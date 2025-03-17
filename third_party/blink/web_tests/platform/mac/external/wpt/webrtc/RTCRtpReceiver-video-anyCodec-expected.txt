@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] An RTCRtpReceiver is prepared to receive any negotiated codec.
+  assert_unreached: Timed out waiting for sent frames Reached unreachable code
+Harness: the test ran to completion.
+

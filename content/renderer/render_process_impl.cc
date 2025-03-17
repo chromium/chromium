@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/renderer/render_process_impl.h"
 
 #include "build/build_config.h"
@@ -126,50 +131,53 @@ RenderProcessImpl::RenderProcessImpl()
   }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-  if (base::SysInfo::IsLowEndDevice()) {
-    std::string optimize_flag("--optimize-for-size");
-    v8::V8::SetFlagsFromString(optimize_flag.c_str(), optimize_flag.size());
+  // Do not apply V8 flag overrides if disallowed.
+  const bool disallow_v8_feature_flag_overrides =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisallowV8FeatureFlagOverrides);
+  if (!disallow_v8_feature_flag_overrides) {
+    if (base::SysInfo::IsLowEndDevice()) {
+      std::string_view optimize_flag("--optimize-for-size");
+      v8::V8::SetFlagsFromString(optimize_flag.data(), optimize_flag.size());
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // V8 flags are typically set in gin/v8_initializer.cc. Only those flags
+    // should be set here that cannot be set in gin/v8_initializer.cc because
+    // e.g. the flag can be set in chrome://flags.
+    ////////////////////////////////////////////////////////////////////////////
+    SetV8FlagIfHasSwitch(switches::kDisableJavaScriptHarmonyShipping,
+                         "--noharmony-shipping");
+    SetV8FlagIfHasSwitch(switches::kJavaScriptHarmony, "--harmony");
+    SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
+                         "--wasm-staging");
+
+    SetV8FlagIfOverridden(features::kV8VmFuture, "--future", "--no-future");
+
+    SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
+                          "--no-liftoff");
+
+    // V8's Wasm stack switching support is sufficient to enable JavaScript
+    // Promise Integration.
+    SetV8FlagIfOverridden(features::kEnableExperimentalWebAssemblyJSPI,
+                          "--experimental-wasm-jspi",
+                          "--no-experimental-wasm-jspi");
+
+    SetV8FlagIfOverridden(features::kWebAssemblyLazyCompilation,
+                          "--wasm-lazy-compilation",
+                          "--no-wasm-lazy-compilation");
+
+    SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
+                          "--no-wasm-tier-up");
+
+    SetV8FlagIfOverridden(features::kWebAssemblyDynamicTiering,
+                          "--wasm-dynamic-tiering",
+                          "--no-wasm-dynamic-tiering");
+
+    SetV8FlagIfOverridden(blink::features::kWebAssemblyJSStringBuiltins,
+                          "--experimental-wasm-imported-strings",
+                          "--no-experimental-wasm-imported-strings");
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // V8 flags are typically set in gin/v8_initializer.cc. Only those flags
-  // should be set here that cannot be set in gin/v8_initializer.cc because
-  // e.g. the flag can be set in chrome://flags.
-  /////////////////////////////////////////////////////////////////////////////
-  SetV8FlagIfHasSwitch(switches::kDisableJavaScriptHarmonyShipping,
-                       "--noharmony-shipping");
-  SetV8FlagIfHasSwitch(switches::kJavaScriptHarmony, "--harmony");
-  SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
-                       "--wasm-staging");
-
-  SetV8FlagIfOverridden(features::kV8VmFuture, "--future", "--no-future");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
-                        "--no-liftoff");
-
-  // V8's WASM stack switching support is sufficient to enable JavaScript
-  // Promise Integration.
-  SetV8FlagIfOverridden(features::kEnableExperimentalWebAssemblyJSPI,
-                        "--experimental-wasm-jspi",
-                        "--no-experimental-wasm-jspi");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyLazyCompilation,
-                        "--wasm-lazy-compilation",
-                        "--no-wasm-lazy-compilation");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyMemory64,
-                        "--experimental-wasm-memory64",
-                        "--no-experimental-wasm-memory64");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
-                        "--no-wasm-tier-up");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyDynamicTiering,
-                        "--wasm-dynamic-tiering", "--no-wasm-dynamic-tiering");
-
-  SetV8FlagIfOverridden(blink::features::kWebAssemblyJSStringBuiltins,
-                        "--experimental-wasm-imported-strings",
-                        "--no-experimental-wasm-imported-strings");
 
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
@@ -185,7 +193,12 @@ RenderProcessImpl::RenderProcessImpl()
   }
 #endif
 
-  if (!enable_shared_array_buffer_unconditionally) {
+  // Do not conditionally set the V8 SharedArrayBuffer feature flag if V8
+  // feature flag overrides are disallowed.
+  // TODO(crbug.com/40155376) Remove when migration to COOP+COEP is complete and
+  // kSharedArrayBuffer is enabled by default.
+  if (!enable_shared_array_buffer_unconditionally &&
+      !disallow_v8_feature_flag_overrides) {
     // It is still possible to enable SharedArrayBuffer per context using the
     // `SharedArrayBufferConstructorEnabledCallback`. This will be done if the
     // context is cross-origin isolated or if it opts in into the reverse origin

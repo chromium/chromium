@@ -193,7 +193,7 @@ export class SettingsLanguagesPageElement extends
       return false;
     }
 
-    const compareLanguage = this.languages.enabled[n]!;
+    const compareLanguage = this.languages.enabled[n];
     return this.detailLanguage_.language === compareLanguage.language;
   }
 

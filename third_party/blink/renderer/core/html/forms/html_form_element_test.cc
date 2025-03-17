@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -16,6 +17,9 @@
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h"
 
 namespace blink {
+
+// Check that type provides a fast path for named property getters.
+static_assert(TypeHasAnyNamedPropertiesMethod<HTMLFormElement>);
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;

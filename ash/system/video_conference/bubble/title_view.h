@@ -62,10 +62,12 @@ class MicTestButton : public views::View {
   void OnMicTestButtonClicked(const ui::Event& event);
   void CloseSidetoneBubble();
   void ShowSidetoneBubble(const bool supported);
+
   // views::View
   void OnThemeChanged() override;
 
   raw_ptr<views::View> background_view_ = nullptr;
+  raw_ptr<MicTestButtonContainer> button_container_ = nullptr;
 };
 
 }  // namespace ash::video_conference

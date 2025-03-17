@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -79,7 +80,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
   GetNetworkFetcherFactory();
 #endif
   static crash_reporter::CrashKeyString<6> crash_key_managed("managed");
-  crash_key_managed.Set(is_managed_device_ ? "true" : "false");
+  crash_key_managed.Set(base::ToString(is_managed_device_));
 }
 Configurator::~Configurator() = default;
 
@@ -265,7 +266,7 @@ update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
 
 std::optional<base::FilePath> Configurator::GetCrxCachePath() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return updater::GetCrxDiffCacheDirectory(GetUpdaterScope());
+  return updater::GetCrxCacheDirectory(GetUpdaterScope());
 }
 
 bool Configurator::IsConnectionMetered() const {

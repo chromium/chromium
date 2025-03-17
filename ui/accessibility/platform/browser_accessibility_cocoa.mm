@@ -19,6 +19,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -721,14 +722,6 @@ bool ui::IsNSRange(id value) {
   return @(GetState(_owner, ax::mojom::State::kExpanded));
 }
 
-- (BOOL)isAccessibilityFocused {
-  if (![self instanceActive])
-    return NO;
-
-  BrowserAccessibilityManager* manager = _owner->manager();
-  return manager->GetFocus() == _owner;
-}
-
 - (void)setAccessibilityFocused:(BOOL)flag {
   BrowserAccessibilityManager* manager = _owner->manager();
   if (flag) {
@@ -1168,6 +1161,13 @@ bool ui::IsNSRange(id value) {
     cocoa_role = NSAccessibilityUnknownRole;
   } else if (_owner->IsRootWebAreaForPresentationalIframe()) {
     cocoa_role = NSAccessibilityGroupRole;
+  } else if (role == ax::mojom::Role::kListBoxOption && _owner->IsWebContent()) {
+    // Short term solution that allows children until Mac gets a more
+    // appropriate role for options than AXStaticText, which can result
+    // truncation or incorrect announcements of the option text when there are
+    // children. For now, only do this for web content, and not UI, where
+    // there are not interesting descendants of list box options.
+    cocoa_role = NSAccessibilityMenuItemRole;
   } else {
     cocoa_role = [AXPlatformNodeCocoa nativeRoleFromAXRole:role];
   }
@@ -1505,12 +1505,7 @@ bool ui::IsNSRange(id value) {
   DCHECK(_owner->node()->IsDataValid());
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
-    std::u16string name = _owner->GetTextContentUTF16();
-    // Leaf node with aria-label will have empty text content.
-    // e.g. <div role="option" aria-label="label">content</div>
-    // So we use its computed name for AXValue.
-    if (name.empty())
-      name = _owner->GetNameAsString16();
+    std::u16string name = _owner->GetNameAsString16();
     if (!IsSelectedStateRelevant(_owner)) {
       return base::SysUTF16ToNSString(name);
     }
@@ -1522,8 +1517,7 @@ bool ui::IsNSRange(id value) {
     int msg_id =
         is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
     std::u16string name_with_selection = base::ReplaceStringPlaceholders(
-        _owner->GetLocalizedString(msg_id), {name}, nullptr);
-
+        _owner->GetLocalizedString(msg_id), name, nullptr);
     return base::SysUTF16ToNSString(name_with_selection);
   }
 
@@ -1749,34 +1743,32 @@ bool ui::IsNSRange(id value) {
       textContent.substr(range.location, range.length));
 }
 
-- (id)AXLineForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  int lineIndex = [(NSNumber*)parameter intValue];
+- (NSInteger)accessibilityLineForIndex:(NSInteger)index {
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
-  auto iterator =
-      std::lower_bound(lineStarts.begin(), lineStarts.end(), lineIndex);
-  return @(std::distance(lineStarts.begin(), iterator));
+  auto iterator = std::lower_bound(lineStarts.begin(), lineStarts.end(), index);
+  return std::distance(lineStarts.begin(), iterator);
 }
 
-- (id)AXRangeForLine:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  if (!_owner->IsTextField())
-    return nil;
+- (NSRange)accessibilityRangeForLine:(NSInteger)lineIndex {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
 
-  int lineIndex = [(NSNumber*)parameter intValue];
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   std::u16string value = _owner->GetValueForControl();
   int valueLength = static_cast<int>(value.size());
 
   int lineCount = static_cast<int>(lineStarts.size());
-  if (lineIndex < 0 || lineIndex >= lineCount)
-    return nil;
+  if (lineIndex < 0 || lineIndex >= lineCount) {
+    return NSMakeRange(0, 0);
+  }
+
   int start = lineStarts[lineIndex];
   int end =
       (lineIndex < (lineCount - 1)) ? lineStarts[lineIndex + 1] : valueLength;
-  return [NSValue valueWithRange:NSMakeRange(start, end - start)];
+  return NSMakeRange(start, end - start);
 }
 
 // Returns the accessibility value for the given attribute and parameter. If the
@@ -1806,16 +1798,6 @@ bool ui::IsNSRange(id value) {
     // here, but at the moment, test infrastructure still directly calls this
     // api endpoint.
     return nil;
-  }
-
-  if ([attribute
-          isEqualToString:NSAccessibilityLineForIndexParameterizedAttribute]) {
-    return [self AXLineForIndex:parameter];
-  }
-
-  if ([attribute
-          isEqualToString:NSAccessibilityRangeForLineParameterizedAttribute]) {
-    return [self AXRangeForLine:parameter];
   }
 
   // LINT.IfChange(accessibilityCellForColumn)
@@ -2683,6 +2665,7 @@ bool ui::IsNSRange(id value) {
 
 // Performs the given accessibility action on the webkit accessibility object
 // that backs this object.
+// This API is deprecated.
 - (void)accessibilityPerformAction:(NSString*)action {
   TRACE_EVENT2("accessibility",
                "BrowserAccessibilityCocoa::accessibilityPerformAction",
@@ -2775,6 +2758,16 @@ bool ui::IsNSRange(id value) {
     data.SetCheckedState(newCheckedState);
   }
   node->SetData(data);  // Set the data back in the node.
+  return YES;
+}
+
+- (BOOL)accessibilityPerformShowMenu {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  BrowserAccessibility* actionTarget = [self actionTarget];
+  BrowserAccessibilityManager* manager = actionTarget->manager();
+  manager->ShowContextMenu(*actionTarget);
   return YES;
 }
 
@@ -2947,57 +2940,6 @@ bool ui::IsNSRange(id value) {
   }
 
   return [super isAccessibilityElement];
-}
-
-- (id)accessibilityDisclosedByRow {
-  if (![self instanceActive]) {
-    return nil;
-  }
-
-  // The row that contains this row.
-  // It should be the same as the first parent that is a treeitem.
-  return nil;
-}
-
-- (id)accessibilityDisclosedRows {
-  if (![self instanceActive]) {
-    return nil;
-  }
-
-  // The rows that are considered inside this row.
-  return nil;
-}
-
-- (NSInteger)accessibilityDisclosureLevel {
-  if (![self instanceActive]) {
-    return 0;
-  }
-
-  ax::mojom::Role role = [self internalRole];
-  if (role == ax::mojom::Role::kRow || role == ax::mojom::Role::kTreeItem ||
-      role == ax::mojom::Role::kHeading) {
-    int level =
-        _owner->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
-    // Mac disclosureLevel is 0-based, but web levels are 1-based.
-    if (level > 0) {
-      level--;
-    }
-    return level;
-  }
-
-  return 0;
-}
-
-- (BOOL)isAccessibilityDisclosed {
-  if (![self instanceActive]) {
-    return NO;
-  }
-
-  if ([self internalRole] == ax::mojom::Role::kTreeItem) {
-    return GetState(_owner, ax::mojom::State::kExpanded);
-  }
-
-  return NO;
 }
 
 @end

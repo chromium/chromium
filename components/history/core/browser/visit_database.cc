@@ -262,7 +262,7 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->url_id = statement.ColumnInt64(1);
   visit->visit_time = statement.ColumnTime(2);
   visit->referring_visit = statement.ColumnInt64(3);
-  visit->external_referrer_url = GURL(statement.ColumnString(4));
+  visit->external_referrer_url = GURL(statement.ColumnStringView(4));
   visit->transition = PageTransitionFromIntWithFallback(statement.ColumnInt(5));
   visit->segment_id = statement.ColumnInt64(6);
   visit->visit_duration = statement.ColumnTimeDelta(7);
@@ -816,7 +816,7 @@ bool VisitDatabase::GetRedirectFromVisit(VisitID from_visit,
   if (to_visit)
     *to_visit = statement.ColumnInt64(0);
   if (to_url)
-    *to_url = GURL(statement.ColumnString(1));
+    *to_url = GURL(statement.ColumnStringView(1));
   return true;
 }
 
@@ -843,7 +843,7 @@ bool VisitDatabase::GetRedirectToVisit(VisitID to_visit,
     if (!statement.Step())
       return false;
 
-    *from_url = GURL(statement.ColumnString(0));
+    *from_url = GURL(statement.ColumnStringView(0));
   }
   return true;
 }
@@ -1014,37 +1014,6 @@ bool VisitDatabase::GetLastVisitToOrigin(const url::Origin& origin,
   return true;
 }
 
-bool VisitDatabase::GetLastVisitToURL(const GURL& url,
-                                      base::Time end_time,
-                                      base::Time* last_visit) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
-    return false;
-
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT "
-      "  v.visit_time "
-      "FROM visits v INNER JOIN urls u ON v.url = u.id "
-      "WHERE "
-      "  u.url = ? AND "
-      "  v.visit_time < ? "
-      "ORDER BY v.visit_time DESC "
-      "LIMIT 1"));
-  statement.BindString(0, url.spec());
-  statement.BindTime(1, end_time);
-
-  if (!statement.Step()) {
-    // If there are no entries from the statement, the URL may not have been
-    // visited in the given time range. Zero the time result and report the
-    // success of the statement.
-    *last_visit = base::Time();
-    return statement.Succeeded();
-  }
-
-  *last_visit = statement.ColumnTime(0);
-  return true;
-}
-
 DailyVisitsResult VisitDatabase::GetDailyVisitsToHost(const GURL& host,
                                                       base::Time begin_time,
                                                       base::Time end_time) {
@@ -1186,12 +1155,22 @@ VisitDatabase::GetGoogleDomainVisitsFromSearchesInRange(base::Time begin_time,
   statement.BindTime(1, end_time);
   std::vector<DomainVisit> domain_visits;
   while (statement.Step()) {
-    const GURL url(statement.ColumnString(1));
+    const GURL url(statement.ColumnStringView(1));
     if (google_util::IsGoogleSearchUrl(url)) {
       domain_visits.emplace_back(url.host(), statement.ColumnTime(0));
     }
   }
   return domain_visits;
+}
+
+bool VisitDatabase::GetIsUrlKnownToSync(URLID url_id, bool* is_known_to_sync) {
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT 1 FROM visits "
+                                 "WHERE url=? AND is_known_to_sync"));
+  statement.BindInt64(0, url_id);
+  *is_known_to_sync = statement.Step();
+  return true;
 }
 
 bool VisitDatabase::MigrateVisitsWithoutDuration() {

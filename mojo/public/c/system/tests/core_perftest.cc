@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <atomic>
+
 #include "base/threading/simple_thread.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -37,11 +39,16 @@ class MessagePipeWriterThread : public base::SimpleThread {
 
   ~MessagePipeWriterThread() override {}
 
+  void Stop() { stopped_.test_and_set(std::memory_order_release); }
+
   void Run() override {
     char buffer[10000];
     assert(num_bytes_ <= sizeof(buffer));
 
     for (;;) {
+      if (stopped_.test(std::memory_order_acquire)) {
+        break;
+      }
       MojoResult result = mojo::WriteMessageRaw(
           mojo::MessagePipeHandle(handle_), buffer, num_bytes_, nullptr, 0,
           MOJO_WRITE_MESSAGE_FLAG_NONE);
@@ -63,6 +70,7 @@ class MessagePipeWriterThread : public base::SimpleThread {
 
  private:
   const MojoHandle handle_;
+  std::atomic_flag stopped_;
   const uint32_t num_bytes_;
   int64_t num_writes_;
 };
@@ -162,7 +170,7 @@ class CorePerftest : public testing::Test {
   void DoMessagePipeThreadedTest(unsigned num_writers,
                                  unsigned num_readers,
                                  uint32_t num_bytes) {
-    static const int64_t kPerftestTimeMicroseconds = 3 * 1000000;
+    static const int64_t kPerftestTimeMicroseconds = 3 * 1'000'000;
 
     assert(num_writers > 0);
     assert(num_readers > 0);
@@ -172,12 +180,14 @@ class CorePerftest : public testing::Test {
     assert(result == MOJO_RESULT_OK);
 
     std::vector<MessagePipeWriterThread*> writers;
-    for (unsigned i = 0; i < num_writers; i++)
+    for (unsigned i = 0; i < num_writers; i++) {
       writers.push_back(new MessagePipeWriterThread(h0_, num_bytes));
+    }
 
     std::vector<MessagePipeReaderThread*> readers;
-    for (unsigned i = 0; i < num_readers; i++)
+    for (unsigned i = 0; i < num_readers; i++) {
       readers.push_back(new MessagePipeReaderThread(h1_));
+    }
 
     // Start time here, just before we fire off the threads.
     const MojoTimeTicks start_time = MojoGetTimeTicksNow();
@@ -192,19 +202,29 @@ class CorePerftest : public testing::Test {
 
     Sleep(kPerftestTimeMicroseconds);
 
-    // Close both handles to make writers and readers stop immediately.
+    // Stop all writers and join them.
+    for (MessagePipeWriterThread* writer : writers) {
+      writer->Stop();
+    }
+    for (MessagePipeWriterThread* writer : writers) {
+      writer->Join();
+    }
+
+    // Once the writers are no longer running, close their end of the pipe.
     result = MojoClose(h0_);
     assert(result == MOJO_RESULT_OK);
+
+    // Join all readers.
+    for (MessagePipeReaderThread* reader : readers) {
+      reader->Join();
+    }
+
+    // Once the readers are no longer running, close the receiving end of the
+    // pipe.
     result = MojoClose(h1_);
     assert(result == MOJO_RESULT_OK);
 
-    // Join everything.
-    for (unsigned i = 0; i < num_writers; i++)
-      writers[i]->Join();
-    for (unsigned i = 0; i < num_readers; i++)
-      readers[i]->Join();
-
-    // Stop time here.
+    // Stop time.
     MojoTimeTicks end_time = MojoGetTimeTicksNow();
 
     // Add up write and read counts, and destroy the threads.

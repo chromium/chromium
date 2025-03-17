@@ -33,6 +33,9 @@ class PrivacySandboxDialogView : public views::View {
 
  private:
   friend class PrivacySandboxQueueTestHelper;
+
+  void AdsDialogNoArgsCallback(
+      PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
   void ResizeNativeView(int height);
   void ShowNativeView();
   void OpenPrivacySandboxSettings();
@@ -44,7 +47,6 @@ class PrivacySandboxDialogView : public views::View {
 
   raw_ptr<views::WebView> web_view_;
   raw_ptr<Browser> browser_;
-  base::TimeTicks dialog_created_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_

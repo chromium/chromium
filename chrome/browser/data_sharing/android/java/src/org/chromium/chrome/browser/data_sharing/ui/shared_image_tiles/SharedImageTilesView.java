@@ -14,14 +14,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
-import androidx.annotation.StyleRes;
-
-import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** View logic for SharedImageTiles component. */
+@NullMarked
 public class SharedImageTilesView extends LinearLayout {
     private final Context mContext;
     private TextView mCountTileView;
@@ -45,74 +41,27 @@ public class SharedImageTilesView extends LinearLayout {
         mLastButtonTileView = findViewById(R.id.last_tile_container);
     }
 
-    void setColorStyle(SharedImageTilesColor colorStyle) {
-        switch (colorStyle.currentStyle) {
-            case SharedImageTilesColor.Style.DEFAULT:
-                setColorOnChildViews(
-                        SemanticColorUtils.getDefaultTextColor(mContext),
-                        SemanticColorUtils.getDefaultBgColor(mContext),
-                        ChromeColors.getSurfaceColor(mContext, R.dimen.default_bg_elevation));
-                break;
-            case SharedImageTilesColor.Style.DYNAMIC:
-                setColorOnChildViews(
-                        SemanticColorUtils.getDefaultTextColorAccent1(mContext),
-                        SemanticColorUtils.getDefaultBgColor(mContext),
-                        SemanticColorUtils.getColorPrimaryContainer(mContext));
-                break;
-            case SharedImageTilesColor.Style.TAB_GROUP:
-                setColorOnChildViews(
-                        ChromeColors.getSurfaceColor(mContext, R.dimen.default_bg_elevation),
-                        colorStyle.tabGroupColor,
-                        colorStyle.tabGroupColor);
-                break;
-        }
-    }
+    void applyConfig(SharedImageTilesConfig config) {
+        int iconTotalSizePx =
+                mContext.getResources().getDimensionPixelSize(config.iconSizeDp)
+                        + 2 * mContext.getResources().getDimensionPixelSize(config.borderSizeDp);
+        int textPaddingPx = mContext.getResources().getDimensionPixelSize(config.textPaddingDp);
 
-    void setColorOnChildViews(
-            @ColorInt int textColor, @ColorInt int borderColor, @ColorInt int backgroundColor) {
-        for (int i = 0; i < getChildCount(); i++) {
-            ViewGroup view_group = (ViewGroup) getChildAt(i);
-            GradientDrawable drawable = (GradientDrawable) view_group.getBackground();
-            drawable.setColor(backgroundColor);
-            drawable.setStroke(
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.shared_image_tiles_icon_border),
-                    borderColor);
-        }
-
-        mCountTileView.setTextColor(textColor);
-    }
-
-    void setType(@SharedImageTilesType int type) {
-        switch (type) {
-            case SharedImageTilesType.DEFAULT:
-                setChildViewSize(
-                        R.dimen.shared_image_tiles_icon_total_height,
-                        R.style.TextAppearance_TextAccentMediumThick_Primary,
-                        R.dimen.shared_image_tiles_text_padding);
-                break;
-            case SharedImageTilesType.SMALL:
-                setChildViewSize(
-                        R.dimen.small_shared_image_tiles_icon_total_height,
-                        R.style.TextAppearance_SharedImageTilesSmall,
-                        R.dimen.small_shared_image_tiles_text_padding);
-                break;
-        }
-    }
-
-    void setChildViewSize(
-            @DimenRes int iconSizeDp, @StyleRes int textStyle, @DimenRes int textPaddingDp) {
-        int iconSizePx = mContext.getResources().getDimensionPixelSize(iconSizeDp);
-        int textPaddingPx = mContext.getResources().getDimensionPixelSize(textPaddingDp);
-        // Loop through all child views.
+        // Style the icon tiles.
         for (int i = 0; i < getChildCount(); i++) {
             ViewGroup viewGroup = (ViewGroup) getChildAt(i);
-            viewGroup.getLayoutParams().height = iconSizePx;
-            viewGroup.setMinimumWidth(iconSizePx);
+            viewGroup.getLayoutParams().height = iconTotalSizePx;
+            viewGroup.setMinimumWidth(iconTotalSizePx);
+            GradientDrawable drawable = (GradientDrawable) viewGroup.getBackground();
+            drawable.setColor(config.backgroundColor);
+            drawable.setStroke(
+                    mContext.getResources().getDimensionPixelSize(config.borderSizeDp),
+                    config.borderColor);
         }
 
-        // Set sizing for the number tile.
-        mCountTileView.setTextAppearance(textStyle);
+        // Style the number tile.
+        mCountTileView.setTextColor(config.textColor);
+        mCountTileView.setTextAppearance(config.textStyle);
         mCountTileView.setPadding(
                 /* left= */ textPaddingPx,
                 /* top= */ 0,

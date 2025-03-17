@@ -4,10 +4,6 @@
 
 #include "remoting/host/linux/gvariant_type.h"
 
-#include <iterator>
-#include <vector>
-
-#include "remoting/host/linux/gvariant_ref.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting::gvariant {

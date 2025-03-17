@@ -7,8 +7,55 @@
 
 #include "base/files/file_path.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
+
+// The result of local web approval flow.
+// Used for metrics. Those values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(LocalApprovalResult)
+enum class LocalApprovalResult {
+  // The parent has locally approved the website.
+  kApproved = 0,
+  // The parent has explicitly declined the approval.
+  kDeclined = 1,
+  // The local web approval is canceled without user intervention.
+  kCanceled = 2,
+  // The local web approval is interrupted due to an error, e.g. parsing error
+  // or unexpected `result` from the server.
+  kError = 3,
+  // Deprecated kMalformedPacpResult = 4,
+  kMaxValue = kError
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserLocalWebApprovalResult)
+
+// Used for metrics. These values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(ParentAccessWidgetError)
+enum class ParentAccessWidgetError {
+  kOAuthError = 0,
+  kDelegateNotAvailable = 1,
+  kDecodingError = 2,
+  kParsingError = 3,
+  kUnknownCallback = 4,
+  kMaxValue = kUnknownCallback
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserParentAccessWidgetError)
+
+// Type of error that was encountered during a local web approval flow.
+// Used for metrics. Those values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(LocalWebApprovalErrorType)
+enum class LocalWebApprovalErrorType : int {
+  kFailureToDecodePacpResponse = 0,
+  kFailureToParsePacpResponse = 1,
+  kUnexpectedPacpResponse = 2,
+  kPacpTimeoutExceeded = 3,
+  kPacpEmptyResponse = 4,
+  kMaxValue = kPacpEmptyResponse
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:LocalWebApprovalErrorType)
 
 // This enum describes the filter types of Chrome, which is
 // set by Family Link App or at families.google.com/families. These values
@@ -157,8 +204,15 @@ extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 // for use in the navigation throttle context.
 extern const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[];
 
+// Histogram name to log the result of a local url approval request.
+extern const char kLocalWebApprovalResultHistogramName[];
+
 // The URL which the "Managed by your parent" UI links to.
 extern const char kManagedByParentUiMoreInfoUrl[];
+
+// The url that displays a user's Family info.
+// The navigations in the via PACP widget redirect to this url.
+extern const char kFamilyManagementUrl[];
 
 // The string used to denote an account that does not have a family member role.
 extern const char kDefaultEmptyFamilyMemberRole[];
@@ -166,10 +220,25 @@ extern const char kDefaultEmptyFamilyMemberRole[];
 // Feedback source name for family member role in Family Link.
 extern const char kFamilyMemberRoleFeedbackTag[];
 
-// Histogram name for the ::ClassifyUrlLoaderThrottle
+// Histogram name to track throttle's headroom before its decision was required.
 extern const char kClassifiedEarlierThanContentResponseHistogramName[];
+
+// Histogram name to track how much throttle delayed the navigation.
 extern const char kClassifiedLaterThanContentResponseHistogramName[];
+
+// Histogram name to track intermediate throttle states.
 extern const char kClassifyUrlThrottleStatusHistogramName[];
+
+// Histogram name to track the final throttle verdict.
+extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
+
+// Histogram name to track the duration of successful local web approval flows,
+// in milliseconds.
+extern const char kLocalWebApprovalDurationMillisecondsHistogramName[];
+
+// Histogram name to track the different error types that may occur during the
+// local web approval flow.
+extern const char kLocalWebApprovalErrorTypeHistogramName[];
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

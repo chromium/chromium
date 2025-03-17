@@ -30,6 +30,11 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="passwords_account"
         android:title="@string/safety_check_passwords_safe" />
+    <!-- Local-level passwords -->
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+        android:key="passwords_local"
+        android:title="@string/safety_hub_local_passwords_checking_title"
+        app:isPreferenceVisible="false" />
     <!-- Safe Browsing -->
     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="safe_browsing"

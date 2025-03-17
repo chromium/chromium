@@ -172,7 +172,7 @@ void RecordCaptureModeRecordingDuration(base::TimeDelta recording_duration,
 // Records the given video file `size_in_kb`. The used histogram will depend on
 // whether this video file was GIF or WebM.
 void RecordVideoFileSizeKB(bool is_gif,
-                           const CaptureModeBehavior* behavior,
+                           const char* client_metric_component,
                            int size_in_kb);
 
 // Records if the user has switched modes during a capture session.

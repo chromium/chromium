@@ -59,9 +59,10 @@ class PerformanceManagerTabHelper
   // and vice-versa.
   void SetDestructionObserver(DestructionObserver* destruction_observer);
 
-  // Must be invoked prior to detaching a PerformanceManagerTabHelper from its
-  // WebContents.
-  void TearDown();
+  // Detaches the tab helper from the WebContents and deletes it. This must be
+  // used instead of calling WebContents::RemoveUserData directly to be sure
+  // resources are cleaned up in the right order.
+  void TearDownAndSelfDelete();
 
   // WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

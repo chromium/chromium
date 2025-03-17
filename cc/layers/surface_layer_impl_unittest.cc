@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "cc/base/features.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -111,7 +112,9 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   auto render_pass = viz::CompositorRenderPass::Create();
   {
     AppendQuadsData data;
-    surface_layer_impl->AppendQuads(render_pass.get(), &data);
+    surface_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
     // The the primary viz::SurfaceInfo will be added to
     // activation_dependencies.
     EXPECT_THAT(data.activation_dependencies,
@@ -127,7 +130,9 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
     AppendQuadsData data;
     surface_layer_impl->SetRange(viz::SurfaceRange(std::nullopt, surface_id1),
                                  0u);
-    surface_layer_impl->AppendQuads(render_pass.get(), &data);
+    surface_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
     // The primary viz::SurfaceInfo should be added to activation_dependencies.
     EXPECT_THAT(data.activation_dependencies,
                 UnorderedElementsAre(surface_id1));
@@ -141,7 +146,9 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
     AppendQuadsData data;
     surface_layer_impl->SetRange(viz::SurfaceRange(surface_id2, surface_id1),
                                  4u);
-    surface_layer_impl->AppendQuads(render_pass.get(), &data);
+    surface_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
     // The the primary viz::SurfaceInfo will be added to
     // activation_dependencies.
     EXPECT_THAT(data.activation_dependencies,
@@ -213,11 +220,15 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  surface_layer_impl->AppendQuads(render_pass.get(), &data);
+  surface_layer_impl->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
   EXPECT_EQ(1u, data.deadline_in_frames);
   EXPECT_FALSE(data.use_default_lower_bound_deadline);
 
-  surface_layer_impl2->AppendQuads(render_pass.get(), &data);
+  surface_layer_impl2->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
   EXPECT_EQ(1u, data.deadline_in_frames);
   EXPECT_TRUE(data.use_default_lower_bound_deadline);
 }
@@ -251,7 +262,9 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  surface_layer_impl->AppendQuads(render_pass.get(), &data);
+  surface_layer_impl->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
   EXPECT_THAT(data.activation_dependencies, UnorderedElementsAre(surface_id1));
   EXPECT_EQ(2u, data.deadline_in_frames);
 
@@ -406,7 +419,9 @@ TEST_F(SurfaceLayerImplAlignToPixelGridTest, FractionalOffsetSnapsToPixelGrid) {
   // Compute RenderPass, with DrawQuads for SurfaceLayer.
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  surface_layer_impl->AppendQuads(render_pass.get(), &data);
+  surface_layer_impl->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify that the DrawQuads for the SurfaceLayer have an integral offset.
   ASSERT_EQ(1U, render_pass->shared_quad_state_list.size());
@@ -444,7 +459,9 @@ TEST(SurfaceLayerImplTest, OverrideChildPaintFlags) {
   {
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
-    surface_layer_impl->AppendQuads(render_pass.get(), &data);
+    surface_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
     const viz::SurfaceDrawQuad* surface_draw_quad =
         viz::SurfaceDrawQuad::MaterialCast(render_pass->quad_list.ElementAt(0));
     EXPECT_EQ(surface_draw_quad->override_child_filter_quality, std::nullopt);
@@ -459,7 +476,9 @@ TEST(SurfaceLayerImplTest, OverrideChildPaintFlags) {
 
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
-    surface_layer_impl->AppendQuads(render_pass.get(), &data);
+    surface_layer_impl->AppendQuads(
+        AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+        &data);
     const viz::SurfaceDrawQuad* surface_draw_quad =
         viz::SurfaceDrawQuad::MaterialCast(render_pass->quad_list.ElementAt(0));
     EXPECT_EQ(surface_draw_quad->override_child_filter_quality,

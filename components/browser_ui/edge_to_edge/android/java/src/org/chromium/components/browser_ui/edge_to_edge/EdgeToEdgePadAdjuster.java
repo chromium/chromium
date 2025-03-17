@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.edge_to_edge;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Triggered when the edge-to-edge state is updated. */
+@NullMarked
 public interface EdgeToEdgePadAdjuster {
 
     /**

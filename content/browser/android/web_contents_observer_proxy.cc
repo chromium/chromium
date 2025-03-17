@@ -70,7 +70,7 @@ void WebContentsObserverProxy::Destroy(JNIEnv* env,
 void WebContentsObserverProxy::WebContentsDestroyed() {
   JNIEnv* env = AttachCurrentThread();
   // The java side will destroy |this|
-  Java_WebContentsObserverProxy_destroy(env, java_observer_);
+  Java_WebContentsObserverProxy_webContentsDestroyed(env, java_observer_);
 }
 
 void WebContentsObserverProxy::RenderFrameCreated(
@@ -87,6 +87,12 @@ void WebContentsObserverProxy::RenderFrameDeleted(
   Java_WebContentsObserverProxy_renderFrameDeleted(
       env, java_observer_, render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID());
+}
+
+void WebContentsObserverProxy::PrimaryPageChanged(content::Page& page) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_primaryPageChanged(env, java_observer_,
+                                                   page.GetJavaPage());
 }
 
 void WebContentsObserverProxy::PrimaryMainFrameRenderProcessGone(
@@ -182,7 +188,8 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
 
   if (render_frame_host->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_didFinishLoadInPrimaryMainFrame(
-        env, java_observer_, render_frame_host->GetProcess()->GetDeprecatedID(),
+        env, java_observer_, render_frame_host->GetPage().GetJavaPage(),
+        render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
         url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
         static_cast<jint>(render_frame_host->GetLifecycleState()));
@@ -194,10 +201,17 @@ void WebContentsObserverProxy::DOMContentLoaded(
   if (render_frame_host->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_documentLoadedInPrimaryMainFrame(
         AttachCurrentThread(), java_observer_,
+        render_frame_host->GetPage().GetJavaPage(),
         render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
         static_cast<jint>(render_frame_host->GetLifecycleState()));
   }
+}
+
+void WebContentsObserverProxy::OnFirstContentfulPaintInPrimaryMainFrame() {
+  Java_WebContentsObserverProxy_firstContentfulPaintInPrimaryMainFrame(
+      AttachCurrentThread(), java_observer_,
+      web_contents()->GetPrimaryPage().GetJavaPage());
 }
 
 void WebContentsObserverProxy::NavigationEntryCommitted(
@@ -316,6 +330,12 @@ void WebContentsObserverProxy::ViewportFitChanged(
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_viewportFitChanged(
       env, java_observer_, as_jint(static_cast<int>(value)));
+}
+
+void WebContentsObserverProxy::SafeAreaConstraintChanged(bool has_constraint) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_safeAreaConstraintChanged(env, java_observer_,
+                                                          has_constraint);
 }
 
 void WebContentsObserverProxy::VirtualKeyboardModeChanged(

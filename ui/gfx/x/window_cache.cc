@@ -4,13 +4,13 @@
 
 #include "ui/gfx/x/window_cache.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -149,7 +149,7 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
   point_px -= gfx::Vector2d(info->x_px, info->y_px);
   if (info->bounding_rects_px && info->input_rects_px) {
     for (const auto& rects : {info->bounding_rects_px, info->input_rects_px}) {
-      if (!base::ranges::any_of(*rects, [&point_px](const Rectangle& x_rect) {
+      if (!std::ranges::any_of(*rects, [&point_px](const Rectangle& x_rect) {
             gfx::Rect rect{x_rect.x, x_rect.y, x_rect.width, x_rect.height};
             return rect.Contains(point_px);
           })) {
@@ -196,8 +196,8 @@ void WindowCache::OnEvent(const Event& event) {
       if (auto* siblings = GetChildren(info->parent)) {
         Window window = configure->window;
         Window above = configure->above_sibling;
-        auto src = base::ranges::find(*siblings, window);
-        auto dst = base::ranges::find(*siblings, above);
+        auto src = std::ranges::find(*siblings, window);
+        auto dst = std::ranges::find(*siblings, above);
         auto end = siblings->end();
         if (src != end && (dst != end || above == Window::None)) {
           dst = above == Window::None ? siblings->begin() : ++dst;

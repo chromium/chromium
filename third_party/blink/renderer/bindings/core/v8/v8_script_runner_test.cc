@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 
 #include "base/location.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -21,7 +22,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/webui_bundled_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -55,12 +58,7 @@ class V8ScriptRunnerTest : public testing::Test {
     return WTF::String::Format("a = function() { 1 + 12; } // %01000d\n",
                                counter_);
   }
-  KURL Url() const {
-    return KURL(WTF::String::Format(code_cache_with_hashing_scheme_
-                                        ? "codecachewithhashing://bla.com/bla%d"
-                                        : "http://bla.com/bla%d",
-                                    counter_));
-  }
+  KURL Url() const { return KURL(url_ + String::Number(counter_)); }
   unsigned TagForCodeCache(CachedMetadataHandler* cache_handler) const {
     return V8CodeCache::TagForCodeCache(cache_handler);
   }
@@ -176,9 +174,7 @@ class V8ScriptRunnerTest : public testing::Test {
     ClassicScript* classic_script =
         CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
     // Set timestamp to simulate a warm run.
-    ScriptCachedMetadataHandler* cache_handler =
-        static_cast<ScriptCachedMetadataHandler*>(
-            classic_script->CacheHandler());
+    CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
     ExecutionContext* execution_context =
         ExecutionContext::From(scope.GetScriptState());
     SetCacheTimeStamp(
@@ -210,8 +206,8 @@ class V8ScriptRunnerTest : public testing::Test {
 
  protected:
   static int counter_;
+  String url_ = "http://bla.com/bla";
   test::TaskEnvironment task_environment_;
-  bool code_cache_with_hashing_scheme_ = false;
   base::test::ScopedFeatureList feature_list_;
   base::RunLoop run_loop_;
 };
@@ -359,7 +355,7 @@ TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
 #endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
-  code_cache_with_hashing_scheme_ = true;
+  url_ = "codecachewithhashing://bla.com/bla";
   ClassicScript* classic_script =
       CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
@@ -406,7 +402,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
 #endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
-  code_cache_with_hashing_scheme_ = true;
+  url_ = "codecachewithhashing://bla.com/bla";
 
   ClassicScript* classic_script_1 =
       CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
@@ -419,10 +415,12 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_1,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_1->GetCachedMetadata(TagForTimeStamp(cache_handler_1)));
-  EXPECT_FALSE(
-      cache_handler_1->GetCachedMetadata(TagForCodeCache(cache_handler_1)));
+  EXPECT_TRUE(cache_handler_1->GetCachedMetadata(
+      TagForTimeStamp(cache_handler_1),
+      CachedMetadataHandler::kCrashIfUnchecked));
+  EXPECT_FALSE(cache_handler_1->GetCachedMetadata(
+      TagForCodeCache(cache_handler_1),
+      CachedMetadataHandler::kCrashIfUnchecked));
 
   // A second script with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the first script.
@@ -438,8 +436,9 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_2,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_2->GetCachedMetadata(TagForCodeCache(cache_handler_2)));
+  EXPECT_TRUE(cache_handler_2->GetCachedMetadata(
+      TagForCodeCache(cache_handler_2),
+      CachedMetadataHandler::kCrashIfUnchecked));
 
   // A third script with different script text, using the state of
   // the ScriptCachedMetadataHandler from the second script.
@@ -457,10 +456,12 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_3,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_3->GetCachedMetadata(TagForTimeStamp(cache_handler_3)));
-  EXPECT_FALSE(
-      cache_handler_3->GetCachedMetadata(TagForCodeCache(cache_handler_3)));
+  EXPECT_TRUE(cache_handler_3->GetCachedMetadata(
+      TagForTimeStamp(cache_handler_3),
+      CachedMetadataHandler::kCrashIfUnchecked));
+  EXPECT_FALSE(cache_handler_3->GetCachedMetadata(
+      TagForCodeCache(cache_handler_3),
+      CachedMetadataHandler::kCrashIfUnchecked));
 
   // A fourth script with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the third script.
@@ -477,10 +478,12 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_4,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_4->GetCachedMetadata(TagForTimeStamp(cache_handler_4)));
-  EXPECT_FALSE(
-      cache_handler_4->GetCachedMetadata(TagForCodeCache(cache_handler_4)));
+  EXPECT_TRUE(cache_handler_4->GetCachedMetadata(
+      TagForTimeStamp(cache_handler_4),
+      CachedMetadataHandler::kCrashIfUnchecked));
+  EXPECT_FALSE(cache_handler_4->GetCachedMetadata(
+      TagForCodeCache(cache_handler_4),
+      CachedMetadataHandler::kCrashIfUnchecked));
 }
 
 namespace {
@@ -543,6 +546,164 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script, compile_options, no_cache_reason,
                             produce_cache_options));
+}
+
+class TestingPlatformForWebUIBundledCodeCache : public TestingPlatformSupport {
+ public:
+  // TestingPlatformSupport:
+  std::optional<int> GetWebUIBundledCodeCacheResourceId(
+      const GURL& resource_url) override {
+    // Flag all chrome resources as having code cache metadata
+    // available in the resource bundle.
+    return 1;
+  }
+};
+
+// Fixture to test the webui bundled code cache feature.
+class WebUIBundledCodeCacheV8ScriptRunnerTest : public V8ScriptRunnerTest {
+ public:
+  // V8ScriptRunnerTest:
+  void SetUp() override {
+    V8ScriptRunnerTest::SetUp();
+#if DCHECK_IS_ON()
+    WTF::SetIsBeforeThreadCreatedForTest();
+#endif
+    SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode("chrome");
+
+    // Update `url_` so generated resources are created with the appropriate
+    // webui bundled code caching scheme.
+    url_ = "chrome://example/script.js";
+  }
+
+  void TearDown() override {
+#if DCHECK_IS_ON()
+    WTF::SetIsBeforeThreadCreatedForTest();
+#endif
+    SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting("chrome");
+    V8ScriptRunnerTest::TearDown();
+  }
+
+  // Produces CachedMetadata for the `classic_script`.
+  scoped_refptr<blink::CachedMetadata> ProduceCachedMetadata(
+      v8::Isolate* isolate,
+      ScriptState* script_state,
+      const ClassicScript& classic_script) {
+    v8::ScriptCompiler::CompileOptions compile_options;
+    V8CodeCache::ProduceCacheOptions produce_cache_options;
+    v8::ScriptCompiler::NoCacheReason no_cache_reason;
+    std::tie(compile_options, produce_cache_options, no_cache_reason) =
+        V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kCode,
+                                       classic_script);
+    v8::MaybeLocal<v8::Script> compiled_script = V8ScriptRunner::CompileScript(
+        script_state, classic_script,
+        classic_script.CreateScriptOrigin(isolate), compile_options,
+        no_cache_reason);
+
+    EXPECT_FALSE(compiled_script.IsEmpty());
+
+    std::unique_ptr<v8::ScriptCompiler::CachedData> cache_data(
+        v8::ScriptCompiler::CreateCodeCache(
+            compiled_script.ToLocalChecked()->GetUnboundScript()));
+    return blink::CachedMetadata::Create(
+        blink::V8CodeCache::TagForCodeCache(classic_script.CacheHandler()),
+        ToSpan(*cache_data));
+  }
+
+ private:
+  ScopedTestingPlatformSupport<TestingPlatformForWebUIBundledCodeCache>
+      platform_;
+};
+
+// Asserts that resources leveraging the webui bundled code cache do not attempt
+// to produce code cache when compiled with an empty handler.
+TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, DoesNotProduceCache) {
+  V8TestingScope scope;
+  ClassicScript* classic_script =
+      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
+            cache_handler->GetServingSource());
+
+  // Compile the script, no code cache should be set on the handler.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            *classic_script,
+                            mojom::blink::V8CacheOptions::kCode));
+  EXPECT_FALSE(
+      cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
+  EXPECT_FALSE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
+                   ->did_use_code_cache_for_testing());
+}
+
+// Asserts that resources leveraging the webui bundled code cache will consume
+// the code cache when available.
+TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, ConsumesAvailableCodeCache) {
+  base::HistogramTester histogram_tester;
+  V8TestingScope scope;
+  ClassicScript* classic_script =
+      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
+            cache_handler->GetServingSource());
+
+  // Compile the script and explicitly extract the cached metadata, no code
+  // cache should be set on the handler.
+  scoped_refptr<blink::CachedMetadata> cached_metadata = ProduceCachedMetadata(
+      scope.GetIsolate(), scope.GetScriptState(), *classic_script);
+
+  // Set the cached metadata on the handler.
+  cache_handler->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(cached_metadata->SerializedData()));
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
+  EXPECT_FALSE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
+                   ->did_use_code_cache_for_testing());
+
+  // Assert that the code cache was used and accepted when the script was
+  // compiled.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            *classic_script,
+                            mojom::blink::V8CacheOptions::kCode));
+  EXPECT_TRUE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
+                  ->did_use_code_cache_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
+      true, 1);
+}
+
+// Asserts that webui code cache deemed invalid by V8 is appropriately rejected.
+TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, RejectsInvalidCodeCache) {
+  base::HistogramTester histogram_tester;
+  V8TestingScope scope;
+  ClassicScript* classic_script =
+      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
+            cache_handler->GetServingSource());
+
+  // Create and compile a different script to generate cached metadata
+  // invalid for use with with `classic_script`.
+  ClassicScript* different_classic_script = CreateScript(CreateResource(
+      scope.GetIsolate(), UTF8Encoding(), Vector<uint8_t>(), DifferentCode()));
+  scoped_refptr<blink::CachedMetadata> different_cached_metadata =
+      ProduceCachedMetadata(scope.GetIsolate(), scope.GetScriptState(),
+                            *different_classic_script);
+
+  // Set the invalid cached metadata on `classic_script`'s handler.
+  cache_handler->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(different_cached_metadata->SerializedData()));
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
+  EXPECT_FALSE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
+                   ->did_use_code_cache_for_testing());
+
+  // Assert that the code cache was used but rejected when the script was
+  // compiled.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            *classic_script,
+                            mojom::blink::V8CacheOptions::kCode));
+  EXPECT_TRUE(static_cast<WebUIBundledCachedMetadataHandler*>(cache_handler)
+                  ->did_use_code_cache_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
+      false, 1);
 }
 
 TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {

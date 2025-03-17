@@ -75,9 +75,9 @@ void DisconnectWindowMac::Start(
   DCHECK(window_controller_ == nil);
 
   // Create the window.
-  base::OnceClosure disconnect_callback =
-      base::BindOnce(&ClientSessionControl::DisconnectSession,
-                     client_session_control, ErrorCode::OK);
+  base::OnceClosure disconnect_callback = base::BindOnce(
+      &ClientSessionControl::DisconnectSession, client_session_control,
+      ErrorCode::OK, "Disconnect button was clicked.", FROM_HERE);
   std::string client_jid = client_session_control->client_jid();
   std::string username = client_jid.substr(0, client_jid.find('/'));
 

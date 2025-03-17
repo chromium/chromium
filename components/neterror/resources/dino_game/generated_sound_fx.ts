@@ -2,37 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-
 import {IS_IOS} from './constants.js';
 
 /**
  * Generated sound FX class for audio cues.
  */
 export class GeneratedSoundFx {
-  private audioCues: boolean = false;
-  private context: AudioContext|null = null;
+  constructor() {
+    this.context = new AudioContext();
+    if (IS_IOS) {
+      this.context.onstatechange = () => {
+        if (this.context.state !== 'running') {
+          this.context.resume();
+        }
+      };
+      this.context.resume();
+    }
+    this.panner = this.context.createStereoPanner ?
+        this.context.createStereoPanner() :
+        null;
+  }
+  private context: AudioContext;
   private panner: StereoPannerNode|null = null;
   private bgSoundIntervalId: number|null = null;
-
-  init() {
-    this.audioCues = true;
-    if (!this.context) {
-      this.context = new AudioContext();
-      if (IS_IOS) {
-        this.context.onstatechange = () => {
-          assert(this.context);
-          if (this.context.state !== 'running') {
-            this.context.resume();
-          }
-        };
-        this.context.resume();
-      }
-      this.panner = this.context.createStereoPanner ?
-          this.context.createStereoPanner() :
-          null;
-    }
-  }
 
   stopAll() {
     this.cancelFootSteps();
@@ -44,8 +36,6 @@ export class GeneratedSoundFx {
   playNote(
       frequency: number, startTime: number, duration: number,
       vol: number = 0.01, pan: number = 0) {
-    assert(this.context);
-
     const osc1 = this.context.createOscillator();
     const osc2 = this.context.createOscillator();
     const volume = this.context.createGain();
@@ -84,20 +74,15 @@ export class GeneratedSoundFx {
   }
 
   background() {
-    assert(this.context);
-
-    if (this.audioCues) {
-      const now = this.context.currentTime;
-      this.playNote(493.883, now, 0.116);
-      this.playNote(659.255, now + 0.116, 0.232);
-      this.loopFootSteps();
-    }
+    const now = this.context.currentTime;
+    this.playNote(493.883, now, 0.116);
+    this.playNote(659.255, now + 0.116, 0.232);
+    this.loopFootSteps();
   }
 
   loopFootSteps() {
-    if (this.audioCues && !this.bgSoundIntervalId) {
+    if (!this.bgSoundIntervalId) {
       this.bgSoundIntervalId = setInterval(() => {
-        assert(this.context);
         this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
         this.playNote(69.30, this.context.currentTime + 0.116, 0.116, 0.16);
       }, 280);
@@ -105,8 +90,7 @@ export class GeneratedSoundFx {
   }
 
   cancelFootSteps() {
-    if (this.audioCues && this.bgSoundIntervalId) {
-      assert(this.context);
+    if (this.bgSoundIntervalId) {
       clearInterval(this.bgSoundIntervalId);
       this.bgSoundIntervalId = null;
       this.playNote(103.83, this.context.currentTime, 0.232, 0.02);
@@ -115,21 +99,15 @@ export class GeneratedSoundFx {
   }
 
   collect() {
-    if (this.audioCues) {
-      assert(this.context);
-      this.cancelFootSteps();
-      const now = this.context.currentTime;
-      this.playNote(830.61, now, 0.116);
-      this.playNote(1318.51, now + 0.116, 0.232);
-    }
+    this.cancelFootSteps();
+    const now = this.context.currentTime;
+    this.playNote(830.61, now, 0.116);
+    this.playNote(1318.51, now + 0.116, 0.232);
   }
 
   jump() {
-    if (this.audioCues) {
-      assert(this.context);
-      const now = this.context.currentTime;
-      this.playNote(659.25, now, 0.116, 0.3, -0.6);
-      this.playNote(880, now + 0.116, 0.232, 0.3, -0.6);
-    }
+    const now = this.context.currentTime;
+    this.playNote(659.25, now, 0.116, 0.3, -0.6);
+    this.playNote(880, now + 0.116, 0.232, 0.3, -0.6);
   }
 }

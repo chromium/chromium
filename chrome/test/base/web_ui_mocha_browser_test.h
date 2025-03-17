@@ -7,15 +7,24 @@
 
 #include <string>
 
+#include "build/build_config.h"
+#include "chrome/test/base/platform_browser_test.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
+#include "content/public/common/content_features.h"
+#else
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#endif
+
+class Profile;
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 // Inherit from this class to run WebUI tests that are using Mocha.
-class WebUIMochaBrowserTest : public InProcessBrowserTest {
+class WebUIMochaBrowserTest : public PlatformBrowserTest {
  public:
   WebUIMochaBrowserTest(const WebUIMochaBrowserTest&) = delete;
   WebUIMochaBrowserTest& operator=(const WebUIMochaBrowserTest&) = delete;
@@ -61,11 +70,11 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   // involve the WebContents, before the Mocha test runs.
   virtual void OnWebContentsAvailable(content::WebContents* web_contents);
 
-  // Gets the WebContents instance to set up the chrome://webui-test data
-  // source for. Defaults to chrome_test_utils::GetActiveWebContents(this);
-  virtual content::WebContents* GetWebContentsForSetup();
+  // Gets the Profile instance to set the chrome://webui-test data on.
+  // Defaults to chrome_test_utils::GetProfile(this);
+  virtual Profile* GetProfileForSetup();
 
-  // InProcessBrowserTest overrides.
+  // PlatformBrowserTest overrides.
   void SetUpOnMainThread() override;
 
   void set_test_loader_host(const std::string& host);
@@ -92,8 +101,18 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   // Note: It is also used by RunTest even when |skip_test_loader| is true.
   std::string test_loader_scheme_;
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, JavaScript console messages are only added to test logs if
+  // kLogJsConsoleMessages is enabled (on other platforms, such messages are
+  // included in test logs by default). Console messages are necessary for
+  // WebUI tests since they include logs indicating which tests in a suite
+  // passed/failed and the console errors related to any failures.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kLogJsConsoleMessages};
+#else
   // Handles collection of code coverage.
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
+#endif
 };
 
 // Inherit from this class to explicitly focus the web contents before running

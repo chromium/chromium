@@ -78,9 +78,12 @@ const char kEarlyBootTestSeed_Signature[] =
 
 const char* kEarlyBootTestSeed_StudyNames[] = {"EarlyBootStudy"};
 
-const SignedSeedData kEarlyBootTestData{
-    kEarlyBootTestSeed_StudyNames, kEarlyBootTestSeed_Uncompressed,
-    kEarlyBootTestSeed_Compressed, kEarlyBootTestSeed_Signature};
+const SignedSeedData kEarlyBootTestData{kEarlyBootTestSeed_StudyNames,
+                                        kEarlyBootTestSeed_Uncompressed,
+                                        kEarlyBootTestSeed_Compressed,
+                                        kEarlyBootTestSeed_Signature,
+                                        /*in_compressed_data=*/{},
+                                        /*in_compressed_data_size=*/0};
 
 // Create mock testing config equivalent to:
 // {

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_item.h"
 
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_cell.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 
 namespace {
 
@@ -39,7 +39,8 @@ constexpr CGFloat kDisabledAlpha = 0.5;
   cell.identityButtonControl.identityViewStyle = self.identityViewStyle;
   [cell.identityButtonControl setIdentityAvatar:self.identityAvatar];
   [cell.identityButtonControl setIdentityName:self.identityName
-                                        email:self.identityEmail];
+                                        email:self.identityEmail
+                                      managed:self.identityManaged];
   cell.identityButtonControl.enabled = self.enabled;
   cell.identityButtonControl.alpha = self.enabled ? 1.0 : kDisabledAlpha;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;

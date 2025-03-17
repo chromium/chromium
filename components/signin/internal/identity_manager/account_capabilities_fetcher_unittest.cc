@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 
 #include <optional>
@@ -10,6 +15,7 @@
 #include "account_capabilities_fetcher.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -75,10 +81,9 @@ class TestSupportAndroid {
   }
 
   void AddAccount(const CoreAccountInfo& account_info) {
-    JNIEnv* env = base::android::AttachCurrentThread();
     signin::Java_AccountCapabilitiesFetcherTestUtil_expectAccount(
-        env, java_test_util_ref_,
-        ConvertToJavaCoreAccountInfo(env, account_info));
+        base::android::AttachCurrentThread(), java_test_util_ref_,
+        account_info);
   }
 
   std::unique_ptr<AccountCapabilitiesFetcher> CreateFetcher(
@@ -114,8 +119,7 @@ class TestSupportAndroid {
                           const AccountCapabilities& capabilities) {
     JNIEnv* env = base::android::AttachCurrentThread();
     signin::Java_AccountCapabilitiesFetcherTestUtil_returnCapabilities(
-        env, java_test_util_ref_,
-        ConvertToJavaCoreAccountInfo(env, account_info),
+        env, java_test_util_ref_, account_info,
         capabilities.ConvertToJavaAccountCapabilities(env));
   }
 
@@ -138,9 +142,9 @@ std::string GenerateValidAccountCapabilitiesResponse(bool capability_value) {
   std::vector<std::string> dict_array;
   for (std::string_view name :
        AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames()) {
-    dict_array.push_back(
-        base::StringPrintf(kSingleCapabilitiyResponseFormat, name.size(),
-                           name.data(), capability_value ? "true" : "false"));
+    dict_array.push_back(base::StringPrintf(kSingleCapabilitiyResponseFormat,
+                                            name.size(), name.data(),
+                                            base::ToString(capability_value)));
   }
   return base::StringPrintf(kAccountCapabilitiesResponseFormat,
                             base::JoinString(dict_array, ",").c_str());

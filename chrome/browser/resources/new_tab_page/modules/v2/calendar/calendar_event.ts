@@ -193,10 +193,10 @@ export class CalendarEventElement extends CalendarEventElementBase {
       return;
     }
     const scrollableRight =
-        (attachmentList!.scrollWidth - attachmentList!.scrollLeft -
-         kAttachmentScrollFadeBuffer) > attachmentList!.clientWidth;
+        (attachmentList.scrollWidth - attachmentList.scrollLeft -
+         kAttachmentScrollFadeBuffer) > attachmentList.clientWidth;
     const scrollableLeft =
-        attachmentList!.scrollLeft - kAttachmentScrollFadeBuffer > 0;
+        attachmentList.scrollLeft - kAttachmentScrollFadeBuffer > 0;
 
     if (scrollableRight && scrollableLeft) {
       this.attachmentListClass_ = 'scrollable';

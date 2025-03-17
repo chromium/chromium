@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 
@@ -160,20 +161,25 @@ CSSRuleSourceData* InspectorCSSParserObserver::PopRuleData() {
 namespace {
 
 wtf_size_t FindColonIndex(const String& property_string) {
-  wtf_size_t index = 0;
-  while (index != kNotFound && index < property_string.length()) {
-    index = std::min(property_string.Find("/*", index),
-                     property_string.Find(":", index));
-    if (index == kNotFound || property_string[index] == ':') {
+  for (wtf_size_t index = 0;
+       index != kNotFound && index < property_string.length(); index++) {
+    if (property_string[index] == '\\') {
+      // Next character is escaped, skip over it.
+      index++;
+    } else if (property_string[index] == ':') {
       return index;
-    }
-    if (index >= property_string.length() - 2) {
-      return kNotFound;
-    }
-    // We're in a comment inside the property name, skip past it.
-    index = property_string.Find("*/", index + 2);
-    if (index != kNotFound) {
-      index += 2;
+    } else if (index < property_string.length() - 1 &&
+               property_string[index] == '/' &&
+               property_string[index + 1 == '*']) {
+      if (index >= property_string.length() - 2) {
+        return kNotFound;
+      }
+      // We're in a comment inside the property name, skip past it.
+      index = property_string.Find("*/", index + 2);
+      if (index != kNotFound) {
+        // "*/" are two characters. Advance one more than the for-loop.
+        index++;
+      }
     }
   }
   return kNotFound;

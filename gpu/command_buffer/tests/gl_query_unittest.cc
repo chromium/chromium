@@ -145,4 +145,27 @@ TEST_F(QueryTest, CommandsCompletedWithFinish) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
 
+// Test deleting a non-active query with a query of the same type active.
+TEST_F(QueryTest, DeleteQueryWithActiveQuery) {
+  if (!GLTestHelper::HasExtension("GL_EXT_occlusion_query_boolean")) {
+    LOG(INFO)
+        << "GL_EXT_occlusion_query_boolean not supported. Skipping test...";
+    return;
+  }
+
+  GLuint queries[2];
+  glGenQueriesEXT(2, queries);
+
+  glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, queries[0]);
+  glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT);
+
+  glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, queries[1]);
+  glDeleteQueriesEXT(1, &queries[0]);
+  glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT);
+
+  glDeleteQueriesEXT(1, &queries[1]);
+
+  GLTestHelper::CheckGLError("no errors", __LINE__);
+}
+
 }  // namespace gpu

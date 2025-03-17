@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_session_pool.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -23,7 +24,6 @@
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -123,6 +123,46 @@ enum QuicSessionKeyPartialMatchResult {
   kMaxValue = kMatchedToActiveJob
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionKeyPartialMatchResult)
+
+// Represents which field in `QuicSessionKey` was different among two keys with
+// the same `ServerId`.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QuicSessionKeyMismatchedField)
+enum class QuicSessionKeyMismatchedField {
+  kPrivacyMode,
+  kSocketTag,
+  kProxyChain,
+  kSessionUsage,
+  kNetworkAnonymizationKey,
+  kSecureDnsPolicy,
+  kRequireDNSHttpsAlpn,
+  kMaxValue = kRequireDNSHttpsAlpn
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionKeyMismatchedField)
+
+// Represents which combination of field in `QuicSessionKey` was different
+// among two keys with the same `ServerId`. We only look at the commonly
+// mismatched fields to avoid combination explosion.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QuicSessionKeyMismatchedFieldCombination)
+enum class QuicSessionKeyMismatchedFieldCombination {
+  kUnknownCombination,
+  kPrivacyMode,
+  kNetworkAnonymizationKey,
+  kPrivacyModeNetworkAnonymizationKey,
+  kRequireDNSHttpsAlpn,
+  kRequireDNSHttpsAlpnPrivacyMode,
+  kRequireDNSHttpsNetworkAnonymizationKey,
+  kPrivacyModeAndNetworkAnonymizationKeyRequireDNSHttpsAlpn,
+  kMaxValue = kPrivacyModeAndNetworkAnonymizationKeyRequireDNSHttpsAlpn
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionKeyMismatchedFieldCombination)
 
 std::string QuicPlatformNotificationToString(
     QuicPlatformNotification notification) {
@@ -263,11 +303,69 @@ void LogUsingExistingSession(const NetLogWithSource& request_net_log,
 }
 
 void LogSessionKeyMismatch(QuicSessionKeyPartialMatchResult result,
-                           const url::SchemeHostPort& destination) {
-  std::string histogram_name = base::StrCat(
-      {"Net.QuicSession.SessionKeyMismatch",
-       IsGoogleHostWithAlpnH3(destination.host()) ? ".GoogleHost" : ""});
-  base::UmaHistogramEnumeration(histogram_name, result);
+                           const url::SchemeHostPort destination,
+                           const QuicSessionKey session_key,
+                           const std::optional<QuicSessionKey> active_key) {
+  const std::string_view kHistogramBase = "Net.QuicSession.SessionKeyMismatch";
+  const std::string histogram_suffix =
+      IsGoogleHostWithAlpnH3(destination.host()) ? ".GoogleHost" : "";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramBase, histogram_suffix}), result);
+
+  if (result != QuicSessionKeyPartialMatchResult::kNoMatch) {
+    CHECK(active_key.has_value());
+    int total_mismatch = 0;
+    int mismatched_combinations = 0;
+    std::string mismatch_field_histogram =
+        base::StrCat({kHistogramBase, ".MismatchedField", histogram_suffix});
+
+    // Check and record the fields that are mismatching.
+    auto checkAndRecordMismatch =
+        [&mismatch_field_histogram, &total_mismatch, &session_key, &active_key](
+            auto method, QuicSessionKeyMismatchedField field) {
+          if ((session_key.*method)() != (active_key.value().*method)()) {
+            total_mismatch++;
+            base::UmaHistogramEnumeration(mismatch_field_histogram, field);
+            return true;
+          }
+          return false;
+        };
+    checkAndRecordMismatch(&QuicSessionKey::socket_tag,
+                           QuicSessionKeyMismatchedField::kSocketTag);
+    checkAndRecordMismatch(&QuicSessionKey::proxy_chain,
+                           QuicSessionKeyMismatchedField::kProxyChain);
+    checkAndRecordMismatch(&QuicSessionKey::session_usage,
+                           QuicSessionKeyMismatchedField::kSessionUsage);
+    checkAndRecordMismatch(&QuicSessionKey::secure_dns_policy,
+                           QuicSessionKeyMismatchedField::kSecureDnsPolicy);
+
+    if (checkAndRecordMismatch(&QuicSessionKey::privacy_mode,
+                               QuicSessionKeyMismatchedField::kPrivacyMode)) {
+      mismatched_combinations |= 1;
+    }
+    if (checkAndRecordMismatch(
+            &QuicSessionKey::network_anonymization_key,
+            QuicSessionKeyMismatchedField::kNetworkAnonymizationKey)) {
+      mismatched_combinations |= (1 << 1);
+    }
+    if (checkAndRecordMismatch(
+            &QuicSessionKey::require_dns_https_alpn,
+            QuicSessionKeyMismatchedField::kRequireDNSHttpsAlpn)) {
+      mismatched_combinations |= (1 << 2);
+    }
+
+    base::UmaHistogramCounts1000(
+        base::StrCat(
+            {kHistogramBase, ".TotalMismatchedField", histogram_suffix}),
+        total_mismatch);
+
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kHistogramBase, ".MismatchedFieldCombination", histogram_suffix}),
+        static_cast<QuicSessionKeyMismatchedFieldCombination>(
+            mismatched_combinations));
+  }
 }
 
 }  // namespace
@@ -625,24 +723,27 @@ QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
   return nullptr;
 }
 
-bool QuicSessionPool::HasActiveSessionToServerId(
+std::optional<QuicSessionKey> QuicSessionPool::GetActiveSessionToServerId(
     const QuicSessionKey& session_key) const {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       active_sessions_, [&session_key](const auto& key_value) {
         return session_key != key_value.first &&
                session_key.server_id() == key_value.first.server_id();
       });
-  return it != std::end(active_sessions_);
+  return it != std::end(active_sessions_)
+             ? std::optional<QuicSessionKey>(it->first)
+             : std::nullopt;
 }
 
-bool QuicSessionPool::HasActiveJobToServerId(
+std::optional<QuicSessionKey> QuicSessionPool::GetActiveJobToServerId(
     const QuicSessionKey& session_key) const {
-  auto it = base::ranges::find_if(
-      active_jobs_, [&session_key](const auto& key_value) {
+  auto it =
+      std::ranges::find_if(active_jobs_, [&session_key](const auto& key_value) {
         return session_key != key_value.first &&
                session_key.server_id() == key_value.first.server_id();
       });
-  return it != std::end(active_jobs_);
+  return it != std::end(active_jobs_) ? std::optional<QuicSessionKey>(it->first)
+                                      : std::nullopt;
 }
 
 bool QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
@@ -703,18 +804,7 @@ int QuicSessionPool::RequestSession(
     return ERR_IO_PENDING;
   }
 
-  // Check and record if we have some sort of partially matched results for the
-  // `session_key`.
-  QuicSessionKeyPartialMatchResult partial_match_result =
-      QuicSessionKeyPartialMatchResult::kNoMatch;
-  if (HasActiveSessionToServerId(session_key)) {
-    partial_match_result =
-        QuicSessionKeyPartialMatchResult::kMatchedToActiveSession;
-  } else if (HasActiveJobToServerId(session_key)) {
-    partial_match_result =
-        QuicSessionKeyPartialMatchResult::kMatchedToActiveJob;
-  }
-  LogSessionKeyMismatch(partial_match_result, destination);
+  CheckQuicSessionKeyMismatch(session_key, destination);
 
   // If a proxy is in use, then a traffic annotation is required.
   if (!session_key.proxy_chain().is_direct()) {
@@ -2218,6 +2308,32 @@ void QuicSessionPool::CollectDataOnPlatformNotification(
                             notification, NETWORK_NOTIFICATION_MAX);
   connectivity_monitor_.RecordConnectivityStatsToHistograms(
       QuicPlatformNotificationToString(notification), affected_network);
+}
+
+void QuicSessionPool::CheckQuicSessionKeyMismatch(
+    const QuicSessionKey& session_key,
+    url::SchemeHostPort destination) const {
+  // Check and record if we have some sort of partially matched results for the
+  // `session_key`.
+  QuicSessionKeyPartialMatchResult partial_match_result =
+      QuicSessionKeyPartialMatchResult::kNoMatch;
+  std::optional<QuicSessionKey> active_key = std::nullopt;
+  if (auto active_session_key = GetActiveSessionToServerId(session_key)) {
+    partial_match_result =
+        QuicSessionKeyPartialMatchResult::kMatchedToActiveSession;
+    active_key = active_session_key;
+  } else if (auto active_job_key = GetActiveJobToServerId(session_key)) {
+    partial_match_result =
+        QuicSessionKeyPartialMatchResult::kMatchedToActiveJob;
+    active_key = active_job_key;
+  }
+
+  // PostTask the histogram recording since we do not want to incur many
+  // overheads for the execution of the session creation with checking field
+  // mismatches.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&LogSessionKeyMismatch, partial_match_result,
+                                destination, session_key, active_key));
 }
 
 std::unique_ptr<QuicCryptoClientConfigHandle>

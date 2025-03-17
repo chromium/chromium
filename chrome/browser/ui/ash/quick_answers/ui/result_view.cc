@@ -71,7 +71,7 @@ ResultView::ResultView() {
               views::Builder<views::Label>()
                   .CopyAddressTo(&first_line_label_)
                   .SetVisible(false)
-                  .SetEnabledColorId(ui::kColorLabelForeground)
+                  .SetEnabledColor(ui::kColorLabelForeground)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   // Set lower priority order for `first_line_label` compared to
                   // `first_line_sub_label` as primary text gets elided first
@@ -85,14 +85,14 @@ ResultView::ResultView() {
                         .CopyAddressTo(&separator_label_)
                         .SetVisible(false)
                         .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                        .SetEnabledColorId(ui::kColorLabelForeground)
+                        .SetEnabledColor(ui::kColorLabelForeground)
                         .SetText(kSeparatorText))
           .AddChild(
               views::Builder<views::Label>()
                   .CopyAddressTo(&first_line_sub_label_)
                   .SetVisible(false)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetEnabledColorId(ui::kColorLabelForeground)
+                  .SetEnabledColor(ui::kColorLabelForeground)
                   .SetProperty(
                       views::kFlexBehaviorKey,
                       views::FlexSpecification(
@@ -113,7 +113,7 @@ ResultView::ResultView() {
       views::Builder<views::Label>()
           .CopyAddressTo(&second_line_label_)
           .SetVisible(false)
-          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetMultiLine(true)
           .SetMaxLines(kMaxLines)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -128,17 +128,16 @@ ResultView::ResultView() {
 
 ResultView::~ResultView() = default;
 
-void ResultView::SetFirstLineText(const std::u16string& first_line_text) {
+void ResultView::SetFirstLineText(std::u16string_view first_line_text) {
   first_line_label_->SetText(first_line_text);
   first_line_label_->SetVisible(!first_line_text.empty());
 }
 
-std::u16string ResultView::GetFirstLineText() const {
+std::u16string_view ResultView::GetFirstLineText() const {
   return first_line_label_->GetText();
 }
 
-void ResultView::SetFirstLineSubText(
-    const std::u16string& first_line_sub_text) {
+void ResultView::SetFirstLineSubText(std::u16string_view first_line_sub_text) {
   first_line_sub_label_->SetText(first_line_sub_text);
   first_line_sub_label_->SetVisible(!first_line_sub_text.empty());
   separator_label_->SetVisible(!first_line_sub_text.empty());
@@ -147,7 +146,7 @@ void ResultView::SetFirstLineSubText(
                                   : views::FlexAllocationOrder::kReverse);
 }
 
-std::u16string ResultView::GetFirstLineSubText() const {
+std::u16string_view ResultView::GetFirstLineSubText() const {
   return first_line_sub_label_->GetText();
 }
 
@@ -160,12 +159,12 @@ PhoneticsInfo ResultView::GetPhoneticsInfo() const {
   return phonetics_info_;
 }
 
-void ResultView::SetSecondLineText(const std::u16string& second_line_text) {
+void ResultView::SetSecondLineText(std::u16string_view second_line_text) {
   second_line_label_->SetText(second_line_text);
   second_line_label_->SetVisible(!second_line_text.empty());
 }
 
-std::u16string ResultView::GetSecondLineText() const {
+std::u16string_view ResultView::GetSecondLineText() const {
   return second_line_label_->GetText();
 }
 
@@ -197,7 +196,7 @@ void ResultView::SetDesign(Design design) {
   phonetics_audio_button_->SetBackground(
       design == Design::kCurrent
           ? nullptr
-          : views::CreateThemedRoundedRectBackground(
+          : views::CreateRoundedRectBackground(
                 ui::ColorIds::kColorSysStateHoverOnSubtle,
                 kPhoneticsAudioButtonBackgroundRadiusDip));
   phonetics_audio_button_->SetProperty(
@@ -213,9 +212,9 @@ void ResultView::OnPhoneticsAudioButtonPressed() {
 }
 
 BEGIN_METADATA(ResultView)
-ADD_PROPERTY_METADATA(std::u16string, FirstLineText)
-ADD_PROPERTY_METADATA(std::u16string, FirstLineSubText)
-ADD_PROPERTY_METADATA(std::u16string, SecondLineText)
+ADD_PROPERTY_METADATA(std::u16string_view, FirstLineText)
+ADD_PROPERTY_METADATA(std::u16string_view, FirstLineSubText)
+ADD_PROPERTY_METADATA(std::u16string_view, SecondLineText)
 END_METADATA
 
 }  // namespace quick_answers

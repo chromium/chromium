@@ -302,6 +302,8 @@ base::Value SerializeIntoValue(const InterestGroup::Ad& ad) {
   SerializeIntoDict("adRenderId", ad.ad_render_id, result);
   SerializeIntoDict("allowedReportingOrigins", ad.allowed_reporting_origins,
                     result);
+  SerializeIntoDict("creativeScanningMetadata", ad.creative_scanning_metadata,
+                    result);
   return base::Value(std::move(result));
 }
 
@@ -422,6 +424,9 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
                     conf.non_shared_params.per_buyer_real_time_reporting_types,
                     result);
 
+  SerializeIntoDict("sendCreativeScanningMetadata",
+                    conf.send_creative_scanning_metadata, result);
+
   // For component auctions, we only serialize the seller names to give a
   // quick overview, since they'll get their own events.
   if (!conf.non_shared_params.component_auctions.empty()) {
@@ -499,6 +504,8 @@ base::Value::Dict SerializeInterestGroupForDevtools(const InterestGroup& ig) {
                     ig.max_trusted_bidding_signals_url_length, result);
   SerializeIntoDict("trustedBiddingSignalsCoordinator",
                     ig.trusted_bidding_signals_coordinator, result);
+  SerializeIntoDict("viewAndClickCountsProviders",
+                    ig.view_and_click_counts_providers, result);
   SerializeIntoDict("userBiddingSignals", ig.user_bidding_signals, result);
   SerializeIntoDict("ads", ig.ads, result);
   SerializeIntoDict("adComponents", ig.ad_components, result);

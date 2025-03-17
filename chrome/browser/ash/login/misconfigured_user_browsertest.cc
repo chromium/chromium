@@ -47,7 +47,7 @@ namespace {
 
 constexpr char kMisconfiguredUserPref[] = "incomplete_login_user_account";
 constexpr char kMisconfiguredUserPrefV2[] = "incomplete_login_user_account_v2";
-constexpr char kNewUserGaiaId[] = "1234";
+constexpr GaiaId::Literal kNewUserGaiaId("1234");
 constexpr char kNewUserPassword[] = "password";
 constexpr char kNewUserEmail[] = "new-user@gmail.com";
 
@@ -115,8 +115,7 @@ class MisconfiguredOwnerUserTest : public LoginManagerTest {
                             const std::string& password) {
     OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 
-    fake_gaia_mixin_.fake_gaia()->MapEmailToGaiaId(email,
-                                                   GaiaId(kNewUserGaiaId));
+    fake_gaia_mixin_.fake_gaia()->MapEmailToGaiaId(email, kNewUserGaiaId);
 
     auto* context =
         LoginDisplayHost::default_host()->GetWizardContextForTesting();
@@ -175,7 +174,8 @@ class MisconfiguredUserTest : public MisconfiguredOwnerUserTest {
 IN_PROC_BROWSER_TEST_F(
     MisconfiguredUserTest,
     PRE_MisconfiguredUserSuccessfullyRemovedFromUserManager) {
-  user_manager::UserList users = user_manager::UserManager::Get()->GetUsers();
+  user_manager::UserList users =
+      user_manager::UserManager::Get()->GetPersistedUsers();
 
   auto result =
       std::find_if(begin(users), end(users), [this](user_manager::User* user) {
@@ -192,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(MisconfiguredUserTest,
                        MisconfiguredUserSuccessfullyRemovedFromUserManager) {
-  user_manager::UserList users = user_manager::UserManager::Get()->GetUsers();
+  user_manager::UserList users =
+      user_manager::UserManager::Get()->GetPersistedUsers();
 
   auto result =
       std::find_if(begin(users), end(users), [this](user_manager::User* user) {

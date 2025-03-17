@@ -21,6 +21,12 @@ namespace ash::boca {
 
 ::boca::LockedNavigationOptions::NavigationType NavigationTypeJsonToProto(
     const std::string& type);
+
+::boca::StudentGroup::GroupSource GroupSourceJsonToProto(
+    const std::string& type);
+
+::boca::ViewScreenConfig::ViewScreenState ViewScreenStateJsonToProto(
+    const std::string& type);
 // Proto to Json
 void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
                                ::boca::Session* session);
@@ -32,7 +38,11 @@ void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
                                      ::boca::Session* session,
                                      bool is_producer);
 void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
-                                     ::boca::Session* session);
+                                     ::boca::Session* session,
+                                     bool is_producer);
+void ParseIndividualStudentStatusFromJson(
+    ::boca::StudentStatus* student_status,
+    base::Value::Dict* student_status_dict);
 // This helper returns unique_ptr for easier lifecycle management.
 std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
                                                          bool is_producer);

@@ -4,13 +4,18 @@
 
 #include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 
+#include "components/enterprise/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 namespace enterprise_util {
 
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 // If a local agent has been configured for content analysis, this function
 // connects to the agent immediately.  Agents expect chrome to connect to them
 // at some point during startup to determine if chrome is configuredcorrectly.
@@ -36,6 +41,7 @@ void MaybePrimeLocalContentAnalysisAgentConnection(Profile* profile) {
         {configs[0]->local_path, configs[0]->user_specific});
   }
 }
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 }  // namespace
 
@@ -48,7 +54,9 @@ ChromeBrowserMainExtraPartsEnterprise::
 void ChromeBrowserMainExtraPartsEnterprise::PostProfileInit(
     Profile* profile,
     bool is_initial_profile) {
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   MaybePrimeLocalContentAnalysisAgentConnection(profile);
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 }
 
 }  // namespace enterprise_util

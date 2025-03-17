@@ -27,7 +27,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
@@ -58,6 +58,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
 
 constexpr base::TimeDelta kRevocationThresholdNoDelayForTesting = base::Days(0);
 constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
@@ -219,8 +223,9 @@ PermissionsData::~PermissionsData() = default;
 PermissionsData::PermissionsData(const PermissionsData& other)
     : primary_pattern(other.primary_pattern),
       permission_types(other.permission_types),
-      constraints(other.constraints),
-      abusive_revocation_constraints(other.abusive_revocation_constraints) {
+      constraints(other.constraints.Clone()),
+      abusive_revocation_constraints(
+          other.abusive_revocation_constraints.Clone()) {
   chooser_permissions_data = other.chooser_permissions_data.Clone();
 }
 
@@ -307,7 +312,7 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
   }
 
   std::set<ContentSettingsPattern> new_origins = GetRevokedOrigins();
-  return !base::ranges::includes(old_origins, new_origins);
+  return !std::ranges::includes(old_origins, new_origins);
 }
 
 std::u16string UnusedSitePermissionsService::UnusedSitePermissionsResult::
@@ -350,6 +355,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
 
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
     pref_change_registrar_->Add(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
@@ -357,15 +363,35 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
                                 OnPermissionsAutorevocationControlChanged,
                             base::Unretained(this)));
   }
+#else   // BUILDFLAG(IS_ANDROID)
+  pref_change_registrar_->Add(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
+      base::BindRepeating(&UnusedSitePermissionsService::
+                              OnPermissionsAutorevocationControlChanged,
+                          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
     abusive_notification_manager_ =
         std::make_unique<AbusiveNotificationPermissionsManager>(
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
             g_browser_process->safe_browsing_service()
                 ? g_browser_process->safe_browsing_service()->database_manager()
                 : nullptr,
+#else
+            nullptr,
+#endif
             hcsm());
+
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubDisruptiveNotificationRevocation)) {
+      disruptive_notification_manager_ =
+          std::make_unique<DisruptiveNotificationPermissionsManager>(
+              hcsm(),
+              site_engagement::SiteEngagementServiceFactory::GetForProfile(
+                  browser_context_));
+    }
 
     pref_change_registrar_->Add(
         prefs::kSafeBrowsingEnabled,
@@ -532,7 +558,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
     abusive_notification_manager_->UndoRegrantPermissionForOriginIfNecessary(
         GURL(permissions_data.primary_pattern.ToString()),
         permissions_data.permission_types,
-        permissions_data.abusive_revocation_constraints);
+        permissions_data.abusive_revocation_constraints.Clone());
   }
 
   // If `permissions_data` had abusive notifications revoked, remove the
@@ -569,7 +595,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
 
   StorePermissionInRevokedPermissionSetting(
       unused_site_permission_types, permissions_data.chooser_permissions_data,
-      permissions_data.constraints, permissions_data.primary_pattern,
+      permissions_data.constraints.Clone(), permissions_data.primary_pattern,
       ContentSettingsPattern::Wildcard());
 }
 
@@ -699,6 +725,9 @@ UnusedSitePermissionsService::UpdateOnUIThread(
           result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
   RevokeUnusedPermissions();
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->RevokeDisruptiveNotifications();
+  }
   // TODO(crbug.com/40250875): Clean up these checks.
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->CheckNotificationPermissionOrigins();
@@ -911,8 +940,9 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   // |ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS| is always wildcard.
   StorePermissionInRevokedPermissionSetting(
       permissions_data.permission_types,
-      permissions_data.chooser_permissions_data, permissions_data.constraints,
-      permissions_data.primary_pattern, ContentSettingsPattern::Wildcard());
+      permissions_data.chooser_permissions_data,
+      permissions_data.constraints.Clone(), permissions_data.primary_pattern,
+      ContentSettingsPattern::Wildcard());
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(

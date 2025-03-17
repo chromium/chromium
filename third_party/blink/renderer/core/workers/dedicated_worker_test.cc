@@ -77,7 +77,7 @@ class CustomEventWithData final : public Event {
 
   explicit CustomEventWithData(const AtomicString& event_type,
                                scoped_refptr<SerializedScriptValue> data,
-                               MessagePortArray* ports)
+                               GCedMessagePortArray* ports)
       : Event(event_type, Bubbles::kNo, Cancelable::kNo),
         data_as_serialized_script_value_(
             SerializedScriptValue::Unpack(std::move(data))),
@@ -95,11 +95,11 @@ class CustomEventWithData final : public Event {
     return data_as_serialized_script_value_->Value();
   }
 
-  MessagePortArray* ports() { return ports_; }
+  GCedMessagePortArray* ports() { return ports_; }
 
  private:
   Member<UnpackedSerializedScriptValue> data_as_serialized_script_value_;
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
 };
 
 ScriptValue CreateStringScriptValue(ScriptState* script_state,
@@ -660,7 +660,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
       .SetSecurityOriginForTesting(security_origin);
   StartWorker(WorkerObject()->CreateGlobalScopeCreationParams(
       script_url, network::mojom::ReferrerPolicy::kDefault,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>()));
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      mojo::NullReceiver(), mojo::NullReceiver()));
   base::RunLoop run_loop;
 
   PostCrossThreadTask(
@@ -687,8 +688,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
               auto nested_worker_params =
                   nested_worker_object->CreateGlobalScopeCreationParams(
                       script_url, network::mojom::ReferrerPolicy::kDefault,
-                      Vector<
-                          network::mojom::blink::ContentSecurityPolicyPtr>());
+                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                      mojo::NullReceiver(), mojo::NullReceiver());
               ASSERT_TRUE(
                   nested_worker_params->top_level_frame_security_origin);
               EXPECT_TRUE(nested_worker_params->top_level_frame_security_origin

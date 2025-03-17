@@ -76,6 +76,10 @@
 // Sets the visibility of the Edit button.
 - (void)setEditButtonHidden:(BOOL)hidden;
 
+// Displays the send feedback button. Default hidden.
+// TODO(crbug.com/398183785): Remove once we got feedback.
+- (void)setTabGroupFeedbackVisible:(BOOL)visible;
+
 // Hides components and uses a black background color for tab grid transition
 // animation.
 - (void)hide;

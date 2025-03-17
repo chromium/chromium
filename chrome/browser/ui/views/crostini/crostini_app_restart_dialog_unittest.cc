@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -41,6 +41,6 @@ TEST_F(CrostiniAppRestartDialogTest, IsSystemModal) {
 TEST_F(CrostiniAppRestartDialogTest, ContentsViewHasModalPreferredWidth) {
   auto widget = ShowDialog();
   EXPECT_EQ(widget->widget_delegate()->GetContentsView()->width(),
-            ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::LayoutProvider::Get()->GetDistanceMetric(
                 views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }

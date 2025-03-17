@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSupported} from './policy_helper.js';
+import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSupported} from './profile_picker_flags.js';
 
 /**
  * ProfilePickerPages enum.

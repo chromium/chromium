@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -107,9 +108,20 @@ class DraggedNodeImageBuilder {
     PaintLayer* layer = dragged_layout_object->EnclosingLayer();
     if (!layer->GetLayoutObject().IsStackingContext())
       layer = layer->AncestorStackingContext();
-
     gfx::Rect absolute_bounding_box =
         dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
+
+    // Maximum reasonable dimension for a drag image which won't crash during
+    // memory allocation and DnD operation.
+    if (RuntimeEnabledFeatures::DnDScaleHeightAndWidthToMaxDimensionEnabled()) {
+      const int kMaxDimension = 64 * 128;
+      if (absolute_bounding_box.width() > kMaxDimension) {
+        absolute_bounding_box.set_width(kMaxDimension);
+      }
+      if (absolute_bounding_box.height() > kMaxDimension) {
+        absolute_bounding_box.set_height(kMaxDimension);
+      }
+    }
 
     gfx::RectF bounding_box =
         layer->GetLayoutObject()
@@ -417,7 +429,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     return nullptr;
 
   SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
-  skia_paint_canvas.concat(AffineTransformToSkM44(transform));
+  skia_paint_canvas.concat(transform.ToSkM44());
   builder.EndRecording(skia_paint_canvas, property_tree_state);
 
   scoped_refptr<Image> image =

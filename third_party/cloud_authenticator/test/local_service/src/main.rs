@@ -25,6 +25,7 @@ extern crate handshake;
 extern crate hex;
 extern crate processor;
 
+use base64::Engine;
 use cbor::{cbor, Value};
 use crypto::P256Scalar;
 use processor::{ClientState, StateUpdate};
@@ -200,7 +201,7 @@ fn write_msg(conn: &TcpStream, msg: &[u8]) -> bool {
 /// connection. See https://datatracker.ietf.org/doc/html/rfc6455#section-1.3
 fn calculate_websocket_accept(key: &[u8]) -> String {
     let digest = crypto::sha1_two_part(key, b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-    base64::encode(digest)
+    base64::engine::general_purpose::STANDARD.encode(digest)
 }
 
 struct EnclaveServer {

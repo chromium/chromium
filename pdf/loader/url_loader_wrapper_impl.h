@@ -15,6 +15,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "pdf/loader/result_codes.h"
 #include "pdf/loader/url_loader_wrapper.h"
 #include "ui/gfx/range/range.h"
 
@@ -43,14 +44,14 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
                  const std::string& referrer_url,
                  uint32_t position,
                  uint32_t size,
-                 base::OnceCallback<void(int)> callback) override;
+                 base::OnceCallback<void(bool)> callback) override;
   void ReadResponseBody(base::span<char> buffer,
                         base::OnceCallback<void(int)> callback) override;
 
  private:
   void SetHeadersFromLoader();
   void ParseHeaders(const std::string& response_headers);
-  void DidOpen(base::OnceCallback<void(int)> callback, int32_t result);
+  void DidOpen(base::OnceCallback<void(bool)> callback, Result result);
   void DidRead(base::OnceCallback<void(int)> callback, int32_t result);
 
   void ReadResponseBodyImpl(base::OnceCallback<void(int)> callback);

@@ -17,6 +17,7 @@
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -58,10 +59,10 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
   if (has_valid_sid) {
     // Create a fake user associated to a gaia id.
     CComBSTR sid_str;
-    ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                        kDefaultUsername, L"password", L"Full Name", L"comment",
-                        base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
-                        domain_name, &sid_str));
+    ASSERT_EQ(S_OK,
+              fake_os_user_manager()->CreateTestOSUser(
+                  kDefaultUsername, L"password", L"Full Name", L"comment",
+                  kDefaultGaiaId, L"user@company.com", domain_name, &sid_str));
     user_sid = OLE2W(sid_str);
   }
 

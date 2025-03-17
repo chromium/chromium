@@ -7,9 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,7 +21,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -63,25 +62,6 @@ constexpr const char kTabsCurrentURL[] = "www.google.com/";
 
 }  // namespace
 
-class MockRealtimeReportingClient : public RealtimeReportingClient {
- public:
-  explicit MockRealtimeReportingClient(content::BrowserContext* context)
-      : RealtimeReportingClient(context) {}
-  MockRealtimeReportingClient(const MockRealtimeReportingClient&) = delete;
-  MockRealtimeReportingClient& operator=(const MockRealtimeReportingClient&) =
-      delete;
-
-  MOCK_METHOD3(ReportRealtimeEvent,
-               void(const std::string&,
-                    const ReportingSettings& settings,
-                    base::Value::Dict event));
-};
-
-std::unique_ptr<KeyedService> MakeMockRealtimeReportingClient(
-    content::BrowserContext* profile_) {
-  return std::make_unique<MockRealtimeReportingClient>(profile_);
-}
-
 class ExtensionTelemetryEventRouterTest : public testing::Test {
  public:
   ExtensionTelemetryEventRouterTest()
@@ -94,12 +74,14 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
         policy::DMToken::CreateValidToken("fake-token"));
 
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
-        profile_, base::BindRepeating(&MakeMockRealtimeReportingClient));
+        profile_, base::BindRepeating(&test::MockRealtimeReportingClient::
+                                          CreateMockRealtimeReportingClient));
     extension_telemetry_event_router_ =
         std::make_unique<ExtensionTelemetryEventRouter>(profile_);
 
-    mock_realtime_reporting_client_ = static_cast<MockRealtimeReportingClient*>(
-        RealtimeReportingClientFactory::GetForProfile(profile_));
+    mock_realtime_reporting_client_ =
+        static_cast<test::MockRealtimeReportingClient*>(
+            RealtimeReportingClientFactory::GetForProfile(profile_));
     mock_realtime_reporting_client_->SetProfileUserNameForTesting(
         kFakeProfileUsername);
 
@@ -198,7 +180,7 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MockRealtimeReportingClient> mock_realtime_reporting_client_;
+  raw_ptr<test::MockRealtimeReportingClient> mock_realtime_reporting_client_;
   std::unique_ptr<ExtensionTelemetryEventRouter>
       extension_telemetry_event_router_;
 };

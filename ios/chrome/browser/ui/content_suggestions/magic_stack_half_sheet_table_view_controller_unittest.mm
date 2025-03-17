@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -37,16 +36,11 @@ TEST_F(MagicStackHalfSheetTableViewControllerUnittest, TestLoadModel) {
   [view_controller_ setSetUpListDisabled:NO];
   [view_controller_ setSafetyCheckDisabled:NO];
   [view_controller_ setTabResumptionDisabled:NO];
-  [view_controller_ setParcelTrackingDisabled:NO];
-
-  // Parcel tracking is only enabled in the US.
-  IOSChromeScopedTestingVariationsService scoped_variations_service;
-  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
 
   [view_controller_ loadViewIfNeeded];
 
   TableViewModel* model = view_controller_.tableViewModel;
-  ASSERT_TRUE([model numberOfItemsInSection:0] == 4);
+  ASSERT_TRUE([model numberOfItemsInSection:0] == 3);
 
   TableViewSwitchItem* setUpListItem = static_cast<TableViewSwitchItem*>(
       [model itemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
@@ -59,8 +53,4 @@ TEST_F(MagicStackHalfSheetTableViewControllerUnittest, TestLoadModel) {
   TableViewSwitchItem* tabResumptionItem = static_cast<TableViewSwitchItem*>(
       [model itemAtIndexPath:[NSIndexPath indexPathForItem:2 inSection:0]]);
   EXPECT_TRUE(tabResumptionItem.on);
-
-  TableViewSwitchItem* parcelTrackingItem = static_cast<TableViewSwitchItem*>(
-      [model itemAtIndexPath:[NSIndexPath indexPathForItem:3 inSection:0]]);
-  EXPECT_TRUE(parcelTrackingItem.on);
 }

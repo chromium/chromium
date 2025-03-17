@@ -228,7 +228,8 @@ void VROrientationDevice::GetInlineFrameData(
   pose->orientation = latest_pose_;
 
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
-  frame_data->mojo_from_viewer = std::move(pose);
+  frame_data->render_info = mojom::XRRenderInfo::New();
+  frame_data->render_info->mojo_from_viewer = std::move(pose);
 
   std::move(callback).Run(std::move(frame_data));
 }

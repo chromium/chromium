@@ -33,8 +33,7 @@
 #include "base/test/multiprocess_test.h"
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 typedef MultiProcessTest StackTraceTest;
@@ -73,8 +72,9 @@ TEST_F(StackTraceTest, OutputToStream) {
   ASSERT_GT(addresses.size(), 5u) << "Too few frames found.";
   ASSERT_NE(nullptr, addresses[0]);
 
-  if (!StackTrace::WillSymbolizeToStreamForTesting())
+  if (!StackTrace::WillSymbolizeToStreamForTesting()) {
     return;
+  }
 
   // Check if the output has symbol initialization warning.  If it does, fail.
   ASSERT_EQ(backtrace_message.find("Dumping unresolved backtrace"),
@@ -456,5 +456,4 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

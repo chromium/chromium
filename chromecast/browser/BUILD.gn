@@ -323,6 +323,7 @@ cast_source_set("browser") {
       "//chromecast/browser/android:jni_headers",
       "//components/android_autofill/browser:android",
       "//components/embedder_support/android:view",
+      "//components/variations:variations_associated_data",
     ]
   } else {
     deps += [ ":display_configurator" ]

@@ -384,6 +384,9 @@ class HostContentSettingsMap : public content_settings::Observer,
       HostContentSettingsMapTest,
       MigrateRequestingAndTopLevelOriginSettingsResetsEmbeddedSetting);
 
+  // Enum for GetWebsiteSettingInternal() parameter.
+  enum class ProviderFilter { kUserModifiable, kAny };
+
   ~HostContentSettingsMap() override;
 
   ContentSetting GetDefaultContentSettingFromProvider(
@@ -426,7 +429,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      ProviderType first_provider_to_search,
+      ProviderFilter provider_filter,
       content_settings::SettingInfo* info) const;
 
   content_settings::PatternPair GetNarrowestPatterns(

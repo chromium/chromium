@@ -37,7 +37,7 @@ class FormEventLoggerBase {
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
 
-  void OnDidPollSuggestions(const FormFieldData& field);
+  void OnDidPollSuggestions(FieldGlobalId field_id);
 
   void OnDidParseForm(const FormStructure& form);
 
@@ -52,8 +52,16 @@ class FormEventLoggerBase {
 
   void OnFormSubmitted(const FormStructure& form);
 
-  void OnTypedIntoNonFilledField();
-  void OnEditedAutofilledField();
+  // Called when a field gets edited (the choice of the function depends on
+  // whether the field was autofilled or not prior to the edit). This covers:
+  // - User manual modifications of the value of text fields.
+  // - User manual modifications of the value of select fields.
+  // - JS modifications of select fields on frames with transient user
+  //   activation (see blink::LocalFrame::HasTransientUserActivation).
+  // Note that this means that any JS modification of text fields doesn't
+  // trigger these methods.
+  void OnEditedNonFilledField(FieldGlobalId field_id);
+  void OnEditedAutofilledField(FieldGlobalId field_id);
 
   // Must be called right before the event logger is destroyed. It triggers the
   // logging of funnel and key metrics.
@@ -77,17 +85,10 @@ class FormEventLoggerBase {
 
   virtual void Log(FormEvent event, const FormStructure& form);
 
-  void OnTextFieldDidChange(const FieldGlobalId& field_global_id);
-
   void SetFastCheckoutRunId(int64_t run_id) { fast_checkout_run_id_ = run_id; }
 
   FormInteractionsUkmLogger::FormEventSet GetFormEvents(
       FormGlobalId form_global_id);
-
-  static int
-  GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
-      FieldType field_type,
-      bool suggestion_accepted);
 
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
@@ -106,6 +107,10 @@ class FormEventLoggerBase {
   virtual void RecordPollSuggestions() = 0;
   virtual void RecordParseForm() = 0;
   virtual void RecordShowSuggestions() = 0;
+
+  // Shared logic of `OnEdited[NonFilled|Autofilled]Field`, called irrespective
+  // of the autofill state of the field represented by `field_global_id`.
+  void OnEditedField(FieldGlobalId field_id);
 
   virtual void LogWillSubmitForm(const FormStructure& form);
   virtual void LogFormSubmitted(const FormStructure& form);
@@ -205,7 +210,7 @@ class FormEventLoggerBase {
   bool has_logged_autocomplete_off_ = false;
   bool has_logged_will_submit_ = false;
   bool has_logged_submitted_ = false;
-  bool has_logged_typed_into_non_filled_field_ = false;
+  bool has_logged_edited_non_filled_field_ = false;
   bool has_logged_edited_autofilled_field_ = false;
   bool has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ =
       false;
@@ -215,10 +220,8 @@ class FormEventLoggerBase {
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   std::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
-  // The last field that was polled for suggestions.
-  // TODO(crbug.com/40100455): Make this a `FieldGlobalId` when
-  // kAutofillUseFewerFormAndFieldComparison is removed.
-  FormFieldData last_polled_field_;
+  // The ID of the last field that was polled for suggestions.
+  FieldGlobalId last_polled_field_id_;
 
   // Used to count consecutive modifications on the same field as one change.
   FieldGlobalId last_field_global_id_modified_by_user_;

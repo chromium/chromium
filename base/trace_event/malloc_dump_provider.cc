@@ -51,8 +51,7 @@
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 #if BUILDFLAG(IS_WIN)
@@ -487,57 +486,58 @@ void MallocDumpProvider::ReportPerMinuteStats(
                                     brp_quarantined_count_per_minute);
   }
 
-  auto report_elud_per_minute_stats = [time_since_last_dump,
-                                       seconds_since_last_dump](
-                                          const ExtremeLUDStats& elud_stats,
-                                          CumulativeEludStats&
-                                              last_cumulative_elud_stats,
-                                          MemoryAllocatorDump* elud_dump) {
-    size_t bytes = elud_stats.lq_stats.cumulative_size_in_bytes -
-                   last_cumulative_elud_stats.quarantined_bytes;
-    size_t count = elud_stats.lq_stats.cumulative_count -
-                   last_cumulative_elud_stats.quarantined_count;
-    size_t miss_count = elud_stats.lq_stats.quarantine_miss_count -
-                        last_cumulative_elud_stats.miss_count;
-    elud_dump->AddScalar("bytes_per_minute", MemoryAllocatorDump::kUnitsBytes,
-                         60ull * bytes / seconds_since_last_dump);
-    elud_dump->AddScalar("count_per_minute",
-                         MemoryAllocatorDump::kNameObjectCount,
-                         60ull * count / seconds_since_last_dump);
-    elud_dump->AddScalar("miss_count_per_minute",
-                         MemoryAllocatorDump::kNameObjectCount,
-                         60ull * miss_count / seconds_since_last_dump);
-    // Given the following three:
-    //   capacity := the quarantine storage space
-    //   time     := the elapsed time since the last dump
-    //   bytes    := the consumed/used bytes since the last dump
-    // We can define/calculate the following.
-    //   speed    := the consuming speed of the quarantine
-    //            = bytes / time
-    //   quarantined_time
-    //            := the time to use up the capacity
-    //               (near to how long an object may be quarantined)
-    //            = capacity / speed
-    //            = capacity / (bytes / time)
-    //            = time * capacity / bytes
-    //
-    // Note that objects in the quarantine are randomly evicted. So objects may
-    // stay in the qurantine longer or shorter depending on object sizes,
-    // allocation/deallocation patterns, etc. in addition to pure randomness.
-    // So, this is just a rough estimation, not necessarily to be the average.
-    if (bytes > 0) {
-      elud_dump->AddScalar(
-          "quarantined_time", "msec",
-          static_cast<uint64_t>(time_since_last_dump.InMilliseconds()) *
-              elud_stats.capacity_in_bytes / bytes);
-    }
-    last_cumulative_elud_stats.quarantined_bytes =
-        elud_stats.lq_stats.cumulative_size_in_bytes;
-    last_cumulative_elud_stats.quarantined_count =
-        elud_stats.lq_stats.cumulative_count;
-    last_cumulative_elud_stats.miss_count =
-        elud_stats.lq_stats.quarantine_miss_count;
-  };
+  auto report_elud_per_minute_stats =
+      [time_since_last_dump, seconds_since_last_dump](
+          const ExtremeLUDStats& elud_stats,
+          CumulativeEludStats& last_cumulative_elud_stats,
+          MemoryAllocatorDump* elud_dump) {
+        size_t bytes = elud_stats.lq_stats.cumulative_size_in_bytes -
+                       last_cumulative_elud_stats.quarantined_bytes;
+        size_t count = elud_stats.lq_stats.cumulative_count -
+                       last_cumulative_elud_stats.quarantined_count;
+        size_t miss_count = elud_stats.lq_stats.quarantine_miss_count -
+                            last_cumulative_elud_stats.miss_count;
+        elud_dump->AddScalar("bytes_per_minute",
+                             MemoryAllocatorDump::kUnitsBytes,
+                             60ull * bytes / seconds_since_last_dump);
+        elud_dump->AddScalar("count_per_minute",
+                             MemoryAllocatorDump::kNameObjectCount,
+                             60ull * count / seconds_since_last_dump);
+        elud_dump->AddScalar("miss_count_per_minute",
+                             MemoryAllocatorDump::kNameObjectCount,
+                             60ull * miss_count / seconds_since_last_dump);
+        // Given the following three:
+        //   capacity := the quarantine storage space
+        //   time     := the elapsed time since the last dump
+        //   bytes    := the consumed/used bytes since the last dump
+        // We can define/calculate the following.
+        //   speed    := the consuming speed of the quarantine
+        //            = bytes / time
+        //   quarantined_time
+        //            := the time to use up the capacity
+        //               (near to how long an object may be quarantined)
+        //            = capacity / speed
+        //            = capacity / (bytes / time)
+        //            = time * capacity / bytes
+        //
+        // Note that objects in the quarantine are randomly evicted. So objects
+        // may stay in the qurantine longer or shorter depending on object
+        // sizes, allocation/deallocation patterns, etc. in addition to pure
+        // randomness. So, this is just a rough estimation, not necessarily to
+        // be the average.
+        if (bytes > 0) {
+          elud_dump->AddScalar(
+              "quarantined_time", "msec",
+              static_cast<uint64_t>(time_since_last_dump.InMilliseconds()) *
+                  elud_stats.capacity_in_bytes / bytes);
+        }
+        last_cumulative_elud_stats.quarantined_bytes =
+            elud_stats.lq_stats.cumulative_size_in_bytes;
+        last_cumulative_elud_stats.quarantined_count =
+            elud_stats.lq_stats.cumulative_count;
+        last_cumulative_elud_stats.miss_count =
+            elud_stats.lq_stats.quarantine_miss_count;
+      };
   if (elud_dump_for_small_objects) {
     report_elud_per_minute_stats(elud_stats_for_small_objects,
                                  last_cumulative_elud_stats_for_small_objects_,
@@ -593,8 +593,22 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
 
   auto total_committed_bytes = memory_stats->total_committed_bytes;
   auto total_active_bytes = memory_stats->total_active_bytes;
-  size_t wasted = total_committed_bytes - total_active_bytes;
-  DCHECK_GE(total_committed_bytes, total_active_bytes);
+  size_t wasted = 0;
+  // This should always be true, but only if our accounting of committed bytes
+  // is consistent, which it isn't. Indeed, with
+  // PartitionAllocFewerMemoryRegions, we may allocate a slot span before the
+  // feature state is known, in which case we commit less, then decommit it
+  // after, in which case we subtract the new commit unit, which is larger.
+  //
+  // Properly handling this would require remembering how much was committed,
+  // which complicates bookkeeping, especially as metadata space is
+  // limited. Since this is only used to report metrics, which are known to
+  // already be quite flawed, and the feature is meant to be temporary (either
+  // shipped or abandoned), don't handle this corner case (which should only
+  // happen for the initial partition, which is tiny anyway).
+  if (total_committed_bytes >= total_active_bytes) {
+    wasted = total_committed_bytes - total_active_bytes;
+  }
   size_t fragmentation =
       total_committed_bytes == 0 ? 0 : 100 * wasted / total_committed_bytes;
 
@@ -713,5 +727,4 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

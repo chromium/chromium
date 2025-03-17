@@ -82,20 +82,19 @@ base::FilePath QuotaManagerProxy::GetClientBucketPath(
 
 void QuotaManagerProxy::RegisterClient(
     mojo::PendingRemote<mojom::QuotaClient> client,
-    QuotaClientType client_type,
-    const base::flat_set<blink::mojom::StorageType>& storage_types) {
+    QuotaClientType client_type) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::RegisterClient, this,
-                       std::move(client), client_type, storage_types));
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::RegisterClient, this,
+                                  std::move(client), client_type));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (quota_manager_impl_) {
-    quota_manager_impl_->RegisterClient(std::move(client), client_type,
-                                        storage_types);
+    quota_manager_impl_->RegisterClient(
+        std::move(client), client_type,
+        {blink::mojom::StorageType::kTemporary});
   }
 }
 
@@ -181,40 +180,9 @@ QuotaErrorOr<BucketInfo> QuotaManagerProxy::GetOrCreateBucketSync(
   return bucket;
 }
 
-void QuotaManagerProxy::GetOrCreateBucketDeprecated(
-    const BucketInitParams& params,
-    blink::mojom::StorageType storage_type,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
-  DCHECK(callback_task_runner);
-  DCHECK(callback);
-
-  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
-    quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::GetOrCreateBucketDeprecated, this,
-                       params, storage_type, std::move(callback_task_runner),
-                       std::move(callback)));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-
-  auto respond =
-      base::BindPostTask(std::move(callback_task_runner), std::move(callback));
-  if (!quota_manager_impl_) {
-    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
-    return;
-  }
-
-  quota_manager_impl_->GetOrCreateBucketDeprecated(params, storage_type,
-                                                   std::move(respond));
-}
-
 void QuotaManagerProxy::CreateBucketForTesting(
     const StorageKey& storage_key,
     const std::string& bucket_name,
-    blink::mojom::StorageType storage_type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   DCHECK(callback_task_runner);
@@ -224,7 +192,7 @@ void QuotaManagerProxy::CreateBucketForTesting(
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::CreateBucketForTesting, this,
-                       storage_key, bucket_name, storage_type,
+                       storage_key, bucket_name,
                        std::move(callback_task_runner), std::move(callback)));
     return;
   }
@@ -239,13 +207,13 @@ void QuotaManagerProxy::CreateBucketForTesting(
   }
 
   quota_manager_impl_->CreateBucketForTesting(  // IN-TEST
-      storage_key, bucket_name, storage_type, std::move(respond));
+      storage_key, bucket_name, blink::mojom::StorageType::kTemporary,
+      std::move(respond));
 }
 
 void QuotaManagerProxy::GetBucketByNameUnsafe(
     const StorageKey& storage_key,
     const std::string& bucket_name,
-    blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   DCHECK(callback_task_runner);
@@ -255,7 +223,7 @@ void QuotaManagerProxy::GetBucketByNameUnsafe(
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::GetBucketByNameUnsafe, this,
-                       storage_key, bucket_name, type,
+                       storage_key, bucket_name,
                        std::move(callback_task_runner), std::move(callback)));
     return;
   }
@@ -270,12 +238,12 @@ void QuotaManagerProxy::GetBucketByNameUnsafe(
   }
 
   quota_manager_impl_->GetBucketByNameUnsafe(  // IN-TEST
-      storage_key, bucket_name, type, std::move(respond));
+      storage_key, bucket_name, blink::mojom::StorageType::kTemporary,
+      std::move(respond));
 }
 
 void QuotaManagerProxy::GetBucketsForStorageKey(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     bool delete_expired,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
@@ -286,7 +254,7 @@ void QuotaManagerProxy::GetBucketsForStorageKey(
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::GetBucketsForStorageKey, this,
-                       storage_key, type, delete_expired,
+                       storage_key, delete_expired,
                        std::move(callback_task_runner), std::move(callback)));
     return;
   }
@@ -301,7 +269,8 @@ void QuotaManagerProxy::GetBucketsForStorageKey(
   }
 
   quota_manager_impl_->GetBucketsForStorageKey(
-      storage_key, type, std::move(respond), delete_expired);
+      storage_key, blink::mojom::StorageType::kTemporary, std::move(respond),
+      delete_expired);
 }
 
 void QuotaManagerProxy::GetBucketById(
@@ -484,25 +453,22 @@ void QuotaManagerProxy::OnClientWriteFailed(const StorageKey& storage_key) {
 
 void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClientType client_id,
                                              const StorageKey& storage_key,
-                                             blink::mojom::StorageType type,
                                              bool enabled) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&QuotaManagerProxy::SetUsageCacheEnabled,
-                                  this, client_id, storage_key, type, enabled));
+                                  this, client_id, storage_key, enabled));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (quota_manager_impl_) {
-    quota_manager_impl_->SetUsageCacheEnabled(client_id, storage_key, type,
-                                              enabled);
+    quota_manager_impl_->SetUsageCacheEnabled(client_id, storage_key, enabled);
   }
 }
 
 void QuotaManagerProxy::GetUsageAndQuota(
     const StorageKey& storage_key,
-    blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     UsageAndQuotaCallback callback) {
   DCHECK(callback_task_runner);
@@ -512,8 +478,7 @@ void QuotaManagerProxy::GetUsageAndQuota(
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::GetUsageAndQuota, this, storage_key,
-                       type, std::move(callback_task_runner),
-                       std::move(callback)));
+                       std::move(callback_task_runner), std::move(callback)));
     return;
   }
 
@@ -526,7 +491,8 @@ void QuotaManagerProxy::GetUsageAndQuota(
     return;
   }
 
-  quota_manager_impl_->GetUsageAndQuota(storage_key, type, std::move(respond));
+  quota_manager_impl_->GetUsageAndQuota(
+      storage_key, blink::mojom::StorageType::kTemporary, std::move(respond));
 }
 
 void QuotaManagerProxy::GetBucketUsageAndReportedQuota(
@@ -588,7 +554,6 @@ void QuotaManagerProxy::GetBucketSpaceRemaining(
 
 void QuotaManagerProxy::IsStorageUnlimited(
     const StorageKey& storage_key,
-    blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(callback_task_runner);
@@ -596,17 +561,17 @@ void QuotaManagerProxy::IsStorageUnlimited(
 
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::IsStorageUnlimited, this,
-                       storage_key, type, std::move(callback_task_runner),
-                       std::move(callback)));
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::IsStorageUnlimited, this,
+                                  storage_key, std::move(callback_task_runner),
+                                  std::move(callback)));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   bool is_storage_unlimited =
       quota_manager_impl_
-          ? quota_manager_impl_->IsStorageUnlimited(storage_key, type)
+          ? quota_manager_impl_->IsStorageUnlimited(
+                storage_key, blink::mojom::StorageType::kTemporary)
           : false;
 
   auto respond =
@@ -616,7 +581,6 @@ void QuotaManagerProxy::IsStorageUnlimited(
 
 void QuotaManagerProxy::GetStorageKeyUsageWithBreakdown(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     UsageWithBreakdownCallback callback) {
   CHECK(callback_task_runner);
@@ -626,7 +590,7 @@ void QuotaManagerProxy::GetStorageKeyUsageWithBreakdown(
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::GetStorageKeyUsageWithBreakdown,
-                       this, storage_key, type, std::move(callback_task_runner),
+                       this, storage_key, std::move(callback_task_runner),
                        std::move(callback)));
     return;
   }
@@ -640,8 +604,8 @@ void QuotaManagerProxy::GetStorageKeyUsageWithBreakdown(
     return;
   }
 
-  quota_manager_impl_->GetStorageKeyUsageWithBreakdown(storage_key, type,
-                                                       std::move(respond));
+  quota_manager_impl_->GetStorageKeyUsageWithBreakdown(
+      storage_key, blink::mojom::StorageType::kTemporary, std::move(respond));
 }
 
 std::unique_ptr<QuotaOverrideHandle>

@@ -1,5 +1,4 @@
 include_rules = [
-  # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
   "+ash/webui/shimless_rma/backend/external_app_dialog.h",
 
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
@@ -17,7 +16,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
   ".*test\.cc": [
     "+ash/public/cpp/session",
     "+ash/session/session_controller_impl.h",

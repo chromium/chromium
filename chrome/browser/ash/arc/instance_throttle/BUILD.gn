@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("instance_throttle") {
   sources = [
@@ -31,7 +31,6 @@ static_library("instance_throttle") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_list/arc",
@@ -46,6 +45,7 @@ static_library("instance_throttle") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/throttle",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ui/base",
     "//components/exo",
     "//ui/aura",
@@ -75,9 +75,6 @@ source_set("unit_tests") {
 
   deps = [
     ":instance_throttle",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/arc",
@@ -90,6 +87,9 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/throttle",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//services/device/public/cpp:test_support",

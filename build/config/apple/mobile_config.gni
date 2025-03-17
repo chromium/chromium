@@ -2,10 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")  # For `use_blink`
+
 declare_args() {
   # Configure the environment for which to build. Could be either "device",
   # "simulator" or "catalyst". Must be specified.
   target_environment = ""
+
+  # Valid values: "iphoneos" (default), "tvos", "watchos".
+  # Indicates the kind of iOS or iOS-based platform that is being targeted.
+  # Note that this value is available only when is_ios is also true (i.e. it
+  # cannot be used with the host toolchain).
+  target_platform = "iphoneos"
 
   # Control whether codesiging is enabled (ignored for simulator builds).
   # TODO(crbug.com/378918882): Prefix with apple_mobile_ instead of ios_.
@@ -28,6 +36,14 @@ declare_args() {
   # provisioning for the selected code signing identify support that prefix.
   # TODO(crbug.com/378918882): Prefix with apple_mobile_ instead of ios_.
   ios_app_bundle_id_prefix = "org.chromium.ost"
+
+  # Suffix for CFBundleIdentifier property of iOS Chrome signed bundles
+  # (main bundle and extensions). Code signing will fail if no mobile
+  # provisioning for the selected code signing identify support that suffix.
+  # For extension, the suffix will be added before the extension identifier.
+  # The suffix is not added to test applications.
+  # No dot is added before the suffix, so add one if needed.
+  apple_mobile_app_bundle_id_suffix = ".dev"
 
   # Paths to the mobileprovision files for the chosen code signing
   # identity description and app bundle id prefix.
@@ -52,12 +68,28 @@ shared_bundle_id_for_test_apps =
 # the variables can only be executed if building for ios or watchos (as they
 # either have no meaning or depend on tools that are only available on macOS).
 if (is_ios || is_watchos) {
-  # Check that target_environment is set to a supported value.
+  # Check that target_platform and target_environment are set to supported
+  # values.
+  _target_platforms = []
+  if (is_ios) {
+    _target_platforms += [
+      "iphoneos",
+      "tvos",
+    ]
+  } else if (is_watchos) {
+    _target_platforms += [
+      "iphoneos",
+      "watchos",
+    ]
+  }
+  assert(filter_include([ target_platform ], _target_platforms) != [],
+         "target_platform '$target_platform' does not match a target value: " +
+             "$_target_platforms")
   _target_environments = [
     "simulator",
     "device",
   ]
-  if (is_ios) {
+  if (is_ios && target_platform == "iphoneos") {
     _target_environments += [ "catalyst" ]
   }
   assert(filter_include([ target_environment ], _target_environments) != [],
@@ -90,5 +122,10 @@ if (is_ios || is_watchos) {
                       find_signing_identity_args,
                       "trim string")
     }
+  }
+
+  # Sanity check: tvOS builds require `use_blink`.
+  if (target_platform == "tvos") {
+    assert(use_blink, "tvOS builds require use_blink=true")
   }
 }

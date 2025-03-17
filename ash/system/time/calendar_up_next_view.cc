@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_up_next_view.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -63,36 +64,30 @@ constexpr int kScrollViewportCornerRadius = 18;
 class ScrollingAnimation : public gfx::LinearAnimation,
                            public gfx::AnimationDelegate {
  public:
-  explicit ScrollingAnimation(
-      views::View* contents_view,
-      gfx::AnimationContainer* bounds_animator_container,
-      base::TimeDelta duration,
-      const gfx::Rect start_visible_rect,
-      const gfx::Rect end_visible_rect)
-      : gfx::LinearAnimation(duration,
-                             gfx::LinearAnimation::kDefaultFrameRate,
-                             this),
+  explicit ScrollingAnimation(views::View* contents_view,
+                              gfx::AnimationContainer* container,
+                              int start_x,
+                              int end_x)
+      : gfx::LinearAnimation(
+            gfx::Animation::RichAnimationDuration(base::Milliseconds(200)),
+            gfx::LinearAnimation::kDefaultFrameRate,
+            this),
         contents_view_(contents_view),
-        start_visible_rect_(start_visible_rect),
-        end_visible_rect_(end_visible_rect) {
-    SetContainer(bounds_animator_container);
+        start_x_(start_x),
+        end_x_(end_x) {
+    SetContainer(container);
   }
   ScrollingAnimation(const ScrollingAnimation&) = delete;
   ScrollingAnimation& operator=(const ScrollingAnimation&) = delete;
   ~ScrollingAnimation() override = default;
 
   void AnimateToState(double state) override {
-    gfx::Rect intermediary_rect(
-        start_visible_rect_.x() +
-            (end_visible_rect_.x() - start_visible_rect_.x()) * state,
-        start_visible_rect_.y(), start_visible_rect_.width(),
-        start_visible_rect_.height());
-
-    contents_view_->ScrollRectToVisible(intermediary_rect);
+    contents_view_->ScrollRectToVisible(
+        gfx::Rect(std::lerp(start_x_, end_x_, state), 0, 0, 0));
   }
 
   void AnimationEnded(const gfx::Animation* animation) override {
-    contents_view_->ScrollRectToVisible(end_visible_rect_);
+    contents_view_->ScrollRectToVisible(gfx::Rect(end_x_, 0, 0, 0));
   }
 
   void AnimationCanceled(const gfx::Animation* animation) override {
@@ -102,8 +97,8 @@ class ScrollingAnimation : public gfx::LinearAnimation,
  private:
   // Owned by views hierarchy.
   const raw_ptr<views::View> contents_view_;
-  const gfx::Rect start_visible_rect_;
-  const gfx::Rect end_visible_rect_;
+  const int start_x_;
+  const int end_x_;
 };
 
 std::unique_ptr<views::Button> CreateTodaysEventsButton(
@@ -157,7 +152,7 @@ int GetFirstVisibleChildIndex(
 // be the same (unique per Calendar) and in the same order.
 bool SameEvents(const std::list<google_apis::calendar::CalendarEvent>& a,
                 const std::list<google_apis::calendar::CalendarEvent>& b) {
-  return base::ranges::equal(a, b, [](const auto& a, const auto& b) {
+  return std::ranges::equal(a, b, [](const auto& a, const auto& b) {
     return a.id() == b.id() &&
            a.start_time().date_time() == b.start_time().date_time() &&
            a.end_time().date_time() == b.end_time().date_time();
@@ -175,18 +170,14 @@ CalendarUpNextView::CalendarUpNextView(
       header_view_(AddChildView(std::make_unique<views::View>())),
       scroll_view_(AddChildView(std::make_unique<views::ScrollView>(
           views::ScrollView::ScrollWithLayers::kEnabled))),
-      content_view_(scroll_view_->SetContents(std::make_unique<views::View>())),
-      bounds_animator_(this) {
+      content_view_(
+          scroll_view_->SetContents(std::make_unique<views::View>())) {
   SetBackground(std::make_unique<CalendarUpNextViewBackground>(
       cros_tokens::kCrosSysSystemOnBaseOpaque));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kContainerInsets, 0));
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-
-  if (!gfx::Animation::ShouldRenderRichAnimation()) {
-    bounds_animator_.SetAnimationDuration(base::TimeDelta());
-  }
 
   on_contents_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(
@@ -459,10 +450,7 @@ void CalendarUpNextView::AnimateScrollToShowXCoordinate(const int start_edge,
   }
 
   scrolling_animation_ = std::make_unique<ScrollingAnimation>(
-      content_view_, bounds_animator_.container(),
-      bounds_animator_.GetAnimationDuration(),
-      /*start_visible_rect=*/gfx::Rect(start_edge, 0, 0, 0),
-      /*end_visible_rect=*/gfx::Rect(target_edge, 0, 0, 0));
+      content_view_, animation_container_.get(), start_edge, target_edge);
   scrolling_animation_->Start();
 }
 

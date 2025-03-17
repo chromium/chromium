@@ -4,32 +4,28 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {moreOptionsClass} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 // TODO: b/40275871 - Add more tests.
 suite('ToolbarOverflow', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let toolbar: ReadAnythingToolbarElement;
 
   setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
-    flush();
+    return microtasksFinished();
   });
 
   suite('on reset toolbar', () => {
@@ -40,7 +36,7 @@ suite('ToolbarOverflow', () => {
 
       toolbar.$.toolbarContainer.dispatchEvent(
           new CustomEvent('reset-toolbar'));
-      flush();
+      return microtasksFinished();
     });
 
     test('more options closed', () => {
@@ -56,20 +52,20 @@ suite('ToolbarOverflow', () => {
   });
 
   suite('on toolbar overflow', () => {
-    function overflow(numOverflowButtons: number) {
+    async function overflow(numOverflowButtons: number): Promise<void> {
       toolbar.$.toolbarContainer.dispatchEvent(
           new CustomEvent('toolbar-overflow', {
             bubbles: true,
             composed: true,
             detail: {numOverflowButtons},
           }));
+      await microtasksFinished();
       toolbar.$.moreOptionsMenu.get();
-      flush();
     }
 
-    test('more options contains overflow', () => {
+    test('more options contains overflow', async () => {
       let numOverflow = 3;
-      overflow(numOverflow);
+      await overflow(numOverflow);
       assertEquals(
           numOverflow,
           toolbar.$.moreOptionsMenu.get()
@@ -77,12 +73,26 @@ suite('ToolbarOverflow', () => {
               .length);
 
       numOverflow = 5;
-      overflow(numOverflow);
+      await overflow(numOverflow);
       assertEquals(
           numOverflow,
           toolbar.$.moreOptionsMenu.get()
               .querySelectorAll<HTMLElement>(moreOptionsClass)
               .length);
+    });
+
+    test('click from overflow opens correct menu', async () => {
+      stubAnimationFrame();
+      const numOverflow = 3;
+      await overflow(numOverflow);
+
+      const letterSpacingButton =
+          toolbar.$.moreOptionsMenu.get().querySelector<CrIconButtonElement>(
+              '#letter-spacing');
+      assertTrue(!!letterSpacingButton);
+      letterSpacingButton.click();
+
+      assertTrue(toolbar.$.letterSpacingMenu.$.menu.$.lazyMenu.get().open);
     });
   });
 });

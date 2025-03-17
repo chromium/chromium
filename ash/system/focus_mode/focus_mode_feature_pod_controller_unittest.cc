@@ -21,7 +21,6 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/view_utils.h"
 
@@ -29,11 +28,7 @@ namespace ash {
 
 class FocusModeFeaturePodControllerTest : public AshTestBase {
  public:
-  FocusModeFeaturePodControllerTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFocusMode},
-        /*disabled_features=*/{});
-  }
+  FocusModeFeaturePodControllerTest() = default;
   ~FocusModeFeaturePodControllerTest() override = default;
 
   // AshTestBase:
@@ -91,7 +86,6 @@ class FocusModeFeaturePodControllerTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FocusModeFeaturePodController> controller_;
   std::unique_ptr<FeatureTile> tile_;
 };
@@ -130,7 +124,7 @@ TEST_F(FocusModeFeaturePodControllerTest, TileVisibilityForUserTypes) {
   for (const auto& test_case : kUserTypeTestCases) {
     SCOPED_TRACE(test_case.trace);
     ClearLogin();
-    SimulateUserLogin("example@gmail.com", test_case.user_type);
+    SimulateUserLogin({"example@gmail.com", test_case.user_type});
 
     CreateFakeFocusModeTile();
     EXPECT_EQ(test_case.is_tile_visible, tile_->GetVisible());

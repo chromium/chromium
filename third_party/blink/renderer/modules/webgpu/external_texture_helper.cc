@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
@@ -402,15 +401,15 @@ ExternalTexture CreateExternalTexture(
     // and PaintCanvasVideoRenderer use the SharedGpuContext.
     auto client_si =
         resource_provider->GetBackingClientSharedImageForOverwrite();
-    gpu::MailboxHolder dst_mailbox(
-        client_si ? client_si->mailbox() : gpu::Mailbox(), gpu::SyncToken(),
-        client_si ? client_si->GetTextureTarget() : GL_TEXTURE_2D);
+    gpu::Mailbox dest_mailbox(client_si ? client_si->mailbox()
+                                        : gpu::Mailbox());
 
     // The returned sync token is from the SharedGpuContext - it's ok to drop it
     // here since WebGPUMailboxTexture::FromCanvasResource will generate a new
     // sync token from the SharedContextState and wait on it anyway.
     std::ignore = video_renderer->CopyVideoFrameToSharedImage(
-        raster_context_provider, std::move(media_video_frame), dst_mailbox,
+        raster_context_provider, std::move(media_video_frame), dest_mailbox,
+        gpu::SyncToken(),
         /*use_visible_rect=*/true);
   } else {
     const gfx::Rect dest_rect = gfx::Rect(media_video_frame->natural_size());

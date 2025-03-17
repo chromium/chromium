@@ -62,16 +62,16 @@ suite('CrContainerShadowMixinLit', function() {
 
     // Should not have a bottom shadow div.
     assertFalse(
-        !!element.shadowRoot!.querySelector('#cr-container-shadow-bottom'));
-    assertTrue(!!element.shadowRoot!.querySelector('#cr-container-shadow-top'));
+        !!element.shadowRoot.querySelector('#cr-container-shadow-bottom'));
+    assertTrue(!!element.shadowRoot.querySelector('#cr-container-shadow-top'));
 
     element.showBottomShadow = true;
     await element.updateComplete;
 
     // Still no bottom shadow since this is only checked in connectedCallback();
     assertFalse(
-        !!element.shadowRoot!.querySelector('#cr-container-shadow-bottom'));
-    assertTrue(!!element.shadowRoot!.querySelector('#cr-container-shadow-top'));
+        !!element.shadowRoot.querySelector('#cr-container-shadow-bottom'));
+    assertTrue(!!element.shadowRoot.querySelector('#cr-container-shadow-top'));
   });
 
   test('show bottom shadow', function() {
@@ -81,7 +81,7 @@ suite('CrContainerShadowMixinLit', function() {
 
     // Has both shadows.
     assertTrue(
-        !!element.shadowRoot!.querySelector('#cr-container-shadow-bottom'));
-    assertTrue(!!element.shadowRoot!.querySelector('#cr-container-shadow-top'));
+        !!element.shadowRoot.querySelector('#cr-container-shadow-bottom'));
+    assertTrue(!!element.shadowRoot.querySelector('#cr-container-shadow-top'));
   });
 });

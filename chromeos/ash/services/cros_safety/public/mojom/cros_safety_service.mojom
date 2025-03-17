@@ -28,6 +28,10 @@ enum GetOnDeviceSafetySessionResult {
   [MinVersion=2] kHadesNotAvailable = 4,  // The Hades system has an error.
   // Temporary issue (loading, downloading, etc).
   [MinVersion=2] kHadesNotReady = 5,
+  [MinVersion=3] kOnDeviceSafetyNotConnected = 6,  // Internal failure
+  [MinVersion=3] kArcGetInstanceForMethodFailed = 7,  // Internal failure
+  [MinVersion=3] kArcSafetyServiceNotAvailable = 8,  // Internal failure
+  [MinVersion=3] kCrosSafetyServiceNotAvailable = 9,  // Internal failure
 };
 
 // CrosSafetyService runs in Chrome which is the entry point of both creating

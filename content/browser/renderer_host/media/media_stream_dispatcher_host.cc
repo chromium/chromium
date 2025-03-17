@@ -99,8 +99,26 @@ bool MayApplySubCaptureTarget(GlobalRenderFrameHostId capturing_id,
 
   WebContents* const captured_wc =
       SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(captured_id);
-  if (capturing_wc != captured_wc) {  // Null or not-same-tab.
+  if (!captured_wc) {
+    // Not a tab-capture or the captured tab has been asynchronously closed.
     return false;
+  }
+
+  if (capturing_wc != captured_wc) {
+    switch (type) {
+      case media::mojom::SubCaptureTargetType::kCropTarget:
+        if (!base::FeatureList::IsEnabled(
+                features::kRegionCaptureOfOtherTabs)) {
+          return false;
+        }
+        break;
+      case media::mojom::SubCaptureTargetType::kRestrictionTarget:
+        if (!base::FeatureList::IsEnabled(
+                features::kElementCaptureOfOtherTabs)) {
+          return false;
+        }
+        break;
+    }
   }
 
   SubCaptureTargetIdWebContentsHelper* const helper =
@@ -178,28 +196,6 @@ bool AllowedStreamTypeCombination(
   }
   return false;
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-bool IsValidZoomLevel(int zoom_level) {
-  if (blink::kPresetBrowserZoomFactors.empty()) {
-    return false;
-  }
-
-  if (zoom_level ==
-      base::ClampCeil(100 * blink::kPresetBrowserZoomFactors[0])) {
-    return true;
-  }
-
-  for (size_t i = 1; i < blink::kPresetBrowserZoomFactors.size(); ++i) {
-    if (zoom_level ==
-        base::ClampFloor(100 * blink::kPresetBrowserZoomFactors[i])) {
-      return true;
-    }
-  }
-
-  return false;
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -743,26 +739,20 @@ void MediaStreamDispatcherHost::SendWheel(
                                    std::move(action), std::move(callback));
 }
 
-void MediaStreamDispatcherHost::SetZoomLevel(
+void MediaStreamDispatcherHost::UpdateZoomLevel(
     const base::UnguessableToken& device_id,
-    int32_t zoom_level,
-    SetZoomLevelCallback callback) {
+    blink::mojom::ZoomLevelAction action,
+    UpdateZoomLevelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   if (!base::FeatureList::IsEnabled(
           features::kCapturedSurfaceControlKillswitch)) {
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 
-  if (!IsValidZoomLevel(zoom_level)) {
-    ReceivedBadMessage(render_frame_host_id_.child_id,
-                       bad_message::MSDH_SET_ZOOM_LEVEL_INVALID_LEVEL);
-    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
-    return;
-  }
-
-  media_stream_manager_->SetZoomLevel(render_frame_host_id_, device_id,
-                                      zoom_level, std::move(callback));
+  media_stream_manager_->UpdateZoomLevel(render_frame_host_id_, device_id,
+                                         action, std::move(callback));
 }
 
 void MediaStreamDispatcherHost::RequestCapturedSurfaceControlPermission(

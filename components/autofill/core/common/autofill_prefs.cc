@@ -4,16 +4,12 @@
 
 #include "components/autofill/core/common/autofill_prefs.h"
 
-#include "base/base64.h"
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
-#include "crypto/sha2.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -21,21 +17,6 @@
 
 namespace autofill {
 namespace prefs {
-namespace {
-
-// Returns the opt-in bitfield for the specific |account_id| or 0 if no entry
-// was found.
-int GetSyncTransportOptInBitFieldForAccount(const PrefService* prefs,
-                                            const std::string& account_hash) {
-  const auto& dictionary = prefs->GetDict(prefs::kAutofillSyncTransportOptIn);
-
-  // If there is no entry in the dictionary, it means the account didn't opt-in.
-  // Use 0 because it's the same as not having opted-in to anything.
-  const auto found = dictionary.FindInt(account_hash);
-  return found.value_or(0);
-}
-
-}  // namespace
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Synced prefs. Used for cross-device choices, e.g., credit card Autofill.
@@ -124,6 +105,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
     BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kAutofillPredictionImprovementsEnabled,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillBnplEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillHasSeenBnpl, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 }
@@ -274,49 +261,6 @@ void SetPaymentCardBenefits(PrefService* prefs, bool value) {
   prefs->SetBoolean(kAutofillPaymentCardBenefits, value);
 }
 
-void SetUserOptedInWalletSyncTransport(PrefService* prefs,
-                                       const CoreAccountId& account_id,
-                                       bool opted_in) {
-  // Get the hash of the account id. The hashing here is only a secondary bit of
-  // obfuscation. The primary privacy guarantees are handled by clearing this
-  // whenever cookies are cleared.
-  std::string account_hash =
-      base::Base64Encode(crypto::SHA256HashString(account_id.ToString()));
-
-  ScopedDictPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
-  int value = GetSyncTransportOptInBitFieldForAccount(prefs, account_hash);
-
-  // If the user has opted in, set that bit while leaving the others intact.
-  if (opted_in) {
-    update->Set(account_hash, value | sync_transport_opt_in::kWallet);
-    return;
-  }
-
-  // Invert the mask in order to reset the Wallet bit while leaving the other
-  // bits intact, or remove the key entirely if the Wallet was the only opt-in.
-  if (value & ~sync_transport_opt_in::kWallet) {
-    update->Set(account_hash, value & ~sync_transport_opt_in::kWallet);
-  } else {
-    update->Remove(account_hash);
-  }
-}
-
-bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
-                                      const CoreAccountId& account_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // On mobile, no specific opt-in is required.
-  return true;
-#else
-  // Get the hash of the account id.
-  std::string account_hash =
-      base::Base64Encode(crypto::SHA256HashString(account_id.ToString()));
-
-  // Return whether the wallet opt-in bit is set.
-  return GetSyncTransportOptInBitFieldForAccount(prefs, account_hash) &
-         sync_transport_opt_in::kWallet;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-}
-
 void ClearSyncTransportOptIns(PrefService* prefs) {
   prefs->SetDict(prefs::kAutofillSyncTransportOptIn, base::Value::Dict());
 }
@@ -351,6 +295,38 @@ bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs) {
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+void SetAutofillBnplEnabled(PrefService* prefs, bool value) {
+  prefs->SetBoolean(kAutofillBnplEnabled, value);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+bool IsAutofillBnplEnabled(const PrefService* prefs) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return prefs->GetBoolean(kAutofillBnplEnabled);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// If called, always sets the pref to true, and once true, it will follow the
+// user around forever.
+void SetAutofillHasSeenBnpl(PrefService* prefs) {
+  prefs->SetBoolean(kAutofillHasSeenBnpl, true);
+}
+
+bool HasSeenBnpl(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillHasSeenBnpl);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace prefs
 }  // namespace autofill

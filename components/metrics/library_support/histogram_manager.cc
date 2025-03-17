@@ -49,7 +49,7 @@ bool HistogramManager::GetDeltas(std::vector<uint8_t>* data)
         false, base::Histogram::kNoFlags,
         base::Histogram::kUmaTargetedHistogramFlag,
         &histogram_snapshot_manager_);
-    int32_t data_size = uma_proto_.ByteSize();
+    int32_t data_size = uma_proto_.ByteSizeLong();
     data->resize(data_size);
     if (data_size == 0 || uma_proto_.SerializeToArray(data->data(), data_size))
       return true;

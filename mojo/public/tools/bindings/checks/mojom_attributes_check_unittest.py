@@ -42,7 +42,7 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     mojoms = []
     self.WriteFile(filename, content)
     mojoms.append(filename)
-    with self.assertRaisesRegexp(check.CheckException, regexp):
+    with self.assertRaisesRegex(check.CheckException, regexp):
       self._ParseAndGenerate(mojoms)
 
   def testLoads(self):
@@ -69,7 +69,7 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     self._testValid(
         "a.mojom", """
       [JavaConstantsClassName="FakeClass",JavaPackage="org.chromium.Fake"]
-      module a;
+      module mojo.test;
       [Stable, Extensible]
       enum Hello { [Default] kValue, kValue2, [MinVersion=2] kValue3 };
       [Native]

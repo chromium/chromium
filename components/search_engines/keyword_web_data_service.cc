@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/webdata/common/web_data_results.h"
@@ -31,13 +32,14 @@ std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
     return nullptr;
   }
 
-  result.metadata = {
-      .builtin_keyword_data_version =
-          keyword_table->GetBuiltinKeywordDataVersion(),
-      .builtin_keyword_country = keyword_table->GetBuiltinKeywordCountry(),
+  WDKeywordsResult::Metadata metadata;
+  metadata.builtin_keyword_data_version =
+      keyword_table->GetBuiltinKeywordDataVersion();
+  metadata.builtin_keyword_country = regional_capabilities::CountryIdHolder(
+      keyword_table->GetBuiltinKeywordCountry());
+  metadata.starter_pack_version = keyword_table->GetStarterPackKeywordVersion();
 
-      .starter_pack_version = keyword_table->GetStarterPackKeywordVersion(),
-  };
+  result.metadata = metadata;
   return std::make_unique<WDResult<WDKeywordsResult>>(KEYWORDS_RESULT, result);
 }
 
@@ -71,6 +73,16 @@ WebDatabase::State SetStarterPackKeywordVersionImpl(int version,
 }
 
 }  // namespace
+
+WDKeywordsResult::Metadata::Metadata() = default;
+
+WDKeywordsResult::Metadata::Metadata(const WDKeywordsResult::Metadata&) =
+    default;
+
+WDKeywordsResult::Metadata& WDKeywordsResult::Metadata::operator=(
+    const WDKeywordsResult::Metadata&) = default;
+
+WDKeywordsResult::Metadata::~Metadata() = default;
 
 WDKeywordsResult::WDKeywordsResult() = default;
 

@@ -6,8 +6,8 @@ package org.chromium.android_webview.test;
 
 import android.os.StrictMode;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +29,9 @@ public class AwStrictModeTest extends AwParameterizedTest {
         mActivityTestRule =
                 new AwActivityTestRule(param.getMutation()) {
                     @Override
-                    public boolean needsAwBrowserContextCreated() {
+                    public boolean needsNativeInitialized() {
+                        // We don't want native to be initialized by default so we can catch the
+                        // strict mode violations as failures in tests.
                         return false;
                     }
 
@@ -125,7 +127,6 @@ public class AwStrictModeTest extends AwParameterizedTest {
 
     private void startEverythingSync() {
         mActivityTestRule.getActivity();
-        mActivityTestRule.createAwBrowserContext();
         mActivityTestRule.startBrowserProcess();
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(

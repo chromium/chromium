@@ -6,10 +6,10 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import type {CpuUsage} from '../../model/cpu_usage_helper.js';
 import {getAverageCpuUsage} from '../../utils/cpu_usage_utils.js';
-import {HealthdApiTelemetryResult, SystemZramInfo} from '../../utils/externs.js';
-import {getFormattedMemory, getFormattedMemoryFromRaw, getFormattedMemoryWithPercentage, MemoryUnitEnum} from '../../utils/memory_utils.js';
+import type {HealthdApiTelemetryResult, SystemZramInfo} from '../../utils/externs.js';
+import {getFormattedMemory, MemoryUnitEnum} from '../../utils/memory_utils.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
-import {HealthdInternalsPage} from '../../utils/page_interface.js';
+import type {HealthdInternalsPage} from '../../utils/page_interface.js';
 import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 
 import {getTemplate} from './info.html.js';
@@ -55,7 +55,7 @@ export class HealthdInternalsInfoElement extends PolymerElement implements
   private healthdData?: HealthdApiTelemetryResult = undefined;
 
   // Other latest data.
-  private cpuUsageData?: (CpuUsage|null)[][] = undefined;
+  private cpuUsageData?: Array<Array<CpuUsage|null>> = undefined;
   private zramData?: SystemZramInfo = undefined;
 
   // Helper for updating UI regularly. Init in `connectedCallback`.
@@ -86,7 +86,7 @@ export class HealthdInternalsInfoElement extends PolymerElement implements
     }
   }
 
-  updateCpuUsageData(physcialCpuUsage: (CpuUsage|null)[][]) {
+  updateCpuUsageData(physcialCpuUsage: Array<Array<CpuUsage|null>>) {
     const isInitilized: boolean = this.cpuUsageData !== undefined;
     this.cpuUsageData = physcialCpuUsage;
     if (!isInitilized) {

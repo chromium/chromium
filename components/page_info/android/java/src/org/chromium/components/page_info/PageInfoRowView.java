@@ -85,7 +85,7 @@ public class PageInfoRowView extends FrameLayout {
         if (params.clickCallback != null) {
             setClickable(true);
             setFocusable(true);
-            getChildAt(0).setOnClickListener((v) -> params.clickCallback.run());
+            setOnClickListener((v) -> params.clickCallback.run());
         }
         if (params.rowTint != 0) {
             setBackgroundColor(

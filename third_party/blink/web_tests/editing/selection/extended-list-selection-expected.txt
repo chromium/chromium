@@ -1,0 +1,60 @@
+This test ensures list element tag is not lost while copying with extended selection
+
+Dump of markup 1:
+| <p>
+|   <br>
+| <ol>
+|   <li>
+|     "Ordered"
+|   <li>
+|     "List<#selection-caret>"
+
+Dump of markup 2:
+| <p>
+|   <br>
+| <ul>
+|   <li>
+|     "Unordered"
+|   <li>
+|     "List<#selection-caret>"
+
+Dump of markup 3:
+| <p>
+|   <br>
+| <dl>
+|   <dt>
+|     "Term 1"
+|   <dd>
+|     "Description 1"
+|   <dt>
+|     "Term 2"
+|   <dd>
+|     "Description 2<#selection-caret>"
+
+Dump of markup 4:
+| <p>
+|   <br>
+| <ol>
+|   <li>
+|     "Ordered"
+|   <li>
+|     "List"
+|     <ul>
+|       <li>
+|         "Unordered"
+|       <li>
+|         "List<#selection-caret>"
+
+Dump of markup 5:
+| <p>
+|   <br>
+| <ul>
+|   <li>
+|     "Unordered"
+|   <li>
+|     "List"
+|     <ol>
+|       <li>
+|         "Ordered"
+|       <li>
+|         "List<#selection-caret>"

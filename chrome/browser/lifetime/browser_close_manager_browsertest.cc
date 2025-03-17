@@ -16,10 +16,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -42,6 +44,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -68,7 +71,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif
 
@@ -281,7 +284,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitch(
         ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
@@ -621,16 +624,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
-// Flaky on Windows 7 (dbg) trybot, see https://crbug.com/751081.
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_TestAddWindowDuringShutdown DISABLED_TestAddWindowDuringShutdown
-#else
-#define MAYBE_TestAddWindowDuringShutdown TestAddWindowDuringShutdown
-#endif
-
 // Test that a window created during shutdown is closed.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
-                       MAYBE_TestAddWindowDuringShutdown) {
+                       TestAddWindowDuringShutdown) {
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
@@ -832,14 +828,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browser2->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
-// TODO(crbug.com/40921700): This test is failing on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_TestCloseTabDuringShutdown DISABLED_TestCloseTabDuringShutdown
-#else
-#define MAYBE_TestCloseTabDuringShutdown TestCloseTabDuringShutdown
-#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
-                       MAYBE_TestCloseTabDuringShutdown) {
+                       TestCloseTabDuringShutdown) {
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
@@ -936,6 +926,43 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   WaitForAllBrowsersToClose();
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+// Check that it is possible to restore a window with the last session after
+// ignoring unload handlers shutdown.
+IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
+                       PRE_RestoreWindowWithIgnoreUnload) {
+  ASSERT_NO_FATAL_FAILURE(
+      ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), embedded_test_server()->GetURL("/beforeunload.html"),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)));
+  PrepareForDialog(browser());
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Set silent exit to hit ignore unload handlers flow
+  browser_shutdown::OnShutdownStarting(
+      browser_shutdown::ShutdownType::kSilentExit);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsers));
+  ui_test_utils::WaitForBrowserToClose(browser());
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
+                       RestoreWindowWithIgnoreUnload) {
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(tab_restore_service);
+  TabRestoreServiceLoadWaiter waiter(tab_restore_service);
+  tab_restore_service->LoadTabsFromLastSession();
+  waiter.Wait();
+  ASSERT_TRUE(!tab_restore_service->entries().empty());
+  EXPECT_EQ(tab_restore_service->entries().front()->type,
+            sessions::tab_restore::Type::WINDOW);
 }
 
 // Mac has its own in-progress download prompt in app_controller_mac.mm, so
@@ -1279,3 +1306,44 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
+
+#if BUILDFLAG(ENABLE_GLIC)
+
+class BrowserCloseManagerWithGlicBrowserTest
+    : public BrowserCloseManagerBrowserTest {
+ public:
+  BrowserCloseManagerWithGlicBrowserTest() = default;
+
+  BrowserCloseManagerWithGlicBrowserTest(
+      const BrowserCloseManagerWithGlicBrowserTest&) = delete;
+  BrowserCloseManagerWithGlicBrowserTest& operator=(
+      const BrowserCloseManagerWithGlicBrowserTest&) = delete;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+    BrowserCloseManagerBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    BrowserCloseManagerBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        glic::prefs::kGlicLauncherEnabled, true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that closing the last browser window doesn't crash when glic is
+// enabled. Regression test for crbug.com/390203045.
+IN_PROC_BROWSER_TEST_F(BrowserCloseManagerWithGlicBrowserTest,
+                       CloseSingleBrowserWindowWithGlic) {
+  TestBrowserCloseManager::AttemptClose(
+      TestBrowserCloseManager::NO_USER_CHOICE);
+  WaitForAllBrowsersToClose();
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+#endif  // BUILDFLAG(ENABLE_GLIC)

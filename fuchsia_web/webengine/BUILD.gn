@@ -199,7 +199,7 @@ component("web_engine_core") {
     "//components/cdm/renderer",
     "//components/client_hints/browser:in_memory",
     "//components/embedder_support",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/embedder_support/origin_trials",
     "//components/favicon/content",
     "//components/favicon/core",

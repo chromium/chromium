@@ -14,10 +14,6 @@
 namespace content {
 namespace {
 
-BASE_FEATURE(kScreenCaptureKitFullscreenModule,
-             "ScreenCaptureKitFullscreenModule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 static NSString* const kApplicationNameKeynote = @"Keynote";
 static NSString* const kApplicationNameLibreOffice = @"LibreOffice";
 static NSString* const kApplicationNamePowerPoint = @"Microsoft PowerPoint";
@@ -94,41 +90,35 @@ MaybeCreateScreenCaptureKitFullscreenModule(
     scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
     ScreenCaptureKitResetStreamInterface& reset_stream_interface,
     SCWindow* original_window) {
-  if (base::FeatureList::IsEnabled(kScreenCaptureKitFullscreenModule)) {
-    // Check if we should enable the fullscreen module for this window and what
-    // mode to use.
-    if ([kApplicationNamePowerPoint
-            isEqualToString:original_window.owningApplication
-                                .applicationName]) {
-      return std::make_unique<ScreenCaptureKitFullscreenModule>(
-          device_task_runner, reset_stream_interface, original_window.windowID,
-          original_window.owningApplication.processID,
-          ScreenCaptureKitFullscreenModule::Mode::kPowerPoint);
-    }
-    if ([kApplicationNameKeynote
-            isEqualToString:original_window.owningApplication
-                                .applicationName]) {
-      return std::make_unique<ScreenCaptureKitFullscreenModule>(
-          device_task_runner, reset_stream_interface, original_window.windowID,
-          original_window.owningApplication.processID,
-          ScreenCaptureKitFullscreenModule::Mode::kKeynote);
-    }
-    if ([kApplicationNameOpenOffice
-            isEqualToString:original_window.owningApplication
-                                .applicationName] &&
-        IsOpenOfficeImpressWindow(original_window.title)) {
-      return std::make_unique<ScreenCaptureKitFullscreenModule>(
-          device_task_runner, reset_stream_interface, original_window.windowID,
-          original_window.owningApplication.processID,
-          ScreenCaptureKitFullscreenModule::Mode::kOpenOffice);
-    }
-    if ([kApplicationNameLibreOffice
-            isEqualToString:original_window.owningApplication
-                                .applicationName]) {
-      // TODO(crbug.com/40233195): Implement support for LibreOffice.
-      LogModeToUma(ScreenCaptureKitFullscreenModule::Mode::kLibreOffice);
-      return nullptr;
-    }
+  // Check if we should enable the fullscreen module for this window and what
+  // mode to use.
+  if ([kApplicationNamePowerPoint
+          isEqualToString:original_window.owningApplication.applicationName]) {
+    return std::make_unique<ScreenCaptureKitFullscreenModule>(
+        device_task_runner, reset_stream_interface, original_window.windowID,
+        original_window.owningApplication.processID,
+        ScreenCaptureKitFullscreenModule::Mode::kPowerPoint);
+  }
+  if ([kApplicationNameKeynote
+          isEqualToString:original_window.owningApplication.applicationName]) {
+    return std::make_unique<ScreenCaptureKitFullscreenModule>(
+        device_task_runner, reset_stream_interface, original_window.windowID,
+        original_window.owningApplication.processID,
+        ScreenCaptureKitFullscreenModule::Mode::kKeynote);
+  }
+  if ([kApplicationNameOpenOffice
+          isEqualToString:original_window.owningApplication.applicationName] &&
+      IsOpenOfficeImpressWindow(original_window.title)) {
+    return std::make_unique<ScreenCaptureKitFullscreenModule>(
+        device_task_runner, reset_stream_interface, original_window.windowID,
+        original_window.owningApplication.processID,
+        ScreenCaptureKitFullscreenModule::Mode::kOpenOffice);
+  }
+  if ([kApplicationNameLibreOffice
+          isEqualToString:original_window.owningApplication.applicationName]) {
+    // TODO(crbug.com/40233195): Implement support for LibreOffice.
+    LogModeToUma(ScreenCaptureKitFullscreenModule::Mode::kLibreOffice);
+    return nullptr;
   }
   LogModeToUma(ScreenCaptureKitFullscreenModule::Mode::kUnsupported);
   return nullptr;

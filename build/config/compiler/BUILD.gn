@@ -7,7 +7,6 @@ import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
@@ -333,9 +332,9 @@ config("compiler") {
   # When UBSan is enabled, we want to continue flagging overflows as a bug.
   if (!is_ubsan && (!is_win || is_clang)) {
     if (is_win) {
-      cflags += [ "/clang:-fwrapv" ]
+      cflags += [ "/clang:-fno-strict-overflow" ]
     } else {
-      cflags += [ "-fwrapv" ]
+      cflags += [ "-fno-strict-overflow" ]
     }
   }
 
@@ -434,7 +433,7 @@ config("compiler") {
     # Explicitly pass --build-id to ld. Compilers used to always pass this
     # implicitly but don't any more (in particular clang when built without
     # ENABLE_LINKER_BUILD_ID=ON).
-    if (is_official_build) {
+    if (is_official_build || is_chrome_branded) {
       # The sha1 build id has lower risk of collision but is more expensive to
       # compute, so only use it in the official build to avoid slowing down
       # links.
@@ -1119,13 +1118,7 @@ config("libcxx_hardening") {
   # TODO(crbug.com/40511454): Move this back to the `runtime_library` config
   # when NaCl is removed.
   if (use_safe_libcxx) {
-    # TODO(crbug.com/40275904): Switch saigo to hardened mode once it's rolled
-    # in.
-    if (is_nacl_saigo) {
-      defines = [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
-    } else {
-      defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
-    }
+    defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
   } else {
     defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_NONE" ]
   }
@@ -1218,17 +1211,6 @@ config("compiler_cpu_abi") {
         "-m64",
         "-msse3",
       ]
-
-      # Minimum SIMD support for devices running lacros.
-      # See https://crbug.com/1475858
-      if (is_chromeos_lacros) {
-        cflags += [
-          "-mssse3",
-          "-msse4",
-          "-msse4.1",
-          "-msse4.2",
-        ]
-      }
       ldflags += [ "-m64" ]
     } else if (current_cpu == "x86") {
       cflags += [ "-m32" ]
@@ -1713,9 +1695,10 @@ config("libcxx_module") {
       "-fmodules",
       "-fmodule-map-file=" + modulemap,
       "-fno-implicit-module-maps",
-      "-fbuiltin-module-map",
-      "-fmodules-cache-path=" +
-          rebase_path("$libcxx_module_prefix/module_cache", root_build_dir),
+
+      # This removes absolute paths from .pcm files.
+      "-Xclang",
+      "-fmodule-file-home-is-cwd",
 
       "-Xclang",
       "-fmodules-local-submodule-visibility",  # required for builtins
@@ -1730,6 +1713,21 @@ config("libcxx_module") {
       # unnecessarily using extern "C".
       "-Wno-module-import-in-extern-c",
     ]
+
+    if (use_explicit_libcxx_modules) {
+      cflags_cc += [
+        "-fno-implicit-modules",
+
+        # This is for exception handling mismatch.
+        "-Wno-module-file-config-mismatch",
+      ]
+    } else {
+      cflags_cc += [
+        "-fbuiltin-module-map",
+        "-fmodules-cache-path=" +
+            rebase_path("$libcxx_module_prefix/module_cache", root_build_dir),
+      ]
+    }
   }
 }
 
@@ -1823,9 +1821,6 @@ config("treat_warnings_as_errors") {
   # Note we apply the actual lint flags in config("compiler"). All warnings
   # are suppressed in third-party crates.
   rustflags = [ "-Dwarnings" ]
-
-  # TODO(https://crbug.com/326247202): Fix unused imports and remove this flag.
-  rustflags += [ "-Aunused-imports" ]
 }
 
 # default_warnings ------------------------------------------------------------
@@ -1974,6 +1969,9 @@ config("default_warnings") {
 
         # TODO(crbug.com/40284799): Fix and re-enable.
         "-Wno-thread-safety-reference-return",
+
+        # TODO(crbug.com/376641662): Fix and re-enable.
+        "-Wno-nontrivial-memcall",
       ]
 
       cflags_cc += [
@@ -1989,12 +1987,6 @@ config("default_warnings") {
 
         # TODO(crbug.com/344680447): Fix and re-enable.
         cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
-
-        # TODO(crbug.com/356172342): Fix and re-enable.
-        cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
-
-        # TODO(crbug.com/376641662): Fix and re-enable.
-        cflags += [ "-Wno-nontrivial-memcall" ]
       }
     }
 
@@ -2007,6 +1999,15 @@ config("default_warnings") {
         "-Wno-error=unused-command-line-argument",
         "-Wno-error=unknown-pragmas",
       ]
+    }
+
+    # Disable the GNU line marker warning when building a target with Icecc.
+    # This warning appears frequently when compiling files that use GNU-style
+    # line markers with Clang and Icecc. It can negatively impact build
+    # performance and make it more difficult to identify other errors or warning
+    # messages.
+    if (cc_wrapper == "icecc") {
+      cflags += [ "-Wno-gnu-line-marker" ]
     }
   }
 
@@ -2055,10 +2056,13 @@ config("prevent_unsafe_narrowing") {
   if (is_clang) {
     cflags = [
       "-Wshorten-64-to-32",
-      "-Wimplicit-int-conversion",
       "-Wsign-compare",
       "-Wsign-conversion",
     ]
+    if (!is_fuchsia) {
+      # TODO(crbug.com/402154971): Fix fuchsia/ui/composition/cpp/fidl.h
+      cflags += [ "-Wimplicit-int-conversion" ]
+    }
     if (!is_nacl) {
       cflags += [
         # Avoid bugs of the form `if (size_t i = size; i >= 0; --i)` while
@@ -2067,25 +2071,6 @@ config("prevent_unsafe_narrowing") {
       ]
     }
   }
-}
-
-config("rust_integer_overflow_checks") {
-  rustflags = [
-    # Overflow checks are optional in Rust, but even if switched off they do
-    # not cause undefined behavior (the overflowing behavior is defined).
-    # Because containers are bounds-checked in safe Rust, they also can't
-    # provoke buffer overflows.  As such these checks may be less important in
-    # Rust than C++ and by default the Rust compiler checks for unexpected
-    # integer overflows only in debug mode (where such overflows panic) and
-    # skips the checks in release mode (where the overflows wrap around).
-    #
-    # But in (simplistic) testing the checks have negligible performance
-    # overhead, and this helps to provide consistent behavior between different
-    # configurations, so in Chromium we diverge from the default Rust compiler
-    # behavior and keep the integer overflow checks even in release mode.  We
-    # may revisit if we discover a reason to turn them off.
-    "-Coverflow-checks=on",
-  ]
 }
 
 # chromium_code ---------------------------------------------------------------
@@ -2297,8 +2282,7 @@ config("no_rtti") {
 # (de)allocate memory on a different heap, which would spell trouble if pointers
 # to heap-allocated memory are passed over shared library boundaries.
 config("export_dynamic") {
-  # TODO(crbug.com/40118868): Revisit after target_os flip is completed.
-  if (is_linux || is_chromeos_lacros || export_libcxxabi_from_executables) {
+  if (is_linux || export_libcxxabi_from_executables) {
     ldflags = [ "-rdynamic" ]
   }
 }
@@ -2318,9 +2302,10 @@ config("export_dynamic") {
 # 2. Remove the thin_archive config, so that the .a file actually contains all
 #    .o files, instead of just references to .o files in the build directoy
 config("thin_archive") {
-  if ((is_apple && use_lld) || (is_linux && !is_clang)) {
+  if ((is_apple && use_lld) || (is_linux && !is_clang) || current_os == "aix") {
     # The macOS and iOS linker ld64.ldd doesn't support thin archive without
     # symbol table, gcc on linux also throws the error `archive has no index`.
+    # AIX does support -s option, not -S option.
     arflags = [
       "-T",
       "-s",
@@ -2403,7 +2388,7 @@ config("no_incompatible_pointer_warnings") {
     cflags += [ "-Wno-incompatible-pointer-types" ]
   } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
     cflags += [ "-w" ]
-  } else if (is_chromeos_ash && current_cpu == "arm") {
+  } else if (is_chromeos && current_cpu == "arm") {
     cflags += [ "-w" ]
   }
 }
@@ -2620,17 +2605,12 @@ config("no_optimize") {
   } else if (is_android && !android_full_debug) {
     # On Android we kind of optimize some things that don't affect debugging
     # much even when optimization is disabled to get the binary size down.
-    if (is_clang) {
-      cflags = [ "-Oz" ] + common_optimize_on_cflags
-    } else {
-      cflags = [ "-Os" ] + common_optimize_on_cflags
-    }
+    cflags = [ "-Os" ] + common_optimize_on_cflags
 
-    if (!is_component_build) {
-      # Required for library partitions. Without this all symbols just end up
-      # in the base partition.
-      ldflags = [ "-Wl,--gc-sections" ]
-    }
+    # Required to keep file sizes down. Excessive file size slows down apk
+    # installation, and for fat binaries, can lead to signing failure
+    # https://crbug.com/402645059
+    ldflags = [ "-Wl,--gc-sections" ]
   } else if (is_fuchsia) {
     # On Fuchsia, we optimize for size here to reduce the size of debug build
     # packages so they can be run in a KVM. See crbug.com/910243 for details.

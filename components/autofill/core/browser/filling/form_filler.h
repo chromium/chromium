@@ -11,13 +11,14 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill {
@@ -35,10 +36,8 @@ enum class RefillTriggerReason {
   kMaxValue = kExpirationDateFormatted
 };
 
-using AutofillAiFillingPayload = base::flat_map<FieldGlobalId, std::u16string>;
-using FillingPayload = absl::variant<const AutofillProfile*,
-                                     const CreditCard*,
-                                     AutofillAiFillingPayload>;
+using FillingPayload = absl::
+    variant<const AutofillProfile*, const CreditCard*, const EntityInstance*>;
 
 // Helper class responsible for [re]filling forms and fields.
 //
@@ -75,8 +74,10 @@ class FormFiller {
   // for filling. If the field should not be skipped, an empty set is returned
   // (and not {FieldFillingSkipReason::kNotSkipped}).
   // `type_count` tracks the number of times a type of field has been filled.
-  // `type_group_originally_filled` denotes, in case of a refill, what groups
+  // `type_groups_originally_filled` denotes, in case of a refill, what groups
   // where filled in the initial filling.
+  // `blocked_fields` are fields which must not be filled because another
+  // filling product of higher priority claims them.
   // `filling_product` is the type of filling calling this function.
   // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
   // FieldTypeSet.
@@ -86,7 +87,8 @@ class FormFiller {
       const AutofillField& autofill_field,
       const AutofillField& trigger_field,
       base::flat_map<FieldType, size_t>& type_count,
-      std::optional<DenseSet<FieldTypeGroup>> type_group_originally_filled,
+      std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
+      const base::flat_set<FieldGlobalId>& blocked_fields,
       FillingProduct filling_product,
       bool is_refill = false);
 
@@ -135,7 +137,6 @@ class FormFiller {
       const FillingPayload& filling_payload,
       FormStructure& form_structure,
       AutofillField& autofill_field,
-      DenseSet<FieldFillingSkipReason> ignorable_skip_reasons,
       AutofillTriggerSource trigger_source,
       bool is_refill = false);
 
@@ -209,8 +210,6 @@ class FormFiller {
     DenseSet<FieldTypeGroup> type_groups_originally_filled;
     // If populated, this map determines which values will be filled into a
     // field (it does not matter whether the field already contains a value).
-    // TODO(crbug.com/40947225): Investigate removing when
-    // `AutofillFixCachingOnJavaScriptChanges` launches.
     std::map<FieldGlobalId, std::u16string> forced_fill_values;
     // The form filled in the first attempt for filling. Used to check whether
     // a refill should be attempted upon parsing an updated FormData.
@@ -243,6 +242,8 @@ class FormFiller {
   // Fills `field_data` and modifies `autofill_field` given all other states.
   // Returns true if the field has been filled, false otherwise. This is
   // independent of whether the field was filled or autofilled before.
+  // When `allow_suggestion_swapping` is true, the method still returns true if
+  // the `autofill_field` is emptied.
   // TODO(crbug.com/40227071): Cleanup API and logic.
   bool FillField(
       AutofillField& autofill_field,
@@ -250,6 +251,7 @@ class FormFiller {
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
+      bool allow_suggestion_swapping,
       std::string* failure_to_fill);
 
   LogManager* log_manager();

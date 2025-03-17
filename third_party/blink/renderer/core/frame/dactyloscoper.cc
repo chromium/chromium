@@ -17,8 +17,6 @@
 #include "third_party/blink/renderer/core/svg/svg_string_list_tear_off.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "v8/include/v8-function-callback.h"
@@ -174,7 +172,6 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
 // static
 void Dactyloscoper::TraceFontLookup(ExecutionContext* execution_context,
                                     const AtomicString& name,
-                                    const FontDescription& font_description,
                                     Dactyloscoper::FontLookupType lookup_type) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
@@ -196,11 +193,6 @@ void Dactyloscoper::TraceFontLookup(ExecutionContext* execution_context,
         FontLookup& font_lookup = *(high_entropy_api.set_font_lookup());
         font_lookup.set_type(ToTypeProto(lookup_type));
         font_lookup.set_name(name.Utf8());
-        FontSelectionRequest font_selection_request =
-            font_description.GetFontSelectionRequest();
-        font_lookup.set_weight(font_selection_request.weight.RawValue());
-        font_lookup.set_width(font_selection_request.width.RawValue());
-        font_lookup.set_slope(font_selection_request.slope.RawValue());
       });
 }
 

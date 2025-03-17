@@ -167,8 +167,9 @@ class UserPolicySigninServiceTest : public PlatformTest {
   // Returns true if there is at least one request that is currently pending in
   // the URL loader.
   bool IsRequestActive() {
-    if (identity_test_env()->IsAccessTokenRequestPending())
+    if (identity_test_env()->IsAccessTokenRequestPending()) {
       return true;
+    }
     return test_url_loader_factory_.NumPending() > 0;
   }
 

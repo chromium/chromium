@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
@@ -113,7 +114,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS),
-      /*user_annotations_service=*/nullptr, sync_service);
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
+      sync_service);
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -159,13 +161,13 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
   WaitForCounting();
   EXPECT_TRUE(IsSyncEnabled());
 
-  // Signout isn't possible on ChromeOS (Ash).
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Signout isn't possible on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   // Stopping the Sync service triggers a restart.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // Test that the counting restarts when password sync state changes.
@@ -232,13 +234,13 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
   WaitForCounting();
   EXPECT_TRUE(IsSyncEnabled());
 
-  // Signout isn't possible on ChromeOS (Ash).
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Signout isn't possible on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   // Stopping the Sync service triggers a restart.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // Test that the counting restarts when history sync state changes.
@@ -323,13 +325,13 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   // notifications, one that history sync has stopped and another that it is
   // active again.
 
-  // Signout isn't possible on ChromeOS (Ash).
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Signout isn't possible on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   // Stopping the Sync service triggers a restart.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace

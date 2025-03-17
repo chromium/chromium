@@ -8,11 +8,10 @@ import("//ash/webui/recorder_app_ui/resources/images/images.gni")
 import("//ash/webui/recorder_app_ui/resources/pages/pages.gni")
 import("//ash/webui/recorder_app_ui/resources/platforms/platforms.gni")
 import("//ash/webui/recorder_app_ui/resources/static/static.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 action("gen_images_js") {
   script = "scripts/gen_images_js.py"
@@ -113,10 +112,10 @@ build_webui("build") {
   ts_path_mappings = [ "/images/*|$images_dir/*" ]
 
   mojo_files = [
-    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",
-    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model_service.mojom-webui.ts",
     "$root_gen_dir/ash/webui/recorder_app_ui/mojom/recorder_app.mojom-webui.ts",
     "$root_gen_dir/chromeos/services/machine_learning/public/mojom/soda.mojom-webui.ts",
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model_service.mojom-webui.ts",
   ]
 
   mojo_files_deps = [

@@ -9,7 +9,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -36,7 +35,7 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -51,14 +50,10 @@
 class SyncServiceFactoryTest : public testing::Test {
  public:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Only the main profile enables syncer::WEB_APPS.
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
                               FaviconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
@@ -88,9 +83,9 @@ class SyncServiceFactoryTest : public testing::Test {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     // There may tasks in flight referencing fields owned by the test fixture.
     // Make sure they are flushed now to prevent memory safety errors, e.g.
     // use-after-destruction errors.
@@ -103,7 +98,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(53 == syncer::GetNumDataTypes(),
+    static_assert(55 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -146,7 +141,7 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::DICTIONARY);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     datatypes.Put(syncer::APP_LIST);
     if (arc::IsArcAllowedForProfile(profile())) {
       datatypes.Put(syncer::ARC_PACKAGE);
@@ -162,7 +157,7 @@ class SyncServiceFactoryTest : public testing::Test {
     }
     datatypes.Put(syncer::WIFI_CONFIGURATIONS);
     datatypes.Put(syncer::WORKSPACE_DESK);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Common types. This excludes PASSWORDS,
     // INCOMING_PASSWORD_SHARING_INVITATION and
@@ -212,6 +207,14 @@ class SyncServiceFactoryTest : public testing::Test {
     // because GoogleGroupsManagerFactory is null for testing and hence no
     // controller gets instantiated for the type.
 
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+      datatypes.Put(syncer::AUTOFILL_LOYALTY_CARD);
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
+      datatypes.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
+    }
+
     return datatypes;
   }
 
@@ -221,7 +224,7 @@ class SyncServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Fake network stack is required for WIFI_CONFIGURATIONS datatype. It's also
   // used by `network_config_helper_`
   ash::NetworkHandlerTestHelper network_handler_test_helper_;

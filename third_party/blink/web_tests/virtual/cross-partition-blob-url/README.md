@@ -1,0 +1,1 @@
+This directory is for tests that need the BlockCrossPartitionBlobUrlFetching and EnforceNoopenerOnBlobURLNavigation feature enabled.

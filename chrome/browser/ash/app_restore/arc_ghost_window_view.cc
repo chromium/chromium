@@ -159,7 +159,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
   if (type == arc::GhostWindowType::kFullRestore) {
     // If not enabled new style flag, all types will use original UI.
     AddChildView(views::Builder<views::ImageView>()
-                     .SetImage(icon_raw_data_)
+                     .SetImage(ui::ImageModel::FromImageSkia(icon_raw_data_))
                      .SetAccessibleName(l10n_util::GetStringUTF16(
                          IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON))
                      .SetID(ContentID::ID_ICON_IMAGE)
@@ -231,14 +231,15 @@ void ArcGhostWindowView::OnIconLoaded(apps::IconValuePtr icon_value) {
 void ArcGhostWindowView::AddCommonChildrenViews() {
   static_cast<views::BoxLayout*>(GetLayoutManager())
       ->set_between_child_spacing(kSpaceBetweenIconAndMessage);
-  AddChildView(views::Builder<views::ImageView>()
-                   .SetImage(ResizeAndShadowedImage(
-                       icon_raw_data_,
-                       gfx::Size(kAppIconSizeNewStyle, kAppIconSizeNewStyle)))
-                   .SetAccessibleName(l10n_util::GetStringUTF16(
-                       IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON))
-                   .SetID(ContentID::ID_ICON_IMAGE)
-                   .Build());
+  AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImage(ui::ImageModel::FromImageSkia(ResizeAndShadowedImage(
+              icon_raw_data_,
+              gfx::Size(kAppIconSizeNewStyle, kAppIconSizeNewStyle))))
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON))
+          .SetID(ContentID::ID_ICON_IMAGE)
+          .Build());
 }
 
 void ArcGhostWindowView::AddChildrenViewsForFixupType() {

@@ -163,19 +163,29 @@ TEST_F(HTMLLinkElementTest, TermsOfServiceCounter) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
 }
 
-// This tests whether `rel=payment` is properly counted.
+// This tests whether `rel=facilitated-payment` is properly counted.
 TEST_F(HTMLLinkElementTest, PaymentCounter) {
-  // <link rel="payment"> is not counted when absent.
+  // <link rel="facilitated-payment"> is not counted when absent.
   GetDocument().head()->setInnerHTML(R"HTML(
-    <link rel="not-payment" href="https://example.com/">
+    <link rel="not-facilitated-payment" href="https://example.com/">
   )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelPayment));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kLinkRelFacilitatedPayment));
 
-  // <link rel="payment"> is counted when present.
+  // <link rel="facilitated-payment"> is not counted when <link rel="payment">
+  // is present.
   GetDocument().head()->setInnerHTML(R"HTML(
     <link rel="payment" href="https://example.com/">
   )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelPayment));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kLinkRelFacilitatedPayment));
+
+  // <link rel="facilitated-payment"> is counted when present.
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="facilitated-payment" href="https://example.com/">
+  )HTML");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kLinkRelFacilitatedPayment));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -187,7 +197,8 @@ TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenRelAndHrefSetBeforeAppend) {
 
   auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
       GetDocument(), CreateElementFlags());
-  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kRelAttr,
+                             AtomicString("facilitated-payment"));
   link_element->setAttribute(html_names::kHrefAttr,
                              AtomicString("https://example.com/"));
   GetDocument().head()->appendChild(link_element);
@@ -206,7 +217,8 @@ TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenHrefAndRelSetBeforeAppend) {
       GetDocument(), CreateElementFlags());
   link_element->setAttribute(html_names::kHrefAttr,
                              AtomicString("https://example.com/"));
-  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kRelAttr,
+                             AtomicString("facilitated-payment"));
   GetDocument().head()->appendChild(link_element);
 
   // Ensures Document::HandlePaymentLink is invoked.
@@ -222,7 +234,8 @@ TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenRelAndHrefSetAfterAppend) {
   auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
       GetDocument(), CreateElementFlags());
   GetDocument().head()->appendChild(link_element);
-  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kRelAttr,
+                             AtomicString("facilitated-payment"));
   link_element->setAttribute(html_names::kHrefAttr,
                              AtomicString("https://example.com/"));
 
@@ -241,7 +254,8 @@ TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenHrefAndRelSetAfterAppend) {
   GetDocument().head()->appendChild(link_element);
   link_element->setAttribute(html_names::kHrefAttr,
                              AtomicString("https://example.com/"));
-  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kRelAttr,
+                             AtomicString("facilitated-payment"));
 
   // Ensures Document::HandlePaymentLink is invoked.
   EXPECT_TRUE(GetDocument().payment_link_handled_);
@@ -271,7 +285,8 @@ TEST_F(HTMLLinkElementTest, PaymentLinkNotHandledWhenHrefNotSet) {
 
   auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
       GetDocument(), CreateElementFlags());
-  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kRelAttr,
+                             AtomicString("facilitated-payment"));
   GetDocument().head()->appendChild(link_element);
 
   // Ensures Document::HandlePaymentLink is not invoked.
@@ -286,7 +301,8 @@ TEST_F(HTMLLinkElementTest, PaymentLinkNotHandledWhenNotAppended) {
 
   auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
       GetDocument(), CreateElementFlags());
-  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kRelAttr,
+                             AtomicString("facilitated-payment"));
   link_element->setAttribute(html_names::kHrefAttr,
                              AtomicString("https://example.com/"));
 
@@ -315,7 +331,7 @@ TEST_F(HTMLLinkElementSimTest, PaymentLinkNotHandledWhenNotInTheMainFrame) {
   test::RunPendingTasks();
 
   child_frame_resource.Complete(R"HTML(
-    <link rel="payment" href='https://paymentlinkexample.com/'>
+    <link rel="facilitated-payment" href='https://paymentlinkexample.com/'>
   )HTML");
 
   Compositor().BeginFrame();
@@ -328,7 +344,7 @@ TEST_F(HTMLLinkElementSimTest, PaymentLinkNotHandledWhenNotInTheMainFrame) {
       iframe_element->contentDocument()->head()->firstChild());
   ASSERT_NE(link_element, nullptr);
   ASSERT_EQ(link_element->FastGetAttribute(html_names::kRelAttr),
-            AtomicString("payment"));
+            AtomicString("facilitated-payment"));
 
   // Ensures Document::HandlePaymentLink is not invoked.
   EXPECT_FALSE(GetDocument().payment_link_handled_);

@@ -8,8 +8,11 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/tab_context_menu_delegate.h"
@@ -18,6 +21,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -36,6 +40,7 @@
 #import "ios/web/public/web_state.h"
 
 using PinnedState = WebStateSearchCriteria::PinnedState;
+using tab_groups::SharingState;
 
 @interface TabContextMenuHelper ()
 
@@ -322,22 +327,33 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   CHECK(group);
   base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
   BOOL incognito = self.incognito;
+
   ShareKitService* shareKitService =
       ShareKitServiceFactory::GetForProfile(_profile);
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile);
+
+  SharingState sharingState = SharingState::kNotShared;
   BOOL isSharedTabGroupSupported =
       shareKitService && shareKitService->IsSupported();
-  BOOL isTabGroupShared =
-      isSharedTabGroupSupported &&
-      tab_groups::utils::IsTabGroupShared(
-          group,
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
+
+  if (tab_groups::utils::IsTabGroupShared(group, tabGroupSyncService)) {
+    collaboration::CollaborationService* collaborationService =
+        collaboration::CollaborationServiceFactory::GetForProfile(_profile);
+    data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+        group, tabGroupSyncService, collaborationService);
+    sharingState = userRole == data_sharing::MemberRole::kOwner
+                       ? SharingState::kSharedAndOwned
+                       : SharingState::kShared;
+  }
+
   __weak __typeof(self) weakSelf = self;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   // Shared actions.
   NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
-  if (isTabGroupShared) {
+  if (sharingState != SharingState::kNotShared) {
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
                    }]];
@@ -366,7 +382,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                                   incognito:incognito];
                }]];
 
-  if (!isTabGroupShared) {
+  if (sharingState == SharingState::kNotShared) {
     [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                    [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
                                                        incognito:incognito
@@ -388,12 +404,33 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                             incognito:incognito];
         }]];
     if (!incognito) {
-      [destructiveActions
-          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-            [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                               incognito:incognito
-                                              sourceView:cell];
-          }]];
+      switch (sharingState) {
+        case SharingState::kNotShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                                   incognito:incognito
+                                                  sourceView:cell];
+              }]];
+          break;
+        }
+        case SharingState::kShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
+                                                       sourceView:cell];
+              }]];
+          break;
+        }
+        case SharingState::kSharedAndOwned: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                [weakSelf.contextMenuDelegate deleteSharedTabGroup:weakGroup
+                                                        sourceView:cell];
+              }]];
+          break;
+        }
+      }
     }
   } else {
     [destructiveActions

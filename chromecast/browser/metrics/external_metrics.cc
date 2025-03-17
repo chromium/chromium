@@ -23,12 +23,9 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chromecast/base/metrics/cast_histograms.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
-#include "chromecast/browser/metrics/cast_stability_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/serialization/metric_sample.h"
 #include "components/metrics/serialization/serialization_utils.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace chromecast {
 namespace metrics {
@@ -68,15 +65,10 @@ scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
 // The interval between external metrics collections in seconds
 static const int kExternalMetricsCollectionIntervalSeconds = 30;
 
-ExternalMetrics::ExternalMetrics(
-    CastStabilityMetricsProvider* stability_provider,
-    const std::string& uma_events_file)
-    : stability_provider_(stability_provider),
-      uma_events_file_(uma_events_file),
+ExternalMetrics::ExternalMetrics(const std::string& uma_events_file)
+    : uma_events_file_(uma_events_file),
       task_runner_(CreateTaskRunner()),
       weak_factory_(this) {
-  DCHECK(stability_provider);
-
   // The sequence checker verifies that all of the interesting work done by this
   // class is done on the |task_runner_|, rather than on the sequence that this
   // object was created on.
@@ -104,10 +96,7 @@ void ExternalMetrics::ProcessExternalEvents(base::OnceClosure cb) {
 }
 
 void ExternalMetrics::RecordCrash(const std::string& crash_kind) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CastStabilityMetricsProvider::LogExternalCrash,
-                     base::Unretained(stability_provider_), crash_kind));
+  // TODO(402448704): Check what should we record for crash events.
 }
 
 void ExternalMetrics::RecordSparseHistogram(

@@ -16,12 +16,16 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {NavigationPredictor} from './omnibox.mojom-webui.js';
 import {getTemplate} from './searchbox.html.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
+import {SideType} from './searchbox.mojom-webui.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
-import {SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoString16} from './utils.js';
+
+// LINT.IfChange(GhostLoaderTagName)
+const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
+// LINT.ThenChange(/chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderTagName)
 
 interface Input {
   text: string;
@@ -110,6 +114,12 @@ export class SearchboxElement extends SearchboxElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('searchboxMatchSearchboxTheme'),
         reflectToAttribute: true,
+      },
+
+      /** The aria description to include on the input element. */
+      searchboxAriaDescription: {
+        type: String,
+        value: '',
       },
 
       /** Whether the Google Lens icon should be visible in the searchbox. */
@@ -253,31 +263,34 @@ export class SearchboxElement extends SearchboxElementBase {
     };
   }
 
-  colorSourceIsBaseline: boolean;
-  dropdownIsVisible: boolean;
-  hadSecondarySide: boolean;
-  hasSecondarySide: boolean;
-  isDark: boolean;
-  matchSearchbox: boolean;
-  searchboxLensSearchEnabled: boolean;
-  searchboxChromeRefreshTheming: boolean;
-  searchboxSteadyStateShadow: boolean;
-  showThumbnail: boolean;
-  private inputAriaLive_: string;
-  private isDeletingInput_: boolean;
-  private queryAutocompleteOnEmptyInput_: boolean;
-  private lastIgnoredEnterEvent_: KeyboardEvent|null;
-  private lastInput_: Input;
-  private lastQueriedInput_: string|null;
-  private pastedInInput_: boolean;
-  private placeholderText: string;
-  private searchboxIcon_: string;
-  private searchboxVoiceSearchEnabled_: boolean;
-  private searchboxLensSearchEnabled_: boolean;
-  private result_: AutocompleteResult|null;
-  private selectedMatch_: AutocompleteMatch|null;
-  private selectedMatchIndex_: number;
-  private thumbnailUrl_: string;
+  declare canShowSecondarySide: boolean;
+  declare colorSourceIsBaseline: boolean;
+  declare dropdownIsVisible: boolean;
+  declare hadSecondarySide: boolean;
+  declare hasSecondarySide: boolean;
+  declare isDark: boolean;
+  declare matchSearchbox: boolean;
+  declare searchboxAriaDescription: string;
+  declare searchboxLensSearchEnabled: boolean;
+  declare searchboxChromeRefreshTheming: boolean;
+  declare searchboxSteadyStateShadow: boolean;
+  declare showThumbnail: boolean;
+  declare private inputAriaLive_: string;
+  declare private isLensSearchbox_: boolean;
+  declare private isDeletingInput_: boolean;
+  declare private queryAutocompleteOnEmptyInput_: boolean;
+  declare private lastIgnoredEnterEvent_: KeyboardEvent|null;
+  declare private lastInput_: Input;
+  declare private lastQueriedInput_: string|null;
+  declare private pastedInInput_: boolean;
+  declare private placeholderText: string;
+  declare private searchboxIcon_: string;
+  declare private searchboxVoiceSearchEnabled_: boolean;
+  declare private searchboxLensSearchEnabled_: boolean;
+  declare private result_: AutocompleteResult|null;
+  declare private selectedMatch_: AutocompleteMatch|null;
+  declare private selectedMatchIndex_: number;
+  declare private thumbnailUrl_: string;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
@@ -331,6 +344,14 @@ export class SearchboxElement extends SearchboxElementBase {
 
   isInputEmpty(): boolean {
     return !this.$.input.value.trim();
+  }
+
+  queryAutocomplete() {
+    // Query autocomplete if dropdown is not visible
+    if (this.dropdownIsVisible) {
+      return;
+    }
+    this.queryAutocomplete_(this.$.input.value);
   }
 
   //============================================================================
@@ -503,7 +524,7 @@ export class SearchboxElement extends SearchboxElementBase {
       if (loadTimeData.getBoolean('reportMetrics')) {
         const metricsReporter = MetricsReporterImpl.getInstance();
         if (!metricsReporter.hasLocalMark('CharTyped')) {
-            metricsReporter.mark('CharTyped');
+          metricsReporter.mark('CharTyped');
         }
       }
 
@@ -542,26 +563,40 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   private onInputWrapperFocusout_(e: FocusEvent) {
+    const newlyFocusedEl = e.relatedTarget as Element;
     // Hide the matches and stop autocomplete only when the focus goes outside
-    // of the searchbox wrapper.
-    if (!this.$.inputWrapper.contains(e.relatedTarget as Element)) {
-      if (this.lastQueriedInput_ === '') {
-        // Clear the input as well as the matches if the input was empty when
-        // the matches arrived.
-        this.updateInput_({text: '', inline: ''});
-        this.clearAutocompleteMatches_();
-      } else {
-        this.dropdownIsVisible = false;
-
-        // Stop autocomplete but leave (potentially stale) results and continue
-        // listening for key presses. These stale results should never be shown.
-        // They correspond to the potentially stale suggestion left in the
-        // searchbox when blurred. That stale result may be navigated to by
-        // focusing and pressing 'Enter'.
-        this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
-      }
-      this.pageHandler_.onFocusChanged(false);
+    // of the searchbox wrapper. If focus is still in the searchbox wrapper,
+    // exit early.
+    if (this.$.inputWrapper.contains(newlyFocusedEl)) {
+      return;
     }
+
+    // If this is a Lens searchbox, treat the ghost loader as keeping searchbox
+    // focus.
+    // TODO(380467089): This workaround wouldn't be needed if the ghost loader
+    // was part of the searchbox element. Remove this workaround once they are
+    // combined.
+    if (this.isLensSearchbox_ &&
+        newlyFocusedEl?.tagName.toLowerCase() === LENS_GHOST_LOADER_TAG_NAME) {
+      return;
+    }
+
+    if (this.lastQueriedInput_ === '') {
+      // Clear the input as well as the matches if the input was empty when
+      // the matches arrived.
+      this.updateInput_({text: '', inline: ''});
+      this.clearAutocompleteMatches_();
+    } else {
+      this.dropdownIsVisible = false;
+
+      // Stop autocomplete but leave (potentially stale) results and continue
+      // listening for key presses. These stale results should never be shown.
+      // They correspond to the potentially stale suggestion left in the
+      // searchbox when blurred. That stale result may be navigated to by
+      // focusing and pressing 'Enter'.
+      this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
+    }
+    this.pageHandler_.onFocusChanged(false);
   }
 
   private onInputWrapperKeydown_(e: KeyboardEvent) {
@@ -849,6 +884,11 @@ export class SearchboxElement extends SearchboxElementBase {
         this.isDeletingInput_ || this.pastedInInput_ || caretNotAtEnd;
     this.pageHandler_.queryAutocomplete(
         mojoString16(input), preventInlineAutocomplete);
+
+    this.dispatchEvent(new CustomEvent('query-autocomplete', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**

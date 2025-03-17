@@ -99,8 +99,8 @@ class OpDownloadTest : public testing::Test {
     scoped_refptr<TestConfigurator> config =
         base::MakeRefCounted<TestConfigurator>(pref_.get());
     config->SetCrxDownloaderFactory(base::MakeRefCounted<FakeFactory>(
-        temp_dir_.GetPath().AppendASCII("OpDownloadTest_File"), result,
-        metrics));
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("OpDownloadTest_File")),
+        result, metrics));
     return config;
   }
 
@@ -125,12 +125,13 @@ class OpDownloadTest : public testing::Test {
   void Download(scoped_refptr<Configurator> config,
                 int64_t length,
                 const std::string& hash) {
-    DownloadOperation(
-        config, base::BindRepeating([](const base::FilePath&) -> int64_t {
-          return 100'000'000;  // 100 MiB
-        }),
-        /*is_foreground=*/false, {GURL("http://localhost:111")}, length, hash,
-        MakePingCallback(), MakeProgressCallback(), MakeDoneCallback());
+    DownloadOperation(config,
+                      base::BindRepeating([](const base::FilePath&) -> int64_t {
+                        return 100'000'000;  // 100 MiB
+                      }),
+                      /*is_foreground=*/false, {GURL("http://localhost:111")},
+                      length, hash, MakePingCallback(), base::DoNothing(),
+                      MakeProgressCallback(), {}, MakeDoneCallback());
     runloop_.Run();
   }
 

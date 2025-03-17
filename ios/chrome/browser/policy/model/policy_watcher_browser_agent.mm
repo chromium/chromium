@@ -8,6 +8,8 @@
 
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
+#import "base/barrier_closure.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
@@ -18,6 +20,7 @@
 #import "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -25,7 +28,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 
 NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
@@ -43,8 +45,9 @@ PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() = default;
 
 void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   // Do nothing if the sign out is still in progress.
-  if (sign_out_in_progress_)
+  if (sign_out_in_progress_) {
     return;
+  }
 
   [handler_ showForceSignedOutPrompt];
 }
@@ -104,25 +107,21 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   DCHECK(auth_service_);
   if ((auth_service_->GetServiceStatus() ==
        AuthenticationService::ServiceStatus::SigninDisabledByPolicy)) {
+    for (auto& observer : observers_) {
+      observer.OnSignInDisallowed(this);
+    }
     if (auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);
-
       base::WeakPtr<PolicyWatcherBrowserAgent> weak_ptr =
           weak_factory_.GetWeakPtr();
-      // Sign the user out, but keep synced data (bookmarks, passwords, etc)
-      // locally to be consistent with the policy's behavior on other platforms.
-      auth_service_->SignOut(signin_metrics::ProfileSignout::kPrefChanged,
-                             /*force_clear_browsing_data=*/false, ^{
-                               if (weak_ptr) {
-                                 weak_ptr->OnSignOutComplete();
-                               }
-                             });
-    }
-
-    for (auto& observer : observers_) {
-      observer.OnSignInDisallowed(this);
+      signin::MultiProfileSignOut(
+          browser_, signin_metrics::ProfileSignout::kPrefChanged,
+          /*force_snackbar_over_toolbar=*/false, /*snackbar_message=*/nil,
+          ^{
+          },
+          /*should_record_metrics=*/false);
     }
   }
 }

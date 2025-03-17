@@ -262,8 +262,7 @@ class GCMStoreImpl::Backend
   bool LoadRegistrations(std::map<std::string, std::string>* registrations);
   bool LoadIncomingMessages(std::vector<std::string>* incoming_messages);
   bool LoadOutgoingMessages(OutgoingMessageMap* outgoing_messages);
-  bool LoadLastCheckinInfo(base::Time* last_checkin_time,
-                           std::set<std::string>* accounts);
+  bool LoadLastCheckinInfo(base::Time* last_checkin_time);
   bool LoadGServicesSettings(std::map<std::string, std::string>* settings,
                              std::string* digest);
   bool LoadAccountMappingInfo(AccountMappings* account_mappings);
@@ -335,8 +334,7 @@ LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
     return LOADING_INCOMING_MESSAGES_FAILED;
   if (!LoadOutgoingMessages(&result->outgoing_messages))
     return LOADING_OUTGOING_MESSAGES_FAILED;
-  if (!LoadLastCheckinInfo(&result->last_checkin_time,
-                           &result->last_checkin_accounts)) {
+  if (!LoadLastCheckinInfo(&result->last_checkin_time)) {
     return LOADING_LAST_CHECKIN_INFO_FAILED;
   }
   if (!LoadGServicesSettings(&result->gservices_settings,
@@ -1065,9 +1063,7 @@ bool GCMStoreImpl::Backend::LoadOutgoingMessages(
   return true;
 }
 
-bool GCMStoreImpl::Backend::LoadLastCheckinInfo(
-    base::Time* last_checkin_time,
-    std::set<std::string>* accounts) {
+bool GCMStoreImpl::Backend::LoadLastCheckinInfo(base::Time* last_checkin_time) {
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
 
@@ -1084,15 +1080,6 @@ bool GCMStoreImpl::Backend::LoadLastCheckinInfo(
   // In case we cannot read last checkin time, we default it to 0, as we don't
   // want that situation to cause the whole load to fail.
   *last_checkin_time = base::Time::FromInternalValue(time_internal);
-
-  accounts->clear();
-  s = db_->Get(read_options, MakeSlice(kLastCheckinAccountsKey), &result);
-  if (!s.ok())
-    DVLOG(1) << "No accounts where stored during last run.";
-
-  base::StringTokenizer t(result, ",");
-  while (t.GetNext())
-    accounts->insert(t.token());
 
   return true;
 }
@@ -1370,11 +1357,12 @@ void GCMStoreImpl::RemoveOutgoingMessages(
 }
 
 void GCMStoreImpl::SetLastCheckinInfo(const base::Time& time,
-                                      const std::set<std::string>& accounts,
                                       UpdateCallback callback) {
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::SetLastCheckinInfo,
-                                backend_, time, accounts, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&GCMStoreImpl::Backend::SetLastCheckinInfo, backend_, time,
+                     /*accounts*/ std::set<std::string>(),
+                     std::move(callback)));
 }
 
 void GCMStoreImpl::SetGServicesSettings(

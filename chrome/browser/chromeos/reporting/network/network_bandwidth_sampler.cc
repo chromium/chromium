@@ -6,11 +6,8 @@
 
 #include <limits>
 
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -18,11 +15,6 @@
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace reporting {
-
-// static
-BASE_FEATURE(kEnableNetworkBandwidthReporting,
-             "EnableNetworkBandwidthReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 NetworkBandwidthSampler::NetworkBandwidthSampler(
     ::network::NetworkQualityTracker* network_quality_tracker,
@@ -44,12 +36,6 @@ void NetworkBandwidthSampler::MaybeCollect(OptionalMetricCallback callback) {
   }
   if (!profile_) {
     // Profile destructed so we collect no data.
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  if (!profile_->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled) &&
-      !base::FeatureList::IsEnabled(kEnableNetworkBandwidthReporting)) {
-    // Both policy and feature flag not set, so we return.
     std::move(callback).Run(std::nullopt);
     return;
   }

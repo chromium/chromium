@@ -166,8 +166,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
   // chromecast.
   if (collector) {
     // SharedMemory creation / Map() might fail.
-    DCHECK(collector->MemoryMetrics());
-    info.blink_oom_metrics = *collector->MemoryMetrics();
+    info.blink_oom_metrics = collector->MemoryMetrics();
   }
 
   if (content_info) {

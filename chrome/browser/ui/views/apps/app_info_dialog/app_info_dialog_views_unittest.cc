@@ -33,7 +33,6 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -41,6 +40,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 
 namespace {
 
@@ -284,7 +284,6 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
 
   EXPECT_FALSE(widget_);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the dialog does not close when a different profile is destroyed.
 TEST_F(AppInfoDialogViewsTest, DestroyedOtherProfileDoesNotCloseDialog) {
@@ -304,6 +303,7 @@ TEST_F(AppInfoDialogViewsTest, DestroyedOtherProfileDoesNotCloseDialog) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(widget_);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that clicking the View in Store link opens a browser tab and closes the
 // dialog cleanly.

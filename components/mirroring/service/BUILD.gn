@@ -15,6 +15,8 @@ component("mirroring_service") {
     "mirror_settings.h",
     "mirroring_features.cc",
     "mirroring_features.h",
+    "mirroring_gpu_factories_factory.cc",
+    "mirroring_gpu_factories_factory.h",
     "mirroring_logger.cc",
     "mirroring_logger.h",
     "mirroring_service.cc",
@@ -39,7 +41,6 @@ component("mirroring_service") {
   public_deps = [ "//base" ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
     "//crypto",
@@ -70,7 +71,12 @@ component("mirroring_service") {
     "//ui/gfx",
   ]
 
-  include_dirs = [ "//third_party/openscreen/src" ]
+  # Make sure to use the Chromium protobuf headers, and not the ones in
+  # //third_party/openscreen/src/third_party/protobuf. direct include_dirs
+  # takes precedence over those pulled in from configs.
+  include_dirs = [ "//third_party/protobuf/src" ]
+  configs +=
+      [ "//third_party/openscreen/src/build_overrides:openscreen_include_dirs" ]
   defines = [ "IS_MIRRORING_SERVICE_IMPL" ]
 }
 
@@ -100,6 +106,8 @@ source_set("unittests") {
     "//base/test:test_support",
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
+    "//gpu:test_support",
+    "//gpu/ipc/common:test_support",
     "//media",
     "//media:test_support",
     "//media/capture/mojom:video_capture",
@@ -122,5 +130,10 @@ source_set("unittests") {
     "//third_party/openscreen/src/cast/streaming:sender",
   ]
 
-  include_dirs = [ "//third_party/openscreen/src" ]
+  # Make sure to use the Chromium protobuf headers, and not the ones in
+  # //third_party/openscreen/src/third_party/protobuf. direct include_dirs
+  # takes precedence over those pulled in from configs.
+  include_dirs = [ "//third_party/protobuf/src" ]
+  configs +=
+      [ "//third_party/openscreen/src/build_overrides:openscreen_include_dirs" ]
 }

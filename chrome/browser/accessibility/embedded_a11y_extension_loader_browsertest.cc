@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -118,6 +119,30 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
       /*should_localize=*/false);
   RemoveAndWaitForExtensionUnloaded(
       profile, extension_misc::kReadingModeGDocsHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
+                       InstallExtensionWithIdAndPath) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  char manifest_id[] = "cjlaeehoipngghikfjogbdkpbdgebppb";
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+  base::FilePath extension_path = source_root_dir.AppendASCII("chrome")
+                                      .AppendASCII("test")
+                                      .AppendASCII("data")
+                                      .AppendASCII("accessibility")
+                                      .AppendASCII("extension");
+  base::FilePath::CharType manifest_name[] = FILE_PATH_LITERAL("manifest.json");
+  auto* embedded_a11y_extension_loader =
+      EmbeddedA11yExtensionLoader::GetInstance();
+  embedded_a11y_extension_loader->InstallExtensionWithIdAndPath(
+      manifest_id, extension_path, manifest_name, /*should_localize=*/false);
+  WaitForExtensionLoaded(profile, manifest_id);
+  RemoveAndWaitForExtensionUnloaded(profile, manifest_id);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

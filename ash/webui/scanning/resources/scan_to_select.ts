@@ -5,12 +5,14 @@
 import './scan_settings_section.js';
 import '/strings.m.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './scan_to_select.html.js';
-import {ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
+import type {SelectedPath} from './scanning_browser_proxy.js';
+import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
  * @fileoverview

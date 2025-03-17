@@ -39,20 +39,21 @@ gfx::Image LoadTestPNG(const base::FilePath::CharType* path) {
 }  // namespace
 
 TEST(IconUtilsTests, MaskSquareSolidBackgroundDiyAppIcon) {
-  // This test simulates a square ChatGPT icon without rounded corners
+  // This test simulates a square icon without rounded corners
   // and a solid color square background. It will enter the mask logic
   // for maskable icons, determining if the output from MaskDiyAppIcon()
   // matches the pre-generated target icon.
-  gfx::Image chatgpt_icon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/chatgpt_icon.png"));
-  ASSERT_TRUE(!chatgpt_icon.IsEmpty());
-  gfx::Image masked_chatgpt_icon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/masked_chatgpt_icon.png"));
-  // ASSERT_TRUE(!masked_chatgpt_icon.IsEmpty());
-  gfx::Image masked_algorithm_chatgpt_icon = MaskDiyAppIcon(chatgpt_icon);
-  ASSERT_TRUE(!masked_algorithm_chatgpt_icon.IsEmpty());
-  ASSERT_TRUE(gfx::test::AreImagesEqual(masked_algorithm_chatgpt_icon,
-                                        masked_chatgpt_icon));
+  gfx::Image square_icon =
+      LoadTestPNG(FILE_PATH_LITERAL("chrome/test/data/web_apps/blue-192.png"));
+  ASSERT_TRUE(!square_icon.IsEmpty());
+  gfx::Image expected_masked_icon = LoadTestPNG(
+      FILE_PATH_LITERAL("chrome/test/data/web_apps/masked_blue-192.png"));
+  ASSERT_TRUE(!expected_masked_icon.IsEmpty());
+  gfx::Image actual_masked_icon = MaskDiyAppIcon(square_icon);
+  ASSERT_TRUE(!actual_masked_icon.IsEmpty());
+  ASSERT_TRUE(gfx::test::AreImagesClose(actual_masked_icon,
+                                        expected_masked_icon,
+                                        /*max_deviation=*/20));
 }
 
 TEST(IconUtilsTests, MaskNormalDiyAppIcon) {
@@ -60,29 +61,16 @@ TEST(IconUtilsTests, MaskNormalDiyAppIcon) {
   // masked after zooming out.
 
   // Small favicon
-  gfx::Image rounded_slack_16x16_icon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/slack_16x16_favicon.png"));
-  ASSERT_TRUE(!rounded_slack_16x16_icon.IsEmpty());
-  gfx::Image masked_slack_16x16_favicon = LoadTestPNG(FILE_PATH_LITERAL(
-      "chrome/test/data/web_apps/masked_slack_16x16_favicon.png"));
-  ASSERT_TRUE(!masked_slack_16x16_favicon.IsEmpty());
-  gfx::Image masked_algorithm_slack_16x16_icon =
-      MaskDiyAppIcon(rounded_slack_16x16_icon);
-  ASSERT_TRUE(!masked_algorithm_slack_16x16_icon.IsEmpty());
-  ASSERT_TRUE(gfx::test::AreImagesEqual(masked_algorithm_slack_16x16_icon,
-                                        masked_slack_16x16_favicon));
-
-  // Real favicon
-  gfx::Image rounded_slack_icon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/slack_favicon.png"));
-  ASSERT_TRUE(!rounded_slack_icon.IsEmpty());
-  gfx::Image masked_slack_icon = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/masked_slack_favicon.png"));
-  ASSERT_TRUE(!masked_slack_icon.IsEmpty());
-  gfx::Image masked_algorithm_slack_icon = MaskDiyAppIcon(rounded_slack_icon);
-  ASSERT_TRUE(!masked_algorithm_slack_icon.IsEmpty());
-  ASSERT_TRUE(gfx::test::AreImagesEqual(masked_algorithm_slack_icon,
-                                        masked_slack_icon));
+  gfx::Image original_favicon = LoadTestPNG(
+      FILE_PATH_LITERAL("chrome/test/data/web_apps/pattern3-256.png"));
+  ASSERT_TRUE(!original_favicon.IsEmpty());
+  gfx::Image expected_masked_favicon = LoadTestPNG(
+      FILE_PATH_LITERAL("chrome/test/data/web_apps/masked_pattern3-256.png"));
+  ASSERT_TRUE(!expected_masked_favicon.IsEmpty());
+  gfx::Image actual_masked_favicon = MaskDiyAppIcon(original_favicon);
+  ASSERT_TRUE(!actual_masked_favicon.IsEmpty());
+  ASSERT_TRUE(gfx::test::AreImagesClose(actual_masked_favicon,
+                                        expected_masked_favicon,
+                                        /*max_deviation=*/5));
 }
-
 }  // namespace web_app

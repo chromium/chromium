@@ -1120,7 +1120,7 @@ class ContainerRewriter {
       match_finder_.addMatcher(affected_op_call, &affected_ptr_expr_rewriter_);
 
       // handles expressions of the form:
-      // base::ranges::any_of(view->children(), [](const auto* v) {
+      // std::ranges::any_of(view->children(), [](const auto* v) {
       //     ...
       //   });
       // where auto* needs to be rewritten into type_name*.

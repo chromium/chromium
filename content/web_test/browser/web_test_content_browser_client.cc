@@ -202,8 +202,13 @@ class MojoWebTestCounterImpl : public mojo_bindings_test::mojom::Counter {
   }
 
   // mojo_bindings_test::mojom::Counter:
-  void AddObserver(
+  void AddObserver1(
       mojo::PendingAssociatedRemote<CounterObserver> observer) override {
+    observers_.Add(std::move(observer));
+  }
+
+  void AddObserver2(mojo::PendingAssociatedRemote<CounterObserver> observer,
+                    int unused) override {
     observers_.Add(std::move(observer));
   }
 
@@ -215,7 +220,12 @@ class MojoWebTestCounterImpl : public mojo_bindings_test::mojom::Counter {
 
   void RemoveAllObservers() override { observers_.Clear(); }
 
-  void Clone(mojo::PendingAssociatedReceiver<Counter> receiver) override {
+  void Clone1(mojo::PendingAssociatedReceiver<Counter> receiver) override {
+    additional_receivers_.Add(this, std::move(receiver));
+  }
+
+  void Clone2(mojo::PendingAssociatedReceiver<Counter> receiver,
+              int unused) override {
     additional_receivers_.Add(this, std::move(receiver));
   }
 
@@ -400,11 +410,12 @@ void WebTestContentBrowserClient::BindStorageAccessAutomation(
       std::move(receiver));
 }
 
-void WebTestContentBrowserClient::OverrideWebkitPrefs(
+void WebTestContentBrowserClient::OverrideWebPreferences(
     WebContents* web_contents,
+    SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* prefs) {
   if (WebTestControlHost::Get())
-    WebTestControlHost::Get()->OverrideWebkitPrefs(prefs);
+    WebTestControlHost::Get()->OverrideWebPreferences(prefs);
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
@@ -667,16 +678,16 @@ void WebTestContentBrowserClient::BindWebPressureManagerAutomation(
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
-    content::WebContents* web_contents,
-    content::BrowserContext* browser_context,
-    const content::GlobalRequestID& request_id,
+    WebContents* web_contents,
+    BrowserContext* browser_context,
+    const GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame_navigation,
     bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
     GuestPageHolder* guest,
-    LoginAuthRequiredCallback auth_required_callback) {
+    LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return nullptr;
 }
 

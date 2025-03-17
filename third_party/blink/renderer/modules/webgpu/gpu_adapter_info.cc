@@ -10,6 +10,8 @@ namespace blink {
 
 GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
                                const String& architecture,
+                               uint32_t subgroup_min_size,
+                               uint32_t subgroup_max_size,
                                const String& device,
                                const String& description,
                                const String& driver,
@@ -19,6 +21,8 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
                                const std::optional<uint32_t> vk_driver_version)
     : vendor_(vendor),
       architecture_(architecture),
+      subgroup_min_size_(subgroup_min_size),
+      subgroup_max_size_(subgroup_max_size),
       device_(device),
       description_(description),
       driver_(driver),
@@ -45,6 +49,14 @@ const String& GPUAdapterInfo::device() const {
 
 const String& GPUAdapterInfo::description() const {
   return description_;
+}
+
+uint32_t GPUAdapterInfo::subgroupMinSize() const {
+  return subgroup_min_size_;
+}
+
+uint32_t GPUAdapterInfo::subgroupMaxSize() const {
+  return subgroup_max_size_;
 }
 
 const String& GPUAdapterInfo::driver() const {

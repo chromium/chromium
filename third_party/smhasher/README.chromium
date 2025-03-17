@@ -1,11 +1,12 @@
 Name: SMHasher
-URL: http://code.google.com/p/smhasher/
+URL: https://github.com/aappleby/smhasher
 Version: N/A
-Revision: 147
-License: MIT, Public Domain
+Revision: 0ff96f7835817a27d0487325b6c16033e2992eb5
+License: MIT, Unlicense
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 This is a library containing the MurmurHash3 function, and a hashing function

@@ -47,11 +47,11 @@
 ../../third_party/catapult/devil/devil/android/device_signal.py
 ../../third_party/catapult/devil/devil/android/device_temp_file.py
 ../../third_party/catapult/devil/devil/android/device_utils.py
+../../third_party/catapult/devil/devil/android/devil_util.py
 ../../third_party/catapult/devil/devil/android/flag_changer.py
 ../../third_party/catapult/devil/devil/android/forwarder.py
 ../../third_party/catapult/devil/devil/android/install_commands.py
 ../../third_party/catapult/devil/devil/android/logcat_monitor.py
-../../third_party/catapult/devil/devil/android/md5sum.py
 ../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../third_party/catapult/devil/devil/android/ndk/abis.py
 ../../third_party/catapult/devil/devil/android/ports.py
@@ -181,10 +181,12 @@ pylib/junit/junit_test_instance.py
 pylib/local/__init__.py
 pylib/local/device/__init__.py
 pylib/local/device/local_device_environment.py
+pylib/local/device/local_device_ethernet_environment.py
 pylib/local/device/local_device_gtest_run.py
 pylib/local/device/local_device_instrumentation_test_run.py
 pylib/local/device/local_device_monkey_test_run.py
 pylib/local/device/local_device_test_run.py
+pylib/local/device/skylab_environment.py
 pylib/local/emulator/__init__.py
 pylib/local/emulator/avd.py
 pylib/local/emulator/ini.py

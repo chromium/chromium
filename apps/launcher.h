@@ -25,11 +25,6 @@ class BrowserContext;
 
 namespace extensions {
 class Extension;
-namespace api {
-namespace app_runtime {
-struct ActionData;
-}
-}
 }
 
 namespace apps {
@@ -69,10 +64,8 @@ void LaunchPlatformAppWithFilePaths(
     const std::vector<base::FilePath>& file_paths);
 
 // Launches the platform app |app| with the specific |action_data|.
-void LaunchPlatformAppWithAction(
-    content::BrowserContext* context,
-    const extensions::Extension* app,
-    extensions::api::app_runtime::ActionData action_data);
+void LaunchPlatformAppWithAction(content::BrowserContext* context,
+                                 const extensions::Extension* app);
 
 // Launches the platform app |app|. |source| tells us how the app is launched.
 void LaunchPlatformApp(content::BrowserContext* context,

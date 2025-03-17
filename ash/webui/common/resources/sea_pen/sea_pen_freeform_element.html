@@ -1,4 +1,8 @@
 <style include="common cros-button-style wallpaper">
+  :host {
+    --sea-pen-tab-height: 48px;
+  }
+
   #heading,
   #samplePromptHeading {
     display: flex;
@@ -14,7 +18,7 @@
   #tabContainer cr-button {
     background-color: transparent;
     border-radius: 0 0 16px 16px;
-    height: 48px;
+    height: var(--sea-pen-tab-height);
     padding: 4px;
   }
 
@@ -42,14 +46,27 @@
     background-color: var(--cros-sys-hover_on_subtle);
   }
 
+  #tabContainer {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+
   #tabContainer,
   #promptingGuide {
     flex-grow: 1;
   }
 
+  #seaPenImagesContainer {
+    height: calc(100% - var(--sea-pen-tab-height));
+  }
+
   #seaPenImagesHeading {
-    margin-top: 10px;
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-annotation-1-font);
+    margin-top: 16px;
     padding-inline-end: 0;
+    padding-inline-start: 16px;
   }
 
   #shuffle {
@@ -62,7 +79,7 @@
     font: var(--cros-button-2-font);
   }
 
-  #promptingGuide{
+  #promptingGuide {
     --text-color: var(--cros-sys-secondary);
     padding: 6px;
     text-decoration: none;
@@ -71,10 +88,6 @@
   #promptingGuide a {
     --text-color: var(--cros-sys-primary);
     font-weight: 700;
-    text-decoration: none;
-  }
-
-  #promptingGuide a:hover {
     text-decoration: underline;
   }
 </style>
@@ -83,7 +96,7 @@
   </iron-a11y-keys>
   <div
       id="tabContainer"
-      hidden="[[isTabContainerHidden_(seaPenQuery_, thumbnailResponseStatusCode_)]]"
+      hidden="[[isTabContainerHidden_(seaPenQuery_, thumbnailResponseStatusCode_, thumbnails_)]]"
       role="tablist">
     <cr-button id="resultsTab"
         aria-selected="[[isResultsTabSelected_(freeformTab_)]]"
@@ -106,9 +119,7 @@
       hidden="[[!isTabContainerHidden_(seaPenQuery_, thumbnailResponseStatusCode_)]]">
   </div>
   <template is="dom-if" if="[[!isSamplePromptsTabSelected_(freeformTab_)]]">
-    <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
-      [[i18n('seaPenFreeformPoweredByGoogle')]]
-    </h2>
+    <p id="seaPenImagesHeading">[[i18n('seaPenFreeformDisclaimer')]]</p>
   </template>
 </div>
 <template is="dom-if" if="[[isSamplePromptsTabSelected_(freeformTab_)]]" restamp>
@@ -119,14 +130,17 @@
       </div>
       <cr-button
           id="shuffle"
-          aria-description="$i18n{seaPenFreeformAriaLabelSamplePrompts}"
+          aria-description$="[[i18n('seaPenFreeformAriaLabelSamplePrompts')]]"
           on-click="onShuffleClicked_">
         <iron-icon icon="personalization-shared:refresh" slot="prefix-icon">
         </iron-icon>
         <p>[[i18n('seaPenFreeformShuffle')]]</p>
       </cr-button>
     </div>
-    <sea-pen-samples samples="[[samples]]"></sea-pen-samples>
+    <sea-pen-samples
+        is-tab-hidden="[[isTabContainerHidden_(seaPenQuery_, thumbnailResponseStatusCode_, thumbnails_)]]"
+        samples="[[samples]]">
+    </sea-pen-samples>
     <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
   </div>
 </template>

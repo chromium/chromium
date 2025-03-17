@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 
     EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId1),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-    EXPECT_TRUE(provider->registrar_unsafe().IsNotInRegistrar(kAppId2));
+    EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(kAppId2));
   }
 
   // Set the policy with 2 IWAs and wait for the second IWA to be re-installed.

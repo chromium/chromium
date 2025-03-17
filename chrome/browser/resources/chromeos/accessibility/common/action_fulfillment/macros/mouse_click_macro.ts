@@ -4,7 +4,8 @@
 
 import {EventGenerator} from '../../event_generator.js';
 
-import {CheckContextResult, Macro, MacroError, RunMacroResult} from './macro.js';
+import type {CheckContextResult, RunMacroResult} from './macro.js';
+import {Macro, MacroError} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;

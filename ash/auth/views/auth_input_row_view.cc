@@ -184,7 +184,7 @@ void AuthInputRowView::CreateAndConfigureInputRow() {
 
   input_row_ =
       input_row_container->AddChildView(std::make_unique<views::View>());
-  input_row_->SetBackground(views::CreateThemedRoundedRectBackground(
+  input_row_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kInputRowCornerRadiusDp));
 
   input_row_->SetBorder(std::make_unique<views::HighlightBorder>(
@@ -329,7 +329,7 @@ void AuthInputRowView::OnTextfieldFocus() {
   }
 }
 
-void AuthInputRowView::OnContentsChanged(const std::u16string& new_contents) {
+void AuthInputRowView::OnContentsChanged(std::u16string_view new_contents) {
   bool enable_buttons = !textfield_->GetReadOnly() && !new_contents.empty();
   if (new_contents.empty() && textfield_->IsTextVisible()) {
     ToggleTextDisplayingState();

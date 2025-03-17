@@ -50,8 +50,9 @@
 #pragma mark - NSObject
 
 - (BOOL)isEqual:(id)object {
-  if (![object isKindOfClass:[self class]])
+  if (![object isKindOfClass:[self class]]) {
     return NO;
+  }
 
   CRWSessionUserData* other =
       base::apple::ObjCCastStrict<CRWSessionUserData>(object);

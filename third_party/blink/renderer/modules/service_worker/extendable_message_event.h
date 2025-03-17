@@ -88,7 +88,7 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
   Member<ServiceWorkerClient> source_as_client_;
   Member<ServiceWorker> source_as_service_worker_;
   Member<MessagePort> source_as_message_port_;
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
 };
 
 }  // namespace blink

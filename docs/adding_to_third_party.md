@@ -50,7 +50,9 @@ email to chrome-atls-discuss@google.com:
    files to be checked in?
 * Build time increase
    * This refers to building `chrome` or test targets in the critical
-     development path.
+     development path. The [compile-size](speed/binary_size/compile_size_builder.md)
+     builder in CQ is a good proxy for the whether the delta is acceptable
+     (caveat that it measures just `chrome` on Linux).
    * If the increase is significant (e.g., 30+ seconds), can we consider making
    this an optional build target?
 * Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration) builds)
@@ -311,9 +313,71 @@ Multiple licenses apply when there are dependencies bundled together, or
 different parts have different restrictions, these are inherently 'and'. This is
 very different to a project allowing multiple license options.
 
-The license field in README.chromium must use a _comma-separated list_ of licenses
+The `License:` field in README.chromium must use a _comma-separated list_ of licenses
 that are actively in use. Complex license expressions are not allowed or
 supported.
+
+Use SPDX license identifiers (https://spdx.org/licenses/) when possible e.g.
+['Apache-2.0'](https://spdx.org/licenses/Apache-2.0.html). You can find the full
+allowlist in
+[depot_tools/+/main:metadata/fields/custom/license_allowlist.py](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
+If the dependency uses a license that is not in the allowlist, you will need to
+add it to the
+[allowlist](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
+This requires approval from the ATLs who will check that the license
+classification is one of [unencumbered/permissive/notice/reciprocal]. If the
+license is more restrictive than reciprocal, engage with the ATLs to determine
+if the dependency is appropriate for Chromium. The license identifier will still
+need to be added to the restricted list
+['WITH_PERMISSION_ONLY'](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
+Do not use a license on that list without approval from the ATLs.
+
+#### License Classifications
+
+Licenses used in our codebase fall into several categories of increasing
+restrictiveness, with notice-level and less restrictive licenses being allowed
+in all projects:
+
+* **Public Domain/Unencumbered/Permissive Licenses** - These licenses allow
+  you to do almost anything with the code, they may require attribution e.g.:
+  * [CC0-1.0](https://spdx.org/licenses/CC0-1.0.html).
+  * [Unlicense](https://spdx.org/licenses/Unlicense.html).
+* **Notice Licenses** - (Most open source licenses fall into this category)
+  These licenses are similar to permissive but have additional notice
+  requirements e.g.:
+  * [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html): [`Any modified files
+      must carry prominent notices stating that you changed the
+      files`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/third_party/coverage/LICENSE.txt;l=98).
+  * [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause): [`3. Neither the
+     name of the copyright holder nor the names of its contributors may be
+     used to endorse or promote products derived from this software without
+     specific prior written
+     permission.`](https://source.chromium.org/chromium/chromium/src/+/main:ios/third_party/fishhook/LICENSE;drc=1308ce89bbb959047a73145a0ca4a2f5f7dde894;l=10).
+
+Additionally, open source projects like Chromium are also allowed to use reciprocal licenses:
+
+*   **Reciprocal Licenses** - These licenses require sharing modifications under
+    the same terms:
+
+    *   [MPL-1.1](https://spdx.org/licenses/MPL-1.1.html).
+    *   [APSL-2.0](https://spdx.org/licenses/APSL-2.0.html).
+
+*   **Restricted Licenses !Case-by-case Approval Required!** - These licenses
+    have stricter requirements but are allowed in some circumstances. These
+    licenses may require you to publish the code under the same terms and
+    conditions:
+
+    *   [LGPL-2.1](https://spdx.org/licenses/LGPL-2.1.html).
+    *   [GPL-2.0](https://spdx.org/licenses/GPL-2.0.html).
+
+Make sure you understand the license terms before checking in a dependency, and
+when making any local modifications or forks.
+
+The following restricted licenses are allowed under the following circumstances
+(this is not a definitive list):
+
+* GPL licenses are allowed for all non-shipped dependencies.
+* LGPLv2.1 is always okay as long as it is part of the Chromium binary.
 
 ## Get a review
 

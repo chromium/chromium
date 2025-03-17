@@ -61,6 +61,14 @@
         margin-inline-start: -10px;
       }
 
+      .cr-title-text {
+        /* Title should stay on one line. */
+        white-space: nowrap;
+        /* Show ellipsis if title would overflow. */
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       h1 {
         flex: 1;  /* Push other items to the end. */
       }

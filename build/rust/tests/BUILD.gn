@@ -33,6 +33,7 @@ group("deps") {
       "//build/rust/tests/test_rlib_crate:target2",
       "//build/rust/tests/test_rlib_crate:test_rlib_crate_associated_bin",
       "//build/rust/tests/test_rlib_crate_testonly:testonly_target",
+      "//build/rust/tests/test_rust_exe_2",
       "//build/rust/tests/test_rust_metadata:test_rust_metadata_cc_exe",
       "//build/rust/tests/test_rust_metadata:test_rust_metadata_exe",
       "//build/rust/tests/test_rust_multiple_dep_versions_exe",
@@ -44,6 +45,15 @@ group("deps") {
       # `//build/rust/run_rs_bindings_from_cc.py`.
       #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
     ]
+
+    if (target_cpu == "x86") {
+      # Some `target_os`s do not support 32-bit platforms anymore.  The
+      # selection below is _loosely_ based on `is_valid_x86_target` from
+      # the top-level `//BUILD.gn`.
+      if (is_win || is_android) {
+        deps += [ "//build/rust/tests/test_build_rs_target_arch_x86" ]
+      }
+    }
 
     if (!(is_apple && is_official_build)) {
       # TODO: crbug.com/372055517 - Apple lld has an ordering dependency bug

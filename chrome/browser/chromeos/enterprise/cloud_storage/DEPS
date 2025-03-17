@@ -12,7 +12,6 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/chromeos/extensions/odfs_config_private",
   "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/extensions/extension_service.h",

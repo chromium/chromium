@@ -18,6 +18,7 @@ config("libwebp_config") {
   defines = [
     "WEBP_NEAR_LOSSLESS=0",
     "WEBP_DISABLE_STATS",
+    "WEBP_USE_THREAD",
   ]
   if (!is_chromeos) {
     defines += [ "WEBP_REDUCE_SIZE" ]

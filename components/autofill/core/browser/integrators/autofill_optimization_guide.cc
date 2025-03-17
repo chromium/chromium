@@ -4,15 +4,17 @@
 
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 
+#include <algorithm>
+
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -62,6 +64,32 @@ GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
     optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
+  } else if (card.issuer_id() == kBmoCardIssuerId &&
+             base::FeatureList::IsEnabled(
+                 features::
+                     kAutofillEnableAllowlistForBmoCardCategoryBenefits)) {
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
   } else if (card.issuer_id() == kCapitalOneCardIssuerId) {
     optimization_types.push_back(
         optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS);
@@ -79,11 +107,10 @@ GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
 }
 
 void AddCreditCardOptimizationTypes(
-    const PersonalDataManager& personal_data_manager,
+    base::span<const CreditCard* const> cards,
     base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  for (const CreditCard* card :
-       personal_data_manager.payments_data_manager().GetServerCreditCards()) {
+  for (const CreditCard* card : cards) {
     auto vcn_merchant_opt_out_optimization_type =
         GetVcnMerchantOptOutOptimizationTypeForCard(*card);
     if (vcn_merchant_opt_out_optimization_type !=
@@ -93,7 +120,7 @@ void AddCreditCardOptimizationTypes(
 
     // Check if the card is eligible for category-level benefit
     // optimizations from supported issuers. Other benefit types are read
-    // directly from the PersonalDataManager and don't require filter
+    // directly from the `PaymentsDataManager` and don't require filter
     // optimizations.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardBenefitsSync)) {
@@ -136,10 +163,29 @@ GetBenefitCategoryForOptimizationType(
     case optimization_guide::proto::
         AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kSubscription;
+    case optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kAirMilesPartner;
+    case optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kAlcoholStores;
+    case optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kDrugstores;
+    case optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kOfficeSupplies;
+    case optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kRecurringBills;
+    case optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kTransit;
+    case optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kTravel;
+    case optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs;
+    case optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS:
     case optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kDining;
+    case optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS:
     case optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kGroceryStores;
+    case optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
     case optimization_guide::proto::
         CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kEntertainment;
@@ -158,42 +204,48 @@ AutofillOptimizationGuide::AutofillOptimizationGuide(
 
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
 
-// TODO(crbug.com/41492637): Pass PersonalDataManager by reference and remove
-// check for presence.
 void AutofillOptimizationGuide::OnDidParseForm(
     const FormStructure& form_structure,
-    const PersonalDataManager& personal_data_manager) {
+    const PaymentsDataManager& payments_data_manager) {
   // This flat set represents all of the optimization types that we need to
   // register based on `form_structure`.
   base::flat_set<optimization_guide::proto::OptimizationType>
       optimization_types;
 
-  bool has_iban_field =
+  const bool has_iban_field =
       std::ranges::any_of(form_structure, [](const auto& field) {
         return field->Type().GetStorableType() == IBAN_VALUE;
       });
   if (has_iban_field) {
     optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
-  bool has_credit_card_field =
+  const bool has_credit_card_field =
       std::ranges::any_of(form_structure, [](const auto& field) {
         return field->Type().group() == FieldTypeGroup::kCreditCard;
       });
 
+  std::vector<const CreditCard*> server_cards;
   if (has_credit_card_field) {
-    AddCreditCardOptimizationTypes(personal_data_manager, optimization_types);
+    server_cards = payments_data_manager.GetServerCreditCards();
+    AddCreditCardOptimizationTypes(server_cards, optimization_types);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (has_credit_card_field &&
-      !personal_data_manager.payments_data_manager()
-           .GetServerCreditCards()
-           .empty() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableAmountExtractionDesktop)) {
+  auto bnpl_issuer_allowlist_can_be_loaded =
+      [&payments_data_manager](std::string_view issuer_id) {
+        return base::Contains(payments_data_manager.GetBnplIssuers(), issuer_id,
+                              &BnplIssuer::issuer_id) &&
+               base::FeatureList::IsEnabled(
+                   features::kAutofillEnableAmountExtractionAllowlistDesktop);
+      };
+
+  if (bnpl_issuer_allowlist_can_be_loaded(kBnplAffirmIssuerId)) {
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
+  }
+
+  if (bnpl_issuer_allowlist_can_be_loaded(kBnplZipIssuerId)) {
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
   }
@@ -225,6 +277,32 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
     issuer_optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
+  } else if (issuer_id == kBmoCardIssuerId &&
+             base::FeatureList::IsEnabled(
+                 features::
+                     kAutofillEnableAllowlistForBmoCardCategoryBenefits)) {
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
   } else if (issuer_id == kCapitalOneCardIssuerId) {
     issuer_optimization_types.push_back(
         optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS);
@@ -342,17 +420,20 @@ bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
   return false;
 }
 
-bool AutofillOptimizationGuide::IsEligibleForBuyNowPayLater(
+bool AutofillOptimizationGuide::IsUrlEligibleForCheckoutAmountSearchForIssuerId(
     std::string_view issuer_id,
     const GURL& url) const {
-  // TODO(b/367815526): For the BNPL project, create issuer id constants.
-  if (issuer_id == "affirm") {
+  if (issuer_id == kBnplAffirmIssuerId &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableAmountExtractionAllowlistDesktop)) {
     return decider_->CanApplyOptimization(
                url,
                optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM,
                /*optimization_metadata=*/nullptr) ==
            optimization_guide::OptimizationGuideDecision::kTrue;
-  } else if (issuer_id == "zip") {
+  } else if (issuer_id == kBnplZipIssuerId &&
+             base::FeatureList::IsEnabled(
+                 features::kAutofillEnableAmountExtractionAllowlistDesktop)) {
     return decider_->CanApplyOptimization(
                url, optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP,
                /*optimization_metadata=*/nullptr) ==

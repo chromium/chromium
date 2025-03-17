@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
+import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
 import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
   { url: 'https://google.com/', contents: 'i am in fact feeling lucky' },
@@ -35,10 +36,13 @@ async function doTest(): Promise<boolean> {
   const cache = WebUITsMojoTestCache.getRemote();
   for (const entry of TEST_DATA) {
     cache.put({ url: entry.url }, entry.contents);
+    let stringWrapper = StringWrapper.getRemote();
+    stringWrapper.putString(entry.contents);
+    cache.addStringWrapper(stringWrapper);
   }
 
   const {items} = await cache.getAll();
-  if (items.length != TEST_DATA.length) {
+  if (items.length !== TEST_DATA.length) {
     return false;
   }
 
@@ -52,6 +56,23 @@ async function doTest(): Promise<boolean> {
       return false;
     }
     if (entries[entry.url] != entry.contents) {
+      return false;
+    }
+  }
+
+  const {stringWrapperList} = await cache.getStringWrapperList();
+  if (stringWrapperList.length !== TEST_DATA.length) {
+    return false;
+  }
+
+  let stringsInList = [];
+  for (const stringWrapper of stringWrapperList) {
+    let {item} = await stringWrapper.getString();
+    stringsInList.push(item);
+  }
+
+  for (const entry of TEST_DATA) {
+    if (!stringsInList.includes(entry.contents)) {
       return false;
     }
   }
@@ -225,6 +246,46 @@ async function doTest(): Promise<boolean> {
     }
   }
 
+  {
+    const result = await cache.echoTypemaps(new Date(12321));
+    assert(
+        result.time.getTime() === new Date(12321).getTime(),
+        `unexpected date received ${result.time.getTime()}`);
+  }
+
+  const assertTypemapContainerEquals =
+      (expected: MappedOptionalContainer, result: MappedOptionalContainer,
+       msg: string) => {
+        assert(expected.optionalInt === result.optionalInt, msg);
+        assertArrayEquals(expected.bools, result.bools, msg);
+        assertObjectEquals(expected.optionalMap, result.optionalMap, msg);
+      };
+
+  {
+    const withNulls = {
+      optionalInt: null,
+      bools: [null, null, null],
+      optionalMap: {'foo': null}
+    };
+    const result = await cache.echoOptionalTypemaps(withNulls);
+    assertTypemapContainerEquals(
+        withNulls, result.result,
+        `unexpected object ${JSON.stringify(result)}, expected: ${
+            JSON.stringify(withNulls)}`);
+  }
+
+  {
+    const withValues = {
+      optionalInt: 6,
+      bools: [null, false, null, true, null],
+      optionalMap: {'foo': null, 'bear': true}
+    };
+    const result = await cache.echoOptionalTypemaps(withValues);
+    assertTypemapContainerEquals(
+        withValues, result.result,
+        `unexpected object ${JSON.stringify(result.result)}, expected: ${
+            JSON.stringify(withValues)}`);
+  }
   return true;
 }
 

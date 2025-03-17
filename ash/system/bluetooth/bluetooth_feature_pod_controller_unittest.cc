@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -137,7 +138,7 @@ class BluetoothFeaturePodControllerTest
     const views::View::Views& children = container->children();
     if (is_showing) {
       EXPECT_EQ(1u, children.size());
-      EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
+      EXPECT_EQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
       return;
     }
     EXPECT_EQ(0u, children.size());
@@ -190,11 +191,11 @@ class BluetoothFeaturePodControllerTest
     return feature_tile_->icon_button()->GetEnabled();
   }
 
-  std::u16string GetButtonLabelText() {
+  std::u16string_view GetButtonLabelText() {
     return feature_tile_->label()->GetText();
   }
 
-  std::u16string GetButtonSubLabelText() {
+  std::u16string_view GetButtonSubLabelText() {
     return feature_tile_->sub_label()->GetText();
   }
 
@@ -206,7 +207,9 @@ class BluetoothFeaturePodControllerTest
     return feature_tile_->GetTooltipText();
   }
 
-  const char* GetButtonIconName() { return feature_tile_->vector_icon_->name; }
+  const gfx::VectorIcon* GetButtonIcon() {
+    return feature_tile_->vector_icon_.get();
+  }
 
   const char* GetToggledOnHistogramName() {
     return "Ash.QuickSettings.FeaturePod.ToggledOn";
@@ -308,7 +311,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWhenOff) {
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP)),
             GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothDisabledIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothDisabledIcon, GetButtonIcon());
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
                 l10n_util::GetStringUTF16(
@@ -330,7 +333,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithZeroDevices) {
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)),
             GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothIcon, GetButtonIcon());
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
                 l10n_util::GetStringUTF16(
@@ -364,7 +367,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithOneDevice) {
                     public_name)),
             GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothConnectedIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothConnectedIcon, GetButtonIcon());
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
                 l10n_util::GetStringFUTF16(
@@ -461,7 +464,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
               base::FormatNumber(kMultipleDeviceCount))),
       GetDrillInTooltipText());
 
-  EXPECT_STREQ(kUnifiedMenuBluetoothConnectedIcon.name, GetButtonIconName());
+  EXPECT_EQ(&kUnifiedMenuBluetoothConnectedIcon, GetButtonIcon());
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,

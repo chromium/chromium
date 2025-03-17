@@ -16,6 +16,7 @@ source_set("proto_wrappers") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/web/find_in_page",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]

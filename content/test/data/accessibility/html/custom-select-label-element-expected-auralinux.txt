@@ -1,0 +1,9 @@
+[document web]
+++[section]
+++++[label] label-for=[combo box]
+++++++[static] name='labeltext '
+++++[combo box] name='labeltext' labelled-by=[label]
+++++++[menu]
+++++++++[section]
+++++++++++[menu item] name='one' selectable selected
+++++++++++[menu item] name='two' selectable

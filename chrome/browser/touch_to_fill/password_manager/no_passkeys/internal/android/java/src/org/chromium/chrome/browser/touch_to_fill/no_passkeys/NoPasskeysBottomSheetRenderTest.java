@@ -8,7 +8,6 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
-import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
@@ -38,7 +37,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -135,20 +134,9 @@ public class NoPasskeysBottomSheetRenderTest {
 
     private BottomSheetController createBottomSheetController() {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
-        ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(
-                        getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        activityContentView,
-                        Color.WHITE);
+        ScrimManager scrimManager = new ScrimManager(getActivity(), activityContentView);
         return BottomSheetControllerFactory.createFullWidthBottomSheetController(
-                () -> scrimCoordinator,
+                () -> scrimManager,
                 (unused) -> {},
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),

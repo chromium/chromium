@@ -24,10 +24,19 @@ class AuctionV8Logger;
 // Also throws on invalid URLs or non-HTTPS URLs.
 class ReportBindings : public Bindings {
  public:
-  ReportBindings(AuctionV8Helper* v8_helper, AuctionV8Logger* v8_logger);
+  ReportBindings(AuctionV8Helper* v8_helper,
+                 AuctionV8Logger* v8_logger,
+                 bool queue_report_aggregate_win_allowed);
   ReportBindings(const ReportBindings&) = delete;
   ReportBindings& operator=(const ReportBindings&) = delete;
   ~ReportBindings() override;
+
+  // Configuration passed to queueAggregateReportWin().
+  struct ModelingSignalsConfig {
+    GURL destination;
+    GURL aggregation_coordinator_origin;
+    uint32_t payload_length;
+  };
 
   // Add report method to global context. The ReportBindings must outlive
   // the context.
@@ -36,17 +45,31 @@ class ReportBindings : public Bindings {
 
   const std::optional<GURL>& report_url() const { return report_url_; }
 
+  const std::optional<ModelingSignalsConfig>& modeling_signals_config() const {
+    return modeling_signals_config_;
+  }
+
  private:
   static void SendReportTo(const v8::FunctionCallbackInfo<v8::Value>& args);
+  // Queues up a call to the AggregateReportWin function.
+  static void QueueReportAggregateWin(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
   const raw_ptr<AuctionV8Logger> v8_logger_;
+  const bool queue_report_aggregate_win_allowed_;
 
   // This is cleared if an exception is thrown.
   std::optional<GURL> report_url_;
 
+  // Configuration passed to queueAggregateReportWin().
+  // Will be cleared if an exception is thrown.
+  std::optional<ModelingSignalsConfig> modeling_signals_config_;
+
   // sendReportTo() can only be called once.
   bool already_called_ = false;
+  // queueAggregateReportWin() can only be called once.
+  bool queue_already_called_ = false;
 };
 
 }  // namespace auction_worklet

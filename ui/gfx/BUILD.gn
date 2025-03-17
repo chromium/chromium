@@ -125,6 +125,8 @@ component("gfx") {
     "image/image_util.h",
     "interpolated_transform.cc",
     "interpolated_transform.h",
+    "overlay_layer_id.cc",
+    "overlay_layer_id.h",
     "overlay_plane_data.cc",
     "overlay_plane_data.h",
     "overlay_transform_utils.cc",
@@ -153,6 +155,7 @@ component("gfx") {
     "ui_gfx_exports.cc",
     "utf16_indexing.cc",
     "utf16_indexing.h",
+    "vector_icon_types.cc",
     "vector_icon_types.h",
     "vector_icon_utils.cc",
     "vector_icon_utils.h",
@@ -222,6 +225,8 @@ component("gfx") {
       "win/d3d_shared_fence.h",
       "win/direct_write.cc",
       "win/direct_write.h",
+      "win/get_elevation_icon.cc",
+      "win/get_elevation_icon.h",
       "win/hwnd_util.cc",
       "win/hwnd_util.h",
       "win/msg_util.h",
@@ -767,7 +772,7 @@ test("gfx_unittests") {
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",
   ]
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [ "font_render_params_linux_unittest.cc" ]
   }
   if (is_linux || is_chromeos) {
@@ -787,7 +792,11 @@ test("gfx_unittests") {
     ]
   }
   if (is_win) {
-    sources += [ "font_fallback_win_unittest.cc" ]
+    sources += [
+      "font_fallback_win_unittest.cc",
+      "win/get_elevation_icon_unittest.cc",
+      "win/hwnd_util_unittest.cc",
+    ]
   }
   if (is_ios) {
     sources += [
@@ -945,6 +954,7 @@ test("gfx_unittests") {
     libs = [
       "d2d1.lib",
       "d3d10_1.lib",
+      "dwmapi.lib",
       "dwrite.lib",
       "imm32.lib",
       "oleacc.lib",

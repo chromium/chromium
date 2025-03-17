@@ -12,7 +12,6 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -39,16 +38,14 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
   base::WeakPtr<PageNode> page_node = page_context->GetWeakPageNode();
   base::WeakPtr<PageNode> page_node_from_pm =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents.get());
-  performance_manager::RunInGraph([&] {
-    ASSERT_TRUE(page_node);
-    ASSERT_TRUE(page_node_from_pm);
-    EXPECT_EQ(page_node.get(), page_node_from_pm.get());
+  ASSERT_TRUE(page_node);
+  ASSERT_TRUE(page_node_from_pm);
+  EXPECT_EQ(page_node.get(), page_node_from_pm.get());
 
-    EXPECT_EQ(page_node.get(), page_context->GetPageNode());
-    EXPECT_EQ(page_context.value(), page_node->GetResourceContext());
-    EXPECT_EQ(page_context.value(), PageContext::FromPageNode(page_node.get()));
-    EXPECT_EQ(page_context.value(), PageContext::FromWeakPageNode(page_node));
-  });
+  EXPECT_EQ(page_node.get(), page_context->GetPageNode());
+  EXPECT_EQ(page_context.value(), page_node->GetResourceContext());
+  EXPECT_EQ(page_context.value(), PageContext::FromPageNode(page_node.get()));
+  EXPECT_EQ(page_context.value(), PageContext::FromWeakPageNode(page_node));
 
   // Navigating the page should not change the PageContext since it corresponds
   // to the WebContents, not the document.
@@ -71,11 +68,9 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
   web_contents.reset();
 
   EXPECT_EQ(nullptr, page_context->GetWebContents());
-  performance_manager::RunInGraph([&] {
-    EXPECT_FALSE(page_node);
-    EXPECT_EQ(nullptr, page_context->GetPageNode());
-    EXPECT_EQ(std::nullopt, PageContext::FromWeakPageNode(page_node));
-  });
+  EXPECT_FALSE(page_node);
+  EXPECT_EQ(nullptr, page_context->GetPageNode());
+  EXPECT_EQ(std::nullopt, PageContext::FromWeakPageNode(page_node));
 
   // The unique id of a PageContext isn't exposed so can't be tested directly.
   // But after deleting a page, its PageContexts should still compare equal,
@@ -97,9 +92,9 @@ TEST_F(ResourceAttrPageContextNoPMTest, PageContextWithoutPM) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   // Verify that PM didn't see the page.
-  performance_manager::RunInGraph(
-      [node = PerformanceManager::GetPrimaryPageNodeForWebContents(
-           web_contents.get())] { EXPECT_FALSE(node); });
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents.get());
+  EXPECT_FALSE(node);
 
   EXPECT_FALSE(PageContext::FromWebContents(web_contents.get()));
 }

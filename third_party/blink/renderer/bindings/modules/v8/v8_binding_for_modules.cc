@@ -215,7 +215,6 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValue(v8::Isolate* isolate,
       // A non-array: convert it directly.
       auto key = CreateIDBKeyFromSimpleValue(isolate, item, exception_state);
       if (exception_state.HadException()) {
-        DCHECK(!rethrow_scope.HasCaught());
         return IDBKey::CreateInvalid();
       }
       top->subkeys.push_back(std::move(key));

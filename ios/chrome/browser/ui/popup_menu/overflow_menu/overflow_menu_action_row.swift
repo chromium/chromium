@@ -122,6 +122,7 @@ struct OverflowMenuActionRow: View {
       }
       .padding([.trailing], Self.editRowEndPadding)
       .accessibilityElement(children: .combine)
+      .accessibilityLabel([action.name, action.subtitle].compactMap { $0 }.joined(separator: ", "))
     } else {
       HStack {
         // If there is no icon, the text should be centered.

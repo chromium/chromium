@@ -45,8 +45,7 @@ use_atk = use_glib && current_toolchain == default_toolchain
 
 # Whether using Xvfb to provide a display server for a test might be
 # necessary.
-use_xvfb_in_this_config =
-    is_linux || (is_chromeos_lacros && !is_chromeos_device)
+use_xvfb_in_this_config = is_linux
 #
 # =============================================
 #   PLEASE DO NOT ADD MORE FLAGS TO THIS FILE

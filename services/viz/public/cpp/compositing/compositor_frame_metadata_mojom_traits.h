@@ -79,6 +79,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.is_handling_interaction;
   }
 
+  static bool is_handling_animation(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_handling_animation;
+  }
+
   static SkColor4f root_background_color(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.root_background_color;

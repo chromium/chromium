@@ -25,6 +25,7 @@ import './toolbar.js';
 import {CrContainerShadowMixinLit} from 'chrome://resources/cr_elements/cr_container_shadow_mixin_lit.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -87,7 +88,8 @@ export interface ExtensionsManagerElement {
 
 // TODO(crbug.com/40270029): Always show a top shadow for the DETAILS, ERRORS and
 // SITE_PERMISSIONS_ALL_SITES pages.
-const ExtensionsManagerElementBase = CrContainerShadowMixinLit(CrLitElement);
+const ExtensionsManagerElementBase =
+    I18nMixinLit(CrContainerShadowMixinLit(CrLitElement));
 
 export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   static get is() {
@@ -245,7 +247,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('narrow_')) {
-      const drawer = this.shadowRoot!.querySelector('cr-drawer');
+      const drawer = this.shadowRoot.querySelector('cr-drawer');
       if (!this.narrow_ && drawer?.open) {
         drawer.close();
       }
@@ -346,10 +348,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
                 eventData.event_type, eventData.extensionInfo) &&
             !toastManager.isToastOpen) {
           toastManager.duration = TOAST_DURATION_MS;
-          // TODO(crbug.com/362756477): Replace temporary string with disable
-          // unsupported developer string once ready.
-          toastManager.show(
-              'Developer Mode Off. Some extensions are disabled.');
+          toastManager.show(this.i18n('itemUnsupportedDeveloperModeToast'));
         }
         break;
       case EventType.UNINSTALLED:
@@ -380,7 +379,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   protected onMenuButtonClick_() {
     this.showDrawer_ = true;
     setTimeout(() => {
-      this.shadowRoot!.querySelector('cr-drawer')!.openDrawer();
+      this.shadowRoot.querySelector('cr-drawer')!.openDrawer();
     }, 0);
   }
 
@@ -570,7 +569,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       e: CustomEvent<Error|chrome.developerPrivate.LoadError>) {
     this.showLoadErrorDialog_ = true;
     setTimeout(() => {
-      const dialog = this.shadowRoot!.querySelector('extensions-load-error')!;
+      const dialog = this.shadowRoot.querySelector('extensions-load-error')!;
       dialog.loadError = e.detail;
       dialog.show();
     }, 0);
@@ -583,7 +582,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     this.onCloseDrawer_();
 
     const optionsDialog =
-        this.shadowRoot!.querySelector('extensions-options-dialog');
+        this.shadowRoot.querySelector('extensions-options-dialog');
     if (optionsDialog && optionsDialog.open) {
       this.showOptionsDialog_ = false;
     }
@@ -649,7 +648,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       assert(newPage.extensionId);
       this.showOptionsDialog_ = true;
       setTimeout(() => {
-        this.shadowRoot!.querySelector('extensions-options-dialog')!.show(
+        this.shadowRoot.querySelector('extensions-options-dialog')!.show(
             data!,
         );
       }, 0);
@@ -673,7 +672,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
    * This method animates the closing of the drawer.
    */
   protected onCloseDrawer_() {
-    const drawer = this.shadowRoot!.querySelector('cr-drawer');
+    const drawer = this.shadowRoot.querySelector('cr-drawer');
     if (drawer && drawer.open) {
       drawer.close();
     }
@@ -685,8 +684,8 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
 
   protected onOptionsDialogClose_() {
     this.showOptionsDialog_ = false;
-    this.shadowRoot!.querySelector(
-                        'extensions-detail-view')!.focusOptionsButton();
+    this.shadowRoot.querySelector(
+                       'extensions-detail-view')!.focusOptionsButton();
   }
 
   private onViewEnterStart_() {
@@ -710,7 +709,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
 
     const extensionId =
         (e.composedPath()[0] as ExtensionsDetailViewElement).data.id;
-    const list = this.shadowRoot!.querySelector('extensions-item-list')!;
+    const list = this.shadowRoot.querySelector('extensions-item-list')!;
     const button = viewType === 'EXTENSIONS-DETAIL-VIEW' ?
         list.getDetailsButton(extensionId) :
         list.getErrorsButton(extensionId);

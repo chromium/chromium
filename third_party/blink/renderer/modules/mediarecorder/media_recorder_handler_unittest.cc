@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 
 #include <stddef.h>
@@ -218,12 +223,19 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     return true;
   }
 
-  bool IsAv1CodecSupported(const String codecs) {
-#if BUILDFLAG(ENABLE_LIBAOM)
-    return true;
-#else
-    return codecs.Find("av1") != kNotFound && codecs.Find("av01") != kNotFound;
+  bool IsVideoCodecSupported(const String codecs) {
+#if !BUILDFLAG(ENABLE_OPENH264)
+    if (codecs.Find("h264") != kNotFound || codecs.Find("avc1") != kNotFound ||
+        codecs.Find("avc3") != kNotFound) {
+      return false;
+    }
 #endif
+#if !BUILDFLAG(ENABLE_LIBAOM)
+    if (codecs.Find("av1") != kNotFound || codecs.Find("av01") != kNotFound) {
+      return false;
+    }
+#endif
+    return true;
   }
 
   WeakCell<AudioTrackRecorder::CallbackInterface>* GetAudioCallbackInterface() {
@@ -316,7 +328,8 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
           base::HeapArray<uint8_t>::CopiedFrom(mapped_h264_file.bytes());
     }
     media::Muxer::VideoParameters video_params(
-        gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace());
+        gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace(),
+        media::kNoTransformation);
     auto buffer = media::DecoderBuffer::CopyFrom(h264_video_stream_);
     std::string alpha_data = "alpha";
     buffer->WritableSideData().alpha_data =
@@ -463,13 +476,9 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
       mime_type_video, example_good_codecs_3));
   const String example_good_codecs_4("H264");
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
-      mime_type_video, example_good_codecs_4));
-#else
-  EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
-      mime_type_video, example_good_codecs_4));
-#endif
+  EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(mime_type_video,
+                                                        example_good_codecs_4),
+            BUILDFLAG(ENABLE_OPENH264));
 
   const String example_unsupported_codecs_1("daala");
   EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
@@ -489,8 +498,9 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
       mime_type_audio, example_good_codecs_7));
 
   const String example_good_codecs_8("AV01,opus");
-  EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
-      mime_type_video, example_good_codecs_8));
+  EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(mime_type_video,
+                                                        example_good_codecs_8),
+            BUILDFLAG(ENABLE_LIBAOM));
 
   const String example_good_codecs_9("avc1");
   const String example_good_codecs_10("avc3");
@@ -498,16 +508,16 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   const String example_good_codecs_12("avc3.42E01E");
   EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(mime_type_video,
                                                         example_good_codecs_9),
-            BUILDFLAG(USE_PROPRIETARY_CODECS));
+            BUILDFLAG(ENABLE_OPENH264));
   EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(mime_type_video,
                                                         example_good_codecs_10),
-            BUILDFLAG(USE_PROPRIETARY_CODECS));
+            BUILDFLAG(ENABLE_OPENH264));
   EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(mime_type_video,
                                                         example_good_codecs_11),
-            BUILDFLAG(USE_PROPRIETARY_CODECS));
+            BUILDFLAG(ENABLE_OPENH264));
   EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(mime_type_video,
                                                         example_good_codecs_12),
-            BUILDFLAG(USE_PROPRIETARY_CODECS));
+            BUILDFLAG(ENABLE_OPENH264));
 
   const String example_unsupported_codecs_2("vorbis");
   EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
@@ -536,7 +546,7 @@ TEST_P(MediaRecorderHandlerTest, SupportsBitrateMode) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
-  if (!IsAv1CodecSupported(codecs)) {
+  if (!IsVideoCodecSupported(codecs)) {
     return;
   }
 
@@ -565,7 +575,7 @@ TEST_P(MediaRecorderHandlerTest, InitializeFailedWhenMP4MuxerFeatureDisabled) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
-  if (!IsAv1CodecSupported(codecs)) {
+  if (!IsVideoCodecSupported(codecs)) {
     return;
   }
 
@@ -618,7 +628,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 1000000, 1000000));
 
   InSequence s;
   const scoped_refptr<media::VideoFrame> video_frame =
@@ -662,7 +672,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
     }
     Mock::VerifyAndClearExpectations(recorder);
     {
-      const size_t kEncodedSizeThreshold = 12;
+      const size_t kEncodedSizeThreshold = 10;
       base::RunLoop run_loop;
       // The second time around writeData() is called a number of times to write
       // the WebM frame header, and then is pinged with the encoded data.
@@ -870,7 +880,7 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
-  if (!IsAv1CodecSupported(codecs)) {
+  if (!IsVideoCodecSupported(codecs)) {
     return;
   }
 
@@ -911,7 +921,7 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
-  if (!IsAv1CodecSupported(codecs)) {
+  if (!IsVideoCodecSupported(codecs)) {
     return;
   }
 
@@ -927,7 +937,8 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
     media::Muxer::VideoParameters params(
-        gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace());
+        gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace(),
+        media::kNoTransformation);
     std::vector<uint8_t> codec_description;
     PopulateAVCDecoderConfiguration(codec_description);
     OnEncodedH264VideoForTesting(base::TimeTicks::Now(),
@@ -937,7 +948,8 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   } else {
     EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
     media::Muxer::VideoParameters params(
-        gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
+        gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace(),
+        media::kNoTransformation);
     if (IsAvcCodecSupported(codecs)) {
       OnEncodedH264VideoForTesting(base::TimeTicks::Now());
     } else {
@@ -973,7 +985,7 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
-  if (!IsAv1CodecSupported(codecs)) {
+  if (!IsVideoCodecSupported(codecs)) {
     return;
   }
 
@@ -988,7 +1000,8 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
   media::Muxer::VideoParameters params(gfx::Size(), 1, media::VideoCodec::kVP9,
-                                       gfx::ColorSpace());
+                                       gfx::ColorSpace(),
+                                       media::kNoTransformation);
   if (IsAvcCodecSupported(codecs)) {
     OnEncodedH264VideoForTesting(base::TimeTicks::Now());
   } else {
@@ -1084,22 +1097,52 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
   const String good_mp4_video_mime_types[] = {"video/mp4"};
   const String bad_mp4_video_mime_types[] = {"video/MP4"};
 
-  const String good_mp4_video_codecs[] = {"avc1",
-                                          "avc3",
-                                          "avc1.420034",
-                                          "avc3.420034",
-                                          "vp9",
-                                          "av01",
-                                          "av01.2.19H.08.0.000.09.16.09.1"};
-  const String bad_mp4_video_codecs[] = {"h264",        "vp8",         "avc11",
-                                         "avc31",       "aVc1",        "aVc3",
-                                         "avc1.123456", "avc3.123456", "av1"};
+  const String good_mp4_video_codecs[] = {
+      "avc1",         "avc3", "vp9", "av01",
+      "avc1.420034",   // H264PROFILE_BASELINE
+      "avc3.420034",   // H264PROFILE_BASELINE
+      "avc1.4D001E",   // H264PROFILE_MAIN
+      "avc3.4D001E",   // H264PROFILE_MAIN
+      "avc1.58A01E",   // H264PROFILE_EXTENDED
+      "avc3.58A01E",   // H264PROFILE_EXTENDED
+      "avc1.640028",   // H264PROFILE_HIGH
+      "avc3.640028",   // H264PROFILE_HIGH
+      "av01.0.19M.08"  // AV1PROFILE_PROFILE_MAIN
+  };
+  const String bad_mp4_video_codecs[] = {
+      "h264",
+      "vp8",
+      "av1",
+      "avc11",
+      "avc31",
+      "aVc1",
+      "aVc3",
+      "avc1.123456",
+      "avc3.123456",
+      "avc1.6E0028",                    // H264PROFILE_HIGH10PROFILE
+      "avc1.6E0028",                    // H264PROFILE_HIGH10PROFILE
+      "av01.1.19M.08",                  // AV1PROFILE_PROFILE_HIGH
+      "av01.2.19H.08.0.000.09.16.09.1"  // AV1PROFILE_PROFILE_PRO
+  };
 
-  const String good_mp4_video_codecs_non_proprietory[] = {
-      "vp9", "av01", "av01.2.19H.08.0.000.09.16.09.1"};
-  const String bad_mp4_video_codecs_non_proprietory[] = {
-      "avc1", "avc3", "h264",        "vp8",         "avc11", "avc31",
-      "aVc1", "aVc3", "avc1.123456", "avc3.123456", "av1"};
+  const String good_mp4_video_codecs_non_proprietary[] = {
+      "vp9", "av01", "av01.0.19M.08"  // AV1PROFILE_PROFILE_MAIN
+  };
+  const String bad_mp4_video_codecs_non_proprietary[] = {
+      "avc1",
+      "avc3",
+      "h264",
+      "vp8",
+      "avc11",
+      "avc31",
+      "aVc1",
+      "aVc3",
+      "avc1.123456",
+      "avc3.123456",
+      "av1",
+      "av01.1.19M.08",                  // AV1PROFILE_PROFILE_HIGH
+      "av01.2.19H.08.0.000.09.16.09.1"  // AV1PROFILE_PROFILE_PRO
+  };
 
   // audio types.
   const String good_mp4_audio_mime_types[] = {"audio/mp4"};
@@ -1109,8 +1152,8 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
   const String bad_mp4_audio_codecs[] = {"mp4a", "mp4a.40", "mP4a.40.2", "aac",
                                          "pcm"};
 
-  const String good_mp4_audio_codecs_non_proprietory[] = {"opus"};
-  const String bad_mp4_audio_codecs_non_proprietory[] = {
+  const String good_mp4_audio_codecs_non_proprietary[] = {"opus"};
+  const String bad_mp4_audio_codecs_non_proprietary[] = {
       "mp4a.40.2", "mp4a", "mp4a.40", "mP4a.40.2", "aac", "pcm"};
 
   if (GetParam()) {
@@ -1119,38 +1162,30 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // success cases.
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
-        if (!IsAv1CodecSupported(codec)) {
-          continue;
-        }
-        EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
+        EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codec),
+                  IsVideoCodecSupported(codec));
       }
     }
 
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_audio_codecs) {
-        if (!IsTargetAudioCodecSupported(codec)) {
-          continue;
-        }
-        EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
+        EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codec),
+                  IsTargetAudioCodecSupported(codec));
       }
     }
 
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& video_codec : good_mp4_video_codecs) {
-        if (!IsAv1CodecSupported(video_codec)) {
-          continue;
-        }
         for (const auto& audio_codec : good_mp4_audio_codecs) {
-          if (!IsTargetAudioCodecSupported(audio_codec)) {
-            continue;
-          }
+          const bool supported = IsVideoCodecSupported(video_codec) &&
+                                 IsTargetAudioCodecSupported(audio_codec);
           String codecs = video_codec + "," + audio_codec;
-          EXPECT_TRUE(
-              media_recorder_handler_->CanSupportMimeType(type, codecs));
+          EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codecs),
+                    supported);
 
           String codecs2 = audio_codec + "," + video_codec;
-          EXPECT_TRUE(
-              media_recorder_handler_->CanSupportMimeType(type, codecs2));
+          EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codecs2),
+                    supported);
         }
       }
     }
@@ -1158,9 +1193,6 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // failure cases.
     for (const auto& type : bad_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
-        if (!IsAv1CodecSupported(codec)) {
-          continue;
-        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1173,33 +1205,28 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 #else
     // success cases.
     for (const auto& type : good_mp4_video_mime_types) {
-      for (const auto& codec : good_mp4_video_codecs_non_proprietory) {
-        if (!IsAv1CodecSupported(codec)) {
-          continue;
-        }
+      for (const auto& codec : good_mp4_video_codecs_non_proprietary) {
+        EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codec),
+                  IsVideoCodecSupported(codec));
+      }
+    }
+
+    for (const auto& type : good_mp4_video_mime_types) {
+      for (const auto& codec : good_mp4_audio_codecs_non_proprietary) {
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
 
     for (const auto& type : good_mp4_video_mime_types) {
-      for (const auto& codec : good_mp4_audio_codecs_non_proprietory) {
-        EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
-      }
-    }
-
-    for (const auto& type : good_mp4_video_mime_types) {
-      for (const auto& video_codec : good_mp4_video_codecs_non_proprietory) {
-        if (!IsAv1CodecSupported(video_codec)) {
-          continue;
-        }
-        for (const auto& audio_codec : good_mp4_audio_codecs_non_proprietory) {
+      for (const auto& video_codec : good_mp4_video_codecs_non_proprietary) {
+        for (const auto& audio_codec : good_mp4_audio_codecs_non_proprietary) {
           String codecs = video_codec + "," + audio_codec;
-          EXPECT_TRUE(
-              media_recorder_handler_->CanSupportMimeType(type, codecs));
+          EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codecs),
+                    IsVideoCodecSupported(video_codec));
 
           String codecs2 = audio_codec + "," + video_codec;
-          EXPECT_TRUE(
-              media_recorder_handler_->CanSupportMimeType(type, codecs2));
+          EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codecs2),
+                    IsVideoCodecSupported(video_codec));
         }
       }
     }
@@ -1217,10 +1244,8 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // success cases.
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& codec : good_mp4_audio_codecs) {
-        if (!IsTargetAudioCodecSupported(codec)) {
-          continue;
-        }
-        EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
+        EXPECT_EQ(media_recorder_handler_->CanSupportMimeType(type, codec),
+                  IsTargetAudioCodecSupported(codec));
       }
     }
 
@@ -1239,18 +1264,12 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
-        if (!IsAv1CodecSupported(codec)) {
-          continue;
-        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
 
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& video_codec : good_mp4_video_codecs) {
-        if (!IsAv1CodecSupported(video_codec)) {
-          continue;
-        }
         for (const auto& audio_codec : good_mp4_audio_codecs) {
           String codecs = video_codec + "," + audio_codec;
           EXPECT_FALSE(
@@ -1265,7 +1284,7 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 #else
     // success cases.
     for (const auto& type : good_mp4_audio_mime_types) {
-      for (const auto& codec : good_mp4_audio_codecs_non_proprietory) {
+      for (const auto& codec : good_mp4_audio_codecs_non_proprietary) {
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1283,18 +1302,12 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
-        if (!IsAv1CodecSupported(codec)) {
-          continue;
-        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
 #else
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
-        if (!IsAv1CodecSupported(codec)) {
-          continue;
-        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1358,7 +1371,8 @@ class MediaRecorderHandlerAudioVideoTest : public testing::Test,
 
   void FeedVideo() {
     media::Muxer::VideoParameters video_params(
-        gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
+        gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace(),
+        media::kNoTransformation);
     auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("video"));
     std::string alpha_data = "alpha";
     buffer->WritableSideData().alpha_data =
@@ -1447,7 +1461,7 @@ TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedVideoDataOnStop) {
   Mock::VerifyAndClearExpectations(recorder);
 }
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_OPENH264)
 TEST_F(MediaRecorderHandlerAudioVideoTest, CorrectH264LevelOnWrite) {
   AddTracks();
   V8TestingScope scope;
@@ -1558,6 +1572,10 @@ TEST_P(MediaRecorderHandlerH264ProfileTest, ActualMimeType) {
 
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
+  if (!IsVideoCodecSupported(codecs)) {
+    return;
+  }
+
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));

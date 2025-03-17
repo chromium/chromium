@@ -97,7 +97,6 @@ bool ThreadProcessDispatcher::CreateThread(IPCInfo* ipc,
   DWORD ret = ProcessPolicy::CreateThreadAction(*ipc->client_info, stack_size,
                                                 start_address, parameter,
                                                 creation_flags, &handle);
-
   ipc->return_info.win32_result = ret;
   ipc->return_info.handle = handle;
   return true;

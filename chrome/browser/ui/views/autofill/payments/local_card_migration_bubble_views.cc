@@ -128,7 +128,7 @@ void LocalCardMigrationBubbleViews::AddedToWidget() {
   icon_view->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   icon_view->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
-  title_container->AddChildView(icon_view);
+  title_container->AddChildViewRaw(icon_view);
 
   auto* title =
       new views::Label(GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
@@ -137,7 +137,7 @@ void LocalCardMigrationBubbleViews::AddedToWidget() {
   // would not be two-lined but would change the width of bubble.
   title->SetPreferredSize(gfx::Size(0, 0));
   title->SetMultiLine(true);
-  title_container->AddChildView(title);
+  title_container->AddChildViewRaw(title);
 
   GetBubbleFrameView()->SetTitleView(std::move(title_container));
 }
@@ -175,7 +175,7 @@ void LocalCardMigrationBubbleViews::Init() {
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   explanatory_message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   explanatory_message->SetMultiLine(true);
-  AddChildView(explanatory_message);
+  AddChildViewRaw(explanatory_message);
   SetID(DialogViewId::MAIN_CONTENT_VIEW_MIGRATION_BUBBLE);
 }
 

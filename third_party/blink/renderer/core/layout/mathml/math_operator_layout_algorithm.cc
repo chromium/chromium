@@ -84,7 +84,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
         operator_target_size = target_stretch_ascent + target_stretch_descent;
 
         LayoutUnit unstretched_size;
-        const SimpleFontData* font_data = Style().GetFont().PrimaryFont();
+        const SimpleFontData* font_data = Style().GetFont()->PrimaryFont();
         if (auto base_glyph =
                 font_data->GlyphForCharacter(GetBaseCodePoint())) {
           gfx::RectF bounds = font_data->BoundsForGlyph(base_glyph);
@@ -141,7 +141,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
                             : OpenTypeMathStretchData::StretchAxis::Horizontal);
   StretchyOperatorShaper::Metrics metrics;
   const ShapeResult* shape_result =
-      shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
+      shaper.Shape(Style().GetFont(), operator_target_size, &metrics);
   const ShapeResultView* shape_result_view =
       ShapeResultView::Create(shape_result);
 
@@ -201,7 +201,7 @@ MinMaxSizesResult MathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
       StretchyOperatorShaper shaper(GetBaseCodePoint(),
                                     OpenTypeMathStretchData::Horizontal);
       StretchyOperatorShaper::Metrics metrics;
-      shaper.Shape(&Style().GetFont(), 0, &metrics);
+      shaper.Shape(Style().GetFont(), 0, &metrics);
       sizes.Encompass(LayoutUnit(metrics.advance));
     } else {
       // "Otherwise, the stretch axis of the operator is block."
@@ -215,7 +215,7 @@ MinMaxSizesResult MathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
                                   OpenTypeMathStretchData::Vertical);
     StretchyOperatorShaper::Metrics metrics;
     LayoutUnit operator_target_size = DisplayOperatorMinHeight(Style());
-    shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
+    shaper.Shape(Style().GetFont(), operator_target_size, &metrics);
     sizes.Encompass(LayoutUnit(metrics.advance));
   }
 

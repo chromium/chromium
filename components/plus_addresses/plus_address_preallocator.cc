@@ -93,9 +93,7 @@ PlusAddressPreallocator::PlusAddressPreallocator(
   PrunePreallocatedPlusAddresses();
 
   // If the notice has not been accepted, we do not preemptively pre-allocate.
-  if (settings_->GetHasAcceptedNotice() ||
-      !base::FeatureList::IsEnabled(
-          features::kPlusAddressUserOnboardingEnabled)) {
+  if (settings_->GetHasAcceptedNotice()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -213,8 +211,7 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses(
 }
 
 bool PlusAddressPreallocator::IsEnabled() const {
-  if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
-      !settings_->GetIsPlusAddressesEnabled()) {
+  if (!settings_->GetIsPlusAddressesEnabled()) {
     return false;
   }
 

@@ -61,7 +61,9 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
 
   static PagePopupController* From(Page&);
 
-  void setValueAndClosePopup(int num_value, const WTF::String& string_value);
+  void setValueAndClosePopup(int num_value,
+                             const WTF::String& string_value,
+                             bool is_keyboard_event);
   void setValue(const WTF::String&);
   void closePopup();
   WTF::String localizeNumberString(const WTF::String&);

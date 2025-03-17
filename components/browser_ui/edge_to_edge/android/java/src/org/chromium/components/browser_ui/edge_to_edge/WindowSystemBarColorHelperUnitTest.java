@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Build;
-import android.view.View;
 import android.view.Window;
 
 import org.junit.Before;
@@ -35,7 +34,6 @@ public class WindowSystemBarColorHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock Window mWindow;
-    @Mock View mDecorView;
 
     private int mWindowStatusBarColor;
     private int mWindowNavBarColor;
@@ -43,8 +41,6 @@ public class WindowSystemBarColorHelperUnitTest {
 
     @Before
     public void setup() {
-        doReturn(mDecorView).when(mWindow).getDecorView();
-
         doAnswer(invocationOnMock -> mWindowStatusBarColor = invocationOnMock.getArgument(0))
                 .when(mWindow)
                 .setStatusBarColor(anyInt());
@@ -120,7 +116,6 @@ public class WindowSystemBarColorHelperUnitTest {
         verify(mWindow, times(1)).setStatusBarColor(mWindowStatusBarColor);
         assertEquals(
                 "getStatusBarColor is wrong.", mWindowStatusBarColor, helper.getStatusBarColor());
-        verify(mDecorView).setSystemUiVisibility(anyInt());
 
         // Setting the same color will be ignored.
         helper.setStatusBarColor(mWindowStatusBarColor);
@@ -137,7 +132,6 @@ public class WindowSystemBarColorHelperUnitTest {
         helper.setNavigationBarColor(newNavColor);
         verify(mWindow, times(1)).setNavigationBarColor(newNavColor);
         assertEquals("getStatusBarColor is wrong.", newNavColor, helper.getNavigationBarColor());
-        verify(mDecorView).setSystemUiVisibility(anyInt());
 
         // Setting the same color will be ignored.
         helper.setNavigationBarColor(newNavColor);

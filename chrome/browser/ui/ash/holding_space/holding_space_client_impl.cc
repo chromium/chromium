@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -14,7 +15,6 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -73,7 +73,7 @@ std::optional<ItemLaunchFailureReason> OpenInProgressItem(
     const HoldingSpaceItem& item) {
   CHECK(!item.progress().IsComplete());
 
-  auto command_iter = base::ranges::find(
+  auto command_iter = std::ranges::find(
       item.in_progress_commands(), HoldingSpaceCommandId::kOpenItem,
       &HoldingSpaceItem::InProgressCommand::command_id);
   if (command_iter != item.in_progress_commands().end()) {

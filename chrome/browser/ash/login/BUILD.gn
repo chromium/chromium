@@ -3,11 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/chromeos/crosier_tests.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
 import("//rlz/buildflags/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("login") {
   sources = [
@@ -134,10 +133,6 @@ static_library("login") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//build:branding_buildflags",
     "//cc/base",
@@ -191,9 +186,12 @@ static_library("login") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_healthd/private/cpp",
     "//chromeos/ash/services/rollback_network_config/public/mojom",
     "//chromeos/components/certificate_provider",
@@ -375,6 +373,7 @@ source_set("browser_tests") {
     "oobe_interactive_ui_test.cc",
     "oobe_localization_browsertest.cc",
     "oobe_metrics_browsertest.cc",
+    "oobe_pre_consent_metrics_browsertest.cc",
     "password_change_browsertest.cc",
     "post_login_deferred_task_browsertest.cc",
     "proxy_auth_dialog_browsertest.cc",
@@ -393,8 +392,6 @@ source_set("browser_tests") {
     ":test_support",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/session",
     "//ash/public/cpp",
     "//chrome/browser",
     "//chrome/browser:browser_process",
@@ -452,7 +449,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/browser_context_helper",
@@ -479,6 +476,8 @@ source_set("browser_tests") {
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
     "//chromeos/ash/components/tpm",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/auth_factor_config",
     "//chromeos/dbus/power",
     "//chromeos/dbus/tpm_manager",
@@ -487,6 +486,7 @@ source_set("browser_tests") {
     "//components/language/core/browser",
     "//components/metrics/structured:structured_events",
     "//components/metrics/structured:test_support",
+    "//components/metrics_services_manager:metrics_services_manager",
     "//components/onc",
     "//components/policy:chrome_settings_proto_generated_compile",
     "//components/policy/core/browser",

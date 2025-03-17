@@ -53,6 +53,8 @@ struct AudioIOPosition {
 // Abstract base-class for isochronous audio I/O client.
 class AudioIOCallback {
  public:
+  virtual ~AudioIOCallback() = default;
+
   // Called periodically to get the next render quantum of audio into
   // |destination_bus|.
   virtual void Render(AudioBus* destination_bus,
@@ -65,8 +67,6 @@ class AudioIOCallback {
   // Called when an error occurs in the underlying audio stack.
   // (e.g. bad hardware parameters, or an error while rendering)
   virtual void OnRenderError() = 0;
-
-  virtual ~AudioIOCallback() = default;
 };
 
 }  // namespace blink

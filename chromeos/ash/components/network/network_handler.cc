@@ -47,6 +47,7 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler_impl.h"
 #include "chromeos/ash/components/network/network_device_handler_impl.h"
+#include "chromeos/ash/components/network/network_login_screen_protocol_handler_observer.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_profile_observer.h"
@@ -112,6 +113,9 @@ NetworkHandler::NetworkHandler(std::unique_ptr<NetworkStateHandler> handler)
   text_message_provider_.reset(new TextMessageProvider());
   geolocation_handler_.reset(new GeolocationHandler());
   network_3gpp_handler_.reset(new Network3gppHandler());
+
+  network_login_screen_protocol_handler_observer_.reset(
+      new NetworkLoginScreenProtocolHandlerObserver());
 
   // Only watch ephemeral network policies enablement if ephemeral network
   // policies should be enabled by the feature or if the device policy to enable
@@ -224,6 +228,9 @@ void NetworkHandler::Init() {
                                  managed_network_configuration_handler_.get());
   geolocation_handler_->Init();
   network_3gpp_handler_->Init();
+
+  network_login_screen_protocol_handler_observer_->Init(
+      network_state_handler_.get());
 }
 
 // static

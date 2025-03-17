@@ -3,7 +3,7 @@ URL: https://hg.mozilla.org/mozilla-central/
 InfoURL: http://www.mozilla.org/
 Revision: a59a5f030021c7a9cf7682277e59795a4ddca64e
 Version: 36838:a59a5f030021
-License: MPL 1.1 / GPL 2 / LGPL 2.1
+License: MPL-1.1
 License File: LICENSE
 Shipped: yes
 Security Critical: yes

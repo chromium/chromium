@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "url/gurl.h"
 
 class BrowserView;
 
@@ -44,6 +45,8 @@ class WebViewSidePanelView final
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  GURL GetLastUrlForTesting();
+
  private:
   // Remove parameters that shouldn't be passed to the main browser.
   GURL CleanUpQueryParams(const GURL& url);
@@ -53,7 +56,6 @@ class WebViewSidePanelView final
 
   // WebViewSidePanelWebContentsUserData::Delegate
   void OpenUrlInBrowser(const content::OpenURLParams& params) override;
-  bool IsNavigationAllowed(const GURL& new_url, const GURL& old_url) override;
 
   // content::WebContentsObserver:
   void LoadProgressChanged(double progress) override;

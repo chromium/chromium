@@ -8,10 +8,12 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 public class ReadAloudMetrics {
     public static String IS_READABLE = "ReadAloud.IsPageReadable";
     public static String READABILITY_SUCCESS = "ReadAloud.IsPageReadabilitySuccessful";

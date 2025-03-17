@@ -37,7 +37,7 @@
 namespace blink {
 
 LayoutHTMLCanvas::LayoutHTMLCanvas(HTMLCanvasElement* element)
-    : LayoutReplaced(element, PhysicalSize(element->Size())) {
+    : LayoutReplaced(element), natural_size_(PhysicalSize(element->Size())) {
   View()->GetFrameView()->SetIsVisuallyNonEmpty();
 }
 
@@ -52,6 +52,7 @@ void LayoutHTMLCanvas::PaintReplaced(const PaintInfo& paint_info,
 
 void LayoutHTMLCanvas::DidInvalidatePaintForPlacedElement(
     Element* placedElement) {
+  NOT_DESTROYED();
   DCHECK(RuntimeEnabledFeatures::CanvasPlaceElementEnabled());
   auto* canvas = To<HTMLCanvasElement>(GetNode());
   DCHECK(canvas->HasPlacedElements());
@@ -67,10 +68,11 @@ void LayoutHTMLCanvas::CanvasSizeChanged() {
   PhysicalSize zoomed_size = PhysicalSize(canvas_size);
   zoomed_size.Scale(StyleRef().EffectiveZoom());
 
-  if (zoomed_size == IntrinsicSize())
+  if (zoomed_size == natural_size_) {
     return;
+  }
 
-  SetIntrinsicSize(zoomed_size);
+  natural_size_ = zoomed_size;
 
   if (!Parent())
     return;
@@ -79,7 +81,13 @@ void LayoutHTMLCanvas::CanvasSizeChanged() {
   SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
 }
 
+PhysicalNaturalSizingInfo LayoutHTMLCanvas::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  return PhysicalNaturalSizingInfo::MakeFixed(natural_size_);
+}
+
 bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
+  NOT_DESTROYED();
   auto* canvas = To<HTMLCanvasElement>(GetNode());
   if (canvas->SurfaceLayerBridge())
     return false;

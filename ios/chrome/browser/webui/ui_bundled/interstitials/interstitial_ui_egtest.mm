@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "components/webui/chrome_urls/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -28,6 +29,8 @@
 
 - (void)setUp {
   [super setUp];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:chrome_urls::kInternalOnlyUisEnabled];
   _schemeRegistry = std::make_unique<url::ScopedSchemeRegistryForTests>();
   url::ClearSchemesForTests();
   url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
@@ -40,7 +43,7 @@
 
 // Tests that chrome://interstitials loads correctly.
 - (void)testLoadInterstitialUI {
-  [ChromeEarlGrey loadURL:GURL(kChromeUIIntersitialsURL)];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIInterstitialsURL)];
 
   [ChromeEarlGrey waitForWebStateContainingText:"Choose an interstitial"];
 }
@@ -48,7 +51,7 @@
 // Tests that chrome://interstitials/ssl loads correctly.
 - (void)testLoadSSLInterstitialUI {
   GURL SSLInterstitialURL =
-      GURL(kChromeUIIntersitialsURL).Resolve(kChromeInterstitialSslPath);
+      GURL(kChromeUIInterstitialsURL).Resolve(kChromeInterstitialSslPath);
   [ChromeEarlGrey loadURL:SSLInterstitialURL];
 
   [ChromeEarlGrey
@@ -58,7 +61,7 @@
 // Tests that chrome://interstitials/captiveportal loads correctly.
 - (void)testLoadCaptivePortalInterstitialUI {
   GURL captivePortalInterstitialURL =
-      GURL(kChromeUIIntersitialsURL)
+      GURL(kChromeUIInterstitialsURL)
           .Resolve(kChromeInterstitialCaptivePortalPath);
   [ChromeEarlGrey loadURL:captivePortalInterstitialURL];
 
@@ -67,7 +70,7 @@
 
 // Tests that chrome://interstitials/safe_browsing?type=malware loads correctly.
 - (void)testLoadSafeBrowsingMalwareInterstitialUI {
-  GURL safeBrowsingURL = GURL(kChromeUIIntersitialsURL)
+  GURL safeBrowsingURL = GURL(kChromeUIInterstitialsURL)
                              .Resolve(kChromeInterstitialSafeBrowsingPath);
   safeBrowsingURL = net::AppendQueryParameter(
       safeBrowsingURL, kChromeInterstitialSafeBrowsingTypeQueryKey,
@@ -80,7 +83,7 @@
 // Tests that chrome://interstitials/safe_browsing?type=phishing loads
 // correctly.
 - (void)testLoadSafeBrowsingPhishingInterstitialUI {
-  GURL safeBrowsingURL = GURL(kChromeUIIntersitialsURL)
+  GURL safeBrowsingURL = GURL(kChromeUIInterstitialsURL)
                              .Resolve(kChromeInterstitialSafeBrowsingPath);
   safeBrowsingURL = net::AppendQueryParameter(
       safeBrowsingURL, kChromeInterstitialSafeBrowsingTypeQueryKey,
@@ -93,7 +96,7 @@
 // Tests that chrome://interstitials/safe_browsing?type=unwanted loads
 // correctly.
 - (void)testLoadSafeBrowsingUnwantedInterstitialUI {
-  GURL safeBrowsingURL = GURL(kChromeUIIntersitialsURL)
+  GURL safeBrowsingURL = GURL(kChromeUIInterstitialsURL)
                              .Resolve(kChromeInterstitialSafeBrowsingPath);
   safeBrowsingURL = net::AppendQueryParameter(
       safeBrowsingURL, kChromeInterstitialSafeBrowsingTypeQueryKey,
@@ -106,7 +109,7 @@
 // Tests that chrome://interstitials/safe_browsing?type=clientside_phishing
 // loads correctly.
 - (void)testLoadSafeBrowsingClientsidePhishingInterstitialUI {
-  GURL safeBrowsingURL = GURL(kChromeUIIntersitialsURL)
+  GURL safeBrowsingURL = GURL(kChromeUIInterstitialsURL)
                              .Resolve(kChromeInterstitialSafeBrowsingPath);
   safeBrowsingURL = net::AppendQueryParameter(
       safeBrowsingURL, kChromeInterstitialSafeBrowsingTypeQueryKey,
@@ -118,7 +121,7 @@
 
 // Tests that chrome://interstitials/safe_browsing?type=billing loads correctly.
 - (void)testLoadSafeBrowsingBillingInterstitialUI {
-  GURL safeBrowsingURL = GURL(kChromeUIIntersitialsURL)
+  GURL safeBrowsingURL = GURL(kChromeUIInterstitialsURL)
                              .Resolve(kChromeInterstitialSafeBrowsingPath);
   safeBrowsingURL = net::AppendQueryParameter(
       safeBrowsingURL, kChromeInterstitialSafeBrowsingTypeQueryKey,
@@ -131,8 +134,8 @@
 
 // Tests that chrome://interstitials/enterprise-warn loads correctly.
 - (void)testEnterpriseWarnInterstitialUI {
-  GURL enterpriseWarnURL =
-      GURL(kChromeUIIntersitialsURL).Resolve(kChromeInterstitialEnterpriseWarn);
+  GURL enterpriseWarnURL = GURL(kChromeUIInterstitialsURL)
+                               .Resolve(kChromeInterstitialEnterpriseWarn);
   [ChromeEarlGrey loadURL:enterpriseWarnURL];
 
   [ChromeEarlGrey waitForWebStateContainingText:
@@ -141,7 +144,7 @@
 
 // Tests that chrome://interstitials/enterprise-block loads correctly.
 - (void)testEnterpriseBlockInterstitialUI {
-  GURL enterpriseBlockURL = GURL(kChromeUIIntersitialsURL)
+  GURL enterpriseBlockURL = GURL(kChromeUIInterstitialsURL)
                                 .Resolve(kChromeInterstitialEnterpriseBlock);
   [ChromeEarlGrey loadURL:enterpriseBlockURL];
 

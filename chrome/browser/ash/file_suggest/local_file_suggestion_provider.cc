@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
@@ -53,10 +53,10 @@ ValidateFiles(const std::vector<std::pair<std::string, float>>& ranker_results,
     const auto& path = base::FilePath::FromUTF8Unsafe(path_score.first);
 
     // Exclude any paths that are parented at an enabled trash location.
-    if (base::ranges::any_of(trash_paths,
-                             [&path](const base::FilePath& trash_path) {
-                               return trash_path.IsParent(path);
-                             })) {
+    if (std::ranges::any_of(trash_paths,
+                            [&path](const base::FilePath& trash_path) {
+                              return trash_path.IsParent(path);
+                            })) {
       invalid_results.emplace_back(path);
       continue;
     }

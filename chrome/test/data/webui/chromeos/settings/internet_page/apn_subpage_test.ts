@@ -4,12 +4,13 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ApnSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {ApnSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
-import {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
+import type {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {DeviceStateProperties, InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {DeviceStateProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -23,19 +24,19 @@ suite('<apn-subpage>', () => {
 
   function getDefaultDeviceStateProps(): DeviceStateProperties {
     return {
-      ipv4Address: undefined,
-      ipv6Address: undefined,
-      imei: undefined,
-      macAddress: undefined,
+      ipv4Address: null,
+      ipv6Address: null,
+      imei: null,
+      macAddress: null,
       scanning: false,
-      simLockStatus: undefined,
-      simInfos: undefined,
+      simLockStatus: null,
+      simInfos: null,
       inhibitReason: InhibitReason.kNotInhibited,
       simAbsent: false,
       deviceState: DeviceStateType.kUninitialized,
       type: NetworkType.kCellular,
       managedNetworkAvailable: false,
-      serial: undefined,
+      serial: null,
       isCarrierLocked: false,
       isFlashing: false,
     };
@@ -75,7 +76,7 @@ suite('<apn-subpage>', () => {
     });
   });
 
-  test('Check if APN list exists', async () => {
+  test('Check if APN list exists', () => {
     assertTrue(!!apnSubpage);
     assertTrue(!!getApnList());
   });
@@ -275,7 +276,7 @@ suite('<apn-subpage>', () => {
     assertEquals(PortalState.kNoInternet, getApnList()!.portalState);
   });
 
-  test('ShouldDisallowApnModification propagated to <apn-list>', async () => {
+  test('ShouldDisallowApnModification propagated to <apn-list>', () => {
     assertFalse(getApnList()!.shouldDisallowApnModification);
     apnSubpage.shouldDisallowApnModification = true;
     assertTrue(getApnList()!.shouldDisallowApnModification);

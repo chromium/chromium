@@ -46,7 +46,7 @@ TabSizer CalculateSpaceFractionAvailable(
   float space_fraction_available;
   if (width < crossover_width) {
     domain = LayoutDomain::kInactiveWidthBelowActiveWidth;
-    // |minimum_width| may equal |crossover_width| when there is only one tab,
+    // `minimum_width` may equal `crossover_width` when there is only one tab,
     // that tab is active, and the tabstrip width is smaller than that width,
     // which will generally happen during startup of a new window. In this case
     // the layout will always be replaced before we paint, so our return value
@@ -57,7 +57,7 @@ TabSizer CalculateSpaceFractionAvailable(
                                          (crossover_width - minimum_width);
   } else {
     domain = LayoutDomain::kInactiveWidthEqualsActiveWidth;
-    // |preferred_width| may equal |crossover_width| when all tabs are pinned.
+    // `preferred_width` may equal `crossover_width` when all tabs are pinned.
     // In this case tabs will have the same width regardless of the space
     // available to them, so our return value is irrelevant.
     space_fraction_available = preferred_width == crossover_width

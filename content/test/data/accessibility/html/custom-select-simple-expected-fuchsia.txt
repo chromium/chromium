@@ -1,0 +1,9 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable has_input_focus label='Fruit' actions='{DEFAULT}' value='Apple'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN focusable selected label='Apple' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden focusable label='Orange' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden focusable label='Banana' actions='{DEFAULT}'

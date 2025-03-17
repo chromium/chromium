@@ -68,15 +68,9 @@ generate_jni("features_jni_headers") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/components/search_engines/SearchEngineChoiceService.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",
   ]
-}
-
-generate_jni("test_utils_jni_headers") {
-  testonly = true
-  sources = [ "java/src/org/chromium/components/search_engines/test/util/SearchEngineChoiceServiceTestUtil.java" ]
 }
 
 android_library("test_utils_java") {
@@ -84,8 +78,6 @@ android_library("test_utils_java") {
   sources = [
     "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlTestHelpers.java",
-    "java/src/org/chromium/components/search_engines/test/util/SearchEngineChoiceServiceTestUtil.java",
-    "java/src/org/chromium/components/search_engines/test/util/SearchEnginesFeaturesTestUtil.java",
   ]
   deps = [
     ":delegate_java",
@@ -102,10 +94,7 @@ android_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
   testonly = true
-  sources = [
-    "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceUnitTest.java",
-    "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtilsUnitTest.java",
-  ]
+  sources = [ "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtilsUnitTest.java" ]
   deps = [
     ":delegate_java",
     ":java",

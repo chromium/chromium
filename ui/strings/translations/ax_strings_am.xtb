@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">ጥቅስ</translation>
 <translation id="1681022320378710418">የአሁኑ ሰዓት</translation>
 <translation id="1727839386348365796">Eyedropper</translation>
+<translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
 <translation id="1787192514241997742">ጠቅላላ ጊዜ፦ <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">የዛፍ ፍርግርግ</translation>
 <translation id="1822429046913737220">ጥዋት/ከሰዓት</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">ሳምንት መራጭ</translation>
 <translation id="3706100364254443312">ቀይር</translation>
 <translation id="3808586225841795776">የጊዜ ቆይታ</translation>
-<translation id="3914173277599553213">የሚያስፈልግ</translation>
 <translation id="3920932319529768807">ድምዳሜ</translation>
 <translation id="3924558731517983934">መተግበሪያ</translation>
 <translation id="3944740393230681990">ቅድመ-ታሪክ</translation>
 <translation id="3960700977367013758">የማሸብለያ አሞሌ</translation>
+<translation id="4021716437419160885">ወደ ታች ይሸብልሉ</translation>
 <translation id="4103419683916926126">ሚሊሰኮንዶች</translation>
 <translation id="4151657705144244502">ግራፊክ</translation>
 <translation id="4160057747563657758">ስልክ</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">ዛፍ</translation>
 <translation id="4668956016107839909">ቅጥያዎች</translation>
 <translation id="4698212723196775569">ኮድ</translation>
+<translation id="4710792130811321440">የድምፅ ትራክ የምርጫ ምናሌን አሳይ</translation>
 <translation id="4742539557769756338">ሽፋን</translation>
 <translation id="4748357248530471599">የተቆረጠው የማሳያ ክፍል ሙሉ ማያ ገጽን ይቀያይሩ</translation>
 <translation id="4757246831282535685">የትር ፓነል</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">አስተያየት</translation>
 <translation id="4924138096460353083">ያልተወሰነ</translation>
 <translation id="4950364064308314478">የአካባቢ ቀን እና ሰዓት መራጭን አሳይ</translation>
+<translation id="495046168593986294">ወደ ላይ ይሸብልሉ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ተመርጧል</translation>
 <translation id="5022314756875057021">የረድፍ ቡድን</translation>
 <translation id="5034860022980953847">የሂደት አመልካች</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">ማሾሪያ አዝራር</translation>
 <translation id="6011459053400940133">የድምጽ ተንሸራታች</translation>
 <translation id="6015796118275082299">ዓመት</translation>
+<translation id="602001110135236999">ወደ ግራ ይሸብልሉ</translation>
 <translation id="6023896073578205740">የዝርዝር ሳጥን</translation>
 <translation id="6119846243427417423">አንቃ</translation>
 <translation id="6150588977291308318">ዋቢ መጽሐፍት</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">ተጫን</translation>
 <translation id="6885760532393684712">ማውጫ</translation>
 <translation id="689129560213475294">ኮሎፎን</translation>
+<translation id="6919089238568236262">የቪድዮ ትራክ የምርጫ ምናሌን አሳይ</translation>
 <translation id="6934078000481955284">የጽሑፍ ጥቅስ</translation>
 <translation id="693476918119313863">ራስጌ</translation>
 <translation id="6941933287844615239">ማህደረ መረጃን አውርድ</translation>

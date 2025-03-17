@@ -16,11 +16,9 @@
 using on_device_translation::CreateFakeDictionaryData;
 using on_device_translation::LanguagePackKey;
 using on_device_translation::MockComponentManager;
-using on_device_translation::TestCanTranslate;
 using on_device_translation::TestCreateTranslator;
-using on_device_translation::TestLanguagePairAvailable;
 using on_device_translation::TestSimpleTranslationWorks;
-using on_device_translation::TestTranslatorCapabilitiesAvailable;
+using on_device_translation::TestTranslationAvailable;
 
 namespace policy {
 
@@ -84,9 +82,7 @@ class TranslatorAPIPolicyTest : public PolicyTest {
 IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, DefaultAllowed) {
   NavigateToEmptyPage();
   TestSimpleTranslationWorks(browser(), "en", "ja");
-  TestCanTranslate(browser(), "en", "ja", "readily");
-  TestLanguagePairAvailable(browser(), "en", "ja", "readily");
-  TestTranslatorCapabilitiesAvailable(browser(), "readily");
+  TestTranslationAvailable(browser(), "en", "ja", "available");
 }
 
 // Test that set the policy to false will disallow the API.
@@ -96,9 +92,7 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, Disallow) {
   TestCreateTranslator(browser(), "en", "ja",
                        "NotSupportedError: Unable to create translator for the "
                        "given source and target language.");
-  TestCanTranslate(browser(), "en", "ja", "no");
-  TestLanguagePairAvailable(browser(), "en", "ja", "no");
-  TestTranslatorCapabilitiesAvailable(browser(), "no");
+  TestTranslationAvailable(browser(), "en", "ja", "unavailable");
 }
 
 // Test that set the policy to true will allow the API.
@@ -106,9 +100,7 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, Allow) {
   NavigateToEmptyPage();
   SetTranslatorAPIAllowedPolicy(true);
   TestSimpleTranslationWorks(browser(), "en", "ja");
-  TestCanTranslate(browser(), "en", "ja", "readily");
-  TestLanguagePairAvailable(browser(), "en", "ja", "readily");
-  TestTranslatorCapabilitiesAvailable(browser(), "readily");
+  TestTranslationAvailable(browser(), "en", "ja", "available");
 }
 
 // Test that the policy can be dynamically refreshed.
@@ -119,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest,
   ASSERT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
       (async () => {
         try {
-          window._translator = await translation.createTranslator({
+          window._translator = await ai.translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -146,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest,
       })();
       )")
                 .ExtractString(),
-            "NotReadableError: Unable to translate the given text.");
+            "UnknownError: Other generic failures occurred.");
 
   // Allow the API.
   SetTranslatorAPIAllowedPolicy(true);

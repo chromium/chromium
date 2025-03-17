@@ -1159,13 +1159,11 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
 
   if (TestType() != ExternalObjectTestType::kOnlyFileSystemAccessHandles) {
     EXPECT_TRUE(backing_store()->IsBlobCleanupPending());
-#if DCHECK_IS_ON()
     EXPECT_EQ(
         3, backing_store()->NumAggregatedJournalCleaningRequestsForTesting());
-#endif
-    for (int i = 3; i < BackingStore::kMaxJournalCleanRequests; ++i) {
-      backing_store()->StartJournalCleaningTimer();
-    }
+    backing_store()->SetNumAggregatedJournalCleaningRequestsForTesting(
+        BackingStore::kMaxJournalCleanRequests - 1);
+    backing_store()->StartJournalCleaningTimer();
     CheckFirstNBlobsRemoved(3);
 #if DCHECK_IS_ON()
     EXPECT_EQ(3, backing_store()->NumBlobFilesDeletedForTesting());
@@ -1631,7 +1629,141 @@ std::string EncodeV3BlobInfos(
   return ret;
 }
 
+int64_t GetTotalBlobSize(MockBlobStorageContext* blob_context) {
+  int64_t space_used = 0;
+  for (const BlobWrite& write : blob_context->writes()) {
+    space_used += base::GetFileSize(write.path).value_or(0);
+  }
+  return space_used;
+}
+
 }  // namespace
+
+// This test ensures that the rollback process correctly handles blob cleanup
+// in abort scenarios, specifically verifying that blob writes are rolled back
+// and no orphaned blobs are left on disk after an abort.
+// For more details, refer to https://crbug.com/41460842
+TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
+  // Enable writing files to disk for the blob context.
+  blob_context_->SetWriteFilesToDisk(true);
+
+  // Ensure no disk space is used initially.
+  int64_t initial_disk_space = GetTotalBlobSize(blob_context_.get());
+  ASSERT_EQ(initial_disk_space, 0);
+
+  // The initial transaction is necessary to establish a baseline blob on disk.
+  // This ensures that the rollback process only affects the blobs inserted in
+  // the second transaction, allowing us to verify that the rollback correctly
+  // handles blob cleanup without impacting pre-existing blobs.
+  BackingStore::Transaction initial_transaction(
+      BackingStore::Transaction(backing_store()->AsWeakPtr(),
+                                blink::mojom::IDBTransactionDurability::Relaxed,
+                                blink::mojom::IDBTransactionMode::ReadWrite));
+  initial_transaction.Begin(CreateDummyLock());
+
+  // Insert an initial blob.
+  std::string initial_blob_name = "initial_blob";
+  IndexedDBExternalObject initial_blob =
+      CreateBlobInfo(base::UTF8ToUTF16(initial_blob_name), /*size=*/100);
+  IndexedDBValue initial_value("initial_value", {initial_blob});
+  IndexedDBKey initial_key(u"initial_key");
+  BackingStore::RecordIdentifier initial_record;
+  EXPECT_TRUE(backing_store()
+                  ->PutRecord(&initial_transaction, /*database_id=*/1,
+                              /*object_store_id=*/1, initial_key,
+                              &initial_value, &initial_record)
+                  .ok());
+
+  // Commit the initial transaction (Phase 1 and Phase 2).
+  bool initial_succeeded = false;
+  base::RunLoop initial_write_blobs_loop;
+  EXPECT_TRUE(
+      initial_transaction
+          .CommitPhaseOne(CreateBlobWriteCallback(
+              &initial_succeeded, initial_write_blobs_loop.QuitClosure()))
+          .ok());
+  initial_write_blobs_loop.Run();
+  EXPECT_TRUE(initial_succeeded);
+  EXPECT_TRUE(initial_transaction.CommitPhaseTwo().ok());
+
+  // Track the path of the initially written blob.
+  ASSERT_GT(blob_context_->writes().size(), 0u);
+  base::FilePath initial_blob_path = blob_context_->writes()[0].path;
+
+  // Ensure disk space is used after committing the initial transaction.
+  int64_t disk_space_after_committed_transaction =
+      GetTotalBlobSize(blob_context_.get());
+  ASSERT_GT(disk_space_after_committed_transaction, 0);
+
+  // Start a new transaction for the test scenario (rollback).
+  BackingStore::Transaction transaction(
+      BackingStore::Transaction(backing_store()->AsWeakPtr(),
+                                blink::mojom::IDBTransactionDurability::Relaxed,
+                                blink::mojom::IDBTransactionMode::ReadWrite));
+  transaction.Begin(CreateDummyLock());
+
+  // Prepare test data for second transaction.
+  IndexedDBKey key = IndexedDBKey(u"key0");
+  std::string name = "name0";
+  IndexedDBExternalObject test_blob =
+      CreateBlobInfo(base::UTF8ToUTF16(name), 100);
+  IndexedDBValue value = IndexedDBValue("value0", {test_blob});
+
+  // Insert additional blob that will be rolled back.
+  BackingStore::RecordIdentifier record;
+  EXPECT_TRUE(backing_store()
+                  ->PutRecord(&transaction, /*database_id=*/1,
+                              /*object_store_id=*/1, key, &value, &record)
+                  .ok());
+
+  // Simulate commit phase 1 to ensure that the blob is written to disk.
+  bool succeeded = false;
+  base::RunLoop write_blobs_loop;
+  EXPECT_TRUE(transaction
+                  .CommitPhaseOne(CreateBlobWriteCallback(
+                      &succeeded, write_blobs_loop.QuitClosure()))
+                  .ok());
+  write_blobs_loop.Run();
+  EXPECT_TRUE(succeeded);
+
+  // Verify that disk space has increased after commit phase 1.
+  int64_t disk_space_after_commit_phase_one =
+      GetTotalBlobSize(blob_context_.get());
+  ASSERT_GT(disk_space_after_commit_phase_one,
+            disk_space_after_committed_transaction);
+
+  // Set the condition to trigger immediate journal cleaning.
+  backing_store_->SetNumAggregatedJournalCleaningRequestsForTesting(
+      BackingStore::kMaxJournalCleanRequests - 1);
+
+  // Introduce the rollback: Simulate a failure or abort in the transaction.
+  transaction.Rollback();
+
+  // Wait for the cleanup process to complete.
+  base::RunLoop cleanup_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, cleanup_loop.QuitClosure());
+  cleanup_loop.Run();
+
+  // Verify that the number of writes is as expected.
+  EXPECT_EQ(blob_context_->writes().size(), 2u);
+  // After the rollback, verify that the blobs inserted in the transaction are
+  // cleaned up.
+  for (const BlobWrite& write : blob_context_->writes()) {
+    if (write.path == initial_blob_path) {
+      // Ensure initial blob still exists.
+      EXPECT_TRUE(base::PathExists(write.path));
+    } else {
+      // Ensure rolled-back blobs are deleted.
+      EXPECT_FALSE(base::PathExists(write.path));
+    }
+  }
+
+  // Finally, verify that the disk space is back to its original state after the
+  // rollback.
+  int64_t disk_space_after_rollback = GetTotalBlobSize(blob_context_.get());
+  ASSERT_EQ(disk_space_after_committed_transaction, disk_space_after_rollback);
+}
 
 TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   int64_t database_id;
@@ -1991,4 +2123,25 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   task_environment_.RunUntilIdle();
 }
 
+class BackingStoreTestForCleanupScheduler : public BackingStoreTest {
+ public:
+  BackingStoreTestForCleanupScheduler() {
+    scoped_feature_list_.InitAndEnableFeature(kIdbInSessionDbCleanup);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BackingStoreTestForCleanupScheduler,
+       SchedulerInitializedIfTombstoneThresholdExceeded) {
+  backing_store_->OnTransactionComplete(false);
+  EXPECT_FALSE(backing_store_->GetLevelDBCleanupSchedulerForTesting()
+                   .GetRunningStateForTesting()
+                   .has_value());
+  backing_store_->OnTransactionComplete(true);
+  EXPECT_TRUE(backing_store_->GetLevelDBCleanupSchedulerForTesting()
+                  .GetRunningStateForTesting()
+                  .has_value());
+}
 }  // namespace content::indexed_db

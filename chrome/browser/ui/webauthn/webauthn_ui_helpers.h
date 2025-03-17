@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_WEBAUTHN_UI_HELPERS_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_WEBAUTHN_UI_HELPERS_H_
 
+#include <cstddef>
 #include <string>
 
 namespace webauthn_ui_helpers {

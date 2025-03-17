@@ -4,6 +4,11 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator.h"
 
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_settings_mediator.h"
+#import "ios/chrome/browser/photos/model/photos_service.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
@@ -12,15 +17,17 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 @interface DownloadsSettingsCoordinator () <
     DownloadsSettingsTableViewControllerActionDelegate,
@@ -37,6 +44,9 @@
   SaveToPhotosSettingsMediator* _saveToPhotosSettingsMediator;
   SaveToPhotosSettingsAccountSelectionViewController*
       _saveToPhotosAccountSelectionViewController;
+
+  // Auto deletion settings mediator.
+  AutoDeletionSettingsMediator* _autoDeletionSettingsMediator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -58,12 +68,14 @@
 
 - (void)start {
   ProfileIOS* profile = self.browser->GetProfile();
+  PhotosService* photosService = PhotosServiceFactory::GetForProfile(profile);
   _saveToPhotosSettingsMediator = [[SaveToPhotosSettingsMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForProfile(profile)
                         prefService:profile->GetPrefs()
                     identityManager:IdentityManagerFactory::GetForProfile(
-                                        profile)];
+                                        profile)
+                      photosService:photosService];
 
   _downloadsSettingsTableViewController =
       [[DownloadsSettingsTableViewController alloc] init];
@@ -75,6 +87,16 @@
   _downloadsSettingsTableViewController.saveToPhotosSettingsMutator =
       _saveToPhotosSettingsMediator;
 
+  if (IsDownloadAutoDeletionFeatureEnabled()) {
+    PrefService* localState = GetApplicationContext()->GetLocalState();
+    _autoDeletionSettingsMediator =
+        [[AutoDeletionSettingsMediator alloc] initWithLocalState:localState];
+    _autoDeletionSettingsMediator.autoDeletionConsumer =
+        _downloadsSettingsTableViewController;
+    _downloadsSettingsTableViewController.autoDeletionSettingsMutator =
+        _autoDeletionSettingsMediator;
+  }
+
   [self.baseNavigationController
       pushViewController:_downloadsSettingsTableViewController
                 animated:YES];
@@ -83,6 +105,11 @@
 - (void)stop {
   [_saveToPhotosSettingsMediator disconnect];
   _saveToPhotosSettingsMediator = nil;
+
+  if (IsDownloadAutoDeletionFeatureEnabled()) {
+    [_autoDeletionSettingsMediator disconnect];
+    _autoDeletionSettingsMediator = nil;
+  }
 
   [_saveToPhotosAccountSelectionViewController.navigationController
       popToViewController:_saveToPhotosAccountSelectionViewController
@@ -96,7 +123,6 @@
                  animated:NO];
   [_downloadsSettingsTableViewController.navigationController
       popViewControllerAnimated:NO];
-  _downloadsSettingsTableViewController = nil;
 }
 
 #pragma mark - DownloadsSettingsTableViewControllerPresentationDelegate
@@ -139,8 +165,7 @@
   ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_SAVE_TO_PHOTOS_IOS
+            accessPoint:signin_metrics::AccessPoint::kSaveToPhotosIos
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,

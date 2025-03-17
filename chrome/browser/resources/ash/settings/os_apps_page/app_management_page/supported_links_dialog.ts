@@ -35,8 +35,7 @@ export class AppManagementSupportedLinksDialogElement extends
 
   override ready(): void {
     super.ready();
-    this.addEventListener(
-        'keydown', e => this.trapDialogFocus_(e as KeyboardEvent));
+    this.addEventListener('keydown', e => this.trapDialogFocus_(e));
   }
 
   // The close button is the only tabbable element in the dialog, so focus

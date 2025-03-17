@@ -6,7 +6,6 @@ module device.mojom;
 
 import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/fingerprint.mojom";
-import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
 import "services/device/public/mojom/geolocation_internals.mojom";
@@ -27,7 +26,7 @@ import "services/device/public/mojom/hid.mojom";
 [EnableIf=enable_input_device_manager]
 import "services/device/public/mojom/input_service.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "services/device/public/mojom/mtp_manager.mojom";
 
 [EnableIf=is_android]
@@ -41,9 +40,6 @@ import "services/device/public/mojom/pressure_manager.mojom";
 interface DeviceService {
   // Binds a Fingerprint endpoint.
   BindFingerprint(pending_receiver<Fingerprint> receiver);
-
-  // Binds a GeolocationConfig endpoint.
-  BindGeolocationConfig(pending_receiver<GeolocationConfig> receiver);
 
   // Binds a GeolocationContext endpoint.
   BindGeolocationContext(pending_receiver<GeolocationContext> receiver);
@@ -78,7 +74,7 @@ interface DeviceService {
   BindHidManager(pending_receiver<HidManager> receiver);
 
   // Binds a MtpManager endpoint.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindMtpManager(pending_receiver<MtpManager> receiver);
 
   // Binds a PowerMonitor endpoint.

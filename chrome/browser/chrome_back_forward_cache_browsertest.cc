@@ -682,7 +682,7 @@ class ChromeBackForwardCacheBrowserWithEmbedTestBase
       blink::scheduler::WebSchedulerTrackedFeature feature,
       base::Location location) {
     content::FetchHistogramsFromChildProcesses();
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(feature);
+    base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(feature);
     base::Bucket expected_blocklisted(sample, 1);
 
     EXPECT_THAT(histogram_tester_->GetAllSamples(
@@ -763,7 +763,7 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
     static constexpr uint8_t kReasonHaveInnerContents = 32;
 
     content::FetchHistogramsFromChildProcesses();
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+    base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(
         UseOopif() ? kReasonBlocklistedFeatures : kReasonHaveInnerContents);
     base::Bucket expected_not_restored(sample, 1);
 

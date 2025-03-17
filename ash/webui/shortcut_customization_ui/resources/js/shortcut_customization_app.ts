@@ -10,7 +10,6 @@ import './search/search_box.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
@@ -19,24 +18,27 @@ import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elem
 import {FindShortcutMixin} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import type {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver, PolicyUpdatedObserverInterface, PolicyUpdatedObserverReceiver, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
+import type {AcceleratorsUpdatedObserverInterface, PolicyUpdatedObserverInterface} from '../mojom-webui/shortcut_customization.mojom-webui.js';
+import {AcceleratorsUpdatedObserverReceiver, PolicyUpdatedObserverReceiver, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
-import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
-import {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
+import type {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
+import type {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
-import {ShowEditDialogEvent} from './accelerator_row.js';
+import type {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {RouteObserver, Router} from './router.js';
+import type {RouteObserver} from './router.js';
+import {Router} from './router.js';
 import {SearchBoxElement} from './search/search_box.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
-import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import type {AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfigResult} from './shortcut_types.js';
 import {getAcceleratorId, getCategoryNameStringId, isCustomizationAllowed} from './shortcut_utils.js';
 
 const oldKeyboardSettingsLink = 'chrome://os-settings/keyboard-overlay';
@@ -114,9 +116,15 @@ export class ShortcutCustomizationAppElement extends
         type: Boolean,
         value: true,
       },
+
+      restoreAllButtonHidden: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
+  protected restoreAllButtonHidden: boolean;
   protected showRestoreAllDialog: boolean;
   protected dialogShortcutTitle: string;
   protected dialogAccelerators: AcceleratorInfo[];
@@ -158,6 +166,7 @@ export class ShortcutCustomizationAppElement extends
         });
 
     this.fetchAccelerators();
+    this.updateHideRestoreAllButtonState();
     this.addEventListener('show-edit-dialog', this.showDialog);
     this.addEventListener('edit-dialog-closed', this.onDialogClosed);
     this.addEventListener(
@@ -225,6 +234,7 @@ export class ShortcutCustomizationAppElement extends
   // AcceleratorsUpdatedObserverInterface:
   onAcceleratorsUpdated(config: MojoAcceleratorConfig): void {
     this.acceleratorlookupManager.setAcceleratorLookup(config);
+    this.updateHideRestoreAllButtonState();
     // Update subsections.
     this.$.navigationPanel.notifyEvent('updateSubsections');
 
@@ -334,8 +344,15 @@ export class ShortcutCustomizationAppElement extends
     this.showRestoreAllDialog = false;
   }
 
-  protected shouldHideRestoreAllButton(): boolean {
-    return !isCustomizationAllowed();
+  protected updateHideRestoreAllButtonState(): void {
+    if (!isCustomizationAllowed()) {
+      this.restoreAllButtonHidden = true;
+      return;
+    }
+    this.shortcutProvider.hasCustomAccelerators().then(
+        (result: {hasCustomAccelerators: boolean}) => {
+          this.restoreAllButtonHidden = !result.hasCustomAccelerators;
+        });
   }
 
   protected updateDialogAccelerators(

@@ -185,6 +185,7 @@ class PermissionRequestManager
   base::WeakPtr<PermissionPrompt::Delegate> GetWeakPtr() override;
   content::WebContents* GetAssociatedWebContents() override;
   bool RecreateView() override;
+  const PermissionPrompt* GetCurrentPrompt() const override;
 
   // Returns the bounds of the active permission prompt view if we're
   // displaying one.
@@ -229,8 +230,6 @@ class PermissionRequestManager
     view_factory_ = std::move(view_factory);
   }
 
-  PermissionPrompt* view_for_testing() const { return view_.get(); }
-
   void set_current_request_first_display_time_for_testing(base::Time time) {
     current_request_first_display_time_ = time;
   }
@@ -238,6 +237,15 @@ class PermissionRequestManager
   std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
   prediction_grant_likelihood_for_testing() const {
     return prediction_grant_likelihood_;
+  }
+
+  std::optional<bool> was_decision_held_back_for_testing() const {
+    return was_decision_held_back_;
+  }
+
+  std::optional<PermissionRequestRelevance>
+  permission_request_relevance_for_testing() const {
+    return permission_request_relevance_;
   }
 
   std::optional<permissions::PermissionPromptDisposition>
@@ -507,9 +515,13 @@ class PermissionRequestManager
   std::optional<UiDecision> current_request_ui_to_use_;
 
   // The likelihood value returned by the Web Permission Predictions Service,
-  // to be recoreded in UKM.
+  // to be recorded in UKM.
   std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
       prediction_grant_likelihood_;
+
+  // The permission request relevance returned by an on-device ML model,
+  // to be recorded in UKM.
+  std::optional<PermissionRequestRelevance> permission_request_relevance_;
 
   // Status of the decision made by the Web Permission Prediction Service, if
   // it was held back or not.

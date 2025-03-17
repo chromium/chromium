@@ -32,13 +32,11 @@ ${this.enableHistoryEmbeddings_ ? html`
 <div id="embeddingsScrollContainer"
     class="sp-scroller sp-scroller-bottom-of-page">
   ${this.shouldShowHistoryEmbeddingsResults_() ? html`
-  <cr-history-embeddings
+  <cr-history-embeddings show-relative-times in-side-panel
       .searchQuery="${this.query}"
-      .showRelativeTimes="${true}"
-      .forceSuppressLogging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
-      .otherHistoryResultClicked="${this.nonEmbeddingsResultClicked_}"
+      ?force-suppress-logging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
+      ?other-history-result-clicked="${this.nonEmbeddingsResultClicked_}"
       .numCharsForQuery="${this.numCharsTypedInSearch_}"
-      .inSidePanel="${true}"
       @answer-click="${this.onHistoryEmbeddingsResultClick_}"
       @answer-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
       @is-empty-changed="${this.onHistoryEmbeddingsIsEmptyChanged_}"

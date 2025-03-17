@@ -21,7 +21,10 @@ export function disableTranscription(firstTime = false): void {
   });
 }
 
-function installSoda(language: LanguageCode) {
+/**
+ * Installs Soda and starts download perf event.
+ */
+export function installSoda(language: LanguageCode): void {
   const platformHandler = usePlatformHandler();
   // Records download events initiated from UI download buttons.
   if (platformHandler.getSodaState(language).value.kind === 'notInstalled') {
@@ -36,7 +39,7 @@ function installSoda(language: LanguageCode) {
 }
 
 /**
- * Wrapper that installs Soda and starts download perf event.
+ * Enables transcription.
  */
 export function enableTranscriptionSkipConsentCheck(): void {
   settings.mutate((s) => {

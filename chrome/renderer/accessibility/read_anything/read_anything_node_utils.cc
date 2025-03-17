@@ -7,7 +7,6 @@
 #include <cinttypes>
 
 #include "base/strings/stringprintf.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -18,46 +17,6 @@ namespace a11y {
 bool IsSuperscript(ui::AXNode* ax_node) {
   return ax_node->data().GetTextPosition() ==
          ax::mojom::TextPosition::kSuperscript;
-}
-
-bool IsNodeIgnoredForReadAnything(ui::AXNode* ax_node, bool is_pdf) {
-  // If the node is not in the active tree (this could happen when RM is still
-  // loading), ignore it.
-  if (!ax_node) {
-    return true;
-  }
-  ax::mojom::Role role = ax_node->GetRole();
-
-  // PDFs processed with OCR have additional nodes that mark the start and end
-  // of a page. The start of a page is indicated with a kBanner node that has a
-  // child static text node. Ignore both. The end of a page is indicated with a
-  // kContentInfo node that has a child static text node. Ignore the static text
-  // node but keep the kContentInfo so a line break can be inserted in between
-  // pages in GetHtmlTagForPDF.
-  if (is_pdf) {
-    // The text content of the aforementioned kBanner or kContentInfo nodes is
-    // the same as the text content of its child static text node.
-    std::string text = ax_node->GetTextContentUTF8();
-    ui::AXNode* parent = ax_node->GetParent();
-
-    std::string pdf_begin_message =
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN);
-    std::string pdf_end_message =
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END);
-
-    bool is_start_or_end_static_text_node =
-        parent && ((parent->GetRole() == ax::mojom::Role::kBanner &&
-                    text == pdf_begin_message) ||
-                   (parent->GetRole() == ax::mojom::Role::kContentInfo &&
-                    text == pdf_end_message));
-    if ((role == ax::mojom::Role::kBanner && text == pdf_begin_message) ||
-        is_start_or_end_static_text_node) {
-      return true;
-    }
-  }
-
-  // Ignore interactive elements, except for text fields.
-  return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
 }
 
 bool IsTextForReadAnything(ui::AXNode* node, bool is_pdf, bool is_docs) {
@@ -140,7 +99,7 @@ std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag) {
           l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END)) {
         return "br";
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     default:
       return html_tag.empty() ? "span" : html_tag;
   }
@@ -149,7 +108,10 @@ std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag) {
 std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
                                     const std::string& html_tag) {
   // Sometimes whole paragraphs can be formatted as a heading. If the text is
-  // longer than 2 lines, assume it was meant to be a paragragh,
+  // longer than 2 lines, assume it was meant to be a paragragh.
+  // LINT.IfChange(MaxLineWidth)
+  static constexpr int kMaxLineWidth = 60;
+  // LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/app.css:MaxLineWidth)
   if (ax_node->GetTextContentLengthUTF8() > (2 * kMaxLineWidth)) {
     return "p";
   }

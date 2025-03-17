@@ -5,8 +5,8 @@
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 
 #include "base/bits.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace storage {
 
@@ -23,16 +23,16 @@ bool IsValidPageSize(int page_size) {
 // static
 std::unique_ptr<SharedStorageOptions> SharedStorageOptions::Create() {
   return std::make_unique<SharedStorageOptions>(
-      blink::features::kMaxSharedStoragePageSize.Get(),
-      blink::features::kMaxSharedStorageCacheSize.Get(),
+      network::features::kMaxSharedStoragePageSize.Get(),
+      network::features::kMaxSharedStorageCacheSize.Get(),
       network::kMaxSharedStorageBytesPerOrigin,
-      blink::features::kMaxSharedStorageInitTries.Get(),
-      blink::features::kMaxSharedStorageIteratorBatchSize.Get(),
-      blink::features::kSharedStorageBitBudget.Get(),
-      blink::features::kSharedStorageBudgetInterval.Get(),
-      blink::features::kSharedStorageStalePurgeInitialInterval.Get(),
-      blink::features::kSharedStorageStalePurgeRecurringInterval.Get(),
-      blink::features::kSharedStorageStalenessThreshold.Get());
+      network::features::kMaxSharedStorageInitTries.Get(),
+      network::features::kMaxSharedStorageIteratorBatchSize.Get(),
+      network::features::kSharedStorageBitBudget.Get(),
+      network::features::kSharedStorageBudgetInterval.Get(),
+      network::features::kSharedStorageStalePurgeInitialInterval.Get(),
+      network::features::kSharedStorageStalePurgeRecurringInterval.Get(),
+      network::features::kSharedStorageStalenessThreshold.Get());
 }
 
 SharedStorageOptions::SharedStorageOptions(

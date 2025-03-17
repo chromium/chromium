@@ -54,6 +54,7 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/active_blob_registry.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
 #include "content/browser/indexed_db/instance/leveldb_compaction_task.h"
 #include "content/browser/indexed_db/instance/leveldb_tombstone_sweeper.h"
 #include "content/browser/indexed_db/status.h"
@@ -93,6 +94,10 @@ class AutoDidCommitTransaction {
 };
 
 namespace {
+// Threshold for the tombstones which were encountered during the
+// lifetime of the cursor. Crossing it will cause scheduling of the
+// `LevelDBCleanupScheduler`.
+constexpr int kCursorTombstoneThreshold = 1000;
 
 std::string ComputeOriginIdentifier(
     const storage::BucketLocator& bucket_locator) {
@@ -1063,11 +1068,6 @@ Status FindDatabaseId(TransactionalLevelDBDatabase* db,
   return s;
 }
 
-// The number of iterations for every 'round' of the tombstone sweeper.
-const int kTombstoneSweeperRoundIterations = 1000;
-// The maximum total iterations for the tombstone sweeper.
-const int kTombstoneSweeperMaxIterations = 10 * 1000 * 1000;
-
 }  // namespace
 
 BackingStore::BackingStore(
@@ -1085,7 +1085,8 @@ BackingStore::BackingStore(
       origin_identifier_(ComputeOriginIdentifier(bucket_locator)),
       transactional_leveldb_factory_(transactional_leveldb_factory),
       db_(std::move(db)),
-      blob_files_cleaned_(std::move(blob_files_cleaned)) {
+      blob_files_cleaned_(std::move(blob_files_cleaned)),
+      level_db_cleanup_scheduler_(db_->db(), this) {
   active_blob_registry_ = std::make_unique<ActiveBlobRegistry>(
       std::move(report_outstanding_blobs),
       base::BindRepeating(&BackingStore::ReportBlobUnused,
@@ -1452,6 +1453,7 @@ Status BackingStore::ValidateBlobFiles() {
 std::unique_ptr<BackingStore::Transaction> BackingStore::CreateTransaction(
     blink::mojom::IDBTransactionDurability durability,
     blink::mojom::IDBTransactionMode mode) {
+  level_db_cleanup_scheduler_.OnTransactionStart();
   return std::make_unique<BackingStore::Transaction>(weak_factory_.GetWeakPtr(),
                                                      durability, mode);
 }
@@ -1467,6 +1469,13 @@ bool BackingStore::ShouldSyncOnCommit(
     case blink::mojom::IDBTransactionDurability::Relaxed:
       return false;
   }
+}
+
+void BackingStore::OnTransactionComplete(bool tombstone_threshold_exceeded) {
+  if (tombstone_threshold_exceeded) {
+    level_db_cleanup_scheduler_.Initialize();
+  }
+  level_db_cleanup_scheduler_.OnTransactionComplete();
 }
 
 // static
@@ -2092,7 +2101,7 @@ Status BackingStore::RenameIndex(Transaction* transaction,
   const std::string name_key = IndexMetaDataKey::Encode(
       database_id, object_store_id, metadata->id, IndexMetaDataKey::NAME);
 
-  // TODO(dmurph): Add consistancy checks & umas for old name.
+  // TODO(dmurph): Add consistency checks & umas for old name.
   Status s = PutString(transaction->transaction(), name_key, new_name);
   if (!s.ok()) {
     return s;
@@ -2364,13 +2373,11 @@ Status BackingStore::DeleteRange(BackingStore::Transaction* transaction,
   if (!s.ok()) {
     return s;
   }
-  start_key =
-      ExistsEntryKey::Encode(database_id, object_store_id, start_cursor->key());
-  stop_key =
-      ExistsEntryKey::Encode(database_id, object_store_id, end_cursor->key());
 
+  // Remove the ExistsEntryKeys for the deleted records.
   s = transaction->transaction()->RemoveRange(
-      start_key, stop_key,
+      ExistsEntryKey::Encode(database_id, object_store_id, start_cursor->key()),
+      ExistsEntryKey::Encode(database_id, object_store_id, end_cursor->key()),
       LevelDBScopeDeletionMode::kImmediateWithRangeEndInclusive);
   return s;
 }
@@ -2808,9 +2815,7 @@ std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
 BackingStore::GetPreCloseTasks() {
   std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>> tasks;
   if (ShouldRunTombstoneSweeper()) {
-    tasks.push_back(std::make_unique<LevelDbTombstoneSweeper>(
-        kTombstoneSweeperRoundIterations, kTombstoneSweeperMaxIterations,
-        db_->db()));
+    tasks.push_back(std::make_unique<LevelDbTombstoneSweeper>(db_->db()));
   }
 
   if (ShouldRunCompaction()) {
@@ -2825,12 +2830,14 @@ bool BackingStore::ShouldRunTombstoneSweeper() {
   }
 
   // A sweep will happen now, so reset the sweep timers.
+  return UpdateEarliestSweepTime();
+}
+
+bool BackingStore::UpdateEarliestSweepTime() {
   std::unique_ptr<LevelDBDirectTransaction> txn =
       transactional_leveldb_factory_->CreateLevelDBDirectTransaction(db_.get());
-  if (!UpdateEarliestSweepTime(txn.get()).ok() || !txn->Commit().ok()) {
-    return false;
-  }
-  return true;
+  return content::indexed_db::UpdateEarliestSweepTime(txn.get()).ok() &&
+         txn->Commit().ok();
 }
 
 bool BackingStore::ShouldRunCompaction() {
@@ -2839,12 +2846,14 @@ bool BackingStore::ShouldRunCompaction() {
   }
 
   // A compaction will happen now, so reset the compaction timers.
+  return UpdateEarliestCompactionTime();
+}
+
+bool BackingStore::UpdateEarliestCompactionTime() {
   std::unique_ptr<LevelDBDirectTransaction> txn =
       transactional_leveldb_factory_->CreateLevelDBDirectTransaction(db_.get());
-  if (!UpdateEarliestCompactionTime(txn.get()).ok() || !txn->Commit().ok()) {
-    return false;
-  }
-  return true;
+  return content::indexed_db::UpdateEarliestCompactionTime(txn.get()).ok() &&
+         txn->Commit().ok();
 }
 
 Status BackingStore::ClearIndex(BackingStore::Transaction* transaction,
@@ -3213,7 +3222,11 @@ BackingStore::Cursor::Cursor(base::WeakPtr<Transaction> transaction,
   DCHECK(transaction_);
 }
 
-BackingStore::Cursor::~Cursor() = default;
+BackingStore::Cursor::~Cursor() {
+  if (tombstones_count_ > kCursorTombstoneThreshold) {
+    transaction_->SetTombstoneThresholdExceeded(true);
+  }
+}
 
 // static
 std::unique_ptr<TransactionalLevelDBIterator>
@@ -3513,6 +3526,14 @@ bool BackingStore::Cursor::IsPastBounds() const {
   return compare < 0;
 }
 
+void BackingStore::Cursor::RemoveTombstoneOrIncrementCount(Status* s) {
+  if (cursor_options_.mode != blink::mojom::IDBTransactionMode::ReadOnly) {
+    *s = transaction_->transaction()->Remove(iterator_->Key());
+  } else {
+    tombstones_count_++;
+  }
+}
+
 const IndexedDBKey& BackingStore::Cursor::primary_key() const {
   return *current_key_;
 }
@@ -3777,12 +3798,7 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
   if (!found) {
-    // If the version numbers don't match, that means this is an obsolete index
-    // entry (a 'tombstone') that can be cleaned up. This removal can only
-    // happen in non-read-only transactions.
-    if (cursor_options_.mode != blink::mojom::IDBTransactionMode::ReadOnly) {
-      *s = transaction_->transaction()->Remove(iterator_->Key());
-    }
+    RemoveTombstoneOrIncrementCount(s);
     return false;
   }
   if (result.empty()) {
@@ -3799,7 +3815,7 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
   }
 
   if (object_store_data_version != index_data_version) {
-    *s = transaction_->transaction()->Remove(iterator_->Key());
+    RemoveTombstoneOrIncrementCount(s);
     return false;
   }
 
@@ -3907,12 +3923,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
   if (!found) {
-    // If the version numbers don't match, that means this is an obsolete index
-    // entry (a 'tombstone') that can be cleaned up. This removal can only
-    // happen in non-read-only transactions.
-    if (cursor_options_.mode != blink::mojom::IDBTransactionMode::ReadOnly) {
-      *s = transaction_->transaction()->Remove(iterator_->Key());
-    }
+    RemoveTombstoneOrIncrementCount(s);
     return false;
   }
   if (result.empty()) {
@@ -3929,12 +3940,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   }
 
   if (object_store_data_version != index_data_version) {
-    // If the version numbers don't match, that means this is an obsolete index
-    // entry (a 'tombstone') that can be cleaned up. This removal can only
-    // happen in non-read-only transactions.
-    if (cursor_options_.mode != blink::mojom::IDBTransactionMode::ReadOnly) {
-      *s = transaction_->transaction()->Remove(iterator_->Key());
-    }
+    RemoveTombstoneOrIncrementCount(s);
     return false;
   }
 
@@ -4612,6 +4618,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
 }
 
 void BackingStore::Transaction::Reset() {
+  backing_store_->OnTransactionComplete(tombstone_threshold_exceeded_);
   backing_store_.reset();
   transaction_ = nullptr;
 }
@@ -4623,6 +4630,13 @@ void BackingStore::Transaction::Rollback() {
   if (committing_) {
     committing_ = false;
     backing_store_->DidCommitTransaction();
+  }
+
+  // The list of blobs being written in the transaction (`blobs_to_write_`)
+  // is added to the recovery journal in commit phase one. Clean up the journal
+  // so that these blobs are deleted from the disk.
+  if (!external_object_change_map_.empty() && !backing_store_->in_memory()) {
+    backing_store_->StartJournalCleaningTimer();
   }
 
   write_state_.reset();

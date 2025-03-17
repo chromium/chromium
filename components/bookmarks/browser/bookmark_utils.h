@@ -89,13 +89,14 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
 // makes sense. See tests in bookmark_utils_unittest.cc which currently fail
 // outside of desktop. Enable and update those if this is to be used on mobile.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Fields to use, split by account/local bookmarks. Used by
-// RecentlyUsedFoldersComboModel.
-struct RecentlyUsedFolders final {
-  RecentlyUsedFolders();
-  RecentlyUsedFolders(const RecentlyUsedFolders&);
-  RecentlyUsedFolders& operator=(const RecentlyUsedFolders&);
-  ~RecentlyUsedFolders();
+// Bookmark nodes, split by account/local bookmarks.
+struct BookmarkNodesSplitByAccountAndLocal final {
+  BookmarkNodesSplitByAccountAndLocal();
+  BookmarkNodesSplitByAccountAndLocal(
+      const BookmarkNodesSplitByAccountAndLocal&);
+  BookmarkNodesSplitByAccountAndLocal& operator=(
+      const BookmarkNodesSplitByAccountAndLocal&);
+  ~BookmarkNodesSplitByAccountAndLocal();
 
   std::vector<const BookmarkNode*> account_nodes;
   std::vector<const BookmarkNode*> local_nodes;
@@ -122,9 +123,18 @@ struct RecentlyUsedFolders final {
 // Note: The parent of `display_node` is pushed on top of its corresponding list
 // if it is a non-permanent folder or at the end if it is a permanent folder
 // that is not already included.
-RecentlyUsedFolders GetMostRecentlyUsedFoldersForDisplay(
+BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
     BookmarkModel* model,
     const BookmarkNode* displayed_node);
+
+// Returns permanent nodes for display. Either account or local+syncable types
+// are always available, sometimes both (non-empty visible local permanent
+// nodes).
+BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
+    const BookmarkModel* model);
+
+// Returns true if any local permanent nodes contain bookmarks.
+bool HasLocalOrSyncableBookmarks(const BookmarkModel* model);
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -233,6 +243,10 @@ bool HasDescendantsOf(
 // opportunity to suggest contextually relevant folders.
 const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
                                          const GURL& url = GURL());
+
+// This pruning keeps visible, non-managed folder nodes.
+bool PruneFoldersForDisplay(const BookmarkModel* model,
+                            const BookmarkNode* node);
 
 }  // namespace bookmarks
 

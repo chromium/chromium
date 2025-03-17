@@ -11,6 +11,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/context_recycler.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "v8/include/v8-forward.h"
 
@@ -23,10 +24,13 @@ class CONTENT_EXPORT SellerBrowserSignalsLazyFiller
   explicit SellerBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper,
                                           AuctionV8Logger* v8_logger);
 
-  // Returns success/failure. `browser_signal_render_url` must live until
-  // Reset() is called.
-  bool FillInObject(const GURL& browser_signal_render_url,
-                    v8::Local<v8::Object> object);
+  // Returns success/failure. `browser_signal_render_url`, `ad_components` must
+  // live until Reset() is called. `ad_components` is only used for
+  // adComponentsCreativeScanningMetadata.
+  bool FillInObject(
+      const GURL& browser_signal_render_url,
+      const std::vector<mojom::CreativeInfoWithoutOwnerPtr>* ad_components,
+      v8::Local<v8::Object> object);
 
   void Reset() override;
 
@@ -34,8 +38,13 @@ class CONTENT_EXPORT SellerBrowserSignalsLazyFiller
   static void HandleDeprecatedRenderUrl(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
+  static void HandleAdComponentsCreativeScanningMetadata(
+      v8::Local<v8::Name> name,
+      const v8::PropertyCallbackInfo<v8::Value>& info);
 
   raw_ptr<const GURL> browser_signal_render_url_ = nullptr;
+  raw_ptr<const std::vector<mojom::CreativeInfoWithoutOwnerPtr>>
+      ad_components_ = nullptr;
 
   const raw_ptr<AuctionV8Logger> v8_logger_;
 };

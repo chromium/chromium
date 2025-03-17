@@ -6,15 +6,12 @@
 #define COMPONENTS_WEBRTC_NET_ADDRESS_UTILS_H_
 
 #include "third_party/webrtc/rtc_base/ip_address.h"
+#include "third_party/webrtc/rtc_base/socket_address.h"
 
 namespace net {
 class IPAddress;
 class IPEndPoint;
 }  // namespace net
-
-namespace rtc {
-class SocketAddress;
-}  // namespace rtc
 
 namespace webrtc {
 

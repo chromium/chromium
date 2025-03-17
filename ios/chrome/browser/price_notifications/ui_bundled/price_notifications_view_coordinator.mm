@@ -48,7 +48,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
           ->GetProfileAttributesStorage()
           ->GetAttributesForProfileWithName(profile->GetProfileName());
 
-  return base::SysUTF8ToNSString(attributes.GetGaiaId());
+  return attributes.GetGaiaId().ToNSString();
 }
 
 }  // namespace
@@ -76,6 +76,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 - (void)start {
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  self.tableViewController.showCurrentPage = self.showCurrentPage;
   PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   self.tableViewController.hasPreviouslyViewed =
       prefService->GetBoolean(prefs::kPriceNotificationsHasBeenShown);

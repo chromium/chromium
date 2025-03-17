@@ -34,6 +34,7 @@
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -123,7 +124,9 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     client_->set_history_embeddings_service(
         std::make_unique<testing::NiceMock<
             history_embeddings::MockHistoryEmbeddingsService>>(
-            os_crypt_.get(), client_->GetHistoryService()));
+            os_crypt_.get(), client_->GetHistoryService(),
+            passage_embeddings_test_env_.embedder_metadata_provider(),
+            passage_embeddings_test_env_.embedder()));
     history_embeddings_service_ = static_cast<
         testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>*>(
         client_->GetHistoryEmbeddingsService());
@@ -160,6 +163,7 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
   base::ScopedTempDir history_dir_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   base::test::TaskEnvironment task_environment_;
+  passage_embeddings::TestEnvironment passage_embeddings_test_env_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   raw_ptr<testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>>
       history_embeddings_service_;

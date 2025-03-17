@@ -4,13 +4,13 @@
 
 #include "chromeos/components/sensors/fake_sensor_device.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace chromeos {
@@ -213,8 +213,8 @@ void FakeSensorDevice::StartReadingSamples(
     return;
   }
 
-  if (base::ranges::none_of(client.channels_enabled,
-                            [](bool enabled) { return enabled; })) {
+  if (std::ranges::none_of(client.channels_enabled,
+                           [](bool enabled) { return enabled; })) {
     client.observer->OnErrorOccurred(
         mojom::ObserverErrorType::NO_ENABLED_CHANNELS);
     return;

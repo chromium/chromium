@@ -33,20 +33,22 @@ ChromePassageEmbeddingsServiceController::
 ChromePassageEmbeddingsServiceController::
     ~ChromePassageEmbeddingsServiceController() = default;
 
-void ChromePassageEmbeddingsServiceController::LaunchService() {
+void ChromePassageEmbeddingsServiceController::MaybeLaunchService() {
   // No-op if already launched.
   if (service_remote_) {
     return;
   }
 
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
-  service_remote_.reset_on_disconnect();
   // Unretained is safe because `this` owns `service_remote_`, which
-  // synchronously calls the idle handler.
+  // synchronously calls the disconnect and idle handlers.
+  service_remote_.set_disconnect_handler(base::BindOnce(
+      &ChromePassageEmbeddingsServiceController::ResetServiceRemote,
+      base::Unretained(this)));
   service_remote_.set_idle_handler(
       kEmbeddingsServiceTimeout.Get(),
       base::BindRepeating(
-          &ChromePassageEmbeddingsServiceController::ResetRemotes,
+          &ChromePassageEmbeddingsServiceController::ResetServiceRemote,
           base::Unretained(this)));
   content::ServiceProcessHost::Launch<mojom::PassageEmbeddingsService>(
       std::move(receiver),
@@ -58,8 +60,9 @@ void ChromePassageEmbeddingsServiceController::LaunchService() {
           .Pass());
 }
 
-void ChromePassageEmbeddingsServiceController::ResetRemotes() {
-  PassageEmbeddingsServiceController::ResetRemotes();
+void ChromePassageEmbeddingsServiceController::ResetServiceRemote() {
+  ResetEmbedderRemote();
+  service_remote_.reset();
   cpu_logger_.StopLoggingAfterNextUpdate();
 }
 
@@ -83,7 +86,10 @@ void ChromePassageEmbeddingsServiceController::InitializeCpuLogger() {
     const content::ChildProcessData& data = iter.GetData();
     if (data.name == u"Passage Embeddings Service") {
       cpu_logger_.StartLogging(
-          content::BrowserChildProcessHost::FromID(data.id));
+          content::BrowserChildProcessHost::FromID(data.id),
+          base::BindRepeating(
+              &PassageEmbeddingsServiceController::EmbedderRunning,
+              base::Unretained(this)));
       return;
     }
     ++iter;

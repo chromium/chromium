@@ -102,16 +102,18 @@ public class DragAndDropLauncherActivity extends Activity {
      *
      * @param context The context used to retrieve the package name.
      * @param tab The dragged tab.
-     * @param windowId The window ID of the Chrome window in which the tab will be moved,
+     * @param sourceWindowId The window ID of the Chrome window where the tab drag starts.
+     * @param destWindowId The window ID of the Chrome window in which the tab will be moved,
      *     |MultiWindowUtils.INVALID_INSTANCE_ID| if the tab should be moved to a new window.
      * @return The intent that will be used to move a dragged tab to a new Chrome instance.
      */
-    public static Intent getTabIntent(Context context, Tab tab, int windowId) {
+    public static Intent getTabIntent(
+            Context context, Tab tab, int sourceWindowId, int destWindowId) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return null;
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context.getApplicationContext(),
-                        windowId,
+                        destWindowId,
                         /* preferNew= */ true,
                         /* openAdjacently= */ false,
                         /* addTrustedIntentExtras= */ false);
@@ -119,6 +121,7 @@ public class DragAndDropLauncherActivity extends Activity {
         intent.setAction(DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW);
         intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_IN_STRIP);
         intent.putExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, tab.getId());
+        intent.putExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, sourceWindowId);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setData(Uri.parse(tab.getUrl().getSpec()));
         DragAndDropLauncherActivity.setIntentCreationTimestampMs(SystemClock.elapsedRealtime());

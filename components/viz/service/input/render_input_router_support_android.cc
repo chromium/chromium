@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
@@ -16,12 +17,15 @@ RenderInputRouterSupportAndroid::~RenderInputRouterSupportAndroid() = default;
 RenderInputRouterSupportAndroid::RenderInputRouterSupportAndroid(
     input::RenderInputRouter* rir,
     RenderInputRouterSupportBase::Delegate* delegate,
-    const FrameSinkId& frame_sink_id)
+    const FrameSinkId& frame_sink_id,
+    GpuServiceImpl* gpu_service)
     : RenderInputRouterSupportBase(rir, delegate, frame_sink_id),
       gesture_provider_(ui::GetGestureProviderConfig(
                             ui::GestureProviderConfigType::CURRENT_PLATFORM,
                             base::SingleThreadTaskRunner::GetCurrentDefault()),
-                        this) {
+                        this),
+      gpu_service_(gpu_service) {
+  CHECK(gpu_service_);
   input_helper_ = std::make_unique<input::AndroidInputHelper>(this, this);
   UpdateFrameSinkIdRegistration();
 }
@@ -91,8 +95,8 @@ void RenderInputRouterSupportAndroid::ProcessAckedTouchEvent(
 
 void RenderInputRouterSupportAndroid::DidOverscroll(
     const ui::DidOverscrollParams& params) {
-  // TODO(365985685): Refactor OverscrollController to work with input on Viz.
-  NOTREACHED();
+  // The implementation on Browser side informs SyncCompositor and
+  // OverscrollController, and both of those are unaffected by InputVizard.
 }
 
 FrameSinkId RenderInputRouterSupportAndroid::GetRootFrameSinkId() {
@@ -128,8 +132,16 @@ void RenderInputRouterSupportAndroid::TransformPointToRootSurface(
 blink::mojom::InputEventResultState
 RenderInputRouterSupportAndroid::FilterInputEvent(
     const blink::WebInputEvent& input_event) {
-  // TODO(365985685): Refactor OverscrollController to work with input on Viz.
-  NOTREACHED();
+  // On Viz side here we do not need a call to
+  // `GestureListenerManager::FilterInputEvent` which happens on Browser. This
+  // is used on Browser for offering input to embedders, and the only user is
+  // Webview which is not affected by InputVizard.
+
+  if (input_event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
+    gpu_service_->WakeUpGpu();
+  }
+
+  return blink::mojom::InputEventResultState::kNotConsumed;
 }
 
 void RenderInputRouterSupportAndroid::GestureEventAck(
@@ -141,6 +153,11 @@ void RenderInputRouterSupportAndroid::GestureEventAck(
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
+}
+
+base::WeakPtr<RenderInputRouterSupportAndroid>
+RenderInputRouterSupportAndroid::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace viz

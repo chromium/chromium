@@ -4,11 +4,13 @@
 
 package org.chromium.components.content_settings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
 
 import java.util.List;
 
 /** Interface for a class that wants to receive cookie updates from CookieControlsBridge. */
+@NullMarked
 public interface CookieControlsObserver {
     /**
      * Called when the cookie blocking status for the current site changes.

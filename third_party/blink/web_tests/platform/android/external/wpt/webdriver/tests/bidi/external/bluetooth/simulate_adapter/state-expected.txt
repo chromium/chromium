@@ -1,0 +1,27 @@
+This is a wdspec test.
+[FAIL] test_state[absent-False]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_state[powered-off-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_state[powered-on-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[absent-False-absent-False]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[absent-False-powered-off-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[absent-False-powered-on-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[powered-off-True-absent-False]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[powered-off-True-powered-off-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[powered-off-True-powered-on-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[powered-on-True-absent-False]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[powered-on-True-powered-off-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[FAIL] test_set_twice[powered-on-True-powered-on-True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+Harness: the test ran to completion.
+

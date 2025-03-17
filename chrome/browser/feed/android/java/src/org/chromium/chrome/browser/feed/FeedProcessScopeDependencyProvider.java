@@ -44,6 +44,11 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         return FeedProcessScopeDependencyProviderJni.get().getExperimentIds();
     }
 
+    @Override
+    public byte[] getFeedLaunchCuiMetadata() {
+        return FeedProcessScopeDependencyProviderJni.get().getFeedLaunchCuiMetadata();
+    }
+
     public static Context createFeedContext(Context context) {
         return BundleUtils.createContextForInflation(context, FEED_SPLIT_NAME);
     }
@@ -52,6 +57,8 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @NativeMethods
     public interface Natives {
         int[] getExperimentIds();
+
+        byte[] getFeedLaunchCuiMetadata();
 
         @JniType("std::string")
         String getSessionId();

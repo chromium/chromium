@@ -57,8 +57,8 @@ class PasswordChangeInfoBubbleViewTest : public PasswordBubbleViewTestBase {
   void SetUp() override {
     PasswordBubbleViewTestBase::SetUp();
     password_change_delegate_ = std::make_unique<PasswordChangeDelegateMock>();
-    ON_CALL(*password_change_delegate_, GetChangePasswordUrl())
-        .WillByDefault(ReturnRef(password_change_url_));
+    ON_CALL(*password_change_delegate_, GetDisplayOrigin())
+        .WillByDefault(Return(u"example.com"));
     ON_CALL(*model_delegate_mock(), GetPasswordChangeDelegate())
         .WillByDefault(Return(password_change_delegate_.get()));
     AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -93,7 +93,6 @@ class PasswordChangeInfoBubbleViewTest : public PasswordBubbleViewTestBase {
 
  private:
   std::unique_ptr<PasswordChangeDelegateMock> password_change_delegate_;
-  GURL password_change_url_ = GURL("https://example.com/password");
   raw_ptr<PasswordChangeInfoBubbleView> view_;
 };
 

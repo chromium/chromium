@@ -222,7 +222,7 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   auto icon = std::make_unique<views::ImageView>();
   toggle_icon_ = icon.get();
   toggle_row_->AddViewAndLabel(std::move(icon), u"");
-  toggle_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  toggle_row_->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_row_->text_label());
 
@@ -269,7 +269,7 @@ void BluetoothDetailedViewImpl::CreateMainContainer() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE));
 
   views::Label* label = pair_new_device_view_->text_label();
-  label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+  label->SetEnabledColor(cros_tokens::kCrosSysPrimary);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                              *label);
 

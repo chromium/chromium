@@ -44,7 +44,6 @@ std::string SecurityLevelToProtocolSecurityState(
       return protocol::Security::SecurityStateEnum::Neutral;
     case security_state::WARNING:
       return protocol::Security::SecurityStateEnum::Insecure;
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
     case security_state::SECURE:
       return protocol::Security::SecurityStateEnum::Secure;
     case security_state::DANGEROUS:

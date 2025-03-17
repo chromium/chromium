@@ -4,8 +4,9 @@
 
 #include "content/browser/renderer_host/policy_container_host.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -21,8 +22,8 @@ bool operator==(const PolicyContainerPolicies& lhs,
   return lhs.referrer_policy == rhs.referrer_policy &&
          lhs.ip_address_space == rhs.ip_address_space &&
          lhs.is_web_secure_context == rhs.is_web_secure_context &&
-         base::ranges::equal(lhs.content_security_policies,
-                             rhs.content_security_policies) &&
+         std::ranges::equal(lhs.content_security_policies,
+                            rhs.content_security_policies) &&
          lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
          lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
          lhs.document_isolation_policy == rhs.document_isolation_policy &&
@@ -30,7 +31,9 @@ bool operator==(const PolicyContainerPolicies& lhs,
          lhs.is_credentialless == rhs.is_credentialless &&
          lhs.can_navigate_top_without_user_gesture ==
              rhs.can_navigate_top_without_user_gesture &&
-         lhs.allow_cross_origin_isolation == rhs.allow_cross_origin_isolation;
+         lhs.allow_cross_origin_isolation == rhs.allow_cross_origin_isolation &&
+         lhs.cross_origin_isolation_enabled_by_dip ==
+             rhs.cross_origin_isolation_enabled_by_dip;
 }
 
 bool operator!=(const PolicyContainerPolicies& lhs,
@@ -102,6 +105,8 @@ std::ostream& operator<<(std::ostream& out,
       << policies.can_navigate_top_without_user_gesture;
   out << ", allow_cross_origin_isolation: "
       << policies.allow_cross_origin_isolation;
+  out << ", cross_origin_isolationi_enabled_by_dip: "
+      << policies.cross_origin_isolation_enabled_by_dip;
 
   return out << " }";
 }
@@ -120,7 +125,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     network::mojom::WebSandboxFlags sandbox_flags,
     bool is_credentialless,
     bool can_navigate_top_without_user_gesture,
-    bool allow_cross_origin_isolation)
+    bool allow_cross_origin_isolation,
+    bool cross_origin_isolation_enabled_by_dip)
     : referrer_policy(referrer_policy),
       ip_address_space(ip_address_space),
       is_web_secure_context(is_web_secure_context),
@@ -132,12 +138,16 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       is_credentialless(is_credentialless),
       can_navigate_top_without_user_gesture(
           can_navigate_top_without_user_gesture),
-      allow_cross_origin_isolation(allow_cross_origin_isolation) {}
+      allow_cross_origin_isolation(allow_cross_origin_isolation),
+      cross_origin_isolation_enabled_by_dip(
+          cross_origin_isolation_enabled_by_dip) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(
-    const blink::mojom::PolicyContainerPolicies& policies)
+    const blink::mojom::PolicyContainerPolicies& policies,
+    bool is_web_secure_context)
     : referrer_policy(policies.referrer_policy),
       ip_address_space(policies.ip_address_space),
+      is_web_secure_context(is_web_secure_context),
       content_security_policies(
           mojo::Clone(policies.content_security_policies)),
       cross_origin_embedder_policy(policies.cross_origin_embedder_policy),
@@ -145,7 +155,9 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       is_credentialless(policies.is_credentialless),
       can_navigate_top_without_user_gesture(
           policies.can_navigate_top_without_user_gesture),
-      allow_cross_origin_isolation(policies.allow_cross_origin_isolation) {}
+      allow_cross_origin_isolation(policies.allow_cross_origin_isolation),
+      cross_origin_isolation_enabled_by_dip(
+          policies.cross_origin_isolation_enabled_by_dip) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(
     const GURL& url,
@@ -162,8 +174,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
           network::mojom::WebSandboxFlags::kNone,
           /*is_credentialless=*/false,
           /*can_navigate_top_without_user_gesture=*/true,
-          /*allow_cross_origin_isolation=*/
-          false) {
+          /*allow_cross_origin_isolation=*/false,
+          /*cross_origin_isolation_enabled_by_dip=*/false) {
   for (auto& content_security_policy :
        response_head->parsed_headers->content_security_policy) {
     sandbox_flags |= content_security_policy->sandbox;
@@ -184,7 +196,7 @@ PolicyContainerPolicies PolicyContainerPolicies::Clone() const {
       mojo::Clone(content_security_policies), cross_origin_opener_policy,
       cross_origin_embedder_policy, mojo::Clone(document_isolation_policy),
       sandbox_flags, is_credentialless, can_navigate_top_without_user_gesture,
-      allow_cross_origin_isolation);
+      allow_cross_origin_isolation, cross_origin_isolation_enabled_by_dip);
 }
 
 std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::ClonePtr()
@@ -205,7 +217,7 @@ PolicyContainerPolicies::ToMojoPolicyContainerPolicies() const {
       cross_origin_embedder_policy, referrer_policy,
       mojo::Clone(content_security_policies), is_credentialless, sandbox_flags,
       ip_address_space, can_navigate_top_without_user_gesture,
-      allow_cross_origin_isolation);
+      allow_cross_origin_isolation, cross_origin_isolation_enabled_by_dip);
 }
 
 PolicyContainerHost::PolicyContainerHost() = default;

@@ -380,12 +380,23 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  EXPECT_EQ(true, GetFieldTrialParamByFeatureAsBool(kFeature, "a", false));
+  EXPECT_EQ(false, GetFieldTrialParamByFeatureAsBool(kFeature, "b", false));
+  EXPECT_EQ(false, GetFieldTrialParamByFeatureAsBool(kFeature, "c",
+                                                     false));  // invalid
+  EXPECT_EQ(true,
+            GetFieldTrialParamByFeatureAsBool(kFeature, "d", true));  // invalid
+  EXPECT_EQ(true,
+            GetFieldTrialParamByFeatureAsBool(kFeature, "e", true));  // empty
+  EXPECT_EQ(true,
+            GetFieldTrialParamByFeatureAsBool(kFeature, "f", true));  // empty
+
   EXPECT_TRUE(a.Get());
   EXPECT_FALSE(b.Get());
-  EXPECT_EQ(false, c.Get());  // invalid
-  EXPECT_EQ(true, d.Get());   // invalid
-  EXPECT_TRUE(e.Get());       // empty
-  EXPECT_TRUE(f.Get());       // empty
+  EXPECT_FALSE(c.Get());  // invalid
+  EXPECT_TRUE(d.Get());   // invalid
+  EXPECT_TRUE(e.Get());   // empty
+  EXPECT_TRUE(f.Get());   // empty
 }
 
 TEST_F(FieldTrialParamsTest, FeatureParamBool_Disable) {
@@ -417,6 +428,19 @@ TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
+
+  EXPECT_EQ(Seconds(1.5),
+            GetFieldTrialParamByFeatureAsTimeDelta(kFeature, "a", TimeDelta()));
+  EXPECT_EQ(Minutes(62),
+            GetFieldTrialParamByFeatureAsTimeDelta(kFeature, "b", TimeDelta()));
+  EXPECT_EQ(TimeDelta(), GetFieldTrialParamByFeatureAsTimeDelta(
+                             kFeature, "c", TimeDelta()));  // invalid
+  EXPECT_EQ(TimeDelta(), GetFieldTrialParamByFeatureAsTimeDelta(
+                             kFeature, "d", TimeDelta()));  // invalid
+  EXPECT_EQ(TimeDelta(), GetFieldTrialParamByFeatureAsTimeDelta(
+                             kFeature, "e", TimeDelta()));  // empty
+  EXPECT_EQ(TimeDelta(), GetFieldTrialParamByFeatureAsTimeDelta(
+                             kFeature, "f", TimeDelta()));  // empty
 
   EXPECT_EQ(a.Get(), Seconds(1.5));
   EXPECT_EQ(b.Get(), Minutes(62));
@@ -460,6 +484,19 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnum) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  EXPECT_EQ(ROCK,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "a", ROCK, hands));
+  EXPECT_EQ(PAPER,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "b", ROCK, hands));
+  EXPECT_EQ(SCISSORS,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "c", ROCK, hands));
+  EXPECT_EQ(ROCK, GetFieldTrialParamByFeatureAsEnum(kFeature, "d", ROCK,
+                                                    hands));  // invalid
+  EXPECT_EQ(PAPER, GetFieldTrialParamByFeatureAsEnum(kFeature, "e", PAPER,
+                                                     hands));  // empty
+  EXPECT_EQ(SCISSORS, GetFieldTrialParamByFeatureAsEnum(
+                          kFeature, "f", SCISSORS, hands));  // not registered
+
   EXPECT_EQ(ROCK, a.Get());
   EXPECT_EQ(PAPER, b.Get());
   EXPECT_EQ(SCISSORS, c.Get());
@@ -495,6 +532,22 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
+
+  EXPECT_EQ(UI::ONE_D,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "a", UI::ONE_D, uis));
+  EXPECT_EQ(UI::TWO_D,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "b", UI::ONE_D, uis));
+  EXPECT_EQ(UI::THREE_D,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "c", UI::ONE_D, uis));
+  EXPECT_EQ(UI::ONE_D,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "d", UI::ONE_D,
+                                              uis));  // invalid
+  EXPECT_EQ(UI::TWO_D,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "e", UI::TWO_D,
+                                              uis));  // empty
+  EXPECT_EQ(UI::THREE_D,
+            GetFieldTrialParamByFeatureAsEnum(kFeature, "f", UI::THREE_D,
+                                              uis));  // not registered
 
   EXPECT_EQ(UI::ONE_D, a.Get());
   EXPECT_EQ(UI::TWO_D, b.Get());

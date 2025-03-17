@@ -32,4 +32,15 @@ bool StructTraits<network::mojom::SharedStorageValueArgumentDataView,
   return network::IsValidSharedStorageValueStringLength(out_value->size());
 }
 
+// static
+bool StructTraits<network::mojom::LockNameDataView, std::string>::Read(
+    network::mojom::LockNameDataView data,
+    std::string* out_value) {
+  if (!data.ReadData(out_value)) {
+    return false;
+  }
+
+  return !network::IsReservedLockName(*out_value);
+}
+
 }  // namespace mojo

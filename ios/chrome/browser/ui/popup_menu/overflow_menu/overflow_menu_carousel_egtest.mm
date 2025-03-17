@@ -4,13 +4,13 @@
 
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/whats_new/constants.h"
@@ -109,18 +109,11 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   [super setUp];
 
   CleanupDestinationsHighlightFeaturesData();
-
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
 - (void)tearDownHelper {
   // Clean up sign-in and Sync data.
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
   CleanupDestinationsHighlightFeaturesData();

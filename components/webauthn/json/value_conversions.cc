@@ -6,13 +6,13 @@
 
 #include <iterator>
 #include <optional>
+#include <ranges>
 #include <string_view>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
-#include "base/ranges/ranges.h"
 #include "base/values.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/authenticator_selection_criteria.h"
@@ -683,8 +683,8 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     return InvalidMakeCredentialField("authenticatorData");
   }
   response->info->authenticator_data = ToByteVector(*opt_authenticator_data);
-  if (!base::ranges::equal(response->info->authenticator_data,
-                           fields->authenticator_data)) {
+  if (!std::ranges::equal(response->info->authenticator_data,
+                          fields->authenticator_data)) {
     return InvalidMakeCredentialField("authenticatorData");
   }
 
@@ -707,8 +707,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   }
   // For any key, providers must calculate the same key as us.
   if (fields->public_key_der && opt_public_key &&
-      !base::ranges::equal(*response->public_key_der,
-                           *fields->public_key_der)) {
+      !std::ranges::equal(*response->public_key_der, *fields->public_key_der)) {
     return InvalidMakeCredentialField("publicKey");
   }
 

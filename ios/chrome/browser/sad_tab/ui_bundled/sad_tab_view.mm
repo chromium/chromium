@@ -436,16 +436,18 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   if (shouldAddActionButtonToContainer) {
     // Right-align actionButton and add it below helpLabel when adding it to
     // the containerView.
-    if (self.actionButton.superview != self.containerView)
+    if (self.actionButton.superview != self.containerView) {
       [self.containerView addSubview:self.actionButton];
+    }
     actionButtonLayout.boundingWidth = CGRectGetWidth(containerBounds);
     actionButtonLayout.position = LayoutRectPositionMake(
         CGRectGetWidth(containerBounds) - actionButtonLayout.size.width,
         CGRectGetMaxY(self.footerLabel.frame) + kActionButtonTopPadding);
   } else {
     // Bottom-align the actionButton with the bounds specified by kLayoutInsets.
-    if (self.actionButton.superview != self)
+    if (self.actionButton.superview != self) {
       [self addSubview:self.actionButton];
+    }
     actionButtonLayout.boundingWidth = CGRectGetWidth(self.bounds);
     actionButtonLayout.position = LayoutRectPositionMake(
         UIEdgeInsetsGetLeading(kLayoutInsets),

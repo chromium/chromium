@@ -210,6 +210,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
     "//components/plus_addresses/resources/strings",
     "//components/strings:components_strings_grit",

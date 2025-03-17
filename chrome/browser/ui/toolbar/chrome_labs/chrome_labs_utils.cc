@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -16,12 +16,12 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/channel_info.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/variations_switches.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
@@ -40,7 +40,7 @@ bool IsFeatureSupportedOnPlatform(const flags_ui::FeatureEntry* entry) {
 }
 
 bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   PrefService* prefs = profile->GetPrefs();
 #else
   PrefService* prefs = g_browser_process->local_state();
@@ -64,7 +64,7 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
 
 void UpdateChromeLabsNewBadgePrefs(Profile* profile,
                                    const ChromeLabsModel* model) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ScopedDictPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
@@ -104,7 +104,7 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
 }
 
 bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kSafeMode) ||
       !ash::ProfileHelper::IsPrimaryProfile(profile)) {
@@ -112,15 +112,15 @@ bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
   }
 #endif
 
-  return base::ranges::any_of(model->GetLabInfo(),
-                              [&profile](const LabInfo& lab) {
-                                return IsChromeLabsFeatureValid(lab, profile);
-                              });
+  return std::ranges::any_of(model->GetLabInfo(),
+                             [&profile](const LabInfo& lab) {
+                               return IsChromeLabsFeatureValid(lab, profile);
+                             });
 }
 
 bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
                                           Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ScopedDictPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
@@ -133,7 +133,7 @@ bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       all_labs.begin(), all_labs.end(), [&new_badge_prefs](const LabInfo& lab) {
         std::optional<int> new_badge_pref_value =
             new_badge_prefs.FindInt(lab.internal_name);

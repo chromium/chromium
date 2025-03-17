@@ -7,13 +7,14 @@
  */
 import {AsyncUtil} from '/common/async_util.js';
 import {AutomationUtil} from '/common/automation_util.js';
-import {CursorRange} from '/common/cursors/range.js';
+import type {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
+import type {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {ChromeVox} from '../chromevox.js';
-import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
+import type {ChromeVoxRangeObserver} from '../chromevox_range.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 

@@ -45,9 +45,11 @@ NoStatePrefetchLinkManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   NoStatePrefetchManager* no_state_prefetch_manager =
       NoStatePrefetchManagerFactory::GetForBrowserContext(context);
-  if (!no_state_prefetch_manager)
+  if (!no_state_prefetch_manager) {
     return nullptr;
-  return std::make_unique<NoStatePrefetchLinkManager>(no_state_prefetch_manager);
+  }
+  return std::make_unique<NoStatePrefetchLinkManager>(
+      no_state_prefetch_manager);
 }
 
 }  // namespace prerender

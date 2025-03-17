@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <vector>
 
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -26,11 +27,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-
-namespace blink {
-template <typename T>
-class WebVector;
-}
 
 namespace mojo {
 
@@ -117,7 +113,7 @@ struct PLATFORM_EXPORT
 template <>
 struct PLATFORM_EXPORT
     StructTraits<blink::mojom::DragDataDataView, blink::WebDragData> {
-  static const blink::WebVector<blink::WebDragData::Item>& items(
+  static const std::vector<blink::WebDragData::Item>& items(
       const blink::WebDragData& drag_data);
   static WTF::String file_system_id(const blink::WebDragData& drag_data);
   static bool force_default_action(const blink::WebDragData& drag_data);

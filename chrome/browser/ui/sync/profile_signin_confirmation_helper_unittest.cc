@@ -16,10 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -38,7 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -178,7 +177,7 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
   scoped_refptr<TestingPrefStoreWithCustomReadError> user_prefs_;
   raw_ptr<BookmarkModel> model_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
@@ -246,7 +245,7 @@ TEST_F(ProfileSigninConfirmationHelperTest,
   profile_->SetIsNewProfile(true);
   char buf[18];
   for (int i = 0; i < 10; i++) {
-    base::snprintf(buf, std::size(buf), "http://foo.com/%d", i);
+    base::SpanPrintf(buf, "http://foo.com/%d", i);
     history->AddPage(GURL(std::string(buf)), base::Time::Now(),
                      /*context_id=*/{}, 1, GURL(), history::RedirectList(),
                      ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);

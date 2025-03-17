@@ -61,13 +61,14 @@ suite('<history-item> unit test', function() {
     assertEquals(2, selectionCount);
   });
 
-  test('title changes with item', function() {
+  test('title changes with item', async function() {
     const time = item.$['time-accessed'];
     assertEquals('', time.title);
 
     time.dispatchEvent(new CustomEvent('mouseover'));
     const initialTitle = time.title;
     item.item = TEST_HISTORY_RESULTS[5]!;
+    await microtasksFinished();
     time.dispatchEvent(new CustomEvent('mouseover'));
     assertNotEquals(initialTitle, time.title);
   });
@@ -80,11 +81,10 @@ suite('<history-item> integration test', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
-
     const app = document.createElement('history-app');
     document.body.appendChild(app);
     element = app.$.history;
-    return testService.whenCalled('queryHistory');
+    return testService.handler.whenCalled('queryHistory');
   });
 
   function getHistoryData() {
@@ -141,26 +141,23 @@ suite('<history-item> integration test', function() {
     assertFalse(items[2]!.hasTimeGap);
   });
 
-  test('remove bookmarks', function() {
+  test('remove bookmarks', async function() {
     element.addNewResults(TEST_HISTORY_RESULTS, false, true);
-    return flushTasks()
-        .then(function() {
-          element.set('historyData_.1.starred', true);
-          element.set('historyData_.5.starred', true);
-          return flushTasks();
-        })
-        .then(function() {
-          const items = element.shadowRoot!.querySelectorAll('history-item');
+    element.set('historyData_.1.starred', true);
+    element.set('historyData_.5.starred', true);
+    await flushTasks();
+    await microtasksFinished();
 
-          const star = items[1]!.shadowRoot!.querySelector<HTMLElement>(
-              '#bookmark-star');
-          assertTrue(!!star);
-          star.focus();
-          star.click();
+    const items = element.shadowRoot!.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
+    const star =
+        items[1]!.shadowRoot.querySelector<HTMLElement>('#bookmark-star');
+    assertTrue(!!star);
+    star.focus();
+    star.click();
 
-          // Check that all items matching this url are unstarred.
-          assertEquals(getHistoryData()[1].starred, false);
-          assertEquals(getHistoryData()[5].starred, false);
-        });
+    // Check that all items matching this url are unstarred.
+    assertEquals(getHistoryData()[1].starred, false);
+    assertEquals(getHistoryData()[5].starred, false);
   });
 });

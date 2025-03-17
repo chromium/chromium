@@ -7,9 +7,11 @@ package org.chromium.components.omnibox;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /** Utility class to get security state info for the omnibox. */
+@NullMarked
 public class SecurityStatusIcon {
     /** @return the id of the resource identifying the icon corresponding to the securityLevel. */
     @DrawableRes
@@ -26,7 +28,6 @@ public class SecurityStatusIcon {
                 return R.drawable.omnibox_not_secure_warning;
             case ConnectionSecurityLevel.DANGEROUS:
                 return R.drawable.omnibox_dangerous;
-            case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
                 return useLockIconForSecureState
                         ? R.drawable.omnibox_https_valid_lock
@@ -47,7 +48,6 @@ public class SecurityStatusIcon {
                 return R.string.accessibility_security_btn_warn;
             case ConnectionSecurityLevel.DANGEROUS:
                 return R.string.accessibility_security_btn_dangerous;
-            case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
                 return R.string.accessibility_security_btn_secure;
             default:

@@ -164,7 +164,7 @@ message NamedValueType {
 //
 // Variable: Variables are NEVER materialized at compile time and are only
 // available at run time. Therefore, for Variables we only have ValueType,
-// which may have unknown shapes in the IR. Variable encompases familiar
+// which may have unknown shapes in the IR. Variable encompasses familiar
 // concepts such as placeholder, output of an Op.
 //
 // Value: Values are ALWAYS materialized at compile time, and MAY be modified
@@ -186,6 +186,7 @@ message ValueType {
     ListType listType = 2;
     TupleType tupleType = 3;
     DictionaryType dictionaryType = 4;
+    StateType stateType = 5;
   }
 }
 
@@ -201,6 +202,8 @@ enum DataType {
   STRING = 2;  // arbitrary sequence of bytes
 
   // Floats
+  FLOAT8E4M3FN = 40;
+  FLOAT8E5M2 = 41;
   FLOAT16 = 10;
   FLOAT32 = 11;
   FLOAT64 = 12;
@@ -211,12 +214,19 @@ enum DataType {
   INT16 = 22;
   INT32 = 23;
   INT64 = 24;
+  INT4 = 25;
 
   // UInts
   UINT8 = 31;
   UINT16 = 32;
   UINT32 = 33;
   UINT64 = 34;
+
+  UINT4 = 35;
+  UINT2 = 36;
+  UINT1 = 37;
+  UINT6 = 38;
+  UINT3 = 39;
 }
 
 message TensorType {
@@ -253,6 +263,10 @@ message ListType {
 message DictionaryType {
   ValueType keyType = 1;
   ValueType valueType = 2;
+}
+
+message StateType {
+  ValueType wrappedType = 1;
 }
 
 message Dimension {

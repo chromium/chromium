@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
@@ -30,6 +29,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -40,10 +40,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -60,6 +62,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ButtonCompat;
+
+import java.util.List;
 
 /** Instrumentation tests for {@link FacilitatedPaymentsPaymentMethodsView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -91,7 +95,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     .build();
     private static final Ewallet EWALLET_1 =
             new Ewallet.Builder()
-                    .setEwalletName("ewallet name 1")
+                    .setEwalletName("eWalletName1")
                     .setAccountDisplayName("account display name 1")
                     .setPaymentInstrument(
                             new PaymentInstrument.Builder()
@@ -103,14 +107,38 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     .build();
     private static final Ewallet EWALLET_2 =
             new Ewallet.Builder()
-                    .setEwalletName("ewallet name 2")
+                    .setEwalletName("eWalletName2")
                     .setAccountDisplayName("account display name 2")
                     .setPaymentInstrument(
                             new PaymentInstrument.Builder()
-                                    .setInstrumentId(100)
+                                    .setInstrumentId(101)
                                     .setNickname("nickname 4")
                                     .setSupportedPaymentRails(new int[] {2})
                                     .setIsFidoEnrolled(true)
+                                    .build())
+                    .build();
+    private static final Ewallet EWALLET_3 =
+            new Ewallet.Builder()
+                    .setEwalletName("eWalletName2")
+                    .setAccountDisplayName("account display name 3")
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(123)
+                                    .setNickname("nickname 5")
+                                    .setSupportedPaymentRails(new int[] {2})
+                                    .setIsFidoEnrolled(false)
+                                    .build())
+                    .build();
+    private static final Ewallet EWALLET_4 =
+            new Ewallet.Builder()
+                    .setEwalletName("eWalletName3")
+                    .setAccountDisplayName("account display name 4")
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(312)
+                                    .setNickname("nickname 6")
+                                    .setSupportedPaymentRails(new int[] {2})
+                                    .setIsFidoEnrolled(false)
                                     .build())
                     .build();
 
@@ -119,10 +147,12 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
+
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetTestSupport;
-    private FacilitatedPaymentsPaymentMethodsView mView;
     private FacilitatedPaymentsPaymentMethodsMediator mMediator;
+    private FacilitatedPaymentsPaymentMethodsView mView;
     private PropertyModel mModel;
 
     @Before
@@ -141,12 +171,16 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             new PropertyModel.Builder(
                                             FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                                     .with(VISIBLE_STATE, HIDDEN)
-                                    .with(DISMISS_HANDLER, (Integer unused) -> {})
                                     .with(UI_EVENT_LISTENER, (Integer unused) -> {})
                                     .build();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
                                     mActivityTestRule.getActivity(), mBottomSheetController);
+                    mMediator.initialize(
+                            ContextUtils.getApplicationContext(),
+                            mModel,
+                            mDelegateMock,
+                            mActivityTestRule.getProfile(false));
                     PropertyModelChangeProcessor.create(
                             mModel,
                             mView,
@@ -263,22 +297,133 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         assertThat(getSheetItems().getChildCount(), is(2));
 
-        assertThat(getEwalletNameAt(0).getText(), is("ewallet name 1"));
+        assertThat(getEwalletNameAt(0).getText(), is("eWalletName1"));
         assertThat(getAccountDisplayNameAt(0).getText(), is("account display name 1"));
 
-        assertThat(getEwalletNameAt(1).getText(), is("ewallet name 2"));
+        assertThat(getEwalletNameAt(1).getText(), is("eWalletName2"));
         assertThat(getAccountDisplayNameAt(1).getText(), is("account display name 2"));
     }
 
     @Test
     @MediumTest
-    public void testDescriptionLine() {
+    public void testPixHeaderProductIconContentDescription() {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
-                            .add(mMediator.buildAdditionalInfo());
+                            .add(mMediator.buildPixHeader(mActivityTestRule.getActivity()));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+
+        assertThat(headerProductIcon.getContentDescription(), is("Google Pay, Pix"));
+    }
+
+    @Test
+    @MediumTest
+    public void testPixHeaderFirstTimeCheckNotVisible() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(mMediator.buildPixHeader(mActivityTestRule.getActivity()));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerSecurityCheckImage = getHeaderSecurityCheckImageAt(0);
+        TextView headerDescription = getHeaderDescriptionAt(0);
+
+        assertThat(headerSecurityCheckImage.getVisibility(), is(View.GONE));
+        assertThat(headerDescription.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletHeaderProductIconContentDescription() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildEwalletHeader(
+                                            mActivityTestRule.getActivity(), List.of(EWALLET_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+
+        assertThat(headerProductIcon.getContentDescription(), is("Google Pay"));
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletHeaderFirstTimeCheckVisible() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildEwalletHeader(
+                                            mActivityTestRule.getActivity(), List.of(EWALLET_3)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerSecurityCheckImage = getHeaderSecurityCheckImageAt(0);
+        TextView headerDescription = getHeaderDescriptionAt(0);
+
+        assertThat(headerSecurityCheckImage.getVisibility(), is(View.VISIBLE));
+        assertThat(headerDescription.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletHeaderFirstTimeCheckNotVisible() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildEwalletHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(EWALLET_3, EWALLET_4)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerSecurityCheckImage = getHeaderSecurityCheckImageAt(0);
+        TextView headerDescription = getHeaderDescriptionAt(0);
+
+        assertThat(headerSecurityCheckImage.getVisibility(), is(View.GONE));
+        assertThat(headerDescription.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    @MediumTest
+    public void testPixDescriptionLine() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(mMediator.buildPixAdditionalInfo());
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -288,6 +433,28 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 descriptionLine1.getText(),
                 hasToString(
                         containsString("To turn off Pix in Chrome, go to your payment settings")));
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletDescriptionLine() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(mMediator.buildEwalletAdditionalInfo(List.of(EWALLET_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line);
+        assertThat(
+                descriptionLine1.getText(),
+                hasToString(
+                        containsString(
+                                "Your saved auto-pay method may be used for this payment. To turn"
+                                        + " off eWallets in Chrome, go to your payment settings")));
     }
 
     @Test
@@ -464,6 +631,18 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     private TextView getAccountDisplayNameAt(int index) {
         return getSheetItems().getChildAt(index).findViewById(R.id.account_display_name);
+    }
+
+    private ImageView getHeaderProductIconAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.branding_icon);
+    }
+
+    private ImageView getHeaderSecurityCheckImageAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.security_check_illustration);
+    }
+
+    private TextView getHeaderDescriptionAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.description_text);
     }
 
     private static boolean containsViewOfClass(ViewGroup parent, Class<?> clazz) {

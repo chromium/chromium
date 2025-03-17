@@ -6,6 +6,7 @@ module ash.media_app_ui.mojom;
 
 import "chromeos/ash/components/mantis/mojom/mantis_processor.mojom";
 import "chromeos/ash/components/mantis/mojom/mantis_service.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -41,7 +42,9 @@ interface UntrustedServiceFactory {
   // closed. Therefore, it should be called once per WebUIController lifetime or
   // previous connection should be closed manually before calling this method
   // the second time (e.g. when opening new file in the same window).
-  CreateMantisUntrustedService(pending_remote<MantisUntrustedPage> page)
+  // The `dlc_uuid` is used to fetch the specific ML model assets.
+  CreateMantisUntrustedService(pending_remote<MantisUntrustedPage> page,
+                               mojo_base.mojom.Uuid? dlc_uuid)
       => (MantisUntrustedServiceResult result);
 };
 
@@ -178,11 +181,20 @@ interface MantisUntrustedService {
   // byte arrays containing the encoded format of an image (e.g., PNG, JPEG)
   // with the same dimension. Inpainting is similar with Generative Fill without
   // a `text` prompt, where it tries to fill the image by reconstructing the
-  // "lost" part of the `image`. Also refer to "Expand background" section which
-  // is a special case of Inpainting where the mask is in the boundaries of the
-  // `image` http://go/mantis-bl-dd#heading=h.usc6s0rg999w.
+  // "lost" part of the `image`.
   // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
   InpaintImage(array<uint8> image, array<uint8> mask, uint32 seed)
+      => (mantis.mojom.MantisResult result);
+
+
+  // Outpaints the image based on the `mask` and `seed`. Pass the same `seed`
+  // across method calls to get identical result. The `image` and `mask` are
+  // byte arrays containing the encoded format of an image (e.g., PNG, JPEG)
+  // with the same dimension. Outpainting, also known as "Expand background" is
+  // a special case of Inpainting where the mask is in the boundaries of the
+  // `image` http://go/mantis-bl-dd#heading=h.usc6s0rg999w.
+  // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
+  OutpaintImage(array<uint8> image, array<uint8> mask, uint32 seed)
       => (mantis.mojom.MantisResult result);
 
   // Classifies image for Trust & Safety checking. Refer to "Trust & safety

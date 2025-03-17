@@ -86,10 +86,9 @@ void MockWidget::RequestSuccessfulPresentationTimeForNextFrame(
 
 void MockWidget::CancelSuccessfulPresentationTimeRequest() {}
 
-void MockWidget::SetupRenderInputRouterConnections(
+void MockWidget::SetupBrowserRenderInputRouterConnections(
     mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
-        browser_request,
-    mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_request) {
+        browser_request) {
   input_receiver_.Bind(std::move(browser_request));
 }
 

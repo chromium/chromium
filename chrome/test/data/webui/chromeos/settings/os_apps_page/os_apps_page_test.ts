@@ -5,8 +5,10 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://os-settings/os_settings.js';
 
-import {ParentalControlsDialogAction, SettingsAndroidAppsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {AndroidAppsBrowserProxyImpl, CrDialogElement, createRouterForTesting, CrLinkRowElement, OsSettingsAppsPageElement, OsSettingsRoutes, Router, routes, routesMojom, setAppNotificationProviderForTesting, setAppParentalControlsProviderForTesting, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {SettingsAndroidAppsSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ParentalControlsDialogAction} from 'chrome://os-settings/lazy_load.js';
+import type {CrDialogElement, CrLinkRowElement, OsSettingsAppsPageElement, OsSettingsRoutes} from 'chrome://os-settings/os_settings.js';
+import {AndroidAppsBrowserProxyImpl, createRouterForTesting, Router, routes, routesMojom, setAppNotificationProviderForTesting, setAppParentalControlsProviderForTesting, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -322,7 +324,7 @@ suite('AppsPageTests', () => {
       await flushTasks();
     }
 
-    test('App notification row displays helpful description', async () => {
+    test('App notification row displays helpful description', () => {
       const rowLink = queryAppNotificationsRow();
       assertTrue(!!rowLink);
       assertTrue(isVisible(rowLink));

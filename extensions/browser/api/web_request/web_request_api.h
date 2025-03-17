@@ -261,14 +261,6 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // installed to support the API.
   bool MayHaveProxies() const;
 
-  // Indicates whether or not WebRequestAPI may have one or more proxies
-  // installed to support intercepting websocket connections for extension
-  // telemetry.
-  // TODO(psarouthakis): This is here for the current implementation, but
-  // will be refactored to live somewhere else so that we don't have to
-  // create a full proxy just for telemetry.
-  bool MayHaveWebsocketProxiesForExtensionTelemetry() const;
-
   // Indicates whether the WebRequestAPI is available to a RenderFrameHost
   // that embeds a WebView instance.
   bool IsAvailableToWebViewEmbedderFrame(
@@ -350,9 +342,11 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
       const url::Origin& request_initiator = url::Origin());
 
-  // A count of active extensions for this BrowserContext that use web request
-  // permissions.
+  // Counts of active extensions for this BrowserContext that use kWebRequest*,
+  // kDeclarative{Web|Net}Request*, or kWebView permissions.
   int web_request_extension_count_ = 0;
+  int declarative_request_extension_count_ = 0;
+  int web_view_extension_count_ = 0;
 
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 

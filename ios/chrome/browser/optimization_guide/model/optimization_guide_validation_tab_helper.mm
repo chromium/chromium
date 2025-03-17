@@ -44,17 +44,20 @@ void OptimizationGuideValidationTabHelper::DidFinishNavigation(
       optimization_guide::features::kOptimizationGuideMetadataValidation));
 
   // Ignore non-committed navigations such as Downloads, etc.
-  if (!navigation_context->HasCommitted())
+  if (!navigation_context->HasCommitted()) {
     return;
+  }
 
-  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS())
+  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForProfile(
           ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
-  if (!optimization_guide_service)
+  if (!optimization_guide_service) {
     return;
+  }
 
   // Async.
   optimization_guide_service->CanApplyOptimization(
@@ -85,8 +88,9 @@ void OptimizationGuideValidationTabHelper::
   DCHECK(base::FeatureList::IsEnabled(
       optimization_guide::features::kOptimizationGuideMetadataValidation));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (decision != optimization_guide::OptimizationGuideDecision::kTrue)
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     return;
+  }
 
   auto expected_metadata =
       optimization_guide::features::ShouldMetadataValidationFetchHostKeyed()

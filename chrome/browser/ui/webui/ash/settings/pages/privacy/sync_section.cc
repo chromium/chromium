@@ -8,7 +8,6 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
@@ -29,9 +28,9 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kPrivacyAndSecuritySectionPath;
+using ::chromeos::settings::mojom::kSyncControlsSubpagePath;
 using ::chromeos::settings::mojom::kSyncDeprecatedAdvancedSubpagePath;
 using ::chromeos::settings::mojom::kSyncSetupSubpagePath;
-using ::chromeos::settings::mojom::kSyncSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -57,15 +56,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"osSyncWifiConfigurationsCheckboxLabel",
        IDS_OS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
       {"osSyncAppsCheckboxLabel", IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL},
-      {"osSyncAppsCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL},
-      {"osSyncSettingsCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_SETTINGS_CHECKBOX_SUBLABEL},
-      {"osSyncWifiCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_WIFI_CHECKBOX_SUBLABEL},
-      {"osSyncWallpaperCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_WALLPAPER_CHECKBOX_SUBLABEL},
-      {"osSyncAppsTooltipText", IDS_OS_SETTINGS_SYNC_APPS_TOOLTIP},
       {"osSyncTurnOn", IDS_OS_SETTINGS_SYNC_TURN_ON},
       {"osSyncFeatureLabel", IDS_OS_SETTINGS_SYNC_FEATURE_LABEL},
       {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
@@ -75,21 +65,16 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddBoolean(
-      "appsToggleSharingEnabled",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
-          crosapi::browser_util::IsLacrosEnabled());
 }
 
 base::span<const SearchConcept> GetCategorizedSyncSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_SYNC,
-       mojom::kSyncSubpagePath,
+       mojom::kSyncControlsSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kSync}},
+       {.subpage = mojom::Subpage::kSyncControls}},
   });
   return tags;
 }
@@ -191,11 +176,11 @@ void SyncSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Page with OS-specific sync data types.
   generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSync,
+      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSyncControls,
       mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSyncSubpagePath);
+      mojom::kSyncControlsSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kSplitSyncOnOff,
-                                   mojom::Subpage::kSync);
+                                   mojom::Subpage::kSyncControls);
 }
 
 }  // namespace ash::settings

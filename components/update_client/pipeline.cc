@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -52,10 +53,6 @@ using Operation = base::OnceCallback<base::OnceClosure(
     const base::FilePath&,
     base::OnceCallback<void(
         base::expected<base::FilePath, CategorizedError>)>)>;
-using RepeatingOperation = base::RepeatingCallback<base::OnceClosure(
-    const base::FilePath&,
-    base::OnceCallback<void(
-        base::expected<base::FilePath, CategorizedError>)>)>;
 
 // `Pipeline` manages the flow of operations, passing the output path of
 // each operation to the next one, short-circuiting on errors.
@@ -70,8 +67,6 @@ class Pipeline : public base::RefCountedThreadSafe<Pipeline> {
  public:
   Pipeline(
       std::queue<Operation> operations,
-      const base::FilePath& first_path,
-      base::RepeatingCallback<void(const CategorizedError&)> outcome_recorder,
       scoped_refptr<Pipeline> fallback);
   Pipeline(const Pipeline&) = delete;
   Pipeline& operator=(const Pipeline&) = delete;
@@ -89,28 +84,20 @@ class Pipeline : public base::RefCountedThreadSafe<Pipeline> {
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::queue<Operation> operations_;
-  base::FilePath first_path_;
-  base::RepeatingCallback<void(const CategorizedError&)> outcome_recorder_;
   scoped_refptr<Pipeline> fallback_;
   scoped_refptr<Cancellation> cancel_ = base::MakeRefCounted<Cancellation>();
   base::OnceCallback<void(const CategorizedError&)> callback_;
 };
 
-Pipeline::Pipeline(
-    std::queue<Operation> operations,
-    const base::FilePath& first_path,
-    base::RepeatingCallback<void(const CategorizedError&)> outcome_recorder,
-    scoped_refptr<Pipeline> fallback)
-    : operations_(std::move(operations)),
-      first_path_(first_path),
-      outcome_recorder_(outcome_recorder),
-      fallback_(fallback) {}
+Pipeline::Pipeline(std::queue<Operation> operations,
+                   scoped_refptr<Pipeline> fallback)
+    : operations_(std::move(operations)), fallback_(fallback) {}
 
 base::OnceClosure Pipeline::Start(
     base::OnceCallback<void(const CategorizedError&)> callback) {
   CHECK(!callback_);
   callback_ = std::move(callback);
-  StartNext(first_path_);
+  StartNext({});
   return base::BindOnce(&Cancellation::Cancel, cancel_);
 }
 
@@ -125,7 +112,6 @@ void Pipeline::OpComplete(
     base::expected<base::FilePath, CategorizedError> result) {
   cancel_->Clear();
   if (!result.has_value()) {
-    outcome_recorder_.Run(result.error());
     if (fallback_ && !cancel_->IsCancelled()) {
       // Pipeline failed, fall back to next pipeline.
       cancel_->OnCancel(fallback_->Start(std::move(callback_)));
@@ -151,72 +137,150 @@ void Pipeline::OpComplete(
   StartNext(result.value());
 }
 
-void AssemblePipeline(
-    std::optional<Operation> download_diff,
-    std::optional<Operation> patch_diff,
-    Operation download_full,
-    RepeatingOperation install,
-    std::optional<RepeatingOperation> run,
-    base::RepeatingCallback<void(const CategorizedError&)>
-        diff_outcome_recorder,
-    base::OnceCallback<void(
-        base::expected<base::OnceCallback<base::OnceClosure(
-                           base::OnceCallback<void(const CategorizedError&)>)>,
-                       CategorizedError>)> callback,
-    base::expected<base::FilePath, UnpackerError> cached_installer,
-    base::expected<base::FilePath, UnpackerError> prev_installer) {
-  if (cached_installer.has_value()) {
-    // Skip downloading and patching; run the cached installer. No fallbacks.
-    std::move(callback).Run(base::BindOnce(
-        &Pipeline::Start,
-        base::MakeRefCounted<Pipeline>(
-            [&] {
-              std::queue<Operation> ops;
-              ops.push(base::BindOnce(install));
-              if (run) {
-                ops.push(base::BindOnce(*run));
+// RunOperation adapts RunAction to an Operation-friendly signature. The
+// operation ignores the outcome of the RunAction (RunAction failures should not
+// stop the pipeline) and passes the previous operation's file onward to the
+// next operation.
+base::OnceClosure RunOperation(
+    scoped_refptr<ActionHandler> handler,
+    scoped_refptr<CrxInstaller> installer,
+    const std::string& file,
+    const std::string& session_id,
+    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
+    const base::FilePath& previous_operation_output,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback) {
+  return RunAction(
+      handler, installer, file, session_id, event_adder, state_tracker,
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 base::expected<base::FilePath, CategorizedError>)> callback,
+             const base::FilePath& previous_operation_output, bool success,
+             int error,
+             int extra) { std::move(callback).Run(previous_operation_output); },
+          std::move(callback), previous_operation_output));
+}
+
+// Wraps an operation in a check of the CRX Cache, skipping it if the associated
+// hash is already cached.
+Operation SkipIfCached(
+    base::RepeatingCallback<
+        void(base::OnceCallback<void(
+                 base::expected<base::FilePath, UnpackerError>)>)> cache_getter,
+    Operation operation) {
+  return base::BindOnce(
+      [](base::RepeatingCallback<void(
+             base::OnceCallback<void(
+                 base::expected<base::FilePath, UnpackerError>)>)> cache_getter,
+         Operation operation, const base::FilePath& path_in,
+         base::OnceCallback<void(
+             base::expected<base::FilePath, CategorizedError>)> callback) {
+        auto cancellation = base::MakeRefCounted<Cancellation>();
+        cache_getter.Run(base::BindOnce(
+            [](scoped_refptr<Cancellation> cancellation, Operation operation,
+               const base::FilePath& path_in,
+               base::OnceCallback<void(
+                   base::expected<base::FilePath, CategorizedError>)> callback,
+               base::expected<base::FilePath, UnpackerError> cached_path) {
+              if (cached_path.has_value()) {
+                // Skip the operation, and return the path to the next step.
+                std::move(callback).Run(cached_path.value());
+                return;
               }
-              return ops;
-            }(),
-            cached_installer.value(), base::DoNothing(), nullptr)));
-    return;
-  }
+              // Else, run the task and bind its cancellation callback to the
+              // cancellation returned by the wrapper.
+              cancellation->OnCancel(
+                  std::move(operation).Run(path_in, std::move(callback)));
+            },
+            cancellation, std::move(operation), path_in, std::move(callback)));
+        return base::BindOnce(&Cancellation::Cancel, cancellation);
+      },
+      cache_getter, std::move(operation));
+}
 
-  scoped_refptr<Pipeline> full = nullptr;
-  {
-    // Construct the full update pipeline.
-    // TODO(crbug.com/353249967): It's possible for the diff pipeline to have
-    // created and cached the full download output. Adjust the download step to
-    // check the cache.
-    std::queue<Operation> ops;
-    ops.push(std::move(download_full));
-    ops.push(base::BindOnce(install));
-    if (run) {
-      ops.push(base::BindOnce(*run));
+// Creates an operation that always fails.
+Operation MakeErrorOperation(
+    base::RepeatingCallback<void(base::Value::Dict)> event_adder) {
+  return base::BindOnce(
+      [](const base::FilePath&,
+         base::OnceCallback<void(
+             base::expected<base::FilePath, CategorizedError>)> callback)
+          -> base::OnceClosure {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           base::unexpected(CategorizedError(
+                               {.category_ = ErrorCategory::kUpdateCheck,
+                                .code_ = static_cast<int>(
+                                    ProtocolError::UNSUPPORTED_OPERATION)}))));
+        return base::DoNothing();
+      });
+}
+
+std::queue<Operation> MakeOperations(
+    scoped_refptr<Configurator> config,
+    base::RepeatingCallback<int64_t(const base::FilePath&)> get_available_space,
+    bool is_foreground,
+    const std::string& session_id,
+    scoped_refptr<CrxCache> crx_cache,
+    crx_file::VerifierFormat crx_format,
+    const std::string& id,
+    const std::vector<uint8_t>& pk_hash,
+    const std::string& install_data_index,
+    scoped_refptr<CrxInstaller> installer,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
+    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    CrxDownloader::ProgressCallback download_progress_callback,
+    CrxInstaller::ProgressCallback install_progress_callback,
+    base::RepeatingCallback<void(const CrxInstaller::Result&)>
+        install_complete_callback,
+    scoped_refptr<ActionHandler> action_handler,
+    const ProtocolParser::Pipeline& pipeline,
+    base::RepeatingCallback<
+        void(base::OnceCallback<
+             void(base::expected<base::FilePath, UnpackerError>)>)> cache_check,
+    const std::string& install_data) {
+  std::queue<Operation> ops;
+  for (const ProtocolParser::Operation& operation : pipeline.operations) {
+    if (operation.type == "download") {
+      ops.push(SkipIfCached(
+          cache_check,
+          base::BindOnce(&DownloadOperation, config, get_available_space,
+                         is_foreground, operation.urls, operation.size,
+                         operation.sha256_out, event_adder, state_tracker,
+                         download_progress_callback)));
+    } else if (operation.type == "puff") {
+      ops.push(SkipIfCached(
+          cache_check, base::BindOnce(&PuffOperation, crx_cache,
+                                      config->GetPatcherFactory()->Create(),
+                                      event_adder, id, operation.sha256_from)));
+    } else if (operation.type == "crx3") {
+      ops.push(base::BindOnce(
+          &InstallOperation, crx_cache, config->GetUnzipperFactory()->Create(),
+          crx_format, id, operation.sha256_in, pk_hash, installer,
+          operation.path.empty()
+              ? nullptr
+              : std::make_unique<CrxInstaller::InstallParams>(
+                    operation.path, operation.arguments, install_data),
+          event_adder, state_tracker, install_progress_callback,
+          install_complete_callback));
+    } else if (operation.type == "run") {
+      ops.push(base::BindOnce(&RunOperation, action_handler, installer,
+                              operation.path, session_id, event_adder,
+                              state_tracker));
+    } else {
+      // A compliant server shouldn't serve an operation type that was not in
+      // the acceptformat, but if it does, or if the client has a bug, replace
+      // the entire pipeline with an operation that simply records an error.
+      VLOG(2) << "Unrecognized operation '" << operation.type
+              << "', skipping pipeline.";
+      std::queue<Operation> error_ops;
+      error_ops.push(MakeErrorOperation(event_adder));
+      return error_ops;
     }
-    full = base::MakeRefCounted<Pipeline>(std::move(ops), base::FilePath(),
-                                          base::DoNothing(), full);
   }
-
-  if (download_diff && prev_installer.has_value()) {
-    // Do a differential update that falls back to a full update.
-    CHECK(patch_diff);
-    std::queue<Operation> ops;
-    ops.push(std::move(*download_diff));
-    ops.push(std::move(*patch_diff));
-    ops.push(base::BindOnce(install));
-    if (run) {
-      ops.push(base::BindOnce(*run));
-    }
-    std::move(callback).Run(base::BindOnce(
-        &Pipeline::Start,
-        base::MakeRefCounted<Pipeline>(std::move(ops), base::FilePath(),
-                                       diff_outcome_recorder, full)));
-    return;
-  }
-
-  // Else, full update only.
-  std::move(callback).Run(base::BindOnce(&Pipeline::Start, full));
+  return ops;
 }
 
 }  // namespace
@@ -231,7 +295,6 @@ void MakePipeline(
     const std::string& id,
     const std::vector<uint8_t>& pk_hash,
     const std::string& install_data_index,
-    const std::string& prev_fp,
     scoped_refptr<CrxInstaller> installer,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
@@ -240,65 +303,21 @@ void MakePipeline(
     base::RepeatingCallback<void(const CrxInstaller::Result&)>
         install_complete_callback,
     scoped_refptr<ActionHandler> action_handler,
-    base::RepeatingCallback<void(const CategorizedError&)>
-        diff_outcome_recorder,
-    const ProtocolParser::Result& result,
+    const ProtocolParser::App& result,
     base::OnceCallback<void(
         base::expected<base::OnceCallback<base::OnceClosure(
                            base::OnceCallback<void(const CategorizedError&)>)>,
                        CategorizedError>)> callback) {
-  // Run action.
-  std::optional<RepeatingOperation> run;
-  if (!result.action_run.empty()) {
-    run = base::BindRepeating(
-              [](base::RepeatingCallback<void(ComponentState)> state_tracker,
-                 const base::FilePath& file,
-                 base::OnceCallback<void(
-                     base::expected<base::FilePath, CategorizedError>)>
-                     callback) {
-                // Discard the input file path, and adapt callback.
-                state_tracker.Run(ComponentState::kRun);
-                return base::BindOnce(
-                           [](const base::FilePath& file, bool success,
-                              int error, int extra) {
-                             // Discard any error result: RunAction failures
-                             // don't end the pipeline.
-                             return file;
-                           },
-                           file)
-                    .Then(std::move(callback));
-              },
-              state_tracker)
-              .Then(base::BindRepeating(&RunAction, action_handler, installer,
-                                        result.action_run, session_id,
-                                        event_adder));
-  }
-
   if (result.status == "noupdate") {
-    if (run) {
-      // The pipeline has a run action only.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback),
-                         base::BindOnce(&Pipeline::Start,
-                                        base::MakeRefCounted<Pipeline>(
-                                            [&] {
-                                              std::queue<Operation> ops;
-                                              ops.push(*run);
-                                              return ops;
-                                            }(),
-                                            base::FilePath(),
-                                            diff_outcome_recorder, nullptr))));
-      return;
-    }
-    // Else, with a noupdate, there's nothing to do.
+    // With a noupdate, there's nothing to do.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   base::unexpected(CategorizedError())));
     return;
   }
 
-  if (result.status != "ok" || result.manifest.packages.empty()) {
+  if (result.status != "ok") {
+    // Any error status should just result in a kUpdateCheck error.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -307,146 +326,54 @@ void MakePipeline(
     return;
   }
 
-  // Download the update.
-  Operation download_full =
-      base::BindOnce(
-          [](base::RepeatingCallback<void(ComponentState)> state_tracker,
-             const base::FilePath&,
-             base::OnceCallback<void(
-                 base::expected<base::FilePath, CategorizedError>)> callback) {
-            // Discard the input file path, set state to downloading, pass
-            // `callback` on to the download.
-            state_tracker.Run(ComponentState::kDownloading);
-            return callback;
-          },
-          state_tracker)
-          .Then(base::BindOnce(
-              &DownloadOperation, config, get_available_space, is_foreground,
-              [&] {
-                std::vector<GURL> urls;
-                for (const auto& base_url : result.crx_urls) {
-                  const GURL url =
-                      base_url.Resolve(result.manifest.packages[0].name);
-                  if (url.is_valid()) {
-                    urls.push_back(url);
-                  }
-                }
-                return urls;
-              }(),
-              result.manifest.packages[0].size,
-              result.manifest.packages[0].hash_sha256, event_adder,
-              download_progress_callback));
+  std::string install_data = [&]() -> std::string {
+    if (install_data_index.empty() || result.data.empty()) {
+      return "";
+    }
+    const auto it =
+        std::ranges::find(result.data, install_data_index,
+                          &ProtocolParser::Data::install_data_index);
+    return it != std::end(result.data) ? it->text : "";
+  }();
 
-  // Download and patch the diff update.
-  std::optional<Operation> download_diff;
-  std::optional<Operation> patch_diff;
-  if (!result.manifest.packages[0].hashdiff_sha256.empty()) {
-    download_diff =
-        base::BindOnce(
-            [](base::RepeatingCallback<void(ComponentState)> state_tracker,
-               const base::FilePath&,
-               base::OnceCallback<void(
-                   base::expected<base::FilePath, CategorizedError>)>
-                   callback) {
-              // Discard the input file path, pass `callback` on to the
-              // download.
-              state_tracker.Run(ComponentState::kDownloading);
-              return callback;
-            },
-            state_tracker)
-            .Then(base::BindOnce(
-                &DownloadOperation, config, get_available_space, is_foreground,
-                [&] {
-                  std::vector<GURL> urls;
-                  for (const auto& base_url : result.crx_diffurls) {
-                    const GURL url =
-                        base_url.Resolve(result.manifest.packages[0].namediff);
-                    if (url.is_valid()) {
-                      urls.push_back(url);
-                    }
-                  }
-                  return urls;
-                }(),
-                result.manifest.packages[0].sizediff,
-                result.manifest.packages[0].hashdiff_sha256, event_adder,
-                download_progress_callback));
-    patch_diff = base::BindOnce(&PuffOperation, crx_cache,
-                                config->GetPatcherFactory()->Create(),
-                                event_adder, id, prev_fp);
+  // Assemble the pipelines from last to first.
+  scoped_refptr<Pipeline> fallback = nullptr;
+  for (const ProtocolParser::Pipeline& pipeline :
+       base::Reversed(result.pipelines)) {
+    // First, scan the operations to find any to-be-installed CRX so that
+    // downloads can be skipped if it is already in cache.
+    auto cache_check = base::BindRepeating(
+        [](base::OnceCallback<void(
+               base::expected<base::FilePath, UnpackerError>)> callback) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  std::move(callback),
+                  base::unexpected(UnpackerError::kCrxCacheFileNotCached)));
+        });
+    for (const ProtocolParser::Operation& operation : pipeline.operations) {
+      if (operation.type == "crx3") {
+        cache_check = base::BindRepeating(&CrxCache::GetByHash, crx_cache,
+                                          operation.sha256_in);
+        break;
+      }
+    }
+
+    // Then, assemble the pipeline. If the pipeline fails, it falls back to the
+    // previously-assembled pipeline.
+    fallback = base::MakeRefCounted<Pipeline>(
+        MakeOperations(config, get_available_space, is_foreground, session_id,
+                       crx_cache, crx_format, id, pk_hash, install_data_index,
+                       installer, state_tracker, event_adder,
+                       download_progress_callback, install_progress_callback,
+                       install_complete_callback, action_handler, pipeline,
+                       cache_check, install_data),
+        fallback);
   }
 
-  // Install the update.
-  RepeatingOperation install = base::BindRepeating(
-      [](scoped_refptr<Configurator> config, scoped_refptr<CrxCache> crx_cache,
-         crx_file::VerifierFormat crx_format, const std::string& id,
-         const std::vector<uint8_t>& pk_hash,
-         scoped_refptr<CrxInstaller> installer, const std::string& run,
-         const std::string& arguments, const std::string& install_data,
-         const std::string& fingerprint,
-         base::RepeatingCallback<void(ComponentState)> state_tracker,
-         base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-         CrxInstaller::ProgressCallback install_progress_callback,
-         base::RepeatingCallback<void(const CrxInstaller::Result&)>
-             install_complete_callback,
-         const base::FilePath& file,
-         base::OnceCallback<void(
-             base::expected<base::FilePath, CategorizedError>)> callback) {
-        state_tracker.Run(ComponentState::kUpdating);
-        return InstallOperation(
-            crx_cache, config->GetUnzipperFactory()->Create(), crx_format, id,
-            pk_hash, installer,
-            run.empty() ? nullptr
-                        : std::make_unique<CrxInstaller::InstallParams>(
-                              run, arguments, install_data),
-            fingerprint, event_adder, install_progress_callback,
-            base::BindOnce(
-                [](const base::FilePath& file,
-                   base::RepeatingCallback<void(const CrxInstaller::Result&)>
-                       install_complete_callback,
-                   const CrxInstaller::Result& result)
-                    -> base::expected<base::FilePath, CategorizedError> {
-                  install_complete_callback.Run(result);
-                  if (result.result.category_ != ErrorCategory::kNone) {
-                    return base::unexpected(result.result);
-                  }
-                  return file;
-                },
-                file, install_complete_callback)
-                .Then(std::move(callback)),
-            file);
-      },
-      config, crx_cache, crx_format, id, pk_hash, installer,
-      result.manifest.run, result.manifest.arguments,
-      [&]() -> std::string {
-        if (install_data_index.empty() || result.data.empty()) {
-          return "";
-        }
-        const auto it = base::ranges::find(
-            result.data, install_data_index,
-            &ProtocolParser::Result::Data::install_data_index);
-        return it != std::end(result.data) ? it->text : "";
-      }(),
-      result.manifest.packages[0].fingerprint, state_tracker, event_adder,
-      install_progress_callback, install_complete_callback);
-
-  crx_cache->Get(
-      id, result.manifest.packages[0].fingerprint,
-      base::BindOnce(
-          [](scoped_refptr<CrxCache> crx_cache, const std::string& id,
-             const std::string& prev_fp,
-             base::OnceCallback<void(
-                 base::expected<base::FilePath, UnpackerError>,
-                 base::expected<base::FilePath, UnpackerError>)> callback,
-             base::expected<base::FilePath, UnpackerError> installer) {
-            crx_cache->Get(id, prev_fp,
-                           base::BindOnce(std::move(callback), installer));
-          },
-          crx_cache, id, prev_fp,
-          base::BindOnce(&AssemblePipeline, std::move(download_diff),
-                         std::move(patch_diff), std::move(download_full),
-                         install, run, diff_outcome_recorder,
-                         std::move(callback))));
-  return;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                base::BindOnce(&Pipeline::Start, fallback)));
 }
 
 }  // namespace update_client

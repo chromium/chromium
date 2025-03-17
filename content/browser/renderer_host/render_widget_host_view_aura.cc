@@ -754,8 +754,6 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   CHECK(GetBackgroundColor());
 
   SkColor color = *GetBackgroundColor();
-  bool opaque = SkColorGetA(color) == SK_AlphaOPAQUE;
-  window_->layer()->SetFillsBoundsOpaquely(opaque);
   window_->layer()->SetColor(color);
 }
 
@@ -873,6 +871,13 @@ bool RenderWidgetHostViewAura::IsPointerLocked() {
 gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSize() {
   gfx::Rect requested_rect(GetRequestedRendererSize());
   requested_rect.Inset(insets_);
+  return requested_rect.size();
+}
+
+gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSizeDevicePx() {
+  gfx::Rect requested_rect(GetRequestedRendererSizeDevicePx());
+  auto scaled_insets = ScaleToCeiledInsets(insets_, GetDeviceScaleFactor());
+  requested_rect.Inset(scaled_insets);
   return requested_rect.size();
 }
 
@@ -1498,6 +1503,16 @@ gfx::Rect RenderWidgetHostViewAura::ConvertRectToScreen(
                    base::ClampSub(end.y(), origin.y()));
 }
 
+gfx::Point RenderWidgetHostViewAura::ConvertPointFromScreen(
+    const gfx::Point& screen_point_in_dips) const {
+  gfx::Point result = screen_point_in_dips;
+  if (window_->GetRootWindow() &&
+      aura::client::GetScreenPositionClient(window_->GetRootWindow())) {
+    wm::ConvertPointFromScreen(window_, &result);
+  }
+  return result;
+}
+
 gfx::Rect RenderWidgetHostViewAura::ConvertRectFromScreen(
     const gfx::Rect& rect) const {
   gfx::Rect result = rect;
@@ -1557,7 +1572,7 @@ std::optional<gfx::Rect> RenderWidgetHostViewAura::GetProximateCharacterBounds(
   std::optional<gfx::Rect> result;
   for (size_t i = range.start(); i < range.end(); ++i) {
     const gfx::Rect& rect_for_index =
-        proximate->bounds[i - proximate->range.start()];
+        proximate->widget_bounds_in_dips[i - proximate->range.start()];
     if (result.has_value()) {
       result->UnionEvenIfEmpty(rect_for_index);
     } else {
@@ -1572,7 +1587,7 @@ std::optional<gfx::Rect> RenderWidgetHostViewAura::GetProximateCharacterBounds(
 
 std::optional<size_t>
 RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
-    const gfx::Point& point,
+    const gfx::Point& screen_point_in_dips,
     ui::IndexFromPointFlags flags) const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget()) {
     return std::nullopt;
@@ -1593,19 +1608,18 @@ RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
   bool any_contain_point = false;
   size_t nearest_index = 0U;
   int64_t nearest_distance_sq = std::numeric_limits<int64_t>::max();
-  const HWND host_hwnd = GetHostWindowHWND();
 
-  for (size_t i = 0; i < proximate->bounds.size(); ++i) {
-    const gfx::Rect bounds_in_screen_coord =
-        display::win::ScreenWin::DIPToScreenRect(
-            host_hwnd, ConvertRectToScreen(proximate->bounds[i]));
+  const gfx::Point widget_point_in_dips =
+      ConvertPointFromScreen(screen_point_in_dips);
+  for (size_t i = 0; i < proximate->widget_bounds_in_dips.size(); ++i) {
+    const gfx::Rect& bounds = proximate->widget_bounds_in_dips[i];
     if (!any_contain_point) {
-      any_contain_point = bounds_in_screen_coord.Contains(point);
+      any_contain_point = bounds.Contains(widget_point_in_dips);
     }
     // When kNearestToContainedPoint is included, this can't early return
     // because we need to check to see if there's a character that's closer to
     // the point. kNearestToUncontainedPoint only applies when a character
-    // doesn't contain `point`, so this can early return when
+    // doesn't contain `widget_point_in_dips`, so this can early return when
     // kNearestToContainedPoint isn't included.
     if (any_contain_point && !nearest_to_contained_point) {
       return proximate->range.start() + i;
@@ -1613,12 +1627,13 @@ RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
 
     // When either flag is provided, we need to perform distance checks in case
     // either of them apply. Ideally this wouldn't need to iterate over all
-    // characters to determine whether one of them contains `point`, but the
-    // current implementation lacks any form of acceleration structures or
-    // such as spatial partitioning which could make this faster. There's no
-    // guarantee that character indices will be laid out spatially contiguously,
-    // so it's also not possible to reliably perform a any sort of binary search
-    // based on the character bounds. For example, nested `float: right;` text.
+    // characters to determine whether one of them contains
+    // `widget_point_in_dips`, but the current implementation lacks any form of
+    // acceleration structures or such as spatial partitioning which could make
+    // this faster. There's no guarantee that character indices will be laid out
+    // spatially contiguously, so it's also not possible to reliably perform a
+    // any sort of binary search based on the character bounds. For example,
+    // nested `float: right;` text.
     if (flags != ui::IndexFromPointFlags::kNone) {
       // For kNearestToContainedPoint, it's unclear from the API documentation
       // whether this expects the "nearest" to only consider characters on the
@@ -1629,7 +1644,7 @@ RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
       // lines it's possible that a character offset for an adjacent line of
       // text may be picked.
       const int64_t distance_sq =
-          (bounds_in_screen_coord.left_center() - point).LengthSquared();
+          (bounds.left_center() - widget_point_in_dips).LengthSquared();
       if (distance_sq < nearest_distance_sq) {
         nearest_index = proximate->range.start() + i;
         nearest_distance_sq = distance_sq;
@@ -2102,7 +2117,7 @@ gfx::Size RenderWidgetHostViewAura::GetMinimumSize() const {
 }
 
 std::optional<gfx::Size> RenderWidgetHostViewAura::GetMaximumSize() const {
-  return gfx::Size();
+  return std::nullopt;
 }
 
 void RenderWidgetHostViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
@@ -2390,12 +2405,12 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
 }
 
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
-    const gfx::Rect& rect_in_screen,
-    const gfx::Size& distance_tolerance) {
-  // TODO(crbug.com/355578906): Consider `distance_tolerance`.
+    const gfx::Rect& focus_screen_rect_in_dips,
+    const gfx::Size& tolerance_screen_distance_in_dips) {
+  // TODO(crbug.com/355578906): Consider `tolerance_screen_distance_in_dips`.
   if (host()) {
     host()->UpdateElementFocusForStylusWriting(
-        ConvertRectFromScreen(rect_in_screen));
+        ConvertRectFromScreen(focus_screen_rect_in_dips));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -3008,21 +3023,18 @@ void RenderWidgetHostViewAura::ForwardKeyboardEventWithLatencyInfo(
 
 #if BUILDFLAG(IS_LINUX)
   auto* linux_ui = ui::LinuxUi::instance();
-  std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (!event.skip_if_unhandled && linux_ui && event.os_event &&
-      linux_ui->GetTextEditCommandsForEvent(*event.os_event,
-                                            GetTextInputFlags(), &commands)) {
-    // Transform from ui/ types to content/ types.
-    std::vector<blink::mojom::EditCommandPtr> edit_commands;
-    for (std::vector<ui::TextEditCommandAuraLinux>::const_iterator it =
-             commands.begin(); it != commands.end(); ++it) {
-      edit_commands.push_back(blink::mojom::EditCommand::New(
-          it->GetCommandString(), it->argument()));
+  if (!event.skip_if_unhandled && linux_ui && event.os_event) {
+    const auto command = linux_ui->GetTextEditCommandForEvent(
+        *event.os_event, GetTextInputFlags());
+    if (command != ui::TextEditCommand::INVALID_COMMAND) {
+      // Transform from ui/ types to content/ types.
+      std::vector<blink::mojom::EditCommandPtr> commands;
+      commands.push_back(blink::mojom::EditCommand::New(
+          ui::TextEditCommandToString(command), ""));
+      target_host->ForwardKeyboardEventWithCommands(
+          event, latency, std::move(commands), update_event);
+      return;
     }
-
-    target_host->ForwardKeyboardEventWithCommands(
-        event, latency, std::move(edit_commands), update_event);
-    return;
   }
 #endif
 
@@ -3073,6 +3085,10 @@ void RenderWidgetHostViewAura::DidEnterBackForwardCache() {
   //
   // Called after to prevent prematurely evict the BFCached surface.
   host()->ForceFirstFrameAfterNavigationTimeout();
+}
+
+void RenderWidgetHostViewAura::ActivatedOrEvictedFromBackForwardCache() {
+  delegated_frame_host_->ActivatedOrEvictedFromBackForwardCache();
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewAura::GetFrameSinkId() const {

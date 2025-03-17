@@ -11,7 +11,6 @@
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
@@ -19,7 +18,6 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../settings_shared.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
@@ -43,12 +41,6 @@ import {getTemplate} from './additional_accounts_settings_card.html.js';
 
 const AdditionalAccountsSettingsCardElementBase = RouteObserverMixin(
     WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
-
-export interface AdditionalAccountsSettingsCardElement {
-  $: {
-    removeConfirmationDialog: CrDialogElement,
-  };
-}
 
 export class AdditionalAccountsSettingsCardElement extends
     AdditionalAccountsSettingsCardElementBase {
@@ -103,20 +95,6 @@ export class AdditionalAccountsSettingsCardElement extends
       },
 
       /**
-       * @return true if `kArcAccountRestrictionsEnabled` feature is
-       * enabled, false otherwise.
-       */
-      isArcAccountRestrictionsEnabled_: {
-        type: Boolean,
-        value() {
-          // TODO(b/349386750): Cleanup UI to toggle ARC access after Lacros is
-          // turned off.
-          return false;
-        },
-        readOnly: true,
-      },
-
-      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -132,7 +110,6 @@ export class AdditionalAccountsSettingsCardElement extends
   accounts: Account[];
   private actionMenuAccount_: Account|null;
   private browserProxy_: AccountManagerBrowserProxy;
-  private isArcAccountRestrictionsEnabled_: boolean;
   private isChildUser_: boolean;
   private isDeviceAccountManaged_: boolean;
   private isSecondaryGoogleAccountSigninAllowed_: boolean;
@@ -256,45 +233,13 @@ export class AdditionalAccountsSettingsCardElement extends
   }
 
   /**
-   * If Lacros is not enabled, removes the account pointed to by
-   * |this.actionMenuAccount_|.
-   * If Lacros is enabled, shows a warning dialog that the user needs to
-   * confirm before removing the account.
+   * Removes the account pointed to by |this.actionMenuAccount_|.
    */
   private onRemoveAccountClick_(): void {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
     assertExists(this.actionMenuAccount_);
-    if (loadTimeData.getBoolean('lacrosEnabled') &&
-        this.actionMenuAccount_.isManaged) {
-      this.$.removeConfirmationDialog.showModal();
-    } else {
-      this.browserProxy_.removeAccount(this.actionMenuAccount_);
-      this.actionMenuAccount_ = null;
-      this.shadowRoot!.querySelector<CrButtonElement>(
-                          '#addAccountButton')!.focus();
-    }
-  }
-
-  /**
-   * The user chooses not to remove the account after seeing the warning
-   * dialog, and taps the cancel button.
-   */
-  private onRemoveAccountDialogCancelClick_(): void {
-    this.actionMenuAccount_ = null;
-    this.$.removeConfirmationDialog.cancel();
-    this.shadowRoot!.querySelector<CrButtonElement>(
-                        '#addAccountButton')!.focus();
-  }
-
-  /**
-   * After seeing the warning dialog, the user chooses to removes the account
-   * pointed to by |this.actionMenuAccount_|, and taps the remove button.
-   */
-  private onRemoveAccountDialogRemoveClick_(): void {
-    assertExists(this.actionMenuAccount_);
     this.browserProxy_.removeAccount(this.actionMenuAccount_);
     this.actionMenuAccount_ = null;
-    this.$.removeConfirmationDialog.close();
     this.shadowRoot!.querySelector<CrButtonElement>(
                         '#addAccountButton')!.focus();
   }

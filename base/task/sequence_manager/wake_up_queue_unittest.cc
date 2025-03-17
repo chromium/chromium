@@ -21,9 +21,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::Mock;
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 class TaskQueueImplForTest : public internal::TaskQueueImpl {
  public:
@@ -60,14 +58,16 @@ class MockWakeUpQueue : public WakeUpQueue {
   }
 
   internal::TaskQueueImpl* NextScheduledTaskQueue() const {
-    if (wake_up_queue_.empty())
+    if (wake_up_queue_.empty()) {
       return nullptr;
+    }
     return wake_up_queue_.top().queue;
   }
 
   TimeTicks NextScheduledRunTime() const {
-    if (wake_up_queue_.empty())
+    if (wake_up_queue_.empty()) {
       return TimeTicks::Max();
+    }
     return wake_up_queue_.top().wake_up.time;
   }
 
@@ -85,8 +85,9 @@ class WakeUpQueueTest : public testing::Test {
   }
 
   void TearDown() final {
-    if (task_queue_)
+    if (task_queue_) {
       task_queue_->UnregisterTaskQueue();
+    }
   }
 
   std::unique_ptr<MockWakeUpQueue> wake_up_queue_;
@@ -517,6 +518,4 @@ TEST_F(WakeUpQueueTest, SetNextWakeUpForQueueInThePast) {
   RunLoop().RunUntilIdle();
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

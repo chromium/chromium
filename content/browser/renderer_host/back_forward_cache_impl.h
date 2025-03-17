@@ -508,10 +508,15 @@ class CONTENT_EXPORT BackForwardCacheImpl
   static size_t GetForegroundedEntriesCacheSize();
 
   // Enforces a limit on the number of entries. Which entries are counted
-  // towards the limit depends on the values of |foregrounded_only|. If it's
-  // true it only considers entries that are associated with a foregrounded
-  // process. Otherwise all entries are considered.
-  size_t EnforceCacheSizeLimitInternal(size_t limit, bool foregrounded_only);
+  // towards the limit depends on the values of `reason`.
+  // If it's `kForegroundCacheLimit`, it only considers entries that are
+  // associated with a foregrounded process. Otherwise all entries are
+  // considered.
+  // If it's `kCacheLimitPruned`, it means the enforcement is triggered by the
+  // `Prune()` method.
+  size_t EnforceCacheSizeLimitInternal(
+      size_t limit,
+      BackForwardCacheMetrics::NotRestoredReason reason);
 
   // Updates |process_to_entry_map_| with processes from |entry|. These must
   // be called after adding or removing an entry in |entries_|.

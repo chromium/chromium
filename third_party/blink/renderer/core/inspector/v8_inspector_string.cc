@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -163,7 +164,7 @@ bool ProtocolTypeTraits<WTF::String>::Deserialize(DeserializerState* state,
   if (tokenizer->TokenTag() == crdtp::cbor::CBORTokenTag::STRING16) {
     const auto str = tokenizer->GetString16WireRep();
     *value = StringUtil::fromUTF16LE(
-        reinterpret_cast<const uint16_t*>(str.data()), str.size() / 2);
+        UNSAFE_TODO(reinterpret_cast<const uint16_t*>(str.data())), str.size() / 2);
     return true;
   }
   state->RegisterError(Error::BINDINGS_STRING_VALUE_EXPECTED);
@@ -174,20 +175,21 @@ bool ProtocolTypeTraits<WTF::String>::Deserialize(DeserializerState* state,
 void ProtocolTypeTraits<WTF::String>::Serialize(const String& value,
                                                 std::vector<uint8_t>* bytes) {
   if (value.length() == 0) {
-    crdtp::cbor::EncodeString8(span<uint8_t>(nullptr, 0),
-                               bytes);  // Empty string.
+    crdtp::cbor::EncodeString8(crdtp::span<uint8_t>(), bytes);  // Empty string.
     return;
   }
   if (value.Is8Bit()) {
     crdtp::cbor::EncodeFromLatin1(
-        span<uint8_t>(reinterpret_cast<const uint8_t*>(value.Characters8()),
-                      value.length()),
+        crdtp::span<uint8_t>(
+            reinterpret_cast<const uint8_t*>(value.Characters8()),
+            value.length()),
         bytes);
     return;
   }
   crdtp::cbor::EncodeFromUTF16(
-      span<uint16_t>(reinterpret_cast<const uint16_t*>(value.Characters16()),
-                     value.length()),
+      crdtp::span<uint16_t>(
+          reinterpret_cast<const uint16_t*>(value.Characters16()),
+          value.length()),
       bytes);
 }
 

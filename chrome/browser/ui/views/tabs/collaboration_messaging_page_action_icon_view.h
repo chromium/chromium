@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -45,6 +46,8 @@ class CollaborationMessagingPageActionIconView : public PageActionIconView {
       CollaborationMessagingPageActionIconViewInteractiveTest,
       ReactsToChangesInTabData);
 
+  tab_groups::LocalTabGroupID GetGroupId();
+
   // Helper method to get the collaboration data for the current tab.
   CollaborationMessagingTabData* GetCollaborationTabData() const;
 
@@ -52,7 +55,10 @@ class CollaborationMessagingPageActionIconView : public PageActionIconView {
   void UpdateContent(
       CollaborationMessagingTabData* collaboration_messaging_tab_data);
 
-  ui::ImageModel avatar_image_;
+  raw_ptr<Profile> profile_ = nullptr;
+  base::WeakPtr<CollaborationMessagingTabData>
+      collaboration_messaging_tab_data_ = nullptr;
+  RecentActivityBubbleCoordinator bubble_coordinator_;
   base::CallbackListSubscription message_changed_callback_;
 };
 

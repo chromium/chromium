@@ -118,6 +118,9 @@ class HardwareDisplayController {
   void GetEnableProps(CommitRequest* commit_request,
                       const DrmOverlayPlaneList& modeset_planes);
   void GetDisableProps(CommitRequest* commit_request);
+  // Gets the props required to modeset a CRTC to its current mode, but detaches
+  // any previously associated planes.
+  void GetCurrentModesetPropsWithoutPlanes(CommitRequest* commit_request);
 
   // Updates state of the controller after modeset/enable/disable is performed.
   void UpdateState(const CrtcCommitRequest& crtc_request);
@@ -239,7 +242,6 @@ class HardwareDisplayController {
   void UpdateCursorImage();
   void UpdateCursorLocation();
   void ResetCursor();
-  void DisableCursor();
   void InitSupportedCursorSizes();
 
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format) const;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://drafts.csswg.org/css-fonts-4/#om-fontfeaturevalues
-
+[Exposed(Window ExposeCSSFontFeatureValuesRule)]
 interface CSSFontFeatureValuesRule : CSSRule {
   attribute CSSOMString fontFamily;
 

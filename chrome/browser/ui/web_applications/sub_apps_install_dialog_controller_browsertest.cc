@@ -6,12 +6,14 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -34,12 +36,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   ash::SystemWebAppManager::Get(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server =
-      CreateAndStartDevServer(
-          FILE_PATH_LITERAL("web_apps/subapps_isolated_app"));
-
-  IsolatedWebAppUrlInfo parent_app = web_app::InstallDevModeProxyIsolatedWebApp(
-      browser()->profile(), iwa_dev_server->GetOrigin());
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo parent_app,
+                       app->Install(profile()));
   const webapps::AppId parent_app_id = parent_app.app_id();
 
   auto controller = std::make_unique<SubAppsInstallDialogController>();

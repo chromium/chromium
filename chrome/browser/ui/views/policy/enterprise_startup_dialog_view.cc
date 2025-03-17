@@ -83,11 +83,10 @@ class LogoView : public views::ImageView {
 
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
-    SetImage(ui::ResourceBundle::GetSharedInstance()
-                 .GetImageNamed((GetNativeTheme()->ShouldUseDarkColors())
-                                    ? IDR_PRODUCT_LOGO_ENTERPRISE_WHITE
-                                    : IDR_PRODUCT_LOGO_ENTERPRISE)
-                 .AsImageSkia());
+    SetImage(
+        ui::ImageModel::FromResourceId((GetNativeTheme()->ShouldUseDarkColors())
+                                           ? IDR_PRODUCT_LOGO_ENTERPRISE_WHITE
+                                           : IDR_PRODUCT_LOGO_ENTERPRISE));
     const gfx::Rect logo_bounds = GetImageBounds();
     SetImageSize(gfx::Size(
         logo_bounds.width() * kLogoHeight / logo_bounds.height(), kLogoHeight));

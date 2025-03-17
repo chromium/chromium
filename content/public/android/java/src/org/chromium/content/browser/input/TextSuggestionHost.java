@@ -13,6 +13,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
@@ -29,6 +31,7 @@ import org.chromium.ui.base.WindowAndroid;
  * the commands in that menu (by calling back to the C++ class).
  */
 @JNINamespace("content")
+@NullMarked
 public class TextSuggestionHost implements WindowEventObserver, HideablePopup, UserData {
     private long mNativeTextSuggestionHost;
     private final WebContentsImpl mWebContents;
@@ -36,10 +39,10 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     private final ViewAndroidDelegate mViewDelegate;
 
     private boolean mIsAttachedToWindow;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
 
-    private SpellCheckPopupWindow mSpellCheckPopupWindow;
-    private TextSuggestionsPopupWindow mTextSuggestionsPopupWindow;
+    private @Nullable SpellCheckPopupWindow mSpellCheckPopupWindow;
+    private @Nullable TextSuggestionsPopupWindow mTextSuggestionsPopupWindow;
 
     private static final class UserDataFactoryLazyHolder {
         private static final UserDataFactory<TextSuggestionHost> INSTANCE = TextSuggestionHost::new;
@@ -53,8 +56,12 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      */
     @VisibleForTesting
     static TextSuggestionHost fromWebContents(WebContents webContents) {
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(TextSuggestionHost.class, UserDataFactoryLazyHolder.INSTANCE);
+        TextSuggestionHost ret =
+                ((WebContentsImpl) webContents)
+                        .getOrSetUserData(
+                                TextSuggestionHost.class, UserDataFactoryLazyHolder.INSTANCE);
+        assert ret != null;
+        return ret;
     }
 
     @CalledByNative
@@ -70,10 +77,14 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      */
     public TextSuggestionHost(WebContents webContents) {
         mWebContents = (WebContentsImpl) webContents;
-        mContext = mWebContents.getContext();
+        Context context = mWebContents.getContext();
+        assert context != null;
+        mContext = context;
         mWindowAndroid = mWebContents.getTopLevelNativeWindow();
-        mViewDelegate = mWebContents.getViewAndroidDelegate();
-        assert mViewDelegate != null;
+
+        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+        assert viewDelegate != null;
+        mViewDelegate = viewDelegate;
         PopupController.register(mWebContents, this);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
     }
@@ -89,7 +100,7 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     // WindowEventObserver
 
     @Override
-    public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+    public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
         mWindowAndroid = newWindowAndroid;
         if (mSpellCheckPopupWindow != null) {
             mSpellCheckPopupWindow.updateWindowAndroid(mWindowAndroid);
@@ -199,7 +210,7 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     }
 
     /** Tells Blink to remove spelling markers under all instances of the specified word. */
-    public void onNewWordAddedToDictionary(String word) {
+    public void onNewWordAddedToDictionary(@Nullable String word) {
         TextSuggestionHostJni.get()
                 .onNewWordAddedToDictionary(
                         mNativeTextSuggestionHost, TextSuggestionHost.this, word);
@@ -227,14 +238,14 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     /**
      * @return The TextSuggestionsPopupWindow, if one exists.
      */
-    public SuggestionsPopupWindow getTextSuggestionsPopupWindowForTesting() {
+    public @Nullable SuggestionsPopupWindow getTextSuggestionsPopupWindowForTesting() {
         return mTextSuggestionsPopupWindow;
     }
 
     /**
      * @return The SpellCheckPopupWindow, if one exists.
      */
-    public SuggestionsPopupWindow getSpellCheckPopupWindowForTesting() {
+    public @Nullable SuggestionsPopupWindow getSpellCheckPopupWindowForTesting() {
         return mSpellCheckPopupWindow;
     }
 
@@ -253,7 +264,9 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
                 long nativeTextSuggestionHostAndroid, TextSuggestionHost caller);
 
         void onNewWordAddedToDictionary(
-                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller, String word);
+                long nativeTextSuggestionHostAndroid,
+                TextSuggestionHost caller,
+                @Nullable String word);
 
         void onSuggestionMenuClosed(
                 long nativeTextSuggestionHostAndroid, TextSuggestionHost caller);

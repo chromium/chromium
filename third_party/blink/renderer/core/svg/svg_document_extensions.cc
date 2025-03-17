@@ -129,6 +129,7 @@ void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
 void SVGDocumentExtensions::AddSVGRootWithRelativeLengthDescendents(
     SVGSVGElement* svg_root) {
 #if DCHECK_IS_ON()
+  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
   DCHECK(!in_relative_length_svg_roots_invalidation_);
 #endif
   relative_length_svg_roots_.insert(svg_root);
@@ -137,6 +138,7 @@ void SVGDocumentExtensions::AddSVGRootWithRelativeLengthDescendents(
 void SVGDocumentExtensions::RemoveSVGRootWithRelativeLengthDescendents(
     SVGSVGElement* svg_root) {
 #if DCHECK_IS_ON()
+  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
   DCHECK(!in_relative_length_svg_roots_invalidation_);
 #endif
   relative_length_svg_roots_.erase(svg_root);

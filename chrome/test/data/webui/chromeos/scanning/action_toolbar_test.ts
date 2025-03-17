@@ -7,7 +7,7 @@ import 'chrome://scanning/action_toolbar.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {ActionToolbarElement} from 'chrome://scanning/action_toolbar.js';
+import type {ActionToolbarElement} from 'chrome://scanning/action_toolbar.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/chromeos/test_util.js';
 
@@ -58,7 +58,7 @@ suite('actionToolbarTest', function() {
     actionToolbar.pageIndex = expectedPageIndex;
     const removePageEvent: Promise<CustomEvent<number>> =
         eventToPromise('show-remove-page-dialog', actionToolbar);
-    strictQuery('#removePageIcon', actionToolbar.shadowRoot!, HTMLElement)
+    strictQuery('#removePageIcon', actionToolbar.shadowRoot, HTMLElement)
         .click();
     pageIndexFromEvent = (await removePageEvent).detail;
 
@@ -75,7 +75,7 @@ suite('actionToolbarTest', function() {
     actionToolbar.pageIndex = expectedPageIndex;
     const rescanPageEvent: Promise<CustomEvent<number>> =
         eventToPromise('show-rescan-page-dialog', actionToolbar);
-    strictQuery('#rescanPageIcon', actionToolbar.shadowRoot!, HTMLElement)
+    strictQuery('#rescanPageIcon', actionToolbar.shadowRoot, HTMLElement)
         .click();
     pageIndexFromEvent = (await rescanPageEvent).detail;
 

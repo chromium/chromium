@@ -55,6 +55,7 @@ fun:*__allocate_unique_temporary_buffer*
 
 # https://github.com/grpc/grpc/issues/19375
 src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
+src:*third_party/grpc/source/src/core/lib/gprpp/inlined_vector.h
 
 # https://crbug.com/994752
 src:*third_party/spirv-cross/spirv-cross/spirv_cross_containers.hpp
@@ -205,6 +206,12 @@ src:*third_party/angle/third_party/vulkan-loader/src/loader*
 src:*third_party/vulkan-loader/src/loader*
 src:*third_party/vulkan-validation-layers/src/layers/*
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
+
+# Calls to TFLiteDelegate functions in a shared library.
+src:*services/webnn/tflite/op_resolver.cc
+src:*third_party/tflite/src/tensorflow/lite/c/common_internal.cc
+src:*third_party/tflite/src/tensorflow/lite/core/subgraph.cc
+src:*third_party/tflite/src/tensorflow/lite/delegates/utils.cc
 
 src:*components/os_crypt/sync/*
 

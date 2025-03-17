@@ -73,16 +73,16 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 
-  // Manages the visibility of the scroll buttons based on whether |tab_strip_|
+  // Manages the visibility of the scroll buttons based on whether `tab_strip_`
   // is currently overflowing.
   raw_ptr<OverflowView> overflow_view_;
 
-  // Actually scrolls |tab_strip_|.
+  // Actually scrolls `tab_strip_`.
   raw_ptr<views::ScrollView> scroll_view_;
   base::ScopedObservation<TabStrip, views::ViewObserver> tab_strip_observation_{
       this};
 
-  // The buttons that allow users to manually scroll |tab_strip_|.
+  // The buttons that allow users to manually scroll `tab_strip_`.
   raw_ptr<views::ImageButton> leading_scroll_button_;
   raw_ptr<views::ImageButton> trailing_scroll_button_;
 

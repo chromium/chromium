@@ -1,0 +1,24 @@
+diff --git a/src/google/protobuf/message_lite.cc b/src/google/protobuf/message_lite.cc
+index 9652028e07bdb..6bb2f434db2c1 100644
+--- a/src/google/protobuf/message_lite.cc
++++ b/src/google/protobuf/message_lite.cc
+@@ -23,7 +23,6 @@
+ 
+ #include "absl/log/absl_check.h"
+ #include "absl/log/absl_log.h"
+-#include "absl/log/log.h"
+ #include "absl/strings/cord.h"
+ #include "absl/strings/cord_buffer.h"
+ #include "absl/strings/str_cat.h"
+diff --git a/src/google/protobuf/wire_format_lite.cc b/src/google/protobuf/wire_format_lite.cc
+index 989a3372624d1..cbe6f3adfe143 100644
+--- a/src/google/protobuf/wire_format_lite.cc
++++ b/src/google/protobuf/wire_format_lite.cc
+@@ -20,7 +20,6 @@
+ 
+ #include "absl/log/absl_check.h"
+ #include "absl/log/absl_log.h"
+-#include "absl/log/log.h"
+ #include "absl/strings/cord.h"
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_format.h"

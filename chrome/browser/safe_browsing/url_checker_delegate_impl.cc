@@ -4,9 +4,10 @@
 
 #include "chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -148,10 +149,10 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     bool originated_from_service_worker) {
   // Check for whether the URL matches the Safe Browsing allowlist domains
   // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
-  return base::ranges::any_of(allowlist_domains_,
-                              [&original_url](const std::string& domain) {
-                                return original_url.DomainIs(domain);
-                              });
+  return std::ranges::any_of(allowlist_domains_,
+                             [&original_url](const std::string& domain) {
+                               return original_url.DomainIs(domain);
+                             });
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(

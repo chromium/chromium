@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/database_utils/url_converter.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/search_engines/search_terms_data.h"
@@ -38,7 +39,20 @@ using base::Time;
 namespace features {
 BASE_FEATURE(kKeywordTableHashVerification,
              "KeywordTableHashVerification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Only enable this hash checking feature on Windows. This because the value of
+// OSCrypt::IsEncryptionAvailable can vary and is platform specific. E.g.
+// os_crypt_posix.cc historically returned 'false' for IsEncryptionAvailable. On
+// Linux, OSCrypt::IsEncryptionAvailable can return `false` if v11 encryption is
+// not available, but data could still be encrypted with v10 encryption, and the
+// backend can change for various reasons including command line options or
+// desktop window manager.
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_WIN)
+);
+
 }  // namespace features
 
 namespace {
@@ -523,7 +537,17 @@ bool KeywordTable::MigrateToVersion137AddHashColumn() {
   while (query_statement.Step()) {
     TemplateURLData data;
     data.id = query_statement.ColumnInt64(0);
-    data.SetURL(query_statement.ColumnString(1));
+    const auto maybe_url = query_statement.ColumnString(1);
+
+    // Due to past bugs, there might be persisted entries with empty URLs. Avoid
+    // reading these out. GetKeywords() will delete these entries when they are
+    // read after migration.
+    if (maybe_url.empty()) {
+      all_rows_migrated = false;
+      continue;
+    }
+
+    data.SetURL(maybe_url);
     const auto url_hash = data.GenerateHash();
     const auto encrypted_hash = encryptor()->EncryptString(
         std::string(url_hash.begin(), url_hash.end()));
@@ -568,8 +592,8 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.search_url_post_params = s.ColumnString(17);
   data.suggestions_url_post_params = s.ColumnString(18);
   data.image_url_post_params = s.ColumnString(19);
-  data.favicon_url = GURL(s.ColumnString(3));
-  data.originating_url = GURL(s.ColumnString(6));
+  data.favicon_url = GURL(s.ColumnStringView(3));
+  data.originating_url = GURL(s.ColumnStringView(6));
   data.safe_for_autoreplace = s.ColumnBool(5);
   data.input_encodings = base::SplitString(
       s.ColumnString(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -578,7 +602,10 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.last_modified = s.ColumnTime(13);
   data.policy_origin =
       static_cast<TemplateURLData::PolicyOrigin>(s.ColumnInt(12));
-  data.created_from_play_api = s.ColumnBool(22);
+  // TODO(b:322513019): support other regulatory programs.
+  data.regulatory_origin = s.ColumnBool(22)
+                               ? RegulatoryExtensionType::kAndroidEEA
+                               : RegulatoryExtensionType::kDefault;
   data.usage_count = s.ColumnInt(8);
   data.prepopulate_id = s.ColumnInt(11);
   data.sync_guid = s.ColumnString(14);
@@ -677,7 +704,9 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
   s->BindString(starting_column + 18, data.image_url_post_params);
   s->BindString(starting_column + 19, data.new_tab_url);
   s->BindTime(starting_column + 20, data.last_visited);
-  s->BindBool(starting_column + 21, data.created_from_play_api);
+  // TODO(b:322513019): support other regulatory programs.
+  s->BindBool(starting_column + 21,
+              data.regulatory_origin == RegulatoryExtensionType::kAndroidEEA);
   s->BindInt(starting_column + 22, static_cast<int>(data.is_active));
   s->BindInt(starting_column + 23, data.starter_pack_id);
   s->BindBool(starting_column + 24, data.enforced_by_policy);

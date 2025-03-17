@@ -38,6 +38,11 @@ struct FrameData {
   // fall out of delegated mode.
   gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  bool is_handling_interaction = false;
+  bool is_handling_animation = false;
+#endif
 };
 
 }  // namespace gfx

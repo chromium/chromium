@@ -132,7 +132,6 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
           si_info.debug_label, texture, /*dcomp_texture=*/nullptr,
           std::move(dxgi_shared_handle_state), caps, GL_TEXTURE_EXTERNAL_OES,
           array_slice, /*use_update_subresource1=*/false, is_thread_safe);
-
   if (!backing) {
     return nullptr;
   }
@@ -140,7 +139,6 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
   // Need to clear the backing since the D3D11 Video Decoder will initialize
   // the textures.
   backing->SetCleared();
-
   DCHECK(shared_image_stub_->channel()
              ->gpu_channel_manager()
              ->shared_image_manager());
@@ -382,30 +380,6 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info.meta, GenVerifiedSyncToken(), holder_, gmb_type);
 }
-SharedImageInterface::SharedImageMapping
-GpuChannelSharedImageInterface::CreateSharedImage(
-    const SharedImageInfo& si_info) {
-  base::WritableSharedMemoryMapping mapping;
-  gfx::GpuMemoryBufferHandle handle;
-  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
-
-  auto mailbox = Mailbox::Generate();
-  {
-    base::AutoLock lock(lock_);
-    ScheduleGpuTask(base::BindOnce(&GpuChannelSharedImageInterface::
-                                       CreateSharedImageWithBufferOnGpuThread,
-                                   this, mailbox, si_info, std::move(handle)),
-                    /*sync_token_fences=*/{},
-                    MakeSyncToken(next_fence_sync_release_++));
-  }
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  shared_image_mapping.mapping = std::move(mapping);
-  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenVerifiedSyncToken(), holder_,
-      gfx::SHARED_MEMORY_BUFFER);
-
-  return shared_image_mapping;
-}
 
 scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::CreateSharedImageForSoftwareCompositor(
@@ -566,15 +540,6 @@ void GpuChannelSharedImageInterface::WaitSyncToken(
                   MakeSyncToken(next_fence_sync_release_++));
 }
 
-void GpuChannelSharedImageInterface::Flush() {
-  // No need to flush in this implementation.
-}
-
-scoped_refptr<gfx::NativePixmap>
-GpuChannelSharedImageInterface::GetNativePixmap(const gpu::Mailbox& mailbox) {
-  NOTREACHED();
-}
-
 void GpuChannelSharedImageInterface::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences,
@@ -585,7 +550,7 @@ void GpuChannelSharedImageInterface::ScheduleGpuTask(
 
 scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
+    ExportedSharedImage exported_shared_image) {
   NOTREACHED();
 }
 

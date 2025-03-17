@@ -16,7 +16,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import type {InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
+import type {AudioData, Capabilities, InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
 import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter, Token} from './on_device_model.mojom-webui.js';
 import {ModelPerformanceHint} from './on_device_model_service.mojom-webui.js';
 import {getTemplate} from './tools.html.js';
@@ -35,6 +35,7 @@ interface OnDeviceInternalsToolsElement {
     temperatureInput: CrInputElement,
     textInput: CrInputElement,
     imageInput: HTMLInputElement,
+    audioInput: HTMLInputElement,
     topKInput: CrInputElement,
     performanceHintSelect: HTMLSelectElement,
   };
@@ -112,10 +113,6 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
-      baseModel_: {
-        type: Object,
-        value: null,
-      },
       model_: {
         type: Object,
         value: null,
@@ -124,17 +121,36 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         type: String,
         value: 'Loading...',
       },
-      contextExpanded_: Boolean,
-      contextLength_: Number,
+      contextExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+      contextLength_: {
+        type: Number,
+        value: 0,
+      },
       contextText_: String,
-      enableImageInput_: Boolean,
-      topK_: Number,
-      temperature_: Number,
+      topK_: {
+        type: Number,
+        value: 1,
+      },
+      temperature_: {
+        type: Number,
+        value: 0,
+      },
       imageFile_: {
         type: Object,
         value: null,
       },
-      performanceHint_: String,
+      audioFile_: {
+        type: Object,
+        value: null,
+      },
+      audioError_: String,
+      performanceHint_: {
+        type: String,
+        value: 'kHighestQuality',
+      },
       loadedPerformanceHint_: Number,
     };
   }
@@ -145,8 +161,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     ];
   }
 
-  private contextExpanded_: boolean = false;
-  private contextLength_: number = 0;
+
+  private capabilities_: Capabilities = {imageInput: false, audioInput: false};
+  private contextExpanded_: boolean;
+  private contextLength_: number;
   private contextText_: string;
   private currentResponse_: Response|null;
   private error_: string;
@@ -154,19 +172,19 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private loadModelDuration_: number;
   private loadModelStart_: number;
   private modelPath_: string;
-  private baseModel_: OnDeviceModelRemote|null;
   private model_: OnDeviceModelRemote|null;
   private performanceClassText_: string;
   private responses_: Response[];
-  private session_: SessionRemote|null = null;
-  private temperature_: number = 0;
+  private temperature_: number;
   private text_: string;
-  private topK_: number = 1;
-  private imageFile_: File|null = null;
-  private enableImageInput_: boolean = false;
-  private performanceHint_: string = 'kHighestQuality';
+  private topK_: number;
+  private imageFile_: File|null;
+  private audioFile_: File|null;
+  private audioError_: string;
+  private performanceHint_: string;
   private loadedPerformanceHint_: ModelPerformanceHint|null;
 
+  private session_: SessionRemote|null = null;
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
   private responseRouter_: StreamingResponderCallbackRouter =
       new StreamingResponderCallbackRouter();
@@ -177,6 +195,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.$.temperatureInput.inputElement.step = '0.1';
     this.$.imageInput.addEventListener(
         'change', this.onImageChange_.bind(this));
+    this.$.audioInput.addEventListener(
+        'change', this.onAudioChange_.bind(this));
   }
 
   private async getPerformanceClass_() {
@@ -201,10 +221,20 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.$.imageInput.click();
   }
 
+  private onAddAudioClick_() {
+    this.$.audioInput.click();
+  }
+
   private onRemoteImageClick_() {
     this.imageFile_ = null;
     this.$.imageInput.value = '';
   }
+
+  private onRemoteAudioClick_() {
+    this.audioFile_ = null;
+    this.$.audioInput.value = '';
+  }
+
 
   private onPerformanceHintChange_() {
     this.performanceHint_ = this.$.performanceHintSelect.value;
@@ -217,7 +247,6 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.error_ = 'Service crashed, please reload the model.';
     this.model_ = null;
-    this.baseModel_ = null;
     this.modelPath_ = '';
     this.loadModelStart_ = 0;
     this.$.modelInput.focus();
@@ -232,17 +261,28 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
   }
 
+  private onAudioChange_() {
+    this.audioError_ = '';
+    if ((this.$.audioInput.files?.length ?? 0) > 0) {
+      this.audioFile_ = this.$.audioInput.files!.item(0) ?? null;
+    } else {
+      this.audioFile_ = null;
+    }
+  }
+
+
   private async onModelSelected_() {
     this.error_ = '';
-    if (this.baseModel_) {
-      this.baseModel_.$.close();
+    if (this.model_) {
+      this.model_.$.close();
     }
     if (this.model_) {
       this.model_.$.close();
     }
     this.imageFile_ = null;
-    this.baseModel_ = null;
+    this.audioFile_ = null;
     this.model_ = null;
+    this.capabilities_ = {imageInput: false, audioInput: false};
     this.loadModelStart_ = new Date().getTime();
     const performanceHint = ModelPerformanceHint[(
         this.performanceHint_ as keyof typeof ModelPerformanceHint)];
@@ -254,33 +294,16 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     // <if expr="not is_win">
     const processedPath = modelPath;
     // </if>
-    const baseModel = new OnDeviceModelRemote();
-    let newModel = new OnDeviceModelRemote();
-    let {result} = await this.proxy_.handler.loadModel(
+    const newModel = new OnDeviceModelRemote();
+    const {result, capabilities} = await this.proxy_.handler.loadModel(
         {path: processedPath}, performanceHint,
-        baseModel.$.bindNewPipeAndPassReceiver());
-    if (result === LoadModelResult.kSuccess && this.enableImageInput_) {
-      result = (await baseModel.loadAdaptation(
-                    {
-                      enableImageInput: true,
-                      maxTokens: 0,
-                      assets: {
-                        weights: null,
-                        weightsPath: null,
-                      },
-                    },
-                    newModel.$.bindNewPipeAndPassReceiver()))
-                   .result;
-    } else {
-      // No adaptation needed, just use the base model.
-      newModel = baseModel;
-    }
+        newModel.$.bindNewPipeAndPassReceiver());
     if (result !== LoadModelResult.kSuccess) {
       this.error_ =
           'Unable to load model. Specify a correct and absolute path.';
     } else {
-      this.baseModel_ = baseModel;
       this.model_ = newModel;
+      this.capabilities_ = capabilities;
       this.model_.onConnectionError.addListener(() => {
         this.onServiceCrashed_();
       });
@@ -294,14 +317,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     if (this.session_ === null) {
       return;
     }
-    this.session_.addContext(
+    this.session_.append(
         {
-          ignoreContext: false,
           maxTokens: 0,
           tokenOffset: 0,
-          maxOutputTokens: 0,
-          topK: null,
-          temperature: null,
           input: {pieces: textToInputPieces(this.contextText_)},
         },
         null);
@@ -315,7 +334,13 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.contextLength_ = 0;
     this.session_ = new SessionRemote();
-    this.model_.startSession(this.session_.$.bindNewPipeAndPassReceiver());
+    this.model_.startSession(this.session_.$.bindNewPipeAndPassReceiver(), {
+      maxTokens: 0,
+      capabilities: {
+        imageInput: this.imagesEnabled_(),
+        audioInput: this.audioEnabled_(),
+      },
+    });
   }
 
   private onCancelClick_() {
@@ -357,7 +382,20 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     const {bitmap} = await this.proxy_.handler.decodeBitmap(bigBuffer);
     return bitmap;
   }
-
+  private async decodeAudio_(): Promise<AudioData> {
+    const audioCtx = new AudioContext({sampleRate: 48000});
+    const arrayBuffer = await this.audioFile_!.arrayBuffer();
+    const buffer = await audioCtx.decodeAudioData(arrayBuffer);
+    if (buffer.numberOfChannels > 1) {
+      throw new Error('Multichannel audio is not supported');
+    }
+    return {
+      sampleRate: buffer.sampleRate,
+      channelCount: buffer.numberOfChannels,
+      frameCount: buffer.length,
+      data: Array.from(buffer.getChannelData(0)),
+    };
+  }
   private async onExecute_() {
     this.imageError_ = '';
     if (this.session_ === null) {
@@ -380,15 +418,30 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         return;
       }
     }
-    this.session_.execute(
+    if (this.audioFile_ !== null) {
+      try {
+        const audio = await this.decodeAudio_();
+        pieces.unshift({audio});
+      } catch (error) {
+        this.audioFile_ = null;
+        this.audioError_ = `Audio is invalid: ${error}`;
+        return;
+      }
+    }
+    const clonedSession = new SessionRemote();
+    this.session_.clone(clonedSession.$.bindNewPipeAndPassReceiver());
+    clonedSession.append(
         {
-          ignoreContext: false,
           maxTokens: 0,
           tokenOffset: 0,
+          input: {pieces: pieces},
+        },
+        null);
+    clonedSession.generate(
+        {
           maxOutputTokens: 0,
           topK: this.topK_,
           temperature: this.temperature_,
-          input: {pieces: pieces},
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =
@@ -413,12 +466,16 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.text_ = '';
   }
 
-  private canExecute_(): boolean {
+  private canEnterInput_(): boolean {
     return !this.currentResponse_ && this.model_ !== null;
   }
 
+  private canExecute_(): boolean {
+    return this.canEnterInput_() && this.text_.length > 0;
+  }
+
   private canUploadFile_(): boolean {
-    return this.canExecute_() && this.imageFile_ === null;
+    return this.canEnterInput_() && this.imageFile_ === null;
   }
 
   private isLoading_(): boolean {
@@ -426,7 +483,11 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   }
 
   private imagesEnabled_(): boolean {
-    return this.model_ !== this.baseModel_;
+    return this.capabilities_.imageInput;
+  }
+
+  private audioEnabled_(): boolean {
+    return this.capabilities_.audioInput;
   }
 
   private getModelText_(): string {
@@ -437,6 +498,9 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         this.loadModelDuration_ + 'ms ';
     if (this.imagesEnabled_()) {
       text += '[images enabled]';
+    }
+    if (this.audioEnabled_()) {
+      text += '[audio enabled]';
     }
     if (this.loadedPerformanceHint_ ===
         ModelPerformanceHint.kFastestInference) {

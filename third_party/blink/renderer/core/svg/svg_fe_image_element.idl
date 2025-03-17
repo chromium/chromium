@@ -28,7 +28,7 @@
 [
     Exposed=Window
 ] interface SVGFEImageElement : SVGElement {
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
+    readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
 };
 
 SVGFEImageElement includes SVGFilterPrimitiveStandardAttributes;

@@ -17,7 +17,7 @@ struct UrlLoadParams;
 @class URLOpenerParams;
 
 // Protocol for object that can open new tabs during application launch.
-@protocol TabOpening<NSObject>
+@protocol TabOpening <NSObject>
 
 // 1. Dismisses any modal view, excluding the omnibox if `dismissOmnibox` is NO,
 // 2. (only if `targetMode` is UNDETERMINED) Resolves the value of `targetMode`,

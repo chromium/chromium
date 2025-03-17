@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_DELEGATE_TAB_GROUP_SYNC_DELEGATE_H_
 
 #include <memory>
+#include <set>
 
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -60,6 +61,13 @@ class TabGroupSyncDelegate {
   // Called to get the local tab IDs associated with a given tab group.
   virtual std::vector<LocalTabID> GetLocalTabIdsForTabGroup(
       const LocalTabGroupID& local_tab_group_id) = 0;
+
+  // Called to get the currently selected tabs from the tab model. The result
+  // should contain selected tabs across all browser windows.
+  virtual std::set<LocalTabID> GetSelectedTabs() = 0;
+
+  // Called to get the title of a tab from the tab model.
+  virtual std::u16string GetTabTitle(const LocalTabID& local_tab_id) = 0;
 
   // Local To Remote mutation methods.
 

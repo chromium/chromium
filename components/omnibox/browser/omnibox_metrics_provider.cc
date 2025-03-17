@@ -59,8 +59,6 @@ ClientSummarizedResultType GetClientSummarizedResultType(
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::HISTORY_BODY,
            ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_KEYWORD,
-           ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::NAVSUGGEST,
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::BOOKMARK_TITLE,

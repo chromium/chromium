@@ -47,17 +47,6 @@ using ::chromeos::ImmersiveFullscreenController;
 using ::chromeos::ImmersiveFullscreenControllerTestApi;
 using ::chromeos::ImmersiveRevealedLock;
 
-class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
- public:
-  explicit TestBubbleDialogDelegate(views::View* anchor)
-      : BubbleDialogDelegateView(anchor, views::BubbleBorder::NONE) {}
-
-  TestBubbleDialogDelegate(const TestBubbleDialogDelegate&) = delete;
-  TestBubbleDialogDelegate& operator=(const TestBubbleDialogDelegate&) = delete;
-
-  ~TestBubbleDialogDelegate() override = default;
-};
-
 class ConsumeEventHandler : public ui::test::TestEventHandler {
  public:
   ConsumeEventHandler() = default;
@@ -76,6 +65,17 @@ class ConsumeEventHandler : public ui::test::TestEventHandler {
 };
 
 }  // namespace
+
+class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
+ public:
+  explicit TestBubbleDialogDelegate(views::View* anchor)
+      : BubbleDialogDelegateView(anchor, views::BubbleBorder::NONE) {}
+
+  TestBubbleDialogDelegate(const TestBubbleDialogDelegate&) = delete;
+  TestBubbleDialogDelegate& operator=(const TestBubbleDialogDelegate&) = delete;
+
+  ~TestBubbleDialogDelegate() override = default;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -146,7 +146,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     gfx::Size window_size = widget_->GetWindowBoundsInScreen().size();
     content_view_ = new views::NativeViewHost();
     content_view_->SetBounds(0, 0, window_size.width(), window_size.height());
-    widget_->client_view()->AddChildView(content_view_.get());
+    widget_->client_view()->AddChildViewRaw(content_view_.get());
 
     test_api_ =
         std::make_unique<ImmersiveFullscreenControllerTestApi>(controller());
@@ -816,11 +816,11 @@ TEST_F(ImmersiveFullscreenControllerTest, Focus) {
   views::View* child_view = new views::View();
   child_view->SetBounds(0, 0, 10, 10);
   child_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  top_container()->AddChildView(child_view);
+  top_container()->AddChildViewRaw(child_view);
   views::View* unrelated_view = new views::View();
   unrelated_view->SetBounds(0, 100, 10, 10);
   unrelated_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  top_container()->parent()->AddChildView(unrelated_view);
+  top_container()->parent()->AddChildViewRaw(unrelated_view);
   views::FocusManager* focus_manager =
       top_container()->GetWidget()->GetFocusManager();
 
@@ -928,10 +928,10 @@ TEST_F(ImmersiveFullscreenControllerTest, Bubbles) {
   // Add views to the view hierarchy to which we will anchor bubbles.
   views::View* child_view = new views::View();
   child_view->SetBounds(0, 0, 10, 10);
-  top_container()->AddChildView(child_view);
+  top_container()->AddChildViewRaw(child_view);
   views::View* unrelated_view = new views::View();
   unrelated_view->SetBounds(0, 100, 10, 10);
-  top_container()->parent()->AddChildView(unrelated_view);
+  top_container()->parent()->AddChildViewRaw(unrelated_view);
 
   SetEnabled(true);
   ASSERT_FALSE(controller()->IsRevealed());

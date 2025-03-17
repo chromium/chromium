@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -106,7 +107,7 @@ class ASH_EXPORT QuickInsertListItemView : public QuickInsertItemView {
   const QuickInsertBadgeView& trailing_badge_for_testing() const {
     return *trailing_badge_;
   }
-  std::u16string GetPrimaryTextForTesting() const;
+  std::u16string_view GetPrimaryTextForTesting() const;
   ui::ImageModel GetPrimaryImageForTesting() const;
   std::u16string_view GetSecondaryTextForTesting() const;
 

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
 
@@ -36,7 +37,8 @@ std::optional<ui::CursorData> GetCursorData(
     ui::CursorSize size,
     float scale,
     std::optional<int> target_cursor_size_in_px,
-    display::Display::Rotation rotation);
+    display::Display::Rotation rotation,
+    SkColor color);
 
 // Scale and rotate the cursor's bitmap and hotpoint.
 // |bitmap_in_out| and |hotpoint_in_out| are used as
@@ -58,6 +60,10 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
                       int* resource_id,
                       gfx::Point* point,
                       bool* is_animated);
+
+// Applies `cursor_color` and recolors `bitmap`.
+COMPONENT_EXPORT(UI_WM)
+SkBitmap GetColorAdjustedBitmap(const SkBitmap& bitmap, SkColor cursor_color);
 
 }  // namespace wm
 

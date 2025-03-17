@@ -277,9 +277,6 @@ class SaturationValueView : public LocatedEventHandlerView {
   SaturationValueView& operator=(const SaturationValueView&) = delete;
   ~SaturationValueView() override = default;
 
-  // views::View
-  void OnThemeChanged() override;
-
   void OnHueChanged(SkScalar hue);
   void OnSaturationValueChanged(SkScalar saturation, SkScalar value);
 
@@ -305,16 +302,9 @@ class SaturationValueView : public LocatedEventHandlerView {
 SaturationValueView::SaturationValueView(
     const SaturationValueChangedCallback& changed_callback)
     : changed_callback_(changed_callback),
-
       marker_color_(gfx::kPlaceholderColor) {
-  SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
-}
-
-void SaturationValueView::OnThemeChanged() {
-  LocatedEventHandlerView::OnThemeChanged();
-  GetBorder()->set_color(
-      GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused));
-  SchedulePaint();
+  SetBorder(
+      CreateSolidBorder(kBorderWidth, ui::kColorFocusableBorderUnfocused));
 }
 
 void SaturationValueView::OnHueChanged(SkScalar hue) {
@@ -420,15 +410,15 @@ class SelectedColorPatchView : public views::View {
 
 SelectedColorPatchView::SelectedColorPatchView() {
   SetVisible(true);
-  SetBorder(CreateThemedSolidBorder(kBorderWidth,
-                                    ui::kColorFocusableBorderUnfocused));
+  SetBorder(
+      CreateSolidBorder(kBorderWidth, ui::kColorFocusableBorderUnfocused));
 }
 
 void SelectedColorPatchView::SetColor(SkColor color) {
   if (!background()) {
     SetBackground(CreateSolidBackground(color));
   } else {
-    background()->SetNativeControlColor(color);
+    background()->SetColor(color);
   }
   SchedulePaint();
 }
@@ -439,7 +429,7 @@ END_METADATA
 std::unique_ptr<View> ColorChooser::BuildView() {
   auto view = std::make_unique<View>();
   tracker_.SetView(view.get());
-  view->SetBackground(CreateThemedSolidBackground(ui::kColorWindowBackground));
+  view->SetBackground(CreateSolidBackground(ui::kColorWindowBackground));
   view->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                   gfx::Insets(kMarginWidth), kMarginWidth));

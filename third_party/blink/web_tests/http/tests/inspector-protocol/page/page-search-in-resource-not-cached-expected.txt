@@ -1,0 +1,6 @@
+Tests that Page.searchInResource returns an error when no-store header is set
+{
+    code : -32000
+    message : Content unavailable. Resource was not cached
+}
+

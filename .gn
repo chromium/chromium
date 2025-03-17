@@ -90,7 +90,7 @@ no_check_targets = [
   "//v8:v8_libplatform",  # 2 errors
 ]
 
-# These are the list of GN files that run exec_script. This whitelist exists
+# These are the list of GN files that run exec_script. This allowlist exists
 # to force additional review for new uses of exec_script, which is strongly
 # discouraged.
 #
@@ -145,11 +145,11 @@ no_check_targets = [
 #      this situation much easier to create. if the build always lists the
 #      files and passes them to a script, it will always be correct.
 
-exec_script_whitelist =
-    build_dotfile_settings.exec_script_whitelist +
+exec_script_allowlist =
+    build_dotfile_settings.exec_script_allowlist +
     angle_dotfile_settings.exec_script_whitelist +
     [
-      # Whitelist entries for //build should go into
+      # Allowlist entries for //build should go into
       # //build/dotfile_settings.gni instead, so that they can be shared
       # with other repos. The entries in this list should be only for files
       # in the Chromium repo outside of //build.

@@ -665,4 +665,16 @@ TEST_P(CdmAdapterTestWithMockCdm, RecordUMA) {
                                             HasNoLicenseSdkVersion())));
 }
 
+// When CDM reports an unexpected value (e.g. new value added in the future),
+// no metric will be reported, and there should not be any crash.
+TEST_P(CdmAdapterTestWithMockCdm, ReportMetricsWithUnexpectedValue) {
+  CdmConfig cdm_config = GetCdmConfig();
+  InitializeWithCdmConfig(cdm_config);
+
+  EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+  const uint32_t kInvalidMetricName = 99999999;  // Arbitrary large metric name.
+  cdm_host_proxy_->ReportMetrics(
+      static_cast<cdm::MetricName>(kInvalidMetricName), 12345);
+}
+
 }  // namespace media

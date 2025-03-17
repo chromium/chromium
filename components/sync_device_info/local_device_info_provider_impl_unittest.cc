@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -115,7 +114,7 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
   std::unique_ptr<LocalDeviceInfoProviderImpl> provider_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(LocalDeviceInfoProviderImplTest, UmaToggleFullHardwareClass) {
   InitializeProvider(kLocalDeviceGuid);
 
@@ -135,7 +134,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, UmaToggleFullHardwareClass) {
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->full_hardware_class(),
             kLocalFullHardwareClass);
 }
-#else   // NOT BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // NOT BUILDFLAG(IS_CHROMEOS)
 TEST_F(LocalDeviceInfoProviderImplTest,
        UmaEnabledNonChromeOSHardwareClassEmpty) {
   // Tests that the |full_hardware_class| doesn't get updated when on
@@ -150,7 +149,7 @@ TEST_F(LocalDeviceInfoProviderImplTest,
   // |kLocalFullHardwareClass| is reset after retrieving |local_device_info|
   EXPECT_EQ(local_device_info->full_hardware_class(), "");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(LocalDeviceInfoProviderImplTest, GetLocalDeviceInfo) {
   ASSERT_EQ(nullptr, provider_->GetLocalDeviceInfo());

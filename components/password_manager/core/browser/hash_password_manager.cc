@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -97,9 +98,6 @@ bool StringToLengthAndSalt(const std::string& s,
   return !salt->empty() && base::StringToSizeT(prefix, password_length);
 }
 
-std::string BooleanToString(bool bool_value) {
-  return bool_value ? "true" : "false";
-}
 }  // namespace
 
 std::optional<PasswordHashData> ConvertToPasswordHashData(
@@ -201,7 +199,7 @@ void HashPasswordManager::ClearAllPasswordHash(bool is_gaia_password) {
 
   (*update)->EraseIf([&](const auto& dict) {
     return GetAndDecryptField(dict, kIsGaiaFieldKey) ==
-           BooleanToString(is_gaia_password);
+           base::ToString(is_gaia_password);
   });
 }
 
@@ -338,7 +336,7 @@ bool HashPasswordManager::EncryptAndSave(
   }
 
   std::string encrypted_is_gaia_value =
-      EncryptString(BooleanToString(password_hash_data.is_gaia_password));
+      EncryptString(base::ToString(password_hash_data.is_gaia_password));
   if (encrypted_is_gaia_value.empty()) {
     return false;
   }

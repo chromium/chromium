@@ -19,7 +19,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -49,7 +49,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -78,7 +78,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -107,7 +107,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -137,7 +137,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -167,7 +167,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -220,6 +220,10 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "gpu-fyi-try-android-a23-32",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "gpu-fyi-try-android-nvidia-shield-tv",
           "group": "tryserver.chromium.android"
         },
@@ -235,18 +239,15 @@
       "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Android arm Builder/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

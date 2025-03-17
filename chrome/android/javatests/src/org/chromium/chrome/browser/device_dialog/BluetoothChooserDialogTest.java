@@ -28,7 +28,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -88,11 +87,6 @@ public class BluetoothChooserDialogTest {
     private String mFinishedDeviceId;
     private int mRestartSearchCount;
 
-    // Unused member variables to avoid Java optimizer issues with Mockito.
-    @Mock ModalDialogManager mMockModalDialogManager;
-    @Mock Activity mMockActivity;
-    @Mock WindowAndroid mMockWindowAndroid;
-
     private class TestBluetoothChooserDialogJni implements BluetoothChooserDialog.Natives {
         private BluetoothChooserDialog mBluetoothChooserDialog;
 
@@ -106,7 +100,7 @@ public class BluetoothChooserDialogTest {
             Assert.assertEquals(
                     nativeBluetoothChooserAndroid,
                     mBluetoothChooserDialog.mNativeBluetoothChooserDialogPtr);
-            Assert.assertEquals(mFinishedEventType, -1);
+            Assert.assertEquals(-1, mFinishedEventType);
             mFinishedEventType = eventType;
             mFinishedDeviceId = deviceId;
             // The native code calls closeDialog() when OnDialogFinished is called.
@@ -618,7 +612,7 @@ public class BluetoothChooserDialogTest {
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
                                     /* delegate= */ null,
-                                    /* nativeUsbChooserDialogPtr= */ 42);
+                                    /* nativeBluetoothChooserDialogPtr= */ 42);
                         });
         Assert.assertNull(dialog);
     }

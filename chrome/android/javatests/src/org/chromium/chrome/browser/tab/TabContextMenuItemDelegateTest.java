@@ -24,9 +24,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -75,8 +73,7 @@ public class TabContextMenuItemDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
-    public void testOpenInNewTabInGroup_NewGroup_ParityEnabled_ContextMenuDialogDisabled() {
+    public void testOpenInNewTabInGroup_NewGroup_NoCreationDialog() {
         openNewTabUsingContextMenu();
 
         assertFalse(mModalDialogManager.isShowing());
@@ -94,7 +91,7 @@ public class TabContextMenuItemDelegateTest {
                                     .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(false);
                     var tab = cta.getActivityTab();
-                    filter.createSingleTabGroup(tab, /* notify= */ false);
+                    filter.createSingleTabGroup(tab);
                 });
 
         openNewTabUsingContextMenu();

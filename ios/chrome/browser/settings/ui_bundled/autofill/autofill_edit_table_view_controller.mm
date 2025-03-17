@@ -14,10 +14,10 @@
 
 @interface AutofillEditTableViewController () <FormInputAccessoryViewDelegate> {
   TableViewTextEditCell* _currentEditingCell;
-}
 
-// The accessory view when editing any of text fields.
-@property(nonatomic, strong) FormInputAccessoryView* formInputAccessoryView;
+  // The accessory view when editing any of text fields.
+  FormInputAccessoryView* _formInputAccessoryView;
+}
 
 @end
 
@@ -36,8 +36,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  [self.formInputAccessoryView setUpWithLeadingView:nil
-                                 navigationDelegate:self];
+  [_formInputAccessoryView setUpWithLeadingView:nil navigationDelegate:self];
   [self setShouldHideDoneButton:YES];
   [self updateUIForEditState];
 
@@ -101,9 +100,9 @@
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   _currentEditingCell = cell;
   if (!IsCompactHeight(self)) {
-    self.formInputAccessoryView.hidden = NO;
+    _formInputAccessoryView.hidden = NO;
   }
-  [textField setInputAccessoryView:self.formInputAccessoryView];
+  [textField setInputAccessoryView:_formInputAccessoryView];
   [self updateAccessoryViewButtonState];
 }
 
@@ -111,7 +110,7 @@
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   DCHECK(_currentEditingCell == cell);
   [textField setInputAccessoryView:nil];
-  self.formInputAccessoryView.hidden = YES;
+  _formInputAccessoryView.hidden = YES;
   _currentEditingCell = nil;
 }
 
@@ -235,18 +234,18 @@
   BOOL isValidPreviousPath =
       previousPath && [[self.tableView cellForRowAtIndexPath:previousPath]
                           isKindOfClass:TableViewTextEditCell.class];
-  self.formInputAccessoryView.previousButton.enabled = isValidPreviousPath;
+  _formInputAccessoryView.previousButton.enabled = isValidPreviousPath;
 
   BOOL isValidNextPath =
       nextPath && [[self.tableView cellForRowAtIndexPath:nextPath]
                       isKindOfClass:TableViewTextEditCell.class];
-  self.formInputAccessoryView.nextButton.enabled = isValidNextPath;
+  _formInputAccessoryView.nextButton.enabled = isValidNextPath;
 }
 
 // Hides the `formInputAccessoryView` when the UITraitVerticalSizeClass changes
 // on device and the height is deemed to be compact.
 - (void)hideFormInputAccessoryViewOnTraitChange {
-  self.formInputAccessoryView.hidden = IsCompactHeight(self);
+  _formInputAccessoryView.hidden = IsCompactHeight(self);
 }
 
 #pragma mark - Keyboard handling

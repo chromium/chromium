@@ -60,6 +60,15 @@
       pref="{{prefs.autofill.payment_card_benefits}}">
   </settings-toggle-button>
 </template>
+<template is="dom-if" if="[[shouldShowPayOverTimeSettings_]]">
+  <settings-toggle-button id="payOverTimeToggle"
+      no-extension-indicator label="$i18n{autofillPayOverTimeSettingsLabel}"
+      sub-label-with-link="[[payOverTimeSublabel_]]"
+      on-sub-label-link-clicked="onPayOverTimeSublabelLinkClick_"
+      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+      pref="{{prefs.autofill.bnpl_enabled}}">
+  </settings-toggle-button>
+</template>
 <settings-toggle-button id="canMakePaymentToggle"
     aria-label="$i18n{canMakePaymentToggleLabel}"
     label="$i18n{canMakePaymentToggleLabel}"
@@ -128,7 +137,9 @@
     sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
 <settings-payments-list id="paymentsList"
     class="list-frame payment-list-margin-start"
-    credit-cards="[[creditCards]]" ibans="[[ibans]]"
+    credit-cards="[[creditCards]]"
+    ibans="[[ibans]]"
+    pay-over-time-issuers="[[payOverTimeIssuers]]"
     on-dots-iban-menu-click="onDotsIbanMenuClick_"
     on-remote-iban-menu-click="onRemoteEditIbanMenuClick_"
     on-dots-card-menu-click="onCreditCardDotsMenuClick_"

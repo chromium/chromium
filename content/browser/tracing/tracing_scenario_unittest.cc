@@ -13,6 +13,7 @@
 #include "base/test/test_proto_loader.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
+#include "build/build_config.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/tracing/perfetto/test_utils.h"
@@ -20,54 +21,46 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include "base/files/scoped_temp_dir.h"
+#include "base/task/current_thread.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "services/tracing/perfetto/system_test_utils.h"
+#include "services/tracing/public/cpp/tracing_features.h"
+#include "services/tracing/tracing_service.h"
+#endif  // BUILDFLAG(IS_POSIX)
+
 namespace content {
 namespace {
 
 const char* kDefaultNestedConfig = R"pb(
   scenario_name: "test_nested_scenario"
-  start_rules: { name: "start_trigger" manual_trigger_name: "start_trigger" }
-  stop_rules: { name: "stop_trigger" manual_trigger_name: "stop_trigger" }
-  upload_rules: { name: "upload_trigger" manual_trigger_name: "upload_trigger" }
+  start_rules: { manual_trigger_name: "start_trigger" }
+  stop_rules: { manual_trigger_name: "stop_trigger" }
+  upload_rules: { manual_trigger_name: "upload_trigger" }
 )pb";
 
 const char* kDefaultConfig = R"pb(
   scenario_name: "test_scenario"
-  setup_rules: { name: "setup_trigger" manual_trigger_name: "setup_trigger" }
-  start_rules: { name: "start_trigger" manual_trigger_name: "start_trigger" }
-  stop_rules: { name: "stop_trigger" manual_trigger_name: "stop_trigger" }
-  upload_rules: { name: "upload_trigger" manual_trigger_name: "upload_trigger" }
+  setup_rules: { manual_trigger_name: "setup_trigger" }
+  start_rules: { manual_trigger_name: "start_trigger" }
+  stop_rules: { manual_trigger_name: "stop_trigger" }
+  upload_rules: { manual_trigger_name: "upload_trigger" }
   trace_config: {
     data_sources: { config: { name: "org.chromium.trace_metadata" } }
   }
   nested_scenarios: {
     scenario_name: "nested_scenario"
-    start_rules: {
-      name: "nested_start_trigger"
-      manual_trigger_name: "nested_start_trigger"
-    }
-    stop_rules: {
-      name: "nested_stop_trigger"
-      manual_trigger_name: "nested_stop_trigger"
-    }
-    upload_rules: {
-      name: "nested_upload_trigger"
-      manual_trigger_name: "nested_upload_trigger"
-    }
+    start_rules: { manual_trigger_name: "nested_start_trigger" }
+    stop_rules: { manual_trigger_name: "nested_stop_trigger" }
+    upload_rules: { manual_trigger_name: "nested_upload_trigger" }
   }
   nested_scenarios: {
     scenario_name: "other_nested_scenario"
-    start_rules: {
-      name: "other_nested_start_trigger"
-      manual_trigger_name: "other_nested_start_trigger"
-    }
-    stop_rules: {
-      name: "other_nested_stop_trigger"
-      manual_trigger_name: "other_nested_stop_trigger"
-    }
-    upload_rules: {
-      name: "other_nested_upload_trigger"
-      manual_trigger_name: "other_nested_upload_trigger"
-    }
+    start_rules: { manual_trigger_name: "other_nested_start_trigger" }
+    stop_rules: { manual_trigger_name: "other_nested_stop_trigger" }
+    upload_rules: { manual_trigger_name: "other_nested_upload_trigger" }
   }
 )pb";
 
@@ -80,6 +73,10 @@ class TestTracingScenarioDelegate : public TracingScenario::Delegate {
   MOCK_METHOD(bool, OnScenarioActive, (TracingScenario * scenario), (override));
   MOCK_METHOD(bool, OnScenarioIdle, (TracingScenario * scenario), (override));
   MOCK_METHOD(bool, OnScenarioCloned, (TracingScenario * scenario), (override));
+  MOCK_METHOD(void,
+              OnScenarioError,
+              (TracingScenario * scenario, perfetto::TracingError),
+              (override));
   MOCK_METHOD(void,
               OnScenarioRecording,
               (TracingScenario * scenario),
@@ -249,7 +246,7 @@ class TracingScenarioForTesting : public TracingScenario {
                         delegate,
                         /*enable_privacy_filter=*/false,
                         /*is_local_scenario=*/true,
-                        /*request_startup_tracing=*/true) {
+                        /*request_startup_tracing=*/false) {
     EXPECT_TRUE(Initialize(config, false));
   }
 
@@ -539,7 +536,7 @@ TEST_F(TracingScenarioTest, SetupStartStop) {
 
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(0);
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
-  EXPECT_EQ(TracingScenario::State::kRecording,
+  EXPECT_EQ(TracingScenario::State::kStarting,
             tracing_scenario.current_state());
 
   base::RunLoop run_loop;
@@ -567,7 +564,7 @@ TEST_F(TracingScenarioTest, SetupNestedStartStop) {
 
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(0);
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
-  EXPECT_EQ(TracingScenario::State::kRecording,
+  EXPECT_EQ(TracingScenario::State::kStarting,
             tracing_scenario.current_state());
   EXPECT_FALSE(
       base::trace_event::EmitNamedTrigger("other_nested_start_trigger"));
@@ -595,7 +592,7 @@ TEST_F(TracingScenarioTest, Abort) {
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
-  EXPECT_EQ(TracingScenario::State::kRecording,
+  EXPECT_EQ(TracingScenario::State::kStarting,
             tracing_scenario.current_state());
 
   base::RunLoop run_loop;
@@ -619,7 +616,17 @@ TEST_F(TracingScenarioTest, Upload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioRecording(&tracing_scenario))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+    EXPECT_EQ(TracingScenario::State::kStarting,
+              tracing_scenario.current_state());
+    run_loop.Run();
+    EXPECT_EQ(TracingScenario::State::kRecording,
+              tracing_scenario.current_state());
+  }
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
@@ -643,7 +650,13 @@ TEST_F(TracingScenarioTest, StopUpload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioRecording(&tracing_scenario))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+    run_loop.Run();
+  }
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
@@ -668,8 +681,16 @@ TEST_F(TracingScenarioTest, NestedUpload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioRecording(&tracing_scenario))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
+    run_loop.Run();
+  }
+  EXPECT_EQ(TracingScenario::State::kRecording,
+            tracing_scenario.current_state());
 
   {
     base::RunLoop run_loop;
@@ -770,5 +791,344 @@ TEST_F(NestedTracingScenarioTest, StopUpload) {
   EXPECT_EQ(NestedTracingScenario::State::kDisabled,
             tracing_scenario.current_state());
 }
+
+#if BUILDFLAG(IS_POSIX)
+
+const char* kSystemProbeScenarioConfig = R"pb(
+  scenario_name: "test_scenario"
+  setup_rules: { manual_trigger_name: "setup_trigger" }
+  start_rules: { manual_trigger_name: "start_trigger" }
+  stop_rules: { manual_trigger_name: "stop_trigger" }
+  trace_config: { data_sources: { config: { name: "mock_data_source" } } }
+  use_system_backend: true
+)pb";
+
+class TracingScenarioSystemBackendTest : public testing::Test {
+ public:
+  static constexpr char kPerfettoConsumerSockName[] =
+      "PERFETTO_CONSUMER_SOCK_NAME";
+  static constexpr char kPerfettoProducerSockName[] =
+      "PERFETTO_PRODUCER_SOCK_NAME";
+  TracingScenarioSystemBackendTest()
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  void TearDown() override {
+    system_producer_ = nullptr;
+    system_service_ = nullptr;
+    traced_process_ = nullptr;
+
+    // Restore env variables after shutdown of the above to data races with the
+    // muxer thread.
+    if (saved_consumer_sock_name_) {
+      ASSERT_EQ(0, setenv(kPerfettoConsumerSockName,
+                          saved_consumer_sock_name_->c_str(), 1));
+    } else {
+      ASSERT_EQ(0, unsetenv(kPerfettoConsumerSockName));
+    }
+    if (saved_producer_sock_name_) {
+      ASSERT_EQ(0, setenv(kPerfettoProducerSockName,
+                          saved_producer_sock_name_->c_str(), 1));
+    } else {
+      ASSERT_EQ(0, unsetenv(kPerfettoConsumerSockName));
+    }
+  }
+
+  // This is not implemented as Setup() because system tracing feature flags
+  // affect the behavior of PerfettoTracedProcess::SetupClientLibrary(). The
+  // tests will need to enable/disable features before |traced_process| is
+  // created.
+  void InitTracing() {
+    // The test connects to the mock system service.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    system_service_ = std::make_unique<tracing::MockSystemService>(temp_dir_);
+
+    const auto* env_val = getenv(kPerfettoConsumerSockName);
+    if (env_val) {
+      saved_consumer_sock_name_ = env_val;
+    }
+    ASSERT_EQ(0, setenv(kPerfettoConsumerSockName,
+                        system_service_->consumer().c_str(), 1));
+
+    env_val = getenv(kPerfettoProducerSockName);
+    if (env_val) {
+      saved_producer_sock_name_ = env_val;
+    }
+    ASSERT_EQ(0, setenv(kPerfettoProducerSockName,
+                        system_service_->producer().c_str(), 1));
+
+    traced_process_ = std::make_unique<tracing::TracedProcessForTesting>(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+    background_tracing_manager_ =
+        content::BackgroundTracingManager::CreateInstance();
+
+    // Connect the producer to the tracing service.
+    system_producer_ = std::make_unique<tracing::MockProducer>();
+    system_producer_->Connect(system_service_->GetService(), "mock_producer");
+    system_producer_->RegisterDataSource("mock_data_source");
+
+    // Also enable the custom backend.
+    static tracing::mojom::TracingService* s_service;
+    s_service = &tracing_service_;
+    // Check if the consumer backend is used.
+    static bool* consumer_conn_created;
+    consumer_conn_created = &custom_backend_consumer_conn_created_;
+    auto factory = []() -> tracing::mojom::TracingService& {
+      *consumer_conn_created = true;
+      return *s_service;
+    };
+    tracing::PerfettoTracedProcess::Get().SetConsumerConnectionFactory(
+        factory, base::SequencedTaskRunner::GetCurrentDefault());
+
+    // Reset the callback that controls whether system consumer is allowed.
+    tracing::PerfettoTracedProcess::Get().SetAllowSystemTracingConsumerCallback(
+        base::RepeatingCallback<bool()>());
+  }
+
+ protected:
+  // Not inheriting from TracingScenarioTest because initialization of
+  // |traced_process_| depends on feature flags and environment variables.
+  BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<tracing::TracedProcessForTesting> traced_process_;
+  TestTracingScenarioDelegate delegate;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
+
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<tracing::MockSystemService> system_service_;
+  std::optional<std::string> saved_consumer_sock_name_;
+  std::optional<std::string> saved_producer_sock_name_;
+  std::unique_ptr<tracing::MockProducer> system_producer_;
+
+  tracing::PerfettoService perfetto_service_;
+  tracing::TracingService tracing_service_;
+
+  // Set to true when a consumer connection of the custom backend is created.
+  bool custom_backend_consumer_conn_created_ = false;
+};
+
+// Test the system backend by creating a real Perfetto tracing service thread
+// that listens to producer and consumer sockets. Config the tracing scenario to
+// use the system backend and check from the producer that a trace session is
+// started and stopped through the system backend.
+TEST_F(TracingScenarioSystemBackendTest, StartStop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEnablePerfettoSystemTracing,
+                            features::kEnablePerfettoSystemBackgroundTracing},
+      /*disabled_features=*/{});
+  InitTracing();
+
+  bool allow_system_consumer_checked = false;
+  auto callback =
+      base::BindLambdaForTesting([&allow_system_consumer_checked]() {
+        allow_system_consumer_checked = true;
+        // Allow system consumer connections. This is typically checked in
+        // ChromeTracingDelegate::IsSystemWideTracingEnabled().
+        return true;
+      });
+  tracing::PerfettoTracedProcess::Get().SetAllowSystemTracingConsumerCallback(
+      std::move(callback));
+
+  // Create a real tracing scenario. Under the hood the system backend is used.
+  auto tracing_scenario = TracingScenario::Create(
+      ParseScenarioConfigFromText(kSystemProbeScenarioConfig), false, false,
+      false, false, &delegate);
+
+  tracing_scenario->Enable();
+  EXPECT_EQ(TracingScenario::State::kEnabled,
+            tracing_scenario->current_state());
+  EXPECT_CALL(delegate, OnScenarioActive(tracing_scenario.get()))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+
+  // Wait until the data source is started.
+  base::RunLoop run_loop_start;
+  EXPECT_CALL(*system_producer_.get(), OnStartDataSource(_, _))
+      .WillOnce([&run_loop_start]() {
+        run_loop_start.Quit();
+        return true;
+      });
+  run_loop_start.Run();
+
+  // Stop tracing. Wait until the data source is stopped.
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+  base::RunLoop run_loop_stop;
+  EXPECT_CALL(*system_producer_.get(), OnStopDataSource(_, _))
+      .WillOnce([&run_loop_stop]() {
+        run_loop_stop.Quit();
+        return true;
+      });
+  run_loop_stop.Run();
+
+  // Run until the scenario is idle.
+  base::RunLoop run_loop_idle;
+  EXPECT_CALL(delegate, OnScenarioIdle(tracing_scenario.get()))
+      .WillOnce([&run_loop_idle]() {
+        run_loop_idle.Quit();
+        return true;
+      });
+  run_loop_idle.Run();
+
+  EXPECT_EQ(TracingScenario::State::kDisabled,
+            tracing_scenario->current_state());
+  EXPECT_TRUE(allow_system_consumer_checked);
+}
+
+// Test that system consumer connections are denied.
+TEST_F(TracingScenarioSystemBackendTest, SystemConsumerNotAllowedByCallback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEnablePerfettoSystemTracing,
+                            features::kEnablePerfettoSystemBackgroundTracing},
+      /*disabled_features=*/{});
+  InitTracing();
+
+  bool allow_system_consumer_checked = false;
+  auto callback =
+      base::BindLambdaForTesting([&allow_system_consumer_checked]() {
+        allow_system_consumer_checked = true;
+        return false;  // Deny system consumer connection.
+      });
+
+  tracing::PerfettoTracedProcess::Get().SetAllowSystemTracingConsumerCallback(
+      std::move(callback));
+
+  // Create a real tracing scenario.
+  auto tracing_scenario = TracingScenario::Create(
+      ParseScenarioConfigFromText(kSystemProbeScenarioConfig), false, false,
+      false, false, &delegate);
+
+  tracing_scenario->Enable();
+  EXPECT_EQ(TracingScenario::State::kEnabled,
+            tracing_scenario->current_state());
+  EXPECT_CALL(delegate, OnScenarioActive(tracing_scenario.get()))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+
+  // The system data producer isn't used.
+  EXPECT_CALL(*system_producer_.get(), OnStartDataSource(_, _)).Times(0);
+  // The callback doesn't allow system consumer. The scenario won't be started.
+
+  tracing_scenario->Abort();
+  base::RunLoop run_loop_idle;
+  EXPECT_CALL(delegate, OnScenarioIdle(tracing_scenario.get()))
+      .WillOnce([&run_loop_idle]() {
+        run_loop_idle.Quit();
+        return true;
+      });
+  run_loop_idle.Run();
+  EXPECT_TRUE(allow_system_consumer_checked);
+  // Not using the custom backend.
+  EXPECT_FALSE(custom_backend_consumer_conn_created_);
+}
+
+// The scenario is ignored if it requests to use the system backend, but the
+// system backend is unavailable (feature
+// "EnablePerfettoSystemBackgroundTracing" isn't enabled).
+TEST_F(TracingScenarioSystemBackendTest, FeatureNotEnabled_1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEnablePerfettoSystemTracing},
+      /*disabled_features=*/{features::kEnablePerfettoSystemBackgroundTracing});
+  InitTracing();
+
+  // Create a real tracing scenario. The system backend isn't used.
+  auto tracing_scenario = TracingScenario::Create(
+      ParseScenarioConfigFromText(kSystemProbeScenarioConfig), false, false,
+      false, false, &delegate);
+
+  tracing_scenario->Enable();
+  EXPECT_EQ(TracingScenario::State::kEnabled,
+            tracing_scenario->current_state());
+  EXPECT_CALL(delegate, OnScenarioActive(tracing_scenario.get())).Times(0);
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
+
+  tracing_scenario->Disable();
+  EXPECT_EQ(TracingScenario::State::kDisabled,
+            tracing_scenario->current_state());
+  // Not using the custom backend.
+  EXPECT_FALSE(custom_backend_consumer_conn_created_);
+}
+
+// EnablePerfettoSystemTracing doesn't have an effect on Android. In debugging
+// (which is always true in content_unittests) system tracing is always enabled.
+// Disable this test on Android.
+#if !BUILDFLAG(IS_ANDROID)
+// The scenario is ignored if it requests to use the system backend, but the
+// system backend is unavailable (feature "EnablePerfettoSystemTracing" isn't
+// enabled).
+TEST_F(TracingScenarioSystemBackendTest, FeatureNotEnabled_2) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEnablePerfettoSystemBackgroundTracing},
+      /*disabled_features=*/{features::kEnablePerfettoSystemTracing});
+
+  InitTracing();
+  // Create a real tracing scenario. The system backend isn't used.
+  auto tracing_scenario = TracingScenario::Create(
+      ParseScenarioConfigFromText(kSystemProbeScenarioConfig), false, false,
+      false, false, &delegate);
+
+  tracing_scenario->Enable();
+  EXPECT_EQ(TracingScenario::State::kEnabled,
+            tracing_scenario->current_state());
+  EXPECT_CALL(delegate, OnScenarioActive(tracing_scenario.get())).Times(0);
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
+
+  tracing_scenario->Disable();
+  EXPECT_EQ(TracingScenario::State::kDisabled,
+            tracing_scenario->current_state());
+  // Not using the custom backend.
+  EXPECT_FALSE(custom_backend_consumer_conn_created_);
+}
+#endif
+
+const char* kScenarioConfigWithoutSystemBackend = R"pb(
+  scenario_name: "test_scenario"
+  setup_rules: { manual_trigger_name: "setup_trigger" }
+  start_rules: { manual_trigger_name: "start_trigger" }
+  stop_rules: { manual_trigger_name: "stop_trigger" }
+  trace_config: { data_sources: { config: { name: "mock_data_source" } } }
+)pb";
+
+// The custom backend is used on a platform that has system background tracing
+// enabled if the scenario doesn't specify the system backend
+TEST_F(TracingScenarioSystemBackendTest, ScenarioConfigWithoutSystemBackend) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEnablePerfettoSystemTracing,
+                            features::kEnablePerfettoSystemBackgroundTracing},
+      /*disabled_features=*/{});
+
+  InitTracing();
+
+  // Create a real tracing scenario. The system backend isn't used.
+  auto tracing_scenario = TracingScenario::Create(
+      ParseScenarioConfigFromText(kScenarioConfigWithoutSystemBackend), false,
+      false, false, false, &delegate);
+
+  tracing_scenario->Enable();
+  EXPECT_EQ(TracingScenario::State::kEnabled,
+            tracing_scenario->current_state());
+  EXPECT_CALL(delegate, OnScenarioActive(tracing_scenario.get()))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+
+  // The system data producer isn't used.
+  EXPECT_CALL(*system_producer_.get(), OnStartDataSource(_, _)).Times(0);
+  // Instead, the custom backend connection factory is called.
+  base::test::RunUntil([&]() { return custom_backend_consumer_conn_created_; });
+
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+  // Not waiting until OnScenarioIdle because mojo of |tracing_service_| isn't
+  // fully set up.
+}
+
+#endif  //  BUILDFLAG(IS_POSIX)
 
 }  // namespace content

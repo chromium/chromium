@@ -12,6 +12,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/typed_identifier.h"
 
@@ -45,11 +46,19 @@ FeatureEngagementTrackerInitializedPrecondition::
           "Feature Engagement Tracker Initialized",
           FeaturePromoResult::kBlockedByConfig) {
   if (tracker) {
-    tracker->AddOnInitializedCallback(
-        base::BindOnce(&FeatureEngagementTrackerInitializedPrecondition::
-                           OnFeatureEngagementTrackerInitialized,
-                       weak_ptr_factory_.GetWeakPtr()));
+    // Want to return true immediately if the tracker is initialized so spot
+    // queries (e.g. `CanShowPromo()`) won't fail.
+    if (tracker->IsInitialized()) {
+      OnFeatureEngagementTrackerInitialized(true);
+    } else {
+      // Otherwise, wait for initialization.
+      tracker->AddOnInitializedCallback(
+          base::BindOnce(&FeatureEngagementTrackerInitializedPrecondition::
+                             OnFeatureEngagementTrackerInitialized,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   } else {
+    // If no tracker, then it cannot be initialized.
     OnFeatureEngagementTrackerInitialized(false);
   }
 }
@@ -84,16 +93,22 @@ MeetsFeatureEngagementCriteriaPrecondition::
 FeaturePromoResult
 MeetsFeatureEngagementCriteriaPrecondition::CheckPrecondition(
     ComputedData& data) const {
-  // Note: if we don't have access to `ListEvents()` this is a no-op.
+  if (tracker_->IsInitialized()) {
+    // Note: if we don't have access to `ListEvents()` this is a no-op.
 #if !BUILDFLAG(IS_ANDROID)
-  for (const auto& [config, count] : tracker_->ListEvents(*feature_)) {
-    if (!config.comparator.MeetsCriteria(count)) {
-      return FeaturePromoResult::kBlockedByConfig;
+    for (const auto& [config, count] : tracker_->ListEvents(*feature_)) {
+      if (!config.comparator.MeetsCriteria(count)) {
+        return FeaturePromoResult::kBlockedByConfig;
+      }
     }
-  }
 #endif
+  }
   return FeaturePromoResult::Success();
 }
+
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(AnchorElementPrecondition,
+                                    std::optional<int>,
+                                    kRotatingPromoIndex);
 
 DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(AnchorElementPrecondition,
                                     ui::SafeElementReference,
@@ -101,19 +116,33 @@ DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(AnchorElementPrecondition,
 
 AnchorElementPrecondition::AnchorElementPrecondition(
     const AnchorElementProvider& provider,
-    ui::ElementContext default_context)
+    ui::ElementContext default_context,
+    bool pre_increment_index)
     : FeaturePromoPreconditionBase(kAnchorElementPrecondition,
                                    "Anchor Element Visible"),
       provider_(provider),
-      default_context_(default_context) {
-  InitCache(kAnchorElement);
+      default_context_(default_context),
+      pre_increment_index_(pre_increment_index) {
+  InitCache(kAnchorElement, kRotatingPromoIndex);
 }
 
 AnchorElementPrecondition::~AnchorElementPrecondition() = default;
 
 FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
     ComputedData& data) const {
-  auto* const element = provider_->GetAnchorElement(default_context_);
+  const auto& lifecycle = data.Get(LifecyclePrecondition::kLifecycle);
+  std::optional<int> index;
+  if (lifecycle->promo_type() ==
+      FeaturePromoSpecification::PromoType::kRotating) {
+    int temp = lifecycle->GetPromoIndex();
+    if (pre_increment_index_) {
+      temp = (temp + 1) % lifecycle->num_rotating_entries();
+    }
+    temp = provider_->GetNextValidIndex(temp);
+    index = temp;
+  }
+  GetCachedDataForComputation(data, kRotatingPromoIndex) = index;
+  auto* const element = provider_->GetAnchorElement(default_context_, index);
   GetCachedDataForComputation(data, kAnchorElement) = element;
   return element != nullptr ? FeaturePromoResult::Success()
                             : FeaturePromoResult::kBlockedByUi;

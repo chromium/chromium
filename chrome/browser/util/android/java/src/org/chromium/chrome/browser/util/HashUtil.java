@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.util;
 import android.util.Log;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 
 /** Helper functions for working with hashes. */
+@NullMarked
 public final class HashUtil {
     private static final String TAG = "HashUtil";
 
@@ -20,23 +23,23 @@ public final class HashUtil {
 
     public static class Params {
         private final String mText;
-        private String mSalt;
+        private @Nullable String mSalt;
 
         public Params(String text) {
             mText = text;
         }
 
-        public Params withSalt(String salt) {
+        public Params withSalt(@Nullable String salt) {
             mSalt = salt;
             return this;
         }
     }
 
-    public static String getMd5Hash(Params params) {
+    public static @Nullable String getMd5Hash(Params params) {
         return getHash(params, "MD5");
     }
 
-    private static String getHash(Params params, String algorithm) {
+    private static @Nullable String getHash(Params params, String algorithm) {
         try {
             String digestText = params.mText + (params.mSalt == null ? "" : params.mSalt);
             MessageDigest m = MessageDigest.getInstance(algorithm);

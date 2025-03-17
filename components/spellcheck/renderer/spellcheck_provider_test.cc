@@ -47,7 +47,7 @@ FakeTextCheckingCompletion::FakeTextCheckingCompletion(
 FakeTextCheckingCompletion::~FakeTextCheckingCompletion() = default;
 
 void FakeTextCheckingCompletion::DidFinishCheckingText(
-    const blink::WebVector<blink::WebTextCheckingResult>& results) {
+    const std::vector<blink::WebTextCheckingResult>& results) {
   ++result_->completion_count_;
   result_->results_ = results;
 }
@@ -208,7 +208,7 @@ void TestingSpellCheckProvider::DisconnectSessionBridge() {
 
 void TestingSpellCheckProvider::SetLastResults(
     const std::u16string last_request,
-    blink::WebVector<blink::WebTextCheckingResult>& last_results) {
+    std::vector<blink::WebTextCheckingResult>& last_results) {
   last_request_ = last_request;
   last_results_ = last_results;
 }

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/normalized_geometry.h"

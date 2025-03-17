@@ -48,34 +48,34 @@ bool TwoClientWebAppsIntegrationTestBase::IsSyncTest() {
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOff() {
   for (SyncServiceImplHarness* client : GetSyncClients()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     client->service()->GetUserSettings()->SetSelectedOsTypes(
         /*sync_everything=*/false, /*types=*/{});
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
     client->service()->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, /*types=*/{});
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 }
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOn() {
   for (SyncServiceImplHarness* client : GetSyncClients()) {
     ASSERT_TRUE(client->SetupSync());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     client->service()->GetUserSettings()->SetSelectedOsTypes(
         /*sync_everything=*/false,
         /*types=*/{syncer::UserSelectableOsType::kOsApps});
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
     client->service()->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/{syncer::UserSelectableType::kApps});
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   AwaitWebAppQuiescence();
 }
 
 void TwoClientWebAppsIntegrationTestBase::SyncSignOut(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   for (int i = 0; i < num_clients(); ++i) {
@@ -89,7 +89,7 @@ void TwoClientWebAppsIntegrationTestBase::SyncSignOut(Profile* profile) {
 }
 
 void TwoClientWebAppsIntegrationTestBase::SyncSignIn(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   for (int i = 0; i < num_clients(); ++i) {
@@ -138,17 +138,17 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
 
     ASSERT_TRUE(GetClient(i)->SetupSync(
         base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           user_settings->SetSelectedTypes(/*sync_everything=*/false,
                                           /*types=*/{});
           user_settings->SetSelectedOsTypes(
               /*sync_everything=*/false,
               /*types=*/{syncer::UserSelectableOsType::kOsApps});
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
           user_settings->SetSelectedTypes(
               /*sync_everything=*/false,
               /*types=*/{syncer::UserSelectableType::kApps});
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         })));
   }
 

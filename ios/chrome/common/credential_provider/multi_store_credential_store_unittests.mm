@@ -12,8 +12,8 @@
 
 namespace {
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 using MultiStoreCredentialStoreTest = PlatformTest;
 
@@ -70,4 +70,4 @@ TEST_F(MultiStoreCredentialStoreTest, RetrieveCredential) {
   EXPECT_NSEQ(retrievedCredential.username, @"store1user");
 }
 
-}
+}  // namespace

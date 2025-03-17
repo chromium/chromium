@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
@@ -408,20 +408,21 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
   // `TemplateUrlService#runWhenLoaded()`.
   CHECK(template_url_service_->loaded(), base::NotFatalUntil::M128);
 
-  // Check if there is already a search engine created from Play API.
+  // Check if there is already a search engine created by a regulatory program.
   TemplateURLService::TemplateURLVector template_urls =
       template_url_service_->GetTemplateURLs();
-  TemplateURL* existing_play_api_turl = nullptr;
-  auto found =
-      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
+  TemplateURL* regulatory_api_turl = nullptr;
+  auto found = std::ranges::find_if(template_urls,
+                                    &TemplateURL::CreatedByRegulatoryProgram);
+
   if (found != template_urls.cend()) {
     // Migrate old Play API database entries that were incorrectly marked as
     // safe_for_autoreplace() before M89.
-    existing_play_api_turl = *found;
-    if (existing_play_api_turl->safe_for_autoreplace()) {
+    regulatory_api_turl = *found;
+    if (regulatory_api_turl->safe_for_autoreplace()) {
       template_url_service_->ResetTemplateURL(
-          existing_play_api_turl, existing_play_api_turl->short_name(),
-          existing_play_api_turl->keyword(), existing_play_api_turl->url());
+          regulatory_api_turl, regulatory_api_turl->short_name(),
+          regulatory_api_turl->keyword(), regulatory_api_turl->url());
     }
   }
 
@@ -472,15 +473,16 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
 
   // Clean up duplication between a Play API template URL and a corresponding
   // prepopulated template URL.
-  auto play_api_it =
-      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
-  TemplateURL* play_api_turl =
-      play_api_it != template_urls.end() ? *play_api_it : nullptr;
+  auto regulatory_api_it = std::ranges::find_if(
+      template_urls, &TemplateURL::CreatedByRegulatoryProgram);
+  TemplateURL* regulatory_api_turl =
+      regulatory_api_it != template_urls.end() ? *regulatory_api_it : nullptr;
 
   for (TemplateURL* template_url : template_urls) {
     // When Play API template URL supercedes the current template URL, skip it.
-    if (play_api_turl && play_api_turl->keyword() == template_url->keyword() &&
-        play_api_turl->IsBetterThanConflictingEngine(template_url)) {
+    if (regulatory_api_turl &&
+        regulatory_api_turl->keyword() == template_url->keyword() &&
+        regulatory_api_turl->IsBetterThanConflictingEngine(template_url)) {
       continue;
     }
 
@@ -519,8 +521,4 @@ TemplateUrlServiceAndroid::GetImageUrlAndPostContent(
   output.push_back(result.spec());
   output.push_back(post_content.first);
   return base::android::ToJavaArrayOfStrings(env, output);
-}
-
-jboolean TemplateUrlServiceAndroid::IsEeaChoiceCountry(JNIEnv* env) {
-  return template_url_service_->IsEeaChoiceCountry();
 }

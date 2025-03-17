@@ -12,12 +12,14 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 
 namespace media {
 namespace {
@@ -60,9 +62,29 @@ VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
   return VideoTransformation(matrix2x2);
 }
 
+std::array<int32_t, 4> VideoTransformation::GetMatrix() const {
+  int32_t m = mirrored ? -1 : 1;
+  int32_t fp1 = 1 << 16;
+  switch (rotation) {
+    case VIDEO_ROTATION_0:
+      return {fp1 * m, 0, 0, fp1};
+    case VIDEO_ROTATION_90:
+      return {0, fp1, -fp1 * m, 0};
+    case VIDEO_ROTATION_180:
+      return {-fp1 * m, 0, 0, -fp1};
+    case VIDEO_ROTATION_270:
+      return {0, -fp1, m * fp1, 0};
+  }
+}
+
 VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
   // Promote to int64_t to avoid abs(int32_min) being undefined.
-  const int64_t matrix64[4] = {matrix[0], matrix[1], matrix[2], matrix[3]};
+  const std::array<int64_t, 4> matrix64 = {
+      matrix[0],
+      matrix[1],
+      matrix[2],
+      matrix[3],
+  };
 
   // Rotation by angle Θ is represented in the matrix as:
   // [ cos(Θ), -sin(Θ)]
@@ -100,6 +122,13 @@ VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
 
   if (matrix64[1] == matrix64[3] && matrix64[1] != 0) {
     mirrored = !mirrored;
+  }
+  // Same but different signs of cosines implies mirrored.
+  if (matrix64[0] == -1 * matrix64[3] && matrix[1] == 0) {
+    mirrored = true;
+  }
+  if (matrix64[1] == matrix64[2] && matrix[0] == 0) {
+    mirrored = true;
   }
 
   // Normalize the angle
@@ -153,6 +182,12 @@ VideoTransformation VideoTransformation::add(VideoTransformation delta) const {
   int combined_rotation = (base_rotation + delta_rotation) % 360;
   return VideoTransformation(static_cast<VideoRotation>(combined_rotation),
                              delta.mirrored);
+}
+
+std::string VideoTransformation::ToString() const {
+  return base::StringPrintf("Rotation: %s, is mirrored: %s",
+                            VideoRotationToString(rotation),
+                            mirrored ? "true" : "false");
 }
 
 }  // namespace media

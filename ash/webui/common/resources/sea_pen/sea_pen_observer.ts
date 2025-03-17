@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenImageId} from './constants.js';
-import {SeaPenObserverInterface, SeaPenObserverReceiver, SeaPenProviderInterface, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {SeaPenImageId} from './constants.js';
+import type {SeaPenObserverInterface, SeaPenProviderInterface, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import {SeaPenObserverReceiver} from './sea_pen.mojom-webui.js';
 import {setSeaPenTextQueryHistory, setSelectedRecentSeaPenImageAction} from './sea_pen_actions.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getSeaPenStore} from './sea_pen_store.js';

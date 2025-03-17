@@ -4,9 +4,9 @@ per-file about_flags.cc=*
 per-file flag_descriptions.*=*
 per-file flag-metadata.json=*
 
-per-file about_flags.h=file://components/flags_ui/OWNERS
-per-file about_flags_unittest.cc=file://components/flags_ui/OWNERS
-per-file about_flags_browsertest.cc=file://components/flags_ui/OWNERS
+per-file about_flags.h=file://components/webui/flags/OWNERS
+per-file about_flags_unittest.cc=file://components/webui/flags/OWNERS
+per-file about_flags_browsertest.cc=file://components/webui/flags/OWNERS
 
 # This is for the common case of adding or renaming files. If you're doing
 # structural changes, use usual OWNERS rules.
@@ -71,8 +71,8 @@ per-file unload_browsertest.cc=file://content/OWNERS
 per-file web_bluetooth*=file://content/browser/bluetooth/OWNERS
 
 # For security review.
-per-file chrome_browser_interface_binders.*=set noparent
-per-file chrome_browser_interface_binders.*=file://ipc/SECURITY_OWNERS
+per-file chrome_browser_interface_binders*=set noparent
+per-file chrome_browser_interface_binders*=file://ipc/SECURITY_OWNERS
 per-file chrome_content_browser_client_receiver_bindings.*=set noparent
 per-file chrome_content_browser_client_receiver_bindings.*=file://ipc/SECURITY_OWNERS
 per-file chrome_content_browser_client_binder_policies.*=set noparent

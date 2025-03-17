@@ -39,6 +39,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_util.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/net/http_bridge.h"
@@ -50,6 +51,7 @@
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_engine_factory.h"
 #include "components/sync/service/sync_error.h"
@@ -225,12 +227,8 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       identity_manager_(sync_prefs_.IsLocalSyncEnabled()
                             ? nullptr
                             : sync_client_->GetIdentityManager()),
-      auth_manager_(std::make_unique<SyncAuthManager>(
-          identity_manager_,
-          base::BindRepeating(&SyncServiceImpl::AccountStateChanged,
-                              base::Unretained(this)),
-          base::BindRepeating(&SyncServiceImpl::CredentialsChanged,
-                              base::Unretained(this)))),
+      auth_manager_(std::make_unique<SyncAuthManager>(identity_manager_,
+                                                      /*delegate=*/this)),
       channel_(init_params.channel),
       debug_identifier_(std::move(init_params.debug_identifier)),
       sync_service_url_(
@@ -373,14 +371,14 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   // crash during signout).
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY)) {
     StopAndClear(ResetEngineReason::kEnterprisePolicy);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
     // removed, for historic reasons. It is unclear if this behavior is
     // optional, because it is indistinguishable from the
     // sync-reset-via-dashboard case. It can be resolved by invoking
     // SetSyncFeatureRequested().
     sync_prefs_.SetSyncFeatureDisabledViaDashboard();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN)) {
     // On ChromeOS-Ash, signout is not possible, so it's not necessary to handle
     // this case.
@@ -388,18 +386,18 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
     // ChromeOS-Ash since it's supposedly unreachable, *but* during the very
     // first startup of a fresh profile, the signed-in account isn't known yet
     // at this point (see also https://crbug.com/1458701#c7).
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     StopAndClear(ResetEngineReason::kNotSignedIn);
 #endif
   }
 
   const bool is_sync_feature_requested_for_metrics =
       IsLocalSyncEnabled() ||
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       !user_settings_->IsSyncFeatureDisabledViaDashboard();
 #else
       HasSyncConsent();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Note: We need to record the initial state *after* calling
   // RegisterForAuthNotifications(), because before that the authenticated
@@ -446,6 +444,10 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   sync_status_recorder_ =
       std::make_unique<SyncFeatureStatusForMigrationsRecorder>(
           sync_client_->GetPrefService(), this);
+
+  local_data_migration_item_queue_ =
+      std::make_unique<LocalDataMigrationItemQueue>(this,
+                                                    data_type_manager_.get());
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
@@ -491,6 +493,14 @@ void SyncServiceImpl::GetThrottledDataTypesForTest(
   engine_->GetThrottledDataTypesForTest(std::move(cb));  // IN-TEST
 }
 
+size_t SyncServiceImpl::GetQueuedLocalDataMigrationItemCountForTest() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
+
+  return local_data_migration_item_queue_
+      ->GetItemsCountForTesting();  // IN-TEST
+}
+
 // static
 ShutdownReason SyncServiceImpl::ShutdownReasonForResetEngineReason(
     ResetEngineReason reset_reason) {
@@ -528,61 +538,6 @@ bool SyncServiceImpl::ShouldClearTransportDataForAccount(
       // start over fresh.
       return true;
   }
-}
-
-void SyncServiceImpl::AccountStateChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsSignedIn()) {
-    // The account was signed out, so shut down.
-    sync_disabled_by_admin_ = false;
-    StopAndClear(ResetEngineReason::kNotSignedIn);
-    DCHECK(!engine_);
-  } else {
-    // Either a new account was signed in, or the existing account's
-    // `is_sync_consented` bit was changed. Start up or reconfigure.
-    if (!engine_) {
-      TryStart();
-      NotifyObservers();
-    } else {
-      ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
-    }
-  }
-}
-
-void SyncServiceImpl::CredentialsChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If the engine isn't allowed to start anymore due to the credentials change,
-  // then shut down. This happens when there is a persistent auth error (e.g.
-  // the user signs out on the web), which implies the "Sync paused" state.
-  if (!IsEngineAllowedToRun()) {
-    // If the engine currently exists, then ResetEngine() will notify observers
-    // anyway. Otherwise, notify them here. (One relevant case is when entering
-    // the PAUSED state before the engine was created, e.g. during deferred
-    // startup.)
-    if (!engine_) {
-      DVLOG(2) << "Notify observers on credentials changed";
-      NotifyObservers();
-    }
-    ResetEngine(ResetEngineReason::kCredentialsChanged);
-    return;
-  }
-
-  if (!engine_) {
-    TryStart();
-  } else {
-    // If the engine already exists, just propagate the new credentials.
-    SyncCredentials credentials = auth_manager_->GetCredentials();
-    if (credentials.access_token.empty()) {
-      engine_->InvalidateCredentials();
-    } else {
-      engine_->UpdateCredentials(credentials);
-    }
-  }
-
-  DVLOG(2) << "Notify observers on credentials changed";
-  NotifyObservers();
 }
 
 bool SyncServiceImpl::IsEngineAllowedToRun() const {
@@ -703,10 +658,12 @@ void SyncServiceImpl::Shutdown() {
 
   NotifyShutdown();
 
-  // Ensure the DataTypeManager is destroyed before the engine, since it has a
-  // pointer to the engine.
+  // Ensure the LocalDataMigrationItemQueue, the DataTypeManager and the
+  // engine are destroyed in order since they hold consecutive pointers to each
+  // other.
   std::unique_ptr<SyncEngine> engine =
       ResetEngine(ResetEngineReason::kShutdown);
+  local_data_migration_item_queue_.reset();
   data_type_manager_.reset();
   engine.reset();
 
@@ -832,9 +789,9 @@ base::android::ScopedJavaLocalRef<jobject> SyncServiceImpl::GetJavaObject() {
 void SyncServiceImpl::SetSyncFeatureRequested() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_settings_->ClearSyncFeatureDisabledViaDashboard();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // If the Sync engine was already initialized (probably running in transport
   // mode), just reconfigure.
@@ -1180,14 +1137,14 @@ void SyncServiceImpl::OnActionableProtocolError(
       // should be okay.
       StopAndClear(ResetEngineReason::kDisableSyncOnClient);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // On Ash, the primary account is always set and sync the feature
       // turned on, so a dedicated bit is needed to ensure that
       // Sync-the-feature remains off. Note that sync-the-transport will restart
       // immediately because IsEngineAllowedToRun() is almost certainly true at
       // this point and StopAndClear() leads to TryStart().
       user_settings_->SetSyncFeatureDisabledViaDashboard();
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
       // On every platform except ash, revoke the Sync consent/Clear primary
       // account after a dashboard clear.
       // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
@@ -1218,7 +1175,7 @@ void SyncServiceImpl::OnActionableProtocolError(
             signin_metrics::ProfileSignout::kServerForcedDisable);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       break;
     case STOP_SYNC_FOR_DISABLED_ACCOUNT:
       // Sync disabled by domain admin. Stop syncing until next restart.
@@ -1268,6 +1225,8 @@ void SyncServiceImpl::OnConfigureDone(
   }
 
   DCHECK_EQ(DataTypeManager::OK, result.status);
+  base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.Finished",
+                            is_first_time_sync_configure_);
 
   // We should never get in a state where we have no encrypted datatypes
   // enabled, and yet we still think we require a passphrase for decryption.
@@ -1298,6 +1257,70 @@ void SyncServiceImpl::OnConfigureStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   engine_->StartConfiguration();
   DVLOG(2) << "Notify observers OnConfigureStart";
+  NotifyObservers();
+}
+
+void SyncServiceImpl::SyncAuthAccountStateChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsSignedIn()) {
+    // The account was signed out, so shut down.
+    sync_disabled_by_admin_ = false;
+    StopAndClear(ResetEngineReason::kNotSignedIn);
+    DCHECK(!engine_);
+  } else {
+    // Either a new account was signed in, or the existing account's
+    // `is_sync_consented` bit was changed. Start up or reconfigure.
+    if (!engine_) {
+      TryStart();
+      NotifyObservers();
+    } else {
+      ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+    }
+  }
+}
+
+void SyncServiceImpl::SyncAuthCredentialsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Cache in prefs whether a persistent auth error exists.
+  if (auth_manager_->IsSyncPaused()) {
+    sync_prefs_.SetHasCachedPersistentAuthErrorForMetrics(true);
+  } else if (!auth_manager_->GetCredentials().access_token.empty()) {
+    // In order to conclude with certainty that there is no persistent auth
+    // error, it is necessary to get an access token successfully.
+    sync_prefs_.SetHasCachedPersistentAuthErrorForMetrics(false);
+  }
+
+  // If the engine isn't allowed to start anymore due to the credentials change,
+  // then shut down. This happens when there is a persistent auth error (e.g.
+  // the user signs out on the web), which implies the "Sync paused" state.
+  if (!IsEngineAllowedToRun()) {
+    // If the engine currently exists, then ResetEngine() will notify observers
+    // anyway. Otherwise, notify them here. (One relevant case is when entering
+    // the PAUSED state before the engine was created, e.g. during deferred
+    // startup.)
+    if (!engine_) {
+      DVLOG(2) << "Notify observers on credentials changed";
+      NotifyObservers();
+    }
+    ResetEngine(ResetEngineReason::kCredentialsChanged);
+    return;
+  }
+
+  if (!engine_) {
+    TryStart();
+  } else {
+    // If the engine already exists, just propagate the new credentials.
+    SyncCredentials credentials = auth_manager_->GetCredentials();
+    if (credentials.access_token.empty()) {
+      engine_->InvalidateCredentials();
+    } else {
+      engine_->UpdateCredentials(credentials);
+    }
+  }
+
+  DVLOG(2) << "Notify observers on credentials changed";
   NotifyObservers();
 }
 
@@ -1443,6 +1466,11 @@ base::Time SyncServiceImpl::GetAuthErrorTime() const {
   return auth_manager_->GetLastAuthErrorTime();
 }
 
+bool SyncServiceImpl::HasCachedPersistentAuthErrorForMetrics() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_prefs_.HasCachedPersistentAuthErrorForMetrics();
+}
+
 bool SyncServiceImpl::RequiresClientUpgrade() const {
   return last_actionable_error_.action == UPGRADE_CLIENT;
 }
@@ -1561,6 +1589,14 @@ DataTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
   return types;
 }
 
+DataTypeSet SyncServiceImpl::GetDataTypesForTransportOnlyMode() const {
+  if (!data_type_manager_) {
+    return DataTypeSet();
+  }
+
+  return data_type_manager_->GetDataTypesForTransportOnlyMode();
+}
+
 DataTypeSet SyncServiceImpl::GetActiveDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1604,6 +1640,9 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
       .sync_mode = SyncMode::kFull,
       .reason = reason,
       .configuration_start_time = base::Time::Now()};
+  base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.IsGaiaAccountId",
+                            GetAccountInfo().account_id.ToString() ==
+                                GetAccountInfo().gaia.ToString());
 
   DCHECK(!configure_context.cache_guid.empty());
 
@@ -1650,6 +1689,9 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
                                     ? ConfigureDataTypeManagerOption::kTransport
                                     : ConfigureDataTypeManagerOption::kFeature);
 
+  base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.Start",
+                            is_first_time_sync_configure_);
+
   // Record the user's choice of data types - in different ways depending on
   // whether Sync-the-feature is enabled (which uses "SyncEverything") or not
   // (which doesn't).
@@ -1672,7 +1714,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
       }
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool sync_everything_os = sync_prefs_.IsSyncAllOsTypesEnabled();
     base::UmaHistogramBoolean("Sync.SyncEverythingOS", sync_everything_os);
     if (!sync_everything_os) {
@@ -1682,7 +1724,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
         base::UmaHistogramEnumeration("Sync.CustomOSSync", canonical_data_type);
       }
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 }
 
@@ -1775,14 +1817,14 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
 
   if (is_sync_managed) {
     StopAndClear(ResetEngineReason::kEnterprisePolicy);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
     // removed, for historic reasons. It is unclear if this behavior is
     // optional, because it is indistinguishable from the
     // sync-reset-via-dashboard case. It can be resolved by invoking
     // SetSyncFeatureRequested().
     sync_prefs_.SetSyncFeatureDisabledViaDashboard();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   } else {
     // Sync is no longer disabled by policy. Try starting it up if appropriate.
     DCHECK(!engine_);
@@ -1792,7 +1834,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     bool is_initial_sync_feature_setup_complete) {
   if (engine_ && engine_->IsInitialized()) {
@@ -1802,7 +1844,7 @@ void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     MaybeRecordTrustedVaultHistograms();
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void SyncServiceImpl::OnAccountsCookieDeletedByUserAction() {
   // Pass an empty `signin::AccountsInCookieJarInfo` to simulate empty cookies.
@@ -2054,13 +2096,12 @@ void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
   nigori_key->ExportKeys(proto.mutable_deprecated_user_key(),
                          proto.mutable_encryption_key(),
                          proto.mutable_mac_key());
-  int32_t byte_size = proto.ByteSize();
+  int32_t byte_size = proto.ByteSizeLong();
   std::vector<uint8_t> bytes(byte_size);
   proto.SerializeToArray(bytes.data(), byte_size);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ExplicitPassphrasePlatformClient_setExplicitDecryptionPassphrase(
-      env, ConvertToJavaCoreAccountInfo(env, GetAccountInfo()),
-      base::android::ToJavaByteArray(env, bytes));
+      env, GetAccountInfo(), base::android::ToJavaByteArray(env, bytes));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -2075,13 +2116,13 @@ void SyncServiceImpl::StopAndClear(ResetEngineReason reset_engine_reason) {
   // passphrase pref should be cleared before clearing
   // InitialSyncFeatureSetupComplete().
   sync_prefs_.ClearAllEncryptionBootstrapTokens();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Note: ResetEngine() does *not* clear directly user-controlled prefs (such
   // as the set of selected types), so that if the user ever chooses to enable
   // Sync again, they start off with their previous settings by default.
   // However, they do have to go through the initial setup again.
   sync_prefs_.ClearInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   sync_prefs_.ClearPassphrasePromptMutedProductVersion();
   // Cached information provided by SyncEngine must be cleared.
   sync_prefs_.ClearCachedPassphraseType();
@@ -2089,6 +2130,10 @@ void SyncServiceImpl::StopAndClear(ResetEngineReason reset_engine_reason) {
   // If the migration didn't finish before StopAndClear() was called, mark it as
   // done so it doesn't trigger again if the user signs in later.
   sync_prefs_.MarkPartialSyncToSigninMigrationFullyDone();
+
+  if (reset_engine_reason == ResetEngineReason::kNotSignedIn) {
+    sync_prefs_.ClearCachedPersistentAuthErrorForMetrics();
+  }
 
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).
@@ -2311,8 +2356,8 @@ void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
   return data_type_manager_->TriggerLocalDataMigration(types);
 }
 
-void SyncServiceImpl::TriggerLocalDataMigration(
-    std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
+void SyncServiceImpl::TriggerLocalDataMigrationForItems(
+    std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) {
   CHECK(switches::IsBatchUploadDesktopEnabled());
 
   for (const auto& [type, _] : items) {
@@ -2326,7 +2371,50 @@ void SyncServiceImpl::TriggerLocalDataMigration(
     return;
   }
 
-  return data_type_manager_->TriggerLocalDataMigration(std::move(items));
+  return data_type_manager_->TriggerLocalDataMigrationForItems(
+      std::move(items));
+}
+
+void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
+    DataType data_type,
+    std::vector<LocalDataItemModel::DataId> items) {
+  CHECK(local_data_migration_item_queue_);
+  CHECK(IsSignedIn());
+  // Syncing users do not use separate local and account storages. Thus, there's
+  // no local-only data to migrate. The sign in through the promo should not
+  // have made the user consent to sync.
+  CHECK(!HasSyncConsent());
+
+  // TODO(crbug.com/386752831): Add a metric here.
+
+  std::optional<UserSelectableType> user_selectable_type =
+      GetUserSelectableTypeFromDataType(data_type);
+  CHECK(user_selectable_type.has_value());
+
+  // Do not proceed if the data type is managed for the account, disabled by
+  // policy or not available in transport-only mode.
+  if (GetUserSettings()->IsTypeManagedByPolicy(user_selectable_type.value()) ||
+      HasDisableReason(SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      !data_type_manager_->GetDataTypesForTransportOnlyMode().Has(data_type)) {
+    return;
+  }
+
+  // Unset the user's preference for account storage if they had explicitly been
+  // using local storage before. This will enable account storage for the type
+  // by its default value set in the sync prefs.
+  if (!GetUserSettings()->GetSelectedTypes().Has(
+          user_selectable_type.value())) {
+    GetUserSettings()->ResetSelectedType(user_selectable_type.value());
+  }
+
+  // At this point, the type should be selected.
+  CHECK(
+      GetUserSettings()->GetSelectedTypes().Has(user_selectable_type.value()));
+
+  // Move the item as soon as the sync service activates.
+  local_data_migration_item_queue_
+      ->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(
+          data_type, std::move(items));
 }
 
 }  // namespace syncer

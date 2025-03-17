@@ -9,6 +9,7 @@
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
+#include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
@@ -19,11 +20,13 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+using printing::kUnitConversionFactorPixelsToPoints;
+
 namespace chrome_pdf {
 
 namespace {
 
-// Standard page size for tests.
+// Standard page size in pixels for tests.
 constexpr gfx::Size kPageSizePortrait(50, 60);
 constexpr gfx::Size kPageSizePortrait2x(kPageSizePortrait.width() * 2,
                                         kPageSizePortrait.height() * 2);
@@ -31,6 +34,18 @@ constexpr gfx::Size kPageSizeLandscape(kPageSizePortrait.height(),
                                        kPageSizePortrait.width());
 constexpr gfx::Size kPageSizeLandscape2x(kPageSizeLandscape.width() * 2,
                                          kPageSizeLandscape.height() * 2);
+
+// Standard page size in points for tests, corresponding to page size in pixels
+// above.
+constexpr gfx::SizeF kPageSizePortraitInPoints(
+    kPageSizePortrait.width() * kUnitConversionFactorPixelsToPoints,
+    kPageSizePortrait.height() * kUnitConversionFactorPixelsToPoints);
+
+// A page size in points `kPageSizePortraitFractionalInPoints` has fractional
+// component, which gets truncated when converted to integer pixels.
+constexpr gfx::SizeF kPageSizePortraitFractionalInPoints(199.9f, 201.1f);
+constexpr gfx::Size kPageSizePortraitFractional(266, 268);
+constexpr gfx::Size kPageSizeLandscapeFractional(268, 266);
 
 // Scale factors used in tests.
 constexpr float kScaleFactor1x = 1.0f;
@@ -212,7 +227,7 @@ TEST(PdfInkTransformTest,
 TEST(PdfInkTransformTest, RenderTransformIdentity) {
   ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kOriginal,
-      kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+      kPageContentAreaPortraitNoOffset, kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
               InkAffineTransformEq(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
 }
@@ -220,7 +235,7 @@ TEST(PdfInkTransformTest, RenderTransformIdentity) {
 TEST(PdfInkTransformTest, RenderTransformZoom) {
   ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kOriginal,
-      kPageContentAreaPortraitNoOffset2x, kScaleFactor2x);
+      kPageContentAreaPortraitNoOffset2x, kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
               InkAffineTransformEq(2.0f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f));
 }
@@ -228,32 +243,32 @@ TEST(PdfInkTransformTest, RenderTransformZoom) {
 TEST(PdfInkTransformTest, RenderTransformRotateClockwise90) {
   ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise90,
-      kPageContentAreaLandscapeNoOffset, kScaleFactor1x);
+      kPageContentAreaLandscapeNoOffset, kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
-              InkAffineTransformEq(0.0f, -1.0f, 59.0f, 1.0f, 0.0f, 0.0f));
+              InkAffineTransformEq(0.0f, -1.0f, 60.0f, 1.0f, 0.0f, 0.0f));
 }
 
 TEST(PdfInkTransformTest, RenderTransformRotateClockwise180) {
   ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise180,
-      kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+      kPageContentAreaPortraitNoOffset, kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
-              InkAffineTransformEq(-1.0f, 0.0f, 49.0f, 0.0f, -1.0f, 59.0f));
+              InkAffineTransformEq(-1.0f, 0.0f, 50.0f, 0.0f, -1.0f, 60.0f));
 }
 
 TEST(PdfInkTransformTest, RenderTransformRotateClockwise270) {
   ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise270,
-      kPageContentAreaLandscapeNoOffset, kScaleFactor1x);
+      kPageContentAreaLandscapeNoOffset, kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
-              InkAffineTransformEq(0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 49.0f));
+              InkAffineTransformEq(0.0f, 1.0, 0.0f, -1.0f, 0.0f, 50.0f));
 }
 
 TEST(PdfInkTransformTest, RenderTransformScrolled) {
   ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kOriginal,
       /*page_content_rect=*/gfx::Rect(gfx::Point(-8, -14), kPageSizePortrait),
-      kScaleFactor1x);
+      kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
               InkAffineTransformEq(1.0f, 0.0f, -8.0f, 0.0f, 1.0f, -14.0f));
 }
@@ -263,7 +278,7 @@ TEST(PdfInkTransformTest, RenderTransformOffsetScrolled) {
       /*viewport_origin_offset=*/gfx::Vector2dF(18.0f, 24.0f),
       PageOrientation::kOriginal,
       /*page_content_rect=*/gfx::Rect(gfx::Point(0, -14), kPageSizePortrait),
-      kScaleFactor1x);
+      kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
               InkAffineTransformEq(1.0f, 0.0f, 18.0f, 0.0f, 1.0f, 10.0f));
 }
@@ -272,9 +287,10 @@ TEST(PdfInkTransformTest, RenderTransformZoomScrolledClockwise90) {
   ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise90,
       /*page_content_rect=*/
-      gfx::Rect(gfx::Point(-16, -28), kPageSizeLandscape2x), kScaleFactor2x);
+      gfx::Rect(gfx::Point(-16, -28), kPageSizeLandscape2x),
+      kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
-              InkAffineTransformEq(0.0f, -2.0f, 103.0f, 2.0f, 0.0f, -28.0f));
+              InkAffineTransformEq(0.0f, -2.0, 104.0f, 2.0f, 0.0f, -28.0f));
 }
 
 TEST(PdfInkTransformTest, RenderTransformOffsetZoomScrolledClockwise90) {
@@ -282,9 +298,45 @@ TEST(PdfInkTransformTest, RenderTransformOffsetZoomScrolledClockwise90) {
       /*viewport_origin_offset=*/gfx::Vector2dF(18.0f, 24.0f),
       PageOrientation::kClockwise90,
       /*page_content_rect=*/gfx::Rect(gfx::Point(0, -28), kPageSizeLandscape2x),
-      kScaleFactor2x);
+      kPageSizePortraitInPoints);
   EXPECT_THAT(transform,
-              InkAffineTransformEq(0.0f, -2.0f, 137.0f, 2.0f, 0.0f, -4.0f));
+              InkAffineTransformEq(0.0f, -2.0, 138.0f, 2.0f, 0.0f, -4.0f));
+}
+
+TEST(PdfInkTransformTest, RenderTransformFractionalPointsSizeIdentity) {
+  ink::AffineTransform transform = GetInkRenderTransform(
+      kViewportOriginOffsetNone, PageOrientation::kOriginal,
+      gfx::Rect(gfx::Point(), kPageSizePortraitFractional),
+      kPageSizePortraitFractionalInPoints);
+  EXPECT_THAT(transform, InkAffineTransformEq(0.997999012f, 0.0f, 0.0f, 0.0f,
+                                              0.999502718f, 0.0f));
+}
+
+TEST(PdfInkTransformTest, RenderTransformFractionalPointsSizeClockwise90) {
+  ink::AffineTransform transform = GetInkRenderTransform(
+      kViewportOriginOffsetNone, PageOrientation::kClockwise90,
+      gfx::Rect(gfx::Point(), kPageSizeLandscapeFractional),
+      kPageSizePortraitFractionalInPoints);
+  EXPECT_THAT(transform, InkAffineTransformEq(0.0f, -0.997999012f, 268.0f,
+                                              0.999502718f, 0.0f, 0.0f));
+}
+
+TEST(PdfInkTransformTest, RenderTransformFractionalPointsSizeClockwise180) {
+  ink::AffineTransform transform = GetInkRenderTransform(
+      kViewportOriginOffsetNone, PageOrientation::kClockwise180,
+      gfx::Rect(gfx::Point(), kPageSizePortraitFractional),
+      kPageSizePortraitFractionalInPoints);
+  EXPECT_THAT(transform, InkAffineTransformEq(-0.997999012f, 0.0f, 266.0f, 0.0f,
+                                              -0.999502718f, 268.0f));
+}
+
+TEST(PdfInkTransformTest, RenderTransformFractionalPointsSizeClockwise270) {
+  ink::AffineTransform transform = GetInkRenderTransform(
+      kViewportOriginOffsetNone, PageOrientation::kClockwise270,
+      gfx::Rect(gfx::Point(), kPageSizeLandscapeFractional),
+      kPageSizePortraitFractionalInPoints);
+  EXPECT_THAT(transform, InkAffineTransformEq(0.0f, 0.997999012f, 0.0f,
+                                              -0.999502718f, 0.0f, 266.0f));
 }
 
 TEST(PdfInkTransformTest, ThumbnailTransformNoZoom) {
@@ -610,14 +662,28 @@ TEST(PdfInkTransformTest,
 
 TEST(PdfInkTransformTest, GetCanonicalToPdfTransform) {
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/0);
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/0, /*translate=*/gfx::Vector2dF());
     EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
     EXPECT_EQ(gfx::Vector2dF(0, 0), tr.translation());
   }
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/712);
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/712, /*translate=*/gfx::Vector2dF());
     EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
     EXPECT_EQ(gfx::Vector2dF(0, 712), tr.translation());
+  }
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/0, /*translate=*/gfx::Vector2dF(50, 60));
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(50, 60), tr.translation());
+  }
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/1008, /*translate=*/gfx::Vector2dF(50, 60));
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(50, 1068), tr.translation());
   }
 }
 

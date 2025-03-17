@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Приступни кључ</translation>
 <translation id="1030376737535466765">Отвори Менаџер лозинки</translation>
 <translation id="1035980983510608210">Затварањем свих картица затварате и закачене картице.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Искључи</translation>
 <translation id="1041322626941363065">Упозори ме ако су лозинке откривене при повреди података</translation>
 <translation id="1044891598689252897">Сајтови ће нормално радити</translation>
@@ -20,11 +19,14 @@
 <translation id="1054745118061919935">Ако наставите, прихватате <ph name="BEGIN_LINK" />Услове коришћења услуге<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Никада се не чува</translation>
 <translation id="1062138828266376352">PIN није промењен. Проверите интернет везу и пробајте поново</translation>
-<translation id="1066060668811609597">Управљајте синхронизацијом</translation>
+<translation id="1072476005125066234">Рецензије на основу интересовања</translation>
+<translation id="1074827084851510304">Избрисаћете лозинке ({password_count}) и листу сајтова и апликација за које сте одабрали да никада не чувате податке за пријављивање. Налози које сте отворили за сајтове и апликације неће бити избрисани.</translation>
 <translation id="1076421457278169141">Скенирали сте кôд</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
+<translation id="1082554859195167538">Рецензије производа за вас</translation>
 <translation id="1084365883616172403">Facebook пост је довршен.</translation>
 <translation id="1085677983426914530">Отварање фајла <ph name="FILENAME" /> није успело</translation>
+<translation id="1086468407802688066">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Подешавања синхронизације ће се вратити на основу последње резервне копије. <ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Увек преводи <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Синхронизација историје</translation>
@@ -32,7 +34,6 @@
 <translation id="1112015203684611006">Штампање није успело.</translation>
 <translation id="1118569444314402022">Добро дошли назад, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Слике</translation>
-<translation id="1125564390852150847">Направи нову картицу.</translation>
 <translation id="1126696498560056882">Управљајте налозима на овом уређају</translation>
 <translation id="1126809382673880764">Не штити вас од опасних веб-сајтова, преузимања и додатака. У другим Google услугама, као што су Gmail и Претрага, и даље ћете имати заштиту помоћу Безбедног прегледања када је доступна.</translation>
 <translation id="1142371195993008685">Искључи обавештења за: <ph name="FEATURE_NAME" /></translation>
@@ -46,6 +47,7 @@
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1190609913194133056">Центар за обавештења</translation>
 <translation id="1201402288615127009">Даље</translation>
+<translation id="1202892408424955784">Производи које пратите</translation>
 <translation id="1204075260022434100">{count,plural, =1{Обележивач је сачуван у фолдеру {title} на налогу, {email}}one{{count} обележивач је сачуван у фолдеру {title} на налогу, {email}}few{{count} обележивача су сачувана у фолдеру {title} на налогу, {email}}other{{count} обележивача је сачувано у фолдеру {title} на налогу, {email}}}</translation>
 <translation id="120431140543679678">Прати</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -73,7 +75,6 @@
 <translation id="1312168552565502328">Колачићи, подаци о сајтовима</translation>
 <translation id="1312721752506309252">Побољшана заштита је укључена</translation>
 <translation id="1317821187353201763">Затварање картице</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Прати овај пакет}one{Прати све пакете}few{Прати све пакете}other{Прати све пакете}}</translation>
 <translation id="1321993286294231467">Дошло је до грешке при чувању слике.</translation>
 <translation id="1322735045095424339">Организација захтева режим без архивирања</translation>
 <translation id="1323735185997015385">Избриши</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Одаберите положај траке за адресу</translation>
 <translation id="1347468774581902829">Управљајте активностима</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Управљани налог</translation>
 <translation id="1358214951266274152">Посетите линк који сте копирали</translation>
 <translation id="1360432990279830238">Одјављујете се и искључујете синхрониз?</translation>
 <translation id="1363028406613469049">Песма</translation>
@@ -108,10 +110,9 @@
 <translation id="143681031165817424">Адреса је сачувана само на овом уређају</translation>
 <translation id="1445276840641906250">Све картице у једном прегледачу</translation>
 <translation id="1450170672351507823">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
-<translation id="1454615514353469963">Лозинке, приступни кључеви и други подаци ће се трајно избрисати из Google менаџера лозинки</translation>
 <translation id="1455660774629812862">Не скривај</translation>
+<translation id="1456545332132818232">Рецензије производа <ph name="PRODUCT_NAME" />, <ph name="STARS" /> од <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Уштедите време, куцајте мање</translation>
-<translation id="1466035273550360103">Нема отворених картица</translation>
 <translation id="1469381646033328562">Налогом управља родитељ.
 <ph name="BEGIN_LINK" />Сазнај више<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Промењено</translation>
@@ -120,6 +121,7 @@
 <translation id="1485907716209290998">Праћење пакета</translation>
 <translation id="1486096554574027028">Претражите лозинке</translation>
 <translation id="1491277525950327607">Двапут додирните да бисте укључили/искључили подешавање</translation>
+<translation id="1491965206608166851">Пријавите се помоћу сачуваних лозинки и приступних кључева из било које апликације</translation>
 <translation id="1492417797159476138">Већ сте сачували ово корисничко име за овај сајт</translation>
 <translation id="1497590942294823549">Мени → Менаџер лозинки</translation>
 <translation id="1498283581832036924">Налог за <ph name="WEBSITE" /> неће бити избрисан.</translation>
@@ -138,6 +140,7 @@
 <translation id="1540800554400757039">1. ред за адресу</translation>
 <translation id="154312949627292154">Отварајте картице које сте примили са других уређаја са закључаног екрана.</translation>
 <translation id="1545749641540134597">Скенирајте QR кôд</translation>
+<translation id="1547610699249301703">Делите лозинке</translation>
 <translation id="1554477036522844996">Нови прозор</translation>
 <translation id="1558391695376153246">Затвори картице без архив.</translation>
 <translation id="1571780780926010134">Картице без архивирања</translation>
@@ -149,9 +152,9 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адресе}other{# адреса}}</translation>
 <translation id="1605405588277479165">Искључено – Не препоручује се</translation>
 <translation id="1605658421715042784">Копирај слику</translation>
-<translation id="1612642630650745968">Праћење пакета је опозвано</translation>
 <translation id="1612754831519568745">Безбедно прегледање је тренутно искључено. Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1622195983844804153">Постојећи подаци прегледања неће бити пренети на пословни налог. И даље можете да им приступате тако што ћете се одјавити или додати лични налог.</translation>
 <translation id="1622717322707146952">Изаберите Додај у Google календар или Додај у Apple Calendar.</translation>
 <translation id="1629162218487290695">Потврдите да сте то ви…</translation>
 <translation id="1636234353664774105">Добијајте упутства до одредишта помоћу детаљних упутстава уз функцију за навигацију.</translation>
@@ -172,8 +175,8 @@
 <translation id="1700629756560807968">Број изабраних ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Избришите приступни кôд</translation>
 <translation id="1712341189152602203">Постојећи подаци прегледања ће бити повезани са: <ph name="USER_EMAIL" />. Ваша организација може да види ове податке.</translation>
-<translation id="1713777106376424209">Испорука до</translation>
 <translation id="1715515772563243997">Ако веб-сајт <ph name="SITE" /> сматрате поузданим, можете да користите сачувану лозинку за пријављивање.</translation>
+<translation id="1718835860248848330">Последњих сат времена</translation>
 <translation id="1728549374069268714">Налепи и иди</translation>
 <translation id="1732468323901456775">Укључи обавештења за: <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Додирните двапут да бисте инсталирали.</translation>
@@ -189,18 +192,22 @@
 <translation id="1779354709911146450">Грешка потврде идентитета</translation>
 <translation id="1780152987505130652">Затвори групу</translation>
 <translation id="178400879184240105">Ваше лозинке су јединствене</translation>
+<translation id="17906873777101817">Понуди чување лозинки и приступних кључева</translation>
+<translation id="1794893174442046596">Група картица</translation>
 <translation id="1807893857950749072">Дозволите обавештења о праћењу цена…</translation>
 <translation id="1810976980198522421">Откажи</translation>
 <translation id="1815941218935345331">Шифра</translation>
 <translation id="1818687879307252150">{count,plural, =0{Нема угрожених лозинки}=1{{count} угрожена лозинка}one{{count} угрожена лозинка}few{{count} угрожене лозинке}other{{count} угрожених лозинки}}</translation>
+<translation id="1819374301217551116">Праћење цена и увиди</translation>
 <translation id="1820195936249950412">Пријавите се помоћу важећег налога</translation>
 <translation id="1820259098641718022">Додато је на листу за читање</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Обавештава вас када примате картице са других уређаја.</translation>
 <translation id="1827529786398596735">Додирните и задржите почетни екран</translation>
 <translation id="1832848789136765277">Да бисте били сигурни да увек можете да приступате синхронизованим подацима, потврдите да сте то ви</translation>
 <translation id="1836891464494477513">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{Обележивачи су сачувани на Google налогу, {email}}few{Обележивачи су сачувани на Google налогу, {email}}other{Обележивачи су сачувани на Google налогу, {email}}}</translation>
+<translation id="1838089197478136166">Желите да отворите у Новчанику?</translation>
 <translation id="183878838231635348">Ова картица приказује све проблеме у вези са приватношћу или безбедношћу које Провера безбедности аутоматски открије.</translation>
+<translation id="1845230888742614096">Задржи групу</translation>
 <translation id="1854463785401910334">Претражите отворене картице</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position}. од {count} лозинке}one{{position}. од {count} лозинке}few{{position}. од {count} лозинке}other{{position}. од {count} лозинки}}</translation>
 <translation id="1861262398884155592">Овај фолдер је празан</translation>
@@ -218,9 +225,9 @@
 <translation id="189531189292803889">Садржај iPad-а је недавно враћен, због чега је подразумевани прегледач можда промењен.</translation>
 <translation id="1901366738768303267">Како да користим ову функцију?</translation>
 <translation id="1901600657316773839">Задржи избор</translation>
+<translation id="1902277226107477495">Откривање адреса је искључено. Поново га укључите у Подешавањима.</translation>
 <translation id="1904580727789512086">URL-ови које посећујете се чувају на Google налогу</translation>
 <translation id="1911619930368729126">Отпреми у Google диск</translation>
-<translation id="1923342640370224680">Претходни сат</translation>
 <translation id="1941314575388338491">Додирните двапут да бисте копирали.</translation>
 <translation id="1943478190258551035">Мени → Подешавања</translation>
 <translation id="1952728750904661634">Пријавите се помоћу налога којим се управља</translation>
@@ -254,13 +261,14 @@
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386">Налози (<ph name="COUNT" />) користе исту лозинку</translation>
 <translation id="2059166748188874810">Општина</translation>
+<translation id="2060114494785549741">Избриши за 1 месец</translation>
+<translation id="2060638295449304809">Ова адреса се чува само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Бирач типа јединице</translation>
 <translation id="2067852168641682340">Сачувај на овом налогу сваки пут</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
 <translation id="2074131957428911366">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Можете да скролујете удесно да бисте прегледали у режиму без архивирања.</translation>
 <translation id="2079545284768500474">Опозови</translation>
-<translation id="2082906935540894275">Најрелевантније функције за вас у различитим периодима.</translation>
 <translation id="2085876078937250610">Сачувај…</translation>
 <translation id="2096239473850415494">Преузимање није успело</translation>
 <translation id="2096716221239095980">Избриши све податке</translation>
@@ -268,26 +276,33 @@
 <translation id="2104436223719117661">Претраге у тренду</translation>
 <translation id="21133533946938348">Закачи картицу</translation>
 <translation id="2119636449201577317">Отвори у…</translation>
+<translation id="2120553909046681540">Организација је искључила приватно прегледање.</translation>
 <translation id="2122754583996902531">Прегледачем се управља. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Потражите текст који сте копирали</translation>
 <translation id="2147127444698817042">Доступно само на iPhone-у</translation>
-<translation id="2148716181193084225">Данас</translation>
 <translation id="2148799636999124959">Лако се пријављујте на сајтове и у апликације помоћу сачуваних лозинки.</translation>
 <translation id="2149968176347646218">Веза није безбедна</translation>
 <translation id="2149973817440762519">Измените обележивач</translation>
 <translation id="2161446265348023004">Пређи на отворен прозор</translation>
 <translation id="2164946989711475905">Пријави ме…</translation>
 <translation id="2175927920773552910">QR кôд</translation>
+<translation id="218350106843433823">Аутоматски попуњавајте лозинке и приступне кључеве</translation>
+<translation id="2186206192313702726">Google објектив</translation>
+<translation id="219283042927675668">Картице у групи</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
 <translation id="2196428379625389579">Претражите на вебу</translation>
 <translation id="2199562093267256223">Овим ћете избрисати групу са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">Нема имејл налога</translation>
 <translation id="2214453882118345682">Купујте, преводите и идентификујте оно што видите помоћу камере.</translation>
+<translation id="2215819824168709130">Сакријте картицу Пратите цену</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
+<translation id="2220887224562128152">Када се фајл закаже за брисање, не може да се врати.</translation>
 <translation id="2223461067862937305">Направи QR кôд</translation>
+<translation id="2229345671837147090">Мрежа удаљених картица</translation>
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
 <translation id="2236949375853147973">Моје активности</translation>
 <translation id="2240256190924001613">Доступан профил конфигурације</translation>
+<translation id="2244080985779413662">Овај веб-сајт жели да преузме фајл и отвори га у Новчанику.</translation>
 <translation id="2245007488813216650">Преводи се…</translation>
 <translation id="2249119578464404734">У врху екрана додирните икону Претрага</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
@@ -302,13 +317,10 @@
 <translation id="2268044343513325586">Прецизирај</translation>
 <translation id="2271452184061378400">Групе картица се чувају овде</translation>
 <translation id="2273327106802955778">Мени Још</translation>
-<translation id="2274800392139890332">Опозови праћење овог пакета</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ова адреса ће бити избрисана са овог уређаја.}one{Ове адресе ће бити избрисане са овог уређаја.}few{Ове адресе ће бити избрисане са овог уређаја.}other{Ове адресе ће бити избрисане са овог уређаја.}}</translation>
 <translation id="2297989278479054870">Када се одјавите, обележивачи, лозинке и други садржај са Google налога ће бити уклоњени са овог уређаја.</translation>
 <translation id="2299218006564889602">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки.</translation>
-<translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Затвори картицу</translation>
-<translation id="230956208401264723">Погледајте све пакете које пратите овде у овој вртешци</translation>
 <translation id="2311077293164383652">Затвори закачену картицу</translation>
 <translation id="2316129865977710310">Не, хвала</translation>
 <translation id="2320166752086256636">Сакриј тастатуру</translation>
@@ -317,7 +329,6 @@
 <translation id="2326302612031521902">Бирач јединица</translation>
 <translation id="2330607597130465898">Без заштите</translation>
 <translation id="233375395665273385">Избриши и одјави ме</translation>
-<translation id="2348630484974447747">Пакет</translation>
 <translation id="2351097562818989364">Подешавања за превођење су ресетована.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Можете да сачувате лозинку за сајт {DOMAIN_ONE} на Google налогу, {EMAIL}.}=2{Можете да сачувате лозинке за сајтове {DOMAIN_ONE} и {DOMAIN_TWO} на Google налогу, {EMAIL}.}=3{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}one{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}few{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}other{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Подразумевани приказ сајта</translation>
@@ -334,8 +345,11 @@
 <translation id="2384692388811649784">Сакриј картице без архивирања</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
 <translation id="2390457533592708044">Сакриј „<ph name="MODULE_NAME" />“</translation>
+<translation id="2393230427496852974">Прочитајте шта људи говоре</translation>
+<translation id="2394659309569789395">Ипак отвори сајт</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
+<translation id="2422174748424038845">Ако је избришете, сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја.</translation>
 <translation id="2424805048070062787">Наставите са овом картицом</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
 <translation id="243275146591958220">Откажи преузимање</translation>
@@ -348,6 +362,7 @@
 <translation id="2468132863574325555">Диск</translation>
 <translation id="2468444275314013497">Прегледач делује у реду</translation>
 <translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
+<translation id="247430852844518481">Можете да подесите подсетник да бисте поново посетили ову страницу касније</translation>
 <translation id="2479148705183875116">Иди у Подешавања</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2484459871750294497">Како да омогућим ову функцију?</translation>
@@ -358,6 +373,7 @@
 <translation id="2511117522375201202">Број угрожених лозинки које могу да угрозе безбедност је <ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="2513103768503127042">Овде ћете пронаћи групе картица</translation>
 <translation id="251837347827266434">Бићете одјављени, картице ће бити затворене, а подаци прегледања избрисани</translation>
+<translation id="2520787026086861736">Да бисте искључили, идите у <ph name="BEGIN_LINK" />Аутоматско попуњавање и лозинке<ph name="END_LINK" /></translation>
 <translation id="2529021024822217800">Отвори све</translation>
 <translation id="2536991091671391962">Можете да користите сачуване лозинке на било ком уређају. Чувају се у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скривена лозинка</translation>
@@ -367,10 +383,10 @@
 <translation id="2547458583188611426">Синхронизација не ради. Да бисте покренули синхронизацију, унесите приступну фразу.</translation>
 <translation id="2551153019974022505">Грешка са налогом</translation>
 <translation id="2559843230610279254">Група картица, <ph name="GROUP_TITLE" />, картица: <ph name="TABS_NUMBER" />.</translation>
-<translation id="2573859402163467749">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације.</translation>
 <translation id="2577522251608256362">Део града</translation>
 <translation id="2579713773888829241">Дељени Дискови</translation>
 <translation id="2597486707832946298">Искористите све предности прегледача за рачунаре који знате и волите на iPhone-у.</translation>
+<translation id="2601778637777010194">Пратите пад цена производа</translation>
 <translation id="260378315836159338">У врху екрана додирните +</translation>
 <translation id="2612676031748830579">Број картице</translation>
 <translation id="261305050785128654">Омогућите веб-сајтовима да знају које језике говорите. Приказиваће садржај на тим језицима када је то могуће.</translation>
@@ -384,6 +400,7 @@
 <translation id="2640733327287333451">Нема корисничког имена ••••••</translation>
 <translation id="264215785133931186">Проверено малопре</translation>
 <translation id="2647434099613338025">Додај језик</translation>
+<translation id="2649592894792404568">Избрисаћете податке из Google менаџера лозинки</translation>
 <translation id="2652129567809778422">Изаберите лозинку</translation>
 <translation id="2658056020748144467">Није могуће отворити фајл</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, само на овом уређају, <ph name="URL" /></translation>
@@ -407,11 +424,13 @@
 <translation id="271033894570825754">Ново</translation>
 <translation id="2718352093833049315">Само на WiFi-ју</translation>
 <translation id="2721190673959776287">Пример детаљне помоћи у производу за контекстуално окно које треба да се приказује више пута дневно.</translation>
+<translation id="2739887572830526131">Задржите ову групу да бисте додали картице касније или је избришите ако вам више не треба.</translation>
 <translation id="2747003861858887689">Претходно поље</translation>
 <translation id="2749231692441336879">Пратите канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755485474385016903">Сви у групи виде унете промене</translation>
 <translation id="2755595981383829244">Сада ћете добијати обавештења о садржају</translation>
 <translation id="2761788987260570878">Сликајте претрагу</translation>
+<translation id="2761898608071930085">Користите други налог</translation>
 <translation id="2762000892062317888">малопре</translation>
 <translation id="2772667768515195373">Можете да користите сачуване адресе у свим Google производима. Ова адреса је сачувана на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Обавештења имејлом</translation>
@@ -428,6 +447,7 @@
 <translation id="2829172210806130158">Претражите екран</translation>
 <translation id="2834399722155632105">3. Додирните Опције лозинки</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Време</translation>
 <translation id="284581348330507117">Направите јединствене лозинке</translation>
 <translation id="2856883624744451946">Дајте назив групи</translation>
 <translation id="2858204748079866344">Ради заштите приватности Chrome неће аутоматски уносити вашу лозинку у ово поље.</translation>
@@ -437,11 +457,12 @@
 <translation id="2883151425485251736">Прегледајте и мењајте теме које сте сакрили са налога</translation>
 <translation id="288655811176831528">Затвори картицу</translation>
 <translation id="2888631381369839306">Обавештења о праћењу цена су укључена</translation>
-<translation id="288902476966286676">Враћено пошиљаоцу</translation>
 <translation id="2893168226686371498">Подразумевани прегледач</translation>
 <translation id="2894757982205307093">Нова картица у групи</translation>
 <translation id="2902312830803030883">Још радњи</translation>
+<translation id="2904788871580817212">Пад цене на отвореној картици, са <ph name="PREVIOUS_PRICE" /> на <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Број лозинки које користите више пута и које могу да угрозе безбедност је<ph name="NUMBER_OF_PASSWORDS" />.</translation>
+<translation id="29153882450867370">Сакриј „Прати цену“</translation>
 <translation id="291754862089661335">Поставите QR или бар-код у овај оквир</translation>
 <translation id="2918688092312652908">Означи као непрочитано</translation>
 <translation id="2920866371965792875">Да бисте видели новости са овог сајта, идите овде.</translation>
@@ -450,11 +471,9 @@
 <translation id="2931440415625410757">Прикажи упутства</translation>
 <translation id="2952278131021475699">Претрага помоћу камере Објектива</translation>
 <translation id="2962516096219646456">Погледајте све податке Аутоматског попуњавања</translation>
-<translation id="2963044753825419640">Дозволите веб-сајтовима и апликацијама да аутоматски надограђују постојеће налоге како би користили приступне кључеве када су доступни</translation>
 <translation id="2969979262385602596">Пријављивање није успело. Пробајте поново касније.</translation>
 <translation id="2989523299700148168">Недавно посећено</translation>
 <translation id="2989805286512600854">Отвори на новој картици</translation>
-<translation id="2990025507101398383">Нема картица без архивирања</translation>
 <translation id="2996291259634659425">Направите приступну фразу</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Прати се нов пакет}one{Прате се нови пакети}few{Прате се нови пакети}other{Прате се нови пакети}}</translation>
 <translation id="3010025794097054078">Заштитите се од упада у податке, небезбедних веб-сајтова и других ствари.</translation>
@@ -468,7 +487,9 @@
 <translation id="3053332585453689122">Шаље URL-ове које посећујете и мали узорак садржаја странице, преузимања, активности додатака и информација о систему у Google безбедно прегледање ради провере штетности.</translation>
 <translation id="3055102495753300780">Меморијски простор за податке</translation>
 <translation id="3059270601560379555">Нова претрага</translation>
+<translation id="3064547930554042309">Управљајте преузимањима</translation>
 <translation id="3072279342064724558">Лозинка већ постоји</translation>
+<translation id="3074862506644936708">Омогући аутоматско брисање</translation>
 <translation id="3076846064362030967">Нећемо вас одјавити са Google налога. <ph name="BEGIN_LINK" />Други облици активности<ph name="END_LINK" /> могу да се сачувају на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.
 
 
@@ -483,10 +504,13 @@
 <translation id="310900540163454140">Желите да избришите лозинку за апликацију <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Означи…</translation>
 <translation id="3119874402040566234">Одјавићете се и подаци прегледања ће бити избрисани</translation>
+<translation id="3124568093781685165">Делите лозинке са породицом</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
 <translation id="313283613037595347">Направи нову картицу без архивирања.</translation>
 <translation id="3138611310073113613">Одбаци избор</translation>
+<translation id="3140825265190223781">Сачуване лозинке и приступни кључеви</translation>
 <translation id="3143515551205905069">Откажи синхронизацију</translation>
+<translation id="3144126448740580210">ГОТОВО</translation>
 <translation id="314837624430314508">Будите у току са најновијим вестима, новостима о праћењу цена и друго.</translation>
 <translation id="3157387275655328056">Додај на листу за читање</translation>
 <translation id="315778507796115851">Историја</translation>
@@ -508,12 +532,14 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3245744387817103524">Чување промене није успело.</translation>
+<translation id="3254806613790954367">Последња отворена картица на свим уређајима</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3273510436356991673">Прилагодите почетни екран</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>
 <translation id="3280562213547448728">Гласовна претрага</translation>
 <translation id="3305294846493618482">још</translation>
 <translation id="3311748811247479259">Искључено</translation>
+<translation id="3312300514034250578">Побољшано безбедно прегледање</translation>
 <translation id="3324193307694657476">2. ред за адресу</translation>
 <translation id="3328801116991980348">Информације о сајту</translation>
 <translation id="333229797575847124">Како да омогућите ову функцију</translation>
@@ -527,6 +553,7 @@
 <translation id="3371831930909698441">Преводилац је доступан. Опције су доступне у дну екрана.</translation>
 <translation id="3377063233124932127">Сада су сачувани обележивачи, лозинке и друго у врху.</translation>
 <translation id="3380352560400387991">Овај сајт покушава да отвори апликацију. То ће вас одвести из режима без архивирања.</translation>
+<translation id="3392923070107623576">Останите организовани прављењем група картица</translation>
 <translation id="3404232721752787413">Сачувај у Google сликама</translation>
 <translation id="3404744938087714423">Одјављивањем се искључује синхронизација.</translation>
 <translation id="3406506285180498376">Дели страницу…</translation>
@@ -534,11 +561,11 @@
 <translation id="3409785640040772790">Мапе</translation>
 <translation id="3416023309465857378">25. октобар 2023.</translation>
 <translation id="3435738964857648380">Безбедност</translation>
+<translation id="3441673211568148613">Заштитите приватност прегледања</translation>
 <translation id="3443810440409579745">Картица је примљена.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344589138074534176">Сазнајте више о Google објективу</translation>
 <translation id="3447332786336558089">Када се одјавите, картице ће бити затворене, а несачувани подаци налога ће бити избрисани са овог уређаја. То може да обухвата лозинке, историју и друго.</translation>
-<translation id="3449016921756175697">Корисни предлози који чине прегледање бољим и лакшим.</translation>
 <translation id="345348365500626747">Адреса је пронађена</translation>
 <translation id="3464194322481586217">Праћење цене није успело.</translation>
 <translation id="3469117812148449995">Опције за чување лозинке</translation>
@@ -551,16 +578,16 @@
 <translation id="35083190962747987">Отвори ${url}</translation>
 <translation id="3511519535430890904">Додајте заштиту прегледања</translation>
 <translation id="3517216995152707259">Брисањем података прегледања не одјављујете се са Google налога. Да бисте то урадили, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
-<translation id="3519193562722059437">Отворите картицу да бисте прегледали веб.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отвори картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
+<translation id="3523513363815970085">Сакриј Најпосећеније сајтове</translation>
 <translation id="3523789730715594198">Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="3527085408025491307">Фолдер</translation>
 <translation id="3529024052484145543">Није безбедно</translation>
+<translation id="3530024057633834563">Немате сачуване лозинке нити приступне кључеве, али можете да избришете листу сајтова и апликација за које сте одабрали да никада не чувате податке за пријављивање. Налози које сте отворили за сајтове и апликације неће бити избрисани.</translation>
 <translation id="3530206579861815432">Брзо пронађите отворене и недавно затворене картице на синхронизованим уређајима.</translation>
 <translation id="3530767473765895035">Управљај налозима на овом уређају…</translation>
 <translation id="3533436815740441613">Нова картица</translation>
 <translation id="3547356470684043247">Прочитајте процене производа, услуга или доживљаја од стране клијената да бисте донели утемељеније одлуке у вези са рецензијама</translation>
-<translation id="3549391962818677448">Покушана је испорука. Покушаћемо поново</translation>
 <translation id="3557336313807607643">Додај у контакте</translation>
 <translation id="355765753469272474">Опозови</translation>
 <translation id="3562379378751492229">Изаберите положај који вам највише одговара.</translation>
@@ -611,19 +638,19 @@
 <translation id="3810973564298564668">Управљај</translation>
 <translation id="381219490185664296">Желите да раздвојите групу картица?</translation>
 <translation id="3812308602011798782">Рецензије</translation>
-<translation id="3818045793209708987">Праћење овог пакета је заустављено</translation>
+<translation id="3813175908845379029">Корисни предлози који чине прегледање бољим и лакшим</translation>
+<translation id="3815668647912194650">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате.</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверите интернет везу и пробајте поново.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 начин плаћања}one{# начин плаћања}few{# начина плаћања}other{# начина плаћања}}</translation>
 <translation id="3831560640878483188">Желите да одбаците упозорење?</translation>
 <translation id="3832419617903252251">Лозинка је сачувана само на овом уређају</translation>
 <translation id="3838691874161539578">Проверите сачуване лозинке да бисте ојачали безбедност и били безбеднији онлајн</translation>
+<translation id="3838985624086228724">Пад цене производа који пратите, са <ph name="PREVIOUS_PRICE" /> на <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Лозинке за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и још <ph name="NUMBER_OF_ACCOUNTS" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="3858860766373142691">Назив</translation>
-<translation id="3861908220442487587">Ова адреса је сачувана само на овом уређају. Да бисте је користили на другим уређајима, преместите је на Google налог, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Прегледајте комплетан URL</translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
-<translation id="3876833929577368454">Питај ме сваки пут</translation>
 <translation id="3885587018298784481">Придружите се групи за породицу</translation>
 <translation id="3888863481921783344">То ће се користити да би вам се приказивале особе које можете да позовете на догађај.</translation>
 <translation id="3891414008432200754">Цена</translation>
@@ -631,7 +658,9 @@
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3904270275864974753">Измените вртешку</translation>
 <translation id="3909222758573607742">Сачувајте лозинке и друге ставке на налогу</translation>
+<translation id="3913463964270756493">Сакријте екран претраге помоћу Google објектива</translation>
 <translation id="3914640181019354363">Откривај адресе</translation>
+<translation id="3921585859122905677">Позиција траке за адресу</translation>
 <translation id="3922185497376658606">Унапред учитавај веб-странице</translation>
 <translation id="3922395466317605522">Прилагодите мени</translation>
 <translation id="3929457972718048006">Адресе</translation>
@@ -639,10 +668,12 @@
 <translation id="3940195383040445971">Прати цене на картицама</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Затвори {COUNT} картицу}one{Затвори {COUNT}картицу}few{Затвори {COUNT} картице}other{Затвори {COUNT} картица}}</translation>
 <translation id="3948600256434252210">Можете да превучете удесно да бисте прегледали у режиму без архивирања.</translation>
+<translation id="3950479158728806902">Аутоматски направи приступни кључ да бисте се брже пријављивали</translation>
 <translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">Имате слабе лозинке.</translation>
 <translation id="3958312024468322930">Превуците је на фиксирано место у дну почетног екрана</translation>
+<translation id="3960218941754097036">Претражујте било шта на екрану помоћу Google објектива</translation>
 <translation id="3962326069546168954">Сачувај</translation>
 <translation id="3967327056943561740">Обележивачи</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
@@ -650,8 +681,10 @@
 <translation id="398604237578616937">Пријављени сте као <ph name="USER_EMAIL" />. Отвори мени налога.</translation>
 <translation id="3986739045730058129">Иди на картицу</translation>
 <translation id="3992684624889376114">О овој страници</translation>
+<translation id="3993594519743675442">Сакриј Подеси подсетник</translation>
 <translation id="3994422733891749358">Одаберите која обавештења желите да примате</translation>
 <translation id="3994522032746736727">Пријави ме као <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">ВАЖИ</translation>
 <translation id="3995521777587992544">Трака напретка учитавања страница, учитано је <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Администратор је онемогућио дељење лозинки.</translation>
 <translation id="4002066346123236978">Наслов</translation>
@@ -660,6 +693,7 @@
 <translation id="4018440314314549819">Аутоматски попуњавајте сачуване лозинке</translation>
 <translation id="4021447724486050609">Ажурирајте прегледач</translation>
 <translation id="4021931095789478915">Додај ${url} на листу за читање</translation>
+<translation id="4026496154402824012">Да бисте искључили, идите у <ph name="BEGIN_LINK" />Опције лозинки<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Сачувај на налогу…</translation>
 <translation id="4038354071007134711">Ниједна апликација на овом уређају не може да отвори датотеку.</translation>
 <translation id="4042870976416480368">Нађи на страници</translation>
@@ -669,6 +703,7 @@
 <translation id="4054572406751135230">Пратите вести, спорт и друго.</translation>
 <translation id="4070132839822635162">Не пријављуј ме</translation>
 <translation id="4094361089640885693">Лако пратите цене и стекните увид у њих.</translation>
+<translation id="4099756562043439968">Подеси подсетник</translation>
 <translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="4111985840824673503">Означи све као прочитано</translation>
 <translation id="411254640334432676">Преузимање није успело.</translation>
@@ -684,8 +719,11 @@
 <translation id="4147897805161313378">Google слике</translation>
 <translation id="4148023517926189160">Овај веб-сајт жели да преузме фајл и дода га у календар.</translation>
 <translation id="4152011295694446843">Овде ћете пронаћи обележиваче</translation>
+<translation id="4154753961803534698">Претражите помоћу камере</translation>
 <translation id="4158491215857439601">Менаџер лозинки</translation>
+<translation id="4161488339191275792">Правите групе картица да бисте организовали отворене картице</translation>
 <translation id="4163699139741158298">{count,plural, =1{Обележивач је сачуван у: {title}. Чува се само на овом уређају.}one{{count} обележивач је сачуван у: {title}. Чува се само на овом уређају.}few{{count} обележивача су сачувана у: {title}. Чувају се само на овом уређају.}other{{count} обележивача је сачувано у: {title}. Чувају се само на овом уређају.}}</translation>
+<translation id="4164514562270305824">Аутоматски бриши преузимања</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> се завршава бројевима <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Не дозволи</translation>
 <translation id="4172051516777682613">Увек прикажи</translation>
@@ -696,12 +734,14 @@
 <translation id="4183350924949589798">Више безбедности?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} слаба лозинка}one{{count} слаба лозинка}few{{count} слабе лозинке}other{{count} слабих лозинки}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} ставка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, {email}.}one{{count} ставка је сачувана само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу, {email}.}few{{count} ставке су сачуване само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу, {email}.}other{{count} ставки је сачувано само на овом уређају. Да бисте их користили на другим уређајима, сачувајте их на Google налогу, {email}.}}</translation>
+<translation id="4207873326995387292">Информације о прегледачу</translation>
 <translation id="421070604241073551">Када је укључено, подаци се чувају на Google налогу. Када је искључено, подаци се чувају само на овом уређају.</translation>
 <translation id="4224534474590365556">Желите да затворите више од 99 неактивних картица?</translation>
 <translation id="422474357428465195">Имате неколико проблема са лозинкама који могу да угрозе безбедност.</translation>
 <translation id="422477017457571619">Заштита у реалном времену коју омогућава вештачка интелигенција од опасних сајтова, преузимања и додатака која се заснива на подацима прегледања који се шаљу Google-у</translation>
 <translation id="4231395118547300571">Обавештења Провере безбедности су укључена</translation>
 <translation id="4237377247299956313">Додирните <ph name="BEGIN_BOLD" />Подразумевана апликација за прегледање<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Нема сачуваних лозинки ни приступних кључева</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
 <translation id="4250432749243022864">{count,plural, =0{Отвори {count} картица}=1{Отвори {count} картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
 <translation id="4250680216510889253">Не</translation>
@@ -726,6 +766,7 @@
 <translation id="4322394346347055525">Затвори друге картице</translation>
 <translation id="4324735664183300693">Укључи обавештења</translation>
 <translation id="4326912346867677256">Додирните Користи лозинку да бисте се безбедно пријавили.</translation>
+<translation id="4327017157997423717">Пратите цену производа <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Мој диск</translation>
 <translation id="4331177082088332784">Овим можете да управљате у BEGIN_LINK Подешавањима садржаја END_LINK</translation>
 <translation id="4334428914252001502">1 непрочитан чланак.</translation>
@@ -744,6 +785,7 @@
 <translation id="441218095371040430">Користи тастатуру</translation>
 <translation id="4415276339145661267">Управљајте Google налогом</translation>
 <translation id="4430277756566635951">Тренутно је изабрано <ph name="EMAIL" />. Одаберите налог.</translation>
+<translation id="4430505936695785931">Добијте сачуване лозинке у другим апликацијама</translation>
 <translation id="4431224949908513835">Изаберите начин плаћања који ће бити унет.</translation>
 <translation id="4442550905108052454">Отворите <ph name="BEGIN_BOLD" />Подешавања<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Још опција за: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -751,7 +793,6 @@
 <translation id="4460014764210899310">Раздвоји</translation>
 <translation id="446314443268698477">Купујте, преводите и идентификујте оно што видите помоћу камере или слика.</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
-<translation id="4469834037720363704">Број пакета</translation>
 <translation id="4471472356135655769">Извоз лозинки није успео</translation>
 <translation id="4473608001744970767">Сакриј опцију Прати цену</translation>
 <translation id="4474142134969976028">Нема подударних резултата</translation>
@@ -763,6 +804,7 @@
 <translation id="4495516234578759322">Проналажење следеће ставке</translation>
 <translation id="4502423230170890588">Уклони са овог уређаја</translation>
 <translation id="4508750114462689118">Затвори промоцију за пријављивање</translation>
+<translation id="4517684186578051919">Информације о уређају</translation>
 <translation id="4520798012560649652">Сазнајте више о режиму без архивирања</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} обележивач}one{{count} обележивач}few{{count} обележивача}other{{count} обележивача}}</translation>
 <translation id="4525629404718770519">Прикажи прегледе линкова</translation>
@@ -786,12 +828,14 @@
 <translation id="4619564267100705184">Потврдите идентитет</translation>
 <translation id="4619615317237390068">Картице са других уређаја</translation>
 <translation id="4624080227980645783">Нови прозор без архивирања</translation>
+<translation id="4627107755957573804">Дозволите сајтовима и апликацијама да надограђују постојеће налоге како би користили приступне кључеве</translation>
 <translation id="4630212057753624203">Пример облачића</translation>
 <translation id="4631335160486397366">Лозинке које користите за више налога: <ph name="COUNT" /></translation>
 <translation id="4631890462758052414">Нова картица без архивирања</translation>
 <translation id="4632655012900268062">Прилагодите картице</translation>
 <translation id="4634124774493850572">Користи лозинку</translation>
 <translation id="4636930964841734540">Информације</translation>
+<translation id="4641425577292284174">Сазнајте да ли имате најбезбеднија подешавања или треба нешто да прегледате</translation>
 <translation id="4642472735733036929">Праћење цена је заустављено</translation>
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>
 <translation id="4647758699119474035">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Грешка у вези са Google налогом. Отвори мени налога.</translation>
@@ -799,18 +843,20 @@
 <translation id="4651927776207937667">{count,plural, =1{Сакриј после 1 минута}one{Сакриј после {count} минута}few{Сакриј после {count} минута}other{Сакриј после {count} минута}}</translation>
 <translation id="4652817563047461855">Уверите се да су лозинке безбедне, сазнајте да ли су угрожене и потражите савет о томе како да се заштитите онлајн. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Сачувај</translation>
+<translation id="466307903888586355">Организација блокира чување фајлова</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Организација захтева да прегледате приватно. Групе картица се не синхронизују у режиму без архивирања.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">Повежите се са предузећем покретањем телефонског позива</translation>
 <translation id="4682496302933121474">Желите да преведете страницу?</translation>
 <translation id="4682686630151240767">1. Отворите подешавања iPhone-а</translation>
-<translation id="4684427112815847243">Синхронизуј све</translation>
 <translation id="4699172675775169585">Кеширане слике и фајлови</translation>
+<translation id="4709570498586527752">Најрелевантније функције за вас у различитим периодима</translation>
 <translation id="4717844083556844785">Актуелна веб-страница је у режиму без архивирања</translation>
 <translation id="4719927025381752090">Понуди превод</translation>
 <translation id="4720530280568305198">Избор је отворен на новој картици</translation>
 <translation id="473775607612524610">Ажурирај</translation>
+<translation id="474209246745757965">Купујте и преводите помоћу камере</translation>
 <translation id="4742407542027196863">Управљај лозинкама...</translation>
 <translation id="4744428388659507035">Да би вам обележивачи били доступни на свим уређајима, укључите Обележиваче у подешавањима.</translation>
 <translation id="4746926359847517643">Увек можете да их вратите из историје.</translation>
@@ -819,9 +865,9 @@
 <translation id="4764612367328936189">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Откривање и праћење</translation>
 <translation id="4769198578611055647">Помаже вам да приступате сачуваним приступним кључевима на било ком уређају</translation>
-<translation id="4777866634702576038">Желите да избришете групу картица?</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Желите да отворите у режиму без архивирања?</translation>
+<translation id="479208892659046780">Најпосећенији сајтови</translation>
 <translation id="4792385443586519711">Назив предузећа</translation>
 <translation id="479628432297359449">Желите да зауставите преузимање?</translation>
 <translation id="4796496140132859135">Група картица. Скупљено.</translation>
@@ -829,13 +875,13 @@
 <translation id="4803185665210547709">Овим управља организација.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Име и презиме на картици</translation>
-<translation id="4808646838864186379">Испорука је отказана</translation>
 <translation id="4808744395915275922">Ажурирања</translation>
 <translation id="4813345808229079766">Веза</translation>
 <translation id="4821595350501541683">Картице су затворене и подаци прегледања су избрисани</translation>
 <translation id="4824480232751123840">Запремина</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и још 1}one{{domain} и још {count}}few{{domain} и још {count}}other{{domain} и још {count}}}</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
+<translation id="4828431027673677473">Производи на основу интересовања</translation>
 <translation id="4833786495304741580">Аутоматски шаље Google-у статистику коришћења и извештаје о отказивању.</translation>
 <translation id="483689884442613745">Сачувај…</translation>
 <translation id="4840495572919996524">Обележивачи, историја, лозинке и други подаци више се неће синхронизовати са Google налогом.</translation>
@@ -843,6 +889,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4860895144060829044">Позовите</translation>
 <translation id="4861953997778766866">Сви могу да уносе промене у дељене групе картица</translation>
+<translation id="4865063548323785458">Чувајте и аутоматски попуњавајте лозинке да бисте се лако пријављивали на сајтове и у апликације</translation>
 <translation id="4869146460927742717">Позиција траке за адресу</translation>
 <translation id="4870911314065352661">Желите да затворите све картице?</translation>
 <translation id="4872664437015695612">Отвори у Преузимањима</translation>
@@ -856,13 +903,13 @@
 <translation id="4894963374040315706">Ово вам омогућава да претражујете помоћу гласа</translation>
 <translation id="4895540042460820904">Последње отварање</translation>
 <translation id="4896467949657706481">Картице су затворене; одјављени сте</translation>
-<translation id="490709372351071121">Преузима се статус пакета</translation>
-<translation id="4908869848243824489">Google Discover</translation>
 <translation id="4913626501929406101">Можете безбедно да делите копију лозинке са неким у групи за породицу. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Прихвати</translation>
+<translation id="4932733599132424254">Датум</translation>
 <translation id="4936354130727646074">Никад не премештај</translation>
 <translation id="4937410517508563815">Сачувајте лозинке на налогу</translation>
 <translation id="4938338714234463591">То ће вам омогућити да користите глас са одређеним функцијама на веб-сајтовима.</translation>
+<translation id="4938560988715301237">Све опције аутоматског попуњавања</translation>
 <translation id="4938716880833771969">Обавештења се шаљу тихо</translation>
 <translation id="4941089862236492464">Жао нам је, дошло је до проблема при дељењу ставке.</translation>
 <translation id="4944543191714094452">Пронађи на страници…</translation>
@@ -876,9 +923,11 @@
 <translation id="4989065233040279145">Изаберите где ће фајл <ph name="FILENAME" /> бити сачуван</translation>
 <translation id="4992255726304765516">Боја групе картица <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копирање лозинке</translation>
+<translation id="5012914568031465281">Праћење цене није успело.</translation>
 <translation id="5016420433031926653">Пошаљите на <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Последњих 15 минута</translation>
 <translation id="5020732097997376541">Додирните икону Објектива</translation>
+<translation id="5021500396464456616">Обратите се особи која је послала овај линк</translation>
 <translation id="5024511550058813796">Имаћете историју на свим синхронизованим уређајима, па можете да наставите оно што сте радили</translation>
 <translation id="5038113048373546701">Примајте обавештења о вестима, спорту и другим темама на основу интересовања</translation>
 <translation id="5039804452771397117">Дозволи</translation>
@@ -904,7 +953,7 @@
 <translation id="5127538504377457572">Последња активност: пре <ph name="DAYS" /> дан/а</translation>
 <translation id="5128788795241319992">Истражите нови мени</translation>
 <translation id="5132942445612118989">Синхронизујте лозинке, историју и други садржај на свим уређајима</translation>
-<translation id="5137526732000415202">Последња отворена картица на свим уређајима.</translation>
+<translation id="5141363746588976328">Сакријте картицу Падови цена на картицама</translation>
 <translation id="5145331760738811130">Изађите из пребацивача картица</translation>
 <translation id="5157638238828697074">Дошло је до грешке. Отварање апликације није успело.</translation>
 <translation id="5163417375525818870">PDF фајлови</translation>
@@ -928,15 +977,16 @@
 <translation id="5217329997012062137">Када користите Google објектив, снимак екрана странице се шаље Google-у.</translation>
 <translation id="5220945116117011963">Правите догађаје у календару од датума</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
-<translation id="5228579091201413441">Омогући синхронизацију</translation>
 <translation id="5233638681132016545">Нова картица</translation>
 <translation id="5234094073825090254">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}.}one{Обележивачи су сачувани на Google налогу, {email}.}few{Обележивачи су сачувани на Google налогу, {email}.}other{Обележивачи су сачувани на Google налогу, {email}.}}</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> сада може да користи корисничко име и лозинку када користи Google менаџер лозинки за пријављивање на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5242899254250321823">Промени лозинку на веб-сајту</translation>
 <translation id="5248640482715684545">Овај сајт покушава да отвори другу апликацију.</translation>
+<translation id="5250371859659394278">Из непознатог извора</translation>
 <translation id="5271265092610673171">{count,plural, =1{Обавезно поље је празно. Попуните га пре чувања.}one{Нека обавезна поља су празна. Попуните их пре чувања.}few{Нека обавезна поља су празна. Попуните их пре чувања.}other{Нека обавезна поља су празна. Попуните их пре чувања.}}</translation>
 <translation id="5271549068863921519">Сачувај лозинку</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) жели да се придружите групи картица. Свако са линком може да мења све картице, па будите пажљиви када се придружујете. Линк истиче за 48 сати.</translation>
 <translation id="5279214046729249716">Да, раздвоји их</translation>
 <translation id="5279600392753459966">Блокирај све</translation>
 <translation id="5282340693022193851">Да бисте добијали обавештења о праћењу цена, укључите обавештења у подешавањима iOS-а.</translation>
@@ -944,7 +994,6 @@
 <translation id="5295239312320826323">Желите да уклоните налог <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5311061401280561833">Приступ камери и микрофону је дозвољен</translation>
-<translation id="531209241254508943">група картица</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318298563956633672">Већ пратите овај производ.</translation>
@@ -955,8 +1004,9 @@
 <translation id="5352128922772839949">Сачувајте фајл</translation>
 <translation id="5355191726083956201">Побољшана заштита је укључена</translation>
 <translation id="537853552771686272">Управљајте темама и сајтовима који вас интересују</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} затворена}one{{count} затворена}few{{count} затворене}other{{count} затворених}}</translation>
+<translation id="5394975111793637642">Сакријте картицу Рецензије производа за вас</translation>
 <translation id="5395707839134961196">Сакријте детаље о претраживачу</translation>
-<translation id="541276233349960923">Користите лозинке на свим уређајима</translation>
 <translation id="5414763847370083940">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
 <translation id="5415289094036440596">Приступни кључеви не могу да се деле</translation>
 <translation id="5416455648658732408">Премести у групу картица</translation>
@@ -967,9 +1017,11 @@
 <translation id="543338862236136125">Измените лозинку</translation>
 <translation id="5433691172869980887">Корисничко име је копирано</translation>
 <translation id="5439618055789623719">Пријављени сте као <ph name="USER_EMAIL" /></translation>
+<translation id="5443636120437209490">Подразумевано боље прегледање</translation>
 <translation id="5444892875087332195">Обележивачи</translation>
 <translation id="5452354193031718372">Користите јаку лозинку:</translation>
 <translation id="5454211924362324495">Да бисте онемогућили другима да користе вашу лозинку, <ph name="BEGIN_LINK" />промените је на <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5454723301413569630">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације, укључујући</translation>
 <translation id="5457082343331641453">Додајте у претрагу</translation>
 <translation id="5457226814769348910">Отвори офлајн верзију</translation>
 <translation id="5478327362747197944">Правите догађаје у календару директно кликом на датум на веб-страници.</translation>
@@ -982,6 +1034,7 @@
 <translation id="5506763544823940561">Сачувај слику у…</translation>
 <translation id="5511959326926949696">Заштита за прегледач коју треба да користите само у крајњем случају. Треба да је користите само ако сматрате да сте можда циљани веома софистицираним сајбер нападом.</translation>
 <translation id="5513681519188741830">пре <ph name="TIME" /> с</translation>
+<translation id="5520668942302483373">Изађи из групе</translation>
 <translation id="5524590039848017563">Скупљено дугме примарне траке с алаткама</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}few{{COUNT} слабе лозинке}other{{COUNT} слабих лозинки}}</translation>
 <translation id="5532545557415295622">Дијалог за временско ограничење за неактивност</translation>
@@ -994,16 +1047,16 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="555749644339804659">Проверавају се лозинке…</translation>
 <translation id="5559567453458728487">Конвертуј мерне јединице које се налазе на вебу</translation>
 <translation id="556042886152191864">Дугме</translation>
+<translation id="5567439033041178034">САЗНАЈТЕ ВИШЕ</translation>
 <translation id="5572648434713976849">Добијаћете побољшане предлоге на траци за адресу</translation>
 <translation id="5576885723883013398">Нови прозор</translation>
 <translation id="5578795271662203820">Потражи ову слику на <ph name="SEARCH_ENGINE" />-у</translation>
 <translation id="5579012242779565775">Сакриј опцију Листа за читање</translation>
-<translation id="5581202956276923239">Пречице за сајтове</translation>
 <translation id="5585019845078534178">Картице</translation>
 <translation id="5595485650161345191">Измена адресе</translation>
+<translation id="559567008082979829">Подесите да се преузимања бришу после једног месеца.</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="560322036295180549">Искључила је организација</translation>
-<translation id="5611107723541161735">Пречице до сајтова које сте недавно посетили на овом уређају.</translation>
 <translation id="5611398002774823980">Сачувај на налогу</translation>
 <translation id="5613297089029360427">Сортирај према најновијем</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
@@ -1018,9 +1071,9 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5633237939819267663">{count,plural, =1{Обележивач је сачуван у: {title}}one{{count} обележивач је сачуван у: {title}}few{{count} обележивача су сачувана у: {title}}other{{count} обележивача је сачувано у: {title}}}</translation>
 <translation id="564170563478022912">Желите да се одјавите? Несачувани подаци налога ће бити избрисани.</translation>
 <translation id="5642707040609478753">Означи као непрочитано</translation>
-<translation id="5646284034397250191">Ознака је направљена. Датум је на чекању</translation>
 <translation id="5647096944343801045">Велика улазна тачка</translation>
 <translation id="5647193778876139879">Додирните и задржите адресу.</translation>
+<translation id="5647702255748985085">Желите да напустите групу?</translation>
 <translation id="5648166631817621825">Последњих 7 дана</translation>
 <translation id="5652623411397330904">Производи које пратите ће се приказивати овде.</translation>
 <translation id="5657156137487675418">Дозволи све колачиће</translation>
@@ -1050,7 +1103,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5740123193752401435">Претражите картице…</translation>
 <translation id="5744274077973758795">Обавештења су укључена за <ph name="FEATURE_NAME" /></translation>
 <translation id="574762237186762643">Догађаји</translation>
-<translation id="5748177854685749242">Стиже у <ph name="DATE" /></translation>
 <translation id="5749158352074143502">Наставите са овом картицом</translation>
 <translation id="5753021559215751319">Сачувај лозинку</translation>
 <translation id="5756525336488841345">Сакриј обележиваче</translation>
@@ -1061,16 +1113,19 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5779117921996157216">{count,plural, =1{Имате {count} угрожену лозинку која може да угрози безбедност. Решите проблем одмах да бисте били безбедни.}one{Имате {count} угрожену лозинку која може да угрози безбедност. Решите проблеме одмах да бисте били безбедни.}few{Имате {count} угрожене лозинке које могу да угрозе безбедност. Решите проблеме одмах да бисте били безбедни.}other{Имате {count} угрожених лозинки које могу да угрозе безбедност. Решите проблеме одмах да бисте били безбедни.}}</translation>
 <translation id="5791632441210678828">Дугме Сортирај за фид Пратите.</translation>
 <translation id="5803566855766646066">Желите ли стварно да одбаците ову нову картицу?</translation>
+<translation id="5804012843049740908">Савети за подешавање који вам помажу да искористите Chrome на најбољи начин</translation>
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5817176759448082654">Провера лозинки</translation>
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Синхронизује се…</translation>
+<translation id="583923961930319521">Користите лозинке на свим уређајима</translation>
 <translation id="5844284118433003733">Кад сте пријављени, ови подаци су повезани са вашим Google налогом да бисмо вас заштитили у свим Google услугама, на пример, повећањем заштите у Gmail-у после безбедносног инцидента.</translation>
 <translation id="5854790677617711513">Старије од 30 дана</translation>
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
+<translation id="5868644772996939262">Аутоматски попуњавајте лозинке и приступне кључеве</translation>
 <translation id="5869522115854928033">Сачуване лозинке</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Овим управља организација.</translation>
 <translation id="5888889603768021126">Пријављени сте помоћу:</translation>
@@ -1079,7 +1134,9 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5897749768294722429">Да бисте се брзо вратили на сајтове које сте посетили, синхронизујте картице и историју.</translation>
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Да бисте делили са људима у близини, дајте им да скенирају овај QR кôд помоћу камере или апликације за скенирање QR кода</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} нова картица}one{{count} нова картица}few{{count} нове картице}other{{count} нових картица}}</translation>
 <translation id="5911030830365207728">Google преводилац</translation>
+<translation id="5917913282764181683">Аутоматски бришите преузимања</translation>
 <translation id="5922999516621365983">Превуците картицу овде да бисте је закачили.</translation>
 <translation id="5936006948844852401">Управљај простором</translation>
 <translation id="5936065461722368675">Преведи целу страницу</translation>
@@ -1099,13 +1156,13 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="598634819525651074">Површина</translation>
 <translation id="5988097621740394599">Прегледајте снижења на картицама.</translation>
 <translation id="5988851877894965432">Отварајте URL-ове у Chrome-у</translation>
-<translation id="5996189683621529225">Спремно за преузимање</translation>
 <translation id="6001839398155993679">Идемо</translation>
 <translation id="6011308810877101166">Побољшајте предлоге за претрагу</translation>
 <translation id="6012140227487808125">Шифрује се…</translation>
 <translation id="6027619584715411062">Пријавите се да бисте приступали обележивачима, лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="6027945736510816438">Да ли сте мислили <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функција</translation>
+<translation id="6038823991892265570">Управљајте Google меморијским простором</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6042308850641462728">Још</translation>
@@ -1114,7 +1171,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059103953801602038">Сајтови које пратите се чувају на Google налогу. Њима можете да управљате у подешавањима Discover-а.</translation>
 <translation id="6059830886158432458">Овде контролишите приче и активности</translation>
-<translation id="6064824697233747382">Организација тражи да искључите синхронизацију.</translation>
 <translation id="6066301408025741299">Додирните да бисте отказали.</translation>
 <translation id="6074656473835429958">Добијајте обавештења</translation>
 <translation id="607620096698446287">Отпремање фајла <ph name="FILENAME" /> (<ph name="FILESIZE" />) није успело</translation>
@@ -1125,6 +1181,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6096965253650248286">Пронађених: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Пријављени сте као <ph name="USER_EMAIL" />. Отвара подешавања.</translation>
 <translation id="6103540626693881831">Шифровање на уређају</translation>
+<translation id="611361228753138223">Сајтови које сте недавно посетили на овом уређају</translation>
 <translation id="6122191549521593678">Онлајн</translation>
 <translation id="6122831415929794347">Желите да искључите Безбедносно прегледање?</translation>
 <translation id="6123514585040403489">Картице ће бити затворене</translation>
@@ -1141,10 +1198,13 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6160780110287872296">Желите да преузмете фајл?</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6168647875670665004">Предлози чланака</translation>
+<translation id="6169031022444660352">Да бисте избрисали све сачуване акредитиве, прво морате да подесите шифру на уређају.</translation>
 <translation id="6173499589275053515">Лозинка је сачувана на Google налогу, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Претражи екран</translation>
 <translation id="6187302354554850004">Последња синхрон.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Направљено <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочитано</translation>
+<translation id="6192388920090306326">Путовање у Токио</translation>
 <translation id="6193448654517602979">Изаберите картице</translation>
 <translation id="6196207969502475924">Гласовна претрага</translation>
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
@@ -1163,7 +1223,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
 <translation id="6251835855431997163">Аутоматски попуните <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Отварајте ликнове у апликацији уместо у прегледачу.</translation>
-<translation id="6266039999629596120">Треба да реагујете</translation>
 <translation id="6268773951964630964">Потражите слику коју сте копирали</translation>
 <translation id="6271462272606946663">Сакриј опцију Захтевај мобилни сајт</translation>
 <translation id="6271824294945464304">Лозинка се дели</translation>
@@ -1174,10 +1233,9 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6295751040240588413">Неважећи надимак картице</translation>
 <translation id="629730747756840877">налог</translation>
 <translation id="6301104306974789820">Добијајте обавештења о праћењу цена</translation>
-<translation id="6303969859164067831">Одјави ме и искључи синхронизацију</translation>
-<translation id="6310451064941005489">Опције за лозинке</translation>
 <translation id="6316141353357700666">Са листе која се прикаже одаберите лозинку коју желите да користите.</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
+<translation id="6331836477476466332">Безбеднији и моћнији прегледач за вас</translation>
 <translation id="6337234675334993532">Шифровање</translation>
 <translation id="633809752005859102">Нешто стварно није у реду. Порадићемо на томе.</translation>
 <translation id="6339793034470834130">Да бисте користили Веб-инспектор, повежите се са Safari-јем на рачунару помоћу кабла и приступите iPhone-у из менија за програмирање. Мени за програмирање можете да омогућите у одељку Напредно у подешавањима Safari-ја на рачунару.</translation>
@@ -1189,11 +1247,14 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="634878792104344809">Синхронизујте, лозинке, историју и друго на свим уређајима</translation>
 <translation id="6351147166808964033">Уђите у пребацивач картица</translation>
 <translation id="63519665078626091">Да бисте користили Веб-инспектор, повежите се са Safari-јем на рачунару помоћу кабла и приступите iPad-у из менија за програмирање. Мени за програмирање можете да омогућите у одељку Напредно у подешавањима Safari-ја на рачунару.</translation>
+<translation id="6355820183143562453">Сакријте картицу за праћење цена</translation>
 <translation id="6355820205320395730">Слабе лозинке лако могу да се погоде. Обавезно направите јаке лозинке. <ph name="BEGIN_LINK" />Погледајте још савета за безбедност.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Пратите <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Одаберите претраживач са листе.</translation>
+<translation id="6368102751067608420">Да бисте избрисали све податке менаџера лозинки</translation>
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6387994324662817823">Лозинке се чувају у Google менаџеру лозинки само на овом уређају.</translation>
+<translation id="6393156038355142111">Предложи јаку лозинку</translation>
 <translation id="6404422529625928907">Отворите на Google диску</translation>
 <translation id="6404511346730675251">Измена обележивача</translation>
 <translation id="6406506848690869874">Синхронизација</translation>
@@ -1204,6 +1265,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6418346271604475326">Припрема PDF датотеке</translation>
 <translation id="6429213933892582367">Отворите Опције лозинки</translation>
 <translation id="6434591244308415567">Дошло је до грешке. Пробајте поново касније.</translation>
+<translation id="6435307030888827407">Останите одјављени</translation>
 <translation id="6436318499800111867">Дељено са мном <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Откачи картицу</translation>
 <translation id="6443118737398455446">Неважећи датум истека</translation>
@@ -1225,7 +1287,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="647867789226964031">Промените лозинке</translation>
 <translation id="6494931198667773526">Завршава се</translation>
 <translation id="6495521251906266731">Одаберите шта желите да урадите са постојећим подацима прегледања на овом уређају, попут лозинки, историје и другог садржаја.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Опозови праћење овог пакета}one{Опозови праћење свих пакета}few{Опозови праћење свих пакета}other{Опозови праћење свих пакета}}</translation>
 <translation id="6503077044568424649">Најпосећенији</translation>
 <translation id="6503763061813913607">Обавештења Провере безбедности</translation>
 <translation id="6505334220040167806">Скупите групу картица.</translation>
@@ -1235,6 +1296,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6518861084553706202">Картице ће бити затворене, а избрисани подаци могу да обухватају лозинке, историју прегледања, колачиће и друго.</translation>
 <translation id="6523575793810663688">Покажи ми како</translation>
 <translation id="6524082013156754186">Сачувај на налогу</translation>
+<translation id="6524918542306337007">Режим без архивирања није доступан</translation>
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6532106788206463496">Сачувај промене</translation>
 <translation id="6536759809440150308">Отворите групу <ph name="GROUP_TITLE" />, број картица у групи је <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1271,6 +1333,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6641465290890659327">Делите копију лозинке</translation>
 <translation id="6642362222295953972">Пређите на постојећу картицу</translation>
 <translation id="6644512095122093795">Понуди да сачуваш лозинке</translation>
+<translation id="664573288952458293">Мрежа уобичајених картица</translation>
 <translation id="6645899968535965230">QR кôд: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL-ови које посећујете се шаљу Google-у да би се предвидели сајтови које ћете можда следеће посетити</translation>
 <translation id="6657585470893396449">Лозинка</translation>
@@ -1282,13 +1345,13 @@ Handoff треба да се омогући у одељку General (Опште)
 
 Када сте у режиму без архивирања, сајтови не могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа.</translation>
 <translation id="6672697278890207089">Унос приступне фразе</translation>
-<translation id="6674571176963658787">Да бисте покренули синхронизацију, унесите приступну фразу</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6680416467695217368">Прилагоди мени</translation>
 <translation id="6681586159478273915">Гласовна претрага</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} опција за начин плаћања је доступна изнад тастатуре.}one{{count} опција за начин плаћања је доступна изнад тастатуре.}few{{count} опције за начин плаћања су доступне изнад тастатуре.}other{{count} опција за начин плаћања је доступно изнад тастатуре.}}</translation>
 <translation id="6685259053455152195">Пречице за брзо мењање подешавања и коришћење функција из траке за адресу.</translation>
 <translation id="6689685206615181381">Доступан је само режим без архивирања</translation>
+<translation id="6708501134077648845">Опције за лозинке</translation>
 <translation id="6709964700841491574">Режим закључавања</translation>
 <translation id="6710079714193676716">Овим управља организација. Неке функције можда нису доступне. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Иди на фид</translation>
@@ -1296,12 +1359,16 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6722623263381062480">Примљене картице</translation>
 <translation id="6723740634201835758">На Google налогу</translation>
 <translation id="672735642903863329">Приступајте обележивачима, лозинкама и другом садржају на свим уређајима.</translation>
+<translation id="6729493062119577923">Активности дељене групе картица</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6746338529702829275">Прегледајте податке о налогу</translation>
 <translation id="6755200887046212842">Управљајте налозима</translation>
+<translation id="6755733078693946548">Приступајте лозинкама и приступним кључевима из било које апликације</translation>
 <translation id="6761393919622941301">Звук</translation>
 <translation id="6779455296366983087">Подаци прегледања ће бити избрисани</translation>
 <translation id="6790502149545262384">Ускоро ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
+<translation id="6794476726485507147">Одаберите датум и време да бисте добили обавештење о подсетнику да поново посетите ову страницу</translation>
+<translation id="6807287147325542056">Лозинке у другим апликацијама</translation>
 <translation id="681368974849482173">Ставка је направљена</translation>
 <translation id="6825078212112407882">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{{count} обележивач је сачуван на Google налогу, {email}}few{{count} обележивача су сачувана на Google налогу, {email}}other{{count} обележивача је сачувано на Google налогу, {email}}}</translation>
 <translation id="6830728435402077660">Није безбедно</translation>
@@ -1315,6 +1382,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6867400383614725881">Нова картица без архивирања</translation>
 <translation id="686831807558000905">Не пријављуј ме</translation>
 <translation id="686899695320434745">Адресе нису шифроване помоћу приступне фразе. То вам омогућава да их користите у другим Google услугама.</translation>
+<translation id="6871397658902960384">Почните да прегледате</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Сачувај лозинку на налогу}one{Сачувај лозинке на налогу}few{Сачувај лозинке на налогу}other{Сачувај лозинке на налогу}}</translation>
 <translation id="6875166646976836138">Можете и да прегледате ове ставке и управљате њима у обележивачима, на листи за читање или у менаџеру лозинки.</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтова, преузимања и додатака за које се зна да су штетни.</translation>
@@ -1335,7 +1403,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6930162026494574854">Ресетуј подешавања Преводиоца</translation>
 <translation id="6930799952781667037">Додирните да бисте променили језик на овај.</translation>
 <translation id="693761253105515415">Подесите шифру</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Желите да пратите овај пакет?}one{Желите да пратите {COUNT} пакет?}few{Желите да пратите {COUNT} пакета?}other{Желите да пратите {COUNT} пакета?}}</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6950522403736391608">Скривено</translation>
 <translation id="6964300328304469089">Тренутно је изабрано <ph name="NAME" />, <ph name="EMAIL" />. Одаберите налог.</translation>
@@ -1347,13 +1414,13 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6979737339423435258">Одувек</translation>
 <translation id="6983306615164277634">Можете и да додирнете и задржите траку за адресу да бисте променили позицију.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Пратите цене производа и добијајте обавештења када цена падне на било ком сајту</translation>
 <translation id="7004032350256606903">Организација захтева да прегледате приватно.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Подеси као подразумевано у Подешавањима…</translation>
 <translation id="7015418667643980944">Подељени приказ</translation>
 <translation id="7016070607649558507">Имате 1 слабу лозинку. Решите проблем одмах да бисте били безбедни.</translation>
 <translation id="7016958933495968912">Опције за Discover</translation>
-<translation id="7026724612456523899">Увек прати пакете</translation>
 <translation id="7029809446516969842">Лозинке</translation>
 <translation id="7035825883570480307">Желите ли да укључите обавештења?</translation>
 <translation id="7039345315346323556">Недавно</translation>
@@ -1371,6 +1438,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> се преузима…</translation>
 <translation id="7104701424653979232">Мени → Подешавања → Начини плаћања</translation>
 <translation id="7108338896283013870">Сакриј</translation>
+<translation id="7128693485119315539">Организација може да има потребу да види податке прегледања повезане са вашим управљаним налогом, попут историје прегледања и лозинки, као и да управља њима.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера је недоступна</translation>
 <translation id="7141960840225504692">Картице ће бити затворене и подаци прегледања ће бити избрисани</translation>
@@ -1398,7 +1466,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7253951228444156601">Проверавају се лозинке…</translation>
 <translation id="7261217796641151584">Дели групу</translation>
 <translation id="7266578100016339897">То вам помаже да останете организовани. То можете да промените у подешавањима у било ком тренутку.</translation>
-<translation id="7271220006028561438">Дозволи аутоматску надоградњу приступних кључева</translation>
 <translation id="7272437679830969316">Верификација идентитета није успела. Лозинка није копирана.</translation>
 <translation id="7293429513719260019">Изаберите језик</translation>
 <translation id="7300448350764260141">Додајте још један ниво заштите од онлајн претњи.</translation>
@@ -1407,7 +1474,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7336264872878993241">Проценат преузимања: <ph name="PERCENT" /></translation>
 <translation id="7346909386216857016">Важи</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
-<translation id="7359341089141286329">Аутоматски прати све откривене пакете</translation>
 <translation id="7363349185727752629">Водич за изборе у вези са приватношћу</translation>
 <translation id="736564850024123010">Промените положај траке за адресу да бисте имали прилагођени доживљај.</translation>
 <translation id="7366909168761621528">Подаци прегледања</translation>
@@ -1426,8 +1492,11 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="741204030948306876">Да, омогући</translation>
 <translation id="7417689656810783109">Преименујте групу</translation>
 <translation id="7419565702166471774">Увек користи безбедне везе</translation>
+<translation id="742001653298797675">Закажите брисање свих преузимања после једног месеца да бисте уштедели простор на телефону и заштитили приватност.</translation>
 <translation id="7425053386765766120">Додај начин плаћања…</translation>
 <translation id="7425346204213733349">Промене обележивача, историје, лозинки и других подешавања се више неће синхронизовати са Google налогом. Међутим, постојећи подаци ће остати сачувани на Google налогу.</translation>
+<translation id="742664698522525515">Желите да задржите групу?</translation>
+<translation id="7431851541687113774">Искључи откривање адресе</translation>
 <translation id="7431991332293347422">Контролишите како се историја прегледања користи за персонализовање Претраге и других услуга</translation>
 <translation id="7435356471928173109">Искључио је администратор</translation>
 <translation id="7438481509621345350">Сада ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
@@ -1442,10 +1511,9 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="746872191028309255">Купујте оно што видите помоћу камере или фото-галерије.</translation>
 <translation id="7471557245617580330">Направи нову картицу</translation>
 <translation id="7473891865547856676">Не, хвала</translation>
-<translation id="747956641630879526">Скривањем ове картице искључујете праћење пакета и уклањате све податке</translation>
+<translation id="7476548258282096076">Ова картица приказује најпосећеније сајтове.</translation>
 <translation id="7484645889979462775">Никад за овај сајт</translation>
 <translation id="7486006552035434095">Синхронизујте уређаје</translation>
-<translation id="7488874549363591659">Испоручено</translation>
 <translation id="7491131399623468277">Идите у Подешавања…</translation>
 <translation id="7498234416455752244">Наставите са изменама</translation>
 <translation id="7500244509706269886">Аутоматски попуни образац</translation>
@@ -1455,7 +1523,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7512075701202892785">Прегледач који волите сада и на iPad-у</translation>
 <translation id="7512909159512473473">Унеси приступну фразу…</translation>
 <translation id="7514365320538308">Преузми</translation>
-<translation id="7521117365186708026">Савети за подешавање који вам помажу да искористите Chrome на најбољи начин.</translation>
 <translation id="7524055474074101597">Приступајте лозинкама и другим ставкама у апликацијама.</translation>
 <translation id="75362970626182391">Нова група картица</translation>
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
@@ -1477,10 +1544,12 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7605594153474022051">Синхронизација не функционише</translation>
 <translation id="760667371114328991">Искључи обавештења за Проверу безбедности</translation>
 <translation id="7612619742409846846">Пријављени сте у Google као</translation>
+<translation id="7612849887607288481">Отвори мени за AI прототип</translation>
 <translation id="7620522820075868385">Откажи</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Угрожене лозинке}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="7640669552036055091">Картице са Android-а</translation>
+<translation id="7642277834834046856">Падови цена на картицама</translation>
 <translation id="7646263789464975852">Мени → Подешавања → Провера безбедности</translation>
 <translation id="7646772052135772216">Синхронизација лозинки не ради</translation>
 <translation id="764827086632467055">Додирните Подразумевана апликација за прегледање</translation>
@@ -1492,7 +1561,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7669493687462784703">Желите да наставите са преузимањем профила конфигурације са <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Можете да превучете улево да бисте прегледали у режиму без архивирања.</translation>
 <translation id="7679915578945954324">Адресе сајтова су копиране</translation>
-<translation id="769134787192530091">Синхронизују се картице…</translation>
 <translation id="7696316012653762532">Опције за превод странице</translation>
 <translation id="7700527812567437847">Претражи екран помоћу Google објектива</translation>
 <translation id="7701040980221191251">Ништа</translation>
@@ -1521,11 +1589,13 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7812377703891978671">Можете да приступате целокупној историји прегледања ако изаберете дугме <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Преузимања</translation>
 <translation id="7815852444315004084">Сакриј за сада</translation>
+<translation id="7825973332242257878">Групе картица</translation>
 <translation id="7831876841288640403">Изаберите положај траке за адресу који вам највише одговара.</translation>
 <translation id="7839994177130598711">Чланови породице сада могу да користе ваше корисничко име и лозинку када користе Google менаџер лозинки за пријављивање на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Ставке које сте изабрали ће бити уклоњене.</translation>
 <translation id="7841180087127694526">Потражите текст који сте копирали</translation>
 <translation id="7841418003178675048">Одаберите које картице ће се приказивати на страници нове картице.</translation>
+<translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="7846296061357476882">Google услуге</translation>
 <translation id="784934925303690534">Временски опсег</translation>
 <translation id="7851858861565204677">Други уређаји</translation>
@@ -1533,7 +1603,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7859988229622350291">Никад не преводи</translation>
 <translation id="7863211248337747225">Преузми апликацију</translation>
 <translation id="7865127013871431856">Опције превода</translation>
-<translation id="7866501058614003444">Праћење овог пакета је опозвано</translation>
 <translation id="7866872729285243843">Да би вам листа за читање била доступна на свим уређајима, укључите Листу за читање у подешавањима.</translation>
 <translation id="7874107544081154809">Аутоматски попуните образац користећи <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Имате лозинке које користите за више налога.</translation>
@@ -1551,8 +1620,8 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7933880123415105005">Претражите <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Страница је додата на листу за читање на налогу, {email}}one{{count} страница је додата на листу за читање на налогу, {email}}few{{count} странице су додате на листу за читање на налогу, {email}}other{{count} страница је додато на листу за читање на налогу, {email}}}</translation>
-<translation id="7944772052836377867">Синхронизација мора да потврди да сте то ви</translation>
 <translation id="7947953824732555851">Прихвати и пријави ме</translation>
+<translation id="7952670906562503188">Ускоро ћете избрисати приступне кључеве ({passkey_count}) и листу сајтова и апликација за које сте одабрали да никада не чувате податке за пријављивање. Налози које сте отворили за сајтове и апликације неће бити избрисани.</translation>
 <translation id="7958575506592576831">Информације о безбедности странице</translation>
 <translation id="7961015016161918242">Никад</translation>
 <translation id="7966516440812255683">Сајтови могу да користе колачиће за побољшање доживљаја прегледања, на пример, да бисте остали пријављени или да би ставке у вашој корпи за куповину остале сачуване.
@@ -1563,17 +1632,23 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="797588153137233716">Мени → Историја → Избриши податке прегледања</translation>
 <translation id="7977451675950311423">Упозорава вас ако користите лозинку која је угрожена при повреди података.</translation>
 <translation id="797824194429476746">Картице ће остати отворене на овом уређају, али ће група бити трајно избрисана.</translation>
+<translation id="797874245254030665">Приступајте лозинкама и приступним кључевима из било које апликације</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7987685713885608670">Ради додатне заштите шифрујте лозинке на уређају пре него што се сачувају у Google менаџеру лозинки.</translation>
 <translation id="798991908416757345">Групе картица нису доступне</translation>
+<translation id="7993170188789685695">Двапут додирните да бисте затворили ово обавештење.</translation>
 <translation id="7993619969781047893">Функције на неким сајтовима могу да престану са радом</translation>
 <translation id="7996239959906074962">Подесите…</translation>
 <translation id="800361585186029508">Отвара унете URL-ове у Google Chrome-у.</translation>
 <translation id="8005666035647241369">У Google менаџеру лозинки на овом уређају</translation>
+<translation id="8010488806779226127">Истражите функције које вам помажу да урадите више док прегледате</translation>
 <translation id="8011489434346330032">Веб-инспектор</translation>
+<translation id="8017015647846870183">Из Google менаџера лозинки, укључујући лозинке и приступне кључеве</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
+<translation id="8023170444051056234">Одмах ћете изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја</translation>
 <translation id="8023878949384262191">Проширује одељак.</translation>
 <translation id="8027581147000338959">Отвори у новом прозору</translation>
+<translation id="8029092694585014252">Подеси подсетник</translation>
 <translation id="8032569120109842252">Пратите</translation>
 <translation id="8035133914807600019">Нови фолдер...</translation>
 <translation id="8035412398498507358">Слике</translation>
@@ -1602,6 +1677,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8132598642024322408">Цена је <ph name="PRICE" />, а била је <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Користите јединствену лозинку за сваки сајт или апликацију. Ако неко открије лозинку коју користите за више налога, може да је употреби за приступ другим налозима. Кликните да бисте отворили веб-сајт и променили је.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} затворена картица}one{{count} затворена картица}few{{count} затворене картице}other{{count} затворених картица}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Још 1}one{Још #}few{Још #}other{Још #}}</translation>
 <translation id="8150167929304790980">Име и презиме</translation>
 <translation id="8152331954420209374">Иди на Објектив</translation>
@@ -1612,17 +1688,20 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8189615296021678665">Додирните Сачувај да бисте лако приступали овој лозинци следећи пут када се пријавите.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинку</translation>
+<translation id="8195936400946057039">Заштита од онлајн претњи</translation>
 <translation id="8202744799033457229">Приказивање историје</translation>
 <translation id="8205564605687841303">Откажи</translation>
-<translation id="820568752112382238">Најпосећенији сајтови</translation>
 <translation id="8206354486702514201">Ово подешавање примењује администратор.</translation>
 <translation id="8209050860603202033">Отвори слику</translation>
 <translation id="8211030355252954494">Примили сте лозинке за <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Веза је безбедна</translation>
 <translation id="8214293972734702249">Закачено, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Прикажи офлајн верзију на новој картици</translation>
+<translation id="8221665793629393739">Подсетник да поново посетите</translation>
 <translation id="8230355548492839438">Проналажење претходне ставке</translation>
 <translation id="8232956427053453090">Задржи податке</translation>
+<translation id="8233237502828137700">Затворите промотивни банер</translation>
+<translation id="8238711781852526820">Сакриј „Праћење цена“</translation>
 <translation id="8258999165172757081">Додато</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="82619448491672958">Прикажи друге картице</translation>
@@ -1639,15 +1718,18 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="828291969289324795">{count,plural, =1{Додај картицу у нову групу}one{Додај картице у нову групу}few{Додај картице у нову групу}other{Додај картице у нову групу}}</translation>
 <translation id="8283172974887967105">Подеси…</translation>
 <translation id="8289930144142009940">Обавештења за функцију <ph name="FEATURE_NAME" /> су искључена</translation>
+<translation id="8290077367744012649">Пратите цене са картица</translation>
 <translation id="8299417921174340354">Да бисте користили лозинке, прво морате да подесите шифру на уређају.</translation>
-<translation id="8299613349954694191">Отворите картицу без архивирања да бисте приватно прегледали веб.</translation>
 <translation id="8307481894409578819">Отпремање овог фајла није успело</translation>
 <translation id="8319076807703933069">Нова претрага</translation>
+<translation id="8320212361750431956">Недавна активност</translation>
+<translation id="833647236762414178">Правите и чувајте лозинке и приступне кључеве и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8364563001733875155">Да бисте променили PIN, прво подесите шифру на уређају.</translation>
 <translation id="8366466717204352506">Провера никада није рађена</translation>
 <translation id="8368001212524806591">Прати цену</translation>
+<translation id="8368198938968349418">Укључи аутоматско попуњавање…</translation>
 <translation id="8370406443343902172">Иди у подешавања…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Избриши адресу}one{Избриши адресе}few{Избриши адресе}other{Избриши адресе}}</translation>
 <translation id="8378714024927312812">Овим управља организација</translation>
@@ -1659,23 +1741,23 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8402673309244746971">Иди на Пратите</translation>
 <translation id="8407669440184693619">Није пронађена ниједна лозинка за овај сајт</translation>
 <translation id="8407831512155324054">Лозинке изгледају јако</translation>
+<translation id="8414283596511250978">Никада не заборавите лозинке</translation>
 <translation id="842523302461531262">Подеси као подразумевано у Подешавањима…</translation>
+<translation id="8425826545759040372">Мрежа картица без архивирања</translation>
 <translation id="8428045167754449968">Град/место</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8428634594422941299">Важи</translation>
 <translation id="8430694217306051839">Изаберите где ће фајл <ph name="FILENAME" /> бити сачуван (<ph name="FILE_SIZE" />)</translation>
+<translation id="8434837876193928924">Детаљи групе картица</translation>
 <translation id="8438566539970814960">Побољшај претраге и прегледање</translation>
 <translation id="8439758443371991593">Сакриј опцију Додај на листу за читање</translation>
 <translation id="8449869326050867919">Лозинка се дели</translation>
-<translation id="8453847087068411809">Никада не откривај пакете аутоматски</translation>
-<translation id="846158969830690371">Сазнајте да ли имате најбезбеднија подешавања или треба нешто да прегледате.</translation>
 <translation id="8473863474539038330">Адресе и друго</translation>
 <translation id="8474378002946546633">Дозволи обавештења</translation>
 <translation id="8477178913400731244">Избриши податке</translation>
 <translation id="8481184073299279701">Додирните дугме „Покрени евидентирање“ да бисте прикупљали будуће евиденције JavaScript конзоле и грешке са свих картица. Евиденције ће се прикупљати (и чувати само у меморији) све док се та страница не затвори или не додирнете дугме „Заустави евидентирање“.</translation>
 <translation id="8487667956631253959">Укључено</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Прављење линка није успело</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8505361906966222822">Сачувајте у…</translation>
@@ -1709,6 +1791,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8611922158252451755">Свако са линком може да мења све картице, па пазите шта делите. Линк истиче за 48 сати.</translation>
 <translation id="8620640915598389714">Измени</translation>
 <translation id="8625706492572042370">Измените почетни екран</translation>
+<translation id="8631370184731241854">Закључане картице без архивирања</translation>
 <translation id="8633025649649592204">Недавна активност</translation>
 <translation id="8636825310635137004">Да би вам картице биле доступне на другим уређајима, укључите синхронизацију.</translation>
 <translation id="8637431369725868556">Заштитите се од опасних сајтова.</translation>
@@ -1727,7 +1810,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8679900250380464358">Додај на Листу за читање</translation>
 <translation id="8680786875305615692">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
-<translation id="8683563711222071415">Премести адресу на налог</translation>
+<translation id="8690752723634292147">Потврда брисања</translation>
 <translation id="8692689525339542358">Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
 <translation id="8694281486652655615">Приказује ову ставку</translation>
 <translation id="8696297579102085705">Пошаљи на уређај</translation>
@@ -1740,6 +1823,8 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8717864919010420084">Копирај линк</translation>
 <translation id="8722229818691036192">Налози на овом уређају</translation>
 <translation id="8722649775263832315">Додирните или истакните да бисте претраживали помоћу Google објектива</translation>
+<translation id="8723088494871522141">Сакриј „Рецензије производа за вас“</translation>
+<translation id="872371143724482722">{COUNT,plural, =1{{COUNT} картица}one{{COUNT} картица}few{{COUNT} картице}other{{COUNT} картица}}</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8728922029615312208">Затвори све</translation>
 <translation id="8730621377337864115">Готово</translation>
@@ -1763,13 +1848,13 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8813277370772331957">Подсети ме касније</translation>
 <translation id="8814719628147284151">Настави</translation>
 <translation id="8820817407110198400">Обележивачи</translation>
+<translation id="8822421075653507124">Да би се уверила да овај уређај може безбедно да се користи, организација ће можда морати да види информације о оперативном систему, прегледачу и подешавањима, као и о софтверу који је инсталиран на уређају.</translation>
 <translation id="8825562130641217944">Приступајте обележивачима, лозинкама и другом садржају.</translation>
 <translation id="8827154289515190290">Прегледач који волите сада и на iOS-у</translation>
 <translation id="8831208860914609320">Затвори све неактивне</translation>
 <translation id="8831944931153286232">Додавање на листу за читање</translation>
 <translation id="8837654851594567190">Сортирај према објављивачу</translation>
 <translation id="8840513115188359703">Нећемо вас одјавити са Google налога.</translation>
-<translation id="8843129975935593190">Ваша организација ограничава садржај који можете да синхронизујете.</translation>
 <translation id="8848286253339013170">Слика се чува у Google сликама налога <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скривено</translation>
 <translation id="8855242995793521265">Не успорава приметно прегледач или уређај.</translation>
@@ -1780,9 +1865,11 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="886477344907998366">Приказивање обележивача</translation>
 <translation id="8869239474428371589">Користите прегледач који волите на најбољи начин</translation>
 <translation id="8871974300055371298">Подешавања садржаја</translation>
+<translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8879604564928138696">Двапут додирните да бисте пробали</translation>
 <translation id="8879952635974818770">Персонализовани садржај</translation>
 <translation id="8887595428614802520">Затвори све картице и групе</translation>
+<translation id="8891031436559779793">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
 <translation id="8893208530912252670">Видео снимци</translation>
 <translation id="8898822736010347272">Шаље Google-у URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница да би се откриле нове претње и заштитили сви широм веба.</translation>
 <translation id="890565330728586731">Назад</translation>
@@ -1791,6 +1878,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8909459547399237818">Изаберите Менаџер лозинки, па додирните Додај виџет</translation>
 <translation id="891282356902782456">Ова лозинка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Затворите све</translation>
+<translation id="892185197271200809">Сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја</translation>
 <translation id="8921902386312975525">Опције за праћење пакета</translation>
 <translation id="8923178205567790913">Лозинке</translation>
 <translation id="892776311701544612">Сазнајте више…</translation>
@@ -1822,6 +1910,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9034759925968272072">Нећемо вас одјавити са Google налога. Google налог можда има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
+<translation id="9055580485132823283">Избрисаћете лозинке ({password_count}), приступне кључеве ({passkey_count}) и листу сајтова и апликација за које сте одабрали да никада не чувате податке за пријављивање. Налози које сте отворили за сајтове и апликације неће бити избрисани.</translation>
 <translation id="9057030985451135243">Сазнајте више о дељеним групама картица</translation>
 <translation id="9057972802061533987">Праћење није успело. Дошло је до грешке.</translation>
 <translation id="9065203028668620118">Измени</translation>
@@ -1843,6 +1932,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9106655997975673326">Са телефона <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Траже угрожене лозинке</translation>
 <translation id="9124387962554796433">Google може да користи историју за персонализацију Претраге и других Google услуга.</translation>
+<translation id="9124978074365039456">Купујте, преводите и идентификујте оно што видите помоћу камере и фото-галеријe</translation>
 <translation id="9130317582644834675">Сакриј опцију Зумирај текст</translation>
 <translation id="913036870884277353">Лако отварајте линкове у другим апликацијама.</translation>
 <translation id="9137013805542155359">Прикажи оригинал</translation>
@@ -1869,6 +1959,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="939736085109172342">Нови фолдер</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
+<translation id="94870150074703282">Желите да избришете групу?</translation>
 <translation id="952704832371081537">Откажи</translation>
 <translation id="954667170699278022">Листа за читање</translation>
 <translation id="959066944189734975">Пратите <ph name="CHANNEL_NAME" /></translation>
@@ -1876,7 +1967,9 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="963102227019621224">Активности на вебу и у апликацијама</translation>
 <translation id="966593914872420832">Гласовна претрага</translation>
 <translation id="968653181266955408">Добијајте обавештења о садржају</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{Придружите се групи картица са власником <ph name="OWNER_NAME" />}=1{Придружите се групи картица са власником <ph name="OWNER_NAME" /> и још {COUNT} особом}one{Придружите се групи картица са власником <ph name="OWNER_NAME" /> и још {COUNT} особом}few{Придружите се групи картица са власником <ph name="OWNER_NAME" /> и још {COUNT} особе}other{Придружите се групи картица са власником <ph name="OWNER_NAME" /> и још {COUNT} особа}}</translation>
 <translation id="973493300226275298">Пратите цену производа у различитим онлајн продавницама. Добијаћете обавештења када цена падне.</translation>
+<translation id="973788791897303708">Ова група картица је пуна</translation>
 <translation id="976392601789283511">Поновно отварање последње затворене картице</translation>
 <translation id="981498610235328462">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени.</translation>
 <translation id="984275831282074731">Начини плаћања</translation>

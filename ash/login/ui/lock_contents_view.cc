@@ -269,8 +269,8 @@ class UserAddingScreenIndicator : public views::View {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase80, kBubbleBorderRadius));
+    SetBackground(views::CreateRoundedRectBackground(kColorAshShieldAndBase80,
+                                                     kBubbleBorderRadius));
   }
 
   UserAddingScreenIndicator(const UserAddingScreenIndicator&) = delete;
@@ -1419,7 +1419,8 @@ void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
     Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
     shelf->GetStatusAreaWidget()
         ->status_area_widget_delegate()
-        ->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged,
+                                             true);
   }
 }
 
@@ -1940,8 +1941,14 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
         }
         if (!state->show_password && !state->show_pin) {
-          CHECK(IsTimeInFuture(state->pin_available_at))
+          CHECK(state->pin_available_at.has_value())
               << "Password or pin factor must be present, if pin is not locked";
+          if (IsTimeInPast(state->pin_available_at)) {
+            LOG(WARNING)
+                << "User PIN factor should have been enabled by cryptohome at "
+                << ToString(state->pin_available_at)
+                << ". Waiting for OnPinUnlock call.";
+          }
           to_update_auth =
               screen_type_ == LockScreen::ScreenType::kLogin
                   ? LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY
@@ -2334,7 +2341,7 @@ bool LockContentsView::GetSystemInfoVisibility() const {
 void LockContentsView::UpdateSystemInfoColors() {
   for (views::View* child : system_info_->children()) {
     views::Label* label = static_cast<views::Label*>(child);
-    label->SetEnabledColorId(kColorAshTextColorPrimary);
+    label->SetEnabledColor(kColorAshTextColorPrimary);
   }
 }
 
@@ -2345,7 +2352,7 @@ void LockContentsView::UpdateBottomStatusIndicatorColors() {
     case BottomIndicatorState::kManagedDevice: {
       bottom_status_indicator_->SetIcon(chromeos::kEnterpriseIcon,
                                         cros_tokens::kCrosSysOnSurface, 20);
-      bottom_status_indicator_->SetEnabledTextColorIds(
+      bottom_status_indicator_->SetEnabledTextColors(
           cros_tokens::kCrosSysOnSurface);
       bottom_status_indicator_->SetImageLabelSpacing(16);
       break;
@@ -2353,7 +2360,7 @@ void LockContentsView::UpdateBottomStatusIndicatorColors() {
     case BottomIndicatorState::kAdbSideLoadingEnabled: {
       bottom_status_indicator_->SetIcon(kLockScreenAlertIcon,
                                         cros_tokens::kCrosSysError, 20);
-      bottom_status_indicator_->SetEnabledTextColorIds(
+      bottom_status_indicator_->SetEnabledTextColors(
           cros_tokens::kCrosSysError);
       bottom_status_indicator_->SetImageLabelSpacing(16);
       break;

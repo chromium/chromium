@@ -1,0 +1,4 @@
+Tests DOM.setFileInputFiles method with a directory.
+Test directory suffix: inspector-protocol/dom/
+File info suffix: inspector-protocol/dom/
+

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 
-import { BrowserTabsModel, CameraRollManager, FeatureStatus, FindMyDeviceStatus, Notification, PhoneStatusModel, TetherStatus } from './types.js';
+import {BrowserTabsModel, CameraRollManager, FeatureStatus, FindMyDeviceStatus, Notification, PhoneStatusModel, TetherStatus} from './types.js';
 
 /**
  * JavaScript hooks into the native WebUI handler for Phonehub tab.

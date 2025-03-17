@@ -34,7 +34,8 @@ AccessTokenFetcher::AccessTokenFetcher(
     const ScopeSet& scopes,
     TokenCallback callback,
     Mode mode,
-    bool require_sync_consent_for_scope_verification)
+    bool require_sync_consent_for_scope_verification,
+    Source token_source)
     : AccessTokenFetcher(account_id,
                          oauth_consumer_name,
                          token_service,
@@ -43,7 +44,8 @@ AccessTokenFetcher::AccessTokenFetcher(
                          scopes,
                          std::move(callback),
                          mode,
-                         require_sync_consent_for_scope_verification) {}
+                         require_sync_consent_for_scope_verification,
+                         token_source) {}
 
 AccessTokenFetcher::AccessTokenFetcher(
     const CoreAccountId& account_id,
@@ -54,7 +56,8 @@ AccessTokenFetcher::AccessTokenFetcher(
     const ScopeSet& scopes,
     TokenCallback callback,
     Mode mode,
-    bool require_sync_consent_for_scope_verification)
+    bool require_sync_consent_for_scope_verification,
+    Source token_source)
     : OAuth2AccessTokenManager::Consumer(oauth_consumer_name),
       account_id_(account_id),
       token_service_(token_service),
@@ -63,6 +66,7 @@ AccessTokenFetcher::AccessTokenFetcher(
       scopes_(scopes),
       callback_(std::move(callback)),
       mode_(mode),
+      token_source_(token_source),
       require_sync_consent_for_scope_verification_(
           require_sync_consent_for_scope_verification) {
   if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
@@ -146,7 +150,14 @@ void AccessTokenFetcher::VerifyScopeAccess() {
 bool AccessTokenFetcher::IsRefreshTokenAvailable() const {
   DCHECK_EQ(Mode::kWaitUntilRefreshTokenAvailable, mode_);
 
-  return token_service_->RefreshTokenIsAvailable(account_id_);
+  switch (token_source_) {
+    case Source::kProfile:
+      return token_service_->RefreshTokenIsAvailable(account_id_);
+#if BUILDFLAG(IS_IOS)
+    case Source::kDevice:
+      return token_service_->RefreshTokenIsAvailableOnDevice(account_id_);
+#endif
+  }
 }
 
 void AccessTokenFetcher::StartAccessTokenRequest() {
@@ -171,16 +182,29 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
     return;
   }
 
-  access_token_request_ =
-      token_service_->StartRequest(account_id_, scopes_, this);
+  switch (token_source_) {
+    case Source::kProfile:
+      access_token_request_ =
+          token_service_->StartRequest(account_id_, scopes_, this);
+      return;
+#if BUILDFLAG(IS_IOS)
+    case Source::kDevice:
+      token_service_->GetRefreshTokenFromDevice(
+          account_id_, scopes_,
+          base::BindOnce(&AccessTokenFetcher::RunCallbackAndMaybeDie,
+                         base::Unretained(this)));
+      return;
+#endif
+  }
 }
 
 void AccessTokenFetcher::OnRefreshTokenAvailable(
     const CoreAccountId& account_id) {
   DCHECK_EQ(Mode::kWaitUntilRefreshTokenAvailable, mode_);
 
-  if (!IsRefreshTokenAvailable())
+  if (!IsRefreshTokenAvailable()) {
     return;
+  }
 
   DCHECK(token_service_observation_.IsObservingSource(token_service_.get()));
   token_service_observation_.Reset();

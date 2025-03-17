@@ -52,6 +52,7 @@ source_set("profile_controller") {
     "//ios/chrome/app:app_lifetime_observer",
     "//ios/chrome/app:launch_screen_ui",
     "//ios/chrome/app:task_names",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:metrics_mediator",
     "//ios/chrome/app/spotlight",
@@ -194,6 +195,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/first_run/ui_bundled",
     "//ios/chrome/browser/first_run/ui_bundled:first_run_provider",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
@@ -203,7 +205,6 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/device_orientation",
   ]
 }
@@ -255,6 +256,7 @@ source_set("identity_confirmation_profile_agent") {
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/ui_bundled:management_util",
@@ -272,7 +274,6 @@ source_set("identity_confirmation_profile_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]

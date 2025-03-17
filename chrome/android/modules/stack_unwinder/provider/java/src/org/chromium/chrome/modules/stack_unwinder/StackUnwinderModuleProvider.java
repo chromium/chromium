@@ -6,7 +6,10 @@ package org.chromium.chrome.modules.stack_unwinder;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Installs and loads the stack unwinder module. */
+@NullMarked
 public class StackUnwinderModuleProvider {
     /** Returns true if the module is installed. */
     @CalledByNative

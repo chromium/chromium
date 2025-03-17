@@ -122,8 +122,6 @@ class SecretPortalKeyProviderTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(*mock_bus_, ShutdownAndBlock());
-
     // Shutdown the bus to ensure clean-up
     key_provider_.reset();
 
@@ -177,25 +175,26 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
 
   EXPECT_CALL(*mock_bus_, GetConnectionName()).WillOnce(Return(kBusName));
 
-  EXPECT_CALL(
-      *mock_secret_proxy_,
-      DoCallMethod(MatchMethod(SecretPortalKeyProvider::kInterfaceSecret,
-                               SecretPortalKeyProvider::kMethodRetrieveSecret),
-                   _, _))
-      .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
-        dbus::MessageReader reader(method_call);
-        base::ScopedFD write_fd;
-        EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
-        EXPECT_EQ(write(write_fd.get(), kSecret, sizeof(kSecret)),
-                  static_cast<ssize_t>(sizeof(kSecret)));
-        write_fd.reset();
+  EXPECT_CALL(*mock_secret_proxy_,
+              DoCallMethodWithErrorResponse(
+                  MatchMethod(SecretPortalKeyProvider::kInterfaceSecret,
+                              SecretPortalKeyProvider::kMethodRetrieveSecret),
+                  _, _))
+      .WillOnce(
+          Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
+                     dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+            dbus::MessageReader reader(method_call);
+            base::ScopedFD write_fd;
+            EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
+            EXPECT_EQ(write(write_fd.get(), kSecret, sizeof(kSecret)),
+                      static_cast<ssize_t>(sizeof(kSecret)));
+            write_fd.reset();
 
-        auto response = dbus::Response::CreateEmpty();
-        dbus::MessageWriter writer(response.get());
-        writer.AppendObjectPath(dbus::ObjectPath(response_path_));
-        std::move(*callback).Run(response.get());
-      }));
+            auto response = dbus::Response::CreateEmpty();
+            dbus::MessageWriter writer(response.get());
+            writer.AppendObjectPath(dbus::ObjectPath(response_path_));
+            std::move(*callback).Run(response.get(), nullptr);
+          }));
 
   bool callback_called = false;
   std::string key_tag;
@@ -204,10 +203,10 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
       [](bool& callback_called, std::string& key_tag,
          std::optional<Encryptor::Key>& key,
          const std::string& returned_key_tag,
-         std::optional<Encryptor::Key> returned_key) {
+         base::expected<Encryptor::Key, KeyProvider::KeyError> returned_key) {
         callback_called = true;
         key_tag = returned_key_tag;
-        key = std::move(returned_key);
+        key = std::move(returned_key.value());
       },
       std::ref(callback_called), std::ref(key_tag), std::ref(key)));
   base::RunLoop run_loop;

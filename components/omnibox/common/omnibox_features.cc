@@ -89,19 +89,12 @@ BASE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore,
              "AdjustLocalHistoryZeroSuggestRelevanceScore",
              DISABLED);
 
-// Enables on-clobber (i.e., when the user clears the whole omnibox text)
-// zero-prefix suggestions on the Open Web, that are contextual to the current
-// URL. Will only work if user is signed-in and syncing, or is otherwise
-// eligible to send the current page URL to the suggest server.
-BASE_FEATURE(kClobberTriggersContextualWebZeroSuggest,
-             "OmniboxClobberTriggersContextualWebZeroSuggest",
-             enable_if(!IS_IOS));
-
-// Enables on-clobber (i.e., when the user clears the whole omnibox text)
-// zero-prefix suggestions on the SRP.
-BASE_FEATURE(kClobberTriggersSRPZeroSuggest,
-             "OmniboxClobberTriggersSRPZeroSuggest",
-             enable_if(!IS_IOS));
+// Enables omnibox focus as a trigger for zero-prefix suggestions on web and
+// SRP, subject to the same requirements and conditions as on-clobber
+// suggestions.
+BASE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest,
+             "OmniboxFocusTriggersWebAndSRPZeroSuggest",
+             DISABLED);
 
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
@@ -292,11 +285,6 @@ BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
              enable_if(!IS_ANDROID && !IS_IOS));
 
-// Actions in Suggest is a data-driven feature; it's considered enabled when the
-// data is available.
-// The feature flag below helps us tune feature behaviors.
-BASE_FEATURE(kActionsInSuggest, "OmniboxActionsInSuggest", ENABLED);
-
 BASE_FEATURE(kAnimateSuggestionsListAppearance,
              "AnimateSuggestionsListAppearance",
              DISABLED);
@@ -321,7 +309,7 @@ BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", ENABLED);
 // are enabled.
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
-             DISABLED);
+             enable_if(IS_ANDROID));
 
 // Enables additional site search providers for the Site search Starter Pack.
 BASE_FEATURE(kStarterPackExpansion,
@@ -331,6 +319,9 @@ BASE_FEATURE(kStarterPackExpansion,
 // Enables an informational IPH message at the bottom of the Omnibox directing
 // users to certain starter pack engines.
 BASE_FEATURE(kStarterPackIPH, "StarterPackIPH", DISABLED);
+
+// Enables the @page starter pack scope.
+BASE_FEATURE(kStarterPackPage, "StarterPackPage", DISABLED);
 
 // If enabled, |SearchProvider| will not function in Zero Suggest.
 BASE_FEATURE(kAblateSearchProviderWarmup,
@@ -351,9 +342,6 @@ BASE_FEATURE(kUseFusedLocationProvider, "UseFusedLocationProvider", ENABLED);
 // Enables storing successful query/match in the shortcut database On Android.
 BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 
-// Enables deletion of old shortcuts on profile load.
-BASE_FEATURE(kOmniboxDeleteOldShortcuts, "OmniboxDeleteOldShortcuts", ENABLED);
-
 // When enabled, it increases ipad's zps matches limit on web,srp and ntp.
 BASE_FEATURE(kIpadZeroSuggestMatches, "IpadZeroSuggestMatches", DISABLED);
 
@@ -369,7 +357,7 @@ BASE_FEATURE(kOmniboxElegantTextHeight, "OmniboxElegantTextHeight", ENABLED);
 // selected so as to allow for easy replacement by the user. Note that even with
 // this feature flag enabled, only large screen devices with an attached
 // keyboard and precision pointer will exhibit a change in behavior.
-BASE_FEATURE(kRetainOmniboxOnFocus, "RetainOmniboxOnFocus", DISABLED);
+BASE_FEATURE(kRetainOmniboxOnFocus, "RetainOmniboxOnFocus", ENABLED);
 
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.
@@ -384,24 +372,32 @@ BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices,
              DISABLED);
 
 // (Android only) Show the search feature in the hub.
-BASE_FEATURE(kAndroidHubSearch,
-             "AndroidHubSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidHubSearch, "AndroidHubSearch", ENABLED);
 
 // When enabled, delay focusTab to prioritize navigation
 // (https://crbug.com/374852568).
 BASE_FEATURE(kPostDelayedTaskFocusTab, "PostDelayedTaskFocusTab", ENABLED);
 
+// Controls various Omnibox Diagnostics features.
+BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
+  static const base::Feature* const kFeaturesExposedToJava[] = {
+      &kDiagnostics,
+      &kOmniboxAnswerActions,
+      &kAnimateSuggestionsListAppearance,
+      &kOmniboxTouchDownTriggerForPrefetch,
+      &kOmniboxAsyncViewInflation,
+      &kRichAutocompletion,
+      &kUseFusedLocationProvider,
+      &kOmniboxElegantTextHeight,
+      &kRetainOmniboxOnFocus,
+      &kJumpStartOmnibox,
+      &kAndroidHubSearch,
+      &kPostDelayedTaskFocusTab};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
-      std::vector<const base::Feature*>{
-          {&kOmniboxAnswerActions, &kAnimateSuggestionsListAppearance,
-           &kOmniboxTouchDownTriggerForPrefetch, &kOmniboxAsyncViewInflation,
-           &kRichAutocompletion, &kUseFusedLocationProvider,
-           &kOmniboxElegantTextHeight, &kRetainOmniboxOnFocus,
-           &kJumpStartOmnibox, &kAndroidHubSearch, &kPostDelayedTaskFocusTab}});
-
+      kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());
 }
 }  // namespace android
@@ -413,6 +409,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
 // the Settings page.
 BASE_FEATURE(kEnableSearchAggregatorPolicy,
              "EnableSearchAggregatorPolicy",
-             DISABLED);
+             ENABLED);
 
 }  // namespace omnibox

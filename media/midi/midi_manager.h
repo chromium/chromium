@@ -129,6 +129,8 @@ class MIDI_EXPORT MidiManager {
  protected:
   friend class MidiManagerUsb;
 
+  virtual const char* GetBackendName() const;
+
   // Initializes the platform dependent MIDI system. MidiManager class has a
   // default implementation that synchronously calls CompleteInitialization()
   // with mojom::Result::NOT_SUPPORTED. A derived class for a specific platform

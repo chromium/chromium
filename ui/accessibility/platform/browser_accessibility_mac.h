@@ -6,17 +6,11 @@
 #define UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_MAC_H_
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 
 @class BrowserAccessibilityCocoa;
-
-namespace ui {
-
-class AXPlatformNodeMac;
-
-}  // namespace ui
 
 namespace ui {
 
@@ -58,8 +52,16 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   // Creates a new cocoa node. Returns an old node in the swap_node.
   BrowserAccessibilityCocoa* CreateNativeWrapper();
 
+  AXPlatformNodeMac* platform_node() {
+    return static_cast<AXPlatformNodeMac*>(platform_node_.get());
+  }
+
+  const AXPlatformNodeMac* platform_node() const {
+    return static_cast<const AXPlatformNodeMac*>(platform_node_.get());
+  }
+
   // Manager of the native cocoa node. We own this object.
-  raw_ptr<AXPlatformNodeMac> platform_node_ = nullptr;
+  AXPlatformNode::Pointer platform_node_;
 };
 
 }  // namespace ui

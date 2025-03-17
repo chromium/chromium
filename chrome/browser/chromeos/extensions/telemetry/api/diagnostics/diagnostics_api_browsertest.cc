@@ -8,41 +8,27 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/fake_diagnostics_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/fake_diagnostics_service_factory.h"
+#include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/fake_diagnostics_service_factory.h"
-#include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace chromeos {
 
 namespace {
-
 namespace crosapi = ::crosapi::mojom;
-
 }  // namespace
 
 class TelemetryExtensionDiagnosticsApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
   TelemetryExtensionDiagnosticsApiBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::DiagnosticsServiceAsh::Factory::SetForTesting(
         &fake_diagnostics_service_factory_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   ~TelemetryExtensionDiagnosticsApiBrowserTest() override = default;
@@ -53,38 +39,13 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
       const TelemetryExtensionDiagnosticsApiBrowserTest&) = delete;
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  template <typename Interface>
-  bool InterfaceVersionHigherOrEqual(int version) {
-    auto* lacros_service = chromeos::LacrosService::Get();
-
-    return lacros_service &&
-           lacros_service->GetInterfaceVersion<Interface>() >= version;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   void SetServiceForTesting(
       std::unique_ptr<FakeDiagnosticsService> fake_diagnostics_service_impl) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_diagnostics_service_factory_.SetCreateInstanceResponse(
         std::move(fake_diagnostics_service_impl));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    fake_diagnostics_service_impl_ = std::move(fake_diagnostics_service_impl);
-    // Replace the production DiagnosticsService with a fake for testing.
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        fake_diagnostics_service_impl_->BindNewPipeAndPassRemote());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   FakeDiagnosticsServiceFactory fake_diagnostics_service_factory_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<FakeDiagnosticsService> fake_diagnostics_service_impl_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
@@ -1141,14 +1102,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunSmartctlCheckRoutineWithPercentageUsedSuccess) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Only run this tests when Ash does support the new parameter for
-  // SmartctlCheck. The parameter is supported from version 1 onwards.
-  if (!InterfaceVersionHigherOrEqual<crosapi::DiagnosticsService>(1)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Configure FakeDiagnosticsService.
   {
     auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();

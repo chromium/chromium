@@ -9,11 +9,11 @@
 // See https://crbug.com/796644 for more historical context.
 //
 // If you don't know why windows.h is #included, there are multiple ways to find
-// out. One is to manually compile the file with `/showIncludes:user` and look at
-// the include tree that results. Another is to temporarily edit your local
+// out. One is to manually compile the file with `/showIncludes:user` and look
+// at the include tree that results. Another is to temporarily edit your local
 // windows.h (which may be in third_party\depot_tools\win_toolchain or installed
-// on the system) and add an #error directive, recompiling to see the problematic
-// #include chain.
+// on the system) and add an #error directive, recompiling to see the
+// problematic #include chain.
 
 // Avoid header guards; if this file is somehow multiply-included, we want the
 // preprocessor to check in every location. The next two lines disable PRESUBMIT

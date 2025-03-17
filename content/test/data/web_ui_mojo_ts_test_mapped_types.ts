@@ -21,3 +21,8 @@ export class TestNode {
 // concrete type in the converter. This allows impls to be hidden
 // away from users.
 export interface StringDictType extends MappedDictType {}
+
+export interface MappedOptionalContainer {
+  optionalInt: (number|null), bools: Array<(boolean | null)>,
+      optionalMap: {[key: string]: (boolean|null)},
+}

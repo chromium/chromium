@@ -109,7 +109,7 @@ privacy-sandbox-dialog-learn-more {
 }
 
 .content-area.can-scroll {
-  border-bottom-color: var(--scrollable-border-color);
+  border-bottom-color: var(--cr-scrollable-border-color);
 }
 
 ul,

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -89,7 +90,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_EOS) {
 // See http://crbug.com/663438
 TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_ZeroByteBuffer) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
 
   MojoDecoderBufferConverter converter;
   converter.ConvertAndVerify(buffer);

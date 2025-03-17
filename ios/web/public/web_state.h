@@ -176,8 +176,9 @@ class WebState : public base::SupportsUserData {
         base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
             callback,
         mojo::GenericPendingReceiver* receiver) {
-      if (auto typed_receiver = receiver->As<Interface>())
+      if (auto typed_receiver = receiver->As<Interface>()) {
         callback.Run(std::move(typed_receiver));
+      }
     }
 
     const raw_ptr<WebState> web_state_;

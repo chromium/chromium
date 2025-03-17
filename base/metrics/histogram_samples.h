@@ -73,7 +73,7 @@ class BASE_EXPORT HistogramSamples {
     // Adds a given count to the held bucket. If not possible, it returns false
     // and leaves the parts unchanged. Once extracted/disabled, this always
     // returns false. This in an "acquire/release" operation.
-    bool Accumulate(size_t bucket, HistogramBase::Count count);
+    bool Accumulate(size_t bucket, HistogramBase::Count32 count);
 
     // Returns if the sample has been "disabled" (via Extract) and thus not
     // allowed to accept further accumulation.
@@ -103,7 +103,7 @@ class BASE_EXPORT HistogramSamples {
     // to have multiple sample-sets representing subsets of the data.
     uint64_t id;
 
-    // The sum of all the entries, effectivly the sum(sample * count) for
+    // The sum of all the entries, effectively the sum(sample * count) for
     // all samples. Despite being atomic, no guarantees are made on the
     // accuracy of this value; there may be races during histogram
     // accumulation and snapshotting that we choose to accept. It should
@@ -142,10 +142,11 @@ class BASE_EXPORT HistogramSamples {
   HistogramSamples& operator=(const HistogramSamples&) = delete;
   virtual ~HistogramSamples();
 
-  virtual void Accumulate(HistogramBase::Sample value,
-                          HistogramBase::Count count) = 0;
-  virtual HistogramBase::Count GetCount(HistogramBase::Sample value) const = 0;
-  virtual HistogramBase::Count TotalCount() const = 0;
+  virtual void Accumulate(HistogramBase::Sample32 value,
+                          HistogramBase::Count32 count) = 0;
+  virtual HistogramBase::Count32 GetCount(
+      HistogramBase::Sample32 value) const = 0;
+  virtual HistogramBase::Count32 TotalCount() const = 0;
 
   bool Add(const HistogramSamples& other);
 
@@ -200,7 +201,7 @@ class BASE_EXPORT HistogramSamples {
     return meta_->sum;
 #endif
   }
-  HistogramBase::Count redundant_count() const {
+  HistogramBase::Count32 redundant_count() const {
     return subtle::NoBarrier_Load(&meta_->redundant_count);
   }
 
@@ -228,16 +229,16 @@ class BASE_EXPORT HistogramSamples {
   // Accumulates to the embedded single-sample field if possible. Returns true
   // on success, false otherwise. Sum and redundant-count are also updated in
   // the success case.
-  bool AccumulateSingleSample(HistogramBase::Sample value,
-                              HistogramBase::Count count,
+  bool AccumulateSingleSample(HistogramBase::Sample32 value,
+                              HistogramBase::Count32 count,
                               size_t bucket);
 
   // Atomically adjust the sum and redundant-count.
-  void IncreaseSumAndCount(int64_t sum, HistogramBase::Count count);
+  void IncreaseSumAndCount(int64_t sum, HistogramBase::Count32 count);
 
   // Record a negative-sample observation and the reason why.
   void RecordNegativeSample(NegativeSampleReason reason,
-                            HistogramBase::Count increment);
+                            HistogramBase::Count32 increment);
 
   AtomicSingleSample& single_sample() { return meta_->single_sample; }
   const AtomicSingleSample& single_sample() const {
@@ -251,7 +252,7 @@ class BASE_EXPORT HistogramSamples {
 
   // Writes textual description of the bucket contents (relative to histogram).
   // Output is the count in the buckets, as well as the percentage.
-  void WriteAsciiBucketValue(HistogramBase::Count current,
+  void WriteAsciiBucketValue(HistogramBase::Count32 current,
                              double scaled_sum,
                              std::string* output) const;
 
@@ -264,7 +265,7 @@ class BASE_EXPORT HistogramSamples {
 
   // Returns a string description of what goes in a given bucket.
   const std::string GetSimpleAsciiBucketRange(
-      HistogramBase::Sample sample) const;
+      HistogramBase::Sample32 sample) const;
 
   Metadata* meta() { return meta_; }
 
@@ -292,12 +293,12 @@ class BASE_EXPORT SampleCountIterator {
   // full int32_t range and bucket max is exclusive, so it needs to support
   // values up to MAXINT32+1.
   // Requires: !Done();
-  virtual void Get(HistogramBase::Sample* min,
+  virtual void Get(HistogramBase::Sample32* min,
                    int64_t* max,
-                   HistogramBase::Count* count) = 0;
-  static_assert(std::numeric_limits<HistogramBase::Sample>::max() <
+                   HistogramBase::Count32* count) = 0;
+  static_assert(std::numeric_limits<HistogramBase::Sample32>::max() <
                     std::numeric_limits<int64_t>::max(),
-                "Get() |max| must be able to hold Histogram::Sample max + 1");
+                "Get() |max| must be able to hold Histogram::Sample32 max + 1");
 
   // Get the index of current histogram bucket.
   // For histograms that don't use predefined buckets, it returns false.
@@ -307,9 +308,9 @@ class BASE_EXPORT SampleCountIterator {
 
 class BASE_EXPORT SingleSampleIterator : public SampleCountIterator {
  public:
-  SingleSampleIterator(HistogramBase::Sample min,
+  SingleSampleIterator(HistogramBase::Sample32 min,
                        int64_t max,
-                       HistogramBase::Count count,
+                       HistogramBase::Count32 count,
                        size_t bucket_index,
                        bool value_was_extracted);
   ~SingleSampleIterator() override;
@@ -317,19 +318,19 @@ class BASE_EXPORT SingleSampleIterator : public SampleCountIterator {
   // SampleCountIterator:
   bool Done() const override;
   void Next() override;
-  void Get(HistogramBase::Sample* min,
+  void Get(HistogramBase::Sample32* min,
            int64_t* max,
-           HistogramBase::Count* count) override;
+           HistogramBase::Count32* count) override;
 
   // SampleVector uses predefined buckets so iterator can return bucket index.
   bool GetBucketIndex(size_t* index) const override;
 
  private:
   // Information about the single value to return.
-  const HistogramBase::Sample min_;
+  const HistogramBase::Sample32 min_;
   const int64_t max_;
   const size_t bucket_index_;
-  HistogramBase::Count count_;
+  HistogramBase::Count32 count_;
 
   // Whether the value that this iterator holds was extracted from the
   // underlying data (i.e., reset to 0).

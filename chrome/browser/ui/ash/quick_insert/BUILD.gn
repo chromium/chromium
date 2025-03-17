@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/args.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("quick_insert") {
   sources = [
@@ -40,7 +40,7 @@ static_library("quick_insert") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs/mojom",
-    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/constants",
     "//components/favicon/core:core",
     "//components/optimization_guide/core",

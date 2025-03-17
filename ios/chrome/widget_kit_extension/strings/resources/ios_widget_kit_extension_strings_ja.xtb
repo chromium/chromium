@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1149198577555059081">検索または URL を入力</translation>
 <translation id="1324575488877808473">Chrome を開くと、よくアクセスするサイトがここに表示されます。</translation>
 <translation id="2513892053093488070">音声検索</translation>
 <translation id="2535710892645968259">ロック画面から Chrome Dino ゲームに移動できます。</translation>
@@ -15,7 +16,6 @@
 <translation id="405442954313519726">新しいタブ、シークレット モード、音声、QR コードで検索や操作を行えます。</translation>
 <translation id="4557098988773644458">Chrome Dino ゲームに移動</translation>
 <translation id="4678859075583681103">新しい検索を開始するか、iPhone のホームページからよくアクセスするサイトを開きます。</translation>
-<translation id="4954445889641385956">検索または URL を入力</translation>
 <translation id="4962772945748414465">WEBSITE_PLACEHOLDER を開く</translation>
 <translation id="5234725349196694896">Chrome でお気に入りの検索エンジンを使って検索できます。</translation>
 <translation id="5277852985315196237">検索または URL を入力</translation>

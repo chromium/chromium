@@ -35,5 +35,5 @@
     SecureContext
 ] interface MIDIConnectionEvent : Event {
     constructor(DOMString type, optional MIDIConnectionEventInit eventInitDict = {});
-    readonly attribute MIDIPort port;
+    readonly attribute MIDIPort? port;
 };

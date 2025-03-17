@@ -4,7 +4,9 @@
 
 #include "android_webview/browser/state_serializer.h"
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,61 +37,64 @@ namespace android_webview {
 
 namespace {
 
-const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_DATA_URL;
+const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_MOST_RECENT_FIRST;
 
-}  // namespace
+// The production implementation of NavigationHistory and NavigationHistorySink,
+// backed by a NavigationController.
+// This class could be split into two independent parts, one for each interface.
+class NavigationControllerWrapper : public internal::NavigationHistory,
+                                    public internal::NavigationHistorySink {
+ public:
+  explicit NavigationControllerWrapper(
+      content::NavigationController* controller)
+      : controller_(controller) {}
 
-void WriteToPickle(content::WebContents& web_contents, base::Pickle* pickle) {
-  DCHECK(pickle);
+  int GetEntryCount() override { return controller_->GetEntryCount(); }
 
-  internal::WriteHeaderToPickle(pickle);
-
-  content::NavigationController& controller = web_contents.GetController();
-  const int entry_count = controller.GetEntryCount();
-  const int selected_entry = controller.GetLastCommittedEntryIndex();
-  // A NavigationEntry will always exist, so there will always be at least 1
-  // entry.
-  DCHECK_GE(entry_count, 1);
-  DCHECK_GE(selected_entry, 0);
-  DCHECK_LT(selected_entry, entry_count);
-
-  pickle->WriteInt(entry_count);
-  pickle->WriteInt(selected_entry);
-  for (int i = 0; i < entry_count; ++i) {
-    internal::WriteNavigationEntryToPickle(*controller.GetEntryAtIndex(i),
-                                           pickle);
+  int GetCurrentEntry() override {
+    return controller_->GetLastCommittedEntryIndex();
   }
 
-  // Please update AW_STATE_VERSION and IsSupportedVersion() if serialization
-  // format is changed.
-  // Make sure the serialization format is updated in a backwards compatible
-  // way.
-}
+  content::NavigationEntry* GetEntryAtIndex(int index) override {
+    return controller_->GetEntryAtIndex(index);
+  }
 
-bool RestoreFromPickle(base::PickleIterator* iterator,
-                       content::WebContents* web_contents) {
-  DCHECK(iterator);
-  DCHECK(web_contents);
+  void Restore(int selected_entry,
+               std::vector<std::unique_ptr<content::NavigationEntry>>* entries)
+      override {
+    controller_->Restore(selected_entry, content::RestoreType::kRestored,
+                         entries);
+    controller_->LoadIfNecessary();
+  }
 
-  uint32_t state_version = internal::RestoreHeaderFromPickle(iterator);
-  if (!state_version)
-    return false;
+ private:
+  const raw_ptr<content::NavigationController> controller_;
+};
 
+bool RestoreFromPickleLegacy_VersionDataUrl(
+    uint32_t state_version,
+    base::PickleIterator* iterator,
+    internal::NavigationHistorySink& sink) {
   int entry_count = -1;
   int selected_entry = -2;  // -1 is a valid value
 
-  if (!iterator->ReadInt(&entry_count))
+  if (!iterator->ReadInt(&entry_count)) {
     return false;
+  }
 
-  if (!iterator->ReadInt(&selected_entry))
+  if (!iterator->ReadInt(&selected_entry)) {
     return false;
+  }
 
-  if (entry_count < 0)
+  if (entry_count < 0) {
     return false;
-  if (selected_entry < -1)
+  }
+  if (selected_entry < -1) {
     return false;
-  if (selected_entry >= entry_count)
+  }
+  if (selected_entry >= entry_count) {
     return false;
+  }
 
   std::unique_ptr<content::NavigationEntryRestoreContext> context =
       content::NavigationEntryRestoreContext::Create();
@@ -98,20 +103,104 @@ bool RestoreFromPickle(base::PickleIterator* iterator,
   for (int i = 0; i < entry_count; ++i) {
     entries.push_back(content::NavigationEntry::Create());
     if (!internal::RestoreNavigationEntryFromPickle(
-            state_version, iterator, entries[i].get(), context.get()))
+            state_version, iterator, entries[i].get(), context.get())) {
       return false;
+    }
   }
 
   // |web_contents| takes ownership of these entries after this call.
-  content::NavigationController& controller = web_contents->GetController();
-  controller.Restore(selected_entry, content::RestoreType::kRestored, &entries);
+  sink.Restore(selected_entry, &entries);
   DCHECK_EQ(0u, entries.size());
-  controller.LoadIfNecessary();
 
   return true;
 }
 
+}  // namespace
+
+std::optional<base::Pickle> WriteToPickle(content::WebContents& web_contents,
+                                          size_t max_size,
+                                          bool include_forward_state) {
+  NavigationControllerWrapper wrapper(&web_contents.GetController());
+  return internal::WriteToPickle(wrapper, max_size, include_forward_state);
+}
+
+bool RestoreFromPickle(base::PickleIterator* iterator,
+                       content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  NavigationControllerWrapper wrapper(&web_contents->GetController());
+  return RestoreFromPickle(iterator, wrapper);
+}
+
 namespace internal {
+
+std::optional<base::Pickle> WriteToPickle(NavigationHistory& history,
+                                          size_t max_size,
+                                          bool save_forward_history) {
+  base::Pickle pickle;
+
+  internal::WriteHeaderToPickle(AW_STATE_VERSION, &pickle);
+
+  const int entry_count = history.GetEntryCount();
+  const int selected_entry = history.GetCurrentEntry();
+  // A NavigationEntry will always exist, so there will always be at least 1
+  // entry.
+  DCHECK_GE(entry_count, 1);
+  DCHECK_GE(selected_entry, 0);
+  DCHECK_LT(selected_entry, entry_count);
+
+  // Navigations are stored in reverse order, allowing us to prioritise the more
+  // recent history entries and stop writing once we exceed the size limit. To
+  // know the size of a navigation entry we've got to serialize it, so to avoid
+  // doing unnecessary work we write the entry, then check if we've exceeded the
+  // limit
+  bool selected_entry_was_saved = false;
+
+  int start_entry = save_forward_history ? entry_count - 1 : selected_entry;
+  for (int i = start_entry; i >= 0; --i) {
+    // Note the difference between |payload_size|, used here and |size| used in
+    // the conditional below. |size| gives the total size of the Pickle, so is
+    // relevant for the size limit, |payload_size| gives the size of the data
+    // we've written (without the Pickle's internal header), so is relevant when
+    // we're copying the payload.
+    size_t payload_size_before_adding_entry = pickle.payload_size();
+
+    pickle.WriteBool(i == selected_entry);
+    internal::WriteNavigationEntryToPickle(*history.GetEntryAtIndex(i),
+                                           &pickle);
+
+    if (pickle.size() > max_size) {
+      if (i == start_entry) {
+        // If not even a single entry can fit into the max size, return nullopt.
+        return std::nullopt;
+      }
+
+      // This should happen rarely, but it's possible that the selected entry
+      // was far enough back in history that it was cut off. In this case, rerun
+      // with save_forward_history = false, ensuring that the current entry is
+      // the first one written.
+      if (!selected_entry_was_saved) {
+        return WriteToPickle(history, max_size,
+                             /* save_forward_history= */ false);
+      }
+
+      base::Pickle new_pickle;
+      new_pickle.WriteBytes(pickle.payload_bytes().subspan(
+          (size_t)0, payload_size_before_adding_entry));
+      return new_pickle;
+    }
+
+    if (i == selected_entry) {
+      selected_entry_was_saved = true;
+    }
+  }
+
+  // Please update AW_STATE_VERSION and IsSupportedVersion() if serialization
+  // format is changed.
+  // Make sure the serialization format is updated in a backwards compatible
+  // way.
+
+  return pickle;
+}
 
 void WriteHeaderToPickle(base::Pickle* pickle) {
   WriteHeaderToPickle(AW_STATE_VERSION, pickle);
@@ -123,8 +212,9 @@ void WriteHeaderToPickle(uint32_t state_version, base::Pickle* pickle) {
 
 uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator) {
   uint32_t state_version = -1;
-  if (!iterator->ReadUInt32(&state_version))
+  if (!iterator->ReadUInt32(&state_version)) {
     return 0;
+  }
 
   if (IsSupportedVersion(state_version)) {
     return state_version;
@@ -135,7 +225,8 @@ uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator) {
 
 bool IsSupportedVersion(uint32_t state_version) {
   return state_version == internal::AW_STATE_VERSION_INITIAL ||
-         state_version == internal::AW_STATE_VERSION_DATA_URL;
+         state_version == internal::AW_STATE_VERSION_DATA_URL ||
+         state_version == internal::AW_STATE_VERSION_MOST_RECENT_FIRST;
 }
 
 void WriteNavigationEntryToPickle(content::NavigationEntry& entry,
@@ -180,6 +271,57 @@ void WriteNavigationEntryToPickle(uint32_t state_version,
   // format is changed.
   // Make sure the serialization format is updated in a backwards compatible
   // way.
+}
+
+bool RestoreFromPickle(base::PickleIterator* iterator,
+                       NavigationHistorySink& sink) {
+  DCHECK(iterator);
+
+  uint32_t state_version = internal::RestoreHeaderFromPickle(iterator);
+  if (!state_version) {
+    return false;
+  }
+
+  if (state_version < AW_STATE_VERSION_MOST_RECENT_FIRST) {
+    return RestoreFromPickleLegacy_VersionDataUrl(state_version, iterator,
+                                                  sink);
+  }
+
+  std::unique_ptr<content::NavigationEntryRestoreContext> context =
+      content::NavigationEntryRestoreContext::Create();
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries;
+
+  std::optional<int> selected_entry;
+
+  while (!iterator->ReachedEnd()) {
+    bool selected = false;
+    if (!iterator->ReadBool(&selected)) {
+      return false;
+    }
+
+    entries.push_back(content::NavigationEntry::Create());
+
+    if (!internal::RestoreNavigationEntryFromPickle(
+            state_version, iterator, entries.back().get(), context.get())) {
+      return false;
+    }
+
+    if (selected) {
+      selected_entry = entries.size() - 1;
+    }
+  }
+
+  if (!selected_entry.has_value()) {
+    return false;
+  }
+
+  // The list was stored in reverse order, so flip it back (and update selected
+  // index).
+  std::reverse(entries.begin(), entries.end());
+  selected_entry = entries.size() - selected_entry.value() - 1;
+
+  sink.Restore(selected_entry.value(), &entries);
+  return true;
 }
 
 bool RestoreNavigationEntryFromPickle(

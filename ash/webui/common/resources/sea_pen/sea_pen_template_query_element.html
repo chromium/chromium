@@ -175,7 +175,7 @@
       </cr-button>
     </template>
   </div>
-  <template is="dom-if" if="[[shouldShowFreeformNavigationInfo_()]]">
+  <template is="dom-if" if="[[shouldShowFreeformNavigationInfo_(thumbnailsLoading_)]]">
     <div id="freeformInfo"
         inner-h-t-m-l="[[i18nAdvanced('seaPenFreeformNavigationDescription')]]">
     </div>

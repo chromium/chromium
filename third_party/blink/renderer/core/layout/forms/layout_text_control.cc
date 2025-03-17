@@ -62,7 +62,7 @@ void StyleDidChange(HTMLElement* inner_editor,
     // ::selection style is or was present on LayoutTextControl.
     if (new_style.HasPseudoElementStyle(kPseudoIdSelection) ||
         (old_style && old_style->HasPseudoElementStyle(kPseudoIdSelection))) {
-      inner_editor_layout_object->InvalidateSelectedChildrenOnStyleChange();
+      inner_editor_layout_object->InvalidateSelectionOnStyleChange();
     }
   }
 }
@@ -167,9 +167,9 @@ bool HasValidAvgCharWidth(const Font& font) {
 }
 
 float GetAvgCharWidth(const ComputedStyle& style) {
-  const Font& font = style.GetFont();
-  const SimpleFontData* primary_font = font.PrimaryFont();
-  if (primary_font && HasValidAvgCharWidth(font)) {
+  const Font* font = style.GetFont();
+  const SimpleFontData* primary_font = font->PrimaryFont();
+  if (primary_font && HasValidAvgCharWidth(*font)) {
     const float width = primary_font->AvgCharWidth();
     // We apply roundf() only if the fractional part of |width| is >= 0.5
     // because:

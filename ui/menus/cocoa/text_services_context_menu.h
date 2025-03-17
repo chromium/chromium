@@ -5,7 +5,7 @@
 #ifndef UI_MENUS_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
 #define UI_MENUS_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(UI_MENUS) TextServicesContextMenu
   class COMPONENT_EXPORT(UI_MENUS) Delegate {
    public:
     // Returns the selected text.
-    virtual std::u16string GetSelectedText() const = 0;
+    virtual std::u16string_view GetSelectedText() const = 0;
 
     // Returns true if |direction| should be enabled in the BiDi submenu.
     virtual bool IsTextDirectionEnabled(
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(UI_MENUS) TextServicesContextMenu
   TextServicesContextMenu& operator=(const TextServicesContextMenu&) = delete;
 
   // Methods for speaking.
-  static void SpeakText(const std::u16string& text);
+  static void SpeakText(std::u16string_view text);
   static void StopSpeaking();
   static bool IsSpeaking();
 

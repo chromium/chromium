@@ -44,10 +44,6 @@ static constexpr SkColorSpacePrimaries kP3 = SkNamedPrimaries::kSMPTE_EG_432_1;
 static constexpr SkColorSpacePrimaries kA98RGB = {
     0.64f, 0.33f, 0.21f, 0.71f, 0.15f, 0.06f, 0.3127f, 0.3290f};
 
-// 'prophoto-rgb'
-static constexpr SkColorSpacePrimaries kProPhotoRGB = {
-    0.7347f, 0.2653f, 0.1596f, 0.8404f, 0.0366f, 0.0001f, 0.34567f, 0.35850f};
-
 // 'rec2020' (as both a predefined color space and color gamut).
 // The value kRec2020 is already defined above.
 

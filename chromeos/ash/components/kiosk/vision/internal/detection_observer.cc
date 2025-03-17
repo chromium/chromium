@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/kiosk/vision/internal/detection_observer.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
@@ -38,7 +38,7 @@ bool IsSortedByTimestamp(
 }
 
 void ValidateDetection(const cros::mojom::KioskVisionDetection& detection) {
-  bool face_or_body_are_present = base::ranges::all_of(
+  bool face_or_body_are_present = std::ranges::all_of(
       detection.appearances, [](auto& a) { return a->face || a->body; });
   CHECK(face_or_body_are_present)
       << "Appearances must have either a face or body or both";
@@ -48,13 +48,13 @@ void ValidateTrack(const cros::mojom::KioskVisionTrack& track) {
   CHECK(track.appearances.size() > 0)
       << "A track's list of appearances must not be empty";
 
-  bool is_same_person = base::ranges::all_of(
+  bool is_same_person = std::ranges::all_of(
       track.appearances,
       [&](auto id) { return track.appearances[0]->person_id == id; },
       [](const auto& a) { return a->person_id; });
   CHECK(is_same_person) << "A track's appearances must all have the same id";
 
-  bool face_or_body_are_present = base::ranges::all_of(
+  bool face_or_body_are_present = std::ranges::all_of(
       track.appearances, [](auto& a) { return a->face || a->body; });
   CHECK(face_or_body_are_present)
       << "Appearances must have either a face or body or both";

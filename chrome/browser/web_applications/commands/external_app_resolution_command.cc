@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -28,7 +29,7 @@
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -51,6 +53,39 @@
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
+
+namespace {
+// Returns a copy of `other` retaining only the fields that are needed for
+// a shortcut (e.g icons), and using the document title and URL instead of
+// manifest properties. This will strip out app-like fields (e.g. file
+// handlers).
+static WebAppInstallInfo CreateInstallInfoForCreateDiy(
+    const GURL& document_url,
+    const std::u16string& document_title,
+    const WebAppInstallInfo& other) {
+  WebAppInstallInfo create_diy_app_info(
+      GenerateManifestIdFromStartUrlOnly(document_url), document_url);
+  create_diy_app_info.title = document_title;
+  create_diy_app_info.description = other.description;
+  create_diy_app_info.manifest_url = other.manifest_url;
+  create_diy_app_info.manifest_icons = other.manifest_icons;
+  create_diy_app_info.icon_bitmaps = other.icon_bitmaps;
+  create_diy_app_info.other_icon_bitmaps = other.other_icon_bitmaps;
+  create_diy_app_info.is_generated_icon = other.is_generated_icon;
+  create_diy_app_info.theme_color = other.theme_color;
+  create_diy_app_info.dark_mode_theme_color = other.dark_mode_theme_color;
+  create_diy_app_info.background_color = other.background_color;
+  create_diy_app_info.dark_mode_background_color =
+      other.dark_mode_background_color;
+  create_diy_app_info.display_mode = other.display_mode;
+  create_diy_app_info.display_override = other.display_override;
+  create_diy_app_info.additional_search_terms = other.additional_search_terms;
+  create_diy_app_info.install_url = other.install_url;
+  create_diy_app_info.is_diy_app = true;
+
+  return create_diy_app_info;
+}
+}  // namespace
 
 ExternalAppResolutionCommand::ExternalAppResolutionCommand(
     Profile& profile,
@@ -274,8 +309,8 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     UpdateWebAppInfoFromManifest(*opt_manifest, web_app_info_.get());
   }
 
-  if (install_params_->install_as_shortcut) {
-    *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
+  if (install_params_->install_as_diy) {
+    *web_app_info_ = CreateInstallInfoForCreateDiy(
         web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
         *web_app_info_);
   }

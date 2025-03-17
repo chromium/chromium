@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -34,7 +35,10 @@ source_set("content_settings") {
   allow_circular_includes_from = []
 
   if (is_android) {
-    sources += [ "request_desktop_site_web_contents_observer_android.h" ]
+    sources += [
+      "javascript_optimizer_provider_android.h",
+      "request_desktop_site_web_contents_observer_android.h",
+    ]
   } else {
     sources += [
       "generated_cookie_prefs.h",
@@ -84,7 +88,10 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    sources += [ "request_desktop_site_web_contents_observer_android.cc" ]
+    sources += [
+      "javascript_optimizer_provider_android.cc",
+      "request_desktop_site_web_contents_observer_android.cc",
+    ]
 
     deps += [
       "//chrome/browser/notifications",
@@ -97,7 +104,6 @@ source_set("impl") {
     ]
 
     deps += [
-      "//chrome/browser/pdf",
       "//chrome/browser/ui/tabs",
       "//components/guest_view/browser",
     ]
@@ -105,6 +111,10 @@ source_set("impl") {
 
   if (enable_extensions_core) {
     deps += [ "//extensions/browser" ]
+  }
+
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf" ]
   }
 }
 
@@ -222,7 +232,6 @@ if (!is_android) {
         "//components/content_settings/core/browser:cookie_settings",
         "//components/content_settings/core/common",
         "//components/nacl/common:buildflags",
-        "//components/pdf/browser",
         "//components/prefs",
         "//pdf:buildflags",
         "//ppapi/buildflags",
@@ -230,6 +239,10 @@ if (!is_android) {
         "//testing/gmock",
         "//third_party/widevine/cdm:buildflags",
       ]
+
+      if (enable_pdf) {
+        deps += [ "//components/pdf/browser" ]
+      }
     }
   }
 }
@@ -298,7 +311,9 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [ "javascript_optimizer_provider_android_unittest.cc" ]
+  } else {
     sources += [ "generated_cookie_prefs_unittest.cc" ]
 
     deps += [

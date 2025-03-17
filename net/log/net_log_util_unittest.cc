@@ -4,6 +4,7 @@
 
 #include "net/log/net_log_util.h"
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -112,8 +112,8 @@ TEST(NetLogUtil, GetNetInfoIncludesDisabledDohProviders) {
   for (bool provider_enabled : {false, true}) {
     // Get the DoH provider entry.
     auto provider_list = net::DohProviderEntry::GetList();
-    auto provider_it = base::ranges::find(provider_list, kArbitraryProvider,
-                                          &net::DohProviderEntry::provider);
+    auto provider_it = std::ranges::find(provider_list, kArbitraryProvider,
+                                         &net::DohProviderEntry::provider);
     CHECK(provider_it != provider_list.end());
     const DohProviderEntry& provider_entry = **provider_it;
 

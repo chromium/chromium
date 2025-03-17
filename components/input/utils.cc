@@ -9,6 +9,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "components/input/android/jni_headers/InputUtils_jni.h"
 #include "components/input/features.h"
 #endif
 
@@ -17,6 +18,12 @@ namespace input {
 using blink::WebInputEvent;
 using blink::mojom::InputEventResultState;
 using perfetto::protos::pbzero::ChromeLatencyInfo2;
+
+#if BUILDFLAG(IS_ANDROID)
+jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
+  return IsTransferInputToVizSupported();
+}
+#endif
 
 bool IsTransferInputToVizSupported() {
 #if BUILDFLAG(IS_ANDROID)

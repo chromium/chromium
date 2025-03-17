@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 
@@ -16,10 +15,8 @@ PaintRenderingContext2D::PaintRenderingContext2D(
     const gfx::Size& container_size,
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     PaintWorkletGlobalScope* global_scope)
-    : BaseRenderingContext2D(std::move(task_runner)),
-      paint_recorder_(container_size, this),
+    : paint_recorder_(container_size, this),
       container_size_(container_size),
       context_settings_(context_settings),
       effective_zoom_(zoom),
@@ -64,27 +61,27 @@ Color PaintRenderingContext2D::GetCurrentColor() const {
 // the canvas context transform and the CSS layout transform. That means, the
 // |effective_zoom_| is implictly applied to line width through CTM.
 double PaintRenderingContext2D::shadowBlur() const {
-  return BaseRenderingContext2D::shadowBlur() / effective_zoom_;
+  return Canvas2DRecorderContext::shadowBlur() / effective_zoom_;
 }
 
 void PaintRenderingContext2D::setShadowBlur(double blur) {
-  BaseRenderingContext2D::setShadowBlur(blur * effective_zoom_);
+  Canvas2DRecorderContext::setShadowBlur(blur * effective_zoom_);
 }
 
 double PaintRenderingContext2D::shadowOffsetX() const {
-  return BaseRenderingContext2D::shadowOffsetX() / effective_zoom_;
+  return Canvas2DRecorderContext::shadowOffsetX() / effective_zoom_;
 }
 
 void PaintRenderingContext2D::setShadowOffsetX(double x) {
-  BaseRenderingContext2D::setShadowOffsetX(x * effective_zoom_);
+  Canvas2DRecorderContext::setShadowOffsetX(x * effective_zoom_);
 }
 
 double PaintRenderingContext2D::shadowOffsetY() const {
-  return BaseRenderingContext2D::shadowOffsetY() / effective_zoom_;
+  return Canvas2DRecorderContext::shadowOffsetY() / effective_zoom_;
 }
 
 void PaintRenderingContext2D::setShadowOffsetY(double y) {
-  BaseRenderingContext2D::setShadowOffsetY(y * effective_zoom_);
+  Canvas2DRecorderContext::setShadowOffsetY(y * effective_zoom_);
 }
 
 const cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
@@ -122,19 +119,19 @@ DOMMatrix* PaintRenderingContext2D::getTransform() {
 // of the canvas happen, we must account for the effective_zoom_ such that the
 // recording canvas would have the correct behavior.
 //
-// The BaseRenderingContext2D::setTransform calls resetTransform, so integrating
-// the effective_zoom_ in here instead of setTransform, to avoid integrating it
-// twice if we have resetTransform and setTransform API calls.
+// The Canvas2DRecorderContext::setTransform calls resetTransform, so
+// integrating the effective_zoom_ in here instead of setTransform, to avoid
+// integrating it twice if we have resetTransform and setTransform API calls.
 void PaintRenderingContext2D::resetTransform() {
-  BaseRenderingContext2D::resetTransform();
-  BaseRenderingContext2D::transform(effective_zoom_, 0, 0, effective_zoom_, 0,
-                                    0);
+  Canvas2DRecorderContext::resetTransform();
+  Canvas2DRecorderContext::transform(effective_zoom_, 0, 0, effective_zoom_, 0,
+                                     0);
 }
 
 void PaintRenderingContext2D::reset() {
-  BaseRenderingContext2D::reset();
-  BaseRenderingContext2D::transform(effective_zoom_, 0, 0, effective_zoom_, 0,
-                                    0);
+  Canvas2DRecorderContext::reset();
+  Canvas2DRecorderContext::transform(effective_zoom_, 0, 0, effective_zoom_, 0,
+                                     0);
 }
 
 PaintRecord PaintRenderingContext2D::GetRecord() {

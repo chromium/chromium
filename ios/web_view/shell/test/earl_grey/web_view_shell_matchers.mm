@@ -4,11 +4,10 @@
 
 #import "ios/web_view/shell/test/earl_grey/web_view_shell_matchers.h"
 
-#import "ios/testing/earl_grey/earl_grey_test.h"
-
-#include "base/apple/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web_view/shell/shell_view_controller.h"
 
 namespace ios_web_view {

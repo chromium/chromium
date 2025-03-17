@@ -198,6 +198,7 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
   }
   float old_value = value_;
   value_ = value;
+  UpdateAccessibleValue();
   if (listener_) {
     listener_->SliderValueChanged(this, value_, old_value, reason);
   }
@@ -219,7 +220,7 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
   if (accessibility_events_enabled_) {
     if (GetWidget() && GetWidget()->IsVisible() && GetVisible()) {
       DCHECK(!pending_accessibility_value_change_);
-      UpdateAccessibleValue();
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
     } else {
       pending_accessibility_value_change_ = true;
     }
@@ -424,11 +425,10 @@ void Slider::AddedToWidget() {
 }
 
 void Slider::ApplyPendingAccessibleValueUpdate() {
-  if (!pending_accessibility_value_change_) {
+  if (!pending_accessibility_value_change_)
     return;
-  }
 
-  UpdateAccessibleValue();
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
   pending_accessibility_value_change_ = false;
 }
 
@@ -487,6 +487,8 @@ int Slider::GetSliderExtraPadding() const {
 }
 
 void Slider::UpdateAccessibleValue() {
+  views::ScopedAccessibilityEventBlocker scoped_event_blocker(
+      GetViewAccessibility());
   GetViewAccessibility().SetValue(base::UTF8ToUTF16(
       base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
 }

@@ -5,12 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:shape="rectangle"
-    app:surfaceElevation="@dimen/snackbar_background_tablet_elev">
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+  <solid android:color="?attr/colorSurface"/>
   <corners
       android:topLeftRadius="2dp"
       android:topRightRadius="2dp"/>
-</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+
+</shape>

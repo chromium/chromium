@@ -197,23 +197,15 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 
 Button::~Button() = default;
 
-void Button::SetTooltipText(const std::u16string& tooltip_text) {
-  std::u16string current_tooltip_text = GetCachedTooltipText();
-  if (tooltip_text == current_tooltip_text) {
-    return;
+void Button::OnTooltipTextChanged(const std::u16string& old_tooltip_text) {
+  View::OnTooltipTextChanged(old_tooltip_text);
+  if ((GetViewAccessibility().GetCachedName().empty() ||
+       GetViewAccessibility().GetCachedName() == old_tooltip_text) &&
+      !GetTooltipText().empty()) {
+    GetViewAccessibility().SetName(GetTooltipText());
   }
 
-  if (GetViewAccessibility().GetCachedName().empty() ||
-      GetViewAccessibility().GetCachedName() == current_tooltip_text) {
-    GetViewAccessibility().SetName(tooltip_text);
-  }
-
-  SetCachedTooltipText(tooltip_text);
-  OnSetTooltipText(tooltip_text);
-}
-
-const std::u16string& Button::GetTooltipText() const {
-  return GetCachedTooltipText();
+  OnSetTooltipText(GetTooltipText());
 }
 
 void Button::SetCallback(PressedCallback callback) {
@@ -228,7 +220,7 @@ void Button::AdjustAccessibleName(std::u16string& new_name,
 }
 
 std::u16string Button::GetAlternativeAccessibleName() const {
-  return GetCachedTooltipText();
+  return GetTooltipText();
 }
 
 Button::ButtonState Button::GetState() const {
@@ -392,7 +384,7 @@ void Button::SetHotTracked(bool is_hot_tracked) {
   }
 
   if (is_hot_tracked) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kHover, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kHover, true);
   }
 }
 
@@ -579,10 +571,6 @@ bool Button::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   // that be treated as an accelerator if there is a key click action
   // corresponding to it.
   return GetKeyClickActionForEvent(event) != KeyClickAction::kNone;
-}
-
-std::u16string Button::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
 }
 
 void Button::ShowContextMenu(const gfx::Point& p,
@@ -847,9 +835,9 @@ ButtonActionViewInterface::ButtonActionViewInterface(Button* action_view)
 void ButtonActionViewInterface::ActionItemChangedImpl(
     actions::ActionItem* action_item) {
   BaseActionViewInterface::ActionItemChangedImpl(action_item);
-  std::u16string tooltip_text = action_item->GetTooltipText();
+  std::u16string tooltip_text(action_item->GetTooltipText());
   if (!tooltip_text.empty()) {
-    action_view_->SetTooltipText(tooltip_text);
+    action_view_->SetTooltipText(std::move(tooltip_text));
   }
 }
 
@@ -870,7 +858,6 @@ ADD_PROPERTY_METADATA(bool, InstallFocusRingOnFocus)
 ADD_PROPERTY_METADATA(bool, RequestFocusOnPress)
 ADD_PROPERTY_METADATA(ButtonState, State)
 ADD_PROPERTY_METADATA(int, Tag)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(int, TriggerableEventFlags)
 END_METADATA
 

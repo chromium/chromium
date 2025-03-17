@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -71,6 +72,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     kRecordingTypeMenu,
     // The action buttons that may be available during region selection.
     kActionButtons,
+    // The search results panel that can appear when Sunfish is enabled.
+    kSearchResultsPanel,
   };
 
   // If a focusable capture session item is part of a views hierarchy, it needs
@@ -92,6 +95,10 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     // generator can be created and installed on the focus ring the next time
     // `PseudoFocus()` is called.
     void InvalidateFocusRingPath();
+
+    // Sets the focus predicate for the view so it will work with both regular
+    // focus and `PseudoFocus()`.
+    void SetUpFocusPredicate();
 
     // Shows the focus ring and triggers setting accessibility focus on the
     // associated view.
@@ -253,6 +260,23 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
                     FocusGroup focus_group,
                     bool by_key_event);
 
+  // Called when the search results panel is created. Observes the
+  // `panel_widget` so focus can be changed to a different element if the panel
+  // is destroyed while it has focus.
+  void OnSearchResultsPanelCreated(views::Widget* panel_widget);
+
+  // Called when Scanner actions are fetched, to move focus onto the first
+  // suggested action if needed after the smart actions button is removed.
+  void OnScannerActionsFetched();
+
+  // Called when the disclaimer widget is opened, to move focus onto the
+  // disclaimer if needed.
+  void OnDisclaimerWidgetOpened(views::Widget* disclaimer_widget);
+
+  // Called when the disclaimer widget is closed, to pass focus back to the
+  // focus cycler if needed.
+  void OnDisclaimerWidgetClosed();
+
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -339,8 +363,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // window is set to null.
   std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      menu_widget_observeration_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      session_widget_observeration_{this};
 
   // True if the current open menu (either settings or recording type) was open
   // by a key event (e.g. spacebar press) on their entry point button. In that

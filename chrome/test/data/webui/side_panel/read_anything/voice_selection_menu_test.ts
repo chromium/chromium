@@ -6,13 +6,14 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, stubAnimationFrame, waitForSpinnerTimeout} from './common.js';
+import {createSpeechSynthesisVoice, stubAnimationFrame} from './common.js';
 
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
@@ -61,6 +62,7 @@ suite('VoiceSelectionMenu', () => {
   }
 
   setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     voiceSelectionMenu = document.createElement('voice-selection-menu');
     document.body.appendChild(voiceSelectionMenu);
@@ -93,9 +95,9 @@ suite('VoiceSelectionMenu', () => {
       await openVoiceMenu();
 
       const dropdownItems: HTMLButtonElement = getDropdownItemForVoice(voice1);
-      assertTrue(isPositionedOnPage(dropdownItems!));
+      assertTrue(isPositionedOnPage(dropdownItems));
       assertEquals(
-          getDropdownItemForVoice(voice1)!.textContent!.trim(), voice1.name);
+          getDropdownItemForVoice(voice1).textContent!.trim(), voice1.name);
     });
 
     test('it shows language menu after button click', async () => {
@@ -108,7 +110,7 @@ suite('VoiceSelectionMenu', () => {
       await microtasksFinished();
 
       const languageMenuElement =
-          voiceSelectionMenu.shadowRoot!.querySelector<LanguageMenuElement>(
+          voiceSelectionMenu.shadowRoot.querySelector<LanguageMenuElement>(
               '#languageMenu');
       assertTrue(!!languageMenuElement);
       assertTrue(isPositionedOnPage(languageMenuElement));
@@ -154,9 +156,9 @@ suite('VoiceSelectionMenu', () => {
     assertEquals(2, groupTitles.length);
     const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
     assertEquals(4, voiceNames.length);
-    const englishVoice1 = groupTitles.item(0)!.nextElementSibling!;
+    const englishVoice1 = groupTitles.item(0).nextElementSibling!;
     const englishVoice2 = englishVoice1.nextElementSibling!;
-    const portugueseVoice1 = groupTitles.item(1)!.nextElementSibling!;
+    const portugueseVoice1 = groupTitles.item(1).nextElementSibling!;
     const portugueseVoice2 = portugueseVoice1.nextElementSibling!;
     assertEquals(googleVoice1.name, englishVoice1.textContent!.trim());
     assertEquals(
@@ -211,10 +213,10 @@ suite('VoiceSelectionMenu', () => {
           menu.querySelectorAll<HTMLElement>('.lang-group-title');
       assertEquals(2, groupTitles.length);
 
-      const firstVoice = groupTitles.item(0)!.nextElementSibling!;
+      const firstVoice = groupTitles.item(0).nextElementSibling!;
       const secondVoice = firstVoice.nextElementSibling!;
       const thirdVoice = secondVoice.nextElementSibling!;
-      const italianVoice = groupTitles.item(1)!.nextElementSibling!;
+      const italianVoice = groupTitles.item(1).nextElementSibling!;
       assertEquals(voice1.name, firstVoice.textContent!.trim());
       assertEquals(previewVoice.name, secondVoice.textContent!.trim());
       assertEquals(selectedVoice.name, thirdVoice.textContent!.trim());
@@ -230,7 +232,7 @@ suite('VoiceSelectionMenu', () => {
           menu.querySelectorAll<HTMLElement>('.lang-group-title');
       assertEquals(1, groupTitles.length);
 
-      const italianVoice = groupTitles.item(0)!.nextElementSibling!;
+      const italianVoice = groupTitles.item(0).nextElementSibling!;
       assertEquals(voice2.name, italianVoice.textContent!.trim());
     });
 
@@ -282,8 +284,8 @@ suite('VoiceSelectionMenu', () => {
               .querySelectorAll<HTMLElement>('.lang-group-title');
 
       assertEquals(
-          'English (United States)', groupTitles.item(0)!.textContent!.trim());
-      assertEquals('it-it', groupTitles.item(1)!.textContent!.trim());
+          'English (United States)', groupTitles.item(0).textContent!.trim());
+      assertEquals('it-it', groupTitles.item(1).textContent!.trim());
     });
 
     test('languages are grouped when voices have same names', async () => {
@@ -300,12 +302,12 @@ suite('VoiceSelectionMenu', () => {
       const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
 
       assertEquals(2, groupTitles.length);
-      assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
-      assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
+      assertEquals('en-us', groupTitles.item(0).textContent!.trim());
+      assertEquals('en-uk', groupTitles.item(1).textContent!.trim());
       assertEquals(3, voiceNames.length);
-      assertEquals('Google English', voiceNames.item(0)!.textContent!.trim());
-      assertEquals('Google English', voiceNames.item(1)!.textContent!.trim());
-      assertEquals('Google English', voiceNames.item(2)!.textContent!.trim());
+      assertEquals('Google English', voiceNames.item(0).textContent!.trim());
+      assertEquals('Google English', voiceNames.item(1).textContent!.trim());
+      assertEquals('Google English', voiceNames.item(2).textContent!.trim());
     });
 
     test('preview button click emits play preview event', async () => {
@@ -317,28 +319,27 @@ suite('VoiceSelectionMenu', () => {
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#preview-icon')!;
 
-      previewButton!.click();
+      previewButton.click();
       await microtasksFinished();
 
       assertTrue(clickEmitted);
     });
 
     test('spinner shows before speech starts and is hidden after', async () => {
-      // Display dropdown menu
-      voiceSelectionMenu.onVoiceSelectionMenuClick(dots);
-
+      openVoiceMenu();
       const previewButton =
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#preview-icon')!;
-      previewButton!.click();
-
-      await microtasksFinished();
-      await waitForSpinnerTimeout();
-      stubAnimationFrame();
-
       const spinnerVoice0 =
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#spinner-span')!;
+
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+      previewButton.click();
+      mockTimer.tick(spinnerDebounceTimeout);
+      mockTimer.uninstall();
+      await microtasksFinished();
 
       // The spinner should be visible and the preview button should be
       // disabled.

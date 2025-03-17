@@ -7,11 +7,13 @@ package org.chromium.android_webview;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.android_webview.media_integrity.AwMediaIntegrityServiceFactory;
+import org.chromium.android_webview.payments.AwPaymentRequestFactory;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.WebViewMediaIntegrityService;
 import org.chromium.components.webauthn.AuthenticatorFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.services.service_manager.InterfaceRegistry;
 
 /** Registers mojo interface implementations exposed to C++ code at the Android Webview layer. */
@@ -33,6 +35,8 @@ class AwInterfaceRegistrar {
             registry.addInterface(
                     WebViewMediaIntegrityService.MANAGER,
                     new AwMediaIntegrityServiceFactory(renderFrameHost));
+            registry.addInterface(
+                    PaymentRequest.MANAGER, new AwPaymentRequestFactory(renderFrameHost));
         }
     }
 }

@@ -17,13 +17,15 @@ namespace prerender {
 // static
 NoStatePrefetchContents* ChromeNoStatePrefetchContentsDelegate::FromWebContents(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
   NoStatePrefetchManager* no_state_prefetch_manager =
       NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (!no_state_prefetch_manager)
+  if (!no_state_prefetch_manager) {
     return nullptr;
+  }
   return no_state_prefetch_manager->GetNoStatePrefetchContents(web_contents);
 }
 

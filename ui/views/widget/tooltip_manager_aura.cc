@@ -115,7 +115,7 @@ void TooltipManagerAura::UpdateTooltip() {
 void TooltipManagerAura::UpdateTooltipForFocus(View* view) {
   aura::Window* root_window = GetWindow()->GetRootWindow();
   if (wm::GetTooltipClient(root_window)) {
-    tooltip_text_ = view->GetTooltipText(gfx::Point());
+    tooltip_text_ = view->GetRenderedTooltipText(gfx::Point());
 
     auto bounds = gfx::Rect(gfx::Point(), view->size());
     auto root_bounds = View::ConvertRectToTarget(
@@ -157,7 +157,7 @@ void TooltipManagerAura::UpdateTooltipForTarget(View* target,
   if (target) {
     gfx::Point view_point = point;
     View::ConvertPointFromWidget(target, &view_point);
-    tooltip_text_ = target->GetTooltipText(view_point);
+    tooltip_text_ = target->GetRenderedTooltipText(view_point);
   } else {
     tooltip_text_.clear();
   }

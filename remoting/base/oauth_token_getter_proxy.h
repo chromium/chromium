@@ -38,10 +38,12 @@ class OAuthTokenGetterProxy : public OAuthTokenGetter {
   // OAuthTokenGetter overrides.
   void CallWithToken(TokenCallback on_access_token) override;
   void InvalidateCache() override;
+  base::WeakPtr<OAuthTokenGetter> GetWeakPtr() override;
 
  private:
   base::WeakPtr<OAuthTokenGetter> token_getter_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<OAuthTokenGetterProxy> weak_factory_{this};
 };
 
 }  // namespace remoting

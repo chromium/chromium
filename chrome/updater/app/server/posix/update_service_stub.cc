@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/server/posix/update_service_stub.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -16,12 +17,11 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom-forward.h"
 #include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/ipc/ipc_security.h"
+#include "chrome/updater/mojom/updater_service.mojom-forward.h"
 #include "chrome/updater/registration_data.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
@@ -171,9 +171,10 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     impl_->RunPeriodicTasks(std::move(callback));
   }
 
-  void FetchPolicies(FetchPoliciesCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    impl_->FetchPolicies(std::move(callback));
+    impl_->FetchPolicies(reason, std::move(callback));
   }
 
   void UpdateAll(UpdateAllCallback callback) override {
@@ -254,10 +255,11 @@ void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
           .Then(task_end_listener_));
 }
 
-void UpdateServiceStub::FetchPolicies(FetchPoliciesCallback callback) {
+void UpdateServiceStub::FetchPolicies(policy::PolicyFetchReason reason,
+                                      FetchPoliciesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  impl_->FetchPolicies(std::move(callback).Then(task_end_listener_));
+  impl_->FetchPolicies(reason, std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::RegisterApp(mojom::RegistrationRequestPtr request,
@@ -275,9 +277,9 @@ void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
       base::BindOnce(
           [](const std::vector<updater::UpdateService::AppState>& app_states) {
             std::vector<mojom::AppStatePtr> app_states_mojom;
-            base::ranges::transform(app_states,
-                                    std::back_inserter(app_states_mojom),
-                                    &MakeMojoAppState);
+            std::ranges::transform(app_states,
+                                   std::back_inserter(app_states_mojom),
+                                   &MakeMojoAppState);
             return app_states_mojom;
           })
           .Then(std::move(callback))

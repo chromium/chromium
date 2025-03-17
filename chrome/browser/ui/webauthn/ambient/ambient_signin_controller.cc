@@ -155,10 +155,10 @@ AmbientSigninController::AmbientSigninController(
   tabs::TabInterface* tab_interface_ = tabs::TabInterface::GetFromContents(
       WebContents::FromRenderFrameHost(render_frame_host));
   tab_subscriptions_.push_back(
-      tab_interface_->RegisterWillEnterBackground(base::BindRepeating(
+      tab_interface_->RegisterWillDeactivate(base::BindRepeating(
           &AmbientSigninController::TabWillEnterBackground, GetWeakPtr())));
   tab_subscriptions_.push_back(
-      tab_interface_->RegisterDidEnterForeground(base::BindRepeating(
+      tab_interface_->RegisterDidActivate(base::BindRepeating(
           &AmbientSigninController::TabDidEnterForeground, GetWeakPtr())));
 }
 

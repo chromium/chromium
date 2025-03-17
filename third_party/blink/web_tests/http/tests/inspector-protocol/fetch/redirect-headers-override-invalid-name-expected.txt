@@ -1,0 +1,13 @@
+Tests that invalid header name results in an error
+{
+    error : {
+        code : -32602
+        message : Invalid header: X-DevTools-Test@
+    }
+    id : <number>
+    sessionId : <string>
+}
+X-DevTools-Test@: after redirect:unset
+X-DevTools-Test@: <not set>
+
+

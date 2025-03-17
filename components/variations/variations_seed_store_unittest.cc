@@ -41,10 +41,10 @@
 #include "components/variations/android/variations_seed_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace variations {
 namespace {
@@ -172,6 +172,14 @@ std::string Base64DecodeData(const std::string& data) {
 // Returns true if a local state seed should be used.
 bool ShouldUseLocalStateSeed() {
   return base::FieldTrialList::FindFullName(kSeedFileTrial) != kSeedFilesGroup;
+}
+
+// Loads the seed from the seed store and returns true if successful.
+bool MakeSeedStoreLoadStoredSeed(TestVariationsSeedStore& seed_store) {
+  VariationsSeed seed;
+  std::string seed_data;
+  std::string seed_signature;
+  return seed_store.LoadSeed(&seed, &seed_data, &seed_signature);
 }
 
 // Sample seeds and the server produced delta between them to verify that the
@@ -371,7 +379,35 @@ class LoadSeedDataGroupTest
   ~LoadSeedDataGroupTest() override = default;
 };
 
-class LoadSeedDataAllGroupsTest : public LoadSeedDataGroupTest {};
+class LoadSeedDataAllGroupsTest : public LoadSeedDataGroupTest {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(base::Base64Decode(kTestSeedData.base64_uncompressed_data,
+                                   &seed_data_));
+  }
+
+  // Stores the seed data to the given seed store.
+  // If |test_signature| is empty, the default test signature is used.
+  // If |seed_data| is nullptr, the test's default seed data is used.
+  void StoreValidatedSeed(
+      TestVariationsSeedStore& seed_store,
+      std::string_view test_signature = kTestSeedData.base64_signature,
+      const std::string* seed_data = nullptr) {
+    if (seed_data == nullptr) {
+      seed_data = &seed_data_;
+    }
+    ASSERT_TRUE(seed_data != nullptr);
+    VariationsSeed seed;
+    ASSERT_TRUE(seed.ParseFromString(*seed_data));
+    std::string compressed_seed_data = Gzip(SerializeSeed(seed));
+    std::string base64_seed_data = SerializeSeedBase64(seed);
+    seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
+        compressed_seed_data, base64_seed_data);
+    prefs_.SetString(prefs::kVariationsSeedSignature, test_signature);
+  }
+
+  std::string seed_data_;
+};
 class LoadSeedDataControlAndDefaultGroupsTest : public LoadSeedDataGroupTest {};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -591,11 +627,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_CorruptGzip) {
       compressed_seed, base::Base64Encode(compressed_seed));
 
   base::HistogramTester histogram_tester;
-  VariationsSeed loaded_seed;
-  std::string loaded_seed_data;
-  std::string loaded_base64_seed_signature;
-  ASSERT_FALSE(seed_store.LoadSeed(&loaded_seed, &loaded_seed_data,
-                                   &loaded_base64_seed_signature));
+  ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
 
   // Verify metrics and prefs.
   histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
@@ -647,11 +679,7 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
       "invalid seed data", "invalid seed data");
 
   base::HistogramTester histogram_tester;
-  VariationsSeed loaded_seed;
-  std::string loaded_seed_data;
-  std::string loaded_base64_seed_signature;
-  ASSERT_FALSE(seed_store.LoadSeed(&loaded_seed, &loaded_seed_data,
-                                   &loaded_base64_seed_signature));
+  ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
 
   // Verify metrics and prefs.
   histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
@@ -713,8 +741,9 @@ class StoreSeedDataGroupTest
         RequireSynchronousStores());
     // If we're testing synchronous stores, we shouldn't issue a Run() call so
     // that the test verifies that the operation completed synchronously.
-    if (!RequireSynchronousStores())
+    if (!RequireSynchronousStores()) {
       run_loop.Run();
+    }
     return store_success_;
   }
 
@@ -1753,137 +1782,88 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
       "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
 }
 
-TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignature) {
-  // A valid seed and signature pair generated using the server's private key.
-  const std::string uncompressed_base64_seed_data =
-      kTestSeedData.base64_uncompressed_data;
-  const std::string base64_seed_signature = kTestSeedData.base64_signature;
+TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureIsValid) {
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
+                                     /*signature_verification_needed=*/true);
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
 
-  std::string base64_seed_data;
-  std::string compressed_seed_data;
-  {
-    std::string seed_data;
-    ASSERT_TRUE(base::Base64Decode(uncompressed_base64_seed_data, &seed_data));
-    VariationsSeed seed;
-    ASSERT_TRUE(seed.ParseFromString(seed_data));
-    compressed_seed_data = Gzip(SerializeSeed(seed));
-    base64_seed_data = SerializeSeedBase64(seed);
-  }
+  StoreValidatedSeed(seed_store);
 
-  // The above inputs should be valid.
-  {
-    TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
-                                       /*signature_verification_needed=*/true);
-    ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-    seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
-        compressed_seed_data, base64_seed_data);
-    prefs_.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(MakeSeedStoreLoadStoredSeed(seed_store));
+  histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
+                                      VerifySignatureResult::VALID_SIGNATURE,
+                                      1);
+}
 
-    base::HistogramTester histogram_tester;
-    VariationsSeed seed;
-    std::string seed_data;
-    std::string seed_signature;
-    ASSERT_TRUE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
-    histogram_tester.ExpectUniqueSample(
-        "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
-            VerifySignatureResult::VALID_SIGNATURE),
-        1);
-  }
+TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureIsMissing) {
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
+                                     /*signature_verification_needed=*/true);
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
 
-  // If there's no signature, the corresponding result should be returned.
-  {
-    TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
-                                       /*signature_verification_needed=*/true);
-    ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-    seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
-        compressed_seed_data, base64_seed_data);
-    prefs_.SetString(prefs::kVariationsSeedSignature, std::string());
+  StoreValidatedSeed(seed_store, /*test_signature=*/std::string());
 
-    base::HistogramTester histogram_tester;
-    VariationsSeed seed;
-    std::string seed_data;
-    std::string seed_signature;
-    ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
-    histogram_tester.ExpectUniqueSample(
-        "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
-            VerifySignatureResult::MISSING_SIGNATURE),
-        1);
-  }
+  base::HistogramTester histogram_tester;
+  ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
+  histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
+                                      VerifySignatureResult::MISSING_SIGNATURE,
+                                      1);
+}
 
-  // Using non-base64 encoded value as signature should fail.
-  {
-    TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
-                                       /*signature_verification_needed=*/true);
-    ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-    seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
-        compressed_seed_data, base64_seed_data);
-    prefs_.SetString(prefs::kVariationsSeedSignature,
-                     "not a base64-encoded string");
+TEST_P(LoadSeedDataAllGroupsTest,
+       VerifySeedSignatureSignatureNotBase64Encoded) {
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
+                                     /*signature_verification_needed=*/true);
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
 
-    base::HistogramTester histogram_tester;
-    VariationsSeed seed;
-    std::string seed_data;
-    std::string seed_signature;
-    ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
-    histogram_tester.ExpectUniqueSample(
-        "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
-            VerifySignatureResult::DECODE_FAILED),
-        1);
-  }
+  StoreValidatedSeed(seed_store,
+                     /*test_signature=*/"not a base64-encoded string");
 
+  base::HistogramTester histogram_tester;
+  ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
+  histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
+                                      VerifySignatureResult::DECODE_FAILED, 1);
+}
+
+TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureDoesNotMatch) {
   // Using a different signature (e.g. the base64 seed data) should fail.
   // OpenSSL doesn't distinguish signature decode failure from the
   // signature not matching.
-  {
-    TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
-                                       /*signature_verification_needed=*/true);
-    ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-    seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
-        compressed_seed_data, base64_seed_data);
-    prefs_.SetString(prefs::kVariationsSeedSignature, base64_seed_data);
+  VariationsSeed seed;
+  ASSERT_TRUE(seed.ParseFromString(seed_data_));
+  std::string base64_seed_data = SerializeSeedBase64(seed);
 
-    base::HistogramTester histogram_tester;
-    VariationsSeed seed;
-    std::string seed_data;
-    std::string seed_signature;
-    ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
-    histogram_tester.ExpectUniqueSample(
-        "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
-            VerifySignatureResult::INVALID_SEED),
-        1);
-  }
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
+                                     /*signature_verification_needed=*/true);
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
+  StoreValidatedSeed(seed_store, /*test_signature=*/base64_seed_data);
 
-  // Using a different seed should not match the signature.
-  {
-    std::string seed_data;
-    ASSERT_TRUE(base::Base64Decode(uncompressed_base64_seed_data, &seed_data));
-    VariationsSeed wrong_seed;
-    ASSERT_TRUE(wrong_seed.ParseFromString(seed_data));
-    (*wrong_seed.mutable_study(0)->mutable_name())[0] = 'x';
-    const std::string wrong_seed_data = SerializeSeed(wrong_seed);
-
-    TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
-                                       /*signature_verification_needed=*/true);
-    ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-    seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
-        Gzip(wrong_seed_data), GzipAndBase64Encode(wrong_seed_data));
-    prefs_.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
-
-    base::HistogramTester histogram_tester;
-    VariationsSeed seed;
-    std::string seed_signature;
-    ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
-    histogram_tester.ExpectUniqueSample(
-        "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
-            VerifySignatureResult::INVALID_SEED),
-        1);
-  }
+  base::HistogramTester histogram_tester;
+  ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
+  histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
+                                      VerifySignatureResult::INVALID_SEED, 1);
 }
+
+TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSeedDoesNotMatch) {
+  const std::string base64_seed_signature = kTestSeedData.base64_signature;
+
+  VariationsSeed wrong_seed;
+  ASSERT_TRUE(wrong_seed.ParseFromString(seed_data_));
+  (*wrong_seed.mutable_study(0)->mutable_name())[0] = 'x';
+  const std::string wrong_seed_data = SerializeSeed(wrong_seed);
+
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
+                                     /*signature_verification_needed=*/true);
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
+  StoreValidatedSeed(seed_store, /*test_signature=*/base64_seed_signature,
+                     /*seed_data=*/&wrong_seed_data);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
+  histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
+                                      VerifySignatureResult::INVALID_SEED, 1);
+}
+
 class VariationsSeedStoreTestAllGroups
     : public SeedStoreGroupTestBase,
       public ::testing::WithParamInterface<std::string_view> {
@@ -2140,7 +2120,7 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const featured::SeedDetails CreateDummySafeSeed(
     ClientFilterableState* client_state,
     base::Time fetch_time_to_store) {
@@ -2311,6 +2291,6 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, SendSafeSeedToPlatform_FailTwoAttempts) {
 
   ash::featured::FeaturedClient::Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace variations

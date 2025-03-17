@@ -14,9 +14,9 @@ namespace ui {
 // Data for AXTree checks that run when DHECKs are on.
 // TODO(accessibility) Use the mojo struct directly in C++ code to avoid having
 // to typemap it.
-struct AX_BASE_EXPORT AXTreeChecks {
+struct AX_BASE_EXPORT AXTreeChecks final {
   AXTreeChecks() = default;
-  virtual ~AXTreeChecks() = default;
+  ~AXTreeChecks() = default;
 
   // If non-zero, provides the expected number of nodes in the tree after the
   // update is processed. This can be used to help check for mismatched trees.

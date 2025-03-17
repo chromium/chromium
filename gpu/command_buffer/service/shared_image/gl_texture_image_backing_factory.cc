@@ -20,61 +20,6 @@
 namespace gpu {
 namespace {
 
-// Serves as reverse-killswitch for rolling out elimination of SCANOUT support.
-// TODO(crbug.com/330865436): Eliminate post safe-rollout.
-BASE_FEATURE(kSupportScanoutInGLTextureImageBacking,
-             "SupportScanoutInGLTextureImageBacking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Determines whether to support SCANOUT.
-// TODO(crbug.com/330865436): Eliminate once killswitches checked within this
-// function roll out safely.
-bool SupportScanout() {
-  // If any of the below clients are not guarding their addition of SCANOUT
-  // usage by SCANOUT support being present in SharedImageCapabilities, then
-  // GLTextureImageBacking *must* accept SCANOUT usage for this use case.
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kCameraVideoFrameHandlerAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_OZONE)
-  // If SharedImageCapabilities is computing SCANOUT support on Ozone via the
-  // legacy (and too generous) native pixmaps being supported rather than by
-  // overlays being supported, GLTextureImageBacking also must accept SCANOUT
-  // usage as the above clients will pass SCANOUT even if they are guarding
-  // adding SCANOUT usage by support being present in SharedImageCapabilities.
-  if (!base::FeatureList::IsEnabled(
-          features::kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported)) {
-    return true;
-  }
-#endif
-
-  return base::FeatureList::IsEnabled(kSupportScanoutInGLTextureImageBacking);
-}
-
 constexpr SharedImageUsageSet kWebGPUUsages =
     SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
@@ -86,7 +31,7 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
     SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     kWebGPUUsages;
@@ -147,20 +92,6 @@ GLTextureImageBackingFactory::CreateSharedImage(
                                    usage, std::move(debug_label), pixel_data);
 }
 
-std::unique_ptr<SharedImageBacking>
-GLTextureImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED();
-}
-
 bool GLTextureImageBackingFactory::IsSupported(
     SharedImageUsageSet usage,
     viz::SharedImageFormat format,
@@ -183,34 +114,10 @@ bool GLTextureImageBackingFactory::IsSupported(
   if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }
-  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT) && !SupportScanout()) {
-    return false;
-  }
 
   if (usage.Has(SHARED_IMAGE_USAGE_CPU_UPLOAD)) {
     if (!supports_cpu_upload_ ||
         !GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
-      return false;
-    }
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
-    // GLTextureImageBacking can't actually support scanout on any platform.
-    // Historically GLImageBacking did accept scanout usage for shared memory
-    // GpuMemoryBuffers which is still replied upon for the following:
-    // - Linux and Chrome OS on X11 have no real scanout support but clients add
-    //   the usage.
-    // - Windows can upload pixels directly from shared memory to a D3D swap
-    //   chain for overlays.
-    // TODO(crbug.com/330865436): Eliminate this code once the above
-    // unconditional rejection of SCANOUT usage rolls out definitively.
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-      return false;
-    }
-#endif
-  } else {
-    // TODO(crbug.com/330865436): Eliminate this code once the above
-    // unconditional rejection of SCANOUT usage rolls out definitively.
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       return false;
     }
   }
@@ -259,13 +166,17 @@ bool GLTextureImageBackingFactory::IsSupported(
     }
   }
 
-  // Only supports WebGPU usages on Dawn's OpenGLES backend.
+  // Only supports WebGPU usages on ANGLE/GL on a Skia/GL context
   if (usage.HasAny(kWebGPUUsages)) {
-    if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES ||
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+    if (gr_context_type != GrContextType::kGL ||
         gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
         gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {
       return false;
     }
+#else
+    return false;
+#endif
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);

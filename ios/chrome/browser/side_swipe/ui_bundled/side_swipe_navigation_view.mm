@@ -29,10 +29,12 @@ typedef struct {
 
 CGFloat MapValueToRange(FloatRange from, FloatRange to, CGFloat value) {
   DCHECK(from.min < from.max);
-  if (value <= from.min)
+  if (value <= from.min) {
     return to.min;
-  if (value >= from.max)
+  }
+  if (value >= from.max) {
     return to.max;
+  }
   const CGFloat fromDst = from.max - from.min;
   const CGFloat toDst = to.max - to.min;
   return to.min + ((value - from.min) / fromDst) * toDst;
@@ -67,7 +69,7 @@ const NSTimeInterval kSelectionAnimationDuration = 0.5;
 UIColor* SelectionCircleColor() {
   return [UIColor colorNamed:kTextfieldBackgroundColor];
 }
-}
+}  // namespace
 
 @interface SideSwipeNavigationView () {
  @private
@@ -155,16 +157,18 @@ UIColor* SelectionCircleColor() {
   CGFloat padding = floor(std::abs(currentPoint.x - half) / half);
 
   // Push towards the edges.
-  if (currentPoint.x > half)
+  if (currentPoint.x > half) {
     currentPoint.x += padding;
-  else
+  } else {
     currentPoint.x -= padding;
+  }
 
   // But don't go past the edges.
-  if (currentPoint.x < 0)
+  if (currentPoint.x < 0) {
     currentPoint.x = 0;
-  else if (currentPoint.x > width)
+  } else if (currentPoint.x > width) {
     currentPoint.x = width;
+  }
 
   return currentPoint;
 }
@@ -407,6 +411,15 @@ UIColor* SelectionCircleColor() {
                        withDirection:direction
                         withDuration:kSelectionAnimationDuration];
   }
+}
+
+- (void)moveTargetViewOnScreenWithAnimation {
+  // NO-OP
+}
+
+- (void)moveTargetViewOffscreenInDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  // NO-OP
 }
 
 - (void)animateTargetViewCompleted:(BOOL)completed

@@ -4,11 +4,11 @@
 
 #include "components/safe_browsing/core/browser/db/hash_prefix_map.h"
 
+#include <algorithm>
 #include <type_traits>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -90,7 +90,7 @@ TEST_F(HashPrefixMapTest, WriteMultipleFiles) {
   EXPECT_EQ(map.IsValid(), APPLY_UPDATE_SUCCESS);
 
   auto hash_files = file_format.hash_files();
-  base::ranges::sort(hash_files, {}, &HashFile::prefix_size);
+  std::ranges::sort(hash_files, {}, &HashFile::prefix_size);
   EXPECT_EQ(hash_files.size(), 2);
 
   const auto& file1 = file_format.hash_files(0);

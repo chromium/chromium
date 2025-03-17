@@ -111,6 +111,7 @@ class ClientSideDetectionService
     virtual std::unique_ptr<
         optimization_guide::OptimizationGuideModelExecutor::Session>
     GetModelExecutorSession() = 0;
+    virtual void LogOnDeviceModelEligibilityReason() = 0;
   };
 
   ClientSideDetectionService(
@@ -236,6 +237,11 @@ class ClientSideDetectionService
   // on-device model session creation.
   bool IsOnDeviceModelAvailable();
 
+  // Resets the session that's created by the on-device model. This occurs when
+  // there is a new page navigation and at the start and end of
+  // |InquireOnDeviceModel|.
+  void ResetOnDeviceSession();
+
   // Called from the host class when the proper requirements are met to inquire
   // the on-device model.
   virtual void InquireOnDeviceModel(
@@ -295,6 +301,11 @@ class ClientSideDetectionService
   // downloading the model after a delay.  In all cases, each render process is
   // updated to match the state
   void OnPrefsUpdated();
+
+  // Unsubscribes to model subscriptions. Currently we unsubscribe to the image
+  // embedding model as well as the on device model depending on user
+  // preferences.
+  void UnsubscribeToModelSubscription();
 
   // Starts sending the request to the client-side detection frontends.
   // This method takes ownership of both pointers.

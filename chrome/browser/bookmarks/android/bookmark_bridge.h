@@ -144,7 +144,6 @@ class BookmarkBridge : public ProfileObserver,
 
   void ReorderChildren(
       JNIEnv* env,
-
       const base::android::JavaParamRef<jobject>& j_bookmark_id_obj,
       jlongArray arr);
 

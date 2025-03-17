@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -170,7 +169,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
     SetModalType(ui::mojom::ModalType::kSystem);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
-    set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+    set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   }
 
@@ -196,12 +195,12 @@ class BorealisDisallowedDialog : public DialogDelegate {
         views::style::STYLE_EMPHASIZED);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetMultiLine(true);
-    view->AddChildView(title_label);
+    view->AddChildViewRaw(title_label);
 
     views::Label* message_label = new views::Label(behaviour.GetMessage());
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    view->AddChildView(message_label);
+    view->AddChildViewRaw(message_label);
 
     for (const std::pair<std::u16string, GURL>& link : behaviour.GetLinks()) {
       views::Link* link_label =

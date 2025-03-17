@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 
-#import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -45,6 +44,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -193,12 +193,13 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled()) {
+  if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled(
+          self.browser->GetProfile()->GetPrefs())) {
     id<LensOverlayCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), LensOverlayCommands);
-    [handler
-        searchImageWithLens:command.image
-                 entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu];
+    [handler searchImageWithLens:command.image
+                      entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
+                      completion:nil];
     return;
   }
 
@@ -219,6 +220,16 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   if (IsSegmentationTipsManagerEnabled()) {
     [self recordLensUsage];
   }
+}
+
+- (void)lensOverlayDidDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause {
+  // NO-OP
+}
+
+- (void)lensOverlayWillDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause {
+  // NO-OP
 }
 
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {
@@ -258,8 +269,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     featureTracker->NotifyEvent(
         feature_engagement::events::kLensButtonKeyboardUsed);
   } else if (entrypoint == LensEntrypoint::NewTabPage) {
-    profile->GetPrefs()->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount,
-                                    INT_MAX);
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kNTPLensEntryPointNewBadgeShownCount, INT_MAX);
   }
 
   if (!isIncognito) {
@@ -553,7 +564,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 - (void)updateLensAvailabilityForWidgets {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
   NSString* enableLensInWidgetKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupEnableLensInWidget);
+      [NSString cr_fromString:app_group::kChromeAppGroupEnableLensInWidget];
 
   // Determine the availability of the Lens entrypoint in the home screen
   // widget. We don't use LensAvailability here because the seach engine status

@@ -42,6 +42,7 @@ enum PermissionName {
     "pointer-lock",
     "fullscreen",
     "web-app-installation",
+    "local-network-access",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

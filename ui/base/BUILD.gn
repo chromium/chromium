@@ -119,6 +119,7 @@ component("base") {
     "accelerators/accelerator.h",
     "accelerators/command.cc",
     "accelerators/command.h",
+    "accelerators/command_constants.h",
     "class_properties.cc",
     "class_properties.h",
     "class_property.cc",
@@ -485,6 +486,8 @@ component("base") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -494,6 +497,7 @@ component("base") {
     "//base",
     "//base:base_static",
     "//base:i18n",
+    "//build:android_buildflags",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//net",
@@ -542,11 +546,9 @@ component("base") {
 
   if (use_blink) {
     deps += [
-      "//ui/color",
       "//ui/events",
       "//ui/events/devices",
     ]
-    public_deps += [ "//ui/color:color_headers" ]
   }
 
   if (is_win) {
@@ -613,6 +615,7 @@ component("base") {
       "CoreVideo.framework",
       "Foundation.framework",
       "QuartzCore.framework",
+      "UniformTypeIdentifiers.framework",
     ]
 
     weak_frameworks = [
@@ -761,6 +764,7 @@ static_library("test_support") {
     "interaction/interaction_sequence_test_util.h",
     "interaction/interactive_test.cc",
     "interaction/interactive_test.h",
+    "interaction/interactive_test_definitions.h",
     "interaction/interactive_test_internal.cc",
     "interaction/interactive_test_internal.h",
     "interaction/polling_state_observer.h",
@@ -833,6 +837,8 @@ static_library("test_support") {
 
   public_deps = [
     ":base",
+    "//testing/gmock",
+    "//testing/gtest",
     "//ui/base/idle",
     "//ui/base/interaction:test_support",
   ]
@@ -846,8 +852,6 @@ static_library("test_support") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
     "//ui/base/clipboard:file_info",
     "//ui/base/data_transfer_policy",
     "//ui/display:test_support",
@@ -1057,6 +1061,7 @@ test("ui_base_unittests") {
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction:prediction",
+    "//ui/color",
     "//ui/display",
     "//ui/gfx:test_support",
     "//ui/resources",
@@ -1065,6 +1070,14 @@ test("ui_base_unittests") {
     "//url",
   ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_unittest.cc" ]
+    deps += [
+      "//ui/base/accelerators/global_accelerator_listener",
+      "//ui/events:events_base",
+    ]
+  }
+
   if (!is_android && !is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
   }
@@ -1072,6 +1085,7 @@ test("ui_base_unittests") {
   if (is_mac) {
     sources += [
       "accelerators/platform_accelerator_cocoa_unittest.mm",
+      "cocoa/appkit_utils_unittest.mm",
       "cocoa/base_view_unittest.mm",
       "cocoa/bubble_closer_unittest.mm",
       "cocoa/cocoa_base_utils_unittest.mm",
@@ -1084,6 +1098,10 @@ test("ui_base_unittests") {
       "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
       "test/view_tree_validator_unittest.mm",
+    ]
+    frameworks = [
+      "Foundation.framework",
+      "UniformTypeIdentifiers.framework",
     ]
   }
 
@@ -1099,6 +1117,7 @@ test("ui_base_unittests") {
       "accelerators/accelerator_manager_unittest.cc",
       "accelerators/accelerator_map_unittest.cc",
       "accelerators/accelerator_unittest.cc",
+      "accelerators/command_unittest.cc",
       "accelerators/menu_label_accelerator_util_unittest.cc",
       "models/dialog_model_menu_model_adapter_unittest.cc",
       "models/dialog_model_unittest.cc",
@@ -1113,7 +1132,6 @@ test("ui_base_unittests") {
 
   if (use_blink) {
     deps += [
-      "//ui/color",
       "//ui/events:events_base",
       "//ui/events:test_support",
     ]
@@ -1297,6 +1315,16 @@ test("ui_base_unittests") {
 
   if (is_linux) {
     sources += [ "linux/xdg_shortcut_unittest.cc" ]
+  }
+
+  if (is_linux && use_dbus) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_linux_unittest.cc" ]
+    deps += [
+      "//components/dbus",
+      "//content/test:test_support",
+      "//dbus:test_support",
+      "//ui/base/accelerators/global_accelerator_listener",
+    ]
   }
 }
 

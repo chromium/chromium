@@ -30,6 +30,7 @@
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
+#include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -49,10 +50,10 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content::indexed_db {
 
+class ActiveBlobRegistry;
 class AutoDidCommitTransaction;
 class BackingStoreTest;
 class BucketContext;
-class ActiveBlobRegistry;
 class LevelDBWriteBatch;
 class PartitionedLockManager;
 class TransactionalLevelDBDatabase;
@@ -66,7 +67,7 @@ namespace indexed_db_backing_store_unittest {
 FORWARD_DECLARE_TEST(BackingStoreTest, ReadCorruptionInfo);
 }  // namespace indexed_db_backing_store_unittest
 
-class CONTENT_EXPORT BackingStore {
+class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
  public:
   class CONTENT_EXPORT RecordIdentifier {
    public:
@@ -145,6 +146,10 @@ class CONTENT_EXPORT BackingStore {
 
     virtual uint64_t GetTransactionSize();
 
+    void SetTombstoneThresholdExceeded(bool tombstone_threshold_exceeded) {
+      tombstone_threshold_exceeded_ = tombstone_threshold_exceeded;
+    }
+
     Status GetExternalObjectsForRecord(int64_t database_id,
                                        const std::string& object_store_data_key,
                                        IndexedDBValue* value);
@@ -220,6 +225,10 @@ class CONTENT_EXPORT BackingStore {
     const blink::mojom::IDBTransactionDurability durability_;
     const blink::mojom::IDBTransactionMode mode_;
 
+    // This flag is set when tombstones encountered during a read-only
+    // cursor operation exceed `kCursorTombstoneThreshold`.
+    bool tombstone_threshold_exceeded_ = false;
+
     base::WeakPtrFactory<Transaction> weak_ptr_factory_{this};
   };
 
@@ -278,6 +287,7 @@ class CONTENT_EXPORT BackingStore {
     Cursor(base::WeakPtr<Transaction> transaction,
            int64_t database_id,
            const CursorOptions& cursor_options);
+
     explicit Cursor(const Cursor* other,
                     std::unique_ptr<TransactionalLevelDBIterator> iterator);
 
@@ -291,6 +301,11 @@ class CONTENT_EXPORT BackingStore {
 
     bool IsPastBounds() const;
     bool HaveEnteredRange() const;
+
+    // If the version numbers don't match or if the value is missing, that
+    // means this is an obsolete index entry (a 'tombstone') that can be
+    // cleaned up. This removal can only happen in non-read-only transactions.
+    void RemoveTombstoneOrIncrementCount(Status* s);
 
     // This does NOT mean that this class can outlive the Transaction.
     // This is only to protect against security issues before this class is
@@ -319,6 +334,7 @@ class CONTENT_EXPORT BackingStore {
                                     IteratorState state,
                                     Status*);
 
+    int tombstones_count_ = 0;
     base::WeakPtrFactory<Cursor> weak_factory_{this};
   };
 
@@ -368,6 +384,8 @@ class CONTENT_EXPORT BackingStore {
   TransactionalLevelDBFactory& transactional_leveldb_factory() const {
     return *transactional_leveldb_factory_;
   }
+
+  void OnTransactionComplete(bool tombstone_threshold_exceeded);
 
   // Virtual for testing.
   virtual void Compact();
@@ -559,15 +577,22 @@ class CONTENT_EXPORT BackingStore {
   int NumBlobFilesDeletedForTesting() {
     return num_blob_files_deleted_;
   }
+#endif
   int NumAggregatedJournalCleaningRequestsForTesting() const {
     return num_aggregated_journal_cleaning_requests_;
   }
-#endif
+  void SetNumAggregatedJournalCleaningRequestsForTesting(int num_requests) {
+    num_aggregated_journal_cleaning_requests_ = num_requests;
+  }
   void SetExecuteJournalCleaningOnNoTransactionsForTesting() {
     execute_journal_cleaning_on_no_txns_ = true;
   }
   void WriteToIndexedDBForTesting(const std::string& key,
                                   const std::string& value);
+
+  const LevelDBCleanupScheduler& GetLevelDBCleanupSchedulerForTesting() const {
+    return level_db_cleanup_scheduler_;
+  }
 
   // Returns true if a blob cleanup job is pending on journal_cleaning_timer_.
   bool IsBlobCleanupPending();
@@ -604,8 +629,29 @@ class CONTENT_EXPORT BackingStore {
   // Delete LevelDB files; used to handle corruptions.
   static Status DestroyDatabase(const base::FilePath file_path);
 
- protected:
+ private:
+  FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
+                           ActiveBlobJournal);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
+
+  friend class AutoDidCommitTransaction;
   friend class BucketContext;
+
+  // LevelDBCleanupScheduler::Delegate:
+  // This function updates the next run timestamp for the
+  // tombstone sweeper in the database metadata.
+  // Virtual for testing.
+  // Returns if the update was successful.
+  bool UpdateEarliestSweepTime() override;
+  // This function updates the next run timestamp for the
+  // level db compaction in the database metadata.
+  // Virtual for testing.
+  // Returns if the update was successful.
+  bool UpdateEarliestCompactionTime() override;
+  // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
+  Status GetCompleteMetadata(
+      std::vector<blink::IndexedDBDatabaseMetadata>* output) override;
 
   void set_bucket_context(BucketContext* bucket_context) {
     bucket_context_ = bucket_context;
@@ -625,17 +671,13 @@ class CONTENT_EXPORT BackingStore {
   // returning an internal inconsistency corruption error if any are missing.
   Status ValidateBlobFiles();
 
-  // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
-  Status GetCompleteMetadata(
-      std::vector<blink::IndexedDBDatabaseMetadata>* output);
-
   // Remove the referenced file on disk.
-  virtual bool RemoveBlobFile(int64_t database_id, int64_t key) const;
+  bool RemoveBlobFile(int64_t database_id, int64_t key) const;
 
   // Schedule a call to CleanRecoveryJournalIgnoreReturn() via
   // an owned timer. If this object is destroyed, the timer
   // will automatically be cancelled.
-  virtual void StartJournalCleaningTimer();
+  void StartJournalCleaningTimer();
 
   // Attempt to clean the recovery journal. This will remove
   // any referenced files and delete the journal entry. If any
@@ -646,14 +688,6 @@ class CONTENT_EXPORT BackingStore {
   // Get tasks to be run after a BackingStore no longer has any connections.
   std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
   GetPreCloseTasks();
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
-                           ActiveBlobJournal);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
-
-  friend class AutoDidCommitTransaction;
 
   Status MigrateToV4(LevelDBWriteBatch* write_batch);
   Status MigrateToV5(LevelDBWriteBatch* write_batch);
@@ -729,6 +763,9 @@ class CONTENT_EXPORT BackingStore {
   // Whenever blobs are registered in active_blob_registry_,
   // indexed_db_factory_ will hold a reference to this backing store.
   std::unique_ptr<ActiveBlobRegistry> active_blob_registry_;
+
+  // Ensures tombstones are removed periodically during an active session.
+  LevelDBCleanupScheduler level_db_cleanup_scheduler_;
 
   // Incremented whenever a transaction starts committing, decremented when
   // complete. While > 0, temporary journal entries may exist so out-of-band

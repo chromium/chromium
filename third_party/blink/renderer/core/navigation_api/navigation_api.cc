@@ -159,8 +159,8 @@ void NavigationApi::InitializeForNewWindow(
     WebFrameLoadType load_type,
     CommitReason commit_reason,
     NavigationApi* previous,
-    const WebVector<WebHistoryItem>& back_entries,
-    const WebVector<WebHistoryItem>& forward_entries,
+    const std::vector<WebHistoryItem>& back_entries,
+    const std::vector<WebHistoryItem>& forward_entries,
     HistoryItem* previous_entry) {
   CHECK(entries_.empty());
 
@@ -778,17 +778,15 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     HistoryItem* current_item = window_->document()->Loader()->GetHistoryItem();
     destination_state = current_item->GetNavigationApiState();
   }
-  NavigationDestination* destination =
-      MakeGarbageCollected<NavigationDestination>(
-          params->url, params->event_type != NavigateEventType::kCrossDocument,
-          destination_state);
+  NavigationHistoryEntry* destination_entry = nullptr;
   if (IsBackForwardOrRestore(params->frame_load_type)) {
     auto iter = keys_to_indices_.find(key);
     if (iter != keys_to_indices_.end()) {
-      destination->SetDestinationEntry(entries_[iter->value]);
+      destination_entry = entries_[iter->value];
     }
   }
-  init->setDestination(destination);
+  init->setDestination(MakeGarbageCollected<NavigationDestination>(
+      params, destination_state, destination_entry));
 
   bool should_allow_traversal_cancellation =
       IsBackForwardOrRestore(params->frame_load_type) &&
@@ -862,7 +860,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       window_->GetFrame()->ConsumeHistoryUserActivation();
     }
     if (!navigate_event->signal()->aborted()) {
-      AbortOngoingNavigation(script_state);
+      AbortOngoingNavigation(script_state,
+                             CancelNavigationReason::kNavigateEvent);
     }
     return DispatchResult::kAbort;
   }
@@ -903,15 +902,15 @@ void NavigationApi::InformAboutCanceledNavigation(
   if (ongoing_navigate_event_) {
     auto* script_state = ToScriptStateForMainWorld(window_->GetFrame());
     ScriptState::Scope scope(script_state);
-    AbortOngoingNavigation(script_state);
+    AbortOngoingNavigation(script_state, reason);
   }
 
   // If this function is being called as part of frame detach, also cleanup any
   // upcoming_traverse_api_method_trackers_.
   if (!upcoming_traverse_api_method_trackers_.empty() && window_->GetFrame() &&
       !window_->GetFrame()->IsAttached()) {
-    HeapVector<Member<NavigationApiMethodTracker>> traversals;
-    CopyValuesToVector(upcoming_traverse_api_method_trackers_, traversals);
+    HeapVector<Member<NavigationApiMethodTracker>> traversals(
+        upcoming_traverse_api_method_trackers_.Values());
     for (auto& traversal : traversals) {
       TraverseCancelled(
           traversal->GetKey(),
@@ -996,13 +995,14 @@ void NavigationApi::DidFinishOngoingNavigation() {
   }
 }
 
-void NavigationApi::AbortOngoingNavigation(ScriptState* script_state) {
+void NavigationApi::AbortOngoingNavigation(ScriptState* script_state,
+                                           CancelNavigationReason reason) {
   CHECK(ongoing_navigate_event_);
   ScriptValue error = ScriptValue::From(
       script_state,
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                          "Navigation was aborted"));
-  ongoing_navigate_event_->Abort(script_state, error);
+  ongoing_navigate_event_->Abort(script_state, error, reason);
   ongoing_navigate_event_ = nullptr;
   DidFailOngoingNavigation(error);
 }

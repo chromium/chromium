@@ -169,7 +169,7 @@ void ExtensionsRequestAccessButton::UpdateTooltipText() {
 
   // Active contents can be null if the window is closing.
   if (!active_contents) {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
     return;
   }
 
@@ -181,7 +181,7 @@ void ExtensionsRequestAccessButton::UpdateTooltipText() {
         extensions_container_->GetActionForId(extension_id);
     tooltip_parts.push_back(action->GetActionName());
   }
-  SetCachedTooltipText(base::JoinString(tooltip_parts, u"\n"));
+  SetTooltipText(base::JoinString(tooltip_parts, u"\n"));
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {

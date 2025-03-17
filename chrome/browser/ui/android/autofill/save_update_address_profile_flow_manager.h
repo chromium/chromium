@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_message_controller.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 

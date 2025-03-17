@@ -157,8 +157,10 @@ enum MetricEnrollment {
   // A registration certificate could not be fetched from the PCA due to
   // attestation not being available.
   kMetricEnrollmentRegistrationCertificateFetchNotAvailable = 68,
+  // Enrollment failed: Organization unit enrollment limit exceeded.
+  kMetricEnrollmentOrgUnitEnrollmentLimitExceeded = 69,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentRegistrationCertificateFetchNotAvailable
+  kMaxValue = kMetricEnrollmentOrgUnitEnrollmentLimitExceeded
 };
 
 // Events related to policy refresh.
@@ -399,20 +401,6 @@ inline constexpr char kUMAPsmNetworkErrorCode[] =
 inline constexpr char kUMAPsmDmServerRequestStatus[] =
     "Enterprise.AutoEnrollmentPsmDmServerRequestStatus";
 
-// DeviceAutoEnrollmentRequest i.e. hash dance request UMA histogram names.
-inline constexpr char kUMAHashDanceSuccessTime[] =
-    "Enterprise.AutoEnrollmentHashDanceSuccessTime";
-// The following histogram names where added before PSM (private set membership)
-// existed. They are only recorded for hash dance.
-inline constexpr char kUMAHashDanceProtocolTime[] =
-    "Enterprise.AutoEnrollmentProtocolTime";
-inline constexpr char kUMAHashDanceBucketDownloadTime[] =
-    "Enterprise.AutoEnrollmentBucketDownloadTime";
-inline constexpr char kUMAHashDanceRequestStatus[] =
-    "Enterprise.AutoEnrollmentRequestStatus";
-inline constexpr char kUMAHashDanceNetworkErrorCode[] =
-    "Enterprise.AutoEnrollmentRequestNetworkErrorCode";
-
 // The following UMA suffixes are used by Hash dance and PSM protocols.
 // Suffix for initial enrollment.
 inline constexpr char kUMASuffixInitialEnrollment[] = ".InitialEnrollment";
@@ -428,6 +416,9 @@ inline constexpr char kUMAStateDeterminationOnFlex[] =
     "Enterprise.StateDetermination.OnFlex";
 inline constexpr char kUMAStateDeterminationOwnershipStatus[] =
     "Enterprise.StateDetermination.OwnershipStatus";
+inline constexpr char
+    kUMAStateDeterminationOwnershipStatusDuringEnrollmentRecovery[] =
+        "Enterprise.StateDetermination.OwnershipStatusDuringEnrollmentRecovery";
 inline constexpr char kUMAStateDeterminationPsmReportedAvailableState[] =
     "Enterprise.StateDetermination.PsmReportedAvailableState";
 inline constexpr char kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode[] =

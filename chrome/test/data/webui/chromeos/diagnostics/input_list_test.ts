@@ -10,19 +10,20 @@ import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_brow
 import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeKeyboards, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
-import {BottomLeftLayout, BottomRightLayout, ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
-import {InputCardElement} from 'chrome://diagnostics/input_card.js';
-import {TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
-import {InputListElement} from 'chrome://diagnostics/input_list.js';
+import type {KeyboardInfo} from 'chrome://diagnostics/input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
+import type {InputCardElement} from 'chrome://diagnostics/input_card.js';
+import type {TouchDeviceInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import {TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import type {InputListElement} from 'chrome://diagnostics/input_list.js';
 import {KeyboardTesterElement} from 'chrome://diagnostics/keyboard_tester.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -92,10 +93,9 @@ suite('inputListTestSuite', function() {
     const resolver = new PromiseResolver();
     assert(inputListElement);
     const touchscreenTester =
-        inputListElement!.shadowRoot!.querySelector('touchscreen-tester');
+        inputListElement.shadowRoot!.querySelector('touchscreen-tester');
     assert(touchscreenTester);
-    const introDialog =
-        touchscreenTester.getDialog('intro-dialog') as CrDialogElement;
+    const introDialog = touchscreenTester.getDialog('intro-dialog');
 
     // Mock requestFullscreen function since this API can only be initiated by a
     // user gesture.
@@ -348,7 +348,7 @@ suite('inputListTestSuite', function() {
     await initializeInputList([], [touchDevice]);
     assert(inputListElement);
     const touchpadTester =
-        inputListElement!.shadowRoot!.querySelector('touchpad-tester');
+        inputListElement.shadowRoot!.querySelector('touchpad-tester');
     assert(touchpadTester);
     assertFalse(touchpadTester.isOpen());
 
@@ -398,10 +398,9 @@ suite('inputListTestSuite', function() {
     let requestFullscreenCalled = 0;
     assert(inputListElement);
     const touchscreenTester =
-        inputListElement!.shadowRoot!.querySelector('touchscreen-tester');
+        inputListElement.shadowRoot!.querySelector('touchscreen-tester');
     assert(touchscreenTester);
-    const introDialog =
-        touchscreenTester.getDialog('intro-dialog') as CrDialogElement;
+    const introDialog = touchscreenTester.getDialog('intro-dialog');
 
     // Mock requestFullscreen function since this API can only be initiated by a
     // user gesture.
@@ -432,15 +431,14 @@ suite('inputListTestSuite', function() {
         provider.getMoveAppToTestingScreenCalled());
 
     // Click get stated button to open canvas dialog.
-    const getStartedButton =
-        introDialog.querySelector('cr-button') as CrButtonElement;
+    const getStartedButton = introDialog.querySelector('cr-button');
+    assertTrue(!!getStartedButton);
     getStartedButton.click();
     await flushTasks();
     assertFalse(introDialog.open);
     assertTrue(provider.getA11yTouchPassthroughState());
 
-    const canvasDialog =
-        touchscreenTester.getDialog('canvas-dialog') as CrDialogElement;
+    const canvasDialog = touchscreenTester.getDialog('canvas-dialog');
     assertTrue(canvasDialog.open);
 
     const fullscreenChangeEvent = eventToPromise('fullscreenchange', document);
@@ -492,8 +490,7 @@ suite('inputListTestSuite', function() {
     await flushTasks();
 
     assertTrue(touchscreenTester.getIsTabletMode());
-    assertTrue(
-        (touchscreenTester.getDialog('canvas-dialog') as CrDialogElement).open);
+    assertTrue((touchscreenTester.getDialog('canvas-dialog')).open);
   });
 
   test('StartTouchscreenTesterWithTabletMode', async () => {
@@ -509,8 +506,7 @@ suite('inputListTestSuite', function() {
     await flushTasks();
 
     assertFalse(touchscreenTester.getIsTabletMode());
-    assertTrue(
-        (touchscreenTester.getDialog('canvas-dialog') as CrDialogElement).open);
+    assertTrue((touchscreenTester.getDialog('canvas-dialog')).open);
   });
 
   test('OnInternalDisplayPowerStateChanged', async () => {
@@ -548,8 +544,7 @@ suite('inputListTestSuite', function() {
     await flushTasks();
 
     // Tester is expecetd to exit.
-    assertFalse(
-        (touchscreenTester.getDialog('canvas-dialog') as CrDialogElement).open);
+    assertFalse((touchscreenTester.getDialog('canvas-dialog')).open);
   });
 
   test('TouchscreenDisconnectedWhileTesterIsRunning', async () => {
@@ -563,8 +558,7 @@ suite('inputListTestSuite', function() {
     await flushTasks();
 
     // Tester is expecetd to exit.
-    assertFalse(
-        (touchscreenTester.getDialog('canvas-dialog') as CrDialogElement).open);
+    assertFalse((touchscreenTester.getDialog('canvas-dialog')).open);
   });
 
   test('EmptySectionsHidden', async () => {

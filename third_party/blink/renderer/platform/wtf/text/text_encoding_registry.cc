@@ -24,6 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 #include <atomic>
@@ -246,18 +251,15 @@ bool NoExtendedTextEncodingNameUsed() {
 }
 
 Vector<String> TextEncodingAliasesForTesting() {
-  Vector<String> results;
-  {
-    base::AutoLock lock(EncodingRegistryLock());
-    if (!g_text_encoding_name_map)
-      BuildBaseTextCodecMaps();
-    if (!AtomicDidExtendTextCodecMaps()) {
-      ExtendTextCodecMaps();
-      AtomicSetDidExtendTextCodecMaps();
-    }
-    CopyKeysToVector(*g_text_encoding_name_map, results);
+  base::AutoLock lock(EncodingRegistryLock());
+  if (!g_text_encoding_name_map) {
+    BuildBaseTextCodecMaps();
   }
-  return results;
+  if (!AtomicDidExtendTextCodecMaps()) {
+    ExtendTextCodecMaps();
+    AtomicSetDidExtendTextCodecMaps();
+  }
+  return Vector<String>(g_text_encoding_name_map->Keys());
 }
 
 #ifndef NDEBUG

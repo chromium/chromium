@@ -20,24 +20,27 @@ class ContentSettingConstraintsTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(ContentSettingConstraintsTest, CopyCtor) {
+TEST_F(ContentSettingConstraintsTest, Clone) {
   ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Seconds(1234));
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
   constraints.set_decided_by_related_website_sets(true);
+  constraints.set_options(base::Value(true));
 
-  ContentSettingConstraints copy = constraints;
-  EXPECT_EQ(constraints, copy);
+  ContentSettingConstraints different = constraints.Clone();
 
-  ContentSettingConstraints different = constraints;
+  EXPECT_EQ(constraints, different);
+  EXPECT_EQ(constraints.lifetime(), different.lifetime());
+  EXPECT_EQ(constraints.session_model(), different.session_model());
+  EXPECT_EQ(constraints.track_last_visit_for_autoexpiration(),
+            different.track_last_visit_for_autoexpiration());
+  EXPECT_EQ(constraints.decided_by_related_website_sets(),
+            different.decided_by_related_website_sets());
+  EXPECT_EQ(constraints.options(), different.options());
+
   different.set_lifetime(base::Days(1));
   EXPECT_NE(constraints, different);
-
-  ContentSettingConstraints old_constraints;
-  env().FastForwardBy(base::Seconds(1));
-  ContentSettingConstraints new_constraints;
-  EXPECT_NE(old_constraints, new_constraints);
 }
 
 TEST_F(ContentSettingConstraintsTest, MoveCtor) {
@@ -46,13 +49,14 @@ TEST_F(ContentSettingConstraintsTest, MoveCtor) {
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
   constraints.set_decided_by_related_website_sets(true);
+  constraints.set_options(base::Value(true));
 
-  ContentSettingConstraints copy = constraints;
+  ContentSettingConstraints clone = constraints.Clone();
   ContentSettingConstraints moved = std::move(constraints);
-  EXPECT_EQ(copy, moved);
+  EXPECT_EQ(clone, moved);
 
   moved.set_lifetime(base::Days(1));
-  EXPECT_NE(copy, moved);
+  EXPECT_NE(clone, moved);
 }
 
 }  // namespace content_settings

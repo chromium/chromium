@@ -208,20 +208,16 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * </pre>
      */
     void recalculateOmniboxAlignment() {
-        View contentView = mAnchorView.getRootView().findViewById(android.R.id.content);
-        int contentViewTopPadding = contentView == null ? 0 : contentView.getPaddingTop();
+        View contentView = mBaseChromeLayout;
+        // TODO(b:397495817): delete the section below once no longer needed.
+        assert contentView != null
+                : "b:397495817: please share backtrace and repro steps on the bug!";
+        if (contentView == null) {
+            contentView = mAnchorView.getRootView().findViewById(android.R.id.content);
+        }
 
-        // If there is a base Chrome layout, calculate the relative position from it rather than
-        // the content view. Sometimes, Chrome will add an intermediate layout to host certain
-        // views above the toolbar, such as the top back button toolbar on automotive devices.
-        // Since the omnibox alignment top padding will position the omnibox relative to this base
-        // layout, rather than the content view, the base layout should be used here to avoid
-        // "double counting" and creating a gap between the browser controls and omnibox
-        // suggestions.
-        View baseRelativeLayout = mBaseChromeLayout != null ? mBaseChromeLayout : contentView;
-        ViewUtils.getRelativeLayoutPosition(baseRelativeLayout, mAnchorView, mPositionArray);
-
-        int top = mPositionArray[1] + mAnchorView.getMeasuredHeight() - contentViewTopPadding;
+        ViewUtils.getRelativeLayoutPosition(contentView, mAnchorView, mPositionArray);
+        int top = mPositionArray[1] + mAnchorView.getMeasuredHeight() - contentView.getPaddingTop();
         int left;
         int width;
         int paddingLeft;

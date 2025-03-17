@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -137,7 +138,7 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
       scoped_refptr<DawnControlClientHolder>(this)));
 }
 
-std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures() {
+std::vector<wgpu::WGSLLanguageFeatureName> GatherWGSLLanguageFeatures() {
 #if BUILDFLAG(USE_DAWN)
   // Create a dawn::wire::WireClient on a noop serializer, to get an instance
   // from it.
@@ -195,10 +196,15 @@ std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures() {
               &static_cast<const WGPUInstanceDescriptor&>(instance_desc))
           .instance);
 
-  size_t feature_count = instance.EnumerateWGSLLanguageFeatures(nullptr);
-  std::vector<wgpu::WGSLFeatureName> features(feature_count);
-  instance.EnumerateWGSLLanguageFeatures(features.data());
+  wgpu::SupportedWGSLLanguageFeatures supported_features = {};
+  instance.GetWGSLLanguageFeatures(&supported_features);
 
+  // SAFETY: Required from caller
+  const auto feature_span =
+      UNSAFE_BUFFERS(base::span<const wgpu::WGSLLanguageFeatureName>(
+          supported_features.features, supported_features.featureCount));
+  std::vector<wgpu::WGSLLanguageFeatureName> features(feature_span.begin(),
+                                                      feature_span.end());
   return features;
 #else
   return {};

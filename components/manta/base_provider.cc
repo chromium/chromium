@@ -10,7 +10,8 @@
 
 namespace manta {
 namespace {
-constexpr char kHttpMethod[] = "POST";
+constexpr HttpMethod kHttpMethod = HttpMethod::kPost;
+constexpr char kHttpMethodString[] = "POST";
 constexpr char kHttpContentType[] = "application/x-protobuf";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
 constexpr char kAutopushEndpointUrl[] =
@@ -134,7 +135,7 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcher(
       /*url_loader_factory=*/url_loader_factory_,
       /*oauth_consumer_name=*/oauth_consumer_name,
       /*url=*/url,
-      /*http_method=*/kHttpMethod,
+      /*http_method=*/kHttpMethodString,
       /*content_type=*/kHttpContentType,
       /*scopes=*/scopes,
       /*timeout=*/timeout,
@@ -152,15 +153,15 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcherForDemoMode(
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
       /*url=*/url,
-      /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
       /*timeout=*/timeout,
       /*post_data=*/post_data,
       /*headers=*/std::vector<std::string>(),
       /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/annotation_tag,
       // ChromeOS always uses the stable channel API key
-      version_info::Channel::STABLE);
+      version_info::Channel::STABLE,
+      EndpointFetcher::RequestParams::Builder(kHttpMethod, annotation_tag)
+          .Build());
 }
 
 }  // namespace manta

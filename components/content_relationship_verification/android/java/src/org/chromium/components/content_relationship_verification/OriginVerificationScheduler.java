@@ -4,10 +4,12 @@
 
 package org.chromium.components.content_relationship_verification;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Collections;
@@ -20,6 +22,7 @@ import java.util.Set;
  * OriginVerificationScheduler#verify} several times, the request for the statement list on the
  * website will only performed at most once.
  */
+@NullMarked
 public class OriginVerificationScheduler {
     private static final String HTTP_SCHEME = "http";
     private static final String HTTPS_SCHEME = "https";
@@ -27,7 +30,7 @@ public class OriginVerificationScheduler {
     private OriginVerifier mOriginVerifier;
 
     /** Origins that we have yet to call OriginVerifier#start or whose validatin is not yet finished. */
-    @Nullable private Set<Origin> mPendingOrigins = Collections.synchronizedSet(new HashSet<>());
+    private Set<Origin> mPendingOrigins = Collections.synchronizedSet(new HashSet<>());
 
     public OriginVerificationScheduler(OriginVerifier originVerifier, Set<Origin> pendingOrigins) {
         mOriginVerifier = originVerifier;
@@ -47,13 +50,14 @@ public class OriginVerificationScheduler {
         verify(Origin.create(url), callback);
     }
 
-    public void verify(Origin origin, Callback<Boolean> callback) {
+    public void verify(@Nullable Origin origin, Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
         if (origin == null) {
             callback.onResult(false);
             return;
         }
         String urlScheme = origin.uri().getScheme();
+        assumeNonNull(urlScheme);
         if (!urlScheme.equals(HTTPS_SCHEME) && !urlScheme.equals(HTTP_SCHEME)) {
             callback.onResult(true);
             return;

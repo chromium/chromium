@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG)
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
       const GURL& url,
-      LoginAuthRequiredCallback auth_required_callback);
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   class Observer : public base::CheckedObserver {
    public:
@@ -108,10 +108,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG)
   };
 
   // The constructor creates and shows a dialog.
-  HttpAuthDialog(const net::AuthChallengeInfo& auth_info,
-                 content::WebContents* web_contents,
-                 const GURL& url,
-                 LoginAuthRequiredCallback auth_required_callback);
+  HttpAuthDialog(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      const GURL& url,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // In the production use-case, this method is called by views when the user
   // clicks the OK button. The dialog is in the process of closing. This method
@@ -134,7 +135,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG)
 
   // This class is owned by the //content layer. The only way to delete this
   // class is to invoke this callback.
-  LoginAuthRequiredCallback callback_;
+  content::LoginDelegate::LoginAuthRequiredCallback callback_;
 
   // Handles configuration and callbacks from the dialog.
   views::DialogDelegate dialog_delegate_;

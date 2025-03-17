@@ -11,7 +11,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
 
 suite('WallpaperSubpageElementTest', function() {
   let wallpaperSubpage: WallpaperSubpageElement|null = null;
@@ -41,12 +41,12 @@ suite('WallpaperSubpageElementTest', function() {
 
         // Wallpaper Selected is displayed.
         const wallpaperSelected =
-            wallpaperSubpage!.shadowRoot!.querySelector('wallpaper-selected');
+            wallpaperSubpage.shadowRoot!.querySelector('wallpaper-selected');
         assertTrue(!!wallpaperSelected);
 
         // Check whether Google Photos collection is displayed.
         const googlePhotosCollections =
-            wallpaperSubpage!.shadowRoot!.querySelector(
+            wallpaperSubpage.shadowRoot!.querySelector(
                 'google-photos-collection');
         assertEquals(
             !!googlePhotosCollections, path === Paths.GOOGLE_PHOTOS_COLLECTION);
@@ -61,7 +61,7 @@ suite('WallpaperSubpageElementTest', function() {
 
     // Ineligible users can't view Google Photos collection.
     const googlePhotosCollections =
-        wallpaperSubpage!.shadowRoot!.querySelector('google-photos-collection');
+        wallpaperSubpage.shadowRoot!.querySelector('google-photos-collection');
     assertFalse(!!googlePhotosCollections);
   });
 });

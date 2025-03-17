@@ -94,21 +94,30 @@ lens::mojom::PolygonPtr CreatePolygonMojomFromProto(
 }
 
 lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
-    const lens::Geometry& response_geometry) {
+    const lens::Geometry& response_geometry,
+    base::optional_ref<const lens::CenterRotatedBox> region_crop_box) {
   lens::mojom::GeometryPtr geometry = lens::mojom::Geometry::New();
   if (!response_geometry.has_bounding_box()) {
     return geometry;
   }
 
+  // If the `region_crop_box` was provided, scale the resulting geometry mojom
+  // by the region in order for it to be normalized by the full image instead.
+  const float width_scale =
+      region_crop_box.has_value() ? region_crop_box->width() : 1;
+  const float height_scale =
+      region_crop_box.has_value() ? region_crop_box->height() : 1;
+
   auto bounding_box_response = response_geometry.bounding_box();
   lens::mojom::CenterRotatedBoxPtr center_rotated_box =
       lens::mojom::CenterRotatedBox::New();
-  gfx::SizeF box_size(bounding_box_response.width(),
-                      bounding_box_response.height());
+  gfx::SizeF box_size(bounding_box_response.width() * width_scale,
+                      bounding_box_response.height() * height_scale);
   // TODO(b/333562179): Replace this setting of the origin with just a point and
   // size that is passed to the WebUI.
-  gfx::PointF center_point = gfx::PointF(bounding_box_response.center_x(),
-                                         bounding_box_response.center_y());
+  gfx::PointF center_point =
+      gfx::PointF(bounding_box_response.center_x() * width_scale,
+                  bounding_box_response.center_y() * height_scale);
   center_rotated_box->box.set_origin(center_point);
   center_rotated_box->box.set_size(box_size);
   center_rotated_box->coordinate_type =
@@ -129,6 +138,7 @@ lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
 
 lens::mojom::WordPtr CreateWordMojomFromProto(
     const lens::TextLayout_Word& proto_word,
+    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
     lens::WritingDirection writing_direction) {
   lens::mojom::WordPtr word = lens::mojom::Word::New();
   word->plain_text = proto_word.plain_text();
@@ -136,7 +146,8 @@ lens::mojom::WordPtr CreateWordMojomFromProto(
     word->text_separator = proto_word.text_separator();
   }
   if (proto_word.has_geometry()) {
-    word->geometry = CreateGeometryMojomFromProto(proto_word.geometry());
+    word->geometry =
+        CreateGeometryMojomFromProto(proto_word.geometry(), region_crop_box);
   }
   if (proto_word.has_formula_metadata()) {
     lens::mojom::FormulaMetadataPtr metadata =
@@ -150,15 +161,18 @@ lens::mojom::WordPtr CreateWordMojomFromProto(
 
 lens::mojom::LinePtr CreateLineMojomFromProto(
     const lens::TextLayout_Line& proto_line,
+    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
     lens::WritingDirection writing_direction) {
   lens::mojom::LinePtr line = lens::mojom::Line::New();
   std::vector<lens::mojom::WordPtr> words;
   for (auto word : proto_line.words()) {
-    words.push_back(CreateWordMojomFromProto(word, writing_direction));
+    words.push_back(
+        CreateWordMojomFromProto(word, region_crop_box, writing_direction));
   }
   line->words = std::move(words);
   if (proto_line.has_geometry()) {
-    line->geometry = CreateGeometryMojomFromProto(proto_line.geometry());
+    line->geometry =
+        CreateGeometryMojomFromProto(proto_line.geometry(), region_crop_box);
   }
   return line;
 }
@@ -212,7 +226,8 @@ lens::mojom::TranslatedLinePtr CreateTranslatedLineMojomFromProto(
   if (!proto_line.has_geometry()) {
     return line;
   }
-  line->geometry = CreateGeometryMojomFromProto(proto_line.geometry());
+  line->geometry =
+      CreateGeometryMojomFromProto(proto_line.geometry(), std::nullopt);
 
   // Create the mojo word objects from the proto response.
   std::vector<mojom::WordPtr> words;
@@ -323,19 +338,20 @@ lens::mojom::TranslatedParagraphPtr CreateTranslatedParagraphMojomFromProto(
 lens::mojom::ParagraphPtr CreateParagraphMojomFromProto(
     const lens::TextLayout_Paragraph& proto_paragraph,
     base::optional_ref<const lens::DeepGleamData> deep_gleam,
+    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
     const gfx::Size& resized_bitmap_size) {
   lens::mojom::ParagraphPtr paragraph = lens::mojom::Paragraph::New();
   paragraph->content_language = proto_paragraph.content_language();
   std::vector<lens::mojom::LinePtr> lines;
   for (auto line : proto_paragraph.lines()) {
-    lines.push_back(
-        CreateLineMojomFromProto(line, proto_paragraph.writing_direction()));
+    lines.push_back(CreateLineMojomFromProto(
+        line, region_crop_box, proto_paragraph.writing_direction()));
   }
   paragraph->lines = std::move(lines);
 
   if (proto_paragraph.has_geometry()) {
-    paragraph->geometry =
-        CreateGeometryMojomFromProto(proto_paragraph.geometry());
+    paragraph->geometry = CreateGeometryMojomFromProto(
+        proto_paragraph.geometry(), region_crop_box);
   }
   paragraph->writing_direction =
       lens::mojom::WritingDirection(proto_paragraph.writing_direction());
@@ -346,6 +362,39 @@ lens::mojom::ParagraphPtr CreateParagraphMojomFromProto(
   }
 
   return paragraph;
+}
+
+lens::mojom::TextPtr CreateTextMojomFromProto(
+    const lens::Text& response_text,
+    const ::google::protobuf::RepeatedPtrField<::lens::DeepGleamData>
+        deep_gleams,
+    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
+    const gfx::Size& resized_bitmap_size) {
+  lens::mojom::TextPtr text = lens::mojom::Text::New();
+  text->content_language = response_text.content_language();
+  if (response_text.has_text_layout()) {
+    const lens::TextLayout response_layout = response_text.text_layout();
+    lens::mojom::TextLayoutPtr text_layout = lens::mojom::TextLayout::New();
+    std::vector<lens::mojom::ParagraphPtr> paragraphs;
+
+    for (int i = 0; i < response_text.text_layout().paragraphs_size(); i++) {
+      const auto& response_paragraph =
+          response_text.text_layout().paragraphs()[i];
+      lens::DeepGleamData deep_gleam_data;
+      // The translated paragraphs should correspond to each paragraph of
+      // detected text and deep gleam data. That is, there should be the same
+      // amount of deep gleam data as paragraphs.
+      if (i < deep_gleams.size()) {
+        deep_gleam_data = deep_gleams[i];
+      }
+      paragraphs.push_back(
+          CreateParagraphMojomFromProto(response_paragraph, deep_gleam_data,
+                                        region_crop_box, resized_bitmap_size));
+    }
+    text_layout->paragraphs = std::move(paragraphs);
+    text->text_layout = std::move(text_layout);
+  }
+  return text;
 }
 
 }  // namespace
@@ -369,8 +418,8 @@ CreateObjectsMojomArrayFromServerResponse(
         lens::mojom::OverlayObject::New();
     overlay_object->id = std::string(response_object.id());
     if (response_object.has_geometry()) {
-      overlay_object->geometry =
-          CreateGeometryMojomFromProto(response_object.geometry());
+      overlay_object->geometry = CreateGeometryMojomFromProto(
+          response_object.geometry(), std::nullopt);
     }
     object_array.push_back(std::move(overlay_object));
   }
@@ -381,38 +430,29 @@ CreateObjectsMojomArrayFromServerResponse(
 lens::mojom::TextPtr CreateTextMojomFromServerResponse(
     const lens::LensOverlayServerResponse& response,
     const gfx::Size resized_bitmap_size) {
-  lens::mojom::TextPtr text;
   // If the server response lacks text, then return an empty vector.
   if (!response.has_objects_response() ||
       !response.objects_response().has_text()) {
-    return text;
+    return lens::mojom::TextPtr();
   }
 
-  text = lens::mojom::Text::New();
-  const lens::Text response_text = response.objects_response().text();
-  text->content_language = response_text.content_language();
-  if (response_text.has_text_layout()) {
-    const lens::TextLayout response_layout = response_text.text_layout();
-    lens::mojom::TextLayoutPtr text_layout = lens::mojom::TextLayout::New();
-    std::vector<lens::mojom::ParagraphPtr> paragraphs;
-
-    for (int i = 0; i < response_text.text_layout().paragraphs_size(); i++) {
-      const auto& response_paragraph =
-          response_text.text_layout().paragraphs()[i];
-      lens::DeepGleamData deep_gleam_data;
-      // The translated paragraphs should correspond to each paragraph of
-      // detected text and deep gleam data. That is, there should be the same
-      // amount of deep gleam data as paragraphs.
-      if (i < response.objects_response().deep_gleams_size()) {
-        deep_gleam_data = response.objects_response().deep_gleams()[i];
-      }
-      paragraphs.push_back(CreateParagraphMojomFromProto(
-          response_paragraph, deep_gleam_data, resized_bitmap_size));
-    }
-    text_layout->paragraphs = std::move(paragraphs);
-    text->text_layout = std::move(text_layout);
-  }
-
-  return text;
+  return CreateTextMojomFromProto(response.objects_response().text(),
+                                  response.objects_response().deep_gleams(),
+                                  std::nullopt, resized_bitmap_size);
 }
+
+lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
+    const lens::LensOverlayInteractionResponse& response,
+    const lens::CenterRotatedBox& region_crop_box,
+    const gfx::Size& resized_bitmap_size) {
+  if (!response.has_text()) {
+    return lens::mojom::TextPtr();
+  }
+
+  return CreateTextMojomFromProto(
+      response.text(),
+      ::google::protobuf::RepeatedPtrField<::lens::DeepGleamData>(),
+      region_crop_box, resized_bitmap_size);
+}
+
 }  // namespace lens

@@ -135,7 +135,6 @@ using PartitionAllocWithAdvancedChecksFunctions =
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
         partition_alloc::FreeFlags::kNoHooks |
-            partition_alloc::FreeFlags::kZap |
             partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 // `PartitionAllocFunctions` in instantiated in cc file.
@@ -147,7 +146,6 @@ extern template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
         partition_alloc::FreeFlags::kNoHooks |
-            partition_alloc::FreeFlags::kZap |
             partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 }  // namespace internal
@@ -182,7 +180,7 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
   auto zapping_by_free_flags = ZappingByFreeFlags(false);
   auto eventually_zero_freed_memory = EventuallyZeroFreedMemory(false);
-  auto use_pool_offset_freelists = UsePoolOffsetFreelists(true);
+  auto fewer_memory_regions = FewerMemoryRegions(false);
   auto use_small_single_slot_spans = UseSmallSingleSlotSpans(true);
 
   ConfigurePartitions(enable_brp, brp_extra_extras_size, enable_memory_tagging,
@@ -190,7 +188,7 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
                       scheduler_loop_quarantine,
                       scheduler_loop_quarantine_capacity_in_bytes,
                       zapping_by_free_flags, eventually_zero_freed_memory,
-                      use_pool_offset_freelists, use_small_single_slot_spans);
+                      fewer_memory_regions, use_small_single_slot_spans);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

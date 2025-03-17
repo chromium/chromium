@@ -48,7 +48,7 @@ ContentSettingPatternSource::ContentSettingPatternSource(
     : primary_pattern(primary_pattern),
       secondary_pattern(secondary_pattern),
       setting_value(std::move(setting_value)),
-      metadata(metadata),
+      metadata(std::move(metadata)),
       source(source),
       incognito(incognito) {}
 
@@ -64,7 +64,7 @@ ContentSettingPatternSource& ContentSettingPatternSource::operator=(
   primary_pattern = other.primary_pattern;
   secondary_pattern = other.secondary_pattern;
   setting_value = other.setting_value.Clone();
-  metadata = other.metadata;
+  metadata = other.metadata.Clone();
   source = other.source;
   incognito = other.incognito;
   return *this;
@@ -128,3 +128,17 @@ RendererContentSettingRules& RendererContentSettingRules::operator=(
 
 bool RendererContentSettingRules::operator==(
     const RendererContentSettingRules& other) const = default;
+
+content_settings::SettingInfo::SettingInfo() = default;
+content_settings::SettingInfo& content_settings::SettingInfo::operator=(
+    SettingInfo&& other) = default;
+content_settings::SettingInfo::SettingInfo(SettingInfo&& other) = default;
+
+content_settings::SettingInfo content_settings::SettingInfo::Clone() const {
+  SettingInfo clone;
+  clone.source = source;
+  clone.primary_pattern = primary_pattern;
+  clone.secondary_pattern = secondary_pattern;
+  clone.metadata = metadata.Clone();
+  return clone;
+}

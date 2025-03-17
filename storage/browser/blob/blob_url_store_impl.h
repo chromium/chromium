@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 namespace storage {
 
@@ -26,7 +27,7 @@ class BlobUrlRegistry;
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
     : public blink::mojom::BlobURLStore {
  public:
-  // `partitioned_fetch_failure_closure` runs when the storage_key check fails
+  // `partitioning_blob_url_closure` runs when the storage_key check fails
   // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory`.
   BlobURLStoreImpl(const blink::StorageKey& storage_key,
                    const url::Origin& renderer_origin,
@@ -34,8 +35,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
                    base::WeakPtr<BlobUrlRegistry> registry,
                    BlobURLValidityCheckBehavior validity_check_options =
                        BlobURLValidityCheckBehavior::DEFAULT,
-                   base::RepeatingClosure partitioned_fetch_failure_closure =
-                       base::DoNothing());
+                   base::RepeatingCallback<void(
+                       const GURL&,
+                       std::optional<blink::mojom::PartitioningBlobURLInfo>)>
+                       partitioning_blob_url_closure = base::DoNothing(),
+                   bool partitioning_disabled_by_policy = false);
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
   BlobURLStoreImpl& operator=(const BlobURLStoreImpl&) = delete;
@@ -57,6 +61,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   void ResolveForNavigation(
       const GURL& url,
       mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
+      bool is_top_level_navigation,
       ResolveForNavigationCallback callback) override;
   void ResolveForWorkerScriptFetch(
       const GURL& url,
@@ -85,7 +90,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
 
   std::set<GURL> urls_;
 
-  base::RepeatingClosure partitioned_fetch_failure_closure_;
+  base::RepeatingCallback<
+      void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
+      partitioning_blob_url_closure_;
+
+  const bool partitioning_disabled_by_policy_;
 
   base::WeakPtrFactory<BlobURLStoreImpl> weak_ptr_factory_{this};
 };

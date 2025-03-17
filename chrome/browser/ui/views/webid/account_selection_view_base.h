@@ -15,30 +15,21 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
-#include "components/image_fetcher/core/image_fetcher.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 
-class FedCmAccountSelectionView;
+namespace webid {
 
-namespace fedcm {
+class FedCmAccountSelectionView;
 
 // The radius used for the corner of the "Continue as" button.
 inline constexpr int kButtonRadius = 16;
 // The fixed, total width of the bubble.
 inline constexpr int kBubbleWidth = 375;
-// The desired size of the avatars of user accounts.
-inline constexpr int kDesiredAvatarSize = 30;
-// The desired size of the IDP icon used as badge for the user account avatar
-// when there are multiple IDPs.
-inline constexpr int kLargeAvatarBadgeSize = 16;
 // The size of the icon of the identity provider in the bubble.
 inline constexpr int kBubbleIdpIconSize = 20;
 // The desired size of the icon for a "login to IDP" secondary view.
@@ -72,12 +63,8 @@ inline constexpr int kModalIdpIconSize = 32;
 // The size of the icons when they are combined i.e. IDP icon + arrow icon + RP
 // icon is shown at the same time in the modal.
 inline constexpr int kModalCombinedIconSize = 20;
-// The size of avatars in the modal dialog.
-inline constexpr int kModalAvatarSize = 36;
 // The size of the horizontal padding for most elements in the modal.
 inline constexpr int kModalHorizontalSpacing = 8;
-// Size of the IDP icon offset when badging the IDP icon in the account button.
-inline constexpr int kIdpBadgeOffset = 8;
 // The size of the arrow icon.
 inline constexpr int kArrowIconSize = 8;
 // The size of the spinner used in place of the IDP icon while it is being
@@ -88,48 +75,24 @@ inline constexpr int kModalIconSpinnerSize = 28;
 inline constexpr int kModalButtonSpinnerSize = 20;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
-}  // namespace fedcm
 
 class BrandIconImageView : public views::ImageView {
   METADATA_HEADER(BrandIconImageView, views::ImageView)
 
  public:
   BrandIconImageView(
-      base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
       int image_size,
       bool should_circle_crop,
-      std::optional<SkColor> background_color = std::nullopt,
       base::RepeatingClosure on_image_set = base::DoNothing());
   BrandIconImageView(const BrandIconImageView&) = delete;
   BrandIconImageView& operator=(const BrandIconImageView&) = delete;
   ~BrandIconImageView() override;
 
-  // Fetch image and set it on BrandIconImageView.
-  void FetchImage(const GURL& icon_url,
-                  image_fetcher::ImageFetcher& image_fetcher);
-
-  void CropAndSetImage(const gfx::ImageSkia& original_image);
-
-  // If this image uses a background circle, updates its color.
-  void OnBackgroundColorUpdated(const SkColor& background_color);
-
-  std::optional<SkColor> background_color_for_testing() const {
-    return background_color_;
-  }
+  void CropAndSetImage(const gfx::Image& image);
 
  private:
-  void OnImageFetched(const GURL& image_url,
-                      const gfx::Image& image,
-                      const image_fetcher::RequestMetadata& metadata);
-
-  base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image_;
   int image_size_;
   bool should_circle_crop_;
-  // The color of a background circle used to encapsulate the brand icon. Set
-  // when this object is used as a badge for an account icon. When set, this
-  // should be the background color of the dialog.
-  std::optional<SkColor> background_color_;
-  gfx::ImageSkia cropped_idp_image_;
   base::RepeatingClosure on_image_set_;
 
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
@@ -144,14 +107,11 @@ class AccountHoverButton : public HoverButton {
                      std::unique_ptr<views::View> secondary_view,
                      bool add_vertical_label_spacing,
                      const std::u16string& footer,
-                     BrandIconImageView* brand_icon_image_view,
                      int button_position);
   AccountHoverButton(const AccountHoverButton&) = delete;
   AccountHoverButton& operator=(const AccountHoverButton&) = delete;
   ~AccountHoverButton() override = default;
 
-  void StateChanged(ButtonState old_state) override;
-  void OnThemeChanged() override;
   void OnPressed(const ui::Event& event);
   bool HasBeenClicked();
 
@@ -165,8 +125,6 @@ class AccountHoverButton : public HoverButton {
 
  private:
   PressedCallback callback_;
-  // Owned by its views::BoxLayoutView container.
-  raw_ptr<BrandIconImageView> brand_icon_image_view_;
   // The order of this account button relative to other account buttons in
   // the dialog (e.g. 0 is the topmost account, 1 the one below it, etc.). Used
   // to record a metric when the button is clicked.
@@ -196,7 +154,6 @@ class AccountHoverButtonSecondaryView : public views::View {
 class AccountSelectionViewBase {
  public:
   AccountSelectionViewBase(
-      content::WebContents* web_contents,
       FedCmAccountSelectionView* owner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
@@ -248,13 +205,10 @@ class AccountSelectionViewBase {
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;
 
-  // Populates `brand_icon_images_` when an IDP image has been fetched.
-  void AddIdpImage(const GURL& image_url, const gfx::ImageSkia& idp_image);
-
-  // Returns the network traffic annotation tag for FedCM.
-  static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
-
-  content::WebContents* web_contents() { return web_contents_.get(); }
+  // Gets the initial letter from the given string and returns it as
+  // a UTF-16 string. Correctly handles non-BMP characters.
+  static std::u16string GetInitialLetterAsUppercase(
+      const std::string& utf8_string);
 
  protected:
   void SetLabelProperties(views::Label* label);
@@ -277,28 +231,11 @@ class AccountSelectionViewBase {
   std::unique_ptr<views::StyledLabel> CreateDisclosureLabel(
       const content::IdentityProviderData& idp_data);
 
-  // Sets the brand views::ImageView visibility and image. Initiates the
-  // download of the brand icon if necessary.
-  void ConfigureBrandImageView(BrandIconImageView* image_view,
-                               const GURL& brand_icon_url);
-
   // Gets the summary and description string of the error.
   std::pair<std::u16string, std::u16string> GetErrorDialogText(
       const std::optional<TokenError>& error,
       const std::u16string& rp_for_display,
       const std::u16string& idp_for_display);
-
-  // The ImageFetcher used to fetch the account pictures for FedCM.
-  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
-
-  // Web contents which the dialog is rendered on.
-  // TODO(https://crbug.com/377803489): WeakPtr is unnecessary and a symptom of
-  // owner_ bug below.
-  base::WeakPtr<content::WebContents> web_contents_;
-
-  // The images for the brand icons. Stored so that they can be reused upon
-  // pressing the back button after choosing an account.
-  base::flat_map<GURL, gfx::ImageSkia> brand_icon_images_;
 
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.
@@ -321,5 +258,7 @@ class AccountSelectionViewBase {
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionViewBase> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_

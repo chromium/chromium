@@ -9,8 +9,9 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_client.h"
 #include "media/base/timestamp_constants.h"
 
@@ -21,8 +22,9 @@ static_assert(StreamParserBuffer::Type::TYPE_MAX < 4,
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer(
     std::optional<ConfigVariant> next_config) {
-  return base::WrapRefCounted(new StreamParserBuffer(
-      DecoderBufferType::kEndOfStream, std::move(next_config)));
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), DecoderBufferType::kEndOfStream,
+      std::move(next_config));
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CopyFrom(
@@ -39,8 +41,9 @@ scoped_refptr<StreamParserBuffer> StreamParserBuffer::CopyFrom(
           alloc->CopyFrom(data_span), is_key_frame, type, track_id);
     }
   }
-  return base::WrapRefCounted(
-      new StreamParserBuffer(data, data_size, is_key_frame, type, track_id));
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), data, data_size, is_key_frame, type,
+      track_id);
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromExternalMemory(
@@ -48,8 +51,9 @@ scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromExternalMemory(
     bool is_key_frame,
     Type type,
     TrackId track_id) {
-  return base::WrapRefCounted(new StreamParserBuffer(
-      std::move(external_memory), is_key_frame, type, track_id));
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), std::move(external_memory),
+      is_key_frame, type, track_id);
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromArray(
@@ -57,8 +61,9 @@ scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromArray(
     bool is_key_frame,
     Type type,
     TrackId track_id) {
-  return base::WrapRefCounted(new StreamParserBuffer(
-      std::move(heap_array), is_key_frame, type, track_id));
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), std::move(heap_array), is_key_frame,
+      type, track_id);
 }
 
 DecodeTimestamp StreamParserBuffer::GetDecodeTimestamp() const {
@@ -74,6 +79,7 @@ void StreamParserBuffer::SetDecodeTimestamp(DecodeTimestamp timestamp) {
 }
 
 StreamParserBuffer::StreamParserBuffer(
+    base::PassKey<StreamParserBuffer>,
     std::unique_ptr<ExternalMemory> external_memory,
     bool is_key_frame,
     Type type,
@@ -85,7 +91,8 @@ StreamParserBuffer::StreamParserBuffer(
   set_is_key_frame(is_key_frame);
 }
 
-StreamParserBuffer::StreamParserBuffer(base::HeapArray<uint8_t> heap_array,
+StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                                       base::HeapArray<uint8_t> heap_array,
                                        bool is_key_frame,
                                        Type type,
                                        TrackId track_id)
@@ -94,7 +101,8 @@ StreamParserBuffer::StreamParserBuffer(base::HeapArray<uint8_t> heap_array,
   set_is_key_frame(is_key_frame);
 }
 
-StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
+StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                                       const uint8_t* data,
                                        int data_size,
                                        bool is_key_frame,
                                        Type type,
@@ -116,7 +124,8 @@ StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
     set_is_key_frame(true);
 }
 
-StreamParserBuffer::StreamParserBuffer(DecoderBufferType decoder_buffer_type,
+StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                                       DecoderBufferType decoder_buffer_type,
                                        std::optional<ConfigVariant> next_config)
     : DecoderBuffer(decoder_buffer_type, next_config),
       type_(Type::UNKNOWN),

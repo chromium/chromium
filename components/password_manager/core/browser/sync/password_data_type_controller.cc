@@ -56,11 +56,14 @@ void PasswordDataTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   syncer::ConfigureContext overridden_context = configure_context;
-  if (features_util::CanCreateAccountStore(pref_service_) &&
-      base::FeatureList::IsEnabled(
-          syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
+#if BUILDFLAG(IS_ANDROID)
+  if (features_util::CanCreateAccountStore(pref_service_)) {
+    // Make syncing users behave like signed-in users, storage-wise.
+    // TODO(crbug.com/40067058): Drop when kForceMigrateSyncingUserToSignedIn
+    // is launched on Android, since there won't be syncing users anymore.
     overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
   }
+#endif
   sync_mode_ = overridden_context.sync_mode;
   DataTypeController::LoadModels(overridden_context, model_load_callback);
 }
@@ -99,33 +102,6 @@ void PasswordDataTypeController::OnPrimaryAccountChanged(
     pref_service_->SetBoolean(prefs::kAccountStorageNoticeShown, true);
   }
 #endif
-}
-
-void PasswordDataTypeController::OnAccountsInCookieUpdated(
-    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-    const GoogleServiceAuthError& error) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // If the account information is stale, do nothing for now - wait until there
-  // is fresh information.
-  if (!accounts_in_cookie_jar_info.AreAccountsFresh()) {
-    return;
-  }
-  // Keep any account-storage settings only for known accounts.
-  features_util::KeepAccountStorageSettingsOnlyForUsers(
-      pref_service_, signin::GetAllGaiaIdsForKeyedPreferences(
-                         identity_manager_, accounts_in_cookie_jar_info)
-                         .extract());
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
-void PasswordDataTypeController::OnAccountsCookieDeletedByUserAction() {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Pass an empty `signin::AccountsInCookieJarInfo` to simulate empty cookies.
-  base::flat_set<GaiaId> gaia_ids = signin::GetAllGaiaIdsForKeyedPreferences(
-      identity_manager_, signin::AccountsInCookieJarInfo());
-  features_util::KeepAccountStorageSettingsOnlyForUsers(
-      pref_service_, std::move(gaia_ids).extract());
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace password_manager

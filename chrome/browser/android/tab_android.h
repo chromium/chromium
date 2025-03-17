@@ -185,6 +185,8 @@ class TabAndroid : public TabAndroidDataProvider,
 
   base::WeakPtr<TabAndroid> GetWeakPtr();
 
+  TabFeaturesAndroid* tab_features() { return tab_features_.get(); }
+
  private:
   JavaObjectWeakGlobalRef weak_java_tab_;
 

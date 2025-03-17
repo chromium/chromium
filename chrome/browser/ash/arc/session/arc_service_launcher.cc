@@ -7,38 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_launch_notifier.h"
-#include "ash/components/arc/appfuse/arc_appfuse_bridge.h"
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/audio/arc_audio_bridge.h"
-#include "ash/components/arc/camera/arc_camera_bridge.h"
-#include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
-#include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
-#include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
-#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
-#include "ash/components/arc/ime/arc_ime_service.h"
-#include "ash/components/arc/intent_helper/arc_icon_cache_delegate.h"
-#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "ash/components/arc/media_session/arc_media_session_bridge.h"
-#include "ash/components/arc/memory/arc_memory_bridge.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/midis/arc_midis_bridge.h"
-#include "ash/components/arc/net/arc_net_host_impl.h"
-#include "ash/components/arc/net/arc_wifi_host_impl.h"
-#include "ash/components/arc/obb_mounter/arc_obb_mounter_bridge.h"
-#include "ash/components/arc/pay/arc_digital_goods_bridge.h"
-#include "ash/components/arc/pay/arc_payment_app_bridge.h"
-#include "ash/components/arc/power/arc_power_bridge.h"
-#include "ash/components/arc/sensor/arc_iio_sensor_bridge.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
-#include "ash/components/arc/timer/arc_timer_bridge.h"
-#include "ash/components/arc/usb/usb_host_bridge.h"
-#include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
-#include "ash/components/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -71,8 +39,6 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_settings_service.h"
 #include "chrome/browser/ash/arc/intent_helper/chrome_arc_intent_helper_delegate.h"
-#include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
-#include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_bridge.h"
 #include "chrome/browser/ash/arc/net/browser_url_opener_impl.h"
@@ -80,12 +46,10 @@
 #include "chrome/browser/ash/arc/notification/arc_boot_error_notification.h"
 #include "chrome/browser/ash/arc/notification/arc_provision_notification_service.h"
 #include "chrome/browser/ash/arc/notification/arc_vm_data_migration_notifier.h"
-#include "chrome/browser/ash/arc/oemcrypto/arc_oemcrypto_bridge.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_bridge.h"
 #include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 #include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder_factory.h"
@@ -97,7 +61,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
 #include "chrome/browser/ash/arc/tts/arc_tts_service.h"
 #include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
-#include "chrome/browser/ash/arc/video/gpu_arc_video_service_host.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_bridge.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ash/arc/wallpaper/arc_wallpaper_service.h"
@@ -107,6 +70,44 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
+#include "chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
+#include "chromeos/ash/experiences/arc/camera/arc_camera_bridge.h"
+#include "chromeos/ash/experiences/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
+#include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
+#include "chromeos/ash/experiences/arc/crash_collector/arc_crash_collector_bridge.h"
+#include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
+#include "chromeos/ash/experiences/arc/ime/arc_ime_service.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_icon_cache_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/keymaster/arc_keymaster_bridge.h"
+#include "chromeos/ash/experiences/arc/keymint/arc_keymint_bridge.h"
+#include "chromeos/ash/experiences/arc/media_session/arc_media_session_bridge.h"
+#include "chromeos/ash/experiences/arc/memory/arc_memory_bridge.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/midis/arc_midis_bridge.h"
+#include "chromeos/ash/experiences/arc/net/arc_net_host_impl.h"
+#include "chromeos/ash/experiences/arc/net/arc_wifi_host_impl.h"
+#include "chromeos/ash/experiences/arc/obb_mounter/arc_obb_mounter_bridge.h"
+#include "chromeos/ash/experiences/arc/oemcrypto/arc_oemcrypto_bridge.h"
+#include "chromeos/ash/experiences/arc/pay/arc_digital_goods_bridge.h"
+#include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
+#include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
+#include "chromeos/ash/experiences/arc/safety/arc_safety_bridge.h"
+#include "chromeos/ash/experiences/arc/sensor/arc_iio_sensor_bridge.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/system_ui/arc_system_ui_bridge.h"
+#include "chromeos/ash/experiences/arc/timer/arc_timer_bridge.h"
+#include "chromeos/ash/experiences/arc/usb/usb_host_bridge.h"
+#include "chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.h"
+#include "chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.h"
+#include "chromeos/ash/experiences/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -133,15 +134,20 @@ constexpr base::TimeDelta kDaemonWaitTimeoutSec = base::Seconds(30);
 
 // `ChromeBrowserMainPartsAsh` owns.
 ArcServiceLauncher* g_arc_service_launcher = nullptr;
+ArcSessionRunner* g_arc_session_runner_for_testing = nullptr;
 
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
     ArcBridgeService* arc_bridge_service,
     version_info::Channel channel,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager) {
   auto delegate = std::make_unique<AdbSideloadingAvailabilityDelegateImpl>();
-  auto runner = std::make_unique<ArcSessionRunner>(
-      base::BindRepeating(ArcSession::Create, arc_bridge_service, channel,
-                          scheduler_configuration_manager, delegate.get()));
+  std::unique_ptr<ArcSessionRunner> runner(
+      std::exchange(g_arc_session_runner_for_testing, nullptr));
+  if (!runner) {
+    runner = std::make_unique<ArcSessionRunner>(
+        base::BindRepeating(ArcSession::Create, arc_bridge_service, channel,
+                            scheduler_configuration_manager, delegate.get()));
+  }
   return std::make_unique<ArcSessionManager>(std::move(runner),
                                              std::move(delegate));
 }
@@ -356,6 +362,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     // ARCVM-only services.
     ArcVmmManager::GetForBrowserContext(profile)->set_user_id_hash(
         user_id_hash);
+    ArcSafetyBridge::GetForBrowserContext(profile);
     ArcSystemStateBridge::GetForBrowserContext(profile);
 
     if (base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
@@ -510,6 +517,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcProcessService::EnsureFactoryBuilt();
   ArcProvisionNotificationService::EnsureFactoryBuilt();
   ArcResizeLockManager::EnsureFactoryBuilt();
+  ArcSafetyBridge::EnsureFactoryBuilt();
   ArcScreenCaptureBridge::EnsureFactoryBuilt();
   ArcSettingsService::EnsureFactoryBuilt();
   ArcSharesheetBridge::EnsureFactoryBuilt();
@@ -531,6 +539,14 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   GpuArcVideoKeyedService::EnsureFactoryBuilt();
   input_overlay::ArcInputOverlayManager::EnsureFactoryBuilt();
   ArcChromeFeatureFlagsBridge::EnsureFactoryBuilt();
+}
+
+// static
+void ArcServiceLauncher::SetArcSessionRunnerForTesting(
+    std::unique_ptr<ArcSessionRunner> arc_session_runner) {
+  CHECK(!g_arc_session_runner_for_testing);
+  CHECK(!g_arc_service_launcher);
+  g_arc_session_runner_for_testing = arc_session_runner.release();
 }
 
 }  // namespace arc

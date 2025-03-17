@@ -133,6 +133,48 @@ base::Value::Dict GetContext(Profile* profile) {
   return context;
 }
 
+::chrome::cros::reporting::proto::UploadEventsRequest CreateUploadEventsRequest(
+    Profile* profile) {
+  ::chrome::cros::reporting::proto::UploadEventsRequest request;
+  request.mutable_browser()->set_user_agent(embedder_support::GetUserAgent());
+
+  if (!profile) {
+    return request;
+  }
+
+  request.mutable_profile()->set_profile_path(
+      profile->GetPath().AsUTF8Unsafe());
+  ProfileAttributesEntry* profile_attributes =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (profile_attributes) {
+    request.mutable_profile()->set_profile_name(
+        base::UTF16ToUTF8(profile_attributes->GetName()));
+    request.mutable_profile()->set_gaia_email(
+        base::UTF16ToUTF8(profile_attributes->GetUserName()));
+  }
+
+  std::optional<std::string> client_id = GetUserClientId(profile);
+  if (client_id) {
+    request.mutable_profile()->set_client_id(*client_id);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::string device_dm_token = GetDeviceDmToken(profile);
+  if (!device_dm_token.empty()) {
+    request.mutable_device()->set_dm_token(device_dm_token);
+  }
+#endif
+
+  std::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  if (user_dm_token) {
+    request.mutable_profile()->set_dm_token(*user_dm_token);
+  }
+
+  return request;
+}
+
 enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
     Profile* profile) {
   enterprise_connectors::ClientMetadata metadata;

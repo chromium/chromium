@@ -23,8 +23,9 @@ class MetricsRecorder {
  public:
   explicit MetricsRecorder(const char* key) : key_(key) {
     HistogramBase* histogram = StatisticsRecorder::FindHistogram(key_);
-    if (histogram)
+    if (histogram) {
       base_samples_ = histogram->SnapshotSamples();
+    }
   }
 
   MetricsRecorder(const MetricsRecorder&) = delete;
@@ -100,17 +101,19 @@ class MetricsRecorder {
                       kSourceLangUnknown)));
   }
 
-  HistogramBase::Count GetTotalCount() {
+  HistogramBase::Count32 GetTotalCount() {
     Snapshot();
-    if (!samples_)
+    if (!samples_) {
       return 0;
-    HistogramBase::Count count = samples_->TotalCount();
-    if (!base_samples_)
+    }
+    HistogramBase::Count32 count = samples_->TotalCount();
+    if (!base_samples_) {
       return count;
+    }
     return count - base_samples_->TotalCount();
   }
 
-  HistogramBase::Count GetCount(HistogramBase::Sample value) {
+  HistogramBase::Count32 GetCount(HistogramBase::Sample32 value) {
     Snapshot();
     return GetCountWithoutSnapshot(value);
   }
@@ -118,17 +121,21 @@ class MetricsRecorder {
  private:
   void Snapshot() {
     HistogramBase* histogram = StatisticsRecorder::FindHistogram(key_);
-    if (!histogram)
+    if (!histogram) {
       return;
+    }
     samples_ = histogram->SnapshotSamples();
   }
 
-  HistogramBase::Count GetCountWithoutSnapshot(HistogramBase::Sample value) {
-    if (!samples_)
+  HistogramBase::Count32 GetCountWithoutSnapshot(
+      HistogramBase::Sample32 value) {
+    if (!samples_) {
       return 0;
-    HistogramBase::Count count = samples_->GetCount(value);
-    if (!base_samples_)
+    }
+    HistogramBase::Count32 count = samples_->GetCount(value);
+    if (!base_samples_) {
       return count;
+    }
     return count - base_samples_->GetCount(value);
   }
 

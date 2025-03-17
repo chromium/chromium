@@ -100,11 +100,11 @@ class ImageSanitizerTest : public testing::Test {
   ImageSanitizerTest& operator=(const ImageSanitizerTest&) = delete;
 
  protected:
-  void CreateValidImage(const base::FilePath::StringPieceType& file_name) {
+  void CreateValidImage(const base::FilePath::StringViewType& file_name) {
     ASSERT_TRUE(WriteBase64DataToFile(kBase64edValidPng, file_name));
   }
 
-  void CreateInvalidImage(const base::FilePath::StringPieceType& file_name) {
+  void CreateInvalidImage(const base::FilePath::StringViewType& file_name) {
     ASSERT_TRUE(WriteBase64DataToFile(kBase64edInvalidPng, file_name));
   }
 
@@ -133,7 +133,7 @@ class ImageSanitizerTest : public testing::Test {
 
  private:
   bool WriteBase64DataToFile(const std::string& base64_data,
-                             const base::FilePath::StringPieceType& file_name) {
+                             const base::FilePath::StringViewType& file_name) {
     std::string binary;
     if (!base::Base64Decode(base64_data, &binary)) {
       return false;

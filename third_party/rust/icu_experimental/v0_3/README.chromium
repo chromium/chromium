@@ -1,0 +1,10 @@
+Name: icu_experimental
+URL: https://crates.io/crates/icu_experimental
+Version: 0.3.0-beta2
+Revision: 371bf1a876f01eafe786acbe7847eccdbaab85c3
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/icu_experimental-0.3.0-beta2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: ICU4X pre-release components under active development; all code in this crate is unstable.

@@ -63,11 +63,11 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
                                       const DisplayItemClient& client) {
 #if DCHECK_IS_ON()
   CheckNotFinished();
-  // If this DCHECK is hit we are missing a call to update the properties.
+#endif
+  // If this CHECK is hit we are missing a call to update the properties.
   // See: ScopedPaintChunkProperties.
   // At this point we should have all of the properties given to us.
-  DCHECK(current_properties_.IsInitialized());
-#endif
+  CHECK(current_properties_.IsInitialized());
 
   if (WillCreateNewChunk()) {
     if (!next_chunk_id_) {

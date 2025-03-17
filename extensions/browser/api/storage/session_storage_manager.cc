@@ -123,6 +123,15 @@ size_t SessionStorageManager::ExtensionStorage::CalculateUsage(
   return updated_used_total;
 }
 
+std::vector<std::string> SessionStorageManager::ExtensionStorage::GetKeys()
+    const {
+  std::vector<std::string> keys;
+  for (auto& value : values_) {
+    keys.push_back(value.first);
+  }
+  return keys;
+}
+
 std::map<std::string, const base::Value*>
 SessionStorageManager::ExtensionStorage::Get(
     const std::vector<std::string>& keys) const {
@@ -249,6 +258,16 @@ SessionStorageManager* SessionStorageManager::GetForBrowserContext(
 BrowserContextKeyedServiceFactory* SessionStorageManager::GetFactory() {
   static base::NoDestructor<SessionStorageManagerFactory> g_factory;
   return g_factory.get();
+}
+
+std::vector<std::string> SessionStorageManager::GetKeys(
+    const ExtensionId& extension_id) const {
+  auto storage_it = extensions_storage_.find(extension_id);
+  if (storage_it == extensions_storage_.end()) {
+    return std::vector<std::string>();
+  }
+
+  return storage_it->second->GetKeys();
 }
 
 const base::Value* SessionStorageManager::Get(const ExtensionId& extension_id,

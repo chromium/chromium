@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -171,8 +171,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -249,8 +247,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   const CreditCard* virtual_card_enrolled_regular_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   CreditCard virtual_card = *virtual_card_enrolled_regular_card;
@@ -342,8 +338,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   CreditCard card = *masked_server_card;
   card.set_record_type(CreditCard::RecordType::kFullServerCard);
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
@@ -444,8 +438,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -470,8 +462,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -499,8 +489,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                          accessor_->GetWeakPtr()));
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
@@ -533,8 +521,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                          accessor_->GetWeakPtr()));
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()

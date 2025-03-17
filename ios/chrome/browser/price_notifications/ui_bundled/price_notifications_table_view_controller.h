@@ -27,6 +27,9 @@
 // Indicates whether this is the user's first time using price tracking.
 @property(nonatomic, assign) BOOL hasPreviouslyViewed;
 
+// Displays the current page the user is viewing in the price tracking menu.
+@property(nonatomic, assign) BOOL showCurrentPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PRICE_NOTIFICATIONS_UI_BUNDLED_PRICE_NOTIFICATIONS_TABLE_VIEW_CONTROLLER_H_

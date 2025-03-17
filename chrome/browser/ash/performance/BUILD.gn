@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("performance") {
   sources = [
@@ -17,13 +17,13 @@ static_library("performance") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/profiles",
     "//chromeos/ash/components/dbus/concierge:concierge",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/metrics",

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/test/utility/audio_utility.h"
+
 #include <cmath>
 #include <numbers>
 #include <vector>
@@ -9,10 +11,8 @@
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
-#include "media/cast/test/utility/audio_utility.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 TestAudioBusFactory::TestAudioBusFactory(int num_channels,
                                          int sample_rate,
@@ -30,6 +30,9 @@ TestAudioBusFactory::TestAudioBusFactory(int num_channels,
 
 TestAudioBusFactory::~TestAudioBusFactory() = default;
 
+// static
+constexpr int TestAudioBusFactory::kMiddleANoteFreq;
+
 std::unique_ptr<AudioBus> TestAudioBusFactory::NextAudioBus(
     const base::TimeDelta& duration) {
   const int num_samples = (sample_rate_ * duration).InSeconds();
@@ -39,6 +42,4 @@ std::unique_ptr<AudioBus> TestAudioBusFactory::NextAudioBus(
   return bus;
 }
 
-
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

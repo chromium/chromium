@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
@@ -31,9 +32,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
@@ -76,21 +77,6 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     // Android chrome strings may have link tags which needs to be removed before comparing with the
     // actual text on the dialog.
     private static final String LINK_TAG_REGEX = "<[^>]*>";
-
-    private final RpContextEntry[] mRpContexts =
-            new RpContextEntry[] {
-                new RpContextEntry(
-                        RpContext.SIGN_IN, R.string.account_selection_sheet_title_explicit_signin),
-                new RpContextEntry(
-                        RpContext.SIGN_UP, R.string.account_selection_sheet_title_explicit_signup),
-                new RpContextEntry(
-                        RpContext.USE, R.string.account_selection_sheet_title_explicit_use),
-                new RpContextEntry(
-                        RpContext.CONTINUE,
-                        R.string.account_selection_sheet_title_explicit_continue),
-                // Test an invalid value.
-                new RpContextEntry(0xCAFE, R.string.account_selection_sheet_title_explicit_signin)
-            };
 
     private class TokenError {
         public String mCode;
@@ -204,17 +190,42 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 asList(
                         buildAccountItem(mAnaAccount),
                         buildAccountItem(mNoOneAccount),
-                        buildAccountItem(mBobAccount)));
+                        buildAccountItem(mBobAccount),
+                        buildAccountItem(mNicolasAccount)));
         ShadowLooper.shadowMainLooper().idle();
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());
-        assertEquals("Incorrect account count", 3, getAccounts().getChildCount());
+        assertEquals("Incorrect account count", 4, getAccounts().getChildCount());
         assertEquals("Incorrect name", mAnaAccount.getName(), getAccountNameAt(0).getText());
         assertEquals("Incorrect email", mAnaAccount.getEmail(), getAccountEmailAt(0).getText());
+        assertEquals(
+                "Should not have secondary description",
+                "",
+                getAccountSecondaryDescriptionAt(0).getText());
+        assertEquals(View.GONE, getAccountSecondaryDescriptionAt(0).getVisibility());
         assertEquals("Incorrect name", mNoOneAccount.getName(), getAccountNameAt(1).getText());
         assertEquals("Incorrect email", mNoOneAccount.getEmail(), getAccountEmailAt(1).getText());
+        assertEquals(
+                "Should not have secondary description",
+                "",
+                getAccountSecondaryDescriptionAt(1).getText());
+        assertEquals(View.GONE, getAccountSecondaryDescriptionAt(1).getVisibility());
         assertEquals("Incorrect name", mBobAccount.getName(), getAccountNameAt(2).getText());
         assertEquals("Incorrect email", mBobAccount.getEmail(), getAccountEmailAt(2).getText());
+        assertEquals(
+                "Should not have secondary description",
+                "",
+                getAccountSecondaryDescriptionAt(2).getText());
+        assertEquals(View.GONE, getAccountSecondaryDescriptionAt(2).getVisibility());
+        assertEquals("Incorrect name", mNicolasAccount.getName(), getAccountNameAt(3).getText());
+        assertEquals("Incorrect email", mNicolasAccount.getEmail(), getAccountEmailAt(3).getText());
+        // Even though mNicolasAccount has secondary description, it should not be shown when UI is
+        // not in multi IDP mode.
+        assertEquals(
+                "Should not have secondary description",
+                "",
+                getAccountSecondaryDescriptionAt(3).getText());
+        assertEquals(View.GONE, getAccountSecondaryDescriptionAt(3).getVisibility());
     }
 
     @Test
@@ -228,7 +239,11 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
 
         getAccounts().getChildAt(0).performClick();
 
-        waitForEvent(mAccountCallback).onResult(eq(mAnaAccount));
+        ArgumentCaptor<ButtonData> captor = ArgumentCaptor.forClass(ButtonData.class);
+        waitForEvent(mAccountCallback).onResult(captor.capture());
+        ButtonData capturedButtonData = captor.getValue();
+        assertEquals(mAnaAccount, capturedButtonData.mAccount);
+        assertNull(capturedButtonData.mIdpMetadata);
     }
 
     @Test
@@ -255,7 +270,11 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         assertTrue(continueButton.isShown());
         continueButton.performClick();
 
-        waitForEvent(mAccountCallback).onResult(eq(mAnaAccount));
+        ArgumentCaptor<ButtonData> captor = ArgumentCaptor.forClass(ButtonData.class);
+        waitForEvent(mAccountCallback).onResult(captor.capture());
+        ButtonData capturedButtonData = captor.getValue();
+        assertEquals(mAnaAccount, capturedButtonData.mAccount);
+        assertEquals(mIdpMetadata, capturedButtonData.mIdpMetadata);
     }
 
     @Test
@@ -292,7 +311,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 new IdentityProviderMetadata(
                         expectedTextColor,
                         /* brandBackgroundColor= */ Color.GREEN,
-                        "https://icon-url.example",
+                        null,
                         mTestConfigUrl,
                         mTestLoginUrl,
                         false);
@@ -334,7 +353,11 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         assertEquals("Continue", continueButton.getText());
         continueButton.performClick();
 
-        waitForEvent(mAccountCallback).onResult(eq(null));
+        ArgumentCaptor<ButtonData> captor = ArgumentCaptor.forClass(ButtonData.class);
+        waitForEvent(mAccountCallback).onResult(captor.capture());
+        ButtonData capturedButtonData = captor.getValue();
+        assertNull(capturedButtonData.mAccount);
+        assertEquals(mIdpMetadata, capturedButtonData.mIdpMetadata);
     }
 
     @Test
@@ -471,6 +494,10 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
 
     private TextView getAccountEmailAt(int index) {
         return getAccounts().getChildAt(index).findViewById(R.id.description);
+    }
+
+    private TextView getAccountSecondaryDescriptionAt(int index) {
+        return getAccounts().getChildAt(index).findViewById(R.id.secondary_description);
     }
 
     public static <T> T waitForEvent(T mock) {

@@ -1,0 +1,17 @@
+<div id="footerContainer">
+  <a id="backgroundImageAttribution"
+      href="${this.backgroundImageAttributionUrl_}"
+      ?hidden="${!this.backgroundImageAttribution1_}">
+    <div id="backgroundImageAttribution1Container">
+      <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}">
+      </div>
+      <div id="backgroundImageAttribution1">
+        ${this.backgroundImageAttribution1_}
+      </div>
+    </div>
+    <div id="backgroundImageAttribution2"
+        ?hidden="${!this.backgroundImageAttribution2_}">
+      ${this.backgroundImageAttribution2_}
+    </div>
+  </a>
+</div>

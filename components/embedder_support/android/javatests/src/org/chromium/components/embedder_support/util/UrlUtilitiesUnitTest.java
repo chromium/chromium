@@ -225,6 +225,19 @@ public class UrlUtilitiesUnitTest {
 
     @Test
     @SmallTest
+    public void testIsChromeNativeUrl() {
+        Assert.assertTrue(UrlUtilities.isChromeNativeUrl(new GURL("chrome-native://newtab")));
+        Assert.assertTrue(UrlUtilities.isChromeNativeUrl(new GURL("chrome-native://bookmarks")));
+
+        Assert.assertFalse(UrlUtilities.isChromeNativeUrl(new GURL("")));
+        Assert.assertFalse(UrlUtilities.isChromeNativeUrl(new GURL("https://www.example.com")));
+        Assert.assertFalse(UrlUtilities.isChromeNativeUrl(new GURL("chrome://about")));
+        Assert.assertFalse(UrlUtilities.isChromeNativeUrl(new GURL("chrome://newtab")));
+        Assert.assertFalse(UrlUtilities.isChromeNativeUrl(new GURL("newtab")));
+    }
+
+    @Test
+    @SmallTest
     public void testIsTelScheme() {
         Assert.assertTrue(UrlUtilities.isTelScheme(new GURL("tel:123456789")));
         Assert.assertFalse(UrlUtilities.isTelScheme(new GURL("teltel:123456789")));

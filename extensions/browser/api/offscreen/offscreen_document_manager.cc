@@ -14,6 +14,7 @@
 #include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
 #include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/offscreen_document_host.h"
@@ -54,6 +55,8 @@ OffscreenDocumentManagerFactory::OffscreenDocumentManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ProcessManagerFactory::GetInstance());
+  // Indirectly depends on ExtensionService via ChromeExtensionSystem.
+  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
 OffscreenDocumentManager* OffscreenDocumentManagerFactory::GetForBrowserContext(

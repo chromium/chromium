@@ -61,6 +61,17 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 - (void)orderWindowByShuffling:(NSWindowOrderingMode)place
                     relativeTo:(NSInteger)otherWin;
 
+// "Activation independence" allows the activation of the window to be
+// independent of the activation of the owning app. This is a combination of two
+// different properties:
+//
+// - !NSWindow.canHide
+// - The equivalent of NSWindowStyleMaskNonactivatingPanel being set, if that
+//   were possible on NSWindows.
+- (void)setActivationIndependence:(BOOL)independence;
+
+- (bool)activationIndependence;
+
 // Order the window to the front (space switch if necessary), and ensure that
 // the window maintains its key state. A space switch will normally activate a
 // window, so this function prevents that if the window is currently inactive.

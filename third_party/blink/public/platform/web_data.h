@@ -31,10 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DATA_H_
 
+#include <vector>
+
 #include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 #if INSIDE_BLINK
@@ -76,7 +77,7 @@ class BLINK_PLATFORM_EXPORT WebData {
   // Same as SharedBuffer::CopyAs, copies the segmented data into a
   // contiguous buffer.  Use GetSomeData() or ForEachSegment() whenever
   // possible, if a copy can be avoided.
-  WebVector<uint8_t> Copy() const;
+  std::vector<uint8_t> Copy() const;
 
   // Helper for applying a lambda to all data segments sequentially:
   //

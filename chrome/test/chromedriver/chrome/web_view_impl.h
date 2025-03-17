@@ -103,7 +103,8 @@ class WebViewImpl : public WebView {
   Status Reload(const Timeout* timeout) override;
   Status Freeze(const Timeout* timeout) override;
   Status Resume(const Timeout* timeout) override;
-  Status StartBidiServer(std::string bidi_mapper_script) override;
+  Status StartBidiServer(std::string bidi_mapper_script,
+                         bool enable_unsafe_extension_debugging) override;
   Status PostBidiCommand(base::Value::Dict command) override;
   Status SendBidiCommand(base::Value::Dict command,
                          const Timeout& timeout,
@@ -216,7 +217,7 @@ class WebViewImpl : public WebView {
   void SetFrame(const std::string& new_frame_id) override;
 
   const WebViewImpl* GetParent() const;
-  const WebViewImpl* GetTab() const;
+  const WebViewImpl* GetTab();
   std::string GetTabId() override;
   Status GetActivePage(WebView** web_view) override;
   bool Lock();

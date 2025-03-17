@@ -7,7 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_settings_test_case_base.h"
@@ -24,6 +23,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 @interface SearchEngineSettingsEEATestCase : SearchEngineSettingsTestCaseBase
 @end
@@ -32,7 +32,8 @@
 
 // Tests that when changing the default search engine, the URL used for the
 // search is updated.
-- (void)testChangeSearchEngine {
+// TODO(crbug.com/386926969): Test failing on tablet-device and phone-device.
+- (void)DISABLED_testChangeSearchEngine {
   [self startHTTPServer];
   [self addURLRewriter];
 

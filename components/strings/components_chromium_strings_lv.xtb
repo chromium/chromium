@@ -20,6 +20,7 @@
           un noņemiet atzīmi no izvēles rūtiņas “Use a proxy server for your LAN” (Izmantot starpniekserveri savam LAN).</translation>
 <translation id="4622039161600275920">Šī lapa ir bloķēta pārlūkā Chromium.</translation>
 <translation id="48558539577516920">Ugunsmūra vai antivīrusu programmas iestatījumu maiņa, lai atļautu pārlūkam Chromium piekļūt tīklam.</translation>
+<translation id="4949828774841497663">Pārejiet uz sadaļu Applications (Lietojumprogrammas) &gt; System Settings (Sistēmas iestatījumi) &gt; Network (Tīkls), atlasiet aktīvo tīklu, noklikšķiniet uz pogas “Details...” (Detalizēta informācija) un noņemiet atlasi visiem starpniekserveriem, kas, iespējams, ir atlasīti.</translation>
 <translation id="580822234363523061">Atveriet
           Chromium izvēlni &gt;
           <ph name="SETTINGS_TITLE" />
@@ -28,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           un pārliecinieties, vai konfigurācija ir iestatīta uz “no proxy” (bez starpniekservera) vai “direct” (tieša).</translation>
+<translation id="648062525172759633">Šīs lapas ir paredzētas Chromium izstrādātājiem, un tās var nebūt aktīvi uzturētas vai testētas. Lai tās iespējotu, pārejiet uz lapu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, noklikšķiniet uz pogas, lai iespējotu atkļūdošanas lapas, un pēc tam atkal pārejiet uz šo lapu.</translation>
 <translation id="6549378540556750549">Pārlūku Chromium nodrošina arī cita <ph name="BEGIN_LINK_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Izmaiņas stāsies spēkā, kad restartēsiet Chromium.</translation>
 <translation id="691026815377248078">Pārlūkam Chromium ir nepieciešama Bluetooth piekļuve, lai turpinātu savienošanu pārī. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -40,9 +42,6 @@
         un noņemiet atzīmi no izvēles rūtiņas “<ph name="NO_PREFETCH_DESCRIPTION" />”.
         Ja problēmu neizdodas novērst, ieteicams atkal atlasīt šo opciju,
         lai uzlabotu veiktspēju.</translation>
-<translation id="8187289872471304532">Atveriet izvēlni
-          Applications (Lietojumprogrammas) &gt; System Preferences (Sistēmas preferences) &gt; Network (Tīkls) &gt; Advanced (Papildu) &gt; (Proxies) Starpniekserveri
-          un noņemiet atzīmes no visiem atzīmētajiem starpniekserveriem.</translation>
 <translation id="8597726643333341451">Jūs skatāt drošu pārlūka Chrome for Testing lapu</translation>
 <translation id="8684913864886094367">Chromium netika pareizi izslēgts.</translation>
 </translationbundle>

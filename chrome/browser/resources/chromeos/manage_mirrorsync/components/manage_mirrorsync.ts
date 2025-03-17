@@ -6,7 +6,8 @@ import './folder_selector.js';
 
 import {BrowserProxy} from '../browser_proxy.js';
 
-import {FOLDER_EXPANDED, FolderExpandedEvent, FolderSelector} from './folder_selector.js';
+import type {FolderExpandedEvent, FolderSelector} from './folder_selector.js';
+import {FOLDER_EXPANDED} from './folder_selector.js';
 import {getTemplate} from './manage_mirrorsync.html.js';
 
 /**

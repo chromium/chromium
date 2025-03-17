@@ -60,8 +60,6 @@ from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
-    Expectation,
-    ExpectationType,
     Result,
     ResultSinkReporter,
     ResultType,
@@ -155,16 +153,15 @@ class WPTResult(Result):
     def __init__(self,
                  *args,
                  test_type: Optional[str] = None,
-                 exp_line: Optional[ExpectationType] = None,
                  baseline: Optional[List[TestharnessLine]] = None,
+                 no_expectations: bool = False,
                  **kwargs):
-        kwargs.setdefault('expected', exp_line.results)
         super().__init__(*args, **kwargs)
         self.testharness_results = []
         self.test_type = test_type
-        self._exp_line = exp_line or Expectation()
         self._baseline = baseline or []
         self.image_diff_stats = None
+        self.no_expectations = no_expectations
         # TODO(crbug.com/41494889): Populate `self.failure_reason` like
         # `run_web_tests.py` does to help LUCI cluster failures.
 
@@ -213,6 +210,9 @@ class WPTResult(Result):
                 self.actual = ResultType.Pass
             else:
                 self.actual = ResultType.Failure
+        # When run with --no-expectations, all results are expected
+        if self.no_expectations:
+            self.expected = [self.actual]
         self.unexpected = self.actual not in self.expected
         self.is_regression = self.actual != ResultType.Pass and self.unexpected
 
@@ -281,11 +281,15 @@ class WPTResult(Result):
         if all(result.statuses <= {Status.PASS}
                for result in self.testharness_results):
             return make_all_pass_baseline(header)
+        # Add an extra newline to baselines generated from this test result.
+        # This avoids spurious failures if the test is run later with
+        # `run_web_tests.py`, which checks `content_shell` output against
+        # `-expected.txt` byte-for-byte.
         return format_testharness_baseline([
             TestharnessLine(header),
             *self.testharness_results,
             TestharnessLine(LineType.FOOTER),
-        ])
+        ]) + '\n'
 
     def summarize(self, product: str) -> Optional[str]:
         """Generate a summary of this test result as sanitized HTML.
@@ -621,6 +625,7 @@ class WPTResultsProcessor:
             baseline = parse_testharness_baseline(expected_text.decode())
         else:
             baseline = []
+        expected = self._expectations.get_expectations(test).results
         self._results[test] = WPTResult(
             test,
             # Placeholder status that has the lowest priority possible.
@@ -631,8 +636,9 @@ class WPTResultsProcessor:
             worker=0,
             file_path=self._file_path_for_test(test),
             test_type=self.get_test_type(test),
-            exp_line=self._expectations.get_expectations(test),
-            baseline=baseline)
+            expected=expected,
+            baseline=baseline,
+            no_expectations=self.port.get_option('no_expectations'))
 
     def get_path_from_test_root(self, test: str) -> str:
         wpt_dir, url_from_wpt_dir = self.port.split_wpt_dir(test)
@@ -680,6 +686,8 @@ class WPTResultsProcessor:
         result = self._results.pop(test, None)
         if not result:
             raise EventProcessingError('Test not started: %s' % test)
+        if 'SKIP' in expected:
+            result.expected |= {ResultType.Skip}
         result.took = max(0, event.time - result.started) / 1000
         result.pid = (extra or {}).get('browser_pid', 0)
         result.update_from_test(status, message)
@@ -887,19 +895,23 @@ class WPTResultsProcessor:
         actual_text = result.format_baseline()
         artifacts.CreateArtifact('actual_text', actual_subpath,
                                  actual_text.encode())
-        if self.reset_results and self._iteration == 0 and result.actual not in {
-                ResultType.Crash,
-                ResultType.Timeout,
-        }:
+        if self.reset_results and self._iteration == 0:
             source = self.fs.join(self.artifacts_dir, actual_subpath)
-            dest = self.fs.join(self.port.baseline_version_dir(),
-                                expected_subpath)
-            self.fs.maybe_make_directory(self.fs.dirname(dest))
+            if self.port.flag_specific_config_name():
+                output_dir = self.fs.join(
+                    self.port.baseline_flag_specific_dir(),
+                    self.fs.dirname(expected_subpath))
+            else:
+                output_dir = self.fs.dirname(
+                    self.port.expected_filename(
+                        result.name, '.txt', fallback_base_for_virtual=False))
+            dest = self.fs.join(output_dir, self.fs.basename(expected_subpath))
+            self.fs.maybe_make_directory(output_dir)
             self.fs.copyfile(source, dest)
 
         expected_text = self.port.expected_text(result.name)
         if expected_text:
-            expected_text = expected_text.decode().strip() + '\n'
+            expected_text = expected_text.decode()
             artifacts.CreateArtifact('expected_text', expected_subpath,
                                      expected_text.encode())
 

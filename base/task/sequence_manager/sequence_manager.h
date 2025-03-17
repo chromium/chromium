@@ -271,11 +271,6 @@ class BASE_EXPORT SequenceManager {
   // Returns a JSON string which describes all pending tasks.
   virtual std::string DescribeAllPendingTasks() const = 0;
 
-  // While Now() is less than `prioritize_until` we will alternate between a
-  // SequenceManager task and a yielding to the underlying sequence (e.g., the
-  // message pump).
-  virtual void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) = 0;
-
   // Adds an observer which reports task execution. Can only be called on the
   // same thread that `this` is running on.
   virtual void AddTaskObserver(TaskObserver* task_observer) = 0;

@@ -286,7 +286,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
                        base::WideToUTF8(known_resource_id));
   }
 
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
 
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       GemDeviceDetailsManager::Get()->GetGemServiceUploadDeviceDetailsUrl(),
@@ -299,7 +299,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     return E_FAIL;
   }
 
-  auto* resource_id = request_result->GetDict().FindString(
+  auto* resource_id = request_result->FindString(
       kUploadDeviceDetailsResponseDeviceResourceIdParameterName);
   if (resource_id) {
     hr = SetUserProperty(sid, kRegUserDeviceResourceId,

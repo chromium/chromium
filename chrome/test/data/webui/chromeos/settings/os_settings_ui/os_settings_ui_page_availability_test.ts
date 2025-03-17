@@ -14,7 +14,8 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
+import type {MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,7 +23,8 @@ import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
-import {SECTION_EXPECTATIONS, SectionName} from './page_availability_test_helpers.js';
+import type {SectionName} from './page_availability_test_helpers.js';
+import {SECTION_EXPECTATIONS} from './page_availability_test_helpers.js';
 
 const {Section} = routesMojom;
 
@@ -92,7 +94,7 @@ suite('<os-settings-ui> page availability', () => {
     });
 
     for (const {name} of SECTION_EXPECTATIONS) {
-      test(`${name} page availability`, async () => {
+      test(`${name} page availability`, () => {
         assertPageIsStamped(name);
       });
     }
@@ -124,7 +126,7 @@ suite('<os-settings-ui> page availability', () => {
            name,
            availableForGuest,
          } of SECTION_EXPECTATIONS) {
-      test(`${name} page availability`, async () => {
+      test(`${name} page availability`, () => {
         if (availableForGuest) {
           assertPageIsStamped(name);
         } else {

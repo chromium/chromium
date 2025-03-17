@@ -3,8 +3,15 @@
 This document describes how Chromium updates crates.io Rust crates that Chromium
 depends on.
 
-We have a weekly rotation (go/chromium-crates-update-rotation) of engineers
-responsible for creating and landing CLs that update Rust crates.
+## Staffing
+
+We have a
+[weekly rotation](https://goto.google.com/chromium-crates-update-rotation) of
+Google engineers responsible for creating and landing CLs that update Rust
+crates.
+
+Google engineers can join the rotation by emailing
+[chrome-safe-coding@google.com](mailto:chrome-safe-coding@google.com).
 
 ## Initial setup
 

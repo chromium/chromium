@@ -15,19 +15,21 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.FORCE_LIST_TAB_SWITCHER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -50,6 +52,7 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -68,12 +71,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -112,8 +116,9 @@ public class TabGridDialogViewBinderTest {
     private @Nullable View mShareButtonContainer;
     private @Nullable ButtonCompat mShareButton;
     private @Nullable View mImageTilesContainer;
+    private @Nullable View mSendFeedbackButton;
     private ImageView mHairline;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private GridLayoutManager mLayoutManager;
     private LinearLayoutManager mLinearLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -161,6 +166,8 @@ public class TabGridDialogViewBinderTest {
                     mTabGridDialogView.setBindingToken(null);
 
                     mHairline = mTabGridDialogView.findViewById(R.id.tab_grid_dialog_hairline);
+                    mSendFeedbackButton =
+                            mTabGridDialogView.findViewById(R.id.send_feedback_button);
                     mBackButton = mToolbarView.findViewById(R.id.toolbar_back_button);
                     mNewTabButton = mToolbarView.findViewById(R.id.toolbar_new_tab_button);
                     mTitleTextView = mToolbarView.findViewById(R.id.title);
@@ -180,9 +187,8 @@ public class TabGridDialogViewBinderTest {
                         assertNull(mShareButton);
                         assertNull(mImageTilesContainer);
                     }
-                    mScrimCoordinator =
-                            new ScrimCoordinator(sActivity, null, parentView, Color.RED);
-                    mTabGridDialogView.setupScrimCoordinator(mScrimCoordinator);
+                    mScrimManager = new ScrimManager(sActivity, parentView);
+                    mTabGridDialogView.setupScrimManager(mScrimManager);
 
                     mModel =
                             new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
@@ -200,6 +206,14 @@ public class TabGridDialogViewBinderTest {
                 });
     }
 
+    @After
+    public void tearDown() {
+        // The verification that a mock is broken or misused is by default on the next verify which
+        // might escape the current testcase causing other tests in the suite to fail. By putting
+        // this here any flakes should be contained to the testcase in which they are caused.
+        validateMockitoUsage();
+    }
+
     @Test
     @SmallTest
     @UiThreadTest
@@ -215,7 +229,7 @@ public class TabGridDialogViewBinderTest {
         assertNotEquals(title, mTitleTextView.getText().toString());
 
         mModel.set(BINDING_TOKEN, 4);
-        assertEquals(mTabGridDialogView.getBindingToken().intValue(), 4);
+        assertEquals(4, mTabGridDialogView.getBindingToken().intValue());
         assertEquals(title, mTitleTextView.getText().toString());
     }
 
@@ -326,7 +340,7 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, scrimClickRunnable);
         // Open the dialog to show the ScrimView.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
-        View scrimView = mScrimCoordinator.getViewForTesting();
+        View scrimView = mScrimManager.getViewForTesting();
         scrimView.performClick();
         assertTrue(scrimViewClicked.get());
     }
@@ -391,7 +405,7 @@ public class TabGridDialogViewBinderTest {
         // animations.
         mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, sourceView);
         assertEquals(
-                6,
+                7,
                 mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
     }
 
@@ -573,6 +587,9 @@ public class TabGridDialogViewBinderTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @RequiresRestart(
+            "Changing the layout size must remain scoped to this testcase otherwise "
+                    + "other tests in the suite may break. See https://crbug.com/363298801.")
     public void testSetInitialScrollIndex() {
         mContentView.layout(0, 0, 100, 500);
 
@@ -595,15 +612,15 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
         mModel.set(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER, mOnClickListener);
 
-        assertEquals(mShareButtonContainer.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mShareButtonContainer.getVisibility());
         assertEquals("Share", mShareButton.getText());
 
         mModel.set(
                 TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
                 R.string.tab_grid_manage_button_text);
         mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, true);
-        assertEquals(mShareButtonContainer.getVisibility(), View.VISIBLE);
-        assertEquals(mShareButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mShareButtonContainer.getVisibility());
+        assertEquals(View.VISIBLE, mShareButton.getVisibility());
         assertEquals("Manage", mShareButton.getText());
 
         mShareButton.performClick();
@@ -619,10 +636,10 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
         mModel.set(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER, mOnClickListener);
 
-        assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mImageTilesContainer.getVisibility());
 
         mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, true);
-        assertEquals(mImageTilesContainer.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mImageTilesContainer.getVisibility());
 
         mImageTilesContainer.performClick();
 
@@ -632,6 +649,9 @@ public class TabGridDialogViewBinderTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @RequiresRestart(
+            "Changing the LayoutManager and size must remain scoped to this testcase otherwise "
+                    + "other tests in the suite may break. See https://crbug.com/363298801.")
     public void testSetInitialScrollIndex_Linear() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -698,6 +718,7 @@ public class TabGridDialogViewBinderTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(FORCE_LIST_TAB_SWITCHER)
+    @DisableFeatures(DISABLE_LIST_TAB_SWITCHER)
     public void testSetAnimationBackgroundColor() {
         int color = ContextCompat.getColor(sActivity, R.color.baseline_primary_80);
 
@@ -731,5 +752,31 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, false);
         assertEquals(
                 View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mTabGridDialogView.getContentSensitivity());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSendFeedback() {
+        // Default state should be "safe".
+        assertEquals(View.GONE, mSendFeedbackButton.getVisibility());
+        mSendFeedbackButton.callOnClick();
+
+        // Test visibility.
+        mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, true);
+        assertEquals(View.VISIBLE, mSendFeedbackButton.getVisibility());
+
+        mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, false);
+        assertEquals(View.GONE, mSendFeedbackButton.getVisibility());
+
+        // Test click listener.
+        Runnable r = mock(Runnable.class);
+        mModel.set(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE, r);
+        mSendFeedbackButton.callOnClick();
+        verify(r).run();
+
+        // Null should not crash.
+        mModel.set(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE, null);
+        mSendFeedbackButton.callOnClick();
     }
 }

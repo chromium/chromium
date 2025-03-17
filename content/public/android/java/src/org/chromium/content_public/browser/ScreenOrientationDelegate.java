@@ -6,10 +6,13 @@ package org.chromium.content_public.browser;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An interface for ScreenOrientationProvider to notify other components that orientation
  * preferences may change.
  */
+@NullMarked
 public interface ScreenOrientationDelegate {
     /**
      * Notify the delegate that ScreenOrientationProvider consumers would like to unlock orientation

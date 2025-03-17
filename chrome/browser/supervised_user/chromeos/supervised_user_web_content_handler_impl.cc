@@ -17,22 +17,22 @@
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
 
-supervised_user::WebContentHandler::LocalApprovalResult
-ChromeOSResultToLocalApprovalResult(
+supervised_user::LocalApprovalResult ChromeOSResultToLocalApprovalResult(
     crosapi::mojom::ParentAccessResult::Tag result) {
   switch (result) {
     case crosapi::mojom::ParentAccessResult::Tag::kApproved:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kApproved;
+      return supervised_user::LocalApprovalResult::kApproved;
     case crosapi::mojom::ParentAccessResult::Tag::kDeclined:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kDeclined;
+      return supervised_user::LocalApprovalResult::kDeclined;
     case crosapi::mojom::ParentAccessResult::Tag::kCanceled:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kCanceled;
+      return supervised_user::LocalApprovalResult::kCanceled;
     case crosapi::mojom::ParentAccessResult::Tag::kError:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kError;
+      return supervised_user::LocalApprovalResult::kError;
     case crosapi::mojom::ParentAccessResult::Tag::kDisabled:
       // Disabled is not a possible result for Local Web Approvals.
       NOTREACHED();
@@ -92,6 +92,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     const supervised_user::UrlFormatter& url_formatter,
+    const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
@@ -126,7 +127,8 @@ void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     crosapi::mojom::ParentAccessResultPtr result) {
   WebContentHandler::OnLocalApprovalRequestCompleted(
       settings_service, url, start_time,
-      ChromeOSResultToLocalApprovalResult(result->which()));
+      ChromeOSResultToLocalApprovalResult(result->which()),
+      /*local_approval_error_type=*/std::nullopt);
 
   if (result->is_error()) {
     HandleChromeOSErrorResult(result->get_error()->type);

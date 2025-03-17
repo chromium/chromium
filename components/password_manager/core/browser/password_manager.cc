@@ -18,7 +18,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,6 +60,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -94,6 +94,21 @@ namespace {
 // Shorten the name to spare line breaks. The code provides enough context
 // already.
 using Logger = autofill::SavePasswordProgressLogger;
+constexpr char kLogInWithPasswordChangeSubmissionHistogram[] =
+    "PasswordManager.LogInWithPasswordChangeSubmission";
+
+bool DidLoginWithChangedPassword(const PasswordFormManager* submitted_manager) {
+  return std::ranges::any_of(
+      submitted_manager->GetBestMatches(),
+      [submitted_manager](const PasswordForm& match_submitted_form) {
+        return match_submitted_form.type ==
+                   PasswordForm::Type::kChangeSubmission &&
+               match_submitted_form.username_value ==
+                   submitted_manager->GetPendingCredentials().username_value &&
+               match_submitted_form.password_value ==
+                   submitted_manager->GetPendingCredentials().password_value;
+      });
+}
 
 bool AreChangePasswordFieldsEmpty(const FormData& form_data,
                                   const PasswordForm& parsed_form) {
@@ -167,7 +182,7 @@ bool ShouldShowManualFallbackForGeneratedPassword(
 }
 
 bool HasSingleUsernameVote(const FormPredictions& form) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       form.fields,
       [](const auto& type) {
         return password_manager_util::IsSingleUsernameType(type);
@@ -182,8 +197,8 @@ bool HasNewPasswordVote(const FormPredictions& form) {
     return type == ACCOUNT_CREATION_PASSWORD || type == NEW_PASSWORD;
   };
 
-  return base::ranges::any_of(form.fields, is_creation_password_or_new_password,
-                              &PasswordFieldPrediction::type);
+  return std::ranges::any_of(form.fields, is_creation_password_or_new_password,
+                             &PasswordFieldPrediction::type);
 }
 
 // Returns true iff `form` is not recognized as a password form by the renderer,
@@ -209,7 +224,7 @@ bool IsMutedInsecureCredential(const PasswordForm& credential,
 
 bool HasMutedCredentials(base::span<const PasswordForm> credentials,
                          const std::u16string& username) {
-  return base::ranges::any_of(credentials, [&username](const auto& credential) {
+  return std::ranges::any_of(credentials, [&username](const auto& credential) {
     return credential.username_value == username &&
            (IsMutedInsecureCredential(credential, InsecureType::kLeaked) ||
             IsMutedInsecureCredential(credential, InsecureType::kPhished));
@@ -260,14 +275,57 @@ bool StoreResultFilterAllowsSaving(PasswordFormManager* form_manager,
 }
 
 bool ModelPredictionsContainCredentialTypes(
-    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
-  return base::ranges::any_of(
+    const base::flat_map<FieldRendererId, FieldType>& predictions) {
+  return std::ranges::any_of(
       predictions,
-      [](const std::pair<FieldGlobalId, FieldType>& field_prediction) {
+      [](const std::pair<FieldRendererId, FieldType>& field_prediction) {
         autofill::FieldTypeGroup type_category =
             GroupTypeOfFieldType(field_prediction.second);
         return (type_category == autofill::FieldTypeGroup::kUsernameField) ||
                (type_category == autofill::FieldTypeGroup::kPasswordField);
+      });
+}
+
+void RecordMetricsForModelPredictions(
+    const base::flat_map<FieldGlobalId, FieldType>& field_predictions,
+    ukm::SourceId ukm_source_id) {
+  ukm::builders::PasswordManager_Classification ukm_builder(ukm_source_id);
+
+  bool model_predictions_empty =
+      std::ranges::all_of(field_predictions, [](const auto& prediction) {
+        return prediction.second == autofill::NO_SERVER_DATA;
+      });
+  base::UmaHistogramBoolean("PasswordManager.ModelPredictions.Empty",
+                            model_predictions_empty);
+  ukm_builder.SetModelPredictionsEmpty(model_predictions_empty);
+
+  // Record metrics on whether we see password or OTP forms.
+  PasswordVsOtpFormType type = PasswordVsOtpFormType::kNone;
+  if (std::any_of(field_predictions.begin(), field_predictions.end(),
+                  [](const auto& field) {
+                    return field.second == autofill::PASSWORD;
+                  })) {
+    type |= PasswordVsOtpFormType::kPassword;
+  }
+  if (std::any_of(field_predictions.begin(), field_predictions.end(),
+                  [](const auto& field) {
+                    return field.second == autofill::ONE_TIME_CODE;
+                  })) {
+    type |= PasswordVsOtpFormType::kOtp;
+  }
+  if (type != PasswordVsOtpFormType::kNone) {
+    base::UmaHistogramEnumeration("PasswordManager.ParsedFormIsOtpForm2", type);
+    ukm_builder.SetPasswordVsOtpFormType(static_cast<int>(type));
+  }
+
+  ukm_builder.Record(ukm::UkmRecorder::Get());
+}
+
+base::flat_map<FieldRendererId, FieldType> KeyPredictionsByRendererIds(
+    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
+  return base::MakeFlatMap<FieldRendererId, FieldType>(
+      predictions, {}, [](const auto& field) {
+        return std::make_pair(field.first.renderer_id, field.second);
       });
 }
 
@@ -317,7 +375,7 @@ void SignalFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool HasManuallyFilledFields(const PasswordForm& form) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       form.form_data.fields(), [&](const autofill::FormFieldData& field) {
         return field.properties_mask() &
                autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
@@ -351,7 +409,8 @@ void PasswordManager::RegisterProfilePrefs(
                                0.0);
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  registry->RegisterDictionaryPref(prefs::kAccountStoragePerAccountSettings);
+  registry->RegisterDictionaryPref(
+      prefs::kObsoleteAccountStoragePerAccountSettings);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterTimePref(prefs::kProfileStoreDateLastUsedForFilling,
@@ -390,10 +449,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
   registry->RegisterBooleanPref(
       prefs::kUserAcknowledgedLocalPasswordsMigrationWarning, false);
-  registry->RegisterTimePref(
-      prefs::kLocalPasswordsMigrationWarningShownTimestamp, base::Time());
-  registry->RegisterBooleanPref(
-      prefs::kLocalPasswordMigrationWarningShownAtStartup, false);
   registry->RegisterIntegerPref(
       prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
   registry->RegisterIntegerPref(
@@ -410,6 +465,7 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kPasswordAccessLossWarningShownAtStartupTimestamp, base::Time());
   registry->RegisterTimePref(prefs::kPasswordAccessLossWarningShownTimestamp,
                              base::Time());
+  registry->RegisterBooleanPref(prefs::kUpmAutoExportCsvNeedsDeletion, false);
   registry->RegisterBooleanPref(prefs::kUpmUnmigratedPasswordsExported, false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -432,6 +488,10 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAutofillableCredentialsAccountStoreLoginDatabase, false);
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
+  registry->RegisterBooleanPref(prefs::kPasswordChangeFlowNoticeAgreement,
+                                false);
+#endif
   registry->RegisterBooleanPref(prefs::kPasswordSharingEnabled, true);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry->RegisterIntegerPref(prefs::kRelaunchChromeBubbleDismissedCounter,
@@ -454,6 +514,9 @@ void PasswordManager::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kAccountStoreMigratedToOSCryptAsync,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kAutomaticPasskeyUpgrades, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 // static
@@ -610,10 +673,12 @@ void PasswordManager::UpdateFormManagers() {
   }
 
   // Remove the duplicates.
-  base::ranges::sort(fetchers);
-  fetchers.erase(base::ranges::unique(fetchers), fetchers.end());
-  base::ranges::sort(drivers);
-  drivers.erase(base::ranges::unique(drivers), drivers.end());
+  std::ranges::sort(fetchers);
+  auto repeated_fetchers = std::ranges::unique(fetchers);
+  fetchers.erase(repeated_fetchers.begin(), repeated_fetchers.end());
+  std::ranges::sort(drivers);
+  auto repeated_drivers = std::ranges::unique(drivers);
+  drivers.erase(repeated_drivers.begin(), repeated_drivers.end());
   // Refetch credentials for all the forms and update the drivers.
   for (FormFetcher* fetcher : fetchers) {
     fetcher->Fetch();
@@ -741,8 +806,8 @@ void PasswordManager::OnPasswordFormCleared(
   // verified that fields are relevant.
   FieldRendererId new_password_field_id =
       manager->GetSubmittedForm()->new_password_element_renderer_id;
-  auto it = base::ranges::find(form_data.fields(), new_password_field_id,
-                               &autofill::FormFieldData::renderer_id);
+  auto it = std::ranges::find(form_data.fields(), new_password_field_id,
+                              &autofill::FormFieldData::renderer_id);
   if (it != form_data.fields().end() && it->value().empty()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
@@ -1060,8 +1125,8 @@ void PasswordManager::UpdateStateOnUserInput(
   }
 
   // Get the field that corresponds to `field_id`.
-  auto it = base::ranges::find(observed_form->fields(), field_id,
-                               &autofill::FormFieldData::renderer_id);
+  auto it = std::ranges::find(observed_form->fields(), field_id,
+                              &autofill::FormFieldData::renderer_id);
   if (it == observed_form->fields().end()) {
     return;
   }
@@ -1129,7 +1194,7 @@ void PasswordManager::OnPasswordFormsRemoved(
   auto* submitted_manager = GetSubmittedManager();
   if (submitted_manager) {
     // Check if the submitted manager corresponds to one of the removed forms.
-    bool removed_submitted_form = base::ranges::any_of(
+    bool removed_submitted_form = std::ranges::any_of(
         removed_forms_copy, [&](const auto& removed_form_id) {
           return submitted_manager->DoesManage(removed_form_id, driver);
         });
@@ -1145,10 +1210,12 @@ void PasswordManager::OnPasswordFormsRemoved(
   // have data that we can save.
   // If the submitted manager observes one of the removed forms, just
   // ignore it as it was already inspected above.
-  base::ranges::any_of(removed_forms_copy, [&](const auto& removed_form_id) {
-    auto* manager = GetMatchedManagerForForm(driver, removed_form_id);
-    return manager != submitted_manager && detect_submission(manager);
-  });
+  if (std::ranges::any_of(removed_forms_copy, [&](const auto& removed_form_id) {
+        auto* manager = GetMatchedManagerForForm(driver, removed_form_id);
+        return manager != submitted_manager && detect_submission(manager);
+      })) {
+    return;
+  }
 }
 
 void PasswordManager::OnIframeDetach(
@@ -1376,6 +1443,14 @@ void PasswordManager::OnLoginSuccessful() {
                                          client_);
   }
 
+  if (DidLoginWithChangedPassword(submitted_manager)) {
+    base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
+                              true);
+    ukm::builders::PasswordManager_ChangeSubmission(client_->GetUkmSourceId())
+        .SetLogInWithPasswordChangeSubmission(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
+
   bool able_to_save_passwords =
       password_manager_util::IsAbleToSavePasswords(client_);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
@@ -1394,7 +1469,7 @@ void PasswordManager::OnLoginSuccessful() {
           submitted_manager->GetInsecureCredentials(),
           submitted_manager->GetSubmittedForm()->username_value) &&
       !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
-    leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck,
+    leak_delegate_.StartLeakCheck(client_->GetLeakDetectionInitiator(),
                                   submitted_manager->GetPendingCredentials(),
                                   submitted_manager->GetURL());
   }
@@ -1468,6 +1543,14 @@ void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  if (DidLoginWithChangedPassword(submitted_manager)) {
+    base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
+                              false);
+    ukm::builders::PasswordManager_ChangeSubmission(client_->GetUkmSourceId())
+        .SetLogInWithPasswordChangeSubmission(false)
+        .Record(ukm::UkmRecorder::Get());
+  }
 
   ResetSubmittedManager();
 }
@@ -1546,8 +1629,14 @@ void PasswordManager::ProcessClassificationModelPredictions(
     PasswordManagerDriver* driver,
     const autofill::FormData& form,
     const base::flat_map<FieldGlobalId, FieldType>& field_predictions) {
+  RecordMetricsForModelPredictions(field_predictions,
+                                   client_->GetUkmSourceId());
+
+  // A combination of driver and form renderer id allow to identify fields
+  // uniquely, so only the renderer ids need to be kept (not global ids).
   auto& predictions_for_form = classifier_model_predictions_[std::make_pair(
-      driver, form.renderer_id())] = std::move(field_predictions);
+      driver, form.renderer_id())] =
+      KeyPredictionsByRendererIds(field_predictions);
 
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
@@ -1720,7 +1809,7 @@ void PasswordManager::ShowManualFallbackForSaving(
 
 bool PasswordManager::NewFormsParsed(PasswordManagerDriver* driver,
                                      const std::vector<FormData>& form_data) {
-  return base::ranges::any_of(form_data, [driver, this](const FormData& form) {
+  return std::ranges::any_of(form_data, [driver, this](const FormData& form) {
     return !GetMatchedManagerForForm(driver, form.renderer_id());
   });
 }

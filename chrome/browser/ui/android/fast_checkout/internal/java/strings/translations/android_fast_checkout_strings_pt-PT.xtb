@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1122068467107743258">Trabalho</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="138513070655895675">Altere para outro método de pagamento neste item de menu.</translation>
 <translation id="2129442648318919291">Faça a gestão das moradas.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Endereço para envio</translation>
 <translation id="8873105120914375071">Pagar mais rapidamente?</translation>
 <translation id="9032876013752408138">Preencher automaticamente as minhas informações</translation>
+<translation id="932327136139879170">Página inicial</translation>
 <translation id="984275831282074731">Métodos de pagamento</translation>
 </translationbundle>

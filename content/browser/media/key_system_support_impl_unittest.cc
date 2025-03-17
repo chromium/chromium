@@ -78,7 +78,8 @@ CdmCapability TestCdmCapability() {
   return CdmCapability(
       {AudioCodec::kVorbis}, {{VideoCodec::kVP8, {}}, {VideoCodec::kVP9, {}}},
       {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
-      {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
+      {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense},
+      base::Version("1.2.3.4"));
 }
 
 KeySystemCapabilities TestKeySystemCapabilities(

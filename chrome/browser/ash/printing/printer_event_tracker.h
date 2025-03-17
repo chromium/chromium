@@ -49,8 +49,10 @@ class PrinterEventTracker : public KeyedService {
 
   // Store a succesful network printer installation. |mode| indicates if
   // the PPD was selected automatically or chosen by the user.
-  void RecordIppPrinterInstalled(const chromeos::Printer& printer,
-                                 SetupMode mode);
+  void RecordIppPrinterInstalled(
+      const chromeos::Printer& printer,
+      SetupMode mode,
+      const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info);
 
   // Record an abandoned setup.
   void RecordSetupAbandoned(const chromeos::Printer& printer);

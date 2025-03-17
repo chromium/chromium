@@ -64,7 +64,7 @@ void ImageView::OnThemeChanged() {
   View::OnThemeChanged();
   if (image_model_.IsImageGenerator() ||
       (image_model_.IsVectorIcon() &&
-       !image_model_.GetVectorIcon().has_color())) {
+       !image_model_.GetVectorIcon().color().GetSkColor())) {
     scaled_image_ = gfx::ImageSkia();
     SchedulePaint();
   }

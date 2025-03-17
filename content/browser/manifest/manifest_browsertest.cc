@@ -18,8 +18,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -602,6 +604,68 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, AnchorNavigation) {
   ASSERT_EQ(2u, manifests_reported_when_favicon_url_updated().size());
   EXPECT_EQ(1u, manifests_reported_when_favicon_url_updated()[0]);
   EXPECT_EQ(1u, manifests_reported_when_favicon_url_updated()[1]);
+}
+
+using ManifestIconDownloaderBrowserTest = ManifestBrowserTest;
+
+// Bad icon measures the `kNoImageFound` histogram, and the chrome-url histogram
+// isn't measured.
+IN_PROC_BROWSER_TEST_F(ManifestIconDownloaderBrowserTest, BadIcon) {
+  base::HistogramTester tester;
+  GURL icon_url = embedded_test_server()->GetURL("/manifest/bad_icon.png");
+
+  base::test::TestFuture<const SkBitmap&> test_future;
+  content::ManifestIconDownloader::Download(
+      shell()->web_contents(), icon_url, /*ideal_icon_size_in_px=*/192,
+      /*minimum_icon_size_in_px=*/192, /*maximum_icon_size_in_px=*/192,
+      test_future.GetCallback(), /*square_only=*/false);
+  EXPECT_TRUE(test_future.Wait());
+
+  EXPECT_TRUE(test_future.Get().drawsNothing());
+
+  tester.ExpectBucketCount("WebApp.ManifestIconDownloader.Result",
+                           ManifestIconDownloader::Result::kNoImageFound, 1);
+  tester.ExpectTotalCount("WebApp.ManifestIconDownloader.ChromeUrl.Result", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestIconDownloaderBrowserTest, HungIcon) {
+  base::HistogramTester tester;
+  GURL icon_url = embedded_test_server()->GetURL("/manifest/hung");
+
+  base::test::TestFuture<const SkBitmap&> test_future;
+  content::ManifestIconDownloader::Download(
+      shell()->web_contents(), icon_url, /*ideal_icon_size_in_px=*/64,
+      /*minimum_icon_size_in_px=*/64, /*maximum_icon_size_in_px=*/64,
+      test_future.GetCallback(), /*square_only=*/false);
+  EXPECT_TRUE(test_future.Wait());
+
+  EXPECT_TRUE(test_future.Get().drawsNothing());
+
+  tester.ExpectBucketCount("WebApp.ManifestIconDownloader.Result",
+                           ManifestIconDownloader::Result::kNoImageFound, 1);
+  tester.ExpectTotalCount("WebApp.ManifestIconDownloader.ChromeUrl.Result", 0);
+}
+
+// Valid icon measures the `kSuccess` histogram.
+IN_PROC_BROWSER_TEST_F(ManifestIconDownloaderBrowserTest, CorrectIcon) {
+  base::HistogramTester tester;
+  GURL test_url =
+      embedded_test_server()->GetURL("/manifest/icon-manifest.html");
+  GURL icon_url = embedded_test_server()->GetURL("/manifest/128x128-red.png");
+
+  base::test::TestFuture<const SkBitmap&> test_future;
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  content::ManifestIconDownloader::Download(
+      shell()->web_contents(), icon_url, /*ideal_icon_size_in_px=*/128,
+      /*minimum_icon_size_in_px=*/128, /*maximum_icon_size_in_px=*/128,
+      test_future.GetCallback(), /*square_only=*/false);
+  EXPECT_TRUE(test_future.Wait());
+
+  // A valid image is drawn.
+  EXPECT_FALSE(test_future.Get().drawsNothing());
+
+  tester.ExpectBucketCount("WebApp.ManifestIconDownloader.Result",
+                           ManifestIconDownloader::Result::kSuccess, 1);
 }
 
 namespace {

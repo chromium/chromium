@@ -414,6 +414,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Note: Setting a layer non-opaque has significant performance impact,
   // especially on low-end Chrome OS devices. Please ensure you are not
   // adding unnecessary overdraw. When in doubt, talk to the graphics team.
+  // NOTE: Opacity of SOLID_COLOR layer is determined by the color's alpha
+  // channel. Calling this on SOLID_COLOR results in check failure.
   void SetFillsBoundsOpaquely(bool fills_bounds_opaquely);
   bool fills_bounds_opaquely() const { return fills_bounds_opaquely_; }
 
@@ -765,7 +767,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // does not affect the layer's descendants.
   bool accept_events_ = true;
 
-  // See SetFillsBoundsOpaquely(). Defaults to true.
+  // See SetFillsBoundsOpaquely().
   bool fills_bounds_opaquely_;
 
   bool fills_bounds_completely_;

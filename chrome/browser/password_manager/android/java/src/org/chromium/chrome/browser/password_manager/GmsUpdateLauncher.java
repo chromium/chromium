@@ -11,7 +11,10 @@ import android.net.Uri;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Launches the UI through which the user can update Google Play Services/ */
+@NullMarked
 public class GmsUpdateLauncher {
     // Referrer string for the Google Play Store when installing GMS Core package
     private static final String STORE_REFERER = "chrome_upm";

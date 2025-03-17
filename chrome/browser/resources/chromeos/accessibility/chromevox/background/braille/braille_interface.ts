@@ -8,8 +8,8 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {BrailleDisplayState} from '../../common/braille/braille_key_types.js';
-import {NavBraille} from '../../common/braille/nav_braille.js';
+import type {BrailleDisplayState} from '../../common/braille/braille_key_types.js';
+import type {NavBraille} from '../../common/braille/nav_braille.js';
 
 // TODO(anastasi): Convert to an interface once dependencies are converted to
 //     TypeScript.

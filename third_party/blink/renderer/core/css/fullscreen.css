@@ -16,8 +16,11 @@
   user-select: text;
 }
 
-:fullscreen {
+/* Reducing specificity to ensure [inert] UA rule overrides this one for the
+   interactivity declaration. */
+:where(:fullscreen) {
   overlay: auto !important;
+  interactivity: auto;
 }
 
 iframe:fullscreen {

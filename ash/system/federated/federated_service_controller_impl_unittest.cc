@@ -22,9 +22,6 @@ class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
   FederatedServiceControllerImplTestBase()
       : NoSessionAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFederatedService},
-        /*disabled_features=*/{});
   }
 
   FederatedServiceControllerImplTestBase(
@@ -43,13 +40,10 @@ class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
  protected:
   raw_ptr<FederatedServiceControllerImpl, DanglingUntriaged> controller_ =
       nullptr;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FederatedServiceControllerImplTestBase, NormalUserLogin) {
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
   EXPECT_TRUE(controller_->IsServiceAvailable());
 
   GetSessionControllerClient()->LockScreen();
@@ -70,7 +64,7 @@ TEST_F(FederatedServiceControllerImplTestBase, NormalUserLogin) {
 }
 
 TEST_F(FederatedServiceControllerImplTestBase, ChildUserLogin) {
-  SimulateUserLogin("user@gmail.com", user_manager::UserType::kChild);
+  SimulateUserLogin({"user@gmail.com", user_manager::UserType::kChild});
   EXPECT_TRUE(controller_->IsServiceAvailable());
 }
 

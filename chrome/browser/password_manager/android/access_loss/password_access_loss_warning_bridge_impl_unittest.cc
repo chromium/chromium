@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/password_manager/android/mock_password_manager_util_bridge.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -38,6 +39,11 @@ class PasswordAccessLossWarningBridgeImplTest : public testing::Test {
     // The pref needs to be explicitly set for the warning to show up.
     pref_service()->SetBoolean(
         password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+
+    auto mock_util_bridge = std::make_unique<MockPasswordManagerUtilBridge>();
+    ON_CALL(*mock_util_bridge, IsInternalBackendPresent)
+        .WillByDefault(testing::Return(true));
+    bridge_.SetUtilBridgeForTesting(std::move(mock_util_bridge));
   }
 
   std::string getGMSVersionForTestSetUp(bool is_up_to_date) {
@@ -149,5 +155,28 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
   task_env()->FastForwardBy(base::Days(2));
 
   EXPECT_TRUE(bridge()->ShouldShowAccessLossNoticeSheet(
+      pref_service(), /*called_at_startup=*/false));
+}
+
+TEST_F(PasswordAccessLossWarningBridgeImplTest,
+       ShouldNotShowIfLoginDbDeprecationStarted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
+       password_manager::features::kLoginDbDeprecationAndroid},
+      {});
+
+  // Create all the conditions necessary for the sheet to show to verify that
+  // the reason it doesn't show is the login DB deprecation being enabled.
+  pref_service()->SetTime(
+      password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
+      base::Time::Now());
+  pref_service()->SetTime(password_manager::prefs::
+                              kPasswordAccessLossWarningShownAtStartupTimestamp,
+                          base::Time::Now());
+  task_env()->FastForwardBy(base::Days(2));
+
+  EXPECT_FALSE(bridge()->ShouldShowAccessLossNoticeSheet(
       pref_service(), /*called_at_startup=*/false));
 }

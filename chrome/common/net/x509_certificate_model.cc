@@ -20,6 +20,7 @@
 #include "crypto/sha2.h"
 #include "net/base/ip_address.h"
 #include "net/cert/ct_objects_extractor.h"
+#include "net/cert/qwac.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -478,6 +479,7 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     {bssl::der::Input(bssl::kUserNoticeId),
      IDS_CERT_PKIX_USER_NOTICE_QUALIFIER},
     {bssl::der::Input(net::ct::kEmbeddedSCTOid), IDS_CERT_X509_SCT_LIST},
+    {bssl::der::Input(net::kQcStatementsOid), IDS_CERT_QC_STATEMENTS},
 
     // Extended Key Usages:
     {bssl::der::Input(bssl::kAnyEKU), IDS_CERT_EKU_ANY_EKU},
@@ -491,6 +493,16 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     {bssl::der::Input(bssl::kOCSPSigning), IDS_CERT_EKU_OCSP_SIGNING},
     {bssl::der::Input(kNetscapeServerGatedCrypto),
      IDS_CERT_EKU_NETSCAPE_INTERNATIONAL_STEP_UP},
+
+    // Policies:
+    {bssl::der::Input(net::kQevcpwOid), IDS_CERT_POLICY_ETSI_QEVCP_W},
+    {bssl::der::Input(net::kQncpwOid), IDS_CERT_POLICY_ETSI_QNCP_W},
+
+    // QcStatements:
+    {bssl::der::Input(net::kEtsiQcsQcComplianceOid),
+     IDS_CERT_QC_ETSI_QCS_QCCOMPLIANCE},
+    {bssl::der::Input(net::kEtsiQcsQcTypeOid), IDS_CERT_QC_ETSI_QCS_QCTYPE},
+    {bssl::der::Input(net::kEtsiQctWebOid), IDS_CERT_QC_ETSI_QCT_WEB},
 
     // Microsoft oids:
     {bssl::der::Input(kMsCertExtCerttype), IDS_CERT_EXT_MS_CERT_TYPE},
@@ -1234,6 +1246,42 @@ std::vector<uint8_t> BIGNUMBytes(const BIGNUM* bn) {
   return ret;
 }
 
+std::optional<std::string> ProcessQcStatements(
+    bssl::der::Input extension_data) {
+  std::optional<std::vector<net::QcStatement>> qc_statements =
+      net::ParseQcStatements(extension_data);
+  if (!qc_statements.has_value()) {
+    return std::nullopt;
+  }
+
+  std::string rv;
+  for (const auto& statement : qc_statements.value()) {
+    rv += GetOidTextOrNumeric(statement.id);
+    if (!statement.info.empty()) {
+      rv += " = ";
+      // The `statement.info` is dependent on the `id`, so `info` can only be
+      // processed for known ids. Otherwise the raw bytes of `info` are shown.
+      if (statement.id == bssl::der::Input(net::kEtsiQcsQcTypeOid)) {
+        std::optional<std::vector<bssl::der::Input>> qc_types =
+            net::ParseQcTypeInfo(statement.info);
+        if (!qc_types.has_value()) {
+          return std::nullopt;
+        }
+        std::string sep;
+        for (const auto& qc_type_id : qc_types.value()) {
+          rv += sep;
+          rv += GetOidTextOrNumeric(qc_type_id);
+          sep = ", ";
+        }
+      } else {
+        rv += ProcessRawBytes(statement.info);
+      }
+    }
+    rv += "\n";
+  }
+  return rv;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -1507,6 +1555,9 @@ std::optional<std::string> X509CertificateModel::ProcessExtensionData(
       extension.oid == bssl::der::Input(kNetscapeCommentOid) ||
       extension.oid == bssl::der::Input(kNetscapeLostPasswordURLOid)) {
     return ProcessIA5String(extension.value);
+  }
+  if (extension.oid == bssl::der::Input(net::kQcStatementsOid)) {
+    return ProcessQcStatements(extension.value);
   }
   // TODO(crbug.com/41395047): SCT
   // TODO(mattm): name constraints

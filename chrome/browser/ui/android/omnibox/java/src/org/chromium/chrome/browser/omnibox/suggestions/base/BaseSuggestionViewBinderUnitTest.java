@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -17,8 +16,9 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -52,12 +52,12 @@ import java.util.List;
 /** Tests for {@link BaseSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseSuggestionViewBinderUnitTest {
-
     private Context mBareContext;
     private Context mContext;
     private Resources mResources;
     private PropertyModel mModel;
     private BaseSuggestionView<View> mBaseView;
+    private BaseSuggestionViewBinder mBinder;
     private ImageView mIconView;
 
     @Before
@@ -71,14 +71,16 @@ public class BaseSuggestionViewBinderUnitTest {
         mIconView = mBaseView.decorationIcon;
 
         mModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(
-                mModel,
-                mBaseView,
+        mBinder =
                 new BaseSuggestionViewBinder(
                         (m, v, p) -> {
                             assertEquals(mBaseView.contentView, v);
-                        }));
+                        });
+
+        PropertyModelChangeProcessor.create(mModel, mBaseView, mBinder);
         BaseSuggestionViewBinder.initializeDimensions(mContext);
+
+        ResettersForTesting.register(() -> BaseSuggestionViewBinder.sFocusableDrawableState = null);
     }
 
     @Test
@@ -280,77 +282,60 @@ public class BaseSuggestionViewBinderUnitTest {
     public void applySelectableBackground_incognito() {
         // This is a whitebox test. It currently assumes that the Suggestion background is a
         // LayerDrawable, whose bottom element represents the color.
+        var defaultDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
+
         mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        var lightModeDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
+        Assert.assertNotSame(defaultDrawable, lightModeDrawable);
 
-        var backgroundCaptor = ArgumentCaptor.forClass(LayerDrawable.class);
-        verify(mBaseView).setBackground(backgroundCaptor.capture());
+        // Trigger "no update", the drawable should not be recreated.
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        Assert.assertSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
+        mBinder.bind(mModel, mBaseView, SuggestionCommonProperties.COLOR_SCHEME);
+        Assert.assertSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
 
-        Assert.assertEquals(
-                mContext.getColor(R.color.omnibox_suggestion_bg_incognito),
-                ((ColorDrawable) backgroundCaptor.getValue().getDrawable(0)).getColor());
+        // Lastly, observe change when changing the color scheme to something else.
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        Assert.assertNotSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
     }
 
     @Test
     public void applySelectableBackground_nonIncognito() {
         // This is a whitebox test. It currently assumes that the Suggestion background is a
         // LayerDrawable, whose bottom element represents the color.
+        var defaultDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
+
         mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        var lightModeDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
+        Assert.assertNotSame(defaultDrawable, lightModeDrawable);
 
-        var backgroundCaptor = ArgumentCaptor.forClass(LayerDrawable.class);
-        verify(mBaseView).setBackground(backgroundCaptor.capture());
+        // Trigger "no update", the drawable should not be recreated.
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        Assert.assertSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
+        mBinder.bind(mModel, mBaseView, SuggestionCommonProperties.COLOR_SCHEME);
+        Assert.assertSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
 
-        Assert.assertEquals(
-                ChromeColors.getSurfaceColor(
-                        mBaseView.getContext(), R.dimen.omnibox_suggestion_bg_elevation),
-                ((ColorDrawable) backgroundCaptor.getValue().getDrawable(0)).getColor());
+        // Lastly, observe change when changing the color scheme to something else.
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        Assert.assertNotSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
     }
 
     @Test
     public void applySelectableBackground_reuseConstantState() {
         // This is a whitebox test. It currently assumes that the Suggestion background is a
-        // LayerDrawable, whose bottom element represents the color.
-        var bgCaptor1 = ArgumentCaptor.forClass(LayerDrawable.class);
-        var bgCaptor2 = ArgumentCaptor.forClass(LayerDrawable.class);
+        // known Drawable supplied by the Test. Use simple drawable to aid testing logic.
+        BaseSuggestionViewBinder.sFocusableDrawableState =
+                new ColorDrawable(Color.MAGENTA).getConstantState();
 
-        // First call should instantiate incognito color.
-        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
-        verify(mBaseView).setBackground(bgCaptor1.capture());
+        var bgCaptor = ArgumentCaptor.forClass(Drawable.class);
 
-        // Attempt to re-use the background color.
-        // We do this by instantiating a mock which does not deliver Context.
-        // This must not crash.
         var viewWithNoContext = mock(View.class);
         BaseSuggestionViewBinder.applySelectableBackground(mModel, viewWithNoContext);
-        verify(viewWithNoContext).setBackground(bgCaptor2.capture());
+        verify(viewWithNoContext).setBackground(bgCaptor.capture());
 
-        var color1 = ((ColorDrawable) bgCaptor1.getValue().getDrawable(0)).getColor();
-        var color2 = ((ColorDrawable) bgCaptor2.getValue().getDrawable(0)).getColor();
+        var color = ((ColorDrawable) bgCaptor.getValue()).getColor();
 
-        Assert.assertEquals(color1, color2);
-    }
-
-    @Test
-    public void applySelectableBackground_clearConstantStateWhenClientColorSchemeChanges() {
-        // This is a whitebox test. It currently assumes that the Suggestion background is a
-        // LayerDrawable, whose bottom element represents the color.
-        var incognitoBgCaptor = ArgumentCaptor.forClass(LayerDrawable.class);
-        var lightBgCaptor = ArgumentCaptor.forClass(LayerDrawable.class);
-
-        // First call should instantiate incognito color.
-        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
-        verify(mBaseView).setBackground(incognitoBgCaptor.capture());
-        clearInvocations(mBaseView);
-
-        // Second call should instantiate regular color.
-        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);
-        verify(mBaseView).setBackground(lightBgCaptor.capture());
-        clearInvocations(mBaseView);
-
-        var incognitoColor =
-                ((ColorDrawable) incognitoBgCaptor.getValue().getDrawable(0)).getColor();
-        var lightColor = ((ColorDrawable) lightBgCaptor.getValue().getDrawable(0)).getColor();
-
-        Assert.assertNotEquals(incognitoColor, lightColor);
+        Assert.assertEquals(Color.MAGENTA, color);
     }
 
     @Test

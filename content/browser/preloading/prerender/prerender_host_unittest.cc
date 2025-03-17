@@ -13,7 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/preloading/preload_pipeline_info.h"
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -21,6 +21,7 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -291,7 +292,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         /*should_warm_up_compositor=*/false,
         /*should_prepare_paint_tree=*/false, std::move(url_match_predicate),
         /*prerender_navigation_handle_callback=*/{},
-        base::MakeRefCounted<PreloadPipelineInfo>());
+        PreloadPipelineInfoImpl::Create(
+            /*planned_max_preloading_type=*/PreloadingType::kPrerender));
   }
 
   void ExpectFinalStatus(PrerenderFinalStatus status) {
@@ -331,29 +333,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class NoVarySearchHeaderPrerenderHostTest
-    : public PrerenderHostTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  NoVarySearchHeaderPrerenderHostTest() {
-    bool is_nvs_header_enabled = GetParam();
-    if (is_nvs_header_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kPrerender2NoVarySearch);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kPrerender2NoVarySearch);
-    }
-  }
-
-  ~NoVarySearchHeaderPrerenderHostTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(NoVarySearchHeaderPrerenderHostTest, IsNoVarySearchHeaderSet) {
-  bool is_nvs_header_enabled = GetParam();
+TEST_F(PrerenderHostTest, IsNoVarySearchHeaderSet) {
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
   FrameTreeNodeId prerender_frame_tree_node_id =
@@ -365,13 +345,8 @@ TEST_P(NoVarySearchHeaderPrerenderHostTest, IsNoVarySearchHeaderSet) {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
           .AddHeader("No-Vary-Search", "params=(\"a\")")
           .Build());
-  EXPECT_EQ(prerender_host->no_vary_search().has_value(),
-            is_nvs_header_enabled);
+  EXPECT_TRUE(prerender_host->no_vary_search().has_value());
 }
-
-INSTANTIATE_TEST_SUITE_P(PrerenderHostTest,
-                         NoVarySearchHeaderPrerenderHostTest,
-                         ::testing::Bool());
 
 TEST_F(PrerenderHostTest, Activate) {
   // Start prerendering a page.
@@ -685,7 +660,6 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher),
-      /*planned_max_preloading_type=*/std::nullopt,
       contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   const FrameTreeNodeId prerender_frame_tree_node_id =

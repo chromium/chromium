@@ -15,15 +15,13 @@ namespace content {
 class BrowserContext;
 
 // Adds client hints headers for a prefetch navigation that is not associated
-// with a frame. It must be a main frame navigation. |is_javascript_enabled| is
-// whether JavaScript is enabled in blink or not.
+// with a frame. It must be a main frame navigation.
 CONTENT_EXPORT void AddClientHintsHeadersToPrefetchNavigation(
     const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on,
-    bool is_javascript_enabled);
+    bool is_ua_override_on);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

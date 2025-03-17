@@ -114,17 +114,14 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
 TEST_F(IMEFeaturePodControllerTest, Labels) {
   SetUpButton();
 
-  std::u16string label = tile_->label()->GetText();
-
-  EXPECT_EQ(label, u"Keyboard");
+  EXPECT_EQ(tile_->label()->GetText(), u"Keyboard");
 
   SetActiveIMECount(2);
   current_ime_.id = "0";
   available_imes_[0].short_name = u"US";
   available_imes_[1].short_name = u"FR";
   RefreshImeController();
-  std::u16string sub_label = tile_->sub_label()->GetText();
-  EXPECT_EQ(sub_label, u"US");
+  EXPECT_EQ(tile_->sub_label()->GetText(), u"US");
 }
 
 // Tests that if the pod button is hidden if less than 2 IMEs are present.

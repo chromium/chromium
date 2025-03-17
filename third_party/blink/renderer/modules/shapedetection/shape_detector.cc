@@ -30,6 +30,7 @@
 
 namespace blink {
 
+// static
 std::optional<SkBitmap> ShapeDetector::GetBitmapFromSource(
     ScriptState* script_state,
     const V8ImageBitmapSource* image_source,
@@ -92,8 +93,7 @@ std::optional<SkBitmap> ShapeDetector::GetBitmapFromSource(
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = canvas_image_source->GetSourceImageForCanvas(
-      FlushReason::kShapeDetector, &source_image_status, size,
-      kPremultiplyAlpha);
+      FlushReason::kShapeDetector, &source_image_status, size);
   if (!image || source_image_status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid element or state.");
@@ -123,6 +123,7 @@ std::optional<SkBitmap> ShapeDetector::GetBitmapFromSource(
   return std::move(n32_bitmap);
 }
 
+// static
 std::optional<SkBitmap> ShapeDetector::GetBitmapFromImageData(
     ScriptState* script_state,
     ImageData* image_data,
@@ -158,6 +159,7 @@ std::optional<SkBitmap> ShapeDetector::GetBitmapFromImageData(
   return std::move(sk_bitmap);
 }
 
+// static
 std::optional<SkBitmap> ShapeDetector::GetBitmapFromImageElement(
     ScriptState* script_state,
     const HTMLImageElement* img,

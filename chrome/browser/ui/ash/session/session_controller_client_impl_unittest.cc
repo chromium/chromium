@@ -10,13 +10,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -38,6 +38,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -48,7 +49,7 @@ using session_manager::SessionState;
 namespace {
 
 constexpr char kUser[] = "user@test.com";
-constexpr char kUserGaiaId[] = "0123456789";
+constexpr GaiaId::Literal kUserGaiaId("0123456789");
 
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
@@ -71,9 +72,10 @@ class SessionControllerClientImplTest : public testing::Test {
 
   void SetUp() override {
     ash::LoginState::Initialize();
-
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
     // Initialize the UserManager singleton.
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    session_manager_->OnUserManagerCreated(user_manager_.Get());
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
@@ -81,17 +83,14 @@ class SessionControllerClientImplTest : public testing::Test {
         TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
-
     cros_settings_test_helper_ =
         std::make_unique<ash::ScopedCrosSettingsTestHelper>();
   }
 
   void TearDown() override {
     cros_settings_test_helper_.reset();
-    browser_manager_.reset();
 
-    for (user_manager::User* user : user_manager_->GetUsers()) {
+    for (user_manager::User* user : user_manager_->GetPersistedUsers()) {
       user_manager_->OnUserProfileWillBeDestroyed(user->GetAccountId());
     }
     profile_manager_.reset();
@@ -105,6 +104,7 @@ class SessionControllerClientImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     assistant_delegate_.reset();
+    session_manager_.reset();
     user_manager_.Reset();
 
     ash::LoginState::Shutdown();
@@ -115,13 +115,20 @@ class SessionControllerClientImplTest : public testing::Test {
     const user_manager::User* user =
         is_child ? user_manager()->AddChildUser(account_id)
                  : user_manager()->AddUser(account_id);
-    session_manager_.CreateSession(account_id, user->username_hash(), is_child);
+    session_manager_->CreateSession(
+        account_id,
+        // TODO(crbug.com/278643115): Looks incorrect.
+        // User's username_hash should be set inside CreateSession via
+        // UserManager::UserLoggedIn().
+        user->username_hash(),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
 
     // Simulate that user profile is loaded.
     CreateTestingProfile(user);
-    session_manager_.NotifyUserProfileLoaded(account_id);
+    session_manager_->NotifyUserProfileLoaded(account_id);
 
-    session_manager_.SetSessionState(SessionState::ACTIVE);
+    session_manager_->SetSessionState(SessionState::ACTIVE);
   }
 
   // Get the active user.
@@ -157,7 +164,7 @@ class SessionControllerClientImplTest : public testing::Test {
   }
 
   session_manager::SessionManager& session_manager() {
-    return session_manager_;
+    return *session_manager_;
   }
   ash::SessionTerminationManager& session_termination_manager() {
     return session_termination_manager_;
@@ -166,21 +173,20 @@ class SessionControllerClientImplTest : public testing::Test {
  private:
   // Sorted in the production initialization order.
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-  session_manager::SessionManager session_manager_;
   ash::SessionTerminationManager session_termination_manager_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
 };
 
 // Make sure that cycling one user does not cause any harm.
 TEST_F(SessionControllerClientImplTest, CyclingOneUser) {
-  UserAddedToSession(
-      AccountId::FromUserEmailGaiaId("firstuser@test.com", "1111111111"));
+  UserAddedToSession(AccountId::FromUserEmailGaiaId("firstuser@test.com",
+                                                    GaiaId("1111111111")));
 
   EXPECT_EQ("firstuser@test.com", GetActiveUserEmail());
   SessionControllerClientImpl::DoCycleActiveUser(ash::CycleUserDirection::NEXT);
@@ -193,16 +199,17 @@ TEST_F(SessionControllerClientImplTest, CyclingOneUser) {
 // Cycle three users forwards and backwards to see that it works.
 TEST_F(SessionControllerClientImplTest, CyclingThreeUsers) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
-  const AccountId first_user =
-      AccountId::FromUserEmailGaiaId("firstuser@test.com", "1111111111");
-  const AccountId second_user =
-      AccountId::FromUserEmailGaiaId("seconduser@test.com", "2222222222");
-  const AccountId third_user =
-      AccountId::FromUserEmailGaiaId("thirduser@test.com", "3333333333");
+  const AccountId first_user = AccountId::FromUserEmailGaiaId(
+      "firstuser@test.com", GaiaId("1111111111"));
+  const AccountId second_user = AccountId::FromUserEmailGaiaId(
+      "seconduser@test.com", GaiaId("2222222222"));
+  const AccountId third_user = AccountId::FromUserEmailGaiaId(
+      "thirduser@test.com", GaiaId("3333333333"));
   UserAddedToSession(first_user);
   UserAddedToSession(second_user);
   UserAddedToSession(third_user);
@@ -240,7 +247,7 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
@@ -260,7 +267,7 @@ TEST_F(SessionControllerClientImplTest,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("child@gmail.com", "12345678"));
+      AccountId::FromUserEmailGaiaId("child@gmail.com", GaiaId("12345678")));
   UserAddedToSession(account_id, /*is_child=*/true);
 
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS,
@@ -273,7 +280,7 @@ TEST_F(SessionControllerClientImplTest,
        MultiProfileAllowedWithPolicyCertificates) {
   TestingProfile* user_profile = InitForMultiProfile();
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
 
   const AccountId account_id(
       AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
@@ -284,8 +291,6 @@ TEST_F(SessionControllerClientImplTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           user_profile, base::BindRepeating(&CreateTestPolicyCertService)));
-  policy::PolicyCertServiceFactory::GetForProfile(user_profile)
-      ->SetUsedPolicyCertificates();
 
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
@@ -300,7 +305,7 @@ TEST_F(SessionControllerClientImplTest,
        MultiProfileDisallowedByPrimaryUserCertificatesInMemory) {
   TestingProfile* user_profile = InitForMultiProfile();
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
 
   const AccountId account_id(
       AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
@@ -339,7 +344,7 @@ TEST_F(SessionControllerClientImplTest,
   user_manager()->LoginUser(account_id);
   while (user_manager()->GetLoggedInUsers().size() <
          session_manager::kMaximumNumberOfUserSessions) {
-    account_id = AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444");
+    account_id = AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444"));
     user_manager()->AddUser(account_id);
     user_manager()->LoginUser(account_id);
   }
@@ -358,7 +363,8 @@ TEST_F(SessionControllerClientImplTest,
   const AccountId account_id(
       AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
-  UserAddedToSession(AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+  UserAddedToSession(
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
@@ -378,7 +384,7 @@ TEST_F(SessionControllerClientImplTest,
       user_manager::MultiUserSignInPolicyToPrefValue(
           user_manager::MultiUserSignInPolicy::kNotAllowed));
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
@@ -396,14 +402,15 @@ TEST_F(SessionControllerClientImplTest,
   user_manager()->LoginUser(account_id);
   session_termination_manager().SetDeviceLockedToSingleUser();
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
 
 TEST_F(SessionControllerClientImplTest, SendUserSession) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -412,10 +419,17 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
 
   // Simulate login.
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
+      AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("5555555555")));
   const user_manager::User* user = user_manager()->AddUser(account_id);
   CreateTestingProfile(user);
-  session_manager().CreateSession(account_id, user->username_hash(), false);
+  session_manager().CreateSession(
+      account_id,
+      // TODO(crbug.com/278643115): Looks incorrect.
+      // User's username_hash should be set inside CreateSession via
+      // UserManager::UserLoggedIn().
+      user->username_hash(),
+      /*new_user=*/false,
+      /*has_active_session=*/false);
   session_manager().SetSessionState(SessionState::ACTIVE);
 
   // User session was sent.
@@ -431,7 +445,8 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
 
 TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -439,8 +454,8 @@ TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
   EXPECT_EQ(0, session_controller.set_user_session_order_count());
 
   // Simulate a not-signed-in user has the user image changed.
-  const AccountId not_signed_in(
-      AccountId::FromUserEmailGaiaId("not_signed_in@test.com", "12345"));
+  const AccountId not_signed_in(AccountId::FromUserEmailGaiaId(
+      "not_signed_in@test.com", GaiaId("12345")));
   user_manager::User* not_signed_in_user =
       user_manager()->AddUser(not_signed_in);
   user_manager()->NotifyUserImageChanged(*not_signed_in_user);
@@ -450,7 +465,7 @@ TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
 
   // Simulate login.
   UserAddedToSession(
-      AccountId::FromUserEmailGaiaId("signed_in@test.com", "67890"));
+      AccountId::FromUserEmailGaiaId("signed_in@test.com", GaiaId("67890")));
 
   // User session order is sent after the sign-in.
   EXPECT_EQ(1, session_controller.set_user_session_order_count());
@@ -458,15 +473,23 @@ TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
 
 TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
   // Simulate login.
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
+      AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("5555555555")));
   const user_manager::User* user = user_manager()->AddUser(account_id);
-  session_manager().CreateSession(account_id, user->username_hash(), false);
+  session_manager().CreateSession(
+      account_id,
+      // TODO(crbug.com/278643115): Looks incorrect.
+      // User's username_hash should be set inside CreateSession via
+      // UserManager::UserLoggedIn().
+      user->username_hash(),
+      /*new_user=*/false,
+      /*has_active_session=*/false);
 
   // Simulate the notification that the profile is ready.
   TestingProfile* const user_profile = CreateTestingProfile(user);
@@ -492,7 +515,8 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
 
 TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
   // Create an object to test and connect it to our test interface.
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 
@@ -512,7 +536,8 @@ TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
 }
 
 TEST_F(SessionControllerClientImplTest, FirstSessionReady) {
-  SessionControllerClientImpl client;
+  SessionControllerClientImpl client(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   TestSessionController session_controller;
   client.Init();
 

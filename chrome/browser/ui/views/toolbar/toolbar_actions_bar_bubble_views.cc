@@ -178,7 +178,7 @@ void ToolbarActionsBarBubbleViews::Init() {
     body_text_->SetMultiLine(true);
     body_text_->SizeToFit(width);
     body_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(body_text_.get());
+    AddChildViewRaw(body_text_.get());
   }
 }
 

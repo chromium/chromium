@@ -44,9 +44,9 @@ namespace web_app {
 
 namespace {
 
-// TODO(crbug.com/40273612): Find a better way to do Lacros testing so that we
-// don't have to pass localhost into the allowlist. Allowlisted host must be
-// from a Google server.
+// TODO(crbug.com/40273612): Figure out why tests fail when removing
+// 127.0.0.1 even though that was added only for Lacros testing and hence
+// shouldn't be needed anymore.
 constexpr auto kHostAllowlist = base::MakeFixedFlatSet<std::string_view>(
     {"googleusercontent.com", "gstatic.com", "youtube.com",
      "127.0.0.1" /*FOR TESTING*/});
@@ -128,6 +128,12 @@ void InstallAppFromVerifiedManifestCommand::StartWithLock(
 
 void InstallAppFromVerifiedManifestCommand::OnAboutBlankLoaded(
     webapps::WebAppUrlLoaderResult result) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kInstallURLLoadFailed);
+    return;
+  }
+
   // The shared web contents must have been reset to about:blank before command
   // execution.
   DCHECK_EQ(web_contents_lock_->shared_web_contents().GetURL(),

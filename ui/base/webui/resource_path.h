@@ -5,10 +5,13 @@
 #ifndef UI_BASE_WEBUI_RESOURCE_PATH_H_
 #define UI_BASE_WEBUI_RESOURCE_PATH_H_
 
+#include <optional>
+
 namespace webui {
 struct ResourcePath {
   const char* const path;
   int id;
+  std::optional<const char* const> filepath;
 };
 }  // namespace webui
 

@@ -91,7 +91,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
             base::Unretained(this))) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2, {}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "1"},
@@ -329,14 +328,10 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
           content::TestNavigationObserver::WaitEvent::kLoadStopped) {
     content::TestNavigationObserver observer(GetActiveWebContents());
     observer.set_wait_event(wait_event);
-    GetActiveWebContents()->OpenURL(
-        content::OpenURLParams(
-            expected_prerender_url, content::Referrer(),
-            WindowOpenDisposition::CURRENT_TAB,
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
+    prerender_helper().NavigatePrimaryPageAsync(
+        expected_prerender_url,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
     observer.Wait();
   }
 
@@ -1141,7 +1136,6 @@ class HoldbackSearchPreloadUnifiedBrowserTest
   HoldbackSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2, {{}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
@@ -1255,7 +1249,6 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
   HTTPCacheSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2, {{}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
@@ -1378,9 +1371,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // TODO(https://cubug.com/1282624): This test should run on Android after we're
 // able to interact with Android UI.
-// TODO(crbug.com/40231021): On LacrOS, the window's bound changes
-// unexpectedly, and it stops auto completing.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
@@ -1526,7 +1517,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests prerender is not cancelled after SearchPrefetchService cancels prefetch
 // requests.

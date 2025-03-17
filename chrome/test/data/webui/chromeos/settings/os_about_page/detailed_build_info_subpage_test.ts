@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsDetailedBuildInfoSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {AboutPageBrowserProxyImpl, CrPolicyIndicatorElement, DeviceNameBrowserProxyImpl, DeviceNameState, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {SettingsDetailedBuildInfoSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrPolicyIndicatorElement} from 'chrome://os-settings/os_settings.js';
+import {AboutPageBrowserProxyImpl, DeviceNameBrowserProxyImpl, DeviceNameState, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_policy_indicator_behavior.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -72,7 +72,6 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
-      std::optional<PreloadingType> planned_max_preloading_type,
       ukm::SourceId triggering_primary_page_source_id) override;
   void AddPreloadingPrediction(
       PreloadingPredictor predictor,
@@ -102,7 +101,6 @@ class CONTENT_EXPORT PreloadingDataImpl
       const PreloadingPredictor& enacting_predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
-      std::optional<PreloadingType> planned_max_preloading_type,
       ukm::SourceId triggering_primary_page_source_id);
 
   void CopyPredictorDomains(const PreloadingDataImpl& other,

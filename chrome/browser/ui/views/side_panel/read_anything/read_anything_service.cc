@@ -62,11 +62,14 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
 // The TTS download extension should only be installed on non-ChromeOS devices
 // when the Read Aloud flag is enabled.
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (features::IsReadAnythingReadAloudEnabled()) {
+  if (features::IsReadAnythingReadAloudEnabled() &&
+      !features::IsWasmTtsComponentUpdaterEnabled() &&
+      !features::IsWasmTtsEngineAutoInstallDisabled()) {
     InstallTtsDownloadExtension();
   } else {
     // If the extension was previously installed but now the Read Aloud flag
-    // is disabled, we should uninstall the extension.
+    // is disabled, or if the component updater flag is enabled, we should
+    // uninstall the extension.
     RemoveTtsDownloadExtension();
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

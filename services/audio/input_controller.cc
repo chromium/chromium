@@ -480,14 +480,6 @@ void InputController::SetOutputDeviceForAec(
 #endif
 }
 
-void InputController::OnStreamActive(Snoopable* output_stream) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-}
-
-void InputController::OnStreamInactive(Snoopable* output_stream) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-}
-
 InputController::ErrorCode MapOpenOutcomeToErrorCode(OpenOutcome outcome) {
   switch (outcome) {
     case OpenOutcome::kFailedSystemPermissions:

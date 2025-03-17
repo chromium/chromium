@@ -139,14 +139,14 @@ class MockEnvironment : public base::Environment {
   }
 
   // Begin base::Environment implementation.
-  bool GetVar(std::string_view variable_name, std::string* result) override {
+  std::optional<std::string> GetVar(std::string_view variable_name) override {
     auto it = table_.find(variable_name);
-    if (it == table_.end() || !*it->second)
-      return false;
+    if (it == table_.end() || !*it->second) {
+      return std::nullopt;
+    }
 
     // Note that the variable may be defined but empty.
-    *result = *(it->second);
-    return true;
+    return *(it->second);
   }
 
   bool SetVar(std::string_view variable_name,

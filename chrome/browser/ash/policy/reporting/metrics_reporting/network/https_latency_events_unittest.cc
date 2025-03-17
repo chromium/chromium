@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/fake_network_diagnostics_util.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -71,18 +72,9 @@ class HttpsLatencyTestReportQueue : public test::FakeMetricReportQueue {
 class FakeMetricReportingManagerDelegate
     : public MetricReportingManager::Delegate {
  public:
-  FakeMetricReportingManagerDelegate(
-      FakeNetworkDiagnostics* fake_diagnostics,
-      std::unique_ptr<MetricReportQueue> metric_report_queue)
-      : fake_diagnostics_(fake_diagnostics) {
-    metric_report_queue_ = std::move(metric_report_queue);
-  }
-
-  FakeMetricReportingManagerDelegate(
-      const FakeMetricReportingManagerDelegate& other) = delete;
-  FakeMetricReportingManagerDelegate& operator=(
-      const FakeMetricReportingManagerDelegate& other) = delete;
-  ~FakeMetricReportingManagerDelegate() override = default;
+  explicit FakeMetricReportingManagerDelegate(
+      FakeNetworkDiagnostics* fake_diagnostics)
+      : fake_diagnostics_(fake_diagnostics) {}
 
   std::unique_ptr<Sampler> GetHttpsLatencySampler() const override {
     return std::make_unique<HttpsLatencySampler>(
@@ -109,13 +101,17 @@ class FakeMetricReportingManagerDelegate
       return std::make_unique<test::FakeMetricReportQueue>();
     }
 
-    return std::move(metric_report_queue_);
+    return std::make_unique<HttpsLatencyTestReportQueue>();
   }
+
+  FakeMetricReportingManagerDelegate(
+      const FakeMetricReportingManagerDelegate& other) = delete;
+  FakeMetricReportingManagerDelegate& operator=(
+      const FakeMetricReportingManagerDelegate& other) = delete;
+  ~FakeMetricReportingManagerDelegate() override = default;
 
  private:
   const raw_ptr<FakeNetworkDiagnostics> fake_diagnostics_;
-
-  std::unique_ptr<MetricReportQueue> metric_report_queue_;
 };
 
 class HttpsLatencyEventsTest : public ::testing::Test {
@@ -204,9 +200,6 @@ class HttpsLatencyEventsTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
-
-  std::unique_ptr<MetricReportQueue> metric_report_queue_;
-  raw_ptr<HttpsLatencyTestReportQueue> report_queue_;
 };
 
 TEST_F(HttpsLatencyEventsTest, RoutineVerdictProblem) {
@@ -214,19 +207,22 @@ TEST_F(HttpsLatencyEventsTest, RoutineVerdictProblem) {
   EnableDeviceNetworkStatusPolicy();
 
   FakeNetworkDiagnostics diagnostics;
+  auto delegate =
+      std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
+          &diagnostics);
   int latency_ms = 50;
   diagnostics.SetResultNoProblem(latency_ms);
-
-  HttpsLatencyTestReportQueue* fake_event_queue =
-      new HttpsLatencyTestReportQueue();
-  std::unique_ptr<MetricReportQueue> metric_report_queue_(fake_event_queue);
-  auto delegate = std::make_unique<FakeMetricReportingManagerDelegate>(
-      &diagnostics, std::move(metric_report_queue_));
   auto init_delay = delegate->GetInitDelay();
-  std::unique_ptr<MetricReportingManager> metric_reporting_manager =
-      MetricReportingManager::CreateForTesting(std::move(delegate), nullptr);
+
+  auto metric_reporting_manager =
+      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
 
   metric_reporting_manager->OnLogin(profile_.get());
+
+  HttpsLatencyTestReportQueue* const fake_event_queue =
+      static_cast<HttpsLatencyTestReportQueue*>(
+          metric_reporting_manager->event_queue());
+
   ProcessNoProblem(&diagnostics, latency_ms, init_delay);
   EXPECT_TRUE(fake_event_queue->IsEmpty());
 
@@ -321,14 +317,17 @@ TEST_F(HttpsLatencyEventsTest, ReportDeviceNetworkStatusDisabled) {
   DisableDeviceNetworkStatusPolicy();
 
   FakeNetworkDiagnostics diagnostics;
-  HttpsLatencyTestReportQueue* fake_event_queue =
-      new HttpsLatencyTestReportQueue();
-  std::unique_ptr<MetricReportQueue> metric_report_queue_(fake_event_queue);
-  auto delegate = std::make_unique<FakeMetricReportingManagerDelegate>(
-      &diagnostics, std::move(metric_report_queue_));
-  std::unique_ptr<MetricReportingManager> metric_reporting_manager =
-      MetricReportingManager::CreateForTesting(std::move(delegate), nullptr);
+  auto delegate =
+      std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
+          &diagnostics);
+
+  auto metric_reporting_manager =
+      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
+
+  HttpsLatencyTestReportQueue* const fake_event_queue =
+      static_cast<HttpsLatencyTestReportQueue*>(
+          metric_reporting_manager->event_queue());
 
   ProcessProblem(&diagnostics, HttpsLatencyProblemMojom::kFailedHttpsRequests,
                  metrics::kDefaultNetworkTelemetryEventCheckingRate);
@@ -340,14 +339,16 @@ TEST_F(HttpsLatencyEventsTest, ReportDeviceNetworkStatusUnaffiliatedUser) {
   EnableDeviceNetworkStatusPolicy();
 
   FakeNetworkDiagnostics diagnostics;
-  HttpsLatencyTestReportQueue* fake_event_queue =
-      new HttpsLatencyTestReportQueue();
-  std::unique_ptr<MetricReportQueue> metric_report_queue_(fake_event_queue);
-  auto delegate = std::make_unique<FakeMetricReportingManagerDelegate>(
-      &diagnostics, std::move(metric_report_queue_));
-  std::unique_ptr<MetricReportingManager> metric_reporting_manager =
-      MetricReportingManager::CreateForTesting(std::move(delegate), nullptr);
+  auto delegate =
+      std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
+          &diagnostics);
+  auto metric_reporting_manager =
+      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
+
+  HttpsLatencyTestReportQueue* const fake_event_queue =
+      static_cast<HttpsLatencyTestReportQueue*>(
+          metric_reporting_manager->event_queue());
 
   ProcessProblem(&diagnostics, HttpsLatencyProblemMojom::kFailedHttpsRequests,
                  metrics::kDefaultNetworkTelemetryEventCheckingRate);
@@ -368,15 +369,17 @@ TEST_F(HttpsLatencyEventsTest, EventCheckingRateSet) {
   int latency_ms = 50;
 
   FakeNetworkDiagnostics diagnostics;
-  HttpsLatencyTestReportQueue* fake_event_queue =
-      new HttpsLatencyTestReportQueue();
-  std::unique_ptr<MetricReportQueue> metric_report_queue_(fake_event_queue);
-  auto delegate = std::make_unique<FakeMetricReportingManagerDelegate>(
-      &diagnostics, std::move(metric_report_queue_));
+  auto delegate =
+      std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
+          &diagnostics);
   auto init_delay = delegate->GetInitDelay();
-  std::unique_ptr<MetricReportingManager> metric_reporting_manager =
-      MetricReportingManager::CreateForTesting(std::move(delegate), nullptr);
+  auto metric_reporting_manager =
+      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
+
+  HttpsLatencyTestReportQueue* const fake_event_queue =
+      static_cast<HttpsLatencyTestReportQueue*>(
+          metric_reporting_manager->event_queue());
 
   ProcessNoProblem(&diagnostics, latency_ms, init_delay);
   EXPECT_TRUE(fake_event_queue->IsEmpty());
@@ -408,6 +411,5 @@ TEST_F(HttpsLatencyEventsTest, EventCheckingRateSet) {
                 .problem(),
             HttpsLatencyProblem::FAILED_HTTPS_REQUESTS);
 }
-
 }  // namespace
 }  // namespace reporting

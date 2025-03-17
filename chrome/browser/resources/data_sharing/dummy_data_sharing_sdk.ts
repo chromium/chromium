@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 // Dummy implementation of data_sharing_sdk.js for non-branded build.
-import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupsParams, ReadGroupsResult, RunJoinFlowParams, RunManageFlowParams, RunInviteFlowParams} from './data_sharing_sdk_types.js';
+import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupsParams, ReadGroupsResult, RunCloseFlowParams, RunDeleteFlowParams, RunInviteFlowParams, RunJoinFlowParams, RunManageFlowParams} from './data_sharing_sdk_types.js';
 import {Code} from './data_sharing_sdk_types.js';
 
 // Add something to the dialog to tell which flow it is.
 function appendTextForTesting(text: string) {
-  const newDiv: HTMLDivElement = document.createElement('div');
+  const newDiv: HTMLElement = document.createElement('div');
   newDiv.textContent = text;
   document.body.appendChild(newDiv);
 }
@@ -25,8 +25,10 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   createGroup(
       _params: CreateGroupParams,
       ): Promise<{result?: CreateGroupResult, status: Code}> {
-    return Promise.resolve(
-        {result: {groupData: {groupId: '', members: []}}, status: Code.OK});
+    return Promise.resolve({
+      result: {groupData: {groupId: '', members: [], formerMembers: []}},
+      status: Code.OK,
+    });
   }
   readGroups(
       _params: ReadGroupsParams,
@@ -35,21 +37,30 @@ export class DataSharingSdkImpl implements DataSharingSdk {
       resolve({
         status: Code.OK,
         result: {
-          groupData:
-              _params.groupIds!.map(groupId => ({
-                                      groupId,
-                                      displayName: 'GROUP_NAME',
-                                      members: [
-                                        {
-                                          focusObfuscatedGaiaId: 'GAIA_ID',
-                                          displayName: 'MEMBER_NAME',
-                                          email: 'test@gmail.com',
-                                          role: 'member',
-                                          avatarUrl: 'http://example.com',
-                                          givenName: 'MEMBER_NAME',
-                                        },
-                                      ],
-                                    })),
+          groupData: _params.params.map(param => ({
+                                          groupId: param.groupId,
+                                          displayName: 'GROUP_NAME',
+                                          members: [
+                                            {
+                                              focusObfuscatedGaiaId: 'GAIA_ID',
+                                              displayName: 'MEMBER_NAME',
+                                              email: 'test@gmail.com',
+                                              role: 'member',
+                                              avatarUrl: 'http://example.com',
+                                              givenName: 'MEMBER_NAME',
+                                            },
+                                          ],
+                                          formerMembers: [
+                                            {
+                                              focusObfuscatedGaiaId: 'GAIA_ID2',
+                                              displayName: 'MEMBER_NAME2',
+                                              email: 'test2@gmail.com',
+                                              role: 'former_member',
+                                              avatarUrl: 'http://example2.com',
+                                              givenName: 'MEMBER_NAME2',
+                                            },
+                                          ],
+                                        })),
         },
       });
     });
@@ -79,6 +90,14 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   }
   runManageFlow(_params: RunManageFlowParams): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake manage dialog');
+    return new Promise(() => {});
+  }
+  runCloseFlow(_params: RunCloseFlowParams): Promise<DataSharingSdkResponse> {
+    appendTextForTesting('A fake close dialog');
+    return new Promise(() => {});
+  }
+  runDeleteFlow(_params: RunDeleteFlowParams): Promise<DataSharingSdkResponse> {
+    appendTextForTesting('A fake delete dialog');
     return new Promise(() => {});
   }
 

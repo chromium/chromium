@@ -16,9 +16,9 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {Command} from './command.js';
+import type {Command} from './command.js';
 import {CommandStore} from './command_store.js';
-import {KeyBinding, KeySequence} from './key_sequence.js';
+import type {KeyBinding, KeySequence} from './key_sequence.js';
 
 export class KeyMap {
   /** An array of bindings - Commands and KeySequences. */

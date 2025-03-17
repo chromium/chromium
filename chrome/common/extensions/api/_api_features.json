@@ -220,6 +220,7 @@
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
       "chrome://glic/*",
+      "chrome://glic-fre/*",
       "chrome://graduation/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
@@ -336,7 +337,10 @@
   }],
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // This restriction is not true for production. It is only true when the
+    // extensions_features::kDebuggerAPIRestrictedToDevMode feature is enabled.
+    "developer_mode_only" : true
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
@@ -437,8 +441,8 @@
   "enterprise.reportingPrivate.getHotfixes": {
     "platforms": ["win"]
   },
-  "enterprise.reportingPrivate.reportDataMaskingEvent": {
-    "feature_flag": "ApiEnterpriseReportingPrivateReportDataMaskingEvent"
+  "enterprise.reportingPrivate.onDataMaskingRulesTriggered": {
+    "feature_flag": "ApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered"
   },
   "experimental.devtools.audits": {
     "nocompile": true,
@@ -590,10 +594,6 @@
   },
   "gcm": {
     "dependencies": ["permission:gcm"],
-    "contexts": ["privileged_extension"]
-  },
-  "sharedStoragePrivate": {
-    "dependencies": ["permission:sharedStoragePrivate"],
     "contexts": ["privileged_extension"]
   },
   "history": {
@@ -838,10 +838,6 @@
       "chrome://print/*"
     ]
   }],
-  "rtcPrivate": {
-    "dependencies": ["permission:rtcPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "safeBrowsingPrivate": {
     "dependencies": ["permission:safeBrowsingPrivate"],
     "contexts": ["privileged_extension"]
@@ -885,10 +881,6 @@
   },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
-    "contexts": ["privileged_extension"]
-  },
-  "systemIndicator": {
-    "dependencies": ["manifest:system_indicator"],
     "contexts": ["privileged_extension"]
   },
   "systemLog": {

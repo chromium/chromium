@@ -22,7 +22,7 @@ suite('ExtensionSidebarTest', function() {
 
   test('SetSelected', function() {
     const selector = '.cr-nav-menu-item.selected';
-    assertFalse(!!sidebar.shadowRoot!.querySelector(selector));
+    assertFalse(!!sidebar.shadowRoot.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -32,7 +32,7 @@ suite('ExtensionSidebarTest', function() {
     return whenSelected
         .then(function() {
           assertEquals(
-              sidebar.shadowRoot!.querySelector(selector)!.id,
+              sidebar.shadowRoot.querySelector(selector)!.id,
               'sectionsShortcuts');
 
           window.history.replaceState(undefined, '', '/');
@@ -45,7 +45,7 @@ suite('ExtensionSidebarTest', function() {
         })
         .then(function() {
           assertEquals(
-              sidebar.shadowRoot!.querySelector(selector)!.id,
+              sidebar.shadowRoot.querySelector(selector)!.id,
               'sectionsExtensions');
         });
   });

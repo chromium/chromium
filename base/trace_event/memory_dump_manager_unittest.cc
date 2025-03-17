@@ -42,8 +42,7 @@ using testing::Between;
 using testing::Invoke;
 using testing::Return;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 // GTest matchers for MemoryDumpRequestArgs arguments.
 MATCHER(IsDetailedDump, "") {
@@ -116,7 +115,7 @@ class MockMemoryDumpProvider : public MemoryDumpProvider {
   MOCK_METHOD2(OnMemoryDump,
                bool(const MemoryDumpArgs& args, ProcessMemoryDump* pmd));
 
-  MockMemoryDumpProvider() : enable_mock_destructor(false) {
+  MockMemoryDumpProvider() {
     ON_CALL(*this, OnMemoryDump(_, _))
         .WillByDefault(
             Invoke([](const MemoryDumpArgs&, ProcessMemoryDump* pmd) -> bool {
@@ -124,11 +123,12 @@ class MockMemoryDumpProvider : public MemoryDumpProvider {
             }));
   }
   ~MockMemoryDumpProvider() override {
-    if (enable_mock_destructor)
+    if (enable_mock_destructor) {
       Destructor();
+    }
   }
 
-  bool enable_mock_destructor;
+  bool enable_mock_destructor = false;
 };
 
 class TestSequencedTaskRunner : public SequencedTaskRunner {
@@ -171,7 +171,7 @@ class TestSequencedTaskRunner : public SequencedTaskRunner {
 
 class MemoryDumpManagerTest : public testing::Test {
  public:
-  MemoryDumpManagerTest(bool is_coordinator = false)
+  explicit MemoryDumpManagerTest(bool is_coordinator = false)
       : is_coordinator_(is_coordinator) {}
 
   MemoryDumpManagerTest(const MemoryDumpManagerTest&) = delete;
@@ -807,8 +807,8 @@ TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoonDuringDump) {
   RegisterDumpProvider(mdp.get(), nullptr, kDefaultOptions);
 
   base::PlatformThreadRef thread_ref;
-  auto self_unregister_from_another_thread = [&mdp, &thread_ref](
-      const MemoryDumpArgs&, ProcessMemoryDump*) -> bool {
+  auto self_unregister_from_another_thread =
+      [&mdp, &thread_ref](const MemoryDumpArgs&, ProcessMemoryDump*) -> bool {
     thread_ref = PlatformThread::CurrentRef();
     TestIOThread thread_for_unregistration(TestIOThread::kAutoStart);
     PostTaskAndWait(
@@ -841,8 +841,8 @@ TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoonDuringDump) {
 // NoStackOverflowWithTooManyMDPs test.
 class SimpleMockMemoryDumpProvider : public MemoryDumpProvider {
  public:
-  SimpleMockMemoryDumpProvider(int expected_num_dump_calls)
-      : expected_num_dump_calls_(expected_num_dump_calls), num_dump_calls_(0) {}
+  explicit SimpleMockMemoryDumpProvider(int expected_num_dump_calls)
+      : expected_num_dump_calls_(expected_num_dump_calls) {}
 
   ~SimpleMockMemoryDumpProvider() override {
     EXPECT_EQ(expected_num_dump_calls_, num_dump_calls_);
@@ -856,7 +856,7 @@ class SimpleMockMemoryDumpProvider : public MemoryDumpProvider {
 
  private:
   int expected_num_dump_calls_;
-  int num_dump_calls_;
+  int num_dump_calls_ = 0;
 };
 
 TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
@@ -893,5 +893,4 @@ TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
                                         MemoryDumpDeterminism::kNone));
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

@@ -77,12 +77,6 @@ struct FormGroupFillingStats {
 // Returns the filling status of `field`.
 FieldFillingStatus GetFieldFillingStatus(const AutofillField& field);
 
-// Merge `first` into `second` by summing each attribute from
-// `FormGroupFillingStats`.
-// TODO(crbug.com/40274514): Remove this on cleanup.
-void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
-                                FormGroupFillingStats& second);
-
 // Returns the `FormGroupFillingStats` corresponding to the fields in
 // `form_structure` that match `form_type`. This method does not log to UMA but
 // only returns the statistics of a submitted form. `FormGroupFillingStats` is

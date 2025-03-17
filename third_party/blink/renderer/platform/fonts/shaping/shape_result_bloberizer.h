@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BLOBERIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BLOBERIZER_H_
 
+#include "cc/paint/node_id.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
@@ -16,9 +17,15 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace cc {
+class PaintCanvas;
+class PaintFlags;
+}  // namespace cc
+
 namespace blink {
 
 class FontDescription;
+class PlainTextNode;
 struct TextRunPaintInfo;
 
 class PLATFORM_EXPORT ShapeResultBloberizer {
@@ -223,6 +230,17 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
              const TextRunPaintInfo&,
              const ShapeResultBuffer&,
              Type);
+  FillGlyphs(const FontDescription& font_description,
+             const PlainTextNode& node,
+             Type type);
+
+ private:
+  template <typename ShapeList>
+  void FillGlyphsSlow(StringView text,
+                      TextDirection direction,
+                      const ShapeList& list,
+                      unsigned from,
+                      unsigned to);
 };
 struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphs
     : public ShapeResultBloberizer {
@@ -231,6 +249,12 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphs
                          const ShapeResultBuffer&,
                          const GlyphData& emphasis_data);
 };
+
+void DrawTextBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,
+                   cc::PaintCanvas& canvas,
+                   const gfx::PointF& point,
+                   const cc::PaintFlags& flags,
+                   cc::NodeId node_id = cc::kInvalidNodeId);
 
 }  // namespace blink
 

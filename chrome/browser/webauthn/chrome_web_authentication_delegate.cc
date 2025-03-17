@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -22,7 +23,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -45,6 +45,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
@@ -78,6 +79,20 @@
 
 namespace {
 
+void LogSignalUnknownCredential(
+    ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey", result);
+}
+
+void LogSignalAllAcceptedCredentials(
+    ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult
+        result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
+      result);
+}
+
 void LogSignalCurrentUserDetailsUpdated(
     ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult result) {
   base::UmaHistogramEnumeration(
@@ -93,9 +108,7 @@ bool IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
   const PrefService* prefs = profile->GetPrefs();
   const base::Value::List& permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
-  const std::string& (base::Value::*get_string)() const =
-      &base::Value::GetString;
-  return base::Contains(permit_attestation, relying_party_id, get_string);
+  return base::Contains(permit_attestation, relying_party_id);
 }
 
 bool IsOriginListedInEnterpriseAttestationSwitch(
@@ -105,7 +118,7 @@ bool IsOriginListedInEnterpriseAttestationSwitch(
           webauthn::switches::kPermitEnterpriseAttestationOriginList);
   std::vector<std::string_view> origin_strings = base::SplitStringPiece(
       cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       origin_strings, [&caller_origin](std::string_view origin_string) {
         return url::Origin::Create(GURL(origin_string)) == caller_origin;
       });
@@ -116,8 +129,9 @@ bool ExtensionCanAssertRpId(const extensions::Extension& extension,
                             const std::string& rp_id) {
   // Extensions are always allowed to assert their own extension identifier.
   // This has special handling in
-  // ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride, the RP ID
-  // will be prefixed with the extension scheme to isolate it from web origins.
+  // ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride, the
+  // RP ID will be prefixed with the extension scheme to isolate it from web
+  // origins.
   if (extension.id() == rp_id) {
     return true;
   }
@@ -171,6 +185,102 @@ bool ExtensionCanAssertRpId(const extensions::Extension& extension,
   return false;
 }
 
+void DeleteUnacceptedPasskeys(
+    content::WebContents* web_contents,
+    const std::string& relying_party_id,
+    const std::vector<uint8_t>& user_id,
+    const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
+  webauthn::PasskeyModel* passkey_store =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  bool is_passkey_deleted = false;
+  for (auto passkey :
+       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
+    if (std::vector<uint8_t>(passkey.user_id().begin(),
+                             passkey.user_id().end()) == user_id &&
+        !base::Contains(all_accepted_credentials_ids,
+                        std::vector<uint8_t>(passkey.credential_id().begin(),
+                                             passkey.credential_id().end()))) {
+      passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
+      is_passkey_deleted = true;
+    }
+  }
+  if (is_passkey_deleted) {
+    PasswordsClientUIDelegate* manage_passwords_ui_controller =
+        PasswordsClientUIDelegateFromWebContents(web_contents);
+    if (manage_passwords_ui_controller) {
+      manage_passwords_ui_controller->OnPasskeyNotAccepted(relying_party_id);
+    }
+  }
+  LogSignalAllAcceptedCredentials(
+      is_passkey_deleted
+          ? ChromeWebAuthenticationDelegate::
+                SignalAllAcceptedCredentialsResult::kPasskeyRemoved
+          : ChromeWebAuthenticationDelegate::
+                SignalAllAcceptedCredentialsResult::kNoPasskeyChanged);
+}
+
+void HideAndRestorePasskeys(
+    content::WebContents* web_contents,
+    const url::Origin& origin,
+    const std::string& relying_party_id,
+    const std::vector<uint8_t>& user_id,
+    const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
+  webauthn::PasskeyChangeQuotaTracker* quota_tracker =
+      webauthn::PasskeyChangeQuotaTracker::GetInstance();
+  if (!quota_tracker->CanMakeChange(origin)) {
+    LogSignalAllAcceptedCredentials(
+        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
+            kQuotaExceeded);
+    FIDO_LOG(ERROR) << "Dropping all accepted credentials request from "
+                    << origin << ": quota exceeded.";
+    return;
+  }
+  webauthn::PasskeyModel* passkey_store =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_store->GetPasskeysForRelyingPartyId(relying_party_id);
+  const auto passkey_it =
+      std::ranges::find_if(passkeys, [&user_id](const auto& passkey) {
+        return std::vector<uint8_t>(passkey.user_id().begin(),
+                                    passkey.user_id().end()) == user_id;
+      });
+  if (passkey_it == passkeys.end()) {
+    LogSignalAllAcceptedCredentials(
+        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
+            kNoPasskeyChanged);
+    return;
+  }
+  bool passkey_in_list =
+      base::Contains(all_accepted_credentials_ids,
+                     std::vector<uint8_t>(passkey_it->credential_id().begin(),
+                                          passkey_it->credential_id().end()));
+  if ((passkey_in_list && !passkey_it->hidden()) ||
+      (!passkey_in_list && passkey_it->hidden())) {
+    LogSignalAllAcceptedCredentials(
+        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
+            kNoPasskeyChanged);
+    return;
+  }
+  passkey_store->SetPasskeyHidden(passkey_it->credential_id(),
+                                  !passkey_in_list);
+  quota_tracker->TrackChange(origin);
+  LogSignalAllAcceptedCredentials(
+      passkey_in_list ? ChromeWebAuthenticationDelegate::
+                            SignalAllAcceptedCredentialsResult::kPasskeyRestored
+                      : ChromeWebAuthenticationDelegate::
+                            SignalAllAcceptedCredentialsResult::kPasskeyHidden);
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents);
+  if (passkey_in_list && manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnPasskeyUpdated(relying_party_id);
+  }
+  if (!passkey_in_list && manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnPasskeyNotAccepted(relying_party_id);
+  }
+}
+
 }  // namespace
 
 ChromeWebAuthenticationDelegate::ChromeWebAuthenticationDelegate() = default;
@@ -195,54 +305,6 @@ bool ChromeWebAuthenticationDelegate::
     return false;
   }
   return ExtensionCanAssertRpId(*extension, relying_party_id);
-}
-
-bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
-    content::BrowserContext* browser_context,
-    const url::Origin& caller_origin) {
-  // Allow the Google-internal version of Chrome Remote Desktop to use the
-  // RemoteDesktopClientOverride extension and make WebAuthn
-  // requests on behalf of other origins, if a corresponding enteprise policy is
-  // enabled.
-  //
-  // The policy explicitly does not cover external instances of CRD. It
-  // must not be extended to other origins or be made configurable without going
-  // through security review.
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege)) {
-    return false;
-  }
-
-  const Profile* profile = Profile::FromBrowserContext(browser_context);
-  const PrefService* prefs = profile->GetPrefs();
-  const bool google_corp_remote_proxied_request_allowed =
-      prefs->GetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed);
-  if (!google_corp_remote_proxied_request_allowed) {
-    return false;
-  }
-
-  constexpr const char* const kGoogleCorpCrdOrigins[] = {
-      "https://remotedesktop.corp.google.com",
-      "https://remotedesktop-autopush.corp.google.com/",
-      "https://remotedesktop-daily-6.corp.google.com/",
-  };
-  for (const char* corp_crd_origin : kGoogleCorpCrdOrigins) {
-    if (caller_origin == url::Origin::Create(GURL(corp_crd_origin))) {
-      return true;
-    }
-  }
-
-  // An additional origin can be passed on the command line for testing.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin)) {
-    return false;
-  }
-  // Note that `cmdline_allowed_origin` will be opaque if the flag is not a
-  // valid URL, which won't match `caller_origin`.
-  const url::Origin cmdline_allowed_origin = url::Origin::Create(
-      GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin)));
-  return caller_origin == cmdline_allowed_origin;
 }
 
 std::optional<std::string>
@@ -316,17 +378,6 @@ void ChromeWebAuthenticationDelegate::
                   return;
                 }
 
-                // Without GPM PIN support the enclave authenticator depends on
-                // having an Android LSKF enrolled to the security domain. But
-                // we can't check that without querying the security domain
-                // service, which we don't want to do just because a site
-                // called IsUVPAA. Thus we conservatively ignore the
-                // possibility of using the enclave authenticator here.
-                if (!device::kWebAuthnGpmPin.Get()) {
-                  std::move(callback).Run(std::nullopt);
-                  return;
-                }
-
                 // The enclave won't allow credentials for an account to be
                 // stored in GPM _in_ that account. So we don't want to tell
                 // accounts.google.com that there is a platform authenticator
@@ -367,10 +418,21 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
   return service && service->IsActive(caller_origin) ? service : nullptr;
 }
 
-void ChromeWebAuthenticationDelegate::DeletePasskey(
+void ChromeWebAuthenticationDelegate::PasskeyUnrecognized(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::vector<uint8_t>& passkey_credential_id,
     const std::string& relying_party_id) {
+  webauthn::PasskeyChangeQuotaTracker* quota_tracker =
+      webauthn::PasskeyChangeQuotaTracker::GetInstance();
+  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
+    if (!quota_tracker->CanMakeChange(origin)) {
+      LogSignalUnknownCredential(SignalUnknownCredentialResult::kQuotaExceeded);
+      FIDO_LOG(ERROR) << "Dropping removal request from " << origin
+                      << ": quota exceeded.";
+      return;
+    }
+  }
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
@@ -378,53 +440,44 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
                             passkey_credential_id.end());
   std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
       passkey_store->GetPasskeyByCredentialId(relying_party_id, credential_id);
-  if (credential_specifics) {
-    passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
-    PasswordsClientUIDelegate* manage_passwords_ui_controller =
-        PasswordsClientUIDelegateFromWebContents(web_contents);
-    if (manage_passwords_ui_controller) {
-      manage_passwords_ui_controller->OnPasskeyDeleted();
-    }
+  if (!credential_specifics) {
+    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyNotFound);
+    return;
   }
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-      credential_specifics.has_value()
-          ? SignalUnknownCredentialResult::kPasskeyRemoved
-          : SignalUnknownCredentialResult::kPasskeyNotFound);
+  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
+    if (credential_specifics->hidden()) {
+      LogSignalUnknownCredential(
+          SignalUnknownCredentialResult::kPasskeyAlreadyHidden);
+      return;
+    }
+    quota_tracker->TrackChange(origin);
+    passkey_store->SetPasskeyHidden(std::move(credential_id),
+                                    /*hidden=*/true);
+    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyHidden);
+  } else {
+    passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
+    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyRemoved);
+  }
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents);
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnPasskeyDeleted();
+  }
 }
 
-void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
+void ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentials(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::string& relying_party_id,
     const std::vector<uint8_t>& user_id,
     const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
-  webauthn::PasskeyModel* passkey_store =
-      PasskeyModelFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  bool is_passkey_deleted = false;
-  for (auto passkey :
-       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
-    if (std::vector<uint8_t>(passkey.user_id().begin(),
-                             passkey.user_id().end()) == user_id &&
-        !base::Contains(all_accepted_credentials_ids,
-                        std::vector<uint8_t>(passkey.credential_id().begin(),
-                                             passkey.credential_id().end()))) {
-      passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
-      is_passkey_deleted = true;
-    }
+  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
+    HideAndRestorePasskeys(web_contents, origin, relying_party_id, user_id,
+                           all_accepted_credentials_ids);
+  } else {
+    DeleteUnacceptedPasskeys(web_contents, relying_party_id, user_id,
+                             all_accepted_credentials_ids);
   }
-  if (is_passkey_deleted) {
-    PasswordsClientUIDelegate* manage_passwords_ui_controller =
-        PasswordsClientUIDelegateFromWebContents(web_contents);
-    if (manage_passwords_ui_controller) {
-      manage_passwords_ui_controller->OnPasskeyNotAccepted(relying_party_id);
-    }
-  }
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      is_passkey_deleted
-          ? SignalAllAcceptedCredentialsResult::kPasskeyRemoved
-          : SignalAllAcceptedCredentialsResult::kNoPasskeyRemoved);
 }
 
 void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
@@ -520,12 +573,6 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
 void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     content::BrowserContext* browser_context,
     base::OnceCallback<void(bool)> callback) {
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    FIDO_LOG(EVENT) << "Enclave authenticator disabled because flag not set";
-    std::move(callback).Run(false);
-    return;
-  }
-
   auto* profile =
       Profile::FromBrowserContext(browser_context)->GetOriginalProfile();
   auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -550,8 +597,9 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     std::move(callback).Run(*tpm_available_);
     return;
   }
+  base::Time tpm_check_start_time = base::Time::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce([]() -> bool {
         std::unique_ptr<crypto::UnexportableKeyProvider> provider =
             GetWebAuthnUnexportableKeyProvider();
@@ -565,8 +613,11 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
       }),
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
+             base::Time tpm_check_start_time,
              base::WeakPtr<ChromeWebAuthenticationDelegate> webauthn_delegate,
              bool available) {
+            FIDO_LOG(DEBUG) << "Checking for TPM availability took "
+                            << (base::Time::Now() - tpm_check_start_time);
             if (webauthn_delegate) {
               webauthn_delegate->tpm_available_ = available;
             }
@@ -576,5 +627,6 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
             }
             std::move(callback).Run(available);
           },
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          std::move(callback), tpm_check_start_time,
+          weak_ptr_factory_.GetWeakPtr()));
 }

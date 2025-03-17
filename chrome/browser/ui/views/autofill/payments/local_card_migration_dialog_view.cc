@@ -78,7 +78,7 @@ class AutofillMigrationHeaderView : public views::ImageView {
   // views::Label:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
-    SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+    SetImage(ui::ImageModel::FromResourceId(
         GetNativeTheme()->ShouldUseDarkColors()
             ? IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK
             : IDR_AUTOFILL_MIGRATION_DIALOG_HEADER));
@@ -105,10 +105,10 @@ std::unique_ptr<views::BoxLayoutView> CreateTipTextContainer(
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetInsideBorderInsets(gfx::Insets(kContainerInsets))
           .SetBetweenChildSpacing(kContainerChildSpace)
-          .SetBackground(views::CreateThemedSolidBackground(
-              kColorPaymentsFeedbackTipBackground))
-          .SetBorder(views::CreateThemedSolidBorder(
-              kTipValuePromptBorderThickness, kColorPaymentsFeedbackTipBorder))
+          .SetBackground(
+              views::CreateSolidBackground(kColorPaymentsFeedbackTipBackground))
+          .SetBorder(views::CreateSolidBorder(kTipValuePromptBorderThickness,
+                                              kColorPaymentsFeedbackTipBorder))
           .Build();
 
   container->AddChildView(
@@ -124,7 +124,7 @@ std::unique_ptr<views::BoxLayoutView> CreateTipTextContainer(
           .SetText(tip_message)
           .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
           .SetTextStyle(views::style::STYLE_SECONDARY)
-          .SetEnabledColorId(kColorPaymentsFeedbackTipForeground)
+          .SetEnabledColor(kColorPaymentsFeedbackTipForeground)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SizeToFit(provider->GetDistanceMetric(

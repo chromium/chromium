@@ -4,10 +4,10 @@
 
 #include "base/containers/fixed_flat_map.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +37,8 @@ bool operator>=(const Unsortable& lhs, const Unsortable& rhs) = delete;
 TEST(FixedFlatMapTest, MakeFixedFlatMap_SortedInput) {
   constexpr auto kSquares =
       MakeFixedFlatMap<int, int>({{1, 1}, {2, 4}, {3, 9}, {4, 16}});
-  static_assert(ranges::is_sorted(kSquares), "Error: Map is not sorted.");
-  static_assert(ranges::adjacent_find(kSquares) == kSquares.end(),
+  static_assert(std::ranges::is_sorted(kSquares), "Error: Map is not sorted.");
+  static_assert(std::ranges::adjacent_find(kSquares) == kSquares.end(),
                 "Error: Map contains repeated elements.");
   EXPECT_THAT(kSquares,
               ElementsAre(Pair(1, 1), Pair(2, 4), Pair(3, 9), Pair(4, 16)));
@@ -47,8 +47,8 @@ TEST(FixedFlatMapTest, MakeFixedFlatMap_SortedInput) {
 TEST(FixedFlatMapTest, MakeFixedFlatMap_UnsortedInput) {
   constexpr auto kMap = MakeFixedFlatMap<std::string_view, int>(
       {{"foo", 1}, {"bar", 2}, {"baz", 3}});
-  static_assert(ranges::is_sorted(kMap), "Error: Map is not sorted.");
-  static_assert(ranges::adjacent_find(kMap) == kMap.end(),
+  static_assert(std::ranges::is_sorted(kMap), "Error: Map is not sorted.");
+  static_assert(std::ranges::adjacent_find(kMap) == kMap.end(),
                 "Error: Map contains repeated elements.");
   EXPECT_THAT(kMap,
               ElementsAre(Pair("bar", 2), Pair("baz", 3), Pair("foo", 1)));

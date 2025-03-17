@@ -10,6 +10,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -19,18 +20,21 @@ namespace blink {
 
 // static
 base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
+    const webnn::ContextProperties& context_properties,
     MLGraphBuilder* builder,
     V8MLOperandDataType::Enum data_type,
     Vector<uint32_t> dimensions,
     String name) {
-  ASSIGN_OR_RETURN(webnn::OperandDescriptor descriptor,
-                   webnn::OperandDescriptor::Create(
-                       FromBlinkDataType(data_type), dimensions),
-                   [](std::string error) { return String(error); });
-
   if (name.empty()) {
     return base::unexpected("The name is empty.");
   }
+
+  ASSIGN_OR_RETURN(
+      webnn::OperandDescriptor descriptor,
+      webnn::OperandDescriptor::Create(
+          context_properties, FromBlinkDataType(data_type), dimensions,
+          webnn::GetErrorLabelPrefix(base::StrCat({"input ", name.Utf8()}))),
+      [](std::string error) { return String(error); });
 
   auto* input = MakeGarbageCollected<MLOperand>(
       builder, webnn::mojom::blink::Operand::Kind::kInput,

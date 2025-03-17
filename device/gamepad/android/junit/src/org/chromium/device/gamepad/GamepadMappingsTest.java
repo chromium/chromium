@@ -718,7 +718,7 @@ public class GamepadMappingsTest {
 
         // The Assistant and Capture buttons should be mapped after the last
         // Standard Gamepad button index.
-        Assert.assertEquals(mappings.getButtonsLength(), CanonicalButtonIndex.COUNT + 2);
+        Assert.assertEquals(CanonicalButtonIndex.COUNT + 2, mappings.getButtonsLength());
         Assert.assertEquals(
                 mMappedButtons[CanonicalButtonIndex.COUNT],
                 mRawButtons[KeyEvent.KEYCODE_BUTTON_1],

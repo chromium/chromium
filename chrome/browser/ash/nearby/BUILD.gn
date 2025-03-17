@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("nearby") {
   sources = [
@@ -120,7 +120,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/nearby/presence/credential_storage:unit_tests",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile_util",

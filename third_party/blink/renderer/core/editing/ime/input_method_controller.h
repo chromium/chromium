@@ -273,7 +273,7 @@ class CORE_EXPORT InputMethodController final
       TypingCommand::TextCompositionType composition_type);
   void DispatchCompositionEndEvent(LocalFrame& frame, const String& text);
 
-  WebVector<ui::ImeTextSpan> GetImeTextSpans() const;
+  std::vector<ui::ImeTextSpan> GetImeTextSpans() const;
 
   FRIEND_TEST_ALL_PREFIXES(InputMethodControllerTest,
                            InputModeOfFocusedElement);

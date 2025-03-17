@@ -124,6 +124,9 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
   // Updates and/or adds the specifics into the DataTypeStore.
   void UpsertEntitySpecific(const proto::SavedTabGroupData& data,
                             syncer::DataTypeStore::WriteBatch* write_batch);
+  void UpsertEntitySpecific(const proto::SavedTabGroupData& data,
+                            syncer::DataTypeStore::WriteBatch* write_batch,
+                            bool send_to_sync);
 
   // Removes the specifics pointed to by `guid` from the DataTypeStore.
   void RemoveEntitySpecific(const base::Uuid& guid,

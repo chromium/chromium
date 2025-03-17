@@ -302,8 +302,8 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
 }
 
 void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
-  const signin_metrics::AccessPoint access_point = signin_metrics::AccessPoint::
-      ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE;
+  const signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience;
   const signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);

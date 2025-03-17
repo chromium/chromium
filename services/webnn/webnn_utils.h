@@ -14,31 +14,32 @@
 
 namespace webnn {
 
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpTagToString(mojom::Operation::Tag tag);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpKindToString(mojom::ArgMinMax::Kind kind);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpKindToString(mojom::ElementWiseBinary::Kind kind);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpKindToString(mojom::ElementWiseUnary::Kind kind);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpKindToString(mojom::Reduce::Kind kind);
-std::string COMPONENT_EXPORT(WEBNN_UTILS) GetOpName(const mojom::Operation& op);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
+    GetOpName(const mojom::Operation& op);
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedOperatorError(const mojom::Operation& op);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedOperatorError(const mojom::ElementWiseUnary& op);
 // TODO: crbug.com/345271830 - remove these after all data type error reports
 // are moved to blink.
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedArgumentTypeError(std::string_view op_name,
                                   std::string_view argument_name,
                                   OperandDataType type);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedInputArgumentTypeError(std::string_view op_name,
                                        OperandDataType type);
-std::string COMPONENT_EXPORT(WEBNN_UTILS)
+std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedOptionTypeError(std::string_view op_name,
                                 std::string_view option_name,
                                 OperandDataType type);
@@ -49,14 +50,14 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
 //
 // e.g., Given an array of [10, 11, 12, 13] and a permutation of [0, 2, 3, 1],
 // the permuted array would be [10, 12, 13, 11].
-std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_UTILS)
+std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_SERVICE)
     PermuteArray(base::span<const uint32_t> array,
                  base::span<const uint32_t> permutation);
 
-bool COMPONENT_EXPORT(WEBNN_UTILS)
+bool COMPONENT_EXPORT(WEBNN_SERVICE)
     IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind);
 
-std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_UTILS)
+std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_SERVICE)
     CalculateStrides(base::span<const uint32_t> dimensions);
 
 }  // namespace webnn

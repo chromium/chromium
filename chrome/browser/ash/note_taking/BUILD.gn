@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("note_taking") {
   sources = [
@@ -18,13 +18,6 @@ static_library("note_taking") {
 
   deps = [
     "//apps",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_metrics_constants",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/mojom:mojom_shared_cpp_sources",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -37,6 +30,13 @@ static_library("note_taking") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_metrics_constants",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/mojom:mojom_shared_cpp_sources",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//components/prefs",
     "//components/services/app_service",
     "//components/user_manager",
@@ -60,12 +60,6 @@ source_set("unit_tests") {
   deps = [
     ":note_taking",
     "//ash",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -90,6 +84,12 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/disks",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//components/crx_file",
     "//components/prefs",
     "//components/sync_preferences",

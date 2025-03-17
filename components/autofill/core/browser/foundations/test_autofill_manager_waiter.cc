@@ -148,19 +148,19 @@ void TestAutofillManagerWaiter::OnAfterCaretMovedInFormField(
   OnAfter(Event::kCaretMovedInFormField);
 }
 
-void TestAutofillManagerWaiter::OnBeforeTextFieldDidChange(
+void TestAutofillManagerWaiter::OnBeforeTextFieldValueChanged(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  OnBefore(Event::kTextFieldDidChange);
+  OnBefore(Event::kTextFieldValueChanged);
 }
 
-void TestAutofillManagerWaiter::OnAfterTextFieldDidChange(
+void TestAutofillManagerWaiter::OnAfterTextFieldValueChanged(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field,
     const std::u16string& text_value) {
-  OnAfter(Event::kTextFieldDidChange);
+  OnAfter(Event::kTextFieldValueChanged);
 }
 
 void TestAutofillManagerWaiter::OnBeforeTextFieldDidScroll(
@@ -177,18 +177,18 @@ void TestAutofillManagerWaiter::OnAfterTextFieldDidScroll(
   OnAfter(Event::kTextFieldDidScroll);
 }
 
-void TestAutofillManagerWaiter::OnBeforeSelectControlDidChange(
+void TestAutofillManagerWaiter::OnBeforeSelectControlSelectionChanged(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  OnBefore(Event::kSelectControlDidChange);
+  OnBefore(Event::kSelectControlSelectionChanged);
 }
 
-void TestAutofillManagerWaiter::OnAfterSelectControlDidChange(
+void TestAutofillManagerWaiter::OnAfterSelectControlSelectionChanged(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  OnAfter(Event::kSelectControlDidChange);
+  OnAfter(Event::kSelectControlSelectionChanged);
 }
 
 void TestAutofillManagerWaiter::OnBeforeAskForValuesToFill(
@@ -405,7 +405,7 @@ const FormStructure* WaitForMatchingForm(
     }
 
     FormStructure* FindForm() const {
-      auto it = base::ranges::find_if(
+      auto it = std::ranges::find_if(
           manager_->form_structures(),
           [&](const auto& p) { return pred_.Run(*p.second); });
       return it != manager_->form_structures().end() ? it->second.get()

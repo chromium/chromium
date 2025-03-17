@@ -28,7 +28,7 @@ suite('cr-link-row', function() {
 
   test('check label visibility', async () => {
     const labelWrapper =
-        linkRow.shadowRoot!.querySelector<HTMLElement>('#labelWrapper')!;
+        linkRow.shadowRoot.querySelector<HTMLElement>('#labelWrapper')!;
     assertTrue(labelWrapper.hidden);
     linkRow.usingSlottedLabel = true;
     await microtasksFinished();
@@ -43,7 +43,7 @@ suite('cr-link-row', function() {
 
   test('icon', async () => {
     const iconButton =
-        linkRow.shadowRoot!.querySelector<CrIconButtonElement>('#icon')!;
+        linkRow.shadowRoot.querySelector<CrIconButtonElement>('#icon')!;
     assertFalse(linkRow.external);
     assertEquals('cr:chevron-right', iconButton.ironIcon);
     linkRow.external = true;
@@ -52,7 +52,7 @@ suite('cr-link-row', function() {
   });
 
   test('role description', async () => {
-    const iconButton = linkRow.shadowRoot!.querySelector('#icon')!;
+    const iconButton = linkRow.shadowRoot.querySelector('#icon')!;
     assertEquals(undefined, linkRow.roleDescription);
     assertEquals(null, iconButton.getAttribute('aria-roledescription'));
     const description = 'self destruct button';

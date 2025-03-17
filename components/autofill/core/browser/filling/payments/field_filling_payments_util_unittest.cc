@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,8 +24,8 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_test_api.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -97,7 +97,7 @@ AutofillField CreateTestSelectAutofillField(
 size_t GetIndexOfValue(const std::vector<SelectOption>& values,
                        const std::u16string& value) {
   size_t i =
-      base::ranges::find(values, value, &SelectOption::value) - values.begin();
+      std::ranges::find(values, value, &SelectOption::value) - values.begin();
   CHECK_LT(i, values.size()) << "Passing invalid arguments to GetIndexOfValue";
   return i;
 }
@@ -245,7 +245,7 @@ TEST_F(FieldFillingPaymentsUtilTest, FillFormField_Preview_CreditCardField) {
   CreditCard credit_card;
   credit_card.SetNumber(u"4111111111111111");
   // Verify that the field contains 4 but no more than 4 digits.
-  size_t num_digits = base::ranges::count_if(
+  size_t num_digits = std::ranges::count_if(
       GetFillingValueForCreditCard(credit_card, kAppLocale,
                                    mojom::ActionPersistence::kPreview, field),
       &base::IsAsciiDigit<char16_t>);
@@ -263,7 +263,8 @@ class CreditCardVerificationCodeTest
 TEST_P(CreditCardVerificationCodeTest,
        FillFormField_CreditCardVerificationCode) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE));
+  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE),
+                  AutofillPredictionSource::kHeuristics);
 
   CreditCard credit_card;
   const std::u16string kCvc = u"1111";
@@ -281,7 +282,8 @@ TEST_P(CreditCardVerificationCodeTest,
 TEST_P(CreditCardVerificationCodeTest,
        FillFormField_CreditCardVerificationCode_Empty) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE));
+  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE),
+                  AutofillPredictionSource::kHeuristics);
 
   CreditCard credit_card;
   const std::u16string kEmptyCvc = u"";
@@ -293,7 +295,8 @@ TEST_P(CreditCardVerificationCodeTest,
 // Tests that CVC is correctly previewed and filled for a standalone CVC field.
 TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
+                  AutofillPredictionSource::kHeuristics);
 
   CreditCard credit_card = test::WithCvc(test::GetVirtualCard());
   std::u16string value_to_fill = GetFillingValueForCreditCard(
@@ -316,7 +319,8 @@ TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
 TEST_P(CreditCardVerificationCodeTest,
        FillFormField_StandaloneCVCField_AmericanExpress) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
+                  AutofillPredictionSource::kHeuristics);
 
   CreditCard credit_card = test::GetVirtualCard();
   test_api(credit_card).set_network_for_card(kAmericanExpressCard);

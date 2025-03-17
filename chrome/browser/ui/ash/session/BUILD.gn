@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("session") {
   sources = [
@@ -20,9 +18,7 @@ static_library("session") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/login/demo_mode",
@@ -41,7 +37,6 @@ static_library("session") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/login/session",
-    "//chromeos/ash/components/standalone_browser",
     "//components/prefs",
     "//components/session_manager/core",
     "//components/supervised_user/core/browser",
@@ -95,7 +90,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/login/session",
-    "//chromeos/ash/components/standalone_browser",
     "//components/account_id",
     "//components/prefs",
     "//components/session_manager/core",

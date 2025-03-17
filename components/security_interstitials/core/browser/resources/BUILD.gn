@@ -3,11 +3,27 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+import("//ui/webui/webui_features.gni")
 
-# Generate JS bundles for interstitials UIs, regradless of the `optimize_webui`
-# GN arg, as these UIs can't load any JS modules at runtime, since they are not
-# proper WebUI pages and therefore are not backed up by any WebUIDataSource.
+# Generate JS bundles for interstitials UIs. Always bundle regardless of the
+# `optimize_webui`  GN arg, as these UIs can't load any JS modules at runtime,
+# since they are not proper WebUI pages and therefore are not backed up by any
+# WebUIDataSource.  Use `optimize_webui` only to decide whether to also minify.
 group("bundle_js") {
+  if (optimize_webui) {
+    public_deps = [ ":minify_js" ]
+  } else {
+    public_deps = [ ":bundle_js_internal" ]
+  }
+}
+
+# Bundle without minifying.
+group("bundle_js_internal") {
+  visibility = [
+    ":bundle_js",
+    ":minify_js",
+  ]
   public_deps = [
     ":bundle_js_interstitial_large",
     ":bundle_js_interstitial_webview_quiet",
@@ -15,11 +31,28 @@ group("bundle_js") {
   ]
 }
 
+if (optimize_webui) {
+  # Bundle and minify.
+  minify_js("minify_js") {
+    visibility = [ ":bundle_js" ]
+    in_folder = target_gen_dir
+    out_folder = "${target_gen_dir}/minified"
+    in_files = [
+      "interstitial_large/interstitial_large.rollup.js",
+      "interstitial_webview_quiet/interstitial_webview_quiet.rollup.js",
+      "interstitial_webview_supervised_user/interstitial_webview_supervised_user.rollup.js",
+    ]
+    deps = [ ":bundle_js_internal" ]
+  }
+}
+
 shared_interstitials_path =
     rebase_path("${root_gen_dir}/components/security_interstitials/core/",
                 root_build_dir)
 
 bundle_js("bundle_js_interstitial_large") {
+  visibility = [ ":bundle_js_internal" ]
+
   # Using a placeholder value for `host`. The value is ignored since the bundled
   # code is not served from any host.
   host = "_ignored_"
@@ -35,6 +68,8 @@ bundle_js("bundle_js_interstitial_large") {
 }
 
 bundle_js("bundle_js_interstitial_webview_quiet") {
+  visibility = [ ":bundle_js_internal" ]
+
   # Using a placeholder value for `host`. The value is ignored since the bundled
   # code is not served from any host.
   host = "_ignored_"
@@ -50,6 +85,8 @@ bundle_js("bundle_js_interstitial_webview_quiet") {
 }
 
 bundle_js("bundle_js_interstitial_webview_supervised_user") {
+  visibility = [ ":bundle_js_internal" ]
+
   # Using a placeholder value for `host`. The value is ignored since the bundled
   # code is not served from any host.
   host = "_ignored_"

@@ -70,10 +70,13 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
             Supplier<SnackbarManager> snackbarManagerSupplier,
             WebContents webContents,
             @Nullable BrowserContextHandle originalBrowserContext,
-            @ActivityType int activityType) {
+            @ActivityType int activityType,
+            boolean isIncognitoBranded) {
         mSnakcbarOnAction = snackbarOnAction;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
-        mCookieControlsBridge = new CookieControlsBridge(this, webContents, originalBrowserContext);
+        mCookieControlsBridge =
+                new CookieControlsBridge(
+                        this, webContents, originalBrowserContext, isIncognitoBranded);
         mActivityType = activityType;
         mWebContents = webContents;
         mTrackingProtectionLimiter = new TrackingProtectionSnackbarLimiter();

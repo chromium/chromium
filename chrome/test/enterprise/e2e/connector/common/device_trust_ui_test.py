@@ -18,6 +18,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import test_util
+from test_util import fetch_policies
 from test_util import getElementFromShadowRoot
 from test_util import getElementsFromShadowRoot
 from test_util import shutdown_chrome
@@ -29,7 +30,6 @@ flags.DEFINE_string(
     'idp_matcher', '',
     'The idp_matcher used to match a IdP site listed at chrome://policy.')
 
-_POLICY_URL = 'chrome://policy'
 _CONNECTOR_INTERNAL_URL = 'chrome://connectors-internals'
 _POLICY_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST = (
     'BrowserContextAwareAccessSignalsAllowlist')
@@ -73,55 +73,24 @@ def main(argv):
       WebDriverWait(driver=driver, timeout=_TIMEOUT)
 
       # Step 1: navigate to chrome://policy app
-      count = 0
-      idp_urls = ''
-      idp_url = ''
-      device_id = ''
-      found_idp_urls = False
-      # Wait up to 120s till the idp_urls fields are filled.
-      while count < 20:
-        driver.get(_POLICY_URL)
-        count += 1
-        # Only click `Reload-policies` button on the key_creation because
-        # a newly enrolled Chrome does not have policies cached. The button
-        # triggers a policy refetch which is needed.
-        # For the key_load, the policies are fetched from disk.
-        if test_case == 'key_creation':
-          wait_element(driver, By.CSS_SELECTOR, '#reload-policies')
-          driver.find_element(By.CSS_SELECTOR, '#reload-policies').click()
-        wait_element(driver, By.CSS_SELECTOR, 'policy-table')
-        policy_table = driver.find_element(By.CSS_SELECTOR, 'policy-table')
-        row_groups = getElementsFromShadowRoot(driver, policy_table,
-                                               '.policy-data')
-        try:
-          for group in row_groups:
-            name = getElementFromShadowRoot(driver, group, '#name').text
-            if not name:
-              break
-            if name == _POLICY_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST:
-              idp_urls = getElementFromShadowRoot(
-                  driver, group, 'div.policy.row > div.value').text
-              if idp_urls:
-                logging.info(f'idp_urls = {idp_urls}')
-                found_idp_urls = True
-                break
-          if found_idp_urls:
-            break
-          time.sleep(6)
-        except StaleElementReferenceException:
-          logging.info('StaleElementReferenceException happened, skip rest')
+      # Only click `Reload-policies` button on the key_creation because
+      # a newly enrolled Chrome does not have policies cached. The button
+      # triggers a policy refetch which is needed.
+      # For the key_load, the policies are fetched from disk.
+      policies = fetch_policies(driver, refresh=(test_case == 'key_creation'))
+      idp_urls = policies[_POLICY_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST].value
+      logging.info(f'idp_urls = {idp_urls}')
+
       wait_element(driver, By.CSS_SELECTOR, 'status-box')
       status_box = driver.find_element(By.CSS_SELECTOR, 'status-box')
       el = getElementFromShadowRoot(driver, status_box, '.status-box-fields')
       device_id = el.find_element(By.CLASS_NAME,
                                   'machine-enrollment-device-id').text
-      # idp_urls could be of '["http://abc", "http://def"]'
-      # remove the excess {[, ], ", '}
-      idp_urls = idp_urls.translate({ord(i): None for i in '[]\"\''})
-      for url in idp_urls.split(','):
-        if re.search(FLAGS.idp_matcher, url):
-          idp_url = url
-          break
+      # `idp_urls` is a list of strings:
+      # https://chromeenterprise.google/policies/#BrowserContextAwareAccessSignalsAllowlist
+      idp_pattern = re.compile(FLAGS.idp_matcher)
+      idp_url = next(
+          url for url in json.loads(idp_urls) if idp_pattern.search(url))
 
       # Step 2: navigate to chrome://connectors-internals app
       count = 0

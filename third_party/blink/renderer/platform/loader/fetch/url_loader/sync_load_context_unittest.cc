@@ -108,7 +108,7 @@ class SyncLoadContextTest : public testing::Test {
             &SyncLoadContext::StartAsyncWithWaitableEvent, std::move(request),
             loading_thread_.task_runner(), TRAFFIC_ANNOTATION_FOR_TESTS,
             0 /* loader_options */, std::move(pending_factory),
-            WebVector<std::unique_ptr<URLLoaderThrottle>>(), out_response,
+            std::vector<std::unique_ptr<URLLoaderThrottle>>(), out_response,
             context_for_redirect, redirect_or_response_event,
             nullptr /* terminate_sync_load_event */,
             base::Seconds(60) /* timeout */,

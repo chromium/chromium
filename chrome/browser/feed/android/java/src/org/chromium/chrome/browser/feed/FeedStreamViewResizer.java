@@ -11,13 +11,13 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.display.DisplayUtil;
 
 /**
  * Updates the paddings used to display the feed stream when switching to landscape mode. Due to the
@@ -134,7 +134,7 @@ public class FeedStreamViewResizer extends ViewResizer {
     private float getScreenWidth() {
         Resources resources = mUiConfig.getContext().getResources();
         float screenWidth;
-        if (BuildInfo.getInstance().isAutomotive && mView != null) {
+        if (DisplayUtil.isUiScaled() && mView != null) {
             screenWidth = mView.getMeasuredWidth();
         } else {
             float dpToPx = resources.getDisplayMetrics().density;

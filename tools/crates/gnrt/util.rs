@@ -94,11 +94,13 @@ pub fn run_cargo_metadata(
     mut extra_options: Vec<String>,
     extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
 ) -> Result<cargo_metadata::Metadata> {
+    // See the `[dependencies.cxxbridge-cmd]` section in
+    // `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+    // `-Zbindeps` flag is needed.
+    extra_options.push("-Zbindeps".to_string());
+
     let mut command = cargo_metadata::MetadataCommand::new();
     command.current_dir(workspace_path);
-
-    // Allow the binary dependency on cxxbridge-cmd.
-    extra_options.push("-Zbindeps".to_string());
     command.other_options(extra_options);
     for (k, v) in extra_env.into_iter() {
         command.env(k, v);
@@ -106,6 +108,28 @@ pub fn run_cargo_metadata(
 
     log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
     command.exec().context("running cargo metadata")
+}
+
+/// Same as `run_cargo_metadata` but built on top of `guppy`.
+pub fn get_guppy_package_graph(
+    workspace_path: PathBuf,
+    mut extra_options: Vec<String>,
+    extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
+) -> Result<guppy::graph::PackageGraph> {
+    // See the `[dependencies.cxxbridge-cmd]` section in
+    // `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+    // `-Zbindeps` flag is needed.
+    extra_options.push("-Zbindeps".to_string());
+
+    let mut command = guppy::MetadataCommand::new();
+    command.current_dir(workspace_path);
+    command.other_options(extra_options);
+    for (k, v) in extra_env.into_iter() {
+        command.env(k, v);
+    }
+
+    log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
+    command.build_graph().context("running cargo metadata")
 }
 
 /// Run a cargo command, other than metadata which should use

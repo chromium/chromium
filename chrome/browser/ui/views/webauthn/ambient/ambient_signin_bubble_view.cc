@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>

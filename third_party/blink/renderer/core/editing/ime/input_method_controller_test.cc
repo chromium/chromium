@@ -274,7 +274,7 @@ TEST_F(InputMethodControllerTest, GetImeTextSpans) {
                                              10);
   Controller().SetEditableSelectionOffsets(PlainTextRange(1, 1));
 
-  const WebVector<ui::ImeTextSpan>& ime_text_spans =
+  const std::vector<ui::ImeTextSpan>& ime_text_spans =
       Controller().TextInputInfo().ime_text_spans;
 
   EXPECT_EQ(2u, ime_text_spans.size());

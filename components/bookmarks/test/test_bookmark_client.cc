@@ -95,6 +95,11 @@ void TestBookmarkClient::SetAccountBookmarkSyncMetadataAndScheduleWrite(
   account_bookmark_sync_metadata_save_closure_.Run();
 }
 
+void TestBookmarkClient::SetDecodeAccountBookmarkSyncMetadataResult(
+    DecodeAccountBookmarkSyncMetadataResult result) {
+  decode_account_bookmark_sync_metadata_result_ = result;
+}
+
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
   return base::BindOnce(&TestBookmarkClient::LoadManagedNode,
                         std::move(managed_node_));
@@ -125,11 +130,13 @@ void TestBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {}
 
-void TestBookmarkClient::DecodeAccountBookmarkSyncMetadata(
+BookmarkClient::DecodeAccountBookmarkSyncMetadataResult
+TestBookmarkClient::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
   account_bookmark_sync_metadata_ = metadata_str;
   account_bookmark_sync_metadata_save_closure_ = schedule_save_closure;
+  return decode_account_bookmark_sync_metadata_result_;
 }
 
 base::CancelableTaskTracker::TaskId

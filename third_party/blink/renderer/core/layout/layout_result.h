@@ -494,7 +494,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_->accessibility_anchor;
   }
 
-  const HeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors() const {
+  const GCedHeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors()
+      const {
     if (!rare_data_) {
       return nullptr;
     }
@@ -559,7 +560,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     void SetAccessibilityAnchor(Element* anchor);
 
     void SetDisplayLocksAffectedByAnchors(
-        HeapHashSet<Member<Element>>* display_locks);
+        GCedHeapHashSet<Member<Element>>* display_locks);
 
    private:
     friend class LayoutResult;
@@ -969,7 +970,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     LayoutUnit block_end_annotation_space;
     int lines_until_clamp;
     Member<Element> accessibility_anchor;
-    Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
+    Member<GCedHeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 
    private:
     // Only valid if line_box_bfc_block_offset_is_set

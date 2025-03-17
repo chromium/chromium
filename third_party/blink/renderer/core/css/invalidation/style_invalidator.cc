@@ -199,7 +199,6 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
   DCHECK(pending_nth_sets_.empty());
 
   for (const auto& invalidation_set : pending_invalidations.Siblings()) {
-    CHECK(invalidation_set->IsAlive());
     if (invalidation_set->IsNthSiblingInvalidationSet()) {
       AddPendingNthSiblingInvalidationSet(
           To<NthSiblingInvalidationSet>(*invalidation_set));
@@ -215,7 +214,6 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
 
   if (!pending_invalidations.Descendants().empty()) {
     for (const auto& invalidation_set : pending_invalidations.Descendants()) {
-      CHECK(invalidation_set->IsAlive());
       PushInvalidationSet(*invalidation_set);
     }
     if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {

@@ -9,7 +9,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"

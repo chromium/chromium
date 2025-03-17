@@ -125,7 +125,7 @@ export class SettingsTranslatePageElement extends
    */
   private hasDisplayName_(language: chrome.languageSettingsPrivate.Language|
                           undefined): boolean {
-    return !!language && !!language!.displayName;
+    return !!language && !!language.displayName;
   }
 
   /**

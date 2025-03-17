@@ -13,7 +13,6 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
@@ -110,12 +109,10 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
   }
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// DICE sign-in flow isn't applicable on Lacros.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   browser()->signin_view_controller()->ShowSignin(
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      signin_metrics::AccessPoint::kSettings);
 
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 // Press Ctrl/Cmd+T, which will open a new tab.
@@ -133,27 +130,14 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that the confirm button is focused by default in the sync confirmation
 // dialog.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                        // TODO(crbug.com/40927355): Re-enable this test
                        DISABLED_SyncConfirmationDefaultFocus) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This test runs in the main profile.
-  EXPECT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  CoreAccountInfo device_primary_account =
-      GetIdentityManager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(),
-                                      device_primary_account.email,
-                                      signin::ConsentLevel::kSync);
-#else
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
                                       signin::ConsentLevel::kSync);
-#endif
   content::TestNavigationObserver content_observer(
       GURL("chrome://sync-confirmation/"));
   content_observer.StartWatchingNewWebContents();
@@ -238,20 +222,21 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
 
           // Verify that the correct action was selected in confirming the
           // dialog.
-          Steps(WaitForEvent(kConstrainedDialogWebViewElementId,
-                             kEmailConfirmationCompleted),
-                CheckResult([&] { return chosen_action; },
-                            SigninEmailConfirmationDialog::CREATE_NEW_USER)),
+          RunSubsequence(
+              WaitForEvent(kConstrainedDialogWebViewElementId,
+                           kEmailConfirmationCompleted),
+              CheckResult([&] { return chosen_action; },
+                          SigninEmailConfirmationDialog::CREATE_NEW_USER)),
 
           // Verify that the dialog closes correctly.
-          Steps(WaitForHide(kConstrainedDialogWebViewElementId),
-                CheckResult(
-                    [&] {
-                      return browser()
-                          ->signin_view_controller()
-                          ->ShowsModalDialog();
-                    },
-                    false))));
+          RunSubsequence(WaitForHide(kConstrainedDialogWebViewElementId),
+                         CheckResult(
+                             [&] {
+                               return browser()
+                                   ->signin_view_controller()
+                                   ->ShowsModalDialog();
+                             },
+                             false))));
 }
 
 // Tests that the confirm button is focused by default in the signin error
@@ -295,26 +280,16 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
     GTEST_SKIP() << "EnterpriseUpdatedProfileCreationScreen feature replaces "
                     "this dialog with a new one";
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This test runs in the main profile.
-  EXPECT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  auto primary_account_info = GetIdentityManager()->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kSignin);
-  auto account_info = signin::MakePrimaryAccountAvailable(
-      GetIdentityManager(), primary_account_info.email,
-      signin::ConsentLevel::kSync);
-#else
   auto account_info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "alice@gmail.com", signin::ConsentLevel::kSync);
-#endif
   content::TestNavigationObserver content_observer(
       (GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)));
   content_observer.StartWatchingNewWebContents();
   signin::SigninChoice result;
   browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
-          account_info, /*is_oidc_account=*/false, /*force_new_profile=*/true,
+          account_info, /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false, /*force_new_profile=*/true,
           /*show_link_data_option=*/true,
           /*process_user_choice_callback=*/
           base::BindOnce([](signin::SigninChoice* result,

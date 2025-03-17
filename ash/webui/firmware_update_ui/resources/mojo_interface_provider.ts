@@ -7,7 +7,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateController} from './fake_update_controller.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';
-import {InstallController, InstallControllerInterface, SystemUtils, SystemUtilsInterface, UpdateProvider, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
+import type {InstallControllerInterface, SystemUtilsInterface, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
+import {InstallController, SystemUtils, UpdateProvider} from './firmware_update.mojom-webui.js';
 
 /**
  * @fileoverview

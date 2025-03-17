@@ -22,7 +22,7 @@ void ShelfContainerView::Initialize() {
 
   shelf_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   shelf_view_->layer()->SetFillsBoundsOpaquely(false);
-  AddChildView(shelf_view_.get());
+  AddChildViewRaw(shelf_view_.get());
 }
 
 gfx::Size ShelfContainerView::CalculateIdealSize(int button_size) const {
@@ -56,8 +56,8 @@ void ShelfContainerView::TranslateShelfView(const gfx::Vector2dF& offset) {
   gfx::Transform transform_matrix;
   transform_matrix.Translate(-offset);
   shelf_view_->SetTransform(transform_matrix);
-  shelf_view_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                        true);
+  shelf_view_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kLocationChanged, true);
 }
 
 BEGIN_METADATA(ShelfContainerView)

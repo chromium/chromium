@@ -167,7 +167,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysScrim2
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque,
@@ -242,7 +242,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     no_recent_items_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     no_recent_items_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
 
-    no_recent_items_label_->SetEnabledColorId(kColorAshIconColorSecondary);
+    no_recent_items_label_->SetEnabledColor(kColorAshIconColorSecondary);
     no_recent_items_label_->SetFontList(
         no_recent_items_label_->font_list()
             .DeriveWithSizeDelta(

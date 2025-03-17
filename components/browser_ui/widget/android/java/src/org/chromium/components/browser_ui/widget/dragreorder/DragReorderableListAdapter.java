@@ -4,19 +4,25 @@
 
 package org.chromium.components.browser_ui.widget.dragreorder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.R;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,14 +31,16 @@ import java.util.List;
  *
  * @param <T> The type of item that inhabits this adapter's list
  */
+@NullMarked
 public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
-    protected final Context mContext;
-
     // keep track of the list and list managers
-    protected ItemTouchHelper mItemTouchHelper;
-    private ItemTouchHelper.Callback mTouchHelperCallback;
-    protected List<T> mElements;
-    protected RecyclerView mRecyclerView;
+    protected @Nullable ItemTouchHelper mItemTouchHelper;
+
+    private ItemTouchHelper.@Nullable Callback mTouchHelperCallback;
+
+    protected List<T> mItems = Collections.emptyList();
+
+    protected @Nullable RecyclerView mRecyclerView;
 
     // keep track of how this item looks
     private final int mDraggedBackgroundColor;
@@ -65,17 +73,19 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
             int from = current.getAdapterPosition();
             int to = target.getAdapterPosition();
             if (from == to) return false;
-            Collections.swap(mElements, from, to);
+            Collections.swap(mItems, from, to);
             notifyItemMoved(from, to);
             return true;
         }
 
         @Override
-        public void onSelectedChanged(ViewHolder viewHolder, int actionState) {
+        public void onSelectedChanged(@Nullable ViewHolder viewHolder, int actionState) {
             super.onSelectedChanged(viewHolder, actionState);
 
             // similar to getMovementFlags, this method may be called multiple times
-            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mBeingDragged != viewHolder) {
+            if (viewHolder != null
+                    && actionState == ItemTouchHelper.ACTION_STATE_DRAG
+                    && mBeingDragged != viewHolder) {
                 mBeingDragged = viewHolder;
                 mStart = viewHolder.getAdapterPosition();
                 onDragStateChange(true);
@@ -91,7 +101,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
             if (viewHolder.getAdapterPosition() != mStart && recyclerView.isAttachedToWindow()) {
                 // Commit the position change for the dragged item when it's dropped and
                 // recyclerView has finished layout computing
-                recyclerView.post(() -> setOrder(mElements));
+                recyclerView.post(() -> setOrder(mItems));
             }
             // the row has been dropped, even though it is possible at same row
             mBeingDragged = null;
@@ -154,28 +164,43 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
      * @param context The context for that this DragReorderableListAdapter occupies.
      */
     public DragReorderableListAdapter(Context context) {
-        mContext = context;
-
         Resources resources = context.getResources();
         // Set the alpha to 90% when dragging which is 230/255
         mDraggedBackgroundColor =
                 ColorUtils.setAlphaComponent(
-                        ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1),
+                        ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1),
                         resources.getInteger(R.integer.list_item_dragged_alpha));
         mDraggedElevation = resources.getDimension(R.dimen.list_item_dragged_elevation);
     }
 
-    @Override
-    public int getItemCount() {
-        return mElements.size();
+    /**
+     * Set the drag state delegate for this adapter.
+     *
+     * @param delegate The drag state delegate for this adapter.
+     */
+    @Initializer
+    protected void initDragStateDelegate(DragStateDelegate delegate) {
+        mDragStateDelegate = delegate;
     }
 
-    protected T getItemByPosition(int position) {
-        return mElements.get(position);
+    @Override
+    public int getItemCount() {
+        return mItems.size();
+    }
+
+    public T getItemByPosition(int position) {
+        return mItems.get(position);
+    }
+
+    @SuppressWarnings("NotifyDataSetChanged")
+    public void setItems(Collection<T> newItems) {
+        mItems = new ArrayList<>(newItems);
+        notifyDataSetChanged();
     }
 
     /** Enables drag & drop interaction on the RecyclerView that this adapter is attached to. */
     public void enableDrag() {
+        assert mRecyclerView != null;
         if (mItemTouchHelper == null) {
             mTouchHelperCallback = new DragTouchCallback();
             mItemTouchHelper = new ItemTouchHelper(mTouchHelperCallback);
@@ -218,6 +243,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
      * @return The item contained by holder.
      */
     protected T getItemByHolder(ViewHolder holder) {
+        assumeNonNull(mRecyclerView);
         return getItemByPosition(mRecyclerView.getChildLayoutPosition(holder.itemView));
     }
 
@@ -232,16 +258,8 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
     }
 
     /**
-     * Set the drag state delegate for this adapter.
-     * It is expected that the drag state delegate will be set through calling this method.
-     *
-     * @param delegate The drag state delegate for this adapter.
+     * @param l The drag listener to be added.
      */
-    protected void setDragStateDelegate(DragStateDelegate delegate) {
-        mDragStateDelegate = delegate;
-    }
-
-    /** @param l The drag listener to be added. */
     public void addDragListener(DragListener l) {
         mListeners.addObserver(l);
     }
@@ -268,6 +286,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
      * @param start The index of the ViewHolder that you want to drag.
      * @param end The index this ViewHolder should be dragged to and dropped at.
      */
+    @SuppressWarnings("NullAway") // Test-only method with lots of assumptions.
     public void simulateDragForTests(int start, int end) {
         ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(start);
         mItemTouchHelper.startDrag(viewHolder);

@@ -4,11 +4,13 @@
 
 #include "components/history_embeddings/ml_answerer.h"
 
+#include <algorithm>
+
 #include "base/barrier_callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
@@ -63,11 +65,13 @@ class MlAnswerer::SessionManager {
 
   SessionManager(std::string query,
                  Context context,
-                 ComputeAnswerCallback callback)
+                 ComputeAnswerCallback callback,
+                 base::WeakPtr<ModelQualityLogsUploaderService> logs_uploader)
       : query_(std::move(query)),
         context_(std::move(context)),
         callback_(std::move(callback)),
         origin_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+        logs_uploader_(logs_uploader),
         weak_ptr_factory_(this) {}
 
   ~SessionManager() {
@@ -152,7 +156,7 @@ class MlAnswerer::SessionManager {
 
     // Sort the inputs according to their indices in the original vector, so
     // we prioritize passages that are more relevant.
-    base::ranges::sort(
+    std::ranges::sort(
         inputs.begin(), inputs.end(),
         [](ModelInput& i1, ModelInput& i2) { return i1.index < i2.index; });
 
@@ -182,8 +186,13 @@ class MlAnswerer::SessionManager {
   // Callback to be repeatedly called during streaming execution.
   void StreamingExecutionCallback(
       size_t session_index,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result) {
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      std::unique_ptr<optimization_guide::proto::HistoryAnswerLoggingData>
+          logging_data) {
+    auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+        logs_uploader_);
+    log_entry->log_ai_data_request()->set_allocated_history_answer(
+        logging_data.release());
     if (!result.response.has_value()) {
       ComputeAnswerStatus status = ComputeAnswerStatus::kExecutionFailure;
       auto error = result.response.error().error();
@@ -191,14 +200,14 @@ class MlAnswerer::SessionManager {
         status = ComputeAnswerStatus::kFiltered;
       }
       FinishCallback(AnswererResult(status, query_, Answer(),
-                                    std::move(result.log_entry), "", {}));
+                                    std::move(log_entry), "", {}));
     } else if (result.response->is_complete) {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
-      AnswererResult answerer_result(
-          ComputeAnswerStatus::kSuccess, query_, response->answer(),
-          std::move(result.log_entry), urls_[session_index], {});
+      AnswererResult answerer_result(ComputeAnswerStatus::kSuccess, query_,
+                                     response->answer(), std::move(log_entry),
+                                     urls_[session_index], {});
       answerer_result.PopulateScrollToTextFragment(
           context_.url_passages_map[answerer_result.url]);
       FinishCallback(std::move(answerer_result));
@@ -242,8 +251,8 @@ class MlAnswerer::SessionManager {
       optimization_guide::proto::HistoryAnswerRequest request;
       const size_t session_index = std::get<0>(session_scores[max_index]);
       VLOG(3) << "Running ExecuteModel for session " << session_index;
-      sessions_[session_index]->ExecuteModel(
-          request,
+      optimization_guide::ExecuteModelSessionWithLogging(
+          sessions_[session_index].get(), request,
           base::BindRepeating(&SessionManager::StreamingExecutionCallback,
                               weak_ptr_factory_.GetWeakPtr(), session_index));
     } else {
@@ -261,11 +270,17 @@ class MlAnswerer::SessionManager {
   Context context_;
   ComputeAnswerCallback callback_;
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
+  base::WeakPtr<ModelQualityLogsUploaderService> logs_uploader_;
   base::WeakPtrFactory<SessionManager> weak_ptr_factory_;
 };
 
-MlAnswerer::MlAnswerer(OptimizationGuideModelExecutor* model_executor)
-    : model_executor_(model_executor) {}
+MlAnswerer::MlAnswerer(OptimizationGuideModelExecutor* model_executor,
+                       ModelQualityLogsUploaderService* logs_uploader)
+    : model_executor_(model_executor) {
+  if (logs_uploader) {
+    logs_uploader_ = logs_uploader->GetWeakPtr();
+  }
+}
 
 MlAnswerer::~MlAnswerer() = default;
 
@@ -280,8 +295,8 @@ void MlAnswerer::ComputeAnswer(std::string query,
   CHECK(model_executor_);
 
   // Assign a new session manager (and destroy the existing one).
-  session_manager_ =
-      std::make_unique<SessionManager>(query, context, std::move(callback));
+  session_manager_ = std::make_unique<SessionManager>(
+      query, context, std::move(callback), logs_uploader_);
 
   const auto sessions_started_callback = base::BarrierCallback<int>(
       context.url_passages_map.size(),
@@ -320,9 +335,9 @@ void MlAnswerer::StartAndAddSession(
                      std::move(session_started)));
 
   const auto make_model_input = [](std::string text, size_t index,
-                                   uint32_t token_count) {
+                                   std::optional<uint32_t> token_count) {
     VLOG(3) << "Created model input for " << index;
-    return ModelInput{text, index, token_count};
+    return ModelInput{text, index, token_count.value_or(0)};
   };
 
   // Get token count for query, always assign index 0 to query to make a

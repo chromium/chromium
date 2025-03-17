@@ -489,36 +489,6 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_, gmb_type);
 }
 
-SharedImageInterface::SharedImageMapping
-SharedImageInterfaceInProcess::CreateSharedImage(
-    const SharedImageInfo& si_info) {
-  base::WritableSharedMemoryMapping mapping;
-  gfx::GpuMemoryBufferHandle handle;
-  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
-
-  auto mailbox = Mailbox::Generate();
-  {
-    base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
-    // Note: we enqueue the task under the lock to guarantee monotonicity of
-    // the release ids as seen by the service. Unretained is safe because
-    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
-    // time, cancelling tasks, before |this| is destroyed.
-    ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
-                                       CreateSharedImageWithBufferOnGpuThread,
-                                   base::Unretained(this), mailbox, si_info,
-                                   std::move(handle)),
-                    /*sync_token_fences=*/{}, sync_token);
-  }
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  shared_image_mapping.mapping = std::move(mapping);
-  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_,
-      gfx::SHARED_MEMORY_BUFFER);
-
-  return shared_image_mapping;
-}
-
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
@@ -687,16 +657,6 @@ void SharedImageInterfaceInProcess::WaitSyncToken(const SyncToken& sync_token) {
                   MakeSyncToken(next_fence_sync_release_++));
 }
 
-void SharedImageInterfaceInProcess::Flush() {
-  // No need to flush in this implementation.
-}
-
-scoped_refptr<gfx::NativePixmap> SharedImageInterfaceInProcess::GetNativePixmap(
-    const gpu::Mailbox& mailbox) {
-  DCHECK(shared_image_manager_->is_thread_safe());
-  return shared_image_manager_->GetNativePixmap(mailbox);
-}
-
 void SharedImageInterfaceInProcess::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences,
@@ -707,7 +667,7 @@ void SharedImageInterfaceInProcess::ScheduleGpuTask(
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
+    ExportedSharedImage exported_shared_image) {
   // Secondary references are required only by client processes, so it shouldn't
   // be reachable here.
   NOTREACHED();

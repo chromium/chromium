@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_MIXIN_BASED_IN_PROCESS_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_MIXIN_BASED_IN_PROCESS_BROWSER_TEST_H_
 
+#include <concepts>
 #include <memory>
 #include <vector>
 
@@ -75,10 +76,11 @@ class InProcessBrowserTestMixin {
   //   SetUpDefaultCommandLine
   //   SetUpUserDataDirectory
   //   SetUpInProcessBrowserTestFixture
+  //   SetUpLocalStatePrefService
   //   CreatedBrowserMainParts
   //   SetUpOnMainThread
-  //   PostRunTestOnMainThread
   //   TearDownOnMainThread
+  //   PostRunTestOnMainThread
   //   TearDownInProcessBrowserTestFixture
   //   TearDown
   //
@@ -89,11 +91,12 @@ class InProcessBrowserTestMixin {
   virtual void SetUpDefaultCommandLine(base::CommandLine* command_line);
   virtual bool SetUpUserDataDirectory();
   virtual void SetUpInProcessBrowserTestFixture();
+  virtual void SetUpLocalStatePrefService(PrefService* local_state);
   virtual void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts);
   virtual void SetUpOnMainThread();
-  virtual void PostRunTestOnMainThread();
   virtual void TearDownOnMainThread();
+  virtual void PostRunTestOnMainThread();
   virtual void TearDownInProcessBrowserTestFixture();
   virtual void TearDown();
 };
@@ -112,10 +115,11 @@ class InProcessBrowserTestMixinHost final {
   void SetUpDefaultCommandLine(base::CommandLine* command_line);
   bool SetUpUserDataDirectory();
   void SetUpInProcessBrowserTestFixture();
+  void SetUpLocalStatePrefService(PrefService* local_state);
   void CreatedBrowserMainParts(content::BrowserMainParts* browser_main_parts);
   void SetUpOnMainThread();
-  void PostRunTestOnMainThread();
   void TearDownOnMainThread();
+  void PostRunTestOnMainThread();
   void TearDownInProcessBrowserTestFixture();
   void TearDown();
 
@@ -128,32 +132,70 @@ class InProcessBrowserTestMixinHost final {
   std::vector<raw_ptr<InProcessBrowserTestMixin, VectorExperimental>> mixins_;
 };
 
-// An InProcessBrowserTest which supports mixins.
-class MixinBasedInProcessBrowserTest : public InProcessBrowserTest {
+template <typename Fixture>
+  requires std::derived_from<Fixture, InProcessBrowserTest>
+class InProcessBrowserTestMixinHostSupport : public Fixture {
  public:
-  MixinBasedInProcessBrowserTest();
-  MixinBasedInProcessBrowserTest(const MixinBasedInProcessBrowserTest&) =
-      delete;
-  MixinBasedInProcessBrowserTest& operator=(
-      const MixinBasedInProcessBrowserTest&) = delete;
-  ~MixinBasedInProcessBrowserTest() override;
-
-  // InProcessBrowserTest:
-  void SetUp() override;
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override;
-  bool SetUpUserDataDirectory() override;
-  void SetUpInProcessBrowserTestFixture() override;
+  // Fixture:
+  void SetUp() override {
+    mixin_host_.SetUp();
+    Fixture::SetUp();
+  }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mixin_host_.SetUpCommandLine(command_line);
+    Fixture::SetUpCommandLine(command_line);
+  }
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    mixin_host_.SetUpDefaultCommandLine(command_line);
+    Fixture::SetUpDefaultCommandLine(command_line);
+  }
+  bool SetUpUserDataDirectory() override {
+    return mixin_host_.SetUpUserDataDirectory() &&
+           Fixture::SetUpUserDataDirectory();
+  }
+  void SetUpInProcessBrowserTestFixture() override {
+    mixin_host_.SetUpInProcessBrowserTestFixture();
+    Fixture::SetUpInProcessBrowserTestFixture();
+  }
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    mixin_host_.SetUpLocalStatePrefService(local_state);
+    Fixture::SetUpLocalStatePrefService(local_state);
+  }
   void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override;
-  void SetUpOnMainThread() override;
-  void PostRunTestOnMainThread() override;
-  void TearDownOnMainThread() override;
-  void TearDownInProcessBrowserTestFixture() override;
-  void TearDown() override;
+      content::BrowserMainParts* browser_main_parts) override {
+    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
+    Fixture::CreatedBrowserMainParts(browser_main_parts);
+  }
+  void SetUpOnMainThread() override {
+    mixin_host_.SetUpOnMainThread();
+    Fixture::SetUpOnMainThread();
+  }
+  void TearDownOnMainThread() override {
+    mixin_host_.TearDownOnMainThread();
+    Fixture::TearDownOnMainThread();
+  }
+  void PostRunTestOnMainThread() override {
+    mixin_host_.PostRunTestOnMainThread();
+    Fixture::PostRunTestOnMainThread();
+  }
+  void TearDownInProcessBrowserTestFixture() override {
+    mixin_host_.TearDownInProcessBrowserTestFixture();
+    Fixture::TearDownInProcessBrowserTestFixture();
+  }
+  void TearDown() override {
+    mixin_host_.TearDown();
+    Fixture::TearDown();
+  }
 
  protected:
   InProcessBrowserTestMixinHost mixin_host_;
 };
+
+// An InProcessBrowserTest which supports mixins.
+using MixinBasedInProcessBrowserTest =
+    InProcessBrowserTestMixinHostSupport<InProcessBrowserTest>;
+// The implementation is included in mixin_based_in_process_browser_test.cc
+extern template class InProcessBrowserTestMixinHostSupport<
+    InProcessBrowserTest>;
 
 #endif  // CHROME_TEST_BASE_MIXIN_BASED_IN_PROCESS_BROWSER_TEST_H_

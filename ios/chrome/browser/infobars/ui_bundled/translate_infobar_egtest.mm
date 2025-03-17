@@ -11,8 +11,8 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/language_detection/core/constants.h"
 #import "components/translate/core/browser/translate_pref_names.h"
-#import "components/translate/core/common/translate_constants.h"
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
@@ -315,7 +315,7 @@ void TestResponseProvider::GetLanguageResponse(
   [self assertContentLanguage:@"it"
              htmlRootLanguage:@"de"
               adoptedLanguage:base::SysUTF8ToNSString(
-                                  translate::kUnknownLanguageCode)];
+                                  language_detection::kUnknownLanguageCode)];
 }
 
 // Tests that hidden text is not considered during detection.
@@ -333,7 +333,7 @@ void TestResponseProvider::GetLanguageResponse(
   [self assertContentLanguage:@""
              htmlRootLanguage:@""
               adoptedLanguage:base::SysUTF8ToNSString(
-                                  translate::kUnknownLanguageCode)];
+                                  language_detection::kUnknownLanguageCode)];
 }
 
 // Tests that language detection is still performed when the page specifies the
@@ -378,7 +378,7 @@ void TestResponseProvider::GetLanguageResponse(
   [self assertContentLanguage:@""
              htmlRootLanguage:@""
               adoptedLanguage:base::SysUTF8ToNSString(
-                                  translate::kUnknownLanguageCode)];
+                                  language_detection::kUnknownLanguageCode)];
 
   // Resets state before triggering a new round of language detection.
   [TranslateAppInterface resetLanguageDetectionTabHelperObserver];

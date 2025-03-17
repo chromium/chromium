@@ -12,6 +12,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/crash/core/common/crash_key.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -25,6 +26,11 @@ using base::SysNSStringToUTF8;
 
 namespace {
 
+// Crash key to investigate the content of the user verification preference
+// string received through a passkey request.
+crash_reporter::CrashKeyString<64> user_verification_preference_crash_key(
+    "iOS CPE user verification preference");
+
 // Appends "data" at the end of "container".
 void Append(std::vector<uint8_t>& container, NSData* data) {
   base::span<const uint8_t> span = base::apple::NSDataToSpan(data);
@@ -32,12 +38,62 @@ void Append(std::vector<uint8_t>& container, NSData* data) {
   container.insert(container.end(), span.begin(), span.end());
 }
 
+// Creates an ExtensionInputData structure from the prf inputs provided in the
+// passkey request.
+webauthn::passkey_model_utils::ExtensionInputData
+ExtensionInputDataFromPRFInputs(NSArray<NSData*>* prf_inputs) {
+  if (prf_inputs) {
+    return webauthn::passkey_model_utils::ExtensionInputData(
+        ([prf_inputs count] > 0) ? base::apple::NSDataToSpan(prf_inputs[0])
+                                 : std::vector<uint8_t>(),
+        ([prf_inputs count] > 1) ? base::apple::NSDataToSpan(prf_inputs[1])
+                                 : std::vector<uint8_t>());
+  }
+  return webauthn::passkey_model_utils::ExtensionInputData();
+}
+
+// Reads the PRF's result into 1 or 2 PRF outputs if the passkey request had
+// provided PRF input data. Returns nil otherwise.
+NSMutableArray<NSData*>* PRFOutputsFromExtensionOutputData(
+    const webauthn::passkey_model_utils::ExtensionOutputData&
+        extension_output_data) {
+  static constexpr size_t kPRFOutputSize = 32u;
+
+  size_t result_size = extension_output_data.prf_result.size();
+  bool hasOneOutput = result_size == kPRFOutputSize;
+  bool hasTwoOutputs = result_size == 2u * kPRFOutputSize;
+
+  // The PRF result can be empty, have exactly 1 output or exactly 2 outputs.
+  CHECK(result_size == 0u || hasOneOutput || hasTwoOutputs)
+      << "Invalid PRF result size: " << result_size;
+
+  if (hasOneOutput || hasTwoOutputs) {
+    NSMutableArray<NSData*>* prf_outputs = [NSMutableArray array];
+    [prf_outputs
+        addObject:[[NSData alloc]
+                      initWithBytes:extension_output_data.prf_result.data()
+                             length:kPRFOutputSize]];
+    if (hasTwoOutputs) {
+      [prf_outputs
+          addObject:[[NSData alloc]
+                        initWithBytes:extension_output_data.prf_result.data() +
+                                      kPRFOutputSize
+                               length:kPRFOutputSize]];
+    }
+    return prf_outputs;
+  }
+  return nil;
+}
+
 // Wrapper around passkey_model_utils's MakeAuthenticatorDataForAssertion
 // function.
-NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
+NSData* MakeAuthenticatorDataForAssertion(
+    NSString* rp_id,
+    const webauthn::passkey_model_utils::ExtensionInputData&
+        extension_input_data) {
   std::vector<uint8_t> authenticator_data =
       webauthn::passkey_model_utils::MakeAuthenticatorDataForAssertion(
-          SysNSStringToUTF8(rp_id));
+          SysNSStringToUTF8(rp_id), extension_input_data);
   return [NSData dataWithBytes:authenticator_data.data()
                         length:authenticator_data.size()];
 }
@@ -45,17 +101,9 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
 // Generates the signature during the passkey assertion process by decrypting
 // the passkey using the security domain secret and then using the decrypted
 // passkey to call passkey_model_utils's GenerateEcSignature function.
-NSData* GenerateSignature(id<Credential> credential,
-                          NSData* authenticator_data,
+NSData* GenerateSignature(NSData* authenticator_data,
                           NSData* client_data_hash,
-                          NSArray<NSData*>* security_domain_secrets) {
-  std::string private_key =
-      DecryptPrivateKey(credential, security_domain_secrets);
-
-  if (private_key.empty()) {
-    return nil;
-  }
-
+                          const std::string& private_key) {
   // Prepare the signed data.
   std::vector<uint8_t> signed_over_data;
   Append(signed_over_data, authenticator_data);
@@ -129,14 +177,21 @@ void SaveCredential(id<Credential> credential) {
 // one of the user verification preference options made available by the
 // WebAuthn API.
 UserVerificationPreference UserVerificationPreferenceFromString(
-    NSString* user_verification_preference_string) {
-  if ([user_verification_preference_string isEqualToString:@"required"]) {
+    ASAuthorizationPublicKeyCredentialUserVerificationPreference
+        user_verification_preference_string) {
+  if ([user_verification_preference_string
+          isEqualToString:
+              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired]) {
     return UserVerificationPreference::kRequired;
-  } else if ([user_verification_preference_string
-                 isEqualToString:@"preferred"]) {
+  } else if (
+      [user_verification_preference_string
+          isEqualToString:
+              ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred]) {
     return UserVerificationPreference::kPreferred;
-  } else if ([user_verification_preference_string
-                 isEqualToString:@"discouraged"]) {
+  } else if (
+      [user_verification_preference_string
+          isEqualToString:
+              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged]) {
     return UserVerificationPreference::kDiscouraged;
   } else {
     // Probably indicates that the WebAuthn API changed.
@@ -146,10 +201,11 @@ UserVerificationPreference UserVerificationPreferenceFromString(
 
 }  // namespace
 
-std::string DecryptPrivateKey(id<Credential> credential,
-                              NSArray<NSData*>* security_domain_secrets) {
+std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
+DecryptCredentialSecrets(id<Credential> credential,
+                         NSArray<NSData*>* security_domain_secrets) {
   if ([security_domain_secrets count] == 0) {
-    return std::string();
+    return std::nullopt;
   }
 
   // Decrypt the private key using the security domain secret.
@@ -161,32 +217,33 @@ std::string DecryptPrivateKey(id<Credential> credential,
     credential_specifics.set_encrypted(credential.encrypted.bytes,
                                        credential.encrypted.length);
   } else {
-    return std::string();
+    return std::nullopt;
   }
 
-  sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
   for (NSData* security_domain_secret in security_domain_secrets) {
     std::vector<uint8_t> trusted_vault_key;
     Append(trusted_vault_key, security_domain_secret);
 
+    sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
             trusted_vault_key, credential_specifics, &credential_secrets)) {
-      return std::move(credential_secrets.private_key());
+      return credential_secrets;
     }
   }
 
-  return std::string();
+  return std::nullopt;
 }
 
-ASPasskeyRegistrationCredential* PerformPasskeyCreation(
+PasskeyCreationOutput PerformPasskeyCreation(
     NSData* client_data_hash,
     NSString* rp_id,
     NSString* user_name,
     NSData* user_handle,
     NSString* gaia,
-    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0)) {
+    NSArray<NSData*>* security_domain_secrets,
+    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0)) {
   if ([security_domain_secrets count] == 0) {
-    return nil;
+    return {};
   }
 
   std::vector<uint8_t> trusted_vault_key;
@@ -198,6 +255,10 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
   std::string rp_id_str = SysNSStringToUTF8(rp_id);
   std::string user_name_str = SysNSStringToUTF8(user_name);
 
+  webauthn::passkey_model_utils::ExtensionInputData extension_input_data =
+      ExtensionInputDataFromPRFInputs(prf_inputs);
+  webauthn::passkey_model_utils::ExtensionOutputData extension_output_data;
+
   // Generate a key pair containing the webauthn specifics and the public key.
   std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
       generated_passkey =
@@ -205,8 +266,8 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
               rp_id_str,
               webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                                  user_name_str),
-              trusted_vault_key,
-              /*trusted_vault_key_version=*/0);
+              trusted_vault_key, /*trusted_vault_key_version=*/0,
+              extension_input_data, &extension_output_data);
   sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
   std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
 
@@ -216,7 +277,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
                                          length:cred_id.size()];
   std::vector<uint8_t> attestation_object_for_creation =
       webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
-          rp_id_str, cred_id, public_key_spki_der);
+          rp_id_str, cred_id, public_key_spki_der, extension_input_data);
   NSData* attestation_object =
       [NSData dataWithBytes:attestation_object_for_creation.data()
                      length:attestation_object_for_creation.size()];
@@ -225,36 +286,47 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
                                                           gaia:gaia
                                                        passkey:passkey]);
 
-  return [ASPasskeyRegistrationCredential
-      credentialWithRelyingParty:rp_id
-                  clientDataHash:client_data_hash
-                    credentialID:credential_id
-               attestationObject:attestation_object];
+  return {[ASPasskeyRegistrationCredential
+              credentialWithRelyingParty:rp_id
+                          clientDataHash:client_data_hash
+                            credentialID:credential_id
+                       attestationObject:attestation_object],
+          PRFOutputsFromExtensionOutputData(extension_output_data)};
 }
 
-ASPasskeyAssertionCredential* PerformPasskeyAssertion(
+PasskeyAssertionOutput PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0)) {
+    NSArray<NSData*>* security_domain_secrets,
+    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0)) {
   if ([security_domain_secrets count] == 0) {
-    return nil;
+    return {};
   }
 
   // If the array is empty, then the relying party accepts any passkey
   // credential.
   if (allowed_credentials.count > 0 &&
       ![allowed_credentials containsObject:credential.credentialId]) {
-    return nil;
+    return {};
   }
 
+  std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
+      credential_secrets =
+          DecryptCredentialSecrets(credential, security_domain_secrets);
+  if (!credential_secrets) {
+    return {};
+  }
+
+  webauthn::passkey_model_utils::ExtensionInputData extension_input_data =
+      ExtensionInputDataFromPRFInputs(prf_inputs);
   NSData* authenticatorData =
-      MakeAuthenticatorDataForAssertion(credential.rpId);
-  NSData* signature = GenerateSignature(
-      credential, authenticatorData, client_data_hash, security_domain_secrets);
+      MakeAuthenticatorDataForAssertion(credential.rpId, extension_input_data);
+  NSData* signature = GenerateSignature(authenticatorData, client_data_hash,
+                                        credential_secrets->private_key());
 
   if (!signature) {
-    return nil;
+    return {};
   }
 
   // Update the credential's last used time.
@@ -262,17 +334,20 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
   SaveCredential(credential);
 
-  return [ASPasskeyAssertionCredential
-      credentialWithUserHandle:credential.userId
-                  relyingParty:credential.rpId
-                     signature:signature
-                clientDataHash:client_data_hash
-             authenticatorData:authenticatorData
-                  credentialID:credential.credentialId];
+  return {[ASPasskeyAssertionCredential
+              credentialWithUserHandle:credential.userId
+                          relyingParty:credential.rpId
+                             signature:signature
+                        clientDataHash:client_data_hash
+                     authenticatorData:authenticatorData
+                          credentialID:credential.credentialId],
+          PRFOutputsFromExtensionOutputData(
+              extension_input_data.ToOutputData(*credential_secrets))};
 }
 
 BOOL ShouldPerformUserVerificationForPreference(
-    NSString* user_verification_preference_string,
+    ASAuthorizationPublicKeyCredentialUserVerificationPreference
+        user_verification_preference_string,
     BOOL is_biometric_authentication_enabled) {
   UserVerificationPreference user_verification_preference =
       UserVerificationPreferenceFromString(user_verification_preference_string);
@@ -280,12 +355,16 @@ BOOL ShouldPerformUserVerificationForPreference(
   // If the UserVerificationPreference value is `kOther`, the WebAuthn API
   // probably changed. This should be investigated, but shouldn't cause a crash.
   if (user_verification_preference == UserVerificationPreference::kOther) {
+    // TODO(crbug.com/392239320): Clean up crash key and when done with the
+    // investigation.
+    user_verification_preference_crash_key.Set(
+        base::SysNSStringToUTF8(user_verification_preference_string));
     base::debug::DumpWithoutCrashing();
   }
 
   switch (user_verification_preference) {
     case UserVerificationPreference::kRequired:
-    case UserVerificationPreference::kOther:  // Fallback to highest degree of
+    case UserVerificationPreference::kOther:  // Fall back to highest degree of
                                               // security.
       return YES;
     case UserVerificationPreference::kPreferred:

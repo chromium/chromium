@@ -30,12 +30,18 @@ enum class LinkCapturingFeatureVersion {
   // TODO(https://crbug.com/377522792): Remove v1 values on non-ChromeOS
   kV1DefaultOff,
   kV2DefaultOff,
+  kV2DefaultOffCaptureExistingFrames,
 #if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(https://crbug.com/377522792): Remove this.
-  kV1DefaultOn,
   kV2DefaultOn,
 #endif
 };
+
+// Returns if links that target existing frames (e.g. "_self", "_top",
+// "namedFrame" where the frame exists, etc) should capture into an app.
+bool ShouldLinksWithExistingFrameTargetsCapture(
+    LinkCapturingFeatureVersion version);
+bool IsV1(LinkCapturingFeatureVersion version);
+bool IsV2(LinkCapturingFeatureVersion version);
 
 std::string ToString(LinkCapturingFeatureVersion version);
 
@@ -46,8 +52,6 @@ std::string LinkCapturingVersionToString(
 // account per platform behavior.
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     LinkCapturingFeatureVersion version);
-
-std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX();
 
 // Enables link capturing as if the user did it from the app settings page.
 // Returns the error description if there was an error.

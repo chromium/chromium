@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_DELIVERER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_DELIVERER_H_
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
@@ -72,11 +73,11 @@ class MediaStreamAudioDeliverer {
     base::AutoLock auto_lock(consumers_lock_);
     const bool had_consumers =
         !consumers_.empty() || !pending_consumers_.empty();
-    auto it = base::ranges::find(consumers_, consumer);
+    auto it = std::ranges::find(consumers_, consumer);
     if (it != consumers_.end()) {
       consumers_.erase(it);
     } else {
-      it = base::ranges::find(pending_consumers_, consumer);
+      it = std::ranges::find(pending_consumers_, consumer);
       if (it != pending_consumers_.end())
         pending_consumers_.erase(it);
     }

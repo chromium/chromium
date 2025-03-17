@@ -30,11 +30,20 @@ TextHighlighterManager::~TextHighlighterManager() = default;
 
 void TextHighlighterManager::CreateTextHighlighterAndRemoveExistingInstance(
     const std::string& text_directive) {
-  // Remove the existing text highlighter.
-  text_highlighter_.reset();
+  CreateTextHighlightersAndRemoveExisting({text_directive});
+}
 
-  text_highlighter_ =
-      std::make_unique<TextHighlighter>(text_directive, agent_container_);
+void TextHighlighterManager::CreateTextHighlightersAndRemoveExisting(
+    const std::vector<std::string>& text_directives) {
+  for (auto& highlighter : highlighters_) {
+    highlighter.reset();
+  }
+  highlighters_.clear();
+
+  for (auto& directive : text_directives) {
+    highlighters_.push_back(
+        std::make_unique<TextHighlighter>(directive, agent_container_));
+  }
 }
 
 PAGE_USER_DATA_KEY_IMPL(TextHighlighterManager);

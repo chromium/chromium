@@ -18,8 +18,14 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SETTINGS,
+                                "OSSettings",
+                                GURL(chrome::kChromeUISettingsURL),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForOSSettingsSystemWebApp() {
+OSSettingsSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(chrome::kChromeUIOSSettingsURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -41,17 +47,6 @@ CreateWebAppInfoForOSSettingsSystemWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   return info;
-}
-
-OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SETTINGS,
-                                "OSSettings",
-                                GURL(chrome::kChromeUISettingsURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-OSSettingsSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForOSSettingsSystemWebApp();
 }
 
 bool OSSettingsSystemAppDelegate::ShouldCaptureNavigations() const {

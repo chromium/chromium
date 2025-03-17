@@ -17,9 +17,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extensions_client.h"
@@ -43,9 +43,9 @@ base::Value::Dict LoadSchemaDictionary(const std::string& name,
 
   // Tracking down http://crbug.com/121424
   char buf[128];
-  base::snprintf(buf, std::size(buf), "%s: (%d) '%s'", name.c_str(),
-                 result.has_value() ? static_cast<int>(result->type()) : -1,
-                 !result.has_value() ? result.error().message.c_str() : "");
+  base::SpanPrintf(buf, "%s: (%d) '%s'", name.c_str(),
+                   result.has_value() ? static_cast<int>(result->type()) : -1,
+                   !result.has_value() ? result.error().message.c_str() : "");
 
   CHECK(result.has_value())
       << result.error().message << " for schema " << schema;

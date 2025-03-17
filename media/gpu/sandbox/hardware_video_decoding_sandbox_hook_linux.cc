@@ -9,6 +9,7 @@
 
 #include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/policy/linux/bpf_hardware_video_decoding_policy_linux.h"
 
@@ -24,10 +25,10 @@ using sandbox::syscall_broker::BrokerFilePermission;
 // to exist only in those configurations so that the presandbox hook is only
 // compiled in those scenarios. As it is now, kHardwareVideoDecoding exists for
 // all ash-chrome builds because
-// chrome/browser/ash/arc/video/gpu_arc_video_service_host.cc depends on it and
-// that file is built for ash-chrome regardless of VA-API/V4L2. That means that
-// bots like linux-chromeos-rel end up compiling this presandbox hook (thus the
-// NOTREACHED()s in some places here).
+// chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.cc depends on
+// it and that file is built for ash-chrome regardless of VA-API/V4L2. That
+// means that bots like linux-chromeos-rel end up compiling this presandbox hook
+// (thus the NOTREACHED()s in some places here).
 
 namespace media {
 namespace {
@@ -57,7 +58,7 @@ void AllowAccessToRenderNodes(std::vector<BrokerFilePermission>& permissions,
 bool HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(
     sandbox::syscall_broker::BrokerCommandSet& command_set,
     std::vector<BrokerFilePermission>& permissions) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This should only be needed in order for GbmDeviceWrapper in
   // platform_video_frame_utils.cc to be able to initialize minigbm after
   // entering the sandbox. Since minigbm is only needed for buffer allocation on
@@ -83,7 +84,7 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(
 
   AllowAccessToRenderNodes(permissions, /*include_sys_dev_char=*/true,
                            /*read_write=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_VAAPI)
   VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
   return true;
@@ -99,14 +100,14 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnAMD(
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
   command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This is added because libdrm calls access() from drmGetMinorType() that is
   // called from drmGetNodeTypeFromFd(). libva calls drmGetNodeTypeFromFd()
   // during initialization.
   //
   // TODO(b/210759684): we probably will need to do this for Linux as well.
   command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   AllowAccessToRenderNodes(permissions, /*include_sys_dev_char=*/true,
                            /*read_write=*/true);

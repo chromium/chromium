@@ -61,4 +61,12 @@ bool InstallServiceWorkItem::IsComServiceInstalled(const GUID& clsid) {
   return InstallServiceWorkItemImpl::IsComServiceInstalled(clsid);
 }
 
+// static
+std::wstring InstallServiceWorkItem::GetCurrentServiceName(
+    base::wcstring_view service_name,
+    base::wcstring_view registry_path) {
+  return InstallServiceWorkItemImpl::GetCurrentServiceName(service_name,
+                                                           registry_path);
+}
+
 }  // namespace installer

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_mutator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
 
@@ -15,6 +17,7 @@ class FaviconLoader;
 @protocol LoadQueryCommands;
 @protocol OmniboxCommands;
 @protocol OmniboxConsumer;
+@class OmniboxTextController;
 @class SceneState;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
@@ -24,13 +27,18 @@ class Tracker;
 }
 
 // A mediator object that updates the omnibox according to the model changes.
-@interface OmniboxMediator
-    : NSObject <OmniboxViewControllerPasteDelegate, PopupMatchPreviewDelegate>
+@interface OmniboxMediator : NSObject <OmniboxMutator,
+                                       OmniboxTextControllerDelegate,
+                                       OmniboxViewControllerPasteDelegate,
+                                       PopupMatchPreviewDelegate>
 
 - (instancetype)initWithIncognito:(BOOL)isIncognito
                           tracker:(feature_engagement::Tracker*)tracker
                     isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
+
+/// Controller of the omnibox text.
+@property(nonatomic, weak) OmniboxTextController* omniboxTextController;
 
 // The templateURLService used by this mediator to extract whether the default
 // search engine supports search-by-image.
@@ -51,6 +59,9 @@ class Tracker;
 // Scene state used by this mediator to log with
 // NonModalDefaultBrowserPromoSchedulerSceneAgent.
 @property(nonatomic, weak) SceneState* sceneState;
+
+/// Sets the image used in image search.
+- (void)setThumbnailImage:(UIImage*)image;
 
 @end
 

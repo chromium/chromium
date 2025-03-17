@@ -109,11 +109,13 @@ class WebTestRunner(object):
         self._printer.num_completed = 0
 
         for test_name in set(tests_to_skip):
-            result = test_results.TestResult(test_name)
+            result = test_results.TestResult(
+                test_name,
+                expected=frozenset([ResultType.Skip]),
+            )
             result.type = ResultType.Skip
             test_run_results.add(
                 result,
-                expected=True,
                 test_is_slow=self._test_is_slow(test_name))
 
         self._printer.write_update('Sharding tests ...')
@@ -197,12 +199,14 @@ class WebTestRunner(object):
                 result = test_results.TestResult(
                     test_input.test_name,
                     failures=[test_failures.FailureEarlyExit()])
+                if self._expectations:
+                    result.expected = self._expectations.get_expectations(
+                        test_input.test_name).results
                 # FIXME: We probably need to loop here if there are multiple iterations.
                 # FIXME: Also, these results are really neither expected nor unexpected. We probably
                 # need a third type of result.
                 test_run_results.add(
                     result,
-                    expected=False,
                     test_is_slow=self._test_is_slow(test_input.test_name))
 
     def _interrupt_if_at_failure_limits(self, test_run_results):
@@ -231,19 +235,18 @@ class WebTestRunner(object):
         if not self._expectations:
             return
 
-        expected = self._expectations.matches_an_expected_result(
-            result.test_name, result.type)
-        expectation_string = ' '.join(
-            self._expectations.get_expectations(result.test_name).results)
+        result.expected = self._expectations.get_expectations(
+            result.test_name).results
+        expectation_string = ' '.join(result.expected)
 
         if result.device_failed:
             self._printer.print_finished_test(self._port, result, False,
                                               expectation_string, 'Aborted')
             return
 
-        test_run_results.add(result, expected,
-                             self._test_is_slow(result.test_name))
-        self._printer.print_finished_test(self._port, result, expected,
+        test_run_results.add(result, self._test_is_slow(result.test_name))
+        self._printer.print_finished_test(self._port, result,
+                                          result.is_expected,
                                           expectation_string, result.type)
         self._interrupt_if_at_failure_limits(test_run_results)
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
@@ -15,6 +16,8 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
+#include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,8 +50,6 @@ class TestSharedImageInterface : public SharedImageInterface {
                     gpu::SurfaceHandle surface_handle,
                     gfx::BufferUsage buffer_usage));
 
-  MOCK_METHOD0(DoFlush, void());
-
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
@@ -58,9 +59,6 @@ class TestSharedImageInterface : public SharedImageInterface {
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
-
-  SharedImageInterface::SharedImageMapping CreateSharedImage(
-      const SharedImageInfo& si_info) override;
 
   scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const SharedImageInfo& si_info) override;
@@ -72,7 +70,7 @@ class TestSharedImageInterface : public SharedImageInterface {
                          const Mailbox& mailbox) override;
 
   scoped_refptr<ClientSharedImage> ImportSharedImage(
-      const ExportedSharedImage& exported_shared_image) override;
+      ExportedSharedImage exported_shared_image) override;
 
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
@@ -102,11 +100,31 @@ class TestSharedImageInterface : public SharedImageInterface {
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
 
-  void Flush() override;
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const Mailbox& mailbox) override;
+  void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote)
+      override {
+    auto it = remote_map_.find(pool_id);
+    CHECK(it == remote_map_.end());
+
+    mojo::Remote<mojom::SharedImagePoolClientInterface> remote;
+    remote.Bind(std::move(client_remote));
+    remote_map_.emplace(pool_id, std::move(remote));
+  }
+
+  void DestroySharedImagePool(const SharedImagePoolId& pool_id) override {
+    auto it = remote_map_.find(pool_id);
+    if (it != remote_map_.end()) {
+      // Disconnect the remote and remove the entry.
+      it->second.reset();
+      remote_map_.erase(it);
+    }
+  }
 
   size_t shared_image_count() const { return shared_images_.size(); }
+  size_t num_update_shared_image_no_fence_calls() const {
+    return num_update_shared_image_no_fence_calls_;
+  }
   const gfx::Size& MostRecentSize() const { return most_recent_size_; }
   const SyncToken& MostRecentGeneratedToken() const {
     return most_recent_generated_token_;
@@ -149,6 +167,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   mutable base::Lock lock_;
 
   uint64_t release_id_ = 0;
+  size_t num_update_shared_image_no_fence_calls_ = 0;
   gfx::Size most_recent_size_;
   SyncToken most_recent_generated_token_;
   SyncToken most_recent_destroy_token_;
@@ -165,6 +184,13 @@ class TestSharedImageInterface : public SharedImageInterface {
   // If non-null, this will be used to back mappable SharedImages with test
   // GpuMemoryBuffers.
   std::unique_ptr<TestGpuMemoryBufferManager> test_gmb_manager_;
+
+  // This is used to simply keep the SharedImagePoolClientInterface alive for
+  // the duration of the SharedImagePool. Not keeping it alive and bound
+  // triggers diconnect_handlers causing unexpected behaviour in the test.
+  base::flat_map<SharedImagePoolId,
+                 mojo::Remote<mojom::SharedImagePoolClientInterface>>
+      remote_map_;
 };
 
 }  // namespace gpu

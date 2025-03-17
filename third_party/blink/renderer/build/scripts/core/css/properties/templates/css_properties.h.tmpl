@@ -52,7 +52,6 @@ namespace {{namespace}} {
   (property.valid_for_marker and 'kValidForMarker' or ''),
   (property.valid_for_keyframe and 'kValidForKeyframe' or ''),
   (property.valid_for_position_try and 'kValidForPositionTry' or ''),
-  (property.valid_for_limited_page_context and 'kValidForLimitedPageContext' or ''),
   (property.valid_for_page_context and 'kValidForPageContext' or ''),
   (property.valid_for_permission_element and 'kValidForPermissionElement' or ''),
   (is_surrogate and 'kSurrogate' or ''),
@@ -102,7 +101,7 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
   {% if property.logical_property_group %}
   bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(CSSPropertyID) const override;
     {% if property.logical_property_group.is_logical %}
-  const CSSProperty& ResolveDirectionAwarePropertyInternal(
+  const CSSProperty& ToPhysicalInternal(
       WritingDirectionMode) const override;
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
@@ -113,12 +112,18 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
     // before calling CSSValueFromComputedStyleInternal.
     NOTREACHED();
   }
+    {% else %}
+  const CSSProperty& ToLogicalInternal(
+      WritingDirectionMode) const override;
     {% endif %}
   {% endif %}
   {% if property.style_builder_declare %}
   void ApplyInitial(StyleResolverState&) const override;
   void ApplyInherit(StyleResolverState&) const override;
   void ApplyValue(StyleResolverState&, const CSSValue&, ValueMode) const override;
+  {% endif %}
+  {% if property.includes_currentcolor %}
+  [[nodiscard]] bool IsAffectedByCurrentColor(const ComputedStyle& style) const override;
   {% endif %}
   {% endif %} {# not is_alias #}
 };

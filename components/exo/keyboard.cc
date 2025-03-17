@@ -9,6 +9,8 @@
 
 #include "components/exo/keyboard.h"
 
+#include <algorithm>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/constants/ash_features.h"
@@ -24,7 +26,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/app_types.h"
@@ -351,7 +352,7 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       }
 
       auto& key_state_set = key_state_set_iter->second;
-      auto key_state_iter = base::ranges::find(
+      auto key_state_iter = std::ranges::find(
           key_state_set, event->code(),
           [](const KeyState& key_state) { return key_state.code; });
 

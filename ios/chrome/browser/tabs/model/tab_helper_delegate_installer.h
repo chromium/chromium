@@ -75,8 +75,9 @@ class TabHelperDelegateInstaller {
 
     // Uninstalls the delegate and stops observing the WebStateList.
     void Disconnect() {
-      if (!web_state_list_)
+      if (!web_state_list_) {
         return;
+      }
       for (int i = 0; i < web_state_list_->count(); ++i) {
         SetTabHelperDelegate(web_state_list_->GetWebStateAt(i), nullptr);
       }

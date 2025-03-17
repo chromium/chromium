@@ -250,12 +250,10 @@ group("default_create_sys_info") {
   } else {
     public_deps = [ ":dummy_create_sys_info" ]
   }
-
-#  The shlib might be needed for Linux, but was never picked up for 'public' builds.
-#  } else {
-#    public_deps = [ ":shlib_create_sys_info" ]
-#  }
-
+  #  The shlib might be needed for Linux, but was never picked up for 'public' builds.
+  #  } else {
+  #    public_deps = [ ":shlib_create_sys_info" ]
+  #  }
 }
 
 cast_source_set("thread_health_checker") {
@@ -315,11 +313,14 @@ if (is_android) {
       "$java_src_dir/org/chromium/chromecast/base/Box.java",
       "$java_src_dir/org/chromium/chromecast/base/Cell.java",
       "$java_src_dir/org/chromium/chromecast/base/Controller.java",
+      "$java_src_dir/org/chromium/chromecast/base/LocalService.java",
       "$java_src_dir/org/chromium/chromecast/base/Observable.java",
       "$java_src_dir/org/chromium/chromecast/base/Observer.java",
       "$java_src_dir/org/chromium/chromecast/base/OwnedScope.java",
+      "$java_src_dir/org/chromium/chromecast/base/Pool.java",
       "$java_src_dir/org/chromium/chromecast/base/Scope.java",
       "$java_src_dir/org/chromium/chromecast/base/Sequencer.java",
+      "$java_src_dir/org/chromium/chromecast/base/SharedObservable.java",
       "$java_src_dir/org/chromium/chromecast/base/Unit.java",
 
       # TODO(sanfin): Move these files to another target.
@@ -362,6 +363,7 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/CastSettingsManagerTest.java",
       "$java_test_dir/org/chromium/chromecast/base/CellTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ControllerTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/LocalServiceTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAfterTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAlarmTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndTest.java",
@@ -379,6 +381,7 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/ObservableOrTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObserverTest.java",
       "$java_test_dir/org/chromium/chromecast/base/OwnedScopeTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/PoolTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ReactiveRecorderTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ScopeTest.java",
       "$java_test_dir/org/chromium/chromecast/base/SequencerTest.java",
@@ -391,6 +394,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//build/android:build_java",
+      "//third_party/androidx:androidx_test_core_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/mockito:mockito_java",

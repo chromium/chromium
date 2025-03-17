@@ -311,6 +311,20 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
+  // Mutes or unmutes the audio of the given VM.
+  // |callback| is called after the method call finishes.
+  virtual void MuteVmAudio(
+      const vm_tools::concierge::MuteVmAudioRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) = 0;
+
+  // Sets up a vm user via maitred.
+  // |callback| is called after the method call finishes.
+  virtual void SetUpVmUser(
+      const vm_tools::concierge::SetUpVmUserRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
+          callback) = 0;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 

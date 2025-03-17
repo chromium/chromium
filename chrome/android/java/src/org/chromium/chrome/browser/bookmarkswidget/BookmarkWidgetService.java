@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.bookmarkswidget;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatRemoteViewsService;
 
 /** See {@link BookmarkWidgetServiceImpl}. */
+@NullMarked
 public class BookmarkWidgetService extends SplitCompatRemoteViewsService {
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetServiceImpl";

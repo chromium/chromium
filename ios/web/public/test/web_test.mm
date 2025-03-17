@@ -6,10 +6,10 @@
 
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
-#import "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "ios/web/web_state/deprecated/global_web_state_observer.h"
 
 namespace web {
 

@@ -45,9 +45,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesUrl) {
   base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL("https://example.com/download"),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -80,9 +80,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesHash) {
   base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"sha256_hash",
+      /*sha256_hash=*/"sha256_hash",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -115,9 +115,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesLength) {
   base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/123,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -162,9 +162,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesResources) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/resources,
       /*is_user_initiated=*/true,
@@ -203,9 +203,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesUserInitiated) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -252,9 +252,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesReferrerChain) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -298,9 +298,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesStandardProtection) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -338,9 +338,9 @@ TEST_F(DownloadRequestMakerTest, PopulatesEnhancedProtection) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -375,7 +375,7 @@ TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_file_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
       /*sha256_hash=*/"",
       /*length=*/0,
@@ -410,10 +410,10 @@ TEST_F(DownloadRequestMakerTest, PopulatesFileBasename) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(FILE_PATH_LITERAL("target_path.exe")),
-      tmp_path,
+      /*target_file_name=*/
+      base::FilePath(FILE_PATH_LITERAL("target_file_name.exe")), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -438,7 +438,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesFileBasename) {
   run_loop.Run();
 
   ASSERT_NE(request, nullptr);
-  EXPECT_EQ(request->file_basename(), "target_path.exe");
+  EXPECT_EQ(request->file_basename(), "target_file_name.exe");
 }
 
 TEST_F(DownloadRequestMakerTest, CreatesFromDownloadItem) {
@@ -451,9 +451,18 @@ TEST_F(DownloadRequestMakerTest, CreatesFromDownloadItem) {
       .WillOnce(ReturnRefOfCopy(GURL("https://example.com/tab_url")));
   EXPECT_CALL(mock_download_item, GetTabReferrerUrl())
       .WillOnce(ReturnRefOfCopy(GURL("https://example.com/tab_referrer_url")));
+#if BUILDFLAG(IS_ANDROID)
+  ON_CALL(mock_download_item, GetTargetFilePath())
+      .WillByDefault(ReturnRefOfCopy(
+          base::FilePath(FILE_PATH_LITERAL("content://media/123"))));
+  EXPECT_CALL(mock_download_item, GetFileNameToReportUser())
+      .WillOnce(
+          Return(base::FilePath(FILE_PATH_LITERAL("target_file_name.exe"))));
+#else
   EXPECT_CALL(mock_download_item, GetTargetFilePath())
       .WillOnce(ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("target_file_path.exe"))));
+          base::FilePath(FILE_PATH_LITERAL("target_file_name.exe"))));
+#endif
   EXPECT_CALL(mock_download_item, GetFullPath())
       .WillOnce(
           ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("full_path.exe"))));
@@ -496,6 +505,7 @@ TEST_F(DownloadRequestMakerTest, CreatesFromDownloadItem) {
 
   ASSERT_NE(request, nullptr);
   EXPECT_EQ(request->url(), "https://example.com/url");
+  EXPECT_EQ(request->file_basename(), "target_file_name.exe");
   EXPECT_EQ(request->digests().sha256(), "hash");
   EXPECT_EQ(request->resources_size(), 3);
   EXPECT_EQ(request->length(), 123);
@@ -504,7 +514,8 @@ TEST_F(DownloadRequestMakerTest, CreatesFromDownloadItem) {
 
 TEST_F(DownloadRequestMakerTest, CreatesFromFileSystemAccess) {
   content::FileSystemAccessWriteItem item;
-  item.target_file_path = base::FilePath(FILE_PATH_LITERAL("target_path.exe"));
+  item.target_file_path =
+      base::FilePath(FILE_PATH_LITERAL("target_file_name.exe"));
   item.full_path = base::FilePath(FILE_PATH_LITERAL("full_path.exe"));
   item.sha256_hash = "sha256_hash";
   item.size = 123;
@@ -516,7 +527,7 @@ TEST_F(DownloadRequestMakerTest, CreatesFromFileSystemAccess) {
 
   std::unique_ptr<DownloadRequestMaker> request_maker =
       DownloadRequestMaker::CreateFromFileSystemAccess(mock_feature_extractor_,
-                                                       nullptr, item);
+                                                       item);
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
       .WillOnce(Return());
@@ -552,9 +563,9 @@ TEST_F(DownloadRequestMakerTest, NotifiesCallback) {
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
-      /*target_path=*/base::FilePath(), tmp_path,
+      /*target_file_name=*/base::FilePath(), tmp_path,
       /*source_url=*/GURL(),
-      /*hash=*/"",
+      /*sha256_hash=*/"",
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
@@ -577,6 +588,8 @@ TEST_F(DownloadRequestMakerTest, NotifiesCallback) {
   EXPECT_TRUE(callback_ran);
 }
 
+// Archive file analysis is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadRequestMakerTest, SetsIsEncrypted) {
   content::InProcessUtilityThreadHelper utility_thread_helper;
 
@@ -596,7 +609,7 @@ TEST_F(DownloadRequestMakerTest, SetsIsEncrypted) {
       .WillOnce(ReturnRefOfCopy(GURL("https://example.com/tab_referrer_url")));
   EXPECT_CALL(mock_download_item, GetTargetFilePath())
       .WillOnce(ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("target_file_path.zip"))));
+          base::FilePath(FILE_PATH_LITERAL("target_file_name.zip"))));
   EXPECT_CALL(mock_download_item, GetFullPath())
       .WillOnce(ReturnRefOfCopy(test_zip));
   EXPECT_CALL(mock_download_item, GetURL())
@@ -647,7 +660,7 @@ TEST_F(DownloadRequestMakerTest, UsesPassword) {
       .WillOnce(ReturnRefOfCopy(GURL("https://example.com/tab_referrer_url")));
   EXPECT_CALL(mock_download_item, GetTargetFilePath())
       .WillOnce(ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("target_file_path.zip"))));
+          base::FilePath(FILE_PATH_LITERAL("target_file_name.zip"))));
   EXPECT_CALL(mock_download_item, GetFullPath())
       .WillOnce(ReturnRefOfCopy(test_zip));
   EXPECT_CALL(mock_download_item, GetURL())
@@ -699,7 +712,7 @@ TEST_F(DownloadRequestMakerTest, SetsFullyExtractedArchive) {
       .WillOnce(ReturnRefOfCopy(GURL("https://example.com/tab_referrer_url")));
   EXPECT_CALL(mock_download_item, GetTargetFilePath())
       .WillOnce(ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("target_file_path.zip"))));
+          base::FilePath(FILE_PATH_LITERAL("target_file_name.zip"))));
   EXPECT_CALL(mock_download_item, GetFullPath())
       .WillOnce(ReturnRefOfCopy(test_zip));
   EXPECT_CALL(mock_download_item, GetURL())
@@ -730,5 +743,6 @@ TEST_F(DownloadRequestMakerTest, SetsFullyExtractedArchive) {
   EXPECT_FALSE(
       DownloadItemWarningData::IsFullyExtractedArchive(&mock_download_item));
 }
+#endif
 
 }  // namespace safe_browsing

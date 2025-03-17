@@ -17,6 +17,8 @@ import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -74,7 +76,7 @@ class MediaCodecUtil {
 
         @SuppressWarnings("deprecation")
         private int getCodecCount() {
-            if (hasNewMediaCodecList()) return mCodecList.length;
+            if (mCodecList != null) return mCodecList.length;
             try {
                 return MediaCodecList.getCodecCount();
             } catch (RuntimeException e) {
@@ -86,16 +88,11 @@ class MediaCodecUtil {
 
         @SuppressWarnings("deprecation")
         private MediaCodecInfo getCodecInfoAt(int index) {
-            if (hasNewMediaCodecList()) return mCodecList[index];
+            if (mCodecList != null) return mCodecList[index];
             return MediaCodecList.getCodecInfoAt(index);
         }
 
-        private boolean hasNewMediaCodecList() {
-            return mCodecList != null;
-        }
-
-        @SuppressWarnings("NullAway.Init")
-        private MediaCodecInfo[] mCodecList;
+        private MediaCodecInfo @Nullable [] mCodecList;
 
         private class CodecInfoIterator implements Iterator<MediaCodecInfo> {
             private int mPosition;
@@ -224,7 +221,7 @@ class MediaCodecUtil {
         }
 
         MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
-        if (codecListHelper.hasNewMediaCodecList()) {
+        if (codecListHelper.mCodecList != null) {
             for (MediaCodecInfo info : codecListHelper) {
                 if (info.isEncoder()) continue;
 
@@ -405,47 +402,14 @@ class MediaCodecUtil {
     }
 
     /**
-     * This is a way to handle misbehaving devices.
-     * Some devices cannot decode certain codecs, while other codecs work fine.
-     *
-     * Do not access MediaCodec or MediaCodecList in this function since it's
-     * used from the renderer process.
+     * This is a way to handle misbehaving devices. Some devices cannot decode certain codecs, while
+     * other codecs work fine.
      *
      * @param mime MIME type as passed to mediaCodec.createDecoderByType(mime).
      * @return true if this codec is supported for decoder on this device.
      */
-    @CalledByNative
     static boolean isDecoderSupportedForDevice(String mime) {
-        // *************************************************************
-        // *** DO NOT ADD ANY NEW CODECS WITHOUT UPDATING MIME_UTIL. ***
-        // *************************************************************
-        if (mime.equals(MimeTypes.VIDEO_VP8)) {
-            // MediaTek decoders do not work properly on vp8. See http://crbug.com/446974 and
-            // http://crbug.com/597836.
-            if (Build.HARDWARE.startsWith("mt")) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return false;
-                // MediaTek chipsets after 'Android T' are compatible with vp8.
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                    // The following chipsets have been confirmed by MediaTek to work on P+
-                    return Build.HARDWARE.startsWith("mt5599")
-                            || Build.HARDWARE.startsWith("mt5895")
-                            || Build.HARDWARE.startsWith("mt8768")
-                            || Build.HARDWARE.startsWith("mt8696")
-                            || Build.HARDWARE.startsWith("mt5887");
-                }
-            }
-        } else if (mime.equals(MimeTypes.VIDEO_VP9)) {
-            // Nexus Player VP9 decoder performs poorly at >= 1080p resolution.
-            if (Build.MODEL.equals("Nexus Player")) {
-                return false;
-            }
-        } else if (mime.equals(MimeTypes.VIDEO_AV1)) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
-        }
-        // *************************************************************
-        // *** DO NOT ADD ANY NEW CODECS WITHOUT UPDATING MIME_UTIL. ***
-        // *************************************************************
-        return true;
+        return MediaCodecUtilJni.get().isDecoderSupportedForDevice(mime);
     }
 
     /**
@@ -665,5 +629,10 @@ class MediaCodecUtil {
 
         Log.w(TAG, "HW encoder for " + mime + " is not available on this device.");
         return null;
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean isDecoderSupportedForDevice(@JniType("std::string") String mimeType);
     }
 }

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
@@ -60,7 +61,7 @@ bool IsValidState(std::u16string_view text) {
          !state_names::GetNameForAbbreviation(text).empty();
 }
 
-bool IsPossiblePhoneNumber(const std::u16string& text,
+bool IsPossiblePhoneNumber(std::u16string_view text,
                            const std::string& country_code) {
   return i18n::IsPossiblePhoneNumber(base::UTF16ToUTF8(text), country_code);
 }

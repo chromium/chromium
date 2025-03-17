@@ -132,6 +132,7 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model(),
           profile->GetPrefs(),
+          /*logger=*/nullptr,
           std::make_unique<SyncDataTypeConfiguration>(
               CreateSavedTabGroupChangeProcessor(),
               GetStoreFactory()),
@@ -175,6 +176,13 @@ void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(
     // If there is no saved group with guid `saved_guid`, the group must
     // have been unsaved since this session closed.
     if (!group) {
+      // Close the tab group in the case the group we want to connect to has
+      // been removed from the model. This prevents a crash during session
+      // restore but after the sync bridge initializes and removes the
+      // associated group from the model.
+      // See crbug.com/392174867 for more details.
+      SavedTabGroupUtils::RemoveGroupFromTabstrip(/*browser=*/nullptr,
+                                                  local_group_id);
       return;
     }
 
@@ -491,17 +499,23 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
   // One time migration from Saved Tab Group V1 to V2
-  // TODO(b/333742126): Remove migration code in M135.
+  // TODO(crbug.com/333742126): Remove migration code in M140.
   PrefService* pref_service = profile()->GetPrefs();
-  if (IsTabGroupsSaveUIUpdateEnabled() &&
-      !saved_tab_groups::prefs::IsTabGroupSavesUIUpdateMigrated(pref_service)) {
+  if (!saved_tab_groups::prefs::IsTabGroupSavesUIUpdateMigrated(pref_service)) {
     model_->MigrateTabGroupSavesUIUpdate();
     saved_tab_groups::prefs::SetTabGroupSavesUIUpdateMigrated(pref_service);
   }
 
   for (const auto& [saved_guid, local_group_id] :
        restored_groups_to_connect_on_load_) {
-    if (model()->is_loaded() && !model()->Contains(saved_guid)) {
+    if (!model()->Contains(saved_guid)) {
+      // Close the tab group in the case the group we want to connect to has
+      // been removed from the model. This prevents a crash during session
+      // restore but after the sync bridge initializes and removes the
+      // associated group from the model.
+      // See crbug.com/392174867 for more details.
+      SavedTabGroupUtils::RemoveGroupFromTabstrip(/*browser=*/nullptr,
+                                                  local_group_id);
       continue;
     }
 

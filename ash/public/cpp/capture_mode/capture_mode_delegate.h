@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -14,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "components/search_engines/template_url.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -30,6 +32,10 @@ class Rect;
 namespace media::mojom {
 class AudioStreamFactory;
 }  // namespace media::mojom
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace recording::mojom {
 class RecordingService;
@@ -58,10 +64,11 @@ using OnGotDriveFsFreeSpace =
     base::OnceCallback<void(int64_t free_remaining_bytes)>;
 
 // Defines the type of the callback that will be invoked when text detection has
-// been performed on an image. `detected_text` contains detected text, or is
-// empty if no text is detected.
+// been performed on an image. `detected_text` contains detected text, empty if
+// no text has been detected, or nullopt if text detection fails (such as the
+// OCR service being reset after the text detection request).
 using OnTextDetectionComplete =
-    base::OnceCallback<void(std::string detected_text)>;
+    base::OnceCallback<void(std::optional<std::string> detected_text)>;
 
 // Defines the type of the callback that will be invoked when the search backend
 // result is fetched. Repeating because the `LensOverlayUrlResponseCallback`
@@ -123,6 +130,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Returns whether screen capture is allowed by an enterprise policy.
   virtual bool IsCaptureAllowedByPolicy() const = 0;
+
+  // Returns whether search is allowed by the browser enterprise policy.
+  virtual bool IsSearchAllowedByPolicy() const = 0;
 
   // Called when a video capture for |window| and |bounds| area is started, so
   // that Data Leak Prevention can start observing the area.
@@ -247,11 +257,29 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void DetectTextInImage(const SkBitmap& image,
                                  OnTextDetectionComplete callback) = 0;
 
+  // Gets the OAuth2 access token for the active user's primary account, used
+  // for making a Lens Web API POST request.
+  virtual void GetPrimaryAccountAccessToken(
+      base::RepeatingCallback<void(const std::string& access_token)>
+          callback) = 0;
+
+  // Gets the POST request URL for a Lens Web API image search, and encodes the
+  // `image` data into `post_content` to be used as the body of the request.
+  // Other URL parameters may need to be appended to the returned GURL.
+  virtual GURL GetBaseSearchURLAndPostContent(
+      const gfx::Image& image,
+      gfx::Size image_original_size,
+      TemplateURLRef::PostContent* post_content) = 0;
+
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetSharedURLLoaderFactory() const = 0;
+
   // Sends the captured `region` and `image` to the backend. Invokes `callback`
   // when the response is fetched.
   virtual void SendRegionSearch(const SkBitmap& image,
                                 const gfx::Rect& region,
-                                OnSearchUrlFetchedCallback callback) = 0;
+                                OnSearchUrlFetchedCallback search_callback,
+                                OnTextDetectionComplete text_callback) = 0;
 
   // Sends the captured `image`, `region`, and search box `text` to the backend.
   // Invokes `callback` when the response is fetched.
@@ -260,6 +288,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
       const gfx::Rect& region,
       const std::string& text,
       ash::OnSearchUrlFetchedCallback callback) = 0;
+
+  // Returns true if the network is currently in an offline or unknown state.
+  virtual bool IsNetworkConnectionOffline() const = 0;
 
   // Deletes the remote file under `path` and calls `callback` with result.
   virtual void DeleteRemoteFile(const base::FilePath& path,

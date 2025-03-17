@@ -33,6 +33,7 @@ import ios_chrome_browser_tab_switcher_ui_bundled_tab_strip_ui_swift_constants
     .titleContainerHorizontalMargin
   public static let fontSize = TabStripConstants.GroupItem.fontSize
   public static let maxTitleWidth = TabStripConstants.GroupItem.maxTitleWidth
+  public static let notificationDotSize = TabStripConstants.GroupItem.notificationDotSize
 }
 
 /// Bridge to access `TabStripConstants.StaticSeparator` from Objective-C code.

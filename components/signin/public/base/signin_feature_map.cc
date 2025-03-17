@@ -19,16 +19,22 @@ namespace signin {
 namespace {
 // Array of features exposed through the Java SigninFeatures API.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &switches::kSkipCheckForAccountManagementOnSignin,
-    &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
     &switches::kCctSignInPrompt,
+    &switches::kDeferWebSigninTrackerCreation,
+    &switches::kForceSupervisedSigninWithCapabilities,
+    &switches::kHistoryOptInEntryPoints,
+    &switches::kHistoryOptInPromoCtaStringVariation,
+    &switches::kHistoryOptInIph,
+    &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kUnoForAuto,
+    &switches::kUseHostedDomainForManagementCheckOnSignin,
+    &switches::kSyncEnableBookmarksInTransportMode,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 

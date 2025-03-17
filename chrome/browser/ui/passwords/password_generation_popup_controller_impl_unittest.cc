@@ -25,16 +25,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/test/scoped_feature_list.h"
-#include "components/password_manager/core/browser/features/password_features.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 namespace password_manager {
 namespace {
 
-using autofill::password_generation::PasswordGenerationType;
-using autofill::password_generation::PasswordGenerationUIData;
+using ::autofill::password_generation::PasswordGenerationType;
+using ::autofill::password_generation::PasswordGenerationUIData;
 using ::testing::_;
 using ::testing::Return;
 
@@ -79,8 +74,7 @@ class MockPasswordGenerationPopupView : public PasswordGenerationPopupView {
   MOCK_METHOD(void, UpdateState, (), (override));
   MOCK_METHOD(void, UpdateGeneratedPasswordValue, (), (override));
   MOCK_METHOD(bool, UpdateBoundsAndRedrawPopup, (), (override));
-  MOCK_METHOD(void, PasswordSelectionUpdated, (), (override));
-  MOCK_METHOD(void, NudgePasswordSelectionUpdated, (), (override));
+  MOCK_METHOD(void, ButtonSelectionUpdated, (), (override));
 };
 
 class PasswordGenerationPopupControllerImplTest
@@ -247,40 +241,6 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetElementTextDirection) {
             base::i18n::TextDirection::RIGHT_TO_LEFT);
 }
 
-TEST_F(PasswordGenerationPopupControllerImplTest,
-       PreviewIsTriggeredDuringGeneration) {
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
-          /*observer=*/nullptr, web_contents(), main_rfh());
-  controller->SetViewForTesting(popup_view());
-
-  // In the offer generation state, suggestions are previewed on selection.
-  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
-  controller->Show(
-      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
-  EXPECT_CALL(driver(), PreviewGenerationSuggestion);
-  static_cast<PasswordGenerationPopupController*>(controller.get())
-      ->SetSelected();
-}
-
-TEST_F(PasswordGenerationPopupControllerImplTest,
-       PreviewIsTriggeredOnlyDuringOfferGeneration) {
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
-          /*observer=*/nullptr, web_contents(), main_rfh());
-  controller->SetViewForTesting(popup_view());
-
-  // In the edit generated password state, no preview calls happen.
-  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
-  controller->Show(PasswordGenerationPopupController::GenerationUIState::
-                       kEditGeneratedPassword);
-  EXPECT_CALL(driver(), PreviewGenerationSuggestion).Times(0);
-  static_cast<PasswordGenerationPopupController*>(controller.get())
-      ->SetSelected();
-}
-
 TEST_F(PasswordGenerationPopupControllerImplTest, ClearsFormPreviewOnHide) {
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
@@ -347,13 +307,8 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   controller->PasswordRejected();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordGenerationPopupControllerImplTest,
        PreviewsGeneratedPasswordOnShowInNudgePassword) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordGenerationSoftNudge);
-
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
           /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
@@ -372,7 +327,5 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   controller->Show(
       PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

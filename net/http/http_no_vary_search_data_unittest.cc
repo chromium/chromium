@@ -9,16 +9,21 @@
 
 #include "net/http/http_no_vary_search_data.h"
 
+#include <algorithm>
+#include <array>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected.h"
+#include "net/base/pickle.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,6 +35,7 @@ namespace net {
 namespace {
 
 using testing::IsEmpty;
+using testing::Optional;
 using testing::UnorderedElementsAreArray;
 
 TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsNonEmptyVaryOnKeyOrder) {
@@ -1176,6 +1182,127 @@ TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, UnrecognizedKeys) {
   EXPECT_THAT(no_vary_search_data, base::test::HasValue());
   histogram_tester.ExpectUniqueSample(
       "Net.HttpNoVarySearch.HasUnrecognizedKeys", true, 1);
+}
+
+TEST(HttpNoVarySearchDataTest, ComparisonOperators) {
+  constexpr auto kValues = std::to_array<std::string_view>(
+      {"params", "key-order", "params, key-order", R"(params=("a"))",
+       R"(params=("b"))", R"(params, except=("a"))", R"(params, except=("b"))",
+       R"(params, except=("a"), key-order)"});
+  auto data_vector = base::ToVector(kValues, [](std::string_view value) {
+    auto headers = HttpResponseHeaders::Builder({1, 1}, "200 OK")
+                       .AddHeader("No-Vary-Search", value)
+                       .Build();
+    auto result = HttpNoVarySearchData::ParseFromHeaders(*headers);
+    CHECK(result.has_value());
+    return result.value();
+  });
+  // We don't actually care what the order is, just that it is consistent, so
+  // sort the vector.
+  std::ranges::sort(data_vector);
+
+  // Compare everything to itself.
+  for (const auto& data : data_vector) {
+    EXPECT_EQ(data, data);
+    EXPECT_EQ(data <=> data, std::strong_ordering::equal);
+  }
+  // Compare everything to everything else.
+  for (size_t i = 0; i < data_vector.size() - 1; ++i) {
+    for (size_t j = i + 1; j < data_vector.size(); ++j) {
+      // Commutativity of !=.
+      EXPECT_NE(data_vector[i], data_vector[j]);
+      EXPECT_NE(data_vector[j], data_vector[i]);
+
+      // Transitivity of <.
+      EXPECT_LT(data_vector[i], data_vector[j]);
+      EXPECT_GT(data_vector[j], data_vector[i]);
+    }
+  }
+}
+
+// Use the `no_vary_search_compare_tests` as a convenient data set for testing
+// serialization and deserialization.
+using HttpNoVarySearchSerializationParameterizedTest = HttpNoVarySearchCompare;
+
+TEST_P(HttpNoVarySearchSerializationParameterizedTest, RoundTrip) {
+  const auto test_data = GetParam();
+
+  const std::string headers =
+      HttpUtil::AssembleRawHeaders(test_data.raw_headers);
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
+  ASSERT_OK_AND_ASSIGN(const auto no_vary_search_data,
+                       HttpNoVarySearchData::ParseFromHeaders(*parsed));
+
+  base::Pickle pickle;
+  WriteToPickle(pickle, no_vary_search_data);
+
+  // This requires that the whole Pickle is consumed.
+  std::optional<HttpNoVarySearchData> extracted =
+      ReadValueFromPickle<HttpNoVarySearchData>(pickle);
+
+  EXPECT_THAT(extracted, Optional(no_vary_search_data));
+}
+
+INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchSerializationParameterizedTest,
+                         HttpNoVarySearchSerializationParameterizedTest,
+                         testing::ValuesIn(no_vary_search_compare_tests));
+
+base::Pickle MakeBadPickle(uint32_t magic_number,
+                           const base::flat_set<std::string>& no_vary_params,
+                           const base::flat_set<std::string>& vary_params,
+                           bool vary_on_key_order,
+                           bool vary_by_default) {
+  base::Pickle result;
+  WriteToPickle(result, magic_number, no_vary_params, vary_params,
+                vary_on_key_order, vary_by_default);
+  return result;
+}
+
+struct BadPickleParams {
+  std::string_view why_bad;  // Should be alphanumeric.
+  uint32_t magic_number;
+  base::flat_set<std::string> no_vary_params;
+  base::flat_set<std::string> vary_params;
+  bool vary_on_key_order;
+  bool vary_by_default;
+};
+
+class HttpNoVarySearchBadPickleTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<BadPickleParams> {};
+
+TEST_P(HttpNoVarySearchBadPickleTest, VerifyFails) {
+  const auto [_, magic_number, no_vary_params, vary_params, vary_on_key_order,
+              vary_by_default] = GetParam();
+  base::Pickle pickle = MakeBadPickle(magic_number, no_vary_params, vary_params,
+                                      vary_on_key_order, vary_by_default);
+  std::optional<HttpNoVarySearchData> result =
+      ReadValueFromPickle<HttpNoVarySearchData>(pickle);
+  EXPECT_EQ(result, std::nullopt);
+}
+
+// This value and the bad pickle tests need to be updated if the corresponding
+// value in the declaration of HttpNoVarySearchData is updated.
+constexpr uint32_t kMagicNumber = 0x652a610e;
+
+const auto bad_pickle_params = std::to_array<BadPickleParams>({
+    {"BadMagicNumber", 0xfeeddad0, {}, {}, false, false},
+    {"DefaultBehavior", kMagicNumber, {}, {}, true, true},
+    {"VaryByDefaultWithVaryParams", kMagicNumber, {}, {"a"}, false, true},
+    {"NoVaryByDefaultWithNoVaryParams", kMagicNumber, {"b"}, {}, false, false},
+});
+
+INSTANTIATE_TEST_SUITE_P(
+    HttpNoVarySearchBadPickleTest,
+    HttpNoVarySearchBadPickleTest,
+    testing::ValuesIn(bad_pickle_params),
+    [](const testing::TestParamInfo<BadPickleParams>& info) {
+      return std::string(info.param.why_bad);
+    });
+
+TEST(HttpNoVarySearchEmptyPickleTest, ReadEmptyPickle) {
+  base::Pickle pickle;
+  EXPECT_EQ(ReadValueFromPickle<HttpNoVarySearchData>(pickle), std::nullopt);
 }
 
 }  // namespace

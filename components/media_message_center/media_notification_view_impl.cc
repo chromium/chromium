@@ -4,6 +4,7 @@
 
 #include "components/media_message_center/media_notification_view_impl.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -484,7 +485,8 @@ views::Button* MediaNotificationViewImpl::GetHeaderRowForTesting() const {
   return header_row_;
 }
 
-std::u16string MediaNotificationViewImpl::GetSourceTitleForTesting() const {
+std::u16string_view MediaNotificationViewImpl::GetSourceTitleForTesting()
+    const {
   return header_row_ ? header_row_->app_name_for_testing()  // IN-TEST
                      : cros_header_label_->GetText();
 }

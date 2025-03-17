@@ -117,11 +117,11 @@ async function runThirdSession() {
 chrome.runtime.onStartup.addListener(async () => {});
 
 chrome.test.sendMessage('ready', testName => {
-  if (testName === 'PRE_PRE_PersistentScripts')
+  if (testName.startsWith('PRE_PRE_PersistentScripts'))
     runFirstSession();
-  else if (testName === 'PRE_PersistentScripts')
+  else if (testName.startsWith('PRE_PersistentScripts'))
     runSecondSession();
-  else if (testName === 'PersistentScripts')
+  else if (testName.startsWith('PersistentScripts'))
     runThirdSession();
   else
     chrome.test.fail();

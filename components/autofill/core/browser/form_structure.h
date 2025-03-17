@@ -93,10 +93,24 @@ class FormStructure {
   // auto-fillable, like google/yahoo/msn search, etc.
   bool IsAutofillable() const;
 
-  // Returns whether |this| form represents a complete Credit Card form, which
-  // consists in having at least a credit card number field and an expiration
-  // field.
-  bool IsCompleteCreditCardForm() const;
+  // This enum defines two different states of completeness for a credit card
+  // form, each used for a distinct purpose to check if the required credit card
+  // fields exist.
+  enum class CreditCardFormCompleteness {
+    // This represents a minimal complete credit card form which has at least a
+    // credit card number field and an expiration date field.
+    kCompleteCreditCardForm,
+    // This represents a credit card form which has a CVC field and a cardholder
+    // name field in addition to the credit card number field and the expiration
+    // date field. For example, this level is required for offering `Save and
+    // Fill`.
+    kCompleteCreditCardFormIncludingCvcAndName,
+  };
+
+  // Returns whether |this| form represents a complete Credit Card form, as
+  // defined by the given CreditCardFormCompleteness level.
+  bool IsCompleteCreditCardForm(
+      CreditCardFormCompleteness credit_card_form_completeness) const;
 
   // Resets |autofill_count_| and counts the number of auto-fillable fields.
   // This is used when we receive server data for form fields.  At that time,
@@ -217,12 +231,6 @@ class FormStructure {
   // is available for at least one field.
   void SetFieldTypesFromAutocompleteAttribute();
 
-  // Resets each field's section and sets it based on the `parsed_autocomplete`
-  // member when available.
-  // Returns whether at least one field's `parsed_autocomplete` section is
-  // correctly defined by the web developer.
-  bool SetSectionsFromAutocompleteOrReset();
-
   // Returns the values that can be filled into the form structure for the
   // given type. For example, there's no way to fill in a value of "The Moon"
   // into ADDRESS_HOME_STATE if the form only has a
@@ -320,6 +328,12 @@ class FormStructure {
 
   bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
 
+  bool may_run_autofill_ai_model() const { return may_run_autofill_ai_model_; }
+
+  void set_may_run_autofill_ai_model(bool may_run_autofill_ai_model) {
+    may_run_autofill_ai_model_ = may_run_autofill_ai_model;
+  }
+
   FormSignature form_signature() const { return form_signature_; }
 
   void set_form_signature(FormSignature signature) {
@@ -386,7 +400,9 @@ class FormStructure {
     form_associations_ = associations;
   }
 
-  FormAssociations form_associations() const { return form_associations_; }
+  const FormAssociations& form_associations() const {
+    return form_associations_;
+  }
 
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
   GetServerPredictions(const std::vector<FieldGlobalId>& field_ids) const;
@@ -400,16 +416,6 @@ class FormStructure {
 
   // Sets the rank of each field in the form.
   void DetermineFieldRanks();
-
-  // Considers all `GetNonActiveHeuristicSources()` and computes predictions
-  // for the PatternSources among them. If some of them match the
-  // `active_predictions`, applying the regexes is skipped entirely.
-  // `active_predictions` is nullopt if the active HeuristicSource is not a
-  // PatternSource.
-  // Reuses the `context` used to compute the main predictions for caching.
-  void DetermineNonActiveHeuristicTypes(
-      std::optional<FieldCandidatesMap> active_predictions,
-      ParsingContext& context);
 
   // Classifies each field using the regular expressions. The classifications
   // are returned, but not assigned to the `fields_` yet. Use
@@ -474,7 +480,8 @@ class FormStructure {
   GURL source_url_;
 
   // The full source URL including query parameters and fragment identifiers.
-  // This value should be set only for password forms.
+  // If `kAutofillIncludeUrlInCrowdsourcing` is disabled, this value should only
+  // be set for password forms.
   GURL full_source_url_;
 
   // The target URL.
@@ -506,6 +513,9 @@ class FormStructure {
 
   // True if all form fields are password fields.
   bool all_fields_are_passwords_ = false;
+
+  // Indicates whether the client may run the AutofillAI model for this form.
+  bool may_run_autofill_ai_model_ = false;
 
   // The unique signature for this form, composed of the target url domain,
   // the form name, and the form field names in a 64-bit hash.

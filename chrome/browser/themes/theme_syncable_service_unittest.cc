@@ -4,6 +4,7 @@
 
 #include "chrome/browser/themes/theme_syncable_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -16,16 +17,18 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +37,7 @@
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service_test_utils.h"
 #include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
@@ -50,7 +54,9 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -59,7 +65,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -72,6 +78,11 @@ using std::string;
 
 namespace {
 
+using theme_service::test::MakeThemeChangeList;
+using theme_service::test::MakeThemeDataList;
+using theme_service::test::MakeThemeExtension;
+
+static const char* kCustomThemeId = "abcdefghijklmnopabcdefghijklmnop";
 static const char kCustomThemeName[] = "name";
 static const char kCustomThemeUrl[] = "http://update.url/foo";
 
@@ -85,6 +96,13 @@ const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
 #endif
 
 constexpr char kTestUrl[] = "https://www.foo.com";
+
+const char kThemePrefMigrationAlreadyMigratedHistogram[] =
+    "Theme.ThemePrefMigration.AlreadyMigrated";
+const char kThemePrefMigrationMigratedPrefHistogram[] =
+    "Theme.ThemePrefMigration.MigratedPref";
+const char kThemePrefMigrationIncomingSyncingPrefAppliedHistogram[] =
+    "Theme.ThemePrefMigration.IncomingSyncingPrefApplied";
 
 MATCHER_P2(DictionaryValuePtrHas, key, value, "") {
   return arg && arg->is_dict() &&
@@ -209,48 +227,6 @@ class FakeThemeService : public ThemeService {
   SkColor color_;
 };
 
-scoped_refptr<extensions::Extension> MakeThemeExtension(
-    const base::FilePath& extension_path,
-    const string& name,
-    extensions::mojom::ManifestLocation location,
-    const string& update_url) {
-  base::Value::Dict source;
-  source.Set(extensions::manifest_keys::kName, name);
-  source.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
-  source.Set(extensions::manifest_keys::kUpdateURL, update_url);
-  source.Set(extensions::manifest_keys::kVersion, "0.0.0.0");
-  string error;
-  scoped_refptr<extensions::Extension> extension =
-      extensions::Extension::Create(extension_path, location, source,
-                                    extensions::Extension::NO_FLAGS, &error);
-  EXPECT_TRUE(extension.get());
-  EXPECT_EQ("", error);
-  return extension;
-}
-
-syncer::SyncDataList MakeThemeDataList(
-    const sync_pb::ThemeSpecifics& theme_specifics) {
-  syncer::SyncDataList list;
-  sync_pb::EntitySpecifics entity_specifics;
-  entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
-  list.push_back(syncer::SyncData::CreateLocalData(
-      ThemeSyncableService::kSyncEntityClientTag,
-      ThemeSyncableService::kSyncEntityTitle, entity_specifics));
-  return list;
-}
-
-syncer::SyncChangeList MakeThemeChangeList(
-    const sync_pb::ThemeSpecifics& theme_specifics) {
-  syncer::SyncChangeList change_list;
-  sync_pb::EntitySpecifics entity_specifics;
-  entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
-  change_list.push_back(syncer::SyncChange(
-      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-      syncer::SyncData::CreateRemoteData(
-          entity_specifics, syncer::ClientTagHash::FromHashed("unused"))));
-  return change_list;
-}
-
 }  // namespace
 
 // ThemeSyncableServiceTest ----------------------------------------------------
@@ -299,15 +275,16 @@ class ThemeSyncableServiceTest : public testing::Test,
     extensions::ExtensionService* service =
         test_ext_system->CreateExtensionService(
             &command_line, base::FilePath(kExtensionFilePath), false);
-    EXPECT_TRUE(service->extensions_enabled());
+    auto* registrar = extensions::ExtensionRegistrar::Get(profile_.get());
+    EXPECT_TRUE(registrar->extensions_enabled());
     service->Init();
     base::RunLoop().RunUntilIdle();
 
     // Create and add custom theme extension so the ThemeSyncableService can
     // find it.
-    theme_extension_ =
-        MakeThemeExtension(base::FilePath(kExtensionFilePath), kCustomThemeName,
-                           GetThemeLocation(), kCustomThemeUrl);
+    theme_extension_ = MakeThemeExtension(base::FilePath(kExtensionFilePath),
+                                          kCustomThemeId, kCustomThemeName,
+                                          GetThemeLocation(), kCustomThemeUrl);
     extensions::ExtensionPrefs::Get(profile_.get())
         ->AddGrantedPermissions(theme_extension_->id(),
                                 extensions::PermissionSet());
@@ -336,7 +313,7 @@ class ThemeSyncableServiceTest : public testing::Test,
   // Needed for setting up extension service.
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
@@ -507,9 +484,7 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Extension_Install) {
   // The theme is not installed yet and thus, the default theme is still used.
   EXPECT_TRUE(fake_theme_service_->UsingDefaultTheme());
   EXPECT_TRUE(HasThemeSyncTriggeredExtensionInstallation());
-  EXPECT_TRUE(extensions::ExtensionSystem::Get(profile_.get())
-                  ->extension_service()
-                  ->pending_extension_manager()
+  EXPECT_TRUE(extensions::PendingExtensionManager::Get(profile_.get())
                   ->HasPendingExtensionFromSync());
 }
 
@@ -684,10 +659,10 @@ TEST_F(ThemeSyncableServiceTest, ProcessSyncThemeChange_Extension) {
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
   syncer::SyncChangeList change_list;
-  change_list.push_back(syncer::SyncChange(
+  change_list.emplace_back(
       FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
       syncer::SyncData::CreateRemoteData(
-          entity_specifics, syncer::ClientTagHash::FromHashed("unused"))));
+          entity_specifics, syncer::ClientTagHash::FromHashed("unused")));
   std::optional<syncer::ModelError> process_error =
       theme_sync_service_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(process_error.has_value()) << process_error.value().message();
@@ -721,10 +696,10 @@ TEST_F(ThemeSyncableServiceTest, ProcessSyncThemeChange_Autogenerated) {
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
   syncer::SyncChangeList change_list;
-  change_list.push_back(syncer::SyncChange(
+  change_list.emplace_back(
       FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
       syncer::SyncData::CreateRemoteData(
-          entity_specifics, syncer::ClientTagHash::FromHashed("unused"))));
+          entity_specifics, syncer::ClientTagHash::FromHashed("unused")));
   std::optional<syncer::ModelError> process_error =
       theme_sync_service_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(process_error.has_value()) << process_error.value().message();
@@ -975,15 +950,16 @@ class RealThemeSyncableServiceTest
 
     theme_service_ = ThemeServiceFactory::GetForProfile(profile());
 
-    theme_sync_service_ =
-        std::make_unique<ThemeSyncableService>(profile(), theme_service_);
+    theme_sync_service_ = theme_service_->GetThemeSyncableService();
+    ASSERT_TRUE(theme_sync_service_);
+
     fake_change_processor_ =
         std::make_unique<syncer::FakeSyncChangeProcessor>();
 
     // Create and add custom theme extension so the ThemeSyncableService can
     // find it.
     theme_extension_ = MakeThemeExtension(
-        base::FilePath(kExtensionFilePath), kCustomThemeName,
+        base::FilePath(kExtensionFilePath), kCustomThemeId, kCustomThemeName,
         extensions::mojom::ManifestLocation::kInternal, kCustomThemeUrl);
     extensions::ExtensionPrefs::Get(profile())->AddGrantedPermissions(
         theme_extension_->id(), extensions::PermissionSet());
@@ -991,11 +967,6 @@ class RealThemeSyncableServiceTest
     ASSERT_EQ(1u, extensions::ExtensionRegistry::Get(profile())
                       ->enabled_extensions()
                       .size());
-  }
-
-  void TearDown() override {
-    theme_sync_service_.reset();
-    base::RunLoop().RunUntilIdle();
   }
 
   ThemeService* theme_service() { return theme_service_; }
@@ -1014,7 +985,7 @@ class RealThemeSyncableServiceTest
 
  private:
   raw_ptr<ThemeService> theme_service_;
-  std::unique_ptr<ThemeSyncableService> theme_sync_service_;
+  raw_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;
   scoped_refptr<extensions::Extension> theme_extension_;
 };
@@ -1031,7 +1002,7 @@ TEST_F(RealThemeSyncableServiceTest, ProcessSyncThemeChange_DisabledExtension) {
   // The custom theme should be set and enabled.
   EXPECT_TRUE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(theme_extension()->id(), theme_service()->GetThemeID());
-  EXPECT_TRUE(service()->IsExtensionEnabled(theme_extension()->id()));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(theme_extension()->id()));
 
   // Now disable that theme by changing to an autogenerated theme.
   {
@@ -1042,7 +1013,7 @@ TEST_F(RealThemeSyncableServiceTest, ProcessSyncThemeChange_DisabledExtension) {
 
   // The custom theme should no longer be set or enabled.
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
-  EXPECT_FALSE(service()->IsExtensionEnabled(theme_extension()->id()));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(theme_extension()->id()));
 
   // Start syncing.
   std::optional<syncer::ModelError> error =
@@ -1076,7 +1047,7 @@ TEST_F(RealThemeSyncableServiceTest, ProcessSyncThemeChange_DisabledExtension) {
   // Ensure the custom theme has been re-set and re-enabled.
   EXPECT_TRUE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(theme_extension()->id(), theme_service()->GetThemeID());
-  EXPECT_TRUE(service()->IsExtensionEnabled(theme_extension()->id()));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(theme_extension()->id()));
 }
 
 class ThemeSyncableServiceWithMigrationFlagDisabledTest
@@ -2263,6 +2234,668 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(theme_service()->GetUserColor(), std::nullopt);
 }
 
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ShouldUpdateOldSyncingThemePrefs) {
+  // Start syncing.
+  ASSERT_FALSE(theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, syncer::SyncDataList(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor())));
+
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Set user color theme.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorRED, ui::mojom::BrowserColorVariant::kTonalSpot);
+
+  ASSERT_TRUE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  ASSERT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kUserColorDoNotUse),
+            static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(prefs::kBrowserColorVariantDoNotUse),
+      static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // Other prefs are cleared.
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Set grayscale theme.
+  theme_service()->SetIsGrayscale(true);
+
+  ASSERT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabledDoNotUse));
+
+  // Other prefs are cleared.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Set ntp background.
+  {
+    ScopedDictPrefUpdate dict(
+        profile()->GetPrefs(),
+        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    dict->Set(kNtpCustomBackgroundURL, kTestUrl);
+  }
+
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Other prefs are left as-is.
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+
+  // Set default theme.
+  theme_service()->UseDefaultTheme();
+
+  // All prefs are cleared.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kBrowserColorVariantDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+}
+
+// Regression test for crbug.com/389026436.
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ClearLocalNtpBackgroundIfRemoteEmpty) {
+  // Set local ntp background.
+  base::Value::Dict new_value =
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
+
+  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                             base::Value(new_value.Clone()));
+
+  // Remote theme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.set_browser_color_scheme(
+      ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
+  sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
+      theme_specifics.mutable_user_color_theme();
+  user_color_theme->set_color(SK_ColorRED);
+  user_color_theme->set_browser_color_variant(
+      sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local ntp background is cleared.
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+}
+
+// Regression test for crbug.com/391114025.
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       KeepLocalNtpBackgroundUponNonDefaultOldThemeSpecifics) {
+  // Set local ntp background.
+  base::Value::Dict new_value =
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
+
+  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                             base::Value(new_value.Clone()));
+
+  // Remote theme does not contain new fields, thus an old ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.mutable_autogenerated_color_theme()->set_color(SK_ColorBLUE);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local ntp background is still there. The remote theme was produced by an
+  // old client which didn't know about the new ThemeSpecifics fields. It didn't
+  // intentionally clear the background, just left it unset.
+  EXPECT_TRUE(theme_service()->UsingAutogeneratedTheme());
+  EXPECT_EQ(theme_service()->GetAutogeneratedThemeColor(), SK_ColorBLUE);
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_EQ(profile()->GetPrefs()->GetDict(
+                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+            new_value);
+
+  // The merged theme should be committed to the server.
+  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
+  ASSERT_EQ(changes.size(), 1u);
+  const sync_pb::ThemeSpecifics& change_specifics =
+      changes.back().sync_data().GetSpecifics().theme();
+  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(change_specifics.has_autogenerated_color_theme());
+  EXPECT_EQ(change_specifics.autogenerated_color_theme().color(), SK_ColorBLUE);
+  ASSERT_TRUE(change_specifics.has_ntp_background());
+  EXPECT_EQ(change_specifics.ntp_background().url(), kTestUrl);
+}
+
+// Regression test for crbug.com/389026436.
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       KeepLocalNtpBackgroundUponDefaultOldThemeSpecifics) {
+  // Set local ntp background.
+  base::Value::Dict new_value =
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
+
+  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                             base::Value(new_value.Clone()));
+
+  // Remote theme does not contain new fields, thus an old ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local ntp background is still there since default remote themes are ignored
+  // in the initial update.
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_EQ(profile()->GetPrefs()->GetDict(
+                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+            new_value);
+
+  // The local theme should be committed to the server.
+  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
+  ASSERT_EQ(changes.size(), 1u);
+  const sync_pb::ThemeSpecifics& change_specifics =
+      changes.back().sync_data().GetSpecifics().theme();
+  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(change_specifics.has_ntp_background());
+  EXPECT_EQ(change_specifics.ntp_background().url(), kTestUrl);
+}
+
+// Regression test for crbug.com/389026436.
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ClearLocalNtpBackgroundUponNonDefaultNewThemeSpecifics) {
+  // Set local ntp background.
+  base::Value::Dict new_value =
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
+
+  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                             base::Value(new_value.Clone()));
+
+  // Remote theme contains new fields, thus a new ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.set_browser_color_scheme(
+      ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
+  theme_specifics.mutable_autogenerated_color_theme()->set_color(SK_ColorBLUE);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local ntp background is cleared, because the remote client must have
+  // explicitly cleared it.
+  EXPECT_TRUE(theme_service()->UsingAutogeneratedTheme());
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // The remote theme wins and nothing is committed to the server.
+  ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       KeepLocalNtpBackgroundUponDefaultNewThemeSpecifics) {
+  // Set local ntp background.
+  base::Value::Dict new_value =
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
+
+  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                             base::Value(new_value.Clone()));
+
+  // Remote theme contains new fields, thus a new ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.set_browser_color_scheme(
+      ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local ntp background is still there since default remote themes are ignored
+  // in the initial update.
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_EQ(profile()->GetPrefs()->GetDict(
+                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+            new_value);
+
+  // The local theme should be committed to the server.
+  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
+  ASSERT_EQ(changes.size(), 1u);
+  const sync_pb::ThemeSpecifics& change_specifics =
+      changes.back().sync_data().GetSpecifics().theme();
+  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(change_specifics.has_ntp_background());
+  EXPECT_EQ(change_specifics.ntp_background().url(), kTestUrl);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ClearLocalUserColorUponNonDefaultOldThemeSpecifics) {
+  // Set local user color.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kNeutral);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  ASSERT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
+
+  // Remote theme does not contain new fields, thus an old ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.mutable_autogenerated_color_theme()->set_color(SK_ColorBLUE);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local user color is cleared because user color and autogenerated color
+  // cannot co-exist.
+  EXPECT_TRUE(theme_service()->UsingAutogeneratedTheme());
+  EXPECT_NE(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  EXPECT_FALSE(theme_service()->GetUserColor());
+
+  // The remote theme wins and nothing is committed to the server.
+  ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       KeepLocalUserColorUponDefaultOldThemeSpecifics) {
+  // Set local user color.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kNeutral);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  ASSERT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
+
+  // Remote theme does not contain new fields, thus an old ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local user color is still there since default remote themes are ignored in
+  // the initial update.
+  EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
+
+  // The local theme should be committed to the server.
+  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
+  ASSERT_EQ(changes.size(), 1u);
+  const sync_pb::ThemeSpecifics& change_specifics =
+      changes.back().sync_data().GetSpecifics().theme();
+  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(change_specifics.has_user_color_theme());
+  EXPECT_EQ(change_specifics.user_color_theme().color(), SK_ColorBLUE);
+  EXPECT_EQ(change_specifics.user_color_theme().browser_color_variant(),
+            sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ClearLocalUserColorUponNonDefaultNewThemeSpecifics) {
+  // Set local user color.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kNeutral);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  ASSERT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
+
+  // Remote theme contains new fields, thus a new ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.set_browser_color_scheme(
+      ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
+  theme_specifics.mutable_ntp_background()->set_url(kTestUrl);
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  // Local user color is cleared since the remote client must have explicitly
+  // cleared it.
+  EXPECT_NE(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  EXPECT_FALSE(theme_service()->GetUserColor());
+
+  // The remote theme wins and nothing is committed to the server.
+  ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       KeepLocalUserColorUponDefaultNewThemeSpecifics) {
+  // Set local user color.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kNeutral);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  ASSERT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
+
+  // Remote theme contains new fields, thus a new ThemeSpecifics.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.set_browser_color_scheme(
+      ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Local user color is still there since default remote themes are ignored in
+  // the initial update.
+  EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorBLUE);
+
+  // The local theme should be committed to the server.
+  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
+  ASSERT_EQ(changes.size(), 1u);
+  const sync_pb::ThemeSpecifics& change_specifics =
+      changes.back().sync_data().GetSpecifics().theme();
+  ASSERT_TRUE(change_specifics.has_browser_color_scheme());
+  ASSERT_TRUE(change_specifics.has_user_color_theme());
+  EXPECT_EQ(change_specifics.user_color_theme().color(), SK_ColorBLUE);
+  EXPECT_EQ(change_specifics.user_color_theme().browser_color_variant(),
+            sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ShouldNotCommitIfLocalAndRemoteThemeAreSame) {
+  // Set local user color.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kNeutral);
+
+  // Remote theme same as local theme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+  theme_specifics.set_use_system_theme_by_default(false);
+  theme_specifics.set_browser_color_scheme(
+      ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
+  theme_specifics.mutable_user_color_theme()->set_color(SK_ColorBLUE);
+  theme_specifics.mutable_user_color_theme()->set_browser_color_variant(
+      ::sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL);
+
+  ASSERT_EQ(theme_specifics.SerializeAsString(),
+            theme_sync_service()
+                ->GetThemeSpecificsFromCurrentThemeForTesting()
+                .SerializeAsString());
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Nothing is committed.
+  ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ShouldNotCommitAnythingElseWithExtensionTheme) {
+  // Local extension theme.
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service());
+    theme_service()->SetTheme(theme_extension());
+    waiter.WaitForThemeChanged();
+  }
+  ASSERT_TRUE(theme_service()->UsingExtensionTheme());
+
+  sync_pb::ThemeSpecifics expected_theme_specifics;
+  expected_theme_specifics.set_use_custom_theme(true);
+  expected_theme_specifics.set_browser_color_scheme(
+      expected_theme_specifics.SYSTEM);
+  expected_theme_specifics.set_use_system_theme_by_default(false);
+  expected_theme_specifics.set_custom_theme_name(kCustomThemeName);
+  expected_theme_specifics.set_custom_theme_id(kCustomThemeId);
+  expected_theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
+  EXPECT_THAT(
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
+      base::test::EqualsProto(expected_theme_specifics));
+
+  // Set custom ntp background pref.
+  {
+    ScopedDictPrefUpdate dict(
+        profile()->GetPrefs(),
+        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    dict->Set(kNtpCustomBackgroundURL, kTestUrl);
+  }
+  task_environment()->RunUntilIdle();
+  // Local extension theme is still there.
+  ASSERT_TRUE(theme_service()->UsingExtensionTheme());
+
+  theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(sync_pb::ThemeSpecifics()),
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(
+              fake_change_processor())));
+
+  // ThemeSpecifics should be valid, i.e. should not contain ntp background when
+  // there is an extension theme.
+  EXPECT_THAT(
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
+      base::test::EqualsProto(expected_theme_specifics));
+  // Nothing committed to the server.
+  ASSERT_EQ(fake_change_processor()->changes().size(), 1u);
+  EXPECT_THAT(
+      fake_change_processor()->changes()[0].sync_data().GetSpecifics().theme(),
+      base::test::EqualsProto(expected_theme_specifics));
+}
+
+class ThemeSyncableServiceVerifyFinalStateTest
+    : public ThemeSyncableServiceWithMigrationFlagEnabledTest,
+      public testing::WithParamInterface<sync_pb::ThemeSpecifics> {
+ protected:
+  void MergeRemoteUpdateAndVerify() {
+    sync_pb::ThemeSpecifics theme_specifics = GetParam();
+
+    // Skip test if remote theme is the same.
+    if (theme_sync_service()
+            ->GetThemeSpecificsFromCurrentThemeForTesting()
+            .SerializeAsString() == theme_specifics.SerializeAsString()) {
+      return;
+    }
+
+    // Start syncing.
+    {
+      test::ThemeServiceChangedWaiter waiter(theme_service());
+      std::optional<syncer::ModelError> error =
+          theme_sync_service()->MergeDataAndStartSyncing(
+              syncer::THEMES, MakeThemeDataList(theme_specifics),
+              std::unique_ptr<syncer::SyncChangeProcessor>(
+                  new syncer::SyncChangeProcessorWrapperForTest(
+                      fake_change_processor())));
+      ASSERT_FALSE(error.has_value()) << error.value().message();
+      waiter.WaitForThemeChanged();
+    }
+
+    // Current theme matches the remote theme.
+    EXPECT_THAT(
+        theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
+        base::test::EqualsProto(theme_specifics));
+
+    // Remote extension theme produces more than one commits.
+    if (theme_specifics.use_custom_theme()) {
+      EXPECT_GE(fake_change_processor()->changes().size(), 1u);
+    } else {
+      EXPECT_THAT(fake_change_processor()->changes(), testing::IsEmpty());
+    }
+  }
+};
+
+TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalDefaultTheme) {
+  MergeRemoteUpdateAndVerify();
+}
+
+TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalExtensionTheme) {
+  // Local extension theme.
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service());
+    theme_service()->SetTheme(theme_extension());
+    waiter.WaitForThemeChanged();
+  }
+  ASSERT_TRUE(theme_service()->UsingExtensionTheme());
+
+  MergeRemoteUpdateAndVerify();
+}
+
+TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalAutogeneratedColorTheme) {
+  // Local autogenerated color theme.
+  theme_service()->BuildAutogeneratedThemeFromColor(SK_ColorBLUE);
+  ASSERT_TRUE(theme_service()->UsingAutogeneratedTheme());
+
+  MergeRemoteUpdateAndVerify();
+}
+
+TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalColorTheme) {
+  // Local color theme.
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kTonalSpot);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+
+  MergeRemoteUpdateAndVerify();
+}
+
+TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalGrayscaleTheme) {
+  // Local grayscale theme.
+  theme_service()->SetIsGrayscale(true);
+  ASSERT_TRUE(theme_service()->GetIsGrayscale());
+
+  MergeRemoteUpdateAndVerify();
+}
+
+TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalBackground) {
+  // Local custom ntp background.
+  {
+    ScopedDictPrefUpdate dict(
+        profile()->GetPrefs(),
+        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    dict->Set(kNtpCustomBackgroundURL, kTestUrl);
+  }
+
+  MergeRemoteUpdateAndVerify();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ThemeSyncableServiceVerifyFinalStateTest,
+    testing::Values(
+        theme_service::test::CreateThemeSpecificsWithExtensionTheme(
+            kCustomThemeId,
+            kCustomThemeName,
+            kCustomThemeUrl),
+        theme_service::test::CreateThemeSpecificsWithAutogeneratedColorTheme(),
+        theme_service::test::CreateThemeSpecificsWithColorTheme(),
+        theme_service::test::CreateThemeSpecificsWithGrayscaleTheme(),
+        theme_service::test::CreateThemeSpecificsWithCustomNtpBackground(
+            kTestUrl)));
+
 class ThemeSyncableServiceTestWithoutAccountThemesSeparation
     : public ThemeSyncableServiceWithMigrationFlagEnabledTest {
  public:
@@ -2525,6 +3158,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Stop syncing.
   {
     test::ThemeServiceChangedWaiter waiter(theme_service());
@@ -2534,6 +3168,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   EXPECT_FALSE(theme_service()->UsingAutogeneratedTheme());
   EXPECT_TRUE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(theme_service()->GetThemeID(), theme_extension()->id());
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -2570,6 +3206,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Stop syncing.
   {
     test::ThemeServiceChangedWaiter waiter(theme_service());
@@ -2579,6 +3216,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_TRUE(theme_service()->UsingAutogeneratedTheme());
   EXPECT_EQ(theme_service()->GetAutogeneratedThemeColor(), SK_ColorBLUE);
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -2613,15 +3252,18 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Stop syncing.
   theme_sync_service()->StopSyncing(syncer::THEMES);
 
-  // Theme remains the same.
+  // Theme is restored to user color theme.
   EXPECT_FALSE(theme_service()->UsingAutogeneratedTheme());
   EXPECT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
   EXPECT_EQ(theme_service()->GetUserColor(), static_cast<int>(SK_ColorRED));
   EXPECT_EQ(theme_service()->GetBrowserColorVariant(),
             ui::mojom::BrowserColorVariant::kTonalSpot);
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -2657,6 +3299,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Stop syncing.
   {
     test::ThemeServiceChangedWaiter waiter(theme_service());
@@ -2665,6 +3308,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   }
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_TRUE(theme_service()->GetIsGrayscale());
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -2706,6 +3351,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Stop syncing.
   {
     test::ThemeServiceChangedWaiter waiter(theme_service());
@@ -2714,6 +3360,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   }
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_TRUE(theme_service()->UsingSystemTheme());
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -2751,6 +3399,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Stop syncing.
   {
     test::ThemeServiceChangedWaiter waiter(theme_service());
@@ -2760,6 +3409,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(theme_service()->GetBrowserColorScheme(),
             ThemeService::BrowserColorScheme::kLight);
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -2805,6 +3456,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Stop syncing.
   {
     test::ThemeServiceChangedWaiter waiter(theme_service());
@@ -2826,6 +3478,46 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
           .Set(kNtpCustomBackgroundRefreshTimestamp,
                static_cast<int>(1234567890))
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED)));
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      true, 1);
+}
+
+TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
+       LoadsDefaultThemeUponSyncStopIfNoLocalThemeExistedInPref) {
+  // Set remote extension theme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(true);
+  theme_specifics.set_custom_theme_id(theme_extension()->id());
+  theme_specifics.set_custom_theme_name(kCustomThemeName);
+  theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
+
+  // Start syncing.
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service());
+    std::optional<syncer::ModelError> error =
+        theme_sync_service()->MergeDataAndStartSyncing(
+            syncer::THEMES, MakeThemeDataList(theme_specifics),
+            std::unique_ptr<syncer::SyncChangeProcessor>(
+                new syncer::SyncChangeProcessorWrapperForTest(
+                    fake_change_processor())));
+    ASSERT_FALSE(error.has_value()) << error.value().message();
+    waiter.WaitForThemeChanged();
+  }
+  EXPECT_TRUE(theme_service()->UsingExtensionTheme());
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+
+  base::HistogramTester histogram_tester;
+  // Stop syncing.
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service());
+    theme_sync_service()->StopSyncing(syncer::THEMES);
+    waiter.WaitForThemeChanged();
+  }
+  EXPECT_FALSE(theme_service()->UsingExtensionTheme());
+  EXPECT_TRUE(theme_service()->UsingDefaultTheme());
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      false, 1);
 }
 
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
@@ -2860,12 +3552,169 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
       prefs::kSavedLocalTheme,
       base::Base64Encode(local_theme_specifics.SerializeAsString()));
 
+  base::HistogramTester histogram_tester;
   // Browser shutdown.
   theme_sync_service()->OnBrowserShutdown(syncer::THEMES);
 
   // Theme remains the same.
   EXPECT_TRUE(theme_service()->UsingAutogeneratedTheme());
   EXPECT_NE(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  histogram_tester.ExpectTotalCount("Theme.RestoredLocalThemeUponSignout", 0);
+}
+
+class ThemeSyncableServiceTestForThemeExtension
+    : public ThemeSyncableServiceTestWithAccountThemesSeparation {
+ public:
+  void SetUp() override {
+    ThemeSyncableServiceTestWithAccountThemesSeparation::SetUp();
+
+    // Remove theme extension added during parent SetUp().
+    service_->UnloadAllExtensionsForTest();
+    ASSERT_FALSE(
+        extensions::ExtensionRegistry::Get(profile())->GetExtensionById(
+            kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
+    ASSERT_FALSE(extensions::PendingExtensionManager::Get(profile())
+                     ->HasPendingExtensions());
+
+    pending_extension_manager_ =
+        extensions::PendingExtensionManager::Get(profile());
+    extension_registry_ = extensions::ExtensionRegistry::Get(profile());
+  }
+
+  void InstallExtension() {
+    service_->OnExtensionInstalled(theme_extension(), syncer::StringOrdinal(),
+                                   extensions::kInstallFlagInstallImmediately);
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return theme_service()->UsingExtensionTheme(); }));
+    EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())->GetExtensionById(
+        kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
+  }
+
+ protected:
+  raw_ptr<extensions::PendingExtensionManager> pending_extension_manager_ =
+      nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
+};
+
+TEST_F(ThemeSyncableServiceTestForThemeExtension,
+       ShouldRemovePendingThemeExtensionUponSignout) {
+  // Set remote theme extension.
+  sync_pb::ThemeSpecifics theme_specifics =
+      theme_service::test::CreateThemeSpecificsWithExtensionTheme(
+          kCustomThemeId, kCustomThemeName, kCustomThemeUrl);
+
+  // Start syncing.
+  theme_sync_service()->WillStartInitialSync();
+  ASSERT_FALSE(theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(
+              fake_change_processor()))));
+
+  // The theme extension is pending install, hence the current theme is still
+  // the default theme.
+  EXPECT_TRUE(theme_service()->UsingDefaultTheme());
+  EXPECT_TRUE(pending_extension_manager_->IsIdPending(kCustomThemeId));
+
+  // Stop syncing.
+  theme_sync_service()->StopSyncing(syncer::THEMES);
+  EXPECT_TRUE(theme_service()->UsingDefaultTheme());
+  // The pending theme extension should be cleared.
+  EXPECT_FALSE(pending_extension_manager_->HasPendingExtensions());
+}
+
+TEST_F(ThemeSyncableServiceTestForThemeExtension,
+       ShouldRemoveInstalledThemeExtensionUponSignout) {
+  // Set remote theme extension.
+  sync_pb::ThemeSpecifics theme_specifics =
+      theme_service::test::CreateThemeSpecificsWithExtensionTheme(
+          kCustomThemeId, kCustomThemeName, kCustomThemeUrl);
+
+  // Start syncing.
+  theme_sync_service()->WillStartInitialSync();
+  ASSERT_FALSE(theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(
+              fake_change_processor()))));
+
+  // Simulate installing theme extension.
+  InstallExtension();
+
+  // Stop syncing.
+  theme_sync_service()->StopSyncing(syncer::THEMES);
+  EXPECT_TRUE(theme_service()->UsingDefaultTheme());
+  // The extension was removed.
+  EXPECT_FALSE(extension_registry_->GetExtensionById(
+      kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
+}
+
+// This tests that remote theme extension is neither installed nor removed upon
+// signout if the same theme extension was already applied.
+TEST_F(ThemeSyncableServiceTestForThemeExtension,
+       ShouldNotRemoveThemeExtensionUponSignoutIfPreexistingTheme) {
+  InstallExtension();
+
+  // Set the same remote theme extension.
+  sync_pb::ThemeSpecifics theme_specifics =
+      theme_service::test::CreateThemeSpecificsWithExtensionTheme(
+          kCustomThemeId, kCustomThemeName, kCustomThemeUrl);
+
+  // Start syncing.
+  theme_sync_service()->WillStartInitialSync();
+  ASSERT_FALSE(theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(
+              fake_change_processor()))));
+
+  // Theme extension is already applied and doesn't need installation.
+  ASSERT_TRUE(theme_service()->UsingExtensionTheme());
+  EXPECT_FALSE(pending_extension_manager_->IsIdPending(kCustomThemeId));
+
+  // Stop syncing.
+  theme_sync_service()->StopSyncing(syncer::THEMES);
+  EXPECT_TRUE(theme_service()->UsingExtensionTheme());
+  // The extension was not removed.
+  EXPECT_TRUE(extension_registry_->GetExtensionById(
+      kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
+}
+
+// This tests that remote theme extension is neither installed nor removed upon
+// signout if the theme extension already exists (for example, if the extension
+// is disabled).
+TEST_F(ThemeSyncableServiceTestForThemeExtension,
+       ShouldNotRemoveThemeExtensionUponSignoutIfPreexisting) {
+  // Theme extension pre-exists but is disabled.
+  InstallExtension();
+  service_->DisableExtension(kCustomThemeId,
+                             extensions::disable_reason::DISABLE_USER_ACTION);
+  ASSERT_TRUE(extension_registry_->GetExtensionById(
+      kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
+  ASSERT_FALSE(theme_service()->UsingExtensionTheme());
+
+  // Set the same remote theme extension.
+  sync_pb::ThemeSpecifics theme_specifics =
+      theme_service::test::CreateThemeSpecificsWithExtensionTheme(
+          kCustomThemeId, kCustomThemeName, kCustomThemeUrl);
+
+  // Start syncing.
+  theme_sync_service()->WillStartInitialSync();
+  ASSERT_FALSE(theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(
+              fake_change_processor()))));
+  // Theme extension doesn't need installation.
+  EXPECT_FALSE(pending_extension_manager_->IsIdPending(kCustomThemeId));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return theme_service()->UsingExtensionTheme(); }));
+
+  // Stop syncing.
+  theme_sync_service()->StopSyncing(syncer::THEMES);
+  // The extension was not removed.
+  EXPECT_TRUE(extension_registry_->GetExtensionById(
+      kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
 }
 
 class ThemePrefsMigrationTest : public ::testing::Test {
@@ -2918,11 +3767,55 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingThemePrefsToNonSyncing) {
   pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
   EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
 
+  base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_TRUE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
   EXPECT_EQ(pref_service_.GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorBLUE));
+  histogram_tester.ExpectUniqueSample(
+      kThemePrefMigrationAlreadyMigratedHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample(kThemePrefMigrationMigratedPrefHistogram,
+                                      ThemePrefInMigration::kUserColor, 1);
+}
+
+TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_FALSE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+
+  pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
+  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+
+  pref_service_.SetDict(
+      prefs::kNtpCustomBackgroundDictDoNotUse,
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp,
+               static_cast<int>(1234567890))
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED)));
+
+  base::HistogramTester histogram_tester;
+  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+  EXPECT_EQ(pref_service_.GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorBLUE));
+  histogram_tester.ExpectUniqueSample(
+      kThemePrefMigrationAlreadyMigratedHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(kThemePrefMigrationMigratedPrefHistogram,
+                                     ThemePrefInMigration::kUserColor, 1);
+  histogram_tester.ExpectBucketCount(
+      kThemePrefMigrationMigratedPrefHistogram,
+      ThemePrefInMigration::kNtpCustomBackgroundDict, 1);
 }
 
 TEST_F(ThemePrefsMigrationTest,
@@ -2933,9 +3826,14 @@ TEST_F(ThemePrefsMigrationTest,
   ASSERT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 
+  base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+  histogram_tester.ExpectTotalCount(kThemePrefMigrationAlreadyMigratedHistogram,
+                                    0);
+  histogram_tester.ExpectTotalCount(kThemePrefMigrationMigratedPrefHistogram,
+                                    0);
 }
 
 TEST_F(ThemePrefsMigrationTest,
@@ -2946,8 +3844,13 @@ TEST_F(ThemePrefsMigrationTest,
   pref_service_.SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
   pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
 
+  base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+  histogram_tester.ExpectUniqueSample(
+      kThemePrefMigrationAlreadyMigratedHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kThemePrefMigrationMigratedPrefHistogram,
+                                    0);
 }
 
 TEST_F(ThemePrefsMigrationTest,
@@ -2964,8 +3867,23 @@ TEST_F(ThemePrefsMigrationTest,
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 }
 
-class ThemePrefsMigrationShouldReadPrefsTest : public ::testing::Test {
+class ThemePrefsMigrationShouldReadPrefsTestBase : public ::testing::Test {
  public:
+  explicit ThemePrefsMigrationShouldReadPrefsTestBase(bool is_flag_enabled) {
+    if (is_flag_enabled) {
+      feature_list_.InitAndEnableFeature(syncer::kMoveThemePrefsToSpecifics);
+    } else {
+      feature_list_.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
+    }
+    profile_ = std::make_unique<TestingProfile>();
+    // TestingProfile init automatically leads to creation of
+    // ThemeSyncableService. To allow for more control for tests, reset the
+    // ThemeSyncableService instance.
+    theme_service()->ResetThemeSyncableServiceForTest();
+
+    prefs()->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, true);
+  }
+
   syncer::SyncDataList InitialPrefsSyncData() {
     syncer::SyncDataList initial_data;
     initial_data.push_back(CreateRemotePrefsSyncData(
@@ -2979,6 +3897,14 @@ class ThemePrefsMigrationShouldReadPrefsTest : public ::testing::Test {
         base::Value(
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot))));
     return initial_data;
+  }
+
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
+    return profile_->GetTestingPrefService();
+  }
+
+  ThemeService* theme_service() {
+    return ThemeServiceFactory::GetForProfile(profile_.get());
   }
 
  protected:
@@ -2997,132 +3923,168 @@ class ThemePrefsMigrationShouldReadPrefsTest : public ::testing::Test {
                               syncer::DataType::PREFERENCES, name));
   }
 
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  ThemeService theme_service_{&profile_, GetThemeHelper()};
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ =
-      profile_.GetTestingPrefService();
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_ =
       std::make_unique<syncer::FakeSyncChangeProcessor>();
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+class ThemePrefsMigrationShouldReadPrefsTestWithFlagDisabled
+    : public ThemePrefsMigrationShouldReadPrefsTestBase {
+ public:
+  ThemePrefsMigrationShouldReadPrefsTestWithFlagDisabled()
+      : ThemePrefsMigrationShouldReadPrefsTestBase(false) {}
 };
 
 // Verifies that if kMoveThemePrefsToSpecifics feature flag is not set, the
 // migration flag is marked unset to allow migration again once the feature flag
 // is enabled again.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagDisabled,
        ClearShouldReadPrefFlagIfFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
-
   // Migration has run before.
-  prefs_->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
+  prefs()->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
 
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   // Flag gets cleared to allow re-migration.
-  EXPECT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 }
+
+class ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled
+    : public ThemePrefsMigrationShouldReadPrefsTestBase {
+ public:
+  ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled()
+      : ThemePrefsMigrationShouldReadPrefsTestBase(true) {}
+};
 
 // Verifies that syncing prefs are read upon construction of
 // ThemeSyncableService if prefs sync has already started.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
        ShouldReadThemePrefsOnContructionIfPrefsAlreadySyncing) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
-
-  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
-      prefs_->GetSyncableService(syncer::PREFERENCES);
+      prefs()->GetSyncableService(syncer::PREFERENCES);
   ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
       syncer::PREFERENCES, InitialPrefsSyncData(),
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  ASSERT_TRUE(prefs_->IsSyncing());
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+  ASSERT_TRUE(prefs()->IsSyncing());
+
+  base::HistogramTester histogram_tester;
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   // Syncing prefs were copied.
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorRED));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // The applied prefs were logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kThemePrefMigrationIncomingSyncingPrefAppliedHistogram),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorScheme), 1),
+          base::Bucket(static_cast<int>(ThemePrefInMigration::kUserColor), 1),
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorVariant),
+              1)));
 }
 
 // Verifies that syncing theme prefs are read when prefs sync starts.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
        ShouldReadThemePrefsWhenPrefsStartSyncing) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
+  ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
-  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  ASSERT_FALSE(prefs()->IsSyncing());
+  base::HistogramTester histogram_tester;
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
-  ASSERT_FALSE(prefs_->IsSyncing());
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+  // No pref logged yet since prefs hasn't started syncing.
+  histogram_tester.ExpectTotalCount(
+      kThemePrefMigrationIncomingSyncingPrefAppliedHistogram, 0);
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
-      prefs_->GetSyncableService(syncer::PREFERENCES);
+      prefs()->GetSyncableService(syncer::PREFERENCES);
   ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
       syncer::PREFERENCES, InitialPrefsSyncData(),
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
   // Syncing prefs have been copied.
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorRED));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // The applied prefs were logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kThemePrefMigrationIncomingSyncingPrefAppliedHistogram),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorScheme), 1),
+          base::Bucket(static_cast<int>(ThemePrefInMigration::kUserColor), 1),
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorVariant),
+              1)));
 }
 
 // Verifies that syncing theme prefs are not read if they have already been read
 // before or if the migration flag has already been set.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
        ShouldNotReadThemePrefsIfAlreadyRead) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
-
   // Mark as already read.
-  prefs_->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
+  prefs()->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
 
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+  base::HistogramTester histogram_tester;
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
-      prefs_->GetSyncableService(syncer::PREFERENCES);
+      prefs()->GetSyncableService(syncer::PREFERENCES);
   ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
       syncer::PREFERENCES, InitialPrefsSyncData(),
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
   // Prefs are unchanged.
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorRED));
-  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // No pref logged.
+  histogram_tester.ExpectTotalCount(
+      kThemePrefMigrationIncomingSyncingPrefAppliedHistogram, 0);
 }
 
 // Verifies that the migration flag is set and (thus) syncing prefs are not read
 // if the incoming ThemeSpecifics contains the new fields.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
        ShouldNotReadThemePrefsIfReadViaThemeSpecifics) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
+  ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
-  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-
-  ASSERT_FALSE(prefs_->IsSyncing());
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+  ASSERT_FALSE(prefs()->IsSyncing());
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_browser_color_scheme(
@@ -3137,39 +4099,38 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
   ASSERT_FALSE(error.has_value()) << error.value().message();
 
   // Migration flag is already set.
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kDark));
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
-      prefs_->GetSyncableService(syncer::PREFERENCES);
+      prefs()->GetSyncableService(syncer::PREFERENCES);
   ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
       syncer::PREFERENCES, InitialPrefsSyncData(),
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
   // Syncing prefs have not been copied since ThemeSpecifics had the new fields.
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorRED));
-  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
 }
 
 // Verifies that syncing theme prefs are read if the incoming ThemeSpecifics
 // didn't have the new fields.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
        ShouldReadThemePrefsIfThemeSpecificsDoesNotHaveNewFields) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
+  ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
-  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-
-  ASSERT_FALSE(prefs_->IsSyncing());
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+  ASSERT_FALSE(prefs()->IsSyncing());
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.mutable_autogenerated_color_theme()->set_color(SK_ColorBLUE);
@@ -3180,47 +4141,47 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  EXPECT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
-      prefs_->GetSyncableService(syncer::PREFERENCES);
+      prefs()->GetSyncableService(syncer::PREFERENCES);
   ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
       syncer::PREFERENCES, InitialPrefsSyncData(),
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
   // Syncing prefs copied since ThemeSpecifics didn't have the new fields.
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorRED));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
 }
 
 // Verifies that the incoming ThemeSpecifics overwrites the value copied from
 // the syncing theme prefs.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest, ShouldPrioritizeThemeSpecifics) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
+       ShouldPrioritizeThemeSpecifics) {
+  ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
-  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-
-  ASSERT_FALSE(prefs_->IsSyncing());
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+  ASSERT_FALSE(prefs()->IsSyncing());
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
-      prefs_->GetSyncableService(syncer::PREFERENCES);
+      prefs()->GetSyncableService(syncer::PREFERENCES);
   ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
       syncer::PREFERENCES, InitialPrefsSyncData(),
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
 
   sync_pb::ThemeSpecifics theme_specifics;
@@ -3233,23 +4194,23 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest, ShouldPrioritizeThemeSpecifics) {
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   // Overwrites the theme set by prefs.
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kDark));
 }
 
 // Regression test for crbug.com/375553464.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
        ShouldOnlyNotifyOnceUponReadingThemePrefs) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
+  ASSERT_FALSE(prefs()->IsSyncing());
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
-  ASSERT_FALSE(prefs_->IsSyncing());
-  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
-
-  theme_service_.SetUserColorAndBrowserColorVariant(
+  theme_service()->SetUserColorAndBrowserColorVariant(
       SK_ColorBLUE, ui::mojom::BrowserColorVariant::kNeutral);
+
+  ASSERT_EQ(fake_change_processor_->changes().size(), 0u);
 
   // Start themes sync.
   ASSERT_FALSE(theme_syncable_service.MergeDataAndStartSyncing(
@@ -3258,26 +4219,26 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
           fake_change_processor_.get())));
 
   ASSERT_EQ(fake_change_processor_->changes().size(), 1u);
-  ASSERT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  ASSERT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorBLUE));
-  ASSERT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+  ASSERT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kNeutral));
 
-  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
-      prefs_->GetSyncableService(syncer::PREFERENCES);
+      prefs()->GetSyncableService(syncer::PREFERENCES);
   ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
       syncer::PREFERENCES, InitialPrefsSyncData(),
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  EXPECT_EQ(2, base::ranges::count_if(
+  EXPECT_EQ(2, std::ranges::count_if(
                    fake_change_processor_->changes(), [](const auto& e) {
                      return e.sync_data().GetSpecifics().has_theme();
                    }));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorRED));
-  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
 }

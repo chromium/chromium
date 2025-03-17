@@ -12,7 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -96,10 +96,9 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
   }
 
   std::string DisplayPref(const base::Value::Dict& value) {
-    std::string output;
-    JSONStringValueSerializer serializer(&output);
-    EXPECT_TRUE(serializer.Serialize(value));
-    return output;
+    std::optional<std::string> output = base::WriteJson(value);
+    EXPECT_TRUE(output);
+    return output.value_or(std::string());
   }
 
   const base::Value::Dict& GetDict(const std::string& path) const {

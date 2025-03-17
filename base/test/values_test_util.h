@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -43,6 +44,16 @@ void ExpectDictValue(const Value& expected_value,
 void ExpectStringValue(const std::string& expected_str, const Value& actual);
 
 namespace test {
+
+namespace internal {
+
+// Default parsing options for the json util functions. By default, the content
+// will be parsed with the default set of Chromium-specific behaviours
+// implemented in `JSONReader`, and additionally allowing trailing commas.
+inline constexpr int kDefaultJsonParseOptions =
+    JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS;
+
+}  // namespace internal
 
 // A custom GMock matcher which matches if a base::Value::Dict has a key |key|
 // that is equal to |value|.
@@ -97,16 +108,19 @@ inline testing::PolymorphicMatcher<IsJsonMatcher> IsJson(const T& value) {
   return testing::MakePolymorphicMatcher(IsJsonMatcher(value));
 }
 
-// Parses `json` as JSON, allowing trailing commas, and returns the resulting
-// value.  If `json` fails to parse, causes an EXPECT failure and returns the
-// Null Value.
-Value ParseJson(std::string_view json);
+// Parses `json` as JSON, using the provided `options`, and returns the
+// resulting value. If `json` fails to parse, causes an EXPECT failure and
+// returns the Null Value.
+Value ParseJson(std::string_view json,
+                int options = internal::kDefaultJsonParseOptions);
 
 // Just like ParseJson(), except returns Dicts/Lists. If `json` fails to parse
 // or is not of the expected type, causes an EXPECT failure and returns an empty
 // container.
-Value::Dict ParseJsonDict(std::string_view json);
-Value::List ParseJsonList(std::string_view json);
+Value::Dict ParseJsonDict(std::string_view json,
+                          int options = internal::kDefaultJsonParseOptions);
+Value::List ParseJsonList(std::string_view json,
+                          int options = internal::kDefaultJsonParseOptions);
 
 // Similar to `ParseJsonDict`, however it loads its contents from a file.
 // Returns the parsed `Value::Dict` when successful. Otherwise, it causes an

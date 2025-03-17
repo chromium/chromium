@@ -36,6 +36,7 @@
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/cwv_global_state_internal.h"
 #import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_error_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
@@ -73,11 +74,12 @@ bool WebViewWebClient::IsAppSpecificURL(const GURL& url) const {
 }
 
 std::string WebViewWebClient::GetUserAgent(web::UserAgentType type) const {
-  if (CWVWebView.customUserAgent) {
-    return base::SysNSStringToUTF8(CWVWebView.customUserAgent);
+  if (CWVGlobalState.sharedInstance.customUserAgent) {
+    return base::SysNSStringToUTF8(
+        CWVGlobalState.sharedInstance.customUserAgent);
   } else {
-    return web::BuildMobileUserAgent(
-        base::SysNSStringToUTF8([CWVWebView userAgentProduct]));
+    return web::BuildMobileUserAgent(base::SysNSStringToUTF8(
+        CWVGlobalState.sharedInstance.userAgentProduct));
   }
 }
 

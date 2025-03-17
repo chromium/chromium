@@ -129,6 +129,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Rect GetViewBounds() override;
   bool IsPointerLocked() override;
   gfx::Size GetVisibleViewportSize() override;
+  gfx::Size GetVisibleViewportSizeDevicePx() override;
   void SetInsets(const gfx::Insets& insets) override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
@@ -198,6 +199,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnOldViewDidNavigatePreCommit() override;
   void OnNewViewDidNavigatePostCommit() override;
   void DidEnterBackForwardCache() override;
+  void ActivatedOrEvictedFromBackForwardCache() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   bool TransformPointToCoordSpaceForView(
@@ -246,7 +248,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   std::optional<gfx::Rect> GetProximateCharacterBounds(
       const gfx::Range& range) const override;
   std::optional<size_t> GetProximateCharacterIndexFromPoint(
-      const gfx::Point& point,
+      const gfx::Point& screen_point_in_dips,
       ui::IndexFromPointFlags flags) const override;
 #endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
@@ -661,6 +663,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // parent.
   void ApplyEventObserverForPopupExit(const ui::LocatedEvent& event);
 
+  // Converts |screen_point| from screen coordinate to window coordinate.
+  gfx::Point ConvertPointFromScreen(
+      const gfx::Point& screen_point_in_dips) const;
+
   // Converts |rect| from screen coordinate to window coordinate.
   gfx::Rect ConvertRectFromScreen(const gfx::Rect& rect) const;
 
@@ -719,8 +725,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Invoked on Shell Handwriting API request to update the element's focus
   // based on the provided rect and the distance tolerance.
-  void OnFocusHandwritingTarget(const gfx::Rect& rect_in_screen,
-                                const gfx::Size& distance_tolerance);
+  void OnFocusHandwritingTarget(
+      const gfx::Rect& focus_screen_rect_in_dips,
+      const gfx::Size& tolerance_screen_distance_in_dips);
 #endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<aura::Window> window_;

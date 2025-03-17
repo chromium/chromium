@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/aggregation_keys.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -11,7 +12,6 @@
 #include "base/check.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -32,12 +32,12 @@ bool AggregationKeyIdHasValidLength(const std::string& key) {
 
 bool IsValid(const AggregationKeys::Keys& keys) {
   return keys.size() <= kMaxAggregationKeysPerSource &&
-         base::ranges::all_of(keys, [](const auto& key) {
+         std::ranges::all_of(keys, [](const auto& key) {
            return AggregationKeyIdHasValidLength(key.first);
          });
 }
 
-void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
+void RecordAggregatableKeysPerSource(base::HistogramBase::Sample32 count) {
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(

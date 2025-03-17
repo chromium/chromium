@@ -52,20 +52,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->
 
-<!-- LINT.IfChange(AICapabilityAvailability) -->
+<!-- LINT.IfChange(AIAvailability) -->
 
-<enum name="AICapabilityAvailability">
-  <int value="0" label="Readily">
-    The model is available on-device and so creating will happen quickly.
+<enum name="AIAvailability">
+  <int value="0" label="Unavailable">
+    The model is not available for this device.
   </int>
-  <int value="1" label="AfterDownload">
+  <int value="1" label="Downloadable">
     The model is not available on-device, but the device is capable, so creating
     the model will start the download process (which can take a while).
   </int>
-  <int value="2" label="No">The model is not available for this device.</int>
+  <int value="2" label="Downloading">
+    The mode is not available on-device, but it's being downloaded.
+  </int>
+  <int value="3" label="Available">
+    The model is available on-device and so creating will happen quickly.
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_capability_availability.h:AICapabilityAvailability) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_availability.h:AIAvailability) -->
 
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 
@@ -98,6 +103,12 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="ErrorDisabled">Response was disabled.</int>
   <int value="12" label="ErrorCancelled">The request was cancelled.</int>
   <int value="13" label="ErrorSessionDestroyed">The session was destroyed.</int>
+  <int value="14" label="kErrorInputTooLarge">
+    The input is too large and exceeds quota limit.
+  </int>
+  <int value="15" label="ErrorResponseLowQuality">
+    The response was retracted due to low quality.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/model_streaming_responder.mojom:ModelStreamingResponseStatus) -->
@@ -113,6 +124,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="InvalidFunctionPointer">
     Success to load TranslateKit binary but one or more function pointers are
     null.
+  </int>
+  <int value="4" label="InvalidVersion">
+    Success to load TranslateKit binary but the binary version is invalid.
   </int>
 </enum>
 

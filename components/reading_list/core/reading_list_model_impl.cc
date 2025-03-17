@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/reading_list_model_impl.h"
 
+#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"

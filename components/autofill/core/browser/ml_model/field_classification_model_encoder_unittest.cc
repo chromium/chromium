@@ -216,6 +216,8 @@ TEST_F(FieldClassificationModelEncoderTest,
                               kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
                               // FEATURE_AUTOCOMPLETE
                               kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_NAME
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
                               // FEATURE_TYPE
                               kNumber, kEmpty, kEmpty, kEmpty, kEmpty),
                           ElementsAre(
@@ -227,6 +229,8 @@ TEST_F(FieldClassificationModelEncoderTest,
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
                               // FEATURE_AUTOCOMPLETE
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
+                              // FEATURE_NAME
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
                               // FEATURE_TYPE
                               kNumber, kEmpty, kEmpty, kEmpty, kEmpty),
                           ElementsAre(
@@ -239,7 +243,9 @@ TEST_F(FieldClassificationModelEncoderTest,
                               // FEATURE_FORM_NAME
                               kNumber, kUnknown, kEmpty, kEmpty, kEmpty,
                               // FEATURE_FRAME_URL_PATH
-                              kUnknown, kUnknown, kNumber, kEmpty, kEmpty)));
+                              kUnknown, kUnknown, kNumber, kEmpty, kEmpty,
+                              // PADDING
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty)));
 }
 
 struct StandardizeStringTestCase {
@@ -256,38 +262,50 @@ using StandardizeStringTest = TestWithParam<StandardizeStringTestCase>;
 INSTANTIATE_TEST_SUITE_P(
     FieldClassificationModelEncoderTest,
     StandardizeStringTest,
-    testing::ValuesIn<StandardizeStringTestCase>(
-        {{
-             .input = u"Hello World",
-             .expected = u"Hello World",
-         },
-         {
-             .split_on_camel_case = true,
-             .input = u"HelloWorld thisIsACamelCaseTest ABCHello",
-             .expected = u"Hello World this Is A Camel Case Test ABC Hello",
-         },
-         {
-             // Test that casting to UTF8 does not break Japanese characters.
-             // This happens in the CamelCase splitting implementation.
-             .split_on_camel_case = true,
-             .input = u"やまもと HelloWorld",
-             .expected = u"やまもと Hello World",
-         },
-         {
-             .lowercase = true,
-             .input = u"AbCd123",
-             .expected = u"abcd123",
-         },
-         {
-             .replace_chars_with_whitespace = "_.-",
-             .input = u"Chars_are-replaced.by-.whitespace",
-             .expected = u"Chars are replaced by  whitespace",
-         },
-         {
-             .remove_chars = "@!",
-             .input = u"@Chars are! @removed!",
-             .expected = u"Chars are removed",
-         }}));
+    testing::ValuesIn<StandardizeStringTestCase>({
+        {
+            .input = u"Hello World",
+            .expected = u"Hello World",
+        },
+        {
+            .split_on_camel_case = true,
+            .input = u"HelloWorld thisIsACamelCaseTest ABCHello",
+            .expected = u"Hello World this Is A Camel Case Test ABC Hello",
+        },
+        {
+            // Test that casting to UTF8 does not break Japanese characters.
+            // This happens in the CamelCase splitting implementation.
+            .split_on_camel_case = true,
+            .input = u"やまもと HelloWorld",
+            .expected = u"やまもと Hello World",
+        },
+        {
+            .lowercase = true,
+            .input = u"AbCd123",
+            .expected = u"abcd123",
+        },
+        {
+            .replace_chars_with_whitespace = "_.-",
+            .input = u"Chars_are-replaced.by-.whitespace",
+            .expected = u"Chars are replaced by  whitespace",
+        },
+        {
+            .remove_chars = "@!",
+            .input = u"@Chars are! @removed!",
+            .expected = u"Chars are removed",
+        },
+        {
+            // Test that camel case splitting supports non ASCII chars.
+            .split_on_camel_case = true,
+            .input = u"новыйПарольЗБСПароль",
+            .expected = u"новый Пароль ЗБС Пароль",
+        },
+        {
+            .lowercase = true,
+            .input = u"Новый ПАРОЛЬ",
+            .expected = u"новый пароль",
+        },
+    }));
 
 TEST_P(StandardizeStringTest, ReturnsExpectedResult) {
   const StandardizeStringTestCase& test_case = GetParam();

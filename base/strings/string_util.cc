@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/string_util.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 #include <time.h>
 #include <wchar.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <string_view>
@@ -26,8 +22,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_impl_helpers.h"
 #include "base/strings/string_util_internal.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -38,13 +34,14 @@
 namespace base {
 
 bool IsWprintfFormatPortable(const wchar_t* format) {
-  for (const wchar_t* position = format; *position != '\0'; ++position) {
+  for (const wchar_t* position = format; *position != '\0';
+       UNSAFE_TODO(++position)) {
     if (*position == '%') {
       bool in_specification = true;
       bool modifier_l = false;
       while (in_specification) {
         // Eat up characters until reaching a known specifier.
-        if (*++position == '\0') {
+        if (UNSAFE_TODO(*++position) == '\0') {
           // The format string ended in the middle of a specification.  Call
           // it portable because no unportable specifications were found.  The
           // string is equally broken on all platforms.
@@ -156,9 +153,13 @@ void TruncateUTF8ToByteSize(const std::string& input,
                             const size_t byte_size,
                             std::string* output) {
   DCHECK(output);
+  *output = TruncateUTF8ToByteSize(input, byte_size);
+}
+
+std::string_view TruncateUTF8ToByteSize(std::string_view input,
+                                        size_t byte_size) {
   if (byte_size > input.length()) {
-    *output = input;
-    return;
+    return input;
   }
   DCHECK_LE(byte_size,
             static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
@@ -174,8 +175,8 @@ void TruncateUTF8ToByteSize(const std::string& input,
   while (char_index >= 0) {
     int32_t prev = char_index;
     base_icu::UChar32 code_point = 0;
-    CBU8_NEXT(reinterpret_cast<const uint8_t*>(data), char_index,
-              truncation_length, code_point);
+    UNSAFE_TODO(CBU8_NEXT(reinterpret_cast<const uint8_t*>(data), char_index,
+                          truncation_length, code_point));
     if (!IsValidCharacter(code_point)) {
       char_index = prev - 1;
     } else {
@@ -183,10 +184,11 @@ void TruncateUTF8ToByteSize(const std::string& input,
     }
   }
 
-  if (char_index >= 0 )
-    *output = input.substr(0, static_cast<size_t>(char_index));
-  else
-    output->clear();
+  if (char_index >= 0) {
+    return input.substr(0, static_cast<size_t>(char_index));
+  } else {
+    return std::string_view();
+  }
 }
 
 TrimPositions TrimWhitespace(std::u16string_view input,
@@ -257,7 +259,7 @@ bool IsStringUTF8AllowingNoncharacters(std::string_view str) {
 }
 
 bool EqualsASCII(std::u16string_view str, std::string_view ascii) {
-  return ranges::equal(ascii, str);
+  return std::ranges::equal(ascii, str);
 }
 
 bool StartsWith(std::string_view str,
@@ -286,20 +288,15 @@ bool EndsWith(std::u16string_view str,
 
 char HexDigitToInt(char c) {
   DCHECK(IsHexDigit(c));
-  if (c >= '0' && c <= '9')
+  if (c >= '0' && c <= '9') {
     return static_cast<char>(c - '0');
+  }
   return (c >= 'A' && c <= 'F') ? static_cast<char>(c - 'A' + 10)
                                 : static_cast<char>(c - 'a' + 10);
 }
 
-static const char* const kByteStringsUnlocalized[] = {
-  " B",
-  " kB",
-  " MB",
-  " GB",
-  " TB",
-  " PB"
-};
+static const char* const kByteStringsUnlocalized[] = {" B",  " kB", " MB",
+                                                      " GB", " TB", " PB"};
 
 std::u16string FormatBytesUnlocalized(int64_t bytes) {
   double unit_amount = static_cast<double>(bytes);
@@ -314,10 +311,10 @@ std::u16string FormatBytesUnlocalized(int64_t bytes) {
   char buf[64];
   if (bytes != 0 && dimension > 0 && unit_amount < 100) {
     base::snprintf(buf, std::size(buf), "%.1lf%s", unit_amount,
-                   kByteStringsUnlocalized[dimension]);
+                   UNSAFE_TODO(kByteStringsUnlocalized[dimension]));
   } else {
     base::snprintf(buf, std::size(buf), "%.0lf%s", unit_amount,
-                   kByteStringsUnlocalized[dimension]);
+                   UNSAFE_TODO(kByteStringsUnlocalized[dimension]));
   }
 
   return ASCIIToUTF16(buf);
@@ -423,16 +420,15 @@ std::string ReplaceStringPlaceholders(std::string_view format_string,
   return std::move(replacement).value();
 }
 
-std::u16string ReplaceStringPlaceholders(const std::u16string& format_string,
-                                         const std::u16string& a,
+std::u16string ReplaceStringPlaceholders(std::u16string_view format_string,
+                                         std::u16string_view subst,
                                          size_t* offset) {
   std::vector<size_t> offsets;
   // ReplaceStringPlaceholders() is more efficient when `offsets` is not set.
   std::vector<size_t>* offsets_pointer = offset ? &offsets : nullptr;
   std::u16string result =
       internal::DoReplaceStringPlaceholders(
-          std::u16string_view(format_string),
-          base::span<const std::u16string_view>({a}),
+          format_string, span_from_ref(subst),
           /*placeholder_prefix*/ u'$',
           /*should_escape_multiple_placeholder_prefixes*/ true,
           /*is_strict_mode*/ false, offsets_pointer)

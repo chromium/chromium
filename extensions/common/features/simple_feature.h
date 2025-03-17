@@ -110,10 +110,6 @@ class SimpleFeature : public Feature {
       DelegatedAvailabilityCheckHandler handler) override;
   bool HasDelegatedAvailabilityCheckHandler() const override;
 
-  static bool IsIdInArray(const ExtensionId& extension_id,
-                          const char* const array[],
-                          size_t array_length);
-
   // Similar to mojom::ManifestLocation, these are the classes of locations
   // supported in feature files. These should only be used in this class and in
   // generated files.

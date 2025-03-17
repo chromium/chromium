@@ -123,7 +123,7 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
       service_worker_handle_->scoped_service_worker_client()
           ->CommitResponseAndRelease(
               /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
-              /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+              /*coep_reporter=*/{}, /*dip_reporter=*/{}, ukm::kInvalidSourceId);
   (*service_worker_handle_->scoped_service_worker_client())
       ->SetContainerReady();
   factory->GetScriptLoader()->OnFetcherCallbackCalled();

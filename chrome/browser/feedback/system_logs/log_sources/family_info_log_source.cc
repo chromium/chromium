@@ -39,9 +39,7 @@ void FamilyInfoLogSource::Fetch(SysLogsSourceCallback callback) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kUseFamilyMemberRolePrefsForFeedback) &&
-      !user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole).empty()) {
+  if (!user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole).empty()) {
     auto logs_response = std::make_unique<SystemLogsResponse>();
     const std::string& family_link_role =
         user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole);

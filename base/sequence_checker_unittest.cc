@@ -250,7 +250,7 @@ TEST(SequenceCheckerTest, MoveOffSequenceBanned) {
   RunCallbackThread thread(
       BindOnce(&ExpectCalledOnValidSequence, Unretained(&other_sequence)));
 
-  EXPECT_DCHECK_DEATH(
+  EXPECT_CHECK_DEATH(
       SequenceCheckerImpl main_sequence(std::move(other_sequence)));
 }
 
@@ -271,7 +271,7 @@ TEST(SequenceCheckerMacroTest, Macros) {
   EXPECT_DCHECK_DEATH(
       { DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker); });
 #else
-    // Happily no-ops on non-dcheck builds.
+  // Happily no-ops on non-dcheck builds.
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker);
 #endif
 

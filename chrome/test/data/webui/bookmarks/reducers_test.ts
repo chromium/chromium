@@ -4,13 +4,14 @@
 
 import type {BookmarksPageState, FolderOpenState, NodeMap, SelectFolderAction, SelectionState, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
 import {changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, moveBookmark, reduceAction, removeBookmark, reorderChildren, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from 'chrome://bookmarks/bookmarks.js';
+import type {Action} from 'chrome://resources/js/store.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createFolder, createItem, normalizeIterable, testTree} from './test_util.js';
 
 suite('selection state', function() {
   let selection: SelectionState;
-  let action;
+  let action: Action;
 
   function select(
       items: string[], anchor: string, clear: boolean,
@@ -65,8 +66,8 @@ suite('selection state', function() {
     action = select(['1', '2', '3'], '3', true, false);
     selection = updateSelection(selection, action);
 
-    action = selectFolder('2');
-    selection = updateSelection(selection, action!);
+    action = selectFolder('2')!;
+    selection = updateSelection(selection, action);
     assertDeepEquals(new Set(), selection.items);
   });
 
@@ -150,7 +151,7 @@ suite('selection state', function() {
 suite('folder open state', function() {
   let nodes: NodeMap;
   let folderOpenState: FolderOpenState;
-  let action;
+  let action: Action;
 
   setup(function() {
     nodes = testTree(
@@ -179,16 +180,16 @@ suite('folder open state', function() {
     assertFalse(folderOpenState.has('2'));
 
     // Should re-open when '2' is selected.
-    action = selectFolder('2');
-    folderOpenState = updateFolderOpenState(folderOpenState, action!, nodes);
+    action = selectFolder('2')!;
+    folderOpenState = updateFolderOpenState(folderOpenState, action, nodes);
     assertTrue(folderOpenState.get('1')!);
     assertFalse(folderOpenState.has('2'));
 
     // The parent should be set to permanently open, even if it wasn't
     // explicitly closed.
     folderOpenState = new Map();
-    action = selectFolder('2');
-    folderOpenState = updateFolderOpenState(folderOpenState, action!, nodes);
+    action = selectFolder('2')!;
+    folderOpenState = updateFolderOpenState(folderOpenState, action, nodes);
     assertTrue(folderOpenState.get('1')!);
     assertFalse(folderOpenState.has('2'));
   });
@@ -401,13 +402,13 @@ suite('search state', function() {
   });
 
   test('updates when search is started and finished', function() {
-    let action;
+    let action: Action;
 
-    action = selectFolder('2');
-    state = reduceAction(state, action!);
+    action = selectFolder('2')!;
+    state = reduceAction(state, action);
 
     action = setSearchTerm('test');
-    state = reduceAction(state, action!);
+    state = reduceAction(state, action);
 
     assertEquals('test', state.search.term);
     assertTrue(state.search.inProgress);
@@ -438,8 +439,8 @@ suite('search state', function() {
     assertDeepEquals(null, clearedState.search.results);
 
     // Case 2: Clear search by selecting a new folder.
-    action = selectFolder('1');
-    const selectedState = reduceAction(searchedState, action!);
+    action = selectFolder('1')!;
+    const selectedState = reduceAction(searchedState, action);
 
     assertEquals('1', selectedState.selectedFolder);
     assertFalse(isShowingSearch(selectedState));

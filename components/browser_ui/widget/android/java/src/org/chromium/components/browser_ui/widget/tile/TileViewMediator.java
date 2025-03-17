@@ -6,9 +6,11 @@ package org.chromium.components.browser_ui.widget.tile;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the TileView. */
+@NullMarked
 class TileViewMediator {
     private final PropertyModel mModel;
 

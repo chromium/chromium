@@ -29,6 +29,10 @@
 #include "components/crx_file/id_util.h"
 #include "components/update_client/update_client.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "content/public/common/content_features.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
@@ -48,13 +52,28 @@ void OnDemandUpdateCompleted(update_client::Error err) {
           << base::to_underlying(err);
 }
 
+component_updater::OnDemandUpdater::Priority GetOnDemandUpdatePriority() {
+#if BUILDFLAG(IS_WIN)
+  return component_updater::OnDemandUpdater::Priority::FOREGROUND;
+#else
+  return component_updater::OnDemandUpdater::Priority::BACKGROUND;
+#endif
+}
+
 }  // namespace
 
 namespace component_updater {
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kIwaKeyDistributionComponent,
              "IwaKeyDistributionComponent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else   // !BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 IwaKeyDistributionComponentInstallerPolicy::
     IwaKeyDistributionComponentInstallerPolicy() = default;
@@ -62,19 +81,33 @@ IwaKeyDistributionComponentInstallerPolicy::
     ~IwaKeyDistributionComponentInstallerPolicy() = default;
 
 // static
+bool IwaKeyDistributionComponentInstallerPolicy::IsSupported() {
+  // kIwaKeyDistributionComponent feature flag is somewhat useless without
+  // features::kIsolatedWebApps. On ChromeOS, it's kept separately for the time
+  // being as a kill switch and will be retired shortly; on Mac/Linux, the
+  // component logic is not fully supported, so it has to be kept separated from
+  // the main IWA feature.
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(features::kIsolatedWebApps);
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return base::FeatureList::IsEnabled(kIwaKeyDistributionComponent);
+#else
+  return false;
+#endif
+}
+
+// static
 bool IwaKeyDistributionComponentInstallerPolicy::QueueOnDemandUpdate(
     base::PassKey<web_app::IwaKeyDistributionInfoProvider>) {
   // static
-  if (!g_browser_process ||
-      !base::FeatureList::IsEnabled(kIwaKeyDistributionComponent)) {
+  if (!g_browser_process || !IsSupported()) {
     return false;
   }
 
   VLOG(1) << "Queueing on-demand update for the Iwa Key Distribution Component";
   g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
       crx_file::id_util::GenerateIdFromHash(kIwaKeyDistributionPublicKeySHA256),
-      OnDemandUpdater::Priority::BACKGROUND,
-      base::BindOnce(&OnDemandUpdateCompleted));
+      GetOnDemandUpdatePriority(), base::BindOnce(&OnDemandUpdateCompleted));
 
   return true;
 }
@@ -150,13 +183,12 @@ IwaKeyDistributionComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 void RegisterIwaKeyDistributionComponent(ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(kIwaKeyDistributionComponent)) {
+  if (!IwaKeyDistributionComponentInstallerPolicy::IsSupported()) {
     return;
   }
 
   base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<IwaKeyDistributionComponentInstallerPolicy>(),
-      /*action_handler=*/nullptr, base::TaskPriority::USER_VISIBLE)
+      std::make_unique<IwaKeyDistributionComponentInstallerPolicy>())
       ->Register(cus, base::DoNothing());
 }
 

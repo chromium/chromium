@@ -22,13 +22,16 @@ class NET_EXPORT SetsMutation {
  public:
   SetsMutation();
 
-  // Preconditions: sets defined by `replacement_sets` and
-  // `addition_sets` must be disjoint.
-  explicit SetsMutation(
-      std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-          replacement_sets,
-      std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-          addition_sets);
+  // Preconditions:
+  // * Sets defined by `replacement_sets` and `addition_sets` must be disjoint.
+  // * All of the canonical sites in `aliases` (the "values") must occur in
+  // (exactly) one of the replacement or addition sets, and have an identical
+  // entry to that of the alias (the "key").
+  SetsMutation(std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+                   replacement_sets,
+               std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+                   addition_sets,
+               base::flat_map<SchemefulSite, SchemefulSite> aliases = {});
 
   ~SetsMutation();
 
@@ -49,12 +52,19 @@ class NET_EXPORT SetsMutation {
     return additions_;
   }
 
+  const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
+    return aliases_;
+  }
+
  private:
   // The list of "replacement" sets.
   std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>> replacements_;
 
   // The list of "addition" sets.
   std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>> additions_;
+
+  // Any aliases to be used in this mutation.
+  base::flat_map<SchemefulSite, SchemefulSite> aliases_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

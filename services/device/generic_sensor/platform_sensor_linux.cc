@@ -4,9 +4,10 @@
 
 #include "services/device/generic_sensor/platform_sensor_linux.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
 #include "services/device/generic_sensor/platform_sensor_reader_linux.h"

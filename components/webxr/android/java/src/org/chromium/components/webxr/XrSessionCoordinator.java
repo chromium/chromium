@@ -216,6 +216,15 @@ public class XrSessionCoordinator {
         if (sActiveSessionInstance == null) return;
         assert (sActiveSessionInstance == this);
 
+        // If we have a host activity, shut it down first. Once it actually enters `onStop` we'll
+        // get called again, but this time since our activity is null we'll run the rest of the
+        // function.
+        if (mXrHostActivity != null && mXrHostActivity.get() != null) {
+            mXrHostActivity.get().finish();
+            mXrHostActivity = null;
+            return;
+        }
+
         if (mImmersiveOverlay != null) {
             mImmersiveOverlay.cleanupAndExit();
             mImmersiveOverlay = null;
@@ -227,10 +236,6 @@ public class XrSessionCoordinator {
         mWebContents = null;
         sActiveSessionInstance = null;
         sActiveSessionAvailableSupplier.set(SessionType.NONE);
-        if (mXrHostActivity != null && mXrHostActivity.get() != null) {
-            mXrHostActivity.get().finish();
-            mXrHostActivity = null;
-        }
     }
 
     // Called from XrDelegateImpl and XRHostActivity
@@ -351,11 +356,12 @@ public class XrSessionCoordinator {
 
     @CalledByNative
     private void onNativeDestroy() {
-        // Native destructors should end sessions before destroying the native XrSessionCoordinator
-        // object.
-        assert sActiveSessionInstance != this : "unexpected active session in onNativeDestroy";
-
+        // The native object is in a bad state, we need to clean ourselves up, but we shouldn't call
+        // back into it, so clear it then end any session we may have.
         mNativeXrSessionCoordinator = 0;
+        if (sActiveSessionInstance == this) {
+            endSession();
+        }
     }
 
     @NativeMethods

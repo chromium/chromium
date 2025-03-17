@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller+Testing.h"
 
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller+Testing.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

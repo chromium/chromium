@@ -91,7 +91,7 @@ std::unique_ptr<views::BoxLayoutView> CreateYouTubeMusicAlternateViewBase(
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   label->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosBody2));
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
   auto* button = box_view->AddChildView(std::make_unique<PillButton>(
       std::move(callback), l10n_util::GetStringUTF16(button_message_id),
@@ -142,7 +142,7 @@ std::unique_ptr<views::Label> CreateOfflineLabel(const int message_id) {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(message_id));
   label->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
       ash::TypographyToken::kCrosBody2));
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   return label;
@@ -422,8 +422,7 @@ void FocusModeSoundsView::CreateHeader(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON));
     focus_sounds_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
-    focus_sounds_label->SetEnabledColorId(
-        cros_tokens::kCrosSysOnSurfaceVariant);
+    focus_sounds_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                           *focus_sounds_label);
     return;

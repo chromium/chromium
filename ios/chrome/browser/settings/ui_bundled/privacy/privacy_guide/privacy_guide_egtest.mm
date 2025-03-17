@@ -18,8 +18,8 @@
 namespace {
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::PromoStylePrimaryActionButtonMatcher;
-using chrome_test_util::PromoStyleSecondaryActionButtonMatcher;
+using chrome_test_util::PromoScreenPrimaryButtonMatcher;
+using chrome_test_util::PromoScreenSecondaryButtonMatcher;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::TableViewSwitchCell;
 using chrome_test_util::TurnTableViewSwitchOn;
@@ -58,7 +58,7 @@ id<GREYMatcher> PrivacyGuideURLUsageSwitch(BOOL is_on) {
   [self openPrivacyGuide];
 
   // Dismiss the Privacy Guide by tapping the 'Cancel' button.
-  [[EarlGrey selectElementWithMatcher:PromoStyleSecondaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Verify that the Privacy Guide is dismissed.
@@ -88,7 +88,7 @@ id<GREYMatcher> PrivacyGuideURLUsageSwitch(BOOL is_on) {
 
   // 1. Test forward navigation.
   // Tap the 'Let's go' button.
-  [[EarlGrey selectElementWithMatcher:PromoStylePrimaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Verify that the next step is displayed.
@@ -97,7 +97,7 @@ id<GREYMatcher> PrivacyGuideURLUsageSwitch(BOOL is_on) {
       assertWithMatcher:grey_notNil()];
 
   // Tap the 'Next' button.
-  [[EarlGrey selectElementWithMatcher:PromoStylePrimaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Verify that the next step is displayed.
@@ -106,7 +106,7 @@ id<GREYMatcher> PrivacyGuideURLUsageSwitch(BOOL is_on) {
       assertWithMatcher:grey_notNil()];
 
   // Tap the 'Next' button.
-  [[EarlGrey selectElementWithMatcher:PromoStylePrimaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Verify that the next step is displayed.
@@ -151,7 +151,7 @@ id<GREYMatcher> PrivacyGuideURLUsageSwitch(BOOL is_on) {
 
   // Open the Privacy Guide and go to the URL usage step.
   [self openPrivacyGuide];
-  [[EarlGrey selectElementWithMatcher:PromoStylePrimaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
   // 1. Test initialization and switch tapping.

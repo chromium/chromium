@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">請輸入有效值。最接近的兩個有效值分別是 <ph name="VALID_VALUE_LOW" /> 和 <ph name="VALID_VALUE_HIGHER" />。</translation>
 <translation id="4522570452068850558">詳細資料</translation>
 <translation id="4664250907885839816">「<ph name="ATSIGN" />」後面的部分不應包含「<ph name="INVALIDCHARACTER" />」符號。</translation>
+<translation id="4703271465972936359">音軌</translation>
 <translation id="4718048029184481307">在子母畫面中播放</translation>
 <translation id="4812940957355064477">請輸入一個數字。</translation>
 <translation id="4975562563186953947">已選取 <ph name="SELECTED_COUNT" /> 個項目</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">投放</translation>
 <translation id="5630795885300617244">輕觸兩下左側或右側可跳過 10 秒</translation>
 <translation id="57838592816432529">靜音</translation>
+<translation id="5868587040512539609">視訊軌</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5888666972993069672">正在投放到「<ph name="DEVICE_FRIENDLY_NAME" />」</translation>
 <translation id="5939518447894949180">重設</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">美化排版</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6643016212128521049">清除</translation>
+<translation id="6661136971638885481">媒體軌 #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">其他...</translation>
 <translation id="6709093583001123835">值必須是 <ph name="VALUE" />。</translation>
 <translation id="6709570249143506788">畫質不佳</translation>

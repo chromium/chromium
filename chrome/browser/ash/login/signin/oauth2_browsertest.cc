@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_future.h"
@@ -80,7 +81,7 @@ using ::net::test_server::HttpResponse;
 using ::net::test_server::HungResponse;
 
 // Email of owner account for test.
-const char kTestGaiaId[] = "12345";
+const GaiaId::Literal kTestGaiaId("12345");
 const char kTestEmail[] = "username@gmail.com";
 const char kTestRawEmail[] = "User.Name@gmail.com";
 const char kTestAccountPassword[] = "fake-password";
@@ -117,10 +118,6 @@ CoreAccountId PickAccountId(Profile* profile,
   return IdentityManagerFactory::GetInstance()
       ->GetForProfile(profile)
       ->PickAccountIdForAccount(gaia_id, email);
-}
-
-const char* BoolToString(bool value) {
-  return value ? "true" : "false";
 }
 
 class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
@@ -291,7 +288,7 @@ class OAuth2Test : public OobeBaseTest {
                           ? kTestIdTokenAdvancedProtectionEnabled
                           : kTestIdTokenAdvancedProtectionDisabled;
     fake_gaia_.fake_gaia()->SetConfiguration(params);
-    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, GaiaId(kTestGaiaId),
+    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
                                      kTestRefreshToken);
   }
 
@@ -308,7 +305,7 @@ class OAuth2Test : public OobeBaseTest {
     FakeGaia::Configuration params;
     params.email = kTestEmail;
     fake_gaia_.fake_gaia()->SetConfiguration(params);
-    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, GaiaId(kTestGaiaId),
+    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
                                      kTestRefreshToken);
   }
 
@@ -317,7 +314,7 @@ class OAuth2Test : public OobeBaseTest {
     params.session_sid_cookie = kTestSession2SIDCookie;
     params.session_lsid_cookie = kTestSession2LSIDCookie;
     fake_gaia_.fake_gaia()->SetConfiguration(params);
-    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, GaiaId(kTestGaiaId),
+    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
                                      kTestRefreshToken);
   }
 
@@ -329,7 +326,7 @@ class OAuth2Test : public OobeBaseTest {
 
     // Try login.  Primary profile has changed.
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId));
+        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
     LoginScreenTestApi::SubmitPassword(account_id, kTestAccountPassword,
                                        true /*check_if_submittable */);
     test::WaitForPrimaryUserSessionStart();
@@ -346,7 +343,7 @@ class OAuth2Test : public OobeBaseTest {
     CoreAccountInfo primary_account =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     EXPECT_TRUE(gaia::AreEmailsSame(kTestEmail, primary_account.email));
-    EXPECT_EQ(GaiaId(kTestGaiaId), primary_account.gaia);
+    EXPECT_EQ(kTestGaiaId, primary_account.gaia);
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
         primary_account.account_id));
   }
@@ -534,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_PRE_PRE_MergeSession) {
                       /*is_under_advanced_protection=*/false);
   // Check for existence of refresh token.
   CoreAccountId account_id =
-      PickAccountId(GetProfile(), GaiaId(kTestGaiaId), kTestEmail);
+      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(account_id));
@@ -592,13 +589,13 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_MergeSession) {
   EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
             user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
-  EXPECT_TRUE(TryToLogin(
-      AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId)),
-      kTestAccountPassword));
+  EXPECT_TRUE(
+      TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
+                 kTestAccountPassword));
 
   CoreAccountId account_id =
-      PickAccountId(GetProfile(), GaiaId(kTestGaiaId), kTestEmail);
-  ASSERT_EQ(kTestGaiaId, account_id.ToString());
+      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
+  ASSERT_EQ(CoreAccountId::FromGaiaId(kTestGaiaId), account_id);
 
   // Wait for the session merge to finish.
   WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
@@ -630,15 +627,15 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_OverlappingContinueSessionRestore) {
   auto thread_blocker = std::make_unique<ThreadBlocker>(nullptr);
 
   // Signs in as the existing user created in pre test.
-  EXPECT_TRUE(TryToLogin(
-      AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId)),
-      kTestAccountPassword));
+  EXPECT_TRUE(
+      TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
+                 kTestAccountPassword));
 
   // Checks that refresh token is not yet loaded.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   const CoreAccountId account_id =
-      PickAccountId(GetProfile(), GaiaId(kTestGaiaId), kTestEmail);
+      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
   EXPECT_FALSE(identity_manager->HasAccountWithRefreshToken(account_id));
 
   // Invokes ContinueSessionRestore multiple times and there should be
@@ -988,7 +985,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, Throttle) {
       ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr())));
+                                    base::ToString(do_async_xhr())));
   ExtensionTestMessageListener listener("Both XHR's Opened");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -1056,7 +1053,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, MAYBE_XHRNotThrottled) {
       ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr())));
+                                    base::ToString(do_async_xhr())));
 
   if (do_async_xhr()) {
     // Verify that we've sent XHR request from the extension side...
@@ -1138,7 +1135,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
       ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr())));
+                                    base::ToString(do_async_xhr())));
 
   if (do_async_xhr()) {
     // Verify that we've sent XHR requests from the extension side...

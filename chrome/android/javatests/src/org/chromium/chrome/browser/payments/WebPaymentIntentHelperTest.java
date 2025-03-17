@@ -827,7 +827,7 @@ public class WebPaymentIntentHelperTest {
         mErrorString = null;
         WebPaymentIntentHelper.parsePaymentResponse(
                 Activity.RESULT_OK,
-                /* intent= */ null,
+                /* data= */ null,
                 /* requestedPaymentOptions= */ null,
                 (errorString) -> mErrorString = errorString,
                 (methodName, details, payerData) -> Assert.fail("Parsing should fail."));

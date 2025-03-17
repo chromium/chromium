@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -24,7 +25,6 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -2743,6 +2743,32 @@ TEST_F(AttributionStorageSqlTest, MaxImpressionsPerOrigin_LimitsStorage) {
 
   ASSERT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(5u), SourceEventIdIs(6u)));
+}
+
+TEST_F(AttributionStorageSqlTest, ClearData_OsRegistrationsDataDeleted) {
+  OpenDatabase();
+
+  url::Origin origin_1 = url::Origin::Create(GURL("https://a.test"));
+  url::Origin origin_2 = url::Origin::Create(GURL("https://b.test"));
+  url::Origin origin_3 = url::Origin::Create(GURL("https://c.test"));
+
+  storage()->StoreOsRegistrations({origin_1, origin_2, origin_3});
+
+  storage()->ClearData(
+      /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey::CreateFirstParty(origin_1)),
+      /*delete_rate_limit_data=*/false);
+
+  EXPECT_THAT(storage()->GetAllDataKeys(),
+              UnorderedElementsAre(AttributionDataModel::DataKey(origin_2),
+                                   AttributionDataModel::DataKey(origin_3)));
+
+  storage()->ClearData(/*delete_begin=*/base::Time::Min(),
+                       /*delete_end=*/base::Time::Max(),
+                       /*filter=*/base::NullCallback(),
+                       /*delete_rate_limit_data=*/false);
+  EXPECT_THAT(storage()->GetAllDataKeys(), IsEmpty());
 }
 
 }  // namespace

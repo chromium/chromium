@@ -4,9 +4,12 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.List;
 
 /** Boundary interface for WebViewStartUpResult. */
+@NullMarked
 public interface WebViewStartUpResultBoundaryInterface {
     Long getTotalTimeInUiThreadMillis();
 

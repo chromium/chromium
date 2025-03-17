@@ -15,10 +15,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/ip_protection/mojom/core.mojom.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -56,6 +58,7 @@ class IpProtectionCoreHost
   IpProtectionCoreHost(
       signin::IdentityManager* identity_manager,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      policy::ManagementService* management_service,
       PrefService* pref_service,
       Profile* profile);
 
@@ -69,6 +72,8 @@ class IpProtectionCoreHost
                         ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   void GetProxyConfig(GetProxyConfigCallback callback) override;
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override;
 
   static bool CanIpProtectionBeEnabled();
   bool IsIpProtectionEnabled();
@@ -110,6 +115,10 @@ class IpProtectionCoreHost
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
+  // Returns whether IP Protection should be disabled for managed users and/or
+  // devices, for testing.
+  bool ShouldDisableIpProtectionForManagedForTesting();
+
  private:
   friend class IpProtectionCoreHostTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostIdentityBrowserTest,
@@ -117,8 +126,15 @@ class IpProtectionCoreHost
   FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostUserSettingBrowserTest,
                            OnIpProtectionEnabledChanged);
 
-  // Set up `ip_protection_proxy_config_fetcher_` and
-  // `ip_protection_token_fetcher_` if
+  // Creating a generic callback in order for `RequestOAuthToken()` to work for
+  // `TryGetAuthTokens()` and `GetProxyConfig()`.
+  using RequestOAuthTokenInternalCallback =
+      base::OnceCallback<void(GoogleServiceAuthError error,
+                              signin::AccessTokenInfo access_token_info)>;
+
+  // Set up `ip_protection_proxy_config_fetcher_`,
+  // `ip_protection_token_fetcher_` and
+  // `ip_protection_prt_fetcher_` if
   // not already initialized. This accomplishes lazy loading of these components
   // to break dependency loops in browser startup.
   void SetUp();
@@ -138,21 +154,6 @@ class IpProtectionCoreHost
       TryGetAuthTokensCallback callback,
       absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens);
 
-  // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
-  // its callback.
-  void TryGetAuthTokensComplete(
-      std::optional<std::vector<ip_protection::BlindSignedAuthToken>>
-          bsa_tokens,
-      TryGetAuthTokensCallback callback,
-      ip_protection::TryGetAuthTokensResult result,
-      std::optional<base::TimeDelta> duration = std::nullopt);
-
-  // Creating a generic callback in order for `RequestOAuthToken()` to work for
-  // `TryGetAuthTokens()` and `GetProxyConfig()`.
-  using RequestOAuthTokenInternalCallback =
-      base::OnceCallback<void(GoogleServiceAuthError error,
-                              signin::AccessTokenInfo access_token_info)>;
-
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user. This method must only be called when
   // `CanRequestOAuthToken()` returns true.
@@ -163,23 +164,9 @@ class IpProtectionCoreHost
   // available) or extend them (if not).
   void AccountStatusChanged(bool account_available);
 
-  // The object used to get an OAuth token. `identity_manager_` will be set to
-  // nullptr after `Shutdown()` is called, but will otherwise be non-null.
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  // Used to retrieve whether the user has enabled IP protection via settings.
-  // `tracking_protection_settings_` will be set to nullptr after `Shutdown()`
-  // is called, but will otherwise be non-null.
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
-  // Used to request the state of the IP Protection user setting. Will be set to
-  // nullptr after `Shutdown()` is called.
-  raw_ptr<PrefService> pref_service_;
-  // The `Profile` object associated with this
-  // `IpProtectionCoreHost()`. Will be reset to nullptr after
-  // `Shutdown()` is called.
-  // NOTE: If this is used in any `GetForProfile()` call, ensure that there is a
-  // corresponding dependency (if needed) registered in the factory class.
-  raw_ptr<Profile> profile_;
+  // Returns whether IP Protection should be disabled for managed users and/or
+  // devices.
+  bool ShouldDisableIpProtectionForManaged();
 
   // Instruct the `IpProtectionConfigCache()`(s) in the Network Service to
   // ignore any previously sent `try_again_after` times.
@@ -197,6 +184,29 @@ class IpProtectionCoreHost
   // TrackingProtectionSettingsObserver:
   void OnIpProtectionEnabledChanged() override;
 
+  // The object used to get an OAuth token. `identity_manager_` will be set to
+  // nullptr after `Shutdown()` is called, but will otherwise be non-null.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  // Used to retrieve whether the user has enabled IP protection via settings.
+  // `tracking_protection_settings_` will be set to nullptr after `Shutdown()`
+  // is called, but will otherwise be non-null.
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
+  // Used to check whether the browser is being managed. Will be set to nullptr
+  // after `Shutdown()`, but will otherwise be non-null.
+  raw_ptr<policy::ManagementService> management_service_;
+  // Used to request the state of the IP Protection user setting. Will be set to
+  // nullptr after `Shutdown()` is called.
+  raw_ptr<PrefService> pref_service_;
+  // The `Profile` object associated with this `IpProtectionCoreHost()`. Will be
+  // reset to nullptr after `Shutdown()` is called.
+  // NOTE: If this is used in any `GetForProfile()` call, ensure that there is a
+  // corresponding dependency (if needed) registered in the factory class.
+  raw_ptr<Profile> profile_;
+
+  std::unique_ptr<
+      ip_protection::IpProtectionProbabilisticRevealTokenDirectFetcher>
+      ip_protection_prt_fetcher_;
   std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
   std::unique_ptr<ip_protection::IpProtectionTokenDirectFetcher>

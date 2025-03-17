@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
@@ -88,18 +65,18 @@
 // I'd love to hear about other alternatives, though, as this code isn't
 // exactly pretty.
 
-#include <google/protobuf/io/tokenizer.h>
+#include "google/protobuf/io/tokenizer.h"
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/stubs/stringprintf.h>
-#include <google/protobuf/io/strtod.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/stubs/stl_util.h>
+#include "google/protobuf/stubs/common.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "absl/strings/escaping.h"
+#include "absl/strings/str_format.h"
+#include "google/protobuf/io/strtod.h"
+#include "google/protobuf/io/zero_copy_stream.h"
 
 // Must be included last.
-#include <google/protobuf/port_def.inc>
+#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
@@ -219,13 +196,13 @@ Tokenizer::Tokenizer(ZeroCopyInputStream* input,
                      ErrorCollector* error_collector)
     : input_(input),
       error_collector_(error_collector),
-      buffer_(NULL),
+      buffer_(nullptr),
       buffer_size_(0),
       buffer_pos_(0),
       read_error_(false),
       line_(0),
       column_(0),
-      record_target_(NULL),
+      record_target_(nullptr),
       record_start_(-1),
       allow_f_after_float_(false),
       comment_style_(CPP_COMMENT_STYLE),
@@ -235,6 +212,7 @@ Tokenizer::Tokenizer(ZeroCopyInputStream* input,
   current_.column = 0;
   current_.end_column = 0;
   current_.type = TYPE_START;
+  previous_ = current_;
 
   Refresh();
 }
@@ -293,7 +271,7 @@ void Tokenizer::Refresh() {
   }
 
   // If we're in a token, append the rest of the buffer to it.
-  if (record_target_ != NULL && record_start_ < buffer_size_) {
+  if (record_target_ != nullptr && record_start_ < buffer_size_) {
     record_target_->append(buffer_ + record_start_,
                            buffer_size_ - record_start_);
     record_start_ = 0;
@@ -406,7 +384,7 @@ void Tokenizer::ConsumeString(char delimiter) {
 
       case '\n': {
         if (!allow_multiline_strings_) {
-          AddError("String literals cannot cross line boundaries.");
+          AddError("Multiline strings are not allowed. Did you miss a \"?.");
           return;
         }
         NextChar();
@@ -422,7 +400,7 @@ void Tokenizer::ConsumeString(char delimiter) {
           // Possibly followed by two more octal digits, but these will
           // just be consumed by the main loop anyway so we don't need
           // to do so explicitly here.
-        } else if (TryConsume('x')) {
+        } else if (TryConsume('x') || TryConsume('X')) {
           if (!TryConsumeOne<HexDigit>()) {
             AddError("Expected hex digits for escape sequence.");
           }
@@ -568,8 +546,8 @@ void Tokenizer::ConsumeBlockComment(std::string* content) {
           "\"/*\" inside block comment.  Block comments cannot be nested.");
     } else if (current_char_ == '\0') {
       AddError("End-of-file inside block comment.");
-      error_collector_->AddError(start_line, start_column,
-                                 "  Comment started here.");
+      error_collector_->RecordError(start_line, start_column,
+                                    "  Comment started here.");
       if (content != NULL) StopRecording();
       break;
     }
@@ -687,7 +665,7 @@ bool Tokenizer::Next() {
               current_.line == previous_.line &&
               current_.column == previous_.end_column) {
             // We don't accept syntax like "blah.123".
-            error_collector_->AddError(
+            error_collector_->RecordError(
                 line_, column_ - 2,
                 "Need space between identifier and decimal point.");
           }
@@ -706,9 +684,9 @@ bool Tokenizer::Next() {
       } else {
         // Check if the high order bit is set.
         if (current_char_ & 0x80) {
-          error_collector_->AddError(
+          error_collector_->RecordError(
               line_, column_,
-              StringPrintf("Interpreting non ascii codepoint %d.",
+              absl::StrFormat("Interpreting non ascii codepoint %d.",
                               static_cast<unsigned char>(current_char_)));
         }
         NextChar();
@@ -746,6 +724,8 @@ class CommentCollector {
       : prev_trailing_comments_(prev_trailing_comments),
         detached_comments_(detached_comments),
         next_leading_comments_(next_leading_comments),
+        num_comments_(0),
+        has_trailing_comment_(false),
         has_comment_(false),
         is_line_comment_(false),
         can_attach_to_prev_(true) {
@@ -797,6 +777,7 @@ class CommentCollector {
         if (prev_trailing_comments_ != NULL) {
           prev_trailing_comments_->append(comment_buffer_);
         }
+        has_trailing_comment_ = true;
         can_attach_to_prev_ = false;
       } else {
         if (detached_comments_ != NULL) {
@@ -804,10 +785,30 @@ class CommentCollector {
         }
       }
       ClearBuffer();
+      num_comments_++;
     }
   }
 
   void DetachFromPrev() { can_attach_to_prev_ = false; }
+
+  void MaybeDetachComment() {
+    int count = num_comments_;
+    if (has_comment_) count++;
+
+    // If there's one comment, make sure it is detached.
+    if (count == 1) {
+      if (has_trailing_comment_ && prev_trailing_comments_ != NULL) {
+        std::string trail = *prev_trailing_comments_;
+        if (detached_comments_ != NULL) {
+          // push trailing comment to front of detached
+          detached_comments_->insert(detached_comments_->begin(), 1, trail);
+        }
+        prev_trailing_comments_->clear();
+      }
+      // flush pending comment so it's detached instead of leading
+      Flush();
+    }
+  }
 
  private:
   std::string* prev_trailing_comments_;
@@ -815,6 +816,8 @@ class CommentCollector {
   std::string* next_leading_comments_;
 
   std::string comment_buffer_;
+  int num_comments_;
+  bool has_trailing_comment_;
 
   // True if any comments were read into comment_buffer_.  This can be true even
   // if comment_buffer_ is empty, namely if the comment was "/**/".
@@ -836,6 +839,9 @@ bool Tokenizer::NextWithComments(std::string* prev_trailing_comments,
   CommentCollector collector(prev_trailing_comments, detached_comments,
                              next_leading_comments);
 
+  int prev_line = line_;
+  int trailing_comment_end_line = -1;
+
   if (current_.type == TYPE_START) {
     // Ignore unicode byte order mark(BOM) if it appears at the file
     // beginning. Only UTF-8 BOM (0xEF 0xBB 0xBF) is accepted.
@@ -849,12 +855,14 @@ bool Tokenizer::NextWithComments(std::string* prev_trailing_comments,
       }
     }
     collector.DetachFromPrev();
+    prev_line = -1;
   } else {
     // A comment appearing on the same line must be attached to the previous
     // declaration.
     ConsumeZeroOrMore<WhitespaceNoNewline>();
     switch (TryConsumeCommentStart()) {
       case LINE_COMMENT:
+        trailing_comment_end_line = line_;
         ConsumeLineComment(collector.GetBufferForLineComment());
 
         // Don't allow comments on subsequent lines to be attached to a trailing
@@ -863,14 +871,8 @@ bool Tokenizer::NextWithComments(std::string* prev_trailing_comments,
         break;
       case BLOCK_COMMENT:
         ConsumeBlockComment(collector.GetBufferForBlockComment());
-
+        trailing_comment_end_line = line_;
         ConsumeZeroOrMore<WhitespaceNoNewline>();
-        if (!TryConsume('\n')) {
-          // Oops, the next token is on the same line.  If we recorded a comment
-          // we really have no idea which token it should be attached to.
-          collector.ClearBuffer();
-          return Next();
-        }
 
         // Don't allow comments on subsequent lines to be attached to a trailing
         // comment.
@@ -917,6 +919,14 @@ bool Tokenizer::NextWithComments(std::string* prev_trailing_comments,
             // It looks like we're at the end of a scope.  In this case it
             // makes no sense to attach a comment to the following token.
             collector.Flush();
+          }
+          if (result &&
+              (prev_line == line_ || trailing_comment_end_line == line_)) {
+            // When previous token and this one are on the same line, or
+            // even if a multi-line trailing comment ends on the same line
+            // as this token, it's unclear to what token the comment
+            // should be attached. So we detach it.
+            collector.MaybeDetachComment();
           }
           return result;
         }
@@ -1002,9 +1012,20 @@ bool Tokenizer::ParseInteger(const std::string& text, uint64_t max_value,
 }
 
 double Tokenizer::ParseFloat(const std::string& text) {
+  double result = 0;
+  if (!TryParseFloat(text, &result)) {
+    ABSL_DLOG(FATAL)
+        << " Tokenizer::ParseFloat() passed text that could not have been"
+           " tokenized as a float: "
+        << absl::CEscape(text);
+  }
+  return result;
+}
+
+bool Tokenizer::TryParseFloat(const std::string& text, double* result) {
   const char* start = text.c_str();
   char* end;
-  double result = NoLocaleStrtod(start, &end);
+  *result = NoLocaleStrtod(start, &end);
 
   // "1e" is not a valid float, but if the tokenizer reads it, it will
   // report an error but still return it as a valid token.  We need to
@@ -1020,12 +1041,7 @@ double Tokenizer::ParseFloat(const std::string& text) {
     ++end;
   }
 
-  GOOGLE_LOG_IF(DFATAL,
-         static_cast<size_t>(end - start) != text.size() || *start == '-')
-      << " Tokenizer::ParseFloat() passed text that could not have been"
-         " tokenized as a float: "
-      << CEscape(text);
-  return result;
+  return static_cast<size_t>(end - start) == text.size() && *start != '-';
 }
 
 // Helper to append a Unicode code point to a string as UTF8, without bringing
@@ -1052,7 +1068,7 @@ static void AppendUTF8(uint32_t code_point, std::string* output) {
     // Unicode code points end at 0x10FFFF, so this is out-of-range.
     // ConsumeString permits hex values up to 0x1FFFFF, and FetchUnicodePoint
     // doesn't perform a range check.
-    StringAppendF(output, "\\U%08x", code_point);
+    absl::StrAppendFormat(output, "\\U%08x", code_point);
     return;
   }
   tmp = ghtonl(tmp);
@@ -1093,8 +1109,8 @@ static inline bool IsTrailSurrogate(uint32_t code_point) {
 // Combine a head and trail surrogate into a single Unicode code point.
 static uint32_t AssembleUTF16(uint32_t head_surrogate,
                               uint32_t trail_surrogate) {
-  GOOGLE_DCHECK(IsHeadSurrogate(head_surrogate));
-  GOOGLE_DCHECK(IsTrailSurrogate(trail_surrogate));
+  ABSL_DCHECK(IsHeadSurrogate(head_surrogate));
+  ABSL_DCHECK(IsTrailSurrogate(trail_surrogate));
   return 0x10000 + (((head_surrogate - kMinHeadSurrogate) << 10) |
                     (trail_surrogate - kMinTrailSurrogate));
 }
@@ -1143,9 +1159,10 @@ void Tokenizer::ParseStringAppend(const std::string& text,
   // empty, it's invalid, so we'll just return).
   const size_t text_size = text.size();
   if (text_size == 0) {
-    GOOGLE_LOG(DFATAL) << " Tokenizer::ParseStringAppend() passed text that could not"
-                   " have been tokenized as a string: "
-                << CEscape(text);
+    ABSL_DLOG(FATAL)
+        << " Tokenizer::ParseStringAppend() passed text that could not"
+           " have been tokenized as a string: "
+        << absl::CEscape(text);
     return;
   }
 
@@ -1179,7 +1196,7 @@ void Tokenizer::ParseStringAppend(const std::string& text,
         }
         output->push_back(static_cast<char>(code));
 
-      } else if (*ptr == 'x') {
+      } else if (*ptr == 'x' || *ptr == 'X') {
         // A hex escape.  May zero, one, or two digits.  (The zero case
         // will have been caught as an error earlier.)
         int code = 0;
@@ -1236,4 +1253,4 @@ bool Tokenizer::IsIdentifier(const std::string& text) {
 }  // namespace protobuf
 }  // namespace google
 
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

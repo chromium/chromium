@@ -9,13 +9,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+class PersonalDataManager;
+}  // namespace autofill
 
 namespace contact_info_helper {
 
 autofill::AutofillProfile BuildTestAccountProfile();
+
+autofill::AddressDataManager* GetAddressDataManager(Profile* profile);
 
 autofill::PersonalDataManager* GetPersonalDataManager(Profile* profile);
 

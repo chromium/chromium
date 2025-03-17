@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
@@ -40,7 +40,7 @@ void ChildPerformanceCoordinator::OnInitializeChildProcessCoordination(
     base::ReadOnlySharedMemoryRegion global_region,
     base::ReadOnlySharedMemoryRegion process_region) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  using blink::performance_scenarios::ScenarioScope;
+  using performance_scenarios::ScenarioScope;
   if (global_region.IsValid()) {
     global_scenario_memory_.emplace(ScenarioScope::kGlobal,
                                     std::move(global_region));

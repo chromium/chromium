@@ -87,8 +87,9 @@ OverlayPresentationContextImpl::~OverlayPresentationContextImpl() = default;
 
 void OverlayPresentationContextImpl::SetDelegate(
     id<OverlayPresentationContextImplDelegate> delegate) {
-  if (delegate_ == delegate)
+  if (delegate_ == delegate) {
     return;
+  }
   // Reset the presentation capabilities.
   container_view_controller_ = nil;
   presentation_context_view_controller_ = nil;
@@ -101,8 +102,9 @@ void OverlayPresentationContextImpl::SetDelegate(
 }
 
 void OverlayPresentationContextImpl::SetWindow(UIWindow* window) {
-  if (window_ == window)
+  if (window_ == window) {
     return;
+  }
   window_ = window;
   for (auto& observer : observers_) {
     observer.OverlayPresentationContextDidMoveToWindow(this, window_);
@@ -111,16 +113,18 @@ void OverlayPresentationContextImpl::SetWindow(UIWindow* window) {
 
 void OverlayPresentationContextImpl::SetContainerViewController(
     UIViewController* view_controller) {
-  if (container_view_controller_ == view_controller)
+  if (container_view_controller_ == view_controller) {
     return;
+  }
   container_view_controller_ = view_controller;
   UpdatePresentationCapabilities();
 }
 
 void OverlayPresentationContextImpl::SetPresentationContextViewController(
     UIViewController* view_controller) {
-  if (presentation_context_view_controller_ == view_controller)
+  if (presentation_context_view_controller_ == view_controller) {
     return;
+  }
   presentation_context_view_controller_ = view_controller;
   // `view_controller` should not be provided to the context until it is fully
   // presented in a window.
@@ -188,8 +192,9 @@ bool OverlayPresentationContextImpl::IsShowingOverlayUI() const {
 void OverlayPresentationContextImpl::PrepareToShowOverlayUI(
     OverlayRequest* request) {
   // Early return if the request is already supported.
-  if (CanShowUIForRequest(request))
+  if (CanShowUIForRequest(request)) {
     return;
+  }
 
   // Request the delegate to prepare for overlay UI with `required_capability`.
   UIPresentationCapabilities required_capabilities =
@@ -205,8 +210,9 @@ void OverlayPresentationContextImpl::ShowOverlayUI(
   DCHECK(!IsShowingOverlayUI());
   DCHECK(CanShowUIForRequest(request));
   // Create the UI state for `request` if necessary.
-  if (!GetRequestUIState(request))
+  if (!GetRequestUIState(request)) {
     states_[request] = std::make_unique<OverlayRequestUIState>(request);
+  }
   // Present the overlay UI and update the UI state.
   GetRequestUIState(request)->OverlayPresentionRequested(
       std::move(presentation_callback), std::move(dismissal_callback));
@@ -224,14 +230,14 @@ void OverlayPresentationContextImpl::HideOverlayUI(OverlayRequest* request) {
   DismissPresentedUI(OverlayDismissalReason::kHiding);
 }
 
-void OverlayPresentationContextImpl::CancelOverlayUI(
-    OverlayRequest* request) {
+void OverlayPresentationContextImpl::CancelOverlayUI(OverlayRequest* request) {
   // No cleanup required if there is no UI state for `request`.  This can
   // occur when cancelling an OverlayRequest whose UI has never been
   // presented.
   OverlayRequestUIState* state = GetRequestUIState(request);
-  if (!state)
+  if (!state) {
     return;
+  }
 
   // If the coordinator is not presenting the overlay UI for `state`, it can
   // be deleted immediately.
@@ -246,8 +252,9 @@ void OverlayPresentationContextImpl::CancelOverlayUI(
 #pragma mark Accesors
 
 void OverlayPresentationContextImpl::SetRequest(OverlayRequest* request) {
-  if (request_ == request)
+  if (request_ == request) {
     return;
+  }
   if (request_) {
     OverlayRequestUIState* state = GetRequestUIState(request_);
     // The presented request should only be reset when the previously presented
@@ -401,8 +408,9 @@ void OverlayPresentationContextImpl::OverlayUIWasDismissed() {
   // presented.
   OverlayRequest* previously_presented_request = request_;
   GetRequestUIState(request_)->OverlayUIWasDismissed();
-  if (request_ == previously_presented_request)
+  if (request_ == previously_presented_request) {
     SetRequest(nullptr);
+  }
 }
 
 void OverlayPresentationContextImpl::BrowserDestroyed() {

@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/signin/core/browser/account_reconcilor.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "extensions/browser/extension_function.h"
@@ -164,8 +163,6 @@ class BrowsingDataRemoverFunction
   base::ScopedObservation<content::BrowsingDataRemover,
                           content::BrowsingDataRemover::Observer>
       observation_{this};
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion>
-      synced_data_deletion_;
 };
 
 class BrowsingDataRemoveAppcacheFunction : public BrowsingDataRemoverFunction {

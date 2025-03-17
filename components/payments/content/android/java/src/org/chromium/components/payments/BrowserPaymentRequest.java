@@ -4,8 +4,9 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
@@ -24,6 +25,7 @@ import java.util.Map;
  * The browser part of the PaymentRequest implementation. The browser here can be either the
  * Android Chrome browser or the WebLayer "browser".
  */
+@NullMarked
 public interface BrowserPaymentRequest {
     /**
      * The client of the interface calls this when it has received the payment details update
@@ -48,6 +50,19 @@ public interface BrowserPaymentRequest {
     void complete(int result, Runnable onCompleteHandled);
 
     /**
+     * If retrying payments is supported, this method returns false.
+     *
+     * If retrying payments is not supported, this method disconnects the Mojo IPC pipe and returns
+     * true.
+     *
+     * @return Whether the Mojo IPC pipe was disconnected due to lack of support for retrying
+     * payments.
+     */
+    default boolean disconnectIfNoRetrySupport() {
+        return false;
+    }
+
+    /**
      * Called when {@link PaymentRequest#retry} is invoked.
      * @param errors The merchant-defined error message strings, which are used to indicate to the
      *         end-user that something is wrong with the data of the payment response.
@@ -61,14 +76,8 @@ public interface BrowserPaymentRequest {
     void close();
 
     /**
-     * Modifies the given method data if needed, called when methodData is created.
-     * @param methodData A map of method names to PaymentMethodData, could be null. This parameter
-     * could be modified in place.
-     */
-    default void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodData) {}
-
-    /**
      * Performs extra validation for the given input and disconnects the mojo pipe if failed.
+     *
      * @param webContents The WebContents that represents the merchant page.
      * @param methodData A map of the method data specified for the request.
      * @param details The payment details specified for the request.
@@ -104,34 +113,38 @@ public interface BrowserPaymentRequest {
      *        implementer may consider other factors before deciding whether to show or skip.
      * @return The error of the showing if any; null if success.
      */
-    @Nullable
-    String showOrSkipAppSelector(
+    @Nullable String showOrSkipAppSelector(
             boolean isShowWaitingForUpdatedDetails,
-            PaymentItem total,
+            @Nullable PaymentItem total,
             boolean shouldSkipAppSelector);
 
     /**
      * Notifies the payment UI service of the payment apps pending to be handled
+     *
      * @param pendingApps The payment apps that are pending to be handled.
      */
     void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps);
 
     /**
-     * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps
-     * are all queried, and (3) PaymentDetails is finalized.
-     * @return The error if it fails; null otherwise.
+     * Called when the merchant requested Secure Payment Confirmation (SPC), but no credentials have
+     * been found.
+     *
+     * @return Returns true if SPC is supported and enabled (e.g., in Chrome). Returns false if SPC
+     *     is not supported or disabled (e.g., in WebView).
      */
-    @Nullable
-    default String onShowCalledAndAppsQueriedAndDetailsFinalized() {
-        return null;
+    default boolean showNoMatchingPaymentCredential() {
+        return false;
     }
 
     /**
-     * Called when a new payment app is created.
-     * @param paymentApp The new payment app.
-     * @return True if the payment app should be used; false if it should be ignored.
+     * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps are
+     * all queried, and (3) PaymentDetails is finalized.
+     *
+     * @return The error if it fails; null otherwise.
      */
-    boolean onPaymentAppCreated(PaymentApp paymentApp);
+    default @Nullable String onShowCalledAndAppsQueriedAndDetailsFinalized() {
+        return null;
+    }
 
     /**
      * Patches the given payment response if needed.
@@ -166,7 +179,7 @@ public interface BrowserPaymentRequest {
      * @param ukmSourceId The ukm source id assigned to the payment app.
      * @return The created WebContents.
      */
-    default WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
+    default @Nullable WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
         return null;
     }
 
@@ -178,8 +191,7 @@ public interface BrowserPaymentRequest {
      *         their payment apps.
      * @return The error if it fails; null otherwise.
      */
-    @Nullable
-    default String continueShowWithUpdatedDetails(
+    default @Nullable String continueShowWithUpdatedDetails(
             PaymentDetails details, boolean isFinishedQueryingPaymentApps) {
         return null;
     }
@@ -213,5 +225,64 @@ public interface BrowserPaymentRequest {
     /** @return Whether the contact info section is visible. */
     default boolean isContactSectionVisible() {
         return false;
+    }
+
+    /**
+     * @return A dialog controller for displaying informational or warning messages.
+     */
+    DialogController getDialogController();
+
+    /**
+     * @return The site certificate chain of the web contents where PaymentRequest API was invoked.
+     *     Can return null when ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or
+     *     when the page is localhost or is a file.
+     */
+    byte @Nullable [][] getCertificateChain();
+
+    /**
+     * @return The launcher for Android intent-based payment app.
+     */
+    AndroidIntentLauncher getAndroidIntentLauncher();
+
+    /**
+     * Used to check whether payment apps are required to handle shipping address and contact
+     * information, when merchant websites request that information. This information can be
+     * returned either from payment apps or from Chrome's autofill. Result of this method does not
+     * guarantee the payment. Even if this method returns true, there could be no payment apps to
+     * support providing shipping address or contact information.
+     *
+     * @return Whether payment apps are required to provide shipping address and contact
+     *     information.
+     */
+    boolean isFullDelegationRequired();
+
+    /**
+     * Send the given response to the renderer process to resolve the pending JavaScript promise for
+     * the PaymentRequest.canMakePayment() API call, potentially overriding the calculated value.
+     *
+     * @param response The response to the JavaScript PaymentRequest.canMakePayment() API call. Can
+     *     be potentially overridden.
+     * @param sender The method for sending the response to the renderer process. May be invoked
+     *     either synchronously or asynchronously.
+     */
+    default void maybeOverrideCanMakePaymentResponse(boolean response, Callback<Boolean> sender) {
+        // By default, there is no override of the `response` value.
+        sender.onResult(response);
+    }
+
+    /**
+     * Send the given response to the renderer process to resolve the pending JavaScript promise for
+     * the PaymentRequest.hasEnrolledInstrument() API call, potentially overriding the calculated
+     * value.
+     *
+     * @param response The response to the JavaScript PaymentRequest.hasEnrolledInstrument() API
+     *     call. Can be potentially overridden.
+     * @param sender The method for sending the response to the renderer process. May be invoked
+     *     either synchronously or asynchronously.
+     */
+    default void maybeOverrideHasEnrolledInstrumentResponse(
+            boolean response, Callback<Boolean> sender) {
+        // By default, there is no override of the `response` value.
+        sender.onResult(response);
     }
 }

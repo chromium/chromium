@@ -467,6 +467,74 @@ TEST_F(SessionStoreTest, ShouldUpdateTrackerWithForeignData) {
                                                  /*urls=*/_)))));
 }
 
+TEST_F(SessionStoreTest, ShouldUpdateTrackerWithForeignDataAndInvalidURL) {
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const int kWindowId = 5;
+  const int kTabId1 = 7;
+  const int kTabNodeId1 = 2;
+  const GURL kValidURL("http://validurl.com/");
+  const GURL kInvalidURL("http:google.com:foo");
+
+  ASSERT_TRUE(kValidURL.is_valid());
+  ASSERT_FALSE(kInvalidURL.is_empty());
+  ASSERT_FALSE(kInvalidURL.is_valid());
+  ASSERT_FALSE(kInvalidURL.possibly_invalid_spec().empty());
+
+  ASSERT_THAT(session_store()->tracker()->LookupAllForeignSessions(
+                  SyncedSessionTracker::RAW),
+              IsEmpty());
+
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kForeignSessionTag);
+  const std::string tab_storage_key1 =
+      SessionStore::GetTabStorageKey(kForeignSessionTag, kTabNodeId1);
+  ASSERT_THAT(BatchToEntityDataMap(session_store()->GetSessionDataForKeys(
+                  {header_storage_key, tab_storage_key1})),
+              IsEmpty());
+
+  // Populate with data.
+  SessionSpecifics header;
+  header.set_session_tag(kForeignSessionTag);
+  header.mutable_header()->add_window()->set_window_id(kWindowId);
+  header.mutable_header()->mutable_window(0)->add_tab(kTabId1);
+  ASSERT_TRUE(SessionStore::AreValidSpecifics(header));
+
+  SessionSpecifics tab1;
+  tab1.set_session_tag(kForeignSessionTag);
+  tab1.set_tab_node_id(kTabNodeId1);
+  tab1.mutable_tab()->set_window_id(kWindowId);
+  tab1.mutable_tab()->set_tab_id(kTabId1);
+  // Having a non-empty, invalid URL in storage is unlikely, but may happen if
+  // there was disk corruption.
+  tab1.mutable_tab()->add_navigation()->set_virtual_url(
+      kInvalidURL.possibly_invalid_spec());
+  tab1.mutable_tab()->add_navigation()->set_virtual_url(kValidURL.spec());
+  ASSERT_TRUE(SessionStore::AreValidSpecifics(tab1));
+
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+  batch->PutAndUpdateTracker(header, base::Time::Now());
+  batch->PutAndUpdateTracker(tab1, base::Time::Now());
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  EXPECT_THAT(
+      session_store()->tracker()->LookupAllForeignSessions(
+          SyncedSessionTracker::RAW),
+      ElementsAre(MatchesSyncedSession(
+          kForeignSessionTag, {{kWindowId, std::vector<int>{kTabId1}}})));
+  EXPECT_THAT(BatchToEntityDataMap(session_store()->GetSessionDataForKeys(
+                  {header_storage_key, tab_storage_key1})),
+              UnorderedElementsAre(
+                  Pair(header_storage_key,
+                       EntityDataHasSpecifics(MatchesHeader(
+                           kForeignSessionTag, {kWindowId}, {kTabId1}))),
+                  Pair(tab_storage_key1,
+                       EntityDataHasSpecifics(MatchesTab(
+                           kForeignSessionTag, kWindowId, kTabId1, kTabNodeId1,
+                           ElementsAre("", kValidURL.spec()))))));
+}
+
 TEST_F(SessionStoreTest, ShouldWriteAndRestoreForeignData) {
   const std::string kForeignSessionTag = "SomeForeignTag";
   const int kWindowId = 5;

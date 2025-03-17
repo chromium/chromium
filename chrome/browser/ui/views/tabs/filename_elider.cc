@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/tabs/filename_elider.h"
 
+#include <stddef.h>
+
+#include <string>
 #include <string_view>
 
 #include "base/i18n/break_iterator.h"
@@ -18,15 +21,14 @@ FilenameElider::FilenameElider(std::unique_ptr<gfx::RenderText> render_text)
 
 FilenameElider::~FilenameElider() = default;
 
-std::u16string FilenameElider::Elide(const std::u16string& text,
+std::u16string FilenameElider::Elide(std::u16string_view text,
                                      const gfx::Rect& display_rect) const {
   render_text_->SetText(text);
   return ElideImpl(GetLineLengths(display_rect));
 }
 
 // static
-std::u16string::size_type FilenameElider::FindImageDimensions(
-    const std::u16string& text) {
+size_t FilenameElider::FindImageDimensions(std::u16string_view text) {
   // We don't have regexes in Chrome, but we can still do a rough evaluation of
   // the line to see if it ends with the expected pattern:
   //
@@ -44,8 +46,7 @@ std::u16string::size_type FilenameElider::FindImageDimensions(
   }
 
   // Fast forward to the unicode character following the paren.
-  base::i18n::UTF16CharIterator it(
-      std::u16string_view(text).substr(paren_pos + 1));
+  base::i18n::UTF16CharIterator it(text.substr(paren_pos + 1));
 
   // Look for the image width.
   if (!base::IsAsciiDigit(it.get())) {
@@ -76,7 +77,6 @@ std::u16string::size_type FilenameElider::FindImageDimensions(
 
 FilenameElider::LineLengths FilenameElider::GetLineLengths(
     const gfx::Rect& display_rect) const {
-  const std::u16string text = render_text_->text();
   render_text_->SetMaxLines(0);
   render_text_->SetMultiline(false);
   render_text_->SetWhitespaceElision(true);
@@ -86,12 +86,14 @@ FilenameElider::LineLengths FilenameElider::GetLineLengths(
   // the string to give us a guess at where the second line of the label
   // should start.
   render_text_->SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
-  const std::u16string tentative_second_line = render_text_->GetDisplayText();
+  const std::u16string_view tentative_second_line =
+      render_text_->GetDisplayText();
 
   // If there is no elision, then the text will fit on a single line and
   // there's nothing to do.
-  if (tentative_second_line == text) {
-    return LineLengths(text.length(), text.length());
+  const size_t length = render_text_->text().length();
+  if (tentative_second_line == render_text_->text()) {
+    return LineLengths(length, length);
   }
 
   // If there's not enough space to display even a single character, there is
@@ -109,11 +111,11 @@ FilenameElider::LineLengths FilenameElider::GetLineLengths(
   // TODO(crbug.com/1239317): Elision is still a little flaky, so we'll make
   // sure we didn't stop in the middle of a grapheme. The +1 is to move past
   // the ellipsis which is not part of the original string.
-  size_t pos = text.length() - tentative_second_line.length() + 1;
+  size_t pos = length - tentative_second_line.length() + 1;
   if (!render_text_->IsGraphemeBoundary(pos)) {
     pos = render_text_->IndexOfAdjacentGrapheme(pos, gfx::CURSOR_FORWARD);
   }
-  result.second = text.length() - pos;
+  result.second = length - pos;
 
   // Calculate the first line by aggressively truncating the text. This may
   // cut the string somewhere other than a word boundary, but for very long
@@ -134,7 +136,7 @@ FilenameElider::LineLengths FilenameElider::GetLineLengths(
 
 std::u16string FilenameElider::ElideImpl(
     FilenameElider::LineLengths line_lengths) const {
-  const std::u16string& text = render_text_->text();
+  std::u16string_view text = render_text_->text();
 
   // Validate the inputs. All of these are base assumptions.
   DCHECK_LE(line_lengths.first, text.length());
@@ -145,7 +147,7 @@ std::u16string FilenameElider::ElideImpl(
   // If the entire text fits on a single line, use it as-is.
   if (line_lengths.first == text.length() ||
       line_lengths.second == text.length()) {
-    return text;
+    return std::u16string(text);
   }
 
   // If no characters will fit on one of the lines, return an empty string.
@@ -202,8 +204,8 @@ std::u16string FilenameElider::ElideImpl(
 
   // Reassemble the string. Start with the first line up to `cut_point` or the
   // end of the line, whichever comes sooner.
-  std::u16string result =
-      text.substr(0, std::min(line_lengths.first, cut_point));
+  std::u16string result(
+      text.substr(0, std::min(line_lengths.first, cut_point)));
   result.push_back(u'\n');
 
   // If we're starting the second line with a file extension hint that the

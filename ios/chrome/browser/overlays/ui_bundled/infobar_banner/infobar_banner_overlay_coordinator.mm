@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/features.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/parcel_tracking/parcel_tracking_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/safe_browsing/enhanced_safe_browsing_infobar_overlay_mediator.h"
@@ -64,7 +63,6 @@
     [PermissionsBannerOverlayMediator class],
     [TailoredSecurityInfobarBannerOverlayMediator class],
     [SyncErrorInfobarBannerOverlayMediator class],
-    [ParcelTrackingBannerOverlayMediator class],
     [EnhancedSafeBrowsingBannerOverlayMediator class],
   ];
 }
@@ -109,8 +107,9 @@
 #pragma mark - OverlayRequestCoordinator
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started || !self.request)
+  if (self.started || !self.request) {
     return;
+  }
   // Create the mediator and use it aas the delegate for the banner view.
   InfobarOverlayRequestConfig* config =
       self.request->GetConfig<InfobarOverlayRequestConfig>();
@@ -153,8 +152,9 @@
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   // Mark started as NO before calling dismissal callback to prevent dup
   // stopAnimated: executions.
   self.started = NO;
@@ -242,8 +242,8 @@
       mediatorClass = [TranslateInfobarBannerOverlayMediator class];
       break;
     case InfobarType::kInfobarTypeParcelTracking:
-      mediatorClass = [ParcelTrackingBannerOverlayMediator class];
-      break;
+      // TODO(crbug.com/391002352): Remove kInfobarTypeParcelTracking
+      NOTREACHED();
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
       mediatorClass = [EnhancedSafeBrowsingBannerOverlayMediator class];
       break;

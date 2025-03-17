@@ -33,9 +33,6 @@ class ASH_EXPORT QuickInsertImageItemGridView
       delete;
   ~QuickInsertImageItemGridView() override;
 
-  // views::View:
-  views::FocusTraversable* GetPaneFocusTraversable() override;
-
   // QuickInsertTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
@@ -49,46 +46,12 @@ class ASH_EXPORT QuickInsertImageItemGridView
       std::unique_ptr<QuickInsertImageItemView> image_item);
 
  private:
-  class FocusSearch : public views::FocusSearch,
-                      public views::FocusTraversable {
-   public:
-    using GetFocusableViewsCallback =
-        base::RepeatingCallback<const views::View::Views&(void)>;
-
-    FocusSearch(views::View* view, const GetFocusableViewsCallback& callback);
-    FocusSearch(const FocusSearch&) = delete;
-    FocusSearch& operator=(const FocusSearch) = delete;
-    ~FocusSearch() override;
-
-    // views::FocusSearch:
-    views::View* FindNextFocusableView(
-        views::View* starting_view,
-        SearchDirection search_direction,
-        TraversalDirection traversal_direction,
-        StartingViewPolicy check_starting_view,
-        AnchoredDialogPolicy can_go_into_anchored_dialog,
-        views::FocusTraversable** focus_traversable,
-        views::View** focus_traversable_view) override;
-
-    // views::FocusTraversable:
-    views::FocusSearch* GetFocusSearch() override;
-    views::FocusTraversable* GetFocusTraversableParent() override;
-    views::View* GetFocusTraversableParentView() override;
-
-   private:
-    const raw_ptr<views::View> view_ = nullptr;
-    const GetFocusableViewsCallback get_focusable_views_callback_;
-  };
-
   // Returns the column containing `item`, or nullptr if `item` is not part of
   // this grid.
   views::View* GetColumnContaining(views::View* item);
 
-  // Returns items in this grid in focus traversal order.
-  const views::View::Views& GetFocusableItems() const;
-
-  views::View::Views focusable_items_;
-  std::unique_ptr<FocusSearch> focus_search_;
+  int column_width_;
+  size_t num_items_ = 0;
 };
 
 }  // namespace ash

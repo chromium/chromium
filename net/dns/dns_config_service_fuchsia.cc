@@ -14,8 +14,8 @@ namespace net {
 namespace internal {
 
 DnsConfigServiceFuchsia::DnsConfigServiceFuchsia()
-    : DnsConfigService(
-          base::FilePath::StringPieceType() /* hosts_file_path */) {}
+    : DnsConfigService(base::FilePath::StringViewType() /* hosts_file_path */) {
+}
 DnsConfigServiceFuchsia::~DnsConfigServiceFuchsia() = default;
 
 void DnsConfigServiceFuchsia::ReadConfigNow() {

@@ -67,9 +67,25 @@ public abstract class SigninPromoDelegate {
     abstract void onDismissButtonClicked();
 
     /**
-     * Whether the promo can be shown. Subclasses should implement their particular show logic here.
+     * Whether the promo can be shown.
+     *
+     * <p>If a condition affecting the promo's content changes, refreshPromoState should be called
+     * before calling this method.
      */
-    abstract boolean canShowPromo(@Nullable CoreAccountInfo visibleAccount);
+    abstract boolean canShowPromo();
+
+    /**
+     * Refresh the promo state including its content and visibility. This method is invoked by
+     * SigninPromoMediator whenever observed state affecting promo content/visibility is updated
+     * (e.g. the primary account, sync data types...).
+     *
+     * @param visibleAccount The account currently shown in the promo.
+     * @return Whether the promo state has changed during the refresh. If it returns true, {@link
+     *     SigninPromoCoordinator} will refresh the promo visibility and the whole promo content
+     *     (e.g. title, description, buttons...) for a visible promo, by updating the promo's model
+     *     with new values retrieved from the delegate.
+     */
+    abstract boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount);
 
     boolean shouldHideSecondaryButton() {
         return false;

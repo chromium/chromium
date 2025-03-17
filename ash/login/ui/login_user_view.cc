@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_user_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
@@ -167,7 +168,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
     const int image_size = GetImageSize(style);
     image_ = new AnimatedRoundedImageView(gfx::Size(image_size, image_size),
                                           image_size / 2);
-    AddChildView(image_.get());
+    AddChildViewRaw(image_.get());
     enterprise_icon_container_ = AddChildView(std::make_unique<views::View>());
     const int icon_size = GetIconSize(style);
     enterprise_icon_container_->SetLayoutManager(
@@ -182,7 +183,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             chromeos::kEnterpriseIcon, icon_color_id,
             icon_size * kIconProportion)));
-    icon_->SetBackground(views::CreateThemedRoundedRectBackground(
+    icon_->SetBackground(views::CreateRoundedRectBackground(
         icon_background_color_id, icon_size / 2));
   }
 
@@ -280,7 +281,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
     user_name_ = new views::Label();
     user_name_->SetSubpixelRenderingEnabled(false);
     user_name_->SetAutoColorReadabilityEnabled(false);
-    user_name_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    user_name_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
     const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
     const gfx::FontList font_list(
@@ -303,7 +304,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
         break;
     }
 
-    AddChildView(user_name_.get());
+    AddChildViewRaw(user_name_.get());
   }
 
   UserLabel(const UserLabel&) = delete;
@@ -323,7 +324,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
                                        gfx::ElideBehavior::ELIDE_TAIL));
   }
 
-  const std::u16string& displayed_name() const { return user_name_->GetText(); }
+  std::u16string_view displayed_name() const { return user_name_->GetText(); }
 
  private:
   raw_ptr<views::Label> user_name_ = nullptr;
@@ -381,7 +382,7 @@ LoginDisplayStyle LoginUserView::TestApi::display_style() const {
   return view_->display_style_;
 }
 
-const std::u16string& LoginUserView::TestApi::displayed_name() const {
+std::u16string_view LoginUserView::TestApi::displayed_name() const {
   return view_->user_label_->displayed_name();
 }
 
@@ -600,7 +601,7 @@ void LoginUserView::RequestFocus() {
 views::View::Views LoginUserView::GetChildrenInZOrder() {
   auto children = views::View::GetChildrenInZOrder();
   const auto move_child_to_top = [&](View* child) {
-    auto it = base::ranges::find(children, child);
+    auto it = std::ranges::find(children, child);
     DCHECK(it != children.end());
     std::rotate(it, it + 1, children.end());
   };
@@ -707,10 +708,10 @@ void LoginUserView::SetLargeLayout() {
                      kVerticalSpacingBetweenEntriesDp)
       .AddRows(1, views::TableLayout::kFixedSize);
 
-  AddChildView(tap_button_.get());
+  AddChildViewRaw(tap_button_.get());
   tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-  AddChildView(user_image_.get());
+  AddChildViewRaw(user_image_.get());
   user_image_->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(5, 1));
   user_image_->SetProperty(views::kTableHorizAlignKey,
                            views::LayoutAlignment::kCenter);
@@ -720,10 +721,10 @@ void LoginUserView::SetLargeLayout() {
     skip_column->SetPreferredSize(dropdown_->GetPreferredSize());
   }
 
-  AddChildView(user_label_.get());
+  AddChildViewRaw(user_label_.get());
 
   if (dropdown_) {
-    AddChildView(dropdown_.get());
+    AddChildViewRaw(dropdown_.get());
   }
 }
 
@@ -731,11 +732,11 @@ void LoginUserView::SetSmallishLayout() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kSmallManyDistanceFromUserIconToUserLabelDp));
-  AddChildView(tap_button_.get());
+  AddChildViewRaw(tap_button_.get());
   tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-  AddChildView(user_image_.get());
-  AddChildView(user_label_.get());
+  AddChildViewRaw(user_image_.get());
+  AddChildViewRaw(user_label_.get());
 }
 
 BEGIN_METADATA(LoginUserView)

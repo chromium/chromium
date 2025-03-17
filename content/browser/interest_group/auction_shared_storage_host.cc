@@ -9,12 +9,13 @@
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
 
 namespace {
 
-using AccessScope = SharedStorageLockManager::AccessScope;
+using AccessScope = blink::SharedStorageAccessScope;
 
 blink::mojom::WebFeature ToWebFeature(
     auction_worklet::mojom::AuctionWorkletFunction auction_worklet_function) {
@@ -74,6 +75,29 @@ void AuctionSharedStorageHost::SharedStorageUpdate(
                            receiver_set_.current_context().worklet_origin,
                            AccessScope::kProtectedAudienceWorklet,
                            main_frame_id, base::DoNothing());
+
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+      receiver_set_.current_context().auction_runner_rfh,
+      ToWebFeature(source_auction_worklet_function));
+}
+
+void AuctionSharedStorageHost::SharedStorageBatchUpdate(
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    const std::optional<std::string>& with_lock,
+    auction_worklet::mojom::AuctionWorkletFunction
+        source_auction_worklet_function) {
+  FrameTreeNodeId main_frame_id =
+      receiver_set_.current_context()
+          .auction_runner_rfh->GetOutermostMainFrame()
+          ->GetFrameTreeNodeId();
+
+  storage_partition_->GetSharedStorageRuntimeManager()
+      ->lock_manager()
+      .SharedStorageBatchUpdate(std::move(methods_with_options), with_lock,
+                                receiver_set_.current_context().worklet_origin,
+                                AccessScope::kProtectedAudienceWorklet,
+                                main_frame_id, base::DoNothing());
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       receiver_set_.current_context().auction_runner_rfh,

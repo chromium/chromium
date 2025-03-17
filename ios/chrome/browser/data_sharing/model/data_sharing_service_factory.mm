@@ -11,6 +11,7 @@
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/public/features.h"
 #import "components/sync/model/data_type_store_service.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
@@ -38,12 +39,16 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   DCHECK(profile);
 
-  return std::make_unique<DataSharingServiceImpl>(
+  auto data_sharing_service = std::make_unique<DataSharingServiceImpl>(
       profile->GetStatePath(), profile->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       ::GetChannel(), /* sdk_delegate = */ nullptr,
       /* ui_delegate = */ nullptr);
+
+  tests_hook::DataSharingServiceHooks(data_sharing_service.get());
+
+  return data_sharing_service;
 }
 
 }  // namespace

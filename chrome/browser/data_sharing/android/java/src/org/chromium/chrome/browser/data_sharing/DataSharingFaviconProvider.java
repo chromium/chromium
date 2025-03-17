@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
@@ -19,6 +20,7 @@ import java.util.Collections;
  * methods for fetching foreign favicon drawable or bitmap for a given URL as required by the client
  * UI.
  */
+@NullMarked
 public class DataSharingFaviconProvider implements RecentActivityListCoordinator.FaviconProvider {
     private final Context mContext;
     private final BulkFaviconUtil mBulkFaviconUtil;
@@ -37,7 +39,7 @@ public class DataSharingFaviconProvider implements RecentActivityListCoordinator
         mContext = context;
         mBulkFaviconUtil = bulkFaviconUtil;
         mFaviconSize =
-                mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
+                mContext.getResources().getDimensionPixelSize(R.dimen.recent_activity_favicon_size);
         mProfile = profile;
     }
 

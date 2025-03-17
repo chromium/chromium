@@ -24,11 +24,13 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -79,15 +81,18 @@ class NetworkEventsObserverTestHelper {
     // TODO(b/278643115) Remove LoginState dependency.
     ash::LoginState::Initialize();
 
-    const AccountId account_id = AccountId::FromUserEmail("test@test");
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->UserLoggedIn(account_id,
-                                    network_handler_test_helper_.UserHash(),
-                                    /*browser_restart=*/false,
-                                    /*is_child=*/false);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
+    fake_user_manager_->UserLoggedIn(account_id,
+                                     network_handler_test_helper_.UserHash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
 
     ash::LoginState::Get()->SetLoggedInState(
         ash::LoginState::LOGGED_IN_ACTIVE,
@@ -120,7 +125,7 @@ class NetworkEventsObserverTestHelper {
   }
 
   void TearDown() {
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
     ash::LoginState::Shutdown();
     ash::DebugDaemonClient::Shutdown();
   }
@@ -131,8 +136,9 @@ class NetworkEventsObserverTestHelper {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
 
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;

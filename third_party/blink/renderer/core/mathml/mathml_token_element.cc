@@ -48,7 +48,7 @@ bool MathMLTokenElement::IsPresentationAttribute(
 void MathMLTokenElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == mathml_names::kMathvariantAttr &&
       EqualIgnoringASCIICase(value, "normal")) {
     AddPropertyToPresentationAttributeStyle(

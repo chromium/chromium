@@ -21,6 +21,9 @@ class ProfileContextDelegate : public ContextDelegate {
   // ContextDelegate:
   void OnClientCertificateDeleted(
       scoped_refptr<net::X509Certificate> certificate) override;
+  std::string GetIdentityName() override;
+  std::string GetTemporaryIdentityName() override;
+  std::string GetPolicyPref() override;
 
  private:
   const raw_ptr<Profile> profile_;

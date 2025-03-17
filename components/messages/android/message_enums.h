@@ -141,6 +141,7 @@ enum class MessageIdentifier {
   COLLABORATION_MEMBER_ADDED = 56,
   COLLABORATION_REMOVED = 57,
   CCT_ACCOUNT_MISMATCH_NOTICE = 58,
+  PROMPT_HATS_CLEAR_BROWSING_DATA = 59,
   // Insert new values before this line.
   COUNT
 };

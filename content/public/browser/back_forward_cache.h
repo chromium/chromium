@@ -116,7 +116,9 @@ class CONTENT_EXPORT BackForwardCache {
     kWebViewMessageListenerInjected = 66,
     kWebViewSafeBrowsingAllowlistChanged = 67,
     kWebViewDocumentStartJavascriptChanged = 68,
-    kMaxValue = kWebViewDocumentStartJavascriptChanged,
+    kCacheControlNoStoreDeviceBoundSessionTerminated = 69,
+    kCacheLimitPruned = 70,
+    kMaxValue = kCacheLimitPruned,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:BackForwardCacheNotRestoredReason)
 

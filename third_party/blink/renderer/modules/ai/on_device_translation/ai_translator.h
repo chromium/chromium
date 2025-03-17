@@ -14,13 +14,19 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
+
+class ExceptionState;
+class ReadableStream;
+
 class AITranslator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit AITranslator(
       mojo::PendingRemote<mojom::blink::Translator> pending_remote,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      String source_language,
+      String target_language);
   ~AITranslator() override = default;
 
   mojo::PendingReceiver<blink::mojom::blink::Translator>
@@ -28,15 +34,29 @@ class AITranslator final : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
+  String sourceLanguage() const;
+  String targetLanguage() const;
+
   // ai_translator.idl implementation
   ScriptPromise<IDLString> translate(ScriptState* script_state,
                                      const WTF::String& input,
                                      AITranslatorTranslateOptions* options,
                                      ExceptionState& exception_state);
+
+  // ai_translator.idl implementation
+  ReadableStream* translateStreaming(ScriptState* script_state,
+                                     const WTF::String& input,
+                                     AITranslatorTranslateOptions* options,
+                                     ExceptionState& exception_state);
+
   void destroy(ScriptState*);
 
  private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
+
+  String source_language_;
+  String target_language_;
 };
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_TRANSLATOR_H_

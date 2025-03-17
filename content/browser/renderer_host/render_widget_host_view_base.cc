@@ -140,6 +140,11 @@ gfx::Size RenderWidgetHostViewBase::GetRequestedRendererSize() {
   return GetViewBounds().size();
 }
 
+gfx::Size RenderWidgetHostViewBase::GetRequestedRendererSizeDevicePx() {
+  return gfx::ScaleToCeiledSize(GetRequestedRendererSize(),
+                                GetDeviceScaleFactor());
+}
+
 uint32_t RenderWidgetHostViewBase::GetCaptureSequenceNumber() const {
   // TODO(vmpstr): Implement this for overrides other than aura and child frame.
   NOTIMPLEMENTED_LOG_ONCE();
@@ -249,6 +254,17 @@ void RenderWidgetHostViewBase::CopyFromExactSurface(
   NOTIMPLEMENTED_LOG_ONCE();
   std::move(callback).Run(SkBitmap());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void RenderWidgetHostViewBase::CopyFromExactSurfaceWithIpcPriority(
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    base::OnceCallback<void(const SkBitmap&)> callback,
+    CopyOutputIpcPriority ipc_priority) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  std::move(callback).Run(SkBitmap());
+}
+#endif
 
 std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
@@ -564,7 +580,7 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
 void RenderWidgetHostViewBase::ResetGestureDetection() {}
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
-  return screen_infos_.current().device_scale_factor;
+  return GetScreenInfos().current().device_scale_factor;
 }
 
 base::WeakPtr<input::RenderWidgetHostViewInput>
@@ -612,6 +628,10 @@ RenderWidgetHostViewBase::GetDevicePosturePlatformProvider() {
 
 gfx::Size RenderWidgetHostViewBase::GetVisibleViewportSize() {
   return GetViewBounds().size();
+}
+
+gfx::Size RenderWidgetHostViewBase::GetVisibleViewportSizeDevicePx() {
+  return gfx::ScaleToCeiledSize(GetViewBounds().size(), GetDeviceScaleFactor());
 }
 
 void RenderWidgetHostViewBase::SetInsets(const gfx::Insets& insets) {
@@ -738,11 +758,10 @@ void RenderWidgetHostViewBase::ImeCancelComposition() {
 
 void RenderWidgetHostViewBase::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
   if (GetTextInputManager()) {
-    GetTextInputManager()->ImeCompositionRangeChanged(
-        this, range, character_bounds, line_bounds);
+    GetTextInputManager()->ImeCompositionRangeChanged(this, range,
+                                                      character_bounds);
   }
 }
 
@@ -769,6 +788,11 @@ RenderWidgetHostViewBase::GetTouchSelectionControllerClientManager() {
 
 TouchSelectionControllerInputObserver*
 RenderWidgetHostViewBase::GetTouchSelectionControllerInputObserver() {
+  return nullptr;
+}
+
+RenderWidgetHost::InputEventObserver*
+RenderWidgetHostViewBase::GetInputTransferHandlerObserver() {
   return nullptr;
 }
 

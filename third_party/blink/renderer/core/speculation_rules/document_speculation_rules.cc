@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/state_transitions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -326,10 +327,10 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 }
 
 void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
-  auto it = base::ranges::remove(rule_sets_, rule_set);
-  CHECK(it != rule_sets_.end(), base::NotFatalUntil::M130)
+  auto removed = std::ranges::remove(rule_sets_, rule_set);
+  CHECK(!removed.empty(), base::NotFatalUntil::M130)
       << "rule set was removed without existing";
-  rule_sets_.erase(it, rule_sets_.end());
+  rule_sets_.erase(removed.begin(), removed.end());
   if (rule_set->has_document_rule()) {
     InvalidateAllLinks();
     if (!rule_set->selectors().empty()) {
@@ -337,8 +338,8 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
     }
   }
   if (wants_pointer_events_ && rule_set->requires_unfiltered_input() &&
-      base::ranges::none_of(rule_sets_,
-                            &SpeculationRuleSet::requires_unfiltered_input)) {
+      std::ranges::none_of(rule_sets_,
+                           &SpeculationRuleSet::requires_unfiltered_input)) {
     wants_pointer_events_ = false;
     Document& document = *GetSupplementable();
     if (auto* frame = document.GetFrame()) {
@@ -707,12 +708,13 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   // Note that the document's URL is not necessarily the same as the base URL
   // (e,g., when a <base> element is present in the document).
   const KURL& document_url = document.Url();
-  auto last = base::ranges::remove_if(candidates, [&](const auto& candidate) {
+  auto last = std::ranges::remove_if(candidates, [&](const auto& candidate) {
     const KURL& url = candidate->url();
     return url.HasFragmentIdentifier() &&
            EqualIgnoringFragmentIdentifier(url, document_url);
   });
-  candidates.Shrink(base::checked_cast<wtf_size_t>(last - candidates.begin()));
+  candidates.Shrink(
+      base::checked_cast<wtf_size_t>(last.begin() - candidates.begin()));
 
   probe::SpeculationCandidatesUpdated(document, candidates);
 
@@ -763,7 +765,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
     CHECK(execution_context);
 
     const auto push_link_candidates =
-        [&link, &link_candidates, &document, this](
+        [&link, &link_candidates, &document, &execution_context, this](
             mojom::blink::SpeculationAction action,
             SpeculationRuleSet* rule_set,
             const HeapVector<Member<SpeculationRule>>& speculation_rules) {
@@ -801,7 +803,9 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
 
             mojom::blink::SpeculationTargetHint target_hint =
                 mojom::blink::SpeculationTargetHint::kNoHint;
-            if (action == mojom::blink::SpeculationAction::kPrerender) {
+            if (RuntimeEnabledFeatures::SpeculationRulesTargetHintEnabled(
+                    execution_context) &&
+                action == mojom::blink::SpeculationAction::kPrerender) {
               if (rule->target_browsing_context_name_hint()) {
                 target_hint = rule->target_browsing_context_name_hint().value();
               } else {

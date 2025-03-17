@@ -29,4 +29,4 @@ CancelViewAction::~CancelViewAction() = default;
 
 OVERLAY_USER_DATA_SETUP_IMPL(NoThanksViewAction);
 
-}  // save_address_profile_infobar_modal_responses
+}  // namespace save_address_profile_infobar_modal_responses

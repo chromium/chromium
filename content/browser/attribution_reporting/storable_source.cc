@@ -10,6 +10,7 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 
@@ -18,12 +19,14 @@ StorableSource::StorableSource(
     attribution_reporting::SourceRegistration reg,
     attribution_reporting::SuitableOrigin source_origin,
     attribution_reporting::mojom::SourceType source_type,
-    bool is_within_fenced_frame)
+    bool is_within_fenced_frame,
+    ukm::SourceId ukm_source_id)
     : registration_(std::move(reg)),
       common_info_(std::move(source_origin),
                    std::move(reporting_origin),
                    source_type),
-      is_within_fenced_frame_(is_within_fenced_frame) {}
+      is_within_fenced_frame_(is_within_fenced_frame),
+      ukm_source_id_(ukm_source_id) {}
 
 StorableSource::~StorableSource() = default;
 

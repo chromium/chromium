@@ -4,13 +4,24 @@
 
 package org.chromium.components.content_capture;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This interface is for consumer to consume the captured content.
  *
  * The consumer shall call OnscreenContentProvider.addConsumer() to get the content and
  * removeConsumer if the content is no longer needed.
  */
+@NullMarked
 public interface ContentCaptureConsumer {
+
+    /**
+     * Invoked when the content captured needs to be flushed.
+     * @param parentFrame is the parent of the frame from that the content captured.
+     * @param contentCaptureFrame is the captured content tree, its root is the frame.
+     */
+    void onContentCaptureFlushed(FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame);
+
     /**
      * Invoked when the content is captured from a frame.
      * @param parentFrame is the parent of the frame from that the content captured.

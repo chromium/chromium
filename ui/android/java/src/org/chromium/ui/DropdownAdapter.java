@@ -25,7 +25,6 @@ import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
@@ -35,7 +34,7 @@ import java.util.Set;
 @NullMarked
 public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
     private final Context mContext;
-    private final Set<Integer> mSeparators;
+    private final @Nullable Set<Integer> mSeparators;
     private final boolean mAreAllItemsEnabled;
     private final int mLabelMargin;
 
@@ -46,7 +45,9 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
      * @param separators Set of positions that separate {@code items}.
      */
     public DropdownAdapter(
-            Context context, List<? extends DropdownItem> items, Set<Integer> separators) {
+            Context context,
+            List<? extends DropdownItem> items,
+            @Nullable Set<Integer> separators) {
         super(context, R.layout.dropdown_item);
         mContext = context;
         addAll(items);
@@ -66,11 +67,12 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
         return true;
     }
 
-    @NullUnmarked
     @Override
     public View getView(int position, @Nullable View convertView, ViewGroup parent) {
-        View layout = convertView;
-        if (convertView == null) {
+        View layout;
+        if (convertView != null) {
+            layout = convertView;
+        } else {
             LayoutInflater inflater =
                     (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             layout = inflater.inflate(R.layout.dropdown_item, null);

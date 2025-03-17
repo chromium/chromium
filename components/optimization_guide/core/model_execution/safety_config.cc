@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -160,7 +161,7 @@ int SafetyConfig::NumRequestChecks() const {
 
 std::optional<SubstitutionResult> SafetyConfig::GetRequestCheckInput(
     int check_idx,
-    const google::protobuf::MessageLite& message) const {
+    MultimodalMessageReadView message) const {
   return CreateSubstitutions(message,
                              proto_->request_check(check_idx).input_template());
 }
@@ -202,7 +203,8 @@ std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
     const std::string& raw_output) const {
   proto::StringValue message;
   message.set_value(raw_output);
-  return CreateSubstitutions(message, GetRawOutputCheckTemplate(*proto_));
+  return CreateSubstitutions(MultimodalMessageReadView(message),
+                             GetRawOutputCheckTemplate(*proto_));
 }
 
 bool SafetyConfig::IsRawOutputUnsafe(
@@ -251,8 +253,8 @@ bool SafetyConfig::IsResponseUnsupportedLanguage(
 
 std::optional<SubstitutionResult> SafetyConfig::GetResponseCheckInput(
     int check_idx,
-    const google::protobuf::MessageLite& request,
-    const google::protobuf::MessageLite& response) const {
+    MultimodalMessageReadView request,
+    MultimodalMessageReadView response) const {
   SubstitutionResult result;
   result.input = on_device_model::mojom::Input::New();
   for (const auto& input : proto_->response_check(check_idx).inputs()) {
@@ -275,6 +277,10 @@ std::optional<SubstitutionResult> SafetyConfig::GetResponseCheckInput(
               std::back_inserter(result.input->pieces));
   }
   return result;
+}
+
+bool SafetyConfig::OnlyCancelUnsafeResponseOnComplete() const {
+  return proto_ && proto_->only_cancel_unsafe_response_on_complete();
 }
 
 }  // namespace optimization_guide

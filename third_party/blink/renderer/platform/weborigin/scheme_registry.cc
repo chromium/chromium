@@ -105,6 +105,7 @@ class URLSchemesRegistry final {
   URLSchemesSet allowing_shared_array_buffer_schemes;
   URLSchemesSet web_ui_schemes;
   URLSchemesSet code_cache_with_hashing_schemes;
+  URLSchemesSet webui_bundled_bytecode_schemes;
 
  private:
   friend const URLSchemesRegistry& GetURLSchemesRegistry();
@@ -491,6 +492,26 @@ bool SchemeRegistry::SchemeSupportsCodeCacheWithHashing(const String& scheme) {
     return false;
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return GetURLSchemesRegistry().code_cache_with_hashing_schemes.Contains(
+      scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(
+    const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistry().webui_bundled_bytecode_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting(
+    const String& scheme) {
+  GetMutableURLSchemesRegistry().webui_bundled_bytecode_schemes.erase(scheme);
+}
+
+bool SchemeRegistry::SchemeSupportsWebUIBundledBytecode(const String& scheme) {
+  if (scheme.empty()) {
+    return false;
+  }
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  return GetURLSchemesRegistry().webui_bundled_bytecode_schemes.Contains(
       scheme);
 }
 

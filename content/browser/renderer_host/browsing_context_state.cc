@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 
@@ -175,7 +176,7 @@ size_t BrowsingContextState::GetProxyCount() {
 
 bool BrowsingContextState::UpdateFramePolicyHeaders(
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedPermissionsPolicy& parsed_header) {
+    const network::ParsedPermissionsPolicy& parsed_header) {
   bool changed = false;
   if (replication_state_->permissions_policy_header != parsed_header) {
     replication_state_->permissions_policy_header = parsed_header;

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Verify matchAll() with window client type
-  assert_array_equals: expected property 2 to be "https://web-platform.test:8444/service-workers/service-worker/resources/clients-matchall-client-types-iframe.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/url-modified-via-pushstate.html" (expected array ["visible", true, "https://web-platform.test:8444/service-workers/service-worker/resources/clients-matchall-client-types-iframe.html", "window", "nested"] got ["visible", true, "https://web-platform.test:8444/service-workers/service-worker/resources/url-modified-via-pushstate.html", "window", "nested"])
-[FAIL] Verify matchAll() with {window, sharedworker, worker} client types
-  assert_array_equals: expected property 2 to be "https://web-platform.test:8444/service-workers/service-worker/resources/clients-matchall-client-types-iframe.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/url-modified-via-pushstate.html" (expected array ["visible", true, "https://web-platform.test:8444/service-workers/service-worker/resources/clients-matchall-client-types-iframe.html", "window", "nested"] got ["visible", true, "https://web-platform.test:8444/service-workers/service-worker/resources/url-modified-via-pushstate.html", "window", "nested"])
-Harness: the test ran to completion.
-

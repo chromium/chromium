@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -169,14 +168,11 @@ PreloadProcessingMode GetPreloadProcessingMode() {
           {PreloadProcessingMode::kYield, "yield"},
       };
 
-  static const base::FeatureParam<PreloadProcessingMode>
-      kPreloadProcessingModeParam{
-          &features::kThreadedPreloadScanner, "preload-processing-mode",
-          PreloadProcessingMode::kImmediate, &kPreloadProcessingModeOptions};
-
   // Cache the value to avoid parsing the param string more than once.
   static const PreloadProcessingMode kPreloadProcessingModeValue =
-      kPreloadProcessingModeParam.Get();
+      base::GetFieldTrialParamByFeatureAsEnum(
+          features::kThreadedPreloadScanner, "preload-processing-mode",
+          PreloadProcessingMode::kImmediate, kPreloadProcessingModeOptions);
   return kPreloadProcessingModeValue;
 }
 
@@ -330,6 +326,7 @@ HTMLDocumentParserState::HTMLDocumentParserState(
     ParserSynchronizationPolicy mode,
     int budget)
     : state_(DeferredParserState::kNotScheduled),
+      meta_csp_state_(MetaCSPTokenState::kNotSeen),
       mode_(mode),
       preload_processing_mode_(GetPreloadProcessingMode()),
       budget_(budget) {}
@@ -781,10 +778,6 @@ bool HTMLDocumentParser::PumpTokenizer() {
     // state in the HTMLToken.
     tokenizer_.ClearToken();
     ConstructTreeFromToken(atomic_html_token);
-
-    // Late preload for anything deferred due to CSP
-    MaybeFetchQueuedPreloads();
-
     if (!should_run_until_completion && !IsPaused()) {
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
       if (TimedParserBudgetEnabled() &&
@@ -813,12 +806,11 @@ bool HTMLDocumentParser::PumpTokenizer() {
       }
       should_yield |= scheduler_->ShouldYieldForHighPriorityWork();
       should_yield &= task_runner_state_->HaveExitedHeader();
+
       // Yield for preloads even if we haven't exited the header, since they
       // should be dispatched as soon as possible.
-      if (task_runner_state_->ShouldYieldForPreloads()) {
+      if (task_runner_state_->ShouldYieldForPreloads())
         should_yield |= HasPendingPreloads();
-      }
-
       if (should_yield)
         break;
     }
@@ -1262,9 +1254,6 @@ void HTMLDocumentParser::NotifyScriptLoaded() {
   DCHECK(script_runner_);
   DCHECK(!IsExecutingScript());
 
-  scheduler::CooperativeSchedulingManager::AllowedStackScope
-      allowed_stack_scope(scheduler::CooperativeSchedulingManager::Instance());
-
   if (IsStopped()) {
     return;
   }
@@ -1423,7 +1412,8 @@ void HTMLDocumentParser::DocumentElementAvailable() {
           kLoadingBehaviorAmpDocumentLoaded);
     }
   }
-  MaybeFetchQueuedPreloads();
+  if (preloader_)
+    FetchQueuedPreloads();
 }
 
 std::unique_ptr<HTMLPreloadScanner> HTMLDocumentParser::CreatePreloadScanner(
@@ -1534,7 +1524,7 @@ void HTMLDocumentParser::ProcessPreloadData(
     }
   }
 
-  seen_csp_meta_tags_ += preload_data->csp_meta_tag_count;
+  task_runner_state_->SetSeenCSPMetaTag(preload_data->has_csp_meta_tag);
   for (auto& request : preload_data->requests) {
     queued_preloads_.push_back(std::move(request));
     if (metrics_reporter_) {
@@ -1569,28 +1559,26 @@ void HTMLDocumentParser::ProcessPreloadData(
     }
   }
 
-  MaybeFetchQueuedPreloads();
+  FetchQueuedPreloads();
 }
 
-void HTMLDocumentParser::MaybeFetchQueuedPreloads() {
+void HTMLDocumentParser::FetchQueuedPreloads() {
+  DCHECK(preloader_);
   TRACE_EVENT_WITH_FLOW0("blink,devtools.timeline",
-                         "HTMLDocumentParser::MaybeFetchQueuedPreloads",
+                         "HTMLDocumentParser::FetchQueuedPreloads",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  if (!AllowPreloading()) {
-    return;
-  }
-
-  base::ElapsedTimer timer;
-  preloader_->TakeAndPreload(queued_preloads_);
-  base::TimeDelta elapsed_time = timer.Elapsed();
-  base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
-                                        GetPreloadHistogramSuffix()}),
-                          elapsed_time);
-  if (metrics_reporter_) {
-    metrics_reporter_->AddFetchQueuedPreloadsTime(
-        elapsed_time.InMicroseconds());
+  if (!queued_preloads_.empty()) {
+    base::ElapsedTimer timer;
+    preloader_->TakeAndPreload(queued_preloads_);
+    base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
+                                          GetPreloadHistogramSuffix()}),
+                            timer.Elapsed());
+    if (metrics_reporter_) {
+      metrics_reporter_->AddFetchQueuedPreloadsTime(
+          timer.Elapsed().InMicroseconds());
+    }
   }
 }
 
@@ -1686,7 +1674,7 @@ void HTMLDocumentParser::AddPreloadDataOnBackgroundThread(
 }
 
 bool HTMLDocumentParser::HasPendingPreloads() {
-  return pending_preloads_->IsEmpty();
+  return !pending_preloads_->IsEmpty();
 }
 
 void HTMLDocumentParser::FlushPendingPreloads() {
@@ -1776,44 +1764,6 @@ bool HTMLDocumentParser::ShouldSkipPreloadScan() {
   }
 
   return false;
-}
-
-bool HTMLDocumentParser::AllowPreloading() {
-  if (!preloader_) {
-    // No resource preloader - Disallow preloads.
-    return false;
-  }
-
-  if (queued_preloads_.empty()) {
-    // Nothing to preload - Early return disallowing preloads.
-    return false;
-  }
-
-  if (RuntimeEnabledFeatures::AllowPreloadingWithCSPMetaTagEnabled()) {
-    CHECK(seen_csp_meta_tags_ >= 0);
-    if (!seen_csp_meta_tags_) {
-      // No CSP meta tags seen - Early return allowing preloads.
-      return true;
-    }
-
-    ExecutionContext* context = GetDocument()->GetExecutionContext();
-    if (!context) {
-      // Seen CSP meta tag but there's no CSP info yet. Disallow preloads.
-      return false;
-    }
-
-    ContentSecurityPolicy* csp = context->GetContentSecurityPolicy();
-    if (!csp || !csp->IsActive()) {
-      // Seen CSP meta tag but there's no CSP info yet. Disallow preloads.
-      return false;
-    }
-
-    // Only allows preloads if all seen meta tags have been processed.
-    return static_cast<int>(csp->GetParsedPolicies().size()) ==
-           seen_csp_meta_tags_;
-  }
-
-  return true;
 }
 
 }  // namespace blink

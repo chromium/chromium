@@ -565,8 +565,6 @@ bool MarkupAccumulator::SerializeAsHTML() const {
 // is controlled by shadow_root_inclusion_:
 //  - If behavior is kIncludeSerializableShadowRoots, then any open shadow
 //    root that also has its `serializable` bit set will be serialized.
-//  - If behavior is kIncludeAllOpenShadowRoots, then any open shadow root
-//    will be serialized, *regardless* of the state of its `serializable` bit.
 //  - Any shadow root included in the `include_shadow_roots` collection will be
 //    serialized.
 using Behavior = ShadowRootInclusion::Behavior;
@@ -582,11 +580,6 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     switch (shadow_root_inclusion_.behavior) {
       case Behavior::kOnlyProvidedShadowRoots:
         return no_serialization;
-      case Behavior::kIncludeAllOpenShadowRoots:
-        if (shadow_root->GetMode() == ShadowRootMode::kClosed) {
-          return no_serialization;
-        }
-        break;
       case Behavior::kIncludeAnySerializableShadowRoots:
         if (!shadow_root->serializable()) {
           return no_serialization;

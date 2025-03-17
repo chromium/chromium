@@ -6,7 +6,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -192,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_FALSE(observer.request_shown());
   EXPECT_TRUE(observer.is_view_recreate_failed());
-  EXPECT_FALSE(manager->view_for_testing());
+  EXPECT_FALSE(manager->GetCurrentPrompt());
 
   EXPECT_FALSE(content::EvalJs(main_rfh, kCheckMicrophone,
                                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
@@ -200,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount(
-      "Permissions.Prompt.AudioCapture.Gesture.Attempt", true, 1);
+      "Permissions.Prompt.AudioCapture.Gesture.Attempt", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,

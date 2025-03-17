@@ -288,6 +288,9 @@ class StrictNumeric {
     return static_cast<ArithmeticOrUnderlyingEnum<Dst>>(value_);
   }
 
+  // Unary negation does not require any conversions.
+  constexpr bool operator!() const { return !value_; }
+
  private:
   template <typename U>
     requires std::is_arithmetic_v<U>

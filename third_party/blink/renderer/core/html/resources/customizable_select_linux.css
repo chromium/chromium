@@ -17,15 +17,15 @@
  * Linux. Don't apply this platform-specific rule on an
  * appearance:base-select <select>.
  *
- * The duplicated :not(:-internal-list-box) is to ensure specificity over
+ * The duplicated :not(:-internal-list-box):not([multiple]) is to ensure specificity over
  * another stylesheet. TODO(crbug.com/378869807): Replace this with at-rules to
  * ensure correct specificity. */
-select:not(:-internal-list-box):not(:-internal-list-box) {
-    background-color: -internal-appearance-auto-base-select(ButtonFace, transparent);
+select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([multiple]) {
+    background-color: -internal-auto-base(ButtonFace, transparent);
 }
-select:not(:-internal-list-box):enabled:hover {
-    background-color: -internal-appearance-auto-base-select(ButtonFace, color-mix(in lab, currentColor 10%, transparent));
+select:not(:-internal-list-box):not([multiple]):enabled:hover {
+    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 10%, transparent));
 }
-select:not(:-internal-list-box):enabled:active {
-    background-color: -internal-appearance-auto-base-select(ButtonFace, color-mix(in lab, currentColor 20%, transparent));
+select:not(:-internal-list-box):not([multiple]):enabled:active {
+    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 20%, transparent));
 }

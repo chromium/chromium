@@ -7,20 +7,14 @@
 #include <algorithm>
 
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/arc/arc_intent_helper_mojo_lacros.h"
-#endif
 
 namespace arc {
 
@@ -54,13 +48,8 @@ void OpenWithMenu::InitMenu(const content::ContextMenuParams& params) {
   if (context_->IsOffTheRecord())
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  using ArcIntentHelperMojo = ArcIntentHelperMojoAsh;
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  using ArcIntentHelperMojo = ArcIntentHelperMojoLacros;
-#endif
   menu_model_ = LinkHandlerModel::Create(
-      context_, params.link_url, std::make_unique<ArcIntentHelperMojo>());
+      context_, params.link_url, std::make_unique<ArcIntentHelperMojoAsh>());
   if (!menu_model_)
     return;
 

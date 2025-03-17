@@ -75,7 +75,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void SetCanPaintToLayer(bool can_paint_to_layer);
 
   // The loading animation only steps when this function is called. The
-  // |elapsed_time| parameter is expected to be the same among all tabs in a tab
+  // `elapsed_time` parameter is expected to be the same among all tabs in a tab
   // strip in order to keep the throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
@@ -99,7 +99,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
-  // Paints the attention indicator and |favicon_| at the given location.
+  // Paints the attention indicator and `favicon_` at the given location.
   void PaintAttentionIndicatorAndIcon(gfx::Canvas* canvas,
                                       const gfx::ImageSkia& icon,
                                       const gfx::Rect& bounds);

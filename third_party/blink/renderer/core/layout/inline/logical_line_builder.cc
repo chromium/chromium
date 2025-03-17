@@ -74,6 +74,29 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
 
   box_states_->OnEndPlaceItems(constraint_space_, line_box, baseline_type_);
 
+  if (main_line_helper) {
+    if (auto& ellipsis_data = main_line_helper->GetLineClampEllipsis()) {
+      DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+      const ShapeResultView* shape_result_view =
+          ShapeResultView::Create(ellipsis_data->shape_result);
+      FontHeight text_metrics = ellipsis_data->text_metrics;
+
+      line_box->AddChild(*node_.GetLayoutBlockFlow(),
+                         StyleVariant::kStandardEllipsis, shape_result_view,
+                         ellipsis_data->text,
+                         LogicalRect(LayoutUnit(), -text_metrics.ascent,
+                                     shape_result_view->SnappedWidth(),
+                                     text_metrics.LineHeight()),
+                         // TODO(abotella): The ellipsis' bidi level is pending
+                         // discussion at
+                         // https://github.com/w3c/csswg-drafts/issues/10844.
+                         // Meanwhile we use the paragraph's embedding level for
+                         // compatibility with the previous behavior of
+                         // -webkit-line-clamp.
+                         static_cast<UBiDiLevel>(line_info->BaseDirection()));
+    }
+  }
+
   if (node_.IsBidiEnabled()) [[unlikely]] {
     box_states_->PrepareForReorder(line_box);
     BidiReorder(line_info->BaseDirection(), line_box,
@@ -357,7 +380,7 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
   } else {
     // The metrics should be as text instead of atomic inline box.
     const auto& style = layout_object->Parent()->StyleRef();
-    box->ComputeTextMetrics(style, style.GetFont(), baseline_type_);
+    box->ComputeTextMetrics(style, *style.GetFont(), baseline_type_);
     // Note: |item_result->spacing_before| is non-zero if this |item_result|
     // is |LayoutTextCombine| and after CJK character.
     // See "text-combine-justify.html".
@@ -467,6 +490,11 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
   box = HandleItemResults(line_info, *ruby_column.base_line.MutableResults(),
                           &line_box,
                           /* main_line_helper */ nullptr, box);
+  if (start_index == line_box.size() && node_.IsBidiEnabled()) {
+    // If the base is empty, we need to add a placeholder so that a ruby column
+    // can track the corresponding base position after BiDi reorder.
+    line_box.AddChild(item_result.item->BidiLevel());
+  }
   wtf_size_t column_base_size = line_box.size() - start_index;
 
   for (wtf_size_t i = 0; i < ruby_column.annotation_line_list.size(); ++i) {
@@ -537,7 +565,7 @@ void LogicalLineBuilder::PlaceListMarker(const InlineItem& item,
                                          InlineItemResult* item_result) {
   if (quirks_mode_) [[unlikely]] {
     box_states_->LineBoxState().EnsureTextMetrics(
-        *item.Style(), item.Style()->GetFont(), baseline_type_);
+        *item.Style(), *item.Style()->GetFont(), baseline_type_);
   }
 }
 
@@ -628,7 +656,7 @@ void LogicalLineBuilder::BidiReorder(
       //
       // min_element() below doesn't return the end iterator because we
       // ensure there is at least one item in the range.
-      column->start_index = *base::ranges::min_element(
+      column->start_index = *std::ranges::min_element(
           base::span(logical_to_visual)
               .subspan(column->start_index, column->size));
     }

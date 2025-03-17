@@ -200,30 +200,30 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var defaultGroupConfig = GroupConfig.getDefaultInstance();
 
-        Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
         Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
         verifyRounding(model.get(0).model, true, true, false);
 
-        Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(1).type);
         Assert.assertEquals(model.get(1).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(1).model, false, false, false);
 
-        Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
         Assert.assertEquals(model.get(2).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(2).model, true, false, true);
 
-        Assert.assertEquals(model.get(3).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
         Assert.assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(3).model, false, true, false);
 
-        Assert.assertEquals(model.get(4).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
         Assert.assertEquals(model.get(4).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(4).model, false, false, false);
 
-        Assert.assertEquals(model.get(5).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
         Assert.assertEquals(model.get(5).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(5).model, true, false, true);
-        Assert.assertEquals(model.get(6).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
         Assert.assertEquals(model.get(6).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(6).model, false, true, false);
     }
@@ -287,22 +287,22 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         // - 2 suggestions (grouped).
         Assert.assertEquals(7, model.size());
 
-        Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
         Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
 
-        Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.GROUP_SEPARATOR);
+        Assert.assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, model.get(1).type);
         Assert.assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
 
-        Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
         Assert.assertEquals(model.get(2).groupConfig, SECTION_1_NO_HEADER);
-        Assert.assertEquals(model.get(3).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
         Assert.assertEquals(model.get(3).groupConfig, SECTION_1_NO_HEADER);
 
-        Assert.assertEquals(model.get(4).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
         Assert.assertEquals(model.get(4).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertEquals(model.get(5).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
         Assert.assertEquals(model.get(5).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertEquals(model.get(6).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
         Assert.assertEquals(model.get(6).groupConfig, SECTION_2_WITH_HEADER);
     }
 
@@ -439,7 +439,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildHorizontalSuggestionsGroup(
-                        mInput, SECTION_1_NO_HEADER, matches, /* firstVerticalPosition= */ 5);
+                        mInput, SECTION_1_NO_HEADER, matches, /* position= */ 5);
 
         var captor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMockSuggestionProcessor).getViewTypeId();
@@ -469,7 +469,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildHorizontalSuggestionsGroup(
-                        mInput, SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition= */ 7);
+                        mInput, SECTION_2_WITH_HEADER, matches, /* position= */ 7);
 
         verify(mMockHeaderProcessor).createModel();
         verify(mMockHeaderProcessor, atLeastOnce()).getViewTypeId();

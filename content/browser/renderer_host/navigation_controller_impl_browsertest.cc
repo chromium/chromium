@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -68,6 +68,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -3999,7 +4000,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadWithUrlAnchor) {
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
-  // TODO(bokan): The floor hack below can go
+  // TODO(bokan): The round hack below can go
   // away once FractionalScrolLOffsets ships. The reason it's required is that,
   // at certain device scale factors, the given CSS pixel scroll value may land
   // between physical pixels. Without the feature Blink will truncate to the
@@ -4016,7 +4017,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadWithUrlAnchor) {
                                     ->GetRenderWidgetHostView()
                                     ->GetDeviceScaleFactor();
     expected_window_scroll_y =
-        floor(device_scale_factor * expected_window_scroll_y) /
+        round(device_scale_factor * expected_window_scroll_y) /
         device_scale_factor;
   }
   EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
@@ -4043,7 +4044,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
-  // TODO(bokan): The floor hack below can go
+  // TODO(bokan): The round hack below can go
   // away once FractionalScrolLOffsets ships. The reason it's required is that,
   // at certain device scale factors, the given CSS pixel scroll value may land
   // between physical pixels. Without the feature Blink will truncate to the
@@ -4059,7 +4060,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                                     ->GetRenderWidgetHostView()
                                     ->GetDeviceScaleFactor();
     expected_window_scroll_y =
-        floor(device_scale_factor * expected_window_scroll_y) /
+        round(device_scale_factor * expected_window_scroll_y) /
         device_scale_factor;
   }
   EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
@@ -4090,7 +4091,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
-  // TODO(bokan): The floor hack below can go
+  // TODO(bokan): The round hack below can go
   // away once FractionalScrolLOffsets ships. The reason it's required is that,
   // at certain device scale factors, the given CSS pixel scroll value may land
   // between physical pixels. Without the feature Blink will truncate to the
@@ -4106,7 +4107,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                                     ->GetRenderWidgetHostView()
                                     ->GetDeviceScaleFactor();
     window_scroll_y_with_user_scroll =
-        floor(device_scale_factor * window_scroll_y_with_user_scroll) /
+        round(device_scale_factor * window_scroll_y_with_user_scroll) /
         device_scale_factor;
   }
   EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
@@ -4155,7 +4156,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
-  // TODO(bokan): The floor hack below can go
+  // TODO(bokan): The round hack below can go
   // away once FractionalScrolLOffsets ships. The reason it's required is that,
   // at certain device scale factors, the given CSS pixel scroll value may land
   // between physical pixels. Without the feature Blink will truncate to the
@@ -4171,7 +4172,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                                     ->GetRenderWidgetHostView()
                                     ->GetDeviceScaleFactor();
     window_scroll_y_with_user_scroll =
-        floor(device_scale_factor * window_scroll_y_with_user_scroll) /
+        round(device_scale_factor * window_scroll_y_with_user_scroll) /
         device_scale_factor;
   }
   EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
@@ -5200,6 +5201,125 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(capturer.is_same_document());
     EXPECT_TRUE(load_details_observer.load_details().is_same_document);
   }
+}
+
+// Ensure that navigating between about:blank documents with different origins
+// does not lead to a same-document navigation. See https://crbug.com/40051596.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       SameUrlCrossOriginIsNotSameDocument) {
+  //  Start on page with a data iframe.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/navigation_controller/page_with_data_iframe.html"));
+  std::string origin_a_str = url::Origin::Create(main_url).Serialize();
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  NavigationControllerImpl& controller = contents()->GetController();
+  EXPECT_EQ(1, controller.GetEntryCount());
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* data_frame = root->child_at(0);
+  EXPECT_EQ(origin_a_str, EvalJs(root, "origin"));
+  EXPECT_EQ("null", EvalJs(data_frame, "origin"));
+
+  // Add an iframe that matches the main frame's origin within the data iframe,
+  // with its own about:blank nested frame.
+  GURL inner_url(embedded_test_server()->GetURL(
+      "a.com", "/navigation_controller/page_with_iframe.html"));
+  std::string script_template =
+      "var f = document.createElement('iframe');"
+      "f.src = $1;"
+      "document.body.appendChild(f);";
+  {
+    TestNavigationObserver observer(contents());
+    EXPECT_TRUE(ExecJs(data_frame, JsReplace(script_template, inner_url)));
+    observer.Wait();
+  }
+  EXPECT_EQ(1, controller.GetEntryCount());
+  FrameTreeNode* inner_frame = data_frame->child_at(0);
+  FrameTreeNode* inner_blank_frame = inner_frame->child_at(0);
+  // Don't use a gesture on scripts run in the inner frames, which affects
+  // whether the navigations in that frame do replacements.
+  auto no_gesture = EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE;
+  EXPECT_EQ(origin_a_str, EvalJs(inner_frame, "origin", no_gesture));
+  EXPECT_EQ(inner_url.spec(), EvalJs(inner_frame, "location.href", no_gesture));
+  EXPECT_EQ(origin_a_str, EvalJs(inner_blank_frame, "origin", no_gesture));
+
+  // Cause the innermost about:blank frame to call document.open on its parent,
+  // inheriting about:blank as its URL and destroying the innermost frame. Use a
+  // setTimeout so that the frame isn't deleted during the ExecJs call.
+  {
+    RenderFrameDeletedObserver deleted_observer(
+        inner_blank_frame->current_frame_host());
+    EXPECT_TRUE(ExecJs(inner_blank_frame,
+                       "setTimeout(()=>{parent.document.open()});",
+                       no_gesture));
+    deleted_observer.WaitUntilDeleted();
+    // DO NOT USE `inner_blank_frame` after this, which has been deleted.
+  }
+  ASSERT_EQ(0U, inner_frame->child_count());
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ("about:blank", EvalJs(inner_frame, "location.href", no_gesture));
+  EXPECT_EQ(origin_a_str, EvalJs(inner_frame, "origin", no_gesture));
+  scoped_refptr<FrameNavigationEntry> frame_entry_blank_a0 =
+      controller.GetLastCommittedEntry()->GetFrameEntry(inner_frame);
+  int64_t dsn_a0 = frame_entry_blank_a0->document_sequence_number();
+
+  // Do a same-document navigation within the rewritten frame, creating a new
+  // history item for about:blank#1. In the test, it is necessary to use
+  // pushState rather than assigning to location.hash to ensure that the
+  // previous entry is not replaced.
+  {
+    FrameNavigateParamsCapturer capturer(inner_frame);
+    EXPECT_TRUE(ExecJs(inner_frame, "history.pushState({},'','about:blank#1');",
+                       no_gesture));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+  }
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ("about:blank#1", EvalJs(inner_frame, "location.href", no_gesture));
+  EXPECT_EQ(origin_a_str, EvalJs(inner_frame, "origin", no_gesture));
+  scoped_refptr<FrameNavigationEntry> frame_entry_blank_a1 =
+      controller.GetLastCommittedEntry()->GetFrameEntry(inner_frame);
+  int64_t dsn_a1 = frame_entry_blank_a1->document_sequence_number();
+  EXPECT_EQ(dsn_a0, dsn_a1);
+  ASSERT_FALSE(contents()->IsLoading());
+
+  // From the data iframe, navigate the rewritten iframe to about:blank, which
+  // is essentially the same URL but a different inherited origin (in the same
+  // renderer process). This replaces the previous history item, because the
+  // the frame does not have a user activation. (No replacement happens if the
+  // test gives an activation to `inner_frame`, unless that activation expires.)
+  EXPECT_FALSE(inner_frame->HasTransientUserActivation());
+  {
+    TestFrameNavigationObserver observer(inner_frame);
+    EXPECT_TRUE(ExecJs(data_frame,
+                       "f.contentWindow.location.href = 'about:blank';",
+                       no_gesture));
+    observer.WaitForCommit();
+  }
+  ASSERT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ("about:blank", EvalJs(inner_frame, "location.href", no_gesture));
+  EXPECT_EQ("null", EvalJs(inner_frame, "origin", no_gesture));
+
+  // Verify that the same document sequence number is not used for the
+  // cross-origin commit.
+  scoped_refptr<FrameNavigationEntry> frame_entry_blank_data =
+      controller.GetLastCommittedEntry()->GetFrameEntry(inner_frame);
+  int64_t dsn_blank = frame_entry_blank_data->document_sequence_number();
+  EXPECT_NE(dsn_a1, dsn_blank);
+
+  // Go back. This should not be treated as same-document, because the origin
+  // changed in the previous navigation.
+  {
+    FrameNavigateParamsCapturer capturer(inner_frame);
+    EXPECT_TRUE(
+        ExecJs(data_frame, "f.contentWindow.history.back();", no_gesture));
+    capturer.Wait();
+    EXPECT_FALSE(capturer.is_same_document());
+  }
+  EXPECT_EQ(inner_url.spec(), EvalJs(inner_frame, "location.href", no_gesture));
+  EXPECT_EQ(origin_a_str, EvalJs(inner_frame, "origin", no_gesture));
+
+  // The data iframe should not have access to the inner frame at this point.
+  EXPECT_FALSE(ExecJs(data_frame, "f.contentWindow.x = 3;", no_gesture));
 }
 
 // Tests that the initial NavigationEntry retains its "initial" status until the
@@ -12935,13 +13055,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // last committed entry.)  Not crashing means that the test is successful.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        LoadOriginalRequestURLRace) {
-  // TODO(lukasza): https://crbug.com/1159466: Get tests working for all
-  // process model modes.
-  if (AreStrictSiteInstancesEnabled() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
-    return;
-  }
-
   GURL original_url(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), original_url));
@@ -14884,8 +14997,8 @@ class RequestMonitoringNavigationBrowserTest
       const GURL& url_to_find) {
     DCHECK(url_to_find.SchemeIsHTTPOrHTTPS());
 
-    auto it = base::ranges::find(accumulated_requests_, url_to_find,
-                                 &net::test_server::HttpRequest::GetURL);
+    auto it = std::ranges::find(accumulated_requests_, url_to_find,
+                                &net::test_server::HttpRequest::GetURL);
     if (it == accumulated_requests_.end())
       return nullptr;
     return &*it;
@@ -17701,7 +17814,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(success_site_instance, error_site_instance);
   EXPECT_TRUE(
       success_site_instance->IsRelatedSiteInstance(error_site_instance.get()));
-  EXPECT_NE(success_site_instance->GetProcess()->GetDeprecatedID(),
+  EXPECT_NE(success_site_instance->GetOrCreateProcess()->GetDeprecatedID(),
             error_site_instance->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
 
@@ -19054,6 +19167,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(previous_frame_entry,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_TRUE(capturer.did_replace_entry());
+
+    // We keep the same history.state value, even in the error page, so that it
+    // can be used when the load later succeeds in step 4.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 
   // 4) Test successfully navigating the subframe to the same URL after a failed

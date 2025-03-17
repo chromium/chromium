@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/login_screen.h"
 #include "base/check.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"

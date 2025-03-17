@@ -4,7 +4,6 @@
 
 import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 
 # This is the default set of Android configurations for which we support

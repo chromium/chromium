@@ -123,6 +123,11 @@ mojom::CrossOriginEmbedderPolicyReporter* URLLoaderFactory::GetCoepReporter()
   return cors_url_loader_factory_->coep_reporter();
 }
 
+mojom::DocumentIsolationPolicyReporter* URLLoaderFactory::GetDipReporter()
+    const {
+  return cors_url_loader_factory_->dip_reporter();
+}
+
 bool URLLoaderFactory::ShouldRequireIsolationInfo() const {
   return context_->require_network_anonymization_key();
 }

@@ -39,18 +39,18 @@ void QuickActionsView::InitQuickActionItems() {
   auto enable_hotspot_controller =
       std::make_unique<EnableHotspotQuickActionController>(
           phone_hub_manager_->GetTetherController());
-  enable_hotspot_ = AddChildView(enable_hotspot_controller->CreateItem());
+  enable_hotspot_ = AddChildViewRaw(enable_hotspot_controller->CreateItem());
   quick_action_controllers_.push_back(std::move(enable_hotspot_controller));
 
   auto silence_phone_controller =
       std::make_unique<SilencePhoneQuickActionController>(
           phone_hub_manager_->GetDoNotDisturbController());
-  silence_phone_ = AddChildView(silence_phone_controller->CreateItem());
+  silence_phone_ = AddChildViewRaw(silence_phone_controller->CreateItem());
 
   auto locate_phone_controller =
       std::make_unique<LocatePhoneQuickActionController>(
           phone_hub_manager_->GetFindMyDeviceController());
-  locate_phone_ = AddChildView(locate_phone_controller->CreateItem());
+  locate_phone_ = AddChildViewRaw(locate_phone_controller->CreateItem());
 
   quick_action_controllers_.push_back(std::move(silence_phone_controller));
   quick_action_controllers_.push_back(std::move(locate_phone_controller));

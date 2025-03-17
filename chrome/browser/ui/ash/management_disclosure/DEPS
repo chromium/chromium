@@ -7,7 +7,6 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/ash/management_disclosure",
   "+chrome/browser/ash/policy/core/browser_policy_connector_ash.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/ui/webui/management/management_ui_handler_chromeos.h",
   "+chrome/browser/ui/webui/management/management_ui.h",
   "+chrome/browser/profiles/profile.h",

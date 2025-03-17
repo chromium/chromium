@@ -8,8 +8,8 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewStructure;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -17,12 +17,14 @@ import org.chromium.content_public.browser.WebContents;
  * relying on {@link WebContents}. This enables {@link WebContentsAccessibilityImpl} to be used
  * without an instance of {@link WebContents}.
  */
+@NullMarked
 public interface AccessibilityDelegate {
     /**
      * @return The {@link View} that contains the content that accessibility is used for.
      */
     View getContainerView();
 
+    @Nullable
     String getProductVersion();
 
     boolean isIncognito();
@@ -60,7 +62,7 @@ public interface AccessibilityDelegate {
      * @param nodeRect The Rect where the click action happened for.
      * @return Whether this event was handled.
      */
-    default boolean performClick(Rect nodeRect) {
+    default boolean performClick(@Nullable Rect nodeRect) {
         return false;
     }
 
@@ -70,7 +72,7 @@ public interface AccessibilityDelegate {
      * @return Whether this delegate performed the scroll. If false, the scroll request will be sent
      * to WebContents.
      */
-    default boolean scrollToMakeNodeVisible(Rect nodeRect) {
+    default boolean scrollToMakeNodeVisible(@Nullable Rect nodeRect) {
         return false;
     }
 

@@ -12,7 +12,7 @@
 #include "base/containers/fixed_flat_set.h"
 namespace privacy_sandbox {
 
-inline constexpr int kPrivacySandboxNoticeSchemaVersion = 1;
+inline constexpr int kPrivacySandboxNoticeSchemaVersion = 2;
 
 // Topics Consent modal names.
 inline constexpr char kTopicsConsentModal[] = "TopicsConsentDesktopModal";

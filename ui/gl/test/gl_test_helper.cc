@@ -104,7 +104,7 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
   gfx::CreateBitmapV4HeaderForARGB888(size.width(), size.height(), &hdr);
 
   void* bits = nullptr;
-  base::win::ScopedBitmap bitmap(
+  base::win::ScopedGDIObject<HBITMAP> bitmap(
       ::CreateDIBSection(mem_hdc.Get(), reinterpret_cast<BITMAPINFO*>(&hdr),
                          DIB_RGB_COLORS, &bits, nullptr, 0));
   DCHECK(bitmap.is_valid());

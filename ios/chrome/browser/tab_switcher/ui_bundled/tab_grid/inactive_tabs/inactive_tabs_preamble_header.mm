@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -77,6 +76,7 @@ const CGFloat kTopPadding = 14;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -88,6 +88,21 @@ const CGFloat kTopPadding = 14;
   }
   return NO;
 }
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  DCHECK_EQ(textView, _textView);
+  if (!_settingsLinkAction) {
+    return defaultAction;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf startSettingsLinkAction];
+  }];
+}
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
   DCHECK_EQ(textView, _textView);
@@ -95,6 +110,19 @@ const CGFloat kTopPadding = 14;
   // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable.
   textView.selectedTextRange = nil;
+}
+
+#pragma mark - Private
+
+// A function that wraps and invokes the ProceduralBlock `_settingsLinkAction`.
+// This function exists to prevent retaining self when invoking the
+// ProceduralBlock from a callback.
+- (void)startSettingsLinkAction {
+  if (!_settingsLinkAction) {
+    return;
+  }
+
+  _settingsLinkAction();
 }
 
 @end

@@ -20,6 +20,8 @@ inline constexpr int kChromeBrowserProductId = 237;
 inline constexpr int kOrcaFeedbackProductId = 5314436;
 inline constexpr int kMahiFeedbackProductId = 5329991;
 inline constexpr int kLobsterFeedbackProductId = 5342213;
+inline constexpr int kScannerFeedbackProductId = 5349584;
+inline constexpr int kCoralFeedbackProductId = 5352311;
 
 }  // namespace feedback
 

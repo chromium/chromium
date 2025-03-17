@@ -30,8 +30,9 @@ constexpr base::TimeDelta kTestSaveDelay = base::Seconds(2.5);
       [NSKeyedArchiver archivedDataWithRootObject:[factory sessionForSaving]
                             requiringSecureCoding:NO
                                             error:nil];
-  if (self.performIO)
+  if (self.performIO) {
     [self performSaveSessionData:data sessionPath:sessionPath];
+  }
   _saveSessionCallsCount++;
 }
 

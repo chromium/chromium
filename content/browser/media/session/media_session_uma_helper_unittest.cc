@@ -13,6 +13,9 @@ namespace content {
 
 namespace {
 
+const char kPictureInPictureTotalTimeForSessionHistogram[] =
+    "Media.Session.PictureInPicture.TotalTimeForSession";
+
 class MediaSessionUmaHelperTest : public testing::Test {
  public:
   MediaSessionUmaHelperTest() = default;
@@ -245,6 +248,106 @@ TEST_F(MediaSessionUmaHelperTest, MultipleInactiveCalls) {
       GetHistogramSamplesSinceTestStart("Media.Session.ActiveTime"));
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(3000));
+}
+
+TEST_F(MediaSessionUmaHelperTest,
+       OnServiceDestroyedWithoutTotalTimeDoesNotCommit) {
+  media_session_uma_helper().OnServiceDestroyed();
+  clock()->Advance(base::Milliseconds(1000));
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(
+          kPictureInPictureTotalTimeForSessionHistogram));
+  EXPECT_EQ(0, samples->TotalCount());
+}
+
+TEST_F(MediaSessionUmaHelperTest,
+       EnterAndClosePipMultipleTimes_DoesCommitTotalPipTime) {
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+
+  clock()->Advance(base::Milliseconds(4000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+  clock()->Advance(base::Milliseconds(3000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+  clock()->Advance(base::Milliseconds(2000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+  media_session_uma_helper().OnServiceDestroyed();
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(
+          kPictureInPictureTotalTimeForSessionHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(9000));
+}
+
+TEST_F(MediaSessionUmaHelperTest, EnterAndClosePip_DoesCommitTotalPipTime) {
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+
+  clock()->Advance(base::Milliseconds(3000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+  media_session_uma_helper().OnServiceDestroyed();
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(
+          kPictureInPictureTotalTimeForSessionHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(3000));
+}
+
+TEST_F(MediaSessionUmaHelperTest,
+       EnterAndRepeatedlyClosePip_DoesCommitTotalPipTime) {
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+
+  clock()->Advance(base::Milliseconds(3000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+  clock()->Advance(base::Milliseconds(2000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+  media_session_uma_helper().OnServiceDestroyed();
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(
+          kPictureInPictureTotalTimeForSessionHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(3000));
+}
+
+TEST_F(MediaSessionUmaHelperTest,
+       CloseAndRepeatedlyEnterPip_DoesNotCommitTotalPipTime) {
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+
+  clock()->Advance(base::Milliseconds(3000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+  clock()->Advance(base::Milliseconds(2000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+  media_session_uma_helper().OnServiceDestroyed();
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(
+          kPictureInPictureTotalTimeForSessionHistogram));
+  EXPECT_EQ(0, samples->TotalCount());
+}
+
+TEST_F(MediaSessionUmaHelperTest,
+       CloseRepeatedlyEnterThenClosePip_DoesCommitTotalPipTime) {
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+
+  clock()->Advance(base::Milliseconds(3000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+  clock()->Advance(base::Milliseconds(2000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(true);
+  clock()->Advance(base::Milliseconds(1000));
+  media_session_uma_helper().OnMediaPictureInPictureChanged(false);
+  media_session_uma_helper().OnServiceDestroyed();
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(
+          kPictureInPictureTotalTimeForSessionHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(1000));
 }
 
 }  // namespace content

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
 
@@ -63,6 +64,10 @@ class PolicyManager : public PolicyManagerInterface {
   const base::Value::Dict policies_;
   std::vector<std::string> force_install_apps_;
 };
+
+// A factory method to create a dict policy manager.
+scoped_refptr<PolicyManagerInterface> CreateDictPolicyManager(
+    base::Value::Dict policies);
 
 }  // namespace updater
 

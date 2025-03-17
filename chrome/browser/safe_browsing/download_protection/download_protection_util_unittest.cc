@@ -335,7 +335,7 @@ TEST(DownloadProtectionUtilTest, NonWildcardEntryDeterministic) {
       << "Wilcard entry is " << selected_binaries[0].file_path();
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 TEST(DownloadProtectionUtilTest, ShouldSendDangerousDownloadReport) {
   content::BrowserTaskEnvironment task_environment;
   GURL download_url("https://example.com");

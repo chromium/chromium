@@ -18,8 +18,8 @@
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -124,8 +124,8 @@ void SupervisedUserNavigationObserver::OnRequestBlocked(
   // Cancel the navigation if there is no navigation observer.
   if (!navigation_observer) {
     callback.Run(
-        SupervisedUserNavigationThrottle::CallbackActions::kCancelNavigation,
-        /* already_requested_permission */ false, /* is_main_frame */ false);
+        supervised_user::InterstitialResultCallbackActions::kCancelNavigation,
+        /*already_requested_permission=*/false, /*is_main_frame=*/false);
     return;
   }
 
@@ -215,7 +215,7 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
     }
   } else {
     // The main frame was not blocked. Check for any blocked iframes.
-    size_t blocked_frame_count = base::ranges::count_if(
+    size_t blocked_frame_count = std::ranges::count_if(
         supervised_user_interstitials_, [](const auto& entry) {
           return entry.second->filtering_behavior_reason() ==
                  supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;
@@ -370,7 +370,7 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
   bool is_main_frame =
       frame_id == web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
-  callback.Run(SupervisedUserNavigationThrottle::CallbackActions::
+  callback.Run(supervised_user::InterstitialResultCallbackActions::
                    kCancelWithInterstitial,
                already_requested, is_main_frame);
 }

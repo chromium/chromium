@@ -241,8 +241,6 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   if (!split_view_controller->CanSnapWindow(window, *auto_snap_ratio)) {
     // If the window can't fit in `auto_snap_ratio`, use its minimum size
     // instead.
-    // TODO(sophiewen): See if we can do this without recalculating the snap
-    // ratio and divider position.
     auto_snap_ratio.emplace(static_cast<float>(GetMinimumWindowLength(
                                 window, IsLayoutHorizontal(window))) /
                             static_cast<float>(GetDividerPositionUpperLimit(

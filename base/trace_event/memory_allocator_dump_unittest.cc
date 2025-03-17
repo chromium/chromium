@@ -16,13 +16,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::ByRef;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::ByRef;
 using testing::IsEmpty;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -171,5 +170,4 @@ TEST(MemoryAllocatorDumpTest, ForbidStringsInBackgroundModeDeathTest) {
 }
 #endif
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

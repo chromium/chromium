@@ -84,8 +84,7 @@ void AutofillFieldPromoControllerImpl::Hide() {
   is_maybe_showing_ = false;
   promo_hide_helper_.reset();
   if (promo_view_) {
-    promo_view_->Close();
-    promo_view_ = nullptr;
+    std::exchange(promo_view_, nullptr)->Close();
   }
 }
 

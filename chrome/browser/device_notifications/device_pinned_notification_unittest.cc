@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -15,9 +16,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
@@ -73,7 +74,7 @@ void DevicePinnedNotificationTestBase::CheckIcon(
     EXPECT_EQ(maybe_notification->message(), GetExpectedMessage(origin_items));
     EXPECT_EQ(maybe_notification->priority(), message_center::LOW_PRIORITY);
     ASSERT_EQ(maybe_notification->rich_notification_data().buttons.size(), 1u);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (!ash::features::AreOngoingProcessesEnabled()) {
       EXPECT_EQ(maybe_notification->rich_notification_data().buttons[0].title,
                 device_content_settings_label_);
@@ -81,7 +82,7 @@ void DevicePinnedNotificationTestBase::CheckIcon(
 #else
     EXPECT_EQ(maybe_notification->rich_notification_data().buttons[0].title,
               device_content_settings_label_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     EXPECT_TRUE(maybe_notification->delegate());
 
     EXPECT_CALL(*GetMockDeviceConnectionTracker(connection_tracker),

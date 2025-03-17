@@ -9,6 +9,7 @@
 
 #include "gpu/vulkan/vulkan_instance.h"
 
+#include <array>
 #include <vector>
 
 #include "base/logging.h"
@@ -21,7 +22,7 @@
 #include "ui/gl/gl_angle_util_vulkan.h"
 #include "ui/gl/gl_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <sys/sysmacros.h>
 #endif
 
@@ -30,10 +31,10 @@ namespace gpu {
 namespace {
 
 #if DCHECK_IS_ON()
-constexpr const char* kSkippedErrors[] = {
+constexpr auto kSkippedErrors = std::to_array<const char*>({
     // http://anglebug.com/4583
     "VUID-VkGraphicsPipelineCreateInfo-blendEnable-02023",
-};
+});
 
 VKAPI_ATTR VkBool32 VKAPI_CALL
 VulkanErrorCallback(VkDebugReportFlagsEXT flags,
@@ -44,7 +45,7 @@ VulkanErrorCallback(VkDebugReportFlagsEXT flags,
                     const char* layer_prefix,
                     const char* message,
                     void* user_data) {
-  static bool encountered_errors[std::size(kSkippedErrors)];
+  static std::array<bool, std::size(kSkippedErrors)> encountered_errors;
   for (size_t i = 0; i < std::size(kSkippedErrors); ++i) {
     if (strstr(message, kSkippedErrors[i])) {
       if (encountered_errors[i]) {
@@ -72,16 +73,6 @@ VulkanWarningCallback(VkDebugReportFlagsEXT flags,
 #endif  // DCHECK_IS_ON()
 
 }  // namespace
-
-// TODO(crbug.com/381535049): Remove after collecting crash reports
-// to see what devices Vulkan initialization is failing on.
-bool VulkanInstance::CheckMinVersion() {
-  uint32_t vulkan_version = 0;
-  if (vkEnumerateInstanceVersion(&vulkan_version) != VK_SUCCESS) {
-    return false;
-  }
-  return vulkan_version >= kVulkanRequiredApiVersion;
-}
 
 VulkanInstance::VulkanInstance()
     : is_from_angle_(base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
@@ -441,7 +432,7 @@ bool VulkanInstance::CollectDeviceInfo(VkPhysicalDevice physical_device) {
     static_assert(kVulkanRequiredApiVersion >= VK_API_VERSION_1_1, "");
     if (info.properties.apiVersion >= kVulkanRequiredApiVersion) {
       bool has_drm_extension =
-          base::ranges::any_of(info.extensions, [](const auto& ext) {
+          std::ranges::any_of(info.extensions, [](const auto& ext) {
             return strcmp(ext.extensionName,
                           VK_EXT_PHYSICAL_DEVICE_DRM_EXTENSION_NAME) == 0;
           });
@@ -462,7 +453,7 @@ bool VulkanInstance::CollectDeviceInfo(VkPhysicalDevice physical_device) {
       };
       vkGetPhysicalDeviceProperties2(device, &properties2);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       if (has_drm_extension &&
           (drm_properties.hasRender || drm_properties.hasPrimary)) {
         static_assert(sizeof(dev_t) <= sizeof(info.drm_device_id),

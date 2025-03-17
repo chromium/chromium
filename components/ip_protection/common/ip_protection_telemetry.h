@@ -5,15 +5,17 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TELEMETRY_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TELEMETRY_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 
 #include "base/time/time.h"
-#include "net/base/proxy_chain.h"
 
 namespace ip_protection {
 
 enum class TryGetAuthTokensResult;
 enum class TryGetAuthTokensAndroidResult;
+enum class TryGetProbabilisticRevealTokensStatus;
 enum class ProxyLayer;
 
 // An enumeration of the eligibility finding for use with
@@ -37,8 +39,7 @@ enum class ProxyResolutionResult {
   kMdlNotPopulated = 0,
   // The request did not match the MDL.
   kNoMdlMatch = 1,
-  // The EnableIpProtectionProxy feature is not enabled.
-  kFeatureDisabled = 2,
+  // Deprecated: kFeatureDisabled = 2,
   // The IP Protection setting is disabled.
   kSettingDisabled = 3,
   // The proxy list is not available. This disposition does not imply that
@@ -53,7 +54,9 @@ enum class ProxyResolutionResult {
   kTokensExhausted = 6,
   // The request was resolved to use the IP Protection proxies.
   kAttemptProxy = 7,
-  kMaxValue = kAttemptProxy,
+  // A site exception created by User Bypass disables protections.
+  kHasSiteException = 8,
+  kMaxValue = kHasSiteException,
 };
 
 // An enumeration of the result of an attempt to fetch a proxy list. These
@@ -118,19 +121,19 @@ class IpProtectionTelemetry {
 
   // The token cache for the given layer was empty during a call to
   // OnResolveProxy.
+  //
+  // Note: This is not called if the token cache was never filled.
   virtual void EmptyTokenCache(ProxyLayer) = 0;
 
   // An `OnResolveProxy` call has completed with the given result.
   virtual void ProxyResolution(ProxyResolutionResult) = 0;
 
   // Results of a call to GetAuthToken. `is_token_available` is true if a token
-  // was returned; `enable_token_caching_by_geo` represents the feature status;
-  // `is_cache_empty` is true if the manager has no cached tokens (for any geo);
-  // and `does_requested_geo_match_current` is true if the token request was
-  // made for the current geo.
+  // was returned; `is_cache_empty` is true if the manager has no cached tokens
+  // (for any geo); and `does_requested_geo_match_current` is true if the token
+  // request was made for the current geo.
   virtual void GetAuthTokenResultForGeo(
       bool is_token_available,
-      bool enable_token_caching_by_geo,
       bool is_cache_empty,
       bool does_requested_geo_match_current) = 0;
 
@@ -166,6 +169,14 @@ class IpProtectionTelemetry {
   // MDL is fully loaded/updated (with any exclusions applied).
   virtual void MdlEstimatedMemoryUsage(size_t) = 0;
 
+  // The estimated disk usage of the MDL, in KB. This is emitted only for the
+  // disk-based data structure, and only after the MDL is fully loaded/updated.
+  // This is measured for all types of MDLs.
+  virtual void MdlEstimatedDiskUsage(int64_t) = 0;
+
+  // The size of the MDL protobuf data, in KB.
+  virtual void MdlSize(int64_t) = 0;
+
   // Time taken to create an Android IP Protection auth client, including
   // binding to the system-provided auth service.
   virtual void AndroidAuthClientCreationTime(base::TimeDelta duration) = 0;
@@ -182,6 +193,16 @@ class IpProtectionTelemetry {
   // Delay between the MDL manager being created and UpdateMaskedDomainList
   // first being called.
   virtual void MdlFirstUpdateTime(base::TimeDelta duration) = 0;
+
+  // Time taken to for a `MaskedDomainListManager::Matches` call.
+  virtual void MdlMatchesTime(base::TimeDelta duration) = 0;
+
+  virtual void GetProbabilisticRevealTokensComplete(
+      TryGetProbabilisticRevealTokensStatus status,
+      base::TimeDelta duration) = 0;
+
+  virtual void IsProbabilisticRevealTokenAvailable(bool is_initial_request,
+                                                   bool is_token_available) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

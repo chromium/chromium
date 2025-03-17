@@ -41,6 +41,11 @@ void SafeAreaInsetsHost::NotifyViewportFitChanged(
   ViewportFitChangedForFrame(receivers_.GetCurrentTargetFrame(), value);
 }
 
+void SafeAreaInsetsHost::NotifyComplexSafeAreaConstraintChanged(bool value) {
+  ComplexSafeAreaConstraintChangedForFrame(receivers_.GetCurrentTargetFrame(),
+                                           value);
+}
+
 void SafeAreaInsetsHost::SendSafeAreaToFrame(RenderFrameHost* rfh,
                                              gfx::Insets insets) {
   blink::AssociatedInterfaceProvider* provider =

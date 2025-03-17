@@ -81,7 +81,7 @@ def convert(crossbench_out_dir: pathlib.Path,
   """
 
   if benchmark and benchmark.startswith('loadline'):
-    _loadline(crossbench_out_dir, out_filename, benchmark)
+    _loadline(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 
   crossbench_json_filename = _get_crossbench_json_path(crossbench_out_dir)
@@ -145,11 +145,8 @@ def _loadline(crossbench_out_dir: pathlib.Path,
     if key == 'browser':
       results.AddSharedDiagnosticToAllHistograms(
           key, generic_set.GenericSet([value]))
-    elif key == 'TOTAL_SCORE':
-      data_point = histogram.Histogram.Create(key, 'unitless_biggerIsBetter',
-                                              float(value))
     else:
-      data_point = histogram.Histogram.Create(key, 'ms_smallerIsBetter',
+      data_point = histogram.Histogram.Create(key, 'unitless_biggerIsBetter',
                                               float(value))
     if data_point:
       results.AddHistogram(data_point)

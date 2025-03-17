@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -271,10 +270,6 @@ class TabRestoreTest : public InProcessBrowserTest {
     CHECK(restored_group_id.has_value())
         << "Expected restored tab to be part of a group but wasn't";
 
-    if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-      CHECK_EQ(restored_group_id.value(), expected_group);
-    }
-
     // Reset all baseline conditions if a new window is expected to be opened.
     // Note that we're resetting what browser models to compare against as well
     // as the baseline counts for those models.
@@ -290,12 +285,6 @@ class TabRestoreTest : public InProcessBrowserTest {
     EXPECT_EQ(++group_count,
               static_cast<int>(group_model->ListTabGroups().size()));
 
-    // TODO(crbug.com/347746086): When TabGroupsSaveV2 is enabled, restored
-    // groups are often not opened on the main restore flow. Additionally, their
-    // tab group ids are regenerated to prevent collisions. This new id will be
-    // different than `expected_group`. Groups are add into a list, so the most
-    // recent one can be found at the end, otherwise, the group was already open
-    // and we had an id for it. Clean this up post launch.
     gfx::Range tabs_in_group =
         group_model->GetTabGroup(restored_group_id.value())->ListTabs();
 
@@ -619,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowBounds) {
 // Close a group not at the end of the current window, then restore it. The
 // group should be at the end of the tabstrip.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroup) {
-  // Manually add tabs since TabGroupsSaveV2 filters out file urls since those
+  // Manually add tabs since TabGroupsSave filters out file urls since those
   // links can expose user data and or trigger automatic downloads.
   AddHTTPSSchemeTabs(browser(), 3);
 
@@ -677,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
-  // Manually add tabs since TabGroupsSaveV2 filters out file urls since those
+  // Manually add tabs since TabGroupsSave filters out file urls since those
   // links can expose user data and or trigger automatic downloads.
   AddHTTPSSchemeTabs(browser(), 3);
 
@@ -688,10 +677,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
   CloseGroup(group);
   tab_groups::TabGroupId restored_group_id = RestoreGroup(group, 0, 1);
 
-  // TODO(crbug.com/347746086): When TabGroupsSaveV2 is enabled the tab will be
-  // restored at the end of the group instead of the original index.
-  const int expected_tabstrip_index =
-      tab_groups::IsTabGroupsSaveV2Enabled() ? 3 : 2;
+  // Tab will be restored at the end of the group instead of the original index.
+  const int expected_tabstrip_index = 3;
   ASSERT_NO_FATAL_FAILURE(RestoreTab(0, expected_tabstrip_index));
 
   EXPECT_EQ(browser()
@@ -747,7 +734,17 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
 // restore the group. The group should restore intact and duplicate the
 // still-open tab.
 // TODO(crbug.com/40750891): Run unload handlers before the group is closed.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
+
+// TODO(crbug.com/394745724): Fails on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
+  DISABLED_RestoreGroupWithUnloadHandlerRejected
+#else
+#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
+  RestoreGroupWithUnloadHandlerRejected
+#endif
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       MAYBE_RestoreGroupWithUnloadHandlerRejected) {
   class OnceGroupDeletionWaiter : public TabStripModelObserver {
    public:
     explicit OnceGroupDeletionWaiter(TabStripModel* tab_strip_model)
@@ -790,10 +787,6 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
   // 1: A grouped tab.
   // 2: A grouped tab with an unload handler.
 
-  // When TabGroupsSaveV2 is enabled, we must manually add non file:// tabs
-  // since we filter out urls which could expose user data on other devices when
-  // we add them to the saved group. We also protect from triggering automatic
-  // downloads this way.
   AddHTTPSSchemeTabs(browser(), 1);
 
   // Add the unload handler tab.
@@ -839,13 +832,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
   EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
             1u);
 
-  // The additional tab comes from the unload url since it is not a standard
-  // https://www domain. For TabGroupsSaveV2 we do not store these to prevent
-  // cross device attacks / information leaks which could disadvantage the user.
   EXPECT_EQ(group_model->GetTabGroup(restored_group_id)->ListTabs(),
-            gfx::Range(2, tab_groups::IsTabGroupsSaveV2Enabled() ? 5 : 4));
-  EXPECT_EQ(browser()->tab_strip_model()->count(),
-            tab_groups::IsTabGroupsSaveV2Enabled() ? 5 : 4);
+            gfx::Range(2, 4));
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
 
   // Close the tab with the unload handler, otherwise it will prevent test
   // cleanup.
@@ -861,10 +850,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, KeepTabWhenUnloadHandlerRejected) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
-  // When TabGroupsSaveV2 is enabled, we must manually add non file:// tabs
-  // since we filter out urls which could expose user data on other devices when
-  // we add them to the saved group. We also protect from triggering automatic
-  // downloads this way.
+  // We must manually add non file:// tabs since we filter out urls which could
+  // expose user data on other devices when we add them to the saved group. We
+  // also protect from triggering automatic downloads this way.
   AddHTTPSSchemeTabs(browser(), 2);
 
   tab_groups::TabGroupId group =
@@ -966,10 +954,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerAccepted) {
   tab_groups::TabGroupId restored_group_id = RestoreGroup(group, 0, 1);
 
   // The 2 additional tabs come from the tabs that do not have a standard
-  // https://www domain. For TabGroupsSaveV2 we do not store these to prevent
+  // https://www domain. For TabGroupsSave we do not store these to prevent
   // cross device attacks / information leaks which could disadvantage the user.
   EXPECT_EQ(group_model->GetTabGroup(restored_group_id)->ListTabs(),
-            gfx::Range(1, tab_groups::IsTabGroupsSaveV2Enabled() ? 5 : 3));
+            gfx::Range(1, 3));
 }
 
 // Open a window with two tabs, close both (closing the window), then restore
@@ -1635,13 +1623,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoCollapsedGroup) {
   EXPECT_EQ(data->title(), visual_data.title());
   EXPECT_EQ(data->color(), visual_data.color());
 
-  // TODO(crbug.com/347746086): When TabGroupsSaveV2 is enabled we always expand
-  // the group when restoring. Clean this up post launch.
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    EXPECT_FALSE(data->is_collapsed());
-  } else {
-    EXPECT_TRUE(data->is_collapsed());
-  }
+  EXPECT_FALSE(data->is_collapsed());
 }
 
 // Closing a tab in a group then updating the metadata before restoring will
@@ -1675,11 +1657,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
                           ->GetTabGroupForTab(closed_tab_index)
                           .value());
   const tab_groups::TabGroupVisualData* data = group->visual_data();
-
-  // TODO(crbug.com/347746086): When TabGroupsSaveV2 is enabled we no longer
-  // proactively update the visual data. Clean this up post launch.
-  const tab_groups::TabGroupVisualData actual_visual_data =
-      tab_groups::IsTabGroupsSaveV2Enabled() ? visual_data_2 : visual_data_1;
+  const tab_groups::TabGroupVisualData actual_visual_data = visual_data_2;
 
   EXPECT_EQ(data->title(), actual_visual_data.title());
   EXPECT_EQ(data->color(), actual_visual_data.color());
@@ -1720,7 +1698,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   ASSERT_EQ(2u, active_browser_list_->size());
 
-  // Manually add tabs since TabGroupsSaveV2 filters out file urls since those
+  // Manually add tabs since TabGroupsSave filters out file urls since those
   // links can expose user data and or trigger automatic downloads.
   AddHTTPSSchemeTabs(browser(), 3);
   constexpr int tab_count = 4;
@@ -2131,10 +2109,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser()->profile());
 
-  // When TabGroupsSaveV2 is enabled, we must manually add non file:// tabs
-  // since we filter out urls which could expose user data on other devices when
-  // we add them to the saved group. We also protect from triggering automatic
-  // downloads this way.
+  // We must manually add non file:// tabs since we filter out urls which could
+  // expose user data on other devices when we add them to the saved group. We
+  // also protect from triggering automatic downloads this way.
   AddHTTPSSchemeTabs(browser(), 2);
 
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
@@ -2164,30 +2141,18 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB);
   ASSERT_EQ(2u, active_browser_list_->size());
 
-  // TODO(crbug.com/347746086): When TabGroupsSaveV2 is enabled we will opt to
-  // open the saved group instead of individually restoring all of the tabs in
-  // the group one at a time. Because of this, RestoreEntryById will only return
-  // one tab as being restored. Clean this guard up post launch.
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    ASSERT_EQ(1u, restored_window_tabs.size());
-  } else {
-    ASSERT_EQ(3u, restored_window_tabs.size());
-  }
+  // We will opt to open the saved group instead of individually restoring all
+  // of the tabs in the group one at a time. Because of this, RestoreEntryById
+  // will only return one tab as being restored.
+  ASSERT_EQ(1u, restored_window_tabs.size());
 
   Browser* third_browser = GetBrowser(1);
   ASSERT_NE(second_browser, third_browser);
   ASSERT_EQ(3, third_browser->tab_strip_model()->count());
 
-  // TODO(crbug.com/347746086): Remove guard post TabGroupsSaveV2 launch.
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    // The group ID should be new.
-    EXPECT_NE(original_group,
-              third_browser->tab_strip_model()->GetTabGroupForTab(1));
-  } else {
-    // We should use the existing group ID.
-    EXPECT_EQ(original_group,
-              third_browser->tab_strip_model()->GetTabGroupForTab(1));
-  }
+  // The group ID should be new.
+  EXPECT_NE(original_group,
+            third_browser->tab_strip_model()->GetTabGroupForTab(1));
 }
 
 // Ensures window.tab_groups is kept in sync with the groups referenced
@@ -2395,13 +2360,10 @@ class TabRestoreSavedGroupsTest : public TabRestoreTest,
   TabRestoreSavedGroupsTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveV2,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveV2},
-          {tab_groups::kTabGroupSyncServiceDesktopMigration});
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
     }
   }
 
@@ -3168,9 +3130,7 @@ class TabRestoreSycnedServiceTest : public TabRestoreTest {
  public:
   TabRestoreSycnedServiceTest() {
     scoped_feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupsSaveV2,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
   }
 
  private:

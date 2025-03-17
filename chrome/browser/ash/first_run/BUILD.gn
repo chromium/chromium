@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("first_run") {
   sources = [
@@ -15,10 +15,8 @@ static_library("first_run") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/login",
@@ -30,6 +28,7 @@ static_library("first_run") {
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common",
     "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/experiences/arc",
     "//components/pref_registry",
     "//components/prefs",
     "//components/session_manager/core",

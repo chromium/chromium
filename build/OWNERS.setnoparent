@@ -29,8 +29,11 @@ file://chrome/browser/ui/hats/HATS_PRIVACY_OWNERS
 # expose to the open web.
 file://third_party/blink/API_OWNERS
 
-# third_party/blink/web_tests/VirtualTestSuites need special care.
+# third_party/blink/web_tests/VirtualTestSuites needs special care.
 file://third_party/blink/web_tests/VIRTUAL_OWNERS
+
+# third_party/blink/web_tests/TestLists/content_shell.filter needs special care.
+file://third_party/blink/web_tests/HEADLESS_OWNERS
 
 # Extension related files.
 file://chrome/browser/extensions/component_extensions_allowlist/EXTENSION_ALLOWLIST_OWNERS
@@ -50,6 +53,7 @@ file://ui/android/java/res/LAYOUT_OWNERS
 file://components/policy/ENTERPRISE_POLICY_OWNERS
 
 # This restriction is in place due to the policies and compliance regulations around this code.
+file://components/regional_capabilities/COMPLIANCE_OWNERS
 file://components/search_engines/COMPLIANCE_OWNERS
 file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIANCE_OWNERS
@@ -89,3 +93,9 @@ file://ui/views/VIEWS_OWNERS
 
 # ChromeOS dependencies reviews
 file://chrome/browser/ash/REFACTORING_OWNERS
+
+# Crashpad
+file://third_party/crashpad/crashpad/OWNERS
+
+# Cronet
+file://components/cronet/CRONET_OWNERS

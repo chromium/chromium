@@ -828,6 +828,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameLinkMultipleSources) {
   RunAccNameTest(FILE_PATH_LITERAL("name-link-multiple-sources.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameLinkTermDefinition) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-link-term-definition.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NamePasswordCssAfterInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-password-css-after-in-label.html"));

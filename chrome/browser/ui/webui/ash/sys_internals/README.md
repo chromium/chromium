@@ -34,7 +34,7 @@ workflow for development.
 ### Tests
 
 WebUI testing is performed on the host as part of `browser_tests`. Refer to
-[Testing WebUI Pages](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing_webui.md)
+[Testing WebUI Pages](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/testing_webui.md)
 for detailed instructions.
 
 *** note

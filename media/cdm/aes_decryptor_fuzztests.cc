@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <algorithm>
 #include <cstdint>
 #include <string>
@@ -124,9 +129,9 @@ void CreateSessionDoesNotCrash(int int_init_data_type,
   }
 
   // Create an AesDecryptor. Ignore any messages that may be generated.
-  scoped_refptr<media::AesDecryptor> aes_decryptor =
-      new media::AesDecryptor(base::DoNothing(), base::DoNothing(),
-                              base::DoNothing(), base::DoNothing());
+  auto aes_decryptor = base::MakeRefCounted<media::AesDecryptor>(
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
 
   // Create a session. Ignore the result of the promise as most often it will be
   // rejected due to an error. However, if a session was created, save the
@@ -154,9 +159,9 @@ void CreateSessionDoesNotCrash(int int_init_data_type,
 // parsing of JWK.
 void UpdateSessionDoesNotCrash(const std::string& response) {
   // Create an AesDecryptor. Ignore any messages that may be generated.
-  scoped_refptr<media::AesDecryptor> aes_decryptor =
-      new media::AesDecryptor(base::DoNothing(), base::DoNothing(),
-                              base::DoNothing(), base::DoNothing());
+  auto aes_decryptor = base::MakeRefCounted<media::AesDecryptor>(
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
 
   // Create a session. We need to keep track of the session_id as Update() needs
   // a valid session_id. Use WEBM init_data as it's the simplest.
@@ -195,9 +200,9 @@ void DecryptDoesNotCrash(std::size_t clear_bytes,
                          std::size_t encrypted_bytes,
                          const std::vector<uint8_t>& data) {
   // Create an AesDecryptor. Ignore any messages that may be generated.
-  scoped_refptr<media::AesDecryptor> aes_decryptor =
-      new media::AesDecryptor(base::DoNothing(), base::DoNothing(),
-                              base::DoNothing(), base::DoNothing());
+  auto aes_decryptor = base::MakeRefCounted<media::AesDecryptor>(
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
 
   // Create a session. We need to keep track of the session_id as Update() needs
   // a valid session_id.

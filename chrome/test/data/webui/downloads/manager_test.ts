@@ -34,7 +34,7 @@ suite('manager tests', function() {
     manager = document.createElement('downloads-manager');
     document.body.appendChild(manager);
 
-    toastManager = manager.shadowRoot!.querySelector('cr-toast-manager')!;
+    toastManager = manager.shadowRoot.querySelector('cr-toast-manager')!;
     assertTrue(!!toastManager);
     return microtasksFinished();
   });
@@ -55,7 +55,7 @@ suite('manager tests', function() {
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
-    const item = manager.shadowRoot!.querySelector('downloads-item')!;
+    const item = manager.shadowRoot.querySelector('downloads-item')!;
     assertLT(item.$.url.offsetWidth, item.offsetWidth);
     assertEquals(displayUrl, item.$.url.textContent);
     assertEquals(url, item.$.url.href);
@@ -65,9 +65,9 @@ suite('manager tests', function() {
 
   test('inserting items at beginning render dates correctly', async () => {
     const countDates = () => {
-      const items = manager.shadowRoot!.querySelectorAll('downloads-item');
+      const items = manager.shadowRoot.querySelectorAll('downloads-item');
       return Array.from(items).reduce((soFar, item) => {
-        return item.shadowRoot!.querySelector('div[id=date]:not(:empty)') ?
+        return item.shadowRoot.querySelector('div[id=date]:not(:empty)') ?
             soFar + 1 :
             soFar;
       }, 0);
@@ -100,8 +100,8 @@ suite('manager tests', function() {
     callbackRouterRemote.insertItems(0, [dangerousDownload]);
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    assertTrue(!!manager.shadowRoot!.querySelector('downloads-item')!
-                     .shadowRoot!.querySelector('.dangerous'));
+    assertTrue(!!manager.shadowRoot.querySelector('downloads-item')!.shadowRoot
+                     .querySelector('.dangerous'));
 
     const safeDownload = Object.assign({}, dangerousDownload, {
       dangerType: DangerType.kNoApplicableDangerType,
@@ -110,8 +110,8 @@ suite('manager tests', function() {
     callbackRouterRemote.updateItem(0, safeDownload);
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    assertFalse(!!manager.shadowRoot!.querySelector('downloads-item')!
-                      .shadowRoot!.querySelector('.dangerous'));
+    assertFalse(!!manager.shadowRoot.querySelector('downloads-item')!.shadowRoot
+                      .querySelector('.dangerous'));
   });
 
   test('remove', async () => {
@@ -123,14 +123,14 @@ suite('manager tests', function() {
                                      })]);
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    const item = manager.shadowRoot!.querySelector('downloads-item')!;
+    const item = manager.shadowRoot.querySelector('downloads-item')!;
 
     const quickRemoveButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+        item.shadowRoot.querySelector<HTMLElement>('#quick-remove');
     assertTrue(!!quickRemoveButton);
     quickRemoveButton.click();
     await testBrowserProxy.handler.whenCalled('remove');
-    const list = manager.shadowRoot!.querySelector('cr-infinite-list')!;
+    const list = manager.shadowRoot.querySelector('cr-infinite-list')!;
     assertTrue(list.hidden);
     assertTrue(toastManager.isToastOpen);
   });
@@ -189,15 +189,15 @@ suite('manager tests', function() {
   test('toast is hidden when undo is clicked', () => {
     toastManager.show('');
     assertTrue(toastManager.isToastOpen);
-    manager.shadowRoot!
-        .querySelector<HTMLElement>('cr-toast-manager cr-button')!.click();
+    manager.shadowRoot.querySelector<HTMLElement>(
+                          'cr-toast-manager cr-button')!.click();
     assertFalse(toastManager.isToastOpen);
   });
 
   test('toast is not hidden when itself is clicked', () => {
     toastManager.show('');
     assertTrue(toastManager.isToastOpen);
-    toastManager.shadowRoot!.querySelector<HTMLElement>('#toast')!.click();
+    toastManager.shadowRoot.querySelector<HTMLElement>('#toast')!.click();
     assertTrue(toastManager.isToastOpen);
   });
 
@@ -238,7 +238,6 @@ suite('manager tests', function() {
       'bypass warning confirmation dialog shown on save-dangerous-click',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        loadTimeData.overrideValues({dangerousDownloadInterstitial: false});
         manager = document.createElement('downloads-manager');
         document.body.appendChild(manager);
         callbackRouterRemote.insertItems(0, [
@@ -252,7 +251,7 @@ suite('manager tests', function() {
         ]);
         await callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
-        const item = manager.shadowRoot!.querySelector('downloads-item');
+        const item = manager.shadowRoot.querySelector('downloads-item');
         assertTrue(!!item);
         item.dispatchEvent(new CustomEvent('save-dangerous-click', {
           bubbles: true,
@@ -263,7 +262,7 @@ suite('manager tests', function() {
         const recordOpenId = await testBrowserProxy.handler.whenCalled(
             'recordOpenBypassWarningDialog');
         assertEquals('itemId', recordOpenId);
-        const dialog = manager.shadowRoot!.querySelector(
+        const dialog = manager.shadowRoot.querySelector(
             'downloads-bypass-warning-confirmation-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
@@ -289,7 +288,7 @@ suite('manager tests', function() {
     ]);
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    const item = manager.shadowRoot!.querySelector('downloads-item');
+    const item = manager.shadowRoot.querySelector('downloads-item');
     assertTrue(!!item);
     item.dispatchEvent(new CustomEvent('save-dangerous-click', {
       bubbles: true,
@@ -300,7 +299,7 @@ suite('manager tests', function() {
     const recordOpenId = await testBrowserProxy.handler.whenCalled(
         'recordOpenBypassWarningDialog');
     assertEquals('itemId', recordOpenId);
-    const dialog = manager.shadowRoot!.querySelector(
+    const dialog = manager.shadowRoot.querySelector(
         'downloads-bypass-warning-confirmation-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
@@ -327,7 +326,7 @@ suite('manager tests', function() {
         ]);
         await callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
-        const item = manager.shadowRoot!.querySelector('downloads-item')!;
+        const item = manager.shadowRoot.querySelector('downloads-item');
         assertTrue(!!item);
         item.dispatchEvent(new CustomEvent('save-dangerous-click', {
           bubbles: true,
@@ -336,7 +335,7 @@ suite('manager tests', function() {
         }));
         await microtasksFinished();
 
-        const dialog = manager.shadowRoot!.querySelector(
+        const dialog = manager.shadowRoot.querySelector(
             'downloads-bypass-warning-confirmation-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
@@ -344,121 +343,6 @@ suite('manager tests', function() {
         callbackRouterRemote.removeItem(0);
         await callbackRouterRemote.$.flushForTesting();
         assertFalse(isVisible(dialog));
-      });
-
-  test(
-      'interstitial shown when dangerousDownloadInterstitial enabled',
-      async () => {
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        loadTimeData.overrideValues({dangerousDownloadInterstitial: true});
-        manager = document.createElement('downloads-manager');
-        document.body.appendChild(manager);
-        callbackRouterRemote.insertItems(0, [
-          createDownload({
-            id: 'itemId',
-            state: State.kDangerous,
-            isDangerous: true,
-            dangerType: DangerType.kDangerousUrl,
-          }),
-        ]);
-        await callbackRouterRemote.$.flushForTesting();
-        await microtasksFinished();
-        const saveDangerousButton =
-            manager.shadowRoot!.querySelector('downloads-item')!.shadowRoot!
-                .querySelector('cr-action-menu')!.querySelector<HTMLElement>(
-                    '#save-dangerous');
-        assertTrue(!!saveDangerousButton);
-        saveDangerousButton.click();
-        const recordOpenId = await testBrowserProxy.handler.whenCalled(
-            'recordOpenBypassWarningInterstitial');
-        assertEquals('itemId', recordOpenId);
-        const interstitial = manager.shadowRoot!.querySelector(
-            'downloads-dangerous-download-interstitial');
-        assertTrue(!!interstitial);
-        assertTrue(interstitial.$.dialog.open);
-
-        const surveyResponse = 'kNoResponse';
-        interstitial.$.dialog.close(surveyResponse);
-        interstitial.dispatchEvent(new CustomEvent('close', {
-          bubbles: true,
-          composed: true,
-        }));
-        const saveDangerousId = await testBrowserProxy.handler.whenCalled(
-            'saveDangerousFromInterstitialNeedGesture');
-        assertEquals(surveyResponse, interstitial.$.dialog.returnValue);
-        assertEquals('itemId', saveDangerousId);
-        assertFalse(interstitial.$.dialog.open);
-      });
-
-  test('dangerousDownloadInterstitial records cancellation', async () => {
-    callbackRouterRemote.insertItems(0, [
-      createDownload({
-        id: 'itemId',
-        state: State.kDangerous,
-        isDangerous: true,
-        dangerType: DangerType.kDangerousUrl,
-      }),
-    ]);
-    await callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-    const saveDangerousButton =
-        manager.shadowRoot!.querySelector('downloads-item')!.shadowRoot!
-            .querySelector('cr-action-menu')!.querySelector<HTMLElement>(
-                '#save-dangerous');
-    assertTrue(!!saveDangerousButton);
-    saveDangerousButton.click();
-    const recordOpenId = await testBrowserProxy.handler.whenCalled(
-        'recordOpenBypassWarningInterstitial');
-    assertEquals('itemId', recordOpenId);
-    const interstitial = manager.shadowRoot!.querySelector(
-        'downloads-dangerous-download-interstitial');
-    assertTrue(!!interstitial);
-    assertTrue(interstitial.$.dialog.open);
-
-    interstitial.$.dialog.close();
-    interstitial.dispatchEvent(new CustomEvent('cancel', {
-      bubbles: true,
-      composed: true,
-    }));
-    const recordCancelId = await testBrowserProxy.handler.whenCalled(
-        'recordCancelBypassWarningInterstitial');
-    assertEquals('itemId', recordCancelId);
-    assertFalse(interstitial.$.dialog.open);
-  });
-
-  test(
-      'bypass warning confirmation interstitial closed when file removed',
-      async () => {
-        callbackRouterRemote.insertItems(0, [
-          createDownload({
-            id: 'itemId',
-            state: State.kDangerous,
-            isDangerous: true,
-            dangerType: DangerType.kDangerousUrl,
-          }),
-        ]);
-        await callbackRouterRemote.$.flushForTesting();
-        await microtasksFinished();
-
-        const item = manager.shadowRoot!.querySelector('downloads-item');
-        assertTrue(!!item);
-        const saveDangerousButton =
-            manager.shadowRoot!.querySelector('downloads-item')!.shadowRoot!
-                .querySelector('cr-action-menu')!.querySelector<HTMLElement>(
-                    '#save-dangerous');
-        assertTrue(!!saveDangerousButton);
-        saveDangerousButton.click();
-        await microtasksFinished();
-
-        const interstitial = manager.shadowRoot!.querySelector(
-            'downloads-dangerous-download-interstitial');
-        assertTrue(!!interstitial);
-        assertTrue(interstitial.$.dialog.open);
-        // Remove the file and check that the interstitial is hidden.
-        callbackRouterRemote.removeItem(0);
-        await callbackRouterRemote.$.flushForTesting();
-        await microtasksFinished();
-        assertFalse(isVisible(interstitial));
       });
 
   // <if expr="_google_chrome">
@@ -478,7 +362,7 @@ suite('manager tests', function() {
         callbackRouterRemote.insertItems(0, [dangerousDownload]);
         await callbackRouterRemote.$.flushForTesting();
 
-        const item = manager.shadowRoot!.querySelector('downloads-item');
+        const item = manager.shadowRoot.querySelector('downloads-item');
         assertTrue(!!item);
         assertTrue(item.showEsbPromotion);
       });
@@ -507,7 +391,7 @@ suite('manager tests', function() {
         callbackRouterRemote.insertItems(
             0, [dangerousDownload, dangerousDownloadTwo]);
         await callbackRouterRemote.$.flushForTesting();
-        const itemList = manager.shadowRoot!.querySelectorAll('downloads-item');
+        const itemList = manager.shadowRoot.querySelectorAll('downloads-item');
         assertEquals(itemList.length, 2);
         assertTrue(itemList[0]!.showEsbPromotion);
         assertFalse(itemList[1]!.showEsbPromotion);

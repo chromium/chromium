@@ -13,48 +13,31 @@ namespace user_education::features {
 
 namespace {
 
-inline constexpr char kMinimumValidSessionLengthParamName[] =
-    "minimum_valid_session_length";
 inline constexpr base::TimeDelta kDefaultMinimumValidSessionLength =
     base::Minutes(2);
 
-inline constexpr char kIdleTimeBetweenSessionsParamName[] =
-    "idle_time_between_sessions";
 inline constexpr base::TimeDelta kDefaultIdleTimeBetweenSessions =
     base::Hours(4);
 
-inline constexpr char kSessionStartGracePeriodParamName[] =
-    "session_start_grace_period";
 inline constexpr base::TimeDelta kDefaultSessionStartGracePeriod =
     base::Minutes(10);
 
-inline constexpr char kNewProfileGracePeriodParamName[] =
-    "new_profile_grace_period";
 inline constexpr base::TimeDelta kDefaultNewProfileGracePeriod = base::Days(7);
 
-inline constexpr char kLowPriorityCooldownParamName[] = "low_priority_cooldown";
 inline constexpr base::TimeDelta kDefaultLowPriorityCooldown = base::Days(8);
 
-inline constexpr char kSnoozeDurationParamName[] = "snooze_duration";
 inline constexpr base::TimeDelta kDefaultSnoozeDuration = base::Days(7);
 
-inline constexpr char kAbortCooldownParamName[] = "abort_cooldown";
 inline constexpr base::TimeDelta kDefaultAbortCooldown = base::Hours(4);
 
-inline constexpr char kMaxSnoozeCountParamName[] = "max_snooze_count";
 inline constexpr int kDefaultMaxSnoozeCount = 3;
 
-inline constexpr char kMaxPromoShowCount[] = "max_promo_show_count";
 inline constexpr int kDefaultMaxPromoShowCount = 3;
 
-inline constexpr char kNewBadgeShowCount[] = "new_badge_show_count";
 inline constexpr int kDefaultNewBadgeShowCount = 10;
 
-inline constexpr char kNewBadgeFeatureUsedCount[] =
-    "new_badge_feature_used_count";
 inline constexpr int kDefaultNewBadgeFeatureUsedCount = 2;
 
-inline constexpr char kNewBadgeDisplayWindow[] = "new_badge_display_window";
 inline constexpr base::TimeDelta kDefaultNewBadgeDisplayWindow = base::Days(60);
 
 inline constexpr char kHighPriorityTimeout[] = "high_priority_timeout";
@@ -68,39 +51,26 @@ inline constexpr base::TimeDelta kDefaultMediumPriorityTimeout =
 inline constexpr char kLowPriorityTimeout[] = "low_priority_timeout";
 inline constexpr base::TimeDelta kDefaultLowPriorityTimeout = base::Seconds(30);
 
+inline constexpr char kIdleTimeBeforeHeavyweight[] = "idle_before_heavyweight";
+inline constexpr base::TimeDelta kDefaultIdleTimeBeforeHeavyweight =
+    base::Seconds(5);
+
 inline constexpr char kPollingInterval[] = "polling_interval";
 inline constexpr base::TimeDelta kDefaultPollingInterval =
     base::Milliseconds(500);
 
 }  // namespace
 
-BASE_FEATURE(kUserEducationExperienceVersion2,
-             "UserEducationExperienceVersion2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUserEducationExperienceVersion2Point5,
-             "kUserEducationExperienceVersion2Point5",
+             "UserEducationExperienceVersion2Point5",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewBadgeTestFeature,
              "NewBadgeTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWhatsNewVersion2,
-             "WhatsNewVersion2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsUserEducationV2() {
-  return base::FeatureList::IsEnabled(kUserEducationExperienceVersion2);
-}
-
 bool IsUserEducationV25() {
-  return IsUserEducationV2() &&
-         base::FeatureList::IsEnabled(kUserEducationExperienceVersion2Point5);
-}
-
-bool IsWhatsNewV2() {
-  return base::FeatureList::IsEnabled(kWhatsNewVersion2);
+  return base::FeatureList::IsEnabled(kUserEducationExperienceVersion2Point5);
 }
 
 bool IsRateLimitingDisabled() {
@@ -109,84 +79,60 @@ bool IsRateLimitingDisabled() {
 }
 
 base::TimeDelta GetMinimumValidSessionLength() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kMinimumValidSessionLengthParamName,
-      kDefaultMinimumValidSessionLength);
+  return kDefaultMinimumValidSessionLength;
 }
 
 base::TimeDelta GetIdleTimeBetweenSessions() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kIdleTimeBetweenSessionsParamName,
-      kDefaultIdleTimeBetweenSessions);
+  return kDefaultIdleTimeBetweenSessions;
 }
 
 base::TimeDelta GetSessionStartGracePeriod() {
   if (IsRateLimitingDisabled()) {
     return base::TimeDelta();
   }
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kSessionStartGracePeriodParamName,
-      kDefaultSessionStartGracePeriod);
+  return kDefaultSessionStartGracePeriod;
 }
 
 base::TimeDelta GetLowPriorityCooldown() {
   if (IsRateLimitingDisabled()) {
     return base::TimeDelta();
   }
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kLowPriorityCooldownParamName,
-      kDefaultLowPriorityCooldown);
+  return kDefaultLowPriorityCooldown;
 }
 
 base::TimeDelta GetNewProfileGracePeriod() {
   if (IsRateLimitingDisabled()) {
     return base::TimeDelta();
   }
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kNewProfileGracePeriodParamName,
-      kDefaultNewProfileGracePeriod);
+  return kDefaultNewProfileGracePeriod;
 }
 
 base::TimeDelta GetSnoozeDuration() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kSnoozeDurationParamName,
-      kDefaultSnoozeDuration);
+  return kDefaultSnoozeDuration;
 }
 
 base::TimeDelta GetAbortCooldown() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kAbortCooldownParamName,
-      kDefaultAbortCooldown);
+  return kDefaultAbortCooldown;
 }
 
 int GetMaxSnoozeCount() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kUserEducationExperienceVersion2, kMaxSnoozeCountParamName,
-      kDefaultMaxSnoozeCount);
+  return kDefaultMaxSnoozeCount;
 }
 
 int GetMaxPromoShowCount() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kUserEducationExperienceVersion2, kMaxPromoShowCount,
-      kDefaultMaxPromoShowCount);
+  return kDefaultMaxPromoShowCount;
 }
 
 int GetNewBadgeShowCount() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kUserEducationExperienceVersion2, kNewBadgeShowCount,
-      kDefaultNewBadgeShowCount);
+  return kDefaultNewBadgeShowCount;
 }
 
 int GetNewBadgeFeatureUsedCount() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kUserEducationExperienceVersion2, kNewBadgeFeatureUsedCount,
-      kDefaultNewBadgeFeatureUsedCount);
+  return kDefaultNewBadgeFeatureUsedCount;
 }
 
 base::TimeDelta GetNewBadgeDisplayWindow() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kNewBadgeDisplayWindow,
-      kDefaultNewBadgeDisplayWindow);
+  return kDefaultNewBadgeDisplayWindow;
 }
 
 base::TimeDelta GetHighPriorityTimeout() {
@@ -205,6 +151,12 @@ base::TimeDelta GetLowPriorityTimeout() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
       kUserEducationExperienceVersion2Point5, kLowPriorityTimeout,
       kDefaultLowPriorityTimeout);
+}
+
+base::TimeDelta GetIdleTimeBeforeHeavyweightPromo() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kUserEducationExperienceVersion2Point5, kIdleTimeBeforeHeavyweight,
+      kDefaultIdleTimeBeforeHeavyweight);
 }
 
 base::TimeDelta GetPromoControllerPollingInterval() {

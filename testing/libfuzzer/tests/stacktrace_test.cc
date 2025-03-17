@@ -18,6 +18,9 @@ namespace {
 
 using testing::ContainsRegex;
 
+// The UaF is not detected under UBSan, which happily runs the fuzzer forever.
+#if !BUILDFLAG(IS_UBSAN) && !BUILDFLAG(IS_UBSAN_SECURITY)
+
 base::FilePath FuzzerPath() {
   base::FilePath out_dir;
   base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &out_dir);
@@ -33,8 +36,6 @@ base::FilePath FuzzerInputPath(std::string_view input_file) {
       .AppendASCII(input_file);
 }
 
-// The UaF is not detected under UBSan, which happily runs the fuzzer forever.
-#if !BUILDFLAG(IS_UBSAN) && !BUILDFLAG(IS_UBSAN_SECURITY)
 TEST(FuzzerStacktraceTest, SymbolizesUAF) {
   base::CommandLine cmd(FuzzerPath());
   cmd.AppendArgPath(FuzzerInputPath("uaf"));

@@ -28,6 +28,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="2329392777730037872">No s'ha pogut obrir <ph name="URL" /> al client.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">No es pot connectar amb l'amfitrió. Probablement, això passa a causa de la configuració de la xarxa que esteu fent servir.</translation>
+<translation id="242591256144136845">Copyright 2025. Google LLC. Tots els drets reservats.</translation>
 <translation id="2504109125669302160">Concedeix a <ph name="PRODUCT_NAME" /> el permís Accessibilitat</translation>
 <translation id="2509394361235492552">Connectat a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Voleu compartir aquest ordinador perquè un altre usuari el pugui veure i controlar?</translation>
@@ -133,6 +134,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="7067321367069083429">La pantalla fa de pantalla tàctil</translation>
 <translation id="7116737094673640201">Et donem la benvinguda a Escriptori remot de Chrome</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
+<translation id="7298392173540380852">Copyright 2025. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="7312846573060934304">L'amfitrió no està connectat</translation>
 <translation id="7319983568955948908">Deixa de compartir</translation>
 <translation id="7359298090707901886">No es pot utilitzar el navegador escollit per obrir URL a l'equip local.</translation>
@@ -149,7 +151,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="7693372326588366043">Actualitza la llista d'amfitrions</translation>
 <translation id="7714222945760997814">Informa'n</translation>
 <translation id="7868137160098754906">Introduïu el vostre PIN de l'ordinador remot.</translation>
-<translation id="7881455334687220899">Copyright 2024. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="7895403300744144251">Les polítiques de seguretat de l'ordinador remot no permeten les connexions des del teu compte.</translation>
 <translation id="7936528439960309876">Fixa a la dreta</translation>
 <translation id="7970576581263377361">L'autenticació ha fallat. Torneu a iniciar la sessió a Chromium.</translation>
@@ -181,7 +182,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="8747048596626351634">La sessió s'ha bloquejat o no s'ha pogut iniciar. Si s'ha introduït ~/.chrome-remote-desktop-session a l'ordinador remot, comprova que s'iniciï un procés llarg en primer pla, com ara un entorn d'escriptori o un gestor de finestres.</translation>
 <translation id="8804164990146287819">Política de privadesa</translation>
 <translation id="8906511416443321782">Es requereix accés al micròfon per capturar l'àudio i reproduir-lo en continu al client d'Escriptori remot de Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024. Google LLC. Tots els drets reservats.</translation>
 <translation id="9111855907838866522">Estàs connectat al dispositiu remot. Toca la pantalla amb quatre dits per obrir el menú.</translation>
 <translation id="9126115402994542723">No tornis a demanar el PIN en connectar amb aquest amfitrió des d'aquest dispositiu</translation>
 <translation id="916856682307586697">Inicia la sessió X predeterminada</translation>

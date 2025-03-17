@@ -132,7 +132,7 @@ export class HistorySideBarElement extends PolymerElement {
   private onClearBrowsingDataClick_(e: Event) {
     const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('InitClearBrowsingData');
-    browserService.openClearBrowsingData();
+    browserService.handler.openClearBrowsingDataDialog();
     e.preventDefault();
   }
 

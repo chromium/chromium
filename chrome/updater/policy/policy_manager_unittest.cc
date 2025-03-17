@@ -23,10 +23,19 @@ constexpr char kTestAppIDForceInstall[] = "appidforceinstall";
 
 class PolicyManagerTests : public ::testing::Test {};
 
-TEST_F(PolicyManagerTests, NoPolicySet) {
-  auto policy_manager =
-      base::MakeRefCounted<PolicyManager>(base::Value::Dict());
-  EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
+TEST_F(PolicyManagerTests, NoPolicies) {
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager({});
+  EXPECT_FALSE(policy_manager);
+}
+
+TEST_F(PolicyManagerTests, InvalidPolicies) {
+  base::Value::Dict policies;
+  policies.Set("autoupdatecheckperiodminutes", "NotAnInteger");
+
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager(std::move(policies));
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "DictValuePolicy");
 
@@ -85,8 +94,8 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   policies.Set(base::StrCat({"install", kTestAppIDForceInstall}),
                kPolicyForceInstallUser);
 
-  auto policy_manager =
-      base::MakeRefCounted<PolicyManager>(std::move(policies));
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager(std::move(policies));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
@@ -165,8 +174,8 @@ TEST_F(PolicyManagerTests, WrongPolicyValueType) {
   policies.Set(base::StrCat({"targetchannel", kTestAppID}), 10);
   policies.Set(base::StrCat({"rollbacktotargetversion", kTestAppID}), "1");
 
-  auto policy_manager =
-      base::MakeRefCounted<PolicyManager>(std::move(policies));
+  scoped_refptr<PolicyManagerInterface> policy_manager =
+      CreateDictPolicyManager(std::move(policies));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 

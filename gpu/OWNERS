@@ -5,6 +5,7 @@ vmiura@chromium.org
 zmo@chromium.org
 sunnyps@chromium.org
 blundell@chromium.org
+kylechar@chromium.org
 
 # GPU memory buffer implementations.
 per-file *gpu_memory_buffer*=dcastagna@chromium.org

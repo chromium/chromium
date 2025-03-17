@@ -68,24 +68,16 @@ public class HistorySyncRenderTest {
         private static List<ParameterSet> sParams =
                 Arrays.asList(
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ false,
-                                        Configuration.ORIENTATION_PORTRAIT)
+                                .value(/* firstArg= */ false, Configuration.ORIENTATION_PORTRAIT)
                                 .name("NightModeDisabled_Portrait"),
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ false,
-                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .value(/* firstArg= */ false, Configuration.ORIENTATION_LANDSCAPE)
                                 .name("NightModeDisabled_Landscape"),
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ true,
-                                        Configuration.ORIENTATION_PORTRAIT)
+                                .value(/* firstArg= */ true, Configuration.ORIENTATION_PORTRAIT)
                                 .name("NightModeEnabled_Portrait"),
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ true,
-                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .value(/* firstArg= */ true, Configuration.ORIENTATION_LANDSCAPE)
                                 .name("NightModeEnabled_Landscape"));
 
         @Override
@@ -196,7 +188,7 @@ public class HistorySyncRenderTest {
                                     new HistorySyncConfig(),
                                     SigninAccessPoint.UNKNOWN,
                                     /* showEmailInFooter= */ false,
-                                    /* signOutOnDecline= */ false,
+                                    /* shouldSignOutOnDecline= */ false,
                                     null);
                     mActivityTestRule
                             .getActivity()

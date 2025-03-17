@@ -55,6 +55,15 @@ h2 {
   padding-inline: var(--cr-section-padding);
 }
 
+p {
+  line-height: 1.4;
+  padding-inline: var(--cr-section-padding);
+}
+
+.blurb-warning {
+  color: var(--cr-fallback-color-error);
+}
+
 .whats-new-section {
   padding-inline: var(--cr-section-padding);
 }

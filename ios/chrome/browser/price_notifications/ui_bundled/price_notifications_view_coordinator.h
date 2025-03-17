@@ -16,6 +16,9 @@
 @interface PriceNotificationsViewCoordinator
     : ChromeCoordinator <PriceNotificationsAlertPresenter>
 
+// Displays the current page the user is viewing in the price tracking menu.
+@property(nonatomic, assign) BOOL showCurrentPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PRICE_NOTIFICATIONS_UI_BUNDLED_PRICE_NOTIFICATIONS_VIEW_COORDINATOR_H_

@@ -15,12 +15,15 @@ namespace {
 // that they represent a non-null non-ignored position, according to
 // |adjustment_behavior|. Returns true on success, false on failure. Note that
 // if the position is initially null, it's not ignored and it's a success.
+// If |non_text_endpoints| is true, then the endpoint will not occur on
+// a text node, but rather use an equivalent position using the parent node.
 bool ComputeUnignoredSelectionEndpoint(
     const AXTree* tree,
     AXPositionAdjustmentBehavior adjustment_behavior,
     AXNodeID& node_id,
     int32_t& offset,
-    ax::mojom::TextAffinity& affinity) {
+    ax::mojom::TextAffinity& affinity,
+    bool non_text_endpoints) {
   AXNode* node = tree ? tree->GetFromId(node_id) : nullptr;
   if (!node) {
     node_id = kInvalidAXNodeID;
@@ -38,8 +41,9 @@ bool ComputeUnignoredSelectionEndpoint(
   // The reason is that |position| becomes null because no AXTreeManager is
   // registered for that |tree|'s AXTreeID.
   // TODO(accessibility): investigate and fix this if needed.
-  if (!position->IsIgnored())
+  if (!non_text_endpoints && !position->IsIgnored()) {
     return true;  // We assume that unignored positions are already valid.
+  }
 
   position =
       position->AsValidPosition()->AsUnignoredPosition(adjustment_behavior);
@@ -52,12 +56,19 @@ bool ComputeUnignoredSelectionEndpoint(
   if (position->IsLeafTreePosition())
     position = position->AsTextPosition();
 
-  // We do not expect the selection to have an endpoint on an inline text
-  // box as this will create issues with parts of the code that don't use
-  // inline text boxes.
-  if (position->IsTextPosition() &&
-      position->GetRole() == ax::mojom::Role::kInlineTextBox) {
-    position = position->CreateParentPosition();
+  if (position->IsTextPosition()) {
+    // We do not expect the selection to have an endpoint on an inline text
+    // box as this will create issues with parts of the code that don't use
+    // inline text boxes.
+    if (position->GetRole() == ax::mojom::Role::kInlineTextBox) {
+      position = position->CreateParentPosition();
+    }
+    // Hypertext-compatible positions cannot use a text node with an offset,
+    // because text nodes don't support the text interface; however, it's
+    // possible to create an equivalent position using the parent.
+    if (non_text_endpoints && ui::IsText(position->GetRole())) {
+      position = position->CreateParentPosition();
+    }
   }
 
   switch (position->kind()) {
@@ -96,7 +107,7 @@ AXSelection::AXSelection(const AXTree& tree)
       focus_affinity(tree.data().sel_focus_affinity),
       tree_id_(tree.GetAXTreeID()) {}
 
-AXSelection& AXSelection::ToUnignoredSelection() {
+AXSelection& AXSelection::ToUnignoredSelection(bool non_text_endpoints) {
   // If the tree is not registered with an AXTreeManager, it
   // is a initial tree with no data, do not calculate selection.
   const AXTreeManager* manager = AXTreeManager::FromID(tree_id_);
@@ -109,7 +120,8 @@ AXSelection& AXSelection::ToUnignoredSelection() {
           manager->ax_tree(),
           is_backward ? AXPositionAdjustmentBehavior::kMoveForward
                       : AXPositionAdjustmentBehavior::kMoveBackward,
-          anchor_object_id, anchor_offset, anchor_affinity)) {
+          anchor_object_id, anchor_offset, anchor_affinity,
+          non_text_endpoints)) {
     focus_object_id = kInvalidAXNodeID;
     focus_offset = AXNodePosition::INVALID_OFFSET;
     focus_affinity = ax::mojom::TextAffinity::kDownstream;
@@ -117,7 +129,8 @@ AXSelection& AXSelection::ToUnignoredSelection() {
                  manager->ax_tree(),
                  is_backward ? AXPositionAdjustmentBehavior::kMoveBackward
                              : AXPositionAdjustmentBehavior::kMoveForward,
-                 focus_object_id, focus_offset, focus_affinity)) {
+                 focus_object_id, focus_offset, focus_affinity,
+                 non_text_endpoints)) {
     anchor_object_id = kInvalidAXNodeID;
     anchor_offset = AXNodePosition::INVALID_OFFSET;
     anchor_affinity = ax::mojom::TextAffinity::kDownstream;

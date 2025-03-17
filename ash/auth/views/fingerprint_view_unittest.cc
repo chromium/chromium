@@ -60,7 +60,7 @@ class FingerprintViewUnitTest : public AshTestBase {
 
     container_view->SetPreferredSize(gfx::Size({400, 300}));
 
-    container_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    container_view->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated, 0));
 
     fingerprint_view_ =

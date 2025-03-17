@@ -18,7 +18,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_byte_range.h"
@@ -101,8 +100,9 @@ bool IsCorsUnsafeRequestHeaderByte(char c) {
 // |value| should be lower case.
 bool IsCorsSafelistedLowerCaseContentType(const std::string& value) {
   DCHECK_EQ(value, base::ToLowerASCII(value));
-  if (base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))
+  if (std::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte)) {
     return false;
+  }
 
   std::optional<std::string> mime_type =
       net::ExtractMimeTypeFromMediaType(value,
@@ -387,10 +387,10 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
   // Verify the values of all non-secure headers (except `intervention`).
   const std::string lower_value = base::ToLowerASCII(value);
   if (lower_name == "accept") {
-    return !base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte);
+    return !std::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte);
   } else if (lower_name == "accept-language" ||
              lower_name == "content-language") {
-    return base::ranges::all_of(value, [](char c) {
+    return std::ranges::all_of(value, [](char c) {
       return (0x30 <= c && c <= 0x39) || (0x41 <= c && c <= 0x5a) ||
              (0x61 <= c && c <= 0x7a) || c == 0x20 || c == 0x2a || c == 0x2c ||
              c == 0x2d || c == 0x2e || c == 0x3b || c == 0x3d;
@@ -404,7 +404,7 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
     // - Only one range is provided
     // - No suffix (bytes=-x) ranges
 
-    if (base::ranges::any_of(lower_value, [](char c) {
+    if (std::ranges::any_of(lower_value, [](char c) {
           return net::HttpUtil::IsLWS(c) || c == ',';
         })) {
       return false;

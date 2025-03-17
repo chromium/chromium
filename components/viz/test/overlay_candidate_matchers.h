@@ -10,6 +10,11 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/overlay_layer_id.h"
+
+namespace gfx {
+void PrintTo(const OverlayLayerId& layer_id, std::ostream* os);
+}
 
 namespace viz {
 

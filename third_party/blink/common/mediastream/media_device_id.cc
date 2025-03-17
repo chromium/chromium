@@ -4,7 +4,8 @@
 
 #include "third_party/blink/public/common/mediastream/media_device_id.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_util.h"
 #include "media/audio/audio_device_description.h"
 
@@ -21,7 +22,7 @@ bool IsValidMediaDeviceId(const std::string& device_id) {
     return false;
   }
 
-  return base::ranges::all_of(device_id, [](const char& c) {
+  return std::ranges::all_of(device_id, [](const char& c) {
     return base::IsAsciiLower(c) || base::IsAsciiDigit(c);
   });
 }

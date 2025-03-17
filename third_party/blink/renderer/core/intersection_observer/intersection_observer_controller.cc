@@ -74,6 +74,7 @@ ComputeIntersectionsContext::GetRootGeometry(
 }
 
 void ComputeIntersectionsContext::UpdateNextRunDelay(base::TimeDelta delay) {
+  CHECK(delay.is_positive());
   next_run_delay_ = std::min(next_run_delay_, delay);
 }
 
@@ -167,17 +168,11 @@ bool IntersectionObserverController::ComputeIntersections(
     }
   };
 
-  HeapVector<Member<IntersectionObserver>> observers_to_remove;
+  tracked_explicit_root_observers_.erase_if(
+      [](const auto& observer) { return !observer->HasObservations(); });
   for (auto& observer : tracked_explicit_root_observers_) {
     DCHECK(!observer->RootIsImplicit());
-    if (observer->HasObservations()) {
-      compute_observer_intersections(*observer, observer->Observations());
-    } else {
-      observers_to_remove.push_back(observer);
-    }
-  }
-  for (auto& observer : observers_to_remove) {
-    tracked_explicit_root_observers_.erase(observer);
+    compute_observer_intersections(*observer, observer->Observations());
   }
 
   for (auto& [observer, observations] : tracked_implicit_root_observations_) {
@@ -195,10 +190,9 @@ bool IntersectionObserverController::ComputeIntersections(
   }
 
   base::TimeDelta delay = context.GetAndResetNextRunDelay();
-  if (delay.is_positive()) {
-    // TODO(crbug.com/40873583): Handle the case that the frame becomes
-    // throttled during the delay,
-    frame_view.ScheduleAnimation(delay);
+  CHECK(delay.is_positive());
+  if (delay != base::TimeDelta::Max()) {
+    frame_view.ScheduleDelayedIntersection(delay);
   }
 
   return needs_occlusion_tracking_;

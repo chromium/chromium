@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/window/arc_window_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
@@ -25,6 +23,7 @@
 #include "ash/webui/sanitize_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -39,7 +38,6 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
-#include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
@@ -78,15 +76,16 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_client_impl.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager_impl.h"
-#include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
 #include "chrome/browser/ui/ash/shell_init/ash_shell_init.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -94,9 +93,9 @@
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/ash/web_view/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/wm/tab_cluster_ui_client.h"
+#include "chrome/browser/ui/chromeos/screen_orientation/screen_orientation_delegate.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h"
-#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -108,6 +107,8 @@
 #include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/window/arc_window_watcher.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
@@ -227,7 +228,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     }
   }
 
-  ash_shell_init_ = std::make_unique<AshShellInit>();
+  ash_shell_init_ = std::make_unique<AshShellInit>(
+      CHECK_DEREF(g_browser_process->local_state()));
   ash::Shell::Get()
       ->login_unlock_throughput_recorder()
       ->post_login_deferred_task_runner()
@@ -272,16 +274,21 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // user_manager::UserManagerImpl.
   wallpaper_controller_client_ =
       std::make_unique<WallpaperControllerClientImpl>(
+          CHECK_DEREF(g_browser_process->local_state()),
           std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
   wallpaper_controller_client_->Init();
 
-  session_controller_client_ = std::make_unique<SessionControllerClientImpl>();
+  session_controller_client_ = std::make_unique<SessionControllerClientImpl>(
+      CHECK_DEREF(g_browser_process->local_state()));
   session_controller_client_->Init();
   // By this point ash shell should have initialized its D-Bus signal
   // listeners, so inform the session manager that Ash is initialized.
   session_controller_client_->EmitAshInitialized();
 
-  system_tray_client_ = std::make_unique<SystemTrayClientImpl>();
+  system_tray_client_ = std::make_unique<SystemTrayClientImpl>(
+      CHECK_DEREF(g_browser_process->platform_part()->GetSystemClock()),
+      CHECK_DEREF(
+          g_browser_process->platform_part()->browser_policy_connector_ash()));
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
 
   if (ash::features::IsCoralFeatureEnabled()) {
@@ -362,7 +369,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   magic_boost_state_ash_ = std::make_unique<ash::MagicBoostStateAsh>();
 
   read_write_cards_manager_ =
-      std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
+      std::make_unique<chromeos::ReadWriteCardsManagerImpl>(
+          g_browser_process->shared_url_loader_factory());
 
   if (base::FeatureList::IsEnabled(ash::features::kReadaheadForLogin)) {
     login_readahead_performer_.emplace(ash::SessionManagerClient::Get());
@@ -377,10 +385,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   }
 
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
-  if (ash::features::IsDemoModeSignInEnabled()) {
-    demo_login_controller_ =
-        std::make_unique<ash::DemoLoginController>(login_screen_client_.get());
-  }
 
   management_disclosure_client_ =
       std::make_unique<ManagementDisclosureClientImpl>(
@@ -410,6 +414,9 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   display_settings_handler_->RegisterHandler(
       std::make_unique<policy::DisplayRotationDefaultHandler>());
   display_settings_handler_->Start();
+
+  ash::NetworkPortalSigninController::Init(
+      CHECK_DEREF(g_browser_process->local_state()));
 
   // Do not create a NetworkPortalNotificationController for tests since the
   // NetworkPortalDetector instance may be replaced.
@@ -448,8 +455,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
         ->SetPeripheralsAppDelegate(peripherals_app_delegate_.get());
   }
 
-  // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
-  TabScrubberChromeOS::GetInstance();
+  // Initialize TabScrubber after the Ash Shell has been initialized.
+  ash::TabScrubber::GetInstance();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -502,7 +509,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // uninstall correctly.
   exo_parts_.reset();
 
-  demo_login_controller_.reset();
   mahi_manager_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
@@ -528,6 +534,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   quick_insert_client_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
+  ash::NetworkPortalSigninController::Shutdown();
   display_settings_handler_.reset();
   media_client_.reset();
   login_screen_client_.reset();

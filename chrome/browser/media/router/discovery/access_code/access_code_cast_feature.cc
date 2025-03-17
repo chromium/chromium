@@ -20,26 +20,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #endif
 
-namespace features {
-// Enables remembering of access code cast devices.
-BASE_FEATURE(kAccessCodeCastRememberDevices,
-             "AccessCodeCastRememberDevices",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Provide a tab switching UI bar while casting (mirroring) when AccessCodeCast
-// is enabled.
-BASE_FEATURE(kAccessCodeCastTabSwitchingUI,
-             "AccessCodeCastTabSwitchingUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Provide functionality to freeze the casting session when AccessCodeCast is
-// enabled.
-BASE_FEATURE(kAccessCodeCastFreezeUI,
-             "AccessCodeCastFreezeUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
-
 namespace media_router {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -59,8 +39,7 @@ bool GetAccessCodeCastEnabledPref(Profile* profile) {
 }
 
 base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile) {
-  if (!GetAccessCodeCastEnabledPref(profile) ||
-      !base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
+  if (!GetAccessCodeCastEnabledPref(profile)) {
     return base::Seconds(0);
   }
 
@@ -70,13 +49,11 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile) {
 }
 
 bool IsAccessCodeCastTabSwitchingUiEnabled(Profile* profile) {
-  return profile && GetAccessCodeCastEnabledPref(profile) &&
-         base::FeatureList::IsEnabled(features::kAccessCodeCastTabSwitchingUI);
+  return profile && GetAccessCodeCastEnabledPref(profile);
 }
 
 bool IsAccessCodeCastFreezeUiEnabled(Profile* profile) {
-  return profile && GetAccessCodeCastEnabledPref(profile) &&
-         base::FeatureList::IsEnabled(features::kAccessCodeCastFreezeUI);
+  return profile && GetAccessCodeCastEnabledPref(profile);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 
 // Represent the id of an account for interaction with GAIA.
@@ -60,18 +59,6 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   // Returns an empty CoreAccountId if |gaia_id| is empty.
   static CoreAccountId FromGaiaId(const GaiaId& gaia_id);
 
-  // Temporary API to construct from a string, while class GaiaId is being
-  // adopted in unit-tests.
-  // TODO(crbug.com/380416867): Remove this API.
-#if defined(UNIT_TEST)
-  static CoreAccountId FromGaiaId(std::string gaia_id) {
-    return FromGaiaId(GaiaId(std::move(gaia_id)));
-  }
-  static CoreAccountId FromGaiaId(const char gaia_id[]) {
-    return FromGaiaId(GaiaId(gaia_id));
-  }
-#endif  // defined(UNIT_TEST)
-
   // Create a CoreAccountId object from an email of a robot account.
   // Returns an empty CoreAccountId if |email| is empty.
   static CoreAccountId FromRobotEmail(const std::string& robot_email);
@@ -80,13 +67,13 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   // |CoreAccountId::ToString()|.
   static CoreAccountId FromString(const std::string& value);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Only on ChromeOS, CoreAccountId objects may be created from Gaia emails.
   //
   // Create a CoreAccountId object from an email.
   // Returns an empty CoreAccountId if |email| is empty.
   static CoreAccountId FromEmail(const std::string& email);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // ---------------------------------------- ---------------------------------
 
  private:
@@ -94,16 +81,19 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
 };
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator<(const CoreAccountId& lhs, const CoreAccountId& rhs);
+inline auto operator<=>(const CoreAccountId& lhs, const CoreAccountId& rhs) {
+  return lhs.ToString() <=> rhs.ToString();
+}
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs);
+inline bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs) {
+  return lhs.ToString() == rhs.ToString();
+}
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator!=(const CoreAccountId& lhs, const CoreAccountId& rhs);
-
-COMPONENT_EXPORT(GOOGLE_APIS)
-std::ostream& operator<<(std::ostream& out, const CoreAccountId& a);
+inline std::ostream& operator<<(std::ostream& out, const CoreAccountId& a) {
+  return out << a.ToString();
+}
 
 // Returns the values of the account ids in a vector. Useful especially for
 // logs.

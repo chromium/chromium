@@ -20,6 +20,7 @@
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -418,9 +419,8 @@ void PersistResponseInfo(CommandMarshal* command_marshal,
                          const std::string& key,
                          const net::HttpResponseInfo& response_info) {
   scoped_refptr<net::PickledIOBuffer> data =
-      base::MakeRefCounted<net::PickledIOBuffer>();
-  response_info.Persist(data->pickle(), false, false);
-  data->Done();
+      base::MakeRefCounted<net::PickledIOBuffer>(response_info.MakePickle(
+          /*skip_transient_headers=*/false, /*response_truncated=*/false));
 
   TestEntryResultCompletionCallback cb_open;
   EntryResult result = command_marshal->cache_backend()->OpenEntry(
@@ -429,7 +429,7 @@ void PersistResponseInfo(CommandMarshal* command_marshal,
   CHECK_EQ(result.net_error(), net::OK);
   Entry* cache_entry = result.ReleaseEntry();
 
-  int data_len = data->pickle()->size();
+  int data_len = data->size();
   net::TestCompletionCallback cb;
   int rv = cache_entry->WriteData(kResponseInfoIndex, 0, data.get(), data_len,
                                   cb.callback(), true);

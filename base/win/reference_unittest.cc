@@ -16,12 +16,12 @@ namespace ABI {
 namespace Windows {
 namespace Foundation {
 template <>
-struct __declspec(uuid("3c00fd60-2950-5939-a21a-2d12c5a01b8a")) IReference<bool>
-    : IReference_impl<Internal::AggregateType<bool, boolean>> {};
+struct __declspec(uuid("3c00fd60-2950-5939-a21a-2d12c5a01b8a"))
+IReference<bool> : IReference_impl<Internal::AggregateType<bool, boolean>> {};
 
 template <>
-struct __declspec(uuid("548cefbd-bc8a-5fa0-8df2-957440fc8bf4")) IReference<int>
-    : IReference_impl<int> {};
+struct __declspec(uuid("548cefbd-bc8a-5fa0-8df2-957440fc8bf4"))
+IReference<int> : IReference_impl<int> {};
 }  // namespace Foundation
 }  // namespace Windows
 }  // namespace ABI

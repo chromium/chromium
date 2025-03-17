@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.JUnitTestGURLs;
 
 /**
@@ -87,7 +89,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabObserver customTabObserver;
     @Mock public ActivityTabProvider activityTabProvider;
     @Mock public ActivityLifecycleDispatcher lifecycleDispatcher;
-    @Mock public CustomTabsSessionToken session;
+    @Mock public SessionHolder<CustomTabsSessionToken> session;
     @Mock public TabModelSelectorImpl tabModelSelector;
     @Mock public TabModel tabModel;
     @Mock public ReparentingTask reparentingTask;
@@ -96,7 +98,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public ToolbarManager toolbarManager;
     @Mock public ChromeBrowserInitializer browserInitializer;
     @Mock public TabModelInitializer tabModelInitializer;
-    @Mock public WebContents webContents;
+    @Mock public MockWebContents webContents;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     @Mock public ProfileProvider profileProvider;
     @Mock public CipherFactory cipherFactory;

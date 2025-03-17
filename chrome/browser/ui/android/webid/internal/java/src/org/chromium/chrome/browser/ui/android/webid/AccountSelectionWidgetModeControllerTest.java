@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,18 +20,13 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -61,9 +55,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             mIdpData.setRpContext(rpContext);
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
                     Arrays.asList(mNewUserAccount),
-                    mIdpData,
+                    Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ false,
                     /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
@@ -84,9 +77,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             // showVerifySheet is called in showAccounts when isAutoReauthn is true
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
                     Arrays.asList(mAnaAccount),
-                    mIdpData,
+                    Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ true,
                     /* newAccounts= */ Collections.EMPTY_LIST);
 
@@ -99,62 +91,17 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
     }
 
     @Test
-    public void testShowAccountsDoesNotFetchRpIcon() {
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) {
-                                Callback<Bitmap> callback =
-                                        (Callback<Bitmap>) invocation.getArguments()[1];
-
-                                Bitmap brandIcon =
-                                        Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-                                brandIcon.eraseColor(Color.RED);
-                                callback.onResult(brandIcon);
-                                return null;
-                            }
-                        })
-                .when(mMockImageFetcher)
-                .fetchImage(any(), any(Callback.class));
-
+    public void testShowAccountsWithoutBrandIcons() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
-                Arrays.asList(mAnaAccount),
-                mIdpData,
+                Arrays.asList(mAnaAccountWithoutBrandIcons),
+                Arrays.asList(mIdpDataWithoutIcons),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
-    }
-
-    @Test
-    public void testBrandIconDownloadFails() {
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) {
-                                Callback<Bitmap> callback =
-                                        (Callback<Bitmap>) invocation.getArguments()[1];
-                                callback.onResult(null);
-                                return null;
-                            }
-                        })
-                .when(mMockImageFetcher)
-                .fetchImage(any(), any(Callback.class));
-
-        mMediator.showAccounts(
-                mTestEtldPlusOne,
-                mTestEtldPlusOne2,
-                Arrays.asList(mAnaAccount),
-                mIdpData,
-                /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST);
-
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
-        // Brand icon should be transparent placeholder icon. This is useful so that the header text
-        // wrapping does not change in the case that the brand icon download succeeds.
-        assertNotNull(headerModel.get(IDP_BRAND_ICON));
+        assertNull(headerModel.get(IDP_BRAND_ICON));
     }
 
     @Test
@@ -198,7 +145,7 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             mModel.get(ItemProperties.CONTINUE_BUTTON)
                     .get(ContinueButtonProperties.PROPERTIES)
                     .mOnClickListener
-                    .onResult(mAnaAccount);
+                    .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
             verify(mMockDelegate, times(++count))
                     .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
             assertTrue(mMediator.wasDismissed());

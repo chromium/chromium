@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("capture_mode") {
   sources = [
@@ -39,6 +37,8 @@ static_library("capture_mode") {
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/policy:system_features_disable_list",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/ash/web_view",
@@ -46,6 +46,7 @@ static_library("capture_mode") {
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/experiences/screenshot_area",
@@ -55,6 +56,8 @@ static_library("capture_mode") {
     "//components/endpoint_fetcher",
     "//components/language/core/common:common",
     "//components/lens",
+    "//components/lens:enterprise_policy",
+    "//components/search",
     "//content/public/browser",
     "//services/screen_ai/public/mojom",
     "//services/video_capture/public/mojom",
@@ -89,7 +92,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/crosapi",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/video_conference",
@@ -103,6 +105,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/lens:enterprise_policy",
     "//content/test:test_support",
     "//media",
     "//media:test_support",

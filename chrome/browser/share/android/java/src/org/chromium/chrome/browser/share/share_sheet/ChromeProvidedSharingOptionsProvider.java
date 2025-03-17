@@ -186,7 +186,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
 
     @Nullable
     @Override
-    protected FirstPartyOption createPageInfoFirstPartyOption() {
+    protected FirstPartyOption createCollaborateFirstPartyOption() {
         return null;
     }
 

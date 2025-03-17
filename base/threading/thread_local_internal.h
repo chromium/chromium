@@ -56,10 +56,11 @@ class CheckedThreadLocalOwnedPointer {
       delete existing_tracker;
     }
 
-    if (ptr)
+    if (ptr) {
       slot_.Set(new PtrTracker(this, std::move(ptr)));
-    else
+    } else {
       slot_.Set(nullptr);
+    }
 
     return existing_ptr;
   }

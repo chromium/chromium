@@ -10,8 +10,12 @@
 <translation id="2447485272386224171">Chrome terwujud karena adanya project open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dan <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" /> lainnya.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Halaman ini hanya menunjukkan informasi tentang kondisi ngadat terkini jika Anda <ph name="BEGIN_LINK" />mengaktifkan pelaporan kondisi ngadat<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Halaman ini ditujukan untuk digunakan oleh developer Chrome, dan mungkin tidak dikelola atau diuji secara aktif. Untuk mengaktifkannya, buka <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik tombol untuk mengaktifkan halaman debug, lalu buka lagi halaman ini.</translation>
 <translation id="3875312571075912821">Izinkan Chrome untuk mengakses jaringan di setelan firewall atau antivirus
           Anda.</translation>
+<translation id="4949828774841497663">Buka Aplikasi &gt; Setelan Sistem &gt; Jaringan, pilih
+          jaringan aktif, klik tombol Detail..., dan batalkan pilihan proxy
+          yang mungkin telah dipilih.</translation>
 <translation id="5005121315113832363">Halaman ini telah diblokir oleh Chrome</translation>
 <translation id="6011049234605203654">Buka
           menu Chrome &gt;
@@ -40,9 +44,6 @@
           Setelan LAN
           dan batalkan pilihan "Gunakan server proxy untuk LAN".</translation>
 <translation id="7230956101631259640">Anda melihat halaman Chrome yang aman</translation>
-<translation id="8187289872471304532">Buka
-          Aplikasi &gt; Preferensi Sistem &gt; Jaringan &gt; Lanjutan &gt; Proxy
-          dan hapus centang proxy apa pun yang telah dipilih.</translation>
 <translation id="8232971017369963250">Chrome terwujud karena adanya project open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome juga terwujud karena adanya <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" /> lainnya.</translation>
 <translation id="8544217240017914508">Google Chrome mencoba mengubah setelan pengisian metode pembayaran.</translation>

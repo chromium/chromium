@@ -29,10 +29,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -51,7 +49,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -69,6 +67,10 @@ import java.util.List;
  * TabListCoordinator} as well as the life-cycle of shared component objects.
  */
 public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogController {
+    static final String COMPONENT_NAME_PREFIX = "TabGridDialog";
+    private static final String FROM_STRIP_COMPONENT_NAME = COMPONENT_NAME_PREFIX + "FromStrip";
+    private static final String IN_SWITCHER_COMPONENT_NAME = COMPONENT_NAME_PREFIX + "InSwitcher";
+
     private final String mComponentName;
     private final TabListCoordinator mTabListCoordinator;
     private final TabGridDialogMediator mMediator;
@@ -106,24 +108,33 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
-            ScrimCoordinator scrimCoordinator,
+            ScrimManager scrimManager,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
-            boolean isDataSharingAndroidEnabled =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
-
             mActivity = activity;
             mComponentName =
                     animationSourceViewProvider == null
-                            ? "TabGridDialogFromStrip"
-                            : "TabGridDialogInSwitcher";
+                            ? FROM_STRIP_COMPONENT_NAME
+                            : IN_SWITCHER_COMPONENT_NAME;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mModalDialogManager = modalDialogManager;
             mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
             mTabContentManager = tabContentManager;
             mTabSwitcherResetHandler = resetHandler;
+
+            Profile originalProfile =
+                    mCurrentTabGroupModelFilterSupplier
+                            .get()
+                            .getTabModel()
+                            .getProfile()
+                            .getOriginalProfile();
+
+            CollaborationService collaborationService =
+                    CollaborationServiceFactory.getForProfile(originalProfile);
+            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
+            boolean isDataSharingAndroidEnabled = serviceStatus.isAllowedToJoin();
 
             mModel =
                     new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
@@ -144,7 +155,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 dialogStub.inflate();
 
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
-                mDialogView.setupScrimCoordinator(scrimCoordinator);
+                mDialogView.setupScrimManager(scrimManager);
             }
 
             if (!activity.isDestroyed() && !activity.isFinishing()) {
@@ -155,21 +166,15 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             }
             mBottomSheetController = bottomSheetController;
 
-            Profile originalProfile =
-                    mCurrentTabGroupModelFilterSupplier
-                            .get()
-                            .getTabModel()
-                            .getProfile()
-                            .getOriginalProfile();
             if (isDataSharingAndroidEnabled) {
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(originalProfile);
+
+                SharedImageTilesConfig config =
+                        new SharedImageTilesConfig.Builder(activity).build();
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
-                                activity,
-                                SharedImageTilesType.DEFAULT,
-                                new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
-                                dataSharingService);
+                                activity, config, dataSharingService, collaborationService);
             }
 
             Runnable showColorPickerPopupRunnable =
@@ -187,6 +192,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             this::getRecyclerViewPosition,
                             animationSourceViewProvider,
                             mSnackbarManager,
+                            mBottomSheetController,
                             mSharedImageTilesCoordinator,
                             dataSharingTabManager,
                             mComponentName,
@@ -224,7 +230,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
-                            /* backgroundColorSupplier= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
@@ -273,13 +278,14 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mMediator.initWithNative(this::getTabListEditorController);
             mTabListCoordinator.initWithNative(originalProfile);
 
-            CollaborationService collaborationService =
-                    CollaborationServiceFactory.getForProfile(originalProfile);
-            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
-            if (serviceStatus.isAllowedToJoin()) {
+            if (isDataSharingAndroidEnabled) {
+                DataSharingService dataSharingService =
+                        DataSharingServiceFactory.getForProfile(originalProfile);
                 mTabLabeller =
                         new TabLabeller(
                                 originalProfile,
+                                activity,
+                                dataSharingService.getUiDelegate(),
                                 mTabListCoordinator.getTabListNotificationHandler(),
                                 mCurrentTabGroupId);
             } else {
@@ -463,13 +469,16 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @Override
     public void resetWithListOfTabs(@Nullable List<Tab> tabs) {
         mTabListCoordinator.resetWithListOfTabs(tabs, false);
-        mMediator.onReset(tabs);
-        if (tabs != null) {
+        boolean startedToShow = mMediator.onReset(tabs);
+        if (startedToShow) {
             mShowingOrAnimationSupplier.set(true);
         }
         mTabListOnScrollListener.postUpdate(mTabListCoordinator.getContainerView());
 
-        mCurrentTabGroupId.set(tabs == null || tabs.isEmpty() ? null : tabs.get(0).getTabGroupId());
+        mCurrentTabGroupId.set(
+                !startedToShow || tabs == null || tabs.isEmpty()
+                        ? null
+                        : tabs.get(0).getTabGroupId());
         if (mTabLabeller != null) {
             mTabLabeller.showAll();
         }

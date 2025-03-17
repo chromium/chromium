@@ -87,7 +87,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kDialogRoundedCornerRadius));
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated),
         kDialogRoundedCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(

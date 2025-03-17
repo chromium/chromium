@@ -5,10 +5,11 @@
 #ifndef EXTENSIONS_BROWSER_MESSAGE_SERVICE_API_H_
 #define EXTENSIONS_BROWSER_MESSAGE_SERVICE_API_H_
 
+#include <variant>
+
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class BrowserContext;
@@ -24,7 +25,7 @@ class MessageServiceApi {
   virtual ~MessageServiceApi() = default;
 
   using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
-  using Source = absl::variant<content::RenderFrameHost*, WorkerId>;
+  using Source = std::variant<content::RenderFrameHost*, WorkerId>;
 
   virtual void OpenChannelToExtension(
       content::BrowserContext* context,

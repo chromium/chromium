@@ -106,13 +106,13 @@ public class DataSharingNotificationManager {
     }
 
     @VisibleForTesting
-    protected NotificationWrapperBuilder getNotificationBuilder() {
+    protected NotificationWrapperBuilder notificationBuilder(int notificationId) {
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                 ChromeChannelDefinitions.ChannelId.COLLABORATION,
                 new NotificationMetadata(
                         NotificationUmaTracker.SystemNotificationType.DATA_SHARING,
                         TAG,
-                        NOTIFICATION_ID));
+                        notificationId));
     }
 
     /**
@@ -125,7 +125,7 @@ public class DataSharingNotificationManager {
                 mContext.getString(
                         R.string.data_sharing_invitation_notification_title, displayName);
         Intent pendingIntent = createPendingIntent(Action.INVITATION_FLOW);
-        buildAndNotify(contentTitle, /* showWhen= */ false, pendingIntent);
+        buildAndNotify(contentTitle, /* showWhen= */ false, NOTIFICATION_ID, pendingIntent);
     }
 
     /**
@@ -134,13 +134,15 @@ public class DataSharingNotificationManager {
      * @param contentTitle The text to display.
      * @param syncId The sync id of the tab group that should be opened upon action interaction.
      */
-    public void showOtherJoinedNotification(String contentTitle, String syncId) {
+    public void showOtherJoinedNotification(
+            String contentTitle, String syncId, int notificationId) {
         Intent pendingIntent = createPendingIntent(Action.MANAGE_TAB_GROUP);
         pendingIntent.putExtra(TAB_GROUP_SYNC_ID_EXTRA, syncId);
-        buildAndNotify(contentTitle, /* showWhen= */ true, pendingIntent);
+        buildAndNotify(contentTitle, /* showWhen= */ true, notificationId, pendingIntent);
     }
 
-    private void buildAndNotify(String contentTitle, boolean showWhen, Intent pendingIntent) {
+    private void buildAndNotify(
+            String contentTitle, boolean showWhen, int notificationId, Intent pendingIntent) {
         PendingIntentProvider pendingIntentProvider =
                 PendingIntentProvider.getBroadcast(
                         mContext,
@@ -149,7 +151,7 @@ public class DataSharingNotificationManager {
                         PendingIntent.FLAG_IMMUTABLE);
 
         NotificationWrapper notification =
-                getNotificationBuilder()
+                notificationBuilder(notificationId)
                         .setSmallIcon(R.drawable.ic_chrome)
                         .setShowWhen(showWhen)
                         .setAutoCancel(true)

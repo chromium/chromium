@@ -99,14 +99,14 @@
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
 #endif
-#include "ash/components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
-#include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -345,11 +345,9 @@ GpuServiceImpl::GpuServiceImpl(
 #if BUILDFLAG(ENABLE_VULKAN)
       vulkan_implementation_(init_params.vulkan_implementation),
 #endif
-      exit_callback_(std::move(init_params.exit_callback)),
       clear_shader_cache_(base::FeatureList::IsEnabled(
           features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
-  DCHECK(exit_callback_);
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
@@ -525,11 +523,6 @@ void GpuServiceImpl::UpdateGPUInfo() {
         image_decode_accelerator_worker_->GetSupportedProfiles();
   }
 
-#if BUILDFLAG(IS_WIN)
-  gpu_info_.shared_image_d3d =
-      gpu::D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_);
-#endif
-
   // Record initialization only after collecting the GPU info because that can
   // take a significant amount of time.
   base::TimeTicks now = base::TimeTicks::Now();
@@ -619,6 +612,20 @@ void GpuServiceImpl::InitializeWithHost(
       std::move(pending_gpu_host), std::move(use_shader_cache_shm_count),
       default_offscreen_surface, std::move(creation_params), sync_point_manager,
       shared_image_manager, scheduler, shutdown_event);
+
+#if BUILDFLAG(IS_WIN)
+  // shared_image_d3d must be initialized after we call
+  // InitializeWithHostInternal as that is where the shared context state is
+  // created.
+  auto shared_context_state = GetContextState();
+  if (shared_context_state) {
+    gpu_info_.shared_image_d3d =
+        gpu::D3DImageBackingFactory::IsD3DSharedImageSupported(
+            shared_context_state->GetD3D11Device().Get(), gpu_preferences_);
+
+    gpu_host_->DidUpdateGPUInfo(gpu_info_);
+  }
+#endif
 }
 #endif
 
@@ -988,7 +995,6 @@ void GpuServiceImpl::CreateGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle shm_handle;
     shm_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
         id, size, format, usage);
-    DCHECK_EQ(gfx::SHARED_MEMORY_BUFFER, shm_handle.type);
     std::move(callback).Run(std::move(shm_handle));
     return;
   }
@@ -1172,7 +1178,6 @@ void GpuServiceImpl::GetIsolationKey(
 }
 
 void GpuServiceImpl::MaybeExitOnContextLost(
-    bool synthetic_loss,
     gpu::error::ContextLostReason context_lost_reason) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
@@ -1182,13 +1187,10 @@ void GpuServiceImpl::MaybeExitOnContextLost(
     return;
   }
 
-  if (IsExiting() || !exit_callback_)
-    return;
-
   LOG(ERROR) << "Exiting GPU process because some drivers can't recover "
                 "from errors. GPU process will restart shortly.";
-  is_exiting_.Set();
-  std::move(exit_callback_).Run(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST);
+  base::Process::TerminateCurrentProcessImmediately(
+      static_cast<int>(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST));
 }
 
 bool GpuServiceImpl::IsExiting() const {

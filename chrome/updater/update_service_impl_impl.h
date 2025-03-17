@@ -24,6 +24,10 @@ class SequencedTaskRunner;
 class Version;
 }  // namespace base
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace update_client {
 class UpdateClient;
 }  // namespace update_client
@@ -42,7 +46,8 @@ class UpdateServiceImplImpl : public UpdateService {
   // Overrides for updater::UpdateService.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     base::OnceCallback<void(int)> callback) override;
   void RegisterApp(const RegistrationRequest& request,
                    base::OnceCallback<void(int)> callback) override;
   void GetAppStates(
@@ -96,9 +101,42 @@ class UpdateServiceImplImpl : public UpdateService {
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback);
 
-  bool IsAppPolicyLoadedOK(const std::string& app_id) const;
-  void HandlePolicyLoadError(
+  void GetAppStatesImpl(
+      base::OnceCallback<void(const std::vector<AppState>&)> callback);
+
+  void CheckForUpdateImpl(
       const std::string& app_id,
+      Priority priority,
+      PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback);
+
+  void UpdateImpl(
+      const std::string& app_id,
+      const std::string& install_data_index,
+      Priority priority,
+      PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback);
+
+  void InstallImpl(
+      const RegistrationRequest& registration,
+      const std::string& client_install_data,
+      const std::string& install_data_index,
+      Priority priority,
+      const std::string& language,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback);
+
+  void RunInstallerImpl(
+      const std::string& app_id,
+      const base::FilePath& installer_path,
+      const std::string& install_args,
+      const std::string& install_data,
+      const std::string& install_settings,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback);
 

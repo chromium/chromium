@@ -8,7 +8,7 @@ import {getTemplate} from './files_metadata_entry.html.js';
 
 export interface FilesMetadataEntry {
   $: {
-    valueContainer: HTMLDivElement,
+    valueContainer: HTMLElement,
   };
   isPath: boolean;
   loading: boolean;

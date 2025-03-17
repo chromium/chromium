@@ -26,4 +26,7 @@ specific_include_rules = {
   ".*fuzzer\.cc$": [
     "+third_party/icu",
   ],
+  "manifest_fuzzer.cc": [
+    "+content/public",
+  ]
 }

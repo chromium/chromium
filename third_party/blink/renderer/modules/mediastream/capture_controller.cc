@@ -4,15 +4,16 @@
 
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
@@ -58,7 +59,7 @@ bool IsCaptureType(const MediaStreamTrack* track,
   MediaStreamTrackPlatform::Settings settings;
   video_track->GetSettings(settings);
   const std::optional<SurfaceType> display_surface = settings.display_surface;
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       types, [display_surface](SurfaceType t) { return t == display_surface; });
 }
 
@@ -137,7 +138,8 @@ std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
 
   const media::mojom::DisplayMediaInformationPtr& display_media_info =
       native_source->device().display_media_info;
-  if (!display_media_info) {
+  if (!display_media_info ||
+      display_media_info->display_surface != SurfaceType::BROWSER) {
     return std::nullopt;
   }
 
@@ -188,6 +190,14 @@ DOMException* CscResultToDOMException(CapturedSurfaceControlResult result) {
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           "Capturing application not focused.");
+    case CapturedSurfaceControlResult::kMinZoomLevel:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Cannot decrease zoom level beyond the minimum value.");
+    case CapturedSurfaceControlResult::kMaxZoomLevel:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Cannot increase zoom level beyond the maximum value.");
   }
   NOTREACHED();
 }
@@ -261,6 +271,32 @@ CaptureController::ValidationResult::ValidationResult(DOMExceptionCode code,
                                                       String message)
     : code(code), message(message) {}
 
+Vector<int> CaptureController::getSupportedZoomLevelsForTabs() {
+  const wtf_size_t kSize =
+      static_cast<wtf_size_t>(kPresetBrowserZoomFactors.size());
+  // If later developers modify `kPresetBrowserZoomFactors` to include many more
+  // entries than original intended, they should consider modifying this
+  // Web-exposed API to either:
+  // * Allow the Web application provide the max levels it wishes to receive.
+  // * Do some UA-determined trimming.
+  CHECK_LE(kSize, 100u) << "Excessive zoom levels.";
+  CHECK_EQ(kMinimumBrowserZoomFactor, kPresetBrowserZoomFactors.front());
+  CHECK_EQ(kMaximumBrowserZoomFactor, kPresetBrowserZoomFactors.back());
+
+  Vector<int> result(kSize);
+  if (kSize == 0) {
+    return result;
+  }
+
+  result[0] = base::ClampCeil(100 * kPresetBrowserZoomFactors[0]);
+  for (wtf_size_t i = 1; i < kSize; ++i) {
+    result[i] = base::ClampFloor(100 * kPresetBrowserZoomFactors[i]);
+    CHECK_LT(result[i - 1], result[i]) << "Must be monotonically increasing.";
+  }
+
+  return result;
+}
+
 CaptureController* CaptureController::Create(ExecutionContext* context) {
   return MakeGarbageCollected<CaptureController>(context);
 }
@@ -313,60 +349,7 @@ void CaptureController::setFocusBehavior(
   FinalizeFocusDecision();
 }
 
-ScriptPromise<IDLUndefined> CaptureController::sendWheel(
-    ScriptState* script_state,
-    CapturedWheelAction* action) {
-  DCHECK(IsMainThread());
-  CHECK(action);
-  CHECK(action->hasX());
-  CHECK(action->hasY());
-  CHECK(action->hasWheelDeltaX());
-  CHECK(action->hasWheelDeltaY());
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-
-  const auto promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Unsupported.");
-  return promise;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    resolver->RejectWithDOMException(validation_result.code,
-                                     validation_result.message);
-    return promise;
-  }
-
-  const base::expected<ScaledCoordinates, String> scaled_coordinates =
-      ScaleCoordinates(video_track_, action);
-  if (!scaled_coordinates.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     scaled_coordinates.error());
-    return promise;
-  }
-
-  const std::optional<base::UnguessableToken>& session_id =
-      GetCaptureSessionId(video_track_);
-  if (!session_id.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
-                                     "Invalid capture");
-    return promise;
-  }
-
-  GetMediaStreamDispatcherHost()->SendWheel(
-      *session_id,
-      blink::mojom::blink::CapturedWheelAction::New(
-          scaled_coordinates->relative_x, scaled_coordinates->relative_y,
-          action->wheelDeltaX(), action->wheelDeltaY()),
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
-
-  return promise;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-}
-
-ScriptPromise<IDLUndefined> CaptureController::captureWheel(
+ScriptPromise<IDLUndefined> CaptureController::forwardWheel(
     ScriptState* script_state,
     HTMLElement* element) {
   DCHECK(IsMainThread());
@@ -403,105 +386,49 @@ ScriptPromise<IDLUndefined> CaptureController::captureWheel(
 
   GetMediaStreamDispatcherHost()->RequestCapturedSurfaceControlPermission(
       *session_id,
-      WTF::BindOnce(&CaptureController::OnCaptureWheelPermissionResult,
+      WTF::BindOnce(&CaptureController::OnForwardWheelPermissionResult,
                     WrapWeakPersistent(this), WrapPersistent(resolver),
                     WrapWeakPersistent(element)));
   return promise;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-Vector<int> CaptureController::getSupportedZoomLevels() {
-  const wtf_size_t kSize =
-      static_cast<wtf_size_t>(kPresetBrowserZoomFactors.size());
-  // If later developers modify `kPresetBrowserZoomFactors` to include many more
-  // entries than original intended, they should consider modifying this
-  // Web-exposed API to either:
-  // * Allow the Web application provide the max levels it wishes to receive.
-  // * Do some UA-determined trimming.
-  CHECK_LE(kSize, 100u) << "Excessive zoom levels.";
-  CHECK_EQ(kMinimumBrowserZoomFactor, kPresetBrowserZoomFactors.front());
-  CHECK_EQ(kMaximumBrowserZoomFactor, kPresetBrowserZoomFactors.back());
-
-  Vector<int> result(kSize);
-  if (kSize == 0) {
-    return result;
-  }
-
-  result[0] = base::ClampCeil(100 * kPresetBrowserZoomFactors[0]);
-  for (wtf_size_t i = 1; i < kSize; ++i) {
-    result[i] = base::ClampFloor(100 * kPresetBrowserZoomFactors[i]);
-    CHECK_LT(result[i - 1], result[i]) << "Must be monotonically increasing.";
-  }
-
-  return result;
-}
-
-int CaptureController::getZoomLevel(ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return 100;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    exception_state.ThrowDOMException(validation_result.code,
-                                      validation_result.message);
-    return 100;
-  }
-
-  if (!zoom_level_) {
+Vector<int> CaptureController::getSupportedZoomLevels(
+    ExceptionState& exception_state) {
+  if (!video_track_ || video_track_->Ended()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The zoom level is not yet known.");
-    return 100;
+                                      "Not actively capturing.");
+    return Vector<int>();
   }
 
-  return *zoom_level_;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Not a supported surface type.");
+    return Vector<int>();
+  }
+
+  return getSupportedZoomLevelsForTabs();
 }
 
-ScriptPromise<IDLUndefined> CaptureController::setZoomLevel(
-    ScriptState* script_state,
-    int zoom_level) {
-  DCHECK(IsMainThread());
+std::optional<int> CaptureController::zoomLevel() const {
+  return zoom_level_;
+}
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+ScriptPromise<IDLUndefined> CaptureController::increaseZoomLevel(
+    ScriptState* script_state) {
+  return UpdateZoomLevel(script_state,
+                         mojom::blink::ZoomLevelAction::kIncrease);
+}
 
-  const auto promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Unsupported.");
-  return promise;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    resolver->RejectWithDOMException(validation_result.code,
-                                     validation_result.message);
-    return promise;
-  }
+ScriptPromise<IDLUndefined> CaptureController::decreaseZoomLevel(
+    ScriptState* script_state) {
+  return UpdateZoomLevel(script_state,
+                         mojom::blink::ZoomLevelAction::kDecrease);
+}
 
-  if (!getSupportedZoomLevels().Contains(zoom_level)) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Only values returned by getSupportedZoomLevels() are valid.");
-    return promise;
-  }
-
-  const std::optional<base::UnguessableToken>& session_id =
-      GetCaptureSessionId(video_track_);
-  if (!session_id.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
-                                     "Invalid capture");
-    return promise;
-  }
-
-  GetMediaStreamDispatcherHost()->SetZoomLevel(
-      session_id.value(), zoom_level,
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
-  return promise;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+ScriptPromise<IDLUndefined> CaptureController::resetZoomLevel(
+    ScriptState* script_state) {
+  return UpdateZoomLevel(script_state, mojom::blink::ZoomLevelAction::kReset);
 }
 
 void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
@@ -565,20 +492,18 @@ void CaptureController::FinalizeFocusDecision() {
 void CaptureController::SourceChangedZoomLevel(int zoom_level) {
   DCHECK(IsMainThread());
 
-  if (zoom_level_ == zoom_level) {
+  if (!video_track_ || video_track_->Ended() ||
+      !IsCaptureType(video_track_, {SurfaceType::BROWSER}) ||
+      zoom_level_ == zoom_level) {
     return;
   }
 
   zoom_level_ = zoom_level;
 
-  if (!video_track_ || video_track_->Ended()) {
-    return;
-  }
-
-  DispatchEvent(*Event::Create(event_type_names::kCapturedzoomlevelchange));
+  DispatchEvent(*Event::Create(event_type_names::kZoomlevelchange));
 }
 
-void CaptureController::OnCaptureWheelPermissionResult(
+void CaptureController::OnForwardWheelPermissionResult(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     HTMLElement* element,
     CapturedSurfaceControlResult result) {
@@ -668,6 +593,95 @@ CaptureController::ValidateCapturedSurfaceControlCall() const {
                             "Action only supported for tab-capture.");
   }
   return ValidationResult(DOMExceptionCode::kNoError, "");
+}
+
+ScriptPromise<IDLUndefined> CaptureController::UpdateZoomLevel(
+    ScriptState* script_state,
+    mojom::blink::ZoomLevelAction action) {
+  DCHECK(IsMainThread());
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+
+  const auto promise = resolver->Promise();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Unsupported.");
+  return promise;
+#else
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->RejectWithDOMException(validation_result.code,
+                                     validation_result.message);
+    return promise;
+  }
+
+  const std::optional<base::UnguessableToken>& session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                     "Invalid capture");
+    return promise;
+  }
+
+  GetMediaStreamDispatcherHost()->UpdateZoomLevel(
+      session_id.value(), action,
+      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
+  return promise;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+ScriptPromise<IDLUndefined> CaptureController::SendWheel(
+    ScriptState* script_state,
+    CapturedWheelAction* action) {
+  DCHECK(IsMainThread());
+  CHECK(action);
+  CHECK(action->hasX());
+  CHECK(action->hasY());
+  CHECK(action->hasWheelDeltaX());
+  CHECK(action->hasWheelDeltaY());
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+
+  const auto promise = resolver->Promise();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Unsupported.");
+  return promise;
+#else
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->RejectWithDOMException(validation_result.code,
+                                     validation_result.message);
+    return promise;
+  }
+
+  const base::expected<ScaledCoordinates, String> scaled_coordinates =
+      ScaleCoordinates(video_track_, action);
+  if (!scaled_coordinates.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     scaled_coordinates.error());
+    return promise;
+  }
+
+  const std::optional<base::UnguessableToken>& session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                     "Invalid capture");
+    return promise;
+  }
+
+  GetMediaStreamDispatcherHost()->SendWheel(
+      *session_id,
+      blink::mojom::blink::CapturedWheelAction::New(
+          scaled_coordinates->relative_x, scaled_coordinates->relative_y,
+          action->wheelDeltaX(), action->wheelDeltaY()),
+      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
+
+  return promise;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 }  // namespace blink

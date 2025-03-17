@@ -106,7 +106,7 @@ struct AXTextSelection final {
 
   AXTextSelection(const AXTextSelection& selection);
 
-  virtual ~AXTextSelection();
+  ~AXTextSelection();
 
   AXTextSelection& operator=(const AXTextSelection& selection);
 
@@ -139,7 +139,7 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXTextStateChangeIntent final {
 
   AXTextStateChangeIntent(const AXTextStateChangeIntent& intent);
 
-  virtual ~AXTextStateChangeIntent();
+  ~AXTextStateChangeIntent();
 
   AXTextStateChangeIntent& operator=(const AXTextStateChangeIntent& intent);
 

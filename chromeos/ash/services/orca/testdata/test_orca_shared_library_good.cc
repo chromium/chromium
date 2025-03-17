@@ -42,7 +42,7 @@ class FakeOrcaService : public ash::orca::mojom::OrcaService {
 
 class OrcaServiceThread : public base::SimpleThread {
  public:
-  OrcaServiceThread(uint32_t receiver_handle, OrcaLogger* logger)
+  OrcaServiceThread(uintptr_t receiver_handle, OrcaLogger* logger)
       : base::SimpleThread("OrcaServiceThread"),
         receiver_handle_(receiver_handle),
         logger_(logger) {}
@@ -69,7 +69,7 @@ class OrcaServiceThread : public base::SimpleThread {
     run_loop.Run();
   }
 
-  uint32_t receiver_handle_;
+  uintptr_t receiver_handle_;
   raw_ptr<OrcaLogger> logger_;
 };
 
@@ -80,10 +80,9 @@ OrcaServiceThread* g_orca_service_thread = nullptr;
 extern "C" {
 
 OrcaBindServiceStatus __attribute__((visibility("default")))
-OrcaBindService(const MojoSystemThunks2* mojo_thunks,
-                const MojoSystemThunks* mojo_thunks_legacy,
-                uint32_t receiver_handle,
-                OrcaLogger* logger) {
+OrcaBindServiceV2(const MojoSystemThunks2* mojo_thunks,
+                  uintptr_t receiver_handle,
+                  OrcaLogger* logger) {
   CHECK(mojo_thunks);
   MojoEmbedderSetSystemThunks(mojo_thunks);
 

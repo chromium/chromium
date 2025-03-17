@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 
+#include "ash/metrics/demo_session_metrics_recorder.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -69,15 +71,28 @@ void DemoModeWindowCloser::OnInstanceUpdate(
   if (CloseGMSCoreWindowIfPresent(update)) {
     return;
   }
-
-  if (!views::Widget::GetWidgetForNativeWindow(update.Window())) {
+  if (!update.StateChanged()) {
     return;
   }
 
+  const bool is_arc_app = ash::IsArcWindow(update.Window());
+  const std::string app_id_or_package =
+      is_arc_app ? GetPackageNameFromAppId(update.AppId()) : update.AppId();
   const auto instance_id = update.InstanceId();
+  auto* metric_recorder = ash::DemoSessionMetricsRecorder::Get();
+  CHECK(metric_recorder);
+
   if (update.IsCreation()) {
-    opened_apps_with_widget_.insert(instance_id);
+    const bool is_widget_app =
+        views::Widget::GetWidgetForNativeWindow(update.Window());
+    if (is_widget_app) {
+      // Some Chrome app has no widget, it will be closed by
+      // `chrome::CloseAllBrowsers`.
+      opened_apps_with_widget_.insert(instance_id);
+    }
+    metric_recorder->OnAppCreation(app_id_or_package, is_arc_app);
   } else if (update.IsDestruction()) {
+    metric_recorder->OnAppDestruction(app_id_or_package, is_arc_app);
     opened_apps_with_widget_.erase(instance_id);
   }
 }
@@ -120,6 +135,8 @@ void DemoModeWindowCloser::StartClosingApps() {
   // non-window/widget if open.
 }
 
+// TODO(crbug.com/302583338): Remove this function once
+// `DemoMode.GMSCoreDialogShown` never present.
 bool DemoModeWindowCloser::CloseGMSCoreWindowIfPresent(
     const apps::InstanceUpdate& update) {
   if (!gms_core_app_id_.empty()) {

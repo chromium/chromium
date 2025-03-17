@@ -89,11 +89,6 @@ const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";
 const char kReadAloudEnabled[] = "policy.read_aloud_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Boolean policy preference to disable the User-Agent Client Hints
-// updated GREASE algorithm feature.
-const char kUserAgentClientHintsGREASEUpdateEnabled[] =
-    "policy.user_agent_client_hints_grease_update_enabled";
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Last time that a check for cloud policy management was done. This time is
 // recorded on Android and iOS so that retries aren't attempted on every

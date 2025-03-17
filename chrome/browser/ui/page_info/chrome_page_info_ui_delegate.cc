@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -25,6 +25,7 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/merchant_trust_service.h"
+#include "components/page_info/core/pref_names.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permissions_client.h"
@@ -320,11 +321,43 @@ ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
       ->GetEmbargoResult(site_url_, type);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void ChromePageInfoUiDelegate::OpenMerchantTrustSidePanel(const GURL& url) {
+  DCHECK(page_info::IsMerchantTrustFeatureEnabled());
+  ShowMerchantTrustSidePanel(web_contents_, url);
+}
+#endif
+
 void ChromePageInfoUiDelegate::GetMerchantTrustInfo(
     page_info::MerchantDataCallback callback) {
-  MerchantTrustServiceFactory::GetForProfile(GetProfile())
-      ->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
-                             std::move(callback));
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
+                                  std::move(callback));
+  }
+}
+
+void ChromePageInfoUiDelegate::RecordPageInfoWithMerchantTrustOpenTime() {
+  GetProfile()->GetPrefs()->SetTime(prefs::kMerchantTrustPageInfoLastOpenTime,
+                                    clock_->Now());
+}
+
+void ChromePageInfoUiDelegate::RecordMerchantTrustButtonShown() {
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->RecordMerchantTrustInteraction(
+        web_contents_->GetVisibleURL(),
+        page_info::MerchantTrustInteraction::kPageInfoRowShown);
+  }
+}
+
+void ChromePageInfoUiDelegate::RecordMerchantTrustSidePanelOpened() {
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->RecordMerchantTrustInteraction(
+        web_contents_->GetVisibleURL(),
+        page_info::MerchantTrustInteraction::kSidePanelOpened);
+  }
 }
 
 Profile* ChromePageInfoUiDelegate::GetProfile() const {

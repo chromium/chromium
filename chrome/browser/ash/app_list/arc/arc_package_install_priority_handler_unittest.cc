@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_package_install_priority_handler.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

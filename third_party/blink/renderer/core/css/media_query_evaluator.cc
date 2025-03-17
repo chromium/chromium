@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/media_eval_utils.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_features.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
@@ -90,30 +91,6 @@ void MaybeRecordMediaFeatureValue(
         .Add(surface, IdentifiableToken(value))
         .Record(document->UkmRecorder());
     document->SetMediaFeatureEvaluated(static_cast<int>(feature_name));
-  }
-}
-
-KleeneValue KleeneOr(KleeneValue a, KleeneValue b) {
-  switch (a) {
-    case KleeneValue::kTrue:
-      return KleeneValue::kTrue;
-    case KleeneValue::kFalse:
-      return b;
-    case KleeneValue::kUnknown:
-      return (b == KleeneValue::kTrue) ? KleeneValue::kTrue
-                                       : KleeneValue::kUnknown;
-  }
-}
-
-KleeneValue KleeneAnd(KleeneValue a, KleeneValue b) {
-  switch (a) {
-    case KleeneValue::kTrue:
-      return b;
-    case KleeneValue::kFalse:
-      return KleeneValue::kFalse;
-    case KleeneValue::kUnknown:
-      return (b == KleeneValue::kFalse) ? KleeneValue::kFalse
-                                        : KleeneValue::kUnknown;
   }
 }
 
@@ -216,70 +193,26 @@ KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
 KleeneValue MediaQueryEvaluator::Eval(
     const MediaQueryExpNode& node,
     MediaQueryResultFlags* result_flags) const {
-  if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node)) {
-    return Eval(n->Operand(), result_flags);
-  }
-  if (auto* n = DynamicTo<MediaQueryFunctionExpNode>(node)) {
-    return Eval(n->Operand(), result_flags);
-  }
-  if (auto* n = DynamicTo<MediaQueryNotExpNode>(node)) {
-    return EvalNot(n->Operand(), result_flags);
-  }
-  if (auto* n = DynamicTo<MediaQueryAndExpNode>(node)) {
-    return EvalAnd(n->Left(), n->Right(), result_flags);
-  }
-  if (auto* n = DynamicTo<MediaQueryOrExpNode>(node)) {
-    return EvalOr(n->Left(), n->Right(), result_flags);
-  }
-  if (IsA<MediaQueryUnknownExpNode>(node)) {
-    return KleeneValue::kUnknown;
-  }
-  return EvalFeature(To<MediaQueryFeatureExpNode>(node), result_flags);
-}
-
-KleeneValue MediaQueryEvaluator::EvalNot(
-    const MediaQueryExpNode& operand_node,
-    MediaQueryResultFlags* result_flags) const {
-  switch (Eval(operand_node, result_flags)) {
-    case KleeneValue::kTrue:
-      return KleeneValue::kFalse;
-    case KleeneValue::kFalse:
-      return KleeneValue::kTrue;
-    case KleeneValue::kUnknown:
-      return KleeneValue::kUnknown;
-  }
-}
-
-KleeneValue MediaQueryEvaluator::EvalAnd(
-    const MediaQueryExpNode& left_node,
-    const MediaQueryExpNode& right_node,
-    MediaQueryResultFlags* result_flags) const {
-  KleeneValue left = Eval(left_node, result_flags);
-  // Short-circuiting before calling Eval on |right_node| prevents
-  // unnecessary entries in |results|.
-  if (left == KleeneValue::kFalse) {
-    return left;
-  }
-  return KleeneAnd(left, Eval(right_node, result_flags));
-}
-
-KleeneValue MediaQueryEvaluator::EvalOr(
-    const MediaQueryExpNode& left_node,
-    const MediaQueryExpNode& right_node,
-    MediaQueryResultFlags* result_flags) const {
-  KleeneValue left = Eval(left_node, result_flags);
-  // Short-circuiting before calling Eval on |right_node| prevents
-  // unnecessary entries in |results|.
-  if (left == KleeneValue::kTrue) {
-    return left;
-  }
-  return KleeneOr(left, Eval(right_node, result_flags));
+  return MediaEval(
+      node, [this, result_flags](const MediaQueryFeatureExpNode& feature) {
+        return EvalFeature(feature, result_flags);
+      });
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
     const HeapVector<MediaQuerySetResult>& result_flags) const {
   for (const auto& result : result_flags) {
     if (result.Result() != Eval(result.MediaQueries())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool MediaQueryEvaluator::DidResultsChange(
+    const HeapHashMap<Member<const MediaQuerySet>, bool>& results) const {
+  for (const auto& [query_set, result] : results) {
+    if (result != Eval(*query_set)) {
       return true;
     }
   }

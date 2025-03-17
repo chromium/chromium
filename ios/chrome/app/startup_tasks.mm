@@ -10,6 +10,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
@@ -61,6 +62,12 @@
                   base::saturated_cast<int>([voiceShortcuts count]), 20);
             }];
       }));
+}
+
+- (void)removeFilesScheduledForAutoDeletion {
+  GetApplicationContext()
+      ->GetAutoDeletionService()
+      ->RemoveScheduledFilesReadyForDeletion(base::DoNothing());
 }
 
 #pragma mark - Private methods.

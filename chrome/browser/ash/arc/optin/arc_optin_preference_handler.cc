@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 

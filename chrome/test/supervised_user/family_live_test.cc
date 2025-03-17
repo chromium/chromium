@@ -7,6 +7,7 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -23,10 +24,14 @@
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/supervised_user/family_member.h"
+#include "chrome/test/supervised_user/browser_user.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/test_support/account_repository.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -43,38 +48,20 @@ const char* kWaitForSyncInvalidationReadySwitch =
 // detailed.
 const char* kDebugSwitch = "supervised-tests-debug-features";
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr signin_metrics::AccessPoint kTestAccessPoint =
+    signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt;
+#endif
+
 bool IsSwitchEnabled(const char* flag) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(flag);
 }
-
-// List of accounts specified in
-// chrome/browser/internal/resources/signin/test_accounts.json.
-static constexpr std::string_view kHeadOfHouseholdAccountIdSuffix{
-    "HEAD_OF_HOUSEHOLD"};
-static constexpr std::string_view kChildAccountIdSuffix{"CHILD_1"};
 
 Profile& CreateNewProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   return profiles::testing::CreateProfileSync(profile_manager, profile_path);
-}
-
-std::string GetFamilyIdentifier() {
-  const base::CommandLine* const cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kFamilyIdentifierLegacySwitch)) {
-    return cmd->GetSwitchValueASCII(kFamilyIdentifierLegacySwitch);
-  }
-  if (cmd->HasSwitch(kFamilyIdentifierSwitch)) {
-    return cmd->GetSwitchValueASCII(kFamilyIdentifierSwitch);
-  }
-
-  NOTREACHED() << "Please specify " << kFamilyIdentifierSwitch << " or "
-               << kFamilyIdentifierLegacySwitch << " switch";
-}
-
-std::string GetFamilyMemberIdentifier(std::string_view member_identifier) {
-  return GetFamilyIdentifier() + "_" + std::string(member_identifier);
 }
 
 bool HasAuthError(syncer::SyncServiceImpl* service) {
@@ -108,14 +95,25 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
   }
 };
 
-signin::TestAccountSigninCredentials CreateTestAccountFromCredentialsSwitch(
+test_accounts::FamilyMember CreateTestAccountFromCredentialsSwitch(
     std::string_view credentials_switch) {
   std::string credentials =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           credentials_switch);
+  test_accounts::FamilyMember member;
+
+  if (credentials_switch == kHeadOfHouseholdCredentialsSwitch) {
+    member.role = kidsmanagement::FamilyRole::HEAD_OF_HOUSEHOLD;
+  } else if (credentials_switch == kChildCredentialsSwitch) {
+    member.role = kidsmanagement::FamilyRole::CHILD;
+  } else {
+    NOTREACHED() << "Unknown credentials switch: " << credentials_switch;
+  }
+
   std::string username, password;
-  if (RE2::FullMatch(credentials, "(.*):(.*)", &username, &password)) {
-    return {username, password};
+  if (RE2::FullMatch(credentials, "(.*):(.*)", &member.username,
+                     &member.password)) {
+    return member;
   }
 
   NOTREACHED() << "Expected username:password format, but got: " << credentials;
@@ -125,22 +123,25 @@ signin::TestAccountSigninCredentials CreateTestAccountFromCredentialsSwitch(
 FamilyLiveTest::FamilyLiveTest(RpcMode rpc_mode) : rpc_mode_(rpc_mode) {}
 FamilyLiveTest::FamilyLiveTest(
     RpcMode rpc_mode,
-    const std::vector<std::string>& extra_enabled_hosts)
-    : extra_enabled_hosts_(extra_enabled_hosts), rpc_mode_(rpc_mode) {}
+    const std::vector<std::string_view>& extra_enabled_hosts)
+    : extra_enabled_hosts_(extra_enabled_hosts.begin(),
+                           extra_enabled_hosts.end()),
+      rpc_mode_(rpc_mode) {}
+
 FamilyLiveTest::~FamilyLiveTest() = default;
 
-FamilyMember& FamilyLiveTest::head_of_household() const {
+BrowserUser& FamilyLiveTest::head_of_household() const {
   CHECK(head_of_household_)
       << "No head of household found for given family or credentials";
   return *head_of_household_;
 }
 
-FamilyMember& FamilyLiveTest::child() const {
+BrowserUser& FamilyLiveTest::child() const {
   CHECK(child_) << "No child found for given family or credentials";
   return *child_;
 }
 
-FamilyMember& FamilyLiveTest::rpc_issuer() const {
+BrowserUser& FamilyLiveTest::rpc_issuer() const {
   switch (rpc_mode_) {
     case RpcMode::kProd:
       return head_of_household();
@@ -155,15 +156,15 @@ void FamilyLiveTest::TurnOnSync() {
   TurnOnSyncFor(*child_);
 }
 
-void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
-  member.TurnOnSync();
-  member.browser().tab_strip_model()->CloseWebContentsAt(
+void FamilyLiveTest::TurnOnSyncFor(BrowserUser& browser_user) {
+  browser_user.TurnOnSync();
+  browser_user.browser().tab_strip_model()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
-  member.browser().tab_strip_model()->CloseWebContentsAt(
+  browser_user.browser().tab_strip_model()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
   if (IsSwitchEnabled(kDebugSwitch)) {
-    CHECK(AddTabAtIndexToBrowser(&member.browser(), 1,
+    CHECK(AddTabAtIndexToBrowser(&browser_user.browser(), 1,
                                  GURL("chrome://sync-internals"),
                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
   }
@@ -173,7 +174,7 @@ void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
     LOG(INFO) << "Waiting for sync service to set up invalidations.";
     syncer::SyncServiceImpl* service =
         SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-            &member.profile());
+            &browser_user.profile());
     service->SetInvalidationsForSessionsEnabled(true);
     CHECK(SyncSetupChecker(service).Wait()) << "SyncSetupChecker timed out.";
     CHECK(InvalidationsStatusChecker(service, /*expected_status=*/true).Wait())
@@ -192,17 +193,42 @@ void FamilyLiveTest::SetUp() {
 void FamilyLiveTest::SetUpOnMainThread() {
   signin::test::LiveTest::SetUpOnMainThread();
 
-  if (IsSwitchEnabled(kFamilyIdentifierSwitch)) {
+  if (IsSwitchEnabled(kFamilyFeatureIdentifierSwitch) &&
+      IsSwitchEnabled(kAccountRepositoryPath)) {
     // Family from static test_accounts file mode
     CHECK(!IsSwitchEnabled(kHeadOfHouseholdCredentialsSwitch))
         << "Head of household credentials are ignored if "
-        << kFamilyIdentifierSwitch << " is set";
+        << kFamilyFeatureIdentifierSwitch << " and " << kAccountRepositoryPath
+        << " are set";
     CHECK(!IsSwitchEnabled(kChildCredentialsSwitch))
-        << "Child credentials are ignored if " << kFamilyIdentifierSwitch
-        << " is set";
+        << "Child credentials are ignored if " << kFamilyFeatureIdentifierSwitch
+        << " and " << kAccountRepositoryPath << " are set";
 
-    SetHeadOfHousehold(GetAccountFromFile(kHeadOfHouseholdAccountIdSuffix));
-    SetChild(GetAccountFromFile(kChildAccountIdSuffix));
+    std::optional<test_accounts::Feature> family_feature =
+        test_accounts::ParseFeature(
+            base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                kFamilyFeatureIdentifierSwitch));
+    CHECK(family_feature.has_value()) << "Unrecognized family feature";
+
+    TestAccountRepository repository(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            kAccountRepositoryPath));
+
+    std::optional<test_accounts::Family> family =
+        repository.GetRandomFamilyByFeature(*family_feature);
+    CHECK(family_feature.has_value())
+        << "Family with requested feature not available";
+
+    std::optional<test_accounts::FamilyMember> head_of_household =
+        GetFirstFamilyMemberByRole(
+            *family, kidsmanagement::FamilyRole::HEAD_OF_HOUSEHOLD);
+    CHECK(head_of_household.has_value()) << "Head of household not available";
+    SetHeadOfHousehold(*head_of_household);
+
+    std::optional<test_accounts::FamilyMember> child =
+        GetFirstFamilyMemberByRole(*family, kidsmanagement::FamilyRole::CHILD);
+    CHECK(child.has_value()) << "Child not available";
+    SetChild(*child);
     return;
   }
 
@@ -214,25 +240,37 @@ void FamilyLiveTest::SetUpOnMainThread() {
     return;
   }
 
-  NOTREACHED() << "Either specify " << kFamilyIdentifierSwitch
-               << " or configure credentials using "
+  NOTREACHED() << "Either specify " << kFamilyFeatureIdentifierSwitch << " and "
+               << kAccountRepositoryPath << " or configure credentials using "
                << kHeadOfHouseholdCredentialsSwitch << " and "
                << kChildCredentialsSwitch << ".";
 }
 void FamilyLiveTest::TearDownOnMainThread() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  for (const BrowserUser* user : {child_.get(), head_of_household_.get()}) {
+    if (!user) {
+      continue;
+    }
+    user->browser().signin_view_controller()->SignoutOrReauthWithPrompt(
+        kTestAccessPoint,
+        signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+        signin_metrics::SourceForRefreshTokenOperation::
+            kUserMenu_SignOutAllAccounts);
+  }
+#endif
+
   head_of_household_.reset();
   child_.reset();
   signin::test::LiveTest::TearDownOnMainThread();
 }
 
 void FamilyLiveTest::SetHeadOfHousehold(
-    const signin::TestAccountSigninCredentials& account) {
-  head_of_household_ = MakeSignedInBrowser(account);
+    const test_accounts::FamilyMember& credentials) {
+  head_of_household_ = MakeSignedInBrowser(credentials);
 }
 
-void FamilyLiveTest::SetChild(
-    const signin::TestAccountSigninCredentials& account) {
-  child_ = MakeSignedInBrowser(account);
+void FamilyLiveTest::SetChild(const test_accounts::FamilyMember& credentials) {
+  child_ = MakeSignedInBrowser(credentials);
 }
 
 void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
@@ -243,30 +281,21 @@ void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
   }
 }
 
-signin::TestAccountSigninCredentials FamilyLiveTest::GetAccountFromFile(
-    std::string_view account_name_suffix) const {
-  std::optional<signin::TestAccountSigninCredentials> account =
-      GetTestAccounts()->GetAccount(
-          GetFamilyMemberIdentifier(account_name_suffix));
-  CHECK(account.has_value());
-  return *account;
-}
-
-std::unique_ptr<FamilyMember> FamilyLiveTest::MakeSignedInBrowser(
-    const signin::TestAccountSigninCredentials& account) {
+std::unique_ptr<BrowserUser> FamilyLiveTest::MakeSignedInBrowser(
+    const test_accounts::FamilyMember& credentials) {
   // Managed externally to the test fixture.
   Profile& profile = CreateNewProfile();
   Browser* browser = CreateBrowser(&profile);
   CHECK(browser) << "Expected to create a browser.";
 
-  FamilyMember::NewTabCallback new_tab_callback = base::BindLambdaForTesting(
+  BrowserUser::NewTabCallback new_tab_callback = base::BindLambdaForTesting(
       [this, browser](int index, const GURL& url,
                       ui::PageTransition transition) -> bool {
         return this->AddTabAtIndexToBrowser(browser, index, url, transition);
       });
 
-  return std::make_unique<FamilyMember>(
-      account,
+  return std::make_unique<BrowserUser>(
+      credentials,
       profile.GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       *IdentityManagerFactory::GetForProfile(&profile), *browser, profile,
@@ -289,30 +318,33 @@ InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
     : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode) {}
 InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
     FamilyLiveTest::RpcMode rpc_mode,
-    const std::vector<std::string>& extra_enabled_hosts)
+    const std::vector<std::string_view>& extra_enabled_hosts)
     : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode, extra_enabled_hosts) {}
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveFamilyLiveTest::WaitForStateSeeding(
     ui::test::StateIdentifier<InIntendedStateObserver> id,
-    const FamilyMember& browser_user,
+    const BrowserUser& browser_user,
     const FamilyLinkSettingsState& state) {
   return Steps(
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
       If([&]() { return !state.Check(browser_user.GetServices()); },
-         /*then_steps=*/
-         Steps(
+         Then(
              Do([&]() {
                state.Seed(rpc_issuer().identity_manager(),
                           rpc_issuer().url_loader_factory(),
                           browser_user.GetAccountId().ToString());
              }),
              PollState(
-                 id, [&]() { return state.Check(browser_user.GetServices()); },
+                 id,
+                 [&]() {
+                   SyncServiceFactory::GetForProfile(&browser_user.profile())
+                       ->TriggerRefresh(syncer::DataTypeSet::All());
+                   return state.Check(browser_user.GetServices());
+                 },
                  /*polling_interval=*/base::Seconds(2)),
              WaitForState(id, true), StopObservingState(id)),
-         /*else_steps=*/
-         Steps(Log(base::StrCat(
+         Else(Log(base::StrCat(
              {"WaitForState[", state.ToString(), "]: seeding skipped"})))),
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: completed"})));
 }

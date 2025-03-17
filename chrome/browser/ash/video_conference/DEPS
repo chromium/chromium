@@ -21,19 +21,19 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/video_conference",
   "+chrome/browser/content_settings",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/views/frame",
   "+chrome/common/chrome_switches.h",
 ]
 
 specific_include_rules = {
   ".*test\.cc": [
+    "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/views/frame",
     "+chrome/test/base",
   ],
 }

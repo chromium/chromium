@@ -101,7 +101,8 @@ class TargetHandler : public DevToolsDomainHandler,
                        bool* out_success) override;
   Response ExposeDevToolsProtocol(
       const std::string& target_id,
-      std::optional<std::string> binding_name) override;
+      std::optional<std::string> binding_name,
+      std::optional<bool> inherit_permissions) override;
   void CreateBrowserContext(
       std::optional<bool> in_disposeOnDetach,
       std::optional<String> in_proxyServer,
@@ -115,8 +116,11 @@ class TargetHandler : public DevToolsDomainHandler,
   Response GetBrowserContexts(
       std::unique_ptr<protocol::Array<String>>* browser_context_ids) override;
   Response CreateTarget(const std::string& url,
+                        std::optional<int> left,
+                        std::optional<int> top,
                         std::optional<int> width,
                         std::optional<int> height,
+                        std::optional<std::string> window_state,
                         std::optional<std::string> context_id,
                         std::optional<bool> enable_begin_frame_control,
                         std::optional<bool> new_window,

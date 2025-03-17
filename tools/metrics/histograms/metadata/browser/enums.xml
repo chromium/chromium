@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
   <int value="115" label="LOCAL_TEST_POLICIES_APPLIED_INFOBAR"/>
   <int value="116"
       label="BIDDING_AND_AUCTION_USER_CONSENTED_DEBUGGING_DELEGATE"/>
-  <int value="117" label="PARCEL_TRACKING_INFOBAR_DELEGATE"/>
+  <int value="117" label="PARCEL_TRACKING_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="118" label="TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE"/>
   <int value="119" label="ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE"/>
   <int value="120" label="DEV_TOOLS_SHARED_PROCESS_DELEGATE"/>
@@ -340,7 +340,76 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kNotYetCreatedAfterWarmup"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/browser/histograms.xml:NoSpareRendererReason) -->
+
+<!-- LINT.IfChange(ProcessAllocationNavigationStage) -->
+
+<enum name="ProcessAllocationNavigationStage">
+  <int value="0" label="NoURLLoader"/>
+  <int value="1" label="BeforeNetworkRequest"/>
+  <int value="2" label="AfterNetworkRequest"/>
+  <int value="3" label="HandlingEarlyHints"/>
+  <int value="4" label="AfterResponse"/>
+  <int value="5" label="AfterFailure"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/process_allocation_context.h:ProcessAllocationNavigationStage) -->
+
+<enum name="ProcessAllocationNavigationStageCombination">
+  <int value="0" label="NoURLLoader_NoURLLoader"/>
+  <int value="1" label="NoURLLoader_BeforeNetworkRequest"/>
+  <int value="2" label="NoURLLoader_AfterNetworkRequest"/>
+  <int value="3" label="NoURLLoader_HandlingEarlyHints"/>
+  <int value="4" label="NoURLLoader_AfterResponse"/>
+  <int value="5" label="NoURLLoader_AfterFailure"/>
+  <int value="100" label="BeforeNetworkRequest_NoURLLoader"/>
+  <int value="101" label="BeforeNetworkRequest_BeforeNetworkRequest"/>
+  <int value="102" label="BeforeNetworkRequest_AfterNetworkRequest"/>
+  <int value="103" label="BeforeNetworkRequest_HandlingEarlyHints"/>
+  <int value="104" label="BeforeNetworkRequest_AfterResponse"/>
+  <int value="105" label="BeforeNetworkRequest_AfterFailure"/>
+  <int value="200" label="AfterNetworkRequest_NoURLLoader"/>
+  <int value="201" label="AfterNetworkRequest_BeforeNetworkRequest"/>
+  <int value="202" label="AfterNetworkRequest_AfterNetworkRequest"/>
+  <int value="203" label="AfterNetworkRequest_HandlingEarlyHints"/>
+  <int value="204" label="AfterNetworkRequest_AfterResponse"/>
+  <int value="205" label="AfterNetworkRequest_AfterFailure"/>
+  <int value="300" label="HandlingEarlyHints_NoURLLoader"/>
+  <int value="301" label="HandlingEarlyHints_BeforeNetworkRequest"/>
+  <int value="302" label="HandlingEarlyHints_AfterNetworkRequest"/>
+  <int value="303" label="HandlingEarlyHints_HandlingEarlyHints"/>
+  <int value="304" label="HandlingEarlyHints_AfterResponse"/>
+  <int value="305" label="HandlingEarlyHints_AfterFailure"/>
+  <int value="400" label="AfterResponse_NoURLLoader"/>
+  <int value="401" label="AfterResponse_BeforeNetworkRequest"/>
+  <int value="402" label="AfterResponse_AfterNetworkRequest"/>
+  <int value="403" label="AfterResponse_HandlingEarlyHints"/>
+  <int value="404" label="AfterResponse_AfterResponse"/>
+  <int value="405" label="AfterResponse_AfterFailure"/>
+  <int value="500" label="AfterFailure_NoURLLoader"/>
+  <int value="501" label="AfterFailure_BeforeNetworkRequest"/>
+  <int value="502" label="AfterFailure_AfterNetworkRequest"/>
+  <int value="503" label="AfterFailure_HandlingEarlyHints"/>
+  <int value="504" label="AfterFailure_AfterResponse"/>
+  <int value="505" label="AfterFailure_AfterFailure"/>
+</enum>
+
+<!-- LINT.IfChange(ProcessAllocationSource) -->
+
+<enum name="ProcessAllocationSource">
+  <int value="0" label="RFHInitRoot"/>
+  <int value="1" label="NavigationRequest"/>
+  <int value="2" label="OverrideNavigationParams"/>
+  <int value="3" label="CanRequestURL"/>
+  <int value="4" label="AuctionProcessManager"/>
+  <int value="5" label="ServiceWorkerProcessManager"/>
+  <int value="6" label="SharedStorageRenderThreadWorkletDriver"/>
+  <int value="7" label="SharedWorker"/>
+  <int value="8" label="NoProcessCreationExpected"/>
+  <int value="9" label="Test"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/process_allocation_context.h:ProcessAllocationSource) -->
 
 <enum name="RendererType">
   <int value="1" label="Normal renderer"/>
@@ -414,6 +483,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ExtensionProcess"/>
   <int value="5" label="JitDisabled"/>
   <int value="6" label="V8OptDisabled"/>
+  <int value="7" label="DisallowV8FeatureFlagOverrides"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/content_browser_client.h:SpareProcessRefusedByEmbedderReason) -->

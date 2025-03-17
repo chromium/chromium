@@ -257,7 +257,6 @@ void WriteAnrAsMime(crashpad::FileReader* anr_reader,
   builder.SetFormData("board", info->board());
   builder.SetFormData("installer_package_name", info->installer_package_name());
   builder.SetFormData("abi_name", info->abi_name());
-  builder.SetFormData("custom_themes", info->custom_themes());
   builder.SetFormData("resources_version", info->resources_version());
   builder.SetFormData("gms_core_version", info->gms_version_code());
 

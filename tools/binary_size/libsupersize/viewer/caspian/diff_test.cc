@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
@@ -29,7 +30,7 @@ Symbol MakeSymbol(SectionId section_id,
     std::string& s = symbol_names.back();
     s += static_cast<char>(section_id);
     s += "_";
-    s += std::to_string(size);
+    s += base::NumberToString(size);
     s += "A";
     name = s;
   }

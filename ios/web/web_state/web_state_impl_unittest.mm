@@ -24,7 +24,6 @@
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
-#import "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -45,7 +44,8 @@
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ios/web/web_state/global_web_state_event_tracker.h"
+#import "ios/web/web_state/deprecated/global_web_state_event_tracker.h"
+#import "ios/web/web_state/deprecated/global_web_state_observer.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_policy_decider_test_util.h"
 #import "net/http/http_response_headers.h"
@@ -55,14 +55,14 @@
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
+using base::test::RunOnceCallback;
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using testing::_;
 using testing::Assign;
 using testing::AtMost;
 using testing::DoAll;
 using testing::Return;
-using base::test::RunOnceCallback;
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 namespace {
@@ -312,13 +312,6 @@ TEST_F(WebStateImplTest, ObserverTest) {
   web_state->OnTitleChanged();
   ASSERT_TRUE(observer->title_was_set_info());
   EXPECT_EQ(web_state.get(), observer->title_was_set_info()->web_state);
-
-  // Test that UnderPageBackgroundColorChanged() is called.
-  ASSERT_FALSE(observer->under_page_background_color_changed_info());
-  web_state->OnUnderPageBackgroundColorChanged();
-  ASSERT_TRUE(observer->under_page_background_color_changed_info());
-  EXPECT_EQ(web_state.get(),
-            observer->under_page_background_color_changed_info()->web_state);
 
   // Test that WebStateDestroyed() is called.
   EXPECT_FALSE(observer->web_state_destroyed_info());

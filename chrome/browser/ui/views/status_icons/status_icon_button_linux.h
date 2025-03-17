@@ -30,7 +30,8 @@ class StatusIconButtonLinux : public ui::StatusIconLinux,
   ~StatusIconButtonLinux() override;
 
   // views::StatusIcon:
-  void SetIcon(const gfx::ImageSkia& image) override;
+  void SetImage(const gfx::ImageSkia& image) override;
+  void SetIcon(const gfx::VectorIcon& icon) override;
   void SetToolTip(const std::u16string& tool_tip) override;
   void UpdatePlatformContextMenu(ui::MenuModel* model) override;
   void OnSetDelegate() override;

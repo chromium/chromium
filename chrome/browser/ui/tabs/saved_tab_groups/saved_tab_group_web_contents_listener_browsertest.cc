@@ -8,9 +8,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -40,13 +39,11 @@ class ListenerDeferredTest : public InProcessBrowserTest,
     if (GetParam()) {
       features_.InitWithFeatures(
           {tab_groups::kTabGroupsDeferRemoteNavigations,
-           tab_groups::kTabGroupSyncServiceDesktopMigration,
-           tab_groups::kTabGroupsSaveV2},
+           tab_groups::kTabGroupSyncServiceDesktopMigration},
           {});
     } else {
       features_.InitWithFeatures(
-          {tab_groups::kTabGroupsDeferRemoteNavigations,
-           tab_groups::kTabGroupsSaveV2},
+          {tab_groups::kTabGroupsDeferRemoteNavigations},
           {tab_groups::kTabGroupSyncServiceDesktopMigration});
     }
   }
@@ -82,7 +79,7 @@ class ListenerDeferredTest : public InProcessBrowserTest,
         tab_strip_model()->GetIndexOfTab(test_tab_));
 
     // Ensure that the tab was foregrounded.
-    ASSERT_TRUE(test_tab_->IsInForeground()) << "The tab was not foregrounded.";
+    ASSERT_TRUE(test_tab_->IsActivated()) << "The tab was not foregrounded.";
   }
 
   void BackgroundTestTab() {
@@ -90,8 +87,7 @@ class ListenerDeferredTest : public InProcessBrowserTest,
         tab_strip_model()->GetIndexOfTab(other_tab_));
 
     // Ensure that the tab was backgrounded.
-    ASSERT_FALSE(test_tab_->IsInForeground())
-        << "The tab was not backgrounded.";
+    ASSERT_FALSE(test_tab_->IsActivated()) << "The tab was not backgrounded.";
   }
 
   void WaitForNavigationCompleted() {
@@ -107,21 +103,7 @@ class ListenerDeferredTest : public InProcessBrowserTest,
     local_group_id_ = tab_strip_model()->AddToNewGroup(
         {tab_strip_model()->GetIndexOfTab(test_tab_)});
 
-    tab_groups::TabGroupSyncService* service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
-
-    ASSERT_TRUE(service);
-
-    tab_groups::SavedTabGroupModel* model = nullptr;
-    if (IsServiceMigrationEnabled()) {
-      auto* service_impl =
-          static_cast<tab_groups::TabGroupSyncServiceImpl*>(service);
-      model = service_impl->GetModelForTesting();
-    } else {
-      auto* keyed_service =
-          tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile());
-      model = keyed_service->model();
-    }
+    tab_groups::SavedTabGroupModel* model = saved_tab_group_model();
 
     ASSERT_TRUE(model);
     ASSERT_TRUE(local_group_id_.has_value());
@@ -184,16 +166,19 @@ class ListenerDeferredTest : public InProcessBrowserTest,
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
   Profile* profile() { return browser()->profile(); }
   tab_groups::SavedTabGroupModel* saved_tab_group_model() {
-    tab_groups::SavedTabGroupModel* model = nullptr;
+    tab_groups::TabGroupSyncService* service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+    EXPECT_TRUE(service);
 
+    tab_groups::SavedTabGroupModel* model = nullptr;
     if (IsServiceMigrationEnabled()) {
-      auto* service = static_cast<tab_groups::TabGroupSyncServiceImpl*>(
-          tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile()));
-      model = service->GetModelForTesting();
+      auto* service_impl =
+          static_cast<tab_groups::TabGroupSyncServiceImpl*>(service);
+      model = service_impl->GetModelForTesting();
     } else {
-      auto* keyed_service =
-          tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile());
-      model = keyed_service->model();
+      auto* service_impl =
+          static_cast<tab_groups::TabGroupSyncServiceProxy*>(service);
+      model = service_impl->GetModelForTesting();
     }
     return model;
   }

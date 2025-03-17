@@ -134,7 +134,7 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
       visit_count(visit_count),
       typed_count(typed_count),
       app_id(app_id) {
-  all_timestamps.insert(time.ToInternalValue());
+  all_timestamps.insert(time);
 }
 
 BrowsingHistoryService::HistoryEntry::HistoryEntry()
@@ -175,8 +175,9 @@ BrowsingHistoryService::BrowsingHistoryService(
   DCHECK(driver_);
 
   // Get notifications when history is cleared.
-  if (local_history_)
+  if (local_history_) {
     history_service_observation_.Observe(local_history_.get());
+  }
 
   // Get notifications when web history is deleted.
   WebHistoryService* web_history = driver_->GetWebHistoryService();
@@ -223,8 +224,9 @@ void BrowsingHistoryService::WebHistoryTimeout(
 
   // Don't reset `web_history_request_` so we can still record histogram.
   // TODO(dubroy): Communicate the failure to the front end.
-  if (!query_task_tracker_.HasTrackedTasks())
+  if (!query_task_tracker_.HasTrackedTasks()) {
     ReturnResultsToDriver(std::move(state));
+  }
 }
 
 void BrowsingHistoryService::QueryHistory(const std::u16string& search_text,
@@ -407,17 +409,17 @@ void BrowsingHistoryService::RemoveVisits(
         delete_directive.mutable_global_id_directive();
     ExpireHistoryArgs* expire_args = nullptr;
 
-    for (int64_t timestamp : entry.all_timestamps) {
+    for (base::Time timestamp : entry.all_timestamps) {
       if (!expire_args) {
         GURL gurl(entry.url);
         expire_list.resize(expire_list.size() + 1);
         expire_args = &expire_list.back();
-        expire_args->SetTimeRangeForOneDay(
-            base::Time::FromInternalValue(timestamp));
+        expire_args->SetTimeRangeForOneDay(timestamp);
         expire_args->urls.insert(gurl);
       }
       // The local visit time is treated as a global ID for the visit.
-      global_id_directive->add_global_id(timestamp);
+      global_id_directive->add_global_id(
+          timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
     }
 
     // Set the start and end time in microseconds since the Unix epoch.
@@ -435,8 +437,9 @@ void BrowsingHistoryService::RemoveVisits(
     expire_args->restrict_app_id = entry.app_id;
 
     // TODO(dubroy): Figure out the proper way to handle an error here.
-    if (web_history && local_history_)
+    if (web_history && local_history_) {
       local_history_->ProcessLocalDeleteDirective(delete_directive);
+    }
   }
 
   if (local_history_) {
@@ -616,8 +619,9 @@ void BrowsingHistoryService::QueryComplete(
   state->local_status =
       results.reached_beginning() ? REACHED_BEGINNING : MORE_RESULTS;
 
-  if (!web_history_timer_->IsRunning())
+  if (!web_history_timer_->IsRunning()) {
     ReturnResultsToDriver(std::move(state));
+  }
 }
 
 void BrowsingHistoryService::OnGetAllAppIds(GetAllAppIdsResult result) {
@@ -668,8 +672,9 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     base::optional_ref<const base::Value::Dict> results_dict) {
   // If the response came in too late, do nothing.
   // TODO(dubroy): Maybe show a banner, and prompt the user to reload?
-  if (!web_history_timer_->IsRunning())
+  if (!web_history_timer_->IsRunning()) {
     return;
+  }
   web_history_timer_->Stop();
   web_history_request_.reset();
 
@@ -705,13 +710,15 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
         if (state->original_options.host_only) {
           // Do post filter to skip entries that do not have the correct
           // hostname.
-          if (gurl.host() != host_name_utf8)
+          if (gurl.host() != host_name_utf8) {
             continue;
+          }
         }
 
         // Ignore any URLs that should not be shown in the history page.
-        if (driver_->ShouldHideWebHistoryUrl(gurl))
+        if (driver_->ShouldHideWebHistoryUrl(gurl)) {
           continue;
+        }
 
         std::u16string title;
 
@@ -765,8 +772,9 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     state->remote_status = FAILURE;
   }
 
-  if (!query_task_tracker_.HasTrackedTasks())
+  if (!query_task_tracker_.HasTrackedTasks()) {
     ReturnResultsToDriver(std::move(state));
+  }
 }
 
 void BrowsingHistoryService::OtherFormsOfBrowsingHistoryQueryComplete(
@@ -779,16 +787,18 @@ void BrowsingHistoryService::OtherFormsOfBrowsingHistoryQueryComplete(
 void BrowsingHistoryService::RemoveComplete() {
   // Notify the driver that the deletion request is complete, but only if
   // web history delete request is not still pending.
-  if (!has_pending_delete_request_)
+  if (!has_pending_delete_request_) {
     driver_->OnRemoveVisitsComplete();
+  }
 }
 
 void BrowsingHistoryService::RemoveWebHistoryComplete(bool success) {
   has_pending_delete_request_ = false;
   // TODO(dubroy): Should we handle failure somehow? Delete directives will
   // ensure that the visits are eventually deleted, so maybe it's not necessary.
-  if (!delete_task_tracker_.HasTrackedTasks())
+  if (!delete_task_tracker_.HasTrackedTasks()) {
     RemoveComplete();
+  }
 }
 
 void BrowsingHistoryService::OnHistoryDeletions(

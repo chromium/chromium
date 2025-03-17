@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Removing the open attribute from an open modal dialog should run the closing algorithm.
-  assert_false: The dialog should not match :modal after closing. expected false got true
-[FAIL] Removing the open attribute from an open non-modal dialog should fire a close event.
-  assert_true: The close event should be fired when removing the open attribute. expected true got false
-Harness: the test ran to completion.
-

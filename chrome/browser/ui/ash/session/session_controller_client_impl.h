@@ -23,6 +23,7 @@
 
 class Profile;
 class PrefChangeRegistrar;
+class PrefService;
 
 namespace ash {
 enum class AddUserSessionPolicy;
@@ -43,7 +44,7 @@ class SessionControllerClientImpl
       public SupervisedUserServiceObserver,
       public policy::off_hours::DeviceOffHoursController::Observer {
  public:
-  SessionControllerClientImpl();
+  explicit SessionControllerClientImpl(PrefService& local_state);
 
   SessionControllerClientImpl(const SessionControllerClientImpl&) = delete;
   SessionControllerClientImpl& operator=(const SessionControllerClientImpl&) =

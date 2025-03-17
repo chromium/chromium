@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(

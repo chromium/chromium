@@ -285,15 +285,15 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       v8::MaybeLocal<v8::Script> script =
           v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                       v8::ScriptCompiler::kConsumeCodeCache);
-      cache_handler->DidUseCodeCache();
-      // The ScriptState has an associated context. We expect the current
-      // context to match the context associated with Script context when
-      // compiling the script for main world. Hence it is safe to use the
-      // CodeCacheHost corresponding to the script execution context. For
-      // isolated world (for ex: extension scripts), the current context
-      // may not match the script context. Though currently code caching is
-      // disabled for extensions.
+      cache_handler->DidUseCodeCache(cached_data->rejected);
       if (cached_data->rejected) {
+        // The ScriptState has an associated context. We expect the current
+        // context to match the context associated with Script context when
+        // compiling the script for main world. Hence it is safe to use the
+        // CodeCacheHost corresponding to the script execution context. For
+        // isolated world (for ex: extension scripts), the current context may
+        // not match the script context. Though currently code caching is
+        // disabled for extensions.
         cache_handler->ClearCachedMetadata(
             ExecutionContext::GetCodeCacheHostFromContext(
                 ExecutionContext::From(script_state)),
@@ -436,7 +436,6 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         // previously.
         CachedMetadataHandler* cache_handler = params.CacheHandler();
         DCHECK(cache_handler);
-        cache_handler->DidUseCodeCache();
         const scoped_refptr<CachedMetadata> cached_metadata =
             V8CodeCache::GetCachedMetadata(cache_handler);
         const bool full_code_cache = V8CodeCache::IsFull(cached_metadata.get());
@@ -448,13 +447,14 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
             source.GetCachedData();
         script = v8::ScriptCompiler::CompileModule(
             isolate, &source, compile_options, no_cache_reason);
-        // The ScriptState also has an associated context. We expect the current
-        // context to match the context associated with Script context when
-        // compiling the module. Hence it is safe to use the CodeCacheHost
-        // corresponding to the current execution context.
-        ExecutionContext* execution_context =
-            ExecutionContext::From(isolate->GetCurrentContext());
+        cache_handler->DidUseCodeCache(cached_data->rejected);
         if (cached_data->rejected) {
+          // The ScriptState also has an associated context. We expect the
+          // current context to match the context associated with Script context
+          // when compiling the module. Hence it is safe to use the
+          // CodeCacheHost corresponding to the current execution context.
+          ExecutionContext* execution_context =
+              ExecutionContext::From(isolate->GetCurrentContext());
           cache_handler->ClearCachedMetadata(
               ExecutionContext::GetCodeCacheHostFromContext(execution_context),
               CachedMetadataHandler::kClearPersistentStorage);
@@ -674,22 +674,21 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
                : true)) {
         auto delay =
             base::Milliseconds(features::kCacheCodeOnIdleDelayParam.Get());
-        // Workers don't have a concept of idle tasks, so use a default task for
-        // these.
-        TaskType task_type =
-            frame ? TaskType::kIdleTask : TaskType::kInternalDefault;
-        execution_context->GetTaskRunner(task_type)->PostDelayedTask(
-            FROM_HERE,
-            WTF::BindOnce(&DelayedProduceCodeCacheTask,
-                          // TODO(leszeks): Consider passing the
-                          // script state as a weak persistent.
-                          WrapPersistent(script_state),
-                          v8::Global<v8::Script>(isolate, script),
-                          WrapPersistent(cache_handler),
-                          classic_script->SourceText().length(),
-                          classic_script->SourceUrl(),
-                          classic_script->StartPosition()),
-            delay);
+        // TODO(crbug.com/40202028): Consider scheduling idle tasks via
+        // ThreadScheduler::PostDelayedIdleTask().
+        execution_context->GetTaskRunner(TaskType::kInternalDefault)
+            ->PostDelayedTask(
+                FROM_HERE,
+                WTF::BindOnce(&DelayedProduceCodeCacheTask,
+                              // TODO(leszeks): Consider passing the
+                              // script state as a weak persistent.
+                              WrapPersistent(script_state),
+                              v8::Global<v8::Script>(isolate, script),
+                              WrapPersistent(cache_handler),
+                              classic_script->SourceText().length(),
+                              classic_script->SourceUrl(),
+                              classic_script->StartPosition()),
+                delay);
       } else {
         V8CodeCache::ProduceCache(
             isolate,
@@ -702,7 +701,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       // `SharedStorageWorkletGlobalScope` has a out-of-process worklet
       // architecture that does not have a `page` associated.
       // TODO(crbug.com/340920456): Figure out what should be done here.
-      if (compile_options == v8::ScriptCompiler::kProduceCompileHints &&
+      if ((compile_options & v8::ScriptCompiler::kProduceCompileHints) != 0 &&
           !execution_context->IsSharedStorageWorkletGlobalScope()) {
         CHECK(page);
         CHECK(frame);

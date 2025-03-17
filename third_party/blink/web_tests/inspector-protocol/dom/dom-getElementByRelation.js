@@ -3,32 +3,51 @@
 
   await dp.DOM.enable();
   const getDocumentResponse = await dp.DOM.getDocument();
+
   const popoverOpener1 = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '.popover-opener-1' })).result.nodeId;
-  const popoverTarget1ById = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#my-popover-1' })).result.nodeId;
+  const target1ById = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#my-popover-1' })).result.nodeId;
   const popoverTarget1 = await dp.DOM.getElementByRelation({nodeId: popoverOpener1, relation: 'PopoverTarget'});
+  const interestTarget1 = await dp.DOM.getElementByRelation({nodeId: popoverOpener1, relation: 'InterestTarget'});
   testRunner.log('Node Id from query selector and getElementByRelation should be the same:');
-  testRunner.log(popoverTarget1ById === popoverTarget1.result.nodeId);
+  testRunner.log(target1ById === popoverTarget1.result.nodeId);
+  testRunner.log('Node Id of PopoverTarget and InterestTarget should be the same because they point to the same element:');
+  testRunner.log(popoverTarget1.result.nodeId === interestTarget1.result.nodeId);
 
   const popoverOpener2 = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '.popover-opener-2' })).result.nodeId;
-  const emptyTarget = await dp.DOM.getElementByRelation({nodeId: popoverOpener2, relation: 'PopoverTarget'});
+  const emptyPopoverTarget = await dp.DOM.getElementByRelation({nodeId: popoverOpener2, relation: 'PopoverTarget'});
+  const emptyInterestTarget = await dp.DOM.getElementByRelation({nodeId: popoverOpener2, relation: 'InterestTarget'});
   testRunner.log('non-existent target id should be zero: ');
-  testRunner.log(emptyTarget.result.nodeId);
+  testRunner.log(emptyPopoverTarget.result.nodeId);
+  testRunner.log(emptyInterestTarget.result.nodeId);
 
   const popoverOpener3 = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '.popover-opener-3' })).result.nodeId;
-  const targetByNonFormControlEl = await dp.DOM.getElementByRelation({nodeId: popoverOpener3, relation: 'PopoverTarget'});
+  const popoverTargetByNonFormControlEl = await dp.DOM.getElementByRelation({nodeId: popoverOpener3, relation: 'PopoverTarget'});
+  const interestTargetByInvalidEl = await dp.DOM.getElementByRelation({nodeId: popoverOpener3, relation: 'InterestTarget'});
   testRunner.log('non-existent target id should be zero: ');
-  testRunner.log(targetByNonFormControlEl.result.nodeId);
+  testRunner.log(popoverTargetByNonFormControlEl.result.nodeId);
+  testRunner.log(interestTargetByInvalidEl.result.nodeId);
 
-  // Verify that it works with popover target set via JavaScript API.
+  // Verify that it works with popover/interest target set via JavaScript API.
   await dp.Runtime.evaluate({ expression: `
     const popoverOpener2 = document.querySelector('.popover-opener-2');
     const myPopover2 = document.getElementById('my-popover-2');
     popoverOpener2.popoverTargetElement = myPopover2;
+    popoverOpener2.interestTargetElement = myPopover2;
   `});
   const popoverTarget2 = await dp.DOM.getElementByRelation({nodeId: popoverOpener2, relation: 'PopoverTarget'});
-  const popoverTarget2ById = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#my-popover-2' })).result.nodeId;
+  const interestTarget2 = await dp.DOM.getElementByRelation({nodeId: popoverOpener2, relation: 'InterestTarget'});
+  const target2ById = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#my-popover-2' })).result.nodeId;
   testRunner.log('Node Id from query selector and getElementByRelation should be the same:');
-  testRunner.log(popoverTarget2ById === popoverTarget2.result.nodeId);
+  testRunner.log(target2ById === popoverTarget2.result.nodeId);
+  testRunner.log('Node Id of PopoverTarget and InterestTarget should be the same because they point to the same element:');
+  testRunner.log(popoverTarget2.result.nodeId === interestTarget2.result.nodeId);
+
+  // Verify that interest target works regardless of popover target.
+  const popoverOpener4 = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '.popover-opener-4' })).result.nodeId;
+  const target3ById = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#my-popover-3' })).result.nodeId;
+  const interestTarget3 = await dp.DOM.getElementByRelation({nodeId: popoverOpener4, relation: 'InterestTarget'});
+  testRunner.log('Node Id from query selector and getElementByRelation should be the same:');
+  testRunner.log(target3ById === interestTarget3.result.nodeId);
 
   testRunner.completeTest();
 })

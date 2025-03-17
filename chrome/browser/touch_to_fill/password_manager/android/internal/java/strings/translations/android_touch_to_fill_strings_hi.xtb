@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">टच करके भरी जाने वाली क्रेडेंशियल की सूची पूरी स्क्रीन में खुली हुई है.</translation>
 <translation id="5591247451101092906">क्या आपको सेव किए गए पासवर्ड या पासकी का इस्तेमाल करना है?</translation>
 <translation id="5624120631404540903">पासवर्ड प्रबंधित करें</translation>
+<translation id="592182999816790476"><ph name="WEBSITE" /> के लिए, <ph name="USERNAME" /> का पासवर्ड सेव किया गया</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> की पासकी, अपने स्क्रीन लॉक का इस्तेमाल करें</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{इस साइट के लिए नया पासवर्ड}one{इस साइट के लिए नया पासवर्ड}other{इस साइट के लिए नए पासवर्ड}}</translation>
 <translation id="7286867818472074330">पासकी चुनें</translation>

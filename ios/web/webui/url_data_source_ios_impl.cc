@@ -19,8 +19,7 @@ URLDataSourceIOSImpl::URLDataSourceIOSImpl(const std::string& source_name,
                                            URLDataSourceIOS* source)
     : source_name_(source_name), backend_(nullptr), source_(source) {}
 
-URLDataSourceIOSImpl::~URLDataSourceIOSImpl() {
-}
+URLDataSourceIOSImpl::~URLDataSourceIOSImpl() {}
 
 void URLDataSourceIOSImpl::SendResponse(
     int request_id,
@@ -49,8 +48,9 @@ void URLDataSourceIOSImpl::SendResponseOnIOThread(
     int request_id,
     scoped_refptr<base::RefCountedMemory> bytes) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  if (backend_)
+  if (backend_) {
     backend_->DataAvailable(request_id, bytes.get());
+  }
 }
 
 const ui::TemplateReplacements* URLDataSourceIOSImpl::GetReplacements() const {

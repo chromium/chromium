@@ -27,14 +27,12 @@ class ExtensionJSRunner : public JSRunner {
   // JSRunner:
   void RunJSFunction(v8::Local<v8::Function> function,
                      v8::Local<v8::Context> context,
-                     int argc,
-                     v8::Local<v8::Value> argv[],
+                     base::span<v8::Local<v8::Value>> args,
                      ResultCallback callback) override;
   v8::MaybeLocal<v8::Value> RunJSFunctionSync(
       v8::Local<v8::Function> function,
       v8::Local<v8::Context> context,
-      int argc,
-      v8::Local<v8::Value> argv[]) override;
+      base::span<v8::Local<v8::Value>> args) override;
 
  private:
   // Called with the result of executing the JS function.

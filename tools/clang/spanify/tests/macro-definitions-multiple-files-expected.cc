@@ -57,7 +57,9 @@ T* SafelyCastNetlinkMsgData(const struct nlmsghdr* header, int length) {
 // Expected rewrite:
 // base::span<int*> dict
 std::size_t check(base::span<int*> dict, std::size_t N) {
-  if (dict) {
+  // Expected rewrite:
+  // if (!dict.empty())
+  if (!dict.empty()) {
     for (int i = 0; i < N; ++i) {
       int* ptr = dict[i];
       // No expected rewrite

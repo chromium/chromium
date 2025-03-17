@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -103,12 +104,21 @@ void ViewTransitionContentLayerImpl::SetOriginatingSurfaceContentRect(
 }
 
 void ViewTransitionContentLayerImpl::AppendQuads(
+    const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   // Skip live content elements that don't have a corresponding resource render
   // passes.
-  if (is_live_content_layer_ && skip_unseen_resource_quads_)
+  if (is_live_content_layer_ && skip_unseen_resource_quads_) {
     return;
+  }
+
+  // Skip all view transition content layer quads for capture phase.
+  // TODO(vmpstr): We may be able to clean this up so that we don't even create
+  // these layers until later phases.
+  if (resource_id_.MatchesToken(context.capture_view_transition_tokens)) {
+    return;
+  }
 
   auto bounds_rect = actual_extents_rect_.IsEmpty() ? gfx::Rect(bounds())
                                                     : actual_extents_rect_;

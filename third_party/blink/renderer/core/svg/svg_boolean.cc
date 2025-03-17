@@ -35,7 +35,7 @@
 namespace blink {
 
 String SVGBoolean::ValueAsString() const {
-  return value_ ? "true" : "false";
+  return String::Boolean(value_);
 }
 
 SVGParsingError SVGBoolean::SetValueAsString(const String& value) {

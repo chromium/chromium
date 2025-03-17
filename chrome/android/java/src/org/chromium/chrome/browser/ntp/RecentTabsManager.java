@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -32,13 +31,11 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.signin_promo.RecentTabsSigninPromoDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
@@ -70,7 +67,6 @@ public class RecentTabsManager
     private final SigninPromoCoordinator mSigninPromoCoordinator;
 
     private TabModel mTabModel;
-    private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
     private FaviconHelper mFaviconHelper;
     private ForeignSessionHelper mForeignSessionHelper;
     private List<ForeignSession> mForeignSessions;
@@ -80,6 +76,7 @@ public class RecentTabsManager
     private SigninManager mSignInManager;
     private UpdatedCallback mUpdatedCallback;
     private View mSigninPromoView;
+    private boolean mShouldShowPromo;
     private boolean mIsDestroyed;
 
     private final ProfileDataCache mProfileDataCache;
@@ -134,7 +131,6 @@ public class RecentTabsManager
                         mProfile,
                         bottomSheetStrings,
                         SigninAccessPoint.RECENT_TABS,
-                        SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                         SigninAndHistorySyncActivityLauncherImpl.get());
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             mSigninPromoCoordinator =
@@ -451,71 +447,31 @@ public class RecentTabsManager
         return mPrefs.getSyncPromoCollapsed();
     }
 
-    /** Returns the current promo state. */
-    @SyncPromoState
-    int getPromoState() {
-        return mPromoState;
+    /** Returns whether the promo should be shown or not. */
+    boolean shouldShowPromo() {
+        return mShouldShowPromo;
     }
 
-    private @SyncPromoState int calculatePromoState() {
+    private boolean calculateShouldShowPromo() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            return mSigninPromoCoordinator.canShowPromo()
-                    ? SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
-                    : SyncPromoState.NO_PROMO;
+            return mSigninPromoCoordinator.canShowPromo();
+        } else {
+            return mSyncPromoController.canShowSyncPromo();
         }
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            // If ReplaceSyncPromosWithSignInPromos is enabled, there's only one promo type.
-            //
-            // TODO(crbug.com/343908771): Revise SyncPromoState after launching
-            //     ReplaceSyncPromosWithSignInPromos.
-            if (!mSyncPromoController.canShowSyncPromo()) {
-                return SyncPromoState.NO_PROMO;
-            }
-            return SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
-        }
-        if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
-            if (!mSyncPromoController.canShowSyncPromo()) {
-                return SyncPromoState.NO_PROMO;
-            }
-            // TODO(crbug.com/338541375): Move this check inside
-            //  SyncPromoController#canShowSyncPromo().
-            if (!mSignInManager.isSyncOptInAllowed()) {
-                return SyncPromoState.NO_PROMO;
-            }
-            if (mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-                return SyncPromoState.PROMO_FOR_SIGNED_IN_STATE;
-            }
-            return SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
-        }
-
-        if (!mForeignSessions.isEmpty()) {
-            return SyncPromoState.NO_PROMO;
-        }
-
-        // TODO(crbug.com/40850972): PROMO_FOR_SYNC_TURNED_OFF_STATE should only
-        // be returned if mSyncService.getSelectedTypes().isEmpty(). Otherwise,
-        // LegacySyncPromoView incorrectly displays a promo with string
-        // R.string.ntp_recent_tabs_sync_promo_instructions.
-        return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
     }
 
     private void updatePromoStateLegacy() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             return;
         }
-        final @SyncPromoState int newState = calculatePromoState();
-        if (newState == mPromoState) return;
+        final boolean shouldShowPromo = calculateShouldShowPromo();
+        if (shouldShowPromo == mShouldShowPromo) return;
 
-        final boolean hasSyncPromoStateChangedtoShown =
-                (mPromoState == SyncPromoState.NO_PROMO
-                                || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
-                        && (newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
-                                || newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
-        if (hasSyncPromoStateChangedtoShown) {
+        final boolean hasPromoVisibilityChangedtoShown = !mShouldShowPromo && shouldShowPromo;
+        if (hasPromoVisibilityChangedtoShown) {
             mSyncPromoController.increasePromoShowCount();
         }
-        mPromoState = newState;
+        mShouldShowPromo = shouldShowPromo;
     }
 
     /** Sets up the sync promo view. */
@@ -574,9 +530,9 @@ public class RecentTabsManager
     }
 
     private void updatePromoState() {
-        final @SyncPromoState int newState = calculatePromoState();
-        if (newState == mPromoState) return;
-        mPromoState = newState;
+        final boolean shouldShowPromo = calculateShouldShowPromo();
+        if (shouldShowPromo == mShouldShowPromo) return;
+        mShouldShowPromo = shouldShowPromo;
 
         if (mIsDestroyed) return;
         onUpdateDone();

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -110,12 +111,12 @@ public abstract class FirstRunFlowSequencer {
     private Boolean mIsChild;
 
     /**
-     * Callback that is called once the flow is determined.
-     * If the properties is null, the First Run experience needs to finish and
-     * restart the original intent if necessary.
-     * @param freProperties Properties to be used in the First Run activity, or null.
+     * Callback that is called once the flow is determined. If the properties is null, the First Run
+     * experience needs to finish and restart the original intent if necessary.
+     *
+     * @param isChild A boolean value indicating child status.
      */
-    public abstract void onFlowIsKnown(Bundle freProperties);
+    public abstract void onFlowIsKnown(boolean isChild);
 
     public FirstRunFlowSequencer(
             OneshotSupplier<ProfileProvider> profileSupplier,
@@ -171,11 +172,7 @@ public abstract class FirstRunFlowSequencer {
 
         if (mIsFlowKnown) return;
         mIsFlowKnown = true;
-
-        Bundle freProperties = new Bundle();
-        freProperties.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, mIsChild);
-
-        onFlowIsKnown(freProperties);
+        onFlowIsKnown(mIsChild);
     }
 
     /**
@@ -303,7 +300,7 @@ public abstract class FirstRunFlowSequencer {
         CrashKeys.getInstance().set(CrashKeyIndex.FIRST_RUN, "yes");
 
         // Launch the async restriction checking as soon as we know we'll be running FRE.
-        FirstRunAppRestrictionInfo.startInitializationHint();
+        AppRestrictionSupplier.startInitializationHint();
 
         if (inSameTask) {
             FreIntentCreator intentCreator = new FreIntentCreator();

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/arc/arc_ui_availability_reporter.h"
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 
 namespace arc {
 

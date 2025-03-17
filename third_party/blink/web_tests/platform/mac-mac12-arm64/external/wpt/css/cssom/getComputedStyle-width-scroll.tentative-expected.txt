@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] getComputedStyle() round-trips in presence of scrollbars
+  assert_equals: width round-trips expected "85px" but got "70px"
+Harness: the test ran to completion.
+

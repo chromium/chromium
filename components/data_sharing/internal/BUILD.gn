@@ -14,6 +14,7 @@ static_library("internal") {
     "//chrome/browser",
     "//chrome/browser/data_sharing:*",
     "//chrome/test:*",
+    "//components/data_sharing:test_support",
     "//ios/chrome/browser/data_sharing/model",
   ]
 
@@ -34,14 +35,15 @@ static_library("internal") {
     "group_data_proto_utils.h",
     "group_data_store.cc",
     "group_data_store.h",
-    "partial_failure_sdk_delegate_wrapper.cc",
-    "partial_failure_sdk_delegate_wrapper.h",
+    "logger_impl.cc",
+    "logger_impl.h",
     "preview_server_proxy.cc",
     "preview_server_proxy.h",
   ]
 
   deps = [
     "//components/data_sharing/internal/protocol",
+    "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/image_fetcher/core:core",
     "//components/signin/public/identity_manager",
@@ -94,7 +96,7 @@ source_set("unit_tests") {
     "group_data_model_unittest.cc",
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
-    "partial_failure_sdk_delegate_wrapper_unittest.cc",
+    "logger_impl_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
 
@@ -111,6 +113,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/data_sharing:test_support",
+    "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher",
     "//components/endpoint_fetcher:test_support",
     "//components/image_fetcher/core:core",
@@ -140,6 +143,7 @@ if (is_android) {
   android_library("internal_java") {
     visibility = [
       "//chrome/android:chrome_all_java",
+      "//chrome/android/javatests:chrome_test_java_org.chromium.chrome.browser.collaboration",
       "//components:*",
       "//components/data_sharing/internal:native_test_helper_java",
     ]
@@ -155,6 +159,8 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//components/data_sharing/public:logger_interfaces_java",
+      "//components/data_sharing/public:logger_java",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
       "//net/android:net_java",
@@ -215,6 +221,7 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//components/data_sharing/public:public_java",
       "//net/android:net_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",

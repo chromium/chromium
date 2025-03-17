@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 
+#include <hb.h>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -12,6 +14,10 @@ namespace blink {
 
 namespace {
 
+//
+// Tests that need `RenderingTest` such as `IsInitial()` are in
+// `InlineNodeTest.FontFeatures*'.
+//
 class FontFeaturesTest : public testing::Test {};
 
 static const FontOrientation orientations[] = {

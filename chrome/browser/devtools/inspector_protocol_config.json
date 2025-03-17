@@ -35,7 +35,7 @@
             },
             {
                 "domain": "Extensions",
-                "async": [ "loadUnpacked", "getStorageItems", "setStorageItems", "removeStorageItems", "clearStorageItems" ]
+                "async": [ "loadUnpacked", "getStorageItems", "setStorageItems", "removeStorageItems", "clearStorageItems", "uninstall" ]
             },
             {
                 "domain": "Security",
@@ -44,7 +44,7 @@
             },
             {
                 "domain": "Storage",
-                "include": ["runBounceTrackingMitigations", "getRelatedWebsiteSets"],
+                "include": ["runBounceTrackingMitigations", "getRelatedWebsiteSets", "getAffectedUrlsForThirdPartyCookieMetadata"],
                 "async": ["runBounceTrackingMitigations", "getRelatedWebsiteSets"]
             },
             {

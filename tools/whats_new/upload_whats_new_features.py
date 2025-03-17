@@ -94,6 +94,8 @@ def _AddFeature(index: int, feature_dict: dict[str, str],
                 valid_icons: whats_new_util.ValidIcons,
                 path_to_milestone_folder: str) -> None:
     start = time.time()
+    # Validate the Lottie files first
+    whats_new_util.ValidateLottieTextLayers(feature_dict, path_to_milestone_folder)
     validation_error = whats_new_util.ValidateWhatsNewData(
         feature_dict, valid_icons)
     if validation_error:
@@ -103,7 +105,8 @@ def _AddFeature(index: int, feature_dict: dict[str, str],
         return
     new_enum = whats_new_util.UpdateWhatsNewItemAndGetNewTypeValue(
         feature_dict)
-    whats_new_util.UpdateWhatsNewPlist(feature_dict, new_enum)
+    whats_new_util.UpdateWhatsNewPlist(feature_dict, new_enum,
+                                       path_to_milestone_folder)
     whats_new_util.UpdateWhatsNewUtils(feature_dict)
     whats_new_util.CopyAnimationFilesToResources(feature_dict,
                                                  path_to_milestone_folder)

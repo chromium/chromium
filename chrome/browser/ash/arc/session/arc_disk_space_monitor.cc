@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -15,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"

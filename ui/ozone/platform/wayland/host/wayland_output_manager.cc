@@ -4,11 +4,11 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -116,7 +116,7 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
 
 WaylandOutput::Id WaylandOutputManager::GetOutputId(
     wl_output* output_resource) const {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       output_list_, output_resource,
       [](const auto& pair) { return pair.second->get_output(); });
   return it == output_list_.end() ? 0 : it->second->output_id();

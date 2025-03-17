@@ -5,11 +5,10 @@
 #include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/cloud/user_fm_registration_token_uploader.h"
 #include "chrome/browser/profiles/profile.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -20,7 +19,7 @@ namespace policy {
 namespace {
 
 auto* GetCloudPolicyManager(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return profile->GetUserCloudPolicyManagerAsh();
 #else
   return profile->GetUserCloudPolicyManager();

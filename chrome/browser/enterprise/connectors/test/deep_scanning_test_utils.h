@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -197,22 +197,6 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
-  void ExpectLoginEvent(const std::string& expected_url,
-                        bool expected_is_federated,
-                        const std::string& expected_federated_origin,
-                        const std::string& expected_profile_username,
-                        const std::string& expected_profile_identifier,
-                        const std::u16string& expected_login_username);
-
-  void ExpectPasswordBreachEvent(
-      const std::string& expected_trigger,
-      const std::vector<std::pair<std::string, std::u16string>>&
-          expected_identities,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier);
-
-  void ExpectNoReport();
-
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
 
@@ -296,7 +280,7 @@ void SetAnalysisConnector(PrefService* prefs,
 void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Helper function to set the profile DM token. It installs a
 // MockCloudPolicyClient with |dm_token| into |profile|'s UserCloudPolicyManager
 // to simulate |profile|'s DM token.

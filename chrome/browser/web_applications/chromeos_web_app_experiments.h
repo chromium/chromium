@@ -12,6 +12,8 @@
 #include "base/containers/span.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -67,6 +69,11 @@ class ChromeOsWebAppExperiments {
   // by the given app after one or multiple redirections.
   static bool ShouldLaunchForRedirectedNavigation(
       const webapps::AppId& target_app_id);
+
+  // Override the manifest id with predefined query params if the start URL in
+  // the manifest matches certain URLs controlled via a finch parameter.
+  static void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
+                                    blink::mojom::ManifestPtr& manifest);
 
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(

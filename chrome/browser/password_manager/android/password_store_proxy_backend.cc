@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -38,7 +38,7 @@ namespace {
 
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
                                       std::vector<bool> statuses) {
-  std::move(completion).Run(base::ranges::all_of(statuses, std::identity()));
+  std::move(completion).Run(std::ranges::all_of(statuses, std::identity()));
 }
 
 void RecordPasswordDeletionResult(PasswordChangesOrError result) {
@@ -137,12 +137,6 @@ void PasswordStoreProxyBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
 void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   main_backend()->GetAutofillableLoginsAsync(std::move(callback));
-}
-
-void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
 }
 
 void PasswordStoreProxyBackend::FillMatchingLoginsAsync(

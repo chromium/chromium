@@ -483,7 +483,8 @@ TEST_F(InteractionTestUtilViewsTest, EnterText_EditableCombobox) {
 TEST_F(InteractionTestUtilViewsTest, ActivateSurface) {
   // Create a bubble that will close on deactivation.
   auto dialog_ptr = std::make_unique<BubbleDialogDelegateView>(
-      contents_, BubbleBorder::Arrow::TOP_LEFT);
+      BubbleDialogDelegateView::CreatePassKey(), contents_,
+      BubbleBorder::Arrow::TOP_LEFT);
   dialog_ptr->set_close_on_deactivate(true);
   auto* widget = BubbleDialogDelegateView::CreateBubble(std::move(dialog_ptr));
   WidgetVisibleWaiter shown_waiter(widget);
@@ -518,7 +519,8 @@ TEST_F(InteractionTestUtilViewsTest, Confirm) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept);
 
   auto dialog_ptr = std::make_unique<BubbleDialogDelegateView>(
-      contents_, BubbleBorder::Arrow::TOP_LEFT);
+      BubbleDialogDelegateView::CreatePassKey(), contents_,
+      BubbleBorder::Arrow::TOP_LEFT);
   auto* dialog = dialog_ptr.get();
   dialog->SetAcceptCallback(accept.Get());
   auto* widget = BubbleDialogDelegateView::CreateBubble(std::move(dialog_ptr));

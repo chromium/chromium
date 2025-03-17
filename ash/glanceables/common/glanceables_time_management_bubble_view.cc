@@ -196,8 +196,7 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                         *combobox_replacement_label_);
   combobox_replacement_label_->SetAutoColorReadabilityEnabled(false);
-  combobox_replacement_label_->SetEnabledColorId(
-      cros_tokens::kCrosSysOnSurface);
+  combobox_replacement_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   combobox_replacement_label_->SetVisible(false);
 
   expand_button_ = header_container->AddChildView(
@@ -331,7 +330,7 @@ void GlanceablesTimeManagementBubbleView::RemoveObserver(Observer* observer) {
 }
 
 void GlanceablesTimeManagementBubbleView::CreateElevatedBackground() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   UpdateInteriorMargin();
 

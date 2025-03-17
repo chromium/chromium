@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_service") {
   sources = [
@@ -34,9 +32,6 @@ static_library("app_service") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc/video_accelerator:protected_native_pixmap_query_client",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -51,7 +46,6 @@ static_library("app_service") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/bruschetta",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/plugin_vm",
@@ -63,6 +57,9 @@ static_library("app_service") {
     "//chrome/browser/ui/webui/ash/settings/app_management",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/borealis",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc/video_accelerator:protected_native_pixmap_query_client",
     "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/ui/base",
     "//components/account_id",
@@ -93,8 +90,6 @@ source_set("browser_tests") {
   deps = [
     ":app_service",
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base/test:test_support",
     "//chrome/app/vector_icons",
     "//chrome/browser",
@@ -119,7 +114,8 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
     "//components/exo",
     "//content/test:test_support",

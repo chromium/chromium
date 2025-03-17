@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/device_sync_impl.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "ash/constants/ash_features.h"
@@ -13,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -37,7 +37,6 @@
 #include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/proto/device_classifier_util.h"
-#include "chromeos/ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "chromeos/ash/services/device_sync/remote_device_provider_impl.h"
 #include "chromeos/ash/services/device_sync/software_feature_manager_impl.h"
 #include "chromeos/ash/services/device_sync/synced_bluetooth_address_tracker_impl.h"
@@ -207,7 +206,6 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* profile_prefs,
-    const GcmDeviceInfoProvider* gcm_device_info_provider,
     ClientAppMetadataProvider* client_app_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<base::OneShotTimer> timer,
@@ -216,16 +214,15 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
   if (custom_factory_instance_) {
     return custom_factory_instance_->CreateInstance(
         identity_manager, gcm_driver, instance_id_driver, profile_prefs,
-        gcm_device_info_provider, client_app_metadata_provider,
-        std::move(url_loader_factory), std::move(timer),
-        get_attestation_certificates_function);
+        client_app_metadata_provider, std::move(url_loader_factory),
+        std::move(timer), get_attestation_certificates_function);
   }
 
   return base::WrapUnique(new DeviceSyncImpl(
       identity_manager, gcm_driver, instance_id_driver, profile_prefs,
-      gcm_device_info_provider, client_app_metadata_provider,
-      std::move(url_loader_factory), base::DefaultClock::GetInstance(),
-      std::move(timer), get_attestation_certificates_function));
+      client_app_metadata_provider, std::move(url_loader_factory),
+      base::DefaultClock::GetInstance(), std::move(timer),
+      get_attestation_certificates_function));
 }
 
 // static
@@ -259,8 +256,8 @@ DeviceSyncImpl::PendingSetSoftwareFeatureRequest::
 bool DeviceSyncImpl::PendingSetSoftwareFeatureRequest::IsFulfilled() const {
   const auto& synced_devices = remote_device_provider_->GetSyncedDevices();
   const auto devices_it =
-      base::ranges::find(synced_devices, device_public_key_,
-                         &multidevice::RemoteDevice::public_key);
+      std::ranges::find(synced_devices, device_public_key_,
+                        &multidevice::RemoteDevice::public_key);
 
   // If the device to edit no longer exists, the request is not fulfilled.
   if (devices_it == synced_devices.end()) {
@@ -376,7 +373,6 @@ DeviceSyncImpl::DeviceSyncImpl(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* profile_prefs,
-    const GcmDeviceInfoProvider* gcm_device_info_provider,
     ClientAppMetadataProvider* client_app_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Clock* clock,
@@ -388,7 +384,6 @@ DeviceSyncImpl::DeviceSyncImpl(
       gcm_driver_(gcm_driver),
       instance_id_driver_(instance_id_driver),
       profile_prefs_(profile_prefs),
-      gcm_device_info_provider_(gcm_device_info_provider),
       client_app_metadata_provider_(client_app_metadata_provider),
       url_loader_factory_(std::move(url_loader_factory)),
       clock_(clock),
@@ -702,7 +697,6 @@ void DeviceSyncImpl::Shutdown() {
   gcm_driver_ = nullptr;
   instance_id_driver_ = nullptr;
   profile_prefs_ = nullptr;
-  gcm_device_info_provider_ = nullptr;
   client_app_metadata_provider_ = nullptr;
   url_loader_factory_ = nullptr;
   clock_ = nullptr;
@@ -990,8 +984,8 @@ DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
   DCHECK_EQ(status_, InitializationStatus::kReady)
       << "DeviceSyncImpl::GetSyncedDeviceWithPublicKey() called before ready.";
   const auto& synced_devices = remote_device_provider_->GetSyncedDevices();
-  const auto it = base::ranges::find(synced_devices, public_key,
-                                     &multidevice::RemoteDevice::public_key);
+  const auto it = std::ranges::find(synced_devices, public_key,
+                                    &multidevice::RemoteDevice::public_key);
 
   if (it == synced_devices.end()) {
     return std::nullopt;

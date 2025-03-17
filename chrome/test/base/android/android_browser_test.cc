@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "content/public/test/test_utils.h"
 
@@ -21,6 +22,9 @@ void AndroidBrowserTest::SetUp() {
   SetUpCommandLine(command_line);
   SetUpDefaultCommandLine(command_line);
   ASSERT_TRUE(test_launcher_utils::CreateUserDataDir(&temp_user_data_dir_));
+
+  InitializeHTTPSTestServer();
+  embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
 
   BrowserTestBase::SetUp();
 }
@@ -57,4 +61,8 @@ size_t AndroidBrowserTest::GetTestPreCount() {
     test_name = test_name.substr(kPreTestPrefix.size());
   }
   return count;
+}
+
+base::FilePath AndroidBrowserTest::GetChromeTestDataDir() const {
+  return chrome_test_utils::GetChromeTestDataDir();
 }

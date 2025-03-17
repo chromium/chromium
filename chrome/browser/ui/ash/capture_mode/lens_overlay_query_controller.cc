@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -57,8 +58,8 @@ namespace {
 
 // The name string for the header for variations information.
 constexpr char kClientDataHeader[] = "X-Client-Data";
-constexpr char kHttpGetMethod[] = "GET";
-constexpr char kHttpPostMethod[] = "POST";
+constexpr HttpMethod kHttpGetMethod = HttpMethod::kGet;
+constexpr HttpMethod kHttpPostMethod = HttpMethod::kPost;
 constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kDeveloperKey[] = "X-Developer-Key";
@@ -81,7 +82,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
-              email: "sophiewen@google.com"
+              email: "hewer@google.com"
             }
             contacts {
               email: "cros-super-select@google.com"
@@ -166,6 +167,13 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
       break;
     case lens::MimeType::kUnknown:
       break;
+    case lens::MimeType::kAnnotatedPageContent:
+    case lens::MimeType::kImage:
+    case lens::MimeType::kVideo:
+    case lens::MimeType::kAudio:
+    case lens::MimeType::kJson:
+      // These content types are not supported for the page content upload flow.
+      NOTREACHED() << "Unsupported option in page content upload";
   }
   return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
 }
@@ -186,6 +194,10 @@ LenOverlayEntryPointFromInvocationSource(
       return lens::LensOverlayClientLogs::TOOLBAR_BUTTON;
     case lens::LensOverlayInvocationSource::kFindInPage:
       return lens::LensOverlayClientLogs::FIND_IN_PAGE;
+    case lens::LensOverlayInvocationSource::kLVFShutterButton:
+    case lens::LensOverlayInvocationSource::kLVFGallery:
+    case lens::LensOverlayInvocationSource::kContextMenu:
+      NOTREACHED() << "Invocation source not supported.";
   }
   return lens::LensOverlayClientLogs::UNKNOWN_ENTRY_POINT;
 }
@@ -288,7 +300,7 @@ std::unique_ptr<EndpointFetcher>
 LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest* request,
     const GURL& fetch_url,
-    const std::string& http_method,
+    const HttpMethod& http_method,
     const base::TimeDelta& timeout,
     const std::vector<std::string>& request_headers,
     const std::vector<std::string>& cors_exempt_headers) {
@@ -304,15 +316,14 @@ LensOverlayQueryController::CreateEndpointFetcher(
           ? profile_->GetURLLoaderFactory().get()
           : g_browser_process->shared_url_loader_factory(),
       /*url=*/fetch_url,
-      /*http_method=*/http_method,
       /*content_type=*/kContentType,
       /*timeout=*/timeout,
       /*post_data=*/request_string,
       /*headers=*/request_headers,
-      /*cors_exempt_headers=*/cors_exempt_headers,
-      /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
+      /*cors_exempt_headers=*/cors_exempt_headers, chrome::GetChannel(),
       /*request_params=*/
-      EndpointFetcher::RequestParams::Builder()
+      EndpointFetcher::RequestParams::Builder(http_method,
+                                              kTrafficAnnotationTag)
           .SetCredentialsMode(CredentialsMode::kInclude)
           .SetSetSiteForCookies(true)
           .Build());

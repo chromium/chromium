@@ -23,7 +23,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -351,7 +353,7 @@ TEST_P(PasswordReceiverServiceImplTest,
 }
 
 TEST_P(PasswordReceiverServiceImplTest,
-       ShouldAcceptInvitationForNonSyncingUserOptedInToAccountStore) {
+       ShouldAcceptInvitationForNonSyncingUserWithAccountStorageEnabled) {
   if (!GetEnableAccountStoreTestParam()) {
     return;
   }
@@ -362,14 +364,8 @@ TEST_P(PasswordReceiverServiceImplTest,
   // Set up an account store user (a non-syncing one, but that doesn't really
   // matter).
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  pref_service().registry()->RegisterDictionaryPref(
-      password_manager::prefs::kAccountStoragePerAccountSettings);
-  features_util::OptInToAccountStorage(&pref_service(), &sync_service());
-#else
-  sync_service().GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, true);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(
+      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());
@@ -381,7 +377,7 @@ TEST_P(PasswordReceiverServiceImplTest,
 }
 
 TEST_P(PasswordReceiverServiceImplTest,
-       ShouldNotAcceptInvitationForNonSyncingUserOptedOutOfAccountStore) {
+       ShouldNotAcceptInvitationForNonSyncingUserWithAccountStorageDisabled) {
   base::HistogramTester histogram_tester;
   if (!GetEnableAccountStoreTestParam()) {
     return;
@@ -390,17 +386,12 @@ TEST_P(PasswordReceiverServiceImplTest,
   ASSERT_TRUE(profile_password_store().stored_passwords().empty());
   ASSERT_TRUE(account_password_store().stored_passwords().empty());
 
-  // Setup a signed-in user that opted-out from using the account store:
+  // Setup a signed-in user that disabled account storage:
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  pref_service().registry()->RegisterDictionaryPref(
-      password_manager::prefs::kAccountStoragePerAccountSettings);
-  features_util::OptOutOfAccountStorageAndClearSettings(&pref_service(),
-                                                        &sync_service());
-#else
   sync_service().GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(
+      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());

@@ -73,8 +73,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)reloadData {
   [self loadModel];
-  if (self.viewLoaded)
+  if (self.viewLoaded) {
     [self.tableView reloadData];
+  }
 }
 
 + (NSString*)accessibilityIdentifier {
@@ -199,8 +200,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (TableViewItem*)subtitleSectionCell {
   WhatsNewTableViewSubtitleItem* cell =
       [[WhatsNewTableViewSubtitleItem alloc] initWithType:ItemTypeHeader];
-  cell.title =
-      l10n_util::GetNSString(IDS_IOS_WHATS_NEW_PRICE_INSIGHTS_SUBTITLE);
+  cell.title = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_LENS_SEARCH_SUBTITLE);
   return cell;
 }
 
@@ -208,11 +208,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
 
   // Add subtitle
-  if (IsPriceInsightsRegionEnabled()) {
-    [model addSectionWithIdentifier:SectionSubtitleIdentifier];
-    [model setHeader:[self subtitleSectionCell]
-        forSectionWithIdentifier:SectionSubtitleIdentifier];
-  }
+  [model addSectionWithIdentifier:SectionSubtitleIdentifier];
+  [model setHeader:[self subtitleSectionCell]
+      forSectionWithIdentifier:SectionSubtitleIdentifier];
 
   [self loadFeatures:model];
   [self loadChromeTip:model];

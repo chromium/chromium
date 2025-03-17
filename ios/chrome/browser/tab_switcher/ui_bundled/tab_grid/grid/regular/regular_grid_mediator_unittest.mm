@@ -6,13 +6,17 @@
 
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/collaboration/test_support/mock_collaboration_service.h"
+#import "components/collaboration/test_support/mock_messaging_backend_service.h"
+#import "components/data_sharing/public/features.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -23,13 +27,26 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+
+using testing::_;
+using testing::Return;
+
+@interface TestRegularGridMediator
+    : RegularGridMediator <MessagingBackendServiceObserving,
+                           TabGroupSyncServiceObserverDelegate>
+@end
+
+@implementation TestRegularGridMediator
+@end
 
 class RegularGridMediatorTest : public GridMediatorTestClass {
  public:
@@ -37,6 +54,17 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
   ~RegularGridMediatorTest() override {}
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            kTabGroupSync,
+            kTabGroupsIPad,
+            kModernTabStrip,
+            kTabGroupIndicator,
+            data_sharing::features::kDataSharingFeature,
+        },
+        /*disable_features=*/{});
+
     GridMediatorTestClass::SetUp();
     mode_holder_ = [[TabGridModeHolder alloc] init];
     tab_group_sync_service_ =
@@ -46,12 +74,12 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
     collaboration_service_ =
         std::make_unique<collaboration::MockCollaborationService>();
 
-    mediator_ = [[RegularGridMediator alloc]
+    mediator_ = [[TestRegularGridMediator alloc]
           initWithModeHolder:mode_holder_
          tabGroupSyncService:tab_group_sync_service_.get()
              shareKitService:share_kit_service_.get()
         collaborationService:collaboration_service_.get()
-            messagingService:nil];
+            messagingService:&messaging_backend_];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
@@ -67,13 +95,15 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
   }
 
  protected:
-  RegularGridMediator* mediator_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TestRegularGridMediator* mediator_ = nullptr;
   std::unique_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<collaboration::MockCollaborationService>
       collaboration_service_;
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
   TabGridModeHolder* mode_holder_;
+  collaboration::messaging::MockMessagingBackendService messaging_backend_;
 };
 
 #pragma mark - Command tests
@@ -243,7 +273,101 @@ TEST_F(RegularGridMediatorTest, FacePileViewControllerForItem) {
   EXPECT_FALSE([mediator_ facePileViewControllerForItem:group_item_id]);
 
   // Share the group.
-  tab_group_sync_service_->MakeTabGroupShared(group.local_group_id().value(),
-                                              "collaboration");
+  tab_group_sync_service_->MakeTabGroupShared(
+      group.local_group_id().value(), "collaboration",
+      tab_groups::TabGroupSyncService::TabGroupSharingCallback());
   EXPECT_TRUE([mediator_ facePileViewControllerForItem:group_item_id]);
+}
+
+// Tests that `-activityLabelDataForGroup:` returns the data for a specific tab
+// group after the messaging backend service is initialized.
+TEST_F(RegularGridMediatorTest, ActivityLabelDataForGroupAfterStartup) {
+  // Create a saved tab group.
+  tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  group.SetLocalGroupId(tab_group_id);
+  tab_group_sync_service_->AddGroup(group);
+  EXPECT_TRUE(
+      tab_group_sync_service_->GetGroup(group.saved_guid()).has_value());
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabGroupMessageMetadata metadata;
+  metadata.local_tab_group_id = std::make_optional(tab_group_id);
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP;
+  message.attribution.tab_group_metadata = std::make_optional(metadata);
+
+  // The activity label data should be nil before the messaging service backend
+  // is initialized.
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(false));
+  EXPECT_EQ(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+  ON_CALL(messaging_backend_, GetMessages(_))
+      .WillByDefault(Return(std::vector{message}));
+
+  // Fake the initialization of the service.
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  // The activity label data should exist after the messaging service backend is
+  // initialized.
+  EXPECT_NE(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
+
+  // The activity label data should be nil for another group.
+  EXPECT_EQ(
+      nil,
+      [mediator_
+          activityLabelDataForGroup:tab_groups::TabGroupId::GenerateNew()]);
+
+  // Fake the update of the service.
+  [mediator_ hidePersistentMessage:message];
+
+  // The activity label data should be nil.
+  EXPECT_EQ(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
+}
+
+// Tests that `-activityLabelDataForGroup:` returns the data for a specific tab
+// group after the API to display the UI is called.
+TEST_F(RegularGridMediatorTest,
+       ActivityLabelDataForGroupAfterDisplayAPICalled) {
+  // Create a saved tab group.
+  tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  group.SetLocalGroupId(tab_group_id);
+  tab_group_sync_service_->AddGroup(group);
+  EXPECT_TRUE(
+      tab_group_sync_service_->GetGroup(group.saved_guid()).has_value());
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabGroupMessageMetadata metadata;
+  metadata.local_tab_group_id = std::make_optional(tab_group_id);
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP;
+  message.attribution.tab_group_metadata = std::make_optional(metadata);
+
+  // The activity label data should be nil by default.
+  EXPECT_EQ(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+
+  // Fake the update of the service.
+  [mediator_ displayPersistentMessage:message];
+
+  // The activity label data should exist after the messaging service backend is
+  // initialized.
+  EXPECT_NE(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
+
+  // The activity label data should be nil for another group.
+  EXPECT_EQ(
+      nil,
+      [mediator_
+          activityLabelDataForGroup:tab_groups::TabGroupId::GenerateNew()]);
+
+  // Fake the update of the service.
+  [mediator_ hidePersistentMessage:message];
+
+  // The activity label data should be nil.
+  EXPECT_EQ(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
 }

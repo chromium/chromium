@@ -13,10 +13,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "printing/printed_document.h"
 
-// This should be after all other #includes.
-#if defined(_WINDOWS_)  // Detect whether windows.h was included.
 #include "base/win/windows_h_disallowed.h"
-#endif  // defined(_WINDOWS_)
 
 namespace printing {
 

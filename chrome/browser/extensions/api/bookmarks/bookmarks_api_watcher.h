@@ -9,7 +9,6 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
-
 #include "content/public/browser/browser_context.h"
 
 class ExtensionFunction;

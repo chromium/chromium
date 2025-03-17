@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -124,7 +125,7 @@ void LogSafetyCheckNotificationOptInSource(
     SafetyCheckNotificationsOptInSource opt_out_source) {
   bool is_notifications_enabled = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, "");
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 
   base::UmaHistogramEnumeration(
       "IOS.Notifications.SafetyCheck.NotificationsOptInSource",

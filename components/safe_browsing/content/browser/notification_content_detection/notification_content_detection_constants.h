@@ -14,6 +14,9 @@ extern const char kSuspiciousVerdictLabel[];
 extern const char kAllowlistCheckLatencyHistogram[];
 extern const char kSuspiciousScoreHistogram[];
 
+// Website setting value key for user's allowlist.
+extern const char kIsAllowlistedByUserKey[];
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_NOTIFICATION_CONTENT_DETECTION_NOTIFICATION_CONTENT_DETECTION_CONSTANTS_H_

@@ -8,6 +8,12 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_static_item.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
 #import "ios/chrome/browser/infobars/model/badge_state.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
@@ -26,12 +32,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
-#import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
-#import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
-#import "ios/chrome/browser/badges/ui_bundled/badge_static_item.h"
-#import "ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h"
-#import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
@@ -152,8 +152,9 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 #pragma mark - Accessors
 
 - (NSArray<id<BadgeItem>>*)badges {
-  if (!self.badgeTabHelper)
+  if (!self.badgeTabHelper) {
     return [NSArray array];
+  }
 
   NSMutableArray<id<BadgeItem>>* badges = [NSMutableArray array];
   std::map<InfobarType, BadgeState> badgeStatesForInfobarType =
@@ -176,15 +177,17 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)setConsumer:(id<BadgeConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
   [self updateConsumer];
 }
 
 - (void)setWebState:(web::WebState*)webState {
-  if (_webState == webState)
+  if (_webState == webState) {
     return;
+  }
   if (_webState) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(nil);
     _webState->RemoveObserver(_webStateObserver.get());
@@ -217,8 +220,9 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 // Updates the consumer for the current active WebState.
 - (void)updateConsumer {
-  if (!self.consumer)
+  if (!self.consumer) {
     return;
+  }
   NSArray<id<BadgeItem>>* badges = self.badges;
 
   BOOL shouldDisplayOverflowBadge = badges.count > 1;
@@ -467,7 +471,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // Returns the infobar in the active WebState's InfoBarManager with `type`.
 - (InfoBarIOS*)infobarWithType:(InfobarType)type {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(self.webState);
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       manager->infobars(), type, [](const infobars::InfoBar* infobar) {
         return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
       });

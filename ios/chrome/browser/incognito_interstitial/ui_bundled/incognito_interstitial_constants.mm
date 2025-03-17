@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
+
+#import <Foundation/Foundation.h>
 
 NSString* const kIncognitoInterstitialAccessibilityIdentifier =
     @"incognitoInterstitialAccessibilityIdentifier";

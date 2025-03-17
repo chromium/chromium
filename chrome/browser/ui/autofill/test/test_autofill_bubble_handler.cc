@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 
-#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/update_address_bubble_controller.h"
@@ -69,7 +69,7 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowAddressSignInPromo(
     content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> move_address_callback) {
+    const AutofillProfile& autofill_profile) {
   if (!address_sign_in_promo_bubble_view_) {
     address_sign_in_promo_bubble_view_ = std::make_unique<TestAutofillBubble>();
   }
@@ -79,7 +79,7 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowAddressSignInPromo(
 
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAutofillAiDataBubble(
     content::WebContents* contents,
-    autofill_ai::SaveAutofillAiDataController* controller) {
+    autofill_ai::SaveOrUpdateAutofillAiDataController* controller) {
   if (!save_autofill_ai_data_bubble_view_) {
     save_autofill_ai_data_bubble_view_ = std::make_unique<TestAutofillBubble>();
   }

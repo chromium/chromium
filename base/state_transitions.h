@@ -74,8 +74,9 @@ struct StateTransitions {
   // Returns a list of states that are valid to transition to from |source|.
   const std::vector<State>& GetValidTransitions(const State& source) const {
     for (const StateTransition& state_transition : state_transitions) {
-      if (state_transition.source == source)
+      if (state_transition.source == source) {
         return state_transition.destinations;
+      }
     }
     static const base::NoDestructor<std::vector<State>> no_transitions;
     return *no_transitions;

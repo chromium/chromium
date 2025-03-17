@@ -7,7 +7,9 @@ package org.chromium.components.viz.service.gl;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
+@NullMarked
 abstract class ThrowUncaughtException {
     @CalledByNative
     private static void post() {

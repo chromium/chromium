@@ -103,7 +103,8 @@ public final class WindowInsetsUtils {
      * Get the Rect with the maximum width within the |regionRect| that is not blocked by any rects
      * within the |blockedRects|. This algorithm only prioritizes the width of the returned Rects,
      * so the returned area does not necessarily have the maximum area. If there are multiple rects
-     * with the same width, this method will bias the first Rect found in the region.
+     * with the same width, this method will bias the first Rect found in the region. If
+     * |blockedRects| is empty, this method will return an empty rect.
      *
      * @see Region
      * @see RegionIterator
@@ -113,7 +114,7 @@ public final class WindowInsetsUtils {
      */
     public static Rect getWidestUnoccludedRect(Rect regionRect, List<Rect> blockedRects) {
         if (sWidestUnoccludedRectForTesting != null) return sWidestUnoccludedRectForTesting;
-        if (regionRect.isEmpty()) return regionRect;
+        if (regionRect.isEmpty() || blockedRects.isEmpty()) return new Rect();
 
         Region region = new Region(regionRect);
         for (Rect rect : blockedRects) {

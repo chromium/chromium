@@ -51,15 +51,6 @@ safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel(
   }
 }
 
-std::optional<bool> GetThirdPartyBlockingEnabled(PrefService* local_state) {
-  DCHECK(local_state);
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return local_state->GetBoolean(prefs::kThirdPartyBlockingEnabled);
-#else
-  return std::nullopt;
-#endif
-}
-
 bool GetBuiltInDnsClientEnabled(PrefService* local_state) {
   DCHECK(local_state);
   return local_state->GetBoolean(prefs::kBuiltInDnsClientEnabled);

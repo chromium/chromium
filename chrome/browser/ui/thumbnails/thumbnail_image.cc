@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -230,7 +230,7 @@ std::vector<uint8_t> ThumbnailImage::CompressBitmap(
     data = gfx::JPEGCodec::Encode(bitmap, kCompressionQuality);
   }
 
-  return data.value();
+  return data.value_or(std::vector<uint8_t>());
 }
 
 // static
@@ -286,7 +286,7 @@ void ThumbnailImage::HandleSubscriptionDestroyed(Subscription* subscription) {
   // The order of |subscribers_| does not matter. We can simply swap
   // |subscription| in |subscribers_| with the last element, then pop it
   // off the back.
-  auto it = base::ranges::find(subscribers_, subscription);
+  auto it = std::ranges::find(subscribers_, subscription);
   CHECK(it != subscribers_.end(), base::NotFatalUntil::M130);
   std::swap(*it, *(subscribers_.end() - 1));
   subscribers_.pop_back();

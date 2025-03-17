@@ -155,6 +155,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/account_managed_status_finder.h:AccountManagedStatusFinderOutcome) -->
 
+<!-- LINT.IfChange(AccountManagementTypesSummary) -->
+
+<enum name="AccountManagementTypesSummary">
+  <int value="0" label="No accounts"/>
+  <int value="1" label="No consumer accounts, 1 enterprise account"/>
+  <int value="2" label="No consumer accounts, 2 or more enterprise accounts"/>
+  <int value="3" label="1 consumer account, no enterprise accounts"/>
+  <int value="4" label="1 consumer account, 1 enterprise account"/>
+  <int value="5" label="1 consumer account, 2 or more enterprise accounts"/>
+  <int value="6" label="2 or more consumer accounts, no enterprise accounts"/>
+  <int value="7" label="2 or more consumer accounts, 1 enterprise account"/>
+  <int value="8"
+      label="2 or more consumer accounts, 2 or more enterprise accounts"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/account_management_type_metrics_recorder.h:AccountManagementTypesSummary) -->
+
 <enum name="AccountReauthenticationEvent">
   <int value="0" label="STARTED"/>
   <int value="1" label="SUCCESS"/>
@@ -182,11 +199,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
-<enum name="BatchUploadTypes">
-  <int value="0" label="Passwords"/>
-  <int value="1" label="Addresses"/>
-</enum>
-
 <enum name="BooleanBoundToTheSameKey">
   <int value="0" label="Bound to different keys"/>
   <int value="1" label="Bound to the same key"/>
@@ -195,11 +207,6 @@ chromium-metrics-reviews@google.com.
 <enum name="BooleanGetAccountsSucceeded">
   <int value="0" label="Account fetching failed"/>
   <int value="1" label="Account fetching succeeded"/>
-</enum>
-
-<enum name="BooleanHadSyncAccount">
-  <int value="0" label="Did not have a sync-enabled account before"/>
-  <int value="1" label="Had at least one sync-enabled account before"/>
 </enum>
 
 <enum name="BooleanIsShared">
@@ -441,6 +448,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User signed in before and after iOS device restore"/>
 </enum>
 
+<enum name="IOSIdentityAvailableInProfile">
+  <int value="0"
+      label="The identity is not available in AccountProfileMapper and
+             IdentityManager"/>
+  <int value="1"
+      label="The identity is available in AccountProfileMapper but it is not
+             available in IdentityManager"/>
+  <int value="2"
+      label="The identity is not available in AccountProfileMapper but it is
+             available in IdentityManager"/>
+  <int value="3"
+      label="The identity is available in AccountProfileMapper and
+             IdentityManager"/>
+</enum>
+
 <enum name="LaunchWebAuthFlowResult">
   <int value="0" label="Success"/>
   <int value="1" label="kOffTheRecord"/>
@@ -596,23 +618,23 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Sign-in promo on NTP feed card menu section."/>
   <int value="43" label="Sign-in promo on NTP feed bottom section."/>
   <int value="44"
-      label="Automatic reset to match account cookies, on Desktop and Lacros.">
+      label="Automatic reset to match account cookies (Desktop only).">
     Used by the SigninManager when no other access point is specified.
   </int>
-  <int value="45" label="'For You' First Run Experience on Desktop"/>
-  <int value="46" label="Creator Feed Follow Button on Android only"/>
+  <int value="45" label="'For You' First Run Experience (Desktop only)"/>
+  <int value="46" label="Creator Feed Follow Button (Android only)"/>
   <int value="47" label="Reading list"/>
   <int value="48" label="Reauth info bar"/>
   <int value="49" label="Account consistency service"/>
   <int value="50" label="(Obsolete) Search companion"/>
-  <int value="51" label="Set Up List on iOS only"/>
-  <int value="52" label="Password migration warning on Android only"/>
-  <int value="53" label="Save to photos iOS"/>
+  <int value="51" label="Set Up List (iOS only)"/>
+  <int value="52" label="Password migration warning (Android only)"/>
+  <int value="53" label="Save to photos (iOS only)"/>
   <int value="54" label="Chrome Sign-in intercept bubble."/>
   <int value="55" label="Restore primary account on profile load"/>
   <int value="56" label="Tab organization"/>
-  <int value="57" label="Save to Drive iOS"/>
-  <int value="58" label="Tips Notification on iOS"/>
+  <int value="57" label="Save to Drive (iOS only)"/>
+  <int value="58" label="Tips Notification on (iOS only)"/>
   <int value="59" label="Notifications Opt-In Screen Content Toggle"/>
   <int value="60" label="Sign-in choice remembered"/>
   <int value="61" label="Signout confirmation prompt in profile menu"/>
@@ -626,8 +648,10 @@ chromium-metrics-reviews@google.com.
   <int value="69" label="Account menu failed switch"/>
   <int value="70" label="Address bubble"/>
   <int value="71" label="CCT account mismatch notification"/>
-  <int value="72" label="Drive file picker iOS"/>
-  <int value="73" label="Share group collaboration authentification"/>
+  <int value="72" label="Drive file picker (iOS only)"/>
+  <int value="73" label="Share group collaboration authentication"/>
+  <int value="74" label="Glic launch button"/>
+  <int value="75" label="History page (Android only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
@@ -652,6 +676,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Regular gmail account"/>
   <int value="1" label="Managed account"/>
 </enum>
+
+<!-- LINT.IfChange(SigninAddAccountToDeviceResult) -->
+
+<enum name="SigninAddAccountToDeviceResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Cancelled by user"/>
+  <int value="3" label="Interrupted"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_manager.h:SigninAddAccountToDeviceResult) -->
 
 <enum name="SigninAndroidAddAccountState">
   <int value="0" label="Requested"/>
@@ -759,15 +794,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Revoked by Dice migration"/>
   <int value="2" label="Revoked as secondary account"/>
   <int value="3" label="Revoked on load due to cookie settings"/>
-</enum>
-
-<enum name="SigninReauthResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Account not signed in"/>
-  <int value="2" label="User dismissed Reauth"/>
-  <int value="3" label="Reauth page failed to load"/>
-  <int value="4" label="Reauth was cancelled"/>
-  <int value="5" label="Unexpected server response"/>
 </enum>
 
 <enum name="SigninReconcilerOperation">
@@ -944,8 +970,11 @@ chromium-metrics-reviews@google.com.
     avoid that deletion of data propagates via sync to other devices.
   </int>
   <int value="35" label="Signed out while switching to another primary account">
-    In the account menu, the user switched their primary account. As a first
-    step, they get signed-out of their previous primary account.
+    The user switched their primary account. As a first step, they get
+    signed-out of their previous primary account, for an account switching. For
+    a profile switching, this metric can be recorded when switching to the
+    personal profile, if the personal profile doesn't have the right primary
+    account.
   </int>
   <int value="36" label="Signed out from the account menu">
     In the account menu, the user selected the sign-out button.

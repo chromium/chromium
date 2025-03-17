@@ -93,10 +93,8 @@ class CredentialProviderService
   // Syncs the credential store to disk.
   void SyncStore();
 
-  // Saves the Gaia and email of the current user to the ios keychain for the
-  // Credential Provider Extension to use when creating new credentials. Returns
-  // whether writing the data to the ios keychain succeeded.
-  bool SaveAccountInfo();
+  // Returns the primary account's gaia id.
+  NSString* PrimaryAccountId() const;
 
   // Add credentials from `forms`. Currently simply calls either the legacy or
   // refactored version of this function.
@@ -138,6 +136,15 @@ class CredentialProviderService
   // includes account storage.)
   void UpdatePasswordSyncSetting();
 
+  // Syncs whether or not automatic passkey upgrade is enabled.
+  void UpdateAutomaticPasskeyUpgradeSetting();
+
+  // Syncs whether or not PRF is enabled.
+  void UpdatePasskeyPRFSetting();
+
+  // Syncs whether or not the Passkeys M2 feature is enabled.
+  void UpdatePasskeysM2Availability();
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
@@ -159,8 +166,9 @@ class CredentialProviderService
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Observer for when `saving_passwords_enabled_` changes.
-  void OnSavingPasswordsEnabledChanged();
+  // Observer for change in enabled or managed state of prefs that govern the
+  // CPE.
+  void OnPrefOrPolicyStatusChanged();
 
   // For each of the 2 PasswordStoreInterfaces (profile and account), returns
   // the corresponding in-memory store used for password deduplication. See
@@ -210,6 +218,16 @@ class CredentialProviderService
   // The preference associated with
   // password_manager::prefs::kCredentialsEnableService.
   BooleanPrefMember saving_passwords_enabled_;
+
+  // The preference associated with
+  // password_manager::prefs::kCredentialsEnablePasskeys. See
+  // `AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled` documentation
+  // for important caveats.
+  BooleanPrefMember saving_passkeys_enabled_;
+
+  // The preference associated with
+  // password_manager::prefs::kAutomaticPasskeyUpgrades.
+  BooleanPrefMember automatic_passkey_upgrades_enabled_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<CredentialProviderService> weak_ptr_factory_{this};

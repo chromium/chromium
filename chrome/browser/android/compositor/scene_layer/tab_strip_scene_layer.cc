@@ -27,10 +27,13 @@ namespace android {
 TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
                                        const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
+      background_layer_(cc::slim::SolidColorLayer::Create()),
       tab_strip_layer_(cc::slim::SolidColorLayer::Create()),
       group_ui_parent_layer_(cc::slim::Layer::Create()),
-      scrollable_strip_layer_(cc::slim::Layer::Create()),
+      tab_ui_parent_layer_(cc::slim::Layer::Create()),
       foreground_layer_(cc::slim::Layer::Create()),
+      foreground_tabs_(cc::slim::Layer::Create()),
+      foreground_group_titles_(cc::slim::Layer::Create()),
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       left_fade_(cc::slim::UIResourceLayer::Create()),
@@ -57,12 +60,21 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   // button and tabs in a separate layer placed visually below the others. Put
   // tab group indicators in a separate layer placed visually below the tabs.
   group_ui_parent_layer_->SetIsDrawable(true);
-  scrollable_strip_layer_->SetIsDrawable(true);
+  tab_ui_parent_layer_->SetIsDrawable(true);
   foreground_layer_->SetIsDrawable(true);
+  background_layer_->SetIsDrawable(true);
+  foreground_tabs_->SetIsDrawable(true);
+  foreground_group_titles_->SetIsDrawable(true);
   tab_strip_layer_->SetIsDrawable(true);
+
+  background_layer_->AddChild(tab_strip_layer_);
+  background_layer_->AddChild(scrim_layer_);
+
   tab_strip_layer_->AddChild(group_ui_parent_layer_);
-  tab_strip_layer_->AddChild(scrollable_strip_layer_);
+  tab_strip_layer_->AddChild(tab_ui_parent_layer_);
   tab_strip_layer_->AddChild(foreground_layer_);
+  foreground_layer_->AddChild(foreground_group_titles_);
+  foreground_layer_->AddChild(foreground_tabs_);
 
   tab_strip_layer_->AddChild(left_fade_);
   tab_strip_layer_->AddChild(right_fade_);
@@ -72,9 +84,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(new_tab_button_background_);
   tab_strip_layer_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(new_tab_button_);
-  tab_strip_layer_->AddChild(scrim_layer_);
 
-  layer()->AddChild(tab_strip_layer_);
+  layer()->AddChild(background_layer_);
 }
 
 TabStripSceneLayer::~TabStripSceneLayer() = default;
@@ -118,14 +129,15 @@ void TabStripSceneLayer::BeginBuildingFrame(JNIEnv* env,
                                             jboolean visible) {
   write_index_ = 0;
   group_write_index_ = 0;
-  tab_strip_layer_->SetHideLayerAndSubtree(!visible);
+  background_layer_->SetHideLayerAndSubtree(!visible);
 }
 
 void TabStripSceneLayer::FinishBuildingFrame(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj) {
-  if (tab_strip_layer_->hide_layer_and_subtree())
+  if (background_layer_->hide_layer_and_subtree()) {
     return;
+  }
 
   for (unsigned i = write_index_; i < tab_handle_layers_.size(); ++i) {
     tab_handle_layers_[i]->layer()->RemoveFromParent();
@@ -161,15 +173,12 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jfloat top_padding) {
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
-  tab_strip_layer_->SetBounds(gfx::Size(width, height));
-  tab_strip_layer_->SetBackgroundColor(SkColor4f::FromColor(background_color));
+  background_layer_->SetBounds(gfx::Size(width, height));
+  background_layer_->SetBackgroundColor(SkColor4f::FromColor(background_color));
 
   float scrollable_strip_height = height - top_padding;
-  scrollable_strip_layer_->SetBounds(gfx::Size(width, scrollable_strip_height));
-  scrollable_strip_layer_->SetPosition(gfx::PointF(0, top_padding));
-
-  group_ui_parent_layer_->SetBounds(gfx::Size(width, scrollable_strip_height));
-  group_ui_parent_layer_->SetPosition(gfx::PointF(0, top_padding));
+  tab_strip_layer_->SetBounds(gfx::Size(width, scrollable_strip_height));
+  tab_strip_layer_->SetPosition(gfx::PointF(0, top_padding));
 
   // Content tree should not be affected by tab strip scene layer visibility.
   if (content_tree_)
@@ -203,7 +212,7 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
 
   // Set opacity and color
   scrim_layer_->SetOpacity(scrim_opacity);
-  scrim_layer_->SetBounds(tab_strip_layer_->bounds());
+  scrim_layer_->SetBounds(background_layer_->bounds());
   scrim_layer_->SetBackgroundColor(SkColor4f::FromColor(scrim_color));
 
   // Ensure layer is visible.
@@ -217,7 +226,6 @@ void TabStripSceneLayer::UpdateNewTabButton(
     jint bg_resource_id,
     jfloat x,
     jfloat y,
-    jfloat top_padding,
     jfloat touch_target_offset,
     jboolean visible,
     jboolean should_apply_hover_highlight,
@@ -234,7 +242,6 @@ void TabStripSceneLayer::UpdateNewTabButton(
                                                   background_tint, true);
 
   x += touch_target_offset;
-  y += top_padding;
 
   UpdateCompositorButton(new_tab_button_, new_tab_button_background_,
                          button_resource, background_resource, x, y, visible,
@@ -373,8 +380,8 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
   right_fade_->SetBounds(gfx::Size(fade_resource->size().width(), height));
 
   // Set position. The right fade is positioned at the end of the tab strip.
-  float x = scrollable_strip_layer_->bounds().width() -
-            fade_resource->size().width() - right_padding;
+  float x = tab_strip_layer_->bounds().width() - fade_resource->size().width() -
+            right_padding;
   right_fade_->SetPosition(gfx::PointF(x, 0));
 
   // Ensure layer is visible.
@@ -422,9 +429,9 @@ void TabStripSceneLayer::PutStripTabLayer(
 
   if (foreground != layer->foreground()) {
     if (foreground) {
-      foreground_layer_->AddChild(layer->layer());
+      foreground_tabs_->AddChild(layer->layer());
     } else {
-      scrollable_strip_layer_->AddChild(layer->layer());
+      tab_ui_parent_layer_->AddChild(layer->layer());
     }
   }
 
@@ -460,9 +467,11 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jboolean incognito,
     jboolean foreground,
     jboolean show_reorder_background,
+    jboolean show_bubble,
     jint id,
     jint tint,
     jint reorder_background_tint,
+    jint bubble_tint,
     jfloat x,
     jfloat y,
     jfloat width,
@@ -472,8 +481,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jfloat corner_radius,
     jfloat bottom_indicator_width,
     jfloat bottom_indicator_height,
-    jboolean show_bubble,
-    jint bubble_tint,
+    jfloat bubble_padding,
     jfloat bubble_size,
     const JavaParamRef<jobject>& jlayer_title_cache) {
   LayerTitleCache* layer_title_cache =
@@ -486,18 +494,18 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   // Foreground if needed.
   if (foreground != layer->foreground()) {
     if (foreground) {
-      foreground_layer_->AddChild(layer->layer());
+      foreground_group_titles_->AddChild(layer->layer());
     } else {
       group_ui_parent_layer_->AddChild(layer->layer());
     }
   }
 
-  layer->SetProperties(id, tint, reorder_background_tint, bubble_tint,
-                       incognito, foreground, show_bubble,
-                       show_reorder_background, x, y, width, height,
-                       title_start_padding, title_end_padding, corner_radius,
-                       bottom_indicator_width, bottom_indicator_height,
-                       bubble_size, group_ui_parent_layer_->bounds().height());
+  layer->SetProperties(
+      id, tint, reorder_background_tint, bubble_tint, incognito, foreground,
+      show_bubble, show_reorder_background, x, y, width, height,
+      title_start_padding, title_end_padding, corner_radius,
+      bottom_indicator_width, bottom_indicator_height, bubble_padding,
+      bubble_size, tab_strip_layer_->bounds().height());
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextTabLayer(
@@ -508,7 +516,7 @@ scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextTabLayer(
   scoped_refptr<TabHandleLayer> layer_tree =
       TabHandleLayer::Create(layer_title_cache);
   tab_handle_layers_.push_back(layer_tree);
-  scrollable_strip_layer_->AddChild(layer_tree->layer());
+  tab_ui_parent_layer_->AddChild(layer_tree->layer());
   write_index_++;
   return layer_tree;
 }

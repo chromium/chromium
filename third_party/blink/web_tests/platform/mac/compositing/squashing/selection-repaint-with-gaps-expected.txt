@@ -16,7 +16,6 @@
       "name": "LayoutBlockFlow (positioned, children-inline) DIV class='item'",
       "position": [15, 35],
       "bounds": [100, 210],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 80, 42, 36]
       ]
@@ -52,7 +51,6 @@
       "name": "LayoutBlockFlow (positioned, children-inline) DIV class='item'",
       "position": [15, 35],
       "bounds": [100, 210],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 160, 42, 36],
         [0, 80, 42, 36]

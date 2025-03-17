@@ -65,7 +65,7 @@ std::string InterstitialHTMLSource::GetMimeType(
 }
 
 std::string InterstitialHTMLSource::GetSource() const {
-  return kChromeUIIntersitialsHost;
+  return kChromeUIInterstitialsHost;
 }
 
 void InterstitialHTMLSource::StartDataRequest(
@@ -78,7 +78,7 @@ void InterstitialHTMLSource::StartDataRequest(
   std::string html;
   // Using this form of the path so we can do exact matching, while ignoring the
   // query (everything after the ? character).
-  GURL url = GURL(kChromeUIIntersitialsURL).GetWithEmptyPath().Resolve(path);
+  GURL url = GURL(kChromeUIInterstitialsURL).GetWithEmptyPath().Resolve(path);
   std::string path_without_query = url.path();
   if (path_without_query == kChromeInterstitialSslPath) {
     interstitial_page = CreateSslBlockingPage(web_state.get(), url);

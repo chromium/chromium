@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//testing/test.gni")
@@ -121,7 +120,6 @@ test("device_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/apdu",
     "//components/cbor",
     "//components/device_event_log",
@@ -186,12 +184,8 @@ test("device_unittests") {
       "fido/credential_management_handler_unittest.cc",
       "fido/ctap_request_unittest.cc",
       "fido/ctap_response_unittest.cc",
+      "fido/enclave/attestation_unittest.cc",
       "fido/enclave/enclave_protocol_utils_unittest.cc",
-      "fido/enclave/verify/amd_unittest.cc",
-      "fido/enclave/verify/claim_unittest.cc",
-      "fido/enclave/verify/endorsement_unittest.cc",
-      "fido/enclave/verify/rekor_unittest.cc",
-      "fido/enclave/verify/utils_unittest.cc",
       "fido/fake_fido_discovery_unittest.cc",
       "fido/fido_device_authenticator_unittest.cc",
       "fido/fido_device_discovery_unittest.cc",
@@ -219,12 +213,6 @@ test("device_unittests") {
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
     ]
-
-    data = [ "fido/enclave/verify/testdata/" ]
-
-    if (is_chromeos_lacros) {
-      deps += [ "//chromeos/startup" ]
-    }
 
     if (is_mac) {
       data_deps += [ "fido/strings:fido_test_strings" ]
@@ -294,17 +282,12 @@ test("device_unittests") {
       "bluetooth/chromeos/bluetooth_connection_logger_unittest.cc",
       "bluetooth/chromeos/bluetooth_utils_unittest.cc",
     ]
-    deps += [ "//chromeos/constants" ]
-    if (is_chromeos_ash) {
-      deps += [
-        "//ash/constants",
-        "//chromeos/ash/services/nearby/public/cpp/",
-        "//chromeos/ash/services/secure_channel/public/cpp/shared",
-      ]
-    }
-    if (is_chromeos_lacros) {
-      deps += [ "//chromeos/lacros:test_support" ]
-    }
+    deps += [
+      "//ash/constants",
+      "//chromeos/ash/services/nearby/public/cpp/",
+      "//chromeos/ash/services/secure_channel/public/cpp/shared",
+      "//chromeos/constants",
+    ]
   }
 
   if ((is_chromeos || is_linux) && use_dbus) {
@@ -535,14 +518,17 @@ if (is_android) {
     sources = [
       "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadDeviceTest.java",
       "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadMappingsTest.java",
+      "vr/public/junit/src/org/chromium/device/vr/XrFeatureStatusTest.java",
     ]
     deps = [
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_location_java",
+      "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//device/gamepad:java",
+      "//device/vr/public:java",
       "//mojo/public/java:bindings_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/hamcrest:hamcrest_java",

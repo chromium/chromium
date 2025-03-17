@@ -74,9 +74,6 @@ class TaskGroupTest : public testing::Test {
         base::BindRepeating(&TaskGroupTest::OnBackgroundCalculationsDone,
                             base::Unretained(this)),
         new SharedSampler(io_task_runner_),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        /*crosapi_task_provider=*/nullptr,
-#endif
         io_task_runner_);
     // Refresh() is only valid on non-empty TaskGroups, so add a fake Task.
     fake_task_ = std::make_unique<FakeTask>(base::Process::Current().Pid(),

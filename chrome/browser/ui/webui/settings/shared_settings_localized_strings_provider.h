@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace content {
 class WebUIDataSource;

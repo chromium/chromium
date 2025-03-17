@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ITEM_H_
 
+#import <UIKit/UIKit.h>
+
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"
 
-#import <UIKit/UIKit.h>
-
-@protocol MostVisitedTilesCommands;
-@protocol ContentSuggestionsMenuProvider;
+@protocol ContentSuggestionsMenuElementsProvider;
 @class FaviconAttributes;
 class GURL;
+@protocol MostVisitedTilesCommands;
 
 // Item containing a Most Visited suggestion.
 @interface ContentSuggestionsMostVisitedItem : NSObject
@@ -35,8 +35,9 @@ class GURL;
 @property(nonatomic, assign) BOOL incognitoAvailable;
 // Index position of this item.
 @property(nonatomic, assign) int index;
-// Provider of menu configurations for the contentSuggestions component.
-@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
+// Provider of menu elements for the contentSuggestions component.
+@property(nonatomic, weak) id<ContentSuggestionsMenuElementsProvider>
+    menuElementsProvider;
 
 @end
 

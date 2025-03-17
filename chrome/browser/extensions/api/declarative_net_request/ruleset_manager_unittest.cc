@@ -125,13 +125,15 @@ class RulesetManagerTest : public DNRTestBase {
   // Returns renderer-initiated request params for the given |url|.
   WebRequestInfoInitParams GetRequestParamsForURL(
       std::string_view url,
-      std::optional<url::Origin> initiator = std::nullopt) {
+      std::optional<url::Origin> initiator = std::nullopt,
+      WebRequestResourceType web_request_type = WebRequestResourceType::OTHER) {
     const int kRendererId = 1;
     WebRequestInfoInitParams info;
     info.url = GURL(url);
     info.method = net::HttpRequestHeaders::kGetMethod;
     info.render_process_id = kRendererId;
     info.initiator = std::move(initiator);
+    info.web_request_type = web_request_type;
     return info;
   }
 
@@ -964,6 +966,8 @@ TEST_P(RulesetManagerTest, CrossExtensionRequestBlocking) {
     std::unique_ptr<CompositeMatcher> matcher;
     TestRule rule = CreateGenericRule();
     rule.condition->url_filter = std::string("*");
+    rule.condition->resource_types =
+        std::vector<std::string>({"main_frame", "sub_frame", "other"});
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension_1", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
@@ -1007,19 +1011,92 @@ TEST_P(RulesetManagerTest, CrossExtensionRequestBlocking) {
                 kMinValidStaticRulesetID, extension_1->id()),
             (*request_2.dnr_actions)[0]);
 
-  // Extensions should not be able to block requests initiated by other
-  // extensions.
+  // Extensions should not be able to block (non-navigation) requests initiated
+  // by other extensions.
   WebRequestInfo request_3(
       GetRequestParamsForURL("http://example.com", extension_2->origin()));
   manager()->EvaluateBeforeRequest(request_3, false /*is_incognito_context*/);
   EXPECT_TRUE(request_3.dnr_actions->empty());
 
-  // Extensions should not be able to block requests initiated by other
-  // extensions, even if they initiated from within a manifest sandbox page.
+  // Extensions should not be able to block (non-navigation) requests initiated
+  // by other extensions, even if they initiated from within a manifest sandbox
+  // page.
   WebRequestInfo request_4(GetRequestParamsForURL(
       "http://example.com", extension_2->origin().DeriveNewOpaqueOrigin()));
   manager()->EvaluateBeforeRequest(request_4, false /*is_incognito_context*/);
   EXPECT_TRUE(request_4.dnr_actions->empty());
+
+  // Extensions should be able to block main_frame navigation requests initiated
+  // by other extensions.
+  WebRequestInfo request_5(
+      GetRequestParamsForURL("http://example.com", extension_2->origin(),
+                             WebRequestResourceType::MAIN_FRAME));
+  manager()->EvaluateBeforeRequest(request_5, false /*is_incognito_context*/);
+  ASSERT_EQ(1u, request_5.dnr_actions->size());
+  EXPECT_EQ(CreateRequestActionForTesting(
+                RequestActionType::BLOCK, kMinValidID, kDefaultPriority,
+                kMinValidStaticRulesetID, extension_1->id()),
+            (*request_5.dnr_actions)[0]);
+
+  // Extensions should not be able to block sub_frame requests initiated by
+  // other extensions.
+  WebRequestInfo request_6(
+      GetRequestParamsForURL("http://example.com", extension_2->origin(),
+                             WebRequestResourceType::SUB_FRAME));
+  manager()->EvaluateBeforeRequest(request_6, false /*is_incognito_context*/);
+  EXPECT_TRUE(request_6.dnr_actions->empty());
+}
+
+// Tests that queryTransform rules do not leave a trailing "?" after removing
+// the last parameter from a URL.
+TEST_P(RulesetManagerTest, QueryTransformRemoveParamsTrailingQuestionMark) {
+  const Extension* extension = nullptr;
+  {
+    std::unique_ptr<CompositeMatcher> matcher;
+    TestRule rule = CreateGenericRule();
+    rule.condition->url_filter = std::string("example.com");
+    rule.action->type = std::string("redirect");
+    rule.action->redirect.emplace();
+    rule.action->redirect->transform.emplace();
+    rule.action->redirect->transform->query_transform.emplace();
+    rule.action->redirect->transform->query_transform->remove_params =
+        std::vector<std::string>({"remove"});
+
+    ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
+        {rule}, "test extension_1", &matcher,
+        std::vector<std::string>({URLPattern::kAllUrlsPattern}),
+        true /* has_background_script */));
+    extension = last_loaded_extension();
+    manager()->AddRuleset(extension->id(), std::move(matcher));
+  }
+
+  EXPECT_EQ(1u, manager()->GetMatcherCountForTest());
+
+  struct TestCase {
+    std::string url;
+    std::string expected_redirected_url;
+  } test_cases[] = {
+      {"https://example.com", "https://example.com"},
+      {"https://example.com?", "https://example.com?"},
+      {"https://example.com?keep=1", "https://example.com?keep=1"},
+      {"https://example.com?keep=1&remove=2", "https://example.com?keep=1"},
+      {"https://example.com?remove=1", "https://example.com"},
+      {"https://example.com?remove", "https://example.com"}};
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE("Testing " + test_case.url + " -> " +
+                 test_case.expected_redirected_url);
+    WebRequestInfo request(GetRequestParamsForURL(test_case.url));
+    manager()->EvaluateBeforeRequest(request, false /*is_incognito_context*/);
+
+    if (request.dnr_actions->empty()) {
+      EXPECT_EQ(test_case.expected_redirected_url, test_case.url);
+    } else {
+      ASSERT_EQ(1u, request.dnr_actions->size());
+      EXPECT_EQ(GURL(test_case.expected_redirected_url),
+                (*request.dnr_actions)[0].redirect_url);
+    }
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

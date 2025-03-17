@@ -337,7 +337,8 @@ TEST_F(AutoFetchInternalImplFencedFrameTest,
       content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
                                                             fenced_frame_rfh);
   navigation_simulator->Commit();
-  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+  EXPECT_TRUE(
+      navigation_simulator->GetFinalRenderFrameHost()->IsFencedFrameRoot());
 
   // AutoFetchPageLoadWatcher should not store the URL navigated in the fenced
   // frame.

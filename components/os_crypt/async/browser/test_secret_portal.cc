@@ -46,7 +46,7 @@ void TestSecretPortal::RetrieveSecret(
   base::ScopedFD write_fd;
   EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
 
-  base::WriteFileDescriptor(write_fd.get(), "secret");
+  EXPECT_TRUE(base::WriteFileDescriptor(write_fd.get(), "secret"));
   write_fd.reset();
 
   DbusDictionary options;

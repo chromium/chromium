@@ -117,6 +117,10 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // cause a UaF, so this pattern can probably be improved in future.
   void DeclareInfiniteLoop() { exit_after_fuzz_case_ = true; }
 
+  // Whether we're in corpus merging mode. Some fuzzers behave specially
+  // in this mode for efficiency reasons.
+  bool InMergeMode() const;
+
  private:
   int DoFuzz(const uint8_t* data, size_t size);
 

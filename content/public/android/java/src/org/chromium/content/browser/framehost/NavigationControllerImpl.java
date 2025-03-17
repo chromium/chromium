@@ -15,6 +15,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -32,6 +34,7 @@ import org.chromium.url.Origin;
 @JNINamespace("content")
 // TODO(tedchoc): Remove the package restriction once this class moves to a non-public content
 //                package whose visibility will be enforced via DEPS.
+@NullMarked
 /* package */ class NavigationControllerImpl implements NavigationController {
     private static final String TAG = "NavigationController";
 
@@ -188,7 +191,7 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public NavigationHandle loadUrl(LoadUrlParams params) {
+    public @Nullable NavigationHandle loadUrl(LoadUrlParams params) {
         NavigationHandle navigationHandle = null;
         if (mNativeNavigationControllerAndroid != 0) {
             String headers =
@@ -252,7 +255,7 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public NavigationHistory getNavigationHistory() {
+    public @Nullable NavigationHistory getNavigationHistory() {
         if (mNativeNavigationControllerAndroid == 0) return null;
         NavigationHistory history = new NavigationHistory();
         int currentIndex =
@@ -266,7 +269,8 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public NavigationHistory getDirectedNavigationHistory(boolean isForward, int itemLimit) {
+    public @Nullable NavigationHistory getDirectedNavigationHistory(
+            boolean isForward, int itemLimit) {
         if (mNativeNavigationControllerAndroid == 0) return null;
         NavigationHistory history = new NavigationHistory();
         NavigationControllerImplJni.get()
@@ -320,7 +324,7 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public NavigationEntry getEntryAtIndex(int index) {
+    public @Nullable NavigationEntry getEntryAtIndex(int index) {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
                     .getEntryAtIndex(
@@ -333,7 +337,7 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public NavigationEntry getVisibleEntry() {
+    public @Nullable NavigationEntry getVisibleEntry() {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
                     .getVisibleEntry(
@@ -344,7 +348,7 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public NavigationEntry getPendingEntry() {
+    public @Nullable NavigationEntry getPendingEntry() {
         if (mNativeNavigationControllerAndroid != 0) {
             return NavigationControllerImplJni.get()
                     .getPendingEntry(
@@ -385,7 +389,7 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public String getEntryExtraData(int index, String key) {
+    public @Nullable String getEntryExtraData(int index, String key) {
         if (mNativeNavigationControllerAndroid == 0) return null;
         return NavigationControllerImplJni.get()
                 .getEntryExtraData(
@@ -493,21 +497,21 @@ import org.chromium.url.Origin;
                 String url,
                 int loadUrlType,
                 int transitionType,
-                String referrerUrl,
+                @Nullable String referrerUrl,
                 int referrerPolicy,
                 int uaOverrideOption,
-                String extraHeaders,
-                ResourceRequestBody postData,
-                String baseUrlForDataUrl,
-                String virtualUrlForSpecialCases,
-                String dataUrlAsString,
+                @Nullable String extraHeaders,
+                @Nullable ResourceRequestBody postData,
+                @Nullable String baseUrlForDataUrl,
+                @Nullable String virtualUrlForSpecialCases,
+                @Nullable String dataUrlAsString,
                 boolean canLoadLocalResources,
                 boolean isRendererInitiated,
                 boolean shouldReplaceCurrentEntry,
-                Origin initiatorOrigin,
+                @Nullable Origin initiatorOrigin,
                 boolean hasUserGesture,
                 boolean shouldClearHistoryList,
-                AdditionalNavigationParams additionalNavigationParams,
+                @Nullable AdditionalNavigationParams additionalNavigationParams,
                 long inputStart,
                 long navigationUIDataPtr,
                 boolean isPdf);

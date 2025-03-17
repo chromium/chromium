@@ -37,8 +37,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
-#include "base/test/scoped_feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #endif
 
 constexpr char kOrigin[] = "https://origin/";
@@ -65,9 +64,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
       blink::mojom::StreamDevices* devices_result,
       bool expect_result = true) {
 #if BUILDFLAG(IS_MAC)
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kMacSystemScreenCapturePermissionCheck);
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(true);
 #endif
     content::MediaStreamRequest request(
         web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),

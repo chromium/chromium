@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   visit2->normalized_url = GURL("https://bar");
   visits.push_back(std::move(visit2));
 
-  handler_->OpenVisitUrlsInTabGroup(std::move(visits));
+  handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
   ASSERT_EQ(3, tab_strip_model->GetTabCount());
 
   ASSERT_EQ(tab_strip_model->GetTabGroupForTab(1).value(),
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   }
 
   // Verify that we open 32 at maximum. Including the NTP, that's 33 total.
-  handler_->OpenVisitUrlsInTabGroup(std::move(visits));
+  handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
   ASSERT_EQ(33, tab_strip_model->GetTabCount());
 }
 
@@ -271,8 +271,9 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
 }
 
+// TODO(crbug.com/401535901): Test is flaky.
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
-                       RemoveVisitByUrlAndTime) {
+                       DISABLED_RemoveVisitByUrlAndTime) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   // Open in a new tab to keep the history clusters UI open.

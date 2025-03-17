@@ -33,7 +33,7 @@ std::vector<std::string> StringVectorFromGURLVector(
   std::vector<std::string> ret;
   ret.reserve(gurls.size());
 
-  base::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
+  std::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
     return gurl.possibly_invalid_spec();
   });
 
@@ -143,13 +143,15 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrxVerifierFormat() {
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetGroupPolicies(
-    const base::Value::Dict& group_policies) {
-  overrides_.Set(kDevOverrideKeyGroupPolicies, group_policies.Clone());
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetDictPolicies(
+    const base::Value::Dict& dict_policies) {
+  overrides_.Set(kDevOverrideKeyDictPolicies, dict_policies.Clone());
+  overrides_.Set(kDevOverrideKeyGroupPolicies, dict_policies.Clone());
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearDictPolicies() {
+  overrides_.Remove(kDevOverrideKeyDictPolicies);
   overrides_.Remove(kDevOverrideKeyGroupPolicies);
   return *this;
 }
@@ -189,17 +191,6 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::SetMachineManaged(
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearMachineManaged() {
   overrides_.Remove(kDevOverrideKeyManagedDevice);
-  return *this;
-}
-
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetEnableDiffUpdates(
-    bool enable_diffs) {
-  overrides_.Set(kDevOverrideKeyEnableDiffUpdates, enable_diffs);
-  return *this;
-}
-
-ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
-  overrides_.Remove(kDevOverrideKeyEnableDiffUpdates);
   return *this;
 }
 
@@ -266,8 +257,8 @@ bool ExternalConstantsBuilder::Modify() {
   if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat)) {
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
   }
-  if (!overrides_.contains(kDevOverrideKeyGroupPolicies)) {
-    SetGroupPolicies(verifier->GroupPolicies());
+  if (!overrides_.contains(kDevOverrideKeyDictPolicies)) {
+    SetDictPolicies(verifier->DictPolicies());
   }
   if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout)) {
     SetOverinstallTimeout(verifier->OverinstallTimeout());
@@ -277,9 +268,6 @@ bool ExternalConstantsBuilder::Modify() {
   }
   if (!overrides_.contains(kDevOverrideKeyManagedDevice)) {
     SetMachineManaged(verifier->IsMachineManaged());
-  }
-  if (!overrides_.contains(kDevOverrideKeyEnableDiffUpdates)) {
-    SetEnableDiffUpdates(verifier->EnableDiffUpdates());
   }
   if (!overrides_.contains(kDevOverrideKeyCecaConnectionTimeout)) {
     SetCecaConnectionTimeout(verifier->CecaConnectionTimeout());

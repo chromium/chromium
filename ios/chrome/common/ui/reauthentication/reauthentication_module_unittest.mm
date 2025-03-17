@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module_for_testing.h"
-
 #import <LocalAuthentication/LocalAuthentication.h>
 
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module_for_testing.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"

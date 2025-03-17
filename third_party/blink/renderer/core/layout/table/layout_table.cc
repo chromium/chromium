@@ -212,7 +212,7 @@ bool LayoutTable::HasBackgroundForPaint() const {
   if (StyleRef().HasBackground())
     return true;
   DCHECK_GT(PhysicalFragmentCount(), 0u);
-  const TableFragmentData::ColumnGeometries* column_geometries =
+  const TableColumnGeometries* column_geometries =
       GetPhysicalFragment(0)->TableColumnGeometries();
   if (column_geometries) {
     for (const auto& column_geometry : *column_geometries) {

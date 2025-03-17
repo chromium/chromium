@@ -21,7 +21,6 @@
 #include <dpapi.h>
 
 #include "base/feature_list.h"
-#include "components/os_crypt/async/common/encryptor_features.h"
 #endif
 
 namespace mojo {
@@ -50,10 +49,10 @@ const std::string& StructTraits<os_crypt_async::mojom::EncryptorDataView,
 }
 
 // static
-const std::map<std::string, os_crypt_async::Encryptor::Key>& StructTraits<
-    os_crypt_async::mojom::EncryptorDataView,
-    os_crypt_async::Encryptor>::key_entries(const os_crypt_async::Encryptor&
-                                                in) {
+const std::map<std::string, std::optional<os_crypt_async::Encryptor::Key>>&
+StructTraits<os_crypt_async::mojom::EncryptorDataView,
+             os_crypt_async::Encryptor>::
+    key_entries(const os_crypt_async::Encryptor& in) {
   return in.keys_;
 }
 
@@ -66,6 +65,10 @@ bool StructTraits<os_crypt_async::mojom::KeyDataView,
   switch (data.algorithm()) {
     case os_crypt_async::mojom::Algorithm::kAES256GCM:
       key_size.emplace(os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
+      break;
+    case os_crypt_async::mojom::Algorithm::kAES128CBC:
+      key_size.emplace(os_crypt_async::Encryptor::Key::kAES128CBCKeySize);
+      break;
   }
 
   if (!key_size.has_value()) {
@@ -93,13 +96,10 @@ bool StructTraits<os_crypt_async::mojom::KeyDataView,
   std::copy(memory_span.begin(), memory_span.end(), out->key_.begin());
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(
-          os_crypt_async::features::kProtectEncryptionKey)) {
-    SecureZeroMemory(std::data(memory_span), std::size(memory_span));
-    out->encrypted_ =
-        ::CryptProtectMemory(std::data(out->key_), std::size(out->key_),
-                             CRYPTPROTECTMEMORY_SAME_PROCESS);
-  }
+  SecureZeroMemory(std::data(memory_span), std::size(memory_span));
+  out->encrypted_ =
+      ::CryptProtectMemory(std::data(out->key_), std::size(out->key_),
+                           CRYPTPROTECTMEMORY_SAME_PROCESS);
 #endif  // BUILDFLAG(IS_WIN)
 
   out->algorithm_ = data.algorithm();

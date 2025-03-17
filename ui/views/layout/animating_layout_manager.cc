@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
@@ -72,9 +71,9 @@ enum class LayoutFadeType {
 ProposedLayout WithOnlyVisibleViews(const ProposedLayout layout) {
   ProposedLayout result;
   result.host_size = layout.host_size;
-  base::ranges::copy_if(layout.child_layouts,
-                        std::back_inserter(result.child_layouts),
-                        &ChildLayout::visible);
+  std::ranges::copy_if(layout.child_layouts,
+                       std::back_inserter(result.child_layouts),
+                       &ChildLayout::visible);
   return result;
 }
 
@@ -207,15 +206,13 @@ void AnimatingLayoutManager::AnimationDelegate::UpdateAnimationParameters() {
       std::min(target_layout_manager_->animation_duration(),
                target_layout_manager_->opacity_animation_duration());
   if (!opacity_animation_duration.is_zero()) {
-    fade_in_opacity_animation_ = std::make_unique<gfx::MultiAnimation>(
-        std::vector<gfx::MultiAnimation::Part>{
-            gfx::MultiAnimation::Part(
-                target_layout_manager_->animation_duration() -
-                    opacity_animation_duration,
-                gfx::Tween::Type::LINEAR, 0.0, 0.0),
-            gfx::MultiAnimation::Part(
-                opacity_animation_duration,
-                target_layout_manager_->opacity_tween_type(), 0.0, 1.0)});
+    fade_in_opacity_animation_ =
+        std::make_unique<gfx::MultiAnimation>(gfx::MultiAnimation::Parts{
+            {target_layout_manager_->animation_duration() -
+                 opacity_animation_duration,
+             gfx::Tween::Type::LINEAR, 0.0, 0.0},
+            {opacity_animation_duration,
+             target_layout_manager_->opacity_tween_type(), 0.0, 1.0}});
     fade_in_opacity_animation_->SetContainer(container_);
     fade_in_opacity_animation_->set_continuous(false);
     const base::TimeDelta fade_out_opacity_duration =
@@ -224,15 +221,13 @@ void AnimatingLayoutManager::AnimationDelegate::UpdateAnimationParameters() {
             ? opacity_animation_duration
             : target_layout_manager_->animation_duration() -
                   opacity_animation_duration;
-    fade_out_opacity_animation_ = std::make_unique<gfx::MultiAnimation>(
-        std::vector<gfx::MultiAnimation::Part>{
-            gfx::MultiAnimation::Part(
-                fade_out_opacity_duration,
-                target_layout_manager_->opacity_tween_type(), 1.0, 0.0),
-            gfx::MultiAnimation::Part(
-                target_layout_manager_->animation_duration() -
-                    fade_out_opacity_duration,
-                gfx::Tween::Type::LINEAR, 0.0, 0.0)});
+    fade_out_opacity_animation_ =
+        std::make_unique<gfx::MultiAnimation>(gfx::MultiAnimation::Parts{
+            {fade_out_opacity_duration,
+             target_layout_manager_->opacity_tween_type(), 1.0, 0.0},
+            {target_layout_manager_->animation_duration() -
+                 fade_out_opacity_duration,
+             gfx::Tween::Type::LINEAR, 0.0, 0.0}});
     fade_out_opacity_animation_->SetContainer(container_);
     fade_out_opacity_animation_->set_continuous(false);
   }

@@ -1,0 +1,23 @@
+[document web]
+++[section]
+++++[push button] name='d1 button - outside - show-modal'
+++++[push button] name='d1 button - outside - unrelated action'
+++++[push button] name='d1 button - outside - custom action'
+++++[push button] name='d1 button - outside - close'
+++++[push button] name='d2 button - outside - show-modal'
+++++[push button] name='d2 button - outside - unrelated action'
+++++[push button] name='d2 button - outside - custom action'
+++++[push button] name='d2 button - outside - close'
+++++[dialog]
+++++++[push button] name='d2 button - inside - show-modal'
+++++++[push button] name='d2 button - inside - close'
+++++++[push button] name='Button inside popover, with unrelated action'
+++++++[push button] name='d2 button - inside - custom action'
+++++[push button] name='d3 button - outside - show-modal'
+++++[push button] name='d3 button - outside - unrelated action'
+++++[push button] name='d3 button - outside - custom action'
+++++[push button] name='d3 button - outside - close'
+++++[push button] name='d3 button - outside - show-modal'
+++++[push button] name='d3 button - outside - unrelated action'
+++++[push button] name='d3 button - outside - custom action'
+++++[push button] name='d3 button - outside - close'

@@ -4,20 +4,20 @@
 
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -54,7 +54,8 @@ class ProfileTokenQualityTest : public testing::Test {
                       std::u16string new_value) {
     FormFieldData& field = test_api(form).field(field_index);
     field.set_value(std::move(new_value));
-    bam_.OnTextFieldDidChange(form, field.global_id(), base::TimeTicks::Now());
+    bam_.OnTextFieldValueChanged(form, field.global_id(),
+                                 base::TimeTicks::Now());
   }
 
   // Fills the `form` with the `profile`, as-if autofilling was triggered from
@@ -68,13 +69,16 @@ class ProfileTokenQualityTest : public testing::Test {
         AutofillTriggerSource::kPopup);
   }
 
- protected:
+  TestAddressDataManager& adm() { return adm_; }
+
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient client_;
   TestAutofillDriver driver_{&client_};
   TestBrowserAutofillManager bam_{&driver_};
-  TestPersonalDataManager pdm_;
+
+ private:
+  TestAddressDataManager adm_;
 };
 
 TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
@@ -104,7 +108,7 @@ TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
 // types when fields are not edited.
 TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
   AutofillProfile profile = test::GetFullProfile();
-  pdm_.address_data_manager().AddProfile(profile);
+  adm().AddProfile(profile);
   ProfileTokenQuality quality(&profile);
   test_api(quality).disable_randomization();
 
@@ -116,7 +120,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
 
   FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
   EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
 
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
@@ -128,7 +132,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
 // types when fields are edited to values that don't occur in another profile.
 TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   AutofillProfile profile = test::GetFullProfile();
-  pdm_.address_data_manager().AddProfile(profile);
+  adm().AddProfile(profile);
   ProfileTokenQuality quality(&profile);
   test_api(quality).disable_randomization();
 
@@ -139,9 +143,9 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   // Clear the value of field 0.
   EditFieldValue(form, 0, u"");
   // Edit field 1 to a different token of the same `profile`.
-  EditFieldValue(form, 1, profile.GetInfo(NAME_MIDDLE, pdm_.app_locale()));
+  EditFieldValue(form, 1, profile.GetInfo(NAME_MIDDLE, adm().app_locale()));
   // Edit field 2 to a value similar to the originally filled one.
-  ASSERT_EQ(profile.GetInfo(ADDRESS_HOME_LINE1, pdm_.app_locale()),
+  ASSERT_EQ(profile.GetInfo(ADDRESS_HOME_LINE1, adm().app_locale()),
             u"666 Erebus St.");
   EditFieldValue(form, 2, u"666 erbus str");
   // Edit field 3 to a completely different token.
@@ -149,7 +153,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
 
   FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
   EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
 
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kEditedValueCleared));
@@ -168,8 +172,8 @@ TEST_F(ProfileTokenQualityTest,
        AddObservationsForFilledForm_Edited_DifferentProfile) {
   AutofillProfile profile = test::GetFullProfile();
   AutofillProfile other_profile = test::GetFullProfile2();
-  pdm_.address_data_manager().AddProfile(profile);
-  pdm_.address_data_manager().AddProfile(other_profile);
+  adm().AddProfile(profile);
+  adm().AddProfile(other_profile);
   ProfileTokenQuality quality(&profile);
   test_api(quality).disable_randomization();
 
@@ -178,14 +182,14 @@ TEST_F(ProfileTokenQualityTest,
 
   // Edit field 0 to the same token of a another profile.
   EditFieldValue(form, 0,
-                 other_profile.GetInfo(EMAIL_ADDRESS, pdm_.app_locale()));
+                 other_profile.GetInfo(EMAIL_ADDRESS, adm().app_locale()));
   // Edit field 1 to a different token of another profile.
   EditFieldValue(form, 1,
-                 other_profile.GetInfo(ADDRESS_HOME_STATE, pdm_.app_locale()));
+                 other_profile.GetInfo(ADDRESS_HOME_STATE, adm().app_locale()));
 
   FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
   EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
 
   EXPECT_THAT(
       quality.GetObservationTypesForFieldType(EMAIL_ADDRESS),
@@ -198,7 +202,7 @@ TEST_F(ProfileTokenQualityTest,
 // Tests that only a single observation is collected per field.
 TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
   AutofillProfile profile = test::GetFullProfile();
-  pdm_.address_data_manager().AddProfile(profile);
+  adm().AddProfile(profile);
   ProfileTokenQuality quality(&profile);
 
   FormData form = GetFormWithTypes({NAME_FIRST});
@@ -206,11 +210,11 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
 
   FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
   EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_FALSE(
-      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
 }
@@ -219,16 +223,17 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
 // observations are collected for the type the field had when it was filled.
 TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_DynamicChange) {
   AutofillProfile profile = test::GetFullProfile();
-  pdm_.address_data_manager().AddProfile(profile);
+  adm().AddProfile(profile);
   ProfileTokenQuality& quality = profile.token_quality();
 
   FormData form = GetFormWithTypes({NAME_FIRST});
   FillForm(form, profile);
 
   FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
-  form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST));
+  form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST),
+                                      AutofillPredictionSource::kHeuristics);
   EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
 }
@@ -243,8 +248,8 @@ TEST_F(ProfileTokenQualityTest,
   profile1.ClearFields({EMAIL_ADDRESS});
   AutofillProfile profile2 = test::GetFullProfile2();
   profile2.ClearFields({ADDRESS_HOME_CITY});
-  pdm_.address_data_manager().AddProfile(profile1);
-  pdm_.address_data_manager().AddProfile(profile2);
+  adm().AddProfile(profile1);
+  adm().AddProfile(profile2);
 
   // No profile contains sufficient data to fill both fields.
   FormData form = GetFormWithTypes({ADDRESS_HOME_CITY, EMAIL_ADDRESS});
@@ -252,21 +257,19 @@ TEST_F(ProfileTokenQualityTest,
   FillForm(form, profile2, /*triggering_field_index=*/1);
 
   ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
-      *bam_.FindCachedFormById(form.global_id()), form, pdm_);
+      *bam_.FindCachedFormById(form.global_id()), form, adm());
 
   // Expect that observations for both profiles were collected. Since
   // `SaveObservationsForFilledFormForAllSubmittedProfiles()` operates on the
-  // profiles owned by the `pdm_`, the profiles need to be accessed through the
-  // `pdm_`. `profile1` and `profile2` haven't changed.
-  const ProfileTokenQuality& quality1 = pdm_.address_data_manager()
-                                            .GetProfileByGUID(profile1.guid())
-                                            ->token_quality();
+  // profiles owned by the `adm()`, the profiles need to be accessed through the
+  // `adm()`. `profile1` and `profile2` haven't changed.
+  const ProfileTokenQuality& quality1 =
+      adm().GetProfileByGUID(profile1.guid())->token_quality();
   EXPECT_THAT(quality1.GetObservationTypesForFieldType(ADDRESS_HOME_CITY),
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_TRUE(quality1.GetObservationTypesForFieldType(EMAIL_ADDRESS).empty());
-  const ProfileTokenQuality& quality2 = pdm_.address_data_manager()
-                                            .GetProfileByGUID(profile2.guid())
-                                            ->token_quality();
+  const ProfileTokenQuality& quality2 =
+      adm().GetProfileByGUID(profile2.guid())->token_quality();
   EXPECT_THAT(quality2.GetObservationTypesForFieldType(EMAIL_ADDRESS),
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_TRUE(
@@ -283,8 +286,7 @@ TEST_F(ProfileTokenQualityTest,
 TEST_F(ProfileTokenQualityTest,
        LoadSerializedObservationsForStoredType_InvalidData) {
   AutofillProfile profile = test::GetFullProfile();
-  FieldTypeSet supported_types;
-  profile.GetSupportedTypes(&supported_types);
+  FieldTypeSet supported_types = profile.GetSupportedTypes();
 
   // Attempt loading observations for an unsupported type.
   ASSERT_FALSE(supported_types.contains(ADDRESS_HOME_LANDMARK));
@@ -338,16 +340,16 @@ TEST_P(ProfileTokenQualityObservationDroppingTest,
   // Use a profile with an address model that contains all the field types used
   // in the tests.
   AutofillProfile profile = test::GetFullProfile(AddressCountryCode("AT"));
-  pdm_.address_data_manager().AddProfile(profile);
+  adm().AddProfile(profile);
   ProfileTokenQuality quality(&profile);
 
   FormData form = GetFormWithTypes(test.form_types);
   FillForm(form, profile);
 
   EXPECT_TRUE(quality.AddObservationsForFilledForm(
-      *bam_.FindCachedFormById(form.global_id()), form, pdm_));
+      *bam_.FindCachedFormById(form.global_id()), form, adm()));
   EXPECT_EQ(test.expected_number_of_observations,
-            base::ranges::count_if(test.form_types, [&](FieldType type) {
+            std::ranges::count_if(test.form_types, [&](FieldType type) {
               return !quality.GetObservationTypesForFieldType(type).empty();
             }));
 }

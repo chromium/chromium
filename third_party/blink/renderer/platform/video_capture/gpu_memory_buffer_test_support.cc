@@ -14,49 +14,6 @@ using ::testing::Return;
 
 namespace blink {
 
-namespace {
-
-class FakeGpuMemoryBufferImpl : public gpu::GpuMemoryBufferImpl {
- public:
-  FakeGpuMemoryBufferImpl(const gfx::Size& size, gfx::BufferFormat format)
-      : gpu::GpuMemoryBufferImpl(
-            gfx::GpuMemoryBufferId(),
-            size,
-            format,
-            gpu::GpuMemoryBufferImpl::DestructionCallback()),
-        fake_gmb_(std::make_unique<media::FakeGpuMemoryBuffer>(size, format)) {}
-
-  // gfx::GpuMemoryBuffer implementation
-  bool Map() override { return fake_gmb_->Map(); }
-  void* memory(size_t plane) override { return fake_gmb_->memory(plane); }
-  void Unmap() override { fake_gmb_->Unmap(); }
-  int stride(size_t plane) const override { return fake_gmb_->stride(plane); }
-  gfx::GpuMemoryBufferType GetType() const override {
-    return fake_gmb_->GetType();
-  }
-  gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    return fake_gmb_->CloneHandle();
-  }
-
- private:
-  std::unique_ptr<media::FakeGpuMemoryBuffer> fake_gmb_;
-};
-
-}  // namespace
-
-std::unique_ptr<gpu::GpuMemoryBufferImpl>
-FakeGpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
-    gfx::GpuMemoryBufferHandle handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    gpu::GpuMemoryBufferImpl::DestructionCallback callback,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-    base::span<uint8_t> premapped_memory) {
-  return std::make_unique<FakeGpuMemoryBufferImpl>(size, format);
-}
-
 TestingPlatformSupportForGpuMemoryBuffer::
     TestingPlatformSupportForGpuMemoryBuffer()
     : sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),

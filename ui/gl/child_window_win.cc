@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -120,8 +121,8 @@ void DestroyWindowsOnThread(HWND child_window, HWND hidden_popup_window) {
 
 #if DCHECK_IS_ON()
 base::ThreadChecker& GetThreadChecker() {
-  static base::ThreadChecker thread_checker;
-  return thread_checker;
+  static base::NoDestructor<base::ThreadChecker> thread_checker;
+  return *thread_checker;
 }
 #endif
 
@@ -133,12 +134,12 @@ class ChildWindowWin::ChildWindowThread
   // Returns the singleton instance of the thread.
   static scoped_refptr<ChildWindowThread> GetInstance() {
     DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
-    static base::WeakPtr<ChildWindowThread> weak_instance;
+    static base::NoDestructor<base::WeakPtr<ChildWindowThread>> weak_instance;
 
-    auto instance = base::WrapRefCounted(weak_instance.get());
+    auto instance = base::WrapRefCounted((*weak_instance).get());
     if (!instance) {
       instance = base::WrapRefCounted(new ChildWindowThread);
-      weak_instance = instance->weak_ptr_factory_.GetWeakPtr();
+      *weak_instance = instance->weak_ptr_factory_.GetWeakPtr();
     }
 
     return instance;

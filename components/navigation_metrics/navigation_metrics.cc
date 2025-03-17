@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/navigation_metrics/navigation_metrics.h"
 
+#include <array>
 #include <iterator>
 
 #include "base/i18n/rtl.h"
@@ -38,10 +34,12 @@ const char kMainFrameHasRTLDomain[] = "Navigation.MainFrameHasRTLDomain2";
 const char kMainFrameHasRTLDomainDifferentPage[] =
     "Navigation.MainFrameHasRTLDomainDifferentPage2";
 const char kMainFrameProfileType[] = "Navigation.MainFrameProfileType2";
+const char kMainFrameProfileTypeDifferentPage[] =
+    "Navigation.MainFrameProfileTypeDifferentPage2";
 
 namespace {
 
-const char* const kSchemeNames[] = {
+constexpr auto kSchemeNames = std::to_array<const char*>({
     "unknown",
     url::kHttpScheme,
     url::kHttpsScheme,
@@ -61,7 +59,7 @@ const char* const kSchemeNames[] = {
     "view-source",
     "externalfile",
     "isolated-app",
-};
+});
 
 static_assert(std::size(kSchemeNames) == static_cast<int>(Scheme::COUNT),
               "kSchemeNames should have Scheme::COUNT elements");
@@ -109,6 +107,9 @@ void RecordPrimaryMainFrameNavigation(
     }
   }
   UMA_HISTOGRAM_ENUMERATION(kMainFrameProfileType, profile_type);
+  if (!is_same_document) {
+    UMA_HISTOGRAM_ENUMERATION(kMainFrameProfileTypeDifferentPage, profile_type);
+  }
 }
 
 void RecordOmniboxURLNavigation(const GURL& url) {

@@ -4,16 +4,19 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -34,8 +37,9 @@ import java.util.Set;
  * native is down are persisted to prefs, up to an experimentally controlled limit. Such overflows
  * are detected and also forwarded to native.
  */
+@NullMarked
 public class OptimizationGuidePushNotificationManager {
-    private static Boolean sNativeIsInitialized;
+    private static @Nullable Boolean sNativeIsInitialized;
 
     private static final String TAG = "OGPNotificationMngr";
 
@@ -80,8 +84,10 @@ public class OptimizationGuidePushNotificationManager {
         }
 
         if (nativeIsInitialized()) {
-            OptimizationGuideBridgeFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
-                    .onNewPushNotification(payload);
+            var optimizationGuideBridge =
+                    OptimizationGuideBridgeFactory.getForProfile(
+                            ProfileManager.getLastUsedRegularProfile());
+            assumeNonNull(optimizationGuideBridge).onNewPushNotification(payload);
             return;
         }
 
@@ -119,8 +125,7 @@ public class OptimizationGuidePushNotificationManager {
      * @param optimizationType the optimization type to get cached notifications for
      * @return a possibly null array of persisted notifications
      */
-    @Nullable
-    public static HintNotificationPayload[] getNotificationCacheForOptimizationType(
+    public static HintNotificationPayload @Nullable [] getNotificationCacheForOptimizationType(
             OptimizationType optimizationType) {
         Set<String> cache = getStringCacheForOptimizationType(optimizationType);
         if (checkForOverflow(cache)) return null;

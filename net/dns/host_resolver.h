@@ -228,8 +228,9 @@ class NET_EXPORT HostResolver {
     // synchronously, and GetEndpointResults() will return finalized results.
     virtual int Start(Delegate* delegate) = 0;
 
-    // The current available service endpoints. These can be changed over time
-    // while resolution is still ongoing. Changes are signaled by a call to the
+    // The current available service endpoints. May return stale results when
+    // the cache usage is ALLOWED. These can be changed over time while
+    // resolution is still ongoing. Changes are signaled by a call to the
     // delegate's OnServiceEndpointsUpdated(). Results are finalized when
     // Start() finished synchronously (returning other than ERR_IO_PENDING), or
     // delegate's OnServiceEndpointRequestFinished() is called.
@@ -255,6 +256,20 @@ class NET_EXPORT HostResolver {
     // while resolution is still ongoing. In general, should be called only
     // after resolution completed.
     virtual ResolveErrorInfo GetResolveErrorInfo() = 0;
+
+    // Staleness about the current endpoint results. Only available if results
+    // were received from the host cache, otherwise returns nullptr.
+    // This can be changed over time while resolution is still ongoing, e.g.,
+    // clearing to nullptr if the cached results were intermediate stale results
+    // and these are replaced with fresh results.
+    virtual const HostCache::EntryStaleness* GetStaleInfo() const = 0;
+
+    // True when the current endpoints are a stale result returned only as a
+    // preliminary results while the resolver retrieves fresh results. This is
+    // equivalent to checking the staleness from GetStaleInfo() while the
+    // request isn't final. This can be changed over time while resolution is
+    // still ongoing.
+    virtual bool IsStaleWhileRefresing() const = 0;
 
     // Change the priority of this request.
     virtual void ChangeRequestPriority(RequestPriority priority) = 0;
@@ -340,6 +355,10 @@ class NET_EXPORT HostResolver {
     // An experimental options for features::kUseDnsHttpsSvcb
     // and features::kUseDnsHttpsSvcbAlpn.
     std::optional<HostResolver::HttpsSvcbOptions> https_svcb_options;
+
+    // Optional boolean to enable or disable the Happy Eyeballs V3 explicitly.
+    // Used for respecting policies.
+    std::optional<bool> enable_happy_eyeballs_v3;
   };
 
   // Factory class. Useful for classes that need to inject and override resolver
@@ -352,14 +371,16 @@ class NET_EXPORT HostResolver {
     virtual std::unique_ptr<HostResolver> CreateResolver(
         HostResolverManager* manager,
         std::string_view host_mapping_rules,
-        bool enable_caching);
+        bool enable_caching,
+        bool enable_stale);
 
     // See HostResolver::CreateStandaloneResolver.
     virtual std::unique_ptr<HostResolver> CreateStandaloneResolver(
         NetLog* net_log,
         const ManagerOptions& options,
         std::string_view host_mapping_rules,
-        bool enable_caching);
+        bool enable_caching,
+        bool enable_stale);
   };
 
   // Parameter-grouping struct for additional optional parameters for
@@ -367,6 +388,9 @@ class NET_EXPORT HostResolver {
   // default.
   struct NET_EXPORT ResolveHostParameters {
     ResolveHostParameters();
+
+    ResolveHostParameters(const ResolveHostParameters&);
+    ResolveHostParameters& operator=(const ResolveHostParameters&);
 
     // Requested DNS query type. If UNSPECIFIED, the resolver will select a set
     // of queries automatically. It will select A, AAAA, or both as the address
@@ -385,14 +409,23 @@ class NET_EXPORT HostResolver {
     HostResolverSource source = HostResolverSource::ANY;
 
     enum class CacheUsage {
-      // Results may come from the host cache if non-stale.
+      // Results may come from the host cache if non-stale, or may be fresh
+      // responses from resolvers.
       ALLOWED,
 
       // Results may come from the host cache even if stale (by expiration or
       // network changes). In secure dns AUTOMATIC mode, the cache is checked
       // for both secure and insecure results prior to any secure DNS lookups to
       // minimize response time.
+      //
+      // For ServiceEndpointRequest, final results could be stale.
       STALE_ALLOWED,
+
+      // Stale results may come from the host cache only as intermediate results
+      // (not the final results). Final results may come from the host cache if
+      // non-stale, or may be fresh responses from resolvers.
+      // Can be used only for ServiceEndpointRequest.
+      STALE_ALLOWED_WHILE_REFRESHING,
 
       // Results will not come from the host cache.
       DISALLOWED,
@@ -531,29 +564,40 @@ class NET_EXPORT HostResolver {
   // only be called once.
   virtual void SetRequestContext(URLRequestContext* request_context);
 
+  // Returns true when HappyEyeballs V3 algorithm is enabled.
+  virtual bool IsHappyEyeballsV3Enabled() const = 0;
+
   virtual HostResolverManager* GetManagerForTesting();
   virtual const URLRequestContext* GetContextForTesting() const;
   virtual handles::NetworkHandle GetTargetNetworkForTesting() const;
 
-  // Creates a new HostResolver. |manager| must outlive the returned resolver.
+  // Creates a new HostResolver. `manager` must outlive the returned resolver.
   //
-  // If |mapping_rules| is non-empty, the mapping rules will be applied to
+  // If `mapping_rules` is non-empty, the mapping rules will be applied to
   // requests.  See MappedHostResolver for details.
+  // if `enable_stale` is true, Stale DNS records will be used based on the
+  // default configurations in `StaleHostResolver::StaleOptions`, see
+  // `StaleHostResolver` for details.
   static std::unique_ptr<HostResolver> CreateResolver(
       HostResolverManager* manager,
       std::string_view host_mapping_rules = "",
-      bool enable_caching = true);
+      bool enable_caching = true,
+      bool enable_stale = false);
 
   // Creates a HostResolver independent of any global HostResolverManager. Only
   // for tests and standalone tools not part of the browser.
   //
-  // If |mapping_rules| is non-empty, the mapping rules will be applied to
+  // If `mapping_rules` is non-empty, the mapping rules will be applied to
   // requests.  See MappedHostResolver for details.
+  // if `enable_stale` is true, Stale DNS records will be used based on the
+  // default configurations in `StaleHostResolver::StaleOptions`, see
+  // `StaleHostResolver` for details.
   static std::unique_ptr<HostResolver> CreateStandaloneResolver(
       NetLog* net_log,
       std::optional<ManagerOptions> options = std::nullopt,
       std::string_view host_mapping_rules = "",
-      bool enable_caching = true);
+      bool enable_caching = true,
+      bool enable_stale = false);
   // Same, but explicitly returns the implementing ContextHostResolver. Only
   // used by tests and by StaleHostResolver in Cronet. No mapping rules can be
   // applied because doing so requires wrapping the ContextHostResolver.
@@ -619,7 +663,6 @@ class NET_EXPORT HostResolver {
   static bool MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
                                         HostResolverSource source,
                                         const IPAddress& ip_address);
-
  protected:
   HostResolver();
 

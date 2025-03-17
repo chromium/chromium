@@ -100,7 +100,7 @@ class CONTENT_EXPORT CacheStorageCache {
   static std::unique_ptr<CacheStorageCache> CreateMemoryCache(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
-      const std::string& cache_name,
+      const std::u16string& cache_name,
       CacheStorage* cache_storage,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -108,7 +108,7 @@ class CONTENT_EXPORT CacheStorageCache {
   static std::unique_ptr<CacheStorageCache> CreatePersistentCache(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
-      const std::string& cache_name,
+      const std::u16string& cache_name,
       CacheStorage* cache_storage,
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -223,7 +223,7 @@ class CONTENT_EXPORT CacheStorageCache {
 
   base::FilePath path() const { return path_; }
 
-  std::string cache_name() const { return cache_name_; }
+  std::u16string cache_name() const { return cache_name_; }
 
   int64_t cache_size() const { return cache_size_; }
 
@@ -301,7 +301,7 @@ class CONTENT_EXPORT CacheStorageCache {
   CacheStorageCache(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
-      const std::string& cache_name,
+      const std::u16string& cache_name,
       const base::FilePath& path,
       CacheStorage* cache_storage,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -590,7 +590,7 @@ class CONTENT_EXPORT CacheStorageCache {
 
   const storage::BucketLocator bucket_locator_;
   const storage::mojom::CacheStorageOwner owner_;
-  const std::string cache_name_;
+  const std::u16string cache_name_;
   const base::FilePath path_;
 
   // Raw pointer is safe because the CacheStorage instance owns this

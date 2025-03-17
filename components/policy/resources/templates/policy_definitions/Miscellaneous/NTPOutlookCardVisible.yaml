@@ -1,7 +1,11 @@
-caption: Show Outlook Calendar card on the New Tab Page
+caption: Show Outlook Calendar card on the New Tab Page (Beta)
 default: false
 desc: |- # TODO(crbug.com/376287682): insert HC article link
+  This is a beta feature.
+
   This policy controls the visibility of the Outlook Card on the New Tab Page. The card will only be displayed on the New Tab Page if the policy is enabled and your organization authorized the usage of the Outlook Calendar data in the browser.
+
+  Outlook data will not be stored by the browser.
 
   The Outlook card shows the next calendar event, along with a glanceable look at the rest of the day's meetings. It aims to address the issue of context switching and enhance productivity by giving users a shortcut to their next meeting.
 
@@ -12,9 +16,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
 items:
 - caption: Enable NTP Outlook Calendar Card
   value: true
@@ -27,5 +28,8 @@ owners:
 - ftirelo@chromium.org
 schema:
   type: boolean
+supported_on:
+- chrome.*:134-
+- chrome_os:134-
 tags: []
 type: main

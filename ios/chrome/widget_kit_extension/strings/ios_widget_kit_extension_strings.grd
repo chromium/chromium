@@ -1,20 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-This file contains definition of resources that will be translated for each
-locale.  The variables is_win, is_macosx, is_linux, is_ios and is_posix are
-available for making strings OS specific.  Other platform defines such as
-use_titlecase are declared in build/common.gypi.
-
-The strings in this file are specific to iOS, thus is_ios will be true and
-all other OS specific variables will be false.
--->
-
-<grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+<?xml version='1.0' encoding='UTF-8'?>
+<grit base_dir="." latest_public_release="0" current_release="1" source_lang_id="en" enc_check="möl">
+  <!--
+  This file contains definition of resources that will be translated for each
+  locale.  The strings in this file are specific to iOS.
+  -->
   <outputs>
     <output filename="grit/ios_widget_kit_extension_strings.h" type="rc_header">
-      <emit emit_type="prepend"></emit>
+      <emit emit_type="prepend" />
     </output>
     <output filename="ios_widget_kit_extension_strings_af.pak" type="data_package" lang="af" />
     <output filename="ios_widget_kit_extension_strings_am.pak" type="data_package" lang="am" />
@@ -190,125 +182,125 @@ all other OS specific variables will be false.
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME" desc="Display name for the dino game widget" meaning="String that appears as title in the installation window for the Dino widget. [CHAR_LIMIT=30][iOS only]">
-        Chrome Dino Game
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL" desc="Accessibility label for the dino game widget" meaning="Accessibility label for the dino game widget [CHAR_LIMIT=40][iOS only]">
+        Jump into Chrome Dino Game
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION" desc="Description for the dino game widget" meaning="String that appears as description in the installation window for the Dino widget. [CHAR_LIMIT=150][iOS only]">
         Jump into the Chrome Dino game from your Home Screen.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE" desc="Title for the dino game widget" meaning="String that appears in the Dino widget. [CHAR_LIMIT=15][iOS only]">
-        Chrome Dino
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL" desc="Accessibility label for the dino game widget" meaning="Accessibility label for the dino game widget [CHAR_LIMIT=40][iOS only]">
-        Jump into Chrome Dino Game
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DISPLAY_NAME" desc="Display name for the lockscreen launcher game widget" meaning="String that appears as title in the installation window for the lockscreen launcher Dino Game widget. [CHAR_LIMIT=30][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME" desc="Display name for the dino game widget" meaning="String that appears as title in the installation window for the Dino widget. [CHAR_LIMIT=30][iOS only]">
         Chrome Dino Game
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DESCRIPTION" desc="Description for the lockscreen launcher game widget" meaning="String that appears as description in the installation window for the lockscreen launcher Dino Game widget. [CHAR_LIMIT=150][iOS only]">
-        Jump into the Chrome Dino Game from your lock screen.
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE" desc="Title for the dino game widget" meaning="String that appears in the Dino widget. [CHAR_LIMIT=15][iOS only]">
+        Chrome Dino
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher game widget" meaning="Accessibility label for the lockscreen launcher Dino Game widget [CHAR_LIMIT=40][iOS only]">
         Jump into Chrome Dino Game
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_DISPLAY_NAME" desc="Display name for the lockscreen launcher incognito widget" meaning="String that appears as title in the installation window for the lockscreen launcher Incognito widget. [CHAR_LIMIT=30][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DESCRIPTION" desc="Description for the lockscreen launcher game widget" meaning="String that appears as description in the installation window for the lockscreen launcher Dino Game widget. [CHAR_LIMIT=150][iOS only]">
+        Jump into the Chrome Dino Game from your lock screen.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DISPLAY_NAME" desc="Display name for the lockscreen launcher game widget" meaning="String that appears as title in the installation window for the lockscreen launcher Dino Game widget. [CHAR_LIMIT=30][iOS only]">
+        Chrome Dino Game
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher incognito widget" meaning="Accessibility label for the lockscreen launcher Incognito widget [CHAR_LIMIT=40][iOS only]">
         Incognito Search
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_DESCRIPTION" desc="Description for the lockscreen launcher incognito widget" meaning="String that appears as description in the installation window for the lockscreen launcher Incognito widget. [CHAR_LIMIT=150][iOS only]">
         Search or navigate in a new Incognito tab in Chrome.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher incognito widget" meaning="Accessibility label for the lockscreen launcher Incognito widget [CHAR_LIMIT=40][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_DISPLAY_NAME" desc="Display name for the lockscreen launcher incognito widget" meaning="String that appears as title in the installation window for the lockscreen launcher Incognito widget. [CHAR_LIMIT=30][iOS only]">
         Incognito Search
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_DISPLAY_NAME" desc="Display name for the lockscreen launcher search widget" meaning="String that appears as title in the installation window for the lockscreen launcher Search widget. [CHAR_LIMIT=30][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher search widget" meaning="Accessibility label for the lockscreen launcher Search widget [CHAR_LIMIT=40][iOS only]">
         Search
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_DESCRIPTION" desc="Description for the lockscreen launcher search widget" meaning="String that appears as description in the installation window for the lockscreen launcher Search widget. [CHAR_LIMIT=150][iOS only]">
         Search in Chrome with your favorite search engine.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher search widget" meaning="Accessibility label for the lockscreen launcher Search widget [CHAR_LIMIT=40][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_DISPLAY_NAME" desc="Display name for the lockscreen launcher search widget" meaning="String that appears as title in the installation window for the lockscreen launcher Search widget. [CHAR_LIMIT=30][iOS only]">
         Search
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DISPLAY_NAME" desc="Display name for the lockscreen launcher voice search widget" meaning="String that appears as title in the installation window for the lockscreen launcher Voice Search widget. [CHAR_LIMIT=30][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher voice search widget" meaning="Accessibility label for the lockscreen launcher Voice Search widget [CHAR_LIMIT=40][iOS only]">
         Voice Search
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DESCRIPTION" desc="Description for the lockscreen launcher voice search widget" meaning="String that appears as description in the installation window for the lockscreen launcher Voice Search widget. [CHAR_LIMIT=150][iOS only]">
         Search in Chrome using your voice.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher voice search widget" meaning="Accessibility label for the lockscreen launcher Voice Search widget [CHAR_LIMIT=40][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DISPLAY_NAME" desc="Display name for the lockscreen launcher voice search widget" meaning="String that appears as title in the installation window for the lockscreen launcher Voice Search widget. [CHAR_LIMIT=30][iOS only]">
         Voice Search
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME" desc="Name for the quick actions widget" meaning="String that appears as title in the installation window for the Quick Actions widget. [CHAR_LIMIT=30][iOS only]">
-        Quick Actions
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION" desc="Description for the quick actions widget" meaning="String that appears as description in the installation window for the Quick Actions widget. [CHAR_LIMIT=150][iOS only]">
         Search or navigate in a new tab, in Incognito mode, using your voice, or with a QR code.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_TITLE" desc="Title for the quick actions widget" meaning="String that appears in the Quick Actions widget. [CHAR_LIMIT=30][iOS only]">
-        Search or type URL
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search action in the quick actions widget" meaning="Accessibility label for the search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
-        Search or type URL
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME" desc="Name for the quick actions widget" meaning="String that appears as title in the installation window for the Quick Actions widget. [CHAR_LIMIT=30][iOS only]">
+        Quick Actions
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the Incognito search in the quick actions widget" meaning="Accessibility label for the Incognito search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Incognito Search
       </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_LENS_A11Y_LABEL" desc="Accessibility label for the Lens action in the quick actions widget" meaning="Accessibility label for the Lens action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
+        Lens
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL" desc="Accessibility label for the QR scan action in the quick actions widget" meaning="Accessibility label for the QR search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Scan QR Code
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_LENS_A11Y_LABEL" desc="Accessibility label for the Lens action in the quick actions widget" meaning="Accessibility label for the Lens action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
-        Lens
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search action in the quick actions widget" meaning="Accessibility label for the search action in the quick actions widget [iOS only]">
+        Search or type URL
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_TITLE" desc="Title for the quick actions widget" meaning="String that appears in the Quick Actions widget. [CHAR_LIMIT=30][iOS only]">
+        Search or type URL
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_VOICE_SEARCH_A11Y_LABEL" desc="Accessibility label for the Voice Search action in the quick actions widget" meaning="Accessibility label for the voice search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Voice Search
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DISPLAY_NAME" desc="Name for the search widget" meaning="String that appears as title in the installation window for the Search widget. [CHAR_LIMIT=30][iOS only]">
-        Search
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [CHAR_LIMIT=40][iOS only]">
+        Search or Type URL
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION" desc="Description for the search widget" meaning="String that appears as description in the installation window for the Search widget. [CHAR_LIMIT=150][iOS only]">
         Search in Chrome with your favorite search engine.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE" desc="Title for the search widget" meaning="String that appears in the Search widget. Should be splited in two lines, each line with a max of 15 characteres. [CHAR_LIMIT=25][iOS only]">
-        Search or
-type URL
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DISPLAY_NAME" desc="Name for the search widget" meaning="String that appears as title in the installation window for the Search widget. [CHAR_LIMIT=30][iOS only]">
+        Search
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [CHAR_LIMIT=40][iOS only]">
-        Search or Type URL
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
+        Search passwords on Google Password Manager
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME" desc="Name for the chrome shortcuts widget" meaning="String that appears as title in the installation window for the Chrome Shortcuts widget [iOS only]">
-        Chrome Shortcuts
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPHONE" desc="Description for the chrome shortcuts widget" meaning="String that appears as description in the installation window for the Chrome Shortcuts widget for the iPhone [iOS only]">
-          Start a new search or open your most visited sites from your iPhone homepage.
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPAD" desc="Description for the chrome shortcuts widget" meaning="String that appears as description in the installation window for the Chrome Shortcuts widget for the iPad [iOS only]">
-          Start a new search or open your most visited sites from your iPad homepage.
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [iOS only]">
-        Search or Type URL
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_OPEN_SHORTCUT_LABEL" desc="Open shortcut label for the shortcuts widget, please use WEBSITE_PLACEHOLDER in the translated string as a placeholder for the title of the website which is to be opened [CHAR_LIMIT=40]" meaning="Open shortcut label for the shortcuts widget [CHAR_LIMIT=40][iOS only]">
-            Open WEBSITE_PLACEHOLDER
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70][iOS only]">
-          Your most visited sites will show up here.
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_EXPIRED_OPEN_CHROME" desc="Message shown in the Shortcuts Widget if Chrome has not been opened for a long time. It invites the user to open Chrome so up-to-date information about most visited sites can be displayed in the widget." meaning="shortcuts expires after some time of not using chrome[iOS only]">
-          Open Chrome to see your most visited sites here.
+    <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION" desc="Description for the Search Passwords widget. [CHAR_LIMIT=150][iOS only]">
+        Safely search for your saved passwords on Google Password Manager
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DISPLAY_NAME" desc="Name for the Search Passwords widget. [CHAR_LIMIT=30][iOS only]" meaning="String that appears as title in the installation window for the Search Passwords widget. Title-cased.">
         Password Manager
-      </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION" desc="Description for the Search Passwords widget. [CHAR_LIMIT=150][iOS only]">
-        Safely search for your saved passwords on Google Password Manager
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_TITLE" desc="Title for the Search Passwords widget. Should be split in two lines, each line with a max of 15 characters. [CHAR_LIMIT=25][iOS only]" meaning="String that appears in the Search Passwords widget. Sentence-cased.">
         Search
 passwords
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
-        Search passwords on Google Password Manager
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE" desc="Title for the search widget" meaning="String that appears in the Search widget. Should be splited in two lines, each line with a max of 15 characteres. [CHAR_LIMIT=25][iOS only]">
+        Search or
+type URL
       </message>
-    </messages>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPAD" desc="Description for the chrome shortcuts widget" meaning="String that appears as description in the installation window for the Chrome Shortcuts widget for the iPad [iOS only]">
+          Start a new search or open your most visited sites from your iPad homepage.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPHONE" desc="Description for the chrome shortcuts widget" meaning="String that appears as description in the installation window for the Chrome Shortcuts widget for the iPhone [iOS only]">
+          Start a new search or open your most visited sites from your iPhone homepage.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME" desc="Name for the chrome shortcuts widget" meaning="String that appears as title in the installation window for the Chrome Shortcuts widget [iOS only]">
+        Chrome Shortcuts
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_EXPIRED_OPEN_CHROME" desc="Message shown in the Shortcuts Widget if Chrome has not been opened for a long time. It invites the user to open Chrome so up-to-date information about most visited sites can be displayed in the widget." meaning="shortcuts expires after some time of not using chrome[iOS only]">
+          Open Chrome to see your most visited sites here.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70][iOS only]">
+          Your most visited sites will show up here.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_OPEN_SHORTCUT_LABEL" desc="Open shortcut label for the shortcuts widget, please use WEBSITE_PLACEHOLDER in the translated string as a placeholder for the title of the website which is to be opened [CHAR_LIMIT=40]" meaning="Open shortcut label for the shortcuts widget [CHAR_LIMIT=40][iOS only]">
+            Open WEBSITE_PLACEHOLDER
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [iOS only]">
+        Search or Type URL
+      </message>
+      </messages>
   </release>
 </grit>

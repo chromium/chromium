@@ -9,12 +9,15 @@ import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Native page that displays pdf file. */
+@NullMarked
 public class PdfPage extends BasicNativePage {
     @VisibleForTesting final PdfCoordinator mPdfCoordinator;
     private String mTitle;
@@ -80,7 +83,7 @@ public class PdfPage extends BasicNativePage {
     }
 
     @Override
-    public String getCanonicalFilepath() {
+    public @Nullable String getCanonicalFilepath() {
         return mPdfCoordinator.getFilepath();
     }
 
@@ -99,6 +102,14 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator.destroy();
     }
 
+    /**
+     * Called after pdf download complete.
+     *
+     * @param pdfFileName The filename of the downloaded pdf document.
+     * @param pdfFilePath The filepath of the downloaded pdf document.
+     * @param isDownloadSafe Whether the pdf download is safe. Mixed-content download is considered
+     *     unsafe.
+     */
     public void onDownloadComplete(String pdfFileName, String pdfFilePath, boolean isDownloadSafe) {
         mTitle = pdfFileName;
         mIsDownloadSafe = isDownloadSafe;
@@ -114,8 +125,22 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator.onDownloadComplete(pdfFilePath);
     }
 
+    /**
+     * Show pdf specific find in page UI.
+     *
+     * @return whether the pdf specific find in page UI is shown.
+     */
     public boolean findInPage() {
         return mPdfCoordinator.findInPage();
+    }
+
+    /**
+     * Retrieve uri of the pdf document.
+     *
+     * @return Uri of the pdf document. The uri might be null if the pdf is downloading.
+     */
+    public @Nullable Uri getUri() {
+        return mPdfCoordinator.getUri();
     }
 
     /**
@@ -123,7 +148,7 @@ public class PdfPage extends BasicNativePage {
      *
      * @param isWorkProfile Whether Chrome is running in the Android work profile.
      */
-    public String requestAssistContent(boolean isWorkProfile) {
+    public @Nullable String requestAssistContent(boolean isWorkProfile) {
         return mPdfCoordinator.requestAssistContent(getTitle(), isWorkProfile);
     }
 }

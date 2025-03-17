@@ -30,3 +30,14 @@ on any thread and will return a user-bound encrypted string. It is guaranteed
 that a string encrypted with `EncryptString` will be able to successfully
 decrypt if `DecryptString` is called in the same user context. The exact
 definition of user context is OS defined.
+
+## Testing
+
+The platform OSCrypt sync implementations have known-answer unit tests, which do
+an encrypt-and-decrypt roundtrip and ensure that both the intermediate
+ciphertext and the final plaintext match expected values. The reason for
+known-answer tests, rather than ordinary roundtrip tests, is that the behavior
+of OSCrypt for existing encrypted data on disk can't change without losing user
+data. Without known-answer tests, it would be possible (for example) to change
+key derivation in a way that did not break roundtrip tests but rendered all
+existing user data undecryptable.

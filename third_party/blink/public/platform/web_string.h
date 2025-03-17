@@ -37,7 +37,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -184,6 +183,15 @@ class BLINK_PLATFORM_EXPORT WebString {
 
   scoped_refptr<WTF::StringImpl> impl_;
 };
+
+#if INSIDE_BLINK
+// This can be used as a projection, e.g. when calling base::ToVector().
+inline WebString ToWebString(const WTF::String& s) {
+  return WebString(s);
+}
+// To convert a std::vector<WebString> to WTF::Vector<String>, use
+//   WTF::Vector<String>(std_vector_web_string).
+#endif
 
 inline bool operator==(const WebString& a, const char* b) {
   return a.Equals(b);

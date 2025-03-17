@@ -220,17 +220,6 @@ export class OsSettingsPrivacyPageElement extends
         readOnly: true,
       },
 
-      /**
-       * Whether to show the new UI for OS Sync Settings
-       * which include sublabel and Apps toggle
-       * shared between Ash and Lacros.
-       */
-      showSyncSettingsRevamp_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
-        readOnly: true,
-      },
-
       isAuthenticating_: {
         type: Boolean,
         value: false,
@@ -267,7 +256,6 @@ export class OsSettingsPrivacyPageElement extends
   private showDisableProtectionDialog_: boolean;
   private showPasswordPromptDialog_: boolean;
   private showSecureDnsSetting_: boolean;
-  private showSyncSettingsRevamp_: boolean;
   private syncBrowserProxy_: SyncBrowserProxy;
   private isAuthenticating_: boolean;
 
@@ -306,7 +294,7 @@ export class OsSettingsPrivacyPageElement extends
 
     this.addFocusConfig(routes.ACCOUNTS, '#manageOtherPeopleRow');
     this.addFocusConfig(routes.LOCK_SCREEN, '#lockScreenRow');
-    this.addFocusConfig(routes.SYNC, '#syncSetupRow');
+    this.addFocusConfig(routes.OS_SYNC_SETUP, '#syncSetupRow');
   }
 
   private afterRenderShowDeepLink_(
@@ -368,7 +356,7 @@ export class OsSettingsPrivacyPageElement extends
 
     // Since the sync setup subpage is a shared subpage, so we handle deep links
     // for both this page and the sync setup subpage.
-    if (newRoute === routes.SYNC || newRoute === this.route) {
+    if (newRoute === routes.OS_SYNC_SETUP || newRoute === this.route) {
       this.attemptDeepLink();
     }
   }
@@ -392,13 +380,6 @@ export class OsSettingsPrivacyPageElement extends
       return this.i18n('lockScreenPinOrPassword');
     }
     return this.i18n('lockScreenPasswordOnly');
-  }
-
-  private getSyncAdvancedTitle_(): string {
-    if (this.showSyncSettingsRevamp_) {
-      return this.i18n('syncAdvancedDevicePageTitle');
-    }
-    return this.i18n('syncAdvancedPageTitle');
   }
 
   private getSyncAndGoogleServicesSubtext_(): string {
@@ -530,7 +511,7 @@ export class OsSettingsPrivacyPageElement extends
 
   // Users can go to sync setup subpage regardless of sync status.
   private onSyncClick_(): void {
-    Router.getInstance().navigateTo(routes.SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC_SETUP);
   }
 
   private onPrivacyHubClick_(): void {

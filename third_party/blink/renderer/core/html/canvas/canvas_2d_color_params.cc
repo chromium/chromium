@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
 
@@ -18,21 +18,18 @@ Canvas2DColorParams::Canvas2DColorParams(PredefinedColorSpace color_space,
       pixel_format_(pixel_format),
       has_alpha_(has_alpha) {}
 
-SkColorType Canvas2DColorParams::GetSkColorType() const {
+viz::SharedImageFormat Canvas2DColorParams::GetSharedImageFormat() const {
   switch (pixel_format_) {
     case CanvasPixelFormat::kF16:
-      return kRGBA_F16_SkColorType;
+      return viz::SinglePlaneFormat::kRGBA_F16;
     case CanvasPixelFormat::kUint8:
-      return kN32_SkColorType;
+      return GetN32FormatForCanvas();
   }
   NOTREACHED();
 }
 
-sk_sp<SkColorSpace> Canvas2DColorParams::GetSkColorSpace() const {
-  static_assert(kN32_SkColorType == kRGBA_8888_SkColorType ||
-                    kN32_SkColorType == kBGRA_8888_SkColorType,
-                "Unexpected kN32_SkColorType value.");
-  return PredefinedColorSpaceToSkColorSpace(color_space_);
+gfx::ColorSpace Canvas2DColorParams::GetGfxColorSpace() const {
+  return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
 
 }  // namespace blink

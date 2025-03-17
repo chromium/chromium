@@ -171,7 +171,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 
     return v4l2_vda_helpers::CreateImageProcessor(
         input_fourcc, *output_fourcc, input_size, output_size, visible_rect,
-        output_storage_type, num_buffers, new V4L2Device(),
+        output_storage_type, num_buffers, base::MakeRefCounted<V4L2Device>(),
         ImageProcessor::OutputMode::IMPORT, std::move(client_task_runner),
         std::move(error_cb));
   }
@@ -189,12 +189,12 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
   if (input_candidates.empty())
     return nullptr;
 
-  auto iter = base::ranges::find_if(
-    input_candidates,
-    [](const PixelLayoutCandidate& candidate) {
-      return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
-          candidate.fourcc).empty();
-    });
+  auto iter = std::ranges::find_if(
+      input_candidates, [](const PixelLayoutCandidate& candidate) {
+        return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
+                    candidate.fourcc)
+                    .empty();
+      });
 
   if (iter == input_candidates.end())
     return nullptr;

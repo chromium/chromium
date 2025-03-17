@@ -37,7 +37,6 @@
 namespace {
 
 using password_manager::constants::kMaxPasswordNoteLength;
-using password_manager::metrics_util::PasswordCheckInteraction;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword = kSectionIdentifierEnumZero,
@@ -106,9 +105,6 @@ const int kMinNoteCharAmountForWarning = 901;
 // `password_manager::constants::kMaxPasswordNoteLength`.
 @property(nonatomic, assign) BOOL isNoteValid;
 
-// If YES, the password details are shown without requiring any authentication.
-@property(nonatomic, assign) BOOL showPasswordWithoutAuth;
-
 // The account where passwords are being saved to, or nil if passwords are only
 // being saved locally.
 @property(nonatomic, strong) NSString* accountSavingPasswords;
@@ -127,7 +123,6 @@ const int kMinNoteCharAmountForWarning = 901;
   if (self) {
     _isDuplicatedCredential = NO;
     _shouldEnableSave = NO;
-    _showPasswordWithoutAuth = NO;
     _isTLDMissingMessageShown = NO;
     _isNoteFooterShown = NO;
     _isNoteValid = YES;

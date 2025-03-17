@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/login_expanded_public_account_view.h"
 
+#include <algorithm>
+
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/login_test_base.h"
@@ -14,7 +16,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,8 +87,8 @@ class LoginExpandedPublicAccountViewTest
     container_ = new views::BoxLayoutView();
     container_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
-    container_->AddChildView(public_account_.get());
-    container_->AddChildView(other_view_.get());
+    container_->AddChildViewRaw(public_account_.get());
+    container_->AddChildViewRaw(other_view_.get());
     auto widget = CreateWidgetWithContent(container_);
     switch (GetParam().orientation) {
       case Orientation::kLandscape:
@@ -202,7 +203,7 @@ TEST_P(LoginExpandedPublicAccountViewTest, ShowLearnMoreDialog) {
 
   // Tap on the learn more link.
   const auto& children = test_api.learn_more_label()->children();
-  const auto it = base::ranges::find_if(children, [](views::View* child) {
+  const auto it = std::ranges::find_if(children, [](views::View* child) {
     return views::IsViewClass<views::LinkFragment>(child);
   });
   DCHECK(it != children.cend());

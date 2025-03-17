@@ -8,6 +8,7 @@
 
 #include "base/files/scoped_temp_file.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -90,8 +91,8 @@ TEST_F(TranslateKitClientTest, CanTranslateBrokenLanguagePack) {
 // Tests that the CanTranslate method crashes if no config is set.
 TEST_F(TranslateKitClientTest, CanTranslateNoConfig) {
   auto client = TranslateKitClient::CreateForTest(GetMockLibraryPath());
-  EXPECT_DEATH_IF_SUPPORTED(client->CanTranslate("en", "ja"),
-                            "SetConfig must have been called");
+  EXPECT_CHECK_DEATH_WITH(client->CanTranslate("en", "ja"),
+                          "SetConfig must have been called");
 }
 
 // Tests that the GetTranslator method returns a valid translator for a language
@@ -131,7 +132,7 @@ TEST_F(TranslateKitClientTest, GetTranslatorBrokenLanguagePack) {
 // Tests that the GetTranslator method crashes if no config is set.
 TEST_F(TranslateKitClientTest, GetTranslatorNoConfig) {
   auto client = TranslateKitClient::CreateForTest(GetMockLibraryPath());
-  EXPECT_DEATH_IF_SUPPORTED(
+  EXPECT_CHECK_DEATH_WITH(
       { std::ignore = client->GetTranslator("en", "ja"); },
       "SetConfig must have been called");
 }

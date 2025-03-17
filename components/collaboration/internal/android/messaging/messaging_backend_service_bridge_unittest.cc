@@ -17,11 +17,13 @@
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
+#include "components/collaboration/test_support/mock_messaging_backend_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,34 +68,6 @@ PersistentMessagesToCollaborationEventArray(
 
 }  // namespace
 
-class MockMessagingBackendService : public MessagingBackendService {
- public:
-  MockMessagingBackendService() = default;
-  ~MockMessagingBackendService() override = default;
-
-  // MessagingBackendService implementation.
-  MOCK_METHOD(void, SetInstantMessageDelegate, (InstantMessageDelegate*));
-  MOCK_METHOD(void, AddPersistentMessageObserver, (PersistentMessageObserver*));
-  MOCK_METHOD(void,
-              RemovePersistentMessageObserver,
-              (PersistentMessageObserver*));
-  MOCK_METHOD(bool, IsInitialized, ());
-  MOCK_METHOD(std::vector<PersistentMessage>,
-              GetMessagesForTab,
-              (tab_groups::EitherTabID,
-               std::optional<PersistentNotificationType>));
-  MOCK_METHOD(std::vector<PersistentMessage>,
-              GetMessagesForGroup,
-              (tab_groups::EitherGroupID,
-               std::optional<PersistentNotificationType>));
-  MOCK_METHOD(std::vector<PersistentMessage>,
-              GetMessages,
-              (std::optional<PersistentNotificationType>));
-  MOCK_METHOD(std::vector<ActivityLogItem>,
-              GetActivityLog,
-              (const ActivityLogQueryParams&));
-};
-
 class MessagingBackendServiceBridgeTest : public testing::Test {
  public:
   MessagingBackendServiceBridgeTest() = default;
@@ -132,7 +106,7 @@ class MessagingBackendServiceBridgeTest : public testing::Test {
   void DisplayInstantaneousMessage(InstantMessage message,
                                    bool expected_success_value) {
     bridge()->DisplayInstantaneousMessage(
-        message,
+        {message},
         base::BindOnce(
             &MessagingBackendServiceBridgeTest::OnInstantMessageCallbackResult,
             base::Unretained(this), expected_success_value));
@@ -201,12 +175,14 @@ InstantMessage CreateInstantMessage() {
   message.collaboration_event = CollaborationEvent::TAB_REMOVED;
 
   // Attribution.
+  message.attribution.id =
+      base::Uuid::ParseLowercase("cf07d904-88d4-4bc9-989d-57a9ab9e17a7");
   message.attribution.collaboration_id = data_sharing::GroupId("my group");
   // GroupMember has its own conversion utils, so only check a single field.
   message.attribution.affected_user = data_sharing::GroupMember();
-  message.attribution.affected_user->gaia_id = "affected";
+  message.attribution.affected_user->gaia_id = GaiaId("affected");
   message.attribution.triggering_user = data_sharing::GroupMember();
-  message.attribution.triggering_user->gaia_id = "triggering";
+  message.attribution.triggering_user->gaia_id = GaiaId("triggering");
 
   // TabGroupMessageMetadata.
   message.attribution.tab_group_metadata = TabGroupMessageMetadata();
@@ -374,6 +350,20 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForGroup_SyncId) {
       PersistentMessagesToCollaborationEventArray(env, messages));
 }
 
+TEST_F(MessagingBackendServiceBridgeTest, TestClearDirtyTabMessagesForGroup) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto collaboration_id = data_sharing::GroupId("collaboration1");
+  ScopedJavaLocalRef<jstring> j_collaboration_id =
+      base::android::ConvertUTF8ToJavaString(env, collaboration_id.value());
+
+  // Invoke the method from Java. The call should arrive to the service.
+  EXPECT_CALL(service(), ClearDirtyTabMessagesForGroup(collaboration_id))
+      .Times(1);
+
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeClearDirtyTabMessagesForGroupAndVerify(
+      env, j_companion(), ScopedJavaLocalRef<jobject>(), j_collaboration_id);
+}
+
 TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForTab_LocalID) {
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<PersistentMessage> messages = GetDefaultPersistentMessages();
@@ -451,22 +441,23 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
   // Create two activity log items.
   ActivityLogItem activity_log_item1;
   activity_log_item1.collaboration_event = CollaborationEvent::TAB_UPDATED;
-  activity_log_item1.user_display_name = "User 1";
-  activity_log_item1.user_is_self = true;
-  activity_log_item1.description = u"https://google.com";
-  activity_log_item1.time_delta = base::Hours(2);
+  activity_log_item1.title_text = u"User 1";
+  activity_log_item1.description_text = u"https://google.com";
+  activity_log_item1.time_delta_text = u"2 hours ago";
   activity_log_item1.show_favicon = true;
   activity_log_item1.action = RecentActivityAction::kReopenTab;
+  activity_log_item1.activity_metadata.id =
+      base::Uuid::ParseLowercase("1b687a61-8a17-4f98-bf9d-74d2b50abf3e");
 
   ActivityLogItem activity_log_item2;
   activity_log_item2.collaboration_event =
       CollaborationEvent::COLLABORATION_MEMBER_ADDED;
-  activity_log_item2.user_display_name = "User 2";
-  activity_log_item2.user_is_self = false;
-  activity_log_item2.description = u"foo@gmail.com";
-  activity_log_item2.time_delta = base::Days(3);
+  activity_log_item2.title_text = u"User 2";
+  activity_log_item2.description_text = u"foo@gmail.com";
+  activity_log_item2.time_delta_text = u"3 days ago";
   activity_log_item2.show_favicon = false;
   activity_log_item2.action = RecentActivityAction::kManageSharing;
+  activity_log_item2.activity_metadata.id = std::nullopt;
 
   std::vector<ActivityLogItem> activity_log_items;
   activity_log_items.emplace_back(activity_log_item1);

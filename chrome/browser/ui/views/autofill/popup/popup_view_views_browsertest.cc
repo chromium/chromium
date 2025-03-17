@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
@@ -23,10 +22,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/plus_addresses/fake_plus_address_allocator.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -510,11 +507,6 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
     : public PopupViewViewsBrowsertestBase {
  public:
   PopupViewViewsPlusAddressSuggestionBrowsertest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {plus_addresses::features::kPlusAddressUserOnboardingEnabled,
-         plus_addresses::features::kPlusAddressInlineCreation},
-        /*disabled_features*/ {});
     setting_service().set_is_plus_addresses_enabled(true);
   }
 
@@ -532,13 +524,12 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
     FormData form = autofill::test::CreateTestSignupFormData();
     return generator.GetSuggestions(
         affiliated_plus_addresses,
-        /*is_creation_enabled=*/true, form, /*form_field_type_groups=*/{},
-        PasswordFormClassification(), form.fields()[0].global_id(),
+        /*is_creation_enabled=*/true, form, form.fields()[0],
+        /*form_field_type_groups=*/{}, PasswordFormClassification(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   autofill::test::AutofillUnitTestEnvironment autofill_env_;
 
   plus_addresses::FakePlusAddressAllocator allocator_;

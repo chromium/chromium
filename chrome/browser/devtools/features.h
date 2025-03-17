@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace features {
 
@@ -44,6 +45,9 @@ extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsFreestylerUserTier;
 extern const base::FeatureParam<DevToolsFreestylerExecutionMode>
     kDevToolsFreestylerExecutionMode;
+extern const base::FeatureParam<bool> kDevToolsFreestylerPatching;
+extern const base::FeatureParam<bool> kDevToolsFreestylerMultimodal;
+extern const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling;
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceNetworkAgent);
 extern const base::FeatureParam<std::string>
@@ -60,6 +64,8 @@ extern const base::FeatureParam<double>
     kDevToolsAiAssistancePerformanceAgentTemperature;
 extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsAiAssistancePerformanceAgentUserTier;
+extern const base::FeatureParam<bool>
+    kDevToolsAiAssistancePerformanceAgentInsightsEnabled;
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceFileAgent);
 extern const base::FeatureParam<std::string>
@@ -74,6 +80,19 @@ BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 
 BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
+
+BASE_DECLARE_FEATURE(kDevToolsAutomaticFileSystems);
+
+BASE_DECLARE_FEATURE(kDevToolsWellKnown);
+
+BASE_DECLARE_FEATURE(kDevToolsCssValueTracing);
+
+BASE_DECLARE_FEATURE(kDevToolsAiGeneratedTimelineLabels);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kDevToolsDebuggingRestrictions);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

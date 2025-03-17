@@ -132,11 +132,11 @@ public class CafMediaRouteProviderTest {
         inOrder.verify(mManager, never()).onJoinRouteRequestError(anyString(), anyInt());
         inOrder.verify(mManager)
                 .onRouteCreated(anyString(), eq("sink-id"), eq(1), eq(mProvider), eq(false));
-        assertEquals(mProvider.mRoutes.size(), 1);
+        assertEquals(1, mProvider.mRoutes.size());
         MediaRoute route = (MediaRoute) mProvider.mRoutes.values().toArray()[0];
-        assertEquals(route.sinkId, "sink-id");
-        assertEquals(route.getSourceId(), "source-id-1");
-        assertEquals(route.presentationId, "presentation-id-1");
+        assertEquals("sink-id", route.sinkId);
+        assertEquals("source-id-1", route.getSourceId());
+        assertEquals("presentation-id-1", route.presentationId);
 
         // No source.
         mProvider.mRoutes.clear();
@@ -192,8 +192,8 @@ public class CafMediaRouteProviderTest {
 
         inOrder.verify(mMessageHandler)
                 .sendReceiverActionToClient(mRoute1.id, mSink, "client-id-1", "stop");
-        assertEquals(mProvider.mRoutes.size(), 1);
-        assertEquals(mProvider.getClientIdToRecords().size(), 1);
+        assertEquals(1, mProvider.mRoutes.size());
+        assertEquals(1, mProvider.getClientIdToRecords().size());
 
         // Abnormal case when the session controller doesn't have a sink.
         doReturn(null).when(mSessionController).getSink();
@@ -203,8 +203,8 @@ public class CafMediaRouteProviderTest {
         inOrder.verify(mMessageHandler, never())
                 .sendReceiverActionToClient(
                         anyString(), any(MediaSink.class), anyString(), anyString());
-        assertEquals(mProvider.mRoutes.size(), 1);
-        assertEquals(mProvider.getClientIdToRecords().size(), 1);
+        assertEquals(1, mProvider.mRoutes.size());
+        assertEquals(1, mProvider.getClientIdToRecords().size());
 
         // Abnormal case when there is no session.
         doReturn(mSink).when(mSessionController).getSink();
@@ -305,39 +305,39 @@ public class CafMediaRouteProviderTest {
     public void testRouteManagement() {
         // Add the first route.
         mProvider.addRoute(mRoute1, "origin-1", 1, 1, false);
-        assertEquals(mProvider.mRoutes.size(), 1);
-        assertEquals(mProvider.getClientIdToRecords().size(), 1);
+        assertEquals(1, mProvider.mRoutes.size());
+        assertEquals(1, mProvider.getClientIdToRecords().size());
         ClientRecord record = mProvider.getClientIdToRecords().get("client-id-1");
         verifyClientRecord(record, mRoute1.id, "client-id-1", "app-id-1", "origin-1", 1, false);
 
         // Add the second route.
         mProvider.addRoute(mRoute2, "origin-2", 2, 2, false);
-        assertEquals(mProvider.mRoutes.size(), 2);
-        assertEquals(mProvider.getClientIdToRecords().size(), 2);
+        assertEquals(2, mProvider.mRoutes.size());
+        assertEquals(2, mProvider.getClientIdToRecords().size());
         record = mProvider.getClientIdToRecords().get("client-id-2");
         verifyClientRecord(record, mRoute2.id, "client-id-2", "app-id-2", "origin-2", 2, false);
 
         // Add a duplicate route. This addition will be ignored as `mRoute2` is already in record.
         // This should never happen in production.
         mProvider.addRoute(mRoute2, "origin-3", 3, 3, false);
-        assertEquals(mProvider.mRoutes.size(), 2);
-        assertEquals(mProvider.getClientIdToRecords().size(), 2);
+        assertEquals(2, mProvider.mRoutes.size());
+        assertEquals(2, mProvider.getClientIdToRecords().size());
         record = mProvider.getClientIdToRecords().get("client-id-2");
         verifyClientRecord(record, mRoute2.id, "client-id-2", "app-id-2", "origin-2", 2, false);
 
         // Remove a route.
         ClientRecord lastRecord = mProvider.getClientIdToRecords().get("client-id-1");
         mProvider.removeRoute(mRoute1.id, null);
-        assertEquals(mProvider.mRoutes.size(), 1);
-        assertEquals(mProvider.getClientIdToRecords().size(), 1);
+        assertEquals(1, mProvider.mRoutes.size());
+        assertEquals(1, mProvider.getClientIdToRecords().size());
         record = mProvider.getClientIdToRecords().get("client-id-2");
         verifyClientRecord(record, mRoute2.id, "client-id-2", "app-id-2", "origin-2", 2, false);
         assertEquals(mProvider.mLastRemovedRouteRecord, lastRecord);
 
         // Remove a non-existing route.
         mProvider.removeRoute(mRoute1.id, null);
-        assertEquals(mProvider.mRoutes.size(), 1);
-        assertEquals(mProvider.getClientIdToRecords().size(), 1);
+        assertEquals(1, mProvider.mRoutes.size());
+        assertEquals(1, mProvider.getClientIdToRecords().size());
         record = mProvider.getClientIdToRecords().get("client-id-2");
         verifyClientRecord(record, mRoute2.id, "client-id-2", "app-id-2", "origin-2", 2, false);
         lastRecord = record;

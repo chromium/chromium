@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Die Liste der Anmeldedaten, die bei Berührung ausgefüllt werden, ist ganz geöffnet.</translation>
 <translation id="5591247451101092906">Gespeichertes Passwort oder gespeicherten Passkey verwenden?</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
+<translation id="592182999816790476">Passwort für <ph name="USERNAME" /> für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="6560306912274274630">Passkey für <ph name="USERNAME" />, verwende die Displaysperre</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Neues Passwort für diese Website}other{Neue Passwörter für diese Website}}</translation>
 <translation id="7286867818472074330">Passkey auswählen</translation>

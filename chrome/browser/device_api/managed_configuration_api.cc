@@ -92,6 +92,7 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = GURL(data_url);
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
     simple_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), kTrafficAnnotation);

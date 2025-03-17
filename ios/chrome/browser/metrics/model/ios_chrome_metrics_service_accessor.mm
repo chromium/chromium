@@ -27,8 +27,9 @@ void IOSChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
 
 // static
 bool IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() {
-  if (g_metrics_consent_for_testing)
+  if (g_metrics_consent_for_testing) {
     return *g_metrics_consent_for_testing;
+  }
 
   return IsMetricsReportingEnabled(GetApplicationContext()->GetLocalState());
 }

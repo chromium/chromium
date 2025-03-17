@@ -27,6 +27,7 @@ import org.chromium.chrome.test.R;
 public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<HostStationT> {
     public static final ViewSpec SNACKBAR_MESSAGE = viewSpec(withId(R.id.snackbar_message));
     public static final ViewSpec SNACKBAR_BUTTON = viewSpec(withId(R.id.snackbar_button));
+    public static final String NO_BUTTON = "__NO_BUTTON__";
 
     private final String mExpectedMessageSubstring;
     private final String mExpectedButtonText;
@@ -51,9 +52,12 @@ public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<
         }
 
         if (mExpectedButtonText != null) {
-            ViewSpec messageSpec =
-                    viewSpec(withText(mExpectedButtonText), SNACKBAR_BUTTON.getViewMatcher());
-            elements.declareView(messageSpec);
+            if (mExpectedButtonText.equals(NO_BUTTON)) {
+                elements.declareNoView(SNACKBAR_BUTTON);
+            } else {
+                ViewSpec messageSpec = SNACKBAR_BUTTON.and(withText(mExpectedButtonText));
+                elements.declareView(messageSpec);
+            }
         } else {
             elements.declareView(SNACKBAR_BUTTON);
         }

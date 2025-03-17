@@ -100,8 +100,8 @@ using InstallPropsPerContext =
 using InstallPropsPerIsolate =
     void (*)(v8::Isolate* isolate,
              const DOMWrapperWorld& world,
-             v8::Local<v8::Template> instance_template,
-             v8::Local<v8::Template> prototype_template,
+             v8::Local<v8::ObjectTemplate> instance_template,
+             v8::Local<v8::ObjectTemplate> prototype_template,
              v8::Local<v8::Template> interface_template);
 
 // Construction of |type_info_table| requires non-trivial initialization due

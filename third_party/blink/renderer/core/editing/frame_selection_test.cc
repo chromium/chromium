@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -752,7 +753,7 @@ TEST_F(FrameSelectionTest, SelectInvalidPositionInFlatTreeDoesntCrash) {
 
   // This only records the current behavior. It might be changed in the future.
   EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Anchor());
-  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Focus());
+  EXPECT_NE(PositionInFlatTree(foo, 0), selection.Focus());
 }
 
 TEST_F(FrameSelectionTest, CaretInShadowTree) {

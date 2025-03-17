@@ -38,11 +38,11 @@ export interface AccessCodeCastElement {
   $: {
     backButton: CrButtonElement,
     castButton: CrButtonElement,
-    codeInputView: HTMLDivElement,
+    codeInputView: HTMLElement,
     codeInput: PasscodeInputElement,
     dialog: CrDialogElement,
     errorMessage: ErrorMessageElement,
-    qrInputView: HTMLDivElement,
+    qrInputView: HTMLElement,
   };
 }
 
@@ -307,12 +307,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
       Promise<AddSinkResultCode> {
     const addSinkResult = await BrowserProxy.getInstance().handler
         .addSink(this.accessCode, method);
-    return addSinkResult.resultCode as AddSinkResultCode;
+    return addSinkResult.resultCode;
   }
 
   private async cast(): Promise<RouteRequestResultCode> {
     const castResult = await BrowserProxy.getInstance().handler.castToSink();
-    return castResult.resultCode as RouteRequestResultCode;
+    return castResult.resultCode;
   }
 
   private async makeFootnote(messageName: string, value: number) {

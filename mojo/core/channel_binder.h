@@ -6,6 +6,7 @@
 #define MOJO_CORE_CHANNEL_BINDER_H_
 
 #include <cstdint>
+#include <variant>
 #include <vector>
 
 #include "base/android/binder.h"
@@ -19,7 +20,6 @@
 #include "mojo/core/connection_params.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo::core {
 
@@ -105,10 +105,10 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelBinder : public Channel {
   };
   struct PendingConnection {};
   enum class Disconnected {};
-  using Peer = absl::variant<PendingExchange,
-                             PendingConnection,
-                             Receiver::Proxy,
-                             Disconnected>;
+  using Peer = std::variant<PendingExchange,
+                            PendingConnection,
+                            Receiver::Proxy,
+                            Disconnected>;
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

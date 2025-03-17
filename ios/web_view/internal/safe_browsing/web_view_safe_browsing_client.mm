@@ -30,7 +30,7 @@ SafeBrowsingService* WebViewSafeBrowsingClient::GetSafeBrowsingService() {
       ->GetSafeBrowsingService();
 }
 
-safe_browsing::RealTimeUrlLookupService*
+safe_browsing::RealTimeUrlLookupServiceBase*
 WebViewSafeBrowsingClient::GetRealTimeUrlLookupService() {
   // ios/web_view does not support real time lookups, for now.
   return nullptr;

@@ -44,6 +44,10 @@ namespace base {
 class Location;
 }  // namespace base
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace media {
 
 class CAPTURE_EXPORT VideoFrameConsumerFeedbackObserver {
@@ -210,15 +214,15 @@ class CAPTURE_EXPORT VideoCaptureDevice
         const std::optional<VideoFrameMetadata>& metadata);
 
     // Captured a new video frame, data for which is stored in the
-    // GpuMemoryBuffer pointed to by |buffer|.  The format of the frame is
-    // described by |frame_format|.  Since the memory buffer pointed to by
-    // |buffer| may be allocated with some size/address alignment requirement,
-    // this method takes into consideration the size and offset of each plane in
-    // |buffer| when creating the content of the output buffer.
-    // |clockwise_rotation|, |reference_time|, |timestamp|, and
+    // shared image pointed to by |shared_image|.  The format of the frame is
+    // described by |frame_format|.  Since the shared image pointed to by
+    // |shared_image| may be allocated with some size/address alignment
+    // requirement, this method takes into consideration the size and offset of
+    // each plane in |shared_image| when creating the content of the output
+    // buffer. |clockwise_rotation|, |reference_time|, |timestamp|, and
     // |frame_feedback_id| serve the same purposes as in OnIncomingCapturedData.
-    virtual void OnIncomingCapturedGfxBuffer(
-        gfx::GpuMemoryBuffer* buffer,
+    virtual void OnIncomingCapturedImage(
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
         const VideoCaptureFormat& frame_format,
         int clockwise_rotation,
         base::TimeTicks reference_time,
@@ -227,8 +231,8 @@ class CAPTURE_EXPORT VideoCaptureDevice
         const std::optional<VideoFrameMetadata>& metadata,
         int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
-    void OnIncomingCapturedGfxBuffer(
-        gfx::GpuMemoryBuffer* buffer,
+    void OnIncomingCapturedImage(
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
         const VideoCaptureFormat& frame_format,
         int clockwise_rotation,
         base::TimeTicks reference_time,
@@ -244,7 +248,9 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // CVPixelBufferPool, and gfx::ScopedInUseIOSurface is used to prevent reuse
     // of buffers until all consumers have consumed them. |visible_rect|
     // specifies the region in the memory pointed to by |buffer.handle| that
-    // contains the captured content.
+    // contains the captured content. |metadata| is used for storing an initial
+    // metadata and if not provided, then the initial metadata used would be the
+    // default values of VideoFrameMetadata.
     virtual void OnIncomingCapturedExternalBuffer(
         CapturedExternalVideoBuffer buffer,
         base::TimeTicks reference_time,

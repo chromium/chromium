@@ -13,16 +13,18 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {logSuggestionClicked, logSuggestionShuffleClicked} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
 import {SEA_PEN_SUGGESTIONS} from './sea_pen_untranslated_constants.js';
-import {isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
+import {IronAnnounceEvent, isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
 
 const seaPenSuggestionSelectedEvent = 'sea-pen-suggestion-selected';
 
@@ -72,16 +74,12 @@ export class SeaPenSuggestionsElement extends PolymerElement {
       selectableSuggestions_: Array,
 
       hiddenSuggestions_: Object,
-
-      /** The button currently highlighted by keyboard navigation. */
-      ironSelectedSuggestion_: Object,
     };
   }
 
   private suggestions_: string[];
   private selectableSuggestions_: string[];
   private hiddenSuggestions_: Set<string>;
-  private ironSelectedSuggestion_: CrButtonElement;
   private debouncer_: Debouncer;
   private onResized_: () => void = () => {
     this.debouncer_ =
@@ -92,6 +90,7 @@ export class SeaPenSuggestionsElement extends PolymerElement {
 
   override ready() {
     super.ready();
+    IronA11yAnnouncer.requestAvailability();
     this.$.keys.target = this.$.suggestionSelector;
   }
 
@@ -148,6 +147,8 @@ export class SeaPenSuggestionsElement extends PolymerElement {
   private onShuffleClicked_() {
     logSuggestionShuffleClicked();
     this.shuffleSuggestions_();
+    this.dispatchEvent(new IronAnnounceEvent(
+        loadTimeData.getString('ariaAnnouncePromptSuggestionsShuffled')));
   }
 
   private shuffleSuggestions_() {
@@ -191,7 +192,7 @@ export class SeaPenSuggestionsElement extends PolymerElement {
   private onSuggestionKeyPressed_(
       e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
     const selector = this.$.suggestionSelector;
-    const prevSuggestion = this.ironSelectedSuggestion_;
+    const prevSuggestion = selector.selectedItem as CrButtonElement;
     switch (e.detail.key) {
       case 'left':
         selector.selectPrevious();
@@ -207,9 +208,10 @@ export class SeaPenSuggestionsElement extends PolymerElement {
       prevSuggestion.removeAttribute('tabindex');
     }
     // Add focus state for new button.
-    if (this.ironSelectedSuggestion_) {
-      this.ironSelectedSuggestion_.setAttribute('tabindex', '0');
-      this.ironSelectedSuggestion_.focus();
+    const currentSuggestion = selector.selectedItem as CrButtonElement;
+    if (currentSuggestion) {
+      currentSuggestion.setAttribute('tabindex', '0');
+      currentSuggestion.focus();
     }
     e.detail.keyboardEvent.preventDefault();
   }

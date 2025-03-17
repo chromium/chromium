@@ -10,15 +10,17 @@ import './shimless_rma_shared.css.js';
 import './base_page.js';
 import './icons.html.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createCustomEvent, FATAL_HARDWARE_ERROR, FatalHardwareEvent} from './events.js';
+import type {FatalHardwareEvent} from './events.js';
+import {createCustomEvent, FATAL_HARDWARE_ERROR} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_provisioning_page.html.js';
-import {ProvisioningError, ProvisioningObserverReceiver, ProvisioningStatus, RmadErrorCode, ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {ProvisioningError, ProvisioningObserverReceiver, ProvisioningStatus, RmadErrorCode} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 declare global {

@@ -44,7 +44,7 @@
 }
 
 - (void)configureConsumer {
-  std::string gaiaID = base::SysNSStringToUTF8([self primaryIdentity].gaiaID);
+  GaiaId gaiaID([self primaryIdentity].gaiaID);
   for (auto [item, selection] : _selected) {
     selection = push_notification_settings::
         GetMobileNotificationPermissionStatusForMultipleClients(
@@ -64,7 +64,7 @@
 - (void)didTapPrimaryActionButton {
   std::vector<PushNotificationClientId> selectedClientIds;
   std::vector<PushNotificationClientId> deselectedClientIds;
-  std::string gaiaID = base::SysNSStringToUTF8([self primaryIdentity].gaiaID);
+  const GaiaId gaiaID([self primaryIdentity].gaiaID);
 
   for (auto [item, selection] : _selected) {
     std::vector<PushNotificationClientId> clientIDs =

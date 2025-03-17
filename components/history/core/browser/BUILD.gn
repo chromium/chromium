@@ -134,25 +134,6 @@ static_library("browser") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_android) {
-    sources += [
-      "android/android_history_types.cc",
-      "android/android_history_types.h",
-      "android/android_urls_database.cc",
-      "android/android_urls_database.h",
-      "android/android_urls_sql_handler.cc",
-      "android/android_urls_sql_handler.h",
-      "android/favicon_sql_handler.cc",
-      "android/favicon_sql_handler.h",
-      "android/sql_handler.cc",
-      "android/sql_handler.h",
-      "android/urls_sql_handler.cc",
-      "android/urls_sql_handler.h",
-      "android/visit_sql_handler.cc",
-      "android/visit_sql_handler.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -211,8 +192,5 @@ source_set("unit_tests") {
   ]
   if (is_ios) {
     deps += [ "//components/test:history_test_bundle_data" ]
-  }
-  if (is_android) {
-    sources += [ "android/android_history_types_unittest.cc" ]
   }
 }

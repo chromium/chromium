@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <climits>
 #include <iterator>
 #include <ranges>
@@ -13,7 +14,6 @@
 #include <vector>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -43,6 +43,19 @@
 #include "url/gurl.h"
 
 namespace {
+
+// Max number of featured enterprise suggestions to show when the user types '@'
+// or '@...'. 4 is a good limit because:
+// - When the user types '@', the existing 4 starter packs, 1 trivial search,
+//   and 4 enterprise suggestions will all fit in the total limit of 9
+//   suggestions. This may change if more starter packs are launched.
+// - When the user types '@...', the at-most-1 matching starter pack (no
+//   starter packs share the same 1st character), 1 trivial search, at least 2
+//   non-trivial searches, and 4 enterprise suggestions will fit in the total
+//   limit of 8 suggestions.
+// This constant can be replaced with a function if we want to show a different
+// # of enterprise suggestions in these 2 cases.
+constexpr int kMaxEnterpriseSuggestions = 4;
 
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
@@ -101,6 +114,11 @@ std::string IphTypeDebugString(IphType iph_type) {
   }
 }
 
+bool IsEnterpriseSearchTemplateURLEnabled(const TemplateURL& turl,
+                                          bool is_incognito) {
+  return !(is_incognito && turl.CreatedByEnterpriseSearchAggregatorPolicy());
+}
+
 }  // namespace
 
 // Scored higher than history URL provider suggestions since inputs like '@b'
@@ -127,8 +145,8 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
 
   AutocompleteInput keyword_input = input;
   const TemplateURL* keyword_turl =
-      KeywordProvider::GetSubstitutingTemplateURLForInput(template_url_service_,
-                                                          &keyword_input);
+      AutocompleteInput::GetSubstitutingTemplateURLForInput(
+          template_url_service_, &keyword_input);
   bool is_history_scope =
       keyword_turl &&
       keyword_turl->starter_pack_id() == TemplateURLStarterPackData::kHistory;
@@ -154,8 +172,15 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
     AddHistoryEmbeddingsScopePromoIphMatch();
   }
 
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+  if (input.IsZeroSuggest() ||
       (input.type() == metrics::OmniboxInputType::EMPTY)) {
+    if (OmniboxFieldTrial::IsStarterPackPageEnabled()) {
+      if (TemplateURL* page_turl =
+              template_url_service_->FindStarterPackTemplateURL(
+                  TemplateURLStarterPackData::kPage)) {
+        AddStarterPackMatch(*page_turl, input);
+      }
+    }
     return;
   }
 
@@ -182,27 +207,30 @@ FeaturedSearchProvider::~FeaturedSearchProvider() = default;
 
 void FeaturedSearchProvider::AddFeaturedKeywordMatches(
     const AutocompleteInput& input) {
-  // When the user's input begins with '@', we want to prioritize providing
-  // suggestions for all active starter pack search engines.
-  bool starts_with_starter_pack_symbol = base::StartsWith(
-      input.text(), u"@", base::CompareCase::INSENSITIVE_ASCII);
-
-  if (starts_with_starter_pack_symbol) {
-    TemplateURLService::TemplateURLVector matches;
-    template_url_service_->AddMatchingKeywords(input.text(), false, &matches);
-    for (TemplateURL* match : matches) {
-      if (match->starter_pack_id() > 0 &&
-          match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
+  size_t enterprise_count = 0;
+  if (input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
+    TemplateURLService::TemplateURLVector turls;
+    template_url_service_->AddMatchingKeywords(input.text(), &turls);
+    for (TemplateURL* turl : turls) {
+      if (turl->starter_pack_id() > 0 &&
+          turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
         // Don't add the expanded set of starter pack engines unless the feature
         // is enabled.
-        if (!OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-            match->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
+        if ((turl->starter_pack_id() == TemplateURLStarterPackData::kGemini &&
+             !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
+            (turl->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+             !OmniboxFieldTrial::IsStarterPackPageEnabled())) {
           continue;
         }
-
-        AddStarterPackMatch(*match, input);
-      } else if (match->featured_by_policy()) {
-        AddFeaturedEnterpriseSearchMatch(*match, input);
+        AddStarterPackMatch(*turl, input);
+        // Don't add enterprise search aggregator engines in incognito mode.
+      } else if (turl->featured_by_policy() &&
+                 IsEnterpriseSearchTemplateURLEnabled(
+                     *turl, client_->IsOffTheRecord()) &&
+                 enterprise_count < kMaxEnterpriseSuggestions) {
+        AddFeaturedEnterpriseSearchMatch(*turl, input);
+        enterprise_count++;
       }
     }
   }
@@ -230,8 +258,10 @@ void FeaturedSearchProvider::AddStarterPackMatch(
       TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
           template_url.starter_pack_id());
   match.fill_into_edit = template_url.keyword();
-  match.inline_autocompletion =
-      match.fill_into_edit.substr(input.text().length());
+  if (match.fill_into_edit.starts_with(input.text())) {
+    match.inline_autocompletion =
+        match.fill_into_edit.substr(input.text().length());
+  }
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   if (input.current_page_classification() !=
@@ -352,6 +382,10 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
       metrics::OmniboxEventProto::NTP_REALBOX) {
     return;
   }
+  if (!IsEnterpriseSearchTemplateURLEnabled(template_url,
+                                            client_->IsOffTheRecord())) {
+    return;
+  }
 
   AutocompleteMatch match(this, kFeaturedEnterpriseSearchRelevance, false,
                           AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
@@ -371,6 +405,9 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
   match.contents_class = {{}};
   match.allowed_to_be_default_match = false;
   match.keyword = template_url.keyword();
+  if (template_url.CreatedByEnterpriseSearchAggregatorPolicy()) {
+    match.icon_url = template_url.favicon_url();
+  }
 
   matches_.push_back(match);
 }
@@ -399,15 +436,23 @@ bool FeaturedSearchProvider::ShouldShowEnterpriseFeaturedSearchIPHMatch(
   // Conditions to show the IPH for featured Enterprise search:
   // - The feature is enabled.
   // - This is a Zero prefix state.
-  // - There is at least one featured search engine set by policy.
+  // - There is at least one featured search engine set by policy, excluding
+  //   featured search engines created by enterprise search aggregator policy
+  //   when in incognito mode.
   // - The user has not deleted the IPH suggestion and we have not shown it more
-  //   the the accepted limit during this session.
+  //   than the accepted limit during this session.
   // - The user has not successfully used at least one featured engine.
-  TemplateURLService::TemplateURLVector featured_engines =
-      template_url_service_->GetFeaturedEnterpriseSearchEngines();
+  TemplateURLService::TemplateURLVector featured_engines;
+  for (TemplateURL* turl :
+       template_url_service_->GetFeaturedEnterpriseSearchEngines()) {
+    if (IsEnterpriseSearchTemplateURLEnabled(*turl,
+                                             client_->IsOffTheRecord())) {
+      featured_engines.push_back(turl);
+    }
+  }
   return input.IsZeroSuggest() && !featured_engines.empty() &&
          ShouldShowIPH(IphType::kFeaturedEnterpriseSearch) &&
-         base::ranges::all_of(featured_engines, [](auto turl) {
+         std::ranges::all_of(featured_engines, [](auto turl) {
            return turl->usage_count() == 0;
          });
 }
@@ -435,12 +480,14 @@ bool FeaturedSearchProvider::ShouldShowIPH(IphType iph_type) const {
 
 void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
   std::vector<std::string> sites;
-  base::ranges::transform(
-      template_url_service_->GetFeaturedEnterpriseSearchEngines(),
-      std::back_inserter(sites), [](auto turl) {
-        return url_formatter::StripWWW(GURL(turl->url()).host());
-      });
-  base::ranges::sort(sites);
+  for (const TemplateURL* turl :
+       template_url_service_->GetFeaturedEnterpriseSearchEngines()) {
+    if (IsEnterpriseSearchTemplateURLEnabled(*turl,
+                                             client_->IsOffTheRecord())) {
+      sites.push_back(url_formatter::StripWWW(GURL(turl->url()).host()));
+    }
+  }
+  std::ranges::sort(sites);
   AddIPHMatch(IphType::kFeaturedEnterpriseSearch,
               l10n_util::GetStringFUTF16(
                   IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH,

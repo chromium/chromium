@@ -16,6 +16,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Log;
+import org.chromium.blink.mojom.PublicKeyCredentialParameters;
+import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -29,6 +31,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BrowserBoundKeyStore creates and stores browser bound keys for matching external credentials.
@@ -56,17 +60,45 @@ public final class BrowserBoundKeyStore {
     }
 
     /**
+     * Creates a list of PublicKeyCredentialParameters from types and algorithms.
+     *
+     * @param types The types as {@link org.chromium.blink.mojom.PublicKeyCrednetialType} constants.
+     * @param algorithms The algorithm as identified by COSE Algorithm identifiers. See <a
+     *     href="https://www.iana.org/assignments/cose/cose.xhtml#algorithms">COSE Algorithms</a>.
+     *     <p>This function aids in JNI conversions.
+     */
+    @CalledByNative
+    public static List<PublicKeyCredentialParameters> createListOfCredentialParameters(
+            @JniType("std::vector<int32_t>") int[] types,
+            @JniType("std::vector<int32_t>") int[] algorithms) {
+        assert types.length == algorithms.length;
+        ArrayList<PublicKeyCredentialParameters> list = new ArrayList<>(types.length);
+        for (int i = 0; i < types.length; i++) {
+            PublicKeyCredentialParameters params = new PublicKeyCredentialParameters();
+            params.type = types[i];
+            params.algorithmIdentifier = algorithms[i];
+            list.add(params);
+        }
+        return list;
+    }
+
+    /**
      * Get the corresponding browser bound key (or creates it).
      *
      * @param identifier An identifier for the corresponding passkey credential id.
+     * @param allowedAlgorithms A list of allowed credential parameters.
      * @return The BrowserBoundKey object or null when the key pair could not be created.
      */
     @CalledByNative
     public @Nullable BrowserBoundKey getOrCreateBrowserBoundKeyForCredentialId(
-            @JniType("std::vector<uint8_t>") byte[] identifier) {
+            @JniType("std::vector<uint8_t>") byte[] identifier,
+            List<PublicKeyCredentialParameters> allowedAlgorithms) {
         // TODO(crbug.com/377278827): Generate a random alias and store the association in a table,
         // so that browser bound public keys can be included in clientDataJson on passkey creation
         // time when the identifier is not know.
+        if (!containsEs256(allowedAlgorithms)) {
+            return null;
+        }
         String keyStoreAlias =
                 KEYSTORE_ALIAS_PREFIX + Base64.encodeToString(identifier, Base64.URL_SAFE);
         BrowserBoundKey browserBoundKey = getBrowserBoundKey(keyStoreAlias);
@@ -74,6 +106,16 @@ public final class BrowserBoundKeyStore {
             browserBoundKey = createBrowserBoundKey(keyStoreAlias);
         }
         return browserBoundKey;
+    }
+
+    private boolean containsEs256(List<PublicKeyCredentialParameters> allowedAlgorithms) {
+        for (PublicKeyCredentialParameters params : allowedAlgorithms) {
+            if (params.type == PublicKeyCredentialType.PUBLIC_KEY
+                    && params.algorithmIdentifier == BrowserBoundKey.COSE_ALGORITHM_ES256) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private @Nullable BrowserBoundKey getBrowserBoundKey(String keyStoreAlias) {

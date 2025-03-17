@@ -8,11 +8,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/common/extensions/api/printing.h"
@@ -128,14 +130,22 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   void GetPrinterInfo(const std::string& printer_id,
                       GetPrinterInfoCallback callback);
 
+  base::expected<api::printing::JobStatus, std::string> GetJobStatus(
+      const std::string& extension_id,
+      const std::string& job_id);
+
  private:
   // Needed for BrowserContextKeyedAPI implementation.
   friend class BrowserContextKeyedAPIFactory<PrintingAPIHandler>;
+
+  FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerParam, GetJobStatus_CacheFull);
+  FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerUnittest, EvictOldFinishedJobs);
 
   struct PrintJobInfo {
     std::string printer_id;
     int job_id;
     std::string extension_id;
+    api::printing::JobStatus status;
   };
 
   void OnPrintJobSubmitted(SubmitJobCallback callback,
@@ -158,6 +168,10 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       base::Value capabilities,
       std::unique_ptr<::printing::PrinterStatus> printer_status);
 
+  // Evicts some jobs from `finished_print_jobs_` to keep them within a certain
+  // threshold.
+  void MaybeEvictFinishedPrintJobs();
+
   // BrowserContextKeyedAPI:
   static const bool kServiceIsNULLWhileTesting = true;
   static const bool kServiceIsCreatedWithBrowserContext = false;
@@ -174,8 +188,20 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       pdf_blob_data_flattener_;
 
   // Stores mapping from job id to PrintJobInfo object.
-  // This is needed to cancel print jobs.
-  base::flat_map<std::string, PrintJobInfo> print_jobs_;
+  // This is needed to cancel print jobs and keep track of the work in progress
+  // jobs.
+  base::flat_map<std::string, PrintJobInfo> in_progress_print_jobs_;
+
+  // Stores mapping from jobs' id to their status and the extension id that
+  // triggered this job. Stores only finished jobs' id, which can either be
+  // printed, cancelled, or failed.
+  std::unordered_map<
+      /*job_id=*/std::string,
+      std::pair</*extension_id=*/std::string, api::printing::JobStatus>>
+      finished_print_jobs_;
+  // Stores the order of finished jobs' id in order to efficiently remove the
+  // oldest jobs from `finished_print_jobs_`.
+  base::circular_deque<std::string> finished_jobs_order_;
 
   raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
 

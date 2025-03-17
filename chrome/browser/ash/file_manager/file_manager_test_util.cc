@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 
+#include <algorithm>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -65,7 +67,7 @@ void FolderInMyFiles::AddWithName(const base::FilePath& file,
 
 OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
   const auto& it =
-      base::ranges::find(files_, file.BaseName(), &base::FilePath::BaseName);
+      std::ranges::find(files_, file.BaseName(), &base::FilePath::BaseName);
   EXPECT_FALSE(it == files_.end());
   if (it == files_.end()) {
     return platform_util::OPEN_FAILED_PATH_NOT_FOUND;
@@ -398,7 +400,7 @@ FakeProvidedFileSystemOneDrive::GetActions(
     actions.push_back(
         {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
     actions.push_back({ash::cloud_upload::kReauthenticationRequiredId,
-                       reauthentication_required_ ? "true" : "false"});
+                       base::ToString(reauthentication_required_)});
     actions.push_back(
         {ash::cloud_upload::kAccountStateId,
          reauthentication_required_ ? "REAUTHENTICATION_REQUIRED" : "NORMAL"});

@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <set>
@@ -94,11 +95,11 @@ bool GetUniformNameSansElement(
 
 bool IsBuiltInFragmentVarying(const std::string& name) {
   // Built-in variables for fragment shaders.
-  const char* kBuiltInVaryings[] = {
+  auto kBuiltInVaryings = std::to_array<const char*>({
       "gl_FragCoord",
       "gl_FrontFacing",
-      "gl_PointCoord"
-  };
+      "gl_PointCoord",
+  });
   for (size_t ii = 0; ii < std::size(kBuiltInVaryings); ++ii) {
     if (name == kBuiltInVaryings[ii])
       return true;
@@ -1080,8 +1081,6 @@ bool Program::Link(ShaderManager* manager,
         transform_feedback_buffer_mode_);
 
     bool cache_hit = status == ProgramCache::LINK_SUCCEEDED;
-    UMA_HISTOGRAM_BOOLEAN("GPU.ProgramCache.CacheHit", cache_hit);
-
     if (cache_hit) {
       ProgramCache::ProgramLoadResult success = cache->LoadLinkedProgram(
           service_id(), attached_shaders_[0].get(), attached_shaders_[1].get(),
@@ -1762,7 +1761,7 @@ bool Program::DetectGlobalNameConflicts(std::string* conflicting_name) const {
          attached_shaders_[0]->shader_type() == GL_VERTEX_SHADER &&
          attached_shaders_[1].get() &&
          attached_shaders_[1]->shader_type() == GL_FRAGMENT_SHADER);
-  const UniformMap* uniforms[2];
+  std::array<const UniformMap*, 2> uniforms;
   uniforms[0] = &(attached_shaders_[0]->uniform_map());
   uniforms[1] = &(attached_shaders_[1]->uniform_map());
   const AttributeMap* attribs =
@@ -2183,14 +2182,14 @@ bool Program::GetUniformsES3(CommonDecoder::Bucket* bucket) const {
   DCHECK(entries);
   const size_t kStride = sizeof(UniformES3Info) / sizeof(int32_t);
 
-  const GLenum kPname[] = {
-    GL_UNIFORM_BLOCK_INDEX,
-    GL_UNIFORM_OFFSET,
-    GL_UNIFORM_ARRAY_STRIDE,
-    GL_UNIFORM_MATRIX_STRIDE,
-    GL_UNIFORM_IS_ROW_MAJOR,
-  };
-  const GLint kDefaultValue[] = { -1, -1, -1, -1, 0 };
+  const auto kPname = std::to_array<GLenum>({
+      GL_UNIFORM_BLOCK_INDEX,
+      GL_UNIFORM_OFFSET,
+      GL_UNIFORM_ARRAY_STRIDE,
+      GL_UNIFORM_MATRIX_STRIDE,
+      GL_UNIFORM_IS_ROW_MAJOR,
+  });
+  const auto kDefaultValue = std::to_array<GLint>({-1, -1, -1, -1, 0});
   const size_t kNumPnames = std::size(kPname);
   std::vector<GLuint> indices(count);
   for (GLsizei ii = 0; ii < count; ++ii) {

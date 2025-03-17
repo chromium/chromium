@@ -182,6 +182,15 @@ enum CapturedSurfaceControlResult {
   kCapturedSurfaceNotFoundError,
   kDisallowedForSelfCaptureError,
   kCapturerNotFocusedError,
+  kMinZoomLevel,
+  kMaxZoomLevel,
+};
+
+// For manipulating a captured tab's zoom level by the capturing application.
+enum ZoomLevelAction {
+  kIncrease,
+  kDecrease,
+  kReset,
 };
 
 // Per-frame renderer-side interface that receives device stopped/change
@@ -327,17 +336,17 @@ interface MediaStreamDispatcherHost {
             CapturedWheelAction action)
       => (CapturedSurfaceControlResult result);
 
-  // Sets the zoom level of the captured tab.
+  // Updates the zoom level of the captured tab.
   //
   // `session_id` identifies the captured tab.
-  // `zoom_level` is the zoom level to be set.
+  // `action` determines whether the zoom-level is increased/decreased/reset.
   // `result` reports if the call was successful or what type of error occurred.
   //
   // TODO(crbug.com/1512609): Create a new device mojo interface to replace the
   // use of the device_id token.
   [EnableIfNot=is_android|is_ios]
-  SetZoomLevel(
-      mojo_base.mojom.UnguessableToken session_id, int32 zoom_level)
+  UpdateZoomLevel(
+      mojo_base.mojom.UnguessableToken session_id, ZoomLevelAction action)
       => (CapturedSurfaceControlResult result);
 
   // Request permission to use Captured Surface Control.

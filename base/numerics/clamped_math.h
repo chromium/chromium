@@ -152,6 +152,7 @@ class ClampedNumeric {
   }
 
   template <typename Dst>
+    requires std::is_arithmetic_v<ArithmeticOrUnderlyingEnum<Dst>>
   constexpr operator Dst() const {  // NOLINT(google-explicit-constructor)
     return saturated_cast<ArithmeticOrUnderlyingEnum<Dst>>(value_);
   }

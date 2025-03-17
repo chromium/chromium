@@ -32,12 +32,19 @@ enum SharedStorageWorkletCreationMethod {
   kCreateWorklet,
 };
 
+enum SharedStorageDataOriginType {
+  kContextOrigin,
+  kScriptOrigin,
+  kCustomOrigin,
+};
+
 // Bundles information passed to the worklet via the `privateAggregationConfig`
 // parameter on `sharedStorage.run()` or `sharedStorage.selectURL()`.
 struct PrivateAggregationConfig {
   url.mojom.Origin? aggregation_coordinator_origin;
   string? context_id;
   uint32 filtering_id_max_bytes;
+  uint16? max_contributions;
 };
 
 // Implemented by the browser and exposed to the renderer process on a
@@ -60,15 +67,20 @@ interface SharedStorageWorkletHost {
   // `keep_alive_after_operation` indicates whether or not the worklet should be
   // kept alive after this operation finishes. `private_aggregation_config`
   // contains (optional) parameters that are passed to Private Aggregation (if
-  // enabled). `saved_query_name`, if non-empty, is the name of this reusable
-  // query, whose index that results in `config`'s mapped URL will be cached in
-  // the browser process for future uses, or else will be retrieved for this use
-  // if the index for a query of name `saved_query_name` was previously cached.
+  // enabled). `resolve_to_config` indicates whether the promise for
+  // sharedStorage.selectURL() will resolve to a FencedFrameConfig or a
+  // URN:UUID; note that this merely notifies the browser of the action that the
+  // renderer's callback will take, so that it can also be reported to DevTools.
+  // `saved_query_name`, if non-empty, is the name of this reusable query, whose
+  // index that results in `config`'s mapped URL will be cached in the browser
+  // process for future uses, or else will be retrieved for this use if the
+  // index for a query of name `saved_query_name` was previously cached.
   SelectURL(string name,
             array<SharedStorageUrlWithMetadata> urls_with_metadata,
             CloneableMessage serialized_data,
             bool keep_alive_after_operation,
             PrivateAggregationConfig private_aggregation_config,
+            bool resolve_to_config,
             mojo_base.mojom.String16 saved_query_name)
       => (bool success,
           string error_message,
@@ -111,6 +123,7 @@ interface SharedStorageDocumentService {
   // `origin_trial_features` (i.e. inherit the creator document's OT features).
   CreateWorklet(url.mojom.Url script_source_url,
                 url.mojom.Origin data_origin,
+                SharedStorageDataOriginType data_origin_type,
                 network.mojom.CredentialsMode credentials_mode,
                 SharedStorageWorkletCreationMethod creation_method,
                 array<OriginTrialFeature> origin_trial_features,
@@ -134,11 +147,11 @@ interface SharedStorageDocumentService {
 
   // Handle each modifier method within `methods_with_options`. If `with_lock`
   // is provided, the methods within the batch will be executed with a lock
-  // acquired on the resource with name `with_lock`. Return an empty
-  // `error_message` on success, and return an non-empty `error_message` on
-  // failure.
+  // acquired on the resource with name `with_lock`. `with_lock` shouldn't start
+  // with '-'. Return an empty `error_message` on success, and return an
+  // non-empty `error_message` on failure.
   SharedStorageBatchUpdate(
     array<network.mojom.SharedStorageModifierMethodWithOptions> methods_with_options,
-    string? with_lock)
+    network.mojom.LockName? with_lock)
       => (string error_message);
 };

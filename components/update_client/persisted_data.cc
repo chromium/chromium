@@ -251,8 +251,8 @@ void PersistedDataImpl::SetDateLastDataHelper(
     }
     if (active_ids.find(id) != active_ids.end()) {
       app_key->Set("dla", datenum);
+      app_key->Remove("iid");
     }
-    app_key->Remove("iid");
   }
   std::move(callback).Run();
 }

@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_requestorusvstringsequence_usvstring.h"
@@ -250,7 +250,7 @@ void BackgroundFetchManager::DidLoadIcons(
     const SkBitmap& icon,
     int64_t ideal_to_chosen_icon_size) {
   if (loader)
-    loaders_.erase(base::ranges::find(loaders_, loader));
+    loaders_.erase(std::ranges::find(loaders_, loader));
 
   auto ukm_data = mojom::blink::BackgroundFetchUkmData::New();
   ukm_data->ideal_to_chosen_icon_size = ideal_to_chosen_icon_size;

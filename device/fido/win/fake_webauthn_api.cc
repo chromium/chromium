@@ -94,6 +94,7 @@ struct FakeWinWebAuthnApi::CredentialInfo {
 
   WEBAUTHN_CREDENTIAL_DETAILS details;
   std::vector<uint8_t> credential_id;
+  std::optional<std::u16string> provider_name;
 
   WEBAUTHN_RP_ENTITY_INFORMATION rp;
   std::u16string rp_id;
@@ -162,13 +163,15 @@ bool FakeWinWebAuthnApi::InjectNonDiscoverableCredential(
 bool FakeWinWebAuthnApi::InjectDiscoverableCredential(
     base::span<const uint8_t> credential_id,
     device::PublicKeyCredentialRpEntity rp,
-    device::PublicKeyCredentialUserEntity user) {
+    device::PublicKeyCredentialUserEntity user,
+    std::optional<std::string> provider_name) {
   RegistrationData registration(VirtualFidoDevice::PrivateKey::FreshP256Key(),
                                 fido_parsing_utils::CreateSHA256Hash(rp.id),
                                 /*counter=*/0);
   registration.is_resident = true;
   registration.user = std::move(user);
   registration.rp = std::move(rp);
+  registration.provider_name = std::move(provider_name);
 
   bool was_inserted;
   std::tie(std::ignore, was_inserted) =
@@ -498,6 +501,10 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
 
     auto credential = std::make_unique<CredentialInfo>();
     credential->credential_id = registration.first;
+    credential->provider_name = registration.second.provider_name
+                                    ? std::make_optional(base::UTF8ToUTF16(
+                                          *registration.second.provider_name))
+                                    : std::nullopt;
     credential->rp_id = base::UTF8ToUTF16(registration.second.rp->id);
     credential->rp_name =
         base::UTF8ToUTF16(registration.second.rp->name.value_or(""));
@@ -519,12 +526,16 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
         .pwszDisplayName = base::as_wcstr(credential->user_display_name),
     };
     credential->details = {
-        .dwVersion = WEBAUTHN_CREDENTIAL_DETAILS_VERSION_1,
+        .dwVersion = WEBAUTHN_CREDENTIAL_DETAILS_CURRENT_VERSION,
         .cbCredentialID = static_cast<DWORD>(credential->credential_id.size()),
         .pbCredentialID = credential->credential_id.data(),
         .pRpInformation = &credential->rp,
         .pUserInformation = &credential->user,
         .bRemovable = true,
+        .pwszAuthenticatorName =
+            credential->provider_name
+                ? base::as_wcstr(*credential->provider_name)
+                : nullptr,
     };
     credential_list->win_credentials.push_back(&credential->details);
     credential_list->credentials.push_back(std::move(credential));

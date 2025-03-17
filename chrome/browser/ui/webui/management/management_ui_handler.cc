@@ -29,8 +29,6 @@
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -44,8 +42,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -76,6 +76,11 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 enum class ReportingType {
   kDevice,
@@ -165,6 +170,7 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
   }
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 void AddThreatProtectionPermission(const char* title,
                                    const char* permission,
                                    base::Value::List* info) {
@@ -173,6 +179,7 @@ void AddThreatProtectionPermission(const char* title,
   value.Set("permission", permission);
   info->Append(std::move(value));
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 }  // namespace
 
@@ -271,11 +278,15 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
           enterprise_reporting::kCloudProfileReportingEnabled);
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   const bool real_time_url_check_connector_enabled =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()))
           ->GetAppliedRealTimeUrlCheck() !=
       enterprise_connectors::REAL_TIME_CHECK_DISABLED;
+#else
+  const bool real_time_url_check_connector_enabled = false;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   if (cloud_legacy_tech_report_enabled) {
     Profile::FromWebUI(web_ui())->GetPrefs()->GetList(
@@ -398,7 +409,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                    message_id, chrome::kManagedUiLearnMoreUrl,
                    base::EscapeForHTML(l10n_util::GetStringUTF16(
                        IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
-  response.Set("pageSubtitle", chrome::GetManagementPageSubtitle(profile));
+  response.Set("pageSubtitle", GetManagementPageSubtitle(profile));
 
   response.Set("extensionReportingSubtitle",
                l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
@@ -419,6 +430,7 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
     Profile* profile) {
   base::Value::List info;
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   constexpr struct {
     enterprise_connectors::AnalysisConnector connector;
     const char* title;
@@ -485,6 +497,11 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
                  : l10n_util::GetStringFUTF16(
                        IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
                        base::UTF8ToUTF16(enterprise_manager)));
+#else
+  base::Value::Dict result;
+  result.Set("description", l10n_util::GetStringUTF16(
+                                IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   result.Set("info", std::move(info));
   return result;
 }
@@ -616,11 +633,10 @@ bool ManagementUIHandler::UpdateBrowserManagedState() {
 #endif
 
 std::string ManagementUIHandler::GetAccountManager(Profile* profile) const {
-  std::optional<std::string> manager =
-      chrome::GetAccountManagerIdentity(profile);
+  std::optional<std::string> manager = GetAccountManagerIdentity(profile);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
-    manager = chrome::GetDeviceManagerIdentity();
+    manager = GetDeviceManagerIdentity();
   }
 
   return manager.value_or(std::string());

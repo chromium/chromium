@@ -177,4 +177,8 @@ bool ShouldCreateSiteInstanceForDataUrls() {
   return base::FeatureList::IsEnabled(features::kSiteInstanceGroupsForDataUrls);
 }
 
+bool ShouldUseDefaultSiteInstanceGroup() {
+  return base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups);
+}
+
 }  // namespace content

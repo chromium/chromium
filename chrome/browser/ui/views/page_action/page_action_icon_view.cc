@@ -22,6 +22,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -213,7 +214,7 @@ void PageActionIconView::ExecuteCommand(ExecuteSource source) {
 }
 
 const gfx::VectorIcon& PageActionIconView::GetVectorIconBadge() const {
-  return gfx::kNoneIcon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 ui::ImageModel PageActionIconView::GetSizedIconImage(int size) const {
@@ -257,7 +258,7 @@ void PageActionIconView::Update() {
   // Currently no page action icon should be visible during user input.
   // A future subclass may need a hook here if that changes.
   if (delegate_->ShouldHidePageActionIcons()) {
-    ResetSlideAnimation(/*show_label=*/false);
+    ResetSlideAnimation(/*show=*/false);
     SetVisible(false);
   } else {
     UpdateImpl();
@@ -322,9 +323,8 @@ void PageActionIconView::UpdateBorder() {
 }
 
 void PageActionIconView::UpdateTooltipText() {
-  SetCachedTooltipText(IsBubbleShowing()
-                           ? std::u16string()
-                           : GetTextForTooltipAndAccessibleName());
+  SetTooltipText(IsBubbleShowing() ? std::u16string()
+                                   : GetTextForTooltipAndAccessibleName());
 }
 
 void PageActionIconView::InstallLoadingIndicator() {

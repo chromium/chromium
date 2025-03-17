@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/trust_tokens/trust_token_key_filtering.h"
+
+#include <algorithm>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "services/network/trust_tokens/trust_token_key_filtering.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -118,11 +119,11 @@ TEST(TrustTokenKeyFiltering, MixOfPastAndFutureKeys) {
   RetainSoonestToExpireTrustTokenKeys(&keys, 3);
 
   EXPECT_EQ(keys.size(), 2u);
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       keys, [&early_key](const mojom::TrustTokenVerificationKeyPtr& key) {
         return mojo::Equals(key, early_key);
       }));
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       keys, [&late_key](const mojom::TrustTokenVerificationKeyPtr& key) {
         return mojo::Equals(key, late_key);
       }));
@@ -159,15 +160,15 @@ TEST(TrustTokenKeyFiltering, BreaksTiesBasedOnBody) {
   RetainSoonestToExpireTrustTokenKeys(&keys, 3);
 
   EXPECT_EQ(keys.size(), 3u);
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       keys, [&a_key](const mojom::TrustTokenVerificationKeyPtr& key) {
         return mojo::Equals(key, a_key);
       }));
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       keys, [&b_key](const mojom::TrustTokenVerificationKeyPtr& key) {
         return mojo::Equals(key, b_key);
       }));
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       keys, [&early_key](const mojom::TrustTokenVerificationKeyPtr& key) {
         return mojo::Equals(key, early_key);
       }));

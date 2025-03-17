@@ -76,6 +76,11 @@
 
 namespace cc {
 namespace {
+
+SkV4 SkColorToSkV4(SkColor4f color) {
+  return SkV4{color.fR, color.fG, color.fB, color.fA};
+}
+
 scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -87,9 +92,12 @@ scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
 }
 
 // Creates a bitmap of |size| filled with pixels of |color|.
-SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor4f color) {
+SkBitmap MakeSolidColorBitmap(gfx::Size size,
+                              SkColor4f color,
+                              SkAlphaType alpha_type = kPremul_SkAlphaType) {
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(size.width(), size.height()));
+  bitmap.allocPixels(SkImageInfo::Make(size.width(), size.height(),
+                                       kN32_SkColorType, alpha_type));
   bitmap.eraseColor(color);
   return bitmap;
 }
@@ -504,6 +512,68 @@ TEST_F(OopPixelTest, DrawImage) {
 
   auto actual = Raster(display_item_list, rect.size());
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image.png"));
+}
+
+TEST_F(OopPixelTest, DrawImageAlpha) {
+  constexpr gfx::Rect rect(100, 100);
+
+  auto bitmap_black = MakeSolidColorBitmap(rect.size(), SkColors::kBlack);
+
+  // Initialize the premul and unpremul SkPixmaps with the same color (note
+  // that SkColor4f is always unpremultiplied).
+  const SkColor4f kTestColor = {128.f / 255.f, 0.f, 0.f, 128.f / 255.f};
+  auto bitmap_premul =
+      MakeSolidColorBitmap(gfx::Size(50, 50), kTestColor, kPremul_SkAlphaType);
+  auto bitmap_unpremul = MakeSolidColorBitmap(gfx::Size(50, 50), kTestColor,
+                                              kUnpremul_SkAlphaType);
+
+  // Despite being initialized by the same SkColor, the premultiplied and
+  // unpremultiplied bitmaps will end up with different bits in them (reflecting
+  // the premultiplied vs unpremultiplied representations of the color).
+  EXPECT_NE(bitmap_premul.getAddr32(0, 0), bitmap_unpremul.getAddr32(0, 0));
+
+  const PaintImage::Id kIdBlack = 32;
+  const PaintImage::Id kIdPremul = 33;
+  const PaintImage::Id kIdUnpremul = 34;
+
+  auto paint_image_black =
+      PaintImageBuilder::WithDefault()
+          .set_image(SkImages::RasterFromBitmap(bitmap_black), 0)
+          .set_id(kIdBlack)
+          .TakePaintImage();
+  auto paint_image_premul =
+      PaintImageBuilder::WithDefault()
+          .set_image(SkImages::RasterFromBitmap(bitmap_premul), 1)
+          .set_id(kIdPremul)
+          .TakePaintImage();
+  auto paint_image_unpremul =
+      PaintImageBuilder::WithDefault()
+          .set_image(SkImages::RasterFromBitmap(bitmap_unpremul), 2)
+          .set_id(kIdUnpremul)
+          .TakePaintImage();
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+
+  // Draw a black background.
+  display_item_list->push<DrawImageOp>(paint_image_black, 0.f, 0.f, sampling,
+                                       nullptr);
+  // Draw a premul image on the left.
+  display_item_list->push<DrawImageOp>(paint_image_premul, 0.f, 25.f, sampling,
+                                       nullptr);
+  // Draw an unpremul image on the right.
+  display_item_list->push<DrawImageOp>(paint_image_unpremul, 50.f, 25.f,
+                                       sampling, nullptr);
+
+  display_item_list->EndPaintOfUnpaired(rect);
+  display_item_list->Finalize();
+
+  auto actual = Raster(display_item_list, rect.size());
+
+  // The premul and unpremul images should be identical.
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_alpha_premul_unpremul.png"));
 }
 
 TEST_F(OopPixelTest, DrawImageScaled) {
@@ -2106,7 +2176,7 @@ class OopTextBlobPixelTest
           max_abs_error = std::max(237, max_abs_error);
           avg_error = std::max(60.9f, avg_error);
 #else
-          max_abs_error = std::max(228, max_abs_error);
+          max_abs_error = std::max(229, max_abs_error);
           avg_error = std::max(40.2f, avg_error);
 #endif
           break;
@@ -2857,16 +2927,19 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
 
-    auto comparator =
-#if BUILDFLAG(IS_IOS)
-        // TODO(crbug.com/40280014): We have larger errors on the platform, but
-        // the images here still seem visually indistinguishable.
-        FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.5f);
-#else
-        // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
-        // rounding.
+    // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
+    // rounding.
+    FuzzyPixelComparator comparator =
         FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.08f);
-#endif
+
+    // TODO(crbug.com/40280014): We have larger errors when running these
+    // tests with Graphite, but the images here still seem visually
+    // indistinguishable.
+    auto* cmd = base::CommandLine::ForCurrentProcess();
+    if (features::IsSkiaGraphiteEnabled(cmd)) {
+      comparator.SetErrorPixelsPercentageLimit(0.5f);
+    }
+
     auto actual = Raster(display_item_list, options);
     ExpectEquals(actual, FILE_PATH_LITERAL("oop_path.png"), comparator);
   }
@@ -2915,31 +2988,45 @@ INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
 
 TEST_F(OopPixelTest, SkSLCommandShader) {
+  // Draws a red square.
+  const std::string_view kDrawRedRect(R"(
+    uniform float u_border_alpha;
+    uniform float2 u_top_left;
+    uniform float2 u_btm_right;
+    uniform vec4 u_border_color;
+    uniform vec4 u_center_color;
+    uniform int u_nudge;
+
+    vec4 main(float2 coord) {
+      float2 adjusted = u_top_left;
+      adjusted.x = u_top_left.x + float(u_nudge);
+      if (all(greaterThanEqual(coord, adjusted)) &&
+          all(lessThan(coord, u_btm_right))) {
+        return u_center_color;
+      } else {
+        return vec4(u_border_color.xyz, u_border_alpha);
+      }
+    }
+  )");
+  auto shader = PaintShader::MakeSkSLCommand(
+      kDrawRedRect,
+      /*float_uniforms=*/{{.name = SkString("u_border_alpha"), .value = 0.5f}},
+      /*float2_uniforms=*/
+      {{.name = SkString("u_top_left"), .value = SkV2{23.f, 25.f}},
+       {.name = SkString("u_btm_right"), .value = SkV2{75.f, 75.f}}},
+      /*float4_uniforms=*/
+      {{.name = SkString("u_border_color"),
+        .value = SkColorToSkV4(SkColors::kRed)},
+       {.name = SkString("u_center_color"),
+        .value = SkColorToSkV4(SkColors::kGreen)}},
+      /*int_uniforms=*/
+      {{.name = SkString("u_nudge"), .value = 2}});
+  ASSERT_TRUE(shader);
+
   const gfx::Size rect(100, 100);
   RasterOptions options(rect);
   options.preclear = true;
   options.preclear_color = SkColors::kWhite;
-
-  // Draws a red square.
-  const std::string_view kDrawRedRect(R"(
-    const half4 color = half4(1.0, 0.0, 0.0, 1.0);  // <R, G, B, A>
-    const vec2 top_left = vec2(25, 25);             // <X, Y>
-    const vec2 btm_right = vec2(75, 75);            // <X+W, Y+H>
-
-    half4 main(float2 coord) {
-      if (all(greaterThanEqual(coord, top_left)) &&
-          all(lessThan(coord, btm_right))) {
-        // Red if inside the rect.
-        return color;
-      } else {
-        // Transparent elsewhere.
-        return half4(0.0);
-      }
-    }
-  )");
-  auto shader = PaintShader::MakeSkSLCommand(kDrawRedRect);
-  ASSERT_TRUE(shader);
-
   PaintFlags flags;
   flags.setShader(std::move(shader));
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
@@ -2955,9 +3042,14 @@ TEST_F(OopPixelTest, SkSLCommandShader) {
   SkCanvas canvas(expected, SkSurfaceProps{});
   SkPaint red;
   red.setColor(SkColors::kRed);
-  canvas.drawRect(SkRect::MakeXYWH(25, 25, 50, 50), red);
+  red.setAlphaf(0.5f);
+  canvas.drawRect(SkRect::MakeXYWH(0, 0, 100, 100), red);
+  SkPaint green;
+  green.setColor(SkColors::kGreen);
+  canvas.drawRect(SkRect::MakeXYWH(25, 25, 50, 50), green);
 
-  EXPECT_EQ(GetPNGDataUrl(actual), GetPNGDataUrl(expected));
+  EXPECT_TRUE(MatchesBitmap(actual, expected,
+                            ManhattanDistancePixelComparator(/*tolerance=*/5)));
 }
 
 }  // namespace

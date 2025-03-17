@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
@@ -106,8 +107,17 @@ namespace {
 
 bool IsScopedByElement(const ScopedCSSName* lookup_name,
                        const Element& element) {
-  const StyleAnchorScope& anchor_scope =
-      element.ComputedStyleRef().AnchorScope();
+  const ComputedStyle* style = element.GetComputedStyle();
+  if (!style) {
+    // TODO(crbug.com/384523570): We should not be here without a style,
+    // but apparently that can happen [1]. This is likely related to poking
+    // into a dirty layout tree during scroll snapshotting,
+    // since ValidateSnapshot() is on the stack [1].
+    //
+    // [1] crbug.com/393395576
+    return false;
+  }
+  const StyleAnchorScope& anchor_scope = style->AnchorScope();
   if (anchor_scope.IsNone()) {
     return false;
   }
@@ -161,7 +171,7 @@ const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
       const LayoutObject* layout_object = result->GetLayoutObject();
       // TODO(crbug.com/384523570): If the layout object has been detached, we
       // really shouldn't be here.
-      if (layout_object &&
+      if (layout_object && layout_object != &query_box &&
           (!result->is_out_of_flow ||
            layout_object->IsBeforeInPreOrder(query_box)) &&
           InSameAnchorScope(key, query_box, *layout_object)) {
@@ -187,9 +197,9 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
                               const PhysicalRect& rect,
                               SetOptions options,
                               Element* element_for_display_lock) {
-  HeapHashSet<Member<Element>>* display_locks = nullptr;
+  GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
   if (element_for_display_lock) {
-    display_locks = MakeGarbageCollected<HeapHashSet<Member<Element>>>();
+    display_locks = MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
     display_locks->insert(element_for_display_lock);
   }
   Set(key, MakeGarbageCollected<PhysicalAnchorReference>(
@@ -241,9 +251,10 @@ void PhysicalAnchorQuery::SetFromChild(
       PhysicalRect rect = reference->rect;
       rect.offset += additional_offset;
 
-      HeapHashSet<Member<Element>>* display_locks = nullptr;
+      GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
       if (reference->display_locks || element_for_display_lock) {
-        display_locks = MakeGarbageCollected<HeapHashSet<Member<Element>>>();
+        display_locks =
+            MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
       }
       if (reference->display_locks) {
         *display_locks = *reference->display_locks;

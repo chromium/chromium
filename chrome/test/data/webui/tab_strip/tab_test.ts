@@ -206,7 +206,7 @@ suite('Tab', function() {
     assertEquals(tabId, tab.id);
   });
 
-  test('ClickingElementClearsTouchPressedState', async () => {
+  test('ClickingElementClearsTouchPressedState', () => {
     const touchPressedAttrib = 'touch_pressed_';
     tabElement.setTouchPressed(true);
     assertTrue(tabElement.hasAttribute(touchPressedAttrib));
@@ -305,7 +305,7 @@ suite('Tab', function() {
     assertEquals(window.getComputedStyle(thumbnailImage).display, 'none');
   });
 
-  test('updates the thumbnail source', async () => {
+  test('updates the thumbnail source', () => {
     const thumbnailSource = 'data:mock-thumbnail-source';
     tabElement.updateThumbnail(thumbnailSource);
     assertEquals(

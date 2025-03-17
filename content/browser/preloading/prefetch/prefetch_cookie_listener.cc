@@ -34,18 +34,28 @@ PrefetchCookieListener::PrefetchCookieListener(const GURL& url) : url_(url) {}
 
 PrefetchCookieListener::~PrefetchCookieListener() = default;
 
-void PrefetchCookieListener::StopListening() {
+void PrefetchCookieListener::TerminateListening() {
   cookie_listener_receiver_.reset();
+}
+
+void PrefetchCookieListener::PauseListening() {
+  should_pause_listening_ = true;
+}
+
+void PrefetchCookieListener::ResumeListening() {
+  should_pause_listening_ = false;
 }
 
 void PrefetchCookieListener::OnCookieChange(
     const net::CookieChangeInfo& change) {
-  DCHECK(url_.DomainIs(change.cookie.DomainWithoutDot()));
-  have_cookies_changed_ = true;
+  if (!should_pause_listening_) {
+    DCHECK(url_.DomainIs(change.cookie.DomainWithoutDot()));
+    have_cookies_changed_ = true;
 
-  // Once we record one change to the cookies associated with |url_|, we don't
-  // care about any subsequent changes.
-  StopListening();
+    // Once we record one change to the cookies associated with |url_|, we don't
+    // care about any subsequent changes.
+    TerminateListening();
+  }
 }
 
 }  // namespace content

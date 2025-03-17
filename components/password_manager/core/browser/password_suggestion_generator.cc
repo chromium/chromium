@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 
+#include <functional>
 #include <set>
 
 #include "base/base64.h"
@@ -13,7 +14,6 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -67,41 +67,8 @@ Suggestion CreateGenerationEntry() {
       SuggestionType::kGeneratePasswordEntry);
 }
 
-// Entry for opting in to password account storage and then filling.
-Suggestion CreateEntryToOptInToAccountStorageThenFill() {
-#if BUILDFLAG(IS_IOS)
-  const bool webauthn_sync_credentials =
-      syncer::IsWebauthnCredentialSyncEnabled();
-#else
-  constexpr bool webauthn_sync_credentials = true;
-#endif  // BUILDFLAG(IS_IOS)
-  return Suggestion(
-      l10n_util::GetStringUTF8(
-          webauthn_sync_credentials
-              ? IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS
-              : IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE),
-      /*label=*/"", Suggestion::Icon::kGoogle,
-      SuggestionType::kPasswordAccountStorageOptIn);
-}
-
-// Entry for opting in to password account storage and then generating password.
-Suggestion CreateEntryToOptInToAccountStorageThenGenerate() {
-  return Suggestion(
-      l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD),
-      /*label=*/"", Suggestion::Icon::kKey,
-      SuggestionType::kPasswordAccountStorageOptInAndGenerate);
-}
-
-// Entry for sigining in again which unlocks the password account storage.
-Suggestion CreateEntryToReSignin() {
-  return Suggestion(
-      l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_RE_SIGNIN_ACCOUNT_STORE),
-      /*label=*/"", Suggestion::Icon::kGoogle,
-      SuggestionType::kPasswordAccountStorageReSignin);
-}
-
 void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
-  bool has_no_fillable_suggestions = base::ranges::none_of(
+  bool has_no_fillable_suggestions = std::ranges::none_of(
       *suggestions,
       [](SuggestionType id) {
         return id == SuggestionType::kPasswordEntry ||
@@ -114,7 +81,7 @@ void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
     return;
   }
 
-  bool has_webauthn_credential = base::ranges::any_of(
+  bool has_webauthn_credential = std::ranges::any_of(
       *suggestions,
       [](SuggestionType type) {
         return type == SuggestionType::kWebauthnCredential;
@@ -300,13 +267,6 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     ShowPasswordSuggestions show_password_suggestions,
     ShowWebAuthnCredentials show_webauthn_credentials) const {
   std::vector<Suggestion> suggestions;
-  bool show_account_storage_optin =
-      password_client_ && password_client_->GetPasswordFeatureManager()
-                              ->ShouldShowAccountStorageOptIn();
-  bool show_account_storage_resignin =
-      password_client_ && password_client_->GetPasswordFeatureManager()
-                              ->ShouldShowAccountStorageReSignin(
-                                  password_client_->GetLastCommittedURL());
 
   // Add WebAuthn credentials suitable for an ongoing request if available.
   WebAuthnCredentialsDelegate* delegate =
@@ -316,29 +276,30 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
   // passkey on another device. On Android this is always false. It also will
   // not be set on iOS since |show_webauthn_credentials| is always false.
   bool uses_passkeys = false;
-  if (show_webauthn_credentials && delegate &&
-      delegate->GetPasskeys().has_value()) {
+  if (show_webauthn_credentials && delegate) {
+    delegate->NotifyForPasskeysDisplay();
+    if (delegate->GetPasskeys().has_value()) {
 #if !BUILDFLAG(IS_ANDROID)
-    uses_passkeys = true;
+      uses_passkeys = true;
 #endif
-    base::ranges::transform(
-        *delegate->GetPasskeys(), std::back_inserter(suggestions),
-        [&page_favicon](const auto& passkey) {
-          Suggestion suggestion(
-              base::UTF16ToUTF8(ToUsernameString(passkey.username())),
-              /*label=*/"", Suggestion::Icon::kGlobe,
-              SuggestionType::kWebauthnCredential);
-          suggestion.custom_icon = page_favicon;
-          suggestion.payload =
-              Suggestion::Guid(base::Base64Encode(passkey.credential_id()));
-          suggestion.labels = {
-              {Suggestion::Text(passkey.GetAuthenticatorLabel())}};
-          return suggestion;
-        });
+      std::ranges::transform(
+          *delegate->GetPasskeys().value(), std::back_inserter(suggestions),
+          [&page_favicon](const auto& passkey) {
+            Suggestion suggestion(
+                base::UTF16ToUTF8(ToUsernameString(passkey.username())),
+                /*label=*/"", Suggestion::Icon::kGlobe,
+                SuggestionType::kWebauthnCredential);
+            suggestion.custom_icon = page_favicon;
+            suggestion.payload =
+                Suggestion::Guid(base::Base64Encode(passkey.credential_id()));
+            suggestion.labels = {
+                {Suggestion::Text(passkey.GetAuthenticatorLabel())}};
+            return suggestion;
+          });
+    }
   }
 
-  if (!fill_data.has_value() && !show_account_storage_optin &&
-      !show_account_storage_resignin && !uses_passkeys && suggestions.empty()) {
+  if (!fill_data.has_value() && !uses_passkeys && suggestions.empty()) {
     // Probably the credential was deleted in the mean time.
     return suggestions;
   }
@@ -360,7 +321,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #endif  //! BUILDFLAG(IS_IOS)
     if (passkey_from_another_device_in_autofill) {
       bool listed_passkeys = delegate->GetPasskeys().has_value() &&
-                             delegate->GetPasskeys()->size() > 0;
+                             delegate->GetPasskeys().value()->size() > 0;
       suggestions.emplace_back(
           CreatePasskeyFromAnotherDeviceEntry(listed_passkeys));
     }
@@ -369,21 +330,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
   // Add password generation entry, if available.
   if (offers_generation) {
-    suggestions.emplace_back(
-        show_account_storage_optin
-            ? CreateEntryToOptInToAccountStorageThenGenerate()
-            : CreateGenerationEntry());
-  }
-
-  // Add button to opt into using the account storage for passwords and then
-  // suggest.
-  if (show_account_storage_optin) {
-    suggestions.emplace_back(CreateEntryToOptInToAccountStorageThenFill());
-  }
-
-  // Add button to sign-in which unlocks the previously used account store.
-  if (show_account_storage_resignin) {
-    suggestions.emplace_back(CreateEntryToReSignin());
+    suggestions.emplace_back(CreateGenerationEntry());
   }
 
   // Add "Manage all passwords" link to settings.
@@ -447,7 +394,7 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   for (const CredentialUIEntry& credential : credentials) {
     // Check if any credential in the "Suggested" section has the same singon
     // realm as this `CredentialUIEntry`.
-    const bool has_suggested_realm = base::ranges::any_of(
+    const bool has_suggested_realm = std::ranges::any_of(
         credential.facets,
         [&suggested_signon_realms](const std::string& signon_realm) {
           return suggested_signon_realms.count(signon_realm);
@@ -463,9 +410,9 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         Suggestion::FiltrationPolicy::kFilterable);
   }
 
-  base::ranges::sort(
+  std::ranges::sort(
       suggestions.begin() + relevant_section_offset, suggestions.end(),
-      base::ranges::less(),
+      std::ranges::less(),
       [](const Suggestion& suggestion) { return suggestion.main_text.value; });
 
   // Add "Manage all passwords" link to settings.

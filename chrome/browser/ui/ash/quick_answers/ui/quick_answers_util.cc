@@ -190,7 +190,7 @@ std::unique_ptr<views::ImageButton> CreateImageButtonView(
     std::u16string tooltip_text) {
   std::unique_ptr<views::ImageButton> image_button =
       std::make_unique<views::ImageButton>(closure);
-  image_button->SetBackground(views::CreateThemedRoundedRectBackground(
+  image_button->SetBackground(views::CreateRoundedRectBackground(
       background_color, kRichAnswersIconContainerRadius));
   image_button->SetBorder(views::CreateEmptyBorder(kRichAnswersIconBorderDip));
   image_button->SetImageModel(views::Button::ButtonState::STATE_NORMAL,

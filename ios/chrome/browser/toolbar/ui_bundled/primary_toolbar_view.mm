@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
@@ -32,7 +33,7 @@ namespace {
 const CGFloat kBannerPromoVerticalSpacing = 8;
 }  // namespace
 
-@interface PrimaryToolbarView ()
+@interface PrimaryToolbarView () <TabGroupIndicatorViewDelegate>
 
 // Factory used to create the buttons.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
@@ -98,12 +99,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 @property(nonatomic, strong, readwrite)
     NSMutableArray<NSLayoutConstraint*>* contractedNoMarginConstraints;
 
-// Constraints for the tabGroupIndicator.
-@property(nonatomic, strong, readwrite)
-    NSArray<NSLayoutConstraint*>* tabGroupIndicatorTopOmniboxConstraints;
-@property(nonatomic, strong, readwrite)
-    NSArray<NSLayoutConstraint*>* tabGroupIndicatorBottomOmniboxConstraints;
-
 @end
 
 @implementation PrimaryToolbarView {
@@ -113,11 +108,27 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   // Background and container for the banner promo.
   UIView* _bannerPromoBackground;
 
-  // The actual banner promo view.
-  BannerPromoView* _bannerPromo;
+  // Whether or not the banner promo is currently displayed. This cannot just
+  // be `view.hidden` because during animations, calculations should assume the
+  // banner is hidden despite the view being visible.
+  BOOL _bannerPromoDisplayed;
 
-  // Constrains the height of the background promo for fullscreen purposes.
+  // Constrains the height of the banner promo background for fullscreen
+  // purposes.
   NSLayoutConstraint* _bannerPromoBackgroundHeightConstraint;
+
+  // Constraint between promo background's top and the top of this view.
+  // Used to animate the promo appearance in split toolbar mode.
+  NSLayoutConstraint* _bannerPromoBackgroundTopConstraint;
+
+  // Constrains the height of the banner promo background for animating the
+  // promo appearance in non-split toolbar mode.
+  NSLayoutConstraint* _bannerPromoBackgroundHeightAnimationConstraint;
+
+  // Constraints for the tabGroupIndicator.
+  NSLayoutConstraint* _tabGroupIndicatorHeightConstraint;
+  NSLayoutConstraint* _tabGroupIndicatorTopOmniboxConstraint;
+  NSLayoutConstraint* _tabGroupIndicatorBottomOmniboxConstraint;
 
   // The location bar container has a bottom constraint where the constant
   // is controlled outside this class. However, the exact second item for
@@ -133,6 +144,10 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   // toolbar mode.
   NSArray<NSLayoutConstraint*>*
       _bannerPromoBackgroundNonSplitToolbarConstraints;
+
+  // Constraints for the banner promo and related views when the promo is
+  // enabled but hidden.
+  NSArray<NSLayoutConstraint*>* _bannerPromoHiddenConstraints;
 }
 
 @synthesize fakeOmniboxTarget = _fakeOmniboxTarget;
@@ -217,19 +232,14 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 }
 
 - (void)updateTabGroupIndicatorAvailability {
-  CHECK(IsTabGroupIndicatorEnabled());
-
+  CHECK(IsTabGroupInGridEnabled());
   BOOL isTopOmnibox = self.locationBarView != nil;
   if (isTopOmnibox) {
-    [NSLayoutConstraint
-        deactivateConstraints:self.tabGroupIndicatorBottomOmniboxConstraints];
-    [NSLayoutConstraint
-        activateConstraints:self.tabGroupIndicatorTopOmniboxConstraints];
+    _tabGroupIndicatorBottomOmniboxConstraint.active = NO;
+    _tabGroupIndicatorTopOmniboxConstraint.active = YES;
   } else {
-    [NSLayoutConstraint
-        deactivateConstraints:self.tabGroupIndicatorTopOmniboxConstraints];
-    [NSLayoutConstraint
-        activateConstraints:self.tabGroupIndicatorBottomOmniboxConstraints];
+    _tabGroupIndicatorTopOmniboxConstraint.active = NO;
+    _tabGroupIndicatorBottomOmniboxConstraint.active = YES;
   }
   self.tabGroupIndicatorView.showSeparator = !isTopOmnibox;
 
@@ -238,9 +248,73 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   self.tabGroupIndicatorView.available = isAvailable;
 }
 
-// Calculates the heihgt of the banner promo background when fullscreen is
+- (void)prepareToShowBannerPromo {
+  _bannerPromoDisplayed = YES;
+  CGFloat bannerPromoBackgroundHeight =
+      [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+  _bannerPromoBackgroundTopConstraint.constant = -bannerPromoBackgroundHeight;
+
+  if (IsSplitToolbarMode(self)) {
+    [NSLayoutConstraint
+        activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+    [NSLayoutConstraint
+        deactivateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+  } else {
+    [NSLayoutConstraint
+        deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+    [NSLayoutConstraint
+        activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+    _bannerPromoBackgroundHeightAnimationConstraint.active = YES;
+  }
+
+  _bannerPromoBackgroundHeightConstraint.constant = bannerPromoBackgroundHeight;
+  [self invalidateIntrinsicContentSize];
+}
+
+- (void)showBannerPromo {
+  if (IsSplitToolbarMode(self)) {
+    _bannerPromoBackgroundTopConstraint.constant = 0;
+  } else {
+    _bannerPromoBackgroundHeightAnimationConstraint.active = NO;
+  }
+
+  [self invalidateIntrinsicContentSize];
+}
+
+- (void)hideBannerPromo {
+  if (IsSplitToolbarMode(self)) {
+    CGFloat bannerPromoBackgroundHeight =
+        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+    _bannerPromoBackgroundTopConstraint.constant = -bannerPromoBackgroundHeight;
+  } else {
+    _bannerPromoBackgroundHeightAnimationConstraint.active = YES;
+  }
+
+  _bannerPromoDisplayed = NO;
+  [self invalidateIntrinsicContentSize];
+}
+
+- (void)cleanupAfterHideBannerPromo {
+  [NSLayoutConstraint
+      deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+  [NSLayoutConstraint
+      deactivateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+
+  _bannerPromoBackgroundHeightAnimationConstraint.active = NO;
+
+  [NSLayoutConstraint activateConstraints:_bannerPromoHiddenConstraints];
+  _bannerPromoBackgroundHeightConstraint.constant = 0;
+
+  [self invalidateIntrinsicContentSize];
+}
+
+// Calculates the height of the banner promo background when fullscreen is
 // active.
 - (CGFloat)bannerPromoBackgroundHeightForFullscreenProgress:(CGFloat)progress {
+  if (!_bannerPromoDisplayed) {
+    return 0;
+  }
+
   if (IsSplitToolbarMode(self)) {
     return _bannerPromo.intrinsicContentSize.height + self.safeAreaInsets.top;
   }
@@ -262,34 +336,26 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
 // Sets tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
-  CHECK(IsTabGroupIndicatorEnabled());
+  CHECK(IsTabGroupInGridEnabled());
   _tabGroupIndicatorView = view;
   _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   _tabGroupIndicatorView.backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
+  _tabGroupIndicatorView.delegate = self;
   [self addSubview:_tabGroupIndicatorView];
+
+  _tabGroupIndicatorHeightConstraint = [_tabGroupIndicatorView.heightAnchor
+      constraintEqualToConstant:kTabGroupIndicatorHeight];
 
   id<LayoutGuideProvider> safeArea = self.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
-    [self.tabGroupIndicatorView.leadingAnchor
+    [_tabGroupIndicatorView.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor],
-    [self.tabGroupIndicatorView.trailingAnchor
+    [_tabGroupIndicatorView.trailingAnchor
         constraintEqualToAnchor:safeArea.trailingAnchor],
-    [self.tabGroupIndicatorView.heightAnchor
-        constraintEqualToConstant:kTabGroupIndicatorHeight],
+    _tabGroupIndicatorHeightConstraint
   ]];
-  self.tabGroupIndicatorTopOmniboxConstraints = @[
-    [self.tabGroupIndicatorView.bottomAnchor
-        constraintEqualToAnchor:self.locationBarContainer.topAnchor
-                       constant:-kAdaptiveLocationBarVerticalMargin],
-  ];
-  self.tabGroupIndicatorBottomOmniboxConstraints = @[
-    [self.tabGroupIndicatorView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
-  ];
-
-  [self updateTabGroupIndicatorAvailability];
 }
 
 #pragma mark - UIView
@@ -305,7 +371,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
                         self.traitCollection.preferredContentSizeCategory);
   }
 
-  if (IsDefaultBrowserBannerPromoEnabled()) {
+  if (IsDefaultBrowserBannerPromoEnabled() && _bannerPromoDisplayed) {
     height += _bannerPromo.intrinsicContentSize.height;
     if (isTopOmnibox) {
       height += kBannerPromoVerticalSpacing;
@@ -313,13 +379,12 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   }
 
   // If the tab group indicator is visible, add its height to the total height.
-  if (IsTabGroupIndicatorEnabled() && !_tabGroupIndicatorView.hidden) {
+  if (IsTabGroupInGridEnabled() && !_tabGroupIndicatorView.hidden) {
     height += kTabGroupIndicatorHeight;
     // If the Omnibox is not at the top, remove the top vertical margin to avoid
     // extra space when the tab group indicator is present.
-    if (!isTopOmnibox) {
+    if (!isTopOmnibox && !HasTabGroupIndicatorBelowOmnibox()) {
       height -= kTopToolbarUnsplitMargin;
-    } else {
     }
   }
   // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
@@ -328,7 +393,8 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 }
 
 - (void)didMoveToSuperview {
-  if (IsTabGroupIndicatorEnabled()) {
+  [super didMoveToSuperview];
+  if (IsTabGroupInGridEnabled()) {
     // Ensure the tab group indicator's visibility aligns with the new
     // superview's layout context.
     [self updateTabGroupIndicatorAvailability];
@@ -458,13 +524,15 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
   _bannerPromoBackground = [[UIView alloc] init];
   _bannerPromoBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  _bannerPromoBackground.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  _bannerPromoBackground.backgroundColor =
+      [UIColor colorNamed:@"banner_promo_background_color"];
   _bannerPromoBackground.clipsToBounds = YES;
   [self addSubview:_bannerPromoBackground];
 
-  _bannerPromo = [[BannerPromoView alloc] init];
-  _bannerPromo.translatesAutoresizingMaskIntoConstraints = NO;
-  [_bannerPromoBackground addSubview:_bannerPromo];
+  self.bannerPromo = [[BannerPromoView alloc] init];
+  self.bannerPromo.translatesAutoresizingMaskIntoConstraints = NO;
+  [_bannerPromoBackground addSubview:self.bannerPromo];
+  _bannerPromoDisplayed = NO;
 }
 
 // Sets the constraints up.
@@ -540,26 +608,38 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   ]];
 
   if (IsDefaultBrowserBannerPromoEnabled()) {
+    _bannerPromoBackgroundTopConstraint = [_bannerPromoBackground.topAnchor
+        constraintEqualToAnchor:self.topAnchor];
     _bannerPromoBackgroundSplitToolbarConstraints = @[
-      [_bannerPromoBackground.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [_bannerPromo.topAnchor
+      _bannerPromoBackgroundTopConstraint,
+      [self.bannerPromo.topAnchor
           constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
       locationBarContainerLayoutGuideBottomConstraint,
     ];
 
+    _bannerPromoBackgroundHeightAnimationConstraint =
+        [_bannerPromoBackground.heightAnchor
+            constraintLessThanOrEqualToConstant:0];
     _bannerPromoBackgroundNonSplitToolbarConstraints = @[
-      [_bannerPromo.topAnchor
+      [self.bannerPromo.topAnchor
           constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
       [_locationBarContainerBottomLayoutGuide.bottomAnchor
           constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
       [_bannerPromoBackground.bottomAnchor
           constraintEqualToAnchor:self.bottomAnchor],
+      _bannerPromoBackgroundHeightAnimationConstraint,
     ];
+
+    _bannerPromoHiddenConstraints =
+        @[ locationBarContainerLayoutGuideBottomConstraint ];
 
     _bannerPromoBackgroundHeightConstraint =
         [_bannerPromoBackground.heightAnchor
             constraintLessThanOrEqualToConstant:
                 [self bannerPromoBackgroundHeightForFullscreenProgress:1]];
+    CGFloat bannerPromoBackgroundHeight =
+        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+    _bannerPromoBackgroundTopConstraint.constant = -bannerPromoBackgroundHeight;
 
     [NSLayoutConstraint activateConstraints:@[
       _bannerPromoBackgroundHeightConstraint,
@@ -568,25 +648,13 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
       [_bannerPromoBackground.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
 
-      [_bannerPromo.leadingAnchor
+      [self.bannerPromo.leadingAnchor
           constraintEqualToAnchor:_bannerPromoBackground.leadingAnchor],
-      [_bannerPromo.trailingAnchor
+      [self.bannerPromo.trailingAnchor
           constraintEqualToAnchor:_bannerPromoBackground.trailingAnchor],
-      [_bannerPromo.bottomAnchor
+      [self.bannerPromo.bottomAnchor
           constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
     ]];
-
-    if (IsSplitToolbarMode(self)) {
-      [NSLayoutConstraint
-          activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-      [NSLayoutConstraint deactivateConstraints:
-                              _bannerPromoBackgroundNonSplitToolbarConstraints];
-    } else {
-      [NSLayoutConstraint
-          deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-      [NSLayoutConstraint
-          activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
-    }
   }
 
   // Trailing StackView constraints.
@@ -650,8 +718,12 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   locationBarView.translatesAutoresizingMaskIntoConstraints = NO;
   [locationBarView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                      forAxis:UILayoutConstraintAxisHorizontal];
-  if (IsTabGroupIndicatorEnabled()) {
-    [self updateTabGroupIndicatorAvailability];
+  if (IsTabGroupInGridEnabled()) {
+    BOOL tabGroupIndicatorVisible = !_tabGroupIndicatorView.hidden;
+    if (tabGroupIndicatorVisible) {
+      [self updateTabGroupIndicatorViewConstraints:tabGroupIndicatorVisible];
+      [self updateTabGroupIndicatorAvailability];
+    }
   }
 
   if (!self.locationBarContainer || !locationBarView) {
@@ -691,8 +763,18 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   _previousFullscreenProgress = progress;
 
   CGFloat alphaValue = fmax(progress * 2 - 1, 0);
-
   _bannerPromoBackground.alpha = alphaValue;
+
+  if (IsTabGroupInGridEnabled()) {
+    if (!_tabGroupIndicatorView.hidden && HasTabGroupIndicatorBelowOmnibox()) {
+      CGFloat tabgroupIndicatorHeight =
+          self.tabGroupIndicatorView.hidden
+              ? 0
+              : kTabGroupIndicatorHeight * alphaValue;
+      _tabGroupIndicatorHeightConstraint.constant = tabgroupIndicatorHeight;
+    }
+    self.tabGroupIndicatorView.alpha = alphaValue;
+  }
 
   _bannerPromoBackgroundHeightConstraint.constant =
       [self bannerPromoBackgroundHeightForFullscreenProgress:progress];
@@ -704,17 +786,23 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 // available space and trait collections.
 - (void)updateViews:(UIView*)updatedView
     previousTraitCollection:(UITraitCollection*)previousTraitCollection {
-  if (IsSplitToolbarMode(self)) {
-    [NSLayoutConstraint
-        activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-    [NSLayoutConstraint
-        deactivateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
-  } else {
-    [NSLayoutConstraint
-        deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-    [NSLayoutConstraint
-        activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+  if (_bannerPromoDisplayed) {
+    if (IsSplitToolbarMode(self)) {
+      [NSLayoutConstraint
+          activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+      [NSLayoutConstraint deactivateConstraints:
+                              _bannerPromoBackgroundNonSplitToolbarConstraints];
+      _bannerPromoBackgroundTopConstraint.constant = 0;
+    } else {
+      [NSLayoutConstraint
+          deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+    }
+    [self invalidateIntrinsicContentSize];
   }
+
+  _bannerPromoBackgroundHeightAnimationConstraint.active = NO;
 
   _bannerPromoBackgroundHeightConstraint.constant =
       [self bannerPromoBackgroundHeightForFullscreenProgress:
@@ -726,6 +814,69 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   _bannerPromoBackgroundHeightConstraint.constant =
       [self bannerPromoBackgroundHeightForFullscreenProgress:
                 _previousFullscreenProgress];
+}
+
+// Updates the `locationBarBottomConstraint` according to
+// `indicatorBelowOmnibox`. `indicatorBelowOmnibox` is false when the tab group
+// indicator is not visble.
+- (void)updateConstraintsForIndicatorBelowOmnibox:(BOOL)indicatorBelowOmnibox {
+  const CGFloat constant = self.locationBarBottomConstraint.constant;
+  self.locationBarBottomConstraint.active = NO;
+
+  if (indicatorBelowOmnibox) {
+    self.locationBarBottomConstraint = [self.tabGroupIndicatorView.bottomAnchor
+        constraintEqualToAnchor:_locationBarContainerBottomLayoutGuide
+                                    .bottomAnchor];
+  } else {
+    self.locationBarBottomConstraint = [self.locationBarContainer.bottomAnchor
+        constraintEqualToAnchor:_locationBarContainerBottomLayoutGuide
+                                    .bottomAnchor
+                       constant:constant];
+  }
+
+  self.locationBarBottomConstraint.active = YES;
+}
+
+// Updates tabgroupIndicatorView constraints.
+// `visible` is true when the group indicator view is visible.
+- (void)updateTabGroupIndicatorViewConstraints:(BOOL)visible {
+  if (!visible) {
+    [self updateConstraintsForIndicatorBelowOmnibox:NO];
+    return;
+  }
+
+  // Deactivate constraints before updating them.
+  _tabGroupIndicatorTopOmniboxConstraint.active = NO;
+  _tabGroupIndicatorBottomOmniboxConstraint.active = NO;
+
+  BOOL isTopOmnibox = self.locationBarView != nil;
+
+  // If the tab group indicator is below the omnibox.
+  if (HasTabGroupIndicatorBelowOmnibox() && isTopOmnibox) {
+    [self updateConstraintsForIndicatorBelowOmnibox:YES];
+
+    _tabGroupIndicatorTopOmniboxConstraint =
+        [self.tabGroupIndicatorView.topAnchor
+            constraintEqualToAnchor:self.locationBarContainer.bottomAnchor];
+  } else {
+    [self updateConstraintsForIndicatorBelowOmnibox:NO];
+
+    _tabGroupIndicatorTopOmniboxConstraint =
+        [self.tabGroupIndicatorView.bottomAnchor
+            constraintEqualToAnchor:self.locationBarContainer.topAnchor
+                           constant:-kAdaptiveLocationBarVerticalMargin];
+  }
+
+  _tabGroupIndicatorBottomOmniboxConstraint =
+      [self.tabGroupIndicatorView.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor];
+}
+
+#pragma mark - TabGroupIndicatorViewDelegate
+
+- (void)tabGroupIndicatorViewVisibilityUpdated:(BOOL)visible {
+  [self updateTabGroupIndicatorViewConstraints:visible];
+  [self updateTabGroupIndicatorAvailability];
 }
 
 @end

@@ -4,11 +4,11 @@
 
 #include "content/browser/file_system_access/file_system_access_observer_host.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"

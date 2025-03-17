@@ -4,7 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, GeolocationAccessLevel, NightLightScheduleType, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {DisplayLayoutElement, SettingsDisplayElement} from 'chrome://os-settings/lazy_load.js';
+import {NightLightScheduleType} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, CrSliderElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrA11yAnnouncerElement, CrToggleElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, GeolocationAccessLevel, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -155,7 +158,7 @@ suite('<settings-display>', () => {
     await flushTasks();
   }
 
-  setup(async () => {
+  setup(() => {
     Router.getInstance().navigateTo(routes.DISPLAY);
 
     fakeSystemDisplay = new FakeSystemDisplay();
@@ -231,7 +234,7 @@ suite('<settings-display>', () => {
           displaySettingsProvider.getExternalDisplayHistogram();
     });
 
-    test('page load', async () => {
+    test('page load', () => {
       // Verify histogram count for display settings page opened.
       assertEquals(
           1,
@@ -1088,7 +1091,7 @@ suite('<settings-display>', () => {
 
     // Brightness slider should not be present when the flag is disabled.
     const displayBrightnessWrapper =
-        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+        displayPage.shadowRoot!.querySelector<HTMLElement>(
             '#brightnessSliderWrapper');
     assertFalse(!!displayBrightnessWrapper);
 
@@ -1115,7 +1118,7 @@ suite('<settings-display>', () => {
     // Display brightness slider should be present on the internal display when
     // the flag is enabled.
     const displayBrightnessWrapper =
-        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+        displayPage.shadowRoot!.querySelector<HTMLElement>(
             '#brightnessSliderWrapper');
     assertTrue(!!displayBrightnessWrapper);
 
@@ -1162,7 +1165,7 @@ suite('<settings-display>', () => {
     flush();
 
     const displayBrightness =
-        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+        displayPage.shadowRoot!.querySelector<HTMLElement>(
             '#brightnessSliderWrapper');
 
     // Display brightness slider should not be present on external displays.
@@ -1192,7 +1195,7 @@ suite('<settings-display>', () => {
 
         // Display brightness slider should be present on the internal display.
         const displayBrightness =
-            displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+            displayPage.shadowRoot!.querySelector<HTMLElement>(
                 '#brightnessSliderWrapper');
         assertTrue(!!displayBrightness);
 
@@ -1408,7 +1411,7 @@ suite('<settings-display>', () => {
 
         // Switch auto-brightness to off by clicking on the row.
         const autoBrightnessToggleRow =
-            displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+            displayPage.shadowRoot!.querySelector<HTMLElement>(
                 '#autoBrightnessToggleRow');
         assertTrue(!!autoBrightnessToggleRow);
         autoBrightnessToggleRow.click();

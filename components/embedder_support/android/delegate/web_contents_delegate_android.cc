@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/resource_request_body_android.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -156,6 +157,9 @@ void WebContentsDelegateAndroid::LoadingStateChanged(
     bool should_show_loading_ui) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
   Java_WebContentsDelegateAndroid_loadingStateChanged(env, obj,
                                                       should_show_loading_ui);
 }
@@ -233,11 +237,6 @@ void WebContentsDelegateAndroid::CloseContents(WebContents* source) {
   Java_WebContentsDelegateAndroid_closeContents(env, obj);
 }
 
-void WebContentsDelegateAndroid::SetContentsBounds(WebContents* source,
-                                                   const gfx::Rect& bounds) {
-  // Do nothing.
-}
-
 bool WebContentsDelegateAndroid::DidAddMessageToConsole(
     WebContents* source,
     blink::mojom::ConsoleMessageLevel log_level,
@@ -270,7 +269,7 @@ bool WebContentsDelegateAndroid::DidAddMessageToConsole(
       NOTREACHED();
   }
   return Java_WebContentsDelegateAndroid_addMessageToConsole(
-      env, GetJavaDelegate(env), jlevel, jmessage, line_no, jsource_id);
+      env, obj, jlevel, jmessage, line_no, jsource_id);
 }
 
 // This is either called from TabContents::DidNavigateMainFramePostCommit() with
@@ -361,6 +360,23 @@ void WebContentsDelegateAndroid::ExitFullscreenModeForTab(
   if (obj.is_null())
     return;
   Java_WebContentsDelegateAndroid_exitFullscreenModeForTab(env, obj);
+}
+
+void WebContentsDelegateAndroid::RequestPointerLock(
+    WebContents* web_contents,
+    bool user_gesture,
+    bool last_unlocked_by_target) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPointerLockOnAndroid)) {
+    // WebContentsDelegate call would reject the lock request with a
+    // kUnknownError
+    return WebContentsDelegate::RequestPointerLock(web_contents, user_gesture,
+                                                   last_unlocked_by_target);
+  }
+
+  // TODO(crbug.com/397609822): add checks on user_gesture & reuse the
+  // ExclusiveAccessManager
+  web_contents->GotResponseToPointerLockRequest(
+      blink::mojom::PointerLockResult::kSuccess);
 }
 
 bool WebContentsDelegateAndroid::IsFullscreenForTabOrPending(
@@ -507,6 +523,31 @@ SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
   return skbitmap;
 }
 
+SkBitmap WebContentsDelegateAndroid::
+    GetBackForwardTransitionFallbackUXInternalPageIcon() {
+  TRACE_EVENT("content",
+              "WebContentsDelegateAndroid::"
+              "GetBackForwardTransitionFallbackUXInternalPageIcon");
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return SkBitmap();
+  }
+  // Call Java's #getBackForwardTransitionFallbackUXInternalPageIcon via JNI.
+  ScopedJavaLocalRef<jobject> bitmap =
+      Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXInternalPageIcon(
+          env, obj);
+  if (bitmap.is_null()) {
+    return SkBitmap();
+  }
+
+  // Covert bitmap to SkBitmap.
+  gfx::JavaBitmap java_bitmap_lock(bitmap);
+  SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+  skbitmap.setImmutable();
+  return skbitmap;
+}
+
 void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
@@ -520,13 +561,17 @@ void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {
 content::BackForwardTransitionAnimationManager::FallbackUXConfig
 WebContentsDelegateAndroid::GetBackForwardTransitionFallbackUXConfig() {
   JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return {};
+  }
   // Java colors are already in 32bit ARBG, same as `SkColor`.
   jint favicon_background =
       Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXFaviconBackgroundColor(
-          env, GetJavaDelegate(env));
+          env, obj);
   jint page_background =
       Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXPageBackgroundColor(
-          env, GetJavaDelegate(env));
+          env, obj);
   return {
       .rounded_rectangle_color =
           SkColor4f::FromColor(static_cast<SkColor>(favicon_background)),
@@ -537,8 +582,11 @@ WebContentsDelegateAndroid::GetBackForwardTransitionFallbackUXConfig() {
 
 void WebContentsDelegateAndroid::ContentsZoomChange(bool zoom_in) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsDelegateAndroid_contentsZoomChange(env, GetJavaDelegate(env),
-                                                     zoom_in);
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsDelegateAndroid_contentsZoomChange(env, obj, zoom_in);
 }
 
 void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(

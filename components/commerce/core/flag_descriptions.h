@@ -15,9 +15,6 @@ extern const char kCommerceLocalPDPDetectionDescription[];
 extern const char kProductSpecificationsName[];
 extern const char kProductSpecificationsDescription[];
 
-extern const char kProductSpecificationsMultiSpecificsName[];
-extern const char kProductSpecificationsMultiSpecificsDescription[];
-
 extern const char kCompareConfirmationToastName[];
 extern const char kCompareConfirmationToastDescription[];
 

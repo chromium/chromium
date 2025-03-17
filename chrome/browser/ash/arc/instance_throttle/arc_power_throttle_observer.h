@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_POWER_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_POWER_THROTTLE_OBSERVER_H_
 
-#include "ash/components/arc/power/arc_power_bridge.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/throttle/throttle_observer.h"
+#include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 
 namespace arc {
 

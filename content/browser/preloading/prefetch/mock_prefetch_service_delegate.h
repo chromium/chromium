@@ -26,7 +26,6 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
       delete;
 
   // PrefetchServiceDelegate.
-  MOCK_METHOD(std::string, GetMajorVersionNumber, (), (override));
   MOCK_METHOD(std::string, GetAcceptLanguageHeader, (), (override));
   MOCK_METHOD(GURL, GetDefaultPrefetchProxyHost, (), (override));
   MOCK_METHOD(std::string, GetAPIKey, (), (override));
@@ -47,6 +46,7 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
   MOCK_METHOD(bool, IsDomainInPrefetchAllowList, (const GURL&), (override));
   MOCK_METHOD(bool, IsContaminationExempt, (const GURL&), (override));
   MOCK_METHOD(void, OnPrefetchLikely, (WebContents*), (override));
+  MOCK_METHOD(void, SetAcceptLanguageHeader, (std::string), (override));
 };
 
 }  // namespace content

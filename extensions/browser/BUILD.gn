@@ -96,8 +96,6 @@ source_set("browser_sources") {
     "api/api_resource.cc",
     "api/api_resource.h",
     "api/api_resource_manager.h",
-    "api/content_settings/content_settings_service.cc",
-    "api/content_settings/content_settings_service.h",
     "api/declarative/declarative_api.cc",
     "api/declarative/declarative_api.h",
     "api/declarative/declarative_rule.h",
@@ -169,10 +167,6 @@ source_set("browser_sources") {
     "api/execute_code_function.h",
     "api/extensions_api_client.cc",
     "api/extensions_api_client.h",
-    "api/system_display/display_info_provider.cc",
-    "api/system_display/display_info_provider.h",
-    "api/system_display/system_display_api.cc",
-    "api/system_display/system_display_api.h",
     "api/web_accessible_resources/web_accessible_resources_router.cc",
     "api/web_accessible_resources/web_accessible_resources_router.h",
     "api/web_contents_capture_client.cc",
@@ -220,6 +214,8 @@ source_set("browser_sources") {
     "blocklist_extension_prefs.cc",
     "blocklist_extension_prefs.h",
     "blocklist_state.h",
+    "bookmark_app_util.cc",
+    "bookmark_app_util.h",
     "browser_context_keyed_api_factory.h",
     "browser_frame_context_data.cc",
     "browser_frame_context_data.h",
@@ -250,7 +246,11 @@ source_set("browser_sources") {
     "crx_file_info.cc",
     "crx_file_info.h",
     "deferred_start_render_host.h",
+    "disable_reason.cc",
     "disable_reason.h",
+    "display_info_provider_base.cc",
+    "display_info_provider_base.h",
+    "display_info_provider_impl.cc",
     "embedder_user_script_loader.cc",
     "embedder_user_script_loader.h",
     "error_map.cc",
@@ -311,6 +311,8 @@ source_set("browser_sources") {
     "extension_icon_manager.h",
     "extension_icon_placeholder.cc",
     "extension_icon_placeholder.h",
+    "extension_navigation_registry.cc",
+    "extension_navigation_registry.h",
     "extension_navigation_throttle.cc",
     "extension_navigation_throttle.h",
     "extension_navigation_ui_data.cc",
@@ -335,6 +337,8 @@ source_set("browser_sources") {
     "extension_protocols.h",
     "extension_registrar.cc",
     "extension_registrar.h",
+    "extension_registrar_factory.cc",
+    "extension_registrar_factory.h",
     "extension_registry.cc",
     "extension_registry.h",
     "extension_registry_factory.cc",
@@ -382,6 +386,8 @@ source_set("browser_sources") {
     "json_file_sanitizer.h",
     "l10n_file_util.cc",
     "l10n_file_util.h",
+    "launch_util.cc",
+    "launch_util.h",
     "lazy_background_task_queue.cc",
     "lazy_background_task_queue.h",
     "lazy_background_task_queue_factory.cc",
@@ -410,6 +416,8 @@ source_set("browser_sources") {
     "offscreen_document_host.h",
     "path_util.cc",
     "path_util.h",
+    "pending_extension_info.cc",
+    "pending_extension_info.h",
     "permissions_manager.cc",
     "permissions_manager.h",
     "policy_check.cc",
@@ -440,6 +448,7 @@ source_set("browser_sources") {
     "renderer_startup_helper.h",
     "requirements_checker.cc",
     "requirements_checker.h",
+    "rules_registry_ids.h",
     "ruleset_parse_result.cc",
     "ruleset_parse_result.h",
     "sandboxed_unpacker.cc",
@@ -545,9 +554,9 @@ source_set("browser_sources") {
     "//content/public/browser:browser",
     "//content/public/common",
     "//extensions:extensions_browser_resources",
-    "//extensions/browser/api/content_settings:content_settings",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
+    "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",
@@ -580,10 +589,7 @@ source_set("browser_sources") {
   ]
 
   if (is_chromeos) {
-    deps += [
-      "//chrome/browser/ash/crosapi:browser_util",
-      "//chromeos/constants",
-    ]
+    deps += [ "//chromeos/constants" ]
   }
 
   public_deps = [
@@ -761,6 +767,8 @@ source_set("test_support") {
     "browsertest_util.h",
     "extension_host_test_helper.cc",
     "extension_host_test_helper.h",
+    "extension_registry_test_helper.cc",
+    "extension_registry_test_helper.h",
     "mock_display_info_provider.cc",
     "mock_display_info_provider.h",
     "mock_screen.cc",
@@ -788,6 +796,7 @@ source_set("test_support") {
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser",
+    "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/updater:updater",
     "//extensions/common",
     "//extensions/common:test_support",
@@ -837,6 +846,7 @@ source_set("unit_tests") {
     "api/storage/settings_quota_unittest.cc",
     "api/storage/storage_api_unittest.cc",
     "api/storage/storage_frontend_unittest.cc",
+    "api/system_network/system_network_api_unittest.cc",
     "api/web_request/form_data_parser_unittest.cc",
     "api/web_request/upload_data_presenter_unittest.cc",
     "api/web_request/web_request_info_unittest.cc",
@@ -925,6 +935,8 @@ source_set("unit_tests") {
     "//extensions:extensions_browser_resources",
     "//extensions:test_support",
     "//extensions/browser/api/storage:settings_namespace",
+    "//extensions/browser/api/system_display:display_info_provider",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/updater:updater",
     "//extensions/buildflags",
     "//extensions/common",
@@ -966,7 +978,6 @@ source_set("unit_tests") {
       "api/sockets_tcp/sockets_tcp_api_unittest.cc",
       "api/sockets_udp/sockets_udp_api_unittest.cc",
       "api/system_info/system_info_api_unittest.cc",
-      "api/system_network/system_network_api_unittest.cc",
     ]
 
     deps += [
@@ -984,7 +995,6 @@ source_set("unit_tests") {
   if (is_chromeos) {
     sources += [
       "api/audio/audio_device_id_calculator_unittest.cc",
-      "api/audio/audio_service_utils_unittest.cc",
       "api/feedback_private/access_rate_limiter_chromeos_unittest.cc",
       "api/feedback_private/feedback_private_api_chromeos_unittest.cc",
       "api/feedback_private/feedback_private_api_unittest_base_chromeos.cc",
@@ -999,7 +1009,6 @@ source_set("unit_tests") {
 
     deps += [
       "//ash/constants",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/common:constants",
       "//chromeos:test_support",
       "//chromeos/ash/components/dbus:test_support",
@@ -1017,10 +1026,12 @@ source_set("unit_tests") {
       "//chromeos/dbus/power",
       "//components/account_id",
       "//components/feedback",
-      "//components/prefs:prefs",
+      "//components/prefs",
+      "//components/prefs:test_support",
       "//components/user_manager",
       "//components/user_manager:test_support",
       "//extensions/shell:app_shell_lib",
+      "//google_apis",
     ]
   }
 
@@ -1055,7 +1066,6 @@ if (enable_extensions) {
       "api/sockets_tcp_server/sockets_tcp_server_apitest.cc",
       "api/sockets_udp/sockets_udp_apitest.cc",
       "api/system_display/system_display_apitest.cc",
-      "api/system_network/system_network_apitest.cc",
       "api/system_storage/storage_api_test_util.cc",
       "api/system_storage/storage_api_test_util.h",
       "api/system_storage/system_storage_apitest.cc",
@@ -1081,6 +1091,8 @@ if (enable_extensions) {
       "//device/bluetooth:mocks",
       "//extensions:test_support",
       "//extensions/browser:test_support",
+      "//extensions/browser/api/system_display:display_info_provider",
+      "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
       "//extensions/common",
       "//extensions/common/api",
       "//extensions/shell:app_shell_lib",

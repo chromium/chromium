@@ -15,10 +15,11 @@ namespace blink {
 
 class ContainerQueryParserTest : public PageTestBase {
  public:
-  String ParseQuery(String string) {
+  template <typename Functor>
+  String ParseQuery(String string, Functor& container_query_parser_func) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    const MediaQueryExpNode* node =
-        ContainerQueryParser(*context).ParseCondition(string);
+    ContainerQueryParser parser(*context);
+    const MediaQueryExpNode* node = container_query_parser_func(string, parser);
     if (!node) {
       return g_null_atom;
     }
@@ -45,6 +46,7 @@ class ContainerQueryParserTest : public PageTestBase {
       return false;
     }
     bool SupportsRange() const override { return true; }
+    bool SupportsElementDependent() const override { return true; }
   };
 
   // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query
@@ -62,6 +64,10 @@ class ContainerQueryParserTest : public PageTestBase {
 };
 
 TEST_F(ContainerQueryParserTest, ParseQuery) {
+  auto container_query_parser_func = [](String string,
+                                        ContainerQueryParser& parser) {
+    return parser.ParseCondition(string);
+  };
   const char* tests[] = {
       "(width)",
       "(min-width: 100px)",
@@ -81,25 +87,35 @@ TEST_F(ContainerQueryParserTest, ParseQuery) {
   };
 
   for (const char* test : tests) {
-    EXPECT_EQ(String(test), ParseQuery(test));
+    EXPECT_EQ(String(test), ParseQuery(test, container_query_parser_func));
   }
 
   // Escaped (unnecessarily but validly) characters in the identifier.
-  EXPECT_EQ("(width)", ParseQuery("(\\77 idth)"));
+  EXPECT_EQ("(width)", ParseQuery("(\\77 idth)", container_query_parser_func));
   // Repro case for b/341640868
-  EXPECT_EQ("(min-width: 100px)", ParseQuery("(min\\2d width: 100px)"));
+  EXPECT_EQ("(min-width: 100px)",
+            ParseQuery("(min\\2d width: 100px)", container_query_parser_func));
 
   // Invalid:
-  EXPECT_EQ("<unknown>", ParseQuery("(min-width)"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) or (width) and (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (width) or (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) or (height) and (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) or (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) 50px)"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height 50px))"));
-  EXPECT_EQ("<unknown>", ParseQuery("((width) and 50px (height))"));
-  EXPECT_EQ("<unknown>", ParseQuery("foo(width)"));
-  EXPECT_EQ("<unknown>", ParseQuery("size(width)"));
+  EXPECT_EQ("<unknown>",
+            ParseQuery("(min-width)", container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) or (width) and (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (width) or (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) or (height) and (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) or (width))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) 50px)",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height 50px))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and 50px (height))",
+                                    container_query_parser_func));
+  EXPECT_EQ("<unknown>", ParseQuery("foo(width)", container_query_parser_func));
+  EXPECT_EQ("<unknown>",
+            ParseQuery("size(width)", container_query_parser_func));
 }
 
 // This test exists primarily to not lose coverage of

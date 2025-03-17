@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstallerViewBrowserTest, UninstallFlow) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UninstallResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniUninstallerView::UninstallResult::kSuccess),
       1);
 }
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstalledUninstallerViewBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UninstallResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniUninstallerView::UninstallResult::kSuccess),
       1);
 }
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstallerViewBrowserTest, Cancel) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UninstallResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniUninstallerView::UninstallResult::kCancelled),
       1);
 }
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstallerViewBrowserTest, ErrorThenCancel) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UninstallResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniUninstallerView::UninstallResult::kError),
       1);
 }

@@ -11,6 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 class CachedPolicyInfo;
@@ -29,6 +33,7 @@ std::string GetRegisterBrowserRequestData();
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a PolicyFetchRequest, to fetch policies for the given type.
 std::string GetPolicyFetchRequestData(
+    policy::PolicyFetchReason reason,
     const std::string& policy_type,
     const device_management_storage::CachedPolicyInfo& policy_info);
 

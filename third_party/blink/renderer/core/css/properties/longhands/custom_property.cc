@@ -122,15 +122,9 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   ComputedStyleBuilder& builder = state.StyleBuilder();
   DCHECK(!value.IsCSSWideKeyword());
 
-  // Highlight Pseudos do not allow custom property definitions.
-  // Properties are copied from the originating element when the
-  // style is created.
-  if (state.UsesHighlightPseudoInheritance()) {
-    if (builder.StyleType() == kPseudoIdSelection) {
-      UseCounter::Count(state.GetDocument(),
-                        WebFeature::kSelectionCustomProperty);
-    }
-    return;
+  if (builder.StyleType() == kPseudoIdSelection) {
+    UseCounter::Count(state.GetDocument(),
+                      WebFeature::kSelectionCustomProperty);
   }
 
   builder.SetHasVariableDeclaration();

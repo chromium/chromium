@@ -6,6 +6,6 @@
 
 dictionary ProgressEventInit : EventInit {
     boolean lengthComputable = false;
-    unsigned long long loaded = 0;
-    unsigned long long total = 0;
+    double loaded = 0;
+    double total = 0;
 };

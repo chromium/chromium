@@ -31,7 +31,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "net/base/network_interfaces_getifaddrs_android.h"
 // Declare getifaddrs() and freeifaddrs() weakly as they're only available
 // on Android N+.
@@ -230,8 +230,8 @@ namespace internal {
 bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks,
                                    int policy,
                                    bool use_alternative_getifaddrs) {
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_NOUGAT);
+  DCHECK_GE(base::android::android_info::sdk_int(),
+            base::android::android_info::SDK_VERSION_NOUGAT);
   DCHECK(getifaddrs);
   DCHECK(freeifaddrs);
 #else

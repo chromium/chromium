@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/forms_classifications.proto";
+
 import "components/optimization_guide/proto/features/forms_predictions.proto";
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
@@ -97,6 +99,12 @@ message ModelPrototypingRequest {
         MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL = 3;
 
         MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL_MPP = 4;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_V3 = 5;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_NANO_V2_MULTI_MODAL = 6;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_V3_XS = 7;
       }
     }
   }
@@ -113,7 +121,8 @@ message ModelPrototypingRequest {
 
 // A representation of an ongoing conversation.
 message Conversation {
-  // The turns of various messages in the conversation.
+  // The turns of various messages in the conversation. Media turns are not
+  // included in this list.
   repeated ConversationTurn conversation_turns = 1;
 }
 
@@ -131,7 +140,7 @@ message ConversationTurn {
 
 // All the information collected from the browser along with the user input
 // (for features like Compose).
-// NEXT ID: 15
+// NEXT ID: 17
 message BrowserCollectedInformation {
   // The page context of the page the model is acting on.
   PageContext page_context = 1;
@@ -180,6 +189,11 @@ message BrowserCollectedInformation {
   // For example, some requests only include foreground tab data,
   // whereas others include all profile data.
   ModelPrototypingCollectionSpecifier collection_specifier = 14;
+
+  // Autofill AI type request and response.
+  AutofillAiTypeRequest autofill_ai_type_request = 15;
+
+  AutofillAiTypeResponse autofill_ai_type_response = 16;
 }
 
 message HistoryQueryResult {
@@ -287,8 +301,20 @@ message PageContextSpecifier {
   // Whether to collect the PDF data.
   bool pdf_data = 6;
 
-  // Whether to collect the forms data.
-  bool forms_data = 7;
+  // Whether to collect the last FormsPredictions request and response.
+  bool forms_prediction = 7;
+
+  // Whether to collect the annotated page content.
+  bool annotated_page_content = 8;
+
+  // The global ID of the field whose form should be extract (if any).
+  AutofillFieldGlobalId field_global_id = 9;
+}
+
+message AutofillFieldGlobalId {
+  string frame_token = 1;
+
+  uint64 renderer_id = 2;
 }
 
 // Used to specify the context to collect for a set of tabs.
@@ -366,7 +392,6 @@ message ModelPrototypingMetadata {
   string logging_description = 2;
 
   // The email address of the user who uploaded the data. This will only be
-  // populated for the TVC data upload, this field will not be scrubbed and will
-  // be used to identify the user if there are issues with this feature.
+  // populated for the TVC data upload.
   string user_email = 3;
 }

@@ -52,6 +52,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -71,6 +73,7 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.util.AttrUtils;
+import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -190,12 +193,15 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             mEdgeToEdgeLayoutCoordinator = ensureEdgeToEdgeLayoutCoordinator();
         }
+        // TODO(crbug.com/393195226): Cleanup EdgeToEdgeManager and EdgeToEdgeSystemBarColorHelper
+        //  when edge to edge supports status bar coloring in tabbed mode.
         mEdgeToEdgeManager =
                 new EdgeToEdgeManager(
                         this,
                         mEdgeToEdgeStateProvider,
                         createSystemBarColorHelperSupplier(),
-                        supportsEdgeToEdge());
+                        shouldDrawEdgeToEdgeOnCreate(),
+                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
 
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             initializeSystemBarColors();
@@ -235,16 +241,19 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         @ColorInt
         int defaultStatusBarColor =
                 AttrUtils.resolveColor(getTheme(), android.R.attr.statusBarColor);
+        @ColorInt
+        int defaultNavigationBarColor =
+                AttrUtils.resolveColor(getTheme(), android.R.attr.navigationBarColor);
         // Check if defaultStatusBarColor is transparent
         defaultStatusBarColor =
                 (defaultStatusBarColor != 0) ? defaultStatusBarColor : defaultBgColor;
+        defaultNavigationBarColor =
+                (defaultNavigationBarColor != 0) ? defaultNavigationBarColor : defaultBgColor;
 
-        mEdgeToEdgeManager
-                .getEdgeToEdgeSystemBarColorHelper()
-                .setStatusBarColor(defaultStatusBarColor);
-        mEdgeToEdgeManager
-                .getEdgeToEdgeSystemBarColorHelper()
-                .setNavigationBarColor(defaultBgColor);
+        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
+                mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper();
+        edgeToEdgeSystemBarColorHelper.setStatusBarColor(defaultStatusBarColor);
+        edgeToEdgeSystemBarColorHelper.setNavigationBarColor(defaultNavigationBarColor);
     }
 
     @Override
@@ -346,21 +355,37 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     public EdgeToEdgeLayoutCoordinator ensureEdgeToEdgeLayoutCoordinator() {
         if (mEdgeToEdgeLayoutCoordinator == null) {
             mEdgeToEdgeLayoutCoordinator = new EdgeToEdgeLayoutCoordinator(this, mInsetObserver);
+            mEdgeToEdgeLayoutCoordinator.setIsDebugging(
+                    EdgeToEdgeUtils.isEdgeToEdgeEverywhereDebugging());
         }
         return mEdgeToEdgeLayoutCoordinator;
     }
 
+    /**
+     * Returns the base content view, which is the highest level view in the layout containing app
+     * content. If drawing edge-to-edge, this content view already handles padding for the window
+     * insets.
+     */
+    public ViewGroup getContentView() {
+        if (mEdgeToEdgeLayoutCoordinator != null
+                && mEdgeToEdgeLayoutCoordinator.getView() != null) {
+            return mEdgeToEdgeLayoutCoordinator.getView();
+        }
+        return findViewById(android.R.id.content);
+    }
+
     /** Returns whether this activity should draw its content edge-to-edge by default. */
-    protected boolean supportsEdgeToEdge() {
+    protected boolean shouldDrawEdgeToEdgeOnCreate() {
         return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
     }
 
     /**
-     * Returns true if the content hosted by this activity should fit within the window insets, or
-     * false if the content can extend beyond the insets and draw edge-to-edge.
+     * Returns true if this activity should wrap its content within an edge-to-edge layout, allowing
+     * it to draw edge-to-edge while still automatically fitting its content within the system
+     * window insets.
      */
-    protected boolean shouldContentFitWindowInsets() {
-        return supportsEdgeToEdge();
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
+        return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
     }
 
     /**
@@ -376,6 +401,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
         applyOverridesForAutomotive(baseContext, overrideConfig);
+        applyOverridesForXr(baseContext, overrideConfig);
         return NightModeUtils.applyOverridesForNightMode(
                 getNightModeStateProvider(), overrideConfig);
     }
@@ -388,6 +414,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             // Enable web ui scaling for automotive devices.
             CommandLine.getInstance()
                     .appendSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
+        }
+    }
+
+    @VisibleForTesting
+    static void applyOverridesForXr(Context baseContext, Configuration overrideConfig) {
+        if (XrUtils.isXrDevice()) {
+            DisplayUtil.scaleUpConfigurationForXr(baseContext, overrideConfig);
+
+            // Enable web ui scaling for immersive devices.
+            CommandLine.getInstance().appendSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED);
         }
     }
 
@@ -435,7 +471,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                                     isDynamicColorAvailable ? "Enabled" : "Disabled");
                         });
 
-        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+        // TODO(https://crbug.com/392634251): Explore setting elegantTextHeight to 'true' on older
+        // OS versions.
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()
+                && Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             getTheme().applyStyle(elegantTextHeightOverlay, true);
             mThemeResIds.add(elegantTextHeightOverlay);
@@ -446,6 +485,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
             getTheme().applyStyle(defaultFontFamilyOverlay, true);
             mThemeResIds.add(defaultFontFamilyOverlay);
+        }
+
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                || CommandLine.getInstance()
+                        .hasSwitch(ChromeSwitches.DISABLE_OPT_OUT_EDGE_TO_EDGE)) {
+            int optOutEdgeToEdge = R.style.ThemeOverlay_BrowserUI_OptOutEdgeToEdge;
+            getTheme().applyStyle(optOutEdgeToEdge, true);
+            mThemeResIds.add(optOutEdgeToEdge);
         }
     }
 
@@ -505,7 +552,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             ViewStub stub = findViewById(R.id.original_layout);
             stub.setLayoutResource(layoutResID);
             stub.inflate();
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             FrameLayout baseLayout = new FrameLayout(this);
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(baseLayout));
             getLayoutInflater().inflate(layoutResID, baseLayout, /* attachToRoot= */ true);
@@ -523,7 +570,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view));
         } else {
             super.setContentView(view);
@@ -540,7 +587,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.setLayoutParams(params);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
         } else {
             super.setContentView(view, params);
@@ -563,7 +610,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
             setAutomotiveToolbarBackButtonAction();
             automotiveLayout.addView(view, params);
-        } else if (shouldContentFitWindowInsets()) {
+        } else if (wrapContentWithEdgeToEdgeLayout()) {
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
         } else {
             super.addContentView(view, params);

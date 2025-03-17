@@ -36,3 +36,12 @@ the proprietary fonts that do not exist on Chrome OS anymore.
 Modified chrome/os/inputview/common.css to fix language codes and update fonts.
 
 Modified chrome/os/inputview/controller.js to remove expired histograms.
+
+Removed unused i18n.input.common.dom.isEditable in chrome/os/inputview/dom.js.
+
+Removed iframe handling in chrome/os/inputview/hwt_util.js.
+
+Removed unused i18n.input.common.dom.getSameDomainDocuments and
+getSameDomainFrameDoc in chrome/os/inputview/dom.js.
+
+Removed unused third_party/closure_library/closure/goog/uri/utils.js

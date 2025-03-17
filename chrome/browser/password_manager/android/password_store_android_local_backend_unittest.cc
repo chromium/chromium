@@ -19,7 +19,6 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -106,8 +105,7 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   // Prefer using the already created `backend()` when possible.
   void ResetBackend() {
     backend_ = std::make_unique<PasswordStoreAndroidLocalBackend>(
-        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(), &prefs_,
-        password_affiliation_adapter_);
+        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(), &prefs_);
   }
 
  private:
@@ -126,7 +124,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
     return new_helper;
   }
 
-  PasswordAffiliationSourceAdapter password_affiliation_adapter_;
   std::unique_ptr<PasswordStoreAndroidLocalBackend> backend_;
   raw_ptr<NiceMock<MockPasswordStoreAndroidBackendBridgeHelper>> bridge_helper_;
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;

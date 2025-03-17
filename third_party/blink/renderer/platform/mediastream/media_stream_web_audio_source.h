@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -42,7 +43,8 @@ namespace blink {
 
 class WebAudioSourceProvider;
 
-class PLATFORM_EXPORT MediaStreamWebAudioSource : public AudioSourceProvider {
+class PLATFORM_EXPORT MediaStreamWebAudioSource final
+    : public AudioSourceProvider {
  public:
   explicit MediaStreamWebAudioSource(std::unique_ptr<WebAudioSourceProvider>);
   MediaStreamWebAudioSource(const MediaStreamWebAudioSource&) = delete;
@@ -53,9 +55,11 @@ class PLATFORM_EXPORT MediaStreamWebAudioSource : public AudioSourceProvider {
  private:
   // blink::AudioSourceProvider implementation.
   void ProvideInput(AudioBus*, int frames_to_process) override;
+  void SetClient(AudioSourceProviderClient*) override {}
 
   std::unique_ptr<WebAudioSourceProvider> web_audio_source_provider_;
-  WebVector<float*> web_audio_data_;
+  std::vector<float*> web_audio_data_
+      ALLOW_DISCOURAGED_TYPE("Matches WebAudioSourceProvider::ProvideInput");
 };
 
 }  // namespace blink

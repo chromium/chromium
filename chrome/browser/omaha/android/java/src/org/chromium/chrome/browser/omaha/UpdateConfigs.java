@@ -8,9 +8,10 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.components.variations.VariationsAssociatedData;
@@ -25,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  * - {@link ChromeSwitches#FORCE_SHOW_UPDATE_MENU_BADGE} (optional)
  * - {@link ChromeSwitches#MARKET_URL_FOR_TESTING} (optional)
  */
+@NullMarked
 public class UpdateConfigs {
     // VariationsAssociatedData configs
     private static final String FIELD_TRIAL_NAME = "UpdateMenuItem";
@@ -75,7 +77,7 @@ public class UpdateConfigs {
      * @return A custom update menu summary to show.  This should override the default summary for
      * 'update available' menu items.
      */
-    public static String getCustomSummary() {
+    public static @Nullable String getCustomSummary() {
         return getStringParamValue(CUSTOM_SUMMARY);
     }
 
@@ -92,7 +94,7 @@ public class UpdateConfigs {
     }
 
     /** @return A test {@link UpdateState} to use or {@code null} if no test state was specified. */
-    public static @UpdateState Integer getMockUpdateState() {
+    public static @UpdateState @Nullable Integer getMockUpdateState() {
         String forcedUpdateType = getStringParamValue(ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE);
         if (TextUtils.isEmpty(forcedUpdateType)) return null;
 
@@ -112,7 +114,7 @@ public class UpdateConfigs {
      * @return A URL to use when an update is available if mocking out the update available menu
      * item.
      */
-    public static String getMockMarketUrl() {
+    public static @Nullable String getMockMarketUrl() {
         return getStringParamValue(ChromeSwitches.MARKET_URL_FOR_TESTING);
     }
 

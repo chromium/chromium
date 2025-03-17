@@ -31,6 +31,13 @@ _XCRESULT_SUFFIX = '.xcresult'
 
 IPS_REGEX = re.compile(r'ios_.*chrome.+\.ips')
 
+# Messages checked for in EG test logs to determine if the app crashed
+# see: https://github.com/google/EarlGrey/blob/earlgrey2/TestLib/DistantObject/GREYTestApplicationDistantObject.m
+CRASH_REGEX = re.compile(
+    r'(App crashed and disconnected\.)|'
+    r'(App process is hanging\.)|'
+    r'(Crash: ios_chrome_.+_eg2tests_module-Runner \(\d+\) )')
+
 
 def _sanitize_str(line):
   """Encodes str when in python 2."""
@@ -278,74 +285,74 @@ class XcodeLogParser(object):
     return result
 
   @staticmethod
-  def _get_app_side_failure(test_name, output_path):
+  def _get_app_side_failure(test_result, output_path):
     """Parses and returns app side failure reason in the event that a test
-    causes the app to crash.
+    causes the app to crash. Also has the side effect of adding host app log
+    files to the test_result object's attachments as well as marking the
+    test_result as containing an asan failure if one is detected.
 
     Args:
-      test_name: (str) The name of the test that crashed. In the format
-          [TestCase/TestMethod]
+      test_result: (TestResult) The TestResult object that represents this
+        failure.
       output_path: (str) An output path passed in --resultBundlePath when
           running xcodebuild.
 
     Returns:
-      (str, list) Formatted app side failure message or a message saying failure
-        reason is missing and a list of tuples of log file name and log file
-        path
+      (str) Formatted app side failure message or a message saying failure
+        reason is missing
     """
-    attempt_num = output_path.split('/')[-1]
     app_side_failure_message = ''
     parent_output_dir = os.path.realpath(os.path.join(output_path, os.pardir))
-    files = os.listdir(parent_output_dir)
-    logs = []
 
-    for file in files:
-      # the '-' is important since it distinguishes the app side log file from
-      # the test app log file
-      if ('StandardOutputAndStandardError-' in file and
-          file.startswith(attempt_num)):
-        logs.append((file, os.path.join(parent_output_dir, file)))
-        with open(os.path.join(parent_output_dir, file), 'r') as f:
-          fmt_test_name = test_name.replace('/', ' ')
-          lines = f.readlines()
+    # get host app stdout logs
+    attempt_num = output_path.split('/')[-1]
+    regex = re.compile(rf'{attempt_num}.*StandardOutputAndStandardError-')
+    files = {
+      file: os.path.join(parent_output_dir, file)
+      for file in os.listdir(parent_output_dir)
+      if regex.match(file)
+    }
+    test_result.attachments.update(files)
 
-          for line in lines:
-            if 'Starting test: -[%s]' % fmt_test_name in line:
-              app_side_failure_message += line
-            elif app_side_failure_message:
-              # end at start of next test or when app restarts
-              if ('Starting test' in line or
-                  'Standard output and standard error from' in line):
-                # test name is only expected to appear in a single log file
-                # so it's safe to return early
-                break
-              else:
-                app_side_failure_message += line
+    # look for logs printed during the failing test method
+    formatted_test_name = test_result.name.replace('/', ' ')
+    error_message_regex = (
+        rf'(Starting test: -\[{formatted_test_name}\].*?)'
+        rf'((Standard output and standard error from)|(Starting test: -)|(\Z))')
+    for file_path in files.values():
+      with open(file_path, 'r') as f:
+        contents = f.read()
+        match = re.search(error_message_regex, contents, flags=re.DOTALL)
+        if match:
+          app_side_failure_message = match.group(1)
+          break
 
-    log_files = ', '.join(list(map(lambda x: x[0], logs)))
-
+    log_file_names = ', '.join(files.keys())
     if not app_side_failure_message:
-      failure_reason_missing = \
-        f'{constants.CRASH_MESSAGE}\n' + \
-        f'App side failure reason not found for {test_name}.\n' + \
-        f'For complete logs see {log_files} in Artifacts.\n'
-      return (failure_reason_missing, logs)
+      failure_reason_missing = (
+          f'{constants.CRASH_MESSAGE}\n'
+          f'App side failure reason not found for {test_result.name}.\n'
+          f'For complete logs see {log_file_names} in Artifacts.\n')
+      return failure_reason_missing
+
+    app_crashed_message = f'{constants.CRASH_MESSAGE}\n'
+    if constants.ASAN_ERROR in app_side_failure_message:
+      test_result.asan_failure_detected = True
+      app_crashed_message += f'{constants.ASAN_ERROR}\n'
 
     # omit layout constraint warnings since they can clutter logs and make the
     # actual reason why the app crashed difficult to find
-    layout_constraint_warning_pattern = \
-      r'Unable to simultaneously satisfy constraints.(.*?)may also be helpful'
     app_side_failure_message = re.sub(
-        layout_constraint_warning_pattern,
+        r'Unable to simultaneously satisfy constraints.(.*?)'
+        r'may also be helpful',
         constants.LAYOUT_CONSTRAINT_MSG,
         app_side_failure_message,
         flags=re.DOTALL)
 
-    app_crashed_message = \
-      f'{constants.CRASH_MESSAGE}\n' + \
-      f'Showing logs from application under test. For complete logs see ' + \
-      f'{log_files} in Artifacts.\n\n{app_side_failure_message}\n'
-    return (app_crashed_message, logs)
+    app_crashed_message += (
+        f'Showing logs from application under test. For complete logs see '
+        f'{log_file_names} in Artifacts.\n\n{app_side_failure_message}\n')
+    return app_crashed_message
 
   @staticmethod
   def _get_test_statuses(output_path, xcode_parallel_enabled):
@@ -413,47 +420,43 @@ class XcodeLogParser(object):
                     expected_status=TestStatus.SKIP,
                     duration=duration))
           else:
-            # Parse data for failed test by its id. See SINGLE_TEST_SUMMARY_REF
-            # in xcode_log_parser_test.py for an example of |summary_ref|.
-            summary_ref = json.loads(
-                XcodeLogParser._xcresulttool_get(
-                    xcresult, test['summaryRef']['id']['_value']))
-
-            failure_message = 'Logs from "failureSummaries" in .xcresult:\n'
-            app_logs = []
-            # On rare occasions rootFailure doesn't have 'failureSummaries'.
-            for failure in summary_ref.get('failureSummaries',
-                                           {}).get('_values', []):
-              file_name = _sanitize_str(
-                  failure.get('fileName', {}).get('_value', ''))
-              line_number = _sanitize_str(
-                  failure.get('lineNumber', {}).get('_value', ''))
-              failure_location = 'file: %s, line: %s' % (file_name, line_number)
-              failure_message += failure_location + '\n'
-
-              if (constants.CRASH_MESSAGE in failure['message']['_value']):
-                msg, app_logs = \
-                  XcodeLogParser._get_app_side_failure(test_name, output_path)
-                failure_message += msg
-              else:
-                failure_message += _sanitize_str(
-                    failure['message']['_value']) + '\n'
-
-            attachments = XcodeLogParser._extract_artifacts_for_test(
-                test_name, summary_ref, xcresult)
-
-            # upload app side log as an attachment if the test crashed
-            for log_file_name, log_file_path in app_logs:
-              attachments[log_file_name] = log_file_path
-
             result.add_test_result(
-                TestResult(
-                    test_name,
-                    TestStatus.FAIL,
-                    duration=duration,
-                    test_log=failure_message,
-                    attachments=attachments))
+                XcodeLogParser._create_failed_test_result(
+                    test_name, duration, xcresult, test, output_path))
     return result
+
+  @staticmethod
+  def _create_failed_test_result(test_name, duration, xcresult, test,
+                                 output_path):
+    test_result = TestResult(
+        test_name,
+        TestStatus.FAIL,
+        duration=duration,
+        test_log='Logs from "failureSummaries" in .xcresult:\n')
+    # Parse data for failed test by its id. See SINGLE_TEST_SUMMARY_REF
+    # in xcode_log_parser_test.py for an example of |summary_ref|.
+    summary_ref = json.loads(
+        XcodeLogParser._xcresulttool_get(xcresult,
+                                         test['summaryRef']['id']['_value']))
+    # On rare occasions rootFailure doesn't have 'failureSummaries'.
+    for failure in summary_ref.get('failureSummaries', {}).get('_values', []):
+      file_name = _sanitize_str(failure.get('fileName', {}).get('_value', ''))
+      line_number = _sanitize_str(
+          failure.get('lineNumber', {}).get('_value', ''))
+      test_result.test_log += f'file: {file_name}, line: {line_number}\n'
+
+      if CRASH_REGEX.search(failure['message']['_value']):
+        test_result.test_log += XcodeLogParser._get_app_side_failure(
+            test_result, output_path)
+      else:
+        test_result.test_log += _sanitize_str(
+            failure['message']['_value']) + '\n'
+
+    attachments = XcodeLogParser._extract_artifacts_for_test(
+        test_name, summary_ref, xcresult)
+    test_result.attachments.update(attachments)
+
+    return test_result
 
   @staticmethod
   def collect_test_results(output_path, output, xcode_parallel_enabled=False):
@@ -857,35 +860,34 @@ class Xcode16LogParser(object):
                   expected_status=TestStatus.SKIP,
                   duration=duration))
         else:
-          failure_message = 'Logs from "Failure Message" in .xcresult:\n'
-          app_logs = []
-          for failure in test['children']:
-            if failure['nodeType'] != 'Failure Message':
-              continue
-
-            if (constants.CRASH_MESSAGE in failure['name']):
-              msg, app_logs = \
-                XcodeLogParser._get_app_side_failure(
-                  test_name, output_path)
-              failure_message += msg
-            else:
-              failure_message += failure['name'] + '\n'
-
-          attachments = Xcode16LogParser._extract_artifacts_for_test(
-              test_name, xcresult, only_failures=True)
-
-          # upload app side log as an attachment if the test crashed
-          for log_file_name, log_file_path in app_logs:
-            attachments[log_file_name] = log_file_path
-
           result.add_test_result(
-              TestResult(
-                  test_name,
-                  TestStatus.FAIL,
-                  duration=duration,
-                  test_log=failure_message,
-                  attachments=attachments))
+              Xcode16LogParser._create_failed_test_result(
+                  test_name, duration, test, output_path, xcresult))
     return result
+
+  def _create_failed_test_result(test_name, duration, test, output_path,
+                                 xcresult):
+    test_result = TestResult(
+        test_name,
+        TestStatus.FAIL,
+        duration=duration,
+        test_log='Logs from "Failure Message" in .xcresult:\n')
+
+    for failure in test['children']:
+      if failure['nodeType'] != 'Failure Message':
+        continue
+
+      if CRASH_REGEX.search(failure['name']):
+        test_result.test_log += XcodeLogParser._get_app_side_failure(
+            test_result, output_path)
+      else:
+        test_result.test_log += failure['name'] + '\n'
+
+    attachments = Xcode16LogParser._extract_artifacts_for_test(
+        test_name, xcresult, only_failures=True)
+    test_result.attachments.update(attachments)
+
+    return test_result
 
   @staticmethod
   def collect_test_results(output_path, output):
@@ -1059,7 +1061,8 @@ class Xcode16LogParser(object):
         is_mp4 = attachment['exportedFileName'].endswith('.mp4')
         if only_failures and not attachment[
             'isAssociatedWithFailure'] and not is_mp4:
-          # Skip attachments not associated with failures, except for video recording
+          # Skip attachments not associated with failures, except for video
+          # recording
           continue
         suggested_name = attachment['suggestedHumanReadableName']
         exported_file = attachment['exportedFileName']

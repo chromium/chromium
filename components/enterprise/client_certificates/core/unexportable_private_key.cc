@@ -44,4 +44,13 @@ client_certificates_pb::PrivateKey UnexportablePrivateKey::ToProto() const {
   return private_key;
 }
 
+base::Value::Dict UnexportablePrivateKey::ToDict() const {
+  std::vector<uint8_t> wrapped = key_->GetWrappedKey();
+  if (wrapped.size() == 0) {
+    return base::Value::Dict();
+  }
+
+  return BuildSerializedPrivateKey(wrapped);
+}
+
 }  // namespace client_certificates

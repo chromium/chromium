@@ -165,3 +165,7 @@ BrowserPolicyConnectorIOS::CreatePlatformProvider() {
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 }
+
+void BrowserPolicyConnectorIOS::OnResourceBundleCreated() {
+  BrowserPolicyConnectorBase::OnResourceBundleCreated();
+}

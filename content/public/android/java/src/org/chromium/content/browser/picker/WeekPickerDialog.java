@@ -6,9 +6,11 @@ package org.chromium.content.browser.picker;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.R;
 
 /** A week picker dialog. */
+@NullMarked
 public class WeekPickerDialog extends TwoFieldDatePickerDialog {
 
     /**

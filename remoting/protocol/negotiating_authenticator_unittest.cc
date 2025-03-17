@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
@@ -96,14 +96,14 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
 
   void DisableMethodOnClient(AuthenticationMethod method) {
     auto* methods = &(client_as_negotiating_authenticator_->methods_);
-    auto iter = base::ranges::find(*methods, method);
+    auto iter = std::ranges::find(*methods, method);
     ASSERT_TRUE(iter != methods->end());
     methods->erase(iter);
   }
 
   void DisableMethodOnHost(AuthenticationMethod method) {
     auto* methods = &(host_as_negotiating_authenticator_->methods_);
-    auto iter = base::ranges::find(*methods, method);
+    auto iter = std::ranges::find(*methods, method);
     ASSERT_TRUE(iter != methods->end());
     methods->erase(iter);
   }

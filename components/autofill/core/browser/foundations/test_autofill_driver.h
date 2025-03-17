@@ -62,7 +62,6 @@ class TestAutofillDriverTemplate : public T {
     return std::nullopt;
   }
   bool IsActive() const override { return is_active_; }
-  bool IsInAnyMainFrame() const override { return true; }
   bool HasSharedAutofillPermission() const override { return shared_autofill_; }
   bool CanShowAutofillUi() const override { return true; }
   void ApplyFieldAction(mojom::FieldActionType action_type,

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="widget_corner_radius">@android:dimen/system_app_widget_background_radius</dimen>
+
+    <!-- base dimensions -->
+    <dimen name="quick_action_search_widget_background_radius">@dimen/widget_corner_radius</dimen>
+    <dimen name="quick_action_search_widget_xsmall_background_radius">@dimen/widget_corner_radius</dimen>
+
+    <!-- Dino Widget Dimensions -->
+    <dimen name="quick_action_search_widget_dino_corner_radius">@dimen/widget_corner_radius</dimen>
+</resources>

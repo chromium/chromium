@@ -90,7 +90,9 @@ class ScreenManager {
   DrmWindow* GetWindow(gfx::AcceleratedWidget widget);
 
   // Updates the mapping between display controllers and windows such that a
-  // controller will be associated with at most one window.
+  // controller will be associated with at most one window. If the DrmDevice for
+  // a controller does not have DRM master, then it will not be associated with
+  // a window.
   void UpdateControllerToWindowMapping();
 
   // Adds trace records to |context|.
@@ -106,6 +108,12 @@ class ScreenManager {
   bool ReplaceDisplayControllersCrtcs(const scoped_refptr<DrmDevice>& drm,
                                       const ConnectorCrtcMap& current_pairings,
                                       const ConnectorCrtcMap& new_pairings);
+
+  // Commits a request ot detach all planes on all controllers. Returns true if
+  // the commit was successful.
+  // NOTE: AMD devices should not attempt this as they are unable to accept
+  // commits without a primary plane attached to a pipe.
+  bool DetachPlanesFromAllControllers();
 
  private:
   using HardwareDisplayControllers =

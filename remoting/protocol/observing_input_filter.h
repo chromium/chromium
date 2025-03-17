@@ -6,11 +6,11 @@
 #define REMOTING_PROTOCOL_OBSERVING_INPUT_FILTER_H_
 
 #include <functional>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/input_filter.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace remoting::protocol {
 
@@ -18,10 +18,10 @@ namespace remoting::protocol {
 // input event is received from the client.
 class ObservingInputFilter : public InputFilter {
  public:
-  using Event = absl::variant<std::reference_wrapper<const KeyEvent>,
-                              std::reference_wrapper<const TextEvent>,
-                              std::reference_wrapper<const MouseEvent>,
-                              std::reference_wrapper<const TouchEvent>>;
+  using Event = std::variant<std::reference_wrapper<const KeyEvent>,
+                             std::reference_wrapper<const TextEvent>,
+                             std::reference_wrapper<const MouseEvent>,
+                             std::reference_wrapper<const TouchEvent>>;
 
   using InputEventCallback = base::RepeatingCallback<void(Event)>;
 

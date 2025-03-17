@@ -4,6 +4,9 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.util.concurrent.Callable;
 
 /**
@@ -11,6 +14,7 @@ import java.util.concurrent.Callable;
  * a 1:1 mapping) between the support library objects and their corresponding internal WebView
  * objects.
  */
+@NullMarked
 public interface IsomorphicObjectBoundaryInterface {
     /**
      * Get the peer object associated with this object.
@@ -35,5 +39,5 @@ public interface IsomorphicObjectBoundaryInterface {
      * @return The peer object associated with this object, which either exists already, or has
      *         been freshly created and recorded.
      */
-    Object getOrCreatePeer(Callable<Object> creationCallable);
+    @Nullable Object getOrCreatePeer(Callable<Object> creationCallable);
 }

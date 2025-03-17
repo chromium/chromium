@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/country_codes",
+  "+components/keyed_service/core",
+  "+components/prefs",
+  "+third_party/jni_zero",
+  "+components/regional_capabilities/access",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+components/sync_preferences",
+  ],
+}

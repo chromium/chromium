@@ -9,6 +9,7 @@
   to the relevant set of devtools protocol handlers.
 */
 
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -25,7 +26,8 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "net/filter/source_stream.h"
+#include "net/cookies/cookie_setting_override.h"
+#include "net/filter/source_stream_type.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -101,7 +103,7 @@ void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
-    std::optional<std::vector<net::SourceStream::SourceType>>*
+    std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden);
@@ -141,6 +143,8 @@ class WillCreateURLLoaderFactoryParams final {
            bool is_download,
            network::URLLoaderFactoryBuilder& factory_builder,
            network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+
+  DevToolsAgentHostImpl* agent_host() { return agent_host_; }
 
  private:
   WillCreateURLLoaderFactoryParams(DevToolsAgentHostImpl* agent_host,
@@ -484,6 +488,19 @@ void OnFencedFrameReportResponseReceived(
     scoped_refptr<net::HttpResponseHeaders> headers);
 
 void DidChangeFrameLoadingState(FrameTreeNode& ftn);
+void DidStartNavigating(FrameTreeNode& ftn,
+                        const GURL& url,
+                        const base::UnguessableToken& loader_id,
+                        const blink::mojom::NavigationType& navigation_type);
+
+// Returns true if devtools wants to override the cookie settings.
+bool ApplyNetworkCookieControlsOverrides(
+    RenderFrameHostImpl& rfh,
+    net::CookieSettingOverrides& overrides);
+
+bool ApplyNetworkCookieControlsOverrides(
+    DevToolsAgentHostImpl* params,
+    net::CookieSettingOverrides& overrides);
 
 }  // namespace devtools_instrumentation
 

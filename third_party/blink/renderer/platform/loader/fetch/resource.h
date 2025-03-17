@@ -202,20 +202,18 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   void UpdateResourceWidth(const AtomicString& resource_width);
 
+  virtual void UpdateResourceInfoFromObservers() {}
+
   // Returns two priorities:
   // - `first` is the priority with the fix of https://crbug.com/1369823.
   // - `second` is the priority without the fix, ignoring the priority from
   //   ImageLoader.
-  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() {
-    std::pair<ResourcePriority, ResourcePriority> result =
-        ComputePriorityFromObservers();
-    last_computed_priority_ = result.first;
-    return result;
+  virtual std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
+      const {
+    return std::make_pair(ResourcePriority(), ResourcePriority());
   }
 
-  const ResourcePriority& LastComputedPriority() const {
-    return last_computed_priority_;
-  }
+  virtual bool HasNonDegenerateSizeForDecode() const { return false; }
 
   // If this Resource is already finished when AddClient is called, the
   // ResourceClient will be notified asynchronously by a task scheduled
@@ -360,7 +358,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // skip the integrity check.
   //
   // We also force integrity checks for resources that declare their own
-  // integrity information via an `Identity-Digest` header. Those should be
+  // integrity information via an `Unencoded-Digest` header. Those should be
   // checked regardless of any given page's assertion through `integrity`
   // attributes.
   bool ForceIntegrityChecks() const;
@@ -481,10 +479,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
            ResourceType,
            const ResourceLoaderOptions&);
 
-  virtual std::pair<ResourcePriority, ResourcePriority>
-  ComputePriorityFromObservers() {
-    return std::make_pair(ResourcePriority(), ResourcePriority());
-  }
   virtual void NotifyDataReceived(base::span<const char> data);
   virtual void NotifyFinished();
 
@@ -611,8 +605,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   HeapHashSet<WeakMember<ResourceFinishObserver>> finish_observers_;
 
   ResourceLoaderOptions options_;
-
-  ResourcePriority last_computed_priority_;
 
   base::Time response_timestamp_;
 

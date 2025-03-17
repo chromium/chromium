@@ -95,7 +95,7 @@ gfx::Size ImeModeIndicatorView::CalculatePreferredSize(
 
 void ImeModeIndicatorView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(label_view_.get());
+  AddChildViewRaw(label_view_.get());
 
   SetAnchorRect(cursor_bounds_);
 }
@@ -106,7 +106,7 @@ ImeModeIndicatorView::CreateNonClientFrameView(views::Widget* widget) {
   // arrow adjustment in BubbleDialogDelegateView is unnecessary because arrow
   // of this bubble is always center.
   auto border = std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  border->SetColor(color());
+  border->SetColor(background_color());
   frame->SetBubbleBorder(std::move(border));
   return frame;
 }

@@ -50,8 +50,6 @@ component("views_examples_lib") {
     "examples_color_id.h",
     "examples_color_mixer.cc",
     "examples_color_mixer.h",
-    "examples_themed_label.cc",
-    "examples_themed_label.h",
     "examples_window.cc",
     "examples_window.h",
     "fade_animation.cc",
@@ -197,6 +195,7 @@ source_set("views_examples_proc") {
     deps += [
       "//ui/base:pixel_diff_test_support",
       "//ui/native_theme:native_theme",
+      "//ui/native_theme:native_theme_browser",
       "//ui/snapshot",
     ]
   }
@@ -233,18 +232,11 @@ executable("views_examples") {
   sources = [ "examples_main.cc" ]
 
   deps = [
-    ":views_examples_lib",
     ":views_examples_proc",
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
-    "//ui/color:mixers",
-    "//ui/resources:ui_test_pak",
   ]
-
-  if (is_win) {
-    deps += [ "//ui/native_theme:native_theme_browser" ]
-  }
 }
 
 component("views_examples_with_content_lib") {

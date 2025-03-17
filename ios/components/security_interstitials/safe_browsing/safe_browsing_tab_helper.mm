@@ -49,12 +49,15 @@ GURL GetCanonicalizedUrl(const GURL& url) {
                                                         &query);
 
   GURL::Replacements replacements;
-  if (hostname.length())
+  if (hostname.length()) {
     replacements.SetHostStr(hostname);
-  if (path.length())
+  }
+  if (path.length()) {
     replacements.SetPathStr(path);
-  if (query.length())
+  }
+  if (query.length()) {
     replacements.SetQueryStr(query);
+  }
   replacements.ClearRef();
 
   return url.ReplaceComponents(replacements);
@@ -180,14 +183,11 @@ bool SafeBrowsingTabHelper::PolicyDecider::ShouldReloadOnCommit() {
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    committed_redirect_chain_.clear();
-    for (auto& query : to_be_committed_redirect_chain_) {
-      committed_redirect_chain_.push_back(std::move(query));
-    }
-    to_be_committed_redirect_chain_.clear();
+  committed_redirect_chain_.clear();
+  for (auto& query : to_be_committed_redirect_chain_) {
+    committed_redirect_chain_.push_back(std::move(query));
   }
+  to_be_committed_redirect_chain_.clear();
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::ReloadPage() {
@@ -349,17 +349,12 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    if (!pending_main_frame_query_) {
-      base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled",
-                                true);
-      return std::move(callback).Run(
-          web::WebStatePolicyDecider::PolicyDecision::Allow());
-    }
-  } else {
-    DCHECK(pending_main_frame_query_);
+  if (!pending_main_frame_query_) {
+    base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled", true);
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
+
   base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled", false);
 
   // When there's a server redirect, a ShouldAllowRequest call sometimes
@@ -382,16 +377,11 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     pending_main_frame_redirect_chain_.clear();
   }
 
-  std::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    // Logic only needs to check if sync queries in the redirect chain are
-    // completed since async queries can respond after navigation.
-    decision = RedirectChainDecisionWithFilter(
-        RedirectChain::kPendingMainFrame, RedirectChainFilter::kSyncQueries);
-  } else {
-    decision = MainFrameRedirectChainDecision();
-  }
+  // Logic only needs to check if sync queries in the redirect chain are
+  // completed since async queries can respond after navigation.
+  std::optional<web::WebStatePolicyDecider::PolicyDecision> decision =
+      RedirectChainDecisionWithFilter(RedirectChain::kPendingMainFrame,
+                                      RedirectChainFilter::kSyncQueries);
 
   if (decision) {
     RecordCheckCompletedOnResponseMetric(/*check_completed=*/true);
@@ -753,17 +743,14 @@ SafeBrowsingTabHelper::PolicyDecider::QueryDecisionFromFilter(
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateToBeCommittedRedirectChain() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    to_be_committed_redirect_chain_.clear();
-    to_be_committed_redirect_chain_.push_back(
-        std::move(*pending_main_frame_query_));
-    pending_main_frame_query_.reset();
-    for (auto& query : pending_main_frame_redirect_chain_) {
-      to_be_committed_redirect_chain_.push_back(std::move(query));
-    }
-    pending_main_frame_redirect_chain_.clear();
+  to_be_committed_redirect_chain_.clear();
+  to_be_committed_redirect_chain_.push_back(
+      std::move(*pending_main_frame_query_));
+  pending_main_frame_query_.reset();
+  for (auto& query : pending_main_frame_redirect_chain_) {
+    to_be_committed_redirect_chain_.push_back(std::move(query));
   }
+  pending_main_frame_redirect_chain_.clear();
 }
 
 #pragma mark SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery
@@ -803,8 +790,9 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
     const SafeBrowsingQueryManager::Query& query,
     const SafeBrowsingQueryManager::Result& result,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
-  if (policy_decider_->IsQueryStale(query))
+  if (policy_decider_->IsQueryStale(query)) {
     return;
+  }
 
   // Create a policy decision using the query result.
   web::WebStatePolicyDecider::PolicyDecision policy_decision =

@@ -199,8 +199,8 @@ void LaunchApplication(
     request.set_display_scaling(
         vm_tools::cicerone::LaunchContainerApplicationRequest::SCALED);
   }
-  base::ranges::copy(files, google::protobuf::RepeatedFieldBackInserter(
-                                request.mutable_files()));
+  std::ranges::copy(files, google::protobuf::RepeatedFieldBackInserter(
+                               request.mutable_files()));
 
   const std::vector<vm_tools::cicerone::ContainerFeature> container_features =
       crostini::GetContainerFeatures();

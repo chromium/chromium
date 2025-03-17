@@ -20,8 +20,8 @@ namespace extensions {
 class ExtensionIconVariant {
  public:
   ExtensionIconVariant();
-  ExtensionIconVariant(const ExtensionIconVariant& other) = delete;
   ExtensionIconVariant(ExtensionIconVariant&& other);
+  ExtensionIconVariant(const ExtensionIconVariant& other);
   ~ExtensionIconVariant();
 
   // Options for `"color_scheme"` in the `"icon_variants"` manifest key.
@@ -31,13 +31,21 @@ class ExtensionIconVariant {
   };
 
   // Parse the base::value argument and return an instance of this class.
-  // TODO(crbug.com/344639840): Remove `issue` and rely on `diagnostics_`?
-  static std::unique_ptr<ExtensionIconVariant> Parse(const base::Value& dict,
-                                                     std::string* issue);
+  static std::unique_ptr<ExtensionIconVariant> Parse(const base::Value& dict);
 
   std::vector<diagnostics::icon_variants::Diagnostic>& get_diagnostics() {
     return diagnostics_;
   }
+
+  using Size = short;
+  using Path = std::string;
+
+  // Getters.
+  const std::optional<Path>& GetAny() const { return any_; }
+  const std::set<ColorScheme>& GetColorSchemes() const {
+    return color_schemes_;
+  }
+  const base::flat_map<Size, Path>& GetSizes() const { return sizes_; }
 
  private:
   // Helper methods that add to `this` object if the parameter is valid.
@@ -47,9 +55,6 @@ class ExtensionIconVariant {
 
   // Either `any` or `<size>` keys must have at least one value.
   bool IsValid() const;
-
-  using Size = short;
-  using Path = std::string;
 
   // The any key can have a path that's for any size.
   std::optional<Path> any_;

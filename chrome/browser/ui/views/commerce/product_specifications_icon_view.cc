@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -74,22 +75,8 @@ void ProductSpecificationsIconView::OnExecuting(
 
   tab_helper->OnProductSpecificationsIconClicked();
 
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
-      base::FeatureList::IsEnabled(commerce::kCompareConfirmationToast)) {
-    ShowConfirmationToast(tab_helper->GetComparisonSetName());
-  }
-}
-
-void ProductSpecificationsIconView::ShowConfirmationToast(
-    std::u16string set_name) {
-  ToastController* const toast_controller =
-      browser_->GetFeatures().toast_controller();
-  if (toast_controller) {
-    ToastParams params = ToastParams(ToastId::kAddedToComparisonTable);
-
-    params.body_string_replacement_params = {set_name};
-    toast_controller->MaybeShowToast(ToastParams(std::move(params)));
-  }
+  commerce::ShowProductSpecsConfirmationToast(
+      tab_helper->GetComparisonSetName(), browser_);
 }
 
 void ProductSpecificationsIconView::ForceVisibleForTesting(bool is_added) {

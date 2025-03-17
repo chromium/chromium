@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Static utilities related to browser controls interfaces. */
+@NullMarked
 public class BrowserControlsUtils {
     /**
      * @return True if the browser controls are completely off screen.

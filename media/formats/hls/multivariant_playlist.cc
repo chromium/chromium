@@ -18,6 +18,7 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/playlist_common.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
@@ -131,7 +132,10 @@ MultivariantPlaylist::Parse(std::string_view source,
           continue;
         }
         case TagKind::kMediaPlaylistTag:
-          return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+          if (!HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
+            return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+          }
+          continue;
         case TagKind::kMultivariantPlaylistTag:
           // Handled below
           break;

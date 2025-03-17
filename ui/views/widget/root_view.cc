@@ -94,8 +94,8 @@ class AnnounceTextView : public View {
     UpdateAccessibleAttributes(text, announcement_type);
     CHECK(HasValidRole());
 
-    NotifyAccessibilityEvent(AnnounceEventType(announcement_type),
-                             /*send_native_event=*/true);
+    NotifyAccessibilityEventDeprecated(AnnounceEventType(announcement_type),
+                                       /*send_native_event=*/true);
   }
 
   ax::mojom::Event AnnounceEventType(
@@ -348,7 +348,7 @@ void RootView::SetContentsView(View* contents_view) {
   if (!children().empty()) {
     RemoveAllChildViews();
   }
-  AddChildView(contents_view);
+  AddChildViewRaw(contents_view);
 }
 
 View* RootView::GetContentsView() {
@@ -763,6 +763,10 @@ void RootView::UpdateAccessibleName() {
 #endif
     }
   }
+}
+
+void RootView::UpdateAccessibleURL(const GURL& url) {
+  GetViewAccessibility().SetRootViewURL(url.spec());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

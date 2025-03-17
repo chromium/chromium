@@ -62,9 +62,9 @@ PRUNE_PATHS = set([
     # Only binaries, used during development.
     os.path.join('third_party', 'valgrind'),
 
-    # Not actually a third party dependency. Supplies configuration for
-    # enabling or disabling field trials and features in Chromium projects.
-    os.path.join('third_party', 'chromium-variations'),
+    # Supplies configuration setting for enabling or disabling field trials and
+    # features in Chromium projects.
+    os.path.join('components', 'variations', 'test_data', 'cipd'),
 
     # Used for development and test, not in the shipping product.
     os.path.join('build', 'secondary'),
@@ -412,7 +412,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'flot'),
     os.path.join('third_party', 'gtk+'),
     os.path.join('third_party', 'iaccessible2'),
-    os.path.join('third_party', 'iccjpeg'),
     os.path.join('third_party', 'isimpledom'),
     os.path.join('third_party', 'jsoncpp'),
     os.path.join('third_party', 'khronos'),
@@ -431,7 +430,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'ots'),
     os.path.join('third_party', 'perfetto'),
     os.path.join('third_party', 'ppapi'),
-    os.path.join('third_party', 'qcms'),
     os.path.join('third_party', 're2'),
     os.path.join('third_party', 'safe_browsing'),
     os.path.join('third_party', 'smhasher'),
@@ -988,19 +986,19 @@ def GenerateCredits(file_template_file,
                                           extra_third_party_dirs)
 
   if not file_template_file:
-    file_template_file = os.path.join(_REPOSITORY_ROOT, 'components',
-                                      'about_ui', 'resources',
+    file_template_file = os.path.join(_REPOSITORY_ROOT, 'components', 'webui',
+                                      'about', 'resources',
                                       'about_credits.tmpl')
   if not entry_template_file:
-    entry_template_file = os.path.join(_REPOSITORY_ROOT, 'components',
-                                       'about_ui', 'resources',
+    entry_template_file = os.path.join(_REPOSITORY_ROOT, 'components', 'webui',
+                                       'about', 'resources',
                                        'about_credits_entry.tmpl')
 
   # Used to add a link at the top of credits for Chromium code to
   # satisfy the requirements for reciprocal license types.
   if not reciprocal_template_file:
     reciprocal_template_file = os.path.join(_REPOSITORY_ROOT, 'components',
-                                            'about_ui', 'resources',
+                                            'webui', 'about', 'resources',
                                             'about_credits_reciprocal.tmpl')
 
   entry_template = codecs.open(entry_template_file, encoding='utf-8').read()

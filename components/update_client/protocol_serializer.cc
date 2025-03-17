@@ -218,13 +218,13 @@ protocol_request::App MakeProtocolApp(
     const int install_date,
     const std::string& install_source,
     const std::string& install_location,
-    const std::string& fingerprint,
     const std::map<std::string, std::string>& installer_attributes,
     const std::string& cohort,
     const std::string& cohort_hint,
     const std::string& cohort_name,
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
+    const std::vector<std::string>& cached_hashes,
     std::optional<protocol_request::UpdateCheck> update_check,
     const std::vector<protocol_request::Data>& data,
     std::optional<protocol_request::Ping> ping,
@@ -240,7 +240,6 @@ protocol_request::App MakeProtocolApp(
   app.install_id = install_id;
   app.install_source = install_source;
   app.install_location = install_location;
-  app.fingerprint = fingerprint;
   app.installer_attributes = FilterInstallerAttributes(installer_attributes);
   app.cohort = cohort;
   app.cohort_hint = cohort_hint;
@@ -248,6 +247,7 @@ protocol_request::App MakeProtocolApp(
   app.release_channel = release_channel;
   app.enabled = disabled_reasons.empty();
   app.disabled_reasons = disabled_reasons;
+  app.cached_hashes = cached_hashes;
   app.update_check = std::move(update_check);
   app.data = data;
   app.ping = std::move(ping);

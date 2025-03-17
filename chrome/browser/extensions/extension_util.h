@@ -43,9 +43,6 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled);
 
-// TODO(crbug.com/356905053): Enable more extension util functions on
-// desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 // Sets whether |extension_id| can inject scripts into pages with file URLs.
 // Reloads the extension if it's enabled since this permission is applied at
 // loading time only. Note than an ExtensionService must exist.
@@ -53,6 +50,9 @@ void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow);
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 // Returns true if |extension_id| is idle and it is safe to perform actions such
 // as updating.
 bool IsExtensionIdle(const std::string& extension_id,
@@ -61,6 +61,7 @@ bool IsExtensionIdle(const std::string& extension_id,
 // Sets the name, id, and icon resource path of the given extension into the
 // returned dictionary.
 base::Value::Dict GetExtensionInfo(const Extension* extension);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns a PermissionSet configured with the permissions that should be
 // displayed in an extension installation prompt for the specified |extension|.
@@ -68,11 +69,13 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
     Profile* profile);
 
+#if !BUILDFLAG(IS_ANDROID)
 // Returns all profiles affected by permissions of an extension running in
 // "spanning" (rather than "split) mode.
 std::vector<content::BrowserContext*> GetAllRelatedProfiles(
     Profile* profile,
     const Extension& extension);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Sets whether the given `profile` is in developer mode and notifies
 // relevant subsystems.
@@ -85,7 +88,6 @@ std::u16string GetFixupExtensionNameForUIDisplay(
     const std::u16string& extension_name);
 std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace util
 }  // namespace extensions

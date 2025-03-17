@@ -50,6 +50,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -68,6 +69,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -82,10 +84,7 @@ import org.chromium.ui.test.util.ViewUtils;
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
-@EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
-})
+@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -339,6 +338,39 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures(SigninFeatures.USE_HOSTED_DOMAIN_FOR_MANAGEMENT_CHECK_ON_SIGNIN)
+    public void testWithManagedAccount_signIn_showsManagementNotice() {
+        mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.NONE);
+
+        // Start sign-in from the collapsed sign-in bottom-sheet shown.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+
+        // The management notice should be displayed.
+        onViewWaiting(withText(R.string.sign_in_managed_account)).check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.continue_button), isCompletelyDisplayed())).perform(click());
+
+        mSigninTestRule.waitForSignin(TestAccounts.MANAGED_ACCOUNT);
+        if (BuildInfo.getInstance().isAutomotive) {
+            verify(mDeviceLockActivityLauncher)
+                    .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
+        }
+
+        // Verify that the activity is finished after the sign-in has completed.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
     public void testWithExistingAccount_signIn_optionalHistoryOptIn() {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
@@ -372,7 +404,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)
     public void testWithExistingAccount_signinIn_turnsOnBookmarksAndReadingList() {
         // Sign-in, toggle bookmarks and reading list off, then sign out.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -673,6 +704,47 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         addAccountStateWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testHistorySyncStringsCustomization() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .build();
+        // Create a config using sign-in strings for the history sync screen to test customization.
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.ADD_ACCOUNT,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.REQUIRED)
+                        .historySyncTitleId(R.string.signin_fre_title)
+                        .historySyncSubtitleId(R.string.signin_fre_subtitle)
+                        .build();
+        Intent intent =
+                SigninAndHistorySyncActivity.createIntent(
+                        ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
+        mActivityTestRule.launchActivity(intent);
+        mActivity = mActivityTestRule.getActivity();
+
+        // Start sign-in from the collapsed bottom-sheet.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+
+        // Wait for the history opt-in dialog and verify the custom strings.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.history_sync_title), withText(R.string.signin_fre_title)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.history_sync_subtitle), withText(R.string.signin_fre_subtitle)))
+                .check(matches(isDisplayed()));
     }
 
     private void launchActivity(

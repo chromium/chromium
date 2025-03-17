@@ -39,8 +39,10 @@ namespace extensions {
 
 namespace {
 
+using testing::Eq;
+
 constexpr char kTestEmail[] = "test@example.com";
-constexpr char kGaiaId[] = "gaia_id_for_test_example.com";
+constexpr GaiaId::Literal kGaiaId("gaia_id_for_test_example.com");
 constexpr char kFakeRefreshToken[] = "fake-refersh-token";
 
 constexpr char kTestAuthSIDCookie[] = "fake-auth-SID-cookie";
@@ -113,11 +115,11 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     consent_url_ = fake_gaia_test_server()->GetURL("/title1.html");
 
     fake_gaia_.Initialize();
-    fake_gaia_.MapEmailToGaiaId(kTestEmail, GaiaId(kGaiaId));
+    fake_gaia_.MapEmailToGaiaId(kTestEmail, kGaiaId);
 
     FakeGaia::AccessTokenInfo token_info;
     token_info.token = "fake-userinfo-token-1";
-    token_info.id_token = kGaiaId;
+    token_info.id_token = kGaiaId.ToString();
     token_info.audience = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
     token_info.email = kTestEmail;
     token_info.any_scope = true;
@@ -231,8 +233,8 @@ IN_PROC_BROWSER_TEST_F(GaiaRemoteConsentFlowParamBrowserTest,
 
   std::string approved_consent = gaia::GenerateOAuth2MintTokenConsentResult(
       /*approved=*/true, "consent_granted", kGaiaId);
-  EXPECT_CALL(mock(), OnGaiaRemoteConsentFlowApproved(approved_consent,
-                                                      GaiaId(kGaiaId)));
+  EXPECT_CALL(mock(),
+              OnGaiaRemoteConsentFlowApproved(approved_consent, Eq(kGaiaId)));
   SimulateConsentResult(approved_consent);
 }
 
@@ -244,8 +246,8 @@ IN_PROC_BROWSER_TEST_F(GaiaRemoteConsentFlowParamBrowserTest,
 
   std::string approved_consent = gaia::GenerateOAuth2MintTokenConsentResult(
       /*approved=*/true, "consent_granted", kGaiaId);
-  EXPECT_CALL(mock(), OnGaiaRemoteConsentFlowApproved(approved_consent,
-                                                      GaiaId(kGaiaId)));
+  EXPECT_CALL(mock(),
+              OnGaiaRemoteConsentFlowApproved(approved_consent, Eq(kGaiaId)));
   SimulateConsentResult(approved_consent);
 }
 

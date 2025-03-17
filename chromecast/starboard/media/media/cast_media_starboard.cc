@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include "chromecast/base/cast_features.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/public/video_plane.h"
@@ -17,25 +18,19 @@ namespace {
 
 StarboardVideoPlane* g_video_plane = nullptr;
 
-// Returns true if starboard supports Dolby Vision playback for HEVC content
-// with the given profile and level.
-bool IsHEVCDolbyVisionSupported(VideoProfile profile, int level) {
+// Returns a handle to starboard.
+//
+// TODO(crbug.com/396728662): this should return a const reference.
+StarboardApiWrapper& GetStarboardHandle() {
   // A leak is intentional here, since starboard_api has static storage
   // duration.
-  static StarboardApiWrapper* const starboard_api =
-      GetStarboardApiWrapper().release();
+  static StarboardApiWrapper* const starboard_api = []() {
+    std::unique_ptr<StarboardApiWrapper> starboard = GetStarboardApiWrapper();
+    CHECK(starboard);
+    return starboard.release();
+  }();
 
-  const std::string mime = GetMimeType(kCodecDolbyVisionHEVC, profile, level);
-  if (mime.empty()) {
-    return false;
-  }
-
-  const bool supported =
-      starboard_api->CanPlayMimeAndKeySystem(mime.c_str(), /*key_system=*/"") ==
-      kStarboardMediaSupportTypeProbably;
-  LOG(INFO) << "HEVC profile=" << profile << ", level=" << level << " is "
-            << (supported ? "supported" : "not supported");
-  return supported;
+  return *starboard_api;
 }
 
 }  // namespace
@@ -90,22 +85,55 @@ VideoPlane::Coordinates VideoPlane::GetCoordinates() {
 bool MediaCapabilitiesShlib::IsSupportedVideoConfig(VideoCodec codec,
                                                     VideoProfile profile,
                                                     int level) {
-  // TODO(b/275430044): expand this to cover all video codecs/profiles/levels.
-  if (codec == kCodecDolbyVisionHEVC) {
-    return IsHEVCDolbyVisionSupported(profile, level);
+  static bool enable_mime_checks =
+      base::FeatureList::IsEnabled(kEnableStarboardMimeChecks);
+
+  // We always need to check dolby vision, since not all starboard linux TVs
+  // support the codec at all. Other codecs were expected to be supported (at
+  // least for some profiles/levels).
+  if (!enable_mime_checks && codec != kCodecDolbyVisionHEVC) {
+    return codec == kCodecH264 || codec == kCodecVP8 || codec == kCodecVP9 ||
+           codec == kCodecHEVC;
   }
 
-  return codec == kCodecH264 || codec == kCodecVP8 || codec == kCodecVP9 ||
-         codec == kCodecHEVC;
+  const std::string mime = GetMimeType(codec, profile, level);
+  if (mime.empty()) {
+    return false;
+  }
+
+  const bool supported = GetStarboardHandle().CanPlayMimeAndKeySystem(
+                             mime.c_str(), /*key_system=*/"") ==
+                         kStarboardMediaSupportTypeProbably;
+
+  LOG(INFO) << "Video codec=" << codec << ", profile=" << profile
+            << ", level=" << level << " is "
+            << (supported ? "supported" : "not supported") << " by starboard.";
+  return supported;
 }
 
 bool MediaCapabilitiesShlib::IsSupportedAudioConfig(const AudioConfig& config) {
-  // TODO(b/275430044): potentially call Starboard here, to determine codec
-  // support. This is probably only necessary for optional codecs (AC3/E-AC3).
-  return config.codec == kCodecAAC || config.codec == kCodecMP3 ||
-         config.codec == kCodecPCM || config.codec == kCodecVorbis ||
-         config.codec == kCodecOpus || config.codec == kCodecAC3 ||
-         config.codec == kCodecEAC3 || config.codec == kCodecFLAC;
+  static bool enable_mime_checks =
+      base::FeatureList::IsEnabled(kEnableStarboardMimeChecks);
+
+  if (!enable_mime_checks) {
+    return config.codec == kCodecAAC || config.codec == kCodecMP3 ||
+           config.codec == kCodecPCM || config.codec == kCodecVorbis ||
+           config.codec == kCodecOpus || config.codec == kCodecAC3 ||
+           config.codec == kCodecEAC3 || config.codec == kCodecFLAC;
+  }
+
+  const std::string mime = GetMimeType(config.codec);
+  if (mime.empty()) {
+    return false;
+  }
+
+  const bool supported = GetStarboardHandle().CanPlayMimeAndKeySystem(
+                             mime.c_str(), /*key_system=*/"") ==
+                         kStarboardMediaSupportTypeProbably;
+
+  LOG(INFO) << "Audio codec=" << config.codec << " is "
+            << (supported ? "supported" : "not supported") << " by starboard.";
+  return supported;
 }
 
 }  // namespace media

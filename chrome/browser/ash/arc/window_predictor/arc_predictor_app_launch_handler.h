@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_WINDOW_PREDICTOR_ARC_PREDICTOR_APP_LAUNCH_HANDLER_H_
 #define CHROME_BROWSER_ASH_ARC_WINDOW_PREDICTOR_ARC_PREDICTOR_APP_LAUNCH_HANDLER_H_
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "components/app_restore/restore_data.h"
 
 namespace arc {

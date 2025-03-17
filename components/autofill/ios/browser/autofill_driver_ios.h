@@ -92,7 +92,6 @@ class AutofillDriverIOS final : public AutofillDriver,
   BrowserAutofillManager& GetAutofillManager() override;
   ukm::SourceId GetPageUkmSourceId() const override;
   bool IsActive() const override;
-  bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
   base::flat_set<FieldGlobalId> ApplyFormAction(
@@ -158,9 +157,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   void CaretMovedInFormField(const FormData& form,
                              const FieldGlobalId& field_id,
                              const gfx::Rect& caret_bounds);
-  void TextFieldDidChange(const FormData& form,
-                          const FieldGlobalId& field_id,
-                          base::TimeTicks timestamp);
+  void TextFieldValueChanged(const FormData& form,
+                             const FieldGlobalId& field_id,
+                             base::TimeTicks timestamp);
 
   // AutofillDriverIOS:
 

@@ -36,18 +36,18 @@ bool GetWritablePixels(SkCanvas* canvas, SkPixmap* result) {
   return true;
 }
 
-#if !defined(WIN32)
-
 std::unique_ptr<SkCanvas> CreatePlatformCanvasWithPixels(
     int width,
     int height,
     bool is_opaque,
     uint8_t* data,
+    size_t bytes_per_row,
     OnFailureType failureType) {
-
   SkBitmap bitmap;
-  bitmap.setInfo(SkImageInfo::MakeN32(width, height,
-      is_opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType));
+  bitmap.setInfo(
+      SkImageInfo::MakeN32(
+          width, height, is_opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType),
+      bytes_per_row);
 
   if (data) {
     bitmap.setPixels(data);
@@ -65,7 +65,5 @@ std::unique_ptr<SkCanvas> CreatePlatformCanvasWithPixels(
 
   return std::make_unique<SkCanvas>(bitmap);
 }
-
-#endif
 
 }  // namespace skia

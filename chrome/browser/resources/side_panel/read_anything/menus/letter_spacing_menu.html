@@ -1,9 +1,12 @@
+<!-- #html_wrapper_imports_start
+import {ToolbarEvent} from '../common.js';
+#html_wrapper_imports_end -->
 <simple-action-menu
     id="menu"
     label="$i18n{letterSpacingTitle}"
-    event-name="[[toolbarEventEnum_.LETTER_SPACING]]"
-    menu-items="[[options_]]"
-    current-selected-index="[[restoredLetterSpacingIndex_(settingsPrefs)]]"
-    on-letter-spacing-change="onLetterSpacingChange_"
+    .menuItems="${this.options_}"
+    event-name="${ToolbarEvent.LETTER_SPACING}"
+    current-selected-index="${this.restoredLetterSpacingIndex_()}"
+    @letter-spacing-change="${this.onLetterSpacingChange_}"
     initial-count="3">
 </simple-action-menu>

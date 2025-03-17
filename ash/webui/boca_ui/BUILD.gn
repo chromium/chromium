@@ -4,13 +4,12 @@
 
 import("//ash/webui/boca_ui/boca_app.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Boca App is ash-chrome only")
+assert(is_chromeos, "Boca App is ChromeOS only")
 
 static_library("boca_ui") {
   sources = [
@@ -20,11 +19,17 @@ static_library("boca_ui") {
     "boca_ui.h",
     "provider/classroom_page_handler_impl.cc",
     "provider/classroom_page_handler_impl.h",
+    "provider/content_settings_handler.cc",
+    "provider/content_settings_handler.h",
     "provider/network_info_provider.cc",
     "provider/network_info_provider.h",
     "provider/tab_info_collector.cc",
     "provider/tab_info_collector.h",
     "url_constants.h",
+    "webview_auth_delegate.cc",
+    "webview_auth_delegate.h",
+    "webview_auth_handler.cc",
+    "webview_auth_handler.h",
   ]
 
   deps = [
@@ -37,7 +42,12 @@ static_library("boca_ui") {
     "//ash/webui/resources:boca_app_bundle_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//base",
+    "//chrome/browser/ash/boca",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:spotlight",
+    "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/browser_context_helper",
@@ -46,6 +56,10 @@ static_library("boca_ui") {
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/permissions:permissions",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//content/public/browser",
@@ -73,6 +87,7 @@ source_set("unit_tests") {
     "boca_app_page_handler_unittest.cc",
     "provider/classroom_page_handler_impl_unittest.cc",
     "provider/network_info_provider_unittest.cc",
+    "webview_auth_handler_unittest.cc",
   ]
 
   deps = [
@@ -83,6 +98,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:spotlight",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/browser_context_helper",

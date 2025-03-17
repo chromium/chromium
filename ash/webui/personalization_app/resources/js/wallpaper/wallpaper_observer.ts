@@ -4,7 +4,8 @@
 
 import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 
-import {CurrentAttribution, CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import type {CurrentAttribution, CurrentWallpaper, WallpaperObserverInterface, WallpaperProviderInterface} from '../../personalization_app.mojom-webui.js';
+import {WallpaperObserverReceiver, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setAttributionAction, setFullscreenStateAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './wallpaper_actions.js';

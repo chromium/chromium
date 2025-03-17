@@ -177,7 +177,10 @@ std::u16string OmniboxView::SanitizeTextForPaste(const std::u16string& text) {
 OmniboxView::~OmniboxView() = default;
 
 bool OmniboxView::IsEditingOrEmpty() const {
-  return model()->user_input_in_progress() || GetOmniboxTextLength() == 0;
+  return model()->user_input_in_progress() || GetOmniboxTextLength() == 0 ||
+         (model()->focus_state() == OMNIBOX_FOCUS_VISIBLE &&
+          OmniboxFieldTrial::IsOnFocusZeroSuggestEnabledInContext(
+              model()->GetPageClassification()));
 }
 
 // TODO (manukh) OmniboxView::GetIcon is very similar to

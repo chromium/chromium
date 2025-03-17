@@ -17,7 +17,7 @@ class StyleRuleUsageTracker : public GarbageCollected<StyleRuleUsageTracker> {
  public:
   using RuleListByStyleSheet =
       HeapHashMap<Member<const CSSStyleSheet>,
-                  Member<HeapVector<Member<const StyleRule>>>>;
+                  Member<GCedHeapVector<Member<const StyleRule>>>>;
 
   void Track(const CSSStyleSheet*, const StyleRule*);
   RuleListByStyleSheet TakeDelta();
@@ -28,7 +28,7 @@ class StyleRuleUsageTracker : public GarbageCollected<StyleRuleUsageTracker> {
   bool InsertToUsedRulesMap(const CSSStyleSheet*, const StyleRule*);
 
   HeapHashMap<Member<const CSSStyleSheet>,
-              Member<HeapHashSet<Member<const StyleRule>>>>
+              Member<GCedHeapHashSet<Member<const StyleRule>>>>
       used_rules_;
   RuleListByStyleSheet used_rules_delta_;
 };

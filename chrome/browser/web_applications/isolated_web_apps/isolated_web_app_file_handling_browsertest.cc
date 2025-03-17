@@ -40,7 +40,7 @@ class IsolatedWebAppFileHandlingBrowserTest
     return IsolatedWebAppBuilder(
                ManifestBuilder().AddFileHandler("/", {{"text/*", {".txt"}}}))
         .BuildBundle()
-        ->TrustBundleAndInstall(profile())
+        ->Install(profile())
         ->app_id();
   }
 

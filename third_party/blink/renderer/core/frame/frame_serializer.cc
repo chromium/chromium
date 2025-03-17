@@ -1264,6 +1264,8 @@ function main(metadata) {
       case CSSRule::kLayerStatementRule:
       case CSSRule::kViewTransitionRule:
       case CSSRule::kPositionTryRule:
+      case CSSRule::kFunctionDeclarationsRule:
+      case CSSRule::kFunctionRule:
         break;
     }
   }

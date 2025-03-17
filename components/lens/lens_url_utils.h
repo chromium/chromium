@@ -25,6 +25,8 @@ constexpr char kTranslateTargetQueryParameter[] = "targetlang";
 constexpr char kFilterTypeQueryParameter[] = "filtertype";
 constexpr char kTranslateFilterTypeQueryParameterValue[] = "tr";
 constexpr char kLensRequestQueryParameter[] = "vsrid";
+inline constexpr char kUnifiedDrillDownQueryParameter[] = "udm";
+inline constexpr char kLensSurfaceQueryParameter[] = "lns_surface";
 
 // Appends logs to query param as a string
 extern void AppendLogsQueryParam(

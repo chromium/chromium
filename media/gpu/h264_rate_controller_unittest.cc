@@ -5,6 +5,7 @@
 #include "media/gpu/h264_rate_controller.h"
 
 #include <array>
+#include <memory>
 
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -402,7 +403,7 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayersTest) {
   // The following use cases are tested:
   //   1. Start Limit Base QP procedure in ClipInterFrameQP(). The buffer size
   //      gradually decreases and the Limit Base QP is turned off when the
-  //      buffer fullness of the enhanched layer reaches 35%.
+  //      buffer fullness of the enhanced layer reaches 35%.
   //   2. Adjusting the min_qp value in ClipInterFrameQP() method when the
   //      buffer reaches full capacity.
   //   3. Setting the overshooting timestamp and increasing min_qp and max_qp in
@@ -624,7 +625,7 @@ TEST_F(H264RateControllerTest,
 
   // Run test sequences 2 and 3
   // The following use cases are tested:
-  //   1. The QP difference between enchanched and base layers is more than 4.
+  //   1. The QP difference between enhanced and base layers is more than 4.
   //      This indicates the HRD overflow and the min_qp is increased. The
   //      ClipInterFrameQP() method handles this scenario.
   //   2. The test sequence triggers the setting of undershoot_delta_qp. Under

@@ -168,7 +168,7 @@ void SVGRectElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGRectElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {x_.Get(), y_.Get(), width_.Get(), height_.Get(), rx_.Get(), ry_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

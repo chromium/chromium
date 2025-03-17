@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/manifest_test.h"
 
 #include <optional>
@@ -327,11 +322,10 @@ ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
       location_(location),
       flags_(flags) {}
 
-void ManifestTest::RunTestcases(const Testcase* testcases,
-                                size_t num_testcases,
+void ManifestTest::RunTestcases(base::span<const Testcase> testcases,
                                 ExpectType type) {
-  for (size_t i = 0; i < num_testcases; ++i) {
-    RunTestcase(testcases[i], type);
+  for (const auto& testcase : testcases) {
+    RunTestcase(testcase, type);
   }
 }
 

@@ -44,7 +44,8 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
         <a class="auto-tab-groups-link"
             role="link"
             tabindex="0"
-            @click="${this.onLearnMoreClick_}">
+            @click="${this.onLearnMoreClick_}"
+            @keydown="${this.onLearnMoreKeyDown_}">
           $i18n{learnMore}
         </a>
       ` : ''}

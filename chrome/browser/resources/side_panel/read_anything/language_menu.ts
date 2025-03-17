@@ -102,18 +102,20 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
     }
   }
 
-  notify(language: string, type: NotificationType) {
+  notify(type: NotificationType, language?: string) {
+    if (!language) {
+      return;
+    }
     this.currentNotifications_ = {
       ...this.currentNotifications_,
       [language]: type,
     };
   }
 
-  selectedLang: string;
+  selectedLang: string = '';
   localeToDisplayName: {[lang: string]: string} = {};
   enabledLangs: string[] = [];
-
-  availableVoices: SpeechSynthesisVoice[];
+  availableVoices: SpeechSynthesisVoice[] = [];
   protected languageSearchValue_: string = '';
   protected availableLanguages_: LanguageDropdownItem[] = [];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
@@ -140,7 +142,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
   protected onToggleChange_(e: Event) {
     const index =
         Number.parseInt((e.currentTarget as HTMLElement).dataset['index']!);
-    const language = this.availableLanguages_[index].languageCode;
+    const language = this.availableLanguages_[index]!.languageCode;
 
     this.fire(ToolbarEvent.LANGUAGE_TOGGLE, {language});
   }
@@ -219,6 +221,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
       case NotificationType.NO_SPACE:
         return {isError: true, text: 'allocationError'};
       case NotificationType.DOWNLOADED:
+      case NotificationType.GOOGLE_VOICES_UNAVAILABLE:
+        // TODO (crbug.com/396436665) Show inline error message
       case NotificationType.NONE:
         return {isError: false};
       default:

@@ -5,13 +5,19 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createMultiColorBlendAnimation;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,16 +56,23 @@ public class HubToolbarView extends LinearLayout {
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
 
+    public Callback<Integer> mToolbarOverviewColorSetter;
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
+    private boolean mApplyDelayForSearchBoxAnimation;
     private final AnimationHandler mColorBlendAnimatorHandler;
+    private final AnimationHandler mHubSearchAnimatorHandler;
     private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
+    private final Handler mHandler;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         mColorBlendAnimatorHandler = new AnimationHandler();
+        mHubSearchAnimatorHandler = new AnimationHandler();
+        mHandler = new Handler();
         mAnimatorSetBuilder = new HubColorBlendAnimatorSetHelper();
+        mToolbarOverviewColorSetter = (color) -> {};
     }
 
     @Override
@@ -90,11 +103,10 @@ public class HubToolbarView extends LinearLayout {
         mMenuButtonContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    void setActionButton(@Nullable FullButtonData buttonData, boolean showText) {
+    void setActionButton(@Nullable FullButtonData buttonData) {
         ApplyButtonData.apply(buttonData, mActionButton);
-        if (!showText) {
-            mActionButton.setText(null);
-        }
+        mActionButton.setText(null);
+        mActionButton.setCompoundDrawablePadding(0);
     }
 
     void setPaneSwitcherButtonData(
@@ -177,16 +189,20 @@ public class HubToolbarView extends LinearLayout {
                     @ColorInt
                     int prevSelectedIconColor =
                             HubColors.getSelectedIconColor(context, prevColorScheme);
-                    return createMultiColorBlendAnimation(
-                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                            new int[] {prevIconColor, prevSelectedIconColor},
-                            new int[] {newIconColor, newSelectedIconColor},
-                            colorList -> {
-                                @ColorInt int interpolatedIconColor = colorList[0];
-                                @ColorInt int interpolatedSelectedIconColor = colorList[1];
-                                updateTabIconTintInternal(
-                                        interpolatedIconColor, interpolatedSelectedIconColor);
-                            });
+                    Animator animation =
+                            createMultiColorBlendAnimation(
+                                    PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                                    new int[] {prevIconColor, prevSelectedIconColor},
+                                    new int[] {newIconColor, newSelectedIconColor},
+                                    colorList -> {
+                                        @ColorInt int interpolatedIconColor = colorList[0];
+                                        @ColorInt int interpolatedSelectedIconColor = colorList[1];
+                                        updateTabIconTintInternal(
+                                                interpolatedIconColor,
+                                                interpolatedSelectedIconColor);
+                                    });
+                    animation.setInterpolator(getPaneColorBlendInterpolator());
+                    return animation;
                 };
         mAnimatorSetBuilder.registerBlend(multiColorBlend);
 
@@ -200,6 +216,15 @@ public class HubToolbarView extends LinearLayout {
                                     ColorStateList.valueOf(interpolatedColor);
                             ImageViewCompat.setImageTintList(mMenuButton, menuButtonColor);
                         }));
+
+        // We don't want to pass a method reference. Lambdas will ensure we run the most recent
+        // setter.
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                        color -> mToolbarOverviewColorSetter.onResult(color)));
+
         // TODO(crbug.com/40948541): Updating the app menu color here is more correct and
         // should be done for code health. Menu Button Color is also set by
         // HubToolbarCoordinator.
@@ -239,7 +264,6 @@ public class HubToolbarView extends LinearLayout {
     private void updateActionButtonColorInternal(Context context, @ColorInt int color) {
         ColorStateList actionButtonColor = HubColors.getActionButtonColor(context, color);
         TextViewCompat.setCompoundDrawableTintList(mActionButton, actionButtonColor);
-        mActionButton.setTextColor(actionButtonColor);
     }
 
     private void updateSearchLoupeColor(@ColorInt int color) {
@@ -252,7 +276,29 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setSearchBoxVisible(boolean visible) {
-        mSearchBoxLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+        AnimatorSet hubSearchTransitionAnimation = getHubSearchBoxTransitionAnimation(visible);
+        AnimatorListenerAdapter animationListener =
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        if (visible) {
+                            mSearchBoxLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (!visible) {
+                            mSearchBoxLayout.setVisibility(View.GONE);
+                        }
+                    }
+                };
+        hubSearchTransitionAnimation.addListener(animationListener);
+        mHubSearchAnimatorHandler.startAnimation(hubSearchTransitionAnimation);
+    }
+
+    void setApplyDelayForSearchBoxAnimation(boolean applyDelay) {
+        mApplyDelayForSearchBoxAnimation = applyDelay;
     }
 
     public void setSearchLoupeVisible(boolean visible) {
@@ -263,6 +309,10 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setOnClickListener(v -> searchBarListener.run());
         mSearchBoxTextView.setOnClickListener(v -> searchBarListener.run());
         mSearchLoupeView.setOnClickListener(v -> searchBarListener.run());
+    }
+
+    void setToolbarColorOverviewListener(Callback<Integer> colorSetter) {
+        mToolbarOverviewColorSetter = colorSetter;
     }
 
     void updateIncognitoElements(boolean isIncognito) {
@@ -301,6 +351,31 @@ public class HubToolbarView extends LinearLayout {
                 isIncognito
                         ? R.string.hub_search_empty_hint_incognito
                         : R.string.hub_search_empty_hint;
-        mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+
+        // Delay the text from changing until the hub search animation is finished to prevent the
+        // incorrect text from showing too early on pane toggles.
+        if (mApplyDelayForSearchBoxAnimation) {
+            mHandler.postDelayed(
+                    () -> {
+                        mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+                    },
+                    PANE_FADE_ANIMATION_DURATION_MS);
+        } else {
+            mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+        }
+    }
+
+    private AnimatorSet getHubSearchBoxTransitionAnimation(boolean visible) {
+        float fadeAlphaFrom = visible ? 0 : 1;
+        float fadeAlphaTo = visible ? 1 : 0;
+        float slideTransitionY = visible ? 0 : -mSearchBoxLayout.getHeight();
+        Animator fade =
+                ObjectAnimator.ofFloat(mSearchBoxLayout, View.ALPHA, fadeAlphaFrom, fadeAlphaTo);
+        Animator slide =
+                ObjectAnimator.ofFloat(mSearchBoxLayout, View.TRANSLATION_Y, slideTransitionY);
+        AnimatorSet slideFadeHubSearchBoxAnimator = new AnimatorSet();
+        slideFadeHubSearchBoxAnimator.play(slide).with(fade);
+        slideFadeHubSearchBoxAnimator.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
+        return slideFadeHubSearchBoxAnimator;
     }
 }

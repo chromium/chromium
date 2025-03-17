@@ -37,9 +37,11 @@ class OptimizationGuideModelExecutionError {
     kDisabled = 9,
     // The request was cancelled.
     kCancelled = 10,
+    // The response quality was deemed to be low quality.
+    kResponseLowQuality = 11,
 
     // Insert new values before this line.
-    kMaxValue = kCancelled
+    kMaxValue = kResponseLowQuality
   };
 
   static OptimizationGuideModelExecutionError FromHttpStatusCode(

@@ -4,10 +4,13 @@
 
 package org.chromium.content.browser.framehost;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * The RenderFrameHost Java wrapper to allow communicating with the native RenderFrameHost object.
  *
  */
+@NullMarked
 public interface RenderFrameHostDelegate {
     // Mirrors callbacks for native RenderFrameHostDelegate.
     void renderFrameCreated(RenderFrameHostImpl host);

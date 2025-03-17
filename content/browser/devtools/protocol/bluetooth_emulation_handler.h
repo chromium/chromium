@@ -29,8 +29,11 @@ class CONTENT_EXPORT BluetoothEmulationHandler
 
  private:
   // BluetoothEmulation::Backend
-  Response Enable(const String& in_state) override;
+  Response Enable(const String& in_state, bool in_le_supported) override;
   Response Disable() override;
+  void SetSimulatedCentralState(
+      const String& in_state,
+      std::unique_ptr<SetSimulatedCentralStateCallback> callback) override;
   void SimulatePreconnectedPeripheral(
       const String& in_address,
       const String& in_name,
@@ -52,6 +55,8 @@ class CONTENT_EXPORT BluetoothEmulationHandler
   // support one fake adapter at a time.
   inline static bool emulation_enabled_ = false;
   mojo::Remote<bluetooth::mojom::FakeCentral> fake_central_;
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
+      global_factory_values_;
 };
 
 }  // namespace content::protocol

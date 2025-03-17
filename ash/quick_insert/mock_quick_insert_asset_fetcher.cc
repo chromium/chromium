@@ -14,13 +14,21 @@ MockQuickInsertAssetFetcher::MockQuickInsertAssetFetcher() = default;
 
 MockQuickInsertAssetFetcher::~MockQuickInsertAssetFetcher() = default;
 
-void MockQuickInsertAssetFetcher::FetchGifFromUrl(
+std::unique_ptr<network::SimpleURLLoader>
+MockQuickInsertAssetFetcher::FetchGifFromUrl(
     const GURL& url,
-    QuickInsertGifFetchedCallback callback) {}
+    size_t rank,
+    QuickInsertGifFetchedCallback callback) {
+  return nullptr;
+}
 
-void MockQuickInsertAssetFetcher::FetchGifPreviewImageFromUrl(
+std::unique_ptr<network::SimpleURLLoader>
+MockQuickInsertAssetFetcher::FetchGifPreviewImageFromUrl(
     const GURL& url,
-    QuickInsertImageFetchedCallback callback) {}
+    size_t rank,
+    QuickInsertImageFetchedCallback callback) {
+  return nullptr;
+}
 
 void MockQuickInsertAssetFetcher::FetchFileThumbnail(
     const base::FilePath& path,

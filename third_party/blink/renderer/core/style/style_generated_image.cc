@@ -69,10 +69,10 @@ CSSValue* StyleGeneratedImage::ComputedCSSValue(
   return image_generator_value_.Get();
 }
 
-IntrinsicSizingInfo StyleGeneratedImage::GetNaturalSizingInfo(
+NaturalSizingInfo StyleGeneratedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
-  return IntrinsicSizingInfo::None();
+  return NaturalSizingInfo::None();
 }
 
 gfx::SizeF StyleGeneratedImage::ImageSize(float multiplier,

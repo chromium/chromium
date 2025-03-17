@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "components/url_formatter/url_formatter.h"

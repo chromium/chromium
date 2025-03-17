@@ -101,6 +101,15 @@ static constexpr wchar_t kDolbyVisionProfile5[] = L"dvhe.05";
 static constexpr wchar_t kDolbyVisionProfile8[] = L"dvhe.08";
 #endif
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+const char kProtectedContentIdPrefPath[] =
+    "profile.default_content_setting_values.protected_media_identifier";
+const char kProtectedContentIdExceptionPrefPath[] =
+    "profile.content_settings.exceptions.protected_media_identifier";
+const int kAllowProtectedContentId = 1;
+const int kDisallowProtectedContentId = 2;
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+
 // The type of video src used to load media.
 enum class SrcType { SRC, MSE };
 
@@ -521,6 +530,9 @@ class ECKEncryptedMediaReportMetricsTest : public EncryptedMediaTestBase,
     // that in v10, RecordUkm is not called and the Ukm is not set.
     if (GetCdmInterfaceVersion() > 10) {
       EXPECT_EQ(report_metric_entries.size(), 1u);
+
+      EXPECT_EQ(ukm::GetSourceIdType(report_metric_entries[0].source_id),
+                ukm::SourceIdType::CDM_ID);
 
       // The ClearKey cdm does not report kCertificateSerialNumber or
       // kDecoderBypassBlockCount, so the entries should not even be set in the
@@ -1327,14 +1339,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, VerifyCdmHostTest) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-// TODO(b/326134178): Disable this test on branded builder
-// ci/linux_lacros_chrome since it fails.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_StorageIdTest DISABLED_StorageIdTest
-#else
-#define MAYBE_StorageIdTest StorageIdTest
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
   TestNonPlaybackCases(media::kExternalClearKeyStorageIdTestKeySystem,
                        kUnitTestSuccess);
 }
@@ -1708,6 +1713,91 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
   RunMediaTestPage("media_foundation_fallback.html",
                    {{"keySystem", media::kMediaFoundationClearKeyKeySystem}},
                    fallback_expected_title, /*http=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       ProtectedContentIdSettingAllowed) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+
+  prefs->SetInteger(kProtectedContentIdPrefPath, kAllowProtectedContentId);
+
+  RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        media::kEndedTitle);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       ProtectedContentIdSettingDisallowed) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+
+
+  prefs->SetInteger(kProtectedContentIdPrefPath, kDisallowProtectedContentId);
+
+  RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        kEmeNotSupportedError);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       ProtectedContentIdCustomSettingAllowed) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+
+  // Disable protected media identifier by default.
+  prefs->SetInteger(kProtectedContentIdPrefPath, kDisallowProtectedContentId);
+
+  // Enable 127.0.0.1 as an exception.
+  prefs->SetDict(
+      kProtectedContentIdExceptionPrefPath,
+      base::Value::Dict().Set(
+          "http://127.0.0.1,*",
+          base::Value::Dict().Set("setting", kAllowProtectedContentId)));
+
+  RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        media::kEndedTitle);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       ProtectedContentIdCustomSettingDisallowed) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+
+  // Enable protected media identifier by default.
+  prefs->SetInteger(kProtectedContentIdPrefPath, kAllowProtectedContentId);
+
+  // Disable 127.0.0.1 as an exception.
+  prefs->SetDict(
+      kProtectedContentIdExceptionPrefPath,
+      base::Value::Dict().Set(
+          "http://127.0.0.1,*",
+          base::Value::Dict().Set("setting", kDisallowProtectedContentId)));
+
+  RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        kEmeNotSupportedError);
 }
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)

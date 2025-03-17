@@ -8,7 +8,6 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
@@ -364,8 +363,8 @@ void WebRemoteFrameImpl::InitializeFrameVisualProperties(
       ancestor_widget->PinchGestureActiveInMainFrame();
   visual_properties.screen_infos = ancestor_widget->GetOriginalScreenInfos();
   visual_properties.visible_viewport_size =
-      ancestor_widget->VisibleViewportSizeInDIPs();
-  const WebVector<gfx::Rect>& viewport_segments =
+      ancestor_widget->VisibleViewportSize();
+  const std::vector<gfx::Rect>& viewport_segments =
       ancestor_widget->ViewportSegments();
   visual_properties.root_widget_viewport_segments.assign(
       viewport_segments.begin(), viewport_segments.end());

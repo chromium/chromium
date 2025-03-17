@@ -220,7 +220,7 @@ export class ViewerPenOptionsElement extends PolymerElement {
 
   /** Used to lookup a string in a computed binding. */
   private lookup_(strings: {[key: string]: string}, name: string): string {
-    return strings ? strings[name] : '';
+    return strings ? strings[name]! : '';
   }
 
   /**

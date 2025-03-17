@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/variations/service/variations_field_trial_creator.h"
 
 #include <stddef.h>
@@ -21,9 +26,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
@@ -62,7 +69,9 @@
 #include "components/variations/variations_test_utils.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "components/web_resource/resource_request_allowed_notifier_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -97,16 +106,16 @@ struct FetchAndLaunchTimeTestParams {
   const base::TimeDelta launch_time;
 };
 
-std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
+std::unique_ptr<VariationsSeedStore> CreateSeedStore(
+    PrefService* local_state,
+    const base::FilePath& seed_file_dir) {
   return std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,
       /*signature_verification_enabled=*/true,
       std::make_unique<VariationsSafeSeedStoreLocalState>(
-          local_state,
-          /*seed_file_dir=*/base::FilePath(), version_info::Channel::UNKNOWN,
+          local_state, seed_file_dir, version_info::Channel::UNKNOWN,
           /*entropy_providers=*/nullptr),
-      version_info::Channel::UNKNOWN,
-      /*seed_file_dir=*/base::FilePath());
+      version_info::Channel::UNKNOWN, seed_file_dir);
 }
 
 // Returns a seed with simple test data. The seed has a single study,
@@ -210,6 +219,15 @@ VariationsSeed CreateTestSafeSeed() {
 // return the start for epoch in Unix-like system (Jan 1, 1970).
 base::Time DistantPast() {
   return base::Time::UnixEpoch();
+}
+
+// Converts |list| to a string, to make it easier for debugging.
+std::string ListToString(const base::Value::List& list) {
+  std::string json;
+  JSONStringValueSerializer serializer(&json);
+  serializer.set_pretty_print(true);
+  serializer.Serialize(list);
+  return json;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -316,8 +334,9 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return nullptr;
   }
   bool OverridesRestrictParameter(std::string* parameter) override {
-    if (restrict_parameter_.empty())
+    if (restrict_parameter_.empty()) {
       return false;
+    }
     *parameter = restrict_parameter_;
     return true;
   }
@@ -390,8 +409,9 @@ class TestVariationsSeedStore : public VariationsSeedStore {
 
   bool LoadSafeSeed(VariationsSeed* seed,
                     ClientFilterableState* client_state) override {
-    if (has_unloadable_safe_seed_)
+    if (has_unloadable_safe_seed_) {
       return false;
+    }
 
     *seed = CreateTestSafeSeed();
     return true;
@@ -419,7 +439,8 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       : VariationsFieldTrialCreator(
             client,
             // Pass a VariationsSeedStore to base class.
-            CreateSeedStore(local_state),
+            CreateSeedStore(local_state,
+                            user_data_dir.AppendASCII("VariationsSeedV1")),
             UIStringOverrider(),
             /*limited_entropy_synthetic_trial=*/nullptr),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
@@ -516,6 +537,10 @@ class FieldTrialCreatorTest : public ::testing::Test {
 
   const base::FilePath user_data_dir_path() const {
     return temp_dir_.GetPath();
+  }
+
+  const base::FilePath seed_file_path() const {
+    return user_data_dir_path().AppendASCII("TestSeedFile");
   }
 
  private:
@@ -942,7 +967,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   // Use a real VariationsFieldTrialCreator and VariationsSeedStore to exercise
   // the VariationsSeedStore::LoadSeed() logic.
   TestVariationsServiceClient variations_service_client;
-  auto seed_store = CreateSeedStore(local_state());
+  auto seed_store = CreateSeedStore(local_state(), seed_file_path());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),
       /*limited_entropy_synthetic_trial=*/nullptr);
@@ -973,6 +998,131 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   EXPECT_EQ(
       local_state()->GetInteger(prefs::kVariationsFailedToFetchSeedStreak), 0);
   EXPECT_EQ(local_state()->GetInteger(prefs::kVariationsCrashStreak), 0);
+}
+
+TEST_F(FieldTrialCreatorTest, LoadPermanentConsistencyCountry) {
+  struct {
+    const char* permanent_overridden_country_before;
+    // Comma separated list, NULL if the pref isn't set initially.
+    const char* permanent_consistency_country_before;
+    const char* version;
+    // NULL indicates that no latest country code is present.
+    const char* latest_country_code;
+    // Comma separated list.
+    const char* permanent_consistency_country_after;
+    std::string expected_country;
+    LoadPermanentConsistencyCountryResult expected_result;
+  } test_cases[] = {
+      // Existing permanent overridden country.
+      {"ca", "20.0.0.0,us", "20.0.0.0", "us", "20.0.0.0,us", "ca",
+       LOAD_COUNTRY_HAS_PERMANENT_OVERRIDDEN_COUNTRY},
+      {"us", "20.0.0.0,us", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_HAS_PERMANENT_OVERRIDDEN_COUNTRY},
+      {"ca", "", "20.0.0.0", "", "", "ca",
+       LOAD_COUNTRY_HAS_PERMANENT_OVERRIDDEN_COUNTRY},
+
+      // Existing pref value present for this version.
+      {"", "20.0.0.0,us", "20.0.0.0", "ca", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_HAS_BOTH_VERSION_EQ_COUNTRY_NEQ},
+      {"", "20.0.0.0,us", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_HAS_BOTH_VERSION_EQ_COUNTRY_EQ},
+      {"", "20.0.0.0,us", "20.0.0.0", "", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_HAS_PREF_NO_SEED_VERSION_EQ},
+
+      // Existing pref value present for a different version.
+      {"", "19.0.0.0,ca", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_HAS_BOTH_VERSION_NEQ_COUNTRY_NEQ},
+      {"", "19.0.0.0,us", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_HAS_BOTH_VERSION_NEQ_COUNTRY_EQ},
+      {"", "19.0.0.0,ca", "20.0.0.0", "", "19.0.0.0,ca", "",
+       LOAD_COUNTRY_HAS_PREF_NO_SEED_VERSION_NEQ},
+
+      // No existing pref value present.
+      {"", "", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_NO_PREF_HAS_SEED},
+      {"", "", "20.0.0.0", "", "", "", LOAD_COUNTRY_NO_PREF_NO_SEED},
+      {"", "", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_NO_PREF_HAS_SEED},
+      {"", "", "20.0.0.0", "", "", "", LOAD_COUNTRY_NO_PREF_NO_SEED},
+
+      // Invalid existing pref value.
+      {"", "20.0.0.0", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_INVALID_PREF_HAS_SEED},
+      {"", "20.0.0.0", "20.0.0.0", "", "", "",
+       LOAD_COUNTRY_INVALID_PREF_NO_SEED},
+      {"", "20.0.0.0,us,element3", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_INVALID_PREF_HAS_SEED},
+      {"", "20.0.0.0,us,element3", "20.0.0.0", "", "", "",
+       LOAD_COUNTRY_INVALID_PREF_NO_SEED},
+      {"", "badversion,ca", "20.0.0.0", "us", "20.0.0.0,us", "us",
+       LOAD_COUNTRY_INVALID_PREF_HAS_SEED},
+      {"", "badversion,ca", "20.0.0.0", "", "", "",
+       LOAD_COUNTRY_INVALID_PREF_NO_SEED},
+  };
+
+  SyntheticTrialRegistry synthetic_trial_registry;
+  metrics::TestEnabledStateProvider enabled_state_provider(
+      /*consent=*/true,
+      /*enabled=*/true);
+  auto metrics_state_manager = metrics::MetricsStateManager::Create(
+      local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
+  metrics_state_manager->InstantiateFieldTrialList();
+
+  for (const auto& test : test_cases) {
+    if (!test.permanent_overridden_country_before) {
+      local_state()->ClearPref(prefs::kVariationsPermanentOverriddenCountry);
+    } else {
+      local_state()->SetString(prefs::kVariationsPermanentOverriddenCountry,
+                               test.permanent_overridden_country_before);
+    }
+
+    if (!test.permanent_consistency_country_before) {
+      local_state()->ClearPref(prefs::kVariationsPermanentConsistencyCountry);
+    } else {
+      base::Value::List list_value;
+      for (const std::string& component :
+           base::SplitString(test.permanent_consistency_country_before, ",",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+        list_value.Append(component);
+      }
+      local_state()->SetList(prefs::kVariationsPermanentConsistencyCountry,
+                             std::move(list_value));
+    }
+
+    std::string latest_country;
+    if (test.latest_country_code) {
+      latest_country = test.latest_country_code;
+    }
+
+    TestVariationsServiceClient variations_service_client;
+    auto seed_store = CreateSeedStore(local_state(), seed_file_path());
+    VariationsFieldTrialCreator field_trial_creator(
+        &variations_service_client, std::move(seed_store), UIStringOverrider(),
+        /*limited_entropy_synthetic_trial=*/nullptr);
+
+    base::HistogramTester histogram_tester;
+    EXPECT_EQ(test.expected_country,
+              field_trial_creator.LoadPermanentConsistencyCountry(
+                  base::Version(test.version), latest_country))
+        << test.permanent_consistency_country_before << ", " << test.version
+        << ", " << test.latest_country_code;
+
+    base::Value::List expected_list;
+    for (const std::string& component :
+         base::SplitString(test.permanent_consistency_country_after, ",",
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+      expected_list.Append(component);
+    }
+    const base::Value::List& pref_list =
+        local_state()->GetList(prefs::kVariationsPermanentConsistencyCountry);
+    EXPECT_EQ(ListToString(expected_list), ListToString(pref_list))
+        << test.permanent_consistency_country_before << ", " << test.version
+        << ", " << test.latest_country_code;
+
+    histogram_tester.ExpectUniqueSample(
+        "Variations.LoadPermanentConsistencyCountryResult",
+        test.expected_result, 1);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1776,7 +1926,7 @@ TEST_P(LimitedEntropyProcessingTest,
 
   // Sets up dependencies and mocks.
   TestVariationsServiceClient variations_service_client;
-  auto seed_store = CreateSeedStore(local_state());
+  auto seed_store = CreateSeedStore(local_state(), seed_file_path());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),
       test_case.trial);
@@ -1907,8 +2057,9 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
 
   // Set up the field trials.
   VariationsFieldTrialCreator field_trial_creator{
-      &variations_service_client, CreateSeedStore(local_state()),
-      UIStringOverrider(), /*limited_entropy_synthetic_trial=*/nullptr};
+      &variations_service_client,
+      CreateSeedStore(local_state(), seed_file_path()), UIStringOverrider(),
+      /*limited_entropy_synthetic_trial=*/nullptr};
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
       /*command_line_variation_ids=*/std::string(),

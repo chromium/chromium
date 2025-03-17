@@ -119,6 +119,8 @@ std::string GetImageTypeTag(WalrusProvider::ImageType image_type) {
       return "output_image";
     case WalrusProvider::ImageType::kGeneratedRegion:
       return "generated_region";
+    case WalrusProvider::ImageType::kGeneratedRegionOutpainting:
+      return "generated_region_outpainting";
     default:
       return "input_image";
   }

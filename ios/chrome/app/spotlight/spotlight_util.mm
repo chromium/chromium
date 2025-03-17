@@ -191,7 +191,6 @@ void GetURLForSpotlightItemID(NSString* itemID, BlockWithNSURL completion) {
       }
     }
     completion(nil);
-
   }];
 
   [query start];

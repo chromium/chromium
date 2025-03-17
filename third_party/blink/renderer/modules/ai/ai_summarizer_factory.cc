@@ -5,15 +5,16 @@
 #include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
-#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
@@ -66,15 +67,12 @@ class CreateSummarizerClient
       AI* ai,
       ScriptPromiseResolver<AISummarizer>* resolver,
       AbortSignal* signal,
-      const AISummarizerCreateOptions* options,
+      AISummarizerCreateOptions* options,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
-        type_(options->type()),
-        format_(options->format()),
-        length_(options->length()),
-        shared_context_(options->getSharedContextOr(WTF::String())) {
+        options_(options) {
     if (options->hasMonitor()) {
       monitor_ = MakeGarbageCollected<AICreateMonitor>(
           ai->GetExecutionContext(), task_runner);
@@ -94,14 +92,21 @@ class CreateSummarizerClient
     ai_->GetAIRemote()->CreateSummarizer(
         std::move(client_remote),
         mojom::blink::AISummarizerCreateOptions::New(
-            shared_context_, ToMojoSummarizerType(type_),
-            ToMojoSummarizerFormat(format_), ToMojoSummarizerLength(length_)));
+            options_->getSharedContextOr(g_empty_string),
+            ToMojoSummarizerType(options_->type()),
+            ToMojoSummarizerFormat(options_->format()),
+            ToMojoSummarizerLength(options_->length()),
+            ToMojoLanguageCodes(options_->getExpectedInputLanguagesOr({})),
+            ToMojoLanguageCodes(options_->getExpectedContextLanguagesOr({})),
+            mojom::blink::AILanguageCode::New(
+                options_->getOutputLanguageOr(g_empty_string))));
   }
 
   void Trace(Visitor* visitor) const override {
     AIMojoClient::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(receiver_);
+    visitor->Trace(options_);
     visitor->Trace(monitor_);
   }
 
@@ -112,15 +117,42 @@ class CreateSummarizerClient
       return;
     }
     if (!ai_->GetExecutionContext() || !remote_summarizer) {
-      GetResolver()->Reject(DOMException::Create(
-          kExceptionMessageUnableToCreateSession,
-          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          kExceptionMessageUnableToCreateSession);
     } else {
       AISummarizer* summarizer = MakeGarbageCollected<AISummarizer>(
           ai_->GetExecutionContext(), ai_->GetTaskRunner(),
-          std::move(remote_summarizer), shared_context_, type_, format_,
-          length_);
+          std::move(remote_summarizer), options_);
       GetResolver()->Resolve(summarizer);
+    }
+    Cleanup();
+  }
+
+  void OnError(mojom::blink::AIManagerCreateClientError error) override {
+    if (!GetResolver()) {
+      return;
+    }
+
+    using mojom::blink::AIManagerCreateClientError;
+
+    switch (error) {
+      // TODO(crbug.com/381975242): Set specific exception once the type is
+      // finalized for `kInitialPromptsTooLarge`.
+      case AIManagerCreateClientError::kUnableToCreateSession:
+      case AIManagerCreateClientError::kUnableToCalculateTokenSize:
+      case AIManagerCreateClientError::kInitialPromptsTooLarge: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            kExceptionMessageUnableToCreateSession);
+        break;
+      }
+      case AIManagerCreateClientError::kUnsupportedLanguage: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            kExceptionMessageUnsupportedLanguages);
+        break;
+      }
     }
     Cleanup();
   }
@@ -133,11 +165,8 @@ class CreateSummarizerClient
                    CreateSummarizerClient>
       receiver_;
 
+  Member<AISummarizerCreateOptions> options_;
   Member<AICreateMonitor> monitor_;
-  V8AISummarizerType type_;
-  V8AISummarizerFormat format_;
-  V8AISummarizerLength length_;
-  WTF::String shared_context_;
 };
 
 }  // namespace
@@ -154,16 +183,17 @@ void AISummarizerFactory::Trace(Visitor* visitor) const {
   visitor->Trace(ai_);
 }
 
-ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
+ScriptPromise<V8AIAvailability> AISummarizerFactory::availability(
     ScriptState* script_state,
+    AISummarizerCreateCoreOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AISummarizerCapabilities>();
+    return ScriptPromise<V8AIAvailability>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AISummarizerCapabilities>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
           script_state);
   auto promise = resolver->Promise();
   if (!ai_->GetAIRemote().is_connected()) {
@@ -171,18 +201,26 @@ ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
     return promise;
   }
 
-  ai_->GetAIRemote()->CanCreateSummarizer(WTF::BindOnce(
-      [](ScriptPromiseResolver<AISummarizerCapabilities>* resolver,
-         AISummarizerFactory* factory,
-         mojom::blink::ModelAvailabilityCheckResult result) {
-        AICapabilityAvailability availability =
-            HandleModelAvailabilityCheckResult(
+  ai_->GetAIRemote()->CanCreateSummarizer(
+      mojom::blink::AISummarizerCreateOptions::New(
+          /*shared_context=*/g_empty_string,
+          ToMojoSummarizerType(options->type()),
+          ToMojoSummarizerFormat(options->format()),
+          ToMojoSummarizerLength(options->length()),
+          ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
+          ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
+          mojom::blink::AILanguageCode::New(
+              options->getOutputLanguageOr(g_empty_string))),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<V8AIAvailability>* resolver,
+             AISummarizerFactory* factory,
+             mojom::blink::ModelAvailabilityCheckResult result) {
+            AIAvailability availability = HandleModelAvailabilityCheckResult(
                 factory->GetExecutionContext(),
                 AIMetrics::AISessionType::kSummarizer, result);
-        resolver->Resolve(MakeGarbageCollected<AISummarizerCapabilities>(
-            AICapabilityAvailabilityToV8(availability)));
-      },
-      WrapPersistent(resolver), WrapWeakPersistent(this)));
+            resolver->Resolve(AIAvailabilityToV8(availability));
+          },
+          WrapPersistent(resolver), WrapPersistent(this)));
   return promise;
 }
 

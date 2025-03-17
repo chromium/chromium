@@ -12,13 +12,16 @@ import android.view.View;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import org.chromium.components.browser_ui.widget.MaterialProgressBar;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.R;
+import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 
 /**
  * Shows the dialog that informs the user that some operation is ongoing without indicating the
  * progress.
  */
+@NullMarked
 public class NonCancelableProgressBar extends DialogFragment {
     private int mTitleStringId;
 
@@ -36,7 +39,7 @@ public class NonCancelableProgressBar extends DialogFragment {
      * progress.
      */
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Activity activity = getActivity();
         View dialog =
                 activity.getLayoutInflater().inflate(R.layout.passwords_progress_dialog, null);

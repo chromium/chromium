@@ -42,27 +42,26 @@
 
 namespace WTF {
 
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_null_atom);
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_empty_atom);
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_star_atom);
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_xml_atom);
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_xmlns_atom);
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_xlink_atom);
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_http_atom);
-WTF_EXPORT DEFINE_GLOBAL(AtomicString, g_https_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_null_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_empty_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_star_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xml_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xmlns_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xlink_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_http_atom);
+DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_https_atom);
 
 // This is not an AtomicString because it is unlikely to be used as an
 // event/element/attribute name, so it shouldn't pollute the AtomicString hash
 // table.
-WTF_EXPORT DEFINE_GLOBAL(String, g_xmlns_with_colon);
+DEFINE_GLOBAL(WTF_EXPORT, String, g_xmlns_with_colon);
 
-WTF_EXPORT DEFINE_GLOBAL(String, g_empty_string);
-WTF_EXPORT DEFINE_GLOBAL(String, g_empty_string16_bit);
+DEFINE_GLOBAL(WTF_EXPORT, String, g_empty_string);
+DEFINE_GLOBAL(WTF_EXPORT, String, g_empty_string16_bit);
 
 namespace {
-std::aligned_storage_t<sizeof(NewlineThenWhitespaceStringsTable::TableType),
-                       alignof(String)>
-    g_canonical_whitespace_table_storage;
+alignas(String) char g_canonical_whitespace_table_storage[sizeof(
+    NewlineThenWhitespaceStringsTable::TableType)];
 }
 
 WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str,
@@ -85,7 +84,7 @@ WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str,
 WTF_EXPORT const NewlineThenWhitespaceStringsTable::TableType&
     NewlineThenWhitespaceStringsTable::g_table_ =
         *reinterpret_cast<NewlineThenWhitespaceStringsTable::TableType*>(
-            &g_canonical_whitespace_table_storage);
+            g_canonical_whitespace_table_storage);
 
 NOINLINE unsigned StringImpl::HashSlowCase() const {
   if (Is8Bit()) {

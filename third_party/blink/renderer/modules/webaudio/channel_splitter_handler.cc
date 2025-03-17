@@ -20,7 +20,7 @@ constexpr unsigned kNumberOfOutputChannels = 1;
 ChannelSplitterHandler::ChannelSplitterHandler(AudioNode& node,
                                                float sample_rate,
                                                unsigned number_of_outputs)
-    : AudioHandler(kNodeTypeChannelSplitter, node, sample_rate) {
+    : AudioHandler(NodeType::kNodeTypeChannelSplitter, node, sample_rate) {
   // These properties are fixed and cannot be changed by the user.
   channel_count_ = number_of_outputs;
   SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);

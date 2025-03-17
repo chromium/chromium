@@ -6,66 +6,66 @@ package org.jni_zero;
 
 public class GEN_JNI {
   public static void org_jni_1zero_SampleForAnnotationProcessor_foo() {
-    J.N._V();
+    J.N.V();
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
-    return J.N._O(0);
+    return J.N.O(0);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnClasses() {
-    return J.N._O(1);
+    return J.N.O(1);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
-    return J.N._O(2);
+    return J.N.O(2);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
-    return J.N._O(3);
+    return J.N.O(3);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
-    return J.N._O(4);
+    return J.N.O(4);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObject() {
-    return J.N._O(5);
+    return J.N.O(5);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObjects() {
-    return J.N._O(6);
+    return J.N.O(6);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnString() {
-    return J.N._O(7);
+    return J.N.O(7);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStrings() {
-    return J.N._O(8);
+    return J.N.O(8);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStruct() {
-    return J.N._O(9);
+    return J.N.O(9);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStructs() {
-    return J.N._O(10);
+    return J.N.O(10);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowable() {
-    return J.N._O(11);
+    return J.N.O(11);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowables() {
-    return J.N._O(12);
+    return J.N.O(12);
   }
   public static boolean org_jni_1zero_SampleForAnnotationProcessor_hasPhalange() {
-    return J.N._Z();
+    return J.N.Z();
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample) {
-    return J.N._O_O(0, sample);
+    return J.N.OO(0, sample);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(
       Object __arrayClazz) {
-    return J.N._O_O(1, __arrayClazz);
+    return J.N.OO(1, __arrayClazz);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_revString(
       Object stringToReverse) {
-    return J.N._O_O(2, stringToReverse);
+    return J.N.OO(2, stringToReverse);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object strs) {
-    return J.N._O_O(3, strs);
+    return J.N.OO(3, strs);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_sendToNative(Object strs) {
-    return J.N._O_O(4, strs);
+    return J.N.OO(4, strs);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(
       int zint,
@@ -84,7 +84,7 @@ public class GEN_JNI {
       Object floats,
       boolean zbool,
       Object bools) {
-    return J.N._O_BCDFIJOOOOOOOOSZ(
+    return J.N.OBCDFIJOOOOOOOOSZ(
         zbyte,
         zchar,
         zdouble,
@@ -121,7 +121,7 @@ public class GEN_JNI {
       Object view,
       Object context,
       Object convertedObjects) {
-    J.N._V_OOOOOOOOOOOOOOOOOO(
+    J.N.VOOOOOOOOOOOOOOOOOO(
         clazz,
         classes,
         throwable,

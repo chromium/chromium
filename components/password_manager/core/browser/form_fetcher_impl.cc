@@ -174,9 +174,7 @@ base::span<const PasswordForm> FormFetcherImpl::GetFederatedMatches() const {
 }
 
 bool FormFetcherImpl::IsBlocklisted() const {
-  if (client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage() &&
-      client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-          PasswordForm::Store::kAccountStore) {
+  if (client_->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
     return is_blocklisted_in_account_store_;
   }
   return is_blocklisted_in_profile_store_;

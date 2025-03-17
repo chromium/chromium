@@ -46,6 +46,7 @@ class CORE_EXPORT V8CodeCache final {
     kProduceCodeCache,
   };
 
+  static uint32_t TagForBundledCodeCache();
   static uint32_t TagForCodeCache(const CachedMetadataHandler*);
   static uint32_t TagForTimeStamp(const CachedMetadataHandler*);
   static uint32_t TagForCompileHints(const CachedMetadataHandler*);

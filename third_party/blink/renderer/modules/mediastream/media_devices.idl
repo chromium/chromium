@@ -50,6 +50,10 @@
     ] void
     setCaptureHandleConfig(optional CaptureHandleConfig config = {});
 
-    [ RuntimeEnabled = PreferredAudioOutputDevices, CallWith = ScriptState, RaisesException]
-    Promise<undefined> setPreferredSinkId(DOMString sinkId);
+    [
+      RuntimeEnabled = PreferredAudioOutputDevices,
+      CallWith = ScriptState, RaisesException,
+      MeasureAs = PreferredAudioOutputDevices
+    ] Promise<undefined>
+    setPreferredSinkId(DOMString sinkId);
 };

@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/overlay_type.h"
@@ -128,6 +129,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // If true, we need to run a detiling image processor on the quad before we
   // can scan it out.
   bool needs_detiling : 1 = false;
+
+  // If true, this candidate uses low latency rendering and we need
+  // to increase its overlay priority.
+  bool low_latency_rendering : 1 = false;
 
   // Rect in content space that, when combined with |transform|, is the bounds
   // to position the overlay to. When |transform| is a |gx::OverlayTransform|,
@@ -251,9 +256,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
 
-  // A layer ID packing that includes the namespace.
-  // See |SharedQuadState::layer_id| and |SharedQuadState::layer_namespace_id|.
-  uint64_t aggregated_layer_id = 0;
+#if BUILDFLAG(IS_WIN)
+  // Used to identify overlays that originate from the same cc layer.
+  gfx::OverlayLayerId layer_id;
+#endif
 
   // Transformation to apply to layer during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and

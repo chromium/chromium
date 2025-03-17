@@ -54,6 +54,7 @@ export interface SettingsPersonalizationOptionsElement {
     metricsReportingLink: CrLinkRowElement,
     urlCollectionToggle: SettingsToggleButtonElement,
     chromeSigninUserChoiceSelection: HTMLSelectElement,
+    chromeSigninUserChoiceToast: CrToastElement,
   };
 }
 
@@ -184,7 +185,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private getPriceEmailNotificationsPrefDesc_(): string {
-    const username = this.syncStatus!.signedInUsername || '';
+    const username = this.syncStatus.signedInUsername || '';
     return loadTimeData.getStringF('priceEmailNotificationsPrefDesc', username);
   }
 
@@ -357,6 +358,11 @@ export class SettingsPersonalizationOptionsElement extends
   private onChromeSigninChoiceSelectionChanged_() {
     const selected = Number(this.$.chromeSigninUserChoiceSelection.value);
     assert(selected !== ChromeSigninUserChoice.NO_CHOICE);
+
+    if (loadTimeData.getBoolean('isSnackbarForSettingsEnabled')) {
+      this.$.chromeSigninUserChoiceToast.show();
+    }
+
     this.syncBrowserProxy_.setChromeSigninUserChoice(
         selected, this.chromeSigninUserChoiceInfo_.signedInEmail);
   }

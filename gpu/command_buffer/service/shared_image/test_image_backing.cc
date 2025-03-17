@@ -147,7 +147,7 @@ class TestMetalSkiaGraphiteImageRepresentation
                                            MemoryTypeTracker* tracker)
       : SkiaGraphiteImageRepresentation(manager, backing, tracker) {}
 
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
     return {};
   }
   void EndReadAccess() override {}
@@ -163,7 +163,8 @@ class TestMetalSkiaGraphiteImageRepresentation
     }
     return surfaces;
   }
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
+      override {
     return {};
   }
   void EndWriteAccess() override {}

@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Listen over legitimasjon som kan fylles ut ved å trykke, er åpnet i full høyde.</translation>
 <translation id="5591247451101092906">Vil du bruke et lagret passord eller en lagret passnøkkel?</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
+<translation id="592182999816790476">Passord for <ph name="USERNAME" /> er lagret for <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Passnøkkel for <ph name="USERNAME" /> – bruk skjermlåsen</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nytt passord for dette nettstedet}other{Nye passord for dette nettstedet}}</translation>
 <translation id="7286867818472074330">Velg passnøkkel</translation>

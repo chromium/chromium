@@ -42,15 +42,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/pwd_migration/ExportDeletionDialogFragment.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningIntroFragment.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediator.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningOnClickHandler.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningOptionsFragment.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningProperties.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningUtil.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningView.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewBinder.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetMediator.java",
@@ -67,7 +59,6 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediatorTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetCoordinatorFactoryTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetModuleTest.java",
@@ -116,8 +107,6 @@ android_library("javatests") {
   # Consult izuzic@ before adding more tests to this target.
   # This target will exist only temporary.
   sources = [
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningRenderTest.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetViewTest.java",
   ]
@@ -162,9 +151,6 @@ android_resources("java_resources") {
   ]
   sources = [
     "java/res/layout/post_pwd_migration_sheet.xml",
-    "java/res/layout/pwd_migration_warning.xml",
-    "java/res/layout/pwd_migration_warning_intro_fragment.xml",
-    "java/res/layout/pwd_migration_warning_options.xml",
     "java/res/values/dimens.xml",
   ]
 }

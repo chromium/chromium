@@ -31,7 +31,6 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/feature_engagement/test/mock_tracker.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -112,16 +111,47 @@ void ScalableIphBrowserTestBase::SetUp() {
   // `SetUpOnMainThread` below is too late to set a testing factory. Note that
   // `InProcessBrowserTest::SetUp` is called at the very early stage, e.g.
   // before command lines are set, etc.
-  MockTrackerFactoryMethod mock_tracker_factory_method =
-      GetMockTrackerFactoryMethod();
-  mock_tracker_enabled_ = !mock_tracker_factory_method.is_null();
-  subscription_ =
-      BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-              &ScalableIphBrowserTestBase::SetTestingFactories,
-              mock_tracker_factory_method));
+  mock_tracker_factory_method_ = GetMockTrackerFactoryMethod();
 
   CustomizableTestEnvBrowserTestBase::SetUp();
+}
+
+void ScalableIphBrowserTestBase::SetUpInProcessBrowserTestFixture() {
+  CustomizableTestEnvBrowserTestBase::SetUpInProcessBrowserTestFixture();
+
+  if (enable_multi_user_) {
+    // Add a secondary user.
+    LoginManagerMixin* login_manager_mixin = GetLoginManagerMixin();
+    CHECK(login_manager_mixin);
+    login_manager_mixin->AppendRegularUsers(1);
+    CHECK_EQ(login_manager_mixin->users().size(), 2ul);
+  }
+}
+
+void ScalableIphBrowserTestBase::SetUpBrowserContextKeyedServices(
+    content::BrowserContext* context) {
+  CustomizableTestEnvBrowserTestBase::SetUpBrowserContextKeyedServices(context);
+  if (mock_tracker_factory_method_) {
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        context, mock_tracker_factory_method_);
+  }
+
+  // The static cast is necessary to access the delegate functions declared in
+  // the `ScalableIphFactoryImpl` class.
+  ScalableIphFactoryImpl* scalable_iph_factory =
+      static_cast<ScalableIphFactoryImpl*>(ScalableIphFactory::GetInstance());
+  CHECK(scalable_iph_factory);
+
+  // This method can be called more than once for a single browser context.
+  if (scalable_iph_factory->has_delegate_factory_for_testing()) {
+    return;
+  }
+
+  // This is NOT a testing factory of a keyed service factory .But the delegate
+  // factory is called from the factory of `ScalableIphFactory`. Set this at the
+  // same time.
+  scalable_iph_factory->SetDelegateFactoryForTesting(
+      base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockDelegate));
 }
 
 // `SetUpOnMainThread` is called just before a test body. Do the mock set up in
@@ -150,12 +180,6 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
   }
 
   if (enable_multi_user_) {
-    // Add a secondary user.
-    LoginManagerMixin* login_manager_mixin = GetLoginManagerMixin();
-    CHECK(login_manager_mixin);
-    login_manager_mixin->AppendRegularUsers(1);
-    CHECK_EQ(login_manager_mixin->users().size(), 2ul);
-
     // By default, `MultiUserWindowManager` is created with multi profile off.
     // Re-create for multi profile tests. This has to be done after
     // `SetUpOnMainThread` of a base class as the original multi-profile-off
@@ -202,7 +226,7 @@ void ScalableIphBrowserTestBase::SetUpMocks() {
          "at a login time. We check the behavior by confirming creation of a "
          "delegate.";
 
-  if (mock_tracker_enabled_) {
+  if (mock_tracker_factory_method_) {
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForBrowserContext(profile));
     CHECK(mock_tracker_)
@@ -440,34 +464,6 @@ void ScalableIphBrowserTestBase::AddOnlineNetwork() {
           CreateStandaloneNetworkProperties(kTestWiFiId, NetworkType::kWiFi,
                                             ConnectionStateType::kOnline,
                                             /*signal_strength=*/0));
-}
-
-// static
-void ScalableIphBrowserTestBase::SetTestingFactories(
-    ScalableIphBrowserTestBase::MockTrackerFactoryMethod
-        mock_tracker_factory_method,
-    content::BrowserContext* browser_context) {
-  if (!mock_tracker_factory_method.is_null()) {
-    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-        browser_context, mock_tracker_factory_method);
-  }
-
-  // The static cast is necessary to access the delegate functions declared in
-  // the `ScalableIphFactoryImpl` class.
-  ScalableIphFactoryImpl* scalable_iph_factory =
-      static_cast<ScalableIphFactoryImpl*>(ScalableIphFactory::GetInstance());
-  CHECK(scalable_iph_factory);
-
-  // This method can be called more than once for a single browser context.
-  if (scalable_iph_factory->has_delegate_factory_for_testing()) {
-    return;
-  }
-
-  // This is NOT a testing factory of a keyed service factory .But the delegate
-  // factory is called from the factory of `ScalableIphFactory`. Set this at the
-  // same time.
-  scalable_iph_factory->SetDelegateFactoryForTesting(
-      base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockDelegate));
 }
 
 ScalableIphBrowserTestBase::MockTrackerFactoryMethod

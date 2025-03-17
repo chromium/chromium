@@ -1,0 +1,2 @@
+# TODO(crbug.com/401453195): Diagnose and fix these failures.
+-VideoFrameCompositorTest.SetIsSurfaceVisible

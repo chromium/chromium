@@ -9,7 +9,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -184,16 +183,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                   ->IsKeyboardLockActive());
 }
 
-// Disabled for flaky SEGFAULTs on Lacros: crbug.com/1340114
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode \
-  DISABLED_KeyboardLockNotLockedInExtensionFullscreenMode
-#else
-#define MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode \
-  KeyboardLockNotLockedInExtensionFullscreenMode
-#endif  // IS_CHROMEOS_LACROS
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
-                       MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode) {
+                       KeyboardLockNotLockedInExtensionFullscreenMode) {
   EnterExtensionInitiatedFullscreen();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_FALSE(GetExclusiveAccessManager()
@@ -472,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   // Test Normal state <--> Browser fullscreen mode <--> Tab fullscreen mode.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(context->IsFullscreen());
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   bool should_show_top_ui = true;
 #else
   bool should_show_top_ui = false;
@@ -481,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
 
   EnterActiveTabFullscreen();
   EXPECT_TRUE(context->IsFullscreen());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(browser()->window()->IsToolbarVisible());
 #else
   EXPECT_FALSE(browser()->window()->IsToolbarVisible());

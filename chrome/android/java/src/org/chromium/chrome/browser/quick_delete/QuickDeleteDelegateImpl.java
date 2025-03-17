@@ -66,4 +66,10 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     boolean isInMultiWindowMode() {
         return MultiWindowUtils.getInstanceCount() > 1;
     }
+
+    @Override
+    void triggerHatsSurvey() {
+        Profile profile = mProfileSupplier.get().getOriginalProfile();
+        BrowsingDataBridge.getForProfile(profile).requestHatsSurvey(/* quickDelete= */ true);
+    }
 }

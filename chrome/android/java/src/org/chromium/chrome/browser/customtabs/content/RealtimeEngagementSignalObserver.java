@@ -288,7 +288,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         if (!gestureListenerManager.hasListener(mGestureStateListener)) {
             gestureListenerManager.addListener(mGestureStateListener, ON_SCROLL_END);
         }
-        mWebContents.addObserver(mEngagementSignalWebContentsObserver);
+        mEngagementSignalWebContentsObserver.observe(mWebContents);
     }
 
     private void removeWebContentsDependencies(@Nullable WebContents webContents) {
@@ -298,7 +298,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                         .removeListener(mGestureStateListener);
             }
             if (mEngagementSignalWebContentsObserver != null) {
-                webContents.removeObserver(mEngagementSignalWebContentsObserver);
+                mEngagementSignalWebContentsObserver.observe(null);
             }
         }
 

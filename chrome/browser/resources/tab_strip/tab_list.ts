@@ -551,6 +551,16 @@ export class TabListElement extends CustomElement implements
     if (!tabGroupElement) {
       return;
     }
+
+    this.$all<TabElement>('tabstrip-tab').forEach(tabElement => {
+      if (tabElement.tab.groupId === groupId) {
+        tabElement.tab = {
+          ...tabElement.tab,
+          groupId: null,
+        };
+      }
+    });
+
     tabGroupElement.remove();
   }
 

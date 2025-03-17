@@ -7,13 +7,15 @@
 import './sandboxed_load_time_data.js';
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
 import {InitializeResult} from './mantis_service.mojom-webui.js';
-import {MahiUntrustedServiceRemote, MantisUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
-import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import type {MahiUntrustedServiceRemote, MantisUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
+import type {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {Message, RenameResult} from './message_types.js';
 import {connectToMahiUntrustedService, connectToMantisUntrustedService, connectToOcrUntrustedService, isMantisAvailable, mahiCallbackRouter, mantisCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 
@@ -369,6 +371,8 @@ const DELEGATE: ClientApiDelegate = {
     // Close any existing pipes when opening a new file.
     ocrUntrustedService?.$.close();
     mahiUntrustedService?.$.close();
+    // Release Mantis resources if opened previously.
+    mantisUntrustedService?.$.close();
 
     if (type === 'application/pdf') {
       ocrUntrustedService = connectToOcrUntrustedService();
@@ -401,7 +405,6 @@ const DELEGATE: ClientApiDelegate = {
   maybeTriggerPdfHats() {
     parentMessagePipe.sendMessage(Message.MAYBE_TRIGGER_PDF_HATS);
   },
-  // TODO(b/219631600): Implement openUrlInBrowserTab() for LacrOS if needed.
 
   // All methods below are on the guest / untrusted frame.
 
@@ -440,9 +443,9 @@ const DELEGATE: ClientApiDelegate = {
   async isMantisAvailable() {
     return isMantisAvailable();
   },
-  async initializeMantis() {
+  async initializeMantis(dlcId: Uuid) {
     mantisUntrustedService?.$.close();
-    const response = await connectToMantisUntrustedService();
+    const response = await connectToMantisUntrustedService(dlcId);
     if (response.error) {
       return response.error;
     }
@@ -468,6 +471,11 @@ const DELEGATE: ClientApiDelegate = {
   async classifyImageSafety(image: number[]) {
     const response = await mantisUntrustedService?.classifyImageSafety(image);
     return response.verdict;
+  },
+  async outpaintImage(image: number[], mask: number[], seed: number) {
+    const response =
+        await mantisUntrustedService?.outpaintImage(image, mask, seed);
+    return response.result;
   },
 };
 

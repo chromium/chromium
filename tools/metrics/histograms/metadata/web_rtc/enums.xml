@@ -208,15 +208,44 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="SetPreferredSinkId"/>
 </enum>
 
-<enum name="SocketErrorCode">
-  <int value="0" label="ERR_MSG_TOO_BIG"/>
-  <int value="1" label="ERR_ADDRESS_UNREACHABLE"/>
-  <int value="2" label="ERR_ADDRESS_INVALID"/>
-  <int value="3" label="ERR_INTERNET_DISCONNECTED"/>
-  <int value="4" label="ERR_TIMED_OUT"/>
-  <int value="5" label="ERR_INSUFFICIENT_RESOURCES"/>
-  <int value="6" label="ERR_OUT_OF_MEMORY"/>
-  <int value="7" label="ERR_OTHER"/>
+<enum name="SdpMungingType">
+  <int value="0" label="NoModification"/>
+  <int value="1" label="UnknownModification"/>
+  <int value="2" label="WithoutCreateAnswer"/>
+  <int value="3" label="WithoutCreateOffer"/>
+  <int value="4" label="NumberOfContents"/>
+  <int value="5" label="NumberOfTransports"/>
+  <int value="6" label="OrderOfContents"/>
+  <int value="20" label="IceOptions"/>
+  <int value="21" label="IcePwd"/>
+  <int value="22" label="IceUfrag"/>
+  <int value="23" label="IceMode"/>
+  <int value="24" label="DtlsSetup"/>
+  <int value="25" label="Mid"/>
+  <int value="26" label="PayloadTypes"/>
+  <int value="27" label="Ssrcs"/>
+  <int value="40" label="RtpHeaderExtensionsRemoved"/>
+  <int value="41" label="RtpHeaderExtensionsAdded"/>
+  <int value="42" label="RtpHeaderExtensionsModified"/>
+  <int value="60" label="AudioCodecsRemoved"/>
+  <int value="61" label="AudioCodecsAdded"/>
+  <int value="62" label="AudioCodecsReordered"/>
+  <int value="63" label="AudioCodecsAddedMultiOpus"/>
+  <int value="64" label="AudioCodecsAddedL16"/>
+  <int value="65" label="AudioCodecsRtcpFbAudioNack"/>
+  <int value="66" label="AudioCodecsFmtpOpusFec"/>
+  <int value="67" label="AudioCodecsFmtpOpusCbr"/>
+  <int value="68" label="AudioCodecsFmtpOpusStereo"/>
+  <int value="69" label="AudioCodecsFmtpOpusDtx"/>
+  <int value="70" label="AudioCodecsFmtp"/>
+  <int value="71" label="AudioCodecsRtcpFb"/>
+  <int value="80" label="VideoCodecsRemoved"/>
+  <int value="81" label="VideoCodecsAdded"/>
+  <int value="82" label="VideoCodecsReordered"/>
+  <int value="83" label="VideoCodecsLegacySimulcast"/>
+  <int value="84" label="VideoCodecsFmtpH264SpsPpsIdrInKeyframe"/>
+  <int value="85" label="VideoCodecsFmtp"/>
+  <int value="86" label="VideoCodecsRtcpFb"/>
 </enum>
 
 <enum name="SrtpErrorCode">

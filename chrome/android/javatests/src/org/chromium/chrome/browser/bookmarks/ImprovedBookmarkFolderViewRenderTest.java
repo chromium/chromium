@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -79,8 +80,8 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     .build();
 
     @Mock private CurrencyFormatter mFormatter;
-    @Mock private BookmarkModel mBookmarkModel;
 
+    private BookmarkModel mBookmarkModel;
     private ImprovedBookmarkFolderView mView;
     private PropertyModel mModel;
     private Bitmap mPrimaryBitmap;
@@ -98,6 +99,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
 
     @Before
     public void setUp() throws Exception {
+        mBookmarkModel = ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
@@ -151,7 +153,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             imageSupplier);
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
-                            BookmarkUtils.getFolderIcon(
+                            BookmarkViewUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     new BookmarkId(0, BookmarkType.NORMAL),
                                     mBookmarkModel,
@@ -183,7 +185,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null)));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
-                            BookmarkUtils.getFolderIcon(
+                            BookmarkViewUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     bookmarksBarId,
                                     mBookmarkModel,
@@ -215,7 +217,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null)));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
-                            BookmarkUtils.getFolderIcon(
+                            BookmarkViewUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     new BookmarkId(0, BookmarkType.READING_LIST),
                                     mBookmarkModel,

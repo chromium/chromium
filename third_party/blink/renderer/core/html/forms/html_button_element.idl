@@ -36,8 +36,8 @@
     // FIXME: attribute HTMLMenuElement? menu;
 
     // Command Invokers
-    [RuntimeEnabled=HTMLInvokeTargetAttribute, CEReactions, Reflect=commandfor] attribute Element? commandForElement;
-    [RuntimeEnabled=HTMLInvokeTargetAttribute, CEReactions, Reflect] attribute DOMString command;
+    [RuntimeEnabled=HTMLCommandAttributes, CEReactions, Reflect=commandfor] attribute Element? commandForElement;
+    [RuntimeEnabled=HTMLCommandAttributes, CEReactions] attribute DOMString command;
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;

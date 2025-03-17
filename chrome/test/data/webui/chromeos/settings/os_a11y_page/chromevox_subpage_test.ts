@@ -8,8 +8,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -281,8 +282,8 @@ suite('<settings-chromevox-subpage>', () => {
   test('connect button works', async function() {
     // Mock chrome.bluetooth.getDevice using `display` as the backing source.
     const displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
-    chrome.bluetooth.getDevice = async address =>
-        displays.find(display => display.address === address)!;
+    chrome.bluetooth.getDevice = address =>
+        Promise.resolve(displays.find(display => display.address === address)!);
 
     // Get Bluetooth Braille Display UI element.
     const bluetoothBrailleDisplayUi =
@@ -312,7 +313,7 @@ suite('<settings-chromevox-subpage>', () => {
     await bluetoothBrailleDisplayUi.onDisplayListChanged(displays);
   });
 
-  test('no custom dropdown item shown', async function() {
+  test('no custom dropdown item shown', function() {
     // Get Bluetooth Braille Display UI element.
     const bluetoothBrailleDisplayUi =
         page.shadowRoot!.querySelector('bluetooth-braille-display-ui');
@@ -335,8 +336,8 @@ suite('<settings-chromevox-subpage>', () => {
   test('braille display shown', async function() {
     // Mock chrome.bluetooth.getDevice using `display` as the backing source.
     const displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
-    chrome.bluetooth.getDevice = async address =>
-        displays.find(display => display.address === address)!;
+    chrome.bluetooth.getDevice = address =>
+        Promise.resolve(displays.find(display => display.address === address)!);
 
     // Get Bluetooth Braille Display UI element.
     const bluetoothBrailleDisplayUi =
@@ -358,5 +359,56 @@ suite('<settings-chromevox-subpage>', () => {
 
     // Verify VarioUltra Bluetooth Braille Display is selected.
     assertEquals('abcd1234', selectElement.value);
+  });
+
+  test('voice dropdown omits internal speaker name', () => {
+    page.populateVoiceListForTesting([
+      {
+        name: 'en-us-x-abc-network',
+        displayName: 'en-us-x-abc-network',
+        // The remaining information isn't used and is present to allow this to
+        // compile.
+        remote: true,
+        extensionId: '1234',
+      },
+      {
+        name: 'en-us-x-abc-local',
+        displayName: 'en-us-x-abc-local',
+        // The remaining information isn't used and is present to allow this to
+        // compile.
+        remote: false,
+        extensionId: '1234',
+      },
+      {
+        name: 'fr-fr-x-abc-local',
+        // Verify that we handle malformed data gracefully.
+        displayName: '',
+        remote: false,
+        extensionId: '1234',
+      },
+      {
+        // Verify that we handle malformed data gracefully.
+        name: 'Not a voice name',
+        displayName: 'Not a voice name',
+        remote: false,
+        extensionId: '1234',
+      },
+    ]);
+    flush();
+
+    const voiceDropdown =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#voiceDropdown');
+    assert(voiceDropdown);
+    // The speaker name, e.g. 'abc' should be stripped from the `name` property
+    // below.
+    const expectedMenuOptions = [
+      {name: 'System Text-to-Speech voice', value: 'chromeos_system_voice'},
+      {name: 'en-us-x-local', value: 'en-us-x-abc-local'},
+      {name: 'fr-fr-x-local', value: 'fr-fr-x-abc-local'},
+      {name: 'Not a voice name', value: 'Not a voice name'},
+      {name: 'en-us-x-network', value: 'en-us-x-abc-network'},
+    ];
+    assertDeepEquals(expectedMenuOptions, voiceDropdown.menuOptions);
   });
 });

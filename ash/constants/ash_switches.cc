@@ -35,10 +35,6 @@ constexpr char kMantisHashKey[] =
     "\x7c\x8c\x82\x6f\x3e\xcd\x16\xf0\xfb\xfe\xfc\x9c\x2a\x48\x07\x75\x7e\xea"
     "\x46\xf2";
 
-// The hash value for the secret key of the sparky feature.
-constexpr char kSparkyHashKey[] =
-    "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
-    "\x44\x77";
 
 }  // namespace
 
@@ -464,6 +460,10 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
     "disable-oobe-chromevox-hint-timer-for-testing";
 
+// Skips OOBE network setup even if there is no internet connection.
+const char kOOBESkipNetworkSetupForTesting[] =
+    "oobe-skip-network-setup-for-testing";
+
 // Disables network screen skip check which is based on ethernet connection.
 const char kDisableOOBENetworkScreenSkippingForTesting[] =
     "disable-oobe-network-screen-skipping-for-testing";
@@ -549,31 +549,13 @@ const char kEnterpriseDisableArc[] = "enterprise-disable-arc";
 const char kEnterpriseForceManualEnrollmentInTestBuilds[] =
     "enterprise-force-manual-enrollment-in-test-builds";
 
-// Whether to enable unified state determination.
+// Whether to enable state determination.
 const char kEnterpriseEnableUnifiedStateDetermination[] =
-    "enterprise-enable-unified-state-determination";
-
-// Whether to enable forced enterprise re-enrollment.
-const char kEnterpriseEnableForcedReEnrollment[] =
-    "enterprise-enable-forced-re-enrollment";
+    "enterprise-enable-state-determination";
 
 // Whether to enable forced enterprise re-enrollment on Flex.
 const char kEnterpriseEnableForcedReEnrollmentOnFlex[] =
     "enterprise-enable-forced-re-enrollment-on-flex";
-
-// Whether to enable initial enterprise enrollment.
-const char kEnterpriseEnableInitialEnrollment[] =
-    "enterprise-enable-initial-enrollment";
-
-// Power of the power-of-2 initial modulus that will be used by the
-// auto-enrollment client. E.g. "4" means the modulus will be 2^4 = 16.
-const char kEnterpriseEnrollmentInitialModulus[] =
-    "enterprise-enrollment-initial-modulus";
-
-// Power of the power-of-2 maximum modulus that will be used by the
-// auto-enrollment client.
-const char kEnterpriseEnrollmentModulusLimit[] =
-    "enterprise-enrollment-modulus-limit";
 
 // Disallow blocking developer mode through enterprise device policy:
 // - Fail enterprise enrollment if enrolling would block dev mode.
@@ -789,12 +771,6 @@ const char kLoginProfile[] = "login-profile";
 // Specifies the user which is already logged in.
 const char kLoginUser[] = "login-user";
 
-// Supply secret key for the sparky feature.
-const char kSparkyFeatureKey[] = "sparky-feature-key";
-
-// Supply server url for the sparky feature.
-const char kSparkyServerUrl[] = "sparky-server-url";
-
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
@@ -802,9 +778,6 @@ const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 // for.
 const char kBrowserDataBackwardMigrationForUser[] =
     "browser-data-backward-migration-for-user";
-
-// Supply secret key for Coral feature.
-const char kCoralFeatureKey[] = "coral-feature-key";
 
 // Supply secret key for Mantis feature.
 const char kMantisFeatureKey[] = "mantis-feature-key";
@@ -971,6 +944,15 @@ const char kSealKey[] = "seal-key";
 // See `ShouldSkipRebootDueToGracePeriod` in scheduled_task_util.h.
 const char kScheduledRebootGracePeriodInSecondsForTesting[] =
     "scheduled-reboot-grace-period-in-seconds-for-testing";
+
+// Selects the scheduler configuration specified in the parameter.
+const char kSchedulerConfiguration[] = "scheduler-configuration";
+const char kSchedulerConfigurationConservative[] = "conservative";
+const char kSchedulerConfigurationPerformance[] = "performance";
+
+// Specifies what the default scheduler configuration value is if the user does
+// not set one.
+const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
 
 // If true, the developer tool overlay will be shown for the login/lock screen.
 // This makes it easier to test layout logic.
@@ -1185,6 +1167,11 @@ bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
       kDisableOOBEChromeVoxHintTimerForTesting);
 }
 
+bool IsOOBENetworkSetupSkippedForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOOBESkipNetworkSetupForTesting);
+}
+
 bool IsOOBENetworkScreenSkippingDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableOOBENetworkScreenSkippingForTesting);
@@ -1296,35 +1283,6 @@ bool IsMantisSecretKeyMatched() {
   }
 
   return key_matched;
-}
-
-bool IsSparkySecretKeyMatched() {
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sparky-feature-key="INSERT KEY HERE" --enable-features=Sparky
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kSparkyFeatureKey));
-
-  bool sparky_key_matched = (provided_key_hash == kSparkyHashKey);
-  if (!sparky_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return sparky_key_matched;
-}
-
-std::optional<std::string> ObtainSparkyServerUrl() {
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sparky-server-url="INSERT KEY HERE"
-  //  --enable-features=Sparky
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSparkyServerUrl)) {
-    return std::make_optional(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            kSparkyServerUrl));
-  }
-  return std::nullopt;
 }
 
 }  // namespace ash::switches

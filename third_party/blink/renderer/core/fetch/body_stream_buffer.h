@@ -29,7 +29,7 @@ class EncodedFormData;
 class ExceptionState;
 class ReadableStream;
 class ScriptState;
-class ScriptCachedMetadataHandler;
+class CachedMetadataHandler;
 
 class CORE_EXPORT BodyStreamBuffer final
     : public UnderlyingByteSourceBase,
@@ -47,7 +47,7 @@ class CORE_EXPORT BodyStreamBuffer final
       ScriptState*,
       BytesConsumer* consumer,
       AbortSignal* signal,
-      ScriptCachedMetadataHandler* cached_metadata_handler,
+      CachedMetadataHandler* cached_metadata_handler,
       scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
   // Create() should be used instead of calling this constructor directly.
@@ -55,12 +55,12 @@ class CORE_EXPORT BodyStreamBuffer final
                    ScriptState*,
                    BytesConsumer* consumer,
                    AbortSignal* signal,
-                   ScriptCachedMetadataHandler* cached_metadata_handler,
+                   CachedMetadataHandler* cached_metadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob);
 
   BodyStreamBuffer(ScriptState*,
                    ReadableStream* stream,
-                   ScriptCachedMetadataHandler* cached_metadata_handler,
+                   CachedMetadataHandler* cached_metadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
   BodyStreamBuffer(const BodyStreamBuffer&) = delete;
@@ -111,10 +111,10 @@ class CORE_EXPORT BodyStreamBuffer final
 
   bool IsAborted();
 
-  // Returns the ScriptCachedMetadataHandler associated with the contents of
-  // this stream. This can return nullptr. Streams' ownership model applies, so
-  // this function is expected to be called by the owner of this stream.
-  ScriptCachedMetadataHandler* GetCachedMetadataHandler() {
+  // Returns the CachedMetadataHandler associated with the contents of this
+  // stream. This can return nullptr. Streams' ownership model applies, so this
+  // function is expected to be called by the owner of this stream.
+  CachedMetadataHandler* GetCachedMetadataHandler() {
     DCHECK(!IsStreamLocked());
     DCHECK(!IsStreamDisturbed());
     return cached_metadata_handler_.Get();
@@ -166,7 +166,7 @@ class CORE_EXPORT BodyStreamBuffer final
   Member<AbortSignal::AlgorithmHandle> stream_buffer_abort_handle_;
   Member<AbortSignal::AlgorithmHandle> loader_client_abort_handle_;
   // CachedMetadata handler used for loading compiled WASM code.
-  Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
+  Member<CachedMetadataHandler> cached_metadata_handler_;
   // Additional side data associated with this body stream.  It should only be
   // retained until the body is drained or starts loading.  Client code, such
   // as service workers, can call TakeSideDataBlob() prior to consumption.

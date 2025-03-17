@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Allows setting the duration to Infinity
+  Failed to execute 'updateTiming' on 'AnimationEffect': Effect duration cannot be Infinity when used with Scroll Timelines
+Harness: the test ran to completion.
+

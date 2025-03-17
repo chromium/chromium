@@ -79,16 +79,11 @@ component("image_decoders") {
 
   if (enable_av1_decoder) {
     sources += [
-      "avif/avif_image_decoder.cc",
-      "avif/avif_image_decoder.h",
       "avif/crabbyavif_image_decoder.cc",
       "avif/crabbyavif_image_decoder.h",
     ]
 
-    deps += [
-      "//third_party/crabbyavif",
-      "//third_party/libavif",
-    ]
+    deps += [ "//third_party/crabbyavif" ]
   }
 
   if (enable_rust_png) {
@@ -135,9 +130,6 @@ source_set("unit_tests") {
   }
 
   if (enable_av1_decoder) {
-    sources += [
-      "avif/avif_image_decoder_test.cc",
-      "avif/crabbyavif_image_decoder_test.cc",
-    ]
+    sources += [ "avif/crabbyavif_image_decoder_test.cc" ]
   }
 }

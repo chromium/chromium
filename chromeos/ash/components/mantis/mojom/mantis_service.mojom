@@ -8,6 +8,7 @@
 module mantis.mojom;
 
 import "chromeos/ash/components/mantis/mojom/mantis_processor.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 
 // The feature status used to restrict Mantis functionality if applicable.
 [Stable, Extensible]
@@ -48,8 +49,10 @@ interface MantisService {
 
   // Loads the assets from DLC and initializes the processor for subsequent
   // queries. The model loading progress can be observed by `progress_observer`.
+  // The `dlc_uuid` is used to fetch the specific ML model assets.
   Initialize@0(
       pending_remote<PlatformModelProgressObserver>? progress_observer,
-      pending_receiver<MantisProcessor> processor)
+      pending_receiver<MantisProcessor> processor,
+      [MinVersion=3] mojo_base.mojom.Uuid? dlc_uuid)
       => (InitializeResult result);
 };

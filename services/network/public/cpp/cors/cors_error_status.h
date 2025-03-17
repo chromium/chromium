@@ -17,6 +17,9 @@
 namespace network {
 
 // Type-mapped to `network::mojom::CorsErrorStatus`.
+// See
+// https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/cors.mojom
+// for documentation on individual fields.
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   // Instances of this type are copyable and efficiently movable.
   CorsErrorStatus(const CorsErrorStatus&);

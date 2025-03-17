@@ -46,6 +46,19 @@ size_t TestingValueStore::GetBytesInUse() {
   NOTREACHED() << "Not implemented";
 }
 
+ValueStore::ReadResult TestingValueStore::GetKeys() {
+  read_count_++;
+  if (!status_.ok()) {
+    return ReadResult(CreateStatusCopy(status_));
+  }
+
+  base::Value::Dict settings;
+  for (auto entry : storage_) {
+    settings.Set(entry.first, base::Value());
+  }
+  return ReadResult(std::move(settings), CreateStatusCopy(status_));
+}
+
 ValueStore::ReadResult TestingValueStore::Get(const std::string& key) {
   return Get(std::vector<std::string>(1, key));
 }

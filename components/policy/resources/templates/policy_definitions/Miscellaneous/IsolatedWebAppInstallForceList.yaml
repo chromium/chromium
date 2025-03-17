@@ -9,7 +9,9 @@ desc: |-
         Each item can also include these optional fields:
 
           * <ph name="UPDATE_CHANNEL_OPTION">update_channel</ph>: The IWA release/update channel name. If not set, "default" is used.
+
           * <ph name="PINNED_VERSION_OPTION">pinned_version</ph>:  A specific version to install. The system will attempt to install this version if available on the specified update channel. By default, pinning an IWA to a specific version prevents it from being updated beyond that version. To unpin, remove this field.
+
           * <ph name="ALLOW_DOWNGRADES_OPTION">allow_downgrades</ph>:: Enables installing older versions of the IWA. This requires the `pinned_version` field to be set. If not provided or set to <ph name="FALSE">false</ph> downgrading is disabled for that IWA.
 example_value:
 - update_manifest_url: https://example.com/isolated_web_app/update_manifest.json
@@ -22,6 +24,8 @@ features:
   per_profile: true
 supported_on:
 - chrome_os:128-
+future_on:
+- chrome.*
 owners:
 - file://chrome/browser/web_applications/isolated_web_apps/OWNERS
 - iwa-team@google.com

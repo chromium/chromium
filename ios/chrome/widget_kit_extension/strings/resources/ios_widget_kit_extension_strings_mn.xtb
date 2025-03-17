@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1149198577555059081">Хайх эсвэл URL бичих</translation>
 <translation id="1324575488877808473">Хамгийн их зочилдог сайтуудаа энд харахын тулд Chrome-г нээнэ үү.</translation>
 <translation id="2513892053093488070">Дуут хайлт</translation>
 <translation id="2535710892645968259">Түгжигдсэн дэлгэцээсээ Chrome Dino тоглоомыг тоглоорой.</translation>
@@ -15,7 +16,6 @@
 <translation id="405442954313519726">Дуу хоолой эсвэл QR кодыг ашиглан шинэ таб, Нууцлалын горимд хайж эсвэл шилжээрэй.</translation>
 <translation id="4557098988773644458">Chrome Dino тоглоомыг тоглоорой</translation>
 <translation id="4678859075583681103">Шинэ хайлт эхлүүлэх эсвэл iPhone-н нүүр хуудаснаасаа хамгийн их зочилсон сайтуудаа нээгээрэй.</translation>
-<translation id="4954445889641385956">Хайх эсвэл URL-г бичих</translation>
 <translation id="4962772945748414465">WEBSITE_PLACEHOLDER-г нээх</translation>
 <translation id="5234725349196694896">Дуртай хайлтын системээрээ Chrome-с хайгаарай.</translation>
 <translation id="5277852985315196237">Хайх эсвэл URL-г бичих</translation>

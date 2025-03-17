@@ -19,7 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
@@ -62,8 +62,7 @@ class ContactInfoPreconditionChecker;
 // performed if the profile exists. Without the queuing, if a remove operation
 // was posted before the add operation has finished, the remove would
 // incorrectly get rejected by the ADM.
-class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
-                           public WebDataServiceConsumer {
+class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -92,7 +91,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
                      signin::IdentityManager* identity_manager,
                      StrikeDatabaseBase* strike_database,
                      GeoIpCountryCode variation_country_code,
-                     const std::string& app_locale);
+                     std::string app_locale);
 
   ~AddressDataManager() override;
   AddressDataManager(const AddressDataManager&) = delete;
@@ -107,10 +106,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override;
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle handle,
+                                   std::unique_ptr<WDTypedResult> result);
 
   // Returns pointers to the AddressDataManager's underlying vector of Profiles.
   // Their lifetime is until the web database is updated with new information,
@@ -145,8 +142,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Updates |profile| which already exists in the web database.
   virtual void UpdateProfile(const AutofillProfile& profile);
 
-  // Removes the profile by `guid`.
-  virtual void RemoveProfile(const std::string& guid);
+  // Tivial wrapper that simply calls `RemoveProfileImpl()`.
+  void RemoveProfile(const std::string& guid,
+                     bool is_deduplication_initiated = false);
 
   // Removes all local profiles modified on or after `delete_begin` and strictly
   // before `delete_end`. Used for browsing data deletion purposes.
@@ -385,6 +383,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Called when `prefs::kAutofillProfileEnabled` changed.
   void OnAutofillProfilePrefChanged();
 
+  // Removes the profile by `guid`. If `is_deduplication_initiated` is true and
+  // the profile is coming from the account, it will be removed from the local
+  // database and marked `invisible_in_autofill` on the server.
+  virtual void RemoveProfileImpl(const std::string& guid,
+                                 bool is_deduplication_initiated);
+
   base::ObserverList<Observer> observers_;
 
   std::unique_ptr<ContactInfoPreconditionChecker>
@@ -455,7 +459,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   const std::string app_locale_;
 
-  base::WeakPtrFactory<AddressDataManager> weak_factory_{this};
+  base::WeakPtrFactory<AddressDataManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

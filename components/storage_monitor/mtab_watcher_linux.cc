@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 // MtabWatcherLinux implementation.
@@ -15,6 +15,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include <array>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -22,19 +24,19 @@
 namespace {
 
 // List of file systems we care about.
-const char* const kKnownFileSystems[] = {
-  "btrfs",
-  "ext2",
-  "ext3",
-  "ext4",
-  "fat",
-  "hfsplus",
-  "iso9660",
-  "msdos",
-  "ntfs",
-  "udf",
-  "vfat",
-};
+constexpr auto kKnownFileSystems = std::to_array<const char*>({
+    "btrfs",
+    "ext2",
+    "ext3",
+    "ext4",
+    "fat",
+    "hfsplus",
+    "iso9660",
+    "msdos",
+    "ntfs",
+    "udf",
+    "vfat",
+});
 
 }  // namespace
 

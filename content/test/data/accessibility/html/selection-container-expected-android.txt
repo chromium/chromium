@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='selection_list'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='selection_list'
 ++++++android.view.View invisible
 ++++++++android.view.View invisible name='Enabled'
 ++++++++++android.view.View clickable focusable invisible name='One'

@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -15,11 +16,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "ipc/ipc_message.h"
-#include "media/base/android/media_url_interceptor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/auth.h"
 #include "net/base/isolation_info.h"
@@ -64,6 +65,13 @@ GetRestrictedCookieManagerForContext(
       net::IsolationInfo::RequestType::kOther, top_frame_origin,
       top_frame_origin, site_for_cookies);
 
+  net::CookieSettingOverrides devtools_cookie_setting_overrides;
+
+  if (render_frame_host) {
+    devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
+        *render_frame_host, devtools_cookie_setting_overrides);
+  }
+
   mojo::PendingRemote<network::mojom::RestrictedCookieManager> pipe;
   static_cast<StoragePartitionImpl*>(storage_partition)
       ->CreateRestrictedCookieManager(
@@ -74,10 +82,14 @@ GetRestrictedCookieManagerForContext(
                             : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
                             : MSG_ROUTING_NONE,
+          /*cookie_setting_overrides=*/
           render_frame_host ? render_frame_host->GetCookieSettingOverrides()
                             : net::CookieSettingOverrides(),
+          /*devtools_cookie_setting_overrides=*/
+          devtools_cookie_setting_overrides,
           pipe.InitWithNewPipeAndPassReceiver(),
-          render_frame_host ? render_frame_host->CreateCookieAccessObserver()
+          render_frame_host ? render_frame_host->CreateCookieAccessObserver(
+                                  CookieAccessDetails::Source::kNonNavigation)
                             : mojo::NullRemote());
   return pipe;
 }
@@ -170,6 +182,7 @@ void MediaResourceGetterImpl::GetCookies(
   cookie_manager_ptr->GetCookiesString(
       url, site_for_cookies, top_frame_origin, storage_access_api_status,
       /*get_version_shared_memory=*/false, /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/true,
       /*force_disable_third_party_cookies=*/false,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,
                      std::move(cookie_manager), std::move(callback)));

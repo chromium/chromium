@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("public") {
   sources = [
@@ -28,7 +28,10 @@ static_library("public") {
     "types.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/extensions/api/terminal:startup_status",
+  ]
 
   deps = [
     "//base",

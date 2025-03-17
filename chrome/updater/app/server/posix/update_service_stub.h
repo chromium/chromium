@@ -11,10 +11,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
+
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
 
 namespace updater {
 
@@ -36,7 +40,8 @@ class UpdateServiceStub : public mojom::UpdateService {
 
   // updater::mojom::UpdateService
   void GetVersion(GetVersionCallback callback) override;
-  void FetchPolicies(FetchPoliciesCallback callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override;
   void RegisterApp(mojom::RegistrationRequestPtr request,
                    RegisterAppCallback callback) override;
   void GetAppStates(GetAppStatesCallback callback) override;

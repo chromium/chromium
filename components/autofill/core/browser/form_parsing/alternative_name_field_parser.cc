@@ -38,23 +38,15 @@ std::unique_ptr<FormFieldParser> AlternativeFullNameField::Parse(
   auto v = base::WrapUnique(new AlternativeFullNameField());
   scanner->SaveCursor();
 
-  base::span<const MatchPatternRef> address_name_ignored_patterns =
-      GetMatchPatterns("ADDRESS_NAME_IGNORED", context.page_language,
-                       context.pattern_file);
-  base::span<const MatchPatternRef> alternative_full_name_patterns =
-      GetMatchPatterns("ALTERNATIVE_FULL_NAME", context.page_language,
-                       context.pattern_file);
-
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseField(context, scanner, address_name_ignored_patterns, nullptr,
-                   "ADDRESS_NAME_IGNORED")) {
+    if (ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
       continue;
     }
     if (!v->alternative_full_name_ &&
-        ParseField(context, scanner, alternative_full_name_patterns,
-                   &v->alternative_full_name_, "ALTERNATIVE_FULL_NAME")) {
+        ParseField(context, scanner, "ALTERNATIVE_FULL_NAME",
+                   &v->alternative_full_name_)) {
       continue;
     }
     break;
@@ -102,31 +94,20 @@ std::unique_ptr<FormFieldParser> AlternativeFamilyAndGivenNameField::Parse(
   auto v = base::WrapUnique(new AlternativeFamilyAndGivenNameField());
   scanner->SaveCursor();
 
-  base::span<const MatchPatternRef> address_name_ignored_patterns =
-      GetMatchPatterns("ADDRESS_NAME_IGNORED", context.page_language,
-                       context.pattern_file);
-  base::span<const MatchPatternRef> alternative_family_name_patterns =
-      GetMatchPatterns("ALTERNATIVE_FAMILY_NAME", context.page_language,
-                       context.pattern_file);
-  base::span<const MatchPatternRef> alternative_given_name_patterns =
-      GetMatchPatterns("ALTERNATIVE_GIVEN_NAME", context.page_language,
-                       context.pattern_file);
-
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseField(context, scanner, address_name_ignored_patterns, nullptr,
-                   "ADDRESS_NAME_IGNORED")) {
+    if (ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
       continue;
     }
     if (!v->alternative_family_name_ &&
-        ParseField(context, scanner, alternative_family_name_patterns,
-                   &v->alternative_family_name_, "ALTERNATIVE_FAMILY_NAME")) {
+        ParseField(context, scanner, "ALTERNATIVE_FAMILY_NAME",
+                   &v->alternative_family_name_)) {
       continue;
     }
     if (!v->alternative_given_name_ &&
-        ParseField(context, scanner, alternative_given_name_patterns,
-                   &v->alternative_given_name_, "ALTERNATIVE_GIVEN_NAME")) {
+        ParseField(context, scanner, "ALTERNATIVE_GIVEN_NAME",
+                   &v->alternative_given_name_)) {
       continue;
     }
 

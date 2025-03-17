@@ -23,6 +23,7 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "cr_components/certificate_manager",
       "cr_components/color_change_listener",
       "cr_components/commerce",
+      "cr_components/cr_shortcut_input",
       "cr_components/customize_color_scheme_mode",
       "cr_components/customize_themes",
       "cr_components/help_bubble",
@@ -140,19 +141,20 @@ def _is_browser_only_dep(dep):
 
 
 def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
+  # TODO: Update Ash Print Preview to use ash cr_elements.
+  exceptions = [
+      'chrome/browser/resources/ash/print_preview',
+      'chrome/test/data/webui/chromeos/print_preview',
+  ]
   if is_ash_target and _is_browser_only_dep(raw_dep):
-    return False
+    return target_path in exceptions
 
   is_ash_dep = isInAshFolder(raw_dep[2:])
   if not is_ash_dep or is_ash_target:
     return True
 
-  exceptions = [
-      # TODO(crbug.com/40946949): Remove this incorrect dependency
-      'chrome/browser/resources/settings',
-  ]
-
-  return target_path in exceptions
+  # TODO(crbug.com/40946949): Remove ChromeOS dependency from browser settings
+  return target_path == "chrome/browser/resources/settings"
 
 
 def _write_path_mappings_file(path_mappings, output_suffix, out_dir,
@@ -192,6 +194,14 @@ def main(argv):
   target_path = getTargetPath(args.gen_dir, args.root_gen_dir)
   is_ash_target = isInAshFolder(target_path)
   path_mappings = collections.defaultdict(list)
+
+  # First, add a path mapping for '/strings.m.js', which is not tied to
+  # `raw_deps` and is used extensively throughout WebUI.
+  path_mappings['/strings.m.js'].append(
+      f'{args.root_src_dir}/tools/typescript/definitions/strings.d.ts'.replace(
+          '\\', '/'))
+
+  # Then add path mappings that can be derived from `raw_deps`.
   for dep in args.raw_deps:
     dependencyType = 'Browser-only' if is_ash_target else 'Ash-only'
     assert _is_dependency_allowed(is_ash_target, dep, target_path), \

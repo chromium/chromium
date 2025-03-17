@@ -18,10 +18,12 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"  // nogncheck
 #include "ui/gl/startup_trace.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 namespace ui {
 
@@ -49,6 +51,14 @@ base::FilePath DrmRenderNodePathFinder::GetDrmRenderNodePath() const {
 }
 
 void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kRenderNodeOverride)) {
+    drm_render_node_path_ =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kRenderNodeOverride);
+    return;
+  }
+
   for (uint32_t i = kRenderNodeStart; i < kRenderNodeEnd; i++) {
     /* First,  look in sysfs and skip if this is the vgem render node. */
     std::string node_link(

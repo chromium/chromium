@@ -5,20 +5,47 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
 #include <memory>
+#include <string>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_params.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/interaction_test_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/test_event.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/actions/action_view_controller.h"
-#include "ui/views/test/views_test_base.h"
+#include "ui/views/background.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace page_actions {
 namespace {
+
+using ::testing::Return;
+using ::testing::ReturnRef;
+using ::ui::EventType;
+
+constexpr int kDefaultIconSize = 16;
+const std::u16string kTestText = u"Test text";
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
  public:
@@ -32,123 +59,147 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               (const, override));
 };
 
-class PageActionViewTest : public views::ViewsTestBase {
+class AlwaysActiveTabInterface : public tabs::MockTabInterface {
  public:
-  PageActionViewTest() = default;
+  ~AlwaysActiveTabInterface() override = default;
+  bool IsActivated() const override { return true; }
+};
+
+// Test class that includes a real controller and model. Prefer to use simpler
+// PageActionViewTest where possible.
+class PageActionViewWithControllerTest : public ChromeViewsTestBase {
+ public:
+  PageActionViewWithControllerTest() = default;
 
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(16, 16);
-    bitmap.eraseColor(SK_ColorRED);
-    gfx::ImageSkia test_image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-
+    ChromeViewsTestBase::SetUp();
+    // Use any arbitrary vector icon.
+    auto image = ui::ImageModel::FromVectorIcon(
+        vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
     action_item_ = actions::ActionManager::Get().AddAction(
-        actions::ActionItem::Builder()
-            .SetActionId(0)
-            .SetImage(ui::ImageModel::FromImage(gfx::Image(test_image)))
-            .Build());
-    page_action_view_ = std::make_unique<PageActionView>(
-        action_item_, &icon_label_view_delegate_);
-    action_view_controller_ = std::make_unique<views::ActionViewController>();
-    action_view_controller_->CreateActionViewRelationship(
-        page_action_view_.get(), action_item_->GetAsWeakPtr());
+        actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
+    test_page_action_view_ = std::make_unique<PageActionView>(
+        action_item_,
+        PageActionViewParams{
+            .icon_size = kDefaultIconSize,
+            .icon_label_bubble_delegate = &icon_label_view_delegate_,
+        });
+
+    profile_ = std::make_unique<TestingProfile>();
+    pinned_actions_model_ =
+        std::make_unique<PinnedToolbarActionsModel>(profile_.get());
   }
 
   void TearDown() override {
-    views::ViewsTestBase::TearDown();
-    action_view_controller_.reset();
+    ChromeViewsTestBase::TearDown();
     page_action_view_.reset();
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
+    pinned_actions_model_.reset();
+    profile_.reset();
   }
 
-  std::unique_ptr<PageActionController> NewPageActionController() const {
-    auto controller = std::make_unique<PageActionController>();
-    controller->Initialize({action_item_->GetActionId().value()});
+  std::unique_ptr<PageActionController> NewPageActionController(
+      tabs::TabInterface& tab) const {
+    auto controller =
+        std::make_unique<PageActionController>(pinned_actions_model_.get());
+    controller->Initialize(tab, {action_item_->GetActionId().value()});
     return controller;
   }
 
-  void RegisterActionViewRelationship() {
-    action_view_controller_->CreateActionViewRelationship(
-        page_action_view_.get(), action_item_->GetAsWeakPtr());
-  }
-
-  PageActionView* page_action_view() { return page_action_view_.get(); }
+  PageActionView* page_action_view() { return test_page_action_view_.get(); }
   actions::ActionItem* action_item() { return action_item_; }
 
  private:
   std::unique_ptr<PageActionView> page_action_view_;
-  std::unique_ptr<views::ActionViewController> action_view_controller_;
+  std::unique_ptr<PageActionView> test_page_action_view_;
   raw_ptr<actions::ActionItem> action_item_;
 
-  MockIconLabelViewDelegate icon_label_view_delegate_;
+  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
+
+  std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
+  std::unique_ptr<TestingProfile> profile_;
 
   // Must exist in order to create PageActionView during the test.
   views::LayoutProvider layout_provider_;
 };
 
-// Tests that calling Show/Hide will show/hide the view.
-TEST_F(PageActionViewTest, ViewRespondsToPageActionUpdates) {
-  auto controller = NewPageActionController();
-  actions::ActionItem* item = action_item();
-  item->SetEnabled(true);
-  item->SetVisible(true);
+// Base test class for PageActionView.  Uses a mock PageActionModel.
+class PageActionViewTest : public ChromeViewsTestBase {
+ public:
+  PageActionViewTest() = default;
 
-  PageActionView* view = page_action_view();
-  view->OnNewActiveController(controller.get());
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
 
-  EXPECT_FALSE(view->GetVisible());
-  controller->Show(0);
-  EXPECT_TRUE(view->GetVisible());
+    action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
 
-  controller->Show(0);
-  EXPECT_TRUE(view->GetVisible());
+    // Host the view in a Widget so it can handle things like mouse input.
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_->Show();
 
-  controller->Hide(0);
-  EXPECT_FALSE(view->GetVisible());
+    page_action_view_ =
+        widget_->SetContentsView(std::make_unique<PageActionView>(
+            action_item_.get(),
+            PageActionViewParams{
+                .icon_size = view_icon_size_,
+                .icon_label_bubble_delegate = &icon_label_view_delegate_}));
 
-  // Disabling the ActionItem should prevent the view from showing.
-  item->SetEnabled(false);
-  controller->Show(0);
-  EXPECT_FALSE(view->GetVisible());
-  item->SetEnabled(true);
+    page_action_view_->GetSlideAnimationForTesting().SetSlideDuration(
+        base::Seconds(0));
 
-  item->SetVisible(false);
-  controller->Show(0);
-  EXPECT_FALSE(view->GetVisible());
-}
+    ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
+    ON_CALL(mock_model_, GetTooltipText())
+        .WillByDefault(ReturnRef(mock_string_));
+    ON_CALL(mock_model_, GetImage()).WillByDefault(ReturnRef(mock_image_));
 
-// Tests that updating the ActionItem will update the view.
-TEST_F(PageActionViewTest, ViewRespondsToActionItemUpdates) {
-  auto controller = NewPageActionController();
-  actions::ActionItem* item = action_item();
-  PageActionView* view = page_action_view();
+    page_action_view_->SetModel(model());
+  }
 
-  item->SetVisible(true);
-  item->SetEnabled(true);
-  EXPECT_FALSE(view->GetVisible());  // No active controller yet.
+  void TearDown() override {
+    page_action_view_ = nullptr;
+    widget_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
 
-  view->OnNewActiveController(controller.get());
-  controller->Show(0);
-  EXPECT_TRUE(view->GetVisible());
+  PageActionView* page_action_view() { return page_action_view_.get(); }
+  MockPageActionModel* model() { return &mock_model_; }
+  actions::ActionItem* action_item() { return action_item_.get(); }
+  int view_icon_size() const { return view_icon_size_; }
 
-  item->SetVisible(false);
-  EXPECT_FALSE(view->GetVisible());
-  item->SetVisible(true);
-  EXPECT_TRUE(view->GetVisible());
+ private:
+  std::unique_ptr<actions::ActionItem> action_item_;
 
-  item->SetEnabled(false);
-  EXPECT_FALSE(view->GetVisible());
-  item->SetEnabled(true);
-  EXPECT_TRUE(view->GetVisible());
-}
+  std::unique_ptr<views::Widget> widget_;
+
+  // Owned by widget_.
+  raw_ptr<PageActionView> page_action_view_;
+
+  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
+
+  // Must exist in order to create PageActionView during the test.
+  views::LayoutProvider layout_provider_;
+
+  // Mock model and associated placeholder data.
+  testing::NiceMock<MockPageActionModel> mock_model_;
+  const ui::ImageModel mock_image_ =
+      ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
+                                     ui::kColorSysPrimary,
+                                     kDefaultIconSize);
+  std::u16string mock_string_ = kTestText;
+
+  const int view_icon_size_ = kDefaultIconSize;
+};
 
 // Tests that calling Show/Hide on an inactive controller will not affect the
 // view.
-TEST_F(PageActionViewTest, ViewIgnoresInactiveController) {
-  auto controller_a = NewPageActionController();
-  auto controller_b = NewPageActionController();
+TEST_F(PageActionViewWithControllerTest, ViewIgnoresInactiveController) {
+  // Use an always-active tab to ensure consistent visibility updates.
+  AlwaysActiveTabInterface tab;
+  auto controller_a = NewPageActionController(tab);
+  auto controller_b = NewPageActionController(tab);
   actions::ActionItem* item = action_item();
   item->SetEnabled(true);
   item->SetVisible(true);
@@ -174,14 +225,16 @@ TEST_F(PageActionViewTest, ViewIgnoresInactiveController) {
 
 // Tests that the PageActionView should never display when it doesn't have an
 // active PageActionController.
-TEST_F(PageActionViewTest, NoActiveController) {
+TEST_F(PageActionViewWithControllerTest, NoActiveController) {
   actions::ActionItem* item = action_item();
   item->SetEnabled(true);
   item->SetVisible(true);
   PageActionView* view = page_action_view();
   EXPECT_FALSE(view->GetVisible());
 
-  auto controller = NewPageActionController();
+  // Use an always-active tab to ensure consistent visibility updates.
+  AlwaysActiveTabInterface tab;
+  auto controller = NewPageActionController(tab);
   view->OnNewActiveController(controller.get());
   controller->Show(0);
   EXPECT_TRUE(view->GetVisible());
@@ -190,42 +243,343 @@ TEST_F(PageActionViewTest, NoActiveController) {
   EXPECT_FALSE(view->GetVisible());
 }
 
+TEST_F(PageActionViewTest, Visibility) {
+  // Ensure view defaults to invisible.
+  EXPECT_FALSE(page_action_view()->GetVisible());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_FALSE(page_action_view()->GetVisible());
+}
+
+TEST_F(PageActionViewTest, LabelVisibility) {
+  // Ensure view defaults to invisible.
+  EXPECT_FALSE(page_action_view()->GetVisible());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+  EXPECT_TRUE(page_action_view()->IsChipVisible());
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+  EXPECT_FALSE(page_action_view()->IsChipVisible());
+}
+
+TEST_F(PageActionViewTest, ChipStateUpdatesBackgroundColor) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  ASSERT_NE(page_action_view()->GetBackground(), nullptr);
+  EXPECT_EQ(page_action_view()->GetBackground()->color(),
+            page_action_view()->GetColorProvider()->GetColor(
+                kColorOmniboxIconBackgroundTonal));
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  EXPECT_EQ(page_action_view()->GetBackground(), nullptr);
+}
+
+TEST_F(PageActionViewTest, ChipStateUpdatesForegroundColor) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  ASSERT_TRUE(page_action_view()->GetVisible());
+  ASSERT_TRUE(page_action_view()->IsChipVisible());
+
+  const SkColor expected_color =
+      page_action_view()->GetColorProvider()->GetColor(
+          kColorOmniboxIconForegroundTonal);
+  EXPECT_EQ(page_action_view()->GetCurrentTextColor(), expected_color);
+}
+
+TEST_F(PageActionViewTest, SuggestionText) {
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(page_action_view()->GetText(), kTestText);
+}
+
+TEST_F(PageActionViewTest, TooltipText) {
+  EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
+}
+
 // Test that OnThemeChanged updates the icon image correctly.
 TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
-  // Simulate OnThemeChanged.
-  page_action_view()->OnThemeChanged();
+  // If the default size is the intended icon size, this test is useless.
+  const int kOriginalIconSize = view_icon_size() + 1;
+  auto icon_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kOriginalIconSize);
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
 
-  // Verify that UpdateIconImage is invoked and sets a valid image model.
-  gfx::ImageSkia image_model =
-      page_action_view()->GetImage(views::Button::STATE_NORMAL);
-  ASSERT_FALSE(image_model.isNull());
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(page_action_view()
+                ->GetImageModel(views::Button::STATE_NORMAL)
+                ->Size()
+                .width(),
+            view_icon_size());
+
+  // Icon maintains required size on theme change.
+  page_action_view()->OnThemeChanged();
+  EXPECT_EQ(page_action_view()
+                ->GetImageModel(views::Button::STATE_NORMAL)
+                ->Size()
+                .width(),
+            view_icon_size());
 }
 
 // Test that UpdateBorder adjusts the insets based on label visibility.
 TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
-  // Test case: Label visibility is true.
-  page_action_view()->SetShouldShowLabelForTesting(true);
-  gfx::Insets initial_insets = page_action_view()->GetInsets();
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  const gfx::Insets initial_insets = page_action_view()->GetInsets();
 
-  // Simulate UpdateBorder when label is visible.
   page_action_view()->UpdateBorder();
-  gfx::Insets updated_insets_true = page_action_view()->GetInsets();
+  const gfx::Insets insets_with_chip = page_action_view()->GetInsets();
 
-  // Verify that insets are updated when the label is visible.
-  EXPECT_NE(initial_insets, updated_insets_true);
+  EXPECT_EQ(initial_insets, insets_with_chip);
 
-  // Test case: Label visibility is false.
-  page_action_view()->SetShouldShowLabelForTesting(false);
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
 
-  // Simulate UpdateBorder when label is not visible.
   page_action_view()->UpdateBorder();
-  gfx::Insets updated_insets_false = page_action_view()->GetInsets();
+  const gfx::Insets insets_without_chip = page_action_view()->GetInsets();
 
-  // Verify that insets remain unchanged when the label is not visible.
-  EXPECT_EQ(initial_insets, updated_insets_false);
+  EXPECT_NE(initial_insets, insets_without_chip);
+  EXPECT_NE(insets_with_chip, insets_without_chip);
+}
 
-  // Verify that true and false cases result in different insets.
-  EXPECT_NE(updated_insets_true, updated_insets_false);
+class PageActionViewTriggerTest : public PageActionViewTest {
+ public:
+  PageActionViewTriggerTest() = default;
+  ~PageActionViewTriggerTest() override = default;
+
+  void SetUp() override {
+    PageActionViewTest::SetUp();
+    action_item()->SetInvokeActionCallback(base::BindRepeating(
+        &PageActionViewTriggerTest::ActionInvocationCallback,
+        base::Unretained(this)));
+  }
+
+  void ActionInvocationCallback(actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+    const PageActionTrigger trigger = static_cast<PageActionTrigger>(
+        context.GetProperty(kPageActionTriggerKey));
+    switch (trigger) {
+      case PageActionTrigger::kMouse:
+        ++mouse_trigger_count_;
+        break;
+      case PageActionTrigger::kKeyboard:
+        ++key_trigger_count_;
+        break;
+      case PageActionTrigger::kGesture:
+        ++gesture_trigger_count_;
+        break;
+    }
+  }
+
+  int TotalTriggerCount() const {
+    return mouse_trigger_count_ + key_trigger_count_ + gesture_trigger_count_;
+  }
+  int mouse_trigger_count() const { return mouse_trigger_count_; }
+  int key_trigger_count() const { return key_trigger_count_; }
+  int gesture_trigger_count() const { return gesture_trigger_count_; }
+
+ private:
+  int mouse_trigger_count_ = 0;
+  int key_trigger_count_ = 0;
+  int gesture_trigger_count_ = 0;
+};
+
+TEST_F(PageActionViewTriggerTest, PageActionKeyTriggerPropagation) {
+  page_action_view()->NotifyClick(ui::test::TestEvent(EventType::kKeyPressed));
+  EXPECT_EQ(1, key_trigger_count());
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
+TEST_F(PageActionViewTriggerTest, PageActionMouseTriggerPropagation) {
+  page_action_view()->NotifyClick(
+      ui::test::TestEvent(EventType::kMousePressed));
+  EXPECT_EQ(1, mouse_trigger_count());
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
+TEST_F(PageActionViewTriggerTest, PageActionGestureTriggerPropagation) {
+  page_action_view()->NotifyClick(ui::test::TestEvent(EventType::kGestureTap));
+  EXPECT_EQ(1, gesture_trigger_count());
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
+TEST_F(PageActionViewTriggerTest, PageActionTriggersOnMouseClick) {
+  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
+      .WillRepeatedly(Return(false));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      page_action_view(), ui::test::InteractionTestUtil::InputType::kMouse);
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
+// Action invocations are suppressed when the ActionItem is displaying UI.
+TEST_F(PageActionViewTriggerTest, PageActionDoesNotTriggersIfBubbleShowing) {
+  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
+      .WillRepeatedly(Return(true));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      page_action_view(), ui::test::InteractionTestUtil::InputType::kMouse);
+  EXPECT_EQ(0, TotalTriggerCount());
+}
+
+// Action invocation suppression carries state across mouse events. Ensure that
+// state is cleaned up, and isn't carried into a subsequent key event. The
+// alternate way to test this a ForTest getter.
+TEST_F(PageActionViewTriggerTest, PageActionsSuccessiveTriggers) {
+  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
+      .WillRepeatedly(Return(true));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      page_action_view(), ui::test::InteractionTestUtil::InputType::kMouse);
+  EXPECT_EQ(0, TotalTriggerCount());
+
+  // A subsequent keyboard click should work.
+  ui::KeyEvent key_event(EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
+      .WillRepeatedly(Return(false));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      page_action_view(), ui::test::InteractionTestUtil::InputType::kKeyboard);
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
+class PageActionViewAnimationTest : public PageActionViewTest {
+ public:
+  using PageActionViewTest::PageActionViewTest;
+
+  void SetUp() override {
+    PageActionViewTest::SetUp();
+    animation_ = std::make_unique<gfx::AnimationTestApi>(
+        &page_action_view()->GetSlideAnimationForTesting());
+  }
+
+  void TearDown() override {
+    animation_.reset();
+    PageActionViewTest::TearDown();
+  }
+
+  void SetInitialChipVisibility(bool showing) {
+    // Make the visibility change instant.
+    page_action_view()->GetSlideAnimationForTesting().SetSlideDuration(
+        base::Seconds(0));
+    EXPECT_CALL(*model(), GetShowSuggestionChip())
+        .WillRepeatedly(Return(showing));
+    EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+    page_action_view()->OnPageActionModelChanged(*model());
+
+    ASSERT_FALSE(page_action_view()->is_animating_label());
+    ASSERT_EQ(page_action_view()->IsChipVisible(), showing);
+  }
+
+  // Force the animation to extend beyond the duration of this test, allowing
+  // us to inspect the view's state mid-animation.
+  void ExtendAnimations() {
+    page_action_view()->GetSlideAnimationForTesting().SetSlideDuration(
+        extended_animation_duration_);
+  }
+
+  // Force the current animation to given percentage.
+  void FastForwardAnimation(double progress = 1.0) {
+    auto now = base::TimeTicks::Now();
+    animation_->SetStartTime(now);
+    animation_->Step(now + (progress * extended_animation_duration_));
+  }
+
+  gfx::AnimationTestApi& animation() { return *animation_.get(); }
+
+ private:
+  std::unique_ptr<gfx::AnimationTestApi> animation_;
+
+  const base::TimeDelta extended_animation_duration_ = base::Hours(1);
+};
+
+TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
+  SetInitialChipVisibility(true);
+  ExtendAnimations();
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  // The page action should be in the middle of animating and its chip should
+  // be visible.
+  EXPECT_TRUE(page_action_view()->is_animating_label());
+  EXPECT_TRUE(page_action_view()->IsChipVisible());
+  EXPECT_NE(page_action_view()->GetBackground(), nullptr);
+
+  // Skip the animation to its ending.
+  FastForwardAnimation();
+
+  // The page action should no longer be animating and its chip should be
+  // hidden.
+  EXPECT_FALSE(page_action_view()->is_animating_label());
+  EXPECT_FALSE(page_action_view()->IsChipVisible());
+  EXPECT_EQ(page_action_view()->GetBackground(), nullptr);
+}
+
+TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateIn) {
+  SetInitialChipVisibility(false);
+  ExtendAnimations();
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  // The page action should be in the middle of animating and its chip should
+  // be visible.
+  EXPECT_TRUE(page_action_view()->is_animating_label());
+  EXPECT_TRUE(page_action_view()->IsChipVisible());
+  EXPECT_NE(page_action_view()->GetBackground(), nullptr);
+
+  // Skip the animation to its ending.
+  FastForwardAnimation();
+
+  // The page action should no longer be animating and its chip should be
+  // visible.
+  EXPECT_FALSE(page_action_view()->is_animating_label());
+  EXPECT_TRUE(page_action_view()->IsChipVisible());
+  EXPECT_NE(page_action_view()->GetBackground(), nullptr);
+}
+
+TEST_F(PageActionViewAnimationTest, BorderInsetsScaleWithAnimationProgress) {
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
+  ASSERT_FALSE(gfx::Animation::PrefersReducedMotion());
+
+  // Record the min and max insets.
+  // The test will compare insets mid-animation to these values.
+  SetInitialChipVisibility(false);
+  const gfx::Insets min_insets = page_action_view()->GetInsets();
+  SetInitialChipVisibility(true);
+  const gfx::Insets max_insets = page_action_view()->GetInsets();
+  ASSERT_LT(min_insets.width(), max_insets.width());
+
+  ExtendAnimations();
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  // Fast forward the animation to halfway.
+  // The insets should be somewhere between the min and max insets.
+  FastForwardAnimation(0.5);
+  const gfx::Insets curr_insets = page_action_view()->GetInsets();
+  EXPECT_LT(curr_insets.width(), max_insets.width());
+  EXPECT_GT(curr_insets.width(), min_insets.width());
 }
 
 }  // namespace

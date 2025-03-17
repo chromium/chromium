@@ -16,8 +16,7 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 #include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -49,7 +48,7 @@ class HoldingSpaceSuggestionsDelegate;
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
 class HoldingSpaceKeyedService : public KeyedService,
-                                 public ProfileManagerObserver,
+                                 public ProfileObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
   HoldingSpaceKeyedService(Profile* profile, const AccountId& account_id);
@@ -60,6 +59,9 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   // Registers profile preferences for holding space.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // ProfileObserver override
+  void OnProfileInitializationComplete(Profile* profile) override;
 
   // Adds multiple pinned file items identified by the provided file system
   // URLs. NOTE: No-op if the service has not been initialized.
@@ -158,9 +160,6 @@ class HoldingSpaceKeyedService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // ProfileManagerObserver:
-  void OnProfileAdded(Profile* profile) override;
-
   // PowerManagerClient::Observer
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta sleep_duration) override;
@@ -230,8 +229,7 @@ class HoldingSpaceKeyedService : public KeyedService,
   // The delegate, owned by `delegates_`, responsible for suggestions.
   raw_ptr<HoldingSpaceSuggestionsDelegate> suggestions_delegate_ = nullptr;
 
-  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
-      profile_manager_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceKeyedService> weak_factory_{this};
 };

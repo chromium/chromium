@@ -10,11 +10,11 @@
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -80,11 +80,11 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   // Read data from the MLTensor. The resolver should be resolved with a copy of
   // the tensor data. Otherwise, the resolver should be rejected accordingly.
-  ScriptPromise<DOMArrayBuffer> ReadTensorImpl(ScopedMLTrace scoped_trace,
+  ScriptPromise<DOMArrayBuffer> ReadTensorImpl(webnn::ScopedTrace scoped_trace,
                                                ScriptState* script_state,
                                                ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> ReadTensorImpl(ScopedMLTrace scoped_trace,
+  ScriptPromise<IDLUndefined> ReadTensorImpl(webnn::ScopedTrace scoped_trace,
                                              ScriptState* script_state,
                                              AllowSharedBufferSource* dst_data,
                                              ExceptionState& exception_state);
@@ -97,11 +97,11 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
  private:
   // The callback of reading from `WebNNTensor` by calling hardware accelerated
   // OS machine learning APIs.
-  void OnDidReadTensor(ScopedMLTrace scoped_trace,
+  void OnDidReadTensor(webnn::ScopedTrace scoped_trace,
                        ScriptPromiseResolver<DOMArrayBuffer>* resolver,
                        base::ElapsedTimer read_tensor_timer,
                        webnn::mojom::blink::ReadTensorResultPtr result);
-  void OnDidReadTensorByob(ScopedMLTrace scoped_trace,
+  void OnDidReadTensorByob(webnn::ScopedTrace scoped_trace,
                            ScriptPromiseResolver<IDLUndefined>* resolver,
                            AllowSharedBufferSource* dst_data,
                            base::ElapsedTimer read_tensor_timer,

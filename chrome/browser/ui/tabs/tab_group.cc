@@ -49,7 +49,6 @@ void TabGroup::SetVisualData(tab_groups::TabGroupVisualData visual_data,
 
   // Notify the controller of the visual change
   controller_->ChangeTabGroupVisuals(id_, visuals);
-  RunTabGroupVisualsChangedCallback();
 }
 
 void TabGroup::SetGroupIsClosing(bool is_closing) {
@@ -66,19 +65,14 @@ std::u16string TabGroup::GetContentString() const {
   std::u16string short_title;
   gfx::ElideString(controller_->GetTitleAt(tabs_in_group.start()),
                    kContextMenuTabTitleMaxLength, &short_title);
-  return base::ReplaceStringPlaceholders(format_string, {short_title}, nullptr);
+  return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
 }
 
 void TabGroup::AddTab() {
   if (tab_count_ == 0) {
     controller_->CreateTabGroup(id_);
-    TabGroupChange::VisualsChange visuals;
-    controller_->ChangeTabGroupVisuals(id_, visuals);
   }
-  controller_->ChangeTabGroupContents(id_);
   ++tab_count_;
-
-  RunTabGroupVisualsChangedCallback();
 }
 
 void TabGroup::RemoveTab() {
@@ -86,11 +80,7 @@ void TabGroup::RemoveTab() {
   --tab_count_;
   if (tab_count_ == 0) {
     controller_->CloseTabGroup(id_);
-  } else {
-    controller_->ChangeTabGroupContents(id_);
   }
-
-  RunTabGroupVisualsChangedCallback();
 }
 
 bool TabGroup::IsEmpty() const {
@@ -140,15 +130,4 @@ gfx::Range TabGroup::ListTabs() const {
   }
 
   return gfx::Range(first_tab, last_tab + 1);
-}
-
-void TabGroup::SetTabGroupVisualsChangedCallback(
-    TabGroupVisualsChangedCallback callback) {
-  tab_group_visuals_changed_ = std::move(callback);
-}
-
-void TabGroup::RunTabGroupVisualsChangedCallback() {
-  if (tab_group_visuals_changed_) {
-    tab_group_visuals_changed_.Run();
-  }
 }

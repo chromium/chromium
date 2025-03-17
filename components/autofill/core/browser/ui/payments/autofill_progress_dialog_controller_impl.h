@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
@@ -23,6 +25,13 @@ enum class AutofillProgressDialogType;
 class AutofillProgressDialogControllerImpl
     : public AutofillProgressDialogController {
  public:
+#if BUILDFLAG(IS_IOS)
+  using CreateAndShowViewCallback =
+      base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>;
+#else
+  using CreateAndShowViewCallback =
+      base::OnceCallback<std::unique_ptr<AutofillProgressDialogView>()>;
+#endif
   // The `autofill_progress_dialog_type` determines the type of the progress
   // dialog and `cancel_callback` is the function to invoke when the cancel
   // button is clicked.
@@ -40,9 +49,7 @@ class AutofillProgressDialogControllerImpl
   // Show a progress dialog for underlying authorization processes. The
   // `create_and_show_view_callback` will be invoked immediately to create a
   // view implementation.
-  void ShowDialog(
-      base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>
-          create_and_show_view_callback);
+  void ShowDialog(CreateAndShowViewCallback create_and_show_view_callback);
 
   // Dismisses the progress dialog after the underlying authorization processes
   // have completed. If `show_confirmation_before_closing` is true, the UI
@@ -70,15 +77,23 @@ class AutofillProgressDialogControllerImpl
 
 #if BUILDFLAG(IS_IOS)
   base::WeakPtr<AutofillProgressDialogControllerImpl> GetImplWeakPtr();
-#endif
 
-  base::WeakPtr<AutofillProgressDialogView> autofill_progress_dialog_view() {
-    return autofill_progress_dialog_view_;
+  AutofillProgressDialogView* autofill_progress_dialog_view() {
+    return autofill_progress_dialog_view_.get();
   }
+#else
+  AutofillProgressDialogView* autofill_progress_dialog_view() {
+    return autofill_progress_dialog_view_.get();
+  }
+#endif
 
  private:
   // View that displays the progress dialog.
+#if BUILDFLAG(IS_IOS)
   base::WeakPtr<AutofillProgressDialogView> autofill_progress_dialog_view_;
+#else
+  std::unique_ptr<AutofillProgressDialogView> autofill_progress_dialog_view_;
+#endif
 
   // The type of the progress dialog that is being displayed.
   const AutofillProgressDialogType autofill_progress_dialog_type_;

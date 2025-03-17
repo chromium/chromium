@@ -12,7 +12,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_impl.h"
@@ -127,7 +126,7 @@ void Layer::ReplaceChild(Layer* old_child, scoped_refptr<Layer> new_child) {
     return;
   }
 
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       children_, [&](auto& ptr) { return ptr.get() == old_child; });
   CHECK(it != children_.end(), base::NotFatalUntil::M130);
   old_child->SetParentSlim(nullptr);

@@ -91,6 +91,15 @@ const std::string AutofillCountry::CountryCodeForLocale(
   return country_code;
 }
 
+// static
+const AddressCountryCode AutofillCountry::GetDefaultCountryCodeForNewAddress(
+    const GeoIpCountryCode& geo_ip_country_code,
+    const std::string& locale) {
+  return AddressCountryCode(geo_ip_country_code.value().empty()
+                                ? AutofillCountry::CountryCodeForLocale(locale)
+                                : geo_ip_country_code.value());
+}
+
 AutofillCountry::AutofillCountry(const std::string& country_code,
                                  const std::u16string& name,
                                  const std::u16string& postal_code_label,
@@ -167,9 +176,8 @@ AutofillCountry::address_format_extensions() const {
           ? fr_extensions
           : base::span(fr_extensions).first(1u);  // first<1>() => type mismatch
   overrides.emplace_back("FR", fr_extensions_span);
-  if (base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
-    overrides.emplace_back("DE", de_extensions);
-  }
+  overrides.emplace_back("DE", de_extensions);
+
   if (base::FeatureList::IsEnabled(features::kAutofillUsePLAddressModel)) {
     overrides.emplace_back("PL", pl_extensions);
   }

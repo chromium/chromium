@@ -30,16 +30,18 @@ PageloadForegroundDurationTabHelper::~PageloadForegroundDurationTabHelper() {
 
 void PageloadForegroundDurationTabHelper::UpdateForAppWillForeground() {
   // Return early if not currently active WebState.
-  if (!web_state_->IsVisible())
+  if (!web_state_->IsVisible()) {
     return;
+  }
   last_time_shown_ = base::TimeTicks::Now();
   currently_recording_ = true;
 }
 
 void PageloadForegroundDurationTabHelper::UpdateForAppDidBackground() {
   // Return early if not currently active WebState.
-  if (!web_state_->IsVisible())
+  if (!web_state_->IsVisible()) {
     return;
+  }
   if (web_state_->IsWebPageInFullscreenMode()) {
     web_state_->CloseMediaPresentations();
   }
@@ -65,10 +67,12 @@ void PageloadForegroundDurationTabHelper::DidStartNavigation(
   // not record for pre-rendering in the omnibox.
   // Do not log as end of recording for the current page session if the
   // navigation is same-document.
-  if (!web_state_->IsVisible() || navigation_context->IsSameDocument())
+  if (!web_state_->IsVisible() || navigation_context->IsSameDocument()) {
     return;
-  if (currently_recording_)
+  }
+  if (currently_recording_) {
     RecordUkmIfInForeground();
+  }
   currently_recording_ = true;
   last_time_shown_ = base::TimeTicks::Now();
 }
@@ -95,8 +99,9 @@ void PageloadForegroundDurationTabHelper::DidFinishNavigation(
 void PageloadForegroundDurationTabHelper::RenderProcessGone(
     web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  if (!web_state_->IsVisible())
+  if (!web_state_->IsVisible()) {
     return;
+  }
   RecordUkmIfInForeground();
 }
 void PageloadForegroundDurationTabHelper::WebStateDestroyed(
@@ -141,8 +146,9 @@ void PageloadForegroundDurationTabHelper::CreateNotificationObservers() {
 }
 
 void PageloadForegroundDurationTabHelper::RecordUkmIfInForeground() {
-  if (!currently_recording_)
+  if (!currently_recording_) {
     return;
+  }
   currently_recording_ = false;
   base::TimeDelta foreground_duration =
       base::TimeTicks::Now() - last_time_shown_;

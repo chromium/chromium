@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/arc/arc_mount_provider.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace arc {

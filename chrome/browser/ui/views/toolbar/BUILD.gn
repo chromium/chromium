@@ -17,8 +17,6 @@ source_set("toolbar") {
     "browser_app_menu_button.h",
     "chrome_labs/chrome_labs_bubble_view.cc",
     "chrome_labs/chrome_labs_bubble_view.h",
-    "chrome_labs/chrome_labs_button.cc",
-    "chrome_labs/chrome_labs_button.h",
     "chrome_labs/chrome_labs_coordinator.cc",
     "chrome_labs/chrome_labs_coordinator.h",
     "chrome_labs/chrome_labs_item_view.cc",
@@ -31,6 +29,8 @@ source_set("toolbar") {
     "overflow_button.h",
     "pinned_action_toolbar_button.cc",
     "pinned_action_toolbar_button.h",
+    "pinned_action_toolbar_button_menu_model.cc",
+    "pinned_action_toolbar_button_menu_model.h",
     "pinned_toolbar_actions_container.cc",
     "pinned_toolbar_actions_container.h",
     "pinned_toolbar_actions_container_layout.cc",
@@ -39,6 +39,8 @@ source_set("toolbar") {
     "pinned_toolbar_button_status_indicator.h",
     "reload_button.cc",
     "reload_button.h",
+    "side_by_side_button.cc",
+    "side_by_side_button.h",
     "toolbar_action_hover_card_bubble_view.cc",
     "toolbar_action_hover_card_bubble_view.h",
     "toolbar_action_hover_card_controller.cc",
@@ -64,17 +66,16 @@ source_set("toolbar") {
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/global_error",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/views",
     "//components/bookmarks/browser",
-    "//components/flags_ui",
     "//components/prefs",
     "//components/saved_tab_groups/public",
     "//components/user_education/common",
+    "//components/webui/flags",
     "//skia",
     "//ui/actions:actions_headers",
     "//ui/base",
@@ -104,7 +105,6 @@ source_set("toolbar") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
-    "//chrome/browser/apps/link_capturing:features",
     "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/prefs",
@@ -125,7 +125,10 @@ source_set("toolbar") {
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/views/download",
+    "//chrome/browser/ui/views/page_action:page_action",
     "//chrome/browser/ui/views/side_panel:side_panel_enums",
+    "//chrome/browser/web_applications:features",
     "//chrome/common:buildflags",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -162,6 +165,7 @@ source_set("toolbar") {
     "//ui/menus",
     "//ui/native_theme",
   ]
+  allow_circular_includes_from = [ "//chrome/browser/ui/views/download" ]
   if (enable_webui_tab_strip) {
     sources += [
       "webui_tab_counter_button.cc",
@@ -172,7 +176,7 @@ source_set("toolbar") {
     deps += [ "//ui/aura" ]
   }
   if (is_chromeos) {
-    public_deps += [ "//ash/components/arc/intent_helper" ]
+    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/ownership",

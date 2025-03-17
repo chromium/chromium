@@ -295,7 +295,7 @@ AX_TEST_F(
           .expectSpeech('Size 20')
           .expectSpeech('Red, 100% opacity.')
           .expectSpeech('Bold')
-          .expectSpeech('Font Tinos')
+          .expectSpeech('Font Tinos (Fontations)')
           .expectBraille(lineText, {startIndex: 1, endIndex: 1})
           .call(moveByChar)
           .expectSpeech('v')
@@ -337,7 +337,7 @@ AX_TEST_F(
           .call(moveByChar)
           .expectSpeech('t')
           .expectSpeech('Underline')
-          .expectSpeech('Font Gelasio')
+          .expectSpeech('Font Gelasio (Fontations)')
           .expectBraille(lineText, {startIndex: 13, endIndex: 13})
           .call(moveByChar)
           .expectSpeech('e')
@@ -351,7 +351,7 @@ AX_TEST_F(
           .call(moveByChar)
           .expectSpeech(' ')
           .expectSpeech('Not underline')
-          .expectSpeech('Font Tinos')
+          .expectSpeech('Font Tinos (Fontations)')
           .expectBraille(lineText, {startIndex: 17, endIndex: 17})
           .call(moveByChar)
           .expectSpeech('b')
@@ -1594,9 +1594,8 @@ AX_TEST_F('ChromeVoxEditingTest', 'NestedInsertionDeletion', async function() {
   await mockFeedback.replay();
 });
 
-// TODO(b/321663219): Re-enable when flakiness is resolved.
 AX_TEST_F(
-    'ChromeVoxEditingTest', 'DISABLED_MoveByCharSuggestions', async function() {
+    'ChromeVoxEditingTest', 'MoveByCharSuggestions', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <div contenteditable="true" role="textbox">
@@ -2113,10 +2112,8 @@ AX_TEST_F('ChromeVoxEditingTest', 'ContextMenus', async function() {
   await mockFeedback.replay();
 });
 
-// TODO(b/321663219): Re-enable when flakiness is resolved.
 AX_TEST_F(
-    'ChromeVoxEditingTest', 'DISABLED_NativeCharWordCommands',
-    async function() {
+    'ChromeVoxEditingTest', 'NativeCharWordCommands', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <p>start</p>
@@ -2200,10 +2197,8 @@ AX_TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', async function() {
   await mockFeedback.replay();
 });
 
-// TODO(b/321663219): Re-enable when flakiness is resolved.
 AX_TEST_F(
-    'ChromeVoxEditingTest', 'DISABLED_NonbreakingSpaceNewLineOrSpace',
-    async function() {
+    'ChromeVoxEditingTest', 'NonbreakingSpaceNewLineOrSpace', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <div contenteditable="true" role="textbox">

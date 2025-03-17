@@ -121,8 +121,8 @@ void DeviceCloudPolicyManagerAsh::Initialize(PrefService* local_state) {
 
   local_state_ = local_state;
 
-  // If FRE is enabled, we'll want to know about re-enrollment state keys.
-  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  // If supported, we'll want to know about re-enrollment state keys.
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     state_keys_update_subscription_ =
         state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
             &DeviceCloudPolicyManagerAsh::OnStateKeysUpdated,
@@ -182,8 +182,9 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     ash::InstallAttributes* install_attributes) {
   CHECK(!service());
 
-  // Set state keys here so the first policy fetch submits them to the server.
-  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  // If supported, set state keys here so the first policy fetch submits them to
+  // the server.
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     client_to_connect->SetStateKeysToUpload(state_keys_broker_->state_keys());
   }
 
@@ -342,8 +343,6 @@ void DeviceCloudPolicyManagerAsh::OnUserRemoved(
 }
 
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
-  // TODO(b/181140445): If we had a separate state keys upload request to DM
-  // Server we should call it here.
   if (client()) {
     client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
   }

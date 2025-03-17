@@ -6,12 +6,13 @@
 #define IOS_CHROME_BROWSER_CONTEXT_MENU_UI_BUNDLED_LINK_PREVIEW_LINK_PREVIEW_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+
 #include "url/gurl.h"
 
 namespace web {
 struct Referrer;
 class WebState;
-}
+}  // namespace web
 
 @protocol LinkPreviewConsumer;
 

@@ -25,7 +25,7 @@
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/metrics/event_metrics.h"
@@ -1202,17 +1202,19 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   TRACE_EVENT(
       "input,input.scrolling",
       "InputHandlerProxy::HandleGestureScrollUpdate_Result",
-      [trace_id, provided_delta_x, provided_delta_y,
-       visual_offset_x = scroll_result.current_visual_offset.x(),
-       visual_offset_y = scroll_result.current_visual_offset.y()](
-          perfetto::EventContext& ctx) {
+      [&](perfetto::EventContext& ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* scroll_data = event->set_scroll_deltas();
         scroll_data->set_trace_id(trace_id);
         scroll_data->set_provided_to_compositor_delta_x(provided_delta_x);
         scroll_data->set_provided_to_compositor_delta_y(provided_delta_y);
-        scroll_data->set_visual_offset_x(visual_offset_x);
-        scroll_data->set_visual_offset_y(visual_offset_y);
+        scroll_data->set_visual_offset_x(
+            scroll_result.current_visual_offset.x());
+        scroll_data->set_visual_offset_y(
+            scroll_result.current_visual_offset.y());
+        scroll_data->set_did_overscroll_root(scroll_result.did_overscroll_root);
+        scroll_data->set_unused_delta_x(scroll_result.unused_scroll_delta.x());
+        scroll_data->set_unused_delta_y(scroll_result.unused_scroll_delta.y());
       });
 
   HandleOverscroll(gesture_event.PositionInWidget(), scroll_result);
@@ -1693,11 +1695,11 @@ void InputHandlerProxy::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
-        offset_tags_info) {
+    base::optional_ref<const cc::BrowserControlsOffsetTagModifications>
+        offset_tag_modifications) {
   DCHECK(input_handler_);
   input_handler_->UpdateBrowserControlsState(constraints, current, animate,
-                                             offset_tags_info);
+                                             offset_tag_modifications);
 }
 
 void InputHandlerProxy::FlushQueuedEventsForTesting() {
@@ -1715,9 +1717,7 @@ void InputHandlerProxy::HandleOverscroll(
   if (!scroll_result.did_overscroll_root)
     return;
 
-  TRACE_EVENT2("input", "InputHandlerProxy::DidOverscroll", "dx",
-               scroll_result.unused_scroll_delta.x(), "dy",
-               scroll_result.unused_scroll_delta.y());
+  TRACE_EVENT("input", "InputHandlerProxy::DidOverscroll");
 
   // Bundle overscroll message with triggering event response, saving an IPC.
   current_overscroll_params_ = std::make_unique<DidOverscrollParams>();

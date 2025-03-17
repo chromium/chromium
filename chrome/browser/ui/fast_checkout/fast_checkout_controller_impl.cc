@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "content/public/browser/web_contents.h"
 

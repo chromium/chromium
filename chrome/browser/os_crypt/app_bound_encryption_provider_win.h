@@ -29,10 +29,23 @@ FORWARD_DECLARE_TEST(AppBoundEncryptionWinReencryptTest, KeyProviderTest);
 
 namespace os_crypt_async {
 
+namespace features {
+// If enabled, App-Bound encryption will signal a temporary key failure if the
+// user data dir is not a standard user data dir. This causes both Encryption
+// and Decryption to be disabled. If this feature is disabled, then Decrypts on
+// previously encrypted data will function correctly but Encrypts do not use
+// app-bound.
+BASE_DECLARE_FEATURE(kAppBoundUserDataDirProtection);
+
+// If enabled, App-Bound encryption will request that the version 3 key be used
+// for data encryption by the elevated service.
+BASE_DECLARE_FEATURE(kAppBoundEncryptionKeyV3);
+
+}  // namespace features
+
 class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
  public:
-  AppBoundEncryptionProviderWin(PrefService* local_state,
-                                bool use_for_encryption);
+  explicit AppBoundEncryptionProviderWin(PrefService* local_state);
   ~AppBoundEncryptionProviderWin() override;
 
   // Not copyable.
@@ -81,8 +94,6 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
 
   class COMWorker;
   base::SequenceBound<COMWorker> com_worker_;
-
-  const bool use_for_encryption_;
 
   const os_crypt::SupportLevel support_level_;
 

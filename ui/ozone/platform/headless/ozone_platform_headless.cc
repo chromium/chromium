@@ -25,7 +25,6 @@
 #include "ui/ozone/platform/headless/headless_window_manager.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/stub_input_controller.h"
 #include "ui/ozone/public/system_input_injector.h"
@@ -53,16 +52,22 @@ class HeadlessPlatformEventSource : public PlatformEventSource {
   ~HeadlessPlatformEventSource() override = default;
 };
 
-// OzonePlatform for headless mode
-class OzonePlatformHeadless : public OzonePlatform {
+// OzonePlatform for headless mode.
+class OzonePlatformHeadlessImpl : public OzonePlatformHeadless {
  public:
-  explicit OzonePlatformHeadless(const base::FilePath& dump_file)
+  explicit OzonePlatformHeadlessImpl(const base::FilePath& dump_file)
       : file_path_(dump_file) {}
 
-  OzonePlatformHeadless(const OzonePlatformHeadless&) = delete;
-  OzonePlatformHeadless& operator=(const OzonePlatformHeadless&) = delete;
+  OzonePlatformHeadlessImpl(const OzonePlatformHeadlessImpl&) = delete;
+  OzonePlatformHeadlessImpl& operator=(const OzonePlatformHeadlessImpl&) =
+      delete;
 
-  ~OzonePlatformHeadless() override = default;
+  ~OzonePlatformHeadlessImpl() override = default;
+
+  // OzonePlatformHeadless:
+  HeadlessWindowManager* GetHeadlessWindowManager() override {
+    return window_manager_.get();
+  }
 
   // OzonePlatform:
   ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
@@ -156,7 +161,7 @@ OzonePlatform* CreateOzonePlatformHeadless() {
   base::FilePath location;
   if (cmd->HasSwitch(switches::kOzoneDumpFile))
     location = cmd->GetSwitchValuePath(switches::kOzoneDumpFile);
-  return new OzonePlatformHeadless(location);
+  return new OzonePlatformHeadlessImpl(location);
 }
 
 }  // namespace ui

@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -45,6 +46,7 @@ class CookieControlsBubbleViewPixelTest
 
   void TearDownOnMainThread() override {
     cookie_controls_coordinator_ = nullptr;
+    controller_ = nullptr;
     cookie_controls_icon_ = nullptr;
     DialogBrowserTest::TearDownOnMainThread();
   }
@@ -96,7 +98,8 @@ class CookieControlsBubbleViewPixelTest
         CookieSettingsFactory::GetForProfile(browser()->profile()),
         /*original_cookie_settings=*/nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
+        /*is_incognito_profile=*/false);
 
     cookie_controls_coordinator_ =
         cookie_controls_icon_->GetCoordinatorForTesting();
@@ -237,12 +240,14 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_PermanentException) {
+  set_baseline("6229914");
   protections_on_ = false;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_TemporaryException) {
+  set_baseline("6229914");
   protections_on_ = false;
   days_to_expiration_ = 90;
   ShowAndVerifyUi();

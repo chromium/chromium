@@ -214,7 +214,7 @@ class FullDuplexAudioSinkSource
       EXPECT_EQ(channels_, dest->channels());
       const auto size =
           std::min<size_t>(dest->frames() * frame_size_, source.size());
-      EXPECT_EQ(size % sizeof(*dest->channel(0)), 0U);
+      EXPECT_EQ(size % sizeof(float), 0U);
 
       // We should only have 16 bits per sample.
       DCHECK_EQ(frame_size_ / channels_, 2);

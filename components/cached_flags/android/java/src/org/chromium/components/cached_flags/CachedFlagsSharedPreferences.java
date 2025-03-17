@@ -8,11 +8,14 @@ import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.base.shared_preferences.PreferenceKeyRegistry;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 
 /** Shared preferences used by org.chromium.base.cached_flags */
+@NullMarked
 public class CachedFlagsSharedPreferences {
     /** CachedFlags store flag values for the next run with this prefix. */
     public static final KeyPrefix FLAGS_CACHED = new KeyPrefix("Chrome.Flags.CachedFlag.*");
@@ -30,7 +33,7 @@ public class CachedFlagsSharedPreferences {
     /** How many runs of Safe Mode for Cached Flags are left before trying a normal run. */
     public static final String FLAGS_SAFE_MODE_RUNS_LEFT = "Chrome.Flags.SafeModeRunsLeft";
 
-    public static final PreferenceKeyRegistry REGISTRY =
+    public static final @Nullable PreferenceKeyRegistry REGISTRY =
             (BuildConfig.ENABLE_ASSERTS
                     ? new PreferenceKeyRegistry(
                             /* module= */ "cached_flags",

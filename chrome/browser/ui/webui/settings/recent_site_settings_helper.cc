@@ -109,8 +109,7 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
 }  // namespace
 
 TimestampedSetting::TimestampedSetting()
-    : timestamp(base::Time()),
-      content_type(ContentSettingsType::DEFAULT),
+    : content_type(ContentSettingsType::DEFAULT),
       content_setting(ContentSetting::CONTENT_SETTING_DEFAULT),
       setting_source(site_settings::SiteSettingSource::kDefault) {}
 TimestampedSetting::TimestampedSetting(const TimestampedSetting& other) =
@@ -126,10 +125,7 @@ TimestampedSetting::TimestampedSetting(
       setting_source(setting_source) {}
 TimestampedSetting::~TimestampedSetting() = default;
 
-RecentSitePermissions::RecentSitePermissions()
-    : origin(GURL()),
-      incognito(false),
-      settings(std::vector<TimestampedSetting>()) {}
+RecentSitePermissions::RecentSitePermissions() : incognito(false) {}
 RecentSitePermissions::RecentSitePermissions(
     const RecentSitePermissions& other) = default;
 RecentSitePermissions::RecentSitePermissions(RecentSitePermissions&& other) =

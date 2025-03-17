@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "build/build_config.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -21,7 +22,8 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -33,9 +35,11 @@
 #include "components/variations/service/google_groups_manager_prefs.h"
 #include "ui/events/ash/pref_names.h"
 #endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/pref_names.h"  // nogncheck
 #endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/supervised_user/core/common/pref_names.h"
 #endif
@@ -373,6 +377,16 @@ enum {
   kAccessibilitySlowKeysDelayMs = 100312,
   kAccessibilityFaceGazePrecisionClick = 100313,
   kAccessibilityFaceGazePrecisionClickSpeedFactor = 100314,
+  kOfficeFilesAlwaysMoveToDriveSyncable = 100315,
+  kOfficeFilesAlwaysMoveToOneDriveSyncable = 100316,
+  kOfficeMoveConfirmationShownForDriveSyncable = 100317,
+  kOfficeMoveConfirmationShownForOneDriveSyncable = 100318,
+  kOfficeMoveConfirmationShownForLocalToDriveSyncable = 100319,
+  kOfficeMoveConfirmationShownForLocalToOneDriveSyncable = 100320,
+  kOfficeMoveConfirmationShownForCloudToDriveSyncable = 100321,
+  kOfficeMoveConfirmationShownForCloudToOneDriveSyncable = 100322,
+  kPinnedCastMigrationComplete = 100323,
+  kAccessibilityAXTreeFixingEnabled = 100324,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -537,6 +551,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kPinnedChromeLabsMigrationComplete,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {prefs::kPinnedCastMigrationComplete,
+     {syncable_prefs_ids::kPinnedCastMigrationComplete, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     {extensions::pref_names::kPinnedExtensions,
@@ -560,7 +578,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {ash::prefs::kRestoreAppsAndPagesPrefName,
      {syncable_prefs_ids::kRestoreAppsAndPagesPrefName, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
@@ -821,6 +839,40 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {ash::prefs::kNaturalScroll,
      {syncable_prefs_ids::kNaturalScroll, syncer::OS_PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
+     {syncable_prefs_ids::kOfficeFilesAlwaysMoveToDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable,
+     {syncable_prefs_ids::kOfficeFilesAlwaysMoveToOneDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeMoveConfirmationShownForDriveSyncable,
+     {syncable_prefs_ids::kOfficeMoveConfirmationShownForDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeMoveConfirmationShownForOneDriveSyncable,
+     {syncable_prefs_ids::kOfficeMoveConfirmationShownForOneDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable,
+     {syncable_prefs_ids::kOfficeMoveConfirmationShownForLocalToDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable,
+     {syncable_prefs_ids::
+          kOfficeMoveConfirmationShownForLocalToOneDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable,
+     {syncable_prefs_ids::kOfficeMoveConfirmationShownForCloudToDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable,
+     {syncable_prefs_ids::
+          kOfficeMoveConfirmationShownForCloudToOneDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kOobeMarketingOptInChoice,
      {syncable_prefs_ids::kOobeMarketingOptInChoice, syncer::OS_PREFERENCES,
@@ -1232,7 +1284,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kKeyboardHasSplitModifierKeyboard,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
@@ -1247,6 +1299,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityImageLabelsOptInAccepted,
      {syncable_prefs_ids::kAccessibilityImageLabelsOptInAccepted,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAccessibilityAXTreeFixingEnabled,
+     {syncable_prefs_ids::kAccessibilityAXTreeFixingEnabled,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityMainNodeAnnotationsEnabled,
@@ -1335,7 +1391,9 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kRestoreOnStartup,
      {syncable_prefs_ids::kRestoreOnStartup, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
+      // This is behind history opt-in to be consistent with the
+      // `kURLsToRestoreOnStartup` pref.
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kSearchSuggestEnabled,
      {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
@@ -1622,9 +1680,9 @@ std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
   std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
       syncable_prefs;
-  base::ranges::copy(kChromeSyncablePrefsAllowlist,
-                     std::inserter(syncable_prefs, syncable_prefs.end()));
-  base::ranges::move(
+  std::ranges::copy(kChromeSyncablePrefsAllowlist,
+                    std::inserter(syncable_prefs, syncable_prefs.end()));
+  std::ranges::move(
       common_syncable_prefs_database_.GetAllSyncablePrefsForTest(),  // IN-TEST
       std::inserter(syncable_prefs, syncable_prefs.end()));
   return syncable_prefs;

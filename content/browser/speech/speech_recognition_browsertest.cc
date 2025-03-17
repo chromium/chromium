@@ -142,10 +142,9 @@ class MockCapturerSource : public media::AudioCapturerSource {
   MOCK_METHOD1(SetOutputDeviceForAec,
                void(const std::string& output_device_id));
 
- protected:
+ private:
   ~MockCapturerSource() override = default;
 
- private:
   StartCallback start_callback_;
   StopCallback stop_callback_;
   raw_ptr<CaptureCallback, AcrossTasksDanglingUntriaged> capture_callback_;
@@ -295,7 +294,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
         audio_buffer[i] =
             static_cast<uint8_t>(127 * sin(i * 3.14F / (16 * buffer_size)));
     } else {
-      base::ranges::fill(audio_buffer, 0);
+      std::ranges::fill(audio_buffer, 0);
     }
 
     std::unique_ptr<media::AudioBus> audio_bus =

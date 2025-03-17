@@ -17,8 +17,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 from pylib.gtest import gtest_test_instance
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_gtest_run
+from pylib.local.device import local_device_test_run
 
 import mock  # pylint: disable=import-error
+from unittest.mock import MagicMock
 
 
 def isSliceInList(s, l):
@@ -132,26 +134,41 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
 
 class LocalDeviceGtestTestRunShardingTest(unittest.TestCase):
   def setUp(self):
+    self._env = mock.MagicMock(
+        spec=local_device_environment.LocalDeviceEnvironment)
+    self._test_instance = mock.MagicMock(
+        spec=gtest_test_instance.GtestTestInstance)
     self._obj = local_device_gtest_run.LocalDeviceGtestRun(
-        mock.MagicMock(spec=local_device_environment.LocalDeviceEnvironment),
-        mock.MagicMock(spec=gtest_test_instance.GtestTestInstance))
+        self._env, self._test_instance)
 
-  def test_CreateShardsForDevices(self):
-    self._obj._env.devices = [1]
-    self._obj._test_instance.test_launcher_batch_limit = 2
-    tests = [
+    self.test_list = [
         'TestClass1.testcase1',
         'TestClass2.testcase1',
         'TestClass1.def_testcase3',
         'TestClass1.abc_testcase2',
         'TestClass3.testcase1'
     ]
+
+    # Mock these methods called in RunTests
+    self._env.ResetCurrentTry = MagicMock(side_effect = self.reset_try)
+    self._env.IncrementCurrentTry = MagicMock(side_effect = self.increment_try)
+    self._obj._GetTests = MagicMock(return_value=self.test_list)
+
+  def reset_try(self):
+    self._env.current_try = 0
+
+  def increment_try(self):
+    self._env.current_try += 1
+
+  def test_CreateShardsForDevices(self):
+    self._obj._env.devices = [1]
+    self._obj._test_instance.test_launcher_batch_limit = 2
     expected_shards = [
         ['TestClass1.testcase1', 'TestClass2.testcase1'],
         ['TestClass1.def_testcase3', 'TestClass1.abc_testcase2'],
         ['TestClass3.testcase1']
     ]
-    actual_shards = self._obj._CreateShardsForDevices(tests)
+    actual_shards = self._obj._CreateShardsForDevices(self.test_list)
     self.assertEqual(expected_shards, actual_shards)
 
   def test_ApplyExternalSharding_1_shard(self):
@@ -181,6 +198,57 @@ class LocalDeviceGtestTestRunShardingTest(unittest.TestCase):
     self.assertEqual(expected_shard0, expected_shard0)
     self.assertEqual(expected_shard1, expected_shard1)
     self.assertSetEqual(set(actual_shard0 + actual_shard1), set(tests))
+
+  def test_deterministic_sharding_grouped_tests(self):
+    self._test_instance.external_shard_index = 0
+    self._test_instance.total_external_shards = 1
+    self._test_instance.test_launcher_batch_limit = 2
+    self._env.devices = [1]
+    self._env.recover_devices = False
+    # 1 try and just the last try of mock_RunTestsOnDevice call is asserted
+    self._env.max_tries = 1
+
+    expected_shards = [
+        ['TestClass1.def_testcase3', 'TestClass1.abc_testcase2'],
+        ['TestClass1.testcase1', 'TestClass3.testcase1'],
+        ['TestClass2.testcase1']
+    ]
+
+    # Mock pMap to call the provided function
+    def mock_pMap(func, *args):
+      for _ in self._env.devices:
+        func(*args)
+      return MagicMock()
+
+    # Process test collection arg of last mock_RunTestsOnDevice call
+    def get_actual_shards():
+      actual_shards = []
+      # mock_RunTestsOnDevice must be called for call_args to not be None
+      mock_RunTestsOnDevice.assert_called()
+      tc = mock_RunTestsOnDevice.call_args.args[0]
+      for group in tc:
+        actual_shards.append(group)
+        tc.test_completed()
+      return actual_shards
+
+    mock_RunTestsOnDevice = MagicMock(
+        autospec='local_device_test_run.LocalDeviceTestRun._RunTestsOnDevice')
+    # Monkey patch needed to call mock. Decorator patch calls original method
+    # instead of mock possibly due to decorator or pMap on original method.
+    (local_device_test_run.LocalDeviceTestRun
+        ._RunTestsOnDevice) = mock_RunTestsOnDevice
+
+    with mock.patch.object(
+        self._env.parallel_devices, "pMap", side_effect=mock_pMap
+    ):
+      self._obj.RunTests(results=[])
+      actual_shards = get_actual_shards()
+      self.assertEqual(actual_shards, expected_shards)
+
+      # Check "Retry shards with patch" has deterministic test ordering
+      self._obj.RunTests(results=[])
+      actual_shards = get_actual_shards()
+      self.assertEqual(actual_shards, expected_shards)
 
 
 if __name__ == '__main__':

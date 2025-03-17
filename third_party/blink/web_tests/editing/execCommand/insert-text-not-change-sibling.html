@@ -1,0 +1,84 @@
+<!doctype html>
+<title>InsertText does not change the sibling element's DOM structure</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+  [
+    '<div contenteditable>',
+      '<span style="color: red;">red</span><span>black</span>',
+      '<span style="color: red;">^red</span><span>bla|ck</span>',
+      '<span style="color: red;">red</span><span>black</span>',
+    '</div>',
+  ],
+  'insertText x',
+  [
+    '<div contenteditable>',
+      '<span style="color: red;">red</span>',
+      '<span>black<font color="#ff0000">x|</font></span>',
+      '<span>ck</span>',
+      '<span style="color: red;">red</span><span>black</span>',
+    '</div>',
+  ],
+  `InsertText into the element that does not have any attribute by splitting the start node`
+);
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<span style="color: red;">red</span><span class="black">black</span>',
+      '<span style="color: red;">^red</span><span class="black">bla|ck</span>',
+      '<span style="color: red;">red</span><span class="black">black</span>',
+    '</div>',
+  ],
+  'insertText x',
+  [
+    '<div contenteditable>',
+      '<span style="color: red;">red</span>',
+      '<span class="black">black<font color="#ff0000">x|</font></span>',
+      '<span class="black">ck</span>',
+      '<span style="color: red;">red</span><span class="black">black</span>',
+    '</div>',
+  ],
+  `InsertText into the element that has a className attribute by splitting the start node`
+);
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<span style="color: red;">^red</span><span>bla|ck</span>',
+      '<span style="color: red;">red</span><span>black</span>',
+      '<span style="color: red;">red</span><span>black</span>',
+    '</div>',
+  ],
+  'insertText x',
+  [
+    '<div contenteditable>',
+      '<span><font color="#ff0000">x|</font>ck</span>',
+      '<span style="color: red;">red</span><span>black</span>',
+      '<span style="color: red;">red</span><span>black</span>',
+    '</div>',
+  ],
+  `InsertText into the element that does not have any attribute by splitting the end node`
+);
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<span style="color: red;">^red</span><span class="black">bla|ck</span>',
+      '<span style="color: red;">red</span><span class="black">black</span>',
+      '<span style="color: red;">red</span><span class="black">black</span>',
+    '</div>',
+  ],
+  'insertText x',
+  [
+    '<div contenteditable>',
+      '<span class="black"><font color="#ff0000">x|</font>ck</span>',
+      '<span style="color: red;">red</span><span class="black">black</span>',
+      '<span style="color: red;">red</span><span class="black">black</span>',
+    '</div>',
+  ],
+  `InsertText into the element that has a className attribute by splitting the end node`
+);
+</script>

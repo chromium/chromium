@@ -19,7 +19,6 @@
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/browser/predictors/prefetch_traffic_annotation.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
-#include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
@@ -37,6 +36,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -133,14 +133,11 @@ struct PrefetchInfo {
 struct PrefetchJob {
   PrefetchJob(PrefetchRequest prefetch_request, PrefetchInfo& info)
       : url(prefetch_request.url),
-        network_anonymization_key(
-            std::move(prefetch_request.network_anonymization_key)),
         destination(prefetch_request.destination),
         creation_time(base::TimeTicks::Now()),
         info(info.weak_factory.GetWeakPtr()) {
     DCHECK(url.is_valid());
     DCHECK(url.SchemeIsHTTPOrHTTPS());
-    DCHECK(network_anonymization_key.IsFullyPopulated());
     info.OnJobCreated();
   }
 
@@ -153,7 +150,6 @@ struct PrefetchJob {
   PrefetchJob& operator=(const PrefetchJob&) = delete;
 
   GURL url;
-  net::NetworkAnonymizationKey network_anonymization_key;
   network::mojom::RequestDestination destination;
   base::TimeTicks creation_time;
 
@@ -250,9 +246,10 @@ void PrefetchManager::PrefetchUrl(
   // conservative one (no-referrer) by default.
   request.referrer_policy = net::ReferrerPolicy::NO_REFERRER;
 
-  request.headers.SetHeader("Purpose", "prefetch");
-  request.headers.SetHeader(prefetch::headers::kSecPurposeHeaderName,
-                            prefetch::headers::kSecPurposePrefetchHeaderValue);
+  request.headers.SetHeader(blink::kPurposeHeaderName,
+                            blink::kSecPurposePrefetchHeaderValue);
+  request.headers.SetHeader(blink::kSecPurposeHeaderName,
+                            blink::kSecPurposePrefetchHeaderValue);
 
   request.load_flags = net::LOAD_PREFETCH;
   request.destination = job->destination;

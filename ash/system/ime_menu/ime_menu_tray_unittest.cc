@@ -4,6 +4,8 @@
 
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
+#include <string_view>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller.h"
@@ -77,7 +79,7 @@ class ImeMenuTrayTest : public AshTestBase {
   bool IsVisible() { return GetTray()->GetVisible(); }
 
   // Returns the label text of the tray.
-  const std::u16string& GetTrayText() { return GetTray()->label_->GetText(); }
+  std::u16string_view GetTrayText() { return GetTray()->label_->GetText(); }
 
   // Returns true if the background color of the tray is active.
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }
@@ -132,7 +134,7 @@ class ImeMenuTrayTest : public AshTestBase {
 
       // Tests that the checked IME is the current IME.
       ui::AXNodeData node_data;
-      ime.first->GetAccessibleNodeData(&node_data);
+      ime.first->GetViewAccessibility().GetAccessibleNodeData(&node_data);
       const auto checked_state = static_cast<ax::mojom::CheckedState>(
           node_data.GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
       if (checked_state == ax::mojom::CheckedState::kTrue) {

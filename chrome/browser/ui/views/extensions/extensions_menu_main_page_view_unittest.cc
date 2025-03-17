@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -37,6 +38,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_utils.h"
@@ -993,9 +995,6 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
 
   const ui::ColorProvider* color_provider =
       context_menu_button->GetColorProvider();
-  auto pin_icon = gfx::Image(gfx::CreateVectorIcon(
-      views::kPinIcon,
-      color_provider->GetColor(kColorExtensionMenuPinButtonIcon)));
   auto three_dot_icon = gfx::Image(
       gfx::CreateVectorIcon(kBrowserToolsChromeRefreshIcon,
                             color_provider->GetColor(kColorExtensionMenuIcon)));

@@ -1695,29 +1695,4 @@ TEST_F(ContentAnalysisDelegateWithLocalClient, FailClosed) {
 }
 #endif
 
-// Calling GetRequestData() twice should return the same valid region.
-TEST(StringAnalysisRequest, GetRequestData) {
-  std::string contents("contents");
-  StringAnalysisRequest request(AnalysisSettings().cloud_or_local_settings,
-                                contents, base::DoNothing());
-
-  safe_browsing::BinaryUploadService::Request::Data data1;
-  request.GetRequestData(base::BindLambdaForTesting(
-      [&data1](safe_browsing::BinaryUploadService::Result result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
-        data1 = std::move(data);
-      }));
-
-  safe_browsing::BinaryUploadService::Request::Data data2;
-  request.GetRequestData(base::BindLambdaForTesting(
-      [&data2](safe_browsing::BinaryUploadService::Result result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
-        data2 = std::move(data);
-      }));
-
-  ASSERT_EQ(data1.size, data2.size);
-  ASSERT_EQ(data1.size, contents.size());
-  ASSERT_EQ(data1.contents, data2.contents);
-}
-
 }  // namespace enterprise_connectors

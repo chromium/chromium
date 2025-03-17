@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,6 +22,10 @@ namespace base {
 class FilePath;
 class Version;
 }  // namespace base
+
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
 
 namespace mojo {
 class IsolatedConnection;
@@ -60,6 +64,7 @@ class UpdateServiceProxyImpl
       base::OnceCallback<void(base::expected<base::Version, RpcError>)>
           callback);
   void FetchPolicies(
+      policy::PolicyFetchReason reason,
       base::OnceCallback<void(base::expected<int, RpcError>)> callback);
   void RegisterApp(
       const RegistrationRequest& request,

@@ -63,6 +63,7 @@ TEST(OutputDeviceBackingTest, GetMaxViewportBytes) {
 
   EXPECT_EQ(GetViewportSizeInBytes(client_b.viewport_size()),
             backing.GetMaxViewportBytes());
+  EXPECT_EQ(client_b.viewport_size(), backing.GetMaxViewportSize());
 }
 
 // Verify that unregistering a client works as expected.

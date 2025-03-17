@@ -9,6 +9,7 @@
 
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -19,7 +20,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -946,8 +946,8 @@ bool PepperPluginInstanceImpl::
   // Set the composition target.
   for (size_t i = 0; i < ime_text_spans.size(); ++i) {
     if (ime_text_spans[i].thickness == ui::ImeTextSpan::Thickness::kThick) {
-      auto it = base::ranges::find(event.composition_segment_offsets,
-                                   utf8_offsets[2 * i + 2]);
+      auto it = std::ranges::find(event.composition_segment_offsets,
+                                  utf8_offsets[2 * i + 2]);
       if (it != event.composition_segment_offsets.end()) {
         event.composition_target_segment =
             it - event.composition_segment_offsets.begin();
@@ -2689,8 +2689,8 @@ void PepperPluginInstanceImpl::ConvertDIPToViewport(gfx::Rect* rect) const {
 
 void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
-  auto it = base::ranges::find(texture_ref_counts_, resource.mailbox(),
-                               &MailboxRefCount::first);
+  auto it = std::ranges::find(texture_ref_counts_, resource.mailbox(),
+                              &MailboxRefCount::first);
   if (it == texture_ref_counts_.end()) {
     texture_ref_counts_.emplace_back(resource.mailbox(), 1);
     return;
@@ -2701,8 +2701,8 @@ void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
 
 bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
-  auto it = base::ranges::find(texture_ref_counts_, resource.mailbox(),
-                               &MailboxRefCount::first);
+  auto it = std::ranges::find(texture_ref_counts_, resource.mailbox(),
+                              &MailboxRefCount::first);
   CHECK(it != texture_ref_counts_.end(), base::NotFatalUntil::M130);
 
   if (it->second == 1) {

@@ -51,6 +51,23 @@ _allow_unsafe_buffers_filenames = [
     "gpu/command_buffer/service/raster_decoder_autogen.h",
 ]
 
+# TODO(crbug.com/390223051): Remove this and generate code using safer
+# constructs.
+_ALLOW_UNSAFE_LIBC_CALLS = """
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
+"""
+_allow_unsafe_libc_calls_filenames = [
+    "gpu/command_buffer/common/gles2_cmd_format_test_autogen.h",
+    "gpu/command_buffer/common/raster_cmd_format_autogen.h",
+    "gpu/command_buffer/common/raster_cmd_format_test_autogen.h",
+    "gpu/command_buffer/common/webgpu_cmd_format_autogen.h",
+]
+
 # This string is copied directly out of the gl2.h file from GLES2.0
 #
 # Edits:
@@ -829,6 +846,8 @@ class CWriter():
     self._ENTER_MSG = _LICENSE % year + _DO_NOT_EDIT_WARNING % _lower_prefix
     if (filename in _allow_unsafe_buffers_filenames):
         self._ENTER_MSG += _ALLOW_UNSAFE_BUFFERS
+    if (filename in _allow_unsafe_libc_calls_filenames):
+        self._ENTER_MSG += _ALLOW_UNSAFE_LIBC_CALLS
     self._EXIT_MSG = ""
     try:
       os.makedirs(os.path.dirname(filename))

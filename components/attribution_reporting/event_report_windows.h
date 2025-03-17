@@ -12,9 +12,13 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+
+namespace base {
+class DictValue;
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -40,12 +44,12 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
       mojom::SourceType);
 
   static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  FromJSON(const base::Value::Dict& registration,
+  FromJSON(const base::DictValue& registration,
            base::TimeDelta expiry,
            mojom::SourceType);
 
   static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  ParseWindows(const base::Value::Dict&,
+  ParseWindows(const base::DictValue&,
                base::TimeDelta expiry,
                const EventReportWindows& default_if_absent);
 
@@ -79,7 +83,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
 
   WindowResult FallsWithin(base::TimeDelta trigger_moment) const;
 
-  void Serialize(base::Value::Dict& dict) const;
+  void Serialize(base::DictValue& dict) const;
 
   friend bool operator==(const EventReportWindows&,
                          const EventReportWindows&) = default;

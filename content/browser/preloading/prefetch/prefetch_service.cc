@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -18,18 +19,20 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
+#include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
@@ -46,6 +49,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -55,6 +59,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -79,7 +84,7 @@ static ServiceWorkerContext* g_service_worker_context_for_testing = nullptr;
 
 bool (*g_host_non_unique_filter)(std::string_view) = nullptr;
 
-static network::mojom::URLLoaderFactory* g_url_loader_factory_for_testing =
+static network::SharedURLLoaderFactory* g_url_loader_factory_for_testing =
     nullptr;
 
 static network::mojom::NetworkContext*
@@ -98,18 +103,13 @@ std::optional<PreloadingEligibility>& GetForceIneligibilityForTesting() {
   return prefetch_force_ineligibility_for_testing;
 }
 
-PrefetchService::PrefetchResponseCompletedCallbackForTesting&
-GetPrefetchResponseCompletedCallbackForTesting() {
-  static base::NoDestructor<
-      PrefetchService::PrefetchResponseCompletedCallbackForTesting>
-      prefetch_response_completed_callback_for_testing;
-  return *prefetch_response_completed_callback_for_testing;
-}
-
 bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
   switch (eligibility) {
     case PreloadingEligibility::kUserHasCookies:
     case PreloadingEligibility::kUserHasServiceWorker:
+    case PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler:
+    case PreloadingEligibility::kRedirectFromServiceWorker:
+    case PreloadingEligibility::kRedirectToServiceWorker:
       // If the prefetch is not eligible because of cookie or a service worker,
       // then maybe send a decoy.
       return true;
@@ -430,7 +430,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     // With `kPrerender2FallbackPrefetchSpecRules`, B' triggers prefetch ahead
     // of prerender B for URL X. Sites use SpecRules A+B' with expectation
     // "prefetch X then prerender X", but the order of
-    // `PrefetchService::AddPrefetchContainer()` for A and B is unstable in
+    // `PrefetchService::AddPrefetchContainer*()` for A and B is unstable in
     // general.
     //
     // `PrerenderHost` of B' needs to know eligibility and status of B. We use
@@ -452,7 +452,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
           std::move(owned_prefetch_container));
       break;
     case Action::kReplaceOldWithNew:
-      ResetPrefetch(prefetch_iter->second->GetWeakPtr());
+      ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr());
       owned_prefetches_[prefetch_container_key] =
           std::move(owned_prefetch_container);
       break;
@@ -463,17 +463,130 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
   }
 }
 
-void PrefetchService::AddPrefetchContainer(
+bool PrefetchService::IsPrefetchDuplicate(
+    GURL& url,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint) {
+  TRACE_EVENT0("loading", "PrefetchService::IsPrefetchDuplicate");
+  for (const auto& [key, prefetch_container] : owned_prefetches_) {
+    if (IsPrefetchStale(prefetch_container->GetWeakPtr())) {
+      continue;
+    }
+
+    // We will only compare the URLs if the no-vary-search hints match for
+    // determinism. This is because comparing URLs with different no-vary-search
+    // hints will change the outcome of the comparison based on the order the
+    // requests happened in.
+    //
+    // This approach optimizes for determinism over minimizing wasted
+    // or redundant prefetches.
+    bool nvs_hints_match =
+        no_vary_search_hint == prefetch_container->GetNoVarySearchHint();
+    if (!nvs_hints_match) {
+      continue;
+    }
+
+    bool urls_equal;
+    if (no_vary_search_hint) {
+      urls_equal = no_vary_search_hint->AreEquivalent(url, key.url());
+    } else {
+      // If there is no no-vary-search hint, just compare the URLs.
+      urls_equal = url == key.url();
+    }
+
+    if (!urls_equal) {
+      continue;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
+    base::PassKey<PrefetchDocumentManager>,
+    PrefetchContainer::Key key) const {
+  auto it = owned_prefetches_.find(key);
+  if (it == owned_prefetches_.end() || !it->second) {
+    return true;
+  }
+
+  const std::unique_ptr<PrefetchContainer>& container = it->second;
+  if (!container->HasPrefetchStatus()) {
+    return false;  // the container is not processed yet
+  }
+
+  switch (container->GetPrefetchStatus()) {
+    case PrefetchStatus::kPrefetchSuccessful:
+    case PrefetchStatus::kPrefetchResponseUsed:
+      return false;
+    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+    case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIsStale:
+    case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+    case PrefetchStatus::kPrefetchNotStarted:
+    case PrefetchStatus::kPrefetchNotFinishedInTime:
+    case PrefetchStatus::kPrefetchFailedNetError:
+    case PrefetchStatus::kPrefetchFailedNon2XX:
+    case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+    case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+    case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+    case PrefetchStatus::kPrefetchHeldback:
+    case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+    case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+    case PrefetchStatus::
+        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      return true;
+  }
+}
+
+bool PrefetchService::IsPrefetchStale(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  TRACE_EVENT0("loading", "PrefetchService::IsPrefetchStale");
+  if (!prefetch_container) {
+    return true;
+  }
+
+  // `PrefetchContainer::LoadState` check.
+  PrefetchContainer::LoadState load_state = prefetch_container->GetLoadState();
+  if (load_state == PrefetchContainer::LoadState::kFailedIneligible ||
+      load_state == PrefetchContainer::LoadState::kFailedHeldback) {
+    return true;
+  }
+
+  // `PrefetchContainer::ServableState` check.
+  PrefetchContainer::ServableState servable_state =
+      prefetch_container->GetServableState(PrefetchCacheableDuration());
+  if (servable_state == PrefetchContainer::ServableState::kNotServable) {
+    return true;
+  }
+  return false;
+}
+
+std::unique_ptr<PrefetchHandle> PrefetchService::AddPrefetchContainerWithHandle(
     std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
   base::WeakPtr<PrefetchContainer> prefetch_container =
       owned_prefetch_container->GetWeakPtr();
   AddPrefetchContainerWithoutStartingPrefetch(
       std::move(owned_prefetch_container));
 
-  if (!prefetch_container) {
-    return;
+  if (prefetch_container) {
+    PrefetchUrl(prefetch_container);
   }
-  PrefetchUrl(std::move(prefetch_container));
+
+  return std::make_unique<PrefetchHandleImpl>(GetWeakPtr(), prefetch_container);
 }
 
 void PrefetchService::AddPrefetchContainerWithoutStartingPrefetchForTesting(
@@ -661,6 +774,45 @@ void PrefetchService::CheckHasServiceWorker(
   CHECK(prefetch_container);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "loading", "PrefetchService::CheckHasServiceWorker", this);
+
+  if (redirect_data) {
+    switch (prefetch_container->service_worker_state()) {
+      case PrefetchServiceWorkerState::kDisallowed:
+        break;
+
+      case PrefetchServiceWorkerState::kAllowed:
+        // Should have been transitioned out already.
+        NOTREACHED();
+
+      case PrefetchServiceWorkerState::kControlled:
+        // Currently we disallow redirects for ServiceWorker-controlled
+        // prefetches.
+        // TODO(https://crbug.com/40947546): Supply an appropriate eligibility
+        // value if needed.
+        OnGotEligibility(std::move(prefetch_container),
+                         std::move(redirect_data),
+                         PreloadingEligibility::kUserHasServiceWorker);
+        return;
+    }
+  } else {
+    switch (prefetch_container->service_worker_state()) {
+      case PrefetchServiceWorkerState::kDisallowed:
+        break;
+
+      case PrefetchServiceWorkerState::kAllowed:
+        // The controlling ServiceWorker will be checked by
+        // `ServiceWorkerMainResourceLoaderInterceptor` from
+        // `PrefetchStreamingURLLoader`, not here during eligibility check.
+        OnGotServiceWorkerResult(std::move(prefetch_container), url,
+                                 std::move(redirect_data), base::Time::Now(),
+                                 ServiceWorkerCapability::NO_SERVICE_WORKER);
+        return;
+
+      case PrefetchServiceWorkerState::kControlled:
+        NOTREACHED();
+    }
+  }
+
   // This service worker check assumes that the prefetch will only ever be
   // performed in a first-party context (main frame prefetch). At the moment
   // that is true but if it ever changes then the StorageKey will need to be
@@ -725,22 +877,33 @@ void PrefetchService::OnGotServiceWorkerResult(
     CHECK(preloading_attempt);
     preloading_attempt->SetServiceWorkerRegisteredCheckDuration(duration);
   }
+  // Note that after ServiceWorker+Prefetch support is implemented,
+  // - For ServiceWorker-eligible prefetches,
+  //   `ServiceWorkerCapability::NO_SERVICE_WORKER` is passed here and thus the
+  //   ServiceWorker-related ineligibility values here are not used.
+  // - For ServiceWorker-ineligible prefetches (e.g. cross-site prefetches),
+  //   they still goes through the checks below and the ServiceWorker-related
+  //   ineligibility values here are still valid and used.
   switch (service_worker_capability) {
     case ServiceWorkerCapability::NO_SERVICE_WORKER:
       break;
     case ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
       if (base::FeatureList::IsEnabled(
               features::kPrefetchServiceWorkerNoFetchHandlerFix)) {
-        OnGotEligibility(std::move(prefetch_container),
-                         std::move(redirect_data),
-                         PreloadingEligibility::kUserHasServiceWorker);
+        OnGotEligibility(
+            std::move(prefetch_container), std::move(redirect_data),
+            PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler);
         return;
       }
       break;
-    case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
+    case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER: {
+      auto eligibility = redirect_data
+                             ? PreloadingEligibility::kRedirectToServiceWorker
+                             : PreloadingEligibility::kUserHasServiceWorker;
       OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
-                       PreloadingEligibility::kUserHasServiceWorker);
+                       eligibility);
       return;
+    }
   }
   // This blocks same-site cross-origin prefetches that require the prefetch
   // proxy. Same-site prefetches are made using the default network context, and
@@ -1025,12 +1188,22 @@ void PrefetchService::OnGotEligibilityForRedirect(
     }
   }
 
+  // TODO(crbug.com/396133768): Consider setting appropriate PrefetchStatus.
+  auto streaming_url_loader = prefetch_container->GetStreamingURLLoader();
+  if (!streaming_url_loader) {
+    if (active_prefetch_ == prefetch_container->key()) {
+      active_prefetch_ = std::nullopt;
+      Prefetch();
+    }
+    return;
+  }
+
   // If the redirect is not eligible and the prefetch is not a decoy, then stop
   // the prefetch.
   if (!eligible && !prefetch_container->IsDecoy()) {
     DCHECK(active_prefetch_ == prefetch_container->key());
     active_prefetch_ = std::nullopt;
-    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
+    streaming_url_loader->HandleRedirect(
         PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
 
     Prefetch();
@@ -1047,7 +1220,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
           ->IsIsolatedNetworkContextRequiredForCurrentPrefetch() !=
       prefetch_container
           ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop()) {
-    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
+    streaming_url_loader->HandleRedirect(
         PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
         std::move(redirect_head));
     // The new ResponseReader is associated with the new streaming URL loader at
@@ -1058,10 +1231,10 @@ void PrefetchService::OnGotEligibilityForRedirect(
   }
 
   // Otherwise, follow the redirect in the same streaming URL loader.
-  prefetch_container->GetStreamingURLLoader()->HandleRedirect(
-      PrefetchRedirectStatus::kFollow, redirect_info, std::move(redirect_head));
+  streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
+                                       redirect_info, std::move(redirect_head));
   // Associate the new ResponseReader with the current streaming URL loader.
-  prefetch_container->GetStreamingURLLoader()->SetResponseReader(
+  streaming_url_loader->SetResponseReader(
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 }
 
@@ -1113,7 +1286,7 @@ PrefetchService::PopNextPrefetchContainer() {
   // managed by PrefetchDocumentManager, this depends on the state of the
   // initiating document, and the number of completed prefetches (this can also
   // result in previously completed prefetches being evicted).
-  auto prefetch_iter = base::ranges::find_if(
+  auto prefetch_iter = std::ranges::find_if(
       prefetch_queue_,
       [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
         if (!prefetch_container->IsRendererInitiated()) {
@@ -1148,14 +1321,27 @@ PrefetchService::PopNextPrefetchContainer() {
 void PrefetchService::OnPrefetchTimeout(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchIsStale);
-  ResetPrefetch(prefetch_container);
+  ResetPrefetchContainer(prefetch_container);
 
   if (!active_prefetch_) {
     Prefetch();
   }
 }
 
-void PrefetchService::ResetPrefetch(
+void PrefetchService::MayReleasePrefetch(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  if (!prefetch_container) {
+    return;
+  }
+
+  if (!base::Contains(owned_prefetches_, prefetch_container->key())) {
+    return;
+  }
+
+  ResetPrefetchContainer(prefetch_container);
+}
+
+void PrefetchService::ResetPrefetchContainer(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   CHECK(prefetch_container);
   auto it = owned_prefetches_.find(prefetch_container->key());
@@ -1194,20 +1380,22 @@ void PrefetchService::StartSinglePrefetch(
 
   prefetch_container->OnPrefetchStarted();
 
-  // Start timer to release the prefetch container after
-  // |PrefetchContainerLifetimeInPrefetchService|.
-  base::TimeDelta reset_delta = PrefetchContainerLifetimeInPrefetchService();
-  if (reset_delta.is_positive()) {
-    prefetch_container->StartTimeoutTimer(
-        PrefetchContainerLifetimeInPrefetchService(),
-        base::BindOnce(&PrefetchService::OnPrefetchTimeout,
-                       weak_method_factory_.GetWeakPtr(), prefetch_container));
-  }
+  // Checks if the `PrefetchContainer` has a specific TTL (Time-to-Live)
+  // configured. If a TTL is configured, the prefetch container will be eligible
+  // for removal after the TTL expires. Otherwise, it will remain alive
+  // indefinitely.
+  //
+  // The default TTL is determined by
+  // `PrefetchContainerDefaultTtlInPrefetchService()`, which may return a zero
+  // or negative value, indicating an indefinite TTL.
+  prefetch_container->StartTimeoutTimerIfNeeded(
+      base::BindOnce(&PrefetchService::OnPrefetchTimeout,
+                     weak_method_factory_.GetWeakPtr(), prefetch_container));
 
   if (prefetch_to_evict) {
     prefetch_to_evict->SetPrefetchStatus(
         PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
-    ResetPrefetch(prefetch_to_evict);
+    ResetPrefetchContainer(prefetch_to_evict);
   }
 
   active_prefetch_.emplace(prefetch_container->key());
@@ -1261,6 +1449,7 @@ void PrefetchService::StartSinglePrefetch(
 
 void PrefetchService::SendPrefetchRequest(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
+  TRACE_EVENT("loading", "PrefetchService::SendPrefetchRequest");
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("speculation_rules_prefetch",
                                           R"(
@@ -1295,22 +1484,22 @@ void PrefetchService::SendPrefetchRequest(
                      base::Unretained(this), prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                           base::Unretained(this), prefetch_container),
-      UseNewWaitLoop() ? base::BindOnce(&PrefetchContainer::OnDeterminedHead2,
-                                        prefetch_container)
-                       : base::BindOnce(&PrefetchContainer::OnDeterminedHead,
-                                        prefetch_container),
-      prefetch_container->GetResponseReaderForCurrentPrefetch());
+      base::BindOnce(&PrefetchContainer::OnDeterminedHead, prefetch_container),
+      prefetch_container->GetResponseReaderForCurrentPrefetch(),
+      prefetch_container->service_worker_state(), browser_context_,
+      base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
+                     prefetch_container));
   prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
 }
 
-network::mojom::URLLoaderFactory*
+scoped_refptr<network::SharedURLLoaderFactory>
 PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK(prefetch_container);
   if (g_url_loader_factory_for_testing) {
-    return g_url_loader_factory_for_testing;
+    return base::WrapRefCounted(g_url_loader_factory_for_testing);
   }
   return prefetch_container->GetOrCreateNetworkContextForCurrentPrefetch()
       ->GetURLLoaderFactory(this);
@@ -1342,8 +1531,8 @@ void PrefetchService::OnPrefetchRedirect(
              redirect_head->headers->response_code() < 300 ||
              redirect_head->headers->response_code() >= 400) {
     failure = PrefetchRedirectResult::kFailedInvalidResponseCode;
-  } else if (net::SchemefulSite(prefetch_container->GetCurrentURL()) !=
-                 net::SchemefulSite(redirect_info.new_url) &&
+  } else if (!net::SchemefulSite::IsSameSite(
+                 prefetch_container->GetCurrentURL(), redirect_info.new_url) &&
              !IsReferrerPolicySufficientlyStrict(new_referrer_policy)) {
     // The new referrer policy is not sufficiently strict to allow cross-site
     // redirects.
@@ -1355,8 +1544,12 @@ void PrefetchService::OnPrefetchRedirect(
     active_prefetch_ = std::nullopt;
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
-    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
-        PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
+    if (auto streaming_url_loader =
+            prefetch_container->GetStreamingURLLoader()) {
+      streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFail,
+                                           redirect_info,
+                                           std::move(redirect_head));
+    }
 
     Prefetch();
     RecordRedirectResult(*failure);
@@ -1466,11 +1659,6 @@ void PrefetchService::OnPrefetchResponseCompleted(
 
   prefetch_container->OnPrefetchComplete(completion_status);
 
-  if (GetPrefetchResponseCompletedCallbackForTesting()) {
-    GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
-        prefetch_container);
-  }
-
   Prefetch();
 }
 
@@ -1547,9 +1735,6 @@ PrefetchService::CollectMatchCandidates(
     bool is_nav_prerender,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
-  // TODO(crbug.com/353490734): Remove include of
-  // prefetch_match_resolver.h when remove this call as it was included only for
-  // this.
   return CollectMatchCandidatesGeneric(
       owned_prefetches_, key, is_nav_prerender,
       std::move(serving_page_metrics_container));
@@ -1567,236 +1752,6 @@ PrefetchService::GetAllForUrlWithoutRefAndQueryForTesting(
       key, owned_prefetches_);
 }
 
-PrefetchService::HandlePrefetchContainerResult
-PrefetchService::HandlePrefetchContainerToServe(
-    const PrefetchContainer::Key& key,
-    PrefetchContainer& prefetch_container,
-    PrefetchMatchResolver& prefetch_match_resolver) {
-  const GURL& url = key.url();
-  DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
-           << prefetch_container << "): Start";
-
-  if (prefetch_container.HasPrefetchBeenConsideredToServe()) {
-    DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
-             << prefetch_container << "): Skipped already considered to serve.";
-    return HandlePrefetchContainerResult::kNotUsable;
-  }
-
-  // If prefetch is servable that means it already was matched to navigation
-  // url. Return it.
-  switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
-    case PrefetchContainer::ServableState::kServable: {
-      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << url
-               << "): " << prefetch_container << " is servable";
-      prefetch_container.OnGetPrefetchToServe(/*blocked_until_head=*/false);
-      return ReturnPrefetchToServe(
-          key, prefetch_container.GetURL(), prefetch_container.CreateReader(),
-          prefetch_match_resolver,
-          FallbackToRegularNavigationWhenPrefetchNotUsable(false));
-    }
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived: {
-      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << url
-               << "): " << prefetch_container << " is blocked until head";
-      if (prefetch_match_resolver.IsWaitingForPrefetch(prefetch_container)) {
-        // TODO(crbug.com/40274818): Figure out if this path is actually
-        // possible. The reason I believe it is not possible is because the
-        // second time `GetPrefetchToServe` is called it executes
-        // HandlePrefetchContainerToServe first for the prefetch container
-        // that is marked as "ready". Since when we mark a prefetch as "ready"
-        // we immediately execute GetPrefetchToServe the container will be
-        // servable so we will return in the if above and serve that prefetch.
-        return HandlePrefetchContainerResult::kWaitForHead;
-      }
-      prefetch_container.OnGetPrefetchToServe(/*blocked_until_head=*/true);
-      auto on_maybe_determined_head =
-          base::BindOnce(&PrefetchService::OnMaybeDeterminedHead,
-                         weak_method_factory_.GetWeakPtr(), key,
-                         prefetch_match_resolver.GetWeakPtr());
-      base::TimeDelta timeout =
-          PrefetchBlockUntilHeadTimeout(prefetch_container.GetPrefetchType());
-      prefetch_container.StartBlockUntilHead(
-          std::move(on_maybe_determined_head), std::move(timeout));
-      prefetch_match_resolver.WaitForPrefetch(prefetch_container);
-      return HandlePrefetchContainerResult::kWaitForHead;
-    }
-    case PrefetchContainer::ServableState::kNotServable: {
-      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << key
-               << "): " << prefetch_container << " is not servable";
-      prefetch_container.OnReturnPrefetchToServe(/*served=*/false, url);
-      return HandlePrefetchContainerResult::kNotUsable;
-    }
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-      NOTREACHED();
-  }
-}
-
-void PrefetchService::GetPrefetchToServe(
-    const PrefetchContainer::Key& key,
-    base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container,
-    PrefetchMatchResolver& prefetch_match_resolver) {
-  CHECK(!UseNewWaitLoop());
-
-  DumpPrefetchesForDebug();
-  // `!UseNewWaitLoop()` implies that `kPrerender2FallbackPrefetchSpecRules` is
-  // disabled. So, this path doesn't collect `PrefetchContainer` with
-  // `kShouldBlockUntilEligibilityGot` regardless the value of
-  // `is_nav_prerender`. Thus, we use false without seeing the navigation.
-  const bool is_nav_prerender = false;
-  auto [potential_matching_prefetches, _] = CollectMatchCandidates(
-      key, is_nav_prerender, std::move(serving_page_metrics_container));
-  DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
-           << "): Potential matched with "
-           << potential_matching_prefetches.size() << " prefetch containers.";
-  bool waiting_on_prefetch_head = false;
-  for (auto* prefetch_container : potential_matching_prefetches) {
-    constexpr auto final_state_prefetch_container_results =
-        base::MakeFixedFlatSet<HandlePrefetchContainerResult>(
-            {HandlePrefetchContainerResult::kToBeServed,
-             HandlePrefetchContainerResult::kNotToBeServedCookiesChanged});
-    CHECK(prefetch_container);
-    auto result = HandlePrefetchContainerToServe(key, *prefetch_container,
-                                                 prefetch_match_resolver);
-    if (final_state_prefetch_container_results.contains(result)) {
-      return;
-    }
-    waiting_on_prefetch_head |=
-        (result == HandlePrefetchContainerResult::kWaitForHead);
-  }
-  // If there is at least one prefetch that we are waiting for the head then
-  // stop.
-  if (waiting_on_prefetch_head) {
-    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
-             << "): waiting on prefetch head";
-    return;
-  }
-  // If not waiting on any prefetches it means there is no match. Let the
-  // browser know to request url from the web server.
-  DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
-           << "): No PrefetchContainer is servable";
-  ReturnPrefetchToServe(key, {}, {}, prefetch_match_resolver);
-}
-
-void PrefetchService::OnMaybeDeterminedHead(
-    const PrefetchContainer::Key& key,
-    base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
-    PrefetchContainer& prefetch_container) {
-  const GURL& prefetch_url = prefetch_container.GetURL();
-
-  DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead:" << "prefetch_url = "
-           << prefetch_url;
-
-  if (!prefetch_match_resolver) {
-    // Since prefetch_match_resolver is a NavigationHandleUserData,
-    // if it is null it means the navigation has finished so there is nothing to
-    // do here.
-    return;
-  }
-
-  // This method is called only for prefetches that we have started waiting on.
-  // We make sure that this is true by checking with prefetch_match_resolver.
-  CHECK(prefetch_match_resolver->IsWaitingForPrefetch(prefetch_url));
-  // We need to make sure we are not waiting on this prefetch_url anymore.
-  prefetch_match_resolver->EndWaitForPrefetch(prefetch_url);
-  // Make sure we are not waiting on this prefetch_url anymore.
-  CHECK(!prefetch_match_resolver->IsWaitingForPrefetch(prefetch_url));
-
-  if (prefetch_container.is_in_dtor()) {
-    DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
-             << "): deleted while waiting for head";
-    ReturnPrefetchToServe(key, prefetch_url, {}, *prefetch_match_resolver);
-    return;
-  }
-
-  DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
-           << "): PrefetchContainer head received for " << prefetch_url << "!";
-
-  const GURL& nav_url = key.url();
-
-  switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-      NOTREACHED();
-    case PrefetchContainer::ServableState::kNotServable:
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived: {
-      DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
-               << "): " << prefetch_container << " not servable!";
-      prefetch_container.OnReturnPrefetchToServe(/*served=*/false, nav_url);
-      ReturnPrefetchToServe(key, prefetch_url, {}, *prefetch_match_resolver);
-      return;
-    }
-    case PrefetchContainer::ServableState::kServable:
-      break;
-  }
-
-  if (prefetch_container.IsExactMatch(nav_url)) {
-    HandlePrefetchContainerToServe(key, prefetch_container,
-                                   *prefetch_match_resolver);
-    return;
-  }
-
-  // No-Vary-Search response header is already populated by
-  // `PrefetchContainer::OnDeterminedHead()`.
-  if (!prefetch_container.IsNoVarySearchHeaderMatch(nav_url)) {
-    prefetch_container.OnReturnPrefetchToServe(/*served=*/false, nav_url);
-    prefetch_container.UpdateServingPageMetrics();
-    ReturnPrefetchToServe(key, prefetch_url, {}, *prefetch_match_resolver);
-    return;
-  }
-  DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead::" << "url = " << nav_url
-           << "::" << "matches by NVS header the prefetch "
-           << prefetch_container.GetURL();
-  HandlePrefetchContainerToServe(key, prefetch_container,
-                                 *prefetch_match_resolver);
-}
-
-PrefetchService::HandlePrefetchContainerResult
-PrefetchService::ReturnPrefetchToServe(
-    const PrefetchContainer::Key& key,
-    const GURL& prefetch_url,
-    PrefetchContainer::Reader reader,
-    PrefetchMatchResolver& prefetch_match_resolver,
-    FallbackToRegularNavigationWhenPrefetchNotUsable
-        when_prefetch_not_used_fallback_to_regular_navigation) {
-  if (prefetch_url.is_empty()) {
-    // In this case there is no matching prefetch.
-    if (when_prefetch_not_used_fallback_to_regular_navigation) {
-      prefetch_match_resolver.PrefetchNotAvailable();
-    }
-    return HandlePrefetchContainerResult::kNotAvailable;
-  }
-  if (!reader) {
-    // In this case the prefetch cannot be used for some reason.
-    if (when_prefetch_not_used_fallback_to_regular_navigation) {
-      prefetch_match_resolver.PrefetchNotUsable(prefetch_url);
-    }
-    return HandlePrefetchContainerResult::kNotUsable;
-  }
-
-  PrefetchContainer* prefetch_container = reader.GetPrefetchContainer();
-  CHECK(prefetch_container);
-  // We know `prefetch_container` is servable when we get here.
-  CHECK_EQ(prefetch_container->GetServableState(PrefetchCacheableDuration()),
-           PrefetchContainer::ServableState::kServable);
-  prefetch_container->UpdateServingPageMetrics();
-  if (reader.HaveDefaultContextCookiesChanged()) {
-    prefetch_match_resolver
-        .FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged(
-            *prefetch_container, key.url());
-    return HandlePrefetchContainerResult::kNotToBeServedCookiesChanged;
-  }
-
-  if (!reader.HasIsolatedCookieCopyStarted()) {
-    CopyIsolatedCookies(reader);
-  }
-
-  DVLOG(1) << "PrefetchService::ReturnPrefetchToServe" << *prefetch_container
-           << " is served!";
-  prefetch_container->OnReturnPrefetchToServe(
-      /*served=*/true, key.url());
-  prefetch_match_resolver.PrefetchServed(std::move(reader));
-  return HandlePrefetchContainerResult::kToBeServed;
-}
-
 // static
 void PrefetchService::SetServiceWorkerContextForTesting(
     ServiceWorkerContext* context) {
@@ -1811,7 +1766,7 @@ void PrefetchService::SetHostNonUniqueFilterForTesting(
 
 // static
 void PrefetchService::SetURLLoaderFactoryForTesting(
-    network::mojom::URLLoaderFactory* url_loader_factory) {
+    network::SharedURLLoaderFactory* url_loader_factory) {
   g_url_loader_factory_for_testing = url_loader_factory;
 }
 
@@ -1833,13 +1788,6 @@ void PrefetchService::SetForceIneligibilityForTesting(
     PreloadingEligibility eligibility) {
   GetForceIneligibilityForTesting() =  // IN-TEST
       eligibility;
-}
-
-// static
-void PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
-    PrefetchResponseCompletedCallbackForTesting callback) {
-  GetPrefetchResponseCompletedCallbackForTesting() =  // IN-TEST
-      std::move(callback);
 }
 
 base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {

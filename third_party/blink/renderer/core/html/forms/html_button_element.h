@@ -52,7 +52,8 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   // Invoker Commands (https://github.com/whatwg/html/pull/9841)
   Element* commandForElement();
   AtomicString command() const;
-  CommandEventType GetCommandEventType() const;
+  void setCommand(const AtomicString& type);
+  CommandEventType GetCommandEventType(const AtomicString& type) const;
 
   // Override for inertness in order to make customizable <select> button inert.
   // TODO(crbug.com/1511354): Replace this with interactivity:inert in

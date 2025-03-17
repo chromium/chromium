@@ -12,7 +12,7 @@
 
 ExtensionApiTestWithManagementPolicy::ExtensionApiTestWithManagementPolicy(
     ContextType context_type)
-    : ExtensionApiTest(context_type) {}
+    : extensions::ExtensionApiTest(context_type) {}
 ExtensionApiTestWithManagementPolicy::~ExtensionApiTestWithManagementPolicy() =
     default;
 

@@ -15,6 +15,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -117,18 +118,17 @@ TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {
   BookmarkActivity* activity = CreateActivity(testUrl);
 
   [[mocked_handler_ expect]
-      createOrEditBookmarkWithURL:[OCMArg
-                                      checkWithBlock:^BOOL(URLWithTitle* URL) {
-                                        EXPECT_EQ(testUrl, URL.URL);
-                                        EXPECT_EQ(kTestTitle, URL.title);
-                                        return YES;
-                                      }]];
+      addOrEditBookmark:[OCMArg checkWithBlock:^BOOL(URLWithTitle* URL) {
+        EXPECT_EQ(testUrl, URL.URL);
+        EXPECT_EQ(kTestTitle, URL.title);
+        return YES;
+      }]];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];
 
   [activity performActivity];
 
-  [mocked_handler_ verify];
-  [activity_partial_mock verify];
+  EXPECT_OCMOCK_VERIFY(mocked_handler_);
+  EXPECT_OCMOCK_VERIFY(activity_partial_mock);
 }

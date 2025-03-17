@@ -16,7 +16,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
@@ -26,7 +26,7 @@ suite('CardsTest', () => {
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = fakeMetricsPrivate();
     handler = installMock(
@@ -51,16 +51,16 @@ suite('CardsTest', () => {
   }
 
   function getToggleElement(): CrToggleElement {
-    return customizeCards.$['showToggleContainer']!.querySelector('cr-toggle')!;
+    return customizeCards.$['showToggleContainer'].querySelector('cr-toggle')!;
   }
 
   function getCollapseElement() {
-    return customizeCards.shadowRoot!.querySelector('cr-collapse')!;
+    return customizeCards.shadowRoot.querySelector('cr-collapse')!;
   }
 
   function getCardsMap(): Map<string, HTMLElement> {
     const elements: HTMLElement[] = Array.from(
-        customizeCards.shadowRoot!.querySelectorAll<HTMLElement>('.card'));
+        customizeCards.shadowRoot.querySelectorAll<HTMLElement>('.card'));
     return Object.freeze(new Map(elements.map(cardEl => {
       const cardNameEl =
           cardEl.querySelector<ButtonLabelElement>('.card-label');
@@ -73,9 +73,15 @@ suite('CardsTest', () => {
   function assertCardCheckedStatus(
       cards: Map<string, HTMLElement>, name: string, checked: boolean) {
     assertTrue(cards.has(name));
-    const checkbox: CrCheckboxElement|null =
+    const checkbox: CrCheckboxElement =
         cards.get(name)!.querySelector('cr-checkbox')!;
     assertEquals(checked, checkbox.checked);
+  }
+
+  function assertCardVisibility(
+      cards: Map<string, HTMLElement>, name: string, visible: boolean) {
+    assertTrue(cards.has(name));
+    assertEquals(visible, isVisible(cards.get(name)!));
   }
 
   [true, false].forEach(visible => {
@@ -85,18 +91,26 @@ suite('CardsTest', () => {
           // Arrange & Act.
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: true,
+                  visible: true,
                 },
                 {
                   id: 'baz',
                   name: 'baz name',
                   description: null,
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ false,
@@ -105,7 +119,7 @@ suite('CardsTest', () => {
           // Assert.
           assertEquals(visible, getToggleElement().checked);
           const policyIndicator =
-              customizeCards.shadowRoot!.querySelector('cr-policy-indicator');
+              customizeCards.shadowRoot.querySelector('cr-policy-indicator');
           assertStyle(policyIndicator!, 'display', 'none');
 
           const collapseElement = getCollapseElement();
@@ -128,8 +142,15 @@ suite('CardsTest', () => {
               name: 'foo name',
               description: 'foo description',
               enabled: true,
+              visible: true,
             },
-            {id: 'bar', name: 'bar name', description: null, enabled: false},
+            {
+              id: 'bar',
+              name: 'bar name',
+              description: null,
+              enabled: false,
+              visible: true,
+            },
           ],
           /*modulesManaged=*/ false,
           /*modulesVisible=*/ visible);
@@ -152,12 +173,19 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ false,
@@ -182,12 +210,19 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ true,
@@ -207,19 +242,26 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ true,
               /*modulesVisible=*/ visible);
 
           const policyIndicator =
-              customizeCards.shadowRoot!.querySelector('cr-policy-indicator');
+              customizeCards.shadowRoot.querySelector('cr-policy-indicator');
           assertNotStyle(policyIndicator!, 'display', 'none');
           assertTrue(getToggleElement().disabled);
           const cards = getCardsMap();
@@ -233,11 +275,49 @@ suite('CardsTest', () => {
         });
   });
 
+  test(
+      'cards visiblity depends on their associated module settings',
+      async () => {
+        // Arrange/Act.
+        await setupTest(
+            [
+              {
+                id: 'foo',
+                name: 'foo name',
+                description: null,
+                enabled: true,
+                visible: true,
+              },
+              {
+                id: 'bar',
+                name: 'bar name',
+                description: 'bar description',
+                enabled: false,
+                visible: false,
+              },
+            ],
+            /*modulesManaged=*/ false,
+            /*modulesVisible=*/ true);
+        await microtasksFinished();
+
+        // Assert.
+        const cards = getCardsMap();
+        assertCardVisibility(cards, 'foo name', true);
+        assertCardVisibility(cards, 'bar name', false);
+      });
+
+
   test(`cards can be disabled/enabled via their checkbox`, async () => {
     // Arrange & Act.
     await setupTest(
         [
-          {id: 'foo', name: 'foo name', description: null, enabled: true},
+          {
+            id: 'foo',
+            name: 'foo name',
+            description: null,
+            enabled: true,
+            visible: true,
+          },
         ],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
@@ -273,7 +353,13 @@ suite('CardsTest', () => {
     // Arrange & Act.
     await setupTest(
         [
-          {id: 'foo', name: 'foo name', description: null, enabled: true},
+          {
+            id: 'foo',
+            name: 'foo name',
+            description: null,
+            enabled: true,
+            visible: true,
+          },
         ],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
@@ -285,7 +371,7 @@ suite('CardsTest', () => {
     assertTrue(!!fooCheckbox);
 
     // Act.
-    (fooCard as HTMLElement).click();
+    (fooCard).click();
     await fooCheckbox.updateComplete;
 
     // Assert.
@@ -313,27 +399,39 @@ suite('CardsTest', () => {
     document.body.appendChild(customizeCards);
 
     // Assert (no animation before initialize).
-    assertTrue(getCollapseElement().noAnimation!);
+    assertTrue(getCollapseElement().noAnimation);
 
     // Act (initialize).
     callbackRouterRemote.setModulesSettings(
-        [{id: 'foo', name: 'Foo', description: null, enabled: true}],
+        [{
+          id: 'foo',
+          name: 'Foo',
+          description: null,
+          enabled: true,
+          visible: true,
+        }],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert (animation after initialize).
-    assertFalse(getCollapseElement().noAnimation!);
+    assertFalse(getCollapseElement().noAnimation);
 
     // Act (update).
     callbackRouterRemote.setModulesSettings(
-        [{id: 'bar', name: 'Bar', description: null, enabled: true}],
+        [{
+          id: 'bar',
+          name: 'Bar',
+          description: null,
+          enabled: true,
+          visible: true,
+        }],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert (still animation after update).
-    assertFalse(getCollapseElement().noAnimation!);
+    assertFalse(getCollapseElement().noAnimation);
   });
 
   suite('Metrics', () => {

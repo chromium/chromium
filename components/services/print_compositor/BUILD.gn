@@ -66,9 +66,8 @@ if (enable_printing) {
       deps += [
         "//cc:test_support",
         "//components/enterprise/watermarking",
+        "//components/enterprise/watermarking:watermark_test_utils",
       ]
-
-      public_deps = [ "//components/enterprise/watermarking/mojom" ]
     }
   }
 }

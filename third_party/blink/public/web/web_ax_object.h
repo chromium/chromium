@@ -31,9 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AX_OBJECT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AX_OBJECT_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_intent.h"
@@ -128,7 +129,7 @@ class BLINK_EXPORT WebAXObject {
   WebString AutoComplete() const;
   ax::mojom::AriaCurrentState AriaCurrentState() const;
   bool IsEditable() const;
-  bool AriaOwns(WebVector<WebAXObject>& owns_elements) const;
+  bool AriaOwns(std::vector<WebAXObject>& owns_elements) const;
   bool CanvasHasFallbackContent() const;
   ax::mojom::InvalidState InvalidState() const;
   int HeadingLevel() const;
@@ -147,7 +148,7 @@ class BLINK_EXPORT WebAXObject {
   // name was derived from, and a list of related objects that were used to
   // derive the name, if any.
   WebString GetName(ax::mojom::NameFrom&,
-                    WebVector<WebAXObject>& name_objects) const;
+                    std::vector<WebAXObject>& name_objects) const;
   // Simplified version of |name| when nameFrom and nameObjects aren't needed.
   WebString GetName() const;
   // Takes the result of nameFrom from calling |name|, above, and retrieves the
@@ -156,7 +157,7 @@ class BLINK_EXPORT WebAXObject {
   // that were used to derive the description, if any.
   WebString Description(ax::mojom::NameFrom,
                         ax::mojom::DescriptionFrom&,
-                        WebVector<WebAXObject>& description_objects) const;
+                        std::vector<WebAXObject>& description_objects) const;
   // Takes the result of nameFrom and descriptionFrom from calling |name| and
   // |description|, above, and retrieves the placeholder of the object, if
   // present and if it wasn't already exposed by one of the two functions above.
@@ -210,6 +211,8 @@ class BLINK_EXPORT WebAXObject {
   //
   // OLD: the od way is that we had separate APIs for every individual
   // action. We're migrating to use PerformAction() for everything.
+  // To clear the selection, use an anchor_offset of
+  // kNoSelectionOffset.
   bool SetSelection(const WebAXObject& anchor_object,
                     int anchor_offset,
                     const WebAXObject& focus_object,
@@ -233,8 +236,8 @@ class BLINK_EXPORT WebAXObject {
   unsigned ColumnCount() const;
   unsigned RowCount() const;
   WebAXObject CellForColumnAndRow(unsigned column, unsigned row) const;
-  void RowHeaders(WebVector<WebAXObject>&) const;
-  void ColumnHeaders(WebVector<WebAXObject>&) const;
+  void RowHeaders(std::vector<WebAXObject>&) const;
+  void ColumnHeaders(std::vector<WebAXObject>&) const;
 
   // For a table cell
   unsigned CellColumnIndex() const;
@@ -249,8 +252,9 @@ class BLINK_EXPORT WebAXObject {
   WebAXObject PreviousOnLine() const;
 
   // For an inline text box.
-  void CharacterOffsets(WebVector<int>&) const;
-  void GetWordBoundaries(WebVector<int>& starts, WebVector<int>& ends) const;
+  void CharacterOffsets(std::vector<int>&) const;
+  void GetWordBoundaries(std::vector<int>& starts,
+                         std::vector<int>& ends) const;
 
   // Scrollable containers.
   // Also scrollable by user.

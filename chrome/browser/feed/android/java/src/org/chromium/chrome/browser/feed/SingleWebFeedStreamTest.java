@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.util.ArrayMap;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -36,9 +35,9 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
@@ -67,13 +66,13 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
+@EnableFeatures(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
 public class SingleWebFeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
     private static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
@@ -120,6 +119,7 @@ public class SingleWebFeedStreamTest {
     class FeedSurfaceRendererBridgeFactory implements FeedSurfaceRendererBridge.Factory {
         @Override
         public FeedSurfaceRendererBridge create(
+                Profile profile,
                 FeedSurfaceRendererBridge.Renderer renderer,
                 FeedReliabilityLoggingBridge reliabilityLoggingBridge,
                 @StreamKind int streamKind,
@@ -127,12 +127,6 @@ public class SingleWebFeedStreamTest {
             mBridgeRenderer = renderer;
             return mFeedSurfaceRendererBridgeMock;
         }
-    }
-
-    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
-        Map<String, Boolean> overrides = new ArrayMap<>();
-        overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
-        FeatureList.setTestFeatures(overrides);
     }
 
     @Before
@@ -157,10 +151,10 @@ public class SingleWebFeedStreamTest {
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
-                        /* shareSupplier= */ mShareDelegateSupplier,
+                        /* shareDelegateSupplier= */ mShareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null,
+                        /* feedContentFirstLoadWatcher= */ null,
                         /* streamsMediator= */ null,
                         new SingleWebFeedParameters(
                                 "WebFeedId".getBytes(), SingleWebFeedEntryPoint.OTHER),
@@ -173,8 +167,6 @@ public class SingleWebFeedStreamTest {
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
         when(mRenderer.getAdapter()).thenReturn(mAdapter);
-
-        setFeatureOverrides(/* feedLoadingPlaceholderOn= */ true);
 
         // Print logs to stdout.
         ShadowLog.stream = System.out;

@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.LruCache;
 
 import androidx.annotation.NonNull;
@@ -19,27 +18,24 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.AwPrefetchCallback.StatusCode;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.PermissionStatus;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Executor;
+import java.util.regex.Pattern;
 
 /**
  * Java side of the Browser Context: contains all the java side objects needed to host one browsing
@@ -53,6 +49,10 @@ import java.util.concurrent.Executor;
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
+
+    /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
+    /* package */ static final String BAD_HEADER_MSG =
+            "HTTP headers must not contain null, CR, or NL characters. ";
 
     /**
      * Cache storing already-initialized Play providers for the Media Integrity Blink renderer
@@ -101,6 +101,8 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NonNull private final AwCookieManager mCookieManager;
     private final boolean mIsDefault;
     @NonNull private final SharedPreferences mSharedPreferences;
+
+    private final AwPrefetchManager mPrefetchManager;
 
     /**
      * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
@@ -153,6 +155,7 @@ public class AwBrowserContext implements BrowserContextHandle {
                 AwBrowserContextJni.get().getDefaultContextName(),
                 AwBrowserContextJni.get().getDefaultContextRelativePath(),
                 AwCookieManager.getDefaultCookieManager(),
+                new AwPrefetchManager(0),
                 true);
     }
 
@@ -161,11 +164,13 @@ public class AwBrowserContext implements BrowserContextHandle {
             @NonNull String name,
             @NonNull String relativePath,
             @NonNull AwCookieManager cookieManager,
+            @NonNull AwPrefetchManager prefetchManager,
             boolean isDefault) {
         mNativeAwBrowserContext = nativeAwBrowserContext;
         mName = name;
         mRelativePath = relativePath;
         mCookieManager = cookieManager;
+        mPrefetchManager = prefetchManager;
         mIsDefault = isDefault;
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -284,67 +289,42 @@ public class AwBrowserContext implements BrowserContextHandle {
         }
     }
 
-    @UiThread
-    public void startPrefetchRequest(
-            @NonNull String url,
-            @Nullable AwPrefetchParameters prefetchParameters,
-            @NonNull AwPrefetchCallback callback,
-            @NonNull Executor callbackExecutor) {
-        assert ThreadUtils.runningOnUiThread();
-        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START")) {
-            if (!UrlUtilities.isHttps(url)) {
-                callbackExecutor.execute(
-                        () ->
-                                callback.onError(
-                                        new IllegalArgumentException(
-                                                "URL must have HTTPS scheme for prefetch.")));
+    /**
+     * Check if additional HTTP headers sent along with loadUrl, prefetchUrl, or prerenderUrl
+     * contains invalid characters.
+     *
+     * @param headers The additional HTTP headers to be sent along with loadUrl, prefetchUrl, or
+     *     prerenderUrl.
+     * @return An exception if validation fails. Otherwise, an empty Optional.
+     */
+    public static Optional<IllegalArgumentException> validateAdditionalHeaders(
+            Map<String, String> headers) {
+        if (headers == null) return Optional.empty();
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            String headerName = header.getKey();
+            String headerValue = header.getValue();
+            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG + "Invalid header name '" + headerName + "'."));
             }
-
-            if (!AwFeatureMap.isEnabled(ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
-                callbackExecutor.execute(
-                        () ->
-                                callback.onError(
-                                        new IllegalStateException(
-                                                "WebView initiated prefetching feature is not"
-                                                        + " enabled.")));
+            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG
+                                        + "Header '"
+                                        + headerName
+                                        + "' has invalid value '"
+                                        + headerValue
+                                        + "'"));
             }
-
-            AwBrowserContextJni.get()
-                    .startPrefetchRequest(
-                            mNativeAwBrowserContext,
-                            url,
-                            prefetchParameters,
-                            callback,
-                            callbackExecutor);
         }
+        return Optional.empty();
     }
 
-    @CalledByNative
-    public void onPrefetchStartFailed(AwPrefetchCallback callback, Executor callbackExecutor) {
-        callbackExecutor.execute(
-                () -> callback.onStatusUpdated(StatusCode.PREFETCH_START_FAILED, null));
-    }
-
-    @CalledByNative
-    public void onPrefetchResponseCompleted(
-            AwPrefetchCallback callback, Executor callbackExecutor) {
-        callbackExecutor.execute(
-                () -> callback.onStatusUpdated(StatusCode.PREFETCH_RESPONSE_COMPLETED, null));
-    }
-
-    @CalledByNative
-    public void onPrefetchResponseError(AwPrefetchCallback callback, Executor callbackExecutor) {
-        callbackExecutor.execute(
-                () -> callback.onStatusUpdated(StatusCode.PREFETCH_RESPONSE_GENERIC_ERROR, null));
-    }
-
-    @CalledByNative
-    public void onPrefetchResponseServerError(
-            AwPrefetchCallback callback, Executor callbackExecutor, int httpResponseCode) {
-        Bundle extras = new Bundle();
-        extras.putInt(AwPrefetchCallback.EXTRA_HTTP_RESPONSE_CODE, httpResponseCode);
-        callbackExecutor.execute(
-                () -> callback.onStatusUpdated(StatusCode.PREFETCH_RESPONSE_SERVER_ERROR, extras));
+    @NonNull
+    public AwPrefetchManager getPrefetchManager() {
+        return mPrefetchManager;
     }
 
     private void migrateGeolocationPreferences() {
@@ -401,17 +381,15 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .clearPersistentOriginTrialStorageForTesting(mNativeAwBrowserContext);
     }
 
-    public boolean hasFormData() {
-        return AwBrowserContextJni.get().hasFormData(mNativeAwBrowserContext);
-    }
-
-    public void clearFormData() {
-        AwBrowserContextJni.get().clearFormData(mNativeAwBrowserContext);
-    }
-
     public void setServiceWorkerIoThreadClient(AwContentsIoThreadClient ioThreadClient) {
         AwBrowserContextJni.get()
                 .setServiceWorkerIoThreadClient(mNativeAwBrowserContext, ioThreadClient);
+    }
+
+    @UiThread
+    public void setMaxPrerenders(int maxPrerenders) {
+        AwBrowserContextJni.get()
+                .setAllowedPrerenderingCount(mNativeAwBrowserContext, maxPrerenders);
     }
 
     private static SharedPreferences createSharedPrefs(String relativePath) {
@@ -425,9 +403,15 @@ public class AwBrowserContext implements BrowserContextHandle {
             @JniType("std::string") String name,
             @JniType("std::string") String relativePath,
             AwCookieManager cookieManager,
+            AwPrefetchManager prefetchManager,
             boolean isDefault) {
         return new AwBrowserContext(
-                nativeAwBrowserContext, name, relativePath, cookieManager, isDefault);
+                nativeAwBrowserContext,
+                name,
+                relativePath,
+                cookieManager,
+                prefetchManager,
+                isDefault);
     }
 
     @CalledByNative
@@ -467,20 +451,9 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         void clearPersistentOriginTrialStorageForTesting(long nativeAwBrowserContext);
 
-        boolean hasFormData(long nativeAwBrowserContext);
-
-        void clearFormData(long nativeAwBrowserContext);
-
         void setServiceWorkerIoThreadClient(
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);
 
-        // TODO (crbug.com/372915956) Consider flattening the prefetch parameters before passing to
-        // native.
-        void startPrefetchRequest(
-                long nativeAwBrowserContext,
-                @JniType("std::string") String url,
-                AwPrefetchParameters prefetchParameters,
-                AwPrefetchCallback callback,
-                Executor callbackExecutor);
+        void setAllowedPrerenderingCount(long nativeAwBrowserContext, int maxPrerenders);
     }
 }

@@ -4,13 +4,13 @@
 
 #include "cc/metrics/compositor_frame_reporter.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -188,11 +188,11 @@ class CompositorFrameReporterTest : public testing::Test {
       const EventMetrics::List& events_metrics) {
     std::vector<base::TimeTicks> event_times;
     event_times.reserve(events_metrics.size());
-    base::ranges::transform(events_metrics, std::back_inserter(event_times),
-                            [](const auto& event_metrics) {
-                              return event_metrics->GetDispatchStageTimestamp(
-                                  EventMetrics::DispatchStage::kGenerated);
-                            });
+    std::ranges::transform(events_metrics, std::back_inserter(event_times),
+                           [](const auto& event_metrics) {
+                             return event_metrics->GetDispatchStageTimestamp(
+                                 EventMetrics::DispatchStage::kGenerated);
+                           });
     return event_times;
   }
 
@@ -437,7 +437,7 @@ TEST_F(CompositorFrameReporterTest,
 
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.TouchPressed.TotalLatency", 1},
       {"EventLatency.TouchMoved.TotalLatency", 2},
@@ -450,25 +450,25 @@ TEST_F(CompositorFrameReporterTest,
 
   struct {
     const char* name;
-    const base::HistogramBase::Sample latency_ms;
+    const base::HistogramBase::Sample32 latency_ms;
   } expected_latencies[] = {
       {"EventLatency.TouchPressed.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
@@ -541,7 +541,7 @@ TEST_F(CompositorFrameReporterTest,
 
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency2", 1},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2", 1},
@@ -571,34 +571,34 @@ TEST_F(CompositorFrameReporterTest,
       viz_breakdown.presentation_feedback.timestamp;
   struct {
     const char* name;
-    const base::HistogramBase::Sample latency_ms;
+    const base::HistogramBase::Sample32 latency_ms;
   } expected_latencies[] = {
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[3]).InMicroseconds())},
       {"EventLatency.GestureScrollBegin.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[4]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[5]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[6]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[6]).InMicroseconds())},
       {"EventLatency.InertialGestureScrollUpdate.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[7]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
@@ -657,7 +657,7 @@ TEST_F(CompositorFrameReporterTest,
 
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.GesturePinchBegin.Touchscreen.TotalLatency", 1},
       {"EventLatency.GesturePinchUpdate.Touchscreen.TotalLatency", 1},
@@ -674,19 +674,19 @@ TEST_F(CompositorFrameReporterTest,
       viz_breakdown.presentation_feedback.timestamp;
   struct {
     const char* name;
-    const base::HistogramBase::Sample latency_ms;
+    const base::HistogramBase::Sample32 latency_ms;
   } expected_latencies[] = {
       {"EventLatency.GesturePinchBegin.Touchpad.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.GesturePinchUpdate.Touchpad.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.GesturePinchBegin.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.GesturePinchUpdate.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[3]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {

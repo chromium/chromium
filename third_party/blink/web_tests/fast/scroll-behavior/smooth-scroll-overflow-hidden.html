@@ -11,8 +11,8 @@ body { overflow: hidden; }
 <script>
 
 async_test(t => {
-    onscroll = t.step_func_done(() => {
-        assert_true(scrollY > 0);
+    onscrollend = t.step_func_done(() => {
+        assert_equals(scrollY, 500);
     });
     scroll({behavior: "smooth", top: 500});
 }, 'scroll');

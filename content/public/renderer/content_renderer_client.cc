@@ -326,7 +326,7 @@ ContentRendererClient::GetAudioRendererAlgorithmParameters(
 
 void ContentRendererClient::AppendContentSecurityPolicy(
     const blink::WebURL& url,
-    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
+    std::vector<blink::WebContentSecurityPolicyHeader>* csp) {}
 
 std::unique_ptr<media::RendererFactory>
 ContentRendererClient::GetBaseRendererFactory(

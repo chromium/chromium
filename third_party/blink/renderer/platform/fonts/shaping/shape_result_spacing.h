@@ -54,6 +54,8 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   // Set letter-spacing, word-spacing, and
   // justification. Available only for TextRun.
   void SetSpacingAndExpansion(const FontDescription&);
+  // This one is not only for TextRun.
+  void SetSpacingAndExpansion(const FontDescription&, bool normalize_space);
 
   // Compute the sum of all spacings for the specified |index|.
   // The |index| is for the |TextContainerType| given in the constructor.

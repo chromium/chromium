@@ -87,10 +87,9 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoCodecProfile profile,
     const VideoEncoder::Options& opts,
     VideoPixelFormat format,
-    VideoFrame::StorageType storage_type,
+    VideoEncodeAccelerator::Config::StorageType storage_type,
     VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes,
-    VideoEncodeAccelerator::Config::EncoderType required_encoder_type,
-    bool is_gpu_supported_format) {
+    VideoEncodeAccelerator::Config::EncoderType required_encoder_type) {
   Bitrate bitrate =
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config = VideoEncodeAccelerator::Config(
@@ -99,6 +98,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
       VideoEncodeAccelerator::Config::StorageType::kShmem,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
   config.gop_length = opts.keyframe_interval;
+  config.storage_type = storage_type;
 
   if (opts.content_hint) {
     switch (*opts.content_hint) {
@@ -148,30 +148,6 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   config.require_low_delay =
       opts.latency_mode == VideoEncoder::LatencyMode::Realtime;
   config.required_encoder_type = required_encoder_type;
-
-  const bool is_rgb =
-      format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
-      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_ARGB;
-
-  // Override the provided format if incoming frames are RGB -- they'll be
-  // converted to I420 or NV12 depending on the VEA configuration.
-  if (is_rgb && !is_gpu_supported_format) {
-    config.input_format = PIXEL_FORMAT_I420;
-  }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (format != PIXEL_FORMAT_I420 ||
-      !VideoFrame::IsStorageTypeMappable(storage_type)) {
-    // ChromeOS/Linux hardware video encoders supports I420 on-memory
-    // VideoFrame and NV12 GpuMemoryBuffer VideoFrame.
-    // For other VideoFrames than them, some processing e.g. format conversion
-    // is required. Let the destination buffer be GpuMemoryBuffer because a
-    // hardware encoder can process it more efficiently than on-memory buffer.
-    config.input_format = PIXEL_FORMAT_NV12;
-    config.storage_type =
-        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-  }
-#endif
 
   return config;
 }
@@ -432,7 +408,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   auto supported_profiles =
       gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles();
   if (!supported_profiles) {
-    InitCompleted(
+    std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile,
                       "No profile is supported by video encode accelerator."));
     return;
@@ -468,7 +444,6 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   options_ = options;
   info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
-  state_ = State::kWaitingForFirstFrame;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX &&
@@ -486,65 +461,32 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
         // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-  std::move(done_cb).Run(EncoderStatus::Codes::kOk);
-
-  // The accelerator will be initialized for real once we have the first frame.
-}
-
-void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  DCHECK_EQ(state_, State::kWaitingForFirstFrame);
-  DCHECK(!pending_encodes_.empty());
-
-  // We use the first frame to setup the VEA config so that we can ensure that
-  // zero copy hardware encoding from the camera can be used.
-  const auto& first_frame = pending_encodes_.front()->frame;
-  const auto format = first_frame->format();
-  const bool is_rgb =
-      format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
-      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_ARGB;
-  const bool supported_format =
-      format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_I420 || is_rgb;
-  const bool is_gpu_frame =
-      first_frame->HasSharedImage() || first_frame->HasNativeGpuMemoryBuffer();
-  const bool is_gpu_supported_format =
-      is_gpu_frame &&
-      base::ranges::find(gpu_supported_pixel_formats_, format) !=
-          gpu_supported_pixel_formats_.end();
-  if (!supported_format && !is_gpu_supported_format) {
-    InitCompleted(EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat,
-                                "Unexpected frame format.")
-                      .WithData("frame", first_frame->AsHumanReadableString()));
-    return;
-  }
-
-  auto vea_config = SetUpVeaConfig(
-      profile_, options_, format, first_frame->storage_type(),
-      supported_rc_modes_, required_encoder_type_, is_gpu_supported_format);
-
+  auto format = PIXEL_FORMAT_I420;
+  auto storage_type = VideoEncodeAccelerator::Config::StorageType::kShmem;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux/ChromeOS require a special configuration to use dmabuf storage.
-  // We need to keep sending frames the same way the first frame was sent.
-  // Other platforms will happily mix GpuMemoryBuffer storage with regular
+  // We need to keep sending frames with the same storage type.
+  // Other platforms will happily mix GpuMemoryBuffer storage with shared-mem
   // storage, so we don't care about mismatches on other platforms.
   if (input_buffer_preference_ == InputBufferKind::Any) {
-    if (vea_config.storage_type ==
-        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer) {
-      input_buffer_preference_ = InputBufferKind::GpuMemBuf;
-    } else {
-      input_buffer_preference_ = InputBufferKind::CpuMemBuf;
-    }
+    input_buffer_preference_ = InputBufferKind::GpuMemBuf;
   }
+  format = PIXEL_FORMAT_NV12;
+  storage_type = VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 #endif
+
+  auto vea_config = SetUpVeaConfig(profile_, options_, format, storage_type,
+                                   supported_rc_modes_, required_encoder_type_);
+
   if (!accelerator_->Initialize(vea_config, this, media_log_->Clone())) {
-    InitCompleted(
+    std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "Failed to initialize video encode accelerator."));
     return;
   }
 
   state_ = State::kInitializing;
-  format_ = vea_config.input_format;
+  pending_initialize_callback_ = std::move(done_cb);
 }
 
 void VideoEncodeAcceleratorAdapter::Encode(scoped_refptr<VideoFrame> frame,
@@ -567,15 +509,12 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
                "timestamp", frame->timestamp());
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
 
-  if (state_ == State::kWaitingForFirstFrame ||
-      state_ == State::kInitializing) {
+  if (state_ == State::kInitializing) {
     auto pending_encode = std::make_unique<PendingEncode>();
     pending_encode->done_callback = std::move(done_cb);
     pending_encode->frame = std::move(frame);
     pending_encode->options = encode_options;
     pending_encodes_.push_back(std::move(pending_encode));
-    if (state_ == State::kWaitingForFirstFrame)
-      InitializeInternalOnAcceleratorThread();
     return;
   }
 
@@ -655,8 +594,7 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   DCHECK(active_encodes_.empty());
   DCHECK(pending_encodes_.empty());
-  CHECK(state_ == State::kReadyToEncode ||
-        state_ == State::kWaitingForFirstFrame);
+  CHECK(state_ == State::kReadyToEncode);
 
   if (options.bitrate && options_.bitrate &&
       options.bitrate->mode() != options_.bitrate->mode()) {
@@ -743,12 +681,6 @@ void VideoEncodeAcceleratorAdapter::Flush(EncoderStatusCB done_cb) {
 void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(
     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  if (state_ == State::kWaitingForFirstFrame) {
-    // Nothing to do since we haven't actually initialized yet.
-    std::move(done_cb).Run(EncoderStatus::Codes::kOk);
-    return;
-  }
-
   if (state_ != State::kReadyToEncode && state_ != State::kInitializing) {
     std::move(done_cb).Run(EncoderStatus(
         EncoderStatus::Codes::kEncoderFailedFlush, "Encoder can't flush now"));
@@ -767,8 +699,7 @@ void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(
     state_ = State::kFlushing;
   }
 
-  pending_flush_ = std::make_unique<PendingOp>();
-  pending_flush_->done_callback = std::move(done_cb);
+  pending_flush_callback_ = std::move(done_cb);
 
   // If flush is not supported FlushCompleted() will be called by
   // BitstreamBufferReady() when |active_encodes_| is empty.
@@ -966,6 +897,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 
 void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
     const EncoderStatus& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   CHECK(!status.is_ok());
   MEDIA_LOG(ERROR, media_log_)
       << "VEA adapter error. Code: " << static_cast<int32_t>(status.code())
@@ -1009,14 +941,24 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
 
 void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
+  if (pending_initialize_callback_) {
+    std::move(pending_initialize_callback_).Run(status);
+    pending_initialize_callback_.Reset();
+  }
 
   if (!status.is_ok()) {
-    // Report the error to all encoding-done callbacks
-    for (auto& encode : pending_encodes_)
-      std::move(encode->done_callback).Run(status);
+    MEDIA_LOG(ERROR, media_log_) << "VEA adapter initialization error. Code: "
+                                 << static_cast<int32_t>(status.code())
+                                 << ". Message: " << status.message();
 
-    if (pending_flush_)
+    // Report the error to all encoding-done callbacks
+    for (auto& encode : pending_encodes_) {
+      std::move(encode->done_callback).Run(status);
+    }
+
+    if (pending_flush_callback_) {
       FlushCompleted(false);
+    }
 
     DCHECK(active_encodes_.empty());
     pending_encodes_.clear();
@@ -1037,7 +979,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
 
   // If a Flush() came in during initialization, transition to flushing now that
   // all the pending encodes have been sent.
-  if (pending_flush_) {
+  if (pending_flush_callback_) {
     state_ = State::kFlushing;
     if (flush_support_.value()) {
       accelerator_->Flush(
@@ -1049,13 +991,14 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
 
 void VideoEncodeAcceleratorAdapter::FlushCompleted(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  if (!pending_flush_)
+  if (!pending_flush_callback_) {
     return;
+  }
 
-  std::move(pending_flush_->done_callback)
+  std::move(pending_flush_callback_)
       .Run(success ? EncoderStatus::Codes::kOk
                    : EncoderStatus::Codes::kEncoderFailedFlush);
-  pending_flush_.reset();
+  pending_flush_callback_.Reset();
   state_ = State::kReadyToEncode;
 }
 
@@ -1136,7 +1079,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   const auto dest_coded_size = input_coded_size_;
   const auto dest_visible_rect = gfx::Rect(options_.frame_size);
   bool is_gpu_supported_format =
-      base::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
+      std::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
       gpu_supported_pixel_formats_.end();
 
   if ((src_frame->HasMappableGpuBuffer() || src_frame->HasSharedImage()) &&

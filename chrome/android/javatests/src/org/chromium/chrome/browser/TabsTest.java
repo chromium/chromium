@@ -441,7 +441,10 @@ public class TabsTest {
         int innerWidth = Integer.parseInt(nums[0]);
         int innerHeight = Integer.parseInt(nums[1]);
 
-        Assert.assertEquals(expectedWidth, innerWidth);
+        // On non-integer device pixel ratio devices, there is rounding that
+        // occurs in the computation of width and height in CSS pixels, so
+        // allow a difference of at most 1 here.
+        Assert.assertEquals(expectedWidth, innerWidth, 1);
 
         // Height can be affected by browser controls so just make sure it's non-0.
         Assert.assertTrue("innerHeight was not set by page load time", innerHeight > 0);
@@ -849,8 +852,7 @@ public class TabsTest {
                     WebContentsObserver observer =
                             new WebContentsObserver(tab.getWebContents()) {
                                 @Override
-                                public void destroy() {
-                                    super.destroy();
+                                public void webContentsDestroyed() {
                                     webContentsDestroyed.notifyCalled();
                                 }
                             };

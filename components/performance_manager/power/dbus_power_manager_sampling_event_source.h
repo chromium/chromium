@@ -21,6 +21,7 @@ class DbusPowerManagerSamplingEventSource
 
   bool Start(
       base::SamplingEventSource::SamplingEventCallback callback) override;
+  base::TimeDelta GetSampleInterval() override;
 
  private:
   // chromeos::PowerManagerClient::Observer:

@@ -74,25 +74,35 @@ public class HttpNegotiateAuthenticator {
      */
     static class RequestData {
         /** Native object to post the result to. */
-        public long nativeResultObject;
+        public final long nativeResultObject;
 
         /** Reference to the account manager to use for the various requests. */
-        @SuppressWarnings("NullAway.Init")
-        public AccountManager accountManager;
+        public final AccountManager accountManager;
 
         /** Authenticator-specific options for the request, used for AccountManager#getAuthToken. */
-        public @Nullable Bundle options;
+        public final Bundle options;
 
         /** Desired token type, used for AccountManager#getAuthToken. */
-        public @Nullable String authTokenType;
+        public final String authTokenType;
 
         /** Account to fetch an auth token for. */
         public @Nullable Account account;
+
+        RequestData(
+                long nativeResultObject,
+                AccountManager accountManager,
+                Bundle options,
+                String authTokenType) {
+            this.nativeResultObject = nativeResultObject;
+            this.accountManager = accountManager;
+            this.options = options;
+            this.authTokenType = authTokenType;
+        }
     }
 
     /**
-     * Expects to receive a single account as result, and uses that account to request a token
-     * from the {@link AccountManager} provided via the {@link RequestData}
+     * Expects to receive a single account as result, and uses that account to request a token from
+     * the {@link AccountManager} provided via the {@link RequestData}
      */
     @VisibleForTesting
     class GetAccountsCallback implements AccountManagerCallback<Account[]> {
@@ -253,8 +263,8 @@ public class HttpNegotiateAuthenticator {
 
     /**
      * @param nativeResultObject The C++ object used to return the result. For correct C++ memory
-     *            management we must call HttpNegotiateAuthenticatorJni.get().setResult precisely
-     * once with this object.
+     *     management we must call HttpNegotiateAuthenticatorJni.get().setResult precisely once with
+     *     this object.
      * @param principal The principal (must be host based).
      * @param authToken The incoming auth token.
      * @param canDelegate True if we can delegate.
@@ -264,27 +274,27 @@ public class HttpNegotiateAuthenticator {
     void getNextAuthToken(
             final long nativeResultObject,
             final String principal,
-            String authToken,
+            @Nullable String authToken,
             boolean canDelegate) {
         assert principal != null;
 
         Context applicationContext = ContextUtils.getApplicationContext();
-        RequestData requestData = new RequestData();
-        requestData.authTokenType = HttpNegotiateConstants.SPNEGO_TOKEN_TYPE_BASE + principal;
-        requestData.accountManager = AccountManager.get(applicationContext);
-        requestData.nativeResultObject = nativeResultObject;
-        String features[] = {HttpNegotiateConstants.SPNEGO_FEATURE};
+        String[] features = {HttpNegotiateConstants.SPNEGO_FEATURE};
 
-        requestData.options = new Bundle();
+        Bundle options = new Bundle();
         if (authToken != null) {
-            requestData.options.putString(
-                    HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN, authToken);
+            options.putString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN, authToken);
         }
         if (mSpnegoContext != null) {
-            requestData.options.putBundle(
-                    HttpNegotiateConstants.KEY_SPNEGO_CONTEXT, mSpnegoContext);
+            options.putBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT, mSpnegoContext);
         }
-        requestData.options.putBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE, canDelegate);
+        options.putBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE, canDelegate);
+        RequestData requestData =
+                new RequestData(
+                        nativeResultObject,
+                        AccountManager.get(applicationContext),
+                        options,
+                        HttpNegotiateConstants.SPNEGO_TOKEN_TYPE_BASE + principal);
 
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (activity == null) {

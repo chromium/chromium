@@ -72,6 +72,11 @@ unit tests.
 - client_with_ec_key.p12 : A PKCS #12 file containing a client certificate and
      a private EC key created for testing.  The password is "123456".
 
+- client_1_old.key
+- client_1_old.pem : static copy of a previous version of client_1.* files.
+     (For some tests that hard-coded various expectations of the cert and keys
+     which aren't easily updated when the certs are regenerated.)
+
 - unittest.selfsigned.der : A self-signed certificate generated using private
      key in unittest.key.bin. The common name is "unittest".
 
@@ -241,10 +246,13 @@ unit tests.
        than RSA.
      - client_6.pem is similar to client_2.pem but is a P-521 ECDSA key rather
        than RSA.
+     - client_7.pem is similar to client_2.pem but is a RSA-1024 key rather
+       than RSA-2048.
      - client_root_ca.pem is the CA certificate which signed client_*_ca.pem.
      - client_1_u16_password.p12 contains the client_1.key and client_1.pem key
        and certificate, but is encoded as a PKCS#12 file and has a password with
        UTF-16 symbols ("Hello, 世界").
+     - The password for all the other client_?.p12 files is "chrome".
 
 ===== From net/data/ssl/scripts/generate-bad-eku-certs.sh
 - eku-test-root.pem

@@ -212,12 +212,12 @@ void ScrollJankDroppedFrameTracker::
 }
 
 void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
-    ScrollUpdateEventMetrics& earliest_event,
+    ScrollUpdateEventMetrics& latest_event,
     base::TimeTicks last_input_generation_ts,
     base::TimeTicks presentation_ts,
     base::TimeDelta vsync_interval) {
   base::TimeTicks first_input_generation_ts =
-      earliest_event.GetDispatchStageTimestamp(
+      latest_event.GetDispatchStageTimestamp(
           EventMetrics::DispatchStage::kGenerated);
   if ((last_input_generation_ts < first_input_generation_ts) ||
       (presentation_ts <= last_input_generation_ts)) {
@@ -292,9 +292,9 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
         "input,input.scrolling", "MissedFrame", "per_scroll_->missed_frames",
         per_scroll_->missed_frames, "per_scroll_->missed_vsyncs",
         per_scroll_->missed_vsyncs, "vsync_interval", vsync_interval);
-    earliest_event.set_is_janky_scrolled_frame(true);
+    latest_event.set_is_janky_scrolled_frame(true);
   } else {
-    earliest_event.set_is_janky_scrolled_frame(false);
+    latest_event.set_is_janky_scrolled_frame(false);
     UMA_HISTOGRAM_CUSTOM_COUNTS(kMissedVsyncsPerFrameHistogram, 0,
                                 kVsyncCountsMin, kVsyncCountsMax,
                                 kVsyncCountsBuckets);

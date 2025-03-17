@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -27,8 +27,5 @@ class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
 };
-
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager();
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_FILE_MANAGER_WEB_APP_INFO_H_

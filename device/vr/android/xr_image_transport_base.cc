@@ -64,7 +64,7 @@ void XrImageTransportBase::Initialize(WebXrPresentationState* webxr,
 
   webgpu_session_ = webgpu_session;
 
-  DoRuntimeInitialization(GL_TEXTURE_2D);
+  DoRuntimeInitialization();
 
   mailbox_bridge_->CreateAndBindContextProvider(
       base::BindOnce(&XrImageTransportBase::OnMailboxBridgeReady,

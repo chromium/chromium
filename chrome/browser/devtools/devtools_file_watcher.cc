@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,7 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -64,6 +65,7 @@ class DevToolsFileWatcher::SharedFileWatcher
   base::Time last_event_time_;
   base::TimeDelta last_dispatch_cost_;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<SharedFileWatcher> weak_factory_{this};
 };
 
 DevToolsFileWatcher::SharedFileWatcher::SharedFileWatcher()
@@ -114,7 +116,7 @@ void DevToolsFileWatcher::SharedFileWatcher::AddListener(
 void DevToolsFileWatcher::SharedFileWatcher::RemoveListener(
     DevToolsFileWatcher* watcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(listeners_, watcher);
+  auto it = std::ranges::find(listeners_, watcher);
   listeners_.erase(it);
   if (listeners_.empty()) {
     file_path_times_.clear();
@@ -133,7 +135,7 @@ void DevToolsFileWatcher::SharedFileWatcher::AddWatch(
   bool success = watchers_[path]->Watch(
       path, base::FilePathWatcher::Type::kRecursive,
       base::BindRepeating(&SharedFileWatcher::DirectoryChanged,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
   if (!success)
     return;
 
@@ -178,7 +180,8 @@ void DevToolsFileWatcher::SharedFileWatcher::DirectoryChanged(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          &DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications, this),
+          &DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications,
+          weak_factory_.GetWeakPtr()),
       shedule_for);
   last_event_time_ = now;
 }

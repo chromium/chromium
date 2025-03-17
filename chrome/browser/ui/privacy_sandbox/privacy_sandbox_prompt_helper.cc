@@ -49,7 +49,7 @@ PrivacySandboxService::PromptType GetRequiredPromptType(Profile* profile) {
       PrivacySandboxService::SurfaceType::kDesktop);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool HasExtensionNtpOverride(
     extensions::ExtensionRegistry* extension_registry) {
   for (const auto& extension : extension_registry->enabled_extensions()) {
@@ -72,7 +72,7 @@ bool IsChromeControlledNtpUrl(const GURL& url) {
          ntp_origin == url::Origin::Create(
                            GURL(chrome::kChromeUINewTabPageThirdPartyURL));
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -106,7 +106,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1315580, crbug.com/1315579): When navigating to a NTP that
   // isn't Chrome-controlled on ChromeOS, open an about blank tab to display the
   // prompt. On other platforms, it's being handled during the startup. This
@@ -133,7 +133,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
       return;
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Check whether the navigation target is a suitable prompt location. The
   // navigation URL, rather than the visible or committed URL, is required to
@@ -189,11 +189,11 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // behind flag / remove.
   bool signin_dialog_showing =
       browser->signin_view_controller()->ShowsModalDialog();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   signin_dialog_showing =
       signin_dialog_showing ||
       IsProfileCustomizationBubbleSyncControllerRunning(browser);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (signin_dialog_showing) {
     base::UmaHistogramEnumeration(
         kPrivacySandboxPromptHelperEventHistogram,
@@ -250,8 +250,9 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   uint32_t host_hash = base::Hash(navigation_handle->GetURL().IsAboutBlank()
                                       ? "about:blank"
                                       : navigation_handle->GetURL().host());
-  base::UmaHistogramSparse("Settings.PrivacySandbox.DialogDisplayHost",
-                           static_cast<base::HistogramBase::Sample>(host_hash));
+  base::UmaHistogramSparse(
+      "Settings.PrivacySandbox.DialogDisplayHost",
+      static_cast<base::HistogramBase::Sample32>(host_hash));
 
   browser->tab_strip_model()->ActivateTabAt(
       browser->tab_strip_model()->GetIndexOfWebContents(

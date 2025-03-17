@@ -6,12 +6,15 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/extensions/sync_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
@@ -116,8 +119,12 @@ void AccountExtensionTracker::SetAccountExtensionTypeOnExtensionInstalled(
   // Set to `kAccountInstalledSignedIn` if this is a syncable extension (by
   // ExtensionSyncService) that was installed when a user is signed in and has
   // sync enabled. Otherwise, set to `kLocal`.
+  // Note: Treat syncable component extensions as "local" extensions despite
+  // being syncable since they shouldn't be directly associated with users'
+  // accounts (and they're component extensions).
   AccountExtensionType type =
-      (is_syncable_extension && extension_sync_enabled)
+      (is_syncable_extension && extension_sync_enabled &&
+       !sync_helper::IsSyncableComponentExtension(&extension))
           ? AccountExtensionType::kAccountInstalledSignedIn
           : AccountExtensionType::kLocal;
   SetAccountExtensionType(extension.id(), type);
@@ -127,6 +134,9 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
 
+  bool observers_notified = false;
+
+  // First look for whether or not the user has signed in or signed out.
   auto signin_event_type =
       event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
   switch (signin_event_type) {
@@ -149,20 +159,61 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
       }
 
       extensions_installed_with_signin_promo_.clear();
+
+      // Don't notify observers that extensions uploadability has changed here,
+      // since initial sync data has not been received yet. Notifying here now
+      // may cause UI flickers from events fired in rapid succession.
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
-      // TODO(crbug.com/366474682): If extension syncing is enabled in transport
-      // mode, only set the pref if the user chooses to keep extensions when
-      // signing out.
+      ExtensionService* extension_service =
+          ExtensionSystem::Get(profile_)->extension_service();
+
       const ExtensionSet extensions =
           extension_registry->GenerateInstalledExtensionsSet();
 
+      // Uninstall any signed in account extensions if
+      // `uninstall_account_extensions_on_signout_` is true. Otherwise, set all
+      // extensions' AccountExtensionType to `kLocal`.
       for (const auto& extension : extensions) {
-        SetAccountExtensionType(extension->id(), AccountExtensionType::kLocal);
+        if (uninstall_account_extensions_on_signout_ &&
+            GetAccountExtensionType(extension->id()) ==
+                AccountExtensionType::kAccountInstalledSignedIn) {
+          extension_service->UninstallExtension(extension->id(),
+                                                UNINSTALL_REASON_USER_INITIATED,
+                                                /*error=*/nullptr);
+        } else {
+          SetAccountExtensionType(extension->id(),
+                                  AccountExtensionType::kLocal);
+        }
       }
+
+      // Reset the value of `uninstall_account_extensions_on_signout_`.
+      uninstall_account_extensions_on_signout_ = false;
+
+      NotifyOnExtensionsUploadabilityChanged();
+      observers_notified = true;
       break;
     }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+
+  // Now see if there is any change on whether the user has enabled or disabled
+  // full sync. If there is, notify observers that the eligibility for uploading
+  // extensions may have changed. If observers have already been notified, just
+  // return early.
+  if (observers_notified) {
+    return;
+  }
+
+  auto sync_event_type =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSync);
+  switch (sync_event_type) {
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      NotifyOnExtensionsUploadabilityChanged();
+      break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
@@ -177,9 +228,30 @@ void AccountExtensionTracker::OnExtensionSyncDataReceived(
   // and thus don't need to be set here.
   AccountExtensionType type = GetAccountExtensionType(extension_id);
   if (type == AccountExtensionType::kLocal) {
-    SetAccountExtensionType(extension_id,
-                            AccountExtensionType::kAccountInstalledLocally);
+    PromoteLocalToAccountExtension(
+        extension_id, AccountExtensionType::kAccountInstalledLocally);
   }
+}
+
+std::vector<const Extension*>
+AccountExtensionTracker::GetSignedInAccountExtensions() const {
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  const ExtensionSet extensions =
+      extension_registry->GenerateInstalledExtensionsSet();
+
+  std::vector<const Extension*> signed_in_account_extensions;
+  for (const auto& extension : extensions) {
+    if (GetAccountExtensionType(extension->id()) ==
+        AccountExtensionType::kAccountInstalledSignedIn) {
+      signed_in_account_extensions.push_back(extension.get());
+    }
+  }
+
+  return signed_in_account_extensions;
+}
+
+void AccountExtensionTracker::OnInitialExtensionsSyncDataReceived() {
+  NotifyOnExtensionsUploadabilityChanged();
 }
 
 AccountExtensionTracker::AccountExtensionType
@@ -204,8 +276,21 @@ AccountExtensionTracker::GetAccountExtensionType(
 
 void AccountExtensionTracker::OnSignInInitiatedFromExtensionPromo(
     const ExtensionId& extension_id) {
-  extensions_installed_with_signin_promo_.push_back(extension_id);
+  bool already_has_primary_account =
+      IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin);
 
+  // Promote the extension right away if the browser already detects a signed in
+  // user by the time this function is called. This happens if clicking "sign
+  // in" from the promo immediately signs the user in rather than opening a
+  // signin tab.
+  if (already_has_primary_account) {
+    PromoteLocalToAccountExtension(
+        extension_id, AccountExtensionType::kAccountInstalledSignedIn);
+    return;
+  }
+
+  extensions_installed_with_signin_promo_.push_back(extension_id);
   // Schedule a task to remove the `extension_id` from
   // `extensions_installed_with_signin_promo_` after
   // `kMaxSigninFromExtensionBubbleDelay`.
@@ -221,6 +306,9 @@ bool AccountExtensionTracker::CanUploadAsAccountExtension(
   // Uploading extensions as "account extensions" aka extensions syncing to the
   // current signed in user, is only enabled if the user is signed in and
   // syncing extensions in transport mode.
+  // If the user is not signed in, then nothing syncs.
+  // If the user is signed into full sync, then any syncable extensions
+  // automatically get uploaded so user uploading is disabled.
   if (!sync_util::IsSyncingExtensionsInTransportMode(profile_)) {
     return false;
   }
@@ -232,10 +320,30 @@ bool AccountExtensionTracker::CanUploadAsAccountExtension(
          sync_util::ShouldSync(profile_, &extension);
 }
 
+void AccountExtensionTracker::OnAccountUploadInitiatedForExtension(
+    const ExtensionId& extension_id) {
+  // Upload the extension and change its "owner" from the current device to the
+  // user's account.
+  PromoteLocalToAccountExtension(
+      extension_id, AccountExtensionType::kAccountInstalledSignedIn);
+
+  // The "local state" of the uploaded extension will be pushed to sync soon,
+  // so set NeedsSync to false.
+  ExtensionPrefs::Get(profile_)->SetNeedsSync(extension_id, false);
+}
+
 void AccountExtensionTracker::SetAccountExtensionTypeForTesting(
     const ExtensionId& extension_id,
     AccountExtensionType type) {
   SetAccountExtensionType(extension_id, type);
+}
+
+void AccountExtensionTracker::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AccountExtensionTracker::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void AccountExtensionTracker::SetAccountExtensionType(
@@ -250,6 +358,29 @@ void AccountExtensionTracker::RemoveExpiredExtension(
   std::erase_if(
       extensions_installed_with_signin_promo_,
       [&extension_id](const ExtensionId& id) { return extension_id == id; });
+}
+
+void AccountExtensionTracker::PromoteLocalToAccountExtension(
+    const ExtensionId& extension_id,
+    AccountExtensionType type) {
+  // Make sure we're actually promoting a local extension to an account
+  // extension!
+  DCHECK_EQ(GetAccountExtensionType(extension_id),
+            AccountExtensionType::kLocal);
+  DCHECK_NE(type, AccountExtensionType::kLocal);
+  SetAccountExtensionType(extension_id, type);
+
+  // The extension's uploadability may change when its AccountExtensionType
+  // changes.
+  for (auto& observer : observers_) {
+    observer.OnExtensionUploadabilityChanged(extension_id);
+  }
+}
+
+void AccountExtensionTracker::NotifyOnExtensionsUploadabilityChanged() {
+  for (auto& observer : observers_) {
+    observer.OnExtensionsUploadabilityChanged();
+  }
 }
 
 }  // namespace extensions

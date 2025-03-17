@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/fido_cable_handshake_handler.h"
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 #include <tuple>
@@ -12,7 +13,6 @@
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/cbor/reader.h"
@@ -72,9 +72,9 @@ ConstructHandshakeMessage(std::string_view handshake_key,
   DCHECK_EQ(kClientHelloMessageSize,
             client_hello->size() + client_hello_mac.size());
   std::array<uint8_t, kClientHelloMessageSize> handshake_message;
-  base::ranges::copy(*client_hello, handshake_message.begin());
-  base::ranges::copy(client_hello_mac,
-                     handshake_message.begin() + client_hello->size());
+  std::ranges::copy(*client_hello, handshake_message.begin());
+  std::ranges::copy(client_hello_mac,
+                    handshake_message.begin() + client_hello->size());
 
   return handshake_message;
 }

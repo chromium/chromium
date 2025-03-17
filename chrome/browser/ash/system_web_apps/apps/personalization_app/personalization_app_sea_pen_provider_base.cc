@@ -401,6 +401,27 @@ void PersonalizationAppSeaPenProviderBase::
   HandleSeaPenIntroductionDialogClosedInternal();
 }
 
+void PersonalizationAppSeaPenProviderBase::
+    ShouldShowSeaPenFreeformIntroductionDialog(
+        ShouldShowSeaPenFreeformIntroductionDialogCallback callback) {
+  if (!features::IsSeaPenEnabled() &&
+      !features::IsVcBackgroundReplaceEnabled() &&
+      !features::IsSeaPenTextInputEnabled()) {
+    sea_pen_receiver_.ReportBadMessage(
+        "Cannot call `ShouldShowSeaPenFreeformIntroductionDialog()` without "
+        "Sea Pen freeform "
+        "feature enabled");
+    return;
+  }
+
+  ShouldShowSeaPenFreeformIntroductionDialogInternal(std::move(callback));
+}
+
+void PersonalizationAppSeaPenProviderBase::
+    HandleSeaPenFreeformIntroductionDialogClosed() {
+  HandleSeaPenFreeformIntroductionDialogClosedInternal();
+}
+
 void PersonalizationAppSeaPenProviderBase::IsInTabletMode(
     IsInTabletModeCallback callback) {
   std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());

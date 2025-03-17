@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -48,7 +50,12 @@ using bookmarks::BookmarkModel;
 
 class ToolbarViewTest : public InteractiveBrowserTest {
  public:
-  ToolbarViewTest() = default;
+  ToolbarViewTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features =*/{features::kSideBySide},
+        /* disabled_features =*/
+        {});
+  }
   ToolbarViewTest(const ToolbarViewTest&) = delete;
   ToolbarViewTest& operator=(const ToolbarViewTest&) = delete;
 
@@ -69,6 +76,9 @@ class ToolbarViewTest : public InteractiveBrowserTest {
 
     location_icon_view->SetSecurityLevelForTesting(security_level);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
@@ -313,6 +323,34 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
       Log("Waiting for menu to dismiss."),
       WaitForHide(kToolbarBackButtonMenuElementId), Log("Menu dismissed."));
 #endif
+}
+
+// TODO(crbug.com/402492418): Find workaround for Mac and ChromeOS.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SideBySideToolbarButton DISABLED_SideBySideToolbarButton
+#else
+#define MAYBE_SideBySideToolbarButton SideBySideToolbarButton
+#endif
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_SideBySideToolbarButton) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents1Id);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2Id);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents3Id);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const char kTabToHover[] = "Tab to hover";
+  RunTestSequence(
+      InstrumentTab(kWebContents1Id),
+      NavigateWebContents(kWebContents1Id, url1),
+      AddInstrumentedTab(kWebContents2Id, url1),
+      AddInstrumentedTab(kWebContents3Id, url1),
+      SelectTab(kTabStripElementId, 0),
+      NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover, 1),
+      MoveMouseTo(kTabToHover), ClickMouse(ui_controls::RIGHT),
+      EnsurePresent(TabMenuModel::kSideBySideMenuItem),
+      SelectMenuItem(TabMenuModel::kSideBySideMenuItem),
+      WaitForShow(kToolbarSideBySideToolbarButtonElementId),
+      SelectTab(kTabStripElementId, 2),
+      WaitForHide(kToolbarSideBySideToolbarButtonElementId));
 }
 
 // Tests that the browser updates the toolbar's visible security state only

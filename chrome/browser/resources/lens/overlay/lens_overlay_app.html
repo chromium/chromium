@@ -1,6 +1,5 @@
 <style include="searchbox-shared-style">
   :host {
-    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
     --cr-searchbox-min-width: 250px;
   }
 
@@ -29,12 +28,12 @@
     display: flex;
     pointer-events: none;
     position: absolute;
-    z-index: 6; /* Keep aligned with cursor and context menu. */
   }
 
   .button-container,
   #searchboxContainer  {
     transition: opacity 150ms, visibility 150ms;
+    z-index: 6; /* Keep aligned with cursor and context menu. */
   }
 
   #searchboxContainer {
@@ -348,12 +347,18 @@
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
-  <div id="searchboxContainer">
-    <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
-        on-blur="handleSearchboxBlurred">
+  <div id="searchboxContainer" on-focusout="handleSearchboxBlurred">
+    <cr-searchbox
+      id="searchbox"
+      on-focusin="handleSearchboxFocused"
+      placeholder-text="{{placeholderText}}"
+      searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]">
     </cr-searchbox>
-    <cr-searchbox-ghost-loader id="searchboxGhostLoader"
-        show-error-state="{{showErrorState}}">
+    <cr-searchbox-ghost-loader
+      id="searchboxGhostLoader"
+      tabindex="-1"
+      show-error-state="{{showErrorState}}"
+      page-content-type="[[pageContentType]]">
     </cr-searchbox-ghost-loader>
   </div>
   <div id="translateButtonContainer" class="button-container">

@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Аккаунтка киргизүүчү маалыматтардын басып коюп толтурула турган тизмеси толугу менен ачылды.</translation>
 <translation id="5591247451101092906">Сакталган сырсөз же киргизүүчү ачкыч колдонулсунбу?</translation>
 <translation id="5624120631404540903">Сырсөздөрдү башкаруу</translation>
+<translation id="592182999816790476"><ph name="WEBSITE" /> үчүн <ph name="USERNAME" /> сырсөзү сакталды</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> үчүн киргизүүчү ачкыч, экрандын кулпусун колдонуңуз</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бул сайт үчүн жаңы сырсөз}other{Бул сайт үчүн жаңы сырсөздөр}}</translation>
 <translation id="7286867818472074330">Киргизүүчү ачкычты тандоо</translation>

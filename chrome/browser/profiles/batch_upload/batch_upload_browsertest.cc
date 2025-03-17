@@ -75,10 +75,7 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
  public:
   BatchUploadBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        // `switches::kExplicitBrowserSigninUIOnDesktop` is needed for the
-        // SigninPending state.
-        /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                              switches::kBatchUploadDesktop},
+        /*enabled_features=*/{switches::kBatchUploadDesktop},
         /*disabled_features=*/{});
   }
 

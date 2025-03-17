@@ -21,8 +21,8 @@ public class FeedManagementActivity extends SnackbarActivity {
             "feed_management_initiating_stream_type_extra";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateInternal(Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
 
         @StreamKind
         int streamKind = getIntent().getIntExtra(INITIATING_STREAM_TYPE_EXTRA, StreamKind.UNKNOWN);

@@ -37,6 +37,7 @@ source_set("internal_structs") {
     "session_authz_service.h",
   ]
   sources = [
+    "logging_service.cc",
     "logging_service.h",
     "session_authz_service.cc",
     "session_authz_service.h",

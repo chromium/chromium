@@ -39,7 +39,6 @@ import org.chromium.url.mojom.Url;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -85,7 +84,6 @@ public class InstalledAppProviderTest {
     @Mock private MockRenderFrameHost mMockRenderFrameHost;
     private FakePackageManager mFakePackageManager;
     private InstalledAppProviderTestImpl mInstalledAppProvider;
-    private FakeInstantAppsHandler mFakeInstantAppsHandler;
     private TestInstalledAppProviderImplJni mTestInstalledAppProviderImplJni;
 
     private static class FakePackageManager extends PackageManagerDelegate {
@@ -133,8 +131,7 @@ public class InstalledAppProviderTest {
     }
 
     private class InstalledAppProviderTestImpl extends InstalledAppProviderImpl {
-        public InstalledAppProviderTestImpl(
-                RenderFrameHost renderFrameHost, FakeInstantAppsHandler instantAppsHandler) {
+        public InstalledAppProviderTestImpl(RenderFrameHost renderFrameHost) {
             super(
                     new BrowserContextHandle() {
                         @Override
@@ -142,8 +139,7 @@ public class InstalledAppProviderTest {
                             return 1;
                         }
                     },
-                    renderFrameHost,
-                    instantAppsHandler::isInstantAppAvailable);
+                    renderFrameHost);
         }
 
         @Override
@@ -191,35 +187,6 @@ public class InstalledAppProviderTest {
         // order.
         void rearrangeOrderOfResults() {
             mCallbacks = new ArrayList<>();
-        }
-    }
-
-    /**
-     * FakeInstantAppsHandler lets us mock getting RelatedApplications from a URL in the absence of
-     * proper GMSCore calls.
-     */
-    private static class FakeInstantAppsHandler {
-        private final List<Pair<String, Boolean>> mRelatedApplicationList;
-
-        public FakeInstantAppsHandler() {
-            mRelatedApplicationList = new ArrayList<Pair<String, Boolean>>();
-        }
-
-        public void addInstantApp(String url, boolean holdback) {
-            mRelatedApplicationList.add(Pair.create(url, holdback));
-        }
-
-        // TODO(thildebr): When the implementation of isInstantAppAvailable is complete, we need to
-        // test its functionality instead of stubbing it out here. Instead we can create a wrapper
-        // around the GMSCore functionality we need and override that here instead.
-        public boolean isInstantAppAvailable(
-                String url, boolean checkHoldback, boolean includeUserPrefersBrowser) {
-            for (Pair<String, Boolean> pair : mRelatedApplicationList) {
-                if (url.startsWith(pair.first) && checkHoldback == pair.second) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 
@@ -383,9 +350,7 @@ public class InstalledAppProviderTest {
         Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(urlOnOrigin);
 
         mFakePackageManager = new FakePackageManager();
-        mFakeInstantAppsHandler = new FakeInstantAppsHandler();
-        mInstalledAppProvider =
-                new InstalledAppProviderTestImpl(mMockRenderFrameHost, mFakeInstantAppsHandler);
+        mInstalledAppProvider = new InstalledAppProviderTestImpl(mMockRenderFrameHost);
         mInstalledAppProvider.setPackageManagerDelegateForTest(mFakePackageManager);
     }
 
@@ -1007,32 +972,6 @@ public class InstalledAppProviderTest {
         // This expectation is based on HMAC_SHA256(salt, manifestUrl encoded in UTF-8), taking the
         // low 10 bits of the first two bytes of the result / 100.
         Assert.assertEquals(8, mInstalledAppProvider.mLastDelayForTesting);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testMultipleAppsIncludingInstantApps() throws Exception {
-        RelatedApplication[] manifestRelatedApps =
-                new RelatedApplication[] {
-                    createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null),
-                    // Instant Apps:
-                    createRelatedApplication(
-                            PLATFORM_ANDROID,
-                            InstalledAppProviderImpl.INSTANT_APP_ID_STRING,
-                            ORIGIN),
-                    createRelatedApplication(
-                            PLATFORM_ANDROID,
-                            InstalledAppProviderImpl.INSTANT_APP_HOLDBACK_ID_STRING,
-                            ORIGIN)
-                };
-
-        setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
-        mFakeInstantAppsHandler.addInstantApp(ORIGIN, true);
-
-        RelatedApplication[] expectedInstalledRelatedApps =
-                new RelatedApplication[] {manifestRelatedApps[0], manifestRelatedApps[2]};
-        verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
     }
 
     /**

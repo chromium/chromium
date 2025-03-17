@@ -12,6 +12,8 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -28,7 +30,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -167,15 +168,15 @@ constexpr PersistingImagesTable kPersistingImages[] = {
 };
 
 BrowserThemePack::PersistentID GetPersistentIDByName(const std::string& key) {
-  auto* it = base::ranges::find_if(kPersistingImages, [&](const auto& image) {
+  auto* it = std::ranges::find_if(kPersistingImages, [&](const auto& image) {
     return base::EqualsCaseInsensitiveASCII(key, image.key);
   });
   return it == std::end(kPersistingImages) ? PRS::kInvalid : it->persistent_id;
 }
 
 BrowserThemePack::PersistentID GetPersistentIDByIDR(int idr) {
-  auto* it = base::ranges::find(kPersistingImages, idr,
-                                &PersistingImagesTable::idr_id);
+  auto* it =
+      std::ranges::find(kPersistingImages, idr, &PersistingImagesTable::idr_id);
   return it == std::end(kPersistingImages) ? PRS::kInvalid : it->persistent_id;
 }
 
@@ -342,10 +343,10 @@ const struct CropEntry kImagesToCrop[] = {
 // be byte-copied directly into the finished DataPack. This should contain the
 // persistent IDs for all themeable image IDs that aren't in kFrameValues,
 // kTabBackgroundMap or kImagesToCrop.
-const BrowserThemePack::PersistentID kPreloadIDs[] = {
+constexpr auto kPreloadIDs = std::to_array<BrowserThemePack::PersistentID>({
     PRS::kNtpBackground,
     PRS::kNtpAttribution,
-};
+});
 
 // Returns a piece of memory with the contents of the file |path|.
 scoped_refptr<base::RefCountedMemory> ReadFileData(const base::FilePath& path) {
@@ -1043,11 +1044,11 @@ gfx::Image BrowserThemePack::GetImageNamed(int idr_id) const {
   }
 
   ThemeImagePngSource::PngMap png_map;
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
+  for (auto scale_factor : scale_factors_) {
     scoped_refptr<base::RefCountedMemory> memory =
-        GetRawData(idr_id, scale_factors_[i]);
+        GetRawData(idr_id, scale_factor);
     if (memory.get()) {
-      png_map[scale_factors_[i]] = memory;
+      png_map[scale_factor] = memory;
     }
   }
   if (!png_map.empty()) {
@@ -1229,8 +1230,8 @@ void BrowserThemePack::AdjustThemePack() {
 
   // Generate raw images (for new-tab-page attribution and background) for
   // any missing scale from an available scale image.
-  for (size_t i = 0; i < std::size(kPreloadIDs); ++i) {
-    GenerateRawImageForAllSupportedScales(kPreloadIDs[i]);
+  for (auto kPreloadID : kPreloadIDs) {
+    GenerateRawImageForAllSupportedScales(kPreloadID);
   }
 
   // Generates missing NTP related colors. Should be called after theme images
@@ -1531,7 +1532,7 @@ void BrowserThemePack::AddFileAtScaleToMap(const std::string& image_name,
 
 void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
   source_images_ = new SourceImage[file_paths.size() + 1];
-  base::ranges::transform(
+  std::ranges::transform(
       file_paths, source_images_.get(),
       [](const auto& pair) { return SourceImage{pair.first}; });
   source_images_[file_paths.size()].id = -1;
@@ -2017,8 +2018,8 @@ void BrowserThemePack::RepackImages(const ImageCache& images,
 
 void BrowserThemePack::MergeImageCaches(const ImageCache& source,
                                         ImageCache* destination) const {
-  for (auto it = source.begin(); it != source.end(); ++it) {
-    (*destination)[it->first] = it->second;
+  for (const auto& it : source) {
+    (*destination)[it.first] = it.second;
   }
 }
 
@@ -2066,10 +2067,9 @@ bool BrowserThemePack::GetScaleFactorFromManifestKey(
   int percent = 0;
   if (base::StringToInt(key, &percent)) {
     float scale = static_cast<float>(percent) / 100.0f;
-    for (size_t i = 0; i < scale_factors_.size(); ++i) {
-      if (fabs(ui::GetScaleForResourceScaleFactor(scale_factors_[i]) - scale) <
-          0.001) {
-        *scale_factor = scale_factors_[i];
+    for (auto i : scale_factors_) {
+      if (fabs(ui::GetScaleForResourceScaleFactor(i) - scale) < 0.001) {
+        *scale_factor = i;
         return true;
       }
     }
@@ -2091,8 +2091,8 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
 
   // See if any image is missing. If not, we're done.
   bool image_missing = false;
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
-    int raw_id = GetRawIDByPersistentID(prs_id, scale_factors_[i]);
+  for (auto& scale_factor : scale_factors_) {
+    int raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
     if (image_memory_.find(raw_id) == image_memory_.end()) {
       image_missing = true;
       break;
@@ -2104,13 +2104,13 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
 
   // Find available scale factor with highest scale.
   ui::ResourceScaleFactor available_scale_factor = ui::kScaleFactorNone;
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
-    int raw_id = GetRawIDByPersistentID(prs_id, scale_factors_[i]);
+  for (auto& scale_factor : scale_factors_) {
+    int raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
     if ((available_scale_factor == ui::kScaleFactorNone ||
-         (ui::GetScaleForResourceScaleFactor(scale_factors_[i]) >
+         (ui::GetScaleForResourceScaleFactor(scale_factor) >
           ui::GetScaleForResourceScaleFactor(available_scale_factor))) &&
         image_memory_.find(raw_id) != image_memory_.end()) {
-      available_scale_factor = scale_factors_[i];
+      available_scale_factor = scale_factor;
     }
   }
   // If no scale factor is available, we're done.
@@ -2128,19 +2128,19 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
   }
 
   // Fill in all missing scale factors by scaling the available bitmap.
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
-    int scaled_raw_id = GetRawIDByPersistentID(prs_id, scale_factors_[i]);
+  for (auto& scale_factor : scale_factors_) {
+    int scaled_raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
     if (image_memory_.find(scaled_raw_id) != image_memory_.end()) {
       continue;
     }
     SkBitmap scaled_bitmap = CreateLowQualityResizedBitmap(
-        available_bitmap, available_scale_factor, scale_factors_[i]);
+        available_bitmap, available_scale_factor, scale_factor);
     std::optional<std::vector<uint8_t>> bitmap_data =
         gfx::PNGCodec::EncodeBGRASkBitmap(scaled_bitmap,
                                           /*discard_transparency=*/false);
     if (!bitmap_data) {
       NOTREACHED() << "Unable to encode theme image for prs_id=" << prs_id
-                   << " for scale_factor=" << scale_factors_[i];
+                   << " for scale_factor=" << scale_factor;
     }
     image_memory_[scaled_raw_id] = base::MakeRefCounted<base::RefCountedBytes>(
         std::move(bitmap_data).value());

@@ -153,6 +153,11 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   void Trace(Visitor*) const override;
 
+  std::optional<int> GetZoomLevelForTesting() const { return zoom_level_; }
+
+  bool IsCapturedSurfaceResolutionActive(
+      const MediaStreamTrackPlatform::Settings& platform_settings) const;
+
  protected:
   // Given a partially built MediaStreamTrackImpl, finishes the job of making it
   // into a clone of |this|.
@@ -173,7 +178,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void SourceChangedCaptureConfiguration() override;
   void SourceChangedCaptureHandle() override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void SourceChangedZoomLevel(int) override {}
+  void SourceChangedZoomLevel(int) override;
 #endif
   void PropagateTrackEnded();
 
@@ -218,6 +223,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   WeakMember<ExecutionContext> execution_context_;
   HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
   bool muted_ = false;
+  std::optional<int> zoom_level_;
   MediaConstraints constraints_;
   std::optional<bool> suppress_local_audio_playback_setting_;
   Member<V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats> stats_;

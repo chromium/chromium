@@ -233,7 +233,7 @@ if (is_win) {
         "--version",
         invoker.version,
         "--output",
-        rebase_path(outputs[0]),
+        rebase_path(outputs[0], root_build_dir),
       ]
     }
 

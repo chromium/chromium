@@ -10,8 +10,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/bad_message.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -23,8 +26,8 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -83,7 +86,14 @@ std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
 WebAuthRequestSecurityChecker::RemoteValidation::Create(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
+  if (!url_loader_factory) {
+    std::move(callback).Run(
+        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
+    return nullptr;
+  }
+
   // The relying party may allow other origins to use its RP ID based on the
   // contents of a .well-known file.
   std::string canonicalized_domain_storage;
@@ -111,16 +121,9 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   replace_host.SetHostStr(canonicalized_domain);
   well_known_url = well_known_url.ReplaceComponents(replace_host);
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      GetContentClient()->browser()->GetSystemSharedURLLoaderFactory();
-  if (!url_loader_factory) {
-    std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
-    return nullptr;
-  }
-
   auto network_request = std::make_unique<network::ResourceRequest>();
   network_request->url = well_known_url;
+  network_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   std::unique_ptr<RemoteValidation> validation(
       new RemoteValidation(caller_origin, std::move(callback)));
@@ -255,8 +258,9 @@ bool WebAuthRequestSecurityChecker::IsSameOriginWithAncestors(
     const url::Origin& origin) {
   RenderFrameHost* parent = render_frame_host_->GetParentOrOuterDocument();
   while (parent) {
-    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin))
+    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
       return false;
+    }
     parent = parent->GetParentOrOuterDocument();
   }
   return true;
@@ -280,13 +284,13 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   // policy and for SPC requests.
   if (type == RequestType::kMakeCredential &&
       render_frame_host_->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::
+          network::mojom::PermissionsPolicyFeature::
               kPublicKeyCredentialsCreate)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
   if (type == RequestType::kGetAssertion &&
       render_frame_host_->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) {
+          network::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
   // For credential creation, SPC credentials (i.e., credentials with the
@@ -294,17 +298,17 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   // 'payment' permissions policy.
   if (type == RequestType::kMakePaymentCredential) {
     if (render_frame_host_->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::
+            network::mojom::PermissionsPolicyFeature::
                 kPublicKeyCredentialsCreate) ||
         render_frame_host_->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kPayment)) {
+            network::mojom::PermissionsPolicyFeature::kPayment)) {
       return blink::mojom::AuthenticatorStatus::SUCCESS;
     }
   }
 
   if (type == RequestType::kGetPaymentCredentialAssertion &&
       render_frame_host_->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kPayment)) {
+          network::mojom::PermissionsPolicyFeature::kPayment)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
   // TODO(crbug.com/347727501): Add a permissions policy for report.
@@ -353,7 +357,6 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   }
 
   url::Origin relying_party_origin = caller_origin;
-#if !BUILDFLAG(IS_ANDROID)
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -367,7 +370,6 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     }
     relying_party_origin = remote_desktop_client_override->origin;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
                                            relying_party_origin)) {
@@ -375,8 +377,19 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     return nullptr;
   }
 
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+  if (!WebAuthRequestSecurityChecker::
+          UseSystemSharedURLLoaderFactoryForTesting()) {
+    url_loader_factory = render_frame_host_->GetStoragePartition()
+                             ->GetURLLoaderFactoryForBrowserProcess();
+  }
+  if (!url_loader_factory) {
+    url_loader_factory =
+        GetContentClient()->browser()->GetSystemSharedURLLoaderFactory();
+  }
+
   return RemoteValidation::Create(caller_origin, relying_party_id,
-                                  std::move(callback));
+                                  url_loader_factory, std::move(callback));
 }
 
 blink::mojom::AuthenticatorStatus
@@ -386,7 +399,6 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
     const blink::mojom::RemoteDesktopClientOverridePtr&
         remote_desktop_client_override,
     std::string* out_appid) {
-#if !BUILDFLAG(IS_ANDROID)
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -398,7 +410,6 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
     }
     caller_origin = remote_desktop_client_override->origin;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Step 1: "If the AppID is not an HTTPS URL, and matches the FacetID of the
   // caller, no additional processing is necessary and the operation may
@@ -499,7 +510,7 @@ bool WebAuthRequestSecurityChecker::
       base::flat_set<device::FidoTransportProtocol> merged_transports;
       if (!it->transports.empty() &&
           !credential_descriptor.transports.empty()) {
-        base::ranges::set_union(
+        std::ranges::set_union(
             it->transports, credential_descriptor.transports,
             std::inserter(merged_transports, merged_transports.begin()));
       }
@@ -512,6 +523,13 @@ bool WebAuthRequestSecurityChecker::
   *list = {unique_credential_descriptors.begin(),
            unique_credential_descriptors.end()};
   return true;
+}
+
+// static
+bool& WebAuthRequestSecurityChecker::
+    UseSystemSharedURLLoaderFactoryForTesting() {
+  static bool value = false;
+  return value;
 }
 
 }  // namespace content

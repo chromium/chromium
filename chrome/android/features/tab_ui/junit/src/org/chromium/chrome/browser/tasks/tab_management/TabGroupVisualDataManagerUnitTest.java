@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -15,8 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-
-import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -114,9 +113,9 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(mTabGroupModelFilter)
                 .when(mTabGroupModelFilterProvider)
                 .getTabGroupModelFilter(false);
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB2_ID, TAB3_ID, TAB4_ID)))
+        doReturn(LazyOneshotSupplier.fromValue(Set.of(GROUP_1_ID, GROUP_2_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllTabGroupIds(any(), anyBoolean());
         doReturn(mIncognitoTabGroupModelFilter)
                 .when(mTabGroupModelFilterProvider)
                 .getTabGroupModelFilter(true);
@@ -142,7 +141,7 @@ public class TabGroupVisualDataManagerUnitTest {
     }
 
     @Test
-    public void onFinishingMultipleTabClosure_RootTab_NotDeleteStoredTitle() {
+    public void onFinishingMultipleTabClosure_NotDeleteStoredTitleIfIncomplete() {
         // Assume that CUSTOMIZED_TITLE1 and COLOR1_ID are associated with the tab group.
         // Mock that tab1, tab2, new tab are in the same group and group root id is TAB1_ID.
         Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
@@ -152,33 +151,12 @@ public class TabGroupVisualDataManagerUnitTest {
         // Mock that the root tab of the group, tab1, is closed, but tab 2 is still around sharing
         // root ID. (Note that this is a stale value and should have been updated elsewhere to have
         // a new root ID).
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
+        doReturn(LazyOneshotSupplier.fromValue(Set.of(GROUP_1_ID, GROUP_2_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllTabGroupIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab1), /* canRestore= */ true);
-
-        // Verify that the title and color were not deleted.
-        verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
-        verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
-    }
-
-    @Test
-    public void onFinishingMultipleTabClosure_NotRootTab_NotDeleteStoredTitle() {
-        // Assume that CUSTOMIZED_TITLE1 and COLOR1_ID are associated with the tab group.
-        // Mock that tab1, tab2, new tab are in the same group and group root id is TAB1_ID.
-        Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
-        List<Tab> groupBeforeClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
-        createTabGroup(groupBeforeClosure, TAB1_ID, GROUP_1_ID);
-
-        // Mock that tab2 is closed and tab2 is not the root tab.
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
-                .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor
-                .getValue()
-                .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
 
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
@@ -190,9 +168,9 @@ public class TabGroupVisualDataManagerUnitTest {
         List<Tab> tabs = List.of(mTab1);
         createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
 
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
+        doReturn(LazyOneshotSupplier.fromValue(Set.of(GROUP_2_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllTabGroupIds(any(), anyBoolean());
         doReturn(true).when(mTabGroupModelFilter).isTabGroupHiding(GROUP_1_ID);
         mTabModelObserverCaptor
                 .getValue()
@@ -218,10 +196,10 @@ public class TabGroupVisualDataManagerUnitTest {
         createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
 
         // Mock that tab1 is closed and the group becomes a single tab.
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(1);
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
+        when(mTabGroupModelFilter.getTabCountForGroup(GROUP_1_ID)).thenReturn(1);
+        doReturn(LazyOneshotSupplier.fromValue(Set.of(GROUP_1_ID, GROUP_2_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllTabGroupIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
@@ -230,9 +208,9 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
 
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
+        doReturn(LazyOneshotSupplier.fromValue(Set.of(GROUP_2_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllTabGroupIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab1), /* canRestore= */ true);
@@ -251,10 +229,10 @@ public class TabGroupVisualDataManagerUnitTest {
         createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
 
         // Mock that tab1 is closed and the group becomes a single tab.
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(0);
-        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
+        when(mTabGroupModelFilter.getTabCountForGroup(GROUP_1_ID)).thenReturn(0);
+        doReturn(LazyOneshotSupplier.fromValue(Set.of(GROUP_2_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllTabGroupIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab1, mTab2), /* canRestore= */ true);
@@ -279,7 +257,9 @@ public class TabGroupVisualDataManagerUnitTest {
         List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
         createTabGroup(group2, TAB3_ID, GROUP_2_ID);
 
-        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMergeTabToGroup(mTab1, TAB3_ID, GROUP_2_ID);
 
         // The title of the source group will not be deleted until the merge is committed, after
         // SnackbarController#onDismissNoAction is called for the UndoGroupSnackbarController.
@@ -302,7 +282,9 @@ public class TabGroupVisualDataManagerUnitTest {
         List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
         createTabGroup(group2, TAB3_ID, GROUP_2_ID);
 
-        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMergeTabToGroup(mTab1, TAB3_ID, GROUP_2_ID);
 
         // The stored title should be assigned to the new root id. The title of the source group
         // will not be deleted until the merge is committed, after
@@ -318,7 +300,9 @@ public class TabGroupVisualDataManagerUnitTest {
         createTabGroup(group1, TAB1_ID, GROUP_1_ID);
         List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
         createTabGroup(group2, TAB3_ID, GROUP_2_ID);
-        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMergeTabToGroup(mTab1, TAB3_ID, GROUP_2_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB3_ID);
     }
 
@@ -332,33 +316,33 @@ public class TabGroupVisualDataManagerUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
 
-        // Mock that we are going to ungroup tab1, and the group becomes a single tab after ungroup.
-        when(mTabGroupModelFilter.getGroupLastShownTab(TAB1_ID)).thenReturn(mTab1);
-        when(mTabGroupModelFilter.getGroupLastShownTab(TAB2_ID)).thenReturn(mTab2);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(2);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB2_ID)).thenReturn(2);
-        when(mTab1.getRootId()).thenReturn(TAB1_ID);
-        when(mTab1.getTabGroupId()).thenReturn(null);
-        when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(false);
+        // Mock the situation that the root tab is not the tab being moved out.
+        when(mTab1.getRootId()).thenReturn(TAB2_ID);
         when(mTab2.getRootId()).thenReturn(TAB2_ID);
 
-        // Mock the situation that the root tab is not the tab being moved out.
-        mTabGroupModelFilterObserverCaptor.getValue().willMoveTabOutOfGroup(mTab1, TAB1_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMoveTabOutOfGroup(mTab1, /* destinationTabGroupId= */ null);
 
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB1_ID);
 
+        // Actually move tab 1 out of the group.
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(false);
+        when(mTab1.getTabGroupId()).thenReturn(null);
+
         when(mTabGroupModelFilter.getTabGroupTitle(TAB2_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupColor(TAB2_ID)).thenReturn(COLOR1_ID);
 
         // Mock that we are going to ungroup the last tab in a size 1 tab group, and it is the root
         // tab.
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(1);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB2_ID)).thenReturn(1);
+        when(mTabGroupModelFilter.getTabCountForGroup(GROUP_1_ID)).thenReturn(1);
 
-        mTabGroupModelFilterObserverCaptor.getValue().willMoveTabOutOfGroup(mTab2, TAB1_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMoveTabOutOfGroup(mTab2, /* destinationTabGroupId= */ null);
 
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB2_ID);
@@ -388,12 +372,11 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mTabGroupModelFilter).setTabGroupCollapsed(TAB2_ID, true);
     }
 
-    private void createTabGroup(List<Tab> tabs, int rootId, @Nullable Token groupId) {
+    private void createTabGroup(List<Tab> tabs, int rootId, Token groupId) {
         Tab lastTab = tabs.isEmpty() ? null : tabs.get(0);
-        when(mTabGroupModelFilter.getGroupLastShownTab(rootId)).thenReturn(lastTab);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(tabs.size());
+        when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabs.size());
         for (Tab tab : tabs) {
-            when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(tabs.size() != 1);
+            when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
             when(tab.getRootId()).thenReturn(rootId);
             when(tab.getTabGroupId()).thenReturn(groupId);
         }

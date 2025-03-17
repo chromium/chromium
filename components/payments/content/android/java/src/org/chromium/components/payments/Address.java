@@ -6,7 +6,8 @@ package org.chromium.components.payments;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
  * An immutable class that mirrors org.chromium.payments.mojom.PaymentAddress.
  * https://w3c.github.io/payment-request/#paymentaddress-interface
  */
+@NullMarked
 public class Address {
     /**
      * The pattern for a valid country code:
@@ -21,10 +23,10 @@ public class Address {
      */
     private static final String COUNTRY_CODE_PATTERN = "^[A-Z]{2}$";
 
-    @Nullable private static Pattern sCountryCodePattern;
+    private static @Nullable Pattern sCountryCodePattern;
 
     public final String country;
-    public final String[] addressLine;
+    public final String @Nullable [] addressLine;
     public final String region;
     public final String city;
     public final String dependentLocality;
@@ -65,7 +67,7 @@ public class Address {
      */
     public Address(
             String country,
-            String[] addressLine,
+            String @Nullable [] addressLine,
             String region,
             String city,
             String dependentLocality,
@@ -102,8 +104,7 @@ public class Address {
      * @param address Bundle to be parsed.
      * @return converted Address or null.
      */
-    @Nullable
-    public static Address createFromBundle(@Nullable Bundle address) {
+    public static @Nullable Address createFromBundle(@Nullable Bundle address) {
         if (address == null) return null;
         return new Address(
                 getStringOrEmpty(address, EXTRA_ADDRESS_COUNTRY),

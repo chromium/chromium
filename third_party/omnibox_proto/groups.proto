@@ -97,10 +97,18 @@ enum GroupId {
   GROUP_OTHER_NAVS = 50002;  // E.g., bookmarks, history, etc.
   GROUP_DOCUMENT = 50003;    // E.g., Drive docs, slides, sheets, etc.
   GROUP_HISTORY_CLUSTER = 50004;
+  GROUP_MOST_VISITED = 50005;
+  GROUP_RECENTLY_CLOSED_TABS = 50006;
 
   // IPH suggestions that appear in zero-prefix.  These suggestions are
   // informational only and do not trigger a search or navigation.
   GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP = 60000;
+
+  // Extension suggestions that appear in non-zps input. These suggestions
+  // appear when ExperimentalOmniboxLabs is enabled. Every extension should
+  // have a unique group in order to have its own header.
+  GROUP_UNSCOPED_EXTENSION_1 = 70000;
+  GROUP_UNSCOPED_EXTENSION_2 = 70001;
 }
 
 // Suggestion group sections determine the order in which suggestion groups
@@ -164,10 +172,17 @@ enum GroupSection {
   SECTION_OTHER_NAVS = 102;
   SECTION_DOCUMENT = 103;
   SECTION_HISTORY_CLUSTER = 104;
+  SECTION_MOST_VISITED = 105;
+  SECTION_RECENTLY_CLOSED_TABS = 106;
 
   // Android-specific auxiliary suggestions. These suggestions are sourced on
   // device, and appear above any other content.
   SECTION_MOBILE_OPEN_TABS = 200;
   SECTION_MOBILE_BOOKMARKS = 201;
   SECTION_MOBILE_HISTORY = 202;
+
+  // Unscoped extension suggestions. These suggestions are sourced from
+  // extensions for non zps input when ExperimentalOmniboxLabs is enabled.
+  SECTION_UNSCOPED_EXTENSION_1 = 300;
+  SECTION_UNSCOPED_EXTENSION_2 = 301;
 }

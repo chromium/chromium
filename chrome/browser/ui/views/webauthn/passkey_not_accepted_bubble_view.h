@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_NOT_ACCEPTED_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_NOT_ACCEPTED_BUBBLE_VIEW_H_
 
+#include <string>
+
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/webauthn/passkey_not_accepted_bubble_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"

@@ -6,18 +6,32 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/types/pass_key.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/models/image_model.h"
 #include "url/gurl.h"
+
+namespace base {
+class CancelableTaskTracker;
+}  // namespace base
 
 namespace content {
 class NavigationHandle;
 class WebContents;
 }  // namespace content
+
+namespace favicon {
+class FaviconService;
+}  // namespace favicon
+
+namespace favicon_base {
+struct FaviconImageResult;
+}  // namespace favicon_base
 
 namespace tabs {
 class TabInterface;
@@ -27,6 +41,44 @@ namespace tab_groups {
 
 class LocalTabGroupListener;
 class TabGroupSyncService;
+
+// State that encompasses the information the tab needs in order to fake
+// its visual state. Queries the favicon service for the given URL, and
+// udpates the tabstripmodel observers when it's updated. Used by the
+// TabRendererData to override the favicon and title.
+class DeferredTabState {
+ public:
+  DeferredTabState(tabs::TabInterface* local_tab,
+                   const GURL& url,
+                   const std::u16string& title,
+                   favicon::FaviconService* favicon_service);
+  ~DeferredTabState();
+
+  const GURL& url() const { return url_; }
+  const ui::ImageModel& favicon() const { return favicon_; }
+  const std::u16string& title() const { return title_; }
+
+ private:
+  // Callback used to update the favicon when the favicon service returns a
+  // result for the URL.
+  void OnGetFaviconImageResult(const favicon_base::FaviconImageResult& result);
+
+  // The tab that will be updated to a new favicon and title.
+  raw_ptr<tabs::TabInterface> local_tab_;
+
+  // Url that will be navigated to when the tab becomes active.
+  GURL url_;
+
+  // Favicon that is displayed on the tab when the tab is inactive. Replaced by
+  // the FaviconImageResult.
+  ui::ImageModel favicon_;
+
+  // Title displayed on the tab until it becomes active.
+  std::u16string title_;
+
+  // Task that pulls the favicion data for the `url_`.
+  std::unique_ptr<base::CancelableTaskTracker> favicon_tracker_;
+};
 
 // Class that maintains a relationship between the webcontents object of a tab
 // and the saved tab group tab that exists for that tab. Listens to navigation
@@ -49,6 +101,10 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
 
   // Accessors.
   LocalTabID local_tab_id() const;
+
+  const std::optional<DeferredTabState>& deferred_tab_state() const {
+    return deferred_tab_state_;
+  }
 
   content::WebContents* contents() const;
 
@@ -88,11 +144,12 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   base::CallbackListSubscription tab_discard_subscription_;
 
   // Subscription that resumes performing a navigation once the tab is
-  // foregrounded if the cached_url_ exists.
+  // foregrounded if the deferred_tab_state_ exists.
   base::CallbackListSubscription tab_foregrounded_subscription_;
 
-  // Stored urls which will be navigated to once the tab is foregrounded.
-  std::optional<GURL> cached_url_;
+  // Stored state (see DeferredTabState) which will be navigated to once the tab
+  // is foregrounded.
+  std::optional<DeferredTabState> deferred_tab_state_;
 };
 
 }  // namespace tab_groups

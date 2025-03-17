@@ -19,11 +19,8 @@
 #include "build/robolectric_buildflags.h"
 #include "third_party/jni_zero/jni_zero.h"
 
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/JniAndroid_jni.h"  // nogncheck
-#else
-#include "base/base_jni/JniAndroid_jni.h"
-#endif
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_minimal_jni/JniAndroid_jni.h"
 
 namespace base {
 namespace android {
@@ -111,7 +108,6 @@ void InitVM(JavaVM* vm) {
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
   DCHECK(g_out_of_memory_error_class);
 }
-
 
 void CheckException(JNIEnv* env) {
   if (!jni_zero::HasException(env)) {
@@ -269,3 +265,5 @@ std::string GetJavaStackTraceIfPresent() {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI_FOR_JniAndroid()

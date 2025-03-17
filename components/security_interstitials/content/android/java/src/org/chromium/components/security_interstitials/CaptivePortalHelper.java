@@ -13,12 +13,14 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /** Helper class for captive portal related methods on Android. */
 @JNINamespace("security_interstitials")
+@NullMarked
 public class CaptivePortalHelper {
     private static final String DEFAULT_PORTAL_CHECK_URL =
             "http://connectivitycheck.gstatic.com/generate_204";

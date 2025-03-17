@@ -75,13 +75,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         type: String,
         computed: 'computeAiPageTitle_(enableAiSettingsPageRefresh_)',
       },
-
-      // <if expr="enable_glic">
-      glicEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showGlicSettings'),
-      },
-      // </if>
     };
   }
 
@@ -93,9 +86,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private aiPageTitle_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  // <if expr="enable_glic">
-  private glicEnabled_: boolean;
-  // </if>
 
   override ready() {
     super.ready();
@@ -106,13 +96,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     return this.showAdvancedFeaturesMainControl_ &&
         (!this.pageVisibility || this.pageVisibility.ai !== false);
   }
-
-  // <if expr="enable_glic">
-  private showGlicMenuItem_(): boolean {
-    return this.glicEnabled_ &&
-        (!this.pageVisibility || this.pageVisibility.glic !== false);
-  }
-  // </if>
 
   private computeAiPageIcon_(): string {
     return this.enableAiSettingsPageRefresh_ ? 'settings20:magic' :
@@ -175,7 +158,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'settings-menu has an entry with an invalid route.');
     Router.getInstance().navigateTo(
-        route!, /* dynamicParams */ undefined, /* removeSearch */ true);
+        route, /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
   private onExtensionsLinkClick_() {

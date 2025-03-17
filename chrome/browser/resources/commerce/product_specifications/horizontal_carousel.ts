@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './horizontal_carousel.css.js';
@@ -172,7 +173,8 @@ export class HorizontalCarouselElement extends CrLitElement {
       return 0;
     }
     const tableElement = this.$.slottedTable.assignedElements()[0];
-    const column = $$<HTMLElement>(tableElement, '.col');
+    assert(tableElement);
+    const column = $$<HTMLElement>(tableElement, '.col') as HTMLElement;
     return column ? column.offsetWidth : 0;
   }
 }

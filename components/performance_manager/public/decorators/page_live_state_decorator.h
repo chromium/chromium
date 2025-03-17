@@ -10,15 +10,11 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "ui/accessibility/ax_mode.h"
+#include "content/public/browser/web_contents_capability_type.h"
 #include "url/gurl.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace performance_manager {
 
@@ -29,9 +25,10 @@ class PageLiveStateObserver;
 // All the functions that take a WebContents* as a parameter should only be
 // called from the UI thread, the event will be forwarded to the corresponding
 // PageNode on the Performance Manager's sequence.
-class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
-                               public NodeDataDescriberDefaultImpl,
-                               public PageNodeObserver {
+class PageLiveStateDecorator
+    : public GraphOwnedAndRegistered<PageLiveStateDecorator>,
+      public NodeDataDescriberDefaultImpl,
+      public PageNodeObserver {
  public:
   class Data;
 
@@ -40,10 +37,29 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   PageLiveStateDecorator(const PageLiveStateDecorator& other) = delete;
   PageLiveStateDecorator& operator=(const PageLiveStateDecorator&) = delete;
 
+  // Starts the given `observer` observing all PageNodes. An observer should not
+  // be passed to this function more than once.
+  //
+  // To observe a specific PageNode, use
+  // PageLiveStateDecorator::Data::AddObserver and
+  // PageLiveStateDecorator::Data::RemoveObserver.
+  static void AddAllPageObserver(PageLiveStateObserver* observer);
+
+  // Stops the given `observer` from observing all PageNodes. Does nothing if
+  // this observer was never added.
+  //
+  // To observe a specific PageNode, use
+  // PageLiveStateDecorator::Data::AddObserver and
+  // PageLiveStateDecorator::Data::RemoveObserver.
+  static void RemoveAllPageObserver(PageLiveStateObserver* observer);
+
+  // Returns whether `observer` is observing all PageNodes.
+  static bool HasAllPageObserver(PageLiveStateObserver* observer);
+
   // Must be called when the capability types used by `contents` change.
   static void OnCapabilityTypesChanged(
       content::WebContents* contents,
-      content::WebContents::CapabilityType capability_type,
+      content::WebContentsCapabilityType capability_type,
       bool used);
 
   // Functions that should be called by a MediaStreamCaptureIndicator::Observer.
@@ -58,8 +74,12 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   static void OnIsCapturingDisplayChanged(content::WebContents* contents,
                                           bool is_capturing_display);
 
-  // Set the auto discardable property. This indicates whether or not the page
-  // can be discarded during an intervention.
+  // Set the auto discardable property. This defaults to true, and can be set
+  // to false by the chrome.tabs.autoDiscardable extension API to prevent a
+  // tab from being discarded during an intervention. The tab can still be
+  // discarded manually by extensions. Technically this is a property of the
+  // tab, not the WebContents, so if discarding changes the WebContents for the
+  // tab the value is copied to the new WebContents.
   static void SetIsAutoDiscardable(content::WebContents* contents,
                                    bool is_auto_discardable);
 
@@ -75,8 +95,23 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   static void SetIsDevToolsOpen(content::WebContents* contents,
                                 bool is_dev_tools_open);
 
-  static void SetAccessibilityMode(content::WebContents* contents,
-                                   ui::AXMode accessibility_mode);
+  // Convenience functions to look up the given properties from the
+  // PageLiveStateDecorator::Data for the given `contents`.
+  static bool IsConnectedToUSBDevice(content::WebContents* contents);
+  static bool IsConnectedToBluetoothDevice(content::WebContents* contents);
+  static bool IsConnectedToHidDevice(content::WebContents* contents);
+  static bool IsConnectedToSerialPort(content::WebContents* contents);
+  static bool IsCapturingVideo(content::WebContents* contents);
+  static bool IsCapturingAudio(content::WebContents* contents);
+  static bool IsBeingMirrored(content::WebContents* contents);
+  static bool IsCapturingWindow(content::WebContents* contents);
+  static bool IsCapturingDisplay(content::WebContents* contents);
+  static bool IsAutoDiscardable(content::WebContents* contents);
+  static bool WasDiscarded(content::WebContents* contents);
+  static bool IsActiveTab(content::WebContents* contents);
+  static bool IsPinnedTab(content::WebContents* contents);
+  static bool IsDevToolsOpen(content::WebContents* contents);
+  static bool UpdatedTitleOrFaviconInBackground(content::WebContents* contents);
 
  private:
   friend class PageLiveStateDecoratorTest;
@@ -89,8 +124,14 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
   // PageNodeObserver implementation:
+  void OnPageNodeAdded(const PageNode* page_node) override;
+  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnTitleUpdated(const PageNode* page_node) override;
   void OnFaviconUpdated(const PageNode* page_node) override;
+  void OnAboutToBeDiscarded(const PageNode* page_node,
+                            const PageNode* new_page_node) override;
+
+  base::ObserverList<PageLiveStateObserver> all_page_observers_;
 
   base::WeakPtrFactory<PageLiveStateDecorator> weak_factory_{this};
 };
@@ -115,11 +156,12 @@ class PageLiveStateDecorator::Data {
   virtual bool IsCapturingWindow() const = 0;
   virtual bool IsCapturingDisplay() const = 0;
   virtual bool IsAutoDiscardable() const = 0;
+  // TODO(crbug.com/391179510): Remove this property which is always "false" due
+  // to a bug.
   virtual bool WasDiscarded() const = 0;
   virtual bool IsActiveTab() const = 0;
   virtual bool IsPinnedTab() const = 0;
   virtual bool IsDevToolsOpen() const = 0;
-  virtual ui::AXMode GetAccessibilityMode() const = 0;
 
   // TODO(crbug.com/40894717): Add a notifier for this to
   // PageLiveStateObserver.
@@ -142,7 +184,6 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsActiveTabForTesting(bool value) = 0;
   virtual void SetIsPinnedTabForTesting(bool value) = 0;
   virtual void SetIsDevToolsOpenForTesting(bool value) = 0;
-  virtual void SetAccessibilityModeForTesting(ui::AXMode value) = 0;
   virtual void SetUpdatedTitleOrFaviconInBackgroundForTesting(bool value) = 0;
 
  protected:
@@ -170,11 +211,9 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsCapturingWindowChanged(const PageNode* page_node) = 0;
   virtual void OnIsCapturingDisplayChanged(const PageNode* page_node) = 0;
   virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) = 0;
-  virtual void OnWasDiscardedChanged(const PageNode* page_node) = 0;
   virtual void OnIsActiveTabChanged(const PageNode* page_node) = 0;
   virtual void OnIsPinnedTabChanged(const PageNode* page_node) = 0;
   virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) = 0;
-  virtual void OnAccessibilityModeChanged(const PageNode* page_node) = 0;
 };
 
 class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
@@ -198,11 +237,9 @@ class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
   void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
-  void OnWasDiscardedChanged(const PageNode* page_node) override {}
   void OnIsActiveTabChanged(const PageNode* page_node) override {}
   void OnIsPinnedTabChanged(const PageNode* page_node) override {}
   void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
-  void OnAccessibilityModeChanged(const PageNode* page_node) override {}
 };
 
 }  // namespace performance_manager

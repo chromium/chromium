@@ -25,9 +25,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/language_detection/content/renderer/language_detection_agent.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_provider.h"
 #include "components/translate/content/renderer/isolated_world_util.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
@@ -52,7 +52,6 @@ using blink::WebLanguageDetectionDetails;
 using blink::WebLocalFrame;
 using blink::WebScriptSource;
 using blink::WebString;
-using blink::WebVector;
 
 namespace {
 
@@ -447,8 +446,9 @@ void TranslateAgent::TranslateFrame(const std::string& translate_script,
 
   // If the source language is undetermined, we'll let the translate element
   // detect it.
-  source_lang_ = (source_lang != kUnknownLanguageCode) ? source_lang
-                                                       : kAutoDetectionLanguage;
+  source_lang_ = (source_lang != language_detection::kUnknownLanguageCode)
+                     ? source_lang
+                     : kAutoDetectionLanguage;
   target_lang_ = target_lang;
 
   // Set up v8 isolated world.

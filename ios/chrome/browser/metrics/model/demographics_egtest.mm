@@ -5,10 +5,10 @@
 #import "base/time/time.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/ukm/ukm_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
@@ -31,8 +31,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
 - (void)setUp {
   [super setUp];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 
   // Set a network time so that SyncPrefs::GetUserNoisedBirthYearAndGender does
@@ -51,8 +51,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 - (void)tearDownHelper {
   [ChromeEarlGrey clearFakeSyncServerData];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -84,6 +84,10 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                    (testUMADemographicsReportingWithFeatureDisabled)]) {
     config.features_disabled.push_back(metrics::kDemographicMetricsReporting);
   }
+  // Note: Can't use the actual feature definition, because its build target
+  // depends on a bunch of stuff that mustn't make it into the EG test target.
+  config.additional_args.push_back(
+      "--enable-features=ManualLogUploadsInTheFRE");
   return config;
 }
 
@@ -124,9 +128,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   // enables UKM.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:YES
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:
+                      syncher::kSyncUKMOperationsTimeout];
 }
 
 // Adds a dummy UKM source to the UKM service's recordings. The presence of this
@@ -171,9 +174,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
 // Tests that user demographics are synced, recorded by UKM, and logged in
 // histograms.
-//
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/ukm_browsertest.cc with features enabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataEnabled_ukmBrowsertest)
 - (void)testUKMDemographicsReportingWithFeatureEnabled {
   // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -189,12 +190,11 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                                      gender:kTestGender],
                  @"The report should contain the specified user demographics");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 // Tests that user demographics are neither recorded by UKM nor logged in
 // histograms when the user is signed-in and history sync is on.
-//
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/ukm_browsertest.cc with features disabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataDisabled_ukmBrowsertest)
 - (void)testUKMDemographicsReportingWithFeatureDisabled {
   // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -211,13 +211,12 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertFalse([MetricsAppInterface UKMReportHasUserDemographics],
                   @"The report should not contain user demographics.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 // Tests that user demographics are synced, recorded by UMA, and logged in
 // histograms.
 //
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
-// with features enabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataEnabled_msudBrowsertest)
 - (void)testUMADemographicsReportingWithFeatureEnabled {
   // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -234,19 +233,20 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
   const int success =
       static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
+  // Expect 2 counts because in the iOS First Run, the MetricsService is started
+  // quicker, which causes two metrics log uploads to happen by this point.
   GREYAssertNil([MetricsAppInterface
-                    expectUniqueSampleWithCount:1
+                    expectUniqueSampleWithCount:2
                                       forBucket:success
                                    forHistogram:@"UMA.UserDemographics.Status"],
                 @"Unexpected histogram contents");
 }
+// LINT.ThenChange(/chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 // Tests that user demographics are neither recorded by UMA nor logged in
 // histograms when the user is signed-in and history sync is on.
 //
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
-// with features disabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataDisabled_msudBrowsertest)
 - (void)testUMADemographicsReportingWithFeatureDisabled {
   // See `appConfigurationForTestCase` for feature set-up.
   GREYAssertFalse([ChromeEarlGrey isDemographicMetricsReportingEnabled],
@@ -260,5 +260,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                   forHistogram:@"UMA.UserDemographics.Status"],
                 @"Unexpected histogram contents.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 @end

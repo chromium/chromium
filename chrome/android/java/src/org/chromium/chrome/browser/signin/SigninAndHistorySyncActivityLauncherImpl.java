@@ -19,11 +19,13 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.widget.Toast;
 
 /**
  * SigninAndHistorySyncActivityLauncherImpl creates the proper intent and then launches the {@link
@@ -76,15 +78,22 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                         profile, historyOptInMode)) {
             return true;
         }
-        // TODO(crbug.com/41493758): Update the UI related to sign-in errors, and handle the
-        // non-managed case.
+        // TODO(crbug.com/354912290): Update the UI related to sign-in errors.
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (signinManager.isSigninDisabledByPolicy()) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SigninDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
+                    "Signin.SigninDisabledNotificationShown",
+                    accessPoint,
+                    SigninAccessPoint.MAX_VALUE);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
+        } else {
+            Toast.makeText(
+                            context,
+                            context.getString(
+                                    R.string.signin_account_picker_bottom_sheet_error_title),
+                            Toast.LENGTH_LONG)
+                    .show();
         }
-        // TODO(crbug.com/376251506): Add generic error UI.
         return false;
     }
 

@@ -101,4 +101,8 @@ uint64_t DummyTraceWriter::written() const {
   return 0u;
 }
 
+uint64_t DummyTraceWriter::drop_count() const {
+  return 0u;
+}
+
 }  // namespace tracing

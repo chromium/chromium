@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_features.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace blink {
@@ -173,6 +173,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
       const auto& scrollbar_thumb =
           absl::get<WebThemeEngine::ScrollbarThumbExtraParams>(*extra_params);
       native_scrollbar_thumb.thumb_color = scrollbar_thumb.thumb_color;
+      native_scrollbar_thumb.track_color = scrollbar_thumb.track_color;
       native_scrollbar_thumb.is_thumb_minimal_mode =
           scrollbar_thumb.is_thumb_minimal_mode;
       native_scrollbar_thumb.is_web_test = scrollbar_thumb.is_web_test;
@@ -260,6 +261,9 @@ SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
     WebThemeEngine::State state,
     const WebThemeEngine::ExtraParams* extra_params,
     const ui::ColorProvider* color_provider) const {
+  if (!color_provider) {
+    return SkColors::kRed;
+  }
   const ui::NativeTheme::ScrollbarThumbExtraParams native_theme_extra_params =
       absl::get<ui::NativeTheme::ScrollbarThumbExtraParams>(
           GetNativeThemeExtraParams(
@@ -271,7 +275,10 @@ SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
-  if (IsFluentOverlayScrollbarEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kScrollbarAnimations)) {
+    style->fade_out_delay = base::TimeDelta::Max();
+    style->fade_out_duration = base::TimeDelta();
+  } else if (IsFluentOverlayScrollbarEnabled()) {
     style->fade_out_delay = ui::kFluentOverlayScrollbarFadeDelay;
     style->fade_out_duration = ui::kFluentOverlayScrollbarFadeDuration;
   } else {

@@ -32,9 +32,8 @@ CpuHealthTracker::CpuHealthTracker(
     ActionableTabResultCallback on_actionability_change_cb)
     : status_change_cb_(std::move(on_status_change_cb)),
       actionable_tabs_cb_(std::move(on_actionability_change_cb)),
-      cpu_health_sample_window_size_(
-          performance_manager::features::kCPUTimeOverThreshold.Get() /
-          performance_manager::features::kCPUSampleFrequency.Get()),
+      cpu_health_sample_window_size_(kCPUTimeOverThreshold /
+                                     kCPUSampleFrequency),
       is_demo_mode_(base::FeatureList::IsEnabled(
           features::kPerformanceInterventionDemoMode)),
       recent_resource_measurements_(cpu_health_sample_window_size_,
@@ -51,7 +50,7 @@ CpuHealthTracker::CpuHealthTracker(
   if (cpu_probe) {
     cpu_probe->StartSampling();
     cpu_probe_timer_.Start(
-        FROM_HERE, performance_manager::features::kCPUSampleFrequency.Get(),
+        FROM_HERE, kCPUSampleFrequency,
         base::BindRepeating(
             &system_cpu::CpuProbe::RequestSample, std::move(cpu_probe),
             base::BindRepeating(&CpuHealthTracker::ProcessCpuProbeResult,
@@ -120,16 +119,11 @@ CpuHealthTracker::GetStatusAndActionabilityCallback(
 
 CpuHealthTracker::HealthLevel CpuHealthTracker::GetHealthLevelForMeasurement(
     CpuPercent measurement) {
-  if (measurement >
-      CpuPercent(performance_manager::features::kCPUUnhealthyPercentageThreshold
-                     .Get())) {
+  if (measurement > CpuPercent(kCPUUnhealthyPercentageThreshold)) {
     return HealthLevel::kUnhealthy;
   }
 
-  if (measurement >
-      CpuPercent(
-          performance_manager::features::kCPUDegradedHealthPercentageThreshold
-              .Get())) {
+  if (measurement > CpuPercent(kCPUDegradedHealthPercentageThreshold)) {
     return HealthLevel::kDegraded;
   }
 
@@ -153,8 +147,7 @@ void CpuHealthTracker::GetFilteredActionableTabs(
   int total_actionable_cpu_percentage = 0;
   bool take_action_improves_health = is_demo_mode_;
   const size_t max_actionable_tabs =
-      std::min(unfiltered_measurements.size(),
-               size_t(features::kCPUMaxActionableTabs.Get()));
+      std::min(unfiltered_measurements.size(), size_t(kCPUMaxActionableTabs));
   const int recent_measurement_percentage = recent_measurement.value();
 
   for (size_t i = 0; i < max_actionable_tabs; i++) {
@@ -163,9 +156,7 @@ void CpuHealthTracker::GetFilteredActionableTabs(
     // Since sorted_measurements is sorted in descending order, we can
     // terminate early as there is no longer any eligible actionable pages.
     if (!is_demo_mode_ &&
-        measurement.value() <
-            performance_manager::features::kMinimumActionableTabCPUPercentage
-                .Get()) {
+        measurement.value() < kMinimumActionableTabCPUPercentage) {
       break;
     }
 
@@ -208,7 +199,7 @@ bool CpuHealthTracker::CanDiscardPage(
   // determining tab actionability so we can immediately trigger the
   // intervention UI for testing purposes.
   const base::TimeDelta measurement_window =
-      is_demo_mode_ ? base::TimeDelta() : features::kCPUTimeOverThreshold.Get();
+      is_demo_mode_ ? base::TimeDelta() : kCPUTimeOverThreshold;
 
   // We should not discard pages that played audio during the measurement window
   // as it may affect CPU measurements.

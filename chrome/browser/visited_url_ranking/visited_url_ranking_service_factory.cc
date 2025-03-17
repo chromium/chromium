@@ -36,6 +36,7 @@
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/recency_filter_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/url_visit_aggregates_segmentation_metrics_transformer.h"
+#include "components/visited_url_ranking/internal/url_grouping/tab_events_visit_transformer.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
@@ -187,6 +188,7 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
   transformers.emplace(
       URLVisitAggregatesTransformType::kHistoryBrowserTypeFilter,
       std::make_unique<HistoryURLVisitAggregatesBrowserTypeTransformer>());
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return std::make_unique<VisitedURLRankingServiceImpl>(

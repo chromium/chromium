@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -19,7 +25,6 @@
 #include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1079,7 +1084,7 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
       actual_specifics = entity.specifics().bookmark();
     }
 
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         expected, [actual_specifics](const ExpectedBookmark& bookmark) {
           return actual_specifics.legacy_canonicalized_title() ==
                      base::UTF16ToUTF8(bookmark.title) &&
@@ -1184,7 +1189,7 @@ bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
     CHECK(parent_iter != server_uuids_by_parent_id.end(),
           base::NotFatalUntil::M130);
     auto server_position_iter =
-        base::ranges::find(parent_iter->second, node->uuid());
+        std::ranges::find(parent_iter->second, node->uuid());
     CHECK(server_position_iter != parent_iter->second.end(),
           base::NotFatalUntil::M130);
     const size_t server_position =
@@ -1351,7 +1356,7 @@ BookmarkModelMatchesFakeServerChecker::GetServerUuidsGroupedByParentSyncId(
   };
 
   for (auto& [parent_id, children_uuids] : uuids_grouped_by_parent_id) {
-    base::ranges::sort(children_uuids, sort_by_position_fn);
+    std::ranges::sort(children_uuids, sort_by_position_fn);
   }
   return uuids_grouped_by_parent_id;
 }

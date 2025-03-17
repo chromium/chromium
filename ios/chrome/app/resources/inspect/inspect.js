@@ -18,26 +18,26 @@ function getFrameIdString_(frameId) {
  * @return {!Object} An element which represents the frame with |frameId|.
  */
 function createFrameElement_(frameId) {
-  let frame = document.createElement('div');
+  const frame = document.createElement('div');
   frame.id = getFrameIdString_(frameId);
   frame.className = 'frame';
 
-  let locationDiv = document.createElement('div');
+  const locationDiv = document.createElement('div');
   locationDiv.className = 'location';
   frame.appendChild(locationDiv);
 
   frame.appendChild(document.createElement('hr'));
 
-  let logs = document.createElement('div');
+  const logs = document.createElement('div');
   logs.className = 'logs';
   frame.appendChild(logs);
 
-  let childFramesLabel = document.createElement('div');
+  const childFramesLabel = document.createElement('div');
   childFramesLabel.className = 'child-frames-label';
   childFramesLabel.appendChild(document.createTextNode('Child frames: '));
   frame.appendChild(childFramesLabel);
 
-  let childFrames = document.createElement('div');
+  const childFrames = document.createElement('div');
   childFrames.className = 'child-frames';
   frame.appendChild(childFrames);
 
@@ -58,7 +58,7 @@ function logMessageReceived(
   let tab = $(getFrameIdString_(mainFrameId));
   if (!tab) {
     tab = createFrameElement_(mainFrameId);
-    tab.classList.add('tab')
+    tab.classList.add('tab');
     $('tabs').appendChild(tab);
   }
 
@@ -75,14 +75,14 @@ function logMessageReceived(
     }
   }
 
-  let locationDiv = frame.querySelector('.location');
+  const locationDiv = frame.querySelector('.location');
   locationDiv.innerHTML = '';
   locationDiv.appendChild(document.createTextNode(frameLocation));
 
-  let log = document.createElement('div');
+  const log = document.createElement('div');
   log.className = 'log';
 
-  let logLevel = document.createElement('span');
+  const logLevel = document.createElement('span');
   logLevel.className = 'log-level';
   if (level === 'warn') {
     level = 'warning';
@@ -104,7 +104,7 @@ function logMessageReceived(
  *                  which sent the message.
  */
 function tabClosed(mainFrameId) {
-  let tab = $(getFrameIdString_(mainFrameId));
+  const tab = $(getFrameIdString_(mainFrameId));
   if (tab) {
     $('tabs').removeChild(tab);
   }

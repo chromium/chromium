@@ -14,19 +14,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
 namespace content {
 namespace {
 
-using blink::performance_scenarios::ScenarioScope;
-using blink::performance_scenarios::ScenarioState;
-using blink::performance_scenarios::ScopedReadOnlyScenarioMemory;
 using performance_manager::mojom::ChildProcessCoordinationUnit;
+using performance_scenarios::ScenarioScope;
+using performance_scenarios::ScenarioState;
+using performance_scenarios::ScopedReadOnlyScenarioMemory;
 using ::testing::_;
 using ::testing::Invoke;
 

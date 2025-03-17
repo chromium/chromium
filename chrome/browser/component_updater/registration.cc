@@ -15,7 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
-#include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
@@ -34,6 +32,7 @@
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
+#include "chrome/browser/component_updater/probabilistic_reveal_token_component_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 #include "chrome/browser/component_updater/tpcd_metadata_component_installer.h"
@@ -55,6 +54,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -83,9 +83,9 @@
 #include "media/base/media_switches.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
 #include "chrome/browser/component_updater/media_foundation_widevine_cdm_component_installer.h"
@@ -108,6 +108,18 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/component_updater/lacros_component_remover.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #endif
 
 namespace component_updater {
@@ -167,14 +179,13 @@ void RegisterComponentsForUpdate() {
       DeleteHistorySearchStringsComponent(path);
     }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (base::SysInfo::IsRunningOnChromeOS()) {
-      // PNaCl on Lacros used to be a component, but on real devices this has
-      // been replaced by a link to the files also used by ash.
-      // Clean up the component if it is present.
-      DeletePnaclComponent(path);
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
+    // Lacros is sunsetted. While rootfs Lacros was already taken care of,
+    // stateful Lacros needs to be cleaned up just like a regular component.
+    // TODO(crbug.com/380780352): Remove this after the stepping stone.
+    component_updater::DeleteStatefulLacros(path);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     // NaCl and PNaCl are no longer supported on Windows and Mac, clean up
     // remaining component.
@@ -183,17 +194,16 @@ void RegisterComponentsForUpdate() {
   }
   RegisterSSLErrorAssistantComponent(cus);
 
-  // Since file type policies are per-platform, and we don't support
-  // Fuchsia-specific component versions, we don't dynamically update file type
-  // policies on Fuchsia.
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   RegisterFileTypePoliciesComponent(cus);
+#endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // CRLSetFetcher attempts to load a CRL set from either the local disk or
   // network.
   // For Chrome OS this registration is delayed until user login.
   component_updater::RegisterCRLSetComponent(cus);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   RegisterOriginTrialsComponent(cus);
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
@@ -207,10 +217,10 @@ void RegisterComponentsForUpdate() {
   RegisterSafetyTipsComponent(cus);
   RegisterCrowdDenyComponent(cus);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   RegisterSmartDimComponent(cus);
   RegisterAppProvisioningComponent(cus);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !BUILDFLAG(IS_ANDROID)
   RegisterHyphenationComponent(cus);
@@ -255,6 +265,14 @@ void RegisterComponentsForUpdate() {
   RegisterAmountExtractionHeuristicRegexesComponent(cus);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (features::IsWasmTtsComponentUpdaterEnabled()) {
+    RegisterWasmTtsEngineComponent(cus);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  RegisterProbabilisticRevealTokenComponent(cus);
 }
 
 }  // namespace component_updater

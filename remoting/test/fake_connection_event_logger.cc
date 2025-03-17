@@ -75,7 +75,7 @@ double MessageCounter::AverageMessageSize() const {
 
 void MessageCounter::LogMessage(
     const ::google::protobuf::MessageLite& message) {
-  LogMessage(message.ByteSize());
+  LogMessage(message.ByteSizeLong());
 }
 
 void MessageCounter::LogMessage(int size) {

@@ -36,11 +36,11 @@
 
 namespace {
 
-const char kTestAccountEmail[] = "test_user@test.com";
-const char kTestOtherAccountEmail[] = "test_other_user@test.com";
-const char kTestAccountGaiaId[] = "gaia_id_for_test_user_test.com";
-const char kTestAccessToken[] = "access_token";
-const char kTestOAuthMultiLoginResponse[] = R"(
+constexpr char kTestAccountEmail[] = "test_user@test.com";
+constexpr char kTestOtherAccountEmail[] = "test_other_user@test.com";
+constexpr GaiaId::Literal kTestAccountGaiaId("gaia_id_for_test_user_test.com");
+constexpr char kTestAccessToken[] = "access_token";
+constexpr char kTestOAuthMultiLoginResponse[] = R"(
     { "status": "OK",
       "cookies":[
         {
@@ -339,7 +339,7 @@ TEST_F(AccountsCookieMutatorTest, TriggerCookieJarUpdate_OneListedAccounts) {
             1U);
   EXPECT_EQ(
       accounts_in_jar_info.GetPotentiallyInvalidSignedInAccounts()[0].gaia_id,
-      GaiaId(kTestAccountGaiaId));
+      kTestAccountGaiaId);
   EXPECT_EQ(
       accounts_in_jar_info.GetPotentiallyInvalidSignedInAccounts()[0].email,
       kTestAccountEmail);

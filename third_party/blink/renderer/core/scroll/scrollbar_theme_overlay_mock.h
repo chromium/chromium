@@ -67,7 +67,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMock
  private:
   bool IsMockTheme() const final { return true; }
 
-  base::TimeDelta delay_;
+  base::TimeDelta delay_ = base::TimeDelta::Max();
 };
 
 }  // namespace blink

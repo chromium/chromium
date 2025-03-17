@@ -83,6 +83,12 @@ class CORE_EXPORT LineBreaker {
   // Specify to break at the `offset` rather than the available width.
   void SetBreakAt(const LineBreakPoint& offset);
 
+  void SetLineClampEllipsisWidth(LayoutUnit width) {
+    DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+    line_clamp_ellipsis_width_ = width;
+    UpdateAvailableWidth();
+  }
+
   // Computing |LineBreakerMode::kMinContent| with |MaxSizeCache| caches
   // information that can help computing |kMaxContent|. It is recommended to set
   // this when computing both |kMinContent| and |kMaxContent|.
@@ -131,7 +137,7 @@ class CORE_EXPORT LineBreaker {
   Document& GetDocument() const { return node_.GetDocument(); }
 
   const String& Text() const { return text_content_; }
-  const HeapVector<InlineItem>& Items() const { return items_data_->items; }
+  const InlineItems& Items() const { return items_data_->items; }
 
   String TextContentForLineBreak() const;
 
@@ -478,11 +484,6 @@ class CORE_EXPORT LineBreaker {
 
   bool* depends_on_block_constraints_out_ = nullptr;
 
-  // Keep the last item |HandleTextForFastMinContent()| has handled. This is
-  // used to fallback the last word to |HandleText()|.
-  // TODO(crbug.com/333630754): Remove when `FasterMinContent` is stabilized.
-  const InlineItem* fast_min_content_item_ = nullptr;
-
   // The current base direction for the bidi algorithm.
   // This is copied from InlineNode, then updated after each forced line break
   // if 'unicode-bidi: plaintext'.
@@ -503,6 +504,8 @@ class CORE_EXPORT LineBreaker {
 
   // This has a valid object if is_svg_text_.
   std::unique_ptr<ResolvedTextLayoutAttributesIterator> svg_resolved_iterator_;
+
+  LayoutUnit line_clamp_ellipsis_width_;
 
   // This member is available after calling SetInputRange().
   const LineBreaker* parent_breaker_ = nullptr;

@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
@@ -26,7 +26,7 @@
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_logs/app_service_log_source.h"
 #include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
@@ -49,7 +49,7 @@
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -144,15 +144,15 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
       case support_tool::SIGN_IN_STATE:
         // Sign-in data is not available when there's no signed-in user.
         if (profile
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             && user_manager::UserManager::Get()->IsUserLoggedIn()
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         ) {
           handler->AddDataCollector(
               std::make_unique<SigninDataCollector>(profile));
         }
         break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       case support_tool::CHROMEOS_UI_HIERARCHY:
         handler->AddDataCollector(std::make_unique<UiHierarchyDataCollector>());
         break;
@@ -274,7 +274,7 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 std::make_unique<system_logs::RevenLogSource>()));
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
         break;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       default:
         break;
     }
@@ -302,7 +302,7 @@ GetAllAvailableDataCollectorsOnDevice() {
   for (const auto& type : kDataCollectors) {
     data_collectors.push_back(type);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   for (const auto& type : kDataCollectorsChromeosAsh) {
     data_collectors.push_back(type);
   }
@@ -311,7 +311,7 @@ GetAllAvailableDataCollectorsOnDevice() {
     data_collectors.push_back(type);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return data_collectors;
 }
 

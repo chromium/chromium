@@ -6,7 +6,8 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
-import {PowerRoutineResult, RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import type {PowerRoutineResult, RoutineResultInfo} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -47,12 +48,11 @@ suite('fakeRoutineListExecutorTestSuite', function() {
 
       if (routine.result.hasOwnProperty('simpleResult')) {
         controller.setFakeStandardRoutineResult(
-            routine.type,
-            routine.result!.simpleResult as StandardRoutineResult);
+            routine.type, routine.result.simpleResult as StandardRoutineResult);
       } else {
-        assertTrue(routine.result!.powerResult!.hasOwnProperty('simpleResult'));
+        assertTrue(routine.result.powerResult!.hasOwnProperty('simpleResult'));
         controller.setFakePowerRoutineResult(
-            routine.type, routine.result!.powerResult as PowerRoutineResult);
+            routine.type, routine.result.powerResult as PowerRoutineResult);
       }
 
       // Build the list of routines to run.
@@ -88,7 +88,7 @@ suite('fakeRoutineListExecutorTestSuite', function() {
           assertEquals(
               expectedCallbacks[callbackIndex]!.result!.powerResult!
                   .simpleResult,
-              status!.result!.powerResult!.simpleResult);
+              status.result!.powerResult!.simpleResult);
         }
       }
 

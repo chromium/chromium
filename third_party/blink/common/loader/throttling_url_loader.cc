@@ -232,9 +232,8 @@ ThrottlingURLLoader::StartInfo::StartInfo(
       request_id(in_request_id),
       options(in_options),
       url_request(*in_url_request),
-      task_runner(std::move(in_task_runner)) {
-  cors_exempt_header_list = std::move(in_cors_exempt_header_list);
-}
+      task_runner(std::move(in_task_runner)),
+      cors_exempt_header_list(std::move(in_cors_exempt_header_list)) {}
 
 ThrottlingURLLoader::StartInfo::~StartInfo() = default;
 
@@ -326,20 +325,6 @@ void ThrottlingURLLoader::ResetForFollowRedirect(
   url_loader_.ResetWithReason(
       network::mojom::URLLoader::kClientDisconnectReason,
       kFollowRedirectReason);
-}
-
-void ThrottlingURLLoader::RestartWithFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> factory,
-    uint32_t url_loader_options) {
-  DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
-  DCHECK(!loader_completed_);
-  url_loader_.reset();
-  client_receiver_.reset();
-  start_info_->url_loader_factory = std::move(factory);
-  start_info_->options = url_loader_options;
-  body_.reset();
-  cached_metadata_.reset();
-  StartNow();
 }
 
 void ThrottlingURLLoader::FollowRedirect(
@@ -966,18 +951,6 @@ void ThrottlingURLLoader::UpdateDeferredResponseHead(
   body_ = std::move(body);
 }
 
-void ThrottlingURLLoader::PauseReadingBodyFromNet() {
-  if (url_loader_) {
-    url_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void ThrottlingURLLoader::ResumeReadingBodyFromNet() {
-  if (url_loader_) {
-    url_loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 void ThrottlingURLLoader::InterceptResponse(
     mojo::PendingRemote<network::mojom::URLLoader> new_loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver,
@@ -989,7 +962,6 @@ void ThrottlingURLLoader::InterceptResponse(
 
   body->swap(body_);
   if (original_loader) {
-    url_loader_->ResumeReadingBodyFromNet();
     *original_loader = url_loader_.Unbind();
   }
   url_loader_.Bind(std::move(new_loader));

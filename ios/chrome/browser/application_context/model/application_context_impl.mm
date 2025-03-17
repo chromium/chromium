@@ -17,6 +17,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
@@ -50,6 +51,7 @@
 #import "ios/chrome/browser/component_updater/model/ios_component_updater_configurator.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/application_breadcrumbs_logger.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_services_manager_client.h"
@@ -60,10 +62,10 @@
 #import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
@@ -92,38 +94,6 @@
 #import "components/optimization_guide/core/model_execution/on_device_model_component.h"  // nogncheck
 #import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
 #endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
-
-namespace {
-
-// Requests a network::mojom::ProxyResolvingSocketFactory on the UI thread.
-// Note that this cannot be called on a thread that is not the UI thread.
-void RequestProxyResolvingSocketFactoryOnUIThread(
-    ApplicationContextImpl* app_context,
-    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
-        receiver) {
-  network::mojom::NetworkContext* network_context =
-      app_context->GetSystemNetworkContext();
-  network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
-}
-
-// Wrapper on top of the method above. This does a PostTask to the UI thread.
-void RequestProxyResolvingSocketFactory(
-    ApplicationContextImpl* app_context,
-    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
-        receiver) {
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread,
-                                app_context, std::move(receiver)));
-}
-
-// Passed to NetworkConnectionTracker to bind a NetworkChangeManager receiver.
-void BindNetworkChangeManagerReceiver(
-    network::NetworkChangeManager* network_change_manager,
-    mojo::PendingReceiver<network::mojom::NetworkChangeManager> receiver) {
-  network_change_manager->AddReceiver(std::move(receiver));
-}
-
-}  // namespace
 
 ApplicationContextImpl::ApplicationContextImpl(
     base::SequencedTaskRunner* local_state_task_runner,
@@ -479,7 +449,7 @@ ApplicationContextImpl::GetNetworkConnectionTracker() {
         std::make_unique<network::NetworkChangeManager>(nullptr);
     network_connection_tracker_ =
         std::make_unique<network::NetworkConnectionTracker>(base::BindRepeating(
-            &BindNetworkChangeManagerReceiver,
+            &network::NetworkChangeManager::AddReceiver,
             base::Unretained(network_change_manager_.get())));
   }
   return network_connection_tracker_.get();
@@ -488,11 +458,15 @@ ApplicationContextImpl::GetNetworkConnectionTracker() {
 BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!browser_policy_connector_.get()) {
+#if !BUILDFLAG(USE_BLINK)
     // Ensure that the ResourceBundle has already been initialized. If this
     // DCHECK ever fails, a call to
     // BrowserPolicyConnector::OnResourceBundleCreated() will need to be added
     // later in the startup sequence, after the ResourceBundle is initialized.
+    // Blink based startup will call OnResourceBundleCreated in
+    // IOSChromeMainParts::PreCreateThreads.
     DCHECK(ui::ResourceBundle::HasSharedInstance());
+#endif
     version_info::Channel channel = ::GetChannel();
     policy::ConfigurationPolicyProvider* test_policy_provider =
         tests_hook::GetOverriddenPlatformPolicyProvider();
@@ -580,6 +554,15 @@ ApplicationContextImpl::GetAdditionalFeaturesController() {
         ios::provider::CreateAdditionalFeaturesController();
   }
   return additional_features_controller_.get();
+}
+
+auto_deletion::AutoDeletionService*
+ApplicationContextImpl::GetAutoDeletionService() {
+  if (!auto_deletion_service_) {
+    auto_deletion_service_ =
+        std::make_unique<auto_deletion::AutoDeletionService>(GetLocalState());
+  }
+  return auto_deletion_service_.get();
 }
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
@@ -759,14 +742,27 @@ void ApplicationContextImpl::CreateGCMDriver() {
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   gcm_driver_ = gcm::CreateGCMDriverDesktop(
-      base::WrapUnique(new gcm::GCMClientFactory), GetLocalState(), store_path,
-      // Because ApplicationContextImpl is destroyed after all WebThreads have
-      // been shut down, base::Unretained() is safe here.
-      base::BindRepeating(&RequestProxyResolvingSocketFactory,
-                          base::Unretained(this)),
+      std::make_unique<gcm::GCMClientFactory>(), GetLocalState(), store_path,
+      // This callback may be invoked on a background sequence, but it calls a
+      // method of ApplicationContextImpl which is a sequence-affine object,
+      // so wrap the call in BindPostTask(...) to ensure the method happens on
+      // the correct sequence.
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(
+              &ApplicationContextImpl::RequestProxyResolvingSocketFactory,
+              weak_ptr_factory_.GetWeakPtr())),
       GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes(),
       web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
       blocking_task_runner);
+}
+
+void ApplicationContextImpl::RequestProxyResolvingSocketFactory(
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+        receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  network::mojom::NetworkContext* network_context = GetSystemNetworkContext();
+  network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
 }

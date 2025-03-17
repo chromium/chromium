@@ -45,6 +45,10 @@ void AiIntroScreenHandler::DeclareLocalizedValues(
   builder->Add("slideWallpaperText", IDS_AI_INTRO_SLIDE_WALLPAPER_TEXT);
   builder->Add("slideBackgroundTitle", IDS_AI_INTRO_SLIDE_BACKGROUND_TITLE);
   builder->Add("slideBackgroundText", IDS_AI_INTRO_SLIDE_BACKGROUND_TEXT);
+  builder->Add("slideReadTitle", IDS_AI_INTRO_SLIDE_READ_TITLE);
+  builder->Add("slideReadText", IDS_AI_INTRO_SLIDE_READ_TEXT);
+  builder->Add("slideImageTitle", IDS_AI_INTRO_SLIDE_IMAGE_TITLE);
+  builder->Add("slideImageText", IDS_AI_INTRO_SLIDE_IMAGE_TEXT);
   builder->Add("slideLabel", IDS_AI_INTRO_SLIDE_LABEL);
   builder->Add("slideSelectedButtonLabel", IDS_AI_INTRO_SELECTED_BUTTON_LABEL);
   builder->Add("slideUnselectedButtonLabel",

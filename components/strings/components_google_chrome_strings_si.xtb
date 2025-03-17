@@ -9,8 +9,12 @@
 <translation id="2447485272386224171">Chrome සෑදීමට හැකි වූයේ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> විවෘත මූලාශ්‍ර ව්‍යාපෘතිය සහ වෙනත් <ph name="BEGIN_LINK_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_OSS" /> මගිනි.</translation>
 <translation id="2588322182880276190">ක්‍රෝම් ලාංඡනය</translation>
 <translation id="3444832043240812445">ඔබ <ph name="BEGIN_LINK" />බිඳවැටුම් වාර්තා සබල කර<ph name="END_LINK" /> ඇත්නම් පමණක් මෙම පිටුව ඔබේ මෑතකදී සිදු වූ බිඳවැටීම් පෙන්වනු ඇත.</translation>
+<translation id="3512634283363927263">මෙම පිටු Chrome සංවර්ධකයින් විසින් භාවිතා කිරීමට අදහස් කර ඇති අතර, ක්‍රියාකාරීව නඩත්තු කිරීම හෝ පරීක්ෂා කිරීම නොකළ හැක. ඒවා සබල කිරීමට, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> වෙත සංචාලනය කරන්න, නිදොස් කිරීමේ පිටු සබල කිරීමට බොත්තම ක්ලික් කර, ඉන්පසු මෙම පිටුවට නැවත සංචාලනය කරන්න.</translation>
 <translation id="3875312571075912821">ඔබගේ ෆයර් වෝල හා ප්‍රතිවයිරස සැකසීම් තුළ Chrome හට ජාලයට පිවිසීමට
           අවසර දෙන්න.</translation>
+<translation id="4949828774841497663">යෙදුම් &gt; පද්ධති සැකසීම් &gt; ජාලය වෙත ගොස්,
+          ක්‍රියාකාරී ජාලය තෝරන්න, විස්තර... බොත්තම ක්ලික් කරන්න, සහ තෝරාගෙන තිබිය හැකි ඕනෑම ප්‍රොක්සි
+          තේරීම ඉවත් කරන්න.</translation>
 <translation id="5005121315113832363">මෙම පිටුව Chrome මගින් අවහිර කර ඇත</translation>
 <translation id="6011049234605203654">යන්න
       Chrome මෙනුව&gt;
@@ -38,8 +42,6 @@
           LAN සැකසුම්
           "ඔබගේ LAN සඳහා ප්‍රොක්සි සේවාදායකයක් භාවිත කරන්න" සලකුණු කොටුව ඉවත් කරන්න.</translation>
 <translation id="7230956101631259640">ඔබගේ ආරක්ෂිත Google Chrome පිටුවක් බලමින් සිටී</translation>
-<translation id="8187289872471304532">යෙදුම් &gt; පද්ධති මනාප &gt; ජාලය &gt; උසස් කළ &gt; ප්‍රොක්සි වෙත ගොස්
-          තෝරා ඇති ඕනෑම ප්‍රොක්සියක් නොතෝරන්න.</translation>
 <translation id="8232971017369963250">Chrome හට <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> විවෘත මූලාශ්‍ර මෘදුකාංගය මගින් හැකියාව සලසා ඇත</translation>
 <translation id="8279509328145658601">Chrome හට වෙනත් <ph name="BEGIN_LINK_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_OSS" /> මගින් ද හැකියාව සලසා ඇත</translation>
 <translation id="8544217240017914508">Google Chrome ගෙවීම් ක්‍රම පිරවීම සඳහා සැකසීම් වෙනස් කිරීමට උත්සාහ දරයි.</translation>

@@ -7,8 +7,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Entrypoint of the task manager UI. This activity instantiates the underlying model, the mediator
  * that keeps updating the model, and binds the model and the view.
  */
-public class TaskManagerActivity extends AppCompatActivity {
+public class TaskManagerActivity extends ChromeBaseAppCompatActivity {
     private static final int REFRESH_TIME_MS = 1000;
     private final PropertyModel mHeaderModel =
             new PropertyModel(TaskManagerProperties.HEADER_PROPERTY_KEYS);

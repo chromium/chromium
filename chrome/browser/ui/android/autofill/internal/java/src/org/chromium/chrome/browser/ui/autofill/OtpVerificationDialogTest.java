@@ -149,8 +149,18 @@ public class OtpVerificationDialogTest {
         // Verify that the listener is called with the text entered in the OTP input field.
         verify(mDelegate, times(1)).onConfirm(VALID_OTP);
         // Verify that the progress bar is shown.
-        assertThat(view.findViewById(R.id.progress_bar_overlay).getVisibility())
+        View progressBarOverlayView = view.findViewById(R.id.progress_bar_overlay);
+        assertThat(progressBarOverlayView.getVisibility()).isEqualTo(View.VISIBLE);
+
+        // Verify that expected messages are showing during code verification.
+        assertThat(progressBarOverlayView.findViewById(R.id.progress_bar).getVisibility())
                 .isEqualTo(View.VISIBLE);
+        TextView progressBarMessage =
+                progressBarOverlayView.findViewById(R.id.progress_bar_message);
+        assertThat(progressBarMessage.getText())
+                .isEqualTo(
+                        mResources.getString(
+                                R.string.autofill_card_unmask_otp_input_dialog_pending_message));
     }
 
     @Test

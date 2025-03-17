@@ -8,18 +8,23 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 namespace extensions {
 namespace {
@@ -74,12 +79,12 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_page));
   test_page = test_page.AppendASCII("simple.html");
   GURL gurl = net::FilePathToFileURL(test_page);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, gurl));
   static constexpr char kScriptTemplate[] = R"(
     // Verify that web accessible resource can be fetched.
     async function run(isAllowed, filename) {
-      return new Promise(async resolve => {
+      return new Promise(async (resolve, reject) => {
         const url = `chrome-extension://%s/${filename}`;
 
         // Fetch and verify the contents of fetched web accessible resources.
@@ -112,8 +117,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test loading of subresources using an initiator coming from a file:// scheme,
 // and, notably, from within a content script context.
+// TODO(crbug.com/391921606): Port to desktop Android when the chrome.scripting
+// API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
                        FileSchemeInitiators_ContentScript) {
   // Load extension.
@@ -200,15 +208,13 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
       profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Useful for testing web accessible resources loaded from a content script.
 class WebAccessibleResourcesDynamicUrlScriptingApiTest
     : public ExtensionApiTest {
  public:
-  WebAccessibleResourcesDynamicUrlScriptingApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionDynamicURLRedirection);
-  }
+  WebAccessibleResourcesDynamicUrlScriptingApiTest() = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -243,11 +249,11 @@ class WebAccessibleResourcesDynamicUrlScriptingApiTest
     // content.js
     static constexpr char kTestScript[] = R"(
       // Verify that web accessible resource can be fetched.
-      async function run(isAllowed, filename, identifier) {
+      async function run(isAllowed, filename, identifier, query = '') {
         return new Promise(async resolve => {
           // Verify URL.
-          let expected = chrome.runtime.getURL(filename);
-          let url = `chrome-extension://${identifier}/${filename}`;
+          let expected = chrome.runtime.getURL(`${filename}${query}`);
+          let url = `chrome-extension://${identifier}/${filename}${query}`;
           chrome.test.assertEq(isAllowed, expected == url);
 
           // Verify contents of fetched web accessible resource.
@@ -258,7 +264,13 @@ class WebAccessibleResourcesDynamicUrlScriptingApiTest
 
           // Fetch web accessible resource.
           fetch(url)
-              .then(result => result.text())
+              .then(result => {
+                // With `use_dynamic_url` set to `true`, we redirect from the
+                // first URL using the GUID to the static extension origin.
+                // Ensure query parameters are not lost in the redirect.
+                chrome.test.assertEq(new URL(result.url).search, query);
+                return result.text();
+              })
               .catch(error => verify(error))
               .then(text => verify(text));
         });
@@ -272,6 +284,7 @@ class WebAccessibleResourcesDynamicUrlScriptingApiTest
       // Run tests with arguments [[isAllowed, filename, identifier]].
       const testCases = [
         [true, 'dynamic_web_accessible_resource.html', dynamicId],
+        [true, 'dynamic_web_accessible_resource.html', dynamicId, '?foo=bar'],
         [true, 'web_accessible_resource.html', id],
         [false, 'web_accessible_resource.html', 'error'],
         [false, 'dynamic_web_accessible_resource.html', 'error'],
@@ -319,11 +332,14 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
 
   ResultCatcher catcher;
   GURL gurl = embedded_test_server()->GetURL("example.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), gurl));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Load dynamic web accessible resources via chrome.scripting.executeScript().
+// TODO(crbug.com/391921606): Port to desktop Android when the chrome.scripting
+// API is ported.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
                        ExecuteScript) {
   // Load extension.
@@ -350,6 +366,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
       profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace extensions

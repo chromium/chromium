@@ -32,7 +32,8 @@ namespace passage_embeddings {
 class CpuHistogramLogger::CpuObserver
     : public resource_attribution::QueryResultObserver {
  public:
-  explicit CpuObserver(const resource_attribution::ProcessContext& context);
+  CpuObserver(const resource_attribution::ProcessContext& context,
+              base::RepeatingCallback<bool()> poll_embedder_running);
   ~CpuObserver() override;
 
   CpuObserver(const CpuObserver&) = delete;
@@ -50,16 +51,21 @@ class CpuHistogramLogger::CpuObserver
   resource_attribution::CPUProportionTracker proportion_tracker_;
   bool proportion_tracker_started_ = false;
 
+  base::RepeatingCallback<bool()> poll_embedder_running_;
+  bool embedder_was_running_ = false;
+
   std::unique_ptr<CpuObserver> self_;
 };
 
 CpuHistogramLogger::CpuObserver::CpuObserver(
-    const resource_attribution::ProcessContext& context)
+    const resource_attribution::ProcessContext& context,
+    base::RepeatingCallback<bool()> poll_embedder_running)
     : scoped_query_(
           resource_attribution::QueryBuilder()
               .AddResourceType(resource_attribution::ResourceType::kCPUTime)
               .AddResourceContext(context)
-              .CreateScopedQuery()) {
+              .CreateScopedQuery()),
+      poll_embedder_running_(poll_embedder_running) {
   query_observation_.Observe(&scoped_query_);
   scoped_query_.Start(kSampleInterval);
   // Take an immediate baseline measurement for proportion tracker.
@@ -99,10 +105,28 @@ void CpuHistogramLogger::CpuObserver::OnResourceUsageUpdated(
       return;
     }
     CHECK_EQ(cpu_proportion.size(), 1ul, base::NotFatalUntil::M134);
-    base::UmaHistogramCustomCounts(
-        "History.Embeddings.Embedder.CpuUsage2",
-        cpu_proportion.begin()->second * kCpuUsageFactor, kCpuUsageMin,
-        kCpuUsageMax, kBucketCount);
+    int sample = cpu_proportion.begin()->second * kCpuUsageFactor;
+    base::UmaHistogramCustomCounts("History.Embeddings.Embedder.CpuUsage2",
+                                   sample, kCpuUsageMin, kCpuUsageMax,
+                                   kBucketCount);
+
+    if (!to_delete) {
+      const bool embedder_is_running = poll_embedder_running_.Run();
+      if (!embedder_was_running_ && !embedder_is_running) {
+        base::UmaHistogramCustomCounts(
+            "History.Embeddings.Embedder.CpuUsage2.NotRunning", sample,
+            kCpuUsageMin, kCpuUsageMax, kBucketCount);
+      } else if (embedder_was_running_ && embedder_is_running) {
+        base::UmaHistogramCustomCounts(
+            "History.Embeddings.Embedder.CpuUsage2.Running", sample,
+            kCpuUsageMin, kCpuUsageMax, kBucketCount);
+      } else {
+        base::UmaHistogramCustomCounts(
+            "History.Embeddings.Embedder.CpuUsage2.RunningPartial", sample,
+            kCpuUsageMin, kCpuUsageMax, kBucketCount);
+      }
+      embedder_was_running_ = embedder_is_running;
+    }
   }
 }
 
@@ -114,13 +138,15 @@ CpuHistogramLogger::~CpuHistogramLogger() {
 }
 
 void CpuHistogramLogger::StartLogging(
-    content::BrowserChildProcessHost* utility_process_host) {
+    content::BrowserChildProcessHost* utility_process_host,
+    base::RepeatingCallback<bool()> poll_embedder_running) {
   CHECK(!cpu_observer_);
   auto process_context =
       resource_attribution::ProcessContext::FromBrowserChildProcessHost(
           utility_process_host);
   if (process_context.has_value()) {
-    cpu_observer_ = std::make_unique<CpuObserver>(process_context.value());
+    cpu_observer_ = std::make_unique<CpuObserver>(process_context.value(),
+                                                  poll_embedder_running);
   }
 }
 

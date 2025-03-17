@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/map_util.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/test/test_future.h"
@@ -17,7 +16,6 @@
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
-#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 
 namespace web_package::test {
 
@@ -46,31 +44,8 @@ mojom::SignatureInfoPtr CreateSignatureInfo(
 
 }  // namespace
 
-FakeSignatureVerifier::FakeSignatureVerifier(
-    std::optional<SignedWebBundleSignatureVerifier::Error> error,
-    base::RepeatingClosure on_verify_signatures)
-    : error_(std::move(error)),
-      on_verify_signatures_(std::move(on_verify_signatures)) {}
-
-FakeSignatureVerifier::~FakeSignatureVerifier() = default;
-
-void FakeSignatureVerifier::VerifySignatures(
-    base::File file,
-    web_package::SignedWebBundleIntegrityBlock integrity_block,
-    SignatureVerificationCallback callback) const {
-  on_verify_signatures_.Run();
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          [&]()
-              -> base::expected<void, SignedWebBundleSignatureVerifier::Error> {
-            if (error_) {
-              return base::unexpected(*error_);
-            }
-            return base::ok();
-          }()));
-}
+MockSignatureVerifier::MockSignatureVerifier() = default;
+MockSignatureVerifier::~MockSignatureVerifier() = default;
 
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
     const PublicKey& public_key,

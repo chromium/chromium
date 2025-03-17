@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -279,10 +278,6 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
 };
 
 int GetEnterpriseReportingPrivatePermissionMessageId() {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_signals::features::kNewEvSignalsEnabled)) {
-    return IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE;
-  }
 #if BUILDFLAG(IS_WIN)
   return IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE_ENABLED_WIN;
 #elif BUILDFLAG(IS_LINUX) or BUILDFLAG(IS_MAC)

@@ -5,6 +5,8 @@
 package org.chromium.components.payments;
 
 import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -13,7 +15,8 @@ import org.chromium.payments.mojom.PaymentOptions;
 import java.util.Map;
 
 /** The parameters of PaymentRequest specified by the merchant. */
-@MockedInTests  // Tell R8 not to break the ability to mock the class.
+@MockedInTests // Tell R8 not to break the ability to mock the class.
+@NullMarked
 public interface PaymentRequestParams {
     /**
      * @return Whether or not the payment request is being aborted. Other methods should not get
@@ -41,5 +44,5 @@ public interface PaymentRequestParams {
      * @return The raw total amount being charged - the total property of the PaymentDetails of
      * payment request.
      */
-    PaymentItem getRawTotal();
+    @Nullable PaymentItem getRawTotal();
 }

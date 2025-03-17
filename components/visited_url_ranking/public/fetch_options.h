@@ -6,12 +6,14 @@
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_FETCH_OPTIONS_H_
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 
 namespace visited_url_ranking {
@@ -39,6 +41,8 @@ enum class URLVisitAggregatesTransformType {
   // expand to other platforms when they need filtering based on browser
   // type as well.
   kHistoryBrowserTypeFilter = 8,
+  // Set tab events related data in the visits.
+  kTabEventsData = 9,
 };
 
 // The options that may be specified when fetching URL visit data.
@@ -56,7 +60,9 @@ struct FetchOptions {
       std::map<URLVisitAggregate::URLType, ResultOption> result_sources_arg,
       std::map<Fetcher, FetchSources> fetcher_sources_arg,
       base::Time begin_time_arg,
-      std::vector<URLVisitAggregatesTransformType> transforms_arg = {});
+      std::vector<URLVisitAggregatesTransformType> transforms_arg = {},
+      size_t aggregate_count_limit =
+          features::kURLAggregateCountLimitDefaultValue);
   FetchOptions(const FetchOptions&);
   FetchOptions(FetchOptions&& other);
   FetchOptions& operator=(FetchOptions&& other);
@@ -81,6 +87,10 @@ struct FetchOptions {
   // the types match the `result_sources`, then the visit can be returned.
   std::map<URLVisitAggregate::URLType, ResultOption> result_sources;
 
+  // A visit can have multiple types, if any of the types matches the
+  // `exclude_result_sources` , the visit will be discarded.
+  URLVisitAggregate::URLTypeSet exclude_results_containing_types;
+
   // The set of data fetchers that should participate in the data fetching and
   // computation of URLVisit data, including their data source characteristics.
   // Mainly useful for turning off a fetcher for performance or stability issue.
@@ -95,6 +105,9 @@ struct FetchOptions {
   // collection. These may include operations that mutate the collection or
   // specific field of the collection objects.
   std::vector<URLVisitAggregatesTransformType> transforms;
+
+  // The count limit of the URL aggregates.
+  size_t aggregate_count_limit;
 };
 
 }  // namespace visited_url_ranking

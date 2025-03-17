@@ -38,9 +38,20 @@ bool IsCustomTab(
 bool IsAndroidHub(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if page classification is a WebUI searchbox. This is specific
+// to WebUI searchboxes that don't use the omnibox popup view (the WebUI
+// Omnibox is not included in this).
+bool IsWebUISearchbox(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 // Checks (and asserts in development builds) if Page Classification is
 // obsolete and should not be used.
 void CheckObsoletePageClass(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
+// Return true, if supplied page classification supports most visited sites
+// provider.
+bool SupportsMostVisitedSites(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
 }  // namespace omnibox

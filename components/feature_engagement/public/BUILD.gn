@@ -21,7 +21,7 @@ component("feature_constants") {
   public_deps = [
     "//base",
     "//build:branding_buildflags",
-    "//components/flags_ui",
+    "//components/webui/flags",
     "//extensions/buildflags",
   ]
 }
@@ -36,6 +36,8 @@ static_library("public") {
     "default_session_controller.h",
     "event_constants.cc",
     "event_constants.h",
+    "feature_activation.cc",
+    "feature_activation.h",
     "feature_configurations.cc",
     "feature_configurations.h",
     "field_trial_configuration_provider.cc",
@@ -65,8 +67,8 @@ static_library("public") {
   deps = [
     "//build:branding_buildflags",
     "//components/feed:feature_list",
-    "//components/flags_ui",
     "//components/keyed_service/core",
+    "//components/webui/flags",
     "//extensions/buildflags",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

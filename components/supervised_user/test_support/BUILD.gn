@@ -13,6 +13,8 @@ source_set("test_support") {
     "kids_chrome_management_test_utils.h",
     "kids_management_api_server_mock.cc",
     "kids_management_api_server_mock.h",
+    "parent_access_test_utils.cc",
+    "parent_access_test_utils.h",
     "supervised_user_signin_test_utils.cc",
     "supervised_user_signin_test_utils.h",
     "supervised_user_url_filter_test_utils.cc",
@@ -42,38 +44,32 @@ source_set("test_support") {
 }
 
 # Repository of test accounts is only supported for platforms that utilize end-to-end tests
-if (is_win || is_ios || is_linux) {
-  source_set("account_repository") {
-    testonly = true
-    sources = [
-      "account_repository.cc",
-      "account_repository.h",
-    ]
-
-    deps = [
-      "//base",
-      "//components/supervised_user/core/browser/proto",
+source_set("account_repository") {
+  testonly = true
+  sources = [
+    "account_repository.cc",
+    "account_repository.h",
+  ]
+  if (is_chrome_branded) {
+    data = [
+      "//chrome/browser/internal/resources/supervised_user/ios_test_accounts.json",
+      "//chrome/browser/internal/resources/supervised_user/linux_test_accounts.json",
+      "//chrome/browser/internal/resources/supervised_user/win_test_accounts.json",
     ]
   }
-  source_set("account_repository_unit_tests") {
-    testonly = true
+  deps = [
+    "//base",
+    "//components/supervised_user/core/browser/proto",
+  ]
+}
+source_set("account_repository_unit_tests") {
+  testonly = true
+  sources = [ "account_repository_unittest.cc" ]
 
-    sources = [ "account_repository_unittest.cc" ]
-
-    deps = [
-      ":account_repository",
-      "//base",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-
-    if (is_chrome_branded) {
-      sources += [ "account_repository_internal_unittest.cc" ]
-      data = [
-        "//chrome/browser/internal/resources/supervised_user/ios_test_accounts.json",
-        "//chrome/browser/internal/resources/supervised_user/linux_test_accounts.json",
-        "//chrome/browser/internal/resources/supervised_user/win_test_accounts.json",
-      ]
-    }
-  }
+  deps = [
+    ":account_repository",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

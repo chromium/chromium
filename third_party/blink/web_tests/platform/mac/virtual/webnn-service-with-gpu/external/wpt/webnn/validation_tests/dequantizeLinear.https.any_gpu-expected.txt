@@ -25,5 +25,7 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
 [FAIL] [dequantizeLinear] throw if zeroPoint is from another builder
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [dequantizeLinear] throw if the output tensor byte length exceeds limit
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
 Harness: the test ran to completion.
 

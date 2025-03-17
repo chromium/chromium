@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
@@ -112,8 +113,8 @@ std::unique_ptr<views::View> CreateStreetAddressView(
 }  // namespace
 
 SaveAddressProfileView::SaveAddressProfileView(
-    std::unique_ptr<SaveAddressBubbleController> controller,
     views::View* anchor_view,
+    std::unique_ptr<SaveAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
       controller_(std::move(controller)) {
@@ -280,9 +281,8 @@ void SaveAddressProfileView::AddedToWidget() {
     GetBubbleFrameView()->SetHeaderView(
         std::make_unique<ThemeTrackingNonAccessibleImageView>(
             images->light, images->dark,
-            base::BindRepeating(
-                &views::BubbleDialogDelegate::GetBackgroundColor,
-                base::Unretained(this))));
+            base::BindRepeating(&views::BubbleDialogDelegate::background_color,
+                                base::Unretained(this))));
   }
 }
 
@@ -317,6 +317,9 @@ void SaveAddressProfileView::AlignIcons() {
                               gfx::Insets::VH(-height_difference, 0));
   }
 }
+
+BEGIN_METADATA(SaveAddressProfileView)
+END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SaveAddressProfileView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SaveAddressProfileView,

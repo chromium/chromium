@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("plugin_vm") {
   sources = [
@@ -76,7 +76,6 @@ static_library("plugin_vm") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/ash/guest_os/virtual_machines",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/common:chrome_features",
@@ -86,6 +85,7 @@ static_library("plugin_vm") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/experiences/guest_os/virtual_machines",
     "//chromeos/constants",
     "//components/drive",
     "//components/exo",

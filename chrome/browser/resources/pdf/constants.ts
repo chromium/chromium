@@ -16,12 +16,12 @@ export interface Color {
   b: number;
 }
 
-// The brush with parameters. Colors are optional, since some brushes do not
-// need colors.
+// The brush with parameters. Color and size are optional, since some brushes do
+// not need them.
 export interface AnnotationBrush {
   type: AnnotationBrushType;
   color?: Color;
-  size: number;
+  size?: number;
 }
 // </if>
 
@@ -88,6 +88,7 @@ export enum SaveRequestType {
   ANNOTATION,
   ORIGINAL,
   EDITED,
+  SEARCHIFIED,  // Saves the PDF with extracted text.
 }
 
 export interface Point {

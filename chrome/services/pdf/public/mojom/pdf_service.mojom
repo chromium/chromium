@@ -28,7 +28,7 @@ interface PdfService {
   // Binds an interface that is used to convert images to a searchable PDF. OCR
   // remotes passed to `BindPdfProgressiveSearchifier` may be called multiple
   // times.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindPdfProgressiveSearchifier(
     pending_receiver<PdfProgressiveSearchifier> receiver,
     pending_remote<Ocr> ocr);
@@ -36,12 +36,12 @@ interface PdfService {
   // Binds an interface that is used to make inaccessible text in PDFs
   // searchable. OCR remotes passed to `BindPdfSearchifier` may be called
   // multiple times.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindPdfSearchifier(
     pending_receiver<PdfSearchifier> receiver,
     pending_remote<Ocr> ocr);
 
   // Binds an interface that is used to generate thumbnails for PDF content.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindPdfThumbnailer(pending_receiver<PdfThumbnailer> receiver);
 };

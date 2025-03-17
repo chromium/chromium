@@ -99,10 +99,10 @@ JNI_ZERO_MUXED_ENTRYPOINT void Muxed_this_is_a_package_prefix_org_jni_1zero_Samp
     jobject convertedObjects);
 
 // Multiplexing Methods.
-JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N__1V(JNIEnv* env, jclass jcaller) {
+JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_V(JNIEnv* env, jclass jcaller) {
   return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo(env);
 }
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N__1O(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_O(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num) {
@@ -138,12 +138,10 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N__1O(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_this_is_a_package_prefix_J_N__1Z(
-    JNIEnv* env,
-    jclass jcaller) {
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_this_is_a_package_prefix_J_N_Z(JNIEnv* env, jclass jcaller) {
   return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(env);
 }
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N__1O_1O(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_OO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,
@@ -164,7 +162,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N__1O_1O(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N__1O_1BCDFIJOOOOOOOOSZ(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_OBCDFIJOOOOOOOOSZ(
     JNIEnv* env,
     jclass jcaller,
     jbyte p0,
@@ -185,7 +183,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N__1O_1BCDFIJOO
     jboolean p15) {
   return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
 }
-JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N__1V_1OOOOOOOOOOOOOOOOOO(
+JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_VOOOOOOOOOOOOOOOOOO(
     JNIEnv* env,
     jclass jcaller,
     jobject p0,

@@ -4,21 +4,28 @@
 
 #include "chrome/updater/update_usage_stats_task.h"
 
-#include <string>
-#include <vector>
+#include <memory>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
+#include "chrome/updater/persisted_data.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
-bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
-                               UpdaterScope scope) {
-  // TODO(crbug.com/40821596): Implement.
-  return false;
-}
+class UsageStatsProviderImpl : public UsageStatsProvider {
+ public:
+  UsageStatsProviderImpl() = default;
 
-bool AreRawUsageStatsEnabled(
-    UpdaterScope scope,
-    const std::vector<std::string>& include_only_these_app_ids) {
-  return false;
+  // TODO(crbug.com/40821596): Implement.
+  bool AnyAppEnablesUsageStats(UpdaterScope scope) override { return false; }
+};
+
+std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create() {
+  return std::make_unique<UsageStatsProviderImpl>();
 }
 
 }  // namespace updater

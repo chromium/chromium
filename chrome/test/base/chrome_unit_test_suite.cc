@@ -11,7 +11,6 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -38,12 +37,9 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_paths.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "crypto/nss_util_internal.h"
 #endif
 
@@ -107,10 +103,10 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
           << "Use content::ScopedAccessibilityModeOverride or otherwise ensure "
              "that accessibility is disabled at the end of your test.";
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     arc::ClearArcAllowedCheckForTesting();
     crypto::ResetTokenManagerForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
     web_app::SetTrustedWebBundleIdsForTesting({});
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -169,11 +165,8 @@ void ChromeUnitTestSuite::InitializeProviders() {
                                           chrome::DIR_INTERNAL_PLUGINS,
                                           chrome::DIR_USER_DATA);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::RegisterPathProvider();
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
+  ash::RegisterPathProvider();
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
 

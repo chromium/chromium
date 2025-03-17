@@ -215,7 +215,7 @@ std::unique_ptr<syncer::EntityChange> CreateEntityChange(
       return syncer::EntityChange::CreateUpdate(guid,
                                                 CreateEntityData(specific));
     case syncer::EntityChange::ACTION_DELETE:
-      return syncer::EntityChange::CreateDelete(guid);
+      return syncer::EntityChange::CreateDelete(guid, syncer::EntityData());
   }
 }
 
@@ -1015,11 +1015,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   const std::vector<proto::SavedTabGroupData>& tabs_missing_groups =
       bridge_->GetTabsMissingGroupsForTesting();
 
-  auto it_1 = base::ranges::find_if(
+  auto it_1 = std::ranges::find_if(
       tabs_missing_groups, [&](proto::SavedTabGroupData data) {
         return data.specifics().guid() == tab_1_guid.AsLowercaseString();
       });
-  auto it_2 = base::ranges::find_if(
+  auto it_2 = std::ranges::find_if(
       tabs_missing_groups, [&](proto::SavedTabGroupData data) {
         return data.specifics().guid() == tab_2_guid.AsLowercaseString();
       });
@@ -1613,6 +1613,56 @@ TEST_F(SavedTabGroupSyncBridgeTest, StoreLocalIdOnRemoteUpdate) {
       LocalTabGroupIDFromString(
           stored_saved_tab_group->local_tab_group_data().local_group_id()),
       kLocalGroupId);
+}
+
+// Verify that deleting the last tab from sync creates a pending NTP which is
+// stored to DB correctly.
+TEST_F(SavedTabGroupSyncBridgeTest,
+       PendingNtpIsCreatedOnDeletionAndStoredToDB) {
+  syncer::EntityChangeList empty_change_list;
+  bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(),
+                             std::move(empty_change_list));
+
+  // Create a group with a single tab.
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/0);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab_1);
+
+  ASSERT_EQ(group.saved_tabs().size(), 1u);
+
+  bridge_->ApplyIncrementalSyncChanges(
+      bridge_->CreateMetadataChangeList(),
+      CreateEntityChangeListFromGroup(
+          group, syncer::EntityChange::ChangeType::ACTION_ADD));
+
+  ASSERT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
+  const SavedTabGroup* group_from_model =
+      saved_tab_group_model_.Get(group.saved_guid());
+
+  // Delete the tab from sync. It should result in creating the pending
+  base::Uuid last_tab_id = group.saved_tabs()[0].saved_tab_guid();
+
+  syncer::EntityChangeList delete_tab_change_list;
+  delete_tab_change_list.push_back(CreateEntityChange(
+      SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(
+          group.saved_tabs()[0]),
+      syncer::EntityChange::ChangeType::ACTION_DELETE));
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(delete_tab_change_list));
+
+  ASSERT_FALSE(group_from_model->ContainsTab(last_tab_id));
+  EXPECT_EQ(group_from_model->saved_tabs().size(), 1u);
+
+  const SavedTabGroupTab& pending_ntp = group_from_model->saved_tabs()[0];
+  base::Uuid pending_ntp_guid = pending_ntp.saved_tab_guid();
+  EXPECT_TRUE(pending_ntp.is_pending_ntp());
+
+  // Read the pending NTP from storage and verify that it's written correctly.
+  std::optional<proto::SavedTabGroupData> stored_saved_tab_group_data =
+      ReadSavedTabGroupDataFromStore(pending_ntp_guid);
+  ASSERT_TRUE(stored_saved_tab_group_data.has_value());
 }
 
 }  // namespace tab_groups

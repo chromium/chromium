@@ -7,16 +7,19 @@
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
 
 using extensions::ScopedTestDialogAutoConfirm;
 
@@ -28,7 +31,8 @@ scoped_refptr<const extensions::Extension> BuildTestExtension() {
 
 }  // namespace
 
-using ExtensionInstallPromptBrowserTest = InProcessBrowserTest;
+using ExtensionInstallPromptBrowserTest =
+    extensions::ExtensionPlatformBrowserTest;
 
 // Test that ExtensionInstallPrompt aborts the install if the web contents which
 // were passed to the ExtensionInstallPrompt constructor get destroyed.
@@ -37,17 +41,14 @@ using ExtensionInstallPromptBrowserTest = InProcessBrowserTest;
 // close the current tab while this processing is taking place.
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
                        TrackParentWebContentsDestruction) {
-  AddBlankTabAndShow(browser());
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
-  int web_contents_index = tab_strip_model->GetIndexOfWebContents(web_contents);
+  NavigateToURLInNewTab(GURL("about:blank"));
+  content::WebContents* web_contents = GetActiveWebContents();
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   ExtensionInstallPrompt prompt(web_contents);
-  tab_strip_model->CloseWebContentsAt(web_contents_index,
-                                      TabCloseTypes::CLOSE_NONE);
+  CloseTabForWebContents(web_contents);
   content::RunAllPendingInMessageLoop();
 
   base::RunLoop run_loop;
@@ -60,8 +61,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
   EXPECT_EQ(ExtensionInstallPrompt::Result::ABORTED, helper.result());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that ExtensionInstallPrompt aborts the install if the gfx::NativeWindow
 // which is passed to the ExtensionInstallPrompt constructor is destroyed.
+// TODO(crbug.com/397754565): Port to desktop Android when the install UI is
+// supported.
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
                        TrackParentWindowDestruction) {
   // Create a second browser to prevent the app from exiting when the browser is
@@ -86,6 +90,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::ABORTED, helper.result());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that ExtensionInstallPrompt shows the dialog normally if no parent
 // web contents or parent gfx::NativeWindow is passed to the
@@ -95,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest, NoParent) {
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
-  ExtensionInstallPrompt prompt(browser()->profile(), nullptr);
+  ExtensionInstallPrompt prompt(profile(), nullptr);
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
   prompt.ShowDialog(

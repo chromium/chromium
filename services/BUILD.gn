@@ -37,6 +37,13 @@ test("services_unittests") {
     "//services/test:run_all_unittests",
   ]
 
+  fuzztests = [
+    "GetAttributionSupportHeader.IsSupportValid",
+    "SerializeAttributionReportingEligibleHeader.IsEligibleValid",
+    "TrustTokenKeyCommitmentFuzzer.ParsesOneIssuerCorrectly",
+    "TrustTokenKeyCommitmentFuzzer.ParsesMultipleIssuersCorrectly",
+  ]
+
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
 
   if (use_blink) {
@@ -59,6 +66,7 @@ test("services_unittests") {
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
       "//services/webnn:tests",
+      "//services/webnn/public/cpp:tests",
       "//services/webnn/public/mojom:tests",
     ]
     if (is_ios) {
@@ -71,7 +79,7 @@ test("services_unittests") {
     deps += [ "//base:base_profiler_test_support_library" ]
   }
 
-  if (is_chromeos_ash || is_linux || is_fuchsia) {
+  if (is_chromeos || is_linux || is_fuchsia) {
     deps += [ "//services/accessibility:tests" ]
   }
 
@@ -129,6 +137,7 @@ if (!is_ios) {
   test("services_perftests") {
     deps = [
       "//services/device:perftests",
+      "//services/network/public/cpp:perftests",
       "//services/test:run_all_unittests",
       "//services/viz/public/cpp/compositing:perftests",
     ]
@@ -165,6 +174,7 @@ if (is_android) {
       "//services/device/geolocation:geolocation_java",
       "//services/device/nfc/android:java",
       "//services/device/public/java:device_feature_list_java",
+      "//services/device/public/java:geolocation_java",
       "//services/device/public/java:geolocation_java_test_support",
       "//services/device/public/java:nfc_java",
       "//services/device/public/mojom:generic_sensor_java",

@@ -83,6 +83,7 @@ export function Runner(outerContainerId, opt_config) {
 
   /** @type {Object} */
   this.soundFx = {};
+  /** @type {GeneratedSoundFx | null} */
   this.generatedSoundFx = null;
 
   // Global web audio context for playing sounds.
@@ -483,8 +484,6 @@ Runner.prototype = {
       this.containerEl.appendChild(this.a11yStatusEl);
     }
 
-    this.generatedSoundFx = new GeneratedSoundFx();
-
     this.canvasCtx =
         /** @type {CanvasRenderingContext2D} */ (this.canvas.getContext('2d'));
     this.canvasCtx.fillStyle = '#f7f7f7';
@@ -633,9 +632,9 @@ Runner.prototype = {
     this.tRex.playingIntro = false;
     this.containerEl.style.webkitAnimation = '';
     this.playCount++;
-    this.generatedSoundFx.background();
 
     if (Runner.audioCues) {
+      this.generatedSoundFx.background();
       this.containerEl.setAttribute('title', getA11yString(A11Y_STRINGS.jump));
     }
 
@@ -681,7 +680,9 @@ Runner.prototype = {
     this.altGameModeActive = true;
     this.tRex.enableAltGameMode(this.spriteDef.TREX);
     this.horizon.enableAltGameMode(this.spriteDef);
-    this.generatedSoundFx.background();
+    if (Runner.audioCues) {
+      this.generatedSoundFx.background();
+    }
   },
 
   /**
@@ -773,7 +774,9 @@ Runner.prototype = {
         collision = false;
         this.altGameModeFlashTimer = this.config.FLASH_DURATION;
         this.runningTime = 0;
-        this.generatedSoundFx.collect();
+        if (Runner.audioCues) {
+          this.generatedSoundFx.collect();
+        }
       }
 
       if (!collision) {
@@ -857,8 +860,8 @@ Runner.prototype = {
   handleCanvasKeyPress(e) {
     if (!this.activated && !Runner.audioCues) {
       this.toggleSpeed();
+      this.generatedSoundFx = new GeneratedSoundFx();
       Runner.audioCues = true;
-      this.generatedSoundFx.init();
       Runner.generatedSoundFx = this.generatedSoundFx;
       Runner.config.CLEAR_TIME *= 1.2;
     } else if (e.keyCode && Runner.keycodes.JUMP[e.keyCode]) {
@@ -1324,7 +1327,9 @@ Runner.prototype = {
     this.paused = true;
     cancelAnimationFrame(this.raqId);
     this.raqId = 0;
-    this.generatedSoundFx.stopAll();
+    if (Runner.audioCues) {
+      this.generatedSoundFx.stopAll();
+    }
   },
 
   play() {
@@ -1334,7 +1339,9 @@ Runner.prototype = {
       this.tRex.update(0, Trex.status.RUNNING);
       this.time = getTimeStamp();
       this.update();
-      this.generatedSoundFx.background();
+      if (Runner.audioCues) {
+        this.generatedSoundFx.background();
+      }
     }
   },
 
@@ -1359,7 +1366,9 @@ Runner.prototype = {
       this.flashTimer = null;
       this.update();
       this.gameOverPanel.reset();
-      this.generatedSoundFx.background();
+      if (Runner.audioCues) {
+        this.generatedSoundFx.background();
+      }
       this.containerEl.setAttribute('title', getA11yString(A11Y_STRINGS.jump));
       announcePhrase(getA11yString(A11Y_STRINGS.started));
     }

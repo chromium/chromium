@@ -103,7 +103,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
                             DISTANCE_TOAST_LABEL_VERTICAL),
                         0));
-    AddChildView(icon_.get());
+    AddChildViewRaw(icon_.get());
   }
 
   if (this->delegate()->IsCloseable()) {
@@ -245,7 +245,7 @@ void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {
   // infobar.
   if (focused_before && focused_now && !Contains(focused_before) &&
       Contains(focused_now)) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 }
 
@@ -306,7 +306,7 @@ void InfoBarView::PlatformSpecificShow(bool animate) {
   // that if we gain focus we'll know what the previously-focused element was.
   SetFocusManager(GetFocusManager());
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }
 
 void InfoBarView::PlatformSpecificHide(bool animate) {

@@ -16,7 +16,7 @@
 #include "base/types/expected.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/tracing/windows_system_tracing_client_win.h"
-#include "components/tracing/tracing_service_idl.h"
+#include "chrome/windows_services/elevated_tracing_service/tracing_service_idl.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 class WindowsSystemTracingClientImpl : public WindowsSystemTracingClient {

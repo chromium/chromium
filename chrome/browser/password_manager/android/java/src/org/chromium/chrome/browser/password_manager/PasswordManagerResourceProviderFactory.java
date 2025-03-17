@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 
 /** Factory for creating {@link PasswordManagerResourceProvider} */
+@NullMarked
 public class PasswordManagerResourceProviderFactory {
     /**
      * Creates an instance of PasswordManagerResourceProvider

@@ -521,7 +521,7 @@ int MediaValues::CalculateHorizontalViewportSegments(LocalFrame* frame) {
     return 1;
   }
 
-  WebVector<gfx::Rect> viewport_segments =
+  std::vector<gfx::Rect> viewport_segments =
       frame->GetWidgetForLocalRoot()->ViewportSegments();
   WTF::HashSet<int> unique_x;
   for (const auto& segment : viewport_segments) {
@@ -537,7 +537,7 @@ int MediaValues::CalculateVerticalViewportSegments(LocalFrame* frame) {
     return 1;
   }
 
-  WebVector<gfx::Rect> viewport_segments =
+  std::vector<gfx::Rect> viewport_segments =
       frame->GetWidgetForLocalRoot()->ViewportSegments();
   WTF::HashSet<int> unique_y;
   for (const auto& segment : viewport_segments) {

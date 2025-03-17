@@ -636,8 +636,8 @@ struct MigrationParam {
   std::vector<PasswordForm> EntriesToPasswordForms(
       const std::vector<Entry>& entries) const {
     std::vector<PasswordForm> v;
-    base::ranges::transform(entries, std::back_inserter(v),
-                            &Entry::ToPasswordForm);
+    std::ranges::transform(entries, std::back_inserter(v),
+                           &Entry::ToPasswordForm);
     return v;
   }
 

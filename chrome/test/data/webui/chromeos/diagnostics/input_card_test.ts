@@ -8,9 +8,11 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
-import {BottomLeftLayout, BottomRightLayout, ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
-import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
-import {TouchDeviceInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import type {KeyboardInfo} from 'chrome://diagnostics/input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
+import type {InputCardElement} from 'chrome://diagnostics/input_card.js';
+import {InputCardType} from 'chrome://diagnostics/input_card.js';
+import type {TouchDeviceInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -173,7 +175,7 @@ suite('inputCardTestSuite', function() {
   test('KeyboardTestabilityLidState', async () => {
     await initializeInputCard(InputCardType.KEYBOARD, keyboards);
     assert(inputCardElement);
-    const elements = inputCardElement!.root!.querySelectorAll('.device');
+    const elements = inputCardElement.root!.querySelectorAll('.device');
     assertEquals(2, elements.length);
 
     inputCardElement.hostDeviceStatus = {
@@ -227,7 +229,7 @@ suite('inputCardTestSuite', function() {
   test('KeyboardTestabilityTabletMode', async () => {
     await initializeInputCard(InputCardType.KEYBOARD, keyboards);
     assert(inputCardElement);
-    const elements = inputCardElement!.root!.querySelectorAll('.device');
+    const elements = inputCardElement.root!.querySelectorAll('.device');
     assertEquals(2, elements.length);
     inputCardElement.hostDeviceStatus = {
       ...inputCardElement.hostDeviceStatus,

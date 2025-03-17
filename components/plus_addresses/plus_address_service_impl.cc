@@ -18,10 +18,13 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -146,7 +149,9 @@ PlusAddressServiceImpl::PlusAddressServiceImpl(
   if (webdata_service_) {
     webdata_service_observation_.Observe(webdata_service_.get());
     if (IsEnabled()) {
-      webdata_service_->GetPlusProfiles(this);
+      webdata_service_->GetPlusProfiles(
+          base::BindOnce(&PlusAddressServiceImpl::OnWebDataServiceRequestDone,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
   identity_manager_observation_.Observe(identity_manager);
@@ -187,8 +192,7 @@ bool PlusAddressServiceImpl::IsPlusAddressCreationEnabled(
 
   // We've met the prerequisites. If this isn't an OTR session and the global
   // settings toggle isn't off, plus address creation is supported.
-  return !base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
-         setting_service_->GetIsPlusAddressesEnabled();
+  return setting_service_->GetIsPlusAddressesEnabled();
 }
 
 bool PlusAddressServiceImpl::ShouldShowManualFallback(
@@ -212,8 +216,7 @@ bool PlusAddressServiceImpl::ShouldShowManualFallback(
 
   // If the user doesn't have an existing plus address for `origin` and this
   // session is not off-the-record, the global toggle must be enabled.
-  return !base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
-         setting_service_->GetIsPlusAddressesEnabled();
+  return setting_service_->GetIsPlusAddressesEnabled();
 }
 
 std::optional<PlusAddress> PlusAddressServiceImpl::GetPlusAddress(
@@ -289,6 +292,22 @@ bool PlusAddressServiceImpl::IsPlusAddressFullFormFillingEnabled() const {
   return base::FeatureList::IsEnabled(features::kPlusAddressFullFormFill);
 }
 
+bool PlusAddressServiceImpl::IsFieldEligibleForPlusAddress(
+    const autofill::AutofillField& field) const {
+  autofill::FillingProduct filling_product =
+      autofill::GetFillingProductFromFieldTypeGroup(field.Type().group());
+
+  if (filling_product == autofill::FillingProduct::kAddress) {
+    return true;
+  }
+
+  return base::FeatureList::IsEnabled(
+             features::kPlusAddressSuggestionsOnUsernameFields) &&
+         (field.server_type() == autofill::FieldType::USERNAME ||
+          field.server_type() == autofill::FieldType::SINGLE_USERNAME) &&
+         field.heuristic_type() == autofill::FieldType::EMAIL_ADDRESS;
+}
+
 void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(
     const url::Origin& origin,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
@@ -311,10 +330,10 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const url::Origin& origin,
     bool is_off_the_record,
     const autofill::FormData& focused_form,
+    const autofill::FormFieldData& focused_field,
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    const autofill::FieldGlobalId& focused_field_id,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!IsPlusAddressFillingEnabled(origin)) {
     return {};
@@ -327,8 +346,8 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
                                      plus_address_allocator_.get(),
                                      std::move(origin))
           .GetSuggestions(plus_addresses, is_creation_enabled, focused_form,
-                          form_field_type_groups, focused_form_classification,
-                          focused_field_id, trigger_source);
+                          focused_field, form_field_type_groups,
+                          focused_form_classification, trigger_source);
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 
@@ -555,11 +574,7 @@ void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
           "PlusAddresses.StandaloneFillSuggestionShown"));
       return;
     case kCreateNewPlusAddressSuggested: {
-      const bool user_acepted_notice =
-          setting_service_->GetHasAcceptedNotice() ||
-          !base::FeatureList::IsEnabled(
-              features::kPlusAddressUserOnboardingEnabled);
-      if (user_acepted_notice) {
+      if (setting_service_->GetHasAcceptedNotice()) {
         base::RecordAction(
             base::UserMetricsAction("PlusAddresses.CreateSuggestionShown"));
       } else {
@@ -736,7 +751,8 @@ PlusAddressServiceImpl::GetPlusAddressHatsData() const {
                                : std::string("-1");
   };
 
-  return {{hats::kFirstPlusAddressCreationTime,
+  return {{hats::kPlusAddressesCount, base::ToString(GetPlusProfiles().size())},
+          {hats::kFirstPlusAddressCreationTime,
            time_pref_to_string(prefs::kFirstPlusAddressCreationTime)},
           {hats::kLastPlusAddressFillingTime,
            time_pref_to_string(prefs::kLastPlusAddressFillingTime)}};

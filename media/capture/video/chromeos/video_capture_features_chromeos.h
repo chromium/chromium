@@ -18,10 +18,6 @@ CAPTURE_EXPORT extern const char kAutoFramingOverride[];
 inline constexpr char kAutoFramingForceEnabled[] = "force-enabled";
 inline constexpr char kAutoFramingForceDisabled[] = "force-disabled";
 
-CAPTURE_EXPORT extern const char kCameraSuperResOverride[];
-inline constexpr char kCameraSuperResForceEnabled[] = "force-enabled";
-inline constexpr char kCameraSuperResForceDisabled[] = "force-disabled";
-
 CAPTURE_EXPORT extern const char kFaceRetouchOverride[];
 inline constexpr char kFaceRetouchForceEnabledWithRelighting[] =
     "force-enabled-with-relighting";

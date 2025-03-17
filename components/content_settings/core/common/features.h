@@ -99,10 +99,6 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kUserBypassUIReloadBubbleTimeout;
 
-// Hide activity indicators if a permission is no longer used.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
-
 // Move activity indicators to the left-hand side of Omnibox.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kLeftHandSideActivityIndicators);
@@ -121,6 +117,27 @@ BASE_DECLARE_FEATURE(kTrackingProtection3pcd);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kNativeUnpartitionedStoragePermittedWhen3PCOff);
 
+////////////////////////////////////////////////////////////
+// Start of third-party cookie access heuristics features //
+////////////////////////////////////////////////////////////
+
+// The content module implements the third-party cookie (3PC or TPC) access
+// heuristics described here:
+// https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/explainer.md
+//
+// At a high level, the heuristics are enabled/disabled by the
+// kTpcdHeuristicsGrants Feature.
+//
+// The heuristics can be tweaked through the FeatureParams declared below. They
+// affect when the heuristics apply and how long the temporary cookie access
+// lasts.
+//
+// The heuristics grant third-party cookie access via calls to
+// ContentBrowserClient::GrantCookieAccessDueToHeuristic(). Embedders should
+// take these calls, kTpcdHeuristicsGrants, and kTpcdReadHeuristicsGrants into
+// account in their implementation of
+// ContentBrowserClient::IsFullCookieAccessAllowed().
+
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const char kTpcdReadHeuristicsGrantsName[];
 
@@ -133,6 +150,93 @@ BASE_DECLARE_FEATURE(kTpcdHeuristicsGrants);
 // behavior.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool> kTpcdReadHeuristicsGrants;
+
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdWriteRedirectHeuristicGrantsName[];
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdRedirectHeuristicRequireABAFlowName[];
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdRedirectHeuristicRequireCurrentInteractionName[];
+
+// The duration of the storage access grant created when observing the Redirect
+// With Current Interaction scenario. If set to zero duration, do not create a
+// grant.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWriteRedirectHeuristicGrants;
+
+// Whether to require an A-B-A flow (where the first party preceded the
+// third-party redirect in the tab history) when applying the Redirect
+// heuristic.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow;
+
+// Whether to require the third-party interaction to be in the current
+// navigation when applying the Redirect heuristic.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<bool>
+    kTpcdRedirectHeuristicRequireCurrentInteraction;
+
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdPopupHeuristicEnableForIframeInitiatorName[];
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[];
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[];
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdBackfillPopupHeuristicsGrantsName[];
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[];
+
+enum class EnableForIframeTypes { kNone = 0, kFirstParty = 1, kAll = 2 };
+
+// Whether to enable writing Popup heuristic grants when the popup is opened via
+// an iframe initiator.
+
+// * kNone: Ignore popups initiated from iframes.
+// * kFirstPartyIframes: Only write grants for popups initiated from 1P iframes,
+// or nested tree of all 1P iframes.
+// * kAllIframes: Write grants for popups initiated from any frame.
+constexpr base::FeatureParam<EnableForIframeTypes>::Option
+    kEnableForIframeTypesOptions[] = {
+        {EnableForIframeTypes::kNone, "none"},
+        {EnableForIframeTypes::kFirstParty, "first-party"},
+        {EnableForIframeTypes::kAll, "all"},
+};
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<EnableForIframeTypes>
+    kTpcdPopupHeuristicEnableForIframeInitiator;
+
+// The duration of the storage access grant created when observing the Popup
+// With Current Interaction scenario. If set to zero duration, do not create a
+// grant.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupCurrentInteractionHeuristicsGrants;
+
+// The duration of the storage access grant created when observing the Popup
+// With Past Interaction scenario. If set to zero duration, do not create a
+// grant.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupPastInteractionHeuristicsGrants;
+
+// The lookback and duration of the storage access grants created when
+// backfilling the Popup With Current Interaction scenario on onboarding to
+// 3PCD. If set to zero duration, to not create backfill grants.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdBackfillPopupHeuristicsGrants;
+
+// Whether to disable writing Popup heuristic grants when the popup is opened
+// via an ad-tagged frame.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<bool>
+    kTpcdPopupHeuristicDisableForAdTaggedPopups;
+
+//////////////////////////////////////////////////////////
+// End of third-party cookie access heuristics features //
+//////////////////////////////////////////////////////////
 
 // Whether we should partition content settings (by StoragePartitions for
 // non-ios platforms).

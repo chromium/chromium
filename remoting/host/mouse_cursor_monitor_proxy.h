@@ -7,19 +7,17 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
-
-namespace webrtc {
-class DesktopCaptureOptions;
-}  // namespace webrtc
 
 namespace remoting {
 
@@ -27,7 +25,8 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
  public:
   MouseCursorMonitorProxy(
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
-      const webrtc::DesktopCaptureOptions& options);
+      base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()>
+          creator);
 
   MouseCursorMonitorProxy(const MouseCursorMonitorProxy&) = delete;
   MouseCursorMonitorProxy& operator=(const MouseCursorMonitorProxy&) = delete;
@@ -37,9 +36,6 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
   // webrtc::MouseCursorMonitor interface.
   void Init(Callback* callback, Mode mode) override;
   void Capture() override;
-
-  void SetMouseCursorMonitorForTests(
-      std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor);
 
  private:
   class Core;

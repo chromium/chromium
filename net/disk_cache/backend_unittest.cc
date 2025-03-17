@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -22,7 +23,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -3499,7 +3499,7 @@ TEST_F(DiskCacheBackendTest, Backend_UsageStats) {
   EXPECT_FALSE(stats.empty());
 
   disk_cache::StatsItems::value_type hits("Create hit", "0x1");
-  EXPECT_EQ(1, base::ranges::count(stats, hits));
+  EXPECT_EQ(1, std::ranges::count(stats, hits));
 
   ResetCaches();
 
@@ -3512,7 +3512,7 @@ TEST_F(DiskCacheBackendTest, Backend_UsageStats) {
   cache_->GetStats(&stats);
   EXPECT_FALSE(stats.empty());
 
-  EXPECT_EQ(1, base::ranges::count(stats, hits));
+  EXPECT_EQ(1, std::ranges::count(stats, hits));
 }
 
 void DiskCacheBackendTest::BackendDoomAll() {

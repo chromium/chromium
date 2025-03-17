@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -28,7 +29,6 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/process/process_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -51,7 +51,7 @@ struct IidComparator {
       return true;
     }
     if (lhs_prefix == rhs_prefix) {
-      return base::ranges::lexicographical_compare(lhs.Data4, rhs.Data4);
+      return std::ranges::lexicographical_compare(lhs.Data4, rhs.Data4);
     }
     return false;
   }
@@ -119,20 +119,26 @@ using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
 template <typename Interface, REFIID iid_user, REFIID iid_system>
 class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
  public:
-  DynamicIIDsImpl() {
+  explicit DynamicIIDsImpl(UpdaterScope scope) : scope_(scope) {
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << StringFromGuid(iid_user)
             << ": iid_system: " << StringFromGuid(iid_system)
-            << ": IsSystemInstall(): " << IsSystemInstall();
+            << ": scope: " << scope;
   }
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     return internal::WrlRuntimeClass<Interface>::QueryInterface(
-        riid == (IsSystemInstall() ? iid_system : iid_user)
+        riid == (IsSystemInstall(scope_) ? iid_system : iid_user)
             ? __uuidof(Interface)
             : riid,
         object);
   }
+
+ protected:
+  UpdaterScope scope() const { return scope_; }
+
+ private:
+  const UpdaterScope scope_;
 };
 
 // Macro that makes it easier to derive from `DynamicIIDsImpl`.
@@ -146,9 +152,10 @@ template <typename... Interface>
 class DynamicIIDsMultImpl : public internal::WrlRuntimeClass<Interface...> {
  public:
   DynamicIIDsMultImpl(
+      UpdaterScope scope,
       const base::flat_map<IID, IID, IidComparator>& user_iid_map,
       const base::flat_map<IID, IID, IidComparator>& system_iid_map)
-      : iid_map_(IsSystemInstall() ? system_iid_map : user_iid_map) {}
+      : iid_map_(IsSystemInstall(scope) ? system_iid_map : user_iid_map) {}
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     const auto find_iid = iid_map_.find(riid);
@@ -215,6 +222,11 @@ std::wstring GetAppClientsKey(const std::wstring& app_id);
 // `Software\{CompanyName}\Update\ClientState\{app_id}`.
 std::wstring GetAppClientStateKey(const std::string& app_id);
 std::wstring GetAppClientStateKey(const std::wstring& app_id);
+
+// Returns the registry path
+// `Software\{CompanyName}\Update\ClientStateMedium\{app_id}`.
+std::wstring GetAppClientStateMediumKey(const std::string& app_id);
+std::wstring GetAppClientStateMediumKey(const std::wstring& app_id);
 
 // Returns the registry path
 // `Software\{CompanyName}\Update\ClientState\{app_id}\cohort`.
@@ -449,11 +461,6 @@ bool IsOemInstalling();
 
 // Stores the runtime enrollment token to the persistent storage.
 bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
-
-// Returns a unique temp file path of the form
-// `%TMP%\{name}{guid}.{fileextension}`, where `name` and `extension` are the
-// name and extension of `file`.
-std::optional<base::FilePath> GetUniqueTempFilePath(base::FilePath file);
 
 }  // namespace updater
 

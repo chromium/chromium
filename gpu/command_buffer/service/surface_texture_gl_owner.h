@@ -34,7 +34,7 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
   void SetFrameAvailableCallback(
       const base::RepeatingClosure& frame_available_cb) override;
   gl::ScopedJavaSurface CreateJavaSurface() const override;
-  void UpdateTexImage() override;
+  bool UpdateTexImage(bool discard) override;
   void ReleaseBackBuffers() override;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override;

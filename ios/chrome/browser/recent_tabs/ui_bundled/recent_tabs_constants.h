@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// Key for saving collapsed session state in the UserDefaults.
-extern NSString* const kCollapsedSectionsKey;
 // Accessibility identifier for the main view.
 extern NSString* const kRecentTabsTableViewControllerAccessibilityIdentifier;
 // Accessibility identifier for the "Show History" cell.

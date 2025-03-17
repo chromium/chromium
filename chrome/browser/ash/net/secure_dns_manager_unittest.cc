@@ -197,11 +197,13 @@ class SecureDnsManagerTest : public testing::Test {
         ::prefs::kAdditionalDnsQueryTypesEnabled, true);
 
     // Add a user for test.
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
     const AccountId account_id = AccountId::FromUserEmailGaiaId(
         "test-user@testdomain.com", GaiaId("1234567890"));
-    user_ = fake_user_manager_->AddUser(account_id);
+    user_ = fake_user_manager_->AddGaiaUser(account_id,
+                                            user_manager::UserType::kRegular);
     ASSERT_TRUE(user_);
 
     network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),

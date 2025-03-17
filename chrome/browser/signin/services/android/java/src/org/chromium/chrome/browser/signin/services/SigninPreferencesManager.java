@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -17,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
 /** SigninPreferencesManager stores the state of SharedPreferences related to account sign-in. */
+@NullMarked
 public class SigninPreferencesManager {
     private static final SigninPreferencesManager INSTANCE = new SigninPreferencesManager();
 
@@ -26,6 +28,7 @@ public class SigninPreferencesManager {
     // LINT.IfChange(SigninPromoAccessPointId)
     @StringDef({
         SigninPromoAccessPointId.BOOKMARKS,
+        SigninPromoAccessPointId.HISTORY_PAGE,
         SigninPromoAccessPointId.NTP,
         SigninPromoAccessPointId.RECENT_TABS,
         SigninPromoAccessPointId.SETTINGS
@@ -33,6 +36,7 @@ public class SigninPreferencesManager {
     @Retention(RetentionPolicy.SOURCE)
     public @interface SigninPromoAccessPointId {
         String BOOKMARKS = "Bookmarks";
+        String HISTORY_PAGE = "HistoryPage";
         String NTP = "Ntp";
         String RECENT_TABS = "RecentTabs"; // Only used for histograms
         String SETTINGS = "Settings";
@@ -80,11 +84,10 @@ public class SigninPreferencesManager {
     }
 
     /**
-     * Returns a set of account emails on the device when signin promo was last shown,
-     * or null if promo hasn't been shown yet.
+     * Returns a set of account emails on the device when signin promo was last shown, or null if
+     * promo hasn't been shown yet.
      */
-    @Nullable
-    public Set<String> getSigninPromoLastAccountEmails() {
+    public @Nullable Set<String> getSigninPromoLastAccountEmails() {
         return mManager.readStringSet(
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, null);
     }
@@ -177,13 +180,13 @@ public class SigninPreferencesManager {
     /** The email of the account for which sync was enabled. */
     // TODO(crbug.com/40697988): Remove this after migrating the legacy code that uses
     //                                  the sync account before the native is loaded.
-    public String getLegacyPrimaryAccountEmail() {
+    public @Nullable String getLegacyPrimaryAccountEmail() {
         return mManager.readString(ChromePreferenceKeys.SIGNIN_LEGACY_PRIMARY_ACCOUNT_EMAIL, null);
     }
 
     // TODO(crbug.com/337003667): Remove after fixing internal usages.
     @Deprecated
-    public String getLegacySyncAccountEmail() {
+    public @Nullable String getLegacySyncAccountEmail() {
         return getLegacyPrimaryAccountEmail();
     }
 

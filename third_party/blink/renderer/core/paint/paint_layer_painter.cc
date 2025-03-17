@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -37,6 +38,86 @@
 #include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
+
+namespace {
+
+constexpr char kDevToolsTimelineCategory[] = "devtools.timeline";
+
+class PaintTimelineReporter {
+  STACK_ALLOCATED();
+
+ public:
+  PaintTimelineReporter(const PaintLayer& layer, bool should_paint_content)
+      : layer_(layer) {
+    if (ShouldReport(should_paint_content)) {
+      reset_current_reporting_.emplace(&current_reporting_, this);
+      TRACE_EVENT_BEGIN1(
+          kDevToolsTimelineCategory, "Paint", "data",
+          [&layer](perfetto::TracedValue context) {
+            const LayoutObject& object = layer.GetLayoutObject();
+            gfx::Rect cull_rect =
+                object.FirstFragment().GetContentsCullRect().Rect();
+            // Convert the cull rect into the local coordinates of layer.
+            cull_rect.Offset(
+                -ToRoundedVector2d(object.FirstFragment().PaintOffset()));
+            inspector_paint_event::Data(std::move(context), object.GetFrame(),
+                                        &object, cull_rect);
+          });
+    }
+  }
+
+  ~PaintTimelineReporter() {
+    if (current_reporting_ == this) {
+      TRACE_EVENT_END0(kDevToolsTimelineCategory, "Paint");
+    }
+  }
+
+ private:
+  bool ShouldReport(bool should_paint_content) const {
+    if (!TRACE_EVENT_CATEGORY_ENABLED(kDevToolsTimelineCategory)) {
+      return false;
+    }
+    // Always report for the top layer to cover the cost of tree walk and
+    // cache copying of non-repainted contents.
+    if (!current_reporting_) {
+      return true;
+    }
+    if (!should_paint_content) {
+      return false;
+    }
+    if (!layer_.SelfNeedsRepaint()) {
+      return false;
+    }
+    if (!current_reporting_->layer_.SelfNeedsRepaint()) {
+      return true;
+    }
+    // The layer should report if it has an expanded cull rect.
+    if (const auto* properties =
+            layer_.GetLayoutObject().FirstFragment().PaintProperties()) {
+      if (const auto* scroll = properties->Scroll()) {
+        if (CullRect::CanExpandForScroll(*scroll)) {
+          return true;
+        }
+      }
+      if (properties->ForNodes<TransformPaintPropertyNode>(
+              [](const TransformPaintPropertyNode& node) {
+                return node.RequiresCullRectExpansion();
+              })) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static PaintTimelineReporter* current_reporting_;
+  const PaintLayer& layer_;
+  std::optional<base::AutoReset<PaintTimelineReporter*>>
+      reset_current_reporting_;
+};
+
+PaintTimelineReporter* PaintTimelineReporter::current_reporting_ = nullptr;
+
+}  // namespace
 
 bool PaintLayerPainter::PaintedOutputInvisible(const ComputedStyle& style) {
   if (style.HasNonInitialBackdropFilter())
@@ -81,6 +162,16 @@ PhysicalRect PaintLayerPainter::ContentsVisualRect(const FragmentData& fragment,
   return contents_visual_rect;
 }
 
+static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
+  // We don't want to include overflowing contents.
+  PhysicalRect overflow_rect =
+      object.IsBox() ? To<LayoutBox>(object).SelfVisualOverflowRect()
+                     : object.VisualOverflowRect();
+  overflow_rect = object.ApplyFiltersToRect(overflow_rect);
+  overflow_rect.Move(object.FirstFragment().PaintOffset());
+  return ToEnclosingRect(overflow_rect);
+}
+
 static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
                                     const GraphicsContext& context,
                                     PaintFlags paint_flags) {
@@ -99,16 +190,43 @@ static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
   if (paint_flags & PaintFlag::kOmitCompositingInfo)
     return false;
 
-  return true;
-}
+  if (!RuntimeEnabledFeatures::FewerSubsequencesEnabled()) {
+    return true;
+  }
 
-static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
-  // We don't want to include overflowing contents.
-  PhysicalRect overflow_rect =
-      object.IsBox() ? To<LayoutBox>(object).SelfVisualOverflowRect()
-                     : object.VisualOverflowRect();
-  overflow_rect.Move(object.FirstFragment().PaintOffset());
-  return ToEnclosingRect(overflow_rect);
+  // Create subsequence if the layer will create a paint chunk because of
+  // different properties.
+  if (context.GetPaintController().NumNewChunks() > 0 &&
+      paint_layer.GetLayoutObject()
+              .FirstFragment()
+              .LocalBorderBoxProperties() !=
+          context.GetPaintController().LastChunkProperties()) {
+    return true;
+  }
+
+  // Create subsequence if the layer has at least 2 descendants,
+  if (paint_layer.FirstChild() && (paint_layer.FirstChild()->FirstChild() ||
+                                   paint_layer.FirstChild()->NextSibling())) {
+    return true;
+  }
+
+  // Or if the merged bounds with the last chunk would be too empty.
+  if (context.GetPaintController().NumNewChunks()) {
+    const auto& object = paint_layer.GetLayoutObject();
+    gfx::Rect last_bounds = context.GetPaintController().LastChunkBounds();
+    gfx::Rect visual_rect = FirstFragmentVisualRect(object);
+    gfx::Rect merged_bounds = gfx::UnionRects(last_bounds, visual_rect);
+    float device_pixel_ratio =
+        object.GetFrame()->LocalFrameRoot().GetDocument()->DevicePixelRatio();
+    // This is similar to the condition in PendingLayer::CanMerge().
+    if (merged_bounds.size().Area64() >
+        10000 * device_pixel_ratio * device_pixel_ratio +
+            last_bounds.size().Area64() + visual_rect.size().Area64()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
@@ -244,6 +362,8 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     subsequence_recorder.emplace(context, paint_layer_);
   }
 
+  PaintTimelineReporter timeline_reporter(paint_layer_, should_paint_content);
+
   std::optional<ScopedEffectivelyInvisible> effectively_invisible;
   if (PaintedOutputInvisible(object.StyleRef()))
     effectively_invisible.emplace(context.GetPaintController());
@@ -256,6 +376,15 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
         context.GetPaintController(),
         object.FirstFragment().LocalBorderBoxProperties(), paint_layer_,
         DisplayItem::kLayerChunk);
+
+    // When a reference filter applies to the layer, ensure a chunk is
+    // generated so that the filter paints even if no other content is painted
+    // by the layer (see `SVGContainerPainter::Paint`).
+    auto* properties = object.FirstFragment().PaintProperties();
+    if (properties && properties->Filter() &&
+        properties->Filter()->Filter().HasReferenceFilter()) {
+      context.GetPaintController().EnsureChunk();
+    }
   }
 
   bool should_paint_background =

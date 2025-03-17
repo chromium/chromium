@@ -7,6 +7,7 @@
 #include <shlobj.h>  // For SHChangeNotify().
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -352,7 +352,7 @@ void RenameChromeDesktopShortcutForProfile(
   if (!profile_shortcuts->empty()) {
     // From all profile_shortcuts choose the one with a known (canonical) name.
     profiles::internal::ShortcutFilenameMatcher matcher(old_profile_name);
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         *profile_shortcuts, [&matcher](const base::FilePath& p) {
           return matcher.IsCanonical(p.BaseName().value());
         });
@@ -478,8 +478,8 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
   // Do not call ListUserDesktopContents again (but with filter) to avoid
   // excess work inside it. Just reuse non-filtered desktop_contents.
   // We need both of them (desktop_contents and shortcuts) later.
-  base::ranges::copy_if(desktop_contents,
-                        std::inserter(shortcuts, shortcuts.begin()), filter);
+  std::ranges::copy_if(desktop_contents,
+                       std::inserter(shortcuts, shortcuts.begin()), filter);
 
   if (params.old_profile_name != params.profile_name || params.single_profile) {
     RenameChromeDesktopShortcutForProfile(
@@ -693,7 +693,7 @@ std::wstring SanitizeShortcutProfileNameString(
 
 namespace profiles {
 
-const base::FilePath::StringPieceType kProfileIconFileName =
+const base::FilePath::StringViewType kProfileIconFileName =
     FILE_PATH_LITERAL("Google Profile.ico");
 
 namespace internal {
@@ -719,7 +719,7 @@ std::wstring GetUniqueShortcutFilenameForProfile(
     const std::u16string& profile_name,
     const std::set<base::FilePath>& excludes) {
   std::set<std::wstring> excludes_names;
-  base::ranges::transform(
+  std::ranges::transform(
       excludes, std::inserter(excludes_names, excludes_names.begin()),
       [](const base::FilePath& e) { return e.BaseName().value(); });
 
@@ -867,11 +867,8 @@ bool ProfileShortcutManager::IsFeatureEnabled() {
   base::FilePath user_data_dir;
   bool success = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(success);
-  base::FilePath default_user_data_dir;
-  success = chrome::GetDefaultUserDataDirectory(&default_user_data_dir);
-  DCHECK(success);
-  return user_data_dir == default_user_data_dir ||
-         user_data_dir == policy_user_data_dir;
+  return user_data_dir == policy_user_data_dir ||
+         chrome::IsUsingDefaultDataDirectory().value_or(false);
 }
 
 // static

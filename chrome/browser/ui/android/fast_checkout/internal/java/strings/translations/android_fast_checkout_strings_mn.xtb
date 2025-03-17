@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1122068467107743258">Ажил</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="138513070655895675">Энэ цэсийн зүйлийн доорх бусад төлбөрийн хэрэгсэл рүү өөрчилнө үү.</translation>
 <translation id="2129442648318919291">Хаягуудыг удирдана уу.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Илгээх хаяг</translation>
 <translation id="8873105120914375071">Тооцоогоо илүү хурдан хийх үү?</translation>
 <translation id="9032876013752408138">Миний мэдээллийг автоматаар бөглөнө үү</translation>
+<translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 </translationbundle>

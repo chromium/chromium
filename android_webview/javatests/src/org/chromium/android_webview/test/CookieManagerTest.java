@@ -95,18 +95,6 @@ public class CookieManagerTest extends AwParameterizedTest {
 
     private static final String SECURE_COOKIE_HISTOGRAM_NAME = "Android.WebView.SecureCookieAction";
 
-    private static final String ASSET_STATEMENT_TEMPLATE =
-            """
-                [{
-                        "relation": ["delegate_permission/common.handle_all_urls"],
-                        "target": {
-                                "namespace": "android_app",
-                                "package_name": "%s",
-                                "sha256_cert_fingerprints": ["%s"]
-                        }
-                }]
-        """;
-
     public CookieManagerTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
@@ -502,7 +490,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetCookie() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kNotASecureCookie= */ 3);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 3);
         String url = "http://www.example.com";
         String cookie = "name=test";
         mCookieManager.setCookie(url, cookie);
@@ -566,7 +554,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpUrlNotTargetingAndroidR() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kFixedUp= */ 4);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 4);
 
         mCookieManager.setWorkaroundHttpSecureCookiesForTesting(true);
         String url = "http://www.example.com";
@@ -585,7 +573,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpUrlTargetingAndroidR() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kDisallowedAndroidR= */ 5);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 5);
 
         mCookieManager.setWorkaroundHttpSecureCookiesForTesting(false);
         String url = "http://www.example.com";
@@ -605,7 +593,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpsUrl() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kAlreadySecureScheme= */ 1);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 1);
 
         String secureUrl = "https://www.example.com";
         String cookie = "name=test";
@@ -645,7 +633,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetCookieCallback_badUrl() throws Throwable {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kInvalidUrl= */ 0);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 0);
         final String cookie = "name=test";
         final String brokenUrl = "foo";
 
@@ -1454,15 +1442,7 @@ public class CookieManagerTest extends AwParameterizedTest {
         String unpartitionedCookie = "regular-cookie=456";
 
         TestWebServer webServer = TestWebServer.start();
-        // Add an asset statement to test storage access since we can auto grant
-        // under these circumstances.
-        webServer.setResponse(
-                "/.well-known/assetlinks.json",
-                String.format(
-                        ASSET_STATEMENT_TEMPLATE,
-                        BuildInfo.getInstance().hostPackageName,
-                        BuildInfo.getInstance().getHostSigningCertSha256()),
-                null);
+        addServerAssetLinks(webServer);
 
         try {
             // TODO(crbug.com/41496912): The WebView cookie manager API does not currently
@@ -1543,6 +1523,177 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    public void testAutoStorageAccessNetCookies() throws Throwable {
+        TestWebServer webServer = TestWebServer.start();
+        addServerAssetLinks(webServer);
+
+        // This test suite relies on an image to force a network request that has cookies attached.
+        // The AwParameterizedTest will disable this setting so force enabling it again so that
+        // we can still test the rest of the parameterized test settings.
+        mAwContents.getSettings().setImagesEnabled(true);
+
+        try {
+            // We want to wait for the page to first have access
+            // to SAA and make a net request before we check for anything
+            // so we will add this API to let us know when the test
+            // has tried the net request.
+            var pageLoadFuture = SettableFuture.create();
+            AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                    mAwContents,
+                    new Object() {
+                        @JavascriptInterface
+                        public void done() {
+                            pageLoadFuture.set(null);
+                        }
+                    },
+                    "pageLoader");
+
+            // This iframe will request SAA, then try set a cookie, and then
+            // finally initiate a network request where we should see the 3PC
+            // attached.
+            // We listen for the onerror event on the image because we are making
+            // a request to a resource that doesn't actually exist, all we care about
+            // is the outgoing request.
+            String iframeWithNetRequest =
+                    """
+                    <html>
+                    <body>
+                    <img>
+                    <script>
+
+                    document.requestStorageAccess().then(() => {
+                        const image = document.querySelector("img");
+                        document.cookie = "foo=bar;";
+                        image.onerror = () => {
+                            pageLoader.done();
+                        };
+                        image.src = "/path_to_intercept";
+                    });
+                    </script>
+                    </body>
+                    </html>
+                    """;
+            String iframeUrl =
+                    toThirdPartyUrl(webServer.setResponse("/", iframeWithNetRequest, null));
+            // We don't need this to do anything fancy, we just need the path to exist
+            webServer.setResponse("/path_to_intercept", "hello", null);
+
+            String url = makeIframeUrl(webServer, "/parent.html", iframeUrl);
+
+            allowFirstPartyCookies();
+            blockThirdPartyCookies(mAwContents);
+
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+            AwActivityTestRule.waitForFuture(pageLoadFuture);
+
+            Assert.assertEquals(
+                    "Cookies should have been attached to the request after receiving storage"
+                            + " access.",
+                    "foo=bar",
+                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    public void testAutoStorageAccessNotAllFrames() throws Throwable {
+        // This test confirms that when one frame is granted storage access,
+        // it is not granted to all frames from that site.
+        // It does this by:
+        // - loading an iframe
+        //   - requesting storage access in this frame
+        //   - then triggering a new iframe to be loaded at the top level
+        // - from the new iframe of the same site, try set a 3PC and report it
+        //
+        // That 3PC is expected to not be set because the second iframe should
+        // not have storage access granted.
+        TestWebServer webServer = TestWebServer.start();
+        SettableFuture<Void> storageAccessFuture = SettableFuture.create();
+        SettableFuture<String> secondFrameCookieFuture = SettableFuture.create();
+        addServerAssetLinks(webServer);
+
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents,
+                new Object() {
+                    @JavascriptInterface
+                    public void done() {
+                        storageAccessFuture.set(null);
+                    }
+
+                    @JavascriptInterface
+                    public void reportCookies(String cookie) {
+                        secondFrameCookieFuture.set(cookie);
+                    }
+                },
+                "testInterface");
+
+        try {
+            String iframeWithNetRequest =
+                    """
+                    <html><body><script>
+                    document.requestStorageAccess().then(() => {
+                        testInterface.done();
+                    });
+                    </script></body></html>
+                    """;
+            String iframeUrl =
+                    toThirdPartyUrl(webServer.setResponse("/", iframeWithNetRequest, null));
+            String url = makeIframeUrl(webServer, "/parent.html", iframeUrl);
+
+            allowFirstPartyCookies();
+            blockThirdPartyCookies(mAwContents);
+
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+            // Wait until the first iframe has storage access granted...
+            AwActivityTestRule.waitForFuture(storageAccessFuture);
+
+            // Once we have granted storage access to one frame, we then load another frame to
+            // ensure that we don't share storage access across all frames.
+            // This frame should not have access to unpartitioned cookies
+            // and so should not report any cookies after attempting to set them.
+            String reportCookies =
+                    """
+                    <html><body><script>
+                    document.cookie="blah=hello;";
+                    testInterface.reportCookies(document.cookie);
+                    </script></body></html>
+                    """;
+
+            String secondFrameUrl =
+                    toThirdPartyUrl(webServer.setResponse("/", reportCookies, null));
+
+            JavaScriptUtils.executeJavaScript(
+                    mAwContents.getWebContents(),
+                    String.format(
+                            """
+                        const secondFrame = document.createElement("iframe");
+                        secondFrame.src="%s";
+                        document.body.appendChild(secondFrame);""",
+                            secondFrameUrl));
+
+            String secondFrameCookieString =
+                    AwActivityTestRule.waitForFuture(secondFrameCookieFuture);
+            Assert.assertEquals(
+                    "Second frame should not have storage access granted.",
+                    "",
+                    secondFrameCookieString);
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
     @CommandLineFlags.Add("disable-partitioned-cookies")
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
     public void testDisabledPartitionedJSCookies() throws Throwable {
@@ -1550,15 +1701,7 @@ public class CookieManagerTest extends AwParameterizedTest {
         String unpartitionedCookie = "regular-cookie=456";
 
         TestWebServer webServer = TestWebServer.start();
-        // Add an asset statement to test storage access since we can auto grant
-        // under these circumstances.
-        webServer.setResponse(
-                "/.well-known/assetlinks.json",
-                String.format(
-                        ASSET_STATEMENT_TEMPLATE,
-                        BuildInfo.getInstance().hostPackageName,
-                        BuildInfo.getInstance().getHostSigningCertSha256()),
-                null);
+        addServerAssetLinks(webServer);
 
         try {
             // TODO(https://crbug.com/1523964): The WebView cookie manager API does not currently
@@ -2314,6 +2457,26 @@ public class CookieManagerTest extends AwParameterizedTest {
         mCookieManager.setAcceptCookie(false);
         String msg = "acceptCookie() should return false after setAcceptCookie(false)";
         Assert.assertFalse(msg, mCookieManager.acceptCookie());
+    }
+
+    /** Adds an asset links json to allow SAA auto grants. */
+    private void addServerAssetLinks(TestWebServer webServer) {
+        webServer.setResponse(
+                "/.well-known/assetlinks.json",
+                String.format(
+                        """
+                                [{
+                                        "relation": ["delegate_permission/common.handle_all_urls"],
+                                        "target": {
+                                                "namespace": "android_app",
+                                                "package_name": "%s",
+                                                "sha256_cert_fingerprints": ["%s"]
+                                        }
+                                }]
+                        """,
+                        BuildInfo.getInstance().hostPackageName,
+                        BuildInfo.getInstance().getHostSigningCertSha256()),
+                null);
     }
 
     interface IframeCookieSupplier {

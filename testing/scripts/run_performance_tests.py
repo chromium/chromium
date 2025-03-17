@@ -190,6 +190,12 @@ def IsWindows():
   return sys.platform == 'cygwin' or sys.platform.startswith('win')
 
 
+def get_abs_user_path(user_path):
+  if user_path is None:
+    return None
+  return os.path.abspath(os.path.expanduser(user_path))
+
+
 class GtestCommandGenerator(object):
 
   def __init__(self,
@@ -723,6 +729,7 @@ class CrossbenchTest(object):
   ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
   BENCHMARK_FILESERVERS = {
+      'speedometer_3.1': 'third_party/speedometer/v3.1',
       'speedometer_3.0': 'third_party/speedometer/v3.0',
       'speedometer_2.1': 'third_party/speedometer/v2.1',
       'speedometer_2.0': 'third_party/speedometer/v2.0'
@@ -731,11 +738,18 @@ class CrossbenchTest(object):
   def __init__(self, options, isolated_out_dir):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
-    browser_arg = _get_browser_arg(options.passthrough_args)
-    self.is_android = _is_android(browser_arg)
-    self._find_browser(browser_arg)
-    self.driver_path_arg = self._find_chromedriver(browser_arg)
     self.network = self._get_network_arg(options.passthrough_args)
+    if self.options.luci_chromium:
+      # In luci.chromium the Chrome and driver are in the user path.
+      self.browser = '--browser=%s' % get_abs_user_path('chrome')
+      driver_path = get_abs_user_path('chromedriver')
+      self.driver_path_arg = [f'--driver-path={driver_path}']
+      self.is_android = False
+    else:
+      browser_arg = _get_browser_arg(options.passthrough_args)
+      self.is_android = _is_android(browser_arg)
+      self._find_browser(browser_arg)
+      self.driver_path_arg = self._find_chromedriver(browser_arg)
 
   def _get_network_arg(self, args):
     if _arg := _get_arg(args, '--network='):
@@ -832,6 +846,8 @@ class CrossbenchTest(object):
     if not self.is_android:
       # See http://shortn/_xGSaVM9P5g
       default_args.append('--enable-field-trial-config')
+    if self.options.luci_chromium:
+      default_args.append('--headless')
     return default_args
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
@@ -881,10 +897,15 @@ class CrossbenchTest(object):
       print(traceback.format_exc())
       infra_failure = True
 
-    write_simple_test_results(return_code, output_paths.test_results,
-                              display_name)
-    if not is_unittest:
-      upload_simple_test_results(return_code, display_name)
+    if self.options.luci_chromium:
+      write_simple_test_results(return_code,
+                                self.options.isolated_script_test_output,
+                                display_name)
+    else:
+      write_simple_test_results(return_code, output_paths.test_results,
+                                display_name)
+      if not is_unittest:
+        upload_simple_test_results(return_code, display_name)
 
     print_duration(f'Executing benchmark: {benchmark}', start)
 
@@ -1034,6 +1055,11 @@ def parse_arguments(args):
                       required=False)
   parser.add_argument('--no-output-conversion',
                       help='If supplied, trace conversion is not done.',
+                      action='store_true',
+                      required=False,
+                      default=False)
+  parser.add_argument('--luci-chromium',
+                      help='Whether the test runs in `luci.chromium` (CQ/CI).',
                       action='store_true',
                       required=False,
                       default=False)

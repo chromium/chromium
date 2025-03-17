@@ -126,4 +126,16 @@ TEST(PredictTest, ExplicitBoolConversion) {
   if (ABSL_PREDICT_FALSE(is_false)) ADD_FAILURE();
 }
 
+// This verifies that ABSL_ASSUME compiles in a variety of contexts.
+// It does not test optimization.
+TEST(AbslAssume, Compiles) {
+  int x = 0;
+  ABSL_ASSUME(x >= 0);
+  EXPECT_EQ(x, 0);
+
+  // https://github.com/abseil/abseil-cpp/issues/1814
+  ABSL_ASSUME(x >= 0), (x >= 0) ? ++x : --x;
+  EXPECT_EQ(x, 1);
+}
+
 }  // namespace

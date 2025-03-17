@@ -27,14 +27,18 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   ~PrerenderHandleImpl() override;
 
   // PrerenderHandle:
+  int32_t GetHandleId() const override;
   const GURL& GetInitialPrerenderingUrl() const override;
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
   void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) override;
-  void SetActivationCallback(base::OnceClosure activation_callback) override;
+  void AddActivationCallback(base::OnceClosure activation_callback) override;
+  void AddErrorCallback(base::OnceClosure error_callback) override;
+  bool IsValid() const override;
 
   // PrerenderHost::Observer:
   void OnActivated() override;
+  void OnFailed(PrerenderFinalStatus status) override;
 
   FrameTreeNodeId frame_tree_node_id_for_testing() const {
     return frame_tree_node_id_;
@@ -43,6 +47,8 @@ class PrerenderHandleImpl final : public PrerenderHandle,
  private:
   PrerenderHost* GetPrerenderHost();
 
+  const int handle_id_;
+
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
   // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered
   // page.
@@ -50,8 +56,11 @@ class PrerenderHandleImpl final : public PrerenderHandle,
 
   const GURL prerendering_url_;
 
-  bool was_activated_ = false;
-  base::OnceClosure activation_callback_;
+  enum class State { kValid, kActivated, kCanceled };
+  State state_ = State::kValid;
+
+  std::vector<base::OnceClosure> activation_callbacks_;
+  std::vector<base::OnceClosure> error_callbacks_;
 
   base::WeakPtrFactory<PrerenderHandle> weak_factory_{this};
 };

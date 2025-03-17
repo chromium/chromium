@@ -22,7 +22,6 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/navigation_type.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -391,7 +390,6 @@ class ShowPopupWidgetWaiter
     void ShowPopupMenu(
         mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
         const gfx::Rect& bounds,
-        int32_t item_height,
         double font_size,
         int32_t selected_item,
         std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -828,20 +826,39 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents);
 // against its view.
 void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
 
-// Blocks the current execution until the frame submitted via the browser's
-// compositor is presented on the screen.
-void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
-
-// Forces the browser to submit a compositor frame, even if nothing has changed
-// in the viewport. Use `WaitForBrowserCompositorFramePresented()` to wait for
-// the frame's presentation.
-void ForceNewCompositorFrameFromBrowser(WebContents* web_contents);
-
 // Sets up a /redirect-on-second-navigation?url endpoint on the provided
 // `server`, which will return a 200 OK response for the first request, and
 // redirect the second request to `url` provided in the query param. This should
 // be called before starting `server`.
 void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server);
+
+// Forwards DidStartLoading calls to the provided callback.
+class LoadingStartObserver : public WebContentsObserver {
+ public:
+  using Callback = base::RepeatingCallback<void()>;
+
+  LoadingStartObserver(WebContents* web_contents, Callback callback);
+  ~LoadingStartObserver() override;
+
+ private:
+  void DidStartLoading() override;
+
+  Callback callback_;
+};
+
+// Forwards DidStopLoading calls to the provided callback.
+class LoadingStopObserver : public WebContentsObserver {
+ public:
+  using Callback = base::RepeatingCallback<void()>;
+
+  LoadingStopObserver(WebContents* web_contents, Callback callback);
+  ~LoadingStopObserver() override;
+
+ private:
+  void DidStopLoading() override;
+
+  Callback callback_;
+};
 
 }  // namespace content
 

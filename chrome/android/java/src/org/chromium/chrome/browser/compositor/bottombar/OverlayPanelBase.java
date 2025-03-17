@@ -20,8 +20,11 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -151,6 +154,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     // State provider for Desktop Window.
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BottomControlsStacker mBottomControlsStacker;
     private float mAppHeaderHeightDp;
 
     // ============================================================================================
@@ -163,17 +167,39 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for measuring
      *     controls.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
      */
     public OverlayPanelBase(
             Context context,
             float toolbarHeightDp,
             DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider) {
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull BottomControlsStacker bottomControlsStacker) {
         mContext = context;
         mToolbarHeightDp = toolbarHeightDp;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBottomControlsStacker = bottomControlsStacker;
         mPxToDp = 1.f / mContext.getResources().getDisplayMetrics().density;
+
+        mBrowserControlsStateProvider.addObserver(
+                new BrowserControlsStateProvider.Observer() {
+                    @Override
+                    public void onControlsOffsetChanged(
+                            int topOffset,
+                            int topControlsMinHeightOffset,
+                            boolean topControlsMinHeightChanged,
+                            int bottomOffset,
+                            int bottomControlsMinHeightOffset,
+                            boolean bottomControlsMinHeightChanged,
+                            boolean requestNewFrame,
+                            boolean isVisibilityForced) {
+                        if (mPanelState > PanelState.CLOSED) {
+                            updatePanelForHeight(mHeight);
+                        }
+                    }
+                });
 
         mBarMarginSide = BAR_ICON_SIDE_PADDING_DP;
         mBarMarginTop = BAR_ICON_TOP_PADDING_DP;
@@ -327,15 +353,48 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The current Y-position of the Overlay Panel.
      */
     protected float calculateOverlayPanelY() {
-        float bottomControlsHeight =
-                mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM
-                        ? mBrowserControlsStateProvider.getBottomControlsHeight()
-                                * (1 - mBrowserControlsStateProvider.getBrowserControlHiddenRatio())
-                        : 0;
         return getTabHeight()
                 + heightForNeverHideBrowserControls()
                 - mHeight
-                - bottomControlsHeight * mPxToDp;
+                - getBottomControlsStackHeightPx() * mPxToDp;
+    }
+
+    /**
+     * Gets the height of the set of visible bottom controls that the contextual search panel should
+     * stack on top of in its current state.
+     */
+    private float getBottomControlsStackHeightPx() {
+        if (mBottomControlsStacker == null) {
+            return 0.0f;
+        }
+        // The panel should:
+        // * Always stack on top of the readaloud player (since it can't overlay it)
+        // * Stack on top of the bottom toolbar when the panel is peeking; beyond peek height,
+        // it overlays the toolbar and thus does not need an upwards adjustment.
+        float bottomControlsHeightPx;
+        boolean readAloudVisible =
+                mBottomControlsStacker.isLayerVisible(LayerType.READ_ALOUD_PLAYER);
+        boolean effectivelyPeeked = findLargestPanelStateFromHeight(mHeight) == PanelState.PEEKED;
+        if (readAloudVisible) {
+            // A visible readaloud player implies browser controls are fully visible, so no need to
+            // multiply.
+            // TODO(https://crbug.com/397722355): this is only a partial solution; the ReadAloud
+            // player still overlaps the contextual search panel when it's expanded.
+            bottomControlsHeightPx =
+                    mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.READ_ALOUD_PLAYER);
+        } else if (effectivelyPeeked
+                && mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM) {
+            bottomControlsHeightPx =
+                    (mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR)
+                                    // Avoid counting the chin's height; it's already accounted for
+                                    // elsewhere.
+                                    - mBottomControlsStacker.getHeightFromLayerToBottom(
+                                            LayerType.BOTTOM_CHIN))
+                            * (1 - mBrowserControlsStateProvider.getBrowserControlHiddenRatio());
+        } else {
+            bottomControlsHeightPx = 0.0f;
+        }
+        return bottomControlsHeightPx;
     }
 
     /**

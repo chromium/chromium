@@ -9,14 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -34,11 +36,48 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+namespace {
+
+// Checks that `contents` is for glic, and that glic is attached.
+bool IsForGlic(content::WebContents* contents) {
+  content::WebContents* outer = contents->GetOutermostWebContents();
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          outer->GetBrowserContext());
+  if (glic_service) {
+    auto& window_controller = glic_service->window_controller();
+    return window_controller.attached_browser() &&
+           window_controller.GetWebContents() == outer;
+  }
+  return false;
+}
+
+// Combines IsForGlic with glic dev switch.
+bool UseGlicDevFlow(content::WebContents* contents) {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ::switches::kGlicDev) &&
+         IsForGlic(contents);
+}
+
+}  // namespace
 #endif
 
 const int CertificateSelector::kTableViewWidth = 500;
@@ -131,7 +170,7 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
   // |provider_names| and |identities_| are parallel arrays.
   // The entry at index |i| is the provider name for |identities_[i]|.
   std::vector<std::string> provider_names;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chromeos::CertificateProviderService* service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
@@ -178,6 +217,12 @@ CertificateSelector::~CertificateSelector() {
 
 // static
 bool CertificateSelector::CanShow(content::WebContents* web_contents) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (UseGlicDevFlow(web_contents)) {
+    return true;
+  }
+#endif
+
   content::WebContents* top_level_web_contents =
       constrained_window::GetTopLevelWebContents(web_contents);
   return web_modal::WebContentsModalDialogManager::FromWebContents(
@@ -185,6 +230,28 @@ bool CertificateSelector::CanShow(content::WebContents* web_contents) {
 }
 
 void CertificateSelector::Show() {
+#if BUILDFLAG(ENABLE_GLIC)
+  // In the event that glic is showing and glic-dev is enabled, always show the
+  // certificate picker on the glic window. This is not fully correct, but
+  // satisfies the main dev use case with minimal overhead.
+  if (UseGlicDevFlow(web_contents_)) {
+    glic::GlicKeyedService* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            web_contents_->GetBrowserContext());
+    // Technically there can be a TOCTTOU bug, but this is a dev-only flow we
+    // want to error out quickly.
+    CHECK(glic_service);
+    auto& window_controller = glic_service->window_controller();
+    Browser* browser = window_controller.attached_browser();
+    CHECK(browser);
+    SetModalType(ui::mojom::ModalType::kWindow);
+    constrained_window::CreateBrowserModalDialogViews(
+        this, browser->GetBrowserView().GetNativeWindow())
+        ->Show();
+    return;
+  }
+#endif
+
   constrained_window::ShowWebModalDialogViews(this, web_contents_);
 
   // TODO(isandrk): A certificate that was previously provided by *both* the
@@ -216,16 +283,16 @@ void CertificateSelector::InitWithText(
   AddChildView(std::move(text_label));
 
   std::vector<ui::TableColumn> columns;
-  columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SUBJECT_COLUMN,
-                                    ui::TableColumn::LEFT, -1, 0.4f));
-  columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_ISSUER_COLUMN,
-                                    ui::TableColumn::LEFT, -1, 0.2f));
+  columns.emplace_back(IDS_CERT_SELECTOR_SUBJECT_COLUMN, ui::TableColumn::LEFT,
+                       -1, 0.4f);
+  columns.emplace_back(IDS_CERT_SELECTOR_ISSUER_COLUMN, ui::TableColumn::LEFT,
+                       -1, 0.2f);
   if (show_provider_column_) {
-    columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_PROVIDER_COLUMN,
-                                      ui::TableColumn::LEFT, -1, 0.4f));
+    columns.emplace_back(IDS_CERT_SELECTOR_PROVIDER_COLUMN,
+                         ui::TableColumn::LEFT, -1, 0.4f);
   }
-  columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SERIAL_COLUMN,
-                                    ui::TableColumn::LEFT, -1, 0.2f));
+  columns.emplace_back(IDS_CERT_SELECTOR_SERIAL_COLUMN, ui::TableColumn::LEFT,
+                       -1, 0.2f);
   for (auto& column : columns) {
     column.sortable = true;
   }

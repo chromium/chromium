@@ -45,7 +45,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.size;
   }
 
-  static viz::MemoryBufferId memory_buffer_id(
+  static gpu::Mailbox memory_buffer_id(
       const viz::TransferableResource& resource) {
     return resource.memory_buffer_id();
   }
@@ -72,12 +72,17 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.is_overlay_candidate;
   }
 
-  static bool is_backed_by_surface_texture(
+  static bool is_low_latency_rendering(
+      const viz::TransferableResource& resource) {
+    return resource.is_low_latency_rendering;
+  }
+
+  static bool is_backed_by_surface_view(
       const viz::TransferableResource& resource) {
 #if BUILDFLAG(IS_ANDROID)
     // TransferableResource has this in an #ifdef, but mojo doesn't let us.
     // TODO(crbug.com/40496893)
-    return resource.is_backed_by_surface_texture;
+    return resource.is_backed_by_surface_view;
 #else
     return false;
 #endif
@@ -118,24 +123,6 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
 
   static bool Read(viz::mojom::TransferableResourceDataView data,
                    viz::TransferableResource* out);
-};
-
-template <>
-struct UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId> {
-  static viz::mojom::MemoryBufferIdDataView::Tag GetTag(
-      const viz::MemoryBufferId& memory_buffer_id);
-
-  static gpu::Mailbox mailbox(const viz::MemoryBufferId& memory_buffer_id) {
-    return absl::get<gpu::Mailbox>(memory_buffer_id);
-  }
-
-  static viz::SharedBitmapId shared_bitmap_id(
-      const viz::MemoryBufferId& memory_buffer_id) {
-    return absl::get<viz::SharedBitmapId>(memory_buffer_id);
-  }
-
-  static bool Read(viz::mojom::MemoryBufferIdDataView memory_buffer_id,
-                   viz::MemoryBufferId* out);
 };
 
 }  // namespace mojo

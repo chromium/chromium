@@ -11,9 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -57,7 +60,7 @@ void OnWebAppInstallShowInstallDialog(
     webapps::WebappInstallSource install_source,
     PwaInProductHelpState iph_state,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    std::vector<webapps::Screenshot> screenshots,
+    base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
@@ -75,11 +78,11 @@ void OnWebAppInstallShowInstallDialog(
                 .SetAppId(app_id));
       }
 #endif
-      if (!screenshots.empty()) {
+      if (screenshot_fetcher) {
         ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker), std::move(web_app_acceptance_callback),
-            std::move(screenshots), iph_state);
+            screenshot_fetcher, iph_state);
         return;
       } else if (web_app_info->is_diy_app) {
         ShowDiyAppInstallDialog(initiator_web_contents, std::move(web_app_info),
@@ -94,20 +97,19 @@ void OnWebAppInstallShowInstallDialog(
             iph_state);
         return;
       }
-    case WebAppInstallFlow::kCreateShortcut:
 #if BUILDFLAG(IS_CHROMEOS)
-    {
+    case WebAppInstallFlow::kCreateShortcut: {
       webapps::AppId app_id =
           web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id());
       metrics::structured::StructuredMetricsClient::Record(
           cros_events::AppDiscovery_Browser_CreateShortcut().SetAppId(app_id));
     }
-#endif
 
       ShowCreateShortcutDialog(initiator_web_contents, std::move(web_app_info),
                                std::move(install_tracker),
                                std::move(web_app_acceptance_callback));
       return;
+#endif
     case WebAppInstallFlow::kUnknown:
       NOTREACHED();
   }
@@ -190,9 +192,13 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(
-          web_contents, flow == WebAppInstallFlow::kCreateShortcut
-                            ? webapps::InstallTrigger::CREATE_SHORTCUT
-                            : webapps::InstallTrigger::MENU);
+          web_contents,
+#if BUILDFLAG(IS_CHROMEOS)
+          flow == WebAppInstallFlow::kCreateShortcut
+              ? webapps::InstallTrigger::CREATE_SHORTCUT
+              :
+#endif
+              webapps::InstallTrigger::MENU);
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       promoter->RegisterCurrentInstallForWebContents(install_source);
@@ -202,17 +208,18 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   // Appropriately set the fallback behavior to distinguish installation of DIY
   // apps with the create shortcut flow.
   FallbackBehavior fallback_behavior =
+#if BUILDFLAG(IS_CHROMEOS)
       flow == WebAppInstallFlow::kCreateShortcut
           ? FallbackBehavior::kAllowFallbackDataAlways
-          : FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
+          :
+#endif
+          FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
 
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
                      PwaInProductHelpState::kNotShown,
-                     std::move(install_tracker),
-                     data.has_value() ? std::move(data->screenshots)
-                                      : std::vector<webapps::Screenshot>()),
+                     std::move(install_tracker)),
       base::BindOnce(OnWebAppInstalled, std::move(callback)),
       fallback_behavior);
 }
@@ -259,12 +266,41 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
       install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite, install_source, iph_state,
-                     std::move(install_tracker),
-                     data.has_value() ? std::move(data->screenshots)
-                                      : std::vector<webapps::Screenshot>()),
+                     std::move(install_tracker)),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)),
       fallback_behavior);
   return true;
+}
+
+void ShowPwaInstallDialog(Browser* browser) {
+  CHECK(browser);
+
+  base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
+
+  content::WebContents* const web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
+
+  // Close PWA install IPH if it is showing.
+  PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown;
+  bool install_icon_clicked_after_iph_shown =
+      browser->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHDesktopPwaInstallFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  if (install_icon_clicked_after_iph_shown) {
+    iph_state = PwaInProductHelpState::kShown;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  metrics::structured::StructuredMetricsClient::Record(
+      metrics::structured::events::v2::cr_os_events::
+          AppDiscovery_Browser_OmniboxInstallIconClicked()
+              .SetIPHShown(install_icon_clicked_after_iph_shown));
+#endif
+
+  CreateWebAppFromManifest(web_contents,
+                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                           base::DoNothing(), iph_state);
 }
 
 void SetInstalledCallbackForTesting(WebAppInstalledCallback callback) {

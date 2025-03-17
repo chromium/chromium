@@ -76,6 +76,17 @@ class PrintingGetPrinterInfoFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("printing.getPrinterInfo", PRINTING_GETPRINTERINFO)
 };
 
+class PrintingGetJobStatusFunction : public ExtensionFunction {
+ protected:
+  ~PrintingGetJobStatusFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("printing.getJobStatus", PRINTING_GETJOBSTATUS)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINTING_API_H_

@@ -98,7 +98,7 @@ export class ChromeVoxPrefs {
     for (const pref in DEFAULT_PREFS) {
       prefs[pref] = LocalStorage.get(pref);
     }
-    for (const pref of SettingsManager.PREFS) {
+    for (const pref of SettingsManager.CHROMEVOX_PREFS) {
       prefs[pref] = SettingsManager.get(pref);
     }
     prefs = {...prefs, ...SettingsManager.getEventStreamFilters()};
@@ -111,7 +111,7 @@ export class ChromeVoxPrefs {
       SettingsManager.setEventStreamFilter(key, Boolean(value));
       return;
     }
-    if (SettingsManager.PREFS.includes(key)) {
+    if (SettingsManager.CHROMEVOX_PREFS.includes(key)) {
       SettingsManager.set(key, value);
       return;
     }

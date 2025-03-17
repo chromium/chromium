@@ -5,32 +5,25 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_LOADER_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_LOADER_H_
 
-#import <Foundation/Foundation.h>
-
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
 @class FaviconAttributes;
 
-namespace favicon {
-class LargeIconService;
-}
-
-// A class that manages asynchronously loading favicons or fallback attributes
-// from LargeIconService and caching them, given a URL.
+// A class that manages asynchronously loading favicons.
 class FaviconLoader : public KeyedService {
  public:
   // Type for completion block for FaviconForURL().
-  typedef void (^FaviconAttributesCompletionBlock)(FaviconAttributes*);
+  using FaviconAttributesCompletionBlock = void (^)(FaviconAttributes*);
 
-  explicit FaviconLoader(favicon::LargeIconService* large_icon_service);
+  FaviconLoader() = default;
 
   FaviconLoader(const FaviconLoader&) = delete;
   FaviconLoader& operator=(const FaviconLoader&) = delete;
 
-  ~FaviconLoader() override;
+  ~FaviconLoader() override = default;
 
   // Tries to find a FaviconAttributes in `favicon_cache_` with `page_url`:
   // If found, invokes `favicon_block_handler` and exits.
@@ -51,12 +44,12 @@ class FaviconLoader : public KeyedService {
   // TODO(crbug.com/40266381): Remove the `fallback_to_google_server` param, and
   // instead have FaviconLoader determine this internally, based on
   // `CanSendHistoryData()`.
-  void FaviconForPageUrl(
+  virtual void FaviconForPageUrl(
       const GURL& page_url,
       float size_in_points,
       float min_size_in_points,
       bool fallback_to_google_server,
-      FaviconAttributesCompletionBlock favicon_block_handler);
+      FaviconAttributesCompletionBlock favicon_block_handler) = 0;
 
   // Tries to find a FaviconAttributes in `favicon_cache_` with `page_url`:
   // If found, invokes `favicon_block_handler` and exits.
@@ -66,10 +59,10 @@ class FaviconLoader : public KeyedService {
   //   1. Use `large_icon_service_` to fetch from local DB managed by
   //      HistoryService;
   //   2. Create a favicon base on the fallback style from `large_icon_service`.
-  void FaviconForPageUrlOrHost(
+  virtual void FaviconForPageUrlOrHost(
       const GURL& page_url,
       float size_in_points,
-      FaviconAttributesCompletionBlock favicon_block_handler);
+      FaviconAttributesCompletionBlock favicon_block_handler) = 0;
 
   // Tries to find a FaviconAttributes in `favicon_cache_` with `icon_url`:
   // If found, invokes `favicon_block_handler` and exits.
@@ -79,31 +72,17 @@ class FaviconLoader : public KeyedService {
   //   1. Use `large_icon_service_` to fetch from local DB managed by
   //      HistoryService;
   //   2. Create a favicon base on the fallback style from `large_icon_service`.
-  void FaviconForIconUrl(
+  virtual void FaviconForIconUrl(
       const GURL& icon_url,
       float size_in_points,
       float min_size_in_points,
-      FaviconAttributesCompletionBlock favicon_block_handler);
+      FaviconAttributesCompletionBlock favicon_block_handler) = 0;
 
   // Cancel all incomplete requests.
-  void CancellAllRequests();
+  virtual void CancellAllRequests() = 0;
 
   // Return a weak pointer to the current object.
-  base::WeakPtr<FaviconLoader> AsWeakPtr();
-
- private:
-  // The LargeIconService used to retrieve favicon.
-  raw_ptr<favicon::LargeIconService> large_icon_service_;
-
-  // Tracks tasks sent to FaviconService.
-  base::CancelableTaskTracker cancelable_task_tracker_;
-  // Holds cached favicons. This NSCache is populated as favicons or fallback
-  // attributes are retrieved from `large_icon_service_`. Contents will be
-  // removed during low-memory conditions based on its inherent LRU removal
-  // algorithm. Keyed by NSString of URL (page URL or icon URL) spec.
-  NSCache<NSString*, FaviconAttributes*>* favicon_cache_;
-
-  base::WeakPtrFactory<FaviconLoader> weak_ptr_factory_{this};
+  virtual base::WeakPtr<FaviconLoader> AsWeakPtr() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_LOADER_H_

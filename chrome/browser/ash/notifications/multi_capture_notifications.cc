@@ -20,8 +20,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -144,8 +144,7 @@ MultiCaptureNotifications::NotificationMetadata::~NotificationMetadata() =
 
 MultiCaptureNotifications::MultiCaptureNotifications() {
   DCHECK(Shell::HasInstance());
-  multi_capture_service_client_observation_.Observe(
-      Shell::Get()->multi_capture_service_client());
+  multi_capture_observation_.Observe(Shell::Get()->multi_capture_service());
   login_state_observation_.Observe(LoginState::Get());
 }
 
@@ -190,8 +189,8 @@ void MultiCaptureNotifications::MultiCaptureStopped(const std::string& label) {
   }
 }
 
-void MultiCaptureNotifications::MultiCaptureServiceClientDestroyed() {
-  multi_capture_service_client_observation_.Reset();
+void MultiCaptureNotifications::MultiCaptureServiceDestroyed() {
+  multi_capture_observation_.Reset();
   for (const auto& [label, notification_metadata] : notifications_metadata_) {
     SystemNotificationHelper::GetInstance()->Close(
         /*notification_id=*/notification_metadata.id);

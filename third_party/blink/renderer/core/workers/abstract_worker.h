@@ -68,6 +68,16 @@ class CORE_EXPORT AbstractWorker
   // Helper function that converts a URL to an absolute URL and checks the
   // result for validity.
   static KURL ResolveURL(ExecutionContext*, const String& url, ExceptionState&);
+
+  // Check whether the |script_url| is allowed by CSP.
+  // When kNoThrowForCSPBlockedWorker is disabled, this method is no-op and
+  // returns true. The CSP check is done in ResolveURL() instead.
+  // When kNoThrowForCSPBlockedWorker is enabled, if it is allowed, the
+  // function returns true. Otherwise, the function posts a task to dispatch
+  // an error event to the worker and returns false.
+  bool CheckAllowedByCSPForNoThrow(const KURL& script_url);
+
+  void DispatchErrorEvent();
 };
 
 }  // namespace blink

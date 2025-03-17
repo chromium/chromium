@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ShortcutSearchHandler, ShortcutSearchHandlerInterface} from '../shortcut_types.js';
+import type {ShortcutSearchHandlerInterface} from '../shortcut_types.js';
+import {ShortcutSearchHandler} from '../shortcut_types.js';
 
 /**
  * @fileoverview

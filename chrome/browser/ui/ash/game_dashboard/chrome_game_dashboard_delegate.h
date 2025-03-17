@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_GAME_DASHBOARD_CHROME_GAME_DASHBOARD_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_GAME_DASHBOARD_CHROME_GAME_DASHBOARD_DELEGATE_H_
 
-#include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-shared.h"
 
 namespace arc {
 class CompatModeButtonController;

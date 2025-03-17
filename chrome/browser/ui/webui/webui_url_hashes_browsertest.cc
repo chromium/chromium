@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(WebUIUrlHashesBrowserTest, UrlsInHistogram) {
     std::string url = config_info.origin.Serialize() + "/";
     uint32_t hash = base::Hash(url);
     std::string hash_string =
-        base::NumberToString(static_cast<base::HistogramBase::Sample>(hash));
+        base::NumberToString(static_cast<base::HistogramBase::Sample32>(hash));
     if (!webui_metrics::IsValidWebUIUrlHashes(hash_string)) {
       missing_entries.push_back(base::StrCat(
           {"  <int value=\"", hash_string, "\" label=\"", url, "\"/>"}));
@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(WebUIUrlHashesBrowserTest, UrlsInHistogram) {
   }
   EXPECT_TRUE(missing_entries.empty())
       << "Please add this line to enum WebUIUrlHashes in "
-         "//tools/metrics/histograms/enums.xml:"
+         "//tools/metrics/histograms/metadata/ui/enums.xml:"
       << std::endl
       << base::JoinString(missing_entries, "\n");
 }

@@ -4,12 +4,12 @@
 
 #include "base/os_compat_android.h"
 
-#include <array>
-
 #include <asm/unistd.h>
 #include <errno.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+
+#include <array>
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
@@ -23,8 +23,8 @@ int futimes(int fd, const struct timeval tv_ptr[2]) {
 
   // SAFETY: The caller is required to give an array of two elements.
   auto tv = UNSAFE_BUFFERS(base::span(tv_ptr, 2u));
-  if (tv[0].tv_usec < 0 || tv[0].tv_usec >= 1000000 ||
-      tv[1].tv_usec < 0 || tv[1].tv_usec >= 1000000) {
+  if (tv[0].tv_usec < 0 || tv[0].tv_usec >= 1000000 || tv[1].tv_usec < 0 ||
+      tv[1].tv_usec >= 1000000) {
     errno = EINVAL;
     return -1;
   }

@@ -61,7 +61,6 @@ bool IsSystemWebUIHost(std::string_view host) {
       kChromeUISetTimeHost,
       kChromeUISmbCredentialsHost,
       kChromeUISmbShareHost,
-      kChromeUIVcTrayTesterHost,
   });
 
   return kHosts.contains(host);
@@ -172,7 +171,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
 #endif
 #endif
 #if BUILDFLAG(IS_ANDROID)
-      kChromeUIOfflineInternalsHost,
       kChromeUISnippetsInternalsHost,
       kChromeUIWebApksHost,
 #endif
@@ -214,7 +212,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
 #if BUILDFLAG(ENABLE_NACL)
       kChromeUINaClHost,
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       kChromeUIExtensionsHost,
       kChromeUIExtensionsInternalsHost,
 #endif

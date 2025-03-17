@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -71,6 +70,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
@@ -113,14 +113,12 @@ using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::Return;
 
-const char kObjectGuid[] = "12345";
-const char kAdUsername[] = "test_user@ad-domain.com";
 const char kNewUser[] = "new_test_user@gmail.com";
-const char kNewGaiaID[] = "11111";
+const GaiaId::Literal kNewGaiaID("11111");
 const char kExistingUser[] = "existing_test_user@gmail.com";
-const char kExistingGaiaID[] = "22222";
+const GaiaId::Literal kExistingGaiaID("22222");
 const char kManagedUser[] = "user@example.com";
-const char kManagedGaiaID[] = "33333";
+const GaiaId::Literal kManagedGaiaID("33333");
 const char kManager[] = "admin@example.com";
 const char kManagedDomain[] = "example.com";
 
@@ -248,8 +246,9 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     // Need to reset it manually so that we don't end up with CrosSettings
     // observer that wasn't removed.
     WizardController* controller = WizardController::default_controller();
-    if (controller && controller->current_screen())
+    if (controller && controller->current_screen()) {
       controller->current_screen()->Hide();
+    }
   }
 
   void ExpectLoginFailure() {
@@ -290,13 +289,10 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   std::unique_ptr<MockSigninUI> mock_signin_ui_;
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
 
-  const AccountId ad_account_id_ =
-      AccountId::AdFromUserEmailObjGuid(kAdUsername, kObjectGuid);
-
   const LoginManagerMixin::TestUserInfo new_user_{
-      AccountId::FromUserEmailGaiaId(kNewUser, GaiaId(kNewGaiaID))};
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
   const LoginManagerMixin::TestUserInfo existing_user_{
-      AccountId::FromUserEmailGaiaId(kExistingUser, GaiaId(kExistingGaiaID))};
+      AccountId::FromUserEmailGaiaId(kExistingUser, kExistingGaiaID)};
 
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoginManagerMixin login_manager_{&mixin_host_,
@@ -436,8 +432,9 @@ class ExistingUserControllerPublicSessionTest
     // Need to reset it manually so that we don't end up with CrosSettings
     // observer that wasn't removed.
     WizardController* controller = WizardController::default_controller();
-    if (controller && controller->current_screen())
+    if (controller && controller->current_screen()) {
       controller->current_screen()->Hide();
+    }
   }
 
   // user_manager::UserManager::Observer:
@@ -492,10 +489,12 @@ class ExistingUserControllerPublicSessionTest
     RefreshDevicePolicy();
 
     // Wait for ExistingUserController to read the updated settings.
-    if (runner1.get())
+    if (runner1.get()) {
       runner1->Run();
-    if (runner2.get())
+    }
+    if (runner2.get()) {
       runner2->Run();
+    }
   }
 
   void ConfigureAutoLogin() {
@@ -810,8 +809,9 @@ class ExistingUserControllerAuthFailureTest : public OobeBaseTest {
 
     auto authenticator_builder =
         std::make_unique<StubAuthenticatorBuilder>(user_context);
-    if (failure_reason != AuthFailure::NONE)
+    if (failure_reason != AuthFailure::NONE) {
       authenticator_builder->SetUpAuthFailure(failure_reason);
+    }
 
     test::UserSessionManagerTestApi(UserSessionManager::GetInstance())
         .InjectAuthenticatorBuilder(std::move(authenticator_builder));
@@ -970,9 +970,9 @@ class ExistingUserControllerProfileTest : public LoginManagerTest {
   }
 
   const LoginManagerMixin::TestUserInfo not_managed_user_{
-      AccountId::FromUserEmailGaiaId(kNewUser, GaiaId(kNewGaiaID))};
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };

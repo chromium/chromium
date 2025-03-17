@@ -13,7 +13,6 @@
 #include "base/memory/values_equivalent.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "cc/paint/draw_image.h"
@@ -702,7 +701,7 @@ bool MatrixConvolutionPaintFilter::EqualsForTesting(
     const MatrixConvolutionPaintFilter& other) const {
   return OneInputPaintFilter::EqualsForTesting(other) &&
          kernel_size_ == other.kernel_size_ &&
-         base::ranges::equal(kernel_, other.kernel_) && gain_ == other.gain_ &&
+         std::ranges::equal(kernel_, other.kernel_) && gain_ == other.gain_ &&
          bias_ == other.bias_ && kernel_offset_ == other.kernel_offset_ &&
          tile_mode_ == other.tile_mode_ &&
          convolve_alpha_ == other.convolve_alpha_;
@@ -983,10 +982,10 @@ sk_sp<PaintFilter> MergePaintFilter::SnapshotWithImagesInternal(
 }
 
 bool MergePaintFilter::EqualsForTesting(const MergePaintFilter& other) const {
-  return base::ranges::equal(
-      inputs_, other.inputs_, [](const auto& a, const auto& b) {
-        return AreValuesEqualForTesting(a, b);  // IN-TEST
-      });
+  return std::ranges::equal(inputs_, other.inputs_,
+                            [](const auto& a, const auto& b) {
+                              return AreValuesEqualForTesting(a, b);  // IN-TEST
+                            });
 }
 
 MorphologyPaintFilter::MorphologyPaintFilter(MorphType morph_type,

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -52,8 +53,14 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
 
@@ -67,11 +74,6 @@ const int kManagedUserNoticeConfirmationUpdatedDialogHeight = 560;
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
 const int kSigninErrorDialogHeight = 164;
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const int kReauthDialogWidth = 540;
-const int kReauthDialogHeight = 520;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
   // If sync is disabled, then the sync confirmation dialog looks like an error
@@ -143,16 +145,6 @@ SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 std::unique_ptr<views::WebView>
-SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
-    Browser* browser,
-    signin_metrics::ReauthAccessPoint access_point) {
-  return CreateDialogWebView(browser, GetReauthConfirmationURL(access_point),
-                             kReauthDialogHeight, kReauthDialogWidth,
-                             InitializeSigninWebDialogUI(false));
-}
-
-// static
-std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     Browser* browser,
     bool is_local_profile_creation,
@@ -176,6 +168,31 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
   web_ui->Initialize(
       base::BindOnce(&CloseModalSigninInBrowser, browser->AsWeakPtr(),
                      show_profile_switch_iph, show_supervised_user_iph));
+  return web_view;
+}
+
+// static
+std::unique_ptr<views::WebView>
+SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
+    Browser* browser,
+    ChromeSignoutConfirmationPromptVariant variant,
+    SignoutConfirmationCallback callback) {
+  // Set an initial height of 0 since the actual dialog's height will be set
+  // dynamically based on its contents, so the initial height does not matter.
+  std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
+      browser, GURL(chrome::kChromeUISignoutConfirmationURL),
+      /*dialog_height=*/0, kModalDialogWidth,
+      InitializeSigninWebDialogUI(false));
+  web_view->SetProperty(
+      views::kElementIdentifierKey,
+      SigninViewController::kSignoutConfirmationDialogViewElementId);
+
+  SignoutConfirmationUI* web_ui = web_view->GetWebContents()
+                                      ->GetWebUI()
+                                      ->GetController()
+                                      ->GetAs<SignoutConfirmationUI>();
+  DCHECK(web_ui);
+  web_ui->Initialize(browser, variant, std::move(callback));
   return web_view;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -298,12 +315,32 @@ SigninViewControllerDelegateViews::GetWebContentsModalDialogHost() {
   return browser_->window()->GetWebContentsModalDialogHost();
 }
 
+void SigninViewControllerDelegateViews::OnViewAddedToWidget(
+    View* observed_view) {
+  DCHECK_EQ(observed_view, content_view_);
+
+  // If the web view contains a WebUI, explicitly set the corner radii to clip
+  // the WebUI contents within the corner radii.
+  // Workaround for crbug.com/358379367.
+  if (content_view_->GetWebContents() &&
+      content_view_->GetWebContents()->GetWebUI()) {
+    content_view_->holder()->SetCornerRadii(
+        gfx::RoundedCornersF(GetCornerRadius()));
+  }
+}
+
+void SigninViewControllerDelegateViews::OnViewIsDeleting(View* observed_view) {
+  DCHECK_EQ(observed_view, content_view_);
+  content_view_observation_.Reset();
+}
+
 SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     std::unique_ptr<views::WebView> content_view,
     Browser* browser,
     ui::mojom::ModalType dialog_modal_type,
     bool wait_for_size,
     bool should_show_close_button,
+    bool animate_on_resize,
     bool delete_profile_on_cancel,
     base::ScopedClosureRunner on_closed_callback)
     : content_view_(content_view.get()),
@@ -316,26 +353,32 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
       << "A tab must be active to present the sign-in modal dialog.";
   DCHECK(content_view_);
+  content_view_observation_.Observe(content_view_);
 
   // Use the layout manager of `this` to automatically translate its preferred
   // size to the owning Widget.
   SetLayoutManager(std::make_unique<WidgetAutoResizingLayout>());
-  // `AnimatingLayoutManager` resizes `animated_view` to match `content_view`'s
-  // preferred size with animation.
-  views::View* animated_view = AddChildView(std::make_unique<views::View>());
-  views::AnimatingLayoutManager* animating_layout =
-      animated_view->SetLayoutManager(
-          std::make_unique<views::AnimatingLayoutManager>());
-  animating_layout
-      ->SetBoundsAnimationMode(
-          views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateMainAxis)
-      .SetOrientation(views::LayoutOrientation::kVertical);
-  // Using `FlexLayout` because `AnimatingLayoutManager` doesn't work properly
-  // with `FillLayout`.
-  auto* flex_layout = animating_layout->SetTargetLayoutManager(
-      std::make_unique<views::FlexLayout>());
-  flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
-  animated_view->AddChildView(std::move(content_view));
+
+  if (animate_on_resize) {
+    // `AnimatingLayoutManager` resizes `animated_view` to match
+    // `content_view`'s preferred size with animation.
+    views::View* animated_view = AddChildView(std::make_unique<views::View>());
+    views::AnimatingLayoutManager* animating_layout =
+        animated_view->SetLayoutManager(
+            std::make_unique<views::AnimatingLayoutManager>());
+    animating_layout
+        ->SetBoundsAnimationMode(views::AnimatingLayoutManager::
+                                     BoundsAnimationMode::kAnimateMainAxis)
+        .SetOrientation(views::LayoutOrientation::kVertical);
+    // Using `FlexLayout` because `AnimatingLayoutManager` doesn't work properly
+    // with `FillLayout`.
+    auto* flex_layout = animating_layout->SetTargetLayoutManager(
+        std::make_unique<views::FlexLayout>());
+    flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
+    animated_view->AddChildView(std::move(content_view));
+  } else {
+    AddChildView(std::move(content_view));
+  }
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
@@ -414,8 +457,8 @@ void SigninViewControllerDelegateViews::DisplayModal() {
           this, host_web_contents);
       if (should_show_close_button_) {
         auto border = std::make_unique<views::BubbleBorder>(
-            views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-            kColorProfilesReauthDialogBorder);
+            views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+        border->SetColor(kColorProfilesReauthDialogBorder);
         GetBubbleFrameView()->SetBubbleBorder(std::move(border));
       }
       constrained_window::ShowModalDialog(
@@ -465,7 +508,8 @@ SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
           browser, style, is_sync_promo),
-      browser, ui::mojom::ModalType::kWindow, true, false);
+      browser, ui::mojom::ModalType::kWindow, true, false,
+      /*animate_on_resize=*/true);
 }
 
 // static
@@ -473,22 +517,11 @@ SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateSigninErrorDelegate(Browser* browser) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateSigninErrorWebView(browser),
-      browser, ui::mojom::ModalType::kWindow, true, false);
+      browser, ui::mojom::ModalType::kWindow, true, false,
+      /*animate_on_resize=*/true);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// static
-SigninViewControllerDelegate*
-SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
-    Browser* browser,
-    const CoreAccountId& account_id,
-    signin_metrics::ReauthAccessPoint access_point) {
-  return new SigninViewControllerDelegateViews(
-      SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
-          browser, access_point),
-      browser, ui::mojom::ModalType::kChild, false, true);
-}
-
 // static
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
@@ -501,7 +534,22 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
           browser, is_local_profile_creation, show_profile_switch_iph,
           show_supervised_user_iph),
       browser, ui::mojom::ModalType::kWindow, false, false,
-      is_local_profile_creation);
+      /*animate_on_resize=*/true, is_local_profile_creation);
+}
+
+// static
+SigninViewControllerDelegate*
+SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
+    Browser* browser,
+    ChromeSignoutConfirmationPromptVariant variant,
+    SignoutConfirmationCallback callback) {
+  // Don't have the native view animate resizes since the dialog contains WebUI
+  // elements that animate on resize.
+  return new SigninViewControllerDelegateViews(
+      SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
+          browser, variant, std::move(callback)),
+      browser, ui::mojom::ModalType::kWindow, true, false,
+      /*animate_on_resize=*/false);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -514,6 +562,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
         create_param) {
   bool profile_creation_required_by_policy =
       create_param->profile_creation_required_by_policy;
+  bool is_oidc_enrollment = create_param->is_oidc_account;
 
   if (profile_creation_required_by_policy &&
       base::FeatureList::IsEnabled(
@@ -573,9 +622,12 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
 
   // Block all navigations to avoid users bypassing the dialog using another
   // window.
+  // Does not block navigation to OIDC profile enrollment landing page since we
+  // need to display information there.
   if (profile_creation_required_by_policy &&
       base::FeatureList::IsEnabled(
-          features::kManagedProfileRequiredInterstitial)) {
+          features::kManagedProfileRequiredInterstitial) &&
+      !is_oidc_enrollment) {
     content::WebContents* active_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     // Reload the active web contents so that the managed profile required
@@ -599,6 +651,6 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
 
   return new SigninViewControllerDelegateViews(
       std::move(web_view), browser, ui::mojom::ModalType::kWindow, true, false,
-      false, std::move(on_closed_callback));
+      /*animate_on_resize=*/true, false, std::move(on_closed_callback));
 }
 #endif

@@ -34,6 +34,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/dcheck_is_on.h"
 #include "base/observer_list.h"
@@ -105,9 +106,6 @@ enum class WebFrameLoadType;
 struct ContextMenuData;
 struct WebAssociatedURLLoaderOptions;
 struct WebPrintParams;
-
-template <typename T>
-class WebVector;
 
 // Implementation of WebFrame, note that this is a reference counted object.
 class CORE_EXPORT WebLocalFrameImpl final
@@ -243,9 +241,15 @@ class CORE_EXPORT WebLocalFrameImpl final
       const gfx::Point& extent,
       WebFrame::TextGranularity = kCharacterGranularity) override;
   void MoveCaretSelection(const gfx::Point&) override;
+
+#if BUILDFLAG(IS_IOS)
+  void StartAutoscrollForSelectionToPoint(const gfx::PointF&);
+  void StopAutoscroll();
+#endif  // BUILDFLAG(IS_IOS)
+
   bool SetEditableSelectionOffsets(int start, int end) override;
   bool AddImeTextSpansToExistingText(
-      const WebVector<ui::ImeTextSpan>& ime_text_spans,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
       unsigned text_start,
       unsigned text_end) override;
   bool ClearImeTextSpansByType(ui::ImeTextSpan::Type type,
@@ -254,7 +258,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool SetCompositionFromExistingText(
       int composition_start,
       int composition_end,
-      const WebVector<ui::ImeTextSpan>& ime_text_spans) override;
+      const std::vector<ui::ImeTextSpan>& ime_text_spans) override;
   void ExtendSelectionAndDelete(int before, int after) override;
   void ExtendSelectionAndReplace(int before,
                                  int after,
@@ -271,9 +275,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   void ReplaceMisspelledRange(const WebString&) override;
   void RemoveSpellingMarkers() override;
   void RemoveSpellingMarkersUnderWords(
-      const WebVector<WebString>& words) override;
+      const std::vector<WebString>& words) override;
   WebContentSettingsClient* GetContentSettingsClient() const override;
   void SetContentSettingsClient(WebContentSettingsClient*) override;
+  const mojom::RendererContentSettingsPtr& GetContentSettings() const override;
   void ReloadImage(const WebNode&) override;
   bool IsAllowedToDownload() const override;
   bool IsCrossOriginToOutermostMainFrame() const override;
@@ -286,7 +291,7 @@ class CORE_EXPORT WebLocalFrameImpl final
                       bool wrap_within_frame,
                       bool async) override;
   void SetTickmarks(const WebElement& target,
-                    const WebVector<gfx::Rect>& tickmarks) override;
+                    const std::vector<gfx::Rect>& tickmarks) override;
   WebNode ContextMenuImageNode() const override;
   WebNode ContextMenuNode() const override;
   void CopyImageAtForTesting(const gfx::Point&) override;
@@ -325,7 +330,6 @@ class CORE_EXPORT WebLocalFrameImpl final
                            cc::PaintCanvas* canvas,
                            bool include_linked_destinations,
                            bool skip_accelerated_content) override;
-  bool ShouldSuppressKeyboardForFocusedElement() override;
   WebPerformanceMetricsForReporting PerformanceMetricsForReporting()
       const override;
   WebPerformanceMetricsForNestedContexts PerformanceMetricsForNestedContexts()
@@ -336,12 +340,12 @@ class CORE_EXPORT WebLocalFrameImpl final
   const std::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(
-      const WebVector<uint32_t>& pages) override;
+      const std::vector<uint32_t>& pages) override;
   gfx::Size SpoolSizeInPixelsForTesting(uint32_t page_count) override;
   void PrintPagesForTesting(
       cc::PaintCanvas*,
       const gfx::Size& spool_size_in_pixels,
-      const WebVector<uint32_t>* pages = nullptr) override;
+      const std::vector<uint32_t>* pages = nullptr) override;
   gfx::Rect GetSelectionBoundsRectForTesting() const override;
   gfx::Point GetPositionInViewportForTesting() const override;
   void WasHidden() override;
@@ -389,11 +393,12 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool is_browser_initiated,
       bool has_ua_visual_transition,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id) override;
+          soft_navigation_heuristics_task_id,
+      bool should_skip_screenshot) override;
   void SetIsNotOnInitialEmptyDocument() override;
   bool IsOnInitialEmptyDocument() override;
   void MaybeStartOutermostMainFrameNavigation(
-      const WebVector<WebURL>& urls) const override;
+      const std::vector<WebURL>& urls) const override;
   bool WillStartNavigation(const WebNavigationInfo&) override;
   void DidDropNavigation() override;
   void DownloadURL(
@@ -413,7 +418,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) override;
 
   bool IsFeatureEnabled(
-      const mojom::blink::PermissionsPolicyFeature&) const override;
+      const network::mojom::PermissionsPolicyFeature&) const override;
 
   void InitializeCoreFrame(
       Page&,
@@ -505,6 +510,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SendOrientationChangeEvent();
 
   WebDevToolsAgentImpl* DevToolsAgentImpl(bool create_if_necessary);
+  void OnDevToolsSessionConnectionChanged(bool attached);
 
   // Instructs devtools to pause loading of the frame as soon as it's shown
   // until explicit command from the devtools client. May only be called on a

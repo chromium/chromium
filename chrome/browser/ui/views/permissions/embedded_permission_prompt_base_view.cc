@@ -26,6 +26,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -137,7 +138,7 @@ void EmbeddedPermissionPromptBaseView::Show() {
 }
 
 const gfx::VectorIcon& EmbeddedPermissionPromptBaseView::GetIcon() const {
-  return gfx::kNoneIcon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 bool EmbeddedPermissionPromptBaseView::ShowLoadingIcon() const {
@@ -332,7 +333,7 @@ void EmbeddedPermissionPromptBaseView::AddRequestLine(
   AddElementIdentifierToLabel(*label, index);
 
   label->SetTextStyle(views::style::STYLE_BODY_3);
-  label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  label->SetEnabledColor(kColorPermissionPromptRequestText);
 
   line_container->SetProperty(views::kMarginsKey,
                               gfx::Insets().set_top(BODY_TOP_MARGIN));
@@ -356,7 +357,8 @@ void EmbeddedPermissionPromptBaseView::AddButton(
 }
 
 gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
-  if (GetPromptPosition() == PermissionElementPromptPosition::kLegacyPrompt) {
+  if (GetPromptPosition() == PermissionElementPromptPosition::kLegacyPrompt ||
+      !delegate_) {
     return views::BubbleDialogDelegateView::GetBubbleBounds();
   }
 

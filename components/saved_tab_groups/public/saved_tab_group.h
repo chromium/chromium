@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -46,6 +48,18 @@ class SavedTabGroup {
   SavedTabGroup(SavedTabGroup&& other);
   SavedTabGroup& operator=(SavedTabGroup&& other);
   ~SavedTabGroup();
+
+  // Contains metadata for a removed tab from the group.
+  struct RemovedTabMetadata {
+    RemovedTabMetadata();
+    ~RemovedTabMetadata();
+
+    // Gaia ID of the user who removed the tab. May be empty.
+    GaiaId removed_by;
+
+    // The time when the tab was removed on this device.
+    base::Time removal_time;
+  };
 
   // Metadata accessors.
   const base::Uuid& saved_guid() const { return saved_guid_; }
@@ -89,9 +103,19 @@ class SavedTabGroup {
 
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
+  bool is_transitioning_to_shared() const {
+    return is_transitioning_to_shared_;
+  }
   bool is_transitioning_to_saved() const { return is_transitioning_to_saved_; }
 
+  const std::map<base::Uuid, RemovedTabMetadata>& last_removed_tabs_metadata()
+      const {
+    return last_removed_tabs_metadata_;
+  }
+
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
+
+  bool is_hidden() const { return is_hidden_; }
 
   // Accessors for Tabs based on id.
   const SavedTabGroupTab* GetTab(const base::Uuid& saved_tab_guid) const;
@@ -142,6 +166,13 @@ class SavedTabGroup {
   // SetUpdatedByAttribution()).
   SavedTabGroup& SetCreatedByAttribution(GaiaId created_by);
 
+  // Sets whether the tab group should be hidden. A group is hidden in the
+  // following cases:
+  // 1. It has transitioned to shared.
+  // 2. It has transitioned to saved.
+  // 3. User has decided to leave or delete the group.
+  SavedTabGroup& SetIsHidden(bool is_hidden);
+
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
   // to the end. If the tab already exists, CHECK. If the tab was added locally
@@ -158,10 +189,12 @@ class SavedTabGroup {
   // was the last tab in the group: crbug/1371959. If the tab was removed
   // locally update the positions of all tabs in the group. Otherwise, leave the
   // order of the group as is. CHECKs that the removed tab is not the last tab,
-  // unless `ignore_empty_groups_for_testing` is true.
+  // unless `ignore_empty_groups_for_testing` is true. `removed_by` is the user
+  // who removed the tab, used for shared groups only and may be empty.
   SavedTabGroup& RemoveTabLocally(const base::Uuid& saved_tab_guid);
   SavedTabGroup& RemoveTabFromSync(
       const base::Uuid& saved_tab_guid,
+      GaiaId removed_by,
       bool ignore_empty_groups_for_testing = false);
 
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
@@ -202,8 +235,12 @@ class SavedTabGroup {
   // copied. This method should only be called on shared tab groups.
   SavedTabGroup CloneAsSavedTabGroup() const;
 
-  // Whether the TabGroup is pending sanitization.
-  bool IsPendingSanitization() const;
+  static size_t GetMaxLastRemovedTabsMetadataForTesting();
+
+  // Marks the tab group as transitioned to shared.
+  void MarkTransitionedToShared();
+
+  void MarkTransitioningToSharedForTesting();
 
  private:
   // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.
@@ -221,9 +258,9 @@ class SavedTabGroup {
   void UpdateTabPositionsImpl();
 
   // Removes `saved_tab_guid` from this group. CHECKs that the removed tab is
-  // not the last tab, unless `ignore_empty_groups_for_testing` is true.
+  // not the last tab, unless `allow_empty_groups` is true.
   void RemoveTabImpl(const base::Uuid& saved_tab_guid,
-                     bool ignore_empty_groups_for_testing = false);
+                     bool allow_empty_groups = false);
 
   // Make a copy the saved tab group, keeping fields like title, color, favicon
   // and all the tabs. UUID and local tab and group IDs are not copied.
@@ -276,6 +313,8 @@ class SavedTabGroup {
   // metrics.
   base::Time last_user_interaction_time_;
 
+  // Fields below are only used for shared tab groups.
+
   // Collaboration ID in case if the group is shared.
   std::optional<CollaborationId> collaboration_id_;
 
@@ -287,9 +326,21 @@ class SavedTabGroup {
   // Atribution data for the shared tab group.
   SharedAttribution shared_attribution_;
 
+  // Whether the tab group is transitioning from private to shared, but not yet
+  // completed. Can only be true if the tab group is currently shared.
+  bool is_transitioning_to_shared_ = false;
+
   // Whether the tab group is transitioning from shared to private, but not yet
   // completed. Can only be true if the tab group is currently shared.
   bool is_transitioning_to_saved_ = false;
+
+  // Whether a group has transitioned to a new group, either from shared to
+  // saved or vice versa. This is set on the source group.
+  bool is_hidden_ = false;
+
+  // The last removed tabs which were removed from this group. Used for shared
+  // tab groups only.
+  std::map<base::Uuid, RemovedTabMetadata> last_removed_tabs_metadata_;
 };
 
 }  // namespace tab_groups

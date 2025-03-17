@@ -355,8 +355,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         // http://crbug.com/316166.
         if (type != TabSelectionType.FROM_EXIT) {
             tab.show(type, TabLoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW);
-            tab.getId();
-            tab.isBeingRestored();
         }
     }
 

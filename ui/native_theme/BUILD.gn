@@ -5,20 +5,6 @@
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-component("features") {
-  output_name = "native_theme_features"
-
-  defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
-
-  sources = [
-    "native_theme_export.h",
-    "native_theme_features.cc",
-    "native_theme_features.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 component("native_theme") {
   sources = [
     "caption_style.cc",
@@ -47,8 +33,9 @@ component("native_theme") {
 
   if (is_mac) {
     frameworks = [
-      "CoreGraphics.framework",
+      "Accessibility.framework",
       "AppKit.framework",
+      "CoreGraphics.framework",
       "MediaAccessibility.framework",
     ]
     sources += [
@@ -79,10 +66,10 @@ component("native_theme") {
     ]
   }
 
-  defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
+  defines = [ "IS_NATIVE_THEME_IMPL" ]
 
   public_deps = [
-    ":features",
+    "features",
     "//skia",
   ]
 
@@ -104,7 +91,7 @@ component("native_theme") {
 
 if (is_win) {
   component("native_theme_browser") {
-    defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
+    defines = [ "IS_NATIVE_THEME_IMPL" ]
 
     # These files cannot work in the renderer on Windows.
     sources = [
@@ -147,6 +134,7 @@ test("native_theme_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "native_theme_base_unittest.cc",
     "native_theme_fluent_unittest.cc",
     "native_theme_unittest.cc",
   ]

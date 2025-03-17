@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -28,6 +28,14 @@ base::expected<PaymentsWindowManager::RedirectCompletionResult,
                PaymentsWindowManager::Vcn3dsAuthenticationResult>
 ParseUrlForVcn3ds(const GURL& url,
                   const Vcn3dsChallengeOptionMetadata& metadata);
+
+// Parses the URL for BNPL, which is set in `url`. `bnpl_context` contains the
+// expected URL's for a success or failure in the BNPL pop-up flow. If `url`
+// does not match any of them, it is assumed the flow has not yet completed.
+// This function will return the flow status for `url` inside of the pop-up.
+PaymentsWindowManager::BnplPopupStatus ParseUrlForBnpl(
+    const GURL& url,
+    const PaymentsWindowManager::BnplContext& bnpl_context);
 
 // Creates UnmaskRequestDetails specific to VCN 3DS. `client` is the
 // AutofillClient associated with the original browser window. `context` is the

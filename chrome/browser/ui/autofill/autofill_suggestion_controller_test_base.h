@@ -247,10 +247,6 @@ class AutofillSuggestionControllerForTest
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
       const gfx::RectF& element_bounds
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
-#endif
   );
   ~AutofillSuggestionControllerForTest() override;
 

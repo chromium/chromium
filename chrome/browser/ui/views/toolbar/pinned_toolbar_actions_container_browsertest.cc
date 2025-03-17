@@ -10,11 +10,14 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -28,16 +31,24 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
  public:
   PinnedToolbarActionsContainerBrowserTest() = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kToolbarPinning);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
     views::test::WaitForAnimatingLayoutManager(container());
+    // OS integration is needed to be able to launch web applications. This
+    // override ensures OS integration doesn't leave any traces.
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+
+  void TearDownOnMainThread() override {
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      web_app::test::UninstallAllWebApps(profile);
+    }
+    override_registration_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   content::WebContents* GetWebContents() {
@@ -72,15 +83,23 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
     return browser;
   }
 
+  WebAppFrameToolbarTestHelper& toolbar_helper() {
+    return web_app_frame_toolbar_helper_;
+  }
+
  protected:
-  base::test::ScopedFeatureList feature_list_;
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanBeCalledFromNewTabPage) {
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
       browser(), actions::kActionCut, container());
-  pinned_button->ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR, 0);
+  pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -97,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanBeCalledFromNonNewTabPage) {
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
       browser(), actions::kActionCut, container());
-  pinned_button->ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR, 0);
+  pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
@@ -116,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   AddBlankTabAndShow(incognito_browser);
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
       incognito_browser, actions::kActionCut, container());
-  EXPECT_FALSE(
-      pinned_button->IsCommandIdEnabled(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR));
+  EXPECT_FALSE(pinned_button->menu_model()->IsEnabledAt(2));
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
@@ -209,4 +227,31 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 
   prefs->SetBoolean(prefs::kQRCodeGeneratorEnabled, false);
   EXPECT_EQ(button->GetEnabled(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       NoPinnedButtonsInWebApps) {
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(browser()->profile());
+
+  // Pin a few buttons and verify they exist.
+  actions_model->UpdatePinnedState(kActionShowTranslate, true);
+  actions_model->UpdatePinnedState(kActionSidePanelShowBookmarks, true);
+  actions_model->UpdatePinnedState(kActionPrint, true);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(container()->IsActionPinned(kActionShowTranslate), true);
+  EXPECT_EQ(container()->IsActionPinned(kActionSidePanelShowBookmarks), true);
+  EXPECT_EQ(container()->IsActionPinned(kActionPrint), true);
+
+  // Open a web app and verify none of the buttons previously pinned exist.
+  const GURL app_url("https://test.org");
+  toolbar_helper().InstallAndLaunchWebApp(browser(), app_url);
+  PinnedToolbarActionsContainer* web_app_container =
+      toolbar_helper()
+          .web_app_frame_toolbar()
+          ->GetPinnedToolbarActionsContainer();
+  EXPECT_EQ(web_app_container->IsActionPinned(kActionShowTranslate), false);
+  EXPECT_EQ(web_app_container->IsActionPinned(kActionSidePanelShowBookmarks),
+            false);
+  EXPECT_EQ(web_app_container->IsActionPinned(kActionPrint), false);
 }

@@ -96,19 +96,6 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
     kMultipartFormData  // for multipart/form-data
   };
 
-  enum class FormDataType {
-    // Has only data elements.
-    kDataOnly,
-    // Can have data, file, and blob elements (no data pipes).
-    kDataAndEncodedFileOrBlob,
-    // Can have data and data pipe elements (no files and blobs).
-    kDataAndDataPipe,
-    // None of above.
-    kInvalid
-  };
-
-  FormDataType GetType() const;
-
   static scoped_refptr<EncodedFormData> Create();
   static scoped_refptr<EncodedFormData> Create(base::span<const uint8_t>);
   static scoped_refptr<EncodedFormData> Create(base::span<const char> chars) {

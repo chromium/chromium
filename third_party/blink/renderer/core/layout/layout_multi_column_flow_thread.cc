@@ -896,8 +896,8 @@ static inline bool NeedsToReinsertIntoFlowThread(
   // re-evaluate the need for column sets. There may be out-of-flow descendants
   // further down that become part of the flow thread, or cease to be part of
   // the flow thread, because of this change.
-  if (object.ComputeIsFixedContainer(&old_style) !=
-      object.ComputeIsFixedContainer(&new_style)) {
+  if (object.ComputeIsFixedContainer(old_style) !=
+      object.ComputeIsFixedContainer(new_style)) {
     return true;
   }
   return old_style.GetPosition() != new_style.GetPosition();
@@ -1118,8 +1118,8 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
       if (!has_processed_first_column_in_flow_thread) {
         // The offset of the flow thread is the same as that of the first
         // column.
-        frame_location_ = LayoutBoxUtils::ComputeLocation(
-            child_fragment, link.Offset(), container_fragment, break_token);
+        frame_location_ = ComputeBoxLocation(child_fragment, link.Offset(),
+                                             container_fragment, break_token);
 
         thread_size.inline_size = logical_size.inline_size;
         has_processed_first_column_in_flow_thread = true;

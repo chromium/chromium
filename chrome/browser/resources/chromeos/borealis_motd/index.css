@@ -1,0 +1,29 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  font-family: Google Sans;
+  margin: 0;
+}
+
+#main {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  padding: 36px 40px 36px 40px;
+  width: 100%;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+}
+
+h2 {
+  text-align: center;
+}
+
+button {
+  text-align: center;
+  padding 0 16px;
+  height: 36px;
+}

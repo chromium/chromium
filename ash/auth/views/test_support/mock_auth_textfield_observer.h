@@ -6,7 +6,7 @@
 #define ASH_AUTH_VIEWS_TEST_SUPPORT_MOCK_AUTH_TEXTFIELD_OBSERVER_H_
 
 #include <cstdint>
-#include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_textfield.h"
@@ -21,7 +21,7 @@ class ASH_EXPORT MockAuthTextfieldObserver : public AuthTextfield::Observer {
 
   MOCK_METHOD(void, OnTextfieldBlur, (), (override));
   MOCK_METHOD(void, OnTextfieldFocus, (), (override));
-  MOCK_METHOD(void, OnContentsChanged, (const std::u16string&), (override));
+  MOCK_METHOD(void, OnContentsChanged, (std::u16string_view), (override));
   MOCK_METHOD(void, OnTextVisibleChanged, (bool), (override));
   MOCK_METHOD(void, OnSubmit, (), (override));
   MOCK_METHOD(void, OnEscape, (), (override));

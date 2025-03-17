@@ -30,13 +30,13 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
 #include "third_party/blink/public/web/web_serialized_script_value_version.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -645,10 +645,10 @@ void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
 
 bool SerializedScriptValue::IsLockedToAgentCluster() const {
   return !wasm_modules_.empty() || !shared_array_buffers_contents_.empty() ||
-         base::ranges::any_of(attachments_,
-                              [](const auto& entry) {
-                                return entry.value->IsLockedToAgentCluster();
-                              }) ||
+         std::ranges::any_of(attachments_,
+                             [](const auto& entry) {
+                               return entry.value->IsLockedToAgentCluster();
+                             }) ||
          shared_value_conveyor_.has_value();
 }
 
@@ -662,7 +662,7 @@ bool SerializedScriptValue::CanDeserializeIn(
   RETURN_IF_ERROR(reader.SkipToTrailer(), [](auto) { return false; });
   RETURN_IF_ERROR(reader.Read(), [](auto) { return false; });
   auto& factory = SerializedScriptValueFactory::Instance();
-  bool result = base::ranges::all_of(
+  bool result = std::ranges::all_of(
       reader.required_exposed_interfaces(), [&](SerializationTag tag) {
         return factory.ExecutionContextExposesInterface(execution_context, tag);
       });

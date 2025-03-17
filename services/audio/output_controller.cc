@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -18,14 +19,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/media_buildflags.h"
 #include "services/audio/device_listener_output_stream.h"
-#include "services/audio/stream_monitor.h"
 
 namespace audio {
 
@@ -87,7 +87,7 @@ OutputController::ErrorStatisticsTracker::~ErrorStatisticsTracker() {
     controller_->SendLogMessage("StopStream => (duration=%" PRId64 " sec)",
                                 duration.InSeconds());
     controller_->SendLogMessage("StopStream => (error_during_callback=%s)",
-                                error_during_callback_ ? "true" : "false");
+                                base::ToString(error_during_callback_).c_str());
   }
 }
 
@@ -522,7 +522,7 @@ void OutputController::StopSnooping(Snooper* snooper) {
 
   // The list will only update on this thread, and only be read on the realtime
   // audio thread.
-  const auto it = base::ranges::find(snoopers_, snooper);
+  const auto it = std::ranges::find(snoopers_, snooper);
   CHECK(it != snoopers_.end(), base::NotFatalUntil::M130);
   // We also don't care about ordering, so swap and pop rather than erase.
   base::AutoLock lock(snooper_lock_);
@@ -554,7 +554,7 @@ void OutputController::ToggleLocalOutput() {
   disable_local_output_ = !disable_local_output_;
 
   SendLogMessage("%s({disable_local_output=%s} [state=%s])", __func__,
-                 disable_local_output_ ? "true" : "false",
+                 base::ToString(disable_local_output_).c_str(),
                  StateToString(state_));
 
   // If there is an active |stream_|, close it and re-create either: 1) a fake

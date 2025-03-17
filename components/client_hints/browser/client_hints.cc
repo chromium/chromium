@@ -31,7 +31,7 @@ namespace client_hints {
 
 namespace {
 base::flat_map<url::Origin, std::vector<network::mojom::WebClientHintsType>>
-ParseInitializeClientHintsStroage() {
+ParseInitializeClientHintsStorage() {
   auto results =
       base::flat_map<url::Origin,
                      std::vector<network::mojom::WebClientHintsType>>();
@@ -40,17 +40,17 @@ ParseInitializeClientHintsStroage() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kInitializeClientHintsStorage);
 
-  std::optional<base::Value> maybe_value =
-      base::JSONReader::Read(raw_client_hint_json);
+  std::optional<base::Value::Dict> maybe_value =
+      base::JSONReader::ReadDict(raw_client_hint_json);
 
-  if (!maybe_value || !maybe_value->is_dict()) {
+  if (!maybe_value) {
     LOG(WARNING)
         << "The 'initialize-client-hints-storage' switch value could not be "
         << "properly parsed.";
     return {};
   }
 
-  for (auto entry : maybe_value->GetDict()) {
+  for (auto entry : *maybe_value) {
     url::Origin origin = url::Origin::Create(GURL(entry.first));
     if (origin.opaque() || origin.scheme() != url::kHttpsScheme) {
       LOG(WARNING)
@@ -103,7 +103,7 @@ ClientHints::ClientHints(
   if (!context->IsOffTheRecord() &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kInitializeClientHintsStorage)) {
-    auto command_line_hints = ParseInitializeClientHintsStroage();
+    auto command_line_hints = ParseInitializeClientHintsStorage();
 
     for (const auto& origin_hints_pair : command_line_hints) {
       PersistClientHints(origin_hints_pair.first, nullptr,

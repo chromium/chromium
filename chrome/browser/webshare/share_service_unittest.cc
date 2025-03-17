@@ -96,7 +96,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     return result;
   }
 
-  bool IsDangerousFilename(base::FilePath::StringPieceType path) {
+  bool IsDangerousFilename(base::FilePath::StringViewType path) {
     return ShareServiceImpl::IsDangerousFilename(base::FilePath(path));
   }
 

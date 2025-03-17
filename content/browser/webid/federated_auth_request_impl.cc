@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 
+#include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -12,12 +14,13 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -50,8 +53,10 @@
 #include "crypto/sha2.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "url/gurl.h"
 
 using base::Value;
 using blink::mojom::DisconnectStatus;
@@ -101,6 +106,8 @@ static constexpr double kRejectionLogNormalSigma = 1.4;
 static constexpr char kDefaultFieldName[] = "name";
 static constexpr char kDefaultFieldEmail[] = "email";
 static constexpr char kDefaultFieldPicture[] = "picture";
+static constexpr char kFieldPhoneNumber[] = "phone";
+static constexpr char kFieldUsername[] = "username";
 
 static constexpr char kVcSdJwt[] = "vc+sd-jwt";
 
@@ -124,6 +131,12 @@ std::vector<std::string> DisclosureFieldsToStringList(
       case IdentityRequestDialogDisclosureField::kPicture:
         list.push_back(kDefaultFieldPicture);
         break;
+      case IdentityRequestDialogDisclosureField::kPhoneNumber:
+        list.push_back(kFieldPhoneNumber);
+        break;
+      case IdentityRequestDialogDisclosureField::kUsername:
+        list.push_back(kFieldUsername);
+        break;
     }
   }
   return list;
@@ -143,7 +156,6 @@ std::string ComputeUrlEncodedTokenPostDataForIssuers(
 
 std::string ComputeUrlEncodedTokenPostData(
     RenderFrameHost& render_frame_host,
-    const url::Origin& idp_origin,
     const std::string& client_id,
     const std::string& nonce,
     const std::string& account_id,
@@ -151,7 +163,8 @@ std::string ComputeUrlEncodedTokenPostData(
     const RpMode& rp_mode,
     const std::optional<std::vector<std::string>>& fields,
     const std::vector<std::string>& disclosure_shown_for,
-    const std::string& params_json) {
+    const std::string& params_json,
+    const std::optional<std::string>& type) {
   std::string query;
   if (!client_id.empty()) {
     query +=
@@ -177,7 +190,7 @@ std::string ComputeUrlEncodedTokenPostData(
   // disclosure text is not necessary. This field indicates in the request
   // whether the user has been shown such disclosure text.
   std::string disclosure_text_shown_param =
-      IsRequestingDefaultPermissions(disclosure_shown_for) ? "true" : "false";
+      base::ToString(IsRequestingDefaultPermissions(disclosure_shown_for));
   if (!query.empty()) {
     query += "&";
   }
@@ -186,7 +199,7 @@ std::string ComputeUrlEncodedTokenPostData(
   // Shares with IdP that whether the identity credential was automatically
   // selected. This could help developers to better comprehend the token
   // request and segment metrics accordingly.
-  std::string is_auto_selected = is_auto_reauthn ? "true" : "false";
+  std::string is_auto_selected = base::ToString(is_auto_reauthn);
   if (!query.empty()) {
     query += "&";
   }
@@ -201,7 +214,7 @@ std::string ComputeUrlEncodedTokenPostData(
     query += "mode=" + rp_mode_str;
   }
 
-  if (webid::IsFedCmAuthzEnabled(render_frame_host, idp_origin)) {
+  if (webid::IsFedCmAuthzEnabled()) {
     std::vector<std::string> fields_to_use;
     if (fields) {
       fields_to_use = *fields;
@@ -227,7 +240,9 @@ std::string ComputeUrlEncodedTokenPostData(
                base::EscapeUrlEncodedData(params_json, /*use_plus=*/true);
     }
   }
-
+  if (IsFedCmIdPRegistrationEnabled() && type) {
+    query += "&type=" + base::EscapeUrlEncodedData(*type, /*use_plus=*/true);
+  }
   return query;
 }
 
@@ -284,6 +299,8 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kInvalidFieldsSpecified:
     case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
     case FederatedAuthRequestResult::kTypeNotMatching:
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
+    case FederatedAuthRequestResult::kCorsError:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -313,11 +330,13 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kIdTokenInvalidResponse:
     case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
     case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType: {
+    case FederatedAuthRequestResult::kIdTokenInvalidContentType:
+    case FederatedAuthRequestResult::kCorsError: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kTokenEndpointInvalidResponse;
     }
     case FederatedAuthRequestResult::kShouldEmbargo:
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
     case FederatedAuthRequestResult::kDisabledInFlags:
     case FederatedAuthRequestResult::kDisabledInSettings:
     case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
@@ -585,14 +604,15 @@ FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
   std::reverse(registered_config_urls.begin(), registered_config_urls.end());
 
   for (auto& provider : providers) {
-    if (!provider->config->use_registered_config_urls) {
+    if (!provider->config->from_idp_registration_api) {
       result.emplace_back(provider->Clone());
       continue;
     }
 
     for (auto& configURL : registered_config_urls) {
       blink::mojom::IdentityProviderRequestOptionsPtr idp = provider->Clone();
-      idp->config->use_registered_config_urls = false;
+      // Keep `from_idp_registration_api` so it is clear this is a registered
+      // provider.
       idp->config->config_url = configURL;
       result.emplace_back(std::move(idp));
     }
@@ -764,7 +784,10 @@ void FederatedAuthRequestImpl::RequestToken(
           /*verifying_dialog_result=*/std::nullopt,
           api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
               ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
-              : FedCmThirdPartyCookiesStatus::kDisabledInSettings);
+              : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
+          webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                           GetEmbeddingOrigin()),
+          /*has_signin_account=*/std::nullopt);
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
@@ -921,10 +944,7 @@ void FederatedAuthRequestImpl::RequestToken(
               render_frame_host(), idp_ptr->config->config_url,
               permission_delegate_);
 
-      url::Origin idp_origin = url::Origin::Create(idp_ptr->config->config_url);
-      if (has_failing_idp_signin_status &&
-          webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
-              FedCmIdpSigninStatusMode::ENABLED) {
+      if (has_failing_idp_signin_status) {
         if (idp_get_params_ptr->mode == blink::mojom::RpMode::kPassive) {
           if (IsFedCmMultipleIdentityProvidersEnabled()) {
             // In the multi IDP case, we do not want to complete the request
@@ -968,7 +988,7 @@ void FederatedAuthRequestImpl::RequestToken(
         return;
       }
 
-      if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+      if (webid::IsFedCmAuthzEnabled()) {
         any_idp_has_custom_scopes =
             any_idp_has_custom_scopes || GetDisclosureFields(*idp_ptr).empty();
         any_idp_has_parameters = any_idp_has_parameters || idp_ptr->params_json;
@@ -1084,7 +1104,7 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
     const std::optional<std::string>& account_id,
     const std::string& token,
     ResolveTokenRequestCallback callback) {
-  if (!webid::IsFedCmAuthzEnabled(render_frame_host(), origin())) {
+  if (!webid::IsFedCmAuthzEnabled()) {
     std::move(callback).Run(false);
     return;
   }
@@ -1101,7 +1121,8 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
 
 void FederatedAuthRequestImpl::SetIdpSigninStatus(
     const url::Origin& idp_origin,
-    blink::mojom::IdpSigninStatus status) {
+    blink::mojom::IdpSigninStatus status,
+    const std::optional<blink::common::webid::LoginStatusOptions>& options) {
   if (render_frame_host().IsNestedWithinFencedFrame()) {
     RecordSetLoginStatusIgnoredReason(
         FedCmSetLoginStatusIgnoredReason::kInFencedFrame);
@@ -1117,8 +1138,16 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
         FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
     return;
   }
-  permission_delegate_->SetIdpSigninStatus(
-      idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
+
+  if (!IsFedCmLightweightModeEnabled()) {
+    permission_delegate_->SetIdpSigninStatus(
+        idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
+        std::nullopt);
+  } else {
+    permission_delegate_->SetIdpSigninStatus(
+        idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
+        options);
+  }
 }
 
 void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
@@ -1211,10 +1240,18 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
     fetch_data_.pending_idps = std::move(pending_idps);
   }
 
+  std::vector<FederatedProviderFetcher::FetchRequest> idps;
+  for (const auto& idp : fetch_data_.pending_idps) {
+    auto idp_get = token_request_get_infos_.find(idp);
+    CHECK(idp_get != token_request_get_infos_.end());
+    idps.emplace_back(
+        idp, idp_get->second.provider->config->from_idp_registration_api);
+  }
+
   provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
       render_frame_host(), network_manager_.get());
   provider_fetcher_->Start(
-      fetch_data_.pending_idps, rp_mode_, icon_ideal_size, icon_minimum_size,
+      idps, rp_mode_, icon_ideal_size, icon_minimum_size,
       base::BindOnce(&FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1327,11 +1364,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
         webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
             render_frame_host(), identity_provider_config_url,
             permission_delegate_);
-    if (idp_info->has_failing_idp_signin_status &&
-        webid::GetIdpSigninStatusMode(
-            render_frame_host(),
-            url::Origin::Create(identity_provider_config_url)) ==
-            FedCmIdpSigninStatusMode::ENABLED) {
+    if (idp_info->has_failing_idp_signin_status) {
       // If the user is logged out and we are in a active-mode, allow the user
       // to sign-in to the IdP and return early.
       if (rp_mode_ == blink::mojom::RpMode::kActive) {
@@ -1407,8 +1440,8 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
           "with the provided background color");
     }
   }
-  FetchAccountPictures(std::move(idp_info), std::move(accounts),
-                       client_metadata);
+  FetchAccountPicturesAndBrandIcons(std::move(idp_info), std::move(accounts),
+                                    std::move(client_metadata));
 }
 
 std::vector<IdentityRequestDialogDisclosureField>
@@ -1419,8 +1452,7 @@ FederatedAuthRequestImpl::GetDisclosureFields(
        IdentityRequestDialogDisclosureField::kEmail,
        IdentityRequestDialogDisclosureField::kPicture};
 
-  url::Origin idp_origin = url::Origin::Create(provider.config->config_url);
-  if (!webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+  if (!webid::IsFedCmAuthzEnabled()) {
     return kDefaultPermissions;
   }
 
@@ -1444,6 +1476,12 @@ FederatedAuthRequestImpl::GetDisclosureFields(
       list.push_back(IdentityRequestDialogDisclosureField::kEmail);
     } else if (field == kDefaultFieldPicture) {
       list.push_back(IdentityRequestDialogDisclosureField::kPicture);
+    } else if (IsFedCmAlternativeIdentifiersEnabled()) {
+      if (field == kFieldPhoneNumber) {
+        list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
+      } else if (field == kFieldUsername) {
+        list.push_back(IdentityRequestDialogDisclosureField::kUsername);
+      }
     }
   }
   return list;
@@ -1486,7 +1524,8 @@ FederatedAuthRequestImpl::ComputeUseOtherAccountResult(
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::vector<IdentityRequestAccountPtr>&& accounts,
-    const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
+    const IdpNetworkRequestManager::ClientMetadata& client_metadata,
+    const gfx::Image& rp_brand_icon) {
   fetch_data_.did_succeed_for_at_least_one_idp = true;
 
   const GURL& idp_config_url = idp_info->provider->config->config_url;
@@ -1500,7 +1539,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
       idp_for_display, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
                      client_metadata.privacy_policy_url,
-                     client_metadata.brand_icon_url},
+                     client_metadata.brand_icon_url, rp_brand_icon},
       idp_info->rp_context, disclosure_fields,
       /*has_login_status_mismatch=*/false);
   for (auto& account : accounts) {
@@ -1814,6 +1853,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Although not useful for catching malicious IDPs, it should only be a very
   // small percentage of the samples recorded.
   fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
+  fedcm_metrics_->RecordRpUrlHasPath(
+      render_frame_host().GetMainFrame()->GetLastCommittedURL().path() != "/");
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {
@@ -1825,12 +1866,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     std::optional<bool> old_idp_signin_status,
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<TokenStatus> token_status) {
-  url::Origin idp_origin =
-      url::Origin::Create(idp_info->provider->config->config_url);
-  FedCmIdpSigninStatusMode signin_status_mode =
-      webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin);
-  if (!old_idp_signin_status.has_value() ||
-      signin_status_mode == FedCmIdpSigninStatusMode::METRICS_ONLY) {
+  if (!old_idp_signin_status.has_value()) {
     if (rp_mode_ == blink::mojom::RpMode::kActive) {
       MaybeShowActiveModeModalDialog(idp_info->provider->config->config_url,
                                      idp_info->metadata.idp_login_url);
@@ -1864,23 +1900,35 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     return;
   }
 
-  OnIdpMismatch(std::move(idp_info));
+  // We are going to show mismatch UI, so fetch the brand icon URL (needed at
+  // least for passive mode). We currently never need the RP icon for mismatch
+  // UI.
+  GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
+  FetchImage(
+      idp_brand_icon_url,
+      base::BindOnce(&FederatedAuthRequestImpl::OnIdpMismatch,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(idp_info)));
 }
 
 void FederatedAuthRequestImpl::OnIdpMismatch(
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   const GURL& idp_config_url = idp_info->provider->config->config_url;
-  fetch_data_.pending_idps.erase(idp_config_url);
 
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_config_url);
+  gfx::Image idp_brand_icon;
+  auto it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    idp_brand_icon = it->second;
+  }
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
-      ClientMetadata{GURL(), GURL(), GURL()}, idp_info->rp_context,
-      GetDisclosureFields(*idp_info->provider),
+      ClientMetadata{GURL(), GURL(), GURL(), std::move(idp_brand_icon)},
+      idp_info->rp_context, GetDisclosureFields(*idp_info->provider),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
+  fetch_data_.pending_idps.erase(idp_config_url);
   if (!fetch_data_.pending_idps.empty()) {
     return;
   }
@@ -2027,8 +2075,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       RecordRawAccountsSize(accounts.size());
-      if (webid::IsFedCmAuthzEnabled(render_frame_host(),
-                                     url::Origin::Create(idp_config_url))) {
+      if (webid::IsFedCmAuthzEnabled()) {
         if (!FilterAccountsWithLabel(idp_info->metadata.requested_label,
                                      accounts)) {
           // No accounts remain, so treat as account fetch failure.
@@ -2116,7 +2163,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
       bool need_client_metadata = false;
 
-      if (!GetDisclosureFields(*idp_info->provider).empty()) {
+      if (!idp_info->provider->config->from_idp_registration_api &&
+          !GetDisclosureFields(*idp_info->provider).empty()) {
         for (const auto& account : accounts) {
           // ComputeLoginStates() should have populated
           // IdentityRequestAccount::login_state.
@@ -2147,46 +2195,57 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                 weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
                 std::move(accounts)));
       } else {
-        FetchAccountPictures(std::move(idp_info), std::move(accounts),
-                             IdpNetworkRequestManager::ClientMetadata());
+        FetchAccountPicturesAndBrandIcons(
+            std::move(idp_info), std::move(accounts),
+            IdpNetworkRequestManager::ClientMetadata());
       }
     }
   }
 }
 
-void FederatedAuthRequestImpl::FetchAccountPictures(
+void FederatedAuthRequestImpl::FetchAccountPicturesAndBrandIcons(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     const std::vector<IdentityRequestAccountPtr>& accounts,
-    const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
+    IdpNetworkRequestManager::ClientMetadata&& client_metadata) {
+  GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
+  GURL rp_brand_icon_url = client_metadata.brand_icon_url;
+
   auto callback = BarrierClosure(
-      accounts.size(),
-      base::BindOnce(&FederatedAuthRequestImpl::OnAllAccountPicturesReceived,
+      // Wait for all accounts plus the brand icon URLs.
+      accounts.size() + 2,
+      base::BindOnce(&FederatedAuthRequestImpl::
+                         OnAllAccountPicturesAndBrandIconUrlReceived,
                      weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
-                     accounts, client_metadata));
+                     accounts, std::move(client_metadata)));
   for (const auto& account : accounts) {
-    if (account->picture.is_valid()) {
-      network_manager_->DownloadAndDecodeImage(
-          account->picture,
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountPictureReceived,
-                         weak_ptr_factory_.GetWeakPtr(), callback,
-                         account->picture));
-    } else {
-      // We have to still call the callback to make sure the barrier
-      // callback gets the right number of calls.
-      callback.Run();
-    }
+    FetchImage(account->picture, callback);
+  }
+  FetchImage(idp_brand_icon_url, callback);
+  FetchImage(rp_brand_icon_url, callback);
+}
+
+void FederatedAuthRequestImpl::FetchImage(const GURL& url,
+                                          base::OnceClosure callback) {
+  if (url.is_valid()) {
+    network_manager_->DownloadAndDecodeImage(
+        url, base::BindOnce(&FederatedAuthRequestImpl::OnImageReceived,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                            url));
+  } else {
+    // We have to still call the callback to make sure the barrier
+    // callback gets the right number of calls.
+    std::move(callback).Run();
   }
 }
 
-void FederatedAuthRequestImpl::OnAccountPictureReceived(
-    base::RepeatingClosure cb,
-    GURL url,
-    const gfx::Image& image) {
+void FederatedAuthRequestImpl::OnImageReceived(base::OnceClosure callback,
+                                               GURL url,
+                                               const gfx::Image& image) {
   downloaded_images_[url] = image;
-  cb.Run();
+  std::move(callback).Run();
 }
 
-void FederatedAuthRequestImpl::OnAllAccountPicturesReceived(
+void FederatedAuthRequestImpl::OnAllAccountPicturesAndBrandIconUrlReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::vector<IdentityRequestAccountPtr>&& accounts,
     const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
@@ -2199,9 +2258,21 @@ void FederatedAuthRequestImpl::OnAllAccountPicturesReceived(
     }
   }
 
+  gfx::Image rp_brand_icon;
+  auto it = downloaded_images_.find(client_metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    rp_brand_icon = it->second;
+  }
+
+  gfx::Image idp_brand_icon;
+  it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    idp_info->metadata.brand_decoded_icon = it->second;
+  }
+
   downloaded_images_.clear();
   OnFetchDataForIdpSucceeded(std::move(idp_info), std::move(accounts),
-                             client_metadata);
+                             client_metadata, rp_brand_icon);
 }
 
 void FederatedAuthRequestImpl::ComputeLoginStates(
@@ -2281,6 +2352,15 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     // auto re-authn with embargo.
     auto_reauthn_permission_delegate_->RemoveEmbargoForAutoReauthn(
         GetEmbeddingOrigin());
+
+    // Record page scroll Y-axis position upon account selection to analyse
+    // for intrusion. Do not record for auto re-authn because we want to detect
+    // whether users scroll the webpage before choosing to sign-in.
+    RenderFrameHostImpl* host_impl = static_cast<RenderFrameHostImpl*>(
+        render_frame_host().GetOutermostMainFrame());
+    host_impl->GetAssociatedLocalFrame()->GetScrollPosition(
+        base::BindOnce(&FedCmMetrics::RecordAccountSelectionScrollPosition,
+                       base::Unretained(fedcm_metrics_.get())));
   }
 
   fedcm_metrics_->RecordIsSignInUser(is_sign_in);
@@ -2292,10 +2372,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   fedcm_metrics_->RecordContinueOnPopupTime(
       idp_config_url, select_account_time_ - accounts_dialog_display_time_);
 
-  url::Origin idp_origin = url::Origin::Create(idp_config_url);
-
   IdpNetworkRequestManager::ContinueOnCallback continue_on;
-  if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+  if (webid::IsFedCmAuthzEnabled()) {
     continue_on = base::BindOnce(
         &FederatedAuthRequestImpl::OnContinueOnResponseReceived,
         weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
@@ -2335,11 +2413,12 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   } else {
     endpoint = idp_info.endpoints.token;
     query = ComputeUrlEncodedTokenPostData(
-        render_frame_host(), idp_origin, idp_info.provider->config->client_id,
+        render_frame_host(), idp_info.provider->config->client_id,
         idp_info.provider->nonce, account_id,
         identity_selection_type_ != kExplicit, rp_mode_,
         idp_info.provider->fields, disclosure_shown_for,
-        idp_info.provider->params_json.value_or(""));
+        idp_info.provider->params_json.value_or(""),
+        idp_info.provider->config->type);
   }
 
   network_manager_->SendTokenRequest(
@@ -2377,13 +2456,13 @@ void FederatedAuthRequestImpl::OnDismissFailureDialog(
     api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
 
-  CompleteRequestWithError(should_embargo
-                               ? FederatedAuthRequestResult::kShouldEmbargo
-                               : FederatedAuthRequestResult::kError,
-                           should_embargo ? TokenStatus::kShouldEmbargo
-                                          : TokenStatus::kNotSignedInWithIdp,
+  CompleteRequestWithError(
+      should_embargo ? FederatedAuthRequestResult::kShouldEmbargo
+                     : FederatedAuthRequestResult::kUiDismissedNoEmbargo,
+      should_embargo ? TokenStatus::kShouldEmbargo
+                     : TokenStatus::kNotSignedInWithIdp,
 
-                           /*should_delay_callback=*/false);
+      /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnDismissErrorDialog(
@@ -2467,12 +2546,12 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   // Reject the promise immediately if the UI is dismissed without selecting
   // an account. Meanwhile, we fuzz the rejection time for other failures to
   // make it indistinguishable.
-  CompleteRequestWithError(should_embargo
-                               ? FederatedAuthRequestResult::kShouldEmbargo
-                               : FederatedAuthRequestResult::kError,
-                           should_embargo ? TokenStatus::kShouldEmbargo
-                                          : TokenStatus::kNotSelectAccount,
-                           /*should_delay_callback=*/false);
+  CompleteRequestWithError(
+      should_embargo ? FederatedAuthRequestResult::kShouldEmbargo
+                     : FederatedAuthRequestResult::kUiDismissedNoEmbargo,
+      should_embargo ? TokenStatus::kShouldEmbargo
+                     : TokenStatus::kNotSelectAccount,
+      /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
@@ -2522,15 +2601,15 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
     const GURL& continue_on) {
-  url::Origin idp_origin = url::Origin::Create(idp->config->config_url);
   // This is enforced by OnAccountSelected when we call SendTokenRequest.
-  DCHECK(webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin));
+  DCHECK(webid::IsFedCmAuthzEnabled());
 
   id_assertion_response_time_ = base::TimeTicks::Now();
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &render_frame_host(), blink::mojom::WebFeature::kFedCmContinueOnResponse);
 
+  url::Origin idp_origin = url::Origin::Create(idp->config->config_url);
   // We only allow loading continue_on urls that are same-origin
   // with the IdP.
   // This isn't necessarily final, but seemed like a safer
@@ -2679,9 +2758,15 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     }
     case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenNoResponse,
-                               TokenStatus::kIdTokenNoResponse,
-                               should_delay_callback);
+      if (status.cors_error) {
+        CompleteRequestWithError(FederatedAuthRequestResult::kCorsError,
+                                 TokenStatus::kIdTokenNoResponse,
+                                 should_delay_callback);
+      } else {
+        CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenNoResponse,
+                                 TokenStatus::kIdTokenNoResponse,
+                                 should_delay_callback);
+      }
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
@@ -2867,11 +2952,18 @@ void FederatedAuthRequestImpl::CompleteRequest(
     bool should_delay_callback) {
   DCHECK(result == FederatedAuthRequestResult::kSuccess || id_token.empty());
 
+  bool should_trigger_cooldown_on_ignore =
+      IsFedCmCooldownOnIgnoreEnabled() &&
+      token_status == TokenStatus::kUnhandledRequest &&
+      rp_mode_ == RpMode::kPassive;
   if (accounts_dialog_shown_time_.has_value()) {
     fedcm_metrics_->RecordAccountsDialogShownDuration(
         idp_data_for_display_,
         base::TimeTicks::Now() - accounts_dialog_shown_time_.value());
     accounts_dialog_shown_time_ = std::nullopt;
+    if (should_trigger_cooldown_on_ignore && dialog_type_ == kSelectAccount) {
+      api_permission_delegate_->RecordIgnoreAndEmbargo(GetEmbeddingOrigin());
+    }
   }
 
   if (mismatch_dialog_shown_time_.has_value()) {
@@ -2879,6 +2971,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
         idp_data_for_display_,
         base::TimeTicks::Now() - mismatch_dialog_shown_time_.value());
     mismatch_dialog_shown_time_ = std::nullopt;
+    if (should_trigger_cooldown_on_ignore && dialog_type_ == kConfirmIdpLogin) {
+      api_permission_delegate_->RecordIgnoreAndEmbargo(GetEmbeddingOrigin());
+    }
   }
 
   if (!auth_request_token_callback_) {
@@ -2904,13 +2999,28 @@ void FederatedAuthRequestImpl::CompleteRequest(
               : FedCmVerifyingDialogResult::kDestroyAutoReauthn;
     }
 
+    std::optional<bool> has_signin_account;
+    // Note: accounts_ does not include the ones that got filtered out. In case
+    // that all accounts are filtered out, we'd show the mismatch UI and skip
+    // recording the account status on the mismatch UI.
+    for (const auto& account : accounts_) {
+      has_signin_account = false;
+      if (account->login_state == LoginState::kSignIn) {
+        has_signin_account = true;
+        break;
+      }
+    }
+
     fedcm_metrics_->RecordRequestTokenStatus(
         *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
         selected_idp_config_url, rp_mode_, use_other_account_result,
         verifying_dialog_result_,
         api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
             ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
-            : FedCmThirdPartyCookiesStatus::kDisabledInSettings);
+            : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
+        webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                         GetEmbeddingOrigin()),
+        has_signin_account);
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {
@@ -2989,7 +3099,7 @@ void FederatedAuthRequestImpl::SendSuccessfulTokenRequestMetrics(
 
     if (metrics_endpoint_kv.first == idp_config_url) {
       network_manager_->SendSuccessfulTokenRequestMetrics(
-          metrics_endpoint, did_show_ui_,
+          metrics_endpoint,
           ready_to_display_accounts_dialog_time_ - start_time_,
           select_account_time_ - accounts_dialog_display_time_,
           id_assertion_response_time_ - select_account_time_,
@@ -3171,6 +3281,15 @@ void FederatedAuthRequestImpl::OnClose() {
   CHECK(request_dialog_controller_);
   request_dialog_controller_->CloseModalDialog();
 
+  // If we have not gotten a signin status change, abort the flow.
+  if (idps_user_tried_to_signin_to_.empty() &&
+      dialog_type_ == kLoginToIdpPopup) {
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             TokenStatus::kLoginPopupClosedWithoutSignin,
+                             /*should_delay_callback=*/false);
+    return;
+  }
+
   // When IdentityProvider.close is called in the continuation popup, we
   // should abort the flow.
   if (dialog_type_ == kContinueOnPopup) {
@@ -3193,6 +3312,12 @@ bool FederatedAuthRequestImpl::OnResolve(
   if (!request_dialog_controller_) {
     return false;
   }
+
+  // IdentityProvider.resolve() is only allowed for continuation API.
+  if (dialog_type_ != kContinueOnPopup) {
+    return false;
+  }
+
   request_dialog_controller_->CloseModalDialog();
 
   MarkUserAsSignedIn(idp_config_url, account_id.value_or(account_id_));
@@ -3521,8 +3646,16 @@ void FederatedAuthRequestImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
   SetRequiresUserMediation(true, std::move(callback));
   if (permission_delegate_->HasSharingPermission(GetEmbeddingOrigin())) {
-    RecordPreventSilentAccess(render_frame_host(), origin(),
-                              GetEmbeddingOrigin());
+    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
+    // prerendering page. As FederatedAuthRequest runs behind the
+    // BrowserInterfaceBinders, the service doesn't receive any request while
+    // prerendering, and the CHECK should always meet the condition.
+    CHECK(!render_frame_host().IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+    RecordPreventSilentAccess(
+        webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                         GetEmbeddingOrigin()),
+        render_frame_host().GetPageUkmSourceId());
   }
 }
 
@@ -3541,7 +3674,8 @@ void FederatedAuthRequestImpl::Disconnect(
             FedCmDisconnectStatus::kTooManyRequests));
     fedcm_metrics_->RecordDisconnectMetrics(
         FedCmDisconnectStatus::kTooManyRequests, std::nullopt,
-        render_frame_host(), origin(), GetEmbeddingOrigin(),
+        webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                         GetEmbeddingOrigin()),
         options->config->config_url, webid::GetNewSessionID());
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;

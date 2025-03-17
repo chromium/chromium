@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/modules/manifest/image_resource_type_converters.h"
 
+#include <vector>
+
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -21,12 +22,12 @@ namespace {
 
 using Purpose = blink::mojom::blink::ManifestImageResource::Purpose;
 using blink::WebString;
-using blink::WebVector;
 
 // https://w3c.github.io/manifest/#sizes-member.
 WTF::Vector<gfx::Size> ParseSizes(const WTF::String& sizes) {
-  WebVector<gfx::Size> parsed_sizes = blink::WebIconSizesParser::ParseIconSizes(
-      WebString::FromASCII(sizes.Ascii()));
+  std::vector<gfx::Size> parsed_sizes =
+      blink::WebIconSizesParser::ParseIconSizes(
+          WebString::FromASCII(sizes.Ascii()));
   WTF::HashSet<std::pair<int, int>,
                PairHashTraits<IntWithZeroKeyHashTraits<int>,
                               IntWithZeroKeyHashTraits<int>>>

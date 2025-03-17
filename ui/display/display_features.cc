@@ -18,16 +18,6 @@ BASE_FEATURE(kSkipEmptyDisplayHotplugEvent,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-
-// Enables the rounded corners for the internal display.
-BASE_FEATURE(kRoundedDisplay,
-             "RoundedDisplay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsRoundedDisplayEnabled() {
-  return base::FeatureList::IsEnabled(kRoundedDisplay);
-}
-
 // Enables using HDR transfer function if the monitor says it supports it.
 BASE_FEATURE(kUseHDRTransferFunction,
              "UseHDRTransferFunction",
@@ -124,6 +114,33 @@ BASE_FEATURE(kExcludeDisplayInMirrorMode,
 
 bool IsExcludeDisplayInMirrorModeEnabled() {
   return base::FeatureList::IsEnabled(kExcludeDisplayInMirrorMode);
+}
+
+BASE_FEATURE(kFastDrmMasterDrop,
+             "FastDrmMasterDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsFastDrmMasterDropEnabled() {
+  return base::FeatureList::IsEnabled(kFastDrmMasterDrop);
+}
+
+// TODO(crbug.com/392021508): Remove the flag once the feature is launched.
+BASE_FEATURE(kFormFactorControlsSubpixelRendering,
+             "FormFactorControlsSubpixelRendering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool DoesFormFactorControlSubpixelRendering() {
+  return base::FeatureList::IsEnabled(kFormFactorControlsSubpixelRendering);
+}
+
+// Open Pluggable Specification (OPS) is a special industry standard with
+// slot-in computing modules.
+BASE_FEATURE(kOpsDisplayScaleFactor,
+             "OpsDisplayScaleFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOpsDisplayScaleFactorEnabled() {
+  return base::FeatureList::IsEnabled(kOpsDisplayScaleFactor);
 }
 
 }  // namespace features

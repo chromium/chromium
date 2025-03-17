@@ -25,6 +25,12 @@ class PrerenderNoVarySearchCommitDeferringCondition
       NavigationRequest& navigation_request,
       NavigationType navigation_type,
       std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
+
+  // Called upon the renderer confirmed that the prerender URL has been updated.
+  static void OnUrlUpdated(base::TimeTicks defer_start_time,
+                           std::string histogram_suffix,
+                           base::OnceClosure resume);
+
   Result WillCommitNavigation(base::OnceClosure resume) override;
   const char* TraceEventName() const override;
 

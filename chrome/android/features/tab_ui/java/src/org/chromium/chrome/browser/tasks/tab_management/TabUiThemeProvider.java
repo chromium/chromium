@@ -204,7 +204,7 @@ public class TabUiThemeProvider {
         if (isIncognito) {
             return context.getColor(R.color.incognito_tab_grid_dialog_background_color);
         } else {
-            return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
+            return SemanticColorUtils.getDialogBgColor(context);
         }
     }
 
@@ -410,7 +410,7 @@ public class TabUiThemeProvider {
     public static int getMessageCardActionButtonTextAppearance(boolean isIncognito) {
         return isIncognito
                 ? R.style.TextAppearance_Button_Text_Blue_Dark
-                : R.style.TextAppearance_Button_Text_Blue;
+                : R.style.TextAppearance_ClickableButtonInverse;
     }
 
     /**

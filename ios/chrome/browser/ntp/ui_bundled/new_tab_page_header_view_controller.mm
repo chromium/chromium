@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -201,12 +200,12 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.headerView.searchHintLabel.alpha = 1;
   self.headerView.voiceSearchButton.alpha = 1;
   if (finalPosition == UIViewAnimatingPositionEnd &&
-      (self.delegate.scrolledToMinimumHeight || IsIOSLargeFakeboxEnabled())) {
+      self.delegate.scrolledToMinimumHeight) {
     // Check to see if the collection are still scrolled to the top --
     // it's possible (and difficult) to unfocus the omnibox and initiate a
     // -shiftTilesDownForOmniboxDefocus before the animation here completes.
     if (IsSplitToolbarMode(self)) {
-      [self.dispatcher onFakeboxAnimationComplete];
+      [self.fakeboxFocuserHandler onFakeboxAnimationComplete];
     } else {
       [self.toolbarDelegate setScrollProgressForTabletOmnibox:1];
     }
@@ -220,7 +219,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets
             animateScrollAnimation:(BOOL)animateScrollAnimation {
   if (self.isShowing) {
-    if (IsTabGroupIndicatorEnabled()) {
+    if (IsTabGroupInGridEnabled()) {
       [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
     }
     CGFloat progress =
@@ -473,17 +472,17 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.identityDiscButton.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {
-    // The identity disc button is oversized to the avatar image to meet the
-    // minimum touch target dimensions. The hover pointer effect should
-    // match the avatar image dimensions, not the button dimensions.
-    CGFloat singleInset =
-        (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
-    CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
-    UIPointerShape* shape =
-        [UIPointerShape shapeWithRoundedRect:rect
-                                cornerRadius:rect.size.width / 2];
-    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-  };
+        // The identity disc button is oversized to the avatar image to meet the
+        // minimum touch target dimensions. The hover pointer effect should
+        // match the avatar image dimensions, not the button dimensions.
+        CGFloat singleInset =
+            (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
+        CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
+        UIPointerShape* shape =
+            [UIPointerShape shapeWithRoundedRect:rect
+                                    cornerRadius:rect.size.width / 2];
+        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+      };
 
   // `self.identityDiscButton` should not be updated if `self.identityDiscImage`
   // is not available yet.
@@ -547,7 +546,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
   [self.customizationDelegate dismissCustomizationMenu];
-  [self.dispatcher openLensInputSelection:command];
+  [self.lensHandler openLensInputSelection:command];
 }
 
 - (void)loadVoiceSearch:(id)sender {
@@ -558,7 +557,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
   [self.customizationDelegate dismissCustomizationMenu];
-  [self.dispatcher startVoiceSearch];
+  [self.applicationHandler startVoiceSearch];
 }
 
 - (void)preloadVoiceSearch:(id)sender {
@@ -566,7 +565,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   [sender removeTarget:self
                 action:@selector(preloadVoiceSearch:)
       forControlEvents:UIControlEventTouchDown];
-  [self.dispatcher preloadVoiceSearch];
+  [self.browserCoordinatorHandler preloadVoiceSearch];
 }
 
 - (void)fakeTapViewTapped {
@@ -602,7 +601,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 // shows fakebox if the logo is visible and hides otherwise
 - (void)updateFakeboxDisplay {
   self.doodleTopMarginConstraint.constant =
-      content_suggestions::DoodleTopMargin(0, self.traitCollection);
+      content_suggestions::DoodleTopMargin(self.logoVendor.showingLogo,
+                                           self.logoVendor.isShowingDoodle,
+                                           self.traitCollection);
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(
                       self.logoVendor.showingLogo,
@@ -642,7 +643,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.doodleTopMarginConstraint = [logoView.topAnchor
       constraintEqualToAnchor:headerView.topAnchor
                      constant:content_suggestions::DoodleTopMargin(
-                                  0, self.traitCollection)];
+                                  self.logoVendor.showingLogo,
+                                  self.logoVendor.isShowingDoodle,
+                                  self.traitCollection)];
   self.doodleHeightConstraint = [logoView.heightAnchor
       constraintEqualToConstant:content_suggestions::DoodleHeight(
                                     self.logoVendor.showingLogo,
@@ -765,7 +768,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {
-  CHECK(base::FeatureList::IsEnabled(kIdentityDiscAccountMenu));
+  CHECK(
+      base::FeatureList::IsEnabled(switches::kEnableErrorBadgeOnIdentityDisc));
 
   if (hasAccountError == _hasAccountError) {
     return;
@@ -855,7 +859,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
                                                email:(NSString*)email {
   NSString* accountButtonLabel;
-  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableErrorBadgeOnIdentityDisc)) {
     if (name) {
       accountButtonLabel = l10n_util::GetNSStringF(
           IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
@@ -908,9 +913,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   }
   if (previousTraitCollection.userInterfaceStyle !=
       self.traitCollection.userInterfaceStyle) {
-      [self.headerView
-          updateButtonsForUserInterfaceStyle:self.traitCollection
-                                                 .userInterfaceStyle];
+    [self.headerView
+        updateButtonsForUserInterfaceStyle:self.traitCollection
+                                               .userInterfaceStyle];
   }
 }
 

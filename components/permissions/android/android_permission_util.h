@@ -92,6 +92,14 @@ bool NeedsLocationServicesForBluetooth();
 bool CanRequestSystemPermissionsForBluetooth(
     content::WebContents* web_contents);
 
+// Checks if Chrome has system permission for `content_settings_type`
+bool HasSystemPermission(ContentSettingsType type,
+                         content::WebContents* web_contents);
+
+// Checks if Chrome can request system permissions for `content_settings_type`
+bool CanRequestSystemPermission(ContentSettingsType type,
+                                content::WebContents* web_contents);
+
 // Request the needed system permissions for using Bluetooth.
 void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents);
 

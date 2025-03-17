@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_TRUE(
       extension_registry()->enabled_extensions().Contains(extension_id));
 
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id).empty());
 
   histogram_tester().ExpectTotalCount(
       "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 0);
@@ -396,9 +396,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_TRUE(
       extension_registry()->disabled_extensions().Contains(extension_id));
 
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 
   // The extension is recorded as "soft disabled".
   histogram_tester().ExpectTotalCount(
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   // and the extension should be marked as explicitly re-enabled.
   EXPECT_TRUE(
       extension_registry()->enabled_extensions().Contains(extension_id));
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id).empty());
   EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id));
 
   // We should emit a UKM record for the re-enabling.
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
 
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id).empty());
   EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id));
 
   // The extension is reported as re-enabled by the user.
@@ -518,9 +518,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   // The MV2 extension is disabled.
   EXPECT_TRUE(
       extension_registry()->disabled_extensions().Contains(extension_id));
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 
   // Update the extension to MV3. Note: Even though this doesn't result in a
   // _new_ extension, the `expected_change` is 1 here because this results in
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_EQ(3, updated_extension->manifest_version());
   EXPECT_TRUE(
       extension_registry()->enabled_extensions().Contains(extension_id));
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id).empty());
   // The user didn't re-enable the extension, so it shouldn't be marked as such.
   EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
 }
@@ -646,9 +646,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       "Test MV2 Extension", extension_registry()->disabled_extensions());
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 }
 // Third stage: The enterprise policy was changed to allow all MV2 extensions.
 // The extension should be automatically re-enabled.
@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
 
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id).empty());
   // The user didn't re-enable the extension, so it shouldn't be marked as such.
   EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
 
@@ -700,9 +700,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       "Test MV2 Extension", extension_registry()->disabled_extensions());
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 }
 // Third stage: Move the user back to the warning stage. The extension should be
 // re-enabled.
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
 
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id).empty());
   // The user didn't re-enable the extension, so it shouldn't be marked as such.
   EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
 
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   // disabled on the next run of Chrome.
   EXPECT_TRUE(
       extension_registry()->enabled_extensions().Contains(kExtensionId));
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(kExtensionId));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(kExtensionId).empty());
 
   // The extension should still be counted as "affected" by the MV2 deprecation.
   EXPECT_TRUE(experiment_manager()->IsExtensionAffected(*extension));
@@ -769,9 +769,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   experiment_manager()->DisableAffectedExtensionsForTesting();
   EXPECT_TRUE(
       extension_registry()->disabled_extensions().Contains(kExtensionId));
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(kExtensionId));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(kExtensionId),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 }
 
 // Tests that a UKM event is emitted when the user uninstalls a disabled
@@ -861,16 +861,16 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       "Test MV2 Extension 1", extension_registry()->disabled_extensions());
   ASSERT_TRUE(extension1);
   const ExtensionId extension_id1 = extension1->id();
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id1));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id1),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
   const Extension* extension2 = GetExtensionByName(
       "Test MV2 Extension 2", extension_registry()->disabled_extensions());
   ASSERT_TRUE(extension1);
   const ExtensionId extension_id2 = extension2->id();
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id2));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id2),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 
   // The extensions should be recorded as "soft disabled".
   histogram_tester().ExpectTotalCount(
@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   // cleared, and the extension should be marked as explicitly re-enabled.
   EXPECT_TRUE(
       extension_registry()->enabled_extensions().Contains(extension_id1));
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id1));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id1).empty());
   EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id1));
 }
 IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
@@ -919,9 +919,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   const ExtensionId extension_id1 = extension1->id();
 
   EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id1));
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id1));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id1),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 
   const Extension* extension2 = GetExtensionByName(
       "Test MV2 Extension 2", extension_registry()->disabled_extensions());
@@ -929,9 +929,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   const ExtensionId extension_id2 = extension2->id();
 
   EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id2));
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id2));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id2),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 
   // The extensions should now be recorded as "hard disabled".
   histogram_tester().ExpectTotalCount(
@@ -1078,8 +1078,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(packed_extension);
   const ExtensionId packed_extension_id = packed_extension->id();
 
-  EXPECT_EQ(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
-            extension_prefs()->GetDisableReasons(packed_extension_id));
+  EXPECT_THAT(extension_prefs()->GetDisableReasons(packed_extension_id),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
   // The user didn't re-enable the extension, so it shouldn't be marked as such.
   EXPECT_FALSE(WasExtensionReEnabledByUser(packed_extension_id));
 
@@ -1098,7 +1099,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(unpacked_extension);
   const ExtensionId unpacked_extension_id = unpacked_extension->id();
 
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(unpacked_extension_id));
+  EXPECT_TRUE(
+      extension_prefs()->GetDisableReasons(unpacked_extension_id).empty());
   // The user didn't re-enable the extension, so it shouldn't be marked as such.
   EXPECT_FALSE(WasExtensionReEnabledByUser(unpacked_extension_id));
 

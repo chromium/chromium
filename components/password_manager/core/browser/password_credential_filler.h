@@ -19,7 +19,6 @@ namespace password_manager {
 class PasswordCredentialFiller {
  public:
   using SubmissionReadinessState = autofill::mojom::SubmissionReadinessState;
-  using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
 
   // The destructor of the implementation should make sure the class is cleaned
   // (i.e. by checking !IsReadyToFill())
@@ -43,10 +42,6 @@ class PasswordCredentialFiller {
 
   // Returns the frame URL this filler is interacting with.
   virtual GURL GetFrameUrl() const = 0;
-
-  // Cleans up the filler and shows the virtual keyboard depending on
-  // `should_show`.
-  virtual void Dismiss(ToShowVirtualKeyboard should_show) = 0;
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() = 0;

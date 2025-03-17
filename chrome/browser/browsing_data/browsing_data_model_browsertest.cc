@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -111,14 +113,14 @@ class TestDeviceBoundSessionAccessObserver
   // WebContentsObserver
   void OnDeviceBoundSessionAccessed(
       content::RenderFrameHost* render_frame_host,
-      const net::device_bound_sessions::SessionKey& session) override {
+      const net::device_bound_sessions::SessionAccess& access) override {
     if (on_access_closure_) {
       std::move(on_access_closure_).Run();
     }
   }
   void OnDeviceBoundSessionAccessed(
       content::NavigationHandle* navigation_handle,
-      const net::device_bound_sessions::SessionKey& session) override {
+      const net::device_bound_sessions::SessionAccess& access) override {
     if (on_access_closure_) {
       std::move(on_access_closure_).Run();
     }
@@ -484,13 +486,13 @@ class BrowsingDataModelBrowserTest
         {features::kPrivacySandboxAdsAPIsOverride, {}},
         {features::kIsolatedWebApps, {}},
         {features::kIsolatedWebAppDevMode, {}},
-        {blink::features::kSharedStorageAPI, {}},
-        {blink::features::kInterestGroupStorage, {}},
+        {network::features::kSharedStorageAPI, {}},
+        {network::features::kInterestGroupStorage, {}},
         {blink::features::kPrivateAggregationApi, {}},
         {blink::features::kAdInterestGroupAPI, {}},
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},
-        {blink::features::kBrowsingTopics, {}},
+        {network::features::kBrowsingTopics, {}},
         {net::features::kThirdPartyStoragePartitioning, {}},
         {network::features::kCompressionDictionaryTransportBackend, {}},
         {network::features::kCompressionDictionaryTransport, {}},
@@ -510,7 +512,8 @@ class BrowsingDataModelBrowserTest
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-    enabled_features.push_back({net::features::kDeviceBoundSessions, {}});
+    enabled_features.push_back({net::features::kDeviceBoundSessions,
+                                {{"ForceEnableForTesting", "true"}}});
     enabled_features.push_back(
         {unexportable_keys::
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
@@ -545,9 +548,10 @@ class BrowsingDataModelBrowserTest
     ASSERT_TRUE(https_server_->InitializeAndListen());
 
     // Must come after `InitializeAndListen` so we know the `base_url()`.
+    // We are testing DBSC against kTestHost, so register a handler for it.
     https_server_->RegisterRequestHandler(
         net::device_bound_sessions::GetTestRequestHandler(
-            https_server_->base_url()));
+            https_server_->GetURL(kTestHost, "/")));
 
     https_server_->StartAcceptingConnections();
   }
@@ -986,17 +990,19 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
   Profile* profile = browser()->profile();
-  auto dev_server = web_app::CreateAndStartDevServer(
-      FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
 
-  auto iwa_url_info1 = web_app::InstallDevModeProxyIsolatedWebApp(
-      profile, dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app1 =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info1,
+                       app1->Install(profile));
   auto* iwa_frame1 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info1.app_id());
   AddLocalStorageUsage(iwa_frame1, 100);
 
-  auto iwa_url_info2 = web_app::InstallDevModeProxyIsolatedWebApp(
-      profile, dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app2 =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info2,
+                       app2->Install(profile));
   auto* iwa_frame2 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info2.app_id());
   AddLocalStorageUsage(iwa_frame2, 500);

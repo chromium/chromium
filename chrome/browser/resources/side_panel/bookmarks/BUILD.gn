@@ -31,6 +31,7 @@ build_webui("build") {
     "power_bookmarks_drag_manager.ts",
     "power_bookmarks_service.ts",
     "power_bookmarks_utils.ts",
+    "keyboard_arrow_navigation_service.ts",
   ]
 
   css_files = [ "power_bookmark_row.css" ]

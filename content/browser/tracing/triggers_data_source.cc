@@ -15,7 +15,7 @@ namespace content {
 void TriggersDataSource::Register() {
   perfetto::DataSourceDescriptor desc;
   desc.set_name("org.chromium.triggers");
-  perfetto::DataSource<TriggersDataSource>::Register(desc);
+  CHECK(perfetto::DataSource<TriggersDataSource>::Register(desc));
 }
 
 void TriggersDataSource::EmitTrigger(
@@ -29,7 +29,7 @@ void TriggersDataSource::EmitTrigger(
     trigger->set_trigger_name(triggered_rule->rule_name());
     trigger->set_trigger_name_hash(
         base::HashFieldTrialName(triggered_rule->rule_name()));
-    trigger->set_flow_id(triggered_rule->GetFlowId());
+    trigger->set_flow_id(triggered_rule->flow_id());
   });
 }
 

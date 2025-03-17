@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
@@ -324,6 +323,14 @@ TableLayout::TableLayout() = default;
 
 TableLayout::~TableLayout() = default;
 
+size_t TableLayout::NumColumns() const {
+  return columns_.size();
+}
+
+size_t TableLayout::NumRows() const {
+  return rows_.size();
+}
+
 TableLayout& TableLayout::AddColumn(LayoutAlignment h_align,
                                     LayoutAlignment v_align,
                                     float horizontal_resize,
@@ -342,6 +349,11 @@ TableLayout& TableLayout::AddPaddingColumn(float horizontal_resize, int width) {
   return *this;
 }
 
+void TableLayout::RemoveColumns(size_t n) {
+  CHECK_LE(n, columns_.size());
+  columns_.erase(columns_.end() - static_cast<ptrdiff_t>(n), columns_.end());
+}
+
 TableLayout& TableLayout::AddRows(size_t n, float vertical_resize, int height) {
   for (size_t i = 0; i < n; ++i) {
     rows_.emplace_back(vertical_resize, height, false);
@@ -354,15 +366,20 @@ TableLayout& TableLayout::AddPaddingRow(float vertical_resize, int height) {
   return *this;
 }
 
+void TableLayout::RemoveRows(size_t n) {
+  CHECK_LE(n, rows_.size());
+  rows_.erase(rows_.end() - static_cast<ptrdiff_t>(n), rows_.end());
+}
+
 TableLayout& TableLayout::LinkColumnSizes(std::vector<size_t> columns) {
   if (columns.size() > 1) {
-    base::ranges::sort(columns);
+    std::ranges::sort(columns);
     DCHECK_LT(columns.back(), columns_.size())
         << "Cannot link an unspecified column";
 
     std::vector<raw_ptr<Column, VectorExperimental>> linked_columns;
-    base::ranges::transform(columns, std::back_inserter(linked_columns),
-                            [&](size_t index) { return &columns_[index]; });
+    std::ranges::transform(columns, std::back_inserter(linked_columns),
+                           [&](size_t index) { return &columns_[index]; });
 
     for (views::TableLayout::Column* column : linked_columns) {
       column->set_linked_columns(linked_columns);
@@ -417,8 +434,8 @@ ProposedLayout TableLayout::CalculateProposedLayout(
                                &height);
     }
 
-    auto it = base::ranges::find(layout.child_layouts, view,
-                                 &ChildLayout::child_view);
+    auto it =
+        std::ranges::find(layout.child_layouts, view, &ChildLayout::child_view);
     DCHECK(it != layout.child_layouts.cend());
     it->bounds = gfx::Rect(x, y, width, height);
     it->available_size = SizeBounds(width, height);
@@ -484,22 +501,22 @@ void TableLayout::SetViewStates() const {
     // Add `view_state` to the relevant vectors.
     ViewState* ptr;
     {
-      auto it = base::ranges::lower_bound(view_states_by_row_span_,
-                                          view_state->row_span, std::less<>(),
-                                          &ViewState::row_span);
+      auto it = std::ranges::lower_bound(view_states_by_row_span_,
+                                         view_state->row_span, std::less<>(),
+                                         &ViewState::row_span);
       ptr = view_states_by_row_span_.insert(it, std::move(view_state))->get();
     }
     {
       auto it =
-          base::ranges::lower_bound(view_states_by_col_span_, ptr->col_span,
-                                    std::less<>(), &ViewState::col_span);
+          std::ranges::lower_bound(view_states_by_col_span_, ptr->col_span,
+                                   std::less<>(), &ViewState::col_span);
       view_states_by_col_span_.insert(it, ptr);
     }
     if (ptr->row_span > 1) {
       DCHECK_LE(row + ptr->row_span, rows_.size())
           << "row_span extends past trailing edge";
-      auto it = base::ranges::lower_bound(row_spans, ptr->start_col,
-                                          std::less<>(), &ViewState::start_col);
+      auto it = std::ranges::lower_bound(row_spans, ptr->start_col,
+                                         std::less<>(), &ViewState::start_col);
       row_spans.insert(it, ptr);
     }
 
@@ -609,7 +626,7 @@ void TableLayout::DistributeRemainingHeight(ViewState& view_state) const {
   const base::span<Row> rows_to_resize =
       base::span(rows_).subspan(view_state.start_row, view_state.row_span);
   const auto resizable_rows = static_cast<size_t>(
-      base::ranges::count_if(rows_to_resize, &Row::resizable));
+      std::ranges::count_if(rows_to_resize, &Row::resizable));
   size_t remaining_rows =
       resizable_rows ? resizable_rows : rows_to_resize.size();
   for (Row& row : rows_to_resize) {

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
@@ -51,6 +52,16 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     kIgnore,
   };
 
+  // Specify when to start the stream attempt delay timer.
+  enum class StreamAttemptDelayBehavior {
+    // Starts the stream attempt delay timer on the first service endpoint
+    // update.
+    kStartTimerOnFirstEndpointUpdate,
+    // Start the stream attempt delay timer when the first QUIC endpoint is
+    // attempted.
+    kStartTimerOnFirstQuicAttempt,
+  };
+
   // Observes events on the HttpStreamPool and may intercept preconnects. Used
   // only for tests.
   class NET_EXPORT_PRIVATE TestDelegate {
@@ -79,6 +90,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr base::TimeDelta kDefaultConnectionAttemptDelay =
       base::Milliseconds(250);
 
+  static inline constexpr NextProtoSet kTcpBasedProtocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoHTTP11,
+      NextProto::kProtoHTTP2};
+  static inline constexpr NextProtoSet kHttp11Protocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoHTTP11};
+  static inline constexpr NextProtoSet kQuicBasedProtocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoQUIC};
+
   // Reasons for closing streams.
   static constexpr std::string_view kIpAddressChanged = "IP address changed";
   static constexpr std::string_view kSslConfigChanged =
@@ -105,18 +124,29 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       "max_stream_per_group";
   static constexpr std::string_view kConnectionAttemptDelayParamName =
       "connection_attempt_delay";
+  static constexpr std::string_view kStreamAttemptDelayBehaviorParamName =
+      "stream_attempt_delay_behavior";
   static constexpr std::string_view kVerboseNetLogParamName = "verbose_netlog";
   static constexpr std::string_view kConsistencyCheckParamName =
       "consistency_check";
+
+  static constexpr inline auto kStreamAttemptDelayBehaviorOptions =
+      std::to_array<base::FeatureParam<StreamAttemptDelayBehavior>::Option>(
+          {{StreamAttemptDelayBehavior::kStartTimerOnFirstEndpointUpdate,
+            "first_endpoint_update"},
+           {StreamAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt,
+            "first_quic_attempt"}});
 
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE AttemptManager;
-  class NET_EXPORT_PRIVATE QuicTask;
 
   // The time to wait between connection attempts.
   static base::TimeDelta GetConnectionAttemptDelay();
+
+  // Returns when to start the stream attempt delay timer.
+  static StreamAttemptDelayBehavior GetStreamAttemptDelayBehavior();
 
   explicit HttpStreamPool(HttpNetworkSession* http_network_session,
                           bool cleanup_on_ip_address_change = true);
@@ -277,6 +307,11 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // implementation.
   static bool VerboseNetLog();
 
+  // Checks whether the total active stream counts are below the pool's limit.
+  // If there are limit-ignoring stream requests (represented as
+  // JobControllers), always return true.
+  bool EnsureTotalActiveStreamCountBelowLimit() const;
+
   Group& GetOrCreateGroup(
       const HttpStreamKey& stream_key,
       std::optional<QuicSessionAliasKey> quic_session_alias_key = std::nullopt);
@@ -337,6 +372,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   std::set<std::unique_ptr<JobController>, base::UniquePtrComparator>
       job_controllers_;
+  size_t limit_ignoring_job_controller_counts_ = 0;
 
   std::unique_ptr<TestDelegate> delegate_for_testing_;
 

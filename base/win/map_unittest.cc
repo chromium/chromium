@@ -23,134 +23,133 @@ namespace ABI::Windows::Foundation::Collections {
 // Map<int, double> specializations:
 template <>
 struct __declspec(uuid("34784dd6-b37b-4680-b391-899be4f755b6"))
-    IKeyValuePair<int, double> : IKeyValuePair_impl<int, double> {};
+IKeyValuePair<int, double> : IKeyValuePair_impl<int, double> {};
 
 template <>
 struct __declspec(uuid("c00bd9bd-cce5-46d6-9dc7-f03067e6d523"))
-    IMap<int, double> : IMap_impl<int, double> {};
+IMap<int, double> : IMap_impl<int, double> {};
 
 template <>
 struct __declspec(uuid("30e075af-9ba2-4562-9f10-a13a0e57ca5b"))
-    IMapView<int, double> : IMapView_impl<int, double> {};
+IMapView<int, double> : IMapView_impl<int, double> {};
 
 template <>
 struct __declspec(uuid("0a0e8ed6-7deb-4fd4-8033-38d270c69301"))
-    IObservableMap<int, double> : IObservableMap_impl<int, double> {};
+IObservableMap<int, double> : IObservableMap_impl<int, double> {};
 
 template <>
 struct __declspec(uuid("f41f9179-9c95-4755-af55-929a250fc0aa"))
-    IMapChangedEventArgs<int> : IMapChangedEventArgs_impl<int> {};
+IMapChangedEventArgs<int> : IMapChangedEventArgs_impl<int> {};
 
 template <>
 struct __declspec(uuid("79196029-07f6-47c6-9933-9ac3a04e7731"))
-    MapChangedEventHandler<int, double>
-    : MapChangedEventHandler_impl<int, double> {};
+MapChangedEventHandler<int, double> : MapChangedEventHandler_impl<int, double> {
+};
 
 template <>
 struct __declspec(uuid("bfd254c3-5ede-4f8f-9e48-3636347f6fe0"))
-    IIterable<IKeyValuePair<int, double>*>
+IIterable<IKeyValuePair<int, double>*>
     : IIterable_impl<IKeyValuePair<int, double>*> {};
 
 template <>
 struct __declspec(uuid("6bb5c7ff-964e-469f-87d3-42daaea8e58d"))
-    IIterator<IKeyValuePair<int, double>*>
+IIterator<IKeyValuePair<int, double>*>
     : IIterator_impl<IKeyValuePair<int, double>*> {};
 
 template <>
 struct __declspec(uuid("7d27014c-8df7-4977-bf98-b0c821f5f988"))
-    IVector<IKeyValuePair<int, double>*>
+IVector<IKeyValuePair<int, double>*>
     : IVector_impl<IKeyValuePair<int, double>*> {};
 
 template <>
 struct __declspec(uuid("d33b7a5c-9da6-4a6a-8b2e-e08cc0240d77"))
-    IVectorView<IKeyValuePair<int, double>*>
+IVectorView<IKeyValuePair<int, double>*>
     : IVectorView_impl<IKeyValuePair<int, double>*> {};
 
 template <>
 struct __declspec(uuid("e5b0d7f2-915d-4831-9a04-466fed63cfa0"))
-    VectorChangedEventHandler<IKeyValuePair<int, double>*>
+VectorChangedEventHandler<IKeyValuePair<int, double>*>
     : VectorChangedEventHandler_impl<IKeyValuePair<int, double>*> {};
 
 template <>
 struct __declspec(uuid("27c3ee04-457f-42dd-9556-8f7c4994d7af"))
-    IObservableVector<IKeyValuePair<int, double>*>
+IObservableVector<IKeyValuePair<int, double>*>
     : IObservableVector_impl<IKeyValuePair<int, double>*> {};
 
 // Map<Uri*, Uri*> specializations:
 template <>
-struct __declspec(uuid("c03984bc-b800-43e4-a36e-3c8c4a34c005")) IMap<Uri*, Uri*>
-    : IMap_impl<Uri*, Uri*> {};
+struct __declspec(uuid("c03984bc-b800-43e4-a36e-3c8c4a34c005"))
+IMap<Uri*, Uri*> : IMap_impl<Uri*, Uri*> {};
 
 template <>
 struct __declspec(uuid("93ec9c52-1b0b-4fd8-ab5a-f6ea32db0e35"))
-    IMapView<Uri*, Uri*> : IMapView_impl<Uri*, Uri*> {};
+IMapView<Uri*, Uri*> : IMapView_impl<Uri*, Uri*> {};
 
 template <>
 struct __declspec(uuid("9b711c83-5f01-4604-9e01-3d586b3f9cdd"))
-    IObservableMap<Uri*, Uri*> : IObservableMap_impl<Uri*, Uri*> {};
+IObservableMap<Uri*, Uri*> : IObservableMap_impl<Uri*, Uri*> {};
 
 template <>
 struct __declspec(uuid("f41f9179-9c95-4755-af55-929a250fc0aa"))
-    IMapChangedEventArgs<Uri*> : IMapChangedEventArgs_impl<Uri*> {};
+IMapChangedEventArgs<Uri*> : IMapChangedEventArgs_impl<Uri*> {};
 
 template <>
 struct __declspec(uuid("6d758124-f99a-47e7-ab74-7cff7359b206"))
-    MapChangedEventHandler<Uri*, Uri*>
-    : MapChangedEventHandler_impl<Uri*, Uri*> {};
+MapChangedEventHandler<Uri*, Uri*> : MapChangedEventHandler_impl<Uri*, Uri*> {};
 
 template <>
 struct __declspec(uuid("8b270b8a-d74b-459b-9933-81cb234d7c5e"))
-    IKeyValuePair<Uri*, Uri*> : IKeyValuePair_impl<Uri*, Uri*> {};
+IKeyValuePair<Uri*, Uri*> : IKeyValuePair_impl<Uri*, Uri*> {};
 
 template <>
 struct __declspec(uuid("6368bcea-dfbc-4847-ba50-9e217fc2d5c3"))
-    IIterable<IKeyValuePair<Uri*, Uri*>*>
+IIterable<IKeyValuePair<Uri*, Uri*>*>
     : IIterable_impl<IKeyValuePair<Uri*, Uri*>*> {};
 
 template <>
 struct __declspec(uuid("7653cf9f-9d0b-46d3-882e-4c0afb209333"))
-    IIterator<IKeyValuePair<Uri*, Uri*>*>
+IIterator<IKeyValuePair<Uri*, Uri*>*>
     : IIterator_impl<IKeyValuePair<Uri*, Uri*>*> {};
 
 template <>
 struct __declspec(uuid("98c3f5a7-237d-494b-ba89-4a49368d5491"))
-    IVector<IKeyValuePair<Uri*, Uri*>*>
-    : IVector_impl<IKeyValuePair<Uri*, Uri*>*> {};
+IVector<IKeyValuePair<Uri*, Uri*>*> : IVector_impl<IKeyValuePair<Uri*, Uri*>*> {
+};
 
 template <>
 struct __declspec(uuid("2cfc2617-7c88-4482-8158-97bf7cc458d7"))
-    IVectorView<IKeyValuePair<Uri*, Uri*>*>
+IVectorView<IKeyValuePair<Uri*, Uri*>*>
     : IVectorView_impl<IKeyValuePair<Uri*, Uri*>*> {};
 
 template <>
 struct __declspec(uuid("bb581e03-3ee7-4c01-8035-4f581c5e91f5"))
-    VectorChangedEventHandler<IKeyValuePair<Uri*, Uri*>*>
+VectorChangedEventHandler<IKeyValuePair<Uri*, Uri*>*>
     : VectorChangedEventHandler_impl<IKeyValuePair<Uri*, Uri*>*> {};
 
 template <>
 struct __declspec(uuid("fb0bd692-34c3-4242-a085-58ed71e8ea6b"))
-    IObservableVector<IKeyValuePair<Uri*, Uri*>*>
+IObservableVector<IKeyValuePair<Uri*, Uri*>*>
     : IObservableVector_impl<IKeyValuePair<Uri*, Uri*>*> {};
 
 // Map<HSTRING*, IInspectable*> specializations:
 template <>
 struct __declspec(uuid("c6682be1-963c-4101-85aa-63db583eb0d5"))
-    IVector<IKeyValuePair<HSTRING, IInspectable*>*>
+IVector<IKeyValuePair<HSTRING, IInspectable*>*>
     : IVector_impl<IKeyValuePair<HSTRING, IInspectable*>*> {};
 
 template <>
 struct __declspec(uuid("868e5342-49c8-478f-af0f-1691e1bbbb7c"))
-    IVectorView<IKeyValuePair<HSTRING, IInspectable*>*>
+IVectorView<IKeyValuePair<HSTRING, IInspectable*>*>
     : IVectorView_impl<IKeyValuePair<HSTRING, IInspectable*>*> {};
 
 template <>
 struct __declspec(uuid("cd99b82f-a768-405f-9123-be509146fef8"))
-    VectorChangedEventHandler<IKeyValuePair<HSTRING, IInspectable*>*>
+VectorChangedEventHandler<IKeyValuePair<HSTRING, IInspectable*>*>
     : VectorChangedEventHandler_impl<IKeyValuePair<HSTRING, IInspectable*>*> {};
 
 template <>
 struct __declspec(uuid("079e2180-0c7a-4508-85ff-7a5f2b29b92b"))
-    IObservableVector<IKeyValuePair<HSTRING, IInspectable*>*>
+IObservableVector<IKeyValuePair<HSTRING, IInspectable*>*>
     : IObservableVector_impl<IKeyValuePair<HSTRING, IInspectable*>*> {};
 
 }  // namespace ABI::Windows::Foundation::Collections

@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "components/facilitated_payments/core/browser/model/secure_payload.h"
+
 namespace payments::facilitated {
 
 // Contains information retrieved from an
@@ -23,8 +25,9 @@ class FacilitatedPaymentsInitiatePaymentResponseDetails {
       const FacilitatedPaymentsInitiatePaymentResponseDetails&) = delete;
   ~FacilitatedPaymentsInitiatePaymentResponseDetails();
 
-  // Used to trigger `PurchaseManager`.
-  std::vector<uint8_t> action_token_;
+  // Used to trigger a payment UI flow in Google Play Services.
+  SecurePayload secure_payload_;
+
   // Set if the request to Payments API fails. The message is human-readable,
   // and will be shown to the user. It could contain HTML <a> tags linking to
   // help center docs.

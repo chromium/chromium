@@ -235,7 +235,7 @@ bool TextResourceDecoder::CheckForCSSCharset(base::span<const char> data) {
   if (BytesEqual(data, '@', 'c', 'h', 'a', 'r', 's', 'e', 't', ' ', '"')) {
     data = data.subspan(10u);
 
-    auto it = base::ranges::find(data, '"');
+    auto it = std::ranges::find(data, '"');
     if (it == data.end()) {
       return false;
     }
@@ -273,7 +273,7 @@ bool TextResourceDecoder::CheckForXMLCharset(base::span<const char> data) {
   // to be at the start of an XML document, and it is ignored in HTML documents
   // in such case.
   if (BytesEqual(data, '<', '?', 'x', 'm', 'l')) {
-    auto it = base::ranges::find(data, '>');
+    auto it = std::ranges::find(data, '>');
     if (it == data.end()) {
       return false;
     }
@@ -324,7 +324,8 @@ void TextResourceDecoder::CheckForMetaCharset(base::span<const char> data) {
 //   different domains, |source_| would not be set to EncodingFromParentFrame
 //   in the first place.
 void TextResourceDecoder::AutoDetectEncodingIfAllowed(
-    base::span<const char> data) {
+    base::span<const char> data,
+    String* auto_detected_charset) {
   if (options_.GetEncodingDetectionOption() !=
           TextResourceDecoderOptions::kUseAllAutoDetection ||
       detection_completed_)
@@ -341,12 +342,20 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(
           base::as_bytes(data), options_.HintEncoding().Utf8().c_str(),
           options_.HintURL(), options_.HintLanguage(), &detected_encoding)) {
     SetEncoding(detected_encoding, kEncodingFromContentSniffing);
+    if (auto_detected_charset != nullptr &&
+        (options_.GetContentType() ==
+             TextResourceDecoderOptions::kHTMLContent ||
+         options_.GetContentType() ==
+             TextResourceDecoderOptions::kXMLContent)) {
+      *auto_detected_charset = detected_encoding.GetName();
+    }
   }
   if (detected_encoding != WTF::UnknownEncoding())
     detection_completed_ = true;
 }
 
-String TextResourceDecoder::Decode(base::span<const char> data) {
+String TextResourceDecoder::Decode(base::span<const char> data,
+                                   String* auto_detected_charset) {
   TRACE_EVENT1("blink", "TextResourceDecoder::Decode", "data_len", data.size());
   // If we have previously buffered data, then add the new data to the buffer
   // and use the buffered content. Any case that depends on buffering (== return
@@ -393,7 +402,7 @@ String TextResourceDecoder::Decode(base::span<const char> data) {
       !checked_for_meta_charset_)
     CheckForMetaCharset(data_for_decode);
 
-  AutoDetectEncodingIfAllowed(data);
+  AutoDetectEncodingIfAllowed(data, auto_detected_charset);
 
   DCHECK(encoding_.IsValid());
 

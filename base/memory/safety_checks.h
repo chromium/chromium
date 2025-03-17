@@ -63,10 +63,6 @@ enum class MemorySafetyCheck : uint32_t {
   // Enables |FreeFlags::kSchedulerLoopQuarantine|.
   // Requires PA-E.
   kSchedulerLoopQuarantine = (1u << 1),
-
-  // Enables |FreeFlags::kZap|.
-  // Requires PA-E.
-  kZapOnFree = (1u << 2),
 };
 
 constexpr MemorySafetyCheck operator|(MemorySafetyCheck a,
@@ -88,7 +84,7 @@ constexpr MemorySafetyCheck operator~(MemorySafetyCheck a) {
 // Set of checks for ADVANCED_MEMORY_SAFETY_CHECKS() annotated objects.
 constexpr auto kAdvancedMemorySafetyChecks =
     MemorySafetyCheck::kForcePartitionAlloc |
-    MemorySafetyCheck::kSchedulerLoopQuarantine | MemorySafetyCheck::kZapOnFree;
+    MemorySafetyCheck::kSchedulerLoopQuarantine;
 
 // Define type traits to determine type |T|'s memory safety check status.
 namespace {
@@ -98,8 +94,7 @@ constexpr bool ShouldUsePartitionAlloc(MemorySafetyCheck checks) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return static_cast<bool>(checks &
                            (MemorySafetyCheck::kForcePartitionAlloc |
-                            MemorySafetyCheck::kSchedulerLoopQuarantine |
-                            MemorySafetyCheck::kZapOnFree));
+                            MemorySafetyCheck::kSchedulerLoopQuarantine));
 #else
   return false;
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -118,9 +113,6 @@ constexpr partition_alloc::FreeFlags GetFreeFlags(MemorySafetyCheck checks) {
   auto flags = partition_alloc::FreeFlags::kNone;
   if (static_cast<bool>(checks & MemorySafetyCheck::kSchedulerLoopQuarantine)) {
     flags |= partition_alloc::FreeFlags::kSchedulerLoopQuarantine;
-  }
-  if (static_cast<bool>(checks & MemorySafetyCheck::kZapOnFree)) {
-    flags |= partition_alloc::FreeFlags::kZap;
   }
   return flags;
 }

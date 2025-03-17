@@ -346,26 +346,30 @@ std::string GetResultA11yDescription(ResultView* result_view,
     if (include_second_line_text) {
       return l10n_util::GetStringFUTF8(
           IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_AND_SUBTEXT_TEMPLATE,
-          GetIntentName(intent), result_view->GetFirstLineText(),
-          result_view->GetFirstLineSubText(), result_view->GetSecondLineText());
+          GetIntentName(intent),
+          std::u16string(result_view->GetFirstLineText()),
+          std::u16string(result_view->GetFirstLineSubText()),
+          std::u16string(result_view->GetSecondLineText()));
     }
 
     return l10n_util::GetStringFUTF8(
         IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_TEMPLATE,
-        GetIntentName(intent), result_view->GetFirstLineText(),
-        result_view->GetSecondLineText());
+        GetIntentName(intent), std::u16string(result_view->GetFirstLineText()),
+        std::u16string(result_view->GetSecondLineText()));
   }
 
   if (include_second_line_text) {
     return l10n_util::GetStringFUTF8(
         IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_SUBTEXT_TEMPLATE,
-        result_view->GetFirstLineText(), result_view->GetFirstLineSubText(),
-        result_view->GetSecondLineText());
+        std::u16string(result_view->GetFirstLineText()),
+        std::u16string(result_view->GetFirstLineSubText()),
+        std::u16string(result_view->GetSecondLineText()));
   }
 
   return l10n_util::GetStringFUTF8(
       IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_TEMPLATE,
-      result_view->GetFirstLineText(), result_view->GetSecondLineText());
+      std::u16string(result_view->GetFirstLineText()),
+      std::u16string(result_view->GetSecondLineText()));
 }
 
 }  // namespace
@@ -384,8 +388,7 @@ QuickAnswersView::QuickAnswersView(
           this,
           base::BindRepeating(&QuickAnswersView::GetFocusableViews,
                               base::Unretained(this)))) {
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorPrimaryBackground));
   SetUseDefaultFillLayout(true);
 
   std::unique_ptr<views::FlexLayout> main_view_layout =
@@ -530,7 +533,7 @@ void QuickAnswersView::OnFocus() {
   if (wants_focus != this) {
     wants_focus->RequestFocus();
   } else {
-    NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
   }
 }
 

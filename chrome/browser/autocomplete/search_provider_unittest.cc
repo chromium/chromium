@@ -25,6 +25,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -141,8 +142,8 @@ std::unique_ptr<KeyedService> BuildRemoteSuggestionsServiceWithURLLoader(
     network::TestURLLoaderFactory* test_url_loader_factory,
     content::BrowserContext* context) {
   return std::make_unique<RemoteSuggestionsService>(
-      DocumentSuggestionsServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context), /*create_if_necessary=*/true),
+      /*document_suggestions_service=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service=*/nullptr,
       test_url_loader_factory->GetSafeWeakWrapper());
 }
 
@@ -2522,7 +2523,7 @@ TEST_F(SearchProviderTest, FieldTrialTriggeredParsing) {
         "[\"foo\",[\"foo bar\"],[\"\"],[],"
         "{\"google:suggesttype\":[\"QUERY\"],"
         "\"google:fieldtrialtriggered\":" +
-            std::string(trigger ? "true" : "false") + "}]",
+            base::ToString(trigger) + "}]",
         std::string());
 
     // Check for the match and field trial triggered bits.

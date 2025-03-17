@@ -320,7 +320,7 @@ if (is_mac) {
     args = [
       "--encode=mojo_fuzzer.ChannelMac",
       "-I",
-      rebase_path("//"),
+      rebase_path("//", root_build_dir),
       "mojo/core/test/data/channel_mac/channel_mac.proto",
     ]
   }

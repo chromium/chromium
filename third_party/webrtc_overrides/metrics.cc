@@ -47,7 +47,7 @@ Histogram* SparseHistogramFactoryGetEnumeration(std::string_view name,
       std::string(name), base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-const char* GetHistogramName(Histogram* histogram_pointer) {
+std::string_view GetHistogramName(Histogram* histogram_pointer) {
   base::HistogramBase* ptr =
       reinterpret_cast<base::HistogramBase*>(histogram_pointer);
   return ptr->histogram_name();

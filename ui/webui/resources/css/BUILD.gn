@@ -26,8 +26,8 @@ preprocess_if_expr("preprocess") {
     "action_link.css",
     "chrome_shared.css",
     "spinner.css",
-    "text_defaults.css",
     "text_defaults_md.css",
+    "text_defaults.css",
     "widgets.css",
   ]
 
@@ -35,7 +35,7 @@ preprocess_if_expr("preprocess") {
     in_files += [ "roboto.css" ]
   }
 
-  if (include_polymer) {
+  if (include_polymer || is_desktop_android) {
     in_files += [ "md_colors.css" ]
   }
 }

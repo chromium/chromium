@@ -41,9 +41,8 @@ const AccountId AccountIdForType(LoggedInUserMixin::LogInType type) {
   switch (type) {
     case LoggedInUserMixin::LogInType::kChild:
     case LoggedInUserMixin::LogInType::kConsumer:
-      return AccountId::FromUserEmailGaiaId(
-          FakeGaiaMixin::kFakeUserEmail,
-          GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+      return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                            FakeGaiaMixin::kFakeUserGaiaId);
     case LoggedInUserMixin::LogInType::kConsumerCustomDomain:
     case LoggedInUserMixin::LogInType::kManaged:
       return AccountId::FromUserEmailGaiaId(
@@ -148,8 +147,7 @@ void LoggedInUserMixin::LogInUser(
   if (!include_initial_user_) {
     if (user_.user_type == user_manager::UserType::kChild) {
       CHECK_EQ(user_.account_id.GetUserEmail(), FakeGaiaMixin::kFakeUserEmail);
-      CHECK_EQ(user_.account_id.GetGaiaId(),
-               GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+      CHECK_EQ(user_.account_id.GetGaiaId(), FakeGaiaMixin::kFakeUserGaiaId);
       login_manager_.LoginAsNewChildUser();
     } else {
       login_manager_.LoginAsNewRegularUser(user_context);

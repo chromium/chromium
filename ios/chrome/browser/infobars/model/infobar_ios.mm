@@ -24,8 +24,9 @@ InfoBarIOS::~InfoBarIOS() {
 }
 
 void InfoBarIOS::set_accepted(bool accepted) {
-  if (accepted_ == accepted)
+  if (accepted_ == accepted) {
     return;
+  }
   accepted_ = accepted;
   for (auto& observer : observers_) {
     observer.DidUpdateAcceptedState(this);
@@ -33,8 +34,9 @@ void InfoBarIOS::set_accepted(bool accepted) {
 }
 
 void InfoBarIOS::set_high_priority(bool high_priority) {
-  if (high_priority_ == high_priority)
+  if (high_priority_ == high_priority) {
     return;
+  }
   high_priority_ = high_priority;
 }
 

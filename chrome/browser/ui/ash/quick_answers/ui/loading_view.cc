@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/quick_answers/ui/loading_view.h"
 
+#include <string_view>
+
 #include "chrome/browser/ui/ash/quick_answers/ui/typography.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,7 +29,7 @@ LoadingView::LoadingView() {
 
   first_line_label_ = AddChildView(
       views::Builder<views::Label>()
-          .SetEnabledColorId(ui::kColorLabelForeground)
+          .SetEnabledColor(ui::kColorLabelForeground)
           // Default is `ALIGN_CENTER`. See `Label::Init`.
           // `SetHorizontalAlignment` flips the value for RTL.
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -42,7 +44,7 @@ LoadingView::LoadingView() {
   second_line_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_LOADING))
-          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetProperty(
               views::kFlexBehaviorKey,
@@ -53,11 +55,11 @@ LoadingView::LoadingView() {
   SetDesign(Design::kCurrent);
 }
 
-void LoadingView::SetFirstLineText(const std::u16string& first_line_text) {
+void LoadingView::SetFirstLineText(std::u16string_view first_line_text) {
   first_line_label_->SetText(first_line_text);
 }
 
-std::u16string LoadingView::GetFirstLineText() const {
+std::u16string_view LoadingView::GetFirstLineText() const {
   return first_line_label_->GetText();
 }
 
@@ -70,7 +72,7 @@ void LoadingView::SetDesign(Design design) {
 }
 
 BEGIN_METADATA(LoadingView)
-ADD_PROPERTY_METADATA(std::u16string, FirstLineText)
+ADD_PROPERTY_METADATA(std::u16string_view, FirstLineText)
 END_METADATA
 
 }  // namespace quick_answers

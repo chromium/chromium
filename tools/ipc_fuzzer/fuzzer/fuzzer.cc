@@ -758,12 +758,18 @@ struct FuzzTraits<gfx::GpuMemoryBufferHandle> {
     int type;
     if (!FuzzParam(&type, fuzzer))
       return false;
+    p->type = static_cast<gfx::GpuMemoryBufferType>(type);
     if (!FuzzParam(&p->offset, fuzzer))
       return false;
     if (!FuzzParam(&p->stride, fuzzer))
       return false;
-    if (!FuzzParam(&p->region, fuzzer))
+    // This reduces fuzzing coverage somewhat, but the UnsafeSharedMemoryRegion
+    // can only be set for GpuMemoryBufferHandle's of the correct type.
+    if ((p->type == gfx::SHARED_MEMORY_BUFFER ||
+         p->type == gfx::DXGI_SHARED_HANDLE) &&
+        !FuzzParam(&p->region(), fuzzer)) {
       return false;
+    }
     p->type = static_cast<gfx::GpuMemoryBufferType>(type);
     return true;
   }

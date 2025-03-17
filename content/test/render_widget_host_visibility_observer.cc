@@ -4,6 +4,8 @@
 
 #include "content/test/render_widget_host_visibility_observer.h"
 
+#include "content/browser/renderer_host/render_widget_host_impl.h"
+
 namespace content {
 
 RenderWidgetHostVisibilityObserver::RenderWidgetHostVisibilityObserver(

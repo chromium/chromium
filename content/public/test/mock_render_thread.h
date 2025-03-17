@@ -111,7 +111,7 @@ class MockRenderThread : public RenderThread {
   // The View expects to be returned a valid |reply.route_id| different from its
   // own. We do not keep track of the newly created widget in MockRenderThread,
   // so it must be cleaned up on its own.
-  void OnCreateWindow(const mojom::CreateNewWindowParams& params,
+  void OnCreateWindow(mojom::CreateNewWindowParams& params,
                       mojom::CreateNewWindowReply* reply);
 
   // Releases any `blink::WebView`s that are being held onto by PageBroadcast

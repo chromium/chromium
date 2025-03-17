@@ -18,7 +18,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/metrics/daily_event.h"
@@ -40,7 +40,7 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 class TabStatsTracker : public TabStripModelObserver,
                         public BrowserListObserver,
                         public base::PowerSuspendObserver,
-                        public resource_coordinator::TabLifecycleObserver {
+                        public resource_coordinator::LifecycleUnitObserver {
  public:
   // Constructor. |pref_service| must outlive this object.
   explicit TabStatsTracker(PrefService* pref_service);
@@ -157,12 +157,11 @@ class TabStatsTracker : public TabStripModelObserver,
   // base::PowerSuspendObserver:
   void OnResume() override;
 
-  // resource_coordinator::TabLifecycleObserver:
-  void OnTabLifecycleStateChange(
-      content::WebContents* contents,
-      mojom::LifecycleUnitState previous_state,
-      mojom::LifecycleUnitState new_state,
-      std::optional<LifecycleUnitDiscardReason> discard_reason) override;
+  // resource_coordinator::LifecycleUnitObserver:
+  void OnLifecycleUnitStateChanged(
+      resource_coordinator::LifecycleUnit* lifecycle_unit,
+      ::mojom::LifecycleUnitState previous_state,
+      ::mojom::LifecycleUnitStateChangeReason reason) override;
 
   // Functions to call to start tracking a new tab.
   void OnInitialOrInsertedTab(content::WebContents* web_contents);

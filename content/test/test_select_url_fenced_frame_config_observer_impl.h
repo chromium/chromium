@@ -15,11 +15,14 @@ namespace content {
 class TestSelectURLFencedFrameConfigObserverImpl
     : public SharedStorageRuntimeManager::SharedStorageObserverInterface {
  public:
+  using AccessScope = blink::SharedStorageAccessScope;
+
   TestSelectURLFencedFrameConfigObserverImpl();
   ~TestSelectURLFencedFrameConfigObserverImpl() override;
 
   void OnSharedStorageAccessed(const base::Time& access_time,
-                               AccessType type,
+                               AccessScope scope,
+                               AccessMethod method,
                                FrameTreeNodeId main_frame_id,
                                const std::string& owner_origin,
                                const SharedStorageEventParams& params) override;

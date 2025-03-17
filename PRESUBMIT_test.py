@@ -2966,6 +2966,16 @@ class BannedTypeCheckTest(unittest.TestCase):
                      ['ResourcesCompat.getDrawable();']),
             MockFile('some/java/problematic/getdrawable2.java',
                      ['getResources().getDrawable();']),
+            MockFile('some/java/problematic/announceForAccessibility.java',
+                     ['view.announceForAccessibility(accessibilityText);']),
+            MockFile(
+                'some/java/problematic/accessibilityTypeAnnouncement.java', [
+                    'accessibilityEvent.setEventType(AccessibilityEvent.TYPE_ANNOUNCEMENT);'
+                ]),
+            MockFile(
+                'content/java/problematic/desktopandroid.java', [
+                    'if (BuildConfig.IS_DESKTOP_ANDROID) {}'
+                ]),
         ]
 
         errors = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -2990,6 +3000,15 @@ class BannedTypeCheckTest(unittest.TestCase):
             'some/java/problematic/getdrawable1.java' in errors[0].message)
         self.assertTrue(
             'some/java/problematic/getdrawable2.java' in errors[0].message)
+        self.assertTrue('some/java/problematic/announceForAccessibility.java'
+                        in errors[0].message)
+        self.assertTrue(
+            'some/java/problematic/accessibilityTypeAnnouncement.java' in
+            errors[0].message)
+        self.assertTrue(
+            'content/java/problematic/desktopandroid.java' in
+            errors[0].message)
+
 
     def testBannedCppFunctions(self):
         input_api = MockInputApi()
@@ -3017,6 +3036,8 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('banned_ranges_usage.cc',
                      ['std::ranges::subrange(first, last)']),
             MockFile('views_usage.cc', ['std::views::all(vec)']),
+            MockFile('content/desktop_android.cc',
+                     ['#if BUILDFLAG(IS_DESKTOP_ANDROID)']),
         ]
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -3039,6 +3060,7 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertFalse('allowed_ranges_usage.cc' in results[1].message)
         self.assertTrue('banned_ranges_usage.cc' in results[1].message)
         self.assertTrue('views_usage.cc' in results[1].message)
+        self.assertTrue('content/desktop_android.cc' in results[0].message)
 
     def testBannedCppRandomFunctions(self):
         banned_rngs = [
@@ -5116,89 +5138,6 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
         self.assertIn('OneTest.java', errors[0].items[0])
 
 
-class CheckMockAnnotation(unittest.TestCase):
-    """Test the CheckMockAnnotation presubmit check."""
-
-    def testTruePositives(self):
-        """Examples of @Mock or @Spy being used and nothing should be flagged."""
-        mock_input = MockInputApi()
-        mock_input.files = [
-            MockFile('path/OneTest.java', [
-                'import a.b.c.Bar;',
-                'import a.b.c.Foo;',
-                '@Mock public static Foo f = new Foo();',
-                'Mockito.mock(new Bar(a, b, c))'
-            ]),
-            MockFile('path/TwoTest.java', [
-                'package x.y.z;',
-                'import static org.mockito.Mockito.spy;',
-                '@Spy',
-                'public static FooBar<Baz> f;',
-                'a = spy(Baz.class)'
-            ]),
-        ]
-        errors = PRESUBMIT.CheckMockAnnotation(mock_input, MockOutputApi())
-        self.assertEqual(1, len(errors))
-        self.assertEqual(2, len(errors[0].items))
-        self.assertIn('a.b.c.Bar in path/OneTest.java', errors[0].items)
-        self.assertIn('x.y.z.Baz in path/TwoTest.java', errors[0].items)
-
-    def testTrueNegatives(self):
-        """Examples of when we should not be flagging mock() or spy() calls."""
-        mock_input = MockInputApi()
-        mock_input.files = [
-            MockFile('path/OneTest.java', [
-                'package a.b.c;',
-                'import org.chromium.base.test.BaseRobolectricTestRunner;',
-                'Mockito.mock(Abc.class)'
-            ]),
-            MockFile('path/TwoTest.java', [
-                'package a.b.c;',
-                'import androidx.test.uiautomator.UiDevice;',
-                'Mockito.spy(new Def())'
-            ]),
-            MockFile('path/ThreeTest.java', [
-                'package a.b.c;',
-                'import static org.mockito.Mockito.spy;',
-                '@Spy',
-                'public static Foo f = new Abc();',
-                'a = spy(Foo.class)'
-            ]),
-            MockFile('path/FourTest.java', [
-                'package a.b.c;',
-                'import static org.mockito.Mockito.mock;',
-                '@Spy',
-                'public static Bar b = new Abc(a, b, c, d);',
-                ' mock(new Bar(a,b,c))'
-            ]),
-            MockFile('path/FiveTest.java', [
-                'package a.b.c;',
-                '@Mock',
-                'public static Baz<abc> b;',
-                'Mockito.mock(Baz.class)'
-            ]),
-            MockFile('path/SixTest.java', [
-                'package a.b.c;',
-                'import android.view.View;',
-                'import java.ArrayList;',
-                'Mockito.spy(new View())',
-                'Mockito.mock(ArrayList.class)'
-            ]),
-            MockFile('path/SevenTest.java', [
-                'package a.b.c;',
-                '@Mock private static Seven s;',
-                'Mockito.mock(Seven.class)'
-            ]),
-            MockFile('path/EightTest.java', [
-                'package a.b.c;',
-                '@Spy Eight e = new Eight2();',
-                'Mockito.py(new Eight())'
-            ]),
-        ]
-        errors = PRESUBMIT.CheckMockAnnotation(mock_input, MockOutputApi())
-        self.assertEqual(0, len(errors))
-
-
 class AssertNoJsInIosTest(unittest.TestCase):
     def testErrorJs(self):
         input_api = MockInputApi()
@@ -5704,6 +5643,34 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
         self.assertTrue('chrome/foo/file3.java' in results[0].message),
         self.assertTrue('chrome/foo/file4.java' in results[0].message),
         self.assertTrue('chrome/foo/file5.java' in results[0].message),
+
+
+class CheckAnonymousNamespaceTest(unittest.TestCase):
+    """Test the presubmit for anonymous namespaces."""
+
+    def testAnonymousNamespace(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('chrome/test.h', ['namespace {']),
+            MockFile('chrome/test.cc', ['namespace {']),
+            MockFile('chrome/test.java', ['namespace {']),
+            MockFile('chrome/test.cpp', ['namespace {']),
+            MockFile('chrome/test.txt', ['namespace {']),
+        ]
+
+        results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+
+        self.assertEqual(1, len(results))
+        self.assertTrue(
+            'chrome/test.h' in results[0].message),
+        self.assertFalse(
+            'chrome/test.cc' in results[0].message),
+        self.assertFalse(
+            'chrome/test.java' in results[0].message),
+        self.assertFalse(
+            'chrome/test.cpp' in results[0].message),
+        self.assertFalse(
+            'chrome/test.txt' in results[0].message),
 
 
 if __name__ == '__main__':

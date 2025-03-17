@@ -7,7 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
+#include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -15,6 +19,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/document_service_internal.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
@@ -95,6 +100,22 @@ void DocumentAssociatedData::RemoveService(
     internal::DocumentServiceBase* service,
     base::PassKey<internal::DocumentServiceBase>) {
   std::erase(services_, service);
+}
+
+void DocumentAssociatedData::AddPostPrerenderingActivationStep(
+    base::OnceClosure callback) {
+  CHECK_EQ(GetSafeRef()->GetLifecycleState(),
+           RenderFrameHost::LifecycleState::kPrerendering);
+  post_prerendering_activation_callbacks_.push(std::move(callback));
+}
+
+void DocumentAssociatedData::RunPostPrerenderingActivationSteps() {
+  CHECK_NE(GetSafeRef()->GetLifecycleState(),
+           RenderFrameHost::LifecycleState::kPrerendering);
+  while (!post_prerendering_activation_callbacks_.empty()) {
+    std::move(post_prerendering_activation_callbacks_.front()).Run();
+    post_prerendering_activation_callbacks_.pop();
+  }
 }
 
 }  // namespace content

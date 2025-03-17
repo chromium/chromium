@@ -4,6 +4,7 @@
 
 #include "components/zucchini/equivalence_map.h"
 
+#include <algorithm>
 #include <deque>
 #include <tuple>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "components/zucchini/encoded_view.h"
 #include "components/zucchini/patch_reader.h"
 #include "components/zucchini/suffix_array.h"
@@ -249,8 +249,8 @@ OffsetMapper::OffsetMapper(const EquivalenceMap& equivalence_map,
       old_image_size_(old_image_size),
       new_image_size_(new_image_size) {
   DCHECK_GT(new_image_size_, 0U);
-  base::ranges::transform(equivalence_map, equivalences_.begin(),
-                          &EquivalenceCandidate::eq);
+  std::ranges::transform(equivalence_map, equivalences_.begin(),
+                         &EquivalenceCandidate::eq);
   PruneEquivalencesAndSortBySource(&equivalences_);
 }
 

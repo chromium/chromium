@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -19,6 +20,8 @@
 
 // The implementation of `blink::mojom::AIRewriter`, which exposes the single
 // stream-based `Rewrite()` API.
+// TODO(crbug.com/402442890): Refactor Writing Assistance APIs to reduce
+// duplicated code.
 class AIRewriter : public AIContextBoundObject,
                    public blink::mojom::AIRewriter {
  public:
@@ -30,20 +33,38 @@ class AIRewriter : public AIContextBoundObject,
       mojo::PendingReceiver<blink::mojom::AIRewriter> receiver);
   AIRewriter(const AIRewriter&) = delete;
   AIRewriter& operator=(const AIRewriter&) = delete;
-
   ~AIRewriter() override;
+
+  static std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
+  ToProtoOptions(const blink::mojom::AIRewriterCreateOptionsPtr& options);
 
   // `blink::mojom::AIRewriter` implementation.
   void Rewrite(const std::string& input,
                const std::optional<std::string>& context,
                mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                    pending_responder) override;
+  void MeasureUsage(const std::string& input,
+                    const std::string& context,
+                    MeasureUsageCallback callback) override;
 
  private:
+  void DidGetExecutionInputSizeForRewrite(
+      mojo::RemoteSetElementId responder_id,
+      optimization_guide::proto::WritingAssistanceApiRequest request,
+      std::optional<uint32_t> result);
+
+  void DidGetExecutionInputSizeInTokensForMeasure(
+      MeasureUsageCallback callback,
+      std::optional<uint32_t> result);
+
   void ModelExecutionCallback(
       mojo::RemoteSetElementId responder_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
+
+  optimization_guide::proto::WritingAssistanceApiRequest BuildRequest(
+      const std::string& input,
+      const std::string& context);
 
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>

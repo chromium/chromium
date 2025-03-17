@@ -30,6 +30,9 @@
 // policy.
 - (void)setupRightShareButton:(BOOL)policyEnabled;
 
+// Hides share button from the right navigation bar.
+- (void)hideShareButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_CONSUMER_H_

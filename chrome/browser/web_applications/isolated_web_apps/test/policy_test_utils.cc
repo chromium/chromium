@@ -20,6 +20,33 @@ void AddForceInstalledIwaToPolicy(PrefService* prefs,
   // RAII applies the update.
 }
 
+// Removes the policy entry associated with the given `web_bundle_id` from
+// `prefs::kIsolatedWebAppInstallForceList`.
+void RemoveForceInstalledIwaFromPolicy(
+    PrefService* prefs,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  ScopedListPrefUpdate update{prefs, prefs::kIsolatedWebAppInstallForceList};
+  update->EraseIf([&web_bundle_id](const base::Value& entry) {
+    const std::string* id = entry.GetDict().FindString(kPolicyWebBundleIdKey);
+    return id && *id == web_bundle_id.id();
+  });
+}
+
+// Edits the policy entry associated with the given `web_bundle_id` in
+// `prefs::kIsolatedWebAppInstallForceList`.
+void EditForceInstalledIwaPolicy(
+    PrefService* prefs,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    base::Value::Dict policy_entry) {
+  ScopedListPrefUpdate update{prefs, prefs::kIsolatedWebAppInstallForceList};
+  auto itr =
+      std::ranges::find(*update, web_bundle_id.id(), [](const auto& entry) {
+        return *entry.GetDict().FindString(kPolicyWebBundleIdKey);
+      });
+  CHECK(itr != update->end());
+  itr->GetDict() = std::move(policy_entry);
+}
+
 // Generates a policy entry that can be appended to
 // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
 base::Value::Dict CreateForceInstallIwaPolicyEntry(

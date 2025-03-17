@@ -34,7 +34,12 @@ class CONTENT_EXPORT PrefetchCookieListener
   // Causes the Cookie Listener to stop listening to cookie changes to |url_|.
   // After this is called the value of |have_cookies_changed_| will no longer
   // change.
-  void StopListening();
+  void TerminateListening();
+
+  // Temporarily stops and resumes the cookie listening. This is intended to be
+  // called during isolated cookie copy.
+  void PauseListening();
+  void ResumeListening();
 
   // Gets whether the cookies of |url_| have changed between the creation of the
   // object and either the first time |StopListening| is called or now (if
@@ -47,6 +52,8 @@ class CONTENT_EXPORT PrefetchCookieListener
 
   bool have_cookies_changed_ = false;
   GURL url_;
+
+  bool should_pause_listening_ = false;
 
   mojo::Receiver<network::mojom::CookieChangeListener>
       cookie_listener_receiver_{this};

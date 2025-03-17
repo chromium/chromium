@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "v8-array-buffer.h"
 #include "v8-container.h"
 
@@ -81,8 +82,8 @@ v8::Local<v8::Value> V8ValueConverter::ToArrayBuffer(
     const base::Value::BlobStorage& value) const {
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value.size());
-  base::ranges::copy(value,
-                     static_cast<uint8_t*>(buffer->GetBackingStore()->Data()));
+  std::ranges::copy(value,
+                    static_cast<uint8_t*>(buffer->GetBackingStore()->Data()));
   return buffer;
 }
 

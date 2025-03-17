@@ -21,6 +21,7 @@
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -118,7 +119,7 @@ TEST_F(AssociatedUserValidatorTest, CleanupStaleUsers) {
   CComBSTR sid_good;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"Full Name", L"Comment",
-                      L"gaia-id", L"foo@gmail.com", &sid_good));
+                      GaiaId("gaia-id"), L"foo@gmail.com", &sid_good));
   ASSERT_EQ(S_OK,
             SetUserProperty(OLE2W(sid_good), kUserTokenHandle, L"good-th"));
 
@@ -129,15 +130,16 @@ TEST_F(AssociatedUserValidatorTest, CleanupStaleUsers) {
   // Simulate a user created by GCPW that has no gaia id and email.
   CComBSTR sid_no_gaia_id;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      L"username2", L"password", L"Full Name", L"Comment", L"",
-                      L"", &sid_no_gaia_id));
+                      L"username2", L"password", L"Full Name", L"Comment",
+                      GaiaId(), L"", &sid_no_gaia_id));
 
   // Simulate a user created by GCPW that has a gaia id, but no token handle
   // set.
   CComBSTR sid_no_token_handle;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      L"username3", L"password", L"Full Name", L"Comment",
-                      L"gaia-id3", L"foo3@gmail.com", &sid_no_token_handle));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                L"username3", L"password", L"Full Name", L"Comment",
+                GaiaId("gaia-id3"), L"foo3@gmail.com", &sid_no_token_handle));
   // Clear the token handle automatically created by CreateTestOSUser.
   EXPECT_EQ(S_OK,
             SetUserProperty((BSTR)sid_no_token_handle, kUserTokenHandle, L""));
@@ -195,7 +197,7 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   // Ensure user has policies and valid GCPW token.
   CreateDefaultCloudPoliciesForUser((BSTR)sid);
@@ -219,7 +221,7 @@ TEST_F(AssociatedUserValidatorTest, EnforceOnlineLoginGlobalFlag) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   // Valid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -243,7 +245,7 @@ TEST_F(AssociatedUserValidatorTest, EnforceOnlineLoginUserFlag) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   // Valid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -265,7 +267,7 @@ TEST_F(AssociatedUserValidatorTest, InvalidTokenHandle) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   // Invalid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -286,7 +288,7 @@ TEST_F(AssociatedUserValidatorTest, InvalidTokenHandleNoInternet) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   validator.StartRefreshingTokenHandleValidity();
   EXPECT_FALSE(validator.IsAuthEnforcedForUser(OLE2W(sid)));
@@ -300,7 +302,7 @@ TEST_F(AssociatedUserValidatorTest, InvalidTokenHandleTimeout) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   // Ensure user has policies and valid GCPW token.
   CreateDefaultCloudPoliciesForUser((BSTR)sid);
@@ -326,7 +328,7 @@ TEST_F(AssociatedUserValidatorTest, TokenHandleValidityStillFresh) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   // Ensure user has policies and valid GCPW token.
   CreateDefaultCloudPoliciesForUser((BSTR)sid);
@@ -351,7 +353,7 @@ TEST_F(AssociatedUserValidatorTest, BlockDenyUserAccess) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
 
   std::vector<std::wstring> reauth_sids;
   reauth_sids.push_back((BSTR)sid);
@@ -400,7 +402,7 @@ TEST_F(AssociatedUserValidatorTest,
   // Created a local test os user that is not domain joined.
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
   std::vector<std::wstring> reauth_sids;
   reauth_sids.push_back((BSTR)sid);
 
@@ -427,7 +429,7 @@ TEST_F(AssociatedUserValidatorTest,
   // Created a test os user with an assigned domain.
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), L"domain", &sid));
+                      GaiaId("gaia-id"), std::wstring(), L"domain", &sid));
 
   std::vector<std::wstring> reauth_sids;
   reauth_sids.push_back((BSTR)sid);
@@ -458,7 +460,7 @@ TEST_P(UpdateAssociatedSidsTest, ClearUserPropertyWhenNoGaiaIdOrEmail) {
   // Created a test os user with an assigned domain.
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", L"user@domain.com", L"domain", &sid));
+                      GaiaId("gaia-id"), L"user@domain.com", L"domain", &sid));
 
   // Clear gaia id if needed.
   if (!is_gaia_id_available)
@@ -573,7 +575,7 @@ TEST_P(AssociatedUserValidatorUserAccessBlockingTest, BlockUserAccessAsNeeded) {
   constexpr wchar_t username[] = L"username";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
   std::vector<std::wstring> reauth_sids;
   reauth_sids.push_back((BSTR)sid);
 
@@ -609,6 +611,7 @@ TEST_P(AssociatedUserValidatorUserAccessBlockingTest, BlockUserAccessAsNeeded) {
   if (contains_stored_password) {
     std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
     auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+    ASSERT_NE(policy, nullptr);
     EXPECT_TRUE(SUCCEEDED(
         policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
     EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
@@ -740,13 +743,14 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
   constexpr wchar_t username[] = L"username";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
   std::vector<std::wstring> reauth_sids;
   reauth_sids.push_back((BSTR)sid);
 
   // Store password.
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_TRUE(SUCCEEDED(
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
@@ -851,7 +855,7 @@ TEST_P(AssociatedUserValidatorMultipleUploadDeviceFailuresTest,
   constexpr wchar_t username[] = L"username";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
   std::vector<std::wstring> reauth_sids;
   reauth_sids.push_back((BSTR)sid);
 
@@ -859,6 +863,7 @@ TEST_P(AssociatedUserValidatorMultipleUploadDeviceFailuresTest,
   // Store encrypted password.
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_TRUE(SUCCEEDED(
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
@@ -909,7 +914,7 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle_Refresh) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), kUserTokenHandle, L"th"));
 
   // Ensure user has policies and valid GCPW token.
@@ -948,7 +953,7 @@ TEST_F(AssociatedUserValidatorTest, InvalidTokenHandle_MissingPasswordLsaData) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), kUserTokenHandle, L"th"));
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl, L"https://mdm.com"));
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegDisablePasswordSync, 0));
@@ -958,6 +963,7 @@ TEST_F(AssociatedUserValidatorTest, InvalidTokenHandle_MissingPasswordLsaData) {
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_FALSE(policy->PrivateDataExists(store_key.c_str()));
 
   // Valid token fetch result.
@@ -975,7 +981,7 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle_PresentPasswordLsaData) {
   CComBSTR sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
-                      L"gaia-id", std::wstring(), &sid));
+                      GaiaId("gaia-id"), std::wstring(), &sid));
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), kUserTokenHandle, L"th"));
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl, L"https://mdm.com"));
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegDisablePasswordSync, 0));
@@ -985,6 +991,7 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle_PresentPasswordLsaData) {
   std::wstring store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  ASSERT_NE(policy, nullptr);
   EXPECT_TRUE(SUCCEEDED(
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));

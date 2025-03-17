@@ -106,6 +106,10 @@ using ProviderType = mojom::ProviderType;
 // set by policy, extension, the user or by the custodian of a supervised user.
 // Certain (internal) origins are allowlisted. For these origins the source is
 // |SettingSource::kAllowList|.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ContentSettingSource
 enum class SettingSource {
   kNone,
   kPolicy,
@@ -115,12 +119,22 @@ enum class SettingSource {
   kSupervised,
   kInstalledWebApp,
   kTpcdGrant,
+  kOsJavascriptOptimizer,
+  kTest,
 };
 
 // |SettingInfo| provides meta data for content setting values. |source|
 // contains the source of a value. |primary_pattern| and |secondary_pattern|
 // contains the patterns of the appling rule.
 struct SettingInfo {
+  SettingInfo();
+  SettingInfo(SettingInfo&& other);
+  SettingInfo(SettingInfo& other) = delete;
+  SettingInfo& operator=(SettingInfo&& other);
+  SettingInfo& operator=(const SettingInfo& other) = delete;
+
+  SettingInfo Clone() const;
+
   SettingSource source = SettingSource::kNone;
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
@@ -129,12 +143,12 @@ struct SettingInfo {
   void SetAttributes(const content_settings::RuleEntry& rule_entry) {
     primary_pattern = rule_entry.first.primary_pattern;
     secondary_pattern = rule_entry.first.secondary_pattern;
-    metadata = rule_entry.second.metadata;
+    metadata = rule_entry.second.metadata.Clone();
   }
   void SetAttributes(const ContentSettingPatternSource& content_setting) {
     primary_pattern = content_setting.primary_pattern;
     secondary_pattern = content_setting.secondary_pattern;
-    metadata = content_setting.metadata;
+    metadata = content_setting.metadata.Clone();
   }
 };
 
@@ -152,13 +166,16 @@ constexpr SettingSource GetSettingSourceFromProviderType(
       return SettingSource::kExtension;
     case ProviderType::kInstalledWebappProvider:
       return SettingSource::kInstalledWebApp;
+    case ProviderType::kJavascriptOptimizerAndroidProvider:
+      return SettingSource::kOsJavascriptOptimizer;
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kOneTimePermissionProvider:
     case ProviderType::kPrefProvider:
     case ProviderType::kDefaultProvider:
+      return SettingSource::kUser;
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      return SettingSource::kUser;
+      return SettingSource::kTest;
     case content_settings::ProviderType::kNone:
       return SettingSource::kNone;
   }

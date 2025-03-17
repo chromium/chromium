@@ -8,35 +8,40 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** Builder for (@see IphCommand.java). Use this instead of constructing an IphCommand directly. */
+@NullMarked
 public class IphCommandBuilder {
 
+    private @Nullable String mContentString;
+    private @Nullable String mAccessibilityText;
     private Resources mResources;
     private final String mFeatureName;
     private boolean mDismissOnTouch = true;
+    private long mDismissOnTouchTimeout = TextBubble.NO_TIMEOUT;
     @StringRes private int mStringId;
-    private Object[] mStringArgs;
+    private Object @Nullable [] mStringArgs;
     @StringRes private int mAccessibilityStringId;
-    private Object[] mAccessibilityStringArgs;
-    private View mAnchorView;
-    private Runnable mOnShowCallback;
-    private Runnable mOnBlockedCallback;
-    private Runnable mOnDismissCallback;
-    private Rect mInsetRect;
+    private Object @Nullable [] mAccessibilityStringArgs;
+    private @Nullable View mAnchorView;
+    private @Nullable Runnable mOnShowCallback;
+    private @Nullable Runnable mOnBlockedCallback;
+    private @Nullable Runnable mOnDismissCallback;
+    private @Nullable Rect mInsetRect;
     private long mAutoDismissTimeout = TextBubble.NO_TIMEOUT;
-    private ViewRectProvider mViewRectProvider;
-    @Nullable private HighlightParams mHighlightParams;
-    private Rect mAnchorRect;
+    private @Nullable ViewRectProvider mViewRectProvider;
+    private @Nullable HighlightParams mHighlightParams;
+    private @Nullable Rect mAnchorRect;
     private boolean mRemoveArrow;
     private boolean mShowTextBubble = true;
 
@@ -106,6 +111,8 @@ public class IphCommandBuilder {
             String accessibilityText) {
         mResources = resources;
         mFeatureName = featureName;
+        mContentString = contentString;
+        mAccessibilityText = accessibilityText;
     }
 
     /**
@@ -153,10 +160,26 @@ public class IphCommandBuilder {
 
     /**
      * @param dismissOnTouch Whether the IPH bubble should be dismissed when the user performs a
-     *     touch interaction.
+     *     touch interaction. Not compatible with delayed dismiss on touch set via {@link
+     *     #setDelayedDismissOnTouch(long)}
      */
     public IphCommandBuilder setDismissOnTouch(boolean dismissOnTouch) {
         mDismissOnTouch = dismissOnTouch;
+        mDismissOnTouchTimeout = TextBubble.NO_TIMEOUT;
+        return this;
+    }
+
+    /**
+     * Set a timeout after which the IPH bubble can be dismissed by touch. For the duration of the
+     * timeout, the bubble will not dismiss from touches; the first subsequent touch will dismiss
+     * it. Not compatible with immediate dismiss on touch set via {@link
+     * #setDismissOnTouch(boolean)}. Theoretically compatible with {@link
+     * #setAutoDismissTimeout(int)} but only meaningful for auto-dismiss timeouts longer than the
+     * one set here.
+     */
+    public IphCommandBuilder setDelayedDismissOnTouch(long timeout) {
+        mDismissOnTouchTimeout = timeout;
+        mDismissOnTouch = false;
         return this;
     }
 
@@ -248,14 +271,17 @@ public class IphCommandBuilder {
                     mFeatureName,
                     mStringId,
                     mStringArgs,
+                    mContentString,
                     mAccessibilityStringId,
                     mAccessibilityStringArgs,
+                    mAccessibilityText,
                     mDismissOnTouch,
                     mAnchorView,
                     mOnDismissCallback,
                     mOnShowCallback,
                     mOnBlockedCallback,
                     mAutoDismissTimeout,
+                    mDismissOnTouchTimeout,
                     mViewRectProvider,
                     mHighlightParams,
                     mAnchorRect,

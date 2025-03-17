@@ -41,8 +41,8 @@ chrome.test.getConfig(function(config) {
       chrome.test.succeed();
     },
     function getMessageFromContentScript() {
-      // Skip this test on Android, which does not yet support chrome.tabs or
-      // tests with content scripts.
+      // TODO(crbug.com/391932982): Port to desktop Android once the chrome.tabs
+      // API is supported.
       if (/Android/.test(navigator.userAgent)) {
         chrome.test.succeed();
         return;

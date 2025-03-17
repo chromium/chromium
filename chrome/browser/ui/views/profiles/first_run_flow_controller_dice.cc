@@ -50,7 +50,7 @@ namespace {
 constexpr base::TimeDelta kDefaultBrowserCheckTimeout = base::Seconds(2);
 
 const signin_metrics::AccessPoint kAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE;
+    signin_metrics::AccessPoint::kForYouFre;
 
 enum class ShowDefaultBrowserStep {
   // The default browser step should be shown as appropriate.
@@ -468,8 +468,7 @@ FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   }
 }
 
-void FirstRunFlowControllerDice::Init(
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+void FirstRunFlowControllerDice::Init() {
   RegisterStep(
       Step::kIntro,
       CreateIntroStep(host(),
@@ -477,8 +476,7 @@ void FirstRunFlowControllerDice::Init(
                           &FirstRunFlowControllerDice::HandleIntroSigninChoice,
                           weak_ptr_factory_.GetWeakPtr()),
                       /*enable_animations=*/true));
-  SwitchToStep(Step::kIntro, /*reset_state=*/true,
-               std::move(step_switch_finished_callback));
+  SwitchToStep(Step::kIntro, /*reset_state=*/true);
 
   signin_metrics::LogSignInOffered(
       kAccessPoint, signin_metrics::PromoAction::
@@ -497,6 +495,12 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
   HandleIdentityStepsCompleted(profile_, PostHostClearedCallback(),
                                /*is_continue_callback=*/false,
                                StepSwitchFinishedCallback());
+}
+
+void FirstRunFlowControllerDice::PickProfile(
+    const base::FilePath& profile_path,
+    ProfilePicker::ProfilePickingArgs args) {
+  NOTREACHED() << "FRE is not expected to handle this flow";
 }
 
 bool FirstRunFlowControllerDice::PreFinishWithBrowser() {

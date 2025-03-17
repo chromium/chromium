@@ -43,8 +43,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/accessibility/ax_event_manager.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -88,18 +88,18 @@ class ClickTrackingOverlayView : public views::View {
 BEGIN_METADATA(ClickTrackingOverlayView)
 END_METADATA
 
-class TestAXEventObserver : public views::AXEventObserver {
+class TestAXEventObserver : public views::AXUpdateObserver {
  public:
-  TestAXEventObserver() { views::AXEventManager::Get()->AddObserver(this); }
+  TestAXEventObserver() { views::AXUpdateNotifier::Get()->AddObserver(this); }
 
   TestAXEventObserver(const TestAXEventObserver&) = delete;
   TestAXEventObserver& operator=(const TestAXEventObserver&) = delete;
 
   ~TestAXEventObserver() override {
-    views::AXEventManager::Get()->RemoveObserver(this);
+    views::AXUpdateNotifier::Get()->RemoveObserver(this);
   }
 
-  // views::AXEventObserver:
+  // views::AXUpdateObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
     if (!view->GetWidget()) {
       return;
@@ -586,8 +586,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
-  match.contents_class.push_back(
-      ACMatchClassification(0, ACMatchClassification::URL));
+  match.contents_class.emplace_back(0, ACMatchClassification::URL);
   match.destination_url = GURL(match_url);
   match.description = u"Foobar";
   match.allowed_to_be_default_match = true;

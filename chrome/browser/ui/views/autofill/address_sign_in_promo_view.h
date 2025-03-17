@@ -9,16 +9,17 @@
 
 namespace autofill {
 
+class AutofillProfile;
+
 // This is the sign in promo view that is shown after a user accepted the
 // address save/update bubble without being signed into Chrome.
 class AddressSignInPromoView : public AddressBubbleBaseView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleFrameViewId);
 
-  explicit AddressSignInPromoView(
-      views::View* anchor_view,
-      content::WebContents* web_contents,
-      base::OnceCallback<void(content::WebContents*)> move_address_callback);
+  explicit AddressSignInPromoView(views::View* anchor_view,
+                                  content::WebContents* web_contents,
+                                  const AutofillProfile& autofill_profile);
 
   AddressSignInPromoView(const AddressSignInPromoView&) = delete;
   AddressSignInPromoView& operator=(const AddressSignInPromoView&) = delete;
@@ -32,9 +33,6 @@ class AddressSignInPromoView : public AddressBubbleBaseView {
 
   // views::WidgetDelegate:
   void WindowClosing() override;
-
- private:
-  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

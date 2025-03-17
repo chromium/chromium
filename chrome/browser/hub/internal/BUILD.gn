@@ -9,6 +9,7 @@ android_library("java") {
   visibility = [
     ":*",
     "//chrome/android:*",
+    "//chrome/android/junit:*",
 
     # For access to resource IDs and view names for test code.
     "//chrome/android/features/tab_ui:test_support_javalib",
@@ -59,6 +60,7 @@ android_library("java") {
     "//chrome/browser/hub:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/edge_to_edge:factory_java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/searchactivityutils:java",

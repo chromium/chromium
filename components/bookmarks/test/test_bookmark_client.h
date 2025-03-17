@@ -79,6 +79,11 @@ class TestBookmarkClient : public BookmarkClient {
   void SetAccountBookmarkSyncMetadataAndScheduleWrite(
       const std::string& account_bookmark_sync_metadata);
 
+  // Allows overriding the value returned by
+  // `DecodeAccountBookmarkSyncMetadataResult()`.
+  void SetDecodeAccountBookmarkSyncMetadataResult(
+      DecodeAccountBookmarkSyncMetadataResult result);
+
   // BookmarkClient:
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   bool IsSyncFeatureEnabledIncludingBookmarks() override;
@@ -89,7 +94,7 @@ class TestBookmarkClient : public BookmarkClient {
   void DecodeLocalOrSyncableBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
-  void DecodeAccountBookmarkSyncMetadata(
+  DecodeAccountBookmarkSyncMetadataResult DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
   base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
@@ -122,6 +127,10 @@ class TestBookmarkClient : public BookmarkClient {
   std::string account_bookmark_sync_metadata_;
   base::RepeatingClosure account_bookmark_sync_metadata_save_closure_ =
       base::DoNothing();
+
+  DecodeAccountBookmarkSyncMetadataResult
+      decode_account_bookmark_sync_metadata_result_ =
+          DecodeAccountBookmarkSyncMetadataResult::kSuccess;
 };
 
 }  // namespace bookmarks

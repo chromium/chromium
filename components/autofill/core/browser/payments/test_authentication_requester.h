@@ -76,6 +76,8 @@ class TestAuthenticationRequester
 
   std::u16string number() { return number_; }
 
+  CreditCard::RecordType record_type() { return record_type_; }
+
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
   risk_based_authentication_response() {
     return risk_based_authentication_response_;
@@ -99,6 +101,9 @@ class TestAuthenticationRequester
 
   // The card number returned from On*AuthenticationComplete().
   std::u16string number_;
+
+  // The card record type returned from On*AuthenticationComplete().
+  CreditCard::RecordType record_type_;
 
   // Authentication response returned from CreditCardRiskBasedAuthenticator.
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse

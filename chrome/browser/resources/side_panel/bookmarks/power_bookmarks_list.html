@@ -344,6 +344,8 @@
                   updated-element-ids="[[updatedElementIds_]]"
                   trailing-icon-tooltip="$i18n{tooltipMore}"
                   has-checkbox="[[editing_]]"
+                  selected-bookmarks=
+                      "[[getSelectedBookmarksList_(selectedBookmarks_.*)]]"
                   renaming-id="[[renamingId_]]"
                   on-row-clicked="onRowClicked_"
                   on-context-menu="onShowContextMenuClicked_"
@@ -358,7 +360,9 @@
                       "[[shoppingCollectionFolderId_]]"
                   context-menu-bookmark="[[contextMenuBookmark_]]"
                   draggable="[[canDrag_]]"
-                  bookmarks-service="[[bookmarksService_]]">
+                  can-drag="[[canDrag_]]"
+                  bookmarks-service="[[bookmarksService_]]"
+                  key-arrow-navigation-service="[[keyArrowNavigationService_]]">
               </power-bookmark-row>
             </template>
           </iron-list>
@@ -378,11 +382,12 @@
   <sp-footer id="footer"
       hidden="[[!sectionVisibility_.footer]]"
       pinned>
-    <cr-button class="floating-button"
+    <cr-button id="addCurrentTabButton"
+        class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(
-                    activeFolderPath_.*, currentUrl_, hasLoadedData_)]]">
+                    activeFolderPath_.*, currentUrl_, displayLists_)]]">
       <cr-icon slot="prefix-icon" icon="bookmarks:add-tab"></cr-icon>
       $i18n{addCurrentTab}
     </cr-button>

@@ -4,6 +4,9 @@
 
 import("../build_webui_tests.gni")
 
+assert(!is_chromeos,
+       "Desktop Print Preview tests should not be included on CrOS builds")
+
 build_webui_tests("build") {
   files = [
     "advanced_dialog_test.ts",
@@ -14,8 +17,11 @@ build_webui_tests("build") {
     "copies_settings_test.ts",
     "custom_margins_test.ts",
     "destination_dialog_test.ts",
+    "destination_dialog_interactive_test.ts",
     "destination_item_test.ts",
     "destination_list_test.ts",
+    "destination_search_test.ts",
+    "destination_select_test.ts",
     "destination_settings_test.ts",
     "destination_store_test.ts",
     "dpi_settings_test.ts",
@@ -24,11 +30,11 @@ build_webui_tests("build") {
     "invalid_settings_test.ts",
     "key_event_test.ts",
     "layout_settings_test.ts",
+    "link_container_test.ts",
     "margins_settings_test.ts",
     "media_size_settings_test.ts",
     "media_type_settings_test.ts",
     "model_settings_availability_test.ts",
-    "model_settings_policy_test.ts",
     "model_test.ts",
     "native_layer_stub.ts",
     "number_settings_section_interactive_test.ts",
@@ -58,42 +64,19 @@ build_webui_tests("build") {
     files += [ "system_dialog_test.ts" ]
   }
 
-  if (is_chromeos) {
-    files += [
-      "destination_dialog_cros_interactive_test.ts",
-      "destination_dialog_cros_test.ts",
-      "destination_dropdown_cros_test.ts",
-      "destination_item_test_cros.ts",
-      "destination_search_test_chromeos.ts",
-      "native_layer_cros_stub.ts",
-      "pin_settings_test.ts",
-      "print_server_store_test.ts",
-      "printer_setup_info_cros_test.ts",
-      "printer_status_test.ts",
-      "searchable_drop_down_cros_test.ts",
-    ]
-  } else {
-    files += [
-      "destination_dialog_interactive_test.ts",
-      "destination_search_test.ts",
-      "destination_select_test.ts",
-    ]
-    files += [ "link_container_test.ts" ]
-  }
-
-  ts_path_mappings = [
-    "chrome://print/print_preview.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/print_preview/tsc/print_preview.d.ts",
-            target_gen_dir),
-    "chrome://print/pdf/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
-                    target_gen_dir),
-  ]
-
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
+  ]
+
+  ts_path_mappings = [
+    "chrome://print/pdf/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
+                    target_gen_dir),
+    "chrome://print/print_preview.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/print_preview/tsc/print_preview.d.ts",
+            target_gen_dir),
   ]
 
   ts_deps = [

@@ -199,7 +199,7 @@ class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
 
 class DummySystemTrustStore : public net::SystemTrustStore {
  public:
-  bssl::TrustStore* GetTrustStore() override { return &trust_store_; }
+  bssl::TrustStore* GetTrustStore() override { return &empty_trust_store_; }
 
   bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
     return false;
@@ -219,10 +219,12 @@ class DummySystemTrustStore : public net::SystemTrustStore {
       const bssl::ParsedCertificate* cert) const override {
     return {};
   }
+
+  bssl::TrustStore* eutl_trust_store() override { return &empty_trust_store_; }
 #endif
 
  private:
-  bssl::TrustStoreCollection trust_store_;
+  bssl::TrustStoreCollection empty_trust_store_;
 };
 
 std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(

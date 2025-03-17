@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -16,7 +17,6 @@
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "ui/gfx/font_fallback_linux.h"
 
 namespace content {

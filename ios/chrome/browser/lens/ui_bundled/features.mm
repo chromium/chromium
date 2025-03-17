@@ -40,14 +40,54 @@ BASE_FEATURE(kLensUnaryHttpTransportEnabled,
              "LensUnaryHttpTransportEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensUnaryApiSalientTextEnabled,
+             "LensUnaryApiSalientTextEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensClearcutBackgroundUploadEnabled,
              "LensClearcutBackgroundUploadEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensClearcutLoggerFastQosEnabled,
              "LensClearcutLoggerFastQosEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSingleTapTextSelectionDisabled,
              "LensSingleTapTextSelectionDisabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensInkMultiSampleModeDisabled,
+             "LensInkMultiSampleModeDisabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensGestureTextSelectionDisabled,
+             "LensGestureTextSelectionDisabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensVsintParamEnabled,
+             "LensVsintParamEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensUnaryClientDataHeaderEnabled,
+             "LensUnaryClientDataHeaderEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake,
+             "LensBlockFetchObjectsInteractionRPCsOnSeparateHandshake",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensPrewarmHardStickinessInInputSelection,
+             "LensPrewarmHardStickinessInInputSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation,
+             "LensPrewarmHardStickinessInQueryFormulation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensFetchSrpApiEnabled,
+             "LensFetchSrpApiEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensQRCodeParsingFix,
+             "LensQRCodeParsingFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);

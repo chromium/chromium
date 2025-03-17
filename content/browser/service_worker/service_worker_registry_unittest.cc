@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/browser/service_worker/service_worker_registry.h"
 
 #include "base/functional/callback_helpers.h"
@@ -704,10 +709,9 @@ TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
   loop.Run();
 
   // Check default bucket exists.com.
-  ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
-                       quota_manager_proxy_sync.GetBucket(
-                           kKey, storage::kDefaultBucketName,
-                           blink::mojom::StorageType::kTemporary));
+  ASSERT_OK_AND_ASSIGN(
+      storage::BucketInfo result,
+      quota_manager_proxy_sync.GetBucket(kKey, storage::kDefaultBucketName));
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
   EXPECT_EQ(result.storage_key, kKey);
   EXPECT_GT(result.id.value(), 0);
@@ -2350,10 +2354,9 @@ TEST_F(ServiceWorkerRegistryTest,
     EXPECT_EQ(inflight_call_count(), 0U);
 
     // Check default bucket exists.com.
-    ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
-                         quota_manager_proxy_sync.GetBucket(
-                             kKey, storage::kDefaultBucketName,
-                             blink::mojom::StorageType::kTemporary));
+    ASSERT_OK_AND_ASSIGN(
+        storage::BucketInfo result,
+        quota_manager_proxy_sync.GetBucket(kKey, storage::kDefaultBucketName));
     EXPECT_EQ(result.name, storage::kDefaultBucketName);
     EXPECT_EQ(result.storage_key, kKey);
     EXPECT_GT(result.id.value(), 0);

@@ -22,7 +22,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -42,6 +41,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/undo_manager_wrapper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -333,7 +333,8 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
       [[UndoManagerWrapper alloc] initWithProfile:profile];
   [wrapper startGroupingActions];
 
-  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts,
+                              profile->GetPrefs());
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   const BookmarkNode* node =
       model->AddNewURL(folder, folder->children().size(), titleString, url);
@@ -560,7 +561,7 @@ void UpdateFoldersFromNode(const BookmarkNode* folder,
 
   bookmark_utils_ios::SortFolders(&directDescendants);
 
-  auto it = base::ranges::find(*results, folder);
+  auto it = std::ranges::find(*results, folder);
   DCHECK(it != results->end());
   ++it;
   results->insert(it, directDescendants.begin(), directDescendants.end());

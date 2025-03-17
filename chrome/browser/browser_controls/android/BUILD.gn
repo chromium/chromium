@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsLayer.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStacker.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsOffsetTagsInfo.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsSizer.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsUtils.java",
@@ -22,6 +23,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//components/browser_ui/util/android:java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
@@ -42,5 +44,6 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

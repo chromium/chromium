@@ -15,15 +15,7 @@ namespace autofill {
 // At field level, heuristic predictions are associated to a HeuristicSource,
 // describing which mechanism computed them.
 enum class HeuristicSource {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  kLegacyRegexes,
-#else
-  kDefaultRegexes,
-  // Corresponds to regexes from the default file, but with at least one
-  // `RegexFeature` enabled.
-  kExperimentalRegexes,
-  kAutofillAiRegexes,
-#endif
+  kRegexes,
   kAutofillMachineLearning,
   kPasswordManagerMachineLearning,
   kMaxValue = kPasswordManagerMachineLearning

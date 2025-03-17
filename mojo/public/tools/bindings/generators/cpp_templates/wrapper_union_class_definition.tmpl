@@ -2,7 +2,8 @@
 {{union.name}}::{{union.name}}() : tag_(Tag::k{{default_field.name|under_to_camel}}) {
 {%- if default_field.kind|is_object_kind or
          default_field.kind|is_any_handle_or_interface_kind %}
-  data_.{{default_field.name}} = new {{default_field.kind|cpp_wrapper_type}};
+  data_.{{default_field.name}} = new {{default_field.kind|cpp_wrapper_type}}(
+      {{-default_field|default_value-}});
 {%- else %}
   data_.{{default_field.name}} = {{default_field.kind|cpp_wrapper_type}}();
 {%- endif %}
@@ -12,7 +13,7 @@
   DestroyActive();
 }
 
-{%  for field in union.fields %}
+{%  for field in union.fields -%}
 void {{union.name}}::set_{{field.name}}(
     {{field.kind|cpp_wrapper_param_type_new}} {{field.name}}) {
 {%-   if field.kind|is_object_kind or

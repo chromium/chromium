@@ -1,0 +1,214 @@
+The test verifies functionality of querying DOM structure for carousel related pseudo elements
+PASS: setChildNodes event was fired once
+PASS: Carousel is only child of carouselParent
+Carousel DOM tree:
+  UL
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    ::scroll-marker-group
+    ::scroll-button(inline-start)
+    ::scroll-button(inline-end)
+    ::column
+      ::scroll-marker
+    ::column
+      ::scroll-marker
+Verify that styles can be queried for pseudo elements
+Style for ::scroll-marker-group:
+&::scroll-button(right)
+&::scroll-button(left)
+&::scroll-marker-group
+{
+  position: fixed;
+  position-anchor: --carousel;
+}
+&::scroll-marker-group
+{
+  position-area: block-end;
+  display: grid;
+}
+Style for ::scroll-button(inline-start):
+&::scroll-button(right)
+&::scroll-button(left)
+&::scroll-marker-group
+{
+  position: fixed;
+  position-anchor: --carousel;
+}
+&::scroll-button(left)
+{
+  position-area: inline-start center;
+  content: '<-';
+}
+Style for ::scroll-button(inline-end):
+&::scroll-button(right)
+&::scroll-button(left)
+&::scroll-marker-group
+{
+  position: fixed;
+  position-anchor: --carousel;
+}
+&::scroll-button(right)
+{
+  position-area: inline-end center;
+  content: '->';
+}
+Style for ::column:
+&::column
+{
+  scroll-snap-align: center;
+}
+Included style for nested ::scroll-marker:
+&::column::scroll-marker
+{
+  content: ' ';
+}
+Style for nested ::scroll-marker:
+&::column::scroll-marker
+{
+  content: ' ';
+}
+&::column::scroll-marker:target-current
+{
+  background: blue;
+}
+Style for ::column:
+&::column
+{
+  scroll-snap-align: center;
+}
+Included style for nested ::scroll-marker:
+&::column::scroll-marker
+{
+  content: ' ';
+}
+Style for nested ::scroll-marker:
+&::column::scroll-marker
+{
+  content: ' ';
+}
+Verify that pseudo element styles are returned for the root element
+#carousel
+{
+  overflow: auto;
+  scroll-snap-type: x mandatory;
+  anchor-name: --carousel;
+}
+{
+  scroll-marker-group: after;
+}
+&.paginated
+{
+  columns: 1;
+  block-size: 25cqi;
+  text-align: center;
+}
+Included style for nested ::scroll-marker-group:
+&::scroll-button(right)
+&::scroll-button(left)
+&::scroll-marker-group
+{
+  position: fixed;
+  position-anchor: --carousel;
+}
+&::scroll-marker-group
+{
+  position-area: block-end;
+  display: grid;
+}
+Included style for nested ::scroll-button:
+&::scroll-button(right)
+&::scroll-button(left)
+&::scroll-marker-group
+{
+  position: fixed;
+  position-anchor: --carousel;
+}
+&::scroll-button(right)
+{
+  position-area: inline-end center;
+  content: '->';
+}
+&::scroll-button(left)
+{
+  position-area: inline-start center;
+  content: '<-';
+}
+Included style for nested ::column:
+&::column
+{
+  scroll-snap-align: center;
+}
+Changing carousel class
+Wait for events for pseudo element changes
+Check that columns were removed and scroll markers were moved to list items
+::column removed from UL
+::column removed from UL
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker removed from ::column
+::scroll-marker removed from ::column
+

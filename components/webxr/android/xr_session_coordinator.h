@@ -48,6 +48,7 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
       device::JavaShutdownCallback destroyed_callback,
       device::XrSessionButtonTouchedCallback button_touched_callback) override;
   void EndSession() override;
+  void EndSession(device::JavaShutdownCallback destroyed_callback) override;
   bool EnsureARCoreLoaded() override;
   base::android::ScopedJavaLocalRef<jobject> GetCurrentActivityContext()
       override;

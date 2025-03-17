@@ -46,18 +46,15 @@
       "retry_failed_shards": true
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },
@@ -80,5 +77,5 @@
   ],
   "upload_bucket": "chromium-browser-libfuzzer",
   "upload_directory": "ios-catalyst-debug",
-  "xcode_build_version": "16b40"
+  "xcode_build_version": "16c5032a"
 }

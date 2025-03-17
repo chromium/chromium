@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -31,7 +32,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cc {
 
@@ -71,7 +71,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     ~InitParams();
 
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner;
-    raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager = nullptr;
     std::unique_ptr<viz::SyntheticBeginFrameSource>
         synthetic_begin_frame_source;
     UnboundMessagePipes pipes;
@@ -141,9 +140,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
                           FrameSkippedReason reason) override;
   std::unique_ptr<LayerContext> CreateLayerContext(
       LayerTreeHostImpl& host_impl) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
 
   const viz::HitTestRegionList& get_last_hit_test_data_for_testing() const {
     return last_hit_test_data_;
@@ -197,7 +193,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   using ClientReceiver = mojo::Receiver<viz::mojom::CompositorFrameSinkClient>;
   using DirectClientReceiver =
       mojo::DirectReceiver<viz::mojom::CompositorFrameSinkClient>;
-  absl::variant<absl::monostate, ClientReceiver, DirectClientReceiver>
+  std::variant<std::monostate, ClientReceiver, DirectClientReceiver>
       client_receiver_;
 
   THREAD_CHECKER(thread_checker_);

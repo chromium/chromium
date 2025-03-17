@@ -32,7 +32,6 @@ class V8GPUCullMode;
 class V8GPUFrontFace;
 class V8GPUTextureAspect;
 class V8GPUErrorFilter;
-class V8WGSLFeatureName;
 enum class PredefinedColorSpace;
 
 // Convert WebGPU bitfield values to Dawn enums. These have the same value.
@@ -78,8 +77,7 @@ V8GPUTextureFormat FromDawnEnum(wgpu::TextureFormat dawn_enum);
 V8GPUBufferMapState FromDawnEnum(wgpu::BufferMapState dawn_enum);
 const char* FromDawnEnum(wgpu::BackendType dawn_enum);
 const char* FromDawnEnum(wgpu::AdapterType dawn_enum);
-[[nodiscard]] bool FromDawnEnum(wgpu::WGSLFeatureName dawn_enum,
-                                V8WGSLFeatureName* result);
+const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum);
 
 }  // namespace blink
 

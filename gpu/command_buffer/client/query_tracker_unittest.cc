@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 // Tests for the QueryTracker.
@@ -15,6 +15,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -61,8 +62,8 @@ class QuerySyncManagerTest : public testing::Test {
 };
 
 TEST_F(QuerySyncManagerTest, Basic) {
-  QuerySyncManager::QueryInfo infos[4];
-  memset(&infos, 0xBD, sizeof(infos));
+  std::array<QuerySyncManager::QueryInfo, 4> infos;
+  memset(&infos, 0xBD, infos.size() * sizeof(infos[0]));
 
   for (size_t ii = 0; ii < std::size(infos); ++ii) {
     EXPECT_TRUE(sync_manager_->Alloc(&infos[ii]));
@@ -78,8 +79,8 @@ TEST_F(QuerySyncManagerTest, Basic) {
 }
 
 TEST_F(QuerySyncManagerTest, DontFree) {
-  QuerySyncManager::QueryInfo infos[4];
-  memset(&infos, 0xBD, sizeof(infos));
+  std::array<QuerySyncManager::QueryInfo, 4> infos;
+  memset(&infos, 0xBD, infos.size() * sizeof(infos[0]));
 
   for (size_t ii = 0; ii < std::size(infos); ++ii) {
     EXPECT_TRUE(sync_manager_->Alloc(&infos[ii]));

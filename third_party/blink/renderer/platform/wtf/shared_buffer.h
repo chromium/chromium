@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -40,7 +41,6 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -86,8 +86,7 @@ class WTF_EXPORT SegmentedBuffer {
       return temp;
     }
     bool operator==(const Iterator& that) const {
-      return base::ranges::equal(value_, that.value_) &&
-             buffer_ == that.buffer_;
+      return std::ranges::equal(value_, that.value_) && buffer_ == that.buffer_;
     }
     bool operator!=(const Iterator& that) const { return !(*this == that); }
     const base::span<const char>& operator*() const {

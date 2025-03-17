@@ -11,7 +11,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,8 +23,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
@@ -44,7 +42,7 @@ namespace chrome {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kExtraDiagnosticsQueryParam[] = "extra_diagnostics";
 constexpr char kDescriptionTemplateQueryParam[] = "description_template";
 constexpr char kDescriptionPlaceholderQueryParam[] =
@@ -170,7 +168,7 @@ bool IsFromUserInteraction(feedback::FeedbackSource source) {
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 feedback_private::FeedbackFlow GetFeedbackFlowFromSource(
     feedback::FeedbackSource source) {
@@ -199,7 +197,7 @@ void RequestFeedbackFlow(const GURL& page_url,
   feedback_private::FeedbackFlow flow = GetFeedbackFlowFromSource(source);
   bool include_bluetooth_logs = false;
   bool show_questionnaire = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40941303) Support ChromeOS feedback dialog for
   // `kFeedbackSourceAI`.
   if (source != feedback::kFeedbackSourceAI) {
@@ -208,10 +206,8 @@ void RequestFeedbackFlow(const GURL& page_url,
       include_bluetooth_logs = IsFromUserInteraction(source);
       show_questionnaire = IsFromUserInteraction(source);
     }
-    // Disable the new feedback tool for kiosk, when SWAs are disabled there.
-    if (!chromeos::IsKioskSession() ||
-        base::FeatureList::IsEnabled(
-            ash::features::kKioskEnableSystemWebApps)) {
+
+    if (!chromeos::IsKioskSession()) {
       // TODO(crbug.com/40253237): Include autofill metadata into CrOS new
       // feedback tool.
       ash::SystemAppLaunchParams params;
@@ -223,7 +219,7 @@ void RequestFeedbackFlow(const GURL& page_url,
       return;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   extensions::FeedbackPrivateAPI* api =
       extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(profile);

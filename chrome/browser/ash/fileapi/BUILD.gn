@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("fileapi") {
   sources = [
@@ -35,13 +35,13 @@ static_library("fileapi") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom",
     "//base",
     "//base:i18n",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/file_manager:constants",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/account_id",
     "//components/drive",
     "//components/file_access",
@@ -135,10 +135,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -155,6 +151,10 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
     "//components/drive",
     "//components/keyed_service/content",
     "//components/user_manager",

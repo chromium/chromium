@@ -150,7 +150,7 @@ void NameRegion(void* start, size_t length, PageTag page_tag) {
       PA_NOTREACHED();
   }
 
-  // No error checking on purpose, testing only.
+  // No error checking on purpose, used for debugging only.
   prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, start, length, name);
 }
 
@@ -200,14 +200,7 @@ bool UseMapJit() {
 }
 #elif PA_BUILDFLAG(IS_IOS)
 bool UseMapJit() {
-// Always enable MAP_JIT in simulator as it is supported unconditionally.
-#if TARGET_IPHONE_SIMULATOR
   return true;
-#else
-  // TODO(crbug.com/40255826): Fill this out when the API it is
-  // available.
-  return false;
-#endif  // TARGET_IPHONE_SIMULATOR
 }
 #endif  // PA_BUILDFLAG(IS_IOS)
 

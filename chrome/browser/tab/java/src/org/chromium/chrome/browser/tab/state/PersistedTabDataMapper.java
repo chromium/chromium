@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 
 /**
  * @param <T> a {@link PersistedTabDataResult}
  * Maps a {@link ByteBuffer} to a {@link PersistedTabDataResult}
  */
+@NullMarked
 public interface PersistedTabDataMapper<T extends PersistedTabDataResult> {
     /**
      * @param byteBuffer serialized {@link PersistedTabData} result

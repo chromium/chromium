@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SettingsPrivacyHubCameraSubpage, SettingsPrivacyHubGeolocationSubpage, SettingsPrivacyHubMicrophoneSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
-import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {SettingsPrivacyHubCameraSubpage, SettingsPrivacyHubGeolocationSubpage, SettingsPrivacyHubMicrophoneSubpage} from 'chrome://os-settings/lazy_load.js';
+import type {appPermissionHandlerMojom, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import type {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -39,7 +40,7 @@ export function getSystemServicesFromSubpage(
 export function getSystemServicePermissionText(
     systemService: SettingsPrivacyHubSystemServiceRow): string {
   return systemService.shadowRoot!
-      .querySelector<HTMLDivElement>('#permissionState')!.innerText.trim();
+      .querySelector<HTMLElement>('#permissionState')!.innerText.trim();
 }
 
 export function getSystemServiceName(

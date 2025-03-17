@@ -39,7 +39,9 @@ WebGLProgram::WebGLProgram(WebGLRenderingContextBase* ctx)
       info_valid_(true),
       required_transform_feedback_buffer_count_(0),
       required_transform_feedback_buffer_count_after_next_link_(0) {
-  SetObject(ctx->ContextGL()->CreateProgram());
+  if (!ctx->isContextLost()) {
+    SetObject(ctx->ContextGL()->CreateProgram());
+  }
 }
 
 WebGLProgram::~WebGLProgram() = default;
@@ -67,7 +69,10 @@ bool WebGLProgram::LinkStatus(WebGLRenderingContextBase* context) {
 bool WebGLProgram::CompletionStatus(WebGLRenderingContextBase* context) {
   GLint completed = 0;
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
-  gl->GetProgramiv(object_, GL_COMPLETION_STATUS_KHR, &completed);
+  // If gl is nullptr, context has been lost.
+  if (gl) {
+    gl->GetProgramiv(object_, GL_COMPLETION_STATUS_KHR, &completed);
+  }
 
   return completed;
 }
@@ -140,6 +145,10 @@ void WebGLProgram::CacheInfoIfNeeded(WebGLRenderingContextBase* context) {
   if (!object_)
     return;
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
+  if (!gl) {
+    // Context has been lost.
+    return;
+  }
   GLint link_status = 0;
   gl->GetProgramiv(object_, GL_LINK_STATUS, &link_status);
   setLinkStatus(link_status);

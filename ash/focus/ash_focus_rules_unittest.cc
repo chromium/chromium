@@ -16,6 +16,7 @@
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
@@ -29,71 +30,6 @@
 namespace ash {
 
 namespace {
-
-// Defines a |SessionControllerClient| that is used to create and destroy the
-// test lock screen widget.
-class LockScreenSessionControllerClient : public TestSessionControllerClient {
- public:
-  LockScreenSessionControllerClient(SessionControllerImpl* controller,
-                                    TestPrefServiceProvider* prefs_provider)
-      : TestSessionControllerClient(controller, prefs_provider) {
-    InitializeAndSetClient();
-
-    Reset();
-    AddUserSession("user0@tray");
-    SetSessionState(session_manager::SessionState::ACTIVE);
-  }
-
-  LockScreenSessionControllerClient(const LockScreenSessionControllerClient&) =
-      delete;
-  LockScreenSessionControllerClient& operator=(
-      const LockScreenSessionControllerClient&) = delete;
-
-  ~LockScreenSessionControllerClient() override = default;
-
-  // TestSessionControllerClient:
-  void RequestLockScreen() override {
-    TestSessionControllerClient::RequestLockScreen();
-    CreateLockScreen();
-    Shelf::UpdateShelfVisibility();
-  }
-
-  void UnlockScreen() override {
-    TestSessionControllerClient::UnlockScreen();
-    if (lock_screen_widget_.get()) {
-      lock_screen_widget_->Close();
-      lock_screen_widget_.reset(nullptr);
-    }
-
-    Shelf::UpdateShelfVisibility();
-  }
-
- private:
-  void CreateLockScreen() {
-    auto lock_view = std::make_unique<views::View>();
-    lock_screen_widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    gfx::Size ps = lock_view->GetPreferredSize();
-
-    gfx::Size root_window_size = Shell::GetPrimaryRootWindow()->bounds().size();
-    params.bounds = gfx::Rect((root_window_size.width() - ps.width()) / 2,
-                              (root_window_size.height() - ps.height()) / 2,
-                              ps.width(), ps.height());
-    params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
-                                        kShellWindowId_LockScreenContainer);
-    lock_screen_widget_->Init(std::move(params));
-    lock_screen_widget_->SetContentsView(std::move(lock_view));
-    lock_screen_widget_->Show();
-    lock_screen_widget_->GetNativeView()->SetName("LockView");
-    lock_screen_widget_->GetNativeView()->Focus();
-  }
-
-  std::unique_ptr<views::Widget> lock_screen_widget_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
 
 // Defines a class that will be used to test the correct behavior of
 // |AshFocusRules| when locking and unlocking the screen.
@@ -109,10 +45,14 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    ash_test_helper()->set_test_session_controller_client(
-        std::make_unique<LockScreenSessionControllerClient>(
-            Shell::Get()->session_controller(),
-            ash_test_helper()->prefs_provider()));
+    // Showing LockScreen requires auth event recorder.
+    auth_events_recorder_ = AuthEventsRecorder::CreateForTesting();
+    GetSessionControllerClient()->set_show_lock_screen_views(true);
+  }
+
+  void TearDown() override {
+    auth_events_recorder_.reset();
+    AshTestBase::TearDown();
   }
 
   aura::Window* CreateWindowInActiveDesk() {
@@ -170,7 +110,7 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
     return window;
   }
 
-  std::unique_ptr<LockScreenSessionControllerClient> session_controller_client_;
+  std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
 };
 
 }  // namespace

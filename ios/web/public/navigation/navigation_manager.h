@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_MANAGER_H_
 
 #import <Foundation/Foundation.h>
-
 #include <stddef.h>
 
 #include <memory>
@@ -171,7 +170,6 @@ class NavigationManager {
   // This takes ownership of `items` (must be moved).
   virtual void Restore(int last_committed_item_index,
                        std::vector<std::unique_ptr<NavigationItem>> items) = 0;
-
 };
 
 }  // namespace web

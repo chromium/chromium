@@ -42,7 +42,11 @@ config("compiler") {
   }
 
   # OS.
-  triplet_os = "apple-ios"
+  if (target_platform == "iphoneos") {
+    triplet_os = "apple-ios"
+  } else if (target_platform == "tvos") {
+    triplet_os = "apple-tvos"
+  }
 
   # Set target.
   common_flags = [

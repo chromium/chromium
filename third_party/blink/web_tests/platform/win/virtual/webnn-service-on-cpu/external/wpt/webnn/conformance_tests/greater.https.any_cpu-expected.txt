@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] greater float32 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'greater' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+[FAIL] greater float16 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'greater' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+Harness: the test ran to completion.
+

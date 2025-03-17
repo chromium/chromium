@@ -18,13 +18,11 @@ namespace user_manager {
 
 const char kCanonicalEmail[] = "email";
 const char kGAIAIdKey[] = "gaia_id";
-const char kObjGuidKey[] = "obj_guid";
 const char kAccountTypeKey[] = "account_type";
 
 std::optional<AccountId> LoadAccountId(const base::Value::Dict& dict) {
   const std::string* email = dict.FindString(kCanonicalEmail);
   const std::string* gaia_id = dict.FindString(kGAIAIdKey);
-  const std::string* obj_guid = dict.FindString(kObjGuidKey);
   AccountType account_type = AccountType::GOOGLE;
   if (const std::string* account_type_string =
           dict.FindString(kAccountTypeKey)) {
@@ -36,11 +34,6 @@ std::optional<AccountId> LoadAccountId(const base::Value::Dict& dict) {
         return AccountId::FromUserEmailGaiaId(
             email ? *email : std::string(),
             gaia_id ? GaiaId(*gaia_id) : GaiaId());
-      }
-      break;
-    case AccountType::ACTIVE_DIRECTORY:
-      if (email && obj_guid) {
-        return AccountId::AdFromUserEmailObjGuid(*email, *obj_guid);
       }
       break;
     default:
@@ -58,8 +51,8 @@ bool AccountIdMatches(const AccountId& account_id,
     return false;
   }
 
-  // TODO(b/268177869): If the gaia id or GUID are present, but doesn't match,
-  // this function should likely be returning false even if the e-mail matches.
+  // TODO(crbug.com/268177869): If the gaia id is present but doesn't match,
+  // this function should likely be returning false, even if the e-mail matches.
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE: {
       const std::string* gaia_id = dict.FindString(kGAIAIdKey);
@@ -68,14 +61,8 @@ bool AccountIdMatches(const AccountId& account_id,
       }
       break;
     }
-    case AccountType::ACTIVE_DIRECTORY: {
-      const std::string* obj_guid = dict.FindString(kObjGuidKey);
-      if (obj_guid && account_id.GetObjGuid() == *obj_guid) {
-        return true;
-      }
-      break;
-    }
     case AccountType::UNKNOWN: {
+      break;
     }
   }
 
@@ -96,11 +83,6 @@ void StoreAccountId(const AccountId& account_id, base::Value::Dict& dict) {
     case AccountType::GOOGLE:
       if (!account_id.GetGaiaId().empty()) {
         dict.Set(kGAIAIdKey, account_id.GetGaiaId().ToString());
-      }
-      break;
-    case AccountType::ACTIVE_DIRECTORY:
-      if (!account_id.GetObjGuid().empty()) {
-        dict.Set(kObjGuidKey, account_id.GetObjGuid());
       }
       break;
     case AccountType::UNKNOWN:

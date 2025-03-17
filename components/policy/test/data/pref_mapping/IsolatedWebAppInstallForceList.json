@@ -1,6 +1,9 @@
 [
   {
     "os": [
+      "win",
+      "linux",
+      "mac",
       "chromeos_ash",
       "chromeos_lacros"
     ],

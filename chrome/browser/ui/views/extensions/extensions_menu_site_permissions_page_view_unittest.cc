@@ -22,6 +22,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace {
 
@@ -233,6 +234,9 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ShowRequestsTogglePressed) {
   ShowSitePermissionsPage(extensionA->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extensionA->id()));
 
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(site_permissions_page());
+
   // By default, extensions are allowed to show request access in the toolbar.
   // However, request is only shown if extension adds a request for the site.
   EXPECT_TRUE(
@@ -305,6 +309,9 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, SiteAccessUpdated) {
 
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(site_permissions_page());
 
   auto* on_click_button =
       site_permissions_page()->GetSiteAccessButtonForTesting(

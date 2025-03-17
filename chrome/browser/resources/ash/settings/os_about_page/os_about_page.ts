@@ -8,7 +8,6 @@
  */
 
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
@@ -62,7 +61,7 @@ export interface OsAboutPageElement {
     productLogo: HTMLImageElement,
     regulatoryInfo: HTMLElement,
     relaunchButton: CrButtonElement,
-    updateStatusMessageInner: HTMLDivElement,
+    updateStatusMessageInner: HTMLElement,
   };
 }
 
@@ -547,7 +546,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
         return this.i18nAdvanced('aboutUpgradeUpToDate');
       case UpdateStatus.UPDATING:
         assert(typeof this.currentUpdateStatusEvent_.progress === 'number');
-        const progressPercent = this.currentUpdateStatusEvent_.progress! + '%';
+        const progressPercent = this.currentUpdateStatusEvent_.progress + '%';
 
         if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeUpdatingChannelSwitch', {
@@ -564,7 +563,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
             substitutions: [this.deviceManager_, progressPercent],
           });
         }
-        if (this.currentUpdateStatusEvent_.progress! > 0) {
+        if (this.currentUpdateStatusEvent_.progress > 0) {
           // NOTE(dbeam): some platforms (i.e. Mac) always send 0% while
           // updating (they don't support incremental upgrade progress). Though
           // it's certainly quite possible to validly end up here with 0% on

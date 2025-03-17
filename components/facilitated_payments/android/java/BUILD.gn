@@ -10,6 +10,8 @@ android_library("java") {
   sources = [
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClient.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java",
+    "src/org/chromium/components/facilitated_payments/SecureData.java",
+    "src/org/chromium/components/facilitated_payments/SecurePayload.java",
   ]
   deps = [
     "//base:base_java",
@@ -24,5 +26,9 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java" ]
+  sources = [
+    "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java",
+    "src/org/chromium/components/facilitated_payments/SecureData.java",
+    "src/org/chromium/components/facilitated_payments/SecurePayload.java",
+  ]
 }

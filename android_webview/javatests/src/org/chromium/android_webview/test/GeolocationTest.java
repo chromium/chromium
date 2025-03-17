@@ -157,7 +157,7 @@ public class GeolocationTest extends AwParameterizedTest {
         public AwSettings createAwSettings(Context context, boolean supportLegacyQuirks) {
             return new AwSettings(
                     context,
-                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    /* isAccessFromFileUrlsGrantedByDefault= */ false,
                     supportLegacyQuirks,
                     /* allowEmptyDocumentPersistence= */ false,
                     mAllow,

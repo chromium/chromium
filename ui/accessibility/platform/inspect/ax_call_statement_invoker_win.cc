@@ -358,6 +358,7 @@ AXOptionalObject AXCallStatementInvokerWin::QueryInterface(
   return AXOptionalObject::Error("Unsupported " + interface_name +
                                  " interface");
 }
+#undef DEFINE_IA2_QI_ENTRY
 
 AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
   LONG role = 0;
@@ -429,9 +430,6 @@ AXOptionalObject AXCallStatementInvokerWin::SetSelections(
 
   std::vector<IA2TextSelection> selections =
       PropertyNodeToIA2TextSelectionArray(property_node.arguments[0]);
-  if (selections.size() == 0) {
-    return AXOptionalObject::Error("Empty IA2TextSelection array is given");
-  }
 
   if (target->setSelections(selections.size(), selections.data()) == S_OK) {
     return AXOptionalObject({target});
@@ -439,6 +437,8 @@ AXOptionalObject AXCallStatementInvokerWin::SetSelections(
 
   return AXOptionalObject::Error();
 }
+#undef CHECK_ARGS_1
+#undef CHECK_ARGS_N
 
 bool AXCallStatementInvokerWin::IsIAccessibleAndNotNull(
     const Target& target) const {

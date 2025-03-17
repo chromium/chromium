@@ -61,7 +61,7 @@ class DecoderBufferProviderImplTest : public testing::Test {
   }
 
   void WriteBufferData() {
-    writer_->Write(kSerializedData.data(), kSerializedData.size(),
+    writer_->Write(kSerializedData,
                    base::BindOnce(&DecoderBufferProviderImplTest::OnWriteDone,
                                   base::Unretained(this)));
   }

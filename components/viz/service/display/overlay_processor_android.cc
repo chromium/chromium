@@ -215,8 +215,6 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
     if (quad->material != DrawQuad::Material::kTextureContent)
       continue;
     const TextureDrawQuad* texture_quad = TextureDrawQuad::MaterialCast(quad);
-    if (!texture_quad->is_stream_video)
-      continue;
     ResourceId id = texture_quad->resource_id;
     if (!resource_provider->DoesResourceWantPromotionHint(id))
       continue;

@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 
+class PrefService;
+
 // Enum representing the possible Lens avaiability statuses on iOS.
 // Current values should not be renumbered. Please keep in sync with
 // "IOSLensSupportStatus" in src/tools/metrics/histograms/enums.xml.
@@ -37,7 +39,7 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
     bool is_google_default_search_engine);
 
 // Checks whether the context menu unified experience in enabled;
-bool IsLensContextMenuUnifiedExperienceEnabled();
+bool IsLensContextMenuUnifiedExperienceEnabled(const PrefService* prefs);
 }  // namespace lens_availability
 
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_LENS_AVAILABILITY_H_

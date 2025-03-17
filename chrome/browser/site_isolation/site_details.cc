@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -162,8 +163,8 @@ void SiteDetails::UpdateHistograms(
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_100(
-      "Memory.RenderProcessHost.Count.OriginAgentClusterOverhead",
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Memory.RenderProcessHost.Count2.OriginAgentClusterOverhead",
       extra_processes_from_oac);
   UMA_HISTOGRAM_PERCENTAGE(
       "Memory.RenderProcessHost.Percent.OriginAgentClusterOverhead",

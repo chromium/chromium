@@ -825,7 +825,12 @@ HRESULT InitializeSampleFromTexture(const VideoFrame* frame,
   hr = sample->SetSampleTime(frame->timestamp().InMicroseconds() *
                              kOneMicrosecondInMFSampleTimeUnits);
   RETURN_ON_HR_FAILURE(hr, "Failed to set sample timestamp", hr);
-
+  if (frame->ColorSpace().GetPrimaryID() !=
+      gfx::ColorSpace::PrimaryID::INVALID) {
+    (void)sample->SetUINT32(
+        MF_MT_VIDEO_PRIMARIES,
+        VideoPrimariesToMFVideoPrimaries(frame->ColorSpace().GetPrimaryID()));
+  }
   return S_OK;
 }
 
@@ -837,8 +842,12 @@ HRESULT GenerateSampleFromVideoFrame(
     DWORD buffer_alignment,
     IMFSample** sample_out) {
   // A shared image sample cannot be created synchronously.  Use
-  // GenerateSampleFromSharedImageVideoFrame
-  CHECK(!frame->HasSharedImage());
+  // GenerateSampleFromSharedImageVideoFrame. Note that this is not true for
+  // mappable shared image since it has a GpuMemoryBufferHandle. So skipping the
+  // CHECK when frame has a mappable buffer.
+  if (!frame->HasMappableGpuBuffer()) {
+    CHECK(!frame->HasSharedImage());
+  }
 
   HRESULT hr;
   Microsoft::WRL::ComPtr<IMFSample> sample;
@@ -868,8 +877,9 @@ HRESULT GenerateSampleFromVideoFrame(
     RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
-    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&input_texture));
+    hr = device1->OpenSharedResource1(
+        buffer_handle.dxgi_handle().buffer_handle(),
+        IID_PPV_ARGS(&input_texture));
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
 
     if (use_dxgi_buffer) {

@@ -28,6 +28,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/upload_data_stream.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -573,6 +574,12 @@ void URLRequest::set_allow_credentials(bool allow_credentials) {
 
 void URLRequest::Start() {
   DCHECK(delegate_);
+
+  // We do not support credentials with a non-general
+  // NetworkIsolationPartition.
+  CHECK(isolation_info_.GetNetworkIsolationPartition() ==
+            NetworkIsolationPartition::kGeneral ||
+        !allow_credentials());
 
   if (status_ != OK)
     return;
@@ -1367,7 +1374,7 @@ void URLRequest::SetIsSharedDictionaryReadAllowedCallback(
 }
 
 void URLRequest::SetDeviceBoundSessionAccessCallback(
-    base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+    base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
         callback) {
   device_bound_session_access_callback_ = std::move(callback);
 }

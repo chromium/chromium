@@ -6,8 +6,8 @@ package org.chromium.components.embedder_support.contextmenu;
 
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -16,6 +16,7 @@ import java.util.List;
  * A delegate responsible for populating context menus and processing results from
  * ContextMenuHelper.
  */
+@NullMarked
 public interface ContextMenuPopulator {
     /**
      * Should be used to populate {@code menu} with the correct context menu items.
@@ -50,6 +51,5 @@ public interface ContextMenuPopulator {
     /**
      * @return A chip delegate responsible for populating chip data and action handling.
      */
-    @Nullable
-    ChipDelegate getChipDelegate();
+    @Nullable ChipDelegate getChipDelegate();
 }

@@ -31,9 +31,14 @@ component("platform") {
 
   defines = [ "IS_AX_PLATFORM_IMPL" ]
 
-  visibility = [ "//ui/accessibility" ]
+  visibility = [
+    "//ui/accessibility",
+    "//ui/views:views",
+  ]
 
   sources = [
+    "ax_mode_observer.cc",
+    "ax_mode_observer.h",
     "ax_node_id_delegate.h",
     "ax_platform.cc",
     "ax_platform.h",
@@ -74,6 +79,11 @@ component("platform") {
     "inspect/ax_tree_formatter_base.cc",
     "inspect/ax_tree_formatter_base.h",
     "inspect/ax_tree_indexer.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   deps = [

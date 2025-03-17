@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
+
+#include <algorithm>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -207,12 +207,12 @@ void MultiDeviceSetupClientImpl::OnGetEligibleHostDevicesCompleted(
   remote_device_cache_->SetRemoteDevices(eligible_host_devices);
 
   multidevice::RemoteDeviceRefList eligible_host_device_refs;
-  base::ranges::transform(eligible_host_devices,
-                          std::back_inserter(eligible_host_device_refs),
-                          [this](const auto& device) {
-                            return *remote_device_cache_->GetRemoteDevice(
-                                device.instance_id, device.GetDeviceId());
-                          });
+  std::ranges::transform(eligible_host_devices,
+                         std::back_inserter(eligible_host_device_refs),
+                         [this](const auto& device) {
+                           return *remote_device_cache_->GetRemoteDevice(
+                               device.instance_id, device.GetDeviceId());
+                         });
 
   std::move(callback).Run(eligible_host_device_refs);
 }

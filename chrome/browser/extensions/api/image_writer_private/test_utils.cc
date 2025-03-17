@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 
 #include <string.h>
@@ -71,10 +76,10 @@ MockOperationManager::MockOperationManager(content::BrowserContext* context)
 MockOperationManager::~MockOperationManager() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
-FakeDiskMountManager::FakeDiskMountManager() = default;
-FakeDiskMountManager::~FakeDiskMountManager() = default;
+UnmountingMockDiskMountManager::UnmountingMockDiskMountManager() = default;
+UnmountingMockDiskMountManager::~UnmountingMockDiskMountManager() = default;
 
-void FakeDiskMountManager::UnmountDeviceRecursively(
+void UnmountingMockDiskMountManager::UnmountDeviceRecursively(
     const std::string& device_path,
     UnmountDeviceRecursivelyCallbackType callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -243,7 +248,7 @@ void ImageWriterTestUtils::SetUp() {
   image_burner_client_ = std::make_unique<ImageWriterFakeImageBurnerClient>();
   ash::ImageBurnerClient::SetInstanceForTest(image_burner_client_.get());
 
-  FakeDiskMountManager* disk_manager = new FakeDiskMountManager();
+  auto* disk_manager = new UnmountingMockDiskMountManager();
   ash::disks::DiskMountManager::InitializeForTesting(disk_manager);
 
   // Adds a disk entry for test_device_path_ with the same device and file path.
@@ -323,8 +328,8 @@ void ImageWriterUnitTestBase::SetUp() {
 }
 
 void ImageWriterUnitTestBase::TearDown() {
-  testing::Test::TearDown();
   test_utils_.TearDown();
+  testing::Test::TearDown();
 }
 
 bool GetTestDataDirectory(base::FilePath* path) {

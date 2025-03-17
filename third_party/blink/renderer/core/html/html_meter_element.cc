@@ -208,13 +208,6 @@ void HTMLMeterElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   bar->AppendChild(value_);
 
   inner->AppendChild(bar);
-
-  if (!RuntimeEnabledFeatures::MeterAppearanceNoneFallbackStyleEnabled()) {
-    auto* fallback = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-    fallback->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
-    fallback->SetShadowPseudoId(AtomicString("-internal-fallback"));
-    root.AppendChild(fallback);
-  }
 }
 
 void HTMLMeterElement::UpdateValueAppearance(double percentage) {

@@ -61,7 +61,8 @@ class AutofillType {
         server_predictions;
   };
 
-  explicit AutofillType(FieldType field_type = NO_SERVER_DATA);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  AutofillType(FieldType field_type = NO_SERVER_DATA);
   explicit AutofillType(HtmlFieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
   AutofillType& operator=(const AutofillType& autofill_type) = default;
@@ -76,10 +77,10 @@ class AutofillType {
 
   // Maps `this` type to a field type that can be directly stored in an Autofill
   // data model (in the sense that it makes sense to call
-  // `AutofillDataModel::SetRawInfo()` with the returned field type as the first
-  // parameter).  Note that the returned type might not be exactly equivalent to
-  // `this` type.  For example, the HTML types 'country' and 'country-name' both
-  // map to ADDRESS_HOME_COUNTRY.
+  // `FormGroup::SetRawInfo()` with the returned field type as the
+  // first parameter).  Note that the returned type might not be exactly
+  // equivalent to `this` type.  For example, the HTML types 'country' and
+  // 'country-name' both map to ADDRESS_HOME_COUNTRY.
   FieldType GetStorableType() const;
 
   std::string_view ToStringView() const;

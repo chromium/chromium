@@ -4,7 +4,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {OpenWindowProxyImpl, ExtensionControlBrowserProxyImpl, ExtensionControlledIndicatorElement} from 'chrome://os-settings/os_settings.js';
+import type { ExtensionControlledIndicatorElement} from 'chrome://os-settings/os_settings.js';
+import {OpenWindowProxyImpl, ExtensionControlBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -55,7 +56,7 @@ suite('extension controlled indicator', function() {
   test('tapping manage button invokes browser proxy', async function() {
     const button = indicator.shadowRoot!.querySelector<HTMLElement>('#manage');
     assertTrue(!!button);
-    button!.click();
+    button.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, `chrome://extensions/?id=${indicator.extensionId}`);
   });
@@ -63,7 +64,7 @@ suite('extension controlled indicator', function() {
   test('tapping disable button invokes browser proxy', async function() {
     const button = indicator.shadowRoot!.querySelector<HTMLElement>('#disable');
     assertTrue(!!button);
-    button!.click();
+    button.click();
     const extensionId = await browserProxy.whenCalled('disableExtension');
     assertEquals(extensionId, indicator.extensionId);
   });

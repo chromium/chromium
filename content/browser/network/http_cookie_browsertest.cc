@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -590,19 +591,12 @@ HandleEchoCookiesWithCorsRequest(const net::test_server::HttpRequest& request) {
   return http_response;
 }
 
-class ThirdPartyCookiesBlockedHttpCookieBrowserTest
-    : public ContentBrowserTest {
+class ThirdPartyCookiesHttpCookieBrowserTest : public ContentBrowserTest {
  public:
-  ThirdPartyCookiesBlockedHttpCookieBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures(
-        {
-            net::features::kForceThirdPartyCookieBlocking,
-        },
-        {});
-  }
+  ThirdPartyCookiesHttpCookieBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  ~ThirdPartyCookiesBlockedHttpCookieBrowserTest() override = default;
+  ~ThirdPartyCookiesHttpCookieBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -691,6 +685,22 @@ class ThirdPartyCookiesBlockedHttpCookieBrowserTest
 
  private:
   net::test_server::EmbeddedTestServer https_server_;
+};
+
+class ThirdPartyCookiesBlockedHttpCookieBrowserTest
+    : public ThirdPartyCookiesHttpCookieBrowserTest {
+ public:
+  ThirdPartyCookiesBlockedHttpCookieBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {
+            net::features::kForceThirdPartyCookieBlocking,
+        },
+        {});
+  }
+
+  ~ThirdPartyCookiesBlockedHttpCookieBrowserTest() override = default;
+
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -864,54 +874,7 @@ IN_PROC_BROWSER_TEST_F(
               net::CookieStringIs(IsEmpty()));
 }
 
-class AncestorChainBitEnabledThirdPartyCookiesBlockedTest
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  AncestorChainBitEnabledThirdPartyCookiesBlockedTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatureStates(
-        {{net::features::kForceThirdPartyCookieBlocking, true},
-         {net::features::kAncestorChainBitEnabledInPartitionedCookies,
-          AncestorChainBitEnabled()}});
-  }
-
-  bool AncestorChainBitEnabled() { return GetParam(); }
-
-  ~AncestorChainBitEnabledThirdPartyCookiesBlockedTest() override = default;
-
-  void SetUpOnMainThread() override {
-    ContentBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server()->AddDefaultHandlers(GetTestDataFilePath());
-    https_server()->RegisterRequestHandler(
-        base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
-    ASSERT_TRUE(https_server()->Start());
-  }
-
-  WebContents* web_contents() const { return shell()->web_contents(); }
-
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
-  GURL EchoCookiesUrl(const std::string& host) const {
-    return https_server_.GetURL(host, "/echoheader?Cookie");
-  }
-
-  std::string ExtractFrameContent(RenderFrameHost* frame) const {
-    return EvalJs(frame, "document.body.textContent").ExtractString();
-  }
-
-  std::string ExtractCookieFromDocument(RenderFrameHost* frame) const {
-    return EvalJs(frame, "document.cookie").ExtractString();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  net::test_server::EmbeddedTestServer https_server_;
-};
-
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        TestCrossSitePartitionKeyNotAvailable) {
   // Set cookie for site A kSameSite ancestor.
   // Create initial frame tree A->B (B is an iframe) and check cookie.
@@ -950,7 +913,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        TestSubresourceRedirects) {
   // Initial frame tree A->B (B is an iframe).
   // A cookie is set for site C.
@@ -1004,7 +967,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        TestTopLevelRedirects) {
   // Navigate to Site A and set cookie on site A.
   // Redirect from site A to site B and back to site A.
@@ -1039,8 +1002,8 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyCookiesBlockedHttpCookieBrowserTest,
     TestSameSiteEmbeddedResourceToCrossSiteEmbeddedResource) {
   // Initial frame tree A1->A2 (A2 is an iframe)
   // A cookie is set from top-level A1 for site B with kCrossSite ancestor chain
@@ -1079,7 +1042,7 @@ IN_PROC_BROWSER_TEST_P(
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        CrossSiteToSameSiteIframeRedirects) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1120,7 +1083,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        RedirectCrossSiteThroughSameSiteIframe) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1164,7 +1127,7 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        RedirectTwoCrossSitesThroughSameSiteIframe) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1210,8 +1173,8 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyCookiesBlockedHttpCookieBrowserTest,
     RedirectCrossSiteIframeToSameSiteThenNavigateToSameSite) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1257,7 +1220,7 @@ IN_PROC_BROWSER_TEST_P(
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
                        CrossSiteToSameSiteIframeNavigation) {
   // Set partitioned kSameSite ancestor cookie on top level site A.
   // Embed an iframe of site A and confirm cookie is accessible from iframe.
@@ -1302,14 +1265,160 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
+class DevToolsOverridesThirdPartyCookiesBrowserTest
+    : public ThirdPartyCookiesHttpCookieBrowserTest {
+ public:
+  DevToolsOverridesThirdPartyCookiesBrowserTest() = default;
+
+  ~DevToolsOverridesThirdPartyCookiesBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ThirdPartyCookiesHttpCookieBrowserTest::SetUpOnMainThread();
+    web_contents_devtools_client.AttachToWebContents(shell()->web_contents());
+    web_contents_devtools_client.SendCommandAsync("Network.enable");
+  }
+
+  void TearDownOnMainThread() override {
+    web_contents_devtools_client.DetachProtocolClient();
+    frame_devtools_client.DetachProtocolClient();
+  }
+
+ protected:
+  void NavigateToPageWith3pIFrame(std::string_view host) {
+    frame_devtools_client.DetachProtocolClient();
+    GURL main_url(https_server()->GetURL(host, "/page_with_blank_iframe.html"));
+
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), main_url));
+    EXPECT_TRUE(
+        NavigateIframeToURL(web_contents(), "test_iframe",
+                            https_server()->GetURL(kHostB, "/empty.html")));
+
+    frame_devtools_client.AttachToFrameTreeHost(GetFrame());
+    frame_devtools_client.SendCommandSync("Network.enable");
+  }
+
+  content::RenderFrameHost* GetFrame() {
+    return ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  }
+
+  std::string SetCookieFromJS(content::RenderFrameHost* render_frame_host,
+                              std::string cookie) {
+    content::EvalJsResult result = content::EvalJs(
+        render_frame_host,
+        "document.cookie = '" + cookie + "; SameSite=None; Secure'",
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+    return result.ExtractString();
+  }
+
+  std::string ReadCookiesFromJS(content::RenderFrameHost* render_frame_host) {
+    std::string res = content::EvalJs(render_frame_host, "document.cookie",
+                                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                          .ExtractString();
+
+    return res;
+  }
+
+  void SendSetCookieControls(bool enable_third_party_cookie_restriction,
+                             bool disable_third_party_cookie_metadata,
+                             bool disable_third_party_cookie_heuristics) {
+    base::Value::Dict command_params;
+    web_contents_devtools_client.SendCommandSync("Network.enable");
+    command_params.Set("enableThirdPartyCookieRestriction",
+                       enable_third_party_cookie_restriction);
+    command_params.Set("disableThirdPartyCookieMetadata",
+                       disable_third_party_cookie_metadata);
+    command_params.Set("disableThirdPartyCookieHeuristics",
+                       disable_third_party_cookie_heuristics);
+    web_contents_devtools_client.SendCommandSync("Network.setCookieControls",
+                                                 std::move(command_params));
+  }
+
+  content::TestDevToolsProtocolClient web_contents_devtools_client;
+  content::TestDevToolsProtocolClient frame_devtools_client;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
+                       DevToolsForceDisableTPCFromJS) {
+  // Third-party access should work initially
+  NavigateToPageWith3pIFrame(kHostA);
+  SetCookieFromJS(GetFrame(), "cookieAllowed=true");
+  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "cookieAllowed=true");
+
+  // Turning on third-party cookie restriction
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  // Refreshing so that RCM is re-created with new controls
+  NavigateToPageWith3pIFrame("a.test");
+
+  // Both of these should get blocked now
+  SetCookieFromJS(GetFrame(), "cookieAllowed=false");
+  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "");
+
+  // Disabling the network domain should return to normal (unblocked) cookie
+  // state
+  frame_devtools_client.SendCommandSync("Network.disable");
+  web_contents_devtools_client.SendCommandSync("Network.disable");
+
+  // The cookie should be the same as before proving that the last
+  // SetCookieFromJS didn't update the cookie
+  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "cookieAllowed=true");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
+                       DevToolsForceDisableTPC) {
+  // Set SameSite=None cookie on top-level-site kHostA.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+  // Embed an iframe containing A in B and check 3pc is allowed.
+  ASSERT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(),
+          FrameTreeForHostAndUrl(kHostB, EchoCookiesUrl(kHostA)), {0}),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+
+  // Apply devtools overrides to enable 3pc restriction.
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  // 3pc should be blocked due to devtools overrides.
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(),
+                  FrameTreeForHostAndUrl(kHostB, EchoCookiesUrl(kHostA)), {0}),
+              "None");
+  EXPECT_THAT(Fetch(web_contents()->GetPrimaryMainFrame(),
+                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                    "cors", "include")
+                  .ExtractString(),
+              net::CookieStringIs(IsEmpty()));
+
+  web_contents_devtools_client.SendCommandAsync("Network.disable");
+  // The override should stop working and 3pc is re-allowed after devtools is
+  // disabled.
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(),
+          FrameTreeForHostAndUrl(kHostB, EchoCookiesUrl(kHostA)), {0}),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+  EXPECT_THAT(
+      Fetch(web_contents()->GetPrimaryMainFrame(),
+            https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath), "cors",
+            "include")
+          .ExtractString(),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+}
+
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          HttpCookieBrowserTest,
                          ::testing::Bool());
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no label */,
-    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
-    ::testing::Bool());
 
 }  // namespace
 }  // namespace content

@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
@@ -39,7 +40,7 @@ class OnDeviceModelFeatureAdapter final
 
   // Constructs the model input from `request`.
   std::optional<SubstitutionResult> ConstructInputString(
-      const google::protobuf::MessageLite& request,
+      MultimodalMessageReadView request,
       bool want_input_context) const;
 
   bool ShouldParseResponse(ResponseCompleteness completeness) const;
@@ -48,7 +49,7 @@ class OnDeviceModelFeatureAdapter final
   // Replies with std::nullopt on error.
   // The `previous_response_pos` might be used by the parser to determine which
   // part of the response to return to the responder.
-  void ParseResponse(const google::protobuf::MessageLite& request,
+  void ParseResponse(const MultimodalMessage& request,
                      const std::string& model_response,
                      size_t previous_response_pos,
                      ResponseParser::ResultCallback callback) const;
@@ -56,12 +57,12 @@ class OnDeviceModelFeatureAdapter final
   // Constructs the request for text safety server fallback.
   // Will return std::nullopt on error or if the config does not allow for it.
   std::optional<proto::TextSafetyRequest> ConstructTextSafetyRequest(
-      const google::protobuf::MessageLite& request,
+      MultimodalMessageReadView request,
       const std::string& text) const;
 
   bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
 
-  std::optional<SamplingParamsConfig> MaybeSamplingParamsConfig() const;
+  SamplingParamsConfig GetSamplingParamsConfig() const;
 
   const proto::Any& GetFeatureMetadata() const;
 
@@ -72,12 +73,12 @@ class OnDeviceModelFeatureAdapter final
   ~OnDeviceModelFeatureAdapter();
 
   // Redacts the content of current response, given the last executed message.
-  RedactResult Redact(const google::protobuf::MessageLite& last_message,
+  RedactResult Redact(MultimodalMessageReadView last_message,
                       std::string& current_response) const;
 
   // Returns the string that is used for checking redaction against.
   std::string GetStringToCheckForRedacting(
-      const google::protobuf::MessageLite& message) const;
+      MultimodalMessageReadView message) const;
 
   proto::OnDeviceModelExecutionFeatureConfig config_;
   TokenLimits token_limits_;

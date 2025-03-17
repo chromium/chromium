@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/login/existing_user_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -28,7 +28,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,6 +43,7 @@
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
+#include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
@@ -100,6 +100,8 @@
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
@@ -272,7 +274,7 @@ std::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
 AccountId GetPublicSessionAutoLoginAccountId(
     const std::vector<policy::DeviceLocalAccount>& device_local_accounts,
     const std::string& auto_login_account_id) {
-  const auto& it = base::ranges::find_if(
+  const auto& it = std::ranges::find_if(
       device_local_accounts, [&auto_login_account_id](const auto& account) {
         return account.account_id == auto_login_account_id;
       });
@@ -389,6 +391,20 @@ ExistingUserController::ExistingUserController()
       kAccountsPrefFamilyLinkAccountsAllowed,
       base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
                           base::Unretained(this)));
+
+  bool is_demo_login_eligible =
+      ash::features::IsDemoModeSignInEnabled() ||
+      ash::features::IsGrowthCampaignsInDemoModeEnabled();
+  // If OOBE's done, device mode is populated in `ash::InitializeDBus()`. create
+  // DemoLoginController here.
+  if (demo_mode::IsDeviceInDemoMode() && is_demo_login_eligible) {
+    // TODO(387572263): Fix `demo_login_controller_` is not created in OOBE. OK
+    // for now because first session is very short and it will be a auto sign
+    // out in 90s if idle.
+    demo_login_controller_ = std::make_unique<ash::DemoLoginController>(
+        base::BindRepeating(&ExistingUserController::ConfigureAutoLogin,
+                            base::Unretained(this)));
+  }
 
   observed_user_manager_.Observe(user_manager::UserManager::Get());
 
@@ -613,8 +629,8 @@ bool ExistingUserController::IsUserAllowlisted(
                                                user_type);
   }
 
-  return cros_settings_->IsUserAllowlisted(account_id.GetUserEmail(),
-                                           &wildcard_match, user_type);
+  return UserLoginPermissionTracker::Get()->IsUserAllowlisted(
+      account_id.GetUserEmail(), &wildcard_match, user_type);
 }
 
 bool ExistingUserController::IsSigninInProgress() const {
@@ -752,7 +768,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   // Mark device will be consumer owned if the device is not managed and this is
   // the first user on the device.
   if (!is_enterprise_managed &&
-      user_manager::UserManager::Get()->GetUsers().empty()) {
+      user_manager::UserManager::Get()->GetPersistedUsers().empty()) {
     DeviceSettingsService::Get()->MarkWillEstablishConsumerOwnership();
 
     // Save the owner email in case Chrome restarts/crashes before fully taking
@@ -871,8 +887,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
                                     is_enterprise_managed);
 
   if (is_enterprise_managed) {
-    std::optional<std::string> manager =
-        chrome::GetAccountManagerIdentity(profile);
+    std::optional<std::string> manager = GetAccountManagerIdentity(profile);
     if (manager) {
       known_user.SetAccountManager(user_context.GetAccountId(), *manager);
     }
@@ -1035,7 +1050,7 @@ void ExistingUserController::DeviceSettingsChanged() {
         UserAddingScreen::Get()->IsRunning()
             ? user_manager::UserManager::Get()
                   ->GetUsersAllowedForMultiUserSignIn()
-            : user_manager::UserManager::Get()->GetUsers();
+            : user_manager::UserManager::Get()->GetPersistedUsers();
 
     UpdateLoginDisplay(users);
     ConfigureAutoLogin();
@@ -1253,6 +1268,11 @@ void ExistingUserController::ConfigureAutoLogin() {
   }
 }
 
+DemoLoginController* ExistingUserController::GetDemoLoginControllerForTest() {
+  CHECK_IS_TEST();
+  return demo_login_controller_.get();
+}
+
 void ExistingUserController::OnUserActivity(const ui::Event* event) {
   // Only restart the auto-login timer if it's already running.
   if (auto_login_timer_ && auto_login_timer_->IsRunning()) {
@@ -1289,8 +1309,7 @@ void ExistingUserController::StartAutoLoginTimer() {
   bool is_demo_mode = demo_mode::IsDeviceInDemoMode();
   if (is_login_in_progress_ ||
       !public_session_auto_login_account_id_.is_valid() ||
-      (session_state == session_manager::SessionState::OOBE && !is_demo_mode) ||
-      (is_demo_mode && !demo_mode::ShouldFallBackToMGS())) {
+      (session_state == session_manager::SessionState::OOBE && !is_demo_mode)) {
     VLOG(2) << "Not starting autologin timer, because:";
     VLOG_IF(2, is_login_in_progress_) << "* Login is in process;";
     VLOG_IF(2, !public_session_auto_login_account_id_.is_valid())
@@ -1298,10 +1317,31 @@ void ExistingUserController::StartAutoLoginTimer() {
     VLOG_IF(2, session_state == session_manager::SessionState::OOBE &&
                    !is_demo_mode)
         << "* OOBE isn't completed and device isn't in demo mode;";
-    VLOG_IF(2, is_demo_mode && !demo_mode::ShouldFallBackToMGS())
-        << "* Should not fall back to manage guest session for demo mode;";
     return;
   }
+
+  // If device is in demo mode, and check whether should login to MGS.
+  if (is_demo_mode && demo_login_controller_) {
+    auto demo_sign_in_state = demo_login_controller_->state();
+    CHECK(demo_sign_in_state != DemoLoginController::State::kUnknown);
+    if (demo_sign_in_state ==
+        DemoLoginController::State::kReadyForLoginWithDemoAccount) {
+      // Trigger demo mode sign in flow.
+      demo_login_controller_->TriggerDemoAccountLoginFlow();
+      VLOG(2) << "Not starting autologin timer, because: Device is in demo "
+                 "mode and setup demo account in progress.";
+      return;
+    }
+
+    if (demo_sign_in_state != DemoLoginController::State::kLoginToMGS) {
+      // Returns early if not falling back to MGS.
+      VLOG(2) << "Not starting autologin timer, because: Device is in demo "
+                 "mode and current login state is "
+              << static_cast<int>(demo_sign_in_state);
+      return;
+    }
+  }
+
   VLOG(2) << "Starting autologin timer with delay: " << auto_login_delay_;
 
   if (auto_login_timer_ && auto_login_timer_->IsRunning()) {

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
@@ -116,6 +117,7 @@ class NearbyShareSettingsTest : public ::testing::Test {
   FakeNearbyShareSettingsObserver observer_;
   std::unique_ptr<NearbyShareSettings> nearby_share_settings_;
   std::unique_ptr<NearbyShareSettingsAsyncWaiter> nearby_share_settings_waiter_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(NearbyShareSettingsTest, GetAndSetEnabled) {
@@ -342,4 +344,19 @@ TEST_F(NearbyShareSettingsTest, GetAndSetAllowedContacts) {
 
   settings_waiter()->GetAllowedContacts(&allowed_contacts);
   EXPECT_EQ(0u, allowed_contacts.size());
+}
+
+TEST_F(NearbyShareSettingsTest, QuickShareV2_SomeContacts_ToYourDevices) {
+  feature_list_.InitAndEnableFeature(chromeos::features::kQuickShareV2);
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kSelectedContacts));
+
+  // Since some contacts -> your devices occurs in constructor, new
+  // NearbyShareSettings object must be created after QuickShareV2 is enabled.
+  NearbyShareSettings nearby_share_settings(&pref_service_,
+                                            &local_device_data_manager_);
+
+  EXPECT_EQ(nearby_share_settings.GetVisibility(),
+            nearby_share::mojom::Visibility::kYourDevices);
 }

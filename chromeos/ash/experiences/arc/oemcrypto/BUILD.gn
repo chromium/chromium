@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("oemcrypto") {
+  sources = [
+    "arc_oemcrypto_bridge.cc",
+    "arc_oemcrypto_bridge.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}

@@ -40,35 +40,63 @@ suite('CookiesPageTest', function() {
   }
 
   function blockThirdParty(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#blockThirdParty')!;
+    const blockThirdParty = page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>('#blockThirdParty');
+    assertTrue(!!blockThirdParty);
+    return blockThirdParty;
   }
 
   function blockThirdPartyIncognito(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#blockThirdPartyIncognito')!;
+    const blockThirdPartyIncognito = page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>('#blockThirdPartyIncognito');
+    assertTrue(!!blockThirdPartyIncognito);
+    return blockThirdPartyIncognito;
   }
 
   function allowThirdParty(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#allowThirdParty')!;
+    const allowThirdParty = page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>('#allowThirdParty');
+    assertTrue(!!allowThirdParty);
+    return allowThirdParty;
   }
 
   function blockAll3pc(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#blockAll3pc')!;
+    const blockAll3pc = page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>('#blockAll3pc');
+    assertTrue(!!blockAll3pc);
+    return blockAll3pc;
   }
 
   function block3pcIncognito(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#block3pcIncognito')!;
+    const block3pcIncognito = page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>('#block3pcIncognito');
+    assertTrue(!!block3pcIncognito);
+    return block3pcIncognito;
+  }
+
+  function createPage() {
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+
+    // Enable one of the PS APIs.
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
+    page.set(
+      'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
+    page.set(
+      'prefs.generated.third_party_cookie_blocking_setting.value',
+      ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    document.body.appendChild(page);
+    flush();
   }
 
   suiteSetup(function() {
-    // This test is for the pre-3PCD cookies page.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
-    resetRouterForTesting();
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
 
   setup(function() {
+    // This test is for the pre-3PCD cookies page.
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+      isAlwaysBlock3pcsIncognitoEnabled: true,
+    });
+    resetRouterForTesting();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -76,18 +104,7 @@ suite('CookiesPageTest', function() {
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-
-    // Enable one of the PS APIs.
-    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
-    page.set(
-        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
-    page.set(
-        'prefs.generated.third_party_cookie_blocking_setting.value',
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-    document.body.appendChild(page);
-    flush();
+    createPage();
   });
 
   teardown(function() {
@@ -95,8 +112,13 @@ suite('CookiesPageTest', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('ElementVisibility', async function() {
-    await flushTasks();
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+  test('ElementVisibility_alwaysBlock3pcsIncognitoDisabled', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+    });
+    resetRouterForTesting();
+    await createPage();
     // Headers
     assertTrue(isChildVisible(page, '#explanationText'));
     assertTrue(isChildVisible(page, '#generalControls'));
@@ -114,7 +136,32 @@ suite('CookiesPageTest', function() {
     assertFalse(isChildVisible(page, '#fingerprintingProtectionToggle'));
   });
 
-  test('ThirdPartyCookiesRadioClicksRecorded', async function() {
+  test('ElementVisibility', async function() {
+    await flushTasks();
+    // Headers
+    assertTrue(isChildVisible(page, '#explanationText'));
+    assertTrue(isChildVisible(page, '#generalControls'));
+    assertTrue(isChildVisible(page, '#additionalProtections'));
+    assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
+    assertTrue(isChildVisible(page, '#allow3pcExceptionsList'));
+    // Settings
+    assertTrue(isChildVisible(page, '#doNotTrack'));
+    assertTrue(isChildVisible(page, '#blockAll3pc'));
+    assertTrue(isChildVisible(page, '#block3pcIncognito'));
+    // By default these toggles should be hidden.
+    assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
+    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
+    assertFalse(isChildVisible(page, '#fingerprintingProtectionToggle'));
+  });
+
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+  test('ThirdPartyCookiesRadioClicksRecorded_alwaysBlock3pcsIncognitoDisabled', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+    });
+    resetRouterForTesting();
+    await createPage();
+
     blockThirdParty().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     assertEquals(
@@ -148,14 +195,7 @@ suite('CookiesPageTest', function() {
     testMetricsBrowserProxy.reset();
   });
 
-  test(
-      'thirdPartyCookiesRadioClicksRecorded_alwaysBlock3pcsIncognito',
-      async function() {
-        loadTimeData.overrideValues({
-          isAlwaysBlock3pcsIncognitoEnabled: true,
-          is3pcdCookieSettingsRedesignEnabled: false,
-        });
-
+  test('thirdPartyCookiesRadioClicksRecorded', async function() {
         blockAll3pc().click();
         await eventToPromise(
             'selected-changed', thirdPartyCookieBlockingSettingGroup());
@@ -166,6 +206,9 @@ suite('CookiesPageTest', function() {
             'recordSettingsPageHistogram');
         assertEquals(
             PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK, result);
+        assertEquals(
+              'Settings.ThirdPartyCookies.Block',
+              await testMetricsBrowserProxy.whenCalled('recordAction'));
         testMetricsBrowserProxy.reset();
 
         block3pcIncognito().click();
@@ -179,10 +222,19 @@ suite('CookiesPageTest', function() {
         assertEquals(
             PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK_IN_INCOGNITO,
             result);
+        assertEquals(
+              'Settings.ThirdPartyCookies.Allow',
+              await testMetricsBrowserProxy.whenCalled('recordAction'));
         testMetricsBrowserProxy.reset();
       });
 
-  test('privacySandboxToast', async function() {
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+  test('privacySandboxToast_alwaysBlock3pcsIncognitoDisabled', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+    });
+    resetRouterForTesting();
+    await createPage();
     assertFalse(page.$.toast.open);
 
     // Disabling third-party cookies should display the privacy sandbox toast.
@@ -192,13 +244,13 @@ suite('CookiesPageTest', function() {
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.BLOCK_THIRD_PARTY);
-    // TODO(crbug.com/40244046): Check historgrams.
+    // TODO(crbug.com/40244046): Check histograms.
     assertTrue(page.$.toast.open);
 
     // Clicking the toast link should be recorded in UMA and should dismiss
     // the toast.
     page.$.toast.querySelector('cr-button')!.click();
-    // TODO(crbug.com/40244046): Check historgrams.
+    // TODO(crbug.com/40244046): Check histograms.
     assertFalse(page.$.toast.open);
 
     // Re-enabling 3P cookies for regular sessions should not display the toast.
@@ -231,7 +283,7 @@ suite('CookiesPageTest', function() {
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.BLOCK_THIRD_PARTY);
-    // TODO(crbug.com/40244046): Check historgrams.
+    // TODO(crbug.com/40244046): Check histograms.
     assertTrue(page.$.toast.open);
 
     // Reselecting a non-3P cookie blocking setting should hide the toast.
@@ -258,12 +310,12 @@ suite('CookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
-  test('privacySandboxToast_alwaysBlock3pcsIncognito', async function() {
+  test('privacySandboxToast', async function() {
     loadTimeData.overrideValues({
-      isAlwaysBlock3pcsIncognitoEnabled: true,
-      is3pcdCookieSettingsRedesignEnabled: false,
       isPrivacySandboxRestricted: false,
     });
+    resetRouterForTesting();
+    await createPage();
     assertFalse(page.$.toast.open);
 
     // Disabling third-party cookies should display the privacy sandbox toast.
@@ -324,10 +376,15 @@ suite('CookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
-  test('privacySandboxToast_restrictedSandbox', async function() {
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+  test('privacySandboxToast_restrictedSandbox_alwaysBlock3pcsIncognitoDisabled', async function() {
     // No toast should be shown if the privacy sandbox is restricted
-    loadTimeData.overrideValues({isPrivacySandboxRestricted: true});
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+    });
     resetRouterForTesting();
+    await createPage();
 
     page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
     blockThirdParty().click();
@@ -338,7 +395,13 @@ suite('CookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
-  test('disabledRWSToggle', async () => {
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+  test('disabledRWSToggle_alwaysBlock3pcsIncognitoDisabled', async () => {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+    });
+    resetRouterForTesting();
+    await createPage();
     // Confirm that when the user has not selected the block 3PC setting, the
     // RWS toggle is disabled.
     const relatedWebsiteSetsToggle =
@@ -368,14 +431,8 @@ suite('CookiesPageTest', function() {
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
   });
 
-  test('disabledRWSToggle_alwaysBlock3pcsIncognito', async () => {
-    loadTimeData.overrideValues({
-      isAlwaysBlock3pcsIncognitoEnabled: true,
-      is3pcdCookieSettingsRedesignEnabled: false,
-    });
-    resetRouterForTesting();
-
-    // Verify the RWS toggle is enabled iff the user has selected block 3PCs.
+  test('disabledRWSToggle', async () => {
+// Verify the RWS toggle is enabled iff the user has selected block 3PCs.
     const relatedWebsiteSetsToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#relatedWebsiteSetsToggle3pcSetting')!;
@@ -400,15 +457,23 @@ suite('CookiesPageTest', function() {
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
   });
 
-  test('blockThirdPartyIncognitoSecondBulletPointText', function() {
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+  test('blockThirdPartyIncognitoSecondBulletPointText_alwaysBlock3pcsIncognitoDisabled', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+    });
+    resetRouterForTesting();
+    await createPage();
+
     // Confirm the correct string is set.
-    const cookiesPageBlockThirdPartyIncognitoBulTwoLabel =
+    const cookiesPageBlockThirdPartyIncognitoBulTwo =
         page.shadowRoot!
             .querySelector<HTMLElement>(
-                '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
+                '#blockThirdPartyIncognitoBulTwo');
+    assertTrue(!!cookiesPageBlockThirdPartyIncognitoBulTwo);
     assertEquals(
         loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoRws'),
-        cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
+        cookiesPageBlockThirdPartyIncognitoBulTwo.innerText.trim());
   });
 });
 
@@ -478,6 +543,7 @@ suite('FirstPartySetsUIDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       firstPartySetsUIEnabled: false,
+      isAlwaysBlock3pcsIncognitoEnabled: false,
       // FirstPartySetsUI does not exist in 3PCD.
       is3pcdCookieSettingsRedesignEnabled: false,
     });

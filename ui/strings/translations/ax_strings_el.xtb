@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">ελκυστική φράση</translation>
 <translation id="1681022320378710418">τρέχουσα ώρα</translation>
 <translation id="1727839386348365796">Σταγονόμετρο</translation>
+<translation id="1771761307086386028">Κύλιση δεξιά</translation>
 <translation id="1787192514241997742">συνολικός χρόνος: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">πλέγμα δέντρου</translation>
 <translation id="1822429046913737220">Π.Μ./Μ.Μ.</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">επιλογέας εβδομάδας</translation>
 <translation id="3706100364254443312">εναλλαγή</translation>
 <translation id="3808586225841795776">όρος</translation>
-<translation id="3914173277599553213">Απαιτείται</translation>
 <translation id="3920932319529768807">συμπέρασμα</translation>
 <translation id="3924558731517983934">εφαρμογή</translation>
 <translation id="3944740393230681990">πρόλογος</translation>
 <translation id="3960700977367013758">γραμμή κύλισης</translation>
+<translation id="4021716437419160885">Κύλιση προς τα κάτω</translation>
 <translation id="4103419683916926126">Χιλιοστά του δευτερολέπτου</translation>
 <translation id="4151657705144244502">γραφικό</translation>
 <translation id="4160057747563657758">τηλέφωνο</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">δέντρο</translation>
 <translation id="4668956016107839909">παράρτημα</translation>
 <translation id="4698212723196775569">κώδικας</translation>
+<translation id="4710792130811321440">εμφάνιση μενού επιλογής κομματιού ήχου</translation>
 <translation id="4742539557769756338">εξώφυλλο</translation>
 <translation id="4748357248530471599">εναλλαγή πλήρους οθόνης εγκοπής οθόνης</translation>
 <translation id="4757246831282535685">παράθυρο καρτέλας</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">σχόλιο</translation>
 <translation id="4924138096460353083">Απροσδιόριστη</translation>
 <translation id="4950364064308314478">Εμφάνιση εργαλείου επιλογής τοπικής ημερομηνίας και ώρας</translation>
+<translation id="495046168593986294">Κύλιση προς τα επάνω</translation>
 <translation id="4971739861736909480">Επιλέχθηκε <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">ομάδα σειρών</translation>
 <translation id="5034860022980953847">ένδειξη προόδου</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">κουμπί αυξομείωσης</translation>
 <translation id="6011459053400940133">ρυθμιστικό έντασης ήχου</translation>
 <translation id="6015796118275082299">Έτος</translation>
+<translation id="602001110135236999">Κύλιση αριστερά</translation>
 <translation id="6023896073578205740">πλαίσιο λίστας</translation>
 <translation id="6119846243427417423">ενεργοποίηση</translation>
 <translation id="6150588977291308318">βιβλιογραφία</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">πατήστε</translation>
 <translation id="6885760532393684712">κατάλογος</translation>
 <translation id="689129560213475294">εκδοτικό σήμα</translation>
+<translation id="6919089238568236262">εμφάνιση μενού επιλογής κομματιού βίντεο</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">κεφαλίδα</translation>
 <translation id="6941933287844615239">λήψη μέσων</translation>

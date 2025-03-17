@@ -23,12 +23,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using crosapi::mojom::CertProvisioningProcessState;
 
@@ -38,12 +38,12 @@ namespace {
 
 crosapi::mojom::CertProvisioning* GetCertProvisioningInterface(
     Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->cert_provisioning_ash();
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Returns localized representation for the state of a certificate provisioning
@@ -256,6 +256,7 @@ void CertificateProvisioningUiHandler::GotStatus(
 
   for (auto& process : status) {
     base::Value::Dict entry;
+    entry.Set("processId", std::move(process->process_id.value()));
     entry.Set("certProfileId", std::move(process->cert_profile_id));
     entry.Set("certProfileName", std::move(process->cert_profile_name));
     entry.Set("isDeviceWide", process->is_device_wide);

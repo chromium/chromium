@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
+@NullMarked
 public class OmahaPrefUtils {
     // Flags for retrieving the OmahaClient's state after it's written to disk.
     // The PREF_PACKAGE doesn't match the current OmahaClient package for historical reasons.

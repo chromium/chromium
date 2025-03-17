@@ -18,7 +18,6 @@
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -237,31 +236,6 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
       // still be used because it's been migrated.
       return true;
   }
-}
-
-// Takes a cache dir and deletes all files in it except those in 'Cache_Data'
-// directory. This can be removed once all caches have been moved to the new
-// sub-directory, around M99.
-void MaybeDeleteOldCache(const base::FilePath& cache_dir) {
-  bool deleted_old_files = false;
-  base::FileEnumerator enumerator(
-      cache_dir, /*recursive=*/false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-
-  for (auto name = enumerator.Next(); !name.empty(); name = enumerator.Next()) {
-    base::FileEnumerator::FileInfo info = enumerator.GetInfo();
-    DCHECK_EQ(info.GetName(), name.BaseName());
-
-    if (info.IsDirectory()) {
-      if (name.BaseName().value() == kCacheDataDirectoryName)
-        continue;
-    }
-    base::DeletePathRecursively(name);
-    deleted_old_files = true;
-  }
-
-  base::UmaHistogramBoolean("NetworkService.DeletedOldCacheData",
-                            deleted_old_files);
 }
 
 void CreateNetworkContextInternal(
@@ -944,23 +918,6 @@ void SetCertVerifierServiceFactoryForTesting(
   g_cert_verifier_service_factory_for_testing = service_factory;
 }
 
-void MaybeCleanCacheDirectory(network::mojom::NetworkContextParams* params) {
-  if (params->http_cache_enabled && params->file_paths &&
-      params->file_paths->http_cache_directory) {
-    // Delete any old data except for the "Cache_Data" directory.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(MaybeDeleteOldCache,
-                       params->file_paths->http_cache_directory->path()));
-
-    params->file_paths->http_cache_directory =
-        params->file_paths->http_cache_directory->path().Append(
-            kCacheDataDirectoryName);
-  }
-}
-
 void CreateNetworkContextInNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params) {
@@ -968,7 +925,12 @@ void CreateNetworkContextInNetworkService(
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
          BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  MaybeCleanCacheDirectory(params.get());
+  if (params->http_cache_enabled && params->file_paths &&
+      params->file_paths->http_cache_directory) {
+    params->file_paths->http_cache_directory =
+        params->file_paths->http_cache_directory->path().Append(
+            kCacheDataDirectoryName);
+  }
 
   const bool has_valid_http_cache_path =
       params->http_cache_enabled && params->file_paths &&

@@ -437,9 +437,7 @@ bool PlusAddressCreationControllerAndroid::ShouldShowNotice() const {
       const_cast<PlusAddressCreationControllerAndroid*>(this)
           ->GetPlusAddressSettingService();
 
-  return setting_service && !setting_service->GetHasAcceptedNotice() &&
-         base::FeatureList::IsEnabled(
-             features::kPlusAddressUserOnboardingEnabled);
+  return setting_service && !setting_service->GetHasAcceptedNotice();
 }
 
 void PlusAddressCreationControllerAndroid::TriggerUserPerceptionSurvey(

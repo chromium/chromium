@@ -73,7 +73,7 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  tray_container()->AddChildView(icon_.get());
+  tray_container()->AddChildViewRaw(icon_.get());
 
   // Since OverviewButtonTray is located on the rightmost position of a
   // horizontal shelf, no separator is required.
@@ -141,7 +141,7 @@ void OverviewButtonTray::OnOverviewModeEnded() {
 void OverviewButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
-  icon_->SetImage(GetIconImage());
+  icon_->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 }
 
 void OverviewButtonTray::HandleLocaleChange() {}
@@ -152,7 +152,7 @@ void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
 
 void OverviewButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(GetIconImage());
+  icon_->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 }
 
 void OverviewButtonTray::HideBubble(const TrayBubbleView* bubble_view) {

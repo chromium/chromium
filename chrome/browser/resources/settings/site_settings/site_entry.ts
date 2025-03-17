@@ -92,6 +92,12 @@ export class SiteEntryElement extends SiteEntryElementBase {
         value: '',
       },
 
+      isRelatedWebsiteSetsV2UiEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
+      },
+
       /**
        * Mock preference used to power managed policy icon for related website
        * sets.
@@ -164,6 +170,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private cookiesNum_: string[];
   sortMethod?: SortMethod;
   private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   private button_: Element|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -325,6 +332,11 @@ export class SiteEntryElement extends SiteEntryElementBase {
     return !!this.siteGroup && this.siteGroup.rwsOwner !== undefined;
   }
 
+  private showRwsLabel_(): boolean {
+    return this.isRwsMember_() &&
+        !(this.isRelatedWebsiteSetsV2UiEnabled_ && this.isRwsFiltered);
+  }
+
   /**
    * Evaluates whether the three dot menu should be shown for the site entry.
    * @returns True if site group is a related website set member and filter by
@@ -352,10 +364,12 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private updateRwsMembershipLabel_() {
     if (!this.siteGroup.rwsOwner) {
       this.rwsMembershipLabel_ = '';
+    } else if (this.isRelatedWebsiteSetsV2UiEnabled_) {
+      this.rwsMembershipLabel_ = this.i18n('allSitesRwsMembershipLabel');
     } else {
       this.browserProxy
           .getRwsMembershipLabel(
-              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner!)
+              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
           .then(label => this.rwsMembershipLabel_ = label);
     }
   }

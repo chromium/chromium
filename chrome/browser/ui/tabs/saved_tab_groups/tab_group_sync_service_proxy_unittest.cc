@@ -34,9 +34,6 @@ class TabGroupSyncServiceProxyUnitTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    enabled_features.push_back(tab_groups::kTabGroupsSaveV2);
-    enabled_features.push_back(tab_groups::kTabGroupsSaveUIUpdate);
-
     if (IsMigrationEnabled()) {
       enabled_features.push_back(
           tab_groups::kTabGroupSyncServiceDesktopMigration);
@@ -45,7 +42,7 @@ class TabGroupSyncServiceProxyUnitTest
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  ~TabGroupSyncServiceProxyUnitTest() = default;
+  ~TabGroupSyncServiceProxyUnitTest() override = default;
   TabGroupSyncServiceProxyUnitTest(const TabGroupSyncServiceProxyUnitTest&) =
       delete;
   TabGroupSyncServiceProxyUnitTest& operator=(
@@ -235,7 +232,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionPinnedState) {
 TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionIndex) {
   auto get_index = [&](const LocalTabGroupID& local_id) -> int {
     std::vector<SavedTabGroup> groups = service()->GetAllGroups();
-    auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
+    auto it = std::ranges::find_if(groups, [&](const SavedTabGroup& group) {
       return group.local_group_id() == local_id;
     });
 

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/arc/vmm/vmm_metrics_provider.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 
 namespace arc {
 

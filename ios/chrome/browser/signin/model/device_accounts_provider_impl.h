@@ -14,6 +14,8 @@
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
+class GaiaId;
+
 // Implementation of DeviceAccountsProvider.
 class DeviceAccountsProviderImpl
     : public DeviceAccountsProvider,
@@ -32,7 +34,7 @@ class DeviceAccountsProviderImpl
   void AddObserver(DeviceAccountsProvider::Observer* observer) override;
   void RemoveObserver(DeviceAccountsProvider::Observer* observer) override;
 
-  void GetAccessToken(const std::string& gaia_id,
+  void GetAccessToken(const GaiaId& gaia_id,
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) override;
@@ -41,6 +43,7 @@ class DeviceAccountsProviderImpl
 
   // ChromeAccountManagerService::Observer
   void OnIdentitiesOnDeviceChanged() override;
+  void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) override;
 
  private:
   raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;

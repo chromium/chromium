@@ -217,6 +217,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   // Using `std::atomic` here so that other threads can update this value.
   std::atomic_size_t branch_capacity_in_bytes_;
 
+  // This working memory is temporarily needed only while dequarantining
+  // objects in slots_ when lock_required_ is true. However, allocating this
+  // working memory on stack may cause stack overflow [1]. Plus, it's non-
+  // negligible perf penalty to allocate and deallocate this working memory on
+  // heap only while dequarantining. So, we reserve one chunk of working memory
+  // on heap during the entire lifetime of this branch object and try to reuse
+  // this working memory among threads. Only when thread contention occurs, we
+  // allocate and deallocate another chunk of working memory.
+  // [1] https://issues.chromium.org/issues/387508217
+  std::atomic<ToBeFreedArray*> to_be_freed_working_memory_ = nullptr;
+
   friend class LightweightQuarantineRoot;
 };
 

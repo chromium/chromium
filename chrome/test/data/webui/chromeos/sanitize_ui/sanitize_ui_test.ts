@@ -4,7 +4,7 @@
 
 
 
-import {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {SanitizeDoneElement} from 'chrome://sanitize/sanitize_done.js';
@@ -34,7 +34,7 @@ suite('SanitizeUITest', function() {
     // Verify the header element exists
     assert(titleDiv);
     // Check the header content
-    assertEquals('Safety reset has been completed', titleDiv!.textContent);
+    assertEquals('Safety reset has been completed', titleDiv.textContent);
   });
 
   test('SanitizeDoneAccordionsAndLinksTest', async () => {

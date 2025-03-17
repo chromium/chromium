@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
 
@@ -13,9 +12,6 @@ group("sync") {
     "//components/sync/nigori",
     "//components/sync/service",
   ]
-  if (is_chromeos) {
-    public_deps += [ "//components/sync/chromeos" ]
-  }
 }
 
 static_library("test_support") {
@@ -144,7 +140,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/bookmarks/browser",
     "//components/pref_registry",
     "//components/prefs:test_support",
@@ -175,6 +170,7 @@ source_set("unit_tests") {
     "base/protobuf_unittest.cc",
     "base/sync_util_unittest.cc",
     "base/unique_position_unittest.cc",
+    "base/user_selectable_type_unittest.cc",
     "base/weak_handle_unittest.cc",
     "engine/backoff_delay_provider_unittest.cc",
     "engine/bookmark_update_preprocessing_unittest.cc",
@@ -239,7 +235,9 @@ source_set("unit_tests") {
     "service/data_type_manager_impl_unittest.cc",
     "service/glue/sync_engine_impl_unittest.cc",
     "service/glue/sync_transport_data_prefs_unittest.cc",
+    "service/history_sync_session_durations_metrics_recorder_unittest.cc",
     "service/local_data_description_unittest.cc",
+    "service/local_data_migration_item_queue_unittest.cc",
     "service/model_load_manager_unittest.cc",
     "service/passphrase_type_metrics_provider_unittest.cc",
     "service/sync_auth_manager_unittest.cc",
@@ -258,10 +256,6 @@ source_set("unit_tests") {
     "service/trusted_vault_synthetic_field_trial_unittest.cc",
   ]
 
-  if (is_chromeos) {
-    sources += [ "chromeos/explicit_passphrase_mojo_utils_unittest.cc" ]
-  }
-
   configs += [ "//build/config:precompiled_headers" ]
 
   data = [
@@ -274,7 +268,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/gcm_driver:test_support",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",

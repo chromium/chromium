@@ -115,14 +115,15 @@ void RealTimeReportingBindings::AttachToContext(
   v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
   v8::Local<v8::Object> real_time_reporting = v8::Object::New(isolate);
 
-  v8::Local<v8::FunctionTemplate> real_time_histogram_template =
-      v8::FunctionTemplate::New(
-          isolate, &RealTimeReportingBindings::ContributeToHistogram, v8_this);
+  v8::Local<v8::Function> real_time_histogram =
+      v8::Function::New(
+          context, &RealTimeReportingBindings::ContributeToHistogram, v8_this)
+          .ToLocalChecked();
 
   real_time_reporting
       ->Set(context,
             v8_helper_->CreateStringFromLiteral("contributeToHistogram"),
-            real_time_histogram_template->GetFunction(context).ToLocalChecked())
+            real_time_histogram)
       .Check();
 
   context->Global()

@@ -4,14 +4,16 @@
 
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
@@ -19,7 +21,6 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -258,7 +259,7 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   EXPECT_TRUE(validation_params[0].origin.is_secure);
 
   EXPECT_EQ(2ul, validation_params[0].third_party_origin_info.size());
-  auto unrelated_info = base::ranges::find_if(
+  auto unrelated_info = std::ranges::find_if(
       validation_params[0].third_party_origin_info,
       [](const TrialTokenValidator::OriginInfo& item) {
         return item.origin.IsSameOriginWith(GURL(kUnrelatedSecureOrigin));
@@ -267,11 +268,11 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   EXPECT_TRUE(unrelated_info->is_secure);
 
   auto insecure_origin_info =
-      base::ranges::find_if(validation_params[0].third_party_origin_info,
-                            [](const TrialTokenValidator::OriginInfo& item) {
-                              return item.origin.IsSameOriginWith(
-                                  GURL(kFrobulateEnabledOriginInsecure));
-                            });
+      std::ranges::find_if(validation_params[0].third_party_origin_info,
+                           [](const TrialTokenValidator::OriginInfo& item) {
+                             return item.origin.IsSameOriginWith(
+                                 GURL(kFrobulateEnabledOriginInsecure));
+                           });
   ASSERT_NE(validation_params[0].third_party_origin_info.end(),
             insecure_origin_info);
   EXPECT_FALSE(insecure_origin_info->is_secure);
@@ -417,7 +418,7 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
   // Make a mock feature name map with "frobulate".
   FeatureNameMap feature_map;
   feature_map.Set("frobulate",
-                  mojom::blink::PermissionsPolicyFeature::kFrobulate);
+                  network::mojom::PermissionsPolicyFeature::kFrobulate);
 
   // Attempt to parse the "frobulate" permissions policy. This will only work if
   // the permissions policy is successfully enabled via the origin trial.
@@ -425,12 +426,12 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
       SecurityOrigin::CreateFromString(kFrobulateEnabledOrigin);
 
   PolicyParserMessageBuffer logger;
-  ParsedPermissionsPolicy result;
+  network::ParsedPermissionsPolicy result;
   result = PermissionsPolicyParser::ParsePermissionsPolicyForTest(
       "frobulate=*", security_origin, nullptr, logger, feature_map, window);
   EXPECT_TRUE(logger.GetMessages().empty());
   ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFrobulate,
+  EXPECT_EQ(network::mojom::PermissionsPolicyFeature::kFrobulate,
             result[0].feature);
 }
 

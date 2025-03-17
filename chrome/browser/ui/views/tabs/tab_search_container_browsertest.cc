@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -26,12 +27,14 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/test/views_test_utils.h"
 
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchContainerBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kTabstripDeclutter}, {});
+        {features::kTabOrganization, features::kTabstripDeclutter},
+        {features::kTabstripComboButton});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 
@@ -44,7 +47,9 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
   TabStrip* tab_strip() { return browser_view()->tabstrip(); }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()->tab_strip_region_view()->GetTabSearchContainer();
+    return browser_view()
+        ->tab_strip_region_view()
+        ->tab_search_container_for_testing();
   }
 
  private:
@@ -89,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   TabSearchContainer* const second_search_container =
       BrowserView::GetBrowserViewForBrowser(second_browser)
           ->tab_strip_region_view()
-          ->GetTabSearchContainer();
+          ->tab_search_container_for_testing();
 
   ASSERT_FALSE(second_search_container->animation_session_for_testing());
 
@@ -148,6 +153,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        BlocksTabStripModalUIWhileShown) {
   ASSERT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
 
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone, nullptr);
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
 
@@ -268,6 +275,9 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        DelayedHidesWhenOrganizeButtonTimesOut) {
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(tab_search_container());
+
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
   tab_search_container()

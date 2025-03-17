@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_creation_reason.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -41,10 +42,12 @@ class ImageSkia;
 }
 
 namespace web_app {
-namespace proto {
-class WebAppOsIntegrationState;
+
+namespace proto::os_state {
+class WebAppOsIntegration;
 class ShortcutMenus;
-}
+}  // namespace proto::os_state
+
 class WebApp;
 class WebAppIconManager;
 
@@ -102,7 +105,7 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const GURL& start_url,
     const base::FilePath& profile_path,
     const std::string& profile_name,
-    const proto::WebAppOsIntegrationState& state);
+    const proto::os_state::WebAppOsIntegration& state);
 
 void PopulateFaviconForShortcutInfo(
     const WebApp* app,
@@ -111,7 +114,7 @@ void PopulateFaviconForShortcutInfo(
     base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> callback);
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
-    const proto::ShortcutMenus& shortcut_menus);
+    const proto::os_state::ShortcutMenus& shortcut_menus);
 
 // This specifies a folder in the system applications menu (e.g the Start Menu
 // on Windows).
@@ -160,12 +163,6 @@ bool operator==(const ShortcutLocations& location1,
 bool operator!=(const ShortcutLocations& location1,
                 const ShortcutLocations& location2);
 
-// This encodes the cause of shortcut creation as the correct behavior in each
-// case is implementation specific.
-enum ShortcutCreationReason {
-  SHORTCUT_CREATION_BY_USER,
-  SHORTCUT_CREATION_AUTOMATED,
-};
 
 // Compute a deterministic name based on data in the shortcut_info.
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info);

@@ -38,6 +38,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "kennytm <kennytm@gmail.com>, Riccardo Casatta <riccardo.casatta@gmail.com>"
   cargo_pkg_name = "qr_code"
   cargo_pkg_description = "QR code encoder in Rust, support structured append (data in multiple qrcodes)"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

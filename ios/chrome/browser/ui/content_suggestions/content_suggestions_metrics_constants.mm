@@ -39,6 +39,8 @@ const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[] =
     "IOS.MagicStack.Module.Click.ParcelTracking";
 const char kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram[] =
     "IOS.MagicStack.Module.Click.PriceTrackingPromo";
+const char kMagicStackModuleEngagementShopCardIndexHistogram[] =
+    "IOS.MagicStack.Module.Click.ShopCard";
 const char kMagicStackModuleEngagementSendTabPromoIndexHistogram[] =
     "IOS.MagicStack.Module.Click.SendTabPromo";
 const char kMagicStackModuleEngagementTipsIndexHistogram[] =

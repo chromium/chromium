@@ -24,15 +24,19 @@
 using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
                                                     std::optional<gfx::Size>,
                                                     std::optional<gfx::Rect>,
+                                                    std::optional<float>,
                                                     bool)>;
 using ErrorCallback = base::RepeatingClosure;
 
 namespace {
 API_AVAILABLE(macos(12.3))
-std::tuple<std::optional<gfx::Rect>, std::optional<gfx::Size>>
+std::tuple<std::optional<gfx::Rect>,
+           std::optional<gfx::Size>,
+           std::optional<float>>
 GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
   std::optional<gfx::Rect> visibleRect;
   std::optional<gfx::Size> contentSize;
+  float scaleFactor = 1.0f;
 
   CFDictionaryRef contentRectValue = base::apple::CFCast<CFDictionaryRef>(
       CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
@@ -48,21 +52,26 @@ GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
     CGRect contentRect = {};
     bool succeed =
         CGRectMakeWithDictionaryRepresentation(contentRectValue, &contentRect);
-    float scaleFactor = 1.0f;
     succeed &=
         CFNumberGetValue(scaleFactorValue, kCFNumberFloatType, &scaleFactor);
     float contentScale = 1.0f;
     succeed &=
         CFNumberGetValue(contentScaleValue, kCFNumberFloatType, &contentScale);
     if (succeed) {
+      contentRect.origin.x *= scaleFactor;
+      contentRect.origin.y *= scaleFactor;
       contentRect.size.width *= scaleFactor;
       contentRect.size.height *= scaleFactor;
       visibleRect.emplace(contentRect);
+      // Make sure the size of the visible rect is even to not cause problems in
+      // later processing (crbug.com/394238799).
+      visibleRect->set_width(visibleRect->width() & ~1);
+      visibleRect->set_height(visibleRect->height() & ~1);
       contentSize.emplace(round(contentRect.size.width / contentScale),
                           round(contentRect.size.height / contentScale));
     }
   }
-  return std::make_tuple(visibleRect, contentSize);
+  return std::make_tuple(visibleRect, contentSize, scaleFactor);
 }
 
 bool IsPresenterOverlayLargeActive(CFDictionaryRef attachment) {
@@ -92,6 +101,20 @@ bool IsPresenterOverlayLargeActive(CFDictionaryRef attachment) {
     }
   }
   return false;
+}
+
+// Creates a size object with even dimensions by expanding the original size in
+// the case one of its dimension is odd. The rounding upwards is needed to
+// ensure that windows that have odd dimensions are not scaled down, which would
+// cause the capture to be blurry (crbug.com/394238799).
+gfx::Size CreateEvenSize(const gfx::Size& original_size) {
+  int width = original_size.width();
+  int height = original_size.height();
+
+  width += width & 1;
+  height += height & 1;
+
+  return {width, height};
 }
 }  // namespace
 
@@ -132,6 +155,7 @@ API_AVAILABLE(macos(12.3))
   // is needed because the IOSurface may be larger than the captured content.
   std::optional<gfx::Size> contentSize;
   std::optional<gfx::Rect> visibleRect;
+  std::optional<float> scaleFactor;
   bool isPresenterOverlayLargeActive = false;
   CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(
       sampleBuffer, /*createIfNecessary=*/false);
@@ -139,7 +163,7 @@ API_AVAILABLE(macos(12.3))
     CFDictionaryRef attachment = base::apple::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(attachmentsArray, 0));
     if (attachment) {
-      std::tie(visibleRect, contentSize) =
+      std::tie(visibleRect, contentSize, scaleFactor) =
           GetVisibleRectAndContentSize(attachment);
       isPresenterOverlayLargeActive = IsPresenterOverlayLargeActive(attachment);
     }
@@ -149,7 +173,7 @@ API_AVAILABLE(macos(12.3))
     return;
   _sampleCallback.Run(
       gfx::ScopedInUseIOSurface(ioSurface, base::scoped_policy::RETAIN),
-      contentSize, visibleRect, isPresenterOverlayLargeActive);
+      contentSize, visibleRect, scaleFactor, isPresenterOverlayLargeActive);
 }
 
 - (void)stream:(SCStream*)stream didStopWithError:(NSError*)error {
@@ -166,7 +190,7 @@ API_AVAILABLE(macos(12.3))
   config.pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
   config.destinationRect = destRectInFrame.ToCGRect();
   config.backgroundColor = CGColorGetConstantColor(kCGColorBlack);
-  config.scalesToFit = YES;
+  config.scalesToFit = NO;
   config.showsCursor = YES;
   config.colorSpaceName = kCGColorSpaceSRGB;
   config.minimumFrameInterval =
@@ -280,7 +304,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     gfx::RectF dest_rect_in_frame;
     actual_capture_format_ = capture_params().requested_format;
     actual_capture_format_.pixel_format = media::PIXEL_FORMAT_NV12;
-    ComputeFrameSizeAndDestRect(stream_config_content_size_,
+    ComputeFrameSizeAndDestRect(CreateEvenSize(stream_config_content_size_),
                                 actual_capture_format_.frame_size,
                                 dest_rect_in_frame);
     SCStreamConfiguration* config = [ScreenCaptureKitDeviceHelper
@@ -343,6 +367,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   void OnStreamSample(gfx::ScopedInUseIOSurface io_surface,
                       std::optional<gfx::Size> content_size,
                       std::optional<gfx::Rect> visible_rect,
+                      std::optional<float> scale_factor,
                       bool is_presenter_overlay_large_active) {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
 
@@ -378,8 +403,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
         stream_config_content_size_ = content_size.value();
         gfx::RectF dest_rect_in_frame;
         gfx::Size new_frame_size;
-        ComputeFrameSizeAndDestRect(stream_config_content_size_, new_frame_size,
-                                    dest_rect_in_frame);
+        ComputeFrameSizeAndDestRect(CreateEvenSize(stream_config_content_size_),
+                                    new_frame_size, dest_rect_in_frame);
 
         // There's a small variation in the reported content size when the large
         // presenter overlay is active which may result in updateConfiguration()
@@ -426,9 +451,12 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     }
     // The IO surface may be larger than the actual content size. Pass on
     // visible rect to be able to render/encode the frame correctly.
+    // `content_size` is passed to know the actual content size for the
+    // metadata.
     OnReceivedIOSurfaceFromStream(
         io_surface, actual_capture_format_,
-        visible_rect.value_or(gfx::Rect(actual_capture_format_.frame_size)));
+        visible_rect.value_or(gfx::Rect(actual_capture_format_.frame_size)),
+        content_size, scale_factor);
   }
   void OnStreamError() {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());

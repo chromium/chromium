@@ -38,6 +38,7 @@ enum PermissionName {
   POINTER_LOCK,
   FULLSCREEN,
   WEB_APP_INSTALLATION,
+  LOCAL_NETWORK_ACCESS,
 };
 
 struct MidiPermissionDescriptor {

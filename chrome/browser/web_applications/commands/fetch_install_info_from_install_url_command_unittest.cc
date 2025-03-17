@@ -87,7 +87,7 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
     EXPECT_NE(command_logs, nullptr);
 
     auto command_log_info =
-        base::ranges::find_if(*command_logs, [](const base::Value& value) {
+        std::ranges::find_if(*command_logs, [](const base::Value& value) {
           const base::Value::Dict* dict = value.GetIfDict();
           return dict && dict->FindDict("!metadata") &&
                  dict->FindDict("!metadata")->FindString("name") &&

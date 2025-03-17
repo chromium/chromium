@@ -7,6 +7,9 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 
 namespace blink {
 
@@ -40,6 +43,7 @@ unsigned NthIndexCache::Key::GetHash() const {
   if (!child_tag_name.empty()) {
     WTF::AddIntToHash(hash, WTF::GetHash(child_tag_name));
   }
+  WTF::AddIntToHash(hash, WTF::GetHash(sibling_order));
   return hash;
 }
 
@@ -114,14 +118,27 @@ unsigned NthIndexCache::UncachedNthChildIndex(
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
     const SelectorChecker::SelectorCheckingContext* context,
+    NthIndexData::SiblingOrder sibling_order,
     unsigned& sibling_count) {
   int index = 1;
-  for (Element* sibling = ElementTraversal::PreviousSibling(element); sibling;
-       sibling = ElementTraversal::PreviousSibling(*sibling)) {
-    if (MatchesFilter(sibling, filter, selector_checker, context)) {
-      ++index;
+  if (sibling_order == NthIndexData::kLightTree) {
+    for (Element* sibling = ElementTraversal::PreviousSibling(element); sibling;
+         sibling = ElementTraversal::PreviousSibling(*sibling)) {
+      if (MatchesFilter(sibling, filter, selector_checker, context)) {
+        ++index;
+      }
+      ++sibling_count;
     }
-    ++sibling_count;
+  } else {
+    for (Node* node = FlatTreeTraversal::PreviousSibling(element); node;
+         node = FlatTreeTraversal::PreviousSibling(*node)) {
+      if (Element* sibling = DynamicTo<Element>(node)) {
+        if (MatchesFilter(sibling, filter, selector_checker, context)) {
+          index++;
+        }
+        ++sibling_count;
+      }
+    }
   }
 
   return index;
@@ -132,14 +149,27 @@ unsigned NthIndexCache::UncachedNthLastChildIndex(
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
     const SelectorChecker::SelectorCheckingContext* context,
+    NthIndexData::SiblingOrder sibling_order,
     unsigned& sibling_count) {
   int index = 1;
-  for (Element* sibling = ElementTraversal::NextSibling(element); sibling;
-       sibling = ElementTraversal::NextSibling(*sibling)) {
-    if (MatchesFilter(sibling, filter, selector_checker, context)) {
-      index++;
+  if (sibling_order == NthIndexData::kLightTree) {
+    for (Element* sibling = ElementTraversal::NextSibling(element); sibling;
+         sibling = ElementTraversal::NextSibling(*sibling)) {
+      if (MatchesFilter(sibling, filter, selector_checker, context)) {
+        index++;
+      }
+      ++sibling_count;
     }
-    ++sibling_count;
+  } else {
+    for (Node* node = FlatTreeTraversal::NextSibling(element); node;
+         node = FlatTreeTraversal::NextSibling(*node)) {
+      if (Element* sibling = DynamicTo<Element>(node)) {
+        if (MatchesFilter(sibling, filter, selector_checker, context)) {
+          index++;
+        }
+        ++sibling_count;
+      }
+    }
   }
   return index;
 }
@@ -148,29 +178,42 @@ unsigned NthIndexCache::NthChildIndex(
     Element& element,
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
-    const SelectorChecker::SelectorCheckingContext* context) {
-  if (element.IsPseudoElement() || !element.parentNode()) {
+    const SelectorChecker::SelectorCheckingContext* context,
+    NthIndexData::SiblingOrder sibling_order) {
+  if (!element.parentNode()) {
     return 1;
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    return NthChildIndex(pseudo_element->UltimateOriginatingElement(), filter,
+                         selector_checker, context, sibling_order);
+  }
+  NthIndexData::SiblingOrder cached_order = sibling_order;
+  if (sibling_order == NthIndexData::kFlatTree && !element.AssignedSlot()) {
+    // Only shadow host children may have a different index for light and flat
+    // tree. Caching as light tree index allows us to share the cache between
+    // :nth-*() selectors and sibling-index().
+    cached_order = NthIndexData::kLightTree;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
-        Key(element.parentNode(), filter));
+        Key(element.parentNode(), filter, cached_order));
     if (it != nth_index_cache->cache_->end()) {
-      unsigned result =
-          it->value->NthIndex(element, filter, selector_checker, context);
+      unsigned result = it->value->NthIndex(element, filter, selector_checker,
+                                            context, cached_order);
       [[maybe_unused]] unsigned sibling_count = 0;
-      DCHECK_EQ(result, UncachedNthChildIndex(element, filter, selector_checker,
-                                              context, sibling_count));
+      DCHECK_EQ(result,
+                UncachedNthChildIndex(element, filter, selector_checker,
+                                      context, cached_order, sibling_count));
       return result;
     }
   }
   unsigned sibling_count = 0;
   unsigned index = UncachedNthChildIndex(element, filter, selector_checker,
-                                         context, sibling_count);
+                                         context, cached_order, sibling_count);
   if (nth_index_cache && sibling_count > kCachedSiblingCountLimit) {
-    nth_index_cache->CacheNthIndexDataForParent(element, filter,
-                                                selector_checker, context);
+    nth_index_cache->CacheNthIndexDataForParent(
+        element, filter, selector_checker, context, cached_order);
   }
   return index;
 }
@@ -179,30 +222,39 @@ unsigned NthIndexCache::NthLastChildIndex(
     Element& element,
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
-    const SelectorChecker::SelectorCheckingContext* context) {
-  if (element.IsPseudoElement() && !element.parentNode()) {
+    const SelectorChecker::SelectorCheckingContext* context,
+    NthIndexData::SiblingOrder sibling_order) {
+  if (!element.parentNode()) {
     return 1;
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    return NthLastChildIndex(pseudo_element->UltimateOriginatingElement(),
+                             filter, selector_checker, context, sibling_order);
+  }
+  NthIndexData::SiblingOrder cached_order = sibling_order;
+  if (sibling_order == NthIndexData::kFlatTree && !element.AssignedSlot()) {
+    cached_order = NthIndexData::kLightTree;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
-        Key(element.parentNode(), filter));
+        Key(element.parentNode(), filter, cached_order));
     if (it != nth_index_cache->cache_->end()) {
-      unsigned result =
-          it->value->NthLastIndex(element, filter, selector_checker, context);
+      unsigned result = it->value->NthLastIndex(
+          element, filter, selector_checker, context, cached_order);
       [[maybe_unused]] unsigned sibling_count = 0;
-      DCHECK_EQ(result,
-                UncachedNthLastChildIndex(element, filter, selector_checker,
-                                          context, sibling_count));
+      DCHECK_EQ(result, UncachedNthLastChildIndex(element, filter,
+                                                  selector_checker, context,
+                                                  cached_order, sibling_count));
       return result;
     }
   }
   unsigned sibling_count = 0;
-  unsigned index = UncachedNthLastChildIndex(element, filter, selector_checker,
-                                             context, sibling_count);
+  unsigned index = UncachedNthLastChildIndex(
+      element, filter, selector_checker, context, cached_order, sibling_count);
   if (nth_index_cache && sibling_count > kCachedSiblingCountLimit) {
-    nth_index_cache->CacheNthIndexDataForParent(element, filter,
-                                                selector_checker, context);
+    nth_index_cache->CacheNthIndexDataForParent(
+        element, filter, selector_checker, context, cached_order);
   }
   return index;
 }
@@ -250,7 +302,7 @@ unsigned NthIndexCache::NthLastOfTypeIndex(Element& element) {
 void NthIndexCache::EnsureCache() {
   if (!cache_) {
     cache_ = MakeGarbageCollected<
-        HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>>();
+        GCedHeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>>();
   }
 }
 
@@ -258,13 +310,23 @@ void NthIndexCache::CacheNthIndexDataForParent(
     Element& element,
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
-    const SelectorChecker::SelectorCheckingContext* context) {
-  DCHECK(element.parentNode());
+    const SelectorChecker::SelectorCheckingContext* context,
+    NthIndexData::SiblingOrder sibling_order) {
   EnsureCache();
+  // The NthIndexData is keyed off of its parent node, except for slotted shadow
+  // host children whose NthIndexData is keyed off of their slot for
+  // sibling-index() and sibling-count(), as they are counted in the flat tree
+  // order. This means that there can be two NthIndexDatas keyed off a slot
+  // element, one for :nth-child() of fallback children and one for
+  // sibling-index() of slotted children, where the key differs on SiblingOrder.
+  ContainerNode* parent = sibling_order == NthIndexData::kLightTree
+                              ? element.parentNode()
+                              : element.AssignedSlot();
+  CHECK(parent);
   auto add_result = cache_->insert(
-      MakeGarbageCollected<Key>(element.parentNode(), filter),
-      MakeGarbageCollected<NthIndexData>(*element.parentNode(), filter,
-                                         selector_checker, context));
+      MakeGarbageCollected<Key>(parent, filter, sibling_order),
+      MakeGarbageCollected<NthIndexData>(*parent, filter, selector_checker,
+                                         context, sibling_order));
   DCHECK(add_result.is_new_entry);
 }
 
@@ -282,7 +344,8 @@ unsigned NthIndexData::NthIndex(
     Element& element,
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
-    const SelectorChecker::SelectorCheckingContext* context) const {
+    const SelectorChecker::SelectorCheckingContext* context,
+    SiblingOrder sibling_order) const {
   DCHECK(!element.IsPseudoElement());
   auto matches = [&](Element& element) {
     return NthIndexCache::MatchesFilter(&element, filter, selector_checker,
@@ -290,16 +353,32 @@ unsigned NthIndexData::NthIndex(
   };
 
   unsigned index = 0;
-  for (Element* sibling = &element; sibling;
-       sibling = ElementTraversal::PreviousSibling(*sibling)) {
-    if (!matches(*sibling)) {
-      continue;
+  if (sibling_order == NthIndexData::kLightTree) {
+    for (Element* sibling = &element; sibling;
+         sibling = ElementTraversal::PreviousSibling(*sibling)) {
+      if (!matches(*sibling)) {
+        continue;
+      }
+      auto it = element_index_map_.find(sibling);
+      if (it != element_index_map_.end()) {
+        return it->value + index;
+      }
+      ++index;
     }
-    auto it = element_index_map_.find(sibling);
-    if (it != element_index_map_.end()) {
-      return it->value + index;
+  } else {
+    for (Node* node = &element; node;
+         node = FlatTreeTraversal::PreviousSibling(*node)) {
+      if (Element* sibling = DynamicTo<Element>(node)) {
+        if (!matches(*sibling)) {
+          continue;
+        }
+        auto it = element_index_map_.find(sibling);
+        if (it != element_index_map_.end()) {
+          return it->value + index;
+        }
+        ++index;
+      }
     }
-    ++index;
   }
   return index;
 }
@@ -324,8 +403,11 @@ unsigned NthIndexData::NthLastIndex(
     Element& element,
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
-    const SelectorChecker::SelectorCheckingContext* context) const {
-  return count_ - NthIndex(element, filter, selector_checker, context) + 1;
+    const SelectorChecker::SelectorCheckingContext* context,
+    SiblingOrder sibling_order) const {
+  return count_ -
+         NthIndex(element, filter, selector_checker, context, sibling_order) +
+         1;
 }
 
 unsigned NthIndexData::NthLastOfTypeIndex(Element& element) const {
@@ -336,7 +418,8 @@ NthIndexData::NthIndexData(
     ContainerNode& parent,
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
-    const SelectorChecker::SelectorCheckingContext* context) {
+    const SelectorChecker::SelectorCheckingContext* context,
+    SiblingOrder sibling_order) {
   auto matches = [&](Element& element) {
     return NthIndexCache::MatchesFilter(&element, filter, selector_checker,
                                         context);
@@ -349,10 +432,25 @@ NthIndexData::NthIndexData(
   // 'spread' elements will be traversed.
   const unsigned kSpread = 3;
   unsigned count = 0;
-  for (Element* sibling = ElementTraversal::FirstChild(parent, matches);
-       sibling; sibling = ElementTraversal::NextSibling(*sibling, matches)) {
-    if (!(++count % kSpread)) {
-      element_index_map_.insert(sibling, count);
+
+  if (sibling_order == kLightTree) {
+    for (Element* sibling = ElementTraversal::FirstChild(parent); sibling;
+         sibling = ElementTraversal::NextSibling(*sibling)) {
+      if (matches(*sibling)) {
+        if (!(++count % kSpread)) {
+          element_index_map_.insert(sibling, count);
+        }
+      }
+    }
+  } else {
+    for (Node* node : To<HTMLSlotElement>(parent).AssignedNodes()) {
+      if (Element* sibling = DynamicTo<Element>(node)) {
+        if (matches(*sibling)) {
+          if (!(++count % kSpread)) {
+            element_index_map_.insert(sibling, count);
+          }
+        }
+      }
     }
   }
   DCHECK(count);

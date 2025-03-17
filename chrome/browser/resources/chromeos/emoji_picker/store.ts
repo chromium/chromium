@@ -5,7 +5,8 @@
 import {EMOJI_PER_ROW} from './constants.js';
 import {Category} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
-import {CategoryEnum, Emoji, EmojiHistoryItem, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
+import type {Emoji, EmojiHistoryItem, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
+import {CategoryEnum} from './types.js';
 
 const MAX_RECENTS = EMOJI_PER_ROW * 2;
 
@@ -94,7 +95,7 @@ export class RecentlyUsedStore {
     const mergedHistory: EmojiHistoryItem[] =
         prefsHistory.history.map((item) => ({
                                    base: {string: item.emoji},
-                                   timestamp: item.timestamp.msec,
+                                   timestamp: item.timestamp.getTime(),
                                    alternates: [],
                                  }));
     for (const item of this.store.data.history) {
@@ -244,9 +245,7 @@ export class RecentlyUsedStore {
               .map((x) => ({
                      // Explicit cast here is safe due to filter above.
                      emoji: x.base.string!,
-                     timestamp: {
-                       msec: x.timestamp || 0,
-                     },
+                     timestamp: new Date(x.timestamp || 0),
                    })));
     }
   }

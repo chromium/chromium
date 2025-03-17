@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
@@ -113,7 +113,7 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
   EXPECT_EQ(2uL, networks.size());
   // Verify the network with prefix length of 64 has 2 IP addresses.
   auto network_with_two_ips =
-      base::ranges::find(networks, 64, &rtc::Network::prefix_length);
+      std::ranges::find(networks, 64, &rtc::Network::prefix_length);
   ASSERT_NE(networks.end(), network_with_two_ips);
   EXPECT_EQ(2uL, (*network_with_two_ips)->GetIPs().size());
   // IPs should be in the same order as the list passed into
@@ -126,7 +126,7 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
             rtc::InterfaceAddress(ip_address));
   // Verify the network with prefix length of 48 has 1 IP address.
   auto network_with_one_ip =
-      base::ranges::find(networks, 48, &rtc::Network::prefix_length);
+      std::ranges::find(networks, 48, &rtc::Network::prefix_length);
   ASSERT_NE(networks.end(), network_with_one_ip);
   EXPECT_EQ(1uL, (*network_with_one_ip)->GetIPs().size());
   EXPECT_TRUE(rtc::IPFromString(kIPv6PublicAddrString2, &ip_address));
@@ -159,9 +159,9 @@ TEST_F(IpcNetworkManagerTest, DeterminesNetworkTypeFromNameIfUnknown) {
   std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
   EXPECT_EQ(2uL, networks.size());
 
-  auto tun1 = base::ranges::find(networks, "tun1", &rtc::Network::name);
+  auto tun1 = std::ranges::find(networks, "tun1", &rtc::Network::name);
   ASSERT_NE(networks.end(), tun1);
-  auto tun2 = base::ranges::find(networks, "tun2", &rtc::Network::name);
+  auto tun2 = std::ranges::find(networks, "tun2", &rtc::Network::name);
   ASSERT_NE(networks.end(), tun1);
 
   EXPECT_EQ(rtc::ADAPTER_TYPE_VPN, (*tun1)->type());

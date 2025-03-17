@@ -7,30 +7,30 @@ package org.chromium.components.data_sharing.configs;
 import android.app.Activity;
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Config class for the Data Sharing UI. */
+@NullMarked
 public class DataSharingUiConfig {
 
     // --- Form Factor Config ---
     private boolean mIsTablet;
 
     // --- Tab Group Details ---
-    private String mTabGroupName;
+    private @Nullable String mTabGroupName;
 
     // --- Usage Config ---
-    private Context mContext;
-    private Activity mActivity;
-    private GURL mLearnMoreHyperLink;
-    private DataSharingStringConfig mDataSharingStringConfig;
-    private DataSharingCallback mDataSharingCallback;
+    private @Nullable Context mContext;
+    private @Nullable Activity mActivity;
+    private @Nullable GURL mLearnMoreHyperLink;
+    private @Nullable DataSharingStringConfig mDataSharingStringConfig;
+    private @Nullable DataSharingCallback mDataSharingCallback;
 
     /** Callback interface for common data sharing UI events. */
     public interface DataSharingCallback {
-        // TODO (ritikagup) : Cleanup this method, once the overloaded method is fully integrated.
-        default void onLearnMoreAboutSharedTabGroupsClicked(GURL url) {}
-
-        default void onLearnMoreAboutSharedTabGroupsClicked(Context context, GURL url) {}
+        default void onClickOpenChromeCustomTab(Context context, GURL url) {}
     }
 
     private DataSharingUiConfig(Builder builder) {
@@ -47,39 +47,39 @@ public class DataSharingUiConfig {
         return mIsTablet;
     }
 
-    public Context getContext() {
+    public @Nullable Context getContext() {
         return mContext;
     }
 
-    public Activity getActivity() {
+    public @Nullable Activity getActivity() {
         return mActivity;
     }
 
-    public String getTabGroupName() {
+    public @Nullable String getTabGroupName() {
         return mTabGroupName;
     }
 
-    public GURL getLearnMoreHyperLink() {
+    public @Nullable GURL getLearnMoreHyperLink() {
         return mLearnMoreHyperLink;
     }
 
-    public DataSharingStringConfig getDataSharingStringConfig() {
+    public @Nullable DataSharingStringConfig getDataSharingStringConfig() {
         return mDataSharingStringConfig;
     }
 
-    public DataSharingCallback getDataSharingCallback() {
+    public @Nullable DataSharingCallback getDataSharingCallback() {
         return mDataSharingCallback;
     }
 
     // Builder class
     public static class Builder {
         private boolean mIsTablet;
-        private Context mContext;
-        private Activity mActivity;
-        private String mTabGroupName;
-        private GURL mLearnMoreHyperLink;
-        private DataSharingStringConfig mDataSharingStringConfig;
-        private DataSharingCallback mDataSharingCallback;
+        private @Nullable Context mContext;
+        private @Nullable Activity mActivity;
+        private @Nullable String mTabGroupName;
+        private @Nullable GURL mLearnMoreHyperLink;
+        private @Nullable DataSharingStringConfig mDataSharingStringConfig;
+        private @Nullable DataSharingCallback mDataSharingCallback;
 
         /**
          * Sets whether the device is a tablet.

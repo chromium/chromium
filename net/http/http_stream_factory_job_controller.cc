@@ -849,7 +849,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   alternative_service_info_ = GetAlternativeServiceInfoFor(
       http_request_info_url_, request_info_, delegate_, stream_type_);
 
-  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3) &&
+  if (session_->host_resolver()->IsHappyEyeballsV3Enabled() &&
       proxy_info_.is_direct() && !is_websocket_) {
     SwitchToHttpStreamPool();
     return OK;

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/win/ui_automation_util.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_safearray.h"
@@ -107,7 +107,7 @@ std::vector<int32_t> GetCachedInt32ArrayValue(IUIAutomationElement* element,
 std::string IntArrayToString(const std::vector<int32_t>& values) {
 #if DCHECK_IS_ON()
   std::vector<std::string> value_strings;
-  base::ranges::transform(
+  std::ranges::transform(
       values, std::back_inserter(value_strings),
       [](int32_t value) { return base::NumberToString(value); });
   return base::JoinString(value_strings, ", ");

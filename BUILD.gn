@@ -9,7 +9,6 @@
 # file to your new one or GN won't know about it.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
@@ -138,7 +137,7 @@ group("gn_all") {
       deps += [ "//third_party/abseil-cpp:absl_tests" ]
     }
 
-    if (is_chromeos_ash && enable_js_type_check) {
+    if (is_chromeos && enable_js_type_check) {
       deps += [ ":webui_closure_compile" ]
     }
 
@@ -168,6 +167,7 @@ group("gn_all") {
         "//tools/polymer:polymer_tools_python_unittests",
         "//tools/privacy_budget:privacy_budget_tools",
         "//ui/accessibility/extensions:extensions",
+        "//ui/webui/resources/tools:webui_resources_tools_python_unittests",
       ]
     }
 
@@ -306,8 +306,9 @@ group("gn_all") {
     }
 
     if (enable_ml_internal) {
-      deps +=
-          [ "//components/optimization_guide/internal:ondevice_model_example" ]
+      deps += [
+        "//components/optimization_guide/internal:ondevice_model_benchmark",
+      ]
     }
 
     if (enable_pdf) {
@@ -342,7 +343,7 @@ group("gn_all") {
       ]
     }
 
-    if (use_aura || is_mac) {
+    if (!is_android && !is_ios && !is_fuchsia) {
       deps += [ "//ui/webui/examples:webui_examples" ]
     }
 
@@ -414,6 +415,7 @@ group("gn_all") {
         "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
         "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
         "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
+        "//tools/cygprofile:generate_orderfile_android_trichrome_chrome_bundle",
         "//tools/pgo:generate_profile_android_trichrome_chrome_bundle",
         "//ui:ui_junit_tests",
       ]
@@ -435,6 +437,7 @@ group("gn_all") {
           "//chrome/android:chrome_public_test_apk",
           "//chrome/android:chrome_public_unit_test_apk",
           "//chrome/browser/android/examples/custom_tabs_client:custom_tabs_client_example_apk",
+          "//chrome/browser/android/examples/inline_autofill_service:inline_autofill_service_example_apk",
           "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
           "//content/shell/android:content_shell_test_apk",
         ]
@@ -455,15 +458,16 @@ group("gn_all") {
       ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [
         "//ash:ash_unittests",
-        "//ash/components:ash_components_unittests",
         "//ash/keyboard/ui:keyboard_unittests",
         "//ash/webui:ash_webui_unittests",
         "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
         "//chrome/browser/metrics/perf:profile_provider_unittest",
+        "//chromeos:chromeos_unittests",
         "//chromeos/ash/components/proximity_auth:proximity_auth_unittests",
+        "//chromeos/ash/experiences:ash_components_unittests",
         "//chromeos/components:chromeos_components_unittests",
         "//components/exo/wayland:wayland_client_compatibility_tests",
         "//components/session_manager/core",
@@ -472,11 +476,7 @@ group("gn_all") {
       ]
     }
 
-    if (is_chromeos) {
-      deps += [ "//chromeos:chromeos_unittests" ]
-    }
-
-    if (is_chromeos_ash || is_mac || is_win) {
+    if (is_chromeos || is_mac || is_win) {
       deps += [
         "//rlz:rlz_id",
         "//rlz:rlz_lib",
@@ -514,7 +514,7 @@ group("gn_all") {
       }
     }
 
-    if (is_ios || is_win || is_linux || is_chromeos_lacros || is_fuchsia) {
+    if (is_ios || is_win || is_linux || is_fuchsia) {
       deps += [
         "//base:base_i18n_perftests",
         "//google_apis:google_apis_unittests",
@@ -531,7 +531,7 @@ group("gn_all") {
 
     # TODO(GYP): Figure out which of these should (and can) build
     # for Chrome OS and iOS (without blink).
-    if (!is_chromeos_ash && use_blink) {
+    if (!is_chromeos && use_blink) {
       deps += [
         "//cc:cc_perftests",
         "//device:device_unittests",
@@ -605,7 +605,7 @@ group("gn_all") {
       ]
     }
 
-    if (is_android || is_linux || is_chromeos_lacros) {
+    if (is_android || is_linux) {
       deps += [
         "//components/network_hints/browser",
         "//content/public/app",
@@ -619,7 +619,7 @@ group("gn_all") {
       ]
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       deps += [
         "//skia:filter_fuzz_stub",
         "//skia:image_operations_bench",
@@ -746,14 +746,14 @@ group("gn_all") {
       deps += [ "//third_party/sqlite:sqlite_shell" ]
     }
 
-    if ((is_linux && !is_castos) || is_chromeos_lacros || is_fuchsia) {
+    if ((is_linux && !is_castos) || is_fuchsia) {
       # TODO(https://crbug.com/1329673): Figure out if this should be in gn_all
       # and how cross-platform this is.
       deps +=
           [ "//components/services/filesystem:filesystem_service_unittests" ]
     }
 
-    if ((is_linux && !is_castos) || is_chromeos_lacros) {
+    if (is_linux && !is_castos) {
       # TODO(https://crbug.com/1329673): Figure out if any of these should be in
       # gn_all and figure out how cross-platform they are.
       deps += [
@@ -795,14 +795,12 @@ group("gn_all") {
         "//testing/libfuzzer/fuzzers",
         "//testing/libfuzzer/research",
         "//third_party/freetype-testing:fuzzers",
-        "//third_party/grpc:fuzzers",
         "//third_party/icu/fuzzers",
-        "//third_party/qcms:fuzzers",
         "//third_party/ukey2/fuzzers",
         "//third_party/zlib/contrib/tests/fuzzers",
       ]
 
-      if (is_chromeos_ash) {
+      if (is_chromeos) {
         deps += [ "//chrome/services/ipp_parser/public/cpp:fuzzers" ]
       }
     }
@@ -928,11 +926,10 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   group("traffic_annotation_auditor_dependencies") {
     deps = [
       "//chrome",
-      "//chromeos",
       "//tools/traffic_annotation:annotations_xml",
     ]
   }
@@ -1025,7 +1022,7 @@ if (is_win) {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   # This group is used to collect all targets used when verifying a new version
   # of Chrome for Chrome OS.
   group("chromiumos_preflight") {
@@ -1124,6 +1121,13 @@ if (use_blink && !is_cronet_build) {
       ":blink_wpt_tests",
       "//third_party/blink/public:all_blink",
     ]
+
+    if (!is_chromeos && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+      deps += [
+        ":chrome_wpt_tests",
+        ":headless_shell_wpt",
+      ]
+    }
   }
 
   # Options shared by all script test targets that call `run_web_tests.py` or
@@ -1172,7 +1176,8 @@ if (use_blink && !is_cronet_build) {
     ]
   }
 
-  if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+  if (!is_chromeos && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = _common_web_test_options + [ "--product=chrome" ]
@@ -1195,12 +1200,11 @@ if (use_blink && !is_cronet_build) {
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
     }
+
+    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("headless_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = _common_web_test_options + [
-               "--product=headless_shell",
-               "--no-wpt-internal",
-             ]
+      args = _common_web_test_options + [ "--product=headless_shell" ]
       data_deps = [
         ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
@@ -1450,7 +1454,6 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/plugins/",
       "//third_party/blink/web_tests/pointer-lock/",
       "//third_party/blink/web_tests/ppapi/",
-      "//third_party/blink/web_tests/print_testharness/",
       "//third_party/blink/web_tests/printing/",
       "//third_party/blink/web_tests/register-protocol-handler/",
       "//third_party/blink/web_tests/regress/",
@@ -1553,6 +1556,7 @@ if (use_blink && !is_cronet_build) {
     }
   }
 
+  # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
   script_test("blink_wpt_tests") {
     script = _common_web_test_script
 
@@ -1565,9 +1569,9 @@ if (use_blink && !is_cronet_build) {
       "@WrappedPath(" +
           rebase_path("//third_party/blink/web_tests/TestLists/chrome.filter",
                       root_out_dir) + ")",
-      "--inverted-test-launcher-filter-file",
+      "--test-launcher-filter-file",
       "@WrappedPath(" + rebase_path(
-              "//third_party/blink/web_tests/TestLists/headless_shell.filter",
+              "//third_party/blink/web_tests/TestLists/content_shell.filter",
               root_out_dir) + ")",
     ]
 
@@ -1701,7 +1705,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/catapult/third_party/typ/",
       "//third_party/depot_tools/pylint-2.7",
       "//third_party/depot_tools/pylint_main.py",
-      "//third_party/depot_tools/pylintrc",
+      "//third_party/depot_tools/pylintrc-2.7",
       "//third_party/ply/",
       "//third_party/pyjson5/",
       "//third_party/wpt_tools/",
@@ -1745,7 +1749,7 @@ group("chromium_builder_perf") {
       ]
     }
 
-    if (!is_chromeos_ash && !is_fuchsia) {
+    if (!is_chromeos && !is_fuchsia) {
       data_deps += [ "//chrome/test:performance_browser_tests" ]
     }
 
@@ -1754,7 +1758,7 @@ group("chromium_builder_perf") {
     }
   }
 
-  if ((is_linux && !is_castos) || is_chromeos_lacros) {
+  if (is_linux && !is_castos) {
     if (is_official_build) {
       # In GN builds, this is controlled by the 'linux_dump_symbols'
       # flag, which defaults to 1 for official builds. For now,
@@ -1792,7 +1796,7 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     if (enable_ipc_fuzzer && !is_component_build) {
       deps += [ "//tools/ipc_fuzzer:ipc_fuzzer_all" ]
     }
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       deps += [ "//v8:v8_shell($v8_snapshot_toolchain)" ]
       if (enable_pdf) {
         deps += [ "//third_party/pdfium/testing:pdfium_test" ]
@@ -1831,7 +1835,7 @@ if (is_android && !is_cronet_build) {
   }
 }
 
-if (is_chromeos_ash && enable_js_type_check) {
+if (is_chromeos && enable_js_type_check) {
   group("webui_closure_compile") {
     testonly = true
     data_deps = [

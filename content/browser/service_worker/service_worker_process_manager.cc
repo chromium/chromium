@@ -14,12 +14,14 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_client.h"
 #include "url/gurl.h"
 
@@ -115,21 +117,33 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
       SiteIsolationPolicy::IsProcessIsolationForFencedFramesEnabled();
   const bool is_coop_coep_cross_origin_isolated =
       !is_guest && network::CompatibleWithCrossOriginIsolated(coep_value);
+
+  WebExposedIsolationInfo isolation_info = [&] {
+    if (!is_coop_coep_cross_origin_isolated) {
+      return WebExposedIsolationInfo::CreateNonIsolated();
+    }
+    if (SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+            storage_partition_->browser_context(), script_url)) {
+      return WebExposedIsolationInfo::CreateIsolatedApplication(
+          url::Origin::Create(script_url));
+    }
+    return WebExposedIsolationInfo::CreateIsolated(
+        url::Origin::Create(script_url));
+  }();
   UrlInfo url_info(
       UrlInfoInit(script_url)
           .WithStoragePartitionConfig(storage_partition_->GetConfig())
-          .WithWebExposedIsolationInfo(
-              is_coop_coep_cross_origin_isolated
-                  ? WebExposedIsolationInfo::CreateIsolated(
-                        url::Origin::Create(script_url))
-                  : WebExposedIsolationInfo::CreateNonIsolated()));
+          .WithWebExposedIsolationInfo(std::move(isolation_info)));
+
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
-          storage_partition_->browser_context(), url_info,
+          storage_partition_->browser_context(), std::move(url_info),
           can_use_existing_process, is_guest, is_fenced);
 
   // Get the process from the SiteInstance.
-  RenderProcessHost* rph = site_instance->GetProcess();
+  RenderProcessHost* rph =
+      site_instance->GetOrCreateProcess(ProcessAllocationContext{
+          ProcessAllocationSource::kServiceWorkerProcessManager});
   DCHECK(!storage_partition_ ||
          rph->InSameStoragePartition(storage_partition_));
 

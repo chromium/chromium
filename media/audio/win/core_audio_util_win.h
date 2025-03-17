@@ -11,12 +11,14 @@
 #ifndef MEDIA_AUDIO_WIN_CORE_AUDIO_UTIL_WIN_H_
 #define MEDIA_AUDIO_WIN_CORE_AUDIO_UTIL_WIN_H_
 
-#include <audioclient.h>
 #include <mmdeviceapi.h>
+
+#include <audioclient.h>
 #include <stdint.h>
 #include <wrl/client.h>
 
 #include <string>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -230,6 +232,9 @@ class MEDIA_EXPORT CoreAudioUtil {
                                       const GUID* session_guid,
                                       bool enable_audio_offload = false);
 
+  // Returns true if the client has been initialized and false otherwise.
+  static bool IsClientInitialized(IAudioClient* client);
+
   // Create an IAudioRenderClient client for an existing IAudioClient given by
   // |client|. The IAudioRenderClient interface enables a client to write
   // output data to a rendering endpoint buffer.
@@ -258,6 +263,24 @@ class MEDIA_EXPORT CoreAudioUtil {
 
   // Check if audio offload can be enabled for client.
   static bool IsAudioOffloadSupported(IAudioClient* client);
+
+  // Set the category to AudioCategory_Communications which is intended for
+  // real-time communications, such as VoIP or chat clients. Also needed to
+  // enable support of audio effects such as echo cancellation.
+  static bool EnableCommunicationsAudioCategoryForClient(IAudioClient* client);
+
+  // Enumerates all supported audio effects and at the same time checks if the
+  // AEC effect is available and enabled for the selected device.
+  // Returns a pair. The first element is an integer representing the voice
+  // processing effects. This is a bitwise OR combination of effect flags (e.g.,
+  // `ECHO_CANCELLER`, `NOISE_SUPPRESSION`, `AUTOMATIC_GAIN_CONTROL`). The
+  // second element is true if AEC is available, false otherwise.
+  // Updates the "Media.Audio.Capture.Win.VoiceProcessingEffects" histogram.
+  // Requires the media::EnforceSystemEchoCancellation command-line flag.
+  // Example:
+  // std::make_pair(ECHO_CANCELLER | NOISE_SUPPRESSION, false)
+  static std::pair<int, bool> GetVoiceProcessingEffectsAndCheckForAEC(
+      IAudioClient* client);
 };
 
 // The special audio session identifier we use when opening up the default

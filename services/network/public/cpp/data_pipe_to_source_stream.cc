@@ -11,16 +11,19 @@
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
+#include "net/filter/source_stream_type.h"
 
 namespace network {
 
 DataPipeToSourceStream::DataPipeToSourceStream(
-    mojo::ScopedDataPipeConsumerHandle body)
-    : net::SourceStream(net::SourceStream::TYPE_NONE),
+    mojo::ScopedDataPipeConsumerHandle body,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : net::SourceStream(net::SourceStreamType::kNone),
       body_(std::move(body)),
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                      base::SequencedTaskRunner::GetCurrentDefault()) {
+                      std::move(task_runner)) {
   handle_watcher_.Watch(
       body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       base::BindRepeating(&DataPipeToSourceStream::OnReadable,

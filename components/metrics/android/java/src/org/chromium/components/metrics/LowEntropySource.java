@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Random;
 
@@ -22,6 +23,7 @@ import java.util.Random;
  * generated in Java so that it can be used by FRE experiments when the native is not available yet.
  */
 @MainThread
+@NullMarked
 public class LowEntropySource {
     // Should be equal to the value of EntropyState::kMaxLowEntropySize in C++.
     public static final int MAX_LOW_ENTROPY_SIZE = 8000;

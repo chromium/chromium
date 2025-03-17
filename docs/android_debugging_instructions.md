@@ -35,11 +35,12 @@ or the one in `//third_party/android_sdk/`.
 
 ### Warnings for Blink developers
 *   **Do not use fprintf or printf debugging!** This does not
-    redirect to logcat.
+    redirect to adb logcat. Use `LOG(ERROR)` etc. instead.
+    See also the "Get Blink code to output to the adb log" section.
 
 *   Redirecting stdio to logcat, as documented
     [here](https://developer.android.com/studio/command-line/logcat.html#viewingStd),
-    has a bad side-effect that it breaks `adb_install.py`. See
+    has a bad side-effect in that it breaks `adb_install.py`. See
     [here for details](http://stackoverflow.com/questions/28539676/android-adb-fails-to-install-apk-to-nexus-5-on-windows-8-1).
 
 ## Take a Screenshot
@@ -200,7 +201,7 @@ build/android/stacktrace/java_deobfuscate.py PROGUARD_MAPPING_FILE.mapping < FIL
 adb logcat | build/android/stacktrace/java_deobfuscate.py PROGUARD_MAPPING_FILE.mapping
 ```
 
-## Get WebKit code to output to the adb log
+## Get Blink code to output to the adb log
 
 In your build environment:
 
@@ -211,8 +212,10 @@ adb shell setprop log.redirect-stdio true
 adb shell start
 ```
 
-In the source itself, use `fprintf(stderr, "message");` whenever you need to
-output a message.
+In the source itself, use `LOG(ERROR),` `LOG(INFO)`, etc. whenever you need to
+output a message, and it will be automatically redirected to adb logcat.
+Running `adb logcat chromium:E`, for example, will show all log lines from
+`LOG(ERROR)` (plus others that match "chromium").
 
 ## Debug unit tests with LLDB
 

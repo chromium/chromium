@@ -1,0 +1,160 @@
+This is a testharness.js-based test.
+Found 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.5) should be [-1 -1 -2]
+  assert_equals: expected "auto " but got "17 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.25) should be [2 0]
+  assert_equals: expected "auto " but got "17 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0) should be [5 1 2]
+  assert_equals: expected "5 1 2 " but got "17 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.25) should be [8 2 4]
+  assert_equals: expected "8 2 4 " but got "17 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.5) should be [11 3 6]
+  assert_equals: expected "11 3 6 " but got "17 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.75) should be [14 4 8]
+  assert_equals: expected "14 4 8 " but got "17 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (1.5) should be [23 7 14]
+  assert_equals: expected "23 7 14 " but got "17 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.5) should be [-1 -1 -2]
+  assert_equals: expected "auto " but got "17 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.25) should be [2 0]
+  assert_equals: expected "auto " but got "17 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0) should be [5 1 2]
+  assert_equals: expected "5 1 2 " but got "17 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.25) should be [8 2 4]
+  assert_equals: expected "8 2 4 " but got "17 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.5) should be [11 3 6]
+  assert_equals: expected "11 3 6 " but got "17 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.75) should be [14 4 8]
+  assert_equals: expected "14 4 8 " but got "17 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (1.5) should be [23 7 14]
+  assert_equals: expected "23 7 14 " but got "17 5 10 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.5) should be [-1 -1 -2]
+  assert_equals: expected "auto " but got "5 1 2 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.25) should be [2 0]
+  assert_equals: expected "auto " but got "5 1 2 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.25) should be [8 2 4]
+  assert_equals: expected "8 2 4 " but got "5 1 2 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.5) should be [11 3 6]
+  assert_equals: expected "11 3 6 " but got "17 5 10 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.75) should be [14 4 8]
+  assert_equals: expected "14 4 8 " but got "17 5 10 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (1.5) should be [23 7 14]
+  assert_equals: expected "23 7 14 " but got "17 5 10 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.5) should be [-1 -1 -2]
+  assert_equals: expected "auto " but got "5 1 2 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (-0.25) should be [2 0]
+  assert_equals: expected "auto " but got "5 1 2 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.25) should be [8 2 4]
+  assert_equals: expected "8 2 4 " but got "5 1 2 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.5) should be [11 3 6]
+  assert_equals: expected "11 3 6 " but got "17 5 10 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (0.75) should be [14 4 8]
+  assert_equals: expected "14 4 8 " but got "17 5 10 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5 1 2] to [17 5 10] at (1.5) should be [23 7 14]
+  assert_equals: expected "23 7 14 " but got "17 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.5) should be [auto -1 -2]
+  assert_equals: expected "auto " but got "auto 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.25) should be [auto 0]
+  assert_equals: expected "auto " but got "auto 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0) should be [auto 1 2]
+  assert_equals: expected "auto 1 2 " but got "auto 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.25) should be [auto 2 4]
+  assert_equals: expected "auto 2 4 " but got "auto 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.5) should be [auto 3 6]
+  assert_equals: expected "auto 3 6 " but got "auto 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.75) should be [auto 4 8]
+  assert_equals: expected "auto 4 8 " but got "auto 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (1.5) should be [auto 7 14]
+  assert_equals: expected "auto 7 14 " but got "auto 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.5) should be [auto -1 -2]
+  assert_equals: expected "auto " but got "auto 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.25) should be [auto 0]
+  assert_equals: expected "auto " but got "auto 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0) should be [auto 1 2]
+  assert_equals: expected "auto 1 2 " but got "auto 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.25) should be [auto 2 4]
+  assert_equals: expected "auto 2 4 " but got "auto 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.5) should be [auto 3 6]
+  assert_equals: expected "auto 3 6 " but got "auto 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.75) should be [auto 4 8]
+  assert_equals: expected "auto 4 8 " but got "auto 5 10 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (1.5) should be [auto 7 14]
+  assert_equals: expected "auto 7 14 " but got "auto 5 10 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.5) should be [auto -1 -2]
+  assert_equals: expected "auto " but got "auto 1 2 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.25) should be [auto 0]
+  assert_equals: expected "auto " but got "auto 1 2 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.25) should be [auto 2 4]
+  assert_equals: expected "auto 2 4 " but got "auto 1 2 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.5) should be [auto 3 6]
+  assert_equals: expected "auto 3 6 " but got "auto 5 10 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.75) should be [auto 4 8]
+  assert_equals: expected "auto 4 8 " but got "auto 5 10 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (1.5) should be [auto 7 14]
+  assert_equals: expected "auto 7 14 " but got "auto 5 10 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.5) should be [auto -1 -2]
+  assert_equals: expected "auto " but got "auto 1 2 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (-0.25) should be [auto 0]
+  assert_equals: expected "auto " but got "auto 1 2 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.25) should be [auto 2 4]
+  assert_equals: expected "auto 2 4 " but got "auto 1 2 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.5) should be [auto 3 6]
+  assert_equals: expected "auto 3 6 " but got "auto 5 10 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (0.75) should be [auto 4 8]
+  assert_equals: expected "auto 4 8 " but got "auto 5 10 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [auto 1 2] to [auto 5 10] at (1.5) should be [auto 7 14]
+  assert_equals: expected "auto 7 14 " but got "auto 5 10 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5] to [17] at (-0.5) should be [-1 auto]
+  assert_equals: expected "auto " but got "17 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5] to [17] at (-0.25) should be [2 auto]
+  assert_equals: expected "2 " but got "17 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5] to [17] at (0) should be [5 auto]
+  assert_equals: expected "5 " but got "17 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5] to [17] at (0.25) should be [8 auto]
+  assert_equals: expected "8 " but got "17 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5] to [17] at (0.5) should be [11 auto]
+  assert_equals: expected "11 " but got "17 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5] to [17] at (0.75) should be [14 auto]
+  assert_equals: expected "14 " but got "17 "
+[FAIL] CSS Transitions: property <hyphenate-limit-chars> from [5] to [17] at (1.5) should be [23 auto]
+  assert_equals: expected "23 " but got "17 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5] to [17] at (-0.5) should be [-1 auto]
+  assert_equals: expected "auto " but got "17 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5] to [17] at (-0.25) should be [2 auto]
+  assert_equals: expected "2 " but got "17 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5] to [17] at (0) should be [5 auto]
+  assert_equals: expected "5 " but got "17 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5] to [17] at (0.25) should be [8 auto]
+  assert_equals: expected "8 " but got "17 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5] to [17] at (0.5) should be [11 auto]
+  assert_equals: expected "11 " but got "17 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5] to [17] at (0.75) should be [14 auto]
+  assert_equals: expected "14 " but got "17 "
+[FAIL] CSS Transitions with transition: all: property <hyphenate-limit-chars> from [5] to [17] at (1.5) should be [23 auto]
+  assert_equals: expected "23 " but got "17 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5] to [17] at (-0.5) should be [-1 auto]
+  assert_equals: expected "auto " but got "5 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5] to [17] at (-0.25) should be [2 auto]
+  assert_equals: expected "2 " but got "5 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5] to [17] at (0.25) should be [8 auto]
+  assert_equals: expected "8 " but got "5 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5] to [17] at (0.5) should be [11 auto]
+  assert_equals: expected "11 " but got "17 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5] to [17] at (0.75) should be [14 auto]
+  assert_equals: expected "14 " but got "17 "
+[FAIL] CSS Animations: property <hyphenate-limit-chars> from [5] to [17] at (1.5) should be [23 auto]
+  assert_equals: expected "23 " but got "17 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5] to [17] at (-0.5) should be [-1 auto]
+  assert_equals: expected "auto " but got "5 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5] to [17] at (-0.25) should be [2 auto]
+  assert_equals: expected "2 " but got "5 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5] to [17] at (0.25) should be [8 auto]
+  assert_equals: expected "8 " but got "5 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5] to [17] at (0.5) should be [11 auto]
+  assert_equals: expected "11 " but got "17 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5] to [17] at (0.75) should be [14 auto]
+  assert_equals: expected "14 " but got "17 "
+[FAIL] Web Animations: property <hyphenate-limit-chars> from [5] to [17] at (1.5) should be [23 auto]
+  assert_equals: expected "23 " but got "17 "
+Harness: the test ran to completion.
+

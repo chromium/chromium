@@ -50,8 +50,8 @@ export class DevicesPage {
     assert(rowTemplate);
 
     for (const device of devices) {
-      const clone =
-          document.importNode(rowTemplate.content, true) as DocumentFragment;
+      const clone: DocumentFragment =
+          document.importNode(rowTemplate.content, true);
 
       const td = clone.querySelectorAll('td');
 
@@ -126,8 +126,7 @@ class DevicePage {
     const tabTemplate =
         this.root.querySelector<HTMLTemplateElement>('#tab-template');
     assert(tabTemplate);
-    const tabClone =
-        document.importNode(tabTemplate.content, true) as DocumentFragment;
+    const tabClone = document.importNode(tabTemplate.content, true);
 
     const tab = tabClone.querySelector<HTMLElement>('div[slot=\'tab\']');
     assert(tab);
@@ -146,8 +145,7 @@ class DevicePage {
     const tabPanelTemplate = this.root.querySelector<HTMLTemplateElement>(
         '#device-tabpanel-template');
     assert(tabPanelTemplate);
-    const tabPanelClone =
-        document.importNode(tabPanelTemplate.content, true) as DocumentFragment;
+    const tabPanelClone = document.importNode(tabPanelTemplate.content, true);
 
     /**
      * Root of the WebContents tree of current device.
@@ -240,7 +238,7 @@ function renderDeviceTree(device: UsbDeviceInfo, root: CrTreeElement) {
 
   if (device.webusbLandingPage) {
     const urlItem =
-        customTreeItem(`WebUSB Landing Page: ${device.webusbLandingPage!.url}`);
+        customTreeItem(`WebUSB Landing Page: ${device.webusbLandingPage.url}`);
     root.add(urlItem);
 
     urlItem.labelElement.addEventListener(

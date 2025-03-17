@@ -1,5 +1,7 @@
-caption: Enterprise search aggregator settings
+caption: Enterprise search aggregator settings (Beta)
 desc: |-
+  This is a beta feature. As this is a feature in development, available to our trusted testers, please be aware that it may undergo changes and updates.
+
   This policy allows administrators to set a designated enterprise search aggregator that will provide search recommendations and results within the address bar when triggered by a specific keyword. Users can initiate a search by typing the keyword specified in the <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> field with or without the @ prefix (e.g. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS">@work</ph>), followed by Space or Tab, in the address bar.
 
   The following fields are required: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD">name</ph>, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph>, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph>, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph>.
@@ -10,9 +12,11 @@ desc: |-
 
   The <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph> field specifies the URL on which to search. Enter the web address for the search engine's results page, and use <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> in place of the query.
 
-  The <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> field specifies the URL that provides search suggestions. If <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> contains <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph>, then Chrome will obtain search suggestions by a GET request to the URL replacing <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> with the user's search query. Otherwise, a POST request will be made, the the user's query will be passed in the POST params under key <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY">'query'</ph>.
+  The <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> field specifies the URL that provides search suggestions. If <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> contains <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph>, then Chrome will obtain search suggestions by a GET request to the URL replacing <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> with the user's search query. Otherwise, a POST request will be made and the user's query will be passed in the POST params under key <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY">'query'</ph>.
 
   The <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">icon_url</ph> field specifies the URL to an image that will be used on the search suggestions. A default icon will be used when this field is not set. It's recommended to use a favicon (example <ph name="ICON_URL_EXAMPLE">https://www.google.com/favicon.ico</ph>).
+
+  The <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">require_shortcut</ph> field specifies whether the address bar <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> is required to see search recommendations. If this field is not set, the address bar <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> is not required.
 
   On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 
@@ -21,14 +25,16 @@ desc: |-
 example_value:
   name: My Search Aggregator
   shortcut: work
-  search_url: https://www.aggregator.com/search?q=site%3Awikipedia.com+{searchTerms}
-  suggest_url: https://www.aggregator.com/suggest?q={searchTerms}
+  search_url: https://www.aggregator.com/search?q={searchTerms}
+  suggest_url: https://www.aggregator.com/suggest
   icon_url: https://www.google.com/favicon.ico
+  require_shortcut: true
 features:
   dynamic_refresh: true
   per_profile: true
 owners:
 - ftirelo@chromium.org
+- alexwchen@chromium.org
 - jdonnelly@chromium.org
 - mahmadi@chromium.org
 schema:
@@ -44,13 +50,15 @@ schema:
       type: string
     icon_url:
       type: string
+    require_shortcut:
+      type: boolean
   required:
   - name
   - shortcut
   - suggest_url
   - search_url
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:135-
+- chrome_os:135-
 tags: []
 type: dict

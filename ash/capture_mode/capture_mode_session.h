@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -39,12 +40,9 @@ namespace gfx {
 class Canvas;
 }  // namespace gfx
 
-namespace views {
-class BoxLayoutView;
-}  // namespace views
-
 namespace ash {
 
+class ActionButtonContainerView;
 class ActionButtonView;
 class CaptureModeBarView;
 class CaptureModeController;
@@ -56,6 +54,7 @@ class CursorSetter;
 class PillButton;
 class RecordingTypeMenuView;
 class ScannerActionViewModel;
+enum class ScannerEntryPoint;
 class UserNudgeController;
 class WindowDimmer;
 
@@ -181,7 +180,7 @@ class ASH_EXPORT CaptureModeSession
       bool capture_surface_became_too_small,
       bool did_bounds_or_visibility_change) override;
   void OnCameraPreviewDestroyed() override;
-  void MaybeDismissUserNudgeForever() override;
+  void MaybeDismissSunfishRegionNudgeForever() override;
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
@@ -194,10 +193,16 @@ class ASH_EXPORT CaptureModeSession
                                     const gfx::VectorIcon* icon,
                                     ActionButtonRank rank,
                                     ActionButtonViewID id) override;
+  void AddSmartActionsButton() override;
+  void MaybeShowScannerDisclaimer(
+      ScannerEntryPoint entry_point,
+      base::RepeatingClosure accept_callback,
+      base::RepeatingClosure decline_callback) override;
   void OnScannerActionsFetched(
-      std::vector<ScannerActionViewModel> scanner_actions) override;
-  void OnTextDetected() override;
+      ScannerSession::FetchActionsResponse actions_response) override;
+  void ShowActionContainerError(const std::u16string& error_message) override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;
+  void OnSearchResultsPanelCreated(views::Widget* panel_widget) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -258,8 +263,7 @@ class ASH_EXPORT CaptureModeSession
   void HideAllUis();
   void ShowAllUis();
 
-  // Shows or hides all session UI widgets.
-  void HideAllWidgets();
+  // Shows all session UI widgets.
   void ShowAllWidgets();
 
   // Called by `ShowAllWidgets()` for each widget. Returns true if the given
@@ -267,9 +271,10 @@ class ASH_EXPORT CaptureModeSession
   bool CanShowWidget(views::Widget* widget) const;
 
   // If possible, this recreates and shows the nudge that alerts the user about
-  // the new folder selection settings. The nudge will be created on top of the
-  // the settings button on the capture mode bar.
-  void MaybeCreateUserNudge();
+  // to sunfish or scanner features in a regular capture mode region screenshot
+  // session. The nudge will be created on top of the the region mode button on
+  // the capture mode bar.
+  void MaybeCreateSunfishRegionNudge();
 
   // Called to accept and trigger a capture operation. This happens e.g. when
   // the user hits enter, selects a window/display to capture, or presses on the
@@ -291,6 +296,9 @@ class ASH_EXPORT CaptureModeSession
 
   // Paints the current capture region depending on the current capture source.
   void PaintCaptureRegion(gfx::Canvas* canvas);
+
+  // Paints the capture region with sunfish mode styling.
+  void PaintSunfishCaptureRegion(gfx::Canvas* canvas);
 
   // Paints the capture region overlay onto `canvas` if supported by the
   // behavior, otherwise does nothing.
@@ -432,28 +440,24 @@ class ASH_EXPORT CaptureModeSession
   // coordinates.
   gfx::Rect CalculateActionContainerWidgetBounds() const;
 
-  // Removes any existing action buttons from `action_container_view_` if the
-  // `action_container_widget_` exists.
-  void RemoveAllActionButtons();
+  // Clears the contents of `action_container_view_`, including action buttons,
+  // if `action_container_widget_` exists.
+  void ClearActionContainer();
 
   // In default mode, shows the Search button and performs text detection. In
   // sunfish mode, performs image search. This may end the session, in which
   // case returns true if `this` was deleted.
   [[nodiscard]] bool ShowDefaultActionButtonsOrPerformSearch();
 
-  // Checks if the controller needs to show the disclaimer and shows if
-  // necessary. `accept_callback` is run if disclaimer is accepted.
-  // Takes a repeating closure because the button that triggers this (Smart
-  // actions button) will continue to appear after the disclaimer is dismissed,
-  // allowing the user to click on it again and trigger the callback again.
-  void MaybeShowDisclaimer(base::RepeatingClosure accept_callback);
-
-  // Called by the consent disclaimer on accept, which will run the `callback`
-  // to `OnSmartActionsButtonDisclaimerCheckSuccess()`.
-  void OnDisclaimerAccepted(base::RepeatingClosure callback);
+  // Called by the consent disclaimer on accept.
+  void OnDisclaimerAccepted(ScannerEntryPoint entry_point,
+                            base::RepeatingClosure callback);
 
   // Called by the consent disclaimer on decline.
-  void OnDisclaimerDeclined();
+  void OnDisclaimerDeclined(base::RepeatingClosure callback);
+
+  // Called by the consent disclaimer when a user clicks a link.
+  void OnDisclaimerLinkPressed(const char* url);
 
   // Called back when the smart actions button is pressed.
   void OnSmartActionsButtonPressed();
@@ -463,9 +467,17 @@ class ASH_EXPORT CaptureModeSession
   // actions.
   void OnSmartActionsButtonDisclaimerCheckSuccess();
 
+  // Called back when the smart actions button is pressed and disclaimer was
+  // declined. This will remove the smart actions button.
+  void OnSmartActionsButtonDisclaimerDeclined();
+
   // Called back when a Scanner action button is pressed.
   void OnScannerActionButtonPressed(
       const ScannerActionViewModel& scanner_action);
+
+  // Called back when the user clicks a link to try fetching Scanner actions
+  // again after a previous attempt failed.
+  void OnScannerTryAgainPressed();
 
   // Creates the feedback button widget if it wasn't previously created and
   // should be shown, and updates the widget's bounds and visibility.
@@ -476,7 +488,18 @@ class ASH_EXPORT CaptureModeSession
   // mode for an image (including Sunfish/Scanner sessions).
   bool ShouldHideFeedbackWidget(views::Widget* widget) const;
 
-  // Returns true if the action container should be shown.
+  // Returns true if the action container should be shown, excluding a check for
+  // whether Sunfish-related UI or Scanner-related UI can be shown. This checks:
+  // - a drag is not in progress,
+  // - the selection is a non-empty image region, and
+  // - the active behavior can show action buttons (i.e. it is either the
+  //   default behavior or the Sunfish behavior).
+  bool ShouldShowActionContainerWidgetWithoutFeatureChecks() const;
+
+  // Returns true if the action container should be shown. This checks all of
+  // the checks in `ShouldShowActionContainerWidgetWithoutFeatureChecks`, and
+  // also includes a check for whether Sunfish-related UI or Scanner-related UI
+  // can be shown.
   bool ShouldShowActionContainerWidget() const;
 
   // Shows the feedback page with preset information for sunfish.
@@ -527,7 +550,7 @@ class ASH_EXPORT CaptureModeSession
 
   // TODO(hewer): Check if we can migrate these widgets to `SunfishBehavior`.
   views::UniqueWidgetPtr action_container_widget_;
-  raw_ptr<views::BoxLayoutView> action_container_view_ = nullptr;
+  raw_ptr<ActionButtonContainerView> action_container_view_ = nullptr;
 
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.
@@ -614,6 +637,11 @@ class ASH_EXPORT CaptureModeSession
   // translations, etc.
   std::unique_ptr<CaptureRegionOverlayController>
       capture_region_overlay_controller_;
+
+  // Timer for performing image search or requesting actions after a delay. This
+  // is to prevent too many requests if the user needs to repeatedly adjust the
+  // capture region.
+  base::OneShotTimer image_search_request_timer_;
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;

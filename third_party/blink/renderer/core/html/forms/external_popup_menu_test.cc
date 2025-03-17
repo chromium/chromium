@@ -54,15 +54,14 @@ class ExternalPopupMenuDisplayNoneItemsTest : public PageTestBase {
 };
 
 TEST_F(ExternalPopupMenuDisplayNoneItemsTest, PopupMenuInfoSizeTest) {
-  int32_t item_height;
   double font_size;
   int32_t selected_item;
   Vector<mojom::blink::MenuItemPtr> menu_items;
   bool right_aligned;
   bool allow_multiple_selection;
   ExternalPopupMenu::GetPopupMenuInfo(
-      *owner_element_, &item_height, &font_size, &selected_item, &menu_items,
-      &right_aligned, &allow_multiple_selection);
+      *owner_element_, &font_size, &selected_item, &menu_items, &right_aligned,
+      &allow_multiple_selection);
   EXPECT_EQ(5U, menu_items.size());
 }
 
@@ -102,15 +101,14 @@ class ExternalPopupMenuHrElementItemsTest : public PageTestBase {
 };
 
 TEST_F(ExternalPopupMenuHrElementItemsTest, PopupMenuInfoSizeTest) {
-  int32_t item_height;
   double font_size;
   int32_t selected_item;
   Vector<mojom::blink::MenuItemPtr> menu_items;
   bool right_aligned;
   bool allow_multiple_selection;
   ExternalPopupMenu::GetPopupMenuInfo(
-      *owner_element_, &item_height, &font_size, &selected_item, &menu_items,
-      &right_aligned, &allow_multiple_selection);
+      *owner_element_, &font_size, &selected_item, &menu_items, &right_aligned,
+      &allow_multiple_selection);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(3U, menu_items.size());
 #else
@@ -167,15 +165,14 @@ TEST_F(FramelessExternalPopupMenuTest, DescendantOption) {
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  int32_t item_height;
   double font_size;
   int32_t selected_item;
   Vector<mojom::blink::MenuItemPtr> menu_items;
   bool right_aligned;
   bool allow_multiple_selection;
-  ExternalPopupMenu::GetPopupMenuInfo(
-      *select, &item_height, &font_size, &selected_item, &menu_items,
-      &right_aligned, &allow_multiple_selection);
+  ExternalPopupMenu::GetPopupMenuInfo(*select, &font_size, &selected_item,
+                                      &menu_items, &right_aligned,
+                                      &allow_multiple_selection);
 
   ASSERT_EQ(2u, menu_items.size());
   EXPECT_EQ(menu_items[0]->label, "option in wrapper_div");
@@ -212,7 +209,6 @@ class TestLocalFrameExternalPopupClient : public FakeLocalFrameHost {
   void ShowPopupMenu(
       mojo::PendingRemote<mojom::blink::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int32_t item_height,
       double font_size,
       int32_t selected_item,
       Vector<mojom::blink::MenuItemPtr> menu_items,

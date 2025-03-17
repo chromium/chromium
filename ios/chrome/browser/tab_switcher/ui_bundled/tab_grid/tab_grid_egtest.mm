@@ -14,6 +14,9 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/unified_consent/pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
@@ -30,10 +33,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -434,7 +433,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_nil()];
 
   // Ensure the incognito tab isn't closed.
-  GREYAssertEqual(1, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey incognitoTabCount],
                   @"Expected that the \"Close All Tabs\" button should not "
                   @"close tabs in other pages.");
 
@@ -465,13 +464,13 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // there are inactive tabs but no regular tabs.
 - (void)testCloseAllAndUndoCloseAllWithInactiveTabs {
   [self loadTestURLsInNewTabs];
-  [self relaunchAppWithInactiveTabsEnabled];
+  [self relaunchAppWithInactiveTabsTestMode];
 
   [ChromeEarlGreyUI openTabGrid];
-  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
                   @"Expected only one tab (NTP), all other tabs should have "
                   @"been in inactive tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 
   // Verify that the Inactive Tabs button is showing.
@@ -493,9 +492,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected all regular tab to be closed.");
-  GREYAssertEqual(0, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected all inactive tab to be closed.");
 
   // Verify that the Inactive Tabs button is not showing.
@@ -506,10 +505,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       performAction:grey_tap()];
-  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
                   @"Expected only one tab (NTP), all other tabs should have "
                   @"been in inactive tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -526,9 +525,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected no tab in regular tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 
   // Ensure there is no selection mode available when there is no tab in regular
@@ -545,18 +544,18 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridEditMenuCloseAllButton()]
       performAction:grey_tap()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected all regular tab to be closed.");
-  GREYAssertEqual(0, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected all inactive tab to be closed.");
 
   // Tap on Undo button.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       performAction:grey_tap()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected no tab in regular tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 }
 
@@ -1455,7 +1454,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging a selection of tab grid items between windows.
-- (void)testDragAndDropSelectionBetweenWindows {
+// TODO(crbug.com/382632079): Fix flakyness.
+- (void)FLAKY_testDragAndDropSelectionBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -3223,13 +3223,13 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // at each step.
 - (void)testSearchHeaderWithInactiveTabs {
   [self loadTestURLsInNewTabs];
-  [self relaunchAppWithInactiveTabsEnabled];
+  [self relaunchAppWithInactiveTabsTestMode];
 
   [ChromeEarlGreyUI openTabGrid];
-  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
                   @"Expected only one tab (NTP), all other tabs should have "
                   @"been in inactive tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 
   // Verify that the Inactive Tabs button is showing.
@@ -3528,6 +3528,60 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                 @"Cannot release user action tester.");
 }
 
+// Ensures that when users tap on a tab from tab search result and this tab is
+// in another window currently displaying tab grid, the tab is opened.
+- (void)testOpenSearchedTabFromAnotherWindowWhenTabGridIsVisible {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Loads regular tab 1 on the first window.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
+
+  // Opens a incognito tab on the first window.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Opens tabGrid in incognito mode on the first window.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Opens a second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+
+  // Opens tabGrid on the second window.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Enters search mode in the second window.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Verifies that search mode is active.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+
+  // Performs the search : tab 1 which is a regular tab present on the first
+  // window.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(kTitle1)];
+
+  // Taps on it from the second window.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Closes the second window.
+  [ChromeEarlGrey closeWindowWithNumber:1];
+
+  // Checks the content of the first window.
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {
@@ -3725,11 +3779,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [RecentTabsAppInterface clearCollapsedListViewSectionStates];
 }
 
-// Relaunches the app with Inactive Tabs enabled.
-- (void)relaunchAppWithInactiveTabsEnabled {
+// Relaunches the app with Inactive Tabs in test mode (i.e. considers tabs as
+// inactive immediately).
+- (void)relaunchAppWithInactiveTabsTestMode {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

@@ -95,7 +95,7 @@ enum class TrustedVaultDownloadKeysStatusForUMA {
   kNetworkError = 15,
   kMaxValue = kNetworkError
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDownloadKeysStatus)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDownloadKeysStatus)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -110,6 +110,17 @@ enum class TrustedVaultFileReadStatusForUMA {
   kMaxValue = kDataProtoDeserializationFailed
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultFileReadStatus)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TrustedVaultListSecurityDomainMembersPinStatus)
+enum class TrustedVaultListSecurityDomainMembersPinStatus {
+  kPinPresentAndUsableForRecovery = 0,
+  kPinPresentButUnusableForRecovery = 1,
+  kNoPinPresent = 2,
+  kMaxValue = kNoPinPresent
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultListSecurityDomainMembersPinStatus)
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
@@ -148,6 +159,12 @@ void RecordRecoveryKeyStoreURLFetchResponse(
 
 // Records the outcome of trying to download keys from the server.
 void RecordTrustedVaultDownloadKeysStatus(
+    SecurityDomainId security_domain_id,
+    TrustedVaultDownloadKeysStatusForUMA status);
+
+// TODO(crbug.com/369980730): replace usages with the version above (in
+// downstream) and delete this one.
+void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status);
 
 void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,
@@ -168,6 +185,10 @@ void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
 // client.
 void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
     std::optional<SecurityDomainId> security_domain);
+
+void RecordTrustedVaultListSecurityDomainMembersPinStatus(
+    SecurityDomainId security_domain_id,
+    TrustedVaultListSecurityDomainMembersPinStatus status);
 
 // Returns a security domain name suitable for using in histograms. When
 // including this in a histogram, its name in the XML should have

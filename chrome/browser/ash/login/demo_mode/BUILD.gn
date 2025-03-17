@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("demo_mode") {
   sources = [
@@ -39,7 +37,6 @@ static_library("demo_mode") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//base:i18n",
@@ -60,6 +57,7 @@ static_library("demo_mode") {
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/idle_detector",
     "//chromeos/constants",
     "//components/language/core/browser",
@@ -94,17 +92,24 @@ static_library("demo_mode_login") {
     "demo_login_controller.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/demo_mode",
+    "//chromeos/ash/components/growth",
     "//chromeos/ash/components/system/",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login" ]
 }
 
 static_library("test_support") {
@@ -153,7 +158,6 @@ source_set("browser_tests") {
   deps = [
     ":demo_mode",
     ":test_support",
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -182,6 +186,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/constants",
     "//chromeos/dbus/power",
     "//components/component_updater/ash:test_support",
@@ -235,6 +240,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/concierge",
@@ -242,6 +248,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/system",
     "//chromeos/constants",
     "//components/component_updater/ash:test_support",

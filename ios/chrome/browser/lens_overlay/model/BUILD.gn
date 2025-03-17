@@ -14,18 +14,23 @@ source_set("model") {
     "lens_overlay_snapshot_controller_delegate.h",
     "lens_overlay_tab_helper.h",
     "lens_overlay_tab_helper.mm",
+    "lens_overlay_url_utils.h",
+    "lens_overlay_url_utils.mm",
     "snapshot_cover_view_controller.h",
     "snapshot_cover_view_controller.mm",
   ]
   deps = [
     ":detent_state_header",
     "//base",
+    "//components/google/core/common",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/common:string_conversions",
     "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/web/public",
@@ -44,15 +49,19 @@ source_set("model") {
 
 source_set("overflow_menu_factory") {
   sources = [
+    "lens_overlay_overflow_menu_delegate.h",
     "lens_overlay_overflow_menu_factory.h",
     "lens_overlay_overflow_menu_factory.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",
     "//url",
@@ -101,6 +110,8 @@ source_set("metrics_recorder") {
   sources = [
     "lens_overlay_metrics_recorder.h",
     "lens_overlay_metrics_recorder.mm",
+    "lens_view_finder_metrics_recorder.h",
+    "lens_view_finder_metrics_recorder.mm",
   ]
   deps = [
     "//base",
@@ -130,6 +141,7 @@ source_set("entrypoint") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "lens_overlay_detents_manager_unittest.mm",
     "lens_overlay_navigation_manager_unittest.mm",
     "lens_overlay_tab_helper_unittest.mm",
   ]
@@ -146,6 +158,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common:string_conversions",
     "//ios/chrome/test:test_support",
     "//ios/testing:ocmock_support",
     "//ios/web/public/test",

@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
-#include "base/ranges/algorithm.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"

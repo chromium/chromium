@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -37,10 +38,12 @@ using optimization_guide::proto::
     AutofillFieldClassificationPostprocessingParameters;
 
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
-// and FieldType respectively.
+// and FieldType respectively. It accesses `local_type_predictions_` directly
+// because heuristic_type() returns the post-processed prediction, after
+// potentially falling back to regex.
 MATCHER(MlTypeEq, "") {
-  return std::get<0>(arg)->heuristic_type(
-             HeuristicSource::kAutofillMachineLearning) == std::get<1>(arg);
+  return std::get<0>(arg)->local_type_predictions()[static_cast<size_t>(
+             HeuristicSource::kAutofillMachineLearning)] == std::get<1>(arg);
 }
 
 class FieldClassificationModelHandlerTest : public testing::Test {
@@ -59,7 +62,6 @@ class FieldClassificationModelHandlerTest : public testing::Test {
         model_provider_.get(),
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
-    model_metadata_ = ReadModelMetadata();
     task_environment_.RunUntilIdle();
   }
 
@@ -98,11 +100,10 @@ class FieldClassificationModelHandlerTest : public testing::Test {
 
   // Simulates receiving the model from the server, with `model_metadata_`
   // attached.
-  void SimulateRetrieveModelFromServer() {
+  void SimulateRetrieveModelFromServer(const std::string file_name) {
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(
-                test_data_dir_.AppendASCII("autofill_model-fold-one.tflite"))
+            .SetModelFilePath(test_data_dir_.AppendASCII(file_name))
             .SetModelMetadata(AnyWrapProto(model_metadata_))
             .Build();
     model_handler_->OnModelUpdated(
@@ -112,19 +113,17 @@ class FieldClassificationModelHandlerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
- private:
-  optimization_guide::proto::AutofillFieldClassificationModelMetadata
-  ReadModelMetadata() const {
+  void ReadModelMetadata(const std::string file_name) {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
-    base::FilePath file_path(
-        test_data_dir_.AppendASCII("autofill_model_metadata.binarypb"));
+    base::FilePath file_path(test_data_dir_.AppendASCII(file_name));
     std::string proto_content;
     EXPECT_TRUE(base::ReadFileToString(file_path, &proto_content));
     EXPECT_TRUE(metadata.ParseFromString(proto_content));
-    return metadata;
+    model_metadata_ = metadata;
   }
 
+ private:
   // Populates `metadata.input_token()` with the contents of the file located
   // at `dictionary_path`. Each line of the dictionary file is added as a
   // separate token.
@@ -151,8 +150,19 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   AutofillFieldClassificationModelMetadata model_metadata_;
 };
 
+// Test that supported types are registered correctly when the model is loaded.
+TEST_F(FieldClassificationModelHandlerTest,
+       SupportedTypesSetCorrectlyOnModelUpdate) {
+  ReadModelMetadata("autofill_model_metadata.binarypb");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  FieldTypeSet supported_types = model_handler().get_supported_types();
+  ASSERT_TRUE(supported_types.contains(FieldType::ADDRESS_HOME_ZIP));
+  ASSERT_FALSE(supported_types.contains(FieldType::IBAN_VALUE));
+}
+
 TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
-  SimulateRetrieveModelFromServer();
+  ReadModelMetadata("autofill_model_metadata.binarypb");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler().GetModelPredictionsForForm(std::move(form_structure),
@@ -166,10 +176,11 @@ TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
 TEST_F(FieldClassificationModelHandlerTest,
        GetModelPredictionsForForm_Threshold) {
   // Set a really high threshold and expect that all predictions are suppressed.
+  ReadModelMetadata("autofill_model_metadata.binarypb");
   model_metadata()
       .mutable_postprocessing_parameters()
       ->set_confidence_threshold_per_field(/*confidence_threshold=*/100);
-  SimulateRetrieveModelFromServer();
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler().GetModelPredictionsForForm(std::move(form_structure),
@@ -181,7 +192,8 @@ TEST_F(FieldClassificationModelHandlerTest,
 }
 
 TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForms) {
-  SimulateRetrieveModelFromServer();
+  ReadModelMetadata("autofill_model_metadata.binarypb");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
   std::vector<std::unique_ptr<FormStructure>> forms;
   forms.push_back(CreateOverfittedForm());
   forms.push_back(CreateOverfittedForm());
@@ -201,10 +213,11 @@ TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForms) {
 TEST_F(FieldClassificationModelHandlerTest,
        GetModelPredictionsForForm_NoPredictionsEmitted) {
   // Set min required confidence to be very high, even for the overfitted model.
+  ReadModelMetadata("autofill_model_metadata.binarypb");
   model_metadata()
       .mutable_postprocessing_parameters()
       ->set_confidence_threshold_to_disable_all_predictions(0.999);
-  SimulateRetrieveModelFromServer();
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
 
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
@@ -222,10 +235,11 @@ TEST_F(FieldClassificationModelHandlerTest,
 // predictions will still be emitted for predictions with high confidence.
 TEST_F(FieldClassificationModelHandlerTest,
        GetModelPredictionsForForm_PredictionsEmittedWithMinConfidence) {
+  ReadModelMetadata("autofill_model_metadata.binarypb");
   model_metadata()
       .mutable_postprocessing_parameters()
       ->set_confidence_threshold_to_disable_all_predictions(0.5);
-  SimulateRetrieveModelFromServer();
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
 
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
@@ -236,6 +250,35 @@ TEST_F(FieldClassificationModelHandlerTest,
   // predictions should be emitted.
   EXPECT_THAT(future.Get()->fields(),
               testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
+}
+
+// Tests that if the form metadata does not allow assigning the same type to
+// multiple fields, NO_SERVER_DATA type will be assigned to a field with less
+// confidence.
+TEST_F(FieldClassificationModelHandlerTest,
+       GetModelPredictionsForForm_DisallowSameTypePredictions) {
+  ReadModelMetadata("model_with_repeated_predicted_types.binarypb");
+  SimulateRetrieveModelFromServer("model_with_repeated_predicted_types.tflite");
+
+  std::unique_ptr<FormStructure> overfitted_form =
+      std::make_unique<FormStructure>(
+          test::GetFormData({.fields = {{.label = u"username"},
+                                        {.label = u"repeat username"},
+                                        {.label = u"new password"},
+                                        {.label = u"confirm password"}}}));
+
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+  model_handler().GetModelPredictionsForForm(std::move(overfitted_form),
+                                             future.GetCallback());
+
+  // The model is trained to predict USERNAME on the first two fields. Expect
+  // that the second field prediction will be discarded and replaced with
+  // NO_SERVER_DATA.
+  auto expected_predictions = {USERNAME, NO_SERVER_DATA,
+                               ACCOUNT_CREATION_PASSWORD,
+                               CONFIRMATION_PASSWORD};
+  EXPECT_THAT(future.Get()->fields(),
+              testing::Pointwise(MlTypeEq(), expected_predictions));
 }
 
 }  // namespace

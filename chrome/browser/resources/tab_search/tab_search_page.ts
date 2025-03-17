@@ -27,7 +27,7 @@ import {search} from './search.js';
 import type {SelectableLazyListElement} from './selectable_lazy_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './selectable_lazy_list.js';
 import {ariaLabel, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
-import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
+import type {ProfileData, RecentlyClosedTab, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import {TabSearchSection} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
@@ -41,6 +41,10 @@ import {TitleItem} from './title_item.js';
 // The minimum number of list items we allow viewing regardless of browser
 // height. Includes a half row that hints to the user the capability to scroll.
 const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT: number = 5.5;
+
+// A maximum limit for search queries, to prevent  errors like
+// "SyntaxError: Invalid regular expression: ..."
+export const SEARCH_QUERY_MAX_LENGTH: number = 400;
 
 const TabSearchSearchFieldBase = CrSearchFieldMixinLit(CrLitElement);
 
@@ -78,6 +82,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       filteredItems_: {type: Array},
       listMaxHeight_: {type: Number},
       listItemSize_: {type: Number},
+      searchQueryMaxLength_: {type: Number},
 
       /**
        * Options for search. Controls how heavily weighted fields are relative
@@ -99,6 +104,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private searchText_: string = '';
   protected listMaxHeight_?: number;
   protected listItemSize_?: number;
+  protected searchQueryMaxLength_: number = SEARCH_QUERY_MAX_LENGTH;
   protected filteredItems_: Array<TitleItem|TabData|TabGroupData> = [];
   private searchOptions_: SearchOptions = {
     includeScore: true,
@@ -485,9 +491,8 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         break;
       case TabItemType.RECENTLY_CLOSED_TAB_GROUP:
         this.apiProxy_.openRecentlyClosedEntry(
-            ((itemData as TabGroupData).tabGroup as RecentlyClosedTabGroup)
-                .sessionId,
-            !!this.searchText_, false, tabIndex - this.filteredOpenTabsCount_);
+            ((itemData as TabGroupData).tabGroup).sessionId, !!this.searchText_,
+            false, tabIndex - this.filteredOpenTabsCount_);
         action = 'OpenRecentlyClosedEntry';
         break;
       default:
@@ -684,7 +689,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
     if (itemData.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP &&
         itemData instanceof TabGroupData) {
-      return (itemData.tabGroup as RecentlyClosedTabGroup).lastActiveTime;
+      return (itemData.tabGroup).lastActiveTime;
     }
 
     throw new Error('ItemData provided is invalid.');
@@ -728,7 +733,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     // section.
     if (filteredOpenTabs.length > 0) {
       this.initiallySelectedIndex_ =
-          (tabHasMediaAlerts(filteredOpenTabs[0]!.tab! as Tab) ||
+          (tabHasMediaAlerts(filteredOpenTabs[0]!.tab as Tab) ||
            filteredMediaTabs.length === 0) ?
           1 :
           filteredMediaTabs.length + 2;
@@ -759,7 +764,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     // when no search text has been specified. Filter out recently closed tabs
     // that belong to a recently closed tab group by default.
     const recentlyClosedTabGroupIds = this.recentlyClosedTabGroups_.reduce(
-        (acc, tabGroupData) => acc.concat(tabGroupData.tabGroup!.id),
+        (acc, tabGroupData) => acc.concat(tabGroupData.tabGroup.id),
         [] as Token[]);
     if (!this.searchText_.length) {
       filteredRecentlyClosedItems =
@@ -770,7 +775,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
                 }
 
                 const recentlyClosedTab =
-                    (recentlyClosedItem as TabData).tab as RecentlyClosedTab;
+                    (recentlyClosedItem).tab as RecentlyClosedTab;
                 return (
                     !recentlyClosedTab.groupId ||
                     !recentlyClosedTabGroupIds.some(
@@ -797,7 +802,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           [this.recentlyClosedTitleItem_, filteredRecentlyClosedItems],
         ] as Array<[TitleItem, Array<TabData|TabGroupData>]>)
             .reduce((acc, [sectionTitle, sectionItems]) => {
-              if (sectionItems!.length !== 0) {
+              if (sectionItems.length !== 0) {
                 acc.push(sectionTitle);
                 if (!sectionTitle.expandable ||
                     sectionTitle.expandable && sectionTitle.expanded) {

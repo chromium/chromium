@@ -102,11 +102,18 @@ public class DragAndDropLauncherActivityUnitTest {
     @Test
     public void testGetTabIntent_specificWindowId() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
-        int windowId = 2;
-        Intent intent = DragAndDropLauncherActivity.getTabIntent(mContext, tab, windowId);
+        int sourceWindowId = 1;
+        int destWindowId = 2;
+        Intent intent =
+                DragAndDropLauncherActivity.getTabIntent(
+                        mContext, tab, sourceWindowId, destWindowId);
+        assertEquals(
+                "The EXTRA_DRAGDROP_TAB_WINDOW_ID intent extra value should match.",
+                sourceWindowId,
+                intent.getIntExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, -1));
         assertEquals(
                 "The EXTRA_WINDOW_ID intent extra value should match.",
-                windowId,
+                destWindowId,
                 intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 "The EXTRA_URL_SOURCE intent extra value should match.",
@@ -117,9 +124,13 @@ public class DragAndDropLauncherActivityUnitTest {
     @Test
     public void testGetTabIntent_defaultWindowId() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
+        int sourceWindowId = 1;
         Intent intent =
                 DragAndDropLauncherActivity.getTabIntent(
-                        mContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID);
+                        mContext,
+                        tab,
+                        sourceWindowId,
+                        /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
                 DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
@@ -134,6 +145,10 @@ public class DragAndDropLauncherActivityUnitTest {
         assertTrue(
                 "The intent should contain the CATEGORY_BROWSABLE category.",
                 intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
+        assertEquals(
+                "The EXTRA_DRAGDROP_TAB_WINDOW_ID intent extra value should match.",
+                sourceWindowId,
+                intent.getIntExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, -1));
         assertFalse(
                 "Intent should not contain the EXTRA_WINDOW_ID.",
                 intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));

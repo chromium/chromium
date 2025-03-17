@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("privacy_hub") {
   sources = [
@@ -23,5 +23,25 @@ static_library("privacy_hub") {
     "//ash",
     "//base",
     "//chrome/browser:browser_public_dependencies",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "privacy_hub_geolocation_browsertest.cc" ]
+
+  deps = [
+    ":privacy_hub",
+    "//ash",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chromeos/ash/components/geolocation",
+    "//testing/gtest",
   ]
 }

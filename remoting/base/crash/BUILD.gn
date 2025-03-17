@@ -24,46 +24,59 @@ source_set("breakpad_utils") {
   ]
 }
 
-source_set("breakpad") {
-  sources = [ "breakpad.h" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    ":breakpad_utils",
-    "//base",
-    "//remoting/base:remoting_base_version",
-  ]
-
-  if (is_linux || is_chromeos) {
-    sources += [ "breakpad_linux.cc" ]
-    deps += [ "//third_party/breakpad:client" ]
-  } else if (is_mac) {
-    sources += [ "breakpad_mac.mm" ]
-  } else if (is_win) {
-    sources += [
-      "breakpad_server.cc",
-      "breakpad_win.cc",
-    ]
-    deps += [
-      "//remoting/base:logging",
-      "//third_party/breakpad:breakpad_handler",
-    ]
-  }
-}
-
 if (is_linux && enable_chromoting_crashpad) {
   source_set("crashpad") {
     sources = [
+      "crash_reporting.cc",
+      "crash_reporting.h",
       "crashpad.h",
       "crashpad_linux.cc",
+      "crashpad_linux.h",
     ]
+    configs += [ "//remoting/build/config:host_implementation" ]
     deps = [
       "//base",
+      "//remoting/base",
       "//remoting/base:logging",
       "//remoting/base:remoting_base_version",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/util",
     ]
+  }
+} else {
+  source_set("breakpad") {
+    sources = [
+      "crash_reporting.cc",
+      "crash_reporting.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//remoting/build/config:host_implementation",
+    ]
+
+    deps = [
+      ":breakpad_utils",
+      "//base",
+      "//remoting/base:remoting_base_version",
+    ]
+
+    if (is_linux || is_chromeos) {
+      sources += [
+        "breakpad_linux.cc",
+        "breakpad_linux.h",
+      ]
+      deps += [ "//third_party/breakpad:client" ]
+    } else if (is_win) {
+      sources += [
+        "breakpad_server.cc",
+        "breakpad_win.cc",
+        "breakpad_win.h",
+      ]
+      deps += [
+        "//remoting/base:logging",
+        "//third_party/breakpad:breakpad_handler",
+      ]
+    }
   }
 }

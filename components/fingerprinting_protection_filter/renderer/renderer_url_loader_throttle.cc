@@ -45,7 +45,7 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
       frame_token_(local_frame_token.CopyAsOptional()),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       main_thread_task_runner_(main_thread_task_runner) {
-  if (frame_token_.has_value()) {
+  if (frame_token_.has_value() && main_thread_task_runner_) {
     // It's only possible to retrieve a `RenderFrame` given a `LocalFrameToken`
     // on the main render thread.
     auto get_renderer_agent_task =
@@ -225,15 +225,14 @@ void RendererURLLoaderThrottle::OnLoadPolicyCalculated(
   } else {
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<RendererAgent> agent, const GURL& url) {
+                       [](base::WeakPtr<RendererAgent> agent) {
                          if (agent) {
-                           agent->OnSubresourceDisallowed(
-                               url.possibly_invalid_spec().c_str());
+                           agent->OnSubresourceDisallowed();
                          }
                        },
-                       renderer_agent_, GetCurrentURL()));
+                       renderer_agent_));
     // Cancel if the resource load should be blocked.
-    delegate_->CancelWithError(net::ERR_BLOCKED_BY_CLIENT,
+    delegate_->CancelWithError(net::ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION,
                                "FingerprintingProtection");
   }
   deferred_ = false;

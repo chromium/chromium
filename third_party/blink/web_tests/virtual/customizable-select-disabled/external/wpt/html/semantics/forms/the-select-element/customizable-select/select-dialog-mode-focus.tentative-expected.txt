@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] In dialog mode the first focusable element should get focus.
+  promise_test: Unhandled rejection with value: object "ReferenceError: interactive1 is not defined"
+[FAIL] In dialog mode tab should not close the picker.
+  assert_false: The select should initially be closed. expected false got true
+Harness: the test ran to completion.
+

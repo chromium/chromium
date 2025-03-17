@@ -151,6 +151,7 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   friend class UsbDeviceHandleImpl;
   friend class UsbDeviceHandleMac;
   friend class UsbDeviceHandleUsbfs;
+  friend class UsbDeviceHandleUsbfsTest;
   friend class UsbDeviceHandleWin;
   friend class UsbServiceAndroid;
   friend class UsbServiceImpl;

@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_info/merchant_trust_service_delegate.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/page_info/core/features.h"
@@ -42,10 +43,6 @@ MerchantTrustServiceFactory::~MerchantTrustServiceFactory() = default;
 std::unique_ptr<KeyedService>
 MerchantTrustServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  if (!page_info::IsMerchantTrustFeatureEnabled()) {
-    return nullptr;
-  }
-
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   auto* optimization_guide =
@@ -55,6 +52,7 @@ MerchantTrustServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<page_info::MerchantTrustService>(
+      std::make_unique<MerchantTrustServiceDelegate>(profile),
       optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs());
 }
 

@@ -16,17 +16,18 @@ import './print_management_shared.css.js';
 import './printer_setup_info.js';
 import '/strings.m.js';
 
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider, getPrintManagementHandler} from './mojo_interface_provider.js';
 import {getTemplate} from './print_management.html.js';
-import {ActivePrintJobState, LaunchSource, PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver, PrintManagementHandlerInterface} from './printing_manager.mojom-webui.js';
+import type {PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverInterface, PrintManagementHandlerInterface} from './printing_manager.mojom-webui.js';
+import {ActivePrintJobState, LaunchSource, PrintJobsObserverReceiver} from './printing_manager.mojom-webui.js';
 
 const METADATA_STORED_INDEFINITELY = -1;
 const METADATA_STORED_FOR_ONE_DAY = 1;

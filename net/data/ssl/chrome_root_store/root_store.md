@@ -1,7 +1,11 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
+# Chrome Root Store
 Version: 17
 
+[TOC]
+
+## Trusted Roots
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
 55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066 | CN=Actalis Authentication Root CA,O=Actalis S.p.A./03358520967,L=Milan,C=IT | 2011-09-22 | 2030-09-22
@@ -40,15 +44,6 @@ e23d4a036d7b70e9f595b1422079d2b91edfbb1fb651a0633eaa8a9dc5f80703 | CN=CA Disig R
 40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367 | CN=emSign Root CA - G1,OU=emSign PKI,O=eMudhra Technologies Limited,C=IN | 2018-02-18 | 2043-02-18
 86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b | CN=emSign ECC Root CA - G3,OU=emSign PKI,O=eMudhra Technologies Limited,C=IN | 2018-02-18 | 2043-02-18
 bc4d809b15189d78db3e1d8cf4f9726a795da1643ca5f1358e1ddb0edc0d7eb3 | CN=emSign ECC Root CA - C3,OU=emSign PKI,O=eMudhra Inc,C=US | 2018-02-18 | 2043-02-18
-02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5 | CN=Entrust Root Certification Authority - EC1,OU=See www.entrust.net/legal-terms+OU=(c) 2012 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2012-12-18 | 2037-12-18
-0376ab1d54c5f9803ce4b2e201a0ee7eef7b57b636e8a93c9b8d4860c96f5fa7 | CN=AffirmTrust Commercial,O=AffirmTrust,C=US | 2010-01-29 | 2030-12-31
-0a81ec5a929777f145904af38d5d509f66b5e2c58fcdb531058b0e17f3f0b41b | CN=AffirmTrust Networking,O=AffirmTrust,C=US | 2010-01-29 | 2030-12-31
-43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339 | CN=Entrust Root Certification Authority - G2,OU=See www.entrust.net/legal-terms+OU=(c) 2009 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2009-07-07 | 2030-12-07
-6dc47172e01cbcb0bf62580d895fe2b8ac9ad4f873801e0c10b9c837d21eb177 | CN=Entrust.net Certification Authority (2048),OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.)+OU=(c) 1999 Entrust.net Limited,O=Entrust.net | 1999-12-24 | 2029-07-24
-70a73f7f376b60074248904534b11482d5bf0e698ecc498df52577ebf2e93b9a | CN=AffirmTrust Premium,O=AffirmTrust,C=US | 2010-01-29 | 2040-12-31
-73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c | CN=Entrust Root Certification Authority,OU=www.entrust.net/CPS is incorporated by reference+OU=(c) 2006 Entrust\, Inc.,O=Entrust\, Inc.,C=US | 2006-11-27 | 2026-11-27
-bd71fdf6da97e4cf62d1647add2581b07d79adf8397eb4ecba9c5e8488821423 | CN=AffirmTrust Premium ECC,O=AffirmTrust,C=US | 2010-01-29 | 2040-12-31
-db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88 | CN=Entrust Root Certification Authority - G4,OU=See www.entrust.net/legal-terms+OU=(c) 2015 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2015-05-27 | 2037-12-27
 bfff8fd04433487d6a8aa60c1a29767a9fc2bbb05e420f713a13b992891d3893 | CN=GDCA TrustAUTH R5 ROOT,O=GUANG DONG CERTIFICATE AUTHORITY CO.\,LTD.,C=CN | 2014-11-26 | 2040-12-31
 179fbc148a3dd00fd24ea13458cc43bfa7f59c8182d783a513f6ebec100c8924 | CN=GlobalSign,OU=GlobalSign ECC Root CA - R5,O=GlobalSign | 2012-11-13 | 2038-01-19
 2cabeafe37d06ca22aba7391c0033d25982952c453647349763a3ab5ad6ccf69 | CN=GlobalSign,OU=GlobalSign Root CA - R6,O=GlobalSign | 2014-12-10 | 2034-12-10
@@ -115,7 +110,6 @@ e59aaa816009c22bff5b25bad37df306f049797c1f81d85ab089e657bd8f0044 | CN=D-TRUST BR
 08170d1aa36453901a2f959245e347db0c8d37abaabc56b81aa100dc958970db | CN=D-TRUST EV Root CA 1 2020,O=D-Trust GmbH,C=DE | 2020-02-11 | 2035-02-11
 cbb9c44d84b8043e1050ea31a69f514955d7bfd2e2c6b49301019ad61d9f5058 | CN=GlobalSign Root E46,O=GlobalSign nv-sa,C=BE | 2019-03-20 | 2046-03-20
 4fa3126d8d3a11d1c4855a4f807cbad6cf919d3a5a88b03bea2c6372d93c40c9 | CN=GlobalSign Root R46,O=GlobalSign nv-sa,C=BE | 2019-03-20 | 2046-03-20
-9a296a5182d1d451a2e37f439b74daafa267523329f90f9a0d2007c334e23c9a | CN=GLOBALTRUST 2020,O=e-commerce monitoring GmbH,C=AT | 2020-02-10 | 2040-06-10
 3f99cc474acfce4dfed58794665e478d1547739f2e780f1bb4ca9b133097d401 | CN=HARICA TLS ECC Root CA 2021,O=Hellenic Academic and Research Institutions CA,C=GR | 2021-02-19 | 2045-02-13
 d95d0e8eda79525bf9beb11b14d2100d3294985f0c62d9fabd9cd999eccb7b1d | CN=HARICA TLS RSA Root CA 2021,O=Hellenic Academic and Research Institutions CA,C=GR | 2021-02-19 | 2045-02-13
 f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root CA - G1,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2019-02-22 | 2037-12-31
@@ -138,3 +132,18 @@ c90f26f0fb1b4018b22227519b5ca2b53e2ca5b3be5cf18efe1bef47380c5383 | CN=Sectigo Pu
 7bb647a62aeeac88bf257aa522d01ffea395e0ab45c73f93f65654ec38f25a06 | CN=Sectigo Public Server Authentication Root R46,O=Sectigo Limited,C=GB | 2021-03-22 | 2046-03-21
 c32ffd9f46f936d16c3673990959434b9ad60aafbb9e7cf33654f144cc1ba143 | CN=SSL.com TLS ECC Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19
 8faf7d2e2cb4709bb8e0b33666bf75a5dd45b5de480f8ea8d4bfe6bebc17f2ed | CN=SSL.com TLS RSA Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19
+## Constrained Roots
+To learn more about constraints applied to certificates included in the Chrome Root Store, click [here](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md).
+
+SHA 256 Hash | Subject | NotBefore | NotAfter
+---|---|---|---
+02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5 | CN=Entrust Root Certification Authority - EC1,OU=See www.entrust.net/legal-terms+OU=(c) 2012 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2012-12-18 | 2037-12-18
+0376ab1d54c5f9803ce4b2e201a0ee7eef7b57b636e8a93c9b8d4860c96f5fa7 | CN=AffirmTrust Commercial,O=AffirmTrust,C=US | 2010-01-29 | 2030-12-31
+0a81ec5a929777f145904af38d5d509f66b5e2c58fcdb531058b0e17f3f0b41b | CN=AffirmTrust Networking,O=AffirmTrust,C=US | 2010-01-29 | 2030-12-31
+43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339 | CN=Entrust Root Certification Authority - G2,OU=See www.entrust.net/legal-terms+OU=(c) 2009 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2009-07-07 | 2030-12-07
+6dc47172e01cbcb0bf62580d895fe2b8ac9ad4f873801e0c10b9c837d21eb177 | CN=Entrust.net Certification Authority (2048),OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.)+OU=(c) 1999 Entrust.net Limited,O=Entrust.net | 1999-12-24 | 2029-07-24
+70a73f7f376b60074248904534b11482d5bf0e698ecc498df52577ebf2e93b9a | CN=AffirmTrust Premium,O=AffirmTrust,C=US | 2010-01-29 | 2040-12-31
+73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c | CN=Entrust Root Certification Authority,OU=www.entrust.net/CPS is incorporated by reference+OU=(c) 2006 Entrust\, Inc.,O=Entrust\, Inc.,C=US | 2006-11-27 | 2026-11-27
+bd71fdf6da97e4cf62d1647add2581b07d79adf8397eb4ecba9c5e8488821423 | CN=AffirmTrust Premium ECC,O=AffirmTrust,C=US | 2010-01-29 | 2040-12-31
+db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88 | CN=Entrust Root Certification Authority - G4,OU=See www.entrust.net/legal-terms+OU=(c) 2015 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2015-05-27 | 2037-12-27
+9a296a5182d1d451a2e37f439b74daafa267523329f90f9a0d2007c334e23c9a | CN=GLOBALTRUST 2020,O=e-commerce monitoring GmbH,C=AT | 2020-02-10 | 2040-06-10

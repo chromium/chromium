@@ -139,11 +139,9 @@ public class WebsiteGroupTest {
                 new RwsCookieInfo(
                         "google.com",
                         Arrays.asList(
-                                new Website(null, null),
-                                new Website(null, null),
-                                new Website(null, null),
-                                new Website(null, null),
-                                new Website(null, null)));
+                                new Website(WebsiteAddress.create("maps.google.com"), null),
+                                new Website(WebsiteAddress.create("mail.google.com"), null),
+                                new Website(WebsiteAddress.create("docs.google.com"), null)));
         Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
         Website origin3 = new Website(WebsiteAddress.create("docs.google.com"), null);

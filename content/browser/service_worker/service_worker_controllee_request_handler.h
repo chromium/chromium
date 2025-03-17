@@ -86,7 +86,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
       bool skip_service_worker,
-      FrameTreeNodeId frame_tree_node_id,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
 
   ServiceWorkerControlleeRequestHandler(
@@ -173,7 +172,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
   bool force_update_started_;
-  const FrameTreeNodeId frame_tree_node_id_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;

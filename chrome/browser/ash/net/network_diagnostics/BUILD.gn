@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("network_diagnostics") {
   sources = [
@@ -56,7 +56,6 @@ static_library("network_diagnostics") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
@@ -64,6 +63,7 @@ static_library("network_diagnostics") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_health/public/mojom",
@@ -118,7 +118,6 @@ source_set("unit_tests") {
 
   deps = [
     ":network_diagnostics",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base/test:test_support",
     "//chrome/test:test_support",
@@ -127,6 +126,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/services/network_config",
     "//chromeos/ash/services/network_config:in_process_instance",
     "//chromeos/services/network_health/public/mojom",

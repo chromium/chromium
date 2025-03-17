@@ -20,8 +20,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -29,6 +31,7 @@ namespace {
 
 constexpr gfx::Size kLoadingAnimationSize = gfx::Size(100, 20);
 constexpr char kMaxSavedGroupsToastId[] = "coral_max_saved_groups_toast";
+constexpr base::TimeDelta kBorderAnimationDuration = base::Seconds(3);
 
 }  // namespace
 
@@ -39,15 +42,7 @@ CoralChipButton::~CoralChipButton() = default;
 void CoralChipButton::OnSelectionWidgetVisibilityChanged() {
   CHECK(tab_app_selection_widget_);
   UpdateRoundedCorners(tab_app_selection_widget_->IsVisible());
-
-  views::View* chevron_button = addon_view();
-
-  CHECK(chevron_button);
-  views::AsViewClass<IconButton>(chevron_button)
-      ->SetTooltipText(l10n_util::GetStringUTF16(
-          tab_app_selection_widget_->IsVisible()
-              ? IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN
-              : IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
+  UpdateAddonButtonTooltip();
 }
 
 void CoralChipButton::ShutdownSelectionWidget() {
@@ -79,19 +74,21 @@ void CoralChipButton::UpdateTitle(
     title_label->SetVisible(false);
 
     BuildTitleLoadingAnimation();
-    title_loading_animated_image_->Play(
-        birch_animation_utils::GetLottiePlaybackConfig(
-            *title_loading_animated_image_->animated_image()->skottie(),
-            IDR_CORAL_LOADING_TITLE_ANIMATION));
   }
 
   SetAccessibleName(item_->GetAccessibleName());
+
+  if (chevron_button_) {
+    UpdateAddonButtonTooltip();
+  }
 }
 
 void CoralChipButton::Init(BirchItem* item) {
   CHECK_EQ(item->GetType(), BirchItemType::kCoral);
 
   BirchChipButton::Init(item);
+
+  BuildBorderAnimation();
 
   // Override the title, callback and addon. Gets the real title from the group.
   auto* coral_provider = BirchCoralProvider::Get();
@@ -113,9 +110,11 @@ void CoralChipButton::Init(BirchItem* item) {
 
   auto button = birch_bar_util::CreateCoralAddonButton(
       std::move(callback), vector_icons::kCaretUpIcon);
-  button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
+  button->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN, item_->title()));
+  chevron_button_ = button.get();
   SetAddon(std::move(button));
+  UpdateAddonButtonTooltip();
 }
 
 void CoralChipButton::ExecuteCommand(int command_id, int event_flags) {
@@ -185,6 +184,59 @@ void CoralChipButton::BuildTitleLoadingAnimation() {
   title_loading_animated_image_ =
       title()->parent()->AddChildViewAt(std::move(title_loading_animated_image),
                                         /*index=*/0);
+  title_loading_animated_image_->Play(
+      birch_animation_utils::GetLottiePlaybackConfig(
+          *title_loading_animated_image_->animated_image()->skottie()));
+}
+
+void CoralChipButton::BuildBorderAnimation() {
+  // Build `rainbow_border_animated_image_` and cover it on the chip.
+  std::unique_ptr<views::AnimatedImageView> rainbow_border_animated_image =
+      views::Builder<views::AnimatedImageView>()
+          .SetAnimatedImage(birch_animation_utils::GetLottieAnimationData(
+              IDR_CORAL_BORDER_ANIMATION))
+          .SetProperty(views::kViewIgnoredByLayoutKey, true)
+          .SetCanProcessEventsWithinSubtree(false)
+          .Build();
+  rainbow_border_animated_image_ =
+      AddChildView(std::move(rainbow_border_animated_image));
+
+  // Transform the animated image to fit the chip.
+  const gfx::SizeF chip_size(GetPreferredSize());
+  const gfx::SizeF image_size(
+      rainbow_border_animated_image_->GetPreferredSize());
+  rainbow_border_animated_image_->SetTransform(
+      gfx::Transform::MakeScale(chip_size.width() / image_size.width(),
+                                chip_size.height() / image_size.height()));
+  rainbow_border_animated_image_->layer()->SetFillsBoundsOpaquely(false);
+
+  // Clipping the image outside chip region.
+  rainbow_border_animated_image_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(GetRoundedCornerRadius()));
+
+  rainbow_border_animated_image_->SizeToPreferredSize();
+  rainbow_border_animated_image_->Play(
+      birch_animation_utils::GetLottiePlaybackConfig(
+          *rainbow_border_animated_image_->animated_image()->skottie()));
+
+  stop_border_animation_timer_.Start(FROM_HERE, kBorderAnimationDuration, this,
+                                     &CoralChipButton::DestroyBorderAnimation);
+}
+
+void CoralChipButton::DestroyBorderAnimation() {
+  if (rainbow_border_animated_image_) {
+    stop_border_animation_timer_.Stop();
+    RemoveChildViewT(std::exchange(rainbow_border_animated_image_, nullptr));
+  }
+}
+
+void CoralChipButton::UpdateAddonButtonTooltip() {
+  CHECK(chevron_button_);
+  chevron_button_->SetTooltipText(l10n_util::GetStringFUTF16(
+      tab_app_selection_widget_ && tab_app_selection_widget_->IsVisible()
+          ? IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN
+          : IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN,
+      item_->title()));
 }
 
 BEGIN_METADATA(CoralChipButton)

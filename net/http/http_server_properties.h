@@ -253,9 +253,9 @@ class NET_EXPORT HttpServerProperties
   // disk.
   void Clear(base::OnceClosure callback);
 
-  // Returns true if |server|, in the context of |network_anonymization_key|,
+  // Returns true if `server`, in the context of `network_anonymization_key`,
   // has previously supported a network protocol which honors request
-  // prioritization.
+  // prioritization. `server` must have either http:// or https:// schemes.
   //
   // Note that this also implies that the server supports request
   // multiplexing, since priorities imply a relationship between
@@ -265,6 +265,7 @@ class NET_EXPORT HttpServerProperties
       const NetworkAnonymizationKey& network_anonymization_key);
 
   // Returns the value set by SetSupportsSpdy(). If not set, returns false.
+  // `server` must have either http:// or https:// schemes.
   bool GetSupportsSpdy(
       const url::SchemeHostPort& server,
       const NetworkAnonymizationKey& network_anonymization_key);
@@ -518,13 +519,6 @@ class NET_EXPORT HttpServerProperties
   // constructor would leave |server.scheme| as wrong if not access through the
   // key, and explicit normalization to create |normalized_server| means the one
   // with the incorrect scheme would still be available.
-  bool GetSupportsSpdyInternal(
-      url::SchemeHostPort server,
-      const NetworkAnonymizationKey& network_anonymization_key);
-  void SetSupportsSpdyInternal(
-      url::SchemeHostPort server,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      bool supports_spdy);
   bool RequiresHTTP11Internal(
       url::SchemeHostPort server,
       const NetworkAnonymizationKey& network_anonymization_key);

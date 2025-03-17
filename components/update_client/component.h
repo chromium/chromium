@@ -83,7 +83,7 @@ class Component {
   CrxUpdateItem GetCrxUpdateItem() const;
 
   // Called by the UpdateEngine when an update check for this component is done.
-  void SetUpdateCheckResult(std::optional<ProtocolParser::Result> result,
+  void SetUpdateCheckResult(std::optional<ProtocolParser::App> result,
                             ErrorCategory error_category,
                             int error,
                             base::OnceCallback<void(bool)> callback);
@@ -132,18 +132,9 @@ class Component {
 
   bool is_foreground() const;
 
-  const std::vector<GURL>& crx_diffurls() const { return crx_diffurls_; }
-
-  bool diff_update_failed() const { return diff_error_code_; }
-
   ErrorCategory error_category() const { return error_category_; }
   int error_code() const { return error_code_; }
   int extra_code1() const { return extra_code1_; }
-  ErrorCategory diff_error_category() const { return diff_error_category_; }
-  int diff_error_code() const { return diff_error_code_; }
-  int diff_extra_code1() const { return diff_extra_code1_; }
-
-  std::string action_run() const { return action_run_; }
 
   scoped_refptr<Configurator> config() const;
 
@@ -313,9 +304,6 @@ class Component {
   // The decision may be predicated on the expected size of the download.
   bool CanDoBackgroundDownload(int64_t size) const;
 
-  // Returns true if the component has a differential update.
-  bool HasDiffUpdate() const;
-
   // Changes the component state and notifies the caller of the |Handle|
   // function that the handling of this component state is complete.
   void ChangeState(std::unique_ptr<State> next_state);
@@ -351,27 +339,11 @@ class Component {
   // Time when the update of this CRX has begun.
   base::TimeTicks update_begin_;
 
-  // A component can be made available for download from several urls.
-  std::vector<GURL> crx_urls_;
-  std::vector<GURL> crx_diffurls_;
-
-  // The cryptographic hash values for the component payload.
-  std::string hash_sha256_;
-  std::string hashdiff_sha256_;
-
-  // The expected size of the download as reported by the update server.
-  int64_t size_ = -1;
-  int64_t sizediff_ = -1;
-
   // The from/to version and fingerprint values.
   base::Version previous_version_;
   base::Version next_version_;
   std::string previous_fp_;
   std::string next_fp_;
-
-  // Contains the file name of the payload to run. This member is set by
-  // the update response parser, when the update response includes a run action.
-  std::string action_run_;
 
   // True if the update check response for this component includes an update.
   bool is_update_available_ = false;
@@ -404,9 +376,6 @@ class Component {
   int error_code_ = 0;
   int extra_code1_ = 0;
   std::optional<CrxInstaller::Result> installer_result_;
-  ErrorCategory diff_error_category_ = ErrorCategory::kNone;
-  int diff_error_code_ = 0;
-  int diff_extra_code1_ = 0;
 
   // Contains app-specific custom response attributes from the server, sent in
   // the last update check.

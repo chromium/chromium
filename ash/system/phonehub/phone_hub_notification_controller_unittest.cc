@@ -300,8 +300,8 @@ TEST_F(PhoneHubNotificationControllerTest, UserCanNotCloseCallNotification) {
 TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
 
-  const std::u16string kInlineReply0 = u"inline reply 0";
-  const std::u16string kInlineReply1 = u"inline reply 1";
+  const std::u16string_view kInlineReply0 = u"inline reply 0";
+  const std::u16string_view kInlineReply1 = u"inline reply 1";
   message_center_->ClickOnNotificationButtonWithReply(kCrOSNotificationId0, 0,
                                                       kInlineReply0);
   message_center_->ClickOnNotificationButtonWithReply(kCrOSNotificationId1, 0,

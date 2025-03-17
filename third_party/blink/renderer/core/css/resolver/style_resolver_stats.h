@@ -40,8 +40,6 @@
 namespace blink {
 
 class StyleResolverStats {
-  USING_FAST_MALLOC(StyleResolverStats);
-
  public:
   StyleResolverStats() { Reset(); }
 

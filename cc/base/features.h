@@ -84,10 +84,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 // to when tracing is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
 
-// When enabled we will restore older FrameSequenceTracker sequence order
-// enforcing that can miss backfilled frames.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsBackfillAdjustmentHoldback);
-
 // When enabled we will submit the 'CopySharedImage' in one call and not batch
 // it up into 4MiB increments.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBatchedCopySharedImage);
@@ -168,6 +164,9 @@ CC_BASE_EXPORT extern const char
 // Enables Viz service-side layer trees for content rendering.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreesInViz);
 
+// Enables Viz service-side layer tree animations for content rendering.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreeAnimationsInViz);
+
 // When enabled HTMLImageElement::decode() will initiate the decode task right
 // away rather than piggy-backing on the next BeginMainFrame.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendExplicitDecodeRequestsImmediately);
@@ -182,9 +181,18 @@ CC_BASE_EXPORT extern const base::FeatureParam<int>
 // NEW_CONTENT_TAKES_PRIORITY during long scroll that cause checkerboarding.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNewContentForCheckerboardedScrolls);
 
+// When enabled, LCD text is allowed with some filters and backdrop filters.
+// Killswitch M135.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAllowLCDTextWithFilter);
+
 // When enabled, impl-only scroll animations may execute concurrently.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMultipleImplOnlyScrollAnimations);
 CC_BASE_EXPORT extern bool MultiImplOnlyScrollAnimationsSupported();
+
+// When enabled, for a render surface with fractional translation, we'll try to
+// align the texels in the render surface to screen pixels to avoid blurriness
+// during compositing.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfacePixelAlignment);
 
 // When enabled, and an image decode is requested by both a tile task and
 // explicitly via img.decode(), it will be decoded only once.
@@ -202,6 +210,38 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
 // On devices with a high refresh rate, whether to throttle main (not impl)
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
+
+// A mode of ViewTransition capture that does not display unstyled frame,
+// instead displays the properly constructed frame while at the same doing
+// capture.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionCaptureAndDisplay);
+
+// When enabled, stops the export of most DFCMetrics.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kStopExportDFCMetrics);
+CC_BASE_EXPORT extern bool StopExportDFCMetrics();
+
+// When enabled, we save the `EventMetrics` for a scroll, even when the result
+// is no damage. So that the termination can be per properly attributed to the
+// end of frame production for the given VSync.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kZeroScrollMetricsUpdate);
+
+// When enabled, the view transition capture transform is floored instead of
+// rounded and we use the render surface pixel snapping to counteract the blurry
+// effect.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionFloorTransform);
+
+// Allow the main thread to throttle the main frame rate.
+// Note that the composited animations will not be affected.
+// Typically the throttle is triggered with the render-blocking API <link
+// rel="expect" blocking="full-frame-rate"/>.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderThrottleFrameRate);
+// The throttled frame rate when the main thread requests a throttle.
+CC_BASE_EXPORT extern const base::FeatureParam<int>
+    kRenderThrottledFrameIntervalHz;
+
+// Adds a fast path to avoid waking up the thread pool when there are no raster
+// tasks.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFastPathNoRaster);
 
 }  // namespace features
 

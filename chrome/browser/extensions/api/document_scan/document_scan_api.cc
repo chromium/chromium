@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -45,7 +43,7 @@ ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
 
   DocumentScanAPIHandler::Get(browser_context())
       ->SimpleScan(
-          mime_types,
+          extension_, mime_types,
           base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 
   return RespondLater();

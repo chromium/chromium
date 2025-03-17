@@ -1,4 +1,4 @@
-<style include="md-select">
+<style include="md-select cr-scrollable">
   :host {
     --compose-loading-body-and-footer-height: 136px;
     --gap-between-sections_: 16px;
@@ -140,10 +140,6 @@
     overflow-y: auto;
   }
 
-  #resultTextContainer.can-scroll:not(.scrolled-to-top) {
-    border-top-color: var(--scrollable-border-color);
-  }
-
   #resultTextContainer::-webkit-scrollbar {
     background: transparent;
     width: var(--scrollbar-width_);
@@ -220,11 +216,22 @@
     overflow: auto;
     /* Incorporates width of righthand scrollbar. */
     padding-inline-start: 16px;
-    margin-inline-end: 4px;
 
     --scrollbar-width_: 4px;
+    --scrollbar-margin-inline-end_: 4px;
     padding-inline-end: calc(12px - var(--scrollbar-width_));
+    margin-inline-end: var(--scrollbar-margin-inline-end_);
     scrollbar-gutter: stable;
+  }
+
+  #resultTextContainer .cr-scrollable-top {
+    --cr-scrollable-border-color: var(--color-compose-dialog-divider);
+    /* Since there is a margin-inline-end on #resultsTextContainer, anchor the
+     * border to the end of it so that the border stretches past the scrollbar
+     * and the margin. */
+    inset-inline-end: calc(anchor(end) - var(--scrollbar-margin-inline-end_));
+    inset-inline-start: anchor(start);
+    width: unset;
   }
 
   /* Border separating result container text and actions bar. */
@@ -551,7 +558,8 @@
       <div id="resultContainer" class="result-container"
           hidden="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
         <div id="resultContainerInner">
-          <div id="resultTextContainer">
+          <div id="resultTextContainer" class="cr-scrollable">
+            <div class="cr-scrollable-top"></div>
             <compose-result-text id="resultText" text-input="[[responseText_]]"
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"

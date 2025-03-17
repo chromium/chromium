@@ -6,7 +6,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {getShortcutSearchHandler, setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
-import {ShortcutSearchHandlerInterface} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {ShortcutSearchHandlerInterface} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('shortcutSearchHandlerTest', function() {

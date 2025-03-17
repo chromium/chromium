@@ -233,8 +233,8 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
         *segmentation_platform_service_,
         CollectTrainingData(
             _, test_request_id,
-            HasTrainingLabel("action",
-                             static_cast<base::HistogramBase::Sample>(action)),
+            HasTrainingLabel(
+                "action", static_cast<base::HistogramBase::Sample32>(action)),
             _))
         .WillOnce([&wait_loop](
                       segmentation_platform::proto::SegmentId,

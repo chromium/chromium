@@ -36,6 +36,7 @@
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +61,7 @@ const ProfileManagementOidcTokens kExampleOidcTokens =
 constexpr char kExampleUserEmail[] = "user@test.com";
 constexpr char kExampleDmToken[] = "example_dm_token";
 constexpr char kExampleClientId[] = "example_client_id";
-constexpr char kExampleGaiaId[] = "123";
+constexpr GaiaId::Literal kExampleGaiaId("123");
 
 class FakeUserPolicyOidcSigninService
     : public policy::UserPolicyOidcSigninService {
@@ -96,7 +97,7 @@ class FakeUserPolicyOidcSigninService
     CHECK(expect_restore_);
 
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-    policy_data->set_gaia_id(kExampleGaiaId);
+    policy_data->set_gaia_id(kExampleGaiaId.ToString());
     if (test_profile_->GetProfileCloudPolicyManager()) {
       static_cast<MockProfileCloudPolicyStore*>(
           test_profile_->GetProfileCloudPolicyManager()->core()->store())

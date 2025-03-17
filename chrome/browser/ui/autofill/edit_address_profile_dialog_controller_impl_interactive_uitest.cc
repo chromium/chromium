@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -102,13 +102,13 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
   RunTestSequence(
       ShowEditor(local_profile(), nullptr, u"", false),
       // The editor popup resides in a different context on MacOS.
-      InAnyContext(Steps(
+      InAnyContext(
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(EditAddressProfileView::kTopViewId,
                      /*screenshot_name=*/"editor", /*baseline_cl=*/"4846629"),
           PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(EditAddressProfileView::kTopViewId))),
+          WaitForHide(EditAddressProfileView::kTopViewId)),
       EnsureClosedWithDecisionAndProfile(
           AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));

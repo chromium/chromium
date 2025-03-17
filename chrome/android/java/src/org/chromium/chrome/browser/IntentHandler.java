@@ -26,7 +26,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -39,6 +38,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -74,9 +75,12 @@ import org.chromium.url.Origin;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /** Handles all browser-related Intents. */
 @JNINamespace("chrome::android")
@@ -250,12 +254,23 @@ public class IntentHandler {
     /** The id of a dragged tab that attempts to launch the intent. */
     public static final String EXTRA_DRAGGED_TAB_ID = "org.chromium.chrome.browser.dragdrop.tab_id";
 
+    /** The id of the window where the tab or tab group drag starts. */
+    public static final String EXTRA_DRAGDROP_TAB_WINDOW_ID =
+            "com.android.chrome.dragdrop_tab_window_id";
+
     /** A boolean to indicate whether the intent should launch the history page in Chrome. */
     public static final String EXTRA_OPEN_HISTORY = "org.chromium.chrome.browser.open_history";
 
     /** A boolean to indicate whether the intent should launch only app specific history */
     public static final String EXTRA_APP_SPECIFIC_HISTORY =
             "org.chromium.chrome.browser.app_specific_history";
+
+    /**
+     * {@link TabGroupMetadata} object used for transferring tab group data between windows during
+     * tab group drag drop.
+     */
+    public static final String EXTRA_TAB_GROUP_METADATA =
+            "org.chromium.chrome.browser.tab_group_metadata";
 
     public static final String EXTRA_SKIP_PRECONNECT =
             "org.chromium.chrome.browser.skip_preconnect";
@@ -573,17 +588,16 @@ public class IntentHandler {
     /**
      * Extracts referrer URL string. The extra is used if we received it from a first party app or
      * if the referrer_extra is specified as android-app://package style URL.
+     *
      * @param intent The intent from which to extract the URL.
      * @return The URL string or null if none should be used.
      */
     private static String getReferrerUrl(Intent intent) {
         Uri referrerExtra = getReferrer(intent);
-        CustomTabsSessionToken customTabsSession =
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        if (referrerExtra == null && customTabsSession != null) {
+        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
+        if (referrerExtra == null && session != null) {
             Referrer referrer =
-                    CustomTabsConnection.getInstance()
-                            .getDefaultReferrerForSession(customTabsSession);
+                    CustomTabsConnection.getInstance().getDefaultReferrerForSession(session);
             if (referrer != null) {
                 referrerExtra = Uri.parse(referrer.getUrl());
             }
@@ -594,7 +608,7 @@ public class IntentHandler {
             return referrerExtra.toString();
         } else if (IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
                 || SessionDataHolder.getInstance()
-                        .canActiveHandlerUseReferrer(customTabsSession, referrerExtra)) {
+                        .canActiveHandlerUseReferrer(session, referrerExtra)) {
             return referrerExtra.toString();
         }
         return null;
@@ -893,50 +907,79 @@ public class IntentHandler {
         // wild.
         try {
             // Ignore all invalid URLs, regardless of what the intent was.
-            if (!intentHasValidUrl(intent)) {
-                return true;
+            @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
+            if (tabGroupMetadata != null) {
+                // Exit early if the incognito intent is not allowed.
+                if (tabGroupMetadata.isIncognito
+                        && !isAllowedIncognitoIntent(
+                                wasIntentSenderChrome(intent), isCustomTab, intent)) {
+                    return true;
+                }
+
+                // Check url validity and remove invalid urls if needed.
+                LinkedHashMap tabIdsToUrls = tabGroupMetadata.tabIdsToUrls;
+                Iterator<Entry<Integer, String>> iterator = tabIdsToUrls.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<Integer, String> entry = iterator.next();
+                    String url = entry.getValue();
+                    if (shouldIgnoreIntentUrl(intent, context, url, isCustomTab)) {
+                        iterator.remove();
+                    }
+                }
+                // TODO(crbug.com/384979079) Add metrics for invalid url and ignored intent during
+                // group drag drop.
+                return tabIdsToUrls.size() == 0;
+            } else {
+                return shouldIgnoreIntentUrl(
+                        intent, context, getUrlFromIntent(intent), isCustomTab);
             }
-
-            // Determine if this intent came from a trustworthy source (Chrome).
-            boolean isFromChrome = wasIntentSenderChrome(intent);
-
-            if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                    && !isAllowedIncognitoIntent(isFromChrome, isCustomTab, intent)) {
-                return true;
-            }
-
-            // Ignore Daydream intents as these would cause us to re-navigate after the Device ON
-            // flow. This can be removed once we migrate to the cardboard library.
-            if (intent.hasCategory(DAYDREAM_CATEGORY)) return true;
-
-            // Now if we have an empty URL and the intent was ACTION_MAIN,
-            // we are pretty sure it is the launcher calling us to show up.
-            // We can safely ignore the screen state.
-            String url = getUrlFromIntent(intent);
-            if (url == null && Intent.ACTION_MAIN.equals(intent.getAction())) {
-                return false;
-            }
-
-            if (isFromChrome) return false;
-
-            // Ignore all intents that specify a Chrome internal scheme if they did not come from
-            // a trustworthy source.
-            String scheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
-            if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
-                Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
-                return true;
-            }
-
-            // Checking screen on/keyguard last as these calls can be slow.
-            // If the screen is off, ignore any intents.
-            if (!isScreenOn(context)) return true;
-            if (ChromeFeatureList.sBlockIntentsWhileLocked.isEnabled() && isKeyguardLocked()) {
-                return true;
-            }
-            return false;
         } catch (Throwable t) {
             return true;
         }
+    }
+
+    private static boolean shouldIgnoreIntentUrl(
+            Intent intent, Context context, String url, boolean isCustomTab) {
+        if (!isValidUrl(url)) {
+            return true;
+        }
+
+        // Determine if this intent came from a trustworthy source (Chrome).
+        boolean isFromChrome = wasIntentSenderChrome(intent);
+
+        if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                && !isAllowedIncognitoIntent(isFromChrome, isCustomTab, intent)) {
+            return true;
+        }
+
+        // Ignore Daydream intents as these would cause us to re-navigate after the Device ON
+        // flow. This can be removed once we migrate to the cardboard library.
+        if (intent.hasCategory(DAYDREAM_CATEGORY)) return true;
+
+        // Now if we have an empty URL and the intent was ACTION_MAIN,
+        // we are pretty sure it is the launcher calling us to show up.
+        // We can safely ignore the screen state.
+        if (url == null && Intent.ACTION_MAIN.equals(intent.getAction())) {
+            return false;
+        }
+
+        if (isFromChrome) return false;
+
+        // Ignore all intents that specify a Chrome internal scheme if they did not come from
+        // a trustworthy source.
+        String scheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
+        if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
+            Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
+            return true;
+        }
+
+        // Checking screen on/keyguard last as these calls can be slow.
+        // If the screen is off, ignore any intents.
+        if (!isScreenOn(context)) return true;
+        if (ChromeFeatureList.sBlockIntentsWhileLocked.isEnabled() && isKeyguardLocked()) {
+            return true;
+        }
+        return false;
     }
 
     private static boolean isAllowedIncognitoIntent(
@@ -980,9 +1023,7 @@ public class IntentHandler {
     }
 
     @VisibleForTesting
-    static boolean intentHasValidUrl(Intent intent) {
-        String url = extractUrlFromIntent(intent);
-
+    static boolean isValidUrl(String url) {
         // Check if this is a valid googlechrome:// URL.
         if (isGoogleChromeScheme(url)) {
             url = ExternalNavigationHandler.getUrlFromSelfSchemeUrl(GOOGLECHROME_SCHEME, url);
@@ -1378,8 +1419,29 @@ public class IntentHandler {
     }
 
     /**
+     * Sets the The {@link TabGroupMetadata} for tab group drag drop to transfer tan group data
+     * between windows.
+     *
+     * @param intent The Intent to be set.
+     */
+    public static void setTabGroupMetadata(Intent intent, TabGroupMetadata tabGroupMetadata) {
+        intent.putExtra(EXTRA_TAB_GROUP_METADATA, tabGroupMetadata.toBundle());
+    }
+
+    /**
+     * @param intent An Intent to be checked.
+     * @return The {@link TabGroupMetadata} for tab group drag drop to transfer tab group data
+     *     between windows.
+     */
+    public static @Nullable TabGroupMetadata getTabGroupMetadata(Intent intent) {
+        Bundle bundle = IntentUtils.safeGetBundleExtra(intent, EXTRA_TAB_GROUP_METADATA);
+        return TabGroupMetadata.maybeCreateFromBundle(bundle);
+    }
+
+    /**
      * Creates an Intent that will launch a ChromeTabbedActivity on the new tab page. The Intent
      * will be trusted and therefore able to launch Incognito tabs.
+     *
      * @param context A {@link Context} to access class and package information.
      * @param incognito Whether the tab should be opened in Incognito.
      * @return The {@link Intent} to launch.

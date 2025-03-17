@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -154,11 +153,11 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
            std::pair<scoped_refptr<VideoFrame>, size_t /* num_sent */>>
       picture_at_client_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Indicates we are handling encrypted content which requires an extra check
   // to see if it is a secure buffer format.
   bool is_encrypted_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Value of |low_delay| from the most recent initialization (via either Create
   // or Initialize(const Config&, Client*, bool). When re-initialization happens

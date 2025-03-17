@@ -4,10 +4,13 @@
 
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
@@ -20,7 +23,15 @@ constexpr base::TimeDelta kKAnonymityExpiration = base::Days(7);
 }  // namespace
 
 bool IsKAnonDataExpired(const base::Time last_updated, const base::Time now) {
-  return last_updated + kKAnonymityExpiration < now;
+  bool result = last_updated + kKAnonymityExpiration < now;
+  base::UmaHistogramBoolean("Ads.InterestGroup.Auction.KAnonymityDataExpired",
+                            result);
+  base::UmaHistogramCustomTimes("Ads.InterestGroup.Auction.KAnonymityDataAge",
+                                /*sample=*/now - last_updated,
+                                /*min=*/base::Seconds(0),
+                                /*max=*/base::Days(7),
+                                /*buckets=*/50);
+  return result;
 }
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
@@ -45,6 +56,10 @@ InterestGroupKAnonymityManager::InProgressQueryState::~InProgressQueryState() =
 void InterestGroupKAnonymityManager::QueryKAnonymityData(
     const blink::InterestGroupKey& interest_group_key,
     const InterestGroupKanonUpdateParameter& k_anon_data) {
+  if (!base::FeatureList::IsEnabled(features::kFledgeQueryKAnonymity)) {
+    return;
+  }
+
   KAnonymityServiceDelegate* k_anonymity_service =
       k_anonymity_service_callback_.Run();
   if (!k_anonymity_service) {

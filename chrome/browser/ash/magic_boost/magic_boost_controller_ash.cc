@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
+#include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/shell.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
@@ -42,13 +44,6 @@ MagicBoostControllerAsh::MagicBoostControllerAsh() {
 MagicBoostControllerAsh::~MagicBoostControllerAsh() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
-}
-
-void MagicBoostControllerAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::MagicBoostController> receiver) {
-  // The receiver is only from lacros chrome as present, but more mojo clients
-  // may be added in the future.
-  receivers_.Add(this, std::move(receiver));
 }
 
 void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
@@ -108,6 +103,13 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
       chromeos::MahiManager::Get()->OpenMahiPanel(
           display_id, disclaimer_widget_->GetWindowBoundsInScreen());
       break;
+    case TransitionAction::kShowLobsterPanel:
+      LobsterController* lobster_controller =
+          ash::Shell::Get()->lobster_controller();
+      if (lobster_controller != nullptr) {
+        lobster_controller->LoadUIFromCachedContext();
+      }
+      break;
   }
 
   RecordDisclaimerViewActionMetrics(opt_in_features_,
@@ -120,6 +122,7 @@ void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   if (opt_in_features_ == OptInFeatures::kOrcaAndHmr) {
     magic_boost_state->DisableOrcaFeature();
+    magic_boost_state->DisableLobsterSettings();
   }
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kDeclined);

@@ -55,6 +55,9 @@ const char kHTMLType[] = "text/html";
 // Mime type for as you type suggestions.
 const char kSuggestionType[] = "application/x-suggestions+json";
 
+// Short name and keyword string lengths are capped for security.
+constexpr size_t kMaxNameLength = 1024;
+
 // Returns true if input_encoding contains a valid input encoding string. This
 // doesn't verify that we have a valid encoding for the string, just that the
 // string contains characters that constitute a valid input encoding.
@@ -410,6 +413,14 @@ std::unique_ptr<TemplateURL> SafeTemplateURLParser::FinalizeTemplateURL() {
       (!template_url->suggestions_url().empty() &&
        !template_url->suggestions_url_ref().IsValid(*search_terms_data_))) {
     DLOG(ERROR) << "Template URL is not valid";
+    return nullptr;
+  }
+
+  // To avoid potential downstream issues when using the data (for example
+  // crossing IPC for presentation in search engines UI), data that exceeds
+  // the limit is not finalized and accepted.
+  if (template_url->data().short_name().length() > kMaxNameLength ||
+      template_url->data().keyword().length() > kMaxNameLength) {
     return nullptr;
   }
 

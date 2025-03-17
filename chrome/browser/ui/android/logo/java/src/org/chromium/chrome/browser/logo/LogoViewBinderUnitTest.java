@@ -37,7 +37,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
-import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
+import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -231,23 +231,11 @@ public class LogoViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testLogoPolishFlagEnabled() {
-        assertEquals(false, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, true);
-        assertEquals(true, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, false);
-        assertEquals(false, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-    }
-
-    @Test
-    @SmallTest
-    public void testSetLogoSizeForLogoPolish() {
-        assertEquals(LogoSizeForLogoPolish.SMALL, mLogoView.getLogoSizeForLogoPolishForTesting());
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.MEDIUM);
-        assertEquals(LogoSizeForLogoPolish.MEDIUM, mLogoView.getLogoSizeForLogoPolishForTesting());
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.LARGE);
-        assertEquals(LogoSizeForLogoPolish.LARGE, mLogoView.getLogoSizeForLogoPolishForTesting());
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.SMALL);
-        assertEquals(LogoSizeForLogoPolish.SMALL, mLogoView.getLogoSizeForLogoPolishForTesting());
+    public void testSetDoodleSize() {
+        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoView.getDoodleSizeForTesting());
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, DoodleSize.REGULAR);
+        assertEquals(DoodleSize.REGULAR, mLogoView.getDoodleSizeForTesting());
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, DoodleSize.TABLET_SPLIT_SCREEN);
+        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoView.getDoodleSizeForTesting());
     }
 }

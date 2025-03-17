@@ -15,15 +15,17 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
 /** The background task to talk to the ContentCapture Service. */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 abstract class NotificationTask extends AsyncTask<Boolean> {
     private static final String TAG = "ContentCapture";
-    private static Boolean sDump;
 
-    protected final FrameSession mSession;
+    protected final @Nullable FrameSession mSession;
     protected final PlatformSession mPlatformSession;
 
     private boolean mHasPlatformExceptionForTesting;
@@ -46,15 +48,14 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
         return false;
     }
 
-    public NotificationTask(FrameSession session, PlatformSession platformSession) {
+    public NotificationTask(@Nullable FrameSession session, PlatformSession platformSession) {
         mSession = session;
         mPlatformSession = platformSession;
-        if (sDump == null) sDump = ContentCaptureFeatures.isDumpForTestingEnabled();
     }
 
     // Build up FrameIdToPlatformSessionData map of mSession, and return the current
     // session the task should run against.
-    public PlatformSessionData buildCurrentSession() {
+    public @Nullable PlatformSessionData buildCurrentSession() {
         if (mSession == null || mSession.isEmpty()) {
             return mPlatformSession.getRootPlatformSessionData();
         }
@@ -82,10 +83,12 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
         viewStructure.setDimens(rect.left, rect.top, 0, 0, rect.width(), rect.height());
         PlatformAPIWrapper.getInstance()
                 .notifyViewAppeared(parentPlatformSessionData.contentCaptureSession, viewStructure);
-        return viewStructure.getAutofillId();
+        AutofillId ret = viewStructure.getAutofillId();
+        assert ret != null;
+        return ret;
     }
 
-    public PlatformSessionData createOrGetSession(
+    public @Nullable PlatformSessionData createOrGetSession(
             PlatformSessionData parentPlatformSessionData, ContentCaptureFrame frame) {
         PlatformSessionData platformSessionData =
                 mPlatformSession.getFrameIdToPlatformSessionData().get(frame.getId());
@@ -110,7 +113,9 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
     }
 
     protected void log(String message) {
-        if (sDump.booleanValue()) Log.i(TAG, message);
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, message);
+        }
     }
 
     @Override

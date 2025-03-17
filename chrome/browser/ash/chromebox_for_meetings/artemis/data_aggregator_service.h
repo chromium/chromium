@@ -101,6 +101,7 @@ class DataAggregatorService : public CfmObserver,
   bool IsPayloadReadyForUpload() const;
   void AddActivePayloadToPendingQueue();
   void EnqueueNextPendingTransportPayload();
+  void InitiateEnqueueRequest();
   void HandleEnqueueResponse(chromeos::cfm::mojom::LoggerStatusPtr status);
 
   chromeos::cfm::ServiceAdaptor service_adaptor_;

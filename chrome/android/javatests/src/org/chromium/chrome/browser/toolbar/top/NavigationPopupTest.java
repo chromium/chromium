@@ -202,10 +202,11 @@ public class NavigationPopupTest {
             throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = ProfileManager.getLastUsedRegularProfile();
-                    if (isOffTheRecord) {
-                        profile = profile.getPrimaryOtrProfile(true);
-                    }
+                    Profile profile =
+                            isOffTheRecord
+                                    ? ProfileManager.getLastUsedRegularProfile()
+                                            .getPrimaryOtrProfile(true)
+                                    : ProfileManager.getLastUsedRegularProfile();
                     NavigationPopup popup =
                             new NavigationPopup(
                                     profile,
@@ -213,7 +214,9 @@ public class NavigationPopupTest {
                                     controller,
                                     NavigationPopup.Type.TABLET_FORWARD,
                                     mActivityTestRule.getActivity().getActivityTabProvider(),
-                                    HistoryManagerUtils::showHistoryManager);
+                                    (tab) ->
+                                            HistoryManagerUtils.showHistoryManager(
+                                                    mActivityTestRule.getActivity(), tab, profile));
                     popup.show(
                             mActivityTestRule
                                     .getActivity()

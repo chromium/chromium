@@ -147,9 +147,9 @@ sorted so that the things that make the biggest difference are first.
 #### Use Reclient
 
 *** note
-**Warning:** If you are a Google employee, do not follow the instructions below.
-See
-[go/building-android-chrome#initialize-remote-execution-distributed-builds](https://goto.google.com/building-android-chrome#initialize-remote-execution-distributed-builds)
+**Warning:** If you are a Google employee, do not follow the Reclient instructions
+in this section. Set up remote execution as described in
+[go/building-android-chrome](https://goto.google.com/building-android-chrome)
 instead.
 ***
 

@@ -4,10 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <GLES3/gl3.h>
-
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -17,6 +13,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_version_info.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)

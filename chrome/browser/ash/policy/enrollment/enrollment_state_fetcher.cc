@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -50,10 +49,8 @@ namespace {
 
 namespace em = enterprise_management;
 
-// TODO(b/265923216): Wrap callbacks into an object ensuring they are called.
-
-RlwePlaintextId ConstructPlainttextId(const std::string& rlz_brand_code,
-                                      const std::string& serial_number) {
+RlwePlaintextId ConstructPlaintextId(const std::string& rlz_brand_code,
+                                     const std::string& serial_number) {
   RlwePlaintextId rlwe_id;
   // See http://shortn/_tkT6f7xV0F for format specification.
   const std::string rlz_brand_code_hex = base::HexEncode(rlz_brand_code);
@@ -80,13 +77,9 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
     }
   }
 
-  // TODO(b/309921228): Add more suffixes.
   return absl::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
-            return kUMASuffixConnectionError;
-          },
-          [](AutoEnrollmentSystemClockSyncError) {
             return kUMASuffixConnectionError;
           },
           [](AutoEnrollmentStateKeysRetrievalError) {
@@ -262,7 +255,7 @@ class RlweOprf {
 
     context.psm_rlwe_client = context.rlwe_client_factory.Run(
         private_membership::rlwe::CROS_DEVICE_STATE_UNIFIED,
-        ConstructPlainttextId(context.rlz_brand_code, context.serial_number));
+        ConstructPlaintextId(context.rlz_brand_code, context.serial_number));
     const auto oprf_request = context.psm_rlwe_client->CreateOprfRequest();
     if (!oprf_request.ok()) {
       LOG(ERROR) << "Failed to create PSM RLWE OPRF request: "
@@ -551,7 +544,6 @@ class EnrollmentState {
 
   void Request(DeterminationContext& context,
                CompletionCallback completion_callback) {
-    // TODO(b/265923216): Replace this with unified request type.
     auto config = std::make_unique<DMServerJobConfiguration>(
         context.device_management_service,
         DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL,
@@ -853,8 +845,6 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
 };
 
 // This implements a strict sequence of asynchronous calls:
-//   - synchronize clock
-//   - check embargo date
 //   - retrieve device identifiers (brand code and serial number)
 //   - PSM OPRF
 //   - PSM Query
@@ -883,12 +873,12 @@ class EnrollmentStateFetcherImpl::Sequence {
     base::UmaHistogramBoolean(kUMAStateDeterminationOnFlex,
                               ash::switches::IsRevenBranding());
 
-    // TODO(b/265923216): Investigate the possibility of using bypassing PSM and
-    // using state key to directly request state when identifiers are missing.
     if (!device_identifiers_.Retrieve(context_.statistics_provider,
                                       context_.rlz_brand_code,
                                       context_.serial_number)) {
       // Skip enrollment if serial number or brand code are missing.
+      // This is expected to happen for prototype devices, for instance.
+      // See crbug.com/376581659.
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
@@ -903,6 +893,11 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
                                   status);
+    if (local_state_->GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
+      base::UmaHistogramEnumeration(
+          kUMAStateDeterminationOwnershipStatusDuringEnrollmentRecovery,
+          status);
+    }
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
       LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
@@ -947,7 +942,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     }
 
     RlwePlaintextId psm_id =
-        ConstructPlainttextId(context_.rlz_brand_code, context_.serial_number);
+        ConstructPlaintextId(context_.rlz_brand_code, context_.serial_number);
     // Use WARNING level to preserve PSM ID in the logs.
     LOG(WARNING) << "PSM determination successful. Identifier "
                  << psm_id.sensitive_id() << " is"
@@ -968,13 +963,13 @@ class EnrollmentStateFetcherImpl::Sequence {
       query_.StoreResponse(local_state_, result.value());
     }
 
-    if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
       state_keys_.Retrieve(context_.state_key_broker,
                            base::BindOnce(&Sequence::OnStateKeyRetrieved,
                                           weak_factory_.GetWeakPtr()));
     } else {
-      LOG(WARNING) << "Forced re-enrollment is not enabled. No need to "
-                      "retrieve a re-enrollment (a.k.a. state) key.";
+      LOG(WARNING)
+          << "State keys are not supported, this is expected on ChromeOS Flex.";
       OnStateKeyRetrieved(std::nullopt);
     }
   }

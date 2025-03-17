@@ -16,17 +16,20 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,10 +41,9 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -50,8 +52,10 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 using bookmarks::BookmarkModel;
@@ -64,12 +68,8 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   BookmarkBarViewBaseTest() {
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
-        search_engines::SearchEngineChoiceServiceFactory::GetInstance(),
-        search_engines::SearchEngineChoiceServiceFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
         TemplateURLServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &BookmarkBarViewBaseTest::CreateTemplateURLService));
+        TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory());
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory());
@@ -80,6 +80,9 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
         BookmarkMergedSurfaceServiceFactory::GetInstance(),
         BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
+
+    BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get())
+        ->LoadForTesting({});
 
     Browser::CreateParams params(profile(), true);
     params.window = &browser_window_;
@@ -108,8 +111,8 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     return result;
   }
 
-  // Continues sizing the bookmark bar until it has |count| buttons that are
-  // visible.
+  // Continues enlarging the bookmark bar until it has at least `count`
+  // buttons that are visible.
   // NOTE: if the model has more than |count| buttons this results in
   // |count| + 1 buttons.
   void SizeUntilButtonsVisible(size_t count) {
@@ -124,8 +127,30 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     }
   }
 
+  // Continues shrinking the bookmark bar until it has at most `count` buttons
+  // that are visible.
+  void SizeDownUntilButtonsVisible(size_t count) {
+    const int start_width = bookmark_bar_view()->width();
+    const int height = bookmark_bar_view()->GetPreferredSize().height();
+    // Keep shrinking the bar view's bounds until either:
+    // - There are fewer bookmark buttons than `count`.
+    // - The button at index `count` is hidden.
+    // - Up to a maximum of 100 times.
+    for (size_t i = 0;
+         i < 100 && (test_helper_->GetBookmarkButtonCount() >= count &&
+                     test_helper_->GetBookmarkButton(count)->GetVisible());
+         ++i) {
+      bookmark_bar_view()->SetBounds(0, 0, start_width - i * 10, height);
+      views::test::RunScheduledLayout(bookmark_bar_view());
+    }
+  }
+
   BookmarkModel* model() {
     return BookmarkModelFactory::GetForBrowserContext(profile());
+  }
+
+  BookmarkMergedSurfaceService* service() {
+    return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile());
   }
 
   void WaitForBookmarkModelToLoad() {
@@ -137,6 +162,13 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   void AddNodesToBookmarkBarFromModelString(const std::string& string) {
     bookmarks::test::AddNodesFromModelString(
         model(), model()->bookmark_bar_node(), string);
+    views::test::RunScheduledLayout(bookmark_bar_view());
+  }
+
+  void AddNodesToAccountBookmarkBarFromModelString(const std::string& string) {
+    CHECK(model()->account_bookmark_bar_node());
+    bookmarks::test::AddNodesFromModelString(
+        model(), model()->account_bookmark_bar_node(), string);
     views::test::RunScheduledLayout(bookmark_bar_view());
   }
 
@@ -157,20 +189,6 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   TestBrowserWindow browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<BookmarkBarViewTestHelper> test_helper_;
-
- private:
-  static std::unique_ptr<KeyedService> CreateTemplateURLService(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    search_engines::SearchEngineChoiceService* search_engine_choice_service =
-        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-            profile);
-    return std::make_unique<TemplateURLService>(
-        *profile->GetPrefs(), *search_engine_choice_service,
-        std::make_unique<SearchTermsData>(),
-        nullptr /* KeywordWebDataService */,
-        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
-  }
 };
 
 class BookmarkBarViewTest : public BookmarkBarViewBaseTest {
@@ -198,6 +216,8 @@ class BookmarkBarViewTest : public BookmarkBarViewBaseTest {
   }
 
  private:
+  base::test::ScopedFeatureList features_{
+      switches::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<BookmarkBarView> bookmark_bar_view_;
 };
 
@@ -379,6 +399,69 @@ TEST_F(BookmarkBarViewTest, RemoveNode) {
                   bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   views::test::RunScheduledLayout(bookmark_bar_view());
   ASSERT_EQ("c", GetStringForVisibleButtons());
+
+  model()->CreateAccountPermanentFolders();
+  AddNodesToAccountBookmarkBarFromModelString("1 2 3 ");
+
+  model()->Remove(model()->account_bookmark_bar_node()->children()[1].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("1", GetStringForVisibleButtons());
+
+  // Remove first node, should force a new button (for the '3' node).
+  model()->Remove(model()->account_bookmark_bar_node()->children()[0].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  ASSERT_EQ("3", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, RemoveAccountNodes) {
+  model()->CreateAccountPermanentFolders();
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  AddNodesToAccountBookmarkBarFromModelString("A1 A2 A3 A4 ");
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+  SizeUntilButtonsVisible(10);
+  EXPECT_EQ(10u, test_helper_->GetBookmarkButtonCount());
+  EXPECT_EQ("A1 A2 A3 A4 a b c d e f", GetStringForVisibleButtons());
+
+  // Remove the account nodes, local nodes should still be visible.
+  model()->RemoveAccountPermanentFolders();
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, RemoveAccountNodesCustomOrder) {
+  model()->CreateAccountPermanentFolders();
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  AddNodesToAccountBookmarkBarFromModelString("A1 A2 A3 A4 ");
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+  SizeUntilButtonsVisible(10);
+  EXPECT_EQ("A1 A2 A3 A4 a b c d e f", GetStringForVisibleButtons());
+
+  service()->Move(model()->account_bookmark_bar_node()->children()[1].get(),
+                  BookmarkParentFolder::BookmarkBarFolder(), 10u,
+                  /*browser=*/nullptr);
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("A1 A3 A4 a b c d e f A2", GetStringForVisibleButtons());
+
+  // Remove the account nodes, local nodes should still be visible.
+  model()->RemoveAccountPermanentFolders();
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, RemoveAccountNodesNotAllAccountNodesVisible) {
+  model()->CreateAccountPermanentFolders();
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  AddNodesToAccountBookmarkBarFromModelString("1 2 3 4 ");
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+  SizeUntilButtonsVisible(2);
+  EXPECT_EQ("1 2", GetStringForVisibleButtons());
+
+  // Remove the account nodes, local nodes should still be visible.
+  model()->RemoveAccountPermanentFolders();
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  EXPECT_EQ("a b", GetStringForVisibleButtons());
 }
 
 // Assertions for moving a node on the bookmark bar.
@@ -409,6 +492,31 @@ TEST_F(BookmarkBarViewTest, MoveNode) {
   model()->Move(bookmark_bar_node->children()[0].get(), bookmark_bar_node, 2);
   SizeUntilButtonsVisible(2);
   EXPECT_EQ("a c", GetStringForVisibleButtons());
+}
+
+// Ensures that the overflow button's menu responds as bookmark button
+// visibility changes.
+TEST_F(BookmarkBarViewInWidgetTest, ButtonVisiblityUpdatesOverflowMenu) {
+  widget()->Show();
+  AddNodesToBookmarkBarFromModelString("a b c d ");
+  ASSERT_EQ(4u, test_helper_->GetBookmarkButtonCount());
+  SizeDownUntilButtonsVisible(1);
+
+  views::MenuButton* overflow_button = bookmark_bar_view()->overflow_button();
+  ASSERT_TRUE(overflow_button);
+  overflow_button->Activate(nullptr);
+  views::MenuItemView* overflow_menu = bookmark_bar_view()->GetMenu();
+  ASSERT_TRUE(overflow_menu && overflow_menu->HasSubmenu());
+  EXPECT_EQ(3u, overflow_menu->GetSubmenu()->GetMenuItems().size());
+
+  SizeUntilButtonsVisible(2);
+  EXPECT_EQ(2u, overflow_menu->GetSubmenu()->GetMenuItems().size());
+
+  SizeUntilButtonsVisible(3);
+  EXPECT_EQ(1u, overflow_menu->GetSubmenu()->GetMenuItems().size());
+
+  SizeDownUntilButtonsVisible(1);
+  EXPECT_EQ(3u, overflow_menu->GetSubmenu()->GetMenuItems().size());
 }
 
 // TODO(crbug.com/375364962): Deflake and re-enable.
@@ -627,11 +735,12 @@ TEST_F(BookmarkBarViewTest, BookmarkFolderButtonTooltipText) {
   auto* folder_button = test_helper_->managed_bookmarks_button();
   folder_button->SetText(u"Managed Bookmarks");
 
-  EXPECT_EQ(u"Managed Bookmarks", folder_button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(u"Managed Bookmarks",
+            folder_button->GetRenderedTooltipText(gfx::Point()));
 
   folder_button->SetText(std::u16string());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER),
-            folder_button->GetTooltipText(gfx::Point()));
+            folder_button->GetRenderedTooltipText(gfx::Point()));
 }
 
 TEST_F(BookmarkBarViewTest, ButtonSeparatorViewAccessibleProperties) {
@@ -655,9 +764,33 @@ TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   views::LabelButton* button = test_helper_->GetBookmarkButton(0);
   ASSERT_TRUE(button);
   gfx::Point p;
-  EXPECT_EQ(u"a\na.com", button->GetTooltipText(p));
+  EXPECT_EQ(u"a\na.com", button->GetRenderedTooltipText(p));
   button->SetText(u"new title");
-  EXPECT_EQ(u"new title\na.com", button->GetTooltipText(p));
+  EXPECT_EQ(u"new title\na.com", button->GetRenderedTooltipText(p));
+}
+
+// Regression test for https://crbug.com/385805737. When BookmarkButton receives
+// an AddedToWidget call, it should also call the corresponding superclass
+// method (specifically, `LabelButton::AddedToWidget()` must be called).
+TEST_F(BookmarkBarViewInWidgetTest,
+       BookmarkButtonAddedToWidgetCallsSuperclass) {
+  widget()->ShowInactive();
+  widget()->Hide();
+
+  bookmarks::test::AddNodesFromModelString(model(),
+                                           model()->bookmark_bar_node(), "a b");
+  SizeUntilButtonsVisible(1);
+
+  // `BookmarkButton::AddedToWidget()` will have been called, so ensure that
+  // `LabelButton::AddedToWidget()` has been called as well.
+  ASSERT_EQ(1u, test_helper_->GetBookmarkButtonCount());
+  views::LabelButton* button = test_helper_->GetBookmarkButton(0);
+  ASSERT_TRUE(button);
+  // The `LabelButton::AddedToWidget()` call only has an effect for bookmark
+  // buttons on certain platforms, so gate the check.
+  if constexpr (views::PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
+    EXPECT_TRUE(button->has_paint_as_active_subscription_for_testing());
+  }
 }
 
 // TODO(crbug.com/375364962): Flaky on Windows & Linux.

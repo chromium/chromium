@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -38,12 +39,19 @@ size_t g_non_domain_wildcard_non_port_schemes_count = 0;
 // Keep it consistent with enum SchemeType in content_settings_pattern.h.
 // TODO(msramek): Layering violation: assemble this array from hardcoded
 // schemes and those injected via |SetNonWildcardDomainNonPortSchemes()|.
-const char* const kSchemeNames[] = {"wildcard",         "other",
-                                    url::kHttpScheme,   url::kHttpsScheme,
-                                    url::kFileScheme,   "chrome-extension",
-                                    "chrome-search",    "chrome",
-                                    "chrome-untrusted", "devtools",
-                                    "isolated-app"};
+constexpr auto kSchemeNames = std::to_array<const char*>({
+    "wildcard",
+    "other",
+    url::kHttpScheme,
+    url::kHttpsScheme,
+    url::kFileScheme,
+    "chrome-extension",
+    "chrome-search",
+    "chrome",
+    "chrome-untrusted",
+    "devtools",
+    "isolated-app",
+});
 
 static_assert(std::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
               "kSchemeNames should have SCHEME_MAX elements");
@@ -770,26 +778,6 @@ ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
   if (scheme_relation != IDENTITY)
     return scheme_relation;
   return path_relation;
-}
-
-bool ContentSettingsPattern::operator==(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) == IDENTITY;
-}
-
-bool ContentSettingsPattern::operator!=(
-    const ContentSettingsPattern& other) const {
-  return !(*this == other);
-}
-
-bool ContentSettingsPattern::operator<(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) < 0;
-}
-
-bool ContentSettingsPattern::operator>(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) > 0;
 }
 
 // static

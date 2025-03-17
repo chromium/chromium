@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 
 #include <algorithm>
@@ -19,7 +24,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
@@ -28,6 +32,7 @@
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/bits.h"
@@ -141,6 +146,7 @@ constexpr size_t LengthOfLength(uint64_t length) {
 // size of the largest CBOR value that fits.
 // Solves `length = 1 + x + LengthOfLength(x)` for `LengthOfLength(x)`.
 size_t MaxLengthOfTaggedData(uint64_t length) {
+  DCHECK_GT(length, 0u);
   size_t lol_x = 0;
   if (length <= 23 + 1) {
     // Length and tag stored in a single byte.
@@ -158,7 +164,8 @@ size_t MaxLengthOfTaggedData(uint64_t length) {
     // 1 byte tag, 8 bytes length.
     lol_x = 8;
   }
-  DCHECK_EQ(LengthOfLength(length - 1 - lol_x), lol_x);
+  DCHECK_LE(LengthOfLength(length - 1 - lol_x), lol_x)
+      << " with length = " << length;
   return lol_x;
 }
 
@@ -661,25 +668,30 @@ BiddingAndAuctionSerializer::TargetSizeEstimator::EstimateTargetSize(
       target_compressed_size = remaining_size.Min(buyer_size);
       per_buyer_current_allowed_size_ += buyer_size;
     } else {
-      if (per_buyer_current_allowed_size_.ValueOrDie() == 0) {
+      if (!size_allocated_) {
         // We haven't processed any proportionally-sized buyers yet, so we
         // need to perform our global size estimation to determine how we
         // allocate the entire remaining space.
         UpdateSizedGroupSizes(remaining_size.ValueOrDie());
+        size_allocated_ = true;
       }
       base::CheckedNumeric<uint64_t> remaining_per_buyer_size =
           per_buyer_total_allowed_size_ - per_buyer_current_allowed_size_;
 
-      // Although we performed global size assignment, there may be extra
-      // space available if a previous buyer didn't use their entire
-      // allocation. We expand the allocation proportionally based on the
-      // remaining size. Note we cast up to uint64_t to avoid overflow from
-      // the multiply.
-      target_compressed_size =
-          (base::CheckedNumeric<uint64_t>(per_buyer_size_[bidder]) *
-           remaining_size) /
-          remaining_per_buyer_size;
-      per_buyer_current_allowed_size_ += per_buyer_size_[bidder];
+      if (per_buyer_size_[bidder] == 0) {
+        target_compressed_size = 0;
+      } else {
+        // Although we performed global size assignment, there may be extra
+        // space available if a previous buyer didn't use their entire
+        // allocation. We expand the allocation proportionally based on the
+        // remaining size. Note we cast up to uint64_t to avoid overflow from
+        // the multiply.
+        target_compressed_size =
+            (base::CheckedNumeric<uint64_t>(per_buyer_size_[bidder]) *
+             remaining_size) /
+            remaining_per_buyer_size;
+        per_buyer_current_allowed_size_ += per_buyer_size_[bidder];
+      }
     }
   } else {
     // No target size for this bidder. Note that we require all specifically
@@ -728,11 +740,11 @@ BiddingAndAuctionSerializer::TargetSizeEstimator::EstimateTargetSize(
       TaggedStringLength(bidder.Serialize().size());
 
   if (!bidder_origin_overhead.IsValid() ||
-      target_compressed_size.ValueOrDie() <
+      target_compressed_size.ValueOrDie() <=
           bidder_origin_overhead.ValueOrDie()) {
-    // If we don't have enough space for even the bidder origin, then just
-    // skip this bidder. We may be able to fit a bidder with a shorter origin
-    // though.
+    // If we don't have enough space for anything more than the bidder origin,
+    // then just skip this bidder. We may be able to fit a bidder with a shorter
+    // origin though.
     return 0;
   }
 
@@ -781,15 +793,21 @@ void BiddingAndAuctionSerializer::TargetSizeEstimator::UpdateSizedGroupSizes(
         continue;
       }
 
-      // Use the `target_size`s as a weight to allocate the space. The total
-      // weight of groups contending for the remaining space is
-      // `unallocated_target_size` so the weight for this buyer is
-      // `target_size`/`unallocated_target_size`. Note we cast up to
-      // uint64_t to avoid overflow from the multiply.
-      base::CheckedNumeric<uint64_t> allocated_size =
-          (base::CheckedNumeric<uint64_t>(bidder_config->target_size.value()) *
-           unallocated_size) /
-          unallocated_target_size;
+      base::CheckedNumeric<uint64_t> allocated_size;
+      if (bidder_config->target_size.value() == 0) {
+        // If the requested size was 0, then give them 0.
+        allocated_size = 0;
+      } else {
+        // Use the `target_size`s as a weight to allocate the space. The total
+        // weight of groups contending for the remaining space is
+        // `unallocated_target_size` so the weight for this buyer is
+        // `target_size`/`unallocated_target_size`. Note we cast up to
+        // uint64_t to avoid overflow from the multiply.
+        allocated_size = (base::CheckedNumeric<uint64_t>(
+                              bidder_config->target_size.value()) *
+                          unallocated_size) /
+                         unallocated_target_size;
+      }
 
       if (per_buyer_size_[bidder] <= allocated_size.ValueOrDie()) {
         // New bidder that doesn't need any more space. Reserve it for exactly
@@ -847,8 +865,12 @@ void BiddingAndAuctionSerializer::TargetSizeEstimator::UpdateUnsizedGroupSizes(
           remaining_unallocated_unsized_buyers_ - 1) /
          remaining_unallocated_unsized_buyers_)
             .ValueOrDie<size_t>();
-    if (equal_size_allocation == previous_size_allocation) {
+    if (equal_size_allocation <= previous_size_allocation) {
       // No changes mean no more buyers can be removed, so we're done.
+      // We have to use <= because we took the ceiling when calculating the
+      // equal size allocation above, so an assignment of this size may
+      // reduce the allocation by up to
+      // `remaining_unallocated_unsized_buyers_ - 1`.
       break;
     }
     unsized_buyer_size_ = equal_size_allocation;
@@ -904,7 +926,7 @@ void BiddingAndAuctionSerializer::AddGroups(
   // Randomize then order, then sort by priority. This insures fairness
   // between groups with the same priority.
   base::RandomShuffle(groups_to_add.begin(), groups_to_add.end());
-  base::ranges::stable_sort(
+  std::ranges::stable_sort(
       groups_to_add, [](const SingleStorageInterestGroup& a,
                         const SingleStorageInterestGroup& b) {
         return a->interest_group.priority > b->interest_group.priority;
@@ -942,11 +964,18 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
                            TaggedStringLength(publisher_.size());
 
   message_obj[cbor::Value("enableDebugReporting")] =
-      cbor::Value(base::FeatureList::IsEnabled(
-                      blink::features::kBiddingAndScoringDebugReportingAPI) &&
-                  !debug_report_in_lockout_);
+      cbor::Value(!debug_report_in_lockout_);
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("enableDebugReporting")) + 1;
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeEnableSampleDebugReportOnCookieSetting)) {
+    bool for_debugging_only_sampling = ShouldSampleDebugReport();
+    message_obj[cbor::Value("enableSampledDebugReporting")] =
+        cbor::Value(for_debugging_only_sampling);
+    message_elements_size +=
+        TaggedStringLength(constexpr_strlen("enableSampledDebugReporting")) + 1;
+  }
 
   std::string debug_key =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(

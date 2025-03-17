@@ -8,7 +8,7 @@ import {constants} from '/common/constants.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
+import type {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 
 import {EditableLine} from './editable_line.js';

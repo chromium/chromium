@@ -31,11 +31,6 @@ class SyncFileSystemGetFileStatusFunction : public ExtensionFunction {
  protected:
   ~SyncFileSystemGetFileStatusFunction() override = default;
   ResponseAction Run() override;
-
- private:
-  void DidGetFileStatus(
-      const ::sync_file_system::SyncStatusCode sync_service_status,
-      const ::sync_file_system::SyncFileStatus sync_file_status);
 };
 
 class SyncFileSystemGetFileStatusesFunction : public ExtensionFunction {
@@ -47,23 +42,6 @@ class SyncFileSystemGetFileStatusesFunction : public ExtensionFunction {
  protected:
   ~SyncFileSystemGetFileStatusesFunction() override;
   ResponseAction Run() override;
-
- private:
-  typedef std::pair<::sync_file_system::SyncStatusCode,
-                    ::sync_file_system::SyncFileStatus>
-      FileStatusPair;
-  typedef std::map<storage::FileSystemURL,
-                   FileStatusPair,
-                   storage::FileSystemURL::Comparator>
-      URLToStatusMap;
-
-  void DidGetFileStatus(const storage::FileSystemURL& file_system_url,
-                        ::sync_file_system::SyncStatusCode sync_status_code,
-                        ::sync_file_system::SyncFileStatus sync_file_statuses);
-
-  unsigned int num_expected_results_;
-  unsigned int num_results_received_;
-  URLToStatusMap file_sync_statuses_;
 };
 
 class SyncFileSystemGetUsageAndQuotaFunction : public ExtensionFunction {

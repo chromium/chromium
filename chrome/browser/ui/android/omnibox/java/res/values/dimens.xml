@@ -106,6 +106,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_end_padding">@dimen/omnibox_suggestion_dropdown_side_spacing</dimen>
 
     <dimen name="omnibox_suggestion_bg_elevation">@dimen/default_elevation_0</dimen>
+    <dimen name="omnibox_suggestion_bg_hover_elevation">@dimen/default_elevation_2</dimen>
     <dimen name="omnibox_suggestion_bg_round_corner_radius">16dp</dimen>
     <dimen name="omnibox_suggestion_side_spacing_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_dropdown_side_spacing">0dp</dimen>

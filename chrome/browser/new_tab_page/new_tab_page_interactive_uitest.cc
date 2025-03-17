@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -35,8 +34,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/command_line.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #endif
@@ -188,8 +186,7 @@ class NewTabPageTest : public InProcessBrowserTest,
   // verification is skipped.
   bool VerifyUi(const std::string& screenshot_prefix,
                 const std::string& screenshot_name) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kVerifyPixels)) {
       views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
@@ -218,7 +215,7 @@ class NewTabPageTest : public InProcessBrowserTest,
 // TODO(crbug.com/40874245): NewTabPageTest.LandingPagePixelTest is failing on
 // Win11 Tests x64.
 // TODO(crbug.com/40893756): It's also found flaky on Linux Tests, Linux Tests
-// (Wayland), linux-lacros-tester-rel, Mac12 Tests.
+// (Wayland), Mac12 Tests.
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LandingPagePixelTest) {
   WaitForLazyLoad();
   // By default WaitForNetworkLoad waits for all resources that have started

@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
@@ -25,15 +26,54 @@ const char kContentTypeKey[] = "Content-Type";
 const char kDeveloperKey[] = "X-Developer-Key";
 const int kNumRetries = 3;
 constexpr base::TimeDelta kDefaultTimeOut = base::Milliseconds(30000);
+
+std::string GetHttpMethodString(const HttpMethod& http_method) {
+  switch (http_method) {
+    case HttpMethod::kGet:
+      return "GET";
+    case HttpMethod::kPost:
+      return "POST";
+    case HttpMethod::kDelete:
+      return "DELETE";
+    default:
+      DCHECK(0) << base::StringPrintf("Unknown HttpMethod %d\n",
+                                      static_cast<int>(http_method));
+  }
+  return "";
+}
+
+HttpMethod GetHttpMethod(const std::string& http_method_string) {
+  if (http_method_string == "GET") {
+    return HttpMethod::kGet;
+  } else if (http_method_string == "POST") {
+    return HttpMethod::kPost;
+  } else if (http_method_string == "DELETE") {
+    return HttpMethod::kDelete;
+  }
+  return HttpMethod::kUndefined;
+}
+
 }  // namespace
 
-EndpointFetcher::RequestParams::RequestParams() = default;
+EndpointFetcher::RequestParams::RequestParams(
+    const HttpMethod& method,
+    const net::NetworkTrafficAnnotationTag& annotation_tag)
+    : http_method_(method), annotation_tag_(annotation_tag) {}
 EndpointFetcher::RequestParams::RequestParams(
     const EndpointFetcher::RequestParams& other) = default;
 EndpointFetcher::RequestParams::~RequestParams() = default;
 
-EndpointFetcher::RequestParams::Builder::Builder()
-    : request_params_(std::make_unique<RequestParams>()) {}
+EndpointFetcher::RequestParams::Builder::Builder(
+    const HttpMethod& method,
+    const net::NetworkTrafficAnnotationTag& annotation_tag)
+    : request_params_(
+          std::make_unique<EndpointFetcher::RequestParams>(method,
+                                                           annotation_tag)) {}
+
+EndpointFetcher::RequestParams::Builder::Builder(
+    const EndpointFetcher::RequestParams& other)
+    : request_params_(std::make_unique<EndpointFetcher::RequestParams>(other)) {
+}
 
 EndpointFetcher::RequestParams::Builder::~Builder() = default;
 
@@ -69,46 +109,42 @@ EndpointFetcher::EndpointFetcher(
 EndpointFetcher::EndpointFetcher(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const GURL& url,
-    const std::string& http_method,
     const std::string& content_type,
     const base::TimeDelta& timeout,
     const std::string& post_data,
     const std::vector<std::string>& headers,
     const std::vector<std::string>& cors_exempt_headers,
-    const net::NetworkTrafficAnnotationTag& annotation_tag,
     version_info::Channel channel,
-    const std::optional<RequestParams> request_params)
-    : auth_type_(CHROME_API_KEY),
-      url_(url),
-      http_method_(http_method),
-      content_type_(content_type),
-      timeout_(timeout),
-      post_data_(post_data),
-      headers_(headers),
-      cors_exempt_headers_(cors_exempt_headers),
-      annotation_tag_(annotation_tag),
-      url_loader_factory_(url_loader_factory),
+    const RequestParams request_params)
+    : url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
       consent_level_(std::nullopt),
       sanitize_response_(true),
       channel_(channel),
-      request_params_(request_params) {}
+      request_params_(EndpointFetcher::RequestParams::Builder(request_params)
+                          .SetAuthType(CHROME_API_KEY)
+                          .SetContentType(content_type)
+                          .SetPostData(post_data)
+                          .SetHeaders(headers)
+                          .SetCorsExemptHeaders(cors_exempt_headers)
+                          .SetTimeout(timeout)
+                          .SetUrl(url)
+                          .Build()) {}
 
 EndpointFetcher::EndpointFetcher(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag)
-    : auth_type_(NO_AUTH),
-      url_(url),
-      http_method_("GET"),
-      content_type_(std::string()),
-      timeout_(base::Milliseconds(0)),
-      post_data_(std::string()),
-      annotation_tag_(annotation_tag),
-      url_loader_factory_(url_loader_factory),
+    : url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
       consent_level_(std::nullopt),
-      sanitize_response_(false) {}
+      sanitize_response_(false),
+      request_params_(EndpointFetcher::RequestParams::Builder(HttpMethod::kGet,
+                                                              annotation_tag)
+                          .SetAuthType(NO_AUTH)
+                          .SetTimeout(base::Milliseconds(0))
+                          .SetUrl(url)
+                          .Build()) {}
 
 EndpointFetcher::EndpointFetcher(
     const std::string& oauth_consumer_name,
@@ -122,18 +158,20 @@ EndpointFetcher::EndpointFetcher(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     signin::IdentityManager* identity_manager,
     signin::ConsentLevel consent_level)
-    : auth_type_(OAUTH),
-      oauth_consumer_name_(oauth_consumer_name),
-      url_(url),
-      http_method_(http_method),
-      content_type_(content_type),
-      timeout_(timeout),
-      post_data_(post_data),
-      annotation_tag_(annotation_tag),
+    : oauth_consumer_name_(oauth_consumer_name),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       consent_level_(consent_level),
-      sanitize_response_(true) {
+      sanitize_response_(true),
+      request_params_(
+          EndpointFetcher::RequestParams::Builder(GetHttpMethod(http_method),
+                                                  annotation_tag)
+              .SetAuthType(OAUTH)
+              .SetContentType(content_type)
+              .SetTimeout(timeout)
+              .SetPostData(post_data)
+              .SetUrl(url)
+              .Build()) {
   for (auto scope : scopes) {
     oauth_scopes_.insert(scope);
   }
@@ -150,27 +188,32 @@ EndpointFetcher::EndpointFetcher(
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     bool is_oauth_fetch)
-    : auth_type_(is_oauth_fetch ? OAUTH : CHROME_API_KEY),
-      url_(url),
-      http_method_(http_method),
-      content_type_(content_type),
-      timeout_(timeout),
-      post_data_(post_data),
-      headers_(headers),
-      cors_exempt_headers_(cors_exempt_headers),
-      annotation_tag_(annotation_tag),
-      url_loader_factory_(url_loader_factory),
+    : url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
       consent_level_(std::nullopt),
-      sanitize_response_(true) {}
+      sanitize_response_(true),
+      request_params_(
+          EndpointFetcher::RequestParams::Builder(GetHttpMethod(http_method),
+                                                  annotation_tag)
+              .SetAuthType(is_oauth_fetch ? OAUTH : CHROME_API_KEY)
+              .SetContentType(content_type)
+              .SetCorsExemptHeaders(headers)
+              .SetHeaders(headers)
+              .SetTimeout(timeout)
+              .SetPostData(post_data)
+              .SetUrl(url)
+              .Build()) {}
 
 EndpointFetcher::EndpointFetcher(
     const net::NetworkTrafficAnnotationTag& annotation_tag)
-    : timeout_(kDefaultTimeOut),
-      annotation_tag_(annotation_tag),
-      identity_manager_(nullptr),
+    : identity_manager_(nullptr),
       consent_level_(std::nullopt),
-      sanitize_response_(true) {}
+      sanitize_response_(true),
+      request_params_(
+          EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                                  annotation_tag)
+              .SetTimeout(kDefaultTimeOut)
+              .Build()) {}
 
 EndpointFetcher::~EndpointFetcher() = default;
 
@@ -227,26 +270,27 @@ void EndpointFetcher::PerformRequest(
     EndpointFetcherCallback endpoint_fetcher_callback,
     const char* key) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->method = http_method_;
-  resource_request->url = url_;
+  resource_request->method = GetHttpMethodString(request_params_.http_method());
+  resource_request->url = request_params_.url();
   resource_request->credentials_mode = GetCredentialsMode();
   if (GetSetSiteForCookies()) {
-    resource_request->site_for_cookies = net::SiteForCookies::FromUrl(url_);
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(request_params_.url());
   }
 
-  if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
-    resource_request->headers.SetHeader(kContentTypeKey, content_type_);
+  if (request_params_.http_method() == HttpMethod::kPost) {
+    resource_request->headers.SetHeader(kContentTypeKey,
+                                        request_params_.content_type());
   }
-  DCHECK_EQ(headers_.size() % 2, 0UL);
-  for (size_t i = 0; i + 1 < headers_.size(); i += 2) {
-    resource_request->headers.SetHeader(headers_[i], headers_[i + 1]);
+  for (const auto& header : request_params_.headers()) {
+    resource_request->headers.SetHeader(header.key, header.value);
   }
-  DCHECK_EQ(cors_exempt_headers_.size() % 2, 0UL);
-  for (size_t i = 0; i + 1 < cors_exempt_headers_.size(); i += 2) {
+  for (const auto& cors_exempt_headers :
+       request_params_.cors_exempt_headers()) {
     resource_request->cors_exempt_headers.SetHeaderIfMissing(
-        cors_exempt_headers_[i], cors_exempt_headers_[i + 1]);
+        cors_exempt_headers.key, cors_exempt_headers.value);
   }
-  switch (auth_type_) {
+  switch (request_params_.auth_type()) {
     case OAUTH:
       resource_request->headers.SetHeader(
           kDeveloperKey, GaiaUrls::GetInstance()->oauth2_chrome_client_id());
@@ -264,10 +308,11 @@ void EndpointFetcher::PerformRequest(
   // TODO(crbug.com/40641804) Make simple_url_loader_ local variable passed to
   // callback
   simple_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), annotation_tag_);
+      std::move(resource_request), request_params_.annotation_tag());
 
-  if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
-    simple_url_loader_->AttachStringForUpload(post_data_, content_type_);
+  if (request_params_.http_method() == HttpMethod::kPost) {
+    simple_url_loader_->AttachStringForUpload(
+        request_params_.post_data().value(), request_params_.content_type());
   }
   if (!GetUploadProgressCallback().is_null()) {
     simple_url_loader_->SetOnUploadProgressCallback(
@@ -275,7 +320,7 @@ void EndpointFetcher::PerformRequest(
   }
   simple_url_loader_->SetRetryOptions(GetMaxRetries(),
                                       network::SimpleURLLoader::RETRY_ON_5XX);
-  simple_url_loader_->SetTimeoutDuration(timeout_);
+  simple_url_loader_->SetTimeoutDuration(request_params_.timeout());
   simple_url_loader_->SetAllowHttpErrorResults(true);
   network::SimpleURLLoader::BodyAsStringCallbackDeprecated
       body_as_string_callback = base::BindOnce(
@@ -361,14 +406,11 @@ void EndpointFetcher::OnSanitizationResult(
   std::move(endpoint_fetcher_callback).Run(std::move(response));
 }
 
-network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() {
-  if (!request_params_.has_value()) {
+network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() const {
+  if (!request_params_.credentials_mode.has_value()) {
     return network::mojom::CredentialsMode::kOmit;
   }
-  if (!request_params_.value().credentials_mode.has_value()) {
-    return network::mojom::CredentialsMode::kOmit;
-  }
-  switch (request_params_.value().credentials_mode.value()) {
+  switch (request_params_.credentials_mode.value()) {
     case CredentialsMode::kOmit:
       return network::mojom::CredentialsMode::kOmit;
     case CredentialsMode::kInclude:
@@ -376,39 +418,30 @@ network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() {
   }
   DCHECK(0) << base::StringPrintf(
       "Credentials mode %d not currently supported by EndpointFetcher\n",
-      static_cast<int>(request_params_.value().credentials_mode.value()));
+      static_cast<int>(request_params_.credentials_mode.value()));
 }
 
-int EndpointFetcher::GetMaxRetries() {
-  if (!request_params_.has_value()) {
+int EndpointFetcher::GetMaxRetries() const {
+  if (!request_params_.max_retries.has_value()) {
     return kNumRetries;
   }
-  if (!request_params_.value().max_retries.has_value()) {
-    return kNumRetries;
-  }
-  return request_params_.value().max_retries.value();
+  return request_params_.max_retries.value();
 }
 
-bool EndpointFetcher::GetSetSiteForCookies() {
-  if (!request_params_.has_value()) {
+bool EndpointFetcher::GetSetSiteForCookies() const {
+  if (!request_params_.set_site_for_cookies.has_value()) {
     return false;
   }
-  if (!request_params_.value().set_site_for_cookies.has_value()) {
-    return false;
-  }
-  return request_params_.value().set_site_for_cookies.value();
+  return request_params_.set_site_for_cookies.value();
 }
 
-UploadProgressCallback EndpointFetcher::GetUploadProgressCallback() {
-  if (!request_params_.has_value()) {
+UploadProgressCallback EndpointFetcher::GetUploadProgressCallback() const {
+  if (!request_params_.upload_progress_callback.has_value()) {
     return UploadProgressCallback();
   }
-  if (!request_params_.value().upload_progress_callback.has_value()) {
-    return UploadProgressCallback();
-  }
-  return request_params_.value().upload_progress_callback.value();
+  return request_params_.upload_progress_callback.value();
 }
 
 std::string EndpointFetcher::GetUrlForTesting() {
-  return url_.spec();
+  return request_params_.url().spec();
 }

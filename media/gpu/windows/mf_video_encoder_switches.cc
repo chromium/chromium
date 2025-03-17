@@ -55,7 +55,7 @@ const base::FeatureParam<int> kMediaFoundationSWBRCFixedDeltaQPValue(
 // constant bitrate encoding is requested.
 BASE_FEATURE(kMediaFoundationUseSWBRCForH265,
              "MediaFoundationUseSWBRCForH265",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 }  // namespace media

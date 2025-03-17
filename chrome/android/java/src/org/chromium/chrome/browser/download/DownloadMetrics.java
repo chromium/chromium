@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -11,10 +12,31 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Records download related metrics on Android. */
 public class DownloadMetrics {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        OpenWithExternalAppsSource.OPEN_FILE,
+        OpenWithExternalAppsSource.DOWNLOAD_PROGRESS_MESSAGE,
+        OpenWithExternalAppsSource.APP_MENU,
+        OpenWithExternalAppsSource.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface OpenWithExternalAppsSource {
+        int OPEN_FILE = 0;
+        int DOWNLOAD_PROGRESS_MESSAGE = 1;
+        int APP_MENU = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * Records download open source.
+     *
      * @param source The source where the user opened the download media file.
      * @param mimeType The mime type of the download.
      */
@@ -53,12 +75,25 @@ public class DownloadMetrics {
         Profile profile = tab.getProfile();
         @BrowserProfileType int type = Profile.getBrowserProfileTypeFromProfile(profile);
         RecordHistogram.recordEnumeratedHistogram(
-                "Download.OpenDownloads.PerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
+                "Download.OpenDownloads.PerProfileType", type, BrowserProfileType.MAX_VALUE);
         if (source == DownloadOpenSource.MENU) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Download.OpenDownloadsFromMenu.PerProfileType",
                     type,
-                    BrowserProfileType.MAX_VALUE + 1);
+                    BrowserProfileType.MAX_VALUE);
         }
+    }
+
+    /**
+     * Record the source when downloads are opened with external app.
+     *
+     * @param openWithExternalAppsSource The source when download is opened with external app.
+     */
+    public static void recordOpenDownloadWithExternalAppsSource(
+            @OpenWithExternalAppsSource int openWithExternalAppsSource) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Download.OpenDownloads.OpenWithExternalAppsSource",
+                openWithExternalAppsSource,
+                OpenWithExternalAppsSource.NUM_ENTRIES);
     }
 }

@@ -22,9 +22,8 @@
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
 #if BUILDFLAG(ENABLE_FREETYPE)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
-#else
-#include "third_party/skia/include/ports/SkTypeface_fontations.h"
 #endif
+#include "third_party/skia/include/ports/SkTypeface_fontations.h"
 
 namespace font_data_service {
 
@@ -50,6 +49,22 @@ mojom::TypefaceSlant ConvertToMojomFontStyle(SkFontStyle::Slant slant) {
   }
   NOTREACHED();
 }
+
+UNSAFE_BUFFER_USAGE std::vector<std::string> bcp47ArrayToVector(
+    const char* bcp47_array[],
+    int bcp47_count) {
+  std::vector<std::string> bcp47s;
+  bcp47s.reserve(bcp47_count);
+
+  // SAFETY: Skia passes BCP47 language tags as an array of `bcp47_count`
+  // null-terminated c-style strings. Generate an equivalent
+  // std::vector<std::string> to pass over mojo.
+  for (int i = 0; i < bcp47_count; ++i) {
+    bcp47s.emplace_back(UNSAFE_BUFFERS(bcp47_array[i]));
+  }
+
+  return bcp47s;
+}
 }  // namespace
 
 FontDataManager::FontDataManager()
@@ -64,12 +79,29 @@ FontDataManager::FontDataManager()
 FontDataManager::~FontDataManager() = default;
 
 int FontDataManager::onCountFamilies() const {
-  NOTREACHED();
+  if (family_names_.empty()) {
+    GetAllFamilyNames();
+  }
+
+  return family_names_.size();
 }
 
 void FontDataManager::onGetFamilyName(int index,
                                       SkString* requested_family_name) const {
-  NOTREACHED();
+  if (family_names_.empty()) {
+    GetAllFamilyNames();
+  }
+
+  if (index < 0) {
+    return;
+  }
+
+  size_t family_index = static_cast<size_t>(index);
+  if (family_index >= family_names_.size()) {
+    return;
+  }
+
+  *requested_family_name = SkString(family_names_[family_index]);
 }
 
 sk_sp<SkFontStyleSet> FontDataManager::onCreateStyleSet(int index) const {
@@ -115,6 +147,156 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
                                                std::move(style), &match_result);
   }
 
+  auto typeface = CreateTypefaceFromMatchResult(std::move(match_result));
+
+  // Update the cache with the resulting typeface even in case of a failure to
+  // avoid calling the font service again. Failed typeface will go to the font
+  // fallback stack.
+  {
+    base::AutoLock locked(lock_);
+    typeface_cache_.Put(std::move(match_request), typeface);
+  }
+
+  return typeface;
+}
+
+sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyleCharacter(
+    const char requested_family_name[],
+    const SkFontStyle& requested_style,
+    const char* bcp47[],
+    int bcp47_count,
+    SkUnichar character) const {
+  // NOTE: requested_family_name can be null to get default font.
+  std::string cpp_requested_family_name;
+  if (requested_family_name) {
+    cpp_requested_family_name = requested_family_name;
+  }
+
+  MatchFamilyRequest match_request{.name = cpp_requested_family_name,
+                                   .weight = requested_style.weight(),
+                                   .width = requested_style.width(),
+                                   .slant = requested_style.slant()};
+
+  // Proxy the font request to the font service.
+  mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
+  style->weight = requested_style.weight();
+  style->width = requested_style.width();
+  style->slant = ConvertToMojomFontStyle(requested_style.slant());
+
+  mojom::MatchFamilyNameResultPtr match_result;
+  {
+    TRACE_EVENT1("fonts", "FontDataManager::onMatchFamilyStyleCharacter",
+                 "family_name", cpp_requested_family_name);
+
+    // SAFETY: Skia passes BCP47 language tags as an array of `bcp47_count`
+    // null-terminated c-style strings. Generate an equivalent
+    // std::vector<std::string> to pass over mojo.
+    GetRemoteFontDataService().MatchFamilyNameCharacter(
+        cpp_requested_family_name, std::move(style),
+        UNSAFE_BUFFERS(bcp47ArrayToVector(bcp47, bcp47_count)), character,
+        &match_result);
+  }
+
+  return CreateTypefaceFromMatchResult(std::move(match_result));
+}
+
+sk_sp<SkTypeface> FontDataManager::onMakeFromData(sk_sp<SkData> data,
+                                                  int ttc_index) const {
+  return makeFromStream(std::make_unique<SkMemoryStream>(std::move(data)),
+                        ttc_index);
+}
+
+sk_sp<SkTypeface> FontDataManager::onMakeFromStreamIndex(
+    std::unique_ptr<SkStreamAsset> stream,
+    int ttc_index) const {
+  SkFontArguments args;
+  args.setCollectionIndex(ttc_index);
+  return onMakeFromStreamArgs(std::move(stream), args);
+}
+
+sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
+    std::unique_ptr<SkStreamAsset> stream,
+    const SkFontArguments& args) const {
+  TRACE_EVENT1("fonts", "FontDataManager::onMakeFromStreamArgs", "size",
+               stream->getLength());
+  // Experiment will test the performance of different SkTypefaces.
+  // 'custom_fnt_mgr_' is a wrapper to create an SkFreeType typeface.
+
+  if (features::kFontDataServiceTypefaceType.Get() ==
+      features::FontDataServiceTypefaceType::kDwrite) {
+    return DWriteFontTypeface::MakeFromStream(std::move(stream), args);
+  } else if (features::kFontDataServiceTypefaceType.Get() ==
+             features::FontDataServiceTypefaceType::kFreetype) {
+    // Chromium currently always sets ENABLE_FREETYPE, but nonetheless allow
+    // falling back to fontations if the param is set to freetype but freetype
+    // isn't enabled.
+#if BUILDFLAG(ENABLE_FREETYPE)
+    return custom_fnt_mgr_->makeFromStream(std::move(stream), args);
+#endif
+  }
+
+  return SkTypeface_Make_Fontations(std::move(stream), args);
+}
+
+sk_sp<SkTypeface> FontDataManager::onMakeFromFile(const char path[],
+                                                  int ttc_index) const {
+  std::unique_ptr<SkStreamAsset> stream = SkStream::MakeFromFile(path);
+  return stream ? makeFromStream(std::move(stream), ttc_index) : nullptr;
+}
+
+sk_sp<SkTypeface> FontDataManager::onLegacyMakeTypeface(
+    const char requested_family_name[],
+    SkFontStyle requested_style) const {
+  std::optional<std::string> cpp_requested_family_name;
+  if (requested_family_name) {
+    cpp_requested_family_name = requested_family_name;
+  }
+
+  // Proxy the font request to the font service.
+  mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
+  style->weight = requested_style.weight();
+  style->width = requested_style.width();
+  style->slant = ConvertToMojomFontStyle(requested_style.slant());
+
+  mojom::MatchFamilyNameResultPtr match_result;
+  {
+    TRACE_EVENT1("fonts", "FontDataManager::onLegacyMakeTypeface",
+                 "family_name", cpp_requested_family_name);
+
+    GetRemoteFontDataService().LegacyMakeTypeface(
+        cpp_requested_family_name, std::move(style), &match_result);
+  }
+
+  return CreateTypefaceFromMatchResult(std::move(match_result));
+}
+
+void FontDataManager::SetFontServiceForTesting(
+    mojo::PendingRemote<font_data_service::mojom::FontDataService>
+        font_data_service) {
+  mojo::Remote<font_data_service::mojom::FontDataService>& remote =
+      font_data_service_slot_.GetOrCreateValue();
+  remote.Bind(std::move(font_data_service));
+}
+
+font_data_service::mojom::FontDataService&
+FontDataManager::GetRemoteFontDataService() const {
+  mojo::Remote<font_data_service::mojom::FontDataService>& remote =
+      font_data_service_slot_.GetOrCreateValue();
+
+  if (!remote) {
+    if (main_task_runner_->RunsTasksInCurrentSequence()) {
+      BindHostReceiverOnMainThread(remote.BindNewPipeAndPassReceiver());
+    } else {
+      main_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&BindHostReceiverOnMainThread,
+                                    remote.BindNewPipeAndPassReceiver()));
+    }
+  }
+  return *remote;
+}
+
+sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
+    mojom::MatchFamilyNameResultPtr match_result) const {
   // Create the resulting typeface from the data received from the font
   // service.
   std::unique_ptr<base::MemoryMappedFile> mapped_font_file;
@@ -195,97 +377,19 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
     }
   }
 
-  // Update the cache with the resulting typeface even in case of a failure to
-  // avoid calling the font service again. Failed typeface will go to the font
-  // fallback stack.
+  // Add the mapped_font_file to the cache so it lives as long as required.
   {
     base::AutoLock locked(lock_);
     if (mapped_font_file) {
       mapped_files_.push_back(std::move(mapped_font_file));
     }
-    typeface_cache_.Put(std::move(match_request), typeface);
   }
 
   return typeface;
 }
 
-sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyleCharacter(
-    const char requested_family_name[],
-    const SkFontStyle& requested_style,
-    const char* bcp47[],
-    int bcp47_count,
-    SkUnichar character) const {
-  NOTREACHED();
-}
-
-sk_sp<SkTypeface> FontDataManager::onMakeFromData(sk_sp<SkData> data,
-                                                  int ttc_index) const {
-  return makeFromStream(std::make_unique<SkMemoryStream>(std::move(data)),
-                        ttc_index);
-}
-
-sk_sp<SkTypeface> FontDataManager::onMakeFromStreamIndex(
-    std::unique_ptr<SkStreamAsset> stream,
-    int ttc_index) const {
-  SkFontArguments args;
-  args.setCollectionIndex(ttc_index);
-  return onMakeFromStreamArgs(std::move(stream), args);
-}
-
-sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
-    std::unique_ptr<SkStreamAsset> stream,
-    const SkFontArguments& args) const {
-  TRACE_EVENT1("fonts", "FontDataManager::onMakeFromStreamArgs", "size",
-               stream->getLength());
-  // Experiment will test the performance of different SkTypefaces.
-  // 'custom_fnt_mgr_' is a wrapper to create an SkFreeType typeface.
-
-  return features::kFontDataServiceTypefaceType.Get() ==
-                 features::FontDataServiceTypefaceType::kInternal
-             ?
-#if BUILDFLAG(ENABLE_FREETYPE)
-             custom_fnt_mgr_->makeFromStream(std::move(stream), args)
-#else
-             SkTypeface_Make_Fontations(std::move(stream), args)
-#endif
-             : DWriteFontTypeface::MakeFromStream(std::move(stream), args);
-}
-
-sk_sp<SkTypeface> FontDataManager::onMakeFromFile(const char path[],
-                                                  int ttc_index) const {
-  std::unique_ptr<SkStreamAsset> stream = SkStream::MakeFromFile(path);
-  return stream ? makeFromStream(std::move(stream), ttc_index) : nullptr;
-}
-
-sk_sp<SkTypeface> FontDataManager::onLegacyMakeTypeface(
-    const char requested_family_name[],
-    SkFontStyle requested_style) const {
-  return onMatchFamilyStyle(requested_family_name, requested_style);
-}
-
-void FontDataManager::SetFontServiceForTesting(
-    mojo::PendingRemote<font_data_service::mojom::FontDataService>
-        font_data_service) {
-  mojo::Remote<font_data_service::mojom::FontDataService>& remote =
-      font_data_service_slot_.GetOrCreateValue();
-  remote.Bind(std::move(font_data_service));
-}
-
-font_data_service::mojom::FontDataService&
-FontDataManager::GetRemoteFontDataService() const {
-  mojo::Remote<font_data_service::mojom::FontDataService>& remote =
-      font_data_service_slot_.GetOrCreateValue();
-
-  if (!remote) {
-    if (main_task_runner_->RunsTasksInCurrentSequence()) {
-      BindHostReceiverOnMainThread(remote.BindNewPipeAndPassReceiver());
-    } else {
-      main_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&BindHostReceiverOnMainThread,
-                                    remote.BindNewPipeAndPassReceiver()));
-    }
-  }
-  return *remote;
+void FontDataManager::GetAllFamilyNames() const {
+  GetRemoteFontDataService().GetAllFamilyNames(&family_names_);
 }
 
 }  // namespace font_data_service

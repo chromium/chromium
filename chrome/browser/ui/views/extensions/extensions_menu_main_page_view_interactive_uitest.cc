@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
@@ -749,10 +750,10 @@ class ExtensionsMenuMainPageViewInteractiveTest
 
     std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
 
-    auto iter = base::ranges::find(menu_items, extension_id,
-                                   [](ExtensionMenuItemView* view) {
-                                     return view->view_controller()->GetId();
-                                   });
+    auto iter = std::ranges::find(menu_items, extension_id,
+                                  [](ExtensionMenuItemView* view) {
+                                    return view->view_controller()->GetId();
+                                  });
     return (iter == menu_items.end()) ? nullptr : *iter;
   }
 
@@ -770,7 +771,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
 // Tests that opening the extensions menu highlight the extension toolbar
 // button.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
-                       ExtensionsMenuButtonHighlight) {
+                       DISABLED_ExtensionsMenuButtonHighlight) {
   LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
 
   RunTestSequence(
@@ -798,8 +799,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
 // Tests clicking on the 'context menu' button opens the extension's context
 // menu.
+// TODO(crbug.com/400536589): Re-enable this flaky test.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
-                       ContextMenuButtonOpensContextMenu) {
+                       DISABLED_ContextMenuButtonOpensContextMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));

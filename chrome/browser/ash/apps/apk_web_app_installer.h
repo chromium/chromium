@@ -9,11 +9,11 @@
 #include <optional>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "components/webapps/common/web_app_id.h"
 
 class GURL;

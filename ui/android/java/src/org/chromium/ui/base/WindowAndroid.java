@@ -4,6 +4,8 @@
 
 package org.chromium.ui.base;
 
+import static androidx.annotation.VisibleForTesting.PRIVATE;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -24,6 +26,7 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.window.TrustedPresentationThresholds;
@@ -49,9 +52,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.ui.InsetObserver;
@@ -134,6 +135,11 @@ public class WindowAndroid
     private boolean mHasFocus = true;
     private @Nullable OverlayTransformApiHelper mOverlayTransformApiHelper;
 
+    private @Nullable View mPointerLockingView;
+    private @Nullable View mPointerLockChangeView;
+    private View.@Nullable OnFocusChangeListener mPointerLockingViewFocusChangeListener;
+    private View.@Nullable OnFocusChangeListener mPointerLockingViewPrvFocusChangeListener;
+
     // The information required to draw a replica of the progress bar drawn in
     // java UI in composited UI.
     public static class ProgressBarConfig {
@@ -165,6 +171,9 @@ public class WindowAndroid
     public interface ActivityStateObserver {
         /** Called when the activity goes into paused state. */
         default void onActivityPaused() {}
+
+        /** Called when the activity top status is changed. */
+        default void onActivityTopResumedChanged(boolean isTopResumedActivity) {}
 
         /** Called when the activity goes into resumed state. */
         default void onActivityResumed() {}
@@ -208,31 +217,50 @@ public class WindowAndroid
     private final ObservableSupplierImpl<Boolean> mOcclusionSupplier =
             new ObservableSupplierImpl<>(false);
 
+    private boolean mIsTopResumedActivity;
+    private final boolean mActivityTopResumedSupported;
+
     /**
      * @param context The application {@link Context}.
      * @param trackOcclusion Whether to track occlusion of the window.
      */
     public WindowAndroid(Context context, boolean trackOcclusion) {
-        this(context, DisplayAndroid.getNonMultiDisplay(context), trackOcclusion);
+        this(
+                context,
+                DisplayAndroid.getNonMultiDisplay(context),
+                /* activityTopResumedSupported= */ false,
+                trackOcclusion);
     }
 
     protected WindowAndroid(
             Context context,
+            boolean activityTopResumedSupported,
             IntentRequestTracker tracker,
             @Nullable InsetObserver insetObserver,
             boolean trackOcclusion) {
-        this(context, DisplayAndroid.getNonMultiDisplay(context), trackOcclusion);
+        this(
+                context,
+                DisplayAndroid.getNonMultiDisplay(context),
+                activityTopResumedSupported,
+                trackOcclusion);
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
     }
 
     /**
      * @param context The application {@link Context}.
+     * @param activityTopResumedSupported If you enable this, you are committed to notify every
+     *     onTopResumedActivityChanged() on the Activity owning the WindowAndroid. If this is not
+     *     enabled, WindowAndroid assumes the activity is in the top when it is resumed.
      * @param display The application {@link DisplayAndroid}.
      * @param trackOcclusion Whether to track occlusion of the window.
      */
     @SuppressLint("UseSparseArrays")
-    protected WindowAndroid(Context context, DisplayAndroid display, boolean trackOcclusion) {
+    protected WindowAndroid(
+            Context context,
+            DisplayAndroid display,
+            boolean activityTopResumedSupported,
+            boolean trackOcclusion) {
         mLifetimeAssert = LifetimeAssert.create(this);
         // context does not have the same lifetime guarantees as an application context so we can't
         // hold a strong reference to it.
@@ -264,11 +292,8 @@ public class WindowAndroid
             mOverlayTransformApiHelper = OverlayTransformApiHelper.create(this);
         }
 
-        // Enable occlusion only for desktop Android. For non-desktop Android, occlusion signals
-        // from Android should be the same as the Activity lifecycle signals that already control
-        // web contents occlusion. Also, on rotate Android seems to send a spurious occlusion
-        // signal. See crbug.com/380209799 for details.
-        mTrackOcclusion = trackOcclusion && BuildConfig.IS_DESKTOP_ANDROID;
+        // Disable occlusion for now, see crbug.com/399724403 for details.
+        mTrackOcclusion = false;
         if (mTrackOcclusion) {
             var decorView = getDecorView();
             assert decorView != null;
@@ -280,6 +305,8 @@ public class WindowAndroid
             }
             decorView.addOnAttachStateChangeListener(this);
         }
+
+        mActivityTopResumedSupported = activityTopResumedSupported;
     }
 
     @Override
@@ -391,7 +418,8 @@ public class WindowAndroid
      *     results, or null if no message is required.
      * @return Whether the intent was shown.
      */
-    public boolean showIntent(PendingIntent intent, IntentCallback callback, Integer errorId) {
+    public boolean showIntent(
+            PendingIntent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return false;
@@ -401,13 +429,15 @@ public class WindowAndroid
 
     /**
      * Shows an intent and returns the results to the callback object.
-     * @param intent   The intent that needs to be shown.
+     *
+     * @param intent The intent that needs to be shown.
      * @param callback The object that will receive the results for the intent.
-     * @param errorId  The ID of error string to be shown if activity is paused before intent
-     *                 results, or null if no message is required.
+     * @param errorId The ID of error string to be shown if activity is paused before intent
+     *     results, or null if no message is required.
      * @return Whether the intent was shown.
      */
-    public boolean showIntent(@Nullable Intent intent, IntentCallback callback, Integer errorId) {
+    public boolean showIntent(
+            @Nullable Intent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return false;
@@ -417,15 +447,16 @@ public class WindowAndroid
 
     /**
      * Shows an intent that could be canceled and returns the results to the callback object.
-     * @param  intent   The PendingIntent that needs to be shown.
-     * @param  callback The object that will receive the results for the intent.
-     * @param  errorId  The ID of error string to be shown if activity is paused before intent
-     *                  results, or null if no message is required.
+     *
+     * @param intent The PendingIntent that needs to be shown.
+     * @param callback The object that will receive the results for the intent.
+     * @param errorId The ID of error string to be shown if activity is paused before intent
+     *     results, or null if no message is required.
      * @return A non-negative request code that could be used for finishActivity, or
-     *         START_INTENT_FAILURE if failed.
+     *     START_INTENT_FAILURE if failed.
      */
     public int showCancelableIntent(
-            PendingIntent intent, IntentCallback callback, Integer errorId) {
+            PendingIntent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return START_INTENT_FAILURE;
@@ -435,14 +466,16 @@ public class WindowAndroid
 
     /**
      * Shows an intent that could be canceled and returns the results to the callback object.
-     * @param  intent   The intent that needs to be shown.
-     * @param  callback The object that will receive the results for the intent.
-     * @param  errorId  The ID of error string to be shown if activity is paused before intent
-     *                  results, or null if no message is required.
+     *
+     * @param intent The intent that needs to be shown.
+     * @param callback The object that will receive the results for the intent.
+     * @param errorId The ID of error string to be shown if activity is paused before intent
+     *     results, or null if no message is required.
      * @return A non-negative request code that could be used for finishActivity, or
-     *         START_INTENT_FAILURE if failed.
+     *     START_INTENT_FAILURE if failed.
      */
-    public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
+    public int showCancelableIntent(
+            Intent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return START_INTENT_FAILURE;
@@ -451,7 +484,9 @@ public class WindowAndroid
     }
 
     public int showCancelableIntent(
-            Callback<Integer> intentTrigger, IntentCallback callback, Integer errorId) {
+            Callback<Integer> intentTrigger,
+            @Nullable IntentCallback callback,
+            @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity");
             return START_INTENT_FAILURE;
@@ -662,11 +697,32 @@ public class WindowAndroid
     }
 
     protected void onActivityPaused() {
-        for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityPaused();
+        if (!mActivityTopResumedSupported) {
+            onActivityTopResumedChanged(false);
+        }
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityPaused();
+        }
+    }
+
+    /**
+     * For window instances associated with an activity, notifies any listeners that the activity's
+     * top resumed state is changed.
+     */
+    public void onActivityTopResumedChanged(boolean isTopResumedActivity) {
+        mIsTopResumedActivity = isTopResumedActivity;
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityTopResumedChanged(isTopResumedActivity);
+        }
     }
 
     protected void onActivityResumed() {
-        for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityResumed();
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityResumed();
+        }
+        if (!mActivityTopResumedSupported) {
+            onActivityTopResumedChanged(true);
+        }
     }
 
     protected void onActivityDestroyed() {
@@ -725,6 +781,10 @@ public class WindowAndroid
         return result;
     }
 
+    public boolean isTopResumedActivity() {
+        return mIsTopResumedActivity;
+    }
+
     /**
      * @return Current state of the associated {@link Activity}. Can be overridden to return the
      *     correct state. {@code ActivityState.DESTROYED} by default.
@@ -779,6 +839,14 @@ public class WindowAndroid
         return manager.getOrCreateNativeBridge();
     }
 
+    @CalledByNative
+    private void showToast(String text) {
+        Context context = getContext().get();
+        if (context != null) {
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * @return Whether this instance is destroyed.
      */
@@ -812,6 +880,8 @@ public class WindowAndroid
                 decorView.removeOnAttachStateChangeListener(this);
             }
         }
+
+        removePointerLockViews();
     }
 
     /**
@@ -831,6 +901,7 @@ public class WindowAndroid
                                     getWindowIsWideColorGamut());
             WindowAndroidJni.get()
                     .setVSyncPaused(mNativeWindowAndroid, WindowAndroid.this, mVSyncPaused);
+            onAdaptiveRefreshRateInfoChanged(mDisplayAndroid.getAdaptiveRefreshRateInfo());
         }
         return mNativeWindowAndroid;
     }
@@ -962,7 +1033,6 @@ public class WindowAndroid
         // returning to the default optimized state.
         animation.addListener(
                 new AnimatorListenerAdapter() {
-                    @NullUnmarked
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         animation.removeListener(this);
@@ -1048,6 +1118,18 @@ public class WindowAndroid
     @Override
     public void onDisplayModesChanged(@Nullable List<Display.Mode> supportedModes) {
         recomputeSupportedRefreshRates();
+    }
+
+    @Override
+    public void onAdaptiveRefreshRateInfoChanged(DisplayAndroid.AdaptiveRefreshRateInfo arrInfo) {
+        if (mNativeWindowAndroid == 0) return;
+        WindowAndroidJni.get()
+                .onAdaptiveRefreshRateInfoChanged(
+                        mNativeWindowAndroid,
+                        arrInfo.supportsAdaptiveRefreshRate,
+                        arrInfo.suggestedFrameRateNormal,
+                        arrInfo.suggestedFrameRateHigh,
+                        arrInfo.supportedFrameRates);
     }
 
     @CalledByNative
@@ -1145,7 +1227,6 @@ public class WindowAndroid
         window.setAttributes(params);
     }
 
-    @NullUnmarked
     @SuppressLint("NewApi")
     // mSupportedRefreshRateModes should only be set if Display.Mode is available.
     @RequiresNonNull("mSupportedRefreshRateModes")
@@ -1164,7 +1245,7 @@ public class WindowAndroid
             }
         }
 
-        if (preferredModeDelta > MAX_REFRESH_RATE_DELTA) {
+        if (preferredMode == null || preferredModeDelta > MAX_REFRESH_RATE_DELTA) {
             Log.e(TAG, "Refresh rate not supported : " + preferredRefreshRate);
             return 0;
         }
@@ -1219,6 +1300,107 @@ public class WindowAndroid
         }
     }
 
+    @CalledByNative
+    @VisibleForTesting(otherwise = PRIVATE)
+    public boolean requestPointerLock(View view) {
+        assert mPointerLockChangeView == null;
+        assert mPointerLockingView == null;
+
+        if (!mHasFocus || !view.hasFocus()) {
+            return false;
+        }
+
+        Context context = assumeNonNull(getContext().get());
+        mPointerLockChangeView =
+                new View(context) {
+                    @Override
+                    public void onPointerCaptureChange(boolean hasCapture) {
+                        super.onPointerCaptureChange(hasCapture);
+                        onPointerLockChangeEvent(hasCapture);
+                    }
+                };
+
+        var decorView = getDecorView();
+        if (decorView instanceof ViewGroup decorViewGroup) {
+            decorViewGroup.addView(mPointerLockChangeView);
+        }
+
+        mPointerLockingViewFocusChangeListener =
+                (view2, hasFocus) -> onPointerLockingViewFocusChange(hasFocus);
+        mPointerLockingViewPrvFocusChangeListener = view.getOnFocusChangeListener();
+
+        view.setOnFocusChangeListener(mPointerLockingViewFocusChangeListener);
+
+        // Pointer lock API equivalent on Android is called pointer capture
+        view.requestPointerCapture();
+        mPointerLockingView = view;
+        return true;
+    }
+
+    @CalledByNative
+    @VisibleForTesting(otherwise = PRIVATE)
+    public void releasePointerLock(View view) {
+        releasePointerLockHelper(view, true, false);
+    }
+
+    private void onPointerLockChangeEvent(boolean hasLock) {
+        assert mPointerLockingView != null;
+
+        if (!hasLock) {
+            releasePointerLockHelper(mPointerLockingView, false, true);
+        }
+    }
+
+    private void onPointerLockingViewFocusChange(boolean hasFocus) {
+        assert mPointerLockingView != null;
+
+        if (mPointerLockingViewPrvFocusChangeListener != null) {
+            mPointerLockingViewPrvFocusChangeListener.onFocusChange(mPointerLockingView, hasFocus);
+        }
+
+        if (!hasFocus) {
+            releasePointerLockHelper(mPointerLockingView, true, true);
+        }
+    }
+
+    private void releasePointerLockHelper(
+            View view, boolean callReleasePointerForView, boolean callbackNativeWindow) {
+        assert mPointerLockingView != null;
+        assert view == mPointerLockingView;
+
+        if (callReleasePointerForView) {
+            mPointerLockingView.releasePointerCapture();
+        }
+        if (callbackNativeWindow && mNativeWindowAndroid != 0) {
+            WindowAndroidJni.get().onWindowPointerLockRelease(mNativeWindowAndroid);
+        }
+
+        removePointerLockViews();
+    }
+
+    private void removePointerLockViews() {
+        var decorView = getDecorView();
+        if (mPointerLockChangeView != null && decorView instanceof ViewGroup decorViewGroup) {
+            decorViewGroup.removeView(mPointerLockChangeView);
+        }
+        if (mPointerLockingView != null) {
+            assert mPointerLockingViewFocusChangeListener != null;
+
+            if (mPointerLockingView.getOnFocusChangeListener()
+                    != mPointerLockingViewFocusChangeListener) {
+                Log.w(TAG, "Pointer locking view focus listener was changed");
+            } else {
+                mPointerLockingView.setOnFocusChangeListener(
+                        mPointerLockingViewPrvFocusChangeListener);
+            }
+        }
+
+        mPointerLockChangeView = null;
+        mPointerLockingView = null;
+        mPointerLockingViewFocusChangeListener = null;
+        mPointerLockingViewPrvFocusChangeListener = null;
+    }
+
     @NativeMethods
     interface Natives {
         long init(
@@ -1244,8 +1426,17 @@ public class WindowAndroid
                 WindowAndroid caller,
                 float @Nullable [] supportedRefreshRates);
 
+        void onAdaptiveRefreshRateInfoChanged(
+                long nativeWindowAndroid,
+                boolean supportsAdaptiveRefreshRate,
+                float suggestedFrameRateNormal,
+                float suggestedFrameRateHigh,
+                float @Nullable [] supportedRefreshRates);
+
         void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
 
         void sendUnfoldLatencyBeginTimestamp(long nativeWindowAndroid, long beginTimestampMs);
+
+        void onWindowPointerLockRelease(long nativeWindowAndroid);
     }
 }

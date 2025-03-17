@@ -5,6 +5,9 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -33,11 +36,50 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
 
+namespace {
+// Helper that extracts custodian data from given preferences.
+std::optional<supervised_user::Custodian> GetCustodianFromPrefs(
+    const PrefService& user_prefs,
+    std::string_view email_address_pref,
+    std::string_view name_pref,
+    std::string_view gaia_id_pref,
+    std::string_view profile_image_url_pref) {
+  std::string email(user_prefs.GetString(email_address_pref));
+  std::string name(user_prefs.GetString(name_pref));
+  GaiaId gaia_id(user_prefs.GetString(gaia_id_pref));
+  std::string profile_image_url(user_prefs.GetString(profile_image_url_pref));
+
+  if (email.empty() && name.empty() && gaia_id.empty() &&
+      profile_image_url.empty()) {
+    return std::nullopt;
+  }
+  return supervised_user::Custodian((name.empty() ? email : name), email,
+                                    gaia_id, profile_image_url);
+}
+}  // namespace
+
 namespace supervised_user {
+
+Custodian::Custodian(std::string_view name,
+                     std::string_view email_address,
+                     GaiaId obfuscated_gaia_id,
+                     std::string_view profile_image_url)
+    : name_(name),
+      email_address_(email_address),
+      obfuscated_gaia_id_(obfuscated_gaia_id),
+      profile_image_url_(profile_image_url) {}
+Custodian::Custodian(std::string_view name,
+                     std::string_view email_address,
+                     std::string_view profile_image_url)
+    : Custodian(name, email_address, GaiaId(), profile_image_url) {}
+
+Custodian::Custodian(const Custodian& other) = default;
+Custodian::~Custodian() = default;
 
 SupervisedUserService::~SupervisedUserService() {
   DCHECK(!did_init_ || did_shutdown_);
@@ -65,39 +107,20 @@ void SupervisedUserService::SetURLFilterForTesting(
   url_filter_ = std::move(test_filter);
 }
 
-std::string SupervisedUserService::GetCustodianEmailAddress() const {
-  return user_prefs_->GetString(prefs::kSupervisedUserCustodianEmail);
+std::optional<Custodian> SupervisedUserService::GetCustodian() const {
+  return GetCustodianFromPrefs(user_prefs_.get(),
+                               prefs::kSupervisedUserCustodianEmail,
+                               prefs::kSupervisedUserCustodianName,
+                               prefs::kSupervisedUserCustodianObfuscatedGaiaId,
+                               prefs::kSupervisedUserCustodianProfileImageURL);
 }
 
-std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
-  return user_prefs_->GetString(
-      prefs::kSupervisedUserCustodianObfuscatedGaiaId);
-}
-
-std::string SupervisedUserService::GetCustodianName() const {
-  std::string name =
-      user_prefs_->GetString(prefs::kSupervisedUserCustodianName);
-  return name.empty() ? GetCustodianEmailAddress() : name;
-}
-
-std::string SupervisedUserService::GetSecondCustodianEmailAddress() const {
-  return user_prefs_->GetString(prefs::kSupervisedUserSecondCustodianEmail);
-}
-
-std::string SupervisedUserService::GetSecondCustodianObfuscatedGaiaId() const {
-  return user_prefs_->GetString(
-      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId);
-}
-
-std::string SupervisedUserService::GetSecondCustodianName() const {
-  std::string name =
-      user_prefs_->GetString(prefs::kSupervisedUserSecondCustodianName);
-  return name.empty() ? GetSecondCustodianEmailAddress() : name;
-}
-
-bool SupervisedUserService::HasACustodian() const {
-  return !GetCustodianEmailAddress().empty() ||
-         !GetSecondCustodianEmailAddress().empty();
+std::optional<Custodian> SupervisedUserService::GetSecondCustodian() const {
+  return GetCustodianFromPrefs(
+      user_prefs_.get(), prefs::kSupervisedUserSecondCustodianEmail,
+      prefs::kSupervisedUserSecondCustodianName,
+      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
+      prefs::kSupervisedUserSecondCustodianProfileImageURL);
 }
 
 bool SupervisedUserService::IsBlockedURL(const GURL& url) const {

@@ -8,12 +8,8 @@
 // Testing category exposing private methods of OmniboxPopupMediator for tests.
 @interface OmniboxPopupMediator (Testing)
 
-/// Groups `currentResult` suggestions from index `begin` (included) to `end`
-/// (excluded) with `GroupSuggestionsBySearchVsURL`.
-- (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end;
-
-/// Returns `AutocompleteResult` from `autocompleteController`.
-- (const AutocompleteResult&)autocompleteResult;
+@property(nonatomic, strong, readonly)
+    NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups;
 
 @end
 

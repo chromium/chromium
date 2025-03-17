@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/client_hints/client_hints.h"
 
 #include <algorithm>
@@ -51,14 +46,16 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -552,18 +549,19 @@ struct ClientHintsExtendedData {
       // See crbug.com/1470634.
       const std::optional<FencedFrameProperties>& fenced_frame_properties =
           frame_tree_node->GetFencedFrameProperties();
-      base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
+      base::span<const network::mojom::PermissionsPolicyFeature> permissions;
       if (fenced_frame_properties) {
         permissions = fenced_frame_properties->effective_enabled_permissions();
       }
-      permissions_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          resource_origin, /*header_policy=*/{}, permissions);
+      permissions_policy =
+          network::PermissionsPolicy::CreateFixedForFencedFrame(
+              resource_origin, /*header_policy=*/{}, permissions);
     } else {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree().GetMainFrame();
       main_frame_origin = main_frame->GetLastCommittedOrigin();
-      permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
-          main_frame->permissions_policy());
+      permissions_policy = network::PermissionsPolicy::CopyStateFrom(
+          main_frame->GetPermissionsPolicy());
     }
 
     const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -594,7 +592,7 @@ struct ClientHintsExtendedData {
   url::Origin resource_origin;
   bool is_outermost_main_frame = false;
   url::Origin main_frame_origin;
-  std::unique_ptr<blink::PermissionsPolicy> permissions_policy;
+  std::unique_ptr<network::PermissionsPolicy> permissions_policy;
 };
 
 bool IsClientHintEnabled(const ClientHintsExtendedData& data,
@@ -608,7 +606,8 @@ bool IsClientHintAllowed(const ClientHintsExtendedData& data,
     return true;
   }
   return (data.permissions_policy->IsFeatureEnabledForOrigin(
-      blink::GetClientHintToPolicyFeatureMap().at(type), data.resource_origin));
+      network::GetClientHintToPolicyFeatureMap().at(type),
+      data.resource_origin));
 }
 
 bool ShouldAddClientHint(const ClientHintsExtendedData& data,
@@ -630,7 +629,7 @@ bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
 // TODO(crbug.com/40208054): Replace w/ generic HTML policy modification.
 void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
     ClientHintsExtendedData& data,
-    const blink::ParsedPermissionsPolicy& container_policy) {
+    const network::ParsedPermissionsPolicy& container_policy) {
   if (container_policy.empty()) {
     return;
   }
@@ -638,11 +637,11 @@ void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
   // For client hints specifically, we need to allow the container policy
   // to overwrite the parent policy so that permissions policies set in HTML
   // via an accept-ch meta tag can be respected.
-  blink::ParsedPermissionsPolicy client_hints_container_policy;
+  network::ParsedPermissionsPolicy client_hints_container_policy;
   for (const auto& container_policy_item : container_policy) {
-    const auto& it = blink::GetPolicyFeatureToClientHintMap().find(
+    const auto& it = network::GetPolicyFeatureToClientHintMap().find(
         container_policy_item.feature);
-    if (it != blink::GetPolicyFeatureToClientHintMap().end()) {
+    if (it != network::GetPolicyFeatureToClientHintMap().end()) {
       client_hints_container_policy.push_back(container_policy_item);
 
       // We need to ensure `blink::EnabledClientHints` is updated where the
@@ -679,7 +678,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     FrameTreeNode* frame_tree_node,
     ClientUaHeaderCallType call_type,
     net::HttpRequestHeaders* headers,
-    const blink::ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const std::optional<GURL>& request_url,
     const ClientHintsExtendedData& data) {
   std::optional<blink::UserAgentMetadata> ua_metadata;
@@ -841,7 +840,7 @@ void AddRequestClientHintsHeaders(
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode* frame_tree_node,
-    const blink::ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const std::optional<GURL>& request_url) {
   ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
   UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
@@ -929,16 +928,11 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on,
-    bool is_javascript_enabled) {
+    bool is_ua_override_on) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context);
 
-  // Since prefetch navigation doesn't have a related frame tree node,
-  // |is_javascript_enabled| is passed in to get whether a typical frame tree
-  // node would support javascript.
-  if (!is_javascript_enabled ||
-      !ShouldAddClientHints(origin, nullptr, delegate)) {
+  if (!ShouldAddClientHints(origin, nullptr, delegate)) {
     return;
   }
 
@@ -953,7 +947,7 @@ void AddNavigationRequestClientHintsHeaders(
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode* frame_tree_node,
-    const blink::ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const std::optional<GURL>& request_url) {
   DCHECK(frame_tree_node);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,7 +60,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_->layer()->GetAnimator()->AddObserver(this);
   label_->layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
 
   // Clip child views to this view.
   SetPaintToLayer();
@@ -121,7 +123,7 @@ void WebAppOriginText::StartFadeAnimation() {
 
   label_layer->GetAnimator()->StartAnimation(opacity_sequence.release());
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
 }
 
 void WebAppOriginText::OnLayerAnimationEnded(
@@ -129,8 +131,8 @@ void WebAppOriginText::OnLayerAnimationEnded(
   SetVisible(false);
 }
 
-const std::u16string& WebAppOriginText::GetLabelTextForTesting() {
-  CHECK(label_ != nullptr);
+std::u16string_view WebAppOriginText::GetLabelTextForTesting() const {
+  CHECK(label_);
   return label_->GetText();
 }
 
@@ -181,7 +183,7 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
 
 void WebAppOriginText::UpdateAccessibleName() {
   if (!label_->GetText().empty()) {
-    GetViewAccessibility().SetName(label_->GetText());
+    GetViewAccessibility().SetName(std::u16string(label_->GetText()));
   } else {
     GetViewAccessibility().RemoveName();
   }

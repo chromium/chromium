@@ -17,9 +17,10 @@ import static org.chromium.components.embedder_support.delegate.ColorPickerPrope
 import android.content.Context;
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.util.DialogTypeRecorder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -34,6 +35,7 @@ import java.util.List;
  * component. Apart from calculating and creating the columns and creating the suggestion colors, it
  * also handles the switches between simple and advanced views.
  */
+@NullMarked
 public class ColorPickerCoordinator {
     // Default color suggestions, overridden if a single suggestion is provided by the web.
     private static final int[] DEFAULT_COLORS = {
@@ -66,26 +68,26 @@ public class ColorPickerCoordinator {
     private final ColorPickerDialogView mColorPickerDialogView;
     private List<ColorSuggestion> mSuggestions;
     private PropertyModel mModel;
-
     private MVCListAdapter.ModelList mSuggestionsModelList;
     private ModelListAdapter mSuggestionsAdapter;
 
     static ColorPickerCoordinator create(
-            @NonNull Context context, Callback<Integer> dialogDismissedCallback) {
+            Context context, Callback<Integer> dialogDismissedCallback) {
         ColorPickerDialogView dialogView = new ColorPickerDialogView(context);
         return new ColorPickerCoordinator(context, dialogDismissedCallback, dialogView);
     }
 
     public ColorPickerCoordinator(
-            @NonNull Context context,
-            @NonNull Callback<Integer> dialogDismissedCallback,
-            @NonNull ColorPickerDialogView dialogView) {
+            Context context,
+            Callback<Integer> dialogDismissedCallback,
+            ColorPickerDialogView dialogView) {
         mContext = context;
         mDialogDismissedCallback = dialogDismissedCallback;
         mSuggestions = new ArrayList<>();
         mColorPickerDialogView = dialogView;
     }
 
+    @Initializer
     void show(int initialColor) {
         mInitialColor = initialColor;
 
@@ -205,7 +207,7 @@ public class ColorPickerCoordinator {
         mModel.set(CHOSEN_COLOR, newColor);
     }
 
-    private void handleViewSwitched(Void unused) {
+    private void handleViewSwitched(@Nullable Void unused) {
         mModel.set(IS_ADVANCED_VIEW, !mModel.get(IS_ADVANCED_VIEW));
     }
 

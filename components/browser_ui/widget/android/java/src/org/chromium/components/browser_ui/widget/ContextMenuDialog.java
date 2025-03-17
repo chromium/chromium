@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -21,9 +23,10 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.animation.EmptyAnimationListener;
@@ -38,6 +41,7 @@ import org.chromium.ui.widget.RectProvider;
  * ContextMenuDialog is a subclass of AlwaysDismissedDialog that ensures that the proper scale
  * animation is played upon calling {@link #show()} and {@link #dismiss()}.
  */
+@NullMarked
 public class ContextMenuDialog extends AlwaysDismissedDialog {
     public static final int NO_CUSTOM_MARGIN = -1;
 
@@ -55,15 +59,15 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private int mContextMenuFirstLocationYPx;
     private @Nullable AnchoredPopupWindow mPopupWindow;
     private View mLayout;
-    private OnLayoutChangeListener mOnLayoutChangeListener;
-    private DragEventDispatchHelper mDragEventDispatchHelper;
+    private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
+    private @Nullable DragEventDispatchHelper mDragEventDispatchHelper;
     private Rect mRect;
 
     private int mTopMarginPx;
     private int mBottomMarginPx;
 
-    private Integer mPopupMargin;
-    private Integer mDesiredPopupContentWidth;
+    private @Nullable Integer mPopupMargin;
+    private @Nullable Integer mDesiredPopupContentWidth;
 
     /**
      * View that is showing behind the context menu. If menu is shown as a popup without scrim, this
@@ -95,6 +99,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      *     touch events other than ACTION_DOWN.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *     coordinates are expected to be screen coordinates.
+     * @param shouldPadForWindowInsets If a wrapper layout should be applied to window inset
+     *     padding.
      */
     public ContextMenuDialog(
             Activity ownerActivity,
@@ -109,8 +115,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
-            Rect rect) {
-        super(ownerActivity, theme);
+            Rect rect,
+            boolean shouldPadForWindowInsets) {
+        super(ownerActivity, theme, shouldPadForWindowInsets);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
         mBottomMarginPx = bottomMarginPx;
@@ -128,7 +135,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     @Override
     public void onStart() {
         super.onStart();
-        Window dialogWindow = getWindow();
+        Window dialogWindow = assumeNonNull(getWindow());
         dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         if (mShouldRemoveScrim) {
@@ -136,21 +143,22 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         }
         if (mShouldRemoveScrim || mShouldSysUiMatchActivity) {
+            Window activityWindow = mActivity.getWindow();
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             // Set the navigation bar when API level >= 27 to match android:navigationBarColor
             // reference in styles.xml.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                dialogWindow.setNavigationBarColor(mActivity.getWindow().getNavigationBarColor());
+                dialogWindow.setNavigationBarColor(activityWindow.getNavigationBarColor());
                 UiUtils.setNavigationBarIconColor(
                         dialogWindow.getDecorView(),
                         mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
             }
             // Apply the status bar color in case the website had override them.
-            UiUtils.setStatusBarColor(dialogWindow, mActivity.getWindow().getStatusBarColor());
+            int statusBarColor = activityWindow.getStatusBarColor();
+            UiUtils.setStatusBarColor(dialogWindow, statusBarColor);
             UiUtils.setStatusBarIconColor(
                     dialogWindow.getDecorView().getRootView(),
-                    !ColorUtils.shouldUseLightForegroundOnBackground(
-                            mActivity.getWindow().getStatusBarColor()));
+                    !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor));
         }
 
         // Both bottom margin and top margin must be set together to ensure default
@@ -370,10 +378,12 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         return animation;
     }
 
+    @EnsuresNonNullIf("mTouchEventDelegateView")
     private boolean isDialogNonModal() {
         return mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null;
     }
 
+    @Nullable
     OnDragListener getOnDragListenerForTesting() {
         return mDragEventDispatchHelper;
     }

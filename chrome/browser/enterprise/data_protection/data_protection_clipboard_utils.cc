@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
-#include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
@@ -20,6 +19,7 @@
 #include "components/enterprise/data_controls/core/browser/data_controls_dialog_factory.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
@@ -33,9 +33,21 @@
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
-#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_PROTECTION)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/data_controls/android_data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/android_data_controls_dialog_factory.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/data_controls/reporting_service.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 namespace enterprise_data_protection {
 
@@ -194,9 +206,11 @@ void PasteIfAllowedByContentAnalysis(
 
 data_controls::DataControlsDialogFactory* GetDialogFactory() {
 #if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
+  return data_controls::AndroidDataControlsDialogFactory::GetInstance();
+#elif BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   return data_controls::DesktopDataControlsDialogFactory::GetInstance();
+#else
+  return nullptr;
 #endif
 }
 
@@ -205,7 +219,7 @@ void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
                                   const content::ClipboardMetadata& metadata,
                                   const data_controls::Verdict& verdict,
                                   bool bypassed = false) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   auto* reporting_service =
       data_controls::ReportingServiceFactory::GetInstance()
           ->GetForBrowserContext(destination.browser_context());
@@ -229,7 +243,7 @@ void MaybeReportDataControlsCopy(const content::ClipboardEndpoint& source,
                                  const content::ClipboardMetadata& metadata,
                                  const data_controls::Verdict& verdict,
                                  bool bypassed = false) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   auto* reporting_service =
       data_controls::ReportingServiceFactory::GetInstance()
           ->GetForBrowserContext(source.browser_context());
@@ -266,13 +280,13 @@ void OnDataControlsPasteWarning(
                                  /*bypassed=*/true);
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   std::move(callback).Run(std::move(clipboard_paste_data));
 #else
   PasteIfAllowedByContentAnalysis(
       destination.web_contents(), source, destination, metadata,
       std::move(clipboard_paste_data), std::move(callback));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
 void PasteIfAllowedByDataControls(
@@ -333,15 +347,16 @@ void PasteIfAllowedByDataControls(
         data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   std::move(callback).Run(std::move(clipboard_paste_data));
 #else
   PasteIfAllowedByContentAnalysis(
       destination.web_contents(), source, destination, metadata,
       std::move(clipboard_paste_data), std::move(callback));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void OnDlpRulesCheckDone(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
@@ -361,6 +376,7 @@ void OnDlpRulesCheckDone(
                                std::move(clipboard_paste_data),
                                std::move(callback));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void IsCopyToOSClipboardRestricted(
     const content::ClipboardEndpoint& source,
@@ -405,6 +421,13 @@ void OnDataControlsCopyWarning(
     IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
     return;
   }
+
+  // Once a pending write has been initiated, something must be written to the
+  // clipboard to avoid being stuck in a pending write state, which would
+  // prevent future writes to the clipboard. Since copying was not allowed,
+  // the callback should be run with empty data instead.
+  std::move(callback).Run(metadata.format_type, content::ClipboardPasteData(),
+                          /*replacement_data=*/std::nullopt);
 }
 
 void IsCopyRestrictedByDialog(
@@ -470,6 +493,24 @@ void PasteIfAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (SkipDataControlOrContentAnalysisChecks(destination)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  } else if (base::FeatureList::IsEnabled(
+                 data_controls::kEnableClipboardDataControlsAndroid)) {
+    // Call PasteIfAllowedByDataControls directly as
+    // DataTransferPolicyController::PasteIfAllowed contains logic that isn't
+    // relevant to Clank.
+    PasteIfAllowedByDataControls(source, destination, metadata,
+                                 std::move(clipboard_paste_data),
+                                 std::move(callback));
+    return;
+  } else {
+    std::move(callback).Run(std::move(clipboard_paste_data));
+    return;
+  }
+#else
   if (ui::DataTransferPolicyController::HasInstance()) {
     absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
     if (clipboard_paste_data.file_paths.empty()) {
@@ -499,6 +540,7 @@ void PasteIfAllowedByPolicy(
   OnDlpRulesCheckDone(source, destination, metadata,
                       std::move(clipboard_paste_data), std::move(callback),
                       /*allowed=*/true);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void IsClipboardCopyAllowedByPolicy(
@@ -506,6 +548,14 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsAndroid)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
@@ -515,6 +565,8 @@ void IsClipboardCopyAllowedByPolicy(
   DCHECK(source.browser_context());
 
 #if !BUILDFLAG(IS_ANDROID)
+  // IsUrlAllowedToCopy checks a deprecated CopyPreventionSettings that isn't
+  // applicable on Clank.
   std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(

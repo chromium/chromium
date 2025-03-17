@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_ANALYSIS_SETTINGS_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_ANALYSIS_SETTINGS_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>

@@ -110,9 +110,8 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
                 "state")));
 
     if (enabled) {
-      AddStep(steps,
-              std::move(WaitForShow(kTrayDetailedViewProgressBarElementId)
-                            .SetMustRemainVisible(false)));
+      AddStep(steps, WaitForShow(kTrayDetailedViewProgressBarElementId)
+                         .SetMustRemainVisible(false));
     } else {
       AddStep(steps, WaitForHide(kTrayDetailedViewProgressBarElementId));
     }

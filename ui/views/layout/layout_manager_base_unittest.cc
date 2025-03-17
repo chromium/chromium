@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -35,10 +34,10 @@ class TestLayoutManagerBase : public LayoutManagerBase {
  public:
   std::vector<const View*> GetIncludedChildViews() const {
     std::vector<const View*> included;
-    base::ranges::copy_if(host_view()->children(), std::back_inserter(included),
-                          [=, this](const View* child) {
-                            return IsChildIncludedInLayout(child);
-                          });
+    std::ranges::copy_if(host_view()->children(), std::back_inserter(included),
+                         [=, this](const View* child) {
+                           return IsChildIncludedInLayout(child);
+                         });
     return included;
   }
 
@@ -592,7 +591,7 @@ TEST_F(LayoutManagerBaseManagerTest, ViewAdded_NotVisible) {
   // doesn't touch it during layout.
   View* new_view = new StaticSizedView(kSquarishSize);
   new_view->SetVisible(false);
-  host_view()->AddChildView(new_view);
+  host_view()->AddChildViewRaw(new_view);
   test::RunScheduledLayout(host_view());
 
   EXPECT_FALSE(new_view->GetVisible());

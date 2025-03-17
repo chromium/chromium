@@ -1007,7 +1007,7 @@ TEST_F(TemplateURLTest, GetRegulatoryExtensionType) {
   }
 
   {
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     TemplateURL url(data);
     EXPECT_EQ(RegulatoryExtensionType::kAndroidEEA,
               url.GetRegulatoryExtensionType());
@@ -1163,16 +1163,17 @@ TEST_F(TemplateURLTest, PlayAPIAttributionEnabled) {
   const struct TestData {
     const char* url;
     std::u16string terms;
-    bool created_from_play_api;
+    RegulatoryExtensionType reg_ext_type;
     const char* output;
-  } test_data[] = {
-      {"http://foo/?q={searchTerms}", u"bar", false, "http://foo/?q=bar"},
-      {"http://foo/?q={searchTerms}", u"bar", true,
-       "http://foo/?q=bar&chrome_dse_attribution=1"}};
+  } test_data[] = {{"http://foo/?q={searchTerms}", u"bar",
+                    RegulatoryExtensionType::kDefault, "http://foo/?q=bar"},
+                   {"http://foo/?q={searchTerms}", u"bar",
+                    RegulatoryExtensionType::kAndroidEEA,
+                    "http://foo/?q=bar&chrome_dse_attribution=1"}};
   TemplateURLData data;
   for (const auto& entry : test_data) {
     data.SetURL(entry.url);
-    data.created_from_play_api = entry.created_from_play_api;
+    data.regulatory_origin = entry.reg_ext_type;
     TemplateURL url(data);
     EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
     ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
@@ -1190,15 +1191,16 @@ TEST_F(TemplateURLTest, PlayAPIAttributionDisabled) {
   const struct TestData {
     const char* url;
     std::u16string terms;
-    bool created_from_play_api;
+    RegulatoryExtensionType reg_ext_type;
     const char* output;
-  } test_data[] = {
-      {"http://foo/?q={searchTerms}", u"bar", false, "http://foo/?q=bar"},
-      {"http://foo/?q={searchTerms}", u"bar", true, "http://foo/?q=bar"}};
+  } test_data[] = {{"http://foo/?q={searchTerms}", u"bar",
+                    RegulatoryExtensionType::kDefault, "http://foo/?q=bar"},
+                   {"http://foo/?q={searchTerms}", u"bar",
+                    RegulatoryExtensionType::kAndroidEEA, "http://foo/?q=bar"}};
   TemplateURLData data;
   for (const auto& entry : test_data) {
     data.SetURL(entry.url);
-    data.created_from_play_api = entry.created_from_play_api;
+    data.regulatory_origin = entry.reg_ext_type;
     TemplateURL url(data);
     EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
     ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
@@ -2568,7 +2570,7 @@ TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
   }
 
   {
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     TemplateURL t_url(data);
 
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
@@ -2614,7 +2616,7 @@ TEST_F(TemplateURLTest, GenerateURL_WithEmptyRegulatoryExtensions) {
   }
 
   {
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     TemplateURL t_url(data);
 
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
@@ -2675,7 +2677,7 @@ TEST_F(TemplateURLTest, GenerateURL_WithFullRegulatoryExtensions) {
   }
 
   {
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     TemplateURL t_url(data);
     const char* expected_search_url =
         "https://search/?q=user+query&eea_search_param=abc";
@@ -2756,7 +2758,7 @@ TEST_F(TemplateURLTest,
   }
 
   {
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     TemplateURL t_url(data);
 
     base::HistogramTester histogram_tester;
@@ -2811,7 +2813,7 @@ TEST_F(TemplateURLTest, GenerateURL_RegulatoryExtensionVariantHistograms) {
   }
 
   {
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     TemplateURL t_url(data);
 
     {
@@ -3022,43 +3024,6 @@ TEST_F(TemplateURLTest, PathWildcard) {
                               search_terms_args, search_terms_data_,
                               &generated_url);
   EXPECT_EQ("https://www.google.com/search?q=foo", generated_url.spec());
-}
-
-TEST_F(TemplateURLTest, SideImageSearchParams) {
-  TemplateURLData data;
-  data.side_image_search_param = "sideimagesearch";
-  TemplateURL url(data);
-
-  // Adds query param with provided version to URL.
-  GURL result =
-      url.GenerateSideImageSearchURL(GURL("http://foo.com/?q=123"), "1");
-  EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=1", result.spec());
-
-  // Does not add query param if the provided URL already has that param and
-  // version.
-  result = url.GenerateSideImageSearchURL(
-      GURL("http://foo.com/?q=123&sideimagesearch=1"), "1");
-  EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=1", result.spec());
-
-  // Updates version if the version on the query param does not match.
-  result = url.GenerateSideImageSearchURL(
-      GURL("http://foo.com/?q=123&sideimagesearch=2"), "1");
-  EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=1", result.spec());
-
-  // Does nothing if the URL does not have the param.
-  result = url.RemoveSideImageSearchParamFromURL(GURL("http://foo.com/?q=123"));
-  EXPECT_EQ("http://foo.com/?q=123", result.spec());
-
-  // Removes the param if the provided URL has it.
-  result = url.RemoveSideImageSearchParamFromURL(
-      GURL("http://foo.com/?q=123&sideimagesearch=1"));
-  EXPECT_EQ("http://foo.com/?q=123", result.spec());
-
-  // Removes the first instance of the query param that exist in the URL. This
-  // should not happen but just asserting for expected behavior.
-  result = url.RemoveSideImageSearchParamFromURL(
-      GURL("http://foo.com/?q=123&sideimagesearch=1&sideimagesearch=2"));
-  EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=2", result.spec());
 }
 
 TEST_F(TemplateURLTest, ImageTranslate) {

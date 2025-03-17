@@ -17,6 +17,7 @@
 #include "cc/cc_export.h"
 #include "cc/layers/draw_mode.h"
 #include "cc/layers/layer_collections.h"
+#include "cc/paint/element_id.h"
 #include "cc/trees/occlusion.h"
 #include "cc/trees/property_tree.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -30,6 +31,7 @@
 
 namespace cc {
 
+struct AppendQuadsContext;
 class AppendQuadsData;
 class DamageTracker;
 class FilterOperations;
@@ -97,11 +99,16 @@ class CC_EXPORT RenderSurfaceImpl {
   SkColor4f GetDebugBorderColor() const;
   float GetDebugBorderWidth() const;
 
-  void SetDrawTransform(const gfx::Transform& draw_transform) {
+  void SetDrawTransform(const gfx::Transform& draw_transform,
+                        const gfx::Vector2dF& pixel_alignment_offset) {
     draw_properties_.draw_transform = draw_transform;
+    draw_properties_.pixel_alignment_offset = pixel_alignment_offset;
   }
   const gfx::Transform& draw_transform() const {
     return draw_properties_.draw_transform;
+  }
+  const gfx::Vector2dF& pixel_alignment_offset() const {
+    return draw_properties_.pixel_alignment_offset;
   }
 
   void SetScreenSpaceTransform(const gfx::Transform& screen_space_transform) {
@@ -166,12 +173,21 @@ class CC_EXPORT RenderSurfaceImpl {
   void SetContentRectToViewport();
   void SetContentRectForTesting(const gfx::Rect& rect);
   gfx::Rect content_rect() const { return draw_properties_.content_rect; }
+  gfx::Rect view_transition_capture_content_rect() const {
+    return view_transition_capture_content_rect_;
+  }
 
   void ClearAccumulatedContentRect();
+  // Please see `append_quads_context.h` for a comment about
+  // `capture_view_transition_tokens`.
   void AccumulateContentRectFromContributingLayer(
-      LayerImpl* contributing_layer);
+      LayerImpl* contributing_layer,
+      const base::flat_set<blink::ViewTransitionToken>&
+          capture_view_transition_tokens);
   void AccumulateContentRectFromContributingRenderSurface(
-      RenderSurfaceImpl* contributing_surface);
+      RenderSurfaceImpl* contributing_surface,
+      const base::flat_set<blink::ViewTransitionToken>&
+          capture_view_transition_tokens);
 
   gfx::Rect accumulated_content_rect() const {
     return accumulated_content_rect_;
@@ -195,6 +211,16 @@ class CC_EXPORT RenderSurfaceImpl {
   ElementId id() const { return id_; }
   viz::CompositorRenderPassId render_pass_id() const {
     return viz::CompositorRenderPassId(id().GetInternalValue());
+  }
+
+  // This is a render pass id that is used for view transition capture phase
+  // when ViewTransitionCaptureAndDisplay feature is enabled. It's constructed
+  // by using the regular `render_pass_id()` and mapping it to a reserved
+  // internal cc namespace (see code in cc/paint/element_.h:
+  // `kElementIdReservedBitCount` and `RemapElementIdToCcNamespace`).
+  viz::CompositorRenderPassId view_transition_capture_render_pass_id() const {
+    return viz::CompositorRenderPassId(
+        RemapElementIdToCcNamespace(id()).GetInternalValue());
   }
 
   bool HasMaskingContributingSurface() const;
@@ -239,11 +265,19 @@ class CC_EXPORT RenderSurfaceImpl {
   DamageTracker* damage_tracker() const { return damage_tracker_.get(); }
   gfx::Rect GetDamageRect() const;
 
-  std::unique_ptr<viz::CompositorRenderPass> CreateRenderPass();
+  // Please see `append_quads_context.h` for a comment about
+  // `capture_view_transition_tokens`.
+  std::unique_ptr<viz::CompositorRenderPass> CreateRenderPass(
+      const base::flat_set<blink::ViewTransitionToken>&
+          capture_view_transition_tokens = {});
+  std::unique_ptr<viz::CompositorRenderPass>
+  CreateViewTransitionCaptureRenderPass(
+      const base::flat_set<blink::ViewTransitionToken>&
+          capture_view_transition_tokens = {});
   viz::ResourceId GetMaskResourceFromLayer(PictureLayerImpl* mask_layer,
                                            gfx::Size* mask_texture_size,
                                            gfx::RectF* mask_uv_rect) const;
-  void AppendQuads(DrawMode draw_mode,
+  void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data);
 
@@ -256,6 +290,15 @@ class CC_EXPORT RenderSurfaceImpl {
   const EffectNode* OwningEffectNode() const;
   EffectNode* OwningEffectNodeMutableForTest() const;
 
+  // Returns true if the owning effect node has a view transition resource.
+  bool IsViewTransitionElement() const;
+
+  // Returns the view transition element resource id for this render surface.
+  // This may be invalid, if this render surface is not a view transition
+  // element.
+  const viz::ViewTransitionElementResourceId& ViewTransitionElementResourceId()
+      const;
+
  private:
   void SetContentRect(const gfx::Rect& content_rect);
   gfx::Rect CalculateClippedAccumulatedContentRect();
@@ -264,6 +307,9 @@ class CC_EXPORT RenderSurfaceImpl {
   void TileMaskLayer(viz::CompositorRenderPass* render_pass,
                      viz::SharedQuadState* shared_quad_state,
                      const gfx::Rect& unoccluded_content_rect);
+  std::unique_ptr<viz::CompositorRenderPass> CreateRenderPassCommon(
+      viz::CompositorRenderPassId id,
+      const gfx::Rect& output_rect);
 
   // Returns true if this surface should be clipped. This is false if there
   // are copy requests, it should be cached, or is part of a view transition.
@@ -286,8 +332,11 @@ class CC_EXPORT RenderSurfaceImpl {
     float draw_opacity = 1.0f;
 
     // Transforms from the surface's own space to the space of its target
-    // surface.
+    // surface. This has been adjusted from the original draw transform
+    // calculated from the property tree, by -pixel_alignment_offset.
     gfx::Transform draw_transform;
+    // See draw_property_utils::PixelAlignmentOffset().
+    gfx::Vector2dF pixel_alignment_offset;
     // Transforms from the surface's own space to the viewport.
     gfx::Transform screen_space_transform;
 
@@ -345,6 +394,8 @@ class CC_EXPORT RenderSurfaceImpl {
   // once its originating surface's content rect has been computed. So we defer
   // adding this contribution until that is complete.
   std::vector<LayerImpl*> deferred_contributing_layers_;
+
+  gfx::Rect view_transition_capture_content_rect_;
 };
 
 }  // namespace cc

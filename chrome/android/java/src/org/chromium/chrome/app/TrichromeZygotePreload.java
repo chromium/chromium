@@ -7,10 +7,12 @@ package org.chromium.chrome.app;
 import android.content.pm.ApplicationInfo;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.content_public.app.ZygotePreload;
 
 /** The {@link ZygotePreload} allowing to use the Chromium Linker when running Trichrome. */
+@NullMarked
 public class TrichromeZygotePreload extends ZygotePreload {
     @Override
     public void doPreload(ApplicationInfo appInfo) {

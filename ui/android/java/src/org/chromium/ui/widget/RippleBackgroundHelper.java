@@ -21,6 +21,7 @@ import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
@@ -41,11 +42,7 @@ public class RippleBackgroundHelper {
 
     private @Nullable ColorStateList mBackgroundColorList;
     private @Nullable ColorStateList mStateLayerColorList;
-
-    @SuppressWarnings("NullAway.Init")
     private GradientDrawable mBackgroundGradient;
-
-    @SuppressWarnings("NullAway.Init")
     private GradientDrawable mStateLayerGradient;
 
     private @Nullable LayerDrawable mBackgroundLayerDrawable;
@@ -206,6 +203,7 @@ public class RippleBackgroundHelper {
      * @param verticalInset The vertical inset of the background drawable.
      * @return The {@link GradientDrawable}/{@link LayerDrawable} to be used as ripple background.
      */
+    @EnsuresNonNull({"mBackgroundGradient", "mStateLayerGradient"})
     private Drawable createBackgroundDrawable(
             ColorStateList rippleColorList,
             ColorStateList borderColorList,
@@ -245,9 +243,9 @@ public class RippleBackgroundHelper {
 
     /**
      * @param color The {@link ColorStateList} to be set as the background color on the background
-     *              drawable.
+     *     drawable.
      */
-    public void setBackgroundColor(ColorStateList color) {
+    public void setBackgroundColor(@Nullable ColorStateList color) {
         if (color == mBackgroundColorList) return;
 
         mBackgroundColorList = color;

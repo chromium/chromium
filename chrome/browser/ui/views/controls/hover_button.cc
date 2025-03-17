@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -61,8 +60,11 @@ class IconWrapper : public views::View {
   METADATA_HEADER(IconWrapper, views::View)
 
  public:
-  explicit IconWrapper(std::unique_ptr<views::View> icon, int vertical_spacing)
-      : icon_(AddChildView(std::move(icon))) {
+  explicit IconWrapper(std::unique_ptr<views::View> icon,
+                       int vertical_spacing,
+                       int icon_label_spacing)
+      : icon_(AddChildView(std::move(icon))),
+        icon_label_spacing_(icon_label_spacing) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     // Make sure hovering over the icon also hovers the |HoverButton|.
@@ -77,17 +79,16 @@ class IconWrapper : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
-    const int icon_height = icon_->GetPreferredSize(available_size).height();
-    const int icon_label_spacing =
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-    return gfx::Size(icon_height + icon_label_spacing, icon_height);
+    const gfx::Size icon_size = icon_->GetPreferredSize(available_size);
+    return gfx::Size(icon_size.width() + icon_label_spacing_,
+                     icon_size.height());
   }
 
   views::View* icon() { return icon_; }
 
  private:
   raw_ptr<views::View> icon_;
+  int icon_label_spacing_;
 };
 
 BEGIN_METADATA(IconWrapper)
@@ -144,7 +145,9 @@ HoverButton::HoverButton(PressedCallback callback,
                          const std::u16string& subtitle,
                          std::unique_ptr<views::View> secondary_view,
                          bool add_vertical_label_spacing,
-                         const std::u16string& footer)
+                         const std::u16string& footer,
+                         int icon_label_spacing,
+                         bool multiline_subtitle)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -160,8 +163,8 @@ HoverButton::HoverButton(PressedCallback callback,
   // vertically.
   const int vertical_spacing = GetVerticalSpacing();
   if (icon_view) {
-    icon_wrapper_ = AddChildView(
-        std::make_unique<IconWrapper>(std::move(icon_view), vertical_spacing));
+    icon_wrapper_ = AddChildView(std::make_unique<IconWrapper>(
+        std::move(icon_view), vertical_spacing, icon_label_spacing));
     icon_view_ = static_cast<IconWrapper*>(icon_wrapper_)->icon();
   }
 
@@ -187,6 +190,7 @@ HoverButton::HoverButton(PressedCallback callback,
   if (!subtitle.empty()) {
     std::unique_ptr<views::Label> subtitle_label =
         CreateSecondaryLabel(subtitle);
+    subtitle_label->SetMultiLine(multiline_subtitle);
     subtitle_ = label_wrapper->AddChildView(std::move(subtitle_label));
   }
   if (!footer.empty()) {
@@ -217,15 +221,13 @@ HoverButton::HoverButton(PressedCallback callback,
     // used in drawing ink drops.
     secondary_view->SetPaintToLayer();
     secondary_view->layer()->SetFillsBoundsOpaquely(false);
-    const int icon_label_spacing =
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+    const int secondary_icon_label_spacing = icon_label_spacing;
 
     // Set vertical margins such that the vertical distance between HoverButtons
     // is maintained.
     secondary_view->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::TLBR(vertical_spacing, icon_label_spacing,
+        gfx::Insets::TLBR(vertical_spacing, secondary_icon_label_spacing,
                           vertical_spacing, 0));
     secondary_view_ = AddChildView(std::move(secondary_view));
   }
@@ -381,7 +383,7 @@ views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
     if (handler) {
       gfx::Point point_in_handler_view(point);
       ConvertPointToTarget(this, handler, &point_in_handler_view);
-      if (!handler->GetTooltipText(point_in_secondary_view).empty()) {
+      if (!handler->GetRenderedTooltipText(point_in_secondary_view).empty()) {
         return handler;
       }
     }

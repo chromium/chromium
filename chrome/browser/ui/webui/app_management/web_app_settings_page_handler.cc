@@ -6,14 +6,15 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
+#include "chrome/browser/web_applications/commands/computed_app_size.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/url_formatter/elide_url.h"
@@ -101,6 +102,20 @@ web_app::RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
   return web_app_constant_login_mode;
 }
 
+web_app::mojom::UserDisplayMode ConvertWindowModeToUserDisplayMode(
+    apps::WindowMode window_mode) {
+  switch (window_mode) {
+    case apps::WindowMode::kBrowser:
+      return web_app::mojom::UserDisplayMode::kBrowser;
+    case apps::WindowMode::kTabbedWindow:
+      return web_app::mojom::UserDisplayMode::kTabbed;
+    case apps::WindowMode::kWindow:
+      return web_app::mojom::UserDisplayMode::kStandalone;
+    case apps::WindowMode::kUnknown:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 WebAppSettingsPageHandler::WebAppSettingsPageHandler(
@@ -112,8 +127,7 @@ WebAppSettingsPageHandler::WebAppSettingsPageHandler(
                                    std::move(page),
                                    profile),
       delegate_(delegate) {
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  registrar_observation_.Observe(&provider->registrar_unsafe());
+  registrar_observation_.Observe(&provider().registrar_unsafe());
 #if BUILDFLAG(IS_MAC)
   app_shim_observation_ = AppShimRegistry::Get()->RegisterAppChangedCallback(
       base::BindRepeating(&WebAppSettingsPageHandler::NotifyAppChanged,
@@ -145,32 +159,25 @@ void WebAppSettingsPageHandler::SetResizeLocked(const std::string& app_id,
 }
 
 void WebAppSettingsPageHandler::Uninstall(const std::string& app_id) {
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
-
-  if (!provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
+  if (!provider().registrar_unsafe().CanUserUninstallWebApp(app_id)) {
     return;
   }
 
-  provider->ui_manager().PresentUserUninstallDialog(
+  provider().ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppManagement,
       delegate_->GetUninstallAnchorWindow(), base::DoNothing());
 }
 
 void WebAppSettingsPageHandler::SetPreferredApp(const std::string& app_id,
                                                 bool is_preferred_app) {
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile());
-
-  provider->scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+  provider().scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
       app_id, is_preferred_app, base::DoNothing());
 }
 
 void WebAppSettingsPageHandler::GetOverlappingPreferredApps(
     const std::string& app_id,
     GetOverlappingPreferredAppsCallback callback) {
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile());
-  provider->scheduler().ScheduleCallbackWithResult(
+  provider().scheduler().ScheduleCallbackWithResult(
       "AppManagementPageHandlerBase::GetOverlappingPreferredApps",
       web_app::AllAppsLockDescription(),
       base::BindOnce(
@@ -183,29 +190,22 @@ void WebAppSettingsPageHandler::GetOverlappingPreferredApps(
       std::move(callback), /*arg_for_shutdown=*/std::vector<std::string>());
 }
 
-void WebAppSettingsPageHandler::UpdateAppSize(const std::string& app_id) {
-  NOTIMPLEMENTED();
-}
-
 void WebAppSettingsPageHandler::SetWindowMode(const std::string& app_id,
                                               apps::WindowMode window_mode) {
-  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile());
-
   // Changing window mode is not allowed for isolated web apps.
-  if (provider->registrar_unsafe().IsIsolated(app_id)) {
+  if (provider().registrar_unsafe().IsIsolated(app_id)) {
     return;
   }
 
-  apps::AppServiceProxyFactory::GetForProfile(profile())->SetWindowMode(
-      app_id, window_mode);
+  provider().scheduler().SetUserDisplayMode(
+      app_id, ConvertWindowModeToUserDisplayMode(window_mode),
+      base::DoNothing());
 }
 
 void WebAppSettingsPageHandler::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::RunOnOsLoginMode run_on_os_login_mode) {
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile());
-  provider->scheduler().SetRunOnOsLoginMode(
+  provider().scheduler().SetRunOnOsLoginMode(
       app_id, ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
       base::DoNothing());
 }
@@ -259,26 +259,23 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
     return nullptr;
   }
 
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile());
-  CHECK(provider);
   app->is_preferred_app =
-      provider->registrar_unsafe().CapturesLinksInScope(app_id);
+      provider().registrar_unsafe().CapturesLinksInScope(app_id);
 
   // This allows us to bypass showing the supported links item if the feature is
   // disabled.
   if (apps::features::ShouldShowLinkCapturingUX()) {
-    app->supported_links = GetSupportedLinks(app->id, *provider);
+    app->supported_links = GetSupportedLinks(app->id, provider());
   } else {
     app->supported_links = std::vector<std::string>();
   }
 
-  if (!provider->registrar_unsafe().GetScopeExtensions(app->id).empty()) {
-    app->formatted_origin = GetFormattedOrigin(app->id, *provider);
-    app->scope_extensions = GetScopeExtensions(app->id, *provider);
+  if (!provider().registrar_unsafe().GetScopeExtensions(app->id).empty()) {
+    app->formatted_origin = GetFormattedOrigin(app->id, provider());
+    app->scope_extensions = GetScopeExtensions(app->id, provider());
   }
 
-  app->hide_window_mode = provider->registrar_unsafe().IsIsolated(app->id);
+  app->hide_window_mode = provider().registrar_unsafe().IsIsolated(app->id);
 
   app->show_system_notifications_settings_link = false;
 #if BUILDFLAG(IS_MAC)
@@ -298,4 +295,8 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
   app->disable_user_choice_navigation_capturing = false;
 
   return app;
+}
+
+web_app::WebAppProvider& WebAppSettingsPageHandler::provider() {
+  return *web_app::WebAppProvider::GetForWebApps(profile());
 }

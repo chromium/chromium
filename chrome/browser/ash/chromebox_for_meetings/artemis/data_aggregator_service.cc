@@ -23,9 +23,9 @@ using mojom::DataFilter::FilterType::REGEX;
 static DataAggregatorService* g_data_aggregator_service = nullptr;
 
 constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
-constexpr size_t kDefaultLogBatchSize = 500;  // lines
+constexpr size_t kDefaultLogBatchSize = 100;  // lines
 
-constexpr size_t kPayloadMaxSizeBytes = 500000;  // 500Kb
+constexpr size_t kPayloadMaxSizeBytes = 500 * 1000;  // 500Kb
 constexpr base::TimeDelta kPayloadEnqueueTimeout = base::Minutes(10);
 constexpr size_t kMaxPayloadQueueSize = 3;  // # payloads
 
@@ -76,10 +76,10 @@ const char* kLocalCommandSourcesSlowPoll[] = {
 
 constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
 const char* kLocalLogSources[] = {
-    kCfmAuditLogFile,  kCfmBiosInfoLogFile,     kCfmChromeLogFile,
-    kCfmCrosEcLogFile, kCfmEventlogLogFile,     kCfmFwupdLogFile,
-    kCfmLacrosLogFile, kCfmPowerdLogFile,       kCfmSyslogLogFile,
-    kCfmUiLogFile,     kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
+    kCfmAuditLogFile,      kCfmBiosInfoLogFile,     kCfmChromeLogFile,
+    kCfmChromeUserLogFile, kCfmCrosEcLogFile,       kCfmEventlogLogFile,
+    kCfmFwupdLogFile,      kCfmPowerdLogFile,       kCfmSyslogLogFile,
+    kCfmUiLogFile,         kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
 };
 
 }  // namespace
@@ -273,7 +273,7 @@ void DataAggregatorService::OnLocalLogDisconnect(const std::string& filepath) {
 }
 
 void DataAggregatorService::OnMojoDisconnect() {
-  VLOG(3) << "mojom::DataAggregator disconnected";
+  VLOG(2) << "mojom::DataAggregator disconnected";
 }
 
 void DataAggregatorService::InitializeLocalSources() {
@@ -318,7 +318,7 @@ void DataAggregatorService::OnRequestBindUploadService(
     const std::string& interface_name,
     size_t num_tries,
     bool success) {
-  VLOG(3) << "Uploader RequestBindService result: " << success
+  VLOG(2) << "Uploader RequestBindService result: " << success
           << " for interface: " << interface_name;
 
   if (success) {
@@ -333,7 +333,7 @@ void DataAggregatorService::OnRequestBindUploadService(
     return;
   }
 
-  VLOG(3) << "Retrying service adaptor connection in "
+  VLOG(2) << "Retrying service adaptor connection in "
           << kServiceAdaptorRetryDelay;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -365,7 +365,7 @@ void DataAggregatorService::OnRequestBindDeviceInfoService(
     const std::string& interface_name,
     size_t num_tries,
     bool success) {
-  VLOG(3) << "DeviceInfo RequestBindService result: " << success
+  VLOG(2) << "DeviceInfo RequestBindService result: " << success
           << " for interface: " << interface_name;
 
   if (success) {
@@ -379,7 +379,7 @@ void DataAggregatorService::OnRequestBindDeviceInfoService(
     return;
   }
 
-  VLOG(3) << "Retrying service adaptor connection in "
+  VLOG(2) << "Retrying service adaptor connection in "
           << kServiceAdaptorRetryDelay;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -555,7 +555,7 @@ void DataAggregatorService::AppendEntriesToActivePayload(
 bool DataAggregatorService::IsPayloadReadyForUpload() const {
   // Flush the payload to the wire if it exceeds our max size.
   if (active_transport_payload_.ByteSizeLong() >= kPayloadMaxSizeBytes) {
-    VLOG(4) << "Payload reached maximum size; pushing to wire";
+    VLOG(2) << "Payload reached maximum size; pushing to wire";
     return true;
   }
 
@@ -563,7 +563,7 @@ bool DataAggregatorService::IsPayloadReadyForUpload() const {
   // always uploading data, even in the event of a data "stall", where
   // a small amount of data is available for an extended period of time.
   if ((base::TimeTicks::Now() - last_upload_time_) >= kPayloadEnqueueTimeout) {
-    VLOG(4) << "Payload timeout reached; force pushing";
+    VLOG(2) << "Payload timeout reached; force pushing";
     return true;
   }
 
@@ -596,7 +596,7 @@ void DataAggregatorService::AddActivePayloadToPendingQueue() {
     pending_transport_payloads_.pop();
   }
 
-  VLOG(3) << "Pushed payload into pending queue. New size: "
+  VLOG(2) << "Pushed payload into pending queue. New size: "
           << pending_transport_payloads_.size();
 }
 
@@ -611,6 +611,12 @@ void DataAggregatorService::EnqueueNextPendingTransportPayload() {
   if (enqueue_in_progress_) {
     return;
   }
+
+  InitiateEnqueueRequest();
+}
+
+void DataAggregatorService::InitiateEnqueueRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (pending_transport_payloads_.empty()) {
     LOG(WARNING) << "Requested payload enqueue, but payload queue is empty.";
@@ -642,11 +648,15 @@ void DataAggregatorService::HandleEnqueueResponse(
     LOG(ERROR) << "Recent enqueue failed with error code: " << status->code
                << ". Trying again in " << retry_delay;
 
+    // Note: we call the helper directly here to force the attempt to go
+    // through, despite `enqueue_in_progress_` being set. We can't unset
+    // this var as we may get additional enqueue requests while we wait
+    // to retry, and we want to decline these. Otherwise, we break the
+    // backoff timer functionality of the retry.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &DataAggregatorService::EnqueueNextPendingTransportPayload,
-            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&DataAggregatorService::InitiateEnqueueRequest,
+                       weak_ptr_factory_.GetWeakPtr()),
         retry_delay);
     return;
   }

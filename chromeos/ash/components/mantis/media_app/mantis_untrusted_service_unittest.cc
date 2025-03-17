@@ -9,12 +9,15 @@
 #include <variant>
 
 #include "base/functional/overloaded.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,14 +92,21 @@ class MockMojoMantisProcessor : public mantis::mojom::MantisProcessor {
               (const std::vector<uint8_t>& image,
                ClassifyImageSafetyCallback callback),
               (override));
+  MOCK_METHOD(void,
+              Outpainting,
+              (const std::vector<uint8_t>& image,
+               const std::vector<uint8_t>& mask,
+               uint32_t seed,
+               InpaintingCallback callback),
+              (override));
 
  private:
   mojo::Receiver<mantis::mojom::MantisProcessor> receiver_;
 };
 
-class UntrustedProcessorTest : public testing::Test {
+class MantisUntrustedServiceTest : public testing::Test {
  public:
-  UntrustedProcessorTest()
+  MantisUntrustedServiceTest()
       : service_(mojo_mantis_processor_.BindNewPipeAndPassRemote()) {}
 
  protected:
@@ -119,8 +129,22 @@ MantisResultPtr GetMantisResult(const ImageInferenceTestCase& test_case) {
       test_case);
 }
 
+TEST_F(MantisUntrustedServiceTest, CallDisconnectHandler) {
+  testing::MockFunction<void()> disconnect_handler;
+  EXPECT_CALL(disconnect_handler, Call);
+
+  mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedService>
+      pending_remote = service_.BindNewPipeAndPassRemote(
+          base::BindLambdaForTesting(disconnect_handler.AsStdFunction()));
+  mojo::Remote<media_app_ui::mojom::MantisUntrustedService> remote(
+      std::move(pending_remote));
+
+  remote.reset();
+  ASSERT_TRUE(base::test::RunUntil([&] { return !remote.is_bound(); }));
+}
+
 class ImageInferenceTest
-    : public UntrustedProcessorTest,
+    : public MantisUntrustedServiceTest,
       public testing::WithParamInterface<ImageInferenceTestCase> {};
 
 TEST_P(ImageInferenceTest, SegmentImage) {
@@ -159,6 +183,18 @@ TEST_P(ImageInferenceTest, InpaintImage) {
   EXPECT_EQ(result_future.Take(), result);
 }
 
+TEST_P(ImageInferenceTest, OutpaintImage) {
+  MantisResultPtr result = GetMantisResult(GetParam());
+
+  EXPECT_CALL(mojo_mantis_processor_, Outpainting)
+      .WillOnce(RunOnceCallback<3>(result.Clone()));
+
+  base::test::TestFuture<mantis::mojom::MantisResultPtr> result_future;
+  service_.OutpaintImage(GetFakeImage(), GetFakeMask(), GetFakeSeed(),
+                         result_future.GetCallback());
+  EXPECT_EQ(result_future.Take(), result);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     MantisMediaApp,
     ImageInferenceTest,
@@ -180,7 +216,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 class ClassifyImageSafetyTest
-    : public UntrustedProcessorTest,
+    : public MantisUntrustedServiceTest,
       public testing::WithParamInterface<SafetyClassifierVerdict> {};
 
 TEST_P(ClassifyImageSafetyTest, ClassifyImageSafety) {

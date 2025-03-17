@@ -26,13 +26,13 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0",
+        "name": "base_unittests iPhone 15 Pro 18",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -53,7 +53,7 @@
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -61,7 +61,7 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0"
+        "variant_id": "iPhone 15 Pro 18"
       },
       {
         "args": [
@@ -69,13 +69,13 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "highway_tests iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0",
+        "name": "highway_tests iPhone 15 Pro 18",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -96,7 +96,7 @@
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -104,7 +104,7 @@
         },
         "test": "highway_tests",
         "test_id_prefix": "ninja://third_party/highway:highway_tests/",
-        "variant_id": "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0"
+        "variant_id": "iPhone 15 Pro 18"
       }
     ]
   }

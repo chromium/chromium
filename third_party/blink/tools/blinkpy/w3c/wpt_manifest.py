@@ -386,22 +386,25 @@ class WPTManifest:
         return (test.file_path or url) if test else None
 
     @staticmethod
-    def ensure_manifest(port, path=None):
+    def ensure_manifest(port, path=None, test_paths=None):
         """Regenerates the WPT MANIFEST.json file.
 
         Args:
             port: A blinkpy.web_tests.port.Port object.
             path: The path to a WPT root (relative to web_tests, optional).
+            test_paths: test directories or files to update, None to update all.
         """
         fs = port.host.filesystem
         if path is None:
             path = fs.join('external', 'wpt')
+
+        if not port.should_update_manifest(path):
+            return
+        _log.debug('%s MANIFEST.json for %s ...',
+                   'Partially updating' if test_paths else 'Generating', path)
+
         wpt_path = fs.join(port.web_tests_dir(), path)
         manifest_path = fs.join(wpt_path, MANIFEST_NAME)
-
-        def is_cog() -> bool:
-            """Checks the environment is cog."""
-            return fs.getcwd().startswith('/google/cog/cloud')
 
         # Unconditionally delete local MANIFEST.json to avoid regenerating the
         # manifest from scratch (when version is bumped) or invalid/out-of-date
@@ -412,7 +415,7 @@ class WPTManifest:
 
         # TODO(crbug.com/853815): perhaps also cache the manifest for wpt_internal.
         #
-        # `url_base` should match those of `web_tests/wptrunner.blink.ini` (or
+        # `url_base` should match those of `external/wpt/.config.json` (or
         # the implicit root `/` URL base).
         if path.startswith('external'):
             base_manifest_path = fs.join(port.web_tests_dir(), 'external',
@@ -421,22 +424,14 @@ class WPTManifest:
                 _log.debug('Copying base manifest from "%s" to "%s".',
                            base_manifest_path, manifest_path)
                 fs.copyfile(base_manifest_path, manifest_path)
-                # TODO(https://github.com/web-platform-tests/wpt/issues/47350):
-                # This is a workaround to handle the hanging issue when running
-                # WPTs in Cider. Not updating WPT manifest usually is not OK
-                # unless the change is not fundamental.
-                # We should eventually allow partial update to the manifest.
-                if is_cog():
-                    _log.info('Skip manifest generation in Cog.')
-                    return
             else:
-                _log.error('Manifest base not found at "%s".',
-                           base_manifest_path)
+                _log.info('Manifest base not found at "%s".',
+                          base_manifest_path)
             url_base = '/'
         elif path.startswith('wpt_internal'):
             url_base = '/wpt_internal/'
 
-        WPTManifest.generate_manifest(port, wpt_path, url_base)
+        WPTManifest.generate_manifest(port, wpt_path, url_base, test_paths)
 
         if fs.isfile(manifest_path):
             _log.info(
@@ -448,7 +443,10 @@ class WPTManifest:
             fs.write_text_file(manifest_path, '{}')
 
     @staticmethod
-    def generate_manifest(port, dest_path, url_base: str = '/'):
+    def generate_manifest(port,
+                          dest_path,
+                          url_base: str = '/',
+                          test_paths: Optional[List[str]] = None):
         """Generates MANIFEST.json on the specified directory."""
         wpt_exec_path = PathFinder(
             port.host.filesystem).path_from_chromium_base(
@@ -462,6 +460,9 @@ class WPTManifest:
             f'--tests-root={dest_path}',
             f'--url-base={url_base}',
         ]
+
+        if test_paths:
+            cmd.extend(test_paths)
 
         # ScriptError will be raised if the command fails.
         # This will also include stderr in the exception message.

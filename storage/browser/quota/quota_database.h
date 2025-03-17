@@ -216,6 +216,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool IsBootstrapped();
   QuotaError SetIsBootstrapped(bool bootstrap_flag);
 
+  // Returns false if SetIsMediaLicensedDatabaseRemoved() has never been called
+  // before, which means that Media License Databases still potentially exist
+  // within the bucket directories.
+  bool IsMediaLicenseDatabaseRemoved();
+  QuotaError SetIsMediaLicenseDatabaseRemoved(bool removed_flag);
+
   // If the database has failed to open, this will attempt to reopen it.
   // Otherwise, it will attempt to recover the database. If recovery is
   // attempted but fails, the database will be razed. In all cases, this will

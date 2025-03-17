@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 #include "components/device_signals/core/common/win/win_types.h"
 
@@ -32,9 +33,16 @@ WinSignalsCollector::WinSignalsCollector(
 WinSignalsCollector::~WinSignalsCollector() = default;
 
 void WinSignalsCollector::GetAntiVirusSignal(
+    UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  if (permission != UserPermission::kGranted &&
+      permission != UserPermission::kMissingConsent) {
+    std::move(done_closure).Run();
+    return;
+  }
+
   auto* system_signals_service = system_service_host_->GetService();
   if (!system_signals_service) {
     AntiVirusSignalResponse av_response;
@@ -55,6 +63,17 @@ void WinSignalsCollector::OnAntiVirusSignalCollected(
     const std::vector<AvProduct>& av_products) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AntiVirusSignalResponse av_response;
+  av_response.antivirus_state =
+      av_products.empty() ? device_signals::InstalledAntivirusState::kNone
+                          : device_signals::InstalledAntivirusState::kDisabled;
+  for (const auto& av_product : av_products) {
+    if (av_product.state == device_signals::AvProductState::kOn) {
+      av_response.antivirus_state =
+          device_signals::InstalledAntivirusState::kEnabled;
+      break;
+    }
+  }
+
   av_response.av_products = std::move(av_products);
   response.av_signal_response = std::move(av_response);
 
@@ -62,9 +81,15 @@ void WinSignalsCollector::OnAntiVirusSignalCollected(
 }
 
 void WinSignalsCollector::GetHotfixSignal(
+    UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  if (permission != UserPermission::kGranted &&
+      permission != UserPermission::kMissingConsent) {
+    std::move(done_closure).Run();
+    return;
+  }
   auto* system_signals_service = system_service_host_->GetService();
   if (!system_signals_service) {
     HotfixSignalResponse hotfix_response;

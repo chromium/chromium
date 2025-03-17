@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/events/get_updates_response_event.h"
@@ -359,11 +360,17 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   return SyncerError::Success();
 }
 
-void GetUpdatesProcessor::ApplyUpdates(const DataTypeSet& gu_types,
-                                       StatusController* status_controller) {
+void GetUpdatesProcessor::ApplyUpdates(
+    const DataTypeSet& gu_types,
+    const DataTypeSet& data_types_with_failure,
+    StatusController* status_controller) {
   for (const auto& [type, update_handler] : *update_handler_map_) {
     if (gu_types.Has(type)) {
       update_handler->ApplyUpdates(status_controller, /*cycle_done=*/true);
+    }
+
+    if (data_types_with_failure.Has(type)) {
+      update_handler->RecordDownloadFailure();
     }
   }
 }

@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MockAssistantViewDelegate
 
   MOCK_METHOD(void,
               OnLauncherSearchChipPressed,
-              (const std::u16string&),
+              (std::u16string_view),
               (override));
 };
 

@@ -20,6 +20,7 @@
 
 #thumbnail {
   align-items: center;
+  background-color: white;
   cursor: pointer;
   display: inline-flex;
   height: 140px;
@@ -31,8 +32,6 @@
 }
 
 :host([is-active]) #thumbnail {
-  --active-background-color: white;
-  background-color: var(--active-background-color);
   box-shadow: 0 0 0 6px var(--focus-border-color);
 }
 

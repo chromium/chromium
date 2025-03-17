@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enterprise_data_controls)
@@ -56,9 +57,13 @@ source_set("data_controls") {
       "desktop_data_controls_dialog_factory.h",
       "dlp_reporting_manager.cc",
       "dlp_reporting_manager.h",
-      "reporting_service.cc",
-      "reporting_service.h",
     ]
+    if (safe_browsing_mode != 0) {
+      sources += [
+        "reporting_service.cc",
+        "reporting_service.h",
+      ]
+    }
     deps += [
       "//components/constrained_window",
       "//components/reporting/client:report_queue",
@@ -77,17 +82,16 @@ source_set("data_controls") {
 
   if (is_chromeos) {
     deps += [
+      "//chrome/browser/ash/policy/dlp",
+      "//components/user_manager",
+
       # Included for allow_circular_includes_from.
       "//chrome/browser/chromeos/policy/dlp",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/policy/dlp" ]
-  }
-  if (is_chromeos_ash) {
-    deps += [
+    allow_circular_includes_from += [
       "//chrome/browser/ash/policy/dlp",
-      "//components/user_manager",
+      "//chrome/browser/chromeos/policy/dlp",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/ash/policy/dlp" ]
   }
 }
 
@@ -106,7 +110,7 @@ source_set("test_support") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ "//components/user_manager" ]
   }
   if (!is_android) {
@@ -135,9 +139,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/enterprise/data_controls/core/browser:unit_tests",
   ]
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
   if (!is_android) {
     sources += [ "reporting_service_unittest.cc" ]
     deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]

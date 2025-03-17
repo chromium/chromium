@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("enrollment") {
   sources = [
@@ -124,7 +122,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/attestation",

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] [sandboxed-iframe-allow-storage-access-by-user-activation] document.requestStorageAccess() should resolve even without a user gesture when already granted.
+  promise_test: Unhandled rejection with value: object "NotAllowedError: requestStorageAccess not allowed"
+[FAIL] [sandboxed-iframe-allow-storage-access-by-user-activation] document.requestStorageAccess() should resolve with a user gesture
+  promise_test: Unhandled rejection with value: object "NotAllowedError: requestStorageAccess not allowed"
+Harness: the test ran to completion.

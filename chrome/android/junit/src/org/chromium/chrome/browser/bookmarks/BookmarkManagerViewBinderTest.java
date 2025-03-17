@@ -29,7 +29,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.base.TestActivity;
@@ -71,6 +73,7 @@ public class BookmarkManagerViewBinderTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testBindPersonalizedPromoView() {
         when(mView.findViewById(R.id.signin_promo_view_container)).thenReturn(mPromoView);
         mModel.set(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER, mBookmarkPromoHeader);

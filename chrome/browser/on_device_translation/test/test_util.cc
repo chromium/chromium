@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -22,14 +23,10 @@ using ::testing::Invoke;
 namespace on_device_translation {
 
 MockComponentManager::MockComponentManager(const base::FilePath& package_dir)
-    : package_dir_(package_dir) {
-  ComponentManager::SetForTesting(this);
-}
+    : package_dir_(package_dir),
+      mock_component_manager_(ComponentManager::SetForTesting(this)) {}
 
-MockComponentManager::~MockComponentManager() {
-  ComponentManager::SetForTesting(nullptr);
-}
-
+MockComponentManager::~MockComponentManager() = default;
 void MockComponentManager::DoNotExpectCallRegisterTranslateKitComponent() {
   EXPECT_CALL(*this, RegisterTranslateKitComponentImpl()).Times(0);
 }
@@ -44,7 +41,7 @@ void MockComponentManager::DoNotExpectCallRegisterLanguagePackComponent() {
 }
 
 void MockComponentManager::ExpectCallRegisterLanguagePackComponentAndInstall(
-    std::vector<LanguagePackKey> language_pack_keys) {
+    const base::span<const LanguagePackKey>& language_pack_keys) {
   auto& expectation =
       EXPECT_CALL(*this, RegisterTranslateKitLanguagePackComponent(_));
   for (const auto expected_key : language_pack_keys) {
@@ -140,9 +137,24 @@ void MockComponentManager::InstallMockLanguagePackLater(
                      weak_ptr_factory_.GetWeakPtr(), language_pack_key));
 }
 
+MockTranslationManagerImpl::MockTranslationManagerImpl(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin)
+    : TranslationManagerImpl(browser_context, origin),
+      mock_translation_manager_impl_(
+          TranslationManagerImpl::SetForTesting(this)) {}
+
+MockTranslationManagerImpl::~MockTranslationManagerImpl() = default;
+
 std::string CreateFakeDictionaryData(const std::string_view sourceLang,
                                      const std::string_view targetLang) {
   return base::StringPrintf("%s to %s: ", sourceLang, targetLang);
+}
+
+void TestSimpleTranslationWorks(Browser* browser,
+                                LanguagePackKey language_pack_key) {
+  TestSimpleTranslationWorks(browser, GetSourceLanguageCode(language_pack_key),
+                             GetTargetLanguageCode(language_pack_key));
 }
 
 void TestSimpleTranslationWorks(Browser* browser,
@@ -156,7 +168,7 @@ void TestSimpleTranslationWorks(Browser* browser,
                    base::StringPrintf(R"(
         (async () => {
           try {
-            const translator = await translation.createTranslator({
+            const translator = await ai.translator.create({
               sourceLanguage: '%s',
               targetLanguage: '%s',
             });
@@ -171,6 +183,13 @@ void TestSimpleTranslationWorks(Browser* browser,
             base::StringPrintf("%s to %s: hello", sourceLang, targetLang));
 }
 
+void TestCreateTranslator(Browser* browser,
+                          LanguagePackKey language_pack_key,
+                          const std::string_view result) {
+  TestCreateTranslator(browser, GetSourceLanguageCode(language_pack_key),
+                       GetTargetLanguageCode(language_pack_key), result);
+}
+
 // Tests that the createTranslator() returns the expected result.
 void TestCreateTranslator(Browser* browser,
                           const std::string_view sourceLang,
@@ -180,7 +199,7 @@ void TestCreateTranslator(Browser* browser,
                    base::StringPrintf(R"(
   (async () => {
     try {
-      await translation.createTranslator({
+      await ai.translator.create({
           sourceLanguage: '%s',
           targetLanguage: '%s',
         });
@@ -195,59 +214,20 @@ void TestCreateTranslator(Browser* browser,
             result);
 }
 
-// Tests that the canTranslate() returns the expected result.
-void TestCanTranslate(Browser* browser,
-                      const std::string_view sourceLang,
-                      const std::string_view targetLang,
-                      const std::string_view result) {
+// Tests that availability() method returns the expected result for the given
+// languages.
+void TestTranslationAvailable(Browser* browser,
+                              const std::string_view sourceLang,
+                              const std::string_view targetLang,
+                              const std::string_view result) {
   ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                    base::StringPrintf(R"(
   (async () => {
     try {
-      return await translation.canTranslate({
+      return await ai.translator.availability({
           sourceLanguage: '%s',
           targetLanguage: '%s',
         });
-    } catch (e) {
-      return e.toString();
-    }
-    })();
-  )",
-                                      sourceLang, targetLang))
-                .ExtractString(),
-            result);
-}
-
-// Tests that the AITranslatorCapabilities.available returns the expected
-// result.
-void TestTranslatorCapabilitiesAvailable(Browser* browser,
-                                         const std::string_view result) {
-  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
-                   R"(
-  (async () => {
-    try {
-      return (await ai.translator.capabilities()).available;
-    } catch (e) {
-      return e.toString();
-    }
-    })();
-  )")
-                .ExtractString(),
-            result);
-}
-
-// Tests that the AITranslatorCapabilities.languagePairAvailable() returns the
-// expected result.
-void TestLanguagePairAvailable(Browser* browser,
-                               const std::string_view sourceLang,
-                               const std::string_view targetLang,
-                               const std::string_view result) {
-  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
-                   base::StringPrintf(R"(
-  (async () => {
-    try {
-      const capabilities = await ai.translator.capabilities();
-      return capabilities.languagePairAvailable('%s','%s');
     } catch (e) {
       return e.toString();
     }

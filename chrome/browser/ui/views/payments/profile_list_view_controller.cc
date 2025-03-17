@@ -394,11 +394,11 @@ void ProfileListViewController::FillContentView(views::View* content_view) {
   content_view->SetLayoutManager(std::move(layout));
   std::unique_ptr<views::View> header_view = CreateHeaderView();
   if (header_view) {
-    content_view->AddChildView(header_view.release());
+    content_view->AddChildViewRaw(header_view.release());
   }
   std::unique_ptr<views::View> list_view = list_.CreateListView();
   list_view->SetID(static_cast<int>(GetDialogViewId()));
-  content_view->AddChildView(list_view.release());
+  content_view->AddChildViewRaw(list_view.release());
 }
 
 base::WeakPtr<PaymentRequestSheetController>

@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_HTTP_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_HTTP_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_message_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"

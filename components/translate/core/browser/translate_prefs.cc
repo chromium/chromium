@@ -4,6 +4,7 @@
 
 #include "components/translate/core/browser/translate_prefs.h"
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -16,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,7 +80,7 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // about always translating from or to the old source language, or always
     // translating from the old target language, then skip merging this pair
     // into the new pref.
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             always_translate_dictionary,
             [&old_language_pair](const auto& new_language_pair) {
               return old_language_pair.first == new_language_pair.first ||
@@ -95,10 +95,8 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // If the old pair's source language matches any of the never-translate
     // languages, it probably means that this source language was set to never
     // be translated after the old pref was deprecated, so avoid this conflict.
-    const std::string& (base::Value::*get_string)() const =
-        &base::Value::GetString;
     if (base::Contains(prefs->GetList(prefs::kBlockedLanguages),
-                       old_language_pair.first, get_string)) {
+                       old_language_pair.first)) {
       continue;
     }
 
@@ -302,7 +300,13 @@ std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
 
   std::vector<std::string> languages;
   for (const auto& language : fluent_languages_value) {
-    std::string chrome_language(language.GetString());
+    const std::string* language_as_string = language.GetIfString();
+    // This needs to be checked here as there can be corrupt entries in the pref
+    // list which causes a crash.
+    if (!language_as_string) {
+      continue;
+    }
+    std::string chrome_language{*language_as_string};
     language::ToChromeLanguageSynonym(&chrome_language);
     languages.push_back(chrome_language);
   }
@@ -353,7 +357,7 @@ void TranslatePrefs::RemoveFromLanguageList(std::string_view input_language) {
   GetUserSelectedLanguageList(&user_selected_languages);
 
   // Remove the language from the list.
-  const auto& it = base::ranges::find(user_selected_languages, chrome_language);
+  const auto& it = std::ranges::find(user_selected_languages, chrome_language);
   if (it != user_selected_languages.end()) {
 
     user_selected_languages.erase(it);
@@ -387,7 +391,7 @@ void TranslatePrefs::RearrangeLanguage(
   std::vector<std::string> languages;
   GetUserSelectedLanguageList(&languages);
 
-  auto pos = base::ranges::find(languages, language);
+  auto pos = std::ranges::find(languages, language);
   if (pos == languages.end())
     return;
 
@@ -975,7 +979,7 @@ void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
   ScopedListPrefUpdate update(prefs_, pref_id);
   base::Value::List& never_prompt_list = update.Get();
 
-  auto value_to_erase = base::ranges::find_if(
+  auto value_to_erase = std::ranges::find_if(
       never_prompt_list, [value](const base::Value& value_in_list) {
         return value_in_list.is_string() && value_in_list.GetString() == value;
       });

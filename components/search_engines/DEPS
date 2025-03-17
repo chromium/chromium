@@ -6,6 +6,7 @@ include_rules = [
   "+components/infobars/core",
   "+components/keyed_service/core",
   "+components/lens",
+  "+components/regional_capabilities",
   "+components/metrics",
   "+components/omnibox/common",
   "+components/os_crypt/async",
@@ -33,6 +34,7 @@ include_rules = [
   "+third_party/metrics_proto",
   "+third_party/omnibox_proto",
   "+third_party/lens_server_proto",
+  "+third_party/search_engines_data",
   "+ui/base",
   "+ui/gfx",
 
@@ -47,5 +49,11 @@ specific_include_rules = {
   ],
   "template_url_service_test_util\.cc": [
     "+components/os_crypt/async/browser/test_utils.h"
+  ],
+  "template_url_service\.cc": [
+    "+components/regional_capabilities/access/country_access_reason.h"
+  ],
+  "template_url_prepopulate_data_resolver\.cc": [
+    "+components/regional_capabilities/access/country_access_reason.h"
   ],
 }

@@ -4,12 +4,15 @@
 
 package org.chromium.components.browser_ui.edge_to_edge;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.Window;
 
 import androidx.core.view.WindowCompat;
 
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.util.TokenHolder;
 
 /**
@@ -17,6 +20,7 @@ import org.chromium.ui.util.TokenHolder;
  *
  * <p>{@link #get()} never returns null for this class.
  */
+@NullMarked
 public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean>
         implements UnownedUserData {
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenUpdate);
@@ -47,7 +51,7 @@ public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean>
 
     private void onTokenUpdate() {
         boolean isEdgeToEdge = mTokenHolder.hasTokens();
-        if (isEdgeToEdge == get()) {
+        if (isEdgeToEdge == assumeNonNull(get())) {
             return;
         }
 

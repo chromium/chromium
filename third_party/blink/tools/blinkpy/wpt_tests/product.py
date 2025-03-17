@@ -120,11 +120,23 @@ class DesktopProduct(Product):
 
     def additional_binary_args(self) -> List[str]:
         # Base args applicable to all embedders.
-        return [
+        args = [
             '--enable-blink-test-features',
             # Expose the non-standard `window.gc()` for `wpt_internal/` tests.
             '--js-flags=--expose-gc',
+            # Disable overlay scrollbar fadeout for consistent screenshots.
+            '--disable-features=ScrollbarAnimations',
         ]
+        if self._options.wrapper and self._host.platform.is_win():
+            # The adapter will generate a batch file wrapping the browser
+            # command. Because `cmd.exe` doesn't have an equivalent of Unix's
+            # `exec`, there will be a real process in between chromedriver and
+            # the browser process. Because the batch file doesn't know how to
+            # relay the file handles it receives to the browser, the default
+            # `--remote-debugging-pipe` won't work. Use any free network port
+            # instead for chromedriver-browser traffic.
+            args.append('--remote-debugging-port=0')
+        return args
 
 
 class Chrome(DesktopProduct):

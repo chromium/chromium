@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -62,7 +61,7 @@ bool CrostiniUninstallerView::Accept() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   progress_bar_ = new views::ProgressBar();
-  AddChildView(progress_bar_.get());
+  AddChildViewRaw(progress_bar_.get());
   // Setting value to -1 makes the progress bar play the
   // "indeterminate animation".
   progress_bar_->SetValue(-1);
@@ -89,8 +88,8 @@ CrostiniUninstallerView::CrostiniUninstallerView(Profile* profile)
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_CROSTINI_UNINSTALLER_UNINSTALL_BUTTON));
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -103,7 +102,7 @@ CrostiniUninstallerView::CrostiniUninstallerView(Profile* profile)
   message_label_ = new views::Label(message);
   message_label_->SetMultiLine(true);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label_.get());
+  AddChildViewRaw(message_label_.get());
 }
 
 CrostiniUninstallerView::~CrostiniUninstallerView() {

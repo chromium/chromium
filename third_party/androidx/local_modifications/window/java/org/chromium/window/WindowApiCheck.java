@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 package org.chromium.window;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Checks if the androidx.window.extensions APIs exist.
  *
  * <p>Must live in a class that does not contain any types used by the API (or else risk
  * NoClassDefFoundErrors).
  */
+@NullMarked
 public class WindowApiCheck {
     private static final boolean sAvailable;
 

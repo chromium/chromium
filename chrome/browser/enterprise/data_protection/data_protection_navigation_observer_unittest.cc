@@ -567,13 +567,13 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       SkipSpecialURLs_GetDataProtectionSettings) {
+       SkipSpecialURLs_ApplyDataProtectionSettings) {
   SetContents(CreateTestWebContents());
 
   for (const auto* url : kSkippedUrls) {
     NavigateAndCommit(GURL(url));
     base::test::TestFuture<const UrlSettings&> future;
-    DataProtectionNavigationObserver::GetDataProtectionSettings(
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
     ASSERT_EQ(future.Get(), UrlSettings());
@@ -603,7 +603,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
   {
     base::test::TestFuture<const UrlSettings&> future;
-    DataProtectionNavigationObserver::GetDataProtectionSettings(
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
     EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -621,7 +621,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   simulator->Commit();
   {
     base::test::TestFuture<const UrlSettings&> future;
-    DataProtectionNavigationObserver::GetDataProtectionSettings(
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
     EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -629,7 +629,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   }
 }
 
-TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
+TEST_F(DataProtectionNavigationObserverTest, ApplyDataProtectionSettings) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
   DataProtectionNavigationObserver::SetLookupServiceForTesting(
@@ -639,7 +639,7 @@ TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -654,7 +654,7 @@ TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_NoUrlCheck) {
+       ApplyDataProtectionSettings_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_DISABLED);
@@ -668,7 +668,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_TRUE(future.Get().watermark_text.empty());
@@ -684,7 +684,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
   DataProtectionNavigationObserver::SetLookupServiceForTesting(
@@ -702,7 +702,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -717,7 +717,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot_NoUrlCheck) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_DISABLED);
@@ -737,7 +737,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_TRUE(future.Get().watermark_text.empty());
@@ -751,7 +751,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot_Redirect) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot_Redirect) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
   DataProtectionNavigationObserver::SetLookupServiceForTesting(
@@ -807,7 +807,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   // The result of the above should be that
   // screenshots are not allowed.
   base::test::TestFuture<const UrlSettings&> get_settings_future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       get_settings_future.GetCallback());
   EXPECT_FALSE(get_settings_future.Get().allow_screenshots);
@@ -820,7 +820,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot_RedirectWithoutUrlCheck) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot_RedirectWithoutUrlCheck) {
   profile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_DISABLED);
@@ -860,7 +860,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   // The result of the above should be that
   // screenshots are not allowed.
   base::test::TestFuture<const UrlSettings&> get_settings_future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       get_settings_future.GetCallback());
   EXPECT_FALSE(get_settings_future.Get().allow_screenshots);

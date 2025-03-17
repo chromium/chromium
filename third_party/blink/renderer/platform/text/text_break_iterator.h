@@ -19,11 +19,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_H_
 
@@ -354,14 +349,16 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
 
   bool IsCRBeforeLF(unsigned offset) const {
     DCHECK(is_8bit_);
-    return charaters8_[offset] == '\r' && offset + 1 < length_ &&
-           charaters8_[offset + 1] == '\n';
+    // SAFTEY: second indexing is safe because of length check, but
+    // the first is not. Could be made safe by re-ordering.
+    return UNSAFE_TODO(charaters8_[offset]) == '\r' && offset + 1 < length_ &&
+           UNSAFE_BUFFERS(charaters8_[offset + 1]) == '\n';
   }
 
   bool IsLFAfterCR(unsigned offset) const {
     DCHECK(is_8bit_);
-    return charaters8_[offset] == '\n' && offset >= 1 &&
-           charaters8_[offset - 1] == '\r';
+    return UNSAFE_TODO(charaters8_[offset]) == '\n' && offset >= 1 &&
+           UNSAFE_TODO(charaters8_[offset - 1]) == '\r';
   }
 
   bool is_8bit_;

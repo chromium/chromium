@@ -52,8 +52,8 @@ class DownloadUIModel {
     kNoTailoredWarning = 0,
     // Base cookie theft warning.
     kCookieTheft = 1,
-    // Cookie theft warning with account info.
-    kCookieTheftWithAccountInfo = 2,
+    // Deprecated. Cookie theft warning with account info.
+    // kCookieTheftWithAccountInfo = 2,
     // Suspicious archive warning.
     kSuspiciousArchive = 3,
     kMaxValue = kSuspiciousArchive
@@ -339,7 +339,7 @@ class DownloadUIModel {
   // ShouldPreferOpeningInBrowser().
   virtual void OpenUsingPlatformHandler();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the Media App action (open or edit) we should show for the item if
   // one should be shown.
   virtual std::optional<DownloadCommands::Command> MaybeGetMediaAppAction()
@@ -496,7 +496,7 @@ class DownloadUIModel {
   virtual bool IsEphemeralWarning() const;
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // Complete the Safe Browsing scan early.
   virtual void CompleteSafeBrowsingScan();
 

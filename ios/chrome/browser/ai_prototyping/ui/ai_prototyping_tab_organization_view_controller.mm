@@ -8,15 +8,12 @@
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 
 using optimization_guide::proto::
@@ -28,8 +25,6 @@ using optimization_guide::proto::
 using optimization_guide::proto::
     TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
 
-#endif
-
 @interface AIPrototypingTabOrganizationViewController () {
   UIButton* _groupTabsButton;
   UITextView* _responseContainer;
@@ -37,11 +32,9 @@ using optimization_guide::proto::
 
 @property(nonatomic, strong) UIButton* groupingStrategyButton;
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 // The currently selected strategy for tab grouping.
 @property(nonatomic, assign)
     TabOrganizationRequest_TabOrganizationModelStrategy groupingStrategy;
-#endif
 
 @end
 
@@ -78,14 +71,13 @@ using optimization_guide::proto::
   _groupingStrategyButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _groupingStrategyButton.layer.borderColor = [primaryColor CGColor];
   _groupingStrategyButton.layer.borderWidth = kBorderWidth;
+  _groupingStrategyButton.layer.cornerRadius = kCornerRadius;
   [_groupingStrategyButton setTitleColor:primaryColor
                                 forState:UIControlStateNormal];
   _groupingStrategyButton.showsMenuAsPrimaryAction = YES;
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   self.groupingStrategy =
       TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
-#endif
 
   _groupingStrategyButton.menu = [self createTabGroupingStrategyMenu];
 
@@ -109,6 +101,8 @@ using optimization_guide::proto::
   _responseContainer.layer.borderColor = [primaryColor CGColor];
   _responseContainer.layer.borderWidth = kBorderWidth;
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
+  _responseContainer.text =
+      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_RESULT_PLACEHOLDER);
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, _groupingStrategyButton, _groupTabsButton, _responseContainer
@@ -133,9 +127,9 @@ using optimization_guide::proto::
 }
 
 - (void)onGroupTabsButtonPressed:(UIButton*)button {
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  [self disableSubmitButton];
+  [self updateResponseField:@""];
   [self.mutator executeGroupTabsWithStrategy:self.groupingStrategy];
-#endif
 }
 
 #pragma mark - AIPrototypingViewControllerProtocol
@@ -144,13 +138,17 @@ using optimization_guide::proto::
   _responseContainer.text = response;
 }
 
+- (void)enableSubmitButtons {
+  _groupTabsButton.enabled = YES;
+  _groupTabsButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+}
+
 #pragma mark - Private
 
 // Creates menu for tab grouping strategy.
 - (UIMenu*)createTabGroupingStrategyMenu {
   NSMutableArray<UIAction*>* strategies = [NSMutableArray array];
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   UIAction* topicBasedStrategy = [UIAction
       actionWithTitle:
           [self
@@ -207,7 +205,6 @@ using optimization_guide::proto::
     default:
       NOTREACHED();
   }
-#endif
 
   return [UIMenu
       menuWithTitle:
@@ -216,7 +213,6 @@ using optimization_guide::proto::
            children:strategies];
 }
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 - (void)setGroupingStrategy:
     (TabOrganizationRequest_TabOrganizationModelStrategy)groupingStrategy {
   _groupingStrategy = groupingStrategy;
@@ -247,6 +243,11 @@ using optimization_guide::proto::
       NOTREACHED();
   }
 }
-#endif
+
+// Disable submit button, and style the accordingly.
+- (void)disableSubmitButton {
+  _groupTabsButton.enabled = NO;
+  _groupTabsButton.backgroundColor = [UIColor colorNamed:kDisabledTintColor];
+}
 
 @end

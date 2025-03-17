@@ -4,10 +4,13 @@
 
 package org.chromium.components.signin;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * AuthException abstracts away authenticator specific exceptions behind a single interface.
  * It is used for passing information that is useful for better handling of errors.
  */
+@NullMarked
 public class AuthException extends Exception {
     public static final boolean TRANSIENT = true;
     public static final boolean NONTRANSIENT = false;

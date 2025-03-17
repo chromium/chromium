@@ -135,8 +135,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
         static_cast<int>(supervised_user::FilteringBehavior::kAllow));
 
     prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
-    prefs_->SetBoolean(feed::prefs::kEnableSnippets,
-                       supervised_user::IsKidFriendlyContentFeedAvailable());
+    prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
 
 #if BUILDFLAG(IS_ANDROID)
     syncer::SyncPrefs::SetTypeDisabledByCustodian(

@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
@@ -26,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
@@ -41,14 +42,14 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
-// Generates a unique folder name. If |folder_name| is not unique, then this
-// repeatedly tests for '|folder_name| + (i)' until a unique name is found.
-std::u16string GenerateUniqueFolderName(BookmarkModel* model,
+// Generates a unique folder name among children of |parent|. If |folder_name|
+// is not unique, then this repeatedly tests for '|folder_name| + (i)' until a
+// unique name is found.
+std::u16string GenerateUniqueFolderName(const BookmarkNode* parent,
                                         const std::u16string& folder_name) {
   // Build a set containing the bookmark bar folder names.
   std::set<std::u16string> existing_folder_names;
-  const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-  for (const auto& node : bookmark_bar->children()) {
+  for (const auto& node : parent->children()) {
     if (node->is_folder())
       existing_folder_names.insert(node->GetTitle());
   }
@@ -128,7 +129,9 @@ void ProfileWriter::AddBookmarks(
 
   // If the bookmark bar is currently empty, we should import directly to it.
   // Otherwise, we should import everything to a subfolder.
-  const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
+  const BookmarkNode* bookmark_bar = model->account_bookmark_bar_node()
+                                         ? model->account_bookmark_bar_node()
+                                         : model->bookmark_bar_node();
   bool import_to_top_level = bookmark_bar->children().empty();
 
   // Reorder bookmarks so that the toolbar entries come first.
@@ -170,7 +173,7 @@ void ProfileWriter::AddBookmarks(
       // to the bar.  The first time we do so, create the folder.
       if (!top_level_folder) {
         std::u16string name =
-            GenerateUniqueFolderName(model, top_level_folder_name);
+            GenerateUniqueFolderName(bookmark_bar, top_level_folder_name);
         top_level_folder = model->AddFolder(
             bookmark_bar, bookmark_bar->children().size(), name);
       }
@@ -189,7 +192,7 @@ void ProfileWriter::AddBookmarks(
         continue;
       }
 
-      const auto it = base::ranges::find_if(
+      const auto it = std::ranges::find_if(
           parent->children(), [folder_name](const auto& node) {
             return node->is_folder() && node->GetTitle() == *folder_name;
           });

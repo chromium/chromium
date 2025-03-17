@@ -14,7 +14,7 @@ import '../../components/quick_start_entry_point.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeIconButton} from '../../components/buttons/oobe_icon_button.js';

@@ -162,7 +162,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/reporting/compression:compression_module",
     "//components/reporting/compression:test_support",
     "//components/reporting/encryption:decryption",

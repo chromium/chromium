@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/chromeos/extensions/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -20,10 +19,10 @@ source_set("events") {
     ":event_manager",
     ":event_router",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
     "//extensions/browser",
@@ -96,23 +95,17 @@ source_set("test_support") {
   sources = [
     "fake_events_service.cc",
     "fake_events_service.h",
+    "fake_events_service_factory.cc",
+    "fake_events_service_factory.h",
   ]
 
   deps = [ "//base/test:test_support" ]
 
   public_deps = [
+    "//chromeos/ash/components/telemetry_extension/events",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "fake_events_service_factory.cc",
-      "fake_events_service_factory.h",
-    ]
-
-    public_deps += [ "//chromeos/ash/components/telemetry_extension/events" ]
-  }
 }
 
 source_set("browser_tests") {
@@ -126,6 +119,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/test:test_support_ui",
     "//chromeos/crosapi/mojom",
     "//content/test:test_support",

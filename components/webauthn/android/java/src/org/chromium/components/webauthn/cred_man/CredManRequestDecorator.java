@@ -9,7 +9,10 @@ import android.credentials.CredentialOption;
 import android.credentials.GetCredentialRequest;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for code that will update the CredMan request bundles or requests. */
+@NullMarked
 public interface CredManRequestDecorator {
     void updateCreateCredentialRequestBundle(
             Bundle input, CredManCreateCredentialRequestHelper helper);

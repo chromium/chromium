@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/ui_devtools/dom_agent.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,7 +17,6 @@
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/ui_devtools/devtools_server.h"
@@ -153,7 +158,7 @@ void DOMAgent::OnUIElementAdded(UIElement* parent, UIElement* child) {
   child->set_is_updating(true);
 
   const auto& children = parent->children();
-  auto iter = base::ranges::find(children, child);
+  auto iter = std::ranges::find(children, child);
   int prev_node_id =
       (iter == children.begin()) ? 0 : (*std::prev(iter))->node_id();
   frontend()->childNodeInserted(parent->node_id(), prev_node_id,
@@ -168,7 +173,7 @@ void DOMAgent::OnUIElementReordered(UIElement* parent, UIElement* child) {
   DCHECK(node_id_to_ui_element_.count(parent->node_id()));
 
   const auto& children = parent->children();
-  auto iter = base::ranges::find(children, child);
+  auto iter = std::ranges::find(children, child);
   CHECK(iter != children.end());
   int prev_node_id =
       (iter == children.begin()) ? 0 : (*std::prev(iter))->node_id();

@@ -91,9 +91,7 @@ void StatusAreaWidget::Initialize() {
     video_conference_tray_ =
         AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
   }
-  if (features::IsFocusModeEnabled()) {
-    focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
-  }
+  focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
   holding_space_tray_ =
       AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
   logout_button_tray_ =
@@ -659,6 +657,10 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
   open_shelf_pod_bubble_ = open_shelf_pod_bubble;
   shelf()->shelf_layout_manager()->OnShelfTrayBubbleVisibilityChanged(
       /*bubble_shown=*/open_shelf_pod_bubble_);
+}
+
+void StatusAreaWidget::InitializeAccessibleProperties() {
+  status_area_widget_delegate()->UpdateAccessiblePreviousAndNextFocus();
 }
 
 void StatusAreaWidget::OnViewIsDeleting(views::View* observed_view) {

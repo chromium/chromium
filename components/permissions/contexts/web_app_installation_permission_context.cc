@@ -7,7 +7,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
@@ -16,6 +16,6 @@ WebAppInstallationPermissionContext::WebAppInstallationPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::WEB_APP_INSTALLATION,
-          blink::mojom::PermissionsPolicyFeature::kWebAppInstallation) {}
+          network::mojom::PermissionsPolicyFeature::kWebAppInstallation) {}
 
 }  // namespace permissions

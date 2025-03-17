@@ -353,10 +353,18 @@ template("single_gcc_toolchain") {
     tool("cxx") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} -c {{source}} -o {{output}}"
+      command = "$cxx $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
+    }
+
+    tool("cxx_module") {
+      depfile = "{{output}}.d"
+      command = "$cxx -MD -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}} -fmodule-name={{label_name}} -c -x c++ -Xclang -emit-module {{source}} -o {{output}}"
+      depsformat = "gcc"
+      description = "CXX_MODULE {{output}}"
+      outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
     }
 
     tool("asm") {
@@ -372,7 +380,7 @@ template("single_gcc_toolchain") {
       if (current_os == "aix") {
         # AIX does not support either -D (deterministic output) or response
         # files.
-        command = "$ar -X64 {{arflags}} -r -c -s {{output}} {{inputs}}"
+        command = "$ar -X64 {{arflags}} -r -c {{output}} {{inputs}}"
       } else {
         rspfile = "{{output}}.rsp"
         rspfile_content = "{{inputs}}"

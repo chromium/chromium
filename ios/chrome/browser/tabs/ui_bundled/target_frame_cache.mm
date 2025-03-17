@@ -20,8 +20,9 @@ void TargetFrameCache::RemoveFrame(UIView* view) {
 
 CGRect TargetFrameCache::GetFrame(UIView* view) {
   std::map<UIView*, CGRect>::iterator it = targetFrames_.find(view);
-  if (it != targetFrames_.end())
+  if (it != targetFrames_.end()) {
     return it->second;
+  }
 
   return CGRectZero;
 }

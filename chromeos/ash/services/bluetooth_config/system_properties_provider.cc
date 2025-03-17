@@ -32,7 +32,6 @@ SystemPropertiesProvider::GenerateProperties() {
   properties->system_state = ComputeSystemState();
   properties->modification_state = ComputeModificationState();
   properties->paired_devices = GetPairedDevices();
-  properties->fast_pairable_devices = GetFastPairableDevices();
   return properties;
 }
 

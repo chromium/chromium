@@ -16,6 +16,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
 #include "media/formats/mp4/avc.h"
+#include "media/formats/mp4/box_constants.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/fourccs.h"
 #include "media/formats/mp4/mp4_status.h"
@@ -269,6 +270,18 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
   // `tkhd`.
   video_track.header.natural_size = params.visible_rect_size;
+  if (params.transformation) {
+    auto mat = params.transformation->GetMatrix();
+    video_track.header.matrix[0] = mat[0];
+    video_track.header.matrix[1] = mat[1];
+    video_track.header.matrix[3] = mat[2];
+    video_track.header.matrix[4] = mat[3];
+  } else {
+    // If VideoParameters do not have a VideoTransformation, we should provide a
+    // default matrix that has zero rotations, zero mirroring, normal zoom.
+    std::copy(std::begin(kDisplayIdentityMatrix),
+              std::end(kDisplayIdentityMatrix), video_track.header.matrix);
+  }
 
   // `hdlr`
   mp4::writable_boxes::MediaHandler media_handler(/*is_audio=*/false);
@@ -710,7 +723,7 @@ scoped_refptr<DecoderBuffer> Mp4MuxerDelegate::ConvertNALUData(
         video_codec_, add_parameter_sets_in_bitstream_);
   }
 
-  return h26x_converter_->Convert(encoded_data->AsSpan());
+  return h26x_converter_->Convert(*encoded_data);
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) ||
         // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

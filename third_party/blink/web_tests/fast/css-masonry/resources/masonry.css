@@ -1,0 +1,20 @@
+.masonry {
+    display: masonry;
+    background: gray;
+    position: relative;
+}
+
+.first-track {
+    background: lightskyblue;
+    masonry-track-start: 1;
+}
+
+.second-track {
+    background: lightcoral;
+    masonry-track-start: 2;
+}
+
+.third-track {
+    background: lightgreen;
+    masonry-track-start: 3;
+}

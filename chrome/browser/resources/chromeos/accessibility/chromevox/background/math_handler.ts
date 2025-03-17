@@ -6,18 +6,18 @@
  * @fileoverview Handles math output and exploration.
  */
 import {AutomationPredicate} from '/common/automation_predicate.js';
-import {CursorRange} from '/common/cursors/range.js';
+import type {CursorRange} from '/common/cursors/range.js';
 
 import {Msgs} from '../common/msgs.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
-import {InternalKeyEvent} from './input/background_keyboard_handler.js';
+import type {InternalKeyEvent} from './input/background_keyboard_handler.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
 
 // Speech Rule Engine is included as a global variable in background.html.
-declare var SRE: any;
+declare let SRE: any;
 
 /**
  * Handles specialized code to navigate, announce, and interact with math

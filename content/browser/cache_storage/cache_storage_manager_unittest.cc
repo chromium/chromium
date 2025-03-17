@@ -9,6 +9,8 @@
 
 #include <cstdint>
 #include <list>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -24,6 +26,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -98,6 +101,8 @@ enum class StorageKeyAndBucketTestCase {
 
 using blink::mojom::StorageType;
 using ResponseHeaderMap = base::flat_map<std::string, std::string>;
+
+constexpr char16_t kReplacementCharacter = 0xFFFD;
 
 class DelayedBlob : public storage::FakeBlob {
  public:
@@ -189,10 +194,8 @@ class MockCacheStorageQuotaManagerProxy
                                     base::SingleThreadTaskRunner* task_runner)
       : MockQuotaManagerProxy(quota_manager, task_runner) {}
 
-  void RegisterClient(
-      mojo::PendingRemote<storage::mojom::QuotaClient> client,
-      storage::QuotaClientType client_type,
-      const base::flat_set<blink::mojom::StorageType>& storage_types) override {
+  void RegisterClient(mojo::PendingRemote<storage::mojom::QuotaClient> client,
+                      storage::QuotaClientType client_type) override {
     registered_clients_.emplace_back(std::move(client));
   }
 
@@ -316,14 +319,16 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   void CacheMetadataCallback(base::RunLoop* run_loop,
-                             std::vector<std::string> cache_names) {
+                             std::vector<std::u16string> cache_names) {
     cache_names_ = std::move(cache_names);
     run_loop->Quit();
   }
 
-  const std::string& GetFirstIndexName() const { return cache_names_.front(); }
+  const std::u16string& GetFirstIndexName() const {
+    return cache_names_.front();
+  }
 
-  std::vector<std::string> GetIndexNames() const { return cache_names_; }
+  std::vector<std::u16string> GetIndexNames() const { return cache_names_; }
 
   void CachePutCallback(base::RunLoop* run_loop,
                         CacheStorageVerboseErrorPtr error) {
@@ -383,10 +388,8 @@ class CacheStorageManagerTest : public testing::Test {
         MemoryOnly(), temp_dir_path,
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         quota_policy_.get());
-    mock_quota_manager_->SetQuota(storage_key1_, StorageType::kTemporary,
-                                  1024 * 1024 * 100);
-    mock_quota_manager_->SetQuota(storage_key2_, StorageType::kTemporary,
-                                  1024 * 1024 * 100);
+    mock_quota_manager_->SetQuota(storage_key1_, 1024 * 1024 * 100);
+    mock_quota_manager_->SetQuota(storage_key2_, 1024 * 1024 * 100);
 
     quota_manager_proxy_ =
         base::MakeRefCounted<MockCacheStorageQuotaManagerProxy>(
@@ -458,7 +461,7 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   bool Open(const storage::BucketLocator& bucket_locator,
-            const std::string& cache_name,
+            const std::u16string& cache_name,
             storage::mojom::CacheStorageOwner owner =
                 storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
@@ -482,7 +485,7 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   bool Has(const storage::BucketLocator& bucket_locator,
-           const std::string& cache_name,
+           const std::u16string& cache_name,
            storage::mojom::CacheStorageOwner owner =
                storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
@@ -499,7 +502,7 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   bool Delete(const storage::BucketLocator& bucket_locator,
-              const std::string& cache_name,
+              const std::u16string& cache_name,
               storage::mojom::CacheStorageOwner owner =
                   storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
@@ -532,7 +535,7 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   bool StorageMatch(const storage::BucketLocator& bucket_locator,
-                    const std::string& cache_name,
+                    const std::u16string& cache_name,
                     const GURL& url,
                     blink::mojom::CacheQueryOptionsPtr match_options = nullptr,
                     storage::mojom::CacheStorageOwner owner =
@@ -546,7 +549,7 @@ class CacheStorageManagerTest : public testing::Test {
 
   bool StorageMatchWithRequest(
       const storage::BucketLocator& bucket_locator,
-      const std::string& cache_name,
+      const std::u16string& cache_name,
       blink::mojom::FetchAPIRequestPtr request,
       blink::mojom::CacheQueryOptionsPtr match_options = nullptr,
       storage::mojom::CacheStorageOwner owner =
@@ -557,7 +560,8 @@ class CacheStorageManagerTest : public testing::Test {
         cache_manager_->OpenCacheStorage(bucket_locator, owner);
     cache_storage.value()->MatchCache(
         cache_name, std::move(request), std::move(match_options),
-        CacheStorageSchedulerPriority::kNormal, /* trace_id = */ 0,
+        CacheStorageSchedulerPriority::kNormal,
+        /* trace_id = */ 0,
         base::BindOnce(&CacheStorageManagerTest::CacheMatchCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
@@ -601,7 +605,7 @@ class CacheStorageManagerTest : public testing::Test {
 
   bool Write(const storage::BucketLocator& bucket_locator,
              storage::mojom::CacheStorageOwner owner,
-             const std::string& cache_name,
+             const std::u16string& cache_name,
              const std::string& request_url) {
     auto request = blink::mojom::FetchAPIRequest::New();
     request->url = GURL(request_url);
@@ -818,8 +822,7 @@ class CacheStorageManagerTest : public testing::Test {
     int64_t usage(CacheStorage::kSizeUnknown);
     base::RunLoop loop;
     quota_manager_proxy_->GetUsageAndQuota(
-        storage_key, StorageType::kTemporary,
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        storage_key, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindOnce(&CacheStorageManagerTest::DidGetQuotaOriginUsage,
                        base::Unretained(this), base::Unretained(&usage),
                        &loop));
@@ -868,7 +871,7 @@ class CacheStorageManagerTest : public testing::Test {
   int callback_bool_ = false;
   CacheStorageError callback_error_ = CacheStorageError::kSuccess;
   blink::mojom::FetchAPIResponsePtr callback_cache_handle_response_;
-  std::vector<std::string> cache_names_;
+  std::vector<std::u16string> cache_names_;
 
   blink::StorageKey storage_key1_;
   blink::StorageKey storage_key2_;
@@ -1010,90 +1013,90 @@ TEST_F(CacheStorageManagerTest, TestsRunOnIOThread) {
 }
 
 TEST_P(CacheStorageManagerTestP, OpenCache) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
 }
 
 TEST_P(CacheStorageManagerTestP, OpenTwoCaches) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
 }
 
 TEST_P(CacheStorageManagerTestP, OpenSameCacheDifferentOwners) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kCacheAPI));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_NE(callback_cache_handle_.value(), cache_handle.value());
 }
 
 TEST_P(CacheStorageManagerTestP, CachePointersDiffer) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_NE(callback_cache_handle_.value(), cache_handle.value());
 }
 
 TEST_P(CacheStorageManagerTestP, Open2CachesSameNameDiffKeys) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(bucket_locator2_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator2_, u"foo"));
   EXPECT_NE(cache_handle.value(), callback_cache_handle_.value());
 }
 
 TEST_P(CacheStorageManagerTestP, OpenExistingCache) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_EQ(callback_cache_handle_.value(), cache_handle.value());
 }
 
 TEST_P(CacheStorageManagerTestP, HasCache) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Has(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Has(bucket_locator1_, u"foo"));
   EXPECT_TRUE(callback_bool_);
 }
 
 TEST_P(CacheStorageManagerTestP, HasCacheDifferentOwners) {
-  EXPECT_TRUE(Open(bucket_locator1_, "public",
+  EXPECT_TRUE(Open(bucket_locator1_, u"public",
                    storage::mojom::CacheStorageOwner::kCacheAPI));
-  EXPECT_TRUE(Open(bucket_locator1_, "bgf",
+  EXPECT_TRUE(Open(bucket_locator1_, u"bgf",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
 
-  EXPECT_TRUE(Has(bucket_locator1_, "public",
+  EXPECT_TRUE(Has(bucket_locator1_, u"public",
                   storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_TRUE(callback_bool_);
-  EXPECT_FALSE(Has(bucket_locator1_, "bgf",
+  EXPECT_FALSE(Has(bucket_locator1_, u"bgf",
                    storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_FALSE(callback_bool_);
 
-  EXPECT_TRUE(Has(bucket_locator1_, "bgf",
+  EXPECT_TRUE(Has(bucket_locator1_, u"bgf",
                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_TRUE(callback_bool_);
-  EXPECT_FALSE(Has(bucket_locator1_, "public",
+  EXPECT_FALSE(Has(bucket_locator1_, u"public",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_FALSE(callback_bool_);
 }
 
 TEST_P(CacheStorageManagerTestP, HasNonExistent) {
-  EXPECT_FALSE(Has(bucket_locator1_, "foo"));
+  EXPECT_FALSE(Has(bucket_locator1_, u"foo"));
 }
 
 TEST_P(CacheStorageManagerTestP, DeleteCache) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
-  EXPECT_FALSE(Has(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
+  EXPECT_FALSE(Has(bucket_locator1_, u"foo"));
 }
 
 TEST_P(CacheStorageManagerTestP, DeleteTwice) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
-  EXPECT_FALSE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
+  EXPECT_FALSE(Delete(bucket_locator1_, u"foo"));
   EXPECT_EQ(CacheStorageError::kErrorNotFound, callback_error_);
 }
 
 TEST_P(CacheStorageManagerTestP, DeleteCacheReducesKeySize) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   // The quota manager gets updated after the put operation runs its callback so
@@ -1101,7 +1104,7 @@ TEST_P(CacheStorageManagerTestP, DeleteCacheReducesKeySize) {
   base::RunLoop().RunUntilIdle();
   int64_t put_delta = *quota_manager_proxy_->last_notified_bucket_delta();
   EXPECT_LT(0, put_delta);
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
 
   // Drop the cache handle so that the cache can be erased from disk.
   callback_cache_handle_ = CacheStorageCacheHandle();
@@ -1115,55 +1118,55 @@ TEST_P(CacheStorageManagerTestP, EmptyKeys) {
 }
 
 TEST_P(CacheStorageManagerTestP, SomeKeys) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
-  EXPECT_TRUE(Open(bucket_locator2_, "baz"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
+  EXPECT_TRUE(Open(bucket_locator2_, u"baz"));
   EXPECT_EQ(2u, Keys(bucket_locator1_));
-  std::vector<std::string> expected_keys;
-  expected_keys.push_back("foo");
-  expected_keys.push_back("bar");
+  std::vector<std::u16string> expected_keys;
+  expected_keys.push_back(u"foo");
+  expected_keys.push_back(u"bar");
   EXPECT_EQ(expected_keys, GetIndexNames());
   EXPECT_EQ(1u, Keys(bucket_locator2_));
-  EXPECT_STREQ("baz", GetFirstIndexName().c_str());
+  EXPECT_EQ(u"baz", GetFirstIndexName());
 }
 
 TEST_P(CacheStorageManagerTestP, DeletedKeysGone) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
-  EXPECT_TRUE(Open(bucket_locator2_, "baz"));
-  EXPECT_TRUE(Delete(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
+  EXPECT_TRUE(Open(bucket_locator2_, u"baz"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"bar"));
   EXPECT_EQ(1u, Keys(bucket_locator1_));
-  EXPECT_STREQ("foo", GetFirstIndexName().c_str());
+  EXPECT_EQ(u"foo", GetFirstIndexName());
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchEntryExists) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_TRUE(
-      StorageMatch(bucket_locator1_, "foo", GURL("http://example.com/foo")));
+      StorageMatch(bucket_locator1_, u"foo", GURL("http://example.com/foo")));
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchNoEntry) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_FALSE(
-      StorageMatch(bucket_locator1_, "foo", GURL("http://example.com/bar")));
+      StorageMatch(bucket_locator1_, u"foo", GURL("http://example.com/bar")));
   EXPECT_EQ(CacheStorageError::kErrorNotFound, callback_error_);
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchNoCache) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_FALSE(
-      StorageMatch(bucket_locator1_, "bar", GURL("http://example.com/foo")));
+      StorageMatch(bucket_locator1_, u"bar", GURL("http://example.com/foo")));
   EXPECT_EQ(CacheStorageError::kErrorCacheNameNotFound, callback_error_);
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchAllEntryExists) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_TRUE(
@@ -1171,7 +1174,7 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAllEntryExists) {
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchAllNoEntry) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_FALSE(
@@ -1186,29 +1189,29 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAllNoCaches) {
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchDifferentOwners) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/public")));
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bgf")));
 
   // Check the public cache.
-  EXPECT_TRUE(StorageMatch(bucket_locator1_, "foo",
+  EXPECT_TRUE(StorageMatch(bucket_locator1_, u"foo",
                            GURL("http://example.com/public"), nullptr,
                            storage::mojom::CacheStorageOwner::kCacheAPI));
-  EXPECT_FALSE(StorageMatch(bucket_locator1_, "foo",
+  EXPECT_FALSE(StorageMatch(bucket_locator1_, u"foo",
                             GURL("http://example.com/bgf"), nullptr,
                             storage::mojom::CacheStorageOwner::kCacheAPI));
 
   // Check the internal cache.
   EXPECT_FALSE(StorageMatch(
-      bucket_locator1_, "foo", GURL("http://example.com/public"), nullptr,
+      bucket_locator1_, u"foo", GURL("http://example.com/public"), nullptr,
       storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_TRUE(StorageMatch(
-      bucket_locator1_, "foo", GURL("http://example.com/bgf"), nullptr,
+      bucket_locator1_, u"foo", GURL("http://example.com/bgf"), nullptr,
       storage::mojom::CacheStorageOwner::kBackgroundFetch));
 }
 
@@ -1216,14 +1219,14 @@ TEST_F(CacheStorageManagerTest, StorageReuseCacheName) {
   // Deleting a cache and creating one with the same name and adding an entry
   // with the same URL should work. (see crbug.com/542668)
   const GURL kTestURL = GURL("http://example.com/foo");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
   EXPECT_TRUE(CacheMatch(callback_cache_handle_.value(), kTestURL));
 
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
   // The cache is deleted but the handle to one of its entries is still
   // open. Creating a new cache in the same directory would fail on Windows.
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
 }
 
@@ -1233,14 +1236,14 @@ TEST_P(CacheStorageManagerTestP, DropRefAfterNewCacheWithSameNameCreated) {
 
   // 1. Create cache A and hang onto the handle
   const GURL kTestURL = GURL("http://example.com/foo");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
 
   // 2. Doom the cache
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
 
   // 3. Create cache B (with the same name)
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
 
   // 4. Drop handle to A
   cache_handle = CacheStorageCacheHandle();
@@ -1253,35 +1256,35 @@ TEST_P(CacheStorageManagerTestP, DeleteCorrectDirectory) {
   // This test reproduces crbug.com/630036.
   // 1. Cache A with name "foo" is created
   const GURL kTestURL = GURL("http://example.com/foo");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
 
   // 2. Cache A is doomed, but js hangs onto the handle.
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
 
   // 3. Cache B with name "foo" is created
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
 
   // 4. Cache B is doomed, and both handles are reset.
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
   cache_handle = CacheStorageCacheHandle();
 
   // Do some busy work on a different cache to move the cache pool threads
   // along and trigger the bug.
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
   EXPECT_TRUE(CacheMatch(callback_cache_handle_.value(), kTestURL));
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchAllEntryExistsTwice) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   // |request_1| and |request_2| has the same url.
   auto request_1 = blink::mojom::FetchAPIRequest::New();
   request_1->url = GURL("http://example.com/foo");
   auto request_2 = BackgroundFetchSettledFetch::CloneRequest(request_1);
   EXPECT_TRUE(CachePutWithStatusCode(callback_cache_handle_.value(),
                                      std::move(request_1), 200));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_TRUE(CachePutWithStatusCode(callback_cache_handle_.value(),
                                      std::move(request_2), 201));
 
@@ -1294,54 +1297,54 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAllEntryExistsTwice) {
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchInOneOfMany) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  EXPECT_TRUE(Open(bucket_locator1_, "baz"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"baz"));
 
   EXPECT_TRUE(
       StorageMatchAll(bucket_locator1_, GURL("http://example.com/foo")));
 }
 
 TEST_P(CacheStorageManagerTestP, Chinese) {
-  EXPECT_TRUE(Open(bucket_locator1_, "你好"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"你好"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(bucket_locator1_, "你好"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"你好"));
   EXPECT_EQ(callback_cache_handle_.value(), cache_handle.value());
   EXPECT_EQ(1u, Keys(bucket_locator1_));
-  EXPECT_STREQ("你好", GetFirstIndexName().c_str());
+  EXPECT_EQ(u"你好", GetFirstIndexName());
 }
 
 TEST_F(CacheStorageManagerTest, EmptyKey) {
-  EXPECT_TRUE(Open(bucket_locator1_, ""));
+  EXPECT_TRUE(Open(bucket_locator1_, u""));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(bucket_locator1_, ""));
+  EXPECT_TRUE(Open(bucket_locator1_, u""));
   EXPECT_EQ(cache_handle.value(), callback_cache_handle_.value());
   EXPECT_EQ(1u, Keys(bucket_locator1_));
-  EXPECT_STREQ("", GetFirstIndexName().c_str());
-  EXPECT_TRUE(Has(bucket_locator1_, ""));
-  EXPECT_TRUE(Delete(bucket_locator1_, ""));
+  EXPECT_EQ(u"", GetFirstIndexName());
+  EXPECT_TRUE(Has(bucket_locator1_, u""));
+  EXPECT_TRUE(Delete(bucket_locator1_, u""));
   EXPECT_EQ(0u, Keys(bucket_locator1_));
 }
 
 TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, DataPersists) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
-  EXPECT_TRUE(Open(bucket_locator1_, "baz"));
-  EXPECT_TRUE(Open(bucket_locator2_, "raz"));
-  EXPECT_TRUE(Delete(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"baz"));
+  EXPECT_TRUE(Open(bucket_locator2_, u"raz"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"bar"));
   RecreateStorageManager();
   EXPECT_EQ(2u, Keys(bucket_locator1_));
-  std::vector<std::string> expected_keys;
-  expected_keys.push_back("foo");
-  expected_keys.push_back("baz");
+  std::vector<std::u16string> expected_keys;
+  expected_keys.push_back(u"foo");
+  expected_keys.push_back(u"baz");
   EXPECT_EQ(expected_keys, GetIndexNames());
 }
 
 TEST_F(CacheStorageManagerMemoryOnlyTest, DataLostWhenMemoryOnly) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Open(bucket_locator2_, "baz"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Open(bucket_locator2_, u"baz"));
   RecreateStorageManager();
   EXPECT_EQ(0u, Keys(bucket_locator1_));
 }
@@ -1349,10 +1352,11 @@ TEST_F(CacheStorageManagerMemoryOnlyTest, DataLostWhenMemoryOnly) {
 TEST_F(CacheStorageManagerTest, BadCacheName) {
   // Since the implementation writes cache names to disk, ensure that we don't
   // escape the directory.
-  const std::string bad_name = "../../../../../../../../../../../../../../foo";
+  const std::u16string bad_name =
+      u"../../../../../../../../../../../../../../foo";
   EXPECT_TRUE(Open(bucket_locator1_, bad_name));
   EXPECT_EQ(1u, Keys(bucket_locator1_));
-  EXPECT_STREQ(bad_name.c_str(), GetFirstIndexName().c_str());
+  EXPECT_EQ(bad_name, GetFirstIndexName());
 }
 
 TEST_F(CacheStorageManagerTest, BadKeyName) {
@@ -1363,9 +1367,9 @@ TEST_F(CacheStorageManagerTest, BadKeyName) {
           "http://../../../../../../../../../../../../../../foo");
   ASSERT_OK_AND_ASSIGN(storage::BucketLocator bad_bucket_locator,
                        GetOrCreateBucket(bad_key, storage::kDefaultBucketName));
-  EXPECT_TRUE(Open(bad_bucket_locator, "foo"));
+  EXPECT_TRUE(Open(bad_bucket_locator, u"foo"));
   EXPECT_EQ(1u, Keys(bad_bucket_locator));
-  EXPECT_EQ("foo", GetFirstIndexName());
+  EXPECT_EQ(u"foo", GetFirstIndexName());
 }
 
 // Dropping a reference to a cache should not immediately destroy it.  These
@@ -1373,7 +1377,7 @@ TEST_F(CacheStorageManagerTest, BadKeyName) {
 TEST_F(CacheStorageManagerTest, DropReference) {
   CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator1_);
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   base::WeakPtr<CacheStorageCache> cache =
       CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   // Run a cache operation to ensure that the cache has finished initializing so
@@ -1397,7 +1401,7 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndDelete) {
   // CacheStorageCache to be kept alive.
   CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator1_);
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   base::WeakPtr<CacheStorageCache> cache =
       CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   // Run a cache operation to ensure that the cache has finished initializing so
@@ -1410,7 +1414,7 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndDelete) {
                         "CacheStorage is still referenced";
 
   // Delete() should trigger its destruction, however.
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(cache)
@@ -1424,7 +1428,7 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndMemoryPressure) {
   // CacheStorageCache to be kept alive.
   CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator1_);
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   base::WeakPtr<CacheStorageCache> cache =
       CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   // Run a cache operation to ensure that the cache has finished initializing so
@@ -1457,7 +1461,7 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndMemoryPressure) {
 TEST_F(CacheStorageManagerTest, DropReferenceDuringQuery) {
   // Setup the cache and execute an operation to make sure all initialization
   // is complete.
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   base::WeakPtr<CacheStorageCache> cache =
       CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(),
@@ -1494,10 +1498,10 @@ TEST_P(CacheStorageManagerTestP, CacheWorksAfterDelete) {
   const GURL kFooURL("http://example.com/foo");
   const GURL kBarURL("http://example.com/bar");
   const GURL kBazURL("http://example.com/baz");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle original_handle = std::move(callback_cache_handle_);
   EXPECT_TRUE(CachePut(original_handle.value(), kFooURL));
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
 
   // Verify that the existing cache handle still works.
   EXPECT_TRUE(CacheMatch(original_handle.value(), kFooURL));
@@ -1509,7 +1513,7 @@ TEST_P(CacheStorageManagerTestP, CacheWorksAfterDelete) {
 
   // Open a new cache with the same name, it should create a new cache, but not
   // interfere with the original cache.
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   CacheStorageCacheHandle new_handle = std::move(callback_cache_handle_);
   EXPECT_TRUE(CachePut(new_handle.value(), kBazURL));
 
@@ -1528,7 +1532,7 @@ TEST_F(CacheStorageManagerTest, DeletedCacheIgnoredInIndex) {
   const GURL kFooURL("http://example.com/foo");
   const GURL kBarURL("http://example.com/bar");
   const GURL kBazURL("http://example.com/baz");
-  const std::string kCacheName = "foo";
+  const std::u16string kCacheName = u"foo";
 
   EXPECT_TRUE(Open(bucket_locator1_, kCacheName));
   auto original_handle = std::move(callback_cache_handle_);
@@ -1562,7 +1566,7 @@ TEST_F(CacheStorageManagerTest, TestErrorInitializingCache) {
     return;
   }
   const GURL kFooURL("http://example.com/foo");
-  const std::string kCacheName = "foo";
+  const std::u16string kCacheName = u"foo";
 
   EXPECT_TRUE(Open(bucket_locator1_, kCacheName));
   auto original_handle = std::move(callback_cache_handle_);
@@ -1612,7 +1616,7 @@ TEST_F(CacheStorageManagerTest, TestErrorInitializingCache) {
 TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
        CacheSizeCorrectAfterReopen) {
   const GURL kFooURL("http://example.com/foo");
-  const std::string kCacheName = "foo";
+  const std::u16string kCacheName = u"foo";
 
   EXPECT_TRUE(Open(bucket_locator1_, kCacheName));
   auto original_handle = std::move(callback_cache_handle_);
@@ -1660,8 +1664,8 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
 }
 
 TEST_F(CacheStorageManagerTest, CacheSizePaddedAfterReopen) {
-  const GURL kFooURL = storage_key1_.origin().GetURL().Resolve("foo");
-  const std::string kCacheName = "foo";
+  const GURL kFooURL = storage_key1_.origin().GetURL().Resolve(u"foo");
+  const std::u16string kCacheName = u"foo";
 
   EXPECT_FALSE(quota_manager_proxy_->last_notified_bucket_delta().has_value());
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_modified_count());
@@ -1709,7 +1713,7 @@ TEST_F(CacheStorageManagerTest, CacheSizePaddedAfterReopen) {
 }
 
 TEST_F(CacheStorageManagerTest, QuotaCorrectAfterReopen) {
-  const std::string kCacheName = "foo";
+  const std::u16string kCacheName = u"foo";
 
   // Choose a response type that will not be padded so that the expected
   // cache size can be calculated.
@@ -1748,31 +1752,31 @@ TEST_F(CacheStorageManagerTest, QuotaCorrectAfterReopen) {
 // With a memory cache the cache can't be freed from memory until the client
 // calls delete.
 TEST_F(CacheStorageManagerMemoryOnlyTest, MemoryLosesReferenceOnlyAfterDelete) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   base::WeakPtr<CacheStorageCache> cache =
       CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   callback_cache_handle_ = CacheStorageCacheHandle();
   EXPECT_TRUE(cache);
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(cache);
 }
 
 TEST_P(CacheStorageManagerTestP, DeleteBeforeRelease) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
   EXPECT_TRUE(callback_cache_handle_.value());
 }
 
 TEST_P(CacheStorageManagerTestP, OpenRunsSerially) {
-  EXPECT_FALSE(Delete(bucket_locator1_, "tmp"));  // Init storage.
+  EXPECT_FALSE(Delete(bucket_locator1_, u"tmp"));  // Init storage.
   CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator1_);
   auto* impl = CacheStorage::From(cache_storage);
   auto id = impl->StartAsyncOperationForTesting();
 
   base::RunLoop open_loop;
   cache_storage.value()->OpenCache(
-      "foo", /* trace_id = */ 0,
+      u"foo", /* trace_id = */ 0,
       base::BindOnce(&CacheStorageManagerTest::CacheAndErrorCallback,
                      base::Unretained(this), base::Unretained(&open_loop)));
 
@@ -1786,7 +1790,7 @@ TEST_P(CacheStorageManagerTestP, OpenRunsSerially) {
 
 TEST_P(CacheStorageManagerTestP, GetBucketUsage) {
   EXPECT_EQ(0, GetBucketUsage(bucket_locator1_));
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_EQ(0, GetBucketUsage(bucket_locator1_));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -1795,7 +1799,7 @@ TEST_P(CacheStorageManagerTestP, GetBucketUsage) {
   EXPECT_EQ(0, GetBucketUsage(bucket_locator2_));
 
   // Add the same entry into a second cache, the size should double.
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_EQ(2 * foo_size, GetBucketUsage(bucket_locator1_));
@@ -1803,7 +1807,7 @@ TEST_P(CacheStorageManagerTestP, GetBucketUsage) {
 
 TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetBucketUsage) {
   EXPECT_EQ(0, GetBucketUsage(bucket_locator1_));
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_EQ(0, GetBucketUsage(bucket_locator1_));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -1812,7 +1816,7 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetBucketUsage) {
   EXPECT_EQ(0, GetBucketUsage(bucket_locator2_));
 
   // Add the same entry into a second cache, the size should double.
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_EQ(2 * foo_size, GetBucketUsage(bucket_locator1_));
@@ -1844,7 +1848,7 @@ TEST_F(CacheStorageManagerTest, GetBucketUsageConflictingBucketIds) {
 
   ASSERT_EQ(bucket_locator1_path, modified_bucket_locator1_path);
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
 
   disk_cache::FlushCacheThreadForTesting();
@@ -1871,7 +1875,7 @@ TEST_F(CacheStorageManagerTest, GetBucketUsageConflictingBucketIds) {
   disk_cache::FlushCacheThreadForTesting();
   content::RunAllTasksUntilIdle();
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CacheMatch(callback_cache_handle_.value(), kTestURL));
   EXPECT_NE(Size(bucket_locator1_), 0);
 }
@@ -1886,7 +1890,7 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
        MAYBE_GetBucketUsageWithPadding) {
   EXPECT_EQ(0, GetBucketUsage(bucket_locator1_));
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   base::FilePath storage_dir =
       CacheStorageCache::From(callback_cache_handle_)->path().DirName();
   base::FilePath index_path =
@@ -1924,7 +1928,7 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
 TEST_F(CacheStorageManagerTest, GetBucketUsageWithOldIndex) {
   // Write a single value (V1) to the cache.
   const GURL kFooURL = storage_key1_.origin().GetURL().Resolve("foo");
-  const std::string kCacheName = "foo";
+  const std::u16string kCacheName = u"foo";
   EXPECT_TRUE(Open(bucket_locator1_, kCacheName));
   CacheStorageCacheHandle original_handle = std::move(callback_cache_handle_);
 
@@ -2016,16 +2020,16 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
 
     GURL test_url = GURL("http://example.com/foo");
 
-    EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+    EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
-    EXPECT_TRUE(Open(bucket_locator2_, "bar"));
+    EXPECT_TRUE(Open(bucket_locator2_, u"bar"));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
-    EXPECT_TRUE(Open(bucket_locator3, "baz"));
+    EXPECT_TRUE(Open(bucket_locator3, u"baz"));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
-    EXPECT_TRUE(Open(bucket_locator4, "cool"));
+    EXPECT_TRUE(Open(bucket_locator4, u"cool"));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
     // Ensure that the index files have been written to disk before calling
@@ -2064,7 +2068,7 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
 TEST_F(CacheStorageManagerTest, GetKeySizeWithOldIndex) {
   // Write a single value (V1) to the cache.
   const GURL kFooURL = storage_key1_.origin().GetURL().Resolve("foo");
-  const std::string kCacheName = "foo";
+  const std::u16string kCacheName = u"foo";
   EXPECT_TRUE(Open(bucket_locator1_, kCacheName));
   CacheStorageCacheHandle original_handle = std::move(callback_cache_handle_);
 
@@ -2118,12 +2122,12 @@ TEST_F(CacheStorageManagerTest, GetKeySizeWithOldIndex) {
 }
 
 TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCaches) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/foo2")));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
@@ -2136,10 +2140,10 @@ TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCaches) {
 }
 
 TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesTwoOwners) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kCacheAPI));
   CacheStorageCacheHandle public_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
   CacheStorageCacheHandle bgf_handle = std::move(callback_cache_handle_);
 
@@ -2156,7 +2160,7 @@ TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesTwoOwners) {
 
 TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesAfterDelete) {
   // Tests that doomed caches are also deleted by GetSizeThenCloseAllCaches.
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
@@ -2168,7 +2172,7 @@ TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesAfterDelete) {
 
   // Delete will only doom the cache because there is still at least one handle
   // referencing an open cache.
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
 
   // GetSizeThenCloseAllCaches should close the cache (which is then deleted)
   // even though there is still an open handle.
@@ -2178,7 +2182,7 @@ TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesAfterDelete) {
 
 TEST_F(CacheStorageManagerTest, DeleteUnreferencedCacheDirectories) {
   // Create a referenced cache.
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
@@ -2197,7 +2201,7 @@ TEST_F(CacheStorageManagerTest, DeleteUnreferencedCacheDirectories) {
   RecreateStorageManager();
 
   // Verify that the referenced cache still works.
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CacheMatch(callback_cache_handle_.value(),
                          GURL("http://example.com/foo")));
 
@@ -2207,19 +2211,19 @@ TEST_F(CacheStorageManagerTest, DeleteUnreferencedCacheDirectories) {
 
 TEST_P(CacheStorageManagerTestP, OpenCacheStorageAccessed) {
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_accessed_count());
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_accessed_count());
 }
 
 TEST_P(CacheStorageManagerTestP, HasStorageAccessed) {
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_accessed_count());
-  EXPECT_FALSE(Has(bucket_locator1_, "foo"));
+  EXPECT_FALSE(Has(bucket_locator1_, u"foo"));
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_accessed_count());
 }
 
 TEST_P(CacheStorageManagerTestP, DeleteStorageAccessed) {
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_accessed_count());
-  EXPECT_FALSE(Delete(bucket_locator1_, "foo"));
+  EXPECT_FALSE(Delete(bucket_locator1_, u"foo"));
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_accessed_count());
 }
 
@@ -2232,7 +2236,7 @@ TEST_P(CacheStorageManagerTestP, KeysStorageAccessed) {
 TEST_P(CacheStorageManagerTestP, MatchCacheStorageAccessed) {
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_accessed_count());
   EXPECT_FALSE(
-      StorageMatch(bucket_locator1_, "foo", GURL("http://example.com/foo")));
+      StorageMatch(bucket_locator1_, u"foo", GURL("http://example.com/foo")));
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_accessed_count());
 }
 
@@ -2261,7 +2265,7 @@ TEST_P(CacheStorageManagerTestP, NotifyCacheListChanged_Created) {
   auto observer = CreateObserver();
 
   EXPECT_EQ(0, observer->notify_list_changed_count);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(1, observer->notify_list_changed_count);
   EXPECT_TRUE(
@@ -2274,14 +2278,14 @@ TEST_P(CacheStorageManagerTestP, NotifyCacheListChanged_Deleted) {
   auto observer = CreateObserver();
 
   EXPECT_EQ(0, observer->notify_list_changed_count);
-  EXPECT_FALSE(Delete(bucket_locator1_, "foo"));
+  EXPECT_FALSE(Delete(bucket_locator1_, u"foo"));
   // Give any unexpected observer tasks a chance to run.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, observer->notify_list_changed_count);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(1, observer->notify_list_changed_count);
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(2, observer->notify_list_changed_count);
 }
@@ -2290,13 +2294,13 @@ TEST_P(CacheStorageManagerTestP, NotifyCacheListChanged_DeletedThenCreated) {
   auto observer = CreateObserver();
 
   EXPECT_EQ(0, observer->notify_list_changed_count);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(1, observer->notify_list_changed_count);
-  EXPECT_TRUE(Delete(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(2, observer->notify_list_changed_count);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo2"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo2"));
   observer->Wait();
   EXPECT_EQ(3, observer->notify_list_changed_count);
 }
@@ -2305,7 +2309,7 @@ TEST_P(CacheStorageManagerTestP, NotifyCacheContentChanged_PutEntry) {
   auto observer = CreateObserver();
 
   EXPECT_EQ(0, observer->notify_content_changed_count);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(
@@ -2325,10 +2329,10 @@ TEST_P(CacheStorageManagerTestP, NotifyCacheContentChanged_DeleteEntry) {
   auto observer = CreateObserver();
 
   EXPECT_EQ(0, observer->notify_content_changed_count);
-  EXPECT_FALSE(Delete(bucket_locator1_, "foo"));
+  EXPECT_FALSE(Delete(bucket_locator1_, u"foo"));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, observer->notify_content_changed_count);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(
@@ -2350,7 +2354,7 @@ TEST_P(CacheStorageManagerTestP, NotifyCacheContentChanged_DeleteThenPutEntry) {
   auto observer = CreateObserver();
 
   EXPECT_EQ(0, observer->notify_content_changed_count);
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   observer->Wait();
   EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(
@@ -2372,44 +2376,44 @@ TEST_P(CacheStorageManagerTestP, NotifyCacheContentChanged_DeleteThenPutEntry) {
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatch_IgnoreSearch) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/foo?bar")));
 
   EXPECT_FALSE(
-      StorageMatch(bucket_locator1_, "foo", GURL("http://example.com/foo")));
+      StorageMatch(bucket_locator1_, u"foo", GURL("http://example.com/foo")));
 
   blink::mojom::CacheQueryOptionsPtr match_options =
       blink::mojom::CacheQueryOptions::New();
   match_options->ignore_search = true;
-  EXPECT_TRUE(StorageMatch(bucket_locator1_, "foo",
+  EXPECT_TRUE(StorageMatch(bucket_locator1_, u"foo",
                            GURL("http://example.com/foo"),
                            std::move(match_options)));
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatch_IgnoreMethod) {
   GURL url = GURL("http://example.com/foo");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), url));
 
   auto post_request = blink::mojom::FetchAPIRequest::New();
   post_request->url = url;
   post_request->method = "POST";
   EXPECT_FALSE(StorageMatchWithRequest(
-      bucket_locator1_, "foo",
+      bucket_locator1_, u"foo",
       BackgroundFetchSettledFetch::CloneRequest(post_request)));
 
   blink::mojom::CacheQueryOptionsPtr match_options =
       blink::mojom::CacheQueryOptions::New();
   match_options->ignore_method = true;
-  EXPECT_TRUE(StorageMatchWithRequest(bucket_locator1_, "foo",
+  EXPECT_TRUE(StorageMatchWithRequest(bucket_locator1_, u"foo",
                                       std::move(post_request),
                                       std::move(match_options)));
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatch_IgnoreVary) {
   GURL url = GURL("http://example.com/foo");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
 
   auto request = blink::mojom::FetchAPIRequest::New();
   request->url = url;
@@ -2425,24 +2429,25 @@ TEST_P(CacheStorageManagerTestP, StorageMatch_IgnoreVary) {
                                             std::move(request_1),
                                             std::move(response_headers)));
   EXPECT_TRUE(
-      StorageMatchWithRequest(bucket_locator1_, "foo", std::move(request_2)));
+      StorageMatchWithRequest(bucket_locator1_, u"foo", std::move(request_2)));
 
   request->headers["vary_foo"] = "bar";
   // |request_3| and |request_4| has the same url and headers.
   auto request_3 = BackgroundFetchSettledFetch::CloneRequest(request);
   auto request_4 = BackgroundFetchSettledFetch::CloneRequest(request);
   EXPECT_FALSE(
-      StorageMatchWithRequest(bucket_locator1_, "foo", std::move(request_3)));
+      StorageMatchWithRequest(bucket_locator1_, u"foo", std::move(request_3)));
 
   blink::mojom::CacheQueryOptionsPtr match_options =
       blink::mojom::CacheQueryOptions::New();
   match_options->ignore_vary = true;
-  EXPECT_TRUE(StorageMatchWithRequest(
-      bucket_locator1_, "foo", std::move(request_4), std::move(match_options)));
+  EXPECT_TRUE(StorageMatchWithRequest(bucket_locator1_, u"foo",
+                                      std::move(request_4),
+                                      std::move(match_options)));
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreSearch) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/foo?bar")));
 
@@ -2458,7 +2463,7 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreSearch) {
 
 TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreMethod) {
   GURL url = GURL("http://example.com/foo");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), url));
 
   auto post_request = blink::mojom::FetchAPIRequest::New();
@@ -2477,7 +2482,7 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreMethod) {
 
 TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreVary) {
   GURL url = GURL("http://example.com/foo");
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
 
   auto request = blink::mojom::FetchAPIRequest::New();
   request->url = url;
@@ -2509,38 +2514,38 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreVary) {
 }
 
 TEST_P(CacheStorageManagerTestP, StorageWriteToCache) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
 
   EXPECT_TRUE(Write(bucket_locator1_,
-                    storage::mojom::CacheStorageOwner::kBackgroundFetch, "foo",
+                    storage::mojom::CacheStorageOwner::kBackgroundFetch, u"foo",
                     "http://example.com/foo"));
 
   // Match request we just wrote.
   EXPECT_TRUE(StorageMatch(
-      bucket_locator1_, "foo", GURL("http://example.com/foo"), nullptr,
+      bucket_locator1_, u"foo", GURL("http://example.com/foo"), nullptr,
       storage::mojom::CacheStorageOwner::kBackgroundFetch));
 
   // Don't match with different origin.
   EXPECT_FALSE(StorageMatch(
-      bucket_locator2_, "foo", GURL("http://example.com/foo"), nullptr,
+      bucket_locator2_, u"foo", GURL("http://example.com/foo"), nullptr,
       storage::mojom::CacheStorageOwner::kBackgroundFetch));
   // Don't match with different cache name.
   EXPECT_FALSE(StorageMatch(
-      bucket_locator1_, "bar", GURL("http://example.com/foo"), nullptr,
+      bucket_locator1_, u"bar", GURL("http://example.com/foo"), nullptr,
       storage::mojom::CacheStorageOwner::kBackgroundFetch));
   // Don't match with different request.
   EXPECT_FALSE(StorageMatch(
-      bucket_locator1_, "foo", GURL("http://example.com/bar"), nullptr,
+      bucket_locator1_, u"foo", GURL("http://example.com/bar"), nullptr,
       storage::mojom::CacheStorageOwner::kBackgroundFetch));
   // Don't match with different owner.
-  EXPECT_FALSE(StorageMatch(bucket_locator1_, "foo",
+  EXPECT_FALSE(StorageMatch(bucket_locator1_, u"foo",
                             GURL("http://example.com/foo"), nullptr,
                             storage::mojom::CacheStorageOwner::kCacheAPI));
 }
 
 TEST_F(CacheStorageManagerTest, WriteIndexOnlyScheduledWhenValueChanges) {
-  const char* kCacheName = "WriteIndexOnlyScheduledWhenValueChanges";
+  const char16_t* kCacheName = u"WriteIndexOnlyScheduledWhenValueChanges";
 
   // In order to make sure operations are flushed through the various scheduler
   // queues we match against a non-existant URL.  This should always return
@@ -2578,7 +2583,7 @@ TEST_F(CacheStorageManagerTest, WriteIndexOnlyScheduledWhenValueChanges) {
 }
 
 TEST_P(CacheStorageManagerTestP, SlowPutCompletesWithoutExternalRef) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
 
   auto request = blink::mojom::FetchAPIRequest::New();
   request->url = GURL("http://example.com/foo");
@@ -2620,7 +2625,7 @@ TEST_P(CacheStorageManagerTestP, SlowPutCompletesWithoutExternalRef) {
 }
 
 TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo",
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
   auto request = blink::mojom::FetchAPIRequest::New();
   request->url = GURL("http://example.com/foo");
@@ -2664,13 +2669,13 @@ TEST_P(CacheStorageManagerTestP, BatchDeleteOriginData) {
   for (const storage::mojom::CacheStorageOwner owner :
        {storage::mojom::CacheStorageOwner::kCacheAPI,
         storage::mojom::CacheStorageOwner::kBackgroundFetch}) {
-    EXPECT_TRUE(Open(bucket_locator1_, "foo", owner));
+    EXPECT_TRUE(Open(bucket_locator1_, u"foo", owner));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
-    EXPECT_TRUE(Open(bucket_locator2_, "foo", owner));
+    EXPECT_TRUE(Open(bucket_locator2_, u"foo", owner));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
-    EXPECT_TRUE(Open(partitioned_default_bucket_locator1, "baz", owner));
+    EXPECT_TRUE(Open(partitioned_default_bucket_locator1, u"baz", owner));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
     EXPECT_EQ(3ULL, GetStorageKeys(owner).size());
@@ -2690,7 +2695,7 @@ TEST_F(CacheStorageManagerMemoryOnlyTest, DeleteBucketData) {
   for (const storage::mojom::CacheStorageOwner owner :
        {storage::mojom::CacheStorageOwner::kCacheAPI,
         storage::mojom::CacheStorageOwner::kBackgroundFetch}) {
-    EXPECT_TRUE(Open(bucket_locator1_, "foo", owner));
+    EXPECT_TRUE(Open(bucket_locator1_, u"foo", owner));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                          GURL("http://example.com/foo")));
 
@@ -2705,7 +2710,7 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, DeleteBucketData) {
   for (const storage::mojom::CacheStorageOwner owner :
        {storage::mojom::CacheStorageOwner::kCacheAPI,
         storage::mojom::CacheStorageOwner::kBackgroundFetch}) {
-    EXPECT_TRUE(Open(bucket_locator1_, "foo", owner));
+    EXPECT_TRUE(Open(bucket_locator1_, u"foo", owner));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                          GURL("http://example.com/foo")));
 
@@ -2742,7 +2747,7 @@ TEST_F(CacheStorageManagerTest, DeleteBucketDataConflictingBucketIds) {
 
   ASSERT_EQ(bucket_locator1_path, modified_bucket_locator1_path);
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
 
   disk_cache::FlushCacheThreadForTesting();
@@ -2772,7 +2777,7 @@ TEST_F(CacheStorageManagerTest, DeleteBucketDataConflictingBucketIds) {
 
   ASSERT_FALSE(base::PathExists(bucket_locator1_path));
 
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(), kTestURL));
   EXPECT_EQ(Size(bucket_locator1_), 0);
 }
@@ -2851,7 +2856,7 @@ class CacheStorageQuotaClientTestP
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaGetBucketUsage) {
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_LT(0, QuotaGetBucketUsage(bucket_locator1_));
@@ -2859,31 +2864,31 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaGetBucketUsage) {
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaGetStorageKeysForType) {
   EXPECT_EQ(0u, QuotaGetStorageKeysForType());
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
-  EXPECT_TRUE(Open(bucket_locator2_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
+  EXPECT_TRUE(Open(bucket_locator2_, u"foo"));
   EXPECT_EQ(2u, QuotaGetStorageKeysForType());
 }
 
 TEST_P(CacheStorageQuotaClientTestP,
        QuotaGetStorageKeysForTypeDifferentOwners) {
   EXPECT_EQ(0u, QuotaGetStorageKeysForType());
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   // The |quota_client_| is registered for
   // storage::mojom::CacheStorageOwner::kCacheAPI, so this Open is ignored.
-  EXPECT_TRUE(Open(bucket_locator2_, "bar",
+  EXPECT_TRUE(Open(bucket_locator2_, u"bar",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_EQ(1u, QuotaGetStorageKeysForType());
 }
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   // Call put to test that initialized caches are properly deleted too.
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  EXPECT_TRUE(Open(bucket_locator1_, "bar"));
-  EXPECT_TRUE(Open(bucket_locator2_, "baz"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
+  EXPECT_TRUE(Open(bucket_locator2_, u"baz"));
 
   int64_t storage_key1_size = QuotaGetBucketUsage(bucket_locator1_);
   EXPECT_LT(0, storage_key1_size);
@@ -2893,10 +2898,10 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
   EXPECT_EQ(-1 * storage_key1_size,
             quota_manager_proxy_->last_notified_bucket_delta());
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));
-  EXPECT_FALSE(Has(bucket_locator1_, "foo"));
-  EXPECT_FALSE(Has(bucket_locator1_, "bar"));
-  EXPECT_TRUE(Has(bucket_locator2_, "baz"));
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_FALSE(Has(bucket_locator1_, u"foo"));
+  EXPECT_FALSE(Has(bucket_locator1_, u"bar"));
+  EXPECT_TRUE(Has(bucket_locator2_, u"baz"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
 }
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaNonDefaultBucket) {
@@ -2911,7 +2916,7 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteEmptyBucket) {
 }
 
 TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
-  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   // Call put to test that initialized caches are properly deleted too.
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -2933,10 +2938,8 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
 
 class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
  public:
-  void DoTest(std::string test_index_path,
-              base::RepeatingCallback<void(const proto::CacheStorageIndex&,
-                                           const proto::CacheStorageIndex&,
-                                           int64_t)> test_logic) {
+  void SetUpTestEnvironment(const std::string& test_index_path,
+                            base::FilePath& storage_dir) {
     std::vector<blink::StorageKey> storage_keys = GetStorageKeys();
     ASSERT_TRUE(storage_keys.empty());
 
@@ -2944,7 +2947,7 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     auto* legacy_manager =
         static_cast<CacheStorageManager*>(cache_manager_.get());
     base::FilePath profile_path = legacy_manager->profile_path();
-    base::FilePath storage_dir = CacheStorageManager::ConstructBucketPath(
+    storage_dir = CacheStorageManager::ConstructBucketPath(
         profile_path, bucket_locator1_,
         storage::mojom::CacheStorageOwner::kCacheAPI);
     EXPECT_TRUE(base::CreateDirectory(
@@ -2953,7 +2956,11 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
         CacheStorageManager::ConstructThirdPartyAndNonDefaultRootPath(
             profile_path)));
 
-    // Destroy the manager while we operate on the underlying files.
+    // Destroy the manager and then ensure that all tasks have completed before
+    // continuing. We can't rely on `FlushCacheStorageIndex()` here because it
+    // only ensures that we've kicked off the task to initiate a write via the
+    // `SimpleCacheLoader`, but it doesn't ensure that that task (and subsequent
+    // ones) have completed.
     DestroyStorageManager();
 
     // Determine the location of the old, frozen copy of the cache_storage
@@ -2966,14 +2973,27 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     // Copy the old files into the test storage directory.
     EXPECT_TRUE(base::CopyDirectory(test_data_path, storage_dir.DirName(),
                                     /*recursive=*/true));
+  }
+
+  void ReadIndexFile(const base::FilePath& index_path,
+                     proto::CacheStorageIndex& index) {
+    std::string protobuf;
+    EXPECT_TRUE(base::ReadFileToString(index_path, &protobuf));
+    EXPECT_TRUE(index.ParseFromString(protobuf));
+  }
+
+  void DoTest(std::string test_index_path,
+              base::RepeatingCallback<void(const proto::CacheStorageIndex&,
+                                           const proto::CacheStorageIndex&,
+                                           int64_t)> test_logic) {
+    base::FilePath storage_dir;
+    SetUpTestEnvironment(test_index_path, storage_dir);
 
     // Read the index file from disk.
     base::FilePath index_path =
         storage_dir.AppendASCII(CacheStorage::kIndexFileName);
-    std::string protobuf;
-    EXPECT_TRUE(base::ReadFileToString(index_path, &protobuf));
     proto::CacheStorageIndex original_index;
-    EXPECT_TRUE(original_index.ParseFromString(protobuf));
+    ReadIndexFile(index_path, original_index);
 
     // Re-create the manager and ask it for all storage keys with CacheStorage
     // instances. This tests two things:
@@ -2987,25 +3007,51 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     // Get bucket usage after bucket size has been recomputed.
     int64_t bucket_usage = GetBucketUsage(bucket_locator1_);
 
-    // Destroy the manager and then ensure that all tasks have completed before
-    // continuing. We can't rely on `FlushCacheStorageIndex()` here because it
-    // only ensures that we've kicked off the task to initiate a write via the
-    // `SimpleCacheLoader`, but it doesn't ensure that that task (and subsequent
-    // ones) have completed.
+    // Destroy the manager and then ensure that all tasks have completed
+    // before continuing. We can't rely on `FlushCacheStorageIndex()` here
+    // because it only ensures that we've kicked off the task to initiate a
+    // write via the `SimpleCacheLoader`, but it doesn't ensure that that task
+    // (and subsequent ones) have completed.
     DestroyStorageManager();
     disk_cache::FlushCacheThreadForTesting();
     content::RunAllTasksUntilIdle();
 
     // Read the newly modified index off of disk.
-    std::string protobuf2;
-    base::ReadFileToString(index_path, &protobuf2);
     proto::CacheStorageIndex upgraded_index;
-    EXPECT_TRUE(upgraded_index.ParseFromString(protobuf2));
+    ReadIndexFile(index_path, upgraded_index);
 
     // Run the test logic callback.
     test_logic.Run(original_index, upgraded_index, bucket_usage);
   }
 };
+
+void VerifyCacheStorageIndexMigration(
+    const proto::CacheStorageIndex& original_index,
+    const proto::CacheStorageIndex& upgraded_index,
+    int64_t bucket_usage,
+    int expected_original_padding_version,
+    int expected_upgraded_padding_version) {
+  // Verify the old index matches our expectations. It should
+  // contain a single cache with the old padding version.
+  EXPECT_EQ(original_index.cache_size(), 1);
+  EXPECT_EQ(original_index.cache(0).padding_version(),
+            expected_original_padding_version);
+  int64_t original_padding = original_index.cache(0).padding();
+
+  // Verify the single cache has had its padding version upgraded.
+  EXPECT_EQ(upgraded_index.cache_size(), 1);
+  EXPECT_EQ(upgraded_index.cache(0).padding_version(),
+            expected_upgraded_padding_version);
+  int64_t upgraded_size = upgraded_index.cache(0).size();
+  int64_t upgraded_padding = upgraded_index.cache(0).padding();
+
+  // Verify the padding has changed with the migration. Note, the
+  // non-padded size may or may not have changed depending on if
+  // additional fields are stored in each entry or the index in the
+  // new disk schema.
+  EXPECT_NE(original_padding, upgraded_padding);
+  EXPECT_EQ(bucket_usage, (upgraded_size + upgraded_padding));
+}
 
 TEST_F(CacheStorageIndexMigrationTest, PaddingMigration) {
   DoTest("content/test/data/cache_storage/padding_v2/",
@@ -3013,24 +3059,66 @@ TEST_F(CacheStorageIndexMigrationTest, PaddingMigration) {
              [](const proto::CacheStorageIndex& original_index,
                 const proto::CacheStorageIndex& upgraded_index,
                 int64_t bucket_usage) {
-               // Verify the old index matches our expectations.  It should
-               // contain a single cache with the old padding version.
-               EXPECT_EQ(original_index.cache_size(), 1);
-               EXPECT_EQ(original_index.cache(0).padding_version(), 2);
-               int64_t original_padding = original_index.cache(0).padding();
+               VerifyCacheStorageIndexMigration(
+                   original_index, upgraded_index, bucket_usage,
+                   /*expected_original_padding_version=*/2,
+                   /*expected_upgraded_padding_version=*/3);
+             }));
+}
 
-               // Verify the single cache has had its padding version upgraded.
-               EXPECT_EQ(upgraded_index.cache_size(), 1);
-               EXPECT_EQ(upgraded_index.cache(0).padding_version(), 3);
-               int64_t upgraded_size = upgraded_index.cache(0).size();
-               int64_t upgraded_padding = upgraded_index.cache(0).padding();
+TEST_F(CacheStorageIndexMigrationTest, UTF16CacheNameMigration) {
+  DoTest("content/test/data/cache_storage/utf16_cache_name/",
+         base::BindLambdaForTesting(
+             [](const proto::CacheStorageIndex& original_index,
+                const proto::CacheStorageIndex& upgraded_index,
+                int64_t bucket_usage) {
+               // Verify the UTF-16 `cache_name`
+               const std::u16string expected_utf16_name = u"bar";
+               std::string upgraded_cache_name =
+                   upgraded_index.cache(0).u16string_name();
+               std::u16string actual_cache_name =
+                   CacheStorage::ConvertUTF16BytesStringToU16String(
+                       upgraded_cache_name, /*correct_encoding=*/false);
+               EXPECT_EQ(actual_cache_name, expected_utf16_name);
 
-               // Verify the padding has changed with the migration.  Note, the
-               // non-padded size may or may not have changed depending on if
-               // additional fields are stored in each entry or the index in the
-               // new disk schema.
-               EXPECT_NE(original_padding, upgraded_padding);
-               EXPECT_EQ(bucket_usage, (upgraded_size + upgraded_padding));
+               // Verify the UTF-8 `cache_name`.
+               const std::string expected_utf8_name =
+                   base::UTF16ToUTF8(expected_utf16_name);
+               EXPECT_EQ(original_index.cache(0).name(), expected_utf8_name);
+               EXPECT_EQ(upgraded_index.cache(0).name(), expected_utf8_name);
+             }));
+}
+
+TEST_F(CacheStorageIndexMigrationTest, CorruptedUTF16CacheNameMigration) {
+  DoTest("content/test/data/cache_storage/corrupt_utf16_cache_name/",
+         base::BindLambdaForTesting(
+             [](const proto::CacheStorageIndex& original_index,
+                const proto::CacheStorageIndex& upgraded_index,
+                int64_t bucket_usage) {
+               // Validate that the original index has a cache name with uneven
+               // number of bytes.
+               EXPECT_TRUE(original_index.cache(0).u16string_name().size() %
+                               sizeof(char16_t) !=
+                           0);
+
+               // Validate after migration the number of bytes is an even
+               // number.
+               EXPECT_TRUE(upgraded_index.cache(0).u16string_name().size() %
+                               sizeof(char16_t) ==
+                           0);
+
+               // Validate that the upgraded index has a cache name with the
+               // replacement character.
+               std::string upgraded_cache_name =
+                   upgraded_index.cache(0).u16string_name();
+               std::u16string actual_cache_name =
+                   CacheStorage::ConvertUTF16BytesStringToU16String(
+                       upgraded_cache_name, /*correct_encoding=*/false);
+
+               std::u16string expected_utf16_name = u"bar";
+               expected_utf16_name.push_back(kReplacementCharacter);
+
+               EXPECT_EQ(actual_cache_name, expected_utf16_name);
              }));
 }
 

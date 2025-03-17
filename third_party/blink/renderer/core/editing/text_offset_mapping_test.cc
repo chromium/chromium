@@ -486,7 +486,6 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
       "<slot id=\"select-popover-options\"></slot>"
@@ -498,7 +497,6 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
       "<slot id=\"select-popover-options\"></slot>"
@@ -518,10 +516,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
-      "<slot id=\"select-popover-options\"></slot>"
+      "<slot id=\"select-popover-options\">bar</slot>"
       "</div>"
       "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
       "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
@@ -530,10 +527,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
-      "<slot id=\"select-popover-options\"></slot>"
+      "<slot id=\"select-popover-options\">bar</slot>"
       "</div>"
       "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
       "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"

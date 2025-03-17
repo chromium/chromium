@@ -40,7 +40,8 @@ export function getHtml(this: DeclutterPageElement) {
       `}
     </div>
     ${
-      this.staleTabDatas_.length === 0 ?
+      (this.staleTabDatas_.length === 0 &&
+       this.duplicateTabDatas_.length === 0) ?
           html`
       <div class="empty-content">
         <div class="empty-title">$i18n{declutterEmptyTitle}</div>

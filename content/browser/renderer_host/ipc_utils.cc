@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/strings/to_string.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -117,7 +118,7 @@ bool VerifyInitiatorOrigin(
     }
 
     if (current_rfh) {
-      auto bool_to_crash_key = [](bool b) { return b ? "true" : "false"; };
+      auto bool_to_crash_key = [](bool b) { return base::ToString(b); };
       static auto* const is_main_frame_key =
           base::debug::AllocateCrashKeyString(
               "is_main_frame", base::debug::CrashKeySize::Size32);

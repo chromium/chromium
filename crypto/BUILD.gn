@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/nacl/toolchain.gni")
 import("//crypto/features.gni")
 import("//testing/test.gni")
@@ -138,21 +137,15 @@ component("crypto") {
       "nss_util.h",
       "nss_util_internal.h",
     ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//components/nacl/common:buildflags",
-    ]
+    deps += [ "//components/nacl/common:buildflags" ]
     configs += [ "//build/config/linux/nss" ]
-  }
-
-  if (is_chromeos_ash && !is_minimal_toolchain) {
-    sources += [ "nss_util_chromeos.cc" ]
   }
 
   if (is_chromeos && !is_minimal_toolchain) {
     sources += [
       "chaps_support.cc",
       "chaps_support.h",
+      "nss_util_chromeos.cc",
     ]
   }
 
@@ -258,7 +251,7 @@ static_library("test_support") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "scoped_test_nss_chromeos_user.cc",
       "scoped_test_nss_chromeos_user.h",

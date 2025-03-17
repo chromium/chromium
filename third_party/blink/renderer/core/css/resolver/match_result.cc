@@ -45,12 +45,11 @@ void MatchedProperties::Trace(Visitor* visitor) const {
 }
 
 void MatchResult::AddMatchedProperties(const CSSPropertyValueSet* properties,
-                                       const MatchedProperties::Data& data) {
-  MatchedProperties::Data new_data = data;
-  new_data.tree_order = current_tree_order_;
+                                       MatchedProperties::Data data) {
+  data.tree_order = current_tree_order_;
   matched_properties_.emplace_back(const_cast<CSSPropertyValueSet*>(properties),
-                                   new_data);
-  matched_properties_hashes_.emplace_back(properties->GetHash(), new_data);
+                                   data);
+  matched_properties_hashes_.emplace_back(properties->GetHash(), data);
 
   if (properties->ModifiedSinceHashing()) {
     // These properties were mutated as some point after original

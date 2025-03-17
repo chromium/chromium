@@ -14,15 +14,23 @@
 #include <stdint.h>
 
 #include "base/files/platform_file.h"
-#include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/unsafe_shared_memory_region.h"
-#include "base/memory/writable_shared_memory_region.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/platform_handle.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/system_export.h"
+
+namespace base {
+class ReadOnlySharedMemoryRegion;
+class UnsafeSharedMemoryRegion;
+class WritableSharedMemoryRegion;
+
+namespace subtle {
+class PlatformSharedMemoryRegion;
+}  // namespace subtle
+
+}  // namespace base
 
 namespace mojo {
 

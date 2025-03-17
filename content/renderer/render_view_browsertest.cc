@@ -384,17 +384,16 @@ class RenderViewImplTest : public RenderViewTest {
       blink::mojom::CommitNavigationParamsPtr commit_params) {
     EXPECT_TRUE(common_params->transition & ui::PAGE_TRANSITION_FORWARD_BACK);
     blink::WebView* webview = web_view_;
-    int pending_offset = offset + webview->HistoryBackListCount();
+    int pending_index = offset + webview->HistoryBackListCount();
 
     // The load actually happens asynchronously, so we pump messages to process
     // the pending continuation.
     CommonParamsFrameLoadWaiter waiter(frame());
 
     commit_params->page_state = state.ToEncodedData();
-    commit_params->nav_entry_id = pending_offset + 1;
-    commit_params->pending_history_list_offset = pending_offset;
-    commit_params->current_history_list_offset =
-        webview->HistoryBackListCount();
+    commit_params->nav_entry_id = pending_index + 1;
+    commit_params->pending_history_list_index = pending_index;
+    commit_params->current_history_list_index = webview->HistoryBackListCount();
     commit_params->current_history_list_length =
         webview->HistoryForwardListCount() + webview->HistoryBackListCount() +
         1;
@@ -548,9 +547,11 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     visual_properties.screen_infos =
         display::ScreenInfos(display::ScreenInfo());
     visual_properties.screen_infos.mutable_current().device_scale_factor = dsf;
-    visual_properties.new_size = gfx::Size(100, 100);
+    visual_properties.new_size_device_px =
+        gfx::ScaleToCeiledSize(gfx::Size(100, 100), dsf);
     visual_properties.compositor_viewport_pixel_rect = gfx::Rect(200, 200);
-    visual_properties.visible_viewport_size = visual_properties.new_size;
+    visual_properties.visible_viewport_size_device_px =
+        visual_properties.new_size_device_px;
     visual_properties.auto_resize_enabled = web_view_->AutoResizeMode();
     visual_properties.min_size_for_auto_resize = min_size_for_autoresize_;
     visual_properties.max_size_for_auto_resize = max_size_for_autoresize_;
@@ -1378,61 +1379,6 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
       EXPECT_EQ(test_case.expected_mode, input_mode);
     }
   }
-}
-
-TEST_F(RenderViewImplTextInputStateChanged,
-       ShouldSuppressKeyboardIsPropagated) {
-  class TestAutofillClient : public blink::WebAutofillClient {
-   public:
-    TestAutofillClient() = default;
-    ~TestAutofillClient() override = default;
-
-    bool ShouldSuppressKeyboard(const blink::WebFormControlElement&) override {
-      return should_suppress_keyboard_;
-    }
-
-    void SetShouldSuppressKeyboard(bool should_suppress_keyboard) {
-      should_suppress_keyboard_ = should_suppress_keyboard;
-    }
-
-   private:
-    bool should_suppress_keyboard_ = false;
-  };
-
-  // Set-up the fake autofill client.
-  TestAutofillClient client;
-  GetMainFrame()->SetAutofillClient(&client);
-
-  // Load an HTML page consisting of one input fields.
-  LoadHTML(
-      "<html>"
-      "<head>"
-      "</head>"
-      "<body>"
-      "<input id=\"test\" type=\"text\"></input>"
-      "</body>"
-      "</html>");
-
-  // Focus the text field, trigger a state update and check that the right IPC
-  // is sent.
-  ExecuteJavaScriptForTests("document.getElementById('test').focus();");
-  main_frame_widget()->UpdateTextInputState();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, updated_states().size());
-  EXPECT_FALSE(updated_states()[0]->always_hide_ime);
-  ClearState();
-
-  // Tell the client to suppress the keyboard. Check whether always_hide_ime is
-  // set correctly.
-  client.SetShouldSuppressKeyboard(true);
-  main_frame_widget()->UpdateTextInputState();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, updated_states().size());
-  EXPECT_TRUE(updated_states()[0]->always_hide_ime);
-
-  // Explicitly clean-up the autofill client, as otherwise a use-after-free
-  // happens.
-  GetMainFrame()->SetAutofillClient(nullptr);
 }
 
 TEST_F(RenderViewImplTextInputStateChanged,
@@ -2471,8 +2417,8 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
   common_params->navigation_start = base::TimeTicks::Now();
   auto commit_params = DummyCommitNavigationParams();
   commit_params->current_history_list_length = 1;
-  commit_params->current_history_list_offset = 0;
-  commit_params->pending_history_list_offset = 1;
+  commit_params->current_history_list_index = 0;
+  commit_params->pending_history_list_index = 1;
 
   TestRenderFrame* subframe =
       static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
@@ -2782,8 +2728,8 @@ TEST_F(RenderViewImplTest, NavigationStartForCrossProcessHistoryNavigation) {
                                   common_params->url, false, nullptr, nullptr)
                                   .ToEncodedData();
   commit_params->nav_entry_id = 42;
-  commit_params->pending_history_list_offset = 1;
-  commit_params->current_history_list_offset = 0;
+  commit_params->pending_history_list_index = 1;
+  commit_params->current_history_list_index = 0;
   commit_params->current_history_list_length = 1;
   CommonParamsFrameLoadWaiter waiter(frame());
   frame()->Navigate(common_params.Clone(), std::move(commit_params));
@@ -2848,7 +2794,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
-  commit_params->current_history_list_offset = 1;
+  commit_params->current_history_list_index = 1;
   commit_params->current_history_list_length = 2;
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_type =
@@ -2872,9 +2818,9 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
-  commit_params->current_history_list_offset = 1;
+  commit_params->current_history_list_index = 1;
   commit_params->current_history_list_length = 25;
-  commit_params->pending_history_list_offset = 12;
+  commit_params->pending_history_list_index = 12;
   commit_params->nav_entry_id = 777;
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_type =
@@ -2898,7 +2844,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnShouldClearHistoryList) {
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
-  commit_params->current_history_list_offset = 12;
+  commit_params->current_history_list_index = 12;
   commit_params->current_history_list_length = 25;
   commit_params->should_clear_history_list = true;
   frame()->Navigate(blink::CreateCommonNavigationParams(),

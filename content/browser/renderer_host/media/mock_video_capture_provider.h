@@ -55,7 +55,9 @@ class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
                Callbacks* callbacks,
                base::OnceClosure done_cb,
                mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-                   video_effects_processor),
+                   video_effects_processor,
+               mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+                   readonly_video_effects_manager),
               (override));
 
   MOCK_METHOD(void, AbortLaunch, ());

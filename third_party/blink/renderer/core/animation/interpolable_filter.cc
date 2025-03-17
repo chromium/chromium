@@ -148,8 +148,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 // static
 InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
     const CSSValue& css_value,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) {
+    const StyleResolverState* state) {
   if (css_value.IsURIValue())
     return nullptr;
 
@@ -180,8 +179,7 @@ InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
       break;
 
     case FilterOperation::OperationType::kDropShadow:
-      value = InterpolableShadow::MaybeConvertCSSValue(
-          filter.Item(0), color_scheme, color_provider);
+      value = InterpolableShadow::MaybeConvertCSSValue(filter.Item(0), state);
       break;
 
     default:

@@ -416,6 +416,15 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="ANGLE Metal NULL"/>
 </enum>
 
+<enum name="FrameIntervalMatcherType">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kInputBoost"/>
+  <int value="2" label="kOnlyVideo"/>
+  <int value="3" label="kVideoConference"/>
+  <int value="4" label="kOnlyAnimatingImage"/>
+  <int value="5" label="kOnlyScrollBarFadeOut"/>
+</enum>
+
 <enum name="GLImplementation">
   <int value="0" label="kGLImplementationNone"/>
   <int value="1" label="kGLImplementationDesktopGL"/>
@@ -429,16 +438,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kGLImplementationEGLANGLE"/>
 </enum>
 
-<enum name="GPUBlocklistFeatureTestResults">
-  <summary>
-    Results of testing against a GPU feature being allowed/blocklisted/disabled.
-  </summary>
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Blocklisted"/>
-  <int value="2" label="User-disabled"/>
-</enum>
-
-<enum name="GPUBlocklistTestResultPerEntry">
+<enum name="GpuBlocklistEntry">
   <summary>Results of testing against the GPU blocklist entries.</summary>
   <int value="0" label="TotalCount"/>
   <int value="1" label="Mac/ATI/Radeon X1900"/>
@@ -520,6 +520,15 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="Mac10.7-/NVIDIA-GT330M-9400-9400M/WebGL"/>
   <int value="74" label="Win/Microsoft/all"/>
   <int value="75" label="Win/AMD_switchable/Texture_sharing"/>
+</enum>
+
+<enum name="GPUBlocklistFeatureTestResults">
+  <summary>
+    Results of testing against a GPU feature being allowed/blocklisted/disabled.
+  </summary>
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Blocklisted"/>
+  <int value="2" label="User-disabled"/>
 </enum>
 
 <enum name="GpuDriverBugWorkaroundEntry">
@@ -1093,8 +1102,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="9th Gen"/>
   <int value="10" label="10th Gen"/>
   <int value="11" label="11th Gen"/>
-  <int value="12" label="12th Gen"/>
-  <int value="13" label="13th Gen"/>
+  <int value="12" label="Xe"/>
+  <int value="13" label="Xe2"/>
+  <int value="14" label="Xe3"/>
 </enum>
 
 <enum name="IntelGpuSeriesType">
@@ -1133,6 +1143,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="29" label="Intel Lunarlake"/>
   <int value="30" label="Intel Arrowlake"/>
   <int value="31" label="Intel Battlemage"/>
+  <int value="32" label="Intel Pantherlake"/>
 </enum>
 
 <enum name="MaximumGLESVersion">
@@ -1186,33 +1197,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8085" label="0x1F95, GeForce GTX 1650 Ti Mobile"/>
   <int value="8089" label="0x1F99, GeForce ?"/>
   <int value="8593" label="0x2191, GeForce GTX 1660 Ti Mobile"/>
-</enum>
-
-<enum name="OopRasterGlyphCacheMissType">
-  <int value="0"
-      label="Missing font metrics, indicating an incorrect SkDescriptor"/>
-  <int value="1" label="Missing glyph metrics"/>
-  <int value="2" label="Missing glyph image"/>
-  <int value="3" label="Missing glyph path"/>
-  <int value="4"
-      label="Missing glyph image, but a fallback was found (deprecated)"/>
-  <int value="5"
-      label="Missing glyph path, but a fallback was found (deprecated)"/>
-</enum>
-
-<enum name="OverlayQuadMaterial">
-  <int value="0" label="Invalid"/>
-  <int value="1" label="DebugBorder"/>
-  <int value="2" label="PictureContent"/>
-  <int value="3" label="CompositorRenderPass"/>
-  <int value="4" label="AggregatedRenderPass"/>
-  <int value="5" label="SolidColor"/>
-  <int value="6" label="StreamVideoContent"/>
-  <int value="7" label="SurfaceContent"/>
-  <int value="8" label="TextureContent"/>
-  <int value="9" label="TiledContent"/>
-  <int value="10" label="YuvVideoContent"/>
-  <int value="11" label="VideoHole"/>
 </enum>
 
 <enum name="OverlayStrategies">
@@ -1352,6 +1336,50 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="16" label="DCompSurfaceImageBacking"/>
   <int value="17" label="DXGISwapChainImageBacking"/>
   <int value="18" label="WrappedGraphiteTextureBacking"/>
+</enum>
+
+<enum name="SharedImageFormatUMA">
+  <summary>
+    Corresponds to SharedImageFormat used when creating a SharedImage.
+  </summary>
+  <int value="0" label="RGBA_8888"/>
+  <int value="1" label="RGBA_4444"/>
+  <int value="2" label="BGRA_8888"/>
+  <int value="3" label="ALPHA_8"/>
+  <int value="4" label="LUMINANCE_8"/>
+  <int value="5" label="RGB_565"/>
+  <int value="6" label="BGR_565"/>
+  <int value="7" label="ETC1"/>
+  <int value="8" label="R_8"/>
+  <int value="9" label="RG_88"/>
+  <int value="10" label="LUMINANCE_F16"/>
+  <int value="11" label="RGBA_F16"/>
+  <int value="12" label="R_16"/>
+  <int value="13" label="RG_1616"/>
+  <int value="14" label="RGBX_8888"/>
+  <int value="15" label="BGRX_8888"/>
+  <int value="16" label="RGBA_1010102"/>
+  <int value="17" label="BGRA_1010102"/>
+  <int value="18" label="R_F16"/>
+  <int value="19" label="YV12"/>
+  <int value="20" label="NV12"/>
+  <int value="21" label="NV12A"/>
+  <int value="22" label="P010"/>
+  <int value="23" label="NV16"/>
+  <int value="24" label="NV24"/>
+  <int value="25" label="P210"/>
+  <int value="26" label="P410"/>
+  <int value="27" label="I420"/>
+  <int value="28" label="I420A"/>
+  <int value="29" label="I422"/>
+  <int value="30" label="I444"/>
+  <int value="31" label="YUV420P10"/>
+  <int value="32" label="YUV422P10"/>
+  <int value="33" label="YUV444P10"/>
+  <int value="34" label="YUV420P16"/>
+  <int value="35" label="YUV422P16"/>
+  <int value="36" label="YUV444P16"/>
+  <int value="37" label="Other"/>
 </enum>
 
 <enum name="SkiaBackendType">

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
-
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -24,7 +23,9 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
+#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -33,6 +34,8 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/extensions/extension_sync_data.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -40,6 +43,8 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/signin_test_util.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
@@ -55,7 +60,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/sync/base/features.h"
+#include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -64,7 +69,6 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_error_test_util.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -73,11 +77,13 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -112,6 +118,31 @@ bool HasPrefsPermission(bool (*has_pref)(const ExtensionId&,
   return has_pref(id, context);
 }
 
+bool DoesItemChangedEventMatch(
+    const Event& event,
+    const ExtensionId& extension_id,
+    const api::developer_private::EventType event_type,
+    api::developer_private::ExtensionInfo* info_from_event) {
+  CHECK_GE(1u, event.event_args.size());
+  std::optional<api::developer_private::EventData> event_data =
+      api::developer_private::EventData::FromValue(event.event_args[0]);
+  if (!event_data) {
+    return false;
+  }
+
+  if (event_data->item_id != extension_id ||
+      event_data->event_type != event_type) {
+    return false;
+  }
+
+  if (event_data->extension_info) {
+    CHECK_EQ(extension_id, event_data->extension_info->id);
+    *info_from_event = std::move(*event_data->extension_info);
+  }
+
+  return true;
+}
+
 bool WasItemChangedEventDispatched(
     const TestEventRouterObserver& observer,
     const ExtensionId& extension_id,
@@ -120,22 +151,13 @@ bool WasItemChangedEventDispatched(
       api::developer_private::OnItemStateChanged::kEventName;
   const auto& event_map = observer.events();
   auto iter = event_map.find(kEventName);
-  if (iter == event_map.end())
-    return false;
-
-  const Event& event = *iter->second;
-  CHECK_GE(1u, event.event_args.size());
-  std::optional<api::developer_private::EventData> event_data =
-      api::developer_private::EventData::FromValue(event.event_args[0]);
-  if (!event_data)
-    return false;
-
-  if (event_data->item_id != extension_id ||
-      event_data->event_type != event_type) {
+  if (iter == event_map.end()) {
     return false;
   }
 
-  return true;
+  api::developer_private::ExtensionInfo info;
+  return DoesItemChangedEventMatch(*iter->second, extension_id, event_type,
+                                   &info);
 }
 
 bool WasUserSiteSettingsChangedEventDispatched(
@@ -145,15 +167,17 @@ bool WasUserSiteSettingsChangedEventDispatched(
       api::developer_private::OnUserSiteSettingsChanged::kEventName;
   const auto& event_map = observer.events();
   auto iter = event_map.find(kEventName);
-  if (iter == event_map.end())
+  if (iter == event_map.end()) {
     return false;
+  }
 
   const Event& event = *iter->second;
   CHECK_GE(1u, event.event_args.size());
   auto site_settings =
       api::developer_private::UserSiteSettings::FromValue(event.event_args[0]);
-  if (!site_settings)
+  if (!site_settings) {
     return false;
+  }
 
   *settings = std::move(*site_settings);
   return true;
@@ -279,6 +303,91 @@ void UpdateSiteAccess(
       << function->GetError();
 }
 
+// A more targeted version of TestEventRouterObserver to pick up a prefs changed
+// event for a given extension.
+class ItemStatePrefsChangedObserver : public EventRouter::TestObserver {
+ public:
+  ItemStatePrefsChangedObserver(EventRouter* event_router,
+                                const ExtensionId& extension_id);
+
+  ItemStatePrefsChangedObserver(const ItemStatePrefsChangedObserver&) = delete;
+  ItemStatePrefsChangedObserver& operator=(
+      const ItemStatePrefsChangedObserver&) = delete;
+
+  ~ItemStatePrefsChangedObserver() override;
+
+  // Waits until a matching prefs changed event is dispatched for the
+  // `extension_id_`.
+  void WaitForEvent();
+
+  // Resets the `event_info_` so the observer can wait for another matching
+  // event.
+  void Reset();
+
+  bool WasEventDispatched() { return event_info_.has_value(); }
+
+  api::developer_private::ExtensionInfo event_info() {
+    return event_info_.has_value() ? event_info_->Clone()
+                                   : api::developer_private::ExtensionInfo();
+  }
+
+ private:
+  // EventRouter::TestObserver:
+  void OnWillDispatchEvent(const Event& event) override;
+  void OnDidDispatchEventToProcess(const Event& event,
+                                   int process_id) override {}
+
+  // The event info from the prefs changed event. Null if a matching event has
+  // not yet been dispatched.
+  std::optional<api::developer_private::ExtensionInfo> event_info_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+
+  raw_ptr<EventRouter> event_router_;
+  const ExtensionId extension_id_;
+};
+
+ItemStatePrefsChangedObserver::ItemStatePrefsChangedObserver(
+    EventRouter* event_router,
+    const ExtensionId& extension_id)
+    : event_router_(event_router), extension_id_(extension_id) {
+  event_router_->AddObserverForTesting(this);
+}
+
+ItemStatePrefsChangedObserver::~ItemStatePrefsChangedObserver() {
+  // Note: can't use ScopedObserver<> here because the method is
+  // RemoveObserverForTesting() instead of RemoveObserver().
+  event_router_->RemoveObserverForTesting(this);
+}
+
+void ItemStatePrefsChangedObserver::WaitForEvent() {
+  while (!event_info_.has_value()) {
+    // Create a new `RunLoop` since reuse is not supported.
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+}
+
+void ItemStatePrefsChangedObserver::Reset() {
+  event_info_ = std::nullopt;
+}
+
+void ItemStatePrefsChangedObserver::OnWillDispatchEvent(const Event& event) {
+  CHECK(!event.event_name.empty());
+
+  api::developer_private::ExtensionInfo info;
+  bool does_event_match = DoesItemChangedEventMatch(
+      event, extension_id_, api::developer_private::EventType::kPrefsChanged,
+      &info);
+
+  if (does_event_match) {
+    event_info_ = std::move(info);
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+}
+
 }  // namespace
 
 class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
@@ -350,6 +459,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   // This test does not create a root window. Because of this,
   // ScopedDisableRootChecking needs to be used (which disables the root window
   // check).
@@ -366,10 +476,8 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
 bool DeveloperPrivateApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
     const base::Value::List& args) {
-  return api_test_utils::RunFunction(
-      function.get(), args.Clone(),
-      std::make_unique<ExtensionFunctionDispatcher>(profile()),
-      api_test_utils::FunctionMode::kNone);
+  return api_test_utils::RunFunction(function.get(), args.Clone(), profile(),
+                                     api_test_utils::FunctionMode::kNone);
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {
@@ -475,8 +583,9 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
     int expected_flags) {
   auto function =
       base::MakeRefCounted<api::DeveloperPrivatePackDirectoryFunction>();
-  if (!RunFunction(function, args))
+  if (!RunFunction(function, args)) {
     return testing::AssertionFailure() << "Could not run function.";
+  }
 
   // Extract the result. We don't have to test this here, since it's verified as
   // part of the general extension api system.
@@ -495,8 +604,9 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
   }
 
   if (response->override_flags != expected_flags) {
-    return testing::AssertionFailure() << "Expected flags: " <<
-        expected_flags << ", found flags: " << response->override_flags;
+    return testing::AssertionFailure()
+           << "Expected flags: " << expected_flags
+           << ", found flags: " << response->override_flags;
   }
 
   return testing::AssertionSuccess();
@@ -607,6 +717,21 @@ TEST_F(DeveloperPrivateApiUnitTest,
       base::BindRepeating(&HasPrefsPermission, &util::AllowFileAccess,
                           profile(), id),
       "fileAccess", id, /*expected_default_value=*/false);
+
+  // Test userScriptsAccess pref.
+  auto* extension_system =
+      static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
+  ASSERT_TRUE(extension_system);
+  extension_system->CreateUserScriptManager();
+  UserScriptManager* user_script_manager =
+      extension_system->user_script_manager();
+  ASSERT_TRUE(user_script_manager);
+  auto user_scripts_enabled = [&]() {
+    return user_script_manager->IsUserScriptPrefEnabled(id);
+  };
+  TestExtensionPrefSetting(base::BindLambdaForTesting(user_scripts_enabled),
+                           "userScriptsAccess", id,
+                           /*expected_default_value=*/false);
 
   SitePermissionsHelper helper(profile());
   TestExtensionPrefSetting(
@@ -827,8 +952,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   // Function should fail and no new extensions are installed.
   EXPECT_EQ(manifest_errors::kManifestUnreadable, function->GetError());
   EXPECT_EQ(0u, base::STLSetDifference<ExtensionIdSet>(
-                    registry()->enabled_extensions().GetIDs(),
-                    current_ids).size());
+                    registry()->enabled_extensions().GetIDs(), current_ids)
+                    .size());
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
@@ -1136,8 +1261,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
     };
 
     UnloadedRegistryObserver unload_observer(path, registry());
-    auto function =
-        base::MakeRefCounted<api::DeveloperPrivateReloadFunction>();
+    auto function = base::MakeRefCounted<api::DeveloperPrivateReloadFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     api_test_utils::RunFunction(function.get(), reload_args, profile());
     // Note: no need to validate a saw_load()-type method because the presence
@@ -1533,8 +1657,8 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
   EXPECT_TRUE(extension_management->BlocklistedByDefault());
   EXPECT_FALSE(extension_management->HasAllowlistedExtension());
 
-  auto info = DeveloperPrivateAPI::CreateProfileInfo(profile());
-  EXPECT_FALSE(info->can_load_unpacked);
+  auto info = CreateProfileInfo(profile());
+  EXPECT_FALSE(info.can_load_unpacked);
 
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
@@ -1565,9 +1689,9 @@ TEST_F(DeveloperPrivateApiUnitTest,
       ExtensionManagementFactory::GetForBrowserContext(browser_context())
           ->HasAllowlistedExtension());
 
-  auto info = DeveloperPrivateAPI::CreateProfileInfo(profile());
+  auto info = CreateProfileInfo(profile());
 
-  EXPECT_TRUE(info->can_load_unpacked);
+  EXPECT_TRUE(info.can_load_unpacked);
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileNoDraggedPath) {
@@ -3076,6 +3200,9 @@ class DeveloperPrivateApiAllowlistUnitTest
     feature_list_.InitAndEnableFeature(
         extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DeveloperPrivateApiAllowlistUnitTest,
@@ -3211,8 +3338,12 @@ class DeveloperPrivateApiWithMV2DeprecationWarningUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
   DeveloperPrivateApiWithMV2DeprecationWarningUnitTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionManifestV2DeprecationWarning);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{extensions_features::
+                                  kExtensionManifestV2DeprecationWarning},
+        /*disabled_features=*/{
+            extensions_features::kExtensionManifestV2Disabled,
+            extensions_features::kExtensionManifestV2Unsupported});
   }
 
  private:
@@ -3346,9 +3477,14 @@ class DeveloperPrivateApiTransportModeUnitTest
  public:
   DeveloperPrivateApiTransportModeUnitTest() {
     scoped_feature_list_.InitWithFeatures(
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         syncer::kSyncEnableExtensionsInTransportMode},
+        {switches::kEnableExtensionsExplicitBrowserSignin},
         /*disabled_features=*/{});
+  }
+
+  void SetUp() override {
+    DeveloperPrivateApiUnitTest::SetUp();
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
   }
 
   DeveloperPrivateApiTransportModeUnitTest(
@@ -3356,18 +3492,82 @@ class DeveloperPrivateApiTransportModeUnitTest
   DeveloperPrivateApiTransportModeUnitTest& operator=(
       const DeveloperPrivateApiTransportModeUnitTest&) = delete;
 
+ protected:
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
+
+  AccountExtensionTracker::AccountExtensionType GetAccountExtensionType(
+      const ExtensionId& extension_id) {
+    return AccountExtensionTracker::Get(profile())->GetAccountExtensionType(
+        extension_id);
+  }
+
+  bool CanUploadToAccount(const Extension& extension) {
+    return AccountExtensionTracker::Get(profile())->CanUploadAsAccountExtension(
+        extension);
+  }
+
+  // Loads and returns a syncable extension with the given `name`.
+  const scoped_refptr<const Extension> LoadSyncableExtension(const char* name) {
+    const scoped_refptr<const Extension> syncable_extension =
+        ExtensionBuilder(name)
+            .SetLocation(mojom::ManifestLocation::kInternal)
+            .Build();
+    EXPECT_TRUE(sync_util::ShouldSync(profile(), syncable_extension.get()));
+    service()->AddExtension(syncable_extension.get());
+
+    return syncable_extension;
+  }
+
+  // Set up a listener for the given `kEventName` and returns the test
+  // observer.
+  ItemStatePrefsChangedObserver StartListeningForEvent(
+      const ExtensionId& extension_id) {
+    // We need to call DeveloperPrivateAPI::Get() in order to instantiate the
+    // keyed service, since it's not created by default in unit tests.
+    DeveloperPrivateAPI::Get(profile());
+    EventRouter* event_router = EventRouter::Get(profile());
+
+    // The DeveloperPrivateEventRouter will only dispatch events if there's at
+    // least one listener to dispatch to. Create one.
+    GURL dummy_url("chrome-untrusted://one");
+    event_router->AddEventListenerForURL(
+        api::developer_private::OnItemStateChanged::kEventName,
+        render_process_host(), dummy_url);
+
+    return ItemStatePrefsChangedObserver(event_router, extension_id);
+  }
+
+  // Simulates an initial download of sync data with the given `extensions`
+  // present.
+  void SimulateInitialSync(const std::vector<const Extension*>& extensions) {
+    syncer::SyncDataList sync_data;
+    for (const auto* extension : extensions) {
+      ExtensionSyncData data(
+          *extension, true,
+          /*disable_reasons=*/{}, /*incognito_enabled=*/false,
+          /*remote_install=*/false, extension_urls::GetWebstoreUpdateUrl());
+
+      sync_data.push_back(data.GetSyncData());
+    }
+
+    ExtensionSyncService::Get(profile())->MergeDataAndStartSyncing(
+        syncer::EXTENSIONS, sync_data,
+        std::make_unique<syncer::FakeSyncChangeProcessor>());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
 };
 
 // Test that extensions cannot be uploaded if the user is signed out.
 TEST_F(DeveloperPrivateApiTransportModeUnitTest,
        UploadExtensionToAccount_SignedOut) {
-  const scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .Build();
-  service()->AddExtension(extension.get());
+  auto extension = LoadSyncableExtension("ext");
 
   std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
   auto upload_function = base::MakeRefCounted<
@@ -3390,14 +3590,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   service()->AddExtension(unsyncable_extension.get());
 
   // Sign the user in without full sync.
-  auto identity_test_env_profile_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                    signin::ConsentLevel::kSignin);
-  // Pretend that the user has completed an explicit sign in before. This is
-  // necessary for extensions to sync in transport mode.
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   std::string args_str =
       base::StringPrintf(R"(["%s"])", unsyncable_extension->id().c_str());
@@ -3415,24 +3608,13 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
           unsyncable_extension->id()));
 }
 
-TEST_F(DeveloperPrivateApiTransportModeUnitTest, UploadExtensionToAccount) {
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       UploadExtensionToAccount_Cancelled) {
   // Add a syncable extension.
-  const scoped_refptr<const Extension> syncable_extension =
-      ExtensionBuilder("sync_ext")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .Build();
-  EXPECT_TRUE(sync_util::ShouldSync(profile(), syncable_extension.get()));
-  service()->AddExtension(syncable_extension.get());
+  auto syncable_extension = LoadSyncableExtension("ext");
 
   // Sign the user in without full sync.
-  auto identity_test_env_profile_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                    signin::ConsentLevel::kSignin);
-  // Pretend that the user has completed an explicit sign in before. This is
-  // necessary for extensions to sync in transport mode.
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   // The syncable extension can be uploaded, but pretend we don't proceed with
   // the upload by simulating cancelling the dialog.
@@ -3464,6 +3646,230 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest, UploadExtensionToAccount) {
       ErrorUtils::FormatErrorMessage(
           "Extension with ID '*' cannot be uploaded to the user's account.",
           syncable_extension->id()));
+}
+
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       UploadExtensionToAccount_Accepted) {
+  // Add a syncable extension.
+  auto extension = LoadSyncableExtension("ext");
+  ItemStatePrefsChangedObserver test_observer =
+      StartListeningForEvent(extension->id());
+
+  // Sign the user in without full sync.
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  // Now simulate an initial sync with no extensions in the user's account. This
+  // is needed to spin up the sync service so uploaded extensions actually get
+  // synced.
+  SimulateInitialSync({});
+
+  // Wait for the associated prefs changed event from the initial sync so the
+  // event that gets emitted later from an extension upload can be properly
+  // picked up.
+  test_observer.WaitForEvent();
+
+  // The syncable extension can be uploaded and should be a local extension.
+  EXPECT_TRUE(CanUploadToAccount(*extension));
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(extension->id()));
+
+  // On this machine, there should be no extensions syncing.
+  {
+    syncer::SyncDataList list =
+        ExtensionSyncService::Get(profile())->GetAllSyncDataForTesting(
+            syncer::EXTENSIONS);
+    EXPECT_TRUE(list.empty());
+  }
+
+  // Now upload the extension and accept the dialog to proceed with the upload.
+  base::Value::List args;
+  args.Append(extension->id());
+  auto upload_function = base::MakeRefCounted<
+      api::DeveloperPrivateUploadExtensionToAccountFunction>();
+  upload_function->set_source_context_type(mojom::ContextType::kWebUi);
+  upload_function->accept_bubble_for_testing(true);
+
+  test_observer.Reset();
+  EXPECT_TRUE(RunFunction(upload_function, args));
+
+  // Wait for the prefs changed update and verify that the extension is no
+  // longer uploadable after being uploaded.
+  test_observer.WaitForEvent();
+  auto info = test_observer.event_info();
+  EXPECT_FALSE(info.can_upload_as_account_extension);
+  EXPECT_FALSE(CanUploadToAccount(*extension));
+
+  // Double check that the extension is now an account extension.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(extension->id()));
+
+  // Verify that the extension is now syncing from the sync service.
+  {
+    syncer::SyncDataList list =
+        ExtensionSyncService::Get(profile())->GetAllSyncDataForTesting(
+            syncer::EXTENSIONS);
+    ASSERT_EQ(1u, list.size());
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(list[0]);
+    ASSERT_TRUE(data.get());
+    EXPECT_EQ(extension->id(), data->id());
+    EXPECT_TRUE(data->enabled());
+  }
+}
+
+// Test that an extension is uploadable when the user signs into transport mode
+// and the extension is not in the user's sync data.
+TEST_F(DeveloperPrivateApiTransportModeUnitTest, ExtensionUploadableOnSignIn) {
+  auto extension = LoadSyncableExtension("ext");
+  ItemStatePrefsChangedObserver test_observer =
+      StartListeningForEvent(extension->id());
+
+  // Sign the user in without full sync.
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  // While the extension technically can be uploaded to the user's account,
+  // don't dispatch an update event if the initial sync data has not been
+  // received yet.
+  EXPECT_TRUE(CanUploadToAccount(*extension));
+  EXPECT_FALSE(test_observer.WasEventDispatched());
+  test_observer.Reset();
+
+  // Now simulate an initial sync where no extensions are present in the user's
+  // sync data.
+  SimulateInitialSync({});
+  test_observer.WaitForEvent();
+
+  // Upon receiving the sync data, the API's event router should be notified.
+  auto info = test_observer.event_info();
+
+  // Verify that the update has alerted observers that the extension can now be
+  // uploaded.
+  EXPECT_TRUE(info.can_upload_as_account_extension);
+  EXPECT_TRUE(CanUploadToAccount(*extension));
+}
+
+// Test that an extension is not uploadable when it's already present in the
+// user's sync data.
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       ExtensionNotUploadableFromInitialSync) {
+  auto extension = LoadSyncableExtension("ext");
+  ItemStatePrefsChangedObserver test_observer =
+      StartListeningForEvent(extension->id());
+
+  // Sign the user in without full sync.
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+  EXPECT_FALSE(test_observer.WasEventDispatched());
+  test_observer.Reset();
+
+  // Simulate an initial sync where the extension is already present in the
+  // user's sync data.
+  SimulateInitialSync({extension.get()});
+  test_observer.WaitForEvent();
+
+  // An update event should be dispatched but the extension should not be
+  // uploadable since it's already present in sync data.
+  auto info = test_observer.event_info();
+  EXPECT_FALSE(info.can_upload_as_account_extension);
+  EXPECT_FALSE(CanUploadToAccount(*extension));
+}
+
+// Sign outs are not supported for ChromeOS hence this test is not run for
+// ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Test that extensions can no longer be uploaded once the user signs out.
+TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadAfterSignOut) {
+  // Test setup: Sign in and simulate an empty initial sync so the extension is
+  // uploadavble.
+  auto extension = LoadSyncableExtension("ext");
+  ItemStatePrefsChangedObserver test_observer =
+      StartListeningForEvent(extension->id());
+
+  // Sign the user in without full sync.
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  SimulateInitialSync({});
+  test_observer.WaitForEvent();
+
+  auto info = test_observer.event_info();
+  EXPECT_TRUE(info.can_upload_as_account_extension);
+  test_observer.Reset();
+
+  // Now sign out. An update should be dispatched indicating that the extension
+  // is no longer syncable.
+  identity_test_env()->ClearPrimaryAccount();
+  test_observer.WaitForEvent();
+  info = test_observer.event_info();
+  EXPECT_FALSE(info.can_upload_as_account_extension);
+  EXPECT_FALSE(CanUploadToAccount(*extension));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Test that extensions can no longer be uploaded by the user if they sign into
+// full sync mode.
+TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadWithFullSync) {
+  // Test setup: Sign in and simulate an empty initial sync so the extension is
+  // uploadavble.
+  auto extension = LoadSyncableExtension("ext");
+  ItemStatePrefsChangedObserver test_observer =
+      StartListeningForEvent(extension->id());
+
+  // Sign the user in without full sync.
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  SimulateInitialSync({});
+  test_observer.WaitForEvent();
+
+  auto info = test_observer.event_info();
+  EXPECT_TRUE(info.can_upload_as_account_extension);
+  test_observer.Reset();
+
+  // Now sign into full sync. Since full sync mode automatically syncs any
+  // syncable extension, the extension cannot be uploaded anymore.
+  identity_test_env()->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                                   signin::ConsentLevel::kSync);
+  test_observer.WaitForEvent();
+  info = test_observer.event_info();
+  EXPECT_FALSE(info.can_upload_as_account_extension);
+  EXPECT_FALSE(CanUploadToAccount(*extension));
+}
+
+// Test that extensions can no longer be uploaded if an update comes in
+// indicating that they're part of the user's sync data.
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       UploadUpdatedAfterIncomingSync) {
+  // Test setup: Sign in and simulate an empty initial sync so the extension is
+  // uploadavble.
+  auto extension = LoadSyncableExtension("ext");
+  ItemStatePrefsChangedObserver test_observer =
+      StartListeningForEvent(extension->id());
+
+  // Sign the user in without full sync.
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  SimulateInitialSync({});
+  test_observer.WaitForEvent();
+
+  auto info = test_observer.event_info();
+  EXPECT_TRUE(info.can_upload_as_account_extension);
+  test_observer.Reset();
+
+  // Simulate a later sync update where the same extension was installed on
+  // another device and the change is synced over.
+  ExtensionSyncData extension_installed_elsewhere(
+      *extension, true,
+      /*disable_reasons=*/{}, /*incognito_enabled=*/false,
+      /*remote_install=*/false, extension_urls::GetWebstoreUpdateUrl());
+  ExtensionSyncService::Get(profile())->ProcessSyncChanges(
+      FROM_HERE, {extension_installed_elsewhere.GetSyncChange(
+                     syncer::SyncChange::ACTION_UPDATE)});
+  test_observer.WaitForEvent();
+
+  // The extension should no longer be uploadable since it is now part of the
+  // user's sync data.
+  info = test_observer.event_info();
+  EXPECT_FALSE(info.can_upload_as_account_extension);
+  EXPECT_FALSE(CanUploadToAccount(*extension));
 }
 
 }  // namespace extensions

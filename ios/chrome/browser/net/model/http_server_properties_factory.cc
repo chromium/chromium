@@ -28,8 +28,9 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   PrefServiceAdapter& operator=(const PrefServiceAdapter&) = delete;
 
   ~PrefServiceAdapter() override {
-    if (on_pref_load_callback_)
+    if (on_pref_load_callback_) {
       pref_store_->RemoveObserver(this);
+    }
   }
 
   // PrefDelegate implementation.
@@ -46,8 +47,9 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
                            base::OnceClosure callback) override {
     pref_store_->SetValue(path_, base::Value(std::move(dict)),
                           WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-    if (callback)
+    if (callback) {
       pref_store_->CommitPendingWrite(std::move(callback));
+    }
   }
   void WaitForPrefLoad(base::OnceClosure callback) override {
     DCHECK(!on_pref_load_callback_);

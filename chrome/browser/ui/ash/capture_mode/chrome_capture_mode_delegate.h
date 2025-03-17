@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
+#include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -69,6 +70,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       const gfx::Rect& bounds,
       ash::OnCaptureModeDlpRestrictionChecked callback) override;
   bool IsCaptureAllowedByPolicy() const override;
+  bool IsSearchAllowedByPolicy() const override;
   void StartObservingRestrictedContent(
       const aura::Window* window,
       const gfx::Rect& bounds,
@@ -114,13 +116,24 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
   void DetectTextInImage(const SkBitmap& image,
                          ash::OnTextDetectionComplete callback) override;
+  void GetPrimaryAccountAccessToken(
+      base::RepeatingCallback<void(const std::string& access_token)> callback)
+      override;
+  GURL GetBaseSearchURLAndPostContent(
+      const gfx::Image& image,
+      gfx::Size image_original_size,
+      TemplateURLRef::PostContent* post_content) override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
+      const override;
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
-                        ash::OnSearchUrlFetchedCallback callback) override;
+                        ash::OnSearchUrlFetchedCallback search_callback,
+                        ash::OnTextDetectionComplete text_callback) override;
   void SendMultimodalSearch(const SkBitmap& image,
                             const gfx::Rect& region,
                             const std::string& text,
                             ash::OnSearchUrlFetchedCallback callback) override;
+  bool IsNetworkConnectionOffline() const override;
   void DeleteRemoteFile(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
 
@@ -168,6 +181,11 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Releases the OCR handle and resets pending OCR requests.
   void ResetOcr();
 
+  void PrimaryAccountAccessTokenAvailable(
+      base::RepeatingCallback<void(const std::string& access_token)> callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
+
   // Used to temporarily disable capture mode in certain cases for which neither
   // a device policy, nor DLP will be triggered. For example, Some extension
   // APIs can request that a tab operate in a locked fullscreen mode, and in
@@ -183,6 +201,10 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // A callback that will be invoked when the search URL is fetched.
   ash::OnSearchUrlFetchedCallback on_search_url_fetched_callback_;
 
+  // A callback that will be invoked when the start query response is received
+  // and text is detected.
+  ash::OnTextDetectionComplete on_text_detection_complete_callback_;
+
   // True when a capture mode session is currently active.
   bool is_session_active_ = false;
 
@@ -194,6 +216,13 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   scoped_refptr<screen_ai::OpticalCharacterRecognizer>
       optical_character_recognizer_;
 
+  // The callback that will be invoked when the OCR service is initialized. The
+  // callback is canceled if OCR is reset, to prevent the underlying
+  // `OpticalCharacterRecognizer` object from running the callback after the
+  // scoped_refptr `optical_character_recognizer_` is reset.
+  base::CancelableOnceCallback<void(bool is_successful)>
+      ocr_service_initialized_callback_;
+
   // Stores the image and callback for the latest OCR request in the case that
   // the OCR service is not ready yet. These will be used to perform OCR after
   // the service indicates that it is ready.
@@ -202,6 +231,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      primary_account_token_fetcher_;
 
   std::unique_ptr<LensOverlayQueryController> lens_overlay_query_controller_;
 

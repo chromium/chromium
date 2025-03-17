@@ -10,6 +10,7 @@
 
 #include "base/containers/queue.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
@@ -343,6 +344,20 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SetOnReadyCallbackAfterBind) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(recognition_ready_);
+}
+
+TEST_F(SodaSpeechRecognitionEngineImplTest, UpdateRecognitionContext) {
+  SpeechRecognitionSessionConfig config;
+  client_under_test_ = CreateSpeechRecognition(
+      config, fake_speech_recognition_mgr_delegate_.get(), true);
+  ASSERT_TRUE(client_under_test_->Initialize());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return recognition_ready_; }));
+
+  media::SpeechRecognitionRecognitionContext context;
+  context.phrases.emplace_back("test phrase", 2.0);
+  EXPECT_CALL(*mock_service_, UpdateRecognitionContext(context));
+  client_under_test_->UpdateRecognitionContext(context);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace content

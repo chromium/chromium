@@ -30,6 +30,7 @@ class SodaClientImpl : public SodaClient {
   void Reset(const SerializedSodaConfig config,
              int sample_rate,
              int channel_count) override;
+  void UpdateRecognitionContext(const RecognitionContext context) override;
   bool IsInitialized() override;
   bool BinaryLoadedSuccessfully() override;
 
@@ -50,6 +51,9 @@ class SodaClientImpl : public SodaClient {
 
   typedef void (*SodaStartFunction)(void*);
   SodaStartFunction soda_start_func_;
+
+  typedef void (*UpdateRecognitionContextFunction)(void*, RecognitionContext);
+  UpdateRecognitionContextFunction update_recognition_context_func_;
 
   // An opaque handle to the SODA async instance. While this class owns this
   // handle, the handle is instantiated and deleted by the SODA library, so the

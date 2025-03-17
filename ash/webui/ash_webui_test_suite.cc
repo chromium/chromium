@@ -48,6 +48,8 @@ void AshWebUITestSuite::Initialize() {
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
   InitI18n();
+
+  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
 }
 
 void AshWebUITestSuite::Shutdown() {

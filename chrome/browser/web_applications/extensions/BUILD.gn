@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -52,7 +51,6 @@ source_set("unit_tests") {
 
   deps = [
     ":extensions",
-    "//build:chromeos_buildflags",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications:web_applications_unit_tests",
@@ -70,15 +68,10 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [
-      "//chrome/browser",
-      "//components/policy/core/common:common_constants",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [
       "//ash/constants",
+      "//chrome/browser",
       "//chrome/browser/ash/system_web_apps/test_support",
+      "//components/policy/core/common:common_constants",
     ]
   }
 }

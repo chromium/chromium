@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
+
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 
 using password_manager::PasswordManagerSurface;

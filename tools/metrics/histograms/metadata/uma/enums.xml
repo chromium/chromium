@@ -276,6 +276,24 @@ chromium-metrics-reviews@google.com.
   <int value="2147480259" label="Sqlite.Vfs_Fetch"/>
 </enum>
 
+<!-- LINT.IfChange(MetricsLogCreateReason) -->
+
+<enum name="MetricsLogCreateReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Periodic"/>
+  <int value="2" label="Service Shutdown"/>
+  <int value="3" label="Load From Previous Session"/>
+  <int value="4" label="Backgrounded"/>
+  <int value="5" label="Foregrounded"/>
+  <int value="6" label="Alternate Ongoing Log Store Set"/>
+  <int value="7" label="Alternate Ongoing Log Store Unset"/>
+  <int value="8" label="Stability"/>
+  <int value="9" label="Independent"/>
+  <int value="10" label="Out Of Band"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/metrics/metrics_logs_event_manager.h:CreateReason) -->
+
 <enum name="MetricsReportingChange">
   <int value="0" label="Error">
     Error occurred while updating MetricsReporting
@@ -307,10 +325,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="False"/>
   <int value="2" label="True"/>
-</enum>
-
-<enum name="PersistentAllocatorErrors">
-  <int value="1" label="Allocator memory is corrupt (set only once)"/>
 </enum>
 
 <enum name="PersistentHistogramsInitResult">

@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/common/dense_set.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,29 +16,22 @@ using ::testing::ElementsAre;
 
 namespace autofill {
 
-template <auto kMinValueP, auto kMaxValueP>
-struct DenseSetTraitsWrapper {
-  static constexpr auto kMinValue = kMinValueP;
-  static constexpr auto kMaxValue = kMaxValueP;
-  static constexpr bool kPacked = false;
-};
-
-template <typename T, T kMinValue = T::kMinValue, T kMaxValue = T::kMaxValue>
-using DenseSetWrapper =
-    DenseSet<T, DenseSetTraitsWrapper<kMinValue, kMaxValue>>;
+template <typename T, T kMinValue, T kMaxValue>
+using IntDenseSet =
+    DenseSet<T, IntegralDenseSetTraits<T, kMinValue, kMaxValue>>;
 
 TEST(DenseSetTest, size_of) {
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 1>) == 1u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 7>) == 1u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 8>) == 2u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 15>) == 2u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 16>) == 4u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 31>) == 4u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 32>) == 8u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 63>) == 8u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 64>) == 16u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 127>) == 16u);
-  static_assert(sizeof(DenseSetWrapper<size_t, 0, 255>) == 32u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 1>) == 1u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 7>) == 1u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 8>) == 2u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 15>) == 2u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 16>) == 4u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 31>) == 4u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 32>) == 8u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 63>) == 8u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 64>) == 16u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 127>) == 16u);
+  static_assert(sizeof(IntDenseSet<size_t, 0, 255>) == 32u);
 }
 
 TEST(DenseSetTest, initialization) {
@@ -95,45 +88,44 @@ TEST(DenseSetTest, initializer_list) {
 
   {
     constexpr uint64_t kMax = 10;
-    constexpr DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1,
-                                                     kMax};
+    constexpr IntDenseSet<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1,
+                                                 kMax};
     EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr uint64_t kMax = kMaxValueForConstexpr;
-    constexpr DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1,
-                                                     kMax};
+    constexpr IntDenseSet<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1,
+                                                 kMax};
     EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr uint64_t kMax = kMaxValueForConstexpr + 1;
-    DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    IntDenseSet<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr uint64_t kMax = kMaxValueForConstexpr + 2;
-    DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    IntDenseSet<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr uint64_t kMax = kMaxValueForConstexpr + 100;
-    DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    IntDenseSet<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 }
 
 TEST(DenseSetTest, all_non_enum) {
-  constexpr DenseSetWrapper<int, 0, 10> set =
-      DenseSetWrapper<int, 0, 10>::all();
+  constexpr IntDenseSet<int, 0, 10> set = IntDenseSet<int, 0, 10>::all();
   EXPECT_EQ(set.size(), 11u);
   EXPECT_THAT(std::vector<int>(set.begin(), set.end()),
               ElementsAre(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
@@ -146,9 +138,9 @@ TEST(DenseSetTest, all_enum) {
     kTwo = 2,
     kMaxValue = kTwo,
   };
+  using Traits = EnumDenseSetTraits<T, T::kMinusOne, T::kMaxValue>;
 
-  constexpr DenseSetWrapper<T, T::kMinusOne> set =
-      DenseSetWrapper<T, T::kMinusOne>::all();
+  constexpr DenseSet<T, Traits> set = DenseSet<T, Traits>::all();
   // `set` will contain all values from -1 to 2, including 0 even if 0 doesn't
   // correspond to any value of `T`.
   EXPECT_EQ(set.size(), 4u);
@@ -158,21 +150,21 @@ TEST(DenseSetTest, all_enum) {
 
 TEST(DenseSetTest, data) {
   {
-    constexpr DenseSetWrapper<uint64_t, 0, 23> set{0, 1, 2, 3, 4, 20, 23};
+    constexpr IntDenseSet<uint64_t, 0, 23> set{0, 1, 2, 3, 4, 20, 23};
     EXPECT_THAT(
         set.data(),
         ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
                     (1ULL << 4) | (1ULL << 20) | (1ULL << 23)));
   }
   {
-    constexpr DenseSetWrapper<uint64_t, 0, 31> set{0, 1, 2, 3, 4, 20, 31};
+    constexpr IntDenseSet<uint64_t, 0, 31> set{0, 1, 2, 3, 4, 20, 31};
     EXPECT_THAT(
         set.data(),
         ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
                     (1ULL << 4) | (1ULL << 20) | (1ULL << 31)));
   }
   {
-    constexpr DenseSetWrapper<uint64_t, 0, 63> set{0, 1, 63};
+    constexpr IntDenseSet<uint64_t, 0, 63> set{0, 1, 63};
     EXPECT_THAT(set.data(),
                 ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 63)));
   }
@@ -188,7 +180,9 @@ TEST(DenseSetTest, iterators_begin_end) {
     kFive = 5,
     kMaxValue = kFive,
   };
-  DenseSetWrapper<T, T::kMinusOne> s;
+  using Traits = EnumDenseSetTraits<T, T::kMinusOne, T::kMaxValue>;
+
+  DenseSet<T, Traits> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -230,8 +224,9 @@ TEST(DenseSetTest, iterators_begin_end_reverse) {
     kFive = 5,
     kMaxValue = kFive
   };
+  using Traits = EnumDenseSetTraits<T, T::kMinusOne, T::kMaxValue>;
 
-  DenseSetWrapper<T, T::kMinusOne> s;
+  DenseSet<T, Traits> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -271,8 +266,9 @@ TEST(DenseSetTest, iterators_rbegin_rend) {
     kFive = 5,
     kMaxValue = kFive
   };
+  using Traits = EnumDenseSetTraits<T, T::kMinusOne, T::kMaxValue>;
 
-  DenseSetWrapper<T, T::kMinusOne> s;
+  DenseSet<T, Traits> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -315,8 +311,9 @@ TEST(DenseSetTest, lookup) {
     kFive = 5,
     kMaxValue = kFive
   };
+  using Traits = EnumDenseSetTraits<T, T::kMinusOne, T::kMaxValue>;
 
-  DenseSetWrapper<T, T::kMinusOne> s;
+  DenseSet<T, Traits> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -353,7 +350,7 @@ TEST(DenseSetTest, lookup) {
   EXPECT_EQ(s.find(T::kFour), s.lower_bound(T::kFour));
   EXPECT_EQ(s.find(T::kFive), s.lower_bound(T::kFive));
 
-  DenseSetWrapper<T, T::kMinusOne> t;
+  DenseSet<T, Traits> t;
   EXPECT_TRUE(t.empty());
   EXPECT_TRUE(t.contains_none({}));
   EXPECT_FALSE(t.contains_any({}));
@@ -389,8 +386,9 @@ TEST(DenseSetTest, iterators_lower_upper_bound) {
     kFour = 4,
     kFive = 5
   };
+  using Traits = EnumDenseSetTraits<T, T::kMinusOne, T::kFive>;
 
-  DenseSetWrapper<T, T::kMinusOne, T::kFive> s;
+  DenseSet<T, Traits> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -463,7 +461,7 @@ TEST(DenseSetTest, max_size) {
   // const int kFive = 5;
   const int kMaxValue = 5;
 
-  DenseSetWrapper<int, 0, kMaxValue> s;
+  IntDenseSet<int, 0, kMaxValue> s;
   EXPECT_TRUE(s.empty());
   EXPECT_EQ(s.size(), 0u);
   EXPECT_EQ(s.max_size(), 6u);
@@ -487,7 +485,7 @@ TEST(DenseSetTest, modifiers) {
   // const uint64_t kFive = 5;
   const uint64_t kMaxValue = 5;
 
-  DenseSetWrapper<uint64_t, 0, kMaxValue> s;
+  IntDenseSet<uint64_t, 0, kMaxValue> s;
   s.insert(kTwo);
   s.insert(kFour);
   s.insert(kOne);
@@ -498,7 +496,7 @@ TEST(DenseSetTest, modifiers) {
     EXPECT_EQ(it, std::make_pair(set.find(value), took_place));
   };
 
-  DenseSetWrapper<uint64_t, 0, kMaxValue> t;
+  IntDenseSet<uint64_t, 0, kMaxValue> t;
   EXPECT_NE(s, t);
   EXPECT_INSERTION(t, kTwo, true);
   EXPECT_INSERTION(t, kTwo, false);
@@ -601,8 +599,8 @@ TEST(DenseSetTest, modifiers) {
 
 TEST(DenseSetTest, intersect) {
   constexpr uint64_t kMaxValue = 5;
-  DenseSetWrapper<uint64_t, 0, kMaxValue> s = {1, 3, 4};
-  DenseSetWrapper<uint64_t, 0, kMaxValue> t = {1, 2, 4};
+  IntDenseSet<uint64_t, 0, kMaxValue> s = {1, 3, 4};
+  IntDenseSet<uint64_t, 0, kMaxValue> t = {1, 2, 4};
   s.intersect(t);
   // Expect that only 1 and 4 remain.
   t.erase(2);
@@ -611,13 +609,13 @@ TEST(DenseSetTest, intersect) {
 
 TEST(DenseSetTest, std_set) {
   constexpr uint64_t kMaxValue = 50;
-  DenseSetWrapper<uint64_t, 0, kMaxValue> dense_set;
+  IntDenseSet<uint64_t, 0, kMaxValue> dense_set;
   std::set<uint64_t> std_set;
 
   auto expect_equivalence = [&] {
     EXPECT_EQ(dense_set.empty(), std_set.empty());
     EXPECT_EQ(dense_set.size(), std_set.size());
-    EXPECT_TRUE(base::ranges::equal(dense_set, std_set));
+    EXPECT_TRUE(std::ranges::equal(dense_set, std_set));
   };
 
   auto random_insert = [&] {

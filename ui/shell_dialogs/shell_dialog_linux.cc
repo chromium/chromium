@@ -25,12 +25,6 @@ void Initialize() {
 #endif
 }
 
-void Finalize() {
-#if BUILDFLAG(USE_DBUS)
-  ui::SelectFileDialogLinuxPortal::DestroyPortalConnection();
-#endif
-}
-
 }  // namespace shell_dialog_linux
 
 namespace ui {
@@ -58,8 +52,6 @@ FileDialogChoice GetFileDialogChoice() {
   // Check to see if the portal is available.
   if (SelectFileDialogLinuxPortal::IsPortalAvailable())
     return kPortal;
-  // Make sure to kill the portal connection.
-  SelectFileDialogLinuxPortal::DestroyPortalConnection();
 #endif
 
   // Check to see if KDE is the desktop environment.

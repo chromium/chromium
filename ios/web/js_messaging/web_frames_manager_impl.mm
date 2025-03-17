@@ -106,4 +106,4 @@ WebFrame* WebFramesManagerImpl::GetFrameWithId(const std::string& frame_id) {
                                             : web_frames_it->second.get();
 }
 
-}  // namespace
+}  // namespace web

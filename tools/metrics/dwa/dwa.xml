@@ -15,6 +15,103 @@ be describing additional metrics about the same event.
 
 <dwa-configuration>
 
+<event name="AttributionConversionsClientBounce">
+  <owner>linnan@google.com</owner>
+  <metric name="UserActivation.10s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 10s without any user activation by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+    </summary>
+  </metric>
+  <metric name="UserActivation.1s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 1s without any user activation by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserActivation.5s&quot; and &quot;UserActivation.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserActivation.5s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 5s without any user activation by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserActivation.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.10s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 10s without any user interaction by
+      a non-user-initiated navigation. Shared data hosts will be counted
+      multiple times.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.1s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 1s without any user interaction by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserInteraction.5s&quot; and &quot;UserInteraction.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.5s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 5s without any user interaction by a
+      non-user-initiated navigation. Shared data hosts will be counted multiple
+      times.
+
+      Note that these data hosts are also counted in
+      &quot;UserInteraction.10s&quot;.
+    </summary>
+  </metric>
+</event>
+
+<event name="AttributionConversionsCreateReport">
+  <owner>zhouzj@google.com</owner>
+  <study name="UMA-Uniformity-Trial-1-Percent"/>
+  <metric name="AggregatableStatus"
+      enum="ConversionCreateAggregatableReportStatus">
+    <summary>
+      Records the outcome of whether aggregatable reports are stored
+      successfully or rejected and why. Recorded once for each trigger event
+      processed by the attribution storage layer. `kNotRegistered` will be
+      logged if the source or trigger doesn't declare aggregatable data.
+    </summary>
+  </metric>
+  <metric name="EventLevelStatus" enum="ConversionStorageCreateReportStatus">
+    <summary>
+      Records the outcome of whether event-level triggers are stored
+      successfully or rejected and why. Recorded once for each conversion event
+      processed by the attribution storage layer.
+    </summary>
+  </metric>
+</event>
+
+<event name="AttributionConversionsStoreSource">
+  <owner>linnan@google.com</owner>
+  <owner>zhouzj@google.com</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="Status" enum="ConversionStorageSourceStatus">
+    <summary>
+      Records the status of source registration processing. Recorded once for
+      each source event processed by the attribution manager layer.
+    </summary>
+  </metric>
+</event>
+
 <event name="DwaTestMetric">
   <owner>zhouzj@google.com</owner>
   <summary>

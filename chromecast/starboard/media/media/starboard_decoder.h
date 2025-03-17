@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -89,8 +90,7 @@ class StarboardDecoder {
   MediaPipelineBackend::BufferStatus PushBufferInternal(
       StarboardSampleInfo sample_info,
       DrmInfoWrapper drm_info,
-      std::unique_ptr<uint8_t[]> buffer_data,
-      size_t buffer_data_size);
+      base::HeapArray<uint8_t> buffer_data);
 
   // Sends an "end of stream" signal to starboard.
   MediaPipelineBackend::BufferStatus PushEndOfStream();
@@ -127,8 +127,9 @@ class StarboardDecoder {
   base::OnceCallback<MediaPipelineBackend::BufferStatus()> pending_first_push_;
   // This map is expected to be small (likely only one or two elements), hence
   // the use of a flat_map.
-  // Maps from the array address to the unique_ptr that manages the array.
-  base::flat_map<const uint8_t*, std::unique_ptr<uint8_t[]>> copied_buffers_;
+  // Maps from the array address to the HeapArray that manages the array's
+  // lifetime.
+  base::flat_map<const uint8_t*, base::HeapArray<uint8_t>> copied_buffers_;
   // A callback to be run once the necessary DRM key is available. The callback
   // will push a pending buffer.
   base::OnceCallback<MediaPipelineBackend::BufferStatus()> pending_drm_key_;

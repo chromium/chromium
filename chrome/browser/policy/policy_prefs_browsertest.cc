@@ -21,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -39,12 +38,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #else
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {
 
@@ -158,19 +157,13 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-// TODO(crbug.com/365426498): Flaky on linux-lacros-chrome.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
-#else
-#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
-#endif
-IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   PrefService* local_state = g_browser_process->local_state();
   PrefService* user_prefs = ProfileManager::GetLastUsedProfileIfLoaded()
@@ -187,7 +180,7 @@ INSTANTIATE_TEST_SUITE_P(Chunked,
                          ::testing::Range(/* start= */ static_cast<size_t>(0),
                                           /* end= */ GetNumChunks()));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Class used to check policy to pref mappings for policies that are mapped into
 // the sign-in profile (usually via LoginProfilePolicyProvider).
@@ -218,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
                              GetMockPolicyProvider());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // For WebUI integration tests, see cr_policy_indicator_tests.js and
 // cr_policy_pref_indicator_tests.js.

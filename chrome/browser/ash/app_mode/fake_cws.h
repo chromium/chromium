@@ -36,10 +36,10 @@ class FakeCWS {
   // switches.
   void Init(net::EmbeddedTestServer* embedded_test_server);
 
-  // Initializes as a private store handler using the given server and URL end
-  // point. Override app gallery command line and provide it to Extensions
-  // client.
+  // Initializes a handler in `embedded_test_server` for a private store using
+  // the given `web_store_url` and `update_check_end_point`.
   void InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
+                          const GURL& web_store_url,
                           std::string_view update_check_end_point);
 
   // Sets up the update check response with has_update template.

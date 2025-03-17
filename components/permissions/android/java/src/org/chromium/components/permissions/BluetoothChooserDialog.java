@@ -4,6 +4,9 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -28,6 +31,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
@@ -51,6 +57,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>The dialog is shown by create() or show(), and always runs finishDialog() as it's closing.
  */
 @JNINamespace("permissions")
+@NullMarked
 public class BluetoothChooserDialog
         implements ItemChooserDialog.ItemSelectedCallback, PermissionCallback {
     private static final String TAG = "Bluetooth";
@@ -96,7 +103,7 @@ public class BluetoothChooserDialog
     final BluetoothChooserAndroidDelegate mDelegate;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public Drawable mConnectedIcon;
+    public @Nullable Drawable mConnectedIcon;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public String mConnectedIconDescription;
@@ -171,10 +178,8 @@ public class BluetoothChooserDialog
             BluetoothChooserAndroidDelegate delegate,
             long nativeBluetoothChooserDialogPtr) {
         mWindowAndroid = windowAndroid;
-        mActivity = windowAndroid.getActivity().get();
-        assert mActivity != null;
-        mContext = windowAndroid.getContext().get();
-        assert mContext != null;
+        mActivity = assertNonNull(windowAndroid.getActivity().get());
+        mContext = assertNonNull(windowAndroid.getContext().get());
         mOrigin = origin;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
@@ -204,10 +209,12 @@ public class BluetoothChooserDialog
                                 "<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF_HELP)));
     }
 
-    private Drawable getIconWithRowIconColorStateList(int icon) {
+    private @Nullable Drawable getIconWithRowIconColorStateList(int icon) {
         Resources res = mContext.getResources();
 
-        Drawable drawable = TraceEventVectorDrawableCompat.create(res, icon, mContext.getTheme());
+        Drawable drawable =
+                assumeNonNull(
+                        TraceEventVectorDrawableCompat.create(res, icon, mContext.getTheme()));
         DrawableCompat.setTintList(
                 drawable,
                 AppCompatResources.getColorStateList(
@@ -217,6 +224,7 @@ public class BluetoothChooserDialog
 
     /** Show the BluetoothChooserDialog. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Initializer
     public void show() {
         SpannableString origin = new SpannableString(mOrigin);
 
@@ -441,7 +449,7 @@ public class BluetoothChooserDialog
 
     @CalledByNative
     @VisibleForTesting
-    public static BluetoothChooserDialog create(
+    public static @Nullable BluetoothChooserDialog create(
             WindowAndroid windowAndroid,
             String origin,
             int securityLevel,
@@ -484,10 +492,12 @@ public class BluetoothChooserDialog
         Drawable icon = null;
         String iconDescription = null;
         if (isGATTConnected) {
-            icon = mConnectedIcon.getConstantState().newDrawable();
+            icon = assumeNonNull(assumeNonNull(mConnectedIcon).getConstantState()).newDrawable();
             iconDescription = mConnectedIconDescription;
         } else if (signalStrengthLevel != -1) {
-            icon = mSignalStrengthLevelIcon[signalStrengthLevel].getConstantState().newDrawable();
+            icon =
+                    assumeNonNull(mSignalStrengthLevelIcon[signalStrengthLevel].getConstantState())
+                            .newDrawable();
             iconDescription =
                     mContext.getResources()
                             .getQuantityString(

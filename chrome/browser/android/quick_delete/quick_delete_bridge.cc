@@ -76,31 +76,6 @@ void QuickDeleteBridge::GetLastVisitedDomainAndUniqueDomainCount(
       &task_tracker_);
 }
 
-void QuickDeleteBridge::ShowSurvey(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents_android) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents_android);
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
-
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerQuickDelete, web_contents,
-        /*timeout_ms=*/5000,
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        HatsService::NavigationBehaviour::ALLOW_ANY,
-        /*success_callback=*/base::DoNothing(),
-        /*failure_callback=*/base::DoNothing(),
-        /*supplied_trigger_id=*/std::nullopt,
-        HatsService::SurveyOptions(
-            l10n_util::GetStringUTF16(
-                IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION),
-            messages::MessageIdentifier::PROMPT_HATS_QUICK_DELETE));
-  }
-}
-
 // TODO(crbug.com/40255099) use rvalue reference to pass the result and define
 // copy ctor and copy assignment in history::DomainsVisitedResult.
 void QuickDeleteBridge::OnGetLastVisitedDomainAndUniqueDomainCountComplete(

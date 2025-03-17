@@ -147,13 +147,6 @@ export class SettingsClearBrowsingDataDialogElement extends
         ],
       },
 
-      unoDesktopEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('unoDesktopEnabled');
-        },
-      },
-
       clearingInProgress_: {
         type: Boolean,
         value: false,
@@ -180,16 +173,6 @@ export class SettingsClearBrowsingDataDialogElement extends
       },
 
       showPasswordsDeletionDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isSignedIn_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isSyncConsented_: {
         type: Boolean,
         value: false,
       },
@@ -271,15 +254,12 @@ export class SettingsClearBrowsingDataDialogElement extends
   syncStatus: SyncStatus|undefined;
   private counters_: {[k: string]: string};
   private clearFromOptions_: DropdownMenuOptionList;
-  private unoDesktopEnabled_: boolean;
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
   private showHistoryDeletionDialog_: boolean;
   private showPasswordsDeletionDialogLater_: boolean;
   private showPasswordsDeletionDialog_: boolean;
-  private isSignedIn_: boolean;
-  private isSyncConsented_: boolean;
   private isSyncingHistory_: boolean;
   private shouldShowCookieException_: boolean;
   // <if expr="not is_chromeos">
@@ -381,8 +361,6 @@ export class SettingsClearBrowsingDataDialogElement extends
    * depending on sync and signin state.
    */
   private updateSyncState_(event: UpdateSyncStateEvent) {
-    this.isSignedIn_ = event.signedIn;
-    this.isSyncConsented_ = event.syncConsented;
     this.isSyncingHistory_ = event.syncingHistory;
     this.shouldShowCookieException_ = event.shouldShowCookieException;
     this.$.clearBrowsingDataDialog.classList.add('fully-rendered');
@@ -433,7 +411,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     // </if>
 
     // The exception is not shown for SIGNED_IN_PAUSED.
-    if (this.unoDesktopEnabled_ && signedInState === SignedInState.SIGNED_IN) {
+    if (signedInState === SignedInState.SIGNED_IN) {
       return clearCookiesSummarySignedIn;
     }
 
@@ -630,7 +608,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   private computeHasOtherError_(): boolean {
-    return this.syncStatus !== undefined && !!this.syncStatus!.hasError &&
+    return this.syncStatus !== undefined && !!this.syncStatus.hasError &&
         !this.isSyncPaused_ && !this.hasPassphraseError_;
   }
   // </if>
@@ -644,32 +622,68 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   // <if expr="not is_chromeos">
   private shouldShowFooter_(): boolean {
-    if (!!this.syncStatus &&
-        this.syncStatus.signedInState === SignedInState.SYNCING) {
-      return true;
+    if (!this.syncStatus) {
+      return false;
     }
-    return this.unoDesktopEnabled_ && this.isClearPrimaryAccountAllowed_ &&
-        this.isSignedIn_;
+
+    switch (this.syncStatus.signedInState) {
+      case SignedInState.SIGNED_IN:
+        return this.isClearPrimaryAccountAllowed_;
+      case SignedInState.SYNCING:
+        return true;
+      case SignedInState.WEB_ONLY_SIGNED_IN:
+      case SignedInState.SIGNED_OUT:
+      case SignedInState.SIGNED_IN_PAUSED:
+        return false;
+    }
+
+    return false;
   }
 
   /**
    * @return Whether the signed info description should be shown in the footer.
    */
   private showSigninInfo_(): boolean {
-    return this.unoDesktopEnabled_ && this.isSignedIn_ &&
-        this.isClearPrimaryAccountAllowed_ &&
-        (!this.syncStatus ||
-         this.syncStatus.signedInState !== SignedInState.SYNCING);
+    if (!this.syncStatus) {
+      return false;
+    }
+
+    return this.syncStatus.signedInState === SignedInState.SIGNED_IN &&
+        this.isClearPrimaryAccountAllowed_;
   }
 
   /**
    * @return Whether the synced info description should be shown in the footer.
    */
   private showSyncInfo_(): boolean {
-    return !this.showSigninInfo_() && !!this.syncStatus &&
-        !this.syncStatus.hasError;
+    if (!this.syncStatus) {
+      return false;
+    }
+
+    return !this.showSigninInfo_() && !this.syncStatus.hasError;
   }
   // </if>
+
+  /**
+   * @return Whether the search history box should be shown.
+   */
+  private showSearchHistoryBox_(): boolean {
+    if (!this.syncStatus) {
+      return false;
+    }
+
+    switch (this.syncStatus.signedInState) {
+      case SignedInState.SIGNED_IN_PAUSED:
+      case SignedInState.SIGNED_IN:
+      case SignedInState.SYNCING:
+        return true;
+      case SignedInState.WEB_ONLY_SIGNED_IN:
+      case SignedInState.SIGNED_OUT:
+        return false;
+    }
+
+    return false;
+  }
 
   private onTimePeriodChanged_() {
     const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();

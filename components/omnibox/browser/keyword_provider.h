@@ -38,72 +38,32 @@ class TemplateURLService;
 //
 // To construct these matches, the provider treats user input as a series of
 // whitespace-delimited tokens and tries to match the first token as the prefix
-// of a known "keyword".  A keyword is some string that maps to a search query
+// of a known "keyword". A keyword is some string that maps to a search query
 // URL; the rest of the user's input is taken as the input to the query.  For
 // example, the keyword "bug" might map to the URL "http://b/issue?id=%s", so
 // input like "bug 123" would become "http://b/issue?id=123".
 //
 // Because we do prefix matching, user input could match more than one keyword
-// at once.  (Example: the input "f jazz" matches all keywords starting with
-// "f".)  We return the best matches, up to three.
+// at once. (Example: the input "f jazz" matches all keywords starting with
+// "f".) We return the best matches, up to three.
 //
 // The resulting matches are shown with content specified by the keyword
-// (usually "Search [name] for %s"), description "(Keyword: [keyword])", and
-// action "[keyword] %s".  If the user has typed a (possibly partial) keyword
+// (usually "Search [name] for %s"), description ("Keyword: [keyword]"), and
+// action ("[keyword] %s"). If the user has typed a (possibly partial) keyword
 // but no search terms, the suggested result is shown greyed out, with
 // "<enter term(s)>" as the substituted input, and does nothing when selected.
 class KeywordProvider : public AutocompleteProvider {
  public:
-  // Returned by `AdjustInputForStarterPackEngines` to represent the stripped
-  // input and starter pack. See its comment.
-  struct AdjustedInputAndStarterPackEngine {
-    AutocompleteInput adjusted_input;
-    raw_ptr<const TemplateURL> starter_pack_engine;
-  };
-
   KeywordProvider(AutocompleteProviderClient* client,
                   AutocompleteProviderListener* listener);
   KeywordProvider(const KeywordProvider&) = delete;
   KeywordProvider& operator=(const KeywordProvider&) = delete;
 
-  // Extracts the next whitespace-delimited token from input and returns it.
-  // Sets |remaining_input| to everything after the first token (skipping over
-  // the first intervening whitespace).
-  // If |trim_leading_whitespace| is true then leading whitespace in
-  // |*remaining_input| will be trimmed.
-  static std::u16string SplitKeywordFromInput(const std::u16string& input,
-                                              bool trim_leading_whitespace,
-                                              std::u16string* remaining_input);
-
-  // Returns the replacement string from the user input. The replacement
-  // string is the portion of the input that does not contain the keyword.
-  // For example, the replacement string for "b blah" is blah.
-  // If |trim_leading_whitespace| is true then leading whitespace in
-  // replacement string will be trimmed.
-  static std::u16string SplitReplacementStringFromInput(
-      const std::u16string& input,
-      bool trim_leading_whitespace);
-
-  // Returns the matching substituting keyword for |input|, or NULL if there
-  // is no keyword for the specified input.  If the matching keyword was found,
-  // updates |input|'s text and cursor position.
-  // |model| must be non-null.
-  static const TemplateURL* GetSubstitutingTemplateURLForInput(
-      TemplateURLService* model,
-      AutocompleteInput* input);
-
-  // If the keyword mode for a starter pack engine, returns `input` with the
-  // keyword stripped and the starter pack's `TemplateURL`. E.g. for "@History
-  // text", the input 'text' and the history `TemplateURL` are
-  // returned. Otherwise, returns `input` untouched and `nullptr`.
-  static AdjustedInputAndStarterPackEngine AdjustInputForStarterPackEngines(
-      const AutocompleteInput& input,
-      TemplateURLService* model);
-
-  // If |text| corresponds (in the sense of
-  // TemplateURLModel::CleanUserInputKeyword()) to an enabled, substituting
-  // keyword, returns that keyword; returns the empty string otherwise.
-  std::u16string GetKeywordForText(const std::u16string& text) const;
+  // If `text` corresponds to an enabled, substituting keyword, returns that
+  // keyword; returns the empty string otherwise.
+  std::u16string GetKeywordForText(
+      const std::u16string& text,
+      TemplateURLService* template_url_service) const;
 
   // Creates a fully marked-up AutocompleteMatch for a specific keyword.
   AutocompleteMatch CreateVerbatimMatch(const std::u16string& text,
@@ -115,34 +75,19 @@ class KeywordProvider : public AutocompleteProvider {
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
 
+  bool done() const { return done_; }
+
  private:
   friend class KeywordExtensionsDelegateImpl;
 
   ~KeywordProvider() override;
 
-  // Extracts the keyword from |input| into |keyword|. Any remaining characters
-  // after the keyword are placed in |remaining_input|. Returns true if |input|
-  // is valid and has a keyword. This makes use of SplitKeywordFromInput to
-  // extract the keyword and remaining string, and uses |template_url_service|
-  // to validate and clean up the extracted keyword (e.g., to remove unnecessary
-  // characters).
-  // In general use this instead of SplitKeywordFromInput.
-  // Leading whitespace in |*remaining_input| will be trimmed.
-  // |template_url_service| must be non-null.
-  static bool ExtractKeywordFromInput(
-      const AutocompleteInput& input,
-      const TemplateURLService* template_url_service,
-      std::u16string* keyword,
-      std::u16string* remaining_input);
-
   // Determines the relevance for some input, given its type, whether the user
-  // typed the complete keyword, and whether the user is in
-  // "prefer keyword matches" mode, and whether the keyword supports
-  // replacement. If |allow_exact_keyword_match| is false, the relevance for
-  // keywords that support replacements is degraded.
+  // typed the complete keyword and whether the user is in
+  // "prefer keyword matches" mode. If |allow_exact_keyword_match| is false,
+  // the relevance for keywords that support replacements is degraded.
   static int CalculateRelevance(metrics::OmniboxInputType type,
                                 bool complete,
-                                bool support_replacement,
                                 bool prefer_keyword,
                                 bool allow_exact_keyword_match);
 
@@ -164,18 +109,6 @@ class KeywordProvider : public AutocompleteProvider {
                             AutocompleteMatch* match) const;
 
   TemplateURLService* GetTemplateURLService() const;
-
-  // Removes any unnecessary characters from a user input keyword, returning
-  // the resulting keyword.  Usually this means it does transformations such as
-  // removing any leading scheme, "www." and trailing slash and returning the
-  // resulting string regardless of whether it's a registered keyword.
-  // However, if a |template_url_service| is provided and the function finds a
-  // registered keyword at any point before finishing those transformations,
-  // it'll return that keyword.
-  // |template_url_service| must be non-null.
-  static std::u16string CleanUserInputKeyword(
-      const TemplateURLService* template_url_service,
-      const std::u16string& keyword);
 
   // Input when searching against the keyword provider.
   AutocompleteInput keyword_input_;

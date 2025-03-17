@@ -79,6 +79,18 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   // to give guidance for heavy animations such as "start download" arrow.
   static bool ShouldRenderRichAnimation();
 
+  // Returns the duration a rich animation should use given the nominal
+  // `duration`. The return value is either `duration` or zero, depending on
+  // whether rich animations are currently enabled. NOTE: Since rich animations
+  // can be enabled and disabled dynamically, it is not appropriate to store the
+  // result of this call long-term; callers should re-set the animation duration
+  // before each animation run.
+  //
+  // TODO(pkasting): It may be clearer and safer to have an "is rich animation"
+  // bit on animations, and have the animation system adjust the duration
+  // internally automatically, e.g. in `AnimationStarted()` in each subclass.
+  static base::TimeDelta RichAnimationDuration(base::TimeDelta duration);
+
   // Determines on a per-platform basis whether scroll animations (e.g. produced
   // by home/end key) should be enabled. Should only be called from the browser
   // process.

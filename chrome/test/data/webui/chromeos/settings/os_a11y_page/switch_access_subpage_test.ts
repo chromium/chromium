@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsSwitchAccessSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsSwitchAccessSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom, SwitchAccessSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

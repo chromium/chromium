@@ -118,14 +118,20 @@ void TrayItemView::RemoveObserver(Observer* observer) {
 
 void TrayItemView::CreateLabel() {
   label_ = new IconizedLabel;
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
   PreferredSizeChanged();
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::CreateImageView() {
   image_view_ = new views::ImageView;
-  AddChildView(image_view_.get());
+  AddChildViewRaw(image_view_.get());
   PreferredSizeChanged();
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::DestroyLabel() {
@@ -134,6 +140,10 @@ void TrayItemView::DestroyLabel() {
 
   RemoveChildViewT(label_.get());
   label_ = nullptr;
+
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::DestroyImageView() {
@@ -142,6 +152,10 @@ void TrayItemView::DestroyImageView() {
 
   RemoveChildViewT(image_view_.get());
   image_view_ = nullptr;
+
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::UpdateLabelOrImageViewColor(bool active) {

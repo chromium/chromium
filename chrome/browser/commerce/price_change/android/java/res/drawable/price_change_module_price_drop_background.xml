@@ -7,5 +7,5 @@ found in the LICENSE file.
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/price_drop_annotation_bg_color"/>
-    <corners android:radius="@dimen/price_change_module_price_card_corner_radius"/>
+    <corners android:radius="@dimen/price_change_indicator_card_radius"/>
 </shape>

@@ -25,7 +25,6 @@ export enum SettingsAiPageFeaturePrefName {
   HISTORY_SEARCH = 'optimization_guide.history_search_setting_state',
   COMPOSE = 'optimization_guide.compose_setting_state',
   TAB_ORGANIZATION = 'optimization_guide.tab_organization_setting_state',
-  WALLPAPER_SEARCH = 'optimization_guide.wallpaper_search_setting_state',
 }
 
 // Exporting enterprise pref names so that they can be referenced by tests.
@@ -36,8 +35,6 @@ export enum AiEnterpriseFeaturePrefName {
       'optimization_guide.model_execution.compose_enterprise_policy_allowed',
   TAB_ORGANIZATION =
       'optimization_guide.model_execution.tab_organization_enterprise_policy_allowed',
-  WALLPAPER_SEARCH =
-      'optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed',
   COMPARE =
       'optimization_guide.model_execution.tab_compare_settings_enterprise_policy',
 }

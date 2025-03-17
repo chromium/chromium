@@ -74,7 +74,9 @@ void FakeRenderWidgetHost::CreateFrameSink(
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
         compositor_frame_sink_receiver,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
-        compositor_frame_sink_client) {}
+        compositor_frame_sink_client,
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
+        viz_rir_client_remote) {}
 
 void FakeRenderWidgetHost::RegisterRenderFrameMetadataObserver(
     mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
@@ -105,8 +107,7 @@ void FakeRenderWidgetHost::ImeCancelComposition() {}
 
 void FakeRenderWidgetHost::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
   last_composition_range_ = range;
   if (character_bounds.has_value()) {
     last_composition_bounds_ = character_bounds.value();
@@ -132,9 +133,8 @@ void FakeRenderWidgetHost::AutoscrollEnd() {}
 blink::mojom::WidgetInputHandler*
 FakeRenderWidgetHost::GetWidgetInputHandler() {
   if (!widget_input_handler_) {
-    widget_remote_->SetupRenderInputRouterConnections(
-        client_remote_.BindNewPipeAndPassReceiver(),
-        /* viz_request= */ mojo::NullReceiver());
+    widget_remote_->SetupBrowserRenderInputRouterConnections(
+        client_remote_.BindNewPipeAndPassReceiver());
 
     client_remote_->GetWidgetInputHandler(
         widget_input_handler_.BindNewPipeAndPassReceiver(),

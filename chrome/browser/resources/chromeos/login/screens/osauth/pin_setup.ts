@@ -15,14 +15,14 @@ import '../../components/buttons/oobe_text_button.js';
 
 import {SetupPinKeyboardElement} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
-import {OobeTypes} from '../../components/oobe_types.js';
+import type {OobeTypes} from '../../components/oobe_types.js';
 
 import {getTemplate} from './pin_setup.html.js';
 
@@ -106,6 +106,13 @@ class PinSetup extends PinSetupBase {
         type: Boolean,
         value: false,
       },
+
+      // The button is set to disabled after the first click. This prevents
+      // multiple invocations of UserActed on the browser side. b:319863929.
+      isSetupDoneButtonEnabled: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -117,6 +124,7 @@ class PinSetup extends PinSetupBase {
   private usingPinAsMainSignInFactor: boolean;
   isChildAccount: boolean;
   private isRecoveryMode: boolean;
+  private isSetupDoneButtonEnabled: boolean;
 
   override get UI_STEPS() {
     return PinSetupState;
@@ -152,6 +160,7 @@ class PinSetup extends PinSetupBase {
     this.hasLoginSupport = data.hasLoginSupport;
     this.usingPinAsMainSignInFactor = data.usingPinAsMainSignInFactor;
     this.isRecoveryMode = data.isRecoveryMode;
+    this.isSetupDoneButtonEnabled = true;
   }
 
   private onIsConfirmStepChanged(): void {
@@ -165,6 +174,7 @@ class PinSetup extends PinSetupBase {
   }
 
   private onSetPinDone(): void {
+    this.isSetupDoneButtonEnabled = true;
     this.setUIStep(PinSetupState.DONE);
   }
 
@@ -193,6 +203,7 @@ class PinSetup extends PinSetupBase {
   }
 
   private onDoneButton(): void {
+    this.isSetupDoneButtonEnabled = false;
     this.authToken = '';
     this.getPinKeyboard().resetState();
     this.userActed('done-button');

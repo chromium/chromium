@@ -25,9 +25,8 @@ namespace {
 // A solid color background where the bottom two corners are rounded.
 class HalfRoundedRectBackground : public Background {
  public:
-  explicit HalfRoundedRectBackground(SkColor color, float radius)
-      : radius_(radius) {
-    SetNativeControlColor(color);
+  HalfRoundedRectBackground(SkColor color, float radius) : radius_(radius) {
+    SetColor(color);
   }
 
   HalfRoundedRectBackground() = delete;
@@ -42,7 +41,7 @@ class HalfRoundedRectBackground : public Background {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
     // Draw a rounded rect that spills outside of the clipping area, so that the
     // rounded corners only show in the bottom 2 corners.
     gfx::RectF spilling_rect(view->GetLocalBounds());

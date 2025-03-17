@@ -80,17 +80,17 @@ public class FindAddressTest {
                         "Lincoln Park | 100 34th Avenue • San Francisco, CA 94121 | 41575036"));
 
         Assert.assertEquals(
+                "1600 Amphitheatre Parkway Mountain View, CA 94043",
                 FindAddress.findAddress(
                         "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do "
                                 + "1600 Amphitheatre Parkway Mountain View, CA 94043 eiusmod "
-                                + "tempor incididunt ut labore et dolore magna aliqua."),
-                "1600 Amphitheatre Parkway Mountain View, CA 94043");
+                                + "tempor incididunt ut labore et dolore magna aliqua."));
 
         Assert.assertEquals(
+                "2590 Pearl Street Suite 100 Boulder, CO 80302",
                 FindAddress.findAddress(
                         "2590 Pearl Street Suite 100 Boulder, CO 80302 "
-                                + "6425 Penn Ave. Suite 700 Pittsburgh, PA 15206"),
-                "2590 Pearl Street Suite 100 Boulder, CO 80302");
+                                + "6425 Penn Ave. Suite 700 Pittsburgh, PA 15206"));
 
         assertIsAddress("5400 Preston Oaks Rd Dallas TX 75254");
         assertIsAddress("5400 Preston Oaks Road Dallas TX 75254");
@@ -152,15 +152,15 @@ public class FindAddressTest {
     @Feature({"AndroidWebView"})
     public void testNumberPrefixCases() {
         Assert.assertEquals(
-                FindAddress.findAddress("Cafe 21\n750 Fifth Ave. San Diego, California 92101"),
-                "750 Fifth Ave. San Diego, California 92101");
+                "750 Fifth Ave. San Diego, California 92101",
+                FindAddress.findAddress("Cafe 21\n750 Fifth Ave. San Diego, California 92101"));
         Assert.assertEquals(
+                "10250 Santa Monica Boulevard Los Angeles, CA 90067",
                 FindAddress.findAddress(
-                        "Century City 15\n 10250 Santa Monica Boulevard Los Angeles, CA 90067"),
-                "10250 Santa Monica Boulevard Los Angeles, CA 90067");
+                        "Century City 15\n 10250 Santa Monica Boulevard Los Angeles, CA 90067"));
         Assert.assertEquals(
-                FindAddress.findAddress("123 45\n67 My Street, Somewhere, NY 10000"),
-                "67 My Street, Somewhere, NY 10000");
+                "67 My Street, Somewhere, NY 10000",
+                FindAddress.findAddress("123 45\n67 My Street, Somewhere, NY 10000"));
         assertIsAddress("123 4th Avenue, Somewhere in NY 10000");
     }
 

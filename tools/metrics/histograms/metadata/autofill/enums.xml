@@ -143,6 +143,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAlternativeNameFieldValueCharacterSet">
+  <int value="0" label="Katakana"/>
+  <int value="1" label="Hiragana"/>
+  <int value="2" label="Other"/>
+</enum>
+
+<enum name="AutofillAutocompleteState">
+  <int value="0" label="None"/>
+  <int value="1" label="Valid"/>
+  <int value="2" label="Garbage"/>
+  <int value="3" label="Off"/>
+  <int value="4" label="Password"/>
+</enum>
+
 <enum name="AutofillAwGSuggestionAvailability">
   <int value="0" label="No suggestion"/>
   <int value="1" label="Has suggestion, user doesn't select it"/>
@@ -716,6 +730,9 @@ Called by update_autofill_enums.py.-->
   <int value="10048"
       label="ADDRESS_HOME_APT_TYPE: Not autofilled or autofilled value edited"/>
   <int value="10049" label="ADDRESS_HOME_APT_TYPE: Autofilled value accepted"/>
+  <int value="10112"
+      label="LOYALTY_MEMBERSHIP_ID: Not autofilled or autofilled value edited"/>
+  <int value="10113" label="LOYALTY_MEMBERSHIP_ID: Autofilled value accepted"/>
   <int value="10240"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Not autofilled or
              autofilled value edited"/>
@@ -743,6 +760,79 @@ Called by update_autofill_enums.py.-->
   <int value="10688"
       label="NAME_LAST_CORE: Not autofilled or autofilled value edited"/>
   <int value="10689" label="NAME_LAST_CORE: Autofilled value accepted"/>
+  <int value="10752"
+      label="PASSPORT_NAME_TAG: Not autofilled or autofilled value edited"/>
+  <int value="10753" label="PASSPORT_NAME_TAG: Autofilled value accepted"/>
+  <int value="10816"
+      label="PASSPORT_NUMBER: Not autofilled or autofilled value edited"/>
+  <int value="10817" label="PASSPORT_NUMBER: Autofilled value accepted"/>
+  <int value="10880"
+      label="PASSPORT_ISSUING_COUNTRY: Not autofilled or autofilled value
+             edited"/>
+  <int value="10881"
+      label="PASSPORT_ISSUING_COUNTRY: Autofilled value accepted"/>
+  <int value="10944"
+      label="PASSPORT_EXPIRATION_DATE: Not autofilled or autofilled value
+             edited"/>
+  <int value="10945"
+      label="PASSPORT_EXPIRATION_DATE: Autofilled value accepted"/>
+  <int value="11008"
+      label="PASSPORT_ISSUE_DATE: Not autofilled or autofilled value edited"/>
+  <int value="11009" label="PASSPORT_ISSUE_DATE: Autofilled value accepted"/>
+  <int value="11072"
+      label="LOYALTY_MEMBERSHIP_PROGRAM: Not autofilled or autofilled value
+             edited"/>
+  <int value="11073"
+      label="LOYALTY_MEMBERSHIP_PROGRAM: Autofilled value accepted"/>
+  <int value="11136"
+      label="LOYALTY_MEMBERSHIP_PROVIDER: Not autofilled or autofilled value
+             edited"/>
+  <int value="11137"
+      label="LOYALTY_MEMBERSHIP_PROVIDER: Autofilled value accepted"/>
+  <int value="11200"
+      label="VEHICLE_OWNER_TAG: Not autofilled or autofilled value edited"/>
+  <int value="11201" label="VEHICLE_OWNER_TAG: Autofilled value accepted"/>
+  <int value="11264"
+      label="VEHICLE_LICENSE_PLATE: Not autofilled or autofilled value edited"/>
+  <int value="11265" label="VEHICLE_LICENSE_PLATE: Autofilled value accepted"/>
+  <int value="11328"
+      label="VEHICLE_VIN: Not autofilled or autofilled value edited"/>
+  <int value="11329" label="VEHICLE_VIN: Autofilled value accepted"/>
+  <int value="11392"
+      label="VEHICLE_MAKE: Not autofilled or autofilled value edited"/>
+  <int value="11393" label="VEHICLE_MAKE: Autofilled value accepted"/>
+  <int value="11456"
+      label="VEHICLE_MODEL: Not autofilled or autofilled value edited"/>
+  <int value="11457" label="VEHICLE_MODEL: Autofilled value accepted"/>
+  <int value="11520"
+      label="DRIVERS_LICENSE_NAME_TAG: Not autofilled or autofilled value
+             edited"/>
+  <int value="11521"
+      label="DRIVERS_LICENSE_NAME_TAG: Autofilled value accepted"/>
+  <int value="11584"
+      label="DRIVERS_LICENSE_REGION: Not autofilled or autofilled value
+             edited"/>
+  <int value="11585" label="DRIVERS_LICENSE_REGION: Autofilled value accepted"/>
+  <int value="11648"
+      label="DRIVERS_LICENSE_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="11649" label="DRIVERS_LICENSE_NUMBER: Autofilled value accepted"/>
+  <int value="11712"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE: Not autofilled or autofilled
+             value edited"/>
+  <int value="11713"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE: Autofilled value accepted"/>
+  <int value="11776"
+      label="DRIVERS_LICENSE_ISSUE_DATE: Not autofilled or autofilled value
+             edited"/>
+  <int value="11777"
+      label="DRIVERS_LICENSE_ISSUE_DATE: Autofilled value accepted"/>
+  <int value="11840"
+      label="VEHICLE_YEAR: Not autofilled or autofilled value edited"/>
+  <int value="11841" label="VEHICLE_YEAR: Autofilled value accepted"/>
+  <int value="11904"
+      label="VEHICLE_PLATE_STATE: Not autofilled or autofilled value edited"/>
+  <int value="11905" label="VEHICLE_PLATE_STATE: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -750,6 +840,43 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Fillable form parsed with type hints"/>
   <int value="2"
       label="(Obsolete) Includes UPI-VPA type hint (removed 04/2024)"/>
+</enum>
+
+<enum name="AutofillDynamicElementType">
+  <int value="0" label="ButtonButton"/>
+  <int value="1" label="ButtonSubmit"/>
+  <int value="2" label="ButtonReset"/>
+  <int value="3" label="ButtonPopover"/>
+  <int value="4" label="Fieldset"/>
+  <int value="5" label="InputButton"/>
+  <int value="6" label="InputCheckbox"/>
+  <int value="7" label="InputColor"/>
+  <int value="8" label="InputDate"/>
+  <int value="9" label="InputDatetimeLocal"/>
+  <int value="10" label="InputEmail"/>
+  <int value="11" label="InputFile"/>
+  <int value="12" label="InputHidden"/>
+  <int value="13" label="InputImage"/>
+  <int value="14" label="InputMonth"/>
+  <int value="15" label="InputNumber"/>
+  <int value="16" label="InputPassword"/>
+  <int value="17" label="InputRadio"/>
+  <int value="18" label="InputRange"/>
+  <int value="19" label="InputReset"/>
+  <int value="20" label="InputSearch"/>
+  <int value="21" label="InputSubmit"/>
+  <int value="22" label="InputTelephone"/>
+  <int value="23" label="InputText"/>
+  <int value="24" label="InputTime"/>
+  <int value="25" label="InputUrl"/>
+  <int value="26" label="InputWeek"/>
+  <int value="27" label="Output"/>
+  <int value="28" label="SelectOne"/>
+  <int value="29" label="SelectMultiple"/>
+  <int value="30" label="TextArea"/>
+  <int value="31" label="Form"/>
+  <int value="32" label="Other"/>
+  <int value="33" label="Null"/>
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatus">
@@ -961,6 +1088,8 @@ Called by update_autofill_enums.py.-->
   <int value="2497" label="ADDRESS_HOME_APT: accepted"/>
   <int value="2512" label="ADDRESS_HOME_APT_TYPE: edited"/>
   <int value="2513" label="ADDRESS_HOME_APT_TYPE: accepted"/>
+  <int value="2528" label="LOYALTY_MEMBERSHIP_ID: edited"/>
+  <int value="2529" label="LOYALTY_MEMBERSHIP_ID: accepted"/>
   <int value="2560" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: edited"/>
   <int value="2561" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
   <int value="2592" label="IMPROVED_PREDICTION: edited"/>
@@ -975,6 +1104,44 @@ Called by update_autofill_enums.py.-->
   <int value="2657" label="NAME_LAST_PREFIX: accepted"/>
   <int value="2672" label="NAME_LAST_CORE: edited"/>
   <int value="2673" label="NAME_LAST_CORE: accepted"/>
+  <int value="2688" label="PASSPORT_NAME_TAG: edited"/>
+  <int value="2689" label="PASSPORT_NAME_TAG: accepted"/>
+  <int value="2704" label="PASSPORT_NUMBER: edited"/>
+  <int value="2705" label="PASSPORT_NUMBER: accepted"/>
+  <int value="2720" label="PASSPORT_ISSUING_COUNTRY: edited"/>
+  <int value="2721" label="PASSPORT_ISSUING_COUNTRY: accepted"/>
+  <int value="2736" label="PASSPORT_EXPIRATION_DATE: edited"/>
+  <int value="2737" label="PASSPORT_EXPIRATION_DATE: accepted"/>
+  <int value="2752" label="PASSPORT_ISSUE_DATE: edited"/>
+  <int value="2753" label="PASSPORT_ISSUE_DATE: accepted"/>
+  <int value="2768" label="LOYALTY_MEMBERSHIP_PROGRAM: edited"/>
+  <int value="2769" label="LOYALTY_MEMBERSHIP_PROGRAM: accepted"/>
+  <int value="2784" label="LOYALTY_MEMBERSHIP_PROVIDER: edited"/>
+  <int value="2785" label="LOYALTY_MEMBERSHIP_PROVIDER: accepted"/>
+  <int value="2800" label="VEHICLE_OWNER_TAG: edited"/>
+  <int value="2801" label="VEHICLE_OWNER_TAG: accepted"/>
+  <int value="2816" label="VEHICLE_LICENSE_PLATE: edited"/>
+  <int value="2817" label="VEHICLE_LICENSE_PLATE: accepted"/>
+  <int value="2832" label="VEHICLE_VIN: edited"/>
+  <int value="2833" label="VEHICLE_VIN: accepted"/>
+  <int value="2848" label="VEHICLE_MAKE: edited"/>
+  <int value="2849" label="VEHICLE_MAKE: accepted"/>
+  <int value="2864" label="VEHICLE_MODEL: edited"/>
+  <int value="2865" label="VEHICLE_MODEL: accepted"/>
+  <int value="2880" label="DRIVERS_LICENSE_NAME_TAG: edited"/>
+  <int value="2881" label="DRIVERS_LICENSE_NAME_TAG: accepted"/>
+  <int value="2896" label="DRIVERS_LICENSE_REGION: edited"/>
+  <int value="2897" label="DRIVERS_LICENSE_REGION: accepted"/>
+  <int value="2912" label="DRIVERS_LICENSE_NUMBER: edited"/>
+  <int value="2913" label="DRIVERS_LICENSE_NUMBER: accepted"/>
+  <int value="2928" label="DRIVERS_LICENSE_EXPIRATION_DATE: edited"/>
+  <int value="2929" label="DRIVERS_LICENSE_EXPIRATION_DATE: accepted"/>
+  <int value="2944" label="DRIVERS_LICENSE_ISSUE_DATE: edited"/>
+  <int value="2945" label="DRIVERS_LICENSE_ISSUE_DATE: accepted"/>
+  <int value="2960" label="VEHICLE_YEAR: edited"/>
+  <int value="2961" label="VEHICLE_YEAR: accepted"/>
+  <int value="2976" label="VEHICLE_PLATE_STATE: edited"/>
+  <int value="2977" label="VEHICLE_PLATE_STATE: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -988,6 +1155,10 @@ Called by update_autofill_enums.py.-->
   <int value="6" label="MASKED_SERVER_IBAN_UNMASKING_TEMPORARY_ERROR"/>
   <int value="7" label="CREDIT_CARD_UPLOAD_ERROR"/>
   <int value="8" label="VIRTUAL_CARD_ENROLLMENT_TEMPORARY_ERROR"/>
+  <int value="9" label="CARD_INFO_RETRIEVAL_TEMPORARY_ERROR"/>
+  <int value="10" label="CARD_INFO_RETRIEVAL_PERMANENT_ERROR"/>
+  <int value="11" label="BNPL_TEMPORARY_ERROR"/>
+  <int value="12" label="BNPL_PERMANENT_ERROR"/>
 </enum>
 
 <enum name="AutofillExpirationDateFixFlowPromptEvent">
@@ -1780,6 +1951,7 @@ Called by update_autofill_enums.py.-->
   <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
   <int value="156" label="ADDRESS_HOME_APT"/>
   <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
+  <int value="158" label="LOYALTY_MEMBERSHIP_ID"/>
   <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
   <int value="161" label="SERVER_RESPONSE_PENDING"/>
   <int value="162" label="IMPROVED_PREDICTION"/>
@@ -1788,6 +1960,25 @@ Called by update_autofill_enums.py.-->
   <int value="165" label="ALTERNATIVE_FAMILY_NAME"/>
   <int value="166" label="NAME_LAST_PREFIX"/>
   <int value="167" label="NAME_LAST_CORE"/>
+  <int value="168" label="PASSPORT_NAME_TAG"/>
+  <int value="169" label="PASSPORT_NUMBER"/>
+  <int value="170" label="PASSPORT_ISSUING_COUNTRY"/>
+  <int value="171" label="PASSPORT_EXPIRATION_DATE"/>
+  <int value="172" label="PASSPORT_ISSUE_DATE"/>
+  <int value="173" label="LOYALTY_MEMBERSHIP_PROGRAM"/>
+  <int value="174" label="LOYALTY_MEMBERSHIP_PROVIDER"/>
+  <int value="175" label="VEHICLE_OWNER_TAG"/>
+  <int value="176" label="VEHICLE_LICENSE_PLATE"/>
+  <int value="177" label="VEHICLE_VIN"/>
+  <int value="178" label="VEHICLE_MAKE"/>
+  <int value="179" label="VEHICLE_MODEL"/>
+  <int value="180" label="DRIVERS_LICENSE_NAME_TAG"/>
+  <int value="181" label="DRIVERS_LICENSE_REGION"/>
+  <int value="182" label="DRIVERS_LICENSE_NUMBER"/>
+  <int value="183" label="DRIVERS_LICENSE_EXPIRATION_DATE"/>
+  <int value="184" label="DRIVERS_LICENSE_ISSUE_DATE"/>
+  <int value="185" label="VEHICLE_YEAR"/>
+  <int value="186" label="VEHICLE_PLATE_STATE"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -1803,6 +1994,23 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="User closed bubble via corner X"/>
   <int value="2" label="User did not interact with the bubble"/>
   <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
+</enum>
+
+<enum name="AutofillFormControlType2">
+  <int value="0" label="ContentEditable"/>
+  <int value="1" label="InputCheckbox"/>
+  <int value="2" label="InputEmail"/>
+  <int value="3" label="InputMonth"/>
+  <int value="4" label="InputNumber"/>
+  <int value="5" label="InputPassword"/>
+  <int value="6" label="InputRadio"/>
+  <int value="7" label="InputSearch"/>
+  <int value="8" label="InputTelephone"/>
+  <int value="9" label="InputText"/>
+  <int value="10" label="InputUrl"/>
+  <int value="11" label="SelectOne"/>
+  <int value="12" label="SelectMultiple"/>
+  <int value="14" label="TextArea"/>
 </enum>
 
 <enum name="AutofillFormEvent">
@@ -2021,6 +2229,8 @@ Called by update_autofill_enums.py.-->
   <int value="107"
       label="Form was submitted after suggestions containing cards with a
              benefit available were shown (once)"/>
+  <int value="108" label="Local card suggestion selected"/>
+  <int value="109" label="Local card suggestion selected (once)"/>
 </enum>
 
 <enum name="AutofillGetRealPanResult">
@@ -2171,6 +2381,15 @@ Called by update_autofill_enums.py.-->
              response"/>
 </enum>
 
+<enum name="AutofillPasswordFormType">
+  <int value="0" label="No password form"/>
+  <int value="1" label="Login form"/>
+  <int value="2" label="Signup form"/>
+  <int value="3" label="Change password form"/>
+  <int value="4" label="Reset password form"/>
+  <int value="5" label="Single username form"/>
+</enum>
+
 <enum name="AutofillPaymentMethodsActionEnum">
   <int value="0" label="Added with nickname"/>
   <int value="1" label="Added without nickname"/>
@@ -2179,1665 +2398,30 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Editor closed without changes"/>
 </enum>
 
+<enum name="AutofillPhoneImportValidity">
+  <int value="0" label="None: No phone number in import"/>
+  <int value="1" label="Valid: Phone number was imported"/>
+  <int value="2" label="Invalid: Phone number was removed before the import"/>
+</enum>
+
+<enum name="AutofillPlusAddressDelegateSuggestionContext">
+  <int value="0" label="Autofill profile filling on email field"/>
+  <int value="1" label="Autofill profile filling on non-email field"/>
+  <int value="2" label="Autocomplete"/>
+  <int value="3" label="Manual fallback"/>
+</enum>
+
 <enum name="AutofillPopupInteraction">
   <int value="0" label="The popup was shown."/>
   <int value="1" label="A suggestion was selected."/>
   <int value="2" label="A suggestion was accepted."/>
 </enum>
 
-<enum name="AutofillPredictionsComparisonResult">
-<!-- Generated from components/autofill/core/browser/field_types.h.
-Called by update_autofill_enums.py.-->
-
-  <int value="0" label="None"/>
-  <int value="1" label="NO_SERVER_DATA - Predictions equal - Value agrees"/>
-  <int value="2" label="NO_SERVER_DATA - Predictions equal - Value disagrees"/>
-  <int value="3"
-      label="NO_SERVER_DATA - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="4"
-      label="NO_SERVER_DATA - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="5"
-      label="NO_SERVER_DATA - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="6"
-      label="NO_SERVER_DATA - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="7" label="UNKNOWN_TYPE - Predictions equal - Value agrees"/>
-  <int value="8" label="UNKNOWN_TYPE - Predictions equal - Value disagrees"/>
-  <int value="9"
-      label="UNKNOWN_TYPE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="10"
-      label="UNKNOWN_TYPE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="11"
-      label="UNKNOWN_TYPE - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="12"
-      label="UNKNOWN_TYPE - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="13" label="EMPTY_TYPE - Predictions equal - Value agrees"/>
-  <int value="14" label="EMPTY_TYPE - Predictions equal - Value disagrees"/>
-  <int value="15"
-      label="EMPTY_TYPE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="16"
-      label="EMPTY_TYPE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="17"
-      label="EMPTY_TYPE - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="18"
-      label="EMPTY_TYPE - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="19" label="NAME_FIRST - Predictions equal - Value agrees"/>
-  <int value="20" label="NAME_FIRST - Predictions equal - Value disagrees"/>
-  <int value="21"
-      label="NAME_FIRST - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="22"
-      label="NAME_FIRST - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="23"
-      label="NAME_FIRST - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="24"
-      label="NAME_FIRST - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="25" label="NAME_MIDDLE - Predictions equal - Value agrees"/>
-  <int value="26" label="NAME_MIDDLE - Predictions equal - Value disagrees"/>
-  <int value="27"
-      label="NAME_MIDDLE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="28"
-      label="NAME_MIDDLE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="29"
-      label="NAME_MIDDLE - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="30"
-      label="NAME_MIDDLE - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="31" label="NAME_LAST - Predictions equal - Value agrees"/>
-  <int value="32" label="NAME_LAST - Predictions equal - Value disagrees"/>
-  <int value="33"
-      label="NAME_LAST - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="34"
-      label="NAME_LAST - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="35"
-      label="NAME_LAST - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="36"
-      label="NAME_LAST - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="37"
-      label="NAME_MIDDLE_INITIAL - Predictions equal - Value agrees"/>
-  <int value="38"
-      label="NAME_MIDDLE_INITIAL - Predictions equal - Value disagrees"/>
-  <int value="39"
-      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="40"
-      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="41"
-      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="42"
-      label="NAME_MIDDLE_INITIAL - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="43" label="NAME_FULL - Predictions equal - Value agrees"/>
-  <int value="44" label="NAME_FULL - Predictions equal - Value disagrees"/>
-  <int value="45"
-      label="NAME_FULL - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="46"
-      label="NAME_FULL - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="47"
-      label="NAME_FULL - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="48"
-      label="NAME_FULL - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="49" label="NAME_SUFFIX - Predictions equal - Value agrees"/>
-  <int value="50" label="NAME_SUFFIX - Predictions equal - Value disagrees"/>
-  <int value="51"
-      label="NAME_SUFFIX - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="52"
-      label="NAME_SUFFIX - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="53"
-      label="NAME_SUFFIX - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="54"
-      label="NAME_SUFFIX - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="55" label="EMAIL_ADDRESS - Predictions equal - Value agrees"/>
-  <int value="56" label="EMAIL_ADDRESS - Predictions equal - Value disagrees"/>
-  <int value="57"
-      label="EMAIL_ADDRESS - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="58"
-      label="EMAIL_ADDRESS - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="59"
-      label="EMAIL_ADDRESS - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="60"
-      label="EMAIL_ADDRESS - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="61" label="PHONE_HOME_NUMBER - Predictions equal - Value agrees"/>
-  <int value="62"
-      label="PHONE_HOME_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="63"
-      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="64"
-      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="65"
-      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="66"
-      label="PHONE_HOME_NUMBER - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="67"
-      label="PHONE_HOME_CITY_CODE - Predictions equal - Value agrees"/>
-  <int value="68"
-      label="PHONE_HOME_CITY_CODE - Predictions equal - Value disagrees"/>
-  <int value="69"
-      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="70"
-      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="71"
-      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="72"
-      label="PHONE_HOME_CITY_CODE - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="73"
-      label="PHONE_HOME_COUNTRY_CODE - Predictions equal - Value agrees"/>
-  <int value="74"
-      label="PHONE_HOME_COUNTRY_CODE - Predictions equal - Value disagrees"/>
-  <int value="75"
-      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="76"
-      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="77"
-      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="78"
-      label="PHONE_HOME_COUNTRY_CODE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="79"
-      label="PHONE_HOME_CITY_AND_NUMBER - Predictions equal - Value agrees"/>
-  <int value="80"
-      label="PHONE_HOME_CITY_AND_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="81"
-      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="82"
-      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="83"
-      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="84"
-      label="PHONE_HOME_CITY_AND_NUMBER - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="85"
-      label="PHONE_HOME_WHOLE_NUMBER - Predictions equal - Value agrees"/>
-  <int value="86"
-      label="PHONE_HOME_WHOLE_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="87"
-      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="88"
-      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="89"
-      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="90"
-      label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="181"
-      label="ADDRESS_HOME_LINE1 - Predictions equal - Value agrees"/>
-  <int value="182"
-      label="ADDRESS_HOME_LINE1 - Predictions equal - Value disagrees"/>
-  <int value="183"
-      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="184"
-      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="185"
-      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="186"
-      label="ADDRESS_HOME_LINE1 - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="187"
-      label="ADDRESS_HOME_LINE2 - Predictions equal - Value agrees"/>
-  <int value="188"
-      label="ADDRESS_HOME_LINE2 - Predictions equal - Value disagrees"/>
-  <int value="189"
-      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="190"
-      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="191"
-      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="192"
-      label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="193"
-      label="ADDRESS_HOME_APT_NUM - Predictions equal - Value agrees"/>
-  <int value="194"
-      label="ADDRESS_HOME_APT_NUM - Predictions equal - Value disagrees"/>
-  <int value="195"
-      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="196"
-      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="197"
-      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="198"
-      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="199"
-      label="ADDRESS_HOME_CITY - Predictions equal - Value agrees"/>
-  <int value="200"
-      label="ADDRESS_HOME_CITY - Predictions equal - Value disagrees"/>
-  <int value="201"
-      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="202"
-      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="203"
-      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="204"
-      label="ADDRESS_HOME_CITY - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="205"
-      label="ADDRESS_HOME_STATE - Predictions equal - Value agrees"/>
-  <int value="206"
-      label="ADDRESS_HOME_STATE - Predictions equal - Value disagrees"/>
-  <int value="207"
-      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="208"
-      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="209"
-      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="210"
-      label="ADDRESS_HOME_STATE - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="211" label="ADDRESS_HOME_ZIP - Predictions equal - Value agrees"/>
-  <int value="212"
-      label="ADDRESS_HOME_ZIP - Predictions equal - Value disagrees"/>
-  <int value="213"
-      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="214"
-      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="215"
-      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="216"
-      label="ADDRESS_HOME_ZIP - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="217"
-      label="ADDRESS_HOME_COUNTRY - Predictions equal - Value agrees"/>
-  <int value="218"
-      label="ADDRESS_HOME_COUNTRY - Predictions equal - Value disagrees"/>
-  <int value="219"
-      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="220"
-      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="221"
-      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="222"
-      label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="307"
-      label="CREDIT_CARD_NAME_FULL - Predictions equal - Value agrees"/>
-  <int value="308"
-      label="CREDIT_CARD_NAME_FULL - Predictions equal - Value disagrees"/>
-  <int value="309"
-      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="310"
-      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="311"
-      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="312"
-      label="CREDIT_CARD_NAME_FULL - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="313"
-      label="CREDIT_CARD_NUMBER - Predictions equal - Value agrees"/>
-  <int value="314"
-      label="CREDIT_CARD_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="315"
-      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="316"
-      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="317"
-      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="318"
-      label="CREDIT_CARD_NUMBER - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="319"
-      label="CREDIT_CARD_EXP_MONTH - Predictions equal - Value agrees"/>
-  <int value="320"
-      label="CREDIT_CARD_EXP_MONTH - Predictions equal - Value disagrees"/>
-  <int value="321"
-      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="322"
-      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="323"
-      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="324"
-      label="CREDIT_CARD_EXP_MONTH - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="325"
-      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions equal - Value agrees"/>
-  <int value="326"
-      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions equal - Value
-             disagrees"/>
-  <int value="327"
-      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="328"
-      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="329"
-      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="330"
-      label="CREDIT_CARD_EXP_2_DIGIT_YEAR - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="331"
-      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions equal - Value agrees"/>
-  <int value="332"
-      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions equal - Value
-             disagrees"/>
-  <int value="333"
-      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="334"
-      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="335"
-      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="336"
-      label="CREDIT_CARD_EXP_4_DIGIT_YEAR - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="337"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions equal - Value
-             agrees"/>
-  <int value="338"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions equal - Value
-             disagrees"/>
-  <int value="339"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
-             Value agrees with old prediction"/>
-  <int value="340"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
-             Value agrees with new prediction"/>
-  <int value="341"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
-             Value agrees with neither prediction"/>
-  <int value="342"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR - Predictions different -
-             Value agrees with both predictions"/>
-  <int value="343"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions equal - Value
-             agrees"/>
-  <int value="344"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions equal - Value
-             disagrees"/>
-  <int value="345"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
-             Value agrees with old prediction"/>
-  <int value="346"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
-             Value agrees with new prediction"/>
-  <int value="347"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
-             Value agrees with neither prediction"/>
-  <int value="348"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR - Predictions different -
-             Value agrees with both predictions"/>
-  <int value="349" label="CREDIT_CARD_TYPE - Predictions equal - Value agrees"/>
-  <int value="350"
-      label="CREDIT_CARD_TYPE - Predictions equal - Value disagrees"/>
-  <int value="351"
-      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="352"
-      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="353"
-      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="354"
-      label="CREDIT_CARD_TYPE - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="355"
-      label="CREDIT_CARD_VERIFICATION_CODE - Predictions equal - Value agrees"/>
-  <int value="356"
-      label="CREDIT_CARD_VERIFICATION_CODE - Predictions equal - Value
-             disagrees"/>
-  <int value="357"
-      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="358"
-      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="359"
-      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="360"
-      label="CREDIT_CARD_VERIFICATION_CODE - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="361" label="COMPANY_NAME - Predictions equal - Value agrees"/>
-  <int value="362" label="COMPANY_NAME - Predictions equal - Value disagrees"/>
-  <int value="363"
-      label="COMPANY_NAME - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="364"
-      label="COMPANY_NAME - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="365"
-      label="COMPANY_NAME - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="366"
-      label="COMPANY_NAME - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="367"
-      label="FIELD_WITH_DEFAULT_VALUE - Predictions equal - Value agrees"/>
-  <int value="368"
-      label="FIELD_WITH_DEFAULT_VALUE - Predictions equal - Value disagrees"/>
-  <int value="369"
-      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="370"
-      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="371"
-      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="372"
-      label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="439"
-      label="MERCHANT_EMAIL_SIGNUP - Predictions equal - Value agrees"/>
-  <int value="440"
-      label="MERCHANT_EMAIL_SIGNUP - Predictions equal - Value disagrees"/>
-  <int value="441"
-      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="442"
-      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="443"
-      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="444"
-      label="MERCHANT_EMAIL_SIGNUP - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="445"
-      label="MERCHANT_PROMO_CODE - Predictions equal - Value agrees"/>
-  <int value="446"
-      label="MERCHANT_PROMO_CODE - Predictions equal - Value disagrees"/>
-  <int value="447"
-      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="448"
-      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="449"
-      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="450"
-      label="MERCHANT_PROMO_CODE - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="451" label="PASSWORD - Predictions equal - Value agrees"/>
-  <int value="452" label="PASSWORD - Predictions equal - Value disagrees"/>
-  <int value="453"
-      label="PASSWORD - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="454"
-      label="PASSWORD - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="455"
-      label="PASSWORD - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="456"
-      label="PASSWORD - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="457"
-      label="ACCOUNT_CREATION_PASSWORD - Predictions equal - Value agrees"/>
-  <int value="458"
-      label="ACCOUNT_CREATION_PASSWORD - Predictions equal - Value disagrees"/>
-  <int value="459"
-      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="460"
-      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="461"
-      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="462"
-      label="ACCOUNT_CREATION_PASSWORD - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="463"
-      label="ADDRESS_HOME_STREET_ADDRESS - Predictions equal - Value agrees"/>
-  <int value="464"
-      label="ADDRESS_HOME_STREET_ADDRESS - Predictions equal - Value
-             disagrees"/>
-  <int value="465"
-      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="466"
-      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="467"
-      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="468"
-      label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="475"
-      label="ADDRESS_HOME_SORTING_CODE - Predictions equal - Value agrees"/>
-  <int value="476"
-      label="ADDRESS_HOME_SORTING_CODE - Predictions equal - Value disagrees"/>
-  <int value="477"
-      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="478"
-      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="479"
-      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="480"
-      label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="487"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions equal - Value
-             agrees"/>
-  <int value="488"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions equal - Value
-             disagrees"/>
-  <int value="489"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="490"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="491"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="492"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="499"
-      label="ADDRESS_HOME_LINE3 - Predictions equal - Value agrees"/>
-  <int value="500"
-      label="ADDRESS_HOME_LINE3 - Predictions equal - Value disagrees"/>
-  <int value="501"
-      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="502"
-      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="503"
-      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="504"
-      label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="511"
-      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value agrees"/>
-  <int value="512"
-      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value
-             disagrees"/>
-  <int value="513"
-      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="514"
-      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="515"
-      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="516"
-      label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="517" label="USERNAME - Predictions equal - Value agrees"/>
-  <int value="518" label="USERNAME - Predictions equal - Value disagrees"/>
-  <int value="519"
-      label="USERNAME - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="520"
-      label="USERNAME - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="521"
-      label="USERNAME - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="522"
-      label="USERNAME - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="523"
-      label="USERNAME_AND_EMAIL_ADDRESS - Predictions equal - Value agrees"/>
-  <int value="524"
-      label="USERNAME_AND_EMAIL_ADDRESS - Predictions equal - Value disagrees"/>
-  <int value="525"
-      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="526"
-      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="527"
-      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="528"
-      label="USERNAME_AND_EMAIL_ADDRESS - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="529" label="NEW_PASSWORD - Predictions equal - Value agrees"/>
-  <int value="530" label="NEW_PASSWORD - Predictions equal - Value disagrees"/>
-  <int value="531"
-      label="NEW_PASSWORD - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="532"
-      label="NEW_PASSWORD - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="533"
-      label="NEW_PASSWORD - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="534"
-      label="NEW_PASSWORD - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="535"
-      label="PROBABLY_NEW_PASSWORD - Predictions equal - Value agrees"/>
-  <int value="536"
-      label="PROBABLY_NEW_PASSWORD - Predictions equal - Value disagrees"/>
-  <int value="537"
-      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="538"
-      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="539"
-      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="540"
-      label="PROBABLY_NEW_PASSWORD - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="541" label="NOT_NEW_PASSWORD - Predictions equal - Value agrees"/>
-  <int value="542"
-      label="NOT_NEW_PASSWORD - Predictions equal - Value disagrees"/>
-  <int value="543"
-      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="544"
-      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="545"
-      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="546"
-      label="NOT_NEW_PASSWORD - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="547"
-      label="CREDIT_CARD_NAME_FIRST - Predictions equal - Value agrees"/>
-  <int value="548"
-      label="CREDIT_CARD_NAME_FIRST - Predictions equal - Value disagrees"/>
-  <int value="549"
-      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="550"
-      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="551"
-      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="552"
-      label="CREDIT_CARD_NAME_FIRST - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="553"
-      label="CREDIT_CARD_NAME_LAST - Predictions equal - Value agrees"/>
-  <int value="554"
-      label="CREDIT_CARD_NAME_LAST - Predictions equal - Value disagrees"/>
-  <int value="555"
-      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="556"
-      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="557"
-      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="558"
-      label="CREDIT_CARD_NAME_LAST - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="559"
-      label="PHONE_HOME_EXTENSION - Predictions equal - Value agrees"/>
-  <int value="560"
-      label="PHONE_HOME_EXTENSION - Predictions equal - Value disagrees"/>
-  <int value="561"
-      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="562"
-      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="563"
-      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="564"
-      label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="571"
-      label="CONFIRMATION_PASSWORD - Predictions equal - Value agrees"/>
-  <int value="572"
-      label="CONFIRMATION_PASSWORD - Predictions equal - Value disagrees"/>
-  <int value="573"
-      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="574"
-      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="575"
-      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="576"
-      label="CONFIRMATION_PASSWORD - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="577" label="AMBIGUOUS_TYPE - Predictions equal - Value agrees"/>
-  <int value="578"
-      label="AMBIGUOUS_TYPE - Predictions equal - Value disagrees"/>
-  <int value="579"
-      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="580"
-      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="581"
-      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="582"
-      label="AMBIGUOUS_TYPE - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="583" label="SEARCH_TERM - Predictions equal - Value agrees"/>
-  <int value="584" label="SEARCH_TERM - Predictions equal - Value disagrees"/>
-  <int value="585"
-      label="SEARCH_TERM - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="586"
-      label="SEARCH_TERM - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="587"
-      label="SEARCH_TERM - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="588"
-      label="SEARCH_TERM - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="589" label="PRICE - Predictions equal - Value agrees"/>
-  <int value="590" label="PRICE - Predictions equal - Value disagrees"/>
-  <int value="591"
-      label="PRICE - Predictions different - Value agrees with old prediction"/>
-  <int value="592"
-      label="PRICE - Predictions different - Value agrees with new prediction"/>
-  <int value="593"
-      label="PRICE - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="594"
-      label="PRICE - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="595" label="NOT_PASSWORD - Predictions equal - Value agrees"/>
-  <int value="596" label="NOT_PASSWORD - Predictions equal - Value disagrees"/>
-  <int value="597"
-      label="NOT_PASSWORD - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="598"
-      label="NOT_PASSWORD - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="599"
-      label="NOT_PASSWORD - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="600"
-      label="NOT_PASSWORD - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="601" label="SINGLE_USERNAME - Predictions equal - Value agrees"/>
-  <int value="602"
-      label="SINGLE_USERNAME - Predictions equal - Value disagrees"/>
-  <int value="603"
-      label="SINGLE_USERNAME - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="604"
-      label="SINGLE_USERNAME - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="605"
-      label="SINGLE_USERNAME - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="606"
-      label="SINGLE_USERNAME - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="607" label="NOT_USERNAME - Predictions equal - Value agrees"/>
-  <int value="608" label="NOT_USERNAME - Predictions equal - Value disagrees"/>
-  <int value="609"
-      label="NOT_USERNAME - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="610"
-      label="NOT_USERNAME - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="611"
-      label="NOT_USERNAME - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="612"
-      label="NOT_USERNAME - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="613" label="UPI_VPA - Predictions equal - Value agrees"/>
-  <int value="614" label="UPI_VPA - Predictions equal - Value disagrees"/>
-  <int value="615"
-      label="UPI_VPA - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="616"
-      label="UPI_VPA - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="617"
-      label="UPI_VPA - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="618"
-      label="UPI_VPA - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="619"
-      label="ADDRESS_HOME_STREET_NAME - Predictions equal - Value agrees"/>
-  <int value="620"
-      label="ADDRESS_HOME_STREET_NAME - Predictions equal - Value disagrees"/>
-  <int value="621"
-      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="622"
-      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="623"
-      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="624"
-      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="625"
-      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions equal - Value agrees"/>
-  <int value="626"
-      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="627"
-      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="628"
-      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="629"
-      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="630"
-      label="ADDRESS_HOME_HOUSE_NUMBER - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="631"
-      label="ADDRESS_HOME_SUBPREMISE - Predictions equal - Value agrees"/>
-  <int value="632"
-      label="ADDRESS_HOME_SUBPREMISE - Predictions equal - Value disagrees"/>
-  <int value="633"
-      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="634"
-      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="635"
-      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="636"
-      label="ADDRESS_HOME_SUBPREMISE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="637"
-      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions equal - Value agrees"/>
-  <int value="638"
-      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions equal - Value disagrees"/>
-  <int value="639"
-      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="640"
-      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="641"
-      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="642"
-      label="ADDRESS_HOME_OTHER_SUBUNIT - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="643" label="NAME_LAST_FIRST - Predictions equal - Value agrees"/>
-  <int value="644"
-      label="NAME_LAST_FIRST - Predictions equal - Value disagrees"/>
-  <int value="645"
-      label="NAME_LAST_FIRST - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="646"
-      label="NAME_LAST_FIRST - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="647"
-      label="NAME_LAST_FIRST - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="648"
-      label="NAME_LAST_FIRST - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="649"
-      label="NAME_LAST_CONJUNCTION - Predictions equal - Value agrees"/>
-  <int value="650"
-      label="NAME_LAST_CONJUNCTION - Predictions equal - Value disagrees"/>
-  <int value="651"
-      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="652"
-      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="653"
-      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="654"
-      label="NAME_LAST_CONJUNCTION - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="655" label="NAME_LAST_SECOND - Predictions equal - Value agrees"/>
-  <int value="656"
-      label="NAME_LAST_SECOND - Predictions equal - Value disagrees"/>
-  <int value="657"
-      label="NAME_LAST_SECOND - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="658"
-      label="NAME_LAST_SECOND - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="659"
-      label="NAME_LAST_SECOND - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="660"
-      label="NAME_LAST_SECOND - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="661"
-      label="NAME_HONORIFIC_PREFIX - Predictions equal - Value agrees"/>
-  <int value="662"
-      label="NAME_HONORIFIC_PREFIX - Predictions equal - Value disagrees"/>
-  <int value="663"
-      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="664"
-      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="665"
-      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="666"
-      label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="685"
-      label="ADDRESS_HOME_ADDRESS - Predictions equal - Value agrees"/>
-  <int value="686"
-      label="ADDRESS_HOME_ADDRESS - Predictions equal - Value disagrees"/>
-  <int value="687"
-      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="688"
-      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="689"
-      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="690"
-      label="ADDRESS_HOME_ADDRESS - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="691"
-      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions equal - Value
-             agrees"/>
-  <int value="692"
-      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions equal - Value
-             disagrees"/>
-  <int value="693"
-      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="694"
-      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="695"
-      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="696"
-      label="ADDRESS_HOME_ADDRESS_WITH_NAME - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="697"
-      label="ADDRESS_HOME_FLOOR - Predictions equal - Value agrees"/>
-  <int value="698"
-      label="ADDRESS_HOME_FLOOR - Predictions equal - Value disagrees"/>
-  <int value="699"
-      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="700"
-      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="701"
-      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="702"
-      label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="709" label="BIRTHDATE_DAY - Predictions equal - Value agrees"/>
-  <int value="710" label="BIRTHDATE_DAY - Predictions equal - Value disagrees"/>
-  <int value="711"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="712"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="713"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="714"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="715" label="BIRTHDATE_MONTH - Predictions equal - Value agrees"/>
-  <int value="716"
-      label="BIRTHDATE_MONTH - Predictions equal - Value disagrees"/>
-  <int value="717"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="718"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="719"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="720"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="721"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value agrees"/>
-  <int value="722"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value disagrees"/>
-  <int value="723"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="724"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="725"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="726"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="727"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions equal -
-             Value agrees"/>
-  <int value="728"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions equal -
-             Value disagrees"/>
-  <int value="729"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
-             Value agrees with old prediction"/>
-  <int value="730"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
-             Value agrees with new prediction"/>
-  <int value="731"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
-             Value agrees with neither prediction"/>
-  <int value="732"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions different -
-             Value agrees with both predictions"/>
-  <int value="733"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
-             equal - Value agrees"/>
-  <int value="734"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
-             equal - Value disagrees"/>
-  <int value="735"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
-             different - Value agrees with old prediction"/>
-  <int value="736"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
-             different - Value agrees with new prediction"/>
-  <int value="737"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
-             different - Value agrees with neither prediction"/>
-  <int value="738"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
-             different - Value agrees with both predictions"/>
-  <int value="739"
-      label="PHONE_HOME_NUMBER_PREFIX - Predictions equal - Value agrees"/>
-  <int value="740"
-      label="PHONE_HOME_NUMBER_PREFIX - Predictions equal - Value disagrees"/>
-  <int value="741"
-      label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="742"
-      label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="743"
-      label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="744"
-      label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="745"
-      label="PHONE_HOME_NUMBER_SUFFIX - Predictions equal - Value agrees"/>
-  <int value="746"
-      label="PHONE_HOME_NUMBER_SUFFIX - Predictions equal - Value disagrees"/>
-  <int value="747"
-      label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="748"
-      label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="749"
-      label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="750"
-      label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="751" label="IBAN_VALUE - Predictions equal - Value agrees"/>
-  <int value="752" label="IBAN_VALUE - Predictions equal - Value disagrees"/>
-  <int value="753"
-      label="IBAN_VALUE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="754"
-      label="IBAN_VALUE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="755"
-      label="IBAN_VALUE - Predictions different - Value agrees with neither
-             prediction"/>
-  <int value="756"
-      label="IBAN_VALUE - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="757"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE - Predictions equal -
-             Value agrees"/>
-  <int value="758"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE - Predictions equal -
-             Value disagrees"/>
-  <int value="759"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE - Predictions different
-             - Value agrees with old prediction"/>
-  <int value="760"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE - Predictions different
-             - Value agrees with new prediction"/>
-  <int value="761"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE - Predictions different
-             - Value agrees with neither prediction"/>
-  <int value="762"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE - Predictions different
-             - Value agrees with both predictions"/>
-  <int value="769" label="NUMERIC_QUANTITY - Predictions equal - Value agrees"/>
-  <int value="770"
-      label="NUMERIC_QUANTITY - Predictions equal - Value disagrees"/>
-  <int value="771"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="772"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="773"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="774"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="775" label="ONE_TIME_CODE - Predictions equal - Value agrees"/>
-  <int value="776" label="ONE_TIME_CODE - Predictions equal - Value disagrees"/>
-  <int value="777"
-      label="ONE_TIME_CODE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="778"
-      label="ONE_TIME_CODE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="779"
-      label="ONE_TIME_CODE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="780"
-      label="ONE_TIME_CODE - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="799"
-      label="DELIVERY_INSTRUCTIONS - Predictions equal - Value agrees"/>
-  <int value="800"
-      label="DELIVERY_INSTRUCTIONS - Predictions equal - Value disagrees"/>
-  <int value="801"
-      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="802"
-      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="803"
-      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="804"
-      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="811"
-      label="ADDRESS_HOME_OVERFLOW - Predictions equal - Value agrees"/>
-  <int value="812"
-      label="ADDRESS_HOME_OVERFLOW - Predictions equal - Value disagrees"/>
-  <int value="813"
-      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="814"
-      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="815"
-      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="816"
-      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="817"
-      label="ADDRESS_HOME_LANDMARK - Predictions equal - Value agrees"/>
-  <int value="818"
-      label="ADDRESS_HOME_LANDMARK - Predictions equal - Value disagrees"/>
-  <int value="819"
-      label="ADDRESS_HOME_LANDMARK - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="820"
-      label="ADDRESS_HOME_LANDMARK - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="821"
-      label="ADDRESS_HOME_LANDMARK - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="822"
-      label="ADDRESS_HOME_LANDMARK - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="841"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK - Predictions equal - Value
-             agrees"/>
-  <int value="842"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK - Predictions equal - Value
-             disagrees"/>
-  <int value="843"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK - Predictions different -
-             Value agrees with old prediction"/>
-  <int value="844"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK - Predictions different -
-             Value agrees with new prediction"/>
-  <int value="845"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK - Predictions different -
-             Value agrees with neither prediction"/>
-  <int value="846"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK - Predictions different -
-             Value agrees with both predictions"/>
-  <int value="847"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions equal - Value agrees"/>
-  <int value="848"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions equal - Value disagrees"/>
-  <int value="849"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="850"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="851"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="852"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="853"
-      label="ADDRESS_HOME_STREET_LOCATION - Predictions equal - Value agrees"/>
-  <int value="854"
-      label="ADDRESS_HOME_STREET_LOCATION - Predictions equal - Value
-             disagrees"/>
-  <int value="855"
-      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="856"
-      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="857"
-      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="858"
-      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="859"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions equal - Value agrees"/>
-  <int value="860"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions equal - Value
-             disagrees"/>
-  <int value="861"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="862"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="863"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="864"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="865"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK - Predictions equal -
-             Value agrees"/>
-  <int value="866"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK - Predictions equal -
-             Value disagrees"/>
-  <int value="867"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK - Predictions different
-             - Value agrees with old prediction"/>
-  <int value="868"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK - Predictions different
-             - Value agrees with new prediction"/>
-  <int value="869"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK - Predictions different
-             - Value agrees with neither prediction"/>
-  <int value="870"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK - Predictions different
-             - Value agrees with both predictions"/>
-  <int value="871"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions equal -
-             Value agrees"/>
-  <int value="872"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions equal -
-             Value disagrees"/>
-  <int value="873"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
-             different - Value agrees with old prediction"/>
-  <int value="874"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
-             different - Value agrees with new prediction"/>
-  <int value="875"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
-             different - Value agrees with neither prediction"/>
-  <int value="876"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY - Predictions
-             different - Value agrees with both predictions"/>
-  <int value="877"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions equal -
-             Value agrees"/>
-  <int value="878"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions equal -
-             Value disagrees"/>
-  <int value="879"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
-             different - Value agrees with old prediction"/>
-  <int value="880"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
-             different - Value agrees with new prediction"/>
-  <int value="881"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
-             different - Value agrees with neither prediction"/>
-  <int value="882"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK - Predictions
-             different - Value agrees with both predictions"/>
-  <int value="901"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions equal
-             - Value agrees"/>
-  <int value="902"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions equal
-             - Value disagrees"/>
-  <int value="903"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
-             different - Value agrees with old prediction"/>
-  <int value="904"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
-             different - Value agrees with new prediction"/>
-  <int value="905"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
-             different - Value agrees with neither prediction"/>
-  <int value="906"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK - Predictions
-             different - Value agrees with both predictions"/>
-  <int value="907"
-      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions equal - Value
-             agrees"/>
-  <int value="908"
-      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions equal - Value
-             disagrees"/>
-  <int value="909"
-      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="910"
-      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="911"
-      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="912"
-      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="913"
-      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions equal - Value
-             agrees"/>
-  <int value="914"
-      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions equal - Value
-             disagrees"/>
-  <int value="915"
-      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="916"
-      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="917"
-      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="918"
-      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="919"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions equal - Value
-             agrees"/>
-  <int value="920"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions equal - Value
-             disagrees"/>
-  <int value="921"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
-             Value agrees with old prediction"/>
-  <int value="922"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
-             Value agrees with new prediction"/>
-  <int value="923"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
-             Value agrees with neither prediction"/>
-  <int value="924"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
-             Value agrees with both predictions"/>
-  <int value="925"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions equal - Value
-             agrees"/>
-  <int value="926"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions equal - Value
-             disagrees"/>
-  <int value="927"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="928"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="929"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="930"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="937" label="ADDRESS_HOME_APT - Predictions equal - Value agrees"/>
-  <int value="938"
-      label="ADDRESS_HOME_APT - Predictions equal - Value disagrees"/>
-  <int value="939"
-      label="ADDRESS_HOME_APT - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="940"
-      label="ADDRESS_HOME_APT - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="941"
-      label="ADDRESS_HOME_APT - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="942"
-      label="ADDRESS_HOME_APT - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="943"
-      label="ADDRESS_HOME_APT_TYPE - Predictions equal - Value agrees"/>
-  <int value="944"
-      label="ADDRESS_HOME_APT_TYPE - Predictions equal - Value disagrees"/>
-  <int value="945"
-      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="946"
-      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="947"
-      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="948"
-      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="961"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions equal -
-             Value agrees"/>
-  <int value="962"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions equal -
-             Value disagrees"/>
-  <int value="963"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
-             - Value agrees with old prediction"/>
-  <int value="964"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
-             - Value agrees with new prediction"/>
-  <int value="965"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
-             - Value agrees with neither prediction"/>
-  <int value="966"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
-             - Value agrees with both predictions"/>
-  <int value="973"
-      label="IMPROVED_PREDICTION - Predictions equal - Value agrees"/>
-  <int value="974"
-      label="IMPROVED_PREDICTION - Predictions equal - Value disagrees"/>
-  <int value="975"
-      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="976"
-      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="977"
-      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="978"
-      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="979"
-      label="ALTERNATIVE_FULL_NAME - Predictions equal - Value agrees"/>
-  <int value="980"
-      label="ALTERNATIVE_FULL_NAME - Predictions equal - Value disagrees"/>
-  <int value="981"
-      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="982"
-      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="983"
-      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="984"
-      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="985"
-      label="ALTERNATIVE_GIVEN_NAME - Predictions equal - Value agrees"/>
-  <int value="986"
-      label="ALTERNATIVE_GIVEN_NAME - Predictions equal - Value disagrees"/>
-  <int value="987"
-      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="988"
-      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="989"
-      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="990"
-      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="991"
-      label="ALTERNATIVE_FAMILY_NAME - Predictions equal - Value agrees"/>
-  <int value="992"
-      label="ALTERNATIVE_FAMILY_NAME - Predictions equal - Value disagrees"/>
-  <int value="993"
-      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="994"
-      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="995"
-      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="996"
-      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="997" label="NAME_LAST_PREFIX - Predictions equal - Value agrees"/>
-  <int value="998"
-      label="NAME_LAST_PREFIX - Predictions equal - Value disagrees"/>
-  <int value="999"
-      label="NAME_LAST_PREFIX - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="1000"
-      label="NAME_LAST_PREFIX - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="1001"
-      label="NAME_LAST_PREFIX - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="1002"
-      label="NAME_LAST_PREFIX - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="1003" label="NAME_LAST_CORE - Predictions equal - Value agrees"/>
-  <int value="1004"
-      label="NAME_LAST_CORE - Predictions equal - Value disagrees"/>
-  <int value="1005"
-      label="NAME_LAST_CORE - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="1006"
-      label="NAME_LAST_CORE - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="1007"
-      label="NAME_LAST_CORE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="1008"
-      label="NAME_LAST_CORE - Predictions different - Value agrees with both
-             predictions"/>
+<enum name="AutofillPredictionSource">
+  <int value="0" label="PREDICTION_SOURCE_UNKNOWN"/>
+  <int value="1" label="PREDICTION_SOURCE_HEURISTIC"/>
+  <int value="2" label="PREDICTION_SOURCE_SERVER"/>
+  <int value="3" label="PREDICTION_SOURCE_OVERALL"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -3847,283 +2431,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Extension"/>
   <int value="4" label="Custodian"/>
   <int value="5" label="Admin Policy"/>
-</enum>
-
-<enum name="AutofillPreFilledFieldClassifications">
-  <int value="0" label="Had placeholder classification"/>
-  <int value="1" label="No placeholder classification"/>
-</enum>
-
-<enum name="AutofillPreFilledFieldClassificationsQuality">
-  <int value="0" label="Placeholder, value not changed"/>
-  <int value="1" label="Placeholder, value changed"/>
-  <int value="2" label="Meaningfully pre-filled, value not changed"/>
-  <int value="3" label="Meaningfully pre-filled, value changed"/>
-</enum>
-
-<enum name="AutofillPreFilledFieldStatus">
-  <int value="0" label="Pre-filled on page load"/>
-  <int value="1" label="Empty on page load"/>
-</enum>
-
-<enum name="AutofillPreFilledFieldStatusByFieldType">
-<!-- Generated from components/autofill/core/browser/field_types.h.
-Called by update_autofill_enums.py.-->
-
-  <int value="0" label="NO_SERVER_DATA: Pre-filled on page load"/>
-  <int value="1" label="NO_SERVER_DATA: Empty on page load"/>
-  <int value="16" label="UNKNOWN_TYPE: Pre-filled on page load"/>
-  <int value="17" label="UNKNOWN_TYPE: Empty on page load"/>
-  <int value="32" label="EMPTY_TYPE: Pre-filled on page load"/>
-  <int value="33" label="EMPTY_TYPE: Empty on page load"/>
-  <int value="48" label="NAME_FIRST: Pre-filled on page load"/>
-  <int value="49" label="NAME_FIRST: Empty on page load"/>
-  <int value="64" label="NAME_MIDDLE: Pre-filled on page load"/>
-  <int value="65" label="NAME_MIDDLE: Empty on page load"/>
-  <int value="80" label="NAME_LAST: Pre-filled on page load"/>
-  <int value="81" label="NAME_LAST: Empty on page load"/>
-  <int value="96" label="NAME_MIDDLE_INITIAL: Pre-filled on page load"/>
-  <int value="97" label="NAME_MIDDLE_INITIAL: Empty on page load"/>
-  <int value="112" label="NAME_FULL: Pre-filled on page load"/>
-  <int value="113" label="NAME_FULL: Empty on page load"/>
-  <int value="128" label="NAME_SUFFIX: Pre-filled on page load"/>
-  <int value="129" label="NAME_SUFFIX: Empty on page load"/>
-  <int value="144" label="EMAIL_ADDRESS: Pre-filled on page load"/>
-  <int value="145" label="EMAIL_ADDRESS: Empty on page load"/>
-  <int value="160" label="PHONE_HOME_NUMBER: Pre-filled on page load"/>
-  <int value="161" label="PHONE_HOME_NUMBER: Empty on page load"/>
-  <int value="176" label="PHONE_HOME_CITY_CODE: Pre-filled on page load"/>
-  <int value="177" label="PHONE_HOME_CITY_CODE: Empty on page load"/>
-  <int value="192" label="PHONE_HOME_COUNTRY_CODE: Pre-filled on page load"/>
-  <int value="193" label="PHONE_HOME_COUNTRY_CODE: Empty on page load"/>
-  <int value="208" label="PHONE_HOME_CITY_AND_NUMBER: Pre-filled on page load"/>
-  <int value="209" label="PHONE_HOME_CITY_AND_NUMBER: Empty on page load"/>
-  <int value="224" label="PHONE_HOME_WHOLE_NUMBER: Pre-filled on page load"/>
-  <int value="225" label="PHONE_HOME_WHOLE_NUMBER: Empty on page load"/>
-  <int value="480" label="ADDRESS_HOME_LINE1: Pre-filled on page load"/>
-  <int value="481" label="ADDRESS_HOME_LINE1: Empty on page load"/>
-  <int value="496" label="ADDRESS_HOME_LINE2: Pre-filled on page load"/>
-  <int value="497" label="ADDRESS_HOME_LINE2: Empty on page load"/>
-  <int value="512" label="ADDRESS_HOME_APT_NUM: Pre-filled on page load"/>
-  <int value="513" label="ADDRESS_HOME_APT_NUM: Empty on page load"/>
-  <int value="528" label="ADDRESS_HOME_CITY: Pre-filled on page load"/>
-  <int value="529" label="ADDRESS_HOME_CITY: Empty on page load"/>
-  <int value="544" label="ADDRESS_HOME_STATE: Pre-filled on page load"/>
-  <int value="545" label="ADDRESS_HOME_STATE: Empty on page load"/>
-  <int value="560" label="ADDRESS_HOME_ZIP: Pre-filled on page load"/>
-  <int value="561" label="ADDRESS_HOME_ZIP: Empty on page load"/>
-  <int value="576" label="ADDRESS_HOME_COUNTRY: Pre-filled on page load"/>
-  <int value="577" label="ADDRESS_HOME_COUNTRY: Empty on page load"/>
-  <int value="816" label="CREDIT_CARD_NAME_FULL: Pre-filled on page load"/>
-  <int value="817" label="CREDIT_CARD_NAME_FULL: Empty on page load"/>
-  <int value="832" label="CREDIT_CARD_NUMBER: Pre-filled on page load"/>
-  <int value="833" label="CREDIT_CARD_NUMBER: Empty on page load"/>
-  <int value="848" label="CREDIT_CARD_EXP_MONTH: Pre-filled on page load"/>
-  <int value="849" label="CREDIT_CARD_EXP_MONTH: Empty on page load"/>
-  <int value="864"
-      label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Pre-filled on page load"/>
-  <int value="865" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Empty on page load"/>
-  <int value="880"
-      label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Pre-filled on page load"/>
-  <int value="881" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Empty on page load"/>
-  <int value="896"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Pre-filled on page load"/>
-  <int value="897"
-      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Empty on page load"/>
-  <int value="912"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Pre-filled on page load"/>
-  <int value="913"
-      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Empty on page load"/>
-  <int value="928" label="CREDIT_CARD_TYPE: Pre-filled on page load"/>
-  <int value="929" label="CREDIT_CARD_TYPE: Empty on page load"/>
-  <int value="944"
-      label="CREDIT_CARD_VERIFICATION_CODE: Pre-filled on page load"/>
-  <int value="945" label="CREDIT_CARD_VERIFICATION_CODE: Empty on page load"/>
-  <int value="960" label="COMPANY_NAME: Pre-filled on page load"/>
-  <int value="961" label="COMPANY_NAME: Empty on page load"/>
-  <int value="976" label="FIELD_WITH_DEFAULT_VALUE: Pre-filled on page load"/>
-  <int value="977" label="FIELD_WITH_DEFAULT_VALUE: Empty on page load"/>
-  <int value="1168" label="MERCHANT_EMAIL_SIGNUP: Pre-filled on page load"/>
-  <int value="1169" label="MERCHANT_EMAIL_SIGNUP: Empty on page load"/>
-  <int value="1184" label="MERCHANT_PROMO_CODE: Pre-filled on page load"/>
-  <int value="1185" label="MERCHANT_PROMO_CODE: Empty on page load"/>
-  <int value="1200" label="PASSWORD: Pre-filled on page load"/>
-  <int value="1201" label="PASSWORD: Empty on page load"/>
-  <int value="1216" label="ACCOUNT_CREATION_PASSWORD: Pre-filled on page load"/>
-  <int value="1217" label="ACCOUNT_CREATION_PASSWORD: Empty on page load"/>
-  <int value="1232"
-      label="ADDRESS_HOME_STREET_ADDRESS: Pre-filled on page load"/>
-  <int value="1233" label="ADDRESS_HOME_STREET_ADDRESS: Empty on page load"/>
-  <int value="1264" label="ADDRESS_HOME_SORTING_CODE: Pre-filled on page load"/>
-  <int value="1265" label="ADDRESS_HOME_SORTING_CODE: Empty on page load"/>
-  <int value="1296"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Pre-filled on page load"/>
-  <int value="1297"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Empty on page load"/>
-  <int value="1328" label="ADDRESS_HOME_LINE3: Pre-filled on page load"/>
-  <int value="1329" label="ADDRESS_HOME_LINE3: Empty on page load"/>
-  <int value="1360"
-      label="NOT_ACCOUNT_CREATION_PASSWORD: Pre-filled on page load"/>
-  <int value="1361" label="NOT_ACCOUNT_CREATION_PASSWORD: Empty on page load"/>
-  <int value="1376" label="USERNAME: Pre-filled on page load"/>
-  <int value="1377" label="USERNAME: Empty on page load"/>
-  <int value="1392"
-      label="USERNAME_AND_EMAIL_ADDRESS: Pre-filled on page load"/>
-  <int value="1393" label="USERNAME_AND_EMAIL_ADDRESS: Empty on page load"/>
-  <int value="1408" label="NEW_PASSWORD: Pre-filled on page load"/>
-  <int value="1409" label="NEW_PASSWORD: Empty on page load"/>
-  <int value="1424" label="PROBABLY_NEW_PASSWORD: Pre-filled on page load"/>
-  <int value="1425" label="PROBABLY_NEW_PASSWORD: Empty on page load"/>
-  <int value="1440" label="NOT_NEW_PASSWORD: Pre-filled on page load"/>
-  <int value="1441" label="NOT_NEW_PASSWORD: Empty on page load"/>
-  <int value="1456" label="CREDIT_CARD_NAME_FIRST: Pre-filled on page load"/>
-  <int value="1457" label="CREDIT_CARD_NAME_FIRST: Empty on page load"/>
-  <int value="1472" label="CREDIT_CARD_NAME_LAST: Pre-filled on page load"/>
-  <int value="1473" label="CREDIT_CARD_NAME_LAST: Empty on page load"/>
-  <int value="1488" label="PHONE_HOME_EXTENSION: Pre-filled on page load"/>
-  <int value="1489" label="PHONE_HOME_EXTENSION: Empty on page load"/>
-  <int value="1520" label="CONFIRMATION_PASSWORD: Pre-filled on page load"/>
-  <int value="1521" label="CONFIRMATION_PASSWORD: Empty on page load"/>
-  <int value="1536" label="AMBIGUOUS_TYPE: Pre-filled on page load"/>
-  <int value="1537" label="AMBIGUOUS_TYPE: Empty on page load"/>
-  <int value="1552" label="SEARCH_TERM: Pre-filled on page load"/>
-  <int value="1553" label="SEARCH_TERM: Empty on page load"/>
-  <int value="1568" label="PRICE: Pre-filled on page load"/>
-  <int value="1569" label="PRICE: Empty on page load"/>
-  <int value="1584" label="NOT_PASSWORD: Pre-filled on page load"/>
-  <int value="1585" label="NOT_PASSWORD: Empty on page load"/>
-  <int value="1600" label="SINGLE_USERNAME: Pre-filled on page load"/>
-  <int value="1601" label="SINGLE_USERNAME: Empty on page load"/>
-  <int value="1616" label="NOT_USERNAME: Pre-filled on page load"/>
-  <int value="1617" label="NOT_USERNAME: Empty on page load"/>
-  <int value="1648" label="ADDRESS_HOME_STREET_NAME: Pre-filled on page load"/>
-  <int value="1649" label="ADDRESS_HOME_STREET_NAME: Empty on page load"/>
-  <int value="1664" label="ADDRESS_HOME_HOUSE_NUMBER: Pre-filled on page load"/>
-  <int value="1665" label="ADDRESS_HOME_HOUSE_NUMBER: Empty on page load"/>
-  <int value="1680" label="ADDRESS_HOME_SUBPREMISE: Pre-filled on page load"/>
-  <int value="1681" label="ADDRESS_HOME_SUBPREMISE: Empty on page load"/>
-  <int value="1696"
-      label="ADDRESS_HOME_OTHER_SUBUNIT: Pre-filled on page load"/>
-  <int value="1697" label="ADDRESS_HOME_OTHER_SUBUNIT: Empty on page load"/>
-  <int value="1712" label="NAME_LAST_FIRST: Pre-filled on page load"/>
-  <int value="1713" label="NAME_LAST_FIRST: Empty on page load"/>
-  <int value="1728" label="NAME_LAST_CONJUNCTION: Pre-filled on page load"/>
-  <int value="1729" label="NAME_LAST_CONJUNCTION: Empty on page load"/>
-  <int value="1744" label="NAME_LAST_SECOND: Pre-filled on page load"/>
-  <int value="1745" label="NAME_LAST_SECOND: Empty on page load"/>
-  <int value="1760" label="NAME_HONORIFIC_PREFIX: Pre-filled on page load"/>
-  <int value="1761" label="NAME_HONORIFIC_PREFIX: Empty on page load"/>
-  <int value="1824" label="ADDRESS_HOME_ADDRESS: Pre-filled on page load"/>
-  <int value="1825" label="ADDRESS_HOME_ADDRESS: Empty on page load"/>
-  <int value="1840"
-      label="ADDRESS_HOME_ADDRESS_WITH_NAME: Pre-filled on page load"/>
-  <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: Empty on page load"/>
-  <int value="1856" label="ADDRESS_HOME_FLOOR: Pre-filled on page load"/>
-  <int value="1857" label="ADDRESS_HOME_FLOOR: Empty on page load"/>
-  <int value="1888" label="BIRTHDATE_DAY: Pre-filled on page load"/>
-  <int value="1889" label="BIRTHDATE_DAY: Empty on page load"/>
-  <int value="1904" label="BIRTHDATE_MONTH: Pre-filled on page load"/>
-  <int value="1905" label="BIRTHDATE_MONTH: Empty on page load"/>
-  <int value="1920" label="BIRTHDATE_4_DIGIT_YEAR: Pre-filled on page load"/>
-  <int value="1921" label="BIRTHDATE_4_DIGIT_YEAR: Empty on page load"/>
-  <int value="1936"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Pre-filled on page load"/>
-  <int value="1937"
-      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Empty on page load"/>
-  <int value="1952"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Pre-filled on
-             page load"/>
-  <int value="1953"
-      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Empty on page
-             load"/>
-  <int value="1968" label="PHONE_HOME_NUMBER_PREFIX: Pre-filled on page load"/>
-  <int value="1969" label="PHONE_HOME_NUMBER_PREFIX: Empty on page load"/>
-  <int value="1984" label="PHONE_HOME_NUMBER_SUFFIX: Pre-filled on page load"/>
-  <int value="1985" label="PHONE_HOME_NUMBER_SUFFIX: Empty on page load"/>
-  <int value="2000" label="IBAN_VALUE: Pre-filled on page load"/>
-  <int value="2001" label="IBAN_VALUE: Empty on page load"/>
-  <int value="2016"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Pre-filled on page
-             load"/>
-  <int value="2017"
-      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Empty on page load"/>
-  <int value="2048" label="NUMERIC_QUANTITY: Pre-filled on page load"/>
-  <int value="2049" label="NUMERIC_QUANTITY: Empty on page load"/>
-  <int value="2064" label="ONE_TIME_CODE: Pre-filled on page load"/>
-  <int value="2065" label="ONE_TIME_CODE: Empty on page load"/>
-  <int value="2128" label="DELIVERY_INSTRUCTIONS: Pre-filled on page load"/>
-  <int value="2129" label="DELIVERY_INSTRUCTIONS: Empty on page load"/>
-  <int value="2160" label="ADDRESS_HOME_OVERFLOW: Pre-filled on page load"/>
-  <int value="2161" label="ADDRESS_HOME_OVERFLOW: Empty on page load"/>
-  <int value="2176" label="ADDRESS_HOME_LANDMARK: Pre-filled on page load"/>
-  <int value="2177" label="ADDRESS_HOME_LANDMARK: Empty on page load"/>
-  <int value="2240"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Pre-filled on page load"/>
-  <int value="2241"
-      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Empty on page load"/>
-  <int value="2256" label="ADDRESS_HOME_ADMIN_LEVEL2: Pre-filled on page load"/>
-  <int value="2257" label="ADDRESS_HOME_ADMIN_LEVEL2: Empty on page load"/>
-  <int value="2272"
-      label="ADDRESS_HOME_STREET_LOCATION: Pre-filled on page load"/>
-  <int value="2273" label="ADDRESS_HOME_STREET_LOCATION: Empty on page load"/>
-  <int value="2288"
-      label="ADDRESS_HOME_BETWEEN_STREETS: Pre-filled on page load"/>
-  <int value="2289" label="ADDRESS_HOME_BETWEEN_STREETS: Empty on page load"/>
-  <int value="2304"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Pre-filled on page
-             load"/>
-  <int value="2305"
-      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Empty on page load"/>
-  <int value="2320"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Pre-filled on page
-             load"/>
-  <int value="2321"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Empty on page load"/>
-  <int value="2336"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Pre-filled on page
-             load"/>
-  <int value="2337"
-      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Empty on page load"/>
-  <int value="2400"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Pre-filled on page
-             load"/>
-  <int value="2401"
-      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Empty on page load"/>
-  <int value="2416"
-      label="ADDRESS_HOME_BETWEEN_STREETS_1: Pre-filled on page load"/>
-  <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: Empty on page load"/>
-  <int value="2432"
-      label="ADDRESS_HOME_BETWEEN_STREETS_2: Pre-filled on page load"/>
-  <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: Empty on page load"/>
-  <int value="2448"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Pre-filled on page load"/>
-  <int value="2449"
-      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Empty on page load"/>
-  <int value="2464"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD: Pre-filled on page load"/>
-  <int value="2465"
-      label="SINGLE_USERNAME_FORGOT_PASSWORD: Empty on page load"/>
-  <int value="2496" label="ADDRESS_HOME_APT: Pre-filled on page load"/>
-  <int value="2497" label="ADDRESS_HOME_APT: Empty on page load"/>
-  <int value="2512" label="ADDRESS_HOME_APT_TYPE: Pre-filled on page load"/>
-  <int value="2513" label="ADDRESS_HOME_APT_TYPE: Empty on page load"/>
-  <int value="2560"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Pre-filled on page
-             load"/>
-  <int value="2561"
-      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Empty on page load"/>
-  <int value="2592" label="IMPROVED_PREDICTION: Pre-filled on page load"/>
-  <int value="2593" label="IMPROVED_PREDICTION: Empty on page load"/>
-  <int value="2608" label="ALTERNATIVE_FULL_NAME: Pre-filled on page load"/>
-  <int value="2609" label="ALTERNATIVE_FULL_NAME: Empty on page load"/>
-  <int value="2624" label="ALTERNATIVE_GIVEN_NAME: Pre-filled on page load"/>
-  <int value="2625" label="ALTERNATIVE_GIVEN_NAME: Empty on page load"/>
-  <int value="2640" label="ALTERNATIVE_FAMILY_NAME: Pre-filled on page load"/>
-  <int value="2641" label="ALTERNATIVE_FAMILY_NAME: Empty on page load"/>
-  <int value="2656" label="NAME_LAST_PREFIX: Pre-filled on page load"/>
-  <int value="2657" label="NAME_LAST_PREFIX: Empty on page load"/>
-  <int value="2672" label="NAME_LAST_CORE: Pre-filled on page load"/>
-  <int value="2673" label="NAME_LAST_CORE: Empty on page load"/>
 </enum>
 
 <enum name="AutofillProfileImportDecision">
@@ -4183,6 +2490,12 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Dashlane"/>
   <int value="5" label="1Password"/>
   <int value="6" label="Bitwarden"/>
+</enum>
+
+<enum name="AutofillQualitiyMetricType">
+  <int value="0" label="TYPE_SUBMISSION"/>
+  <int value="1" label="TYPE_NO_SUBMISSION"/>
+  <int value="2" label="TYPE_AUTOCOMPLETE_BASED"/>
 </enum>
 
 <enum name="AutofillQueryMethod">
@@ -4292,6 +2605,15 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Available after session start"/>
 </enum>
 
+<enum name="AutofillServerPredictionSource">
+  <int value="0" label="SOURCE_UNSPECIFIED"/>
+  <int value="1" label="SOURCE_AUTOFILL_DEFAULT"/>
+  <int value="2" label="SOURCE_PASSWORDS_DEFAULT"/>
+  <int value="3" label="SOURCE_OVERRIDE"/>
+  <int value="4" label="SOURCE_ALL_APPROVED_EXPERIMENTS"/>
+  <int value="5" label="SOURCE_FIELD_RANKS"/>
+</enum>
+
 <enum name="AutofillSessionStates">
   <int value="0" label="Unknown"/>
   <int value="1" label="No callback from framework"/>
@@ -4396,6 +2718,27 @@ Called by update_autofill_enums.py.-->
       label="Keyboard accessory suggestion long pressed and deletion dialog
              confirmed"/>
 </enum>
+
+<!-- LINT.IfChange(FieldPredictionOverlapXml) -->
+
+<enum name="AutofillSourcesSupersetEnum">
+  <int value="0" label="Nothing agrees with the submitted type"/>
+  <int value="1"
+      label="Only Autocomplete attribute agree with the submitted type"/>
+  <int value="2" label="Only Heuristics agree with the submitted type"/>
+  <int value="3" label="Only Server agrees with the submitted type"/>
+  <int value="4" label="Server and Heuristics agree with the submitted type"/>
+  <int value="5"
+      label="Server and Autocomplete attribute agree with the submitted type"/>
+  <int value="6"
+      label="Heuristics and Autocomplete attribute agree with the submitted
+             type"/>
+  <int value="7"
+      label="Server, Heuristics and Autocomplete attribute agree with the
+             submitted type"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/prediction_quality_metrics.h:FieldPredictionOverlapHeader) -->
 
 <enum name="AutofillSubmissionSource">
   <int value="0" label="Same document navigation"/>
@@ -4596,6 +2939,87 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Declined after accepting"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillWebDataBackendImplOperationResult) -->
+
+<enum name="AutofillWebDataBackendImplOperationResult">
+  <int value="0" label="AddFormElements: Success"/>
+  <int value="1" label="AddFormElements: Failure"/>
+  <int value="10" label="RemoveFormElementsAddedBetween: Success"/>
+  <int value="11" label="RemoveFormElementsAddedBetween: Failure"/>
+  <int value="20" label="RemoveFormValueForElementName: Success"/>
+  <int value="22" label="RemoveFormValueForElementName: Failure"/>
+  <int value="30" label="AddAutofillProfile: Success"/>
+  <int value="31" label="AddAutofillProfile: Failure"/>
+  <int value="40" label="UpdateAutofillProfile: Success"/>
+  <int value="41" label="UpdateAutofillProfile: ReadFailure"/>
+  <int value="42" label="UpdateAutofillProfile: WriteFailure"/>
+  <int value="50" label="RemoveAutofillProfile: Success"/>
+  <int value="51" label="RemoveAutofillProfile: ReadFailure"/>
+  <int value="52" label="RemoveAutofillProfile: WriteFailure"/>
+  <int value="60" label="UpdateAutocompleteEntries: Success"/>
+  <int value="61" label="UpdateAutocompleteEntries: Failure"/>
+  <int value="70" label="AddCreditCard: Success"/>
+  <int value="71" label="AddCreditCard: Failure"/>
+  <int value="80" label="UpdateCreditCard: Success"/>
+  <int value="81" label="UpdateCreditCard: ReadFailure"/>
+  <int value="82" label="UpdateCreditCard: WriteFailure"/>
+  <int value="90" label="RemoveCreditCard: Success"/>
+  <int value="91" label="RemoveCreditCard: ReadFailure"/>
+  <int value="92" label="RemoveCreditCard: WriteFailure"/>
+  <int value="100" label="AddServerCreditCardForTesting: Success"/>
+  <int value="101" label="AddServerCreditCardForTesting: Failure"/>
+  <int value="110" label="UnmaskServerCreditCard: Success"/>
+  <int value="111" label="UnmaskServerCreditCard: Failure"/>
+  <int value="120" label="MaskServerCreditCard: Success"/>
+  <int value="121" label="MaskServerCreditCard: Failure"/>
+  <int value="130" label="UpdateServerCardMetadata: Success"/>
+  <int value="131" label="UpdateServerCardMetadata: Failure"/>
+  <int value="140" label="AddIBAN: Success"/>
+  <int value="141" label="AddIBAN: Failure"/>
+  <int value="150" label="UpdateIBAN: Success"/>
+  <int value="151" label="UpdateIBAN: ReadFailure"/>
+  <int value="152" label="UpdateIBAN: WriteFailure"/>
+  <int value="160" label="RemoveIBAN: Success"/>
+  <int value="161" label="RemoveIBAN: ReadFailure"/>
+  <int value="162" label="RemoveIBAN: WriteFailure"/>
+  <int value="180" label="AddUpiId: Success"/>
+  <int value="181" label="AddUpiId: Failure"/>
+  <int value="190" label="ClearAllServerData: Success"/>
+  <int value="191" label="ClearAllServerData: Failure"/>
+  <int value="200" label="ClearAllLocalData: Success"/>
+  <int value="201" label="ClearAllLocalData: Failure"/>
+  <int value="210" label="RemoveAutofillDataModifiedBetween: Success"/>
+  <int value="211" label="RemoveAutofillDataModifiedBetween: Failure"/>
+  <int value="220" label="RemoveOriginURLsModifiedBetween: Success"/>
+  <int value="221" label="RemoveOriginURLsModifiedBetween: Failure"/>
+  <int value="230" label="AddServerCvc: Success"/>
+  <int value="231" label="AddServerCvc: Failure"/>
+  <int value="240" label="UpdateServerCvc: Success"/>
+  <int value="241" label="UpdateServerCvc: Failure"/>
+  <int value="250" label="RemoveServerCvc: Success"/>
+  <int value="251" label="RemoveServerCvc: Failure"/>
+  <int value="260" label="ClearServerCvcs: Success"/>
+  <int value="261" label="ClearServerCvcs: Failure"/>
+  <int value="270" label="UpdateCreditCardCvc: Success"/>
+  <int value="271" label="UpdateCreditCardCvc: Failure"/>
+  <int value="272" label="ClearLocalCvcs: Success"/>
+  <int value="273" label="ClearLocalCvcs: Failure"/>
+  <int value="274" label="UpdateServerIbanMetadata: Success"/>
+  <int value="275" label="UpdateServerIbanMetadata: Failure"/>
+  <int value="276" label="ClearAllCreditCardBenefits: Success"/>
+  <int value="277" label="ClearAllCreditCardBenefits: Failure"/>
+  <int value="280" label="AddEntityInstance: Success"/>
+  <int value="281" label="AddEntityInstance: Failure"/>
+  <int value="290" label="UpdateEntityInstance: Success"/>
+  <int value="291" label="UpdateEntityInstance: Failure"/>
+  <int value="300" label="RemoveEntityInstance: Success"/>
+  <int value="301" label="RemoveEntityInstance: Failure"/>
+  <int value="310" label="RemoveEntityInstancesModifiedBetween: Success"/>
+  <int value="311" label="RemoveEntityInstancesModifiedBetween: Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/webdata/autofill_webdata_backend_impl.cc:Result) -->
+
 <enum name="BooleanAutofillAddressSuggestionOnTypingAcceptance">
   <int value="0" label="Not accepted"/>
   <int value="1" label="Accepted"/>
@@ -4704,6 +3128,28 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanSuppressed">
   <int value="0" label="No suppressions"/>
   <int value="1" label="Suppressed"/>
+</enum>
+
+<enum name="CardInfoRetrievalEnrolledLoggingEvent">
+  <int value="0" label="Suggestions shown"/>
+  <int value="1" label="Suggestions shown (once)"/>
+  <int value="2" label="Suggestion selected"/>
+  <int value="3" label="Suggestion selected (once)"/>
+  <int value="4" label="Suggestion filled"/>
+  <int value="5" label="Suggestion filled (once)"/>
+  <int value="6"
+      label="Form about to be submitted after suggestion filled (once)"/>
+  <int value="7" label="Form submitted after suggestion filled (once)"/>
+</enum>
+
+<enum name="CardInfoRetrievalEnrolledUnmaskResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1"
+      label="Completed risk-based unmasking, no user-facing authentication"/>
+  <int value="2" label="Completed unmasking via authentication"/>
+  <int value="3" label="Authentication-related errors"/>
+  <int value="4" label="Flow was cancelled"/>
+  <int value="5" label="Unexpected errors"/>
 </enum>
 
 <enum name="CheckBoxStatus">
@@ -5001,6 +3447,8 @@ Called by update_autofill_enums.py.-->
   <int value="625" label="ADDRESS_HOME_APT: Accepted"/>
   <int value="628" label="ADDRESS_HOME_APT_TYPE: Ignored"/>
   <int value="629" label="ADDRESS_HOME_APT_TYPE: Accepted"/>
+  <int value="632" label="LOYALTY_MEMBERSHIP_ID: Ignored"/>
+  <int value="633" label="LOYALTY_MEMBERSHIP_ID: Accepted"/>
   <int value="640" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Ignored"/>
   <int value="641" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Accepted"/>
   <int value="648" label="IMPROVED_PREDICTION: Ignored"/>
@@ -5011,7 +3459,67 @@ Called by update_autofill_enums.py.-->
   <int value="657" label="ALTERNATIVE_GIVEN_NAME: Accepted"/>
   <int value="660" label="ALTERNATIVE_FAMILY_NAME: Ignored"/>
   <int value="661" label="ALTERNATIVE_FAMILY_NAME: Accepted"/>
+  <int value="664" label="NAME_LAST_PREFIX: Ignored"/>
+  <int value="665" label="NAME_LAST_PREFIX: Accepted"/>
+  <int value="668" label="NAME_LAST_CORE: Ignored"/>
+  <int value="669" label="NAME_LAST_CORE: Accepted"/>
+  <int value="672" label="PASSPORT_NAME_TAG: Ignored"/>
+  <int value="673" label="PASSPORT_NAME_TAG: Accepted"/>
+  <int value="676" label="PASSPORT_NUMBER: Ignored"/>
+  <int value="677" label="PASSPORT_NUMBER: Accepted"/>
+  <int value="680" label="PASSPORT_ISSUING_COUNTRY: Ignored"/>
+  <int value="681" label="PASSPORT_ISSUING_COUNTRY: Accepted"/>
+  <int value="684" label="PASSPORT_EXPIRATION_DATE: Ignored"/>
+  <int value="685" label="PASSPORT_EXPIRATION_DATE: Accepted"/>
+  <int value="688" label="PASSPORT_ISSUE_DATE: Ignored"/>
+  <int value="689" label="PASSPORT_ISSUE_DATE: Accepted"/>
+  <int value="692" label="LOYALTY_MEMBERSHIP_PROGRAM: Ignored"/>
+  <int value="693" label="LOYALTY_MEMBERSHIP_PROGRAM: Accepted"/>
+  <int value="696" label="LOYALTY_MEMBERSHIP_PROVIDER: Ignored"/>
+  <int value="697" label="LOYALTY_MEMBERSHIP_PROVIDER: Accepted"/>
+  <int value="700" label="VEHICLE_OWNER_TAG: Ignored"/>
+  <int value="701" label="VEHICLE_OWNER_TAG: Accepted"/>
+  <int value="704" label="VEHICLE_LICENSE_PLATE: Ignored"/>
+  <int value="705" label="VEHICLE_LICENSE_PLATE: Accepted"/>
+  <int value="708" label="VEHICLE_VIN: Ignored"/>
+  <int value="709" label="VEHICLE_VIN: Accepted"/>
+  <int value="712" label="VEHICLE_MAKE: Ignored"/>
+  <int value="713" label="VEHICLE_MAKE: Accepted"/>
+  <int value="716" label="VEHICLE_MODEL: Ignored"/>
+  <int value="717" label="VEHICLE_MODEL: Accepted"/>
+  <int value="720" label="DRIVERS_LICENSE_NAME_TAG: Ignored"/>
+  <int value="721" label="DRIVERS_LICENSE_NAME_TAG: Accepted"/>
+  <int value="724" label="DRIVERS_LICENSE_REGION: Ignored"/>
+  <int value="725" label="DRIVERS_LICENSE_REGION: Accepted"/>
+  <int value="728" label="DRIVERS_LICENSE_NUMBER: Ignored"/>
+  <int value="729" label="DRIVERS_LICENSE_NUMBER: Accepted"/>
+  <int value="732" label="DRIVERS_LICENSE_EXPIRATION_DATE: Ignored"/>
+  <int value="733" label="DRIVERS_LICENSE_EXPIRATION_DATE: Accepted"/>
+  <int value="736" label="DRIVERS_LICENSE_ISSUE_DATE: Ignored"/>
+  <int value="737" label="DRIVERS_LICENSE_ISSUE_DATE: Accepted"/>
+  <int value="740" label="VEHICLE_YEAR: Ignored"/>
+  <int value="741" label="VEHICLE_YEAR: Accepted"/>
+  <int value="744" label="VEHICLE_PLATE_STATE: Ignored"/>
+  <int value="745" label="VEHICLE_PLATE_STATE: Accepted"/>
 </enum>
+
+<!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->
+
+<enum name="FormSubmissionOutcomeIOS">
+  <summary>
+    Defines possible outcomes of handling a form submission message on iOS.
+  </summary>
+  <int value="0" label="Handled"/>
+  <int value="1" label="Invalid message body"/>
+  <int value="2" label="No frame ID"/>
+  <int value="3" label="No frame"/>
+  <int value="4" label="Is main frame discrepancy"/>
+  <int value="5" label="Missing href"/>
+  <int value="6" label="Missing form data"/>
+  <int value="7" label="Form extraction failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/ios/form_util/form_activity_tab_helper.mm:FormSubmissionOutcomeIOS) -->
 
 <enum name="IbanCountry">
   <int value="0" label="Unsupport"/>
@@ -5149,6 +3657,25 @@ Called by update_autofill_enums.py.-->
       label="The text of a &lt;select&gt; element's first &lt;option&gt;"/>
 </enum>
 
+<!-- LINT.IfChange(InvalidSubmittedFormReasonIOS) -->
+
+<enum name="InvalidSubmittedFormReasonIOS">
+  <summary>
+    Represents the various reasons why form data extraction might fail on iOS.
+  </summary>
+  <int value="0" label="Missing name"/>
+  <int value="1" label="Filtered name mismatch"/>
+  <int value="2" label="Missing origin"/>
+  <int value="3" label="Origin mismatch"/>
+  <int value="4" label="Missing host frame"/>
+  <int value="5" label="Invalid host frame"/>
+  <int value="6" label="Frame ID mismatch"/>
+  <int value="7" label="Missing fields"/>
+  <int value="8" label="Invalid field"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/ios/browser/autofill_util.h:InvalidSubmittedFormReasonIOS) -->
+
 <enum name="LocalCardMigrationPrompt">
   <int value="0" label="Intermediate bubble shown"/>
   <int value="1" label="Intermediate bubble accepted"/>
@@ -5254,19 +3781,6 @@ Called by update_autofill_enums.py.-->
   <int value="14" label="Phone: [phone]"/>
 </enum>
 
-<enum name="PlusAddressModalEvent">
-  <int value="0" label="Modal shown"/>
-  <int value="1" label="Modal canceled"/>
-  <int value="2" label="Modal confirmed"/>
-</enum>
-
-<enum name="PlusAddressSuggestionEvent">
-  <int value="0" label="Existing plus address suggested"/>
-  <int value="1" label="Create new plus address suggested"/>
-  <int value="2" label="Existing plus address suggestion chosen"/>
-  <int value="3" label="Create new plus address suggestion chosen"/>
-</enum>
-
 <enum name="PredictionStateAutocompleteStatePair">
   <int value="0"
       label="No server or heuristic type, valid autocomplete attribute"/>
@@ -5312,11 +3826,27 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="User-edited select field"/>
 </enum>
 
+<!-- LINT.IfChange(SaveCreditCardPromptResultIOS) -->
+
+<enum name="SaveCreditCardPromptResultIOS">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Denied"/>
+  <int value="3" label="Swiped"/>
+  <int value="4" label="TimedOut"/>
+  <int value="5" label="LinkCLicked"/>
+  <int value="6" label="Ignored"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/ios/browser/credit_card_save_metrics_ios.h:SaveCreditCardPromptResultIOS) -->
+
 <enum name="ShowCardsFromGoogleAccountButtonEvent">
   <int value="0" label="Button shown"/>
   <int value="1" label="Button shown (once)"/>
   <int value="2" label="Button clicked"/>
 </enum>
+
+<!-- LINT.IfChange(SuggestionType) -->
 
 <enum name="SuggestionType">
   <int value="0" label="Autocomplete entry"/>
@@ -5351,11 +3881,12 @@ Called by update_autofill_enums.py.-->
   <int value="22" label="All saved passwords entry"/>
   <int value="23" label="Generate password entry"/>
   <int value="24" label="Show account cards"/>
-  <int value="25" label="Password account storage opt-in"/>
-  <int value="26" label="Password account storage opt-in and generate"/>
+  <int value="25" label="(obsolete) Password account storage opt-in"/>
+  <int value="26"
+      label="(obsolete) Password account storage opt-in and generate"/>
   <int value="27" label="Account storage password entry"/>
-  <int value="28" label="Password account storage re-sign-in"/>
-  <int value="29" label="Password account storage empty"/>
+  <int value="28" label="(obsolete) Password account storage re-sign-in"/>
+  <int value="29" label="(obsolete) Password account storage empty"/>
   <int value="30" label="Password field-by-field filling"/>
   <int value="31" label="Fill password"/>
   <int value="32" label="View password details"/>
@@ -5363,7 +3894,7 @@ Called by update_autofill_enums.py.-->
   <int value="34" label="Insecure context payment disabled message"/>
   <int value="35" label="Scan credit card"/>
   <int value="36" label="Virtual credit card entry"/>
-  <int value="37" label="(DEPRECATED) Credit card field-by-field filling"/>
+  <int value="37" label="(Obsolete) Credit card field-by-field filling"/>
   <int value="38" label="Iban entry"/>
   <int value="39" label="Create new plus address"/>
   <int value="40" label="Fill existing plus address"/>
@@ -5379,18 +3910,21 @@ Called by update_autofill_enums.py.-->
   <int value="50" label="Devtools test address entry"/>
   <int value="51" label="Devtools test address by country entry"/>
   <int value="52" label="Create new plus address inline"/>
-  <int value="53" label="Retrieve Autofill AI suggestions"/>
-  <int value="54" label="Autofill AI loading state"/>
+  <int value="53" label="(Obsolete) Retrieve Autofill AI suggestions"/>
+  <int value="54" label="(Obsolete) Autofill AI loading state"/>
   <int value="55" label="Autofill AI filling suggestion"/>
-  <int value="56" label="Autofill AI feedback"/>
+  <int value="56" label="(Obsolete) Autofill AI feedback"/>
   <int value="57" label="Plus address error"/>
-  <int value="58" label="Autofill AI details"/>
-  <int value="59" label="Autofill AI error"/>
-  <int value="60" label="Edit Autofill AI information"/>
+  <int value="58" label="(Obsolete) Autofill AI details"/>
+  <int value="59" label="(Obsolete) Autofill AI error"/>
+  <int value="60" label="(Obsolete) Edit Autofill AI information"/>
   <int value="61" label="Bnpl entry"/>
   <int value="62" label="Save and fill credit card entry"/>
-  <int value="63" label="Adress suggestion displayed when typing"/>
+  <int value="63" label="Address suggestion displayed when typing"/>
+  <int value="64" label="Manage AutofillAi information"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->
 
 <enum name="TouchToFill.CreditCard.Outcome">
   <int value="0"
@@ -5474,6 +4008,18 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="User opted in from settings"/>
   <int value="6" label="User already opted into FIDO auth, no need to offer"/>
 </enum>
+
+<!-- LINT.IfChange(AutofillAccountStorageResult) -->
+
+<enum name="WebDatabaseAutofillAccountStorageResult">
+  <int value="0" label="In memory (flag disabled)"/>
+  <int value="1" label="In memory (signed in implicitly)"/>
+  <int value="2" label="On disk (signed out)"/>
+  <int value="3" label="On disk (signed in explicitly)"/>
+  <int value="4" label="On disk (full sync on)"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/webdata_services/web_data_service_factory.cc:AutofillAccountStorageResult) -->
 
 </enums>
 

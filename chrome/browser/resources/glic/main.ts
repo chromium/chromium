@@ -3,63 +3,44 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
+import './icons.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
-import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
+import {GlicAppController} from './glic_app_controller.js';
 
-const browserProxy = BrowserProxyImpl.getInstance();
-const webview =
-    document.getElementById('guest-frame') as chrome.webviewTag.WebView;
+const appController = new GlicAppController();
 
-// Manages construction of the GlicAppHost, which must be created to match the
-// lifecycle of the webview's page load.
-class GlicAppHostManager {
-  host: GlicApiHost|undefined;
-  constructor() {
-    webview.addEventListener('loadcommit', (e: any) => {
-      this.loadCommit(e.url, e.isTopLevel);
-    });
-    webview.addEventListener('contentload', () => {
-      this.contentLoaded();
-    });
-    webview.addEventListener('newwindow', (e: Event) => {
-      this.onNewWindowEvent(e as chrome.webviewTag.NewWindowEvent);
-    });
-    webview.addEventListener('permissionrequest', (e: any) => {
-      if (e.permission === 'media' || e.permission === 'geolocation') {
-        e.request.allow();
-      }
-    });
-  }
-
-  onNewWindowEvent(event: chrome.webviewTag.NewWindowEvent) {
-    if (!this.host) {
-      return;
-    }
-    event.preventDefault();
-    this.host.openLinkInNewTab(event.targetUrl);
-    event.stopPropagation();
-  }
-
-  loadCommit(url: string, isTopLevel: boolean) {
-    if (!isTopLevel) {
-      return;
-    }
-    if (this.host) {
-      this.host.destroy();
-      this.host = undefined;
-    }
-    if (webview.contentWindow) {
-      this.host = new GlicApiHost(
-          browserProxy, webview.contentWindow, new URL(url).origin);
-    }
-  }
-
-  contentLoaded() {
-    if (this.host) {
-      this.host.contentLoaded();
-    }
+declare global {
+  interface Window {
+    // For testing access.
+    appController: GlicAppController;
   }
 }
+window.appController = appController;
 
-new GlicAppHostManager();
+window.addEventListener('load', () => {
+  // Allow WebUI close buttons to close the window.
+  const buttons = document.querySelectorAll('.close-button');
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      appController.close();
+    });
+  }
+  document.getElementById('retry')!.addEventListener(
+      'click',
+      () => {
+          // For now, do nothing. The button is inactive. The dialog will
+          // disappear on its own if the network comes back online.
+      });
+  document.getElementById('reload')?.addEventListener('click', () => {
+    appController.reload();
+  });
+  document.getElementById('debug')?.addEventListener('click', () => {
+    appController.showDebug();
+  });
+});

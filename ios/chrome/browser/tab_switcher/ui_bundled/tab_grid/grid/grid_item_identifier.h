@@ -19,7 +19,7 @@ class WebState;
 }
 #endif
 
-// Different types of items identified by an ItemIdentifier.
+// Different types of items identified by a GridItemIdentifier.
 enum class GridItemType : NSUInteger {
   kInactiveTabsButton,
   kTab,
@@ -40,10 +40,10 @@ enum class GridItemType : NSUInteger {
 // The type of collection view item this is referring to.
 @property(nonatomic, readonly) GridItemType type;
 
-// Only valid when itemType is ItemTypeTab.
+// Only valid when `type` is ItemTypeTab.
 @property(nonatomic, readonly) TabSwitcherItem* tabSwitcherItem;
 
-// Only valid when itemType is ItemTypeGroup.
+// Only valid when `type` is ItemTypeGroup.
 @property(nonatomic, readonly) TabGroupItem* tabGroupItem;
 
 // Convenience factory methods to create identifier and its sub-item based on

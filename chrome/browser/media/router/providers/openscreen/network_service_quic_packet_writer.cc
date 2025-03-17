@@ -73,7 +73,7 @@ quic::QuicByteCount NetworkServiceQuicPacketWriter::GetMaxPacketSize(
 }
 
 quic::QuicPacketBuffer NetworkServiceQuicPacketWriter::GetNextWriteLocation(
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address) {
   // In PassThrough mode, this method isn't used and should return
   // a null QuicPacketBuffer.
@@ -102,7 +102,7 @@ bool NetworkServiceQuicPacketWriter::SupportsReleaseTime() const {
 quic::WriteResult NetworkServiceQuicPacketWriter::WritePacket(
     const char* buffer,
     size_t buf_len,
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
     quic::PerPacketOptions* options) {
   if (is_write_blocked_) {

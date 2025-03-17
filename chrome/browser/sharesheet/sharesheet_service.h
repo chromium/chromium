@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
@@ -85,7 +85,7 @@ class SharesheetService : public KeyedService {
   // Gets the sharesheet controller for the given |native_window|.
   SharesheetController* GetSharesheetController(
       gfx::NativeWindow native_window);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog for ARC.
   void ShowNearbyShareBubbleForArc(gfx::NativeWindow native_window,
@@ -94,7 +94,7 @@ class SharesheetService : public KeyedService {
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback,
                                    ActionCleanupCallback cleanup_callback);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // |share_action_type| is set to null when testing, but should otherwise have
   // a valid value.
   void OnBubbleClosed(gfx::NativeWindow native_window,

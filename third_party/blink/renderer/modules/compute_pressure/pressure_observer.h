@@ -85,7 +85,7 @@ class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   bool PassesRateTest(V8PressureSource::Enum, const DOMHighResTimeStamp&) const;
 
   // Verifies if there is data change in between last update and new one.
-  bool HasChangeInData(V8PressureSource::Enum, V8PressureState::Enum) const;
+  bool ShouldDispatch(V8PressureSource::Enum, V8PressureState::Enum) const;
 
   // Verifies if there is data changes in a defined time span is not too high.
   bool PassesRateObfuscation(V8PressureSource::Enum) const;

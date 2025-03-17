@@ -25,26 +25,6 @@ namespace {
 
 const char kTrialName[] = "TopLevelTpcd";
 
-OriginTrialStatusChange ClassifyStatusChange(
-    const OriginTrialStatusChangeDetails& details) {
-  if (details.enabled) {
-    return details.match_subdomains
-               ? OriginTrialStatusChange::kEnabled_MatchesSubdomains
-               : OriginTrialStatusChange::kEnabled;
-  } else {
-    return details.match_subdomains
-               ? OriginTrialStatusChange::kDisabled_MatchesSubdomains
-               : OriginTrialStatusChange::kDisabled;
-  }
-}
-
-inline void UmaHistogramCrossSiteChange(
-    const OriginTrialStatusChangeDetails& details) {
-  base::UmaHistogramEnumeration(
-      "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange",
-      ClassifyStatusChange(details));
-}
-
 bool IsSameSite(const GURL& url1, const GURL& url2) {
   // We can't use SiteInstance::IsSameSiteWithURL() because both mainframe and
   // subframe are under default SiteInstance on low-end Android environment, and
@@ -175,7 +155,6 @@ void TopLevelTrialService::OnStatusChanged(
   // top-level sites, explicitly check that `origin` is same-site with
   // `partition_site`.
   if (!IsSameSite(details.origin.GetURL(), GURL(details.partition_site))) {
-    UmaHistogramCrossSiteChange(details);
     return;
   }
 

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("network_config") {
   sources = [
@@ -79,7 +77,6 @@ source_set("unit_tests") {
   deps = [
     ":network_config",
     ":test_support",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -89,6 +86,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/components/onc",
     "//chromeos/services/network_config/public/mojom",

@@ -28,7 +28,6 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -164,6 +163,9 @@ class BookmarkModel : public BookmarkUndoProvider,
     return node && (node == root_ || node->parent() == root_);
   }
 
+  // Returns true if the given `node` should be visible in UI surfaces.
+  bool IsNodeVisible(const BookmarkNode& node) const;
+
   // Returns true if `node` represents a bookmark that is stored on the local
   // profile but not saved to the user's server-side account. The opposite case,
   // returning null, can happen because the user turned sync-the-feature on,
@@ -177,6 +179,8 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Notifies the observers that an extensive set of changes is about to happen,
   // such as during import or sync, so they can delay any expensive UI updates
   // until it's finished.
+  //
+  // Undo tracking is suspended during extensive changes.
   void BeginExtensiveChanges();
   void EndExtensiveChanges();
 
@@ -198,7 +202,10 @@ class BookmarkModel : public BookmarkUndoProvider,
   // `Remove()` for the actual child, i.e.
   // `Remove(parent->children()[parent->children().size() - 1].get())`. The
   // only difference is that `RemoveLastChild()` is guaranteed to require
-  // constant time, for advanced cases where performance is a concern.
+  // constant time, for advanced cases where performance is a concern (to be
+  // more accurate, it exhibits logarithmic runtime complexity with respect to
+  // the tree depth, excluding the cost incurred in observers, which may
+  // implement arbitrary logic outside BookmarkModel's control).
   void RemoveLastChild(const BookmarkNode* parent,
                        metrics::BookmarkEditSource source,
                        const base::Location& location);
@@ -213,12 +220,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   //
   // Note: this might cause UUIDs to get reassigned for `node` or its
   // descendants, when the node is moved between local and account storages.
+  //
+  // `new_parent` may be the same as `node`'s current parent, in which case the
+  // semantics are "insert before the element currently at `index`". Suppose the
+  // initial current children of new_parent are ordered [A, B, C]:
+  // * Move(B, new_parent, 0) -> [B, A, C]
+  // * Move(B, new_parent, 1) -> [A, B, C]
+  // * Move(B, new_parent, 2) -> [A, B, C]
+  // * Move(B, new_parent, 3) -> [A, C, B]
   void Move(const BookmarkNode* node,
-            const BookmarkNode* new_parent,
-            size_t index);
-
-  // Inserts a copy of `node` into `new_parent` at `index`.
-  void Copy(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
 
@@ -426,6 +436,12 @@ class BookmarkModel : public BookmarkUndoProvider,
   // by sync code only. Must only be invoked after BookmarkModel is loaded.
   void RemoveAccountPermanentFolders();
 
+  // Returns the total number of bookmark nodes (URLs and folders) in the model.
+  // This is equivalent to iterating the entire tree starting with root_node(),
+  // root node included.
+  // On Android this does *not* include partner bookmarks.
+  size_t GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes() const;
+
   base::WeakPtr<BookmarkModel> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -485,12 +501,18 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   // Removes a child under `parent` at position `index` and notifies its
   // observers. `is_undoable` determines whether the deletion should be
-  // propagated via BookmarkClient to the undo stack.
+  // propagated via BookmarkClient to the undo stack. `notify_observers`
+  // determines whether observers are notified about the removal.
   void RemoveChildAt(const BookmarkNode* parent,
                      size_t index,
                      const base::Location& location,
                      std::optional<metrics::BookmarkEditSource> source,
-                     bool is_undoable);
+                     bool is_undoable,
+                     bool notify_observers);
+
+  // Private counterpart of `RemoveAccountPermanentFolders()` that allows
+  // controlling whether observers are notified.
+  void RemoveAccountPermanentFoldersImpl(bool notify_observers);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.
@@ -499,6 +521,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   void RemoveNodeFromIndicesRecursive(
       BookmarkNode* node,
       NodeTypeForUuidLookup type_for_uuid_lookup);
+
+  // Updates the UUID index to ensure that `node`, whose former type was
+  // `old_type_for_uuid_lookup`, is instead indexed under type
+  // `new_type_for_uuid_lookup`. This is exercised when a node is moved across
+  // type boundaries, which requires updating the UUID index.
+  void UpdateUuidIndexUponNodeMoveRecursive(
+      const BookmarkNode* node,
+      NodeTypeForUuidLookup old_type_for_uuid_lookup,
+      NodeTypeForUuidLookup new_type_for_uuid_lookup);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);

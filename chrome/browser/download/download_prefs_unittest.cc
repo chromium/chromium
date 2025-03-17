@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -22,10 +21,11 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -37,7 +37,7 @@
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -524,18 +524,16 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   DownloadPrefs prefs(&profile);
   const base::FilePath default_dir =
       prefs.GetDefaultDownloadDirectoryForProfile();
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(profile.GetProfileUserName(), "12345");
+  AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile.GetProfileUserName(), GaiaId("12345"));
   const std::string drivefs_profile_salt = "a";
   base::FilePath removable_media_dir;
   base::FilePath android_files_dir;
   base::FilePath linux_files_dir;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   removable_media_dir = ash::CrosDisksClient::GetRemovableDiskMountPoint();
   android_files_dir = base::FilePath(file_manager::util::GetAndroidFilesPath());
   linux_files_dir = file_manager::util::GetCrostiniMountDirectory(&profile);
-#endif
 
   // Test a valid subdirectory of downloads.
   ExpectValidDownloadDir(&profile, &prefs, default_dir.AppendASCII("testdir"));
@@ -580,7 +578,6 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     // Create new profile for enabled feature to work.
     TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
     DownloadPrefs prefs2(&profile2);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
         user_manager{std::make_unique<ash::FakeChromeUserManager>()};
     const auto* user = user_manager->AddUser(account_id);
@@ -591,7 +588,6 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::GetForProfile(&profile2);
     integration_service->SetEnabled(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // My Drive root.
     ExpectValidDownloadDir(
@@ -615,7 +611,6 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Temp for OneDrive.
   {
     base::test::ScopedFeatureList scoped_feature_list;
@@ -625,10 +620,8 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     base::GetTempDir(&temp_path);
     ExpectValidDownloadDir(&profile, &prefs, temp_path);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that download path is correct when migrated from old format.
 TEST(DownloadPrefsTest, DownloadPathWithMigrationFromOldFormat) {
   content::BrowserTaskEnvironment task_environment;
@@ -666,7 +659,6 @@ TEST(DownloadPrefsTest, DefaultDownloadPathPrefMigrationFromOldFormat) {
           prefs::kDownloadDefaultDirectory),
       base::FilePath("/home/chronos/u-0123456789abcdef/MyFiles/Downloads"));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

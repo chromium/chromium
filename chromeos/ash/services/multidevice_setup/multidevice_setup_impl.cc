@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/services/multidevice_setup/multidevice_setup_impl.h"
+
+#include <algorithm>
 #include <utility>
 #include <vector>
-
-#include "chromeos/ash/services/multidevice_setup/multidevice_setup_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
@@ -74,21 +74,18 @@ std::unique_ptr<MultiDeviceSetupBase> MultiDeviceSetupImpl::Factory::Create(
     OobeCompletionTracker* oobe_completion_tracker,
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
     bool is_secondary_user) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
         pref_service, device_sync_client, auth_token_validator,
         oobe_completion_tracker, android_sms_app_helper_delegate,
-        android_sms_pairing_state_tracker, gcm_device_info_provider,
-        is_secondary_user);
+        android_sms_pairing_state_tracker, is_secondary_user);
   }
 
   return base::WrapUnique(new MultiDeviceSetupImpl(
       pref_service, device_sync_client, auth_token_validator,
       oobe_completion_tracker, android_sms_app_helper_delegate,
-      android_sms_pairing_state_tracker, gcm_device_info_provider,
-      is_secondary_user));
+      android_sms_pairing_state_tracker, is_secondary_user));
 }
 
 // static
@@ -106,7 +103,6 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
     OobeCompletionTracker* oobe_completion_tracker,
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
     bool is_secondary_user)
     : eligible_host_devices_provider_(
           EligibleHostDevicesProviderImpl::Factory::Create(device_sync_client)),
@@ -409,7 +405,7 @@ bool MultiDeviceSetupImpl::AttemptSetHost(
         << ": attempting to set host but no eligible devices are available";
   }
 
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       eligible_devices,
       [&host_instance_id_or_legacy_device_id](const auto& eligible_device) {
         return eligible_device.instance_id() ==

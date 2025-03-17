@@ -200,7 +200,7 @@ void TabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
       abs_value_dirty_ = true;
       break;
     case ABS_PRESSURE:
-      pressure_ = (float)input.value / pressure_max_;
+      pressure_ = static_cast<float>(input.value) / pressure_max_;
       abs_value_dirty_ = true;
       break;
   }
@@ -208,11 +208,10 @@ void TabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
 
 void TabletEventConverterEvdev::UpdateCursor() {
   gfx::Rect confined_bounds = cursor_->GetCursorConfinedBounds();
-
-  int x =
-      ((x_abs_location_ - x_abs_min_) * confined_bounds.width()) / x_abs_range_;
-  int y = ((y_abs_location_ - y_abs_min_) * confined_bounds.height()) /
-          y_abs_range_;
+  float x = ((x_abs_location_ - x_abs_min_) * confined_bounds.width()) /
+            static_cast<float>(x_abs_range_);
+  float y = ((y_abs_location_ - y_abs_min_) * confined_bounds.height()) /
+            static_cast<float>(y_abs_range_);
 
   x += confined_bounds.x();
   y += confined_bounds.y();

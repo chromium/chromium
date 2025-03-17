@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 
 #include <memory>
@@ -37,6 +32,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
+#include "media/video/video_encoder_info.h"
 #include "media/video/vpx_video_encoder.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -126,29 +122,21 @@ static const struct {
   media::VideoCodecProfile min_profile;
   media::VideoCodecProfile max_profile;
 } kPreferredCodecIdAndVEAProfiles[] = {
-    {CodecId::kVp8, media::VP8PROFILE_MIN, media::VP8PROFILE_MAX},
-    {CodecId::kVp9, media::VP9PROFILE_MIN, media::VP9PROFILE_MAX},
+    {CodecId::kVp8, media::VP8PROFILE_ANY, media::VP8PROFILE_ANY},
+    {CodecId::kVp9, media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE0},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {CodecId::kH264, media::H264PROFILE_MIN, media::H264PROFILE_MAX},
+    {CodecId::kH264, media::H264PROFILE_BASELINE, media::H264PROFILE_HIGH},
 #endif
-    {CodecId::kAv1, media::AV1PROFILE_MIN, media::AV1PROFILE_MAX},
+    {CodecId::kAv1, media::AV1PROFILE_PROFILE_MAIN,
+     media::AV1PROFILE_PROFILE_MAIN},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    {CodecId::kHevc, media::HEVCPROFILE_MIN, media::HEVCPROFILE_MAX},
+    {CodecId::kHevc, media::HEVCPROFILE_MAIN, media::HEVCPROFILE_MAIN},
 #endif
 };
 
 static_assert(std::size(kPreferredCodecIdAndVEAProfiles) ==
                   static_cast<int>(CodecId::kLast),
               "|kPreferredCodecIdAndVEAProfiles| should consider all CodecIds");
-
-// The maximum number of frames which we'll keep frame references alive for
-// encode. The number of frames in flight is further restricted by the device
-// video capture max buffer pool size if it is smaller. This guarantees that
-// there is limit on the number of frames in a FIFO queue that are being encoded
-// and frames coming after this limit is reached are dropped.
-// TODO(emircan): Make this a LIFO queue that has different sizes for each
-// encoder implementation.
-const size_t kMaxNumberOfFramesInEncode = 10;
 
 void NotifyEncoderSupportKnown(base::OnceClosure callback) {
   if (!Platform::Current()) {
@@ -363,6 +351,14 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
       NOTREACHED() << "Unsupported codec=" << static_cast<int>(codec_id);
   }
 }
+
+std::optional<media::VideoTransformation> GetFrameTransformation(
+    scoped_refptr<media::VideoFrame> video_frame) {
+  if (const auto& transformation = video_frame->metadata().transformation) {
+    return *transformation;
+  }
+  return std::nullopt;
+}
 }  // anonymous namespace
 
 VideoTrackRecorder::VideoTrackRecorder(
@@ -542,8 +538,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
   awaiting_first_frame_ = false;
 
-  if (num_frames_in_encode_->count() >
-      std::min(kMaxNumberOfFramesInEncode, frame_buffer_pool_limit_)) {
+  if (num_frames_in_encode_->count() > max_number_of_frames_in_encode_) {
     LOCAL_HISTOGRAM_BOOLEAN("Media.MediaRecorder.DroppingFrameTooManyInEncode",
                             true);
     DLOG(WARNING) << "Too many frames are queued up. Dropping this one.";
@@ -580,6 +575,28 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   EncodeFrame(std::move(frame), timestamp,
               request_key_frame_for_testing_ || force_key_frame);
   request_key_frame_for_testing_ = false;
+}
+
+void VideoTrackRecorderImpl::Encoder::OnVideoEncoderInfo(
+    const media::VideoEncoderInfo& encoder_info) {
+  if (!encoder_info.frame_delay.has_value()) {
+    max_number_of_frames_in_encode_ = kMaxNumberOfFramesInEncoderMinValue;
+    return;
+  }
+
+  // The maximum number of input frames above the encoder frame delay that we
+  // want to be able to enqueue---to account for IPC, etc.
+  constexpr int kDefaultEncoderExtraInputCapacity = 2;
+
+  const int preferred_capacity =
+      encoder_info.frame_delay.value() + kDefaultEncoderExtraInputCapacity;
+  max_number_of_frames_in_encode_ =
+      encoder_info.input_capacity.has_value()
+          ? std::min(preferred_capacity, encoder_info.input_capacity.value())
+          : preferred_capacity;
+  CHECK_GE(frame_buffer_pool_limit_, max_number_of_frames_in_encode_)
+      << "The video capture buffer pool is too small for this encoder: "
+      << encoder_info.implementation_name;
 }
 
 scoped_refptr<media::VideoFrame>
@@ -647,27 +664,20 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
     const gfx::Size& old_visible_size = video_frame->visible_rect().size();
     gfx::Size new_visible_size = old_visible_size;
 
-    media::VideoRotation video_rotation = media::VIDEO_ROTATION_0;
-    if (video_frame->metadata().transformation) {
-      video_rotation = video_frame->metadata().transformation->rotation;
-    }
-
-    if (video_rotation == media::VIDEO_ROTATION_90 ||
-        video_rotation == media::VIDEO_ROTATION_270) {
-      new_visible_size.SetSize(old_visible_size.height(),
-                               old_visible_size.width());
-    }
-
     frame = frame_pool_.CreateFrame(
         is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
         new_visible_size, gfx::Rect(new_visible_size), new_visible_size,
         video_frame->timestamp());
 
+    frame->metadata().MergeMetadataFrom(video_frame->metadata());
+    frame->metadata().ClearTextureFrameMetadata();
+
     const SkImageInfo info = SkImageInfo::MakeN32(
         frame->visible_rect().width(), frame->visible_rect().height(),
         is_opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType);
 
-    // Create |surface_| if it doesn't exist or incoming resolution has changed.
+    // Create |surface_| if it doesn't exist or incoming resolution has
+    // changed.
     if (!canvas_ || canvas_->imageInfo().width() != info.width() ||
         canvas_->imageInfo().height() != info.height()) {
       bitmap_.allocPixels(info);
@@ -702,8 +712,7 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
             frame->stride(media::VideoFrame::Plane::kV), 0 /* crop_x */,
             0 /* crop_y */, pixmap.width(), pixmap.height(),
             old_visible_size.width(), old_visible_size.height(),
-            MediaVideoRotationToRotationMode(video_rotation),
-            source_pixel_format) != 0) {
+            libyuv::kRotate0, source_pixel_format) != 0) {
       DLOG(ERROR) << "Error converting frame to I420";
       return nullptr;
     }
@@ -870,6 +879,9 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
 VideoTrackRecorderImpl::~VideoTrackRecorderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DisconnectFromTrack();
+
+  UMA_HISTOGRAM_COUNTS_100("Media.MediaRecorder.TrackTransformationChangeCount",
+                           num_video_transformation_changes_);
 }
 
 void VideoTrackRecorderImpl::OnEncoderSupportKnown() {
@@ -896,6 +908,15 @@ void VideoTrackRecorderImpl::OnVideoFrame(
     base::TimeTicks capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   TRACE_EVENT("media", "VideoTrackRecorderImpl::OnVideoFrame");
+
+  // Measure how common video transformation changes are, crbug.com/391786486.
+  auto frame_transformation = GetFrameTransformation(video_frame);
+  if (num_video_transformation_changes_ == 0) {
+    num_video_transformation_changes_ = 1;
+  } else if (last_transformation_ != frame_transformation) {
+    ++num_video_transformation_changes_;
+  }
+  last_transformation_ = frame_transformation;
 
   if (encoder_support_known_) {
     ProcessOneVideoFrame(allow_vea_encoder, std::move(video_frame),
@@ -1264,10 +1285,13 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
   auto buffer = media::DecoderBuffer::CopyFrom(encoded_frame->Data());
   buffer->set_is_key_frame(encoded_frame->IsKeyFrame());
 
+  // TODO(crbug.com/391786486): create method in EncodedVideoFrame to get
+  // Transformation info. Use method instead of passing
+  // media::kNoTransformation.
   media::Muxer::VideoParameters params(encoded_frame->Resolution(),
                                        /*frame_rate=*/0.0f,
                                        /*codec=*/encoded_frame->Codec(),
-                                       color_space);
+                                       color_space, media::kNoTransformation);
   if (auto* callback = callback_interface()->Get()) {
     callback->OnPassthroughVideo(params, std::move(buffer),
                                  estimated_capture_time);

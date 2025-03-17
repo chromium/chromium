@@ -52,7 +52,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
@@ -91,11 +90,11 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -115,8 +114,13 @@ import java.util.Set;
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(
-        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+// TODO(crbug.com/397186266): Update the tests when updating SafetyCheckMediator itself.
+// The mediator exercises a code path checking the LOGIN_DB_DEPRECATION_ANDROID
+// flag, so it has to be set up explicitly in tests.
+@DisableFeatures({
+    ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING,
+    ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID
+})
 public class SafetyCheckMediatorTest {
     private static final String SAFETY_CHECK_INTERACTIONS_HISTOGRAM =
             "Settings.SafetyCheck.Interactions";
@@ -139,7 +143,6 @@ public class SafetyCheckMediatorTest {
     @Mock private Profile mProfile;
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    @Mock private SyncConsentActivityLauncher mSyncLauncher;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
@@ -220,7 +223,9 @@ public class SafetyCheckMediatorTest {
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.hasSyncConsent()).thenReturn(true);
         when(mSyncService.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                TEST_EMAIL_ADDRESS, new GaiaId("0")));
         when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
                 .thenReturn(true);
 
@@ -244,7 +249,6 @@ public class SafetyCheckMediatorTest {
                 mUpdatesDelegate,
                 new SafetyCheckBridge(mProfile),
                 mSigninLauncher,
-                mSyncLauncher,
                 mSyncService,
                 mPrefService,
                 mPasswordStoreBridge,
@@ -775,7 +779,6 @@ public class SafetyCheckMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testClickListenerStartsSignInFlowWhenUserSignedOut() {
         mMediator.setInitialState();
         setUpPasswordCheckToReturnError(
@@ -795,10 +798,10 @@ public class SafetyCheckMediatorTest {
                         configCaptor.capture(),
                         eq(SigninAccessPoint.SAFETY_CHECK));
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
-                config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
-        assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.NONE);
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
+        assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
     }
 
@@ -813,7 +816,7 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         click(getPasswordsClickListener(mPasswordCheckModel));
@@ -895,7 +898,7 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.LOCAL_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
@@ -923,14 +926,14 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckAccountModel.get(PASSWORDS_STATE));
         assertEquals(PasswordsState.CHECKING, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.LOCAL_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 0));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 0));
         assertEquals(PasswordsState.UNCHECKED, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
         mMediator.performSafetyCheck();
@@ -939,14 +942,14 @@ public class SafetyCheckMediatorTest {
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.LOCAL_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckLocalModel.get(PASSWORDS_STATE));
         assertEquals(PasswordsState.CHECKING, passwordCheckAccountModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
                 PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+                new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
                 PasswordsState.COMPROMISED_EXIST, passwordCheckAccountModel.get(PASSWORDS_STATE));
     }

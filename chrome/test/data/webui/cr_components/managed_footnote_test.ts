@@ -60,9 +60,8 @@ suite('ManagedFootnoteTest', function() {
 
     assertNotEquals('none', getComputedStyle(footnote).display);
     assertEquals(
-        footnote.shadowRoot!.querySelector('cr-icon')!.icon,
-        'cr:jumping_fox');
-    assertTrue(footnote.shadowRoot!.textContent!.includes(browserMessage));
+        footnote.shadowRoot.querySelector('cr-icon')!.icon, 'cr:jumping_fox');
+    assertTrue(footnote.shadowRoot.textContent!.includes(browserMessage));
   });
 
   test('Responds to is-managed-changed events', async function() {
@@ -74,7 +73,7 @@ suite('ManagedFootnoteTest', function() {
     assertNotEquals('none', getComputedStyle(footnote).display);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('Reads Attributes From loadTimeData device message', async function() {
     const browserMessage = 'the quick brown fox jumps over the lazy dog';
     const deviceMessage = 'the lazy dog jumps over the quick brown fox';
@@ -82,11 +81,11 @@ suite('ManagedFootnoteTest', function() {
         setupTestElement(true, browserMessage, deviceMessage, '', '');
 
     assertNotEquals('none', getComputedStyle(footnote).display);
-    assertTrue(footnote.shadowRoot!.textContent!.includes(browserMessage));
+    assertTrue(footnote.shadowRoot.textContent!.includes(browserMessage));
 
     footnote.showDeviceInfo = true;
     await microtasksFinished();
-    assertTrue(footnote.shadowRoot!.textContent!.includes(deviceMessage));
+    assertTrue(footnote.shadowRoot.textContent!.includes(deviceMessage));
   });
   // </if>
 });

@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">Клиент құрылғысында <ph name="URL" /> мекенжайы ашылмады.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2366718077645204424">Хостқа қол жеткізу мүмкін емес. Бұған сіз пайдаланып жатқан желінің конфигурациясы себеп болуы мүмкін.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Барлық құқығы қорғалған.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> қызметіне арнайы мүмкіндіктерді пайдалануға рұқсат беріңіз</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> хостымен байланыс орнатылды</translation>
 <translation id="2540992418118313681">Бұл компьютерді басқа пайдаланушының көруі үшін және басқаруы үшін бөліскіңіз келе ме?</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">Экран сенсорлық экран сияқты жұмыс істейді</translation>
 <translation id="7116737094673640201">Chrome Remote Desktop бетіне қош келдіңіз</translation>
 <translation id="7144878232160441200">Қайталау</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="7312846573060934304">Хост желіден тыс.</translation>
 <translation id="7319983568955948908">Бөлісуді тоқтату</translation>
 <translation id="7359298090707901886">Таңдалған браузерді жергілікті құрылғыдан URL мекенжайларын ашу үшін пайдалану мүмкін емес.</translation>
@@ -149,7 +151,6 @@
 <translation id="7693372326588366043">Хосттар тізімін жаңарту</translation>
 <translation id="7714222945760997814">Осы жөнінде хабарлау</translation>
 <translation id="7868137160098754906">Қашықтағы компьютерге арналған PIN кодын енгізіңіз.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="7895403300744144251">Қашықтағы компьютердегі қауіпсіздік саясаттары аккаунтыңыздан байланыс орнатуға тыйым салады.</translation>
 <translation id="7936528439960309876">Оң жаққа қондыру</translation>
 <translation id="7970576581263377361">Аутентификация сәтсіз аяқталды. Chromium жүйесіне қайта кіріңіз.</translation>
@@ -181,7 +182,6 @@
 <translation id="8747048596626351634">Сеанс бұзылды немесе басталмады. Егер қашықтағы компьютерде ~/.chrome-remote-desktop-session сеансы жүріп жатса, онда жұмыс үстелінің ортасы немесе терезе менеджері сияқты ұзақ мерзімді басымдыққа ие процесс іске қосылып жатқанына көз жеткізіңіз.</translation>
 <translation id="8804164990146287819">Құпиялық саясаты</translation>
 <translation id="8906511416443321782">Аудио жазып, оны Chrome Remote Desktop клиентіне трансляциялау үшін микрофонды пайдалану рұқсаты болуы керек.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC, Барлық құқығы қорғалған.</translation>
 <translation id="9111855907838866522">Қашықтағы құрылғыға қосылдыңыз. Мәзірді ашу үшін экранды төрт саусағыңызбен түртіңіз.</translation>
 <translation id="9126115402994542723">Бұл құрылғыдан осы хостқа қосылу кезінде PIN коды енді сұралмасын.</translation>
 <translation id="916856682307586697">Әдепкі XSession сеансын іске қосу</translation>

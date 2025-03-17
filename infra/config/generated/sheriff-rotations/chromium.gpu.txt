@@ -26,7 +26,6 @@ ci/GPU FYI Win x64 Builder (dbg)
 ci/GPU FYI Win x64 DX12 Vulkan Builder
 ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)
 ci/GPU FYI XR Win x64 Builder
-ci/GPU Flake Finder
 ci/GPU Linux Builder
 ci/GPU Mac Builder
 ci/GPU Win x64 Builder
@@ -35,6 +34,7 @@ ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release
 ci/Linux FYI Release (AMD RX 5500 XT)
+ci/Linux FYI Release (AMD RX 7600)
 ci/Linux FYI Release (Intel UHD 630)
 ci/Linux FYI Release (Intel UHD 770)
 ci/Linux FYI Release (NVIDIA)
@@ -67,13 +67,14 @@ ci/Win10 FYI x64 Experimental Release (Intel)
 ci/Win10 FYI x64 Release (AMD RX 5500 XT)
 ci/Win10 FYI x64 Release (Intel UHD 770)
 ci/Win10 FYI x64 Release (Intel)
-ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)
 ci/Win10 FYI x64 Release (NVIDIA)
 ci/Win10 FYI x64 Release XR Perf (NVIDIA)
 ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
+ci/Win11 FYI x64 Release (AMD RX 7600)
+ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)
 ci/linux-swangle-chromium-x64
 ci/linux-swangle-chromium-x64-exp
 ci/linux-swangle-tot-swiftshader-x64

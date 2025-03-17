@@ -15,10 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -259,7 +257,7 @@ TabGroupSyncDelegateDesktop::GetLocalTabGroupIds() {
         browser->tab_strip_model()->SupportsTabGroups()) {
       std::vector<LocalTabGroupID> local_groups =
           browser->tab_strip_model()->group_model()->ListTabGroups();
-      base::ranges::copy(local_groups, std::back_inserter(local_group_ids));
+      std::ranges::copy(local_groups, std::back_inserter(local_group_ids));
     }
   }
 
@@ -271,6 +269,40 @@ std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
   // TODO(b/346871861): Implement.
   return std::vector<LocalTabID>();
 }
+
+std::set<LocalTabID> TabGroupSyncDelegateDesktop::GetSelectedTabs() {
+  std::set<LocalTabID> selected_tab_ids;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->tab_strip_model()) {
+      tabs::TabInterface* active_tab =
+          browser->tab_strip_model()->GetActiveTab();
+      if (active_tab) {
+        selected_tab_ids.insert(active_tab->GetHandle().raw_value());
+      }
+    }
+  }
+
+  return selected_tab_ids;
+}
+
+std::u16string TabGroupSyncDelegateDesktop::GetTabTitle(
+    const LocalTabID& local_tab_id) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    if (tab_strip_model) {
+      for (int i = 0; i < tab_strip_model->count(); ++i) {
+        tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+        if (tab->GetHandle().raw_value() == local_tab_id) {
+          return tab->GetContents() ? tab->GetContents()->GetTitle()
+                                    : std::u16string();
+        }
+      }
+    }
+  }
+
+  return std::u16string();
+}
+
 std::unique_ptr<SavedTabGroup>
 TabGroupSyncDelegateDesktop::CreateSavedTabGroupFromLocalGroup(
     const LocalTabGroupID& local_tab_group_id) {

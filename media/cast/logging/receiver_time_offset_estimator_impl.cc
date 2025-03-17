@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/logging/receiver_time_offset_estimator_impl.h"
+
 #include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/time/tick_clock.h"
-#include "media/cast/logging/receiver_time_offset_estimator_impl.h"
 
 namespace media {
 namespace cast {
@@ -49,22 +50,23 @@ void ReceiverTimeOffsetEstimatorImpl::BoundCalculator::SetReceived(
 }
 
 void ReceiverTimeOffsetEstimatorImpl::BoundCalculator::UpdateBound(
-    base::TimeTicks sent, base::TimeTicks received) {
-    base::TimeDelta delta = received - sent;
-    if (has_bound_) {
-      if (delta < bound_) {
-        bound_ = delta;
-      } else {
-        bound_ += (delta - bound_) / kClockDriftSpeed;
-      }
-    } else {
+    base::TimeTicks sent,
+    base::TimeTicks received) {
+  base::TimeDelta delta = received - sent;
+  if (has_bound_) {
+    if (delta < bound_) {
       bound_ = delta;
+    } else {
+      bound_ += (delta - bound_) / kClockDriftSpeed;
     }
-    has_bound_ = true;
+  } else {
+    bound_ = delta;
   }
+  has_bound_ = true;
+}
 
-  void ReceiverTimeOffsetEstimatorImpl::BoundCalculator::CheckUpdate(
-      uint64_t key) {
+void ReceiverTimeOffsetEstimatorImpl::BoundCalculator::CheckUpdate(
+    uint64_t key) {
   const TimeTickPair& ticks = events_[key];
   if (!ticks.first.is_null() && !ticks.second.is_null()) {
     UpdateBound(ticks.first, ticks.second);
@@ -86,20 +88,17 @@ ReceiverTimeOffsetEstimatorImpl::~ReceiverTimeOffsetEstimatorImpl() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-
 void ReceiverTimeOffsetEstimatorImpl::OnReceiveFrameEvent(
     const FrameEvent& frame_event) {
   DCHECK(thread_checker_.CalledOnValidThread());
   switch (frame_event.type) {
     case FRAME_ACK_SENT:
-      lower_bound_.SetSent(frame_event.rtp_timestamp,
-                           0,
+      lower_bound_.SetSent(frame_event.rtp_timestamp, 0,
                            frame_event.media_type == AUDIO_EVENT,
                            frame_event.timestamp);
       break;
     case FRAME_ACK_RECEIVED:
-      lower_bound_.SetReceived(frame_event.rtp_timestamp,
-                               0,
+      lower_bound_.SetReceived(frame_event.rtp_timestamp, 0,
                                frame_event.media_type == AUDIO_EVENT,
                                frame_event.timestamp);
       break;
@@ -112,8 +111,9 @@ void ReceiverTimeOffsetEstimatorImpl::OnReceiveFrameEvent(
 bool ReceiverTimeOffsetEstimatorImpl::GetReceiverOffsetBounds(
     base::TimeDelta* lower_bound,
     base::TimeDelta* upper_bound) {
-  if (!lower_bound_.has_bound() || !upper_bound_.has_bound())
+  if (!lower_bound_.has_bound() || !upper_bound_.has_bound()) {
     return false;
+  }
 
   *lower_bound = -lower_bound_.bound();
   *upper_bound = upper_bound_.bound();
@@ -132,23 +132,20 @@ void ReceiverTimeOffsetEstimatorImpl::OnReceivePacketEvent(
   DCHECK(thread_checker_.CalledOnValidThread());
   switch (packet_event.type) {
     case PACKET_SENT_TO_NETWORK:
-      upper_bound_.SetSent(packet_event.rtp_timestamp,
-                           packet_event.packet_id,
+      upper_bound_.SetSent(packet_event.rtp_timestamp, packet_event.packet_id,
                            packet_event.media_type == AUDIO_EVENT,
                            packet_event.timestamp);
       break;
     case PACKET_RECEIVED:
-      upper_bound_.SetReceived(packet_event.rtp_timestamp,
-                               packet_event.packet_id,
-                               packet_event.media_type == AUDIO_EVENT,
-                               packet_event.timestamp);
+      upper_bound_.SetReceived(
+          packet_event.rtp_timestamp, packet_event.packet_id,
+          packet_event.media_type == AUDIO_EVENT, packet_event.timestamp);
       break;
     default:
       // Ignored
       break;
   }
 }
-
 
 }  // namespace cast
 }  // namespace media

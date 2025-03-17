@@ -19,12 +19,13 @@ CrashKeyImplementation* g_crash_key_impl = nullptr;
 
 CrashKeyString* AllocateCrashKeyString(const char name[],
                                        CrashKeySize value_length) {
-  if (!g_crash_key_impl)
+  if (!g_crash_key_impl) {
     return nullptr;
+  }
 
-    // TODO(crbug.com/40850825): It would be great if the DCHECKs below
-    // could also be enabled on Android, but debugging tryjob failures was a bit
-    // difficult... :-/
+  // TODO(crbug.com/40850825): It would be great if the DCHECKs below
+  // could also be enabled on Android, but debugging tryjob failures was a bit
+  // difficult... :-/
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_ANDROID)
   std::string_view name_piece = name;
 
@@ -44,22 +45,25 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
 }
 
 void SetCrashKeyString(CrashKeyString* crash_key, std::string_view value) {
-  if (!g_crash_key_impl || !crash_key)
+  if (!g_crash_key_impl || !crash_key) {
     return;
+  }
 
   g_crash_key_impl->Set(crash_key, value);
 }
 
 void ClearCrashKeyString(CrashKeyString* crash_key) {
-  if (!g_crash_key_impl || !crash_key)
+  if (!g_crash_key_impl || !crash_key) {
     return;
+  }
 
   g_crash_key_impl->Clear(crash_key);
 }
 
 void OutputCrashKeysToStream(std::ostream& out) {
-  if (!g_crash_key_impl)
+  if (!g_crash_key_impl) {
     return;
+  }
 
   g_crash_key_impl->OutputCrashKeysToStream(out);
 }

@@ -32,8 +32,7 @@ void PassthroughOAuthTokenGetter::InvalidateCache() {
   NOTIMPLEMENTED();
 }
 
-base::WeakPtr<PassthroughOAuthTokenGetter>
-PassthroughOAuthTokenGetter::GetWeakPtr() {
+base::WeakPtr<OAuthTokenGetter> PassthroughOAuthTokenGetter::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

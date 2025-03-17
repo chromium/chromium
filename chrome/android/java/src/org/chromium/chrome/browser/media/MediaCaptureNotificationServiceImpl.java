@@ -115,7 +115,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
             } else if (ACTION_SCREEN_CAPTURE_STOP.equals(action)) {
                 // Notify native to stop screen capture when the STOP button in notification
                 // is clicked.
-                final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(notificationId);
+                final int tabId = getTabIdFromNotificationId(notificationId);
+                final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
                 if (tab != null) {
                     MediaCaptureDevicesDispatcherAndroid.notifyStopped(tab.getWebContents());
                 }
@@ -173,7 +174,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     private void destroyNotification(int notificationId, @MediaType int mediaType) {
         if (doesNotificationExist(notificationId)) {
             if (mNotificationsType.get(notificationId) == MediaType.SCREEN_CAPTURE) {
-                final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(notificationId);
+                final int tabId = getTabIdFromNotificationId(notificationId);
+                final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
                 if (tab != null) {
                     WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
                     MediaCaptureOverlayController overlayController =
@@ -263,7 +265,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         notification.getNotification());
 
         if (mediaType == MediaType.SCREEN_CAPTURE) {
-            final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(notificationId);
+            final int tabId = getTabIdFromNotificationId(notificationId);
+            final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
             if (tab != null) {
                 WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
                 MediaCaptureOverlayController overlayController =
@@ -365,7 +368,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         }
     }
 
-    private static boolean shouldStartService(@MediaType int mediaType, int tabId) {
+    private static boolean shouldStartService(@MediaType int mediaType, int notificationId) {
         if (mediaType != MediaType.NO_MEDIA) return true;
         SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds =
@@ -373,7 +376,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS, null);
         if (notificationIds != null
                 && !notificationIds.isEmpty()
-                && notificationIds.contains(String.valueOf(tabId))) {
+                && notificationIds.contains(String.valueOf(notificationId))) {
             return true;
         }
         return false;
@@ -383,17 +386,18 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
      * Send an intent to MediaCaptureNotificationService to either create, update or destroy the
      * notification identified by tabId.
      *
-     * @param tabId Unique notification id.
+     * @param tabId Unique tab id.
      * @param webContents The webContents of the tab; used to get the current media type.
      * @param url Url of the current webrtc call.
      */
     public static void updateMediaNotificationForTab(
             Context context, int tabId, @Nullable WebContents webContents, GURL url) {
         @MediaType int mediaType = getMediaType(webContents);
-        if (!shouldStartService(mediaType, tabId)) return;
+        final int nofticationId = getNotificationIdFromTabId(tabId);
+        if (!shouldStartService(mediaType, nofticationId)) return;
         Intent intent = new Intent(context, MediaCaptureNotificationService.class);
         intent.setAction(ACTION_MEDIA_CAPTURE_UPDATE);
-        intent.putExtra(NOTIFICATION_ID_EXTRA, tabId);
+        intent.putExtra(NOTIFICATION_ID_EXTRA, nofticationId);
         intent.putExtra(NOTIFICATION_MEDIA_URL_EXTRA, url.getSpec());
         intent.putExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, mediaType);
         if (TabWindowManagerSingleton.getInstance().getTabById(tabId) != null) {
@@ -427,5 +431,15 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
+    }
+
+    // The tab IDs start from 0, but the notification ID for the foreground service cannot
+    // be 0. Therefore, set the notification ID to tab ID + 1.
+    private static int getNotificationIdFromTabId(int tabId) {
+        return tabId + 1;
+    }
+
+    private static int getTabIdFromNotificationId(int notificationId) {
+        return notificationId - 1;
     }
 }

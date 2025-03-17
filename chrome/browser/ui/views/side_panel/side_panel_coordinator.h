@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
@@ -73,12 +74,13 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   SidePanelRegistry* GetWindowRegistry();
 
   // SidePanelUI:
-  void Show(SidePanelEntry::Id entry_id,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
-                std::nullopt) override;
-  void Show(SidePanelEntry::Key entry_key,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
-                std::nullopt) override;
+  using SidePanelUI::Show;
+  void Show(
+      SidePanelEntry::Id entry_id,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
+  void Show(
+      SidePanelEntry::Key entry_key,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
   void Close() override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
@@ -181,7 +183,7 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   void ClearCachedEntryViews();
 
   void UpdatePanelIconAndTitle(const ui::ImageModel& icon,
-                               const std::u16string& text,
+                               std::u16string_view text,
                                const bool should_show_title_text,
                                const bool is_extension);
 
@@ -190,11 +192,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
                                views::View* starting_from) override;
 
   // PinnedToolbarActionsModel::Observer:
-  void OnActionAddedLocally(const actions::ActionId& id) override {}
-  void OnActionRemovedLocally(const actions::ActionId& id) override {}
-  void OnActionMovedLocally(const actions::ActionId& id,
-                            int from_index,
-                            int to_index) override {}
   void OnActionsChanged() override;
 
   SidePanelRegistry* GetActiveContextualRegistry() const;

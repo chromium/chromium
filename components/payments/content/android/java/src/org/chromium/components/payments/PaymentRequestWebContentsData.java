@@ -10,6 +10,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -21,8 +23,9 @@ import org.chromium.content_public.browser.WebContentsObserver;
  * user activation, which is recorded and tracked by the native PaymentRequestWebContentsManager.
  */
 @JNINamespace("payments::android")
+@NullMarked
 public class PaymentRequestWebContentsData extends WebContentsObserver implements UserData {
-    private static PaymentRequestWebContentsData sInstanceForTesting;
+    private static @Nullable PaymentRequestWebContentsData sInstanceForTesting;
 
     private static final class UserDataFactoryLazyHolder {
         private static final UserDataFactory<PaymentRequestWebContentsData> INSTANCE =
@@ -40,7 +43,7 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
      * @param webContents The web contents of the current PaymentRequest.
      * @return the PaymentRequestWebContentsData instance.
      */
-    public static PaymentRequestWebContentsData from(WebContents webContents) {
+    public static @Nullable PaymentRequestWebContentsData from(WebContents webContents) {
         return sInstanceForTesting != null
                 ? sInstanceForTesting
                 : ((WebContentsImpl) webContents)
@@ -59,10 +62,8 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
      * @return Whether there has been an activationless PaymentRequest.show() for this WebContents.
      */
     public boolean hadActivationlessShow() {
-        if (mWebContents == null) return false;
-        WebContents webContents = mWebContents.get();
+        WebContents webContents = getWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
-
         return PaymentRequestWebContentsDataJni.get().hadActivationlessShow(webContents);
     }
 
@@ -71,10 +72,8 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
      * tracked on the native side in PaymentRequestWebContentsManager.
      */
     public void recordActivationlessShow() {
-        if (mWebContents == null) return;
-        WebContents webContents = mWebContents.get();
+        WebContents webContents = getWebContents();
         if (webContents == null || webContents.isDestroyed()) return;
-
         PaymentRequestWebContentsDataJni.get().recordActivationlessShow(webContents);
     }
 

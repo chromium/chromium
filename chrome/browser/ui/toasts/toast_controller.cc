@@ -234,6 +234,8 @@ void ToastController::ShowToast(ToastParams params) {
       toast_registry_->GetToastSpecification(params.toast_id);
   CHECK(current_toast_spec);
   CHECK_EQ(current_toast_spec->has_menu(), !!params.menu_model);
+  CHECK(current_toast_spec->body_string_id() != 0 ||
+        params.body_string_override.has_value());
 
   currently_showing_toast_id_ = params.toast_id;
   const bool is_actionable =
@@ -273,11 +275,14 @@ void ToastController::CreateToast(ToastParams params,
   const ui::ImageModel* image_override = params.image_override.has_value()
                                              ? &params.image_override.value()
                                              : nullptr;
+  const std::u16string body_string =
+      params.body_string_override.has_value()
+          ? params.body_string_override.value()
+          : FormatString(spec->body_string_id(),
+                         params.body_string_replacement_params);
   auto toast_view = std::make_unique<toasts::ToastView>(
-      anchor_view,
-      FormatString(spec->body_string_id(),
-                   params.body_string_replacement_params),
-      spec->icon(), image_override, ShouldRenderToastOverWebContents(),
+      anchor_view, body_string, spec->icon(), image_override,
+      ShouldRenderToastOverWebContents(),
       base::BindRepeating(&RecordToastDismissReason, params.toast_id));
 
   if (spec->has_close_button()) {
@@ -293,7 +298,7 @@ void ToastController::CreateToast(ToastParams params,
             &RecordToastActionButtonClicked, params.toast_id)));
   }
 
-  if (params.menu_model) {
+  if (spec->has_menu()) {
     toast_view->AddMenu(std::move(params.menu_model));
   }
 
@@ -345,7 +350,6 @@ void ToastController::OnFullscreenStateChanged() {
 }
 
 void ToastController::ClearTabScopedToasts() {
-  toast_close_timer_.Stop();
   if (next_toast_params_.has_value()) {
     const ToastId toast_id = next_toast_params_.value().toast_id;
     const ToastSpecification* const specification =
@@ -360,6 +364,7 @@ void ToastController::ClearTabScopedToasts() {
       !toast_registry_
            ->GetToastSpecification(currently_showing_toast_id_.value())
            ->is_global_scope()) {
+    toast_close_timer_.Stop();
     CloseToast(toasts::ToastCloseReason::kAbort);
   }
 }

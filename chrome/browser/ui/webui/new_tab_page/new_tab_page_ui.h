@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -46,7 +46,6 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
-#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 
 namespace base {
 class RefCountedMemory;
@@ -74,6 +73,7 @@ class GoogleCalendarPageHandler;
 class OutlookCalendarPageHandler;
 class GURL;
 class MicrosoftAuthPageHandler;
+class MicrosoftFilesPageHandler;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
@@ -136,11 +136,6 @@ class NewTabPageUI : public ui::MojoWebUIController,
   void BindInterface(mojo::PendingReceiver<searchbox::mojom::PageHandler>
                          pending_page_handler);
 
-  // Instantiates the implementor of metrics_reporter::mojom::PageMetricsHost
-  // mojo interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
-
   // Instantiates the implementor of the
   // browser_command::mojom::CommandHandlerFactory mojo interface passing
   // the pending receiver that will be internally bound.
@@ -183,6 +178,13 @@ class NewTabPageUI : public ui::MojoWebUIController,
                      ntp::authentication::mojom::MicrosoftAuthPageHandler>
                          pending_receiver);
 
+  // Instantiates the implementor of
+  // file_suggestion::mojom::MicrosoftFilesPageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<file_suggestion::mojom::MicrosoftFilesPageHandler>
+          pending_receiver);
+
 #if !defined(OFFICIAL_BUILD)
   // Instantiates the implementor of the foo::mojom::FooHandler mojo interface
   // passing the pending receiver that will be internally bound.
@@ -201,6 +203,10 @@ class NewTabPageUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
+
+  void ConnectToParentDocument(
+      mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+          child_page);
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
@@ -262,7 +268,6 @@ class NewTabPageUI : public ui::MojoWebUIController,
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
-  MetricsReporter metrics_reporter_;
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
@@ -285,6 +290,7 @@ class NewTabPageUI : public ui::MojoWebUIController,
   std::unique_ptr<DriveSuggestionHandler> drive_handler_;
   std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
   std::unique_ptr<MicrosoftAuthPageHandler> microsoft_auth_handler_;
+  std::unique_ptr<MicrosoftFilesPageHandler> microsoft_files_handler_;
   std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -35,12 +35,13 @@ static void VerifyBus(AudioBus* bus,
                       ValueType type = ValueType::kNormal) {
   for (int ch = 0; ch < bus->channels(); ++ch) {
     const float v = start + ch * buffer_size * increment;
+    auto channel_data = bus->channel_span(ch);
     for (int i = offset; i < offset + frames; ++i) {
       float expected_value = v + (i - offset) * increment;
       if (type == ValueType::kFloat)
         expected_value /= std::numeric_limits<uint16_t>::max();
 
-      ASSERT_FLOAT_EQ(expected_value, bus->channel(ch)[i])
+      ASSERT_FLOAT_EQ(expected_value, channel_data[i])
           << "i=" << i << ", ch=" << ch;
     }
   }
@@ -174,35 +175,37 @@ TEST(AudioBufferQueueTest, ReadBitstream) {
   // The first audio buffer contains 4 frames.
   std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, buffer.frames());
   EXPECT_EQ(4, buffer.ReadFrames(buffer.frames(), 0, bus.get()));
-  VerifyBitstreamAudioBus(bus.get(), 2, 1, 1);
+  VerifyBitstreamAudioBus(bus.get(), 1, 1);
 
   // The second audio buffer contains 20 frames.
   EXPECT_EQ(20, buffer.ReadFrames(buffer.frames(), 0, bus.get()));
-  VerifyBitstreamAudioBus(bus.get(), 10, 9, 1);
+  VerifyBitstreamAudioBus(bus.get(), 9, 1);
 }
 
 TEST(AudioBufferQueueTest, ReadBitstreamIECDts) {
   const ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
   const int channels = ChannelLayoutToChannelCount(channel_layout);
   AudioBufferQueue buffer;
+  const size_t first_data_size = 4 * sizeof(float) * channels;
+  const size_t second_data_size = 20 * sizeof(float) * channels;
 
   // Add 4 frames of data.
   buffer.Append(MakeBitstreamAudioBuffer(kSampleFormatIECDts, channel_layout,
-                                         channels, kSampleRate, 1, 1, 4, 2,
-                                         kNoTimestamp));
+                                         channels, kSampleRate, 1, 1, 4,
+                                         first_data_size, kNoTimestamp));
   buffer.Append(MakeBitstreamAudioBuffer(kSampleFormatIECDts, channel_layout,
-                                         channels, kSampleRate, 9, 1, 20, 10,
-                                         kNoTimestamp));
+                                         channels, kSampleRate, 9, 1, 20,
+                                         second_data_size, kNoTimestamp));
   EXPECT_EQ(24, buffer.frames());
 
   // The first audio buffer contains 4 frames.
   std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, buffer.frames());
   EXPECT_EQ(4, buffer.ReadFrames(buffer.frames(), 0, bus.get()));
-  VerifyBitstreamAudioBus(bus.get(), 2, 1, 1);
+  VerifyBitstreamIECDtsAudioBus(bus.get(), first_data_size, 1, 1);
 
   // The second audio buffer contains 20 frames.
   EXPECT_EQ(20, buffer.ReadFrames(buffer.frames(), 0, bus.get()));
-  VerifyBitstreamAudioBus(bus.get(), 10, 9, 1);
+  VerifyBitstreamIECDtsAudioBus(bus.get(), second_data_size, 9, 1);
 }
 
 TEST(AudioBufferQueueTest, ReadF32) {

@@ -49,7 +49,7 @@ class SharesheetBubbleViewBrowserTest : public InProcessBrowserTest {
   void ShowUi() {
     views::Widget::Widgets old_widgets;
     for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(root_window, &old_widgets);
+      old_widgets.merge(views::Widget::GetAllChildWidgets(root_window));
     }
 
     ::sharesheet::SharesheetService* const sharesheet_service =
@@ -65,7 +65,7 @@ class SharesheetBubbleViewBrowserTest : public InProcessBrowserTest {
 
     views::Widget::Widgets new_widgets;
     for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(root_window, &new_widgets);
+      new_widgets.merge(views::Widget::GetAllChildWidgets(root_window));
     }
 
     views::Widget::Widgets added_widgets;

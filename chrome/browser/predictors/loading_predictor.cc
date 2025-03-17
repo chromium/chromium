@@ -97,6 +97,7 @@ void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
     return;
   }
 
+  // TODO(jbroman): Allow a non-default storage partition.
   content::StoragePartition* storage_partition =
       profile->GetDefaultStoragePartition();
 
@@ -134,8 +135,7 @@ LoadingPredictor::LoadingPredictor(const LoadingPredictorConfig& config,
       resource_prefetch_predictor_(
           std::make_unique<ResourcePrefetchPredictor>(config, profile)),
       stats_collector_(std::make_unique<LoadingStatsCollector>(
-          resource_prefetch_predictor_.get(),
-          config)),
+          resource_prefetch_predictor_.get())),
       loading_data_collector_(std::make_unique<LoadingDataCollector>(
           resource_prefetch_predictor_.get(),
           stats_collector_.get(),
@@ -427,7 +427,8 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
       preconnect_data.last_preconnect_time_ = now;
       preconnect_manager()->StartPreconnectUrl(
           url, true, network_anonymization_key,
-          kLoadingPredictorPreconnectTrafficAnnotation);
+          kLoadingPredictorPreconnectTrafficAnnotation,
+          /*storage_partition_config=*/nullptr);
     }
     return true;
   }
@@ -437,7 +438,8 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
     preconnect_data.last_preresolve_time_ = now;
     preconnect_manager()->StartPreresolveHost(
         url, network_anonymization_key,
-        kLoadingPredictorPreconnectTrafficAnnotation);
+        kLoadingPredictorPreconnectTrafficAnnotation,
+        /*storage_partition_config=*/nullptr);
     return true;
   }
 
@@ -466,7 +468,6 @@ void LoadingPredictor::PreconnectFinished(
 
   DCHECK(stats);
   active_hints_.erase(stats->url);
-  stats_collector_->RecordPreconnectStats(std::move(stats));
 }
 
 void LoadingPredictor::PrefetchInitiated(const GURL& url,
@@ -495,12 +496,14 @@ void LoadingPredictor::PreconnectURLIfAllowed(
     const GURL& url,
     bool allow_credentials,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    const content::StoragePartitionConfig* storage_partition_config) {
   if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_))
     return;
 
   preconnect_manager()->StartPreconnectUrl(
-      url, allow_credentials, network_anonymization_key, traffic_annotation);
+      url, allow_credentials, network_anonymization_key, traffic_annotation,
+      storage_partition_config);
 }
 
 void LoadingPredictor::MaybePrewarmResources(
@@ -531,6 +534,7 @@ void LoadingPredictor::MaybePrewarmResources(
   }
 
   if (!prewarm_http_disk_cache_manager_) {
+    // TODO(jbroman): Allow a non-default storage partition.
     prewarm_http_disk_cache_manager_ =
         std::make_unique<PrewarmHttpDiskCacheManager>(
             profile_->GetDefaultStoragePartition()
@@ -538,7 +542,8 @@ void LoadingPredictor::MaybePrewarmResources(
   }
 
   prewarm_http_disk_cache_manager_->MaybePrewarmResources(
-      top_frame_main_resource_url, PredictFetchedSubresourceUrls(*lcpp_stat));
+      initiator_origin, top_frame_main_resource_url,
+      PredictFetchedSubresourceUrls(*lcpp_stat));
 }
 
 }  // namespace predictors

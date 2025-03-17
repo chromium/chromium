@@ -11,10 +11,13 @@ import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.Autofil
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -30,6 +33,22 @@ class AutofillProfileItemViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == AUTOFILL_PROFILE) {
             FastCheckoutAutofillProfile profile = model.get(AUTOFILL_PROFILE);
+
+            TextView recordTypeTextView = view.findViewById(R.id.fast_checkout_record_type);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
+                if (profile.getRecordType() == RecordType.ACCOUNT_HOME) {
+                    recordTypeTextView.setText(
+                            view.getContext().getString(R.string.fast_checkout_record_type_home));
+                } else if (profile.getRecordType() == RecordType.ACCOUNT_WORK) {
+                    recordTypeTextView.setText(
+                            view.getContext().getString(R.string.fast_checkout_record_type_work));
+                }
+            }
+
+            ImageView addressImageView = view.findViewById(R.id.fast_checkout_address_icon);
+            addressImageView.setImageResource(profile.getAddressHomeAndWorkIconId());
+
             TextView fullNameView =
                     view.findViewById(R.id.fast_checkout_autofill_profile_item_name);
             fullNameView.setText(profile.getFullName());
@@ -54,6 +73,7 @@ class AutofillProfileItemViewBinder {
                     view.findViewById(R.id.fast_checkout_autofill_profile_item_phone_number);
             phoneNumber.setText(profile.getPhoneNumber());
 
+            hideIfEmpty(recordTypeTextView);
             hideIfEmpty(fullNameView);
             hideIfEmpty(streetAddressView);
             hideIfEmpty(postalCodeView);

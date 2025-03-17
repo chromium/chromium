@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mutator.h"
@@ -14,7 +15,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -142,6 +142,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   item.mode = TableViewAccountModeNonTappable;
   item.accessoryType = UITableViewCellAccessoryNone;
   item.accessibilityTraits = UIAccessibilityTraitStaticText;
+  item.managed = identityViewItem.managed;
 }
 
 - (TableViewItem*)removeAccountItemWithIdentityViewItem:
@@ -231,10 +232,6 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     return;
   }
   [self reloadData];
-}
-
-- (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded {
-  return;
 }
 
 - (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem {

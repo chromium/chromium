@@ -11,7 +11,7 @@ import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
 import("//tools/typescript/ts_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
@@ -65,8 +65,11 @@ ts_modules = [
   "cursors/recovery_strategy.ts",
   "event_generator.ts",
   "event_handler.ts",
+  "features.ts",
   "flags.ts",
-  "instance_checker.ts",
+  "mv2/instance_checker.ts",
+  "mv3/instance_checker.ts",
+  "keep_alive.ts",
   "key_code.ts",
   "local_storage.ts",
   "node_navigation_utils.ts",
@@ -167,6 +170,7 @@ source_set("browser_tests") {
 
 js2gtest("accessibility_tests") {
   test_type = "extension"
+
   sources = [
     "array_util_test.js",
     "automation_predicate_test.js",
@@ -174,6 +178,7 @@ js2gtest("accessibility_tests") {
     "cursors/cursors_test.js",
     "cursors/recovery_strategy_test.js",
     "event_generator_test.js",
+    "keep_alive_test.js",
     "local_storage_test.js",
     "paragraph_utils_overflow_test.js",
     "rect_util_test.js",
@@ -203,15 +208,14 @@ js2gtest("accessibility_tests") {
     "testing/snippets.js",
   ]
 
-  if (is_chromeos_ash) {
-    # The test base classes generate C++ code with these deps.
-    deps = [
-      "//ash",
-      "//base",
-      "//chrome/browser/ash/accessibility",
-      "//chrome/browser/ash/system_web_apps",
-      "//chrome/common",
-    ]
-  }
+  # The test base classes generate C++ code with these deps.
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/common",
+  ]
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }

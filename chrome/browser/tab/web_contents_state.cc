@@ -561,12 +561,6 @@ bool WebContentsState::ExtractNavigationEntries(
     return false;
   }
 
-  // TODO(crbug.com/41493935): Remove this once we have enough data to
-  // conclude whether V0 and V1 are still used.
-  constexpr size_t kHighestVersion = 3;
-  UMA_HISTOGRAM_EXACT_LINEAR("Android.WebContentsState.SavedStateVersion",
-                             saved_state_version, kHighestVersion);
-
   if (!saved_state_version) {
     // When |saved_state_version| is 0, it predates our notion of each tab
     // having a saved version id. For that version of tab serialization, we

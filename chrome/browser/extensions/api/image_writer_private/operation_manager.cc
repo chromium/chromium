@@ -28,95 +28,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/image_writer_ash.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #endif
 
 namespace image_writer_api = extensions::api::image_writer_private;
 
 namespace extensions {
 namespace image_writer {
-
-namespace {
-#if BUILDFLAG(IS_CHROMEOS)
-crosapi::mojom::Stage ToMojo(image_writer_api::Stage stage) {
-  switch (stage) {
-    case image_writer_api::Stage::kConfirmation:
-      return crosapi::mojom::Stage::kConfirmation;
-    case image_writer_api::Stage::kDownload:
-      return crosapi::mojom::Stage::kDownload;
-    case image_writer_api::Stage::kVerifyDownload:
-      return crosapi::mojom::Stage::kVerifyDownload;
-    case image_writer_api::Stage::kUnzip:
-      return crosapi::mojom::Stage::kUnzip;
-    case image_writer_api::Stage::kWrite:
-      return crosapi::mojom::Stage::kWrite;
-    case image_writer_api::Stage::kVerifyWrite:
-      return crosapi::mojom::Stage::kVerifyWrite;
-    case image_writer_api::Stage::kUnknown:
-    case image_writer_api::Stage::kNone:
-      return crosapi::mojom::Stage::kUnknown;
-  }
-}
-
-bool IsRemoteClientToken(const ExtensionId& id) {
-  // CrosapiManager is not initialized for unit test cases, since we have
-  // not enabled unit tests for Lacros.
-  // TODO(crbug.com/40773848): Always expect CrosapiManager::IsInitialized()
-  // once we enable unit test with Lacros integration.
-  if (!crosapi::CrosapiManager::IsInitialized())
-    return false;
-
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->image_writer_ash()
-      ->IsRemoteClientToken(id);
-}
-
-void DispatchOnWriteProgressToRemoteClient(
-    const std::string& client_token_string,
-    image_writer_api::Stage stage,
-    int progress) {
-  // CrosapiManager is not initialized for unit test cases, since we have
-  // not enabled unit tests for Lacros.
-  // TODO(crbug.com/40773848): Always expect CrosapiManager::IsInitialized()
-  // once we enable unit test with Lacros integration.
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->image_writer_ash()
-        ->DispatchOnWriteProgressEvent(client_token_string, ToMojo(stage),
-                                       progress);
-  }
-}
-
-void DispatchOnWriteCompleteToRemoteClient(
-    const std::string& client_token_string) {
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->image_writer_ash()
-        ->DispatchOnWriteCompleteEvent(client_token_string);
-  }
-}
-
-void DispatchOnWriteErrorToRemoteClient(const std::string& client_token_string,
-                                        image_writer_api::Stage stage,
-                                        uint32_t percent_complete,
-                                        const std::string& error) {
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->image_writer_ash()
-        ->DispatchOnWriteErrorEvent(client_token_string, ToMojo(stage),
-                                    percent_complete, error);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}  // namespace
 
 using content::BrowserThread;
 
@@ -243,21 +161,8 @@ void OperationManager::OnProgress(const ExtensionId& extension_id,
       events::IMAGE_WRITER_PRIVATE_ON_WRITE_PROGRESS,
       image_writer_api::OnWriteProgress::kEventName, std::move(args)));
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // If the the |extension_id| is a remote image writer client token string,
-  // dispatch the event to Lacros via crosapi; otherwise, it must be the id of
-  // the extension which makes the extension API call, dispatch the event to
-  // the extension.
-  if (IsRemoteClientToken(extension_id)) {
-    DispatchOnWriteProgressToRemoteClient(extension_id, stage, progress);
-  } else {
-    EventRouter::Get(browser_context_)
-        ->DispatchEventToExtension(extension_id, std::move(event));
-  }
-#else
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OperationManager::OnComplete(const ExtensionId& extension_id) {
@@ -268,21 +173,8 @@ void OperationManager::OnComplete(const ExtensionId& extension_id) {
       events::IMAGE_WRITER_PRIVATE_ON_WRITE_COMPLETE,
       image_writer_api::OnWriteComplete::kEventName, std::move(args)));
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // If the the |extension_id| is a remote image writer client token string,
-  // dispatch the event to Lacros via crosapi; otherwise, it must be the id of
-  // the extension which makes the extension API call, dispatch the event to
-  // the extension.
-  if (IsRemoteClientToken(extension_id)) {
-    DispatchOnWriteCompleteToRemoteClient(extension_id);
-  } else {
-    EventRouter::Get(browser_context_)
-        ->DispatchEventToExtension(extension_id, std::move(event));
-  }
-#else
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   DeleteOperation(extension_id);
 }
@@ -304,22 +196,8 @@ void OperationManager::OnError(const ExtensionId& extension_id,
       new Event(events::IMAGE_WRITER_PRIVATE_ON_WRITE_ERROR,
                 image_writer_api::OnWriteError::kEventName, std::move(args)));
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // If the the |extension_id| is a remote image writer client token string,
-  // dispatch the event to Lacros via crosapi; otherwise, it must be the id of
-  // the extension which makes the extension API call, dispatch the event to
-  // the extension.
-  if (IsRemoteClientToken(extension_id)) {
-    DispatchOnWriteErrorToRemoteClient(extension_id, stage, progress,
-                                       error_message);
-  } else {
-    EventRouter::Get(browser_context_)
-        ->DispatchEventToExtension(extension_id, std::move(event));
-  }
-#else
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   DeleteOperation(extension_id);
 }

@@ -32,7 +32,6 @@ enum class ProvisioningScenario {
   kUnknown = 0,
   kCertificateCreation = 1,
   kCertificateRenewal = 2,
-  kPublicKeySync = 3,
 };
 
 struct ProvisioningContext {
@@ -42,8 +41,6 @@ struct ProvisioningContext {
 
 void LogProvisioningError(ProvisioningError provisioning_error,
                           std::optional<StoreError> store_error);
-
-void LogKeySyncResponse(HttpCodeOrClientError upload_code);
 
 void LogCertificateCreationResponse(HttpCodeOrClientError upload_code,
                                     bool has_certificate);

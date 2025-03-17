@@ -11,9 +11,11 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
 
@@ -43,6 +45,11 @@ struct StreamingResponse {
 
   // True if streaming has finished.
   bool is_complete = false;
+
+  // The number of tokens in this response's input.
+  size_t input_token_count = 0;
+  // The number of tokens in this response.
+  size_t output_token_count = 0;
 };
 
 struct OptimizationGuideModelStreamingExecutionResult {
@@ -51,8 +58,6 @@ struct OptimizationGuideModelStreamingExecutionResult {
       base::expected<const StreamingResponse,
                      OptimizationGuideModelExecutionError> response,
       bool provided_by_on_device,
-      // TODO(372535824): remove this parameter.
-      std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr,
       std::unique_ptr<proto::ModelExecutionInfo> execution_info = nullptr);
 
   ~OptimizationGuideModelStreamingExecutionResult();
@@ -63,8 +68,6 @@ struct OptimizationGuideModelStreamingExecutionResult {
       response;
   // True if the response was computed on-device.
   bool provided_by_on_device = false;
-  // The log entry will be null until `StreamingResponse.is_complete` is true.
-  std::unique_ptr<ModelQualityLogEntry> log_entry;
   // The execution info will be null until `StreamingResponse.is_complete` is
   // true.
   std::unique_ptr<proto::ModelExecutionInfo> execution_info;
@@ -90,7 +93,7 @@ using OptimizationGuideModelExecutionResultStreamingCallback =
 
 // The callback for receiving the token size of the given input.
 using OptimizationGuideModelSizeInTokenCallback =
-    base::OnceCallback<void(uint32_t)>;
+    base::OnceCallback<void(std::optional<uint32_t>)>;
 
 // Params used to control sampling output tokens for the on-device model.
 struct SamplingParams {
@@ -127,6 +130,7 @@ struct SessionConfigParams {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(OnDeviceModelEligibilityReason)
 enum class OnDeviceModelEligibilityReason {
   kUnknown = 0,
   // Success.
@@ -144,8 +148,9 @@ enum class OnDeviceModelEligibilityReason {
   kGpuBlocked = 5,
   // The on-device model process crashed too many times for this version.
   kTooManyRecentCrashes = 6,
+  // DEPRECATED
   // The on-device model took too long too many times for this version.
-  kTooManyRecentTimeouts = 7,
+  // kTooManyRecentTimeouts = 7,
   // The on-device safety model was required but not available.
   kSafetyModelNotAvailable = 8,
   // The on-device safety model was available but there was not a safety config
@@ -173,12 +178,10 @@ enum class OnDeviceModelEligibilityReason {
   // downloaded yet.
   kNoOnDeviceFeatureUsed = 18,
 
-  // This must be kept in sync with
-  // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
-
   // Insert new values before this line.
   kMaxValue = kNoOnDeviceFeatureUsed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideOnDeviceModelEligibilityReason)
 
 std::ostream& operator<<(std::ostream& out,
                          const OnDeviceModelEligibilityReason& val);
@@ -214,10 +217,9 @@ struct TokenLimits {
 };
 
 // The configuration that specifies the default sampling params.
-// TODO(crbug.com/367771112): support `max_top_k` and `max_temperature`.
 struct SamplingParamsConfig {
-  std::optional<uint32_t> default_top_k;
-  std::optional<float> default_temperature;
+  uint32_t default_top_k;
+  float default_temperature;
 };
 
 // Interface for model execution.
@@ -230,7 +232,19 @@ class OptimizationGuideModelExecutor {
    public:
     virtual ~Session() = default;
 
+    // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+    virtual on_device_model::mojom::Session& GetSession() = 0;
+
     virtual const TokenLimits& GetTokenLimits() const = 0;
+
+    // Sets the input context for this session, replacing any previous context.
+    // This will generate prompt text from the feature config's
+    // "input_context_substitutions". Data provided here (including images) will
+    // be merged with data provided to an ExecuteModel() call and be available
+    // for use in later prompt templates based on the request. Calling this will
+    // cancel any ongoing executions and invoke their 'callback' methods with
+    // the 'kCancelled' error.
+    virtual void SetInput(MultimodalMessage request) = 0;
 
     // Adds context to this session. This will be saved for future Execute()
     // calls. Calling multiple times will replace previous calls to
@@ -266,14 +280,14 @@ class OptimizationGuideModelExecutor {
     // formatted by a call to `ExecuteModel()`. The result will be passed back
     // through the callback.
     virtual void GetExecutionInputSizeInTokens(
-        const google::protobuf::MessageLite& request_metadata,
+        MultimodalMessageReadView request_metadata,
         OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
     // Gets the size in tokens used by request_metadata as it would be formatted
     // by a call to `AddContext()`. The result will be passed back through the
     // callback.
     virtual void GetContextSizeInTokens(
-        const google::protobuf::MessageLite& request_metadata,
+        MultimodalMessageReadView request_metadata,
         OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
     // Return the sampling params for the current session.
@@ -282,6 +296,12 @@ class OptimizationGuideModelExecutor {
     // Returns the feature_metadata from the
     // OnDeviceModelExecutionFeatureConfig.
     virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
+
+    // Clones the session and associated context. Note that if the parent
+    // session is deleted and cancels context processing after clone, the
+    // context will also be cancelled for the clone.
+    // TODO: crbug.com/396211270 - Make clone independent of parent.
+    virtual std::unique_ptr<Session> Clone() = 0;
   };
 
   // Starts a session which allows streaming input and output from the model.

@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Pair;
 import android.view.KeyEvent;
 
@@ -53,7 +54,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
@@ -65,7 +65,6 @@ import java.util.List;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
 @Features.EnableFeatures({AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU})
-@DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/385151137
 public class ContextMenuTest extends AwParameterizedTest {
     private static final String FILE = "/main.html";
     private static final String DATA =
@@ -109,8 +108,10 @@ public class ContextMenuTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @SkipMutations(
-        reason = "This test uses DOMUtils.longPressNode() which is known"
-        + " to be flaky under modified scaling factor, see crbug.com/40840940")
+            reason =
+                    "This test uses DOMUtils.longPressNode() which is known"
+                            + " to be flaky under modified scaling factor, see crbug.com/40840940")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391715753")
     public void testCopyLinkText() throws Throwable {
         int item = Item.COPY_LINK_TEXT;
 
@@ -129,8 +130,10 @@ public class ContextMenuTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @SkipMutations(
-        reason = "This test uses DOMUtils.longPressNode() which is known"
-        + " to be flaky under modified scaling factor, see crbug.com/40840940")
+            reason =
+                    "This test uses DOMUtils.longPressNode() which is known"
+                            + " to be flaky under modified scaling factor, see crbug.com/40840940")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391715753")
     public void testCopyLinkURL() throws Throwable {
         int item = Item.COPY_LINK_ADDRESS;
 
@@ -149,8 +152,10 @@ public class ContextMenuTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @SkipMutations(
-        reason = "This test uses DOMUtils.longPressNode() which is known"
-        + " to be flaky under modified scaling factor, see crbug.com/40840940")
+            reason =
+                    "This test uses DOMUtils.longPressNode() which is known"
+                            + " to be flaky under modified scaling factor, see crbug.com/40840940")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391715753")
     public void testOpenInBrowser() throws Throwable {
         try {
             Intents.init();
@@ -179,8 +184,10 @@ public class ContextMenuTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @SkipMutations(
-        reason = "This test uses DOMUtils.longPressNode() which is known"
-        + " to be flaky under modified scaling factor, see crbug.com/40840940")
+            reason =
+                    "This test uses DOMUtils.longPressNode() which is known"
+                            + " to be flaky under modified scaling factor, see crbug.com/40840940")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391715753")
     public void testDismissContextMenuOnBack() throws Throwable {
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
@@ -206,8 +213,10 @@ public class ContextMenuTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @SkipMutations(
-        reason = "This test uses DOMUtils.longPressNode() which is known"
-        + " to be flaky under modified scaling factor, see crbug.com/40840940")
+            reason =
+                    "This test uses DOMUtils.longPressNode() which is known"
+                            + " to be flaky under modified scaling factor, see crbug.com/40840940")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391715753")
     public void testDismissContextMenuOnClick() throws Throwable {
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
@@ -307,7 +316,7 @@ public class ContextMenuTest extends AwParameterizedTest {
 
         String actualHeaderTitle = headerCoordinator.getTitle();
 
-        Assert.assertEquals(actualHeaderTitle, expectedHeaderText);
+        Assert.assertEquals(expectedHeaderText, actualHeaderTitle);
     }
 
     private void loadUrlSync(String url) throws Exception {

@@ -4,7 +4,7 @@ specific_include_rules = {
     "+ios/chrome/browser/reading_list/ui_bundled/ios_add_to_reading_list_infobar_delegate.h",
   ],
   "^confirm_infobar_banner_overlay_request_config.mm": [
-    "+ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h",
   ],
   "^sync_error_infobar_banner_overlay_request_config.mm": [
     "+ios/chrome/browser/settings/ui_bundled/sync/utils/sync_error_infobar_delegate.h",

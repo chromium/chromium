@@ -6,12 +6,12 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <optional>
 #include <sstream>
 #include <string_view>
 
 #include "base/json/json_writer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -107,7 +107,7 @@ GURL RemoveFragmentSelectorDirectives(const GURL& url) {
   for (const std::string& directive :
        base::SplitString(fragment_directive, kSelectorJoinDelimeter,
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    if (base::ranges::none_of(
+    if (std::ranges::none_of(
             directive_parameter_names,
             [&directive](std::string_view directive_parameter_name) {
               return base::StartsWith(directive, directive_parameter_name);

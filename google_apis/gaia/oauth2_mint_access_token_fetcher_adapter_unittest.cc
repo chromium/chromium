@@ -36,16 +36,16 @@ using testing::Le;
 using testing::Matcher;
 using testing::Property;
 
-const char kTestClientId[] = "test_client_id";
-const char kTestClientSecret[] = "test_client_secret";
-const char kTestScope[] = "test_scope";
-const char kTestRefreshToken[] = "test_refresh_token";
-const char kTestUserGaiaId[] = "test_gaia_id";
-const char kTestAccessToken[] = "test_access_token";
-const char kTestDeviceId[] = "test_device_id";
-const char kTestVersion[] = "test_version";
-const char kTestChannel[] = "test_channel";
-const char kTestAssertion[] = "test_assertion";
+constexpr char kTestClientId[] = "test_client_id";
+constexpr char kTestClientSecret[] = "test_client_secret";
+constexpr char kTestScope[] = "test_scope";
+constexpr char kTestRefreshToken[] = "test_refresh_token";
+constexpr GaiaId::Literal kTestUserGaiaId("test_gaia_id");
+constexpr char kTestAccessToken[] = "test_access_token";
+constexpr char kTestDeviceId[] = "test_device_id";
+constexpr char kTestVersion[] = "test_version";
+constexpr char kTestChannel[] = "test_channel";
+constexpr char kTestAssertion[] = "test_assertion";
 
 constexpr char kAssertionSentinel[] = "DBSC_CHALLENGE_IF_REQUIRED";
 
@@ -163,7 +163,7 @@ class OAuth2MintAccessTokenFetcherAdapterTest : public testing::Test {
   std::unique_ptr<OAuth2MintAccessTokenFetcherAdapter> CreateFetcher() {
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         &mock_consumer_, url_loader_factory_.GetSafeWeakWrapper(),
-        GaiaId(kTestUserGaiaId), kTestRefreshToken, kTestDeviceId, kTestVersion,
+        kTestUserGaiaId, kTestRefreshToken, kTestDeviceId, kTestVersion,
         kTestChannel);
     fetcher->SetOAuth2MintTokenFlowFactoryForTesting(base::BindRepeating(
         &OAuth2MintAccessTokenFetcherAdapterTest::CreateMockFlow,
@@ -213,7 +213,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Params) {
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
   expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
-      GaiaId(kTestUserGaiaId), kTestRefreshToken, kAssertionSentinel);
+      kTestUserGaiaId, kTestRefreshToken, kAssertionSentinel);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 
@@ -231,7 +231,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, ParamsWithBindingKeyAssertion) {
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
   expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
-      GaiaId(kTestUserGaiaId), kTestRefreshToken, kTestAssertion);
+      kTestUserGaiaId, kTestRefreshToken, kTestAssertion);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 

@@ -3675,7 +3675,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     }
 
     private static String buildEventList(Integer[] eventArray) {
-        Assert.assertEquals(EVENT.length, AUTOFILL_EVENT_MAX);
+        Assert.assertEquals(AUTOFILL_EVENT_MAX, EVENT.length);
         List<String> result = new ArrayList<String>(eventArray.length);
         for (Integer event : eventArray) result.add(EVENT[event]);
         return TextUtils.join(",", result);

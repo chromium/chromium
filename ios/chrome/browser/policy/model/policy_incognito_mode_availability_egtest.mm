@@ -87,15 +87,15 @@ id<GREYMatcher> TabGridButton() {
 }
 
 - (void)setupAndRegisterHistogramTester {
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   self.histogramTesterCreated = YES;
 }
 
 - (void)tearDownHelper {
   if (self.histogramTesterCreated) {
-    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                  @"Failed to release histogram tester.");
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseHistogramTester]);
     self.histogramTesterCreated = NO;
   }
   [super tearDownHelper];

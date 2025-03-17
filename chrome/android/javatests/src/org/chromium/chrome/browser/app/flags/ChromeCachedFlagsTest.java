@@ -22,7 +22,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.components.cached_flags.CachedFlag;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,17 +49,7 @@ public class ChromeCachedFlagsTest {
     // change.
     //
     // DO NOT ADD FLAGS TO THIS LIST.
-    private static final Set<CachedFlag> BASELINE =
-            Set.of(
-                    ChromeFeatureList.sDownloadsMigrateToJobsAPI,
-                    ChromeFeatureList.sPostGetMyMemoryStateToBackground,
-                    ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
-                    ChromeFeatureList.sSafetyHubMagicStack,
-                    ChromeFeatureList.sTabGroupPaneAndroid,
-                    ChromeFeatureList.sTabResumptionModuleAndroid,
-                    ChromeFeatureList.sTabStateFlatBuffer,
-                    ChromeFeatureList.sTraceBinderIpc,
-                    OmniboxFeatures.sAndroidHubSearch);
+    private static final Set<CachedFlag> BASELINE = Set.of(ChromeFeatureList.sSafetyHubMagicStack);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches

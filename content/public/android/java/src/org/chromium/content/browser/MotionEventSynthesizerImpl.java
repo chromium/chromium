@@ -10,9 +10,11 @@ import android.view.MotionEvent.PointerCoords;
 import android.view.MotionEvent.PointerProperties;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.MotionEventSynthesizer;
 
 /** Injects synthetic touch events. All the coordinates are of physical unit. */
+@NullMarked
 public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
     private static final int MAX_NUM_POINTERS = 16;
 

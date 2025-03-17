@@ -12,10 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.List;
@@ -35,6 +35,8 @@ public class AdaptiveToolbarStatePredictor {
     private static Integer sToolbarStateForTesting;
     private final Context mContext;
     @NonNull private final Profile mProfile;
+    private final AdaptiveToolbarBehavior mBehavior;
+
     @Nullable private final AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     /** The result of the predictor. Contains the UI states specific to the toolbar button. */
@@ -70,14 +72,19 @@ public class AdaptiveToolbarStatePredictor {
      * @param Context to determine form-factor.
      * @param profile The {@link Profile} associated with the toolbar state.
      * @param androidPermissionDelegate used for determining if voice search can be used
+     * @param behavior Embedder-specific toolbar behavior. The default one is used if {@code null}
+     *     is passed.
      */
     public AdaptiveToolbarStatePredictor(
             Context context,
             Profile profile,
-            @Nullable AndroidPermissionDelegate androidPermissionDelegate) {
+            @Nullable AndroidPermissionDelegate androidPermissionDelegate,
+            AdaptiveToolbarBehavior behavior) {
         mContext = context;
         mProfile = profile;
         mAndroidPermissionDelegate = androidPermissionDelegate;
+        mBehavior =
+                behavior != null ? behavior : AdaptiveToolbarBehavior.getDefaultBehavior(context);
     }
 
     /**
@@ -113,9 +120,7 @@ public class AdaptiveToolbarStatePredictor {
         boolean toolbarToggle = readToolbarToggleStateFromPrefs();
         readFromSegmentationPlatform(
                 segmentSelectionResults -> {
-                    int topSegmentationResult =
-                            AdaptiveToolbarFeatures.getTopSegmentationResult(
-                                    mContext, segmentSelectionResults);
+                    int topSegmentationResult = filterSegmentationResults(segmentSelectionResults);
                     UiState uiState =
                             new UiState(
                                     AdaptiveToolbarFeatures.isCustomizationEnabled(),
@@ -131,6 +136,10 @@ public class AdaptiveToolbarStatePredictor {
                                                     defaultSegment, topSegmentationResult)));
                     callback.onResult(uiState);
                 });
+    }
+
+    public int filterSegmentationResults(List<Integer> results) {
+        return mBehavior.resultFilter(results);
     }
 
     private @AdaptiveToolbarButtonVariant int getToolbarButtonState(
@@ -168,6 +177,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
             case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
+            case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
                 return true;
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
@@ -206,9 +216,8 @@ public class AdaptiveToolbarStatePredictor {
             return;
         }
 
-        boolean useRawResults = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         AdaptiveToolbarBridge.getSessionVariantButtons(
-                mProfile, useRawResults, result -> callback.onResult(result.second));
+                mProfile, mBehavior.useRawResults(), result -> callback.onResult(result.second));
     }
 
     /**
@@ -261,10 +270,12 @@ public class AdaptiveToolbarStatePredictor {
     /** For testing only. */
     public static void setSegmentationResultsForTesting(Pair<Boolean, List<Integer>> results) {
         sSegmentationResultsForTesting = results == null ? null : results.second;
+        ResettersForTesting.register(() -> sSegmentationResultsForTesting = null);
     }
 
     /** For testing only. */
     public static void setToolbarStateForTesting(Integer toolbarState) {
         sToolbarStateForTesting = toolbarState;
+        ResettersForTesting.register(() -> sToolbarStateForTesting = null);
     }
 }

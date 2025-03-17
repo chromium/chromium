@@ -24,6 +24,7 @@ aggregate_vector_icons("views_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
+    "account_box.icon",
     "arrow_drop_down.icon",
     "checkbox_active.icon",
     "checkbox_check_cr2023.icon",
@@ -49,7 +50,9 @@ aggregate_vector_icons("views_vector_icons") {
     "new_window.icon",
     "open.icon",
     "options.icon",
+    "password_change.icon",
     "pin.icon",
+    "psychiatry.icon",
     "radio_button_active.icon",
     "radio_button_normal.icon",
     "uninstall.icon",
@@ -80,8 +83,8 @@ component("views") {
     "accessibility/accessibility_paint_checks.h",
     "accessibility/atomic_view_ax_tree_manager.h",
     "accessibility/ax_attribute_changed_callbacks.h",
-    "accessibility/ax_event_manager.h",
-    "accessibility/ax_event_observer.h",
+    "accessibility/ax_update_notifier.h",
+    "accessibility/ax_update_observer.h",
     "accessibility/ax_virtual_view.h",
     "accessibility/view_accessibility.h",
     "accessibility/view_accessibility_utils.h",
@@ -114,6 +117,7 @@ component("views") {
     "animation/ink_drop_stub.h",
     "animation/ink_drop_util.h",
     "animation/pulsing_ink_drop_mask.h",
+    "animation/pulsing_path_ink_drop_mask.h",
     "animation/scroll_animator.h",
     "animation/slide_out_controller.h",
     "animation/slide_out_controller_delegate.h",
@@ -329,8 +333,8 @@ component("views") {
     "accessibility/accessibility_paint_checks.cc",
     "accessibility/atomic_view_ax_tree_manager.cc",
     "accessibility/ax_attribute_changed_callbacks.cc",
-    "accessibility/ax_event_manager.cc",
-    "accessibility/ax_event_observer.cc",
+    "accessibility/ax_update_notifier.cc",
+    "accessibility/ax_update_observer.cc",
     "accessibility/ax_virtual_view.cc",
     "accessibility/view_accessibility.cc",
     "accessibility/view_accessibility_utils.cc",
@@ -359,6 +363,7 @@ component("views") {
     "animation/ink_drop_stub.cc",
     "animation/ink_drop_util.cc",
     "animation/pulsing_ink_drop_mask.cc",
+    "animation/pulsing_path_ink_drop_mask.cc",
     "animation/scroll_animator.cc",
     "animation/slide_out_controller.cc",
     "animation/square_ink_drop_ripple.cc",
@@ -566,6 +571,7 @@ component("views") {
     "//skia",
     "//third_party/icu",
     "//ui/accessibility",
+    "//ui/accessibility/platform:platform",
     "//ui/actions",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom",
@@ -776,6 +782,8 @@ component("views") {
       "accessibility/ax_virtual_view_wrapper.h",
       "accessibility/ax_widget_obj_wrapper.h",
       "accessibility/ax_window_obj_wrapper.h",
+      "accessibility/tree/browser_views_ax_manager.h",
+      "accessibility/tree/views_ax_manager.h",
       "controls/native/native_view_host_aura.h",
       "corewm/tooltip.h",
       "corewm/tooltip_aura.h",
@@ -804,6 +812,8 @@ component("views") {
       "accessibility/ax_virtual_view_wrapper.cc",
       "accessibility/ax_widget_obj_wrapper.cc",
       "accessibility/ax_window_obj_wrapper.cc",
+      "accessibility/tree/browser_views_ax_manager.cc",
+      "accessibility/tree/views_ax_manager.cc",
       "controls/menu/menu_pre_target_handler_aura.cc",
       "controls/menu/menu_pre_target_handler_aura.h",
       "controls/native/native_view_host_aura.cc",
@@ -827,6 +837,7 @@ component("views") {
       sources += [ "accessibility/widget_ax_tree_id_map.cc" ]
     }
     deps += [
+      "//components/crash/core/common:crash_key",
       "//ui/aura",
       "//ui/base/cursor/mojom:cursor_type_shared",
       "//ui/events",
@@ -1401,7 +1412,6 @@ test("views_unittests") {
     ]
 
     sources += [
-      "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/test_list_grid_view.cc",
       "accessibility/test_list_grid_view.h",
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",
@@ -1419,6 +1429,7 @@ test("views_unittests") {
 
   if (has_native_accessibility) {
     sources += [
+      "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/ax_virtual_view_unittest.cc",
       "accessibility/view_accessibility_unittest.cc",
       "accessibility/view_ax_platform_node_delegate_unittest.cc",
@@ -1502,6 +1513,10 @@ test("views_unittests") {
 
     if (enable_desktop_aura || is_chromeos) {
       sources += [ "touchui/touch_selection_menu_runner_views_unittest.cc" ]
+    }
+
+    if (!is_chromeos) {
+      sources += [ "accessibility/tree/browser_views_ax_manager_unittest.cc" ]
     }
 
     if (enable_desktop_aura) {

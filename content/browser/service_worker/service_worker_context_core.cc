@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -229,7 +230,7 @@ class ClearAllServiceWorkersHelper
 int GetWarmedUpServiceWorkerCount(
     const std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>&
         live_versions) {
-  return base::ranges::count_if(live_versions, [](const auto& iter) {
+  return std::ranges::count_if(live_versions, [](const auto& iter) {
     ServiceWorkerVersion& service_worker_version = *iter.second;
     return service_worker_version.IsWarmingUp() ||
            service_worker_version.IsWarmedUp();
@@ -339,8 +340,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
   if (quota_manager_proxy) {
     quota_manager_proxy->RegisterClient(
         quota_client_receiver_->BindNewPipeAndPassRemote(),
-        storage::QuotaClientType::kServiceWorker,
-        {blink::mojom::StorageType::kTemporary});
+        storage::QuotaClientType::kServiceWorker);
   }
 
   registry_->GetRegisteredStorageKeys(
@@ -438,9 +438,25 @@ void ServiceWorkerClientOwner::HasMainFrameWindowClient(
 ScopedServiceWorkerClient
 ServiceWorkerClientOwner::CreateServiceWorkerClientForWindow(
     bool are_ancestors_secure,
-    FrameTreeNodeId frame_tree_node_id) {
+    FrameTreeNodeId ongoing_navigation_frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
-      context_->AsWeakPtr(), are_ancestors_secure, frame_tree_node_id);
+      context_->AsWeakPtr(), are_ancestors_secure,
+      ongoing_navigation_frame_tree_node_id);
+  auto weak_client = client->AsWeakPtr();
+  auto inserted = service_worker_clients_by_uuid_
+                      .emplace(weak_client->client_uuid(), std::move(client))
+                      .second;
+  DCHECK(inserted);
+  return ScopedServiceWorkerClient(std::move(weak_client));
+}
+
+ScopedServiceWorkerClient
+ServiceWorkerClientOwner::CreateServiceWorkerClientForPrefetch() {
+  // Currently prefetching is enabled only for top-level navigation.
+  const bool are_ancestors_secure = true;
+
+  auto client = std::make_unique<ServiceWorkerClient>(
+      context_->AsWeakPtr(), are_ancestors_secure, FrameTreeNodeId());
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))
@@ -520,7 +536,8 @@ void ServiceWorkerContextCore::OnClientDestroyed(
       service_worker_client.container_host()
           ? service_worker_client.container_host()->ukm_source_id()
           : ukm::kInvalidSourceId,
-      service_worker_client.url(), service_worker_client.GetClientType());
+      service_worker_client.GetUrlForScopeMatch(),
+      service_worker_client.GetClientType());
 }
 
 void ServiceWorkerClientOwner::DestroyServiceWorkerClient(
@@ -698,7 +715,8 @@ void ServiceWorkerContextCore::NotifyClientIsExecutionReady(
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientIsExecutionReady,
       service_worker_client.container_host()->ukm_source_id(),
-      service_worker_client.url(), service_worker_client.GetClientType());
+      service_worker_client.GetUrlForScopeMatch(),
+      service_worker_client.GetClientType());
 }
 
 bool ServiceWorkerContextCore::MaybeHasRegistrationForStorageKey(
@@ -1415,6 +1433,8 @@ ScopedServiceWorkerClient::CommitResponseAndRelease(
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     ukm::SourceId ukm_source_id) {
   if (!service_worker_client_) {
     return {};
@@ -1424,7 +1444,7 @@ ScopedServiceWorkerClient::CommitResponseAndRelease(
       service_worker_client_->CommitResponse(
           base::PassKey<ScopedServiceWorkerClient>(), std::move(rfh_id),
           policy_container_policies, std::move(coep_reporter),
-          std::move(ukm_source_id));
+          std::move(dip_reporter), std::move(ukm_source_id));
 
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_client_->controller()) {

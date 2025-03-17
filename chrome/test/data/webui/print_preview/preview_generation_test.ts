@@ -6,10 +6,6 @@ import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, Print
 import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
-
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, getDefaultInitialSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
@@ -33,9 +29,6 @@ suite('PreviewGenerationTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
@@ -259,7 +252,7 @@ suite('PreviewGenerationTest', function() {
   /** Validate changing the paper size updates the preview. */
   test('MediaSize', function() {
     const mediaSizeCapability =
-        getCddTemplate('FooDevice').capabilities!.printer!.media_size!;
+        getCddTemplate('FooDevice').capabilities!.printer.media_size!;
     const letterOption = mediaSizeCapability.option[0]!;
     const squareOption = mediaSizeCapability.option[1]!;
     return initialize()
@@ -571,12 +564,12 @@ suite('PreviewGenerationTest', function() {
               page.shadowRoot!.querySelector('print-preview-sidebar')!
                   .shadowRoot!.querySelector(
                       'print-preview-destination-settings')!;
-          assertEquals('FooDevice', destinationSettings.destination!.id);
+          assertEquals('FooDevice', destinationSettings.destination.id);
           assertEquals('FooDevice', originalTicket.deviceName);
           const barDestination =
               new Destination('BarDevice', DestinationOrigin.LOCAL, 'BarName');
           const capabilities = getCddTemplate(barDestination.id).capabilities!;
-          capabilities.printer!.media_size = {
+          capabilities.printer.media_size = {
             option: [
               {
                 name: 'ISO_A4',

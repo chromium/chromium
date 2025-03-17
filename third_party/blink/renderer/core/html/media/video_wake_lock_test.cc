@@ -57,6 +57,8 @@ class VideoWakeLockPictureInPictureSession final
               const viz::SurfaceId&,
               const gfx::Size&,
               bool show_play_pause_button) override {}
+  void UpdateMediaPosition(
+      media_session::mojom::blink::MediaPositionPtr) override {}
 
  private:
   mojo::Receiver<mojom::blink::PictureInPictureSession> receiver_;

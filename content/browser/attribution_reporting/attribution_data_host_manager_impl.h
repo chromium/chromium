@@ -108,9 +108,10 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       attribution_reporting::mojom::RegistrationEligibility,
       std::optional<blink::AttributionSrcToken> attribution_src_token,
       std::optional<std::string> devtools_request_id) override;
-  bool NotifyBackgroundRegistrationData(BackgroundRegistrationsId id,
-                                        const net::HttpResponseHeaders* headers,
-                                        GURL reporting_url) override;
+  bool NotifyBackgroundRegistrationData(
+      BackgroundRegistrationsId id,
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      GURL reporting_url) override;
   void NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId id) override;
 
@@ -392,13 +393,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       registrations_count_and_set_scopes_per_navigation_;
 
   data_decoder::DataDecoder data_decoder_;
-
-  // Holds the time value for the last registration received. Used for
-  // 'Conversions.RegistrationProcessed.TimeSinceLastRegistration' metric.
-  std::optional<base::Time> last_registration_time_;
-  // Holds the time value of the construction of the manager. Used for
-  // 'Conversions.RegistrationProcessed.TimeSinceManagerStartup' metric.
-  base::Time manager_startup_time_ = base::Time::Now();
 
   base::WeakPtrFactory<AttributionDataHostManagerImpl> weak_factory_{this};
 };

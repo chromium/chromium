@@ -28,6 +28,10 @@ class FilledCardInformationBubbleController;
 class FilledCardInformationBubbleViews : public AutofillLocationBarBubble {
   METADATA_HEADER(FilledCardInformationBubbleViews, AutofillLocationBarBubble)
  public:
+  // View IDs used for testing specific views.
+  static constexpr int kCardImage = 654;
+  static constexpr int kCardName = 3454;
+
   // The bubble will be anchored to the |anchor_view|.
   FilledCardInformationBubbleViews(
       views::View* anchor_view,
@@ -42,6 +46,8 @@ class FilledCardInformationBubbleViews : public AutofillLocationBarBubble {
  private:
   FRIEND_TEST_ALL_PREFIXES(FilledCardInformationBubbleViewsInteractiveUiTest,
                            TooltipAndAccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(FilledCardInformationBubbleViewsInteractiveUiTest,
+                           BnplTooltipAndAccessibleName);
 
   // AutofillBubbleBase:
   void Hide() override;

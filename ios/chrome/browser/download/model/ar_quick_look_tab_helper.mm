@@ -139,8 +139,9 @@ void ARQuickLookTabHelper::Download(
   // Calling DownloadTask::Start() may cause the task to be immediately
   // destroyed (e.g. if it is in error). Only call `LogHistogram` is it
   // is still valid and owned by the current object.
-  if (download_task_)
+  if (download_task_) {
     LogHistogram(download_task_.get());
+  }
 }
 
 void ARQuickLookTabHelper::DidFinishDownload() {

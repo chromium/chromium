@@ -307,6 +307,9 @@ TEST_F(SafetyCheckNotificationClientTest, FiresTriggeredHistogram) {
   histogram_tester.ExpectBucketCount(
       "IOS.Notifications.SafetyCheck.Triggered",
       static_cast<int>(SafetyCheckNotificationType::kPasswords), 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.Notification.Received",
+      static_cast<int>(NotificationType::kSafetyCheckPasswords), 1);
 }
 
 // Tests that a notification is not scheduled if one has already been

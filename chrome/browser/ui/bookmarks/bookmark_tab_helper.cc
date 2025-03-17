@@ -6,7 +6,6 @@
 
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,7 +67,7 @@ bool BookmarkTabHelper::ShouldShowBookmarkBar() const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (profile->IsGuestSession()) {
     return false;
   }

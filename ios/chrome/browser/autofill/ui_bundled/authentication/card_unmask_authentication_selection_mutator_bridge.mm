@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_mutator_bridge.h"
+
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_mutator_bridge_target.h"
 
 @implementation CardUnmaskAuthenticationSelectionMutatorBridge {

@@ -14,6 +14,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/reconciling_template_url_data_holder.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -62,8 +63,6 @@ class DefaultSearchManager
   static const char kSearchURLPostParams[];
   static const char kSuggestionsURLPostParams[];
   static const char kImageURLPostParams[];
-  static const char kSideSearchParam[];
-  static const char kSideImageSearchParam[];
   static const char kImageSearchBrandingLabel[];
   static const char kSearchIntentParams[];
   static const char kImageTranslateSourceLanguageParamKey[];
@@ -82,6 +81,7 @@ class DefaultSearchManager
   static const char kDisabledByPolicy[];
   static const char kCreatedFromPlayAPI[];
   static const char kFeaturedByPolicy[];
+  static const char kRequireShortcut[];
   static const char kPreconnectToSearchUrl[];
   static const char kPrefetchLikelyNavigations[];
   static const char kIsActive[];
@@ -92,7 +92,7 @@ class DefaultSearchManager
 
   enum Source {
     // Default search engine chosen either from prepopulated engines set for
-    // current country or overriden from kSearchProviderOverrides preference.
+    // current country or overridden from kSearchProviderOverrides preference.
     FROM_FALLBACK = 0,
     // User selected engine.
     FROM_USER,
@@ -112,6 +112,7 @@ class DefaultSearchManager
   DefaultSearchManager(
       PrefService* pref_service,
       search_engines::SearchEngineChoiceService* search_engine_choice_service,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       const ObserverCallback& change_observer);
 
   DefaultSearchManager(const DefaultSearchManager&) = delete;
@@ -196,6 +197,8 @@ class DefaultSearchManager
   base::ScopedObservation<search_engines::SearchEngineChoiceService,
                           search_engines::SearchEngineChoiceService::Observer>
       search_engine_choice_service_observation_{this};
+
+  raw_ref<TemplateURLPrepopulateData::Resolver> prepopulate_data_resolver_;
 
   // Default search engine provided by pre-populated data or by the
   // |kSearchProviderOverrides| pref. This will be used when no other default

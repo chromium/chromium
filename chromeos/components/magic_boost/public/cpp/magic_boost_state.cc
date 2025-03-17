@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace {
 chromeos::MagicBoostState* g_magic_boost_state = nullptr;
@@ -42,11 +43,15 @@ void MagicBoostState::RemoveObserver(MagicBoostState::Observer* observer) {
 
 bool MagicBoostState::ShouldShowHmrCard() {
   // Should not show if consent_status is `kDeclined` (users explicitly decline
-  // in the opt-in flow), or `kUnset` (both Quick Answers and Mahi is not
-  // consented to show yet).
-  if (hmr_consent_status_ == HMRConsentStatus::kDeclined ||
-      hmr_consent_status_ == HMRConsentStatus::kUnset) {
+  // in the opt-in flow). In case the consent status is `kUnset` (both Quick
+  // Answers and Mahi is not consented to show yet), we would see the HMR card
+  // when using the Magic Boost revamped logic.
+  if (hmr_consent_status_ == HMRConsentStatus::kDeclined) {
     return false;
+  }
+
+  if (hmr_consent_status_ == HMRConsentStatus::kUnset) {
+    return chromeos::features::IsMagicBoostRevampEnabled();
   }
 
   if (hmr_consent_status_.has_value()) {

@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/test/mock_callback.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
 #include "remoting/base/protobuf_http_client_test_messages.pb.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +25,7 @@ constexpr char kSecondTestMessage[] = "This is the second message.";
 constexpr char kThirdTestMessage[] = "This is the third message.";
 
 MATCHER(IsCancelStatus, "") {
-  return arg.error_code() == ProtobufHttpStatus::Code::CANCELLED &&
+  return arg.error_code() == HttpStatus::Code::CANCELLED &&
          arg.error_message() == "Cancelled";
 }
 
@@ -94,7 +94,7 @@ TEST_F(ProtobufHttpStreamParserTest, CloseStreamWithCancelled) {
 
   protobufhttpclient::StreamBody stream_body;
   stream_body.mutable_status()->set_code(
-      static_cast<int>(ProtobufHttpStatus::Code::CANCELLED));
+      static_cast<int>(HttpStatus::Code::CANCELLED));
   stream_body.mutable_status()->set_message("Cancelled");
   stream_parser_.Append(stream_body.SerializeAsString());
 }

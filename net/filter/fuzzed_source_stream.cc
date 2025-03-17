@@ -16,10 +16,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/filter/source_stream_type.h"
 
 namespace net {
 
@@ -31,7 +31,7 @@ const Error kReadErrors[] = {OK, ERR_FAILED, ERR_CONTENT_DECODING_FAILED};
 }  // namespace
 
 FuzzedSourceStream::FuzzedSourceStream(FuzzedDataProvider* data_provider)
-    : SourceStream(SourceStream::TYPE_NONE), data_provider_(data_provider) {}
+    : SourceStream(SourceStreamType::kNone), data_provider_(data_provider) {}
 
 FuzzedSourceStream::~FuzzedSourceStream() {
   DCHECK(!read_pending_);
@@ -54,7 +54,7 @@ int FuzzedSourceStream::Read(IOBuffer* buf,
 
   if (sync) {
     if (result > 0) {
-      base::ranges::copy(data, buf->data());
+      std::ranges::copy(data, buf->data());
     } else {
       end_returned_ = true;
     }

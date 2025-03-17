@@ -79,6 +79,7 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
   base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
+  base::TimeDelta GetDeleteExpiredOsRegistrationsFrequency() const override;
   base::Uuid NewReportID() const override;
   std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;

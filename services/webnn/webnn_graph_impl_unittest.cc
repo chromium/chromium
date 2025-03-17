@@ -165,8 +165,9 @@ CreateTensorSuccess CreateWebNNTensor(
     std::vector<uint32_t> shape) {
   base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
   webnn_context->CreateTensor(
-      mojom::TensorInfo::New(*OperandDescriptor::Create(data_type, shape),
-                             MLTensorUsage()),
+      mojom::TensorInfo::New(
+          OperandDescriptor::UnsafeCreateForTesting(data_type, shape),
+          MLTensorUsage()),
       create_tensor_future.GetCallback());
   mojom::CreateTensorResultPtr create_tensor_result =
       create_tensor_future.Take();
@@ -1785,7 +1786,7 @@ struct ElementWiseBinaryTester {
   OperandInfo output;
   bool expected;
 
-  static constexpr std::array<mojom::ElementWiseBinary::Kind, 15>
+  static constexpr std::array<mojom::ElementWiseBinary::Kind, 16>
       kAllBinaryOps = {
           mojom::ElementWiseBinary::Kind::kAdd,
           mojom::ElementWiseBinary::Kind::kSub,
@@ -1799,6 +1800,7 @@ struct ElementWiseBinaryTester {
           mojom::ElementWiseBinary::Kind::kGreaterOrEqual,
           mojom::ElementWiseBinary::Kind::kLesser,
           mojom::ElementWiseBinary::Kind::kLesserOrEqual,
+          mojom::ElementWiseBinary::Kind::kNotEqual,
           mojom::ElementWiseBinary::Kind::kLogicalAnd,
           mojom::ElementWiseBinary::Kind::kLogicalOr,
           mojom::ElementWiseBinary::Kind::kLogicalXor,
@@ -1818,6 +1820,7 @@ struct ElementWiseBinaryTester {
       case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
       case mojom::ElementWiseBinary::Kind::kLesser:
       case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+      case mojom::ElementWiseBinary::Kind::kNotEqual:
         return OperandDataType::kFloat32;
       case mojom::ElementWiseBinary::Kind::kLogicalAnd:
       case mojom::ElementWiseBinary::Kind::kLogicalOr:
@@ -1841,6 +1844,7 @@ struct ElementWiseBinaryTester {
       case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
       case mojom::ElementWiseBinary::Kind::kLesser:
       case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+      case mojom::ElementWiseBinary::Kind::kNotEqual:
       case mojom::ElementWiseBinary::Kind::kLogicalAnd:
       case mojom::ElementWiseBinary::Kind::kLogicalOr:
       case mojom::ElementWiseBinary::Kind::kLogicalXor:
@@ -1873,6 +1877,7 @@ struct ElementWiseBinaryTester {
         mojom::ElementWiseBinary::Kind::kGreaterOrEqual,
         mojom::ElementWiseBinary::Kind::kLesser,
         mojom::ElementWiseBinary::Kind::kLesserOrEqual,
+        mojom::ElementWiseBinary::Kind::kNotEqual,
     };
 
     for (const auto& op : kLogicalOperators) {

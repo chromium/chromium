@@ -7,6 +7,7 @@
 #include "base/process/kill.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/mac/sandbox_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -29,18 +30,14 @@ MULTIPROCESS_TEST_MAIN(ServerTest) {
   std::string exec_path = "/bin/ls";
   std::string allowed_path = "/Applications";
 
-  mac::SandboxPolicy policy;
-  CHECK(policy.mutable_source()
-            ->mutable_params()
-            ->insert({"ALLOWED_READ_DIR", allowed_path})
-            .second);
-  CHECK(policy.mutable_source()
-            ->mutable_params()
-            ->insert({"EXECUTABLE_PATH", exec_path})
-            .second);
-  policy.mutable_source()->set_profile(profile);
+  SandboxSerializer serializer(SandboxSerializer::Target::kSource);
+  serializer.SetProfile(profile);
+  CHECK(serializer.SetParameter("ALLOWED_READ_DIR", allowed_path));
+  CHECK(serializer.SetParameter("EXECUTABLE_PATH", exec_path));
 
-  CHECK(exec_server.ApplySandboxProfile(policy));
+  std::string error, serialized;
+  CHECK(serializer.SerializePolicy(serialized, error)) << error;
+  CHECK(serializer.ApplySerializedPolicy(serialized));
 
   // Test that the sandbox profile is actually applied.
   struct stat sb;

@@ -123,8 +123,8 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
                                            const ComputedStyle& new_style) {
   NOT_DESTROYED();
   // Change of stacked/stacking context status may cause change of this or
-  // descendant PaintLayer's CompositingContainer, so we need to eagerly
-  // invalidate the current compositing container chain which may have painted
+  // descendant PaintLayer's PaintingContainer, so we need to eagerly
+  // invalidate the current PaintingContainer chain which may have painted
   // cached subsequences containing this object or descendant objects.
   if (Style() &&
       (IsStacked() != IsStacked(new_style) ||
@@ -265,10 +265,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (Layer()) {
-    // The previous CompositingContainer chain was marked for repaint via
+    // The previous PaintingContainer chain was marked for repaint via
     // |LayoutBoxModelObject::StyleWillChange| but changes to stacking can
-    // change the compositing container so we need to ensure the new
-    // CompositingContainer is also marked for repaint.
+    // change the PaintingContainer so we need to ensure the new
+    // PaintingContainer is also marked for repaint.
     if (old_style &&
         (IsStacked() != IsStacked(*old_style) ||
          IsStackingContext() != IsStackingContext(*old_style)) &&
@@ -420,6 +420,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 }
 
 void LayoutBoxModelObject::RecalcVisualOverflow() {
+  NOT_DESTROYED();
   // |PaintLayer| calls this function when |HasSelfPaintingLayer|. When |this|
   // is an inline box or an atomic inline, its ink overflow is stored in
   // |FragmentItem| in the inline formatting context.
@@ -440,6 +441,7 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
 
 bool LayoutBoxModelObject::ShouldBeHandledAsInline(
     const ComputedStyle& style) const {
+  NOT_DESTROYED();
   if (style.IsDisplayInlineType()) {
     return true;
   }
@@ -453,14 +455,16 @@ bool LayoutBoxModelObject::ShouldBeHandledAsInline(
 
 void LayoutBoxModelObject::UpdateFromStyle() {
   NOT_DESTROYED();
-  const ComputedStyle& style_to_use = StyleRef();
-  SetHasBoxDecorationBackground(style_to_use.HasBoxDecorationBackground());
-  SetInline(ShouldBeHandledAsInline(style_to_use));
-  SetPositionState(style_to_use.GetPosition());
-  SetHorizontalWritingMode(style_to_use.IsHorizontalWritingMode());
+  const ComputedStyle& style = StyleRef();
+  SetHasBoxDecorationBackground(style.HasBoxDecorationBackground());
+  SetInline(ShouldBeHandledAsInline(style));
+  SetPositionState(style.GetPosition());
+  SetHorizontalWritingMode(style.IsHorizontalWritingMode());
+
+  const bool is_fixed_container = ComputeIsFixedContainer(style);
+  SetCanContainFixedPositionObjects(is_fixed_container);
   SetCanContainAbsolutePositionObjects(
-      ComputeIsAbsoluteContainer(&style_to_use));
-  SetCanContainFixedPositionObjects(ComputeIsFixedContainer(&style_to_use));
+      ComputeIsAbsoluteContainer(style, is_fixed_container));
   SetIsBackgroundAttachmentFixedObject(
       !BackgroundTransfersToView() &&
       StyleRef().HasFixedAttachmentBackgroundImage());
@@ -468,6 +472,7 @@ void LayoutBoxModelObject::UpdateFromStyle() {
 
 void LayoutBoxModelObject::UpdateCanCompositeBackgroundAttachmentFixed(
     bool enable_composited_background_attachment_fixed) {
+  NOT_DESTROYED();
   SetCanCompositeBackgroundAttachmentFixed(
       enable_composited_background_attachment_fixed &&
       ComputeCanCompositeBackgroundAttachmentFixed());
@@ -504,6 +509,7 @@ PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
 }
 
 LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
+  NOT_DESTROYED();
   return ContainingBlock();
 }
 
@@ -536,8 +542,9 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   const PhysicalOffset scroll_container_border_offset(
       scroll_container->BorderLeft(), scroll_container->BorderTop());
 
-  MapCoordinatesFlags flags =
-      kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
+  MapCoordinatesFlags flags = kIgnoreTransforms | kIgnoreScrollOffset |
+                              kIgnoreStickyOffset |
+                              kIgnoreScrollOriginAndOffset;
 
   // Compute the sticky-container rect.
   {
@@ -676,6 +683,17 @@ PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
   // present, but there are callsites within Layout for it.
   auto* constraints = StickyConstraints();
   return constraints ? constraints->StickyOffset() : PhysicalOffset();
+}
+
+PhysicalOffset LayoutBoxModelObject::OffsetFromContainerInternal(
+    const LayoutObject* container,
+    MapCoordinatesFlags mode) const {
+  NOT_DESTROYED();
+  PhysicalOffset offset;
+  if (IsStickyPositioned() && !(mode & kIgnoreStickyOffset)) {
+    offset += StickyPositionOffset();
+  }
+  return offset + LayoutObject::OffsetFromContainerInternal(container, mode);
 }
 
 PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
@@ -840,8 +858,8 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   }
   x = std::min(x, (max_x - caret_width).ClampNegativeToZero());
 
-  const Font& font = StyleRef().GetFont();
-  const SimpleFontData* font_data = font.PrimaryFont();
+  const Font* font = StyleRef().GetFont();
+  const SimpleFontData* font_data = font->PrimaryFont();
   LayoutUnit height;
   // crbug.com/595692 This check should not be needed but sometimes
   // primaryFont is null.

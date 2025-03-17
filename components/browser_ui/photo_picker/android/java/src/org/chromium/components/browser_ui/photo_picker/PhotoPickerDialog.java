@@ -4,11 +4,15 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.ContentResolver;
 import android.net.Uri;
 
 import androidx.activity.OnBackPressedCallback;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.ui.base.PhotoPicker;
 import org.chromium.ui.base.PhotoPickerListener;
@@ -20,6 +24,7 @@ import java.util.List;
  * UI for the photo chooser that shows on the Android platform as a result of &lt;input type=file
  * accept=image &gt; form element.
  */
+@NullMarked
 public class PhotoPickerDialog extends FullscreenAlertDialog
         implements PhotoPickerToolbar.PhotoPickerToolbarDelegate, PhotoPicker {
 
@@ -50,7 +55,8 @@ public class PhotoPickerDialog extends FullscreenAlertDialog
 
         // PhotoPickerListener:
         @Override
-        public void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos) {
+        public void onPhotoPickerUserAction(
+                @PhotoPickerAction int action, Uri @Nullable [] photos) {
             mExternalIntentSelected = false;
             if (action == PhotoPickerAction.LAUNCH_GALLERY
                     || action == PhotoPickerAction.LAUNCH_CAMERA) {
@@ -87,7 +93,7 @@ public class PhotoPickerDialog extends FullscreenAlertDialog
             PhotoPickerListener listener,
             boolean multiSelectionAllowed,
             List<String> mimeTypes) {
-        super(windowAndroid.getContext().get());
+        super(assertNonNull(windowAndroid.getContext().get()));
 
         mListenerWrapper = new PhotoPickerListenerWrapper(listener);
 

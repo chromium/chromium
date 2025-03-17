@@ -4,37 +4,56 @@
 
 package org.chromium.chrome.browser.read_later;
 
+import android.app.Activity;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * A {@link BackPressHandler} intercepting back press when the current selected tab is launched
- * from reading list.
+ * A {@link BackPressHandler} intercepting back press when the current selected tab is launched from
+ * reading list.
  */
+@NullMarked
 public class ReadingListBackPressHandler implements BackPressHandler, Destroyable {
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
     private final ActivityTabTabObserver mActivityTabTabObserver;
-    private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private final ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
 
-    private BookmarkId mLastUsedParent;
+    private @Nullable BookmarkId mLastUsedParent;
 
+    /**
+     * @param activity The android activity.
+     * @param activityTabProvider Provides the current activity tab.
+     * @param bookmarkModelSupplier Supplier the BookmarkModel, used to get the last used url of the
+     *     bookmarks manager.
+     * @param bookmarkManagerOpenerSupplier Supplies the BookmarkManagerOpenerSupplier, used to open
+     *     the bookmarks manager.
+     */
     public ReadingListBackPressHandler(
+            Activity activity,
             ActivityTabProvider activityTabProvider,
-            ObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
+            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
+        mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         mActivityTabTabObserver =
                 new ActivityTabTabObserver(mActivityTabProvider, true) {
@@ -51,7 +70,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
                         }
                     }
                 };
-        mBookmarkModelSupplier = bookmarkModelSupplier;
+        mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
     }
 
     // After {@link BookmarkModel} is available, load it then query the last used URL and store it
@@ -64,7 +83,8 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
                     // to tracking it here.
                     BookmarkUiState lastUsedState =
                             BookmarkUiState.createStateFromUrl(
-                                    BookmarkUtils.getLastUsedUrl(), bookmarkModel);
+                                    mBookmarkManagerOpenerSupplier.get().getLastUsedUrl(),
+                                    bookmarkModel);
                     mLastUsedParent = lastUsedState.getFolder();
                 });
     }
@@ -72,13 +92,17 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     @Override
     public @BackPressResult int handleBackPress() {
         Tab tab = mActivityTabProvider.get();
-        int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
-        if (mBookmarkModelSupplier.hasValue()
-                && mBookmarkModelSupplier.get().areAccountBookmarkFoldersActive()) {
-            BookmarkUtils.showBookmarkManager(null, mLastUsedParent, tab.isIncognito());
-        } else {
-            ReadingListUtils.showReadingList(tab.isIncognito());
+        if (tab == null) {
+            return BackPressResult.FAILURE;
         }
+        int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
+        // If the last used parent failed to load somehow, default to the local reading list.
+        if (mLastUsedParent == null) {
+            mLastUsedParent = new BookmarkId(/* id= */ 0, BookmarkType.READING_LIST);
+        }
+        mBookmarkManagerOpenerSupplier
+                .get()
+                .showBookmarkManager(mActivity, tab.getProfile(), mLastUsedParent);
 
         WebContents webContents = tab.getWebContents();
         if (webContents != null) webContents.dispatchBeforeUnload(false);

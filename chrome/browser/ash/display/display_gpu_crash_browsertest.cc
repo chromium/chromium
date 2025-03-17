@@ -83,7 +83,8 @@ class TestSurfaceIdObserver : public ui::CompositorObserver {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInMirror) {
+// TODO(crbug.com/388451843): Flaky on ChromeOS release.
+IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInMirror) {
   display::test::DisplayManagerTestApi test_api(GetDisplayManager());
   test_api.UpdateDisplay("1300x1000,1000x800");
   ASSERT_EQ(2u, GetDisplayManager()->GetNumDisplays());

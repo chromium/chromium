@@ -25,6 +25,9 @@
 
 namespace net {
 
+class DrainableIOBuffer;
+class GrowableIOBuffer;
+
 // This StreamSocket is used to setup a SOCKSv5 handshake with a socks proxy.
 // Currently no SOCKSv5 authentication is supported.
 class NET_EXPORT_PRIVATE SOCKS5ClientSocket : public StreamSocket {
@@ -115,9 +118,8 @@ class NET_EXPORT_PRIVATE SOCKS5ClientSocket : public StreamSocket {
   int DoGreetWrite();
   int DoGreetWriteComplete(int result);
 
-  // Writes the SOCKS handshake buffer into |handshake|
-  // and return OK on success.
-  int BuildHandshakeWriteBuffer(std::string* handshake) const;
+  // Creates a DrainableIOBuffer containing the SOCKS handshake.
+  scoped_refptr<DrainableIOBuffer> BuildHandshakeWriteBuffer() const;
 
   CompletionRepeatingCallback io_callback_;
 
@@ -129,24 +131,16 @@ class NET_EXPORT_PRIVATE SOCKS5ClientSocket : public StreamSocket {
   // Stores the callback to the layer above, called on completing Connect().
   CompletionOnceCallback user_callback_;
 
-  // This IOBuffer is used by the class to read and write
-  // SOCKS handshake data. The length contains the expected size to
-  // read or write.
-  scoped_refptr<IOBuffer> handshake_buf_;
+  // The write buffer used for both the handshake and greet data. Once entirely
+  // written, it's time to advance to the next phase.
+  scoped_refptr<DrainableIOBuffer> write_buf_;
 
-  // While writing, this buffer stores the complete write handshake data.
-  // While reading, it stores the handshake information received so far.
-  std::string buffer_;
+  // The read buffer used for both the handshake and greet data.
+  scoped_refptr<GrowableIOBuffer> read_buf_;
 
   // This becomes true when the SOCKS handshake has completed and the
   // overlying connection is free to communicate.
   bool completed_handshake_ = false;
-
-  // These contain the bytes sent / received by the SOCKS handshake.
-  size_t bytes_sent_ = 0;
-  size_t bytes_received_ = 0;
-
-  size_t read_header_size;
 
   bool was_ever_used_ = false;
 

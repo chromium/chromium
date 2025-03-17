@@ -639,7 +639,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageFilterScaled) {
 }
 
 // TODO(crbug.com/40256786): currently do not pass on iOS.
-#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/401029604): Times out in arm64 windows and linux TSAN.
+#if BUILDFLAG(IS_IOS) ||                                        \
+    (defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_ARM64) && \
+     BUILDFLAG(IS_WIN)) ||                                      \
+    (defined(THREAD_SANITIZER) && BUILDFLAG(IS_LINUX))
 #define MAYBE_BackdropFilterRotated DISABLED_BackdropFilterRotated
 #else
 #define MAYBE_BackdropFilterRotated BackdropFilterRotated

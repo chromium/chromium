@@ -1,0 +1,74 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION description-from:tooltip description='container headingoffset=1'
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_HEADING level:3
+++++IA2_ROLE_HEADING level:4
+++++IA2_ROLE_SECTION description-from:tooltip description='container headingoffset=2'
+++++++IA2_ROLE_HEADING level:4
+++++++IA2_ROLE_HEADING level:5
+++++++IA2_ROLE_SECTION description-from:tooltip description='container headingreset'
+++++++++IA2_ROLE_HEADING level:1
+++++++ROLE_SYSTEM_DIALOG name='container dialog' FOCUSABLE
+++++++++IA2_ROLE_HEADING level:4
+++++++++IA2_ROLE_HEADING level:1
+++IA2_ROLE_SECTION description-from:tooltip description='container headingoffset=8'
+++++IA2_ROLE_HEADING level:9
+++++IA2_ROLE_HEADING level:9
+++++IA2_ROLE_HEADING level:9
+++++IA2_ROLE_HEADING level:9
+++++IA2_ROLE_HEADING level:9
+++++IA2_ROLE_HEADING level:9
+++++IA2_ROLE_SECTION description-from:tooltip description='container headingreset'
+++++++IA2_ROLE_HEADING level:1
+++++ROLE_SYSTEM_DIALOG name='container dialog' FOCUSABLE
+++++++IA2_ROLE_HEADING level:9
+++IA2_ROLE_SECTION description-from:tooltip description='container headingoffset=-3'
+++++IA2_ROLE_HEADING level:1
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_HEADING level:3
+++++IA2_ROLE_HEADING level:4
+++++IA2_ROLE_HEADING level:5
+++++IA2_ROLE_HEADING level:6
+++++IA2_ROLE_SECTION description-from:tooltip description='container headingreset'
+++++++IA2_ROLE_HEADING level:1
+++++ROLE_SYSTEM_DIALOG name='container dialog' FOCUSABLE
+++++++IA2_ROLE_HEADING level:1
+++IA2_ROLE_SECTION description-from:tooltip description='container shadowroot headingoffset=1'
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_HEADING level:2
+++IA2_ROLE_SECTION description-from:tooltip description='container shadowroot slotted headingoffset=1'
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_HEADING level:3
+++++IA2_ROLE_HEADING level:3
+++++IA2_ROLE_HEADING level:2
+++IA2_ROLE_SECTION description-from:tooltip description='container shadowroot slotted with container headingoffset=1'
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_SECTION description-from:tooltip description='container inside shadowroot headingoffset=1'
+++++++IA2_ROLE_HEADING level:4
+++++++IA2_ROLE_HEADING level:6
+++++++IA2_ROLE_HEADING level:4
+++IA2_ROLE_SECTION description-from:tooltip description='container shadowroot slot with attr headingoffset=1'
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_HEADING level:4
+++IA2_ROLE_HEADING level:2
+++IA2_ROLE_HEADING level:3
+++IA2_ROLE_HEADING level:3
+++IA2_ROLE_HEADING level:4
+++IA2_ROLE_HEADING level:2
+++IA2_ROLE_HEADING level:3
+++IA2_ROLE_HEADING level:3
+++IA2_ROLE_HEADING level:4
+++IA2_ROLE_HEADING level:9
+++IA2_ROLE_HEADING level:9
+++IA2_ROLE_HEADING level:1
+++IA2_ROLE_HEADING level:2
+++IA2_ROLE_SECTION description-from:tooltip description='container with no attr'
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_HEADING level:3
+++++IA2_ROLE_HEADING level:2
+++++IA2_ROLE_HEADING level:3
+++++IA2_ROLE_HEADING level:1
+++++IA2_ROLE_HEADING level:2
+++IA2_ROLE_SECTION description-from:tooltip description='many nested + and - values'
+++++IA2_ROLE_HEADING level:5
+++IA2_ROLE_HEADING level:3

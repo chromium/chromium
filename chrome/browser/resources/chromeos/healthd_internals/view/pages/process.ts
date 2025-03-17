@@ -8,8 +8,8 @@ import '//resources/ash/common/cr_elements/md_select.css.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HealthdApiProcessInfo, HealthdApiProcessResult} from '../../utils/externs.js';
-import {HealthdInternalsPage} from '../../utils/page_interface.js';
+import type {HealthdApiProcessInfo, HealthdApiProcessResult} from '../../utils/externs.js';
+import type {HealthdInternalsPage} from '../../utils/page_interface.js';
 import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 
 import {getTemplate} from './process.html.js';
@@ -272,7 +272,6 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
                convertProcessData(filterProcessData(data, filterQuery)),
                sortColumn, sortOrder)
         .slice(0, pageSize);
-    ;
   }
 
   private onPageSizeChanged() {

@@ -11,7 +11,6 @@
 #include <iterator>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -28,7 +27,7 @@ const typename A::container_type& GetUnderlyingContainer(const A& adapter) {
 // Clears internal memory of an STL object.
 // STL clear()/reserve(0) does not always free internal memory allocated
 // This function uses swap/destructor to ensure the internal memory is freed.
-template<class T>
+template <class T>
 void STLClearObject(T* obj) {
   T tmp;
   tmp.swap(*obj);
@@ -40,11 +39,10 @@ void STLClearObject(T* obj) {
 // Returns a new ResultType containing the difference of two sorted containers.
 template <typename ResultType, typename Arg1, typename Arg2>
 ResultType STLSetDifference(const Arg1& a1, const Arg2& a2) {
-  DCHECK(ranges::is_sorted(a1));
-  DCHECK(ranges::is_sorted(a2));
+  DCHECK(std::ranges::is_sorted(a1));
+  DCHECK(std::ranges::is_sorted(a2));
   ResultType difference;
-  std::set_difference(a1.begin(), a1.end(),
-                      a2.begin(), a2.end(),
+  std::set_difference(a1.begin(), a1.end(), a2.begin(), a2.end(),
                       std::inserter(difference, difference.end()));
   return difference;
 }
@@ -52,11 +50,10 @@ ResultType STLSetDifference(const Arg1& a1, const Arg2& a2) {
 // Returns a new ResultType containing the union of two sorted containers.
 template <typename ResultType, typename Arg1, typename Arg2>
 ResultType STLSetUnion(const Arg1& a1, const Arg2& a2) {
-  DCHECK(ranges::is_sorted(a1));
-  DCHECK(ranges::is_sorted(a2));
+  DCHECK(std::ranges::is_sorted(a1));
+  DCHECK(std::ranges::is_sorted(a2));
   ResultType result;
-  std::set_union(a1.begin(), a1.end(),
-                 a2.begin(), a2.end(),
+  std::set_union(a1.begin(), a1.end(), a2.begin(), a2.end(),
                  std::inserter(result, result.end()));
   return result;
 }
@@ -65,11 +62,10 @@ ResultType STLSetUnion(const Arg1& a1, const Arg2& a2) {
 // containers.
 template <typename ResultType, typename Arg1, typename Arg2>
 ResultType STLSetIntersection(const Arg1& a1, const Arg2& a2) {
-  DCHECK(ranges::is_sorted(a1));
-  DCHECK(ranges::is_sorted(a2));
+  DCHECK(std::ranges::is_sorted(a1));
+  DCHECK(std::ranges::is_sorted(a2));
   ResultType result;
-  std::set_intersection(a1.begin(), a1.end(),
-                        a2.begin(), a2.end(),
+  std::set_intersection(a1.begin(), a1.end(), a2.begin(), a2.end(),
                         std::inserter(result, result.end()));
   return result;
 }

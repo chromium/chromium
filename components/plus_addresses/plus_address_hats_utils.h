@@ -8,11 +8,24 @@
 namespace plus_addresses::hats {
 
 // Hats Bits data fields:
+inline constexpr char kPlusAddressesCount[] =
+    "The number of the plus addresses the user has";
 inline constexpr char kFirstPlusAddressCreationTime[] =
     "Time passed since the user has created the first plus address, in seconds";
 inline constexpr char kLastPlusAddressFillingTime[] =
     "Time passed since the user has filled a plus address the last time, in "
     "seconds";
+
+// Plus address survey parameters:
+//
+// The custom survey cooldown override for plus addresses HaTS surveys. The
+// survey can be triggered after this cooldown period instead of the default
+// 180 days delay.
+inline constexpr char kCooldownOverrideDays[] = "cooldown-override-days";
+// The lower bound on the plus address survey delay.
+inline constexpr char kMinDelayMs[] = "min-delay-ms";
+// The upper bound on the plus address survey delay.
+inline constexpr char kMaxDelayMs[] = "max-delay-ms";
 
 }  // namespace plus_addresses::hats
 

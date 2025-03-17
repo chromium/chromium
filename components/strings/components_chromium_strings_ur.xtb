@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">‏اس صفحے کو Chromium نے مسدود کر دیا ہے</translation>
 <translation id="48558539577516920">‏Chromium کو اپنے فائروال یا اینٹی وائرس کی
           ترتیبات میں نیٹ ورک تک رسائی حاصل کرنے کی اجازت دیں۔</translation>
+<translation id="4949828774841497663">ایپلیکیشنز &gt; سسٹم کی ترتیبات &gt; نیٹ ورک پر جائیں، فعال نیٹ ورک منتخب کریں، تفصیلات... بٹن پر کلک کریں اور ممکنہ طور پر منتخب کردہ کسی بھی پراکسی کو غیر منتخب کریں۔</translation>
 <translation id="580822234363523061">‏Chromium مینیو &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -29,6 +30,7 @@
           <ph name="PROXIES_TITLE" />
           پر جائیں اور یقینی بنائیں کہ آپ کی کنفیگریشن
           "کوئی پراکسی نہیں" یا "ڈائریکٹ" پر سیٹ ہے۔</translation>
+<translation id="648062525172759633">‏یہ صفحات Chromium کے ڈویلپرز کے استعمال کے ارادے سے ہیں اور ہو سکتا ہے کہ ان کی فعال طور پر دیکھ بھال یا جانچ نہ کی جائے۔ ان کو فعال کرنے کے لیے، <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> پر نیویگیٹ کریں، ڈیبگ صفحات کو فعال کرنے کے لیے بٹن پر کلک کریں اور پھر اس صفحہ پر دوبارہ نیویگیٹ کریں۔</translation>
 <translation id="6549378540556750549">‏Chromium کو دوسرے <ph name="BEGIN_LINK_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_OSS" /> کے ذریعے بھی ممکن بنایا گیا ہے۔</translation>
 <translation id="6613594504749178791">‏آپ کی تبدیلیاں Chromium کو اگلی بار آپ کے دوبارہ شروع کرنے کے وقت نافذ ہوں گی۔</translation>
 <translation id="691026815377248078">‏جوڑا بنانا جاری رکھنے کیلئے Chromium کو بلوٹوتھ رسائی کی ضرورت ہے۔ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -41,8 +43,6 @@
           اگر اس سے مسئلہ حل نہیں ہوتا ہے تو ہم
           بہتر کارکردگی کیلئے یہ اختیار دوبارہ منتخب کرنے کی تجویز
           کرتے ہیں۔</translation>
-<translation id="8187289872471304532">ایپلیکیشنز &gt; سسٹم کی ترجیحات &gt; نیٹ ورک &gt; جدید ترین &gt; پراکسیز پر جائیں
-          اور منتخب کردہ کسی بھی پراکسی کو غیر منتخب کریں۔</translation>
 <translation id="8597726643333341451">‏آپ محفوظ Chrome for Testing صفحہ دیکھ رہے ہیں</translation>
 <translation id="8684913864886094367">‏Chromium صحیح سے بند نہیں ہوا۔</translation>
 </translationbundle>

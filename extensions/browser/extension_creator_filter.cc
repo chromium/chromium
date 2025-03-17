@@ -39,7 +39,7 @@ bool ExtensionCreatorFilter::ShouldPackageFile(
 
   // The file path that contains one of following special components should be
   // excluded. See https://crbug.com/314360 and https://crbug.com/27840.
-  static constexpr base::FilePath::StringPieceType kNamesToExclude[] = {
+  static constexpr base::FilePath::StringViewType kNamesToExclude[] = {
       FILE_PATH_LITERAL(".DS_Store"),   FILE_PATH_LITERAL(".git"),
       FILE_PATH_LITERAL(".svn"),        FILE_PATH_LITERAL("__MACOSX"),
       FILE_PATH_LITERAL("desktop.ini"), FILE_PATH_LITERAL("Thumbs.db")};

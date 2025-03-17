@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_DIALOG_CONTROLLER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
@@ -48,7 +49,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
       DesksController::GetDeskTemplateCallback callback,
       std::unique_ptr<DeskTemplate> desk_template);
   void ShowReplaceDialog(aura::Window* root_window,
-                         const std::u16string& template_name,
+                         std::u16string_view template_name,
                          DeskTemplateType template_type,
                          base::OnceClosure on_accept_callback,
                          base::OnceClosure on_cancel_callback);
@@ -56,7 +57,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   // The `template_name` shows the name of the template which will be deleted in
   // the dialog description.
   void ShowDeleteDialog(aura::Window* root_window,
-                        const std::u16string& template_name,
+                        std::u16string_view template_name,
                         DeskTemplateType template_type,
                         base::OnceClosure on_accept_callback);
 

@@ -28,26 +28,26 @@ struct VisualProperties {
   // The maximum size for Blink if auto-resize is enabled.
   gfx.mojom.Size max_size_for_auto_resize;
 
-  // The size for the widget in DIPs.
-  gfx.mojom.Size new_size;
+  // The size for the widget in device px.
+  gfx.mojom.Size new_size_device_px;
 
-  // The size of the area of the widget that is visible to the user, in DIPs.
+  // The size of the area of the widget that is visible to the user, in
+  // device px.
   // The visible area may be empty if the visible area does not intersect with
   // the widget, for example in the case of a child frame that is entirely
   // scrolled out of the main frame's viewport. It may also be smaller than the
   // widget's size in |new_size| due to the UI hiding part of the widget, such
   // as with an on-screen keyboard.
-  gfx.mojom.Size visible_viewport_size;
+  gfx.mojom.Size visible_viewport_size_device_px;
 
   // The rect of compositor's viewport in pixels. Note that for top level
   // widgets this is roughly the DSF scaled new_size put into a rect. For child
   // frame widgets it is a pixel-perfect bounds of the visible region of the
-  // widget. The size would be similar to visible_viewport_size, but in physical
-  // pixels and computed via very different means.
+  // widget.
   // TODO(danakj): It would be super nice to remove one of |new_size|,
-  // |visible_viewport_size| and |compositor_viewport_pixel_rect|. Their values
-  // overlap in purpose, creating a very confusing situation about which to use
-  // for what, and how they should relate or not.
+  // |visible_viewport_size_device_px| and |compositor_viewport_pixel_rect|.
+  // Their values overlap in purpose, creating a very confusing situation about
+  // which to use for what, and how they should relate or not.
   gfx.mojom.Rect compositor_viewport_pixel_rect;
 
   // Browser controls params such as top and bottom controls heights, whether
@@ -121,7 +121,7 @@ struct VisualProperties {
   gfx.mojom.Rect window_controls_overlay_rect;
 
   // If shown and resizing the renderer, returns the height of the virtual
-  // keyboard in physical pixels. Otherwise, returns 0. Always 0 in a
+  // keyboard in device pixels. Otherwise, returns 0. Always 0 in a
   // non-outermost main frame.
-  uint32 virtual_keyboard_resize_height_physical_px;
+  uint32 virtual_keyboard_resize_height_device_px;
 };

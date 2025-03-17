@@ -4,10 +4,11 @@
 
 #include "components/browsing_topics/browsing_topics_calculator.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/common/semantic_tree.h"
@@ -306,8 +307,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
                                    left.second.second > right.second.second);
                          });
 
-  base::ranges::transform(top_topics_count, std::back_inserter(top_topics),
-                          &TopicsCountValue::first);
+  std::ranges::transform(top_topics_count, std::back_inserter(top_topics),
+                         &TopicsCountValue::first);
 
   padded_top_topics_start_index = top_topics.size();
 

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/edusumer/graduation_utils.h"
 #include "base/check.h"
@@ -19,6 +17,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/user_manager/user.h"

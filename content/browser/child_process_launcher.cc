@@ -100,8 +100,12 @@ ChildProcessLauncher::ChildProcessLauncher(
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
     std::unique_ptr<ChildProcessLauncherFileData> file_data,
-    base::UnsafeSharedMemoryRegion histogram_memory_region,
-    base::ReadOnlySharedMemoryRegion tracing_config_memory_region,
+    scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+        histogram_memory_region,
+    scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+        tracing_config_memory_region,
+    scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+        tracing_output_memory_region,
     bool terminate_on_shutdown)
     : client_(client),
       starting_(true),
@@ -128,7 +132,8 @@ ChildProcessLauncher::ChildProcessLauncher(
 #endif
       std::move(mojo_invitation), process_error_callback, std::move(file_data),
       std::move(histogram_memory_region),
-      std::move(tracing_config_memory_region));
+      std::move(tracing_config_memory_region),
+      std::move(tracing_output_memory_region));
   helper_->StartLaunchOnClientThread();
 }
 
@@ -294,8 +299,9 @@ bool RenderProcessPriority::is_background() const {
     return *priority_override == base::Process::Priority::kBestEffort;
   }
 #endif
-  return !visible && !has_media_stream && !boost_for_pending_views &&
-         !has_foreground_service_worker && !boost_for_loading;
+  return !visible && !has_media_stream && !has_immersive_xr_session &&
+         !boost_for_pending_views && !has_foreground_service_worker &&
+         !boost_for_loading;
 }
 
 base::Process::Priority RenderProcessPriority::GetProcessPriority() const {

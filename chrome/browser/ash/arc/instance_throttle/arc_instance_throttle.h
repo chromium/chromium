@@ -9,12 +9,12 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/throttle/throttle_observer.h"
 #include "chromeos/ash/components/throttle/throttle_service.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {

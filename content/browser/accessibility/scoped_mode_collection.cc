@@ -4,10 +4,10 @@
 
 #include "content/browser/accessibility/scoped_mode_collection.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 
 namespace content {
@@ -58,7 +58,7 @@ ScopedModeCollection::~ScopedModeCollection() {
   // the collection and a scoper are bound to the lifetime of the target and the
   // collection happens to be destroyed first). In this case, deactivate any
   // remaining scopers so that they do nothing when they are later destroyed.
-  base::ranges::for_each(scopers_, [](auto& scoper) { scoper->deactivate(); });
+  std::ranges::for_each(scopers_, [](auto& scoper) { scoper->deactivate(); });
 }
 
 std::unique_ptr<ScopedAccessibilityMode> ScopedModeCollection::Add(
@@ -86,7 +86,7 @@ void ScopedModeCollection::OnDestroyed(ScoperKey scoper_key) {
 void ScopedModeCollection::RecalculateEffectiveModeAndNotify() {
   ui::AXMode mode;
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       scopers_, [&mode](const auto& scoper) { mode |= scoper->mode(); });
 
   if (mode == accessibility_mode_) {

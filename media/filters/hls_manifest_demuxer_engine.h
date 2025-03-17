@@ -66,6 +66,9 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   int64_t GetMemoryUsage() const override;
   void Stop() override;
 
+  void SelectVideoVariant(const MediaTrack::Id&) override;
+  void SelectAudioRendition(const MediaTrack::Id&) override;
+
   // HlsRenditionHost implementation.
   void ReadKey(const hls::MediaSegment::EncryptionData& data,
                HlsDataSourceProvider::ReadCb) override;

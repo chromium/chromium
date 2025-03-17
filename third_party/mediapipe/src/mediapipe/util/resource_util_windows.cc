@@ -26,7 +26,8 @@ absl::Status DefaultGetResourceContents(const std::string& path,
 
 }  // namespace internal
 
-absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path) {
+absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path,
+                                                 bool /*shadow_copy*/) {
   return absl::UnimplementedError("not suported in chromium");
 }
 

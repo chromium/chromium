@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   auto* predictor = GetAutocompleteActionPredictor();
   ASSERT_TRUE(predictor);
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
-  predictor->StartPrerendering(prerender_url, *web_contents, gfx::Size(50, 50));
+  predictor->StartPrerendering(prerender_url, *web_contents);
 
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 
   content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
   // Attempt to trigger prerendering again.
-  predictor->StartPrerendering(prerender_url, *web_contents, gfx::Size(50, 50));
+  predictor->StartPrerendering(prerender_url, *web_contents);
 
   // Since preload setting is enabled, prerender should be triggered
   // successfully.
@@ -224,11 +224,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 class PrerenderOmniboxSearchSuggestionBrowserTest
     : public OmniboxPrerenderBrowserTest {
  public:
-  PrerenderOmniboxSearchSuggestionBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kSupportSearchSuggestionForPrerender2);
-  }
-
   void SetUp() override {
     prerender_helper().RegisterServerRequestMonitor(&search_engine_server_);
     PlatformBrowserTest::SetUp();
@@ -289,26 +284,16 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     ASSERT_TRUE(prerender_manager_);
   }
 
-  void NavigateToPrerenderedResult(const GURL& expected_prerender_url) {
-    content::TestNavigationObserver observer(GetActiveWebContents());
-    GetActiveWebContents()->OpenURL(
-        content::OpenURLParams(
-            expected_prerender_url, content::Referrer(),
-            WindowOpenDisposition::CURRENT_TAB,
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
-    observer.Wait();
-  }
-
   void PrerenderAndActivate(const std::string& search_terms) {
     PrerenderQuery(search_terms);
     GURL prerendered_url =
         GetSearchSuggestionUrl(search_terms, /*with_parameter=*/false);
     prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
                                                       prerendered_url);
-    NavigateToPrerenderedResult(prerendered_url);
+    prerender_helper().NavigatePrimaryPage(
+        prerendered_url,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
     EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerendered_url);
   }
 
@@ -354,78 +339,14 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
   net::test_server::EmbeddedTestServer search_engine_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
   std::string prerender_page_target_ = "/title1.html";
-  base::test::ScopedFeatureList feature_list_;
 };
-
-class PrerenderOmniboxSearchSuggestionReloadBrowserTest
-    : public PrerenderOmniboxSearchSuggestionBrowserTest {
- public:
-  PrerenderOmniboxSearchSuggestionReloadBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
-         {kSearchPrefetchServicePrefetching,
-          {{"device_memory_threshold_MB", "0"}}}},
-        // Disable BFCache, to test the HTTP Cache path.
-        {features::kBackForwardCache});
-  }
-
-  // TODO(crbug.com/40285326): This fails with the field trial testing config.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrerenderOmniboxSearchSuggestionBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test back or forward navigations can use the HTTP Cache.
-IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionReloadBrowserTest,
-                       BackNavigationHitsHttpCache) {
-  base::HistogramTester histogram_tester;
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(GetActiveWebContents());
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
-  InitializePrerenderManager();
-
-  // 1. Prerender the first page.
-  std::string search_terms_1 = "prerender2222";
-  GURL expected_prefetched_url_1 =
-      GetSearchSuggestionUrl(search_terms_1, /*with_parameter=*/true);
-  GURL expected_activated_url_1 =
-      GetSearchSuggestionUrl(search_terms_1, /*with_parameter=*/false);
-  PrerenderAndActivate(search_terms_1);
-  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_1));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_1));
-
-  // 2. Prerender and activate another page.
-  std::string search_terms_2 = "prefetch233";
-  GURL expected_prefetched_url_2 =
-      GetSearchSuggestionUrl(search_terms_2, /*with_parameter=*/true);
-  GURL expected_activated_url_2 =
-      GetSearchSuggestionUrl(search_terms_2, /*with_parameter=*/false);
-  PrerenderAndActivate(search_terms_2);
-  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_2));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_2));
-
-  // 3. Navigate back. Chrome is supposed to read the response from the cache,
-  // instead of sending another request.
-  content::TestNavigationObserver back_load_observer(GetActiveWebContents());
-  GetActiveWebContents()->GetController().GoBack();
-  back_load_observer.Wait();
-  EXPECT_EQ(expected_activated_url_1,
-            GetActiveWebContents()->GetLastCommittedURL());
-  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_activated_url_1));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetched_url_1));
-}
 
 class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
     : public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionExpiryBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
-         {kSearchPrefetchServicePrefetching,
+        {{kSearchPrefetchServicePrefetching,
           {{"device_memory_threshold_MB", "0"}}}},
         {});
   }

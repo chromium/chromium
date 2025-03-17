@@ -161,36 +161,40 @@ Element* ContainerQueryEvaluator::FindContainer(
   return nullptr;
 }
 
+// static
+Element* ContainerQueryEvaluator::DetermineStartingElement(
+    Element& element,
+    PseudoId pseudo_id,
+    const ContainerSelector& selector,
+    Element* nearest_size_container) {
+  // For size queries, we have an optimization where we keep track of
+  // the nearest size container during style recalc. This is the first
+  // possible candidate for such queries.
+  if (selector.SelectsSizeContainers()) {
+    return nearest_size_container;
+  }
+  // We don't have a similar optimization for any other query types,
+  // so we'll generally start at the flat-tree parent.
+  if (pseudo_id != kPseudoIdNone) {
+    // Pseudo-elements start at their originating element, however.
+    // https://drafts.csswg.org/css-conditional-5/#container-queries
+    return &element;
+  }
+  return FlatTreeTraversal::ParentElement(element);
+}
+
 bool ContainerQueryEvaluator::EvalAndAdd(
-    Element* style_container_candidate,
+    Element* starting_element,
     const StyleRecalcContext& context,
     const ContainerQuery& query,
     ContainerSelectorCache& container_selector_cache,
     MatchResult& match_result) {
   const ContainerSelector& selector = query.Selector();
-  if (selector.HasUnknownFeature()) {
+  if (!selector.SelectsAnyContainer()) {
     return false;
   }
-  bool selects_size = selector.SelectsSizeContainers();
-  bool selects_style = selector.SelectsStyleContainers();
-  bool selects_scroll_state = selector.SelectsScrollStateContainers();
-  if (!selects_size && !selects_style && !selects_scroll_state) {
-    return false;
-  }
-
-  if (selects_size) {
-    match_result.SetDependsOnSizeContainerQueries();
-  }
-  if (selects_style) {
-    match_result.SetDependsOnStyleContainerQueries();
-  }
-  if (selects_scroll_state) {
-    match_result.SetDependsOnScrollStateContainerQueries();
-  }
-
-  Element* starting_element =
-      selects_size ? context.container : style_container_candidate;
-  if (Element* container = CachedContainer(starting_element, query.Selector(),
+  SetDependencyFlags(query, match_result);
+  if (Element* container = CachedContainer(starting_element, selector,
                                            match_result.CurrentTreeScope(),
                                            container_selector_cache)) {
     Change change = starting_element == container
@@ -200,6 +204,20 @@ bool ContainerQueryEvaluator::EvalAndAdd(
                                                                  match_result);
   }
   return false;
+}
+
+void ContainerQueryEvaluator::SetDependencyFlags(const ContainerQuery& query,
+                                                 MatchResult& match_result) {
+  const ContainerSelector& selector = query.Selector();
+  if (selector.SelectsSizeContainers()) {
+    match_result.SetDependsOnSizeContainerQueries();
+  }
+  if (selector.SelectsStyleContainers()) {
+    match_result.SetDependsOnStyleContainerQueries();
+  }
+  if (selector.SelectsScrollStateContainers()) {
+    match_result.SetDependsOnScrollStateContainerQueries();
+  }
 }
 
 std::optional<double> ContainerQueryEvaluator::Width() const {
@@ -563,7 +581,7 @@ void ContainerQueryEvaluator::UpdateContainerScrollable(
     ContainerScrollableFlags scrollable_horizontal,
     ContainerScrollableFlags scrollable_vertical) {
   scrollable_horizontal_ = scrollable_horizontal;
-  scrollable_vertical_ = scrollable_horizontal;
+  scrollable_vertical_ = scrollable_vertical;
 
   const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
   Element* container = existing_values.ContainerElement();

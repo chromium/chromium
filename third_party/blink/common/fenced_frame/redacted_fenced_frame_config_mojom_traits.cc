@@ -4,7 +4,8 @@
 
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 
-#include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
@@ -170,7 +171,7 @@ bool StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
 }
 
 // static
-const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
+const std::vector<network::ParsedPermissionsPolicyDeclaration>&
 StructTraits<blink::mojom::ParentPermissionsInfoDataView,
              blink::FencedFrame::ParentPermissionsInfo>::
     parsed_permissions_policy(
@@ -504,9 +505,6 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
       out_properties->nested_urn_config_pairs_.emplace(std::nullopt);
     }
   }
-
-  out_properties->has_fenced_frame_reporting_ =
-      data.has_fenced_frame_reporting();
 
   out_properties->can_disable_untrusted_network_ =
       data.can_disable_untrusted_network();

@@ -75,6 +75,7 @@ public class EdgeToEdgeBottomChinSceneLayerTest {
                         Color.RED,
                         Color.BLACK,
                         viewport.height() + 12,
+                        false,
                         offsetTag);
     }
 }

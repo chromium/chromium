@@ -10,7 +10,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "base/trace_event/named_trigger.h"
+#include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -85,17 +85,15 @@ enum ClickInteractionEvents {
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:EventTimingClickInteractionEvents)
 
 void EmitSlowInteractionToNextPaintTraceEvent(
-    const ResponsivenessMetrics::EventTimestamps& event) {
+    const ResponsivenessMetrics::EventTimestamps& event,
+    uint64_t event_id) {
   auto track =
       perfetto::Track::Global(base::trace_event::GetNextGlobalTraceId());
-  auto flow = base::trace_event::TriggerFlow(
-      base::StrCat({kHistogramMaxEventDuration, kHistogramAllTypes}),
-      event.duration().InMilliseconds());
   TRACE_EVENT_BEGIN(kSlowInteractionToNextPaintTraceEventCategory,
                     kSlowInteractionToNextPaintTraceEventName, track,
                     event.creation_time);
   TRACE_EVENT_END(kSlowInteractionToNextPaintTraceEventCategory, track,
-                  event.end_time, flow);
+                  event.end_time, perfetto::Flow::Global(event_id));
 }
 
 // Returns the longest event in `timestamps`.
@@ -220,12 +218,14 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
 
   // Emit a trace event when "interaction to next paint" is considered "slow"
   // according to RAIL guidelines (web.dev/rail).
+  uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
   constexpr base::TimeDelta kSlowInteractionToNextPaintThreshold =
       base::Milliseconds(100);
   if (longest_event.duration() > kSlowInteractionToNextPaintThreshold) {
-    EmitSlowInteractionToNextPaintTraceEvent(longest_event);
+    EmitSlowInteractionToNextPaintTraceEvent(longest_event, event_id);
   }
 
+  base::trace_event::HistogramScope scoped_event(event_id);
   LogResponsivenessHistogram(max_event_duration, kHistogramAllTypes);
   if (is_pointer_event) {
     LogResponsivenessHistogram(max_event_duration, kHistogramTapOrClick);

@@ -260,12 +260,14 @@ void DocumentLoaderImpl::ContinueDownload() {
                                     weak_factory_.GetWeakPtr()));
 }
 
-void DocumentLoaderImpl::DidOpenPartial(int32_t result) {
-  if (result != Result::kSuccess)
+void DocumentLoaderImpl::DidOpenPartial(bool success) {
+  if (!success) {
     return ReadComplete();
+  }
 
-  if (!ResponseStatusSuccess(loader_.get()))
+  if (!ResponseStatusSuccess(loader_.get())) {
     return ReadComplete();
+  }
 
   // Leave position untouched for multiparted responce for now, when we read the
   // data we'll get it.
@@ -281,8 +283,9 @@ void DocumentLoaderImpl::DidOpenPartial(int32_t result) {
   // http://www.act.org/compass/sample/pdf/geometry.pdf
   int start_pos = 0;
   if (loader_->GetByteRangeStart(&start_pos)) {
-    if (start_pos % DataStream::kChunkSize != 0)
+    if (start_pos % DataStream::kChunkSize != 0) {
       return ReadComplete();
+    }
 
     DCHECK(!chunk_.chunk_data);
     chunk_.chunk_index = chunk_stream_.GetChunkIndex(start_pos);

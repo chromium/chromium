@@ -431,13 +431,13 @@ TEST(UrlFormatterTest, FormatUrl) {
   });
   // clang-format on
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     size_t prefix_len;
     std::u16string formatted =
-        FormatUrl(GURL(tests[i].input), tests[i].format_types,
-                  tests[i].escape_rules, nullptr, &prefix_len, nullptr);
-    EXPECT_EQ(WideToUTF16(tests[i].output), formatted) << tests[i].description;
-    EXPECT_EQ(tests[i].prefix_len, prefix_len) << tests[i].description;
+        FormatUrl(GURL(test.input), test.format_types, test.escape_rules,
+                  nullptr, &prefix_len, nullptr);
+    EXPECT_EQ(WideToUTF16(test.output), formatted) << test.description;
+    EXPECT_EQ(test.prefix_len, prefix_len) << test.description;
   }
 }
 

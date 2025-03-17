@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] fallbackbutton: Clicking an option in an appearance:base-select select should choose the option and close the popover.
+  promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
+[FAIL] fallbackbutton: Touch input should work the same as mouse input.
+  promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
+[FAIL] custombutton: Clicking an option in an appearance:base-select select should choose the option and close the popover.
+  promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
+[FAIL] custombutton: Touch input should work the same as mouse input.
+  promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
+Harness: the test ran to completion.
+

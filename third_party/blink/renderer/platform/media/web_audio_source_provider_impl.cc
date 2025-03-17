@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -176,7 +175,7 @@ void WebAudioSourceProviderImpl::SetClient(
 }
 
 void WebAudioSourceProviderImpl::ProvideInput(
-    const WebVector<float*>& audio_data,
+    const std::vector<float*>& audio_data,
     int number_of_frames) {
   if (!bus_wrapper_ ||
       static_cast<size_t>(bus_wrapper_->channels()) != audio_data.size()) {

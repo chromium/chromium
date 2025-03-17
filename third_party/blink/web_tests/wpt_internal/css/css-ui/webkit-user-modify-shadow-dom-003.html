@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<title>-webkit-user-modify shadow reset and MatchedPropertiesCache</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+
+span { -webkit-user-modify: read-only; }
+
+</style>
+<div id="host" contenteditable>
+  <template shadowrootmode="open">
+    <slot></slot>
+  </template>
+  <span id="s1"></span>
+  <span id="s2"></span>
+</div>
+<script>
+
+  test(() => {
+    let s1 = document.getElementById("s1");
+    let s2 = document.getElementById("s2");
+    assert_equals(getComputedStyle(s1).webkitUserModify, "read-only",
+                  "first element style inheritance overridden by declaration");
+    assert_equals(getComputedStyle(s2).webkitUserModify, "read-only",
+                  "second element style inheritance overridden by declaration");
+  }, "-webkit-user-modify style is reset at shadow boundary and shared style is correctly overridden");
+
+</script>

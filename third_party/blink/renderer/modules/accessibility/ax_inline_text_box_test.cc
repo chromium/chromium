@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
@@ -15,6 +18,7 @@
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/accessibility/accessibility_features.h"
 
 using AXIntListAttribute = ax::mojom::blink::IntListAttribute;
 using AXMarkerType = ax::mojom::blink::MarkerType;
@@ -22,7 +26,26 @@ using AXMarkerType = ax::mojom::blink::MarkerType;
 namespace blink {
 namespace test {
 
-TEST_F(AccessibilityTest, GetWordBoundaries) {
+class AXInlineTextBoxTest : public AccessibilityTest,
+                            public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    AccessibilityTest::SetUp();
+    bool feature_on = GetParam();
+    if (feature_on) {
+      list.InitWithFeatures({::features::kAccessibilityBlockFlowIterator}, {});
+    } else {
+      list.InitWithFeatures({}, {::features::kAccessibilityBlockFlowIterator});
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList list;
+};
+
+INSTANTIATE_TEST_SUITE_P(BoolSequence, AXInlineTextBoxTest, testing::Bool());
+
+TEST_P(AXInlineTextBoxTest, GetWordBoundaries) {
   // &#9728; is the sun emoji symbol.
   // &#2460; is circled digit one.
   // Full string: "This, ☀ জ is ... a---+++test. <p>word</p>"
@@ -51,7 +74,7 @@ TEST_F(AccessibilityTest, GetWordBoundaries) {
   EXPECT_EQ(expected_word_ends, word_ends);
 }
 
-TEST_F(AccessibilityTest, GetDocumentMarkers) {
+TEST_P(AXInlineTextBoxTest, GetDocumentMarkers) {
   // There should be four inline text boxes in the following paragraph.
   SetBodyInnerHTML(R"HTML(
       <style>* { font-size: 10px; }</style>
@@ -152,7 +175,7 @@ TEST_F(AccessibilityTest, GetDocumentMarkers) {
   }
 }
 
-TEST_F(AccessibilityTest, TextOffsetInContainerWithASpan) {
+TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithASpan) {
   // There should be three inline text boxes in the following paragraph. The
   // span should reset the text start offset of all of them to 0.
   SetBodyInnerHTML(R"HTML(
@@ -190,7 +213,7 @@ TEST_F(AccessibilityTest, TextOffsetInContainerWithASpan) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextInPreOrderIncludingIgnored());
 }
 
-TEST_F(AccessibilityTest, TextOffsetInContainerWithMultipleInlineTextBoxes) {
+TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithMultipleInlineTextBoxes) {
   // There should be four inline text boxes in the following paragraph. The span
   // should not affect the text start offset of the text outside the span.
   SetBodyInnerHTML(R"HTML(
@@ -233,7 +256,7 @@ TEST_F(AccessibilityTest, TextOffsetInContainerWithMultipleInlineTextBoxes) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextInPreOrderIncludingIgnored());
 }
 
-TEST_F(AccessibilityTest, TextOffsetInContainerWithLineBreak) {
+TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithLineBreak) {
   // There should be three inline text boxes in the following paragraph. The
   // line break should reset the text start offset to 0 of both the inline text
   // box inside the line break, as well as the text start ofset of the second
@@ -273,7 +296,7 @@ TEST_F(AccessibilityTest, TextOffsetInContainerWithLineBreak) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextInPreOrderIncludingIgnored());
 }
 
-TEST_F(AccessibilityTest, TextOffsetInContainerWithBreakWord) {
+TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithBreakWord) {
   // There should be three inline text boxes in the following paragraph because
   // of the narrow width and the long word, coupled with the CSS "break-word"
   // property. Each inline text box should have a different offset in container.
@@ -323,7 +346,7 @@ TEST_F(AccessibilityTest, TextOffsetInContainerWithBreakWord) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextSiblingIncludingIgnored());
 }
 
-TEST_F(AccessibilityTest, GetTextDirection) {
+TEST_P(AXInlineTextBoxTest, GetTextDirection) {
   using WritingDirection = ax::mojom::blink::WritingDirection;
   SetBodyInnerHTML(R"HTML(
       <p id="paragraph" style="writing-mode:sideways-lr;">
@@ -344,7 +367,7 @@ TEST_F(AccessibilityTest, GetTextDirection) {
   EXPECT_EQ(WritingDirection::kBtt, ax_static_text->GetTextDirection());
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Simple) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Simple) {
   SetBodyInnerHTML(R"HTML(
       <p id="paragraph">Hello <em>World</em></p>)HTML");
 
@@ -380,7 +403,7 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Simple) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_SoftLinebreak) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_SoftLinebreak) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -494,7 +517,7 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_SoftLinebreak) {
   // testing soft-line-breaking.
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_HardtLinebreak) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_HardtLinebreak) {
   SetBodyInnerHTML(R"HTML(
     <p id="paragraph">Hello <br>World!</p>)HTML");
 
@@ -531,7 +554,7 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_HardtLinebreak) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ellipsis) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ellipsis) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -598,7 +621,7 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ellipsis) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ruby) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby) {
   SetBodyInnerHTML(R"HTML(
     <ruby id="ruby">Ruby base<rt>ruby text</rt></ruby>)HTML");
 
@@ -628,7 +651,7 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ruby) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ruby2) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby2) {
   SetBodyInnerHTML(R"HTML(
     <p style="font-family:monospace; width:5ch;">
       <ruby id="ruby">ruby base<rt>ruby text</rt></ruby>
@@ -664,7 +687,7 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ruby2) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_CharacterOffsets) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterOffsets) {
   // Then Ahem font has consistent font metrics across platforms.
   LoadAhem();
 
@@ -692,17 +715,21 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_CharacterOffsets) {
   // The trailing whitespace in "Hello " is not part of the actual text fragment
   // since not rendered. When extracting the glyphs, the length of the vector
   // padded to include the trailing space a zero-width glyph.
-  std::vector<int> expected_character_offsets = {16, 32, 48, 64, 80, 80};
-  ASSERT_EQ(expected_character_offsets, it.GetCharacterLayoutPixelOffsets());
+  Vector<int> expected_character_offsets = {16, 32, 48, 64, 80, 80};
+  Vector<int> result;
+  it.GetCharacterLayoutPixelOffsets(result);
+  ASSERT_EQ(expected_character_offsets, result);
 
   ASSERT_TRUE(it.Next());
   ASSERT_EQ("world!", it.GetText());
   expected_character_offsets = {16, 32, 48, 64, 80, 96};
+  it.GetCharacterLayoutPixelOffsets(result);
+  ASSERT_EQ(expected_character_offsets, result);
 
   ASSERT_FALSE(it.Next());
 }
 
-TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_CharacterOffsets_Ligature) {
+TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterWidths_Ligature) {
   // Google Sans supports ligatures (e.g. "fi" being rendered as a single glyph.
   LoadFontFromFile(GetFrame(), test::CoreTestDataPath("GoogleSans-Regular.ttf"),
                    AtomicString("Google Sans"));
@@ -726,12 +753,9 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_CharacterOffsets_Ligature) {
   AXBlockFlowIterator it(ax_static_text);
   ASSERT_TRUE(it.Next());
   ASSERT_EQ("f", it.GetText());
-  // The offset will be for the "fi" ligature and not for "f" since the
-  // "Google Sans" font uses ligatures. Metrics are not platform agnostic, so we
-  // cannot assert the actual reported offsets unless we have expectations on a
-  // per-platform basis. The important thing is how "i" is handled at the start
-  // of the next fragment.
-  ASSERT_EQ(1u, it.GetCharacterLayoutPixelOffsets().size());
+  Vector<int> result;
+  it.GetCharacterLayoutPixelOffsets(result);
+  ASSERT_EQ(1u, result.size());
 
   ASSERT_TRUE(it.NextOnLine().has_value());
   ASSERT_FALSE(it.Next());
@@ -743,11 +767,11 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_CharacterOffsets_Ligature) {
   ASSERT_TRUE(it.Next());
   ASSERT_EQ("ire", it.GetText());
 
-  const std::vector<int> offsets = it.GetCharacterLayoutPixelOffsets();
-  ASSERT_EQ(3u, offsets.size());
+  it.GetCharacterLayoutPixelOffsets(result);
+  ASSERT_EQ(3u, result.size());
   // "i"  was rendered as part of the "fi" ligature and is a reported as a
   // zero width glyph, to preserve character alignment.
-  ASSERT_EQ(0, offsets[0]);
+  ASSERT_EQ(0, result[0]);
 
   ASSERT_FALSE(it.Next());
 }

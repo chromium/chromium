@@ -49,7 +49,7 @@ export declare class uPlot {
   readonly series: uPlot.Series[];
 
   /** scales state & opts */
-  readonly scales: {[key: string]: uPlot.Scale;};
+  readonly scales: {[key: string]: uPlot.Scale};
 
   /** axes state & opts */
   readonly axes: uPlot.Axis[];
@@ -85,14 +85,15 @@ export declare class uPlot {
   setData(data: uPlot.AlignedData, resetScales?: boolean): void;
 
   /** sets the limits of a scale & redraws (used for zooming) */
-  setScale(scaleKey: string, limits: {min: number; max: number}): void;
+  setScale(scaleKey: string, limits: {min: number, max: number}): void;
 
   /** sets the cursor position (relative to plotting area) */
   setCursor(opts: {left: number, top: number}, fireHook?: boolean): void;
 
   /** sets the legend to the values of the specified idx */
-  setLegend(opts: {idx?: number, idxs?: (number|null)[]}, fireHook?: boolean):
-      void;
+  setLegend(
+      opts: {idx?: number, idxs?: Array<number|null>},
+      fireHook?: boolean): void;
 
   // TODO: include other series style opts which are dynamically pulled?
   /** toggles series visibility or focus */
@@ -127,7 +128,7 @@ export declare class uPlot {
    * sets the width & height of the plotting area + axes (excludes title &
    * legend height)
    */
-  setSize(opts: {width: number; height: number}): void;
+  setSize(opts: {width: number, height: number}): void;
 
   /**
    * converts a CSS pixel position (relative to plotting area) to the closest
@@ -234,7 +235,7 @@ export declare namespace uPlot {
   type OrientCallback = (
       series: Series,
       dataX: number[],
-      dataY: (number|null)[],
+      dataY: Array<number|null>,
       scaleX: Scale,
       scaleY: Scale,
       valToPosX: ValToPos,
@@ -298,10 +299,10 @@ export declare namespace uPlot {
 
   export type AlignedData = TypedArray[]|
       [xValues: number[]|TypedArray,
-          ...yValues: ((number|null|undefined)[]|TypedArray)[],
-  ]
+          ...yValues: Array<Array<number|null|undefined>|TypedArray>,
+  ];
 
-      export interface DateNames {
+  export interface DateNames {
     /** long month names */
     MMMM: string[];
 
@@ -377,7 +378,7 @@ export declare namespace uPlot {
     /** current index (readback-only, not for init) */
     idx?: number|null;
     /** current indices (readback-only, not for init) */
-    idxs?: (number|null)[];
+    idxs?: Array<number|null>;
     /** current values (readback-only, not for init) */
     values?: Legend.Values;
   }
@@ -396,7 +397,9 @@ export declare namespace uPlot {
     export type Fill = CSSStyleDeclaration['background']|
         ((self: uPlot, seriesIdx: number) => CSSStyleDeclaration['background']);
 
-    export type Value = {[key: string]: string|number;};
+    export interface Value {
+      [key: string]: string|number
+    }
 
     export type Values = Value[];
 
@@ -432,10 +435,10 @@ export declare namespace uPlot {
      * 1: aligned & ordered, single-x / y-per-series, 2: unordered & faceted,
      * per-series/per-point x,y,size,label,color,shape,etc.
      */
-    mode?: Mode,
+    mode?: Mode;
 
-        /** chart title */
-        title?: string;
+    /** chart title */
+    title?: string;
 
     /** id to set on chart div */
     id?: string;
@@ -668,7 +671,7 @@ export declare namespace uPlot {
        * sync scales' values at the cursor position (exposed for read-back by
        * subscribers)
        */
-      values?: Sync.Values,
+      values?: Sync.Values;
     }
 
     // options that compile the cursor.dataIdx callback (the index scanner)
@@ -744,7 +747,7 @@ export declare namespace uPlot {
     dataIdx?: Cursor.DataIdxRefiner;
 
     /** a series-matched array of indices returned by dataIdx() */
-    idxs?: (number|null)[];
+    idxs?: Array<number|null>;
 
     /**
      * fires on debounced mousemove events; returns refined [left, top] tuple
@@ -872,7 +875,7 @@ export declare namespace uPlot {
        * tuples of canvas pixel coordinates that were used to construct the
        * gaps clip
        */
-      gaps?: [from: number, to: number][];
+      gaps?: Array<[from: number, to: number]>;
 
       /**
        * line width in CSS pixels, if differs from series.width (for dynamic
@@ -1240,7 +1243,7 @@ export declare namespace uPlot {
     /** must return an array of same length as splits, e.g. via splits.map() */
     export type Filter =
         (self: uPlot, splits: number[], axisIdx: number, foundSpace: number,
-         foundIncr: number) => (number|null)[];
+         foundIncr: number) => Array<number|null>;
 
     export type Size = number|
         ((self: uPlot, values: string[], axisIdx: number,
@@ -1258,13 +1261,13 @@ export declare namespace uPlot {
         ((self: uPlot, axisIdx: number, scaleMin: number, scaleMax: number,
           foundIncr: number, foundSpace: number) => number[]);
 
-    export type StaticValues = (string|number|null)[];
+    export type StaticValues = Array<string|number|null>;
 
     export type DynamicValues =
         (self: uPlot, splits: number[], axisIdx: number, foundSpace: number,
          foundIncr: number) => StaticValues;
 
-    export type TimeValuesConfig = (string|number|null)[][];
+    export type TimeValuesConfig = Array<Array<string|number|null>>;
 
     export type TimeValuesTpl = string;
 
@@ -1288,7 +1291,7 @@ export declare namespace uPlot {
     }
 
     export type Rotate = number|
-        ((self: uPlot, values: (string|number)[], axisIdx: number,
+        ((self: uPlot, values: Array<string|number>, axisIdx: number,
           foundSpace: number) => number);
 
     interface OrthoLines {
@@ -1477,11 +1480,9 @@ export declare namespace uPlot {
       syncRect?: (self: uPlot, rect: DOMRect) => void;
     }
 
-    export type Arrays =
-    {[P in keyof Defs]: Defs[P][]}
+    export type Arrays = {[P in keyof Defs]: Array<Defs[P]>};
 
-    export type ArraysOrFuncs =
-    {[P in keyof Defs]: Defs[P][]|Defs[P]}
+    export type ArraysOrFuncs = {[P in keyof Defs]: Array<Defs[P]>| Defs[P]};
   }
 
   export interface Plugin {

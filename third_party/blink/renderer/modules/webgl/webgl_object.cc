@@ -25,15 +25,21 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 
+#include <limits>
+
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
 WebGLObject::WebGLObject(WebGLRenderingContextBase* context)
-    : cached_number_of_context_losses_(context->NumberOfContextLosses()),
+    : cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()),
       attachment_count_(0),
       marked_for_deletion_(false),
-      destruction_in_progress_(false) {}
+      destruction_in_progress_(false) {
+  if (context) {
+    cached_number_of_context_losses_ = context->NumberOfContextLosses();
+  }
+}
 
 WebGLObject::~WebGLObject() = default;
 

@@ -4,16 +4,19 @@
 
 package org.chromium.components.favicon;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.net.NetworkTrafficAnnotationTag;
@@ -25,20 +28,21 @@ import org.chromium.url.GURL;
  * An instance of this class must be created, used, and destroyed on the same thread.
  */
 @JNINamespace("favicon")
+@NullMarked
 public class LargeIconBridge {
     private static final int CACHE_ENTRY_MIN_SIZE_BYTES = ConversionUtils.BYTES_PER_KILOBYTE;
-    private final BrowserContextHandle mBrowserContextHandle;
+    private final @Nullable BrowserContextHandle mBrowserContextHandle;
     private long mNativeLargeIconBridge;
-    private LruCache<GURL, CachedFavicon> mFaviconCache;
+    private @Nullable LruCache<GURL, CachedFavicon> mFaviconCache;
 
     private static class CachedFavicon {
-        public Bitmap icon;
+        public @Nullable Bitmap icon;
         public int fallbackColor;
         public boolean isFallbackColorDefault;
         public @IconType int iconType;
 
         CachedFavicon(
-                Bitmap newIcon,
+                @Nullable Bitmap newIcon,
                 int newFallbackColor,
                 boolean newIsFallbackColorDefault,
                 @IconType int newIconType) {
@@ -196,10 +200,11 @@ public class LargeIconBridge {
                     new LargeIconCallback() {
                         @Override
                         public void onLargeIconAvailable(
-                                Bitmap icon,
+                                @Nullable Bitmap icon,
                                 int fallbackColor,
                                 boolean isFallbackColorDefault,
                                 @IconType int iconType) {
+                            assumeNonNull(mFaviconCache);
                             mFaviconCache.put(
                                     pageUrl,
                                     new CachedFavicon(
@@ -261,6 +266,7 @@ public class LargeIconBridge {
 
     /** Removes the favicon from the local cache for the given URL. */
     public void clearFavicon(GURL url) {
+        assumeNonNull(mFaviconCache);
         mFaviconCache.remove(url);
     }
 
@@ -272,7 +278,7 @@ public class LargeIconBridge {
 
         boolean getLargeIconForURL(
                 long nativeLargeIconBridge,
-                BrowserContextHandle browserContextHandle,
+                @Nullable BrowserContextHandle browserContextHandle,
                 GURL pageUrl,
                 int minSizePx,
                 int desiredSizePx,
@@ -280,7 +286,7 @@ public class LargeIconBridge {
 
         void getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
                 long nativeLargeIconBridge,
-                BrowserContextHandle browserContextHandle,
+                @Nullable BrowserContextHandle browserContextHandle,
                 GURL pageUrl,
                 boolean shouldTrimPageUrlPath,
                 int annotationHashCode,
@@ -288,7 +294,7 @@ public class LargeIconBridge {
 
         void touchIconFromGoogleServer(
                 long nativeLargeIconBridge,
-                BrowserContextHandle browserContextHandle,
+                @Nullable BrowserContextHandle browserContextHandle,
                 GURL iconUrl);
     }
 }

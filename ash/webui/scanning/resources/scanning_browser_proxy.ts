@@ -10,7 +10,7 @@
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 
-import {ScanCompleteAction, ScanJobSettingsForMetrics} from './scanning_app_types.js';
+import type {ScanCompleteAction, ScanJobSettingsForMetrics} from './scanning_app_types.js';
 
 export interface SelectedPath {
   baseName: string;

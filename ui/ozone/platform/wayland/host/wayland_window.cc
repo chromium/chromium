@@ -20,7 +20,6 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/cursor/cursor.h"
@@ -46,6 +45,7 @@
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
+#include "ui/ozone/platform/wayland/host/wayland_async_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
@@ -313,16 +313,10 @@ void WaylandWindow::OnPointerFocusChanged(bool focused) {
   // Whenever the window gets the pointer focus back, the cursor shape must be
   // updated. Otherwise, it is invalidated upon wl_pointer::leave and is not
   // restored by the Wayland compositor.
-#if BUILDFLAG(IS_LINUX)
   if (focused && async_cursor_) {
     async_cursor_->AddCursorLoadedCallback(base::BindOnce(
         &WaylandWindow::OnCursorLoaded, AsWeakPtr(), async_cursor_));
   }
-#else
-  if (focused && cursor_) {
-    UpdateCursorShape(cursor_);
-  }
-#endif
 }
 
 bool WaylandWindow::HasPointerFocus() const {
@@ -402,6 +396,43 @@ void WaylandWindow::Hide() {
     subsurface->Hide();
   }
   frame_manager_->Hide();
+
+  // Per https://wayland.app/protocols/xdg-shell#xdg_surface, the process of
+  // mapping a shell surface comprises the following steps:
+  //
+  // (1) Ensuring no buffer is attached to its associated wl_surface.
+  // (2) Creating the xdg_surface and its specific role surface (eg:
+  //     xdg_toplevel), and set its metadata (eg: app_id, title, etc).
+  // (3) Committing its wl_surface state; and then
+  // (4) Waiting for the initial configure sequence. After that, a non-null
+  //     buffer can be produced and attached to its underlying wl_surface.
+  //
+  // As `root_surface_` is reused for the whole WaylandWindow's lifetime, a
+  // null buffer must be attached here and no buffer should be attached to it
+  // until it is shown again.
+  //
+  // Note: `wl_surface_attach` is used directly here to ensure that the null
+  // buffer attach request is actually issued. This is required for 2 reasons:
+  //
+  // - There are synchronization issues in interactive ui tests (eg: tab drag),
+  // which lead to dnd start before a non-null buffer is attached to the origin
+  // surface, i.e: `root_surface_->buffer_id() == 0` here.
+  // - Weston, used in interactive ui infra, does not properly handle wl_surface
+  // reuse, and raises a protocol error when no buffer is attached before a
+  // previous surface unmapping.
+  //
+  // TODO(crbug.com/400894502): Investigate the issues described above.
+
+  if (root_surface_) {
+    wl_surface_attach(root_surface_->surface(), nullptr, 0, 0);
+    root_surface_->Commit(false);
+  }
+}
+
+void WaylandWindow::ClearInFlightRequestsSerial() {
+  for (auto& request : in_flight_requests_) {
+    request.serial = -1;
+  }
 }
 
 void WaylandWindow::OnChannelDestroyed() {
@@ -586,7 +617,6 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
 void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   DCHECK(platform_cursor);
 
-#if BUILDFLAG(IS_LINUX)
   auto async_cursor = WaylandAsyncCursor::FromPlatformCursor(platform_cursor);
 
   if (async_cursor_ == async_cursor) {
@@ -596,13 +626,6 @@ void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   async_cursor_ = async_cursor;
   async_cursor->AddCursorLoadedCallback(base::BindOnce(
       &WaylandWindow::OnCursorLoaded, AsWeakPtr(), async_cursor));
-#else
-  if (cursor_ == platform_cursor) {
-    return;
-  }
-
-  UpdateCursorShape(BitmapCursor::FromPlatformCursor(platform_cursor));
-#endif
 }
 
 void WaylandWindow::MoveCursorTo(const gfx::Point& location) {
@@ -693,7 +716,7 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
       // need it to traverse menu options, or type in text boxes.
       auto* bubble = active_bubble();
       while (bubble->active_bubble()) {
-        bubble = active_bubble();
+        bubble = bubble->active_bubble();
       }
       return bubble->DispatchEventToDelegate(event);
     } else {
@@ -758,7 +781,6 @@ std::string WaylandWindow::WindowStates::ToString() const {
   } else {
     base::TrimString(states, " ", &states);
   }
-#if BUILDFLAG(IS_LINUX)
   states += "; tiled_edges: ";
   std::string tiled = "";
   if (tiled_edges.left) {
@@ -779,7 +801,6 @@ std::string WaylandWindow::WindowStates::ToString() const {
     base::TrimString(tiled, " ", &tiled);
   }
   states += tiled;
-#endif
   return states;
 }
 
@@ -1228,19 +1249,14 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
         cursor->bitmaps(), hotspot_in_dips,
         std::ceil(cursor->cursor_image_scale_factor()));
   }
-#if !BUILDFLAG(IS_LINUX)
-  cursor_ = cursor;
-#endif
 }
 
-#if BUILDFLAG(IS_LINUX)
 void WaylandWindow::OnCursorLoaded(scoped_refptr<WaylandAsyncCursor> cursor,
                                    scoped_refptr<BitmapCursor> bitmap_cursor) {
   if (HasPointerFocus() && async_cursor_ == cursor && bitmap_cursor) {
     UpdateCursorShape(bitmap_cursor);
   }
 }
-#endif
 
 void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   // For values not specified in pending_configure_state_, use the latest
@@ -1513,7 +1529,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   }
 
   if (!force) {
-    int in_flight_applied = base::ranges::count_if(
+    int in_flight_applied = std::ranges::count_if(
         in_flight_requests_,
         [](const StateRequest& req) { return req.applied; });
 
@@ -1544,7 +1560,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   if (UseTestConfigForPlatformWindows()) {
     latest_applied_viz_seq_for_testing_ = std::max(
         latest_applied_viz_seq_for_testing_,
-        base::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
+        std::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
           return req.viz_seq;
         }).viz_seq);
   }

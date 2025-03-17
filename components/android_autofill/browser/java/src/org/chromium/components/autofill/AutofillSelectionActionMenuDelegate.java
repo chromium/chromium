@@ -6,8 +6,8 @@ package org.chromium.components.autofill;
 
 import android.content.pm.ResolveInfo;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
@@ -20,8 +20,9 @@ import java.util.List;
  * It ensures that a client using Android Autofill has access to the fallback entry in the
  * long-press selection menu.
  */
+@NullMarked
 public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
-    private AutofillSelectionMenuItemHelper mAutofillSelectionMenuItemHelper;
+    private @Nullable AutofillSelectionMenuItemHelper mAutofillSelectionMenuItemHelper;
 
     public AutofillSelectionActionMenuDelegate() {}
 
@@ -30,14 +31,13 @@ public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuD
             List<SelectionMenuItem.Builder> menuItemBuilders,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
-            @NonNull String selectedText) {}
+            String selectedText) {}
 
     @Override
     public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
         return activities;
     }
 
-    @NonNull
     @Override
     public List<SelectionMenuItem> getAdditionalNonSelectionItems() {
         if (mAutofillSelectionMenuItemHelper != null) {
@@ -46,7 +46,6 @@ public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuD
         return new ArrayList<>();
     }
 
-    @NonNull
     @Override
     public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
         return new ArrayList<>();

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ColorMode, FileType, MultiPageScanControllerRemote, PageSize, Scanner, ScannerCapabilities, SourceType} from './scanning.mojom-webui.js';
+import type {ColorMode, FileType, MultiPageScanControllerRemote, PageSize, Scanner, ScannerCapabilities, SourceType} from './scanning.mojom-webui.js';
 
 /**
  * Enum for the state of `scanning-app`.

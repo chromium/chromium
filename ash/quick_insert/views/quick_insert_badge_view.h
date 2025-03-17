@@ -6,6 +6,7 @@
 #define ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_BADGE_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -30,7 +31,7 @@ class ASH_EXPORT QuickInsertBadgeView : public views::BoxLayoutView {
   QuickInsertBadgeView& operator=(const QuickInsertBadgeView&) = delete;
   ~QuickInsertBadgeView() override;
 
-  const std::u16string& GetText() const;
+  std::u16string_view GetText() const;
   void SetText(const std::u16string& text);
 
   // views::BoxLayoutView:

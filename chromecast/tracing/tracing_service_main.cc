@@ -224,7 +224,8 @@ class TraceConnection : public base::MessagePumpEpoll::FdWatcher {
       LOG(INFO) << "connection closed";
       Finish();
     } else {
-      std::string_view message = base::as_string_view(recv_buffer.first(bytes));
+      std::string_view message =
+          base::as_string_view(recv_buffer_.first(bytes));
       HandleClientMessage(message);
     }
   }

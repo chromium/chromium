@@ -73,6 +73,9 @@ fuzzer_test("renderer_proto_tree_fuzzer") {
     ":html_tree_proto",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # Increase the memory limit, since the fuzzer exceeds it in Debug builds.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 proto_library("html_tree_proto") {
@@ -98,16 +101,6 @@ fuzzer_test("devtools_protocol_encoding_cbor_fuzzer") {
   ]
   seed_corpus =
       "../../browser/devtools/devtools_protocol_encoding_cbor_fuzzer_corpus/"
-}
-
-fuzzer_test("devtools_protocol_encoding_json_fuzzer") {
-  sources =
-      [ "../../browser/devtools/devtools_protocol_encoding_json_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//third_party/inspector_protocol:crdtp",
-  ]
-  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
 }
 
 fuzzer_test("inspector_fuzzer") {
@@ -166,7 +159,38 @@ if (enable_mojom_fuzzer) {
   }
 }
 
-mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
+source_set("content_mojolpm_fuzzer_test_support") {
+  sources = [ "content_mojolpm_fuzzer_test_main.cc" ]
+  testonly = true
+  deps = [ "//base/test:test_support" ]
+}
+
+# A bit of explanation is necessary here. Basically, some new features to setup
+# the RendererHost process is calling `CHECK_IS_TEST`, which requires
+# AllowCheckIsTestForTesting to be called in the test initialization setup, so
+# that the runtime knowns when we're running in a test.
+# Unfortunately, those fuzzers are not being setup by our internal test setup
+# mechanism, and thus we're never calling AllowCheckIsTestForTesting. Besides,
+# this function must be called at most once per process, which prevents the
+# fuzzers from calling it in their setup method (called at every fuzzing
+# iteration).
+template("content_mojolpm_fuzzer_test") {
+  mojolpm_fuzzer_test(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "exclude_main",
+                             "deps",
+                           ])
+    deps = [ ":content_mojolpm_fuzzer_test_support" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    exclude_main = true
+  }
+}
+
+content_mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   sources = [ "code_cache_host_mojolpm_fuzzer.cc" ]
 
   proto_source = "code_cache_host_mojolpm_fuzzer.proto"
@@ -186,7 +210,7 @@ mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   ]
 }
 
-mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
+content_mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
   sources = [ "file_system_manager_mojolpm_fuzzer.cc" ]
 
   proto_source = "file_system_manager_mojolpm_fuzzer.proto"
@@ -203,7 +227,7 @@ mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
   ]
 }
 
-mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
+content_mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
   sources = [ "audio_context_manager_mojolpm_fuzzer.cc" ]
 
   proto_source = "audio_context_manager_mojolpm_fuzzer.proto"
@@ -301,15 +325,6 @@ if (use_fuzzing_engine) {
   }
 }
 
-fuzzer_test("first_party_set_parser_fuzzer") {
-  sources =
-      [ "../../browser/first_party_sets/test/first_party_set_parser_fuzzer.cc" ]
-  deps = [ ":first_party_set_parser_fuzzer_support" ]
-  dict =
-      "../../browser/first_party_sets/test/first_party_set_parser_fuzzer.dict"
-  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
-}
-
 fuzzer_test("first_party_set_parser_json_fuzzer") {
   sources = [
     "../../browser/first_party_sets/test/first_party_set_parser_json_fuzzer.cc",
@@ -338,7 +353,7 @@ if (use_fuzzing_engine_with_lpm) {
   }
 }
 
-mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
+content_mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
   sources = [ "media_stream_dispatcher_host_mojolpm_fuzzer.cc" ]
 
   proto_source = "media_stream_dispatcher_host_mojolpm_fuzzer.proto"
@@ -356,7 +371,7 @@ mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
 # Fuzzer only supports linux. As we use a `V4L2CaptureDevice`, which is only
 # usable on linux through `VideoCaptureDeviceFactoryV4L2`.
 if (is_linux) {
-  mojolpm_fuzzer_test("video_capture_host_mojolpm_fuzzer") {
+  content_mojolpm_fuzzer_test("video_capture_host_mojolpm_fuzzer") {
     sources = [ "video_capture_host_mojolpm_fuzzer.cc" ]
 
     proto_source = "video_capture_host_mojolpm_fuzzer.proto"
@@ -376,7 +391,7 @@ if (is_linux) {
   }
 }
 
-mojolpm_fuzzer_test("image_capture_mojolpm_fuzzer") {
+content_mojolpm_fuzzer_test("image_capture_mojolpm_fuzzer") {
   sources = [ "image_capture_mojolpm_fuzzer.cc" ]
 
   proto_source = "image_capture_mojolpm_fuzzer.proto"
@@ -391,7 +406,7 @@ mojolpm_fuzzer_test("image_capture_mojolpm_fuzzer") {
   proto_deps = [ "//media/capture/mojom:image_capture_mojolpm" ]
 }
 
-mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
+content_mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
   sources = [ "presentation_service_mojolpm_fuzzer.cc" ]
 
   proto_source = "presentation_service_mojolpm_fuzzer.proto"
@@ -409,7 +424,7 @@ mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
   ]
 }
 
-mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
+content_mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
   sources = [ "clipboard_host_mojolpm_fuzzer.cc" ]
 
   proto_source = "clipboard_host_mojolpm_fuzzer.proto"
@@ -430,7 +445,7 @@ proto_library("ad_auction_service_mojolpm_fuzzer_stringifiers_proto") {
   sources = [ "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.proto" ]
 }
 
-mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
+content_mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
   sources = [
     "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.cc",
     "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.cc",
@@ -524,4 +539,16 @@ if (use_fuzzing_engine) {
       "//third_party/fuzztest:fuzztest_gtest_main",
     ]
   }
+}
+
+test("devtools_protocol_encoding_json_fuzzer") {
+  sources =
+      [ "../../browser/devtools/devtools_protocol_encoding_json_fuzzer.cc" ]
+  fuzztests = [ "DevToolsProtocolFuzzer.ConvertsJSONToCBORCorrectly" ]
+  deps = [
+    "//base",
+    "//base/test:fuzztest_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+    "//third_party/inspector_protocol:crdtp",
+  ]
 }

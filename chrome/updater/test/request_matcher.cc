@@ -123,13 +123,12 @@ Matcher GetContentMatcher(
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
     const bool is_match = [&scope, &request] {
-      const std::optional<base::Value> doc =
-          base::JSONReader::Read(request.decoded_content);
-      if (!doc || !doc->is_dict()) {
+      const std::optional<base::Value::Dict> doc =
+          base::JSONReader::ReadDict(request.decoded_content);
+      if (!doc) {
         return false;
       }
-      const base::Value::Dict* object_request =
-          doc->GetDict().FindDict("request");
+      const base::Value::Dict* object_request = doc->FindDict("request");
       if (!object_request) {
         return false;
       }
@@ -157,15 +156,18 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
   return base::BindLambdaForTesting([app_id,
                                      priority](const HttpRequest& request) {
     const bool is_match = [&app_id, priority, &request] {
-      const std::optional<base::Value> doc =
-          base::JSONReader::Read(request.decoded_content);
-      if (!doc || !doc->is_dict()) {
+      const std::optional<base::Value::Dict> doc =
+          base::JSONReader::ReadDict(request.decoded_content);
+      if (!doc) {
         return false;
       }
       const base::Value::List* app_list =
-          doc->GetDict().FindListByDottedPath("request.app");
+          doc->FindListByDottedPath("request.apps");
       if (!app_list) {
-        return false;
+        app_list = doc->FindListByDottedPath("request.app");  // V3 fallback.
+        if (!app_list) {
+          return false;
+        }
       }
       for (const base::Value& app : *app_list) {
         if (const auto* dict = app.GetIfDict()) {
@@ -193,13 +195,13 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
 Matcher GetUpdaterEnableUpdatesMatcher() {
   return base::BindLambdaForTesting([](const HttpRequest& request) {
     const bool update_disabled = [&request] {
-      const std::optional<base::Value> doc =
-          base::JSONReader::Read(request.decoded_content);
-      if (!doc || !doc->is_dict()) {
+      const std::optional<base::Value::Dict> doc =
+          base::JSONReader::ReadDict(request.decoded_content);
+      if (!doc) {
         return false;
       }
       const base::Value::List* app_list =
-          doc->GetDict().FindListByDottedPath("request.app");
+          doc->FindListByDottedPath("request.apps");
       if (!app_list) {
         return false;
       }
@@ -248,9 +250,8 @@ Matcher GetMultipartContentMatcher(
     re2::RE2::Options opt;
     opt.set_case_sensitive(false);
     std::string_view input(request.decoded_content);
-    for (std::vector<FormExpectations>::const_iterator form_expection =
-             form_expections.begin();
-         form_expection < form_expections.end(); ++form_expection) {
+
+    for (const FormExpectations& form_expectation : form_expections) {
       if (re2::RE2::FindAndConsume(&input, form_data_boundary)) {
         VLOG(3) << "Advancing to next form in the multipart content.";
       } else {
@@ -258,7 +259,7 @@ Matcher GetMultipartContentMatcher(
         return false;
       }
 
-      const std::string& form_name = form_expection->name;
+      const std::string& form_name = form_expectation.name;
       if (re2::RE2::FindAndConsume(
               &input,
               base::StringPrintf(R"(Content-Disposition: form-data; name="%s")",
@@ -269,14 +270,12 @@ Matcher GetMultipartContentMatcher(
         return false;
       }
 
-      for (std::vector<std::string>::const_iterator regex =
-               form_expection->regex_sequence.begin();
-           regex < form_expection->regex_sequence.end(); ++regex) {
-        if (re2::RE2::FindAndConsume(&input, re2::RE2(*regex, opt))) {
-          VLOG(3) << "Found regex: [" << *regex << "]";
+      for (const std::string& regex : form_expectation.regex_sequence) {
+        if (re2::RE2::FindAndConsume(&input, re2::RE2(regex, opt))) {
+          VLOG(3) << "Found regex: [" << regex << "]";
         } else {
           ADD_FAILURE() << "Form [" << form_name << "] match failed. "
-                        << "Expected regex: [" << *regex << "] not found in "
+                        << "Expected regex: [" << regex << "] not found in "
                         << "content: [" << GetPrintableContent(request) << "]";
           return false;
         }

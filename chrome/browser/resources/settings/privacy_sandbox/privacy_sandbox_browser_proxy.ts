@@ -72,6 +72,9 @@ export interface PrivacySandboxBrowserProxy {
    */
   getChildTopicsCurrentlyAssigned(topic: CanonicalTopic):
       Promise<CanonicalTopic[]>;
+
+  /** Determines if the Ad Topics Content Parity should be shown. */
+  shouldShowPrivacySandboxAdTopicsContentParity(): Promise<boolean>;
 }
 
 export class PrivacySandboxBrowserProxyImpl implements
@@ -105,6 +108,10 @@ export class PrivacySandboxBrowserProxyImpl implements
     return sendWithPromise(
         'getChildTopicsCurrentlyAssigned', topic.topicId,
         topic.taxonomyVersion);
+  }
+
+  shouldShowPrivacySandboxAdTopicsContentParity() {
+    return sendWithPromise('shouldShowPrivacySandboxAdTopicsContentParity');
   }
 
   static getInstance(): PrivacySandboxBrowserProxy {

@@ -141,6 +141,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using SetUserDataStorageWriteEnabledCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::SetUserDataStorageWriteEnabledReply>;
 
+  using LockFactorUntilRebootCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::LockFactorUntilRebootReply>;
+
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
   UserDataAuthClient& operator=(const UserDataAuthClient&) = delete;
@@ -370,6 +373,14 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void SetUserDataStorageWriteEnabled(
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
       SetUserDataStorageWriteEnabledCallback callback) = 0;
+
+  // Initiates a Cryptohome lock on the provided authentication factor type,
+  // persisting until device reboot.
+  // NOTE: The `LockFactorUntilRebootRequest` is only implemented for
+  // `AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY`.
+  virtual void LockFactorUntilReboot(
+      const ::user_data_auth::LockFactorUntilRebootRequest& request,
+      LockFactorUntilRebootCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

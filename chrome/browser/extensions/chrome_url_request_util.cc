@@ -129,8 +129,6 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
   // load, so priority, and pausing is not currently implemented.
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
  private:
   explicit ResourceBundleFileLoader(

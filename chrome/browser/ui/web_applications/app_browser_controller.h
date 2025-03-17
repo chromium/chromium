@@ -12,8 +12,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/actions/action_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "url/gurl.h"
@@ -73,6 +76,31 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   static Browser* FindForWebApp(const Profile& profile,
                                 const webapps::AppId& app_id);
 
+  // Returns the `browser` and `tab_index` for a tab for the given `app_id` in
+  // the given `profile`, where the tab does not have an opener, and the browser
+  // is of the specified `browser_type`. Prefers more recently activated
+  // windows and tabs over less recently used ones.
+  struct BrowserAndTabIndex {
+    raw_ptr<Browser> browser = nullptr;
+    int tab_index = -1;
+  };
+  enum class HomeTabScope {
+    kDontCare,   // The caller doesn't care if the returned tab is a home tab.
+    kInScope,    // Only return tabs that are a pinned home tab.
+    kOutOfScope  // Only return tabs that are not a pinned home tab.
+  };
+  static std::optional<BrowserAndTabIndex> FindTopLevelBrowsingContextForWebApp(
+      const Profile& profile,
+      const webapps::AppId& app_id,
+      BrowserWindowInterface::Type browser_type,
+      bool for_focus_existing,
+      HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
+  static std::optional<int> FindTabIndexForApp(
+      Browser* browser,
+      const webapps::AppId& app_id,
+      bool for_focus_existing,
+      HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
+
   // Renders |url|'s origin as Unicode.
   static std::u16string FormatUrlOrigin(
       const GURL& url,
@@ -111,8 +139,13 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Whether to show content settings in the titlebar toolbar.
   virtual bool HasTitlebarContentSettings() const;
 
-  // Returns which PageActionIconTypes should appear in the titlebar toolbar.
-  virtual std::vector<PageActionIconType> GetTitleBarPageActions() const;
+  // Returns which page actions which should should appear in the titlebar
+  // toolbar.
+  virtual std::vector<actions::ActionId> GetTitleBarPageActions() const;
+  // The page actions framework is currently undergoing a migration.
+  // This is method is used by the legacy framework and will be removed once
+  // the migration is complete.
+  virtual std::vector<PageActionIconType> GetTitleBarPageActionTypes() const;
 
   // Whether to show the Back and Refresh buttons in the web app toolbar.
   virtual bool HasMinimalUiButtons() const = 0;

@@ -70,7 +70,7 @@ void LogUrl(const net::test_server::HttpRequest& request) {
 FakeOriginTestServerMixin::FakeOriginTestServerMixin(
     InProcessBrowserTestMixinHost* host,
     GURL origin,
-    base::FilePath::StringPieceType path_to_be_served)
+    base::FilePath::StringViewType path_to_be_served)
     : InProcessBrowserTestMixin(host),
       origin_(std::move(origin)),
       path_to_be_served_(path_to_be_served),

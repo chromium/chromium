@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CpuUsage} from '../model/cpu_usage_helper.js';
+import type {CpuUsage} from '../model/cpu_usage_helper.js';
 
 /**
  * Calculate the average CPU usage.

@@ -480,7 +480,7 @@ bool AnchoredNudgeManagerImpl::IsNudgeShown(const std::string& id) {
   return base::Contains(shown_nudges_, id);
 }
 
-const std::u16string& AnchoredNudgeManagerImpl::GetNudgeBodyTextForTest(
+std::u16string_view AnchoredNudgeManagerImpl::GetNudgeBodyTextForTest(
     const std::string& id) {
   CHECK(base::Contains(shown_nudges_, id));
   return views::AsViewClass<views::Label>(

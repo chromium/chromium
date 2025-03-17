@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <optional>
@@ -21,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_constants.h"
@@ -60,9 +61,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user_manager.h"
@@ -287,14 +285,12 @@ bool AreWebAppsEnabled(Profile* profile) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();
-  // Don't enable if SWAs in Kiosk session are disabled for the next session
-  // types.
-  if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
-    // Don't enable for Chrome App Kiosk sessions.
-    if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
-      return false;
-    }
+
+  // Don't enable for Chrome App Kiosk sessions.
+  if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
+    return false;
   }
+
   // Guest session forces OTR to be turned on.
   if (profile->IsGuestSession()) {
     return profile->IsOffTheRecord();
@@ -321,11 +317,18 @@ content::BrowserContext* GetBrowserContextForWebApps(
     return profile;
   }
 
+  // On ChromeOS, the system web app implementation requires that incognito
+  // profiles can be used to look up the WebAppProvider of their original
+  // profile.
+  // TODO(https://crbug.com/384063076): Stop returning for profiles on ChromeOS
+  // where `AreWebAppsEnabled` returns `false`.
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* original_profile = profile->GetOriginalProfile();
   CHECK(original_profile);
   if (AreWebAppsEnabled(original_profile)) {
     return original_profile;
   }
+#endif
 
   return nullptr;
 }
@@ -460,7 +463,7 @@ std::vector<std::u16string> TransformFileExtensionsForDisplay(
     const std::set<std::string>& extensions) {
   std::vector<std::u16string> extensions_for_display;
   extensions_for_display.reserve(extensions.size());
-  base::ranges::transform(
+  std::ranges::transform(
       extensions, std::back_inserter(extensions_for_display),
       [](const std::string& extension) {
         return base::UTF8ToUTF16(base::ToUpperASCII(extension.substr(1)));
@@ -478,12 +481,6 @@ bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode) {
       return false;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-bool IsWebAppsCrosapiEnabled() {
-  return false;
-}
-#endif
 
 bool HasAnySpecifiedSourcesAndNoOtherSources(
     WebAppManagementTypes sources,
@@ -528,9 +525,12 @@ DisplayMode ResolveEffectiveDisplayMode(
   const DisplayMode resolved_display_mode =
       ResolveNonIsolatedEffectiveDisplayMode(
           app_display_mode, app_display_mode_overrides, user_display_mode);
-  if (is_isolated && resolved_display_mode == DisplayMode::kBrowser) {
+  // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
+  // are added to the WebAppProvider system.
+  if (is_isolated && resolved_display_mode == DisplayMode::kMinimalUi) {
     return DisplayMode::kStandalone;
   }
+  CHECK(!(is_isolated && resolved_display_mode == DisplayMode::kBrowser));
 
   return resolved_display_mode;
 }
@@ -588,14 +588,9 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
   }
 
   WebAppRegistrar& web_app_registrar = web_app_provider->registrar_unsafe();
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   const std::optional<webapps::AppId> app_id =
       web_app_registrar.FindBestAppWithUrlInScope(
-          url, {
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               });
+          url, web_app::WebAppFilter::InstalledInChrome());
   if (!app_id.has_value()) {
     return nullptr;
   }

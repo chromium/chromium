@@ -52,7 +52,8 @@ StylusHandwritingCallbackSinkWin::FocusHandwritingTarget(
 
   handwriting_callback_.Run(
       display::win::ScreenWin::ScreenToDIPRect(window, gfx::Rect(rect)),
-      gfx::Size(distance_threshold.cx, distance_threshold.cy));
+      display::win::ScreenWin::ScreenToDIPSize(
+          window, gfx::Size(distance_threshold.cx, distance_threshold.cy)));
 
   // Check that we have no pending callback.
   DCHECK(!pending_target_args_);

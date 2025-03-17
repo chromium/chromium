@@ -139,7 +139,7 @@ export class QuickViewController {
     this.quickView_.onDeleteButtonClick = this.onDeleteButtonClick_.bind(this);
 
     const toolTipElements =
-        this.quickView_.shadowRoot!.querySelector<HTMLDivElement>('#toolbar')!
+        this.quickView_.shadowRoot!.querySelector<HTMLElement>('#toolbar')!
             .querySelectorAll('[has-tooltip]');
     this.quickView_.shadowRoot!.querySelector<FilesTooltip>('files-tooltip')!
         .addTargets(toolTipElements);

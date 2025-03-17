@@ -108,8 +108,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter*
       _priceNotificationsWhileBrowsingBubbleTipPresenter;
   BubbleViewControllerPresenter* _lensKeyboardPresenter;
-  BubbleViewControllerPresenter* _parcelTrackingTipBubblePresenter;
   BubbleViewControllerPresenter* _lensOverlayEntrypointBubblePresenter;
+  BubbleViewControllerPresenter* _settingsInOverflowMenuBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -177,10 +177,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_whatsNewBubblePresenter dismissAnimated:NO];
   [_lensKeyboardPresenter dismissAnimated:NO];
   [_defaultPageModeTipBubblePresenter dismissAnimated:NO];
-  [_parcelTrackingTipBubblePresenter dismissAnimated:NO];
   [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
+}
+
+- (void)hideBubblesPointingToOmnibox {
+  [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
 }
 
 - (void)handleTapOutsideOfVisibleGestureInProductHelp {
@@ -236,8 +239,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                   anchorPoint:discoverFeedMenuAnchor
                 presentAction:nil
                 dismissAction:nil];
-  if (!presenter)
+  if (!presenter) {
     return;
+  }
 
   _discoverFeedHeaderMenuTipBubblePresenter = presenter;
 }
@@ -283,8 +287,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                              popupMenuHandler:
                                                  (id<PopupMenuCommands>)
                                                      popupMenuHandler {
-  if (![self canPresentBubble])
+  if (![self canPresentBubble]) {
     return;
+  }
 
   BubbleArrowDirection arrowDirection =
       IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
@@ -340,8 +345,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         voiceOverAnnouncement:l10n_util::GetNSString(
                                   IDS_IOS_DEFAULT_PAGE_MODE_TIP_VOICE_OVER)
                   anchorPoint:toolsMenuAnchor];
-  if (!presenter)
+  if (!presenter) {
     return;
+  }
   [popupMenuHandler notifyIPHBubblePresenting];
   _defaultPageModeTipBubblePresenter = presenter;
 }
@@ -426,32 +432,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 }
 
-- (void)presentParcelTrackingTipBubble {
-  if (![self canPresentBubble]) {
-    return;
-  }
-
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
-  NSString* text = l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_IPH);
-
-  CGPoint magicStackAnchor = [self anchorPointToGuide:kMagicStackGuide
-                                            direction:arrowDirection];
-
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHiOSParcelTrackingFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentCenter
-                         text:text
-        voiceOverAnnouncement:text
-                  anchorPoint:magicStackAnchor
-                presentAction:nil
-                dismissAction:nil];
-
-  if (!presenter) {
-    _parcelTrackingTipBubblePresenter = presenter;
-  }
-}
-
 - (void)presentLensOverlayTipBubble {
   if (![self canPresentBubble]) {
     return;
@@ -493,6 +473,46 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   if (presenter) {
     _lensOverlayEntrypointBubblePresenter = presenter;
+  }
+}
+
+- (void)presentOverflowMenuSettingsBubble {
+  if (![self canPresentBubble]) {
+    return;
+  }
+
+  // Only show on top of the NTP:
+  // If the user had opened the account menu from the NTP, chances are they were
+  // looking for settings (because that's where the account particle disc used
+  // to link), so this IPH will help them.
+  // If they had opened the account menu from anywhere else, there's no
+  // connection to settings, and so this IPH wouldn't make sense.
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (!IsUrlNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection =
+      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
+                                                  : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_IN_OVERFLOW_MENU_IPH_TEXT);
+
+  CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
+                                           direction:arrowDirection];
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the IPH, then end early to prevent the potential reassignment of the
+  // existing presenter to nil.
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:
+                feature_engagement::kIPHiOSSettingsInOverflowMenuBubbleFeature
+                          direction:arrowDirection
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:toolsMenuAnchor];
+  if (presenter) {
+    _settingsInOverflowMenuBubblePresenter = presenter;
   }
 }
 

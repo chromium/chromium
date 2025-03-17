@@ -85,7 +85,7 @@ def _GetPrimaryAction(action: str) -> int:
         return 2
     if action == 'Chrome Settings':
         return 3
-    if action == 'iOS Password Settings':
+    if action == 'iOS Credential Provider Settings':
         return 4
     if action == 'Lens':
         return 5
@@ -112,15 +112,15 @@ def CleanUpFeaturesPlist() -> None:
             plistlib.dump(plist_data, plist_file, sort_keys=False)
 
 
-def UpdateWhatsNewPlist(feature_dict: dict[str, str],
-                        feature_type: int) -> None:
+def UpdateWhatsNewPlist(feature_dict: dict[str, str], feature_type: int,
+                        path_to_milestone_folder: str) -> None:
     """Updates whats_new_entries.plist with the new feature entry.
 
   Args:
       feature_dict: Data for the new What's New feature.
       feature_type: Newly added WhatsNewType for the new What's New feature.
+      path_to_milestone_folder: Path to the milestone folder.
   """
-
     # Format and clean up the instructions text field ID.
     instruction_steps = StripWhitespacesAndEmptyLines(feature_dict['Instructions'])
     serialized_animation_texts = feature_dict['Animation texts'].splitlines()
@@ -159,7 +159,8 @@ def UpdateWhatsNewUtils(feature_dict: dict[str, str]) -> None:
       feature_dict: Data for the new What's New feature.
   """
     feature_name = feature_dict['Feature name']
-    whats_new_util_file = os.path.join(BASE_DIR, '..', CHROME_ICON_FILENAME)
+    whats_new_util_file = os.path.join(
+        BASE_DIR, '..', 'ios/chrome/browser/ui/whats_new/whats_new_util.mm')
     with open(whats_new_util_file, 'r+', encoding='utf-8', newline='') as file:
         read_data = file.read()
         whats_new_type_error_regex = r'case WhatsNewType::kError:'
@@ -446,8 +447,7 @@ def LoadValidIconNames() -> ValidIcons:
 
     icon_name_regex = re.compile(r"@\"(.*)\";")
 
-    valid_icons_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/shared/ui/symbols/symbol_names.mm')
+    valid_icons_file = os.path.join(BASE_DIR, '..', CHROME_ICON_FILENAME)
     found_default_icons = False
     with open(valid_icons_file, 'r', encoding='utf-8', newline='') as file:
         # The icons file starts with custom icons until reaching the comment
@@ -490,15 +490,12 @@ def ValidateWhatsNewData(feature_dict: dict[str, str],
         feature_dict: Data for the new What's New feature
         valid_icons: A ValidIcons instance representing which icons are valid
       Returns:
-        A string error message if the data is not valid, and an empty
-        string if the data is valid.
+        An empty string if the data is valid
     """
-
     icon_name = feature_dict['Icon name']
-
-    if (feature_dict['Icon Type'] == 'Custom'
-            and icon_name not in valid_icons.valid_custom):
-        return f'Invalid Custom icon name: {icon_name}'
+    if feature_dict['Icon Type'] == 'Custom':
+        if icon_name not in valid_icons.valid_custom:
+            return f'Invalid Custom icon name: {icon_name}'
     elif icon_name not in valid_icons.valid_default:
         if icon_name not in valid_icons.full_default:
             return f'Invalid Default icon name: {icon_name}'
@@ -520,3 +517,102 @@ def StripWhitespacesAndEmptyLines(text: str) -> list[str]:
     """
     lines = text.splitlines()
     return ["".join(line.split()) for line in lines if line.strip()]
+
+
+def ExtractTextLayerIDs(lottie_json: dict) -> set[str]:
+    """Extracts all text layer IDs from a Lottie JSON file.
+
+    Args:
+        lottie_json: Parsed Lottie JSON data
+
+    Returns:
+        Set of text layer IDs found in the Lottie JSON
+    """
+    text_layer_ids = set()
+
+    def process_layers(layers: list[dict]):
+        for layer in layers:
+            if layer.get('ty') == 5:  # Type 5 represents text layers
+                if 'nm' in layer:  # 'nm' is the name/ID field
+                    text_layer_ids.add(layer['nm'])
+            if 'layers' in layer:
+                process_layers(layer['layers'])
+
+    if 'layers' in lottie_json:
+        process_layers(lottie_json['layers'])
+
+    return text_layer_ids
+
+
+def ValidateLottieTextLayers(feature_dict: dict[str, str],
+                             path_to_milestone_folder: str) -> None:
+    """Validates that all animation text keys correspond to text layers in
+    Lottie files.
+
+    Args:
+        feature_dict: Data for the new What's New feature
+        path_to_milestone_folder: Path to the milestone folder
+
+    Raises:
+        AssertionError: if validation fails
+    """
+    feature_name = feature_dict['Feature name']
+    animation_name = feature_dict['Animation']
+    animation_name_darkmode = feature_dict['Animation darkmode']
+
+    # Validate that the animation names are not empty
+    if not animation_name or not animation_name_darkmode:
+        raise AssertionError(
+            "Animation and Animation darkmode names cannot be empty")
+
+    # Get the provided animation text keys
+    animation_texts = feature_dict['Animation texts'].splitlines()
+    provided_keys = set()
+    for text in animation_texts:
+        try:
+            animation_text = json.loads(text)
+            if 'key' in animation_text:
+                provided_keys.add(animation_text['key'])
+            else:
+                # Handle case where 'key' is missing
+                raise AssertionError(
+                    f"Missing 'key' in animation text: {text}")
+        except json.JSONDecodeError as e:
+            raise AssertionError(
+                f"Invalid JSON format in animation texts: {text}") from e
+
+    # Read and validate both light and dark mode Lottie files
+    lottie_files = [(os.path.join(path_to_milestone_folder, feature_name,
+                                  animation_name), "light mode"),
+                    (os.path.join(path_to_milestone_folder, feature_name,
+                                  animation_name_darkmode), "dark mode")]
+
+    for lottie_file_path, mode in lottie_files:
+        try:
+            with open(lottie_file_path, 'r', encoding='utf-8') as file:
+                lottie_data = json.load(file)
+        except FileNotFoundError as e:
+            raise AssertionError(
+                f"Could not find {mode} Lottie file: {lottie_file_path}"
+            ) from e
+        except json.JSONDecodeError as e:
+            raise AssertionError(
+                f"Invalid JSON in {mode} Lottie file: {lottie_file_path}"
+            ) from e
+
+        # Extract text layer IDs from the Lottie file
+        text_layer_ids = ExtractTextLayerIDs(lottie_data)
+
+        # Validate that all provided keys exist in the Lottie file
+        missing_keys = provided_keys - text_layer_ids
+        if missing_keys:
+            raise AssertionError(
+                f"The following animation text keys were not found as text layers in the {mode} "
+                f"Lottie file: {', '.join(missing_keys)}")
+
+        # Warn about text layers without corresponding keys
+        unused_layers = text_layer_ids - provided_keys
+        if unused_layers:
+            print(
+                f"Warning: The following text layers in the {mode} Lottie file don't have corresponding animation texts: {', '.join(unused_layers)}"
+            )

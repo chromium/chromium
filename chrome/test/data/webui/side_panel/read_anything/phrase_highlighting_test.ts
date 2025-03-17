@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {stubAnimationFrame, suppressInnocuousErrors} from './common.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {createApp, stubAnimationFrame} from './common.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('PhraseHighlighting', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
+  let metrics: TestMetricsBrowserProxy;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -56,19 +56,18 @@ suite('PhraseHighlighting', () => {
     ],
   };
 
-  setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    flush();
+    metrics = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metrics);
+    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+    app = await createApp();
 
     // Use a tree with just one sentence. For the actual implementation of
     // phrase segmentation, a more realistic example would be to use
@@ -85,14 +84,15 @@ suite('PhraseHighlighting', () => {
     let highlightButton: CrIconButtonElement;
     let options: HTMLButtonElement[];
 
-    setup(() => {
+    setup(async () => {
       toolbar = app.$.toolbar;
       highlightButton =
           toolbar.$.toolbarContainer.querySelector<CrIconButtonElement>(
               '#highlight')!;
       stubAnimationFrame();
       highlightButton.click();
-      flush();
+
+      await microtasksFinished();
 
       const menu = toolbar.$.highlightMenu.$.menu.$.lazyMenu.get();
       assertTrue(menu.open);
@@ -100,9 +100,9 @@ suite('PhraseHighlighting', () => {
           menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
     });
 
-    test('with word highlighting on, word is highlighted', () => {
+    test('with word highlighting on, word is highlighted', async () => {
       options[1]!.click();
-      flush();
+      await microtasksFinished();
       assertEquals(
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.wordHighlighting);
@@ -113,11 +113,15 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals(currentHighlight!.textContent!, 'This ');
+
+      assertEquals(2, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
 
-    test('with phrase highlighting on, phrase is highlighted', () => {
+    test('with phrase highlighting on, phrase is highlighted', async () => {
       options[2]!.click();
-      flush();
+      await microtasksFinished();
+
       assertEquals(
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.phraseHighlighting);
@@ -128,11 +132,13 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals(currentHighlight!.textContent!, 'This is a ');
+      assertEquals(3, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
 
-    test('with sentence highlighting on, sentence is highlighted', () => {
+    test('with sentence highlighting on, sentence is highlighted', async () => {
       options[3]!.click();
-      flush();
+      await microtasksFinished();
       assertEquals(
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.sentenceHighlighting);
@@ -143,11 +149,13 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals(currentHighlight!.textContent!, 'This is a link.');
+      assertEquals(4, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
 
-    test('with highlighting off, highlight is invisible', () => {
+    test('with highlighting off, highlight is invisible', async () => {
       options[4]!.click();
-      flush();
+      await microtasksFinished();
       assertEquals(
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.noHighlighting);
@@ -158,6 +166,8 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals('transparent', computeStyle('--current-highlight-bg-color'));
+      assertEquals(1, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
   });
 

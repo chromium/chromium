@@ -65,6 +65,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Transparency) {
   RunTest("new_tab_page/transparency_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, Footer) {
+  RunTest("new_tab_page/footer_test.js", "mocha.run()");
+}
+
 using NewTabPageModulesTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleWrapper) {
@@ -142,9 +146,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestion) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, SharepointModule) {
-  RunTest("new_tab_page/modules/v2/file_suggestion/sharepoint_module_test.js",
-          "mocha.run()");
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MicrosoftFilesModule) {
+  RunTest(
+      "new_tab_page/modules/v2/file_suggestion/microsoft_files_module_test.js",
+      "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MicrosoftAuthModule) {

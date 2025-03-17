@@ -32,25 +32,22 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * whether NTP is shown).
  */
 public class ShareButtonController extends BaseButtonDataProvider {
-    private final ShareUtils mShareUtils;
-
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-
     private final Supplier<Tracker> mTrackerSupplier;
     private final Runnable mOnShareRunnable;
 
     /**
      * Creates ShareButtonController object.
+     *
      * @param context The context for retrieving string resources.
      * @param buttonDrawable Drawable for the new tab button.
      * @param tabProvider The {@link ActivityTabProvider} used for accessing the tab.
      * @param shareDelegateSupplier The supplier to get a handle on the share delegate.
-     * @param trackerSupplier  Supplier for the current profile tracker.
-     * @param shareUtils The share utility functions used by this class.
+     * @param trackerSupplier Supplier for the current profile tracker.
      * @param modalDialogManager dispatcher for modal lifecycles events
      * @param onShareRunnable A {@link Runnable} to execute when a share event occurs. This object
-     *                        does not actually handle sharing, but can provide supplemental
-     *                        functionality when the share button is pressed.
+     *     does not actually handle sharing, but can provide supplemental functionality when the
+     *     share button is pressed.
      */
     public ShareButtonController(
             Context context,
@@ -58,7 +55,6 @@ public class ShareButtonController extends BaseButtonDataProvider {
             ActivityTabProvider tabProvider,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             Supplier<Tracker> trackerSupplier,
-            ShareUtils shareUtils,
             ModalDialogManager modalDialogManager,
             Runnable onShareRunnable) {
         super(
@@ -73,7 +69,6 @@ public class ShareButtonController extends BaseButtonDataProvider {
                 /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_share,
                 /* showHoverHighlight= */ true);
 
-        mShareUtils = shareUtils;
         mShareDelegateSupplier = shareDelegateSupplier;
         mTrackerSupplier = trackerSupplier;
         mOnShareRunnable = onShareRunnable;
@@ -108,7 +103,7 @@ public class ShareButtonController extends BaseButtonDataProvider {
     protected boolean shouldShowButton(Tab tab) {
         if (!super.shouldShowButton(tab) || mShareDelegateSupplier.get() == null) return false;
 
-        return mShareUtils.shouldEnableShare(tab);
+        return ShareUtils.shouldEnableShare(tab);
     }
 
     /**

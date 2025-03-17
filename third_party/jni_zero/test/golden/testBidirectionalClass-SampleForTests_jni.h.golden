@@ -10,6 +10,8 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
+// Macro for transition to enable_definition_macros=true.
+#define DEFINE_JNI_FOR_SampleForTests()
 
 // Class Accessors
 #ifndef org_jni_1zero_SampleForTests_clazz_defined
@@ -547,9 +549,9 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
       "jniTypesAndAnnotations",
       "(I[IIJ)[I",
       &cached_method_id);
-  jint converted_foo = static_cast<jint>(foo);
+  jint converted_foo = jni_zero::internal::PrimitiveConvert<MyEnum, jint>::ToJniType(env, foo);
   jni_zero::ScopedJavaLocalRef<jobject> converted_bar = jni_zero::ToJniArray(env, bar);
-  jlong converted_bat = static_cast<jlong>(bat);
+  jlong converted_bat = jni_zero::internal::PrimitiveConvert<long, jlong>::ToJniType(env, bat);
   auto _ret = env->CallObjectMethod(
       obj.obj(),
       call_context.method_id(),

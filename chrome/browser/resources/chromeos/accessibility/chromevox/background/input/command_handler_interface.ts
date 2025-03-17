@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {constants} from '/common/constants.js';
-import {CursorRange} from '/common/cursors/range.js';
+import type {constants} from '/common/constants.js';
+import type {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {Command} from '../../common/command.js';
+import type {Command} from '../../common/command.js';
 
 /**
  * Interface defining the methods of performing or modifying the performance of

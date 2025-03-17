@@ -146,6 +146,9 @@ class BleV2MediumTest : public testing::Test {
         {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
 
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync_primitives;
+
+    // GATT server advertisements are expected to be connectable; this behavior
+    // aligns with the Nearby SDK implementation.
     EXPECT_EQ(expected_success,
               ble_v2_medium_->StartAdvertising(
                   advertising_data,
@@ -884,6 +887,80 @@ TEST_F(BleV2MediumTest, ConnectToGattServer_Failure) {
       /*bucket: FAILED=*/5, 1);
   histogram_tester_.ExpectTotalCount(
       "Nearby.Connections.BleV2.ConnectToGattServer.Duration", 0);
+}
+
+// Regression test for crbug/392944686. All advertisements are expected to be
+// non-connectable.
+TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_FastAdvertisement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
+  fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
+  api::ble_v2::BleAdvertisementData advertising_data;
+  advertising_data.is_extended_advertisement = false;
+  advertising_data.service_data.insert(
+      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+
+  // Fast Advertisements are expected to be non-connectable; this behavior
+  // aligns with the Nearby SDK implementation.
+  EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
+      advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
+                         .is_connectable = false}));
+  EXPECT_FALSE(
+      fake_adapter_
+          ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
+          .value());
+}
+
+TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_ExtendedAdvertisement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2,
+                            ::features::kEnableNearbyBleV2ExtendedAdvertising},
+      /*disabled_features=*/{});
+  EXPECT_TRUE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
+
+  fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
+  api::ble_v2::BleAdvertisementData advertising_data;
+  advertising_data.is_extended_advertisement = true;
+  advertising_data.service_data.insert(
+      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+
+  // Extended advertisements are expected to be connectable; this behavior
+  // aligns with the Nearby SDK implementation.
+  EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
+      advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
+                         .is_connectable = true}));
+  EXPECT_TRUE(
+      fake_adapter_
+          ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
+          .value());
+}
+
+TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_GattAdvertisement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2,
+                            ::features::kEnableNearbyBleV2GattServer},
+      /*disabled_features=*/{});
+
+  SetUpGattServerForAdvertising(/*should_register_succeed=*/true);
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2MediumTest::CallStartAdvertisingForGattService,
+                         base::Unretained(this), /*expected_result=*/true),
+          run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(
+      fake_adapter_
+          ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
+          .value());
 }
 
 }  // namespace nearby::chrome

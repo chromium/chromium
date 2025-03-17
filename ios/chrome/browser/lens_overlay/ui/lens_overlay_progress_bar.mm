@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -20,9 +20,8 @@ const CGFloat kAppearanceAnimationDuration = 0.3f;
 @implementation LensOverlayProgressBar
 
 - (NSString*)accessibilityValue {
-  return l10n_util::GetNSStringF(
-      IDS_IOS_PROGRESS_BAR_ACCESSIBILITY,
-      base::SysNSStringToUTF16([super accessibilityValue]));
+  return l10n_util::GetNSStringF(IDS_IOS_PROGRESS_BAR_ACCESSIBILITY,
+                                 [super accessibilityValue].cr_UTF16String);
 }
 
 - (void)setHidden:(BOOL)hidden

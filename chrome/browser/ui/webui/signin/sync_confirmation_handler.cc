@@ -14,7 +14,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -38,13 +37,6 @@
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/sync/base/features.h"
-#endif
-
 using signin::ConsentLevel;
 
 namespace {
@@ -53,7 +45,7 @@ const int kProfileImageSize = 128;
 // Derives screen mode of sync opt in screen from the
 // CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
 constexpr bool UseMinorModeRestrictions() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS handles minor modes separately.
   return false;
 #else
@@ -188,13 +180,6 @@ void SyncConfirmationHandler::RegisterMessages() {
       "accountInfoRequest",
       base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
-      "openDeviceSyncSettings",
-      base::BindRepeating(
-          &SyncConfirmationHandler::HandleOpenDeviceSyncSettings,
-          base::Unretained(this)));
-#endif
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
@@ -246,15 +231,6 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
   // yet, the listener will be fired again through `OnAccountUpdated()`.
   DispatchAccountInfoUpdate(primary_account_info);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SyncConfirmationHandler::HandleOpenDeviceSyncSettings(
-    const base::Value::List& args) {
-  std::string os_sync_settings_url = chrome::kChromeUIOSSettingsURL;
-  os_sync_settings_url.append(chromeos::settings::mojom::kSyncSubpagePath);
-  lacros_url_handling::NavigateInAsh(GURL(os_sync_settings_url));
-}
-#endif
 
 void SyncConfirmationHandler::RecordConsent(
     const base::Value::List& consent_description,

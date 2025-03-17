@@ -138,23 +138,23 @@ void MergeModuleSpecifierMaps(ImportMap::SpecifierMap& old_map,
   // Instead of copying the maps and returning the copy, we're modifying the
   // maps in place.
   // 2. For each specifier → url of newMap:
-  for (auto specifier : new_map.Keys()) {
+  for (const auto& entry : new_map) {
+    // 2.2. Set mergedMap[specifier] to url.
+    // Reversing the order for efficiency reasons. `insert` does nothing if the
+    // key already exists.
+    auto iter = old_map.insert(entry.key, std::move(entry.value));
     // 2.1. If specifier exists in oldMap, then:
-    if (old_map.Contains(specifier)) {
+    if (!iter.is_new_entry) {
       // 2.1.1. The user agent may report the removed rule as a warning to the
       // developer console.
       auto* message = MakeGarbageCollected<ConsoleMessage>(
           ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
-          "An import map rule for specifier '" + specifier +
+          "An import map rule for specifier '" + entry.key +
               "' was removed, as it conflicted with an existing rule.");
       logger.AddConsoleMessage(message,
                                /*discard_duplicates=*/true);
       // 2.1.2. Continue.
-      continue;
     }
-    auto url = new_map.at(specifier);
-    // 2.2. Set mergedMap[specifier] to url.
-    old_map.insert(specifier, url);
   }
 }
 
@@ -317,7 +317,7 @@ ImportMap* ImportMap::Parse(const String& input,
         normalized_scopes_map.erase(prefix_url_string);
       }
       normalized_scopes_map.insert(
-          prefix_url_string,
+          std::move(prefix_url_string),
           SortAndNormalizeSpecifierMap(specifier_map, base_url, context));
     }
   }
@@ -712,7 +712,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
       new_import_map->integrity_;
 
   // 3. For each scopePrefix → scopeImports of newImportMapScopes:
-  for (auto scope : new_import_map_scopes) {
+  for (auto& scope : new_import_map_scopes) {
     ImportMap::SpecifierMap& scope_imports = scope.value;
     // 3.1. For each pair of global's resolved module set:
     //
@@ -732,15 +732,15 @@ void ImportMap::MergeExistingAndNewImportMaps(
     // specifiers whose prefix is in the set.
     const auto& current_set_it = scoped_resolved_module_map.find(scope.key);
     if (current_set_it != scoped_resolved_module_map.end()) {
-      const auto current_resolved_set = current_set_it->value;
+      const auto& current_resolved_set = current_set_it->value;
       Vector<AtomicString> specifiers_to_remove;
-      for (auto specifier : scope_imports.Keys()) {
+      for (const auto& specifier : scope_imports.Keys()) {
         if (current_resolved_set.find(specifier) !=
             current_resolved_set.end()) {
           specifiers_to_remove.push_back(specifier);
         }
       }
-      for (auto specifier : specifiers_to_remove) {
+      for (auto& specifier : specifiers_to_remove) {
         // 3.1.2.1.1. The user agent may report the removed rule as a warning to
         // the developer console.
         auto* message = MakeGarbageCollected<ConsoleMessage>(
@@ -767,16 +767,20 @@ void ImportMap::MergeExistingAndNewImportMaps(
     } else {
       // 3.3 Otherwise, set oldImportMap's scopes[scopePrefix] to
       // scopeImports.
-      scopes_map_.insert(scope.key, scope_imports);
+      scopes_map_.insert(scope.key, std::move(scope_imports));
       scopes_vector_.push_back(scope.key);
     }
   }
 
   // 4. For each url → integrity of newImportMap's integrity:
-  for (auto url : new_import_map_integrity.Keys()) {
+  for (const auto& url : new_import_map_integrity.Keys()) {
     auto new_integrity_value = new_import_map_integrity.at(url);
+    // 4.2 Set oldImportMap's integrity[url] to integrity.
+    // Reversing the order for efficiency reasons. `insert` does nothing if the
+    // key already exists.
+    auto iter = integrity_.insert(std::move(url), new_integrity_value);
     // 4.1 If url exists in oldImportMap's integrity, then:
-    if (integrity_.Contains(url)) {
+    if (!iter.is_new_entry) {
       // 4.1.1. The user agent may report the removed rule as a warning to the
       // developer console.
       auto* message = MakeGarbageCollected<ConsoleMessage>(
@@ -786,10 +790,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
               "rules.");
       logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
       // 4.1.2 Continue.
-      continue;
     }
-    // 4.2 Set oldImportMap's integrity[url] to integrity.
-    integrity_.insert(url, new_integrity_value);
   }
   // 5. For each pair of global's resolved module set:
 
@@ -801,7 +802,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
   // replaced with a set of all the prefixes of specifier resolved. For each
   // such prefix that exists in the new import map's imports section, we remove
   // it from that section.
-  for (auto specifier : toplevel_resolved_module_set) {
+  for (auto& specifier : toplevel_resolved_module_set) {
     if (!new_import_map_imports.Contains(specifier)) {
       continue;
     }
@@ -827,7 +828,7 @@ void ImportMap::InitializeScopesVector() {
   // <spec label="sort-and-normalize-scopes" step="3">Return the result of
   // sorting normalized, with an entry a being less than an entry b if b’s key
   // is code unit less than a’s key.</spec>
-  WTF::CopyKeysToVector(scopes_map_, scopes_vector_);
+  scopes_vector_.assign(scopes_map_.Keys());
   std::sort(scopes_vector_.begin(), scopes_vector_.end(),
             [](const String& a, const String& b) {
               return CodeUnitCompareLessThan(b, a);

@@ -18,8 +18,9 @@ bool IsTabSwitcherActive() {
 }
 
 StackViewController* GetStackViewController() {
-  if (!IsTabSwitcherActive())
+  if (!IsTabSwitcherActive()) {
     return nil;
+  }
   MainController* mainController = chrome_test_util::GetMainController();
   DCHECK(mainController);
   return base::apple::ObjCCastStrict<StackViewController>(

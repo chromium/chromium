@@ -109,8 +109,8 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_features.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -151,7 +151,7 @@ struct FeatureDialogData {
 // A static array describing each feature.
 const FeatureData kFeatures[] = {
     {FeatureType::kAlwaysShowScrollbar,
-     prefs::kAccessibilityOverlayScrollbarEnabled, nullptr, 0,
+     prefs::kAccessibilityAlwaysShowScrollbarsEnabled, nullptr, 0,
      /*toggleable_in_quicksettings=*/false},
     {FeatureType::kAutoclick, prefs::kAccessibilityAutoclickEnabled,
      &kSystemMenuAccessibilityAutoClickIcon,
@@ -301,7 +301,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityReducedAnimationsEnabled,
-    prefs::kAccessibilityOverlayScrollbarEnabled,
+    prefs::kAccessibilityAlwaysShowScrollbarsEnabled,
     prefs::kAccessibilityMouseKeysEnabled,
     prefs::kAccessibilityMouseKeysAcceleration,
     prefs::kAccessibilityMouseKeysMaxSpeed,
@@ -1267,7 +1267,7 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kAccessibilityDisableTrackpadMode,
                                 static_cast<int>(DisableTouchpadMode::kNever));
   registry->RegisterIntegerPref(prefs::kAccessibilityCursorColor,
-                                kDefaultCursorColor);
+                                ui::kDefaultCursorColor);
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition
@@ -1591,8 +1591,8 @@ void AccessibilityController::RegisterProfilePrefs(
                                   kDefaultFlashNotificationsColor);
   }
 
-  registry->RegisterBooleanPref(prefs::kAccessibilityOverlayScrollbarEnabled,
-                                false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityAlwaysShowScrollbarsEnabled, false);
 }
 
 void AccessibilityController::Shutdown() {
@@ -3022,7 +3022,7 @@ void AccessibilityController::UpdateCursorColorFromPrefs(bool notify) {
   Shell* shell = Shell::Get();
   shell->SetCursorColor(
       enabled ? active_user_prefs_->GetInteger(prefs::kAccessibilityCursorColor)
-              : kDefaultCursorColor);
+              : ui::kDefaultCursorColor);
   if (notify) {
     NotifyAccessibilityStatusChanged();
   }
@@ -3769,8 +3769,10 @@ void AccessibilityController::ShowNotificationForFaceGaze(
       break;
   }
 
-  if (active_user_prefs_->GetBoolean(notification_shown_pref)) {
-    // Do not show notifications more than once.
+  if (active_user_prefs_->GetBoolean(notification_shown_pref) &&
+      notification_shown_pref ==
+          prefs::kFaceGazeDlcSuccessNotificationHasBeenShown) {
+    // Do not show success notifications more than once.
     return;
   }
 

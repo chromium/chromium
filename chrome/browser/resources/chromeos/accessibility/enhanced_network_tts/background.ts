@@ -4,7 +4,7 @@
 
 import '/common/testing/test_import_manager.js';
 
-import {InstanceChecker} from '/common/instance_checker.js';
+import {InstanceChecker} from '/common/mv2/instance_checker.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EnhancedNetworkTts} from './enhanced_network_tts.js';

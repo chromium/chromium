@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -31,11 +30,6 @@ using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
-
-const char* kDelayedQueriesCountHistogram =
-    "Cookie.FirstPartySets.Network.DelayedQueriesCount";
-const char* kMostDelayedQueryDeltaHistogram =
-    "Cookie.FirstPartySets.Network.MostDelayedQueryDelta";
 
 namespace network {
 
@@ -77,12 +71,10 @@ class FirstPartySetsManagerTest : public ::testing::Test,
     return result.has_value() ? result.value() : future.Get();
   }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   FirstPartySetsManager& manager() { return manager_; }
 
  private:
   base::test::TaskEnvironment env_;
-  base::HistogramTester histogram_tester_;
   FirstPartySetsManager manager_;
 };
 
@@ -112,9 +104,6 @@ TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
                   },
                   net::FirstPartySetsContextConfig(), base::NullCallback()),
               Optional(IsEmpty()));
-
-  histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
-  histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(FirstPartySetsManagerDisabledTest, FindEntries) {
@@ -157,8 +146,6 @@ TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets) {
                                        std::nullopt)),
           Pair(aaaa, net::FirstPartySetEntry(example_test,
                                              net::SiteType::kAssociated, 0))));
-  histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
-  histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets_Idempotent) {
@@ -260,8 +247,6 @@ TEST_F(AsyncWaitingFirstPartySetsManagerTest,
 
     EXPECT_EQ(future.Get(), net::FirstPartySetMetadata(entry, entry));
   }
-  histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
-  histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(AsyncWaitingFirstPartySetsManagerTest, QueryBeforeReady_FindEntries) {
@@ -317,12 +302,6 @@ TEST_F(AsyncNonwaitingFirstPartySetsManagerTest,
             manager().ComputeMetadata(associatedSite, &associatedSite,
                                       net::FirstPartySetsContextConfig(),
                                       base::NullCallback()));
-
-  histogram_tester().ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester().ExpectUniqueSample(kMostDelayedQueryDeltaHistogram,
-                                        /*sample=*/0,
-                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsManagerTest, QueryBeforeReady_FindEntries) {

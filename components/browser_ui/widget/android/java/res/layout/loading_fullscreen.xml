@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/loading_fullscreen_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/left_right_padding"
+    android:paddingEnd="@dimen/left_right_padding"
+    android:paddingTop="@dimen/top_bottom_padding"
+    android:paddingBottom="@dimen/top_bottom_padding"
+    android:orientation="vertical"
+    android:visibility="gone" >
+
+    <org.chromium.ui.widget.ChromeImageButton
+            android:src="@drawable/btn_close"
+            android:id="@+id/loading_close_button"
+            android:layout_height="24dp"
+            android:layout_width="24dp"
+            android:background="@android:color/transparent"
+            android:tint="@color/default_icon_color_secondary_tint_list" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/loading_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/text_bottom_padding"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <include
+            android:id="@+id/progress_spinner"
+            layout="@layout/indeterminate_progress_view" />
+
+    </LinearLayout>
+
+</LinearLayout>

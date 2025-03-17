@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using signin::constants::kNoHostedDomainFound;
@@ -43,7 +44,7 @@ class ProfileNameResolverTest : public testing::Test {
  protected:
   const std::string kTestGivenName = "Jane";
   const std::string kTestEmail = "jane@bar.baz";
-  const std::string kTestGaiaId = "123456";
+  const GaiaId kTestGaiaId = GaiaId("123456");
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -107,8 +108,9 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoUnvailable) {
 
   // The account is not known from the identity manager.
   CoreAccountInfo core_account_info;
-  core_account_info.account_id = CoreAccountId::FromGaiaId(kTestGaiaId);
   core_account_info.gaia = kTestGaiaId;
+  core_account_info.account_id =
+      CoreAccountId::FromGaiaId(core_account_info.gaia);
   core_account_info.email = kTestEmail;
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
                                core_account_info};
@@ -132,8 +134,9 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoMissing) {
 
   // The account is not known from the identity manager.
   CoreAccountInfo core_account_info;
-  core_account_info.account_id = CoreAccountId::FromGaiaId(kTestGaiaId);
   core_account_info.gaia = kTestGaiaId;
+  core_account_info.account_id =
+      CoreAccountId::FromGaiaId(core_account_info.gaia);
   core_account_info.email = kTestEmail;
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
                                core_account_info};

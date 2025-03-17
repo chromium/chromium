@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
@@ -29,17 +28,16 @@
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
-using device::mojom::PressureManagerAddClientError;
+using device::mojom::PressureManagerAddClientResult;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
 using device::mojom::PressureUpdate;
@@ -49,7 +47,7 @@ namespace {
 // Test double for PressureClient that records all updates.
 class FakePressureClient : public device::mojom::PressureClient {
  public:
-  FakePressureClient() : receiver_(this) {}
+  FakePressureClient() : associated_receiver_(this) {}
   ~FakePressureClient() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -99,10 +97,8 @@ class FakePressureClient : public device::mojom::PressureClient {
     run_loop.Run();
   }
 
-  void Bind(
-      mojo::PendingReceiver<device::mojom::PressureClient> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    receiver_.Bind(std::move(pending_receiver));
+  mojo::AssociatedReceiver<device::mojom::PressureClient>& receiver() {
+    return associated_receiver_;
   }
 
  private:
@@ -113,7 +109,7 @@ class FakePressureClient : public device::mojom::PressureClient {
   // Used to implement WaitForUpdate().
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::Receiver<device::mojom::PressureClient> receiver_
+  mojo::AssociatedReceiver<device::mojom::PressureClient> associated_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
@@ -178,12 +174,11 @@ TEST_F(PressureServiceForDedicatedWorkerTest, AddClient) {
   SetPressureServiceForDedicatedWorker();
 
   FakePressureClient client;
-  base::test::TestFuture<device::mojom::PressureManagerAddClientResultPtr>
-      future;
-  pressure_manager_->AddClient(PressureSource::kCpu, future.GetCallback());
-  ASSERT_TRUE(future.Get()->is_pressure_client());
-  auto result = future.Take();
-  client.Bind(std::move(result->get_pressure_client()));
+  base::test::TestFuture<device::mojom::PressureManagerAddClientResult> future;
+  pressure_manager_->AddClient(PressureSource::kCpu,
+                               client.receiver().BindNewEndpointAndPassRemote(),
+                               future.GetCallback());
+  ASSERT_EQ(future.Get(), device::mojom::PressureManagerAddClientResult::kOk);
 
   const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
@@ -202,8 +197,6 @@ TEST_F(PressureServiceForDedicatedWorkerTest,
   auto* web_contents =
       WebContents::FromRenderFrameHost(RenderFrameHostImpl::FromID(
           worker_host_->GetAncestorRenderFrameHostId()));
-  EXPECT_EQ(WebContentsPressureManagerProxy::FromWebContents(web_contents),
-            nullptr);
   auto* pressure_manager_proxy =
       WebContentsPressureManagerProxy::GetOrCreate(web_contents);
   EXPECT_NE(pressure_manager_proxy, nullptr);
@@ -228,9 +221,9 @@ TEST_F(PressureServiceForDedicatedWorkerTest,
 TEST_F(PressureServiceForDedicatedWorkerTest, PermissionsPolicyBlock) {
   // Make compute pressure blocked by permissions policy and it can only be
   // made once on page load, so we refresh the page to simulate that.
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kComputePressure;
+      network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(kTestUrl, main_rfh());
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
@@ -287,7 +280,6 @@ class PressureServiceForSharedWorkerTest
         worker_host_->browser_interface_broker_receiver_for_testing();
     blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();
     broker->GetInterface(pressure_manager_.BindNewPipeAndPassReceiver());
-
     // Focus on the page and frame to make HasImplicitFocus() return true
     // by default.
     rfh->GetRenderWidgetHost()->Focus();
@@ -322,12 +314,11 @@ TEST_F(PressureServiceForSharedWorkerTest, AddClient) {
   SetPressureServiceForSharedWorker();
 
   FakePressureClient client;
-  base::test::TestFuture<device::mojom::PressureManagerAddClientResultPtr>
-      future;
-  pressure_manager_->AddClient(PressureSource::kCpu, future.GetCallback());
-  ASSERT_TRUE(future.Get()->is_pressure_client());
-  auto result = future.Take();
-  client.Bind(std::move(result->get_pressure_client()));
+  base::test::TestFuture<device::mojom::PressureManagerAddClientResult> future;
+  pressure_manager_->AddClient(PressureSource::kCpu,
+                               client.receiver().BindNewEndpointAndPassRemote(),
+                               future.GetCallback());
+  ASSERT_EQ(future.Get(), device::mojom::PressureManagerAddClientResult::kOk);
 
   const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
@@ -352,9 +343,9 @@ TEST_F(PressureServiceForSharedWorkerTest, WebContentPressureManagerProxyTest) {
 TEST_F(PressureServiceForSharedWorkerTest, PermissionsPolicyBlock) {
   // Make compute pressure blocked by permissions policy and it can only be
   // made once on page load, so we refresh the page to simulate that.
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kComputePressure;
+      network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(kTestUrl, main_rfh());
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
@@ -372,9 +363,9 @@ TEST_F(PressureServiceForSharedWorkerTest,
 
   auto web_contents = TestWebContents::Create(browser_context(), nullptr);
   auto* rfh = web_contents->GetPrimaryMainFrame();
-  blink::ParsedPermissionsPolicy permissions_policy(1);
+  network::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kComputePressure;
+      network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(kTestUrl, rfh);
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);

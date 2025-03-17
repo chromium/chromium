@@ -80,10 +80,13 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
@@ -212,17 +215,11 @@ bool ChromeOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
   return false;
 }
 
-gfx::Image ChromeOmniboxClient::GetIconIfExtensionMatch(
-    const AutocompleteMatch& match) const {
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-  const TemplateURL* template_url = match.GetTemplateURL(service, false);
-  if (template_url &&
-      (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)) {
-    return extensions::OmniboxAPI::Get(profile_)->GetOmniboxIcon(
-        template_url->GetExtensionId());
-  }
-  return gfx::Image();
+gfx::Image ChromeOmniboxClient::GetExtensionIcon(
+    const TemplateURL* template_url) const {
+  CHECK_EQ(template_url->type(), TemplateURL::OMNIBOX_API_EXTENSION);
+  return extensions::OmniboxAPI::Get(profile_)->GetOmniboxIcon(
+      template_url->GetExtensionId());
 }
 
 gfx::Image ChromeOmniboxClient::GetSizedIcon(
@@ -231,6 +228,17 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(
   return gfx::Image(gfx::CreateVectorIcon(
       vector_icon_type, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
       vector_icon_color));
+}
+
+gfx::Image ChromeOmniboxClient::GetSizedIcon(const SkBitmap* bitmap) const {
+  CHECK(bitmap);
+
+  // First, resize the bitmap to `LOCATION_BAR_ICON_SIZE`.
+  const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+  return gfx::Image(gfx::ImageSkiaOperations::CreateResizedImage(
+      gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
+      skia::ImageOperations::ResizeMethod::RESIZE_LANCZOS3,
+      gfx::Size(icon_size, icon_size)));
 }
 
 gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
@@ -283,28 +291,25 @@ const gfx::VectorIcon& ChromeOmniboxClient::GetVectorIcon() const {
   return location_bar_->GetLocationBarModel()->GetVectorIcon();
 }
 
-bool ChromeOmniboxClient::ProcessExtensionKeyword(
+void ChromeOmniboxClient::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
-  if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
-    return false;
-  }
+  // Strip the keyword + leading space (if present) off the input.
+  std::u16string remaining_input;
+  AutocompleteInput::SplitKeywordFromInput(match.fill_into_edit, true,
+                                           &remaining_input);
 
-  // Strip the keyword + leading space off the input, but don't exceed
-  // fill_into_edit.  An obvious case is that the user may not have entered
-  // a leading space and is asking to launch this extension without any
-  // additional input.
-  size_t prefix_length =
-      std::min(match.keyword.length() + 1, match.fill_into_edit.length());
+  // In unscoped mode, the input is sent verbatim. In scoped (keyword) mode, the
+  // keyword and input are split, and only the input after the keyword is sent.
+  std::string input =
+      match.provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION
+          ? base::UTF16ToUTF8(match.fill_into_edit)
+          : base::UTF16ToUTF8(remaining_input);
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(
-      location_bar_->GetWebContents(), template_url->GetExtensionId(),
-      base::UTF16ToUTF8(match.fill_into_edit.substr(prefix_length)),
+      location_bar_->GetWebContents(), template_url->GetExtensionId(), input,
       disposition);
-
-  OnSuccessfulNavigation(profile_, text, match);
-  return true;
 }
 
 void ChromeOmniboxClient::OnInputStateChanged() {
@@ -353,14 +358,31 @@ void ChromeOmniboxClient::OnResultChanged(
   int result_index = -1;
   for (const AutocompleteMatch& match : result) {
     ++result_index;
-    if (match.ImageUrl().is_empty()) {
-      continue;
+    if (!match.icon_url.is_empty()) {
+      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+          match.icon_url, base::BindOnce(on_bitmap_fetched, result_index)));
+    } else if (!match.ImageUrl().is_empty()) {
+      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+          match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
+    } else if (match.associated_keyword) {
+      // - Fetch the favicon here for non-featured matches that have the search
+      // aggregator keyword hint attached to them (e.g., verbatim match when
+      // user types 'aggregator') use the policy favicon only in location bar
+      // keyword UI.
+      // - Featured search aggregator matches (e.g., when user types
+      // '@aggregator') use the match icon_url in both the popup keyword row UI
+      // and the location bar keyword UI.
+      // - Site search matches do not use the policy favicon so do not fetch the
+      // favicon here.
+      const TemplateURL* turl = match.associated_keyword->GetTemplateURL(
+          GetTemplateURLService(), false);
+      if (turl && turl->policy_origin() ==
+                      TemplateURLData::PolicyOrigin::kSearchAggregator) {
+        request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+            turl->favicon_url(),
+            base::BindOnce(on_bitmap_fetched, result_index)));
+      }
     }
-
-    request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-        match.ImageUrl(), base::BindOnce(&ChromeOmniboxClient::OnBitmapFetched,
-                                         weak_factory_.GetWeakPtr(),
-                                         on_bitmap_fetched, result_index)));
   }
 }
 
@@ -594,10 +616,9 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   // TODO(crbug.com/40208255): Refactor relevant code to reuse common
   // code, and ensure metrics are correctly recorded.
   DCHECK(!AutocompleteMatch::IsSearchType(match.type));
-  gfx::Rect container_bounds = web_contents->GetContainerBounds();
+
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->StartPrerendering(match.destination_url, *web_contents,
-                          container_bounds.size());
+      ->StartPrerendering(match.destination_url, *web_contents);
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
@@ -616,12 +637,6 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
   // We could prefetch the alternate nav URL, if any, but because there
   // can be many of these as a user types an initial series of characters,
   // the OS DNS cache could suffer eviction problems for minimal gain.
-}
-
-void ChromeOmniboxClient::OnBitmapFetched(const BitmapFetchedCallback& callback,
-                                          int result_index,
-                                          const SkBitmap& bitmap) {
-  callback.Run(result_index, bitmap);
 }
 
 // static

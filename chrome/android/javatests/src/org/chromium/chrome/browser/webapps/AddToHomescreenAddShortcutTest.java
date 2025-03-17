@@ -396,6 +396,19 @@ public class AddToHomescreenAddShortcutTest {
                             Matchers.is(2));
                 });
 
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabAt(1)
+                                    .getUrl()
+                                    .isEmpty(),
+                            Matchers.is(false));
+                });
+
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         Assert.assertEquals(0, tabModel.indexOf(mTab));
         return mActivityTestRule.getActivity().getTabModelSelector().getModel(false).getTabAt(1);

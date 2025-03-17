@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   run_loop.Run();
 
   // 4) Check the histogram.
-  base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+  base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(
       base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
           "blink.mojom.LocalFrame"));
 
@@ -2564,7 +2564,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   ExpectBucketCount(
       "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
-      base::HistogramBase::Sample(
+      base::HistogramBase::Sample32(
           static_cast<int32_t>(base::HashMetricName(mojom::Echo::Name_))),
       1);
 }
@@ -2649,7 +2649,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectBucketCount(
       "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
-      base::HistogramBase::Sample(
+      base::HistogramBase::Sample32(
           static_cast<int32_t>(base::HashMetricName(mojom::Echo::Name_))),
       1);
 
@@ -4072,6 +4072,53 @@ IN_PROC_BROWSER_TEST_F(
       ExpectRestored(FROM_HERE);
     } else {
       ExpectNotRestored({NotRestoredReason::kCacheLimit}, {}, {}, {}, {},
+                        FROM_HERE);
+    }
+  }
+}
+
+// Test that pruning a series of cross-site navigations (which use different
+// processes) evicts the right entries with the right reason.
+IN_PROC_BROWSER_TEST_F(
+    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
+    PruneCrossSite) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::vector<RenderFrameHostImplWrapper> rfhs;
+
+  for (size_t i = 0; i < kBackForwardCacheSize; ++i) {
+    SCOPED_TRACE(i);
+    // Note: do NOT use .com domains here because a4.com is on the HSTS preload
+    // list, which will cause our test requests to timeout.
+    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.test", i),
+                                            "/title1.html"));
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    rfhs.emplace_back(current_frame_host());
+    EXPECT_NE(rfhs.back()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
+  }
+
+  constexpr size_t kPruneSize = 1u;
+  CHECK_LE(kPruneSize, kBackForwardCacheSize);
+
+  // Prune the BFCache entries to 1.
+  web_contents()->GetController().GetBackForwardCache().Prune(kPruneSize);
+
+  for (int i = kBackForwardCacheSize - 1 - 1 - kPruneSize; i >= 0; --i) {
+    SCOPED_TRACE(i);
+    ASSERT_TRUE(rfhs[i].WaitUntilRenderFrameDeleted());
+  }
+
+  // Navigate back but not to the initial about:blank.
+  for (size_t i = 0; i < kBackForwardCacheSize - 1; ++i) {
+    SCOPED_TRACE(i);
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    // The first `kPruneSize` navigation should be restored from the cache. The
+    // rest should not.
+    if (i < kPruneSize) {
+      ExpectRestored(FROM_HERE);
+    } else {
+      ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
                         FROM_HERE);
     }
   }

@@ -4,9 +4,7 @@
 # found in the LICENSE file.
 """Siso configuration for proto/linux."""
 
-load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
-load("./config.star", "config")
 
 def __filegroups(ctx):
     return {}

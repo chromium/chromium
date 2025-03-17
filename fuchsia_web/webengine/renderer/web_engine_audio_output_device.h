@@ -12,10 +12,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "media/base/audio_renderer_sink.h"
 
@@ -43,6 +45,10 @@ class WEB_ENGINE_EXPORT WebEngineAudioOutputDevice
       fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
           audio_consumer_handle);
 
+  WebEngineAudioOutputDevice(
+      base::PassKey<WebEngineAudioOutputDevice>,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   // AudioRendererSink implementation.
   void Initialize(const media::AudioParameters& params,
                   RenderCallback* callback) override;
@@ -60,8 +66,6 @@ class WEB_ENGINE_EXPORT WebEngineAudioOutputDevice
  private:
   friend class WebEngineAudioOutputDeviceTest;
 
-  explicit WebEngineAudioOutputDevice(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebEngineAudioOutputDevice() override;
 
   void BindAudioConsumerOnAudioThread(

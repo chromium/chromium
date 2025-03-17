@@ -26,13 +26,8 @@ namespace {
 constexpr char kDohConfigString[] =
     "https://doh1.test https://doh2.test/query{?dns}";
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const std::string kDnsOverHttpsTemplatesPrefName =
-    prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
-#else
 const std::string kDnsOverHttpsTemplatesPrefName =
     prefs::kDnsOverHttpsTemplates;
-#endif
 
 // Override the reader to mock out the ShouldDisableDohFor...() methods.
 class MockedStubResolverConfigReader : public StubResolverConfigReader {
@@ -250,13 +245,8 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck_Managed) {
   local_state_.SetManagedPref(
       prefs::kDnsOverHttpsMode,
       std::make_unique<base::Value>(SecureDnsConfig::kModeAutomatic));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  local_state_.SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                         kDohConfigString);
-#else
   local_state_.SetManagedPref(prefs::kDnsOverHttpsTemplates,
                               std::make_unique<base::Value>(kDohConfigString));
-#endif
   SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
 

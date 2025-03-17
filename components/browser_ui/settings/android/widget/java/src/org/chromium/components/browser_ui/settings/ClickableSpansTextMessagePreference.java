@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -12,17 +14,23 @@ import android.view.View;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
  * A preference wrapper for {@link TextViewWithClickableSpans}, which makes the
  * {@link TextMessagePreference} with one or more ClickableSpans accessible.
  */
+@NullMarked
 public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
-    private CharSequence mTitle;
-    private CharSequence mSummary;
+    private @Nullable CharSequence mTitle;
+    private @Nullable CharSequence mSummary;
 
+    @SuppressWarnings("NullAway.Init")
     private TextViewWithClickableSpans mTitleView;
+
+    @SuppressWarnings("NullAway.Init")
     private TextViewWithClickableSpans mSummaryView;
 
     /** Constructor for inflating from XML. */
@@ -37,8 +45,9 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        mTitleView = (TextViewWithClickableSpans) holder.findViewById(R.id.title);
-        mSummaryView = (TextViewWithClickableSpans) holder.findViewById(R.id.summary);
+        mTitleView = (TextViewWithClickableSpans) assumeNonNull(holder.findViewById(R.id.title));
+        mSummaryView =
+                (TextViewWithClickableSpans) assumeNonNull(holder.findViewById(R.id.summary));
 
         if (!TextUtils.isEmpty(mTitle)) {
             mTitleView.setText(mTitle);
@@ -57,7 +66,7 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     }
 
     @Override
-    public void setTitle(CharSequence title) {
+    public void setTitle(@Nullable CharSequence title) {
         if (!TextUtils.equals(mTitle, title)) {
             mTitle = title;
             notifyChanged();
@@ -70,7 +79,7 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     }
 
     @Override
-    public void setSummary(CharSequence summary) {
+    public void setSummary(@Nullable CharSequence summary) {
         if (!TextUtils.equals(mSummary, summary)) {
             mSummary = summary;
             notifyChanged();

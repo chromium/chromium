@@ -15,11 +15,11 @@ source_set("model") {
   ]
 
   deps = [
+    ":event_exporter",
     "//base",
     "//components/feature_engagement",
     "//components/leveldb_proto",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/default_browser/model:event_exporter",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/commands",
@@ -51,16 +51,47 @@ source_set("eg2_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "event_exporter_unittest.mm",
     "feature_engagement_unittest.mm",
     "ios_tracker_session_controller_unittest.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":event_exporter",
     ":model",
     "//base",
     "//base/test:test_support",
+    "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
+  ]
+}
+
+source_set("event_exporter") {
+  sources = [
+    "event_exporter.h",
+    "event_exporter.mm",
+  ]
+  deps = [
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:features",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/default_browser/model:features",
+    "//ios/chrome/browser/default_browser/model:utils",
   ]
 }

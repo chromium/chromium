@@ -45,6 +45,25 @@ class WebAppProvider;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 
+struct ExternallyManagedAppManagerInstallResult {
+  ExternallyManagedAppManagerInstallResult();
+  explicit ExternallyManagedAppManagerInstallResult(
+      webapps::InstallResultCode code,
+      std::optional<webapps::AppId> app_id = std::nullopt,
+      bool did_uninstall_and_replace = false);
+  ExternallyManagedAppManagerInstallResult(
+      const ExternallyManagedAppManagerInstallResult&);
+  ~ExternallyManagedAppManagerInstallResult();
+
+  bool operator==(const ExternallyManagedAppManagerInstallResult& other) const;
+
+  webapps::InstallResultCode code;
+  std::optional<webapps::AppId> app_id;
+  bool did_uninstall_and_replace = false;
+  // When adding fields, please update the `==` and `<<` operators to include
+  // the new field.
+};
+
 // ExternallyManagedAppManager installs, uninstalls, and updates apps that are
 // externally managed. This means that they are not installed by the user, but
 // instead through a different system (enterprise installs, device default
@@ -67,22 +86,7 @@ enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 // re-initiated, and if successful, the placeholder app is removed.
 class ExternallyManagedAppManager {
  public:
-  struct InstallResult {
-    InstallResult();
-    explicit InstallResult(webapps::InstallResultCode code,
-                           std::optional<webapps::AppId> app_id = std::nullopt,
-                           bool did_uninstall_and_replace = false);
-    InstallResult(const InstallResult&);
-    ~InstallResult();
-
-    bool operator==(const InstallResult& other) const;
-
-    webapps::InstallResultCode code;
-    std::optional<webapps::AppId> app_id;
-    bool did_uninstall_and_replace = false;
-    // When adding fields, please update the `==` and `<<` operators to include
-    // the new field.
-  };
+  using InstallResult = ExternallyManagedAppManagerInstallResult;
 
   using OnceInstallCallback =
       base::OnceCallback<void(const GURL& install_url, InstallResult result)>;

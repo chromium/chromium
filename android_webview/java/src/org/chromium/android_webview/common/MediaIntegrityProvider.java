@@ -4,10 +4,11 @@
 
 package org.chromium.android_webview.common;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Async handler for media integrity token requests. */
+@NullMarked
 public interface MediaIntegrityProvider {
 
     /**
@@ -18,5 +19,5 @@ public interface MediaIntegrityProvider {
      */
     void requestToken2(
             @Nullable String contentBinding,
-            @NonNull ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback);
+            ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback);
 }

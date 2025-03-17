@@ -34,7 +34,6 @@
 #include "base/trace_event/trace_log.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
@@ -49,9 +48,7 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/metrics/android_metrics_helper.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -60,6 +57,7 @@
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info_values.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -87,9 +85,7 @@
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #if defined(__GLIBC__)
 #include <gnu/libc-version.h>
 #endif  // defined(__GLIBC__)
@@ -97,33 +93,31 @@
 #include "base/linux_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/win/hardware_check.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/metrics/key_credential_manager_support_reporter_win.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/win/cloud_synced_folder_checker.h"
 #include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/metrics/pressure/pressure_metrics_reporter.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/power_metrics/system_power_monitor.h"
@@ -386,38 +380,6 @@ enum UMALinuxGlibcVersion : uint32_t {
   UMA_LINUX_GLIBC_2_11,
   // To log newer versions, just update tools/metrics/histograms/histograms.xml.
 };
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// These values are written to logs.  New enum values can be added, but existing
-// enums must never be renumbered or deleted and reused.
-enum class ChromeOSChannel {
-  kUnknown = 0,
-  kCanary = 1,
-  kDev = 2,
-  kBeta = 3,
-  kStable = 4,
-  kMaxValue = kStable,
-};
-
-// Records the underlying Chrome OS release channel, which may be different than
-// the Lacros browser's release channel.
-void RecordChromeOSChannel() {
-  ChromeOSChannel os_channel = ChromeOSChannel::kUnknown;
-  std::string release_track;
-  if (base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
-                                        &release_track)) {
-    if (release_track == crosapi::kReleaseChannelStable)
-      os_channel = ChromeOSChannel::kStable;
-    else if (release_track == crosapi::kReleaseChannelBeta)
-      os_channel = ChromeOSChannel::kBeta;
-    else if (release_track == crosapi::kReleaseChannelDev)
-      os_channel = ChromeOSChannel::kDev;
-    else if (release_track == crosapi::kReleaseChannelCanary)
-      os_channel = ChromeOSChannel::kCanary;
-  }
-  base::UmaHistogramEnumeration("ChromeOS.Lacros.OSChannel", os_channel);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void RecordMicroArchitectureStats() {
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -717,9 +679,7 @@ void RecordLinuxDistro() {
 #endif  // BUILDFLAG(IS_LINUX)
 
 void RecordLinuxGlibcVersion() {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(__GLIBC__) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(__GLIBC__) && BUILDFLAG(IS_LINUX)
   base::Version version(gnu_get_libc_version());
 
   UMALinuxGlibcVersion glibc_version_result = UMA_LINUX_GLIBC_NOT_PARSEABLE;
@@ -818,6 +778,36 @@ void RecordAppCompatMetrics() {
   base::UmaHistogramBoolean("Windows.AcLayersLoaded", !!mod);
 }
 
+void RecordWin11HardwareRequirementsMetrics(
+    const base::win::HardwareEvaluationResult& result) {
+  base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
+                            result.IsEligible());
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.CPUCheck",
+                            result.cpu);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.MemoryCheck",
+                            result.memory);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.DiskCheck",
+                            result.disk);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.FirmwareCheck",
+                            result.firmware);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.TPMCheck",
+                            result.tpm);
+}
+
+void MaybeRecordOneDriveSyncMetrics() {
+  if (!base::FeatureList::IsEnabled(
+          cloud_synced_folder_checker::features::kCloudSyncedFolderChecker)) {
+    return;
+  }
+
+  cloud_synced_folder_checker::CloudSyncStatus status =
+      cloud_synced_folder_checker::EvaluateOneDriveSyncStatus();
+
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced", status.synced);
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.DesktopSynced",
+                            status.desktop_synced);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
@@ -860,6 +850,14 @@ void RecordStartupMetrics() {
   base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
                             IsParallelDllLoadingEnabled());
   RecordAppCompatMetrics();
+
+  MaybeRecordOneDriveSyncMetrics();
+
+  if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
+    base::win::HardwareEvaluationResult result =
+        base::win::EvaluateWin11HardwareRequirements();
+    RecordWin11HardwareRequirementsMetrics(result);
+  }
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -879,10 +877,6 @@ void RecordStartupMetrics() {
   base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
                                 shell_integration::NUM_DEFAULT_STATES);
 #endif  // !BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  RecordChromeOSChannel();
-#endif
 
 #if BUILDFLAG(IS_MAC)
   base::mac::ProcessRequirement::MaybeGatherMetrics();
@@ -1151,9 +1145,9 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 // crash (which has no login screen) requires the user to click a notification
 // prompt before browser windows are restored, so the `BrowserList` is also
 // empty in this case.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   metrics::BeginFirstWebContentsProfiling();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Instantiate the power-related metrics reporters.
 
@@ -1177,12 +1171,9 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
   }
 
-  if (performance_manager::features::
-          ShouldUsePerformanceInterventionBackend()) {
-    performance_intervention_metrics_reporter_ =
-        std::make_unique<PerformanceInterventionMetricsReporter>(
-            g_browser_process->local_state());
-  }
+  performance_intervention_metrics_reporter_ =
+      std::make_unique<PerformanceInterventionMetricsReporter>(
+          g_browser_process->local_state());
 
   web_app_metrics_provider_ =
       std::make_unique<web_app::SamplingMetricsProvider>();
@@ -1274,13 +1265,13 @@ void ChromeBrowserMainExtraPartsMetrics::HandleEnableBenchmarkingCountdown(
 void ChromeBrowserMainExtraPartsMetrics::
     HandleEnableBenchmarkingCountdownAsync() {
   Profile* profile = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This logic is subtle. There are two ways for ash-chrome PostBrowserStart to
-  // be called on ChromeOS. The first is when the device first shows the login
-  // screen. In this case the profile is the login profile. The second is after
-  // the user logs in. If any flags have been changed from the login profile's
-  // flags, then all of ash is restarted. We only care about invoking this logic
-  // in the second case. Thus we check if IsUserLoggedIn() to guard the logic.
+#if BUILDFLAG(IS_CHROMEOS)
+  // This logic is subtle. There are two ways for PostBrowserStart to be called
+  // on ChromeOS. The first is when the device first shows the login screen. In
+  // this case the profile is the login profile. The second is after the user
+  // logs in. If any flags have been changed from the login profile's flags,
+  // then all of ash is restarted. We only care about invoking this logic in the
+  // second case. Thus we check if IsUserLoggedIn() to guard the logic.
   if (!user_manager::UserManager::IsInitialized() ||
       !user_manager::UserManager::Get()->IsUserLoggedIn()) {
     return;

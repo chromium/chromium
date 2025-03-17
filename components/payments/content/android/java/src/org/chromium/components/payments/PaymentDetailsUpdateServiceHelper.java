@@ -4,17 +4,19 @@
 
 package org.chromium.components.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.pm.PackageInfo;
 import android.content.pm.Signature;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentHandlerMethodData;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentRequestDetailsUpdate;
 
@@ -24,16 +26,17 @@ import java.util.Arrays;
  * Helper class used by android payment app to notify the browser that the user has selected a
  * different payment instrument, shipping option, or shipping address inside native app.
  */
+@NullMarked
 public class PaymentDetailsUpdateServiceHelper {
     private static final String TAG = "PaymentDetailsUpdate";
 
-    @Nullable private IPaymentDetailsUpdateServiceCallback mCallback;
-    @Nullable private PaymentRequestUpdateEventListener mListener;
-    @Nullable private PackageInfo mInvokedAppPackageInfo;
-    @Nullable private PackageManagerDelegate mPackageManagerDelegate;
+    private @Nullable IPaymentDetailsUpdateServiceCallback mCallback;
+    private @Nullable PaymentRequestUpdateEventListener mListener;
+    private @Nullable PackageInfo mInvokedAppPackageInfo;
+    private @Nullable PackageManagerDelegate mPackageManagerDelegate;
 
     // Singleton instance.
-    private static PaymentDetailsUpdateServiceHelper sInstance;
+    private static @Nullable PaymentDetailsUpdateServiceHelper sInstance;
 
     private PaymentDetailsUpdateServiceHelper() {}
 
@@ -147,7 +150,7 @@ public class PaymentDetailsUpdateServiceHelper {
         }
 
         Address address = Address.createFromBundle(shippingAddress);
-        if (!address.isValid()) {
+        if (!assumeNonNull(address).isValid()) {
             runCallbackWithError(ErrorStrings.SHIPPING_ADDRESS_INVALID, callback);
             return;
         }

@@ -389,9 +389,8 @@ void SyncFileSystemService::CallOnIdleForTesting(base::OnceClosure callback) {
 
 SyncFileSystemService::SyncFileSystemService(Profile* profile)
     : profile_(profile),
-      sync_enabled_(true),
-      promoting_demoted_changes_(false) {
-}
+      sync_enabled_(false),
+      promoting_demoted_changes_(false) {}
 
 void SyncFileSystemService::Initialize(
     std::unique_ptr<LocalFileSyncService> local_service,
@@ -428,12 +427,9 @@ void SyncFileSystemService::Initialize(
 
   ExtensionRegistry::Get(profile_)->AddObserver(this);
 
-  // Don't enable file sync if deprecation flag is enabled.
-  if (base::FeatureList::IsEnabled(
-          chrome_apps::features::kDeprecateSyncFileSystemApis)) {
-    sync_enabled_ = false;
-    remote_service_->SetSyncEnabled(false);
-  }
+  // Don't enable file sync.
+  // TODO(crbug.com/396460818): Cleanup file syncing.
+  remote_service_->SetSyncEnabled(false);
 }
 
 void SyncFileSystemService::DidInitializeFileSystem(const GURL& app_origin,
@@ -537,9 +533,9 @@ void SyncFileSystemService::OnExtensionUnloaded(
     return;
 
   GURL app_origin = Extension::GetBaseURLFromExtensionId(extension->id());
-  int disable_reasons =
+  extensions::DisableReasonSet disable_reasons =
       ExtensionPrefs::Get(profile_)->GetDisableReasons(extension->id());
-  if (disable_reasons & extensions::disable_reason::DISABLE_RELOAD) {
+  if (disable_reasons.contains(extensions::disable_reason::DISABLE_RELOAD)) {
     // Bypass disabling the origin since the app will be re-enabled soon.
     // NOTE: If re-enabling the app fails, the app is disabled while it is
     // handled as enabled origin in the SyncFS. This should be safe and will be

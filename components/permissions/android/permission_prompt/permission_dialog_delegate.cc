@@ -14,10 +14,8 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -40,74 +38,32 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   // Create our Java counterpart, which manages the lifetime of
   // PermissionDialogDelegate.
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  bool isOneTime =
-      base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) &&
-      PermissionUtil::DoesSupportTemporaryGrants(
-          permission_prompt_->GetContentSettingType(0));
-
-  base::android::ScopedJavaLocalRef<jstring> positiveButtonText;
-  base::android::ScopedJavaLocalRef<jstring> negativeButtonText;
-  base::android::ScopedJavaLocalRef<jstring> positiveEphemeralButtonText;
-
-  bool showPositiveNonEphemeralAsFirstButton = false;
-  if (isOneTime) {
-    positiveButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 permissions::feature_params::kUseWhileVisitingLanguage.Get()
-                     ? IDS_PERMISSION_ALLOW_WHILE_VISITING
-                     : IDS_PERMISSION_ALLOW_EVERY_VISIT));
-    negativeButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 permissions::feature_params::kUseStrongerPromptLanguage.Get()
-                     ? IDS_PERMISSION_NEVER_ALLOW
-                     : IDS_PERMISSION_DONT_ALLOW));
-    positiveEphemeralButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
-    showPositiveNonEphemeralAsFirstButton =
-        permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get();
-  } else {
-    positiveButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
-    negativeButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
-    positiveEphemeralButtonText =
-        ConvertUTF16ToJavaString(env, std::u16string_view());
-  }
-
-  std::vector<int> content_settings_types;
-  for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
-    content_settings_types.push_back(
-        static_cast<int>(permission_prompt_->GetContentSettingType(i)));
-  }
-
-  PermissionRequest::AnnotatedMessageText annotatedMessageText =
-      permission_prompt_->GetAnnotatedMessageText();
-  std::vector<int> bolded_ranges;
-  for (auto [start, end] : annotatedMessageText.bolded_ranges) {
-    bolded_ranges.push_back(base::checked_cast<int>(start));
-    bolded_ranges.push_back(base::checked_cast<int>(end));
-  }
-
+  bool is_one_time = permission_prompt_->IsOneTimePermissionRequest();
+  bool showPositiveNonEphemeralAsFirstButton =
+      is_one_time &&
+      permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get();
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
       env, reinterpret_cast<uintptr_t>(owner),
       web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
-      base::android::ToJavaIntArray(env, content_settings_types),
+      permission_prompt_->GetContentSettingTypes(env),
       PermissionsClient::Get()->MapToJavaDrawableId(
           permission_prompt_->GetIconId()),
-      ConvertUTF16ToJavaString(env, annotatedMessageText.text),
-      base::android::ToJavaIntArray(env, bolded_ranges), positiveButtonText,
-      negativeButtonText, positiveEphemeralButtonText,
-      showPositiveNonEphemeralAsFirstButton));
+      ConvertUTF16ToJavaString(
+          env, permission_prompt_->GetAnnotatedMessageText().text),
+      permission_prompt_->GetBoldRanges(env),
+      permission_prompt_->GetPositiveButtonText(env, is_one_time),
+      permission_prompt_->GetNegativeButtonText(env, is_one_time),
+      permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
+      showPositiveNonEphemeralAsFirstButton,
+      static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant())));
 }
 
 void PermissionDialogJavaDelegate::CreateDialog(
     content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Send the Java delegate to the Java PermissionDialogController for display.
-  // The controller takes over lifetime management; when the Java delegate is no
-  // longer needed it will in turn free the native delegate
-  // (PermissionDialogDelegate).
+  // When the Java delegate is no longer needed it will in turn reset the native
+  // java delegate (PermissionDialogJavaDelegate).
   Java_PermissionDialogController_createDialog(env, j_delegate_);
 
   if (permission_prompt_->ShouldUseRequestingOriginFavicon()) {
@@ -158,29 +114,55 @@ void PermissionDialogJavaDelegate::DismissDialog() {
   Java_PermissionDialogDelegate_dismissFromNative(env, j_delegate_);
 }
 
+void PermissionDialogJavaDelegate::NotifyPermissionAllowed() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PermissionDialogDelegate_notifyPermissionAllowed(env, j_delegate_);
+}
+
+void PermissionDialogJavaDelegate::UpdateDialog() {
+  CHECK(permission_prompt_->GetEmbeddedPromptVariant() !=
+        EmbeddedPermissionPromptFlowModel::Variant::kUninitialized);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  bool is_one_time = permission_prompt_->IsOneTimePermissionRequest();
+  Java_PermissionDialogDelegate_updateDialog(
+      env, j_delegate_, permission_prompt_->GetContentSettingTypes(env),
+      PermissionsClient::Get()->MapToJavaDrawableId(
+          permission_prompt_->GetIconId()),
+      ConvertUTF16ToJavaString(
+          env, permission_prompt_->GetAnnotatedMessageText().text),
+      permission_prompt_->GetBoldRanges(env),
+      permission_prompt_->GetPositiveButtonText(env, is_one_time),
+      permission_prompt_->GetNegativeButtonText(env, is_one_time),
+      permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
+      is_one_time &&
+          permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get(),
+      static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant()));
+}
+
 // static
-void PermissionDialogDelegate::Create(
+std::unique_ptr<PermissionDialogDelegate> PermissionDialogDelegate::Create(
     content::WebContents* web_contents,
     PermissionPromptAndroid* permission_prompt) {
   CHECK(web_contents);
   // If we don't have a window, just act as though the prompt was dismissed.
   if (!web_contents->GetTopLevelNativeWindow()) {
     permission_prompt->Closing();
-    return;
+    return nullptr;
   }
   std::unique_ptr<PermissionDialogJavaDelegate> java_delegate(
       std::make_unique<PermissionDialogJavaDelegate>(permission_prompt));
-  new PermissionDialogDelegate(web_contents, permission_prompt,
-                               std::move(java_delegate));
+  return std::make_unique<PermissionDialogDelegate>(
+      web_contents, permission_prompt, std::move(java_delegate));
 }
 
 // static
-PermissionDialogDelegate* PermissionDialogDelegate::CreateForTesting(
+std::unique_ptr<PermissionDialogDelegate>
+PermissionDialogDelegate::CreateForTesting(
     content::WebContents* web_contents,
     PermissionPromptAndroid* permission_prompt,
     std::unique_ptr<PermissionDialogJavaDelegate> java_delegate) {
-  return new PermissionDialogDelegate(web_contents, permission_prompt,
-                                      std::move(java_delegate));
+  return std::make_unique<PermissionDialogDelegate>(
+      web_contents, permission_prompt, std::move(java_delegate));
 }
 
 void PermissionDialogDelegate::Accept(JNIEnv* env,
@@ -196,10 +178,37 @@ void PermissionDialogDelegate::AcceptThisTime(
   permission_prompt_->AcceptThisTime();
 }
 
-void PermissionDialogDelegate::Cancel(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void PermissionDialogDelegate::Acknowledge(JNIEnv* env,
+                                           const JavaParamRef<jobject>& obj) {
+  CHECK(permission_prompt_);
+  permission_prompt_->Acknowledge();
+}
+
+void PermissionDialogDelegate::Deny(JNIEnv* env,
+                                    const JavaParamRef<jobject>& obj) {
   CHECK(permission_prompt_);
   permission_prompt_->Deny();
+}
+
+void PermissionDialogDelegate::Resumed(JNIEnv* env,
+                                       const JavaParamRef<jobject>& obj) {
+  CHECK(permission_prompt_);
+  permission_prompt_->Resumed();
+}
+
+void PermissionDialogDelegate::SystemSettingsShown(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(permission_prompt_);
+  permission_prompt_->SystemSettingsShown();
+}
+
+void PermissionDialogDelegate::SystemPermissionResolved(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    bool accepted) {
+  CHECK(permission_prompt_);
+  permission_prompt_->SystemPermissionResolved(accepted);
 }
 
 void PermissionDialogDelegate::Dismissed(JNIEnv* env,
@@ -222,12 +231,32 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env,
         static_cast<DismissalType>(dismissalType));
   }
 
+  if (!permission_prompt_->IsShowing()) {
+    // This probably happens synchronously when creating the
+    // `PermissionPromptAndroid` fails, and the `view_` of
+    // `PermissionRequestManager` won't be ready yet. It can mess up here, this
+    // prompt will be assigned to the 'view_' of the 'PermissionRequestManager.'
+    // But, all the underlying data associated with it will get wiped.
+    // So, we destroy the Java delegate and use the `IsJavaDelegateDestroyed`
+    // signal as a way to tell if the `PermissionPrompt` creation failed.
+    DestroyJavaDelegate();
+  }
   permission_prompt_->Closing();
 }
 
 void PermissionDialogDelegate::Destroy(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
-  delete this;
+  DestroyJavaDelegate();
+}
+
+void PermissionDialogDelegate::NotifyPermissionAllowed() {
+  CHECK(!IsJavaDelegateDestroyed());
+  java_delegate_->NotifyPermissionAllowed();
+}
+
+void PermissionDialogDelegate::UpdateDialog() {
+  CHECK(!IsJavaDelegateDestroyed());
+  java_delegate_->UpdateDialog();
 }
 
 PermissionDialogDelegate::PermissionDialogDelegate(
@@ -239,16 +268,29 @@ PermissionDialogDelegate::PermissionDialogDelegate(
       java_delegate_(std::move(java_delegate)) {
   CHECK(java_delegate_);
 
-  // Create our Java counterpart, which manages our lifetime.
+  // Create our Java counterpart.
   java_delegate_->CreateJavaDelegate(web_contents, this);
   // Open the Permission Dialog.
   java_delegate_->CreateDialog(web_contents);
+  // Note: `java_delegate_` can be destroyed after this line, if Java
+  // counterpart fails to show the dialog.
 }
 
-PermissionDialogDelegate::~PermissionDialogDelegate() = default;
+PermissionDialogDelegate::~PermissionDialogDelegate() {
+  // When the owning class is destroyed, ensure that any active java delegate
+  // associated with the class is destroyed.
+  if (!IsJavaDelegateDestroyed()) {
+    DismissDialog();
+  }
+}
 
 void PermissionDialogDelegate::DismissDialog() {
-  java_delegate_->DismissDialog();
+  // `java_delegate_` is owned by `this` and will be freed before `this`. During
+  // the gap, it's still possible that `this` receives some dismiss signals but
+  // should do nothing.
+  if (!IsJavaDelegateDestroyed()) {
+    java_delegate_->DismissDialog();
+  }
 }
 
 void PermissionDialogDelegate::PrimaryPageChanged(content::Page& page) {

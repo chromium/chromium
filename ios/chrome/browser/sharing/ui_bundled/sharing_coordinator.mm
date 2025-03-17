@@ -289,7 +289,7 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 
 #pragma mark - QRGenerationCommands
 
-- (void)generateQRCode:(GenerateQRCodeCommand*)command {
+- (void)showQRCode:(GenerateQRCodeCommand*)command {
   self.qrGeneratorCoordinator = [[QRGeneratorCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser

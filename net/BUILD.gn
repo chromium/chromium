@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
@@ -173,6 +172,8 @@ component("net") {
     "base/data_url.h",
     "base/datagram_buffer.cc",
     "base/datagram_buffer.h",
+    "base/does_url_match_filter.cc",
+    "base/does_url_match_filter.h",
     "base/elements_upload_data_stream.cc",
     "base/elements_upload_data_stream.h",
     "base/expiring_cache.h",
@@ -245,8 +246,12 @@ component("net") {
     "base/network_interfaces.h",
     "base/network_isolation_key.cc",
     "base/network_isolation_key.h",
+    "base/network_isolation_partition.cc",
+    "base/network_isolation_partition.h",
     "base/parse_number.cc",
     "base/parse_number.h",
+    "base/pickle.h",
+    "base/pickle_traits.h",
     "base/platform_mime_util.h",
     "base/port_util.cc",
     "base/port_util.h",
@@ -364,6 +369,8 @@ component("net") {
     "cert/multi_log_ct_verifier.h",
     "cert/multi_threaded_cert_verifier.cc",
     "cert/multi_threaded_cert_verifier.h",
+    "cert/qwac.cc",
+    "cert/qwac.h",
     "cert/root_cert_list_generated.h",
     "cert/sct_auditing_delegate.h",
     "cert/sct_status_flags.cc",
@@ -374,8 +381,6 @@ component("net") {
     "cert/signed_certificate_timestamp_and_status.h",
     "cert/signed_tree_head.cc",
     "cert/signed_tree_head.h",
-    "cert/symantec_certs.cc",
-    "cert/symantec_certs.h",
     "cert/test_root_certs.cc",
     "cert/test_root_certs.h",
     "cert/time_conversions.cc",
@@ -432,6 +437,10 @@ component("net") {
     "cookies/site_for_cookies.h",
     "cookies/static_cookie_policy.cc",
     "cookies/static_cookie_policy.h",
+    "cookies/unique_cookie_key.cc",
+    "cookies/unique_cookie_key.h",
+    "device_bound_sessions/session_access.cc",
+    "device_bound_sessions/session_access.h",
     "device_bound_sessions/session_key.cc",
     "device_bound_sessions/session_key.h",
     "disk_cache/backend_cleanup_tracker.cc",
@@ -524,6 +533,7 @@ component("net") {
     "filter/gzip_source_stream.h",
     "filter/source_stream.cc",
     "filter/source_stream.h",
+    "filter/source_stream_type.h",
     "first_party_sets/addition_overlaps_union_find.cc",
     "first_party_sets/addition_overlaps_union_find.h",
     "first_party_sets/first_party_set_entry.cc",
@@ -654,6 +664,8 @@ component("net") {
     "http/http_stream_pool.h",
     "http/http_stream_pool_attempt_manager.cc",
     "http/http_stream_pool_attempt_manager.h",
+    "http/http_stream_pool_attempt_manager_quic_task.cc",
+    "http/http_stream_pool_attempt_manager_quic_task.h",
     "http/http_stream_pool_group.cc",
     "http/http_stream_pool_group.h",
     "http/http_stream_pool_handle.cc",
@@ -662,8 +674,6 @@ component("net") {
     "http/http_stream_pool_job.h",
     "http/http_stream_pool_job_controller.cc",
     "http/http_stream_pool_job_controller.h",
-    "http/http_stream_pool_quic_task.cc",
-    "http/http_stream_pool_quic_task.h",
     "http/http_stream_pool_request_info.cc",
     "http/http_stream_pool_request_info.h",
     "http/http_stream_request.cc",
@@ -675,6 +685,8 @@ component("net") {
     "http/http_vary_data.cc",
     "http/http_vary_data.h",
     "http/http_version.h",
+    "http/no_vary_search_cache.cc",
+    "http/no_vary_search_cache.h",
     "http/partial_data.cc",
     "http/partial_data.h",
     "http/proxy_client_socket.cc",
@@ -1109,7 +1121,6 @@ component("net") {
   deps = [
     ":cronet_buildflags",
     ":net_deps",
-    "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
     "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
@@ -1198,6 +1209,8 @@ component("net") {
       "device_bound_sessions/session_binding_utils.h",
       "device_bound_sessions/session_challenge_param.cc",
       "device_bound_sessions/session_challenge_param.h",
+      "device_bound_sessions/session_error.cc",
+      "device_bound_sessions/session_error.h",
       "device_bound_sessions/session_inclusion_rules.cc",
       "device_bound_sessions/session_inclusion_rules.h",
       "device_bound_sessions/session_json_utils.cc",
@@ -1522,6 +1535,7 @@ component("net") {
       "third_party/nss/ssl/cmpcert.cc",
       "third_party/nss/ssl/cmpcert.h",
     ]
+    deps += [ "//build:chromeos_buildflags" ]
     if (!is_castos) {
       sources += [
         "ssl/client_cert_store_nss.cc",
@@ -2338,7 +2352,6 @@ if (!is_ios && !is_android) {
     deps = [
       ":net",
       "//base",
-      "//build:chromeos_buildflags",
       "//build/win:default_exe_manifest",
     ]
   }
@@ -2600,17 +2613,21 @@ if (is_ios) {
 if (!is_cronet_build) {
   test("net_fuzztests") {
     sources = [
+      "cert/qwac_fuzztest.cc",
       "cert/x509_certificate_fuzztest.cc",
       "http/http_cookie_indices_fuzztest.cc",
     ]
 
     fuzztests = [
       "CookieIndicesFuzzTest.FuzzParseFromHeader",
+      "QwacFuzzTest.FuzzParseQcStatements",
+      "QwacFuzzTest.FuzzParseQcTypeInfo",
       "X509CertificateFuzzTest.FuzzCreateFromDERCertChain",
     ]
 
     deps = [
       ":net",
+      "//testing/gtest",
       "//third_party/fuzztest:fuzztest_gtest_main",
     ]
   }
@@ -2632,6 +2649,7 @@ target(_test_target_type, "net_unittests") {
     "base/chunked_upload_data_stream_unittest.cc",
     "base/data_url_unittest.cc",
     "base/datagram_buffer_unittest.cc",
+    "base/does_url_match_filter_unittest.cc",
     "base/elements_upload_data_stream_unittest.cc",
     "base/expiring_cache_unittest.cc",
     "base/file_stream_unittest.cc",
@@ -2656,6 +2674,7 @@ target(_test_target_type, "net_unittests") {
     "base/network_interfaces_unittest.cc",
     "base/network_isolation_key_unittest.cc",
     "base/parse_number_unittest.cc",
+    "base/pickle_unittest.cc",
     "base/port_util_unittest.cc",
     "base/prioritized_dispatcher_unittest.cc",
     "base/prioritized_task_runner_unittest.cc",
@@ -2695,8 +2714,8 @@ target(_test_target_type, "net_unittests") {
     "cert/merkle_tree_leaf_unittest.cc",
     "cert/multi_log_ct_verifier_unittest.cc",
     "cert/multi_threaded_cert_verifier_unittest.cc",
+    "cert/qwac_unittest.cc",
     "cert/signed_certificate_timestamp_unittest.cc",
-    "cert/symantec_certs_unittest.cc",
     "cert/test_root_certs_unittest.cc",
     "cert/time_conversions_unittest.cc",
     "cert/x509_cert_types_unittest.cc",
@@ -2794,6 +2813,7 @@ target(_test_target_type, "net_unittests") {
     "http/http_vary_data_unittest.cc",
     "http/mock_allow_http_auth_preferences.cc",
     "http/mock_allow_http_auth_preferences.h",
+    "http/no_vary_search_cache_unittest.cc",
     "http/test_upload_data_stream_not_allow_http1.cc",
     "http/test_upload_data_stream_not_allow_http1.h",
     "http/transport_security_persister_unittest.cc",
@@ -2968,7 +2988,7 @@ target(_test_target_type, "net_unittests") {
     ]
   }
 
-  if (is_chromeos_ash && use_nss_certs) {
+  if (is_chromeos && use_nss_certs) {
     sources += [
       "cert/nss_cert_database_chromeos_unittest.cc",
       "cert/nss_profile_filter_chromeos_unittest.cc",
@@ -3027,8 +3047,11 @@ target(_test_target_type, "net_unittests") {
     defines += [ "NET_DISABLE_ZSTD" ]
   }
 
+  fuzztests = [ "PickleTest.FuzzRoundTrip" ]
+
   deps = [
     ":cronet_buildflags",
+    ":isolation_info_proto",
     ":net",
     ":preload_decoder",
     ":quic_test_tools",
@@ -3037,7 +3060,6 @@ target(_test_target_type, "net_unittests") {
     ":test_support",
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/network_time/time_tracker",
     "//crypto",
     "//crypto:test_support",
@@ -3089,7 +3111,7 @@ target(_test_target_type, "net_unittests") {
     sources += [ "base/sockaddr_util_posix_unittest.cc" ]
   }
 
-  if (is_android || is_chromeos_ash) {
+  if (is_android || is_chromeos) {
     sources += [ "base/network_change_notifier_passive_unittest.cc" ]
   }
 
@@ -3584,6 +3606,16 @@ fuzzer_test("net_mime_sniffer_fuzzer") {
     "//net",
   ]
   dict = "data/fuzzer_dictionaries/net_mime_sniffer_fuzzer.dict"
+}
+
+fuzzer_test("net_pickle_fuzzer") {
+  sources = [ "base/pickle_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+  ]
+  seed_corpus = "//net/data/fuzzer_data/pickle/"
 }
 
 fuzzer_test("net_parse_proxy_list_pac_fuzzer") {

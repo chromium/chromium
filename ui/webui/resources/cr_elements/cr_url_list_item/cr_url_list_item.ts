@@ -193,7 +193,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
 
   private resetFirstImageLoaded_() {
     this.firstImageLoaded_ = false;
-    const image = this.shadowRoot!.querySelector('img');
+    const image = this.shadowRoot.querySelector('img');
     if (!image) {
       return;
     }

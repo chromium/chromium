@@ -8,7 +8,7 @@ import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './common_styles/oobe_common_styles.css.js';
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './oobe_a11y_option.html.js';

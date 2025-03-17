@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/observer_list.h"
-#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
@@ -50,6 +50,8 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   void UnloadProfile(std::string_view name) override;
   void UnloadAllProfiles() override;
   void MarkProfileForDeletion(std::string_view name) override;
+  bool IsProfileMarkedForDeletion(std::string_view name) const override;
+  void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // Builds and adds a TestProfileIOS using `builder`. Asserts that no Profile
@@ -62,7 +64,7 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
       std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>;
 
   // The ProfileAttributesStorageIOS owned by this instance.
-  ProfileAttributesStorageIOS profile_attributes_storage_;
+  MutableProfileAttributesStorageIOS profile_attributes_storage_;
 
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 

@@ -22,6 +22,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -193,7 +194,9 @@ class TrustedSignalsKVv2ManagerTest
           v8::Context::Scope context_scope(context);
 
           v8::Local<v8::Value> value = signals.GetScoringSignals(
-              v8_helper_.get(), context, render_url, ad_component_render_urls);
+              v8_helper_.get(), context, render_url,
+              CreateMojoCreativeInfoWithoutOwnerVector(
+                  ad_component_render_urls));
 
           if (v8_helper_->ExtractJson(context, value,
                                       /*script_timeout=*/nullptr, &result) !=
@@ -240,11 +243,11 @@ class TrustedSignalsKVv2ManagerTest
             "dataVersion": 1,
             "keyGroupOutputs": [
               {
-                "tags": ["renderUrls"],
+                "tags": ["renderURLs"],
                 "keyValues": {"https://a.test/":{"value":"4"}}
               },
               {
-                "tags": ["adComponentRenderUrls"],
+                "tags": ["adComponentRenderURLs"],
                 "keyValues": {
                   "https://a.test/":{"value":"[5]"},
                   "https://b.test/":{"value":"\"6\""}

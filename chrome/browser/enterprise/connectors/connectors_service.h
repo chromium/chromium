@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -32,10 +31,6 @@ class FileSystemURL;
 
 namespace enterprise_connectors {
 
-// Controls whether the Enterprise Connectors policies should be read by
-// ConnectorsManager in Managed Guest Sessions.
-BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabledOnMGS);
-
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
@@ -48,12 +43,12 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
       AnalysisConnector connector);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool IsConnectorEnabled(AnalysisConnector connector) const override;
 

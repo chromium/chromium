@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("file_manager") {
   sources = [
@@ -75,9 +75,6 @@ static_library("file_manager") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/webui/settings/public/constants",
     "//base",
@@ -129,6 +126,9 @@ static_library("file_manager") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/sharesheet:constants",
     "//chromeos/dbus/dlp",
@@ -183,7 +183,6 @@ source_set("unit_tests") {
 
   deps = [
     ":file_manager",
-    "//ash/components/arc",
     "//ash/webui/file_manager:constants",
     "//base",
     "//chrome/browser",
@@ -196,6 +195,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/experiences/arc",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//storage/browser",

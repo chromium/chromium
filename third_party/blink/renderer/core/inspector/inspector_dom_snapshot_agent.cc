@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
@@ -105,7 +105,7 @@ String GetOriginUrl(const Node* node) {
   if (!isolate || !isolate->InContext() || !debugger)
     return String();
   v8::HandleScope handleScope(isolate);
-  String url = GetCurrentScriptUrl(isolate);
+  String url = CaptureCurrentScriptUrl(isolate);
   if (!url.empty())
     return url;
   // If we did not get anything from the sync stack, let's try the slow
@@ -214,13 +214,13 @@ void InspectorDOMSnapshotAgent::CharacterDataModified(
     CharacterData* character_data) {
   String origin_url = GetOriginUrl(character_data);
   if (origin_url)
-    origin_url_map_->insert(character_data->GetDomNodeId(), origin_url);
+    origin_url_map_->map.insert(character_data->GetDomNodeId(), origin_url);
 }
 
 void InspectorDOMSnapshotAgent::DidInsertDOMNode(Node* node) {
   String origin_url = GetOriginUrl(node);
   if (origin_url)
-    origin_url_map_->insert(node->GetDomNodeId(), origin_url);
+    origin_url_map_->map.insert(node->GetDomNodeId(), origin_url);
 }
 
 void InspectorDOMSnapshotAgent::EnableAndReset() {
@@ -264,8 +264,10 @@ protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
   Document* document = inspected_frames_->Root()->GetDocument();
   if (!document)
     return protocol::Response::ServerError("Document is not available");
-  LegacyDOMSnapshotAgent legacySupport(dom_debugger_agent_,
-                                       origin_url_map_.get());
+  LegacyDOMSnapshotAgent legacySupport(
+      dom_debugger_agent_, origin_url_map_
+                               ? origin_url_map_->weak_ptr_factory.GetWeakPtr()
+                               : base::WeakPtr<OriginUrlMap>());
   return legacySupport.GetSnapshot(
       document, std::move(style_filter), std::move(include_event_listeners),
       std::move(include_paint_order), std::move(include_user_agent_shadow_tree),
@@ -517,16 +519,17 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       BuildArrayForElementAttributes(node));
   BuildLayoutTreeNode(node->GetLayoutObject(), node, index, contrast);
 
-  if (origin_url_map_ && origin_url_map_->Contains(backend_node_id)) {
-    String origin_url = origin_url_map_->at(backend_node_id);
+  if (origin_url_map_ && origin_url_map_->map.Contains(backend_node_id)) {
+    String origin_url = origin_url_map_->map.at(backend_node_id);
     // In common cases, it is implicit that a child node would have the same
     // origin url as its parent, so no need to mark twice.
     if (!node->parentNode()) {
       SetRare(nodes->getOriginURL(nullptr), index, std::move(origin_url));
     } else {
       DOMNodeId parent_id = node->parentNode()->GetDomNodeId();
-      auto it = origin_url_map_->find(parent_id);
-      String parent_url = it != origin_url_map_->end() ? it->value : String();
+      auto it = origin_url_map_->map.find(parent_id);
+      String parent_url =
+          it != origin_url_map_->map.end() ? it->value : String();
       if (parent_url != origin_url)
         SetRare(nodes->getOriginURL(nullptr), index, std::move(origin_url));
     }

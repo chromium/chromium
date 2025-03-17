@@ -4,11 +4,6 @@
 
 #include "chrome/updater/update_usage_stats_task.h"
 
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -20,15 +15,6 @@
 #include "third_party/crashpad/crashpad/client/settings.h"
 
 namespace updater {
-namespace {
-
-void SetUsageStatsEnabled(scoped_refptr<PersistedData> persisted_data,
-                          bool enabled) {
-  persisted_data->SetUsageStatsEnabled(enabled);
-  CrashClient::GetInstance()->SetUploadsEnabled(enabled);
-}
-
-}  // namespace
 
 UpdateUsageStatsTask::UpdateUsageStatsTask(
     UpdaterScope scope,
@@ -37,14 +23,26 @@ UpdateUsageStatsTask::UpdateUsageStatsTask(
 
 UpdateUsageStatsTask::~UpdateUsageStatsTask() = default;
 
+void UpdateUsageStatsTask::SetUsageStatsEnabled(
+    scoped_refptr<PersistedData> persisted_data,
+    bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  persisted_data->SetUsageStatsEnabled(enabled);
+  CrashClient::GetInstance()->SetUploadsEnabled(enabled);
+}
+
 void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&OtherAppUsageStatsAllowed, persisted_data_->GetAppIds(),
-                     scope_),
-      base::BindOnce(&SetUsageStatsEnabled, persisted_data_)
+      base::BindOnce(
+          [](UpdaterScope scope) {
+            return UsageStatsProvider::Create()->AnyAppEnablesUsageStats(scope);
+          },
+          scope_),
+      base::BindOnce(&UpdateUsageStatsTask::SetUsageStatsEnabled, this,
+                     persisted_data_)
           .Then(std::move(callback)));
 }
 

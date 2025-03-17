@@ -18,6 +18,27 @@ author/reviewer/OWNERS agree that another course is better.
   setters.  Note that constructors and destructors can be more expensive than
   they appear and should also generally not be inlined.
 
+Use forward declarations when:
+* Declaring a reference or pointer to a type (e.g. `MyClass& myRef;`).
+* Declaring a `unique_ptr` to a type if the type's destructor is out of line.
+* Declaring a function that takes the type as a reference parameter (e.g.
+  `void f(MyClass& arg);`).
+* Using the type in `typedef` or `using` aliases (e.g.
+  `using MyClassPtr = MyClass*;`).
+* Declaring friend classes or friend functions.
+
+You can't use forward declarations when:
+* Creating an instance of the type (e.g. `MyClass obj;`). The compiler needs to
+  know the type's size to allocate memory.
+* Accessing members of the type (e.g. `obj.Method();`). The compiler needs to
+  know the type's layout to access its members.
+* Inheriting from a type (e.g. `class Derived : public MyClass`). The compiler
+  needs the full definition of the base class to calculate the size and layout
+  of the derived class.
+* Using the type as a template argument where the template implementation
+  requires complete information about the type.
+* When you need to know the size of the type (e.g. `sizeof(MyClass);`).
+
 ## Static variables
 
 Dynamic initialization of function-scope static variables is **thread-safe** in

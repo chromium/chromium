@@ -9,8 +9,8 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -20,6 +20,7 @@ import java.util.function.BooleanSupplier;
  * {@link SuggestionsListAnimationDriver} that runs an unsynced, fixed duration fade + translate
  * animation against the given list property model when focusing the omnibox.
  */
+@NullMarked
 public class UnsyncedSuggestionsListAnimationDriver
         implements SuggestionsListAnimationDriver, AnimatorUpdateListener, AnimatorListener {
 
@@ -28,11 +29,11 @@ public class UnsyncedSuggestionsListAnimationDriver
     // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/view/InsetsController.java;l=236;drc=cad0f6adc5e8ca56f9a35a20f23ddd87c13af33e
     private static final int DURATION = 200;
 
-    @NonNull private final PropertyModel mListPropertyModel;
-    @NonNull private final Runnable mShowSuggestionsListCallback;
-    @NonNull private final BooleanSupplier mShouldAnimateSuggestions;
+    private final PropertyModel mListPropertyModel;
+    private final Runnable mShowSuggestionsListCallback;
+    private final BooleanSupplier mShouldAnimateSuggestions;
     private final int mStartingVerticalOffset;
-    private ValueAnimator mAnimator;
+    private @Nullable ValueAnimator mAnimator;
 
     /**
      * @param listPropertyModel Property model for the suggestions list view being animated.
@@ -43,9 +44,9 @@ public class UnsyncedSuggestionsListAnimationDriver
      *     at the start of the animation; the ending translation will be 0.
      */
     public UnsyncedSuggestionsListAnimationDriver(
-            @NonNull PropertyModel listPropertyModel,
-            @NonNull Runnable showSuggestionsListCallback,
-            @NonNull BooleanSupplier shouldAnimateSuggestionsSupplier,
+            PropertyModel listPropertyModel,
+            Runnable showSuggestionsListCallback,
+            BooleanSupplier shouldAnimateSuggestionsSupplier,
             int startingVerticalOffset) {
 
         mListPropertyModel = listPropertyModel;
@@ -78,7 +79,7 @@ public class UnsyncedSuggestionsListAnimationDriver
     }
 
     @Override
-    public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+    public void onAnimationUpdate(ValueAnimator valueAnimator) {
         mListPropertyModel.set(SuggestionListProperties.ALPHA, valueAnimator.getAnimatedFraction());
         mListPropertyModel.set(
                 SuggestionListProperties.CHILD_TRANSLATION_Y,
@@ -86,7 +87,7 @@ public class UnsyncedSuggestionsListAnimationDriver
     }
 
     @Override
-    public void onAnimationStart(@NonNull Animator animator) {
+    public void onAnimationStart(Animator animator) {
         mShowSuggestionsListCallback.run();
         mListPropertyModel.set(SuggestionListProperties.ALPHA, 0.0f);
         mListPropertyModel.set(
@@ -94,18 +95,18 @@ public class UnsyncedSuggestionsListAnimationDriver
     }
 
     @Override
-    public void onAnimationEnd(@NonNull Animator animator) {
+    public void onAnimationEnd(Animator animator) {
         mListPropertyModel.set(SuggestionListProperties.ALPHA, 1.0f);
         mListPropertyModel.set(SuggestionListProperties.CHILD_TRANSLATION_Y, 0.0f);
     }
 
     @Override
-    public void onAnimationCancel(@NonNull Animator animator) {
+    public void onAnimationCancel(Animator animator) {
         // Show the list in case we get cancelled ahead of starting.
         mShowSuggestionsListCallback.run();
         onAnimationEnd(animator);
     }
 
     @Override
-    public void onAnimationRepeat(@NonNull Animator animator) {}
+    public void onAnimationRepeat(Animator animator) {}
 }

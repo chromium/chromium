@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, NewDownloadPolicy) {
 };
 
 // Delegate for DownloadManagerTabHelper class.
-@protocol DownloadManagerTabHelperDelegate<NSObject>
+@protocol DownloadManagerTabHelperDelegate <NSObject>
 
 // Informs the delegate that a DownloadTask was created.
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper

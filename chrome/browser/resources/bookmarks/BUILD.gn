@@ -9,40 +9,47 @@ build_webui("build") {
 
   static_files = [ "bookmarks.html" ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [
-    "app.ts",
-    "command_manager.ts",
-    "edit_dialog.ts",
-    "folder_node.ts",
-    "item.ts",
-    "list.ts",
-    "toolbar.ts",
-  ]
-
   non_web_component_files = [
     "actions.ts",
     "api_listener.ts",
+    "app.html.ts",
+    "app.ts",
     "bookmark_manager_api_proxy.ts",
     "bookmarks.ts",
     "bookmarks_api_proxy.ts",
     "browser_proxy.ts",
+    "command_manager.html.ts",
+    "command_manager.ts",
     "constants.ts",
     "debouncer.ts",
     "dialog_focus_manager.ts",
     "dnd_manager.ts",
-    "mouse_focus_behavior.ts",
+    "edit_dialog.html.ts",
+    "edit_dialog.ts",
+    "folder_node.html.ts",
+    "folder_node.ts",
+    "item.html.ts",
+    "item.ts",
+    "list.html.ts",
+    "list.ts",
     "reducers.ts",
     "router.ts",
     "store.ts",
-    "store_client_mixin.ts",
+    "store_client_mixin_lit.ts",
+    "toolbar.html.ts",
+    "toolbar.ts",
     "types.ts",
     "util.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
-    "shared_style.css",
+    "app.css",
+    "folder_node.css",
+    "item.css",
+    "list.css",
+    "toolbar.css",
+    "shared_style_lit.css",
     "shared_vars.css",
   ]
 
@@ -60,7 +67,7 @@ build_webui("build") {
   ]
 
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

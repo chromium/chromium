@@ -15,6 +15,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "base/types/id_type.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -40,6 +41,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
@@ -182,8 +184,12 @@ using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Property;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // FAIL if a field with the supplied `name` and `fieldType` is not present on
 // the `form`.
@@ -197,11 +203,6 @@ void CheckField(const FormStructure& form,
     }
   }
   FAIL() << "Missing field " << name;
-}
-
-AutocompleteEntry CreateAutocompleteEntry(const std::u16string& value) {
-  const base::Time kNow = AutofillClock::Now();
-  return AutocompleteEntry(AutocompleteKey(u"Name", value), kNow, kNow);
 }
 
 // Forces rendering of a UIView. This is used in tests to make sure that UIKit
@@ -231,21 +232,6 @@ auto ChildFrameMatcher(int expected_predecessor) {
                        testing::Eq(expected_predecessor));
   return AllOf(valid_token_matcher, predecessor_matcher);
 }
-
-// WebDataServiceConsumer for receiving vectors of strings and making them
-// available to tests.
-class TestConsumer : public WebDataServiceConsumer {
- public:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override {
-    DCHECK_EQ(result->GetType(), AUTOFILL_VALUE_RESULT);
-    result_ =
-        static_cast<WDResult<std::vector<AutocompleteEntry>>*>(result.get())
-            ->GetValue();
-  }
-  std::vector<AutocompleteEntry> result_;
-};
 
 // Text fixture to test autofill.
 class AutofillControllerTest : public PlatformTest {
@@ -387,8 +373,9 @@ void AutofillControllerTest::SetUp() {
   InfoBarManagerImpl::CreateForWebState(web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
-  autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
-      profile_.get(), web_state(), infobar_manager, autofill_agent_);
+  autofill_client_ =
+      std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
+          profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill_client_->GetPersonalDataManager()
       .address_data_manager()
@@ -576,6 +563,264 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Synthetic) {
           Property(&FormData::child_frames,
                    ElementsAre(ChildFrameMatcher(-1), ChildFrameMatcher(0),
                                ChildFrameMatcher(0), ChildFrameMatcher(2))))));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames will stop being extracted for forms once the limit of frames is
+// reached.
+TEST_F(AutofillControllerTest,
+       ReadForm_WithChildFrames_Throttling_AcrossForms) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A form with iframes and inputs where some of the iframes have predecessors.
+  NSString* const test_page =
+      @"<form id='form1'>"
+       "<!-- 20 frames, just a the limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>"
+       "<form id='form2'>"
+       "<!-- Frame limit busted -->"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>"
+       "<form id='form3'>"
+       "<!-- Frame limit busted -->"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/3));
+
+  // Verify that the form data is correctly filled with the child frames data
+  // by respecting the child frames limit, where the first form has its 20 child
+  // frames then the follow up forms don't have any child frames.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form1_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
+                             Property(&FormData::child_frames, SizeIs(20)));
+  auto following_forms_matcher =
+      AllOf(Property(&FormData::renderer_id, IsTrue()),
+            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, ElementsAre(form1_matcher, following_forms_matcher,
+                                     following_forms_matcher));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames won't be extracted for the syntethic forms once the limit of frames is
+// reached.
+TEST_F(AutofillControllerTest,
+       ReadForm_WithChildFrames_Throttling_AcrossForms_Synthetic) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A form with iframes and inputs where some of the iframes have predecessors.
+  NSString* const test_page =
+      @"<form id='form1'>"
+       "<!-- 4 iframes, below the per-form limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>"
+       "<!-- 17 frames in the synthetic form, just above the xform limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/2));
+
+  // Verify that the form data is correctly filled with the child frames data
+  // by respecting the child frames limit, where the first form has its 4 child
+  // frames then the follow up synthetic form hasn't any child frame because it
+  // busted the xform limit.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form1_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
+                             Property(&FormData::child_frames, SizeIs(4)));
+  auto synthetic_form_matcher =
+      AllOf(Property(&FormData::renderer_id, testing::Eq(FormRendererId(0))),
+            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, ElementsAre(synthetic_form_matcher, form1_matcher));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames will not be extracted on a form that exceeds the limit of child
+// frames.
+TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Throttling_SingleForm) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A form with iframes and inputs where some of the iframes have predecessors.
+  NSString* const test_page =
+      @"<form id='form1'>"
+       "<!-- 21 frames, just above the limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/1));
+
+  // Verify that the form data doesn't have child frames when the form exceeds
+  // the child frame limit.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
+                            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, ElementsAre(form_matcher));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames will not be extracted on a synthetic form that exceeds the limit of
+// child frames.
+TEST_F(AutofillControllerTest,
+       ReadForm_WithChildFrames_Throttling_SingleForm_Synthetic) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A synthetic form with too many child frames exceeding the limit.
+  NSString* const test_page =
+      @"<html><body><div id='div'>"
+       "<!-- 21 frames in synthetic form, just above the limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</div></html></body>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/1));
+
+  // Verify that the synthetic form data doesn't have child frames when the form
+  // exceeds the child frame limit.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form_matcher =
+      AllOf(Property(&FormData::renderer_id, Eq(FormRendererId(0))),
+            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, UnorderedElementsAre(form_matcher));
 }
 
 // Checks that viewing an HTML page containing a form with an 'id' results in
@@ -777,32 +1022,43 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   scoped_refptr<AutofillWebDataService> web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  TestConsumer consumer;
-  const int limit = 1;
-  consumer.result_ = {CreateAutocompleteEntry(u"Should"),
-                      CreateAutocompleteEntry(u"get"),
-                      CreateAutocompleteEntry(u"overwritten")};
-  web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
-                                                limit, &consumer);
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  web::test::WaitForBackgroundTasks();
-  // No value should be returned before anything is loaded via form submission.
-  ASSERT_EQ(0U, consumer.result_.size());
-  web::test::ExecuteJavaScript(@"submit.click()", web_state());
-  // We can't make `consumer` a __block variable because TestConsumer lacks copy
-  // construction. We just pass a pointer instead as we know that the callback
-  // is executed within the life-cyle of `consumer`.
-  TestConsumer* consumer_ptr = &consumer;
-  WaitForCondition(^bool {
+
+  {
+    base::test::TestFuture<WebDataServiceBase::Handle,
+                           std::unique_ptr<WDTypedResult>>
+        future;
     web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
-                                                  limit, consumer_ptr);
-    return consumer_ptr->result_.size();
-  });
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  web::test::WaitForBackgroundTasks();
-  // One result should be returned, matching the filled value.
-  ASSERT_EQ(1U, consumer.result_.size());
-  EXPECT_EQ(u"Hello", consumer.result_[0].key().value());
+                                                  /*limit=*/1,
+                                                  future.GetCallback());
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    web::test::WaitForBackgroundTasks();
+    std::vector<AutocompleteEntry> result =
+        static_cast<WDResult<std::vector<AutocompleteEntry>>&>(*future.Get<1>())
+            .GetValue();
+    // No value should be returned before anything is loaded via form
+    // submission.
+    EXPECT_THAT(result, IsEmpty());
+  }
+
+  web::test::ExecuteJavaScript(@"submit.click()", web_state());
+
+  {
+    base::test::TestFuture<WebDataServiceBase::Handle,
+                           std::unique_ptr<WDTypedResult>>
+        future;
+    web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
+                                                  /*limit=*/1,
+                                                  future.GetCallback());
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    web::test::WaitForBackgroundTasks();
+    std::vector<AutocompleteEntry> result =
+        static_cast<WDResult<std::vector<AutocompleteEntry>>&>(*future.Get<1>())
+            .GetValue();
+    // One result should be returned, matching the filled value.
+    EXPECT_THAT(result, ElementsAre(Property(
+                            &AutocompleteEntry::key,
+                            Property(&AutocompleteKey::value, u"Hello"))));
+  }
 }
 
 void AutofillControllerTest::SetUpKeyValueData() {
@@ -940,6 +1196,10 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   });
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
+  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
+               "NumStrikes.0.NoFixFlow",
+               static_cast<int>(
+                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
   ASSERT_EQ(1U, infobar_manager->infobars().size());
   infobars::InfoBarDelegate* infobar =
       infobar_manager->infobars()[0]->delegate();
@@ -1007,6 +1267,10 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
   });
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
+  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
+               "NumStrikes.0.NoFixFlow",
+               static_cast<int>(
+                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
   ASSERT_EQ(1U, infobar_manager->infobars().size());
   infobars::InfoBarDelegate* infobar =
       infobar_manager->infobars()[0]->delegate();
@@ -1101,6 +1365,10 @@ TEST_F(AutofillControllerTest,
   });
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
+  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
+               "NumStrikes.0.NoFixFlow",
+               static_cast<int>(
+                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
   ASSERT_EQ(1U, infobar_manager->infobars().size());
   infobars::InfoBarDelegate* infobar =
       infobar_manager->infobars()[0]->delegate();

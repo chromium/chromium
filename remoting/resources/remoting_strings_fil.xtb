@@ -28,6 +28,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="2329392777730037872">Hindi nabuksan ang <ph name="URL" /> sa client.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2366718077645204424">Hindi maabot ang host. Malamang na dahil ito sa configuration ng network na iyong ginagamit.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="2504109125669302160">Magbigay ng pahintulot sa 'Accessibility' sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Nakakonekta sa <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Gusto mo bang ibahagi ang computer na ito upang makita at makontrol ng ibang user?</translation>
@@ -133,6 +134,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="7067321367069083429">Gumagana ang screen tulad ng touch screen</translation>
 <translation id="7116737094673640201">Welcome sa Remote na Desktop ng Chrome</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
+<translation id="7298392173540380852">Copyright 2025 Ang Mga Gumawa ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="7312846573060934304">Naka-offline ang host.</translation>
 <translation id="7319983568955948908">Ihinto ang Pagbabahagi</translation>
 <translation id="7359298090707901886">Hindi magagamit ang napiling browser para magbukas ng mga URL sa lokal na machine.</translation>
@@ -149,7 +151,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="7693372326588366043">I-refresh ang listahan ng mga host</translation>
 <translation id="7714222945760997814">Iulat ito</translation>
 <translation id="7868137160098754906">Pakilagay ang iyong PIN para sa remote na computer.</translation>
-<translation id="7881455334687220899">Copyright 2024 Ang Mga Gumawa ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="7895403300744144251">Hindi pinapayagan ng mga patakaran sa seguridad sa remote na computer ang mga koneksyon mula sa iyong account.</translation>
 <translation id="7936528439960309876">I-dock sa Kanan</translation>
 <translation id="7970576581263377361">Hindi naisagawa ang pagpapatotoo. Mangyaring muling mag-sign in sa Chromium.</translation>
@@ -181,7 +182,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="8747048596626351634">Nag-crash o hindi nagsimula ang session. Kung may ~/.chrome-remote-desktop-session sa malayuang computer, tiyaking nagsisimula ito ng matagal na paggana ng proseso sa foreground gaya ng desktop environment o window manager.</translation>
 <translation id="8804164990146287819">Patakaran sa Privacy</translation>
 <translation id="8906511416443321782">Kinakailangan ang access sa mikropono para ma-capture ang audio at ma-stream ito sa client ng Remote na Desktop ng Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="9111855907838866522">Nakakonekta ka sa iyong remote device. Upang buksan ang menu, paki-tap ang screen gamit ang apat na daliri.</translation>
 <translation id="9126115402994542723">Huwag muling humingi ng PIN kapag kumokonekta sa host na ito mula sa device na ito.</translation>
 <translation id="916856682307586697">Ilunsad ang default na XSession</translation>

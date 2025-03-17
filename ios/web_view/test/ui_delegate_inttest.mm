@@ -9,10 +9,11 @@
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest_mac.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "url/gurl.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 
@@ -57,7 +58,7 @@ TEST_F(UIDelegateTest, CreateWebView) {
                 &error));
   EXPECT_FALSE(error);
 
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests -webView:runJavaScriptAlertPanelWithMessage:pageURL:completionHandler:
@@ -78,7 +79,7 @@ TEST_F(UIDelegateTest, RunJavaScriptAlertPanel) {
   test::EvaluateJavaScript(web_view_, @"alert('message')", &error);
   EXPECT_FALSE(error);
 
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests
@@ -101,7 +102,7 @@ TEST_F(UIDelegateTest, RunJavaScriptConfirmPanel) {
                                         &error) boolValue]);
   EXPECT_FALSE(error);
 
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests
@@ -125,7 +126,7 @@ TEST_F(UIDelegateTest, RunJavaScriptTextInputPanel) {
                             web_view_, @"prompt('prompt', 'default')", &error));
   EXPECT_FALSE(error);
 
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests -webView:didLoadFavicons:

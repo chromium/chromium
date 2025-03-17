@@ -34,6 +34,7 @@ void SanitizeFormData(FormData* form) {
     field.set_value({});
     field.set_autocomplete_attribute({});
     field.set_options({});
+    field.set_pattern({});
     field.set_placeholder({});
     field.set_css_classes({});
     field.set_id_attribute({});

@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -133,8 +132,8 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MatchesInStore(
 bool AccountStoreMatchesContainForm(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const PasswordForm& form) {
-  DCHECK(base::ranges::all_of(matches, &PasswordForm::IsUsingAccountStore));
-  return base::ranges::any_of(matches, [&form](const PasswordForm* match) {
+  DCHECK(std::ranges::all_of(matches, &PasswordForm::IsUsingAccountStore));
+  return std::ranges::any_of(matches, [&form](const PasswordForm* match) {
     return ArePasswordFormUniqueKeysEqual(*match, form) &&
            match->password_value == form.password_value;
   });
@@ -235,10 +234,10 @@ PasswordForm UpdateFormPreservingDifferentFieldsAcrossStores(
 
 bool AlternativeElementsContainValue(const AlternativeElementVector& elements,
                                      const std::u16string& value) {
-  return base::ranges::any_of(elements,
-                              [&value](const AlternativeElement& element) {
-                                return element.value == value;
-                              });
+  return std::ranges::any_of(elements,
+                             [&value](const AlternativeElement& element) {
+                               return element.value == value;
+                             });
 }
 
 void PopulateAlternativeUsernames(base::span<const PasswordForm> best_matches,
@@ -257,8 +256,8 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
     base::span<const PasswordForm> matches) {
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
       matches.size());
-  base::ranges::transform(matches, result.begin(),
-                          [](const PasswordForm& form) { return &form; });
+  std::ranges::transform(matches, result.begin(),
+                         [](const PasswordForm& form) { return &form; });
   return result;
 }
 
@@ -423,11 +422,11 @@ void PasswordSaveManagerImpl::Save(const FormData* observed_form,
 
 void PasswordSaveManagerImpl::Blocklist(const PasswordFormDigest& form_digest) {
   CHECK(!client_->IsOffTheRecord());
-  if (IsOptedInForAccountStorage() && AccountStoreIsDefault()) {
+  if (IsAccountStorageEnabled()) {
     account_store_form_saver_->Blocklist(form_digest);
   } else {
-    // For users who aren't yet opted-in to the account storage, we store their
-    // blocklisted entries in the profile store.
+    // For users with account storage disabled, we store their blocklisted
+    // entries in the profile store.
     profile_store_form_saver_->Blocklist(form_digest);
   }
 }
@@ -437,7 +436,7 @@ void PasswordSaveManagerImpl::Unblocklist(
   // Try to unblocklist in both stores anyway because if credentials don't
   // exist, the unblocklist operation is no-op.
   profile_store_form_saver_->Unblocklist(form_digest);
-  if (IsOptedInForAccountStorage()) {
+  if (IsAccountStorageEnabled()) {
     account_store_form_saver_->Unblocklist(form_digest);
   }
 }
@@ -702,6 +701,10 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
     pending_credentials.type = PasswordForm::Type::kGenerated;
   }
 
+  if (client_->IsPasswordChangeOngoing()) {
+    pending_credentials.type = PasswordForm::Type::kChangeSubmission;
+  }
+
   return pending_credentials;
 }
 
@@ -920,20 +923,14 @@ void PasswordSaveManagerImpl::CloneInto(PasswordSaveManagerImpl* clone) {
   clone->pending_credentials_state_ = pending_credentials_state_;
 }
 
-bool PasswordSaveManagerImpl::IsOptedInForAccountStorage() const {
+bool PasswordSaveManagerImpl::IsAccountStorageEnabled() const {
   return account_store_form_saver_ &&
-         client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
-}
-
-bool PasswordSaveManagerImpl::AccountStoreIsDefault() const {
-  return account_store_form_saver_ &&
-         client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-             PasswordForm::Store::kAccountStore;
+         client_->GetPasswordFeatureManager()->IsAccountStorageEnabled();
 }
 
 bool PasswordSaveManagerImpl::ShouldStoreGeneratedPasswordsInAccountStore()
     const {
-  if (IsOptedInForAccountStorage()) {
+  if (IsAccountStorageEnabled()) {
     return true;
   }
   return false;
@@ -943,7 +940,7 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
     const PendingCredentialsStates& states) const {
   PasswordForm::Store result = PasswordForm::Store::kNotSet;
   if (HasGeneratedPassword()) {
-    if (IsOptedInForAccountStorage()) {
+    if (IsAccountStorageEnabled()) {
       result = result | PasswordForm::Store::kAccountStore;
       if (states.profile_store_state == PendingCredentialsState::UPDATE) {
         result = result | PasswordForm::Store::kProfileStore;
@@ -957,13 +954,11 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
       states.account_store_state == PendingCredentialsState::NEW_LOGIN) {
     // If the credential is new to both stores, store it only in the default
     // store.
-    if (AccountStoreIsDefault()) {
+    if (IsAccountStorageEnabled()) {
       // TODO(crbug.com/40102239): Record UMA for how many passwords get dropped
-      // here. In rare cases it could happen that the user *was* opted in when
-      // the save dialog was shown, but now isn't anymore.
-      if (IsOptedInForAccountStorage()) {
-        result = result | PasswordForm::Store::kAccountStore;
-      }
+      // here. In rare cases it could happen that the user had account storage
+      // enabled when the save dialog was shown, but now doesn't anymore.
+      result = result | PasswordForm::Store::kAccountStore;
     } else {
       result = result | PasswordForm::Store::kProfileStore;
     }
@@ -981,7 +976,7 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
       break;
   }
 
-  if (IsOptedInForAccountStorage()) {
+  if (IsAccountStorageEnabled()) {
     switch (states.account_store_state) {
       case PendingCredentialsState::AUTOMATIC_SAVE:
       case PendingCredentialsState::UPDATE:

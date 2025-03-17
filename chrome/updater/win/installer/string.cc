@@ -11,7 +11,8 @@
 
 #include <windows.h>
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 
 namespace {
@@ -38,7 +39,7 @@ bool HexEncode(const void* bytes, size_t size, wchar_t* str, size_t str_size) {
     return false;
   }
 
-  base::ranges::copy(base::HexEncode(bytes, size), str);
+  std::ranges::copy(base::HexEncode(bytes, size), str);
   str[size * 2] = L'\0';
   return true;
 }

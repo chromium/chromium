@@ -24,7 +24,7 @@ class GetIceConfigResponse;
 }  // namespace v1
 }  // namespace apis
 
-class ProtobufHttpStatus;
+class HttpStatus;
 class OAuthTokenGetter;
 
 namespace protocol {
@@ -48,7 +48,7 @@ class IceConfigFetcherDefault final : public protocol::IceConfigFetcher {
  private:
   friend class IceConfigFetcherDefaultTest;
 
-  void OnResponse(const ProtobufHttpStatus& status,
+  void OnResponse(const HttpStatus& status,
                   std::unique_ptr<apis::v1::GetIceConfigResponse> response);
 
   bool make_authenticated_requests_ = false;

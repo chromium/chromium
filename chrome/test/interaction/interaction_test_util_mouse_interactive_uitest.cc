@@ -47,7 +47,7 @@ class InteractionTestUtilMouseUiTest
   std::unique_ptr<Mouse> mouse_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(TouchMode,
                          InteractionTestUtilMouseUiTest,
                          testing::Bool());

@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
-protobuf_mutator::protobuf::LogSilencer log_silencer;
-
 using css_proto_converter::Input;
 
 DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
@@ -28,8 +26,7 @@ DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
           {Input::kHTMLStandardMode, blink::kHTMLStandardMode},
           {Input::kHTMLQuirksMode, blink::kHTMLQuirksMode},
           {Input::kSVGAttributeMode, blink::kSVGAttributeMode},
-          {Input::kCSSFontFaceRuleMode, blink::kCSSFontFaceRuleMode},
-          {Input::kUASheetMode, blink::kUASheetMode}};
+          {Input::kCSSFontFaceRuleMode, blink::kCSSFontFaceRuleMode}};
 
   static std::unordered_map<Input::SecureContextMode, blink::SecureContextMode>
       secure_context_mode_map = {

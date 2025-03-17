@@ -16,7 +16,6 @@
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -32,7 +31,7 @@ constexpr size_t kSuggestedEmojisSize = 6u;
 
 bool ContainsEmoji(const std::vector<HistoryItem>& vec,
                    std::string_view emoji) {
-  return base::ranges::any_of(vec, [emoji](const HistoryItem& item) {
+  return std::ranges::any_of(vec, [emoji](const HistoryItem& item) {
     return item.category == ui::EmojiPickerCategory::kEmojis &&
            item.text == emoji;
   });

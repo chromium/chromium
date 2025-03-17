@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -37,6 +36,7 @@
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/fieldset_painter.h"
 #include "third_party/blink/renderer/core/paint/fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
@@ -62,6 +61,7 @@
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -406,9 +406,6 @@ bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
   switch (paint_phase) {
     case PaintPhase::kSelfBlockBackgroundOnly:
     case PaintPhase::kSelfOutlineOnly:
-      return ViewTransitionUtils::
-          ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(
-              *fragment.GetLayoutObject());
     case PaintPhase::kBlockBackground:
     case PaintPhase::kDescendantBlockBackgroundsOnly:
     case PaintPhase::kForcedColorsModeBackplate:
@@ -422,6 +419,31 @@ bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
     case PaintPhase::kMask:
       return false;
   }
+}
+
+BoxSide BoxSideFromGridDirection(const ComputedStyle& style,
+                                 GridTrackSizingDirection direction) {
+  BoxSide box_side;
+
+  if (style.IsHorizontalWritingMode()) {
+    if (style.IsLeftToRightDirection()) {
+      box_side = direction == kForColumns ? BoxSide::kLeft : BoxSide::kTop;
+    } else {
+      box_side = direction == kForColumns ? BoxSide::kRight : BoxSide::kBottom;
+    }
+  } else {
+    // Vertical Writing Mode.
+    const auto writing_direction = style.GetWritingDirection();
+    if (writing_direction.InlineEnd() == PhysicalDirection::kDown) {
+      // Top to Bottom.
+      box_side = direction == kForColumns ? BoxSide::kTop : BoxSide::kLeft;
+    } else {
+      // Bottom to Top.
+      box_side = direction == kForColumns ? BoxSide::kBottom : BoxSide::kRight;
+    }
+  }
+
+  return box_side;
 }
 
 }  // anonymous namespace
@@ -522,12 +544,10 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     PaintObject(info, paint_offset);
     info.SetSkipsBackground(false);
 
-    if ((RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-         // We need to record hit test data for the scrolling contents.
-         box.ScrollsOverflow()) ||
+    // We need to record hit test data for the scrolling contents.
+    if (box.ScrollsOverflow() ||
         (paint_location & kBackgroundPaintInContentsSpace)) {
       if (!(paint_location & kBackgroundPaintInContentsSpace)) {
-        DCHECK(RuntimeEnabledFeatures::HitTestOpaquenessEnabled());
         info.SetSkipsBackground(true);
       }
       // If possible, paint overflow controls before scrolling background to
@@ -1307,6 +1327,193 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
   }
 }
 
+void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
+                                             const PhysicalRect& paint_rect) {
+  // TODO(crbug.com/357648037): This will change when gap decorations for
+  // flexbox are implemented.
+  if (!GetPhysicalFragment().IsGrid()) {
+    return;
+  }
+  const GapFragmentData::GapGeometry* gap_geometry =
+      box_fragment_.GapGeometry();
+  CHECK(gap_geometry);
+
+  PaintNewGridGaps(kForRows, paint_info, paint_rect, gap_geometry);
+  PaintNewGridGaps(kForColumns, paint_info, paint_rect, gap_geometry);
+}
+
+void BoxFragmentPainter::PaintGridGaps(
+    GridTrackSizingDirection track_direction,
+    const PaintInfo& paint_info,
+    const PhysicalRect& paint_rect,
+    const GapFragmentData::GapBoundaries& gaps) {
+  const ComputedStyle& style = box_fragment_.Style();
+
+  WritingModeConverter converter(style.GetWritingDirection(),
+                                 box_fragment_.Size());
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+  BoxSide box_side = BoxSideFromGridDirection(style, track_direction);
+
+  Color rule_color;
+  EBorderStyle rule_style;
+  LayoutUnit rule_thickness;
+  // TODO(crbug.com/357648037): We are currently only painting gaps with a
+  // single color, but we should update this to paint with all values
+  // potentially set by the author.
+  if (track_direction == kForColumns) {
+    rule_color =
+        LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
+    rule_style = ComputedStyle::CollapsedBorderStyle(
+        style.ColumnRuleStyle().GetLegacyValue());
+    rule_thickness = LayoutUnit(style.ColumnRuleWidth().GetLegacyValue());
+  } else {
+    rule_color =
+        LayoutObject::ResolveColor(style, GetCSSPropertyRowRuleColor());
+    rule_style = ComputedStyle::CollapsedBorderStyle(
+        style.RowRuleStyle().GetLegacyValue());
+    rule_thickness = LayoutUnit(style.RowRuleWidth().GetLegacyValue());
+  }
+
+  const PhysicalRect local_rect = box_fragment_.LocalRect();
+  const LayoutUnit cross_track_offset = track_direction == kForColumns
+                                            ? local_rect.offset.top
+                                            : local_rect.offset.left;
+  const LayoutUnit cross_track_size = track_direction == kForColumns
+                                          ? local_rect.size.height
+                                          : local_rect.size.width;
+
+  for (const auto& gap : gaps) {
+    CHECK(gap.start_offset);
+    CHECK(gap.end_offset);
+
+    LayoutUnit inline_start;
+    LayoutUnit inline_size;
+    LayoutUnit block_start;
+    LayoutUnit block_size;
+
+    const LayoutUnit center = (gap.start_offset + gap.end_offset) / 2;
+    if (track_direction == kForColumns) {
+      // For columns, paint a vertical strip at the center of the gap.
+      inline_start = center - (rule_thickness / 2);
+      inline_size = rule_thickness;
+      block_start = cross_track_offset;
+      block_size = cross_track_size;
+    } else {
+      // For rows, paint a horizontal strip at the center of the gap.
+      inline_start = cross_track_offset;
+      inline_size = cross_track_size;
+      block_start = center - (rule_thickness / 2);
+      block_size = rule_thickness;
+    }
+
+    const LogicalRect gap_logical(inline_start, block_start, inline_size,
+                                  block_size);
+    PhysicalRect gap_rect = converter.ToPhysical(gap_logical);
+    gap_rect.offset += paint_rect.offset;
+
+    BoxBorderPainter::DrawBoxSide(paint_info.context,
+                                  ToPixelSnappedRect(gap_rect), box_side,
+                                  rule_color, rule_style, auto_dark_mode);
+  }
+}
+
+void BoxFragmentPainter::PaintNewGridGaps(
+    GridTrackSizingDirection track_direction,
+    const PaintInfo& paint_info,
+    const PhysicalRect& paint_rect,
+    const GapFragmentData::GapGeometry* gap_geometry) {
+  CHECK(GetPhysicalFragment().IsGrid());
+
+  const ComputedStyle& style = box_fragment_.Style();
+
+  WritingModeConverter converter(style.GetWritingDirection(),
+                                 box_fragment_.Size());
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+  BoxSide box_side = BoxSideFromGridDirection(style, track_direction);
+
+  Color rule_color;
+  EBorderStyle rule_style;
+  LayoutUnit rule_thickness;
+
+  // TODO(crbug.com/357648037): We are currently only painting gaps with a
+  // single color, but we should update this to paint with all values
+  // potentially set by the author.
+  if (track_direction == kForColumns) {
+    rule_color =
+        LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
+    rule_style = ComputedStyle::CollapsedBorderStyle(
+        style.ColumnRuleStyle().GetLegacyValue());
+    rule_thickness = LayoutUnit(style.ColumnRuleWidth().GetLegacyValue());
+  } else {
+    rule_color =
+        LayoutObject::ResolveColor(style, GetCSSPropertyRowRuleColor());
+    rule_style = ComputedStyle::CollapsedBorderStyle(
+        style.RowRuleStyle().GetLegacyValue());
+    rule_thickness = LayoutUnit(style.RowRuleWidth().GetLegacyValue());
+  }
+
+  // Adjusts the (start, end) intersection pair to ensure that the gap
+  // decorations are painted correctly based on `rule_break`.
+  auto AdjustIntersectionIndexPair =
+      [&](wtf_size_t& start, wtf_size_t& end,
+          const GapFragmentData::GapIntersectionList intersections) {
+        // TODO(samomekarajr): Let start be the first intersection and end be
+        // the last intersection i.e. assume `*-rule-break` is `none`. This is
+        // subject to change once the other `*-rule-break` values(`intersection`
+        // & `spanning-item`) are implemented.
+        start = 0;
+        end = intersections.size() - 1;
+      };
+
+  const auto gaps = gap_geometry->GetGapIntersections(track_direction);
+  for (wtf_size_t gap_index = 0; gap_index < gaps.size(); ++gap_index) {
+    LayoutUnit inline_start;
+    LayoutUnit inline_size;
+    LayoutUnit block_start;
+    LayoutUnit block_size;
+
+    wtf_size_t start = 0;
+    const auto gap = gaps[gap_index];
+    const auto num_intersections = gap.size();
+
+    // Gap decorations are painted relative to (start, end) pairs of gap
+    // intersection points in the center of the corresponding gap and parallel
+    // to its edges.
+    while (start < num_intersections - 1) {
+      wtf_size_t end = start + 1;
+      AdjustIntersectionIndexPair(start, end, gap);
+
+      if (track_direction == kForColumns) {
+        // For columns, paint a vertical strip at the center of the gap.
+        const LayoutUnit center = gap[start].inline_offset;
+        inline_start = center - (rule_thickness / 2);
+        inline_size = rule_thickness;
+        block_start = gap[start].block_offset;
+        block_size = gap[end].block_offset - block_start;
+      } else {
+        // For rows, paint a horizontal strip at the center of the gap.
+        const LayoutUnit center = gap[start].block_offset;
+        block_start = center - (rule_thickness / 2);
+        block_size = rule_thickness;
+        inline_start = gap[start].inline_offset;
+        inline_size = gap[end].inline_offset - inline_start;
+      }
+
+      const LogicalRect gap_logical(inline_start, block_start, inline_size,
+                                    block_size);
+      PhysicalRect gap_rect = converter.ToPhysical(gap_logical);
+      gap_rect.offset += paint_rect.offset;
+
+      BoxBorderPainter::DrawBoxSide(paint_info.context,
+                                    ToPixelSnappedRect(gap_rect), box_side,
+                                    rule_color, rule_style, auto_dark_mode);
+      start = end;
+    }
+  }
+}
+
 // TODO(kojii): This logic is kept in sync with BoxPainter. Not much efforts to
 // eliminate LayoutObject dependency were done yet.
 void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
@@ -1331,9 +1538,10 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
       BleedAvoidanceIsClipping(
           box_decoration_data.GetBackgroundBleedAvoidance())) {
     state_saver.Save();
-    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
+
+    ContouredRect border = ContouredBorderGeometry::PixelSnappedContouredBorder(
         style, paint_rect, box_fragment_.SidesToInclude());
-    paint_info.context.ClipRoundedRect(border);
+    paint_info.context.ClipContouredRect(border);
 
     if (box_decoration_data.GetBackgroundBleedAvoidance() ==
         kBackgroundBleedClipLayer) {
@@ -1394,6 +1602,14 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
                   box_decoration_data.GetBackgroundBleedAvoidance(),
                   box_fragment_.SidesToInclude());
     }
+  }
+
+  // TODO(crbug.com/357648037): Currently painting gap decorations after
+  // borders. This is likely to change following the resolution of the paint
+  // order issue for gap decorations.
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      box_decoration_data.ShouldPaintGapDecorations()) {
+    PaintGapDecorations(paint_info, paint_rect);
   }
 
   if (needs_end_layer)
@@ -1703,15 +1919,6 @@ inline void BoxFragmentPainter::PaintLineBox(
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   line_fragment_id);
 
-  bool paints_hit_test_data =
-      !RuntimeEnabledFeatures::HitTestOpaquenessEnabled() ||
-      !RuntimeEnabledFeatures::HitTestOpaquenessOmitLineBoxEnabled();
-  if (paints_hit_test_data && ShouldRecordHitTestData(paint_info)) {
-    ObjectPainter(*GetPhysicalFragment().GetLayoutObject())
-        .RecordHitTestData(paint_info, ToPixelSnappedRect(border_box),
-                           display_item_client);
-  }
-
   Element* element = DynamicTo<Element>(line_box_fragment.GetNode());
   if (element && element->GetRegionCaptureCropId()) {
     paint_info.context.GetPaintController().RecordRegionCaptureData(
@@ -1936,7 +2143,8 @@ bool BoxFragmentPainter::ShouldPaint(
   if (box_fragment_.IsPaginatedRoot())
     return true;
   return paint_state.LocalRectIntersectsCullRect(
-      box_fragment_.InkOverflowRect());
+      To<LayoutBoxModelObject>(box_fragment_.GetLayoutObject())
+          ->ApplyFiltersToRect(box_fragment_.InkOverflowRect()));
 }
 
 void BoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
@@ -2091,8 +2299,8 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     if (!skip_children && style.HasBorderRadius()) {
       PhysicalRect bounds_rect(physical_offset, size);
       skip_children = !hit_test.location.Intersects(
-          RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(style,
-                                                                bounds_rect));
+          ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+              style, bounds_rect));
     }
   }
 
@@ -2156,7 +2364,7 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       // caused by filters), because we want to record a match if we hit the
       // overflow of a child below the stop node. This matches legacy behavior
       // in LayoutBox::NodeAtPoint(); see call to
-      // PhysicalVisualOverflowRectIncludingFilters().
+      // VisualOverflowRectIncludingFilters().
       bounds_rect = InkOverflowIncludingFilters();
       bounds_rect.Move(physical_offset);
     }
@@ -2205,7 +2413,7 @@ bool BoxFragmentPainter::UpdateHitTestResultForView(
   if (!element)
     return false;
   const auto children = GetPhysicalFragment().Children();
-  auto it = base::ranges::find(children, element, &PhysicalFragment::GetNode);
+  auto it = std::ranges::find(children, element, &PhysicalFragment::GetNode);
   if (it == children.end())
     return false;
   return hit_test.AddNodeToResultWithContentOffset(
@@ -2310,9 +2518,10 @@ bool BoxFragmentPainter::HitTestLineBoxFragment(
   const ComputedStyle& containing_box_style = box_fragment_.Style();
   if (containing_box_style.HasBorderRadius() &&
       !hit_test.location.Intersects(
-          RoundedBorderGeometry::PixelSnappedRoundedBorder(containing_box_style,
-                                                           bounds_rect)))
+          ContouredBorderGeometry::PixelSnappedContouredBorder(
+              containing_box_style, bounds_rect))) {
     return false;
+  }
 
   if (cursor.ContainerFragment().IsSvgText())
     return false;
@@ -2748,7 +2957,7 @@ bool BoxFragmentPainter::HitTestClippedOutByBorder(
   PhysicalRect rect(PhysicalOffset(), GetPhysicalFragment().Size());
   rect.Move(border_box_location);
   return !hit_test_location.Intersects(
-      RoundedBorderGeometry::PixelSnappedRoundedBorder(
+      ContouredBorderGeometry::PixelSnappedContouredBorder(
           style, rect, box_fragment_.SidesToInclude()));
 }
 

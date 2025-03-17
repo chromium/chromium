@@ -77,7 +77,7 @@ TEST_F(TouchSelectionPixelTest, MagnifierOnTextfield) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "touch_selection",
-      /*revision_number=*/2, widget.get()));
+      /*revision_number=*/3, widget.get()));
 }
 
 }  // namespace

@@ -12,7 +12,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -26,10 +28,13 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+using tab_groups::SharingState;
 
 namespace {
 // Background.
@@ -80,6 +85,10 @@ constexpr CGFloat kFacePileHeight = 44;
   UIView* _coloredDotView;
   // Whether this is an incognito group.
   BOOL _incognito;
+  // Whether the share option is available.
+  BOOL _shareAvailable;
+  // Sharing state of the saved tab group.
+  SharingState _sharingState;
   // The bottom toolbar.
   TabGridBottomToolbar* _bottomToolbar;
   // The face pile view controller that displays the share button or
@@ -289,11 +298,17 @@ constexpr CGFloat kFacePileHeight = 44;
   [_coloredDotView setBackgroundColor:_groupColor];
 }
 
-- (void)setGroupShared:(BOOL)shared {
-  if (_gridViewController.shared == shared) {
+- (void)setShareAvailable:(BOOL)shareAvailable {
+  _shareAvailable = shareAvailable;
+  [self configureNavigationBarItems];
+}
+
+- (void)setSharingState:(SharingState)state {
+  if (_sharingState == state) {
     return;
   }
-  _gridViewController.shared = shared;
+  _sharingState = state;
+  _gridViewController.shared = _sharingState != SharingState::kNotShared;
   [self configureNavigationBarItems];
 }
 
@@ -313,6 +328,10 @@ constexpr CGFloat kFacePileHeight = 44;
     [_facePileViewController didMoveToParentViewController:self];
   }
   [self configureNavigationBarItems];
+}
+
+- (void)setActivitySummaryCellText:(NSString*)text {
+  _gridViewController.activitySummaryCellText = text;
 }
 
 #pragma mark - Private
@@ -371,7 +390,7 @@ constexpr CGFloat kFacePileHeight = 44;
         [[UIBarButtonItem alloc] initWithCustomView:facePileButton];
   }
 
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
     if (facePileBarButton) {
       navigationItem.rightBarButtonItems = @[ dotsItem, facePileBarButton ];
     } else {
@@ -488,7 +507,7 @@ constexpr CGFloat kFacePileHeight = 44;
 
 // Adds the bottom toolbar containing the "plus" button.
 - (void)configureBottomToolbar {
-  if (!IsTabGroupIndicatorEnabled()) {
+  if (!IsTabGroupIndicatorEnabled() || !HasTabGroupIndicatorButtonsUpdated()) {
     return;
   }
 
@@ -505,6 +524,10 @@ constexpr CGFloat kFacePileHeight = 44;
       setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
   [bottomToolbar setEditButtonHidden:YES];
   [bottomToolbar setDoneButtonHidden:YES];
+
+  if (IsTabGroupSendFeedbackAvailable()) {
+    [bottomToolbar setTabGroupFeedbackVisible:YES];
+  }
 
   [self.view addSubview:bottomToolbar];
 
@@ -533,45 +556,93 @@ constexpr CGFloat kFacePileHeight = 44;
   __weak TabGroupViewController* weakSelf = self;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
+  // Shared actions.
+  NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
   if (_gridViewController.shared) {
     CHECK(IsTabGroupSyncEnabled());
-    [menuElements addObject:[actionFactory actionToManageTabGroupWithBlock:^{
-                    [weakSelf manageGroup];
-                  }]];
+    [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
+                     [weakSelf manageGroup];
+                   }]];
 
-    [menuElements addObject:[actionFactory actionToShowRecentActivity:^{
-                    [weakSelf showRecentActivity];
-                  }]];
+    [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
+                     [weakSelf showRecentActivity];
+                   }]];
+  } else if (_shareAvailable) {
+    [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
+                     [weakSelf shareGroup];
+                   }]];
+  }
+  if ([sharedActions count] > 0) {
+    [menuElements addObject:[UIMenu menuWithTitle:@""
+                                            image:nil
+                                       identifier:nil
+                                          options:UIMenuOptionsDisplayInline
+                                         children:sharedActions]];
   }
 
-  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                  [weakSelf displayEditionMenu];
-                }]];
-
-  [menuElements addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
-                  [weakSelf openNewTab];
-                }]];
-
-  if (!_gridViewController.shared) {
-    [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                    [weakSelf ungroup];
-                  }]];
+  // Edit actions.
+  NSMutableArray<UIAction*>* editActions = [[NSMutableArray alloc] init];
+  [editActions addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                 [weakSelf displayEditionMenu];
+               }]];
+  [editActions addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
+                 [weakSelf openNewTab];
+               }]];
+  if (_sharingState == SharingState::kNotShared) {
+    [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                   [weakSelf ungroup];
+                 }]];
   }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:editActions]];
 
+  // Destructive actions.
+  NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
   if (IsTabGroupSyncEnabled()) {
-    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                    [weakSelf closeGroup];
-                  }]];
+    [destructiveActions
+        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+          [weakSelf closeGroup];
+        }]];
     if (!_incognito) {
-      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf deleteGroup];
-                    }]];
+      switch (_sharingState) {
+        case SharingState::kNotShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                [weakSelf deleteGroup];
+              }]];
+          break;
+        }
+        case SharingState::kShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                [weakSelf leaveSharedGroup];
+              }]];
+          break;
+        }
+
+        case SharingState::kSharedAndOwned: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                [weakSelf deleteSharedGroup];
+              }]];
+          break;
+        }
+      }
     }
   } else {
-    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf deleteGroup];
-                  }]];
+    [destructiveActions
+        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+          [weakSelf deleteGroup];
+        }]];
   }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:destructiveActions]];
 
   return [UIMenu menuWithTitle:@"" children:menuElements];
 }
@@ -628,11 +699,37 @@ constexpr CGFloat kFacePileHeight = 44;
   [_handler hideTabGroup];
 }
 
+// Deletes the shared group and closes the view.
+- (void)deleteSharedGroup {
+  CHECK(IsTabGroupSyncEnabled());
+  CHECK(_gridViewController.shared);
+  CHECK_EQ(_sharingState, SharingState::kSharedAndOwned);
+
+  [_handler showTabGroupConfirmationForAction:TabGroupActionType::
+                                                  kDeleteSharedTabGroup
+                                        group:_tabGroup->GetWeakPtr()
+                             sourceButtonItem:_navigationBar.topItem
+                                                  .rightBarButtonItems[0]];
+}
+
+// Leaves the shared group and closes the view.
+- (void)leaveSharedGroup {
+  CHECK(IsTabGroupSyncEnabled());
+  CHECK(_gridViewController.shared);
+  CHECK_EQ(_sharingState, SharingState::kShared);
+
+  [_handler
+      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
+                                  group:_tabGroup->GetWeakPtr()
+                       sourceButtonItem:_navigationBar.topItem
+                                            .rightBarButtonItems[0]];
+}
+
 // Updates the safe area inset of the grid based on this VC safe areas and the
 // bottom toolbar, except the top one as the grid is below a toolbar.
 - (void)updateGridInsets {
   CGFloat bottomToolbarInset = 0;
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
     BOOL shouldUseCompactLayout = self.traitCollection.verticalSizeClass ==
                                       UIUserInterfaceSizeClassRegular &&
                                   self.traitCollection.horizontalSizeClass ==
@@ -652,6 +749,13 @@ constexpr CGFloat kFacePileHeight = 44;
 - (void)manageGroup {
   CHECK(_gridViewController.shared);
   [_handler showManageForGroup:_tabGroup->GetWeakPtr()];
+}
+
+// Starts sharing the group.
+- (void)shareGroup {
+  CHECK(!_gridViewController.shared);
+  CHECK(_shareAvailable);
+  [_handler showShareForGroup:_tabGroup->GetWeakPtr()];
 }
 
 #pragma mark - UIResponder
@@ -719,6 +823,13 @@ constexpr CGFloat kFacePileHeight = 44;
 
 - (void)selectTabsButtonTapped:(id)sender {
   NOTREACHED();
+}
+
+- (void)sendFeedbackGroupTapped:(id)sender {
+  // TODO(crbug.com/398183785): Remove once we got feedback.
+  [self.applicationHandler
+      showReportAnIssueFromViewController:self
+                                   sender:UserFeedbackSender::TabGroup];
 }
 
 @end

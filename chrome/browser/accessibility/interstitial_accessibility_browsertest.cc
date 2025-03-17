@@ -48,9 +48,9 @@ class InterstitialAccessibilityBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/1453221): flakily times out on ChromeOS MSAN and Lacros ASAN
-// builders. Deflake and re-enable.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1453221): flakily times out on ChromeOS MSAN builders. Deflake
+// and re-enable.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestSSLInterstitialAccessibility \
   DISABLED_TestSSLInterstitialAccessibility
 #else

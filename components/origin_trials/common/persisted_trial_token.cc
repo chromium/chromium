@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/json/values_util.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 
 namespace origin_trials {
@@ -90,8 +91,7 @@ bool operator!=(const PersistedTrialToken& a, const PersistedTrialToken& b) {
 
 std::ostream& operator<<(std::ostream& out, const PersistedTrialToken& token) {
   out << "{";
-  out << "match_subdomains: " << (token.match_subdomains ? "true" : "false")
-      << ", ";
+  out << "match_subdomains: " << base::ToString(token.match_subdomains) << ", ";
   out << "trial: " << token.trial_name << ", ";
   out << "expiry: " << base::TimeToValue(token.token_expiry) << ", ";
   out << "usage: " << static_cast<int>(token.usage_restriction) << ", ";

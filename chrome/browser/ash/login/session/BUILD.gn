@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//rlz/buildflags/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("session") {
   sources = [
@@ -20,7 +19,6 @@ static_library("session") {
   ]
 
   public_deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/base",
@@ -31,6 +29,7 @@ static_library("session") {
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/login/integrity",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/session_manager/core",
     "//components/user_manager",
@@ -40,10 +39,6 @@ static_library("session") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session:arc_base_enums",
     "//ash/constants",
     "//ash/webui/shimless_rma",
     "//chrome/browser:browser_process",
@@ -87,6 +82,7 @@ static_library("session") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/rmad",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
@@ -95,8 +91,11 @@ static_library("session") {
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/tpm",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/ash/services/cros_safety",
     "//chromeos/constants",
     "//chromeos/dbus/tpm_manager",
@@ -105,7 +104,6 @@ static_library("session") {
     "//components/account_id",
     "//components/account_manager_core",
     "//components/component_updater",
-    "//components/flags_ui",
     "//components/language/core/browser",
     "//components/live_caption:utils",
     "//components/password_manager/core/browser:metrics_util",
@@ -113,6 +111,7 @@ static_library("session") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/quirks",
+    "//components/server_certificate_database",
     "//components/session_manager:base",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_switches",
@@ -122,6 +121,7 @@ static_library("session") {
     "//components/trusted_vault",
     "//components/user_manager:common",
     "//components/version_info",
+    "//components/webui/flags",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/common",

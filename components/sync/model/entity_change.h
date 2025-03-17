@@ -23,7 +23,8 @@ class EntityChange {
       const std::string& storage_key,
       EntityData data);
   static std::unique_ptr<EntityChange> CreateDelete(
-      const std::string& storage_key);
+      const std::string& storage_key,
+      EntityData data);
   static std::unique_ptr<EntityChange> CreateDeletedCollaborationMembership(
       const std::string& storage_key);
 

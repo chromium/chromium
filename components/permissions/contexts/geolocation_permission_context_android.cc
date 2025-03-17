@@ -104,7 +104,12 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   request_data.embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetMainFrame());
 
-  if (!IsLocationAccessPossible(web_contents, request_data.requesting_origin,
+  // Relax the location access check if the request comes from a permission
+  // element and still keep the whole permission process going. We'll check the
+  // status later when we show a prompt and help the user fix it if they haven't
+  // given us location access yet.
+  if (!request_data.embedded_permission_element_initiated &&
+      !IsLocationAccessPossible(web_contents, request_data.requesting_origin,
                                 request_data.user_gesture)) {
     NotifyPermissionSet(request_data.id, request_data.requesting_origin,
                         request_data.embedding_origin, std::move(callback),
@@ -119,7 +124,8 @@ void GeolocationPermissionContextAndroid::RequestPermission(
           render_frame_host, request_data.requesting_origin,
           request_data.embedding_origin)
           .status;
-  if (status == PermissionStatus::GRANTED &&
+  if (!request_data.embedded_permission_element_initiated &&
+      status == PermissionStatus::GRANTED &&
       ShouldRepromptUserForPermissions(web_contents,
                                        {ContentSettingsType::GEOLOCATION}) ==
           PermissionRepromptState::kShow) {
@@ -216,9 +222,12 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
 
 content::PermissionResult
 GeolocationPermissionContextAndroid::UpdatePermissionStatusWithDeviceStatus(
+    content::WebContents* web_contents,
     content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
+  MaybeUpdateCachedHasDevicePermission(web_contents);
+
   if (result.status != PermissionStatus::DENIED) {
     if (!location_settings_->IsSystemLocationSettingEnabled()) {
       // As this is returning the status for possible future permission

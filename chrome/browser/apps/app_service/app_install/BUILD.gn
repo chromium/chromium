@@ -49,10 +49,6 @@ source_set("implementation") {
   deps = [
     ":app_install",
     ":proto",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//base",
     "//chrome/browser/apps/almanac_api_client",
@@ -62,6 +58,10 @@ source_set("implementation") {
     "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/components/mgs",
     "//chromeos/constants:constants",
     "//chromeos/crosapi/mojom",
@@ -78,8 +78,9 @@ source_set("implementation") {
     "//chrome/browser",
 
     # For transition period, let crosapi allow to depend on this for
-    # allow_circular_includes_from. Crosapi will be gone along with
-    # lacros removal.
+    # allow_circular_includes_from. Both Lacros and crosapi removal
+    # are in progress. When both removals are done, the following
+    # lines can then be deleted.
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/system_web_apps/apps/help_app:browser_tests",
   ]
@@ -122,9 +123,6 @@ source_set("unit_tests") {
     ":navigation_throttle",
     ":proto",
     ":test_support",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/almanac_api_client/proto",
@@ -136,6 +134,9 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/services/app_service",
     "//content/test:test_support",
     "//services/network:test_support",
@@ -166,7 +167,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/browser_instance",
     "//chrome/browser/apps/link_capturing:test_support",
-    "//chrome/browser/chromeos/crosapi:test_support",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/webui/ash/app_install",
     "//chrome/browser/ui/webui/ash/app_install:test_support",

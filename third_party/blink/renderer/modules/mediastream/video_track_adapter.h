@@ -141,8 +141,11 @@ class MODULES_EXPORT VideoTrackAdapter
           base::TimeTicks estimated_capture_time)>;
   using VideoCaptureSubCaptureTargetVersionInternalCallback =
       WTF::CrossThreadFunction<void(uint32_t)>;
-  using VideoTrackSettingsInternalCallback =
-      WTF::CrossThreadFunction<void(gfx::Size frame_size, double frame_rate)>;
+  using VideoTrackSettingsInternalCallback = WTF::CrossThreadFunction<void(
+      gfx::Size frame_size,
+      double frame_rate,
+      std::optional<gfx::Size> metadata_source_size,
+      std::optional<float> device_scale_factor)>;
   using VideoTrackFormatInternalCallback =
       WTF::CrossThreadFunction<void(const media::VideoCaptureFormat&)>;
   void AddTrackOnVideoTaskRunner(

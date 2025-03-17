@@ -11,16 +11,16 @@ import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CategoryTypeEnum, SystemTrendController} from '../../controller/system_trend_controller.js';
-import {HealthdInternalsPage} from '../../utils/page_interface.js';
+import type {HealthdInternalsPage} from '../../utils/page_interface.js';
 import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js';
-import {HealthdInternalsChartCategoryDialogElement} from '../settings/chart_category_dialog.js';
+import type {HealthdInternalsChartCategoryDialogElement} from '../settings/chart_category_dialog.js';
 
 import {getTemplate} from './system_trend.html.js';
 
 function toReadableDuration(timeMilliseconds: number): string {
   if (timeMilliseconds < 0) {
-    console.warn('Failed to get positive duration.')
+    console.warn('Failed to get positive duration.');
     return 'N/A';
   }
 

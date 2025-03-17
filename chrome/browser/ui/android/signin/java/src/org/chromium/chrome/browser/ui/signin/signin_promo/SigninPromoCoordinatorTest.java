@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -47,8 +48,8 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -64,24 +65,29 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "This test relies on native initialization")
 public class SigninPromoCoordinatorTest {
     private static final List<Integer> sAccessPoints =
             List.of(
                     SigninAccessPoint.BOOKMARK_MANAGER,
+                    SigninAccessPoint.HISTORY_PAGE,
                     SigninAccessPoint.NTP_FEED_TOP_PROMO,
                     SigninAccessPoint.RECENT_TABS);
 
@@ -117,7 +123,7 @@ public class SigninPromoCoordinatorTest {
     }
 
     @Rule(order = 0)
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule(order = 1)
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -138,6 +144,7 @@ public class SigninPromoCoordinatorTest {
     private @Mock Profile mProfile;
     private @Mock SigninAndHistorySyncActivityLauncher mLauncher;
     private @Mock Runnable mOnPromoStateChange;
+    private @Mock Runnable mOnOpenSettings;
 
     private PersonalizedSigninPromoView mPromoView;
     private SigninPromoCoordinator mPromoCoordinator;
@@ -145,11 +152,17 @@ public class SigninPromoCoordinatorTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
     }
 
     @ParameterAnnotations.UseMethodParameterBefore(RenderTestParams.class)
     public void setUpRenderTest(@SigninAccessPoint int accessPoint, boolean nightModeEnabled) {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+    }
+
+    @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
+    public void setUpNightModeTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
     }
 
@@ -161,6 +174,8 @@ public class SigninPromoCoordinatorTest {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED);
         ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_DECLINED);
+        ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(
@@ -169,7 +184,13 @@ public class SigninPromoCoordinatorTest {
         ChromeSharedPreferences.getInstance()
                 .removeKey(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE));
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                                 SigninPreferencesManager.SigninPromoAccessPointId.NTP));
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
         ChromeSharedPreferences.getInstance()
@@ -179,23 +200,38 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testPromoNotShownWhenAccountsNotAvailable(@SigninAccessPoint int accessPoint) {
+        try (var unused = mSigninTestRule.blockGetCoreAccountInfosUpdate(false)) {
+            setUpSignInPromo(accessPoint);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        assertFalse(mPromoCoordinator.canShowPromo());
+                    });
+        }
+    }
+
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Continued.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Continued.Count."
+                                + getAccessPointToHistogramName(accessPoint),
+                        1);
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(
+                        accessPoint,
+                        /* hasAccounts= */ accessPoint == SigninAccessPoint.HISTORY_PAGE);
+        signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
         onView(withId(R.id.sync_promo_signin_button)).perform(click());
 
         @HistorySyncConfig.OptInMode
         int historyOptInMode =
-                accessPoint == SigninAccessPoint.RECENT_TABS
+                (accessPoint == SigninAccessPoint.RECENT_TABS
+                                || accessPoint == SigninAccessPoint.HISTORY_PAGE)
                         ? HistorySyncConfig.OptInMode.REQUIRED
                         : HistorySyncConfig.OptInMode.NONE;
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
@@ -207,28 +243,54 @@ public class SigninPromoCoordinatorTest {
                         configCaptor.capture(),
                         eq(accessPoint));
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
-                config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
         assertEquals(config.historyOptInMode, historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testBookmarksAccountSettingsPromoPrimaryButtonClick() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Continued.Count."
+                                + getAccessPointToHistogramName(SigninAccessPoint.BOOKMARK_MANAGER),
+                        1);
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(
+                        SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        disableBookmarksAndReadingListDataTypes();
+        setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
+        ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
+
+        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+
+        verify(mOnOpenSettings).run();
+        histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testSecondaryButtonClick(@SigninAccessPoint int accessPoint) {
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            // The history page promo doesn't have a secondary button.
+            return;
+        }
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Continued.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .build();
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Continued.Count."
+                                + getAccessPointToHistogramName(accessPoint),
+                        1);
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
 
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
@@ -247,11 +309,29 @@ public class SigninPromoCoordinatorTest {
                         configCaptor.capture(),
                         eq(accessPoint));
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
-                config.withAccountSigninMode, WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET);
-        assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.NONE);
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
+        assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
+        histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testBookmarksAccountSettingsPromoSecondaryButtonHidden() {
+        var histogramWatcher =
+                getPromoImpressionHistogramWatcher(
+                        SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        disableBookmarksAndReadingListDataTypes();
+
+        setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
+
+        ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
+        onView(withId(R.id.sync_promo_choose_account_button))
+                .check(ViewAssertions.matches(not(isDisplayed())));
         histogramWatcher.assertExpected();
     }
 
@@ -260,14 +340,16 @@ public class SigninPromoCoordinatorTest {
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testDismissButtonClick(@SigninAccessPoint int accessPoint) {
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Shown.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .expectAnyRecord(
-                                "Signin.SyncPromo.Dismissed.Count."
-                                        + getAccessPointToHistogramName(accessPoint))
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncPromo.Dismissed.Count."
+                                + getAccessPointToHistogramName(accessPoint),
+                        1);
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(
+                        accessPoint,
+                        /* hasAccounts= */ accessPoint == SigninAccessPoint.HISTORY_PAGE);
+
+        signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
@@ -278,10 +360,7 @@ public class SigninPromoCoordinatorTest {
         onView(withId(R.id.sync_promo_close_button)).perform(click());
 
         verify(mOnPromoStateChange).run();
-        String preferenceName =
-                accessPoint == SigninAccessPoint.BOOKMARK_MANAGER
-                        ? ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED
-                        : ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
+        String preferenceName = getAccessPointDismissPreferenceName(accessPoint);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(
@@ -290,6 +369,7 @@ public class SigninPromoCoordinatorTest {
                     assertFalse(mPromoCoordinator.canShowPromo());
                 });
         histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
     }
 
     @Test
@@ -300,14 +380,11 @@ public class SigninPromoCoordinatorTest {
             // Recent tabs doesn't record impressions.
             return;
         }
+        signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
-        String preferenceName =
-                accessPoint == SigninAccessPoint.BOOKMARK_MANAGER
-                        ? ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS)
-                        : ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.NTP);
+        String preferenceName = getAccessPointImpressionPreferenceName(accessPoint);
+
         // Impression is recorded asynchronously by ImpressionTracker.
         CriteriaHelper.pollUiThread(
                 () -> ChromeSharedPreferences.getInstance().readInt(preferenceName, 0) == 1);
@@ -334,7 +411,16 @@ public class SigninPromoCoordinatorTest {
                             SigninPreferencesManager.SigninPromoAccessPointId.NTP);
             ChromeSharedPreferences.getInstance()
                     .writeInt(preferenceName, NtpSigninPromoDelegate.MAX_IMPRESSIONS_NTP);
+        } else if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            String preferenceName =
+                    ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                            SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE);
+            ChromeSharedPreferences.getInstance()
+                    .writeInt(
+                            preferenceName,
+                            HistoryPageSigninPromoDelegate.MAX_IMPRESSIONS_HISTORY_PAGE);
         }
+        signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -353,6 +439,11 @@ public class SigninPromoCoordinatorTest {
     @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
     public void testRendering_noAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            // Promo hidden for the history page.
+            return;
+        }
+
         setUpSignInPromo(accessPoint);
 
         mRenderTestRule.render(
@@ -365,16 +456,34 @@ public class SigninPromoCoordinatorTest {
     @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
     public void testRendering_withAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            // Promo hidden for the history page.
+            return;
+        }
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
 
         mRenderTestRule.render(
                 mPromoView, "WithAccount_" + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testRendering_withAccount_bookmarksAccountSettingsPromo(boolean nightModeEnabled)
+            throws Exception {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        disableBookmarksAndReadingListDataTypes();
+        setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
+
+        mRenderTestRule.render(
+                mPromoView,
+                "WithAccount_SignedIn_"
+                        + getParamToRenderId(SigninAccessPoint.BOOKMARK_MANAGER, nightModeEnabled));
+    }
+
     private void setUpSignInPromo(@SigninAccessPoint int accessPoint) {
-        // Load native to have access to profile.
-        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         @LayoutRes int layoutResId = SigninPromoCoordinator.getLayoutResId(accessPoint);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -396,7 +505,8 @@ public class SigninPromoCoordinatorTest {
                                     activity,
                                     mProfile,
                                     mLauncher,
-                                    mOnPromoStateChange);
+                                    mOnPromoStateChange,
+                                    mOnOpenSettings);
                     mPromoCoordinator = new SigninPromoCoordinator(activity, mProfile, mDelegate);
                     mPromoCoordinator.setView(mPromoView);
                 });
@@ -407,9 +517,12 @@ public class SigninPromoCoordinatorTest {
             Context context,
             Profile profile,
             SigninAndHistorySyncActivityLauncher launcher,
-            Runnable onPromoStateChange) {
+            Runnable onPromoStateChange,
+            Runnable onOpenSettings) {
         return switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER -> new BookmarkSigninPromoDelegate(
+                    context, profile, launcher, onPromoStateChange, onOpenSettings);
+            case SigninAccessPoint.HISTORY_PAGE -> new HistoryPageSigninPromoDelegate(
                     context, profile, launcher, onPromoStateChange);
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> new NtpSigninPromoDelegate(
                     context, profile, launcher, onPromoStateChange);
@@ -422,20 +535,60 @@ public class SigninPromoCoordinatorTest {
     private static String getAccessPointToRenderId(@SigninAccessPoint int accessPoint) {
         return switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER -> "BookmarkManager";
+            case SigninAccessPoint.HISTORY_PAGE -> "History";
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> "NtpFeedTopPromo";
             case SigninAccessPoint.RECENT_TABS -> "RecentTabs";
             default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
         };
     }
 
+    private static HistogramWatcher getPromoImpressionHistogramWatcher(
+            @SigninAccessPoint int accessPoint, boolean hasAccounts) {
+        String promoActionSuffix = hasAccounts ? "WithDefault" : "NewAccountNoExistingAccount";
+        return HistogramWatcher.newBuilder()
+                .expectAnyRecord(
+                        "Signin.SyncPromo.Shown.Count."
+                                + getAccessPointToHistogramName(accessPoint))
+                .expectIntRecord("Signin.SignIn.Offered", accessPoint)
+                .expectIntRecord("Signin.SignIn.Offered." + promoActionSuffix, accessPoint)
+                .build();
+    }
+
     private static String getAccessPointToHistogramName(@SigninAccessPoint int accessPoint) {
         return switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER -> SigninPreferencesManager
                     .SigninPromoAccessPointId.BOOKMARKS;
+            case SigninAccessPoint.HISTORY_PAGE -> SigninPreferencesManager.SigninPromoAccessPointId
+                    .HISTORY_PAGE;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> SigninPreferencesManager
                     .SigninPromoAccessPointId.NTP;
             case SigninAccessPoint.RECENT_TABS -> SigninPreferencesManager.SigninPromoAccessPointId
                     .RECENT_TABS;
+            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+        };
+    }
+
+    private static String getAccessPointDismissPreferenceName(@SigninAccessPoint int accessPoint) {
+        return switch (accessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER -> ChromePreferenceKeys
+                    .SIGNIN_PROMO_BOOKMARKS_DECLINED;
+            case SigninAccessPoint.HISTORY_PAGE -> ChromePreferenceKeys
+                    .SIGNIN_PROMO_HISTORY_PAGE_DECLINED;
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO -> ChromePreferenceKeys
+                    .SIGNIN_PROMO_NTP_PROMO_DISMISSED;
+            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+        };
+    }
+
+    private static String getAccessPointImpressionPreferenceName(
+            @SigninAccessPoint int accessPoint) {
+        return switch (accessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER -> ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT
+                    .createKey(SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
+            case SigninAccessPoint.HISTORY_PAGE -> ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT
+                    .createKey(SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE);
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO -> ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT
+                    .createKey(SigninPreferencesManager.SigninPromoAccessPointId.NTP);
             default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
         };
     }
@@ -445,5 +598,28 @@ public class SigninPromoCoordinatorTest {
         String head = getAccessPointToRenderId(accessPoint);
         String tail = nightModeEnabled ? "NightModeEnabled" : "NightModeDisabled";
         return head + "_" + tail;
+    }
+
+    private void disableBookmarksAndReadingListDataTypes() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                    syncService.setSelectedType(UserSelectableType.BOOKMARKS, false);
+                    syncService.setSelectedType(UserSelectableType.READING_LIST, false);
+                });
+        assertFalse(SyncTestUtil.isBookmarksAndReadingListEnabled());
+    }
+
+    private void signinAndOptOutHistorySyncIfNeeded(@SigninAccessPoint int accessPoint) {
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                        syncService.setSelectedType(UserSelectableType.HISTORY, false);
+                        syncService.setSelectedType(UserSelectableType.TABS, false);
+                    });
+            assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        }
     }
 }

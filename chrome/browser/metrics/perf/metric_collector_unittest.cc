@@ -182,7 +182,7 @@ class MetricCollectorTest : public testing::Test {
 };
 
 TEST_F(MetricCollectorTest, CheckSetup) {
-  EXPECT_GT(perf_data_proto_.ByteSize(), 0);
+  EXPECT_GT(perf_data_proto_.ByteSizeLong(), 0U);
 
   // Timer is active after user logs in.
   EXPECT_TRUE(metric_collector_->IsRunning());

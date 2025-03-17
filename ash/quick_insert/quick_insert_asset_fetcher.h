@@ -19,6 +19,10 @@ class ImageSkia;
 class Size;
 }  // namespace gfx
 
+namespace network {
+class SimpleURLLoader;
+}
+
 namespace ash {
 
 namespace image_util {
@@ -41,15 +45,26 @@ class ASH_EXPORT QuickInsertAssetFetcher {
   // Fetches and decodes a gif from `url`. If successful, the decoded gif frames
   // will be returned via `callback`. Otherwise, `callback` is run with an empty
   // vector of frames.
-  virtual void FetchGifFromUrl(const GURL& url,
-                               QuickInsertGifFetchedCallback callback) = 0;
+  // `rank` is the index of the GIF in the results. The lower the rank, the
+  // higher its priority.
+  // If the returned `SimpleURLLoader` is destroyed before the request is
+  // complete, the request is canceled and `callback` will not be called.
+  [[nodiscard]] virtual std::unique_ptr<network::SimpleURLLoader>
+  FetchGifFromUrl(const GURL& url,
+                  size_t rank,
+                  QuickInsertGifFetchedCallback callback) = 0;
 
   // Fetches and decodes a gif preview image from `url`. If successful, the
   // decoded gif preview image will be returned via `callback`. Otherwise,
   // `callback` is run with an empty ImageSkia.
-  virtual void FetchGifPreviewImageFromUrl(
-      const GURL& url,
-      QuickInsertImageFetchedCallback callback) = 0;
+  // `rank` is the index of the GIF in the results. The lower the rank, the
+  // higher its priority.
+  // If the returned `SimpleURLLoader` is destroyed before the request is
+  // complete, the request is canceled and `callback` will not be called.
+  [[nodiscard]] virtual std::unique_ptr<network::SimpleURLLoader>
+  FetchGifPreviewImageFromUrl(const GURL& url,
+                              size_t rank,
+                              QuickInsertImageFetchedCallback callback) = 0;
 
   // Fetches the thumbnail for a file and calls `callback` with the result.
   virtual void FetchFileThumbnail(const base::FilePath& path,

@@ -9,11 +9,13 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
@@ -23,6 +25,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -68,90 +72,6 @@ std::string ReadTestDataFile(const std::string& test_data_relative_path) {
   std::string file_contents;
   CHECK(base::ReadFileToString(expected_properties_json_path, &file_contents));
   return file_contents;
-}
-
-const extensions::MenuItem::Id CreateMenuItemId(
-    const extensions::MenuItem::ExtensionKey& extension_key,
-    const std::string& string_uid) {
-  extensions::MenuItem::Id id;
-  id.extension_key = extension_key;
-  id.string_uid = string_uid;
-  return id;
-}
-
-const content::EvalJsResult CreateContextMenuItem(
-    content::RenderFrameHost* app_frame,
-    const std::string& id,
-    const std::string& title) {
-  return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise(async (resolve, reject) => {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.contextMenus || !frame.contextMenus.create) {
-          reject('FAIL: frame, frame.contextMenus, or ' +
-              'frame.contextMenus.create is undefined');
-          return;
-        }
-        await frame.contextMenus.create({ title: $2, id: $1 });
-        resolve('SUCCESS');
-      });
-    )",
-                                                       id, title));
-}
-
-const content::EvalJsResult UpdateContextMenuItemTitle(
-    content::RenderFrameHost* app_frame,
-    const std::string& id,
-    const std::string& new_title) {
-  return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise(async (resolve, reject) => {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.contextMenus || !frame.contextMenus.update) {
-          reject('FAIL: frame, frame.contextMenus, or ' +
-              'frame.contextMenus.update is undefined');
-          return;
-        }
-
-        await frame.contextMenus.update(/*id=*/$1, { title: $2 });
-        resolve('SUCCESS');
-      });
-  )",
-                                                       id, new_title));
-}
-
-const content::EvalJsResult RemoveContextMenuItem(
-    content::RenderFrameHost* app_frame,
-    const std::string& id) {
-  return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise(async (resolve, reject) => {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.contextMenus || !frame.contextMenus.remove) {
-          reject('FAIL: frame, frame.contextMenus, or ' +
-              'frame.contextMenus.remove is undefined');
-          return;
-        }
-
-        await frame.contextMenus.remove(/*id=*/$1);
-        resolve('SUCCESS');
-      });
-  )",
-                                                       id));
-}
-
-const content::EvalJsResult RemoveAllContextMenuItems(
-    content::RenderFrameHost* app_frame) {
-  return content::EvalJs(app_frame, R"(
-      new Promise(async (resolve, reject) => {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.contextMenus || !frame.contextMenus.removeAll) {
-          reject('FAIL: frame, frame.contextMenus, or ' +
-              'frame.contextMenus.removeAll is undefined');
-          return;
-        }
-
-        await frame.contextMenus.removeAll();
-        resolve('SUCCESS');
-      });
-  )");
 }
 
 const content::EvalJsResult SetBackgroundColorToWhite(
@@ -238,144 +158,7 @@ class ControlledFrameApiTest : public ControlledFrameTestBase {
     StartContentServer("web_apps/simple_isolated_app");
   }
 
-  void ExpectMenuItemWithIdAndTitle(
-      const extensions::MenuItem::ExtensionKey& extension_key,
-      const std::string& expected_id,
-      const std::string& expected_title) {
-    auto* menu_manager = extensions::MenuManager::Get(profile());
-    extensions::MenuItem* menu_item =
-        menu_manager->GetItemById(CreateMenuItemId(extension_key, expected_id));
-
-    ASSERT_TRUE(menu_item);
-    EXPECT_EQ(expected_title, menu_item->title());
-  }
 };
-
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusCreate) {
-  web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL("/index.html")));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
-  auto* menu_manager = extensions::MenuManager::Get(profile());
-
-  const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"",
-      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
-      web_view_guest->owner_rfh()->GetRoutingID(),
-      web_view_guest->view_instance_id());
-  EXPECT_EQ(0u, menu_manager->MenuItemsSize(extension_key));
-
-  static constexpr std::string kItem1ID = "1";
-  static constexpr std::string kItem1Title = "Test";
-  EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_frame, kItem1ID, kItem1Title));
-  ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
-  ExpectMenuItemWithIdAndTitle(extension_key, kItem1ID, kItem1Title);
-
-  static constexpr std::string kItem2ID = "2";
-  static constexpr std::string kItem2Title = "Test2";
-  EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_frame, kItem2ID, kItem2Title));
-  ASSERT_EQ(2u, menu_manager->MenuItemsSize(extension_key));
-  ExpectMenuItemWithIdAndTitle(extension_key, kItem2ID, kItem2Title);
-
-  static constexpr std::string kItem3ID = "3";
-  static constexpr std::string kItem3Title = "Test3";
-  EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_frame, kItem3ID, kItem3Title));
-  ASSERT_EQ(3u, menu_manager->MenuItemsSize(extension_key));
-  ExpectMenuItemWithIdAndTitle(extension_key, kItem3ID, kItem3Title);
-}
-
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusUpdate) {
-  web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL("/index.html")));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
-  auto* menu_manager = extensions::MenuManager::Get(profile());
-
-  static constexpr std::string kItem1ID = "1";
-  static constexpr std::string kItem1Title = "Test";
-  EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_frame, kItem1ID, kItem1Title));
-
-  const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"",
-      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
-      web_view_guest->owner_rfh()->GetRoutingID(),
-      web_view_guest->view_instance_id());
-  ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
-  ExpectMenuItemWithIdAndTitle(extension_key, kItem1ID, kItem1Title);
-
-  static constexpr std::string kItem1NewTitle = "Test1";
-  EXPECT_EQ(kEvalSuccessStr,
-            UpdateContextMenuItemTitle(app_frame, kItem1ID, kItem1NewTitle));
-
-  ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
-  ExpectMenuItemWithIdAndTitle(extension_key, kItem1ID, kItem1NewTitle);
-}
-
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemove) {
-  web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL("/index.html")));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
-  auto* menu_manager = extensions::MenuManager::Get(profile());
-
-  static constexpr std::string kItem1ID = "1";
-  static constexpr std::string kItem1Title = "Test1";
-  EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_frame, kItem1ID, kItem1Title));
-  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, /*id=*/"2",
-                                                   /*title=*/"Test2"));
-
-  EXPECT_EQ(kEvalSuccessStr, RemoveContextMenuItem(app_frame, kItem1ID));
-
-  const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"",
-      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
-      web_view_guest->owner_rfh()->GetRoutingID(),
-      web_view_guest->view_instance_id());
-  ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
-
-  extensions::MenuItem* deleted_item =
-      menu_manager->GetItemById(CreateMenuItemId(extension_key, kItem1ID));
-  EXPECT_FALSE(deleted_item);
-}
-
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemoveAll) {
-  web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL("/index.html")));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
-  auto* menu_manager = extensions::MenuManager::Get(profile());
-
-  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, /*id=*/"1",
-                                                   /*title=*/"Test1"));
-  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, /*id=*/"2",
-                                                   /*title=*/"Test2"));
-
-  EXPECT_EQ(kEvalSuccessStr, RemoveAllContextMenuItems(app_frame));
-
-  const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"",
-      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
-      web_view_guest->owner_rfh()->GetRoutingID(),
-      web_view_guest->view_instance_id());
-  ASSERT_EQ(0u, menu_manager->MenuItemsSize(extension_key));
-}
 
 // This test checks if the Controlled Frame is able to intercept URL navigation
 // requests.
@@ -557,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicy(
-              blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+              network::mojom::PermissionsPolicyFeature::kControlledFrame,
               /*self=*/true,
               /*origins=*/{}))
           .AddHtml("/execute_script.input.js",
@@ -880,7 +663,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage_Abort) {
   ASSERT_EQ(1UL, console_observer.messages().size());
   EXPECT_EQ(
       "<controlledframe>: "
-      "The load has aborted with error -301: ERR_DISALLOWED_URL_SCHEME.",
+      "The load has aborted with error -301: ERR_DISALLOWED_URL_SCHEME."
+      " url: chrome://flags/",
       console_observer.GetMessageAt(0));
 }
 
@@ -1119,7 +903,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePromiseApiTest, PromiseAPIs) {
   std::unique_ptr<web_app::ScopedProxyIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicy(
-              blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+              network::mojom::PermissionsPolicyFeature::kControlledFrame,
               /*self=*/true,
               /*origins=*/{}))
           .AddFolderFromDisk("/", "web_apps/simple_isolated_app")
@@ -1333,6 +1117,39 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityTest, Verify) {
     EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
   }
 }
+
+class ControlledFrameAvailabilityAdminPolicyTest
+    : public ControlledFrameApiTest,
+      public testing::WithParamInterface<ContentSetting> {};
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityAdminPolicyTest,
+                       VerifyPolicy) {
+  // Get the expected content setting and set it up.
+  const ContentSetting content_setting = GetParam();
+
+  bool expected_enabled =
+      content_setting != ContentSetting::CONTENT_SETTING_BLOCK;
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::CONTROLLED_FRAME,
+                                 content_setting);
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  const bool actual_enabled = CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html"));
+  EXPECT_EQ(expected_enabled, actual_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* */,
+    ControlledFrameAvailabilityAdminPolicyTest,
+    /* Per-channel tests examine the extensions-based availability system. */
+    testing::Values(ContentSetting::CONTENT_SETTING_DEFAULT,
+                    ContentSetting::CONTENT_SETTING_ALLOW,
+                    ContentSetting::CONTENT_SETTING_BLOCK));
 
 class ControlledFrameRequestHeaderTest : public ControlledFrameTestBase {
  public:

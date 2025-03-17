@@ -48,7 +48,7 @@ TEST_F(OverlayRequestMediatorUtilTest, CreateAggregateSupportForMediators) {
       OverlayRequest::CreateWithConfig<ThirdConfig>();
 
   NSArray<Class>* mediator_classes =
-      @ [[FirstMediator class], [SecondMediator class]];
+      @[ [FirstMediator class], [SecondMediator class] ];
   std::unique_ptr<OverlayRequestSupport> support =
       CreateAggregateSupportForMediators(mediator_classes);
 

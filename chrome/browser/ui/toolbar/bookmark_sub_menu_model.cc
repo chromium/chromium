@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/commerce/compare_sub_menu_model.h"
@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/ui_base_features.h"
@@ -78,12 +79,16 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
                          kReadingListMenuItem);
 
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
+  // Will be null if the product specifications service is unavailable.
+  auto* product_specs_service =
+      commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
+          browser->profile());
+  if (product_specs_service &&
+      base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
       base::FeatureList::IsEnabled(commerce::kCompareManagementInterface)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-
-    compare_sub_menu_model_ =
-        std::make_unique<commerce::CompareSubMenuModel>(delegate());
+    compare_sub_menu_model_ = std::make_unique<commerce::CompareSubMenuModel>(
+        delegate(), browser, product_specs_service);
     AddSubMenuWithStringIdAndIcon(
         IDC_COMPARE_MENU, IDS_COMPARE_MENU_LABEL, compare_sub_menu_model_.get(),
         ui::ImageModel::FromVectorIcon(kCompareIcon, ui::kColorMenuIcon, 16));

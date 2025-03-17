@@ -29,35 +29,6 @@ constexpr int kFirmwareUpdateAppDefaultHeight = 640;
 
 }  // namespace
 
-// TODO(michaelcheco): Update to correct icon.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
-  GURL start_url(ash::kChromeUIFirmwareUpdateAppURL);
-  auto info =
-      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(ash::kChromeUIFirmwareUpdateAppURL);
-  info->title = l10n_util::GetStringUTF16(IDS_ASH_FIRMWARE_UPDATE_APP_TITLE);
-  web_app::CreateIconInfoForSystemWebApp(
-      info->start_url(),
-      {{"app_icon_192.png", 192, IDR_ASH_FIRMWARE_UPDATE_APP_APP_ICON_192_PNG}},
-      *info);
-  info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-  info->theme_color =
-      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
-  info->background_color = info->theme_color;
-
-  return info;
-}
-
-gfx::Rect GetDefaultBoundsForFirmwareUpdateApp(Browser*) {
-  gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  bounds.ClampToCenteredSize(
-      {kFirmwareUpdateAppDefaultWidth, kFirmwareUpdateAppDefaultHeight});
-  return bounds;
-}
-
 FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
     Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::FIRMWARE_UPDATE,
@@ -67,7 +38,22 @@ FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForFirmwareUpdateSystemWebApp();
+  GURL start_url(ash::kChromeUIFirmwareUpdateAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
+  info->scope = GURL(ash::kChromeUIFirmwareUpdateAppURL);
+  info->title = l10n_util::GetStringUTF16(IDS_ASH_FIRMWARE_UPDATE_APP_TITLE);
+  // TODO(michaelcheco): Update to correct icon.
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url(),
+      {{"app_icon_192.png", 192, IDR_ASH_FIRMWARE_UPDATE_APP_APP_ICON_192_PNG}},
+      *info);
+  info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+  info->theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
+  info->background_color = info->theme_color;
+  return info;
 }
 
 bool FirmwareUpdateSystemAppDelegate::ShouldAllowFullscreen() const {
@@ -90,7 +76,10 @@ bool FirmwareUpdateSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 
-gfx::Rect FirmwareUpdateSystemAppDelegate::GetDefaultBounds(
-    Browser* browser) const {
-  return GetDefaultBoundsForFirmwareUpdateApp(browser);
+gfx::Rect FirmwareUpdateSystemAppDelegate::GetDefaultBounds(Browser*) const {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(
+      {kFirmwareUpdateAppDefaultWidth, kFirmwareUpdateAppDefaultHeight});
+  return bounds;
 }

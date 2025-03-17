@@ -21,8 +21,7 @@ const char* testStrings[] = {
     "This is working™",
     "古池や蛙飛込む水の音\nふるいけやかわずとびこむみずのおと",
     "ἀγεωμέτρητος μηδεὶς εἰσίτω",
-    "Bang!\t\n"
-};
+    "Bang!\t\n"};
 
 TEST_F(NSCoderStdStringTest, encodeDecode) {
   for (size_t i = 0; i < std::size(testStrings); ++i) {

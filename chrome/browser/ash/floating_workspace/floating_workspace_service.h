@@ -200,8 +200,7 @@ class FloatingWorkspaceService : public KeyedService,
   void HandleProgressBarStatus();
 
   // Stops the progress bar and resumes the latest floating workspace. This is
-  // called when the app cache is ready and we have received `kUpToDate` from
-  // sync service.
+  // called when the app cache is ready and sync data is available.
   void StopProgressBarAndRestoreFloatingWorkspace();
 
   // Restore last saved floating workspace desk for current user with
@@ -310,6 +309,19 @@ class FloatingWorkspaceService : public KeyedService,
   // restore immediately if cache is ready at the moment of the call.
   void LaunchWhenAppCacheIsReady();
 
+  void LaunchWhenDeskTemplatesAreReadyOnFirstSync();
+
+  // When syncing for the very first time, Chrome can assume that all Chrome
+  // Sync data for a given Sync type is downloaded once corresponding Sync
+  // bridge executes `MergeFullSyncData` method.
+  // `SetCallbacksToLaunchOnFirstSync` sets callbacks to bridges responsible for
+  // desk templates and cookies (if enabled) to launch as soon as data is
+  // downloaded. This only works on the very first sync, in other cases we
+  // should wait for `UpToDate` signal from the sync service before launching,
+  // see `OnStateChanged` method. On the first sync `UpToDate` signal comes with
+  // a delay, so tracking `MergeFullSyncData` can be seen as an optimization.
+  void SetCallbacksToLaunchOnFirstSync();
+
   const raw_ptr<Profile> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
@@ -341,8 +353,8 @@ class FloatingWorkspaceService : public KeyedService,
   // desk template time.
   base::Time initialization_time_;
 
-  // Time when we first received `kUpToDate` status from `sync_service_`
-  std::optional<base::TimeTicks> first_uptodate_download_timeticks_;
+  // Time when sync data becomes available for the first time.
+  std::optional<base::TimeTicks> first_sync_data_downloaded_timeticks_;
 
   // Time when the last template was uploaded.
   base::TimeTicks last_uploaded_timeticks_;

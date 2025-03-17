@@ -30,8 +30,8 @@
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -242,7 +242,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
   payments::UnmaskDetails unmask_details;
-  unmask_details.offer_fido_opt_in = true;
+  unmask_details.server_denotes_fido_eligible_but_not_opted_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page, and Payments did not update the status in time.
   SetUserOptInPreference(true);
@@ -260,7 +260,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
   payments::UnmaskDetails unmask_details;
-  unmask_details.offer_fido_opt_in = true;
+  unmask_details.server_denotes_fido_eligible_but_not_opted_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page and Payments did not update the status in time, or
   // something updated on the server side which caused Chrome to be out of sync.

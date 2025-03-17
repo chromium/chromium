@@ -108,10 +108,6 @@ UserScriptListener* ExtensionsBrowserClient::GetUserScriptListener() {
 void ExtensionsBrowserClient::SignalContentScriptsLoaded(
     content::BrowserContext* context) {}
 
-std::string ExtensionsBrowserClient::GetUserAgent() const {
-  return std::string();
-}
-
 bool ExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
     const std::string& scheme) const {
   return false;
@@ -137,9 +133,17 @@ bool ExtensionsBrowserClient::IsScreenshotRestricted(
   return false;
 }
 
-bool ExtensionsBrowserClient::IsValidTabId(content::BrowserContext* context,
-                                           int tab_id) const {
+bool ExtensionsBrowserClient::IsValidTabId(
+    content::BrowserContext* browser_context,
+    int tab_id,
+    bool include_incognito,
+    content::WebContents** web_contents) const {
   return false;
+}
+
+ScriptExecutor* ExtensionsBrowserClient::GetScriptExecutorForTab(
+    content::WebContents& web_contents) {
+  return nullptr;
 }
 
 void ExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
@@ -163,11 +167,6 @@ void ExtensionsBrowserClient::
         const ExtensionId& extension_id,
         const GURL& request_url,
         const GURL& redirect_url) const {}
-
-void ExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const GURL& url) const {}
 
 bool ExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
     content::BrowserContext* context,
@@ -258,6 +257,12 @@ media_device_salt::MediaDeviceSaltService*
 ExtensionsBrowserClient::GetMediaDeviceSaltService(
     content::BrowserContext* context) {
   return nullptr;
+}
+
+bool ExtensionsBrowserClient::HasControlledFrameCapability(
+    content::BrowserContext* context,
+    const GURL& url) {
+  return false;
 }
 
 }  // namespace extensions

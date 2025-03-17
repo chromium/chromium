@@ -55,10 +55,6 @@
 /// kRichAutocompletion.
 - (void)setClearButtonHidden:(BOOL)isHidden;
 
-/// Notifies the consumer to update the additional text. Set to nil to remove
-/// additional text.
-- (void)updateAdditionalText:(NSString*)additionalText;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_CONTAINER_VIEW_H_

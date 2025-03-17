@@ -721,7 +721,7 @@ export class FaceGazeAddActionDialogElement extends
         video: {facingMode: 'user'},
       });
       this.streamTrack_ = this.stream_.getVideoTracks()[0];
-      videoElement!.srcObject = this.stream_;
+      videoElement.srcObject = this.stream_;
     }
   }
 

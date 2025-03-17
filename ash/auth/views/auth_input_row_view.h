@@ -43,9 +43,9 @@ class ASH_EXPORT AuthInputRowView : public views::View,
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnSubmit(const std::u16string& text) {}
+    virtual void OnSubmit(std::u16string_view text) {}
     virtual void OnEscape() {}
-    virtual void OnContentsChanged(const std::u16string& text) {}
+    virtual void OnContentsChanged(std::u16string_view text) {}
     virtual void OnCapsLockStateChanged(bool visible) {}
     virtual void OnTextVisibleChanged(bool visible) {}
     virtual void OnTextfieldBlur() {}
@@ -85,7 +85,7 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   // AuthTextfield::Observer:
   void OnTextfieldBlur() override;
   void OnTextfieldFocus() override;
-  void OnContentsChanged(const std::u16string& new_contents) override;
+  void OnContentsChanged(std::u16string_view new_contents) override;
   void OnTextVisibleChanged(bool visible) override;
   void OnSubmit() override;
   void OnEscape() override;

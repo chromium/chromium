@@ -54,8 +54,9 @@ PaintControllerTestBase::DrawResult PaintControllerTestBase::Draw(
   if (matching_cached_item) {
     // We should reused the cached paint record and paint into it.
     PaintRecord new_record =
-        To<DrawingDisplayItem>(
-            GetNewPaintArtifact(paint_controller).GetDisplayItemList().back())
+        To<DrawingDisplayItem>(UNSAFE_TODO(GetNewPaintArtifact(paint_controller)
+                                               .GetDisplayItemList()
+                                               .back()))
             .GetPaintRecord();
     EXPECT_NE(&old_record.GetFirstOp(), &new_record.GetFirstOp());
     EXPECT_EQ(old_record.bytes_used(), new_record.bytes_used());
@@ -1870,8 +1871,10 @@ TEST_P(PaintControllerTest, SkipCacheDuplicatedItemAndChunkIds) {
   EXPECT_THAT(GetPersistentData().GetDisplayItemList(),
               ElementsAre(IsSameId(item_client.Id(), kBackgroundType),
                           IsSameId(item_client.Id(), kBackgroundType)));
-  EXPECT_FALSE(GetPersistentData().GetDisplayItemList()[0].IsCacheable());
-  EXPECT_FALSE(GetPersistentData().GetDisplayItemList()[1].IsCacheable());
+  EXPECT_FALSE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[0]).IsCacheable());
+  EXPECT_FALSE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[1]).IsCacheable());
 
   EXPECT_THAT(GetPersistentData().GetPaintChunks(),
               ElementsAre(IsPaintChunk(0, 1, chunk_id, properties),
@@ -2115,9 +2118,12 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
       DrawRect(context, uncacheable, kBackgroundType, gfx::Rect(r));
     }
   }
-  EXPECT_TRUE(GetPersistentData().GetDisplayItemList()[0].IsCacheable());
-  EXPECT_FALSE(GetPersistentData().GetDisplayItemList()[1].IsCacheable());
-  EXPECT_FALSE(GetPersistentData().GetDisplayItemList()[2].IsCacheable());
+  EXPECT_TRUE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[0]).IsCacheable());
+  EXPECT_FALSE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[1]).IsCacheable());
+  EXPECT_FALSE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[2]).IsCacheable());
   EXPECT_TRUE(cacheable.IsCacheable());
   EXPECT_FALSE(uncacheable.IsCacheable());
 
@@ -2127,9 +2133,12 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
     InitRootChunk(paint_controller);
     EXPECT_TRUE(paint_controller.UseCachedSubsequenceIfPossible(cacheable));
   }
-  EXPECT_TRUE(GetPersistentData().GetDisplayItemList()[0].IsCacheable());
-  EXPECT_FALSE(GetPersistentData().GetDisplayItemList()[1].IsCacheable());
-  EXPECT_FALSE(GetPersistentData().GetDisplayItemList()[2].IsCacheable());
+  EXPECT_TRUE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[0]).IsCacheable());
+  EXPECT_FALSE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[1]).IsCacheable());
+  EXPECT_FALSE(
+      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[2]).IsCacheable());
   EXPECT_TRUE(cacheable.IsCacheable());
   EXPECT_FALSE(uncacheable.IsCacheable());
 }
@@ -2171,12 +2180,14 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
     GraphicsContext context(paint_controller);
     InitRootChunk(paint_controller);
 
-#if DCHECK_IS_ON()
-    EXPECT_DEATH(
-        paint_controller.RecordRegionCaptureData(client, kCropId, kBounds),
-        "Check failed: !crop_id->is_zero");
-  }
-#else
+    // If DCHECKs are on the test stops here. Remainder verifies non-DCHECK
+    // behavior.
+    if (DCHECK_IS_ON()) {
+      EXPECT_DEATH(
+          paint_controller.RecordRegionCaptureData(client, kCropId, kBounds),
+          "DCHECK failed: !crop_id->is_zero");
+      return;
+    }
     // If DCHECKs are not enabled, we should just record the data as-is.
     paint_controller.RecordRegionCaptureData(client, kCropId, kBounds);
     DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 200, 200));
@@ -2188,7 +2199,6 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
   const PaintChunks& chunks = GetPersistentData().GetPaintChunks();
   EXPECT_EQ(1u, chunks.size());
   EXPECT_EQ(kBounds, chunks[0].region_capture_data->map.at(kCropId));
-#endif
 }
 
 TEST_P(PaintControllerTest, DuplicatedSubsequences) {

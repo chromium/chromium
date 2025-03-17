@@ -90,8 +90,7 @@ class PostRestoreProfileAgentTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity);
-    auth_service_->SignIn(fake_identity,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service_->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
   }
 
   PrefService* pref_service() { return profile_.get()->GetPrefs(); }

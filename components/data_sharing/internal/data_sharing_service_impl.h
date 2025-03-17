@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DATA_SHARING_INTERNAL_DATA_SHARING_SERVICE_IMPL_H_
 #define COMPONENTS_DATA_SHARING_INTERNAL_DATA_SHARING_SERVICE_IMPL_H_
 
+#include <set>
 #include <unordered_map>
 
 #include "base/memory/scoped_refptr.h"
@@ -47,6 +48,7 @@ namespace data_sharing {
 class DataSharingNetworkLoader;
 class PreviewServerProxy;
 class AvatarFetcher;
+class Logger;
 
 // The internal implementation of the DataSharingService.
 class DataSharingServiceImpl : public DataSharingService,
@@ -111,6 +113,7 @@ class DataSharingServiceImpl : public DataSharingService,
   void LeaveGroup(
       const GroupId& group_id,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  bool IsLeavingOrDeletingGroup(const GroupId& group_id) override;
   std::vector<GroupEvent> GetGroupEventsSinceStartup() override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
   void HandleShareURLNavigationIntercepted(
@@ -137,7 +140,12 @@ class DataSharingServiceImpl : public DataSharingService,
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;
+  Logger* GetLogger() override;
   void AddGroupDataForTesting(GroupData group_data) override;
+  void SetPreviewServerProxyForTesting(
+      std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;
+  PreviewServerProxy* GetPreviewServerProxyForTesting() override;
+  void OnCollaborationGroupRemoved(const GroupId& group_id) override;
 
   // GroupDataModel::Observer implementation.
   void OnModelLoaded() override;
@@ -154,8 +162,14 @@ class DataSharingServiceImpl : public DataSharingService,
   void OnMemberRemoved(const GroupId& group_id,
                        const GaiaId& member_gaia_id,
                        const base::Time& event_time) override;
+  void OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type) override;
 
   CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
+
+  // Utillity to create URL from `group_token`. See
+  // DataSharingService::GetDataSharingUrl().
+  static std::unique_ptr<GURL> GetDataSharingUrl(const GroupToken& group_token);
 
  private:
   void OnReadSingleGroupCompleted(
@@ -208,6 +222,7 @@ class DataSharingServiceImpl : public DataSharingService,
   base::ObserverList<DataSharingService::Observer> observers_;
   std::unique_ptr<PreviewServerProxy> preview_server_proxy_;
   std::unique_ptr<AvatarFetcher> avatar_fetcher_;
+  std::unique_ptr<Logger> logger_;
 
   // An in-memory map of groups that have been removed this session. This is
   // required to be able to inform users about which groups they have been
@@ -216,6 +231,11 @@ class DataSharingServiceImpl : public DataSharingService,
 
   // Stores arbitrary GroupData used for testing.
   std::unordered_map<GroupId, GroupData> group_data_for_testing_;
+
+  // The set of groups that the user has attempted to leave in the current
+  // session. Not cleared until a chrome restart.
+  std::set<GroupId>
+      groups_attempted_to_leave_or_delete_by_current_user_in_current_session_;
 
   base::WeakPtrFactory<DataSharingServiceImpl> weak_ptr_factory_{this};
 };

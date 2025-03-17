@@ -30,6 +30,9 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
 
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
   void AbortRecognition() override;
   void StopAudioCapture() override;
   bool IsActive() const override;

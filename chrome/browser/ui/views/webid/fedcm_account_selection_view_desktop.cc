@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,16 +20,16 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
-
-using DismissReason = content::IdentityRequestDialogController::DismissReason;
-using SheetType = AccountSelectionView::SheetType;
 
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
@@ -38,9 +37,9 @@ int AccountSelectionView::GetBrandIconMinimumSize(
   // TODO(crbug.com/348673144): Decide whether to keep circle cropping IDP
   // icons.
   return (rp_mode == blink::mojom::RpMode::kActive
-              ? fedcm::kModalIdpIconSize
-              : fedcm::kBubbleIdpIconSize) /
-         FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
+              ? webid::kModalIdpIconSize
+              : webid::kBubbleIdpIconSize) /
+         webid::FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
 }
 
 // static
@@ -53,16 +52,24 @@ int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
   return round(GetBrandIconMinimumSize(rp_mode) * max_supported_scale);
 }
 
+namespace webid {
+
+using DismissReason = content::IdentityRequestDialogController::DismissReason;
+using SheetType = AccountSelectionView::SheetType;
+
 FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate,
-    tabs::TabInterface* tab)
+    tabs::TabInterface* tab,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service)
     : AccountSelectionView(delegate),
       content::WebContentsObserver(delegate->GetWebContents()),
-      tab_(tab) {
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+      tab_(tab),
+      segmentation_platform_service_(segmentation_platform_service) {
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterWillEnterBackground(
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabWillEnterBackground,
                           weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
@@ -80,15 +87,6 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 }
 
 void FedCmAccountSelectionView::ShowDialogWidget() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser &&
-      browser->tab_strip_model()->GetActiveWebContents() != web_contents()) {
-    // This is unexpected since we should never reach this codepath when the
-    // WebContents is not the active one. Dump to get debug info on when this
-    // happens.
-    base::debug::DumpWithoutCrashing();
-  }
-
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
   // SetInputEventActivationProtectorForTesting().
@@ -97,32 +95,13 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   }
 
   input_protector_->VisibilityChanged(true);
-  GetDialogWidget()->widget_delegate()->SetCanActivate(true);
   GetDialogWidget()->Show();
   if (dialog_type_ == DialogType::MODAL) {
     scoped_ignore_input_events_ =
-        tab_->GetContents()->IgnoreInputEvents(std::nullopt);
+        web_contents()->IgnoreInputEvents(std::nullopt);
+  } else {
+    tab_accept_mouse_events_ = tab_->AcceptMouseEventsWhileWindowInactive();
   }
-  // An active widget would steal the focus when displayed, this would lead
-  // to some unexpected consequences. e.g.
-  //   1. links/buttons from the web contents area would require two clicks,
-  //   one to focus on the content area and one to focus on the clickable
-  //   2. user typing will be interrupted because the widget that's not
-  //   gated by user gesture would take the focus
-  // TODO(crbug.com/41482141): figure out how to address this issue without
-  // causing additional problems such as obscuring other browser UIs.
-  // This temporarily resolves the Mac-only two-clicks issue by giving the focus
-  // back. For users who have turned on screen readers, until we figure out how
-  // to handle the FedCM stealing focus issue, it's better to keep it focused
-  // because otherwise it's hard for them to understand or interact with the
-  // FedCM UI.
-#if BUILDFLAG(IS_MAC)
-  // `parent()` may return nullptr in tests.
-  if (!accessibility_state_utils::IsScreenReaderEnabled() &&
-      GetDialogWidget()->parent()) {
-    GetDialogWidget()->parent()->Activate();
-  }
-#endif  // IS_MAC
 
   if (accounts_widget_shown_callback_) {
     std::move(accounts_widget_shown_callback_).Run();
@@ -531,6 +510,25 @@ void FedCmAccountSelectionView::CreateViewAndWidget(
   dialog_widget_ = CreateDialogWidget();
   dialog_widget_->MakeCloseSynchronous(base::BindOnce(
       &FedCmAccountSelectionView::OnUserClosedDialog, base::Unretained(this)));
+
+  // If widget mode, segmentation platform feature flag is enabled, make the
+  // call to segmentation platform service for a UI volume recommendation.
+  if (dialog_type_ != DialogType::BUBBLE ||
+      !base::FeatureList::IsEnabled(
+          segmentation_platform::features::kSegmentationPlatformFedCmUser)) {
+    return;
+  }
+  segmentation_platform::PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  CHECK(segmentation_platform_service_);
+  segmentation_platform_service_->GetClassificationResult(
+      segmentation_platform::kFedCmUserKey, prediction_options, nullptr,
+      base::BindOnce(&FedCmAccountSelectionView::OnClassificationResultReturned,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Assume that the user ignores the UI for now. This will be updated when
+  // the user closes the UI or proceeds with signing in.
+  user_action_state_ = FedCmAccountSelectionView::UserAction::kIgnored;
 }
 
 void FedCmAccountSelectionView::OnAccountsDisplayed() {
@@ -572,7 +570,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
       return;
     }
     ShowVerifyingSheet(account);
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
 
@@ -587,7 +585,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
     // these happen by time the dialog is closed, it means our placeholder
     // assumption is true i.e. the user has closed the tab.
     modal_disclosure_dialog_state_ = DisclosureDialogResult::kDestroy;
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
 
@@ -597,7 +595,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   state_ = State::SINGLE_ACCOUNT_PICKER;
   account_selection_view_->ShowSingleAccountConfirmDialog(
       account, /*show_back_button=*/true);
-  UpdateDialogPositionIfModal();
+  UpdateDialogPosition();
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -623,7 +621,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleAccountConfirmDialog(
         accounts_[0], /*show_back_button=*/false);
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
   // If the back button was clicked while on the multi account picker, go back
@@ -632,14 +630,14 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
                                                               idp_list_);
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
   ShowMultiAccountPicker(
       accounts_, idp_list_,
       /*show_back_button=*/started_as_single_returning_account_,
       /*is_choose_an_account=*/last_multi_account_is_choose_an_account_);
-  UpdateDialogPositionIfModal();
+  UpdateDialogPosition();
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
@@ -805,16 +803,15 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
   ShowMultiAccountPicker(accounts_, idp_list_,
                          /*show_back_button=*/true,
                          /*is_choose_an_account=*/true);
-  UpdateDialogPositionIfModal();
+  UpdateDialogPosition();
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
                             true);
 }
 
 bool FedCmAccountSelectionView::CanFitInWebContents() {
-  content::WebContents* web_contents = account_selection_view_->web_contents();
-  CHECK(web_contents && dialog_widget_);
+  CHECK(web_contents() && dialog_widget_);
 
-  gfx::Size web_contents_size = web_contents->GetSize();
+  gfx::Size web_contents_size = web_contents()->GetSize();
   gfx::Size preferred_bubble_size =
       dialog_widget_->GetContentsView()->GetPreferredSize();
 
@@ -822,9 +819,9 @@ bool FedCmAccountSelectionView::CanFitInWebContents() {
   // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
   // to the bubble widget.
   return preferred_bubble_size.width() <
-             (web_contents_size.width() - fedcm::kRightMargin) &&
+             (web_contents_size.width() - kRightMargin) &&
          preferred_bubble_size.height() <
-             (web_contents_size.height() - fedcm::kTopMargin);
+             (web_contents_size.height() - kTopMargin);
 }
 
 void FedCmAccountSelectionView::UpdateDialogPosition() {
@@ -836,15 +833,9 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
     constrained_window::UpdateWebContentsModalDialogPosition(
         GetDialogWidget(),
         web_modal::WebContentsModalDialogManager::FromWebContents(
-            account_selection_view_->web_contents())
+            web_contents())
             ->delegate()
             ->GetWebContentsModalDialogHost());
-  }
-}
-
-void FedCmAccountSelectionView::UpdateDialogPositionIfModal() {
-  if (dialog_type_ == DialogType::MODAL) {
-    UpdateDialogPosition();
   }
 }
 
@@ -905,7 +896,9 @@ bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
 
   base::WeakPtr<FedCmAccountSelectionView> weak_ptr(
       weak_ptr_factory_.GetWeakPtr());
-  delegate_->OnAccountSelected(idp_data.idp_metadata.config_url, account);
+  delegate_->OnAccountSelected(
+      idp_data.idp_metadata.config_url, account.id,
+      account.login_state.value_or(Account::LoginState::kSignUp));
 
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.
@@ -914,6 +907,10 @@ bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
 
 void FedCmAccountSelectionView::ShowVerifyingSheet(
     const IdentityRequestAccountPtr& account) {
+  if (user_action_state_) {
+    user_action_state_ = FedCmAccountSelectionView::UserAction::kSuccess;
+  }
+
   const std::u16string title =
       state_ == State::AUTO_REAUTHN
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)
@@ -975,7 +972,7 @@ std::unique_ptr<views::Widget> FedCmAccountSelectionView::CreateDialogWidget() {
     auto* modal =
         static_cast<AccountSelectionModalView*>(account_selection_view_);
     gfx::NativeWindow top_level_native_window =
-        tab_->GetContents()->GetTopLevelNativeWindow();
+        web_contents()->GetTopLevelNativeWindow();
     views::Widget* top_level_widget =
         views::Widget::GetWidgetForNativeWindow(top_level_native_window);
     dialog_widget = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
@@ -1020,12 +1017,11 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateDialogView(
   if (rp_mode == blink::mojom::RpMode::kActive && has_modal_support) {
     *out_dialog_type = DialogType::MODAL;
     return new AccountSelectionModalView(rp_for_display, idp_title, rp_context,
-                                         tab_->GetContents(),
                                          GetURLLoaderFactory(), this);
   } else {
     *out_dialog_type = DialogType::BUBBLE;
     return new AccountSelectionBubbleView(rp_for_display, idp_title, rp_context,
-                                          tab_->GetContents(), GetAnchorView(),
+                                          GetAnchorView(),
                                           GetURLLoaderFactory(), this);
   }
 }
@@ -1047,13 +1043,9 @@ void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
 }
 
 void FedCmAccountSelectionView::HideDialogWidget() {
-  // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
-  // Make the views::Widget non-activatable while it is hidden to prevent the
-  // views::Widget from being shown during focus traversal.
-  // TODO(crbug.com/40239995): fix the issue on Mac.
   GetDialogWidget()->Hide();
   scoped_ignore_input_events_.reset();
-  GetDialogWidget()->widget_delegate()->SetCanActivate(false);
+  tab_accept_mouse_events_.reset();
   // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
   // match production.
   if (input_protector_) {
@@ -1123,14 +1115,16 @@ void FedCmAccountSelectionView::LogDialogDismissal(
                               *popup_window_state_);
   }
 
+  ukm::SourceId source_id =
+      (web_contents() && web_contents()->GetPrimaryMainFrame())
+          ? web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()
+          : ukm::kInvalidSourceId;
+
   // If a modal account chooser was open, record the outcome.
   if (modal_account_chooser_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.AccountChooserResult",
                               *modal_account_chooser_state_);
-    if (account_selection_view_->web_contents()) {
-      ukm::SourceId source_id = account_selection_view_->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetPageUkmSourceId();
+    if (source_id != ukm::kInvalidSourceId) {
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_AccountChooserResult(
               static_cast<int>(*modal_account_chooser_state_))
@@ -1142,10 +1136,7 @@ void FedCmAccountSelectionView::LogDialogDismissal(
   if (modal_loading_dialog_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.LoadingDialogResult",
                               *modal_loading_dialog_state_);
-    if (account_selection_view_->web_contents()) {
-      ukm::SourceId source_id = account_selection_view_->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetPageUkmSourceId();
+    if (source_id != ukm::kInvalidSourceId) {
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_LoadingDialogResult(
               static_cast<int>(*modal_loading_dialog_state_))
@@ -1157,16 +1148,33 @@ void FedCmAccountSelectionView::LogDialogDismissal(
   if (modal_disclosure_dialog_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.DisclosureDialogResult",
                               *modal_disclosure_dialog_state_);
-    if (account_selection_view_->web_contents()) {
-      ukm::SourceId source_id = account_selection_view_->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetPageUkmSourceId();
+    if (source_id != ukm::kInvalidSourceId) {
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_DisclosureDialogResult(
               static_cast<int>(*modal_disclosure_dialog_state_))
           .Record(ukm::UkmRecorder::Get());
     }
   }
+
+  if (!user_action_state_ || !training_request_id_) {
+    return;
+  }
+
+  CHECK(segmentation_platform_service_);
+  if (dismiss_reason == DismissReason::kCloseButton) {
+    user_action_state_ = FedCmAccountSelectionView::UserAction::kClosed;
+  }
+
+  segmentation_platform::TrainingLabels training_labels;
+  base::UmaHistogramEnumeration("Blink.FedCm.SegmentationPlatform.UserAction",
+                                *user_action_state_);
+  training_labels.output_metric = std::make_pair(
+      "Blink.FedCm.SegmentationPlatform.UserAction",
+      static_cast<base::HistogramBase::Sample32>(*user_action_state_));
+  segmentation_platform_service_->CollectTrainingData(
+      segmentation_platform::proto::SegmentId::
+          OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER,
+      *training_request_id_, source_id, training_labels, base::DoNothing());
 }
 
 void FedCmAccountSelectionView::CloseWidget(
@@ -1208,7 +1216,7 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
     return;
   }
 
-  bool should_show_dialog = tab_->IsInForeground();
+  bool should_show_dialog = tab_->IsActivated();
 
   if (dialog_type_ == DialogType::BUBBLE) {
     // Hide the bubble dialog if it can't fit.
@@ -1234,7 +1242,12 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 
   if (should_show_dialog) {
     UpdateDialogPosition();
-    if (!dialog_widget_->IsVisible()) {
+    // The segmentation platform service will call
+    // |UpdateDialogVisibilityAndPosition| again when the dialog is ready to
+    // show after accounting for the platform's UI volume recommendation.
+    bool waiting_for_segmentation =
+        segmentation_platform_service_ && !training_request_id_;
+    if (!dialog_widget_->IsVisible() && !waiting_for_segmentation) {
       ShowDialogWidget();
     }
     return;
@@ -1247,3 +1260,23 @@ void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
   accounts_widget_shown_callback_.Reset();
   hide_dialog_widget_after_idp_login_popup_ = false;
 }
+
+void FedCmAccountSelectionView::OnClassificationResultReturned(
+    const segmentation_platform::ClassificationResult& result) {
+  // TODO(crbug.com/403297749): Record how long it takes to get a classification
+  // result.
+  training_request_id_ = result.request_id;
+
+  // Default to showing loud UI if the prediction fails for any reason.
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded ||
+      result.ordered_labels[0] == "FedCmUserLoud") {
+    UpdateDialogVisibilityAndPosition();
+    return;
+  }
+
+  // TODO(crbug.com/380416872): Integrate with quiet UI. Until then, close the
+  // UI.
+  Close(/*notify_delegate=*/true);
+}
+
+}  // namespace webid

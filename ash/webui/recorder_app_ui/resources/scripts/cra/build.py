@@ -122,7 +122,10 @@ def generate_tsconfig(build_dir: pathlib.Path):
 
     _make_mojom_symlink(build_dir)
 
-    tsconfig["files"] = [str(p) for p in cra_root.glob("**/*.ts")]
+    tsconfig["files"] = [
+        str(p) for p in cra_root.glob("**/*.ts")
+        if not str(p).endswith("_test.ts")
+    ]
     tsconfig["compilerOptions"]["rootDir"] = str(cra_root)
     tsconfig["compilerOptions"]["noEmit"] = True
     tsconfig["compilerOptions"]["paths"] = _get_tsc_paths(build_dir)

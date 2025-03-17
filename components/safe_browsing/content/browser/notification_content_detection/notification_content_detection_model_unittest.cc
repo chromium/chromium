@@ -162,8 +162,8 @@ TEST_F(NotificationContentDetectionModelTest, LogNotificationSuspiciousScore) {
     }
     EXPECT_CALL(model_verdict_callback_, Run(_)).Times(1);
     notification_content_detection_model()->Execute(
-        notification_data, GURL("url"), /*did_match_allowlist=*/false,
-        model_verdict_callback_.Get());
+        notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
+        /*did_match_allowlist=*/false, model_verdict_callback_.Get());
     histogram_tester().ExpectUniqueSample(
         kSuspiciousScoreHistogram, 100 * kSuspiciousScoreTestValue, 1 + i);
     EXPECT_EQ(notification_content_detection_model()->inputs()[i],
@@ -179,8 +179,8 @@ TEST_F(NotificationContentDetectionModelTest,
   blink::PlatformNotificationData notification_data;
   EXPECT_CALL(model_verdict_callback_, Run(_)).Times(1);
   notification_content_detection_model()->Execute(
-      notification_data, GURL("url"), /*did_match_allowlist=*/false,
-      model_verdict_callback_.Get());
+      notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
+      /*did_match_allowlist=*/false, model_verdict_callback_.Get());
   histogram_tester().ExpectUniqueSample(kSuspiciousScoreHistogram,
                                         100 * kSuspiciousScoreTestValue, 1);
   EXPECT_EQ(notification_content_detection_model()->inputs()[0], ",,");
@@ -211,8 +211,8 @@ TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
   blink::PlatformNotificationData notification_data;
   EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
   notification_content_detection_model()->Execute(
-      notification_data, GURL("url"), /*did_match_allowlist=*/false,
-      model_verdict_callback_.Get());
+      notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
+      /*did_match_allowlist=*/false, model_verdict_callback_.Get());
 }
 
 TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
@@ -225,8 +225,8 @@ TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
   blink::PlatformNotificationData notification_data;
   EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
   notification_content_detection_model()->Execute(
-      notification_data, GURL("url"), /*did_match_allowlist=*/false,
-      model_verdict_callback_.Get());
+      notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
+      /*did_match_allowlist=*/false, model_verdict_callback_.Get());
 }
 
 TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
@@ -239,8 +239,22 @@ TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
   blink::PlatformNotificationData notification_data;
   EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/true)).Times(1);
   notification_content_detection_model()->Execute(
-      notification_data, GURL("url"), /*did_match_allowlist=*/false,
-      model_verdict_callback_.Get());
+      notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
+      /*did_match_allowlist=*/false, model_verdict_callback_.Get());
+}
+
+TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
+       NotificationNotSuspiciousIfAllowlistedByUser) {
+  SetUpFeatureWithSuspiciousThresholdValue("0");
+
+  // Update with a notification content detection model.
+  SendModelToNotificationContentDetectionModel();
+
+  blink::PlatformNotificationData notification_data;
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
+  notification_content_detection_model()->Execute(
+      notification_data, GURL("url"), /*is_allowlisted_by_user=*/true,
+      /*did_match_allowlist=*/false, model_verdict_callback_.Get());
 }
 
 }  // namespace safe_browsing

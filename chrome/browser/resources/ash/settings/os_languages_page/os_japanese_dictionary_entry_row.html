@@ -32,29 +32,33 @@
   }
 </style>
 
-<!-- TODO(b/340393256): Localize all strings -->
 <div class="cr-row continuation entry-row">
   <cr-input value="[[entry.key]]"
-     label="Reading"
+     label="$i18n{japaneseDictionaryReading}"
      type="text"
      class="entry-input"
      on-change="saveReading_"></cr-input>
   <cr-input value="[[entry.value]]"
-     label="Word"
+     label="$i18n{japaneseDictionaryWord}"
      type="text" class="entry-input"
      on-change="saveWord_"></cr-input>
   <div class="category-div" >
-    <div class="cr-form-field-label category-label">Category</div>
-    <!-- TODO(b/340393256): Make these options match actual POS values -->
-    <select class="md-select" class="entry-input">
-      <option>ENTRY ROW ELEM POS Type 1</option>
-      <option>POS Type 2</option>
-      <option>POS Type 3</option>
-      <option selected>POS Type 4</option>
+    <div class="cr-form-field-label category-label">$i18n{japaneseDictionaryCategory}</div>
+    <!--
+      These Japanese terms are not translated on purpose since they are technical linguistic terms
+      The option values needs to corresponds to the int value of the mojo enum JpPosType.
+    -->
+    <select id="posDropdownMenu" class="md-select" class="entry-input" on-change="onOptionChanged_">
+       <template is="dom-repeat" items="[[posTypeOptions_]]">
+         <option value="[[item.value]]"
+            selected="[[isSelectedOption_(item.value)]]">
+           [[item.label]]
+         </option>
+       </template>
     </select>
   </div>
   <cr-input value="[[entry.comment]]"
-     label="Comment"
+     label="$i18n{japaneseDictionaryComment}"
      type="text" class="entry-input"
      on-change="saveComment_"></cr-input>
   <cr-icon-button class="delete-icon"

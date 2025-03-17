@@ -8,6 +8,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator+testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller.h"
@@ -48,7 +49,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
     feed_top_section_view_controller_ =
         [[FeedTopSectionViewController alloc] init];
     feed_top_section_mediator_ = [[FeedTopSectionMediator alloc]
-        initWithConsumer:[[FeedTopSectionViewController alloc] init]
+        initWithConsumer:feed_top_section_view_controller_
          identityManager:IdentityManagerFactory::GetForProfile(
                              fake_profile_.get())
              authService:fake_authentication_service_
@@ -74,6 +75,27 @@ class FeedTopSectionMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
+
+#pragma mark - Test signin promo
+
+TEST_F(FeedTopSectionMediatorTest, TestPromoForEngagedUser) {
+  base::HistogramTester histogram_tester;
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setBool:YES forKey:kEngagedWithFeedKey];
+  feed_top_section_mediator_.isSignInPromoEnabled = YES;
+  [feed_top_section_mediator_ setUp];
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kNtpFeedTopPromo,
+      1);
+}
+
+TEST_F(FeedTopSectionMediatorTest, TestPromoForNotEngagedUser) {
+  base::HistogramTester histogram_tester;
+  [feed_top_section_mediator_ setUp];
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kNtpFeedTopPromo,
+      0);
+}
 
 #pragma mark - Notifications Promo Action Tests
 

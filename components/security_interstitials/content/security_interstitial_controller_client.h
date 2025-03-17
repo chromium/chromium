@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_CONTROLLER_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
 
@@ -56,9 +57,10 @@ class SecurityInterstitialControllerClient
  protected:
   // security_interstitials::ControllerClient overrides.
   const std::string GetExtendedReportingPrefName() const override;
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents() { return &*web_contents_; }
 
  private:
+  base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<PrefService> prefs_;
   const std::string app_locale_;
   // The default safe page we should go to if there is no previous page to go

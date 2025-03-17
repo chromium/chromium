@@ -27,6 +27,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/webdata/common/web_database.h"
 
 using sync_pb::AutofillSpecifics;
 using syncer::ClientTagBasedDataTypeProcessor;
@@ -350,6 +351,8 @@ std::optional<syncer::ModelError> AutocompleteSyncBridge::MergeFullSyncData(
     EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   SyncDifferenceTracker tracker(GetAutocompleteTable());
   for (const auto& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill());
@@ -361,7 +364,13 @@ std::optional<syncer::ModelError> AutocompleteSyncBridge::MergeFullSyncData(
   RETURN_IF_ERROR(tracker.FlushToSync(true, std::move(metadata_change_list),
                                       change_processor()));
 
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
   return std::nullopt;
 }
 
@@ -369,6 +378,8 @@ std::optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
   SyncDifferenceTracker tracker(GetAutocompleteTable());
   for (const std::unique_ptr<EntityChange>& change : entity_changes) {
@@ -385,7 +396,13 @@ std::optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
   RETURN_IF_ERROR(tracker.FlushToSync(false, std::move(metadata_change_list),
                                       change_processor()));
 
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
   return std::nullopt;
 }
 

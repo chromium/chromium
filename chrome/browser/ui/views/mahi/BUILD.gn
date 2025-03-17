@@ -20,9 +20,9 @@ source_set("mahi") {
   deps = [
     "//base",
     "//chrome/browser/ui/ash/editor_menu:utils",
+    "//chrome/browser/ui/ash/magic_boost",
+    "//chrome/browser/ui/ash/magic_boost:magic_boost_constants",
     "//chrome/browser/ui/ash/read_write_cards",
-    "//chrome/browser/ui/chromeos/magic_boost",
-    "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/mahi/public/cpp",

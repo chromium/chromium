@@ -362,12 +362,12 @@ void AddButtonToButtonRemappingList(
     // Otherwise, give it the default button name indexed at the number of
     // non-middle click buttons in `button_remappings` + 1.
     auto iter =
-        base::ranges::find(button_remappings,
-                           *mojom::Button::NewCustomizableButton(
-                               mojom::CustomizableButton::kMiddle),
-                           [](const mojom::ButtonRemappingPtr& remapping) {
-                             return *remapping->button;
-                           });
+        std::ranges::find(button_remappings,
+                          *mojom::Button::NewCustomizableButton(
+                              mojom::CustomizableButton::kMiddle),
+                          [](const mojom::ButtonRemappingPtr& remapping) {
+                            return *remapping->button;
+                          });
 
     int button_number = button_remappings.size() + 1;
     if (is_mouse_button_remapping && iter != button_remappings.end()) {
@@ -397,7 +397,7 @@ bool KeyboardSettingsAreValid(
       base::Contains(keyboard.modifier_keys, ui::mojom::ModifierKey::kFunction);
 
   for (const auto& remapping : settings.modifier_remappings) {
-    auto it = base::ranges::find(keyboard.modifier_keys, remapping.first);
+    auto it = std::ranges::find(keyboard.modifier_keys, remapping.first);
     if (it == keyboard.modifier_keys.end()) {
       return false;
     }
@@ -683,7 +683,7 @@ void ApplyDefaultsToButtonRemappingList(
     const std::vector<mojom::ButtonRemappingPtr>& default_button_remappings,
     std::vector<mojom::ButtonRemappingPtr>& button_remappings) {
   for (auto& button_remapping : button_remappings) {
-    auto matching_remapping_iter = base::ranges::find(
+    auto matching_remapping_iter = std::ranges::find(
         default_button_remappings, *button_remapping->button,
         [](const mojom::ButtonRemappingPtr& button_remapping) {
           return *button_remapping->button;
@@ -1316,10 +1316,10 @@ void InputDeviceSettingsControllerImpl::
 
   // Our map of keyboards is sorted so iterating in reverse order guarantees
   // that we'll select the most recently connected device.
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
       [](const auto& keyboard) { return keyboard.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/false,
       [](const auto& keyboard) { return keyboard.second->is_external; });
 
@@ -1352,10 +1352,10 @@ void InputDeviceSettingsControllerImpl::
 
   // Our map of mice is sorted so iterating in reverse order guarantees
   // that we'll select the most recently connected device.
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       mice_.rbegin(), mice_.rend(), /*value=*/true,
       [](const auto& mouse) { return mouse.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       mice_.rbegin(), mice_.rend(), /*value=*/false,
       [](const auto& mouse) { return mouse.second->is_external; });
 
@@ -1387,15 +1387,15 @@ void InputDeviceSettingsControllerImpl::
   // Our map of pointing sticks is sorted so iterating in reverse order
   // guarantees that we'll select the most recently connected device.
   auto external_iter =
-      base::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
-                         /*value=*/true, [](const auto& pointing_stick) {
-                           return pointing_stick.second->is_external;
-                         });
+      std::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
+                        /*value=*/true, [](const auto& pointing_stick) {
+                          return pointing_stick.second->is_external;
+                        });
   auto internal_iter =
-      base::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
-                         /*value=*/false, [](const auto& pointing_stick) {
-                           return pointing_stick.second->is_external;
-                         });
+      std::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
+                        /*value=*/false, [](const auto& pointing_stick) {
+                          return pointing_stick.second->is_external;
+                        });
 
   if (external_iter != pointing_sticks_.rend()) {
     auto& external_pointing_stick = *external_iter->second;
@@ -1424,10 +1424,10 @@ void InputDeviceSettingsControllerImpl::
 
   // Our map of touchpads is sorted so iterating in reverse order guarantees
   // that we'll select the most recently connected device.
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       touchpads_.rbegin(), touchpads_.rend(), /*value=*/true,
       [](const auto& touchpad) { return touchpad.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       touchpads_.rbegin(), touchpads_.rend(), /*value=*/false,
       [](const auto& touchpad) { return touchpad.second->is_external; });
 
@@ -2264,10 +2264,10 @@ void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(
 // latest external keyboard which has the largest device id.
 const mojom::Keyboard*
 InputDeviceSettingsControllerImpl::GetGeneralizedKeyboard() {
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
       [](const auto& keyboard) { return keyboard.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/false,
       [](const auto& keyboard) { return keyboard.second->is_external; });
   if (external_iter != keyboards_.rend()) {
@@ -2512,10 +2512,10 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
   auto& mouse = *mouse_ptr;
   auto& button_remappings = mouse.settings->button_remappings;
   auto remapping_iter =
-      base::ranges::find(button_remappings, button,
-                         [](const mojom::ButtonRemappingPtr& remapping) {
-                           return *remapping->button;
-                         });
+      std::ranges::find(button_remappings, button,
+                        [](const mojom::ButtonRemappingPtr& remapping) {
+                          return *remapping->button;
+                        });
   if (remapping_iter != button_remappings.end()) {
     DispatchCustomizableMouseButtonPressed(mouse, button);
     return;
@@ -2576,10 +2576,10 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
   auto& tablet_button_remappings =
       graphics_tablet.settings->tablet_button_remappings;
   auto tablet_remapping_iter =
-      base::ranges::find(tablet_button_remappings, button,
-                         [](const mojom::ButtonRemappingPtr& remapping) {
-                           return *remapping->button;
-                         });
+      std::ranges::find(tablet_button_remappings, button,
+                        [](const mojom::ButtonRemappingPtr& remapping) {
+                          return *remapping->button;
+                        });
   if (tablet_remapping_iter != tablet_button_remappings.end()) {
     DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
     return;
@@ -2587,10 +2587,10 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
 
   auto& pen_button_remappings = graphics_tablet.settings->pen_button_remappings;
   auto pen_remapping_iter =
-      base::ranges::find(pen_button_remappings, button,
-                         [](const mojom::ButtonRemappingPtr& remapping) {
-                           return *remapping->button;
-                         });
+      std::ranges::find(pen_button_remappings, button,
+                        [](const mojom::ButtonRemappingPtr& remapping) {
+                          return *remapping->button;
+                        });
   if (pen_remapping_iter != pen_button_remappings.end()) {
     DispatchCustomizablePenButtonPressed(graphics_tablet, button);
     return;
@@ -2922,21 +2922,21 @@ void InputDeviceSettingsControllerImpl::RefreshKeyboardDefaultSettings() {
   }
 
   auto chromeos_iter =
-      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
-                         [](const auto& keyboard) {
-                           return IsChromeOSKeyboard(*keyboard.second);
-                         });
+      std::ranges::find(keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
+                        [](const auto& keyboard) {
+                          return IsChromeOSKeyboard(*keyboard.second);
+                        });
   auto non_chromeos_iter =
-      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
-                         /*value=*/false, [](const auto& keyboard) {
-                           return IsChromeOSKeyboard(*keyboard.second) ||
-                                  IsSplitModifierKeyboard(*keyboard.second);
-                         });
+      std::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
+                        /*value=*/false, [](const auto& keyboard) {
+                          return IsChromeOSKeyboard(*keyboard.second) ||
+                                 IsSplitModifierKeyboard(*keyboard.second);
+                        });
   auto split_modifier_iter =
-      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
-                         /*value=*/true, [](const auto& keyboard) {
-                           return IsSplitModifierKeyboard(*keyboard.second);
-                         });
+      std::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
+                        /*value=*/true, [](const auto& keyboard) {
+                          return IsSplitModifierKeyboard(*keyboard.second);
+                        });
 
   if (chromeos_iter != keyboards_.rend()) {
     keyboard_pref_handler_->UpdateDefaultChromeOSKeyboardSettings(

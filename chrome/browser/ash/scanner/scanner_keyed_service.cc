@@ -9,14 +9,21 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/drive/service/drive_api_service.h"
@@ -25,6 +32,7 @@
 #include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/common/auth_service.h"
@@ -70,13 +78,43 @@ constexpr auto kTrafficAnnotation =
       }
     )");
 
+specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
+  specialized_features::FeatureAccessConfig config;
+  config.settings_toggle_pref = ash::prefs::kScannerEnabled;
+  config.disabled_in_kiosk_mode = true;
+  config.consent_accepted_pref = ash::prefs::kSunfishConsentDisclaimerAccepted;
+
+  // Dogfood devices ignore all other checks.
+  // On actual launch, we will be using the ScannerUpdate flag instead of
+  // Dogfood which includes all extra checks.
+  if (base::FeatureList::IsEnabled(ash::features::kScannerDogfood)) {
+    return config;
+  }
+
+  config.feature_flag = &ash::features::kScannerUpdate;
+  config.feature_management_flag = &ash::features::kFeatureManagementScanner;
+  config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_manta_service();
+      });
+  config.country_codes = ash::GetGenerativeAiCountryAllowlist();
+  return config;
+}
+
 }  // namespace
 
 ScannerKeyedService::ScannerKeyedService(
+    PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<manta::ScannerProvider> scanner_provider)
     : identity_manager_(identity_manager),
+      access_checker_(CreateFeatureAccessConfig(),
+                      /*prefs=*/pref_service,
+                      /*identity_manager=*/identity_manager_,
+                      base::BindRepeating([]() {
+                        return g_browser_process->variations_service();
+                      })),
       scanner_provider_(std::move(scanner_provider)) {
   if (identity_manager_ != nullptr) {
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
@@ -107,8 +145,9 @@ ScannerKeyedService::ScannerKeyedService(
 
 ScannerKeyedService::~ScannerKeyedService() = default;
 
-ash::ScannerSystemState ScannerKeyedService::GetSystemState() const {
-  return system_state_provider_.GetSystemState();
+specialized_features::FeatureAccessFailureSet
+ScannerKeyedService::CheckFeatureAccess() const {
+  return access_checker_.Check();
 }
 
 void ScannerKeyedService::FetchActionsForImage(
@@ -141,6 +180,8 @@ void ScannerKeyedService::FetchActionDetailsForImage(
   }
   manta::proto::ScannerInput scanner_input;
   scanner_input.set_image(std::string(base::as_string_view(*jpeg_bytes)));
+  scanner_input.mutable_current_timestamp()->set_seconds(
+      base::Time::Now().InSecondsFSinceUnixEpoch());
   *scanner_input.mutable_selected_action() = std::move(selected_action);
   scanner_provider_->Call(scanner_input, std::move(callback));
 }

@@ -134,7 +134,7 @@ If the result is not empty, it's passed through the AcceptCHFrameObserver mojo p
 
 Any storage related to an incognito mode profile is cleared when the last incognito tab is closed, including client hint preferences.
 
-### `--initial-client-hint-storage` Command Line Switch
+### `--initialize-client-hints-storage` Command Line Switch
 
 A command line flag is available for testing to pre-populate the Accept-CH cache. It takes a json dictionary, where each key is an origin and each value is a string in the same format as the Accept-CH response header.
 
@@ -145,7 +145,7 @@ Each new profile will include these pre-populated preferences *except* for "Off 
 An example use might be:
 
 ```
-out/default/chrome --initial-client-hint-storage="{\"https://a.test\":\"Sec-CH-UA-Full-Version\", \"https://b.test\":\"Sec-CH-UA-Model\"}"
+out/default/chrome --initialize-client-hints-storage="{\"https://a.test\":\"Sec-CH-UA-Full-Version\", \"https://b.test\":\"Sec-CH-UA-Model\"}"
 ```
 
 ## Adding a new hint
@@ -165,9 +165,9 @@ The canonical enum for client hint tokens is [network::mojom::WebClientHintsType
 *   Add an enum value to `WebFeature` in [/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom] and run [/tools/metrics/histograms/update_use_counter_feature_enum.py] to update the enum in [/tools/metrics/histograms/enums.xml].
 *   Map the hint to the web feature in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
 *   Update the `static_assert` for `network::mojom::WebClientHintsType::kMaxValue` in [/content/browser/client_hints/client_hints.cc], leaving a TODO for your implementation.
-*   Add a permissions policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]. Note that the entries in this file are in lexical order by name.
-*   Add an entry to the end of [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom] and run [/tools/metrics/histograms/update_permissions_policy_enum.py] to update [tools/metrics/histograms/enums.xml].
-*   Map the hint to the permissions policy in `MakeClientHintToPolicyFeatureMap` in [/third_party/blink/common/client_hints/client_hints.cc].
+*   Add a permissions policy in [/services/network/public/cpp/permissions_policy/permissions_policy_features.json5]. Note that the entries in this file are in lexical order by name.
+*   Add an entry to the end of [/services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom] and run [/tools/metrics/histograms/update_permissions_policy_enum.py] to update [tools/metrics/histograms/enums.xml].
+*   Map the hint to the permissions policy in `MakeClientHintToPolicyFeatureMap` in [/services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.cc].
 *   Add the permissions policy name to:
     * `third_party/blink/public/devtools_protocol/browser_protocol.pdl`
     * `third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt`
@@ -230,12 +230,12 @@ Devtools frontend source code is in a different branch [devtools/devtools-fronte
 [/third_party/blink/common/features.cc]: /third_party/blink/common/features.cc
 [/third_party/blink/public/common/features.h]: /third_party/blink/public/common/features.h
 [/third_party/blink/public/devtools_protocol/browser_protocol.pdl]: /third_party/blink/public/devtools_protocol/browser_protocol.pdl
-[/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom]: /third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom
+[/services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom]: /services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom
 [/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom]: /third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.cc]: /third_party/blink/renderer/core/inspector/inspector_emulation_agent.cc
 [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.h]: /third_party/blink/renderer/core/inspector/inspector_emulation_agent.h
 [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc]: /third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc
-[/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]: /third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5
+[/services/network/public/cpp/permissions_policy/permissions_policy_features.json5]: /services/network/public/cpp/permissions_policy/permissions_policy_features.json5
 [/third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py]: /third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py
 [/third_party/blink/web_tests/external/wpt/client-hints/resources/export.js]: /third_party/blink/web_tests/external/wpt/client-hints/resources/export.js
 [/third_party/blink/web_tests/external/wpt/client-hints/]: /third_party/blink/web_tests/external/wpt/client-hints/

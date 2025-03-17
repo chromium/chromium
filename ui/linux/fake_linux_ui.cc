@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_edit_commands.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
@@ -111,7 +112,8 @@ std::unique_ptr<ui::NavButtonProvider> FakeLinuxUi::CreateNavButtonProvider() {
 }
 
 ui::WindowFrameProvider* FakeLinuxUi::GetWindowFrameProvider(bool solid_frame,
-                                                             bool tiled) {
+                                                             bool tiled,
+                                                             bool maximized) {
   return nullptr;
 }
 
@@ -131,11 +133,10 @@ ui::NativeTheme* FakeLinuxUi::GetNativeTheme() const {
   return nullptr;
 }
 
-bool FakeLinuxUi::GetTextEditCommandsForEvent(
+ui::TextEditCommand FakeLinuxUi::GetTextEditCommandForEvent(
     const ui::Event& event,
-    int text_falgs,
-    std::vector<ui::TextEditCommandAuraLinux>* commands) {
-  return false;
+    int text_falgs) {
+  return ui::TextEditCommand::INVALID_COMMAND;
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

@@ -19,7 +19,7 @@ function animationFrame(): Promise<void> {
 }
 
 function contentElement(): HTMLElement {
-  return viewer.shadowRoot!.elementFromPoint(innerWidth / 2, innerHeight / 2) as
+  return viewer.shadowRoot.elementFromPoint(innerWidth / 2, innerHeight / 2) as
       HTMLElement;
 }
 
@@ -32,7 +32,7 @@ chrome.test.runTests([
     const toolbar = viewer.$.toolbar;
     chrome.test.assertTrue(loadTimeData.getBoolean('pdfAnnotationsEnabled'));
     chrome.test.assertTrue(
-        toolbar.shadowRoot!.querySelector('#annotate') != null);
+        toolbar.shadowRoot.querySelector('#annotate') != null);
     chrome.test.succeed();
   },
   async function testEnterAnnotationMode() {
@@ -127,7 +127,7 @@ chrome.test.runTests([
     // Pen defaults.
     const viewerPdfToolbar = viewer.$.toolbar;
     const viewerAnnotationsBar =
-        viewerPdfToolbar.shadowRoot!.querySelector('viewer-annotations-bar')!;
+        viewerPdfToolbar.shadowRoot.querySelector('viewer-annotations-bar')!;
     const pen = viewerAnnotationsBar.$.pen;
     pen.click();
     chrome.test.assertTrue(!!toolOrNull);
@@ -207,7 +207,7 @@ chrome.test.runTests([
     const inkHost = contentElement();
     const viewerPdfToolbar = viewer.$.toolbar;
     const viewerAnnotationsBar =
-        viewerPdfToolbar.shadowRoot!.querySelector('viewer-annotations-bar')!;
+        viewerPdfToolbar.shadowRoot.querySelector('viewer-annotations-bar')!;
     const undo = viewerAnnotationsBar.$.undo;
     const redo = viewerAnnotationsBar.$.redo;
 
@@ -241,7 +241,7 @@ chrome.test.runTests([
     chrome.test.assertEq(redo.disabled, true);
     chrome.test.succeed();
   },
-  async function testPointerEvents() {
+  function testPointerEvents() {
     chrome.test.assertTrue(isAnnotationMode());
     const inkHost = contentElement() as ViewerInkHostElement;
     inkHost.resetPenMode();
@@ -352,7 +352,7 @@ chrome.test.runTests([
     ]);
     chrome.test.succeed();
   },
-  async function testTouchPanGestures() {
+  function testTouchPanGestures() {
     // Ensure that we have an out-of-bounds area.
     viewer.viewport.setZoom(0.5);
     chrome.test.assertTrue(isAnnotationMode());

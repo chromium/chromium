@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/renderer/bindings/test_js_runner.h"
 
 #include <ostream>
@@ -86,8 +81,7 @@ TestJSRunner::~TestJSRunner() = default;
 
 void TestJSRunner::RunJSFunction(v8::Local<v8::Function> function,
                                  v8::Local<v8::Context> context,
-                                 int argc,
-                                 v8::Local<v8::Value> argv[],
+                                 base::span<v8::Local<v8::Value>> args,
                                  ResultCallback callback) {
   if (g_suspended) {
     // Script is suspended. Queue up the call and return.
@@ -96,10 +90,11 @@ void TestJSRunner::RunJSFunction(v8::Local<v8::Function> function,
     call.isolate = isolate;
     call.function.Reset(isolate, function);
     call.context.Reset(isolate, context);
-    call.arguments.reserve(argc);
+    call.arguments.reserve(args.size());
     call.callback = std::move(callback);
-    for (int i = 0; i < argc; ++i)
-      call.arguments.push_back(v8::Global<v8::Value>(isolate, argv[i]));
+    for (auto& arg : args) {
+      call.arguments.push_back(v8::Global<v8::Value>(isolate, arg));
+    }
     pending_calls_.push_back(std::move(call));
     return;
   }
@@ -112,9 +107,10 @@ void TestJSRunner::RunJSFunction(v8::Local<v8::Function> function,
 
   v8::MaybeLocal<v8::Value> result;
   if (g_allow_errors) {
-    result = function->Call(context, context->Global(), argc, argv);
+    result =
+        function->Call(context, context->Global(), args.size(), GetArgv(args));
   } else {
-    result = RunFunctionOnGlobal(function, context, argc, argv);
+    result = RunFunctionOnGlobal(function, context, args.size(), GetArgv(args));
   }
 
   if (callback)
@@ -124,8 +120,7 @@ void TestJSRunner::RunJSFunction(v8::Local<v8::Function> function,
 v8::MaybeLocal<v8::Value> TestJSRunner::RunJSFunctionSync(
     v8::Local<v8::Function> function,
     v8::Local<v8::Context> context,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
+    base::span<v8::Local<v8::Value>> args) {
   // Note: deliberately circumvent g_suspension, since this should only be used
   // in response to JS interaction.
   if (will_call_js_)
@@ -133,10 +128,10 @@ v8::MaybeLocal<v8::Value> TestJSRunner::RunJSFunctionSync(
 
   if (g_allow_errors) {
     v8::MaybeLocal<v8::Value> result =
-        function->Call(context, context->Global(), argc, argv);
+        function->Call(context, context->Global(), args.size(), GetArgv(args));
     return result;
   }
-  return RunFunctionOnGlobal(function, context, argc, argv);
+  return RunFunctionOnGlobal(function, context, args.size(), GetArgv(args));
 }
 
 void TestJSRunner::Flush() {
@@ -153,8 +148,7 @@ void TestJSRunner::Flush() {
     for (auto& arg : call.arguments)
       local_arguments.push_back(arg.Get(isolate));
     v8::MaybeLocal<v8::Value> result =
-        RunJSFunctionSync(call.function.Get(isolate), context,
-                          local_arguments.size(), local_arguments.data());
+        RunJSFunctionSync(call.function.Get(isolate), context, local_arguments);
     if (call.callback)
       std::move(call.callback).Run(context, Convert(result, context));
   }

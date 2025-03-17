@@ -11,13 +11,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "base/strings/to_string.h"
 #include "base/task/common/task_annotator.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -219,7 +219,7 @@ std::optional<gfx::Rect> CalculateClipRect(
 // - |dest_render_pass| is where the new SharedQuadState will be created.
 SharedQuadState* CopyAndScaleSharedQuadState(
     const SharedQuadState* source_sqs,
-    uint32_t client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& client_namespace_id,
     const gfx::Transform& quad_to_target_transform,
     const gfx::Transform& target_transform,
     const gfx::Rect& quad_layer_rect,
@@ -254,7 +254,7 @@ SharedQuadState* CopyAndScaleSharedQuadState(
 // into it. See CopyAndScaleSharedQuadState() for full documentation.
 SharedQuadState* CopySharedQuadState(
     const SharedQuadState* source_sqs,
-    uint32_t client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> added_clip_rect,
     const MaskFilterInfoExt& mask_filter_info,
@@ -487,9 +487,8 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
   if (child_render_pass.filters.HasFilterThatMovesPixels()) {
     // The size of pixel-moving foreground filter is allowed to expand.
     // No intersecting shared_quad_state->clip_rect for the expanded rect.
-    damage_rect_in_target_space =
-        GetExpandedRectWithPixelMovingForegroundFilter(
-            *render_pass_quad, child_render_pass.filters);
+    damage_rect_in_target_space = GetTargetExpandedRectForPixelMovingFilters(
+        *render_pass_quad, child_render_pass.filters);
   } else if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     const auto* shared_quad_state = render_pass_quad->shared_quad_state;
     damage_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
@@ -751,7 +750,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
 void SurfaceAggregator::HandleSurfaceQuad(
     const CompositorRenderPass& source_pass,
     const SurfaceDrawQuad* surface_quad,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> added_clip_rect,
@@ -839,7 +838,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     ResolvedFrameData& resolved_frame,
     float parent_device_scale_factor,
     const SurfaceDrawQuad* surface_quad,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> added_clip_rect,
     const std::optional<gfx::Rect> dest_root_target_clip_rect,
@@ -1034,8 +1033,8 @@ void SurfaceAggregator::EmitSurfaceContent(
       features::kAllowForceMergeRenderPassWithRequireOverlayQuads);
   const bool force_merge_pass =
       allow_forced_merge_pass && !merge_pass && pass_is_mergeable &&
-      base::ranges::any_of(dest_pass_list_->back()->quad_list,
-                           &OverlayCandidate::RequiresOverlay);
+      std::ranges::any_of(dest_pass_list_->back()->quad_list,
+                          &OverlayCandidate::RequiresOverlay);
 
   if (merge_pass || force_merge_pass) {
     // Compute a clip rect in |dest_pass| coordinate space to ensure merged
@@ -1119,7 +1118,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 
 void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
     const SurfaceDrawQuad* surface_quad,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> clip_rect,
     AggregatedRenderPass* dest_pass,
@@ -1144,7 +1143,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const gfx::Rect& primary_rect,
     const gfx::Rect& fallback_rect,
     const SharedQuadState* primary_shared_quad_state,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> clip_rect,
     SkColor4f background_color,
@@ -1424,7 +1423,8 @@ void SurfaceAggregator::CopyQuadsToPass(
   size_t quad_index = 0;
   auto& resolved_draw_quads = resolved_pass.draw_quads();
 
-  uint32_t client_namespace_id = resolved_frame.GetClientNamespaceId();
+  const gfx::OverlayLayerId::NamespaceId client_namespace_id =
+      resolved_frame.GetClientNamespaceId();
 
   for (auto* quad : source_quad_list) {
     const ResolvedQuadData& quad_data = resolved_draw_quads[quad_index++];
@@ -1935,7 +1935,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // has pixel-moving foreground filter.
       if (child_render_pass.filters.HasFilterThatMovesPixels()) {
         gfx::Rect expanded_rect_in_target_space =
-            GetExpandedRectWithPixelMovingForegroundFilter(
+            GetTargetExpandedRectForPixelMovingFilters(
                 *render_pass_quad, child_render_pass.filters);
 
         if (expanded_rect_in_target_space.Intersects(damage_rect) ||
@@ -2576,7 +2576,7 @@ void SurfaceAggregator::DebugLogSurface(const Surface* surface,
           static_cast<int>(referenced_surfaces_.size()),
           surface->surface_id().ToString().c_str(),
           surface->size_in_pixels().ToString().c_str(),
-          will_draw ? "true" : "false");
+          base::ToString(will_draw).c_str());
 }
 
 }  // namespace viz

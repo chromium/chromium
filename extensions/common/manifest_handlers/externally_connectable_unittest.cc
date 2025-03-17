@@ -236,7 +236,8 @@ TEST_F(ExternallyConnectableTest, ErrorBadID) {
 TEST_F(ExternallyConnectableTest, ErrorBadMatches) {
   LoadAndExpectError("externally_connectable_error_bad_matches.json",
                      ErrorUtils::FormatErrorMessage(
-                         errors::kErrorInvalidMatchPattern, "www.yahoo.com"));
+                         errors::kErrorInvalidMatchPattern, "www.yahoo.com",
+                         "Missing scheme separator."));
 }
 
 TEST_F(ExternallyConnectableTest, AllURLs) {

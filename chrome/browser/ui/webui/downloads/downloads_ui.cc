@@ -36,7 +36,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
-#include "components/grit/components_resources.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -160,7 +159,7 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"screenreaderResumed", IDS_DOWNLOAD_SCREENREADER_RESUMED},
       {"screenreaderCanceled", IDS_DOWNLOAD_SCREENREADER_CANCELED},
 
-      // Warning bypass prompt (used in both the dialog and interstitial).
+      // Warning bypass prompt dialog.
       {"warningBypassPromptLearnMoreLink",
        IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_LEARN_MORE_LINK},
       {"warningBypassPromptDescription",
@@ -173,40 +172,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       // Warning bypass dialog.
       {"warningBypassDialogTitle", IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE},
       {"warningBypassDialogCancel", IDS_CANCEL},
-
-      // Warning bypass interstitial main content.
-      {"warningBypassInterstitialTitle",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_TITLE},
-      {"warningBypassInterstitialContinue",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CONTINUE},
-      {"warningBypassInterstitialCancel",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CANCEL},
-      {"warningBypassInterstitialDownload",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_DOWNLOAD},
-
-      // Warning bypass interstitial survey content.
-      {"warningBypassInterstitialSurveyTitle",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE},
-      {"warningBypassInterstitialSurveyCreatedFile",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE},
-      {"warningBypassInterstitialSurveyTrustSiteWithoutUrl",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL},
-      {"warningBypassInterstitialSurveyTrustSiteWithUrl",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL},
-      {"warningBypassInterstitialSurveyAcceptRisk",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK},
-
-      // Warning bypass interstitial accessibility text.
-      {"warningBypassInterstitialSurveyTitleAccessible",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE_ACCESSIBLE},
-      {"warningBypassInterstitialSurveyCreatedFileAccessible",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE_ACCESSIBLE},
-      {"warningBypassInterstitialSurveyTrustSiteWithoutUrlAccessible",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL_ACCESSIBLE},
-      {"warningBypassInterstitialSurveyTrustSiteWithUrlAccessible",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL_ACCESSIBLE},
-      {"warningBypassInterstitialSurveyAcceptRiskAccessible",
-       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK_ACCESSIBLE},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // ESB Download Row Promo
@@ -221,18 +186,12 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"dangerDownloadDesc", IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS},
       {"dangerDownloadCookieTheft",
        IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT},
-      {"dangerDownloadCookieTheftAndAccountDesc",
-       IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT_AND_ACCOUNT},
       {"dangerSettingsDesc", IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED},
       {"insecureDownloadDesc", IDS_BLOCK_DOWNLOAD_REASON_INSECURE},
 
       {"referrerLine", IDS_DOWNLOADS_PAGE_REFERRER_LINE},
   };
   source->AddLocalizedStrings(kStrings);
-
-  source->AddBoolean("dangerousDownloadInterstitial",
-                     base::FeatureList::IsEnabled(
-                         safe_browsing::kDangerousDownloadInterstitial));
 
   source->AddBoolean(
       "showReferrerUrl",
@@ -276,9 +235,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                         GURL(chrome::kDownloadBlockedLearnMoreURL),
                         g_browser_process->GetApplicationLocale())
                         .spec());
-
-  source->AddResourcePath("safebrowsing_shared.css",
-                          IDR_SECURITY_INTERSTITIAL_SAFEBROWSING_SHARED_CSS);
 
   return source;
 }

@@ -62,7 +62,7 @@ std::unique_ptr<views::Label> CreateLabelView(
   return views::Builder<views::Label>()
       .CopyAddressTo(destination_view)
       .SetText(text)
-      .SetEnabledColorId(enabled_color_id)
+      .SetEnabledColor(enabled_color_id)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(false)
       .Build();
@@ -233,7 +233,7 @@ void DictationBubbleView::OnBeforeBubbleWidgetInit(
   params->name = "DictationBubbleView";
 }
 
-std::u16string DictationBubbleView::GetTextForTesting() {
+std::u16string_view DictationBubbleView::GetTextForTesting() {
   return top_row_view_->label_->GetText();
 }
 
@@ -264,8 +264,9 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   std::vector<std::u16string> hints;
   for (size_t i = 0; i < hint_view_->labels_.size(); ++i) {
     views::Label* label = hint_view_->labels_[i];
-    if (label->GetVisible())
-      hints.push_back(label->GetText());
+    if (label->GetVisible()) {
+      hints.emplace_back(label->GetText());
+    }
   }
   return hints;
 }
@@ -321,7 +322,7 @@ void DictationHintView::Update(
   // hints to the user.
   if (num_visible_hints > 0) {
     SetVisible(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   } else {
     SetVisible(false);
   }

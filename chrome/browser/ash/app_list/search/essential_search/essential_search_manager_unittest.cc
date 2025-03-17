@@ -102,7 +102,7 @@ void EssentialSearchManagerTest::ExpectSocsCookieInUserProfile(
   net::CookieList cookie_list = GetCookiesInUserProfile();
   EXPECT_GT(cookie_list.size(), 0u);
 
-  const auto socs_cookie_iterator = base::ranges::find(
+  const auto socs_cookie_iterator = std::ranges::find(
       cookie_list, cookie_name,
       [](const net::CanonicalCookie& cookie) { return cookie.Name(); });
   ASSERT_NE(socs_cookie_iterator, cookie_list.end());

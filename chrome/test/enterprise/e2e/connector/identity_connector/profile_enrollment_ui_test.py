@@ -18,21 +18,11 @@ from test_util import getElementFromShadowRoot
 FLAGS = flags.FLAGS
 flags.DEFINE_string('account', None, 'The 3rd party account for authentication')
 flags.DEFINE_string('password', None, 'The password')
-
-AUTH_URL = (
-    r"https://login.microsoftonline.com/organizations/"
-    r"oauth2/v2.0/authorize?"
-    r"client_id=bfb3dc57-d2b9-4b83-9a1d-7bf987e115fd&"
-    r"redirect_uri=https://chromeenterprise.google/enroll/&"
-    r"response_type=token%20id_token&"
-    r"scope=openid+email+profile&"
-    r"nonce=072f41d79a3cda30b589143eba6cd479140aa51c545f813365f839b4967d0347&"
-    r"prompt=select_account")
-
+flags.DEFINE_string('auth_url', None, 'The URL for profile registration.')
 
 def enroll(driver):
   # Go to MSFT auth URL
-  driver.get(AUTH_URL)
+  driver.get(FLAGS.auth_url)
   time.sleep(5)
   # Enter credentials
   driver.find_element(By.CSS_SELECTOR, '#i0116').send_keys(FLAGS.account)
@@ -63,9 +53,12 @@ def main(argv):
     time.sleep(30)  # Wait for the profile creation dialogue to show up
 
     window.child_window(
-        title="Continue", control_type="Button").click()  # Confirm the dialogue
+        title="Continue", auto_id="proceed-button",
+        control_type="Button").click()  # Confirm the dialogue
     time.sleep(10)  # Wait for the completion of work profile enrollment
-    window.child_window(title="Continue", control_type="Button").click()
+    window.child_window(
+        title="Continue", auto_id="proceed-button",
+        control_type="Button").click()
     time.sleep(5)
 
     # Obtain the workprofile's UI window
@@ -90,14 +83,14 @@ def main(argv):
     driver.find_element(By.ID, 'reload-policies').click
     # Give the page 5 seconds to render the legend
     time.sleep(5)
-    status_box = driver.find_elements(By.CSS_SELECTOR, "status-box")[0]
-
-    el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
-
-    logging.info(el.find_element(By.CLASS_NAME, 'status-box-heading').text)
-    logging.info(el.find_element(By.CLASS_NAME, 'username').text)
-    logging.info(el.find_element(By.CLASS_NAME, 'profile-id').text)
-    logging.info(el.find_element(By.CLASS_NAME, 'status').text)
+    # Loop through the status boxes as there might be more than one.
+    for status_box in driver.find_elements(By.CSS_SELECTOR, "status-box"):
+      el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
+      logging.info("Found a status box")
+      logging.info(el.find_element(By.CLASS_NAME, 'status-box-heading').text)
+      logging.info(el.find_element(By.CLASS_NAME, 'username').text)
+      logging.info(el.find_element(By.CLASS_NAME, 'profile-id').text)
+      logging.info(el.find_element(By.CLASS_NAME, 'status').text)
 
   except Exception as e:
     logging.critical(e, exc_info=True)

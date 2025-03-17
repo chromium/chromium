@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -87,7 +88,8 @@ void OnAvailableUpdateModes(Profile* profile,
                                  NotificationCatalogName::kTPMFirmwareUpdate),
       message_center::RichNotificationData(),
       base::MakeRefCounted<TPMFirmwareUpdateNotificationDelegate>(profile),
-      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::WARNING);
+      gfx::VectorIcon::EmptyIcon(),
+      message_center::SystemNotificationWarningLevel::WARNING);
 
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification,

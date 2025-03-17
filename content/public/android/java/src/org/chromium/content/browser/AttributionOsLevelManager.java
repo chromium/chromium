@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -38,6 +40,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -55,6 +59,7 @@ import java.util.concurrent.TimeoutException;
  * library.
  */
 @JNINamespace("content")
+@NullMarked
 public class AttributionOsLevelManager {
     private static final String TAG = "AttributionManager";
     // TODO: replace with constant in android.Manifest.permission once it becomes available in U.
@@ -62,10 +67,10 @@ public class AttributionOsLevelManager {
             "android.permission.ACCESS_ADSERVICES_ATTRIBUTION";
 
     // Used for testing
-    private static MeasurementManagerFutures sManagerForTesting;
+    private static @Nullable MeasurementManagerFutures sManagerForTesting;
 
     private long mNativePtr;
-    private MeasurementManagerFutures mManager;
+    private @Nullable MeasurementManagerFutures mManager;
 
     @IntDef({
         OperationType.REGISTER_SOURCE,
@@ -143,7 +148,7 @@ public class AttributionOsLevelManager {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
 
-    private static @OperationResult int getOperationResultFromMessage(String message) {
+    private static @OperationResult int getOperationResultFromMessage(@Nullable String message) {
         if (message == null) {
             return OperationResult.ERROR_UNKNOWN;
         } else {
@@ -241,7 +246,7 @@ public class AttributionOsLevelManager {
         mNativePtr = nativePtr;
     }
 
-    private MeasurementManagerFutures getManager() {
+    private @Nullable MeasurementManagerFutures getManager() {
         if (!supportsAttribution()) {
             return null;
         }
@@ -280,7 +285,7 @@ public class AttributionOsLevelManager {
                 future,
                 new FutureCallback<Object>() {
                     @Override
-                    public void onSuccess(Object result) {
+                    public void onSuccess(@Nullable Object result) {
                         onRegistrationCompleted(requestId, type, OperationResult.SUCCESS);
                     }
 
@@ -294,7 +299,7 @@ public class AttributionOsLevelManager {
     }
 
     @CalledByNative
-    private static List<WebSourceParams> createWebSourceParamsList(int size) {
+    private static @Nullable List<WebSourceParams> createWebSourceParamsList(int size) {
         if (!supportsAttribution()) {
             return null;
         }
@@ -377,7 +382,7 @@ public class AttributionOsLevelManager {
     }
 
     @CalledByNative
-    private static List<WebTriggerParams> createWebTriggerParamsList(int size) {
+    private static @Nullable List<WebTriggerParams> createWebTriggerParamsList(int size) {
         if (!supportsAttribution()) {
             return null;
         }
@@ -537,7 +542,7 @@ public class AttributionOsLevelManager {
                     }
 
                     @Override
-                    public void onSuccess(Object result) {
+                    public void onSuccess(@Nullable Object result) {
                         recordOperationResult(
                                 OperationType.DELETE_REGISTRATIONS, OperationResult.SUCCESS);
                         onCall();
@@ -561,8 +566,8 @@ public class AttributionOsLevelManager {
                                     currMatchBehavior,
                                     Instant.ofEpochMilli(startMs),
                                     Instant.ofEpochMilli(endMs),
-                                    originUris,
-                                    domainUris));
+                                    domainUris,
+                                    originUris));
 
             Futures.addCallback(
                     future, callback, ContextUtils.getApplicationContext().getMainExecutor());
@@ -632,8 +637,8 @@ public class AttributionOsLevelManager {
                 future,
                 new FutureCallback<Integer>() {
                     @Override
-                    public void onSuccess(Integer status) {
-                        onMeasurementStateReturned(status, OperationResult.SUCCESS);
+                    public void onSuccess(@Nullable Integer status) {
+                        onMeasurementStateReturned(assumeNonNull(status), OperationResult.SUCCESS);
                     }
 
                     @Override

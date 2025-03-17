@@ -102,6 +102,9 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
     case AutofillSnackbarType::kPlusAddressEmailOverride:
       return l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_ANDROID);
+    case AutofillSnackbarType::kCardInfoRetrieval:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SNACKBAR_MESSAGE_TEXT);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -110,6 +113,7 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
 std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
   switch (autofill_snackbar_type_) {
     case AutofillSnackbarType::kVirtualCard:
+    case AutofillSnackbarType::kCardInfoRetrieval:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT);
     case AutofillSnackbarType::kMandatoryReauth:
@@ -160,6 +164,8 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
       return "SaveServerIbanSuccess";
     case AutofillSnackbarType::kPlusAddressEmailOverride:
       return "PlusAddressEmailOverride";
+    case AutofillSnackbarType::kCardInfoRetrieval:
+      return "CardInfoRetrievalEnrolled";
     case AutofillSnackbarType::kUnspecified:
       return "Unspecified";
   }

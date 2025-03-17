@@ -14,8 +14,11 @@ class FilePath;
 // MIME type for iOS configuration file.
 extern char kMobileConfigurationType[];
 
-// MIME type for Virtual Contact File.
+// MIME type for Virtual Contact File (text/vcard).
 extern char kVcardMimeType[];
+
+// MIME type for Virtual Contact File (text/x-vcard).
+extern char kXVcardMimeType[];
 
 // MIME type for pass data.
 extern char kPkPassMimeType[];
@@ -67,6 +70,9 @@ extern char kBitTorrentMimeType[];
 
 // MIME Type for Java archive.
 extern char kJavaArchiveMimeType[];
+
+// MIME Type for Apple Wallet order packages.
+extern char kAppleWalletOrderMimeType[];
 
 // Legacy USDZ content types.
 extern char kLegacyUsdzMimeType[];

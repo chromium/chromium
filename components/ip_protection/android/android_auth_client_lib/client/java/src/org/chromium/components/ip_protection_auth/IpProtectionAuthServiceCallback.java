@@ -4,6 +4,9 @@
 
 package org.chromium.components.ip_protection_auth;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public interface IpProtectionAuthServiceCallback {
     /**
      * Called if/when IpProtectionAuthClient.CreateConnectedInstance has completed.

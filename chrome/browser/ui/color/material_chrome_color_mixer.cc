@@ -139,6 +139,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBatchUploadDataBackground] = {ui::kColorSysSurface3};
   mixer[kColorBatchUploadDataSeparator] = {ui::kColorSysOnHeaderDivider};
 
+  // BNPL Issuer dialog color tokens
+  mixer[kColorBnplIssuerLabelForeground] = {ui::kColorLabelForeground};
+  mixer[kColorBnplIssuerLabelForegroundDisabled] = {
+      ui::kColorLabelForegroundDisabled};
+  mixer[kColorBnplIssuerLinkedIneligibleBackground] = {ui::kColorSysSurface2};
+
   // Tab Search colors.
   mixer[kColorTabSearchButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorTabSearchButtonIcon] = {ui::kColorSysOnTonalContainer};
@@ -238,7 +244,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
   // History Embeddings colors.
-  mixer[kColorHistoryEmbeddingsBackground] = {ui::kColorSysSurface};
+  mixer[kColorHistoryEmbeddingsBackground] = {
+      ui::kColorSysBaseContainerElevated};
   mixer[kColorHistoryEmbeddingsDivider] = {ui::kColorSysDivider};
   mixer[kColorHistoryEmbeddingsForeground] = {ui::kColorSysOnSurface};
   mixer[kColorHistoryEmbeddingsForegroundSubtle] = {
@@ -249,8 +256,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysGradientTertiary};
   mixer[kColorHistoryEmbeddingsImageBackgroundGradientStart] = {
       ui::kColorSysGradientPrimary};
-  mixer[kColorHistoryEmbeddingsWithAnswersBackground] = {
-      ui::kColorSysBaseContainerElevated};
 
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;

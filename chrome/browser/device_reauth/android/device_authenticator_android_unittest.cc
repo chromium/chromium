@@ -89,7 +89,7 @@ TEST_F(DeviceAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {
   EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometrics());
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BiometricAuthPwdFill.CanAuthenticate",
+      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics",
       BiometricsAvailability::kAvailable, 1);
 }
 
@@ -103,7 +103,7 @@ TEST_F(
   EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", 0);
+      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics", 0);
 }
 
 TEST_F(DeviceAuthenticatorAndroidTest, AuthenticateRecordsSource) {

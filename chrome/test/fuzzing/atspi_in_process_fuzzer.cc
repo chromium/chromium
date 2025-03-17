@@ -177,6 +177,9 @@ class AtspiInProcessFuzzer
 
   // Initialized in SetupOnMainThread, then valid thereafter
   std::optional<UiNode> ui_state_;
+  // If we're in -merge mode, skip enumerating UI controls because it's
+  // too slow and merges time out.
+  bool merge_mode_ = false;
 };
 
 // Stringified version of Action in the protobuf.
@@ -283,6 +286,8 @@ void AtspiInProcessFuzzer::SetUpOnMainThread() {
         control.back()->ProbablyActionable());
   }
   ATSPI_FUZZER_LOG << "Initial controls inserted into database.";
+  merge_mode_ = InMergeMode();
+  LOG(INFO) << "Merging mode: " << merge_mode_;
 }
 
 std::string AtspiInProcessFuzzer::DebugPath(const ControlPath& path) {
@@ -361,6 +366,7 @@ int AtspiInProcessFuzzer::Fuzz(
       return status;
     }
   }
+
   return 0;
 }
 
@@ -442,6 +448,10 @@ int AtspiInProcessFuzzer::HandleAction(
   }
 
   base::RunLoop().RunUntilIdle();
+
+  if (merge_mode_) {
+    return 0;
+  }
 
   // If new components are visible, record how to reach them for
   // the sake of the mutator in future.
@@ -1060,12 +1070,9 @@ Database* Database::GetInstance() {
 Database::Database() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions{
-          .exclusive_locking =
-              false,  // centipede may run several fuzzers at once
-          .page_size = sql::DatabaseOptions::kDefaultPageSize,
-          .cache_size = 0,
-      },
+      sql::DatabaseOptions()
+          // centipede may run several fuzzers at once
+          .set_exclusive_locking(false),
       sql::test::kTestTag);
   base::FilePath db_path;
   CHECK(base::PathService::Get(base::DIR_TEMP, &db_path));

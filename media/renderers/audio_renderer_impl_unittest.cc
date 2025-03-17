@@ -128,7 +128,7 @@ class AudioRendererImplTest : public ::testing::Test,
                          512),
         main_thread_task_runner_(
             base::SingleThreadTaskRunner::GetCurrentDefault()),
-        sink_(new FakeAudioRendererSink(hardware_params_)),
+        sink_(base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_)),
         demuxer_stream_(DemuxerStream::AUDIO),
         expected_init_result_(true),
         enter_pending_decoder_init_(false),
@@ -145,7 +145,7 @@ class AudioRendererImplTest : public ::testing::Test,
         ChannelLayoutConfig::FromLayout<kChannelLayout>(),
         kOutputSamplesPerSecond, 512);
     renderer_ = std::make_unique<AudioRendererImpl>(
-        main_thread_task_runner_, sink_.get(),
+        main_thread_task_runner_, sink_,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &media_log_, 0, this);
@@ -174,7 +174,7 @@ class AudioRendererImplTest : public ::testing::Test,
       stalled_demixer_read_cb_ = std::move(read_cb);
       return;
     }
-    scoped_refptr<DecoderBuffer> decoder_buffer(new DecoderBuffer(0));
+    auto decoder_buffer = base::MakeRefCounted<DecoderBuffer>(0);
     std::move(read_cb).Run(DemuxerStream::kOk, {std::move(decoder_buffer)});
   }
 
@@ -190,7 +190,7 @@ class AudioRendererImplTest : public ::testing::Test,
     hardware_params_ = params;
     sink_ = base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_);
     renderer_ = std::make_unique<AudioRendererImpl>(
-        main_thread_task_runner_, sink_.get(),
+        main_thread_task_runner_, sink_,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &media_log_, 0, nullptr);
@@ -204,7 +204,7 @@ class AudioRendererImplTest : public ::testing::Test,
     hardware_params_ = hardware_params;
     sink_ = base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_);
     renderer_ = std::make_unique<AudioRendererImpl>(
-        main_thread_task_runner_, sink_.get(),
+        main_thread_task_runner_, sink_,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &media_log_, 0, nullptr);
@@ -215,7 +215,7 @@ class AudioRendererImplTest : public ::testing::Test,
   void ConfigureWithMockSink(const AudioParameters& params) {
     mock_sink_ = base::MakeRefCounted<MockAudioRendererSink>();
     renderer_ = std::make_unique<AudioRendererImpl>(
-        main_thread_task_runner_, mock_sink_.get(),
+        main_thread_task_runner_, mock_sink_,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &media_log_, 0, nullptr);
@@ -226,7 +226,7 @@ class AudioRendererImplTest : public ::testing::Test,
   void ConfigureWithMockMediaLog() {
     sink_ = base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_);
     renderer_ = std::make_unique<AudioRendererImpl>(
-        main_thread_task_runner_, sink_.get(),
+        main_thread_task_runner_, sink_,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &mock_media_log_, 0, nullptr);
@@ -301,7 +301,7 @@ class AudioRendererImplTest : public ::testing::Test,
     ConfigureDemuxerStream(true);
 
     renderer_ = std::make_unique<AudioRendererImpl>(
-        main_thread_task_runner_, sink_.get(),
+        main_thread_task_runner_, sink_,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &media_log_, 0, this);
@@ -1526,7 +1526,7 @@ TEST_F(AudioRendererImplTest, MutedPlaybackBadDeviceInfo) {
       std::string(), OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
       AudioParameters());
   renderer_ = std::make_unique<AudioRendererImpl>(
-      main_thread_task_runner_, mock_sink_.get(),
+      main_thread_task_runner_, mock_sink_,
       base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                           base::Unretained(this)),
       &media_log_, 0, nullptr);
@@ -1608,6 +1608,76 @@ TEST_F(AudioRendererImplTest, BasicMutedPlayback) {
   EXPECT_CALL(*mock_sink_, Pause());
   StopTicking();
   EXPECT_CALL(*mock_sink_, Stop());
+}
+
+TEST_F(AudioRendererImplTest, RenderMutedAudio) {
+  ConfigureWithMockSink(hardware_params_);
+  EXPECT_CALL(*mock_sink_, SetVolume(0));
+  renderer_->SetVolume(0);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+
+  EXPECT_CALL(*mock_sink_, Start());
+  EXPECT_CALL(*mock_sink_, Play());
+  Initialize();
+  Preroll();
+  StartTicking();
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+
+  EXPECT_CALL(*mock_sink_, SetVolume(1));
+  renderer_->SetVolume(1);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+
+  // Muting should not pause the sink.
+  renderer_->SetRenderMutedAudio(true);
+  EXPECT_CALL(*mock_sink_, SetVolume(0));
+  EXPECT_CALL(*mock_sink_, Pause()).Times(0);
+  renderer_->SetVolume(0);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+  testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
+
+  // Setting render muted audio to false should pause the sink.
+  EXPECT_CALL(*mock_sink_, Pause());
+  renderer_->SetRenderMutedAudio(false);
+  testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
+
+  // Setting render muted audio to true should restart the sink.
+  EXPECT_CALL(*mock_sink_, Play());
+  renderer_->SetRenderMutedAudio(true);
+  testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
+
+  // Setting render muted audio to false should pause the sink.
+  EXPECT_CALL(*mock_sink_, Pause());
+  renderer_->SetRenderMutedAudio(false);
+  testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
+
+  // Unmuting should restart the sink.
+  EXPECT_CALL(*mock_sink_, Play());
+  EXPECT_CALL(*mock_sink_, SetVolume(1));
+  renderer_->SetVolume(1);
+  testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
+
+  StopTicking();
+  EXPECT_CALL(*mock_sink_, Stop());
+}
+
+TEST_F(AudioRendererImplTest,
+       SetRenderMutedAudioImmediatelyAfterInitialization) {
+  ConfigureWithMockSink(hardware_params_);
+  EXPECT_CALL(*mock_sink_, SetVolume(0));
+  renderer_->SetVolume(0);
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+
+  EXPECT_CALL(*mock_sink_, Start());
+  EXPECT_CALL(*mock_sink_, Play());
+
+  // Verify that setting the render muted audio flag immediately after
+  // initializing doesn't cause any crashes.
+  Initialize();
+  renderer_->SetRenderMutedAudio(true);
+  Preroll();
+  StartTicking();
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 0);
+  testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
 }
 
 TEST_F(AudioRendererImplTest, SinkIsFlushed) {

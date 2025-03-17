@@ -168,6 +168,12 @@ BASE_FEATURE(kEnableCastAudioOutputDevice,
              "enable_cast_audio_output_device",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If true, codec/profile/level support will be checked against starboard via
+// SbMediaCanPlayMimeAndKeySystem.
+BASE_FEATURE(kEnableStarboardMimeChecks,
+             "enable_starboard_mime_checks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // End Chromecast Feature definitions.
 const base::Feature* kFeatures[] = {
     &kAllowUserMediaAccess,
@@ -179,6 +185,7 @@ const base::Feature* kFeatures[] = {
     &kEnableSideGesturePassThrough,
     &kEnableChromeAudioManagerAndroid,
     &kEnableCastAudioOutputDevice,
+    &kEnableStarboardMimeChecks,
 };
 
 std::vector<const base::Feature*> GetInternalFeatures();

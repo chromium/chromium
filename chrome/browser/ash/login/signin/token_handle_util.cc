@@ -141,7 +141,7 @@ TokenHandleUtil::TokenHandleUtil()
 TokenHandleUtil::~TokenHandleUtil() = default;
 
 // static
-bool TokenHandleUtil::HasToken(const AccountId& account_id) {
+bool TokenHandleUtil::HasToken(const AccountId& account_id) const {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
@@ -149,7 +149,7 @@ bool TokenHandleUtil::HasToken(const AccountId& account_id) {
 }
 
 // static
-bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
+bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) const {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const base::Value* value =
       known_user.FindPath(account_id, kTokenHandleLastCheckedPref);
@@ -165,11 +165,10 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
 }
 
 // static
-bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
+bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) const {
   return !HasToken(account_id) || HasTokenStatusInvalid(account_id);
 }
 
-// static
 void TokenHandleUtil::IsReauthRequired(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

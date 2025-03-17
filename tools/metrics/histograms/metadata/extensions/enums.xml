@@ -144,11 +144,14 @@ chromium-metrics-reviews@google.com.
   <int value="262144" label="DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE"/>
   <int value="524288" label="DISABLE_REINSTALL"/>
   <int value="1048576" label="DISABLE_NOT_ALLOWLISTED"/>
-  <int value="2097152" label="DISABLE_NOT_ASH_KEEPLISTED"/>
+  <int value="2097152" label="DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED"/>
   <int value="4194304" label="DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY"/>
   <int value="8388608" label="DISABLE_UNSUPPORTED_MANIFEST_VERSION"/>
   <int value="16777216" label="DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION"/>
+  <int value="33554432" label="DISABLE_UNKNOWN"/>
 </enum>
+
+<!-- LINT.IfChange(ExtensionEvents) -->
 
 <enum name="ExtensionEvents">
 <!-- Generated from extensions/browser/extension_event_histogram_value.h.
@@ -407,7 +410,7 @@ Called by update_extension_histograms.py.-->
   <int value="243" label="SYNC_FILE_SYSTEM_ON_FILE_STATUS_CHANGED"/>
   <int value="244" label="SYNC_FILE_SYSTEM_ON_SERVICE_STATUS_CHANGED"/>
   <int value="245" label="SYSTEM_DISPLAY_ON_DISPLAY_CHANGED"/>
-  <int value="246" label="SYSTEM_INDICATOR_ON_CLICKED"/>
+  <int value="246" label="DELETED_SYSTEM_INDICATOR_ON_CLICKED"/>
   <int value="247" label="SYSTEM_PRIVATE_ON_BRIGHTNESS_CHANGED"/>
   <int value="248" label="SYSTEM_PRIVATE_ON_SCREEN_UNLOCKED"/>
   <int value="249" label="SYSTEM_PRIVATE_ON_VOLUME_CHANGED"/>
@@ -763,7 +766,14 @@ Called by update_extension_histograms.py.-->
   <int value="560" label="TTS_ENGINE_ON_INSTALL_LANGUAGE_REQUEST"/>
   <int value="561" label="TTS_ENGINE_ON_LANGUAGE_STATUS_REQUEST"/>
   <int value="562" label="TTS_ENGINE_ON_UNINSTALL_LANGUAGE_REQUEST"/>
+  <int value="563" label="PDF_VIEWER_PRIVATE_ON_SHOULD_UPDATE_VIEWPORT"/>
+  <int value="564" label="OMNIBOX_ON_ACTION_EXECUTED"/>
+  <int value="565" label="AUTOFILL_PRIVATE_ON_ENTITY_INSTANCES_CHANGED"/>
+  <int value="566"
+      label="ENTERPRISE_REPORTING_PRIVATE_ON_DATA_MASKING_RULES_TRIGGERED"/>
 </enum>
+
+<!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->
 
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">
   <int value="0" label="Gmail"/>
@@ -778,6 +788,8 @@ Called by update_extension_histograms.py.-->
   <int value="0" label="Non-webstore update URL"/>
   <int value="1" label="External install location"/>
 </enum>
+
+<!-- LINT.IfChange(ExtensionFunctions) -->
 
 <enum name="ExtensionFunctions">
 <!-- Generated from extensions/browser/extension_function_histogram_value.h.
@@ -914,7 +926,7 @@ Called by update_extension_histograms.py.-->
   <int value="127" label="WEBREQUEST_HANDLERBEHAVIORCHANGED"/>
   <int value="128" label="INPUT_IME_SETCURSORPOSITION"/>
   <int value="129" label="OMNIBOX_SENDSUGGESTIONS"/>
-  <int value="130" label="SYSTEMINDICATOR_ENABLE"/>
+  <int value="130" label="DELETED_SYSTEMINDICATOR_ENABLE"/>
   <int value="131" label="EVENTS_GETRULES"/>
   <int value="132" label="BOOKMARKMANAGERPRIVATE_COPY"/>
   <int value="133" label="SOCKET_RECVFROM"/>
@@ -1114,7 +1126,7 @@ Called by update_extension_histograms.py.-->
   <int value="326" label="ALARMS_CLEARALL"/>
   <int value="327" label="FONTSETTINGS_GETDEFAULTFIXEDFONTSIZE"/>
   <int value="328" label="FILEMANAGERPRIVATEINTERNAL_ZIPSELECTION"/>
-  <int value="329" label="SYSTEMINDICATOR_DISABLE"/>
+  <int value="329" label="DELETED_SYSTEMINDICATOR_DISABLE"/>
   <int value="330" label="DELETED_SCRIPTBADGE_SETPOPUP"/>
   <int value="331" label="EXTENSION_ISALLOWEDFILESCHEMEACCESS"/>
   <int value="332" label="EXPERIMENTAL_IDENTITY_LAUNCHWEBAUTHFLOW"/>
@@ -1164,7 +1176,7 @@ Called by update_extension_histograms.py.-->
   <int value="376" label="APP_WINDOW_CREATE"/>
   <int value="377" label="RUNTIME_RELOAD"/>
   <int value="378" label="EXPERIMENTAL_POWER_REQUESTKEEPAWAKE"/>
-  <int value="379" label="SYSTEMINDICATOR_SETICON"/>
+  <int value="379" label="DELETED_SYSTEMINDICATOR_SETICON"/>
   <int value="380" label="FILEMANAGERPRIVATE_ADDMOUNT"/>
   <int value="381" label="APP_CURRENTWINDOWINTERNAL_FOCUS"/>
   <int value="382" label="EVENTS_REMOVERULES"/>
@@ -1826,7 +1838,7 @@ Called by update_extension_histograms.py.-->
   <int value="1013" label="AUTOFILLPRIVATE_SAVEADDRESS"/>
   <int value="1014" label="AUTOFILLPRIVATE_GETADDRESSCOMPONENTS"/>
   <int value="1015" label="AUTOFILLPRIVATE_SAVECREDITCARD"/>
-  <int value="1016" label="AUTOFILLPRIVATE_REMOVEENTRY"/>
+  <int value="1016" label="DELETED_AUTOFILLPRIVATE_REMOVEENTRY"/>
   <int value="1017" label="DELETED_AUTOFILLPRIVATE_VALIDATEPHONENUMBERS"/>
   <int value="1018" label="DELETED_AUTOFILLPRIVATE_MASKCREDITCARD"/>
   <int value="1019" label="INSTANCEID_GETID"/>
@@ -2444,7 +2456,7 @@ Called by update_extension_histograms.py.-->
   <int value="1594" label="INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS"/>
   <int value="1595" label="PASSWORDSPRIVATE_GETURLCOLLECTION"/>
   <int value="1596" label="PASSWORDSPRIVATE_ADDPASSWORD"/>
-  <int value="1597" label="PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT"/>
+  <int value="1597" label="DELETED_PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT"/>
   <int value="1598" label="WEB_AUTHENTICATION_PROXY_ATTACH"/>
   <int value="1599" label="WEB_AUTHENTICATION_PROXY_DETACH"/>
   <int value="1600" label="FILEMANAGERPRIVATE_CANCELIOTASK"/>
@@ -2509,9 +2521,9 @@ Called by update_extension_histograms.py.-->
   <int value="1657" label="BOOKMARKMANAGERPRIVATE_OPENINNEWTAB"/>
   <int value="1658" label="BOOKMARKMANAGERPRIVATE_OPENINNEWWINDOW"/>
   <int value="1659" label="WMDESKSPRIVATE_REMOVEDESK"/>
-  <int value="1660" label="SHAREDSTORAGEPRIVATE_GET"/>
-  <int value="1661" label="SHAREDSTORAGEPRIVATE_SET"/>
-  <int value="1662" label="SHAREDSTORAGEPRIVATE_REMOVE"/>
+  <int value="1660" label="DELETED_SHAREDSTORAGEPRIVATE_GET"/>
+  <int value="1661" label="DELETED_SHAREDSTORAGEPRIVATE_SET"/>
+  <int value="1662" label="DELETED_SHAREDSTORAGEPRIVATE_REMOVE"/>
   <int value="1663" label="FILEMANAGERPRIVATEINTERNAL_GETDLPMETADATA"/>
   <int value="1664" label="WMDESKSPRIVATE_GETALLDESKS"/>
   <int value="1665" label="AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE"/>
@@ -2628,7 +2640,7 @@ Called by update_extension_histograms.py.-->
       label="DELETED_SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT"/>
   <int value="1770" label="WMDESKSPRIVATE_GETDESKBYID"/>
   <int value="1771" label="AUTOFILLPRIVATE_ISVALIDIBAN"/>
-  <int value="1772" label="ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY"/>
+  <int value="1772" label="DELETED_ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY"/>
   <int value="1773" label="POWER_REPORTACTIVITY"/>
   <int value="1774" label="PASSWORDSPRIVATE_CONTINUEIMPORT"/>
   <int value="1775" label="PASSWORDSPRIVATE_RESETIMPORTER"/>
@@ -2689,7 +2701,7 @@ Called by update_extension_histograms.py.-->
   <int value="1828" label="OS_DIAGNOSTICS_CANCELROUTINE"/>
   <int value="1829" label="OS_DIAGNOSTICS_ISMEMORYROUTINEARGUMENTSUPPORTED"/>
   <int value="1830"
-      label="ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
+      label="DELETED_ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
   <int value="1831" label="USERSCRIPTS_UPDATE"/>
   <int value="1832" label="INPUTMETHODPRIVATE_GETLANGUAGEPACKSTATUS"/>
   <int value="1833" label="OS_DIAGNOSTICS_RUNFANROUTINE"/>
@@ -2747,7 +2759,7 @@ Called by update_extension_histograms.py.-->
   <int value="1881" label="USERSCRIPTS_GETWORLDCONFIGURATIONS"/>
   <int value="1882" label="USERSCRIPTS_RESETWORLDCONFIGURATION"/>
   <int value="1883" label="AUTOTESTPRIVATE_WAITFORLOGINANIMATIONEND"/>
-  <int value="1884" label="CHROMEOSINFOPRIVATE_ISRUNNINGONLACROS"/>
+  <int value="1884" label="DELETED_CHROMEOSINFOPRIVATE_ISRUNNINGONLACROS"/>
   <int value="1885" label="WEBSTOREPRIVATE_GETFULLCHROMEVERSION"/>
   <int value="1886"
       label="ODFSCONFIGPRIVATE_ISFILESYSTEMPROVIDERCONTENTCACHEENABLED"/>
@@ -2766,25 +2778,45 @@ Called by update_extension_histograms.py.-->
   <int value="1898" label="STORAGE_GETKEYS"/>
   <int value="1899" label="ACCESSIBILITY_PRIVATE_SENDGESTUREINFOTOSETTINGS"/>
   <int value="1900" label="ENTERPRISEREPORTINGPRIVATE_REPORTDATAMASKINGEVENT"/>
-  <int value="1901" label="AUTOFILLPRIVATE_GETUSERANNOTATIONSENTRIES"/>
-  <int value="1902" label="AUTOFILLPRIVATE_DELETEUSERANNOTATIONSENTRY"/>
-  <int value="1903" label="AUTOFILLPRIVATE_DELETEALLUSERANNOTATIONSENTRIES"/>
+  <int value="1901" label="DELETED_AUTOFILLPRIVATE_GETUSERANNOTATIONSENTRIES"/>
+  <int value="1902" label="DELETED_AUTOFILLPRIVATE_DELETEUSERANNOTATIONSENTRY"/>
+  <int value="1903"
+      label="DELETED_AUTOFILLPRIVATE_DELETEALLUSERANNOTATIONSENTRIES"/>
   <int value="1904" label="EXPERIMENTALAIDATA_PRIVATE_GETAIDATA"/>
   <int value="1905" label="AUTOTESTPRIVATE_GETDEVICEEVENTLOG"/>
   <int value="1906" label="ACCESSIBILITY_PRIVATE_UPDATEFACEGAZEBUBBLE"/>
-  <int value="1907" label="AUTOFILLPRIVATE_HASUSERANNOTATIONSENTRIES"/>
+  <int value="1907" label="DELETED_AUTOFILLPRIVATE_HASUSERANNOTATIONSENTRIES"/>
   <int value="1908"
       label="AUTOFILLPRIVATE_ISUSERELIGIBLEFORAUTOFILLIMPROVEMENTS"/>
   <int value="1909"
       label="AUTOFILLPRIVATE_PREDICTIONIMPROVEMENTSIPHFFEATUREUSED"/>
-  <int value="1910" label="AUTOFILLPRIVATE_TRIGGERANNOTATIONSBOOTSTRAPPING"/>
+  <int value="1910"
+      label="DELETED_AUTOFILLPRIVATE_TRIGGERANNOTATIONSBOOTSTRAPPING"/>
   <int value="1911" label="ACCESSIBILITY_PRIVATE_ENABLEDRAGEVENTREWRITER"/>
   <int value="1912" label="TTSENGINE_UPDATELANGUAGE"/>
   <int value="1913" label="ODFSCONFIGPRIVATE_OPENINOFFICEAPP"/>
   <int value="1914" label="COOKIES_GETPARTITIONKEY"/>
   <int value="1915" label="CONTROLLEDFRAMEINTERNAL_SETCLIENTHINTSENABLED"/>
   <int value="1916" label="DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT"/>
+  <int value="1917" label="USERSCRIPTS_EXECUTE"/>
+  <int value="1918" label="EXPERIMENTALAIDATA_PRIVATE_GETAIDATAWITHSPECIFIER"/>
+  <int value="1919" label="AUTOTESTPRIVATE_OVERRIDELOBSTERRESPONSE"/>
+  <int value="1920" label="AUTOFILLPRIVATE_REMOVEADDRESS"/>
+  <int value="1921" label="AUTOFILLPRIVATE_REMOVEPAYMENTSENTITY"/>
+  <int value="1922" label="PRINTING_GETJOBSTATUS"/>
+  <int value="1923" label="AUTOTESTPRIVATE_OVERRIDESCANNERRESPONSESFORTESTING"/>
+  <int value="1924" label="AUTOFILLPRIVATE_LOADENTITYINSTANCES"/>
+  <int value="1925" label="AUTOFILLPRIVATE_ADDORUPDATEENTITYINSTANCE"/>
+  <int value="1926" label="AUTOFILLPRIVATE_REMOVEENTITYINSTANCE"/>
+  <int value="1927" label="ACCESSIBILITY_PRIVATE_ENABLELIVECAPTION"/>
+  <int value="1928" label="AUTOFILLPRIVATE_GETALLENTITYTYPES"/>
+  <int value="1929"
+      label="AUTOFILLPRIVATE_GETALLATTRIBUTETYPESFORENTITYTYPENAME"/>
+  <int value="1930" label="AUTOFILLPRIVATE_GETENTITYINSTANCEBYGUID"/>
+  <int value="1931" label="AUTOFILLPRIVATE_GETPAYOVERTIMEISSUERLIST"/>
 </enum>
+
+<!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
 
 <enum name="ExtensionInstallationCrxInstallError">
   <int value="0" label="NONE"/>
@@ -3030,7 +3062,7 @@ Called by update_extension_permission.py.-->
   <int value="121" label="kProxy"/>
   <int value="122" label="kImageWriterPrivate"/>
   <int value="123" label="kDeleted_ReadingListPrivate"/>
-  <int value="124" label="kRtcPrivate"/>
+  <int value="124" label="kDeleted_RtcPrivate"/>
   <int value="125" label="kSearchProvider"/>
   <int value="126" label="kSearchEnginesPrivate"/>
   <int value="127" label="kSerial"/>
@@ -3144,7 +3176,7 @@ Called by update_extension_permission.py.-->
   <int value="235" label="kSpeechRecognitionPrivate"/>
   <int value="236" label="kChromeOSDiagnostics"/>
   <int value="237" label="kChromeOSTelemetrySerialNumber"/>
-  <int value="238" label="kSharedStoragePrivate"/>
+  <int value="238" label="kDeleted_SharedStoragePrivate"/>
   <int value="239" label="kEnterpriseRemoteApps"/>
   <int value="240" label="kOffscreen"/>
   <int value="241" label="kSidePanel"/>
@@ -3348,16 +3380,6 @@ Called by update_extension_permission.py.-->
   <int value="13" label="Bad App Status"/>
 </enum>
 
-<enum name="ManifestVersion">
-  <int value="1" label="Manifest Version 1"/>
-  <int value="2" label="Manifest Version 2"/>
-  <int value="3" label="Manifest Version 3"/>
-  <int value="4" label="Manifest Version 4"/>
-  <int value="5" label="Manifest Version 5"/>
-  <int value="6" label="Manifest Version 6"/>
-  <int value="7" label="Manifest Version 7"/>
-</enum>
-
 <enum name="ManifestVersionPopulationSplit">
   <int value="0" label="No extensions"/>
   <int value="1" label="Manifest Version 2 extensions only"/>
@@ -3456,6 +3478,7 @@ Called by update_extension_permission.py.-->
   <int value="7" label="(Obsolete) ARC Kiosk"/>
   <int value="8" label="Active Directory"/>
   <int value="9" label="Web App Kiosk"/>
+  <int value="10" label="Isolated Web App Kiosk"/>
 </enum>
 
 <enum name="SettingsOverriddenDialogResult">
@@ -3513,6 +3536,17 @@ Called by update_extension_permission.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/extensions/browser/api/web_request/web_request_api.h:ProxyDecision) -->
+
+<!-- LINT.IfChange(WebRequestProxyDecisionDetailsForExtension) -->
+
+<enum name="WebRequest.ProxyDecisionDetailsForExtension">
+  <int value="0" label="kOnlyForWebRequest"/>
+  <int value="1" label="kOnlyForDeclarativeRequest"/>
+  <int value="2" label="kOnlyForWebView"/>
+  <int value="3" label="kForMixedReasons"/>
+</enum>
+
+<!-- LINT.ThenChange(/extensions/browser/api/web_request/web_request_api.cc:ProxyDecisionDetailsForExtension) -->
 
 <enum name="WebRequest.RequestHeader">
   <int value="0" label="kNone"/>

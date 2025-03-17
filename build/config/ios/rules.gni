@@ -518,6 +518,7 @@ template("ios_app_bundle") {
                                "testonly",
                                "transparent",
                                "visibility",
+                               "xcasset_compiler_flags",
                                "xcode_extra_attributes",
                              ])
 
@@ -1286,10 +1287,16 @@ template("ios_xctest_test") {
     if (xcode_version_int >= 1300) {
       extra_system_frameworks += [
         "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
-        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework",
         "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
         "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
       ]
+
+      # Xcode 16.3 moved XCUIAutomation.framework
+      if (xcode_version_int < 1630) {
+        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
+      } else {
+        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/Frameworks/XCUIAutomation.framework" ]
+      }
     }
 
     # XCTestSupport framework is required as of Xcode 14.3 or later.
@@ -1431,10 +1438,16 @@ template("ios_xcuitest_test_runner_bundle") {
     if (xcode_version_int >= 1300) {
       extra_system_frameworks += [
         "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
-        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework",
         "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
         "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
       ]
+
+      # Xcode 16.3 moved XCUIAutomation.framework
+      if (xcode_version_int < 1630) {
+        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
+      } else {
+        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/Frameworks/XCUIAutomation.framework" ]
+      }
     }
 
     # XCTestSupport framework is required as of Xcode 14.3 or later.

@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -48,45 +49,40 @@ TabStripModelChange::Remove::~Remove() = default;
 TabStripModelChange::TabStripModelChange() = default;
 
 TabStripModelChange::TabStripModelChange(Insert delta)
-    : TabStripModelChange(Type::kInserted,
-                          std::make_unique<Insert>(std::move(delta))) {}
+    : TabStripModelChange(Type::kInserted, std::move(delta)) {}
 
 TabStripModelChange::TabStripModelChange(Remove delta)
-    : TabStripModelChange(Type::kRemoved,
-                          std::make_unique<Remove>(std::move(delta))) {}
+    : TabStripModelChange(Type::kRemoved, std::move(delta)) {}
 
 TabStripModelChange::TabStripModelChange(Move delta)
-    : TabStripModelChange(Type::kMoved,
-                          std::make_unique<Move>(std::move(delta))) {}
+    : TabStripModelChange(Type::kMoved, std::move(delta)) {}
 
 TabStripModelChange::TabStripModelChange(Replace delta)
-    : TabStripModelChange(Type::kReplaced,
-                          std::make_unique<Replace>(std::move(delta))) {}
+    : TabStripModelChange(Type::kReplaced, std::move(delta)) {}
 
 TabStripModelChange::~TabStripModelChange() = default;
 
 const TabStripModelChange::Insert* TabStripModelChange::GetInsert() const {
-  DCHECK_EQ(type_, Type::kInserted);
-  return static_cast<const Insert*>(delta_.get());
+  CHECK_EQ(type_, Type::kInserted);
+  return &absl::get<Insert>(delta_);
 }
 
 const TabStripModelChange::Remove* TabStripModelChange::GetRemove() const {
-  DCHECK_EQ(type_, Type::kRemoved);
-  return static_cast<const Remove*>(delta_.get());
+  CHECK_EQ(type_, Type::kRemoved);
+  return &absl::get<Remove>(delta_);
 }
 
 const TabStripModelChange::Move* TabStripModelChange::GetMove() const {
-  DCHECK_EQ(type_, Type::kMoved);
-  return static_cast<const Move*>(delta_.get());
+  CHECK_EQ(type_, Type::kMoved);
+  return &absl::get<Move>(delta_);
 }
 
 const TabStripModelChange::Replace* TabStripModelChange::GetReplace() const {
-  DCHECK_EQ(type_, Type::kReplaced);
-  return static_cast<const Replace*>(delta_.get());
+  CHECK_EQ(type_, Type::kReplaced);
+  return &absl::get<Replace>(delta_);
 }
 
-TabStripModelChange::TabStripModelChange(Type type,
-                                         std::unique_ptr<Delta> delta)
+TabStripModelChange::TabStripModelChange(Type type, Delta delta)
     : type_(type), delta_(std::move(delta)) {}
 
 void TabStripModelChange::RemovedTab::WriteIntoTrace(
@@ -130,7 +126,7 @@ void TabStripModelChange::Replace::WriteIntoTrace(
 void TabStripModelChange::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", type_);
-  dict.Add("delta", delta_);
+  absl::visit([&dict](auto&& delta) { dict.Add("delta", delta); }, delta_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -170,9 +166,43 @@ TabGroupChange::~TabGroupChange() = default;
 TabGroupChange::VisualsChange::VisualsChange() = default;
 TabGroupChange::VisualsChange::~VisualsChange() = default;
 
+TabGroupChange::CreateChange::CreateChange(
+    TabGroupChange::TabGroupCreationReason reason,
+    tabs::TabGroupTabCollection* detached_group)
+    : reason_(reason), detached_group_(detached_group) {}
+TabGroupChange::CreateChange::~CreateChange() = default;
+
+TabGroupChange::CloseChange::CloseChange(
+    TabGroupChange::TabGroupClosureReason reason,
+    tabs::TabGroupTabCollection* detached_group)
+    : reason_(reason), detached_group_(detached_group) {}
+TabGroupChange::CloseChange::~CloseChange() = default;
+
 const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
   DCHECK_EQ(type, Type::kVisualsChanged);
   return static_cast<const VisualsChange*>(delta.get());
+}
+
+const TabGroupChange::CreateChange* TabGroupChange::GetCreateChange() const {
+  DCHECK_EQ(type, Type::kCreated);
+  return static_cast<const CreateChange*>(delta.get());
+}
+
+std::vector<tabs::TabModel*> TabGroupChange::CreateChange::GetDetachedTabs()
+    const {
+  CHECK(detached_group_);
+  return detached_group_->GetTabs();
+}
+
+std::vector<tabs::TabModel*> TabGroupChange::CloseChange::GetDetachedTabs()
+    const {
+  CHECK(detached_group_);
+  return detached_group_->GetTabs();
+}
+
+const TabGroupChange::CloseChange* TabGroupChange::GetCloseChange() const {
+  DCHECK_EQ(type, Type::kClosed);
+  return static_cast<const CloseChange*>(delta.get());
 }
 
 TabGroupChange::TabGroupChange(TabStripModel* model,
@@ -182,6 +212,22 @@ TabGroupChange::TabGroupChange(TabStripModel* model,
                      group,
                      Type::kVisualsChanged,
                      std::make_unique<VisualsChange>(std::move(deltap))) {}
+
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
+                               CreateChange deltap)
+    : TabGroupChange(model,
+                     group,
+                     Type::kCreated,
+                     std::make_unique<CreateChange>(std::move(deltap))) {}
+
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
+                               CloseChange deltap)
+    : TabGroupChange(model,
+                     group,
+                     Type::kClosed,
+                     std::make_unique<CloseChange>(std::move(deltap))) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver
@@ -214,6 +260,8 @@ void TabStripModelObserver::OnTabGroupAdded(
 void TabStripModelObserver::OnTabGroupWillBeRemoved(
     const tab_groups::TabGroupId& group_id) {}
 
+void TabStripModelObserver::OnSplitViewAdded(std::vector<int> indices) {}
+
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,
                                          TabChangeType change_type) {}
@@ -227,7 +275,9 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
                                                    int index) {}
 
 void TabStripModelObserver::TabGroupedStateChanged(
-    std::optional<tab_groups::TabGroupId> group,
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {}
 

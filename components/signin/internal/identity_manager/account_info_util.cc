@@ -20,6 +20,7 @@ namespace {
 // Keys used to store the different values in the JSON dictionary received
 // from gaia server.
 const char kGaiaIdKey[] = "id";
+const char kSubKey[] = "sub";
 const char kEmailKey[] = "email";
 const char kHostedDomainKey[] = "hd";
 const char kFullNameKey[] = "name";
@@ -36,12 +37,19 @@ std::optional<AccountInfo> AccountInfoFromUserInfo(
   // Both |gaia_id| and |email| are required value in the JSON reply, so
   // return empty result if any is missing or is empty.
   const std::string* gaia_id_value = user_info.FindString(kGaiaIdKey);
-  if (!gaia_id_value || gaia_id_value->empty())
-    return std::nullopt;
+  if (!gaia_id_value || gaia_id_value->empty()) {
+    // The GAIA ID may be returned via a different property, based on which
+    // endpoint the browser is communicating with.
+    gaia_id_value = user_info.FindString(kSubKey);
+    if (!gaia_id_value || gaia_id_value->empty()) {
+      return std::nullopt;
+    }
+  }
 
   const std::string* email_value = user_info.FindString(kEmailKey);
-  if (!email_value || email_value->empty())
+  if (!email_value || email_value->empty()) {
     return std::nullopt;
+  }
 
   AccountInfo account_info;
   account_info.email = *email_value;
@@ -50,28 +58,33 @@ std::optional<AccountInfo> AccountInfoFromUserInfo(
   // All other fields are optional, some with default values.
   const std::string* hosted_domain_value =
       user_info.FindString(kHostedDomainKey);
-  if (hosted_domain_value && !hosted_domain_value->empty())
+  if (hosted_domain_value && !hosted_domain_value->empty()) {
     account_info.hosted_domain = *hosted_domain_value;
-  else
+  } else {
     account_info.hosted_domain = kNoHostedDomainFound;
+  }
 
   const std::string* full_name_value = user_info.FindString(kFullNameKey);
-  if (full_name_value)
+  if (full_name_value) {
     account_info.full_name = *full_name_value;
+  }
 
   const std::string* given_name_value = user_info.FindString(kGivenNameKey);
-  if (given_name_value)
+  if (given_name_value) {
     account_info.given_name = *given_name_value;
+  }
 
   const std::string* locale_value = user_info.FindString(kLocaleKey);
-  if (locale_value)
+  if (locale_value) {
     account_info.locale = *locale_value;
+  }
 
   const std::string* picture_url_value = user_info.FindString(kPictureUrlKey);
-  if (picture_url_value && !picture_url_value->empty())
+  if (picture_url_value && !picture_url_value->empty()) {
     account_info.picture_url = *picture_url_value;
-  else
+  } else {
     account_info.picture_url = kNoPictureURLFound;
+  }
 
   return account_info;
 }
@@ -80,16 +93,18 @@ std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
     const base::Value::Dict& account_capabilities) {
   const base::Value::List* list =
       account_capabilities.FindList(kAccountCapabilitiesListKey);
-  if (!list)
+  if (!list) {
     return std::nullopt;
+  }
 
   // 1. Create "capability name" -> "boolean value" mapping.
   std::map<std::string, bool, std::less<>> boolean_capabilities;
   for (const auto& capability_value : *list) {
     const std::string* name =
         capability_value.GetDict().FindString(kAccountCapabilityNameKey);
-    if (!name)
+    if (!name) {
       return std::nullopt;  // name is a required field.
+    }
 
     // Check whether a capability has a boolean value.
     std::optional<bool> boolean_value =

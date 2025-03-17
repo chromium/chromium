@@ -15,9 +15,9 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/signaling/ftl_device_id_provider.h"
 #include "remoting/signaling/ftl_messaging_client.h"
 #include "remoting/signaling/ftl_registration_manager.h"
@@ -55,10 +55,10 @@ class FtlSignalStrategy::Core {
   // Methods are called in the order below when Connect() is called.
   void OnGetOAuthTokenResponse(OAuthTokenGetter::Status status,
                                const OAuthTokenInfo& token_info);
-  void OnSignInGaiaResponse(const ProtobufHttpStatus& status);
+  void OnSignInGaiaResponse(const HttpStatus& status);
   void StartReceivingMessages();
   void OnReceiveMessagesStreamStarted();
-  void OnReceiveMessagesStreamClosed(const ProtobufHttpStatus& status);
+  void OnReceiveMessagesStreamClosed(const HttpStatus& status);
   void OnMessageReceived(const ftl::Id& sender_id,
                          const std::string& sender_registration_id,
                          const ftl::ChromotingMessage& message);
@@ -68,11 +68,11 @@ class FtlSignalStrategy::Core {
                        MessagingClient::DoneCallback callback);
   void OnSendMessageResponse(const SignalingAddress& receiver,
                              const std::string& stanza_id,
-                             const ProtobufHttpStatus& status);
+                             const HttpStatus& status);
 
   // Returns true if the status is handled.
-  void HandleProtobufHttpStatusError(const base::Location& location,
-                                     const ProtobufHttpStatus& status);
+  void HandleHttpStatusError(const base::Location& location,
+                             const HttpStatus& status);
 
   void OnStanza(const SignalingAddress& sender_address,
                 std::unique_ptr<jingle_xmpp::XmlElement> stanza);
@@ -262,12 +262,11 @@ void FtlSignalStrategy::Core::OnGetOAuthTokenResponse(
   StartReceivingMessages();
 }
 
-void FtlSignalStrategy::Core::OnSignInGaiaResponse(
-    const ProtobufHttpStatus& status) {
+void FtlSignalStrategy::Core::OnSignInGaiaResponse(const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!status.ok()) {
     is_sign_in_error_ = true;
-    HandleProtobufHttpStatusError(FROM_HERE, status);
+    HandleHttpStatusError(FROM_HERE, status);
     return;
   }
   StartReceivingMessages();
@@ -308,13 +307,13 @@ void FtlSignalStrategy::Core::OnReceiveMessagesStreamStarted() {
 }
 
 void FtlSignalStrategy::Core::OnReceiveMessagesStreamClosed(
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (status.error_code() == ProtobufHttpStatus::Code::CANCELLED) {
+  if (status.error_code() == HttpStatus::Code::CANCELLED) {
     LOG(WARNING) << "ReceiveMessages stream closed with CANCELLED code.";
   }
   DCHECK(!status.ok());
-  HandleProtobufHttpStatusError(FROM_HERE, status);
+  HandleHttpStatusError(FROM_HERE, status);
 }
 
 void FtlSignalStrategy::Core::OnMessageReceived(
@@ -382,14 +381,14 @@ void FtlSignalStrategy::Core::SendMessageImpl(
 void FtlSignalStrategy::Core::OnSendMessageResponse(
     const SignalingAddress& receiver,
     const std::string& stanza_id,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status.ok()) {
     return;
   }
 
-  if (status.error_code() == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
-    HandleProtobufHttpStatusError(FROM_HERE, status);
+  if (status.error_code() == HttpStatus::Code::UNAUTHENTICATED) {
+    HandleHttpStatusError(FROM_HERE, status);
     return;
   }
 
@@ -411,9 +410,9 @@ void FtlSignalStrategy::Core::OnSendMessageResponse(
   OnStanza(receiver, std::move(error_iq));
 }
 
-void FtlSignalStrategy::Core::HandleProtobufHttpStatusError(
+void FtlSignalStrategy::Core::HandleHttpStatusError(
     const base::Location& location,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!status.ok());
   // We don't map HTTP_UNAUTHORIZED to AUTHENTICATION_FAILED here, as it will
@@ -427,8 +426,8 @@ void FtlSignalStrategy::Core::HandleProtobufHttpStatusError(
              << static_cast<int>(status.error_code())
              << ", message: " << status.error_message()
              << ", location: " << location.ToString();
-  if (status.error_code() == ProtobufHttpStatus::Code::UNAUTHENTICATED ||
-      status.error_code() == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
+  if (status.error_code() == HttpStatus::Code::UNAUTHENTICATED ||
+      status.error_code() == HttpStatus::Code::PERMISSION_DENIED) {
     oauth_token_getter_->InvalidateCache();
     registration_manager_->SignOut();
   }

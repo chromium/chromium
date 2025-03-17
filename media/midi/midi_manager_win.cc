@@ -18,6 +18,7 @@
 #include <mmreg.h>
 #include <mmsystem.h>
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -32,7 +33,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -224,7 +224,7 @@ ScopedMIDIHDR CreateMIDIHDR(size_t size) {
 
 ScopedMIDIHDR CreateMIDIHDR(const std::vector<uint8_t>& data) {
   ScopedMIDIHDR hdr(CreateMIDIHDR(data.size()));
-  base::ranges::copy(data, hdr->lpData);
+  std::ranges::copy(data, hdr->lpData);
   return hdr;
 }
 
@@ -861,7 +861,7 @@ void MidiManagerWin::ReflectActiveDeviceList(
     std::vector<std::unique_ptr<T>>* active_ports) {
   // Update existing port states.
   for (const auto& port : *known_ports) {
-    const auto& it = base::ranges::find(
+    const auto& it = std::ranges::find(
         *active_ports, *port,
         [](const auto& candidate) -> T& { return *candidate; });
     if (it == active_ports->end()) {

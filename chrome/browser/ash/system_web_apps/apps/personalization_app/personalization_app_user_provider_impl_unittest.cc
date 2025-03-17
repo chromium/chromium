@@ -65,7 +65,7 @@ using ash::personalization_app::GetAccountId;
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kFakeTestName[] = "Fake Name";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 mojo_base::BigBuffer FakeEncodedPngBuffer() {
   return mojo_base::BigBuffer(std::to_array<uint8_t>({0, 1}));
@@ -214,7 +214,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
     // Add a User then log in.
     const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
     user_manager_->AddUser(account_id);
     user_manager_->SaveUserDisplayName(
         account_id, base::UTF8ToUTF16(std::string(kFakeTestName)));
@@ -242,7 +242,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   void TearDown() override {
     user_manager_->OnUserProfileWillBeDestroyed(
-        AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId)));
+        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId));
   }
 
   TestingProfile* profile() { return profile_; }

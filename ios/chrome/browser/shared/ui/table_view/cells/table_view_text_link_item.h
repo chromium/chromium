@@ -32,6 +32,10 @@ class GURL;
 // Character range for the links in `linkURLs`. Order should match order in
 // `linkURLs`.
 @property(nonatomic, strong) NSArray* linkRanges;
+// Image of a logo shown below the text. Could be nil if no image is needed.
+@property(nonatomic, strong) UIImage* logoImage;
+// Accessibility description for the `logoImage`. Could be nil.
+@property(nonatomic, strong) NSString* logoImageDescription;
 
 @end
 
@@ -39,6 +43,9 @@ class GURL;
 @interface TableViewTextLinkCell : TableViewCell
 // The text to display.
 @property(nonatomic, readonly, strong) UITextView* textView;
+// The image to be displayed below the `textView`. Could be nil if no
+// `logoImage` is provided.
+@property(nonatomic, readonly, strong) UIImageView* logo;
 // Delegate for the TableViewTextLinkCell. Is notified when a link is
 // tapped.
 @property(nonatomic, weak) id<TableViewTextLinkCellDelegate> delegate;

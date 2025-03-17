@@ -52,11 +52,14 @@ net::CookieAccessSemantics CookieAccessDelegateImpl::GetAccessSemantics(
 }
 
 net::CookieScopeSemantics CookieAccessDelegateImpl::GetScopeSemantics(
-    const net::CanonicalCookie& cookie) const {
+    const std::string_view domain) const {
   if (!cookie_settings_) {
     return net::CookieScopeSemantics::UNKNOWN;
   }
-  return cookie_settings_->GetCookieScopeSemanticsForDomain(cookie.Domain());
+  // TODO(crbug.com/378827534)  finish propagating string_view thru cookie
+  // settings.
+  return cookie_settings_->GetCookieScopeSemanticsForDomain(
+      std::string(domain));
 }
 
 bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(

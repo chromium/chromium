@@ -14,12 +14,12 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/user_annotations/user_annotations_service.h"
 #include "device/fido/platform_credential_store.h"
 
 class PrefService;
 
 namespace autofill {
+class EntityDataManager;
 class PersonalDataManager;
 }  // namespace autofill
 
@@ -42,12 +42,12 @@ class ProfileStatisticsAggregator {
   ProfileStatisticsAggregator(
       scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
       autofill::PersonalDataManager* personal_data_manager,
+      const autofill::EntityDataManager* entity_data_manager,
       bookmarks::BookmarkModel* bookmark_model,
       history::HistoryService* history_service,
       scoped_refptr<password_manager::PasswordStoreInterface>
           profile_password_store,
       PrefService* pref_service,
-      user_annotations::UserAnnotationsService* user_annotations_service,
       std::unique_ptr<device::fido::PlatformCredentialStore>
           platform_credential_store,
       base::OnceClosure done_callback);
@@ -78,13 +78,12 @@ class ProfileStatisticsAggregator {
   const scoped_refptr<autofill::AutofillWebDataService>
       autofill_web_data_service_;
   const raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
+  const raw_ptr<const autofill::EntityDataManager> entity_data_manager_;
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   const raw_ptr<history::HistoryService> history_service_;
   const scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store_;
   const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<user_annotations::UserAnnotationsService>
-      user_annotations_service_;
 
   std::unique_ptr<device::fido::PlatformCredentialStore>
       platform_credential_store_;

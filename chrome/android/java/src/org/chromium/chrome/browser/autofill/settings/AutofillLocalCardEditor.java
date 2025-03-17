@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.Fi
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.text.SimpleDateFormat;
@@ -62,6 +62,10 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             "Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded";
     static final String ADD_CARD_FLOW_HISTOGRAM =
             "Autofill.PaymentMethodsSettingsPage.AddCardClicked";
+    static final String ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM =
+            "Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards";
+    static final String CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM =
+            "Autofill.PaymentMethodsSettingsPage.CardAddedWithoutExistingCards";
 
     protected Button mDoneButton;
     private TextInputLayout mNameLabel;
@@ -144,7 +148,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
             mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
         } else {
-            RelativeLayout creditCardExpirationAndCvcLayout =
+            LinearLayout creditCardExpirationAndCvcLayout =
                     v.findViewById(R.id.credit_card_expiration_and_cvc_layout);
             creditCardExpirationAndCvcLayout.setVisibility(View.GONE);
 
@@ -172,6 +176,11 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         addCardDataToEditFields();
         initializeButtons(v);
         RecordHistogram.recordBooleanHistogram(ADD_CARD_FLOW_HISTOGRAM, true);
+        RecordHistogram.recordBooleanHistogram(
+                ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                PersonalDataManagerFactory.getForProfile(getProfile())
+                        .getCreditCardsForSettings()
+                        .isEmpty());
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
         }
@@ -254,6 +263,13 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
 
     private void addCardDataToEditFields() {
         if (mCard == null) {
+            // If TalkBack is enabled, we want to keep the focus at the top
+            // because the user would not learn about the elements that are
+            // above the focused field.
+            if (AccessibilityState.isTouchExplorationEnabled()
+                    || AccessibilityState.isPerformGesturesEnabled()) {
+                return;
+            }
             mNumberLabel.requestFocus();
             return;
         }
@@ -394,6 +410,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             }
             RecordHistogram.recordCount100Histogram(
                     CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM, currentCardCount);
+            RecordHistogram.recordBooleanHistogram(
+                    CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM, currentCardCount == 0);
         }
 
         mScannerManager.logScanResult();

@@ -7,13 +7,13 @@
 #include <algorithm>  // For sort.
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"             // For IsArcVmEnabled.
-#include "ash/components/arc/mojom/process.mojom.h"  // For arc::mojom::ProcessInstance.
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "base/logging.h"                 // For LOG.
+#include "base/logging.h"  // For LOG.
 #include "base/process/process_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"  // For IsArcVmEnabled.
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"  // For arc::mojom::ProcessInstance.
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -27,8 +26,7 @@ import org.chromium.chrome.browser.toolbar.R;
 public class AddressBarHeaderPreference extends Preference
         implements OnSharedPreferenceChangeListener {
     private @NonNull SharedPreferencesManager mSharedPreferencesManager;
-    private @NonNull ImageView mToolbarOnTopImage;
-    private @NonNull ImageView mToolbarOnBottomImage;
+    private @NonNull ImageView mToolbarPositionImage;
 
     public AddressBarHeaderPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -41,9 +39,7 @@ public class AddressBarHeaderPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        mToolbarOnTopImage = (ImageView) holder.findViewById(R.id.toolbar_on_top);
-        mToolbarOnBottomImage = (ImageView) holder.findViewById(R.id.toolbar_on_bottom);
-
+        mToolbarPositionImage = (ImageView) holder.findViewById(R.id.toolbar_position_graphic);
         updateImageVisibility();
     }
 
@@ -74,17 +70,17 @@ public class AddressBarHeaderPreference extends Preference
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
-        mToolbarOnTopImage.setVisibility(showOnTop ? View.VISIBLE : View.GONE);
-        mToolbarOnBottomImage.setVisibility(showOnTop ? View.GONE : View.VISIBLE);
+        mToolbarPositionImage.setSelected(showOnTop);
+        int stringRes =
+                showOnTop
+                        ? R.string.address_bar_settings_currently_on_top
+                        : R.string.address_bar_settings_currently_on_bottom;
+        mToolbarPositionImage.setContentDescription(getContext().getString(stringRes));
     }
 
+    @NonNull
     @VisibleForTesting
-    ImageView getToolbarOnTopImage() {
-        return mToolbarOnTopImage;
-    }
-
-    @VisibleForTesting
-    ImageView getToolbarOnBottomImage() {
-        return mToolbarOnBottomImage;
+    ImageView getToolbarPositionImage() {
+        return mToolbarPositionImage;
     }
 }

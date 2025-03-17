@@ -27,18 +27,22 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -147,12 +151,12 @@ void SecurityContext::SetSandboxFlags(
 }
 
 void SecurityContext::SetPermissionsPolicy(
-    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+    std::unique_ptr<network::PermissionsPolicy> permissions_policy) {
   permissions_policy_ = std::move(permissions_policy);
 }
 
 void SecurityContext::SetReportOnlyPermissionsPolicy(
-    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+    std::unique_ptr<network::PermissionsPolicy> permissions_policy) {
   report_only_permissions_policy_ = std::move(permissions_policy);
 }
 
@@ -167,13 +171,28 @@ void SecurityContext::SetReportOnlyDocumentPolicy(
 }
 
 SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature) const {
+    network::mojom::PermissionsPolicyFeature feature) const {
   DCHECK(permissions_policy_);
   bool permissions_policy_result =
       permissions_policy_->IsFeatureEnabled(feature);
   bool report_only_permissions_policy_result =
       !report_only_permissions_policy_ ||
       report_only_permissions_policy_->IsFeatureEnabled(feature);
+
+  if (permissions_policy_result && IsPrivacySensitiveFeature(feature)) {
+    if (LocalDOMWindow* window =
+            DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+      if (LocalFrame* frame = window->GetFrame()) {
+        AdTracker* ad_tracker = frame->GetAdTracker();
+        if (ad_tracker && ad_tracker->IsAdScriptInStack(
+                              AdTracker::StackType::kBottomAndTop)) {
+          window->CountPermissionsPolicyUsage(
+              feature, UseCounterImpl::PermissionsPolicyUsageType::
+                           kEnabledPrivacySensitive);
+        }
+      }
+    }
+  }
 
   bool should_report =
       !permissions_policy_result || !report_only_permissions_policy_result;

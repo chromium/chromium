@@ -250,7 +250,7 @@
     "properties": {
       "autoVerify": {
         "$ref": "ContentSetting",
-        "description": "Whether to allow sites to use the <a href='https://developer.chrome.com/docs/privacy-sandbox/trust-tokens/'>Private State Tokens API</a>. One of <br><var>allow</var>: Allow sites to use the Private State Tokens API, <br><var>block</var>: Block sites from using the Private State Tokens API. <br>Default is <var>allow</var>.<br> The primary URL is the URL of the top-level frame. The secondary URL is not used. NOTE: When calling <code>set()</code>, the primary pattern must be <code><all_urls></code>.",
+        "description": "Whether to allow sites to use the <a href='https://developer.chrome.com/docs/privacy-sandbox/trust-tokens/'>Private State Tokens API</a>. One of <br><var>allow</var>: Allow sites to use the Private State Tokens API, <br><var>block</var>: Block sites from using the Private State Tokens API. <br>Default is <var>allow</var>.<br> When calling <code>set()</code>, the primary URL pattern must be <code>&lt;all_urls&gt;</code>. The secondary URL is not used.",
         "value": [
           "anti-abuse",
           {"$ref":"AutoVerifyContentSetting"}
@@ -330,7 +330,7 @@
       },
       "microphone": {
         "$ref": "ContentSetting",
-        "description": "Whether to allow sites to access the microphone. One of <br><var>allow</var>: Allow sites to access the microphone,<br><var>block</var>: Don't allow sites to access the microphone,<br><var>ask</var>: Ask when a site wants to access the microphone. <br>Default is <var>ask</var>.<br>The primary URL is the URL of the document which requested microphone access. The secondary URL is not used.<br>NOTE: The 'allow' setting is not valid if both patterns are '<all_urls>'.",
+        "description": "Whether to allow sites to access the microphone. One of <br><var>allow</var>: Allow sites to access the microphone,<br><var>block</var>: Don't allow sites to access the microphone,<br><var>ask</var>: Ask when a site wants to access the microphone. <br>Default is <var>ask</var>.<br>The primary URL is the URL of the document which requested microphone access. The secondary URL is not used.<br>NOTE: The 'allow' setting is not valid if both patterns are '&lt;all_urls&gt;'.",
         "value": [
           "media-stream-mic",
           {"$ref":"MicrophoneContentSetting"}
@@ -346,7 +346,7 @@
       },
       "camera": {
         "$ref": "ContentSetting",
-        "description": "Whether to allow sites to access the camera. One of <br><var>allow</var>: Allow sites to access the camera,<br><var>block</var>: Don't allow sites to access the camera,<br><var>ask</var>: Ask when a site wants to access the camera. <br>Default is <var>ask</var>.<br>The primary URL is the URL of the document which requested camera access. The secondary URL is not used.<br>NOTE: The 'allow' setting is not valid if both patterns are '<all_urls>'.",
+        "description": "Whether to allow sites to access the camera. One of <br><var>allow</var>: Allow sites to access the camera,<br><var>block</var>: Don't allow sites to access the camera,<br><var>ask</var>: Ask when a site wants to access the camera. <br>Default is <var>ask</var>.<br>The primary URL is the URL of the document which requested camera access. The secondary URL is not used.<br>NOTE: The 'allow' setting is not valid if both patterns are '&lt;all_urls&gt;'.",
         "value": [
           "media-stream-camera",
           {"$ref":"CameraContentSetting"}

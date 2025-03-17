@@ -29,6 +29,8 @@ COMPONENT_EXPORT(OZONE_SWITCHES) extern const char kDisableExplicitDmaFences[];
 
 COMPONENT_EXPORT(OZONE_SWITCHES) extern const char kOzoneOverrideScreenSize[];
 
+COMPONENT_EXPORT(OZONE_SWITCHES) extern const char kRenderNodeOverride[];
+
 }  // namespace switches
 
 #endif  // UI_OZONE_PUBLIC_OZONE_SWITCHES_H_

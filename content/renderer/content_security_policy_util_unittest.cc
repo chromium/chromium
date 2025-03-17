@@ -25,7 +25,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversion) {
       ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP),
-      false, std::vector<std::string>(),
+      false, std::vector<std::string>(), network::mojom::CSPRequireSRIFor::None,
       network::mojom::CSPRequireTrustedTypesFor::None, nullptr,
       std::vector<std::string>());
 
@@ -105,7 +105,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversionForCSPSourceList) {
       network::mojom::ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP),
-      false, std::vector<std::string>(),
+      false, std::vector<std::string>(), network::mojom::CSPRequireSRIFor::None,
       network::mojom::CSPRequireTrustedTypesFor::None, nullptr,
       std::vector<std::string>());
 

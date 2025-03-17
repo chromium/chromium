@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -25,7 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/actions/action_id.h"
+#include "ui/actions/actions.h"
 
 CastToolbarButtonController::CastToolbarButtonController(Profile* profile)
     : CastToolbarButtonController(
@@ -73,7 +76,7 @@ void CastToolbarButtonController::OnIssuesCleared() {
 void CastToolbarButtonController::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes) {
   has_local_display_route_ =
-      base::ranges::any_of(routes, [](const media_router::MediaRoute& route) {
+      std::ranges::any_of(routes, [](const media_router::MediaRoute& route) {
         // The Cast icon should be hidden if there only are
         // non-local and non-display routes.
         if (!route.is_local()) {
@@ -133,13 +136,8 @@ void CastToolbarButtonController::OnContextMenuHidden() {
 }
 
 void CastToolbarButtonController::UpdateIcon() {
-  // Non-ToolbarPinning path updates the icon via observers.
-  if (features::IsToolbarPinningEnabled()) {
-    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
-      browser->browser_window_features()
-          ->cast_browser_controller()
-          ->UpdateIcon();
-    }
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    browser->browser_window_features()->cast_browser_controller()->UpdateIcon();
   }
 }
 
@@ -185,12 +183,40 @@ CastToolbarButtonController::CastToolbarButtonController(
       base::BindRepeating(
           &CastToolbarButtonController::MaybeToggleIconVisibility,
           base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    pref_change_registrar_.Add(
+        media_router::prefs::kMediaRouterMediaRemotingEnabled,
+        base::BindRepeating(
+            &CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction,
+            base::Unretained(this)));
+  }
 }
 
 void CastToolbarButtonController::MaybeToggleIconVisibility() {
-  if (features::IsToolbarPinningEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    // Pin media router if it should be pinned based on enterprise policy.
+    if (IsActionShownByPolicy(profile_)) {
+      PinnedToolbarActionsModel* const actions_model =
+          PinnedToolbarActionsModel::Get(profile_);
+      actions_model->UpdatePinnedState(kActionRouteMedia, true);
+    }
+
     for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+      auto* action_item = actions::ActionManager::Get().FindAction(
+          kActionRouteMedia, browser->browser_actions()->root_action_item());
+      // Update the action item's pinnable state based on the enterprise policy.
+      if (IsActionShownByPolicy(profile_)) {
+        action_item->SetProperty(
+            actions::kActionItemPinnableKey,
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kEnterpriseControlled));
+      } else {
+        action_item->SetProperty(
+            actions::kActionItemPinnableKey,
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kPinnable));
+      }
+      // Update the toolbar button's visibility.
       if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
                                 ->toolbar()
                                 ->pinned_toolbar_actions_container()) {
@@ -209,5 +235,16 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
     for (Observer& observer : observers_) {
       observer.HideIcon();
     }
+  }
+}
+
+void CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction() {
+  bool checked = profile_->GetPrefs()->GetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled);
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    actions::ActionManager::Get()
+        .FindAction(kActionMediaRouterToggleMediaRemoting,
+                    browser->browser_actions()->root_action_item())
+        ->SetChecked(checked);
   }
 }

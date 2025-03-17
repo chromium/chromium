@@ -11,13 +11,12 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
 // Keys are manually ordered from the least important to the most important.
-const auto kTestKeys = std::to_array<TaskSourceSortKey>({
+constexpr auto kTestKeys = std::to_array<TaskSourceSortKey>({
     {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(2000)},
     {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(1000)},
     {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(2000), 1},
@@ -33,13 +32,15 @@ const auto kTestKeys = std::to_array<TaskSourceSortKey>({
 TEST(TaskSourceSortKeyTest, OperatorLessThan) {
   for (size_t i = 0; i < std::size(kTestKeys); i++) {
     // All the entries before the index of the current key are smaller.
-    for (size_t j = 0; j < i; j++)
+    for (size_t j = 0; j < i; j++) {
       EXPECT_LT(kTestKeys[j], kTestKeys[i]);
+    }
 
     // All the other entries (including itself) are not smaller than the current
     // key.
-    for (size_t j = i; j < std::size(kTestKeys); j++)
+    for (size_t j = i; j < std::size(kTestKeys); j++) {
       EXPECT_FALSE(kTestKeys[j] < kTestKeys[i]);
+    }
   }
 }
 
@@ -48,10 +49,11 @@ TEST(TaskSourceSortKeyTest, OperatorEqual) {
   // their index is the same.
   for (size_t i = 0; i < std::size(kTestKeys); i++) {
     for (size_t j = 0; j < std::size(kTestKeys); j++) {
-      if (i == j)
+      if (i == j) {
         EXPECT_EQ(kTestKeys[i], kTestKeys[j]);
-      else
+      } else {
         EXPECT_FALSE(kTestKeys[i] == kTestKeys[j]);
+      }
     }
   }
 }
@@ -61,13 +63,13 @@ TEST(TaskSourceSortKeyTest, OperatorNotEqual) {
   // their index is different.
   for (size_t i = 0; i < std::size(kTestKeys); i++) {
     for (size_t j = 0; j < std::size(kTestKeys); j++) {
-      if (i != j)
+      if (i != j) {
         EXPECT_NE(kTestKeys[i], kTestKeys[j]);
-      else
+      } else {
         EXPECT_FALSE(kTestKeys[i] != kTestKeys[j]);
+      }
     }
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

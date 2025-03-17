@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/network_isolation_key.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,16 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
                                token),
       net::NetworkIsolationKey(net::SchemefulSite(GURL("http://foo.a.test/")),
                                net::SchemefulSite(GURL("http://bar.b.test/")),
-                               token)};
+                               token),
+      net::NetworkIsolationKey(
+          net::SchemefulSite(GURL("http://foo.a.test/")),
+          net::SchemefulSite(GURL("http://bar.b.test/")), std::nullopt,
+          net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+      net::NetworkIsolationKey(net::SchemefulSite(GURL("http://foo.a.test/")),
+                               net::SchemefulSite(GURL("http://bar.b.test/")),
+                               std::nullopt,
+                               net::NetworkIsolationPartition::kGeneral),
+  };
 
   for (auto original : keys) {
     SCOPED_TRACE(original.ToDebugString());

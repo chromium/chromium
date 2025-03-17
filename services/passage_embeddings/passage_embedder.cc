@@ -4,14 +4,16 @@
 
 #include "services/passage_embeddings/passage_embedder.h"
 
-#include "base/containers/heap_array.h"
+#include <utility>
+
 #include "base/files/file.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/optimization_guide/core/tflite_op_resolver.h"
+#include "services/passage_embeddings/passage_embeddings_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
 
 namespace {
@@ -57,26 +59,30 @@ namespace passage_embeddings {
 
 PassageEmbedder::PassageEmbedder(
     mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
-    mojom::PassageEmbedderParamsPtr embedder_params)
+    mojom::PassageEmbedderParamsPtr embedder_params,
+    base::OnceCallback<void()> on_disconnect)
     : receiver_(this, std::move(receiver)),
       embeddings_cache_(embedder_params->embedder_cache_size),
       user_initiated_priority_num_threads_(
           embedder_params->user_initiated_priority_num_threads),
       passive_priority_num_threads_(
-          embedder_params->passive_priority_num_threads) {}
+          embedder_params->passive_priority_num_threads),
+      allow_gpu_execution_(embedder_params->allow_gpu_execution) {
+  receiver_.set_disconnect_handler(std::move(on_disconnect));
+}
 
 PassageEmbedder::~PassageEmbedder() = default;
 
 bool PassageEmbedder::LoadModels(
-    base::File* embeddings_model_file,
-    base::File* sp_file,
+    base::File embeddings_model_file,
+    base::File sp_file,
     uint32_t embeddings_input_window_size,
     std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
   UnloadModelFiles();
 
   base::ElapsedTimer embeddings_timer;
-  bool embeddings_load_success =
-      LoadEmbeddingsModelFile(embeddings_model_file, std::move(tflite_engine));
+  bool embeddings_load_success = LoadEmbeddingsModelFile(
+      std::move(embeddings_model_file), std::move(tflite_engine));
   base::UmaHistogramBoolean(
       "History.Embeddings.Embedder.EmbeddingsModelLoadSucceeded",
       embeddings_load_success);
@@ -88,7 +94,7 @@ bool PassageEmbedder::LoadModels(
       embeddings_timer.Elapsed());
 
   base::ElapsedTimer sp_timer;
-  bool sp_load_success = LoadSentencePieceModelFile(sp_file);
+  bool sp_load_success = LoadSentencePieceModelFile(std::move(sp_file));
   base::UmaHistogramBoolean(
       "History.Embeddings.Embedder.SentencePieceModelLoadSucceeded",
       sp_load_success);
@@ -104,16 +110,15 @@ bool PassageEmbedder::LoadModels(
   return true;
 }
 
-bool PassageEmbedder::LoadSentencePieceModelFile(base::File* sp_file) {
-  auto sp_file_contents =
-      base::HeapArray<uint8_t>::Uninit(sp_file->GetLength());
-  std::optional<size_t> bytes_read = sp_file->Read(0, sp_file_contents);
-  if (!bytes_read.has_value()) {
+bool PassageEmbedder::LoadSentencePieceModelFile(base::File sp_file) {
+  base::MemoryMappedFile sp_model;
+  bool was_mapped = sp_model.Initialize(std::move(sp_file));
+  if (!was_mapped) {
     return false;
   }
 
   auto model_proto = std::make_unique<sentencepiece::ModelProto>();
-  model_proto->ParseFromArray(sp_file_contents.data(), sp_file_contents.size());
+  model_proto->ParseFromArray(sp_model.data(), sp_model.length());
   sp_processor_ = std::make_unique<sentencepiece::SentencePieceProcessor>();
   if (!(sp_processor_->Load(std::move(model_proto)).ok())) {
     sp_processor_.reset();
@@ -123,13 +128,12 @@ bool PassageEmbedder::LoadSentencePieceModelFile(base::File* sp_file) {
 }
 
 bool PassageEmbedder::LoadEmbeddingsModelFile(
-    base::File* embeddings_file,
+    base::File embeddings_file,
     std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
-  embeddings_model_buffer_ =
-      base::HeapArray<uint8_t>::Uninit(embeddings_file->GetLength());
-  std::optional<size_t> bytes_read =
-      embeddings_file->Read(0, embeddings_model_buffer_);
-  if (!bytes_read.has_value()) {
+  embeddings_model_.emplace();
+  bool was_mapped = embeddings_model_->Initialize(std::move(embeddings_file));
+  if (!was_mapped) {
+    embeddings_model_.reset();
     return false;
   }
 
@@ -157,11 +161,11 @@ bool PassageEmbedder::BuildExecutionTask() {
 
   // Build a new task from the model bytes and the task priority.
   auto tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
-      std::make_unique<optimization_guide::TFLiteOpResolver>());
+      std::make_unique<PassageEmbeddingsOpResolver>(allow_gpu_execution_));
 
   absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
-      reinterpret_cast<const char*>(embeddings_model_buffer_.data()),
-      embeddings_model_buffer_.size());
+      reinterpret_cast<const char*>(embeddings_model_->data()),
+      embeddings_model_->length());
   if (!model_load_status.ok()) {
     return false;
   }
@@ -192,7 +196,7 @@ bool PassageEmbedder::BuildExecutionTask() {
 void PassageEmbedder::UnloadModelFiles() {
   sp_processor_.reset();
   loaded_model_.reset();
-  embeddings_model_buffer_ = base::HeapArray<uint8_t>();
+  embeddings_model_.reset();
 }
 
 std::optional<OutputType> PassageEmbedder::Execute(InputType input) {

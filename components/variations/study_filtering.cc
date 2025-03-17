@@ -31,7 +31,7 @@ base::Time ConvertStudyDateToBaseTime(int64_t date_time) {
 template <typename Collection>
 bool ContainsStringIgnoreCaseASCII(const Collection& collection,
                                    const std::string& value) {
-  return base::ranges::any_of(collection, [&value](const std::string& s) {
+  return std::ranges::any_of(collection, [&value](const std::string& s) {
     return base::EqualsCaseInsensitiveASCII(s, value);
   });
 }

@@ -47,7 +47,7 @@
 namespace blink {
 
 template <typename T>
-class AudioArray {
+class AudioArray final {
   USING_FAST_MALLOC(AudioArray);
 
  public:

@@ -19,6 +19,9 @@ class BookmarkNode;
 
 namespace sync_bookmarks {
 
+constexpr char kBatchUploadDurationHistogramName[] =
+    "Bookmarks.BatchUploadDuration";
+
 class BookmarkModelViewUsingLocalOrSyncableNodes;
 
 class BookmarkLocalDataBatchUploader
@@ -39,6 +42,8 @@ class BookmarkLocalDataBatchUploader
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;
+  void TriggerLocalDataMigrationForItems(
+      std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
  private:
   bool CanUpload() const;

@@ -84,7 +84,7 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual int GetInitialShowState() const = 0;
 
   virtual int GetNonClientComponent(const gfx::Point& point) const = 0;
-  virtual void GetWindowMask(const gfx::Size& size, SkPath* mask) = 0;
+  virtual void GetWindowMask(const gfx::Size& size_px, SkPath* mask) = 0;
 
   // Returns true if the delegate modifies |insets| to define a custom client
   // area for the window, false if the default client area should be used. If

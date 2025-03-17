@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/ozone/platform/wayland/emulate/wayland_input_emulate.h"
 
 #include <ui-controls-unstable-v1-client-protocol.h>
@@ -239,53 +244,9 @@ void WaylandInputEmulate::EmulateTouch(int action,
   wayland_proxy->FlushForTesting();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void WaylandInputEmulate::EmulateUpdateDisplay(const std::string& display_specs,
-                                               uint32_t request_id) {
-  VLOG(1) << "Updating display specs to: " << display_specs;
-  if (zcr_ui_controls_v1_get_version(ui_controls_) >=
-      ZCR_UI_CONTROLS_V1_DISPLAY_INFO_LIST_DONE_SINCE_VERSION) {
-    const std::vector<display::Display>& existing_displays =
-        display::Screen::GetScreen()->GetAllDisplays();
-    auto info_list = display::CreateDisplayInfoListFromSpecs(
-        display_specs, std::vector<display::Display>(), false);
-
-    // Reuse existing display IDs on the client side, and let the server side
-    // generate new IDs.
-    size_t existing_display_index = 0;
-    for (const auto& pending_display : info_list) {
-      if (existing_display_index < existing_displays.size()) {
-        auto id_pair = ui::wayland::ToWaylandDisplayIdPair(
-            existing_displays[existing_display_index].id());
-        zcr_ui_controls_v1_set_display_info_id(ui_controls_, id_pair.high,
-                                               id_pair.low);
-        ++existing_display_index;
-      }
-
-      zcr_ui_controls_v1_set_display_info_size(
-          ui_controls_, pending_display.bounds_in_native().width(),
-          pending_display.bounds_in_native().height());
-
-      float device_scale_factor = pending_display.device_scale_factor();
-      uint32_t scale_factor_value =
-          *reinterpret_cast<const uint32_t*>(&device_scale_factor);
-      zcr_ui_controls_v1_set_display_info_device_scale_factor(
-          ui_controls_, scale_factor_value);
-      zcr_ui_controls_v1_display_info_done(ui_controls_);
-    }
-
-    zcr_ui_controls_v1_display_info_list_done(ui_controls_, request_id);
-    auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-    wayland_proxy->FlushForTesting();
-  }
-}
-#endif
-
-#if BUILDFLAG(IS_LINUX)
 void WaylandInputEmulate::ForceUseScreenCoordinatesOnce() {
   force_use_screen_coordinates_once_ = true;
 }
-#endif
 
 void WaylandInputEmulate::DestroyTestWindowState(TestWindow* window) {
   if (window->frame_callback) {

@@ -70,6 +70,7 @@ class ChromeTabStripDelegateBrowserTest
     EXPECT_EQ(base::UTF8ToUTF16(title), tab.title);
     EXPECT_EQ(url, tab.url);
     EXPECT_GT(tab.last_access_timetick, base::TimeTicks());
+    EXPECT_GT(tab.id, 0);
   }
 
  private:

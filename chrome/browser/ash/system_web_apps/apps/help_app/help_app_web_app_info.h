@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -39,12 +39,6 @@ class HelpAppSystemAppDelegate : public SystemWebAppDelegate {
       const GURL& url,
       const apps::AppLaunchParams& params) const override;
 };
-
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForHelpWebApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForHelpApp(Browser*);
 
 }  // namespace ash
 

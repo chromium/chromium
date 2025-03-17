@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {MultiDeviceSetupInterface} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
+
+/** @typedef {*} MultiDeviceSetupInterface */
 
 /**
  * @implements {MultiDeviceSetupInterface}

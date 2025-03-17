@@ -110,10 +110,12 @@ public class DataSharingNotificationManagerUnitTest {
     @Test
     public void testShowOtherJoinedNotification() {
         String contentTitle = "blah blah expected text";
-        mDataSharingNotificationManager.showOtherJoinedNotification(contentTitle, SYNC_GROUP_ID1);
+        mDataSharingNotificationManager.showOtherJoinedNotification(
+                contentTitle, SYNC_GROUP_ID1, /* notificationId= */ 1234);
         verify(mNotificationManagerProxy).notify(mNotifyCaptor.capture());
 
         NotificationWrapper notificationWrapper = mNotifyCaptor.getValue();
+        assertEquals(1234, notificationWrapper.getMetadata().id);
         Notification notification = notificationWrapper.getNotification();
         assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
         assertEquals(ChannelId.COLLABORATION, notification.getChannelId());

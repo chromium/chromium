@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A helper function for using JsTemplate. See jstemplate_builder.h for more
-// info.
-
 #include "ui/base/webui/jstemplate_builder.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/check.h"
-#include "base/json/json_file_value_serializer.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -39,7 +37,6 @@ void AppendJsonHtml(const base::Value::Dict& json, std::string* output) {
 
 // Appends the source for load_time_data.js in a script tag.
 void AppendLoadTimeData(std::string* output) {
-  // fetch and cache the pointer of the jstemplate resource source text.
   std::string load_time_data_src =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS);
@@ -83,11 +80,10 @@ void AppendJsonJS(const base::Value::Dict& json,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  std::string jstext;
-  JSONStringValueSerializer serializer(&jstext);
-  serializer.Serialize(json);
+  std::optional<std::string> jstext = base::WriteJson(json);
+  CHECK(jstext);
   output->append("loadTimeData.data = ");
-  output->append(jstext);
+  output->append(*jstext);
   output->append(";");
 }
 

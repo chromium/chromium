@@ -135,6 +135,12 @@ struct NetworkServiceParams {
   // case the system DNS resolver cannot always run sandboxed.
   pending_remote<SystemDnsResolver>? system_dns_resolver;
 
+  // A boolean provided by the Browser Process in order to enable or disable
+  // the HappyEyeballs V3 feature explicitly during
+  // NetworkService::Initialize().
+  // TODO(crbug.com/401410305): Consider using boolean without std::optional.
+  bool? happy_eyeballs_v3_enabled;
+
   // The policy used for bypassing requests that are eligible for IP Protection.
   // Even if a domain is part of the masked domain list, the bypass policy can
   // be used to bypass certain network requests from IP Protection.
@@ -388,6 +394,28 @@ interface NetworkService {
   // the MDL as well.
   UpdateMaskedDomainList(mojo_base.mojom.ProtoWrapper masked_domain_list,
                          array<string> exclusion_list);
+
+  // Updates the Masked Domain List data used to generate custom proxy configs
+  // for the Privacy Proxy, with files pointing to flatbuffer files. Any
+  // existing NetworkContexts that are using the custom proxy configs will have
+  // their configs updated. This is not compatible with MDL policies that
+  // require exclusion list.
+  //
+  // These files are opened read-only, but are also deleted. Per comments in
+  // the mojom traits for `ReadOnlyFile`, the underlying file must not be
+  // deleted, so we use `File` here.
+  //
+  // File sizes must be included here, as otherwise `MemoryMappedFile` cannot
+  // tell how much memory to map.
+  UpdateMaskedDomainListFlatbuffer(mojo_base.mojom.File default_file,
+                                   uint64 default_file_size,
+                                   mojo_base.mojom.File regular_browsing_file,
+                                   uint64 regular_browsing_file_size);
+
+  // Updates the Probabilistic Reveal Token registry used to determine whether a
+  // request should include a PRT in the headers.
+  UpdateProbabilisticRevealTokenRegistry(
+      mojo_base.mojom.DictionaryValue registry);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when

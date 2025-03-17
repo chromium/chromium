@@ -7,9 +7,11 @@
 #include <windows.h>
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -78,15 +80,14 @@ std::optional<base::Value::Dict> ReadValue(const base::win::RegKey& key,
 bool WriteValue(base::win::RegKey& key,
                 const wchar_t* value_name,
                 const base::Value::Dict& value) {
-  std::string value_json_utf8;
-  JSONStringValueSerializer serializer(&value_json_utf8);
-  if (!serializer.Serialize(value)) {
+  std::optional<std::string> value_json_utf8 = base::WriteJson(value);
+  if (!value_json_utf8.has_value()) {
     LOG(ERROR) << "Failed to serialize '" << value_name << "'";
     return false;
   }
 
   // presubmit: allow wstring
-  std::wstring value_json = base::UTF8ToWide(value_json_utf8);
+  std::wstring value_json = base::UTF8ToWide(*value_json_utf8);
   LONG result = key.WriteValue(value_name, value_json.c_str());
   if (result != ERROR_SUCCESS) {
     SetLastError(result);

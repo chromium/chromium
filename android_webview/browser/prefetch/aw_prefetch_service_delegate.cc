@@ -11,18 +11,19 @@ namespace android_webview {
 
 AwPrefetchServiceDelegate::AwPrefetchServiceDelegate(
     AwBrowserContext* browser_context)
-    : browser_context_(*browser_context) {}
+    : browser_context_(*browser_context) {
+  accept_language_header_ = browser_context->GetDefaultAcceptLanguageHeader();
+}
 
 AwPrefetchServiceDelegate::~AwPrefetchServiceDelegate() = default;
 
-std::string AwPrefetchServiceDelegate::GetMajorVersionNumber() {
-  NOTREACHED() << "Only used for isolated network context. WebView doesn't use "
-                  "an isolated network context for app triggered prefetching.";
+void AwPrefetchServiceDelegate::SetAcceptLanguageHeader(
+    std::string accept_language_header) {
+  accept_language_header_ = accept_language_header;
 }
 
 std::string AwPrefetchServiceDelegate::GetAcceptLanguageHeader() {
-  NOTREACHED() << "Only used for isolated network context. WebView doesn't use "
-                  "an isolated network context for app triggered prefetching.";
+  return accept_language_header_;
 }
 
 GURL AwPrefetchServiceDelegate::GetDefaultPrefetchProxyHost() {

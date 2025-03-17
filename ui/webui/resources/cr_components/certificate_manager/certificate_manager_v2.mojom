@@ -46,12 +46,15 @@ enum CertificateSource {
   kEnterpriseDistrustedCerts,
 
   // Trusted certs from platform (user-added).
+  [EnableIfNot=is_chromeos]
   kPlatformUserTrustedCerts,
 
   // Intermediate certs from platform (user-added).
+  [EnableIfNot=is_chromeos]
   kPlatformUserIntermediateCerts,
 
   // Distrusted certs from platform (user-added).
+  [EnableIfNot=is_chromeos]
   kPlatformUserDistrustedCerts,
 
   // Enterprise provisioned client certificates. Only enabled on platforms
@@ -73,9 +76,11 @@ enum CertificateSource {
 
 struct CertManagementMetadata {
   // If true, user-added certs are imported from the system.
+  [EnableIfNot=is_chromeos]
   bool include_system_trust_store;
 
   // Number of user-added certs that could be imported from the system.
+  [EnableIfNot=is_chromeos]
   uint8 num_user_added_system_certs;
 
   // If true, an enterprise policy controls whether user-added certs are
@@ -165,4 +170,7 @@ interface CertificateManagerPage {
 
   // Triggers a reload of the certificates for the given sources.
   TriggerReload(array<CertificateSource> sources);
+
+  // Trigger an update to refetch the Cert Metadata
+  TriggerMetadataUpdate();
 };

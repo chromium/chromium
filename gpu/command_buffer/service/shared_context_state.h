@@ -133,6 +133,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool IsGraphiteMetal() const;
   bool IsGraphiteDawnMetal() const;
   bool IsGraphiteDawnD3D() const;
+  bool IsGraphiteDawnD3D11() const;
   bool IsGraphiteDawnVulkan() const;
   bool IsGraphiteDawnVulkanSwiftShader() const;
 

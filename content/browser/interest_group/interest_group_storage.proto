@@ -18,18 +18,44 @@ message AdProtos {
     repeated string selectable_buyer_and_seller_reporting_ids = 8;
     optional string ad_render_id = 6;
     repeated string allowed_reporting_origins = 7;
+    optional string creative_scanning_metadata = 9;
   }
   repeated AdProto ads = 1;
 }
 
-message BiddingAndAuctionServerKeyProtos {
+message BiddingAndAuctionServerKeysProtos {
   message BiddingAndAuctionServerKeyProto {
     bytes key = 1;
-    int32 id = 2;
+    optional int32 id = 2 [deprecated = true];
+    string id_str = 3;
   }
+  message BiddingAndAuctionServerKeyProtos {
+    repeated BiddingAndAuctionServerKeyProto keys = 1;
+  }
+
+  // Global keys
   repeated BiddingAndAuctionServerKeyProto keys = 1;
+
+  // Map from origin scope to the list of keys.
+  map<string, BiddingAndAuctionServerKeyProtos> origin_scoped_keys = 2;
 }
 
 message KAnonKeyProtos {
   repeated bytes keys = 1;
+}
+
+message ListOfOrigins {
+  repeated string origins = 1;
+}
+
+message ListOfTimestamps {
+  repeated int64 timestamps = 1;
+}
+
+message ListOfTimestampAndCounts {
+  message Entry {
+    optional int64 timestamp = 1;
+    optional int64 count = 2;
+  }
+  repeated Entry timestamp_and_counts = 1;
 }

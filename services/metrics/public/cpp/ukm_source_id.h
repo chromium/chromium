@@ -98,8 +98,15 @@ class METRICS_EXPORT SourceIdObj {
     // report
     // interval; it will not be kept in memory between different reports.
     NOTIFICATION_ID = 13,
+    // Source ID type for Content Decryption Module triggered events.
+    // The CDM persists a CDM origin which it receives from the renderer, and is
+    // used for crash reporting. To avoid making a round trip from the utility
+    // process where the CDM is hosted, and because the adapter exists for ~ 5
+    // more seconds after the renderer/tab is tore down, the events are logged
+    // with a CDM_ID SourceId type to specify exactly where it is coming from.
+    CDM_ID = 14,
 
-    kMaxValue = NOTIFICATION_ID,
+    kMaxValue = CDM_ID,
   };
 
   // Default constructor has the invalid value.

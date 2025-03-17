@@ -44,35 +44,6 @@ RawDrawImageBackingFactory::CreateSharedImage(
   return texture;
 }
 
-std::unique_ptr<SharedImageBacking>
-RawDrawImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    bool is_thread_safe,
-    base::span<const uint8_t> data) {
-  NOTREACHED() << "Not supported";
-}
-
-std::unique_ptr<SharedImageBacking>
-RawDrawImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED();
-}
-
 bool RawDrawImageBackingFactory::CanUseRawDrawImageBacking(
     SharedImageUsageSet usage,
     GrContextType gr_context_type) const {

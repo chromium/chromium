@@ -60,7 +60,7 @@ public final class AuxiliarySearchDonorTest {
     @Before
     public void setUp() {
         mActivityTestRule.launchActivity(null);
-        mAuxiliarySearchDonor = new AuxiliarySearchDonor(mActivityTestRule.getActivity());
+        mAuxiliarySearchDonor = AuxiliarySearchDonor.getInstance();
 
         mIds = new int[] {1, 2};
         mUrls = new String[] {"Url1", "Url2"};
@@ -81,7 +81,10 @@ public final class AuxiliarySearchDonorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures("AndroidAppIntegrationV2:content_ttl_hours/5")
+    @EnableFeatures({
+        "AndroidAppIntegrationV2:content_ttl_hours/5",
+        "AndroidAppIntegrationWithFavicon:skip_schema_check/true"
+    })
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
     public void testDonateTabs() {
         ThreadUtils.runOnUiThreadBlocking(() -> mAuxiliarySearchDonor.createSessionAndInit());
@@ -100,9 +103,9 @@ public final class AuxiliarySearchDonorTest {
             entryList.add(entry);
         }
 
-        Map<Integer, Bitmap> map = new HashMap<>();
-        map.put(mIds[0], mBitmap[0]);
-        map.put(mIds[1], mBitmap[1]);
+        Map<AuxiliarySearchEntry, Bitmap> map = new HashMap<>();
+        map.put(entryList.get(0), mBitmap[0]);
+        map.put(entryList.get(1), mBitmap[1]);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -130,7 +133,9 @@ public final class AuxiliarySearchDonorTest {
                             GenericDocument genericDocument = result.getGenericDocument();
                             WebPage webPage = genericDocument.toDocumentClass(WebPage.class);
 
-                            String documentId = AuxiliarySearchDonor.getDocumentId(mIds[i]);
+                            String documentId =
+                                    AuxiliarySearchDonor.getDocumentId(
+                                            AuxiliarySearchEntryType.TAB, mIds[i]);
                             assertEquals(documentId, genericDocument.getId());
                             assertEquals(
                                     mLastAccessTimestamps[i],
@@ -142,7 +147,7 @@ public final class AuxiliarySearchDonorTest {
                             assertEquals(
                                     mLastAccessTimestamps[i], webPage.getCreationTimestampMillis());
                             assertEquals(
-                                    mAuxiliarySearchDonor.getDocumentTtlMs(),
+                                    mAuxiliarySearchDonor.getTabDocumentTtlMs(),
                                     webPage.getDocumentTtlMillis());
                             assertTrue(
                                     Arrays.equals(

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
@@ -145,7 +145,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserRegionalURLFilterTest,
     ::testing::Values(
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
         // Only for platforms that support signed-out browser.
         SupervisionMixin::SignInMode::kSignedOut,
 #endif

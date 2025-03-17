@@ -59,7 +59,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8PerContextMarkingWorklist);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ReduceConcurrentMarkingTasks);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ScavengerHigherCapacity);
 GIN_EXPORT extern const base::FeatureParam<int> kV8ScavengerMaxCapacity;
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8SeparateGCPhases);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ShortBuiltinCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SideStepTransitions);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SingleThreadedGCInBackground);
@@ -81,7 +80,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8Turbofan);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8Turboshaft);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboshaftInstructionSelection);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8UpdateLimitAfterLoading);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseLibmTrigFunctions);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseOriginalMessageForStackTrace);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>

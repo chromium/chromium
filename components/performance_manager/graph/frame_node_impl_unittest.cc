@@ -8,18 +8,21 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
 #include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
@@ -182,6 +185,13 @@ namespace {
 
 class MockObserver : public MockFrameNodeObserver {
  public:
+  explicit MockObserver(Graph* graph = nullptr) {
+    // If a `graph` is passed, automatically start observing it.
+    if (graph) {
+      scoped_observation_.Observe(graph);
+    }
+  }
+
   void SetCreatedFrameNode(
       const FrameNode* frame_node,
       const FrameNode* pending_parent_frame_node,
@@ -224,6 +234,7 @@ class MockObserver : public MockFrameNodeObserver {
   const FrameNode* created_frame_node() { return created_frame_node_; }
 
  private:
+  base::ScopedObservation<Graph, FrameNodeObserver> scoped_observation_{this};
   raw_ptr<const FrameNode, DanglingUntriaged> created_frame_node_ = nullptr;
   raw_ptr<const FrameNode> pending_parent_frame_node_ = nullptr;
   raw_ptr<const PageNode> pending_page_node_ = nullptr;
@@ -442,8 +453,7 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
 // other tests of the individual pieces of logic in NodeBase and
 // ObservedProperty.
 TEST_F(FrameNodeImplDeathTest, SetPropertyDuringNodeCreation) {
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -487,13 +497,10 @@ TEST_F(FrameNodeImplDeathTest, SetPropertyDuringNodeCreation) {
   EXPECT_DCHECK_DEATH(frame.reset());
   property_setter.set_action(NodePropertySetter::Action::kDoNothing);
   frame.reset();
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplDeathTest, SetPropertyBeforeNodeAdded) {
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -533,8 +540,6 @@ TEST_F(FrameNodeImplDeathTest, SetPropertyBeforeNodeAdded) {
   EXPECT_DCHECK_DEATH(frame.reset());
   property_setter.set_action(NodePropertySetter::Action::kDoNothing);
   frame.reset();
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, IsAdFrame) {
@@ -542,8 +547,7 @@ TEST_F(FrameNodeImplTest, IsAdFrame) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   // Observer will be notified once when IsAdFrame goes from false to true, and
   // again when it goes from true to false.
@@ -557,8 +561,6 @@ TEST_F(FrameNodeImplTest, IsAdFrame) {
 
   frame_node->SetIsAdFrame(false);
   EXPECT_FALSE(frame_node->IsAdFrame());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
@@ -566,8 +568,7 @@ TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_FALSE(frame_node->IsHoldingWebLock());
   EXPECT_CALL(obs, OnFrameIsHoldingWebLockChanged(frame_node.get()));
@@ -576,8 +577,6 @@ TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
   EXPECT_CALL(obs, OnFrameIsHoldingWebLockChanged(frame_node.get()));
   frame_node->SetIsHoldingWebLock(false);
   EXPECT_FALSE(frame_node->IsHoldingWebLock());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, IsHoldingBlockingIndexedDBLock) {
@@ -585,8 +584,7 @@ TEST_F(FrameNodeImplTest, IsHoldingBlockingIndexedDBLock) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs,
               OnFrameIsHoldingBlockingIndexedDBLockChanged(frame_node.get()));
@@ -596,8 +594,6 @@ TEST_F(FrameNodeImplTest, IsHoldingBlockingIndexedDBLock) {
               OnFrameIsHoldingBlockingIndexedDBLockChanged(frame_node.get()));
   frame_node->SetIsHoldingBlockingIndexedDBLock(false);
   EXPECT_FALSE(frame_node->IsHoldingBlockingIndexedDBLock());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, UsesWebRTC) {
@@ -605,8 +601,7 @@ TEST_F(FrameNodeImplTest, UsesWebRTC) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnFrameUsesWebRTCChanged(frame_node.get()));
   frame_node->OnStartedUsingWebRTC();
@@ -614,8 +609,6 @@ TEST_F(FrameNodeImplTest, UsesWebRTC) {
   EXPECT_CALL(obs, OnFrameUsesWebRTCChanged(frame_node.get()));
   frame_node->OnStoppedUsingWebRTC();
   EXPECT_FALSE(frame_node->UsesWebRTC());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, Priority) {
@@ -625,8 +618,7 @@ TEST_F(FrameNodeImplTest, Priority) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   // By default the priority should be "lowest".
   EXPECT_EQ(base::TaskPriority::LOWEST,
@@ -673,8 +665,6 @@ TEST_F(FrameNodeImplTest, Priority) {
   EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, nullptr),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, UserActivation) {
@@ -682,8 +672,7 @@ TEST_F(FrameNodeImplTest, UserActivation) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_FALSE(frame_node->HadFormInteraction());
 
@@ -696,8 +685,6 @@ TEST_F(FrameNodeImplTest, UserActivation) {
   frame_node->SetHadUserActivation();
   EXPECT_TRUE(frame_node->HadUserActivation());
   testing::Mock::VerifyAndClear(&obs);
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, FormInteractions) {
@@ -705,14 +692,11 @@ TEST_F(FrameNodeImplTest, FormInteractions) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnHadFormInteractionChanged(frame_node.get()));
   frame_node->SetHadFormInteraction();
   EXPECT_TRUE(frame_node->HadFormInteraction());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, UserEdits) {
@@ -720,14 +704,11 @@ TEST_F(FrameNodeImplTest, UserEdits) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnHadUserEditsChanged(frame_node.get()));
   frame_node->SetHadUserEdits();
   EXPECT_TRUE(frame_node->HadUserEdits());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, IsAudible) {
@@ -736,14 +717,11 @@ TEST_F(FrameNodeImplTest, IsAudible) {
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
   EXPECT_FALSE(frame_node->IsAudible());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnIsAudibleChanged(frame_node.get()));
   frame_node->SetIsAudible(true);
   EXPECT_TRUE(frame_node->IsAudible());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, IsCapturingMediaStream) {
@@ -752,14 +730,11 @@ TEST_F(FrameNodeImplTest, IsCapturingMediaStream) {
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
   EXPECT_FALSE(frame_node->IsCapturingMediaStream());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnIsCapturingMediaStreamChanged(frame_node.get()));
   frame_node->SetIsCapturingMediaStream(true);
   EXPECT_TRUE(frame_node->IsCapturingMediaStream());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, HasFreezingOriginTrialOptOut) {
@@ -768,15 +743,12 @@ TEST_F(FrameNodeImplTest, HasFreezingOriginTrialOptOut) {
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
   EXPECT_FALSE(frame_node->HasFreezingOriginTrialOptOut());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs,
               OnFrameHasFreezingOriginTrialOptOutChanged(frame_node.get()));
   frame_node->OnFreezingOriginTrialOptOut();
   EXPECT_TRUE(frame_node->HasFreezingOriginTrialOptOut());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, ViewportIntersection) {
@@ -788,8 +760,7 @@ TEST_F(FrameNodeImplTest, ViewportIntersection) {
   auto child_frame_node =
       CreateFrameNodeAutoId(process.get(), page.get(), main_frame_node.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   // Initially unknown.
   EXPECT_EQ(child_frame_node->GetViewportIntersection(), std::nullopt);
@@ -816,8 +787,6 @@ TEST_F(FrameNodeImplTest, ViewportIntersection) {
   EXPECT_TRUE(child_frame_node->GetViewportIntersection()->is_intersecting());
   EXPECT_FALSE(child_frame_node->GetViewportIntersection()
                    ->is_intersecting_large_area());
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, ViewportIntersection_IsIntersectingLargeArea) {
@@ -866,16 +835,13 @@ TEST_F(FrameNodeImplTest, Visibility) {
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
   EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kUnknown);
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   EXPECT_CALL(obs, OnFrameVisibilityChanged(frame_node.get(),
                                             FrameNode::Visibility::kUnknown));
 
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
   EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, FirstContentfulPaint) {
@@ -883,14 +849,11 @@ TEST_F(FrameNodeImplTest, FirstContentfulPaint) {
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
 
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
+  MockObserver obs(graph());
 
   base::TimeDelta fcp = base::Milliseconds(1364);
   EXPECT_CALL(obs, OnFirstContentfulPaint(frame_node.get(), fcp));
   frame_node->OnFirstContentfulPaint(fcp);
-
-  graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, PublicInterface) {
@@ -936,7 +899,8 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   const PageNode* ppageB = static_cast<const PageNode*>(pageB.get());
 
   MockPageNodeObserver obs;
-  graph()->AddPageNodeObserver(&obs);
+  base::ScopedObservation<Graph, PageNodeObserver> scoped_observation(&obs);
+  scoped_observation.Observe(graph());
 
   // You can always call the pre-delete embedder clearing helper, even if you
   // have no such relationships.
@@ -1053,8 +1017,39 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   frameB1.reset();
   pageB.reset();
   testing::Mock::VerifyAndClear(&obs);
+}
 
-  graph()->RemovePageNodeObserver(&obs);
+// Regression test for crbug.com/391723297.
+TEST_F(FrameNodeImplTest, ResetCoordinationUnitReceiverOnDiscard) {
+  // Create a frame tree with two child frame nodes.
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto main_frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+  auto child_frame_node =
+      CreateFrameNodeAutoId(process.get(), page.get(), main_frame_node.get());
+
+  // Bind remotes to each frame.
+  mojo::Remote<mojom::DocumentCoordinationUnit> main_frame_remote;
+  main_frame_node->Bind(main_frame_remote.BindNewPipeAndPassReceiver());
+  mojo::Remote<mojom::DocumentCoordinationUnit> child_frame_remote;
+  child_frame_node->Bind(child_frame_remote.BindNewPipeAndPassReceiver());
+
+  // Assert the remotes are connected to the frame receivers.
+  EXPECT_TRUE(main_frame_remote.is_connected());
+  EXPECT_TRUE(child_frame_remote.is_connected());
+
+  // Notify a discard for the primary page node.
+  base::RunLoop main_frame_run_loop;
+  base::RunLoop child_frame_run_loop;
+  main_frame_remote.set_disconnect_handler(main_frame_run_loop.QuitClosure());
+  child_frame_remote.set_disconnect_handler(child_frame_run_loop.QuitClosure());
+  page->OnAboutToBeDiscarded(page->GetWeakPtr());
+
+  // The connection should have been reset.
+  main_frame_run_loop.Run();
+  child_frame_run_loop.Run();
+  EXPECT_FALSE(main_frame_remote.is_connected());
+  EXPECT_FALSE(child_frame_remote.is_connected());
 }
 
 }  // namespace performance_manager

@@ -51,8 +51,7 @@ content::RenderFrameHost* FindFullPagePdfExtensionHost(
 
 content::RenderFrameHost* FindPdfChildFrame(
     content::RenderFrameHost* extension_host) {
-  if (!IsPdfInternalPluginAllowedOrigin(
-          extension_host->GetLastCommittedOrigin())) {
+  if (!IsPdfExtensionOrigin(extension_host->GetLastCommittedOrigin())) {
     return nullptr;
   }
 
@@ -63,9 +62,8 @@ content::RenderFrameHost* FindPdfChildFrame(
           return;
         }
 
-        DCHECK(IsPdfInternalPluginAllowedOrigin(
-            rfh->GetParent()->GetLastCommittedOrigin()));
-        DCHECK(!pdf_rfh);
+        CHECK(IsPdfExtensionOrigin(rfh->GetParent()->GetLastCommittedOrigin()));
+        CHECK(!pdf_rfh);
         pdf_rfh = rfh;
       });
 

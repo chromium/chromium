@@ -50,7 +50,7 @@ public class BitmapDynamicResource implements DynamicResource {
         if (!mOnResourceReadyObservers.isEmpty() && mBitmap != null) {
             Resource resource =
                     new DynamicResourceSnapshot(
-                            mBitmap, false, mSize, ResourceFactory.createBitmapResource(null));
+                            mBitmap, mSize, ResourceFactory.createBitmapResource(null));
             for (Callback<Resource> observer : mOnResourceReadyObservers) {
                 observer.onResult(resource);
             }

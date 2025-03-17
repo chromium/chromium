@@ -17,11 +17,15 @@ class SafeBrowsingClientImplTest : public PlatformTest {
  protected:
   SafeBrowsingClientImplTest()
       : prerender_service_(base::WrapUnique(new FakePrerenderService())),
-        client_(base::WrapUnique(
-            new SafeBrowsingClientImpl(/*pref_service=*/nullptr,
-                                       /*lookup_service=*/nullptr,
-                                       /*hash_real_time_service=*/nullptr,
-                                       prerender_service_.get()))),
+        client_(base::WrapUnique(new SafeBrowsingClientImpl(
+            /*pref_service=*/nullptr,
+            /*hash_real_time_service=*/nullptr,
+            prerender_service_.get(),
+            /*url_lookup_service_factory=*/
+            base::BindRepeating(
+                []() -> safe_browsing::RealTimeUrlLookupServiceBase* {
+                  return nullptr;
+                })))),
         web_state_(base::WrapUnique(new web::FakeWebState())) {}
 
   // Configures `prerender_service_` to prerender `web_state_`.

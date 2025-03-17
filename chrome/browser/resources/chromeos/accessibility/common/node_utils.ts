@@ -185,8 +185,8 @@ export class NodeUtils {
       node: AutomationNode,
       rect: {left: number, top: number, width: number, height: number},
       nodes: AutomationNode[]): boolean {
-    var found = false;
-    for (var c = node.firstChild; c; c = c.nextSibling) {
+    let found = false;
+    for (let c = node.firstChild; c; c = c.nextSibling) {
       if (NodeUtils.findAllMatching(c, rect, nodes)) {
         found = true;
       }
@@ -325,7 +325,7 @@ export class NodeUtils {
       nodesToCheck = parent.children.slice().reverse();
     }
     let index = 0;
-    var node = parent;
+    let node = parent;
     // Delve down into the children recursively to find the
     // one at this offset.
     while (nodesToCheck.length > 0) {

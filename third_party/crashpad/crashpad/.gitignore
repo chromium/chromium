@@ -36,7 +36,6 @@
 /third_party/fuchsia/qemu
 /third_party/fuchsia/sdk
 /third_party/googletest/googletest
-/third_party/gyp/gyp
 /third_party/libfuzzer
 /third_party/linux/.cipd
 /third_party/linux/clang
@@ -46,6 +45,7 @@
 /third_party/ninja/linux
 /third_party/ninja/mac*
 /third_party/ninja/ninja.exe
+/third_party/windows/clang/win-amd64
 /third_party/zlib/zlib
 /xcodebuild
 tags

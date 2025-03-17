@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -639,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 }
 
 // ChromeOS doesn't have the concept of sign-out.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/40833316): Enable test on Android once signout is supported.
 #if BUILDFLAG(IS_ANDROID)
@@ -684,6 +685,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
       ServerDeviceInfoMatchChecker(Contains(HasInstanceIdToken(new_token)))
           .Wait());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

@@ -11,7 +11,7 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <stdio.h>
 #include <unistd.h>
 #endif
@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -33,7 +32,7 @@
 #include "media/base/media.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_paths.h"
 #include "base/process/process_metrics.h"
 #endif
@@ -47,7 +46,7 @@
 namespace {
 
 bool IsCrosPythonProcess() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   char buf[80];
   int num_read = readlink(base::kProcSelfExe, buf, sizeof(buf) - 1);
   if (num_read == -1)
@@ -57,7 +56,7 @@ bool IsCrosPythonProcess() {
   return !strncmp(strrchr(buf, '/'), kPythonPrefix, sizeof(kPythonPrefix) - 1);
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace

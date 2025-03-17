@@ -4,13 +4,14 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
  * delegated to the native C++ class.
  */
 @JNINamespace("tab_groups")
+@NullMarked
 public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     private final ObserverList<TabGroupSyncService.Observer> mObservers = new ObserverList<>();
     private long mNativePtr;
@@ -53,10 +55,11 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public String createGroup(LocalTabGroupId groupId) {
-        if (mNativePtr == 0) return null;
-        assert groupId != null;
-        return TabGroupSyncServiceImplJni.get().createGroup(mNativePtr, this, groupId);
+    public void addGroup(SavedTabGroup savedTabGroup) {
+        if (mNativePtr == 0) return;
+        assert savedTabGroup != null;
+        assert savedTabGroup.localId != null;
+        TabGroupSyncServiceImplJni.get().addGroup(mNativePtr, this, savedTabGroup);
     }
 
     @Override
@@ -86,6 +89,22 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
         assert tabGroupId != null;
         TabGroupSyncServiceImplJni.get()
                 .makeTabGroupShared(mNativePtr, this, tabGroupId, collaborationId);
+    }
+
+    @Override
+    public void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, @Nullable Callback<Boolean> callback) {
+        if (mNativePtr == 0) return;
+        assert tabGroupId != null;
+        TabGroupSyncServiceImplJni.get()
+                .aboutToUnShareTabGroup(mNativePtr, this, tabGroupId, callback);
+    }
+
+    @Override
+    public void onTabGroupUnShareComplete(LocalTabGroupId tabGroupId, boolean success) {
+        if (mNativePtr == 0) return;
+        assert tabGroupId != null;
+        TabGroupSyncServiceImplJni.get()
+                .onTabGroupUnShareComplete(mNativePtr, this, tabGroupId, success);
     }
 
     @Override
@@ -120,9 +139,9 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public void onTabSelected(@Nullable LocalTabGroupId groupId, int tabId) {
+    public void onTabSelected(@Nullable LocalTabGroupId groupId, int tabId, String tabTitle) {
         if (mNativePtr == 0) return;
-        TabGroupSyncServiceImplJni.get().setTabSelected(mNativePtr, this, groupId, tabId);
+        TabGroupSyncServiceImplJni.get().setTabSelected(mNativePtr, this, groupId, tabId, tabTitle);
     }
 
     @Override
@@ -132,7 +151,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public SavedTabGroup getGroup(String syncGroupId) {
+    public @Nullable SavedTabGroup getGroup(String syncGroupId) {
         if (mNativePtr == 0) return null;
         return TabGroupSyncServiceImplJni.get()
                 .getGroupBySyncGroupId(mNativePtr, this, syncGroupId);
@@ -206,6 +225,13 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
+    public boolean wasTabGroupClosedLocally(String syncTabGroupId) {
+        if (mNativePtr == 0) return false;
+        return TabGroupSyncServiceImplJni.get()
+                .wasTabGroupClosedLocally(mNativePtr, this, syncTabGroupId);
+    }
+
+    @Override
     public void recordTabGroupEvent(EventDetails eventDetails) {
         if (mNativePtr == 0) return;
         TabGroupSyncServiceImplJni.get()
@@ -270,10 +296,10 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
 
     @NativeMethods
     interface Natives {
-        String createGroup(
+        void addGroup(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
-                LocalTabGroupId groupId);
+                SavedTabGroup savedTabGroup);
 
         void removeGroupByLocalId(
                 long nativeTabGroupSyncServiceAndroid,
@@ -297,6 +323,18 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId tabGroupId,
                 String collaborationId);
+
+        void aboutToUnShareTabGroup(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                LocalTabGroupId tabGroupId,
+                @Nullable Callback<Boolean> callback);
+
+        void onTabGroupUnShareComplete(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                LocalTabGroupId tabGroupId,
+                boolean success);
 
         void addTab(
                 long nativeTabGroupSyncServiceAndroid,
@@ -332,8 +370,9 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
         void setTabSelected(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
-                LocalTabGroupId groupId,
-                int tabId);
+                @Nullable LocalTabGroupId groupId,
+                int tabId,
+                String tabTitle);
 
         String[] getAllGroupIds(
                 long nativeTabGroupSyncServiceAndroid, TabGroupSyncServiceImpl caller);
@@ -376,11 +415,16 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 String syncCacheGuid);
 
+        boolean wasTabGroupClosedLocally(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                String syncTabGroupId);
+
         void recordTabGroupEvent(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 int eventType,
-                LocalTabGroupId localGroupId,
+                @Nullable LocalTabGroupId localGroupId,
                 int localTabId,
                 int openingSource,
                 int closingSource);

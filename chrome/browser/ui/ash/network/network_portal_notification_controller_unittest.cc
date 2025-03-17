@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -50,6 +52,16 @@ class NetworkPortalNotificationControllerTest
         std::make_unique<SystemNotificationHelper>());
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         nullptr /* profile */);
+
+    // This initializes the global instance. In production, it is initialized by
+    // ChromeBrowserMainExtraPartsAsh.
+    NetworkPortalSigninController::Init(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
+  }
+
+  void TearDown() override {
+    NetworkPortalSigninController::Shutdown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:

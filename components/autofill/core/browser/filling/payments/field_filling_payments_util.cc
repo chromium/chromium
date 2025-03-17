@@ -4,22 +4,22 @@
 
 #include "components/autofill/core/browser/filling/payments/field_filling_payments_util.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling/form_filler.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -52,8 +52,8 @@ std::u16string GetExpirationMonthSelectControlValue(
   // Trim the whitespace and specific prefixes used in AngularJS from the
   // select values before attempting to convert them to months.
   std::vector<std::u16string> trimmed_values(field_options.size());
-  const std::u16string kNumberPrefix = u"number:";
-  const std::u16string kStringPrefix = u"string:";
+  static constexpr char16_t kNumberPrefix[] = u"number:";
+  static constexpr char16_t kStringPrefix[] = u"string:";
   for (size_t i = 0; i < field_options.size(); ++i) {
     base::TrimWhitespace(field_options[i].value, base::TRIM_ALL,
                          &trimmed_values[i]);
@@ -409,7 +409,7 @@ std::u16string GetFillingValueForCreditCardForInput(
 // Replaces the digits in `value` with dots. Used for credit card preview when
 // obfuscating card information to the user.
 std::u16string ReplaceDigitsWithCenterDots(std::u16string value) {
-  base::ranges::replace_if(
+  std::ranges::replace_if(
       value.begin(), value.end(),
       [](char16_t c) { return base::IsAsciiDigit(c); },
       kMidlineEllipsisPlainDot);
@@ -524,8 +524,8 @@ bool WillFillCreditCardNumberOrCvc(
   // exists in the renderer and whether it is fillable.
   auto IsFillableField =
       [&fields, &trigger_autofill_field](const AutofillField& autofill_field) {
-        auto field = base::ranges::find(fields, autofill_field.global_id(),
-                                        &FormFieldData::global_id);
+        auto field = std::ranges::find(fields, autofill_field.global_id(),
+                                       &FormFieldData::global_id);
         if (field == fields.end()) {
           return false;
         }
@@ -538,7 +538,8 @@ bool WillFillCreditCardNumberOrCvc(
         // to the iframe security policy.
         return FormFiller::GetFillingSkipReasonsForField(
                    *field, autofill_field, trigger_autofill_field, type_count,
-                   std::nullopt, FillingProduct::kCreditCard)
+                   /*type_groups_originally_filled=*/std::nullopt,
+                   /*blocked_fields=*/{}, FillingProduct::kCreditCard)
             .empty();
       };
 

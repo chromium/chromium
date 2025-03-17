@@ -20,9 +20,6 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -38,7 +35,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -190,29 +186,11 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
   Profile* profile = Profile::FromWebUI(web_ui_);
   if (base::FeatureList::IsEnabled(
           features::kHelpAppAutoTriggerInstallDialog)) {
-    // If the feature is enabled, we schedule the following command.
-    if (web_app::WebAppProvider::GetForWebApps(profile)) {
-      // Web apps are managed in Ash.
-      web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::GetForWebApps(profile);
-      CHECK(provider);
-      provider->scheduler().ScheduleNavigateAndTriggerInstallDialog(
-          url, origin_url, /*is_renderer_initiated=*/true, base::DoNothing());
-    } else {
-      // Web apps are managed in Lacros.
-      crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-          crosapi::CrosapiManager::Get()
-              ->crosapi_ash()
-              ->web_app_service_ash()
-              ->GetWebAppProviderBridge();
-      if (!web_app_provider_bridge) {
-        return "ChromeHelpAppUIDelegate::OpenUrlInBrowser "
-               "web_app_provider_bridge"
-               " not ready";
-      }
-      web_app_provider_bridge->ScheduleNavigateAndTriggerInstallDialog(
-          url, origin_url, /*is_renderer_initiated=*/true);
-    }
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForWebApps(profile);
+    CHECK(provider);
+    provider->scheduler().ScheduleNavigateAndTriggerInstallDialog(
+        url, origin_url, /*is_renderer_initiated=*/true, base::DoNothing());
     return std::nullopt;
   }
 

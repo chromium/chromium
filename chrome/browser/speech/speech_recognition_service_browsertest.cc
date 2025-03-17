@@ -236,12 +236,12 @@ void SpeechRecognitionServiceTest::SetUpPrefs() {
   base::FilePath soda_binary_path;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   soda_binary_path =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaTestBinaryRelativePath);
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(::soda::kSodaTestBinaryRelativePath);
 #else
   base::FilePath soda_test_binary_path =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaTestBinaryRelativePath);
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(::soda::kSodaTestBinaryRelativePath);
   DVLOG(0) << "SODA test path: " << soda_test_binary_path.value().c_str();
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(base::PathExists(soda_test_binary_path));
@@ -254,8 +254,8 @@ void SpeechRecognitionServiceTest::SetUpPrefs() {
                                                 soda_binary_path);
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaLanguagePackRelativePath));
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(::soda::kSodaLanguagePackRelativePath));
 }
 
 void SpeechRecognitionServiceTest::LaunchService() {
@@ -359,8 +359,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
 
   std::string buffer;
   auto audio_file =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(base::FilePath(soda::kSodaTestAudioRelativePath));
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(base::FilePath(::soda::kSodaTestAudioRelativePath));
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::PathExists(audio_file));
@@ -415,8 +415,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
 
   std::string buffer;
   auto audio_file =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(base::FilePath(soda::kSodaTestAudioRelativePath));
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(base::FilePath(::soda::kSodaTestAudioRelativePath));
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::PathExists(audio_file));

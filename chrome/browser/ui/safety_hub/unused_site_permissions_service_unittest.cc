@@ -59,6 +59,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::UnorderedElementsAre;
+
 namespace {
 
 const char url1[] = "https://example1.com:443";
@@ -451,7 +453,7 @@ class UnusedSitePermissionsServiceTest
         fake_database_manager_.get());
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
     TestingBrowserProcess::GetGlobal()->SetLocalState(profile()->GetPrefs());
@@ -460,7 +462,7 @@ class UnusedSitePermissionsServiceTest
 
   void TearDownSafeBrowsingService() {
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 #endif
   }
@@ -843,8 +845,8 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(1U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
     ExpectRevokedAbusiveNotificationSettingValues(url3);
   }
 
@@ -855,10 +857,10 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   // Undoing the changes should add `url1` back to the list of revoked
@@ -874,10 +876,10 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   // Undoing `url2` adds it back to the revoked permissions lists.
@@ -893,8 +895,8 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(1U);
     ExpectRevokedAbusiveNotificationSettingValues(url2);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   // Undoing `url3` adds it back to the revoked abusive notification permissions
@@ -954,10 +956,10 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPreventsAutorevoke) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   clock()->Advance(base::Days(70));
@@ -1122,8 +1124,8 @@ TEST_P(UnusedSitePermissionsServiceTest,
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(1U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
     ExpectRevokedAbusiveNotificationSettingValues(url3);
   }
 
@@ -1136,8 +1138,8 @@ TEST_P(UnusedSitePermissionsServiceTest,
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/false);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/false);
   }
 
   // Grant the revoked chooser permissions again from url5, and check that
@@ -1233,19 +1235,11 @@ TEST_P(UnusedSitePermissionsServiceTest, ResultToFromDict) {
   base::Value::Dict dict = result->ToDictValue();
   auto* revoked_origins_list = dict.FindList(kUnusedSitePermissionsResultKey);
   if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(3U, revoked_origins_list->size());
-    EXPECT_EQ(url1, revoked_origins_list->front().GetString());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url1));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url3));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2, url3));
   } else if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(2U, revoked_origins_list->size());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url1));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2));
   } else if (ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(2U, revoked_origins_list->size());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url3));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url2, url3));
   }
 }
 
@@ -1791,70 +1785,4 @@ TEST_F(UnusedSitePermissionsServiceStartUpTest,
                 .setting_value.GetDict()
                 .Find(permissions::kRevokedKey)
                 ->GetList());
-}
-
-class UnusedSitePermissionsServiceSafetyHubDisabledTest
-    : public ChromeRenderViewHostTestHarness {
- public:
-  UnusedSitePermissionsServiceSafetyHubDisabledTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/
-        {features::kSafetyHub});
-  }
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(
-        profile()->GetPrefs(), false, true, false, false);
-    service_ = std::make_unique<UnusedSitePermissionsService>(
-        profile(), profile()->GetPrefs());
-    callback_count_ = 0;
-  }
-
-  void TearDown() override {
-    service_->Shutdown();
-    service_.reset();
-    hcsm_->ShutdownOnUIThread();
-    base::RunLoop().RunUntilIdle();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  void ResetService() {
-    service_ = std::make_unique<UnusedSitePermissionsService>(
-        profile(), profile()->GetPrefs());
-  }
-
-  UnusedSitePermissionsService* service() { return service_.get(); }
-
-  uint8_t callback_count() { return callback_count_; }
-
- private:
-  std::unique_ptr<UnusedSitePermissionsService> service_;
-  scoped_refptr<HostContentSettingsMap> hcsm_;
-  uint8_t callback_count_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(UnusedSitePermissionsServiceSafetyHubDisabledTest,
-       UnusedSitePermissionsRevocationEnabled) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitWithFeatureStates(
-      {{content_settings::features::kSafetyCheckUnusedSitePermissions, true}});
-  // If Safety Hub is disabled but kSafetyCheckUnusedSitePermissions is on,
-  // auto-revocation still happens (i.e. the timer is started on start-up).
-  ResetService();
-  EXPECT_TRUE(service()->IsTimerRunningForTesting());
-}
-
-TEST_F(UnusedSitePermissionsServiceSafetyHubDisabledTest,
-       UnusedSitePermissionsRevocationDisabled) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitWithFeatureStates(
-      {{content_settings::features::kSafetyCheckUnusedSitePermissions, false},
-       {safe_browsing::kSafetyHubAbusiveNotificationRevocation, false}});
-
-  // If both kSafetyHub and kSafetyCheckUnusedSitePermissions are disabled, then
-  // no auto-revocation should happen (i.e. no repeated timers should start).
-  ResetService();
-  EXPECT_FALSE(service()->IsTimerRunningForTesting());
 }

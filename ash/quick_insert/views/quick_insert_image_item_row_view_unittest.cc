@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_base.h"
@@ -38,15 +39,18 @@ using QuickInsertImageItemRowViewTest = views::ViewsTestBase;
 TEST_F(QuickInsertImageItemRowViewTest, HasGridRole) {
   QuickInsertImageItemRowView item_row;
 
-  EXPECT_EQ(item_row.GetAccessibleRole(), ax::mojom::Role::kGrid);
+  ui::AXNodeData node_data;
+  item_row.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kGrid);
 }
 
 TEST_F(QuickInsertImageItemRowViewTest, HasRowOfItems) {
   QuickInsertImageItemRowView item_row;
 
-  EXPECT_THAT(item_row.children(),
-              Contains(Pointee(Property(&views::View::GetAccessibleRole,
-                                        ax::mojom::Role::kRow))));
+  ui::AXNodeData node_data;
+  item_row.children()[1]->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kRow);
 }
 
 TEST_F(QuickInsertImageItemRowViewTest, CreatesImageItems) {

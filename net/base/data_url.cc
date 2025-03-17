@@ -6,12 +6,12 @@
 
 #include "net/base/data_url.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -50,7 +50,7 @@ bool IsBase64Whitespace(char c) {
 //   - Does not have any escaped characters.
 //   - Does not have any whitespace.
 bool IsDataURLReadyForDecode(std::string_view body) {
-  return (body.length() % 4) == 0 && base::ranges::none_of(body, [](char c) {
+  return (body.length() % 4) == 0 && std::ranges::none_of(body, [](char c) {
            return c == '%' || IsBase64Whitespace(c);
          });
 }
@@ -77,7 +77,7 @@ bool DataURL::Parse(const GURL& url,
   // Avoid copying the URL content which can be expensive for large URLs.
   std::string_view content = url.GetContentPiece();
 
-  std::string_view::const_iterator comma = base::ranges::find(content, ',');
+  std::string_view::const_iterator comma = std::ranges::find(content, ',');
   if (comma == content.end())
     return false;
 

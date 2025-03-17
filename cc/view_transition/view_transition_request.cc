@@ -4,6 +4,7 @@
 
 #include "cc/view_transition/view_transition_request.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 
@@ -117,6 +117,15 @@ ViewTransitionRequest::ConstructDirective(
   return viz::CompositorFrameTransitionDirective::CreateSave(
       transition_token_, maybe_cross_frame_sink_, sequence_id_,
       std::move(shared_elements), display_color_spaces);
+}
+
+bool ViewTransitionRequest::HasSubframeSnapshot() const {
+  for (const auto& id : capture_resource_ids_) {
+    if (id.for_subframe_snapshot()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::string ViewTransitionRequest::ToString() const {

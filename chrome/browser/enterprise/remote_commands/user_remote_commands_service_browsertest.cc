@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
@@ -137,15 +136,7 @@ class UserRemoteCommandsServiceTest
   }
 
   policy::UserCloudPolicyManager* InitCloudPolicyManager() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::FilePath dest_path =
-        g_browser_process->profile_manager()->user_data_dir();
-    profile_ = Profile::CreateProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")),
-        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
-#else
     profile_ = chrome_test_utils::GetProfile(this);
-#endif
     policy::UserCloudPolicyManager* policy_manager =
         profile()->GetUserCloudPolicyManager();
     policy_manager->Connect(
@@ -215,11 +206,7 @@ class UserRemoteCommandsServiceTest
 
   void TearDownOnMainThread() override {
     identity_test_env_.reset();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_.reset();
-#else
     profile_ = nullptr;
-#endif
   }
 
   invalidation::FakeInvalidationService* GetInvalidationServiceForProjectNumber(
@@ -249,20 +236,11 @@ class UserRemoteCommandsServiceTest
   }
 
   Profile* profile() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return profile_.get();
-#else
     return profile_;
-#endif
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For Lacros use non-main profile in these tests.
-  std::unique_ptr<Profile> profile_;
-#else
   raw_ptr<Profile> profile_;
-#endif
 
   std::unique_ptr<policy::EmbeddedPolicyTestServer> test_server_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;

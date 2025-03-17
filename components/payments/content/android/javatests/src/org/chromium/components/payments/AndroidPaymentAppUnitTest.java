@@ -36,12 +36,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Tests for the native Android payment app finder. */
+/** Tests for the Android intent-based payment app. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AndroidPaymentAppUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private AndroidPaymentApp.Launcher mLauncherMock;
+    @Mock private AndroidIntentLauncher mLauncherMock;
+    @Mock private DialogController mDialogControllerMock;
 
     private String mErrorMessage;
     private String mPaymentMethodName;
@@ -71,7 +72,8 @@ public class AndroidPaymentAppUnitTest {
     public void testNoReadyToPayDebugInfo() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
         queryReadyToPay(app);
-        Mockito.verify(mLauncherMock, Mockito.never()).showReadyToPayDebugInfo(Mockito.any());
+        Mockito.verify(mDialogControllerMock, Mockito.never())
+                .showReadyToPayDebugInfo(Mockito.any());
     }
 
     @SmallTest
@@ -80,7 +82,7 @@ public class AndroidPaymentAppUnitTest {
     public void testShowReadyToPayDebugInfo() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ true);
         queryReadyToPay(app);
-        Mockito.verify(mLauncherMock, Mockito.times(1))
+        Mockito.verify(mDialogControllerMock, Mockito.times(1))
                 .showReadyToPayDebugInfo(
                         Mockito.eq(
                                 "IS_READY_TO_PAY sent to com.company.app.IsReadyToPayService in"
@@ -122,6 +124,7 @@ public class AndroidPaymentAppUnitTest {
         AndroidPaymentApp app =
                 new AndroidPaymentApp(
                         mLauncherMock,
+                        mDialogControllerMock,
                         "com.company.app",
                         "com.company.app.PaymentActivity",
                         "com.company.app.IsReadyToPayService",
@@ -190,14 +193,12 @@ public class AndroidPaymentAppUnitTest {
                         mInvokePaymentAppFinished = true;
                     }
                 });
-        AndroidPaymentApp.IntentResult intentResult = new AndroidPaymentApp.IntentResult();
-        intentResult.resultCode = resultCode;
-        intentResult.data = new Intent();
+        Intent data = new Intent();
         Bundle extras = new Bundle();
         extras.putString("methodName", "https://company.com/pay");
         extras.putString("details", "{}");
-        intentResult.data.putExtras(extras);
-        app.onIntentCompleted(intentResult);
+        data.putExtras(extras);
+        app.onIntentCompleted(resultCode, data);
 
         CriteriaHelper.pollUiThreadNested(() -> mInvokePaymentAppFinished);
     }

@@ -14,6 +14,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 
 namespace {
 
@@ -35,7 +36,7 @@ bool AutoStart::AddApplication(const std::string& autostart_filename,
 
   base::FilePath autostart_file =
       autostart_directory.Append(autostart_filename);
-  std::string terminal = is_terminal_app ? "true" : "false";
+  std::string terminal = base::ToString(is_terminal_app);
   std::string autostart_file_contents =
       "[Desktop Entry]\n"
       "Type=Application\n"

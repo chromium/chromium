@@ -631,8 +631,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   web::NavigationContextImpl* context =
       [self.navigationStates contextForNavigation:navigation];
-  if (!context)
+  if (!context) {
     return;
+  }
 
   // Redirecting to a data url is always unsafe.
   if (webViewURL.SchemeIs(url::kDataScheme) ||
@@ -744,8 +745,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // navigation is already finished, stop processing
   // (https://crbug.com/818796#c2).
   if ([self.navigationStates stateForNavigation:navigation] ==
-      web::WKNavigationState::FINISHED)
+      web::WKNavigationState::FINISHED) {
     return;
+  }
 
   BOOL committedNavigation =
       [self.navigationStates isCommittedNavigation:navigation];
@@ -776,8 +778,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     // webView.backForwardList.currentItem.URL will return the right committed
     // URL (crbug.com/784480).
     webViewURL = currentWKItemURL;
-  } else if (context &&
-             context->GetUrl() == currentWKItemURL) {
+  } else if (context && context->GetUrl() == currentWKItemURL) {
     // If webView.backForwardList.currentItem.URL matches `context`, then this
     // is a known edge case where `webView.URL` is wrong.
     // TODO(crbug.com/41379040): Remove this workaround.
@@ -785,8 +786,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   }
 
   if (context) {
-    if (self.pendingNavigationInfo.HTTPHeaders)
+    if (self.pendingNavigationInfo.HTTPHeaders) {
       context->SetResponseHeaders(self.pendingNavigationInfo.HTTPHeaders);
+    }
   }
 
   [self.delegate navigationHandlerDisplayWebView:self];
@@ -1179,8 +1181,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   NS_VALID_UNTIL_END_OF_SCOPE
   DownloadNativeTaskBridge* nativeTaskBridge = bridge;
   [_nativeTaskBridges removeObject:bridge];
-  if (!self.webStateImpl)
+  if (!self.webStateImpl) {
     return NO;
+  }
 
   const GURL responseURL = net::GURLWithNSURL(bridge.response.URL);
   const int64_t contentLength = bridge.response.expectedContentLength;
@@ -1239,8 +1242,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
         navigationItem];
     // In some cases, the associated item isn't found. In that case, follow the
     // code path for the non-backforward navigations. See crbug.com/1121950.
-    if (item)
+    if (item) {
       userAgentType = item->GetUserAgentType();
+    }
   }
   if (!item) {
     // Get the visible item. There is no guarantee that the pending item belongs
@@ -1251,8 +1255,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     // pending item explicitly as the visible item might be the committed item
     // if the pending navigation isn't user triggered.
     item = self.navigationManagerImpl->GetPendingItem();
-    if (!item)
+    if (!item) {
       item = self.navigationManagerImpl->GetVisibleItem();
+    }
 
     if (item && item->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK) {
       // When navigating forward to a restored page, the WKNavigationAction is
@@ -1542,8 +1547,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // used to store web::NavigationContext. Those "null" navigations have to be
 // cleaned up manually by calling this method.
 - (void)forgetNullWKNavigation:(WKNavigation*)navigation {
-  if (!navigation)
+  if (!navigation) {
     [self.navigationStates removeNavigation:navigation];
+  }
 }
 
 // Returns the warning type to be shown for <form> posts, or kNone if no warning
@@ -1604,8 +1610,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           self.navigationManagerImpl->GetCurrentItemImpl();
       // TODO(crbug.com/40449786): Remove this check once it's no longer
       // possible to have no current entries.
-      if (item)
+      if (item) {
         [self cachePOSTDataForRequest:action.request inNavigationItem:item];
+      }
     }
   } else {
     if (action.targetFrame.mainFrame) {
@@ -1863,6 +1870,32 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
+  // This error occurs following a file path lookup when restoring navigation
+  // to a private file path. Restore the file if it has been previously stored
+  // as a bookmark.
+  if ([error.domain isEqualToString:NSPOSIXErrorDomain] &&
+      navigationContext->GetUrl().SchemeIsFile() &&
+      item->GetSecurityScopedFileResource()) {
+    BOOL bookmarkDataIsStale = false;
+    GURL bookmarkURL = net::GURLWithNSURL([NSURL
+        URLByResolvingBookmarkData:item->GetSecurityScopedFileResource()
+                           options:NSURLBookmarkResolutionWithoutUI
+                     relativeToURL:nil
+               bookmarkDataIsStale:&bookmarkDataIsStale
+                             error:nil]);
+    if (bookmarkURL.is_valid() && !bookmarkDataIsStale) {
+      web::NavigationManager::WebLoadParams params(bookmarkURL);
+      params.transition_type = navigationContext->GetPageTransition();
+      params.virtual_url = item->GetVirtualURL();
+      params.is_renderer_initiated = navigationContext->IsRendererInitiated();
+      self.webStateImpl->GetNavigationManager()->LoadURLWithParams(params);
+      return;
+    }
+    // Clear the security scoped file resource if it is invalid or stale to
+    // short-circuit future invalid PDF page loads.
+    item->SetSecurityScopedFileResource(nil);
+  }
+
   WKNavigation* errorNavigation =
       [self displayErrorPageWithError:error
                             inWebView:webView
@@ -1994,18 +2027,18 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     self.navigationManagerImpl->DiscardNonCommittedItems();
   }
 
-    if (provisionalLoad) {
-      // TODO(crbug.com/40631880): Remove this workaround when WebKit bug is
-      // fixed.
-      if (!navigationContext) {
-        // It is likely that `navigationContext` is null because
-        // didStartProvisionalNavigation: was not called with this WKNavigation
-        // object. Do not call OnNavigationFinished() to avoid crash on null
-        // pointer dereferencing. See crbug.com/973653 for details.
-      } else {
-        self.webStateImpl->OnNavigationFinished(navigationContext.get());
-      }
+  if (provisionalLoad) {
+    // TODO(crbug.com/40631880): Remove this workaround when WebKit bug is
+    // fixed.
+    if (!navigationContext) {
+      // It is likely that `navigationContext` is null because
+      // didStartProvisionalNavigation: was not called with this WKNavigation
+      // object. Do not call OnNavigationFinished() to avoid crash on null
+      // pointer dereferencing. See crbug.com/973653 for details.
+    } else {
+      self.webStateImpl->OnNavigationFinished(navigationContext.get());
     }
+  }
 }
 
 // Used to decide whether a load that generates errors with the
@@ -2018,8 +2051,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // are produced during the app specific URL load process.
   const GURL errorURL =
       net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey]);
-  if (web::GetWebClient()->IsAppSpecificURL(errorURL))
+  if (web::GetWebClient()->IsAppSpecificURL(errorURL)) {
     return NO;
+  }
 
   return provisionalLoad;
 }
@@ -2073,8 +2107,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       error.userInfo[NSURLErrorFailingURLStringErrorKey];
   GURL failingURL(base::SysNSStringToUTF8(failingURLString));
   GURL itemURL = item->GetURL();
-  if (itemURL != failingURL)
+  if (itemURL != failingURL) {
     item->SetVirtualURL(failingURL);
+  }
   web::GetWebClient()->PrepareErrorPage(
       self.webStateImpl, failingURL, error, context->IsPost(),
       self.webStateImpl->GetBrowserState()->IsOffTheRecord(), ssl_info,
@@ -2191,8 +2226,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 }
 
 - (BOOL)isCurrentNavigationBackForward {
-  if (!self.currentNavItem)
+  if (!self.currentNavItem) {
     return NO;
+  }
   WKNavigationType currentNavigationType =
       self.currentBackForwardListItemHolder->navigation_type();
   return currentNavigationType == WKNavigationTypeBackForward;
@@ -2257,8 +2293,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // as part of this pending load. It will be nil when doing a fast
   // back/forward navigation, for instance, because the callback that would
   // populate it is not called in that flow.
-  if (self.pendingNavigationInfo.MIMEType)
+  if (self.pendingNavigationInfo.MIMEType) {
     holder->set_mime_type(self.pendingNavigationInfo.MIMEType);
+  }
 }
 
 - (web::Referrer)currentReferrer {
@@ -2268,8 +2305,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   NSString* referrerString = _currentReferrerString;
 
   // In case of an error evaluating the JavaScript simply return empty string.
-  if (referrerString.length == 0)
+  if (referrerString.length == 0) {
     return web::Referrer();
+  }
 
   web::NavigationItem* item = self.currentNavItem;
   GURL navigationURL = item ? item->GetVirtualURL() : GURL();
@@ -2296,8 +2334,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   DCHECK(title);
   web::NavigationItem* item =
       self.navigationManagerImpl->GetLastCommittedItem();
-  if (!item)
+  if (!item) {
     return;
+  }
 
   item->SetTitle(base::SysNSStringToUTF16(title));
   self.webStateImpl->OnTitleChanged();

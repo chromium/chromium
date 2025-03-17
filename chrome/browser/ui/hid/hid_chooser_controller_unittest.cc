@@ -45,7 +45,8 @@ namespace {
 
 constexpr char kDefaultTestUrl[] = "https://www.google.com/";
 
-const auto kTestPhysicalDeviceIds = std::to_array<const char*>({"1", "2", "3"});
+constexpr auto kTestPhysicalDeviceIds =
+    std::to_array<const char*>({"1", "2", "3"});
 
 constexpr uint16_t kVendorYubico = 0x1050;
 constexpr uint16_t kProductYubicoGnubby = 0x0200;

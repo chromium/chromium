@@ -61,6 +61,13 @@
   #labelWrapper {
     padding: var(--cr-section-vertical-padding) 0;
   }
+
+  #policyIcon {
+    position: absolute;
+    right:5%;
+    height: 15px;
+    width: 15px;
+  }
 </style>
 
 <div class="cr-row first manage-profile-section">
@@ -71,8 +78,15 @@
         on-keydown="onProfileNameKeydown_"
         maxlength="500"
         aria-label="$i18n{nameInputLabel}" auto-validate required
-        spellcheck="false">
+        spellcheck="false" disabled="[[hasEnterpriseLabel_]]">
+        <cr-icon id="policyIcon" icon="cr:domain" slot="suffix"
+        hidden="[[!hasEnterpriseLabel_]]">
+        </cr-icon>
     </cr-input>
+    <cr-tooltip id="tooltip"
+    for="policyIcon" position="top">
+    $i18n{controlledSettingPolicy}
+  </cr-tooltip>
   </div>
 </div>
 <div class="cr-row manage-profile-section">

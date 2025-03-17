@@ -5,8 +5,10 @@
 package org.chromium.components.signin;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 
 /** Displayability of email addresses in Chrome UI based on the email domain. */
+@NullMarked
 public interface AccountEmailDisplayHook {
     boolean canHaveEmailAddressDisplayedInternal(String email);
 

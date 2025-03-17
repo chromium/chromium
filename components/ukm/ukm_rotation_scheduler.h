@@ -18,7 +18,7 @@ class UkmRotationScheduler : public metrics::MetricsRotationScheduler {
   // to determine the interval between rotations in steady state.
   UkmRotationScheduler(
       const base::RepeatingClosure& rotation_callback,
-      bool fast_startup_for_testing,
+      bool fast_startup,
       const base::RepeatingCallback<base::TimeDelta(void)>& interval_callback);
 
   UkmRotationScheduler(const UkmRotationScheduler&) = delete;

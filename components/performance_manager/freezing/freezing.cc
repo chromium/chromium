@@ -13,32 +13,22 @@ namespace performance_manager::freezing {
 FreezingVote::FreezingVote(content::WebContents* web_contents)
     : page_node_(
           PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents)) {
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node, Graph* graph) {
-            CHECK(page_node);
-            // Balanced with `RemoveFreezeVote()` in destructor.
-            CHECK_DEREF(graph->GetRegisteredObjectAs<FreezingPolicy>())
-                .AddFreezeVote(page_node.get());
-          },
-          page_node_));
+  CHECK(page_node_);
+  // Balanced with `RemoveFreezeVote()` in destructor.
+  auto* freezing_policy =
+      PerformanceManager::GetGraph()->GetRegisteredObjectAs<FreezingPolicy>();
+  CHECK_DEREF(freezing_policy).AddFreezeVote(page_node_.get());
 }
 
 FreezingVote::~FreezingVote() {
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node, Graph* graph) {
-            if (!page_node) {
-              // No-op if the `PageNode` no longer exists.
-              return;
-            }
+  if (!page_node_) {
+    // No-op if the `PageNode` no longer exists.
+    return;
+  }
 
-            CHECK_DEREF(graph->GetRegisteredObjectAs<FreezingPolicy>())
-                .RemoveFreezeVote(page_node.get());
-          },
-          page_node_));
+  auto* freezing_policy =
+      PerformanceManager::GetGraph()->GetRegisteredObjectAs<FreezingPolicy>();
+  CHECK_DEREF(freezing_policy).RemoveFreezeVote(page_node_.get());
 }
 
 std::set<std::string> GetCannotFreezeReasonsForPageNode(

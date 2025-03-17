@@ -36,6 +36,11 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
     };
   }
 
+  static uint64_t tensor_byte_length_limit(
+      const webnn::ContextProperties& context_properties) {
+    return context_properties.tensor_byte_length_limit;
+  }
+
   static webnn::DataTypeLimits data_type_limits(
       const webnn::ContextProperties& context_properties) {
     return context_properties.data_type_limits;
@@ -62,6 +67,8 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
         out->resample_2d_axes = webnn::Resample2DAxes::kChannelsLast;
         break;
     }
+    out->tensor_byte_length_limit = data.tensor_byte_length_limit();
+
     return data.ReadDataTypeLimits(&out->data_type_limits);
   }
 };

@@ -83,10 +83,11 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (override));
   MOCK_METHOD(void,
               PrepareSystemWebAppWindowForOnTask,
-              (SessionID window_id),
+              (SessionID window_id, bool close_bundle_content),
               (override));
   MOCK_METHOD(SessionID, GetActiveTabID, (), (override));
   MOCK_METHOD(void, SwitchToTab, (SessionID tab_id), (override));
+  MOCK_METHOD(void, SetAllChromeTabsMuted, (bool muted), (override));
 };
 
 // Mock implementation of the `OnTaskExtensionsManager`.
@@ -170,7 +171,8 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     return &session_manager_->should_lock_window_;
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<OnTaskSessionManager> session_manager_;
   raw_ptr<NiceMock<OnTaskSystemWebAppManagerMock>> system_web_app_manager_ptr_;
   raw_ptr<NiceMock<OnTaskExtensionsManagerMock>> extensions_manager_ptr_;
@@ -218,7 +220,8 @@ TEST_F(OnTaskSessionManagerTest,
       session_manager_->active_tab_tracker(), session_manager_.get()};
   Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(kWindowId))
+              PrepareSystemWebAppWindowForOnTask(kWindowId,
+                                                 /*close_bundle_content=*/true))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(
@@ -238,6 +241,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown and window lock state was reset.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskSessionEndNotificationId));
   EXPECT_FALSE(*should_lock_window());
@@ -251,6 +255,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnSessionEnd) {
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskSessionEndNotificationId));
 }
@@ -263,6 +268,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnSessionEnd) {
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskSessionEndNotificationId));
 }
@@ -286,6 +292,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
   session_manager_->OnBundleUpdated(bundle);
 
   // Verify that relevant notification is shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskBundleContentAddedNotificationId));
 }
@@ -383,7 +390,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldApplyRestrictionsToTabsOnBundleUpdated) {
   session_manager_->OnBundleUpdated(bundle);
 }
 
-TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
+TEST_F(OnTaskSessionManagerTest,
+       ShouldPinBocaSWAAfterCountdownWhenLockedOnBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
   const SessionID kTabId = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
@@ -392,18 +400,22 @@ TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
       .WillOnce(Return(kTabId));
   EXPECT_CALL(*extensions_manager_ptr_, DisableExtensions).Times(1);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForSystemWebAppWindow(true, kWindowId))
-      .Times(1);
 
   ::boca::Bundle bundle;
   bundle.add_content_configs()->set_url(kTestUrl1);
   bundle.set_locked(true);
   session_manager_->OnBundleUpdated(bundle);
 
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(true, kWindowId))
+      .Times(1);
+
   // Verify notification is shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownDuration +
+                                  kOnTaskNotificationCountdownInterval);
 }
 
 TEST_F(OnTaskSessionManagerTest,
@@ -429,12 +441,13 @@ TEST_F(OnTaskSessionManagerTest,
   session_manager_->OnBundleUpdated(bundle);
 
   // Verify notification is not shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_FALSE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
 }
 
 TEST_F(OnTaskSessionManagerTest,
-       ShouldPinBocaSWAWhenLockedOnSessionStartAndBundleUpdated) {
+       ShouldPinBocaSWAAfterCountdownWhenLockedOnSessionStartAndBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
   Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
@@ -460,8 +473,11 @@ TEST_F(OnTaskSessionManagerTest,
   session_manager_->OnBundleUpdated(bundle);
 
   // Verify notification is shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownDuration +
+                                  kOnTaskNotificationCountdownInterval);
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldAddTabsWhenAdditionalTabsFoundInBundle) {
@@ -487,6 +503,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldAddTabsWhenAdditionalTabsFoundInBundle) {
   session_manager_->OnBundleUpdated(bundle_2);
 
   // Verify relevant notification is shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskBundleContentAddedNotificationId));
 }
@@ -513,6 +530,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
   session_manager_->OnBundleUpdated(bundle_1);
 
   // Verify notification is shown for newly added tabs.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskBundleContentAddedNotificationId));
 
@@ -521,6 +539,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
   session_manager_->OnBundleUpdated(bundle_2);
 
   // Verify notification is shown for removed content.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskBundleContentRemovedNotificationId));
 }
@@ -551,6 +570,7 @@ TEST_F(OnTaskSessionManagerTest,
 
   // Verify no notification is shown because no new content was added or
   // removed.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_FALSE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskBundleContentAddedNotificationId));
   EXPECT_FALSE(fake_notifications_delegate_ptr_->WasNotificationShown(
@@ -614,8 +634,11 @@ TEST_F(OnTaskSessionManagerTest, ShouldDisableExtensionsOnLock) {
   session_manager_->OnBundleUpdated(bundle);
 
   // Verify notification is shown.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownDuration +
+                                  kOnTaskNotificationCountdownInterval);
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnUnlock) {
@@ -687,7 +710,7 @@ TEST_F(OnTaskSessionManagerTest, OnAppReloadWithNoActiveWindow) {
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillOnce(Return(SessionID::InvalidValue()));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(_))
+              PrepareSystemWebAppWindowForOnTask(_, _))
       .Times(0);
   session_manager_->OnAppReloaded();
 }
@@ -719,8 +742,8 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
       .Times(AtLeast(1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(kWindowId))
-      .Times(1)
+              PrepareSystemWebAppWindowForOnTask(kWindowId, _))
+      .Times(AtLeast(1))
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
@@ -768,11 +791,27 @@ TEST_F(OnTaskSessionManagerTest, LockWindowOnAppReload) {
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
       .Times(AtLeast(1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(kWindowId))
-      .Times(1)
+              PrepareSystemWebAppWindowForOnTask(kWindowId, _))
+      .Times(AtLeast(1))
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_, SetPinStateForSystemWebAppWindow(
                                                 /*pinned=*/true, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  session_manager_->OnAppReloaded();
+}
+
+TEST_F(OnTaskSessionManagerTest, UnpinWindowWhenNoActiveSessionOnAppReload) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              PrepareSystemWebAppWindowForOnTask(kWindowId, _))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_, SetPinStateForSystemWebAppWindow(
+                                                /*pinned=*/false, kWindowId))
       .Times(1)
       .InSequence(s);
   session_manager_->OnAppReloaded();

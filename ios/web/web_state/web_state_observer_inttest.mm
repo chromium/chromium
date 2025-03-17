@@ -770,14 +770,14 @@ class PolicyDeciderMock : public WebStatePolicyDecider {
 
 }  // namespace
 
-using net::test_server::EmbeddedTestServer;
-using ::testing::Return;
-using ::testing::StrictMock;
-using ::testing::_;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using net::test_server::EmbeddedTestServer;
 using test::WaitForWebViewContainingText;
+using ::testing::_;
+using ::testing::Return;
+using ::testing::StrictMock;
 
 // Test fixture to test navigation and load callbacks from WebStateObserver and
 // WebStatePolicyDecider.

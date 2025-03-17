@@ -76,7 +76,6 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, activity, targetActivity);
         IntentUtils.addTrustedIntentExtras(intent);
 
-        MultiInstanceManager.onMultiInstanceModeStarted();
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             // If there is a Chrome window running adjacently, open the link in it.
             // Otherwise create a new window.
@@ -88,6 +87,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
+        MultiInstanceManager.onMultiInstanceModeStarted();
         activity.startActivity(
                 intent, MultiWindowUtils.getOpenInOtherWindowActivityOptions(activity));
     }

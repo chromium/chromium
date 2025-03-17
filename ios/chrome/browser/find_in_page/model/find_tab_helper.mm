@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
+
 #import "ios/chrome/browser/find_in_page/model/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -16,7 +17,12 @@ FindTabHelper::FindTabHelper(web::WebState* web_state) {
   }
 }
 
-FindTabHelper::~FindTabHelper() {}
+FindTabHelper::~FindTabHelper() {
+  // If there is a controller then it needs to be detached from `web_state`
+  // before the call to `-dealloc`.
+  [controller_ detachFromWebState];
+  controller_ = nil;
+}
 
 void FindTabHelper::DismissFindNavigator() {
   // Same as `StopFinding()` except the UI is not marked as inactive so it can

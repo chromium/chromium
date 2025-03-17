@@ -118,6 +118,9 @@ extern const base::FeatureParam<double>
 extern const base::FeatureParam<double>
     kVisitedURLRankingScoreThresholdCCTVisit;
 
+// Enable the tab group suggestion service.
+BASE_DECLARE_FEATURE(kGroupSuggestionService);
+
 }  // namespace visited_url_ranking::features
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_

@@ -23,6 +23,11 @@ namespace experimental_flags {
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
+// Whether the First Run UI will never be displayed. Useful when running
+// automated testing on the "chrome" build target which otherwise cannot skip
+// the FRE using tests_hook::DisableDefaultFirstRun
+bool NeverDisplayFirstRun();
+
 // Whether the Upgrade Promo UI will always be displayed.
 bool AlwaysDisplayUpgradePromo();
 
@@ -136,7 +141,9 @@ std::string GetSegmentForForcedDeviceSwitcherExperience();
 // former takes precedence.
 std::string GetSegmentForForcedShopperExperience();
 
-// Whether a phone backup/restore state should be simulated.
+// Whether a phone backup/restore state should be simulated due to experimental
+// settings. Uses `tests_hook::SimulatePostDeviceRestore()` to check whether
+// this feature should be enabled for EG tests.
 bool SimulatePostDeviceRestore();
 
 // In production, the history sync opt-in isn't shown if it was declined too
@@ -166,15 +173,17 @@ bool ShouldUseInactiveTabsDemoThreshold();
 // tabs are immediately considered inactive.
 bool ShouldUseInactiveTabsTestThreshold();
 
-// Returns the override for Tab Resumption decoration.
-// Returns nil is not set.
-NSString* GetTabResumptionDecorationOverride();
-
-// Whether the first party incognito experince should be simulated.
+// Whether the first party incognito experience should be simulated.
 bool ShouldOpenInIncognitoOverride();
 
 // Whether the a delay should be added to the asynchronous startup.
 bool ShouldDelayAsyncStartup();
+
+// Whether to always show the first party incognito experience UI.
+bool AlwaysShowTheFirstPartyIncognitoUI();
+
+// Enables the AI menu, which is a tool for debugging LLM queries.
+bool EnableAIPrototypingMenu();
 
 }  // namespace experimental_flags
 

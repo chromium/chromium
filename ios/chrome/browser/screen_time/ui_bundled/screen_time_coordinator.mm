@@ -55,8 +55,9 @@
 #pragma mark - Private properties
 
 - (void)setMediator:(ScreenTimeMediator*)mediator {
-  if (_mediator == mediator)
+  if (_mediator == mediator) {
     return;
+  }
 
   if (_mediator) {
     [_mediator disconnect];
@@ -72,8 +73,9 @@
 
 - (void)setScreenTimeViewController:
     (ScreenTimeViewController*)screenTimeViewController {
-  if (_screenTimeViewController == screenTimeViewController)
+  if (_screenTimeViewController == screenTimeViewController) {
     return;
+  }
 
   if (_screenTimeViewController) {
     [_screenTimeViewController willMoveToParentViewController:nil];

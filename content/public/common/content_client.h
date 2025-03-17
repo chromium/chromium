@@ -103,9 +103,6 @@ class CONTENT_EXPORT ContentClient {
   // Gives the embedder a chance to register its own plugins.
   virtual void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) {}
 
-  // Returns a list of origins that are allowed to use PDF internal plugin.
-  virtual std::vector<url::Origin> GetPdfInternalPluginAllowedOrigins();
-
   // Gives the embedder a chance to register the Content Decryption Modules
   // (CDM) it supports, as well as the CDM host file paths to verify CDM host.
   // |cdms| or |cdm_host_file_paths| can be null which means that specific list
@@ -192,6 +189,17 @@ class CONTENT_EXPORT ContentClient {
   // Returns the origin trial policy, or nullptr if origin trials are not
   // supported by the embedder.
   virtual blink::OriginTrialPolicy* GetOriginTrialPolicy();
+
+  // Cross-origin subframes are generally not allowed to display a file picker
+  // for security reasons. This method allows content embedders to specify
+  // whether a cross-origin subframe of a particular origin should be allowed to
+  // display the file picker.
+  //
+  // For example, Chrome's built-in PDF viewer may be hosted in a cross-origin
+  // subframe. To allow this viewer to function correctly, Chrome uses this
+  // method to grant it access to the file picker.
+  virtual bool IsFilePickerAllowedForCrossOriginSubframe(
+      const url::Origin& origin);
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns true for clients like Android WebView that uses synchronous

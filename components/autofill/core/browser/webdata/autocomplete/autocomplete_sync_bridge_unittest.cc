@@ -457,8 +457,8 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesSimple) {
   EXPECT_CALL(*backend(), CommitChanges());
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(
-      EntityChange::CreateDelete(GetStorageKey(specifics1)));
+  entity_change_list.push_back(EntityChange::CreateDelete(
+      GetStorageKey(specifics1), syncer::EntityData()));
   ApplyChanges(std::move(entity_change_list));
   VerifyAllData({specifics2});
 }
@@ -468,8 +468,8 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesSimple) {
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesWrongChangeType) {
   AutofillSpecifics specifics = CreateSpecifics(1, {1});
   syncer::EntityChangeList entity_change_list1;
-  entity_change_list1.push_back(
-      EntityChange::CreateDelete(GetStorageKey(specifics)));
+  entity_change_list1.push_back(EntityChange::CreateDelete(
+      GetStorageKey(specifics), syncer::EntityData()));
   ApplyChanges(std::move(entity_change_list1));
   VerifyAllData(std::vector<AutofillSpecifics>());
 
@@ -563,7 +563,8 @@ TEST_F(AutocompleteSyncBridgeTest,
 // runtime by the bridge and not loaded from disk.
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesBadStorageKey) {
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete("bogus storage key"));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete("bogus storage key", syncer::EntityData()));
   const auto error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_TRUE(error);

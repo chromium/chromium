@@ -38,14 +38,14 @@ void PowerMonitorDeviceSource::PlatformInit() {
                       object:nil
                        queue:nil
                   usingBlock:^(NSNotification* notification) {
-                      ProcessPowerEvent(RESUME_EVENT);
+                    ProcessPowerEvent(RESUME_EVENT);
                   }];
   id background =
       [nc addObserverForName:UIApplicationDidEnterBackgroundNotification
                       object:nil
                        queue:nil
                   usingBlock:^(NSNotification* notification) {
-                      ProcessPowerEvent(SUSPEND_EVENT);
+                    ProcessPowerEvent(SUSPEND_EVENT);
                   }];
   notification_observers_.push_back(foreground);
   notification_observers_.push_back(background);

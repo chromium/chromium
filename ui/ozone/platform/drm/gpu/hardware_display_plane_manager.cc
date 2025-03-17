@@ -11,6 +11,7 @@
 
 #include <drm_fourcc.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <set>
@@ -19,7 +20,6 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/display/display_features.h"
@@ -565,7 +565,7 @@ HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
     return hc;
   }
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       planes_, [crtc_id, &num_overlay_planes = hc.num_overlay_capable_planes,
                 &buffer_formats = hc.supported_buffer_formats](
                    const std::unique_ptr<HardwareDisplayPlane>& plane) {

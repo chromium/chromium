@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -160,11 +162,17 @@ public class LocationBarModelTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         LocationBarModel locationBarModel =
                 activity.getToolbarManager().getLocationBarModelForTesting();
+        Supplier<Boolean> isIncognitoSupplier =
+                activity.getToolbarManager()
+                        .getTabSwitcherButtonCoordinatorForTesting()
+                        .getIsIncognitoSupplier();
         ToolbarDataProvider.Observer observer =
                 new ToolbarDataProvider.Observer() {
                     @Override
                     public void onIncognitoStateChanged() {
                         assertEquals(toIncognito, locationBarModel.isIncognito());
+                        assertNotNull(isIncognitoSupplier);
+                        assertEquals(toIncognito, isIncognitoSupplier.get());
                         incognitoStateObserverCallCount.set(Integer.valueOf(1));
                     }
                 };

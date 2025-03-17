@@ -118,8 +118,8 @@ void SavedDeskIconView::CreateCountLabelChildView(bool show_plus,
                        .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                            kCountLabelInsetSize, kCountLabelInsetSize,
                            kCountLabelInsetSize, inset_size)))
-                       .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
-                       .SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase)
+                       .SetEnabledColor(cros_tokens::kCrosSysSecondary)
+                       .SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase)
                        .SetAutoColorReadabilityEnabled(false)
                        .Build());
 }
@@ -140,9 +140,9 @@ SavedDeskRegularIconView::SavedDeskRegularIconView(
       icon_identifier_(icon_identifier),
       on_icon_loaded_(std::move(on_icon_loaded)) {
   if (GetCountToShow()) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase,
-        /*radius=*/kIconViewSize / 2.0f));
+    SetBackground(
+        views::CreateRoundedRectBackground(cros_tokens::kCrosSysSystemOnBase,
+                                           /*radius=*/kIconViewSize / 2.0f));
   }
 
   CreateChildViews(incognito_window_color_provider, app_title);
@@ -292,9 +292,9 @@ END_METADATA
 // SavedDeskOverflowIconView:
 SavedDeskOverflowIconView::SavedDeskOverflowIconView(int count, bool show_plus)
     : SavedDeskIconView(count, kOverflowIconSortingKey) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase,
-      /*radius=*/kIconViewSize / 2.0f));
+  SetBackground(
+      views::CreateRoundedRectBackground(cros_tokens::kCrosSysSystemOnBase,
+                                         /*radius=*/kIconViewSize / 2.0f));
 
   CreateCountLabelChildView(show_plus, kCountLabelInsetSize);
 }

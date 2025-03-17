@@ -10,7 +10,8 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrDrawerElement, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import type {CrDrawerElement, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -66,7 +67,7 @@ suite('OSSettingsUi', () => {
         mainPageContainer.shadowRoot!.querySelector(
             '#updateRequiredEolBanner'));
 
-    mainPageContainer!.set('showUpdateRequiredEolBanner_', true);
+    mainPageContainer.set('showUpdateRequiredEolBanner_', true);
     flush();
     assertTrue(!!mainPageContainer.shadowRoot!.querySelector(
         '#updateRequiredEolBanner'));

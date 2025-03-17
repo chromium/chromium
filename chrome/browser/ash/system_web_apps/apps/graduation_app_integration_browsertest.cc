@@ -23,7 +23,7 @@
 
 namespace {
 
-constexpr char kContentTransferAppName[] = "Content Transfer";
+constexpr char kContentTransferAppName[] = "Content transfer";
 constexpr char kFromChromeInternalHistogramName[] =
     "Apps.DefaultAppLaunch.FromChromeInternal";
 

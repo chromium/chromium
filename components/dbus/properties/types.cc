@@ -74,7 +74,7 @@ std::unique_ptr<DbusType> CreateDynamicDbusType(dbus::MessageReader* reader) {
       if (reader->GetDataSignature() == "a{sv}") {
         return CreateDbusType<DbusDictionary>(reader);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case dbus::Message::DataType::STRUCT:
     case dbus::Message::DataType::DICT_ENTRY:
       // For templated types (array, struct dict entry), an untyped container is
@@ -104,7 +104,12 @@ bool DbusType::operator!=(const DbusType& other) const {
 }
 
 bool DbusType::Move(DbusType&& object) {
-  if (!TypeMatches(object)) {
+  if (GetSignatureDynamic() != object.GetSignatureDynamic()) {
+    return false;
+  }
+  // Allow moving from UntypedDbusContainer to DbusParameters.
+  if (IsParameters() != object.IsParameters() &&
+      (!IsParameters() || !object.IsUntyped())) {
     return false;
   }
   MoveImpl(std::move(object));
@@ -129,6 +134,11 @@ bool DbusType::TypeMatches(const DbusType& other) const {
 namespace detail {
 
 UntypedDbusContainer::UntypedDbusContainer() = default;
+
+UntypedDbusContainer::UntypedDbusContainer(
+    std::vector<std::unique_ptr<DbusType>> value,
+    std::string signature)
+    : value_(std::move(value)), signature_(std::move(signature)) {}
 
 UntypedDbusContainer::UntypedDbusContainer(
     UntypedDbusContainer&& other) noexcept = default;
@@ -365,4 +375,21 @@ std::string DbusDictionary::GetSignature() {
 
 DbusDictionary MakeDbusDictionary() {
   return DbusDictionary();
+}
+
+DbusVariant ReadDbusMessage(dbus::MessageReader* reader) {
+  std::string signature;
+  std::vector<std::unique_ptr<DbusType>> data;
+  while (reader->HasMoreData()) {
+    data.push_back(CreateDynamicDbusType(reader));
+    if (!data.back()) {
+      return DbusVariant();
+    }
+    signature += data.back()->GetSignatureDynamic();
+  }
+  if (data.size() == 1U) {
+    return DbusVariant(std::move(data[0]));
+  }
+  return DbusVariant(std::make_unique<detail::UntypedDbusContainer>(
+      std::move(data), std::move(signature)));
 }

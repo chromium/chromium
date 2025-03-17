@@ -10,7 +10,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/tracing/windows_system_tracing_client_impl_win.h"
-#include "components/tracing/tracing_service_idl.h"
+#include "chrome/windows_services/elevated_tracing_service/tracing_service_idl.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"

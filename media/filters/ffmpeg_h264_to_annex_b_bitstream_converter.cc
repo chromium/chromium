@@ -35,7 +35,7 @@ bool FFmpegH264ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
     if (!stream_codec_parameters_->extradata ||
         stream_codec_parameters_->extradata_size <= 0) {
       DVLOG(2) << __func__ << ": Empty extra data";
-      return false;
+      return true;
     }
 
     avc_config = std::make_unique<mp4::AVCDecoderConfigurationRecord>();

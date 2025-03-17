@@ -12,11 +12,12 @@ import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BrailleCommandData} from '../../common/braille/braille_command_data.js';
-import {BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
-import {NavBraille} from '../../common/braille/nav_braille.js';
+import type {BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
+import {BrailleKeyCommand} from '../../common/braille/braille_key_types.js';
+import type {NavBraille} from '../../common/braille/nav_braille.js';
 import {Command} from '../../common/command.js';
 import {EventSourceType} from '../../common/event_source_type.js';
-import {Spannable} from '../../common/spannable.js';
+import type {Spannable} from '../../common/spannable.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {DesktopAutomationInterface} from '../event/desktop_automation_interface.js';

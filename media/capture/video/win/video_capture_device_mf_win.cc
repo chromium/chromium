@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -739,14 +740,16 @@ class DXGIHandlePrivateData
           IUnknown> {
  public:
   explicit DXGIHandlePrivateData(base::win::ScopedHandle texture_handle)
-      : texture_handle_(std::move(texture_handle)) {}
+      : handle_(std::move(texture_handle)) {}
 
-  gfx::DXGIHandleToken GetDXGIToken() { return dxgi_token_; }
-  HANDLE GetTextureHandle() { return texture_handle_.get(); }
+  const gfx::DXGIHandleToken& GetDXGIToken() { return handle_.token(); }
+  HANDLE GetTextureHandle() { return handle_.buffer_handle(); }
+
+  gfx::DXGIHandle CloneHandle() { return handle_.Clone(); }
 
  private:
-  gfx::DXGIHandleToken dxgi_token_;
-  const base::win::ScopedHandle texture_handle_;
+  gfx::DXGIHandle handle_;
+
   ~DXGIHandlePrivateData() override = default;
 };
 
@@ -762,6 +765,8 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
       public IMFCaptureEngineOnSampleCallback,
       public IMFCaptureEngineOnEventCallback {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MFVideoCallback(VideoCaptureDeviceMFWin* observer) : observer_(observer) {}
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
@@ -901,7 +906,7 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
 
  private:
   friend class base::RefCountedThreadSafe<MFVideoCallback>;
-  ~MFVideoCallback() {}
+  ~MFVideoCallback() = default;
 
   base::TimeTicks last_capture_begin_time_ = base::TimeTicks();
 
@@ -914,6 +919,8 @@ class VideoCaptureDeviceMFWin::MFActivitiesReportCallback final
     : public base::RefCountedThreadSafe<MFActivitiesReportCallback>,
       public IMFSensorActivitiesReportCallback {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MFActivitiesReportCallback(
       base::WeakPtr<VideoCaptureDeviceMFWin> observer,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
@@ -1414,7 +1421,7 @@ bool VideoCaptureDeviceMFWin::Init() {
     dxgi_device_manager_->RegisterInCaptureEngineAttributes(attributes.Get());
   }
 
-  video_callback_ = new MFVideoCallback(this);
+  video_callback_ = base::MakeRefCounted<MFVideoCallback>(this);
   hr = engine_->Initialize(video_callback_.get(), attributes.Get(), nullptr,
                            source_.Get());
   if (FAILED(hr)) {
@@ -2276,12 +2283,13 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   }
 
   auto gmb_handle = capture_buffer.handle_provider->GetGpuMemoryBufferHandle();
-  if (!gmb_handle.dxgi_handle.IsValid()) {
+  if (!gmb_handle.dxgi_handle().IsValid()) {
     // If the device is removed and GMB tracker fails to recreate it,
     // an empty gmb handle may be returned here.
     return MF_E_UNEXPECTED;
   }
-  hr = CopyTextureToGpuMemoryBuffer(texture, gmb_handle.dxgi_handle.Get());
+  hr = CopyTextureToGpuMemoryBuffer(texture,
+                                    gmb_handle.dxgi_handle().buffer_handle());
 
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to copy camera device texture to output texture: "
@@ -2386,14 +2394,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
   // Set reused |token| and |share_handle| to gmb handle.
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-  HANDLE texture_handle_duplicated = nullptr;
-  CHECK(::DuplicateHandle(GetCurrentProcess(), private_data->GetTextureHandle(),
-                          GetCurrentProcess(), &texture_handle_duplicated, 0,
-                          FALSE, DUPLICATE_SAME_ACCESS))
-      << "failed to reuse handle.";
-
-  gmb_handle.dxgi_handle.Set(texture_handle_duplicated);
-  gmb_handle.dxgi_token = private_data->GetDXGIToken();
+  gmb_handle.set_dxgi_handle(private_data->CloneHandle());
 
   media::CapturedExternalVideoBuffer external_buffer =
       media::CapturedExternalVideoBuffer(
@@ -2566,9 +2567,10 @@ void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
   if (hr == MF_E_HW_MFT_FAILED_START_STREAMING) {
     // This may indicate that the camera is in use by another application.
     if (!activities_report_callback_) {
-      activities_report_callback_ = new MFActivitiesReportCallback(
-          weak_factory_.GetWeakPtr(), main_thread_task_runner_,
-          device_descriptor_.device_id);
+      activities_report_callback_ =
+          base::MakeRefCounted<MFActivitiesReportCallback>(
+              weak_factory_.GetWeakPtr(), main_thread_task_runner_,
+              device_descriptor_.device_id);
     }
     if (!activity_monitor_) {
       bool created = CreateMFSensorActivityMonitor(

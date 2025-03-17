@@ -10,11 +10,6 @@
 
 namespace tabs {
 
-// Kill switch for disconnecting file select dialog when tab is deactivated.
-BASE_FEATURE(kDisconnectFileChooserOnTabDeactivateKillSwitch,
-             "DisconnectFileChooserOnTabDeactivateKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Splits pinned and unpinned tabs into separate TabStrips.
 // https://crbug.com/1346019
 BASE_FEATURE(kSplitTabStrip,
@@ -43,12 +38,6 @@ const char kScrollableTabStripOverflowModeName[] = "tabScrollOverflow";
 
 BASE_FEATURE(kTabSearchPositionSetting,
              "TabSearchPositionSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Stores the tabs as a tree based data structure instead of a
-// vector in the tabstrip model. b/323937237
-BASE_FEATURE(kTabStripCollectionStorage,
-             "TabStripCollectionStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CanShowTabSearchPositionSetting() {

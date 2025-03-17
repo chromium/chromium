@@ -31,7 +31,7 @@ class DeviceAccountsSynchronizer {
   // accounts will be visible in IdentityManager::GetAccountsWithRefreshTokens()
   // with any persistent errors cleared after this method is called.
   virtual void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      const std::vector<CoreAccountInfo>& core_account_infos,
+      const std::vector<AccountInfo>& accounts,
       const std::optional<CoreAccountId>& primary_account_id) = 0;
 #endif
 

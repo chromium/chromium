@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/task_manager_search_bar_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
@@ -31,11 +32,7 @@ class MockDelegate : public TaskManagerSearchBarView::Delegate {
   ~MockDelegate() override = default;
   MOCK_METHOD(void,
               SearchBarOnInputChanged,
-              (const std::u16string& text),
-              (override));
-  MOCK_METHOD(void,
-              SearchBarOnHoverChange,
-              (const bool is_focus_on),
+              (std::u16string_view text),
               (override));
 };
 class TaskManagerSearchBarViewTest : public ChromeViewsTestBase {
@@ -75,8 +72,7 @@ TEST_F(TaskManagerSearchBarViewTest, SetsFocusOnTextfield) {
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
   ASSERT_NE(focused_field, nullptr);
-  EXPECT_EQ(focused_field->GetClassMetaData()->type_name(),
-            std::string("Textfield"));
+  EXPECT_EQ(focused_field->GetClassName(), "Textfield");
 }
 
 TEST_F(TaskManagerSearchBarViewTest, KeyPressedFromTextfield) {

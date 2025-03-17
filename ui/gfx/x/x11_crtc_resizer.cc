@@ -4,6 +4,7 @@
 
 #include "ui/gfx/x/x11_crtc_resizer.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/connection.h"
@@ -117,7 +117,7 @@ x11::RandR::Crtc X11CrtcResizer::GetCrtcForOutput(
   // there are multiple CRTCs for the output, only the first will be returned,
   // but this should never occur with Xorg+video-dummy.
   auto iter =
-      base::ranges::find_if(active_crtcs_, [output](const CrtcInfo& crtc_info) {
+      std::ranges::find_if(active_crtcs_, [output](const CrtcInfo& crtc_info) {
         return base::Contains(crtc_info.outputs, output);
       });
   if (iter == active_crtcs_.end()) {
@@ -146,7 +146,7 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
   updated_crtcs_.insert(crtc);
 
   // Find |crtc| in |active_crtcs_| and adjust its mode and size.
-  auto iter = base::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc);
+  auto iter = std::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc);
 
   // |crtc| was returned by GetCrtcForOutput() so it should definitely be in
   // the list.
@@ -163,7 +163,7 @@ void X11CrtcResizer::UpdateActiveCrtc(x11::RandR::Crtc crtc,
   updated_crtcs_.insert(crtc);
 
   // Find |crtc| in |active_crtcs_| and adjust its mode and size.
-  auto iter = base::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc);
+  auto iter = std::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc);
 
   // |crtc| was returned by GetCrtcForOutput() so it should definitely be in
   // the list.
@@ -182,7 +182,7 @@ void X11CrtcResizer::AddActiveCrtc(
     const std::vector<x11::RandR::Output>& outputs,
     const gfx::Rect& new_rect) {
   // |crtc| is not active so it must not be in |active_crtcs_|.
-  DCHECK(base::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc) ==
+  DCHECK(std::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc) ==
          active_crtcs_.end());
 
   active_crtcs_.emplace_back(crtc, new_rect.x(), new_rect.y(), new_rect.width(),
@@ -192,9 +192,9 @@ void X11CrtcResizer::AddActiveCrtc(
 }
 
 void X11CrtcResizer::RemoveActiveCrtc(x11::RandR::Crtc crtc) {
-  auto iter = base::ranges::remove(active_crtcs_, crtc, &CrtcInfo::crtc);
-  DCHECK(iter != active_crtcs_.end());
-  active_crtcs_.erase(iter, active_crtcs_.end());
+  auto to_remove = std::ranges::remove(active_crtcs_, crtc, &CrtcInfo::crtc);
+  DCHECK(!to_remove.empty());
+  active_crtcs_.erase(to_remove.begin(), to_remove.end());
 }
 
 void X11CrtcResizer::RelayoutCrtcs(x11::RandR::Crtc crtc_to_resize,
@@ -432,7 +432,7 @@ void X11CrtcResizer::PackVertically(const gfx::Size& new_size,
   }
 
   // Sort vertically before packing.
-  base::ranges::sort(active_crtcs_, std::less<>(), &CrtcInfo::y);
+  std::ranges::sort(active_crtcs_, std::less<>(), &CrtcInfo::y);
 
   // Pack the CRTCs by setting their y-offsets. If necessary, change the
   // x-offset for right-alignment.

@@ -9,16 +9,18 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 
 /**
  * A helper class to draw an overlay layer on the top of a view to enable highlighting. The overlay
  * layer can be specified to be a circle or a rectangle.
  */
+@NullMarked
 public class ViewHighlighter {
     /**
      * Represents the delay between when menu anchor/toolbar handle/expand button was tapped and
@@ -66,7 +68,7 @@ public class ViewHighlighter {
         private int mNumPulses;
         // Only valid for HighlightShape.CIRCLE.
         // Used to customize the size of pulse if needed.
-        @Nullable private PulseDrawable.Bounds mCircleRadius;
+        private PulseDrawable.@Nullable Bounds mCircleRadius;
         // Only valid for HighlightShape.RECTANGLE The corner radius od rectangle in pixels. Used
         // to created a rounded rectangle.
         @Px private int mCornerRadius;
@@ -108,8 +110,7 @@ public class ViewHighlighter {
         }
 
         /** @return custom definition of the size of highlight's pulse or null of not set */
-        @Nullable
-        public PulseDrawable.Bounds getCircleRadius() {
+        public PulseDrawable.@Nullable Bounds getCircleRadius() {
             return mCircleRadius;
         }
 
@@ -246,7 +247,7 @@ public class ViewHighlighter {
             View view,
             int numPulses,
             boolean boundsRespectPadding,
-            @Nullable PulseDrawable.Bounds circleRadius) {
+            PulseDrawable.@Nullable Bounds circleRadius) {
         PulseDrawable drawable = null;
         Context context = view.getContext();
         PulseDrawable.PulseEndAuthority pulseEndAuthority =

@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "build/chromeos_buildflags.h"
+#include "base/strings/to_string.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_switches.h"
@@ -524,7 +524,7 @@ bool MediaSource::isTypeSupported(ExecutionContext* context,
                                   const String& type) {
   bool result = IsTypeSupportedInternal(
       context, type, true /* Require fully specified mime and codecs */);
-  DVLOG(2) << __func__ << "(" << type << ") -> " << (result ? "true" : "false");
+  DVLOG(2) << __func__ << "(" << type << ") -> " << base::ToString(result);
   return result;
 }
 
@@ -538,7 +538,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // lack of support immediately without proceeding.
   if (!context) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (context is null)";
     return false;
   }
@@ -548,7 +548,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // 1. If type is an empty string, then return false.
   if (type.empty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (empty input)";
     return false;
   }
@@ -558,7 +558,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   String mime_type = content_type.GetType();
   if (mime_type.empty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (invalid mime type)";
     return false;
   }
@@ -637,7 +637,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
       HTMLMediaElement::GetSupportsType(filtered_content_type);
   if (get_supports_type_result == MIMETypeRegistry::kNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (not supported by HTMLMediaElement)";
     RecordIdentifiabilityMetric(context, type, false);
     return false;
@@ -665,8 +665,8 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   bool result = supported == MIMETypeRegistry::kSupported;
 
   DVLOG(2) << __func__ << "(" << type << ", "
-           << (enforce_codec_specificity ? "true" : "false") << ") -> "
-           << (result ? "true" : "false");
+           << base::ToString(enforce_codec_specificity) << ") -> "
+           << base::ToString(result);
   RecordIdentifiabilityMetric(context, type, result);
   return result;
 }
@@ -811,12 +811,11 @@ WebTimeRanges MediaSource::BufferedInternal(
     active_source_buffers_->item(i)->GetBuffered_Locked(&ranges[i], pass_key);
   }
 
-  WebTimeRanges intersection_ranges;
-
   // 1. If activeSourceBuffers.length equals 0 then return an empty TimeRanges
   //    object and abort these steps.
-  if (ranges.empty())
-    return intersection_ranges;
+  if (ranges.empty()) {
+    return WebTimeRanges();
+  }
 
   // 2. Let active ranges be the ranges returned by buffered for each
   //    SourceBuffer object in activeSourceBuffers.
@@ -828,12 +827,13 @@ WebTimeRanges MediaSource::BufferedInternal(
   }
 
   // Return an empty range if all ranges are empty.
-  if (highest_end_time < 0)
-    return intersection_ranges;
+  if (highest_end_time < 0) {
+    return WebTimeRanges();
+  }
 
   // 4. Let intersection ranges equal a TimeRange object containing a single
   //    range from 0 to highest end time.
-  intersection_ranges.emplace_back(0, highest_end_time);
+  WebTimeRanges intersection_ranges(0, highest_end_time);
 
   // 5. For each SourceBuffer object in activeSourceBuffers run the following
   //    steps:
@@ -867,13 +867,13 @@ WebTimeRanges MediaSource::SeekableInternal(
 
   // Implements MediaSource algorithm for HTMLMediaElement.seekable.
   // http://w3c.github.io/media-source/#htmlmediaelement-extensions
-  WebTimeRanges ranges;
 
   double source_duration = GetDuration_Locked(pass_key);
 
   // If duration equals NaN: Return an empty TimeRanges object.
-  if (std::isnan(source_duration))
-    return ranges;
+  if (std::isnan(source_duration)) {
+    return WebTimeRanges();
+  }
 
   // If duration equals positive Infinity:
   if (source_duration == std::numeric_limits<double>::infinity()) {
@@ -887,33 +887,30 @@ WebTimeRanges MediaSource::SeekableInternal(
       //      earliest start time in union ranges and an end time equal to
       //      the highest end time in union ranges and abort these steps.
       if (buffered.empty()) {
-        ranges.emplace_back(live_seekable_range_start_,
-                            live_seekable_range_end_);
-        return ranges;
+        return WebTimeRanges(live_seekable_range_start_,
+                             live_seekable_range_end_);
       }
 
-      ranges.emplace_back(
+      return WebTimeRanges(
           std::min(live_seekable_range_start_, buffered.front().start),
           std::max(live_seekable_range_end_, buffered.back().end));
-      return ranges;
     }
 
     // 2. If the HTMLMediaElement.buffered attribute returns an empty TimeRanges
     //    object, then return an empty TimeRanges object and abort these steps.
-    if (buffered.empty())
-      return ranges;
+    if (buffered.empty()) {
+      return WebTimeRanges();
+    }
 
     // 3. Return a single range with a start time of 0 and an end time equal to
     //    the highest end time reported by the HTMLMediaElement.buffered
     //    attribute.
-    ranges.emplace_back(0, buffered.back().end);
-    return ranges;
+    return WebTimeRanges(0, buffered.back().end);
   }
 
   // 3. Otherwise: Return a single range with a start time of 0 and an end time
   //    equal to duration.
-  ranges.emplace_back(0, source_duration);
-  return ranges;
+  return WebTimeRanges(0, source_duration);
 }
 
 void MediaSource::OnTrackChanged(TrackBase* track) {

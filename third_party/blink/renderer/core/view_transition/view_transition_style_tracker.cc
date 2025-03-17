@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/not_fatal_until.h"
+#include "cc/base/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -403,7 +403,12 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
   }
 
   if (!transform.HasPerspective()) {
-    transform.Round2dTranslationComponents();
+    if (base::FeatureList::IsEnabled(
+            ::features::kViewTransitionFloorTransform)) {
+      transform.Floor2dTranslationComponents();
+    } else {
+      transform.Round2dTranslationComponents();
+    }
   }
 
   return transform;
@@ -466,10 +471,12 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
   ImageWrapperPseudoElement(Element* parent,
                             PseudoId pseudo_id,
                             const AtomicString& view_transition_name,
+                            bool is_generated_name,
                             const ViewTransitionStyleTracker* style_tracker)
       : ViewTransitionPseudoElementBase(parent,
                                         pseudo_id,
                                         view_transition_name,
+                                        is_generated_name,
                                         style_tracker) {}
 
   ~ImageWrapperPseudoElement() override = default;
@@ -535,23 +542,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
         PhysicalRect::EnclosingRect(
             transition_state_element
                 .border_box_rect_in_enclosing_layer_css_space),
-        transition_state_element.viewport_matrix,
-        transition_state_element.layered_box_properties
-            ? std::make_optional(ContainerProperties::BoxGeometry{
-                  .content_box = PhysicalRect::EnclosingRect(
-                      transition_state_element.layered_box_properties
-                          ->content_box),
-                  .padding_box = PhysicalRect::EnclosingRect(
-                      transition_state_element.layered_box_properties
-                          ->padding_box),
-                  .box_sizing =
-                      transition_state_element.layered_box_properties
-                                  ->box_sizing ==
-                              mojom::blink::ViewTransitionElementBoxSizing::
-                                  kContentBox
-                          ? EBoxSizing::kContentBox
-                          : EBoxSizing::kBorderBox})
-            : std::nullopt};
+        transition_state_element.viewport_matrix};
     element_data->old_snapshot_id = transition_state_element.snapshot_id;
 
     element_data->element_index = transition_state_element.paint_order;
@@ -615,7 +606,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
 ViewTransitionStyleTracker::~ViewTransitionStyleTracker() {
   if (!RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
-    CHECK_EQ(state_, State::kFinished);
+    CHECK(state_ == State::kIdle || state_ == State::kFinished)
+        << static_cast<int>(state_);
   }
 }
 
@@ -963,6 +955,9 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
     // already sorted.
     element_data->containing_group_name = ComputeContainingGroupName(
         name, element->ComputedStyleRef().ViewTransitionGroup());
+
+    element_data->is_generated_name =
+        !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
     element_data_map_.insert(name, std::move(element_data));
 
     if (element->IsDocumentElement()) {
@@ -993,7 +988,8 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
   if (RuntimeEnabledFeatures::PaintHoldingForLocalIframesEnabled() &&
       !document_->GetFrame()->IsLocalRoot()) {
     subframe_snapshot_layer_ = cc::ViewTransitionContentLayer::Create(
-        GenerateResourceId(), /*is_live_content_layer=*/true);
+        GenerateResourceId(/*for_subframe_snapshot=*/true),
+        /*is_live_content_layer=*/true);
     capture_resource_ids_.push_back(
         subframe_snapshot_layer_->ViewTransitionResourceId());
   }
@@ -1004,11 +1000,6 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
 void ViewTransitionStyleTracker::SetCaptureRectsFromCompositor(
     const std::unordered_map<viz::ViewTransitionElementResourceId, gfx::RectF>&
         rects) {
-  if (!RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled()) {
-    // CC might collect these rects when the feature is disabled, but we're
-    // ignoring them in that case.
-    return;
-  }
 
   CHECK(!HasLiveNewContent());
   for (auto& entry : element_data_map_) {
@@ -1174,6 +1165,9 @@ bool ViewTransitionStyleTracker::Start() {
     element_data->containing_group_name = ComputeContainingGroupName(
         name, element->ComputedStyleRef().ViewTransitionGroup());
 
+    element_data->is_generated_name =
+        !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
+
     // Verify that the element_index assigned in Capture is less than next_index
     // here, just as a sanity check.
     DCHECK_LT(element_data->element_index, next_index);
@@ -1300,6 +1294,10 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
   DCHECK(IsTransitionPseudoElement(pseudo_id));
   DCHECK(pseudo_id == kPseudoIdViewTransition || view_transition_name);
 
+  bool is_generated_name =
+      view_transition_name &&
+      element_data_map_.find(view_transition_name)->value->is_generated_name;
+
   switch (pseudo_id) {
     case kPseudoIdViewTransition:
       return MakeGarbageCollected<ViewTransitionTransitionElement>(parent,
@@ -1307,11 +1305,11 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 
     case kPseudoIdViewTransitionGroup: {
       return MakeGarbageCollected<ViewTransitionPseudoElementBase>(
-          parent, pseudo_id, view_transition_name, this);
+          parent, pseudo_id, view_transition_name, is_generated_name, this);
     }
     case kPseudoIdViewTransitionImagePair:
       return MakeGarbageCollected<ImageWrapperPseudoElement>(
-          parent, pseudo_id, view_transition_name, this);
+          parent, pseudo_id, view_transition_name, is_generated_name, this);
 
     case kPseudoIdViewTransitionOld: {
       DCHECK(view_transition_name);
@@ -1337,7 +1335,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
       // update it when the value changes.
       auto* pseudo_element = MakeGarbageCollected<ViewTransitionContentElement>(
           parent, pseudo_id, view_transition_name, snapshot_id,
-          /*is_live_content_element=*/false, this);
+          /*is_live_content_element=*/false, is_generated_name, this);
       pseudo_element->SetIntrinsicSize(
           captured_rect, reference_rect_in_enclosing_layer_space,
           element_data->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
@@ -1356,7 +1354,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 
       auto* pseudo_element = MakeGarbageCollected<ViewTransitionContentElement>(
           parent, pseudo_id, view_transition_name, snapshot_id,
-          /*is_live_content_element=*/true, this);
+          /*is_live_content_element=*/true, is_generated_name, this);
       pseudo_element->SetIntrinsicSize(
           captured_rect, border_box_rect,
           element_data->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
@@ -1449,7 +1447,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       layout_view_size_in_css_space.Scale(1 / device_pixel_ratio_);
       container_properties = ContainerProperties{
           PhysicalRect(PhysicalOffset(), layout_view_size_in_css_space),
-          gfx::Transform(), std::nullopt};
+          gfx::Transform()};
       visual_overflow_rect_in_layout_space.size = layout_view_size;
     } else {
       ComputeLiveElementGeometry(
@@ -1473,12 +1471,6 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     for (CSSPropertyID id : kPropertiesToCapture) {
       capture_property(id);
-    }
-
-    if (ViewTransitionUtils::UseLayeredCapture(layout_object->StyleRef())) {
-      for (CSSPropertyID id : kLayeredCaptureProperties) {
-        capture_property(id);
-      }
     }
 
     auto css_properties = std::move(css_property_builder).Finish();
@@ -1575,25 +1567,17 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   snapshot_matrix_in_css_space.Zoom(1.0 / device_pixel_ratio_);
 
   PhysicalOffset offset_in_css_space;
-  if (RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled()) {
-    // In this mode, the max extents rect (the capture rect we guess here) and
-    // the border box are in the enclosing layer coordinate space. That's a more
-    // convenient coordinate space than the element's own space as it matches
-    // CC's coordinate space (e.g. RenderSurfaceImpl::content_rect()).
-    if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
-      offset_in_css_space = layout_inline->PhysicalLinesBoundingBox().offset;
-    }
-
-    offset_in_css_space.Scale(1.f / device_pixel_ratio_);
+  // In this mode, the max extents rect (the capture rect we guess here) and
+  // the border box are in the enclosing layer coordinate space. That's a more
+  // convenient coordinate space than the element's own space as it matches
+  // CC's coordinate space (e.g. RenderSurfaceImpl::content_rect()).
+  if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
+    offset_in_css_space = layout_inline->PhysicalLinesBoundingBox().offset;
   }
 
-  // For layered capture, the reference box might be the content box, based on
-  // box-sizing.
-  PhysicalSize border_box_size_in_css_space;
-  const bool use_layered_capture =
-      ViewTransitionUtils::UseLayeredCapture(layout_object.StyleRef());
+  offset_in_css_space.Scale(1.f / device_pixel_ratio_);
 
-  std::optional<ContainerProperties::BoxGeometry> box_geometry;
+  PhysicalSize border_box_size_in_css_space;
   if (layout_object.IsSVGChild() || IsA<LayoutBox>(layout_object)) {
     // ResizeObserverEntry is created to reuse the logic for parsing object
     // size for different types of LayoutObjects. However, this works only
@@ -1615,19 +1599,6 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }
 
-  if (use_layered_capture && layout_object.IsBoxModelObject()) {
-    PhysicalRect padding_box(PhysicalOffset(), border_box_size_in_css_space);
-    padding_box.Contract(
-        To<LayoutBoxModelObject>(layout_object).BorderOutsets());
-    PhysicalRect content_box = padding_box;
-    content_box.Contract(
-        To<LayoutBoxModelObject>(layout_object).PaddingOutsets());
-    box_geometry = ContainerProperties::BoxGeometry{
-        .content_box = content_box,
-        .padding_box = padding_box,
-        .box_sizing = layout_object.StyleRef().BoxSizing()};
-  }
-
   float effective_zoom = layout_object.StyleRef().EffectiveZoom();
 
   // If the object's effective zoom differs from device_pixel_ratio, adjust
@@ -1636,10 +1607,6 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       std::numeric_limits<float>::epsilon()) {
     float device_to_css_pixels_ratio = effective_zoom / device_pixel_ratio_;
     border_box_size_in_css_space.Scale(device_to_css_pixels_ratio);
-    if (box_geometry) {
-      box_geometry->content_box.Scale(device_to_css_pixels_ratio);
-      box_geometry->padding_box.Scale(device_to_css_pixels_ratio);
-    }
   }
 
   snapshot_matrix_in_css_space = ConvertFromTopLeftToCenter(
@@ -1657,7 +1624,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       snapshot_matrix_in_layout_space, *snapshot_root_layout_size_at_capture_);
   container_properties = {
       PhysicalRect(offset_in_css_space, border_box_size_in_css_space),
-      snapshot_matrix_in_css_space, box_geometry};
+      snapshot_matrix_in_css_space};
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {
@@ -1900,17 +1867,6 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
                        ->border_box_rect_in_enclosing_layer_css_space);
     element.viewport_matrix =
         element_data->container_properties->snapshot_matrix;
-    if (const auto& box_geometry =
-            element_data->container_properties->box_geometry) {
-      element
-          .layered_box_properties = ViewTransitionElement::LayeredBoxProperties{
-          .content_box = gfx::RectF(box_geometry->content_box),
-          .padding_box = gfx::RectF(box_geometry->padding_box),
-          .box_sizing =
-              box_geometry->box_sizing == EBoxSizing::kContentBox
-                  ? mojom::blink::ViewTransitionElementBoxSizing::kContentBox
-                  : mojom::blink::ViewTransitionElementBoxSizing::kBorderBox};
-    }
     element.overflow_rect_in_layout_space =
         gfx::RectF(element_data->visual_overflow_rect_in_layout_space);
 
@@ -2068,17 +2024,11 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
           containing_group_data->cached_container_properties.snapshot_matrix
               .InverseOrIdentity();
 
-      old_parent_inverse_transform.Translate(
-          -containing_group_data->cached_container_properties.BorderOffset());
-
       if (containing_group_data->container_properties) {
         const auto& new_container_properties =
             *containing_group_data->container_properties;
         new_parent_inverse_transform =
-
             new_container_properties.snapshot_matrix.InverseOrIdentity();
-        new_parent_inverse_transform.Translate(
-            -new_container_properties.BorderOffset());
       }
     }
 
@@ -2166,8 +2116,7 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetInkOverflowRect(
 
 gfx::RectF ViewTransitionStyleTracker::ElementData::GetCapturedSubrect(
     bool use_cached_data) const {
-  if (RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled() &&
-      use_cached_data) {
+  if (use_cached_data) {
     return GetInkOverflowRect(true);
   }
   auto captured_rect = use_cached_data ? cached_captured_rect_in_layout_space
@@ -2185,19 +2134,13 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetReferenceRect(
   const auto& properties =
       use_cached_data ? cached_container_properties : *container_properties;
   PhysicalRect rect = properties.border_box_rect_in_enclosing_layer_css_space;
-  if (properties.box_geometry) {
-    rect = properties.box_geometry->content_box;
-    rect.Move(properties.border_box_rect_in_enclosing_layer_css_space.offset);
-  }
   rect.Scale(device_scale_factor);
   return gfx::RectF(rect);
 }
 
 bool ViewTransitionStyleTracker::ElementData::
     ShouldPropagateVisualOverflowRectAsMaxExtentsRect() const {
-  return RuntimeEnabledFeatures::
-             ViewTransitionOverflowRectFromSurfaceEnabled() &&
-         target_element && !target_element->IsDocumentElement();
+  return target_element && !target_element->IsDocumentElement();
 }
 
 void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {
@@ -2225,158 +2168,22 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     LayoutBoxModelObject& box,
     const LayoutBoxModelObject* ancestor) const {
   DCHECK(!box.IsLayoutView());
-  if (RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled()) {
-    // In this mode, we don't try to compute the pixel-precise capture rect.
-    // Instead, we compute the max extents: a rect that's close enough to that
-    // rect and contains it. This rect is used for clipping computation in CC.
-    // When displaying live content, ViewTransitionContentImpl would later
-    // "correct" this rect to the actual capture rect that's computed inside CC.
-    // Note that this rect is in enclosing layer space, to match the CC
-    // coordinate space. So the border box rect also has to be in the same
-    // coordinate space.
-    auto rect = box.EnclosingLayer()
-                    ->LocalBoundingBoxIncludingSelfPaintingDescendants();
-    if (!ViewTransitionUtils::UseLayeredCapture(box.StyleRef())) {
-      rect = box.ApplyFiltersToRect(rect);
-    }
 
-    // Correct for fractional offset.
-    rect.Move(box.FirstFragment().PaintOffset());
-    return PhysicalRect(ToEnclosingRect(rect));
-  }
+  // We don't try to compute the pixel-precise capture rect.
+  // Instead, we compute the max extents: a rect that's close enough to that
+  // rect and contains it. This rect is used for clipping computation in CC.
+  // When displaying live content, ViewTransitionContentImpl would later
+  // "correct" this rect to the actual capture rect that's computed inside CC.
+  // Note that this rect is in enclosing layer space, to match the CC
+  // coordinate space. So the border box rect also has to be in the same
+  // coordinate space.
+  auto rect =
+      box.EnclosingLayer()->LocalBoundingBoxIncludingSelfPaintingDescendants();
+  rect = box.ApplyFiltersToRect(rect);
 
-  if (ancestor) {
-    if (auto* element = DynamicTo<Element>(box.GetNode());
-        element && IsTransitionElement(*element)) {
-      return {};
-    }
-  }
-
-  const bool visible = box.StyleRef().Visibility() == EVisibility::kVisible ||
-                       !box.VisualRectRespectsVisibility();
-  const bool layered_effects_contribute_to_visual_overflow =
-      ancestor || !ViewTransitionUtils::UseLayeredCapture(box.StyleRef());
-  PhysicalRect result;
-
-  if (layered_effects_contribute_to_visual_overflow) {
-    if (auto clip_path_bounds =
-            ClipPathClipper::LocalClipPathBoundingBox(box)) {
-      // TODO(crbug.com/40840594): This is just the bounds of the clip-path, as
-      // opposed to the intersection between the clip-path and the border box
-      // bounds. This seems suboptimal, but that's the rect that we use further
-      // down the pipeline to generate the texture.
-      // TODO(khushalsagar): This doesn't account for CSS clip property.
-      if (visible) {
-        result = PhysicalRect::EnclosingRect(*clip_path_bounds);
-        if (ancestor) {
-          box.MapToVisualRectInAncestorSpace(ancestor, result,
-                                             kUseGeometryMapper);
-        }
-      }
-
-      return result;
-    }
-  }
-
-  auto* paint_layer = box.Layer();
-  if (!paint_layer || (!box.ChildPaintBlockedByDisplayLock() &&
-                       !paint_layer->KnownToClipSubtreeToPaddingBox())) {
-    const LayoutBoxModelObject* ancestor_for_recursion =
-        ancestor ? ancestor : &box;
-    for (auto* child = box.SlowFirstChild(); child;
-         child = child->NextSibling()) {
-      // Recurse for every child. Doing a paint walk here is insufficient
-      // because of visibility considerations on each layout object. See
-      // crbug.com/1458568 for more details.
-      if (auto* child_box = DynamicTo<LayoutBoxModelObject>(child)) {
-        PhysicalRect mapped_overflow_rect =
-            ComputeVisualOverflowRect(*child_box, ancestor_for_recursion);
-        result.Unite(mapped_overflow_rect);
-      } else if (auto* child_text = DynamicTo<LayoutText>(child)) {
-        if (box.IsLayoutInline()) {
-          continue;
-        }
-
-        const bool child_visible =
-            child_text->StyleRef().Visibility() == EVisibility::kVisible ||
-            !child_text->VisualRectRespectsVisibility();
-        if (!child_visible) {
-          continue;
-        }
-
-        auto overflow_rect = child_text->VisualOverflowRect();
-        child_text->MapToVisualRectInAncestorSpace(
-            ancestor_for_recursion, overflow_rect, kUseGeometryMapper);
-        result.Unite(overflow_rect);
-      }
-    }
-  }
-
-  PhysicalRect overflow_rect;
-  if (visible) {
-    if (auto* layout_box = DynamicTo<LayoutBox>(box)) {
-      overflow_rect = layout_box->PhysicalBorderBoxRect();
-      if (layout_box->StyleRef().HasVisualOverflowingEffect()) {
-        PhysicalBoxStrut outsets =
-            layout_box->ComputeVisualEffectOverflowOutsets();
-        overflow_rect.Expand(outsets);
-      }
-    } else {
-      overflow_rect = To<LayoutInline>(box).LinesVisualOverflowBoundingBox();
-    }
-  }
-
-  if (ancestor) {
-    // For any recursive call, we map our overflow rect into the
-    // ancestor space and combine that with the result. GeometryMapper should
-    // take care of any filters and clips that are necessary between this box
-    // and the ancestor.
-    if (visible) {
-      box.MapToVisualRectInAncestorSpace(ancestor, overflow_rect,
-                                         kUseGeometryMapper);
-      result.Unite(overflow_rect);
-    }
-  } else {
-    // We're at the root of the recursion, so clip self painting descendant
-    // overflow by the overflow clip rect, then add in the visual overflow (with
-    // filters) from the own painting layer.
-    if (auto* layout_box = DynamicTo<LayoutBox>(&box);
-        layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
-      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
-    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
-      // We need the `overflow_rect` to be relative to the inline's
-      // border-box. However, `LayoutInline::LinesVisualOverflowBoundingBox()`
-      // is relative to the inline's container's border-box. The offset below
-      // removes the translation between the container's border-box and the
-      // inline's border-box.
-      //
-      // This mapping is done internally by
-      // `LayoutObject::MapToVisualRectInAncestorSpace` so its not necessary
-      // when computing overflow for an ancestor.
-      overflow_rect.Move(-layout_inline->PhysicalLinesBoundingBox().offset);
-    }
-
-    if (visible) {
-      result.Unite(overflow_rect);
-    }
-
-    if (layered_effects_contribute_to_visual_overflow) {
-      result = box.ApplyFiltersToRect(result);
-    }
-
-    // TODO(crbug.com/1432868): This captures a couple of common cases --
-    // box-shadow and no box shadow on the element. However, this isn't at all
-    // comprehensive. The paint system determines per element whether it
-    // should pixel snap or enclosing rect or something else. We need to think
-    // of a better way to fix this for all cases.
-    result.Move(box.FirstFragment().PaintOffset());
-    if (visible && box.StyleRef().BoxShadow()) {
-      result = PhysicalRect(ToEnclosingRect(result));
-    } else {
-      result = PhysicalRect(ToPixelSnappedRect(result));
-    }
-  }
-  return result;
+  // Correct for fractional offset.
+  rect.Move(box.FirstFragment().PaintOffset());
+  return PhysicalRect(ToEnclosingRect(rect));
 }
 
 const char* ViewTransitionStyleTracker::StateToString(State state) {
@@ -2396,13 +2203,15 @@ const char* ViewTransitionStyleTracker::StateToString(State state) {
 }
 
 viz::ViewTransitionElementResourceId
-ViewTransitionStyleTracker::GenerateResourceId() const {
+ViewTransitionStyleTracker::GenerateResourceId(
+    bool for_subframe_snapshot) const {
   // If we've already send the state to the incoming document, generating a new
   // ID now would collide with IDs generated by that document.
   CHECK(!state_extracted_);
   auto* supplement = ViewTransitionSupplement::FromIfExists(*document_);
   CHECK(supplement);
-  return supplement->GenerateResourceId(transition_token_);
+  return supplement->GenerateResourceId(transition_token_,
+                                        for_subframe_snapshot);
 }
 
 void ViewTransitionStyleTracker::SnapBrowserControlsToFullyShown() {

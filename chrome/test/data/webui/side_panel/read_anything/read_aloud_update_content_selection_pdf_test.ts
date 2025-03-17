@@ -3,19 +3,15 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {createApp, playFromSelectionWithMockTimer} from './common.js';
 
 suite('ReadAloud_UpdateContentSelectionPDF', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
-
 
   // Similar to read_aloud_update_content_selection, but this tree uses
   // negative values, as some node ids, such as those for PDFs, may be negative.
@@ -84,18 +80,15 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
     },
   };
 
-  setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     document.onselectionchange = () => {};
     chrome.readingMode.setContentForTesting(axTree, []);
     return microtasksFinished();
@@ -129,9 +122,9 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
   });
 
   suite('While Read Aloud playing', () => {
-    setup(async () => {
-      app.playSpeech();
-      await waitForPlayFromSelection();
+    setup(() => {
+      playFromSelectionWithMockTimer(app);
+      return microtasksFinished();
     });
 
     test('inner html of container matches expected html', () => {
@@ -156,16 +149,15 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
 
     test('container class correct', () => {
       assertEquals(
-          app.$.container.className,
-          'user-select-disabled-when-speech-active-true');
+          'user-select-disabled-when-speech-active-true',
+          app.$.container.className);
       assertEquals('none', window.getComputedStyle(app.$.container).userSelect);
     });
   });
 
   suite('While Read Aloud paused', () => {
-    setup(async () => {
-      app.playSpeech();
-      await waitForPlayFromSelection();
+    setup(() => {
+      playFromSelectionWithMockTimer(app);
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
       return microtasksFinished();
     });

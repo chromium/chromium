@@ -4,13 +4,15 @@
 
 package org.chromium.components.installedapp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
@@ -24,8 +26,11 @@ import org.json.JSONObject;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -35,6 +40,8 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.url.GURL;
 import org.chromium.url.mojom.Url;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -43,6 +50,7 @@ import java.util.Collections;
  * installed_app_provider.mojom
  */
 @JNINamespace("installedapp")
+@NullMarked
 public class InstalledAppProviderImpl implements InstalledAppProvider {
     @VisibleForTesting public static final String ASSET_STATEMENTS_KEY = "asset_statements";
     private static final String ASSET_STATEMENT_FIELD_TARGET = "target";
@@ -56,6 +64,25 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @VisibleForTesting
     public static final String INSTANT_APP_HOLDBACK_ID_STRING = "instantapp:holdback";
 
+    // These values are persisted to histograms. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({
+        RelatedAppType.REGULAR_APP,
+        RelatedAppType.INSTANT_APP,
+        RelatedAppType.OWN_WEBAPK,
+        RelatedAppType.OTHER_WEBAPK,
+        RelatedAppType.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RelatedAppType {
+        int OTHER = 0;
+        int REGULAR_APP = 1;
+        int INSTANT_APP = 2;
+        int OWN_WEBAPK = 3;
+        int OTHER_WEBAPK = 4;
+        int COUNT = 5;
+    }
+
     // The delay, in ms, of the most recent invocation of FilterInstalledApps_Response.
     int mLastDelayForTesting;
 
@@ -65,39 +92,18 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
 
     private static final String TAG = "InstalledAppProvider";
 
-    /** Used to inject Instant Apps logic into InstalledAppProviderImpl. */
-    public interface InstantAppProvider {
-        /**
-         * Returns whether or not the instant app is available.
-         *
-         * @param url The URL where the instant app is located.
-         * @param checkHoldback Check if the app would be available if the user weren't in the
-         *         holdback group.
-         * @param includeUserPrefersBrowser Function should return true if there's an instant app
-         *         intent even if the user has opted out of instant apps.
-         * @return Whether or not the instant app specified by the entry in the page's manifest is
-         *         either available, or would be available if the user wasn't in the holdback group.
-         */
-        boolean isInstantAppAvailable(
-                String url, boolean checkHoldback, boolean includeUserPrefersBrowser);
-    }
-
     // May be null in tests.
     private final BrowserContextHandle mBrowserContextHandle;
     private final RenderFrameHost mRenderFrameHost;
     // May be overridden in tests.
     private PackageManagerDelegate mPackageManagerDelegate;
     private boolean mIsInTest;
-    @Nullable private final InstantAppProvider mInstantAppProvider;
 
     public InstalledAppProviderImpl(
-            BrowserContextHandle browserContextHandle,
-            RenderFrameHost renderFrameHost,
-            @Nullable InstantAppProvider instantAppProvider) {
+            BrowserContextHandle browserContextHandle, RenderFrameHost renderFrameHost) {
         mBrowserContextHandle = browserContextHandle;
         mRenderFrameHost = renderFrameHost;
         mPackageManagerDelegate = new PackageManagerDelegate();
-        mInstantAppProvider = instantAppProvider;
     }
 
     void setPackageManagerDelegateForTest(PackageManagerDelegate packageManagerDelegate) {
@@ -147,6 +153,8 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         }
     }
 
+    // I have no idea why the RelatedAppType intdef is complaining, and cannot figure it out.
+    @SuppressWarnings("WrongConstant")
     @Override
     @UiThread
     public void filterInstalledApps(
@@ -167,26 +175,32 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             RelatedApplication app = relatedApps[i];
             int taskIdx = i;
 
+            @RelatedAppType int relatedAppType;
             if (isInstantNativeApp(app)) {
-                PostTask.postTask(
-                        TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                        () -> checkInstantApp(resultHolder, taskIdx, app, frameUrl));
+                relatedAppType = RelatedAppType.INSTANT_APP;
+                resultHolder.onResult(null, taskIdx, 0);
             } else if (isRegularNativeApp(app)) {
+                relatedAppType = RelatedAppType.REGULAR_APP;
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         () -> checkPlayApp(resultHolder, taskIdx, app, frameUrl));
-            } else if (isWebApk(app) && app.url.equals(manifestUrl.url)) {
+            } else if (isWebApk(app) && manifestUrl.url.equals(app.url)) {
+                relatedAppType = RelatedAppType.OWN_WEBAPK;
                 // The website wants to check whether its own WebAPK is installed.
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         () -> checkWebApkInstalled(resultHolder, taskIdx, app));
             } else if (isWebApk(app)) {
+                relatedAppType = RelatedAppType.OTHER_WEBAPK;
                 // The website wants to check whether another WebAPK is installed.
                 checkWebApk(resultHolder, taskIdx, app, manifestUrl);
             } else {
+                relatedAppType = RelatedAppType.OTHER;
                 // The app did not match any category.
                 resultHolder.onResult(null, taskIdx, 0);
             }
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.InstalledApp.RelatedAppType", relatedAppType, RelatedAppType.COUNT);
         }
     }
 
@@ -222,26 +236,9 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     }
 
     @WorkerThread
-    private void checkInstantApp(
-            ResultHolder resultHolder, int taskIdx, RelatedApplication app, GURL frameUrl) {
-        int delayMs = calculateDelayForPackageMs(app.id);
-
-        if (mInstantAppProvider != null
-                && !mInstantAppProvider.isInstantAppAvailable(
-                        frameUrl.getSpec(),
-                        INSTANT_APP_HOLDBACK_ID_STRING.equals(app.id),
-                        /* includeUserPrefersBrowser= */ true)) {
-            postResultOnUiThread(resultHolder, null, taskIdx, delayMs);
-            return;
-        }
-
-        setVersionInfo(app);
-        postResultOnUiThread(resultHolder, app, taskIdx, delayMs);
-    }
-
-    @WorkerThread
     private void checkPlayApp(
             ResultHolder resultHolder, int taskIdx, RelatedApplication app, GURL frameUrl) {
+        assumeNonNull(app.id);
         int delayMs = calculateDelayForPackageMs(app.id);
 
         if (!isAppInstalledAndAssociatedWithOrigin(app.id, frameUrl, mPackageManagerDelegate)) {
@@ -256,6 +253,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @WorkerThread
     private void checkWebApkInstalled(
             ResultHolder resultHolder, int taskIdx, RelatedApplication app) {
+        assumeNonNull(app.url);
         int delayMs = calculateDelayForPackageMs(app.url);
 
         if (!isWebApkInstalled(app.url)) {
@@ -271,6 +269,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @UiThread
     private void checkWebApk(
             ResultHolder resultHolder, int taskIdx, RelatedApplication app, Url manifestUrl) {
+        assumeNonNull(app.url);
         int delayMs = calculateDelayForPackageMs(app.url);
 
         InstalledAppProviderImplJni.get()
@@ -462,7 +461,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
      *         could be because: the JSON string was invalid, there was no "target" field, this was
      *         not a web asset, there was no "site" field, or the "site" field was invalid.
      */
-    private static GURL getSiteForWebAsset(JSONObject statement) {
+    private static @Nullable GURL getSiteForWebAsset(JSONObject statement) {
         JSONObject target;
         try {
             // Ignore the "relation" field and allow an asset with any relation to this origin.
@@ -510,7 +509,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     }
 
     private static void postResultOnUiThread(
-            ResultHolder resultHolder, RelatedApplication app, int taskIdx, int delayMs) {
+            ResultHolder resultHolder, @Nullable RelatedApplication app, int taskIdx, int delayMs) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT, () -> resultHolder.onResult(app, taskIdx, delayMs));
     }

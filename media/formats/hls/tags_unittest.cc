@@ -4,17 +4,18 @@
 
 #include "media/formats/hls/tags.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_serializers.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/test_util.h"
 #include "media/formats/hls/variable_dictionary.h"
@@ -1154,7 +1155,7 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_DOUBLE_EQ(result.tag.score.value(), 12.2);
   ASSERT_TRUE(result.tag.codecs.has_value());
   EXPECT_TRUE(
-      base::ranges::equal(result.tag.codecs.value(), std::array{"foo", "bar"}));
+      std::ranges::equal(result.tag.codecs.value(), std::array{"foo", "bar"}));
   EXPECT_EQ(result.tag.resolution, std::nullopt);
   EXPECT_EQ(result.tag.frame_rate, std::nullopt);
 
@@ -1232,7 +1233,7 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(result.tag.score, std::nullopt);
   ASSERT_TRUE(result.tag.codecs.has_value());
   EXPECT_TRUE(
-      base::ranges::equal(result.tag.codecs.value(), std::array{"bar", "baz"}));
+      std::ranges::equal(result.tag.codecs.value(), std::array{"bar", "baz"}));
   EXPECT_EQ(result.tag.resolution, std::nullopt);
 
   // "RESOLUTION" must be a valid decimal-resolution
@@ -1316,12 +1317,15 @@ TEST(HlsTagsTest, ParseInfTag) {
   EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(12.0)));
   EXPECT_EQ(result.tag.title.Str(), "asdfsdf   ");
 
-  // By Spec, this should be an error, but alas, feral manifests exists and
-  // often lack the trailing comma emblematic of their domesticated brethren.
-  // ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
-  result = OkTest<InfTag>("123");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123)));
-  EXPECT_EQ(result.tag.title.Str(), "");
+  if (HLSQuirks::AllowMissingSegmentInfCommas()) {
+    result = OkTest<InfTag>("123");
+    EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123)));
+    EXPECT_EQ(result.tag.title.Str(), "");
+  } else {
+    // By Spec, this should be an error, but alas, feral manifests exist and
+    // often lack the trailing comma emblematic of their domesticated brethren.
+    ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
+  }
 
   // Test some invalid tags
   ErrorTest<InfTag>(std::nullopt, ParseStatusCode::kMalformedTag);

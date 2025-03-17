@@ -457,7 +457,7 @@ void FocusModeController::ResetFocusSession() {
   }
 }
 
-void FocusModeController::OnEndingBubbleShown() {
+void FocusModeController::OnEndingBubbleShowing() {
   if (!in_ending_moment()) {
     return;
   }

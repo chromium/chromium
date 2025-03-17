@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/containers/fixed_flat_set.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -52,6 +53,7 @@
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -534,6 +536,16 @@ bool IsSuggestionRefreshAllowed() {
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
   DCHECK_EQ(_webState, webState);
+
+  // The keyboard accessory shouldn't be reset if the finished navigation
+  // happened within the same document. If reset, the keyboard accessory
+  // suggestions can suddenly disappear if a form field is still focused.
+  // See crbug.com/339851686.
+  if (base::FeatureList::IsEnabled(
+          kSkipKeyboardAccessoryResetForSameDocumentNavigation) &&
+      navigation->IsSameDocument()) {
+    return;
+  }
   [self reset];
 }
 
@@ -800,6 +812,17 @@ bool IsSuggestionRefreshAllowed() {
 
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index {
+  if (base::FeatureList::IsEnabled(kStatelessFormSuggestionController)) {
+    // When using the stateless FormSuggestionsController, ensure the params
+    // attached to the suggestion are the same as the ones held by this mediator
+    // to keep the status quo as this mediator should be the source of truth
+    // when it is used instead of directly using the suggestions provider for
+    // accepting the suggestions.
+    formSuggestion = [FormSuggestion copy:formSuggestion
+                             andSetParams:_lastSeenParams
+                                 provider:formSuggestion.provider];
+  }
+
   [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
                             type:formSuggestion.type];
 
@@ -836,7 +859,7 @@ bool IsSuggestionRefreshAllowed() {
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index
                      params:(const autofill::FormActivityParams&)params {
-  CHECK(_lastSeenParams == params);
+  CHECK_EQ(_lastSeenParams, params);
   [self didSelectSuggestion:formSuggestion atIndex:index];
 }
 

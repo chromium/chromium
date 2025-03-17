@@ -13,13 +13,17 @@
 #include "chrome/browser/profiles/profile_selections.h"
 
 namespace {
+
 std::unique_ptr<KeyedService> BuildBookmarkMergedSurfaceService(
     content::BrowserContext* context) {
-  return std::make_unique<BookmarkMergedSurfaceService>(
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto service = std::make_unique<BookmarkMergedSurfaceService>(
       BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
-      ManagedBookmarkServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
+      ManagedBookmarkServiceFactory::GetForProfile(profile));
+  service->Load(profile->GetPath());
+  return service;
 }
+
 }  // namespace
 
 // static

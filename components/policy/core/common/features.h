@@ -12,12 +12,16 @@ namespace policy::features {
 
 // Enable the PolicyBlocklistThrottle optimization to hide the DEFER latency
 // on WillStartRequest and WillRedirectRequest. See https://crbug.com/349964973.
+// This is launched, but the feature flag will be kept in 2025 for monitoring.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyBlocklistProceedUntilResponse);
 
 // Enables the fact that the ProfileSeparationDomainExceptionList retroactively
 // signs out accounts that require a new profile. This is used as a kill switch.
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kProfileSeparationDomainExceptionListRetroactive);
+
+// Enables the addition of new security fields for SecOps.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kEnhancedSecurityEventFields);
 
 }  // namespace policy::features
 

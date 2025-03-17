@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 /** Grabs feedback about the current system. */
 @JNINamespace("chrome::android")
+@NullMarked
 public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
     // Process types used for feedback report. These should be in sync with the enum
     // in //content/public/common/process_type.h
@@ -31,7 +34,7 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
     }
 
     /** A map of process type -> list of PIDs for that type. Can be {@code null}. */
-    private Map<String, String> mProcessMap;
+    private @Nullable Map<String, String> mProcessMap;
 
     private boolean mIsReady;
 
@@ -75,7 +78,7 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
     }
 
     @Override
-    public Map<String, String> getFeedback() {
+    public @Nullable Map<String, String> getFeedback() {
         return mProcessMap;
     }
 

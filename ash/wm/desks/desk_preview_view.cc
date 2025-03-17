@@ -31,7 +31,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -225,7 +224,7 @@ void MirrorLayerTree(
         continue;
       }
 
-      if (base::ranges::find(mru_windows, window) == mru_windows.end()) {
+      if (std::ranges::find(mru_windows, window) == mru_windows.end()) {
         continue;
       }
 
@@ -254,7 +253,7 @@ void MirrorLayerTree(
 
     // Step 3: Sort all child layers based on `LayerOrderData` and write to
     // `children` for further recursion.
-    base::ranges::sort(
+    std::ranges::sort(
         layer_orders, [](const LayerOrderData& lhs, const LayerOrderData& rhs) {
           return (lhs.primary_key > rhs.primary_key) ||
                  (lhs.primary_key == rhs.primary_key &&
@@ -402,7 +401,7 @@ DeskPreviewView::DeskPreviewView(
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(false);
 
-  AddChildView(wallpaper_preview_.get());
+  AddChildViewRaw(wallpaper_preview_.get());
 
   desk_mirrored_contents_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   ui::Layer* contents_view_layer = desk_mirrored_contents_view_->layer();
@@ -410,7 +409,7 @@ DeskPreviewView::DeskPreviewView(
   contents_view_layer->SetName("Desk mirrored contents view");
   contents_view_layer->SetRoundedCornerRadius(kCornerRadius);
   contents_view_layer->SetIsFastRoundedCorner(true);
-  AddChildView(desk_mirrored_contents_view_.get());
+  AddChildViewRaw(desk_mirrored_contents_view_.get());
 
   highlight_overlay_ = AddChildView(std::make_unique<views::View>());
   highlight_overlay_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);

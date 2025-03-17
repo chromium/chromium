@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
-#include "android_webview/browser/aw_media_url_interceptor.h"
 #include "android_webview/browser/aw_user_agent_metadata.h"
 
 #include "testing/gtest/include/gtest/gtest.h"

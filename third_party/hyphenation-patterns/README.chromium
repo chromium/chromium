@@ -1,12 +1,12 @@
 Name: hyphenation-patterns
 Short Name: hyphenation-patterns
 URL: https://android.googlesource.com/platform/external/hyphenation-patterns/
-Version: 0
+Version: N/A
 Date: 2023-01-24
 Revision: 06ce8d348f9145e41e8f52ff9f83470fe3563084
 Security Critical: no
 Shipped: yes
-License: MIT, MPL 1.1/GPL 2.0/LGPL 2.1, GNU Lesser Public License, Unicode License, Unicode Data License, custom notice license, Unlicense, custom permissive license
+License: Unicode-DFS-2015, LGPL-2.1, Unlicense, MPL-1.1, GNU-All-permissive-Copying-License, MIT, CC-BY-3.0, BSD-3-Clause, zxing, MPL-2.0
 License File: LICENSE
 License Android Compatible: yes
 

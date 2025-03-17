@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -80,7 +80,6 @@ public class CommerceSubscriptionsServiceUnitTest {
     private SharedPreferencesManager mSharedPreferencesManager;
     private MockNotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
-    private FeatureList.TestValues mTestValues;
 
     @Before
     public void setUp() {
@@ -101,9 +100,7 @@ public class CommerceSubscriptionsServiceUnitTest {
                                 CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds()));
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
-        mTestValues = new FeatureList.TestValues();
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
-        FeatureList.setTestValues(mTestValues);
+        FeatureOverrides.enable(ChromeFeatureList.PRICE_ANNOTATIONS);
 
         mMockNotificationManager = new MockNotificationManagerProxy();
         NotificationProxyUtils.setNotificationEnabledForTest(false);

@@ -18,17 +18,18 @@ import './sea_pen_toast_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY, Query} from './constants.js';
+import type {Query} from './constants.js';
+import {QUERY} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {cleanUpSeaPenQueryStates, closeSeaPenIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
-import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
+import {cleanUpSeaPenQueryStates, closeSeaPenFreeformIntroductionDialog, closeSeaPenIntroductionDialog, getShouldShowSeaPenFreeformIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
+import type {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logSeaPenVisited} from './sea_pen_metrics_logger.js';
 import {SeaPenObserver} from './sea_pen_observer.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {SeaPenTemplateQueryElement} from './sea_pen_template_query_element.js';
-import {getTemplateIdFromString} from './sea_pen_utils.js';
+import type {SeaPenTemplateQueryElement} from './sea_pen_template_query_element.js';
+import {getTemplateIdFromString, isPersonalizationApp} from './sea_pen_utils.js';
 import {maybeDoPageTransition} from './transition.js';
 
 export enum SeaPenPaths {
@@ -67,6 +68,8 @@ export class SeaPenRouterElement extends WithSeaPenStore {
       },
 
       showSeaPenIntroductionDialog_: Boolean,
+
+      showSeaPenFreeformIntroductionDialog_: Boolean,
     };
   }
 
@@ -81,6 +84,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   private queryParams_: SeaPenQueryParams;
   private relativePath_: string|null;
   private showSeaPenIntroductionDialog_: boolean;
+  private showSeaPenFreeformIntroductionDialog_: boolean;
 
   override connectedCallback() {
     assert(isSeaPenEnabled(), 'sea pen must be enabled');
@@ -89,8 +93,12 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     this.watch<SeaPenRouterElement['showSeaPenIntroductionDialog_']>(
         'showSeaPenIntroductionDialog_',
         state => state.shouldShowSeaPenIntroductionDialog);
+    this.watch<SeaPenRouterElement['showSeaPenFreeformIntroductionDialog_']>(
+        'showSeaPenFreeformIntroductionDialog_',
+        state => state.shouldShowSeaPenFreeformIntroductionDialog);
     this.updateFromStore();
     this.fetchIntroductionDialogStatus();
+    this.fetchFreeformIntroductionDialogStatus();
     logSeaPenVisited(this.relativePath_ as SeaPenPaths);
     afterNextRender(this, () => SeaPenObserver.initSeaPenObserverIfNeeded());
   }
@@ -170,6 +178,11 @@ export class SeaPenRouterElement extends WithSeaPenStore {
       console.warn('SeaPenRouter unknown path', relativePath);
       this.goToRoute(SeaPenPaths.TEMPLATES);
     }
+
+    if (!isPersonalizationApp() && relativePath === SeaPenPaths.FREEFORM) {
+      console.warn('Attempt to navigate to freeform on unsupported platform');
+      this.goToRoute(SeaPenPaths.TEMPLATES);
+    }
   }
 
   private shouldShowTemplateQuery_(
@@ -193,7 +206,28 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   }
 
   private shouldShowSeaPenFreeform_(relativePath: string|null): boolean {
-    return isSeaPenTextInputEnabled() && relativePath === SeaPenPaths.FREEFORM;
+    return isSeaPenTextInputEnabled() &&
+        relativePath === SeaPenPaths.FREEFORM && isPersonalizationApp();
+  }
+
+  private shouldSeaPenIntroductionDialog_(
+      relativePath: string|null, showSeaPenFreeformIntroDialog: boolean,
+      showSeaPenIntroDialog: boolean): boolean {
+    if (!isSeaPenTextInputEnabled() || !isPersonalizationApp()) {
+      return showSeaPenIntroDialog;
+    }
+
+    if (relativePath === SeaPenPaths.FREEFORM) {
+      return showSeaPenFreeformIntroDialog;
+    }
+    // On the templates page, either of the acknowledgments is sufficient.
+    return showSeaPenIntroDialog && showSeaPenFreeformIntroDialog;
+  }
+
+  private getBottomContainerClass_(relativePath: string|null) {
+    return isSeaPenTextInputEnabled() && relativePath !== SeaPenPaths.FREEFORM ?
+        'add-extra-spacing' :
+        '';
   }
 
   private onBottomContainerClicked_(): void {
@@ -216,6 +250,20 @@ export class SeaPenRouterElement extends WithSeaPenStore {
 
   private async onCloseSeaPenIntroductionDialog_() {
     await closeSeaPenIntroductionDialog(getSeaPenProvider(), this.getStore());
+    // Freeform focus goes to the text input automatically.
+    if (this.relativePath_ !== SeaPenPaths.FREEFORM) {
+      this.focusOnFirstTemplate_();
+    }
+  }
+
+  private async fetchFreeformIntroductionDialogStatus() {
+    await getShouldShowSeaPenFreeformIntroductionDialog(
+        getSeaPenProvider(), this.getStore());
+  }
+
+  private async onCloseSeaPenFreeformIntroductionDialog_() {
+    await closeSeaPenFreeformIntroductionDialog(
+        getSeaPenProvider(), this.getStore());
     // Freeform focus goes to the text input automatically.
     if (this.relativePath_ !== SeaPenPaths.FREEFORM) {
       this.focusOnFirstTemplate_();

@@ -4,12 +4,15 @@
 
 package org.chromium.components.offline_items_collection;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class is the Java counterpart to the C++ UpdateDelta
  * (components/offline_items_collection/core/state_change.h) class.
  *
  * For all member variable descriptions see the C++ class.
  */
+@NullMarked
 public class UpdateDelta {
     public boolean stateChanged;
     public boolean visualsChanged;

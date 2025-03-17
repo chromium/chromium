@@ -70,8 +70,6 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
-  // Tests need to be adapted to make sure local server tabs appear with TR2.
-  config.features_disabled.push_back(kTabResumption2);
   return config;
 }
 
@@ -84,6 +82,12 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
 - (void)testColdStartOpenStartSurface {
+// TODO(crbug.com/40262902): Test is flaky on iPad device. Re-enable the test.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad device.");
+  }
+#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -95,7 +99,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   // Assert NTP is visible by checking that the fake omnibox is here.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Two tabs were expected to be open");
 }
 
@@ -114,7 +118,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Two tabs were expected to be open");
 }
 
@@ -131,7 +135,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   // Give time for NTP to be fully loaded so all elements are accessible.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Two tabs were expected to be open");
   // Assert NTP is visible by checking that the fake omnibox is here.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]

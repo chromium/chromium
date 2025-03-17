@@ -1,0 +1,4 @@
+include_rules = [
+  "+ash/display/screen_orientation_controller.h",
+  "+ash/shell.h",
+]

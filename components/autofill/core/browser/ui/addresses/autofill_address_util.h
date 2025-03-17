@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"

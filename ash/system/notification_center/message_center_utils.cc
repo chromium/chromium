@@ -4,6 +4,8 @@
 
 #include "ash/system/notification_center/message_center_utils.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
@@ -18,7 +20,6 @@
 #include "ash/system/status_area_widget.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -56,7 +57,7 @@ std::string GenerateGroupParentNotificationIdSuffix(
       if (notifier_id.id == ash::kPrivacyIndicatorsNotifierId) {
         return base::SHA1HashString(notifier_id.id);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case message_center::NotifierType::APPLICATION:
     case message_center::NotifierType::CROSTINI_APPLICATION:
     case message_center::NotifierType::PHONE_HUB:
@@ -77,7 +78,7 @@ bool CompareNotifications(message_center::Notification* n1,
 
 std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView() {
   std::vector<message_center::Notification*> sorted_notifications;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       message_center::MessageCenter::Get()->GetVisibleNotifications(),
       std::back_inserter(sorted_notifications),
       [](message_center::Notification* notification) {
@@ -100,7 +101,7 @@ size_t GetNotificationCount() {
                 ->session_state_notification_blocker()
           : nullptr;
 
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       message_center::MessageCenter::Get()
           ->GetVisibleNotificationsWithoutBlocker(blocker_to_ignore),
       [](message_center::Notification* notification) {

@@ -53,19 +53,6 @@ const mojom::ClientSecurityState* ChooseClientSecurityState(
   return request_client_security_state;
 }
 
-std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
-  net::IPAddress address;
-  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
-    return std::nullopt;
-  }
-
-  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
-    return std::nullopt;
-  }
-
-  return address;
-}
-
 }  // namespace
 
 PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
@@ -189,9 +176,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kBlockedByLoadOption;
   }
 
-  if (is_potentially_trustworthy_same_origin_ &&
-      base::FeatureList::IsEnabled(
-          features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin)) {
+  if (is_potentially_trustworthy_same_origin_) {
     return Result::kAllowedPotentiallyTrustworthySameOrigin;
   }
 
@@ -274,6 +259,10 @@ Result PrivateNetworkAccessChecker::CheckInternal(
       return Result::kBlockedByPolicyPreflightWarn;
     case Policy::kPreflightBlock:
       return Result::kBlockedByPolicyPreflightBlock;
+    case Policy::kPermissionBlock:
+      return Result::kLNABlockedByMissingPermission;
+    case Policy::kPermissionWarn:
+      return Result::kLNAAllowedByPolicyWarn;
   }
 }
 

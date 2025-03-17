@@ -6,10 +6,10 @@
 #include "extensions/browser/api/cec_private/cec_private_delegate.h"
 // clang-format on
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "extensions/common/api/cec_private.h"
 
@@ -84,9 +84,9 @@ void CecPrivateDelegateAsh::QueryDisplayCecPowerState(
          const std::vector<ash::CecServiceClient::PowerState>& power_states) {
         std::vector<extensions::api::cec_private::DisplayCecPowerState>
             result_power_states;
-        base::ranges::transform(power_states,
-                                std::back_inserter(result_power_states),
-                                ConvertCecServiceClientPowerState);
+        std::ranges::transform(power_states,
+                               std::back_inserter(result_power_states),
+                               ConvertCecServiceClientPowerState);
         std::move(service_callback).Run(result_power_states);
       },
       std::move(callback)));

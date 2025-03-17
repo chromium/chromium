@@ -91,4 +91,4 @@ id<CRWResponderInputView> WebStateDelegate::GetResponderInputView(
 
 void WebStateDelegate::OnNewWebViewCreated(WebState* source) {}
 
-}  // web
+}  // namespace web

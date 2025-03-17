@@ -25,7 +25,7 @@ class PageInfoViewFactory {
                       ChromePageInfoUiDelegate* ui_delegate,
                       PageInfoNavigationHandler* navigation_handler,
                       PageInfoHistoryController* history_controller,
-                      bool allow_about_this_site);
+                      bool allow_extended_site_info);
 
   // Bubble width constraints.
   static constexpr int kMinBubbleWidth = 320;
@@ -71,6 +71,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_SUBPAGE_TITLE,
     VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW,
     VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE,
+    VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex
@@ -149,7 +150,7 @@ class PageInfoViewFactory {
   raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
   raw_ptr<PageInfoNavigationHandler> navigation_handler_;
   raw_ptr<PageInfoHistoryController, DanglingUntriaged> history_controller_;
-  const bool allow_about_this_site_;
+  const bool allow_extended_site_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_

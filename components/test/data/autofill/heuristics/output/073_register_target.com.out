@@ -1,10 +1,10 @@
-UNKNOWN_TYPE | email | Email address: |  | email_1
+EMAIL_ADDRESS | email | Email address: |  | email_1
 UNKNOWN_TYPE | password | Password: |  | email_1
 
-UNKNOWN_TYPE | email | Email address: |  | email_1
+EMAIL_ADDRESS | email | Email address: |  | email_1
 UNKNOWN_TYPE | password | Password: |  | email_1
 
-UNKNOWN_TYPE | emailId | E-mail Address: | E-mail Address | emailId_1
+EMAIL_ADDRESS | emailId | E-mail Address: | E-mail Address | emailId_1
 
 UNKNOWN_TYPE | firstName | First Name* |  | firstName_1
 UNKNOWN_TYPE | lastName | Last Name* |  | firstName_1

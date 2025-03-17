@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
@@ -33,12 +34,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 namespace {
 
 constexpr char kTestUser1[] = "test-user1@gmail.com";
-constexpr char kTestUser1GaiaId[] = "test-user1@gmail.com";
+constexpr GaiaId::Literal kTestUser1GaiaId("test-user1@gmail.com");
 
 // HTML Elements
 constexpr char kResetScreen[] = "reset";
@@ -53,8 +55,9 @@ constexpr char kCancelPowerwashButton[] = "cancelButton";
 constexpr char kRestartButton[] = "restart";
 
 void InvokeResetAccelerator() {
-  ASSERT_TRUE(LoginScreenTestApi::SendAcceleratorNatively(ui::Accelerator(
-      ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)));
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+  event_generator.PressKeyAndModifierKeys(
+      ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
 }
 
 void ClickCancelButton() {
@@ -123,10 +126,6 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
   ~ResetTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(b/353731379): Remove when removing legacy state determination code.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 
@@ -148,7 +147,7 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
 
  private:
   LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId))};
+      AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
@@ -167,10 +166,6 @@ class ResetOobeTest : public OobeBaseTest {
 
   // OobeBaseTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(b/353731379): Remove when removing legacy state determination code.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
     command_line->AppendSwitch(switches::kFirstExecAfterBoot);
     OobeBaseTest::SetUpCommandLine(command_line);
   }

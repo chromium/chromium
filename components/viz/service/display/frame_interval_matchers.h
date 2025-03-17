@@ -22,13 +22,16 @@
 
 namespace viz {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FrameIntervalMatcherType {
-  kNone,
-  kInputBoost,
-  kOnlyVideo,
-  kVideoConference,
-  kOnlyAnimatingImage,
-  kOnlyScrollBarFadeOut,
+  kNone = 0,
+  kInputBoost = 1,
+  kOnlyVideo = 2,
+  kVideoConference = 3,
+  kOnlyAnimatingImage = 4,
+  kOnlyScrollBarFadeOut = 5,
+  kMaxValue = kOnlyScrollBarFadeOut,
 };
 
 // Works with `FrameIntervalDecider` to compute the ideal frame interval.

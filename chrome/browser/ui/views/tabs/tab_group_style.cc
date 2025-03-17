@@ -31,7 +31,6 @@ constexpr int kSyncIconWidth = 16;
 constexpr int kAttentionIndicatorWidth = 8;
 // The size of the empty chip.
 constexpr int kEmptyChipSize = 20;
-constexpr int kSyncIconLeftMargin = 2;
 constexpr int kCornerRadius = 6;
 constexpr int kTabGroupOverlapAdjustment = 2;
 
@@ -100,12 +99,9 @@ std::unique_ptr<views::Background> TabGroupStyle::GetEmptyTitleChipBackground(
   return views::CreateRoundedRectBackground(color, GetChipCornerRadius());
 }
 
-gfx::Insets TabGroupStyle::GetInsetsForHeaderChip(
-    bool should_show_sync_icon) const {
-  return gfx::Insets::TLBR(
-      kHeaderChipVerticalInset,
-      should_show_sync_icon ? kSyncIconLeftMargin : GetChipCornerRadius(),
-      kHeaderChipVerticalInset, GetChipCornerRadius());
+gfx::Insets TabGroupStyle::GetInsetsForHeaderChip() const {
+  return gfx::Insets::TLBR(kHeaderChipVerticalInset, GetChipCornerRadius(),
+                           kHeaderChipVerticalInset, GetChipCornerRadius());
 }
 
 int TabGroupStyle::GetHighlightPathGeneratorCornerRadius(
@@ -128,10 +124,7 @@ float TabGroupStyle::GetSyncIconWidth() const {
   return kSyncIconWidth;
 }
 
-float TabGroupStyle::GetAttentionIndicatorWidth(bool needs_attention) const {
-  if (!needs_attention) {
-    return 0;
-  }
+float TabGroupStyle::GetAttentionIndicatorWidth() const {
   return kAttentionIndicatorWidth;
 }
 

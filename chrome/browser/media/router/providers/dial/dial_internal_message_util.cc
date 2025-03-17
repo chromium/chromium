@@ -58,26 +58,33 @@ std::string DialInternalMessageTypeToString(DialInternalMessageType type) {
 
 DialInternalMessageType StringToDialInternalMessageType(
     const std::string& str_type) {
-  if (str_type == "client_connect")
+  if (str_type == "client_connect") {
     return DialInternalMessageType::kClientConnect;
+  }
 
-  if (str_type == "v2_message")
+  if (str_type == "v2_message") {
     return DialInternalMessageType::kV2Message;
+  }
 
-  if (str_type == "receiver_action")
+  if (str_type == "receiver_action") {
     return DialInternalMessageType::kReceiverAction;
+  }
 
-  if (str_type == "new_session")
+  if (str_type == "new_session") {
     return DialInternalMessageType::kNewSession;
+  }
 
-  if (str_type == "custom_dial_launch")
+  if (str_type == "custom_dial_launch") {
     return DialInternalMessageType::kCustomDialLaunch;
+  }
 
-  if (str_type == "dial_app_info")
+  if (str_type == "dial_app_info") {
     return DialInternalMessageType::kDialAppInfo;
+  }
 
-  if (str_type == "error")
+  if (str_type == "error") {
     return DialInternalMessageType::kError;
+  }
 
   return DialInternalMessageType::kOther;
 }
@@ -136,8 +143,9 @@ std::unique_ptr<DialInternalMessage> DialInternalMessage::From(
 
   std::optional<base::Value> message_body;
   base::Value* message_body_value = message.Find("message");
-  if (message_body_value)
+  if (message_body_value) {
     message_body = std::move(*message_body_value);
+  }
 
   int sequence_number = message.FindInt("sequenceNumber").value_or(-1);
 
@@ -161,8 +169,9 @@ CustomDialLaunchMessageBody CustomDialLaunchMessageBody::From(
   DCHECK(message.type == DialInternalMessageType::kCustomDialLaunch);
 
   const std::optional<base::Value>& body = message.body;
-  if (!body || !body->is_dict())
+  if (!body || !body->is_dict()) {
     return CustomDialLaunchMessageBody();
+  }
 
   const std::optional<bool> do_launch = body->GetDict().FindBool("doLaunch");
   if (!do_launch) {
@@ -172,8 +181,9 @@ CustomDialLaunchMessageBody CustomDialLaunchMessageBody::From(
   std::optional<std::string> launch_parameter;
   const std::string* launch_parameter_value =
       body->GetDict().FindString("launchParameter");
-  if (launch_parameter_value)
+  if (launch_parameter_value) {
     launch_parameter = *launch_parameter_value;
+  }
 
   return CustomDialLaunchMessageBody(*do_launch, launch_parameter);
 }
@@ -194,12 +204,14 @@ DialInternalMessageUtil::~DialInternalMessageUtil() = default;
 // static
 bool DialInternalMessageUtil::IsStopSessionMessage(
     const DialInternalMessage& message) {
-  if (message.type != DialInternalMessageType::kV2Message)
+  if (message.type != DialInternalMessageType::kV2Message) {
     return false;
+  }
 
   const std::optional<base::Value>& body = message.body;
-  if (!body || !body->is_dict())
+  if (!body || !body->is_dict()) {
     return false;
+  }
 
   const std::string* request_type = body->GetDict().FindString("type");
   return request_type && *request_type == "STOP";

@@ -9,9 +9,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {createFakeMojoAccelInfo, createFakeMojoLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {ShortcutsPageElement} from 'chrome://shortcut-customization/js/shortcuts_page.js';
+import type {ShortcutsPageElement} from 'chrome://shortcut-customization/js/shortcuts_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

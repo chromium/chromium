@@ -52,11 +52,10 @@ ProfileIOSImplIOData::Handle::~Handle() {
   io_data_->ShutdownOnUIThread(GetAllContextGetters());
 }
 
-void ProfileIOSImplIOData::Handle::Init(
-    const base::FilePath& cookie_path,
-    const base::FilePath& cache_path,
-    int cache_max_size,
-    const base::FilePath& profile_path) {
+void ProfileIOSImplIOData::Handle::Init(const base::FilePath& cookie_path,
+                                        const base::FilePath& cache_path,
+                                        int cache_max_size,
+                                        const base::FilePath& profile_path) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(!io_data_->lazy_params_);
 

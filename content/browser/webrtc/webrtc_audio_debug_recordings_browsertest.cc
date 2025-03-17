@@ -49,7 +49,7 @@ base::FilePath GetExpectedAecDumpFileName(const base::FilePath& base_file_path,
 // <temporary path>.<kind>.<running stream id>.wav, for example
 // "/tmp/.com.google.Chrome.Z6UC3P.output.1.wav". |kind| is output or input.
 std::vector<base::FilePath> GetRecordingFileNames(
-    base::FilePath::StringPieceType kind,
+    base::FilePath::StringViewType kind,
     const base::FilePath& base_file_path) {
   base::FilePath dir = base_file_path.DirName();
   base::FilePath file = base_file_path.BaseName();

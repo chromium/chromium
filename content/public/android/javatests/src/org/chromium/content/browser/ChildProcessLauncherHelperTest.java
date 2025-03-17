@@ -163,7 +163,7 @@ public class ChildProcessLauncherHelperTest {
                 /* privilegedServicesName= */ null,
                 context.getPackageName(),
                 /* sandboxedServicesName= */ null,
-                /* isExternalService= */ false,
+                /* isExternalSandboxedService= */ false,
                 LibraryProcessType.PROCESS_CHILD,
                 /* bindToCallerCheck= */ true,
                 /* ignoreVisibilityForImportance= */ false);
@@ -180,7 +180,7 @@ public class ChildProcessLauncherHelperTest {
                         launcher.getChildConnectionAllocatorForTesting();
 
         // Check that only one connection is created.
-        for (int i = 0; i < connectionAllocator.getNumberOfServices(); ++i) {
+        for (int i = 0; i < connectionAllocator.getMaxNumberOfAllocations(); ++i) {
             ChildProcessConnection sandboxedConn =
                     connectionAllocator.getChildProcessConnectionAtSlotForTesting(i);
             if (i == 1) {
@@ -280,7 +280,7 @@ public class ChildProcessLauncherHelperTest {
                 /* privilegedServicesName= */ null,
                 context.getPackageName(),
                 /* sandboxedServicesName= */ null,
-                /* isExternalService= */ false,
+                /* isExternalSandboxedService= */ false,
                 LibraryProcessType.PROCESS_CHILD,
                 /* bindToCallerCheck= */ true,
                 /* ignoreVisibilityForImportance= */ false);

@@ -16,7 +16,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -108,7 +107,7 @@ class MinimumWindowsSupportTest : public DelayloadsTest {
       return false;
     }
     // Need at least api-{components}-l1-1-0.dll so > four dashes.
-    if (base::ranges::count(import, '-') < 5) {
+    if (std::ranges::count(import, '-') < 5) {
       return false;
     }
 

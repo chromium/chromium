@@ -48,7 +48,7 @@ base::FilePath AppIDToPath(const std::string& app_id) {
   EXPECT_TRUE(application_support_dir);
   return (*application_support_dir)
       .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
-      .AppendASCII(base::StrCat({"UpdateUsageStatsTaskTest_", app_id}));
+      .AppendUTF8(base::StrCat({"UpdateUsageStatsTaskTest_", app_id}));
 }
 #endif
 
@@ -102,7 +102,7 @@ class UpdateUsageStatsTaskTest : public testing::Test {
     base::CreateDirectory(AppIDToPath(app_id));
     std::unique_ptr<crashpad::CrashReportDatabase> database =
         crashpad::CrashReportDatabase::Initialize(
-            AppIDToPath(app_id).AppendASCII("Crashpad"));
+            AppIDToPath(app_id).AppendUTF8("Crashpad"));
     ASSERT_TRUE(database);
     database->GetSettings()->SetUploadsEnabled(enabled);
 #endif  // BUILDFLAG(IS_MAC)
@@ -117,10 +117,8 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
-  ASSERT_FALSE(
-      AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
@@ -129,10 +127,8 @@ TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", true);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"},
-                                          GetUpdaterScopeForTesting()));
-    ASSERT_TRUE(
-        AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
+    ASSERT_TRUE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+        GetUpdaterScopeForTesting()));
   }
 }
 
@@ -142,10 +138,8 @@ TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", false);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"},
-                                           GetUpdaterScopeForTesting()));
-    ASSERT_FALSE(
-        AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
+    ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+        GetUpdaterScopeForTesting()));
   }
 }
 
@@ -156,14 +150,15 @@ TEST_F(UpdateUsageStatsTaskTest,
   }
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", false);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", true);
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1"}, GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", true);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", false);
-  ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1"}, GetUpdaterScopeForTesting()));
-  ASSERT_TRUE(AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1"}));
+  ASSERT_TRUE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
+
 #elif !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Mac Google-branded builds may pick up Chrome or other Google software
 // usagestat opt-ins from outside this test. Disable the test in that
@@ -171,8 +166,8 @@ TEST_F(UpdateUsageStatsTaskTest,
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 
 // TODO(crbug.com/40821596): Enable tests once the feature is implemented.
@@ -180,16 +175,16 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true);
   SetAppUsageStats("app2", false);
-  ASSERT_TRUE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
+  ASSERT_TRUE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 #endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
   SetAppUsageStats("app1", false);
   SetAppUsageStats("app2", false);
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 #endif
 

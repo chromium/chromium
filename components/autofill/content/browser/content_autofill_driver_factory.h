@@ -28,9 +28,11 @@ class ContentAutofillClient;
 class ContentAutofillDriver;
 class ScopedAutofillManagersObservation;
 
-// Manages lifetime of ContentAutofillDriver. Owned by ContentAutofillClient,
-// therefore one Factory per WebContents. Creates one Driver per
-// RenderFrameHost.
+// Creates one ContentAutofillDriver per content::RenderFrameHost and manages
+// its lifecycle corresponding to the content::RenderFrameHost's lifecycle.
+//
+// Owned by ContentAutofillClient, therefore there is one
+// ContentAutofillDriverFactory per content::WebContents.
 class ContentAutofillDriverFactory : public AutofillDriverFactory,
                                      public content::WebContentsObserver {
  public:

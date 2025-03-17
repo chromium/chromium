@@ -1,0 +1,2 @@
+ci/linux-x64-fuzzilli-coverage
+ci/linux-x86-fuzzilli-coverage

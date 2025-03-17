@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 namespace views {
@@ -35,7 +35,7 @@ class MenuRunner;
 // MenuItemView prevents repeated activation of a menu by clicks too
 // close in time.
 class MenuTestBase : public ViewEventTestBase,
-                     public views::AXEventObserver,
+                     public views::AXUpdateObserver,
                      public views::MenuDelegate {
  public:
   MenuTestBase();
@@ -45,7 +45,7 @@ class MenuTestBase : public ViewEventTestBase,
 
   ~MenuTestBase() override;
 
-  // AXEventObserver overrides.
+  // AXUpdateObserver overrides.
   void OnViewEvent(views::View*, ax::mojom::Event event_type) override;
 
   // Generate a mouse click and run |next| once the event has been processed.

@@ -1,0 +1,11 @@
+{
+  "name": "ExtWindow",
+  "version": "1.0",
+  "description": "Chromedriver extension with a new window",
+  "manifest_version": 2,
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
+}

@@ -74,6 +74,16 @@ using FileDestinationPickerDataSource =
 using FileDestinationPickerDataSourceSnapshot =
     NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>;
 
+// Sets the background color of `cell` for the highlighted state.
+void SetHighlightedBackgroundColorForCell(UITableViewCell* cell) {
+  cell.backgroundColor = [UIColor colorNamed:kGrey300Color];
+}
+
+// Sets the background color of `cell` for the unhighlighted state.
+void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
+  cell.backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+}
+
 }  // namespace
 
 @interface FileDestinationPickerViewController () <UITableViewDelegate>
@@ -149,6 +159,18 @@ using FileDestinationPickerDataSourceSnapshot =
                         didSelectDestination:destination];
 }
 
+- (void)tableView:(UITableView*)tableView
+    didHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+  SetHighlightedBackgroundColorForCell(cell);
+}
+
+- (void)tableView:(UITableView*)tableView
+    didUnhighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+  SetUnhighlightedBackgroundColorForCell(cell);
+}
+
 #pragma mark - FileDestinationPickerConsumer
 
 - (void)setSelectedDestination:(FileDestination)destination {
@@ -183,13 +205,13 @@ using FileDestinationPickerDataSourceSnapshot =
     cell.userInteractionEnabled = NO;
     cell.textLabel.enabled = NO;
     cell.detailTextLabel.text =
-        l10n_util::GetNSString(IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION);
+        l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION);
     cell.detailTextLabel.enabled = NO;
   }
 
   cell.accessoryType = selected ? UITableViewCellAccessoryCheckmark
                                 : UITableViewCellAccessoryNone;
-  cell.backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  SetUnhighlightedBackgroundColorForCell(cell);
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.accessibilityIdentifier =
       destination == FileDestination::kFiles

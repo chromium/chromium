@@ -20,7 +20,6 @@ source_set("model") {
     "//components/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
-    "//ios/chrome/browser/price_insights/resources",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/ui/symbols",

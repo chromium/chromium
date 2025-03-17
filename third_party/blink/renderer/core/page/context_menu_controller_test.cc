@@ -13,6 +13,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -67,7 +68,9 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -204,7 +207,9 @@ class MockAttributionHost
   void RegisterDataHost(
       mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>,
       attribution_reporting::mojom::RegistrationEligibility,
-      bool is_for_background_requests) override {}
+      bool is_for_background_requests,
+      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+          reporting_origins) override {}
 
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>
@@ -1907,6 +1912,27 @@ TEST_F(ContextMenuControllerTest, OpenedFromHighlight) {
   EXPECT_TRUE(ShowContextMenuForElement(third_element, kMenuSourceMouse));
   context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_TRUE(context_menu_data.opened_from_highlight);
+}
+
+TEST_F(ContextMenuControllerTest, SelectAllEnabledForEditContext) {
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <div id=target>123</div>
+    </body>
+  )HTML");
+  Element* target = GetDocument()->getElementById(AtomicString("target"));
+  // Attach `EditContext` to the target.
+  Element* script = GetDocument()->CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      "document.getElementById('target').editContext = new EditContext()");
+  GetDocument()->body()->AppendChild(script);
+  target->Focus();
+
+  EXPECT_TRUE(target->editContext());
+  EXPECT_TRUE(ShowContextMenuForElement(target, kMenuSourceMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(!!(context_menu_data.edit_flags &
+                 ContextMenuDataEditFlags::kCanSelectAll));
 }
 
 // Test that opening context menu with keyboard does not change text selection.

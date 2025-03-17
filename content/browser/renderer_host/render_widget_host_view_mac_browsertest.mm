@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #import "base/mac/mac_util.h"
@@ -83,8 +84,8 @@ class TextCallbackWaiter {
 
   const std::u16string& text() const { return text_; }
 
-  void GetText(const std::u16string& text) {
-    text_ = text;
+  void GetText(std::u16string_view text) {
+    text_ = std::u16string(text);
     run_loop_.Quit();
   }
 

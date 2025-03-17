@@ -13,8 +13,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/download/download_bubble_info.h"
@@ -34,8 +32,14 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
+
 using offline_items_collection::ContentId;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 namespace {
 
 void MaybeSendDownloadReport(content::BrowserContext* browser_context,
@@ -51,6 +55,7 @@ void MaybeSendDownloadReport(content::BrowserContext* browser_context,
 }
 
 }  // namespace
+#endif
 
 DownloadBubbleContentsView::DownloadBubbleContentsView(
     base::WeakPtr<Browser> browser,
@@ -183,30 +188,37 @@ void DownloadBubbleContentsView::ProcessDeepScanPress(
     DownloadItemWarningData::DeepScanTrigger trigger,
     base::optional_ref<const std::string> password) {
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     LogDeepScanEvent(model->GetDownloadItem(),
                      safe_browsing::DeepScanEvent::kPromptAccepted);
+#endif
     DownloadItemWarningData::AddWarningActionEvent(
         model->GetDownloadItem(),
         DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
         DownloadItemWarningData::WarningAction::ACCEPT_DEEP_SCAN);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
         model->GetDownloadItem(), trigger, password);
+#endif
   }
 }
 
 void DownloadBubbleContentsView::ProcessLocalDecryptionPress(
     const offline_items_collection::ContentId& id,
     base::optional_ref<const std::string> password) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
     LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kPromptAccepted);
     safe_browsing::DownloadProtectionService::CheckDownloadWithLocalDecryption(
         model->GetDownloadItem(), password);
   }
+#endif
 }
 
 void DownloadBubbleContentsView::ProcessLocalPasswordInProgressClick(
     const offline_items_collection::ContentId& id,
     DownloadCommands::Command command) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   DownloadUIModel* model = GetDownloadModel(id);
   if (!model) {
     return;
@@ -218,6 +230,7 @@ void DownloadBubbleContentsView::ProcessLocalPasswordInProgressClick(
   if (!sb_service) {
     return;
   }
+
   safe_browsing::DownloadProtectionService* protection_service =
       sb_service->download_protection_service();
   if (!protection_service) {
@@ -249,6 +262,7 @@ void DownloadBubbleContentsView::ProcessLocalPasswordInProgressClick(
   } else {
     NOTREACHED() << "Unexpected command: " << static_cast<int>(command);
   }
+#endif
 }
 
 bool DownloadBubbleContentsView::IsEncryptedArchive(const ContentId& id) {

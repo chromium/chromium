@@ -226,7 +226,44 @@ std::unique_ptr<FeaturePromoPrecondition> MakeTestPrecondition(
   return result;
 }
 
+template <typename T>
+class TestPreconditionWithData : public CachingFeaturePromoPrecondition {
+ public:
+  TestPreconditionWithData(FeaturePromoPrecondition::Identifier id,
+                           std::string description,
+                           FeaturePromoResult initial_state,
+                           ui::TypedIdentifier<T> data_id,
+                           T value)
+      : CachingFeaturePromoPrecondition(id, description, initial_state),
+        data_id_(data_id) {
+    InitCachedData(data_id, value);
+  }
+  ~TestPreconditionWithData() override = default;
+
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override {
+    GetCachedDataForComputation(data, data_id_);
+    return CachingFeaturePromoPrecondition::CheckPrecondition(data);
+  }
+
+ private:
+  const ui::TypedIdentifier<T> data_id_;
+};
+
 }  // namespace
+
+TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList_ComputesData) {
+  auto precond1 = std::make_unique<TestPreconditionWithData<int>>(
+      kTestId, kPrecondName, FeaturePromoResult::Success(), kIntegerData, 2);
+  auto precond2 = std::make_unique<TestPreconditionWithData<std::string>>(
+      kTestId2, kPrecondName2, FeaturePromoResult::Success(), kStringData, "3");
+
+  FeaturePromoPreconditionList list(std::move(precond1), std::move(precond2));
+  ComputedData data;
+  list.CheckPreconditions(data);
+
+  EXPECT_EQ(2, data.Get(kIntegerData));
+  EXPECT_EQ("3", data.Get(kStringData));
+}
 
 TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList) {
   CachingFeaturePromoPrecondition* precond1 = nullptr;
@@ -239,38 +276,45 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList) {
       MakeTestPrecondition(precond3, kTestId3, kPrecondName3));
 
   // true, true, true
+  ComputedData data;
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond3->set_check_result_for_testing(kPrecondFailure3);
   // true, true, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure3, precond3->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond1->set_check_result_for_testing(kPrecondFailure);
   // false, true, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond2->set_check_result_for_testing(kPrecondFailure2);
   // false, false, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond1->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond3->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, true
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond2->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, true, true
+  data.release_all_references();
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 }
 
 // Same as previous test, but add the preconditions individually.
@@ -286,38 +330,45 @@ TEST(FeaturePromoPreconditionTest,
   list.AddPrecondition(MakeTestPrecondition(precond3, kTestId3, kPrecondName3));
 
   // true, true, true
+  ComputedData data;
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond3->set_check_result_for_testing(kPrecondFailure3);
   // true, true, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure3, precond3->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond1->set_check_result_for_testing(kPrecondFailure);
   // false, true, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond2->set_check_result_for_testing(kPrecondFailure2);
   // false, false, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond1->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond3->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, true
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond2->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, true, true
+  data.release_all_references();
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 }
 
 // Same as previous test, but add the preconditions from another list.
@@ -334,38 +385,45 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList_AppendAll) {
   list.AppendAll(std::move(temp));
 
   // true, true, true
+  ComputedData data;
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond3->set_check_result_for_testing(kPrecondFailure3);
   // true, true, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure3, precond3->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond1->set_check_result_for_testing(kPrecondFailure);
   // false, true, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond2->set_check_result_for_testing(kPrecondFailure2);
   // false, false, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond1->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, false
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond3->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, true
+  data.release_all_references();
   EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 
   precond2->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, true, true
+  data.release_all_references();
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
-            list.CheckPreconditions());
+            list.CheckPreconditions(data));
 }
 
 TEST(FeaturePromoPreconditionTest,

@@ -10,6 +10,7 @@
 
 // Needed for function prototypes.
 #include <specstrings.h>
+
 #include <cstdint>
 
 #ifdef __cplusplus

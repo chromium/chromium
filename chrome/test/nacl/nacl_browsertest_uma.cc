@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestGLibcVcacheExtension,
 // This includes pnacl-llc.nexe, pnacl-ld.nexe, and possibly pnacl-sz.nexe.
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl, ValidationCacheOfTranslatorNexes) {
   const bool uses_subzero_with_o0 = IsSubzeroSupportedForArch();
-  base::HistogramBase::Count subzero_o0_count = (uses_subzero_with_o0 ? 1 : 0);
+  base::HistogramBase::Count32 subzero_o0_count = (uses_subzero_with_o0 ? 1 : 0);
   base::HistogramTester histograms;
   // Run a load test w/ one pexe cache identity.
   RunLoadTest(FILE_PATH_LITERAL("pnacl_options.html?use_nmf=o_0"));

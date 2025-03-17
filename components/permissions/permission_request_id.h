@@ -62,10 +62,4 @@ class PermissionRequestID {
 
 }  // namespace permissions
 
-namespace std {
-template <>
-struct hash<permissions::PermissionRequestID::RequestLocalId>
-    : public permissions::PermissionRequestID::RequestLocalId::Hasher {};
-}  // namespace std
-
 #endif  // COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_ID_H_

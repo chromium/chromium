@@ -14,7 +14,6 @@ import {AppManagementUserAction} from 'chrome://resources/cr_components/app_mana
 import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MediaDevicesProxy} from '../../common/media_devices_proxy.js';
@@ -178,7 +177,7 @@ export class AppManagementPermissionItemElement extends
       case PermissionType.kMicrophone:
       case PermissionType.kContacts:
       case PermissionType.kStorage:
-        return loadTimeData.getBoolean('privacyHubAppPermissionsV2Enabled');
+        return true;
       case PermissionType.kNotifications:
       case PermissionType.kPrinting:
       case PermissionType.kFileHandling:
@@ -241,7 +240,7 @@ export class AppManagementPermissionItemElement extends
     }
 
     BrowserProxy.getInstance().handler.setPermission(
-        this.app.id, newPermission!);
+        this.app.id, newPermission);
 
     recordAppManagementUserAction(
         this.app.type,

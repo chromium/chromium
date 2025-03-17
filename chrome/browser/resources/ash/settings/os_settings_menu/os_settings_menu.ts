@@ -27,7 +27,7 @@ import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/net
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import type {BluetoothSystemProperties, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import type {CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -84,8 +84,7 @@ function capitalize(str: string): string {
 }
 
 function getPrioritizedConnectedNetwork(
-    networkStateList: OncMojo.NetworkStateProperties[]):
-    OncMojo.NetworkStateProperties|null {
+    networkStateList: NetworkStateProperties[]): NetworkStateProperties|null {
   // The priority of the network types. Both Cellular and Tether belongs to
   // the Mobile Data.
   const orderedNetworkTypes = [
@@ -97,18 +96,18 @@ function getPrioritizedConnectedNetwork(
   ];
 
   const networkStates:
-      Record<NetworkType, OncMojo.NetworkStateProperties[]> = {};
+      Partial<Record<NetworkType, NetworkStateProperties[]>> = {};
 
   for (const networkType of orderedNetworkTypes) {
     networkStates[networkType] = [];
   }
 
   for (const networkState of networkStateList) {
-    networkStates[networkState.type].push(networkState);
+    networkStates[networkState.type]!.push(networkState);
   }
 
   for (const type of orderedNetworkTypes) {
-    for (const networkState of networkStates[type]) {
+    for (const networkState of networkStates[type]!) {
       if (OncMojo.connectionStateIsConnected(networkState.connectionState)) {
         return networkState;
       }
@@ -442,7 +441,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       {
         section: Section.kAccessibility,
         path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
-        icon: 'os-settings:accessibility-revamp',
+        icon: 'os-settings:accessibility',
         label: this.i18n('a11yPageTitle'),
         sublabel: this.i18n('a11yMenuItemDescription'),
       },

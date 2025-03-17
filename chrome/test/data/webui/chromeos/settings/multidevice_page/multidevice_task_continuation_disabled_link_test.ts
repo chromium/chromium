@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsMultideviceTaskContinuationDisabledLinkElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsMultideviceTaskContinuationDisabledLinkElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -25,7 +25,7 @@ suite('<settings-multidevice-task-continuation-disabled-link>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Contains 2 links with aria-labels', async () => {
+  test('Contains 2 links with aria-labels', () => {
     const chromeSyncLink =
         localizedLink.shadowRoot!.querySelector('#chromeSyncLink');
     assertTrue(!!chromeSyncLink);
@@ -36,7 +36,7 @@ suite('<settings-multidevice-task-continuation-disabled-link>', () => {
     assertTrue(learnMoreLink.hasAttribute('aria-label'));
   });
 
-  test('Spans are aria-hidden', async () => {
+  test('Spans are aria-hidden', () => {
     const spans = localizedLink.shadowRoot!.querySelectorAll('span');
     spans.forEach((span) => {
       assertTrue(span.hasAttribute('aria-hidden'));
@@ -54,6 +54,6 @@ suite('<settings-multidevice-task-continuation-disabled-link>', () => {
     chromeSyncLink.click();
 
     await advancedSyncOpenedPromise;
-    assertNotEquals(Router.getInstance().currentRoute, routes.OS_SYNC);
+    assertNotEquals(Router.getInstance().currentRoute, routes.OS_SYNC_CONTROLS);
   });
 });

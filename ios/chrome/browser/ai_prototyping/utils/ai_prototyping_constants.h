@@ -14,6 +14,10 @@ extern const CGFloat kHorizontalInset;
 extern const CGFloat kMainStackTopInset;
 extern const CGFloat kMainStackViewSpacing;
 extern const CGFloat kResponseContainerHeightMultiplier;
+extern const CGFloat kVerticalInset;
+extern const CGFloat kButtonStackViewSpacing;
+extern const CGFloat kDefaultTemperature;
+extern const CGFloat kTemperatureSliderSteps;
 
 // Enum representing the prototyping pages for different features.
 enum class AIPrototypingFeature : NSInteger {
@@ -22,6 +26,8 @@ enum class AIPrototypingFeature : NSInteger {
   kFreeform,
   // Represents the tab organization/grouping feature.
   kTabOrganization,
+  // Represents the enhanced calendar feature.
+  kEnhancedCalendar,
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_AI_PROTOTYPING_CONSTANTS_H_

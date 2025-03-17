@@ -17,6 +17,10 @@
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 struct RegistrationRequest;
@@ -85,15 +89,27 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // Failed to run app installer.
     kInstallFailed = 10,
 
+    // The server received the request and rejected the requester as
+    // unauthorized to make it.
+    kPermissionDenied = 11,
+
+    // The remote transmitted a value unknown to this version of the app.
+    kUnknown = 12,
+
     // The service has been stopped, because the system is shutting down, or
     // any other reason.
-    kServiceStopped = 11,
+    kServiceStopped = 13,
 
     // The request could not be serviced, either because no user has accepted
     // the terms of service, or OEM mode is in effect.
-    kEulaRequiredOrOemMode = 12,
+    kEulaRequiredOrOemMode = 14,
+
+    // The service failed to fetch policies.
+    kFetchPoliciesFailed = 15,
 
     // Update EnumTraits<UpdateService::Result> when adding new values.
+    // Also update the `UpdateService::Result` `enum` in `updater_service.mojom`
+    // when adding new values.
   };
 
   // Run time errors are organized in specific categories to indicate the
@@ -220,7 +236,8 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   virtual void GetVersion(base::OnceCallback<void(const base::Version&)>) = 0;
 
   // Fetches policies from device management.
-  virtual void FetchPolicies(base::OnceCallback<void(int)> callback) = 0;
+  virtual void FetchPolicies(policy::PolicyFetchReason reason,
+                             base::OnceCallback<void(int)> callback) = 0;
 
   // Registers given request to the updater.
   virtual void RegisterApp(const RegistrationRequest& request,
@@ -356,7 +373,7 @@ template <>
 struct EnumTraits<UpdateService::Result> {
   using Result = UpdateService::Result;
   static constexpr Result first_elem = Result::kSuccess;
-  static constexpr Result last_elem = Result::kEulaRequiredOrOemMode;
+  static constexpr Result last_elem = Result::kFetchPoliciesFailed;
 };
 
 template <>

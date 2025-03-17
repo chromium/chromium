@@ -25,13 +25,13 @@
 
 #include "third_party/blink/renderer/core/loader/history_item.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/platform/web_http_body.h"
@@ -363,8 +363,8 @@ HistoryItem::GetReferencedFilePathsForSerialization() const {
 
   std::vector<std::optional<std::u16string>> result;
   result.reserve(file_paths.size());
-  base::ranges::transform(file_paths, std::back_inserter(result),
-                          WebString::ToOptionalString16);
+  std::ranges::transform(file_paths, std::back_inserter(result),
+                         WebString::ToOptionalString16);
   return result;
 }
 

@@ -4,9 +4,9 @@
 
 #include "content/web_test/renderer/fake_subresource_filter.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -46,7 +46,7 @@ FakeSubresourceFilter::GetLoadPolicyImpl(const blink::WebURL& url) {
   std::string_view path(gurl.path_piece());
 
   // Allows things not listed in |disallowed_path_suffixes_|.
-  if (base::ranges::none_of(
+  if (std::ranges::none_of(
           disallowed_path_suffixes_, [&path](const std::string& suffix) {
             return base::EndsWith(path, suffix, base::CompareCase::SENSITIVE);
           })) {

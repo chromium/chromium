@@ -42,8 +42,9 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
   using CountAndBucketData = base::SparseHistogram::CountAndBucketData;
 
   void SetUp() override {
-    if (use_persistent_histogram_allocator_)
+    if (use_persistent_histogram_allocator_) {
       CreatePersistentMemoryAllocator();
+    }
 
     // Each test will have a clean state (no Histogram / BucketRanges
     // registered).
@@ -77,10 +78,12 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
     GlobalHistogramAllocator::ReleaseForTesting();
   }
 
-  std::unique_ptr<SparseHistogram> NewSparseHistogram(const char* name) {
+  template <size_t N>
+  std::unique_ptr<SparseHistogram> NewSparseHistogram(const char (&name)[N]) {
     // std::make_unique can't access protected ctor so do it manually. This
     // test class is a friend so can access it.
-    return std::unique_ptr<SparseHistogram>(new SparseHistogram(name));
+    return std::unique_ptr<SparseHistogram>(
+        new SparseHistogram(DurableStringView(std::string_view(name, N - 1))));
   }
 
   CountAndBucketData GetCountAndBucketData(SparseHistogram* histogram) {
@@ -267,7 +270,7 @@ TEST_P(SparseHistogramTest, MacroBasicTest) {
   const HistogramBase* const sparse_histogram = histograms[0];
 
   EXPECT_EQ(SPARSE_HISTOGRAM, sparse_histogram->GetHistogramType());
-  EXPECT_STREQ("Sparse", sparse_histogram->histogram_name());
+  EXPECT_EQ("Sparse", sparse_histogram->histogram_name());
   EXPECT_EQ(
       HistogramBase::kUmaTargetedHistogramFlag |
           (use_persistent_histogram_allocator_ ? HistogramBase::kIsPersistent
@@ -291,8 +294,8 @@ TEST_P(SparseHistogramTest, MacroInLoopTest) {
   const StatisticsRecorder::Histograms histograms =
       StatisticsRecorder::Sort(StatisticsRecorder::GetHistograms());
   ASSERT_THAT(histograms, testing::SizeIs(2));
-  EXPECT_STREQ(histograms[0]->histogram_name(), "Sparse0");
-  EXPECT_STREQ(histograms[1]->histogram_name(), "Sparse1");
+  EXPECT_EQ(histograms[0]->histogram_name(), "Sparse0");
+  EXPECT_EQ(histograms[1]->histogram_name(), "Sparse1");
 }
 
 TEST_P(SparseHistogramTest, Serialize) {
@@ -383,8 +386,9 @@ TEST_P(SparseHistogramTest, FactoryTime) {
 
   // Calculate cost of creating histograms.
   TimeTicks create_start = TimeTicks::Now();
-  for (int i = 0; i < kTestCreateCount; ++i)
+  for (int i = 0; i < kTestCreateCount; ++i) {
     SparseHistogram::FactoryGet(histogram_names[i], HistogramBase::kNoFlags);
+  }
   TimeDelta create_ticks = TimeTicks::Now() - create_start;
   int64_t create_ms = create_ticks.InMilliseconds();
 
@@ -416,8 +420,9 @@ TEST_P(SparseHistogramTest, FactoryTime) {
       SparseHistogram::FactoryGet(histogram_names[0], HistogramBase::kNoFlags);
   ASSERT_TRUE(histogram);
   TimeTicks add_start = TimeTicks::Now();
-  for (int i = 0; i < kTestAddCount; ++i)
+  for (int i = 0; i < kTestAddCount; ++i) {
     histogram->Add(i & 127);
+  }
   TimeDelta add_ticks = TimeTicks::Now() - add_start;
   int64_t add_ms = add_ticks.InMilliseconds();
 
@@ -427,7 +432,7 @@ TEST_P(SparseHistogramTest, FactoryTime) {
 
 TEST_P(SparseHistogramTest, ExtremeValues) {
   struct Cases {
-    Histogram::Sample sample;
+    HistogramBase::Sample32 sample;
     int64_t expected_max;
   };
   static const auto cases = std::to_array<Cases>({
@@ -449,9 +454,9 @@ TEST_P(SparseHistogramTest, ExtremeValues) {
     std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
     ASSERT_FALSE(it->Done());
 
-    base::Histogram::Sample min;
+    base::HistogramBase::Sample32 min;
     int64_t max;
-    base::Histogram::Count count;
+    base::Histogram::Count32 count;
     it->Get(&min, &max, &count);
 
     EXPECT_EQ(1, count);
@@ -473,10 +478,10 @@ TEST_P(SparseHistogramTest, HistogramNameHash) {
 TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   std::unique_ptr<SparseHistogram> histogram(NewSparseHistogram("Sparse"));
   // Add samples in reverse order and make sure the output is in correct order.
-  histogram->AddCount(/*sample=*/200, /*count=*/15);
-  histogram->AddCount(/*sample=*/100, /*count=*/5);
+  histogram->AddCount(/*value=*/200, /*count=*/15);
+  histogram->AddCount(/*value=*/100, /*count=*/5);
   // Add samples to the same bucket and make sure they'll be aggregated.
-  histogram->AddCount(/*sample=*/100, /*count=*/5);
+  histogram->AddCount(/*value=*/100, /*count=*/5);
 
   const CountAndBucketData count_and_data_bucket =
       GetCountAndBucketData(histogram.get());
@@ -504,8 +509,8 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
 TEST_P(SparseHistogramTest, WriteAscii) {
   HistogramBase* histogram =
       SparseHistogram::FactoryGet("AsciiOut", HistogramBase::kNoFlags);
-  histogram->AddCount(/*sample=*/4, /*count=*/5);
-  histogram->AddCount(/*sample=*/10, /*count=*/15);
+  histogram->AddCount(/*value=*/4, /*count=*/5);
+  histogram->AddCount(/*value=*/10, /*count=*/15);
 
   std::string output;
   histogram->WriteAscii(&output);
@@ -521,8 +526,8 @@ TEST_P(SparseHistogramTest, WriteAscii) {
 TEST_P(SparseHistogramTest, ToGraphDict) {
   HistogramBase* histogram =
       SparseHistogram::FactoryGet("HTMLOut", HistogramBase::kNoFlags);
-  histogram->AddCount(/*sample=*/4, /*count=*/5);
-  histogram->AddCount(/*sample=*/10, /*count=*/15);
+  histogram->AddCount(/*value=*/4, /*count=*/5);
+  histogram->AddCount(/*value=*/10, /*count=*/15);
 
   base::Value::Dict output = histogram->ToGraphDict();
   std::string* header = output.FindString("header");

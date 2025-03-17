@@ -68,7 +68,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/scoped_feature_list.h"
 #endif
 
@@ -149,7 +149,7 @@ class BrowserFocusBasicTest : public InProcessBrowserTest {
     // the setup function, which interferes with what the test wants to test so
     // unset it.
     set_global_browser_set_up_function(nullptr);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
     // For CHROME_HEADLESS, which is currently used for browser tests, native
     // window occlusion is turned off. Turn it on to match the production
     // environment.
@@ -178,7 +178,7 @@ class BrowserFocusBasicTest : public InProcessBrowserTest {
   }
 
  private:
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "google_apis/gaia/gaia_id.h"
 
 FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() = default;
 
@@ -21,7 +22,7 @@ void FakeDeviceAccountsProvider::RemoveObserver(Observer* observer) {
 }
 
 void FakeDeviceAccountsProvider::GetAccessToken(
-    const std::string& account_id,
+    const GaiaId& account_id,
     const std::string& client_id,
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {
@@ -41,7 +42,7 @@ FakeDeviceAccountsProvider::GetAccountsOnDevice() const {
 }
 
 DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::AddAccount(
-    const std::string& gaia,
+    const GaiaId& gaia,
     const std::string& email) {
   DeviceAccountsProvider::AccountInfo account;
   account.gaia = gaia;
@@ -49,6 +50,20 @@ DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::AddAccount(
   accounts_.push_back(account);
   FireOnAccountsOnDeviceChanged();
   return account;
+}
+
+DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::UpdateAccount(
+    const GaiaId& gaia,
+    const std::string& email) {
+  for (AccountInfo& account : accounts_) {
+    if (account.gaia != gaia) {
+      continue;
+    }
+    account.email = email;
+    FireAccountOnDeviceUpdated(account);
+    return account;
+  }
+  NOTREACHED() << "Account with Gaia ID " << gaia << " not found";
 }
 
 void FakeDeviceAccountsProvider::ClearAccounts() {
@@ -59,7 +74,7 @@ void FakeDeviceAccountsProvider::ClearAccounts() {
 void FakeDeviceAccountsProvider::IssueAccessTokenForAllRequests() {
   for (auto& pair : requests_) {
     AccessTokenInfo info{base::StringPrintf("fake_access_token [account=%s]",
-                                            pair.first.c_str()),
+                                            pair.first.ToString().c_str()),
                          base::Time::Now() + base::Hours(1)};
     std::move(pair.second).Run(base::ok(std::move(info)));
   }
@@ -77,5 +92,12 @@ void FakeDeviceAccountsProvider::IssueAccessTokenErrorForAllRequests() {
 void FakeDeviceAccountsProvider::FireOnAccountsOnDeviceChanged() {
   for (auto& observer : observer_list_) {
     observer.OnAccountsOnDeviceChanged();
+  }
+}
+
+void FakeDeviceAccountsProvider::FireAccountOnDeviceUpdated(
+    const AccountInfo& account) {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountOnDeviceUpdated(account);
   }
 }

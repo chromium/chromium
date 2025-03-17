@@ -315,16 +315,18 @@ STATIC_ASSERT_MATCHING_ENUM(MatrixID::YCOCG, MatrixID::YCOCG);
 STATIC_ASSERT_MATCHING_ENUM(MatrixID::BT2020_NCL, MatrixID::BT2020_NCL);
 STATIC_ASSERT_MATCHING_ENUM(MatrixID::BT2020_CL, MatrixID::BT2020_CL);
 STATIC_ASSERT_MATCHING_ENUM(MatrixID::YDZDX, MatrixID::YDZDX);
+#undef STATIC_ASSERT_MATCHING_ENUM
 
-#define STATIC_ASSERT_MATCHING_ENUM2(chromium_name, chromecast_name)        \
+#define STATIC_ASSERT_MATCHING_ENUM(chromium_name, chromecast_name)        \
   static_assert(static_cast<int>(::gfx::ColorSpace::chromium_name) ==       \
                     static_cast<int>(::chromecast::media::chromecast_name), \
                 "mismatching status enum values: " #chromium_name)
 
-STATIC_ASSERT_MATCHING_ENUM2(RangeID::INVALID, RangeID::INVALID);
-STATIC_ASSERT_MATCHING_ENUM2(RangeID::LIMITED, RangeID::LIMITED);
-STATIC_ASSERT_MATCHING_ENUM2(RangeID::FULL, RangeID::FULL);
-STATIC_ASSERT_MATCHING_ENUM2(RangeID::DERIVED, RangeID::DERIVED);
+STATIC_ASSERT_MATCHING_ENUM(RangeID::INVALID, RangeID::INVALID);
+STATIC_ASSERT_MATCHING_ENUM(RangeID::LIMITED, RangeID::LIMITED);
+STATIC_ASSERT_MATCHING_ENUM(RangeID::FULL, RangeID::FULL);
+STATIC_ASSERT_MATCHING_ENUM(RangeID::DERIVED, RangeID::DERIVED);
+#undef STATIC_ASSERT_MATCHING_ENUM
 
 VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
     StreamId id,
@@ -375,8 +377,7 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
     }
   }
 
-  const gfx::Size aspect_ratio =
-      config.aspect_ratio().GetNaturalSize(config.visible_rect());
+  const gfx::Size aspect_ratio = config.coded_size();
   video_config.width = aspect_ratio.width();
   video_config.height = aspect_ratio.height();
 

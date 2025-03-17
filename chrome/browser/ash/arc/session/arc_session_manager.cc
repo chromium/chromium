@@ -7,27 +7,17 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/metrics/stability_metrics_manager.h"
-#include "ash/components/arc/session/arc_data_remover.h"
-#include "ash/components/arc/session/arc_instance_mode.h"
-#include "ash/components/arc/session/arc_management_transition.h"
-#include "ash/components/arc/session/arc_session.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/session/serial_number_util.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -47,11 +37,11 @@
 #include "chrome/browser/ash/arc/arc_ui_availability_reporter.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"
+#include "chrome/browser/ash/arc/dlc_installer/arc_dlc_install_notification_delegate_impl.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
-#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
@@ -64,10 +54,27 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_data_remover.h"
+#include "chromeos/ash/experiences/arc/session/arc_instance_mode.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
+#include "chromeos/ash/experiences/arc/session/arc_session.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/session/serial_number_util.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
@@ -76,6 +83,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "ui/display/types/display_constants.h"
 
 // Enable VLOG level 1.
@@ -448,6 +456,17 @@ void UmaHistogramDeferActivationTimes(const std::string& name,
                                 base::Seconds(25), 125);
 }
 
+bool IsDeviceFlexArcPreloadEnabledByPolicy() {
+  bool device_flex_arc_preload_enabled_allowed;
+  if (ash::CrosSettings::Get()->GetBoolean(
+          ash::kDeviceFlexArcPreloadEnabled,
+          &device_flex_arc_preload_enabled_allowed)) {
+    return device_flex_arc_preload_enabled_allowed;
+  }
+  // If device policy is not set, doesn't allow arcvm dlc.
+  return false;
+}
+
 bool NeedRevenDLC() {
   if (!ash::switches::IsRevenBranding()) {
     return false;
@@ -458,9 +477,9 @@ bool NeedRevenDLC() {
     return false;
   }
 
-  if (!ash::features::IsAndroidVpnAppsOnFlexEnabled()) {
-    VLOG(1) << "enable-android-vpn-apps-on-flex flag is off and cannot "
-               "install arcvm images.";
+  if (!IsDeviceFlexArcPreloadEnabledByPolicy()) {
+    VLOG(1) << "Reven device cannot install arcvm images because the "
+               "DeviceFlexArcPreloadEnabled policy prevents it.";
     return false;
   }
 
@@ -560,6 +579,7 @@ ArcSessionManager::~ArcSessionManager() {
     ash::SessionManagerClient::Get()->RemoveObserver(this);
   }
 
+  internal_state_ = InternalState::kDestroying;
   Shutdown();
   DCHECK(arc_session_runner_);
   arc_session_runner_->RemoveObserver(this);
@@ -785,6 +805,14 @@ bool ArcSessionManager::IsAllowed() const {
 }
 
 void ArcSessionManager::SetProfile(Profile* profile) {
+  if (internal_state_ != InternalState::kNotInitialized &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
+    // This should not be called twice, except in tests.
+    base::debug::DumpWithoutCrashing();
+  }
+  internal_state_ = InternalState::kRunning;
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!profile_);
   DCHECK(IsArcAllowedForProfile(profile));
@@ -857,6 +885,24 @@ void ArcSessionManager::Initialize() {
     SetUserInfo();
   }
 
+  if (const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_)) {
+    if (!arc_dlc_install_notification_manager_) {
+      auto delegate =
+          std::make_unique<arc::ArcDlcInstallNotificationManagerDelegateImpl>(
+              profile_);
+      arc_dlc_install_notification_manager_ =
+          std::make_unique<arc::ArcDlcInstallNotificationManager>(
+              std::move(delegate), *account_id);
+    }
+    for (const auto& notification : dlc_install_pending_notifications_) {
+      arc_dlc_install_notification_manager_->Show(notification);
+    }
+    dlc_install_pending_notifications_.clear();
+  } else {
+    // TODO to clean up later.
+    CHECK_IS_TEST();
+  }
+
   // Create the support host at initialization. Note that, practically,
   // ARC support Chrome app is rarely used (only opt-in and re-auth flow).
   // So, it may be better to initialize it lazily.
@@ -903,6 +949,38 @@ void ArcSessionManager::Initialize() {
 
 void ArcSessionManager::Shutdown() {
   VLOG(1) << "Shutting down session manager";
+
+  // We expect this is called twice, once from ArcServiceLauncher
+  // then the internal state is switched to kRunning -> kShutdown,
+  // followed by the one from dtor, then the state is kDestroying.
+  // All cases should happen after stopping RunLoop.
+  bool expected = true;
+  if (base::RunLoop::IsRunningOnCurrentThread()) {
+    LOG(ERROR) << "Shutdown is called while message loop is running";
+    expected = false;
+  }
+  switch (internal_state_) {
+    case InternalState::kNotInitialized:
+      LOG(ERROR) << "Unexpected state: kNotInitialized";
+      expected = false;
+      break;
+    case InternalState::kRunning:
+      internal_state_ = InternalState::kShutdown;
+      break;
+    case InternalState::kShutdown:
+      LOG(ERROR) << "Unexpected state: kShutdown";
+      expected = false;
+      break;
+    case InternalState::kDestroying:
+      // Do nothing.
+      break;
+  }
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType) &&
+      !expected) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   enable_requested_ = false;
   ResetArcState();
   session_manager_observation_.Reset();
@@ -916,6 +994,8 @@ void ArcSessionManager::Shutdown() {
   pai_starter_.reset();
   fast_app_reinstall_starter_.reset();
   arc_ui_availability_reporter_.reset();
+  arc_dlc_install_notification_manager_.reset();
+  hardware_checker_.reset();
   profile_ = nullptr;
   state_ = State::NOT_INITIALIZED;
   if (scoped_opt_in_tracker_) {
@@ -925,6 +1005,11 @@ void ArcSessionManager::Shutdown() {
   for (auto& observer : observer_list_) {
     observer.OnShutdown();
   }
+}
+
+void ArcSessionManager::SetHardwareCheckerForTesting(
+    std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker) {
+  hardware_checker_ = std::move(hardware_checker);
 }
 
 void ArcSessionManager::ShutdownSession() {
@@ -1301,11 +1386,18 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   // Check whether ARC is expected to be used soon.
   if (base::FeatureList::IsEnabled(
           kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
-    if (activation_is_allowed_ || session_manager::SessionManager::Get()
-                                      ->IsUserSessionStartUpTaskCompleted()) {
+    if (activation_is_allowed_ ||
+        session_manager::SessionManager::Get()
+            ->IsUserSessionStartUpTaskCompleted() ||
+        GetManagementTransition(profile_) !=
+            ArcManagementTransition::NO_TRANSITION) {
       // If the activation is already allowed, it is out of the targets to
       // defer. Or, if session start up task is already completed, it does not
       // need to wait activating ARC.
+      // If this is running in the process of management transition, e.g. family
+      // member to child account, we start ARC now, because it is happening as a
+      // part of OOBE flow, and ARC is expected to run on background to complete
+      // the transition.
       base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
                                     DeferArcActivationCategory::kNotTarget);
     } else {
@@ -1374,6 +1466,12 @@ void ArcSessionManager::RequestDisableWithArcDataRemoval() {
 }
 
 void ArcSessionManager::RequestArcDataRemoval() {
+  if (internal_state_ != InternalState::kRunning &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
   DCHECK(data_remover_);
@@ -1941,6 +2039,14 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
   }
 }
 
+void ArcSessionManager::MaybeShowDlcInstallNotification(NotificationType type) {
+  if (arc_dlc_install_notification_manager_) {
+    arc_dlc_install_notification_manager_->Show(type);
+    return;
+  }
+  dlc_install_pending_notifications_.push_back(type);
+}
+
 void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   VLOG(1) << "Started expanding *.prop files";
 
@@ -1963,14 +2069,24 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   }
 
   if (NeedRevenDLC()) {
+    // Check if a mock hardware checker has already been created for testing.
+    // If not, create a new one to initialize the hardware_checker_ member.
+    if (!hardware_checker_) {
+      hardware_checker_ = std::make_unique<arc::ArcDlcInstallHardwareChecker>();
+    }
     // Check if the Reven device is compatible for ARC.
-    hardware_checker_->IsRevenDeviceCompatibleForArc(
+    hardware_checker_->IsCompatible(
         base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
                        weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
   } else {
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }
+}
+
+void ArcSessionManager::OnEnableArcOnRevenForTesting(std::deque<JobDesc> jobs,
+                                                     bool is_compatible) {
+  OnEnableArcOnReven(jobs, is_compatible);
 }
 
 void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
@@ -1980,6 +2096,10 @@ void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
                "from DLC.";
     dlcservice::InstallRequest install_request;
     install_request.set_id(kArcvmDlcId);
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. arc_vm preload will start during a reboot or
+    // when the Chrome session is restarted.
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
     ash::DlcserviceClient::Get()->Install(
         install_request,
         base::BindOnce(&ArcSessionManager::OnDlcInstalled,
@@ -1996,6 +2116,11 @@ void ArcSessionManager::OnDlcInstalled(
     std::deque<JobDesc> jobs,
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. A notification will be sent requesting the
+    // user to log out and log back in to use the VPN apps on Flex once the
+    // installation is complete.
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
     jobs.emplace_front(JobDesc{
         kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}});
     ConfigureUpstartJobs(
@@ -2004,6 +2129,10 @@ void ArcSessionManager::OnDlcInstalled(
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     VLOG(1) << "Failed to install arcvm DLC: " << install_result.error;
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. An error notification will be sent if the DLC
+    // preload fails.
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadFailed);
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }

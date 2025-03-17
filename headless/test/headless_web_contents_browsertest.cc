@@ -390,9 +390,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
         content::DevToolsAgentHost::GetForId(targetId)->GetWebContents());
 
     devtools_client_.AttachToWebContents(web_contents_->web_contents());
-    devtools_client_.AddEventHandler("Page.loadEventFired",
-                                     on_load_event_fired_handler_);
-
     devtools_client_.SendCommand(
         "Page.enable",
         base::BindOnce(
@@ -401,6 +398,8 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
   }
 
   void OnPageDomainEnabled(base::Value::Dict) {
+    devtools_client_.AddEventHandler("Page.loadEventFired",
+                                     on_load_event_fired_handler_);
     devtools_client_.SendCommand(
         "Page.navigate",
         Param("url", embedded_test_server()->GetURL(GetTestHtmlFile()).spec()));
@@ -474,7 +473,20 @@ class HeadlessWebContentsBeginFrameControlBasicTest
   void StartFrames() override { BeginFrame(true); }
 
   void OnFrameFinished(base::Value::Dict result) override {
+    // TODO(crbug.com/385523803): The screenshot capturing logic is currently
+    // flaky for a first screenshot after a navigation, see bug for detaiils.
+    // This works around the flake by retrying the command in case the first
+    // one returns without screenshot.
     if (num_begin_frames_ == 1) {
+      CHECK_EQ(num_retries_, 0);
+      if (!result.FindStringByDottedPath("result.screenshotData")) {
+        num_retries_ += 1;
+        BeginFrame(true);
+        return;
+      }
+    }
+    int frame_number = num_begin_frames_ - num_retries_;
+    if (frame_number == 1) {
       // First BeginFrame should have caused damage and have a screenshot.
       EXPECT_TRUE(DictBool(result, "result.hasDamage"));
 
@@ -493,13 +505,13 @@ class HeadlessWebContentsBeginFrameControlBasicTest
       SkColor actual_color = result_bitmap.getColor(100, 100);
       EXPECT_EQ(expected_color, actual_color);
     } else {
-      DCHECK_EQ(2, num_begin_frames_);
+      DCHECK_EQ(2, frame_number);
       // Can't guarantee that the second BeginFrame didn't have damage, but it
       // should not have a screenshot.
       EXPECT_FALSE(result.FindStringByDottedPath("result.screenshotData"));
     }
 
-    if (num_begin_frames_ < 2) {
+    if (frame_number < 2) {
       // Don't capture a screenshot in the second BeginFrame.
       BeginFrame(false);
     } else {
@@ -508,6 +520,8 @@ class HeadlessWebContentsBeginFrameControlBasicTest
       PostFinishAsynchronousTest();
     }
   }
+
+  int num_retries_ = 0;
 };
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessWebContentsBeginFrameControlBasicTest);

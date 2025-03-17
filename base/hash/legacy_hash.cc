@@ -9,8 +9,7 @@
 #include "base/containers/span.h"
 #include "base/third_party/cityhash_v103/src/city_v103.h"
 
-namespace base {
-namespace legacy {
+namespace base::legacy {
 
 uint64_t CityHash64(base::span<const uint8_t> data) {
   return internal::cityhash_v103::CityHash64(
@@ -22,5 +21,4 @@ uint64_t CityHash64WithSeed(base::span<const uint8_t> data, uint64_t seed) {
       reinterpret_cast<const char*>(data.data()), data.size(), seed);
 }
 
-}  // namespace legacy
-}  // namespace base
+}  // namespace base::legacy

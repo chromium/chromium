@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -112,7 +112,7 @@ AnalyzeResponseResult CheckIfCredentialWasLeaked(
   std::string hash_username_password =
       crypto::SHA256HashString(*decrypted_username_password);
 
-  const ptrdiff_t matched_prefixes = base::ranges::count_if(
+  const ptrdiff_t matched_prefixes = std::ranges::count_if(
       response->encrypted_leak_match_prefixes,
       [&hash_username_password](const std::string& prefix) {
         return base::StartsWith(hash_username_password, prefix,
@@ -193,6 +193,7 @@ TriggerBackendNotification ShouldTriggerBackendNotificationForInitiator(
     case LeakDetectionInitiator::kSignInCheck:
     case LeakDetectionInitiator::kBulkSyncedPasswordsCheck:
     case LeakDetectionInitiator::kEditCheck:
+    case LeakDetectionInitiator::kIOSWebViewSignInCheck:
     case LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck:
     case LeakDetectionInitiator::kClientUseCaseUnspecified:
       return TriggerBackendNotification(false);

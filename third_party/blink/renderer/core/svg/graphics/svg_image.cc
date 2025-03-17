@@ -36,8 +36,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -217,17 +217,17 @@ void SVGImage::ApplyViewInfo(const SVGImageViewInfo* viewinfo) {
   root_element->SetViewSpec(viewspec);
 }
 
-bool SVGImage::GetIntrinsicSizingInfo(
-    const SVGViewSpec* override_viewspec,
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+std::optional<NaturalSizingInfo> SVGImage::GetNaturalDimensions(
+    const SVGViewSpec* override_viewspec) const {
   const LayoutSVGRoot* layout_root = LayoutRoot();
-  if (!layout_root)
-    return false;
-  layout_root->UnscaledIntrinsicSizingInfo(
-      override_viewspec ? override_viewspec->ViewBox() : nullptr,
-      intrinsic_sizing_info);
+  if (!layout_root) {
+    return std::nullopt;
+  }
+  NaturalSizingInfo natural_sizing_info =
+      layout_root->UnscaledNaturalSizingInfo(
+          override_viewspec ? override_viewspec->ViewBox() : nullptr);
 
-  if (!intrinsic_sizing_info.has_width || !intrinsic_sizing_info.has_height) {
+  if (!natural_sizing_info.has_width || !natural_sizing_info.has_height) {
     // We're not using an intrinsic aspect ratio to resolve a missing
     // intrinsic width or height when preserveAspectRatio is none.
     // (Ref: crbug.com/584172)
@@ -236,12 +236,10 @@ bool SVGImage::GetIntrinsicSizingInfo(
         SVGPreserveAspectRatio::kSvgPreserveaspectratioNone) {
       // Clear all the fields so that the concrete object size will equal the
       // default object size.
-      intrinsic_sizing_info = IntrinsicSizingInfo();
-      intrinsic_sizing_info.has_width = false;
-      intrinsic_sizing_info.has_height = false;
+      natural_sizing_info = NaturalSizingInfo::None();
     }
   }
-  return true;
+  return natural_sizing_info;
 }
 
 SVGImage::DrawInfo::DrawInfo(const gfx::SizeF& container_size,
@@ -684,8 +682,12 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // so we have sensible defaults. These settings are fixed and will not update
   // if changed.
   const auto& pages = Page::OrdinaryPages();
-  const Settings* settings_to_use =
-      !pages.empty() ? &(*pages.begin())->GetSettings() : nullptr;
+  Page* page = !pages.empty() ? *pages.begin() : nullptr;
+  const Settings* settings_to_use = page ? &page->GetSettings() : nullptr;
+  const ColorProviderColorMaps* color_maps =
+      page && RuntimeEnabledFeatures::IsolatedSVGDocumentOptimizationEnabled()
+          ? &page->GetColorProviderColorMaps()
+          : nullptr;
 
   // FIXME: If this SVG ends up loading itself, we might leak the world.
   // The Cache code does not know about ImageResources holding Frames and
@@ -697,20 +699,17 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
       *chrome_client_, *agent_group_scheduler_, Data(),
       WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
                     weak_ptr_factory_.GetWeakPtr()),
-      settings_to_use, IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
+      settings_to_use, color_maps,
+      IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
 
-  if (!RootElement())
+  const SVGSVGElement* root_element = RootElement();
+  if (!root_element) {
     return kSizeUnavailable;
-
-  // Set the concrete object size before a container size is available.
-  // TODO(fs): Make this just set/copy width and height directly. See
-  // crbug.com/789511.
-  IntrinsicSizingInfo sizing_info;
-  if (GetIntrinsicSizingInfo(nullptr, sizing_info)) {
-    intrinsic_size_ = PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
-        sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
-                                LayoutReplaced::kDefaultHeight)));
   }
+
+  intrinsic_size_ = PhysicalSize::FromSizeFFloor(
+      gfx::SizeF(root_element->IntrinsicWidth().value_or(0),
+                 root_element->IntrinsicHeight().value_or(0)));
 
   ++data_change_count_;
   data_change_elapsed_time_ += elapsed_timer.Elapsed();

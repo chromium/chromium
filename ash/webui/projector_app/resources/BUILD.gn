@@ -6,13 +6,11 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Projector is ChromeOS only")
+assert(is_chromeos, "Projector is ChromeOS only")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
-    "//ash/webui/annotator/resources/untrusted:untrusted_annotator_library",
-    "//ash/webui/projector_app/resources/app/untrusted:untrusted_app",
     "//ash/webui/projector_app/resources/common:message_types",
     "//ash/webui/projector_app/resources/mock:mock_app",
   ]

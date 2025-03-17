@@ -12,8 +12,10 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_button.html.js';
-import {createCustomEvent, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiImgButtonClickEvent, EmojiTextButtonClickEvent, EmojiVariantsShownEvent} from './events.js';
-import {CategoryEnum, Emoji, Gender, Tone} from './types.js';
+import type {EMOJI_IMG_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiImgButtonClickEvent, EmojiTextButtonClickEvent, EmojiVariantsShownEvent} from './events.js';
+import {createCustomEvent, EMOJI_TEXT_BUTTON_CLICK} from './events.js';
+import type {Emoji, Gender, Tone} from './types.js';
+import {CategoryEnum} from './types.js';
 
 export class EmojiButton extends PolymerElement {
   static get is() {

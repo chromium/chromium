@@ -30,7 +30,7 @@ class EngineTestBase : public ::testing::Test {
   ash::MockUserDataAuthClient mock_udac_;
   CryptohomeCoreImpl core_;
   TestingPrefServiceSimple prefs_;
-  user_manager::FakeUserManager user_manager_;
+  user_manager::FakeUserManager user_manager_{&prefs_};
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedStubInstallAttributes install_attributes{
       ash::StubInstallAttributes::CreateConsumerOwned()};

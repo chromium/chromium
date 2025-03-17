@@ -4,7 +4,7 @@
 
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace storage {
 
@@ -48,8 +48,8 @@ bool operator<(const BucketInfo& lhs, const BucketInfo& rhs) {
 std::set<BucketLocator> COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
     BucketInfosToBucketLocators(const std::set<BucketInfo>& bucket_infos) {
   std::set<BucketLocator> result;
-  base::ranges::transform(bucket_infos, std::inserter(result, result.begin()),
-                          &BucketInfo::ToBucketLocator);
+  std::ranges::transform(bucket_infos, std::inserter(result, result.begin()),
+                         &BucketInfo::ToBucketLocator);
   return result;
 }
 

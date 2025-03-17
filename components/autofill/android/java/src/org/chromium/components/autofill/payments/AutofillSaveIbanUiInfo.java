@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
@@ -12,6 +14,9 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +27,7 @@ import java.util.Objects;
  * bottom sheet.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillSaveIbanUiInfo {
     private final String mAcceptText;
     private final String mCancelText;
@@ -114,14 +120,14 @@ public class AutofillSaveIbanUiInfo {
     /** Builder for {@link AutofillSaveIbanUiInfo} */
     @VisibleForTesting
     public static class Builder {
-        private String mAcceptText;
-        private String mCancelText;
-        private String mDescriptionText;
-        private String mIbanValue;
+        private @Nullable String mAcceptText;
+        private @Nullable String mCancelText;
+        private @Nullable String mDescriptionText;
+        private @Nullable String mIbanValue;
         private boolean mIsServerSave;
         private List<LegalMessageLine> mLegalMessageLines = Collections.EMPTY_LIST;
         @DrawableRes private int mLogoIcon;
-        private String mTitleText;
+        private @Nullable String mTitleText;
 
         public Builder withAcceptText(String acceptText) {
             mAcceptText = acceptText;
@@ -171,14 +177,14 @@ public class AutofillSaveIbanUiInfo {
             assert mIbanValue != null && !TextUtils.isEmpty(mIbanValue)
                     : "IBAN value cannot be null or empty.";
             return new AutofillSaveIbanUiInfo(
-                    mAcceptText,
-                    mCancelText,
-                    mDescriptionText,
+                    assumeNonNull(mAcceptText),
+                    assumeNonNull(mCancelText),
+                    assumeNonNull(mDescriptionText),
                     mIbanValue,
                     mIsServerSave,
                     mLegalMessageLines,
                     mLogoIcon,
-                    mTitleText);
+                    assumeNonNull(mTitleText));
         }
     }
 }

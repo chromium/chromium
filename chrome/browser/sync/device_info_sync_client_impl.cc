@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -24,10 +23,6 @@
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
-
 namespace browser_sync {
 
 DeviceInfoSyncClientImpl::DeviceInfoSyncClientImpl(Profile* profile)
@@ -39,32 +34,19 @@ DeviceInfoSyncClientImpl::~DeviceInfoSyncClientImpl() = default;
 std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 // Since the local sync backend is currently only supported on Windows, Mac and
 // Linux don't even check the pref on other os-es.
-// TODO(crbug.com/40118868): Reassess whether the next block needs to be
-// included in lacros-chrome once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   syncer::SyncPrefs prefs(profile_->GetPrefs());
   if (prefs.IsLocalSyncEnabled()) {
     return "local_device";
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return GetSigninScopedDeviceIdForProfile(profile_);
 }
 
 // syncer::DeviceInfoSyncClient:
 bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  // TODO(crbug.com/40210838): Current logic allows to disable receiving tabs
-  // in Ash, while sending is still enabled - this seems to be the best solution
-  // for Lacros-Primary. Once Lacros-Only is the only available option, this
-  // should simply check whether SendTabToSelf datatype is enabled.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return !crosapi::browser_util::IsLacrosEnabled();
-#else
   return true;
-#endif
 }
 
 // syncer::DeviceInfoSyncClient:
@@ -108,7 +90,7 @@ DeviceInfoSyncClientImpl::GetPhoneAsASecurityKeyInfo() const {
 }
 
 bool DeviceInfoSyncClientImpl::IsUmaEnabledOnCrOSDevice() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 #else
   return false;

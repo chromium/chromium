@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/public/common/common_param_traits.h"
 
 #include <stddef.h>
@@ -82,7 +87,7 @@ TEST(IPCMessageTest, Bitmap) {
   // Add some bogus pixel data.
   const size_t bogus_pixels_size = bitmap.computeByteSize() * 2;
   auto bogus_pixels = base::HeapArray<uint8_t>::Uninit(bogus_pixels_size);
-  base::ranges::fill(bogus_pixels, 'B');
+  std::ranges::fill(bogus_pixels, 'B');
   bad_msg.WriteData(bogus_pixels);
 
   // Make sure we don't read out the bitmap!

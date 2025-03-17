@@ -189,15 +189,35 @@ std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
   return tabs;
 }
 
+void TabDeclutterController::LogExcludedDuplicateTabMetrics() {
+  int excluded_tab_count = 0;
+
+  if (!excluded_urls_.empty()) {
+    for (int index = 0; index < tab_strip_model_->GetTabCount(); index++) {
+      if (excluded_urls_.contains(tab_strip_model_->GetTabAtIndex(index)
+                                      ->GetContents()
+                                      ->GetLastCommittedURL()
+                                      .GetWithoutRef())) {
+        excluded_tab_count++;
+      }
+    }
+  }
+
+  base::UmaHistogramCounts1000("Tab.Organization.Dedupe.ExcludedTabCount",
+                               excluded_tab_count);
+}
+
 void TabDeclutterController::DeclutterTabs(
     std::vector<tabs::TabInterface*> tabs,
     const std::vector<GURL>& urls) {
-  UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.DeclutterTabCount",
-                            tabs.size());
-  UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.TotalTabCount",
-                            tab_strip_model_->count());
-  UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.ExcludedTabCount",
-                            excluded_tabs_.size());
+  base::UmaHistogramCounts1000("Tab.Organization.Declutter.DeclutterTabCount",
+                               tabs.size());
+  base::UmaHistogramCounts1000("Tab.Organization.Declutter.TotalTabCount",
+                               tab_strip_model_->count());
+  base::UmaHistogramCounts1000("Tab.Organization.Declutter.ExcludedTabCount",
+                               excluded_tabs_.size());
+
+  LogExcludedDuplicateTabMetrics();
 
   PrefService* prefs =
       Profile::FromBrowserContext(tab_strip_model_->profile())->GetPrefs();
@@ -219,6 +239,7 @@ void TabDeclutterController::DeclutterTabs(
         TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }
 
+  int duplicate_tabs_decluttered = 0;
   for (GURL url : urls) {
     // Sort the tabs with `url` based on the last committed navigation time and
     // close all the tabs except the oldest tab.
@@ -259,8 +280,12 @@ void TabDeclutterController::DeclutterTabs(
       tab_strip_model_->CloseWebContentsAt(
           tab_strip_model_->GetIndexOfWebContents(tab->GetContents()),
           TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+      duplicate_tabs_decluttered++;
     }
   }
+
+  base::UmaHistogramCounts1000("Tab.Organization.Dedupe.DeclutterTabCount",
+                               duplicate_tabs_decluttered);
 
   excluded_tabs_.clear();
   excluded_urls_.clear();
@@ -390,7 +415,7 @@ void TabDeclutterController::OnActionUIDismissed(
 }
 
 void TabDeclutterController::OnActionUIDismissed(
-    base::PassKey<TabGlicContainer>) {
+    base::PassKey<TabStripActionContainer>) {
   ResetAndDoubleNudgeTimer();
 }
 

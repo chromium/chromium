@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/controller/javascript_call_stack_collector.h"
 
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -36,20 +37,42 @@ namespace blink {
 
 namespace {
 
-// Format the callstack in a format that's
-// consistent with Error.stack
-void FormatStackTrace(v8::Isolate* isolate, StringBuilder& builder) {
+// Determines whether a script frame should be included in the call stack.
+// frames whose URL protocol matches an extension scheme are excluded.
+// Returns true to include the frame (i.e. not redacted) and false to exclude
+// it.
+bool IsScriptFrameAllowed(v8::Isolate* isolate,
+                          v8::Local<v8::String> script_name) {
+  String script_url =
+      ToCoreStringWithUndefinedOrNullCheck(isolate, script_name);
+  if (script_url.empty()) {
+    return true;
+  }
+  KURL url(script_url);
+  if (!url.IsValid()) {
+    return true;
+  }
+
+  return !CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii());
+}
+
+// Gathers and formats the call stack in a format that's
+// consistent with Error.stack If extension frames are detected,
+// we replace them with <redacted> to protect privacy.
+// The function respects the stack trace limit set in the isolate.
+void CollectFilteredCallStack(v8::Isolate* isolate, StringBuilder& builder) {
   std::ostringstream oss;
-  v8::Message::PrintCurrentStackTrace(isolate, oss);
+  v8::Message::PrintCurrentStackTrace(isolate, oss, &IsScriptFrameAllowed);
   const std::string stack_trace = oss.str();
   std::istringstream iss(stack_trace);
   std::string line;
+  int processed_frames = 0;
+
   const int stack_trace_limit = isolate->GetStackTraceLimit();
-  int frame_count = 0;
-  while (std::getline(iss, line) && frame_count < stack_trace_limit) {
-    builder.Append("\n    at ");
+  while (std::getline(iss, line) && processed_frames < stack_trace_limit) {
+    builder.Append(kStackFramePrefix);
     builder.Append(base::as_byte_span(line));
-    frame_count++;
+    processed_frames++;
   }
 }
 
@@ -101,14 +124,12 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
     if (!execution_context->IsFeatureEnabled(
             mojom::blink::DocumentPolicyFeature::
                 kIncludeJSCallStacksInCrashReports)) {
-      builder.Append(
-          "Website owner has not opted in for JS call stacks in crash "
-          "reports.");
+      builder.Append(kWebsiteOwnerNotOptedInMessage);
     } else {
       UseCounter::Count(
           execution_context,
           WebFeature::kDocumentPolicyIncludeJSCallStacksInCrashReports);
-      FormatStackTrace(isolate, builder);
+      CollectFilteredCallStack(isolate, builder);
     }
   }
   PostHandleCollectedCallStackTask(collector, builder, frame_token);

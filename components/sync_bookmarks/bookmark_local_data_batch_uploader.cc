@@ -4,11 +4,17 @@
 
 #include "components/sync_bookmarks/bookmark_local_data_batch_uploader.h"
 
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -23,6 +29,42 @@
 #include "url/gurl.h"
 
 namespace sync_bookmarks {
+namespace {
+
+// Returns the number of descendants (folders or URLs) under `parent` (excluding
+// `parent` itself).
+size_t GetNumberOfDescendants(const bookmarks::BookmarkNode* parent) {
+  if (!parent) {
+    return 0;
+  }
+
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(parent);
+  size_t num_nodes = 0;
+  while (iterator.has_next()) {
+    num_nodes++;
+    iterator.Next();
+  }
+  return num_nodes;
+}
+
+// Returns the number of local nodes (folders or URLs) in `bookmark_model`,
+// excluding managed nodes.
+size_t GetNumberOfLocalNodes(const bookmarks::BookmarkModel* bookmark_model) {
+  CHECK(bookmark_model);
+  return GetNumberOfDescendants(bookmark_model->mobile_node()) +
+         GetNumberOfDescendants(bookmark_model->bookmark_bar_node()) +
+         GetNumberOfDescendants(bookmark_model->other_node());
+}
+
+// Returns the number of account nodes (folders or URLs) in `bookmark_model`.
+size_t GetNumberOfAccountNodes(const bookmarks::BookmarkModel* bookmark_model) {
+  CHECK(bookmark_model);
+  return GetNumberOfDescendants(bookmark_model->account_mobile_node()) +
+         GetNumberOfDescendants(bookmark_model->account_bookmark_bar_node()) +
+         GetNumberOfDescendants(bookmark_model->account_other_node());
+}
+
+}  // namespace
 
 BookmarkLocalDataBatchUploader::BookmarkLocalDataBatchUploader(
     bookmarks::BookmarkModel* bookmark_model)
@@ -59,7 +101,9 @@ void BookmarkLocalDataBatchUploader::GetLocalDataDescription(
       bookmarked_urls.insert(bookmarked_urls.end(), urls.begin(), urls.end());
 
       if (base::FeatureList::IsEnabled(
-              switches::kSyncBookmarksBatchUploadSelectedItems)) {
+              switches::kSyncBookmarksBatchUploadSelectedItems) &&
+          base::FeatureList::IsEnabled(
+              switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
         // Populate the individual items for Batch Upload (used on
         // Windows/Mac/Linux) only.
         local_data_items.push_back(
@@ -79,20 +123,110 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigration() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
-    LocalBookmarkToAccountMerger(bookmark_model_).MoveAndMerge();
-  } else {
-    BookmarkModelViewUsingLocalOrSyncableNodes
-        local_or_syncable_bookmark_model_view(bookmark_model_);
-    BookmarkModelViewUsingAccountNodes account_bookmark_model_view(
-        bookmark_model_);
+  const size_t num_local_nodes_before = GetNumberOfLocalNodes(bookmark_model_);
+  const size_t num_account_nodes_before =
+      GetNumberOfAccountNodes(bookmark_model_);
+  const size_t num_total_nodes_before =
+      num_local_nodes_before + num_account_nodes_before;
 
-    LocalBookmarkModelMerger(&local_or_syncable_bookmark_model_view,
-                             &account_bookmark_model_view)
-        .Merge();
-    local_or_syncable_bookmark_model_view.RemoveAllSyncableNodes();
+  {
+    base::ScopedUmaHistogramTimer scoped_timer(
+        kBatchUploadDurationHistogramName,
+        base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMediumTimes);
+
+    if (base::FeatureList::IsEnabled(
+            switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
+      LocalBookmarkToAccountMerger(bookmark_model_).MoveAndMergeAllNodes();
+    } else {
+      BookmarkModelViewUsingLocalOrSyncableNodes
+          local_or_syncable_bookmark_model_view(bookmark_model_);
+      BookmarkModelViewUsingAccountNodes account_bookmark_model_view(
+          bookmark_model_);
+
+      LocalBookmarkModelMerger(&local_or_syncable_bookmark_model_view,
+                               &account_bookmark_model_view)
+          .Merge();
+      local_or_syncable_bookmark_model_view.RemoveAllSyncableNodes();
+    }
   }
+
+  // All local nodes should have been merged into account nodes.
+  CHECK_EQ(GetNumberOfLocalNodes(bookmark_model_), 0u);
+  const size_t num_account_nodes_after =
+      GetNumberOfAccountNodes(bookmark_model_);
+
+  // Batch upload should not create additional nodes.
+  CHECK_LE(num_account_nodes_after, num_total_nodes_before);
+
+  // Batch upload should, at most, deduplicate all local nodes. The number of
+  // of resulting account nodes cannot be smaller than the original number of
+  // account nodes.
+  CHECK_GE(num_account_nodes_after, num_account_nodes_before);
+  // Similarly, the number of resulting account nodes cannot be smaller than the
+  // original number of local nodes (as deduplication logic never deduplicates
+  // more than two nodes into one).
+  CHECK_GE(num_account_nodes_after, num_local_nodes_before);
+  // As a corollary, the total number of nodes can at most reduce by 50% if all
+  // local nodes are deduplicated.
+  CHECK_GE(num_account_nodes_after * 2, num_total_nodes_before);
+
+  base::UmaHistogramCounts100000("Bookmarks.BatchUploadOutcomeAccountNodes",
+                                 num_account_nodes_after);
+
+  if (num_total_nodes_before != 0) {
+    const double ratio = 1.0 * num_account_nodes_after / num_total_nodes_before;
+    base::UmaHistogramPercentage("Bookmarks.BatchUploadOutcomeRatio",
+                                 static_cast<int>(std::round(100.0 * ratio)));
+  }
+}
+
+void BookmarkLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
+    std::vector<syncer::LocalDataItemModel::DataId> items) {
+  // The per-item batch upload UI requires this new code path. The entry point
+  // is hidden if this feature flag is disabled so it's safe to CHECK here.
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload));
+
+  if (!CanUpload()) {
+    return;
+  }
+
+  const size_t num_local_nodes_before = GetNumberOfLocalNodes(bookmark_model_);
+  const size_t num_account_nodes_before =
+      GetNumberOfAccountNodes(bookmark_model_);
+  const size_t num_total_nodes_before =
+      num_local_nodes_before + num_account_nodes_before;
+
+  {
+    base::ScopedUmaHistogramTimer scoped_timer(
+        kBatchUploadDurationHistogramName,
+        base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMediumTimes);
+
+    std::set<int64_t> ids;
+    std::transform(items.begin(), items.end(), std::inserter(ids, ids.begin()),
+                   [](const syncer::LocalDataItemModel::DataId& id) {
+                     return std::get<int64_t>(id);
+                   });
+    LocalBookmarkToAccountMerger(bookmark_model_)
+        .MoveAndMergeSpecificSubtrees(std::move(ids));
+  }
+
+  const size_t num_local_nodes_after = GetNumberOfLocalNodes(bookmark_model_);
+  const size_t num_account_nodes_after =
+      GetNumberOfAccountNodes(bookmark_model_);
+  const size_t num_total_nodes_after =
+      num_local_nodes_after + num_account_nodes_after;
+
+  // Batch upload should not create additional nodes.
+  CHECK_LE(num_total_nodes_after, num_total_nodes_before);
+
+  // Batch upload should, at most, deduplicate all local nodes. The number of
+  // of resulting account nodes cannot be smaller than the original number of
+  // account nodes.
+  CHECK_GE(num_account_nodes_after, num_account_nodes_before);
+  // As a corollary, the total number of nodes can at most reduce by 50% if all
+  // local nodes are deduplicated.
+  CHECK_GE(num_total_nodes_after * 2, num_total_nodes_before);
 }
 
 bool BookmarkLocalDataBatchUploader::CanUpload() const {

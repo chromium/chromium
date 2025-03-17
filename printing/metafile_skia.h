@@ -121,6 +121,8 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
 
   void UtilizeTypefaceContext(ContentProxySet* typeface_content_info);
 
+  void UtilizeImageContext(ContentProxySet* image_content_info);
+
   const ui::AXTreeUpdate& accessibility_tree() const {
     return accessibility_tree_;
   }

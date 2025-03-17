@@ -220,7 +220,8 @@ TEST_F(WebApkSyncBridgeTest, PrepareRegistryUpdateFromSyncApps) {
 
   // There's no entry in the registry to delete, so we ignore it
   std::unique_ptr<syncer::EntityChange> sync_change_2 =
-      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_2));
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_2),
+                                         syncer::EntityData());
 
   syncer::EntityData sync_data_3;
   sync_pb::WebApkSpecifics* sync_specifics_3 =
@@ -233,11 +234,13 @@ TEST_F(WebApkSyncBridgeTest, PrepareRegistryUpdateFromSyncApps) {
 
   // There's no entry in the registry to delete, so we ignore it
   std::unique_ptr<syncer::EntityChange> sync_change_4 =
-      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_4));
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_4),
+                                         syncer::EntityData());
 
   // There IS an entry in the registry to delete -> included in output
   std::unique_ptr<syncer::EntityChange> sync_change_5 =
-      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_5));
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_5),
+                                         syncer::EntityData());
 
   syncer::EntityChangeList sync_changes;
   sync_changes.push_back(std::move(sync_change_1));
@@ -452,7 +455,8 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
   // causes app5 to be not included in final state (no installed version, only
   // registry)
   std::unique_ptr<syncer::EntityChange> sync_change_5 =
-      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_5));
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_5),
+                                         syncer::EntityData());
 
   syncer::EntityChangeList sync_changes;
   sync_changes.push_back(std::move(sync_change_1));
@@ -605,7 +609,8 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
   InitSyncBridge();
 
   std::unique_ptr<syncer::EntityChange> sync_change_2 =
-      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_2));
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_2),
+                                         syncer::EntityData());
 
   syncer::EntityData sync_data_3;
   sync_pb::WebApkSpecifics* sync_specifics_3 =

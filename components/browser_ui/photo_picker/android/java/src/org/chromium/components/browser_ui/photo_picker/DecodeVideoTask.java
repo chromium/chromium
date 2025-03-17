@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -15,6 +17,8 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,7 +28,8 @@ import java.util.List;
 import java.util.Locale;
 
 /** A worker task to decode video and extract information from it off of the UI thread. */
-class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
+@NullMarked
+class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
     /** The possible error states while decoding. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -53,8 +58,8 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
          */
         void videoDecodedCallback(
                 Uri uri,
-                List<Bitmap> bitmaps,
-                String duration,
+                @Nullable List<Bitmap> bitmaps,
+                @Nullable String duration,
                 boolean fullWidth,
                 @DecodingResult int decodingStatus,
                 float ratio);
@@ -85,7 +90,7 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
     private @DecodingResult int mDecodingResult;
 
     // The duration of the video.
-    private String mDuration;
+    private @Nullable String mDuration;
 
     // The ratio of the first frame of the video.
     private float mRatio;
@@ -125,7 +130,7 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
      * @param durationMs The duration in milliseconds.
      * @return The duration in human-readable form.
      */
-    public static String formatDuration(Long durationMs) {
+    public static @Nullable String formatDuration(Long durationMs) {
         if (durationMs == null) return null;
 
         long duration = durationMs / 1000;
@@ -147,7 +152,7 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
      * @return A list of bitmaps (video thumbnails).
      */
     @Override
-    protected List<Bitmap> doInBackground() {
+    protected @Nullable List<Bitmap> doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
@@ -159,6 +164,7 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
         // https://developer.android.com/sdk/api_diff/29/changes/android.media.MediaMetadataRetriever
         MediaMetadataRetriever retriever = null;
         try (AssetFileDescriptor afd = mContentResolver.openAssetFileDescriptor(mUri, "r")) {
+            assumeNonNull(afd);
             retriever = new MediaMetadataRetriever();
             retriever.setDataSource(afd.getFileDescriptor());
             String duration =
@@ -206,7 +212,7 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
      * @param results A pair of bitmap (video thumbnail) and the duration of the video.
      */
     @Override
-    protected void onPostExecute(List<Bitmap> results) {
+    protected void onPostExecute(@Nullable List<Bitmap> results) {
         if (isCancelled()) {
             return;
         }

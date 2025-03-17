@@ -22,7 +22,7 @@
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
-#import "ios/web/web_state/global_web_state_event_tracker.h"
+#import "ios/web/web_state/deprecated/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl_realized_web_state.h"
 #import "ios/web/web_state/web_state_impl_serialized_data.h"
@@ -41,8 +41,9 @@ constexpr base::TimeDelta kWindowSize = base::Seconds(1);
 size_t g_last_realized_count = 0;
 void CheckForOverRealization() {
   static bool g_has_reported_once = false;
-  if (g_has_reported_once)
+  if (g_has_reported_once) {
     return;
+  }
   static base::TimeTicks g_last_creation_time;
   base::TimeTicks now = base::TimeTicks::Now();
   if ((now - g_last_creation_time) < kWindowSize) {
@@ -266,11 +267,6 @@ void WebStateImpl::OnFaviconUrlUpdated(
 void WebStateImpl::OnStateChangedForPermission(Permission permission) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnStateChangedForPermission(permission);
-}
-
-void WebStateImpl::OnUnderPageBackgroundColorChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RealizedState()->OnUnderPageBackgroundColorChanged();
 }
 
 NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() {
@@ -569,8 +565,9 @@ WebState* WebStateImpl::ForceRealized() {
     saved.reset();
 
     // Notify all observers that the WebState has become realized.
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.WebStateRealized(this);
+    }
 
     CheckForOverRealization();
   }

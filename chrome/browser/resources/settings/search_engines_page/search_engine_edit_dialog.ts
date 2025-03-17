@@ -199,7 +199,7 @@ export class SettingsSearchEngineEditDialogElement extends
   }
 
   private computeUrlIsReadonly_(): boolean {
-    return this.readonly_ || (!!this.model && this.model!.urlLocked);
+    return this.readonly_ || (!!this.model && this.model.urlLocked);
   }
 }
 

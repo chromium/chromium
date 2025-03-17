@@ -469,8 +469,8 @@ TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
 
   std::vector<GURL> requests;
   requests.reserve(metadata->requests.size());
-  base::ranges::transform(metadata->requests, std::back_inserter(requests),
-                          [](const auto& entry) { return entry.first; });
+  std::ranges::transform(metadata->requests, std::back_inserter(requests),
+                         [](const auto& entry) { return entry.first; });
   EXPECT_THAT(requests, UnorderedElementsAreArray(
                             {GURL("https://test.example.org/absolute-url"),
                              GURL("https://example.com/relative-url-1"),

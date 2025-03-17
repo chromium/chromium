@@ -29,10 +29,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -43,7 +41,7 @@ class Image;
 enum SourceImageStatus {
   kNormalSourceImageStatus,
   kUndecodableSourceImageStatus,     // Image element with a 'broken' image
-  kZeroSizeCanvasSourceImageStatus,  // Source is a canvas with width or heigh
+  kZeroSizeCanvasSourceImageStatus,  // Source is a canvas with width or height
                                      // of zero
   kZeroSizeImageSourceStatus,    // Image element with width or height of zero
   kIncompleteSourceImageStatus,  // Image element with no source media
@@ -53,11 +51,9 @@ enum SourceImageStatus {
 
 class CORE_EXPORT CanvasImageSource {
  public:
-  virtual scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) = 0;
+  virtual scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                                       SourceImageStatus*,
+                                                       const gfx::SizeF&) = 0;
 
   // IMPORTANT: Result must be independent of whether destinationContext is
   // already tainted because this function may be used to determine whether

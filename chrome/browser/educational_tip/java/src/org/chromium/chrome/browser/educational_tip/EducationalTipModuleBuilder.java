@@ -48,6 +48,16 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
             return false;
         }
 
+        if (mModuleType == ModuleType.TAB_GROUP_SYNC_PROMO
+                && !ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+            return false;
+        }
+
+        if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO
+                && !ChromeFeatureList.sEducationalTipDefaultBrowserPromoCard.isEnabled()) {
+            return false;
+        }
+
         EducationalTipModuleCoordinator coordinator =
                 new EducationalTipModuleCoordinator(
                         mModuleType,
@@ -84,16 +94,14 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
 
     @Override
     public InputContext createInputContext() {
-        int cardType = EducationalTipModuleUtils.getCardType(mModuleType);
-        Tracker tracker =
-                TrackerFactory.getTrackerForProfile(
-                        getRegularProfile(mActionDelegate.getProfileSupplier()));
+        Profile profile = getRegularProfile(mActionDelegate.getProfileSupplier());
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         return EducationalTipCardProviderSignalHandler.createInputContext(
-                cardType, mActionDelegate, tracker);
+                mModuleType, mActionDelegate, profile, tracker);
     }
 
     /** Gets the regular profile if exists. */
-    private Profile getRegularProfile(ObservableSupplier<Profile> profileSupplier) {
+    private Profile getRegularProfile(@NonNull ObservableSupplier<Profile> profileSupplier) {
         if (mProfile != null) {
             return mProfile;
         }

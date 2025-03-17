@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ResponseStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2025-06-08">
+    enum="LocalSearchServiceResponseStatus" expires_after="2025-08-10">
   <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
@@ -217,21 +217,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorage.BrowserLocalStorageCachePurgedInKB" units="KB"
-    expires_after="M77">
-  <owner>ssid@chromium.org</owner>
+<histogram name="LocalStorage.DatabaseOpen" enum="LevelDBStatus"
+    expires_after="2025-10-31">
+  <owner>arichiv@chromium.org</owner>
+  <owner>tamartol@microsoft.com</owner>
   <summary>
-    Total size of the HTML5 LocalStorage browser-side cache purged in KB when
-    memory pressure signal was triggered or cache size hit the limits.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorage.BrowserLocalStorageCacheSizeInKB" units="KB"
-    expires_after="M77">
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Total size of the HTML5 LocalStorage databases in KB in the browser-side
-    cache recorded each time a new database is opened in memory.
+    Emitted when the local storage database fails to open. Using to investigate
+    distribution of various types of local storage corruption.
   </summary>
 </histogram>
 

@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
 
 #import "base/notreached.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
@@ -20,10 +21,11 @@ LensOverlayNavigationManager::LensResultItem::LensResultItem(
     : lens_result_(lens_result) {
   // Use `isTextSelection`, `selectionRect` and `queryText` to verify that two
   // lens result refer to the same selection query.
-  comparison_key_ = base::SysNSStringToUTF8(
+  comparison_key_ =
       [NSString stringWithFormat:@"%d%@%@", lens_result.isTextSelection,
                                  NSStringFromCGRect(lens_result.selectionRect),
-                                 lens_result.queryText]);
+                                 lens_result.queryText]
+          .cr_UTF8String;
 }
 
 LensOverlayNavigationManager::LensResultItem::~LensResultItem() {}
@@ -119,7 +121,19 @@ void LensOverlayNavigationManager::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (navigation_context && !navigation_context->IsSameDocument()) {
-    RegisterSubNavigation(navigation_context->GetUrl(), PreviousOmniboxText());
+    GURL navigation_url = navigation_context->GetUrl();
+
+    BOOL isLensOverLaySRP = lens::IsLensOverlaySRP(navigation_url);
+    BOOL isLensMultimodalSRP = lens::IsLensMultimodalSRP(navigation_url);
+    if (isLensOverLaySRP || isLensMultimodalSRP) {
+      NSString* omnibox_text = [NSString
+          cr_fromString:lens::ExtractQueryFromLensOverlaySRP(navigation_url)];
+      [mutator_ onSRPLoadWithOmniboxText:omnibox_text
+                            isMultimodal:isLensMultimodalSRP];
+      RegisterSubNavigation(navigation_url, omnibox_text.cr_UTF16String);
+    } else {
+      RegisterSubNavigation(navigation_url, PreviousOmniboxText());
+    }
   }
 }
 
@@ -128,6 +142,19 @@ void LensOverlayNavigationManager::WebStateDestroyed(web::WebState* web_state) {
 }
 
 #pragma mark - Private
+
+BOOL LensOverlayNavigationManager::IsNavigationRelatedSearch(
+    GURL current_url,
+    GURL destination_url) {
+  if (lens_navigation_items_.empty()) {
+    return NO;
+  }
+  id<ChromeLensOverlayResult> result =
+      lens_navigation_items_.back()->lens_result();
+
+  return !result.isTextSelection && !lens::IsLensOverlaySRP(current_url) &&
+         lens::IsLensOverlaySRP(destination_url);
+}
 
 void LensOverlayNavigationManager::RegisterSubNavigation(
     GURL url,
@@ -160,6 +187,8 @@ void LensOverlayNavigationManager::OnNavigationListUpdate() const {
 }
 
 void LensOverlayNavigationManager::GoToPreviousSubNavigation() {
+  CHECK(!lens_navigation_items_.empty());
+  CHECK(!lens_navigation_items_.back()->sub_navigations().empty());
   std::vector<LensSubNavigationItem>& sub_navigation =
       lens_navigation_items_.back()->sub_navigations();
   // Removes current sub navigation.
@@ -172,14 +201,15 @@ void LensOverlayNavigationManager::GoToPreviousSubNavigation() {
 }
 
 void LensOverlayNavigationManager::GoToPreviousLensNavigation() {
+  CHECK(!lens_navigation_items_.empty());
   // Remove the current lens navigation.
   lens_navigation_items_.pop_back();
   LensResultItem& previous_item = *lens_navigation_items_.back();
   // Clear previous sub navigations as they become invalid after reload.
   std::vector<LensSubNavigationItem>& previous_sub_navigation =
       previous_item.sub_navigations();
-  previous_sub_navigation.erase(previous_sub_navigation.begin() + 1,
-                                previous_sub_navigation.end());
+  previous_sub_navigation.resize(
+      std::min<size_t>(previous_sub_navigation.size(), 1u));
   // Load the previous lens navigation.
   lens_reloaded_items_[previous_item.comparison_key()] =
       lens_navigation_items_.size() - 1;
@@ -196,8 +226,7 @@ std::u16string LensOverlayNavigationManager::PreviousOmniboxText() const {
   // If there is no previous sub navigation return the omnibox text from the
   // lens result.
   if (current_lens_result.sub_navigations().empty()) {
-    return base::SysNSStringToUTF16(
-        current_lens_result.lens_result().queryText);
+    return current_lens_result.lens_result().queryText.cr_UTF16String;
   } else {
     return current_lens_result.sub_navigations().back().omnibox_text;
   }

@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
@@ -68,10 +67,10 @@ TEST_F(XdgActivationTest, RequestNewToken) {
     wl_keyboard_send_enter(keyboard, server->GetNextSerial(), surface2,
                            empty.get());
 
-    // The following should be called each time for the requests below,
-    // including both successful cases and one timeout case.
-    EXPECT_CALL(*xdg_activation, TokenSetSurface(_, _, surface2)).Times(3);
-    EXPECT_CALL(*xdg_activation, TokenCommit(_, _)).Times(3);
+    // The following should be called once for the initial request and then
+    // again when the second request is sent after the initial one completes.
+    EXPECT_CALL(*xdg_activation, TokenSetSurface(_, _, surface2)).Times(2);
+    EXPECT_CALL(*xdg_activation, TokenCommit(_, _)).Times(2);
   });
 
   // Expect a successful token request.
@@ -81,31 +80,6 @@ TEST_F(XdgActivationTest, RequestNewToken) {
         callback;
     EXPECT_CALL(callback, Run(std::string(kMockStaticTestToken)));
     connection_->xdg_activation()->RequestNewToken(callback.Get());
-    PostToServerAndWait(
-        [](wl::TestWaylandServerThread* server) {
-          auto* const xdg_activation = server->xdg_activation_v1();
-          ASSERT_TRUE(xdg_activation);
-          ASSERT_TRUE(xdg_activation->get_token());
-          xdg_activation_token_v1_send_done(
-              xdg_activation->get_token()->resource(), kMockStaticTestToken);
-        },
-        true);
-  }
-
-  // Expect a successful token request from a non-sequenced task.
-  {
-    ::testing::StrictMock<
-        base::MockCallback<base::nix::XdgActivationTokenCallback>>
-        callback;
-    EXPECT_CALL(callback, Run(std::string(kMockStaticTestToken)));
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&XdgActivation::RequestNewToken,
-                       base::Unretained(connection_->xdg_activation()),
-                       callback.Get()));
-    task_environment_.RunUntilIdle();
     PostToServerAndWait(
         [](wl::TestWaylandServerThread* server) {
           auto* const xdg_activation = server->xdg_activation_v1();

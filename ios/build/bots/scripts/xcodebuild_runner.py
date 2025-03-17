@@ -250,6 +250,11 @@ class LaunchCommand(object):
       tests_to_include = (
           tests_to_include
           | overall_launch_command_result.never_expected_tests())
+      # Do not retry ASan failures
+      asan_failures = overall_launch_command_result.asan_failed_tests()
+      if asan_failures:
+        LOGGER.info('Skipping retrying ASan failures.')
+        tests_to_include = tests_to_include - asan_failures
       self.egtests_app.included_tests = list(tests_to_include)
 
       # Nothing to run in retry.
@@ -412,7 +417,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     all_test_names = []
     for test_class in all_test_classes:
       test_class_name = test_class['name']
-      test_methods = test_class['children']
+      test_methods = test_class.get('children', [])
 
       for test_method in test_methods:
         all_test_names.append((test_class_name, test_method['name']))

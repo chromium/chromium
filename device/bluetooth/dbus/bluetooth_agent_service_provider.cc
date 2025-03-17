@@ -149,8 +149,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::MessageReader reader(method_call);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path)) {
-      LOG(WARNING) << "RequestPinCode called with incorrect paramters: "
+      LOG(WARNING) << "RequestPinCode called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -174,8 +177,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::ObjectPath device_path;
     std::string pincode;
     if (!reader.PopObjectPath(&device_path) || !reader.PopString(&pincode)) {
-      LOG(WARNING) << "DisplayPinCode called with incorrect paramters: "
+      LOG(WARNING) << "DisplayPinCode called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -194,8 +200,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::MessageReader reader(method_call);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path)) {
-      LOG(WARNING) << "RequestPasskey called with incorrect paramters: "
+      LOG(WARNING) << "RequestPasskey called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -221,8 +230,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     uint16_t entered;
     if (!reader.PopObjectPath(&device_path) || !reader.PopUint32(&passkey) ||
         !reader.PopUint16(&entered)) {
-      LOG(WARNING) << "DisplayPasskey called with incorrect paramters: "
+      LOG(WARNING) << "DisplayPasskey called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -244,8 +256,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::ObjectPath device_path;
     uint32_t passkey;
     if (!reader.PopObjectPath(&device_path) || !reader.PopUint32(&passkey)) {
-      LOG(WARNING) << "RequestConfirmation called with incorrect paramters: "
+      LOG(WARNING) << "RequestConfirmation called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -268,8 +283,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::MessageReader reader(method_call);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path)) {
-      LOG(WARNING) << "RequestAuthorization called with incorrect paramters: "
+      LOG(WARNING) << "RequestAuthorization called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -293,8 +311,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::ObjectPath device_path;
     std::string uuid;
     if (!reader.PopObjectPath(&device_path) || !reader.PopString(&uuid)) {
-      LOG(WARNING) << "AuthorizeService called with incorrect paramters: "
+      LOG(WARNING) << "AuthorizeService called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 

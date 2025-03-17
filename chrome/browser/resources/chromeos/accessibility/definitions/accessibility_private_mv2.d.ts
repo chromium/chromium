@@ -13,7 +13,7 @@
  * regenerate.
  */
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
+import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
 declare global {
   export namespace chrome {
@@ -216,6 +216,7 @@ declare global {
         DICTATION_CONTEXT_CHECKING = 'dictationContextChecking',
         FACE_GAZE = 'faceGaze',
         GOOGLE_TTS_HIGH_QUALITY_VOICES = 'googleTtsHighQualityVoices',
+        CAPTIONS_ON_BRAILLE_DISPLAY = 'captionsOnBrailleDisplay',
       }
 
       export enum SelectToSpeakPanelAction {
@@ -380,6 +381,8 @@ declare global {
 
       export function setNativeAccessibilityEnabled(enabled: boolean): void;
 
+      export function enableLiveCaption(enabled: boolean): void;
+
       export function setFocusRings(
           focusRings: FocusRingInfo[], atType: AssistiveTechnologyType): void;
 
@@ -421,8 +424,6 @@ declare global {
           void;
 
       export function setSelectToSpeakState(state: SelectToSpeakState): void;
-
-      export function clipboardCopyInActiveLacrosGoogleDoc(url: string): void;
 
       export function handleScrollableBoundsForPointFound(rect: ScreenRect):
           void;
@@ -472,9 +473,6 @@ declare global {
       export function getTtsDlcContents(
           dlc: DlcType, variant: TtsVariant,
           callback: GetDlcContentsCallback): void;
-
-      type IsLacrosPrimaryCallback = (result: boolean) => void;
-      export function isLacrosPrimary(callback: IsLacrosPrimaryCallback): void;
 
       export function getDisplayBounds(
           callback: (screens: ScreenRect[]) => void): void;

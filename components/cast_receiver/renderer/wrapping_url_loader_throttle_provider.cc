@@ -4,6 +4,8 @@
 
 #include "components/cast_receiver/renderer/wrapping_url_loader_throttle_provider.h"
 
+#include <vector>
+
 #include "components/cast_receiver/renderer/url_rewrite_rules_provider.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
@@ -11,7 +13,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace cast_receiver {
 
@@ -39,13 +40,13 @@ WrappingURLLoaderThrottleProvider::Clone() {
       wrapped_provider_ ? wrapped_provider_->Clone() : nullptr, *client_);
 }
 
-blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 WrappingURLLoaderThrottleProvider::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   if (wrapped_provider_) {
     throttles = wrapped_provider_->CreateThrottles(local_frame_token, request);
   }

@@ -1,4 +1,7 @@
 include_rules = [
+  "+chrome/browser/content_settings/host_content_settings_map_factory.h",
+  "+chrome/browser/ash/boca/boca_manager_factory.h",
+  "+chrome/browser/profiles/profile.h",
   "+chromeos/grit/chromeos_boca_app_bundle_resources.h",
   "+chromeos/grit/chromeos_boca_app_bundle_resources_map.h",
   "+chromeos/ash/components/boca",
@@ -6,6 +9,10 @@ include_rules = [
   "+google_apis",
   "+google_apis/classroom",
   "+google_apis/common",
+  "+components/content_settings/core/browser",
+  "+components/content_settings/core/common",
+  "+components/permissions/permission_decision_auto_blocker.h",
+  "+components/sessions/core/session_id.h",
   "+components/signin/public/identity_manager",
   "+components/signin/public/base"
 ]

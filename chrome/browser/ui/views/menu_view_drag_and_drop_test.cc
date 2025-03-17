@@ -114,11 +114,11 @@ void TestTargetView::Init() {
 
   // Then add two draggable views, each 10x5.
   views::View* first = new TestDragView();
-  AddChildView(first);
+  AddChildViewRaw(first);
   first->SetBounds(2, 2, 10, 5);
 
   views::View* second = new TestDragView();
-  AddChildView(second);
+  AddChildViewRaw(second);
   second->SetBounds(15, 2, 10, 5);
 }
 
@@ -242,7 +242,7 @@ void MenuViewDragAndDropTest::BuildMenu(views::MenuItemView* menu) {
   // drop...
   views::MenuItemView* menu_item_view = menu->AppendMenuItem(1, u"item 1");
   target_view_ = new TestTargetView();
-  menu_item_view->AddChildView(target_view_.get());
+  menu_item_view->AddChildViewRaw(target_view_.get());
   // ... as well as two other, normal items.
   menu->AppendMenuItem(2, u"item 2");
   menu->AppendMenuItem(3, u"item 3");

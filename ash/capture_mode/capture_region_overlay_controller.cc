@@ -23,6 +23,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/throb_animation.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
@@ -44,9 +45,11 @@ constexpr SkColor kTranslatedTextColor = SK_ColorBLACK;
 constexpr SkColor kTranslatedTextBackgroundColor = SK_ColorWHITE;
 
 // The duration of the region glow pulse animation.
-// TODO(crbug.com/374381937): Replace this with the glow pulse animation from
-// specs once motion specs are available.
-constexpr base::TimeDelta kRegionGlowPulseDuration = base::Milliseconds(600);
+constexpr base::TimeDelta kRegionGlowPulseDuration = base::Milliseconds(666);
+
+// The minimum and maximum opacity of the region glow pulse animation.
+constexpr float kRegionGlowMinOpacity = 0.35f;
+constexpr float kRegionGlowMaxOpacity = 1.0f;
 
 // Translates and rotates `canvas` so that `center_rotated_box` is upright and
 // centered on the canvas. The components of `center_rotated_box` should be
@@ -70,7 +73,7 @@ gfx::Rect GetRectCenteredAtOrigin(const gfx::Size& size) {
 }  // namespace
 
 CaptureRegionOverlayController::CaptureRegionOverlayController() {
-  DCHECK(IsSunfishAllowedAndEnabled());
+  DCHECK(CanShowSunfishOrScannerUi());
 }
 
 CaptureRegionOverlayController::~CaptureRegionOverlayController() = default;
@@ -97,6 +100,7 @@ void CaptureRegionOverlayController::StartGlowAnimation(
   if (!glow_animation_) {
     glow_animation_ = std::make_unique<gfx::ThrobAnimation>(animation_delegate);
     glow_animation_->SetThrobDuration(kRegionGlowPulseDuration);
+    glow_animation_->SetTweenType(gfx::Tween::LINEAR);
   }
   // Set `cycles_til_stop` to be negative so that the animation continues
   // indefinitely.
@@ -133,6 +137,8 @@ void CaptureRegionOverlayController::PaintCurrentGlowState(
       capture_mode::kRegionGlowMinOutsetDp,
       capture_mode::kRegionGlowMaxOutsetDp));
   cc::PaintFlags flags;
+  flags.setAlphaf(static_cast<float>(glow_animation_->CurrentValueBetween(
+      kRegionGlowMinOpacity, kRegionGlowMaxOpacity)));
   flags.setShader(gfx::CreateGradientShader(
       current_glow_bounds.origin(), current_glow_bounds.top_right(),
       color_provider->GetColor(cros_tokens::kCrosSysMuted),

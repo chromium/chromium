@@ -23,7 +23,7 @@ class IdentityManager;
 }
 
 namespace ash {
-class TokenHandleUtil;
+class TokenHandleStore;
 
 // This class is responsible for obtaining new token handle for user.
 // It can be used in two ways. When a user has just used Gaia signin there is
@@ -32,7 +32,7 @@ class TokenHandleUtil;
 class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
  public:
   TokenHandleFetcher(Profile* profile,
-                     TokenHandleUtil* util,
+                     TokenHandleStore* token_handle_store,
                      const AccountId& account_id);
 
   TokenHandleFetcher(const TokenHandleFetcher&) = delete;
@@ -78,7 +78,7 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   void OnProfileDestroyed();
 
   const raw_ptr<Profile> profile_;
-  const raw_ptr<TokenHandleUtil> token_handle_util_;
+  const raw_ptr<TokenHandleStore> token_handle_store_;
   AccountId account_id_;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 

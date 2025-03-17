@@ -22,8 +22,9 @@ void ElapsedTimer::operator=(ElapsedTimer&& other) {
 }
 
 TimeDelta ElapsedTimer::Elapsed() const {
-  if (g_mock_elapsed_timers_for_test)
+  if (g_mock_elapsed_timers_for_test) {
     return ScopedMockElapsedTimersForTest::kMockElapsedTime;
+  }
   return TimeTicks::Now() - start_time_;
 }
 
@@ -32,10 +33,12 @@ ElapsedThreadTimer::ElapsedThreadTimer()
       begin_(is_supported_ ? ThreadTicks::Now() : ThreadTicks()) {}
 
 TimeDelta ElapsedThreadTimer::Elapsed() const {
-  if (!is_supported_)
+  if (!is_supported_) {
     return TimeDelta();
-  if (g_mock_elapsed_timers_for_test)
+  }
+  if (g_mock_elapsed_timers_for_test) {
     return ScopedMockElapsedTimersForTest::kMockElapsedTime;
+  }
   return ThreadTicks::Now() - begin_;
 }
 

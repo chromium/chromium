@@ -40,6 +40,10 @@ static constexpr size_t kMaxChunkSize = 512u * 1024u + kAuthTagSize;
 // Size of the chunk size prefix for variable size.
 static constexpr size_t kChunkSizePrefixSize = 4u;
 
+// Obfuscation result and error type histogram name.
+static constexpr char kObfuscationResultHistogram[] =
+    "Enterprise.FileDownloadObfuscation.Result";
+
 // Feature to enable insecure obfuscation and deobfuscation of files sent to
 // WebProtect deep scanning service for enterprise users.
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
@@ -49,13 +53,16 @@ BASE_DECLARE_FEATURE(kEnterpriseFileObfuscation);
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
 bool IsFileObfuscationEnabled();
 
-// Error types for insecure obfuscation and deobfuscation operations.
+// Error types for insecure obfuscation and deobfuscation operations. Values are
+// persisted to logs. Entries should not be renumbered or reused.
 enum class Error {
-  kObfuscationFailed,    // Obfuscation process could not be completed
-  kDeobfuscationFailed,  // Deobfuscation process could not be completed
-  kFileOperationError,   // Error during file read/write operations
-  kDisabled,             // Obfuscation/deobfuscation is not enabled
-  kSchemeError,          // Error with obfuscation scheme.
+  kSuccess = 0,              // No error exits, used for metrics
+  kObfuscationFailed = 1,    // Obfuscation process could not be completed
+  kDeobfuscationFailed = 2,  // Deobfuscation process could not be completed
+  kFileOperationError = 3,   // Error during file read/write operations
+  kDisabled = 4,             // Obfuscation/deobfuscation is not enabled
+  kSchemeError = 5,          // Error with obfuscation scheme.
+  kMaxValue = kSchemeError
 };
 
 // Returns the header and populates the derived key and nonce prefix values used
@@ -128,6 +135,22 @@ base::expected<std::vector<uint8_t>, Error> DeobfuscateDataChunk(
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
 base::expected<void, Error> DeobfuscateFileInPlace(
     const base::FilePath& file_path);
+
+// Records result of obfuscation/deobfuscation operations to UMA metrics.
+COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
+void RecordObfuscationResult(Error result);
+
+// Helper function to record UMA metrics inline with return statements.
+// TODO(crbug.com/396499421): Centralize and improve maintainability for metrics
+// collection.
+template <typename T>
+COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
+inline base::expected<T, Error> RecordAndReturn(
+    base::expected<T, Error> result) {
+  RecordObfuscationResult(result.has_value() ? Error::kSuccess
+                                             : result.error());
+  return result;
+}
 
 }  // namespace enterprise_obfuscation
 

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <list>
 #include <memory>
@@ -14,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 
 //
 // A container class that provides fast containment test (like a set)
@@ -52,7 +52,7 @@ class list_set {
     if (set_.find(elem) == set_.end())
       return;
     set_.erase(elem);
-    typename std::list<T>::iterator it = base::ranges::find(list_, elem);
+    typename std::list<T>::iterator it = std::ranges::find(list_, elem);
     CHECK(it != list_.end(), base::NotFatalUntil::M130);
     list_.erase(it);
   }

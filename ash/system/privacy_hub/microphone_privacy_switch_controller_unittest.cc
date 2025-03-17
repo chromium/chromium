@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -25,7 +26,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -64,7 +64,7 @@ class FakeSensorDisabledNotificationDelegate
   }
 
   void CloseAppAccessingMicrophone(const std::u16string& app_name) {
-    auto it = base::ranges::find(apps_accessing_microphone_, app_name);
+    auto it = std::ranges::find(apps_accessing_microphone_, app_name);
     ASSERT_NE(apps_accessing_microphone_.end(), it);
     apps_accessing_microphone_.erase(it);
 
@@ -96,6 +96,10 @@ class MockFrontendAPI : public PrivacyHubDelegate {
  public:
   MOCK_METHOD(void, MicrophoneHardwareToggleChanged, (bool), (override));
   MOCK_METHOD(void, SetForceDisableCameraSwitch, (bool), (override));
+  MOCK_METHOD(void,
+              SystemGeolocationAccessLevelChanged,
+              (GeolocationAccessLevel),
+              (override));
 };
 
 }  // namespace
@@ -255,11 +259,11 @@ TEST_P(PrivacyHubMicrophoneControllerTest, SetSystemMuteOnLogin) {
     const AccountId user1_account_id =
         Shell::Get()->session_controller()->GetActiveAccountId();
 
-    SimulateUserLogin("other@user.test");
+    SimulateUserLogin({"other@user.test"});
     SetUserPref(microphone_muted);
     EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), microphone_allowed);
 
-    SimulateUserLogin(user1_account_id);
+    SwitchActiveUser(user1_account_id);
     EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), microphone_muted);
   }
 }

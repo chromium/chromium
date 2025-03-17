@@ -134,6 +134,9 @@ bool MigrateToDriveFs(Profile* profile,
 // The canonical mount point name for "Downloads" folder.
 std::string GetDownloadsMountPointName(Profile* profile);
 
+// The canonical mount point name for "ShareCache" folder.
+std::string GetShareCacheMountPointName(Profile* profile);
+
 // The canonical mount point name for ARC "Play files" folder.
 std::string GetAndroidFilesMountPointName();
 

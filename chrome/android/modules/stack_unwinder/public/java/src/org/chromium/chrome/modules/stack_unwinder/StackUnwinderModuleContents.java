@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.modules.stack_unwinder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
 /**
@@ -12,6 +13,7 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 @ModuleInterface(
         module = "stack_unwinder",
         impl = "org.chromium.chrome.modules.stack_unwinder.StackUnwinderModuleContentsImpl")
+@NullMarked
 public interface StackUnwinderModuleContents {
 
     long getDoNothingFunction();

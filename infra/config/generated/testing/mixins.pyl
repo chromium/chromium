@@ -132,9 +132,6 @@
       ],
     },
   },
-  'chromeos-tast-public-builder': {
-    'args': ["tast.setup.FieldTrialConfig=enable", "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)", "shard_method=hash"],
-  },
   'chromium-tester-service-account': {
     'fail_if_unused': False,
     'swarming': {
@@ -166,19 +163,13 @@
     },
   },
   'cros-cbx-dut': {
-    'cros_cbx': True,
+    'skylab': {
+      'cros_cbx': True,
+    },
   },
   'crosier-no-arc': {
     'args': [
       '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter',
-    ],
-  },
-  'dawn_end2end_gpu_test': {
-    'args': [
-      '--use-gpu-in-tests',
-      '--exclusive-device-type-preference=discrete,integrated',
-      '--test-launcher-retry-limit=0',
-      '--test-launcher-batch-limit=512',
     ],
   },
   'experiments': {
@@ -199,6 +190,76 @@
       },
     },
   },
+  'gpu_enable_metal_debug_layers': {
+    'args': [
+      '--enable-metal-debug-layers',
+    ],
+  },
+  'gpu_force_angle_d3d11': {
+    'args': [
+      '--extra-browser-args=--use-angle=d3d11',
+    ],
+  },
+  'gpu_force_angle_d3d9': {
+    'args': [
+      '--extra-browser-args=--use-angle=d3d9',
+    ],
+  },
+  'gpu_force_angle_gl': {
+    'args': [
+      '--extra-browser-args=--use-angle=gl',
+    ],
+  },
+  'gpu_force_angle_gles': {
+    'args': [
+      '--extra-browser-args=--use-angle=gles',
+    ],
+  },
+  'gpu_force_angle_metal': {
+    'args': [
+      '--extra-browser-args=--use-angle=metal',
+    ],
+  },
+  'gpu_force_angle_swiftshader': {
+    'args': [
+      '--extra-browser-args=--use-angle=swiftshader',
+    ],
+  },
+  'gpu_force_angle_vulkan': {
+    'args': [
+      '--extra-browser-args=--use-angle=vulkan',
+    ],
+  },
+  'gpu_force_command_decoder_passthrough': {
+    'args': [
+      '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+    ],
+  },
+  'gpu_force_command_decoder_validating': {
+    'args': [
+      '--extra-browser-args=--use-cmd-decoder=validating',
+    ],
+  },
+  'gpu_force_high_performance_gpu': {
+    'args': [
+      '--extra-browser-args=--force_high_performance_gpu',
+    ],
+  },
+  'gpu_force_high_performance_gpu_for_webgl_metal': {
+    'args': [
+      '--extra-browser-args=--enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL',
+    ],
+  },
+  'gpu_force_skia_ganesh': {
+    'args': [
+      '--extra-browser-args=--disable-features=SkiaGraphite',
+    ],
+  },
+  'gpu_force_skia_graphite': {
+    'args': [
+      '--extra-browser-args=--enable-features=SkiaGraphite',
+    ],
+  },
   'gpu_integration_test_common_args': {
     'args': [
       '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
@@ -216,6 +277,45 @@
       '--no-xvfb',
       '--use-weston',
       '--weston-use-gl',
+    ],
+  },
+  'gpu_integration_test_expected_color_args': {
+    'args': [
+      '--dont-restore-color-profile-after-test',
+      '--test-machine-name',
+      '${buildername}',
+    ],
+    'android_args': [
+      '--extra-browser-args=--force-online-connection-state-for-indicator',
+    ],
+  },
+  'gpu_integration_test_pixel_args': {
+    'args': [
+      '--dont-restore-color-profile-after-test',
+      '--test-machine-name',
+      '${buildername}',
+    ],
+    'android_args': [
+      '--extra-browser-args=--force-online-connection-state-for-indicator',
+    ],
+  },
+  'gpu_integration_test_screenshot_sync_args': {
+    'args': [
+      '--dont-restore-color-profile-after-test',
+    ],
+    'android_args': [
+      '--extra-browser-args=--force-online-connection-state-for-indicator',
+    ],
+  },
+  'gpu_integration_test_webgl1_args': {
+    'args': [
+      '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+    ],
+  },
+  'gpu_integration_test_webgl2_args': {
+    'args': [
+      '--webgl-conformance-version=2.0.1',
+      '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
     ],
   },
   'gpu_nvidia_shield_tv_stable': {
@@ -283,8 +383,8 @@
     'swarming': {
       'dimensions': {
         'os': 'Android',
-        'device_type': 'a23',
-        'device_os': 'SP1A.210812.016',
+        'device_type': 'a23xq',
+        'device_os': 'TP1A.220624.014',
         'device_os_type': 'user',
         'pool': 'chromium.tests.gpu',
       },
@@ -365,6 +465,17 @@
       },
     },
   },
+  'linux_amd_rx_7600_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:7480-24.2.8',
+        'os': 'Ubuntu-24.04',
+        'display_attached': '1',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'linux_intel_uhd_630_experimental': {
     'fail_if_unused': False,
     'swarming': {
@@ -417,13 +528,10 @@
       },
     },
   },
-  'linux_vulkan': {
-    'linux_args': [
-      '--extra-browser-args=--enable-features=Vulkan',
-    ],
-  },
   'long_skylab_timeout': {
-    'timeout_sec': 10800,
+    'skylab': {
+      'timeout_sec': 10800,
+    },
   },
   'mac_14_x64': {
     'swarming': {
@@ -621,15 +729,6 @@
       '${ISOLATED_OUTDIR}',
     ],
   },
-  'shards-20': {
-    'shards': 20,
-  },
-  'shards-30': {
-    'shards': 30,
-  },
-  'shards-50': {
-    'shards': 50,
-  },
   'skia_gold_test': {
     'args': [
       '--git-revision=${got_revision}',
@@ -639,6 +738,21 @@
       '--gerrit-patchset=${patch_set}',
       '--buildbucket-id=${buildbucket_build_id}',
     ],
+  },
+  'skylab-shards-20': {
+    'skylab': {
+      'shards': 20,
+    },
+  },
+  'skylab-shards-30': {
+    'skylab': {
+      'shards': 30,
+    },
+  },
+  'skylab-shards-50': {
+    'skylab': {
+      'shards': 50,
+    },
   },
   'swarming_containment_auto': {
     'fail_if_unused': False,
@@ -653,22 +767,10 @@
       'io_timeout': 900,
     },
   },
-  'timeout_30m': {
-    'swarming': {
-      'hard_timeout': 1800,
-      'io_timeout': 1800,
-    },
-  },
   'vaapi_unittest_args': {
     'args': [
       '--stop-ui',
       '--gtest_filter="VaapiTest.*"',
-    ],
-  },
-  'webgpu_telemetry_cts': {
-    'args': [
-      '--extra-browser-args=--force_high_performance_gpu',
-      '--use-webgpu-power-preference=default-high-performance',
     ],
   },
   'win-arm64': {
@@ -772,14 +874,25 @@
       },
     },
   },
-  'win10_nvidia_rtx_4070_super_stable': {
+  'win11_amd_rx_7600_stable': {
     'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'display_attached': '1',
-        'gpu': '10de:2783',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu.experimental',
+        'gpu': '1002:7480-32.0.12033.1030',
+        'os': 'Windows-11-26100',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'win11_nvidia_rtx_4070_super_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '10de:2783-32.0.15.6070',
+        'os': 'Windows-11',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },
@@ -807,12 +920,12 @@
   'xcode_16_main': {
     'args': [
       '--xcode-build-version',
-      '16b40',
+      '16c5032a',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_16b40',
+          'name': 'xcode_ios_16c5032a',
           'path': 'Xcode.app',
         },
       ],

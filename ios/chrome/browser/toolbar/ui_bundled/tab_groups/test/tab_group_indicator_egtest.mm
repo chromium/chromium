@@ -3,7 +3,15 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/data_sharing/public/features.h"
+#import "components/data_sharing/public/group_data.h"
+#import "components/data_sharing/test_support/test_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h"
@@ -12,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -20,7 +29,17 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::CreateTabGroupCreateButton;
+using chrome_test_util::DeleteGroupButton;
+using chrome_test_util::DeleteSharedConfirmationButton;
+using chrome_test_util::DeleteSharedGroupButton;
+using chrome_test_util::FakeJoinFlowView;
+using chrome_test_util::FakeShareFlowView;
+using chrome_test_util::LeaveSharedGroupButton;
+using chrome_test_util::LeaveSharedGroupConfirmationButton;
+using chrome_test_util::NavigationBarSaveButton;
+using chrome_test_util::ShareGroupButton;
 using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridCloseButtonForCellAtIndex;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGroupCreationView;
 
@@ -109,6 +128,22 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 }
 
+// Creates a shared tab group and opens the tab group indicator menu.
+void CreateSharedGroupAndOpenMenu() {
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(0)];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
+                                   @"shared group")] performAction:grey_tap()];
+}
+
 }  // namespace
 
 // Tests for the tab group indicator.
@@ -122,14 +157,14 @@ void CreateDefaultTabGroupAndOpenMenu(
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kTabGroupIndicator);
-  if ([self isRunningTest:@selector
-            (testTabGroupIndicatorMenuActionsSyncDisabled)] ||
-      [self isRunningTest:@selector
-            (testTabGroupIndicatorMenuActionsDeleteGroupSyncDisabled)]) {
-    config.features_disabled.push_back(kTabGroupSync);
-  } else {
-    config.features_enabled.push_back(kTabGroupSync);
-  }
+  config.features_enabled.push_back(
+      data_sharing::features::kDataSharingFeature);
+  config.features_enabled.push_back(kTabGroupSync);
+
+  // Add the flag to use FakeTabGroupSyncService.
+  config.additional_args.push_back(
+      "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
+
   return config;
 }
 
@@ -137,6 +172,24 @@ void CreateDefaultTabGroupAndOpenMenu(
   [super setUp];
   RegisterQueryTitleHandler(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
+  [ChromeEarlGrey
+      setUserDefaultsObject:@YES
+                     forKey:kSharedTabGroupUserEducationShownOnceKey];
+
+  // `fakeIdentity2` joins shared groups as member.
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  if ([self isRunningTest:@selector
+            (testTabGroupIndicatorMenuActionsDeleteSharedGroup)]) {
+    // `fakeIdentity2` joins shared groups as owner.
+    identity = [FakeSystemIdentity fakeIdentity2];
+  }
+  [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
+}
+
+- (void)tearDownHelper {
+  [super tearDownHelper];
+  // Delete groups.
+  [TabGroupAppInterface cleanup];
 }
 
 // Tests that the tab group indicator view is visible when the active tab is
@@ -185,6 +238,10 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that the tab group indicator view is visible when the active tab is
 // grouped.
 - (void)testTabGroupIndicatorNotVisibleOnIpad {
+  if (@available(iOS 17, *)) {
+  } else {
+    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 16.");
+  }
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped on iPhone.");
   }
@@ -223,7 +280,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now two tabs and the current tab has changed.
-  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 2 tabs to be present.");
   NSString* newTabTitle = [ChromeEarlGrey currentTabTitle];
   GREYAssertNotEqual(kTab1Title, newTabTitle,
@@ -257,34 +314,6 @@ void CreateDefaultTabGroupAndOpenMenu(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that menu actions are correct when kTabGroupSync is disabled.
-- (void)testTabGroupIndicatorMenuActionsSyncDisabled {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
-                           @"if the tab strip is visible.");
-  }
-  CreateDefaultTabGroupAndOpenMenu(self.testServer);
-
-  // Check that displayed menu actions are correct.
-  [[EarlGrey
-      selectElementWithMatcher:MenuButtonMatcher(
-                                   IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Not displayed when kTabGroupSync is disabled.
-  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)]
-      assertWithMatcher:grey_notVisible()];
-}
-
 // Tests that closing a tab group from the tab group indicator menu works.
 - (void)testTabGroupIndicatorMenuActionsCloseGroup {
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -299,7 +328,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now 0 tab.
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 0 tab to be present.");
 
   // Tap on the snackbar action.
@@ -331,26 +360,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now 0 tab.
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
-                  @"Expected 0 tab to be present.");
-}
-
-// Tests that deleting a tab group from the tab group indicator menu works when
-// kTabGroupSync is disabled.
-- (void)testTabGroupIndicatorMenuActionsDeleteGroupSyncDisabled {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
-                           @"if the tab strip is visible.");
-  }
-  CreateDefaultTabGroupAndOpenMenu(self.testServer);
-
-  // Tap on the "Delete Group" button.
-  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
-                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
-      performAction:grey_tap()];
-
-  // Check that there are now 0 tab.
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 0 tab to be present.");
 }
 
@@ -427,7 +437,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now two tabs and the current tab has changed.
-  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 2 tabs to be present.");
   NSString* newTabTitle = [ChromeEarlGrey currentTabTitle];
   GREYAssertNotEqual(kTab1Title, newTabTitle,
@@ -459,6 +469,10 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that the Tab Grid button indicator is correctly updated whether a tab
 // is grouped or not.
 - (void)testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
+  }
   // Open a second tab.
   [ChromeEarlGreyUI openNewTab];
 
@@ -496,6 +510,66 @@ void CreateDefaultTabGroupAndOpenMenu(
   // Check that the Tab Grid button is in normal style, with 2 tabs.
   [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle(@"2")]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that deleting a shared tab group from the tab group indicator menu
+// works.
+- (void)testTabGroupIndicatorMenuActionsDeleteSharedGroup {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
+  }
+  CreateSharedGroupAndOpenMenu();
+
+  // Verify that the leave button is not available.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Delete the shared group.
+  [[EarlGrey selectElementWithMatcher:DeleteSharedGroupButton()]
+      performAction:grey_tap()];
+  // Tap on the delete button again to confirm the deletion.
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group has been deleted.
+  GREYCondition* groupsDeletedCheck =
+      [GREYCondition conditionWithName:@"Wait for tab groups to be deleted"
+                                 block:^{
+                                   return [ChromeEarlGrey mainTabCount] == 0;
+                                 }];
+  bool groupsDeleted = [groupsDeletedCheck waitWithTimeout:10];
+  GREYAssertTrue(groupsDeleted, @"Failed to delete the shared group");
+}
+
+// Tests that leaving a shared tab group from the tab group indicator menu
+// works.
+- (void)testTabGroupIndicatorMenuActionsLeaveSharedGroup {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
+  }
+  CreateSharedGroupAndOpenMenu();
+
+  // Verify that the delete button is not available.
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Leave the shared group.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
+      performAction:grey_tap()];
+  // Tap on the leave button confirmation.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group has been leaved.
+  GREYCondition* groupsLeavedCheck =
+      [GREYCondition conditionWithName:@"Wait for tab groups to be leaved"
+                                 block:^{
+                                   return [ChromeEarlGrey mainTabCount] == 0;
+                                 }];
+  bool groupsLeaved = [groupsLeavedCheck waitWithTimeout:10];
+  GREYAssertTrue(groupsLeaved, @"Failed to leave the shared group");
 }
 
 @end

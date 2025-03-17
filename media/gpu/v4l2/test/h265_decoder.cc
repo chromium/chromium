@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/test/h265_decoder.h"
 
 #include <linux/videodev2.h>
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
 #include "media/parsers/h265_parser.h"
@@ -1320,7 +1326,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
             state_ = kTryCurrentSlice;
           } else {
-            curr_pic_ = new H265Picture();
+            curr_pic_ = base::MakeRefCounted<H265Picture>();
             CHECK(curr_pic_) << "Ran out of surfaces.";
 
             curr_pic_->first_picture_ = first_picture_;

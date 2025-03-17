@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@21.0.1.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@24.1.0.cr1
 package: chromium/third_party/android_deps/libs/com_google_firebase_firebase_messaging
 description: "firebase-messaging"
 data:
-- file: firebase-messaging-21.0.1.aar
+- file: firebase-messaging-24.1.0.aar

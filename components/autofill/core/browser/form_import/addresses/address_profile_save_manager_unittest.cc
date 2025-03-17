@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -388,10 +388,10 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   }
   // The import can only be one of {new, updated, migrated} profile at once.
   ASSERT_EQ(
-      base::ranges::count(std::vector<bool>{IsNewProfile(test_scenario),
-                                            IsConfirmableMerge(test_scenario),
-                                            IsMigration(test_scenario)},
-                          true),
+      std::ranges::count(std::vector<bool>{IsNewProfile(test_scenario),
+                                           IsConfirmableMerge(test_scenario),
+                                           IsMigration(test_scenario)},
+                         true),
       1);
 
   const ImportHistogramNames& affected_histograms =
@@ -1454,8 +1454,7 @@ TEST_P(AddressProfileSaveManagerTest, Migration_Never) {
 // Runs the suite as if:
 // - the phone number was (not) removed (relevant for UKM metrics).
 // - the imported profile contains information from an input with an
-//   unrecognized autocomplete attribute. Such fields are considered for import
-//   when `kAutofillImportFromAutocompleteUnrecognized` is active.
+//   unrecognized autocomplete attribute. This is needed to test some metrics.
 INSTANTIATE_TEST_SUITE_P(,
                          AddressProfileSaveManagerTest,
                          testing::Combine(testing::Bool(), testing::Bool()));

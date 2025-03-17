@@ -27,8 +27,9 @@ namespace {
 // which correspond to the features used by the webstore.
 constexpr static std::array<std::string_view, 2> kWebstoreOverrideFeatureList =
     {
-        "webstorePrivate",
-        "management",
+        // LINT.IfChange
+        "webstorePrivate", "management",
+        // LINT.ThenChange(chrome/common/extensions/extension_test_util.cc)
 };
 
 // Returns true if the "apps-gallery-url" command line flag has been used to

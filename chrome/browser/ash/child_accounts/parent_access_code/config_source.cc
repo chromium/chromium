@@ -30,7 +30,7 @@ constexpr char kOldConfigsDictKey[] = "old_configs";
 
 ConfigSource::ConfigSource() {
   const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetPersistedUsers();
   for (const user_manager::User* user : users) {
     if (user->IsChild())
       LoadConfigForUser(user);

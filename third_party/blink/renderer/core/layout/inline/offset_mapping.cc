@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <functional>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -298,10 +297,8 @@ const OffsetMappingUnit* OffsetMapping::GetMappingUnitForPosition(
     return nullptr;
   // Find the last unit where unit.dom_start <= offset
   auto range = base::span(units_).subspan(range_start, range_end - range_start);
-  auto i = base::ranges::upper_bound(
-      range, offset, [](unsigned offset, const OffsetMappingUnit& unit) {
-        return offset < unit.DOMStart();
-      });
+  auto i = std::ranges::upper_bound(range, offset, std::ranges::less(),
+                                    &OffsetMappingUnit::DOMStart);
   const OffsetMappingUnit* unit = &range[std::distance(range.begin(), i) - 1];
   if (unit->DOMEnd() < offset)
     return nullptr;
@@ -331,22 +328,17 @@ OffsetMapping::UnitVector OffsetMapping::GetMappingUnitsForDOMRange(
   auto span1 = base::span(units_).subspan(range_start, range_end - range_start);
   size_t result_begin =
       range_start +
-      std::distance(span1.begin(),
-                    base::ranges::lower_bound(
-                        span1, start_offset,
-                        [](const OffsetMappingUnit& unit, unsigned offset) {
-                          return unit.DOMEnd() < offset;
-                        }));
+      std::distance(span1.begin(), std::ranges::lower_bound(
+                                       span1, start_offset, std::ranges::less(),
+                                       &OffsetMappingUnit::DOMEnd));
 
   // Find the next of the last unit where unit.dom_start <= end_offset
   auto span2 =
       base::span(units_).subspan(result_begin, range_end - result_begin);
   size_t result_size = std::distance(
-      span2.begin(), base::ranges::upper_bound(
-                         span2, end_offset,
-                         [](unsigned offset, const OffsetMappingUnit& unit) {
-                           return offset < unit.DOMStart();
-                         }));
+      span2.begin(),
+      std::ranges::upper_bound(span2, end_offset, std::ranges::less(),
+                               &OffsetMappingUnit::DOMStart));
 
   UnitVector result;
   result.reserve(base::checked_cast<wtf_size_t>(result_size));
@@ -608,7 +600,7 @@ unsigned OffsetMapping::LayoutObjectConverter::TextContentOffset(
     unsigned offset) const {
   auto iter = offset >= last_offset_ ? last_unit_ : units_.begin();
   if (offset >= iter->DOMEnd()) {
-    iter = base::ranges::find_if(
+    iter = std::ranges::find_if(
         iter, units_.end(), [offset](const OffsetMappingUnit& unit) {
           return unit.DOMStart() <= offset && offset < unit.DOMEnd();
         });

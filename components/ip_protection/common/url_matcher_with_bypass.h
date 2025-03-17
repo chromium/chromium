@@ -5,18 +5,22 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_URL_MATCHER_WITH_BYPASS_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_URL_MATCHER_WITH_BYPASS_H_
 
+#include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
+#include <set>
+#include <string>
 #include <string_view>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "base/types/optional_ref.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/scheme_host_port_matcher.h"
-#include "net/base/scheme_host_port_matcher_result.h"
-#include "net/base/scheme_host_port_matcher_rule.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 
@@ -53,6 +57,7 @@ class UrlMatcherWithBypass {
   UrlMatcherWithBypassResult Matches(
       const GURL& resource_url,
       const std::optional<net::SchemefulSite>& top_frame_site,
+      MdlType mdl_type,
       bool skip_bypass_check = false) const;
 
   // Builds a matcher to match to the public suffix list domains.
@@ -75,9 +80,6 @@ class UrlMatcherWithBypass {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  static std::unique_ptr<net::SchemeHostPortMatcher> BuildBypassMatcher(
-      const masked_domain_list::ResourceOwner& resource_owner);
-
   // Determine the partition of the `match_list_with_bypass_map_` that contains
   // the given domain.
   static std::string PartitionMapKey(std::string_view domain);
@@ -89,26 +91,50 @@ class UrlMatcherWithBypass {
 
  private:
   struct PartitionMatcher {
-    net::SchemeHostPortMatcher matcher;
-    raw_ptr<net::SchemeHostPortMatcher> bypass_matcher;
+    PartitionMatcher(
+        std::vector<raw_ptr<net::SchemeHostPortMatcher>> matcher_ptrs,
+        unsigned int bypass_matcher_key);
 
-    size_t EstimateMemoryUsage() const {
-      return base::trace_event::EstimateMemoryUsage(matcher) +
-             sizeof(bypass_matcher);
-    }
+    ~PartitionMatcher();
+
+    PartitionMatcher(const PartitionMatcher& other);
+
+    std::vector<raw_ptr<net::SchemeHostPortMatcher>> matchers;
+
+    // If this is set to 0, then the bypass matcher is not used. Otherwise, maps
+    // to a vector of bypass matchers in `bypass_matchers_map_`.
+    unsigned int bypass_matcher_key;
+
+    // Estimates dynamic memory usage.
+    // See base/trace_event/memory_usage_estimator.h for more info.
+    size_t EstimateMemoryUsage() const;
   };
 
-  // Contains a single bypass matcher for each ResourceOwner that is referenced
-  // by `match_list_with_bypass_map_`.
-  std::vector<std::unique_ptr<net::SchemeHostPortMatcher>> bypass_matchers_;
+  // Maps bypass matcher keys to the bypass matchers. Each bypass matcher key in
+  // partition matcher in `match_list_with_bypass_map_` references a vector of
+  // bypass matchers in this map. The key 0 is reserved for matchers that are
+  // not used as a bypass matcher.
+  // NOTE: bypass_matchers_map_ must be declared before
+  // match_list_with_bypass_map_ to ensure that the bypass matchers are
+  // destroyed after the match list.
+  std::map<unsigned int,
+           std::vector<std::unique_ptr<net::SchemeHostPortMatcher>>>
+      bypass_matchers_map_;
 
-  // Empty matcher used by reference instead of creating new empty instances.
-  net::SchemeHostPortMatcher empty_bypass_matcher_;
-
-  // Maps partition map keys to smaller maps of domains eligible for the match
-  // list and the top frame domains that allow the match list to be bypassed.
-  std::map<std::string, std::vector<PartitionMatcher>>
+  // Maps the an experiment group to a map of the relevant map of partition
+  // keys to a list of matchers.
+  // This allows us to have a separate set of matchers for each experiment
+  // group.
+  std::map<std::pair<ip_protection::MdlType, std::string>,
+           std::vector<PartitionMatcher>>
       match_list_with_bypass_map_;
+
+  // This is used to generate a unique key for each bypass matcher. It MUST be
+  // incremented for each resource owner that requires a bypass matcher to be
+  // added AND set to 0 when `bypass_matchers_` is
+  // cleared.
+  // NOTE: 0 is reserved for matchers that do are not used as a bypass matcher.
+  unsigned int bypass_matcher_key_ = 0;
 };
 
 }  // namespace ip_protection

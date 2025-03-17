@@ -11,7 +11,7 @@
 namespace web {
 struct ContextMenuParams;
 class WebState;
-}
+}  // namespace web
 
 // Class handling the fetching information about DOM element in a specific
 // position.

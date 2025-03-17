@@ -39,6 +39,11 @@ class CONTENT_EXPORT ScreenOrientationProvider
       mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
           receiver);
 
+  // Return if orientation lock is enabled.  This does not guarantee that any
+  // particular call to `Lock` will succeed, but lack of support here does mean
+  // that `Lock` will definitely won't work.
+  bool IsOrientationLockSupported() const;
+
   // device::mojom::ScreenOrientation:
   void LockOrientation(device::mojom::ScreenOrientationLockType,
                        LockOrientationCallback callback) override;

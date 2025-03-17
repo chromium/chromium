@@ -31,7 +31,10 @@ enum class ToastId {
   kSyncEsbOn = 9,
   kSyncEsbOnWithoutActionButton = 10,
   kSyncEsbOff = 11,
-  kMaxValue = kSyncEsbOff
+  kTabGroupSyncTabRemoved = 12,
+  kTabGroupSyncUserJoined = 13,
+  kTabGroupSyncRemovedFromGroup = 14,
+  kMaxValue = kTabGroupSyncRemovedFromGroup
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

@@ -71,9 +71,6 @@ class CORE_EXPORT HTMLAreaElement final : public HTMLAnchorElementBase {
                               const FocusOptions*) override;
   void SetFocused(bool, mojom::blink::FocusType) override;
 
-  Element* interestTargetElement() override;
-  AtomicString interestAction() const override;
-
   enum Shape { kDefault, kPoly, kRect, kCircle };
   void InvalidateCachedPath();
 

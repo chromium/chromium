@@ -174,34 +174,66 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('account store user can import passwords to device', async function() {
-    // Store picker should pre-select preferred store as DEVICE.
-    passwordManager.data.isAccountStorageDefault = false;
     const importer = createPasswordsImporter(
         /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
     await flushTasks();
 
-    // Clicking on the importer row should open the STORE_PICKER dialog.
+    // Clicking on the importer row should open the import dialog. The store
+    // picker should be shown and "account" should be the default.
     importer.$.linkRow.click();
     flush();
+    const storePicker =
+        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
+    assertTrue(!!storePicker);
+    assertTrue(isVisible(storePicker));
+    assertEquals(
+        storePicker.value, chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT);
 
+    // Switch the picker to "device" and confirm. Passwords should be imported
+    // to the device.
     const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+    storePicker.value = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
     await triggerImportHelper(importer, passwordManager, expectedStore);
   });
 
+
   test('account store user can import passwords to account', async function() {
-    // Store picker should pre-select preferred store as ACCOUNT.
-    passwordManager.data.isAccountStorageDefault = true;
     const importer = createPasswordsImporter(
         /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
     await flushTasks();
 
-    // Clicking on the importer row should open the STORE_PICKER dialog.
+    // Clicking on the importer row should open the import dialog. The store
+    // picker should be shown and "account" should be the default.
     importer.$.linkRow.click();
     flush();
+    const storePicker =
+        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
+    assertTrue(!!storePicker);
+    assertTrue(isVisible(storePicker));
+    assertEquals(
+        storePicker.value, chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT);
 
     const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
+    await triggerImportHelper(importer, passwordManager, expectedStore);
+  });
+
+  test('non-account store user imports passwords to device', async function() {
+    const importer = createPasswordsImporter(
+        /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ false,
+        /*accountEmail=*/ 'test@test.com');
+    await flushTasks();
+
+    // Clicking on the importer row should open the import dialog. The store
+    // picker should be hidden.
+    importer.$.linkRow.click();
+    flush();
+    assertFalse(isVisible(
+        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker')));
+
+    // Accepting the dialog should import to the device.
+    const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
     await triggerImportHelper(importer, passwordManager, expectedStore);
   });
 

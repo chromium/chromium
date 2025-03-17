@@ -14,12 +14,15 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace web_app {
 
 namespace {
+
+constexpr const char* kMicrosoft365ManifestId = "?from=Homescreen";
 
 bool g_always_enabled_for_testing = false;
 
@@ -60,8 +63,8 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
 
   if (GetScopeExtensionsOverrideForTesting()) {
     for (const auto* origin : *GetScopeExtensionsOverrideForTesting()) {
-      extensions.insert(
-          ScopeExtensionInfo{.origin = url::Origin::Create(GURL(origin))});
+      extensions.insert(ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL(origin))));
     }
     return extensions;
   }
@@ -76,7 +79,7 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
       continue;
     }
     extensions.insert(
-        ScopeExtensionInfo{.origin = url::Origin::Create(GURL(url))});
+        ScopeExtensionInfo::CreateForOrigin(url::Origin::Create(GURL(url))));
   }
   const auto microsoft365_scope_extension_domains = GetListFromFinchParam(
       chromeos::features::kMicrosoft365ScopeExtensionsDomains.Get());
@@ -88,8 +91,8 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
           << url_string;
       continue;
     }
-    extensions.insert(ScopeExtensionInfo{
-        .origin = url::Origin::Create(GURL(url)), .has_origin_wildcard = true});
+    extensions.insert(ScopeExtensionInfo::CreateForOrigin(
+        url::Origin::Create(GURL(url)), /*has_origin_wildcard*/ true));
   }
   return extensions;
 }
@@ -154,6 +157,31 @@ bool ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForSourceApp(
 bool ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
     const webapps::AppId& target_app_id) {
   return IsExperimentEnabled(target_app_id);
+}
+
+void ChromeOsWebAppExperiments::MaybeOverrideManifest(
+    content::RenderFrameHost* frame_host,
+    blink::mojom::ManifestPtr& manifest) {
+  if (!::chromeos::features::IsMicrosoft365ManifestOverrideEnabled()) {
+    return;
+  }
+
+  const auto pwa_start_url_origin = url::Origin::Create(manifest->start_url);
+  std::string pwa_start_url_path =
+      manifest->start_url.GetWithoutFilename().path();
+
+  const auto microsoft365_manifest_urls = GetListFromFinchParam(
+      chromeos::features::kMicrosoft365ManifestUrls.Get());
+
+  for (const auto& url_string : microsoft365_manifest_urls) {
+    GURL microsoft365_manifest_url = GURL(url_string);
+
+    if (pwa_start_url_origin.IsSameOriginWith(microsoft365_manifest_url) &&
+        pwa_start_url_path == microsoft365_manifest_url.path()) {
+      manifest->id =
+          GURL(pwa_start_url_origin.GetURL().spec() + kMicrosoft365ManifestId);
+    }
+  }
 }
 
 void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {

@@ -76,6 +76,9 @@
       name: "range",
     },
     {
+      name: "result",
+    },
+    {
       name: "navigation",
     },
     {

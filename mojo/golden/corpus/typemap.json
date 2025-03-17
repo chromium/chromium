@@ -1,0 +1,11 @@
+{
+  "c++": {},
+  "typescript": {
+    "golden.Typemapped": {
+      "converter": "Converter",
+      "converter_import": "converter.ts",
+      "typename": "number",
+      "type_import": null
+    }
+  }
+}

@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -140,6 +141,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void OnOldViewDidNavigatePreCommit() override;
   void OnNewViewDidNavigatePostCommit() override;
   void DidEnterBackForwardCache() override;
+  void ActivatedOrEvictedFromBackForwardCache() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
@@ -231,11 +233,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                                     bool did_update_state) override;
   void OnImeCancelComposition(TextInputManager* text_input_manager,
                               RenderWidgetHostViewBase* updated_view) override;
-  void OnImeCompositionRangeChanged(
-      TextInputManager* text_input_manager,
-      RenderWidgetHostViewBase* updated_view,
-      bool character_bounds_changed,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
+  void OnImeCompositionRangeChanged(TextInputManager* text_input_manager,
+                                    RenderWidgetHostViewBase* updated_view,
+                                    bool character_bounds_changed) override;
   void OnSelectionBoundsChanged(
       TextInputManager* text_input_manager,
       RenderWidgetHostViewBase* updated_view) override;
@@ -556,7 +556,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Gets a textual view of the page's contents, and passes it to the callback
   // provided.
-  using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
+  using SpeechCallback = base::OnceCallback<void(std::u16string_view)>;
   void GetPageTextForSpeech(SpeechCallback callback);
 
   // Calls RenderWidgetHostNSView::SetTooltipText and call the observer's
@@ -564,6 +564,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void SetTooltipText(const std::u16string& tooltip_text);
 
   void UpdateWindowsNow();
+
+  // For HiDPI capture mode, adjust the device scale factor to render the
+  // contents at a higher pixel density when scale_override_for_capture_ > 1.0.
+  // The first boolean returns true if any of the ScreenInfo elements in
+  // `screen_infos_` was changed. The second boolean returns true if the current
+  // ScreenInfo element was changed.
+  std::pair<bool, bool> MaybeUpdateScreenInfosForHiDPI();
 
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.

@@ -5,21 +5,22 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TRANSACTION_LIMIT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ACCOUNT_DISPLAY_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_ICON_BITMAP;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_CONTENT_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_HEIGHT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.SECURITY_CHECK_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
@@ -113,8 +114,6 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         } else if (propertyKey == SCREEN_VIEW_MODEL) {
             // This property contains the model to manipulate the {@link #SCREEN} view. No need to
             // update the {@code view} for this property. Intentional fall-through.
-        } else if (propertyKey == DISMISS_HANDLER) {
-            view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == UI_EVENT_LISTENER) {
             view.setUiEventListener(model.get(UI_EVENT_LISTENER));
         } else {
@@ -146,17 +145,31 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
      * @param key The {@link PropertyKey} which changed.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == TITLE_ID) {
+        if (propertyKey == TITLE) {
             TextView sheetTitleText = view.findViewById(R.id.sheet_title);
-            sheetTitleText.setText(view.getContext().getString(model.get(TITLE_ID)));
+            sheetTitleText.setText(model.get(TITLE));
         } else if (propertyKey == DESCRIPTION_ID) {
             TextView sheetDescriptionText = view.findViewById(R.id.description_text);
             sheetDescriptionText.setText(view.getContext().getString(model.get(DESCRIPTION_ID)));
-        } else if (propertyKey == IMAGE_DRAWABLE_ID) {
-            ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
-            sheetHeaderImage.setImageDrawable(
+            sheetDescriptionText.setVisibility(View.VISIBLE);
+        } else if (propertyKey == PRODUCT_ICON_DRAWABLE_ID) {
+            ImageView sheetProductIconImage = view.findViewById(R.id.branding_icon);
+            sheetProductIconImage.setImageDrawable(
                     AppCompatResources.getDrawable(
-                            view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
+                            view.getContext(), model.get(PRODUCT_ICON_DRAWABLE_ID)));
+        } else if (propertyKey == PRODUCT_ICON_HEIGHT) {
+            ImageView sheetProductIconImage = view.findViewById(R.id.branding_icon);
+            sheetProductIconImage.getLayoutParams().height = model.get(PRODUCT_ICON_HEIGHT);
+        } else if (propertyKey == PRODUCT_ICON_CONTENT_DESCRIPTION_ID) {
+            ImageView sheetProductIconImage = view.findViewById(R.id.branding_icon);
+            sheetProductIconImage.setContentDescription(
+                    view.getContext().getString(model.get(PRODUCT_ICON_CONTENT_DESCRIPTION_ID)));
+        } else if (propertyKey == SECURITY_CHECK_DRAWABLE_ID) {
+            ImageView sheetSecurityCheckImage = view.findViewById(R.id.security_check_illustration);
+            sheetSecurityCheckImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.getContext(), model.get(SECURITY_CHECK_DRAWABLE_ID)));
+            sheetSecurityCheckImage.setVisibility(View.VISIBLE);
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -222,8 +235,7 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         } else if (propertyKey == BANK_NAME
                 || propertyKey == BANK_ACCOUNT_SUMMARY
                 || propertyKey == BANK_ACCOUNT_TRANSACTION_LIMIT
-                || propertyKey == BANK_ACCOUNT_DRAWABLE_ID
-                || propertyKey == BANK_ACCOUNT_ICON_BITMAP
+                || propertyKey == BANK_ACCOUNT_ICON
                 || propertyKey == ACCOUNT_DISPLAY_NAME
                 || propertyKey == EWALLET_ICON_BITMAP
                 || propertyKey == EWALLET_NAME

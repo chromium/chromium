@@ -8,13 +8,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
 /** App Menu helper that handles hiding and showing menu items based on activity state. */
+@NullMarked
 public interface AppMenuPropertiesDelegate {
     int INVALID_ITEM_ID = -1;
 

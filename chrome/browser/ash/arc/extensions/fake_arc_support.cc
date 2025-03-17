@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/profiles/profile.h"
@@ -112,7 +113,7 @@ void FakeArcSupport::TosLoadResult(bool success) {
   DCHECK(native_message_host_);
   native_message_host_->OnMessage(
       base::StrCat({"{\"event\": \"onTosLoadResult\", \"success\": ",
-                    success ? "true" : "false", "}"}));
+                    base::ToString(success), "}"}));
 }
 
 void FakeArcSupport::AddObserver(Observer* observer) {

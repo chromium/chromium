@@ -18,6 +18,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -163,7 +164,7 @@ TEST_F(OmniboxTextFieldIOSTest, CopyInPreedit) {
   [delegateMock onCopy];
   [textfield_ copy:nil];
   EXPECT_NSEQ(textfield_.text, testString);
-  [delegateMock verify];
+  EXPECT_OCMOCK_VERIFY(delegateMock);
 }
 
 TEST_F(OmniboxTextFieldIOSTest, CutInPreedit) {
@@ -177,7 +178,7 @@ TEST_F(OmniboxTextFieldIOSTest, CutInPreedit) {
   [delegateMock onCopy];
   [textfield_ cut:nil];
   EXPECT_NSEQ(textfield_.text, @"");
-  [delegateMock verify];
+  EXPECT_OCMOCK_VERIFY(delegateMock);
 }
 
 }  // namespace

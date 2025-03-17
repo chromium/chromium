@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.external_intents.RedirectHandler;
@@ -48,6 +47,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                             mInterceptNavigationDelegate.setExternalNavigationHandler(
                                     createExternalNavigationHandler());
                         }
+                        mInterceptNavigationDelegate.onActivityAttachmentChanged(window != null);
                     }
 
                     @Override
@@ -85,11 +85,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationHandle handle) {
-        return false;
-    }
-
-    @Override
     public Activity getActivity() {
         return mTab.getActivity();
     }
@@ -113,13 +108,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                         TabClosureParams.closeTab(mTab).allowUndo(false).build(),
                         /* allowDialog= */ false);
     }
-
-    @Override
-    public void onNavigationStarted(NavigationHandle handle) {}
-
-    @Override
-    public void onDecisionReachedForNavigation(
-            NavigationHandle handle, OverrideUrlLoadingResult overrideUrlLoadingResult) {}
 
     public void initializeWithDelegate(InterceptNavigationDelegateImpl delegate) {
         mInterceptNavigationDelegate = delegate;

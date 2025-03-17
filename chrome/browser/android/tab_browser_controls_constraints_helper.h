@@ -22,7 +22,7 @@ class TabBrowserControlsConstraintsHelper {
       jint constraints,
       jint current,
       jboolean animate,
-      const base::android::JavaParamRef<jobject>& joffset_tags_info);
+      const base::android::JavaParamRef<jobject>& joffset_tag_modifications);
   void OnDestroyed(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj);
 

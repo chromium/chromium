@@ -21,6 +21,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/crostini/baguette_installer.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
@@ -236,6 +237,9 @@ class CrostiniManager : public KeyedService,
   // Installs termina using the DLC service.
   void InstallTermina(CrostiniResultCallback callback);
 
+  // Installs baguette using GS downloader or local file.
+  void InstallBaguette(CrostiniResultCallback callback);
+
   // Try to cancel a previous InstallTermina call. This is done on a best-effort
   // basis. The callback passed to InstallTermina is still run upon completion.
   void CancelInstallTermina();
@@ -291,6 +295,12 @@ class CrostiniManager : public KeyedService,
   // |callback| is called immediately if the arguments are bad, or after LXD has
   // been started.
   void StartLxd(std::string vm_name, CrostiniResultCallback callback);
+
+  // Wrapper for ConciergeClient::SetUpVmUser
+  // |callback| is called immediately if the arguments are bad.
+  void SetUpBaguetteUser(std::string vm_name,
+                         std::optional<std::string> container_username,
+                         CrostiniResultCallback callback);
 
   // Checks the arguments for creating an Lxd container via
   // CiceroneClient::CreateLxdContainer. |callback| is called immediately if the
@@ -708,6 +718,11 @@ class CrostiniManager : public KeyedService,
                   CrostiniResultCallback callback,
                   std::optional<vm_tools::cicerone::StartLxdResponse> response);
 
+  // Callback for ConciergeClient::SetUpVmUser.
+  void OnSetUpBaguetteUser(
+      CrostiniResultCallback callback,
+      std::optional<vm_tools::concierge::SetUpVmUserResponse> response);
+
   // Callback for ConciergeClient::ExportDiskImage. Called after the Concierge
   // service method finishes.
   void OnExportDiskImage(
@@ -982,8 +997,10 @@ class CrostiniManager : public KeyedService,
       upgrade_available_notification_;
 
   TerminaInstaller termina_installer_;
+  BaguetteInstaller baguette_installer_;
 
   bool install_termina_never_completes_for_testing_ = false;
+  bool install_baguette_never_completes_for_testing_ = false;
 
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
 

@@ -1,5 +1,16 @@
 file://chrome/browser/glic/API_OWNERS
 
 andreaxg@google.com
+baranerf@google.com
+bokan@chromium.org
 cuianthony@chromium.org
+iclelland@chromium.org
 iwells@chromium.org
+liuwilliam@chromium.org
+perrier@chromium.org
+sanaakbani@google.com
+vollick@chromium.org
+
+per-file *test*=dfried@chromium.org
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

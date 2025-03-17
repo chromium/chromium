@@ -15,6 +15,11 @@ action("gcp_installer") {
     rebase_path(target_gen_dir, root_build_dir),
   ]
 
+  inputs = [
+    "$root_out_dir/gaia1_0.dll",
+    "$root_out_dir/gcp_eventlog_provider.dll",
+  ]
+
   deps = [
     "//chrome/credential_provider/eventlog:gcp_eventlog_provider",
     "//chrome/credential_provider/extension:gcpw_extension",

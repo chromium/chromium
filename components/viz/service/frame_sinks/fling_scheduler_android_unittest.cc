@@ -7,9 +7,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/input/features.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
+#include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/input/input_manager.h"
+#include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
 #include "components/viz/test/test_output_surface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +23,14 @@ constexpr FrameSinkId kFrameSinkIdA(1, 1);
 class FakeInputManager : public InputManager {
  public:
   explicit FakeInputManager(FrameSinkManagerImpl* frame_sink_manager)
-      : InputManager(frame_sink_manager) {}
+      : InputManager(frame_sink_manager),
+        begin_frame_source_(BeginFrameSource::kNotRestartableId,
+                            60.f,
+                            /*requires_align_with_java=*/false) {
+    // Send BeginFrame without any observer.
+    auto args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
+    begin_frame_source_.OnBeginFrame(args);
+  }
 
   FakeInputManager(const FakeInputManager&) = delete;
   FakeInputManager& operator=(const FakeInputManager&) = delete;
@@ -35,7 +43,7 @@ class FakeInputManager : public InputManager {
   }
 
  private:
-  StubBeginFrameSource begin_frame_source_;
+  ExternalBeginFrameSourceAndroid begin_frame_source_;
 };
 
 class FlingSchedulerTest : public testing::Test,
@@ -43,8 +51,7 @@ class FlingSchedulerTest : public testing::Test,
  public:
   FlingSchedulerTest()
       : frame_sink_manager_(
-            FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
-                                             &output_surface_provider_)) {
+            FrameSinkManagerImpl::InitParams(&output_surface_provider_)) {
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features */ {input::features::kInputOnViz},
         /* disabled_features */ {});
@@ -158,7 +165,6 @@ class FlingSchedulerTest : public testing::Test,
   }
 
   std::unique_ptr<input::FlingController> fling_controller_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl frame_sink_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;

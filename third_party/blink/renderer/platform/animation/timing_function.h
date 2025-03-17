@@ -25,11 +25,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_TIMING_FUNCTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_TIMING_FUNCTION_H_
 
+#include <algorithm>
 #include <vector>
+
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -107,7 +108,7 @@ class PLATFORM_EXPORT LinearTimingFunction final : public TimingFunction {
   bool IsTrivial() const { return linear_->IsTrivial(); }
 
   bool operator==(const LinearTimingFunction& other) const {
-    return base::ranges::equal(Points(), other.Points());
+    return std::ranges::equal(Points(), other.Points());
   }
 
  private:

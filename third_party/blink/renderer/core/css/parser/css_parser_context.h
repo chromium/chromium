@@ -114,6 +114,7 @@ class CORE_EXPORT CSSParserContext final
   }
 
   void Count(WebFeature) const;
+  void Count(WebDXFeature) const;
   void Count(CSSParserMode, CSSPropertyID) const;
   void CountDeprecation(WebFeature) const;
   bool IsUseCounterRecordingEnabled() const { return document_ != nullptr; }
@@ -124,6 +125,12 @@ class CORE_EXPORT CSSParserContext final
   const DOMWrapperWorld* JavascriptWorld() const { return world_.Get(); }
 
   bool IsForMarkupSanitization() const;
+
+  // Returns true if we are in a parsing mode where the result will be used in
+  // an element context. This function is used to fail parsing of functions such
+  // as sibling-index() which do not make sense in @page or @font-face
+  // descriptors, for instance.
+  bool InElementContext() const;
 
   // Overrides |mode_| of a CSSParserContext within the scope, allowing us to
   // switching parsing mode while parsing different parts of a style sheet.

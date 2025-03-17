@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -119,7 +118,6 @@ public class WebappActionsNotificationManager implements PauseResumeWithNativeOb
                 .setShowWhen(false)
                 .setAutoCancel(false)
                 .setOngoing(true)
-                .setPriorityBeforeO(NotificationCompat.PRIORITY_MIN)
                 .setContentIntent(focusIntent)
                 .addAction(
                         R.drawable.ic_share_white_24dp,

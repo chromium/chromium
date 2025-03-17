@@ -27,7 +27,7 @@ namespace syncer {
 namespace {
 
 std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   return base::Base64Encode(
       base::SHA1HashString(specifics.SerializeAsString()));
 }
@@ -181,7 +181,7 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
       TimeToProtoTime(update.entity.modification_time));
   if (update.entity.collaboration_metadata.has_value()) {
     metadata_.mutable_collaboration()->set_collaboration_id(
-        update.entity.collaboration_metadata->collaboration_id());
+        update.entity.collaboration_metadata->collaboration_id().value());
     if (!update.entity.collaboration_metadata->created_by().empty()) {
       metadata_.mutable_collaboration()
           ->mutable_creation_attribution()
@@ -245,7 +245,7 @@ void ProcessorEntity::RecordLocalUpdate(
   if (!metadata_.has_collaboration() &&
       data->collaboration_metadata.has_value()) {
     metadata_.mutable_collaboration()->set_collaboration_id(
-        data->collaboration_metadata->collaboration_id());
+        data->collaboration_metadata->collaboration_id().value());
     metadata_.mutable_collaboration()
         ->mutable_creation_attribution()
         ->set_obfuscated_gaia_id(
@@ -259,7 +259,7 @@ void ProcessorEntity::RecordLocalUpdate(
 
     // Collaboration ID must never change.
     CHECK_EQ(metadata_.collaboration().collaboration_id(),
-             data->collaboration_metadata->collaboration_id());
+             data->collaboration_metadata->collaboration_id().value());
   }
 
   metadata_.set_modification_time(TimeToProtoTime(modification_time));
@@ -400,13 +400,13 @@ size_t ProcessorEntity::EstimateMemoryUsage() const {
 bool ProcessorEntity::MatchesSpecificsHash(
     const sync_pb::EntitySpecifics& specifics) const {
   DCHECK(!metadata_.is_deleted());
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   return HashSpecifics(specifics) == metadata_.specifics_hash();
 }
 
 void ProcessorEntity::UpdateSpecificsHash(
     const sync_pb::EntitySpecifics& specifics) {
-  if (specifics.ByteSize() > 0) {
+  if (specifics.ByteSizeLong() > 0) {
     *metadata_.mutable_specifics_hash() = HashSpecifics(specifics);
   } else {
     metadata_.clear_specifics_hash();

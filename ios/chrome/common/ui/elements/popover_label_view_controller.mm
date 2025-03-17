@@ -246,6 +246,19 @@ constexpr CGFloat kIconSize = 16;
   heightConstraint.active = YES;
 
   [self updateBackgroundColor];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = @[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+      UITraitUserInterfaceStyle.class
+    ];
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -253,8 +266,7 @@ constexpr CGFloat kIconSize = 16;
   [super viewWillAppear:animated];
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
   if ((self.traitCollection.verticalSizeClass !=
        previousTraitCollection.verticalSizeClass) ||
       (self.traitCollection.horizontalSizeClass !=
@@ -267,6 +279,16 @@ constexpr CGFloat kIconSize = 16;
     [self updateBackgroundColor];
   }
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self updateUIOnTraitChange:previousTraitCollection];
+}
+#endif
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];

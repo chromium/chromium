@@ -109,7 +109,7 @@ enum class DownloadNativeTaskState {
   if (_status == DownloadNativeTaskState::kPendingStart) {
     // WKDownload will pass a block to its delegate when calling its
     // - download:decideDestinationUsingResponse:suggestedFilename
-    //:completionHandler: method. WKDownload enforces that this block is called
+    //: completionHandler: method. WKDownload enforces that this block is called
     // before the object is destroyed or the download is cancelled. Thus it
     // must be called now.
     //
@@ -350,7 +350,7 @@ enum class DownloadNativeTaskState {
         base::apple::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
   }
 
-  std::move(_responseCallback).Run(http_error, response.MIMEType);
+  std::move(_responseCallback).Run(http_error, response.MIMEType, response.URL);
 }
 
 @end

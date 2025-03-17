@@ -75,8 +75,9 @@ specific_include_rules = {
 
 You can optionally ignore the rules inherited from parent directories, similar
 to "set noparent" in OWNERS files. For example, adding `noparent = True` in
-//ash/components/DEPS will cause rules from //ash/DEPS to be ignored, thereby
-forcing each //ash/component/foo to explicitly declare foo's dependencies.
+//chromeos/ash/components/DEPS will cause rules from //chromeos/ash/DEPS
+to be ignored, thereby forcing each //ash/component/foo to explicitly declare
+foo's dependencies.
 
 ```
 noparent = True
@@ -106,10 +107,10 @@ only lowercase.
 `include_rules` entry on a directory. To do so, use:
 
 ```
-new_usages_require_reviews = True
+new_usages_require_review = True
 ```
 
-For example, if `//foo/bar/DEPS` sets `new_usages_require_reviews=True`, then:
+For example, if `//foo/bar/DEPS` sets `new_usages_require_review=True`, then:
 
 1) `include_rules` for `//foo` will not allow includes for files in `//foo/bar`
 2) A `PRESUBMIT.py` check will enforce that an `OWNER` of `//foo/bar` must +1

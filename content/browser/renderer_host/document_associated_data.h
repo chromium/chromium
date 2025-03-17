@@ -9,6 +9,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/confidence_level.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -137,6 +140,14 @@ class DocumentAssociatedData : public base::SupportsUserData {
     devtools_navigation_token_ = devtools_navigation_token;
   }
 
+  blink::mojom::ConfidenceLevel navigation_confidence() const {
+    return confidence_level_;
+  }
+  void set_navigation_confidence(
+      blink::mojom::ConfidenceLevel confidence_level) {
+    confidence_level_ = confidence_level;
+  }
+
   // fetch keepalive handing:
   //
   // Contains the weak pointer to the FactoryContext of the in-browser
@@ -168,6 +179,13 @@ class DocumentAssociatedData : public base::SupportsUserData {
   void RemoveService(internal::DocumentServiceBase* service,
                      base::PassKey<internal::DocumentServiceBase>);
 
+  // Add `callback` to the callback queue to be run after prerendered page
+  // activation.
+  void AddPostPrerenderingActivationStep(base::OnceClosure callback);
+
+  // Run callback queue for post-prerendering activation.
+  void RunPostPrerenderingActivationSteps();
+
  private:
   const blink::DocumentToken token_;
   std::unique_ptr<PageImpl> owned_page_;
@@ -179,8 +197,12 @@ class DocumentAssociatedData : public base::SupportsUserData {
       services_;
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
   std::optional<base::UnguessableToken> devtools_navigation_token_;
+  blink::mojom::ConfidenceLevel confidence_level_ =
+      blink::mojom::ConfidenceLevel::kHigh;
   base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
       keep_alive_url_loader_factory_context_;
+  // The callback queue for post-prerendering activation.
+  base::queue<base::OnceClosure> post_prerendering_activation_callbacks_;
 
   base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
 };

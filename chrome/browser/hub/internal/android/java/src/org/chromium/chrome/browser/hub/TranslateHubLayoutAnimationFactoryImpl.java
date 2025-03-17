@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.XrUtils;
 
 /** Implementation of {@link TranslateHubLayoutAnimationFactory}. */
 public class TranslateHubLayoutAnimationFactoryImpl {
@@ -40,14 +41,18 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                         ObjectAnimator animator =
                                 ObjectAnimator.ofFloat(
                                         hubContainerView,
-                                        View.TRANSLATION_Y,
+                                        View.Y,
                                         hubContainerView.getHeight(),
                                         yOffset);
                         animator.setInterpolator(Interpolators.EMPHASIZED_DECELERATE);
                         animator.setDuration(durationMs);
                         animatorSet.play(animator);
 
-                        scrimController.startShowingScrim();
+                        // The scrim is not needed on an XR device when in full space mode the
+                        // transparent background provides spatial look, so we skip it.
+                        if (!XrUtils.getInstance().isFsmOnXrDevice()) {
+                            scrimController.startShowingScrim();
+                        }
                     }
 
                     @Override
@@ -73,10 +78,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
             float yOffset) {
         ObjectAnimator animator =
                 ObjectAnimator.ofFloat(
-                        hubContainerView,
-                        View.TRANSLATION_Y,
-                        yOffset,
-                        hubContainerView.getHeight());
+                        hubContainerView, View.Y, yOffset, hubContainerView.getHeight());
         animator.setInterpolator(Interpolators.EMPHASIZED_ACCELERATE);
         animator.setDuration(durationMs);
 

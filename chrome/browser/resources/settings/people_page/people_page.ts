@@ -105,6 +105,19 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         },
       },
 
+      /**
+       * This property stores whether the profile is a Dasherless profiles,
+       * which is associated with a non-Dasher account. Some UIs related to
+       * sign in and sync service will be different because they are not
+       * available for these profiles.
+       */
+      isDasherlessProfile_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isDasherlessProfile');
+        },
+      },
+
       // <if expr="not chromeos_ash">
       /**
        * Stored accounts to the system, supplied by SyncBrowserProxy.
@@ -211,6 +224,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   prefs: any;
   private signinAllowed_: boolean;
+  private isDasherlessProfile_: boolean;
   syncStatus: SyncStatus|null;
   pageVisibility: PageVisibility;
   private authToken_: string;
@@ -296,6 +310,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private getSyncAndGoogleServicesSubtext_(): string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return '';
+    }
     if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
       return this.syncStatus.statusText;

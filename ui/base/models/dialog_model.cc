@@ -4,13 +4,13 @@
 
 #include "ui/base/models/dialog_model.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -187,14 +187,14 @@ DialogModel::DialogModel(base::PassKey<Builder>,
 DialogModel::~DialogModel() = default;
 
 bool DialogModel::HasField(ElementIdentifier id) const {
-  return base::ranges::any_of(contents_.fields(),
-                              [id](auto& field) {
-                                // TODO(pbos): This does not
-                                // work recursively yet.
-                                CHECK_NE(field->type_,
-                                         DialogModelField::kSection);
-                                return field->id_ == id;
-                              }) ||
+  return std::ranges::any_of(contents_.fields(),
+                             [id](auto& field) {
+                               // TODO(pbos): This does not
+                               // work recursively yet.
+                               CHECK_NE(field->type_,
+                                        DialogModelField::kSection);
+                               return field->id_ == id;
+                             }) ||
          (ok_button_ && ok_button_->id_ == id) ||
          (cancel_button_ && cancel_button_->id_ == id) ||
          (extra_button_ && extra_button_->id_ == id);

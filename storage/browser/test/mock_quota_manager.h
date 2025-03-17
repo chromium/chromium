@@ -142,7 +142,6 @@ class MockQuotaManager : public QuotaManager {
 
   // Helper method for updating internal quota info.
   void SetQuota(const blink::StorageKey& storage_key,
-                blink::mojom::StorageType type,
                 int64_t quota);
 
   // Helper methods for timed-deletion testing:
@@ -246,9 +245,7 @@ class MockQuotaManager : public QuotaManager {
 
   // The list of stored buckets that have been added via AddBucket.
   std::vector<BucketData> buckets_;
-  std::map<std::pair<blink::StorageKey, blink::mojom::StorageType>,
-           StorageKeyQuota>
-      quota_map_;
+  std::map<blink::StorageKey, StorageKeyQuota> quota_map_;
   std::map<BucketLocator, BucketUsage, CompareBucketLocators> usage_map_;
 
   // Tracks number of times NotifyFailedWrite has been called per storage key.

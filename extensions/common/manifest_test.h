@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/common/extension.h"
@@ -181,9 +182,7 @@ class ManifestTest : public testing::Test {
              int flags);
   };
 
-  void RunTestcases(const Testcase* testcases,
-                    size_t num_testcases,
-                    ExpectType type);
+  void RunTestcases(base::span<const Testcase> testcases, ExpectType type);
 
   void RunTestcase(const Testcase& testcase, ExpectType type);
 

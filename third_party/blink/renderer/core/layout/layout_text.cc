@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -94,9 +95,10 @@ class SecureTextTimer;
 typedef HeapHashMap<WeakMember<const LayoutText>, Member<SecureTextTimer>>
     SecureTextTimerMap;
 static SecureTextTimerMap& GetSecureTextTimers() {
-  DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMap>, map,
-                      (MakeGarbageCollected<SecureTextTimerMap>()));
-  return *map;
+  using SecureTextTimerMapHolder = DisallowNewWrapper<SecureTextTimerMap>;
+  DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMapHolder>, holder,
+                      (MakeGarbageCollected<SecureTextTimerMapHolder>()));
+  return holder->Value();
 }
 
 class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
@@ -156,9 +158,12 @@ using SelectionDisplayItemClientMap =
     HeapHashMap<WeakMember<const LayoutText>,
                 Member<SelectionDisplayItemClient>>;
 SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
-  DEFINE_STATIC_LOCAL(Persistent<SelectionDisplayItemClientMap>, map,
-                      (MakeGarbageCollected<SelectionDisplayItemClientMap>()));
-  return *map;
+  using SelectionDisplayItemClientMapHolder =
+      DisallowNewWrapper<SelectionDisplayItemClientMap>;
+  DEFINE_STATIC_LOCAL(
+      Persistent<SelectionDisplayItemClientMapHolder>, holder,
+      (MakeGarbageCollected<SelectionDisplayItemClientMapHolder>()));
+  return holder->Value();
 }
 
 }  // anonymous namespace
@@ -238,7 +243,7 @@ void LayoutText::StyleDidChange(StyleDifference diff,
 
   // This is an optimization that kicks off font load before layout.
   if (!TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
-    new_style.GetFont().WillUseFontData(TransformedText());
+    new_style.GetFont()->WillUseFontData(TransformedText());
   }
 
   TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer();
@@ -260,12 +265,12 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
       Parent()->DirtyLinesFromChangedChild(this);
     }
     if (FirstInlineFragmentItemIndex()) {
-      DetachAbstractInlineTextBoxesIfNeeded();
+      DetachAxHooksIfNeeded();
       FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
     }
   } else if (FirstInlineFragmentItemIndex()) {
-    DetachAbstractInlineTextBoxesIfNeeded();
+    DetachAxHooksIfNeeded();
     ClearFirstInlineFragmentItemIndex();
   }
   DeleteTextBoxes();
@@ -297,10 +302,10 @@ void LayoutText::WillBeDestroyed() {
 
 void LayoutText::DeleteTextBoxes() {
   NOT_DESTROYED();
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
 }
 
-void LayoutText::DetachAbstractInlineTextBoxes() {
+void LayoutText::DetachAxHooks() {
   NOT_DESTROYED();
   // TODO(layout-dev): Because We should call |WillDestroy()| once for
   // associated fragments, when you reuse fragments, you should construct
@@ -310,14 +315,23 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
   InlineCursor cursor;
-  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
+  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
     AbstractInlineTextBox::WillDestroy(cursor);
+  }
+}
+
+void LayoutText::ClearBlockFlowCachedData() {
+  NOT_DESTROYED();
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->ClearBlockFlowCachedData(this);
+    cache->InlineTextBoxesUpdated(this);
+  }
 }
 
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   first_fragment_item_index_ = 0u;
 }
 
@@ -326,7 +340,7 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   CHECK(IsInLayoutNGInlineFormattingContext());
   // TODO(yosin): Call |AbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   // Changing the first fragment item index causes
   // LayoutText::FirstAbstractInlineTextBox to return a box,
   // so notify the AX object for this LayoutText that it might need to
@@ -722,7 +736,7 @@ bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   return WTF::VisitCharacters(text_, [&style](auto chars) {
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         chars, [&style](auto ch) { return style.IsCollapsibleWhiteSpace(ch); });
   });
 }
@@ -899,9 +913,7 @@ String LayoutText::TransformAndSecureText(const String& original,
     }
     auto [masked, secure_map] = SecureText(transformed, mask);
     if (!secure_map.IsEmpty()) {
-      offset_map = TextOffsetMap(
-          offset_map, secure_map,
-          RuntimeEnabledFeatures::TextTransformAndSecurityFixEnabled());
+      offset_map = TextOffsetMap(offset_map, secure_map);
     }
     return masked;
   }
@@ -949,6 +961,7 @@ std::pair<String, TextOffsetMap> LayoutText::SecureText(const String& plain,
 void LayoutText::SetVariableLengthTransformResult(
     wtf_size_t original_length,
     const TextOffsetMap& offset_map) {
+  NOT_DESTROYED();
   if (offset_map.IsEmpty()) {
     ClearHasVariableLengthTransform();
     return;
@@ -960,6 +973,7 @@ void LayoutText::SetVariableLengthTransformResult(
 
 VariableLengthTransformResult LayoutText::GetVariableLengthTransformResult()
     const {
+  NOT_DESTROYED();
   return View()->GetVariableLengthTransformResult(*this);
 }
 
@@ -990,6 +1004,7 @@ void LayoutText::ForceSetText(String text) {
 
 void LayoutText::SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
     LayoutInvalidationReasonForTracing reason) {
+  NOT_DESTROYED();
   auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
   if (text_combine) [[unlikely]] {
     // Number of characters in text may change compressed font or scaling of
@@ -1426,7 +1441,7 @@ void LayoutText::SetInlineItems(InlineItemsData* data,
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   for (wtf_size_t i = begin; i < begin + size; i++) {
-    DCHECK_EQ(data->items[i].GetLayoutObject(), this);
+    DCHECK_EQ(data->items[i]->GetLayoutObject(), this);
   }
 #endif
   auto* items = GetInlineItems();

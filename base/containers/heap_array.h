@@ -169,13 +169,17 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   // If `count` is unspecified, all remaining elements are included. A CHECK()
   // occurs if any of the parameters results in an out-of-range position in
   // the HeapArray.
-  base::span<T> subspan(size_t offset,
-                        size_t count = base::dynamic_extent) LIFETIME_BOUND {
+  base::span<T> subspan(size_t offset) LIFETIME_BOUND {
+    return as_span().subspan(offset);
+  }
+  base::span<const T> subspan(size_t offset) const LIFETIME_BOUND {
+    return as_span().subspan(offset);
+  }
+  base::span<T> subspan(size_t offset, size_t count) LIFETIME_BOUND {
     return as_span().subspan(offset, count);
   }
   base::span<const T> subspan(size_t offset,
-                              size_t count = base::dynamic_extent) const
-      LIFETIME_BOUND {
+                              size_t count) const LIFETIME_BOUND {
     return as_span().subspan(offset, count);
   }
 

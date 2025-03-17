@@ -9,7 +9,7 @@
 
 // This class stores all the data associated with an NTP Most Visited tile
 // suggestion in an NSCoding-enabled format.
-@interface NTPTile : NSObject<NSCoding>
+@interface NTPTile : NSObject <NSCoding>
 
 // The most visited site's title.
 @property(readonly, atomic) NSString* title;

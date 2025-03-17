@@ -25,7 +25,6 @@ source_set("public") {
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/common:user_agent",
-    "//ios/web/public/deprecated",
   ]
 
   sources = [

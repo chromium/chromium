@@ -9,7 +9,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.GridView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class is to have the constructors for the suggestions view */
+@NullMarked
 public class ColorPickerSuggestionsView extends GridView {
     public ColorPickerSuggestionsView(Context context) {
         super(context);

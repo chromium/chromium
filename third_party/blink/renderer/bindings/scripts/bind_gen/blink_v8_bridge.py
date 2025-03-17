@@ -5,6 +5,7 @@
 import web_idl
 
 from . import name_style
+from .union_name_mapper import UnionNameMapper
 from .code_node import FormatNode
 from .code_node import Likeliness
 from .code_node import SymbolDefinitionNode
@@ -37,6 +38,9 @@ def blink_class_name(idl_definition):
             idl_definition.element_type.
             type_name_with_extended_attribute_key_values)
     elif isinstance(idl_definition, web_idl.Union):
+        # See if there are overrides.
+        if class_name := UnionNameMapper.instance().class_name(idl_definition):
+            return class_name
         # Technically this name is not guaranteed to be unique because
         # (X or sequence<Y or Z>) and (X or Y or sequence<Z>) have the same
         # name, but it's highly unlikely to cause a conflict in the actual use
@@ -402,7 +406,10 @@ def blink_type_info(idl_type):
         if inner_type.has_null_value:
             return inner_type
         if inner_type.is_heap_vector_type:
-            return TypeInfo(inner_type.typename,
+            # Since the type is Member<>, we need to used GCedHeapVector<T>
+            # as inner type as we require MakeGarbageCollected() for the
+            # vector type.
+            return TypeInfo("GCed{}".format(inner_type.typename),
                             member_fmt="Member<{}>",
                             ref_fmt="{}*",
                             const_ref_fmt="const {}*",
@@ -979,6 +986,7 @@ def typed_array_element_type(idl_type):
         'Uint32Array': 'unsigned long',
         'BigUint64Array': 'unsigned long long',
         'Uint8ClampedArray': 'octet',
+        'Float16Array': 'unsigned short',
         'Float32Array': 'unrestricted float',
         'Float64Array': 'unrestricted double',
     }

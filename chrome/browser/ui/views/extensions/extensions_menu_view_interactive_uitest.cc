@@ -6,7 +6,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -121,7 +120,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
   void TriggerExtensionButton(const std::string& id) {
     auto menu_items = GetExtensionMenuItemViews();
     auto iter =
-        base::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
+        std::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
           return view->view_controller()->GetId();
         });
     ASSERT_TRUE(iter != menu_items.end());

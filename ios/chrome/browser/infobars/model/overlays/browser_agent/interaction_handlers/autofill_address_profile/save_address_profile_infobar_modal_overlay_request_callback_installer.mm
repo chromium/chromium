@@ -46,8 +46,7 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     return;
   }
 
-  EditedProfileSaveAction* info =
-      response->GetInfo<EditedProfileSaveAction>();
+  EditedProfileSaveAction* info = response->GetInfo<EditedProfileSaveAction>();
   interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
 }
 

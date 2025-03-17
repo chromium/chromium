@@ -39,19 +39,17 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
-import org.chromium.components.search_engines.test.util.SearchEnginesFeaturesTestUtil;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @SmallTest
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -383,18 +381,22 @@ public class SearchEngineChoiceServiceUnitTest {
             boolean isClayBlockingEnabled,
             boolean isDarkLaunchEnabled,
             @Nullable Integer defaultBrowserPromoSuppressedMillis) {
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
         if (isClayBlockingEnabled) {
-            Map<String, String> params = new HashMap<>();
-            params.put("is_dark_launch", isDarkLaunchEnabled ? "true" : "");
-            params.put("dialog_timeout_millis", "0");
+            overrides =
+                    overrides
+                            .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                            .param("is_dark_launch", isDarkLaunchEnabled ? "true" : "")
+                            .param("dialog_timeout_millis", 0);
             if (defaultBrowserPromoSuppressedMillis != null) {
-                params.put(
-                        "default_browser_promo_suppressed_millis",
-                        defaultBrowserPromoSuppressedMillis.toString());
+                overrides =
+                        overrides.param(
+                                "default_browser_promo_suppressed_millis",
+                                defaultBrowserPromoSuppressedMillis);
             }
-            SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(params);
         } else {
-            SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(null);
+            overrides = overrides.disable(SearchEnginesFeatures.CLAY_BLOCKING);
         }
+        overrides.apply();
     }
 }

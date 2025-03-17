@@ -16,6 +16,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -23,13 +26,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Java side of native MessageWrapper class that represents a message for native features. */
 @JNINamespace("messages")
+@NullMarked
 public final class MessageWrapper implements ListMenu.Delegate {
     private long mNativeMessageWrapper;
     private final PropertyModel mMessageProperties;
-    private MessageSecondaryMenuItems mMessageSecondaryMenuItems;
+    private @MonotonicNonNull MessageSecondaryMenuItems mMessageSecondaryMenuItems;
 
     /**
      * Creates an instance of MessageWrapper and links it with native MessageWrapper object.
+     *
      * @param nativeMessageWrapper Pointer to native MessageWrapper.
      * @param messageIdentifier Message identifier of the new message.
      * @return reference to created MessageWrapper.
@@ -73,7 +78,7 @@ public final class MessageWrapper implements ListMenu.Delegate {
     }
 
     @CalledByNative
-    String getDescription() {
+    @Nullable String getDescription() {
         CharSequence description = mMessageProperties.get(MessageBannerProperties.DESCRIPTION);
         return description == null ? null : description.toString();
     }
@@ -151,7 +156,7 @@ public final class MessageWrapper implements ListMenu.Delegate {
                 itemId, resourceId, itemText, itemDescription);
     }
 
-    MessageSecondaryMenuItems getMessageSecondaryMenuItemsForTesting() {
+    @Nullable MessageSecondaryMenuItems getMessageSecondaryMenuItemsForTesting() {
         return mMessageSecondaryMenuItems;
     }
 

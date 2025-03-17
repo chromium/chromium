@@ -15,7 +15,8 @@ namespace collaboration {
 
 // Helper class responsible for bridging the CollaborationService between
 // C++ and Java.
-class CollaborationServiceAndroid : public base::SupportsUserData::Data {
+class CollaborationServiceAndroid : public base::SupportsUserData::Data,
+                                    public CollaborationService::Observer {
  public:
   explicit CollaborationServiceAndroid(CollaborationService* service);
   ~CollaborationServiceAndroid() override;
@@ -23,6 +24,13 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data {
   // CollaborationService Java API methods, implemented by native service:
   bool IsEmptyService(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& j_caller);
+  void StartJoinFlow(JNIEnv* env,
+                     jlong delegate,
+                     const base::android::JavaParamRef<jobject>& j_url);
+  void StartShareOrManageFlow(
+      JNIEnv* env,
+      jlong delegate,
+      const base::android::JavaParamRef<jstring>& j_sync_group_id);
   base::android::ScopedJavaLocalRef<jobject> GetServiceStatus(JNIEnv* env);
   jint GetCurrentUserRoleForGroup(
       JNIEnv* env,
@@ -30,9 +38,18 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data {
   jni_zero::ScopedJavaLocalRef<jobject> GetGroupData(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& group_id);
+  void LeaveGroup(JNIEnv* env,
+                  const base::android::JavaParamRef<jstring>& group_id,
+                  const base::android::JavaParamRef<jobject>& j_callback);
+  void DeleteGroup(JNIEnv* env,
+                   const base::android::JavaParamRef<jstring>& group_id,
+                   const base::android::JavaParamRef<jobject>& j_callback);
 
   // Returns the CollaborationServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+
+  // CollaborationService::Observer overrides.
+  void OnServiceStatusChanged(const ServiceStatusUpdate& update) override;
 
  private:
   // A reference to the Java counterpart of this class.  See

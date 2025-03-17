@@ -42,12 +42,9 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
   // Removes |host| from the set |hosts_|.
   void RemoveHost(aura::WindowTreeHost* host);
 
-#if BUILDFLAG(IS_WIN)
-  // Initialize the observer that will report system cursor size and visibility
-  // state.
-  virtual void InitSystemCursorObservers(
+  // Initialize the observer that will report system cursor size.
+  virtual void InitCursorSizeObserver(
       wm::NativeCursorManagerDelegate* delegate);
-#endif
 
  private:
   // Overridden from wm::NativeCursorManager:
@@ -59,9 +56,14 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
                      wm::NativeCursorManagerDelegate* delegate) override;
   void SetCursorSize(ui::CursorSize cursor_size,
                      wm::NativeCursorManagerDelegate* delegate) override;
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      wm::NativeCursorManagerDelegate* delegate) override;
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override;
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override;
 
   // The set of hosts to notify of changes in cursor state.
   using Hosts = std::set<raw_ptr<aura::WindowTreeHost, SetExperimental>>;

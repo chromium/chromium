@@ -102,7 +102,7 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
 
   // Returns User instance of the given |browser_context|. If not found,
   // returns nullptr.
-  const user_manager::User* GetUserByBrowserContext(
+  user_manager::User* GetUserByBrowserContext(
       content::BrowserContext* browser_context);
 
   // Returns user browser context dir in a format of "u-${user_id_hash}".
@@ -124,9 +124,6 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // Similar to GetSigninBrowserContext, but if not yet created,
   // this loads the BrowserContext instance, instead of returning nullptr.
   content::BrowserContext* DeprecatedGetOrCreateSigninBrowserContext();
-
-  // Returns the path of lock-screen-app browser context.
-  base::FilePath GetLockScreenAppBrowserContextPath() const;
 
   // Returns the path of lock-screen browser context.
   base::FilePath GetLockScreenBrowserContextPath() const;

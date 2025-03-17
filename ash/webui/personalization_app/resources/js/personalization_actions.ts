@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
-import {Action} from 'chrome://resources/js/store.js';
+import type {SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import type {Action} from 'chrome://resources/js/store.js';
 
-import {AmbientActions} from './ambient/ambient_actions.js';
-import {KeyboardBacklightActions} from './keyboard_backlight/keyboard_backlight_actions.js';
-import {PersonalizationStateError} from './personalization_state.js';
-import {ThemeActions} from './theme/theme_actions.js';
-import {UserActions} from './user/user_actions.js';
-import {WallpaperActions} from './wallpaper/wallpaper_actions.js';
+import type {AmbientActions} from './ambient/ambient_actions.js';
+import type {KeyboardBacklightActions} from './keyboard_backlight/keyboard_backlight_actions.js';
+import type {PersonalizationStateError} from './personalization_state.js';
+import type {ThemeActions} from './theme/theme_actions.js';
+import type {UserActions} from './user/user_actions.js';
+import type {WallpaperActions} from './wallpaper/wallpaper_actions.js';
 
 /**
  * @fileoverview Defines the actions to change state.

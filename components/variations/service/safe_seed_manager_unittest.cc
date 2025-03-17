@@ -53,7 +53,7 @@ class FakeSeedStore : public VariationsSeedStore {
                                 /*entropy_providers=*/nullptr),
                             version_info::Channel::UNKNOWN,
                             /*seed_file_dir=*/base::FilePath(),
-                            /*entropy_provider=*/nullptr) {
+                            /*entropy_providers=*/nullptr) {
     VariationsSeedStore::RegisterPrefs(local_state->registry());
   }
 

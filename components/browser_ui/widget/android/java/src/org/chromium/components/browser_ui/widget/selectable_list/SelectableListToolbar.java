@@ -36,9 +36,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
@@ -54,15 +57,18 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * A toolbar that changes its view depending on whether a selection is established. The toolbar
- * also optionally shows a search view depending on whether {@link #initializeSearchView()} has
- * been called.
+ * A toolbar that changes its view depending on whether a selection is established. The toolbar also
+ * optionally shows a search view depending on whether {@link #initializeSearchView()} has been
+ * called.
  *
  * @param <E> The type of the selectable items this toolbar interacts with.
  */
+@NullMarked
 public class SelectableListToolbar<E> extends Toolbar
         implements SelectionObserver<E>,
                 OnClickListener,
@@ -102,22 +108,40 @@ public class SelectableListToolbar<E> extends Toolbar
         int NORMAL_VIEW_BACK = 3;
     }
 
+    // These are used to track whether there is actually a change in selection state, so that we can
+    // correctly make a11y announcements.
     protected boolean mIsSelectionEnabled;
+    // When we assign mSelectedItems, make sure we copy the contents so that we can properly track
+    // whether the content actually changed.
+    @Nullable private Set<E> mSelectedItems;
+
+    @SuppressWarnings("NullAway.Init")
     protected SelectionDelegate<E> mSelectionDelegate;
 
     private final ObservableSupplierImpl<Boolean> mIsSearchingSupplier =
             new ObservableSupplierImpl<>();
     private boolean mHasSearchView;
+
+    @SuppressWarnings("NullAway.Init")
     private LinearLayout mSearchView;
+
+    @SuppressWarnings("NullAway.Init")
     private EditText mSearchEditText;
+
+    @SuppressWarnings("NullAway.Init")
     private ImageButton mClearTextButton;
+
+    @SuppressWarnings("NullAway.Init")
     private SearchDelegate mSearchDelegate;
+
     private boolean mSearchEnabled;
     private boolean mUpdateStatusBarColor;
     private boolean mShowBackInNormalView;
 
     protected NumberRollView mNumberRollView;
-    private Drawable mMenuButton;
+    private @Nullable Drawable mMenuButton;
+
+    @SuppressWarnings("NullAway.Init")
     private Drawable mNavigationIconDrawable;
 
     private @NavigationButton int mNavigationButton;
@@ -129,9 +153,9 @@ public class SelectableListToolbar<E> extends Toolbar
 
     private @ColorInt int mNormalBackgroundColor;
     private @ColorInt int mSearchBackgroundColor;
-    private ColorStateList mIconColorList;
+    private @Nullable ColorStateList mIconColorList;
 
-    private UiConfig mUiConfig;
+    private @Nullable UiConfig mUiConfig;
     private int mWideDisplayStartOffsetPx;
     private int mModernNavButtonStartOffsetPx;
     private int mModernToolbarActionMenuEndOffsetPx;
@@ -214,6 +238,14 @@ public class SelectableListToolbar<E> extends Toolbar
 
         mSelectionDelegate = delegate;
         mSelectionDelegate.addObserver(this);
+        // Initialize the selection state so that if selection is already enabled,
+        // mIsSelectionEnabled correctly tracks that instead of defaulting to false.
+        mIsSelectionEnabled = mSelectionDelegate.isSelectionEnabled();
+        mSelectedItems = new HashSet<>(mSelectionDelegate.getSelectedItems());
+        // If we're already in selection mode, show the selection mode.
+        if (mIsSelectionEnabled) {
+            showSelectionView(mSelectionDelegate.getSelectedItemsAsList(), mIsSelectionEnabled);
+        }
 
         mModernNavButtonStartOffsetPx =
                 getResources()
@@ -311,6 +343,8 @@ public class SelectableListToolbar<E> extends Toolbar
     public void onSelectionStateChange(List<E> selectedItems) {
         boolean wasSelectionEnabled = mIsSelectionEnabled;
         mIsSelectionEnabled = mSelectionDelegate.isSelectionEnabled();
+        Set<E> previouslySelectedItems = mSelectedItems;
+        mSelectedItems = new HashSet<>(selectedItems);
 
         // If onSelectionStateChange() gets called before onFinishInflate(), mNumberRollView
         // will be uninitialized. See crbug.com/637948.
@@ -326,14 +360,24 @@ public class SelectableListToolbar<E> extends Toolbar
             showNormalView();
         }
 
+        // Handle a11y announcements
+        if (wasSelectionEnabled == mIsSelectionEnabled
+                && mSelectedItems.equals(previouslySelectedItems)) {
+            // If there's no actual change in selection state, don't announce anything.
+            return;
+        }
+        // Otherwise, make an appropriate announcement.
         if (mIsSelectionEnabled) {
             @StringRes
             int resId =
                     wasSelectionEnabled
                             ? R.string.accessibility_toolbar_multi_select
                             : R.string.accessibility_toolbar_screen_position;
-            announceForAccessibility(
-                    getContext().getString(resId, Integer.toString(selectedItems.size())));
+            ViewCompat.setAccessibilityPaneTitle(
+                    this, getContext().getString(resId, Integer.toString(selectedItems.size())));
+        } else {
+            ViewCompat.setAccessibilityPaneTitle(
+                    this, getContext().getString(R.string.accessibility_toolbar_exit_select));
         }
     }
 
@@ -678,7 +722,7 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     @Override
-    public void setTitle(CharSequence title) {
+    public void setTitle(@Nullable CharSequence title) {
         super.setTitle(title);
 
         // The super class adds an AppCompatTextView for the title which not focusable by default.

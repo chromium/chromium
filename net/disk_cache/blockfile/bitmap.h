@@ -8,10 +8,11 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
+
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
-#include "base/ranges/algorithm.h"
 #include "net/base/net_export.h"
 
 namespace disk_cache {
@@ -52,7 +53,7 @@ class NET_EXPORT_PRIVATE Bitmap {
 
   // Sets all the bits to true or false.
   void SetAll(bool value) {
-    base::ranges::fill(map_, (value ? 0xFFFFFFFFu : 0x00u));
+    std::ranges::fill(map_, (value ? 0xFFFFFFFFu : 0x00u));
   }
 
   // Clears all bits in the bitmap

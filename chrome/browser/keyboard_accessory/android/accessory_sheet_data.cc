@@ -4,9 +4,10 @@
 
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 

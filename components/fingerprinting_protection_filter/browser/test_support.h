@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_TEST_SUPPORT_H_
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_TEST_SUPPORT_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/raw_ptr.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
@@ -24,17 +24,22 @@ class TestSupport {
   TestSupport& operator=(const TestSupport&) = delete;
 
   privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return &tracking_protection_settings_;
+    return tracking_protection_settings_.get();
+  }
+
+  HostContentSettingsMap* content_settings() {
+    return host_content_settings_map_.get();
   }
 
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
  private:
-  scoped_refptr<HostContentSettingsMap> InitializePrefs();
+  void InitializePrefsAndContentSettings();
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
-  privacy_sandbox::TrackingProtectionSettings tracking_protection_settings_;
+  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
 };
 
 }  // namespace fingerprinting_protection_filter

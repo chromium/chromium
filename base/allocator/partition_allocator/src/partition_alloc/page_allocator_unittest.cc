@@ -265,8 +265,9 @@ TEST(PartitionAllocPageAllocatorTest,
       reinterpret_cast<BTITestFunction>(buffer + invalid_offset);
   EXPECT_EQ(bti_enabled_fn(15), 18);
   // Next, attempt to call the function without the entrypoint.
-  EXPECT_EXIT({ bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
-              "");  // Should crash with SIGILL.
+  EXPECT_EXIT(
+      { bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
+      "");  // Should crash with SIGILL.
   FreePages(buffer, PageAllocationGranularity());
 #else
   PA_NOTREACHED();
@@ -633,7 +634,17 @@ TEST(PartitionAllocPageAllocatorTest, MappedPagesAccounting) {
   }
 }
 
-TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
+#if PA_BUILDFLAG(IS_IOS)
+// MAP_JIT is not supported without the com.apple.developer.cs.allow-jit
+// entitlement which unittests do not have. To toggle W^X of pages
+// BrowserEngineKit library is needed which is not supported
+// until the 17.4 SDK.
+#define MAYBE_AllocInaccessibleWillJitLater \
+  DISABLED_AllocInaccessibleWillJitLater
+#else
+#define MAYBE_AllocInaccessibleWillJitLater AllocInaccessibleWillJitLater
+#endif  // PA_BUILDFLAG(IS_IOS)
+TEST(PartitionAllocPageAllocatorTest, MAYBE_AllocInaccessibleWillJitLater) {
   // Verify that kInaccessibleWillJitLater allows read/write, and read/execute
   // permissions to be set.
   uintptr_t buffer =

@@ -145,6 +145,7 @@ ClientSideDetectionService::~ClientSideDetectionService() {
 
 void ClientSideDetectionService::Shutdown() {
   url_loader_factory_.reset();
+  delegate_->StopListeningToOnDeviceModelUpdate();
   delegate_.reset();
   enabled_ = false;
   client_side_phishing_model_.reset();
@@ -166,7 +167,6 @@ void ClientSideDetectionService::OnPrefsUpdated() {
 
   enabled_ = enabled;
   extended_reporting_ = extended_reporting;
-
   if (enabled_ && client_side_phishing_model_) {
     update_model_subscription_ = client_side_phishing_model_->RegisterCallback(
         base::BindRepeating(&ClientSideDetectionService::SendModelToRenderers,
@@ -174,15 +174,13 @@ void ClientSideDetectionService::OnPrefsUpdated() {
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       client_side_phishing_model_->SubscribeToImageEmbedderOptimizationGuide();
       if (base::FeatureList::IsEnabled(
-              kClientSideDetectionBrandAndIntentForScamDetection)) {
+              kClientSideDetectionBrandAndIntentForScamDetection) ||
+          base::FeatureList::IsEnabled(
+              kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
         delegate_->StartListeningToOnDeviceModelUpdate();
       }
     } else {
-      if (base::FeatureList::IsEnabled(
-              kClientSideDetectionBrandAndIntentForScamDetection)) {
-        delegate_->StopListeningToOnDeviceModelUpdate();
-        on_device_model_available_ = false;
-      }
+      UnsubscribeToModelSubscription();
     }
   } else {
     // Invoke pending callbacks with a false verdict.
@@ -193,11 +191,27 @@ void ClientSideDetectionService::OnPrefsUpdated() {
             .Run(info->phishing_url, false, std::nullopt, std::nullopt);
       }
     }
+
+    // Unsubscribe to any SafeBrowsing preference related subscriptions if the
+    // SafeBrowsing enabled state is false entirely or
+    // client_side_phishing_model_ is unavailable.
+    UnsubscribeToModelSubscription();
+
     client_phishing_reports_.clear();
     cache_.clear();
   }
 
   SendModelToRenderers();  // always refresh the renderer state
+}
+
+void ClientSideDetectionService::UnsubscribeToModelSubscription() {
+  delegate_->StopListeningToOnDeviceModelUpdate();
+  on_device_model_available_ = false;
+  // We will check for the model object below because we also call this function
+  // when the model object is not available.
+  if (client_side_phishing_model_) {
+    client_side_phishing_model_->UnsubscribeToImageEmbedderOptimizationGuide();
+  }
 }
 
 void ClientSideDetectionService::NotifyOnDeviceModelAvailable() {
@@ -749,9 +763,7 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
 
     const TfLiteModelMetadata::Threshold& thresholds = result->second;
 
-    if (base::FeatureList::IsEnabled(
-            kSafeBrowsingPhishingClassificationESBThreshold) &&
-        delegate_ && delegate_->GetPrefs() &&
+    if (delegate_ && delegate_->GetPrefs() &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       if (verdict->tflite_model_scores().at(i).value() >=
           thresholds.esb_threshold()) {
@@ -807,13 +819,33 @@ ClientSideDetectionService::RegisterCallbackForModelUpdates(
   return client_side_phishing_model_->RegisterCallback(callback);
 }
 
+void ClientSideDetectionService::ResetOnDeviceSession() {
+  // Because of the use of DeleteSoon below, we can't guarantee that session_
+  // is still available when the callback is invoked.
+  if (session_) {
+    // Reset session immediately so that future inference is not affected by the
+    // old context.
+    // TODO(crbug.com/380928557): Call session_.reset() directly once
+    // crbug.com/384774788 is fixed.
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                   std::move(session_));
+  }
+}
+
 void ClientSideDetectionService::InquireOnDeviceModel(
     ClientPhishingRequest* verdict,
     std::string rendered_texts,
     base::OnceCallback<
         void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
         callback) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
+      IsOnDeviceModelAvailable());
+
   if (!IsOnDeviceModelAvailable()) {
+    // When the model is not available at the time of inquiry, we want to log
+    // the current status of the model fetch.
+    delegate_->LogOnDeviceModelEligibilityReason();
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -885,12 +917,7 @@ void ClientSideDetectionService::ModelExecutionCallback(
 
   LogOnDeviceModelExecutionParse(true);
 
-  CHECK(session_);
-  // TODO: Currently, due to the lifetime of session and its deletion when the
-  // model execution finishes, this causes a crash. crbug.com/384774788 tracks
-  // the ergonomic approach to deleting the session, but we can call DeleteSoon
-  // for this session.
-  // session_.reset();
+  ResetOnDeviceSession();
 
   if (inquire_on_device_model_callback_) {
     std::move(inquire_on_device_model_callback_).Run(scam_detection_response);

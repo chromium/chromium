@@ -36,6 +36,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
   }
 };
 
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
+    StructTraits<network::mojom::LockNameDataView, std::string> {
+  static bool Read(network::mojom::LockNameDataView data,
+                   std::string* out_value);
+
+  static const std::string& data(const std::string& input) { return input; }
+};
+
 }  // namespace mojo
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_SHARED_STORAGE_MOJOM_TRAITS_H_

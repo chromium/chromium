@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -21,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/base_paths.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -146,6 +146,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tpm/prepare_tpm.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/ui/base/app_types.h"
@@ -155,8 +156,6 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/flags_ui/flags_ui_metrics.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -185,6 +184,8 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
+#include "components/webui/flags/flags_ui_metrics.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -608,7 +609,6 @@ UserSessionManager::UserSessionManager()
       authenticator_(nullptr),
       has_auth_cookies_(false),
       user_sessions_restored_(false),
-      user_sessions_restore_in_progress_(false),
       should_obtain_handles_(true),
       should_launch_browser_(true),
       waiting_for_child_account_status_(false),
@@ -742,7 +742,7 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
       auto* user_manager = user_manager::UserManager::Get();
       bool new_user_can_become_owner =
           !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
-          user_manager->GetUsers().empty();
+          user_manager->GetPersistedUsers().empty();
       authenticator_ = new AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>(),
           base::BindRepeating(&RecordKnownUser), new_user_can_become_owner,
@@ -773,7 +773,7 @@ void UserSessionManager::StartSession(
 
   VLOG(1) << "Starting user session.";
   PreStartSession(start_session_type);
-  CreateUserSession(user_context, has_auth_cookies);
+  CreateUserSession(user_context, has_auth_cookies, has_active_session);
 
   if (!has_active_session)
     StartCrosSession();
@@ -832,7 +832,6 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
 }
 
 void UserSessionManager::RestoreActiveSessions() {
-  user_sessions_restore_in_progress_ = true;
   SessionManagerClient::Get()->RetrieveActiveSessions(
       base::BindOnce(&UserSessionManager::OnRestoreActiveSessions,
                      GetUserSessionManagerAsWeakPtr()));
@@ -841,11 +840,6 @@ void UserSessionManager::RestoreActiveSessions() {
 bool UserSessionManager::UserSessionsRestored() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return user_sessions_restored_;
-}
-
-bool UserSessionManager::UserSessionsRestoreInProgress() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return user_sessions_restore_in_progress_;
 }
 
 void UserSessionManager::SetFirstLoginPrefs(
@@ -1180,14 +1174,53 @@ void UserSessionManager::StopChildStatusObserving(Profile* profile) {
 }
 
 void UserSessionManager::CreateUserSession(const UserContext& user_context,
-                                           bool has_auth_cookies) {
+                                           bool has_auth_cookies,
+                                           bool has_active_session) {
   user_context_ = user_context;
   has_auth_cookies_ = has_auth_cookies;
   ProcessAppModeSwitches();
   StoreUserContextDataBeforeProfileIsCreated();
-  session_manager::SessionManager::Get()->CreateSession(
-      user_context_.GetAccountId(), user_context_.GetUserIDHash(),
-      user_context.GetUserType() == user_manager::UserType::kChild);
+
+  // Ensure there's user to be logged in.
+  // TODO(hidehiko): probably we should have better place to guarantee User
+  // registered much before this stage. Investigate further.
+  const AccountId& account_id = user_context_.GetAccountId();
+  auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
+  auto& session_manager = CHECK_DEREF(session_manager::SessionManager::Get());
+
+  // Find persisted user.
+  user_manager::User* persisted_user = nullptr;
+  for (auto& user : user_manager.GetPersistedUsers()) {
+    if (user->GetAccountId() == account_id) {
+      persisted_user = user.get();
+      break;
+    }
+  }
+
+  bool created = false;
+  if (session_manager.sessions().empty()) {
+    // Primary session login.
+    user_manager::UserType user_type = user_manager.CalculateUserType(
+        account_id, persisted_user,
+        /*browser_restart=*/false,
+        user_context_.GetUserType() == user_manager::UserType::kChild);
+    // TODO(crbug.com/278643115): Make sure user_type and
+    // user_context_.GetUserType() are the same value, and then remove
+    // CalculateUserType call.
+
+    // Note: we call EnsureUser even if there's persisted_user,
+    // which may update user type between kRegular and kChild.
+    created = user_manager.EnsureUser(
+        account_id, user_type, user_manager.IsEphemeralAccountId(account_id));
+  } else {
+    CHECK(persisted_user);
+    // TODO(crbug.com/278643115): Make sure persisted_user's type and
+    // user_context_.GetUserType() are the same value.
+  }
+
+  session_manager.CreateSession(user_context_.GetAccountId(),
+                                user_context_.GetUserIDHash(), created,
+                                has_active_session);
 }
 
 void UserSessionManager::PreStartSession(StartSessionType start_session_type) {
@@ -2232,7 +2265,6 @@ void UserSessionManager::RestorePendingUserSessions() {
 void UserSessionManager::NotifyPendingUserSessionsRestoreFinished() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   user_sessions_restored_ = true;
-  user_sessions_restore_in_progress_ = false;
   for (auto& observer : session_state_observer_list_)
     observer.PendingUserSessionsRestoreFinished();
 }

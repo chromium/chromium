@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -31,16 +32,24 @@
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/url_formatter/url_fixer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "omnibox_triggered_feature_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_unittest_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_features.h"  // nogncheck
+#endif
 
 using metrics::OmniboxEventProto;
 using Selection = OmniboxPopupSelection;
@@ -66,9 +75,6 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void OnMatchIconUpdated(size_t match_index) override {}
   void OnDragCanceled() override {}
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override {}
-  std::u16string GetAccessibleButtonTextForResult(size_t line) const override {
-    return u"";
-  }
 };
 
 void OpenUrlFromEditBox(OmniboxController* controller,
@@ -657,6 +663,15 @@ TEST_F(OmniboxEditModelTest,
 class OmniboxEditModelPopupTest : public ::testing::Test {
  public:
   OmniboxEditModelPopupTest() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // `kExperimentalOmniboxLabs` feature flag has to be enabled
+    // before the test client initialization for the `UnscopedExtensionProvider`
+    // to be initialized. The provider is needed for
+    // `GetIconForExtensionWithImageURL` test.
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExperimentalOmniboxLabs);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     EXPECT_CALL(*omnibox_client, GetPrefs())
         .WillRepeatedly(Return(pref_service()));
@@ -687,6 +702,7 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestOmniboxView> view_;
@@ -1323,6 +1339,215 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
   EXPECT_EQ(FeedbackType::kNone, result->match_at(1)->feedback_type);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests the `GetMatchIcon()` method, verifying that a page favicon is used for
+// `URL_WHAT_YOU_TYPED` matches.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForUrlWhatYouTypedUsesPageFavicon) {
+  const GURL kUrl("https://foo.com");
+
+  GURL page_url;
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&page_url), Return(gfx::Image())));
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _)).Times(0);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = kUrl;
+
+  gfx::Image image = model()->GetMatchIcon(match, 0);
+  EXPECT_EQ(page_url, kUrl);
+}
+
+// Tests the `GetMatchIcon()` method, verifying that a keyword favicon is used
+// for `FEATURED_ENTERPRISE_SEARCH` matches with `kSiteSearch` policy origin.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForFeaturedEnterpriseSiteSearchUsesKeywordFavicon) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _)).Times(0);
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _))
+      .WillOnce(Return(expected_image));
+
+  TemplateURLData data;
+  data.SetKeyword(u"sitesearch");
+  data.SetURL("https://sitesearch.com");
+  data.featured_by_policy = true;
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH;
+  match.destination_url = GURL("https://sitesearch.com");
+  match.keyword = u"sitesearch";
+  match.associated_keyword = std::make_unique<AutocompleteMatch>(match);
+
+  gfx::Image image = model()->GetMatchIcon(match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
+
+// Tests the `GetMatchIcon()` method, verifying that no favicon is used for
+// `FEATURED_ENTERPRISE_SEARCH` matches with `kSearchAggregator` policy origin.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForFeaturedEnterpriseSearchAggregator) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _)).Times(0);
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _)).Times(0);
+
+  TemplateURLData data;
+  data.SetKeyword(u"searchaggregator");
+  data.SetURL("https://searchaggregator.com");
+  data.featured_by_policy = true;
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  // Creates a set of matches.
+  ACMatches matches;
+  AutocompleteMatch search_aggregator_match(
+      nullptr, 1350, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
+  search_aggregator_match.keyword = u"searchaggregator";
+  search_aggregator_match.associated_keyword =
+      std::make_unique<AutocompleteMatch>(search_aggregator_match);
+  search_aggregator_match.icon_url = GURL("https://aggregator.com/icon.png");
+  matches.push_back(search_aggregator_match);
+  AutocompleteMatch url_match(nullptr, 1000, false,
+                              AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  url_match.keyword = u"match";
+  matches.push_back(url_match);
+  AutocompleteResult* result =
+      &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Sets the popup rich suggestion bitmap for search aggregator match.
+  model()->SetPopupRichSuggestionBitmap(0, bitmap);
+
+  gfx::Image image = model()->GetMatchIcon(search_aggregator_match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
+
+// Tests the `GetMatchIcon()` method, verifying that the icon served by a URL,
+// if one is supplied with a content suggestion, is returned.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForFeaturedEnterpriseSearchAggregatorContentSuggestion) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorBLUE);
+
+  // Creates a set of matches.
+  ACMatches matches;
+  AutocompleteMatch search_aggregator_match(
+      nullptr, 1350, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
+  search_aggregator_match.keyword = u"searchaggregator";
+  search_aggregator_match.associated_keyword =
+      std::make_unique<AutocompleteMatch>(search_aggregator_match);
+  search_aggregator_match.icon_url = GURL("https://aggregator.com/icon.png");
+  matches.push_back(search_aggregator_match);
+  AutocompleteMatch content_match(nullptr, 1000, false,
+                                  AutocompleteMatchType::NAVSUGGEST);
+  content_match.icon_url = GURL("https://example.com/icon.png");
+  matches.push_back(content_match);
+  AutocompleteResult* result =
+      &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Sets the popup rich suggestion bitmap for search aggregator match.
+  model()->SetPopupRichSuggestionBitmap(1, bitmap);
+
+  gfx::Image image = model()->GetMatchIcon(content_match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Tests the `GetMatchIcon()` method, verifying that the extension's icon is
+// returned when no url is specified for the match.
+TEST_F(OmniboxEditModelPopupTest, GetIconForExtensionWithNoImageURL) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  TemplateURLData data;
+  data.SetShortName(u"extension_name");
+  data.SetKeyword(u"api");
+  data.SetURL("https://extension.com");
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data, TemplateURL::OMNIBOX_API_EXTENSION,
+                                    "extension_id", base::Time::Now(), false));
+  ASSERT_TRUE(turl);
+
+  EXPECT_CALL(*client(), GetExtensionIcon(_)).WillOnce(Return(expected_image));
+
+  AutocompleteMatch match(
+      controller()->autocomplete_controller()->unscoped_extension_provider(), 0,
+      false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
+  match.keyword = u"api";
+
+  gfx::Image image = model()->GetMatchIcon(match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
+
+// Tests the `GetMatchIcon()` method, verifying that the favicon url from the
+// extension match is returned. This simulates the case  when the suggestion
+// from an extension has a `faviconUrl` set.
+TEST_F(OmniboxEditModelPopupTest, GetIconForExtensionWithImageURL) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  TemplateURLData data;
+  data.SetShortName(u"extension_name");
+  data.SetKeyword(u"api");
+  data.SetURL("https://extension.com");
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data, TemplateURL::OMNIBOX_API_EXTENSION,
+                                    "extension_id", base::Time::Now(), false));
+  ASSERT_TRUE(turl);
+
+  EXPECT_CALL(*client(), GetExtensionIcon(_)).Times(0);
+
+  AutocompleteMatch match(
+      controller()->autocomplete_controller()->unscoped_extension_provider(), 0,
+      false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
+  match.keyword = u"api";
+  match.image_url = GURL("https://www.google-icon.com");
+  match.provider =
+      controller()->autocomplete_controller()->unscoped_extension_provider();
+
+  // Creates a set of matches.
+  ACMatches matches;
+  matches.push_back(match);
+  AutocompleteResult* result =
+      &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Sets the popup rich suggestion bitmap for the extension match.
+  model()->SetPopupRichSuggestionBitmap(0, bitmap);
+
+  gfx::Image image = model()->GetMatchIcon(match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
   // Escape should incrementally revert temporary text, close the popup, clear
   // input, and blur the omnibox.
@@ -1476,4 +1701,63 @@ TEST_F(OmniboxEditModelTest, LogAnswerUsed) {
                                GURL(), std::u16string(), 0);
   histogram_tester.ExpectUniqueSample("Omnibox.SuggestionUsed.AnswerInSuggest",
                                       8, 1);
+}
+
+// Tests `GetPopupRichSuggestionBitmap()` method, verifying that no bitmap is
+// fetched when there is no match with an `associated_keyword`.
+TEST_F(OmniboxEditModelPopupTest,
+       GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword) {
+  // Setup match with no bitmap.
+  ACMatches matches;
+  AutocompleteMatch match_without_associated_keyword(
+      nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match_without_associated_keyword.keyword =
+      u"match_without_associated_keyword";
+  matches.push_back(match_without_associated_keyword);
+  auto* result = &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  const SkBitmap* actual_bitmap = model()->GetPopupRichSuggestionBitmap(
+      u"match_without_associated_keyword");
+
+  EXPECT_FALSE(actual_bitmap);
+}
+
+// Tests `GetPopupRichSuggestionBitmap()` method, verifying that the correct
+// bitmap is fetched when there is a match with an `associated_keyword`.
+TEST_F(OmniboxEditModelPopupTest,
+       GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword) {
+  SkBitmap expected_bitmap;
+  expected_bitmap.allocN32Pixels(16, 16);
+  expected_bitmap.eraseColor(SK_ColorRED);
+
+  // Setup matches and add to result.
+  ACMatches matches;
+  AutocompleteMatch match_without_bitmap(
+      nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match_without_bitmap.keyword = u"match_without_bitmap";
+  match_without_bitmap.associated_keyword =
+      std::make_unique<AutocompleteMatch>(match_without_bitmap);
+  matches.push_back(match_without_bitmap);
+  AutocompleteMatch match_with_bitmap(
+      nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match_with_bitmap.keyword = u"match_with_bitmap";
+  match_with_bitmap.associated_keyword =
+      std::make_unique<AutocompleteMatch>(match_with_bitmap);
+  matches.push_back(match_with_bitmap);
+  auto* result = &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Store bitmap for 'match_with_bitmap' match.
+  model()->rich_suggestion_bitmaps_.insert({1, expected_bitmap});
+
+  const SkBitmap* match_without_bitmap_bitmap =
+      model()->GetPopupRichSuggestionBitmap(u"match_without_bitmap");
+  EXPECT_FALSE(match_without_bitmap_bitmap);
+
+  const SkBitmap* match_with_bitmap_bitmap =
+      model()->GetPopupRichSuggestionBitmap(u"match_with_bitmap");
+  EXPECT_TRUE(match_with_bitmap_bitmap);
+  gfx::test::CheckColors(expected_bitmap.getColor(0, 0),
+                         match_with_bitmap_bitmap->getColor(0, 0));
 }

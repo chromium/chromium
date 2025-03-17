@@ -82,7 +82,7 @@ are treated in different ways during painting:
     *   [grid items](http://www.w3.org/TR/css-grid-1/#z-order)
     *   custom scrollbar parts
 
-    They are painted by `ObjectPainter::paintAllPhasesAtomically()` which
+    They are painted by `ObjectPainter::PaintAllPhasesAtomically()` which
     executes all of the steps of the painting algorithm explained in the
     documentation, except ignores any descendants which are positioned or have
     non-auto z-index (which is achieved by skipping descendants with
@@ -92,22 +92,18 @@ are treated in different ways during painting:
 
 ### Other glossaries
 
-*   Paint container: the parent of an object for painting, as defined by
-    [CSS2.1 spec for painting]((http://www.w3.org/TR/CSS21/zindex.html)). For
-    regular objects, this is the parent in the DOM. For stacked objects, it's
-    the containing stacking context-inducing object.
+*   [`PaintLayer`](paint_layer.h): an old implementation detail of Blink.
+    It represents some layout objects to handle a lot of operations about
+    painting and hit-testing. We would like to remove this class in the future.
+    See the documentation of the class for more details.
 
-*   Paint container chain: the chain of paint ancestors between an element and
-    the root of the page.
+*   Painting container: the parent of a `PaintLayer` in paint order.
+    For a stacked `PaintLayer`, it's the containing stacking-context-inducing
+    ancestor, otherwise it's the parent.
 
-*   Compositing container: an implementation detail of Blink, which uses
-    `PaintLayer`s to represent some layout objects. It is the ancestor along the
-    paint ancestor chain which has a PaintLayer. Implemented in
-    `PaintLayer::compositingContainer()`. Think of it as skipping intermediate
-    normal objects and going directly to the containing stacked object.
-
-*   Compositing container chain: same as paint chain, but for compositing
-    container.
+*   Painting container chain: the chain of painting containers between a
+    `PaintLayer` and the root of the frame or the page, depending on whether
+    we want to cross the frame boundaries.
 
 *   Visual rect: the bounding box of all pixels that will be painted by a
     for a [display item](../../platform/graphics/paint/README.md#display-items)
@@ -243,32 +239,22 @@ is created for the root `LayoutView`. During the tree walk, one
 `PaintInvalidatorContext` passed from the parent object. It tracks the painting
 layer which will initiate painting of the current object.
 
-[`PaintInvalidator`](PaintInvalidator.h) initializes `PaintInvalidatorContext`
+[`PaintInvalidator`](paint_invalidator.h) initializes `PaintInvalidatorContext`
 for the current object, then calls `LayoutObject::InvalidatePaint()` which
 calls the object's paint invalidator (e.g. `BoxPaintInvalidator`) to complete
 paint invalidation of the object.
 
 #### Paint invalidation of text
 
-Text is painted by `InlineTextBoxPainter` using `InlineTextBox` as display
-item client. Text backgrounds and masks are painted by `InlineTextFlowPainter`
-using `InlineFlowBox` as display item client. We should invalidate these display
-item clients when their painting will change.
-
-`LayoutInline`s and `LayoutText`s are marked for full paint invalidation if
-needed when new style is set on them. During paint invalidation, we invalidate
-the `InlineFlowBox`s directly contained by the `LayoutInline` in
-`LayoutInline::InvalidateDisplayItemClients()` and `InlineTextBox`s contained by
-the `LayoutText` in `LayoutText::InvalidateDisplayItemClients()`. We don't need
-to traverse into the subtree of `InlineFlowBox`s in
-`LayoutInline::InvalidateDisplayItemClients()` because the descendant
-`InlineFlowBox`s and `InlineTextBox`s will be handled by their owning
-`LayoutInline`s and `LayoutText`s, respectively, when changed style is
-propagated.
+Text is painted by `TextFragmentPainter` using
+`FragmentItem::GetDisplayItemClient()` (which is the containing `LayoutText` or
+`LayoutInline`) as the display item client. We should invalidate these display
+item clients when their painting will change, which is the same as paint
+invalidation of other `LayoutObject`s.
 
 #### Specialty of `::first-line`
 
-`::first-line` pseudo style dynamically applies to all `InlineBox`'s in the
+`::first-line` pseudo style dynamically applies to all `FragmentItem`'s in the
 first line in the block having `::first-line` style. The actual applied style is
 computed from the `::first-line` style and other applicable styles.
 
@@ -287,8 +273,8 @@ The normal paint invalidation of texts doesn't work for first line because:
 
 We have a special path for first line style change: the style system informs the
 layout system when the computed first-line style changes through
-`LayoutObject::FirstLineStyleDidChange()`. When this happens, we invalidate all
-`InlineBox`es in the first line.
+`LayoutObject::ApplyFirstLineChanges()`. When this happens, we invalidate all
+`LayoutObject`s contributing to the first line.
 
 ### Building paint property trees
 [`PaintPropertyTreeBuilder`](paint_property_tree_builder.h)
@@ -514,14 +500,23 @@ structures:
    and
    [`HitTestData::scroll_hit_test_rect`](../../platform/graphics/paint/hit_test_data.h)
 
-   Used to create
-   [non-fast scrollable regions](https://docs.google.com/document/d/1IyYJ6bVF7KZq96b_s5NrAzGtVoBXn_LQnya9y4yT3iw/view)
-   to prevent compositor scrolling of non-composited scrollers, plugins with
-   blocking scroll event handlers, and resize handles.
+   Used to create main-thread scroll hit-test regions (renamed from
+   [non-fast scrollable regions](https://docs.google.com/document/d/1IyYJ6bVF7KZq96b_s5NrAzGtVoBXn_LQnya9y4yT3iw/view))
+   to force main-thread hit test for non-composited scrollers with mixed
+   hit-test opaqueness, non-composited scrollbars, and resize handles.
 
    If `scroll_translation` is not null, this is also used to force a special
    cc::Layer that is marked as being scrollable when composited scrolling is
    needed for the scroller.
+
+5. [Hit-test opaqueness](../../../cc/input/hit_test_opaqueness.h)
+
+   Iindicates if a hit test can be reliably sent to a paint chunk directly or
+   ignored. During layerization, the [paint artifact compositor](../../platform/graphics/paint/README.md#paint-artifact-compositor)
+   will accumulate the hit-test opaqueness on paint chunks to cc::Layers, and
+   cc will use the information (as well as main-thread scroll hit-test regions)
+   to determine if a hit-test can be done directly on the compositor or must be
+   done on the main thread.
 
 ### Scrollbar painting
 

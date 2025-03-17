@@ -11,8 +11,8 @@ import {assertEquals, assertNotEquals, assertStringContains, assertTrue} from 'c
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('WallpaperPreviewElementTest', function() {
   let wallpaperPreviewElement: WallpaperPreviewElement|null;

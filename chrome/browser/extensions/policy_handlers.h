@@ -9,7 +9,6 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
@@ -20,6 +19,7 @@ class Schema;
 
 namespace extensions {
 
+#if !BUILDFLAG(IS_ANDROID)
 // Implements additional checks for policies that are lists of extension IDs.
 class ExtensionListPolicyHandler : public policy::ListPolicyHandler {
  public:
@@ -127,6 +127,7 @@ class ExtensionURLPatternListPolicyHandler
  private:
   const char* pref_path_;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ExtensionSettingsPolicyHandler
     : public policy::SchemaValidatingPolicyHandler {

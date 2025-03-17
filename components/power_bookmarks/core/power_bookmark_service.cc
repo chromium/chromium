@@ -4,8 +4,9 @@
 
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/common/power.h"
@@ -168,7 +169,7 @@ void PowerBookmarkService::AddDataProvider(
 void PowerBookmarkService::RemoveDataProvider(
     PowerBookmarkDataProvider* data_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(data_providers_, data_provider);
+  auto it = std::ranges::find(data_providers_, data_provider);
   if (it != data_providers_.end())
     data_providers_.erase(it);
 }

@@ -6,13 +6,13 @@
 
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_samples.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/process/current_process.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
@@ -24,7 +24,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_active_processes.pbzero.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_histogram_sample.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_user_event.pbzero.h"
 
@@ -39,24 +38,8 @@ using perfetto::protos::pbzero::ChromeProcessDescriptor;
 namespace tracing {
 namespace {
 
-constexpr char kHistogramSamplesCategory[] =
-    TRACE_DISABLED_BY_DEFAULT("histogram_samples");
 constexpr char kUserActionSamplesCategory[] =
     TRACE_DISABLED_BY_DEFAULT("user_action_samples");
-
-struct InternedHistogramName
-    : public perfetto::TrackEventInternedDataIndex<
-          InternedHistogramName,
-          perfetto::protos::pbzero::InternedData::kHistogramNamesFieldNumber,
-          const char*> {
-  static void Add(perfetto::protos::pbzero::InternedData* interned_data,
-                  size_t iid,
-                  const char* histogram_name) {
-    auto* msg = interned_data->add_histogram_names();
-    msg->set_iid(iid);
-    msg->set_name(histogram_name);
-  }
-};
 
 }  // namespace
 
@@ -105,6 +88,7 @@ void CustomEventRecorder::EmitRecurringUpdates() {
 void CustomEventRecorder::OnSetup(
     const perfetto::DataSourceBase::SetupArgs& args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+
   // The legacy chrome_config is only used to specify histogram names.
   auto legacy_config = TraceConfig(args.config->chrome_config().trace_config());
   ResetHistograms(legacy_config.histogram_names());
@@ -115,25 +99,6 @@ void CustomEventRecorder::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   EmitRecurringUpdates();
 
   bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kHistogramSamplesCategory, &enabled);
-  if (enabled) {
-    if (histograms_.empty() &&
-        !base::StatisticsRecorder::global_sample_callback()) {
-      // Add the global callback if it wasn't already.
-      base::StatisticsRecorder::SetGlobalSampleCallback(
-          &CustomEventRecorder::OnMetricsSampleCallback);
-    }
-    for (const std::string& histogram_name : histograms_) {
-      if (monitored_histograms_.count(histogram_name)) {
-        continue;
-      }
-      monitored_histograms_[histogram_name] = std::make_unique<
-          base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-          histogram_name,
-          base::BindRepeating(&CustomEventRecorder::OnMetricsSampleCallback));
-    }
-  }
-
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kUserActionSamplesCategory, &enabled);
   if (enabled) {
     auto task_runner = base::GetRecordActionTaskRunner();
@@ -158,14 +123,7 @@ void CustomEventRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
   // Write metadata events etc.
   LogHistograms();
 
-  // Clean up callbacks if no tracing sessions are recording samples.
   bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kHistogramSamplesCategory, &enabled);
-  if (!enabled) {
-    base::StatisticsRecorder::SetGlobalSampleCallback(nullptr);
-    monitored_histograms_.clear();
-  }
-
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kUserActionSamplesCategory, &enabled);
   if (!enabled) {
     auto task_runner = base::GetRecordActionTaskRunner();
@@ -219,8 +177,8 @@ void CustomEventRecorder::LogHistogram(base::HistogramBase* histogram) {
   }
   base::Pickle pickle;
   samples->Serialize(&pickle);
-  std::string buckets =
-      base::Base64Encode(std::string(pickle.data_as_char(), pickle.size()));
+  std::string buckets = base::Base64Encode(
+      std::string_view(pickle.data_as_char(), pickle.size()));
   TRACE_EVENT_INSTANT2("benchmark,uma", "UMAHistogramSamples",
                        TRACE_EVENT_SCOPE_PROCESS, "name",
                        histogram->histogram_name(), "buckets", buckets);
@@ -254,23 +212,8 @@ void CustomEventRecorder::LogHistograms() {
   }
 }
 
-// static
-void CustomEventRecorder::OnMetricsSampleCallback(
-    const char* histogram_name,
-    uint64_t name_hash,
-    base::HistogramBase::Sample sample) {
-  TRACE_EVENT_INSTANT(
-      kHistogramSamplesCategory, "HistogramSample",
-      [&](perfetto::EventContext ctx) {
-        perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
-            ctx.event()->set_chrome_histogram_sample();
-        new_sample->set_name_hash(name_hash);
-        new_sample->set_sample(sample);
-        if (!ctx.ShouldFilterDebugAnnotations()) {
-          size_t iid = InternedHistogramName::Get(&ctx, histogram_name);
-          new_sample->set_name_iid(iid);
-        }
-      });
+void CustomEventRecorder::DetachFromSequence() {
+  DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
 }
 
 }  // namespace tracing

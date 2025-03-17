@@ -40,7 +40,7 @@ bool IsOwnerUser() {
   }
   return !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
          (user_manager->IsCurrentUserOwner() ||
-          user_manager->GetUsers().size() == 1);
+          user_manager->GetPersistedUsers().size() == 1);
 }
 
 bool IsEphemeralOrMGS() {

@@ -179,6 +179,7 @@ class AutocompleteProvider
     TYPE_HISTORY_EMBEDDINGS = 1 << 21,
     TYPE_ENTERPRISE_SEARCH_AGGREGATOR = 1 << 22,
     TYPE_UNSCOPED_EXTENSION = 1 << 23,
+    TYPE_RECENTLY_CLOSED_TABS = 1 << 24,
     // When adding a value here, also update:
     // - omnibox_event.proto
     // - `AutocompleteProvider::AsOmniboxEventProviderType`
@@ -342,8 +343,6 @@ class AutocompleteProvider
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
 
-  typedef std::pair<bool, std::u16string> FixupReturn;
-
   virtual ~AutocompleteProvider();
 
   // Limits the size of `matches_` to `max_matches`. When ML scoring is enabled,
@@ -351,6 +350,16 @@ class AutocompleteProvider
   // this does not resize the list of matches, but instead marks all matches
   // beyond `max_matches` as zero relevance and `culled_by_provider`.
   void ResizeMatches(size_t max_matches, bool ml_scoring_enabled);
+
+  // If `input` is in keyword mode for a starter pack keyword, returns `input`
+  // with the keyword stripped and the starter pack's `TemplateURL`. E.g. for
+  // "@History text", the input 'text' and the `TemplateURL` for '@history' are
+  // returned. Otherwise, returns `input` untouched and `nullptr`.
+  using AdjustedInputAndStarterPackKeyword =
+      std::pair<AutocompleteInput, const TemplateURL*>;
+  static AdjustedInputAndStarterPackKeyword AdjustInputForStarterPackKeyword(
+      const AutocompleteInput& input,
+      TemplateURLService* turl_service);
 
   // Fixes up user URL input to make it more possible to match against.  Among
   // many other things, this takes care of the following:
@@ -366,6 +375,7 @@ class AutocompleteProvider
   // input text.  The returned string will be the same as the input string if
   // fixup failed; this lets callers who don't care about failure simply use the
   // string unconditionally.
+  using FixupReturn = std::pair<bool, std::u16string>;
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
 
   std::vector<raw_ptr<AutocompleteProviderListener, VectorExperimental>>

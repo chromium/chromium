@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 
 namespace blink {
 
@@ -26,30 +27,36 @@ constexpr uint32_t kMaxChannelCountSupported = 8;
 
 MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
     AudioNode& node,
-    uint32_t number_of_channels)
-    : AudioHandler(kNodeTypeMediaStreamAudioDestination,
+    uint32_t number_of_channels,
+    WebAudioDestinationConsumer* webaudio_consumer)
+    : AudioHandler(NodeType::kNodeTypeMediaStreamAudioDestination,
                    node,
                    node.context()->sampleRate()),
-      source_(static_cast<MediaStreamAudioDestinationNode&>(node).source()),
       mix_bus_(
           AudioBus::Create(number_of_channels,
                            GetDeferredTaskHandler().RenderQuantumFrames())) {
-  AddInput();
   SendLogMessage(__func__, "");
-  source_.Lock()->SetAudioFormat(static_cast<int>(number_of_channels),
-                                 node.context()->sampleRate());
+
+  AddInput();
+  consumer_bus_wrapper_.ReserveInitialCapacity(kMaxChannelCountSupported);
+  SetConsumer(webaudio_consumer,
+              static_cast<int>(number_of_channels),
+              node.context()->sampleRate());
   SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   Initialize();
 }
 
 scoped_refptr<MediaStreamAudioDestinationHandler>
-MediaStreamAudioDestinationHandler::Create(AudioNode& node,
-                                           uint32_t number_of_channels) {
+MediaStreamAudioDestinationHandler::Create(
+    AudioNode& node, uint32_t number_of_channels,
+    WebAudioDestinationConsumer* webaudio_consumer) {
   return base::AdoptRef(
-      new MediaStreamAudioDestinationHandler(node, number_of_channels));
+      new MediaStreamAudioDestinationHandler(
+          node, number_of_channels, webaudio_consumer));
 }
 
 MediaStreamAudioDestinationHandler::~MediaStreamAudioDestinationHandler() {
+  RemoveConsumer();
   Uninitialize();
 }
 
@@ -63,28 +70,23 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   // Synchronize with possible dynamic changes to the channel count.
   base::AutoTryLock try_locker(process_lock_);
 
-  auto source = source_.Lock();
-
   // If we can get the lock, we can process normally by updating the
   // mix bus to a new channel count, if needed.  If not, just use the
   // old mix bus to do the mixing; we'll update the bus next time
   // around.
   if (try_locker.is_acquired()) {
-    unsigned count = ChannelCount();
-    if (count != mix_bus_->NumberOfChannels()) {
+    unsigned new_channel_count = ChannelCount();
+    if (new_channel_count != mix_bus_->NumberOfChannels()) {
       mix_bus_ = AudioBus::Create(
-          count, GetDeferredTaskHandler().RenderQuantumFrames());
-      // setAudioFormat has an internal lock.  This can cause audio to
-      // glitch.  This is outside of our control.
-      source->SetAudioFormat(static_cast<int>(count), Context()->sampleRate());
+          new_channel_count, GetDeferredTaskHandler().RenderQuantumFrames());
+      SetConsumerFormat(static_cast<int>(new_channel_count),
+                        Context()->sampleRate());
     }
   }
 
   mix_bus_->CopyFrom(*Input(0).Bus());
 
-  // consumeAudio has an internal lock (also used by setAudioFormat).
-  // This can cause audio to glitch.  This is outside of our control.
-  source->ConsumeAudio(mix_bus_.get(), static_cast<int>(number_of_frames));
+  ConsumeAudio(mix_bus_.get(), static_cast<int>(number_of_frames));
 }
 
 void MediaStreamAudioDestinationHandler::SetChannelCount(
@@ -163,6 +165,60 @@ void MediaStreamAudioDestinationHandler::SendLogMessage(
                                   function_name, message.Utf8().c_str(),
                                   reinterpret_cast<uintptr_t>(this))
                        .Utf8());
+}
+
+void MediaStreamAudioDestinationHandler::SetConsumer(
+    WebAudioDestinationConsumer* destination_consumer,
+    int number_of_channels,
+    float sample_rate) {
+  if (!destination_consumer) {
+    return;
+  }
+
+  base::AutoLock locker(consumer_lock_);
+  destination_consumer_ = destination_consumer;
+  destination_consumer_->SetFormat(number_of_channels, sample_rate);
+}
+
+bool MediaStreamAudioDestinationHandler::RemoveConsumer() {
+  base::AutoLock locker(consumer_lock_);
+  if (!destination_consumer_) {
+    return false;
+  }
+
+  destination_consumer_ = nullptr;
+  return true;
+}
+
+void MediaStreamAudioDestinationHandler::SetConsumerFormat(
+    int number_of_channels, float sample_rate) {
+  base::AutoLock locker(consumer_lock_);
+  if (!destination_consumer_) {
+    return;
+  }
+
+  destination_consumer_->SetFormat(number_of_channels, sample_rate);
+}
+
+void MediaStreamAudioDestinationHandler::ConsumeAudio(
+    AudioBus* input_bus, int number_of_frames) {
+  if (!input_bus) {
+    return;
+  }
+
+  base::AutoTryLock try_locker(consumer_lock_);
+  if (try_locker.is_acquired() && destination_consumer_) {
+    unsigned number_of_channels = input_bus->NumberOfChannels();
+    if (consumer_bus_wrapper_.size() != number_of_channels) {
+      consumer_bus_wrapper_.resize(number_of_channels);
+    }
+    for (unsigned i = 0; i < number_of_channels; ++i) {
+      consumer_bus_wrapper_[i] = input_bus->Channel(i)->Data();
+    }
+
+    destination_consumer_->ConsumeAudio(consumer_bus_wrapper_,
+                                        number_of_frames);
+  }
 }
 
 }  // namespace blink

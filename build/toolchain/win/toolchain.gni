@@ -776,12 +776,10 @@ template("win_toolchains") {
     clang_toolchain_prefix = "win_clang_"
   }
 
-  _clang_lib_dir =
-      rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
-                  root_build_dir)
-  if (host_os == "win") {
-    # And to match the other -libpath flags.
-    _clang_lib_dir = string_replace(_clang_lib_dir, "/", "\\")
+  if (use_lld) {
+    _clang_lib_dir =
+        rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
+                    root_build_dir)
   }
 
   msvc_toolchain(clang_toolchain_prefix + target_name) {

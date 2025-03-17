@@ -22,6 +22,7 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/cookies/canonical_cookie.h"
+#import "net/cookies/cookie_access_params.h"
 #import "net/cookies/cookie_constants.h"
 #import "url/gurl.h"
 
@@ -303,8 +304,9 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   // to support cookieOptions this function can be modified to support that.
   std::unique_ptr<net::CanonicalCookie> canonical_cookie =
       net::CanonicalCookieFromSystemCookie(cookie, base::Time());
-  if (!canonical_cookie)
+  if (!canonical_cookie) {
     return false;
+  }
   // Cookies handled by this method are app specific cookies, so it's safe to
   // use strict same site context.
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();

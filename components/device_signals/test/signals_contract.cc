@@ -52,7 +52,7 @@ bool VerifyIsSettingInteger(const std::string& signal_name,
                             const base::Value::Dict& signals) {
   // Verify the value is in the valid enum values range.
   // Enum defined at:
-  // //chrome/browser/enterprise/signals/signals_common.h
+  // //components/device_signals/core/common/common_types.h
   return VerifyIsIntegerWithRange(signal_name, 0, 2, signals);
 }
 
@@ -113,7 +113,7 @@ void ChangeContractForUnmanagedDevices(
 
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::Value::Dict&)>>
-GetSignalsContract() {
+GetSignalsContract(bool is_av_signal_enabled) {
   base::flat_map<std::string,
                  base::RepeatingCallback<bool(const base::Value::Dict&)>>
       contract;
@@ -171,6 +171,13 @@ GetSignalsContract() {
       base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
 
 #if BUILDFLAG(IS_WIN)
+  if (is_av_signal_enabled) {
+    contract[names::kAntivirusState] =
+        base::BindRepeating(VerifyIsSettingInteger, names::kAntivirusState);
+  } else {
+    contract[names::kAntivirusState] =
+        base::BindRepeating(VerifyUnset, names::kAntivirusState);
+  }
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyOptionalString, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =
@@ -202,6 +209,8 @@ GetSignalsContract() {
 
 #else
   // Windows-only signals that shouldn't be set on other platforms.
+  contract[names::kAntivirusState] =
+      base::BindRepeating(VerifyUnset, names::kAntivirusState);
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyUnset, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =
@@ -240,10 +249,10 @@ GetSignalsContract() {
 #if BUILDFLAG(IS_CHROMEOS)
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::Value::Dict&)>>
-GetSignalsContractForUnmanagedDevices() {
+GetSignalsContractForUnmanagedDevices(bool is_av_signal_enabled) {
   base::flat_map<std::string,
                  base::RepeatingCallback<bool(const base::Value::Dict&)>>
-      contract = GetSignalsContract();
+      contract = GetSignalsContract(is_av_signal_enabled);
 
   ChangeContractForUnmanagedDevices(contract);
   return contract;

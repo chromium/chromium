@@ -20,7 +20,6 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import type {CrA11yAnnouncerElement} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -128,7 +127,7 @@ export class SettingsUserListElement extends SettingsUserListElementBase {
   }
 
   private removeUser_(e: DomRepeatEvent<chrome.usersPrivate.User>): void {
-    (getAnnouncerInstance() as CrA11yAnnouncerElement)
+    (getAnnouncerInstance())
         .announce(this.i18n('userRemovedMessage', e.model.item.name));
 
     // Focus the add user button since, after this removal, the only user left

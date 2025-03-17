@@ -172,7 +172,8 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
     CreateExtraTextLabel(extra_text.value());
   }
 
-  CreatePermissionButtons(GetAllowAlwaysText(visible_requests));
+  CreatePermissionButtons(GetAllowAlwaysText(visible_requests),
+                          GetBlockText(visible_requests));
 
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
@@ -247,7 +248,7 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
 #endif
 
   label->SetTextStyle(views::style::STYLE_BODY_3);
-  label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  label->SetEnabledColor(kColorPermissionPromptRequestText);
 
   if (index == 0u) {
     constexpr int kPermissionBodyTopMargin = 10;
@@ -317,7 +318,7 @@ void PermissionPromptBubbleOneOriginView::OnAudioDevicesChanged(
       IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
       base::NumberToString16(real_device_names.size())));
 
-  mic_permission_label_->SetTooltipText(
+  mic_permission_label_->SetCustomTooltipText(
       base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
 }
 
@@ -342,7 +343,7 @@ void PermissionPromptBubbleOneOriginView::OnVideoDevicesChanged(
       media_effects::GetRealVideoDeviceNames(device_infos.value());
   camera_label->SetText(l10n_util::GetStringFUTF16(
       message_id, base::NumberToString16(real_device_names.size())));
-  camera_label->SetTooltipText(
+  camera_label->SetCustomTooltipText(
       base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
 }
 #endif

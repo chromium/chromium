@@ -37,16 +37,13 @@ namespace {
 bool DrawingShouldFillScrollingContentsLayer(
     const PropertyTreeState& layer_state,
     const cc::PictureLayer& layer) {
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return false;
-  }
   if (!layer.draws_content()) {
     return false;
   }
   if (const auto* scroll_node = layer_state.Transform().ScrollNode()) {
     // If the layer covers the whole scrolling contents area, we should fill
-    // the layer with (empty) drawing to disable UseRecordedBoundsForTiling
-    // for this layer, to avoid tiling rect change during scroll.
+    // the layer with (empty) drawing to avoid recorded bounds and tiling rect
+    // changes (which cause re-rasterization) during scroll.
     return layer.bounds().width() >= scroll_node->ContentsRect().width() &&
            layer.bounds().height() >= scroll_node->ContentsRect().height();
   }
@@ -116,8 +113,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   auto layer_state = pending_layer.GetPropertyTreeState();
-  gfx::Size layer_bounds = pending_layer.LayerBounds();
-  gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
+  auto [layer_offset, layer_bounds] = pending_layer.Bounds();
   gfx::Size old_layer_bounds = raster_invalidator_->LayerBounds();
 
   bool is_mask_layer = layer_state.Effect().BlendMode() == SkBlendMode::kDstIn;
@@ -148,7 +144,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetOffsetToTransformParent(layer_offset);
 
   cc_picture_layer_->SetBounds(layer_bounds);
-  pending_layer.UpdateCcLayerHitTestOpaqueness();
+  cc_picture_layer_->SetHitTestOpaqueness(pending_layer.GetHitTestOpaqueness());
 
   // If nothing changed in the layer, keep the original display item list.
   // Here check layer_bounds because RasterInvalidator doesn't issue raster
@@ -207,8 +203,8 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
       // pixels during rasterization.
       cc_picture_layer_->background_color() != SkColors::kTransparent &&
       pending_layer.RectKnownToBeOpaque().Contains(
-          gfx::RectF(gfx::PointAtOffsetFromOrigin(pending_layer.LayerOffset()),
-                     gfx::SizeF(pending_layer.LayerBounds())));
+          gfx::RectF(gfx::PointAtOffsetFromOrigin(layer_offset),
+                     gfx::SizeF(layer_bounds)));
   cc_picture_layer_->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_picture_layer_->SetContentsOpaqueForText(

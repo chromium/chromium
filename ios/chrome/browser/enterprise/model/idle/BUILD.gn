@@ -24,6 +24,7 @@ source_set("idle") {
     "//components/enterprise/idle",
     "//components/pref_registry",
     "//components/prefs",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/discover_feed/model:model",

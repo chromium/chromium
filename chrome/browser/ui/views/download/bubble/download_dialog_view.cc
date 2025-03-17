@@ -59,7 +59,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
       base::RepeatingClosure show_all_downloads_callback)
       : RichHoverButton(
             std::move(show_all_downloads_callback),
-            /*main_image_icon=*/ui::ImageModel(),
+            /*icon=*/ui::ImageModel(),
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL),
             /*subtitle_text=*/std::u16string(),
             ui::ImageModel::FromVectorIcon(

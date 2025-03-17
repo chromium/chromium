@@ -7,15 +7,9 @@
 
 #include "base/files/file.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_function.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
 
@@ -24,24 +18,6 @@ class FileSystemProviderBase : public ExtensionFunction {
   ~FileSystemProviderBase() override = default;
   std::string GetProviderId() const;
   void RespondWithError(const std::string& error);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Whether ash supports the FileSystemProviderService interface, and in
-  // particular its `MountFinished` method..
-  bool MountFinishedInterfaceAvailable();
-
-  // Whether ash supports the FileSystemProviderService interface, and in
-  // particular its `OperationFinished` method..
-  bool OperationFinishedInterfaceAvailable();
-
-  // Whether ash supports the optional metadata struct to be passed on the
-  // OpenFile success callback.
-  bool OpenFileFinishedSuccessfullyInterfaceAvailable();
-
-  // A helper function that returns a reference to a functional remote. Should
-  // only be called if the needed interface method is supported.
-  mojo::Remote<crosapi::mojom::FileSystemProviderService>& GetRemote();
-#endif
 };
 
 class FileSystemProviderMountFunction : public FileSystemProviderBase {

@@ -28,7 +28,7 @@ class Extension;
 // This class can be used in two ways:
 // Aided Manifest Construction
 //   The easy way. Use the constructor that takes a name and use helper methods
-//   like AddPermission() to customize the extension without needing to
+//   like AddAPIPermission() to customize the extension without needing to
 //   construct the manifest dictionary by hand. For more customization, you can
 //   use MergeManifest() to add additional keys (which will take precedence over
 //   others).
@@ -39,8 +39,8 @@ class Extension;
 //   useful, but it came first and is used in many places. It'd be nice to maybe
 //   get rid of it.
 // These are not interchangable - calling SetManifest() with aided manifest
-// construction or e.g. AddPermissions() with custom manifest construction will
-// crash.
+// construction or e.g. AddAPIPermissions() with custom manifest construction
+// will crash.
 class ExtensionBuilder {
  public:
   enum class Type {

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/app_list/chrome_app_list_item_manager.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 
 ChromeAppListItemManager::ChromeAppListItemManager() = default;
@@ -175,7 +176,7 @@ void ChromeAppListItemManager::RemoveChildFromFolderItemMapping(
       sorted_children_ptr = &folder_item_mappings_iter->second;
 
   auto children_array_iter =
-      base::ranges::find(*sorted_children_ptr, child_item);
+      std::ranges::find(*sorted_children_ptr, child_item);
   DCHECK(children_array_iter != sorted_children_ptr->cend());
 
   // Delete `child_item` from `src_folder`'s children list.

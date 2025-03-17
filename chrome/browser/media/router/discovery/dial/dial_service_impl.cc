@@ -26,7 +26,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,7 +43,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -63,7 +62,7 @@ using net::UDPSocket;
 
 namespace media_router {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void PostSendNetworkList(
     base::WeakPtr<DialServiceImpl> impl,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -73,7 +72,7 @@ void PostSendNetworkList(
                         base::BindOnce(&DialServiceImpl::SendNetworkList,
                                        std::move(impl), networks));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -130,7 +129,7 @@ std::string BuildRequest() {
   return request;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Finds the IP address of the preferred interface of network type |type|
 // to bind the socket and inserts the address into |bind_address_list|. This
 // ChromeOS version can prioritize wifi and ethernet interfaces.
@@ -139,8 +138,9 @@ void InsertBestBindAddressChromeOS(const ash::NetworkTypePattern& type,
   const ash::NetworkState* state = ash::NetworkHandler::Get()
                                        ->network_state_handler()
                                        ->ConnectedNetworkByType(type);
-  if (!state)
+  if (!state) {
     return;
+  }
   std::string state_ip_address = state->GetIpAddress();
   IPAddress bind_ip_address;
   if (bind_ip_address.AssignFromIPLiteral(state_ip_address) &&
@@ -182,7 +182,7 @@ void GetNetworkListOnUIThread(
       net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
       base::BindOnce(&PostSendNetworkList, std::move(impl), task_runner));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -270,18 +270,21 @@ void DialServiceImpl::DialSocket::OnSocketWrite(int send_buffer_size,
                                                 int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_writing_ = false;
-  if (!CheckResult("OnSocketWrite", result))
+  if (!CheckResult("OnSocketWrite", result)) {
     return;
+  }
   dial_service_->NotifyOnDiscoveryRequest();
 }
 
 bool DialServiceImpl::DialSocket::ReadSocket() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!socket_)
+  if (!socket_) {
     return false;
+  }
 
-  if (is_reading_)
+  if (is_reading_) {
     return false;
+  }
 
   int result = net::OK;
   bool result_ok = true;
@@ -292,8 +295,9 @@ bool DialServiceImpl::DialSocket::ReadSocket() {
         base::BindOnce(&DialServiceImpl::DialSocket::OnSocketRead,
                        base::Unretained(this)));
     result_ok = CheckResult("RecvFrom", result);
-    if (result != net::ERR_IO_PENDING)
+    if (result != net::ERR_IO_PENDING) {
       is_reading_ = false;
+    }
     if (result_ok && result > 0) {
       // Synchronous read.
       HandleResponse(result);
@@ -305,10 +309,12 @@ bool DialServiceImpl::DialSocket::ReadSocket() {
 void DialServiceImpl::DialSocket::OnSocketRead(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_reading_ = false;
-  if (!CheckResult("OnSocketRead", result))
+  if (!CheckResult("OnSocketRead", result)) {
     return;
-  if (result > 0)
+  }
+  if (result > 0) {
     HandleResponse(result);
+  }
 
   // Await next response.
   ReadSocket();
@@ -326,8 +332,9 @@ void DialServiceImpl::DialSocket::HandleResponse(int bytes_read) {
 
   // Attempt to parse response, notify client if successful.
   DialDeviceData parsed_device;
-  if (ParseResponse(response, response_time, &parsed_device))
+  if (ParseResponse(response, response_time, &parsed_device)) {
     dial_service_->NotifyOnDeviceDiscovered(parsed_device);
+  }
 }
 
 bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
@@ -439,7 +446,7 @@ void DialServiceImpl::StartDiscovery() {
 
   auto ui_task_runner = content::GetUIThreadTaskRunner({});
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ui_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&GetBestBindAddressOnUIThread),
       base::BindOnce(&DialServiceImpl::DiscoverOnAddresses,
@@ -507,8 +514,9 @@ void DialServiceImpl::DiscoverOnAddresses(
 
 void DialServiceImpl::BindAndAddSocket(const IPAddress& bind_ip_address) {
   std::unique_ptr<DialServiceImpl::DialSocket> dial_socket(CreateDialSocket());
-  if (dial_socket->CreateAndBindSocket(bind_ip_address, net_log_))
+  if (dial_socket->CreateAndBindSocket(bind_ip_address, net_log_)) {
     dial_sockets_.push_back(std::move(dial_socket));
+  }
 }
 
 std::unique_ptr<DialServiceImpl::DialSocket>
@@ -524,8 +532,9 @@ void DialServiceImpl::SendOneRequest() {
   }
   num_requests_sent_++;
   for (const auto& socket : dial_sockets_) {
-    if (!socket->IsClosed())
+    if (!socket->IsClosed()) {
       socket->SendOneRequest(send_address_, send_buffer_);
+    }
   }
 }
 
@@ -575,8 +584,9 @@ void DialServiceImpl::FinishDiscovery() {
 
 bool DialServiceImpl::HasOpenSockets() {
   for (const auto& socket : dial_sockets_) {
-    if (!socket->IsClosed())
+    if (!socket->IsClosed()) {
       return true;
+    }
   }
   return false;
 }

@@ -27,14 +27,15 @@ class TabStripNudgeButtonTest : public ChromeViewsTestBase {
         base::BindRepeating(&TabStripNudgeButtonTest::MockButtonCallback,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
-        kAutoTabGroupButtonElementId, Edge::kRight);
+        kAutoTabGroupButtonElementId, Edge::kRight,
+        gfx::VectorIcon::EmptyIcon());
   }
 
   void MockButtonCallback() { button_callback_count_++; }
 
  protected:
-  std::unique_ptr<TabStripNudgeButton> button_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
+  std::unique_ptr<TabStripNudgeButton> button_;
   int button_callback_count_ = 0;
 };
 

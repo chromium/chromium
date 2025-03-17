@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 
+#include <algorithm>
+
+#include "base/auto_reset.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 SidePanelRegistry::SidePanelRegistry(tabs::TabInterface* tab_interface)
     : SidePanelEntryScope(SidePanelEntryScope::ScopeType::kTab),
@@ -39,7 +42,7 @@ SidePanelRegistry* SidePanelRegistry::GetDeprecated(
 
 SidePanelEntry* SidePanelRegistry::GetEntryForKey(
     const SidePanelEntry::Key& entry_key) {
-  auto it = base::ranges::find(entries_, entry_key, &SidePanelEntry::key);
+  auto it = std::ranges::find(entries_, entry_key, &SidePanelEntry::key);
   return it == entries_.end() ? nullptr : it->get();
 }
 
@@ -108,7 +111,7 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
     // If the entry is showing with the same key.
     if (unique_key && unique_key->key == key) {
       tabs::TabInterface* const* tab_ptr =
-          std::get_if<tabs::TabInterface*>(&owner_);
+          absl::get_if<tabs::TabInterface*>(&owner_);
       tabs::TabInterface* tab = tab_ptr ? *tab_ptr : nullptr;
       // And it's for the active tab/window registry.
       const bool is_for_window_coordinator = !unique_key->tab_handle && !tab;
@@ -140,15 +143,15 @@ void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
 
 const tabs::TabInterface& SidePanelRegistry::GetTabInterface() const {
   CHECK_EQ(SidePanelEntryScope::ScopeType::kTab, get_scope_type());
-  return *std::get<tabs::TabInterface*>(owner_);
+  return *absl::get<tabs::TabInterface*>(owner_);
 }
 
 const BrowserWindowInterface& SidePanelRegistry::GetBrowserWindowInterface()
     const {
   return get_scope_type() == SidePanelEntryScope::ScopeType::kTab
-             ? *std::get<tabs::TabInterface*>(owner_)
+             ? *absl::get<tabs::TabInterface*>(owner_)
                     ->GetBrowserWindowInterface()
-             : *std::get<BrowserWindowInterface*>(owner_);
+             : *absl::get<BrowserWindowInterface*>(owner_);
 }
 
 SidePanelCoordinator* SidePanelRegistry::GetCoordinator() {

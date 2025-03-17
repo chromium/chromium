@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
@@ -120,7 +121,7 @@ class MockDataTypeWorker : public CommitQueue {
   syncer::UpdateResponseData GenerateSharedUpdateData(
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics,
-      const std::string& collaboration_id);
+      const CollaborationId& collaboration_id);
 
   // Returns an UpdateResponseData representing an update received from
   // the server for a type root node.

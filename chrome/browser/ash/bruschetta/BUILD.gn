@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("bruschetta") {
   sources = [
@@ -58,20 +58,21 @@ static_library("bruschetta") {
   deps = [
     "//ash/constants",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/ash/guest_os/virtual_machines",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions/api/terminal:startup_status",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/guest_os/virtual_machines",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common",
+    "//components/prefs",
     "//components/strings:components_strings",
     "//content/public/browser",
     "//crypto",
@@ -110,6 +111,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -144,8 +146,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os:test_support",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/ash/guest_os/virtual_machines",
-    "//chrome/browser/extensions",
+    "//chrome/browser/extensions/api/terminal:startup_status",
     "//chrome/browser/profiles",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/attestation",
@@ -157,6 +158,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/guest_os/virtual_machines",
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gmock",

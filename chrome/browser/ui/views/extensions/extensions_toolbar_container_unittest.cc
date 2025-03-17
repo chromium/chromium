@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/json/json_reader.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -107,7 +107,7 @@ ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(
     const extensions::ExtensionId& extension_id) {
   std::vector<ToolbarActionView*> actions = GetPinnedExtensionViews();
   auto it =
-      base::ranges::find(actions, extension_id, [](ToolbarActionView* action) {
+      std::ranges::find(actions, extension_id, [](ToolbarActionView* action) {
         return action->view_controller()->GetId();
       });
   if (it == actions.end()) {
@@ -716,7 +716,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
           current_site) +
       u"\n" + u"Extension A\n" + u"Extension B";
 
-  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(request_access_button()->GetRenderedTooltipText(gfx::Point()),
             expected_tooltip);
   RemoveHostAccessRequest(*extension_B,
                           browser()->tab_strip_model()->GetActiveWebContents());
@@ -725,7 +725,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
           IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
           current_site) +
       u"\n" + u"Extension A";
-  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(request_access_button()->GetRenderedTooltipText(gfx::Point()),
             expected_tooltip);
 }
 
@@ -755,9 +755,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   ui::AXNodeData data;
   request_access_button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
 
   RemoveHostAccessRequest(*extension_B,
                           browser()->tab_strip_model()->GetActiveWebContents());
@@ -765,9 +765,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   data = ui::AXNodeData();
   request_access_button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            request_access_button()->GetTooltipText(gfx::Point()));
+            request_access_button()->GetRenderedTooltipText(gfx::Point()));
 }
 
 // Tests that an extension appears in the request access button iff it has a

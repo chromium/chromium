@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_encryption_key_name.h"
@@ -113,15 +112,11 @@ ScriptPromise<IDLBoolean> PushSubscription::unsubscribe(
     ScriptState* script_state) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
-  auto promise = resolver->Promise();
-
   PushProvider* push_provider =
       PushProvider::From(service_worker_registration_);
   DCHECK(push_provider);
-  push_provider->Unsubscribe(
-      std::make_unique<CallbackPromiseAdapter<IDLBoolean, DOMException>>(
-          resolver));
-  return promise;
+  push_provider->Unsubscribe(resolver);
+  return resolver->Promise();
 }
 
 ScriptObject PushSubscription::toJSONForBinding(ScriptState* script_state) {

@@ -353,8 +353,6 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
                scoped_refptr<gpu::ClientSharedImage>(
                    const gpu::SharedImageInfo& si_info,
                    gfx::GpuMemoryBufferHandle buffer_handle));
-  MOCK_METHOD1(CreateSharedImage,
-               SharedImageMapping(const gpu::SharedImageInfo& si_info));
   MOCK_METHOD1(CreateSharedImageForSoftwareCompositor,
                scoped_refptr<gpu::ClientSharedImage>(
                    const gpu::SharedImageInfo& si_info));
@@ -373,7 +371,7 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
                     scoped_refptr<gpu::ClientSharedImage> client_shared_image));
   MOCK_METHOD1(ImportSharedImage,
                scoped_refptr<gpu::ClientSharedImage>(
-                   const gpu::ExportedSharedImage& exported_shared_image));
+                   gpu::ExportedSharedImage exported_shared_image));
   MOCK_METHOD6(CreateSwapChain,
                SwapChainSharedImages(viz::SharedImageFormat format,
                                      const gfx::Size& size,
@@ -388,7 +386,6 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
   MOCK_METHOD0(GenVerifiedSyncToken, gpu::SyncToken());
   MOCK_METHOD1(VerifySyncToken, void(gpu::SyncToken& sync_token));
   MOCK_METHOD1(WaitSyncToken, void(const gpu::SyncToken& sync_token));
-  MOCK_METHOD0(Flush, void());
   MOCK_METHOD1(GetNativePixmap,
                scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));
   MOCK_METHOD0(GetCapabilities, const gpu::SharedImageCapabilities&());

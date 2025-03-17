@@ -12,9 +12,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.commerce.core.CommerceSubscription;
@@ -28,13 +28,11 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PowerBookmarkUtilsTest {
-    @Mock private BookmarkModel mMockBookmarkModel;
-
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-
-        when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
+        BookmarkModel bookmarkModel =
+                ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
+        when(bookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
     }
 
     @Test

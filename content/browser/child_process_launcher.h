@@ -84,6 +84,7 @@ static_assert(static_cast<int>(LAUNCH_RESULT_START) >
 struct RenderProcessPriority {
   RenderProcessPriority(bool visible,
                         bool has_media_stream,
+                        bool has_immersive_xr_session,
                         bool has_foreground_service_worker,
                         unsigned int frame_depth,
                         bool intersects_viewport,
@@ -100,6 +101,7 @@ struct RenderProcessPriority {
                         )
       : visible(visible),
         has_media_stream(has_media_stream),
+        has_immersive_xr_session(has_immersive_xr_session),
         has_foreground_service_worker(has_foreground_service_worker),
         frame_depth(frame_depth),
         intersects_viewport(intersects_viewport),
@@ -141,6 +143,11 @@ struct RenderProcessPriority {
   // |has_media_stream| is true when the process is responsible for "hearable"
   // content.
   bool has_media_stream;
+
+  // |has_immersive_xr_session| is true when the process is responsible for
+  // rendering an XrSession. Such sessions typically take over the full screen
+  // for rendering, and may otherwise "background" the current process.
+  bool has_immersive_xr_session;
 
   // |has_foreground_service_worker| is true when the process has a service
   // worker that may need to service timely events from other, possibly visible,
@@ -245,8 +252,12 @@ class CONTENT_EXPORT ChildProcessLauncher {
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
-      base::UnsafeSharedMemoryRegion = {},
-      base::ReadOnlySharedMemoryRegion = {},
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          histogram_memory_region = nullptr,
+      scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+          trace_config_memory_region = nullptr,
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          trace_output_memory_region = nullptr,
       bool terminate_on_shutdown = true);
 
   ChildProcessLauncher(const ChildProcessLauncher&) = delete;
@@ -262,7 +273,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
 
   // Call this when the child process exits to know what happened to it.
   // |known_dead| can be true if we already know the process is dead as it can
-  // help the implemention figure the proper TerminationStatus.
+  // help the implementation figure the proper TerminationStatus.
   // On Linux, the use of |known_dead| is subtle and can be crucial if an
   // accurate status is important. With |known_dead| set to false, a dead
   // process could be seen as running. With |known_dead| set to true, the

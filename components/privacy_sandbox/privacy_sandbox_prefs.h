@@ -169,6 +169,10 @@ inline constexpr char kPrivacySandboxFakeNoticeFirstSignInTime[] =
 // primary account.
 inline constexpr char kPrivacySandboxFakeNoticeFirstSignOutTime[] =
     "privacy_sandbox.fake_notice.first_sign_out_time";
+
+inline constexpr char kPrivacySandboxAllowNoticeFor3PCBlockedTrial[] =
+    "privacy_sandbox.allow_notice_for_3PC_blocked_trial";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

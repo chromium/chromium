@@ -82,7 +82,9 @@ constexpr int kAnimationDurationMs = 450;
 class SidePanelBorder : public views::Border {
  public:
   explicit SidePanelBorder(BrowserView* browser_view)
-      : Border(gfx::kPlaceholderColor), browser_view_(browser_view) {}
+      : browser_view_(browser_view) {
+    SetColor(kColorSidePanelContentAreaSeparator);
+  }
 
   SidePanelBorder(const SidePanelBorder&) = delete;
   SidePanelBorder& operator=(const SidePanelBorder&) = delete;
@@ -149,13 +151,13 @@ class SidePanelBorder : public views::Border {
     }
 
     // Paint the inner border around SidePanel content. Since half the stroke
-    // gets painted in the clipped area, make this twice as thick.
-    const float stroke_thickness = views::Separator::kThickness * 2;
+    // gets painted in the clipped area, make this twice as thick, and scale
+    // the thickness by device scale factor since we're working in pixels.
+    const float stroke_thickness = views::Separator::kThickness * 2 * dsf;
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
-    flags.setColor(
-        view.GetColorProvider()->GetColor(kColorSidePanelContentAreaSeparator));
+    flags.setColor(color().ConvertToSkColor(view.GetColorProvider()));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
 
@@ -235,8 +237,7 @@ class ContentParentView : public views::View {
  public:
   ContentParentView() {
     SetUseDefaultFillLayout(true);
-    SetBackground(
-        views::CreateThemedSolidBackground(kColorSidePanelBackground));
+    SetBackground(views::CreateSolidBackground(kColorSidePanelBackground));
     SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -352,6 +353,21 @@ SidePanel::~SidePanel() = default;
 void SidePanel::SetPanelWidth(int width) {
   // Only the width is used by BrowserViewLayout.
   SetPreferredSize(gfx::Size(width, 1));
+}
+
+bool SidePanel::ShouldRestrictMaxWidth() const {
+  // TODO(crbug.com/394339052): Only restricting width for only non-read
+  // anything content is a temporary solution and UX will investigate a better
+  // long term solution.
+  SidePanelUI* coordinator =
+      browser_view_->browser()->GetFeatures().side_panel_ui();
+  if (!coordinator) {
+    return true;
+  }
+  std::optional<SidePanelEntry::Id> side_panel_entry_id =
+      coordinator->GetCurrentEntryId();
+  return !side_panel_entry_id.has_value() ||
+         side_panel_entry_id.value() != SidePanelEntryId::kReadAnything;
 }
 
 void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {

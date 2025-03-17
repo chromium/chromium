@@ -75,7 +75,6 @@
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
-#include "chrome/browser/ui/webui/identity_internals_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -307,8 +306,7 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
     // |gfx::kFaviconSize| x |gfx::kFaviconSize| DIP.
     int candidate_edge_size =
         static_cast<int>(gfx::kFaviconSize * scale + 0.5f);
-    candidate_sizes.push_back(
-        gfx::Size(candidate_edge_size, candidate_edge_size));
+    candidate_sizes.emplace_back(candidate_edge_size, candidate_edge_size);
   }
   std::vector<size_t> selected_indices;
   SelectFaviconFrameIndices(candidate_sizes, desired_sizes_in_pixel,

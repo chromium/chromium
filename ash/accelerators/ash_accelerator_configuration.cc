@@ -26,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -163,6 +164,16 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
 
   if (ash::features::IsAppLaunchShortcutEnabled()) {
     AppendAcceleratorData(accelerators, ash::kGeminiAcceleratorData);
+  }
+
+  if (ash::features::IsToggleCameraShortcutEnabled()) {
+    AppendAcceleratorData(accelerators,
+                          ash::kToggleCameraAllowedAcceleratorData);
+  }
+
+  if (!ash::assistant::features::IsNewEntryPointEnabled()) {
+    AppendAcceleratorData(accelerators,
+                          ash::kAssistantSearchPlusAAcceleratorData);
   }
 
   return accelerators;
@@ -648,6 +659,10 @@ bool AshAcceleratorConfiguration::IsValid(uint32_t id) const {
          default_id_to_accelerators_cache_.contains(id);
 }
 
+bool AshAcceleratorConfiguration::HasCustomAccelerators() {
+  return GetTotalNumberOfModifications() > 0;
+}
+
 void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {
   // Re-populate `accelerators_` which contains all currently available
   // accelerators and deprecated accelerators, if present.
@@ -863,7 +878,7 @@ bool AshAcceleratorConfiguration::AreAcceleratorsValid() {
       RestoreAllDefaults();
       return false;
     }
-    if (base::ranges::find(id_to_accelerator_iter->second, accelerator) ==
+    if (std::ranges::find(id_to_accelerator_iter->second, accelerator) ==
         id_to_accelerator_iter->second.end()) {
       LOG(ERROR) << "Shortcut overide prefs are out of sync, reverse lookup "
                  << "has an extra accelerator: "

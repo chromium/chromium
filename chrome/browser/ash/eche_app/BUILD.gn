@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("eche_app") {
   sources = [
@@ -41,11 +41,11 @@ static_library("eche_app") {
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ui:browser_list",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/ash/services/secure_channel",
     "//chromeos/ash/services/secure_channel/public/cpp/client",
     "//chromeos/ash/services/secure_channel/public/cpp/shared",

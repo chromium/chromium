@@ -14,9 +14,11 @@ import android.graphics.drawable.ScaleDrawable;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * {@link Animatable} {@link Drawable}s in the {@link Drawable} hierarchy when this {@link Drawable}
  * is shown or hidden.
  */
+@NullMarked
 public class AutoAnimatorDrawable extends DrawableWrapperCompat {
     // Since Drawables default visible to true by default, we might not get a change and start the
     // animation on the first visibility request.
@@ -38,7 +41,7 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
      * @return         A new {@link Drawable} that will automaticaly animate or {@code null} if
      *                 {@code drawable} is {@code null}.
      */
-    public static Drawable wrap(@Nullable Drawable drawable) {
+    public static @Nullable Drawable wrap(@Nullable Drawable drawable) {
         if (drawable == null || !shouldWrapDrawable(drawable)) return drawable;
         return new AutoAnimatorDrawable(drawable);
     }

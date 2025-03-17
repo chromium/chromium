@@ -38,6 +38,7 @@ const char kRealTimeThreatInfoProto[] = "rt_threat_info_proto";
 const char kPasswordOnFocusCacheKey[] = "password_on_focus_cache_key";
 const char kRealTimeUrlCacheKey[] = "real_time_url_cache_key";
 const char kCsdTypeCacheKey[] = "client_side_detection_type_cache_key";
+const char kLlamaForcedTriggerInfoKey[] = "llama_forced_trigger_info_key";
 
 // The maximum number of entries to be removed in a single cleanup. Removing too
 // many entries all at once could cause jank.
@@ -120,10 +121,18 @@ base::Value::Dict CreateDictionaryFromVerdict(
     const T& verdict,
     const base::Time& receive_time,
     const char* proto_name,
-    const safe_browsing::ClientSideDetectionType csd_type) {
+    const safe_browsing::ClientSideDetectionType csd_type,
+    const safe_browsing::LlamaForcedTriggerInfo llama_forced_trigger_info) {
   base::Value::Dict result =
       CreateDictionaryFromVerdict(verdict, receive_time, proto_name);
   result.Set(kCsdTypeCacheKey, static_cast<int>(csd_type));
+  std::string serialized_proto(llama_forced_trigger_info.SerializeAsString());
+  // Performs a base64 encoding on the serialized proto.
+  serialized_proto = base::Base64Encode(serialized_proto);
+  if (!serialized_proto.empty()) {
+    result.Set(kLlamaForcedTriggerInfoKey, serialized_proto);
+  }
+
   return result;
 }
 
@@ -620,6 +629,8 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
   std::vector<std::string> visited_cache_expressions;
   safe_browsing::ClientSideDetectionType csd_type =
       verdict.client_side_detection_type();
+  safe_browsing::LlamaForcedTriggerInfo llama_forced_trigger_info =
+      verdict.llama_forced_trigger_info();
 
   for (const auto& threat_info : verdict.threat_info()) {
     // If |cache_expression_match_type| is unspecified, ignore this entry.
@@ -655,7 +666,8 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
 
     base::Value::Dict threat_info_entry =
         CreateDictionaryFromVerdict<RTLookupResponse::ThreatInfo>(
-            threat_info, receive_time, kRealTimeThreatInfoProto, csd_type);
+            threat_info, receive_time, kRealTimeThreatInfoProto, csd_type,
+            llama_forced_trigger_info);
     // Increases stored verdict count if we haven't seen this cache expression
     // before.
     if (!verdict_dictionary->contains(cache_expression)) {
@@ -724,6 +736,41 @@ VerdictCacheManager::GetCachedRealTimeUrlClientSideDetectionType(
     return safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
   }
+}
+
+bool VerdictCacheManager::GetCachedRealTimeLlamaForcedTriggerInfo(
+    const GURL& url,
+    safe_browsing::LlamaForcedTriggerInfo* out_llama_forced_trigger_info) {
+  if (is_shut_down_) {
+    return false;
+  }
+
+  std::optional<base::Value> most_matching_verdict =
+      GetMostMatchingCachedVerdictEntryWithHostAndPathMatching<
+          RTLookupResponse::ThreatInfo>(
+          url, kRealTimeUrlCacheKey, content_settings_,
+          ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
+          kRealTimeThreatInfoProto);
+
+  if (!most_matching_verdict || !most_matching_verdict->is_dict()) {
+    return false;
+  }
+
+  const std::string* cache_llama_forced_trigger_info =
+      most_matching_verdict->GetDict().FindString(kLlamaForcedTriggerInfoKey);
+
+  if (cache_llama_forced_trigger_info) {
+    std::string serialized_llama_forced_trigger_info =
+        *cache_llama_forced_trigger_info;
+
+    if (base::Base64Decode(serialized_llama_forced_trigger_info,
+                           &serialized_llama_forced_trigger_info)) {
+      return out_llama_forced_trigger_info->ParseFromString(
+          serialized_llama_forced_trigger_info);
+    }
+  }
+
+  return false;
 }
 
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(

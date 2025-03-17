@@ -4,16 +4,15 @@
 
 #import "base/feature_list.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -54,15 +53,15 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 @implementation SupervisedUserIncognitoModeTestCase
 
 - (void)setupAndRegisterHistogramTester {
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   self.histogramTesterCreated = YES;
 }
 
 - (void)tearDownHelper {
   if (self.histogramTesterCreated) {
-    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                  @"Failed to release histogram tester.");
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseHistogramTester]);
     self.histogramTesterCreated = NO;
   }
   [super tearDownHelper];
@@ -222,15 +221,10 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // supervised account.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(base::StrCat({
     "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
         [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeIdentity ]]
   }));
-  config.features_enabled.push_back(
-      supervised_user::
-          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Set up the histogram tester after restarting.
@@ -271,7 +265,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // Create new incognito tabs.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 2");
 
   // The latest incognito tab is displayed.
@@ -281,7 +275,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   [self signInWithSupervisedAccount];
 
   // All incognito tabs should be destroyed.
-  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 0");
 
   // If the supervised user was previously on an incognito tab, the disabled
@@ -300,7 +294,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // Create new incognito tabs.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 2");
 
   // Open a new regular tab.
@@ -311,7 +305,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   [self signInWithSupervisedAccount];
 
   // All incognito tabs should be destroyed.
-  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 0");
 
   // The user should stay on the new tab page.

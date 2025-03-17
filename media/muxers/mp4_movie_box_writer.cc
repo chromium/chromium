@@ -16,6 +16,7 @@
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/formats/mp4/box_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_muxer_context.h"
@@ -25,23 +26,6 @@
 namespace media {
 
 namespace {
-
-// ISO/IEC 14496-12.
-// A transformation matrix for the video.
-// Video frames are not scaled, rotated, or skewed, and are displayed at
-// their original size with no zoom or depth applied.
-
-// The value 0x00010000 in the top-left and middle element of the
-// matrix specifies the horizontal and vertical scaling factor,
-// respectively. This means that the video frames are not scaled and
-// are displayed at their original size.
-
-// The bottom-right element of the matrix, with a value of 0x40000000,
-// specifies the fixed-point value of the zoom or depth of the video frames.
-// This value is equal to 1.0 in decimal notation, meaning that there
-// is no zoom or depth applied to the video frames.
-constexpr int32_t kDisplayIdentityMatrix[9] = {
-    0x00010000, 0, 0, 0, 0x00010000, 0, 0, 0, 0x40000000};
 
 void WriteIsoTime(BoxByteStream& writer, base::Time time) {
   uint64_t iso_time =
@@ -304,8 +288,8 @@ void Mp4MovieTrackHeaderBoxWriter::Write(BoxByteStream& writer) {
   }
   writer.WriteU16(0);  // reserved.
 
-  for (auto* it = std::begin(kDisplayIdentityMatrix);
-       it != std::end(kDisplayIdentityMatrix); ++it) {
+  for (auto* it = std::begin(box_->matrix); it != std::end(box_->matrix);
+       ++it) {
     writer.WriteU32(*it);
   }
 

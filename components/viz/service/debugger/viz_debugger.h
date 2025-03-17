@@ -90,6 +90,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
   static VizDebugger* GetInstance();
 
+  VizDebugger();
   ~VizDebugger();
 
   struct VIZ_SERVICE_EXPORT BufferInfo {
@@ -127,7 +128,6 @@ class VIZ_SERVICE_EXPORT VizDebugger {
  private:
   friend class VizDebuggerInternal;
   static std::atomic<bool> enabled_;
-  VizDebugger();
   base::Value FrameAsJson(const uint64_t counter,
                           const gfx::Size& window_pix,
                           base::TimeTicks time_ticks);
@@ -150,7 +150,10 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
   struct CallSubmitCommon {
     CallSubmitCommon() = default;
-    CallSubmitCommon(int index, int source, int thread, DrawOption draw_option)
+    CallSubmitCommon(int index,
+                     int source,
+                     int64_t thread,
+                     DrawOption draw_option)
         : draw_index(index),
           source_index(source),
           thread_id(thread),
@@ -158,7 +161,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     base::Value::Dict GetDictionaryValue() const;
     int draw_index;
     int source_index;
-    int thread_id;
+    int64_t thread_id;
     VizDebugger::DrawOption option;
   };
 
@@ -166,7 +169,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     DrawCall() = default;
     DrawCall(int index,
              int source,
-             int thread,
+             int64_t thread,
              DrawOption draw_option,
              gfx::SizeF size,
              gfx::Vector2dF position,
@@ -190,7 +193,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     LogCall() = default;
     LogCall(int index,
             int source,
-            int thread,
+            int64_t thread,
             DrawOption draw_option,
             std::string str)
         : CallSubmitCommon(index, source, thread, draw_option),

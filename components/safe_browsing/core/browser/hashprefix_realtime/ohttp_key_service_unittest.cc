@@ -64,13 +64,6 @@ class OhttpKeyServiceTest : public ::testing::Test {
     } else {
       disabled_features.emplace_back(kHashPrefixRealTimeLookups);
     }
-    if (is_fast_key_rotation_enabled_) {
-      enabled_features.emplace_back(
-          kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
-    } else {
-      disabled_features.emplace_back(
-          kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
-    }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
     RegisterProfilePrefs(pref_service_.registry());
     local_state_.registry()->RegisterStringPref(
@@ -108,8 +101,8 @@ class OhttpKeyServiceTest : public ::testing::Test {
                     resource_request.url.spec());
           ASSERT_EQ(network::mojom::CredentialsMode::kOmit,
                     resource_request.credentials_mode);
-          ASSERT_EQ(is_fast_key_rotation_enabled_,
-                    resource_request.headers.HasHeader("X-OhttpPublickey-Fst"));
+          ASSERT_TRUE(
+              resource_request.headers.HasHeader("X-OhttpPublickey-Fst"));
         }));
     test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                           kTestOhttpKey);
@@ -147,7 +140,6 @@ class OhttpKeyServiceTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
   std::optional<std::string> country_;
   bool is_hash_prefix_feature_enabled_ = true;
-  bool is_fast_key_rotation_enabled_ = true;
 
  private:
   hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
@@ -161,13 +153,6 @@ class OhttpKeyServiceFeatureOffTest : public OhttpKeyServiceTest {
 class OhttpKeyServiceLocationDisabledTest : public OhttpKeyServiceTest {
  public:
   OhttpKeyServiceLocationDisabledTest() { country_ = "cn"; }
-};
-
-class OhttpKeyServiceFastKeyRotationDisabledTest : public OhttpKeyServiceTest {
- public:
-  OhttpKeyServiceFastKeyRotationDisabledTest() {
-    is_fast_key_rotation_enabled_ = false;
-  }
 };
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
@@ -342,34 +327,6 @@ TEST_F(OhttpKeyServiceFeatureOffTest, GetOhttpKey_FeatureDisabled) {
 
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
-}
-
-TEST_F(OhttpKeyServiceLocationDisabledTest, GetOhttpKey_FreshnessHistogram) {
-  SetupSuccessResponse();
-  base::MockCallback<OhttpKeyService::Callback> response_callback;
-  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
-
-  ohttp_key_service_->GetOhttpKey(response_callback.Get());
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
-      /*sample=*/true,
-      /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch", 1);
-
-  country_ = std::nullopt;
-  base::MockCallback<OhttpKeyService::Callback> response_callback2;
-  EXPECT_CALL(response_callback2, Run(Eq(std::nullopt))).Times(1);
-
-  ohttp_key_service_->GetOhttpKey(response_callback2.Get());
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
-      /*sample=*/false,
-      /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch", 2);
 }
 
 TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
@@ -772,45 +729,6 @@ TEST_F(OhttpKeyServiceTest, Shutdown) {
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   ohttp_key_service_->Shutdown();
   task_environment_.RunUntilIdle();
-}
-
-TEST_F(OhttpKeyServiceFastKeyRotationDisabledTest, NoFastRotationHeader) {
-  SetupSuccessResponse();
-  base::MockCallback<OhttpKeyService::Callback> response_callback;
-  EXPECT_CALL(response_callback, Run(Optional(std::string(kTestOhttpKey))))
-      .Times(1);
-
-  ohttp_key_service_->GetOhttpKey(response_callback.Get());
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(OhttpKeyServiceFastKeyRotationDisabledTest, AsyncFetch) {
-  SetupSuccessResponse();
-
-  task_environment_.RunUntilIdle();
-  auto original_expiration = base::Time::Now() + base::Days(7);
-  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration);
-
-  int32_t original_bucket_count = histogram_tester_.GetBucketCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
-      /*sample=*/OhttpKeyService::FetchTriggerReason::kAsyncFetch);
-
-  task_environment_.FastForwardBy(base::Days(5));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration);
-
-  task_environment_.FastForwardBy(base::Days(1));
-  task_environment_.RunUntilIdle();
-  // OHTTP key is extended by async fetch.
-  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration + base::Days(6));
-
-  histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
-      /*sample=*/OhttpKeyService::FetchTriggerReason::kAsyncFetch,
-      /*expected_count=*/original_bucket_count + 1);
 }
 
 }  // namespace safe_browsing

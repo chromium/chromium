@@ -36,7 +36,7 @@ export class InkApi {
     return this.canvas_.getPDFDestructive();
   }
 
-  async setCamera(camera: drawings.Box) {
+  setCamera(camera: drawings.Box) {
     this.camera_ = camera;
     this.canvas_.setCamera(camera);
     // Wait for the next task to avoid a race where Ink drops the camera value

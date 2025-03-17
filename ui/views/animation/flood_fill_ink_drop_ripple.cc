@@ -284,10 +284,13 @@ float FloodFillInkDropRipple::MaxDistanceToCorners(
 // Returns the InkDropState sub animation duration for the given |state|.
 base::TimeDelta FloodFillInkDropRipple::GetAnimationDuration(
     AnimationSubState state) {
-  if (!PlatformStyle::kUseRipples ||
-      !gfx::Animation::ShouldRenderRichAnimation() ||
-      (GetInkDropHost() && GetInkDropHost()->GetMode() ==
-                               InkDropHost::InkDropMode::ON_NO_ANIMATE)) {
+  if constexpr (!PlatformStyle::kUseRipples) {
+    return base::TimeDelta();
+  }
+  if (!gfx::Animation::ShouldRenderRichAnimation() ||
+             (GetInkDropHost() &&
+              GetInkDropHost()->GetMode() ==
+                  InkDropHost::InkDropMode::ON_NO_ANIMATE)) {
     return base::TimeDelta();
   }
 

@@ -62,8 +62,9 @@ constexpr int kPlaceholderGSuiteIconSpacing = 8;
 
 // Create a builder for an image view for the given G Suite icon.
 views::Builder<views::ImageView> CreateGSuiteIcon(const gfx::VectorIcon& icon) {
-  return views::Builder<views::ImageView>().SetImage(gfx::CreateVectorIcon(
-      icon, kPlaceholderGSuiteIconSize, gfx::kPlaceholderColor));
+  return views::Builder<views::ImageView>().SetImage(
+      ui::ImageModel::FromVectorIcon(icon, gfx::kPlaceholderColor,
+                                     kPlaceholderGSuiteIconSize));
 }
 #endif
 
@@ -147,8 +148,8 @@ class FilesAppChip : public views::Button {
 
     // Icon.
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
-    icon->SetImage(gfx::CreateVectorIcon(kFilesAppIcon, kFilesAppChipIconSize,
-                                         gfx::kPlaceholderColor));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kFilesAppIcon, gfx::kPlaceholderColor, kFilesAppChipIconSize));
 
     // Label.
     auto* label =
@@ -161,7 +162,7 @@ class FilesAppChip : public views::Button {
     views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
     // Background.
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         kColorAshControlBackgroundColorInactive, kFilesAppChipHeight / 2.f));
   }
 };

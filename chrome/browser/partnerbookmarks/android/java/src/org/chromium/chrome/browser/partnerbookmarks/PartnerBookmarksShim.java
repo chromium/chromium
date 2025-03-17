@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -17,6 +18,7 @@ import org.chromium.chrome.browser.profiles.Profile;
  * pushing the partner bookmarks to the C++ side, - reporting that all partner bookmarks were read
  * to the C++ side.
  */
+@NullMarked
 public class PartnerBookmarksShim {
     private static boolean sIsReadingAttempted;
 

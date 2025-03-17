@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/network_isolation_partition.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
@@ -26,4 +27,5 @@ struct IsolationInfo {
   url.mojom.Origin? frame_origin;
   mojo_base.mojom.UnguessableToken? nonce;
   SiteForCookies site_for_cookies;
+  NetworkIsolationPartition network_isolation_partition;
 };

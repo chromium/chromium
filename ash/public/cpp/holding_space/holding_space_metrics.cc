@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 
@@ -13,7 +14,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -167,7 +167,7 @@ size_t FilePathToExtension(const base::FilePath& file_path) {
     return kEmptyExtension;
   }
 
-  const auto it = base::ranges::find(kKnownExtensions, extension);
+  const auto it = std::ranges::find(kKnownExtensions, extension);
   if (it == kKnownExtensions.end()) {
     return kOtherExtension;
   }

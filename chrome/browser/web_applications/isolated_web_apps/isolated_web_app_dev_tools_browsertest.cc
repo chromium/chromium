@@ -46,7 +46,6 @@ class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
                                            .SetName(kIsolatedAppName)
                                            .SetVersion(kIsolatedAppVersion))
             .BuildBundle();
-    app->TrustSigningKey();
     return app->InstallChecked(profile());
   }
 };

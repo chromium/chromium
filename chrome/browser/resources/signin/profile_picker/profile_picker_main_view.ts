@@ -13,8 +13,10 @@ import '/strings.m.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -24,7 +26,7 @@ import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_del
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
-import {isAskOnStartupAllowed, isProfileCreationAllowed} from './policy_helper.js';
+import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed} from './profile_picker_flags.js';
 import {getCss} from './profile_picker_main_view.css.js';
 import {getHtml} from './profile_picker_main_view.html.js';
 
@@ -35,13 +37,13 @@ export interface ProfilePickerMainViewElement {
     'product-logo': HTMLElement,
     browseAsGuestButton: HTMLElement,
     profilesContainer: HTMLElement,
-    wrapper: HTMLElement,
+    profilesWrapper: HTMLElement,
     forceSigninErrorDialog: CrDialogElement,
   };
 }
 
-const ProfilePickerMainViewElementBase =
-    HelpBubbleMixinLit(WebUiListenerMixinLit(NavigationMixin(CrLitElement)));
+const ProfilePickerMainViewElementBase = HelpBubbleMixinLit(
+    WebUiListenerMixinLit(I18nMixinLit(NavigationMixin(CrLitElement))));
 
 export class ProfilePickerMainViewElement extends
     ProfilePickerMainViewElementBase implements DraggableTileListInterface {
@@ -67,10 +69,14 @@ export class ProfilePickerMainViewElement extends
       hideAskOnStartup_: {type: Boolean},
       askOnStartup_: {type: Boolean},
       guestModeEnabled_: {type: Boolean},
+      profileCreationAllowed_: {type: Boolean},
       forceSigninErrorDialogTitle_: {type: String},
       forceSigninErrorDialogBody_: {type: String},
       forceSigninErrorProfilePath_: {type: String},
       shouldShownSigninButton_: {type: Boolean},
+
+      // Exposed to CSS as 'is-glic_'.
+      isGlic_: {type: Boolean, reflect: true},
     };
   }
 
@@ -82,6 +88,8 @@ export class ProfilePickerMainViewElement extends
   // Potentially updated on profile addition/removal/sign-in.
   protected guestModeEnabled_: boolean =
       loadTimeData.getBoolean('isGuestModeEnabled');
+  protected profileCreationAllowed_: boolean = isProfileCreationAllowed();
+  protected isGlic_: boolean = isGlicVersion();
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
@@ -98,15 +106,9 @@ export class ProfilePickerMainViewElement extends
   private forceSigninErrorProfilePath_: string = '';
   protected shouldShownSigninButton_: boolean = false;
 
+  private eventTracker_: EventTracker = new EventTracker();
+
   override firstUpdated() {
-    if (!this.guestModeEnabled_) {
-      this.$.browseAsGuestButton.style.display = 'none';
-    }
-
-    if (!isProfileCreationAllowed()) {
-      this.$.addProfile.style.display = 'none';
-    }
-
     this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
 
     this.addEventListener('toggle-drag', this.toggleDrag_);
@@ -123,9 +125,11 @@ export class ProfilePickerMainViewElement extends
         'display-force-signin-error-dialog',
         (title: string, body: string, profilePath: string) =>
             this.showForceSigninErrorDialog(title, body, profilePath));
-    this.addWebUiListener(
-        'guest-mode-availability-updated',
-        this.maybeUpdateGuestMode_.bind(this));
+    if (!this.isGlic_) {
+      this.addWebUiListener(
+          'guest-mode-availability-updated',
+          this.maybeUpdateGuestMode_.bind(this));
+    }
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
@@ -139,11 +143,23 @@ export class ProfilePickerMainViewElement extends
     super.updated(changedProperties);
 
     this.initializeDragDelegate_();
+
+    // Cast necessary to expose protected members.
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('profilesListLoaded_') ||
+        changedPrivateProperties.has('profilesList_')) {
+      // The strings containing the link may appear dynamically, so we need to
+      // update their `click` events accordingly.
+      this.updateLearnMoreLinkEvents_();
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.resizeObserver_!.disconnect();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+    }
 
     if (this.dragDelegate_) {
       this.dragDelegate_.clearListeners();
@@ -166,9 +182,16 @@ export class ProfilePickerMainViewElement extends
   }
 
   private addResizeObserver_() {
+    if (this.isGlic_) {
+      // In the Glic version, the separator is not needed. If added it will
+      // interfere with the special background in this mode. Also a footer text
+      // is shown, which already acts as a separator.
+      return;
+    }
+
     const profilesContainer = this.$.profilesContainer;
     this.resizeObserver_ = new ResizeObserver(() => {
-      this.shadowRoot!.querySelector('.footer')!.classList.toggle(
+      this.shadowRoot.querySelector('.footer')!.classList.toggle(
           'division-line',
           profilesContainer.scrollHeight > profilesContainer.clientHeight);
     });
@@ -270,6 +293,70 @@ export class ProfilePickerMainViewElement extends
     this.dragDelegate_.toggleDrag(customEvent.detail.toggle);
   }
 
+  // Redirects the call to the handler, to create/use a browser to show the
+  // Help page.
+  private onLearnMoreClicked_(): void {
+    assert(this.isGlic_);
+    this.manageProfilesBrowserProxy_.onLearnMoreClicked();
+  }
+
+  protected getTitle_(): TrustedHTML {
+    const titleStringResouce = this.isProfileListLoadedAndEmptyAndGlic_() ?
+        'glicTitleNoProfile' :
+        'mainViewTitle';
+    // Special styling through 'class' attribute in some version of the title.
+    return this.i18nAdvanced(titleStringResouce, {attrs: ['class']});
+  }
+
+  protected getSubtitle_(): TrustedHTML {
+    const subtitleStringResource = this.isProfileListLoadedAndEmptyAndGlic_() ?
+        'mainViewSubtitleGlicNoProfile' :
+        'mainViewSubtitle';
+    // Special tagging through 'class' attribute in some version of the
+    // subtitle.
+    return this.i18nAdvanced(subtitleStringResource, {attrs: ['class']});
+  }
+
+  protected shouldHideProfilesWrapper_(): boolean {
+    if (!this.profilesListLoaded_) {
+      return true;
+    }
+
+    return this.isProfileListLoadedAndEmptyAndGlic_();
+  }
+
+  protected shouldHideFooterText_(): boolean {
+    if (this.isProfileListLoadedAndEmptyAndGlic_()) {
+      return true;
+    }
+
+    return !isGlicVersion();
+  }
+
+  private isProfileListLoadedAndEmptyAndGlic_(): boolean {
+    return this.profilesListLoaded_ && this.profilesList_.length === 0 &&
+        isGlicVersion();
+  }
+
+  private updateLearnMoreLinkEvents_(): void {
+    // This class is set in the string as a placeholder - check
+    // `IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC` and
+    // `IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE`. The given link
+    // cannot be directly opened from this page since it is controlled by the
+    // System Profile that is not allowed to open a browser. Therefore we
+    // redirect the call to the handler which will load the last used profile
+    // and open a browser with it.
+    const links = this.shadowRoot.querySelectorAll('.learn-more-link');
+    for (const link of links) {
+      // Remove any potential existing event to avoid duplication of execution.
+      this.eventTracker_.remove(link, 'click');
+      // Add the event listener dynamically since we do not have access to the
+      // string content before the page is loaded.
+      this.eventTracker_.add(
+          link, 'click', this.onLearnMoreClicked_.bind(this));
+    }
+  }
+
   // @override
   onDragEnd(initialIndex: number, finalIndex: number): void {
     this.manageProfilesBrowserProxy_.updateProfileOrder(
@@ -278,7 +365,7 @@ export class ProfilePickerMainViewElement extends
 
   // @override
   getDraggableTile(index: number): HTMLElement {
-    return this.shadowRoot!.querySelector<HTMLElement>(
+    return this.shadowRoot.querySelector<HTMLElement>(
         `profile-card[data-index="${index}"]`)!;
   }
 

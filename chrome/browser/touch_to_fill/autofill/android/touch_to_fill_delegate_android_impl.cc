@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -132,8 +132,7 @@ TouchToFillDelegateAndroidImpl::DryRunForIban() {
   PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   std::vector<Iban> ibans_to_suggest =
       pdm.payments_data_manager().GetOrderedIbansToSuggest();
-  return ibans_to_suggest.empty() || !base::FeatureList::IsEnabled(
-                                         features::kAutofillEnableLocalIban)
+  return ibans_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,
                             std::move(ibans_to_suggest));
@@ -208,12 +207,10 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     } else if (std::vector<Iban>* ibans_to_suggest =
                    absl::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
                ibans_to_suggest &&
-               (base::FeatureList::IsEnabled(
-                    features::kAutofillSkipAndroidBottomSheetForIban) ||
-                !manager_->client()
-                     .GetPaymentsAutofillClient()
-                     ->ShowTouchToFillIban(GetWeakPtr(),
-                                           std::move(*ibans_to_suggest)))) {
+               !manager_->client()
+                    .GetPaymentsAutofillClient()
+                    ->ShowTouchToFillIban(GetWeakPtr(),
+                                          std::move(*ibans_to_suggest))) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     }
   }
@@ -396,7 +393,8 @@ bool TouchToFillDelegateAndroidImpl::IsFillingCorrect(
 
 bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
   return std::ranges::any_of(form.fields(), [&](const FormFieldData& field) {
-    AutofillField* autofill_field = manager_->GetAutofillField(form, field);
+    AutofillField* autofill_field =
+        manager_->GetAutofillField(form.global_id(), field.global_id());
     if (autofill_field && autofill_field->Type().GetStorableType() !=
                               FieldType::CREDIT_CARD_NUMBER) {
       return false;

@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -115,7 +115,7 @@ BodyStreamBuffer* BodyStreamBuffer::Create(
     ScriptState* script_state,
     BytesConsumer* consumer,
     AbortSignal* signal,
-    ScriptCachedMetadataHandler* cached_metadata_handler,
+    CachedMetadataHandler* cached_metadata_handler,
     scoped_refptr<BlobDataHandle> side_data_blob) {
   auto* buffer = MakeGarbageCollected<BodyStreamBuffer>(
       PassKey(), script_state, consumer, signal, cached_metadata_handler,
@@ -129,7 +129,7 @@ BodyStreamBuffer::BodyStreamBuffer(
     ScriptState* script_state,
     BytesConsumer* consumer,
     AbortSignal* signal,
-    ScriptCachedMetadataHandler* cached_metadata_handler,
+    CachedMetadataHandler* cached_metadata_handler,
     scoped_refptr<BlobDataHandle> side_data_blob)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
@@ -168,7 +168,7 @@ void BodyStreamBuffer::Init() {
 BodyStreamBuffer::BodyStreamBuffer(
     ScriptState* script_state,
     ReadableStream* stream,
-    ScriptCachedMetadataHandler* cached_metadata_handler,
+    CachedMetadataHandler* cached_metadata_handler,
     scoped_refptr<BlobDataHandle> side_data_blob)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),

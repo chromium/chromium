@@ -56,12 +56,11 @@ TEST_F(GenerateQrCodeActivityTest, Execution) {
   __block NSString* fakeTitle = @"fake title";
 
   [[mocked_handler_ expect]
-      generateQRCode:[OCMArg
-                         checkWithBlock:^BOOL(GenerateQRCodeCommand* value) {
-                           EXPECT_EQ(fakeURL, value.URL);
-                           EXPECT_EQ(fakeTitle, value.title);
-                           return YES;
-                         }]];
+      showQRCode:[OCMArg checkWithBlock:^BOOL(GenerateQRCodeCommand* value) {
+        EXPECT_EQ(fakeURL, value.URL);
+        EXPECT_EQ(fakeTitle, value.title);
+        return YES;
+      }]];
 
   GenerateQrCodeActivity* activity =
       [[GenerateQrCodeActivity alloc] initWithURL:fakeURL

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -184,6 +185,29 @@ const String& NavigatorUAData::platform() const {
   return WTF::g_empty_string;
 }
 
+bool AllowedToCollectHighEntropyValues(ExecutionContext* execution_context) {
+  // To determine whether a document is allowed to use the get high-entropy
+  // client hints returned by navigator.userAgentData.getHighEntropyValues(),
+  // check the following:
+
+  // 1. Check if our RuntimeEnabledFeature is enabled
+  // Note: We return true if not enabled because the default allowlist is "*",
+  // this permissions-policy allows a document to restrict it.
+  // TODO(crbug.com/388538952): remove this after it ships to stable
+  if (!RuntimeEnabledFeatures::
+          ClientHintUAHighEntropyValuesPermissionPolicyEnabled()) {
+    return true;
+  }
+
+  // 2. If Permissions Policy is enabled, return the policy for
+  // "ch-ua-high-entropy-values" feature.
+  return execution_context->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kClientHintUAHighEntropyValues,
+      ReportOptions::kReportOnFailure,
+      "Collection of high-entropy user-agent client hints is disabled for "
+      "this document.");
+}
+
 ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
     ScriptState* script_state,
     const Vector<String>& hints) const {
@@ -203,9 +227,9 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
   // AtomicStrings as well.
 
   // According to
-  // https://wicg.github.io/ua-client-hints/#getHighEntropyValues, brands,
-  // mobile and platform should be included regardless of whether they were
-  // asked for.
+  // https://wicg.github.io/ua-client-hints/#getHighEntropyValues, the
+  // low-entropy brands, mobile and platform hints should always be included for
+  // convenience.
 
   // Use `brands()` and not `brand_set_` directly since the former also
   // records IdentifiabilityStudy metrics.
@@ -219,37 +243,41 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
   Dactyloscoper::RecordDirectSurface(
       GetExecutionContext(), WebFeature::kNavigatorUAData_Platform, platform());
 
-  for (const String& hint : hints) {
-    if (hint == "platformVersion") {
-      values->setPlatformVersion(platform_version_);
-      MaybeRecordMetric(record_identifiability, hint, platform_version_,
-                        execution_context);
-    } else if (hint == "architecture") {
-      values->setArchitecture(architecture_);
-      MaybeRecordMetric(record_identifiability, hint, architecture_,
-                        execution_context);
-    } else if (hint == "model") {
-      values->setModel(model_);
-      MaybeRecordMetric(record_identifiability, hint, model_,
-                        execution_context);
-    } else if (hint == "uaFullVersion") {
-      values->setUaFullVersion(ua_full_version_);
-      MaybeRecordMetric(record_identifiability, hint, ua_full_version_,
-                        execution_context);
-    } else if (hint == "bitness") {
-      values->setBitness(bitness_);
-      MaybeRecordMetric(record_identifiability, hint, bitness_,
-                        execution_context);
-    } else if (hint == "fullVersionList") {
-      values->setFullVersionList(full_version_list_);
-    } else if (hint == "wow64") {
-      values->setWow64(is_wow64_);
-      MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
-                        execution_context);
-    } else if (hint == "formFactors") {
-      values->setFormFactors(form_factors_);
-      MaybeRecordMetric(record_identifiability, hint, form_factors_,
-                        execution_context);
+  // If the "ch-ua-high-entropy-values" permission policy is enabled for a
+  // document, add high-entropy client hints to values (if requested)
+  if (AllowedToCollectHighEntropyValues(execution_context)) {
+    for (const String& hint : hints) {
+      if (hint == "platformVersion") {
+        values->setPlatformVersion(platform_version_);
+        MaybeRecordMetric(record_identifiability, hint, platform_version_,
+                          execution_context);
+      } else if (hint == "architecture") {
+        values->setArchitecture(architecture_);
+        MaybeRecordMetric(record_identifiability, hint, architecture_,
+                          execution_context);
+      } else if (hint == "model") {
+        values->setModel(model_);
+        MaybeRecordMetric(record_identifiability, hint, model_,
+                          execution_context);
+      } else if (hint == "uaFullVersion") {
+        values->setUaFullVersion(ua_full_version_);
+        MaybeRecordMetric(record_identifiability, hint, ua_full_version_,
+                          execution_context);
+      } else if (hint == "bitness") {
+        values->setBitness(bitness_);
+        MaybeRecordMetric(record_identifiability, hint, bitness_,
+                          execution_context);
+      } else if (hint == "fullVersionList") {
+        values->setFullVersionList(full_version_list_);
+      } else if (hint == "wow64") {
+        values->setWow64(is_wow64_);
+        MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
+                          execution_context);
+      } else if (hint == "formFactors") {
+        values->setFormFactors(form_factors_);
+        MaybeRecordMetric(record_identifiability, hint, form_factors_,
+                          execution_context);
+      }
     }
   }
 

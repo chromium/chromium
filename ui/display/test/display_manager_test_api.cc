@@ -4,12 +4,12 @@
 
 #include "ui/display/test/display_manager_test_api.h"
 
+#include <algorithm>
 #include <cstdarg>
 #include <iterator>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_manager.h"
@@ -49,7 +49,7 @@ bool GetDisplayModeForResolution(const ManagedDisplayInfo& info,
   const ManagedDisplayInfo::ManagedDisplayModeList& modes =
       info.display_modes();
   DCHECK_NE(0u, modes.size());
-  auto iter = base::ranges::find(modes, resolution, &ManagedDisplayMode::size);
+  auto iter = std::ranges::find(modes, resolution, &ManagedDisplayMode::size);
   if (iter == modes.end()) {
     DLOG(WARNING) << "Unsupported resolution was requested:"
                   << resolution.ToString();
@@ -227,7 +227,7 @@ const Display& DisplayManagerTestApi::GetSecondaryDisplay() const {
   const int64_t primary_display_id =
       Screen::GetScreen()->GetPrimaryDisplay().id();
 
-  auto primary_display_iter = base::ranges::find(
+  auto primary_display_iter = std::ranges::find(
       display_manager_->active_display_list_, primary_display_id, &Display::id);
 
   CHECK(primary_display_iter != display_manager_->active_display_list_.end());

@@ -34,7 +34,7 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
                          IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
   }
 
-  if (IsOutlookCalendarModuleEnabled(is_managed_profile)) {
+  if (IsOutlookCalendarModuleEnabledForProfile(profile)) {
     details.emplace_back(ntp_modules::kOutlookCalendarModuleId,
                          IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE);
   }
@@ -44,17 +44,12 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
                          IDS_NTP_MODULES_DRIVE_NAME);
   }
 
-  // TODO(crbug.com/372722777): Implement something similar to
-  // `IsDriveModuleEnabledForProfile()` that limits who can see the sharepoint
-  // module.
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)) {
-    details.emplace_back(ntp_modules::kSharepointModuleId,
-                         IDS_NTP_MODULES_SHAREPOINT_NAME);
+  if (IsMicrosoftFilesModuleEnabledForProfile(profile)) {
+    details.emplace_back(ntp_modules::kMicrosoftFilesModuleId,
+                         IDS_NTP_MODULES_MICROSOFT_FILES_NAME);
   }
 
-  // TODO(crbug.com/377888363): Add conditional display logic.
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpMicrosoftAuthenticationModule)) {
+  if (IsMicrosoftModuleEnabledForProfile(profile)) {
     details.emplace_back(
         ntp_modules::kMicrosoftAuthenticationModuleId,
         IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME,

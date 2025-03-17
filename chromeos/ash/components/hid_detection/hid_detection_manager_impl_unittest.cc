@@ -934,8 +934,8 @@ TEST_F(HidDetectionManagerImplTest,
   StopHidDetection(/*should_be_using_bluetooth=*/false);
 }
 
-// TODO(gordonseto): Test add device for type already connected, remove device
-// for type already connected.
+// TODO(crbug.com/390257083): Test add device for type already connected, remove
+// device for type already connected.
 
 TEST_F(HidDetectionManagerImplTest, StartDetection_BluetoothPointerSuccess) {
   StartHidDetection();

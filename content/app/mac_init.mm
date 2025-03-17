@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "content/common/mac/system_policy.h"
+
 namespace content {
 
 void InitializeMac() {
@@ -26,6 +28,8 @@ void InitializeMac() {
     // https://crbug.com/871235.
     @"NSAppSleepDisabled" : @YES,
   }];
+
+  SetSystemPolicyCrashKeys();
 }
 
 }  // namespace content

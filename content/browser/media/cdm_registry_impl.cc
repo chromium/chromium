@@ -82,8 +82,9 @@ void ReportHardwareSecureCapabilityStatusUMA(
   // Use a set to track whether the UMA has been reported for `key_system` to
   // make sure we only report once.
   static base::NoDestructor<std::set<std::string>> reported_key_systems;
-  if (reported_key_systems->count(key_system))
+  if (reported_key_systems->count(key_system)) {
     return;
+  }
 
   reported_key_systems->insert(key_system);
 
@@ -170,37 +171,38 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   const media::VideoCodecInfo kAllProfiles;
   const media::VideoCodecInfo kAllProfilesNoClearLead = {{}, false};
   for (const auto& codec : overridden_codecs) {
-    if (codec == "vp8")
+    if (codec == "vp8") {
       video_codecs.emplace(media::VideoCodec::kVP8, kAllProfiles);
-    else if (codec == "vp9")
+    } else if (codec == "vp9") {
       video_codecs.emplace(media::VideoCodec::kVP9, kAllProfiles);
-    else if (codec == "avc1")
+    } else if (codec == "avc1") {
       video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
-    else if (codec == "hevc")
+    } else if (codec == "hevc") {
       video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
-    else if (codec == "dolbyvision")
+    } else if (codec == "dolbyvision") {
       video_codecs.emplace(media::VideoCodec::kDolbyVision, kAllProfiles);
-    else if (codec == "av01")
+    } else if (codec == "av01") {
       video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
-    else if (codec == "vp8-no-clearlead")
+    } else if (codec == "vp8-no-clearlead") {
       video_codecs.emplace(media::VideoCodec::kVP8, kAllProfilesNoClearLead);
-    else if (codec == "vp9-no-clearlead")
+    } else if (codec == "vp9-no-clearlead") {
       video_codecs.emplace(media::VideoCodec::kVP9, kAllProfilesNoClearLead);
-    else if (codec == "avc1-no-clearlead")
+    } else if (codec == "avc1-no-clearlead") {
       video_codecs.emplace(media::VideoCodec::kH264, kAllProfilesNoClearLead);
-    else if (codec == "hevc-no-clearlead")
+    } else if (codec == "hevc-no-clearlead") {
       video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfilesNoClearLead);
-    else if (codec == "dolbyvision-no-clearlead")
+    } else if (codec == "dolbyvision-no-clearlead") {
       video_codecs.emplace(media::VideoCodec::kDolbyVision,
                            kAllProfilesNoClearLead);
-    else if (codec == "av01-no-clearlead")
+    } else if (codec == "av01-no-clearlead") {
       video_codecs.emplace(media::VideoCodec::kAV1, kAllProfilesNoClearLead);
-    else if (codec == "mp4a")
+    } else if (codec == "mp4a") {
       audio_codecs.push_back(media::AudioCodec::kAAC);
-    else if (codec == "vorbis")
+    } else if (codec == "vorbis") {
       audio_codecs.push_back(media::AudioCodec::kVorbis);
-    else
+    } else {
       DVLOG(1) << "Unsupported codec specified on command line: " << codec;
+    }
   }
 
   if (video_codecs.empty()) {
@@ -213,7 +215,8 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   // on 'cbcs' not being supported.
   return media::CdmCapability(std::move(audio_codecs), std::move(video_codecs),
                               {media::EncryptionScheme::kCenc},
-                              {media::CdmSessionType::kTemporary});
+                              {media::CdmSessionType::kTemporary},
+                              base::Version("0.1.0.0"));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -293,8 +296,9 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
   // If there are `key_system_capabilities_update_callbacks_` registered,
   // finalize key system capabilities and notify the callbacks. Otherwise  we'll
   // finalize key system capabilities in `ObserveKeySystemCapabilities()`.
-  if (!key_system_capabilities_update_callbacks_.empty())
+  if (!key_system_capabilities_update_callbacks_.empty()) {
     FinalizeKeySystemCapabilities();
+  }
 }
 
 void CdmRegistryImpl::SetHardwareSecureCdmStatus(CdmInfo::Status status) {
@@ -332,8 +336,9 @@ void CdmRegistryImpl::OnGpuInfoUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_WIN)
-  if (IsGpuHardwareCompositionDisabled())
+  if (IsGpuHardwareCompositionDisabled()) {
     SetHardwareSecureCdmStatus(CdmInfo::Status::kGpuCompositionDisabled);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -352,8 +357,9 @@ std::unique_ptr<CdmInfo> CdmRegistryImpl::GetCdmInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& cdm : cdms_) {
-    if (cdm.robustness == robustness && MatchKeySystem(cdm, key_system))
+    if (cdm.robustness == robustness && MatchKeySystem(cdm, key_system)) {
       return std::make_unique<CdmInfo>(cdm);
+    }
   }
 
   return nullptr;
@@ -506,8 +512,9 @@ void CdmRegistryImpl::FinalizeKeySystemCapabilities() {
   }
 
   // If not empty, we'll handle it in OnCapabilityInitialized().
-  if (pending_lazy_initializations_.empty())
+  if (pending_lazy_initializations_.empty()) {
     UpdateAndNotifyKeySystemCapabilities();
+  }
 }
 
 void CdmRegistryImpl::AttemptToFinalizeKeySystemCapability(
@@ -576,9 +583,9 @@ void CdmRegistryImpl::LazyInitializeCapability(
     auto cdm_info =
         GetCdmInfo(key_system, CdmInfo::Robustness::kHardwareSecure);
     DCHECK(cdm_info && !cdm_info->capability);
-    GetMediaFoundationServiceCdmCapability(key_system, cdm_info->path,
-                                           /*is_hw_secure=*/true,
-                                           std::move(cdm_capability_cb));
+    GetMediaFoundationServiceCdmCapability(
+        key_system, cdm_info->type, cdm_info->path,
+        /*is_hw_secure=*/true, std::move(cdm_capability_cb));
   } else {
     // kSoftwareSecure should have been determined from the manifest.
     std::move(cdm_capability_cb)
@@ -598,7 +605,7 @@ void CdmRegistryImpl::OnCapabilityInitialized(
     media::CdmCapabilityOrStatus cdm_capability_or_status) {
   DVLOG(1) << __func__ << ": key_system=" << key_system
            << ", robustness=" << robustness << ", cdm_capability_or_status="
-           << (cdm_capability_or_status.has_value() ? "yes" : "no");
+           << cdm_capability_or_status.ToString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_lazy_initializations_.count({key_system, robustness}));
 
@@ -615,8 +622,9 @@ void CdmRegistryImpl::OnCapabilityInitialized(
                      CdmInfo::Status::kEnabled);
 
   pending_lazy_initializations_.erase({key_system, robustness});
-  if (pending_lazy_initializations_.empty())
+  if (pending_lazy_initializations_.empty()) {
     UpdateAndNotifyKeySystemCapabilities();
+  }
 }
 
 void CdmRegistryImpl::FinalizeCapability(
@@ -655,13 +663,6 @@ void CdmRegistryImpl::FinalizeCapability(
     itr->capability = std::nullopt;
     itr->capability_query_status = std::move(cdm_capability_or_status).error();
   }
-#if BUILDFLAG(IS_ANDROID)
-  // Querying for the CDM version requires creating a MediaDrm object, so
-  // delaying it until the capability is determined.
-  // TODO(crbug.com/40280540): Once querying capabilities on Android is done in
-  // a separate process, include the version with the capabilities returned.
-  itr->version = media::MediaDrmBridge::GetVersion(key_system);
-#endif
 }
 
 void CdmRegistryImpl::UpdateAndNotifyKeySystemCapabilities() {
@@ -685,8 +686,9 @@ std::set<std::string> CdmRegistryImpl::GetSupportedKeySystems() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::set<std::string> supported_key_systems;
-  for (const auto& cdm : cdms_)
+  for (const auto& cdm : cdms_) {
     supported_key_systems.insert(cdm.key_system);
+  }
 
   return supported_key_systems;
 }

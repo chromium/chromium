@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java accessor for translate base::Features.
@@ -16,6 +17,7 @@ import org.chromium.base.FeatureMap;
  * //components/translate/content/android/translate_feature_map.cc
  */
 @JNINamespace("translate::android")
+@NullMarked
 public final class TranslateFeatureMap extends FeatureMap {
     /** Alphabetical: */
     public static final String CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM = "disable_observers";

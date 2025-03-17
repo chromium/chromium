@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -20,7 +21,7 @@
 
 namespace extensions {
 
-using ZipResultVariant = absl::variant<base::FilePath, std::string>;
+using ZipResultVariant = std::variant<base::FilePath, std::string>;
 
 // ZipFileInstaller unzips an extension safely using the Unzipper and
 // SafeJSONParser services.

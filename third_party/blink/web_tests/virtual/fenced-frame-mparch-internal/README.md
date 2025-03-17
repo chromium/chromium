@@ -13,7 +13,6 @@ suite:
     InterestGroupStorage,
     AdInterestGroupAPI,
     AllowURNsInIframes,
-    BiddingAndScoringDebugReportingAPI,
 --enable-blink-features=
     FencedFramesAPIChanges
 ```

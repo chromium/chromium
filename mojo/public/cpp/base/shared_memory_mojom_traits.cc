@@ -4,7 +4,9 @@
 
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/writable_shared_memory_region.h"
 
 namespace mojo {
 

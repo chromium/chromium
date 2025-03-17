@@ -392,8 +392,8 @@ void FeatureTile::UpdateColors() {
           ? std::make_unique<ProgressBackground>(
                 /*progress_color_id=*/cros_tokens::kCrosSysHighlightShape,
                 /*background_color_id=*/background_color)
-          : views::CreateThemedRoundedRectBackground(background_color,
-                                                     corner_radius_));
+          : views::CreateRoundedRectBackground(background_color,
+                                               corner_radius_));
 
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetBaseColorId(toggled_
@@ -410,9 +410,9 @@ void FeatureTile::UpdateColors() {
     UpdateIconButtonFocusRingColor();
   }
 
-  label_->SetEnabledColorId(foreground_color);
+  label_->SetEnabledColor(foreground_color);
   if (sub_label_) {
-    sub_label_->SetEnabledColorId(foreground_optional_color);
+    sub_label_->SetEnabledColor(foreground_optional_color);
   }
   if (drill_in_arrow_) {
     UpdateDrillInArrowColor();

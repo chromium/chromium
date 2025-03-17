@@ -95,14 +95,7 @@ void PerformanceManagerRegistryImpl::SetPageType(
   PerformanceManagerTabHelper* tab_helper =
       PerformanceManagerTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
-
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      // Unretained() is safe because PerformanceManagerTabHelper owns the
-      // PageNodeImpl and deletes it by posting a task to the PerformanceManager
-      // sequence, which will be sequenced after the task posted here.
-      base::BindOnce(&PageNodeImpl::SetType,
-                     base::Unretained(tab_helper->primary_page_node()), type));
+  tab_helper->primary_page_node()->SetType(type);
 }
 
 void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
@@ -124,8 +117,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
       browser_context->UniqueId(),
       storage_partition->GetDedicatedWorkerService(),
       storage_partition->GetSharedWorkerService(),
-      service_worker_context_adapter, &process_node_source_,
-      &frame_node_source_);
+      service_worker_context_adapter, &frame_node_source_);
   bool inserted =
       worker_watchers_.emplace(browser_context, std::move(worker_watcher))
           .second;
@@ -183,11 +175,10 @@ void PerformanceManagerRegistryImpl::TearDown() {
     PerformanceManagerTabHelper* tab_helper =
         PerformanceManagerTabHelper::FromWebContents(web_contents);
     DCHECK(tab_helper);
-    // Clear the destruction observer to avoid a nested notification.
+    // Clear the destruction observer to avoid a notification that will modify
+    // `web_contents_` while iterating.
     tab_helper->SetDestructionObserver(nullptr);
-    // Destroy the tab helper.
-    tab_helper->TearDown();
-    web_contents->RemoveUserData(PerformanceManagerTabHelper::UserDataKey());
+    tab_helper->TearDownAndSelfDelete();
   }
   web_contents_.clear();
 

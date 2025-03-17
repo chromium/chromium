@@ -22,22 +22,16 @@ TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePrinterBasicInfo) {
       /*printer_name=*/"test printer name 1",
       /*display_name=*/"test display name 1",
       /*printer_description=*/"This is printer #1 for unit testing.",
-      /*printer_status=*/0,
-      /*is_default=*/true,
       /*options=*/{{"opt1", "123"}, {"opt2", "456"}});
   static const PrinterBasicInfo kPrinterBasicInfo2(
       /*printer_name=*/"test printer name 2",
       /*display_name=*/"test display name 2",
       /*printer_description=*/"This is printer #2 for unit testing.",
-      /*printer_status=*/1,
-      /*is_default=*/false,
       /*options=*/{});
   static const PrinterBasicInfo kPrinterBasicInfo3(
       /*printer_name=*/"test printer name 2",
       /*display_name=*/"test display name 2",
       /*printer_description=*/"",
-      /*printer_status=*/9,
-      /*is_default=*/false,
       /*options=*/{});
   static const PrinterList kPrinterList{kPrinterBasicInfo1, kPrinterBasicInfo2,
                                         kPrinterBasicInfo3};
@@ -57,15 +51,11 @@ TEST(PrintBackendMojomTraitsTest,
       /*printer_name=*/"",
       /*display_name=*/"test display name",
       /*printer_description=*/"",
-      /*printer_status=*/0,
-      /*is_default=*/true,
       /*options=*/{});
   static const PrinterBasicInfo kPrinterBasicInfoEmptyDisplayName(
       /*printer_name=*/"test printer name",
       /*display_name=*/"",
       /*printer_description=*/"",
-      /*printer_status=*/0,
-      /*is_default=*/true,
       /*options=*/{});
   static const PrinterList kPrinterList{kPrinterBasicInfoEmptyPrinterName,
                                         kPrinterBasicInfoEmptyDisplayName};

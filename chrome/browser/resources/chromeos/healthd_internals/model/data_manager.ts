@@ -64,7 +64,7 @@ export class DataManager {
 
     this.initBatteryDataSeries();
     this.initMemoryDataSeries();
-    this.initZramDataSeries()
+    this.initZramDataSeries();
   }
 
   // Historical data for line chart. The following `DataSeries` collection
@@ -214,7 +214,7 @@ export class DataManager {
   }
 
   private updateCpuUsageData(
-      physcialCpuUsage: (CpuUsage|null)[][], timestamp: number) {
+      physcialCpuUsage: Array<Array<CpuUsage|null>>, timestamp: number) {
     if (this.cpuUsageDataSeries.length === 0) {
       this.initCpuUsageDataSeries(physcialCpuUsage);
     }
@@ -310,7 +310,8 @@ export class DataManager {
     this.systemTrendController.setCpuFrequencyData(this.cpuFrequencyDataSeries);
   }
 
-  private initCpuUsageDataSeries(physcialCpuUsage: (CpuUsage|null)[][]) {
+  private initCpuUsageDataSeries(physcialCpuUsage:
+                                     Array<Array<CpuUsage|null>>) {
     this.cpuUsageDataSeries.push(new DataSeries('Overall', 'Usage'));
     for (const [physicalCpuId, logicalCpuUsage] of physcialCpuUsage.entries()) {
       for (let logicalCpuId: number = 0; logicalCpuId < logicalCpuUsage.length;

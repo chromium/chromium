@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
 
 #include "base/feature_list.h"
@@ -1013,12 +1018,15 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
 
   v8_stats->setId(String::FromUTF8(stat.id()));
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  DocumentLoadTiming& time_converter =
-      window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
-  v8_stats->setTimestamp(time_converter
-                             .MonotonicTimeToPseudoWallTime(
-                                 ConvertToBaseTimeTicks(stat.timestamp()))
-                             .InMillisecondsF());
+  if (window && window->GetFrame() &&
+      window->GetFrame()->Loader().GetDocumentLoader()) {
+    DocumentLoadTiming& time_converter =
+        window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
+    v8_stats->setTimestamp(time_converter
+                               .MonotonicTimeToPseudoWallTime(
+                                   ConvertToBaseTimeTicks(stat.timestamp()))
+                               .InMillisecondsF());
+  }
   v8_stats->setType(String::FromUTF8(stat.type()));
   return v8_stats;
 }

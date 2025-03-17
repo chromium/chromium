@@ -15,8 +15,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_favicon_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_view.h"
@@ -30,6 +28,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_price_tracking_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/standalone_module_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
@@ -49,9 +51,10 @@
       MostVisitedTilesConfig* mvtConfig =
           static_cast<MostVisitedTilesConfig*>(config);
       return [[MostVisitedTilesStackView alloc]
-          initWithConfig:mvtConfig
-                 spacing:ContentSuggestionsTilesHorizontalSpacing(
-                             traitCollection)];
+               initWithConfig:mvtConfig
+          contentViewDelegate:contentViewDelegate
+                      spacing:ContentSuggestionsTilesHorizontalSpacing(
+                                  traitCollection)];
     }
     case ContentSuggestionsModuleType::kShortcuts: {
       ShortcutsConfig* shortcutsConfig = static_cast<ShortcutsConfig*>(config);
@@ -65,11 +68,9 @@
           static_cast<TabResumptionItem*>(config);
       return [self tabResumptionViewForConfig:tabResumptionItem];
     }
-    case ContentSuggestionsModuleType::kParcelTracking: {
-      ParcelTrackingItem* parcelTrackingItem =
-          static_cast<ParcelTrackingItem*>(config);
-      return [self parcelTrackingViewForConfig:parcelTrackingItem];
-    }
+    case ContentSuggestionsModuleType::kParcelTracking:
+      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
+      NOTREACHED();
     case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckState* safetyCheckConfig =
           static_cast<SafetyCheckState*>(config);
@@ -80,6 +81,10 @@
       PriceTrackingPromoItem* item =
           static_cast<PriceTrackingPromoItem*>(config);
       return [self priceTrackingPromoViewForConfig:item];
+    }
+    case ContentSuggestionsModuleType::kShopCard: {
+      ShopCardItem* item = static_cast<ShopCardItem*>(config);
+      return [self shopCardViewForConfig:item];
     }
     case ContentSuggestionsModuleType::kSendTabPromo: {
       SendTabPromoItem* item = static_cast<SendTabPromoItem*>(config);
@@ -142,18 +147,18 @@
 }
 
 - (UIView*)tabResumptionViewForConfig:(TabResumptionItem*)tabResumptionItem {
-  TabResumptionView* tabResumptionView =
-      [[TabResumptionView alloc] initWithItem:tabResumptionItem];
-  tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
-  return tabResumptionView;
-}
-
-- (UIView*)parcelTrackingViewForConfig:(ParcelTrackingItem*)parcelTrackingItem {
-  ParcelTrackingModuleView* parcelTrackingModuleView =
-      [[ParcelTrackingModuleView alloc] initWithFrame:CGRectZero];
-  parcelTrackingModuleView.commandHandler = parcelTrackingItem.commandHandler;
-  [parcelTrackingModuleView configureView:parcelTrackingItem];
-  return parcelTrackingModuleView;
+  if (tabResumptionItem.shopCardData.shopCardItemType ==
+      ShopCardItemType::kPriceTrackableProductOnTab) {
+    ShopCardPriceTrackingView* shopCardPriceTrackingView =
+        [[ShopCardPriceTrackingView alloc] initWithItem:tabResumptionItem];
+    shopCardPriceTrackingView.commandHandler = tabResumptionItem.commandHandler;
+    return shopCardPriceTrackingView;
+  } else {
+    TabResumptionView* tabResumptionView =
+        [[TabResumptionView alloc] initWithItem:tabResumptionItem];
+    tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
+    return tabResumptionView;
+  }
 }
 
 - (UIView*)priceTrackingPromoViewForConfig:
@@ -164,6 +169,14 @@
       addConsumer:view];
   view.commandHandler = priceTrackingPromoItem.commandHandler;
   [view configureView:priceTrackingPromoItem];
+  return view;
+}
+
+- (UIView*)shopCardViewForConfig:(ShopCardItem*)shopCardItem {
+  ShopCardModuleView* view =
+      [[ShopCardModuleView alloc] initWithFrame:CGRectZero];
+  view.commandHandler = shopCardItem.commandHandler;
+  [view configureView:shopCardItem];
   return view;
 }
 

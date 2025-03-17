@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -56,7 +55,7 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #endif
 
@@ -88,8 +87,6 @@ bool IsUrlInAppScope(web_app::AppBrowserController* app_controller, GURL url) {
 ui::ColorId GetSecurityChipColorId(
     security_state::SecurityLevel security_level) {
   switch (security_level) {
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return kColorPwaSecurityChipForegroundPolicyCert;
     case security_state::SECURE:
       return kColorPwaSecurityChipForegroundSecure;
     case security_state::DANGEROUS:
@@ -99,7 +96,7 @@ ui::ColorId GetSecurityChipColorId(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The CustomTabBarView uses a WebAppMenuButton with a custom color. This class
 // overrides the GetForegroundColor method to achieve this effect.
 class CustomTabBarAppMenuButton : public WebAppMenuButton {
@@ -266,7 +263,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
   // mode. Find a better place to set it.
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (browser_->is_type_custom_tab()) {
     web_app_menu_button_ =
         AddChildView(std::make_unique<CustomTabBarAppMenuButton>(

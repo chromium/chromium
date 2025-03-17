@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <string>
@@ -25,7 +26,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -94,16 +94,18 @@ PreloadingFailureReason ToPreloadingFailureReason(FinalStatus status) {
 
 void SetPreloadingTriggeringOutcome(PreloadingAttempt* attempt,
                                     PreloadingTriggeringOutcome outcome) {
-  if (!attempt)
+  if (!attempt) {
     return;
+  }
 
   attempt->SetTriggeringOutcome(outcome);
 }
 
 void SetPreloadingEligibility(PreloadingAttempt* attempt,
                               PreloadingEligibility eligibility) {
-  if (!attempt)
+  if (!attempt) {
     return;
+  }
 
   attempt->SetEligibility(eligibility);
 }
@@ -222,12 +224,14 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
   if (process_id != -1) {
     RenderViewHost* source_render_view_host =
         RenderViewHost::FromID(process_id, route_id);
-    if (!source_render_view_host)
+    if (!source_render_view_host) {
       return nullptr;
+    }
     WebContents* source_web_contents =
         WebContents::FromRenderViewHost(source_render_view_host);
-    if (!source_web_contents)
+    if (!source_web_contents) {
       return nullptr;
+    }
     if (origin == ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN &&
         source_web_contents->GetVisibleURL().host_piece() == url.host_piece()) {
       origin = ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN;
@@ -254,7 +258,6 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
     attempt = preloading_data->AddPreloadingAttempt(
         content::preloading_predictor::kLinkRel,
         content::PreloadingType::kNoStatePrefetch, same_url_matcher,
-        /*planned_max_preloading_type=*/std::nullopt,
         triggered_primary_page_source_id);
   }
   return StartPrefetchingWithPreconnectFallback(
@@ -351,8 +354,9 @@ NoStatePrefetchManager::GetAllNoStatePrefetchingContentsForTesting() const {
 
   for (const auto& prefetch : active_prefetches_) {
     WebContents* contents = prefetch->contents()->no_state_prefetch_contents();
-    if (contents)
+    if (contents) {
       result.push_back(contents);
+    }
   }
 
   return result;
@@ -365,8 +369,9 @@ bool NoStatePrefetchManager::HasRecentlyBeenNavigatedTo(Origin origin,
   CleanUpOldNavigations(&navigations_,
                         base::Milliseconds(kNavigationRecordWindowMs));
   for (const NavigationRecord& navigation : base::Reversed(navigations_)) {
-    if (navigation.url == url)
+    if (navigation.url == url) {
       return true;
+    }
   }
 
   return false;
@@ -387,11 +392,13 @@ base::Value::Dict NoStatePrefetchManager::CopyAsDict() const {
 void NoStatePrefetchManager::ClearData(int clear_flags) {
   DCHECK_GE(clear_flags, 0);
   DCHECK_LT(clear_flags, CLEAR_MAX);
-  if (clear_flags & CLEAR_PRERENDER_CONTENTS)
+  if (clear_flags & CLEAR_PRERENDER_CONTENTS) {
     DestroyAllContents(FINAL_STATUS_CACHE_OR_HISTORY_CLEARED);
+  }
   // This has to be second, since destroying prerenders can add to the history.
-  if (clear_flags & CLEAR_PRERENDER_HISTORY)
+  if (clear_flags & CLEAR_PRERENDER_HISTORY) {
     prefetch_history_->Clear();
+  }
 }
 
 void NoStatePrefetchManager::RecordFinalStatus(Origin origin,
@@ -709,8 +716,9 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
 
 void NoStatePrefetchManager::StartSchedulingPeriodicCleanups() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (repeating_timer_.IsRunning())
+  if (repeating_timer_.IsRunning()) {
     return;
+  }
 
   repeating_timer_.Start(FROM_HERE, kPeriodicCleanupInterval, this,
                          &NoStatePrefetchManager::PeriodicCleanup);
@@ -730,20 +738,23 @@ void NoStatePrefetchManager::PeriodicCleanup() {
   // will not interfere with potential deletions of the list.
   std::vector<NoStatePrefetchContents*> prefetch_contents;
   prefetch_contents.reserve(active_prefetches_.size());
-  for (auto& prefetch : active_prefetches_)
+  for (auto& prefetch : active_prefetches_) {
     prefetch_contents.push_back(prefetch->contents());
+  }
 
   // And now check for prerenders using too much memory.
-  for (auto* contents : prefetch_contents)
+  for (auto* contents : prefetch_contents) {
     contents->DestroyWhenUsingTooManyResources();
+  }
 
   base::ElapsedTimer cleanup_timer;
 
   // Perform deferred cleanup work.
   DeleteOldWebContents();
   DeleteOldEntries();
-  if (active_prefetches_.empty())
+  if (active_prefetches_.empty()) {
     StopSchedulingPeriodicCleanups();
+  }
 
   DeleteToDeletePrerenders();
 
@@ -774,8 +785,9 @@ void NoStatePrefetchManager::DeleteOldEntries() {
     DCHECK(prefetch_data);
     DCHECK(prefetch_data->contents());
 
-    if (prefetch_data->expiry_time() > GetCurrentTimeTicks())
+    if (prefetch_data->expiry_time() > GetCurrentTimeTicks()) {
       return;
+    }
     prefetch_data->contents()->Destroy(FINAL_STATUS_TIMED_OUT);
   }
 }
@@ -834,8 +846,9 @@ NoStatePrefetchManager::FindNoStatePrefetchData(
     SessionStorageNamespace* session_storage_namespace) {
   for (const auto& prefetch : active_prefetches_) {
     NoStatePrefetchContents* contents = prefetch->contents();
-    if (contents->Matches(url, session_storage_namespace))
+    if (contents->Matches(url, session_storage_namespace)) {
       return prefetch.get();
+    }
   }
   return nullptr;
 }
@@ -845,8 +858,9 @@ NoStatePrefetchManager::FindIteratorForNoStatePrefetchContents(
     NoStatePrefetchContents* no_state_prefetch_contents) {
   for (auto it = active_prefetches_.begin(); it != active_prefetches_.end();
        ++it) {
-    if ((*it)->contents() == no_state_prefetch_contents)
+    if ((*it)->contents() == no_state_prefetch_contents) {
       return it;
+    }
   }
   return active_prefetches_.end();
 }
@@ -855,12 +869,14 @@ bool NoStatePrefetchManager::DoesRateLimitAllowPrefetch(Origin origin) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Allow navigation predictor to manage its own rate limit.
-  if (origin == ORIGIN_NAVIGATION_PREDICTOR)
+  if (origin == ORIGIN_NAVIGATION_PREDICTOR) {
     return true;
+  }
   base::TimeDelta elapsed_time =
       GetCurrentTimeTicks() - last_prefetch_start_time_;
-  if (!config_.rate_limit_enabled)
+  if (!config_.rate_limit_enabled) {
     return true;
+  }
   return elapsed_time >= base::Milliseconds(kMinTimeBetweenPrefetchesMs);
 }
 
@@ -875,21 +891,27 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
     Origin* origin) {
   CleanUpOldNavigations(&prefetches_, base::Minutes(30));
 
-  if (prefetch_age)
+  if (prefetch_age) {
     *prefetch_age = base::TimeDelta();
-  if (final_status)
+  }
+  if (final_status) {
     *final_status = FINAL_STATUS_MAX;
-  if (origin)
+  }
+  if (origin) {
     *origin = ORIGIN_NONE;
+  }
 
   for (const NavigationRecord& prefetch : base::Reversed(prefetches_)) {
     if (prefetch.url == url) {
-      if (prefetch_age)
+      if (prefetch_age) {
         *prefetch_age = GetCurrentTimeTicks() - prefetch.time;
-      if (final_status)
+      }
+      if (final_status) {
         *final_status = prefetch.final_status;
-      if (origin)
+      }
+      if (origin) {
         *origin = prefetch.origin;
+      }
       return true;
     }
   }
@@ -923,8 +945,9 @@ void NoStatePrefetchManager::CleanUpOldNavigations(
   base::TimeTicks cutoff = GetCurrentTimeTicks() - max_age;
   auto it = navigations->begin();
   for (; it != navigations->end(); ++it) {
-    if (it->time > cutoff)
+    if (it->time > cutoff) {
       break;
+    }
   }
   navigations->erase(navigations->begin(), it);
 }
@@ -938,8 +961,9 @@ void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
   old_web_contents_list_.push_back(std::move(tab));
   PostCleanupTask();
 
-  if (!deleter)
+  if (!deleter) {
     return;
+  }
 
   for (auto it = on_close_web_contents_deleters_.begin();
        it != on_close_web_contents_deleters_.end(); ++it) {
@@ -985,8 +1009,9 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
     return;
   }
 
-  if (origin == ORIGIN_LINK_REL_NEXT)
+  if (origin == ORIGIN_LINK_REL_NEXT) {
     return;
+  }
 
   if (final_status == FINAL_STATUS_LOW_END_DEVICE ||
       final_status == FINAL_STATUS_DUPLICATE ||

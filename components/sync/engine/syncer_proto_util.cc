@@ -454,6 +454,16 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
     base::UmaHistogramSparse("Sync.PostedClientToServerMessageError2",
                              error_type);
   }
+  if (response->has_error() &&
+      response->error().error_type() == sync_pb::SyncEnums::PARTIAL_FAILURE) {
+    DataTypeSet error_data_types = GetDataTypeSetFromSpecificsFieldNumberList(
+        response->error().error_data_type_ids());
+    for (DataType data_type : error_data_types) {
+      base::UmaHistogramEnumeration(
+          "Sync.PostedClientToServerMessagePartialErrorDataType",
+          DataTypeHistogramValue(data_type));
+    }
+  }
 
   return true;
 }

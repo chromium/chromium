@@ -674,7 +674,7 @@
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5310788376443009632">Éléments supprimés :</translation>
 <translation id="5316825363044614340">passer à la ligne suivante</translation>
-<translation id="5320727453979144100">Mode rémanent activé</translation>
+<translation id="5320727453979144100">Mode Rémanent activé</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{virgule}one{# virgule}other{# virgules}}</translation>
 <translation id="532485153932049746">Formatage du texte
     <ph name="FONT_SIZE_STRING" />
@@ -834,7 +834,7 @@
 <translation id="6322856989298155004">Sons</translation>
 <translation id="6324551002951139333">Erreur grammaticale détectée</translation>
 <translation id="6325241889020214828">copier <ph name="TEXT" />.</translation>
-<translation id="6348657800373377022">Zone de liste déroulante</translation>
+<translation id="6348657800373377022">Zone de liste ou de texte</translation>
 <translation id="6348869651006731065">Gris clair</translation>
 <translation id="6350358010104919766">{COUNT,plural, =1{puce}one{# puce}other{# puces}}</translation>
 <translation id="6357433033180746873">Aucune cellule à droite</translation>
@@ -1115,6 +1115,7 @@
 <translation id="8316881042119029234">Vieille dentelle</translation>
 <translation id="8326783648485765113">Vert gazon</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{carré}one{# carré}other{# carrés}}</translation>
+<translation id="8351821207686449674">Activez/Désactivez les sous-titres</translation>
 <translation id="8378855320830505539">Région</translation>
 <translation id="8382679411218029383">Remplissage automatique de ligne et de liste</translation>
 <translation id="8394908167088220973">Contenu multimédia : lecture/pause</translation>

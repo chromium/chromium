@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -182,10 +181,10 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
       std::vector<raw_ptr<const sync_sessions::SyncedSession,
                           VectorExperimental>>* sessions) override {
     *sessions = foreign_sessions_;
-    base::ranges::sort(*sessions, std::greater(),
-                       [](const sync_sessions::SyncedSession* session) {
-                         return session->GetModifiedTime();
-                       });
+    std::ranges::sort(*sessions, std::greater(),
+                      [](const sync_sessions::SyncedSession* session) {
+                        return session->GetModifiedTime();
+                      });
 
     return !sessions->empty();
   }
@@ -468,18 +467,17 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
-    const AccountId account_id(AccountId::FromUserEmail(email));
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(email, gaia_id));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-    GetSessionControllerClient()->AddUserSession(email);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    return profile_manager()->CreateTestingProfile(
+    auto* testing_profile = profile_manager()->CreateTestingProfile(
         profile_name, {}, u"user_name", /*avatar_id=*/0, GetTestingFactories());
+    return testing_profile;
   }
 
   void SetUpReleaseNotesStorage() {
@@ -576,10 +574,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     return version_info::GetVersion().components()[0];
   }
 
-  TestSessionControllerClient* GetSessionControllerClient() {
-    return ash_test_helper()->test_session_controller_client();
-  }
-
   BirchLostMediaProvider* GetLostMediaProvider() {
     return static_cast<BirchLostMediaProvider*>(
         birch_keyed_service()->GetLostMediaProvider());
@@ -668,22 +662,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
 
   base::test::ScopedFeatureList feature_list_;
-};
-
-// A test harness that enables focus mode.
-class BirchKeyedServiceFocusModeTest : public BirchKeyedServiceTest {
- public:
-  BirchKeyedServiceFocusModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFocusMode);
-  }
-  BirchKeyedServiceFocusModeTest(const BirchKeyedServiceFocusModeTest&) =
-      delete;
-  BirchKeyedServiceFocusModeTest& operator=(
-      const BirchKeyedServiceFocusModeTest&) = delete;
-  ~BirchKeyedServiceFocusModeTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BirchKeyedServiceTest, HasDataProviders) {
@@ -1063,7 +1041,7 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_PausedDoesNotShow) {
   EXPECT_EQ(lost_media_items.size(), 1u);
 }
 
-TEST_F(BirchKeyedServiceFocusModeTest, LostMediaProvider_FocusModeDoesNotShow) {
+TEST_F(BirchKeyedServiceTest, LostMediaProvider_FocusModeDoesNotShow) {
   BirchModel* model = Shell::Get()->birch_model();
   BirchDataProvider* lost_media_provider =
       birch_keyed_service()->GetLostMediaProvider();

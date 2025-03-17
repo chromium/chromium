@@ -35,7 +35,7 @@
 #include "content/test/test_web_contents.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,9 +74,10 @@ using attribution_reporting::kAttributionReportingRegisterOsTriggerHeader;
 using attribution_reporting::kAttributionReportingRegisterSourceHeader;
 using attribution_reporting::kAttributionReportingRegisterTriggerHeader;
 
-class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
+class KeepAliveAttributionRequestHelperTestBase
+    : public RenderViewHostTestHarness {
  public:
-  KeepAliveAttributionRequestHelperTest()
+  KeepAliveAttributionRequestHelperTestBase()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -85,8 +86,7 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
                 AttributionOsLevelManager::ApiState::kEnabled)) {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kKeepAliveInBrowserMigration,
-         blink::features::kAttributionReportingInBrowserMigration,
-         network::features::kAttributionReportingCrossAppWeb},
+         blink::features::kAttributionReportingInBrowserMigration},
         {});
   }
 
@@ -137,7 +137,7 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
         eligibility, reporting_url, attribution_src_token,
         "devtools-request-id",
         *AttributionSuitableContext::Create(
-            test_web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+            test_web_contents()->GetPrimaryMainFrame()));
 
     CHECK(helper);
 
@@ -157,6 +157,9 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
   raw_ptr<MockAttributionManager> mock_attribution_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
+
+using KeepAliveAttributionRequestHelperTest =
+    KeepAliveAttributionRequestHelperTestBase;
 
 TEST_F(KeepAliveAttributionRequestHelperTest, SingleResponse) {
   const GURL source_url = GURL("https://secure_source.com");
@@ -404,7 +407,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     test_web_contents()->NavigateAndCommit(source_url);
 
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
     EXPECT_FALSE(context.has_value());
   }
 
@@ -412,7 +415,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     const GURL source_url("https://secure.test");
     test_web_contents()->NavigateAndCommit(source_url);
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
     ASSERT_TRUE(context.has_value());
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEmpty, reporting_url,
@@ -429,7 +432,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     test_web_contents()->NavigateAndCommit(source_url);
 
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
     ASSERT_TRUE(context.has_value());
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEventSourceOrTrigger, reporting_url,
@@ -668,7 +671,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, CreateIfNeeded_MetricRecorded) {
 
     test_web_contents()->NavigateAndCommit(test_case.context_url);
     auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        test_web_contents()->GetPrimaryMainFrame());
 
     base::HistogramTester histograms;
 
@@ -684,6 +687,75 @@ TEST_F(KeepAliveAttributionRequestHelperTest, CreateIfNeeded_MetricRecorded) {
                                   0);
     }
   }
+}
+
+// A type to support parameterized testing for testing attribution request.
+struct IsAttributionRequestTestCase {
+  std::string test_case;
+  AttributionReportingEligibility eligibility;
+  bool expected;
+};
+
+class IsNonKeepAliveRequestAttributionRequestTest
+    : public KeepAliveAttributionRequestHelperTestBase,
+      public ::testing::WithParamInterface<IsAttributionRequestTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsNonKeepAliveRequestAttributionRequestTest,
+    testing::ValuesIn<IsAttributionRequestTestCase>({
+        {"kEmpty", AttributionReportingEligibility::kEmpty, false},
+        {"kEventSource", AttributionReportingEligibility::kEventSource, false},
+        {"kEventSourceOrTrigger",
+         AttributionReportingEligibility::kEventSourceOrTrigger, false},
+        {"kNavigationSource",
+         AttributionReportingEligibility::kNavigationSource, false},
+        {"kTrigger", AttributionReportingEligibility::kTrigger, false},
+    }),
+    [](const testing::TestParamInfo<IsAttributionRequestTestCase>& info) {
+      return info.param.test_case;
+    });
+
+TEST_P(IsNonKeepAliveRequestAttributionRequestTest, WithEligibility) {
+  network::ResourceRequest request;
+  request.url = GURL("https://report.test");
+  request.keepalive = false;
+
+  request.attribution_reporting_eligibility = GetParam().eligibility;
+
+  EXPECT_THAT(KeepAliveAttributionRequestHelper::IsAttributionRequest(request),
+              testing::Eq(GetParam().expected));
+}
+
+class IsKeepAliveRequestAttributionRequestTest
+    : public KeepAliveAttributionRequestHelperTestBase,
+      public ::testing::WithParamInterface<IsAttributionRequestTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsKeepAliveRequestAttributionRequestTest,
+    testing::ValuesIn<IsAttributionRequestTestCase>({
+        {"kEmpty", AttributionReportingEligibility::kEmpty, false},
+        {"kEventSource", AttributionReportingEligibility::kEventSource, true},
+        {"kEventSourceOrTrigger",
+         AttributionReportingEligibility::kEventSourceOrTrigger, true},
+        {"kNavigationSource",
+         AttributionReportingEligibility::kNavigationSource, true},
+        {"kTrigger", AttributionReportingEligibility::kTrigger, true},
+    }),
+    [](const testing::TestParamInfo<IsAttributionRequestTestCase>& info) {
+      return info.param.test_case;
+    });
+
+TEST_P(IsKeepAliveRequestAttributionRequestTest, WithEligibility) {
+  network::ResourceRequest request;
+  request.url = GURL("https://report.test");
+  request.keepalive = true;
+
+  request.attribution_reporting_eligibility = GetParam().eligibility;
+
+  EXPECT_THAT(KeepAliveAttributionRequestHelper::IsAttributionRequest(request),
+              testing::Eq(GetParam().expected));
 }
 
 }  // namespace

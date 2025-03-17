@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("settings") {
   sources = [
@@ -45,7 +45,6 @@ static_library("settings") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
@@ -54,9 +53,7 @@ static_library("settings") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//components/account_id",
-    "//components/flags_ui",
     "//components/ownership",
     "//components/policy:generated",
     "//components/policy/core/common",
@@ -64,10 +61,15 @@ static_library("settings") {
     "//components/policy/proto",
     "//components/prefs",
     "//components/user_manager",
+    "//components/webui/flags",
     "//content/public/browser",
     "//crypto",
     "//net",
     "//third_party/re2:re2",
+
+    # Work around of stub_cros_settings_provider injection.
+    # TODO(hidehiko): Move the test support code to test_support target.
+    "//chromeos/ash/components/settings:test_support",
   ]
 }
 

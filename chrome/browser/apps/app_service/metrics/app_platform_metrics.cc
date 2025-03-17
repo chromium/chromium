@@ -818,8 +818,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
     // For the browser window, if a tab of the browser is activated, we don't
     // need to calculate the browser window running time.
-    if ((app_id == app_constants::kChromeAppId ||
-         app_id == app_constants::kLacrosAppId) &&
+    if ((app_id == app_constants::kChromeAppId) &&
         browser_to_tab_list_.HasActivatedTab(update.Window())) {
       SetWindowInActivated(app_id, update.InstanceId(), kInActivated);
       return;
@@ -889,8 +888,7 @@ void AppPlatformMetrics::GetBrowserInstanceInfo(
   state = InstanceState::kUnknown;
   proxy->InstanceRegistry().ForInstancesWithWindow(
       browser_window, [&](const InstanceUpdate& browser_update) {
-        if (browser_update.AppId() == app_constants::kChromeAppId ||
-            browser_update.AppId() == app_constants::kLacrosAppId) {
+        if (browser_update.AppId() == app_constants::kChromeAppId) {
           browser_id = browser_update.InstanceId();
           browser_app_id = browser_update.AppId();
           state = browser_update.State();

@@ -4,6 +4,7 @@
 
 #include "components/media_router/browser/presentation/controller_presentation_service_delegate_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -17,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -484,7 +484,7 @@ void ControllerPresentationServiceDelegateImpl::StartPresentation(
         PresentationErrorType::UNKNOWN, "Invalid presentation arguments."));
     return;
   }
-  if (!base::ranges::all_of(presentation_urls, IsValidPresentationUrl)) {
+  if (!std::ranges::all_of(presentation_urls, IsValidPresentationUrl)) {
     std::move(error_cb).Run(
         PresentationError(PresentationErrorType::NO_PRESENTATION_FOUND,
                           "Invalid presentation URL."));

@@ -14,7 +14,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 
 namespace {
 
@@ -110,7 +109,7 @@ bool DependencyGraph::BuildConstructionOrder() {
       it++;
       edges.erase(temp);
 
-      bool has_incoming_edges = base::ranges::any_of(
+      bool has_incoming_edges = std::ranges::any_of(
           edges, [dest](const auto& edge) { return edge.second == dest; });
 
       if (!has_incoming_edges)

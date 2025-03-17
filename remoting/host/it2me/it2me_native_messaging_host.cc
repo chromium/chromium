@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 
 #include <memory>
@@ -24,7 +29,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
 #include "net/base/url_util.h"
 #include "net/socket/client_socket_factory.h"
@@ -102,28 +106,6 @@ bool IsValidEmailAddress(const std::string& email) {
              .size() == 2U;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-ChromeOsEnterpriseParams BuildEnterpriseParams(
-    const base::Value::Dict& message) {
-  return {.suppress_user_dialogs =
-              message.FindBool(kSuppressUserDialogs).value_or(false),
-          .suppress_notifications =
-              message.FindBool(kSuppressNotifications).value_or(false),
-          .terminate_upon_input =
-              message.FindBool(kTerminateUponInput).value_or(false),
-          .curtain_local_user_session =
-              message.FindBool(kCurtainLocalUserSession).value_or(false),
-          .show_troubleshooting_tools =
-              message.FindBool(kShowTroubleshootingTools).value_or(false),
-          .allow_troubleshooting_tools =
-              message.FindBool(kAllowTroubleshootingTools).value_or(false),
-          .allow_reconnections =
-              message.FindBool(kAllowReconnections).value_or(false),
-          .allow_file_transfer =
-              message.FindBool(kAllowFileTransfer).value_or(false)};
-}
-#endif
-
 std::unique_ptr<It2MeHost::DeferredConnectContext>
 CreateDelegatedSignalingDeferredConnectContext(
     std::unique_ptr<remoting::SignalStrategy> signal_strategy,
@@ -142,15 +124,17 @@ CreateDelegatedSignalingDeferredConnectContext(
 std::unique_ptr<It2MeHost::DeferredConnectContext>
 CreateNativeSignalingDeferredConnectContext(
     scoped_refptr<base::SequencedTaskRunner> oauth_token_getter_task_runner,
-    base::WeakPtr<PassthroughOAuthTokenGetter> signaling_token_getter,
-    base::WeakPtr<PassthroughOAuthTokenGetter> api_token_getter,
+    base::WeakPtr<OAuthTokenGetter> signaling_token_getter,
+    base::WeakPtr<OAuthTokenGetter> api_token_getter,
     const std::string& ftl_device_id,
+    bool use_corp_session_authz,
     ChromotingHostContext* host_context) {
   std::string device_id =
       ftl_device_id.empty() ? base::Uuid::GenerateRandomV4().AsLowercaseString()
                             : ftl_device_id;
   auto connection_context =
       std::make_unique<It2MeHost::DeferredConnectContext>();
+  connection_context->use_corp_session_authz = use_corp_session_authz;
   connection_context->use_ftl_signaling = true;
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<OAuthTokenGetterProxy>(signaling_token_getter,
@@ -247,11 +231,11 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
 void It2MeNativeMessagingHost::Start(Client* client) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   client_ = client;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   log_message_handler_ = std::make_unique<LogMessageHandler>(
       base::BindRepeating(&It2MeNativeMessagingHost::SendMessageToClient,
                           base::Unretained(this)));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void It2MeNativeMessagingHost::SendMessageToClient(
@@ -347,13 +331,14 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   }
 
   std::optional<ReconnectParams> reconnect_params;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   bool is_enterprise_admin_user =
       message.FindBool(kIsEnterpriseAdminUser).value_or(false);
   if (is_enterprise_admin_user) {
     const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
     if (reconnect_params_ptr) {
-      CHECK(message.FindBool(kAllowReconnections).value_or(false));
+      auto enterprise_params = ChromeOsEnterpriseParams::FromDict(message);
+      CHECK(enterprise_params.allow_reconnections);
       reconnect_params.emplace(
           ReconnectParams::FromDict(*reconnect_params_ptr));
     }
@@ -399,10 +384,12 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
       if (reconnect_params.has_value()) {
         ftl_device_id = reconnect_params->ftl_device_id;
       }
-      create_connection_context =
-          base::BindOnce(&CreateNativeSignalingDeferredConnectContext,
-                         task_runner(), signaling_token_getter_.GetWeakPtr(),
-                         api_token_getter_.GetWeakPtr(), ftl_device_id);
+      bool use_corp_session_authz =
+          message.FindBool(kUseCorpSessionAuthz).value_or(false);
+      create_connection_context = base::BindOnce(
+          &CreateNativeSignalingDeferredConnectContext, task_runner(),
+          signaling_token_getter_.GetWeakPtr(), api_token_getter_.GetWeakPtr(),
+          ftl_device_id, use_corp_session_authz);
     } else {
       LOG(ERROR) << kUserName << " not found in request.";
     }
@@ -433,11 +420,17 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   it2me_host_->set_authorized_helper(authorized_helper);
 
   auto dialog_style = It2MeConfirmationDialog::DialogStyle::kConsumer;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  base::TimeDelta connection_auto_accept_timeout;
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (is_enterprise_admin_user) {
-    dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
+    auto chromeos_enterprise_params =
+        ChromeOsEnterpriseParams::FromDict(message);
+    connection_auto_accept_timeout =
+        chromeos_enterprise_params.connection_auto_accept_timeout;
     it2me_host_->set_chrome_os_enterprise_params(
-        BuildEnterpriseParams(message));
+        std::move(chromeos_enterprise_params));
+
+    dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
 
     if (reconnect_params.has_value()) {
       it2me_host_->set_reconnect_params(std::move(*reconnect_params));
@@ -445,10 +438,11 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   }
 #endif
 
-  it2me_host_->Connect(
-      host_context_->Copy(), std::move(policies),
-      std::make_unique<It2MeConfirmationDialogFactory>(dialog_style), weak_ptr_,
-      std::move(create_connection_context), username, ice_config);
+  it2me_host_->Connect(host_context_->Copy(), std::move(policies),
+                       std::make_unique<It2MeConfirmationDialogFactory>(
+                           dialog_style, connection_auto_accept_timeout),
+                       weak_ptr_, std::move(create_connection_context),
+                       username, ice_config);
 
   SendMessageToClient(std::move(response));
 }
@@ -736,44 +730,25 @@ It2MeNativeMessagingHost::CreateDelegatedSignalStrategy(
 
 std::string It2MeNativeMessagingHost::ExtractAccessToken(
     const base::Value::Dict& message) {
-  // TODO(b/309958013): Remove this function, code, and unused constants after
-  // M124 and we no longer need to deal with the kAuthServiceWithToken field.
   const std::string* access_token = message.FindString(kAccessToken);
-  if (access_token) {
-    if (access_token->empty()) {
-      LOG(ERROR) << "Empty token stored in " << kAccessToken << " field";
-      return {};
-    }
-    return *access_token;
+  if (!access_token) {
+    LOG(ERROR) << kAccessToken << " field not found in request.";
+    return {};
   }
-
-  const std::string* auth_service_with_token =
-      message.FindString(kAuthServiceWithToken);
-  if (!auth_service_with_token || auth_service_with_token->empty()) {
-    LOG(ERROR) << "'authServiceWithToken' not found in request.";
+  if (access_token->empty()) {
+    LOG(ERROR) << "Empty token stored in " << kAccessToken << " field";
     return {};
   }
 
-  // We are migrating away from requiring the oauth2 prefix in the
-  // kAuthServiceWithToken field, however ash-chrome needs to support different
-  // versions of lacros-chrome which may not have been updated. Therefore, we
-  // need to support messages which are prefixed with oauth2: as well as those
-  // which pass a raw access token.
-  const char kOAuth2ServicePrefix[] = "oauth2:";
-  if (base::StartsWith(*auth_service_with_token, kOAuth2ServicePrefix,
-                       base::CompareCase::SENSITIVE)) {
-    return auth_service_with_token->substr(strlen(kOAuth2ServicePrefix));
-  }
-
   // Log an error if an access token is provided which does not match the
-  // expected format. Though this prefix is effectively stable, there is are no
-  // guarantees so we shouldn't reject requests based on it.
-  if (!auth_service_with_token->starts_with("ya29.")) {
-    LOG(ERROR) << "Potentially invalid auth_service_with_token value: "
-               << *auth_service_with_token;
+  // expected format. Though this prefix is effectively stable, there are no
+  // guarantees it won't change so we shouldn't reject requests based on it.
+  if (!access_token->starts_with("ya29.")) {
+    LOG(ERROR) << "Potentially invalid " << kAccessToken
+               << " value: " << *access_token;
   }
 
-  return *auth_service_with_token;
+  return *access_token;
 }
 
 #if BUILDFLAG(IS_WIN)

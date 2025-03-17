@@ -184,7 +184,7 @@ public class MostVisitedSitesMetadataUtilsTest {
         List<Tile> sitesAfterRestore = MostVisitedSitesMetadataUtils.restoreFileToSuggestionLists();
         // Ensure that the new suggestion equals to old suggestion.
         assertEquals(1, sitesAfterRestore.size());
-        assertEquals(sitesAfterRestore.get(0).getData(), expectedSiteSuggestion);
+        assertEquals(expectedSiteSuggestion, sitesAfterRestore.get(0).getData());
     }
 
     private static List<Tile> createFakeSiteSuggestionTiles1() {

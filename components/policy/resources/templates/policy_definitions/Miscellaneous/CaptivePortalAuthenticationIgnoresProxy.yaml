@@ -15,8 +15,7 @@ items:
 - caption: Prevent captive portal authentication from ignoring proxy settings
   value: false
 owners:
-- ultrotter@google.com
-- rsorokin@google.com
+- file://components/policy/OWNERS
 schema:
   type: boolean
 supported_on:

@@ -101,6 +101,11 @@ GPU_EXPORT std::string D3DFeatureLevelToString(uint32_t d3d_feature_level);
 GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+GPU_EXPORT void EnsureNonSoftwareDeviceForTesting(
+    gl::GpuPreference gpu_preference);
+#endif
+
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_GPU_UTIL_H_

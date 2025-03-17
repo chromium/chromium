@@ -116,9 +116,6 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
   // least one line with actual inline content (as opposed to e.g. "lines"
   // consisting only of floats).
   bool IsPastFirstFormattedLine() const {
-    if (!RuntimeEnabledFeatures::LineBoxBelowLeadingFloatsEnabled()) {
-      return !Start().IsZero();
-    }
     return flags_ & kIsPastFirstFormattedLine;
   }
 

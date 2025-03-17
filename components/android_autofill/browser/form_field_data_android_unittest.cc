@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 #include "components/android_autofill/browser/form_field_data_android.h"
-#include "components/android_autofill/browser/form_data_android.h"
 
 #include <memory>
 
 #include "base/test/bind.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
+#include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,24 +59,22 @@ class FormFieldDataAndroidTest : public ::testing::Test {
 };
 
 // Tests that the equality operator of FieldTypes requires that all FieldTypes
-// members match the AutofillType it is compared with.
+// members match the FieldType it is compared with.
 TEST_F(FormFieldDataAndroidTest, FieldTypesEquality) {
   using FieldTypes = FormFieldDataAndroid::FieldTypes;
-  const AutofillType kUsername(FieldType::USERNAME);
-  const AutofillType kName(FieldType::NAME_FIRST);
 
-  const FieldTypes mixed_types(/*heuristic_type=*/kUsername,
-                               /*server_type=*/kName,
-                               /*server_type=*/kName,
-                               /*server_predictions=*/{kName});
-  const FieldTypes same_types(/*heuristic_type=*/kUsername,
-                              /*server_type=*/kUsername,
-                              /*server_type=*/kUsername,
-                              /*server_predictions=*/{kUsername});
-  EXPECT_NE(mixed_types, kUsername);
-  EXPECT_NE(mixed_types, kName);
-  EXPECT_NE(same_types, kName);
-  EXPECT_EQ(same_types, kUsername);
+  const FieldTypes mixed_types(/*heuristic_type=*/USERNAME,
+                               /*server_type=*/NAME_FIRST,
+                               /*computed_type=*/"NAME_FIRST",
+                               /*server_predictions=*/{NAME_FIRST});
+  const FieldTypes same_types(/*heuristic_type=*/USERNAME,
+                              /*server_type=*/USERNAME,
+                              /*computed_type=*/"USERNAME",
+                              /*server_predictions=*/{USERNAME});
+  EXPECT_NE(mixed_types, USERNAME);
+  EXPECT_NE(mixed_types, NAME_FIRST);
+  EXPECT_NE(same_types, NAME_FIRST);
+  EXPECT_EQ(same_types, USERNAME);
 }
 
 // Tests that updating the autofill types calls the Java bridge.
@@ -82,18 +82,16 @@ TEST_F(FormFieldDataAndroidTest, UpdateAutofillTypes) {
   FormFieldData field;
   FormFieldDataAndroid field_android(&field);
   EXPECT_CALL(bridge(), UpdateFieldTypes);
-  field_android.UpdateAutofillTypes(FormFieldDataAndroid::FieldTypes());
+  field_android.UpdateFieldTypes(FormFieldDataAndroid::FieldTypes());
 }
 
 // Tests that calling `UpdateAutofillTypes` updates the AutofillTypes member.
 TEST_F(FormFieldDataAndroidTest, UpdateAutofillTypesUpdatesFieldTypes) {
-  const AutofillType kName(FieldType::NAME_FIRST);
-
   FormFieldData field;
   FormFieldDataAndroid field_android(&field);
-  EXPECT_NE(field_android.field_types(), kName);
-  field_android.UpdateAutofillTypes(FormFieldDataAndroid::FieldTypes(kName));
-  EXPECT_EQ(field_android.field_types(), kName);
+  EXPECT_NE(field_android.field_types(), NAME_FIRST);
+  field_android.UpdateFieldTypes(FormFieldDataAndroid::FieldTypes(NAME_FIRST));
+  EXPECT_EQ(field_android.field_types(), NAME_FIRST);
 }
 
 // Tests that updating the field value calls the Java bridge and also updates

@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "third_party/blink/public/platform/web_vector.h"
-
 namespace blink {
 class WebString;
 }
@@ -43,7 +41,7 @@ class ContentWatcher {
  private:
   // If any of these selectors match on a page, we need to call
   // extensions::mojom::LocalFrameHost::WatchedPageChange to notify the browser.
-  blink::WebVector<blink::WebString> css_selectors_;
+  std::vector<blink::WebString> css_selectors_;
 };
 
 }  // namespace extensions

@@ -9,7 +9,7 @@
 
 // Protocol defining an interface to trigger changes on the location bar.
 // Calling those methods should not start any animation.
-@protocol LocationBarAnimatee<NSObject>
+@protocol LocationBarAnimatee <NSObject>
 
 // Moves the text field to a position where the text in it visually overlays the
 // text in steady view.

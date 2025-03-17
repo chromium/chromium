@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, Run) {
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
   Profile* profile = profile_manager->GetLastUsedProfile();
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
+  ASSERT_EQ(ProfileManager::GetInitialProfileDir(), profile->GetBaseName());
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   ASSERT_NE(nullptr, browser);
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile = profile_manager->GetLastUsedProfile();
 
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
+  ASSERT_EQ(ProfileManager::GetInitialProfileDir(), profile->GetBaseName());
 
   if (!GetParam().existing_email.empty()) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest, ExistingWinBrowser) {
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
   Profile* profile = profile_manager->GetLastUsedProfile();
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
+  ASSERT_EQ(ProfileManager::GetInitialProfileDir(), profile->GetBaseName());
 
   AssertSigninStarted(GetParam().expect_is_started, profile);
 
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
 
   Profile* profile = profile_manager->GetLastUsedProfile();
 
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
+  ASSERT_EQ(ProfileManager::GetInitialProfileDir(), profile->GetBaseName());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);

@@ -10,7 +10,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
-import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -97,22 +96,6 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public long testSavedTabGroupConversionJavaToNative() throws TimeoutException {
-        SavedTabGroup savedTabGroup = new SavedTabGroup();
-        savedTabGroup.localId = LOCAL_TAB_GROUP_ID_1;
-        savedTabGroup.title = TEST_GROUP_TITLE;
-        savedTabGroup.color = TabGroupColorId.CYAN;
-
-        SavedTabGroupTab tab1 = new SavedTabGroupTab();
-        tab1.localId = LOCAL_TAB_ID_1;
-        tab1.url = new GURL(TEST_URL);
-        tab1.title = TEST_TAB_TITLE;
-        savedTabGroup.savedTabs.add(tab1);
-
-        return TabGroupSyncConversionsBridge.convertToNativeSavedTabGroup(savedTabGroup);
-    }
-
-    @CalledByNative
     public void testOnTabGroupAdded() {
         verify(mObserver).onTabGroupAdded(mTabGroupCaptor.capture(), eq(TriggerSource.REMOTE));
         SavedTabGroup group = mTabGroupCaptor.getValue();
@@ -140,9 +123,17 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testCreateGroup() {
-        String uuid = mService.createGroup(LOCAL_TAB_GROUP_ID_1);
-        Assert.assertFalse(TextUtils.isEmpty(uuid));
+    public void testAddGroup() {
+        SavedTabGroup group = new SavedTabGroup();
+        group.localId = LOCAL_TAB_GROUP_ID_1;
+        group.title = TEST_GROUP_TITLE;
+        group.color = TabGroupColorId.GREEN;
+        SavedTabGroupTab tab1 = new SavedTabGroupTab();
+        tab1.localId = LOCAL_TAB_ID_1;
+        tab1.url = new GURL(TEST_URL);
+        tab1.title = TEST_TAB_TITLE;
+        group.savedTabs.add(tab1);
+        mService.addGroup(group);
     }
 
     @CalledByNative
@@ -163,6 +154,16 @@ public class TabGroupSyncServiceAndroidUnitTest {
     @CalledByNative
     public void testMakeTabGroupShared(String collaborationId) {
         mService.makeTabGroupShared(LOCAL_TAB_GROUP_ID_1, collaborationId);
+    }
+
+    @CalledByNative
+    public void testAboutToUnShareTabGroup() {
+        mService.aboutToUnShareTabGroup(LOCAL_TAB_GROUP_ID_1, null);
+    }
+
+    @CalledByNative
+    public void testOnTabGroupUnShareComplete() {
+        mService.onTabGroupUnShareComplete(LOCAL_TAB_GROUP_ID_1, true);
     }
 
     @CalledByNative
@@ -245,7 +246,8 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testOnTabSelected(LocalTabGroupId localTabGroupId, int localTabId) {
-        mService.onTabSelected(localTabGroupId, localTabId);
+    public void testOnTabSelected(
+            LocalTabGroupId localTabGroupId, int localTabId, String tabTitle) {
+        mService.onTabSelected(localTabGroupId, localTabId, tabTitle);
     }
 }

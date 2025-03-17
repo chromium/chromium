@@ -5,6 +5,7 @@
 package org.chromium.net.telemetry;
 
 import android.os.Build;
+import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -87,7 +88,10 @@ public class CronetLoggerImpl extends CronetLogger {
                     info.httpFlagsLatencyMillis,
                     OptionalBoolean.fromBoolean(info.httpFlagsSuccessful).getValue(),
                     longListToLongArray(info.httpFlagsNames),
-                    longListToLongArray(info.httpFlagsValues));
+                    longListToLongArray(info.httpFlagsValues),
+                    info.cronetImplVersion,
+                    convertToProtoCronetEngineCreatedSource(info.source),
+                    Process.myUid());
         }
     }
 
@@ -170,7 +174,8 @@ public class CronetLoggerImpl extends CronetLogger {
                     experimentalOptions.getStaleDnsPersistDelayMillisOption(),
                     experimentalOptions.getStaleDnsUseStaleOnNameNotResolvedOption().getValue(),
                     experimentalOptions.getDisableIpv6OnWifiOption().getValue(),
-                    builder.getCronetInitializationRef());
+                    builder.getCronetInitializationRef(),
+                    Process.myUid());
         } catch (Exception e) { // catching all exceptions since we don't want to crash the client
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(
@@ -218,7 +223,9 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getQuicErrorCode(),
                     convertToProtoConnectionCloseSource(trafficInfo.getConnectionCloseSource()),
                     convertToProtoFailureReason(trafficInfo.getFailureReason()),
-                    OptionalBoolean.fromBoolean(trafficInfo.getIsSocketReused()).getValue());
+                    OptionalBoolean.fromBoolean(trafficInfo.getIsSocketReused()).getValue(),
+                    trafficInfo.getCronetVersion(),
+                    convertToProtoCronetEngineCreatedSource(trafficInfo.getCronetSource()));
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

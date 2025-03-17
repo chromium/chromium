@@ -5,12 +5,14 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrToggleElement, IronIconElement, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes, SettingsBluetoothSummaryElement} from 'chrome://os-settings/os_settings.js';
+import type {CrToggleElement, IronIconElement, SettingsBluetoothSummaryElement} from 'chrome://os-settings/os_settings.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {setHidPreservingControllerForTesting} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothSystemProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothSystemState, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/chromeos/bluetooth/fake_bluetooth_config.js';
@@ -38,7 +40,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  async function init() {
+  function init() {
     hidPreservingController = new FakeHidPreservingBluetoothStateController();
     hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
     setHidPreservingControllerForTesting(hidPreservingController);

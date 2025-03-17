@@ -29,6 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_condition_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
@@ -56,7 +57,9 @@ namespace probe {
 class RecalculateStyle;
 }  // namespace probe
 
+class CSSConditionRule;
 class CSSContainerRule;
+class CSSFunctionRule;
 class CSSPropertyName;
 class CSSRule;
 class CSSStyleRule;
@@ -124,6 +127,16 @@ class CORE_EXPORT InspectorCSSAgent final
                                   String* computed_font_weight,
                                   float* text_opacity);
 
+  // Collects all function references (i.e. <dashed-ident>s) within
+  // the rule list, and the CSSFunctionRules that resulted from looking up
+  // those function references.
+  static void CollectReferencedFunctionRules(
+      Document&,
+      const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets,
+      const RuleIndexList&,
+      HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>&
+          result);
+
   InspectorCSSAgent(InspectorDOMAgent*,
                     InspectedFrames*,
                     InspectorNetworkAgent*,
@@ -181,9 +194,10 @@ class CORE_EXPORT InspectorCSSAgent final
       std::optional<int>*,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
-      std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
-          out_cssFontPaletteValuesRule,
-      std::optional<int>*) override;
+      std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*,
+      std::optional<int>* parent_layout_node_id,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionRule>>*)
+      override;
   protocol::Response getInlineStylesForNode(
       int node_id,
       std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
@@ -199,6 +213,11 @@ class CORE_EXPORT InspectorCSSAgent final
       std::optional<protocol::DOM::PseudoType> pseudo_type,
       std::optional<String> pseudo_identifier,
       std::unique_ptr<protocol::Array<String>>* results) override;
+  protocol::Response getLonghandProperties(
+      const String& shorthand_name,
+      const String& value,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>*
+          longhand_properties) override;
   protocol::Response getPlatformFontsForNode(
       int node_id,
       std::unique_ptr<protocol::Array<protocol::CSS::PlatformFontUsage>>* fonts)
@@ -254,6 +273,7 @@ class CORE_EXPORT InspectorCSSAgent final
       const String& text,
       std::unique_ptr<protocol::CSS::CSSSupports>*) override;
   protocol::Response createStyleSheet(const String& frame_id,
+                                      std::optional<bool> force,
                                       String* style_sheet_id) override;
   protocol::Response addRule(
       const String& style_sheet_id,
@@ -402,7 +422,7 @@ class CORE_EXPORT InspectorCSSAgent final
   String UnbindStyleSheet(InspectorStyleSheet*);
   InspectorStyleSheet* InspectorStyleSheetForRule(CSSStyleRule*);
 
-  InspectorStyleSheet* ViaInspectorStyleSheet(Document*);
+  InspectorStyleSheet* CreateViaInspectorStyleSheet(Document*, bool);
 
   protocol::Response AssertEnabled();
   protocol::Response AssertInspectorStyleSheetForId(const String&,
@@ -479,6 +499,14 @@ class CORE_EXPORT InspectorCSSAgent final
                              protocol::Array<protocol::CSS::CSSScope>*,
                              protocol::Array<protocol::CSS::CSSRuleType>*);
 
+  // Function at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSFunctionRule> BuildObjectForFunctionRule(
+      CSSFunctionRule*);
+  std::unique_ptr<protocol::CSS::CSSFunctionConditionNode>
+  BuildObjectForFunctionConditionNode(CSSConditionRule*);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionNode>>
+  BuildArrayForFunctionNodeChildren(CSSRuleList*);
+
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;
   void WillRemoveDOMNode(Node*) override;
@@ -494,6 +522,9 @@ class CORE_EXPORT InspectorCSSAgent final
   void DecrementFocusedCountForAncestors(Element*);
 
   void NotifyComputedStyleUpdatedForNode(int node_id);
+  static String ResolvePercentagesValues(Element*,
+                                         CSSPropertyName,
+                                         const CSSValue*);
 
   Member<InspectorDOMAgent> dom_agent_;
   Member<InspectedFrames> inspected_frames_;
@@ -506,9 +537,9 @@ class CORE_EXPORT InspectorCSSAgent final
       id_to_inspector_style_sheet_for_inline_style_;
   HeapHashMap<Member<CSSStyleSheet>, Member<InspectorStyleSheet>>
       css_style_sheet_to_inspector_style_sheet_;
-  typedef HeapHashMap<Member<Document>,
-                      Member<HeapHashSet<Member<CSSStyleSheet>>>>
-      DocumentStyleSheets;
+  using DocumentStyleSheets =
+      HeapHashMap<Member<Document>,
+                  Member<GCedHeapHashSet<Member<CSSStyleSheet>>>>;
   DocumentStyleSheets document_to_css_style_sheets_;
   HeapHashSet<Member<Document>> invalidated_documents_;
 
@@ -516,6 +547,9 @@ class CORE_EXPORT InspectorCSSAgent final
   NodeIdToForcedPseudoState node_id_to_forced_pseudo_state_;
   NodeIdToNumberFocusedChildren node_id_to_number_focused_children_;
   NodeIdToForcedStartingStyle node_id_to_forced_starting_style_;
+
+  HeapHashMap<WeakMember<Document>, Member<CSSStyleSheet>>
+      default_inspector_stylesheets_;
 
   Member<StyleRuleUsageTracker> tracker_;
 
@@ -543,16 +577,13 @@ class CORE_EXPORT InspectorCSSAgent final
   HashSet<int> notify_computed_style_updated_node_ids_;
   WeakCellFactory<InspectorCSSAgent> weak_factory_{this};
 
-  // True while InspectorGhostRules is modifying a stylesheet. We don't
-  // need to respond to such mutations, because we're guaranteed to undo them.
-  bool ignore_stylesheet_mutation_ = false;
-
   // Node to be tracked for `ComputedStyleUpdated` events.
   // This is set via `trackComputedStyleUpdatesForNode` call.
   std::optional<int> node_id_for_computed_style_updated_events_;
 
   friend class InspectorResourceContentLoaderCallback;
   friend class StyleSheetBinder;
+  friend class InspectorCSSAgentTest;
 };
 
 }  // namespace blink

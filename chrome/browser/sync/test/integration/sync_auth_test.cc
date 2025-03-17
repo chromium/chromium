@@ -8,7 +8,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -314,13 +313,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that SyncServiceImpl fetches a new token when an old token expires.
-// TODO(crbug.com/40788468): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TokenExpiry DISABLED_TokenExpiry
-#else
-#define MAYBE_TokenExpiry TokenExpiry
-#endif
-IN_PROC_BROWSER_TEST_F(SyncAuthTestOAuthTokens, MAYBE_TokenExpiry) {
+IN_PROC_BROWSER_TEST_F(SyncAuthTestOAuthTokens, TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
   GetFakeServer()->ClearHttpError();

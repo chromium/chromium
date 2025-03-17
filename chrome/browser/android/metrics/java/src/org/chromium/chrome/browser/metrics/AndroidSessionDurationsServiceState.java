@@ -10,12 +10,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Bridge for native |AndroidSessionDurationsService| state, for storage and retrieval
  * of Incognito session duration metrics.
  */
+@NullMarked
 public class AndroidSessionDurationsServiceState {
     private static final String INCOGNITO_SESSION_STARTUP_TIME = "incognito_session_startup_time";
     private static final String INCOGNITO_SESSION_LAST_REPORTED_DURATION =

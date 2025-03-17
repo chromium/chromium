@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/views/examples/vector_example.h"
 
 #include <algorithm>
@@ -170,8 +175,8 @@ class VectorIconGallery : public View, public TextfieldController {
     image_view_container_->RemoveAllChildViews();
     image_view_ =
         image_view_container_->AddChildView(std::make_unique<ImageView>());
-    image_view_->SetBorder(CreateThemedSolidBorder(
-        1, ExamplesColorIds::kColorVectorExampleImageBorder));
+    image_view_->SetBorder(
+        CreateSolidBorder(1, ExamplesColorIds::kColorVectorExampleImageBorder));
 
     auto image_layout =
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal);

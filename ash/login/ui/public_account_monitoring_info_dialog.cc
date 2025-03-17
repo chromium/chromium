@@ -96,8 +96,8 @@ PublicAccountMonitoringInfoDialog::PublicAccountMonitoringInfoDialog(
         gfx::Size(kBulletContainerSizeDp, kBulletContainerSizeDp));
 
     container->AddChildView(bullet_view);
-    container->AddChildView(label);
-    AddChildView(container);
+    container->AddChildViewRaw(label);
+    AddChildViewRaw(container);
   };
 
   add_bulleted_label(l10n_util::GetStringUTF16(

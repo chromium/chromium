@@ -15,6 +15,7 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -127,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Parameter) {
 
   scoped_refptr<RulesRegistry> rules_registry =
       extensions::RulesRegistryService::Get(browser()->profile())
-          ->GetRulesRegistry(RulesRegistryService::kDefaultRulesRegistryID,
+          ->GetRulesRegistry(rules_registry_ids::kDefaultRulesRegistryID,
                              "declarativeContent.onPageChanged");
   ASSERT_TRUE(rules_registry);
 

@@ -11,11 +11,11 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/language_detection/core/browser/language_detection_model_service.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/ios/browser/language_detection_model_loader_service_ios.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
@@ -281,9 +281,10 @@ void IOSTranslateDriver::OnTranslateScriptReady(TranslateErrors error_type,
 
   ReportTimeToLoad(load_time);
   ReportTimeToBeReady(ready_time);
-  std::string source = (source_language_ != kUnknownLanguageCode)
-                           ? source_language_
-                           : kAutoDetectionLanguage;
+  std::string source =
+      (source_language_ != language_detection::kUnknownLanguageCode)
+          ? source_language_
+          : kAutoDetectionLanguage;
   TranslateController::FromWebState(web_state_)
       ->StartTranslation(source, target_language_);
 }

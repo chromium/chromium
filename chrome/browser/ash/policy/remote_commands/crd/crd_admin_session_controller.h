@@ -124,8 +124,10 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate,
       notification_controller_;
   std::unique_ptr<CrdHostSession> active_session_;
 
-  raw_ptr<ash::curtain::SecurityCurtainController> curtain_controller_ =
-      nullptr;
+  // May point to the SecurityCurtainController at destruction time. This is
+  // only during shutdown, allow it to dangle.
+  raw_ptr<ash::curtain::SecurityCurtainController, DisableDanglingPtrDetection>
+      curtain_controller_ = nullptr;
 
   // During unittests the `DeviceOAuth2TokenService` will be null and the code
   // will instead use this OAuth token to restart a reconnectable session.

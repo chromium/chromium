@@ -1,0 +1,53 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++comboBoxSelect collapsed value='hello world'
+++++++++genericContainer ignored invisible
+++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++dialog invisible ispopup=auto
+++++++++++genericContainer invisible
+++++++++++++menuListOption name='hello world' selected=true actionsIds=button
+++++++++++++++genericContainer
+++++++++++++++++button name='hello world'
+++++++++++++++++++staticText name='hello world'
+++++++++++++menuListOption invisible name='search engine' selected=false actionsIds=link
+++++++++++++++genericContainer invisible
+++++++++++++++++link invisible name='search engine'
+++++++++++++++++++staticText invisible name='search engine'
+++++++++++++menuListOption invisible name='my-first-button my-second-button my-link' selected=false actionsIds=button,button,link
+++++++++++++++genericContainer invisible
+++++++++++++++++button invisible name='my-first-button'
+++++++++++++++++++staticText invisible name='my-first-button'
+++++++++++++++++button invisible name='my-second-button'
+++++++++++++++++++staticText invisible name='my-second-button'
+++++++++++++++++link invisible name='my-link'
+++++++++++++++++++staticText invisible name='my-link'
+++++++listBox
+++++++++listBoxOption name='Item 1 hello world' selected=false actionsIds=button
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
+++++++++++button name='hello world'
+++++++++++++staticText name='hello world'
+++++++++++++++inlineTextBox name='hello world'
+++++++++listBoxOption name='Item 2search engine' selected=false actionsIds=link
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
+++++++++++link name='search engine'
+++++++++++++staticText name='search engine'
+++++++++++++++inlineTextBox name='search engine'
+++++++menu
+++++++++menuItem name='File1 hello world' actionsIds=button
+++++++++++staticText name='File1'
+++++++++++++inlineTextBox name='File1'
+++++++++++button name='hello world'
+++++++++++++staticText name='hello world'
+++++++++++++++inlineTextBox name='hello world'
+++++++++menuItem name='File2search engine' actionsIds=link
+++++++++++staticText name='File2'
+++++++++++++inlineTextBox name='File2'
+++++++++++link name='search engine'
+++++++++++++staticText name='search engine'
+++++++++++++++inlineTextBox name='search engine'

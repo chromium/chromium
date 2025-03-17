@@ -258,6 +258,10 @@ String HTMLScriptElement::IntegrityAttributeValue() const {
   return FastGetAttribute(html_names::kIntegrityAttr);
 }
 
+String HTMLScriptElement::SignatureAttributeValue() const {
+  return FastGetAttribute(html_names::kSignatureAttr);
+}
+
 String HTMLScriptElement::ReferrerPolicyAttributeValue() const {
   return FastGetAttribute(html_names::kReferrerpolicyAttr);
 }

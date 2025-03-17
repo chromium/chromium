@@ -38,7 +38,7 @@ namespace blink {
 
 // SincResampler is a high-quality sample-rate converter.
 
-class SincResampler {
+class SincResampler final {
   USING_FAST_MALLOC(SincResampler);
 
  public:

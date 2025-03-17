@@ -12,6 +12,8 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -70,14 +72,17 @@ constexpr char kAccountKeyEmail[] = "email";
 constexpr char kAccountKeyFullName[] = "fullName";
 constexpr char kAccountKeyImage[] = "image";
 
-std::string AnonymizeAccountEmail(const std::string& email) {
-  std::string result = base::Base64Encode(crypto::SHA256HashString(email));
-  return result + "@example.com";
-}
-
-// Returns a base64-encoded hash code of "signin_scoped_device_id:gaia_id".
+// Returns a base64-encoded hash code of "signin_scoped_device_id:gaia_id" for
+// secondary accounts, and `signin_scoped_device_id` for the Device / Primary
+// Account.
 std::string GetAccountDeviceId(const std::string& signin_scoped_device_id,
+                               const GaiaId& primary_account_gaia_id,
                                const GaiaId& gaia_id) {
+  if (primary_account_gaia_id == gaia_id) {
+    return signin_scoped_device_id;
+  }
+
+  // A secondary account was added / re-authenticated.
   return base::Base64Encode(crypto::SHA256HashString(signin_scoped_device_id +
                                                      ":" + gaia_id.ToString()));
 }
@@ -373,9 +378,10 @@ void InlineLoginHandlerImpl::CreateSigninHelper(
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  std::string primary_account_email =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email;
+  const CoreAccountInfo primary_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const std::string primary_account_email = primary_account_info.email;
+  const GaiaId primary_account_gaia_id = primary_account_info.gaia;
 
   // Child user added a secondary account.
   if (profile->IsChild() &&
@@ -385,7 +391,7 @@ void InlineLoginHandlerImpl::CreateSigninHelper(
         profile->GetURLLoaderFactory(), std::move(arc_helper), params.gaia_id,
         params.email, params.auth_code,
         GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
-                           params.gaia_id),
+                           primary_account_gaia_id, params.gaia_id),
         profile->GetPrefs(), web_ui());
 
     return;
@@ -397,7 +403,7 @@ void InlineLoginHandlerImpl::CreateSigninHelper(
       show_signin_error_, profile->GetURLLoaderFactory(), std::move(arc_helper),
       params.gaia_id, params.email, params.auth_code,
       GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
-                         params.gaia_id));
+                         primary_account_gaia_id, params.gaia_id));
 }
 
 void InlineLoginHandlerImpl::ShowSigninErrorPage(
@@ -432,13 +438,12 @@ void InlineLoginHandlerImpl::OnGetAccounts(
     const std::vector<::account_manager::Account>& accounts) {
   base::Value::List account_emails;
   for (const auto& account : accounts) {
-    if (account.key.account_type() ==
-        ::account_manager::AccountType::kActiveDirectory) {
-      // Don't send Active Directory account email to Gaia.
-      account_emails.Append(AnonymizeAccountEmail(account.raw_email));
-    } else {
-      account_emails.Append(account.raw_email);
-    }
+    // Currently, we only support `kGaia` account type. Should a new type be
+    // added in the future, consider removing the `CHECK_EQ()` below and
+    // handling the new type accordingly.
+    CHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
+
+    account_emails.Append(account.raw_email);
   }
 
   ResolveJavascriptCallback(base::Value(callback_id), account_emails);

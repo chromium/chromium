@@ -8,10 +8,12 @@ import static android.view.PointerIcon.TYPE_NULL;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 
 /** A {@link StylusWritingHandler} that represents the feature being disabled. */
+@NullMarked
 public class DisabledStylusWritingHandler implements StylusApiOption {
     @Override
     public void onWebContentsChanged(Context context, WebContents webContents) {

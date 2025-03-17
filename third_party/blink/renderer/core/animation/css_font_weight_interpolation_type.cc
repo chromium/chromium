@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -74,7 +74,11 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
               inherited_font_weight));
     }
   }
+  // TODO(40946458): Should do a proper interpolation here instead of converting
+  // relative units first.
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
+      state ? state->CssToLengthConversionData()
+            : CSSToLengthConversionData(/*element=*/nullptr),
       value, inherited_font_weight));
 }
 

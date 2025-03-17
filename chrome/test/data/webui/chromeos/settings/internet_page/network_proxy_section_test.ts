@@ -4,9 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {NetworkProxySectionElement} from 'chrome://os-settings/lazy_load.js';
-import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
-import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {NetworkProxySectionElement} from 'chrome://os-settings/lazy_load.js';
+import type {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
+import type {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -21,25 +21,25 @@ suite('<network-proxy-section>', () => {
       source: OncSource.MIN_VALUE,
       connectable: false,
       portalState: PortalState.MIN_VALUE,
-      errorState: undefined,
+      errorState: null,
       guid: '',
       ipAddressConfigType: {
         activeValue: '',
         policySource: PolicySource.MIN_VALUE,
-        policyValue: undefined,
+        policyValue: null,
       },
-      ipConfigs: undefined,
-      metered: undefined,
-      name: undefined,
+      ipConfigs: null,
+      metered: null,
+      name: null,
       nameServersConfigType: {
         activeValue: '',
         policySource: PolicySource.MIN_VALUE,
-        policyValue: undefined,
+        policyValue: null,
       },
-      priority: undefined,
-      proxySettings: undefined,
-      staticIpConfig: undefined,
-      savedIpConfig: undefined,
+      priority: null,
+      proxySettings: null,
+      staticIpConfig: null,
+      savedIpConfig: null,
       type: NetworkType.MIN_VALUE,
       typeProperties: {
         cellular: undefined,
@@ -49,8 +49,8 @@ suite('<network-proxy-section>', () => {
         wifi: undefined,
       },
       trafficCounterProperties: {
-        lastResetTime: undefined,
-        friendlyDate: undefined,
+        lastResetTime: null,
+        friendlyDate: null,
         autoReset: false,
         userSpecifiedResetDay: 0,
       },
@@ -138,11 +138,11 @@ suite('<network-proxy-section>', () => {
       type: {
         activeValue: 'Direct',
         policySource: PolicySource.kActiveExtension,
-        policyValue: undefined,
+        policyValue: null,
       },
-      manual: undefined,
-      excludeDomains: undefined,
-      pac: undefined,
+      manual: null,
+      excludeDomains: null,
+      pac: null,
     };
     proxySection.managedProperties = {
       ...props,

@@ -22,14 +22,21 @@
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/test_view_android_delegate.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/base_event_utils.h"
 
 namespace content {
 
 namespace {
+
+using ::testing::_;
+using ::testing::Return;
+
 // Allows for RenderWidgetHostViewAndroidRotationTest to override the ScreenInfo
 // so that different configurations can be tests. The default path fallbacks on
 // an empty ScreenInfo in testing, assuming it has no effect.
@@ -84,6 +91,14 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
 }
 
 }  // namespace
+
+class MockInputTransferHandler : public InputTransferHandlerAndroid {
+ public:
+  MOCK_METHOD(bool,
+              OnTouchEvent,
+              (const ui::MotionEventAndroid& event),
+              (override));
+};
 
 class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
  public:
@@ -398,6 +413,39 @@ TEST_F(RenderWidgetHostViewAndroidTest, RenderFrameSubmittedBeforeNavigation) {
   rwhva->OnOldViewDidNavigatePreCommit();
   rwhva->DidNavigate();
   GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+// Test that InputTransferHandler receives input before FilteredGestureProvider.
+// This is to prevent crash related to transferred events which stayed in
+// TouchDispositionGestureFilter's queue, which it received through
+// FilteredGestureProvider.
+TEST_F(RenderWidgetHostViewAndroidTest,
+       EventsPassedToInputTransferHandlerBeforedGestureProvider) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  MockInputTransferHandler* handler = new MockInputTransferHandler();
+  rwhva->SetInputTransferHandlerForTesting(handler);
+
+  auto& gesture_provider = rwhva->GetGestureProvider();
+
+  gfx::Point point(/*x=*/100, /*y=*/100);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+  auto action = ui::MotionEvent::Action::DOWN;
+  ui::MotionEventAndroidJava touch_down(
+      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, false, &p, nullptr);
+
+  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(true));
+  EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
+  rwhva->OnTouchEvent(touch_down);
+  EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
+
+  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(false));
+  rwhva->OnTouchEvent(touch_down);
+  EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
 }
 
 // Tests rotation and fullscreen cases that are supported by visual properties
@@ -1035,6 +1083,30 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, ToggleFullscreenWithoutResize) {
   FireFullscreenTimeout();
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
+}
+
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       FullscreenEvictionWithoutAnySizeChanged) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  // When we are evicted while hidden, the viz::LocalSurfaceId should be
+  // invalidated, and we should no longer throttle synchronizing.
+  rwhva->Hide();
+  rwhva->WasEvicted();
+  EXPECT_FALSE(rwhva->GetLocalSurfaceId().is_valid());
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  EnterFullscreenMode();
+  // Entering fullscreen mode without `any_non_rotation_size_changed` blocks
+  // synchronizing.
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // Here we have web page in background and in fullscreen
+  // with invalid surface and without ability to synchronizing.
+  // This shouldn't crash. And should generate new surface to bring web in
+  // visible state.
+  rwhva->ShowWithVisibility(blink::mojom::PageVisibilityState::kVisible);
+  EXPECT_TRUE(rwhva->GetLocalSurfaceId().is_valid());
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
 }
 
 // Tests rotation and fullscreen cases that are supported by both the visual

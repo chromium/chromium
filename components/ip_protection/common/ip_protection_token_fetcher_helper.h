@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_FETCHER_HELPER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_FETCHER_HELPER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"

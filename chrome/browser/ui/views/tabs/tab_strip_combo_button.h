@@ -12,8 +12,9 @@
 #include "ui/views/view.h"
 
 class BrowserWindowInterface;
-class TabSearchContainer;
+class TabSearchButton;
 class TabStrip;
+class TabStripControlButton;
 
 class TabStripComboButton : public views::View {
   METADATA_HEADER(TabStripComboButton, views::View)
@@ -27,21 +28,27 @@ class TabStripComboButton : public views::View {
 
   void OnNewTabButtonStateChanged();
   void OnTabSearchButtonStateChanged();
+  void DidBecomeActive(BrowserWindowInterface* browser);
+  void DidBecomeInactive(BrowserWindowInterface* browser);
   void UpdateSeparatorVisibility();
 
-  views::Button* new_tab_button() { return new_tab_button_; }
+  // views::View:
+  void OnThemeChanged() override;
 
-  TabSearchContainer* tab_search_container() { return tab_search_container_; }
+  TabStripControlButton* new_tab_button() { return new_tab_button_; }
+
+  TabSearchButton* tab_search_button() { return tab_search_button_; }
 
   views::Separator* separator() { return separator_; }
 
  private:
-  raw_ptr<views::Button> new_tab_button_ = nullptr;
-  raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
+  raw_ptr<TabStripControlButton> new_tab_button_ = nullptr;
+  raw_ptr<TabSearchButton> tab_search_button_ = nullptr;
   raw_ptr<views::Separator> separator_ = nullptr;
 
   base::TimeTicks new_tab_button_last_pressed_;
   base::TimeTicks tab_search_button_last_pressed_;
+  bool using_custom_theme_ = false;
   std::list<base::CallbackListSubscription> subscriptions_;
 };
 

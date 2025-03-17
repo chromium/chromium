@@ -67,7 +67,6 @@ class IdentityManager;
 
 namespace signin_metrics {
 enum class AccessPoint;
-enum class ReauthAccessPoint;
 }  // namespace signin_metrics
 
 namespace url {
@@ -76,9 +75,11 @@ class Origin;
 
 class GURL;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(IS_IOS)
 namespace safe_browsing {
 class PasswordProtectionService;
 }
+#endif
 
 namespace device_reauth {
 class DeviceAuthenticator;
@@ -121,9 +122,6 @@ struct PasswordFillingParams {
   uint64_t username_field_index;
   uint64_t password_field_index;
   autofill::FieldRendererId focused_field_renderer_id_;
-  // TODO(crbug.com/40274966): Remove this param after
-  // PasswordSuggestionBottomSheetV2 is launched.
-  autofill::mojom::SubmissionReadinessState submission_readiness;
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -288,6 +286,9 @@ class PasswordManagerClient {
   // deprecated.
   virtual void ResetSubmissionTrackingAfterTouchToFill() {}
 
+  // True if there is a Password Change ongoing in the tab.
+  virtual bool IsPasswordChangeOngoing() = 0;
+
   // Inform the embedder that the site called 'store()'.
   virtual void NotifyStorePasswordCalled() = 0;
 
@@ -325,18 +326,6 @@ class PasswordManagerClient {
 
   // Informs the embedder that user credentials were leaked.
   virtual void NotifyUserCredentialsWereLeaked(LeakedPasswordDetails details);
-
-  // Requests a reauth for the primary account with |access_point| representing
-  // where the reauth was triggered.
-  // Triggers the |reauth_callback| with ReauthSucceeded(true) if
-  // reauthentication succeeded.
-  virtual void TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint access_point,
-      base::OnceCallback<void(ReauthSucceeded)> reauth_callback);
-
-  // Redirects the user to a sign-in in a new tab. |access_point| is used for
-  // metrics recording and represents where the sign-in was triggered.
-  virtual void TriggerSignIn(signin_metrics::AccessPoint access_point);
 
   // Gets prefs associated with this embedder.
   virtual PrefService* GetPrefs() const = 0;
@@ -426,9 +415,11 @@ class PasswordManagerClient {
   // Returns the current best guess as to the page's display language.
   virtual autofill::LanguageCode GetPageLanguage() const;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(IS_IOS)
   // Return the PasswordProtectionService associated with this instance.
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const = 0;
+#endif
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill for passwords. When triggering happens, the survey dialog will be
@@ -440,7 +431,7 @@ class PasswordManagerClient {
   virtual void TriggerUserPerceptionOfPasswordManagerSurvey(
       const std::string& filling_assistance);
 
-#if defined(ON_FOCUS_PING_ENABLED)
+#if defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Checks the safe browsing reputation of the webpage when the
   // user focuses on a username/password field. This is used for reporting
   // only, and won't trigger a warning.
@@ -576,6 +567,8 @@ class PasswordManagerClient {
                                    bool show_warning_text,
                                    base::OnceClosure confirmation_callback) = 0;
 #endif  // !BUILDFLAG(IS_IOS)
+
+  virtual password_manager::LeakDetectionInitiator GetLeakDetectionInitiator();
 };
 
 }  // namespace password_manager

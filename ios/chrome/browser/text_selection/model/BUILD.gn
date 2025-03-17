@@ -35,6 +35,7 @@ source_set("text_classifier_utils") {
     "text_classifier_util.mm",
   ]
   deps = [
+    ":model_utils",
     "//base",
     "//components/optimization_guide/core",
     "//ios/chrome/browser/optimization_guide/model",

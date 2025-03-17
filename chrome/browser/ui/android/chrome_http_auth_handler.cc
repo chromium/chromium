@@ -7,6 +7,7 @@
 #include <jni.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -73,12 +74,13 @@ void ChromeHttpAuthHandler::CloseDialog() {
 }
 
 void ChromeHttpAuthHandler::OnAutofillDataAvailable(
-    const std::u16string& username,
-    const std::u16string& password) {
-  DCHECK(java_chrome_http_auth_handler_.obj() != NULL);
+    std::u16string_view username,
+    std::u16string_view password) {
+  DCHECK(java_chrome_http_auth_handler_.obj());
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ChromeHttpAuthHandler_onAutofillDataAvailable(
-      env, java_chrome_http_auth_handler_, username, password);
+      env, java_chrome_http_auth_handler_, std::u16string(username),
+      std::u16string(password));
 }
 
 void ChromeHttpAuthHandler::OnLoginModelDestroying() {

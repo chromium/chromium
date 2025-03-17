@@ -72,7 +72,8 @@ bool UnindexedRulesetWriter::WritePendingChunk() {
 
   proto::FilteringRules chunk;
   chunk.Swap(&pending_chunk_);
-  coded_stream_.WriteVarint32(base::checked_cast<uint32_t>(chunk.ByteSize()));
+  coded_stream_.WriteVarint32(
+      base::checked_cast<uint32_t>(chunk.ByteSizeLong()));
   return !had_error() && chunk.SerializeToCodedStream(&coded_stream_);
 }
 

@@ -7,10 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/search_box/search_box_constants.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/types/event_type.h"
@@ -81,6 +83,13 @@ class SearchBoxViewBase : public views::View,
   views::ImageButton* CreateAssistantButton(
       const base::RepeatingClosure& button_callback);
 
+  // Creates the search box assistant new entry point button at the right edge
+  // of the search box in LTR layout. The assistant new entry point button will
+  // initially be hidden. The visibility will be updated appropriately when
+  // `UpdateButtonsVisibility()` gets called.
+  views::ImageButton* CreateAssistantNewEntryPointButton(
+      const base::RepeatingClosure& button_callback);
+
   // Creates the search box category filter button at the right edge of the
   // search box, where clicking on it shows a bubble for the users to select
   // search categories to show.
@@ -99,6 +108,7 @@ class SearchBoxViewBase : public views::View,
 
   views::ImageButton* sunfish_button();
   views::ImageButton* assistant_button();
+  views::ImageButton* assistant_new_entry_point_button();
   views::View* edge_button_container();
   views::ImageButton* close_button();
   views::ImageButton* filter_button();
@@ -115,7 +125,7 @@ class SearchBoxViewBase : public views::View,
   // `query` the new search box query.
   // `initiated_by_user` whether the query changes was a result of the user
   // typing.
-  virtual void HandleQueryChange(const std::u16string& query,
+  virtual void HandleQueryChange(std::u16string_view query,
                                  bool initiated_by_user) = 0;
 
   // Explicitly triggers the search while keeping the same query.
@@ -221,6 +231,7 @@ class SearchBoxViewBase : public views::View,
   void SetSearchIconImage(gfx::ImageSkia image);
 
   void SetShowAssistantButton(bool show);
+  void SetShowAssistantNewEntryPointButton(bool show);
   void SetShowSunfishButton(bool show);
 
   // Detects |kMousePressed| and |EventType::kGestureTap| events on the white
@@ -257,6 +268,7 @@ class SearchBoxViewBase : public views::View,
   raw_ptr<views::BoxLayoutView> content_container_;
   raw_ptr<SearchIconImageView> search_icon_ = nullptr;
   raw_ptr<SearchBoxImageButton> assistant_button_ = nullptr;
+  raw_ptr<SearchBoxImageButton> assistant_new_entry_point_button_ = nullptr;
   raw_ptr<SearchBoxImageButton> sunfish_button_ = nullptr;
   raw_ptr<SearchBoxImageButton> close_button_ = nullptr;
   raw_ptr<SearchBoxImageButton> filter_button_ = nullptr;
@@ -281,6 +293,8 @@ class SearchBoxViewBase : public views::View,
   bool show_close_button_when_active_ = false;
   // Whether to show assistant button.
   bool show_assistant_button_ = false;
+  // Whether to show assistant new entry point button.
+  bool show_assistant_new_entry_point_button_ = false;
   // Whether to show sunfish button.
   bool show_sunfish_button_ = false;
 

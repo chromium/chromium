@@ -35,6 +35,8 @@
 
 namespace blink {
 
+class ExceptionState;
+
 class CORE_EXPORT InspectorOverlayHost final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

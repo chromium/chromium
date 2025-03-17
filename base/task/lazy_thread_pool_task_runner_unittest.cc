@@ -77,8 +77,9 @@ void ExpectSingleThreadEnvironment(SequenceCheckerImpl* sequence_checker,
   EXPECT_EQ(expected_priority, internal::GetTaskPriorityForCurrentThread());
 
 #if BUILDFLAG(IS_WIN)
-  if (expect_com_sta)
+  if (expect_com_sta) {
     win::AssertComApartmentType(win::ComApartmentType::STA);
+  }
 #endif
 }
 

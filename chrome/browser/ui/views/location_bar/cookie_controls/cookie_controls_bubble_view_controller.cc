@@ -359,7 +359,7 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
   controller_->SetUserChangedCookieBlockingForSite(true);
   // Set the toggle ON when protections are ON (cookies are blocked).
   controller_->OnCookieBlockingEnabledForSite(protections_on);
-  bubble_view_->GetContentView()->NotifyAccessibilityEvent(
+  bubble_view_->GetContentView()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, true);
 }
 

@@ -116,8 +116,7 @@ TEST_F(TranslationManagerImplTest, PassAcceptLanguagesCheck) {
   // Target lang:
   //   - Is in accept-languages : false
   //   - Is popular lang        : true
-  // None of source and target lang is in accept-languages.
-  EXPECT_FALSE(PassAcceptLanguagesCheck("en,es", "ja", "zh"));
+  EXPECT_TRUE(PassAcceptLanguagesCheck("en,es", "ja", "zh"));
 
   // Source lang:
   //   - Is in accept-languages : false
@@ -125,7 +124,7 @@ TEST_F(TranslationManagerImplTest, PassAcceptLanguagesCheck) {
   // Target lang:
   //   - Is in accept-languages : false
   //   - Is popular lang        : false
-  // None of source and target lang is in accept-languages.
+  // Target is not in accept-languages, and not popular.
   EXPECT_FALSE(PassAcceptLanguagesCheck("en,es", "ja", "fr"));
 
   // Source lang:
@@ -152,7 +151,7 @@ TEST_F(TranslationManagerImplTest, PassAcceptLanguagesCheck) {
   // Target lang:
   //   - Is in accept-languages : false
   //   - Is popular lang        : true
-  // None of source and target lang is in accept-languages.
+  // Source is not in accept-languages, and not popular.
   EXPECT_FALSE(PassAcceptLanguagesCheck("en,es", "de", "zh"));
 
   // Source lang:
@@ -161,7 +160,7 @@ TEST_F(TranslationManagerImplTest, PassAcceptLanguagesCheck) {
   // Target lang:
   //   - Is in accept-languages : false
   //   - Is popular lang        : false
-  // None of source and target lang is in accept-languages.
+  // Target and source are not in accept-languages, and not popular.
   EXPECT_FALSE(PassAcceptLanguagesCheck("en,es", "de", "fr"));
 }
 

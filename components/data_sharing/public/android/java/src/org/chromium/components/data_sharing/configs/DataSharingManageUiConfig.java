@@ -5,19 +5,25 @@
 package org.chromium.components.data_sharing.configs;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.sync.protocol.GroupData;
 import org.chromium.components.sync.protocol.GroupMember;
+import org.chromium.url.GURL;
 
 /** Config class for the Data Sharing Manage UI. */
+@NullMarked
 public class DataSharingManageUiConfig {
 
     // --- Group related Info ---
-    private GroupToken mGroupToken;
+    private @Nullable GroupToken mGroupToken;
 
     // --- Manage Usage Config ---
-    private ManageCallback mManageCallback;
-    private DataSharingUiConfig mCommonConfig;
+    private @Nullable ManageCallback mManageCallback;
+    private @Nullable GURL mLearnAboutBlockedAccounts;
+    private @Nullable GURL mActivityLogsUrl;
+    private @Nullable DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing Manage UI events. */
     public interface ManageCallback {
@@ -28,9 +34,9 @@ public class DataSharingManageUiConfig {
         default void onShareInviteLinkClickedWithWait(
                 GroupToken groupToken, Callback<Boolean> onShareDone) {}
 
-        default void onStopSharingInitiated(GroupData groupData, Callback<Boolean> readyToStop) {}
+        default void onStopSharingInitiated(Callback<Boolean> readyToStopSharing) {}
 
-        default void onStopSharingSuccess(GroupData groupData) {}
+        default void onStopSharingCompleted(boolean success) {}
 
         default void onMemberRemoved(GroupMember member) {}
 
@@ -44,31 +50,47 @@ public class DataSharingManageUiConfig {
         default void onLeaveGroup() {}
 
         default void getDataSharingUrl(GroupToken groupToken, Callback<String> url) {}
+
+        // This will always be called when user exits the managing the group,
+        // ui closes, or session is finished.
+        default void onSessionFinished() {}
     }
 
     private DataSharingManageUiConfig(Builder builder) {
         this.mGroupToken = builder.mGroupToken;
+        this.mLearnAboutBlockedAccounts = builder.mLearnAboutBlockedAccounts;
+        this.mActivityLogsUrl = builder.mActivityLogsUrl;
         this.mManageCallback = builder.mManageCallback;
         this.mCommonConfig = builder.mCommonConfig;
     }
 
-    public GroupToken getGroupToken() {
+    public @Nullable GroupToken getGroupToken() {
         return mGroupToken;
     }
 
-    public ManageCallback getManageCallback() {
+    public @Nullable ManageCallback getManageCallback() {
         return mManageCallback;
     }
 
-    public DataSharingUiConfig getCommonConfig() {
+    public @Nullable GURL getLearnAboutBlockedAccounts() {
+        return mLearnAboutBlockedAccounts;
+    }
+
+    public @Nullable GURL getActivityLogsUrl() {
+        return mActivityLogsUrl;
+    }
+
+    public @Nullable DataSharingUiConfig getCommonConfig() {
         return mCommonConfig;
     }
 
     // Builder class
     public static class Builder {
-        private GroupToken mGroupToken;
-        private ManageCallback mManageCallback;
-        private DataSharingUiConfig mCommonConfig;
+        private @Nullable GroupToken mGroupToken;
+        private @Nullable GURL mLearnAboutBlockedAccounts;
+        private @Nullable GURL mActivityLogsUrl;
+        private @Nullable ManageCallback mManageCallback;
+        private @Nullable DataSharingUiConfig mCommonConfig;
 
         /**
          * Sets the group token for the data sharing group.
@@ -87,6 +109,26 @@ public class DataSharingManageUiConfig {
          */
         public Builder setManageCallback(ManageCallback manageCallback) {
             this.mManageCallback = manageCallback;
+            return this;
+        }
+
+        /**
+         * Sets the hyperlink for "learn about blocked accounts".
+         *
+         * @param learnAboutBlockedAccounts The hyperlink to learn about blocked accounts.
+         */
+        public Builder setLearnAboutBlockedAccounts(GURL learnAboutBlockedAccounts) {
+            this.mLearnAboutBlockedAccounts = learnAboutBlockedAccounts;
+            return this;
+        }
+
+        /**
+         * Sets the hyperlink for viewing activity logs.
+         *
+         * @param activityLogsUrl The hyperlink for viewing activity logs.
+         */
+        public Builder setActivityLogsUrl(GURL activityLogsUrl) {
+            this.mActivityLogsUrl = activityLogsUrl;
             return this;
         }
 

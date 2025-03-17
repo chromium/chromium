@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.cookies;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -18,6 +17,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -45,6 +46,7 @@ import javax.crypto.CipherOutputStream;
  * serialize and store them to avoid logging the user out of their accounts being used in incognito,
  * if the app is killed e.g. while in the background.
  */
+@NullMarked
 public class CookiesFetcher implements Destroyable {
     /** The default file name for the encrypted cookies storage for the primary OTR profile. */
     @VisibleForTesting public static final String DEFAULT_COOKIE_FILE_NAME = "COOKIES.DAT";
@@ -98,7 +100,7 @@ public class CookiesFetcher implements Destroyable {
 
     /** Return the cookie file path for the appropriate Profile. */
     @VisibleForTesting
-    String fetchAbsoluteFilePath() {
+    @Nullable String fetchAbsoluteFilePath() {
         ThreadUtils.assertOnBackgroundThread();
         File directory = getCookieDir();
         if (!directory.exists() && !directory.mkdir()) {
@@ -134,10 +136,10 @@ public class CookiesFetcher implements Destroyable {
     /** Asynchronously fetches cookies from the incognito profile and saves them to a file. */
     public void persistCookies() {
         ThreadUtils.assertOnUiThread();
-        if (!mProfileProvider.hasOffTheRecordProfile()) {
+        Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
+        if (offTheRecordProfile == null) {
             return;
         }
-        Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
         CookiesFetcherJni.get().persistCookies(offTheRecordProfile, this);
     }
 
@@ -149,16 +151,16 @@ public class CookiesFetcher implements Destroyable {
      * @param restoreCompletedAction Called when the restore action has been completed (regardless
      *     of whether any cookies were in fact restored).
      */
-    public void restoreCookies(@NonNull Runnable restoreCompletedAction) {
+    public void restoreCookies(Runnable restoreCompletedAction) {
         ThreadUtils.assertOnUiThread();
-        if (!mProfileProvider.hasOffTheRecordProfile()) {
+        Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
+        if (offTheRecordProfile == null) {
             scheduleDeleteCookies();
             restoreCompletedAction.run();
             return;
         }
-        Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
         new AsyncTask<List<CanonicalCookie>>() {
-            private File getCookieFile() {
+            private @Nullable File getCookieFile() {
                 String fileName = fetchAbsoluteFilePath();
                 if (fileName == null) {
                     Log.e(TAG, "Failed to load cookie file, skipping restore.");

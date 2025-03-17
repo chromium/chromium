@@ -119,7 +119,7 @@ AnchoredNudge::AnchoredNudge(
       click_callback_(std::move(nudge_data.click_callback)),
       dismiss_callback_(std::move(nudge_data.dismiss_callback)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  set_color(SK_ColorTRANSPARENT);
+  set_background_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);
   set_highlight_button_when_shown(nudge_data.highlight_anchor_button);

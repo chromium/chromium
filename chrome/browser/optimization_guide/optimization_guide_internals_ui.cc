@@ -92,21 +92,21 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
     RequestLoggedModelQualityClientIdsCallback callback) {
   PrefService* local_state = g_browser_process->local_state();
 
+  int64_t client_id =
+      local_state->GetInt64(optimization_guide::model_execution::prefs::
+                                localstate::kModelQualityLoggingClientId);
+
+  // If the client id is zero no client id is set, in that case do nothing.
+  if (client_id == 0) {
+    std::move(callback).Run({});
+    return;
+  }
+
   // Get the client ids for the compose and tab organization feature for the
   // past 28 days to show on chrome://optimization-guide-internals.
   // TODO(b/308642692): Add other features client id as requested.
   std::vector<optimization_guide_internals::mojom::LoggedClientIdsPtr>
       logged_client_ids;
-
-  int64_t client_id =
-      local_state->GetInt64(optimization_guide::model_execution::prefs::
-                                localstate::kModelQualityLogggingClientId);
-
-  // If the client id is zero no client id is set, in that case do nothing.
-  if (client_id == 0) {
-    return;
-  }
-
   // Initialize time outside to have it change when generating the client ids
   // for different days.
   base::Time now = base::Time::Now();

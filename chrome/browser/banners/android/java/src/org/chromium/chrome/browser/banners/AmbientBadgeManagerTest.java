@@ -43,6 +43,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PackageManagerWrapper;
@@ -295,7 +296,7 @@ public class AmbientBadgeManagerTest {
         navigateToUrlAndWaitForBannerManager(rule, url);
         waitUntilAppDetailsRetrieved(rule, 1);
         waitUntilAmbientBadgePromptAppears(rule);
-        Assert.assertEquals(mDetailsDelegate.mReferrer, expectedReferrer);
+        Assert.assertEquals(expectedReferrer, mDetailsDelegate.mReferrer);
 
         dismissAmbientBadgeMessage(rule, true);
         final ChromeActivity activity = rule.getActivity();
@@ -449,6 +450,7 @@ public class AmbientBadgeManagerTest {
     @Test
     @MediumTest
     @Features.DisableFeatures(ChromeFeatureList.INSTALL_MESSAGE_THROTTLE)
+    @DisabledTest(message = "Flakey test. See https://crbug.com/388540256")
     public void testBlockedAmbientBadgeDoesNotAppearAgainForMonths() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder().expectNoRecords(INSTALL_PATH_HISTOGRAM_NAME).build();

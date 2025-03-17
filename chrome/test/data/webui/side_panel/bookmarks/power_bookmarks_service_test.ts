@@ -348,7 +348,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(delegate.getCallCount('onBookmarkChanged'), 1);
   });
 
-  test('CallsOnBookmarkCreated', async () => {
+  test('CallsOnBookmarkCreated', () => {
     bookmarksApi.callbackRouter.onCreated.callListeners('999', {
       id: '999',
       title: 'New bookmark',

@@ -9,6 +9,7 @@
 #include "ash/login/test_login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -67,6 +68,7 @@ class ScreenLockerUnitTest : public testing::Test {
   ~ScreenLockerUnitTest() override = default;
 
   void SetUp() override {
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BiodClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
@@ -80,6 +82,7 @@ class ScreenLockerUnitTest : public testing::Test {
     LoginState::Initialize();
 
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -95,9 +98,11 @@ class ScreenLockerUnitTest : public testing::Test {
     user_profile_ = testing_profile_manager_->CreateTestingProfile(
         test_account_id_.GetUserEmail());
 
-    session_controller_client_ =
-        std::make_unique<SessionControllerClientImpl>();
+    session_controller_client_ = std::make_unique<SessionControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     session_controller_client_->Init();
+
+    login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
 
     // Initialize AssistantBrowserDelegate:
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
@@ -112,14 +117,17 @@ class ScreenLockerUnitTest : public testing::Test {
 
   void CreateSessionForUser(bool is_public_account) {
     ASSERT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
+    user_manager::User* user = nullptr;
     if (is_public_account) {
-      fake_user_manager_->AddPublicAccountUser(test_account_id_);
+      user = fake_user_manager_->AddPublicAccountUser(test_account_id_);
     } else {
-      fake_user_manager_->AddUser(test_account_id_);
+      user = fake_user_manager_->AddUser(test_account_id_);
     }
     auto* session_manager = session_manager::SessionManager::Get();
-    session_manager->CreateSession(test_account_id_,
-                                   test_account_id_.GetUserEmail(), false);
+    session_manager->CreateSession(user->GetAccountId(),
+                                   user->GetAccountId().GetUserEmail(),
+                                   /*new_user=*/false,
+                                   /*has_active_session=*/false);
     auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
     ASSERT_TRUE(primary_user);
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(primary_user,
@@ -135,9 +143,12 @@ class ScreenLockerUnitTest : public testing::Test {
     input_method::InputMethodManager::Shutdown();
     assistant_delegate_.reset();
 
+    login_screen_client_.reset();
     session_controller_client_.reset();
 
+    user_profile_ = nullptr;
     testing_profile_manager_.reset();
+    session_manager_.reset();
     fake_user_manager_.Reset();
     base::RunLoop().RunUntilIdle();
 
@@ -162,17 +173,17 @@ class ScreenLockerUnitTest : public testing::Test {
   // * ChromeUserSelectionScreen dependencies:
   ScopedStubInstallAttributes test_install_attributes_;
 
-  // ScreenLocker dependencies:
-  // * LoginScreenClientImpl dependencies:
-  session_manager::SessionManager session_manager_;
-  TestLoginScreen test_login_screen_;
-  LoginScreenClientImpl login_screen_client_;
-
   // * SessionControllerClientImpl dependencies:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<Profile, DanglingUntriaged> user_profile_ = nullptr;
+  raw_ptr<Profile> user_profile_ = nullptr;
+
+  // ScreenLocker dependencies:
+  // * LoginScreenClientImpl dependencies:
+  TestLoginScreen test_login_screen_;
+  std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
 
   ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   TestSessionController test_session_controller_;

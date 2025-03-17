@@ -1257,7 +1257,7 @@ policies:
   1256: PdfViewerOutOfProcessIframeEnabled
   1257: LockScreenAutoStartOnlineReauth
   1258: KeyboardFocusableScrollersEnabled
-  1259: ExtensibleEnterpriseSSOEnabled
+  1259: ExtensibleEnterpriseSSOBlocklist
   1260: CSSCustomStateDeprecatedSyntaxEnabled
   1261: MemorySaverModeSavings
   1262: KioskVisionTelemetryEnabled
@@ -1324,7 +1324,25 @@ policies:
   1323: AllowedInputMethodsForceEnabled
   1324: WebRtcIPHandlingUrl
   1325: GenAIPhotoEditingSettings
-
+  1326: PartitionedBlobUrlUsage
+  1327: ''
+  1328: DefaultControlledFrameSetting
+  1329: ControlledFrameAllowedForUrls
+  1330: ControlledFrameBlockedForUrls
+  1331: ExternalStorageAllowlist
+  1332: WebAuthenticationRemoteDesktopAllowedOrigins
+  1333: ServiceWorkerToControlSrcdocIframeEnabled
+  1334: ProvisionManagedClientCertificateForBrowser
+  1335: GeminiSettings
+  1336: GenAISmartGroupingSettings
+  1337: GenAiChromeOsSmartActionsSettings
+  1338: RelaunchSupersededReleaseAge
+  1339: ClassManagementCaptionsEnabled
+  1340: ClassManagementClassroomIntegrationEnabled
+  1341: ClassManagementNetworkRestrictionEnabled
+  1342: ClassManagementSendingContentEnabled
+  1343: ClassManagementViewScreenEnabled
+  1344: KioskChromeAppsForceAllowed
 
 atomic_groups:
   1: Homepage
@@ -1383,3 +1401,4 @@ atomic_groups:
   54: BrowserEventReporting
   55: SmartCardConnectSettings
   56: WebRtc
+  57: ControlledFrameSettings

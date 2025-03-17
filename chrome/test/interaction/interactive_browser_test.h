@@ -9,12 +9,14 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -31,6 +33,7 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -61,6 +64,14 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
 
   using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
   using StateChange = WebContentsInteractionTestUtil::StateChange;
+
+  // Since we enforce a 1:1 correspondence between ElementIdentifiers and
+  // WebContents defaulting to ContextMode::kAny prevents accidentally missing
+  // the correct context, which is a common mistake that causes tests to
+  // mysteriously time out looking in the wrong place.
+  static constexpr ui::InteractionSequence::ContextMode
+      kDefaultWebContentsContextMode =
+          ui::InteractionSequence::ContextMode::kAny;
 
   // Shorthand to convert a tracked element into a instrumented WebContents.
   // The element should be a TrackedElementWebContents.
@@ -156,6 +167,25 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       AbsoluteViewSpecifier web_view,
       bool wait_for_ready = true);
 
+  // Instruments an inner webview of an already-instrumented WebContents of any
+  // type; the resulting element will be present only when the parent element is
+  // *and* the inner webview is loaded and ready.
+  //
+  // Do not use with iframe; just instrument the primary contents and use
+  // `DeepQuery` instead.
+  [[nodiscard]] MultiStep InstrumentInnerWebContents(
+      ui::ElementIdentifier inner_id,
+      ui::ElementIdentifier outer_id,
+      size_t inner_contents_index,
+      bool wait_for_ready = true);
+
+  // Removes instrumentation for the WebContents with identifier `id`.
+  // `fail_if_not_instrumented` defines what happens if `id` is not in use;
+  // if true, crashes the test. If false, ignores and continues.
+  [[nodiscard]] StepBuilder UninstrumentWebContents(
+      ui::ElementIdentifier id,
+      bool fail_if_not_instrumented = true);
+
   // These convenience methods wait for page navigation/ready. If you specify
   // `expected_url`, the test will fail if that is not the loaded page. If you
   // do not, there is no step start callback and you can add your own logic.
@@ -205,6 +235,9 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // fail if the change times out, unless `expect_timeout` is true, in which
   // case the StateChange *must* timeout, and |state_change.timeout_event| must
   // be set.
+  //
+  // Generally, you are better off using WaitForJsResult[At] instead of a raw
+  // WaitForStateChange.
   [[nodiscard]] static MultiStep WaitForStateChange(
       ui::ElementIdentifier webcontents_id,
       const StateChange& state_change,
@@ -262,6 +295,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       const DeepQuery& where,
       const std::string& function,
       ExecuteJsMode mode = ExecuteJsMode::kWaitForCompletion);
+
+  // Returns a matcher that matches truthy values.
+  //
+  // Use this if you don't want to compare specifically to "true", but just want
+  // to know that a value isn't null/false/empty/zero.
+  [[nodiscard]] static auto IsTruthy() { return internal::IsTruthyMatcher(); }
 
   // Executes javascript `function`, which should take no arguments and return a
   // value, in WebContents `webcontents_id`, and fails if the result is not
@@ -324,6 +363,52 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       const std::string& function,
       T&& matcher);
 
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kDefaultWaitForJsResultEvent);
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kDefaultWaitForJsResultAtEvent);
+
+  // Polls `webcontents_id` until the result of `function` matches `value`.
+  //
+  // It is not necessary to specify `event` unless you are waiting for results
+  // in parallel (then each event must be unique).
+  template <typename M>
+  [[nodiscard]] MultiStep WaitForJsResult(
+      ui::ElementIdentifier webcontents_id,
+      const std::string& function,
+      M&& value,
+      bool continue_across_navigation = false,
+      ui::CustomElementEventType event = kDefaultWaitForJsResultEvent);
+
+  // Polls element at `where` in `webcontents_id` until the element exists and
+  // the result of calling `function` on it matches `value`.
+  //
+  // It is not necessary to specify `event` unless you are waiting for results
+  // in parallel (then each event must be unique).
+  template <typename M>
+  [[nodiscard]] MultiStep WaitForJsResultAt(
+      ui::ElementIdentifier webcontents_id,
+      const DeepQuery& where,
+      const std::string& function,
+      M&& value,
+      bool element_must_be_present_at_start = false,
+      bool continue_across_navigation = false,
+      ui::CustomElementEventType event = kDefaultWaitForJsResultAtEvent);
+
+  // Polls `webcontents_id` until the result of `function` is truthy.
+  //
+  // Equivalent to `WaitForJsResult(webcontents_id, function, IsTruthy())`.
+  [[nodiscard]] MultiStep WaitForJsResult(ui::ElementIdentifier webcontents_id,
+                                          const std::string& function);
+
+  // Polls element at `where` in `webcontents_id` until the element exists and
+  // the result of calling `function` on it is truthy.
+  //
+  // Equivalent to:
+  // `WaitForJsResultAt(webcontents_id, where function, IsTruthy())`.
+  [[nodiscard]] MultiStep WaitForJsResultAt(
+      ui::ElementIdentifier webcontents_id,
+      const DeepQuery& where,
+      const std::string& function);
+
   // These are required so the following overloads don't hide the base class
   // variations.
   using InteractiveViewsTestApi::DragMouseTo;
@@ -358,6 +443,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   [[nodiscard]] StepBuilder ScrollIntoView(ui::ElementIdentifier web_contents,
                                            const DeepQuery& where);
 
+  // Waits until the intersection of the element's bounds and the window bounds
+  // are nonempty.
+  [[nodiscard]] MultiStep WaitForElementVisible(
+      ui::ElementIdentifier web_contents,
+      const DeepQuery& where);
+
   // Simulates clicking on an HTML element by injecting the click event directly
   // into the DOM. You can specify the mouse button and additional modifier
   // keys (default is left-click, no modifiers).
@@ -367,11 +458,26 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // does not e.g. trigger navigation when clicking a link, so in all these
   // cases, vanilla click events are sent, which should be handled normally for
   // backwards-compatibility reasons.
+  //
+  // Note that if your WebUI will close in response to this action, you should
+  // set `execute_mode` to `kFireAndForget` to avoid failure to receive
+  // confirmation.
   [[nodiscard]] StepBuilder ClickElement(
       ui::ElementIdentifier web_contents,
       const DeepQuery& where,
       ui_controls::MouseButton button = ui_controls::LEFT,
-      ui_controls::AcceleratorState modifiers = ui_controls::kNoAccelerator);
+      ui_controls::AcceleratorState modifiers = ui_controls::kNoAccelerator,
+      ExecuteJsMode execute_mode = ExecuteJsMode::kWaitForCompletion);
+
+  // Convenience version of `ClickElement()` (see above) for
+  // default-left-clicking when you need to specify the execution mode.
+  [[nodiscard]] inline StepBuilder ClickElement(
+      ui::ElementIdentifier web_contents,
+      const DeepQuery& where,
+      ExecuteJsMode execute_mode) {
+    return ClickElement(web_contents, where, ui_controls::LEFT,
+                        ui_controls::kNoAccelerator, execute_mode);
+  }
 
  protected:
   explicit InteractiveBrowserTestApi(
@@ -379,6 +485,17 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
           private_test_impl);
 
  private:
+  // Common logic for WaitForJsResult[At].
+  template <typename M>
+  [[nodiscard]] MultiStep WaitForJsResultCommon(
+      ui::ElementIdentifier webcontents_id,
+      StateChange::Type type,
+      const std::string& function,
+      const DeepQuery& where,
+      M&& value,
+      bool continue_across_navigation,
+      ui::CustomElementEventType event);
+
   static RelativePositionCallback DeepQueryToRelativePosition(
       const DeepQuery& query);
 
@@ -452,9 +569,29 @@ template <typename T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
     ui::ElementIdentifier webcontents_id,
     const std::string& function,
-    T&& matcher) {
-  return internal::JsResultChecker<T>::CheckJsResult(webcontents_id, function,
-                                                     std::move(matcher));
+    T&& value) {
+  return std::move(
+      CheckElement(
+          webcontents_id,
+          [function,
+           value = ui::test::internal::MatcherTypeFor<T>(
+               std::forward<T>(value))](ui::TrackedElement* el) mutable {
+            std::string error_msg;
+            base::Value result =
+                el->AsA<TrackedElementWebContents>()->owner()->Evaluate(
+                    function, &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "CheckJsResult() failed: " << error_msg;
+              return false;
+            }
+
+            auto m = internal::MakeValueMatcher(std::move(value));
+            return ui::test::internal::MatchAndExplain("CheckJsResult()", m,
+                                                       result);
+          })
+          .SetContext(kDefaultWebContentsContextMode)
+          .SetDescription(base::StringPrintf("CheckJsResult(\"\n%s\n\")",
+                                             function.c_str())));
 }
 
 // static
@@ -463,9 +600,127 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     ui::ElementIdentifier webcontents_id,
     const DeepQuery& where,
     const std::string& function,
-    T&& matcher) {
-  return internal::JsResultChecker<T>::CheckJsResultAt(
-      webcontents_id, where, function, std::move(matcher));
+    T&& value) {
+  return std::move(
+      CheckElement(
+          webcontents_id,
+          [where, function,
+           value = ui::test::internal::MatcherTypeFor<T>(
+               std::forward<T>(value))](ui::TrackedElement* el) mutable {
+            const auto full_function = base::StringPrintf(
+                R"(
+            (el, err) => {
+              if (err) {
+                throw err;
+              }
+              return (%s)(el);
+            }
+          )",
+                function.c_str());
+            std::string error_msg;
+            base::Value result =
+                el->AsA<TrackedElementWebContents>()->owner()->EvaluateAt(
+                    where, full_function, &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "CheckJsResult() failed: " << error_msg;
+              return false;
+            }
+
+            auto m = internal::MakeValueMatcher(std::move(value));
+            return ui::test::internal::MatchAndExplain("CheckJsResultAt()", m,
+                                                       result);
+          })
+          .SetContext(kDefaultWebContentsContextMode)
+          .SetDescription(base::StringPrintf(
+              "CheckJsResultAt( %s, \"\n%s\n\")",
+              internal::InteractiveBrowserTestPrivate::DeepQueryToString(where)
+                  .c_str(),
+              function.c_str())));
+}
+
+template <typename M>
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::WaitForJsResultCommon(
+    ui::ElementIdentifier webcontents_id,
+    StateChange::Type type,
+    const std::string& function,
+    const DeepQuery& where,
+    M&& value,
+    bool continue_across_navigation,
+    ui::CustomElementEventType event) {
+  StateChange change;
+  change.type = type;
+  change.test_function = function;
+  change.event = event;
+  change.continue_across_navigation = continue_across_navigation;
+  change.where = where;
+
+  auto context = private_test_impl().CreateAdditionalContext();
+  auto expected = ui::test::internal::MatcherTypeFor<M>(std::forward<M>(value));
+  using X = decltype(expected);
+  change.check_callback = base::BindRepeating(
+      [](const X& expected, AdditionalContext context,
+         const base::Value& actual) {
+        auto m = internal::MakeConstValueMatcher(expected);
+        std::ostringstream oss;
+        oss << "Expected ";
+        m.DescribeTo(&oss);
+        oss << "; last known value: " << actual;
+        context.Set(oss.str());
+        return m.Matches(actual);
+      },
+      std::move(expected), context);
+
+  return Steps(
+      WaitForStateChange(webcontents_id, change),
+      Do([context]() mutable { context.Clear(); })
+          // Preserve the context of the previous step so that
+          // `InSameContext()` on subsequent steps remains valid.
+          .SetContext(ui::InteractionSequence::ContextMode::kFromPreviousStep));
+}
+
+template <typename M>
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::WaitForJsResult(
+    ui::ElementIdentifier webcontents_id,
+    const std::string& function,
+    M&& value,
+    bool continue_across_navigation,
+    ui::CustomElementEventType event) {
+  auto steps = WaitForJsResultCommon(
+      webcontents_id, StateChange::Type::kConditionTrue, function, DeepQuery(),
+      std::forward<M>(value), continue_across_navigation, event);
+
+  std::ostringstream prefix;
+  prefix << "WaitForJsResult(" << webcontents_id << ") with function\n"
+         << function << "\n";
+  AddDescriptionPrefix(steps, prefix.str());
+  return steps;
+}
+
+template <typename M>
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::WaitForJsResultAt(
+    ui::ElementIdentifier webcontents_id,
+    const DeepQuery& where,
+    const std::string& function,
+    M&& value,
+    bool element_must_be_present_at_start,
+    bool continue_across_navigation,
+    ui::CustomElementEventType event) {
+  auto steps =
+      WaitForJsResultCommon(webcontents_id,
+                            element_must_be_present_at_start
+                                ? StateChange::Type::kConditionTrue
+                                : StateChange::Type::kExistsAndConditionTrue,
+                            function, where, std::forward<M>(value),
+                            continue_across_navigation, event);
+
+  std::ostringstream prefix;
+  prefix << "WaitForJsResultAt(" << webcontents_id << ", " << where
+         << ") with function\n"
+         << function << "\n";
+  AddDescriptionPrefix(steps, prefix.str());
+  return steps;
 }
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_

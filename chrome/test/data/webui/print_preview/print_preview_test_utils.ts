@@ -31,13 +31,12 @@ export function getDefaultInitialSettings(isPdf: boolean = false):
     destinationsManaged: false,
     uiLocale: 'en-us',
     unitType: MeasurementSystemUnitType.IMPERIAL,
-    isDriveMounted: true,
   };
 }
 
 export function getCddTemplate(
     printerId: string, printerName?: string): CapabilitiesResponse {
-  const template: CapabilitiesResponse = {
+  return {
     printer: {
       deviceName: printerId,
       printerName: printerName || '',
@@ -128,10 +127,6 @@ export function getCddTemplate(
       },
     },
   };
-  // <if expr="is_chromeos">
-  template.capabilities!.printer.pin = {supported: true};
-  // </if>
-  return template;
 }
 
 /**
@@ -167,7 +162,7 @@ export function getCddTemplateWithAdvancedSettings(
   }
 
   // Add new capability.
-  template.capabilities!.printer.vendor_capability!.push({
+  template.capabilities!.printer.vendor_capability.push({
     display_name: 'Paper Type',
     id: 'paperType',
     type: 'SELECT',
@@ -184,7 +179,7 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities!.printer.vendor_capability!.push({
+  template.capabilities!.printer.vendor_capability.push({
     display_name: 'Watermark',
     id: 'watermark',
     type: 'TYPED_VALUE',
@@ -219,7 +214,6 @@ export function getCddTemplateWithAdvancedSettings(
       option: [
         {display_name: 'Draft', value: '3'},
         {display_name: 'Normal', value: '4', is_default: true},
-        {display_name: 'High', value: '5'},
       ],
     },
   });
@@ -262,7 +256,7 @@ export function getPdfPrinter(): {capabilities: Cdd} {
  */
 export function getDefaultMediaSize(device: CapabilitiesResponse):
     MediaSizeOption {
-  const size = device.capabilities!.printer.media_size!.option!.find(
+  const size = device.capabilities!.printer.media_size!.option.find(
       opt => !!opt.is_default);
   return {
     width_microns: size!.width_microns,
@@ -276,7 +270,7 @@ export function getDefaultMediaSize(device: CapabilitiesResponse):
  */
 export function getDefaultOrientation(device: CapabilitiesResponse): string {
   const options = device.capabilities!.printer.page_orientation!.option;
-  const orientation = options!.find(opt => !!opt.is_default)!.type;
+  const orientation = options.find(opt => !!opt.is_default)!.type;
   assert(orientation);
   return orientation;
 }
@@ -331,12 +325,6 @@ export function getExtensionDestinations(): ExtensionPrinters {
 export function getDestinations(localDestinations: LocalDestinationInfo[]):
     Destination[] {
   const destinations: Destination[] = [];
-  // <if expr="not is_chromeos">
-  const origin = DestinationOrigin.LOCAL;
-  // </if>
-  // <if expr="is_chromeos">
-  const origin = DestinationOrigin.CROS;
-  // </if>
   // Five destinations. FooDevice is the system default.
   [{deviceName: 'ID1', printerName: 'One'},
    {deviceName: 'ID2', printerName: 'Two'},
@@ -344,8 +332,8 @@ export function getDestinations(localDestinations: LocalDestinationInfo[]):
    {deviceName: 'ID4', printerName: 'Four'},
    {deviceName: 'FooDevice', printerName: 'FooName'}]
       .forEach(info => {
-        const destination =
-            new Destination(info.deviceName, origin, info.printerName);
+        const destination = new Destination(
+            info.deviceName, DestinationOrigin.LOCAL, info.printerName);
         localDestinations.push(info);
         destinations.push(destination);
       });
@@ -420,16 +408,6 @@ export function createDestinationStore(): DestinationStore {
       testListenerElement.addWebUiListener.bind(testListenerElement));
 }
 
-// <if expr="is_chromeos">
-/**
- * @return The Google Drive destination.
- */
-export function getGoogleDriveDestination(): Destination {
-  return new Destination(
-      'Save to Drive CrOS', DestinationOrigin.LOCAL, 'Save to Google Drive');
-}
-// </if>
-
 /** @return The Save as PDF destination. */
 export function getSaveAsPdfDestination(): Destination {
   return new Destination(
@@ -446,6 +424,7 @@ export function getSaveAsPdfDestination(): Destination {
 export function selectOption(
     section: HTMLElement, option: string): Promise<void> {
   const select = section.shadowRoot!.querySelector('select')!;
+  select.focus();
   select.value = option;
   select.dispatchEvent(new CustomEvent('change'));
   return eventToPromise('process-select-change', section);

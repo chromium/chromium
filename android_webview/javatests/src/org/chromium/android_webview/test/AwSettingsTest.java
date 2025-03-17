@@ -47,7 +47,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -588,49 +587,6 @@ public class AwSettingsTest {
             loadUrlSync(UrlUtils.getIsolatedTestFileUrl(TEST_FILE));
             Assert.assertEquals(
                     value == ENABLED ? HAS_LOCAL_STORAGE : NO_LOCAL_STORAGE, getTitleOnUiThread());
-        }
-    }
-
-    class AwSettingsDatabaseTestHelper extends AwSettingsTestHelper<Boolean> {
-        private static final String TEST_FILE = "android_webview/test/data/database_access.html";
-        private static final String NO_DATABASE = "No database";
-        private static final String HAS_DATABASE = "Has database";
-
-        AwSettingsDatabaseTestHelper(
-                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
-                throws Throwable {
-            super(containerView, contentViewClient, true);
-            AwSettingsTest.assertFileIsReadable(UrlUtils.getIsolatedTestFilePath(TEST_FILE));
-        }
-
-        @Override
-        protected Boolean getAlteredValue() {
-            return ENABLED;
-        }
-
-        @Override
-        protected Boolean getInitialValue() {
-            return DISABLED;
-        }
-
-        @Override
-        protected Boolean getCurrentValue() {
-            return mAwSettings.getDatabaseEnabled();
-        }
-
-        @Override
-        protected void setCurrentValue(Boolean value) {
-            mAwSettings.setDatabaseEnabled(value);
-        }
-
-        @Override
-        protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
-            // It seems accessing the database through a data scheme is not
-            // supported, and fails with a DOM exception (likely a cross-domain
-            // violation).
-            loadUrlSync(UrlUtils.getIsolatedTestFileUrl(TEST_FILE));
-            Assert.assertEquals(
-                    value == ENABLED ? HAS_DATABASE : NO_DATABASE, getTitleOnUiThread());
         }
     }
 
@@ -1672,7 +1628,7 @@ public class AwSettingsTest {
                         getTitleOnUiThread());
             }
 
-            ThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
+            ThreadUtils.runOnUiThreadBlocking(() -> observer.observe(null));
         }
 
         private String getData() {
@@ -1913,7 +1869,7 @@ public class AwSettingsTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         final String actualUserAgentString = settings.getUserAgentString();
-        Assert.assertEquals(actualUserAgentString, AwSettings.getDefaultUserAgent());
+        Assert.assertEquals(AwSettings.getDefaultUserAgent(), actualUserAgentString);
         final String patternString =
                 "Mozilla/5\\.0 \\(Linux;( U;)? Android ([^;]+);( (\\w+)-(\\w+);)?"
                         + "\\s?(.*)\\sBuild/(.+); wv\\) "
@@ -2174,50 +2130,6 @@ public class AwSettingsTest {
                         views.getContainer0(), views.getClient0()),
                 new AwSettingsDomStorageEnabledTestHelper(
                         views.getContainer1(), views.getClient1()));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences"})
-    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
-    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
-    public void testDatabaseInitialValue() throws Throwable {
-        TestAwContentsClient client = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-        AwSettingsDatabaseTestHelper helper =
-                new AwSettingsDatabaseTestHelper(testContainerView, client);
-        helper.ensureSettingHasInitialValue();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences"})
-    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
-    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
-    public void testDatabaseEnabled() throws Throwable {
-        TestAwContentsClient client = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-        AwSettingsDatabaseTestHelper helper =
-                new AwSettingsDatabaseTestHelper(testContainerView, client);
-        helper.setAlteredSettingValue();
-        helper.ensureSettingHasAlteredValue();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences"})
-    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
-    @CommandLineFlags.Add({"enable-features=kWebSQLAccess"})
-    public void testDatabaseDisabled() throws Throwable {
-        TestAwContentsClient client = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-        AwSettingsDatabaseTestHelper helper =
-                new AwSettingsDatabaseTestHelper(testContainerView, client);
-        helper.setInitialSettingValue();
-        helper.ensureSettingHasInitialValue();
     }
 
     @Test
@@ -3768,7 +3680,7 @@ public class AwSettingsTest {
         public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
             return new AwSettings(
                     context,
-                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    /* isAccessFromFileUrlsGrantedByDefault= */ false,
                     supportsLegacyQuirks,
                     mAllow,
                     /* allowGeolocationOnInsecureOrigins= */ true,
@@ -3852,7 +3764,7 @@ public class AwSettingsTest {
         public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
             return new AwSettings(
                     context,
-                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    /* isAccessFromFileUrlsGrantedByDefault= */ false,
                     supportsLegacyQuirks,
                     /* allowEmptyDocumentPersistence= */ false,
                     /* allowGeolocationOnInsecureOrigins= */ true,

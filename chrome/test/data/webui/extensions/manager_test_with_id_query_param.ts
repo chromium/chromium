@@ -34,7 +34,7 @@ suite('ExtensionManagerTest', function() {
   test('UrlNavigationToDetails', async () => {
     assertViewActive('extensions-detail-view');
     const detailsView =
-        manager.shadowRoot!.querySelector('extensions-detail-view');
+        manager.shadowRoot.querySelector('extensions-detail-view');
     assertTrue(!!detailsView);
     assertEquals('ldnnhddmnhbkjipkidpdiheffobcpfmf', detailsView.data.id);
 
@@ -67,7 +67,7 @@ suite('ExtensionManagerTest', function() {
     // false.
     assertViewActive('extensions-detail-view');
     const detailsView =
-        manager.shadowRoot!.querySelector('extensions-detail-view');
+        manager.shadowRoot.querySelector('extensions-detail-view');
     assertTrue(!!detailsView);
     assertFalse(detailsView.showActivityLog);
 

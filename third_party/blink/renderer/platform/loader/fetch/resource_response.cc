@@ -27,7 +27,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
@@ -39,7 +42,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
-#include "third_party/blink/renderer/platform/loader/identity_digest.h"
+#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -50,6 +53,16 @@
 namespace blink {
 
 namespace {
+
+constexpr auto kSupportedContentEncodingValues =
+    base::MakeFixedFlatSet<std::string_view>({
+        "br",
+        "dcb",
+        "dcz",
+        "deflate",
+        "gzip",
+        "zstd",
+    });
 
 template <typename Interface>
 Vector<Interface> IsolatedCopy(const Vector<Interface>& src) {
@@ -358,9 +371,7 @@ static std::optional<base::Time> ParseDateValueInHeader(
   //
   // > A cache recipient MUST interpret invalid date formats, especially the
   // > value "0", as representing a time in the past (i.e., "already expired").
-  if (base::FeatureList::IsEnabled(
-          blink::features::kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink) &&
-      header_name == http_names::kLowerExpires && header_value == "0") {
+  if (header_name == http_names::kLowerExpires && header_value == "0") {
     return base::Time::Min();
   }
 
@@ -421,11 +432,12 @@ std::optional<base::Time> ResourceResponse::LastModified(
   return last_modified_;
 }
 
-std::optional<IdentityDigest> ResourceResponse::IdentityDigest() const {
-  if (!RuntimeEnabledFeatures::IdentityDigestEnabled()) {
+std::optional<UnencodedDigest> ResourceResponse::UnencodedDigest(
+    const FeatureContext* feature_context) const {
+  if (!RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context)) {
     return std::nullopt;
   }
-  return IdentityDigest::Create(HttpHeaderFields());
+  return UnencodedDigest::Create(HttpHeaderFields());
 }
 
 bool ResourceResponse::IsAttachment() const {
@@ -441,6 +453,21 @@ bool ResourceResponse::IsAttachment() const {
 AtomicString ResourceResponse::HttpContentType() const {
   return ExtractMIMETypeFromMediaType(
       HttpHeaderField(http_names::kContentType).LowerASCII());
+}
+
+AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
+  String content_encoding =
+      HttpHeaderField(http_names::kContentEncoding).LowerASCII();
+  if (content_encoding.IsNull() || content_encoding.empty()) {
+    return g_empty_atom;
+  }
+  if (kSupportedContentEncodingValues.contains(content_encoding.Ascii())) {
+    return AtomicString(content_encoding);
+  }
+  if (content_encoding.find(',') != kNotFound) {
+    return AtomicString("multiple");
+  }
+  return AtomicString("unknown");
 }
 
 bool ResourceResponse::WasCached() const {

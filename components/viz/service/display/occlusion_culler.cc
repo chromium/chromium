@@ -13,9 +13,12 @@
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -25,25 +28,9 @@ namespace {
 
 constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
 
-bool IsRightAngledRotationOrPositiveScaleOrTranslation(
+bool Is2dAndRightAngledRotationOrPositiveScaleOrTranslation(
     const gfx::Transform& transform) {
-  if (transform.IsPositiveScaleOrTranslation()) {
-    return true;
-  }
-
-  const bool is_2d_and_has_no_perspective =
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 0), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 1), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 2), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(3, 3), 1.0) &&  // 4th row
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 0), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 1), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 2), 1.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(2, 3), 0.0) &&  // 3rd row
-      cc::MathUtil::IsWithinEpsilon(transform.rc(0, 2), 0.0) &&
-      cc::MathUtil::IsWithinEpsilon(transform.rc(1, 2), 0.0);
-
-  if (!is_2d_and_has_no_perspective ||
+  if (!transform.Is2dTransform() ||
       !transform.NonDegeneratePreserves2dAxisAlignment()) {
     return false;
   }
@@ -64,11 +51,10 @@ bool IsRightAngledRotationOrPositiveScaleOrTranslation(
   const bool has_270_rotation_with_positive_scaling =
       transform.rc(0, 1) > kEpsilon && transform.rc(1, 0) < kEpsilon;
 
-  return is_2d_and_has_no_perspective &&
-         (has_translation || has_0_rotation_with_positive_scaling ||
-          has_90_rotation_with_positive_scaling ||
-          has_180_rotation_with_positive_scaling ||
-          has_270_rotation_with_positive_scaling);
+  return has_translation || has_0_rotation_with_positive_scaling ||
+         has_90_rotation_with_positive_scaling ||
+         has_180_rotation_with_positive_scaling ||
+         has_270_rotation_with_positive_scaling;
 }
 
 // SkRegion uses INT_MAX as a sentinel. Reduce gfx::Rect values when they are
@@ -88,53 +74,6 @@ gfx::Rect SafeConvertRectForRegion(const gfx::Rect& r) {
     safe_rect.set_height(INT_MAX - 1);
   }
   return safe_rect;
-}
-
-// Decides whether or not a DrawQuad should be split into a more complex visible
-// region in order to avoid overdraw.
-bool CanSplitQuad(const DrawQuad::Material quad_material,
-                  const std::vector<gfx::Rect>& visible_region_rects,
-                  const gfx::Size& visible_region_bounding_size,
-                  int minimum_fragments_reduced,
-                  float device_scale_factor) {
-  static constexpr DrawQuad::Material kNonSplittableMaterials[] = {
-      // Exclude debug quads from quad splitting.
-      DrawQuad::Material::kDebugBorder,
-      // Exclude possible overlay candidates from quad splitting
-      // See `OverlayCandidate::FromDrawQuad()`.
-      DrawQuad::Material::kTextureContent,
-      DrawQuad::Material::kVideoHole,
-  };
-
-  if (base::Contains(kNonSplittableMaterials, quad_material)) {
-    return false;
-  }
-
-  base::CheckedNumeric<int> area = 0;
-  for (const auto& r : visible_region_rects) {
-    area += r.size().GetCheckedArea();
-    // In calculations below, assume false if this addition overflows.
-    if (!area.IsValid()) {
-      return false;
-    }
-  }
-
-  base::CheckedNumeric<int> visible_region_bounding_area =
-      visible_region_bounding_size.GetCheckedArea();
-  if (!visible_region_bounding_area.IsValid()) {
-    // In calculations below, assume true if this overflows.
-    return true;
-  }
-
-  area = visible_region_bounding_area - area;
-  if (!area.IsValid()) {
-    // In calculations below, assume false if this subtraction underflows.
-    return false;
-  }
-
-  const int int_area = area.ValueOrDie();
-  return int_area * device_scale_factor * device_scale_factor >
-         minimum_fragments_reduced;
 }
 
 // Returns the bounds for the largest rect that can be inscribed in a rounded
@@ -183,7 +122,7 @@ bool ReduceComplexity(const cc::Region& region,
   CHECK(reduced_region_out.empty());
 
   for (gfx::Rect r : region) {
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         reduced_region_out,
         [&r](const gfx::Rect& a) { return a.SharesEdgeWith(r); });
 
@@ -234,8 +173,11 @@ void MaybeReduceOccluderComplexity(cc::Region& occluder,
 
 OcclusionCuller::OcclusionCuller(
     OverlayProcessorInterface* overlay_processor,
+    DisplayResourceProvider* resource_provider,
     const RendererSettings::OcclusionCullerSettings& settings)
-    : overlay_processor_(overlay_processor), settings_(settings) {}
+    : overlay_processor_(overlay_processor),
+      resource_provider_(resource_provider),
+      settings_(settings) {}
 
 OcclusionCuller::~OcclusionCuller() = default;
 
@@ -358,19 +300,24 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         current_sqs_intersects_occlusion =
             occlusion_in_target_space.Intersects(current_sqs_in_target_space);
 
-        // Compute the occlusion region in the quad content space for scale,
-        // rotation(90, 180, 270) and translation transforms. Note that 0 scale
-        // transform will fail the positive scale check.
+        // Compute the occlusion region in the quad content space for 2d-scale,
+        // rotation(90, 180, 270) and 2d-translation transforms. Note that 0
+        // scale transform will fail the positive scale check.
+        // (See crrev.com/c/788283 for the rationale)
+        // Given:
+        // * Scale transform can be inverted by multiplying 1/scale.
+        //  (given scale > 0)
+        // * Translation transform can be inverted by applying reversed
+        //   directional translation.
+        // * Rotation transform can be inverted by applying rotation
+        //   in opposite direction.
+        // Therefore, `transform` is always invertible.
+        // Note: `Transform::IsInvertible()` check is necessary to ensure no
+        // overflows occur when calculating the inverse. (It is inexpensive for
+        // 2d transforms)
         if (current_sqs_intersects_occlusion &&
-            IsRightAngledRotationOrPositiveScaleOrTranslation(transform)) {
-          // Given:
-          // * Scale transform can be inverted by multiplying 1/scale.
-          //  (given scale > 0)
-          // * Translation transform can be inverted by applying reversed
-          //   directional translation.
-          // * Rotation transform can be inverted by applying rotation
-          //   in opposite direction.
-          // Therefore, `transform` is always invertible.
+            Is2dAndRightAngledRotationOrPositiveScaleOrTranslation(transform) &&
+            transform.IsInvertible()) {
           const gfx::Transform reverse_transform =
               transform.GetCheckedInverse();
           DCHECK_LE(occlusion_in_target_space.GetRegionComplexity(),
@@ -433,10 +380,8 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
             !visible_region.Intersects(render_pass_quads_in_content_space) &&
             ReduceComplexity(visible_region, settings_.quad_split_limit,
                              reduced_visible_region) &&
-            CanSplitQuad(quad->material, reduced_visible_region,
-                         visible_region.bounds().size(),
-                         settings_.minimum_fragments_reduced,
-                         device_scale_factor_);
+            CanSplitDrawQuad(*quad, visible_region.bounds().size(),
+                             reduced_visible_region);
         if (should_split_quads) {
           auto new_quad = pass->quad_list.InsertCopyBeforeDrawQuad(
               quad, reduced_visible_region.size() - 1);
@@ -461,6 +406,54 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
       ++quad;
     }
   }
+}
+
+bool OcclusionCuller::CanSplitDrawQuad(
+    const DrawQuad* quad,
+    const gfx::Size& visible_region_bounding_size,
+    const std::vector<gfx::Rect>& visible_region_rects) {
+  if (quad->material == DrawQuad::Material::kDebugBorder ||
+      quad->material == DrawQuad::Material::kVideoHole) {
+    return false;
+  }
+
+  if (quad->material == DrawQuad::Material::kTextureContent) {
+    if (!features::IsOcclusionCullingForTextureQuadsEnabled()) {
+      return false;
+    }
+
+    // Exclude possible overlay candidates from quad splitting. See
+    // `OverlayCandidateFactory::FromDrawQuad()`.
+    if (resource_provider_->IsOverlayCandidate(quad->resource_id)) {
+      return false;
+    }
+  }
+
+  base::CheckedNumeric<int> area = 0;
+  for (const auto& r : visible_region_rects) {
+    area += r.size().GetCheckedArea();
+    // In calculations below, assume false if this addition overflows.
+    if (!area.IsValid()) {
+      return false;
+    }
+  }
+
+  base::CheckedNumeric<int> visible_region_bounding_area =
+      visible_region_bounding_size.GetCheckedArea();
+  if (!visible_region_bounding_area.IsValid()) {
+    // In calculations below, assume true if this overflows.
+    return true;
+  }
+
+  area = visible_region_bounding_area - area;
+  if (!area.IsValid()) {
+    // In calculations below, assume false if this subtraction underflows.
+    return false;
+  }
+
+  const int int_area = area.ValueOrDie();
+  return int_area * device_scale_factor_ * device_scale_factor_ >
+         settings_.minimum_fragments_reduced;
 }
 
 }  // namespace viz

@@ -31,7 +31,7 @@ using ScopedWebStateListObservation =
   // Observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
-  // Preference service from the application context.
+  // Preference service from the profile.
   raw_ptr<PrefService> _prefService;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -41,8 +41,7 @@ using ScopedWebStateListObservation =
 
 - (instancetype)initWithConsumer:(id<InactiveTabsInfoConsumer>)consumer
                     webStateList:(WebStateList*)webStateList
-                     prefService:(PrefService*)prefService {
-  CHECK(IsInactiveTabsAvailable());
+              profilePrefService:(PrefService*)prefService {
   // TODO(crbug.com/40923937): Reinstate this CHECK once
   // InactiveTabsButtonMediator is not created when not needed (for example when
   // a policy disables the regular tab grid).
@@ -73,7 +72,7 @@ using ScopedWebStateListObservation =
 
     // Push the info to the consumer.
     [_consumer updateInactiveTabsCount:_webStateList->count()];
-    NSInteger daysThreshold = InactiveTabsTimeThreshold().InDays();
+    NSInteger daysThreshold = InactiveTabsTimeThreshold(_prefService).InDays();
     [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
   }
   return self;

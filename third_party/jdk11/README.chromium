@@ -2,7 +2,7 @@ Name: Java Development Kit
 Short Name: JDK
 URL: https://openjdk.java.net/
 Version: 11.0.15+10.cr0
-License: GPL v2
+License: GPL-2.0
 Security Critical: no
 Shipped: no
 

@@ -288,7 +288,8 @@ bool DesktopWindowTreeHostLinux::OnAtkKeyEvent(AtkKeyEventStruct* atk_event,
 }
 #endif
 
-bool DesktopWindowTreeHostLinux::IsOverrideRedirect() const {
+bool DesktopWindowTreeHostLinux::IsOverrideRedirect(
+    const ui::X11Extension& x11_extension) const {
   // BrowserDesktopWindowTreeHostLinux implements this for browser windows.
   return false;
 }
@@ -347,7 +348,7 @@ DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
 void DesktopWindowTreeHostLinux::OnCompleteSwapWithNewSize(
     const gfx::Size& size) {
   if (GetX11Extension()) {
-    GetX11Extension()->OnCompleteSwapAfterResize();
+    GetX11Extension()->OnCompleteSwapAfterResize(size);
   }
 }
 

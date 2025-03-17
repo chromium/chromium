@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
@@ -12,7 +14,6 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -108,7 +109,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
   // Attempt to find the finalized `item` in persistent storage.
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   base::Value::List& list = update.Get();
-  auto item_it = base::ranges::find(
+  auto item_it = std::ranges::find(
       list, item->id(), [](const base::Value& persisted_item) {
         return HoldingSpaceItem::DeserializeId(persisted_item.GetDict());
       });

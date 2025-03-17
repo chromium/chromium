@@ -9,11 +9,11 @@ for (const namespace in gCrWeb) {
   const namespaceObject = gCrWeb[namespace];
   for (const itemName in namespaceObject) {
     const exposedItem = namespaceObject[itemName];
-    if (typeof exposedItem == 'function') {
+    if (typeof exposedItem === 'function') {
       const funcName = '__gCrWeb.' + namespace + '.' + itemName;
       gCrWeb[namespace][itemName] = function(...args: unknown[]) {
         return catchAndReportErrors.apply(null, [funcName, exposedItem, args]);
-      }
+      };
     }
   }
 }

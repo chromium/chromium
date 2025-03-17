@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/nearby/sharing/proto/device_rpc.pb.h"
@@ -19,12 +19,14 @@
 
 class NearbyShareClientFactory;
 class NearbyShareDeviceDataUpdater;
-class NearbyShareProfileInfoProvider;
-class PrefService;
 
 namespace ash::nearby {
 class NearbyScheduler;
 }  // namespace ash::nearby
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 // Implementation of NearbyShareLocalDeviceDataManager that persists device data
 // in prefs. All RPC-related calls are guarded by a timeout, so callbacks are
@@ -37,17 +39,15 @@ class NearbyShareLocalDeviceDataManagerImpl
   class Factory {
    public:
     static std::unique_ptr<NearbyShareLocalDeviceDataManager> Create(
-        PrefService* pref_service,
-        NearbyShareClientFactory* http_client_factory,
-        NearbyShareProfileInfoProvider* profile_info_provider);
+        user_manager::User& user,
+        NearbyShareClientFactory* http_client_factory);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<NearbyShareLocalDeviceDataManager> CreateInstance(
-        PrefService* pref_service,
-        NearbyShareClientFactory* http_client_factory,
-        NearbyShareProfileInfoProvider* profile_info_provider) = 0;
+        user_manager::User& user,
+        NearbyShareClientFactory* http_client_factory) = 0;
 
    private:
     static Factory* test_factory_;
@@ -57,9 +57,8 @@ class NearbyShareLocalDeviceDataManagerImpl
 
  private:
   NearbyShareLocalDeviceDataManagerImpl(
-      PrefService* pref_service,
-      NearbyShareClientFactory* http_client_factory,
-      NearbyShareProfileInfoProvider* profile_info_provider);
+      user_manager::User& user,
+      NearbyShareClientFactory* http_client_factory);
 
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
@@ -103,8 +102,7 @@ class NearbyShareLocalDeviceDataManagerImpl
       const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response);
 
-  raw_ptr<PrefService> pref_service_ = nullptr;
-  raw_ptr<NearbyShareProfileInfoProvider> profile_info_provider_ = nullptr;
+  const raw_ref<user_manager::User> user_;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
   std::unique_ptr<ash::nearby::NearbyScheduler> download_device_data_scheduler_;
   std::string default_device_name_;

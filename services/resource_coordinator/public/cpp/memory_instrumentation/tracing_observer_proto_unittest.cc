@@ -45,7 +45,7 @@ class TracingObserverProtoTest : public testing::Test {
         false);
     memory_instrumentation::TracingObserverProto::GetInstance()
         ->ResetForTesting();
-    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
@@ -136,7 +136,7 @@ memory_instrumentation::mojom::OSMemDump GetFakeOSMemDump(
       /*is_peak_rss_resettable=*/true, private_footprint_kb, shared_footprint_kb
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
       ,
-      0
+      0, 0,
 #endif
   );
 }

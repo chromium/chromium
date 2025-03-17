@@ -7,12 +7,16 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -27,11 +31,13 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using chrome_test_util::SettingsToolbarEditButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 
 namespace {
 
 const char kCreditCardUrl[] = "/credit_card.html";
+const char kCreditCardWithAutofocusUrl[] = "/credit_card_autofocused.html";
 const char kFormCardName[] = "CCName";
 const char kFormCardNumber[] = "CCNo";
 const char kFormCardExpirationMonth[] = "CCExpiresMonth";
@@ -62,8 +68,8 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
   [AutofillAppInterface clearCreditCardStore];
   _lastDigits = [AutofillAppInterface saveLocalCreditCard];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
@@ -73,8 +79,8 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
   [AutofillAppInterface clearMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -94,6 +100,12 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
                  (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
     config.features_enabled.push_back(kStatelessFormSuggestionController);
+  } else if ([self isRunningTest:@selector
+                   (testFillingFromKeyboardOnAutofocus_WithFix)]) {
+    config.features_enabled.push_back(kAutofillFixPaymentSheetSpam);
+  } else if ([self isRunningTest:@selector
+                   (testFillingFromKeyboardOnAutofocus_WithoutFix)]) {
+    config.features_disabled.push_back(kAutofillFixPaymentSheetSpam);
   }
   return config;
 }
@@ -108,11 +120,6 @@ id<GREYMatcher> ContinueButton() {
 id<GREYMatcher> UseKeyboardButton() {
   return chrome_test_util::ButtonWithAccessibilityLabelId(
       IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
-}
-
-// Matcher for the toolbar's edit button.
-id<GREYMatcher> SettingToolbarEditButton() {
-  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 // Matcher for the toolbar's done button.
@@ -190,6 +197,16 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // Localhost is not considered secure, therefore form security needs to be
   // overridden for the tests to work. This will allow us to fill the textfields
   // on the web page.
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+}
+
+// Loads a page on local host to test payment and autofocus.
+- (void)loadPaymentsWithAutofocusPage {
+  // Load and wait for the page to be loaded.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardWithAutofocusUrl)];
+  [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+
+  // Allow filling credit card information on an unsecured HTTP host.
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 }
 
@@ -590,7 +607,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Edit the card's nickname.
-  [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
       performAction:grey_tap()];
 
   NSString* nickname = @"Card Nickname";
@@ -643,7 +660,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Edit the card's nickname.
-  [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
       performAction:grey_tap()];
 
   NSString* nickname = @"Card Nickname";
@@ -688,7 +705,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Delete the credit card
-  [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:creditCardEntry]
@@ -759,6 +776,115 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // Dismiss the bottom sheet by tapping outside.
   [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
       performAction:grey_tap()];
+}
+
+// Tests that the payment sheet doesn't spam after filling from the KA on an
+// autofocused field This ensures that crbug.com/389077460 doesn't happen.
+- (void)testFillingFromKeyboardOnAutofocus_WithFix {
+  // Clear the credit cards to remove the default local cards that aren't needed
+  // for this test case.
+  [AutofillAppInterface clearCreditCardStore];
+
+  // Add the server credit card. Before loading the page so it can be in the
+  // autofill suggestion upon autofocusing the credit card field.
+  [AutofillAppInterface saveMaskedCreditCard];
+
+  // Load page for testing autofocus.
+  [self loadPaymentsWithAutofocusPage];
+
+  // Create the payment form dynamically with a field programmatically
+  // focused right after creation which will emulate an autofocus from the
+  // perspective of the bottom sheet (because the element will be already
+  // focused when the form is detected by Autofill which is when the sheet
+  // listeners are attached). The keyboard will automatically pop up.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("create-form-btn")];
+
+  // Wait for the keyboard accessory to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::FormSuggestionViewMatcher()];
+
+  // Represents the masked server card that was saved.
+  autofill::CreditCard serverCard = autofill::test::GetMaskedServerCard();
+
+  // Tap on the card chip in the KA.
+  id<GREYMatcher> serverCardChip =
+      grey_text(base::SysUTF16ToNSString(serverCard.GetInfo(
+          autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:serverCardChip];
+  [[EarlGrey selectElementWithMatcher:serverCardChip] performAction:grey_tap()];
+
+  // Tap on the "Cancel" button on the card unmask dialog to dismiss the dialog.
+  id<GREYMatcher> cancelBtnMatcher =
+      grey_allOf(grey_buttonTitle(l10n_util::GetNSString(IDS_CANCEL)),
+                 grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cancelBtnMatcher];
+  [[EarlGrey selectElementWithMatcher:cancelBtnMatcher]
+      performAction:grey_tap()];
+  // Give enough time so the sheet would have shown if it was wrongly
+  // triggered after dismissing the card unmask dialog (can be from any action,
+  // it doesn't matter).
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(500));
+
+  // Verify that the sheet didn't pop up after filling from the KA on the
+  // autofucsed field. Use the continue button of the sheet as a proxy.
+  [[EarlGrey selectElementWithMatcher:ContinueButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the payment sheet spams after filling from the KA on an
+// autofocused field, when the fix is disabled. This is a sanity check to make
+// sure that the test setup is right for testing that the fix really works (and
+// it doesn't only work because the tested case can't be reproed correctly).
+- (void)testFillingFromKeyboardOnAutofocus_WithoutFix {
+  if (!@available(iOS 18, *)) {
+    EARL_GREY_TEST_SKIPPED(@"The issue tested here started on ios18");
+  }
+
+  // Clear the credit cards to remove the default local cards that aren't needed
+  // for this test case.
+  [AutofillAppInterface clearCreditCardStore];
+
+  // Add the server credit card. Before loading the page so it can be in the
+  // autofill suggestion upon autofocusing the credit card field.
+  [AutofillAppInterface saveMaskedCreditCard];
+
+  // Load page for testing autofocus.
+  [self loadPaymentsWithAutofocusPage];
+
+  // Create the payment form dynamically with a field programmatically
+  // focused right after creation which will emulate an autofocus from the
+  // perspective of the bottom sheet (because the element will be already
+  // focused when the form is detected by Autofill which is when the sheet
+  // listeners are attached). The keyboard will automatically pop up.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("create-form-btn")];
+
+  // Wait for the keyboard accessory to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::FormSuggestionViewMatcher()];
+
+  // Represents the masked server card that was saved.
+  autofill::CreditCard serverCard = autofill::test::GetMaskedServerCard();
+
+  // Tap on the card chip in the KA.
+  id<GREYMatcher> serverCardChip =
+      grey_text(base::SysUTF16ToNSString(serverCard.GetInfo(
+          autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:serverCardChip];
+  [[EarlGrey selectElementWithMatcher:serverCardChip] performAction:grey_tap()];
+
+  // Tap on the "Cancel" button on the card unmask dialog to dismiss the dialog.
+  id<GREYMatcher> cancelBtnMatcher =
+      grey_allOf(grey_buttonTitle(l10n_util::GetNSString(IDS_CANCEL)),
+                 grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cancelBtnMatcher];
+  [[EarlGrey selectElementWithMatcher:cancelBtnMatcher]
+      performAction:grey_tap()];
+
+  // Verify that the sheet popped up after filling from the KA on the
+  // autofocused field.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ContinueButton()];
 }
 
 @end

@@ -1,0 +1,54 @@
+Tests that Page.enable(enableFileChooserOpenedEvent) enables `Page.fileChooserOpened` events
+
+Running test: testClickFileInput
+Page.fileChooserOpened{
+    method : Page.fileChooserOpened
+    params : {
+        backendNodeId : <number>
+        frameId : <string>
+        mode : selectSingle
+    }
+    sessionId : <string>
+}
+
+Running test: testShowPickerAPI
+Page.fileChooserOpened{
+    method : Page.fileChooserOpened
+    params : {
+        backendNodeId : <number>
+        frameId : <string>
+        mode : selectSingle
+    }
+    sessionId : <string>
+}
+
+Running test: testOpenFilePickerAPI
+Page.fileChooserOpened{
+    method : Page.fileChooserOpened
+    params : {
+        frameId : <string>
+        mode : selectSingle
+    }
+    sessionId : <string>
+}
+
+Running test: testSaveFilePickerAPI
+Page.fileChooserOpened{
+    method : Page.fileChooserOpened
+    params : {
+        frameId : <string>
+        mode : selectSingle
+    }
+    sessionId : <string>
+}
+
+Running test: testDirectoryPickerAPI
+Page.fileChooserOpened{
+    method : Page.fileChooserOpened
+    params : {
+        frameId : <string>
+        mode : selectSingle
+    }
+    sessionId : <string>
+}
+

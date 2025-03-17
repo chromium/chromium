@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -54,7 +54,7 @@ struct DecodedImage {
 // the same decoded result.
 DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<DecodedImage> NativePixmapToDecodedImage(
     gfx::NativePixmapHandle& handle,
     const gfx::Size& size,

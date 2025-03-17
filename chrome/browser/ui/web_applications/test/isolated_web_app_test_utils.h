@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/version_info/channel.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/common/features/feature_channel.h"
@@ -55,7 +57,7 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
-      const base::FilePath::StringPieceType& chrome_test_data_relative_root);
+      base::FilePath::StringViewType chrome_test_data_relative_root);
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
   content::RenderFrameHost* OpenApp(const webapps::AppId& app_id,
@@ -75,8 +77,34 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
 };
 
+class UpdateDiscoveryTaskResultWaiter
+    : public IsolatedWebAppUpdateManager::Observer {
+  using TaskResultCallback = base::OnceCallback<void(
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status)>;
+
+ public:
+  UpdateDiscoveryTaskResultWaiter(WebAppProvider& provider,
+                                  const webapps::AppId expected_app_id,
+                                  TaskResultCallback callback);
+  ~UpdateDiscoveryTaskResultWaiter() override;
+
+  // IsolatedWebAppUpdateManager::Observer:
+  void OnUpdateDiscoveryTaskCompleted(
+      const webapps::AppId& app_id,
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) override;
+
+ private:
+  const webapps::AppId expected_app_id_;
+  TaskResultCallback callback_;
+  const raw_ref<WebAppProvider> provider_;
+
+  base::ScopedObservation<IsolatedWebAppUpdateManager,
+                          IsolatedWebAppUpdateManager::Observer>
+      observation_{this};
+};
+
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
-    const base::FilePath::StringPieceType& chrome_test_data_relative_root);
+    base::FilePath::StringViewType chrome_test_data_relative_root);
 
 IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
     Profile* profile,
@@ -90,20 +118,6 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
                   const std::string& iframe_id,
                   const GURL& url,
                   const std::string& permissions_policy);
-
-// Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
-// filepath for |IsolatedWebAppLocation|.
-webapps::AppId AddDummyIsolatedAppToRegistry(
-    Profile* profile,
-    const GURL& start_url,
-    const std::string& name,
-    const IsolationData& isolation_data =
-        IsolationData::Builder(IwaStorageOwnedBundle{/*dir_name_ascii=*/"",
-                                                     /*dev_mode=*/false},
-                               base::Version("1.0.0"))
-            .Build(),
-    webapps::WebappInstallSource install_source =
-        webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
 
 // Simulates navigating `web_contents` main frame to the provided isolated-app:
 // URL for unit tests. `TestWebContents::NavigateAndCommit` won't work for IWAs

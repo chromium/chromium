@@ -174,8 +174,9 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
     if (immediate_starvation_count_ >= kMaxDelayedStarvationTasks) {
       WorkQueue* queue =
           ChooseImmediateOnlyWithPriority<SetOperation>(priority);
-      if (queue)
+      if (queue) {
         return queue;
+      }
       return ChooseDelayedOnlyWithPriority<SetOperation>(priority);
     }
     return ChooseImmediateOrDelayedTaskWithPriority<SetOperation>(priority);

@@ -29,7 +29,7 @@ public class LocalTabTabResumptionDataProviderUnitTest extends TestSupport {
                 new LocalTabTabResumptionDataProvider(null);
         localTabProvider.fetchSuggestions(
                 (SuggestionsResult results) -> {
-                    Assert.assertEquals(results.strength, ResultStrength.FORCED_NULL);
+                    Assert.assertEquals(ResultStrength.FORCED_NULL, results.strength);
                     Assert.assertNull(results.suggestions);
                     ++mFetchSuggestionsCallbackCounter;
                 });
@@ -44,7 +44,7 @@ public class LocalTabTabResumptionDataProviderUnitTest extends TestSupport {
                 new LocalTabTabResumptionDataProvider(tab);
         localTabProvider.fetchSuggestions(
                 (SuggestionsResult results) -> {
-                    Assert.assertEquals(results.strength, ResultStrength.STABLE);
+                    Assert.assertEquals(ResultStrength.STABLE, results.strength);
                     Assert.assertEquals(1, results.suggestions.size());
                     SuggestionEntry entry1 = results.suggestions.get(0);
                     Assert.assertTrue(entry1.isLocalTab());

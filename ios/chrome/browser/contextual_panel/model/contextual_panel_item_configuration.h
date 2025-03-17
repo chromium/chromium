@@ -95,10 +95,6 @@ struct ContextualPanelItemConfiguration {
   // rich IPH bubble.
   std::string iph_text;
 
-  // Optional (required if `iph_feature` is non-nil). The name of the image used
-  // in the rich IPH bubble.
-  std::string iph_image_name;
-
   // ** End of entrypoint IPH (rich IPH type) related config keys. **
 
   base::WeakPtrFactory<ContextualPanelItemConfiguration> weak_ptr_factory{this};

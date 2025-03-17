@@ -13,7 +13,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_base.h"
 #include "net/disk_cache/disk_cache_test_util.h"
@@ -38,7 +38,7 @@ int NumberOfFiles(const base::FilePath& path) {
 
 namespace disk_cache {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Flaky on ChromeOS: https://crbug.com/1156795
 #define MAYBE_BlockFiles_Grow DISABLED_BlockFiles_Grow
 #else

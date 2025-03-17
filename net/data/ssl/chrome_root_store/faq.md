@@ -1,5 +1,5 @@
 # Frequently Asked Questions
-Last updated: June 1, 2024
+Last updated: January 23, 2025
 
 [TOC]
 
@@ -63,12 +63,9 @@ the rollout population.
 Certificate Verifier from being used on Chrome for iOS.
 
 ### How do these features impact "enterprise", "private", or "only-locally trusted" certificates?
-The Chrome Certificate Verifier
-[considers](#does-the-chrome-certificate-verifier-consider-local-trust-decisions)
-locally-managed certificates during the certificate verification process.
-Consequently, if an enterprise distributes a root CA certificate as
-trusted to its users (for example, by a Windows Group Policy Object), it
-will be considered trusted in Chrome.
+Depending on the underlying [connection protocol](#how-does-the-chrome-certificate-verifier-consider-local-trust-decisions)
+used, the Chrome Certificate Verifier considers locally-managed certificates
+during the certificate verification process.
 
 ### How can I apply for my CA's inclusion in the Chrome Root Store?
 CA Owners who meet the Chrome Root Program
@@ -122,9 +119,36 @@ During routine operating conditions, the Chrome Root Store is updated
 approximately quarterly. However, aperiodic updates may take place to
 promote the safety and privacy of Chrome's users.
 
-### Does the Chrome Certificate Verifier consider local trust decisions?
+### What happens when a certificate is added to or removed from the Chrome Root Store?
 
-Yes.
+Google Chrome includes or removes self-signed root CA certificates in the Chrome
+Root Store as it deems appropriate at its sole discretion.
+
+New binary releases of Chrome include the current version of the Chrome Root
+Store. If there is a change to the Chrome Root Store, future binary releases of
+Chrome will automatically include that change.
+
+Existing versions of Chrome [relying](#when-did-these-features-land) on the
+Chrome Root Store and capable of [receiving component updates](#how-is-the-chrome-root-store-updated)
+typically receive updated versions of the Chrome Root Store within 24-hours of
+the component’s release. Upon receiving the updated component, Chrome will rely
+on the contents of the updated root store.
+
+Existing versions of Chrome *not* relying on the Chrome Root Store and/or that
+have disabled component updates will *not* become aware of the change(s) until
+installing a binary update following the publication of the updated root store.
+
+### How does the Chrome Certificate Verifier consider local trust decisions?
+
+For TLS connections relying on the Transmission Control Protocol (TCP), the
+ Chrome Certificate Verifier considers local trust decisions for both adding and
+removing trust. Learn more [here](#how-does-the-chrome-certificate-verifier-integrate-with-platform-trust-stores-for-local-trust-decisions).
+
+For TLS connections relying on the Quick UDP Internet Connections (QUIC)
+protocol, the Chrome Certificate Verifier *only* considers local trust decisions
+for removing trust.
+
+### How does the Chrome Certificate Verifier integrate with platform trust stores for local trust decisions?
 
 On **Windows**, the Chrome Certificate Verifier automatically consumes
 certificates **added** to the following certificate stores:
@@ -198,6 +222,18 @@ contents of the Chrome Root Store in use by a version of Chrome:
 1. Navigate to ```chrome://system```
 2. Click the ```Expand...``` button next to `chrome_root_store`
 3. *The contents of the Chrome Root Store will display*
+
+### What does it mean for a certificate in the Chrome Root Store to be constrained?
+Chrome maintains a variety of mechanisms to protect its users from certificates
+that put their safety and privacy at risk. One way this is accomplished is
+through the use of metadata-based constraints added to CA certificates included
+in the Chrome Root Store.
+
+The set of constraints that may be applied to a CA certificate included in the
+Chrome Root Store is described [here](/net/cert/root_store.proto).
+
+To understand a constraint applied to a root included in the Chrome Root Store,
+view the certificate’s entry in [root_store.textproto](/net/data/ssl/chrome_root_store/root_store.textproto).
 
 ### What criteria does the Chrome Certificate Verifier use to evaluate certificates?
 The Chrome Certificate Verifier applies standard processing to include

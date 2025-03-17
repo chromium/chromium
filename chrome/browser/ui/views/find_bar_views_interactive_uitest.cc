@@ -148,9 +148,11 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
     return GetFindBarHost()->GetFindBarViewForTesting();
   }
 
-  std::u16string GetFindBarText() { return GetFindBarHost()->GetFindText(); }
+  std::u16string_view GetFindBarText() {
+    return GetFindBarHost()->GetFindText();
+  }
 
-  std::u16string GetFindBarSelectedText() {
+  std::u16string_view GetFindBarSelectedText() {
     return GetFindBarHost()->GetFindBarTesting()->GetFindSelectedText();
   }
 
@@ -213,10 +215,10 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
   }
 
   ui::InteractionSequence::StepBuilder BringBrowserWindowToFront() {
-    return std::move(Check([this]() {
-                       return ui_test_utils::BringBrowserWindowToFront(
-                           browser());
-                     }).SetDescription("BringBrowserWindowToFront()"));
+    return Check([this]() {
+             return ui_test_utils::BringBrowserWindowToFront(browser());
+           })
+        .SetDescription("BringBrowserWindowToFront()");
   }
 
   auto ShowFindBar() {
@@ -267,7 +269,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
                         focused->GetProperty(views::kElementIdentifierKey)) {
                   return id.GetName();
                 }
-                return focused->GetClassName();
+                return std::string(focused->GetClassName());
               }
               return "(none)";
             }),

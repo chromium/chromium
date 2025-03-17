@@ -4,16 +4,16 @@
 
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/md_select.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './filter_chips.html.js';
+import {getCss} from './filter_chips.css.js';
+import {getHtml} from './filter_chips.html.js';
 
 export interface Suggestion {
   label: string;
@@ -60,7 +60,7 @@ export interface HistoryEmbeddingsFilterChips {
   };
 }
 
-const HistoryEmbeddingsFilterChipsElementBase = I18nMixin(PolymerElement);
+const HistoryEmbeddingsFilterChipsElementBase = I18nMixinLit(CrLitElement);
 
 export class HistoryEmbeddingsFilterChips extends
     HistoryEmbeddingsFilterChipsElementBase {
@@ -68,16 +68,21 @@ export class HistoryEmbeddingsFilterChips extends
     return 'cr-history-embeddings-filter-chips';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      enableShowResultsByGroupOption: Boolean,
+      enableShowResultsByGroupOption: {
+        type: Boolean,
+      },
       timeRangeStart: {
         type: Object,
-        observer: 'onTimeRangeStartChanged_',
       },
       selectedSuggestion: {
         type: String,
@@ -86,30 +91,32 @@ export class HistoryEmbeddingsFilterChips extends
       showResultsByGroup: {
         type: Boolean,
         notify: true,
-        value: false,
       },
       suggestions_: {
         type: Array,
-        value: () => generateSuggestions(),
       },
     };
   }
 
-  enableShowResultsByGroupOption: boolean;
+  enableShowResultsByGroupOption: boolean = false;
   selectedSuggestion?: Suggestion;
-  showResultsByGroup: boolean;
-  private suggestions_: Suggestion[];
+  showResultsByGroup: boolean = false;
+  protected suggestions_: Suggestion[] = generateSuggestions();
   timeRangeStart?: Date;
 
-  private getByGroupIcon_(): string {
-    return this.showResultsByGroup ? 'cr:check' : 'history-embeddings:by-group';
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('timeRangeStart')) {
+      this.onTimeRangeStartChanged_();
+    }
   }
 
-  private isSuggestionSelected_(suggestion: Suggestion): boolean {
+  protected isSuggestionSelected_(suggestion: Suggestion): boolean {
     return this.selectedSuggestion === suggestion;
   }
 
-  private onShowByGroupSelectMenuChanged_() {
+  protected onShowByGroupSelectMenuChanged_() {
     this.showResultsByGroup = this.$.showByGroupSelectMenu.value === 'true';
   }
 
@@ -125,8 +132,10 @@ export class HistoryEmbeddingsFilterChips extends
     });
   }
 
-  private onSuggestionClick_(e: DomRepeatEvent<Suggestion>) {
-    const clickedSuggestion = e.model.item;
+  protected onSuggestionClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const clickedSuggestion = this.suggestions_[index];
+    assert(clickedSuggestion);
     if (this.isSuggestionSelected_(clickedSuggestion)) {
       this.selectedSuggestion = undefined;
     } else {
@@ -140,6 +149,8 @@ declare global {
     'cr-history-embeddings-filter-chips': HistoryEmbeddingsFilterChips;
   }
 }
+
+export type FilterChipsElement = HistoryEmbeddingsFilterChips;
 
 customElements.define(
     HistoryEmbeddingsFilterChips.is, HistoryEmbeddingsFilterChips);

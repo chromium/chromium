@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -801,7 +802,7 @@ TEST_F(BodyStreamBufferTest,
 TEST_F(BodyStreamBufferTest, CachedMetadataHandler) {
   V8TestingScope scope;
   Persistent<BodyStreamBuffer> buffer;
-  WeakPersistent<ScriptCachedMetadataHandler> weak_handler;
+  WeakPersistent<CachedMetadataHandler> weak_handler;
   {
     BytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
         scope.GetDocument().GetTaskRunner(TaskType::kNetworking));

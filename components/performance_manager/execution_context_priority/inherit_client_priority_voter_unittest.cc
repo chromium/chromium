@@ -28,62 +28,40 @@ const execution_context::ExecutionContext* GetExecutionContext(
       ->GetExecutionContextForWorkerNode(worker_node);
 }
 
-// All voting system components are expected to live on the graph, without being
-// actual GraphOwned objects. This class wraps them to allow this.
-class GraphOwnedWrapper : public GraphOwned {
- public:
-  GraphOwnedWrapper()
-      : inherit_client_priority_voter_(
-            dummy_vote_observer_.BuildVotingChannel()),
-        voter_id_(inherit_client_priority_voter_.voter_id()) {}
-
-  GraphOwnedWrapper(const GraphOwnedWrapper&) = delete;
-  GraphOwnedWrapper& operator=(const GraphOwnedWrapper&) = delete;
-
-  // GraphOwned:
-  void OnPassedToGraph(Graph* graph) override {
-    inherit_client_priority_voter_.InitializeOnGraph(graph);
-  }
-  void OnTakenFromGraph(Graph* graph) override {
-    inherit_client_priority_voter_.TearDownOnGraph(graph);
-  }
-
-  // Exposes the vote observer to validate expectations.
-  const DummyVoteObserver& observer() const { return dummy_vote_observer_; }
-
-  VoterId voter_id() { return voter_id_; }
-
- private:
-  DummyVoteObserver dummy_vote_observer_;
-
-  InheritClientPriorityVoter inherit_client_priority_voter_;
-
-  // The VoterId of |inherit_client_priority_voter_|.
-  VoterId voter_id_;
-};
-
-}  // namespace
-
 class InheritClientPriorityVoterTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
+  InheritClientPriorityVoterTest() = default;
+  ~InheritClientPriorityVoterTest() override = default;
+
+  InheritClientPriorityVoterTest(const InheritClientPriorityVoterTest&) =
+      delete;
+  InheritClientPriorityVoterTest& operator=(
+      const InheritClientPriorityVoterTest&) = delete;
+
   void SetUp() override {
     Super::SetUp();
+    inherit_client_priority_voter_.InitializeOnGraph(
+        graph(), observer_.BuildVotingChannel());
+  }
 
-    auto wrapper = std::make_unique<GraphOwnedWrapper>();
-    wrapper_ = wrapper.get();
-    graph()->PassToGraph(std::move(wrapper));
+  void TearDown() override {
+    inherit_client_priority_voter_.TearDownOnGraph(graph());
+    Super::TearDown();
   }
 
   // Exposes the DummyVoteObserver to validate expectations.
-  const DummyVoteObserver& observer() const { return wrapper_->observer(); }
+  const DummyVoteObserver& observer() const { return observer_; }
 
-  VoterId voter_id() { return wrapper_->voter_id(); }
+  VoterId voter_id() const { return inherit_client_priority_voter_.voter_id(); }
 
  private:
-  raw_ptr<GraphOwnedWrapper> wrapper_ = nullptr;
+  DummyVoteObserver observer_;
+  InheritClientPriorityVoter inherit_client_priority_voter_;
 };
+
+}  // namespace
 
 TEST_F(InheritClientPriorityVoterTest, OneWorker) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());

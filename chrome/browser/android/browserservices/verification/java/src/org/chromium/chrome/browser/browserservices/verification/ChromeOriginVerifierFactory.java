@@ -4,15 +4,17 @@
 
 package org.chromium.chrome.browser.browserservices.verification;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** A factory that creates instances of {@link ChromeOriginVerifier}. */
+@NullMarked
 public class ChromeOriginVerifierFactory {
-    private static ChromeOriginVerifier sInstanceForTests;
+    private static @Nullable ChromeOriginVerifier sInstanceForTests;
 
     public static void setInstanceForTesting(ChromeOriginVerifier verifier) {
         sInstanceForTests = verifier;

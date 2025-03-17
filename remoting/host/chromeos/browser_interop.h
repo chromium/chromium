@@ -9,6 +9,10 @@
 
 #include "base/memory/ref_counted.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace remoting {
 
 class ChromotingHostContext;
@@ -24,7 +28,10 @@ class BrowserInterop : public base::RefCounted<BrowserInterop> {
   BrowserInterop() = default;
 
   // Must be called on the main/UI sequence.
-  virtual std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext();
+  // |browser_context| is used to fetch certificates for URL requests. nullptr
+  // can be passed if no URL requests require providing a certificate.
+  virtual std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext(
+      content::BrowserContext* browser_context);
 
   // Can be called on any sequence.
   virtual std::unique_ptr<PolicyWatcher> CreatePolicyWatcher();

@@ -101,6 +101,7 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
             SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
           }
         }
+        orientation_ = static_cast<ImageOrientationEnum>(codec_->getOrigin());
         return;
       }
 
@@ -123,7 +124,11 @@ int SkiaImageDecoderBase::RepetitionCount() const {
   }
 
   DCHECK(!Failed());
+  repetition_count_ = RepetitionCountInternal();
+  return repetition_count_;
+}
 
+int SkiaImageDecoderBase::RepetitionCountInternal() const {
   // This value can arrive at any point in the image data stream.  Most GIFs
   // in the wild declare it near the beginning of the file, so it usually is
   // set by the time we've decoded the size, but (depending on the GIF and the
@@ -135,25 +140,31 @@ int SkiaImageDecoderBase::RepetitionCount() const {
 
   switch (repetition_count) {
     case 0: {
-      // SkCodec returns 0 for both still images and animated images which only
-      // play once.
-      if (IsAllDataReceived() && codec_->getFrameCount() == 1) {
-        repetition_count_ = kAnimationNone;
-        break;
+      // SkCodec returns 0 both for 1) still images and 2) animated images which
+      // only play once.  First try to disambiguate using by checking
+      // `isAnimated`.
+      switch (codec_->isAnimated()) {
+        case SkCodec::IsAnimated::kYes:
+          return kAnimationLoopOnce;
+        case SkCodec::IsAnimated::kNo:
+          return kAnimationNone;
+        case SkCodec::IsAnimated::kUnknown:
+          break;
       }
 
-      repetition_count_ = kAnimationLoopOnce;
-      break;
+      // Otherwise, fall back to frame-count-based heuristics.  This may end up
+      // incorrectly returning `kAnimationLoopOnce` for static/single-frame
+      // images that are only partially-received so far.
+      if (IsAllDataReceived() && codec_->getFrameCount() == 1) {
+        return kAnimationNone;
+      }
+      return kAnimationLoopOnce;
     }
     case SkCodec::kRepetitionCountInfinite:
-      repetition_count_ = kAnimationLoopInfinite;
-      break;
+      return kAnimationLoopInfinite;
     default:
-      repetition_count_ = repetition_count;
-      break;
+      return repetition_count;
   }
-
-  return repetition_count_;
 }
 
 bool SkiaImageDecoderBase::FrameIsReceivedAtIndex(wtf_size_t index) const {

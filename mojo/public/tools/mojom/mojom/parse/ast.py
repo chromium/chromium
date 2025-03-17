@@ -377,28 +377,37 @@ class Literal(NodeBase):
             self.value_type == other.value_type and \
             self.value == other.value
 
+
 class Method(Definition):
   """Represents a method definition."""
 
   def __init__(self, mojom_name, attribute_list, ordinal, parameter_list,
-               response_parameter_list, **kwargs):
+               response, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
     assert isinstance(parameter_list, ParameterList)
-    assert response_parameter_list is None or \
-           isinstance(response_parameter_list, ParameterList)
+    assert response is None or isinstance(response,
+                                          (ParameterList, ResultResponse))
     super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.ordinal = ordinal
     self.parameter_list = parameter_list
-    self.response_parameter_list = response_parameter_list
+    self.response_parameter_list = None
+    self.result_response = None
+
+    # Only one of response_parameter_list or result_response can be set.
+    if isinstance(response, ParameterList):
+      self.response_parameter_list = response
+    if isinstance(response, ResultResponse):
+      self.result_response = response
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.ordinal == other.ordinal and \
-           self.parameter_list == other.parameter_list and \
-           self.response_parameter_list == other.response_parameter_list
+    return (super().__eq__(other)
+            and self.attribute_list == other.attribute_list
+            and self.ordinal == other.ordinal
+            and self.parameter_list == other.parameter_list
+            and self.response_parameter_list == other.response_parameter_list
+            and self.result_response == other.result_response)
 
 
 # This needs to be declared after |Method|.
@@ -500,6 +509,24 @@ class ParameterList(NodeListBase):
   """Represents a list of (method request or response) parameters."""
 
   _list_item_type = Parameter
+
+
+class ResultResponse(NodeBase):
+  """Represents a result<T,E> response."""
+
+  def __init__(self, success_type, failure_type, **kwargs):
+    assert isinstance(success_type, Typename)
+    assert isinstance(failure_type, Typename)
+    super().__init__(**kwargs)
+    self.success_type = success_type
+    self.failure_type = failure_type
+
+  def __repr__(self):
+    return f'Result<{self.success_type}, {self.failure_type}>'
+
+  def __eq__(self, other):
+    return (super().__eq__(other) and self.success_type == self.success_type
+            and self.failure_type == self.failure_type)
 
 
 class Receiver(Identifier):

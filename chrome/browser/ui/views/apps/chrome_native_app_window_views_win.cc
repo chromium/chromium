@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_win.h"
 
+#include <windows.h>
+
 #include "apps/ui/views/app_window_frame_view.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"

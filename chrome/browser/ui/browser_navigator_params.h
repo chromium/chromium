@@ -238,8 +238,17 @@ struct NavigateParams {
   // `disposition` should be NEW_POPUP.
   bool is_tab_modal_popup = false;
 
-  // If false then the navigation was not initiated by a user gesture.
+  // If false then the navigation was not initiated by a user gesture. This
+  // variable will be set to true for popups to get windows focus even if
+  // the navigation was not triggered by user gesture.
   bool user_gesture = true;
+
+  // Whether the navigation was initiated by a user gesture. Unlike
+  // `user_gesture`, this value will not change during the course of the
+  // navigation.
+  // TODO(https://crbug.com/394614633): remove this once the user gesture hack
+  // is fixed.
+  bool original_user_gesture = true;
 
   // What to do with the path component of the URL for singleton navigations.
   enum PathBehavior {

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//device/vr/buildflags/buildflags.gni")
+
 static_library("embedder_support") {
   sources = [
     "pref_names.h",
@@ -10,13 +12,44 @@ static_library("embedder_support") {
   ]
 }
 
-# Target for general utilities that are only used in the browser process.
-static_library("browser_util") {
+static_library("content_settings") {
   sources = [
     "content_settings_utils.cc",
     "content_settings_utils.h",
+  ]
+
+  deps = [
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//content/public/browser",
+    "//net",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//url",
+  ]
+}
+
+static_library("permissions") {
+  sources = [
     "permission_context_utils.cc",
     "permission_context_utils.h",
+  ]
+
+  deps = [
+    "//components/background_sync",
+    "//components/permissions",
+    "//device/vr/buildflags",
+    "//services/device/public/cpp:device_features",
+    "//services/device/public/cpp/geolocation:buildflags",
+  ]
+
+  if (enable_vr) {
+    deps += [ "//device/vr/public/cpp:features" ]
+  }
+}
+
+static_library("user_agent") {
+  sources = [
     "user_agent_utils.cc",
     "user_agent_utils.h",
   ]
@@ -24,17 +57,13 @@ static_library("browser_util") {
   deps = [
     ":embedder_support",
     "//build:branding_buildflags",
-    "//components/background_sync",
-    "//components/content_settings/browser",
-    "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
-    "//components/permissions",
+    "//build/util:chromium_git_revision",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/version_info",
-    "//content/public/browser",
-    "//services/device/public/cpp:device_features",
-    "//services/device/public/cpp/geolocation:buildflags",
+    "//net",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
   ]
 }
 
@@ -44,14 +73,11 @@ source_set("unit_tests") {
     "origin_trials/component_updater_utils_unittest.cc",
     "origin_trials/origin_trial_policy_impl_unittest.cc",
     "origin_trials/origin_trials_settings_storage_unittest.cc",
+    "user_agent_utils_unittest.cc",
   ]
 
-  if (!is_ios) {
-    sources += [ "user_agent_utils_unittest.cc" ]
-  }
-
   deps = [
-    ":browser_util",
+    ":user_agent",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",

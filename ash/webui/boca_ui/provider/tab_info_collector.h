@@ -17,31 +17,11 @@ namespace mojom = ash::boca::mojom;
 using GetWindowsTabsListCallback =
     base::OnceCallback<void(std::vector<mojom::WindowPtr>)>;
 
-namespace ui {
-class ImageModel;
-}
-
 namespace ash::boca {
 class TabInfoCollector {
  public:
-  class ImageGenerator {
-   public:
-    ImageGenerator();
-    explicit ImageGenerator(content::WebUI* web_ui);
-    ImageGenerator(const ImageGenerator&) = delete;
-    ImageGenerator& operator=(const ImageGenerator) = delete;
-    virtual ~ImageGenerator();
-
-    virtual std::string StringifyImage(ui::ImageModel image);
-
-   private:
-    raw_ptr<content::WebUI> web_ui_;
-  };
-
   TabInfoCollector(content::WebUI* web_ui, bool is_producer);
-  TabInfoCollector(
-      std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator,
-      bool is_producer);
+  explicit TabInfoCollector(bool is_producer);
   TabInfoCollector(const TabInfoCollector&) = delete;
   TabInfoCollector& operator=(const TabInfoCollector&) = delete;
   ~TabInfoCollector();
@@ -64,7 +44,6 @@ class TabInfoCollector {
       std::vector<std::vector<ash::TabInfo>> windows);
   const bool is_producer_;
   const raw_ptr<content::WebUI> web_ui_;
-  std::unique_ptr<ImageGenerator> image_generator_;
 };
 
 }  // namespace ash::boca

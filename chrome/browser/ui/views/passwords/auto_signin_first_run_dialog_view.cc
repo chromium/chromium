@@ -83,7 +83,7 @@ void AutoSigninFirstRunDialogView::InitWindow() {
       views::style::STYLE_SECONDARY);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(label.release());
+  AddChildViewRaw(label.release());
 }
 
 BEGIN_METADATA(AutoSigninFirstRunDialogView)

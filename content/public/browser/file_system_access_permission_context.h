@@ -61,7 +61,7 @@ struct PathInfo {
     CHECK(!this->path.empty(), base::NotFatalUntil::M134);
     CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
   }
-  explicit PathInfo(base::FilePath::StringPieceType path)
+  explicit PathInfo(base::FilePath::StringViewType path)
       : PathInfo(base::FilePath(path)) {
     CHECK(!this->path.empty(), base::NotFatalUntil::M134);
     CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);

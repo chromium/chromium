@@ -8,12 +8,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.ui.signin.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /* Class containing IDs of resources for the history sync opt-in view. */
 public final class HistorySyncConfig implements Parcelable {
@@ -49,18 +51,30 @@ public final class HistorySyncConfig implements Parcelable {
             };
 
     public HistorySyncConfig() {
-        this(
-                /* titleId= */ R.string.history_sync_title,
-                /* subtitleId= */ R.string.history_sync_subtitle);
+        this(/* titleId= */ 0, /* subtitleId= */ 0);
     }
 
     public HistorySyncConfig(@StringRes int titleId, @StringRes int subtitleId) {
-        this.titleId = titleId;
-        this.subtitleId = subtitleId;
+        this.titleId = titleId == 0 ? R.string.history_sync_title : titleId;
+        this.subtitleId = subtitleId == 0 ? R.string.history_sync_subtitle : subtitleId;
     }
 
     private HistorySyncConfig(Parcel in) {
         this(/* titleId= */ in.readInt(), /* subtitleId= */ in.readInt());
+    }
+
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (!(object instanceof HistorySyncConfig)) {
+            return false;
+        }
+        HistorySyncConfig other = (HistorySyncConfig) object;
+        return titleId == other.titleId && subtitleId == other.subtitleId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(titleId, subtitleId);
     }
 
     /** Implements {@link Parcelable} */

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -71,7 +72,7 @@ public class SigninTestRule extends AccountManagerTestRule {
     }
 
     /**
-     * Adds and signs in an account with the default name without sync consent.
+     * Adds and signs in an account with the default name.
      *
      * @deprecated Use the version with {@link AccountInfo}.
      */
@@ -84,11 +85,19 @@ public class SigninTestRule extends AccountManagerTestRule {
         return coreAccountInfo;
     }
 
-    /** Adds and signs in with the provided account without sync consent. */
+    /** Adds and signs in with the provided account. */
     public void addAccountThenSignin(AccountInfo accountInfo) {
         assert !mIsSignedIn : "An account is already signed in!";
         addAccount(accountInfo);
         SigninTestUtil.signin(accountInfo);
+        mIsSignedIn = true;
+    }
+
+    /** Adds and signs in with the provided account and opts into history sync. */
+    public void addAccountThenSigninAndEnableHistorySync(AccountInfo accountInfo) {
+        assert !mIsSignedIn : "An account is already signed in!";
+        addAccount(accountInfo);
+        SigninTestUtil.signinAndEnableHistorySync(accountInfo);
         mIsSignedIn = true;
     }
 
@@ -110,15 +119,6 @@ public class SigninTestRule extends AccountManagerTestRule {
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
         mIsSignedIn = true;
         return coreAccountInfo;
-    }
-
-    /** Adds and signs in an account with the specified name and enables sync. */
-    public void addAccountThenSigninAndEnableSync(AccountInfo accountInfo) {
-        assert !mIsSignedIn : "An account is already signed in!";
-        addAccount(accountInfo);
-        SigninTestUtil.signinAndEnableSync(
-                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
-        mIsSignedIn = true;
     }
 
     /** Waits for the account corresponding to coreAccountInfo to finish signin. */
@@ -150,9 +150,13 @@ public class SigninTestRule extends AccountManagerTestRule {
 
         addAccount(testChildAccount);
 
-        // The child will be force signed in (by SigninChecker).
+        // The account will be force signed in (by SigninChecker).
         // Wait for this to complete before enabling sync.
         waitForSignin(testChildAccount);
+
+        // Wait for child status properties to be populated through asynchronous callbacks triggered
+        // after sign-in completes.
+        waitForChildSettingPropagation(testChildAccount);
         return testChildAccount;
     }
 
@@ -219,5 +223,27 @@ public class SigninTestRule extends AccountManagerTestRule {
     /** Completes the device lock flow when on automotive devices. */
     public void completeDeviceLockIfOnAutomotive() {
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+    }
+
+    /** Waits for the account manager to set corresponding child properties. */
+    private void waitForChildSettingPropagation(AccountInfo accountInfo) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    // The child sign-in triggers two changes to preferences in native code used
+                    // to determine the child status to trigger Android UI changes.
+                    // Check that `IsSubjectToParentalControls` is updated to `Tribool.TRUE` as
+                    // expected for supervised accounts.
+                    Criteria.checkThat(
+                            IdentityServicesProvider.get()
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
+                                    .findExtendedAccountInfoByEmailAddress(accountInfo.getEmail())
+                                    .getAccountCapabilities()
+                                    .isSubjectToParentalControls(),
+                            is(Tribool.TRUE));
+                    // Check that the `kSupervisedUserId` preference is populated, which backs the
+                    // Java `Profile.isChild` implementation.
+                    Criteria.checkThat(
+                            ProfileManager.getLastUsedRegularProfile().isChild(), is(true));
+                });
     }
 }

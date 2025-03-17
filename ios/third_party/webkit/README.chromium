@@ -3,7 +3,7 @@ Short Name: webkit
 URL: git://git.webkit.org/WebKit.git
 Version: N/A
 Revision: DEPS
-License: BSD
+License: LGPL-2.0, BSD-2-Clause, LGPL-2.1, BSD-3-Clause
 License File: LICENSE
 Security Critical: no
 Shipped: no

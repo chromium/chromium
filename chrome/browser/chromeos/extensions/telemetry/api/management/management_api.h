@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/management/remote_telemetry_management_service_strategy.h"
 #include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
@@ -30,10 +29,6 @@ class ManagementApiFunctionBase
   ~ManagementApiFunctionBase() override;
 
   mojo::Remote<crosapi::mojom::TelemetryManagementService>& GetRemoteService();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool IsCrosApiAvailable() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Gets the parameters passed to the JavaScript call and tries to convert it
   // to the `Params` type. If the `Params` can't be created, this resolves the

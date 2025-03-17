@@ -542,7 +542,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     } else if (request->range_error_message) {
       ScriptState::Scope scope(script_state_);
       request->resolver->Reject(V8ThrowException::CreateRangeError(
-          script_state_->GetIsolate(), *request->range_error_message));
+          script_state_->GetIsolate(), request->range_error_message));
     } else {
       request->resolver->Resolve(request->result);
     }

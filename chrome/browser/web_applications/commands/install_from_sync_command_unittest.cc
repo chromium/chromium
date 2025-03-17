@@ -564,7 +564,7 @@ TEST_F(InstallFromSyncTest, Shutdown) {
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar().IsInRegistrar(app_id));
 }
 
 }  // namespace

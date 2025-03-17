@@ -110,8 +110,6 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, NonMatchingUrlsDoesntLaunchStoreKit) {
   EXPECT_FALSE(VerifyStoreKitLaunched(
       @"http://itunes.apple.com/us/movie/testmovie/id12345",
       /*main_frame=*/true));
-  EXPECT_FALSE(VerifyStoreKitLaunched(
-      @"http://itunes.apple.com/app-bundle/id12345", /*main_frame=*/true));
 }
 
 // Verifies that navigating to URLs for a product hosted on iTunes AppStore
@@ -160,5 +158,10 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, MatchingUrlsLaunchesStoreKit) {
       @"http://apps.apple.com/de/app/bar/id123?at=2&uo=4#foo",
       /*main_frame=*/true));
   expected_params = @{product_id : @"123", af_tkn : @"2", @"uo" : @"4"};
+  EXPECT_NSEQ(expected_params, fake_handler_.productParams);
+
+  EXPECT_TRUE(VerifyStoreKitLaunched(
+      @"http://apps.apple.com/app-bundle/bar/id243?at=12345", /*main_frame=*/true));
+  expected_params = @{product_id : @"243", af_tkn : @"12345"};
   EXPECT_NSEQ(expected_params, fake_handler_.productParams);
 }

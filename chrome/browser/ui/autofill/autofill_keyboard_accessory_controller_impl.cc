@@ -19,7 +19,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
@@ -112,8 +111,7 @@ AutofillSuggestionController::GetOrCreate(
     previous->Hide(SuggestionHidingReason::kViewDestroyed);
   }
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
-      delegate, web_contents, std::move(controller_common),
-      base::BindRepeating(&local_password_migration::ShowWarning));
+      delegate, web_contents, std::move(controller_common));
   return controller->GetWeakPtr();
 }
 
@@ -121,27 +119,16 @@ AutofillKeyboardAccessoryControllerImpl::
     AutofillKeyboardAccessoryControllerImpl(
         base::WeakPtr<AutofillSuggestionDelegate> delegate,
         content::WebContents* web_contents,
-        PopupControllerCommon controller_common,
-        ShowPasswordMigrationWarningCallback
-            show_pwd_migration_warning_callback)
+        PopupControllerCommon controller_common)
     : delegate_(delegate),
       web_contents_(web_contents->GetWeakPtr()),
-      controller_common_(std::move(controller_common)),
-      show_pwd_migration_warning_callback_(
-          std::move(show_pwd_migration_warning_callback)) {}
+      controller_common_(std::move(controller_common)) {}
 
 AutofillKeyboardAccessoryControllerImpl::
     ~AutofillKeyboardAccessoryControllerImpl() = default;
 
 void AutofillKeyboardAccessoryControllerImpl::Hide(
     SuggestionHidingReason reason) {
-  // If the reason for hiding is only stale data or a user interacting with
-  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
-                          reason == SuggestionHidingReason::kFocusChanged ||
-                          reason == SuggestionHidingReason::kEndEditing)) {
-    return;  // Don't close the popup while waiting for an update.
-  }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
       (reason == SuggestionHidingReason::kWidgetChanged ||
@@ -312,15 +299,6 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
           password_manager_android_util::PasswordAccessLossWarningTriggers::
               kKeyboardAcessoryBar);
     }
-  }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    show_pwd_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
-            kKeyboardAcessoryBar);
   }
 }
 
@@ -524,10 +502,6 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   }
 }
 
-void AutofillKeyboardAccessoryControllerImpl::PinView() {
-  is_view_pinned_ = true;
-}
-
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
   return !suggestions_.empty() &&
          IsStandaloneSuggestionType(suggestions_[0].type);
@@ -616,8 +590,8 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
 void AutofillKeyboardAccessoryControllerImpl::
     OrderSuggestionsAndCreateLabels() {
   // If there is an Undo suggestion, move it to the front.
-  if (auto it = base::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
-                                   &Suggestion::type);
+  if (auto it = std::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
+                                  &Suggestion::type);
       it != suggestions_.end()) {
     std::rotate(suggestions_.begin(), it, it + 1);
   }

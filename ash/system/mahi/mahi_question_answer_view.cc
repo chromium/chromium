@@ -120,7 +120,7 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
     bool is_question) {
   return views::Builder<views::FlexLayoutView>()
       .SetInteriorMargin(kTextBubbleInteriorMargin)
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           is_question ? cros_tokens::kCrosSysSystemPrimaryContainer
                       : cros_tokens::kCrosSysSystemOnBase,
           gfx::RoundedCornersF(kTextBubbleCornerRadius)))
@@ -158,7 +158,7 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
               .SetTooltipText(text)
               .SetHorizontalAlignment(is_question ? gfx::ALIGN_RIGHT
                                                   : gfx::ALIGN_LEFT)
-              .SetEnabledColorId(
+              .SetEnabledColor(
                   is_question ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                               : cros_tokens::kCrosSysOnSurface)
               .SetAutoColorReadabilityEnabled(false)
@@ -327,6 +327,7 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
                   IDS_ASH_MAHI_LOADING_ACCESSIBLE_NAME))
               .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
                   IDR_MAHI_LOADING_SUMMARY_ANIMATION))
+              .SetHorizontalAlignment(views::ImageViewBase::Alignment::kLeading)
               .AfterBuild(base::BindOnce([](views::AnimatedImageView* self) {
                 self->Play(mahi_animation_utils::GetLottiePlaybackConfig(
                     *self->animated_image()->skottie(),

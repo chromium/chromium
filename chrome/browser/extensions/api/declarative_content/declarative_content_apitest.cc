@@ -5,6 +5,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -34,6 +35,7 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
@@ -258,7 +260,7 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
             ExecuteScriptInBackgroundPage(
                 extension->id(),
                 base::StringPrintf(kSetIsBookmarkedRule,
-                                   match_is_bookmarked ? "true" : "false")));
+                                   base::ToString(match_is_bookmarked))));
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on add/remove bookmark.
@@ -1162,7 +1164,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
       extensions::RulesRegistryService::Get(browser()->profile());
   scoped_refptr<RulesRegistry> rules_registry =
       rules_registry_service->GetRulesRegistry(
-          RulesRegistryService::kDefaultRulesRegistryID,
+          rules_registry_ids::kDefaultRulesRegistryID,
           "declarativeContent.onPageChanged");
   DCHECK(rules_registry);
 

@@ -5,6 +5,7 @@
 #include "services/network/network_service.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <utility>
@@ -12,10 +13,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -36,8 +39,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_registry.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -98,9 +102,7 @@
 #include "third_party/boringssl/src/include/openssl/cpu.h"
 #endif
 
-#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 #include "components/os_crypt/sync/key_storage_config_linux.h"
 #endif
 
@@ -224,9 +226,26 @@ std::unique_ptr<net::HttpAuthMechanism> CreateAuthSystem(
 // message handling inside the Browser process is sufficient).
 void HandleBadMessage(const std::string& error) {
   LOG(WARNING) << "Mojo error in NetworkService: " << error;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kIgnoreBadMessageForTesting)) {
+    return;
+  }
+  // Don't expect bad message in normal testing and usage, but it could happen
+  // if a compromised renderer process sends a bad message. Therefore, create
+  // dump in official build or ipc fuzzer build where it is expected to received
+  // bad message, and crash otherwise so that it is more visible when unexpected
+  // bad message is encountered in tests.
+  // Also create dump instead of crash for builds without DCHECK on as some
+  // fuzzing tests are done using builds without ENABLE_IPC_FUZZER, but those
+  // builds are always with DCHECK disabled. As DCHECK is on for most builds,
+  // we still have enough coverage for crashing upon bad message behavior.
+#if defined(OFFICIAL_BUILD) || defined(ENABLE_IPC_FUZZER) || !DCHECK_IS_ON()
   mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
   base::debug::DumpWithoutCrashing();
   network::debug::ClearDeserializationCrashKeyString();
+#else
+  LOG(FATAL) << error;
+#endif
 }
 
 // Runs `results_cb` on `sequenced_task_runner` with an empty result and
@@ -447,9 +466,11 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   dns_config_change_manager_ = std::make_unique<DnsConfigChangeManager>();
 
+  net::HostResolver::ManagerOptions manager_options;
+  manager_options.enable_happy_eyeballs_v3 = params->happy_eyeballs_v3_enabled;
   host_resolver_manager_ = std::make_unique<net::HostResolverManager>(
-      net::HostResolver::ManagerOptions(),
-      net::NetworkChangeNotifier::GetSystemDnsConfigNotifier(), net_log_);
+      manager_options, net::NetworkChangeNotifier::GetSystemDnsConfigNotifier(),
+      net_log_);
   host_resolver_factory_ = std::make_unique<net::HostResolver::Factory>();
 
   http_auth_cache_copier_ = std::make_unique<HttpAuthCacheCopier>();
@@ -471,6 +492,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   masked_domain_list_manager_ =
       std::make_unique<ip_protection::MaskedDomainListManager>(
           params->ip_protection_proxy_bypass_policy);
+
+  probabilistic_reveal_token_registry_ =
+      std::make_unique<ip_protection::ProbabilisticRevealTokenRegistry>();
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;
@@ -846,6 +870,9 @@ void NetworkService::ParseHeaders(
     const GURL& url,
     const scoped_refptr<net::HttpResponseHeaders>& headers,
     ParseHeadersCallback callback) {
+  base::ScopedUmaHistogramTimer parse_headers_time(
+      "NetworkService.ParsedHeaders.IPCHandleTime",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   std::move(callback).Run(PopulateParsedHeaders(headers.get(), url));
 }
 
@@ -924,25 +951,29 @@ void NetworkService::UpdateMaskedDomainList(
   const base::Time start_time = base::Time::Now();
   auto mdl = masked_domain_list.As<masked_domain_list::MaskedDomainList>();
   if (mdl.has_value()) {
-    UMA_HISTOGRAM_MEMORY_KB("NetworkService.MaskedDomainList.SizeInKB",
-                            mdl->ByteSizeLong() / 1024);
-
+    ip_protection::Telemetry().MdlSize(mdl->ByteSizeLong());
     masked_domain_list_manager_->UpdateMaskedDomainList(mdl.value(),
                                                         exclusion_list);
-
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.ProxyAllowList."
-        "UpdateSuccess",
-        true);
-  } else {
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.ProxyAllowList.UpdateSuccess", false);
-    LOG(ERROR) << "Unable to parse MDL in NetworkService";
   }
 
   base::UmaHistogramTimes(
       "NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime",
       base::Time::Now() - start_time);
+}
+
+void NetworkService::UpdateMaskedDomainListFlatbuffer(
+    base::File default_file,
+    uint64_t default_file_size,
+    base::File regular_browsing_file,
+    uint64_t regular_browsing_file_size) {
+  masked_domain_list_manager_->UpdateMaskedDomainListFlatbuffer(
+      std::move(default_file), default_file_size,
+      std::move(regular_browsing_file), regular_browsing_file_size);
+}
+
+void NetworkService::UpdateProbabilisticRevealTokenRegistry(
+    base::Value::Dict registry) {
+  probabilistic_reveal_token_registry_->UpdateRegistry(std::move(registry));
 }
 
 #if BUILDFLAG(IS_ANDROID)

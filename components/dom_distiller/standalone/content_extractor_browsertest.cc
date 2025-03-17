@@ -175,7 +175,7 @@ bool WriteProtobufWithSize(
   google::protobuf::io::CodedOutputStream coded_output(output_stream);
 
   // Write the size.
-  const int size = message.ByteSize();
+  const int size = message.ByteSizeLong();
   coded_output.WriteLittleEndian32(size);
   message.SerializeWithCachedSizes(&coded_output);
   return !coded_output.HadError();

@@ -71,7 +71,12 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
       return base::FeatureList::IsEnabled(
                  features::kDesktopPWAsElidedExtensionsMenu) &&
              browser()->window()->GetExtensionsContainer() &&
-             browser()->window()->GetExtensionsContainer()->HasAnyExtensions();
+             browser()
+                 ->window()
+                 ->GetExtensionsContainer()
+                 ->HasAnyExtensions() &&
+             // Extensions are not supported inside Isolated Web Apps.
+             !browser()->app_controller()->IsIsolatedWebApp();
     case IDC_OPEN_IN_CHROME: {
       return ShouldAllowOpenInChrome(browser());
     }

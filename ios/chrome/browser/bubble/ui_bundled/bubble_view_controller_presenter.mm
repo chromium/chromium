@@ -102,7 +102,6 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 - (instancetype)initWithText:(NSString*)text
                        title:(NSString*)titleString
-                       image:(UIImage*)image
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
@@ -113,7 +112,6 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
     _bubbleViewController =
         [[BubbleViewController alloc] initWithText:text
                                              title:titleString
-                                             image:image
                                     arrowDirection:arrowDirection
                                          alignment:alignment
                                     bubbleViewType:type
@@ -140,7 +138,6 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                                               dismissalCallback {
   return [self initWithText:text
                       title:nil
-                      image:nil
              arrowDirection:arrowDirection
                   alignment:alignment
                  bubbleType:BubbleViewTypeDefault
@@ -375,35 +372,46 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 // Adds gesture recognizers to parent view.
 - (void)addGestureRecognizersToParentView:(UIView*)parentView {
-  self.outsideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(tapOutsideBubbleRecognized:)];
-  self.outsideBubbleTapRecognizer.delegate = self;
-  self.outsideBubbleTapRecognizer.cancelsTouchesInView = NO;
+  if (!IsIPHGestureRecognitionOutsideTapAblationEnabled()) {
+    self.outsideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapOutsideBubbleRecognized:)];
+    self.outsideBubbleTapRecognizer.delegate = self;
+    self.outsideBubbleTapRecognizer.cancelsTouchesInView = NO;
 
-  self.outsideBubblePanRecognizer = [[UIPanGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(tapOutsideBubbleRecognized:)];
-  self.outsideBubblePanRecognizer.delegate = self;
-  self.outsideBubblePanRecognizer.cancelsTouchesInView = NO;
+    [parentView addGestureRecognizer:self.outsideBubbleTapRecognizer];
+  }
 
-  self.insideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(tapInsideBubbleRecognized:)];
-  self.insideBubbleTapRecognizer.delegate = self;
-  self.insideBubbleTapRecognizer.cancelsTouchesInView = NO;
+  if (!IsIPHGestureRecognitionPanAblationEnabled()) {
+    self.outsideBubblePanRecognizer = [[UIPanGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapOutsideBubbleRecognized:)];
+    self.outsideBubblePanRecognizer.delegate = self;
+    self.outsideBubblePanRecognizer.cancelsTouchesInView = NO;
 
-  self.swipeRecognizer = [[UISwipeGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(tapOutsideBubbleRecognized:)];
-  self.swipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
-  self.swipeRecognizer.delegate = self;
+    [parentView addGestureRecognizer:self.outsideBubblePanRecognizer];
+  }
 
-  [self.bubbleViewController.view
-      addGestureRecognizer:self.insideBubbleTapRecognizer];
-  [parentView addGestureRecognizer:self.outsideBubbleTapRecognizer];
-  [parentView addGestureRecognizer:self.outsideBubblePanRecognizer];
-  [parentView addGestureRecognizer:self.swipeRecognizer];
+  if (!IsIPHGestureRecognitionInsideTapAblationEnabled()) {
+    self.insideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapInsideBubbleRecognized:)];
+    self.insideBubbleTapRecognizer.delegate = self;
+    self.insideBubbleTapRecognizer.cancelsTouchesInView = NO;
+
+    [self.bubbleViewController.view
+        addGestureRecognizer:self.insideBubbleTapRecognizer];
+  }
+
+  if (!IsIPHGestureRecognitionSwipeAblationEnabled()) {
+    self.swipeRecognizer = [[UISwipeGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapOutsideBubbleRecognized:)];
+    self.swipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+    self.swipeRecognizer.delegate = self;
+
+    [parentView addGestureRecognizer:self.swipeRecognizer];
+  }
 }
 
 // Invoked by tapping inside the bubble. Dismisses the bubble.
@@ -470,9 +478,6 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   CGSize bubbleSize =
       [self.bubbleViewController.view sizeThatFits:maxBubbleSize];
 
-  if ([self bubbleIsFullWidth]) {
-    bubbleSize.width = maxBubbleSize.width;
-  }
   // If `bubbleSize` does not fit in `maxBubbleSize`, the bubble will be
   // partially off screen and not look good. This is most likely a result of
   // an incorrect value for `alignment` (such as a trailing aligned bubble
@@ -494,17 +499,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 // Whether the bubble's arrow is floating.
 - (BOOL)arrowIsFloating {
-  return self.bubbleType == BubbleViewTypeWithClose ||
-         ((self.bubbleType == BubbleViewTypeRichWithSnooze ||
-           self.bubbleType == BubbleViewTypeRich) &&
-          !IsRichBubbleWithoutImageEnabled());
-}
-
-// Whether the bubble should be full width.
-- (BOOL)bubbleIsFullWidth {
-  return (self.bubbleType == BubbleViewTypeRichWithSnooze ||
-          self.bubbleType == BubbleViewTypeRich) &&
-         !IsRichBubbleWithoutImageEnabled();
+  return self.bubbleType == BubbleViewTypeWithClose;
 }
 
 // Whether the bubble should stick or auto-dismiss when the user uses a screen

@@ -41,7 +41,7 @@ namespace blink {
 
 class HRTFKernel;
 
-class HRTFDatabase {
+class HRTFDatabase final {
   USING_FAST_MALLOC(HRTFDatabase);
 
  public:

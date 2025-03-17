@@ -12,9 +12,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
-namespace ash {
-namespace cert_provisioning {
+namespace ash::cert_provisioning {
 
 #define CP_PREFIX "ChromeOS.CertProvisioning"
 
@@ -120,5 +120,15 @@ void RecordDataSignTime(ProtocolVersion protocol_version,
       sample, base::Milliseconds(1), base::Minutes(2), 25);
 }
 
-}  // namespace cert_provisioning
-}  // namespace ash
+void RecordDmStatusForDynamic(policy::DeviceManagementStatus status) {
+  base::UmaHistogramSparse(kDmStatusHistogramName, status);
+}
+
+void RecordCertProvBackendErrorForDynamic(
+    enterprise_management::CertProvBackendError::Error error) {
+  base::UmaHistogramEnumeration(
+      kCertProvBackendErrorHistogramName, error,
+      enterprise_management::CertProvBackendError::Error_MAX);
+}
+
+}  // namespace ash::cert_provisioning

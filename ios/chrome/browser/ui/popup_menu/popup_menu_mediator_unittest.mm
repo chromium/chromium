@@ -89,7 +89,7 @@ const int kNumberOfWebStates = 3;
 }  // namespace
 
 @interface TestPopupMenuMediator
-    : PopupMenuMediator<CRWWebStateObserver, WebStateListObserving>
+    : PopupMenuMediator <CRWWebStateObserver, WebStateListObserving>
 @end
 
 @implementation TestPopupMenuMediator
@@ -196,9 +196,9 @@ class PopupMenuMediatorTest : public PlatformTest {
       BOOL is_incognito,
       BrowserPolicyConnectorIOS* browser_policy_connector) {
     mediator_ = [[PopupMenuMediator alloc]
-              initWithIsIncognito:is_incognito
-                 readingListModel:reading_list_model_
-           browserPolicyConnector:browser_policy_connector];
+           initWithIsIncognito:is_incognito
+              readingListModel:reading_list_model_
+        browserPolicyConnector:browser_policy_connector];
     return mediator_;
   }
 
@@ -256,14 +256,17 @@ class PopupMenuMediatorTest : public PlatformTest {
     mediator_.webStateList = browser_->GetWebStateList();
     SetUpActiveWebState();
     auto same_number_items = ^BOOL(id items) {
-      if (![items isKindOfClass:[NSArray class]])
+      if (![items isKindOfClass:[NSArray class]]) {
         return NO;
-      if ([items count] != number_items.count)
+      }
+      if ([items count] != number_items.count) {
         return NO;
+      }
       for (NSUInteger index = 0; index < number_items.count; index++) {
         NSArray* section = [items objectAtIndex:index];
-        if (section.count != number_items[index].unsignedIntegerValue)
+        if (section.count != number_items[index].unsignedIntegerValue) {
           return NO;
+        }
       }
       return YES;
     };
@@ -278,8 +281,9 @@ class PopupMenuMediatorTest : public PlatformTest {
                BOOL enabled) {
     for (NSArray* innerArray in consumer.popupMenuItems) {
       for (PopupMenuToolsItem* item in innerArray) {
-        if (item.accessibilityIdentifier == accessibility_identifier)
+        if (item.accessibilityIdentifier == accessibility_identifier) {
           return item.enabled == enabled;
+        }
       }
     }
     return NO;
@@ -288,8 +292,9 @@ class PopupMenuMediatorTest : public PlatformTest {
   bool HasEnterpriseInfoItem(FakePopupMenuConsumer* consumer) {
     for (NSArray* innerArray in consumer.popupMenuItems) {
       for (PopupMenuTextItem* item in innerArray) {
-        if (item.accessibilityIdentifier == kTextMenuEnterpriseInfo)
+        if (item.accessibilityIdentifier == kTextMenuEnterpriseInfo) {
           return YES;
+        }
       }
     }
     return NO;

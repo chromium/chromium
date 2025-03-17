@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -32,14 +33,14 @@ namespace {
 // This is provided in feature_util because for some reason features are prone
 // to mysterious crashes in named map lookups. For example see crbug.com/365192
 // and crbug.com/461915.
-#define CRASH_WITH_MINIDUMP(message)                                           \
-  {                                                                            \
-    std::string message_copy(message);                                         \
-    char minidump[BUFSIZ];                                                     \
-    base::debug::Alias(&minidump);                                             \
-    base::snprintf(minidump, std::size(minidump), "e::%s:%d:\"%s\"", __FILE__, \
-                   __LINE__, message_copy.c_str());                            \
-    LOG(FATAL) << message_copy;                                                \
+#define CRASH_WITH_MINIDUMP(message)                                  \
+  {                                                                   \
+    std::string message_copy(message);                                \
+    char minidump[BUFSIZ];                                            \
+    base::debug::Alias(&minidump);                                    \
+    base::SpanPrintf(minidump, "e::%s:%d:\"%s\"", __FILE__, __LINE__, \
+                     message_copy.c_str());                           \
+    LOG(FATAL) << message_copy;                                       \
   }
 
 class FeatureProviderStatic {

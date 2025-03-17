@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "net/http/http_response_headers.h"
@@ -19,6 +18,9 @@
 #include "url/origin.h"
 
 namespace content {
+
+class FrameTreeNode;
+class RenderFrameHostImpl;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -39,9 +41,10 @@ enum class AdAuctionHeadersIsEligibleOutcomeForMetrics {
 // signals, and additional bids from their associated response headers.
 extern const char kAdAuctionRequestHeaderKey[];
 
-// Response header keys associated with auction result, signals, and
+// Response header keys associated with auction result, nonce, signals, and
 // additional bids, respectively.
 extern const char CONTENT_EXPORT kAdAuctionResultResponseHeaderKey[];
+extern const char CONTENT_EXPORT kAdAuctionResultNonceResponseHeaderKey[];
 extern const char CONTENT_EXPORT kAdAuctionSignalsResponseHeaderKey[];
 extern const char CONTENT_EXPORT kAdAuctionAdditionalBidResponseHeaderKey[];
 
@@ -71,6 +74,15 @@ CONTENT_EXPORT bool IsAdAuctionHeadersEligibleForNavigation(
 // unsafe language, from an unsandboxed process, hence the fuzz test coverage.
 CONTENT_EXPORT std::vector<std::string> ParseAdAuctionResultResponseHeader(
     const std::string& ad_auction_results);
+
+// NOTE: Exposed only for fuzz testing. This is used by
+// `ProcessAdAuctionResponseHeaders`, declared below.
+//
+// Splits and parses the `Ad-Auction-Result-Nonce` response header,
+// and returns the results. This function processes untrusted content, in an
+// unsafe language, from an unsandboxed process, hence the fuzz test coverage.
+CONTENT_EXPORT std::vector<std::string> ParseAdAuctionResultNonceResponseHeader(
+    const std::string& ad_auction_result_nonces);
 
 // NOTE: Exposed only for fuzz testing. This is used by
 // `ProcessAdAuctionResponseHeaders`, declared below.

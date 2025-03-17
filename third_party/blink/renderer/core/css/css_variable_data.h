@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 
@@ -32,7 +27,8 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
         is_8bit_(true),
         has_font_units_(false),
         has_root_font_units_(false),
-        has_line_height_units_(false) {}
+        has_line_height_units_(false),
+        has_dashed_functions_(false) {}
 
   using PassKey = base::PassKey<CSSVariableData>;
   CSSVariableData(PassKey,
@@ -42,7 +38,8 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
                   bool needs_variable_resolution,
                   bool has_font_units,
                   bool has_root_font_units,
-                  bool has_line_height_units);
+                  bool has_line_height_units,
+                  bool has_dashed_functions);
 
   // This is the fastest (non-trivial) constructor if you've got the has_* data
   // already, e.g. because you extracted them while tokenizing (see
@@ -54,7 +51,8 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
                                  bool needs_variable_resolution,
                                  bool has_font_units,
                                  bool has_root_font_units,
-                                 bool has_line_height_units) {
+                                 bool has_line_height_units,
+                                 bool has_dashed_functions) {
     if (original_text.length() > kMaxVariableBytes) {
       // This should have been blocked off during variable substitution.
       NOTREACHED();
@@ -65,7 +63,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
                                                : 2 * original_text.length()),
         PassKey(), original_text, is_animation_tainted, is_attr_tainted,
         needs_variable_resolution, has_font_units, has_root_font_units,
-        has_line_height_units);
+        has_line_height_units, has_dashed_functions);
   }
 
   // This tokenizes the string to determine the has_* data.
@@ -113,6 +111,9 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   // to line-height property.
   bool HasLineHeightUnits() const { return has_line_height_units_; }
 
+  // https://drafts.csswg.org/css-mixins-1/#typedef-dashed-function
+  bool HasDashedFunctions() const { return has_dashed_functions_; }
+
   const CSSValue* ParseForSyntax(const CSSSyntaxDefinition&,
                                  SecureContextMode) const;
 
@@ -125,7 +126,8 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   static void ExtractFeatures(const CSSParserToken& token,
                               bool& has_font_units,
                               bool& has_root_font_units,
-                              bool& has_line_height_units);
+                              bool& has_line_height_units,
+                              bool& has_dashed_functions);
 
   // The maximum number of bytes for a CSS variable (including text
   // that comes from var() substitution). This matches Firefox.
@@ -141,7 +143,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   // https://randomascii.wordpress.com/2010/06/06/bit-field-packing-with-visual-c/
 
   // Enough for storing up to 2MB (and then some), cf. kMaxSubstitutionBytes.
-  // The remaining 3 bits are kept in reserve for future use.
+  // The remaining 2 bits are kept in reserve for future use.
   const unsigned length_ : 22;
   const unsigned is_animation_tainted_ : 1;       // bool.
   const unsigned is_attr_tainted_ : 1;            // bool.
@@ -150,7 +152,8 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   unsigned has_font_units_ : 1;                   // bool.
   unsigned has_root_font_units_ : 1;              // bool.
   unsigned has_line_height_units_ : 1;            // bool.
-  unsigned /* unused_ */ : 3;
+  unsigned has_dashed_functions_ : 1;             // bool.
+  unsigned /* unused_ */ : 2;
 
   // The actual character data is stored after this.
 };

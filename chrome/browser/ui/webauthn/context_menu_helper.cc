@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
 
-#include "base/feature_list.h"
+#include <cstdint>
+
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/features.h"
 
 namespace webauthn {
 

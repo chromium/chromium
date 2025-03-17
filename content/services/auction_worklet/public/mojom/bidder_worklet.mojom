@@ -8,6 +8,7 @@ import "content/services/auction_worklet/public/mojom/private_aggregation_reques
 import "content/services/auction_worklet/public/mojom/real_time_reporting.mojom";
 import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
 import "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -182,6 +183,21 @@ struct BidderTimingMetrics {
   mojo_base.mojom.TimeDelta script_latency;
 
   bool script_timed_out;
+};
+
+// Represents data that needs to be passed to the browser process
+// to create a request for the Private Model Training API.
+struct PrivateModelTrainingRequestData {
+  // The raw data that will need to be passed to the browser.
+  // Will never have a size greater than the `payload_length`.
+  mojo_base.mojom.BigBuffer payload;
+  // The length specified within `queueReportAggregateWin()` as
+  // part of the `modelingSignalsConfig`, which may differ from the actual
+  // length of `payload` which was created within `reportAggregateWin()`.
+  // This is capped at 10000.
+  uint32 payload_length;
+  url.mojom.Url aggregation_coordinator_origin;
+  url.mojom.Url destination;
 };
 
 // Single use client for each GenerateBid() call. Allows deferring generating
@@ -428,6 +444,9 @@ interface BidderWorklet {
   //  `browser_signal_recency` The duration of time from when this device
   //  joined this interest group until now, rounded to the nearest 100ms.
   //
+  //  `browser_signal_for_debugging_only_sampling` Whether the browser has fDO
+  //  sampling enabled.
+  //
   // `bidding_browser_signals` See BiddingBrowserSignals.
   //
   // `auction_start_time` The time the auction started, used to ensure the
@@ -463,6 +482,7 @@ interface BidderWorklet {
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       mojo_base.mojom.TimeDelta browser_signal_recency,
+      bool browser_signal_for_debugging_only_sampling,
       blink.mojom.BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
       blink.mojom.AdSize? requested_ad_size,
@@ -621,6 +641,9 @@ interface BidderWorklet {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
+  // `pmt_request_data` The data needed to build a request for the
+  // Private Model Training API.
+  //
   // `reporting_latency` How long it took to run the JavaScript for
   // `reportWin()` (including the top-level).
   //
@@ -664,6 +687,7 @@ interface BidderWorklet {
           map<string, url.mojom.Url> ad_beacon_map,
           map<string, string> ad_macro_map,
           array<PrivateAggregationRequest> pa_requests,
+          PrivateModelTrainingRequestData? pmt_request_data,
           BidderTimingMetrics timing_metrics,
           array<string> errors);
 

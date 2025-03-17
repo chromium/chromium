@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/frame/screen.h"
 
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -162,7 +162,7 @@ bool Screen::isExtended() const {
     return false;
   auto* context = GetExecutionContext();
   if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWindowManagement)) {
+          network::mojom::PermissionsPolicyFeature::kWindowManagement)) {
     return false;
   }
 

@@ -59,6 +59,10 @@ class WebClient {
   // browser startup code.
   virtual std::unique_ptr<WebMainParts> CreateWebMainParts();
 
+  // Allows the embedder to initialize the field trial and features list
+  // early.
+  virtual void InitializeFieldTrialAndFeatureList() {}
+
   // Gives the embedder a chance to perform tasks before a web view is created.
   virtual void PreWebViewCreation() const {}
 

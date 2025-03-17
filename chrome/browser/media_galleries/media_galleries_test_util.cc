@@ -18,7 +18,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -80,8 +79,7 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
 
   extension_prefs->OnExtensionInstalled(
       extension.get(),
-      extensions::Extension::ENABLED,
-      syncer::StringOrdinal::CreateInitialOrdinal(),
+      /*disable_reasons=*/{}, syncer::StringOrdinal::CreateInitialOrdinal(),
       std::string());
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
@@ -147,14 +145,14 @@ base::FilePath EnsureMediaDirectoriesExists::GetFakeLocalAppDataPath() const {
 #endif  // BUILDFLAG(IS_WIN)
 
 void EnsureMediaDirectoriesExists::Init() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return;
 #else
 
   ASSERT_TRUE(fake_dir_.CreateUniqueTempDir());
 
   ChangeMediaPathOverrides();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 }
 
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -33,38 +33,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.DocumentLoad.Activation.CPUDuration"
-    units="microseconds" expires_after="M77">
-  <owner>pkalinnikov@chromium.org</owner>
-  <summary>
-    Records how much thread CPU time it takes to decide whether subresource
-    filtering should be activated for a main frame or subframe.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceFilter.DocumentLoad.Activation.WallDuration"
-    units="microseconds" expires_after="M77">
-  <owner>pkalinnikov@chromium.org</owner>
-  <summary>
-    Records how long it takes to decide whether subresource filtering should be
-    activated for a main frame or subframe.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.DocumentLoad.RulesetIsAvailable"
-    enum="BooleanAvailable" expires_after="2025-01-26">
+    enum="BooleanAvailable" expires_after="2026-01-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -120,44 +90,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2"
-    enum="Boolean" expires_after="2023-08-14">
-  <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For every navigation observed by the subresource filter that passes through
-    ReadyToCommitNavigation, whether the navigation results in a commit.
-    Recorded when the navigation finishes.
-
-    Excludes top-level frame navigations, same-document navigations, navigations
-    that are not handled by the network stack (e.g. about: URLs), navigations
-    with no available RenderFrameHost, and navigations with a dead RenderFrame.
-  </summary>
-</histogram>
-
-<histogram
-    name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.RestrictedAdFrameNavigation"
-    enum="Boolean" expires_after="2023-08-28">
-  <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For every 'restricted' navigation observed by the subresource filter that
-    passes through ReadyToCommitNavigation and occurs in an ad frame, whether
-    the navigation results in a commit. Recorded when the navigation finishes.
-
-    A restricted navigation is one that is either to a URL matching an allowlist
-    rule on the filter list, or is both to a URL that matches no filter list
-    rule and is same-origin with the top-level frame's URL. Note that, if there
-    is a sequence of restricted navigations, each will be counted individually.
-
-    Excludes top-level frame navigations, same-document navigations, navigations
-    that are not handled by the network stack (e.g. about: URLs), navigations
-    with no available RenderFrameHost, and navigations with a dead RenderFrame.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.IndexRuleset.CPUDuration" units="ms"
     expires_after="2025-07-10">
   <owner>jkarlin@chromium.org</owner>
@@ -191,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
-    enum="SubresourceFilterVerifyStatus" expires_after="2025-06-01">
+    enum="SubresourceFilterVerifyStatus" expires_after="2025-08-03">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -232,7 +164,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel"
-    enum="BooleanAvailable" expires_after="2025-02-11">
+    enum="BooleanAvailable" expires_after="2026-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -243,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationDecision"
-    enum="SubresourceFilterActivationDecision" expires_after="2025-06-08">
+    enum="SubresourceFilterActivationDecision" expires_after="2025-08-10">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -257,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
-    enum="ActivationList" expires_after="2025-05-11">
+    enum="ActivationList" expires_after="2025-07-13">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -267,7 +199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2025-05-11">
+    enum="SubresourceFilterActivationState" expires_after="2025-07-13">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -290,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.AdsInterventionTriggered"
-    enum="AdsViolations" expires_after="2025-01-26">
+    enum="AdsViolations" expires_after="2026-01-26">
   <owner>yaoxia@google.com</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -353,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.SafeBrowsingDelay" units="ms"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -367,7 +299,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration"
-    units="microseconds" expires_after="2025-01-17">
+    units="microseconds" expires_after="2026-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -385,7 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration"
-    units="microseconds" expires_after="2025-01-17">
+    units="microseconds" expires_after="2026-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -403,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2025-08-03">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -417,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration"
-    units="microseconds" expires_after="2025-01-17">
+    units="microseconds" expires_after="2026-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -437,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SubresourceLoad.Evaluation.WallDuration"
-    units="microseconds" expires_after="2025-01-17">
+    units="microseconds" expires_after="2026-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

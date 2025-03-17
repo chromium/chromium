@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
@@ -65,7 +65,7 @@ import org.chromium.ui.util.ColorUtils;
 
 /** The activity for custom tabs. It will be launched on top of a client's task. */
 public class CustomTabActivity extends BaseCustomTabActivity {
-    private CustomTabsSessionToken mSession;
+    private SessionHolder<?> mSession;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
     private int mNumOmniboxNavigationEventsPerSession;
@@ -84,6 +84,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
      * would have gone missing.
      */
     private MotionEvent mBlockedEvent;
+
+    private static final boolean sBlockTouchesDuringEnterAnimation =
+            ChromeFeatureList.sCctBlockTouchesDuringEnterAnimation.isEnabled();
+    private boolean mIsEnterAnimationCompleted;
 
     private CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
@@ -138,6 +142,14 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
+        // If the activity is being recreated, #onEnterAnimationComplete() doesn't get called.
+        // So, we need to manually set mIsEnterAnimationCompleted to true. See crbug.com/399194973.
+        if (sBlockTouchesDuringEnterAnimation) {
+            var savedInstanceState = getSavedInstanceState();
+            if (savedInstanceState != null) {
+                mIsEnterAnimationCompleted = true;
+            }
+        }
         mOpenTimeRecorder =
                 new CustomTabsOpenTimeRecorder(
                         getLifecycleDispatcher(),
@@ -300,7 +312,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             assert HistoryManager.isAppSpecificHistoryEnabled();
             HistoryManagerUtils.showAppSpecificHistoryManager(
                     this,
-                    getTabModelSelector().isIncognitoSelected(),
+                    getTabModelSelector().getCurrentModel().getProfile(),
                     getIntentDataProvider().getClientPackageNameIdentitySharing());
 
             CustomTabHistoryIphController historyIph =
@@ -315,6 +327,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        // We should block touches while the enter animation is still running. An enter animation
+        // that makes the Activity "appear" transparent for a long time may lead users to touch
+        // elements on the webpage that's loaded within a currently invisible CCT.
+        if (sBlockTouchesDuringEnterAnimation && !mIsEnterAnimationCompleted) {
+            return true;
+        }
         if (sPreventTouches && shouldPreventTouch(ev)) {
             // Discard the events which may be trickling down from an overlay activity above.
             return true;
@@ -450,5 +468,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                             IntentHandler.getTransitionTypeFromIntent(data, PageTransition.LINK));
             getCustomTabActivityTabProvider().getTab().loadUrl(params);
         }
+    }
+
+    @Override
+    public void onEnterAnimationComplete() {
+        super.onEnterAnimationComplete();
+
+        mIsEnterAnimationCompleted = true;
     }
 }

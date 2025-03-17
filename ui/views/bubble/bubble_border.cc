@@ -15,6 +15,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkClipOp.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -22,6 +23,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -260,9 +262,10 @@ void DrawBorderAndShadowImpl(
 
 }  // namespace
 
-BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, ui::ColorId color_id)
-    : arrow_(arrow), shadow_(shadow), color_id_(color_id) {
+BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow)
+    : arrow_(arrow), shadow_(shadow) {
   DCHECK_LT(shadow_, SHADOW_COUNT);
+  SetColor(ui::kColorDialogBackground);
 }
 
 BubbleBorder::~BubbleBorder() = default;
@@ -282,11 +285,6 @@ gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
 
 void BubbleBorder::SetCornerRadius(int corner_radius) {
   corner_radius_ = corner_radius;
-}
-
-void BubbleBorder::SetColor(SkColor color) {
-  requested_color_ = color;
-  UpdateColor(nullptr);
 }
 
 gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
@@ -502,7 +500,7 @@ gfx::Size BubbleBorder::GetMinimumSize() const {
 }
 
 void BubbleBorder::OnViewThemeChanged(View* view) {
-  UpdateColor(view);
+  view->SchedulePaint();
 }
 
 gfx::Size BubbleBorder::GetSizeForContentsSize(
@@ -689,16 +687,6 @@ bool BubbleBorder::ShouldDrawStroke() const {
                                  shadow_);
 }
 
-void BubbleBorder::UpdateColor(View* view) {
-  const SkColor computed_color =
-      view ? view->GetColorProvider()->GetColor(color_id_)
-           : gfx::kPlaceholderColor;
-  color_ = requested_color_.value_or(computed_color);
-  if (view) {
-    view->SchedulePaint();
-  }
-}
-
 void BubbleBorder::PaintNoShadow(const View& view, gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped(canvas);
   canvas->sk_canvas()->clipRRect(GetClientRect(view), SkClipOp::kDifference,
@@ -740,7 +728,7 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
         flags);
   }
 
-  flags.setColor(color());
+  flags.setColor(color().ConvertToSkColor(view.GetColorProvider()));
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setStrokeWidth(1.0);
   flags.setAntiAlias(true);
@@ -755,7 +743,7 @@ void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(border_->color());
+  flags.setColor(border_->color().ConvertToSkColor(view->GetColorProvider()));
   gfx::RectF bounds(view->GetLocalBounds());
   bounds.Inset(gfx::InsetsF(border_->GetInsets()));
 

@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
 
@@ -22,18 +23,12 @@ class StoragePartitionImpl;
 class CONTENT_EXPORT SharedStorageLockManager
     : public blink::mojom::LockRequest {
  public:
+  using AccessScope = blink::SharedStorageAccessScope;
   using SharedStorageUpdateCallback =
       base::OnceCallback<void(const std::string&)>;
   using LockGrantedCallback =
       base::OnceCallback<void(mojo::AssociatedRemote<blink::mojom::LockHandle>,
                               mojo::Remote<blink::mojom::LockManager>)>;
-
-  enum AccessScope {
-    kWindow,
-    kSharedStorageWorklet,
-    kProtectedAudienceWorklet,
-    kHeader,
-  };
 
   explicit SharedStorageLockManager(StoragePartitionImpl& storage_partition);
   ~SharedStorageLockManager() override;

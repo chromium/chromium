@@ -386,6 +386,14 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 
+// Whether to ignore all ZPS prefetch responses received from the Suggest
+// service when the user is on a Google SRP. This can be used, for example,
+// during experimentation to measure the performance impact of only the
+// request/response portion of ZPS prefetching (i.e. without updating the
+// user-visible list of suggestions in the Omnibox).
+extern const base::FeatureParam<bool>
+    kZeroSuggestPrefetchingOnSRPCounterfactual;
+
 // Determines the debouncing delay (in milliseconds) to use when throttling ZPS
 // prefetch requests.
 extern const base::FeatureParam<int> kZeroSuggestPrefetchDebounceDelay;
@@ -405,6 +413,10 @@ bool IsZeroSuggestPrefetchingEnabled();
 
 // Returns whether zero-suggest prefetching is enabled in the given context.
 bool IsZeroSuggestPrefetchingEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification);
+
+// Returns whether on-focus zero-suggest is enabled in the given context.
+bool IsOnFocusZeroSuggestEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
 
 // Rich autocompletion.
@@ -702,28 +714,6 @@ constexpr base::FeatureParam<int> kIpadZPSLimit(
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
 // Actions In Suggest ->
-//
-// When set to true, permits Entity suggestion with associated Actions to be
-// promoted over the Escape Hatch.
-constexpr base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
-    &omnibox::kActionsInSuggest,
-    "PromoteEntitySuggestion",
-    (!!BUILDFLAG(IS_ANDROID) || !!BUILDFLAG(IS_IOS)));
-
-// Specifies which actions in suggest will be offered to users.
-constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>::Option
-    kActionsInSuggestRemoveActionTypesVariants[] = {
-        {{}, ""},
-        {omnibox::ActionInfo_ActionType_CALL, "call"},
-        {omnibox::ActionInfo_ActionType_DIRECTIONS, "directions"},
-        {omnibox::ActionInfo_ActionType_REVIEWS, "reviews"},
-};
-constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>
-    kActionsInSuggestRemoveActionTypes(
-        &omnibox::kActionsInSuggest,
-        "RemoveActionTypes",
-        {},
-        &kActionsInSuggestRemoveActionTypesVariants);
 
 constexpr base::FeatureParam<bool> kAnswerActionsCounterfactual(
     &omnibox::kOmniboxAnswerActions,
@@ -744,13 +734,6 @@ constexpr base::FeatureParam<bool> kAnswerActionsShowRichCard(
     "ShowRichCard",
     false);
 
-// Controls the placement of Reviews and Call actions position.
-// false => Call, Directions, Reviews.
-// true  => Reviews, Directions, Call.
-constexpr base::FeatureParam<bool> kActionsInSuggestPromoteReviewsAction(
-    &omnibox::kActionsInSuggest,
-    "PromoteReviewsAction",
-    false);
 // <- Actions In Suggest
 // ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->
@@ -764,12 +747,16 @@ extern const base::FeatureParam<int>
 // DB or TemplateURLService's copy of the URL.
 extern const base::FeatureParam<std::string> kGeminiUrlOverride;
 
-// Whether the expansion pack for the site search starter pack is enabled.
+// Whether the expansion pack (the StarterPackID::kGemini keyword/engine) for
+// the site search starter pack is enabled.
 bool IsStarterPackExpansionEnabled();
 
 // When true, enables an informational IPH message at the bottom of the Omnibox
 // directing users to certain starter pack engines.
 bool IsStarterPackIPHEnabled();
+
+// Whether the starter pack page scope is enabled.
+bool IsStarterPackPageEnabled();
 
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
@@ -779,11 +766,21 @@ bool IsStarterPackIPHEnabled();
 // primitives are included.
 #if BUILDFLAG(IS_ANDROID)
 constexpr base::FeatureParam<bool> kAndroidHubSearchEnableBookmarkProvider{
-    &omnibox::kAndroidHubSearch, "enable_bookmark_provider", false};
+    &omnibox::kAndroidHubSearch, "enable_bookmark_provider", true};
 
 constexpr base::FeatureParam<bool> kAndroidHubSearchEnableHistoryProvider{
-    &omnibox::kAndroidHubSearch, "enable_history_provider", false};
+    &omnibox::kAndroidHubSearch, "enable_history_provider", true};
 #endif
+
+// <- Android Hub Search
+// ---------------------------------------------------------
+// Diagnostics -->
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
+    &omnibox::kDiagnostics, "omnibox_diag_input_connection", false};
+#endif
+
+// <- Diagnostics
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

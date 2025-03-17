@@ -93,15 +93,9 @@ BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
 BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-
 // Enables "chunking" generated passwords by adding hyphens every 4 characters
 // to make them more readable.
 BASE_DECLARE_FEATURE(kPasswordGenerationChunking);
-
-// Enables updated password generation UI with a prominent button and previewing
-// the generated password on focus.
-BASE_DECLARE_FEATURE(kPasswordGenerationSoftNudge);
-
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Enables logging the content of chrome://password-manager-internals to the
@@ -123,6 +117,10 @@ BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 // Enables biometric authentication on for Password Autofill on ChromeOS.
 BASE_DECLARE_FEATURE(kBiometricsAuthForPwdFill);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Sets request criticality when calling leak check service to detect leaked
+// passwords.
+BASE_DECLARE_FEATURE(kSetLeakCheckRequestCriticality);
 
 // Displays at least the decryptable and never saved logins in the password
 // manager
@@ -164,20 +162,16 @@ BASE_DECLARE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers);
 // Instead, it either uses the Android-specific storage or an empty backend
 // if the client isn't eligible for the former.
 BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
+
+inline constexpr base::FeatureParam<int> kLoginDbDeprecationExportDelay = {
+    &kLoginDbDeprecationAndroid,
+    /*name=*/"login-db-deprecation-export-delay-seconds", /*default_value=*/15};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from
 // affiliation service. It fixes problem with incorrect password suggestions on
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
-
-// Enables new prediction that is based on votes from Username First Flow with
-// Intermediate Values.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
-
-// Enables voting for more text fields outside of the password form in Username
-// First Flow.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 
 // Enables async implementation of OSCrypt inside LoginDatabase (Stage 1).
 BASE_DECLARE_FEATURE(kUseAsyncOsCryptInLoginDatabase);

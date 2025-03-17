@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
@@ -56,12 +55,12 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -75,41 +74,10 @@ static const char* kFamiliesHost = "families.google.com";
 static const char* kIframeHost1 = "www.iframe1.com";
 static const char* kIframeHost2 = "www.iframe2.com";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kLocalUrlAccessCommand[] = "requestUrlAccessLocal";
 #endif
 constexpr char kRemoteUrlAccessCommand[] = "requestUrlAccessRemote";
-
-class ThrottleTestParam {
- public:
-  enum class FeatureStatus : bool {
-    // ClassifyUrlOnProcessResponseEvent feature disabled: uses
-    // SupervisedUserNavigationThrottle
-    kDisabled = false,
-    // ClassifyUrlOnProcessResponseEvent feature enabled: uses
-    // supervised_user::ClassifyUrlNavigationThrottle
-    kEnabled = true,
-  };
-  static auto Values() {
-    return ::testing::Values(FeatureStatus::kDisabled, FeatureStatus::kEnabled);
-  }
-  static std::string ToString(FeatureStatus status) {
-    switch (status) {
-      case FeatureStatus::kDisabled:
-        return "SupervisedUserNavigationThrottle";
-      case FeatureStatus::kEnabled:
-        return "ClassifyUrlNavigationThrottle";
-      default:
-        NOTREACHED();
-    }
-  }
-  static void InitFeatureList(base::test::ScopedFeatureList& feature_list,
-                              FeatureStatus status) {
-    feature_list.InitWithFeatureState(
-        supervised_user::kClassifyUrlOnProcessResponseEvent,
-        status == FeatureStatus::kEnabled);
-  }
-};
 
 // Class to keep track of iframes created and destroyed.
 // TODO(crbug.com/40173416): Can be replaced with
@@ -286,8 +254,7 @@ void SupervisedUserNavigationThrottleTestBase::SetUpOnMainThread() {
 }
 
 class SupervisedUserNavigationThrottleTest
-    : public SupervisedUserNavigationThrottleTestBase,
-      ::testing::WithParamInterface<ThrottleTestParam::FeatureStatus> {
+    : public SupervisedUserNavigationThrottleTestBase {
  protected:
   SupervisedUserNavigationThrottleTest()
       : SupervisedUserNavigationThrottleTestBase(
@@ -297,34 +264,22 @@ class SupervisedUserNavigationThrottleTest
 
 class SupervisedUserNavigationThrottleWithPrerenderingTest
     : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<
-          std::tuple<std::string, ThrottleTestParam::FeatureStatus>> {
+      public testing::WithParamInterface<std::string> {
  protected:
   SupervisedUserNavigationThrottleWithPrerenderingTest()
       : SupervisedUserNavigationThrottleTestBase(
-            supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-    ThrottleTestParam::InitFeatureList(scoped_feature_list_,
-                                       std::get<1>(GetParam()));
-  }
+            supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
   ~SupervisedUserNavigationThrottleWithPrerenderingTest() override = default;
 
-  static std::string GetTargetHint() { return std::get<0>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  static std::string GetTargetHint() { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SupervisedUserNavigationThrottleWithPrerenderingTest,
-    testing::Combine(testing::Values("_self", "_blank"),
-                     ThrottleTestParam::Values()),
-    [](const testing::TestParamInfo<
-        std::tuple<std::string, ThrottleTestParam::FeatureStatus>>& info) {
-      return base::StrCat(
-          {"WithTargetHint", std::get<0>(info.param), "WithThrottle",
-           ThrottleTestParam::ToString(std::get<1>(info.param))});
-    });
+INSTANTIATE_TEST_SUITE_P(,
+                         SupervisedUserNavigationThrottleWithPrerenderingTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return base::StrCat({"WithTargetHint", info.param});
+                         });
 
 // Tests that prerendering fails in supervised user mode.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -458,14 +413,11 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 class SupervisedUserIframeFilterTest
     : public SupervisedUserNavigationThrottleTestBase,
       public testing::WithParamInterface<
-          std::tuple<supervised_user::testing::LocalWebApprovalsTestCase,
-                     ThrottleTestParam::FeatureStatus>> {
+          supervised_user::testing::LocalWebApprovalsTestCase> {
  protected:
   SupervisedUserIframeFilterTest()
       : SupervisedUserNavigationThrottleTestBase(
             supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-    ThrottleTestParam::InitFeatureList(throttle_feature_list_,
-                                       std::get<1>(GetParam()));
   }
 
   ~SupervisedUserIframeFilterTest() override = default;
@@ -498,7 +450,7 @@ class SupervisedUserIframeFilterTest
  private:
   static supervised_user::testing::LocalWebApprovalsTestCase
   GetLocalWebApprovalsSupportTestParam() {
-    return std::get<0>(GetParam());
+    return GetParam();
   }
 
  private:
@@ -513,7 +465,6 @@ class SupervisedUserIframeFilterTest
   std::unique_ptr<base::test::ScopedFeatureList>
       local_web_approvals_test_support_{
           GetLocalWebApprovalsSupportTestParam().MakeFeatureList()};
-  base::test::ScopedFeatureList throttle_feature_list_;
 };
 
 void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
@@ -682,16 +633,11 @@ bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsEnabled() const {
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabled,
     SupervisedUserIframeFilterTest,
-    testing::Combine(
-        supervised_user::testing::LocalWebApprovalsTestCase::Values(),
-        ThrottleTestParam::Values()),
+    supervised_user::testing::LocalWebApprovalsTestCase::Values(),
     [](const testing::TestParamInfo<
-        std::tuple<supervised_user::testing::LocalWebApprovalsTestCase,
-                   ThrottleTestParam::FeatureStatus>>& info) {
-      return base::StrCat(
-          {"WithLocalWebApprovalsTestCase",
-           static_cast<std::string>(std::get<0>(info.param)), "WithThrottle",
-           ThrottleTestParam::ToString(std::get<1>(info.param))});
+        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
+      return base::StrCat({"WithLocalWebApprovalsTestCase",
+                           static_cast<std::string>(info.param)});
     });
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
@@ -1074,7 +1020,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 // The switches::kHostWindowBounds commandline flag doesn't appear to work
 // for tests on other platforms.
 // TODO(b/300426225): enable these tests on Linux/Mac/Windows.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class SupervisedUserNarrowWidthIframeFilterTest
     : public SupervisedUserIframeFilterTest {
  protected:
@@ -1093,16 +1039,11 @@ void SupervisedUserNarrowWidthIframeFilterTest::SetUp() {
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabledNarrowWidth,
     SupervisedUserNarrowWidthIframeFilterTest,
-    testing::Combine(
-        supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
-        ThrottleTestParam::Values()),
+    supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
     [](const testing::TestParamInfo<
-        std::tuple<supervised_user::testing::LocalWebApprovalsTestCase,
-                   ThrottleTestParam::FeatureStatus>>& info) {
-      return base::StrCat(
-          {"WithLocalWebApprovalsTestCase",
-           static_cast<std::string>(std::get<0>(info.param)), "WithThrottle",
-           ThrottleTestParam::ToString(std::get<1>(info.param))});
+        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
+      return base::StrCat({"WithLocalWebApprovalsTestCase",
+                           static_cast<std::string>(info.param)});
     });
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
@@ -1184,16 +1125,11 @@ using ChromeOSLocalWebApprovalsTest = SupervisedUserIframeFilterTest;
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChromeOSLocalWebApprovalsTest,
-    testing::Combine(
-        supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
-        ThrottleTestParam::Values()),
+    supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
     [](const testing::TestParamInfo<
-        std::tuple<supervised_user::testing::LocalWebApprovalsTestCase,
-                   ThrottleTestParam::FeatureStatus>>& info) {
-      return base::StrCat(
-          {"WithLocalWebApprovalsTestCase",
-           static_cast<std::string>(std::get<0>(info.param)), "WithThrottle",
-           ThrottleTestParam::ToString(std::get<1>(info.param))});
+        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
+      return base::StrCat({"WithLocalWebApprovalsTestCase",
+                           static_cast<std::string>(info.param)});
     });
 
 IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
@@ -1317,47 +1253,31 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
   EXPECT_FALSE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
   EXPECT_TRUE(IsLocalApprovalsInsteadButtonBeingShown(blocked_frame));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers
     : public SupervisedUserNavigationThrottleTestBase,
       public testing::WithParamInterface<
-          std::tuple<supervised_user::SupervisionMixin::SignInMode,
-                     ThrottleTestParam::FeatureStatus>> {
+          supervised_user::SupervisionMixin::SignInMode> {
  protected:
   static supervised_user::SupervisionMixin::SignInMode GetSignInMode() {
-    return std::get<0>(GetParam());
-  }
-  static ThrottleTestParam::FeatureStatus GetThrottleStatus() {
-    return std::get<1>(GetParam());
+    return GetParam();
   }
   SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers()
-      : SupervisedUserNavigationThrottleTestBase(GetSignInMode()) {
-    ThrottleTestParam::InitFeatureList(scoped_feature_list_,
-                                       GetThrottleStatus());
-  }
+      : SupervisedUserNavigationThrottleTestBase(GetSignInMode()) {}
   ~SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers() override =
       default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
-    testing::Combine(
-        testing::Values(
-            supervised_user::SupervisionMixin::SignInMode::kRegular,
-            supervised_user::SupervisionMixin::SignInMode::kSupervised),
-        ThrottleTestParam::Values()),
+
+    testing::Values(supervised_user::SupervisionMixin::SignInMode::kRegular,
+                    supervised_user::SupervisionMixin::SignInMode::kSupervised),
     [](const testing::TestParamInfo<
-        std::tuple<supervised_user::SupervisionMixin::SignInMode,
-                   ThrottleTestParam::FeatureStatus>>& info) {
-      return base::StrCat(
-          {"WithSignInMode", SignInModeAsString(std::get<0>(info.param)),
-           "WithThrottle",
-           ThrottleTestParam::ToString(std::get<1>(info.param))});
+        supervised_user::SupervisionMixin::SignInMode>& info) {
+      return base::StrCat({"WithSignInMode", SignInModeAsString(info.param)});
     });
 
 IN_PROC_BROWSER_TEST_P(
@@ -1449,14 +1369,11 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 class SupervisedUserNavigationThrottleFencedFramesTest
-    : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<ThrottleTestParam::FeatureStatus> {
+    : public SupervisedUserNavigationThrottleTestBase {
  public:
   SupervisedUserNavigationThrottleFencedFramesTest()
       : SupervisedUserNavigationThrottleTestBase(
-            supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-    ThrottleTestParam::InitFeatureList(scoped_feature_list_, GetParam());
-  }
+            supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
   ~SupervisedUserNavigationThrottleFencedFramesTest() override = default;
   SupervisedUserNavigationThrottleFencedFramesTest(
       const SupervisedUserNavigationThrottleFencedFramesTest&) = delete;
@@ -1470,19 +1387,9 @@ class SupervisedUserNavigationThrottleFencedFramesTest
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SupervisedUserNavigationThrottleFencedFramesTest,
-    ThrottleTestParam::Values(),
-    [](const testing::TestParamInfo<ThrottleTestParam::FeatureStatus>& info) {
-      return base::StrCat(
-          {"WithThrottle", ThrottleTestParam::ToString(info.param)});
-    });
-
-IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleFencedFramesTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleFencedFramesTest,
                        BlockFencedFrame) {
   BlockHost(kIframeHost2);
   const GURL kInitialUrl = embedded_test_server()->GetURL(

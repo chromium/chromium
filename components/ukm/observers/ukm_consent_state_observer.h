@@ -71,7 +71,7 @@ class UkmConsentStateObserver
       bool total_purge,
       UkmConsentState previous_consent_state) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Used to set is_demo_mode_ field.
   void SetIsDemoMode(bool is_demo_mode);
 
@@ -157,7 +157,7 @@ class UkmConsentStateObserver
   // if constructed with UkmConsentStateObserver(NoInitialUkmConsentStateTag).
   std::optional<UkmConsentState> ukm_consent_state_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Indicate whether the device is in demo mode. If it is true,
   // set APPS consent to collect App usage data for active demo
   // session. Default to false.

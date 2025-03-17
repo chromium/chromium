@@ -108,14 +108,6 @@ bool OfferNotificationBubbleControllerImpl::IsIconVisible() const {
   return bubble_state_ != BubbleState::kHidden;
 }
 
-bool OfferNotificationBubbleControllerImpl::ShouldIconExpand() const {
-  return icon_should_expand_;
-}
-
-void OfferNotificationBubbleControllerImpl::OnIconExpanded() {
-  icon_should_expand_ = false;
-}
-
 void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   set_bubble_view(nullptr);
@@ -152,7 +144,6 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     const AutofillOfferData& offer,
     const CreditCard* card,
     const OfferNotificationOptions& options) {
-  icon_should_expand_ = options.expand_notification_icon;
 
   // If this is not the bubble's first show, and offer to be shown has not
   // changed, and it has not been shown for more than

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,10 +20,10 @@
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,7 +36,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -44,10 +45,15 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -57,6 +63,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -65,6 +72,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -86,6 +94,7 @@ namespace {
 
 using base::ToVector;
 using base::test::DictionaryHasValue;
+using base::test::ErrorIs;
 using base::test::ValueIs;
 using ::testing::_;
 using ::testing::AllOf;
@@ -109,27 +118,10 @@ using ::testing::SizeIs;
 using ::testing::VariantWith;
 using ::testing::WithArg;
 
-struct IwaForceInstallPolicyEntry {
-  IsolatedWebAppUrlInfo url_info;
-  GURL update_manifest_url;
-  std::optional<UpdateChannel> update_channel;
-  std::optional<base::Version> pinned_version;
-  bool allow_downgrades = false;
-};
+const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 
-blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                std::u16string_view short_name,
-                                                const base::Version& version) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->id = application_url.DeprecatedGetOriginAsURL();
-  manifest->scope = application_url.Resolve("/");
-  manifest->start_url = application_url.Resolve("/testing-start-url.html");
-  manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = short_name;
-  manifest->version = base::UTF8ToUTF16(version.GetString());
-
-  return manifest;
-}
+using UpdateDiscoveryTaskFuture =
+    base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
 
 MATCHER_P(IsDict, dict_matcher, "") {
   return ExplainMatchResult(
@@ -153,6 +145,17 @@ class MockCommandScheduler : public WebAppCommandScheduler {
        const base::Location& call_location),
       (override));
 
+  MOCK_METHOD(
+      void,
+      PrepareAndStoreIsolatedWebAppUpdate,
+      (const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo& update_info,
+       const IsolatedWebAppUrlInfo& url_info,
+       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+       PrepareAndStoreIsolatedWebAppUpdateCallback callback,
+       const base::Location& call_location),
+      (override));
+
   void DelegateToRealImpl() {
     ON_CALL(*this, ApplyPendingIsolatedWebAppUpdate)
         .WillByDefault(
@@ -171,6 +174,22 @@ class MockCommandScheduler : public WebAppCommandScheduler {
                       std::move(optional_profile_keep_alive),
                       std::move(callback), call_location);
             });
+    ON_CALL(*this, PrepareAndStoreIsolatedWebAppUpdate)
+        .WillByDefault(
+            [this](const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&
+                       update_info,
+                   const IsolatedWebAppUrlInfo& url_info,
+                   std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+                   std::unique_ptr<ScopedProfileKeepAlive>
+                       optional_profile_keep_alive,
+                   PrepareAndStoreIsolatedWebAppUpdateCallback callback,
+                   const base::Location& call_location) {
+              return this
+                  ->WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
+                      update_info, url_info, std::move(optional_keep_alive),
+                      std::move(optional_profile_keep_alive),
+                      std::move(callback), call_location);
+            });
   }
 };
 
@@ -186,91 +205,122 @@ class ScopedNaClBrowserDelegate {
 };
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-// TODO(b/304691179): Rely less on `RunUntilIdle` and more on concrete events in
-// all of these tests.
-class IsolatedWebAppUpdateManagerTest : public WebAppTest {
+class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
  public:
   explicit IsolatedWebAppUpdateManagerTest(
-      const base::flat_map<base::test::FeatureRef, bool>& feature_states =
-          {{features::kIsolatedWebApps, true}},
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory(), time_source) {
-    scoped_feature_list_.InitWithFeatureStates(feature_states);
-  }
-
-  void SetUp() override {
-    WebAppTest::SetUp();
-#if BUILDFLAG(ENABLE_NACL)
-    // Clearing Cache will clear PNACL cache, which needs this delegate set.
-    nacl_browser_delegate_.Init(profile_manager().profile_manager());
-#endif  // BUILDFLAG(ENABLE_NACL)
-    IwaIdentityValidator::CreateSingleton();
-  }
-
-  void TearDown() override {
-    if (task_environment()->UsesMockTime()) {
-      // TODO(b/299074540): Without this line, subsequent tests are unable to
-      // use `test::UninstallWebApp`, which will hang forever. This has
-      // something to do with the combination of `MOCK_TIME` and NaCl, because
-      // the code ends up hanging forever in
-      // `PnaclTranslationCache::DoomEntriesBetween`. A simple `FastForwardBy`
-      // here seems to alleviate this issue.
-      task_environment()->FastForwardBy(TestTimeouts::tiny_timeout());
-    }
-
-    WebAppTest::TearDown();
-  }
+      : IsolatedWebAppTest(time_source) {}
 
  protected:
   IsolatedWebAppUpdateManager& update_manager() {
-    return fake_provider().iwa_update_manager();
-  }
-
-  FakeWebContentsManager& fake_web_contents_manager() {
-    return static_cast<FakeWebContentsManager&>(
-        fake_provider().web_contents_manager());
+    return provider().iwa_update_manager();
   }
 
   FakeWebAppUiManager& fake_ui_manager() {
-    return static_cast<FakeWebAppUiManager&>(fake_provider().ui_manager());
+    return static_cast<FakeWebAppUiManager&>(provider().ui_manager());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  void InitialIwaBundleForceInstall(
+      std::unique_ptr<ScopedBundledIsolatedWebApp> app) {
+    auto bundle_id = app->web_bundle_id();
+    auto version = app->version();
+
+    test_update_server().AddBundle(std::move(app));
+
+    test::AddForceInstalledIwaToPolicy(
+        profile()->GetPrefs(),
+        test_update_server().CreateForceInstallPolicyEntry(bundle_id));
+
+    web_app::WebAppTestInstallObserver(profile()).BeginListeningAndWait(
+        {GetAppId(bundle_id)});
+
+    AssertAppInstalledAtVersion(bundle_id, version);
+  }
+
+  std::unique_ptr<ScopedBundledIsolatedWebApp> CreateIwa1Bundle(
+      std::string_view version) {
+    std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
+            .BuildBundle(GetIwa1WebBundleId(),
+                         {test::GetDefaultEd25519KeyPair()});
+    app->TrustSigningKey();
+    app->FakeInstallPageState(profile());
+    return app;
+  }
+
+  std::unique_ptr<ScopedBundledIsolatedWebApp> CreateIwa2Bundle(
+      std::string_view version) {
+    std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
+            .BuildBundle(GetIwa2WebBundleId(),
+                         {test::GetDefaultEcdsaP256KeyPair()});
+    app->TrustSigningKey();
+    app->FakeInstallPageState(profile());
+    return app;
+  }
+
+  webapps::AppId GetAppId(web_package::SignedWebBundleId web_bundle_id) const {
+    return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
+        .app_id();
+  }
+
+  web_package::SignedWebBundleId GetIwa1WebBundleId() const {
+    return test::GetDefaultEd25519WebBundleId();
+  }
+
+  web_package::SignedWebBundleId GetIwa2WebBundleId() const {
+    return test::GetDefaultEcdsaP256WebBundleId();
+  }
+
+  void AssertAppDiscoveryTaskSuccessful(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    UpdateDiscoveryTaskFuture future;
+    UpdateDiscoveryTaskResultWaiter waiter(provider(), GetAppId(web_bundle_id),
+                                           future.GetCallback());
+    EXPECT_THAT(future.Take(),
+                ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
+                            kUpdateFoundAndSavedInDatabase));
+  }
+
+  void AssertInstallationFinish(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListeningAndWait({GetAppId(web_bundle_id)});
+  }
+
+  void AssertAppInstalledAtVersion(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      base::Version version) {
+    ASSERT_EQ(provider()
+                  .registrar_unsafe()
+                  .GetAppById(GetAppId(web_bundle_id))
+                  ->isolation_data()
+                  ->version(),
+              version);
+  }
+
+  void AssertAppNotInstalled(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    ASSERT_FALSE(
+        provider().registrar_unsafe().GetAppById(GetAppId(web_bundle_id)));
+  }
+
   data_decoder::test::InProcessDataDecoder data_decoder_;
-#if BUILDFLAG(ENABLE_NACL)
-  ScopedNaClBrowserDelegate nacl_browser_delegate_;
-#endif  // BUILDFLAG(ENABLE_NACL)
 };
 
-class IsolatedWebAppUpdateManagerDevModeUpdateTest
-    : public IsolatedWebAppUpdateManagerTest {
+class IsolatedWebAppUpdateManagerDevModeUpdateTest : public IsolatedWebAppTest {
  public:
   IsolatedWebAppUpdateManagerDevModeUpdateTest()
-      : IsolatedWebAppUpdateManagerTest(
-            {{features::kIsolatedWebApps, true},
-             {features::kIsolatedWebAppDevMode, true}}) {}
+      : IsolatedWebAppTest(WithDevMode()) {}
 
   void SetUp() override {
-    IsolatedWebAppUpdateManagerTest::SetUp();
+    IsolatedWebAppTest::SetUp();
 
-    fake_provider().SetEnableAutomaticIwaUpdates(
+    provider().SetEnableAutomaticIwaUpdates(
         FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  void CreateInstallPageState(const IsolatedWebAppUrlInfo& url_info) {
-    GURL install_url = url_info.origin().GetURL().Resolve(
-        "/.well-known/_generated_install_page.html");
-    auto& page_state =
-        fake_web_contents_manager().GetOrCreatePageState(install_url);
-    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
-    page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
-    page_state.manifest_url =
-        url_info.origin().GetURL().Resolve("manifest.webmanifest");
-    page_state.valid_manifest_for_web_app = true;
-    page_state.manifest_before_default_processing = CreateDefaultManifest(
-        url_info.origin().GetURL(), u"updated iwa", base::Version("2.0.0"));
   }
 
  protected:
@@ -279,33 +329,34 @@ class IsolatedWebAppUpdateManagerDevModeUpdateTest
 
 TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
        DiscoversLocalDevModeUpdate) {
+  web_package::SignedWebBundleId bundle_id =
+      test::GetDefaultEd25519WebBundleId();
+
+  auto initial_bundle =
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetVersion("1.0.0").SetName("intiial iwa"))
+          .BuildBundle(bundle_id, {test::GetDefaultEd25519KeyPair()});
+
   auto update_bundle =
       IsolatedWebAppBuilder(
           ManifestBuilder().SetVersion("2.0.0").SetName("updated iwa"))
-          .BuildBundle();
+          .BuildBundle(bundle_id, {test::GetDefaultEd25519KeyPair()});
 
-  IsolatedWebAppUrlInfo url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          update_bundle->web_bundle_id());
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       initial_bundle->InstallWithSource(
+                           profile(), &IsolatedWebAppInstallSource::FromDevUi,
+                           web_app::IwaSourceBundleDevFileOp::kCopy));
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), url_info.origin().GetURL(), "installed iwa 1 (unowned bundle)",
-      IsolationData::Builder(IwaStorageUnownedBundle{base::FilePath()},
-                             base::Version("1.0.0"))
-          .Build());
-
-  CreateInstallPageState(url_info);
+  update_bundle->FakeInstallPageState(profile());
 
   base::test::TestFuture<base::expected<base::Version, std::string>> future;
-  fake_provider()
-      .iwa_update_manager()
-      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-          IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
-                                           kDefaultBundleDevFileOp),
-          url_info, future.GetCallback());
+  provider().iwa_update_manager().DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+      IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
+                                       IwaSourceBundleDevFileOp::kCopy),
+      url_info, future.GetCallback());
 
   EXPECT_THAT(future.Get(), ValueIs(Eq(base::Version("2.0.0"))));
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(url_info.app_id()),
+  EXPECT_THAT(provider().registrar_unsafe().GetAppById(url_info.app_id()),
               test::IwaIs(Eq("updated iwa"),
                           test::IsolationDataIs(
                               Property("variant",
@@ -315,12 +366,6 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
 
 class IsolatedWebAppUpdateManagerUpdateTest
@@ -329,174 +374,31 @@ class IsolatedWebAppUpdateManagerUpdateTest
   explicit IsolatedWebAppUpdateManagerUpdateTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : IsolatedWebAppUpdateManagerTest({{features::kIsolatedWebApps, true}},
-                                        time_source) {}
+      : IsolatedWebAppUpdateManagerTest(time_source) {}
 
  protected:
-  struct IwaInfo {
-    IwaInfo(web_package::test::Ed25519KeyPair key_pair,
-            IsolatedWebAppStorageLocation installed_location,
-            base::Version installed_version,
-            GURL update_manifest_url,
-            GURL update_bundle_url,
-            base::Version update_version,
-            std::string update_app_name,
-            std::optional<std::vector<UpdateChannel>> update_channels =
-                std::nullopt)
-        : url_info(IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-              web_package::SignedWebBundleId::CreateForPublicKey(
-                  key_pair.public_key))),
-          key_pair(std::move(key_pair)),
-          installed_location(std::move(installed_location)),
-          installed_version(std::move(installed_version)),
-          update_manifest_url(std::move(update_manifest_url)),
-          update_bundle_url(std::move(update_bundle_url)),
-          update_version(std::move(update_version)),
-          update_app_name(std::move(update_app_name)),
-          update_channels(std::move(update_channels)) {}
-
-    IsolatedWebAppUrlInfo url_info;
-    web_package::test::Ed25519KeyPair key_pair;
-    IsolatedWebAppStorageLocation installed_location;
-    base::Version installed_version;
-
-    GURL update_manifest_url;
-    GURL update_bundle_url;
-    base::Version update_version;
-    std::string update_app_name;
-    std::optional<std::vector<UpdateChannel>> update_channels;
-  };
-
   void SetUp() override {
     IsolatedWebAppUpdateManagerTest::SetUp();
-    fake_provider().SetEnableAutomaticIwaUpdates(
+    provider().SetEnableAutomaticIwaUpdates(
         FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
 
     auto command_scheduler =
         std::make_unique<NiceMock<MockCommandScheduler>>(*profile());
     command_scheduler->DelegateToRealImpl();
-    fake_provider().SetScheduler(std::move(command_scheduler));
-
-    iwa_info1_ = IwaInfo(web_package::test::Ed25519KeyPair::CreateRandom(),
-                         IwaStorageOwnedBundle{"iwa1", /*dev_mode=*/false},
-                         base::Version("1.0.0"),
-                         GURL("https://example.com/update_manifest1.json"),
-                         GURL("https://example.com/bundle1.swbn"),
-                         base::Version("2.0.0"), "updated app 1");
-    SetUpIwaInfo(*iwa_info1_);
-
-    iwa_info2_ = IwaInfo(web_package::test::Ed25519KeyPair::CreateRandom(),
-                         IwaStorageOwnedBundle{"iwa2", /*dev_mode=*/false},
-                         base::Version("4.0.0"),
-                         GURL("https://example.com/update_manifest2.json"),
-                         GURL("https://example.com/bundle2.swbn"),
-                         base::Version("7.0.0"), "updated app 2");
-    SetUpIwaInfo(*iwa_info2_);
-
-    auto iwa3_update_channels = {UpdateChannel::Create("beta").value(),
-                                 UpdateChannel::Create("🍪").value()};
-    iwa_info3_ =
-        IwaInfo(web_package::test::Ed25519KeyPair::CreateRandom(),
-                IwaStorageOwnedBundle{"iwa3", /*dev_mode=*/false},
-                base::Version("4.0.0"),
-                GURL("https://example.com/update_manifest3.json"),
-                GURL("https://example.com/bundle3.swbn"),
-                base::Version("8.0.0"), "updated app 3", iwa3_update_channels);
-    SetUpIwaInfo(*iwa_info3_);
-
-    SetTrustedWebBundleIdsForTesting({iwa_info1_->url_info.web_bundle_id(),
-                                      iwa_info2_->url_info.web_bundle_id(),
-                                      iwa_info3_->url_info.web_bundle_id()});
+    provider().SetScheduler(std::move(command_scheduler));
 
     SeedWebAppDatabase();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  void SetUpIwaInfo(const IwaInfo& iwa_info) {
-    TestSignedWebBundle update_bundle =
-        CreateBundle(iwa_info.update_version, iwa_info.key_pair);
-
-    auto version_entry =
-        base::Value::Dict()
-            .Set("src", iwa_info.update_bundle_url.spec())
-            .Set("version", iwa_info.update_version.GetString());
-
-    if (iwa_info.update_channels.has_value()) {
-      version_entry.Set("channels",
-                        base::ToValueList(iwa_info.update_channels.value(),
-                                          &UpdateChannel::ToString));
-    }
-
-    profile_url_loader_factory().AddResponse(
-        iwa_info.update_manifest_url.spec(),
-        *base::WriteJson(base::Value::Dict().Set(
-            "versions", base::Value::List().Append(std::move(version_entry)))));
-
-    profile_url_loader_factory().AddResponse(
-        iwa_info.update_bundle_url.spec(),
-        std::string(update_bundle.data.begin(), update_bundle.data.end()));
-
-    GURL install_url = iwa_info.url_info.origin().GetURL().Resolve(
-        "/.well-known/_generated_install_page.html");
-
-    auto& page_state =
-        fake_web_contents_manager().GetOrCreatePageState(install_url);
-    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
-    page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
-    page_state.manifest_url =
-        iwa_info.url_info.origin().GetURL().Resolve("manifest.webmanifest");
-    page_state.valid_manifest_for_web_app = true;
-    page_state.manifest_before_default_processing = CreateDefaultManifest(
-        iwa_info.url_info.origin().GetURL(),
-        base::UTF8ToUTF16(iwa_info.update_app_name), iwa_info.update_version);
-  }
-
-  TestSignedWebBundle CreateBundle(
-      const base::Version& version,
-      const web_package::test::Ed25519KeyPair& key_pair) const {
-    return TestSignedWebBundleBuilder::BuildDefault(
-        TestSignedWebBundleBuilder::BuildOptions()
-            .SetVersion(version)
-            .AddKeyPair(key_pair));
-  }
-
   virtual void SeedWebAppDatabase() {}
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void SetIwaForceInstallPolicy(
-      std::vector<IwaForceInstallPolicyEntry> entries) {
-    PolicyGenerator policy_generator;
-    for (auto& entry : entries) {
-      policy_generator.AddForceInstalledIwa(
-          entry.url_info.web_bundle_id(), entry.update_manifest_url,
-          entry.update_channel, entry.pinned_version, entry.allow_downgrades);
-    }
-
-    profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
-                               policy_generator.Generate());
-  }
-
-  // TODO(crbug.com/298005569): This should eventually go away and instead rely
-  // on the `IsolatedWebAppPolicyManager` to perform the uninstall by setting
-  // `SetIwaForceInstallPolicy` appropriately.
-  [[nodiscard]] webapps::UninstallResultCode UninstallPolicyInstalledIwa(
-      const webapps::AppId& app_id) {
-    base::test::TestFuture<webapps::UninstallResultCode> future;
-    fake_provider().scheduler().RemoveInstallManagementMaybeUninstall(
-        app_id, WebAppManagement::Type::kIwaPolicy,
-        webapps::WebappUninstallSource::kIwaEnterprisePolicy,
-        future.GetCallback());
-    return future.Take();
-  }
-#endif
-
-  NiceMock<MockCommandScheduler>& mock_command_scheduler() {
-    return static_cast<NiceMock<MockCommandScheduler>&>(
-        fake_provider().scheduler());
+  MockCommandScheduler& mock_command_scheduler() {
+    return static_cast<MockCommandScheduler&>(provider().scheduler());
   }
 
   base::Value debug_log() {
-    return fake_provider().iwa_update_manager().AsDebugValue();
+    return provider().iwa_update_manager().AsDebugValue();
   }
 
   base::Value::List UpdateDiscoveryLog() {
@@ -534,16 +436,6 @@ class IsolatedWebAppUpdateManagerUpdateTest
   base::Value::List UpdateApplyWaiters() {
     return debug_log().GetDict().FindList("update_apply_waiters")->Clone();
   }
-
-  auto UpdateLocationMatcher(Profile* profile) {
-    return Property("variant", &IsolatedWebAppStorageLocation::variant,
-                    VariantWith<IwaStorageOwnedBundle>(
-                        test::OwnedIwaBundleExists(profile->GetPath())));
-  }
-
-  std::optional<IwaInfo> iwa_info1_;
-  std::optional<IwaInfo> iwa_info2_;
-  std::optional<IwaInfo> iwa_info3_;
 };
 
 class IsolatedWebAppUpdateManagerUpdateMockTimeTest
@@ -554,117 +446,32 @@ class IsolatedWebAppUpdateManagerUpdateMockTimeTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
-       DiscoversAndPreparesUpdateOfPolicyInstalledApps) {
-  IsolatedWebAppUrlInfo non_installed_url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          *web_package::SignedWebBundleId::Create(
-              "5tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic"));
-  IsolatedWebAppUrlInfo dev_bundle_url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          *web_package::SignedWebBundleId::Create(
-              "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"));
-  IsolatedWebAppUrlInfo dev_proxy_url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateRandomForProxyMode());
-
-  test::InstallDummyWebApp(profile(), "non-iwa", GURL("https://a"));
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-  AddDummyIsolatedAppToRegistry(
-      profile(), dev_proxy_url_info.origin().GetURL(),
-      "installed iwa 2 (dev mode proxy)",
-      IsolationData::Builder(IwaStorageProxy{dev_proxy_url_info.origin()},
-                             base::Version("1.0.0"))
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-  AddDummyIsolatedAppToRegistry(
-      profile(), dev_bundle_url_info.origin().GetURL(),
-      "installed iwa 3 (unowned bundle)",
-      IsolationData::Builder(IwaStorageUnownedBundle{base::FilePath()},
-                             base::Version("1.0.0"))
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-  AddDummyIsolatedAppToRegistry(
-      profile(), GURL("isolated-app://b"), "installed iwa 4",
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("1.0.0"))
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
-
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
-       {non_installed_url_info,
-        GURL("https://example.com/update_manifest.json")},
-       {dev_bundle_url_info, GURL("https://example.com/update_manifest.json")},
-       {dev_proxy_url_info, GURL("https://example.com/update_manifest.json")}});
-
-  task_environment()->FastForwardBy(
-      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
-      base::TimeTicks::Now());
-  task_environment()->RunUntilIdle();
-
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info1_->url_info.app_id()),
-      test::IwaIs(Eq("installed iwa 1"),
-                  test::IsolationDataIs(Eq(iwa_info1_->installed_location),
-                                        Eq(iwa_info1_->installed_version),
-                                        /*controlled_frame_partitions=*/_,
-                                        test::PendingUpdateInfoIs(
-                                            UpdateLocationMatcher(profile()),
-                                            Eq(base::Version("2.0.0")),
-                                            /*integrity_block_data=*/_),
-                                        /*integrity_block_data=*/_)));
-
-  EXPECT_THAT(
-      UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
-  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
-}
-
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DiscoversAndPreparesUpdateOfPolicyInstalledAppsOnBetaChannel) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info3_->url_info.origin().GetURL(), "installed iwa 3",
-      IsolationData::Builder(iwa_info3_->installed_location,
-                             iwa_info3_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  // Initial Beta channel bundle installation.
+  {
+    test_update_server().AddBundle(CreateIwa1Bundle("1.0.0"),
+                                   std::vector<UpdateChannel>{kBetaChannel});
 
-  SetIwaForceInstallPolicy(
-      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url,
-        UpdateChannel::Create("beta").value()}});
+    test::AddForceInstalledIwaToPolicy(
+        profile()->GetPrefs(),
+        test_update_server().CreateForceInstallPolicyEntry(
+            GetIwa1WebBundleId(), /*update_channel=*/kBetaChannel));
 
-  task_environment()->FastForwardBy(
+    web_app::WebAppTestInstallObserver(profile()).BeginListeningAndWait(
+        {GetAppId(GetIwa1WebBundleId())});
+
+    AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
+  }
+
+  test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"),
+                                 std::vector<UpdateChannel>{kBetaChannel});
+
+  task_environment().FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
       base::TimeTicks::Now());
-  task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info3_->url_info.app_id()),
-              test::IwaIs(iwa_info3_->update_app_name,
-                          test::IsolationDataIs(
-                              UpdateLocationMatcher(profile()),
-                              Eq(iwa_info3_->update_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("2.0.0"));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -672,82 +479,55 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
           "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(IsDict(DictionaryHasValue(
                                     "result", base::Value("Success")))));
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DoesNotDiscoverUpdateOfPolicyInstalledAppsOnDefaultChannel) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info3_->url_info.origin().GetURL(), "installed iwa 3",
-      IsolationData::Builder(iwa_info3_->installed_location,
-                             iwa_info3_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-  SetIwaForceInstallPolicy(
-      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url}});
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
 
-  task_environment()->FastForwardBy(
+  test_update_server().AddBundle(CreateIwa1Bundle("4.0.0"),
+                                 std::vector<UpdateChannel>{kBetaChannel});
+
+  UpdateDiscoveryTaskFuture update_future;
+  UpdateDiscoveryTaskResultWaiter update_waiter(
+      provider(), GetAppId(GetIwa1WebBundleId()), update_future.GetCallback());
+
+  task_environment().FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
       base::TimeTicks::Now());
-  task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info3_->url_info.app_id()),
-              test::IwaIs(Eq("installed iwa 3"),
-                          test::IsolationDataIs(
-                              Eq(iwa_info3_->installed_location),
-                              Eq(iwa_info3_->installed_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  EXPECT_THAT(
+      update_future.Take(),
+      ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound));
+
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
   EXPECT_THAT(UpdateDiscoveryLog(),
               UnorderedElementsAre(IsDict(DictionaryHasValue(
-                  "result",
-                  base::Value("Error::kUpdateManifestNoApplicableVersion")))));
+                  "result", base::Value("Success::kNoUpdateFound")))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DiscoversAndPreparesUpdateOfPolicyInstalledAppsToPinnedVersion) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
 
-  SetIwaForceInstallPolicy(
-      {{/*url_info=*/iwa_info1_->url_info,
-        /*update_manifest_url=*/iwa_info1_->update_manifest_url,
-        /*update_channel=*/std::nullopt,
-        /*pinned_version=*/iwa_info1_->update_version}});
+  // Pins the IWA to v2.0.0.
+  test::EditForceInstalledIwaPolicy(
+      profile()->GetPrefs(), GetIwa1WebBundleId(),
+      test_update_server().CreateForceInstallPolicyEntry(
+          GetIwa1WebBundleId(),
+          /*update_channel=*/std::nullopt,
+          /*pinned_version=*/base::Version("2.0.0")));
 
-  task_environment()->FastForwardBy(
+  test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"));
+
+  task_environment().FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
       base::TimeTicks::Now());
-  task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              test::IwaIs(iwa_info1_->update_app_name,
-                          test::IsolationDataIs(
-                              UpdateLocationMatcher(profile()),
-                              Eq(iwa_info1_->update_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("2.0.0"));
+
   EXPECT_THAT(
       UpdateDiscoveryLog(),
       UnorderedElementsAre(IsDict(DictionaryHasValue(
@@ -755,102 +535,79 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(IsDict(DictionaryHasValue(
                                     "result", base::Value("Success")))));
 
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
+  test_update_server().AddBundle(CreateIwa1Bundle("3.0.0"));
+
+  task_environment().FastForwardBy(
+      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
+      base::TimeTicks::Now());
+
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("2.0.0"));
+
+  EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DoesNotDiscoverUpdateOfPolicyInstalledAppsWithPinnedCurrentVersion) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  // Initial pinned IWA force installation.
+  {
+    test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"));
 
-  SetIwaForceInstallPolicy(
-      {{/*url_info=*/iwa_info1_->url_info,
-        /*update_manifest_url=*/iwa_info1_->update_manifest_url,
-        /*update_channel=*/std::nullopt,
-        /*pinned_version=*/iwa_info1_->installed_version}});
+    test::AddForceInstalledIwaToPolicy(
+        profile()->GetPrefs(),
+        test_update_server().CreateForceInstallPolicyEntry(
+            GetIwa1WebBundleId(),
+            /*update_channel=*/std::nullopt,
+            /*pinned_version=*/base::Version("2.0.0")));
 
-  task_environment()->FastForwardBy(
+    web_app::WebAppTestInstallObserver(profile()).BeginListeningAndWait(
+        {GetAppId(GetIwa1WebBundleId())});
+
+    AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("2.0.0"));
+  }
+  test_update_server().AddBundle(CreateIwa1Bundle("3.0.0"));
+
+  task_environment().FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
       base::TimeTicks::Now());
-  task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              test::IwaIs(Eq("installed iwa 1"),
-                          test::IsolationDataIs(
-                              Eq(iwa_info1_->installed_location),
-                              Eq(iwa_info1_->installed_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
-
-  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
+  // As log as the IWA is pinned to v2.0.0 no updates should be discovered.
+  EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
 }
 
-TEST_F(
-    IsolatedWebAppUpdateManagerUpdateMockTimeTest,
-    DoesNotDiscoverUpdateOfPolicyInstalledAppsWithPinnedToNotExistentVersion) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
+       DoesNotDiscoverUpdateOfPolicyInstalledAppsWhenPinnedToIncorrectVersion) {
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info2_->url_info.origin().GetURL(), "installed iwa 2",
-      IsolationData::Builder(iwa_info2_->installed_location,
-                             iwa_info2_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  // Pin IWA to a version that is higher than the latest version.
+  test::EditForceInstalledIwaPolicy(
+      profile()->GetPrefs(), GetIwa1WebBundleId(),
+      test_update_server().CreateForceInstallPolicyEntry(
+          GetIwa1WebBundleId(),
+          /*update_channel=*/std::nullopt,
+          /*pinned_version=*/base::Version("5.0.0")));
 
-  // Pin IWA 1 to a version that is higher than the latest (2.0.0).
-  // Pin IWA 2 to lower version than the current one (dowgrading by only pinning
-  // is not possible)
-  SetIwaForceInstallPolicy(
-      {{/*url_info=*/iwa_info1_->url_info,
-        /*update_manifest_url=*/iwa_info1_->update_manifest_url,
-        /*update_channel=*/std::nullopt,
-        /*pinned_version=*/base::Version("5.0.0")},
-       {/*url_info=*/iwa_info2_->url_info,
-        /*update_manifest_url=*/iwa_info2_->update_manifest_url,
-        /*update_channel=*/std::nullopt,
-        /*pinned_version=*/base::Version("0.5.0")}});
+  // New version appears, it is still lower than the `pinned_version`.
+  test_update_server().AddBundle(CreateIwa1Bundle("3.0.0"));
 
-  task_environment()->FastForwardBy(
+  task_environment().FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
       base::TimeTicks::Now());
-  task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              test::IwaIs(Eq("installed iwa 1"),
-                          test::IsolationDataIs(
-                              Eq(iwa_info1_->installed_location),
-                              Eq(iwa_info1_->installed_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info2_->url_info.app_id()),
-              test::IwaIs(Eq("installed iwa 2"),
-                          test::IsolationDataIs(
-                              Eq(iwa_info2_->installed_location),
-                              Eq(iwa_info2_->installed_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  // Pin IWA to lower version than the current one (downgrading by setting
+  // `pinned_version` without setting `allow_downgrades` to true is impossible.
+  test::AddForceInstalledIwaToPolicy(
+      profile()->GetPrefs(), test_update_server().CreateForceInstallPolicyEntry(
+                                 GetIwa1WebBundleId(),
+                                 /*update_channel=*/std::nullopt,
+                                 /*pinned_version=*/base::Version("0.5.0")));
+
+  task_environment().FastForwardBy(
+      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
+      base::TimeTicks::Now());
+
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
   EXPECT_THAT(UpdateDiscoveryLog(),
               UnorderedElementsAre(IsDict(DictionaryHasValue(
@@ -858,43 +615,28 @@ TEST_F(
                   base::Value("Error::kUpdateManifestNoApplicableVersion")))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DiscoverDowngradeOfPolicyInstalledApps) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info2_->url_info.origin().GetURL(), "latest iwa 2",
-      IsolationData::Builder(iwa_info2_->installed_location,
-                             base::Version("10.0.0"))
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("5.0.0"));
 
-  // Pin IWA to lower version than the current one
-  SetIwaForceInstallPolicy(
-      {{/*url_info=*/iwa_info2_->url_info,
-        /*update_manifest_url=*/iwa_info2_->update_manifest_url,
-        /*update_channel=*/std::nullopt,
-        /*pinned_version=*/iwa_info2_->update_version,
-        /*allow_downgrades=*/true}});
+  // Pin IWA to a lower version than the current one.
+  test::EditForceInstalledIwaPolicy(
+      profile()->GetPrefs(), GetIwa1WebBundleId(),
+      test_update_server().CreateForceInstallPolicyEntry(
+          GetIwa1WebBundleId(),
+          /*update_channel=*/std::nullopt,
+          /*pinned_version=*/base::Version("1.0.0"),
+          /*allow_downgrades=*/true));
 
-  EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
-                  iwa_info2_->url_info.app_id()),
-              IsTrue());
-  task_environment()->RunUntilIdle();
+  test_update_server().AddBundle(CreateIwa1Bundle("1.0.0"));
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info2_->url_info.app_id()),
-              test::IwaIs(Eq("updated app 2"),
-                          test::IsolationDataIs(
-                              UpdateLocationMatcher(profile()),
-                              Eq(iwa_info2_->update_version, ),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  task_environment().FastForwardBy(
+      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
+      base::TimeTicks::Now());
+
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -902,18 +644,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
           "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), SizeIs(1));
-
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        MaybeDiscoverUpdatesForApp) {
   // Trigger updates for an app that is not installed. This should fail.
   EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
-                  iwa_info1_->url_info.app_id()),
+                  GetAppId(GetIwa1WebBundleId())),
               IsFalse());
 
   // Trigger updates for an app that is not an IWA. This should fail.
@@ -922,98 +659,161 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(non_iwa_app_id),
               IsFalse());
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(GetIwa1WebBundleId());
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 1);
 
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
+  test::RemoveForceInstalledIwaFromPolicy(profile()->GetPrefs(),
+                                          GetIwa1WebBundleId());
+
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
   // Trigger updates for an app that is not installed via policy. This should
   // fail.
   EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
-                  iwa_info1_->url_info.app_id()),
+                  GetAppId(GetIwa1WebBundleId())),
               IsFalse());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
+  test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"));
+
+  test::AddForceInstalledIwaToPolicy(
+      profile()->GetPrefs(),
+      test_update_server().CreateForceInstallPolicyEntry(GetIwa1WebBundleId()));
 
   EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
-                  iwa_info1_->url_info.app_id()),
+                  GetAppId(GetIwa1WebBundleId())),
               IsTrue());
-  task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info1_->url_info.app_id()),
-      test::IwaIs(Eq("installed iwa 1"),
-                  test::IsolationDataIs(Eq(iwa_info1_->installed_location),
-                                        Eq(iwa_info1_->installed_version),
-                                        /*controlled_frame_partitions=*/_,
-                                        test::PendingUpdateInfoIs(
-                                            UpdateLocationMatcher(profile()),
-                                            Eq(base::Version("2.0.0")),
-                                            /*integrity_block_data=*/_),
-                                        /*integrity_block_data=*/_)));
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 0);
 
-  EXPECT_THAT(
-      UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
-  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
+  AssertAppDiscoveryTaskSuccessful(GetIwa1WebBundleId());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
 
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
-
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 1);
+  test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"));
 
   // After one hour, the update should not yet have run, but still be scheduled
   // (i.e. containing a value in the `std::optional`).
-  task_environment()->FastForwardBy(base::Hours(1));
+  task_environment().FastForwardBy(base::Hours(1));
+
   auto old_update_discovery_time =
       update_manager().GetNextUpdateDiscoveryTimeForTesting();
   EXPECT_THAT(old_update_discovery_time.has_value(), IsTrue());
 
-  // Once we manually trigger update discovery, the update discovery timer
-  // should reset to a different time in the future.
   EXPECT_THAT(update_manager().DiscoverUpdatesNow(), Eq(1ul));
   EXPECT_THAT(update_manager().GetNextUpdateDiscoveryTimeForTesting(),
               AllOf(Ne(old_update_discovery_time), Ge(base::TimeTicks::Now())));
 
-  task_environment()->RunUntilIdle();
+  AssertAppDiscoveryTaskSuccessful(GetIwa1WebBundleId());
 
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info1_->url_info.app_id()),
-      test::IwaIs(Eq("installed iwa 1"),
-                  test::IsolationDataIs(Eq(iwa_info1_->installed_location),
-                                        Eq(iwa_info1_->installed_version),
-                                        /*controlled_frame_partitions=*/_,
-                                        test::PendingUpdateInfoIs(
-                                            UpdateLocationMatcher(profile()),
-                                            Eq(base::Version("2.0.0")),
-                                            /*integrity_block_data=*/_),
-                                        /*integrity_block_data=*/_)));
+  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, KeyRotationUpdateRetry) {
+  // Install bundle with ed25519 id.
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+
+  auto capture_discovery_task_result = [&](base::FunctionRef<void()> trigger) {
+    UpdateDiscoveryTaskFuture future;
+    UpdateDiscoveryTaskResultWaiter waiter(
+        provider(), GetAppId(GetIwa1WebBundleId()), future.GetCallback());
+    trigger();
+    return future.Take();
+  };
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Rotate the signing key from ed25519 to ecdsaP256. This will
+                // trigger an unsuccessful update.
+                ASSERT_THAT(
+                    test::UpdateKeyDistributionInfo(
+                        base::Version("1.0.0"), GetIwa1WebBundleId().id(),
+                        test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
+                    base::test::HasValue());
+              }),
+              ErrorIs(_));
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Fast forward by a minute -- this will trigger the first
+                // exponential update attempt.
+                task_environment().FastForwardBy(base::Minutes(1));
+              }),
+              ErrorIs(_));
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Fast forward by two minutes -- this will trigger the second
+                // exponential update attempt.
+                task_environment().FastForwardBy(base::Minutes(2));
+              }),
+              ErrorIs(_));
+
+  // Now substitute the bundle served by the manifest.
+  test_update_server().AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle(GetIwa1WebBundleId(),
+                       {test::GetDefaultEcdsaP256KeyPair()}));
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Fast forward by another four minutes -- this will trigger the
+                // third & successful exponential update attempt.
+                task_environment().FastForwardBy(base::Minutes(4));
+              }),
+              ValueIs(_));
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, SubsequentKeyRotations) {
+  // Install bundle with ed25519 id.
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+
+  auto web_bundle_id = GetIwa1WebBundleId();
+  auto app_id = GetAppId(web_bundle_id);
+
+  for (uint32_t comp_v = 1; comp_v <= 10; comp_v++) {
+    auto key_pair = web_package::test::Ed25519KeyPair::CreateRandom();
+    test_update_server().AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+            .BuildBundle(web_bundle_id, {key_pair}));
+
+    ASSERT_THAT(
+        provider().registrar_unsafe().GetAppById(app_id),
+        test::IwaIs(_, test::IsolationDataIs(
+                           _, _, _, _, /*integrity_block_data=*/
+                           testing::Not(test::IntegrityBlockDataPublicKeysAre(
+                               key_pair.public_key)))));
+
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({app_id});
+    ASSERT_THAT(test::UpdateKeyDistributionInfo(
+                    base::Version(base::StringPrintf("%d.0.0", comp_v)),
+                    web_bundle_id.id(), key_pair.public_key.bytes()),
+                base::test::HasValue());
+    manifest_updated_observer.Wait();
+
+    ASSERT_THAT(provider().registrar_unsafe().GetAppById(app_id),
+                test::IwaIs(_, test::IsolationDataIs(
+                                   _, _, _, _, /*integrity_block_data=*/
+                                   test::IntegrityBlockDataPublicKeysAre(
+                                       key_pair.public_key))));
+  }
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
+       AppliesUpdatesAfterWindowIsClosed) {
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 1);
+
+  test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"));
+  update_manager().DiscoverUpdatesNow();
+
+  AssertAppDiscoveryTaskSuccessful(GetIwa1WebBundleId());
+
+  // Due to not closed IWA window, update is not applied yet.
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -1021,85 +821,26 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
           "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 0);
+
+  AssertInstallationFinish(GetIwa1WebBundleId());
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("2.0.0"));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
-       ApplysUpdatesAfterWindowIsClosed) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed app",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+       AppliesUpdatesWithHigherPriorityThanUpdateDiscovery) {
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+  InitialIwaBundleForceInstall(CreateIwa2Bundle("2.0.0"));
 
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
+  // Add new bundles for both apps.
+  test_update_server().AddBundle(CreateIwa1Bundle("1.1.0"));
+  test_update_server().AddBundle(CreateIwa2Bundle("2.2.0"));
 
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
   update_manager().DiscoverUpdatesNow();
-  task_environment()->RunUntilIdle();
-
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info1_->url_info.app_id()),
-      test::IwaIs(Eq("installed app"),
-                  test::IsolationDataIs(Eq(iwa_info1_->installed_location),
-                                        Eq(iwa_info1_->installed_version),
-                                        /*controlled_frame_partitions=*/_,
-                                        test::PendingUpdateInfoIs(
-                                            UpdateLocationMatcher(profile()),
-                                            Eq(iwa_info1_->update_version),
-                                            /*integrity_block_data=*/_),
-                                        /*integrity_block_data=*/_)));
-
-  EXPECT_THAT(
-      UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
-  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 0);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(IsDict(DictionaryHasValue(
-                                    "result", base::Value("Success")))));
-
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              test::IwaIs(iwa_info1_->update_app_name,
-                          test::IsolationDataIs(
-                              UpdateLocationMatcher(profile()),
-                              Eq(iwa_info1_->update_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
-}
-
-TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
-       ApplysUpdatesWithHigherPriorityThanUpdateDiscovery) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed app 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info2_->url_info.origin().GetURL(), "installed app 2",
-      IsolationData::Builder(iwa_info2_->installed_location,
-                             iwa_info2_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
-       {iwa_info2_->url_info, iwa_info2_->update_manifest_url}});
-  update_manager().DiscoverUpdatesNow();
-  task_environment()->RunUntilIdle();
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListeningAndWait(
+      {GetAppId(GetIwa1WebBundleId()), GetAppId(GetIwa2WebBundleId())});
 
   {
     auto update_discovery_log = UpdateDiscoveryLog();
@@ -1131,156 +872,94 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
          update_discovery_log[1].GetDict().Find("end_time"),
          update_apply_log[1].GetDict().Find("start_time"),
          update_apply_log[1].GetDict().Find("end_time")});
-    EXPECT_THAT(base::ranges::is_sorted(times, {},
-                                        [](base::Value* value) {
-                                          return *base::ValueToTime(value);
-                                        }),
+    EXPECT_THAT(std::ranges::is_sorted(times, {},
+                                       [](base::Value* value) {
+                                         return *base::ValueToTime(value);
+                                       }),
                 IsTrue())
         << base::JoinString(ToVector(times, &base::Value::DebugString), "");
   }
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              test::IwaIs(iwa_info1_->update_app_name,
-                          test::IsolationDataIs(
-                              UpdateLocationMatcher(profile()),
-                              Eq(iwa_info1_->update_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.1.0"));
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info2_->url_info.app_id()),
-              test::IwaIs(iwa_info2_->update_app_name,
-                          test::IsolationDataIs(
-                              UpdateLocationMatcher(profile()),
-                              Eq(iwa_info2_->update_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("2.2.0"));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled) {
-  profile_url_loader_factory().ClearResponses();
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+  InitialIwaBundleForceInstall(CreateIwa2Bundle("2.0.0"));
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed app 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info2_->url_info.origin().GetURL(), "installed app 2",
-      IsolationData::Builder(iwa_info2_->installed_location,
-                             iwa_info2_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  test_update_server().AddBundle(CreateIwa1Bundle("1.1.0"));
+  test_update_server().AddBundle(CreateIwa2Bundle("2.2.0"));
 
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
-       {iwa_info2_->url_info, iwa_info2_->update_manifest_url}});
-  update_manager().DiscoverUpdatesNow();
-  task_environment()->RunUntilIdle();
+  // Wait for the first discovery task to be in progress.
+  base::test::TestFuture<web_package::SignedWebBundleId> future;
+  EXPECT_CALL(mock_command_scheduler(), PrepareAndStoreIsolatedWebAppUpdate)
+      .WillOnce(
+          WithArg<1>([&future](const IsolatedWebAppUrlInfo& url_info) -> void {
+            future.SetValue(url_info.web_bundle_id());
+          }))
+      .RetiresOnSaturation();
 
-  // Wait for the update discovery task of either app 1 or app 2 to request the
-  // update manifest (which task starts first is undefined).
-  ASSERT_THAT(profile_url_loader_factory().NumPending(), Eq(1));
-  EXPECT_THAT(UpdateDiscoveryTasks(), SizeIs(2));  // two tasks should be queued
-  EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());  // no task should have finished
+  EXPECT_THAT(update_manager().DiscoverUpdatesNow(), Eq(2ul));
 
-  // Uninstall the other IWA whose update discovery task has not yet started.
-  GURL pending_url =
-      profile_url_loader_factory().GetPendingRequest(0)->request.url;
-  IwaInfo* iwa_to_keep;
-  IwaInfo* iwa_to_uninstall;
-  if (pending_url == iwa_info1_->update_manifest_url) {
-    iwa_to_keep = &*iwa_info1_;
-    iwa_to_uninstall = &*iwa_info2_;
-  } else if (pending_url == iwa_info2_->update_manifest_url) {
-    iwa_to_keep = &*iwa_info2_;
-    iwa_to_uninstall = &*iwa_info1_;
-  } else {
-    FAIL() << "Unexpected pending request for: " << pending_url;
-  }
+  web_package::SignedWebBundleId iwa_to_keep = future.Take();
 
-  EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_to_uninstall->url_info.app_id()),
-              Eq(webapps::UninstallResultCode::kAppRemoved));
+  // Uninstall the other IWA whose discovery task has not yet started.
+  web_package::SignedWebBundleId iwa_to_uninstall =
+      (iwa_to_keep == GetIwa1WebBundleId()) ? GetIwa2WebBundleId()
+                                            : GetIwa1WebBundleId();
+  test::RemoveForceInstalledIwaFromPolicy(profile()->GetPrefs(),
+                                          iwa_to_uninstall);
 
-  EXPECT_THAT(UpdateDiscoveryTasks(),
-              UnorderedElementsAre(IsDict(DictionaryHasValue(
-                  "app_id", base::Value(iwa_to_keep->url_info.app_id())))));
-  EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListeningAndWait({GetAppId(iwa_to_uninstall)});
 
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
+  AssertAppNotInstalled(iwa_to_uninstall);
 }
 
-// TODO(b/338380813): The test is flaky on asan ChromeOS builder.
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed app",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
 
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 1);
 
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
+  test_update_server().AddBundle(CreateIwa1Bundle("2.0.0"));
   update_manager().DiscoverUpdatesNow();
-  task_environment()->RunUntilIdle();
+  AssertAppDiscoveryTaskSuccessful(GetIwa1WebBundleId());
 
-  EXPECT_THAT(
-      UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyWaiters(),
               UnorderedElementsAre(IsDict(DictionaryHasValue(
-                  "app_id", base::Value(iwa_info1_->url_info.app_id())))));
+                  "app_id", base::Value(GetAppId(GetIwa1WebBundleId()))))));
 
-  EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_info1_->url_info.app_id()),
-              Eq(webapps::UninstallResultCode::kAppRemoved));
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
+  // IWA uninstallation.
+  {
+    test::RemoveForceInstalledIwaFromPolicy(profile()->GetPrefs(),
+                                            GetIwa1WebBundleId());
+    WebAppTestUninstallObserver uninstall_observer(profile());
+    uninstall_observer.BeginListeningAndWait({GetAppId(GetIwa1WebBundleId())});
+  }
   EXPECT_THAT(UpdateApplyWaiters(), IsEmpty());
   EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
 
-// TODO(b/326527744): This test is flaky on asan ChromeOS builder.
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        StopsNonStartedUpdateApplyTasksIfIwaIsUninstalled) {
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info1_->url_info.origin().GetURL(), "installed app 1",
-      IsolationData::Builder(iwa_info1_->installed_location,
-                             iwa_info1_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-  AddDummyIsolatedAppToRegistry(
-      profile(), iwa_info2_->url_info.origin().GetURL(), "installed app 2",
-      IsolationData::Builder(iwa_info2_->installed_location,
-                             iwa_info2_->installed_version)
-          .Build(),
-      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+  InitialIwaBundleForceInstall(CreateIwa2Bundle("2.0.0"));
 
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
-  fake_ui_manager().SetNumWindowsForApp(iwa_info2_->url_info.app_id(), 1);
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 1);
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa2WebBundleId()), 1);
 
-  SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
-       {iwa_info2_->url_info, iwa_info2_->update_manifest_url}});
+  test_update_server().AddBundle(CreateIwa1Bundle("1.1.0"));
+  test_update_server().AddBundle(CreateIwa2Bundle("2.2.0"));
+
   update_manager().DiscoverUpdatesNow();
-  task_environment()->RunUntilIdle();
+  AssertAppDiscoveryTaskSuccessful(GetIwa1WebBundleId());
+  AssertAppDiscoveryTaskSuccessful(GetIwa2WebBundleId());
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -1294,9 +973,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   EXPECT_THAT(UpdateApplyWaiters(),
               UnorderedElementsAre(
                   IsDict(DictionaryHasValue(
-                      "app_id", base::Value(iwa_info1_->url_info.app_id()))),
+                      "app_id", base::Value(GetAppId(GetIwa1WebBundleId())))),
                   IsDict(DictionaryHasValue(
-                      "app_id", base::Value(iwa_info2_->url_info.app_id())))));
+                      "app_id", base::Value(GetAppId(GetIwa2WebBundleId()))))));
 
   // Wait for the update apply task of either app 1 or app 2 to start.
   base::test::TestFuture<IsolatedWebAppUrlInfo> future;
@@ -1304,69 +983,65 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
               ApplyPendingIsolatedWebAppUpdate(_, _, _, _, _))
       .WillOnce(WithArg<0>(Invoke(
           &future, &base::test::TestFuture<IsolatedWebAppUrlInfo>::SetValue)));
-  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 0);
-  fake_ui_manager().SetNumWindowsForApp(iwa_info2_->url_info.app_id(), 0);
+
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 0);
+  fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa2WebBundleId()), 0);
   webapps::AppId iwa_to_keep = future.Take().app_id();
 
   EXPECT_THAT(UpdateApplyTasks(), SizeIs(2));  // two tasks should be queued
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());    // no task should have finished
 
   // Uninstall the other IWA whose update apply task has not yet started.
-  IwaInfo* iwa_to_uninstall;
-  if (iwa_to_keep == iwa_info1_->url_info.app_id()) {
-    iwa_to_uninstall = &*iwa_info2_;
-  } else if (iwa_to_keep == iwa_info2_->url_info.app_id()) {
-    iwa_to_uninstall = &*iwa_info1_;
-  } else {
-    FAIL() << "Unexpected IWA app id: " << iwa_to_keep;
-  }
+  web_package::SignedWebBundleId iwa_to_uninstall =
+      (iwa_to_keep == GetAppId(GetIwa1WebBundleId())) ? GetIwa2WebBundleId()
+                                                      : GetIwa1WebBundleId();
 
-  EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_to_uninstall->url_info.app_id()),
-              Eq(webapps::UninstallResultCode::kAppRemoved));
+  test::RemoveForceInstalledIwaFromPolicy(profile()->GetPrefs(),
+                                          iwa_to_uninstall);
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListeningAndWait({GetAppId(iwa_to_uninstall)});
 
   EXPECT_THAT(UpdateApplyTasks(),
               UnorderedElementsAre(IsDict(
                   DictionaryHasValue("app_id", base::Value(iwa_to_keep)))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     : public IsolatedWebAppUpdateManagerUpdateTest {
  protected:
   void SeedWebAppDatabase() override {
     // Seed the `WebAppProvider` with an IWA before it is started.
-    EXPECT_THAT(fake_provider().is_registry_ready(), IsFalse());
+    EXPECT_THAT(provider().is_registry_ready(), IsFalse());
 
     base::FilePath path = update_location_.GetPath(profile()->GetPath());
     EXPECT_THAT(base::CreateDirectory(path.DirName()), IsTrue());
 
     auto update_bundle =
         IsolatedWebAppBuilder(
-            ManifestBuilder()
-                .SetVersion(iwa_info1_->update_version.GetString())
-                .SetName("updated iwa"))
-            .BuildBundle(path, iwa_info1_->key_pair);
+            ManifestBuilder().SetVersion("2.0.0").SetName("updated iwa"))
+            .BuildBundle(path, test::GetDefaultEd25519KeyPair());
+    update_bundle->TrustSigningKey();
+    update_bundle->FakeInstallPageState(profile());
+
+    auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+        GetIwa1WebBundleId());
 
     std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-        iwa_info1_->url_info.origin().GetURL(),
-        IsolationData::Builder(iwa_info1_->installed_location,
-                               iwa_info1_->installed_version)
+        url_info.origin().GetURL(),
+        IsolationData::Builder(
+            IwaStorageOwnedBundle{"iwa1", /*dev_mode=*/false},
+            base::Version("1.0.0"))
             .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
-                update_location_, iwa_info1_->update_version))
+                update_location_, base::Version("2.0.0")))
             .Build());
-    CreateStoragePartition(iwa_info1_->url_info);
+
+    CreateStoragePartition(url_info);
 
     Registry registry;
     registry.emplace(iwa->app_id(), std::move(iwa));
-    auto& database_factory = static_cast<FakeWebAppDatabaseFactory&>(
-        fake_provider().database_factory());
+    auto& database_factory =
+        static_cast<FakeWebAppDatabaseFactory&>(provider().database_factory());
     database_factory.WriteRegistry(registry);
   }
 
@@ -1400,19 +1075,16 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest,
        SchedulesPendingUpdateApplyTasks) {
-  WebAppTestManifestUpdatedObserver manifest_updated_observer(
-      &fake_provider().install_manager());
-  manifest_updated_observer.BeginListening({iwa_info1_->url_info.app_id()});
-  manifest_updated_observer.Wait();
+  AssertInstallationFinish(GetIwa1WebBundleId());
 
-  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
-                  iwa_info1_->url_info.app_id()),
-              test::IwaIs(iwa_info1_->update_app_name,
-                          test::IsolationDataIs(
-                              update_location_, Eq(iwa_info1_->update_version),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt),
-                              /*integrity_block_data=*/_)));
+  EXPECT_THAT(
+      provider().registrar_unsafe().GetAppById(GetAppId(GetIwa1WebBundleId())),
+      test::IwaIs(
+          "updated iwa",
+          test::IsolationDataIs(update_location_, Eq(base::Version("2.0.0")),
+                                /*controlled_frame_partitions=*/_,
+                                /*pending_update_info=*/Eq(std::nullopt),
+                                /*integrity_block_data=*/_)));
 }
 
 class IsolatedWebAppUpdateManagerDiscoveryTimerTest
@@ -1420,7 +1092,7 @@ class IsolatedWebAppUpdateManagerDiscoveryTimerTest
  protected:
   void SetUp() override {
     IsolatedWebAppUpdateManagerTest::SetUp();
-    fake_provider().SetEnableAutomaticIwaUpdates(
+    provider().SetEnableAutomaticIwaUpdates(
         FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -1437,8 +1109,13 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
        StartsUpdateDiscoveryTimerWithJitter) {
   std::vector<base::TimeTicks> times;
   for (int i = 0; i < 10; ++i) {
-    webapps::AppId app_id = AddDummyIsolatedAppToRegistry(
-        profile(), GURL("isolated-app://a"), "iwa");
+    std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+            .BuildBundle();
+    app->FakeInstallPageState(profile());
+    app->TrustSigningKey();
+    app->InstallChecked(profile());
+
     auto time = update_manager().GetNextUpdateDiscoveryTimeForTesting();
     EXPECT_THAT(time,
                 Optional(AllOf(Ge(base::TimeTicks::Now() + base::Hours(4)),
@@ -1450,17 +1127,11 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
       times.push_back(*time);
     }
 
-    test::UninstallWebApp(profile(), app_id);
+    test::UninstallWebApp(profile(), GetAppId(app->web_bundle_id()));
     EXPECT_THAT(
         update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
         IsFalse());
   }
-
-  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
-  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
-  fake_provider().Shutdown();
-  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
-      ->Shutdown();
 }
 
 TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
@@ -1475,19 +1146,17 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
       update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
       IsFalse());
 
-  webapps::AppId iwa_app_id1 = AddDummyIsolatedAppToRegistry(
-      profile(), GURL("isolated-app://a"), "iwa1");
+  CreateIwa1Bundle("1.0.0")->InstallChecked(profile());
   EXPECT_THAT(
       update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
       IsTrue());
 
-  webapps::AppId iwa_app_id2 = AddDummyIsolatedAppToRegistry(
-      profile(), GURL("isolated-app://b"), "iwa2");
+  CreateIwa2Bundle("2.0.0")->InstallChecked(profile());
   EXPECT_THAT(
       update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
       IsTrue());
 
-  test::UninstallWebApp(profile(), iwa_app_id1);
+  test::UninstallWebApp(profile(), GetAppId(GetIwa1WebBundleId()));
   EXPECT_THAT(
       update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
       IsTrue());
@@ -1497,75 +1166,11 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
       update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
       IsTrue());
 
-  test::UninstallWebApp(profile(), iwa_app_id2);
+  test::UninstallWebApp(profile(), GetAppId(GetIwa2WebBundleId()));
   EXPECT_THAT(
       update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
       IsFalse());
 }
-
-struct FeatureFlagParam {
-  base::flat_map<base::test::FeatureRef, bool> feature_states;
-  bool expected_result;
-};
-
-class IsolatedWebAppUpdateManagerFeatureFlagTest
-    : public IsolatedWebAppUpdateManagerTest,
-      public ::testing::WithParamInterface<FeatureFlagParam> {
- public:
-  IsolatedWebAppUpdateManagerFeatureFlagTest()
-      : IsolatedWebAppUpdateManagerTest(GetParam().feature_states) {}
-
- protected:
-  void SetUp() override {
-    IsolatedWebAppUpdateManagerTest::SetUp();
-    // Disable manual overwrite of automatic update behavior and thus behave
-    // like it would outside of tests.
-    fake_provider().SetEnableAutomaticIwaUpdates(
-        FakeWebAppProvider::AutomaticIwaUpdateStrategy::kDefault);
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-};
-
-TEST_P(IsolatedWebAppUpdateManagerFeatureFlagTest,
-       DoesUpdateDiscoveryIfFeatureFlagsAreEnabled) {
-  AddDummyIsolatedAppToRegistry(profile(), GURL("isolated-app://a"), "iwa");
-
-  EXPECT_THAT(
-      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
-      Eq(GetParam().expected_result));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    IsolatedWebAppUpdateManagerFeatureFlagTest,
-    ::testing::Values(
-// TODO: crbug.com/40274058 - Enable automatic updates on other platforms.
-#if !BUILDFLAG(IS_CHROMEOS)
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, false}},
-            .expected_result = false},
-        FeatureFlagParam{.feature_states = {{features::kIsolatedWebApps, true}},
-                         .expected_result = false}
-#else   // BUILDFLAG(IS_CHROMEOS)
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, false},
-                               {features::kIsolatedWebAppAutomaticUpdates,
-                                true}},
-            .expected_result = false},
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, true},
-                               {features::kIsolatedWebAppAutomaticUpdates,
-                                false}},
-            .expected_result = false},
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, true},
-                               {features::kIsolatedWebAppAutomaticUpdates,
-                                true}},
-            .expected_result = true}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        ));
-
-}  // namespace
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskSuccess) {
   base::HistogramTester histogram_tester;
@@ -1627,4 +1232,5 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateApplyTaskFails) {
                            IsolatedWebAppUpdateError::kUpdateApplyFailed, 1))));
 }
 
+}  // namespace
 }  // namespace web_app

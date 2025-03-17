@@ -359,10 +359,9 @@ scoped_refptr<const TableConstraintSpaceData> CreateConstraintSpaceData(
   return data;
 }
 
-// Columns do not generate fragments.
-// Column geometry is needed for painting, and is stored
-// in TableFragmentData. Geometry data is also copied
-// back to LayoutObject.
+// Columns do not generate fragments. Column geometry is needed for painting,
+// and is stored in TableColumnGeometry. Geometry data is also copied back to
+// LayoutObject.
 class ColumnGeometriesBuilder {
   STACK_ALLOCATED();
 
@@ -407,8 +406,7 @@ class ColumnGeometriesBuilder {
     // - parent COLGROUP must come before child COLs.
     // - child COLs are in ascending order.
     std::sort(column_geometries.begin(), column_geometries.end(),
-              [](const TableFragmentData::ColumnGeometry& a,
-                 const TableFragmentData::ColumnGeometry& b) {
+              [](const TableColumnGeometry& a, const TableColumnGeometry& b) {
                 if (a.node.IsTableCol() && b.node.IsTableCol()) {
                   return a.start_column < b.start_column;
                 }
@@ -442,7 +440,7 @@ class ColumnGeometriesBuilder {
                           LayoutUnit table_column_block_size)
       : column_locations(column_locations),
         table_column_block_size(table_column_block_size) {}
-  TableFragmentData::ColumnGeometries column_geometries;
+  TableColumnGeometries column_geometries;
   const Vector<TableColumnLocation>& column_locations;
   const LayoutUnit table_column_block_size;
 };
@@ -873,9 +871,8 @@ void TableLayoutAlgorithm::ComputeTableSpecificFragmentData(
   }
   // Collapsed borders.
   if (!table_borders.IsEmpty()) {
-    std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
-        fragment_borders_geometry =
-            std::make_unique<TableFragmentData::CollapsedBordersGeometry>();
+    std::unique_ptr<CollapsedTableBordersGeometry> fragment_borders_geometry =
+        std::make_unique<CollapsedTableBordersGeometry>();
     for (const auto& column : column_locations)
       fragment_borders_geometry->columns.push_back(column.offset);
     DCHECK_NE(column_locations.size(), 0u);

@@ -34,11 +34,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -53,6 +53,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link ChromeDragAndDropBrowserDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+@Features.DisableFeatures(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW)
 public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -63,15 +65,9 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
 
     private Context mApplicationContext;
     private ChromeDragAndDropBrowserDelegate mDelegate;
-    private FeatureList.TestValues mTestValues;
 
     @Before
     public void setup() throws NameNotFoundException {
-        mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW, false);
-        FeatureList.setTestValues(mTestValues);
-
         mApplicationContext = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mApplicationContext);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
@@ -90,11 +86,12 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(
+            ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU
+                    + ":"
+                    + ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME
+                    + "/true")
     public void testDragAndDropBrowserDelegate_getDragAndDropPermissions() {
-        mTestValues.addFieldTrialParamOverride(
-                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
-                "true");
         mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertTrue("SupportDropInChrome should be true.", mDelegate.getSupportDropInChrome());
         assertFalse(
@@ -106,11 +103,12 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(
+            ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU
+                    + ":"
+                    + ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME
+                    + "/false")
     public void testDragAndDropBrowserDelegate_NotSupportDropInChrome() {
-        mTestValues.addFieldTrialParamOverride(
-                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
-                "false");
         mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertFalse("SupportDropInChrome should be false.", mDelegate.getSupportDropInChrome());
 
@@ -209,7 +207,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     public void testBuildFlags_dropDataHasNoTab() {
         MultiWindowTestUtils.enableMultiInstance();
         int originalFlag = 0;
-        var dropData = new ChromeDropDataAndroid.Builder().build();
+        var dropData = new ChromeTabDropDataAndroid.Builder().build();
         var flags = mDelegate.buildFlags(originalFlag, dropData);
         assertEquals("Original flag should not be modified.", originalFlag, flags);
     }
@@ -240,7 +238,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     private ChromeDropDataAndroid createTabDropData(
             int tabId, boolean allowDragToCreateNewInstance) {
         Tab tab = MockTab.createAndInitialize(tabId, mProfile);
-        return new ChromeDropDataAndroid.Builder()
+        return new ChromeTabDropDataAndroid.Builder()
                 .withTab(tab)
                 .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
                 .build();
@@ -250,13 +248,15 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         var tab = MockTab.createAndInitialize(1, mProfile);
         var dropData = createTabDropData(1, true);
+        int sourceWindowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(mActivity);
         var item =
                 withItem
                         ? new Item(
                                 DragAndDropLauncherActivity.getTabIntent(
                                         mApplicationContext,
                                         tab,
-                                        MultiWindowUtils.INVALID_INSTANCE_ID))
+                                        sourceWindowId,
+                                        /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID))
                         : null;
         ChromeDragAndDropBrowserDelegate.setClipDataItemWithPendingIntentForTesting(item);
 

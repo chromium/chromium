@@ -123,7 +123,7 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
   // </if>
 
-  test('records on language list reorder', async () => {
+  test('records on language list reorder', () => {
     // Add several languages.
     for (const language of ['en-CA', 'en-US', 'tk', 'no']) {
       languageHelper.enableLanguage(language);
@@ -148,7 +148,7 @@ suite('LanguagesPageMetricsBrowser', function() {
       const menuItem = Array.from(menuItems).find(
           item => item.textContent!.trim() === i18nString);
       assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
-      return menuItem!;
+      return menuItem;
     }
 
     let moveButton = getMenuItem('moveUp');

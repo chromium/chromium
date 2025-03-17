@@ -9,6 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
+import type {TextLayerBase} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
@@ -16,7 +17,7 @@ import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_sup
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createWord, getHighlightedNodesForTesting, getWordNodesForTesting} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -56,8 +57,14 @@ suite('TextSelection', function() {
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Remove the extra word margins to make testing easier.
-    loadTimeData.overrideValues(
-        {'verticalTextMarginPx': 0, 'horizontalTextMarginPx': 0});
+    loadTimeData.overrideValues({
+      'verticalTextMarginPx': 0,
+      'horizontalTextMarginPx': 0,
+      // TODO(crbug.com/398040980): After launching simplified
+      // selection, the tests in this file should be removed as text
+      // selection will no longer be supported.
+      'simplifiedSelectionEnabled': false,
+    });
 
     // Turn off the shimmer. Since the shimmer is resource intensive, turn off
     // to prevent from causing issues in the tests.
@@ -78,6 +85,10 @@ suite('TextSelection', function() {
     await flushTasks();
     await addWords();
   });
+
+  function getTextSelectionLayer(): TextLayerBase {
+    return selectionOverlayElement.getTextSelectionLayerForTesting();
+  }
 
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
@@ -133,16 +144,16 @@ suite('TextSelection', function() {
   }
 
   function getRenderedWords(): NodeListOf<Element> {
-    return selectionOverlayElement.$.textSelectionLayer
-        .getWordNodesForTesting();
+    return getWordNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
   }
 
   function getHighlightedLines(): NodeListOf<Element> {
-    return selectionOverlayElement.$.textSelectionLayer
-        .getHighlightedNodesForTesting();
+    return getHighlightedNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
   }
 
-  test('verify that text renders on the page', async () => {
+  test('verify that text renders on the page', () => {
     const wordsOnPage = getRenderedWords();
 
     assertEquals(9, wordsOnPage.length);

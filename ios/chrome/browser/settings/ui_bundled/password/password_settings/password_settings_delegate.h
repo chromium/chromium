@@ -9,11 +9,20 @@
 // Settings UI.
 @protocol PasswordSettingsDelegate
 
-// Indicates whether or not "Offer to Save Passwords" is set to enabled.
+// Indicates whether or not "Offer to save passwords and passkeys" is set to
+// enabled.
 - (void)savedPasswordSwitchDidChange:(BOOL)enabled;
+
+// Indicates that the app was set as a credential provider through an in-app
+// prompt.
+- (void)passwordAutoFillWasTurnedOn;
 
 // Indicates that the bulk move passwords to account button was clicked.
 - (void)bulkMovePasswordsToAccountButtonClicked;
+
+// Indicates whether or not "Allow automatic passkey upgrades" is set to
+// enabled.
+- (void)automaticPasskeyUpgradesSwitchDidChange:(BOOL)enabled;
 
 @end
 

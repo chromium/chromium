@@ -1,0 +1,24 @@
+<!--
+  This is a version of histograms.xml that has correctly defined variants that
+  are referred to from tokens within histogram.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="TestToken">
+  <variant name="Variant1" summary="Label1"/>
+  <variant name="Variant2" summary="Label2"/>
+</variants>
+
+<histogram name="Test.Histogram.{TestToken}" units="microseconds"
+    expires_after="M85">
+  <owner>person@chromium.org</owner>
+  <summary>Summary</summary>
+  <token key="TestToken" variants="TestToken"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -39,7 +39,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
     virtual void NotifyObserversOfInputEvent(
         const FrameSinkId& frame_sink_id,
         const base::UnguessableToken& grouping_id,
-        std::unique_ptr<blink::WebCoalescedInputEvent> event) = 0;
+        std::unique_ptr<blink::WebCoalescedInputEvent> event,
+        bool dispatched_to_renderer) = 0;
     virtual void NotifyObserversOfInputEventAcks(
         const FrameSinkId& frame_sink_id,
         const base::UnguessableToken& grouping_id,
@@ -75,7 +76,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   bool IsIgnoringWebInputEvents(
       const blink::WebInputEvent& event) const override;
   bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
-  void NotifyObserversOfInputEvent(const blink::WebInputEvent& event) override;
+  void NotifyObserversOfInputEvent(const blink::WebInputEvent& event,
+                                   bool dispatched_to_renderer) override;
   void NotifyObserversOfInputEventAcks(
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,
@@ -90,11 +92,17 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   bool IsInitializedAndNotDead() override;
   void OnInputEventPreDispatch(const blink::WebInputEvent& event) override {}
   void OnInvalidInputEventSource() override;
-  void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) override {}
   void OnInputIgnored(const blink::WebInputEvent& event) override {}
+  input::StylusInterface* GetStylusInterface() override;
+  bool IsHidden() const override;
+  bool IsRendererProcessBlocked() override;
+  void OnInputEventAckTimeout() override {}
+  void RendererIsResponsive() override {}
+
+  void SetIsBlocked(bool blocked) { is_blocked_ = blocked; }
 
  private:
+  bool is_blocked_ = false;
   scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier_;
   raw_ref<Delegate> delegate_;
   const FrameSinkId frame_sink_id_;

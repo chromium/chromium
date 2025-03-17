@@ -702,10 +702,7 @@ class IbanBubbleViewSyncTransportFullFormBrowserTest
   }
 
  protected:
-  IbanBubbleViewSyncTransportFullFormBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableServerIban);
-  }
+  IbanBubbleViewSyncTransportFullFormBrowserTest() = default;
 
   void SetUpForSyncTransportModeTest() {
     // On ChromeOS, the test profile starts with a primary account already set,
@@ -770,9 +767,6 @@ class IbanBubbleViewSyncTransportFullFormBrowserTest
     test_url_loader_factory()->AddResponse(kURLUploadIbanRequest,
                                            kResponsePaymentsFailure);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests the upload save bubble. Ensures that the bubble does not go away right

@@ -142,6 +142,8 @@ inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
 inline constexpr char kNudgePayloadPath[] = "nudge";
 inline constexpr char kNotificationPayloadPath[] = "notification";
 inline constexpr char kOobePerkDiscoveryPayloadPath[] = "oobePerkDiscovery";
+inline constexpr char kDemoModeSignInExperiencePath[] =
+    "demoModeSignInExperience";
 
 // Actions
 inline constexpr char kActionTypePath[] = "type";
@@ -354,6 +356,9 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
     case Slot::kOobePerkDiscovery:
       return campaign->FindDictByDottedPath(base::StringPrintf(
           kPayloadPathTemplate, kOobePerkDiscoveryPayloadPath));
+    case Slot::kDemoModeSignInExperience:
+      return campaign->FindDictByDottedPath(base::StringPrintf(
+          kPayloadPathTemplate, kDemoModeSignInExperiencePath));
     case Slot::kDemoModeFreePlayApps:
       NOTREACHED();
   }

@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/node/node.gni")
+
+node("check_version") {
+  script = "check_version.py"
+
+  expected_version_file = "update_node_binaries"
+  inputs = [
+    expected_version_file,
+    "check_version.js",
+  ]
+
+  out_file = "${target_gen_dir}/check_version_result.txt"
+  outputs = [ out_file ]
+
+  args = [
+    "--expected_version_file",
+    rebase_path(expected_version_file, root_build_dir),
+    "--out_file",
+    rebase_path(out_file, root_build_dir),
+  ]
+}

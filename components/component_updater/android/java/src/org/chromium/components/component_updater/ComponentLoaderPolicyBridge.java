@@ -12,15 +12,18 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
 /** Provides JNI bridge to the native ComponentLoaderPolicy. */
 @JNINamespace("component_updater")
+@NullMarked
 public class ComponentLoaderPolicyBridge {
     private static final long NATIVE_NULL = 0;
 
-    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     private long mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
 

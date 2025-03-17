@@ -495,8 +495,7 @@ std::optional<MockRead> QuicSocketDataProvider::ConsumeNextRead() {
   Expectation& ready_expectation = expectations_[*ready];
   MockRead read(ready_expectation.mode(), ready_expectation.rv());
   if (ready_expectation.packet()) {
-    read.data = ready_expectation.packet()->data();
-    read.data_len = ready_expectation.packet()->length();
+    read.data = ready_expectation.packet()->AsStringPiece();
   }
   read.tos = ready_expectation.tos_byte();
   ready_expectation.Consume();

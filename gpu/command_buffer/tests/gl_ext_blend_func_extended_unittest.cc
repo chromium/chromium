@@ -237,7 +237,7 @@ TEST_P(EXTBlendFuncExtendedDrawTest, ESSL1FragColor) {
           });
   // clang-format on
   CreateProgramWithFragmentShader(kFragColorShader);
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
   DrawAndVerify();
 }
 
@@ -265,7 +265,7 @@ TEST_P(EXTBlendFuncExtendedDrawTest, ESSL1FragData) {
           });
   // clang-format on
   CreateProgramWithFragmentShader(kFragDataShader);
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
   DrawAndVerify();
 }
 
@@ -322,7 +322,7 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ESSL3Var) {
   // clang-format on
   CreateProgramWithFragmentShader(kFragColorShader);
   glBindFragDataLocationIndexedEXT(program_, 0, 1, "SecondaryFragColor");
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
   DrawAndVerify();
 }
 
@@ -355,7 +355,7 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ESSL3BindArrayWithSimpleName) {
   CreateProgramWithFragmentShader(kFragDataShader);
   glBindFragDataLocationEXT(program_, 0, "FragData");
   glBindFragDataLocationIndexedEXT(program_, 0, 1, "SecondaryFragData");
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
   DrawAndVerify();
 }
 
@@ -423,7 +423,7 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ESSL3BindArrayAsArray) {
   CreateProgramWithFragmentShader(kFragDataShader);
   glBindFragDataLocationEXT(program_, 0, "FragData[0]");
   glBindFragDataLocationIndexedEXT(program_, 0, 1, "SecondaryFragData[0]");
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
   DrawAndVerify();
 }
 
@@ -459,7 +459,7 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ES3Getters) {
   EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION), glGetError());
   index = glGetFragDataIndexEXT(program_, "SecondaryFragColor");
   EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION), glGetError());
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
 
   // Getters return location and index after linking. Run twice to confirm that
   // setters do not affect the getters until next link.
@@ -485,7 +485,7 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ES3Getters) {
     glBindFragDataLocationIndexedEXT(program_, 0, 1, "FragColor");
   }
 
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
 
   location = glGetFragDataLocation(program_, "FragColor");
   EXPECT_EQ(0, location);
@@ -510,7 +510,7 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ES3Getters) {
   // Reset the settings and verify that the driver gets them correct.
   glBindFragDataLocationEXT(program_, 0, "FragColor");
   glBindFragDataLocationIndexedEXT(program_, 0, 1, "SecondaryFragColor");
-  LinkProgram();
+  EXPECT_TRUE(LinkProgram());
   DrawAndVerify();
 }
 
@@ -590,7 +590,7 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ES3GettersArray) {
     }
 
     EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
-    LinkProgram();
+    EXPECT_TRUE(LinkProgram());
     EXPECT_EQ(kFragData0Location, glGetFragDataLocation(program_, "FragData"));
     EXPECT_EQ(0, glGetFragDataIndexEXT(program_, "FragData"));
     EXPECT_EQ(kFragData0Location,

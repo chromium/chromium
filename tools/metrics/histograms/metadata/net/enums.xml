@@ -137,6 +137,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Client Cert"/>
 </enum>
 
+<!-- LINT.IfChange(CertManagerPageEnum) -->
+
+<enum name="CertificateManagerPage">
+  <int value="0" label="Local Certs"/>
+  <int value="1" label="Client Certs"/>
+  <int value="2" label="Chrome Root Store Certs"/>
+  <int value="3" label="Admin Certs subpage"/>
+  <int value="4" label="Platform Client Certs subpage"/>
+  <int value="5" label="Platform Certs subpage"/>
+  <int value="6" label="User Certs subpage"/>
+</enum>
+
+<!-- LINT.ThenChange(/ui/webui/resources/cr_components/certificate_manager/navigation_v2.ts:PageHistogramEnum) -->
+
 <enum name="ConnectionInfo">
   <summary>
     Application protocol used for HTTP response as defined in
@@ -231,7 +245,33 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="kPreflightMissingPrivateNetworkAccessName"/>
   <int value="29" label="kPrivateNetworkAccessPermissionUnavailable"/>
   <int value="30" label="kPrivateNetworkAccessPermissionDenied"/>
+  <int value="31" label="kLocalNetworkAccessPermissionDenied"/>
 </enum>
+
+<!-- LINT.IfChange(DeviceBoundSessionError) -->
+
+<enum name="DeviceBoundSessionError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Key error"/>
+  <int value="2" label="Signing error"/>
+  <int value="3" label="Network error"/>
+  <int value="4" label="HTTP error"/>
+  <int value="5" label="Server requested termination"/>
+  <int value="6" label="Invalid configuration JSON"/>
+  <int value="7" label="Invalid session ID"/>
+  <int value="8" label="Invalid credentials"/>
+  <int value="9" label="Invalid challenge"/>
+  <int value="10" label="Too many challenges"/>
+  <int value="11" label="Invalid fetcher URL"/>
+  <int value="12" label="Invalid refresh URL"/>
+  <int value="13" label="Transient HTTP error"/>
+  <int value="14" label="Persistent HTTP error"/>
+  <int value="15" label="Same-site mismatch scope origin"/>
+  <int value="16" label="Same-site mismatch refresh URL"/>
+  <int value="17" label="Invalid scope origin"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
 
 <enum name="DNS.AttemptType">
   <int value="0" label="DnsUDPAttempt"/>
@@ -433,13 +473,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="SpdyProxy Reject (Deprecated)"/>
 </enum>
 
-<enum name="HttpAuthNtlmV2Usage">
-  <int value="0" label="Disabled over unsecured connection"/>
-  <int value="1" label="Disabled over secure connection"/>
-  <int value="2" label="Enabled over unsecured connection"/>
-  <int value="3" label="Enabled over secure connection"/>
-</enum>
-
 <enum name="HttpAuthTarget">
   <int value="0" label="Basic Proxy"/>
   <int value="1" label="Basic Secure Proxy"/>
@@ -536,6 +569,22 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="REFUSED"/>
 </enum>
 
+<!-- LINT.IfChange(HttpStreamPoolInitialAttemptState) -->
+
+<enum name="HttpStreamPoolInitialAttemptState">
+  <int value="0" label="Other"/>
+  <int value="1" label="CanUseQuicWithKnownVersion"/>
+  <int value="2" label="CanUseQuicWithKnownVersionAndSupportsSpdy"/>
+  <int value="3" label="CanUseQuicWithUnknownVersion"/>
+  <int value="4" label="CanUseQuicWithUnknownVersionAndSupportsSpdy"/>
+  <int value="5" label="CannotUseQuicWithKnownVersion"/>
+  <int value="6" label="CannotUseQuicWithKnownVersionAndSupportsSpdy"/>
+  <int value="7" label="CannotUseQuicWithUnknownVersion"/>
+  <int value="8" label="CannotUseQuicWithUnknownVersionAndSupportsSpdy"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_stream_pool_attempt_manager.h:InitialAttemptState) -->
+
 <enum name="InitialRttEstimateSource">
   <int value="0" label="Default"/>
   <int value="1" label="Cached"/>
@@ -602,13 +651,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Byte equal Names"/>
   <int value="2" label="Normalized Names"/>
   <int value="3" label="Chain contained only one certificate"/>
-</enum>
-
-<enum name="NetCertVerifierNSSCertMigrationResult">
-  <int value="0" label="NSS DB empty"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Partial Success"/>
-  <int value="3" label="Failure"/>
 </enum>
 
 <enum name="NetErrorPageEvents">
@@ -722,32 +764,6 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Sign in to network button clicked">
     An error page was shown with at least a &quot;Sign in to network&quot;
     button on it and the user pressed that button.
-  </int>
-</enum>
-
-<enum name="NetFilterType2">
-  <summary>
-    Specific content decoding filter. See net::SourceStream::SourceType for more
-    details
-  </summary>
-  <int value="0" label="Brotli"/>
-  <int value="1" label="Deflate"/>
-  <int value="2" label="GZIP"/>
-  <int value="3" label="GZIPFallback"/>
-  <int value="4" label="SDCH"/>
-  <int value="5" label="SDCHPossible"/>
-  <int value="6" label="Invalid"/>
-  <int value="7" label="None"/>
-  <int value="8" label="Rejected">
-    Unlike other values, this one is reported from HttpNetworkTransaction in a
-    case when an unadvertised, but known encoding appears in a
-    &quot;Content-Encoding&quot; header, and is thus not comparable with the
-    other values, which are potentially returned from cached entries.
-  </int>
-  <int value="9" label="Unknown">
-    Reported from URLRequestHttpJob::SetUpSourceStream when an unknown encoding
-    appears in a &quot;Content-Encoding&quot; header. Despite being reported in
-    this histogram, this does not cause a CONTENT_DECODING_FAILED error.
   </int>
 </enum>
 
@@ -1874,6 +1890,88 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Metered"/>
 </enum>
 
+<!-- LINT.IfChange(NoVarySearchHeaderParseResult) -->
+
+<enum name="NoVarySearchHeaderParseResult">
+  <int value="0" label="Success">
+    The No-Vary-Search header was successfully parsed.
+  </int>
+  <int value="1" label="No header">
+    The No-Vary-Search header was not present in the response headers.
+  </int>
+  <int value="2" label="Default value">
+    The No-Vary-Search header value was equivalent to the default (vary on all
+    query parameters), and so was ignored.
+  </int>
+  <int value="3" label="Not dictionary">
+    The value of the No-Vary-Search header could not be parsed as a structured
+    headers dictionary.
+  </int>
+  <int value="4" label="Non-boolean key-order">
+    The &quot;key-order&quot; parameter does not have a boolean value.
+  </int>
+  <int value="5" label="Params not string list">
+    The &quot;params&quot; parameter is not an inner list, or contains a
+    non-string value.
+  </int>
+  <int value="6" label="Except not string list">
+    The &quot;except&quot; parameter is not an inner list, or contains a
+    non-string value.
+  </int>
+  <int value="7" label="Except without true params">
+    The &quot;except&quot; parameter was supplied, but the &quot;params&quot;
+    parameter did not have a boolean true value.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_no_vary_search_data.h:NoVarySearchHeaderParseResult) -->
+
+<!-- LINT.IfChange(NoVarySearchUseResult) -->
+
+<enum name="NoVarySearchUseResult">
+  <int value="0" label="Not applied">
+    The request was not suitable, or the feature was disabled.
+  </int>
+  <int value="1" label="No match">
+    There was no match in the No-Vary-Search cache.
+  </int>
+  <int value="2" label="URL Unchanged">
+    There was a match, but the URL was identical so it has no effect.
+  </int>
+  <int value="3" label="Used">
+    There was a match, and the original cache entry was used.
+  </int>
+  <int value="4" label="Not suitable">
+    There was a match, but it was unusable due to in-memory hints, so the match
+    was not used.
+  </int>
+  <int value="5" label="Not openable">
+    There was a match, but the corresponding disk cache entry was missing or
+    could not be loaded, so the match was not used.
+  </int>
+  <int value="6" label="Read-only entry needs validation">
+    There was a match, but the disk cache entry needed revalidation in read-only
+    mode, so the match was not used.
+  </int>
+  <int value="7" label="Incomplete body">
+    There was a match, but the disk cache entry has an incomplete body. Partial
+    responses are not supported for No-Vary-Search, so the match was not used.
+  </int>
+  <int value="8" label="Couldn't conditionalize">
+    There was a match, but revalidation was required and the request could not
+    be conditionalized, so the match was not used.
+  </int>
+  <int value="9" label="Validated">
+    There was a match, and the original cache entry was successfully
+    revalidated.
+  </int>
+  <int value="10" label="Updated">
+    There was a match, and the original cache entry was updated.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:NoVarySearchUseResult) -->
+
 <enum name="NsswitchService">
   <int value="0" label="Unknown"/>
   <int value="1" label="&quot;files&quot;"/>
@@ -2373,6 +2471,36 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="SETTING_DO_NOT_FRAGMENT"/>
 </enum>
 
+<!-- LINT.IfChange(QuicSessionKeyMismatchedField) -->
+
+<enum name="QuicSessionKeyMismatchedField">
+  <int value="0" label="kPrivacyMode"/>
+  <int value="1" label="kSocketTag"/>
+  <int value="2" label="kProxyChain"/>
+  <int value="3" label="kSessionUsage"/>
+  <int value="4" label="kNetworkAnonymizationKey"/>
+  <int value="5" label="kSecureDnsPolicy"/>
+  <int value="6" label="kRequireDNSHttpsAlpn"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyMismatchedField) -->
+
+<!-- LINT.IfChange(QuicSessionKeyMismatchedFieldCombination) -->
+
+<enum name="QuicSessionKeyMismatchedFieldCombination">
+  <int value="0" label="kUnknownCombination"/>
+  <int value="1" label="kPrivacyMode"/>
+  <int value="2" label="kNetworkAnonymizationKey"/>
+  <int value="3" label="kPrivacyModeNetworkAnonymizationKey"/>
+  <int value="4" label="kRequireDNSHttpsAlpn"/>
+  <int value="5" label="kRequireDNSHttpsAlpnPrivacyMode"/>
+  <int value="6" label="kRequireDNSHttpsNetworkAnonymizationKey"/>
+  <int value="7"
+      label="kPrivacyModeAndNetworkAnonymizationKeyRequireDNSHttpsAlpn"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyMismatchedFieldCombination) -->
+
 <!-- LINT.IfChange(QuicSessionKeyPartialMatchResult) -->
 
 <enum name="QuicSessionKeyPartialMatchResult">
@@ -2698,6 +2826,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Cross-site redirect with storage access override"/>
 </enum>
 
+<!-- LINT.IfChange(StreamSocketCloseReason) -->
+
 <enum name="StreamSocketCloseReason">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Close all connections"/>
@@ -2708,7 +2838,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="QUIC session created"/>
   <int value="7" label="Using existing SPDY session"/>
   <int value="8" label="Using existing QUIC session"/>
+  <int value="9" label="Abort"/>
 </enum>
+
+<!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
 
 <enum name="TPMSupport">
   <int value="0" label="None"/>
@@ -2721,6 +2854,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="HW"/>
   <int value="2" label="Virtual"/>
   <int value="3" label="Both"/>
+</enum>
+
+<enum name="TrafficAnnotationUniqueIdHash">
+  <int value="29693511" label="loading_predictor_preconnect"/>
+  <int value="81815349" label="search_engine_preconnect"/>
+  <int value="131223974" label="network_hints_preconnect"/>
 </enum>
 
 <!-- LINT.IfChange(TrustTokenOperationStatus) -->
@@ -2738,6 +2877,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Internal error"/>
   <int value="10" label="Unknown error"/>
   <int value="11" label="Operation fulfilled locally"/>
+  <int value="12" label="Per-site issuer limit reached"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenOperationStatus) -->

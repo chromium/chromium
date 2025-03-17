@@ -5,7 +5,6 @@
 #include "base/files/file_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/ui/browser.h"
@@ -150,15 +149,8 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   EXPECT_EQ(0u, GetInfobarCount(tab));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CooldownResetsOnBrowserRestartDesktop \
-  DISABLED_CooldownResetsOnBrowserRestartDesktop
-#else
-#define MAYBE_CooldownResetsOnBrowserRestartDesktop \
-  CooldownResetsOnBrowserRestartDesktop
-#endif
 IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
-                       MAYBE_CooldownResetsOnBrowserRestartDesktop) {
+                       CooldownResetsOnBrowserRestartDesktop) {
   const GURL kInterceptedUrl(https_server_.GetURL("/ssl/google.html"));
 
   // On restart, no infobar should be shown initially.

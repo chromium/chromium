@@ -34,9 +34,6 @@ struct TestCase {
 
 TestCase* test_case = new TestCase();
 
-// Silence logging from the protobuf library.
-protobuf_mutator::protobuf::LogSilencer log_silencer;
-
 std::string Slash_to_string(int slash) {
   if (slash == url_proto::Url::NONE)
     return "";

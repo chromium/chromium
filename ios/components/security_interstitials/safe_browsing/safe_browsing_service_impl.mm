@@ -11,10 +11,11 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
-#import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/browser/url_checker_delegate.h"
+#import "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "components/sessions/core/session_id.h"
@@ -77,14 +78,9 @@ void SafeBrowsingServiceImpl::Initialize(const base::FilePath& user_data_path) {
                      std::move(safe_browsing_data_path),
                      std::move(user_agent)));
 
-  auto url_loader_factory_params =
-      network::mojom::URLLoaderFactoryParams::New();
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_orb_enabled = false;
-  url_loader_factory_params->is_trusted = true;
   network_context_client_->CreateURLLoaderFactory(
       std::move(url_loader_factory_pending_receiver_),
-      std::move(url_loader_factory_params));
+      safe_browsing::GetUrlLoaderFactoryParams());
 }
 
 void SafeBrowsingServiceImpl::OnBrowserStateCreated(
@@ -162,7 +158,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+  safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
@@ -208,7 +204,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+  safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
@@ -284,16 +280,11 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
 bool SafeBrowsingServiceImpl::ShouldCreateAsyncChecker(
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    return false;
-  }
-
   if (!web_state) {
     return false;
   }
 
-  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+  safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();

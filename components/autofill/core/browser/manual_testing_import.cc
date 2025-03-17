@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -154,16 +154,15 @@ std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
   return card;
 }
 
-// Removes all AutofillProfiles from the `pdm`. Since `PDM::RemoveByGUID()`
-// invalidates the pointers returned by `PDM::GetProfiles()`, this is done by
+// Removes all AutofillProfiles from the `adm`. Since `ADM::RemoveProfile()`
+// invalidates the pointers returned by `ADM::GetProfiles()`, this is done by
 // collecting all GUIDs to remove first.
-void RemoveAllExistingProfiles(PersonalDataManager& pdm) {
+void RemoveAllExistingProfiles(AddressDataManager& adm) {
   std::vector<std::string> existing_guids;
-  base::ranges::transform(pdm.address_data_manager().GetProfiles(),
-                          std::back_inserter(existing_guids),
-                          &AutofillProfile::guid);
+  std::ranges::transform(adm.GetProfiles(), std::back_inserter(existing_guids),
+                         &AutofillProfile::guid);
   for (const std::string& guid : existing_guids) {
-    pdm.RemoveByGUID(guid);
+    adm.RemoveProfile(guid);
   }
 }
 
@@ -184,7 +183,7 @@ void SetData(
   // If a list in `profiles_or_credit_cards` is empty, do not trigger the PDM
   // because this will clear all corresponding existing data.
   if (!profiles_or_credit_cards->profiles->empty()) {
-    RemoveAllExistingProfiles(*pdm);
+    RemoveAllExistingProfiles(pdm->address_data_manager());
     for (const AutofillProfile& profile : *profiles_or_credit_cards->profiles) {
       pdm->address_data_manager().AddProfile(profile);
     }
@@ -225,19 +224,14 @@ std::optional<std::vector<T>> DataModelsFromJSON(
 // If parsing fails the error is logged and std::nullopt is returned.
 std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
     const std::string& file_content) {
-  std::optional<base::Value> json = base::JSONReader::Read(file_content);
-  if (!json.has_value()) {
+  std::optional<base::Value::Dict> json =
+      base::JSONReader::ReadDict(file_content);
+  if (!json) {
     LOG(ERROR) << "Failed to parse JSON file.";
     return std::nullopt;
   }
-  if (!json->is_dict()) {
-    LOG(ERROR) << "JSON is not a dictionary at it's top level.";
-    return std::nullopt;
-  }
-  const base::Value::List* const profiles_json =
-      json->GetDict().FindList(kKeyProfiles);
-  const base::Value::List* const cards_json =
-      json->GetDict().FindList(kKeyCreditCards);
+  const base::Value::List* const profiles_json = json->FindList(kKeyProfiles);
+  const base::Value::List* const cards_json = json->FindList(kKeyCreditCards);
   if (!cards_json && !profiles_json) {
     LOG(ERROR) << "JSON has no " << kKeyProfiles << " or " << kKeyCreditCards
                << " keys.";

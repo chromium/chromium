@@ -52,6 +52,10 @@ source_set("store") {
     ":store_private",
     "//components/variations",
   ]
+
+  # Required because ":store_private" exists to restrict which targets
+  # have access to "ios_chrome_variations_seed_store+fetcher.h" header.
+  allow_circular_includes_from = [ ":store_private" ]
 }
 
 source_set("store_private") {

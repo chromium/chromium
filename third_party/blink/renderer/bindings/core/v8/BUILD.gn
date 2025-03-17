@@ -64,6 +64,7 @@ group("generated") {
 
   public_deps = [
     "//components/miracle_parameter/common",
+    "//third_party/blink/renderer/bindings:buildflags",
     "//third_party/blink/renderer/bindings:generate_bindings_all",
   ]
 }

@@ -15,16 +15,16 @@
 @interface FakePromosManagerCommandHandler : NSObject <PromosManagerCommands>
 
 @property(nonatomic, assign)
-    BOOL displayDefaultBrowserPromoAfterRemindMeLaterCalled;
+    BOOL showDefaultBrowserPromoAfterRemindMeLaterCalled;
 
 @end
 
 @implementation FakePromosManagerCommandHandler
 
-- (void)maybeDisplayPromo {
+- (void)showPromo {
 }
 
-- (void)requestAppStoreReview {
+- (void)showAppStoreReviewPrompt {
 }
 
 - (void)showSignin:(ShowSigninCommand*)command {
@@ -36,14 +36,17 @@
 - (void)showChoicePromo {
 }
 
-- (void)maybeDisplayDefaultBrowserPromo {
+- (void)showDefaultBrowserPromo {
 }
 
-- (void)displayDefaultBrowserPromoAfterRemindMeLater {
-  self.displayDefaultBrowserPromoAfterRemindMeLaterCalled = YES;
+- (void)showDefaultBrowserPromoAfterRemindMeLater {
+  self.showDefaultBrowserPromoAfterRemindMeLaterCalled = YES;
 }
 
 - (void)showOmniboxPositionChoicePromo {
+}
+
+- (void)showSigninPromo {
 }
 
 @end
@@ -72,8 +75,7 @@ TEST_F(DefaultBrowserRemindMeLaterPromoDisplayHandlerTest, TestHandleDisplay) {
       [[FakePromosManagerCommandHandler alloc] init];
   display_handler.handler = command_handler;
 
-  // Call method and check that the fake has been notified.
+  // Calls method and checks that the fake has been notified.
   [display_handler handleDisplay];
-  EXPECT_TRUE(
-      command_handler.displayDefaultBrowserPromoAfterRemindMeLaterCalled);
+  EXPECT_TRUE(command_handler.showDefaultBrowserPromoAfterRemindMeLaterCalled);
 }

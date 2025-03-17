@@ -12,6 +12,7 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -26,6 +27,7 @@
 #include "base/values.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -54,6 +56,14 @@ namespace {
 // Most IAccessible functions require a VARIANT set to CHILDID_SELF as
 // the first argument.
 ScopedVariant SELF(CHILDID_SELF);
+
+// Calls `Release()` on each of the `count` interface pointers in `pointers`.
+void ReleasePointers(IUnknown** pointers, LONG count) {
+  if (count > 0) {
+    std::ranges::for_each(base::span(pointers, static_cast<size_t>(count)),
+                          [](IUnknown* ptr) { ptr->Release(); });
+  }
+}
 
 }  // namespace
 
@@ -541,15 +551,11 @@ void AXPlatformNodeWinTest::TestGetColumnHeadersForRole(ax::mojom::Role role) {
       GetTree(), GetRoot()->children()[0]->children()[0]);
   column_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       root_itableprovider->GetColumnHeaders(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
 }
-
-TestFragmentRootDelegate::TestFragmentRootDelegate() = default;
-
-TestFragmentRootDelegate::~TestFragmentRootDelegate() = default;
 
 gfx::NativeViewAccessible TestFragmentRootDelegate::GetChildOfAXFragmentRoot() {
   return child_;
@@ -1303,67 +1309,73 @@ TEST_F(AXPlatformNodeWinTest, AccNavigate) {
       ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant::kEmptyVariant, nullptr));
   EXPECT_EQ(E_INVALIDARG,
             ia_child1->accNavigate(NAVDIR_NEXT, ScopedVariant::kEmptyVariant,
-                                   end.AsInput()));
+                                   end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   // Navigating to first/last child should only be from self.
   EXPECT_EQ(E_INVALIDARG,
-            ia_root->accNavigate(NAVDIR_FIRSTCHILD, var_root, end.AsInput()));
+            ia_root->accNavigate(NAVDIR_FIRSTCHILD, var_root, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
   EXPECT_EQ(E_INVALIDARG,
-            ia_root->accNavigate(NAVDIR_LASTCHILD, var_root, end.AsInput()));
+            ia_root->accNavigate(NAVDIR_LASTCHILD, var_root, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   // Spatial directions are not supported.
-  EXPECT_EQ(E_NOTIMPL, ia_child1->accNavigate(NAVDIR_UP, SELF, end.AsInput()));
-  EXPECT_EQ(E_NOTIMPL, ia_root->accNavigate(NAVDIR_DOWN, SELF, end.AsInput()));
+  EXPECT_EQ(E_NOTIMPL, ia_child1->accNavigate(NAVDIR_UP, SELF, end.Receive()));
+  EXPECT_EQ(E_NOTIMPL, ia_root->accNavigate(NAVDIR_DOWN, SELF, end.Receive()));
   EXPECT_EQ(E_NOTIMPL,
-            ia_child1->accNavigate(NAVDIR_RIGHT, SELF, end.AsInput()));
+            ia_child1->accNavigate(NAVDIR_RIGHT, SELF, end.Receive()));
   EXPECT_EQ(E_NOTIMPL,
-            ia_child2->accNavigate(NAVDIR_LEFT, SELF, end.AsInput()));
+            ia_child2->accNavigate(NAVDIR_LEFT, SELF, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   // Logical directions should be supported.
-  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_FIRSTCHILD, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_FIRSTCHILD, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child1.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
-  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_LASTCHILD, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_LASTCHILD, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child2.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
-  EXPECT_EQ(S_OK, ia_child1->accNavigate(NAVDIR_NEXT, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_child1->accNavigate(NAVDIR_NEXT, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child2.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
-  EXPECT_EQ(S_OK, ia_child2->accNavigate(NAVDIR_PREVIOUS, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_child2->accNavigate(NAVDIR_PREVIOUS, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child1.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
   // Child indices can also be passed by variant.
   // Indices are one-based.
   EXPECT_EQ(S_OK,
-            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(1), end.AsInput()));
+            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(1), end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child2.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
   EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_PREVIOUS, ScopedVariant(2),
-                                       end.AsInput()));
+                                       end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child1.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
   // Test out-of-bounds.
   EXPECT_EQ(S_FALSE,
-            ia_child1->accNavigate(NAVDIR_PREVIOUS, SELF, end.AsInput()));
+            ia_child1->accNavigate(NAVDIR_PREVIOUS, SELF, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
-  EXPECT_EQ(S_FALSE, ia_child2->accNavigate(NAVDIR_NEXT, SELF, end.AsInput()));
+  EXPECT_EQ(S_FALSE, ia_child2->accNavigate(NAVDIR_NEXT, SELF, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   EXPECT_EQ(S_FALSE, ia_root->accNavigate(NAVDIR_PREVIOUS, ScopedVariant(1),
-                                          end.AsInput()));
+                                          end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
   EXPECT_EQ(S_FALSE,
-            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(2), end.AsInput()));
+            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(2), end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 }
 
@@ -1830,12 +1842,13 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetColumnHeaderCells) {
   ComPtr<IAccessibleTableCell> cell = GetCellInTable();
   ASSERT_NE(nullptr, cell.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
+  LONG number_cells = 0;
 
-  LONG number_cells;
   EXPECT_EQ(S_OK,
             cell->get_columnHeaderCells(&cell_accessibles, &number_cells));
   EXPECT_EQ(1, number_cells);
+  ReleasePointers(cell_accessibles.get(), number_cells);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetColumnIndex) {
@@ -1866,11 +1879,12 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetRowHeaderCells) {
   ComPtr<IAccessibleTableCell> cell = GetCellInTable();
   ASSERT_NE(nullptr, cell.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
+  LONG number_cells = 0;
 
-  LONG number_cells;
   EXPECT_EQ(S_OK, cell->get_rowHeaderCells(&cell_accessibles, &number_cells));
   EXPECT_EQ(number_cells, 1);
+  ReleasePointers(cell_accessibles.get(), number_cells);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetRowIndex) {
@@ -2170,17 +2184,18 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2_TestRelationTargetsOfType) {
 
   {
     ScopedBstr type(L"details");
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
                         type.Get(), 0, &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
+    targets.Reset(nullptr);
 
     EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
                         type.Get(), 1, &targets, &n_targets));
     ASSERT_EQ(1, n_targets);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 }
 
@@ -2234,37 +2249,37 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_TestRelationTargetsOfType) {
 
   {
     ScopedBstr type(L"details");
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
                         type.Get(), 1, &targets, &n_targets));
     ASSERT_EQ(1, n_targets);
     EXPECT_EQ(ax_child1.Get(), targets[0]);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 
   {
     ScopedBstr type(IA2_RELATION_LABELLED_BY);
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, ax_child2->get_relationTargetsOfType(type.Get(), 0,
                                                          &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
     EXPECT_EQ(root_iaccessible2.Get(), targets[0]);
     EXPECT_EQ(ax_child3.Get(), targets[1]);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 
   {
     ScopedBstr type(L"detailsFor");
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, ax_child1->get_relationTargetsOfType(type.Get(), 0,
                                                          &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
     EXPECT_EQ(root_iaccessible2.Get(), targets[0]);
     EXPECT_EQ(ax_child3.Get(), targets[1]);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 }
 
@@ -2866,10 +2881,11 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTable2GetSelectedChildrenZero) {
   table.As(&result);
   ASSERT_NE(nullptr, result.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
   LONG count;
   EXPECT_EQ(S_OK, result->get_selectedCells(&cell_accessibles, &count));
   EXPECT_EQ(0, count);
+  ReleasePointers(cell_accessibles.get(), count);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTable2GetSelectedChildren) {
@@ -2892,16 +2908,14 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTable2GetSelectedChildren) {
   table.As(&result);
   ASSERT_NE(nullptr, result.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
   LONG count;
   EXPECT_EQ(S_OK, result->get_selectedCells(&cell_accessibles, &count));
   EXPECT_EQ(2, count);
 
-  ComPtr<IUnknown> table_cell_1(cell_accessibles[0]);
-  CheckIUnknownHasName(table_cell_1, L"1");
-
-  ComPtr<IUnknown> table_cell_4(cell_accessibles[1]);
-  CheckIUnknownHasName(table_cell_4, L"4");
+  CheckIUnknownHasName(cell_accessibles.get()[0], L"1");
+  CheckIUnknownHasName(cell_accessibles.get()[1], L"4");
+  ReleasePointers(cell_accessibles.get(), count);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessible2GetGroupPosition) {
@@ -3178,7 +3192,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetNCharacters) {
 
   AXNodeData node;
   node.id = 2;
-  node.role = ax::mojom::Role::kStaticText;
+  node.role = ax::mojom::Role::kParagraph;
   node.SetName("Name");
   root.child_ids.push_back(node.id);
 
@@ -3202,19 +3216,20 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(0, 0, 300, 200);
-  root.child_ids = {2, 3};
+  root.child_ids = {2};
 
   AXNodeData button;
   button.id = 2;
   button.role = ax::mojom::Role::kButton;
   button.SetName("button");
-  button.relative_bounds.bounds = gfx::RectF(20, 0, 10, 10);
+  button.relative_bounds.bounds = gfx::RectF(0, 0, 30, 30);
+  button.child_ids = {3};
 
   AXNodeData static_text1;
   static_text1.id = 3;
   static_text1.role = ax::mojom::Role::kStaticText;
   static_text1.SetName("line 1");
-  static_text1.relative_bounds.bounds = gfx::RectF(0, 20, 30, 10);
+  static_text1.relative_bounds.bounds = gfx::RectF(0, 0, 30, 30);
   static_text1.child_ids = {4};
 
   AXNodeData inline_box1;
@@ -3255,18 +3270,11 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
                          &offset_result));
   EXPECT_EQ(-1, offset_result);
 
-  // Test point(0, 0) retrieved from IAccessibleText of the root web area is
-  // outside of any text. Expected result: S_FALSE.
-  EXPECT_EQ(S_FALSE, root_text->get_offsetAtPoint(
-                         0, 0, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
-                         &offset_result));
-  EXPECT_EQ(-1, offset_result);
-
-  // Test point(25, 5) retrieved from IAccessibleText of the root web area is
+  // Test point(225, 5) retrieved from IAccessibleText of the root web area is
   // on button, and outside of any text. Expected result: S_FALSE.
   EXPECT_EQ(S_FALSE,
             root_text->get_offsetAtPoint(
-                25, 5, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
+                225, 5, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
                 &offset_result));
   EXPECT_EQ(-1, offset_result);
 
@@ -3277,13 +3285,13 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
                       &offset_result));
   EXPECT_EQ(0, offset_result);
 
-  AXNode* static_text1_node = GetRoot()->children()[1];
-  ComPtr<IAccessible> text1_iaccessible(IAccessibleFromNode(static_text1_node));
-  ASSERT_NE(nullptr, text1_iaccessible.Get());
+  AXNode* button_node = GetRoot()->children()[0];
+  ComPtr<IAccessible> button1_iaccessible(IAccessibleFromNode(button_node));
+  ASSERT_NE(nullptr, button1_iaccessible.Get());
 
-  ComPtr<IAccessibleText> text1;
-  text1_iaccessible.As(&text1);
-  ASSERT_NE(nullptr, text1.Get());
+  ComPtr<IAccessibleText> button_text;
+  button1_iaccessible.As(&button_text);
+  ASSERT_NE(nullptr, button_text.Get());
 
   // "l" 4 points of bounds {(0, 20), (5, 20), (0, 30), (5, 30)}
   // "i" 4 points of bounds {(5, 20), (10, 20), (5, 30), (10, 30)}
@@ -3293,53 +3301,53 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
   // "1" 4 points of bounds {(25, 20), (30, 20), (25, 30), (30, 30)}
 
   // Test point(0, 0) outside of any character bounds and text.
-  EXPECT_EQ(S_FALSE, text1->get_offsetAtPoint(
-                         0, 0, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
-                         &offset_result));
+  EXPECT_EQ(S_OK, button_text->get_offsetAtPoint(
+                      0, 0, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
+                      &offset_result));
   EXPECT_EQ(-1, offset_result);
 
   // Test point(30, 30) outside of any character bounds but on the text.
-  EXPECT_EQ(S_OK, text1->get_offsetAtPoint(
+  EXPECT_EQ(S_OK, button_text->get_offsetAtPoint(
                       30, 30, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
                       &offset_result));
   EXPECT_EQ(-1, offset_result);
 
   // Test point(0, 20) inside bounds of "l", text offset=0
   // character bounds={(0, 20), (5, 20), (0, 30), (5, 30)}
-  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
       0, 20, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE, &offset_result));
   EXPECT_EQ(0, offset_result);
 
   // Test point(9, 20) inside bounds of "i", text offset=1
   // character bounds={(5, 20), (10, 20), (5, 30), (10, 30)}
-  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
       9, 20, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE, &offset_result));
   EXPECT_EQ(1, offset_result);
 
   // Test point(10, 30) inside bounds of "n", text offset=2
   // character bounds={(10, 20), (15, 20), (10, 30), (15, 30)}
-  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
       10, 29, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(2, offset_result);
 
   // Test point(19, 29) inside bounds of "e", text offset=3
   // character bounds={(15, 20), (20, 20), (15, 30), (20, 30)
-  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
       19, 29, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(3, offset_result);
 
   // Test point(23, 25) inside bounds of " ", text offset=4
   // character bounds={(20, 20), (25, 20), (20, 30), (25, 30)}
-  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
       23, 25, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(4, offset_result);
 
   // Test point(25, 20) inside bounds of "1", text offset=5
   // character bounds={(25, 20), (30, 20), (25, 30), (30, 30)}
-  EXPECT_HRESULT_SUCCEEDED(text1->get_offsetAtPoint(
+  EXPECT_HRESULT_SUCCEEDED(button_text->get_offsetAtPoint(
       25, 20, IA2CoordinateType::IA2_COORDTYPE_SCREEN_RELATIVE,
       &offset_result));
   EXPECT_EQ(5, offset_result);
@@ -3676,10 +3684,10 @@ TEST_F(AXPlatformNodeWinTest, IGridProviderGetItem) {
       QueryInterfaceFromNode<IRawElementProviderSimple>(
           GetRoot()->children()[0]->children()[0]));
 
-  IRawElementProviderSimple* grid_item = nullptr;
+  ComPtr<IRawElementProviderSimple> grid_item;
   EXPECT_HRESULT_SUCCEEDED(root_igridprovider->GetItem(0, 0, &grid_item));
   EXPECT_NE(nullptr, grid_item);
-  EXPECT_EQ(cell1_irawelementprovidersimple.Get(), grid_item);
+  EXPECT_EQ(cell1_irawelementprovidersimple.Get(), grid_item.Get());
 }
 
 TEST_F(AXPlatformNodeWinTest, IGridProviderGetItemCustomAria) {
@@ -3701,11 +3709,11 @@ TEST_F(AXPlatformNodeWinTest, IGridProviderGetItemCustomAria) {
   ComPtr<IGridProvider> grid4_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[3]);
 
-  IRawElementProviderSimple* grid_item = nullptr;
+  ComPtr<IRawElementProviderSimple> grid_item;
   EXPECT_HRESULT_FAILED(grid1_provider->GetItem(0, 0, &grid_item));
   EXPECT_HRESULT_SUCCEEDED(grid2_provider->GetItem(3, 4, &grid_item));
   EXPECT_EQ(QueryInterfaceFromNodeId<IRawElementProviderSimple>(5).Get(),
-            grid_item);
+            grid_item.Get());
   // This is an empty grid, so we should not be able to get any items.
   EXPECT_HRESULT_FAILED(grid3_provider->GetItem(1, 2, &grid_item));
   EXPECT_HRESULT_FAILED(grid4_provider->GetItem(-1, -1, &grid_item));
@@ -3902,7 +3910,7 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetRowHeaders) {
       GetTree(), GetRoot()->children()[0]->children()[1]);
   row_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       root_itableprovider->GetRowHeaders(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
@@ -3981,7 +3989,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetColumnHeaderItems) {
       GetTree(), GetRoot()->children()[0]->children()[0]);
   column_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       cell_itableitemprovider->GetColumnHeaderItems(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
@@ -4043,7 +4051,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetRowHeaderItems) {
       GetTree(), GetRoot()->children()[0]->children()[0]);
   row_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       cell_itableitemprovider->GetRowHeaderItems(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
@@ -5490,7 +5498,7 @@ TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
     EXPECT_EQ(highlighted1_node.Get(), target.Get());
     annotation_provider.Reset();
     target.Reset();
-    name.Release();
+    name.Reset();
   }
 
   {
@@ -5514,7 +5522,7 @@ TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
     EXPECT_EQ(highlighted1_node.Get(), target.Get());
     annotation_provider.Reset();
     target.Reset();
-    name.Release();
+    name.Reset();
   }
 
   {
@@ -5540,7 +5548,7 @@ TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
     EXPECT_EQ(highlighted1_node.Get(), target.Get());
     annotation_provider.Reset();
     target.Reset();
-    name.Release();
+    name.Reset();
   }
 
   {
@@ -8022,6 +8030,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_BulkFetch) {
   CComObject<TestIChromeAccessibleDelegate>* delegate = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       CComObject<TestIChromeAccessibleDelegate>::CreateInstance(&delegate));
+  ComPtr<TestIChromeAccessibleDelegate> delegate_ptr(delegate);
   ScopedBstr input_bstr(L"Potato");
   chrome_accessible->get_bulkFetch(input_bstr.Get(), 99, delegate);
   std::string response = delegate->WaitForBulkFetchResult(99);
@@ -8051,6 +8060,7 @@ TEST_F(AXPlatformNodeWinTest, AsyncHitTest) {
   CComObject<TestIChromeAccessibleDelegate>* delegate = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       CComObject<TestIChromeAccessibleDelegate>::CreateInstance(&delegate));
+  ComPtr<TestIChromeAccessibleDelegate> delegate_ptr(delegate);
   ScopedBstr input_bstr(L"Potato");
   chrome_accessible->get_hitTest(400, 300, 12345, delegate);
   ComPtr<IUnknown> result = delegate->WaitForHitTestResult(12345);
@@ -8062,6 +8072,124 @@ TEST_F(AXPlatformNodeWinTest, AsyncHitTest) {
   LONG root_unique_id = 0;
   ASSERT_HRESULT_SUCCEEDED(root_accessible->get_uniqueID(&root_unique_id));
   ASSERT_EQ(root_unique_id, result_unique_id);
+}
+
+namespace {
+
+class FakeAxPlatformNodeDelegate : public AXPlatformNodeDelegate {
+ public:
+  AXPlatformNodeId GetUniqueId() const override { return unique_id_; }
+
+ private:
+  const AXUniqueId unique_id_{AXUniqueId::Create()};
+};
+
+}  // namespace
+
+// Tests lifecycle accounting for dormant -> destroyed.
+TEST_F(AXPlatformNodeWinTest, DormantDestroyed) {
+  AXPlatformNodeDelegate test_delegate;
+
+  // All zeros to start with.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 0U));
+
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(&test_delegate);
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(1U, 1U, 0U, 0U));
+
+  node.reset();
+
+  // Zero instances and no ghost nodes.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 0U));
+}
+
+// Tests lifecycle accounting for dormant -> live -> dormant -> destroyed.
+TEST_F(AXPlatformNodeWinTest, DormantLiveDormantDestroyed) {
+  AXPlatformNodeDelegate test_delegate;
+
+  // All zeros to start with.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 0U));
+
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(&test_delegate);
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(1U, 1U, 0U, 0U));
+
+  Microsoft::WRL::ComPtr<IAccessible> a_ref;
+  ASSERT_HRESULT_SUCCEEDED(
+      static_cast<AXPlatformNodeWin&>(*node).QueryInterface(
+          IID_PPV_ARGS(&a_ref)));
+
+  // One instance and one live node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(1U, 0U, 1U, 0U));
+
+  a_ref.Reset();
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(1U, 1U, 0U, 0U));
+
+  node.reset();
+
+  // Zero instances and no ghost nodes.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 0U));
+}
+
+// Tests lifecycle accounting for dormant -> live -> ghost -> destroyed.
+TEST_F(AXPlatformNodeWinTest, DormantLiveGhostDestroyed) {
+  AXPlatformNodeDelegate test_delegate;
+
+  // All zeros to start with.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 0U));
+
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(&test_delegate);
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(1U, 1U, 0U, 0U));
+
+  Microsoft::WRL::ComPtr<IAccessible> a_ref;
+  ASSERT_HRESULT_SUCCEEDED(
+      static_cast<AXPlatformNodeWin&>(*node).QueryInterface(
+          IID_PPV_ARGS(&a_ref)));
+
+  // One instance and one live node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(1U, 0U, 1U, 0U));
+
+  Microsoft::WRL::ComPtr<IAccessible> a_second_ref;
+  ASSERT_HRESULT_SUCCEEDED(a_ref.CopyTo(&a_second_ref));
+
+  // Still one instance and one live node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(1U, 0U, 1U, 0U));
+
+  node.reset();
+
+  // Zero instances and one ghost node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 1U));
+
+  a_ref.Reset();
+
+  // Still zero instances and one ghost node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 1U));
+
+  a_second_ref.Reset();
+
+  // Zero instances and no ghost nodes.
+  ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
+            std::tuple(0U, 0U, 0U, 0U));
 }
 
 }  // namespace ui

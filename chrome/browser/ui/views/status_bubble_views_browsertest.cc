@@ -21,8 +21,12 @@
 class StatusBubbleViewsTest : public InProcessBrowserTest {
  public:
   StatusBubbleViews* GetBubble() {
-    return static_cast<StatusBubbleViews*>(
-        browser()->window()->GetStatusBubble());
+    std::vector<StatusBubble*> status_bubbles =
+        browser()->window()->GetStatusBubbles();
+    if (status_bubbles.size() > 0) {
+      return static_cast<StatusBubbleViews*>(status_bubbles.front());
+    }
+    return nullptr;
   }
   views::Widget* GetWidget() { return GetBubble()->popup(); }
   bool IsDestroyPopupTimerRunning() {

@@ -39,9 +39,7 @@ test(function() {
   assert_throws_js(TypeError, function() { svgText.getEndPositionOfChar(); });
   assert_throws_js(TypeError, function() { svgText.getExtentOfChar(); });
   assert_throws_js(TypeError, function() { svgText.getRotationOfChar(); });
-  assert_throws_js(TypeError, function() { svgText.getCharNumAtPosition(); });
   assert_throws_js(TypeError, function() { svgText.getCharNumAtPosition('aString'); });
-  assert_throws_js(TypeError, function() { svgText.getCharNumAtPosition(svgText); });
   assert_throws_js(TypeError, function() { svgText.selectSubString(); });
   assert_throws_js(TypeError, function() { svgText.selectSubString(2); });
 

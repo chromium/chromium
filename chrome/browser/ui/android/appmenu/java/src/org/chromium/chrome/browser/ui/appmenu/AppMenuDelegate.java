@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.ui.appmenu;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A delegate to handle menu item selection. */
+@NullMarked
 public interface AppMenuDelegate {
     /**
      * Called whenever an item in the app menu is selected.

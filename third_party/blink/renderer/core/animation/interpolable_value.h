@@ -84,28 +84,11 @@ class CORE_EXPORT InterpolableValue
   virtual InterpolableValue* RawCloneAndZero() const = 0;
 };
 
-class CORE_EXPORT InlinedInterpolableDouble final {
-  DISALLOW_NEW();
-
- public:
-  InlinedInterpolableDouble() = default;
-  explicit InlinedInterpolableDouble(double d) : value_(d) {}
-
-  double Value() const { return value_; }
-  void Set(double value) { value_ = value; }
-
-  double Interpolate(double to, const double progress) const;
-
-  void Scale(double scale) { value_ *= scale; }
-  void Add(double other) { value_ += other; }
-  void ScaleAndAdd(double scale, double other) {
-    value_ = value_ * scale + other;
-  }
-
-  void Trace(Visitor*) const {}
-
- private:
-  double value_ = 0.;
+template <typename T>
+struct ThreadingTrait<
+    T,
+    std::enable_if_t<std::is_base_of_v<InterpolableValue, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 
 class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
@@ -118,8 +101,10 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
   explicit InterpolableNumber(const CSSPrimitiveValue& value);
 
   // TODO(crbug.com/1521261): Remove this, once the bug is fixed.
-  double Value() const { return value_.Value(); }
+  double Value() const { return value_; }
   double Value(const CSSLengthResolver& length_resolver) const;
+
+  static double Interpolate(double from, double to, double progress);
 
   // InterpolableValue
   void Interpolate(const InterpolableValue& to,
@@ -137,15 +122,13 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
 
   void Trace(Visitor* v) const override {
     InterpolableValue::Trace(v);
-    v->Trace(value_);
     v->Trace(expression_);
   }
 
  private:
   InterpolableNumber* RawClone() const final {
     if (IsDoubleValue()) {
-      return MakeGarbageCollected<InterpolableNumber>(value_.Value(),
-                                                      unit_type_);
+      return MakeGarbageCollected<InterpolableNumber>(value_, unit_type_);
     }
     return MakeGarbageCollected<InterpolableNumber>(*expression_);
   }
@@ -165,7 +148,7 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
 
   enum class Type { kDouble, kExpression };
   Type type_;
-  InlinedInterpolableDouble value_;
+  double value_;
   CSSPrimitiveValue::UnitType unit_type_;
   Member<const CSSMathExpressionNode> expression_;
 };

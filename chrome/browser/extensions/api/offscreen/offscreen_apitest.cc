@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
@@ -39,10 +41,7 @@
 #include "content/public/common/content_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -122,26 +121,20 @@ void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionApiTestBase = ExtensionPlatformApiTest;
-#else
-using ExtensionApiTestBase = ExtensionApiTest;
-#endif
-
-class OffscreenApiTest : public ExtensionApiTestBase {
+class OffscreenApiTest : public ExtensionApiTest {
  public:
   OffscreenApiTest() = default;
   ~OffscreenApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTestBase::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
     // Add the kOffscreenDocumentTesting switch to allow the use of the
     // `TESTING` reason in offscreen document creation.
     command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
   }
 
   void SetUpOnMainThread() override {
-    ExtensionApiTestBase::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -287,7 +280,7 @@ class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Explicitly don't call OffscreenApiTest's version to avoid adding the
     // commandline flag.
-    ExtensionApiTestBase::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
   }
 };
 

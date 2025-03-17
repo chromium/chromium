@@ -24,6 +24,7 @@ export interface ShoppingServiceBrowserProxy {
   getPriceInsightsInfoForUrl(url: Url):
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;
+  getProductInfoForUrls(urls: Url[]): Promise<{productInfos: ProductInfo[]}>;
   getProductSpecificationsForUrls(urls: Url[]):
       Promise<{productSpecs: ProductSpecifications}>;
   getAllProductSpecificationsSets():
@@ -60,6 +61,10 @@ export class ShoppingServiceBrowserProxyImpl implements
 
   getProductInfoForUrl(url: Url) {
     return this.handler.getProductInfoForUrl(url);
+  }
+
+  getProductInfoForUrls(urls: Url[]) {
+    return this.handler.getProductInfoForUrls(urls);
   }
 
   getPriceInsightsInfoForCurrentUrl() {

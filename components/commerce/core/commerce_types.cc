@@ -84,21 +84,4 @@ EntryPointInfo::~EntryPointInfo() = default;
 EntryPointInfo::EntryPointInfo(const EntryPointInfo&) = default;
 EntryPointInfo& EntryPointInfo::operator=(const EntryPointInfo&) = default;
 
-ParcelTrackingStatus::ParcelTrackingStatus() = default;
-ParcelTrackingStatus::ParcelTrackingStatus(const ParcelTrackingStatus&) =
-    default;
-ParcelTrackingStatus& ParcelTrackingStatus::operator=(
-    const ParcelTrackingStatus&) = default;
-ParcelTrackingStatus::~ParcelTrackingStatus() = default;
-ParcelTrackingStatus::ParcelTrackingStatus(const ParcelStatus& parcel_status) {
-  carrier = parcel_status.parcel_identifier().carrier();
-  tracking_id = parcel_status.parcel_identifier().tracking_id();
-  state = parcel_status.parcel_state();
-  tracking_url = GURL(parcel_status.tracking_url());
-  if (parcel_status.estimated_delivery_time_usec() != 0) {
-    estimated_delivery_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(parcel_status.estimated_delivery_time_usec()));
-  }
-}
-
 }  // namespace commerce

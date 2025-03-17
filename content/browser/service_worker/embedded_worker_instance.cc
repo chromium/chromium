@@ -329,6 +329,13 @@ void EmbeddedWorkerInstance::Start(
         coep_reporter_for_subresources =
             GetCoepReporterInternal(storage_partition);
 
+    // Create the DIP reporter if the DocumentIsolationPolicy value is already
+    // available.
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter = GetDipReporterInternal(storage_partition);
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter_for_devtools = GetDipReporterInternal(storage_partition);
+
     network::mojom::ClientSecurityStatePtr client_security_state =
         owner_version_->BuildClientSecurityState();
 
@@ -343,7 +350,8 @@ void EmbeddedWorkerInstance::Start(
         process_id, routing_id, context_->wrapper(),
         params->service_worker_version_id, params->script_url, params->scope,
         params->is_installed, client_security_state.Clone(),
-        std::move(coep_reporter_for_devtools), &params->devtools_worker_token,
+        std::move(coep_reporter_for_devtools),
+        std::move(dip_reporter_for_devtools), &params->devtools_worker_token,
         &params->wait_for_debugger);
     params->service_worker_route_id = routing_id;
     // Create DevToolsProxy here to ensure that the WorkerCreated() call is
@@ -362,7 +370,7 @@ void EmbeddedWorkerInstance::Start(
     if (!params->is_installed) {
       factory_bundle_for_new_scripts = CreateFactoryBundle(
           rph, routing_id, owner_version_->key(), client_security_state.Clone(),
-          std::move(coep_reporter_for_scripts),
+          std::move(coep_reporter_for_scripts), std::move(dip_reporter),
           ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
           params->devtools_worker_token.ToString());
     }
@@ -375,7 +383,7 @@ void EmbeddedWorkerInstance::Start(
     factory_bundle_for_renderer = CreateFactoryBundle(
         rph, routing_id, owner_version_->key(),
         std::move(client_security_state),
-        std::move(coep_reporter_for_subresources),
+        std::move(coep_reporter_for_subresources), std::move(dip_reporter),
         ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
         params->devtools_worker_token.ToString());
   }
@@ -458,6 +466,11 @@ void EmbeddedWorkerInstance::Start(
 
   inflight_start_info_ = std::make_unique<StartInfo>(
       params->is_installed, params->wait_for_debugger, start_time);
+
+  // Send receivers for COEP and DocumentIsolationPolicy ReportObserver events.
+  params->coep_reporting_observer =
+      std::move(coep_reporting_observer_receiver_);
+  params->dip_reporting_observer = std::move(dip_reporting_observer_receiver_);
 
   SendStartWorker(std::move(params));
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);
@@ -832,6 +845,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     ContentBrowserClient::URLLoaderFactoryType factory_type,
     const std::string& devtools_worker_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -854,6 +869,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           rph, origin, isolation_info, std::move(coep_reporter),
+          std::move(dip_reporter),
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
               ->CreateAuthCertObserverForServiceWorker(rph->GetDeprecatedID()),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
@@ -1161,12 +1177,20 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
           coep_reporter_remote.InitWithNewPipeAndPassReceiver());
     }
 
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter_remote;
+    if (dip_reporter_) {
+      dip_reporter_->Clone(
+          dip_reporter_remote.InitWithNewPipeAndPassReceiver());
+    }
+
     auto* rph = RenderProcessHost::FromID(process_id());
     if (!rph)
       return;
 
     rph->BindCacheStorage(*coep, std::move(coep_reporter_remote), *dip,
-                          request.bucket, std::move(request.receiver));
+                          std::move(dip_reporter_remote), request.bucket,
+                          std::move(request.receiver));
   }
   pending_cache_storage_requests_.clear();
 }
@@ -1217,8 +1241,8 @@ EmbeddedWorkerInstance::GetCoepReporterInternal(
   }
   mojo::PendingRemote<blink::mojom::ReportingObserver>
       reporting_observer_remote;
-  owner_version_->set_reporting_observer_receiver(
-      reporting_observer_remote.InitWithNewPipeAndPassReceiver());
+  coep_reporting_observer_receiver_ =
+      reporting_observer_remote.InitWithNewPipeAndPassReceiver();
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
       storage_partition->GetWeakPtr(), owner_version_->script_url(),
       coep->reporting_endpoint, coep->report_only_reporting_endpoint,
@@ -1230,6 +1254,66 @@ EmbeddedWorkerInstance::GetCoepReporterInternal(
 
   coep_reporter_->Clone(new_coep_reporter.InitWithNewPipeAndPassReceiver());
   return new_coep_reporter;
+}
+
+mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+EmbeddedWorkerInstance::GetDipReporter() {
+  if (!owner_version_->context() || !owner_version_->context()->wrapper()) {
+    return mojo::NullRemote();
+  }
+  auto* storage_partition =
+      owner_version_->context()->wrapper()->storage_partition();
+  if (!storage_partition) {
+    return mojo::NullRemote();
+  }
+  return GetDipReporterInternal(storage_partition);
+}
+
+mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+EmbeddedWorkerInstance::GetDipReporterInternal(
+    StoragePartitionImpl* storage_partition) {
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      new_dip_reporter;
+  if (dip_reporter_) {
+    if (owner_version_->context() && owner_version_->context()->wrapper() &&
+        owner_version_->context()->wrapper()->storage_partition()) {
+      if (owner_version_->context()->wrapper()->storage_partition() !=
+          storage_partition) {
+        // MockRenderProcessHost::GetStoragePartition() returns a storage
+        // partition generated via the browser context, which is a different
+        // path to obtain the storage partition from the production.
+        // Therefore, the storage partitions mismatches in tests.
+        CHECK_IS_TEST();
+      }
+    }
+    dip_reporter_->Clone(new_dip_reporter.InitWithNewPipeAndPassReceiver());
+    return new_dip_reporter;
+  }
+
+  network::mojom::ClientSecurityStatePtr client_security_state =
+      owner_version_->BuildClientSecurityState();
+  const network::DocumentIsolationPolicy* dip =
+      client_security_state ? &client_security_state->document_isolation_policy
+                            : nullptr;
+
+  if (!dip) {
+    return mojo::NullRemote();
+  }
+  mojo::PendingRemote<blink::mojom::ReportingObserver>
+      reporting_observer_remote;
+  dip_reporting_observer_receiver_ =
+      reporting_observer_remote.InitWithNewPipeAndPassReceiver();
+  dip_reporter_ = std::make_unique<DocumentIsolationPolicyReporter>(
+      storage_partition->GetWeakPtr(), owner_version_->script_url(),
+      dip->reporting_endpoint, dip->report_only_reporting_endpoint,
+      owner_version_->reporting_source(),
+      owner_version_->key()
+          .ToPartialNetIsolationInfo()
+          .network_anonymization_key());
+  dip_reporter_->BindObserver(std::move(reporting_observer_remote));
+
+  dip_reporter_->Clone(new_dip_reporter.InitWithNewPipeAndPassReceiver());
+  return new_dip_reporter;
 }
 
 EmbeddedWorkerInstance::CacheStorageRequest::CacheStorageRequest(

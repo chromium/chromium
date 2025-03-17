@@ -25,25 +25,25 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/protected_buffer_manager.mojom";
+[EnableIf=is_chromeos]
+import "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom";
 
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_decode_accelerator.mojom";
+[EnableIf=is_chromeos]
+import "chromeos/ash/experiences/arc/mojom/video_decode_accelerator.mojom";
 
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_decoder.mojom";
+[EnableIf=is_chromeos]
+import "chromeos/ash/experiences/arc/mojom/video_decoder.mojom";
 
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_encode_accelerator.mojom";
+[EnableIf=is_chromeos]
+import "chromeos/ash/experiences/arc/mojom/video_encode_accelerator.mojom";
 
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
+[EnableIf=is_chromeos]
+import "chromeos/ash/experiences/arc/mojom/video_protected_buffer_allocator.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 
 [EnableIf=is_win]
@@ -109,12 +109,12 @@ interface GpuService {
       pending_receiver<arc.mojom.ProtectedBufferManager> pbm);
 
   // Creates a new MjpegDecodeAccelerator and binds it to |jda|.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   CreateJpegDecodeAccelerator(
       pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
 
   // Creates a new JpegEncodeAccelerator and binds it to |jea|.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   CreateJpegEncodeAccelerator(
       pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea);
 

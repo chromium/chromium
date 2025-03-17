@@ -86,8 +86,9 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
   // that do not guarantee the WebState's view is in the view hierarchy.
   // TODO(crbug.com/40630853): Do not DCHECK([webState->GetView() window]) here
   // since this is a known issue.
-  if (displaying_placeholder_ || ![web_state_->GetView() window])
+  if (displaying_placeholder_ || ![web_state_->GetView() window]) {
     return;
+  }
 
   displaying_placeholder_ = true;
 
@@ -141,8 +142,9 @@ void PagePlaceholderTabHelper::DisplaySnapshotImage(UIImage* snapshot) {
 }
 
 void PagePlaceholderTabHelper::RemovePlaceholder() {
-  if (!displaying_placeholder_)
+  if (!displaying_placeholder_) {
     return;
+  }
 
   displaying_placeholder_ = false;
 

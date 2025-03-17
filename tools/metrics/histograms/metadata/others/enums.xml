@@ -86,6 +86,38 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Version v11"/>
 </enum>
 
+<enum name="FreedesktopSecretKeyProviderErrorDetail">
+  <summary>
+    Fine-grained error details for FreedesktopSecretKeyProvider.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="DestructedBeforeComplete"/>
+  <int value="2" label="EmptyObjectPaths"/>
+  <int value="3" label="InvalidReplyFormat"/>
+  <int value="4" label="InvalidSignalFormat"/>
+  <int value="5" label="InvalidVariantFormat"/>
+  <int value="6" label="NoResponse"/>
+  <int value="7" label="PromptDismissed"/>
+  <int value="8" label="PromptFailedSignalConnection"/>
+</enum>
+
+<enum name="FreedesktopSecretKeyProviderInitStatus">
+  <summary>
+    High-level error categories for FreedesktopSecretKeyProvider.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="CreateCollectionFailed"/>
+  <int value="2" label="CreateItemFailed"/>
+  <int value="3" label="EmptySecret"/>
+  <int value="4" label="GetSecretFailed"/>
+  <int value="5" label="GnomeKeyringDeadlock"/>
+  <int value="6" label="NoService"/>
+  <int value="7" label="ReadAliasFailed"/>
+  <int value="8" label="SearchItemsFailed"/>
+  <int value="9" label="SessionFailure"/>
+  <int value="10" label="UnlockFailed"/>
+</enum>
+
 <enum name="HappinessTrackingSurvey">
   <summary>Possible survey states and answers for each question.</summary>
   <int value="1" label="Survey Triggered"/>
@@ -594,18 +626,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Silent push without notification"/>
   <int value="3" label="Silent push with generic notification"/>
 </enum>
-
-<!-- LINT.IfChange(WebDatabaseAutofillAccountStorageWithReason) -->
-
-<enum name="WebDatabaseAutofillAccountStorageWithReason">
-  <int value="0" label="In memory (flag disabled)"/>
-  <int value="1" label="In memory (signed in implicitly)"/>
-  <int value="2" label="On disk (signed out)"/>
-  <int value="3" label="On disk (signed in explicitly)"/>
-  <int value="4" label="On disk (full sync on)"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/webdata_services/web_data_service_factory.cc:WebDatabaseAutofillAccountStorageWithReason) -->
 
 <!--
   Names are converted to ASCII before hashing - generate new hashes with:

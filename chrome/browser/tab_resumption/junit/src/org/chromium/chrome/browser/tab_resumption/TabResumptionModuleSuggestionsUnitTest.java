@@ -303,7 +303,7 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         urlImageProvider.fetchImageForUrl(
                 urlWithFavicon,
                 (Bitmap icon) -> {
-                    Assert.assertEquals(icon, expectedRealIcon);
+                    Assert.assertEquals(expectedRealIcon, icon);
                     ++mCallbackCounter;
                 });
 
@@ -313,7 +313,7 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                 /* tabId= */ 0,
                 /* thumbnailSize= */ new Size(32, 32),
                 /* tabThumbnailCallback= */ (Drawable icon) -> {
-                    Assert.assertEquals(((BitmapDrawable) icon).getBitmap(), expectedThumbnail);
+                    Assert.assertEquals(expectedThumbnail, ((BitmapDrawable) icon).getBitmap());
                     ++mCallbackCounter;
                 });
         Assert.assertEquals(2, mCallbackCounter);
@@ -321,7 +321,7 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         urlImageProvider.fetchImageForUrl(
                 urlWithoutFavicon,
                 (Bitmap icon) -> {
-                    Assert.assertEquals(icon, expectedFallbackIcon);
+                    Assert.assertEquals(expectedFallbackIcon, icon);
                     ++mCallbackCounter;
                 });
 

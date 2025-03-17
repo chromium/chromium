@@ -23,7 +23,6 @@ class AutofillAiLogger {
   void OnFormEligibilityAvailable(autofill::FormGlobalId form_id,
                                   bool is_eligible);
   void OnFormHasDataToFill(autofill::FormGlobalId form_id);
-  void OnSuggestionsShown(autofill::FormGlobalId form_id);
   void OnTriggeredFillingSuggestions(autofill::FormGlobalId form_id);
   void OnFillingSuggestionsShown(autofill::FormGlobalId form_id);
   void OnDidFillSuggestion(autofill::FormGlobalId form_id);
@@ -37,7 +36,7 @@ class AutofillAiLogger {
 
  private:
   // Helper struct that contains relevant information about the state of a form
-  // regarding the prediction improvement system.
+  // regarding the AutofillAi system.
   // TODO(crbug.com/372170223): Investigate whether this can be represented as
   // an enum.
   struct FunnelState {
@@ -47,11 +46,9 @@ class AutofillAiLogger {
     // Given a form, records whether there's data available to fill this form.
     // Whether or not this data is used for filling is irrelevant.
     bool has_data_to_fill = false;
-    // Given a form, records whether prediction improvement suggestions were
-    // shown for this form.
-    bool did_show_suggestions = false;
-    // Given a form, records whether the user triggered prediction improvement
-    // suggestions, which started loading filling suggestions.
+    // Given a form, records whether the user triggered AutofillAi
+    // suggestions via manua fallback, which started loading filling
+    // suggestions.
     bool did_start_loading_suggestions = false;
     // Given a form, records whether filling suggestions were actually shown
     // to the user.
@@ -60,7 +57,7 @@ class AutofillAiLogger {
     // filling suggestion.
     bool did_fill_suggestions = false;
     // Given a form, records whether the user corrected fields filled using
-    // prediction improvements filling suggestions.
+    // AutofillAi filling suggestions.
     bool did_correct_filling = false;
   };
   // Records the funnel state of each form. See the documentation of

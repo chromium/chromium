@@ -638,6 +638,11 @@ return score;
       "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
       "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",
       2);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+      "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2."
+      "Incognito",
+      0);
 }
 
 // Verifies that the app resumes HistoryNavigation logging for a page if the

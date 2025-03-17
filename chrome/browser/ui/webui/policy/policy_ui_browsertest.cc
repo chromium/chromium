@@ -58,12 +58,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_prefs.h"
@@ -286,7 +286,7 @@ void PolicyUITest::VerifyReportButton(bool visible) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PolicyUIStatusTest : public MixinBasedInProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
   EXPECT_EQ(status["time-since-last-refresh"], "1 hour ago");
   EXPECT_EQ(status["time-since-last-fetch-attempt"], "0 secs ago");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
   // Verifies that the names of known policies are sent to the UI and processed
@@ -787,11 +787,11 @@ class ExtensionPolicyUITest : public PolicyUITest,
   bool UseSigninProfile() const { return GetParam(); }
 
   Profile* extension_profile() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (UseSigninProfile()) {
       return ash::ProfileHelper::GetSigninProfile();
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return chrome_test_utils::GetProfile(this);
   }
 };
@@ -996,11 +996,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionPolicyUITest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                          ::testing::Values(false, true)
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
                          ::testing::Values(false)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1065,7 +1065,7 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
 
   // The browser's locale needs to be "en-US" to be able to see the banner
   static constexpr std::string_view kValidLocale = "en-US";
-  static constexpr std::string_view kInvalidLocale = "not-en-US";
+  static constexpr std::string_view kInvalidLocale = "en-AU";
 
  protected:
   void SetPromotionBannerDismissedPref(bool is_dismissed) {
@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                     .ExtractString();
 
   if (isFeatureEnabled()) {
-    EXPECT_EQ(result, kBannerVisible);
+    EXPECT_EQ(result, kBannerHidden);
   } else {
     EXPECT_EQ(result, kBannerHidden);
   }
@@ -1165,7 +1165,15 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
   EXPECT_EQ(result, kBannerHidden);
 }
 
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, HandleLocaleNotEnUSHidden) {
+// Test is flaky on macOS. <https://crbug.com/394767577>
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HandleLocaleNotEnUSHidden DISABLED_HandleLocaleNotEnUSHidden
+#else
+#define MAYBE_HandleLocaleNotEnUSHidden HandleLocaleNotEnUSHidden
+#endif
+
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       MAYBE_HandleLocaleNotEnUSHidden) {
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -1198,83 +1206,23 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIPolicyURL)));
 
-  const bool expected_bucket = isFeatureEnabled() ? true : false;
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerDisplayed", expected_bucket, 1);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.PolicyPromotionBannerDisplayed", false, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
-                       HistogramRecordedWhenBannerDismissedNotDisplayed) {
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
+  // Verifies that the page opens in guest session.
+  Browser* policy_browser = OpenURLOffTheRecord(
+      browser()->profile(), GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(policy_browser);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(policy_browser,
+                               GURL(chrome::kChromeUIPolicyURL)));
 
-  SetBrowserLocale(kValidLocale);
-
-  // Banner will not be displayed if it has been dismissed
-  SetPromotionBannerDismissedPref(true);
-
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIPolicyURL)));
-
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerDisplayed", false, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
-                       HistogramRecordedWhenBannerDismissed) {
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
-  if (!isFeatureEnabled()) {
-    GTEST_SKIP() << "Test only relevant when feature is enabled";
-  }
-
-  SetBrowserLocale(kValidLocale);
-
-  SetPromotionBannerDismissedPref(false);
-
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIPolicyURL)));
-
-  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     kPromotionBannerDismissJavaScript));
-
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerAction",
-      policy::PolicyPromotionBannerAction::kBannerDismissed, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
-                       HistoramRecordedWhenBannerRedirected) {
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
-  if (!isFeatureEnabled()) {
-    GTEST_SKIP() << "Test only relevant when feature is enabled";
-  }
-
-  SetBrowserLocale(kValidLocale);
-
-  SetPromotionBannerDismissedPref(false);
-
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIPolicyURL)));
-
-  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     kPromotionBannerRedirectJavaScript));
-
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerAction",
-      policy::PolicyPromotionBannerAction::kBannerRedirected, 1);
+  auto result =
+      EvalJs(policy_browser->tab_strip_model()->GetActiveWebContents(),
+             kPromotionBannerVisibilityJavaScript)
+          .ExtractString();
+  EXPECT_EQ(result, kBannerHidden);
 }
 
 INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,

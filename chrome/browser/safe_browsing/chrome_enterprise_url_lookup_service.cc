@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -75,13 +76,14 @@ ChromeEnterpriseRealTimeUrlLookupService::
             get_user_population_callback,
         std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
         enterprise_connectors::ConnectorsService* connectors_service,
-        ReferrerChainProvider* referrer_chain_provider)
+        ReferrerChainProvider* referrer_chain_provider,
+        PrefService* pref_service)
     : RealTimeUrlLookupServiceBase(
           url_loader_factory,
           cache_manager,
           get_user_population_callback,
           referrer_chain_provider,
-          /*pref_service=*/nullptr,
+          pref_service,
           /*webui_delegate=*/WebUIInfoSingleton::GetInstance()),
       profile_(profile),
       connectors_service_(connectors_service),
@@ -272,7 +274,7 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
     const {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!connectors_service_->GetBrowserDmToken().has_value() ||
       enterprise_util::IsProfileAffiliated(profile_)) {
     return connectors_service_->GetProfileDmToken().value_or("");

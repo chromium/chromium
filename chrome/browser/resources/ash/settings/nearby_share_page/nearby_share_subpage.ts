@@ -8,7 +8,6 @@
  * Nearby Share feature.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -139,21 +138,6 @@ export class SettingsNearbyShareSubpageElement extends
                 settings.isFastInitiationHardwareSupported)`,
       },
 
-      isDeviceVisible_: {
-        type: Boolean,
-        value: true,  // Correctly populated on settings load.
-      },
-
-      selectedVisibilityLabel_: {
-        type: String,
-        value: '',  // Populated on settings load.
-      },
-
-      isEveryoneModeOnlyForTenMinutes_: {
-        type: Boolean,
-        value: true,
-      },
-
       yourDevicesLabel_: {
         type: String,
         value: 'Your devices',
@@ -163,46 +147,30 @@ export class SettingsNearbyShareSubpageElement extends
         type: String,
         value: 'Contacts',
       },
-
-      everyoneLabel_: {
-        type: String,
-        value: 'Everyone',
-      },
-
-      yourDevicesSublabel_: {
-        type: String,
-        computed: 'getYourDevicesVisibilitySublabel_(profileLabel_)',
-      },
     };
   }
 
   static get observers() {
     return [
       'enabledChange_(settings.enabled)',
-      'setSettingsVisibilityMenu_(settings.visibility)',
     ];
   }
 
   isSettingsRetreived: boolean;
   settings: NearbySettings;
-  private isDeviceVisible_: boolean;
-  private isEveryoneModeOnlyForTenMinutes_: boolean;
   private inHighVisibility_: boolean;
   private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;
   private profileLabel_: string;
   private profileName_: string;
   private receiveObserver_: ReceiveObserverReceiver|null;
-  private selectedVisibilityLabel_: string;
   private shouldShowFastInititationNotificationToggle_: boolean;
   private showDataUsageDialog_: boolean;
   private showDeviceNameDialog_: boolean;
   private showReceiveDialog_: boolean;
   private showVisibilityDialog_: boolean;
   private yourDevicesLabel_: string;
-  private yourDevicesSublabel_: string;
   private contactsLabel_: string;
-  private everyoneLabel_: string;
 
   constructor() {
     super();
@@ -339,6 +307,22 @@ export class SettingsNearbyShareSubpageElement extends
     if (visibility === undefined) {
       return '';
     }
+
+    if (this.isQuickShareV2Enabled_) {
+      switch (visibility) {
+        case Visibility.kAllContacts:
+          return this.i18n('nearbyShareContactVisiblityContactsButton');
+        case Visibility.kNoOne:
+          return this.i18n('nearbyShareContactVisibilityNone');
+        case Visibility.kUnknown:
+          return this.i18n('nearbyShareContactVisibilityUnknown');
+        case Visibility.kYourDevices:
+          return this.i18n('nearbyShareContactVisibilityYourDevices');
+        default:
+          assertNotReached();
+      }
+    }
+
     switch (visibility) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAll');
@@ -456,10 +440,10 @@ export class SettingsNearbyShareSubpageElement extends
   }
 
   private showHighVisibilityPage_(timeoutInSeconds?: number): void {
-    const shutoffTimeoutInSeconds =
-        timeoutInSeconds || this.isQuickShareV2Enabled_ ?
+    const defaultTimeout = this.isQuickShareV2Enabled_ ?
         DEFAULT_HIGH_VISIBILITY_TIMEOUT_S :
         DEFAULT_HIGH_VISIBILITY_TIMEOUT_LEGACY_S;
+    const shutoffTimeoutInSeconds = timeoutInSeconds || defaultTimeout;
 
     this.showReceiveDialog_ = true;
     flush();

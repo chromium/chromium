@@ -105,6 +105,15 @@ class SparseVectorTest : public testing::Test {
       EXPECT_EQ(std::count(field_ids.begin(), field_ids.end(), id),
                 sparse_vector().HasField(id))
           << static_cast<unsigned>(id);
+      for (auto last_id = id; last_id <= FieldId::kLast;
+           last_id = static_cast<FieldId>(static_cast<unsigned>(last_id) + 1)) {
+        bool has_in_range = std::any_of(
+            field_ids.begin(), field_ids.end(),
+            [id, last_id](FieldId i) { return i >= id && i <= last_id; });
+        EXPECT_EQ(has_in_range, sparse_vector().HasFieldInRange(id, last_id))
+            << static_cast<unsigned>(id) << "-"
+            << static_cast<unsigned>(last_id);
+      }
     }
   }
 

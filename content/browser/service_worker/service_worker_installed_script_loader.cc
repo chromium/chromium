@@ -117,12 +117,4 @@ void ServiceWorkerInstalledScriptLoader::SetPriority(
   // Ignore: this class doesn't have a concept of priority.
 }
 
-void ServiceWorkerInstalledScriptLoader::PauseReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
-}
-
-void ServiceWorkerInstalledScriptLoader::ResumeReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
-}
-
 }  // namespace content

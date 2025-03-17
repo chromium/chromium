@@ -27,16 +27,8 @@ SiteDataTestHarness::~SiteDataTestHarness() = default;
 
 void SiteDataTestHarness::SetUp() {
   PerformanceManagerTestHarnessHelper::SetUp();
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  auto recorder = std::make_unique<SiteDataRecorder>();
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindLambdaForTesting([&](performance_manager::Graph* graph) {
-        graph->PassToGraph(std::move(recorder));
-        std::move(quit_closure).Run();
-      }));
-  run_loop.Run();
+  PerformanceManager::GetGraph()->PassToGraph(
+      std::make_unique<SiteDataRecorder>());
 }
 
 void SiteDataTestHarness::TearDown(Profile* profile) {
@@ -59,57 +51,33 @@ internal::SiteDataImpl* GetSiteDataImplForPageNode(PageNode* page_node) {
 
 void MarkWebContentsAsLoadedInBackgroundInSiteDataDb(
     content::WebContents* web_contents) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node, base::OnceClosure closure) {
-            DCHECK(page_node);
-            auto* impl = GetSiteDataImplForPageNode(page_node.get());
-            DCHECK(impl);
-            impl->NotifySiteLoaded();
-            impl->NotifyLoadedSiteBackgrounded();
-            std::move(closure).Run();
-          },
-          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents);
+  CHECK(page_node);
+  auto* impl = GetSiteDataImplForPageNode(page_node.get());
+  CHECK(impl);
+  impl->NotifySiteLoaded();
+  impl->NotifyLoadedSiteBackgrounded();
 }
 
 void MarkWebContentsAsUnloadedInBackgroundInSiteDataDb(
     content::WebContents* web_contents) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node, base::OnceClosure closure) {
-            DCHECK(page_node);
-            auto* impl = GetSiteDataImplForPageNode(page_node.get());
-            DCHECK(impl);
-            impl->NotifySiteUnloaded(TabVisibility::kBackground);
-            std::move(closure).Run();
-          },
-          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents);
+  CHECK(page_node);
+  auto* impl = GetSiteDataImplForPageNode(page_node.get());
+  CHECK(impl);
+  impl->NotifySiteUnloaded(TabVisibility::kBackground);
 }
 
 void ExpireSiteDataObservationWindowsForWebContents(
     content::WebContents* web_contents) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node, base::OnceClosure closure) {
-            DCHECK(page_node);
-            auto* impl = GetSiteDataImplForPageNode(page_node.get());
-            DCHECK(impl);
-            impl->ExpireAllObservationWindowsForTesting();
-            std::move(closure).Run();
-          },
-          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents);
+  CHECK(page_node);
+  auto* impl = GetSiteDataImplForPageNode(page_node.get());
+  CHECK(impl);
+  impl->ExpireAllObservationWindowsForTesting();
 }
 
 }  // namespace performance_manager

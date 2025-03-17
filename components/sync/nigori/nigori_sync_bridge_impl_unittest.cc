@@ -347,7 +347,7 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     storage_ = storage.get();
     ON_CALL(*storage, StoreData)
         .WillByDefault(testing::SaveArg<0>(&nigori_local_data_));
-    if (nigori_local_data_.ByteSize() != 0) {
+    if (nigori_local_data_.ByteSizeLong() != 0U) {
       // Return local data only if it's populated and non-empty. Otherwise,
       // return default nullopt.
       ON_CALL(*storage, RestoreData).WillByDefault(Return(nigori_local_data_));

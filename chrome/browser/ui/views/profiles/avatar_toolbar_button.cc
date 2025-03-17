@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -69,9 +70,7 @@ namespace {
 
 constexpr int kChromeRefreshImageLabelPadding = 6;
 
-// Value used to enlarge the AvatarIcon to accommodate for DIP scaling. This is
-// used to adapt other related icon modifications, such as the dotted circle
-// icon in SigninPending mode.
+// Value used to enlarge the AvatarIcon to accommodate for DIP scaling.
 constexpr int kAvatarIconEnlargement = 1;
 
 }  // namespace
@@ -129,7 +128,8 @@ void AvatarToolbarButton::UpdateIcon() {
 
   const int icon_size = GetIconSize();
   ui::ImageModel icon = delegate_->GetAvatarIcon(
-      icon_size, GetForegroundColor(ButtonState::STATE_NORMAL));
+      icon_size, GetForegroundColor(ButtonState::STATE_NORMAL),
+      GetColorProvider());
 
   SetImageModel(ButtonState::STATE_NORMAL, icon);
   SetImageModel(ButtonState::STATE_DISABLED,
@@ -221,7 +221,7 @@ void AvatarToolbarButton::UpdateAccessibilityLabel() {
   // accessibility label: the tooltip or no text if the button content has no
   // text initially. All the values needs to be overridden every time in order
   // clear the previous state effect.
-  std::u16string button_content = GetText();
+  std::u16string button_content(GetText());
   if (accessibility_label.has_value()) {
     if (button_content.empty()) {
       name = accessibility_label.value();
@@ -346,6 +346,7 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   }
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHSupervisedUserProfileSigninFeature)) {
@@ -388,6 +389,7 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
   browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
     const AccountInfo& account_info) {
@@ -399,7 +401,6 @@ void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
 }
 
 void AvatarToolbarButton::MaybeShowWebSignoutIPH(const GaiaId& gaia_id) {
-  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   browser_->window()->MaybeShowFeaturePromo(user_education::FeaturePromoParams(
       feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id.ToString()));
 }
@@ -502,30 +503,6 @@ void AvatarToolbarButton::AddObserver(Observer* observer) {
 
 void AvatarToolbarButton::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
-}
-
-void AvatarToolbarButton::PaintButtonContents(gfx::Canvas* canvas) {
-  int icon_size = GetIconSize();
-  // This ensures that the bounds get are mirror adapted, and will only return
-  // the mirror values if RTL or mirror is enabled.
-  gfx::Rect avatar_image_bounds = image_container_view()->GetMirroredBounds();
-
-  // Override image bounds width and height to match the icon size used.
-  avatar_image_bounds.set_width(icon_size);
-  avatar_image_bounds.set_height(icon_size);
-  // This is needed to adapt the changes done in `AvatarToolbarButton::Layout()`
-  // where the internal image is enlarged. When enlarging an image, the
-  // coordinates are not affected, but the image size is and therefore the
-  // container of the image as well.
-  // This is only needed for the mirrored version since in the regular version
-  // the icon is placed at the beginning which does not take into consideration
-  // the total width (the total width is considered when getting the mirrored
-  // value).
-  if (GetMirrored()) {
-    avatar_image_bounds.set_x(avatar_image_bounds.x() + kAvatarIconEnlargement);
-  }
-
-  delegate_->PaintIcon(canvas, avatar_image_bounds);
 }
 
 // static

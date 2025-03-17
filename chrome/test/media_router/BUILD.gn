@@ -30,7 +30,6 @@ source_set("browser_tests") {
   ]
   deps = [
     ":test_support",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/media/router",

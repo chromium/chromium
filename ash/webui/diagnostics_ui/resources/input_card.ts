@@ -8,17 +8,18 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './diagnostics_card_frame.js';
 import './icons.html.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ConnectionType, KeyboardInfo} from './input.mojom-webui.js';
+import type {KeyboardInfo} from './input.mojom-webui.js';
+import {ConnectionType} from './input.mojom-webui.js';
 import {getTemplate} from './input_card.html.js';
-import {InputDataProviderInterface, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
-import {HostDeviceStatus} from './input_list.js';
+import type {InputDataProviderInterface, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import type {HostDeviceStatus} from './input_list.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
 
 declare global {
@@ -133,7 +134,7 @@ export class InputCardElement extends InputCardElementBase {
   private getDeviceTestability(device: KeyboardInfo|TouchDeviceInfo): boolean {
     // If the device has the key 'testable', we check its testable state.
     if ('testable' in device) {
-      return (device as TouchDeviceInfo).testable;
+      return (device).testable;
     }
 
     if (this.isInternalKeyboard(device)) {

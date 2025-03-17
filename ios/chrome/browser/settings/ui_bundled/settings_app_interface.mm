@@ -11,12 +11,12 @@
 #import "components/metrics/metrics_service.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
+#import "components/search_engines/template_url_prepopulate_data_resolver.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -27,6 +27,7 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 
@@ -111,11 +112,10 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* context) {
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
-  search_engines::SearchEngineChoiceService* searchEngineChoiceService =
-      ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+  TemplateURLPrepopulateData::Resolver* prepopulate_data_resolver =
+      ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(profile);
   std::unique_ptr<TemplateURLData> templateURLData =
-      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-          prefs, searchEngineChoiceService,
+      prepopulate_data_resolver->GetEngineFromFullList(
           TemplateURLPrepopulateData::google.id);
   auto templateURL = std::make_unique<TemplateURL>(*templateURLData.get());
   service->SetUserSelectedDefaultSearchProvider(templateURL.get());

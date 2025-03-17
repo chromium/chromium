@@ -9,10 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_state_tracker.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
+#include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -66,26 +67,13 @@ class ParentAccessUiHandlerImpl
   const kids::platform::parentaccess::client::proto::ParentAccessToken*
   GetParentAccessTokenForTest();
 
-  // Used for metrics. These values are logged to UMA. Entries should not be
-  // renumbered and numeric values should never be reused. Please keep in sync
-  // with "FamilyLinkUserParentAccessWidgetError" in
-  // src/tools/metrics/histograms/enums.xml.
-  enum class ParentAccessWidgetError {
-    kOAuthError = 0,
-    kDelegateNotAvailable = 1,
-    kDecodingError = 2,
-    kParsingError = 3,
-    kUnknownCallback = 4,
-    kMaxValue = kUnknownCallback
-  };
-
  private:
   void OnAccessTokenFetchComplete(GetOauthTokenCallback callback,
                                   GoogleServiceAuthError error,
                                   signin::AccessTokenInfo access_token_info);
 
   void RecordParentAccessWidgetError(
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError error);
+      supervised_user::ParentAccessWidgetError error);
 
   // Used to fetch OAuth2 access tokens.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

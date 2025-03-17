@@ -6,8 +6,8 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenOptionsElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,8 +15,8 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
 suite('SeaPenTemplateQueryElementTest', function() {
   let seaPenTemplateQueryElement: SeaPenTemplateQueryElement|null;
@@ -135,7 +135,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const chips =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -147,12 +147,13 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const optionToSelect =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
             '#container cr-button[aria-checked=false]');
-    const optionText = optionToSelect!.innerText;
+    assertTrue(!!optionToSelect);
+    const optionText = optionToSelect.innerText;
     assertTrue(
         optionText !== chip.innerText,
         'unselected option should not match text');
 
-    optionToSelect!.click();
+    optionToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     assertEquals(
@@ -171,7 +172,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chipToSelect = chips[0] as HTMLElement;
 
-    chipToSelect!.click();
+    chipToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -210,7 +211,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chipToSelect = chips[1] as HTMLElement;
 
-    chipToSelect!.click();
+    chipToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -252,7 +253,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
 
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -291,7 +292,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         selectedChipText!.innerText, optionText,
         'the chip should update to match the new selected option');
 
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     selectedOption =
@@ -312,7 +313,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
 
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     assertEquals(
@@ -337,7 +338,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
             '#container cr-button[aria-checked=false]');
     assertTrue(!!optionToSelect, 'option should be available to select');
 
-    optionToSelect!.click();
+    optionToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     // verify the text animation happened, <span> elements with `letter` class
@@ -357,7 +358,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const inspireButton =
         seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
     assertTrue(!!inspireButton);
-    inspireButton!.click();
+    inspireButton.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const chips =
@@ -406,6 +407,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
             '.chip-text');
     const inspireButton =
         seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
+    assertTrue(!!inspireButton);
 
     // Select a chip.
     chips[0]!.click();
@@ -418,7 +420,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         unselected.length > 0, 'template should have unselected elements');
 
     // Click inspire button.
-    inspireButton!.click();
+    inspireButton.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     unselected =
@@ -438,7 +440,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const inspireButton =
         seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
     assertTrue(!!inspireButton);
-    inspireButton!.click();
+    inspireButton.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const query: SeaPenQuery =
@@ -587,4 +589,44 @@ suite('SeaPenTemplateQueryElementTest', function() {
                 '#freeformInfo'),
             'freeform navigation info displays');
       });
+
+  test('hides Freeform navigation info if thumbnails are loading', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertTrue(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info displays');
+
+    // Simulate loading start.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertFalse(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info no longer displays');
+
+    // Simulate loading end.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertTrue(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info displays');
+  });
 });

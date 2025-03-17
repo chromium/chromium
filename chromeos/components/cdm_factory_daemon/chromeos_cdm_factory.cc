@@ -10,12 +10,12 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_restrictions.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom.h"
@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 namespace chromeos {
 
@@ -83,7 +84,6 @@ void GetOutputProtectionOnTaskRunner(
       std::move(output_protection));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class SingletonCdmContextRef : public media::CdmContextRef {
  public:
   explicit SingletonCdmContextRef(media::CdmContext* cdm_context)
@@ -157,7 +157,6 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
   // media::CdmContext implementation.
   ChromeOsCdmContext* GetChromeOsCdmContext() override { return this; }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void OnCdmCreated(media::CdmCreatedCB callback,
                   scoped_refptr<ContentDecryptionModuleAdapter> cdm,
@@ -278,7 +277,6 @@ void ChromeOsCdmFactory::ParseEncryptedSliceHeader(
       secure_handle, offset, stream_data, std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 void ChromeOsCdmFactory::SetBrowserCdmFactoryRemote(
     mojo::Remote<cdm::mojom::BrowserCdmFactory> remote) {
@@ -292,7 +290,6 @@ media::CdmContext* ChromeOsCdmFactory::GetArcCdmContext() {
   static base::NoDestructor<ArcCdmContext> arc_cdm_context;
   return arc_cdm_context.get();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     const media::CdmConfig& cdm_config,
@@ -393,12 +390,9 @@ void ChromeOsCdmFactory::CreateCdm(
   // Create the adapter that proxies calls between
   // media::ContentDecryptionModule and
   // chromeos::cdm::mojom::ContentDecryptionModule.
-  scoped_refptr<ContentDecryptionModuleAdapter> cdm =
-      base::WrapRefCounted<ContentDecryptionModuleAdapter>(
-          new ContentDecryptionModuleAdapter(
-              std::move(storage), std::move(cros_cdm), session_message_cb,
-              session_closed_cb, session_keys_change_cb,
-              session_expiration_update_cb));
+  auto cdm = base::MakeRefCounted<ContentDecryptionModuleAdapter>(
+      std::move(storage), std::move(cros_cdm), session_message_cb,
+      session_closed_cb, session_keys_change_cb, session_expiration_update_cb);
 
   // Create the OutputProtection interface to pass to the CDM.
   mojo::PendingRemote<cdm::mojom::OutputProtection> output_protection_remote;
@@ -412,7 +406,7 @@ void ChromeOsCdmFactory::CreateCdm(
   {
     // TODO (crbug.com/368792274): Refactor the GetCdmOrigin mojo call to not be
     // a sync call.
-    base::ScopedAllowBaseSyncPrimitives allow_sync_mojo_call;
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_mojo_call;
     frame_interfaces_->GetCdmOrigin(&cdm_origin);
   }
 

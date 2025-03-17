@@ -24,6 +24,7 @@
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -99,6 +100,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_management_policy.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -317,7 +319,7 @@ class OpenURLsPopupObserver : public BrowserListObserver {
 // explicit profile given.
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
   std::vector<GURL> urls;
-  urls.push_back(GURL("http://localhost"));
+  urls.emplace_back("http://localhost");
 
   // Note that in our testing we do not ever query the BrowserList for the "last
   // active" browser. That's because the browsers are set as "active" by
@@ -461,6 +463,55 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
   observer.Wait();
   EXPECT_EQ("title2.html",
             web_contents->GetLastCommittedURL().ExtractFileName());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       KSameTabSwitchReplacesActiveTab) {
+  // Use a couple of arbitrary URLs.
+  std::vector<GURL> urls;
+  urls.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title1.html"))));
+  urls.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html"))));
+  urls.push_back(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title3.html"))));
+
+  DisableWhatsNewPage();
+
+  // Open a browser window with some preloaded tabs.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://localhost"), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());  // Verify one tab is open.
+
+  // Set the first tab as the active tab.
+  tab_strip->ActivateTabAt(0);
+  EXPECT_EQ(0, tab_strip->active_index());
+
+  // Add the --kSameTab switch and URLs to the command line.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kSameTab);  // Add the switch.
+  command_line.AppendArg(urls[0].spec());         // First URL.
+  command_line.AppendArg(urls[1].spec());         // Second URL.
+  command_line.AppendArg(urls[2].spec());         // Third URL.
+
+  // Process the command line to simulate the launch.
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+
+  // Verify the behavior:
+  // - The active tab's URL should be replaced by the first URL.
+  EXPECT_EQ(urls[0], tab_strip->GetWebContentsAt(0)->GetVisibleURL());
+
+  // - The remaining URLs should open in new tabs.
+  EXPECT_EQ(3, tab_strip->count());  // Verify total tabs.
+  EXPECT_EQ(urls[1], tab_strip->GetWebContentsAt(1)->GetVisibleURL());
+  EXPECT_EQ(urls[2], tab_strip->GetWebContentsAt(2)->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
@@ -2050,8 +2101,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
 // and an app restore occurs, apps will be duplicated. This test ensures that
 // does not occur. This test doesn't build on non app_session_service
 // platforms, hence the buildflag disablement.
+//
+// TODO(crbug.com/401224321): Flaky on "Mac13 Tests" bot.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+#define MAYBE_ProfileRestartedAppRestore DISABLED_ProfileRestartedAppRestore
+#else
+#define MAYBE_ProfileRestartedAppRestore ProfileRestartedAppRestore
+#endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
-                       ProfileRestartedAppRestore) {
+                       MAYBE_ProfileRestartedAppRestore) {
   Profile* test_profile = browser()->profile();
 
   // StartupBrowserCreator() has already run in SetUp(), so it would already be
@@ -2952,7 +3010,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
   protocol_handler.protocol = "web+test";
   apps::FileHandler file_handler;
   file_handler.action = GURL(std::string(kStartUrl) + "/file_handler");
-  file_handler.accept.push_back({});
+  file_handler.accept.emplace_back();
   file_handler.accept.back().mime_type = "text/plain";
   file_handler.accept.back().file_extensions = {".txt"};
   webapps::AppId app_id =
@@ -3637,7 +3695,7 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
       ASSERT_NE(entry, nullptr);
       entry->SetActiveTimeToNow();
       entry->SetAuthInfo(
-          base::StringPrintf("gaia_id_%i", i),
+          GaiaId(base::StringPrintf("gaia_id_%i", i)),
           base::UTF8ToUTF16(base::StringPrintf("user%i@gmail.com", i)),
           /*is_consented_primary_account=*/false);
     }
@@ -3729,7 +3787,8 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, PRE_TestSetup) {
 // Checks that either the ProfilePicker or a browser window is open at startup.
 // Except with switches::kNoStartupWindow, for which neither the picker nor a
 // browser is open.
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, TestSetup) {
+// TODO(crbug.com/394713545): Flaky on all of Win/Mac/Linux
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, DISABLED_TestSetup) {
   ProfilePickerSetup setup_param = GetParam();
 
   // Check the ProfilePicker.

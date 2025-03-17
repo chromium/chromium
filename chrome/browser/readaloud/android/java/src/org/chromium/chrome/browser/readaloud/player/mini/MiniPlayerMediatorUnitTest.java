@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.readaloud.player.mini;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -28,10 +30,10 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
@@ -59,7 +61,6 @@ public class MiniPlayerMediatorUnitTest {
 
     private PropertyModel mModel;
     private MiniPlayerMediator mMediator;
-    private FeatureList.TestValues mTestFeatures;
 
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -73,8 +74,6 @@ public class MiniPlayerMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mTestFeatures = new TestValues();
-        FeatureList.setTestValues(mTestFeatures);
         // By default, test behavior of using yOffset from bottom stacker.
         setBottomControlsStackerYOffset(mTestBottomControlsStacker);
 
@@ -182,6 +181,17 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     @Test
+    public void testBackgroundColorWithBottomToolbarPresent() {
+        mMediator.onBackgroundColorUpdated(0xAABBCCDD);
+        doReturn(true).when(mBottomControlsStacker).isLayerVisible(LayerType.BOTTOM_TOOLBAR);
+        verify(mBottomControlsStacker, never()).notifyBackgroundColor(anyInt());
+        mMediator.show(/* animate= */ true);
+
+        // Simulate the layout reporting its height.
+        mMediator.onHeightKnown(HEIGHT_PX);
+    }
+
+    @Test
     public void testShowAlreadyShowing() {
         mMediator.show(/* animate= */ true);
         assertEquals(VisibilityState.SHOWING, mMediator.getVisibility());
@@ -231,6 +241,7 @@ public class MiniPlayerMediatorUnitTest {
 
     @Test
     public void testShowWithDelayedRunnable_GrowBottomControlsAnimates() {
+        mMediator.onBackgroundColorUpdated(0xAABBCCDD);
         mMediator.show(/* animate= */ true);
 
         // Layout visibility, CC layer visibility, and overall VisibilityState should be set.
@@ -246,6 +257,7 @@ public class MiniPlayerMediatorUnitTest {
                 .setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX), eq(true));
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsHeight();
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
+        verify(mBottomControlsStacker).notifyBackgroundColor(0xAABBCCDD);
 
         assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
 
@@ -574,7 +586,7 @@ public class MiniPlayerMediatorUnitTest {
                 .getBottomControlsMinHeightOffset();
 
         if (mTestBottomControlsStacker) {
-            mMediator.onBrowserControlsOffsetUpdate(layerYOffset, false);
+            mMediator.onBrowserControlsOffsetUpdate(layerYOffset);
         } else {
             mBrowserControlsObserverCaptor
                     .getValue()
@@ -599,10 +611,12 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     private void setBottomControlsStackerYOffset(boolean doTestYOffset) {
-        mTestFeatures.addFeatureFlagOverride(
-                ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, doTestYOffset);
-        mTestFeatures.addFieldTrialParamOverride(
-                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching,
-                Boolean.toString(!mTestBottomControlsStacker));
+        FeatureOverrides.newBuilder()
+                .flag(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, doTestYOffset)
+                .param(
+                        ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR,
+                        "disable_bottom_controls_stacker_y_offset",
+                        !mTestBottomControlsStacker)
+                .apply();
     }
 }

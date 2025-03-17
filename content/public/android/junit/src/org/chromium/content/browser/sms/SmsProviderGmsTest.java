@@ -48,7 +48,7 @@ public class SmsProviderGmsTest {
     private void createSmsProviderGms(@GmsBackend int backend) {
         mProvider =
                 new SmsProviderGms(
-                        /* native_identifier= */ 0,
+                        /* smsProviderGmsAndroid= */ 0,
                         backend,
                         /* isVerificationBackendAvailable= */ true);
         mProvider.setUserConsentReceiverForTesting(mUserConsentReceiver);
@@ -59,7 +59,7 @@ public class SmsProviderGmsTest {
     public void testVerificationReceiverCreationWithUserConsentBackend() {
         SmsProviderGms provider =
                 new SmsProviderGms(
-                        /* native_identifier= */ 0,
+                        /* smsProviderGmsAndroid= */ 0,
                         GmsBackend.USER_CONSENT,
                         /* isVerificationBackendAvailable= */ true);
         assertNotNull(

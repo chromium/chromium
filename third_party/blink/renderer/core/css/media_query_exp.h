@@ -181,7 +181,8 @@ class CORE_EXPORT MediaQueryExpValue {
   static std::optional<MediaQueryExpValue> Consume(
       const String& lower_media_feature,
       CSSParserTokenStream&,
-      const CSSParserContext&);
+      const CSSParserContext&,
+      bool supports_element_dependent);
 
  private:
   enum class Type { kInvalid, kId, kValue, kRatio };
@@ -285,7 +286,8 @@ class CORE_EXPORT MediaQueryExp {
   // Returns an invalid MediaQueryExp if the arguments are invalid.
   static MediaQueryExp Create(const AtomicString& media_feature,
                               CSSParserTokenStream&,
-                              const CSSParserContext&);
+                              const CSSParserContext&,
+                              bool supports_element_dependent);
   static MediaQueryExp Create(const AtomicString& media_feature,
                               const MediaQueryExpBounds&);
   static MediaQueryExp Invalid() {
@@ -491,6 +493,7 @@ class CORE_EXPORT MediaQueryUnknownExpNode : public MediaQueryExpNode {
   explicit MediaQueryUnknownExpNode(String string) : string_(string) {}
 
   Type GetType() const override { return Type::kUnknown; }
+  String ToString() const { return string_; }
   void SerializeTo(WTF::StringBuilder&) const override;
   void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
   FeatureFlags CollectFeatureFlags() const override;

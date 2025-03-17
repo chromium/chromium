@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/devtools_preload_storage.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
@@ -193,6 +194,49 @@ PreloadingDecider::PreloadingDecider(RenderFrameHost* rfh)
 
   prerenderer_->SetPrerenderCancellationCallback(
       base::BindRepeating(&OnPrerenderCanceled, rfh->GetWeakDocumentPtr()));
+
+  // Forcibly create `DevToolsPreloadStorage` before we use it in
+  // `devtools_instrumentation`.
+  //
+  // For more details, see
+  // https://docs.google.com/document/d/1ZP7lYrtqZL9jC2xXieNY_UBMJL1sCrfmzTB8K6v4sD4/edit?resourcekey=0-fkbeQhkT3PhBb9FnnPgnZA&tab=t.e4x3d1nxzmy3#heading=h.4lvl0yr9vmh7
+  //
+  // We found that there is a case that
+  // `devtools_instrumentation::DidUpdatePrerenderStatus()` in the same stack
+  // that called `DocumentAssociatedData::dtor()`. The former needs an instance
+  // of `DevToolsPreloadStorage`. If we call
+  // `DevToolsPreloadStorage::GetOrCreateForCurrentDocument()` there, the call
+  // may try to create an instance, but it is forbidden as the holder
+  // `DocumentAssociatedData` is in dtor and will crash.
+  //
+  // To mitigate this crash, we'll call `GetOrCreateForCurrentDocument()` here
+  // and use `GetForCurrentDocument()` in
+  // `devtools_instrumentation::DidUpdatePrerenderStatus()`.
+  //
+  // This works because:
+  //
+  // - The issue happens only on speculation rules preload, not
+  //   browser-initiated preloads. This is because browser-initiated preloads
+  //   don't emit CDP events as they don't have an initiator document, thus
+  //   don't use `DevToolsPreloadStorage`. This is guaranteed by
+  //   `DevToolsPrerenderAttempt::SetFailureReason()`. Therefore, we do this
+  //   workaround in `PreloadingDecider`, not the common layer.
+  //   So, we can assume that the below
+  //   `DevToolsPreloadStorage::GetOrCreateForCurrentDocument()` is called and
+  //   an instance basically exists.
+  // - `SupportsUserData::ClearAllUserData()` (which is called from
+  //   `DocumentAssociatedData::dtor()`) swaps user data with an empty map and
+  //   then drops the swapped map at the end of scope, which calls each dtor.
+  //   https://source.chromium.org/chromium/chromium/src/+/main:base/supports_user_data.cc;l=142;drc=5f14562c01775211a40ebc3056d0a773c3569008
+  //   So, `DevToolsPreloadStorage::GetForCurrentDocument()` returns non null
+  //   pointer iff the call is before `DocumentAssociatedData::dtor()` call. We
+  //   can branch by the condition.
+  //
+  // Note that this is just a short-term fix. We are planning to fix the root
+  // cause.
+  //
+  // TODO(crbug.com/394631076): Fix the root cause and revert this.
+  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(rfh);
 }
 
 PreloadingDecider::~PreloadingDecider() = default;
@@ -464,7 +508,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // Move eager candidates to the front. This will avoid unnecessarily
   // marking some non-eager candidates as on-standby when there is an eager
   // candidate with the same URL that will be processed immediately.
-  base::ranges::stable_partition(candidates, [&](const auto& candidate) {
+  std::ranges::stable_partition(candidates, [&](const auto& candidate) {
     return candidate->eagerness == blink::mojom::SpeculationEagerness::kEager;
   });
 
@@ -519,7 +563,7 @@ PreloadingDecider::GetMatchedPreloadingCandidate(
   auto it = on_standby_candidates_.find(lookup_key);
   if (it != on_standby_candidates_.end()) {
     auto inner_it =
-        base::ranges::find_if(it->second, [&](const auto& candidate) {
+        std::ranges::find_if(it->second, [&](const auto& candidate) {
           return IsSuitableCandidate(candidate, enacting_predictor, confidence,
                                      lookup_key.second);
         });
@@ -570,7 +614,7 @@ PreloadingDecider::GetMatchedPreloadingCandidateByNoVarySearchHint(
     // has a No-Vary-Search hint that is matching.
     auto standby_it = on_standby_candidates_.find(standby_key);
     CHECK(standby_it != on_standby_candidates_.end());
-    auto inner_it = base::ranges::find_if(
+    auto inner_it = std::ranges::find_if(
         standby_it->second, [&](const auto& on_standby_candidate) {
           return on_standby_candidate->no_vary_search_hint &&
                  no_vary_search::ParseHttpNoVarySearchDataFromMojom(

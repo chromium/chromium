@@ -1,8 +1,5 @@
 {
   "description": "Tests that sources with outdated scopes are deleted using expected scope ordering.",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       {

@@ -1,8 +1,5 @@
 {
   "description": "Test source deactivation logic based on different max event states for attribution scopes",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       // S1: max_event_states -> 10, attribution scopes-> ["1", "2"].

@@ -171,6 +171,9 @@ float ToLinear(ColorSpace::TransferID id, float v) {
 
 }  // namespace
 
+ColorTransform::RuntimeOptions::RuntimeOptions() = default;
+ColorTransform::RuntimeOptions::~RuntimeOptions() = default;
+
 class ColorTransformMatrix;
 class ColorTransformSkTransferFn;
 class ColorTransformFromLinear;

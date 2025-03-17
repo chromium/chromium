@@ -8,7 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-using Sample = base::HistogramBase::Sample;
+using Sample32 = base::HistogramBase::Sample32;
 
 namespace cc {
 
@@ -16,10 +16,10 @@ class ScopedUMAHistogramAreaTimerBaseTest : public ::testing::Test {
  protected:
   void ExpectValidHistogramValues(base::TimeDelta elapsed,
                                   int area,
-                                  Sample expected_time_microseconds,
-                                  Sample expected_pixels_per_ms) {
-    Sample time_microseconds;
-    Sample pixels_per_ms;
+                                  Sample32 expected_time_microseconds,
+                                  Sample32 expected_pixels_per_ms) {
+    Sample32 time_microseconds;
+    Sample32 pixels_per_ms;
     ScopedUMAHistogramAreaTimerBase::GetHistogramValues(
         elapsed, area, &time_microseconds, &pixels_per_ms);
     EXPECT_EQ(expected_time_microseconds, time_microseconds);
@@ -49,7 +49,7 @@ TEST_F(ScopedUMAHistogramAreaTimerBaseTest, ZeroTimeAndArea) {
 
 TEST_F(ScopedUMAHistogramAreaTimerBaseTest, VeryLargeTime) {
   ExpectValidHistogramValues(base::Hours(24), 1000,
-                             std::numeric_limits<Sample>::max(), 0);
+                             std::numeric_limits<Sample32>::max(), 0);
 }
 
 TEST_F(ScopedUMAHistogramAreaTimerBaseTest, VeryLargeArea) {
@@ -57,7 +57,7 @@ TEST_F(ScopedUMAHistogramAreaTimerBaseTest, VeryLargeArea) {
                              2000000000);
   ExpectValidHistogramValues(base::Microseconds(1000),
                              std::numeric_limits<int>::max(), 1000,
-                             std::numeric_limits<Sample>::max());
+                             std::numeric_limits<Sample32>::max());
 }
 
 }  // namespace

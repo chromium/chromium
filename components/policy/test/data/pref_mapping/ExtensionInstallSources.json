@@ -8,21 +8,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionInstallSources": [
-            "https://www.corp.monkey.net/*"
-          ]
-        },
-        "prefs": {
-          "extensions.allowed_install_sites": {
-            "value": [
-              "https://www.corp.monkey.net/*"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.allowed_install_sites",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://www.corp.monkey.net/*"
+        ]
+      ]
+    }
   }
 ]

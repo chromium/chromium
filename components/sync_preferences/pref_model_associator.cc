@@ -22,6 +22,7 @@
 #include "base/observer_list.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
@@ -94,7 +95,8 @@ PrefModelAssociator::PrefModelAssociator(
     : PrefModelAssociator(client,
                           dual_layer_user_prefs->GetAccountPrefStore(),
                           type) {
-  CHECK(base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage));
+  CHECK(
+      base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage));
   dual_layer_user_prefs_ = std::move(dual_layer_user_prefs);
 }
 

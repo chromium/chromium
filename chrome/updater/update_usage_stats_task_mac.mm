@@ -4,9 +4,10 @@
 
 #include "chrome/updater/update_usage_stats_task.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
-#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
@@ -23,66 +24,96 @@ namespace updater {
 
 namespace {
 
-bool OtherAppUsageStatsAllowedInDir(const base::FilePath& base_dir) {
-  base::FileEnumerator files(
-      base_dir.Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING)), false,
-      base::FileEnumerator::FileType::DIRECTORIES);
-  for (base::FilePath name = files.Next(); !name.empty(); name = files.Next()) {
-    if (name.BaseName().value() == PRODUCT_FULLNAME_STRING) {
-      continue;
+// Returns the Application Support directories associated with the given scope.
+// These directories are located under
+// /Users/<user>/Library/Application\ Support. Returns the directory for all
+// users in the system case or the current user's otherwise.
+std::vector<base::FilePath> GetAppSupportDirectoriesForScope(
+    UpdaterScope scope) {
+  std::vector<base::FilePath> app_support_dirs;
+  if (IsSystemInstall(scope)) {
+    base::FilePath user_dir;
+    if (!base::apple::GetLocalDirectory(NSUserDirectory, &user_dir)) {
+      return {};
     }
-    base::FilePath crashpad = name.AppendASCII("Crashpad");
-    if (base::PathExists(crashpad)) {
-      std::unique_ptr<crashpad::CrashReportDatabase> app_database =
-          crashpad::CrashReportDatabase::Initialize(crashpad);
-      if (!app_database) {
-        continue;
-      }
-      crashpad::Settings* app_settings = app_database->GetSettings();
-      bool enabled = false;
-      if (app_settings->GetUploadsEnabled(&enabled) && enabled) {
-        return true;
-      }
+    base::FileEnumerator(user_dir, /*recursive=*/false,
+                         base::FileEnumerator::FileType::DIRECTORIES)
+        .ForEach([&app_support_dirs](const base::FilePath& name) {
+          app_support_dirs.push_back(
+              name.Append("Library").Append("Application Support"));
+        });
+  } else {
+    if (std::optional<base::FilePath> application_support_dir =
+            GetApplicationSupportDirectory(UpdaterScope::kUser);
+        application_support_dir) {
+      app_support_dirs.push_back(*application_support_dir);
     }
   }
-  return false;
+  return app_support_dirs;
+}
+
+// Returns true if the directory contains a crashpad database with uploads
+// enabled.
+bool AppAllowsUsageStats(const base::FilePath& app_directory) {
+  base::FilePath crashpad = app_directory.Append("Crashpad");
+  if (!base::PathExists(crashpad)) {
+    return false;
+  }
+  std::unique_ptr<crashpad::CrashReportDatabase> app_database =
+      crashpad::CrashReportDatabase::Initialize(crashpad);
+  if (!app_database) {
+    return false;
+  }
+  bool enabled = false;
+  return app_database->GetSettings()->GetUploadsEnabled(&enabled) && enabled;
 }
 
 }  // namespace
 
-// Returns whether any crashpad databases in ~/Library/Application
-// Support/<company name>/<app name>/Crashpad have upload enabled. Google
-// Chrome channels all follow this pattern.
-bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
-                               UpdaterScope scope) {
-  if (!IsSystemInstall(scope)) {
-    std::optional<base::FilePath> application_support_dir =
-        GetApplicationSupportDirectory(UpdaterScope::kUser);
-    return application_support_dir &&
-           OtherAppUsageStatsAllowedInDir(*application_support_dir);
+class UsageStatsProviderImpl : public UsageStatsProvider {
+ public:
+  explicit UsageStatsProviderImpl(const base::FilePath& install_directory)
+      : install_directory_(install_directory) {}
+
+  // Returns true if any app directory under
+  // "Application Support/<install_directory_>" for the given scope has
+  // usage stats enabled.
+  bool AnyAppEnablesUsageStats(UpdaterScope scope) override {
+    return std::ranges::any_of(
+        GetAppDirectories(scope), [](const base::FilePath& app_dir) {
+          return app_dir.BaseName().value() != PRODUCT_FULLNAME_STRING &&
+                 AppAllowsUsageStats(app_dir);
+        });
   }
-  // In the system case, iterate all users. If any user has opted-in to usage
-  // stats, the system updater may transmit usage stats.
-  base::FilePath user_dir;
-  if (!base::apple::GetLocalDirectory(NSUserDirectory, &user_dir)) {
-    return false;
-  }
-  base::FileEnumerator files(user_dir, false,
-                             base::FileEnumerator::FileType::DIRECTORIES);
-  for (base::FilePath name = files.Next(); !name.empty(); name = files.Next()) {
-    if (OtherAppUsageStatsAllowedInDir(
-            name.Append(FILE_PATH_LITERAL("Library"))
-                .Append(FILE_PATH_LITERAL("Application Support")))) {
-      return true;
+
+  std::vector<base::FilePath> GetAppDirectories(UpdaterScope scope) {
+    std::vector<base::FilePath> all_apps;
+    for (const base::FilePath& app_support_dir :
+         GetAppSupportDirectoriesForScope(scope)) {
+      base::FileEnumerator(app_support_dir.Append(install_directory_),
+                           /*recursive=*/false,
+                           base::FileEnumerator::FileType::DIRECTORIES)
+          .ForEach([&all_apps](const base::FilePath& app) {
+            all_apps.push_back(app);
+          });
     }
+    return all_apps;
   }
-  return false;
+
+ private:
+  base::FilePath install_directory_;
+};
+
+// Returns a UsageStatsProvider that checks usage stats opt in for apps found
+// under "Application Support/<COMPANY_NAME>." Google Chrome channels all follow
+// this pattern.
+std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create() {
+  return UsageStatsProvider::Create(base::FilePath(COMPANY_SHORTNAME_STRING));
 }
 
-bool AreRawUsageStatsEnabled(
-    UpdaterScope scope,
-    const std::vector<std::string>& include_only_these_app_ids) {
-  return false;
+std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
+    const base::FilePath& install_directory) {
+  return std::make_unique<UsageStatsProviderImpl>(install_directory);
 }
 
 }  // namespace updater

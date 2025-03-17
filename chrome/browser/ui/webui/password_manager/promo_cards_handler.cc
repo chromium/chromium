@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -157,7 +157,7 @@ PasswordPromoCardBase* PromoCardsHandler::GetPromoToShowAndUpdatePref() {
     return nullptr;
   }
   // Sort based on last time shown.
-  auto* promo_to_show = *base::ranges::min_element(
+  auto* promo_to_show = *std::ranges::min_element(
       promo_card_to_show_candidates, [](auto* lhs, auto* rhs) {
         return lhs->last_time_shown() < rhs->last_time_shown();
       });

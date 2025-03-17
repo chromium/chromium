@@ -8,17 +8,16 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-
 
 /**
  * Coordinator class for displaying the data sharing invitation modal dialog. It proxies the
  * communication to the {@link DataSharingInvitationDialogMediator}.
  */
+@NullMarked
 public class DataSharingInvitationDialogCoordinator {
     private final Context mContext;
     private final DataSharingInvitationDialogMediator mMediator;
@@ -31,7 +30,7 @@ public class DataSharingInvitationDialogCoordinator {
      * @param modalDialogMediator The DataSharingInvitationDialogMediator to control the dialog.
      */
     public DataSharingInvitationDialogCoordinator(
-            Context context, @NonNull ModalDialogManager modalDialogManager) {
+            Context context, ModalDialogManager modalDialogManager) {
         mContext = context;
         mMediator = new DataSharingInvitationDialogMediator(modalDialogManager);
         mButtonsView =

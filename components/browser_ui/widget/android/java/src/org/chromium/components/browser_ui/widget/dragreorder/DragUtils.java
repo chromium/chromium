@@ -14,7 +14,10 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.core.graphics.ColorUtils;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** While multiple drag adapters exist, this class holds shared functionality. */
+@NullMarked
 public class DragUtils {
     private static final int ANIMATION_DURATION_MS = 100;
 

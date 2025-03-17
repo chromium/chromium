@@ -8,14 +8,14 @@
 #include <vector>
 namespace ash::quick_start::message_helper {
 
-static constexpr char kCredentialIdKey[] = "id";
-static constexpr char kEntitiyIdMapKey[] = "id";
+inline constexpr char kCredentialIdKey[] = "id";
+inline constexpr char kEntitiyIdMapKey[] = "id";
 
 // CBOR Values from https://www.rfc-editor.org/rfc/rfc7049
-static constexpr int kCborTypeInt = 1;
-static constexpr int kCborTypeByteString = 2;
-static constexpr int kCborTypeString = 3;
-static constexpr int kCborTypeArray = 4;
+inline constexpr int kCborTypeInt = 1;
+inline constexpr int kCborTypeByteString = 2;
+inline constexpr int kCborTypeString = 3;
+inline constexpr int kCborTypeArray = 4;
 
 std::vector<uint8_t> BuildEncodedResponseData(
     std::vector<uint8_t> credential_id,

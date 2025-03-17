@@ -263,7 +263,7 @@ bool H264ToAnnexBBitstreamConverter::ConvertNalUnitStreamToByteStream(
   }
   // Successful conversion, output the freshly allocated bitstream buffer.
   *output_size = static_cast<uint32_t>(outscan - output);
-  return true;
+  return *output_size != 0;
 }
 
 bool H264ToAnnexBBitstreamConverter::WriteParamSet(

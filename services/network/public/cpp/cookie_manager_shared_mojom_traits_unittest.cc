@@ -57,13 +57,14 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
   // arbitrary selection of values to test the serialization/deserialization.
   net::CookieInclusionStatus original =
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
-          {net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-           net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX,
-           net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY},
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY},
+          {net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-           net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
-           net::CookieInclusionStatus::
+           net::CookieInclusionStatus::WarningReason::
+               WARN_SAMESITE_NONE_INSECURE,
+           net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE},
           net::CookieInclusionStatus::ExemptionReason::kNone);
 
@@ -71,13 +72,14 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
               network::mojom::CookieInclusionStatus>(original, copied));
   EXPECT_TRUE(copied.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-       net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX,
-       net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX,
+       net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY}));
   EXPECT_TRUE(copied.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-       net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
-       net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::WarningReason::
+           WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
+       net::CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE,
+       net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE}));
   EXPECT_EQ(copied.exemption_reason(),
             net::CookieInclusionStatus::ExemptionReason::kNone);
@@ -90,7 +92,7 @@ TEST(CookieManagerSharedMojomTraitsTest,
   net::CookieInclusionStatus original =
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
           {},
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT},
           net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
 
@@ -99,10 +101,34 @@ TEST(CookieManagerSharedMojomTraitsTest,
               network::mojom::CookieInclusionStatus>(original, copied));
   EXPECT_TRUE(copied.IsInclude());
   EXPECT_TRUE(copied.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   EXPECT_EQ(copied.exemption_reason(),
             net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
+}
+
+TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieExemptionReason) {
+  for (net::CookieInclusionStatus::ExemptionReason exemption_reason : {
+           net::CookieInclusionStatus::ExemptionReason::kNone,
+           net::CookieInclusionStatus::ExemptionReason::kUserSetting,
+           net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata,
+           net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial,
+           net::CookieInclusionStatus::ExemptionReason::
+               kTopLevel3PCDDeprecationTrial,
+           net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics,
+           net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy,
+           net::CookieInclusionStatus::ExemptionReason::kStorageAccess,
+           net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess,
+           net::CookieInclusionStatus::ExemptionReason::kScheme,
+           net::CookieInclusionStatus::ExemptionReason::
+               kSameSiteNoneCookiesInSandbox,
+       }) {
+    net::CookieInclusionStatus::ExemptionReason roundtrip;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                network::mojom::CookieExemptionReason>(exemption_reason,
+                                                       roundtrip));
+    EXPECT_EQ(exemption_reason, roundtrip);
+  }
 }
 
 }  // namespace mojo

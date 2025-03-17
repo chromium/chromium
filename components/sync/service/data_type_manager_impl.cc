@@ -960,7 +960,7 @@ void DataTypeManagerImpl::TriggerLocalDataMigration(DataTypeSet types) {
   }
 }
 
-void DataTypeManagerImpl::TriggerLocalDataMigration(
+void DataTypeManagerImpl::TriggerLocalDataMigrationForItems(
     std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
   DataTypeSet supported_types = base::Intersection(
       GetDataTypesWithLocalDataBatchUploader(), GetActiveDataTypes());
@@ -975,7 +975,7 @@ void DataTypeManagerImpl::TriggerLocalDataMigration(
   for (auto& [type, item_list] : items) {
     controllers_.at(type)
         ->GetLocalDataBatchUploader()
-        ->TriggerLocalDataMigration(std::move(item_list));
+        ->TriggerLocalDataMigrationForItems(std::move(item_list));
   }
 }
 

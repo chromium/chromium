@@ -188,11 +188,9 @@ void ContentPasswordManagerDriver::SetPasswordFillData(
   }
 }
 
-void ContentPasswordManagerDriver::InformNoSavedCredentials(
-    bool should_show_popup_without_passwords) {
-  GetPasswordAutofillManager()->OnNoCredentialsFound();
+void ContentPasswordManagerDriver::InformNoSavedCredentials() {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->InformNoSavedCredentials(should_show_popup_without_passwords);
+    agent->InformNoSavedCredentials();
   }
 }
 
@@ -294,12 +292,6 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ContentPasswordManagerDriver::KeyboardReplacingSurfaceClosed(
-    ToShowVirtualKeyboard show_virtual_keyboard) {
-  GetPasswordAutofillAgent()->KeyboardReplacingSurfaceClosed(
-      show_virtual_keyboard.value());
-}
-
 void ContentPasswordManagerDriver::TriggerFormSubmission() {
   GetPasswordAutofillAgent()->TriggerFormSubmission();
 }
@@ -597,20 +589,10 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 #if !BUILDFLAG(IS_ANDROID)
   std::move(show_with_autofill_manager_cb).Run();
 #else
-  if (!base::FeatureList::IsEnabled(
-          features::kPasswordSuggestionBottomSheetV2)) {
-    std::move(show_with_autofill_manager_cb).Run();
-    return;
-  }
-  // TODO(crbug.com/40269373): Remove the parameter
-  // autofill::mojom::SubmissionReadinessState::kNoInformation when the
-  // feature is launched.
   client_->ShowKeyboardReplacingSurface(
       this,
-      PasswordFillingParams(
-          request.form_data, request.username_field_index,
-          request.password_field_index, request.element_id,
-          autofill::mojom::SubmissionReadinessState::kNoInformation),
+      PasswordFillingParams(request.form_data, request.username_field_index,
+                            request.password_field_index, request.element_id),
       request.show_webauthn_credentials,
       base::BindOnce(
           [](base::OnceClosure cb, bool shown) {
@@ -625,35 +607,13 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
-    autofill::mojom::SubmissionReadinessState submission_readiness,
-    bool is_webauthn_form) {
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(
-          render_frame_host_)) {
-    return;
-  }
-  autofill::FormData form;
-  // This is only called when `kPasswordSuggestionBottomSheetV2` feature flag is
-  // disabled. In this scenario only `submission_readiness` field of the
-  // `PasswordFillingParams` is used later, other fields are not needed. This
-  // call will be removed after launching the `kPasswordSuggestionBottomSheetV2`
-  // feature.
-  client_->ShowKeyboardReplacingSurface(
-      this,
-      PasswordFillingParams(form, 0, 0, autofill::FieldRendererId(),
-                            submission_readiness),
-      is_webauthn_form, base::DoNothing());
-}
-#endif
-
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-#if defined(ON_FOCUS_PING_ENABLED)
+#if defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   client_->CheckSafeBrowsingReputation(form_action, frame_url);
 #endif
 }
@@ -662,8 +622,10 @@ void ContentPasswordManagerDriver::FocusedInputChanged(
     autofill::FieldRendererId focused_field_id,
     FocusedFieldType focused_field_type) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
-          render_frame_host_))
+          render_frame_host_)) {
     return;
+  }
+  GetPasswordAutofillManager()->FocusedInputChanged();
   client_->FocusedInputChanged(this, focused_field_id, focused_field_type);
 }
 

@@ -9,9 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 namespace content {
 class BrowserContext;
@@ -30,7 +30,7 @@ class Extension;
 class ExtensionCommandsGlobalRegistry
     : public BrowserContextKeyedAPI,
       public ExtensionKeybindingRegistry,
-      public GlobalShortcutListener::Observer {
+      public ui::GlobalAcceleratorListener::Observer {
  public:
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<ExtensionCommandsGlobalRegistry>*

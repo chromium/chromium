@@ -4,6 +4,11 @@
 
 import("//build/buildflag_header.gni")
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
 group("unit_tests") {
   testonly = true
 
@@ -13,6 +18,14 @@ group("unit_tests") {
   ]
 
   data_deps = [ ":components_unittests_gtest_filter" ]
+}
+
+if (is_android) {
+  java_group("junit") {
+    testonly = true
+
+    deps = [ "//components/saved_tab_groups/public:junit" ]
+  }
 }
 
 source_set("components_unittests_gtest_filter") {

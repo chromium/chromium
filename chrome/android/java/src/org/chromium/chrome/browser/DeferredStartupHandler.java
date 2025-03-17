@@ -10,6 +10,8 @@ import android.os.Looper;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,12 +20,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /** Handler for application level tasks to be completed on deferred startup. */
+@NullMarked
 public class DeferredStartupHandler {
-    private static DeferredStartupHandler sInstance;
+    private static @Nullable DeferredStartupHandler sInstance;
 
     private final Queue<Runnable> mDeferredTasks = new LinkedList<>();
 
-    private CountDownLatch mLatchForTesting;
+    private @Nullable CountDownLatch mLatchForTesting;
 
     /**
      * This class is an application specific object that handles the deferred startup.

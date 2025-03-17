@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 
@@ -65,6 +66,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     @Mock private CustomButtonParams mCustomButtonParams;
     @Mock private PendingIntent mPendingIntent;
     @Mock private Activity mActivity;
+    @Mock private ToolbarManager mToolbarManager;
 
     private Activity mActivityForResources;
     private CustomTabActivityTabController mTabController;
@@ -146,5 +148,21 @@ public class CustomTabToolbarCoordinatorUnitTest {
                 .thenReturn(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON);
 
         clickButtonAndVerifyPendingIntent();
+    }
+
+    @Test
+    public void testToolbarInitialized_closeButtonEnabled() {
+        when(env.intentDataProvider.isCloseButtonEnabled()).thenReturn(true);
+
+        mCoordinator.onToolbarInitialized(mToolbarManager);
+        verify(mCloseButtonVisibilityManager).setVisibility(true);
+    }
+
+    @Test
+    public void testToolbarInitialized_closeButtonDisabled() {
+        when(env.intentDataProvider.isCloseButtonEnabled()).thenReturn(false);
+
+        mCoordinator.onToolbarInitialized(mToolbarManager);
+        verify(mCloseButtonVisibilityManager).setVisibility(false);
     }
 }

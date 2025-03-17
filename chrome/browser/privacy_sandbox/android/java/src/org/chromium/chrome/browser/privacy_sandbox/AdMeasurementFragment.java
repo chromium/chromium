@@ -123,6 +123,11 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
 
     private void onPrivacyPolicyLinkClicked() {
         RecordUserAction.record("Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked");
-        getCustomTabLauncher().openUrlInCct(getContext(), UrlConstants.GOOGLE_PRIVACY_POLICY);
+        getCustomTabLauncher()
+                .openUrlInCct(
+                        getContext(),
+                        getPrivacySandboxBridge().shouldUsePrivacyPolicyChinaDomain()
+                                ? UrlConstants.GOOGLE_PRIVACY_POLICY_CHINA
+                                : UrlConstants.GOOGLE_PRIVACY_POLICY);
     }
 }

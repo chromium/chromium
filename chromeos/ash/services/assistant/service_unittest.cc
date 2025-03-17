@@ -28,6 +28,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -46,9 +47,9 @@ constexpr base::TimeDelta kAutoRecoverTime = base::Seconds(60);
 
 #define EXPECT_STATE(_state) EXPECT_EQ(_state, assistant_manager()->GetState())
 
-const char* kAccessToken = "fake access token";
-const char* kGaiaId = "gaia_id_for_user_gmail.com";
-const char* kEmailAddress = "user@gmail.com";
+constexpr char kAccessToken[] = "fake access token";
+constexpr GaiaId::Literal kGaiaId("gaia_id_for_user_gmail.com");
+constexpr char kEmailAddress[] = "user@gmail.com";
 
 // Should be the same value as the one in service.cc.
 constexpr int kMaxStartServiceRetries = 1;

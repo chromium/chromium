@@ -1,8 +1,6 @@
 include_rules = [
   "+apps",
-  "+cc/input/browser_controls_offset_tags_info.h",
   "+cc/input/browser_controls_state.h",
-  "+cc/input/android/java",
   "+cc/input/android/offset_tag_android.h",
   "+cc/metrics",
   "+cc/paint",
@@ -38,8 +36,10 @@ include_rules = [
   "+chrome/services/removable_storage_writer/public",
   "+chrome/services/util_win/public",
   "+chrome/updater/app/server/win/updater_legacy_idl.h",
+  "+chrome/updater/constants.h",
+  "+chrome/updater/updater_scope.h",
+  "+chrome/updater/update_service.h",
   "+chromeos",
-  "+components/about_ui",
   "+components/access_code_cast",
   "+components/account_id",
   "+components/account_manager_core",
@@ -121,6 +121,7 @@ include_rules = [
   "+components/crash/core/browser",
   "+components/crash/core/common",
   "+components/creator",
+  "+components/credential_management",
   "+components/cross_device/nearby",
   "+components/crx_file",
   "+components/data_use_measurement/core",
@@ -165,7 +166,6 @@ include_rules = [
   "+components/fingerprinting_protection_filter/browser",
   "+components/fingerprinting_protection_filter/common",
   "+components/fingerprinting_protection_filter/mojom",
-  "+components/flags_ui",
   "+components/gcm_driver",
   "+components/global_media_controls",
   "+components/google/core/browser",
@@ -277,6 +277,7 @@ include_rules = [
   "+components/performance_manager/test_support",
   "+components/permissions",
   "+components/sampling_profiler",
+  "+components/server_certificate_database",
   "+components/webid",
   "+components/pdf/browser",
   "+components/pdf/common",
@@ -300,6 +301,7 @@ include_rules = [
   "+components/reading_list/core",
   "+components/reading_list/features",
   "+components/remote_cocoa/app_shim",
+  "+components/regional_capabilities",
   "+components/remote_cocoa/browser",
   "+components/remote_cocoa/common",
   "+components/renderer_context_menu",
@@ -398,15 +400,12 @@ include_rules = [
   "+components/upload_list",
   "+components/url_matcher",
   "+components/url_pattern_index/proto",
-  "+components/user_annotations",
   "+components/user_education",
   "+components/user_manager",
-  "+components/user_notes",
   "+components/user_prefs",
   "+components/value_store",
   "+components/vector_icons",
   "+components/version_info",
-  "+components/version_ui",
   "+components/visited_url_ranking",
   "+components/viz/common",
   "+components/viz/host",
@@ -420,6 +419,10 @@ include_rules = [
   "+components/webdata_services",
   "+components/webrtc_logging/browser",
   "+components/webrtc_logging/common",
+  "+components/webui/about",
+  "+components/webui/chrome_urls",
+  "+components/webui/flags",
+  "+components/webui/version",
   "+components/zoom",
   "+content/public/android/java/src/org/chromium/content/browser/webid",
   "+content/public/android/java/src/org/chromium/content_public/browser",
@@ -504,6 +507,7 @@ include_rules = [
   "+third_party/cros_system_api",
   "+third_party/metrics_proto",
   "+third_party/omnibox_proto",
+  "+third_party/search_engines_data",
   "+third_party/tflite_support",
   "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
@@ -512,7 +516,6 @@ include_rules = [
 
   # Code under //ash should be accessed via its public API. See //ash/README.md.
   "-ash",
-  "+ash/components/arc",
   "+ash/constants",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",
@@ -577,17 +580,17 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  '.*Test\.java': [
+  r'.*Test\.java': [
     # Android instrumentation tests depend on the whole app.
     "+chrome/android",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
-  '.*TestUtils\.java': [
+  r'.*TestUtils\.java': [
       "+chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java",
       "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
     ],
-  "platform_util_ash\.cc": [
+  r"platform_util_ash\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
   "platform_util_linux.cc": [
@@ -595,7 +598,7 @@ specific_include_rules = {
     # DBus interface to highlight a file within its parent folder
     "+dbus"
   ],
-  "exo_parts\.cc": [
+  r"exo_parts\.cc": [
     "+ash/shell.h",
   ],
   # TODO(estade): the message center is initialized and shut down here, but it
@@ -611,29 +614,31 @@ specific_include_rules = {
     "+services/network/network_context.h",
     "+services/network/network_service.h",
   ],
-  "bound_session_cookie_observer_unittest\.cc": [
+  r"bound_session_cookie_observer_unittest\.cc": [
     "+services/network/cookie_manager.h",
     "+services/network/network_context.h",
     "+services/network/network_service.h",
   ],
-  "chrome_authenticator_request_delegate_unittest\.cc": [
+  r"chrome_authenticator_request_delegate_unittest\.cc": [
     "+third_party/microsoft_webauthn/webauthn.h",
   ],
-  "chrome_content_browser_client_receiver_bindings\.cc" : [
+  r"chrome_content_browser_client_receiver_bindings\.cc" : [
     "+chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h",
   ],
-  "chrome_content_browser_client\.cc" : [
+  r"chrome_content_browser_client\.cc" : [
+    "+ash/shell.h",
+    "+ash/multi_capture/multi_capture_service.h",
     "+content/public/browser/tts_controller.h",
   ],
   "chrome_navigation_browsertest.cc" : [
     "+content/common/content_navigation_policy.h",
   ],
-  "about_flags\.cc" : [
+  r"about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
     "+sandbox/policy/features.h",
     "+skia/rusty_png_feature.h",
   ],
-  "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
+  r"dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",
   ],
   "permission_element_browsertest.cc": [
@@ -642,7 +647,7 @@ specific_include_rules = {
   "browsing_data_model_browsertest.cc" : [
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
-  "ash_session_restore_page_load_metrics_observer_browsertest\.cc": [
+  r"ash_session_restore_page_load_metrics_observer_browsertest\.cc": [
     "+ash/wm/window_restore/window_restore_util.h",
   ],
   "render_view_context_menu_browsertest.cc" : [
@@ -656,9 +661,9 @@ specific_include_rules = {
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
   "certificate_manager_model.cc": [
-    "+ash/components/kcer",
+    "+chromeos/ash/components/kcer",
   ],
   "certificate_manager_model_unittest.cc": [
-    "+ash/components/kcer/extra_instances.h",
+    "+chromeos/ash/components/kcer/extra_instances.h",
   ],
 }

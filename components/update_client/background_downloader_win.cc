@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <winerror.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -926,7 +926,7 @@ void BackgroundDownloader::EnumerateDownloadDirs(
   if (base::GetTempDir(&dir)) {
     dirs.push_back(dir);
   }
-  base::ranges::for_each(dirs, [&](const base::FilePath& parent_dir) {
+  std::ranges::for_each(dirs, [&](const base::FilePath& parent_dir) {
     base::FileEnumerator(parent_dir,
                          /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
                          matcher)

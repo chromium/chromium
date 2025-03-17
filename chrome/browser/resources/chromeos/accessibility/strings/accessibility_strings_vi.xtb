@@ -382,7 +382,7 @@
 <translation id="3312997241656799641">Liên kết đã truy cập tiếp theo</translation>
 <translation id="3313245066383501820">Phím bổ trợ ChromeVox</translation>
 <translation id="3317212938060708859">Thanh trượt</translation>
-<translation id="3321460131042519426">Bật xuống dòng tự động</translation>
+<translation id="3321460131042519426">Bật tính năng xuống dòng tự động</translation>
 <translation id="3322936298410871309">Tiêu đề cấp 1 trước</translation>
 <translation id="3323447499041942178">Hộp văn bản</translation>
 <translation id="3324983252691184275">Đỏ thẫm</translation>
@@ -1042,7 +1042,7 @@
 <translation id="7839679365527550018">Từ trước</translation>
 <translation id="7846634333498149051">Bàn phím</translation>
 <translation id="7851816175263618915">Một số dấu câu</translation>
-<translation id="7871691770940645922">Màn hình chữ nổi Braille ảo</translation>
+<translation id="7871691770940645922">Màn hình chữ nổi ảo</translation>
 <translation id="7882421473871500483">Nâu</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">Không có tiêu đề cấp 2 nào tiếp theo</translation>
@@ -1115,6 +1115,7 @@
 <translation id="8316881042119029234">Màu ren cũ</translation>
 <translation id="8326783648485765113">Màu xanh cỏ</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{dấu thăng}other{# dấu thăng}}</translation>
+<translation id="8351821207686449674">Bật/tắt phụ đề</translation>
 <translation id="8378855320830505539">Khu vực</translation>
 <translation id="8382679411218029383">Tự động hoàn thành nội dòng và danh sách</translation>
 <translation id="8394908167088220973">Phát/Tạm dừng trình phát phương tiện</translation>

@@ -9,6 +9,7 @@
 
 #include "net/test/cert_builder.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -17,11 +18,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -31,6 +32,7 @@
 #include "net/cert/asn1_util.h"
 #include "net/cert/ct_objects_extractor.h"
 #include "net/cert/ct_serialization.h"
+#include "net/cert/qwac.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
@@ -83,11 +85,16 @@ std::string EcdsaWithSha1() {
   return std::string(std::begin(kDer), std::end(kDer));
 }
 
+// Adds bytes to the given CBB.
+// The argument ordering follows the boringssl CBB_* api style.
+bool CBBAddBytes(CBB* cbb, base::span<const uint8_t> bytes) {
+  return CBB_add_bytes(cbb, bytes.data(), bytes.size());
+}
+
 // Adds bytes (specified as a std::string_view) to the given CBB.
 // The argument ordering follows the boringssl CBB_* api style.
 bool CBBAddBytes(CBB* cbb, std::string_view bytes) {
-  return CBB_add_bytes(cbb, reinterpret_cast<const uint8_t*>(bytes.data()),
-                       bytes.size());
+  return CBBAddBytes(cbb, base::as_byte_span(bytes));
 }
 
 // Adds bytes (from fixed size array) to the given CBB.
@@ -248,7 +255,7 @@ std::vector<std::unique_ptr<CertBuilder>> CertBuilder::CreateSimpleChain(
     parent_builder = builder.get();
     chain.push_back(std::move(builder));
   }
-  base::ranges::reverse(chain);
+  std::ranges::reverse(chain);
   return chain;
 }
 
@@ -396,6 +403,27 @@ std::vector<uint8_t> CertBuilder::BuildNameWithCommonNameOfType(
     return {};
   }
 
+  return FinishCBBToVector(cbb.get());
+}
+
+// static
+std::vector<uint8_t> CertBuilder::BuildSequenceOfOid(
+    std::vector<bssl::der::Input> oids) {
+  bssl::ScopedCBB cbb;
+  CBB sequence;
+  if (!CBB_init(cbb.get(), 64) ||
+      !CBB_add_asn1(cbb.get(), &sequence, CBS_ASN1_SEQUENCE)) {
+    ADD_FAILURE();
+    return {};
+  }
+  for (const auto& oid_value : oids) {
+    CBB oid;
+    if (!CBB_add_asn1(&sequence, &oid, CBS_ASN1_OBJECT) ||
+        !CBBAddBytes(&oid, oid_value) || !CBB_flush(&sequence)) {
+      ADD_FAILURE();
+      return {};
+    }
+  }
   return FinishCBBToVector(cbb.get());
 }
 
@@ -578,7 +606,20 @@ void CertBuilder::SetCrlDistributionPointUrl(const GURL& url) {
   SetCrlDistributionPointUrls({url});
 }
 
+void CertBuilder::SetCrlDistributionPointUrl(const std::string_view& url) {
+  SetCrlDistributionPointUrls(std::vector<std::string>{std::string(url)});
+}
+
 void CertBuilder::SetCrlDistributionPointUrls(const std::vector<GURL>& urls) {
+  std::vector<std::string> string_urls;
+  for (const auto& url : urls) {
+    string_urls.push_back(url.possibly_invalid_spec());
+  }
+  SetCrlDistributionPointUrls(string_urls);
+}
+
+void CertBuilder::SetCrlDistributionPointUrls(
+    const std::vector<std::string>& urls) {
   bssl::ScopedCBB cbb;
   ASSERT_TRUE(CBB_init(cbb.get(), 64));
   CBB dps, dp, dp_name, dp_fullname;
@@ -608,7 +649,7 @@ void CertBuilder::SetCrlDistributionPointUrls(const std::vector<GURL>& urls) {
     CBB dp_url;
     ASSERT_TRUE(
         CBB_add_asn1(&dp_fullname, &dp_url, CBS_ASN1_CONTEXT_SPECIFIC | 6));
-    ASSERT_TRUE(CBBAddBytes(&dp_url, url.spec()));
+    ASSERT_TRUE(CBBAddBytes(&dp_url, url));
     ASSERT_TRUE(CBB_flush(&dp_fullname));
   }
 
@@ -868,6 +909,43 @@ void CertBuilder::SetInhibitAnyPolicy(uint64_t skip_certs) {
   SetExtension(bssl::der::Input(bssl::kInhibitAnyPolicyOid),
                FinishCBB(cbb.get()),
                /*critical=*/true);
+}
+
+void CertBuilder::SetQcStatements(std::vector<QcStatement> qc_statements) {
+  // From RFC 3739 A.1:
+  //
+  //   QCStatements ::= SEQUENCE OF QCStatement
+  //
+  //   QCStatement ::= SEQUENCE {
+  //       statementId        OBJECT IDENTIFIER,
+  //       statementInfo      ANY DEFINED BY statementId OPTIONAL}
+  bssl::ScopedCBB cbb;
+  ASSERT_TRUE(CBB_init(cbb.get(), 64));
+  CBB qc_statements_sequence;
+  ASSERT_TRUE(
+      CBB_add_asn1(cbb.get(), &qc_statements_sequence, CBS_ASN1_SEQUENCE));
+
+  for (const auto& statement : qc_statements) {
+    CBB qc_statement_sequence;
+    ASSERT_TRUE(CBB_add_asn1(&qc_statements_sequence, &qc_statement_sequence,
+                             CBS_ASN1_SEQUENCE));
+    CBB statement_id;
+    ASSERT_TRUE(
+        CBB_add_asn1(&qc_statement_sequence, &statement_id, CBS_ASN1_OBJECT));
+    ASSERT_TRUE(CBBAddBytes(&statement_id, statement.id));
+    ASSERT_TRUE(CBBAddBytes(&qc_statement_sequence, statement.info));
+    ASSERT_TRUE(CBB_flush(&qc_statements_sequence));
+  }
+
+  SetExtension(bssl::der::Input(kQcStatementsOid), FinishCBB(cbb.get()));
+}
+
+void CertBuilder::SetQwacQcStatements(std::vector<bssl::der::Input> qc_types) {
+  std::vector<uint8_t> qc_type_info = CertBuilder::BuildSequenceOfOid(qc_types);
+  SetQcStatements({
+      {bssl::der::Input(kEtsiQcsQcComplianceOid), {}},
+      {bssl::der::Input(kEtsiQcsQcTypeOid), bssl::der::Input(qc_type_info)},
+  });
 }
 
 void CertBuilder::SetValidity(base::Time not_before, base::Time not_after) {

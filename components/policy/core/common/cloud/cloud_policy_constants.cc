@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_switches.h"
 
 namespace policy {
@@ -82,9 +81,11 @@ const char kValueRequestCertProvisioningRequest[] = "client_cert_provisioning";
 const char kValueRequestChromeProfileReport[] = "chrome_profile_report";
 const char kValueRequestFmRegistrationTokenUpload[] =
     "fm_registration_token_upload";
+const char kValueRequestDeterminePromotionEligibility[] =
+    "promotion_eligibility";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUserPolicyType[] = "google/chromeos/user";
 #elif BUILDFLAG(IS_ANDROID)
 const char kChromeUserPolicyType[] = "google/android/user";

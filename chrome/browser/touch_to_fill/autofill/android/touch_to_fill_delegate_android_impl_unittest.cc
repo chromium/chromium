@@ -8,12 +8,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -279,8 +280,6 @@ class TouchToFillDelegateAndroidImplPaymentMethodUnitTest
       public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableLocalIban);
     TouchToFillDelegateAndroidImplUnitTest::SetUp();
     if (IsCreditCard()) {
       ConfigureForCreditCards(test::GetCreditCard());
@@ -714,10 +713,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(expired_card);
-  std::vector<const CreditCard*> credit_cards =
-      autofill_client_.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCardsToSuggest();
+  std::vector<const CreditCard*> credit_cards = GetCreditCardsToSuggest(
+      autofill_client_.GetPersonalDataManager().payments_data_manager());
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(
@@ -746,9 +743,9 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
       .ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   CreditCard disused_expired_card = test::GetExpiredCreditCard();
-  credit_card.set_use_date(AutofillClock::Now());
-  disused_expired_card.set_use_date(AutofillClock::Now() -
-                                    kDisusedDataModelTimeDelta * 2);
+  credit_card.usage_history().set_use_date(AutofillClock::Now());
+  disused_expired_card.usage_history().set_use_date(
+      AutofillClock::Now() - kDisusedDataModelTimeDelta * 2);
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(credit_card);
@@ -870,10 +867,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(credit_card2);
-  std::vector<const CreditCard*> credit_cards =
-      autofill_client_.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCardsToSuggest();
+  std::vector<const CreditCard*> credit_cards = GetCreditCardsToSuggest(
+      autofill_client_.GetPersonalDataManager().payments_data_manager());
 
   EXPECT_CALL(
       payments_autofill_client(),
@@ -1004,8 +999,6 @@ class TouchToFillDelegateAndroidImplIbanUnitTest
     : public TouchToFillDelegateAndroidImplUnitTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableLocalIban);
     TouchToFillDelegateAndroidImplUnitTest::SetUp();
     ConfigureForIbans();
   }
@@ -1050,26 +1043,6 @@ TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
       .WillOnce(Return(true));
 
   TryToShowTouchToFill(/*expected_success=*/true);
-}
-
-TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
-       TryToShowTouchToFillFailsIfFlagOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillSkipAndroidBottomSheetForIban);
-  autofill_client_.GetPersonalDataManager()
-      .test_payments_data_manager()
-      .ClearAllLocalData();
-  Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
-  autofill_client_.GetPersonalDataManager()
-      .test_payments_data_manager()
-      .AddAsLocalIban(std::move(iban));
-
-  EXPECT_CALL(payments_autofill_client(), ShowTouchToFillIban).Times(0);
-  TryToShowTouchToFill(/*expected_success=*/false);
-
-  browser_autofill_manager_.reset();
 }
 
 TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,

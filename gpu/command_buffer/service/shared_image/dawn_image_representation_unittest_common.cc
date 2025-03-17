@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
 
 #include "base/threading/platform_thread.h"
@@ -16,12 +21,12 @@ void CopyTexelToBuffer(const wgpu::CommandEncoder& encoder,
                        uint32_t x,
                        uint32_t y,
                        const wgpu::Buffer& buffer) {
-  wgpu::ImageCopyBuffer buffer_copy;
+  wgpu::TexelCopyBufferInfo buffer_copy;
   buffer_copy.buffer = buffer;
   buffer_copy.layout =
-      wgpu::TextureDataLayout{.bytesPerRow = kBufferSizeMinAlignment};
+      wgpu::TexelCopyBufferLayout{.bytesPerRow = kBufferSizeMinAlignment};
 
-  wgpu::ImageCopyTexture texture_copy;
+  wgpu::TexelCopyTextureInfo texture_copy;
   texture_copy.texture = texture;
   texture_copy.mipLevel = 0;
   texture_copy.origin = wgpu::Origin3D{.x = x, .y = y, .z = 0};

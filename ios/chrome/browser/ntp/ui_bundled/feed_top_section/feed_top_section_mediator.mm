@@ -14,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 
 using base::RecordAction;
@@ -206,7 +206,7 @@ using base::UserMetricsAction;
   // Check if user has notifications enabled at the Chime level.
   BOOL isChimeEnabled =
       push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
-          base::SysNSStringToUTF8(identity.gaiaID), self.prefService);
+          GaiaId(identity.gaiaID), self.prefService);
   if (isChimeEnabled) {
     return true;
   }
@@ -289,22 +289,15 @@ using base::UserMetricsAction;
   BOOL isAccountEligibleForSignInPromo = NO;
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
+              signin_metrics::AccessPoint::kNtpFeedTopPromo
                                     signinPromoAction:SigninPromoAction::
                                                           kInstantSignin
                                 authenticationService:self.authenticationService
                                           prefService:self.prefService]) {
     isAccountEligibleForSignInPromo = ![self isUserSignedIn];
   }
-  // Don't show the promo for incognito or start surface or if account is not
-  // eligible.
-  BOOL isStartSurfaceOrIncognito = self.isIncognito ||
-                                   [self.NTPDelegate isStartSurface] ||
-                                   !self.isSignInPromoEnabled;
-  if (!isStartSurfaceOrIncognito && isAccountEligibleForSignInPromo) {
-    return true;
-  }
-  return false;
+  return !self.isIncognito && ![self.NTPDelegate isStartSurface] &&
+         self.isSignInPromoEnabled && isAccountEligibleForSignInPromo;
 }
 
 - (void)updateShouldShowPromo {

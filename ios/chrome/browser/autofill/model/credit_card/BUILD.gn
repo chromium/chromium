@@ -22,6 +22,7 @@ source_set("infobar_delegate") {
   ]
   deps = [
     "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/common",
   ]
 }

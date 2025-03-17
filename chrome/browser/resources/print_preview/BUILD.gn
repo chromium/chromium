@@ -7,6 +7,8 @@ import("//printing/buildflags/buildflags.gni")
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
+assert(!is_chromeos,
+       "ChromeOS should use chrome/browser/resources/ash/print_preview")
 assert(enable_print_preview, "enable_print_preview check failed")
 
 build_webui("build") {
@@ -23,12 +25,16 @@ build_webui("build") {
     "ui/button_strip.ts",
     "ui/color_settings.ts",
     "ui/copies_settings.ts",
+    "ui/destination_dialog.ts",
     "ui/destination_list.ts",
+    "ui/destination_list_item.ts",
+    "ui/destination_select.ts",
     "ui/destination_settings.ts",
     "ui/dpi_settings.ts",
     "ui/duplex_settings.ts",
     "ui/header.ts",
     "ui/layout_settings.ts",
+    "ui/link_container.ts",
     "ui/margin_control.ts",
     "ui/margin_control_container.ts",
     "ui/margins_settings.ts",
@@ -46,26 +52,6 @@ build_webui("build") {
     "ui/settings_select.ts",
     "ui/sidebar.ts",
   ]
-
-  if (is_chromeos) {
-    web_component_files += [
-      "ui/destination_dialog_cros.ts",
-      "ui/destination_dropdown_cros.ts",
-      "ui/destination_list_item_cros.ts",
-      "ui/destination_select_cros.ts",
-      "ui/pin_settings.ts",
-      "ui/printer_setup_info_cros.ts",
-      "ui/provisional_destination_resolver.ts",
-      "ui/searchable_drop_down_cros.ts",
-    ]
-  } else {
-    web_component_files += [
-      "ui/destination_dialog.ts",
-      "ui/destination_list_item.ts",
-      "ui/destination_select.ts",
-      "ui/link_container.ts",
-    ]
-  }
 
   non_web_component_files = [
     "dark_mode_mixin.ts",
@@ -93,15 +79,6 @@ build_webui("build") {
     "ui/select_mixin.ts",
     "ui/settings_mixin.ts",
   ]
-
-  if (is_chromeos) {
-    non_web_component_files += [
-      "data/managed_print_options_cros.ts",
-      "data/print_server_store.ts",
-      "data/printer_status_cros.ts",
-      "native_layer_cros.ts",
-    ]
-  }
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [

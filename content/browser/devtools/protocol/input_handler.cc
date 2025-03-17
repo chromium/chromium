@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/devtools/protocol/input_handler.h"
 
 #include <stddef.h>
@@ -1481,8 +1476,12 @@ void InputHandler::OnWidgetForDispatchDragEvent(
 float InputHandler::ScaleFactor() {
   DCHECK(web_contents_);
   // Browser zoom
-  float scale_factor =
-      blink::ZoomLevelToZoomFactor(web_contents_->GetPendingPageZoomLevel());
+  RenderWidgetHostImpl* widget_host_for_zoom_level =
+      (host_ && host_->GetRenderWidgetHost())
+          ? host_->GetRenderWidgetHost()
+          : web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  float scale_factor = blink::ZoomLevelToZoomFactor(
+      web_contents_->GetPendingZoomLevel(widget_host_for_zoom_level));
   // CSS zoom applied to embedding element (e.g. <iframe>), if applicable.
   if (host_) {
     if (RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost()) {
@@ -1492,6 +1491,8 @@ float InputHandler::ScaleFactor() {
     }
   }
   // Pinch zoom
+  // TODO(crbug.com/400860567): Investigate if this should also be
+  // host_->GetPage() when `host_` is available.
   scale_factor *= web_contents_->GetPrimaryPage().GetPageScaleFactor();
 
   return scale_factor;

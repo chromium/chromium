@@ -132,13 +132,15 @@ export function getFavicon(url: string): string {
  * @param size The favicon size.
  * @param forceLightMode Flag to force the service to show the light
  *     mode version of the default favicon.
+ * @param fallbackToHost To allow for disabling the best match fallback
+ *     behavior.
  *
  * @return image-set for the favicon.
  */
 export function getFaviconForPageURL(
     url: string, isSyncedUrlForHistoryUi: boolean,
     remoteIconUrlForUma: string = '', size: number = 16,
-    forceLightMode: boolean = false): string {
+    forceLightMode: boolean = false, fallbackToHost: boolean = true): string {
   // Note: URL param keys used below must match those in the description of
   // chrome://favicon2 format in components/favicon_base/favicon_url_parser.h.
   const faviconUrl = getBaseFaviconUrl();
@@ -153,6 +155,9 @@ export function getFaviconForPageURL(
   }
   if (forceLightMode) {
     faviconUrl.searchParams.set('forceLightMode', 'true');
+  }
+  if (!fallbackToHost) {
+    faviconUrl.searchParams.set('fallbackToHost', '0');
   }
 
   return getImageSet(faviconUrl.toString());

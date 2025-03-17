@@ -28,7 +28,7 @@ const bool kFakeTabletMode = true;
 const ConnectionStateType kFakeWifiConnectionState =
     ConnectionStateType::kConnected;
 const bool kFakeDebugMode = false;
-const char kFakeGaiaId[] = "123";
+const GaiaId::Literal kFakeGaiaId("123");
 const char kFakeDeviceType[] = "Chromebook";
 const char kFakeOsVersion[] = "1.2.3.4";
 const char kFakeChannel[] = "Dev";
@@ -213,7 +213,7 @@ class SystemInfoProviderTest : public testing::Test {
         std::make_unique<SystemInfoProvider>(SystemInfo::Builder()
                                                  .SetDeviceName(kFakeDeviceName)
                                                  .SetBoardName(kFakeBoardName)
-                                                 .SetGaiaId(GaiaId(kFakeGaiaId))
+                                                 .SetGaiaId(kFakeGaiaId)
                                                  .SetDeviceType(kFakeDeviceType)
                                                  .SetOsVersion(kFakeOsVersion)
                                                  .SetChannel(kFakeChannel)
@@ -360,7 +360,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(tablet_mode, kFakeTabletMode);
   EXPECT_EQ(wifi_connection_state, "connected");
   EXPECT_EQ(debug_mode, kFakeDebugMode);
-  EXPECT_EQ(gaia_id, kFakeGaiaId);
+  EXPECT_EQ(gaia_id, kFakeGaiaId.ToString());
   EXPECT_EQ(device_type, kFakeDeviceType);
   EXPECT_EQ(os_version, kFakeOsVersion);
   EXPECT_EQ(channel, kFakeChannel);

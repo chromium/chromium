@@ -24,6 +24,8 @@ struct RenderInputRouterConfig {
   // mirror 1:1 relationship between RenderWidgetHostInputEventRouter and
   // WebContentsImpl.
   mojo_base.mojom.UnguessableToken grouping_id;
+  // Force zoom enable feature for accessbility.
+  bool force_enable_zoom = false;
 };
 
 struct TouchTransferState {
@@ -39,6 +41,18 @@ struct TouchTransferState {
   // root widget. This will be used to account for top controls height when
   // creating MotionEventAndroid on Viz side.
   int32 raw_y_offset;
+
+  // Device scale factor being used to create MotionEventAndroid objects for
+  // converting device pixels to device independent pixels.
+  float dip_scale;
+
+  // A touch sequence that Browser would have handled, and should be returned to
+  // Browser if it were a new sequence.
+  // With Android 15 QPR2 update, the touches are always split across windows:
+  // https://cs.android.com/android/_/android/platform/frameworks/native/+/a3fe664ce5d4931e2717a1ed48c8ea8e66b03ac8
+  // What it means for Chrome is the pointer downs hit Browser process instead
+  // of coming directly to Viz. They need to be transferred individually to Viz.
+  bool browser_would_have_handled = false;
 };
 
 // Implemented by Viz, an interface between Browser and Viz. It defines methods
@@ -52,6 +66,13 @@ interface RenderInputRouterDelegate {
   // |frame_sink_id|), of changes to a page being mobile site optimized.
   NotifySiteIsMobileOptimized(bool is_mobile_optimized,
                               viz.mojom.FrameSinkId frame_sink_id);
+
+  // Notifies RenderInputRouters corresponding to |frame_sink_ids| on the
+  // VizCompositor thread of changes to |force_enable_zoom| state for
+  // Accessibility.
+  ForceEnableZoomStateChanged(
+    bool force_enable_zoom,
+    array<viz.mojom.FrameSinkId> frame_sink_ids);
 };
 
 // Implemented by the browser, this interface defines methods that will be
@@ -61,7 +82,8 @@ interface RenderInputRouterDelegateClient {
   // Notifies InputEventObservers in the browser of input events being handled
   // on Viz (with InputVizard).
   NotifyObserversOfInputEvent(viz.mojom.FrameSinkId id,
-                              blink.mojom.Event event);
+                              blink.mojom.Event event,
+                              bool dispatched_to_renderer);
 
   // Notifies InputEventObservers in the browser of input event acks being
   // handled on Viz (with InputVizard).

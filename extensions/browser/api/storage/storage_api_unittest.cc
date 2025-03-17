@@ -240,6 +240,8 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
 
     size_t GetBytesInUse() override { return bytes_in_use_; }
 
+    ReadResult GetKeys() override { NOTREACHED(); }
+
     ReadResult Get(const std::string& key) override { NOTREACHED(); }
 
     ReadResult Get(const std::vector<std::string>& keys) override {

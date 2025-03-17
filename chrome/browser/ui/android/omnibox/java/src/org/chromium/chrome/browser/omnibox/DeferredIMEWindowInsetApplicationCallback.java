@@ -63,9 +63,10 @@ public class DeferredIMEWindowInsetApplicationCallback
                 : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
                         + " InsetObserverView";
         mInsetObserver = insetObserver;
+        insetObserver.addWindowInsetsAnimationListener(this);
         insetObserver.addInsetsConsumer(
                 this, InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
-        insetObserver.addWindowInsetsAnimationListener(this);
+        insetObserver.retriggerOnApplyWindowInsets();
     }
 
     /** Detaches this callback from the root of the given window. */
@@ -135,10 +136,18 @@ public class DeferredIMEWindowInsetApplicationCallback
         }
 
         // Zero out (consume) the ime insets; we're applying them ourselves so no one else needs
-        // to consume them.
-        return new WindowInsetsCompat.Builder(windowInsetsCompat)
-                .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
-                .build();
+        // to consume them. Additionally, we will also consume nav bar insets because we have at
+        // least one other inset consumer that might otherwise use the nav bar inset incorrectly
+        // when the ime is visible and only the ime insets are consumed here. This is based on the
+        // assumption that both the ime and nav bar are present at the bottom of the app window.
+        // TODO (crbug.com/388037271): Remove nav bar inset consumption.
+        var builder =
+                new WindowInsetsCompat.Builder(windowInsetsCompat)
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE);
+        if (imeInsets.bottom > 0) {
+            builder.setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE);
+        }
+        return builder.build();
     }
 
     private void commitKeyboardHeight(int newKeyboardHeight) {

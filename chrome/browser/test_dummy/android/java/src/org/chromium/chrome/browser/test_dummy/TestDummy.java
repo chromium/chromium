@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.test_dummy;
 import android.app.Activity;
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Runs scenarios to test dynamic feature module functionality. */
+@NullMarked
 public interface TestDummy {
     /**
      * Run the test scenario encoded in the given intent.

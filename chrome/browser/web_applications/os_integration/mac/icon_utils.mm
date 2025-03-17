@@ -6,7 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/check_op.h"
+#include <array>
+#include <queue>
+
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -22,12 +24,18 @@
 #include "ui/gfx/skia_util.h"
 
 namespace {
-const float kCornerRadiusFactor = 0.22f;
-}
 
-namespace web_app {
+// Returns parameters for Apple's icon grid bounding box and shadow for the
+// given size. Values are derived from Apple icon design templates (March 2023
+// macOS Production Templates).
+struct IconGridParameters {
+  SkScalar inset;
+  SkScalar corner_radius;
+  SkScalar shadow_y_offset;
+  SkScalar shadow_blur_radius;
+};
 
-gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon) {
+IconGridParameters GetIconGridParameters(int base_size) {
   // According to Apple design templates, a macOS icon should be a rounded
   // rect surrounded by some transparent padding.  The rounded rect's size
   // is approximately 80% of the overall icon, but this percentage varies.
@@ -50,72 +58,151 @@ gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon) {
   // code icons have already been resized to neatly fill entire standard sized
   // icons by the time this code runs, so doing any more resizing here would
   // not be great.
-  int base_size = base_icon.Width();
-  SkScalar icon_grid_bounding_box_inset;
-  SkScalar icon_grid_bounding_box_corner_radius;
-  SkScalar shadow_y_offset;
-  SkScalar shadow_blur_radius;
   switch (base_size) {
     case 16:
       // An exact value for the 16 corner radius was not available.
       // this corner radius is derived by dividing the 32 radius by 2
-      icon_grid_bounding_box_inset = 1.0;
-      icon_grid_bounding_box_corner_radius = 2.785;
-      shadow_y_offset = 0.5;
-      shadow_blur_radius = 0.5;
-      break;
+      return {.inset = 1.0,
+              .corner_radius = 2.785,
+              .shadow_y_offset = 0.5,
+              .shadow_blur_radius = 0.5};
     case 32:
-      icon_grid_bounding_box_inset = 2.0;
-      icon_grid_bounding_box_corner_radius = 5.75;
-      shadow_y_offset = 1.0;
-      shadow_blur_radius = 1.0;
-      break;
+      return {.inset = 2.0,
+              .corner_radius = 5.75,
+              .shadow_y_offset = 1.0,
+              .shadow_blur_radius = 1.0};
     case 64:
-      icon_grid_bounding_box_inset = 6.0;
-      icon_grid_bounding_box_corner_radius = 11.5;
-      shadow_y_offset = 2;
-      shadow_blur_radius = 2;
-      break;
+      return {.inset = 6.0,
+              .corner_radius = 11.5,
+              .shadow_y_offset = 2.0,
+              .shadow_blur_radius = 2.0};
     case 128:
       // An exact value for the 128 corner radius was not available.
       // this corner radius is derived by dividing the 256 radius by 2
       // or by multiplying the 64 radius by 2, both calculations
       // have the same result.
-      icon_grid_bounding_box_inset = 12.0;
-      icon_grid_bounding_box_corner_radius = 23.0;
-      shadow_y_offset = 1.25;
-      shadow_blur_radius = 1.25;
-      break;
+      return {.inset = 12.0,
+              .corner_radius = 23.0,
+              .shadow_y_offset = 1.25,
+              .shadow_blur_radius = 1.25};
     case 256:
-      icon_grid_bounding_box_inset = 25.0;
-      icon_grid_bounding_box_corner_radius = 46.0;
-      shadow_y_offset = 2.5;
-      shadow_blur_radius = 2.5;
-      break;
+      return {.inset = 25.0,
+              .corner_radius = 46.0,
+              .shadow_y_offset = 2.5,
+              .shadow_blur_radius = 2.5};
     case 512:
-      icon_grid_bounding_box_inset = 50.0;
-      icon_grid_bounding_box_corner_radius = 92.0;
-      shadow_y_offset = 5.0;
-      shadow_blur_radius = 5.0;
-      break;
+      return {.inset = 50.0,
+              .corner_radius = 92.0,
+              .shadow_y_offset = 5.0,
+              .shadow_blur_radius = 5.0};
     case 1024:
       // An exact value for the 1024 corner radius was not available.
       // this corner radius is derived by multiplying the 512 radius by 2
-      icon_grid_bounding_box_inset = 100.0;
-      icon_grid_bounding_box_corner_radius = 184.0;
-      shadow_y_offset = 10.0;
-      shadow_blur_radius = 10.0;
-      break;
+      return {.inset = 100.0,
+              .corner_radius = 184.0,
+              .shadow_y_offset = 10.0,
+              .shadow_blur_radius = 10.0};
     default:
       // Use 1024 sizes as a reference for approximating any size mask if needed
-      icon_grid_bounding_box_inset = base_size * 100.0 / 1024.0;
-      icon_grid_bounding_box_corner_radius = base_size * 184.0 / 1024.0;
-      shadow_y_offset = base_size * 10.0 / 1024.0;
-      shadow_blur_radius = base_size * 10.0 / 1024.0;
-      break;
+      return {
+          .inset = static_cast<SkScalar>(base_size * 100.0 / 1024.0),
+          .corner_radius = static_cast<SkScalar>(base_size * 184.0 / 1024.0),
+          .shadow_y_offset = static_cast<SkScalar>(base_size * 10.0 / 1024.0),
+          .shadow_blur_radius =
+              static_cast<SkScalar>(base_size * 10.0 / 1024.0)};
+  }
+}
+
+SkPath CreateMaskingIconGridBoundingBoxPath(int base_size,
+                                            const IconGridParameters& params) {
+  SkPath path;
+  SkRect rect = SkRect::MakeIWH(base_size, base_size)
+                    .makeInset(params.inset, params.inset);
+  path.addRoundRect(rect, params.corner_radius, params.corner_radius);
+  return path;
+}
+
+// Scales the given icon down to fit appropriately within the masked area.
+gfx::Image ScaleDownInsideMask(const gfx::Image& icon,
+                               IconGridParameters grid_params) {
+  const int width = icon.Width();
+  // Always scale the icon to 10% of the mask area - this means the corners may
+  // be slightly clipped, but this looks good, and scaling down further is too
+  // small.
+  int masked_width = width - 2 * grid_params.inset;
+  int margin = grid_params.inset + static_cast<int>(masked_width * 0.1f);
+  gfx::Canvas canvas(gfx::Size(width, width), 1.0f, /*is_opaque=*/false);
+  canvas.sk_canvas()->clear(SkColor4f{0, 0, 0, 0});
+
+  const gfx::RectF dst_rect(margin, margin, width - 2 * margin,
+                            width - 2 * margin);
+
+  canvas.DrawImageInt(icon.AsImageSkia(),
+                      /*src_x=*/0, /*src_y=*/0, width, width, dst_rect.x(),
+                      dst_rect.y(), dst_rect.width(), dst_rect.height(),
+                      /*filter=*/true);
+
+  return gfx::Image::CreateFrom1xBitmap(canvas.GetBitmap());
+}
+
+// Checks that all pixels outside of the given mask are within
+// `max_non_alpha_deviation`. All pixels less than `min_alpha` are ignored to
+// help prevent false negatives.
+bool AreColorsOutsideMaskWithinDeviation(const SkBitmap& icon,
+                                         const SkPath& mask_path,
+                                         uint8_t min_alpha,
+                                         int max_non_alpha_deviation) {
+  if (!icon.peekPixels(nullptr)) {
+    return false;
   }
 
-  // Creat a bitmap and canvas for drawing the masked icon
+  std::array<uint8_t, 3> min_components = {255, 255, 255};  // R, G, B
+  std::array<uint8_t, 3> max_components = {0, 0, 0};
+
+  SkPixmap pixmap;
+  icon.peekPixels(&pixmap);
+
+  for (int x = 0; x < icon.width(); ++x) {
+    for (int y = 0; y < icon.height(); ++y) {
+      if (mask_path.contains(SkIntToScalar(x), SkIntToScalar(y))) {
+        continue;  // Skip pixels inside the mask
+      }
+
+      SkColor current_color = pixmap.getColor(x, y);
+
+      if (SkColorGetA(current_color) < min_alpha) {
+        continue;
+      }
+
+      min_components[0] =
+          std::min<uint8_t>(min_components[0], SkColorGetR(current_color));
+      min_components[1] =
+          std::min<uint8_t>(min_components[1], SkColorGetG(current_color));
+      min_components[2] =
+          std::min<uint8_t>(min_components[2], SkColorGetB(current_color));
+
+      max_components[0] =
+          std::max<uint8_t>(max_components[0], SkColorGetR(current_color));
+      max_components[1] =
+          std::max<uint8_t>(max_components[1], SkColorGetG(current_color));
+      max_components[2] =
+          std::max<uint8_t>(max_components[2], SkColorGetB(current_color));
+
+      for (size_t i = 0; i < 3; ++i) {
+        if (max_components[i] - min_components[i] > max_non_alpha_deviation) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+gfx::Image CreateAppleMaskedAppIconWithPath(
+    const gfx::Image& base_icon,
+    const SkPath& icon_grid_bounding_box_path) {
+  int base_size = base_icon.Width();
   SkImageInfo info =
       SkImageInfo::Make(base_size, base_size, SkColorType::kN32_SkColorType,
                         SkAlphaType::kUnpremul_SkAlphaType);
@@ -124,23 +211,15 @@ gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon) {
   SkCanvas canvas(bitmap);
   SkRect base_rect = SkRect::MakeIWH(base_size, base_size);
 
-  // Create a path for the icon mask. The mask will match Apple's icon grid
-  // bounding box.
-  SkPath icon_grid_bounding_box_path;
-  SkRect icon_grid_bounding_box_rect = base_rect.makeInset(
-      icon_grid_bounding_box_inset, icon_grid_bounding_box_inset);
-  icon_grid_bounding_box_path.addRoundRect(
-      icon_grid_bounding_box_rect, icon_grid_bounding_box_corner_radius,
-      icon_grid_bounding_box_corner_radius);
-
   // Draw the shadow
   SkPaint shadowPaint;
   shadowPaint.setStyle(SkPaint::kFill_Style);
   shadowPaint.setARGB(77, 0, 0, 0);
-  shadowPaint.setImageFilter(
-      SkImageFilters::Blur(shadow_blur_radius, shadow_blur_radius, nullptr));
+  IconGridParameters params = GetIconGridParameters(base_size);
+  shadowPaint.setImageFilter(SkImageFilters::Blur(
+      params.shadow_blur_radius, params.shadow_blur_radius, nullptr));
   canvas.save();
-  canvas.translate(0, shadow_y_offset);
+  canvas.translate(0, params.shadow_y_offset);
   canvas.drawPath(icon_grid_bounding_box_path, shadowPaint);
   canvas.restore();
 
@@ -165,8 +244,21 @@ gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon) {
                           0);
   canvas.drawImage(SkImages::RasterFromBitmap(opaque_bitmap), 0, 0);
 
-  // Create the final image.
   return gfx::Image::CreateFrom1xBitmap(bitmap);
+}
+
+}  // namespace
+
+namespace web_app {
+
+gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon) {
+  int base_size = base_icon.Width();
+  IconGridParameters params = GetIconGridParameters(base_size);
+  SkPath icon_grid_bounding_box_path =
+      CreateMaskingIconGridBoundingBoxPath(base_size, params);
+
+  return CreateAppleMaskedAppIconWithPath(base_icon,
+                                          icon_grid_bounding_box_path);
 }
 
 NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
@@ -210,72 +302,22 @@ NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
   return canvas;
 }
 
-bool HasSolidColorBorder(const gfx::Image& icon) {
-  SkBitmap bitmap = icon.AsBitmap();
-  int width = bitmap.width();
-  int height = bitmap.height();
-
-  SkColor reference_color = bitmap.getColor(0, 0);
-
-  for (int x = 0; x < width; ++x) {
-    if (bitmap.getColor(x, 0) != reference_color ||
-        bitmap.getColor(x, height - 1) != reference_color) {
-      return false;
-    }
-  }
-
-  for (int y = 0; y < height; ++y) {
-    if (bitmap.getColor(0, y) != reference_color ||
-        bitmap.getColor(width - 1, y) != reference_color) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-// TODO(https://crbug.com/372688523): Implement masking without zooming.
 gfx::Image MaskDiyAppIcon(const gfx::Image& icon) {
-  SkBitmap bitmap = icon.AsBitmap();
-  int width = bitmap.width();
-  int height = bitmap.height();
+  // If the alpha value of the color is less than this value then it is ignored
+  constexpr uint8_t kMinAlpha = 1;
+  // Maximum allowed deviation between RGB components of colors outside the mask
+  constexpr int kMaxNonAlphaDeviation = 5;
 
-  bool is_solid_color_border = HasSolidColorBorder(icon);
+  IconGridParameters grid_params = GetIconGridParameters(icon.Width());
+  SkPath mask = CreateMaskingIconGridBoundingBoxPath(icon.Width(), grid_params);
 
-  SkBitmap output_bitmap;
-  output_bitmap.allocN32Pixels(width, height);
-  SkCanvas canvas(output_bitmap);
-
-  canvas.clear(SK_ColorTRANSPARENT);
-
-  float corner_radius = width * kCornerRadiusFactor;
-  int background_margin = width * 0.1;  // 10% margin
-  int background_offset_x = background_margin;
-  int background_width = width - 2 * background_margin;
-  SkRect rect = SkRect::MakeXYWH(background_offset_x, background_offset_x,
-                                 background_width, background_width);
-  SkRRect rrect = SkRRect::MakeRectXY(rect, corner_radius, corner_radius);
-  SkPaint paint;
-  paint.setColor(SK_ColorWHITE);
-  if (is_solid_color_border) {
-    paint.setColor(bitmap.getColor(0, 0));
-    // Create a mask with rounded corners
-    SkPath path;
-    path.addRRect(rrect);
-    canvas.clipPath(path, SkClipOp::kIntersect, true);
+  if (AreColorsOutsideMaskWithinDeviation(*icon.ToSkBitmap(), mask, kMinAlpha,
+                                          kMaxNonAlphaDeviation)) {
+    return CreateAppleMaskedAppIconWithPath(icon, mask);
+  } else {
+    gfx::Image scaled_icon = ScaleDownInsideMask(icon, grid_params);
+    return CreateAppleMaskedAppIconWithPath(scaled_icon, mask);
   }
-  paint.setAntiAlias(true);
-  canvas.drawRRect(rrect, paint);
-  SkRect src_rect = SkRect::MakeWH(width, height);
-  int image_margin = background_width * 0.1;  // 10% margin
-  int image_offset_x = background_offset_x + image_margin;
-  int image_width = background_width - 2 * image_margin;
-  SkRect dst_rect = SkRect::MakeXYWH(image_offset_x, image_offset_x,
-                                     image_width, image_width);
-  canvas.drawImageRect(bitmap.asImage(), src_rect, dst_rect,
-                       SkSamplingOptions(), nullptr,
-                       SkCanvas::kFast_SrcRectConstraint);
-
-  return gfx::Image::CreateFrom1xBitmap(output_bitmap);
 }
+
 }  // namespace web_app

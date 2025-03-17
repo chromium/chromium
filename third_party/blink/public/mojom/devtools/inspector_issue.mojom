@@ -27,6 +27,7 @@ enum InspectorIssueCode {
   kGenericIssue,
   kDeprecationIssue,
   kFederatedAuthUserInfoRequestIssue,
+  kPartitioningBlobURLIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -37,8 +38,8 @@ struct AffectedCookie {
 };
 
 struct AffectedRequest {
-  string request_id;
-  string? url;
+  string? request_id;
+  string url;
 };
 
 struct AffectedFrame {
@@ -125,6 +126,7 @@ enum ContentSecurityPolicyViolationType {
     kInlineViolation,
     kEvalViolation,
     kURLViolation,
+    kSRIViolation,
     kTrustedTypesSinkViolation,
     kTrustedTypesPolicyViolation,
     kWasmEvalViolation,
@@ -254,6 +256,8 @@ enum FederatedAuthRequestResult {
   kRelyingPartyOriginIsOpaque,
   kTypeNotMatching,
   kError,
+  kUiDismissedNoEmbargo,
+  kCorsError,
 };
 
 struct FederatedAuthRequestIssueDetails {
@@ -286,6 +290,16 @@ struct FederatedAuthUserInfoRequestIssueDetails {
 
 struct BounceTrackingIssueDetails {
   array<string> tracking_sites;
+};
+
+enum PartitioningBlobURLInfo {
+  kBlockedCrossPartitionFetching,
+  kEnforceNoopenerForNavigation,
+};
+
+struct PartitioningBlobURLIssueDetails {
+  url.mojom.Url url;
+  PartitioningBlobURLInfo partitioning_blob_url_info;
 };
 
 struct CookieDeprecationMetadataIssueDetails {
@@ -339,6 +353,7 @@ struct InspectorIssueDetails {
   LowTextContrastIssue? low_text_contrast_details;
   FederatedAuthRequestIssueDetails? federated_auth_request_details;
   BounceTrackingIssueDetails? bounce_tracking_issue_details;
+  PartitioningBlobURLIssueDetails? partitioning_blob_url_issue_details;
   CookieDeprecationMetadataIssueDetails? cookie_deprecation_metadata_issue_details;
   GenericIssueDetails? generic_issue_details;
   DeprecationIssueDetails? deprecation_issue_details;

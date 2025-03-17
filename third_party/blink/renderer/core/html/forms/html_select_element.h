@@ -55,6 +55,11 @@ class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
 class HTMLSelectedContentElement;
 class SelectDescendantsObserver;
 
+enum class SelectPopupHideBehavior {
+  kNormal,
+  kNoEventsOrFocusing,
+};
+
 class CORE_EXPORT HTMLSelectElement final
     : public HTMLFormControlElementWithState,
       private TypeAheadDataSource {
@@ -158,6 +163,20 @@ class CORE_EXPORT HTMLSelectElement final
   // We prefer |optionList()| to |listItems()|.
   const ListItems& GetListItems() const;
 
+  // NearestAncestorSelectNoNesting is called with <hr>, <option>, and
+  // <optgroup> elements to determine if they have an ancestor <select> which
+  // they are associated with. An ancestor <select> will not be returned in some
+  // cases, such as nested <option>s, in order to match the logic in
+  // RecalcListItems and OptionList.
+  // `insertion_point` and `passed_insertion_point` are optional parameters used
+  // by HTMLOptionElement::InsertedInto. If `insertion_point` is encountered
+  // during the ancestor traversal, then `passed_insertion_point` will be set to
+  // true.
+  static HTMLSelectElement* NearestAncestorSelectNoNesting(
+      const Element& element,
+      ContainerNode* insertion_point = nullptr,
+      bool* passed_insertion_point = nullptr);
+
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void SelectOptionByAccessKey(HTMLOptionElement*);
 
@@ -190,8 +209,7 @@ class CORE_EXPORT HTMLSelectElement final
   // Helper functions for popup menu implementations.
   String ItemText(const Element&) const;
   bool ItemIsDisplayNone(Element&, bool ensure_style) const;
-  // itemComputedStyle() returns nullptr only if the owner Document is not
-  // active.  So, It returns a valid object when we open a popup.
+  // ItemComputedStyle() may return nullptr if the element is not rendered.
   const ComputedStyle* ItemComputedStyle(Element&) const;
   // Text starting offset in LTR.
   LayoutUnit ClientPaddingLeft() const;
@@ -212,7 +230,7 @@ class CORE_EXPORT HTMLSelectElement final
   // the menulist mode.
   const ComputedStyle* OptionStyle() const;
   void ShowPopup();
-  void HidePopup();
+  void HidePopup(SelectPopupHideBehavior);
   PopupMenu* PopupForTesting() const;
 
   void ResetTypeAheadSessionForTesting();
@@ -222,6 +240,14 @@ class CORE_EXPORT HTMLSelectElement final
   void Trace(Visitor*) const override;
   void CloneNonAttributePropertiesFrom(const Element&,
                                        NodeCloningData&) override;
+
+  // These are all utilities that check the relevant runtime flag, *plus* check
+  // that the SelectParserRelaxationOptOut origin trial is not enabled.
+  static bool SelectParserRelaxationEnabled(const Document* document);
+  static bool SelectParserRelaxationEnabled(const Node* node);
+  static bool CustomizableSelectEnabled(const Document* document);
+  static bool CustomizableSelectEnabled(const Node* node);
+  static bool CustomizableSelectEnabledNoDocument();
 
   // InnerElement and PopupRootAXObject should be called only if UsesMenuList().
   // InnerElement is the in-page <div> element in the UA shadowroot for MenuList
@@ -244,6 +270,9 @@ class CORE_EXPORT HTMLSelectElement final
   // called during style calculation to compute internal pseudo-classes, the
   // value of the appearance property is not checked.
   HTMLButtonElement* SlottedButton() const;
+
+  // Returns true if the provided node is some select element's SlottedButton.
+  static bool IsSlottedButton(const Node*);
 
   // This method returns the UA popover element which is used for
   // appearance:base-select. If this select is rendering in a mode which doesn't
@@ -268,11 +297,12 @@ class CORE_EXPORT HTMLSelectElement final
   // in-page rendering of the button, and IsAppearanceBasePicker should be used
   // for code which is concerned with the popup/popover and the other elements
   // which are rendered in it.
-  // |no_update| prevents these methods from running an UpdateStyleAndLayoutTree
-  // which is needed in some cases to prevent nested style/layout recalc.
-  enum class StyleUpdateBehavior { kUpdateStyle, kDontUpdateStyle };
-  bool IsAppearanceBaseButton(StyleUpdateBehavior) const;
+  // SetIsAppearanceBasePickerForDisplayNone is called during style recalc for
+  // the case where the picker is closed and is therefore display:none and
+  // doesn't have a computed style to look at inside IsAppearanceBasePicker.
+  bool IsAppearanceBaseButton() const;
   bool IsAppearanceBasePicker() const;
+  void SetIsAppearanceBasePickerForDisplayNone(bool);
 
   void SelectedContentElementInserted(
       HTMLSelectedContentElement* selectedcontent);
@@ -290,7 +320,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   void DefaultEventHandler(Event&) override;
 
-  void UpdateAllSelectedcontents();
+  void UpdateAllSelectedcontents(HTMLOptionElement* selected_option);
 
  private:
   mojom::blink::FormControlType FormControlType() const override;
@@ -392,7 +422,6 @@ class CORE_EXPORT HTMLSelectElement final
   mutable ListItems list_items_;
   TypeAhead type_ahead_;
   unsigned size_;
-  Member<HTMLSlotElement> option_slot_;
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
   TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;

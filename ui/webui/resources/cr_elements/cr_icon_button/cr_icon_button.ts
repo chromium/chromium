@@ -178,8 +178,8 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     }
   }
 
-  private async onIronIconChanged_() {
-    this.shadowRoot!.querySelectorAll('cr-icon').forEach(el => el.remove());
+  private onIronIconChanged_() {
+    this.shadowRoot.querySelectorAll('cr-icon').forEach(el => el.remove());
     if (!this.ironIcon) {
       return;
     }
@@ -189,7 +189,7 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
       crIcon.icon = icon;
       this.$.icon.appendChild(crIcon);
       await crIcon.updateComplete;
-      crIcon.shadowRoot!.querySelectorAll('svg, img')
+      crIcon.shadowRoot.querySelectorAll('svg, img')
           .forEach(child => child.setAttribute('role', 'none'));
     });
   }

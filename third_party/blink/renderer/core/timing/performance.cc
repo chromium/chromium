@@ -29,23 +29,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "base/check_op.h"
-#include "base/time/time.h"
-#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "third_party/blink/renderer/core/timing/performance.h"
 
 #include <algorithm>
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -61,6 +56,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -76,7 +72,7 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
-#include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_container_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
@@ -84,6 +80,7 @@
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/core/timing/performance_measure.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
+#include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_server_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
@@ -204,10 +201,10 @@ PerformanceEntryVector MergePerformanceEntryVectors(
   merged_entries.reserve(first_entry_vector.size() +
                          second_entry_vector.size());
 
-  auto first_it = first_entry_vector.begin();
-  auto first_end = first_entry_vector.end();
-  auto second_it = second_entry_vector.begin();
-  auto second_end = second_entry_vector.end();
+  auto first_it = first_entry_vector.CheckedBegin();
+  auto first_end = first_entry_vector.CheckedEnd();
+  auto second_it = second_entry_vector.CheckedBegin();
+  auto second_end = second_entry_vector.CheckedEnd();
 
   // Advance the second iterator past any entries with disallowed names.
   while (second_it != second_end && !CheckName(*second_it, maybe_name)) {
@@ -466,6 +463,11 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kResource:
       UseCounter::Count(GetExecutionContext(), WebFeature::kResourceTiming);
       entries = &resource_timing_buffer_;
+      break;
+
+    case PerformanceEntry::kContainer:
+      // TODO(jdapena): implementation of container timing entries storage and
+      // retrieval.
       break;
 
     case PerformanceEntry::kElement:
@@ -1092,6 +1094,25 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
     UseCounter::Count(GetExecutionContext(), WebFeature::kPaintTimingObserved);
 }
 
+void Performance::NotifyObserversOfContainerEntry(
+    PerformanceEntry& entry) const {
+  CHECK(entry.EntryTypeEnum() == PerformanceEntry::kContainer);
+  for (auto& observer : observers_) {
+    if (observer->FilterOptions() & entry.EntryTypeEnum() &&
+        observer->CanObserve(entry)) {
+      observer->EnqueuePerformanceEntry(entry);
+    }
+  }
+}
+
+void Performance::NotifyObserversOfContainerTiming() {
+  for (auto& observer : observers_) {
+    if (observer->FilterOptions() & PerformanceEntry::EntryType::kContainer) {
+      ActivateObserver(*observer);
+    }
+  }
+}
+
 bool Performance::HasObserverFor(
     PerformanceEntry::EntryType filter_type) const {
   return observer_filter_options_ & filter_type;
@@ -1115,6 +1136,9 @@ void Performance::SuspendObserver(PerformanceObserver& observer) {
 }
 
 void Performance::DeliverObservationsTimerFired(TimerBase*) {
+  if (HasObserverFor(PerformanceEntry::kContainer)) {
+    PopulateContainerTimingEntries();
+  }
   decltype(active_observers_) observers;
   active_observers_.Swap(observers);
   for (const auto& observer : observers) {

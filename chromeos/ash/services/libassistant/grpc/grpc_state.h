@@ -16,11 +16,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/assistant/internal/grpc_transport/grpc_client_cq_tag.h"
-#include "third_party/grpc/src/include/grpcpp/client_context.h"
-#include "third_party/grpc/src/include/grpcpp/generic/generic_stub.h"
-#include "third_party/grpc/src/include/grpcpp/grpcpp.h"
-#include "third_party/grpc/src/include/grpcpp/impl/codegen/client_context.h"
-#include "third_party/grpc/src/include/grpcpp/support/status.h"
+#include "third_party/grpc/source/include/grpcpp/client_context.h"
+#include "third_party/grpc/source/include/grpcpp/generic/generic_stub.h"
+#include "third_party/grpc/source/include/grpcpp/grpcpp.h"
+#include "third_party/grpc/source/include/grpcpp/impl/codegen/client_context.h"
+#include "third_party/grpc/source/include/grpcpp/support/status.h"
 
 namespace google {
 namespace protobuf {

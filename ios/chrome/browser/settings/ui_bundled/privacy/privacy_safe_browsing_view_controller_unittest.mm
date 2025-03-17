@@ -65,7 +65,7 @@ TEST_F(PrivacySafeBrowsingViewControllerTest, TestModel) {
       l10n_util::GetNSString(
           IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE),
       l10n_util::GetNSString(
-          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY),
+          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED),
       0, 0);
 
   NSInteger standard_protection_summary = 0;

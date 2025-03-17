@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -90,7 +91,8 @@ std::unique_ptr<syncer::EntityChange> EntityChangeUpdateFromSpecifics(
 
 std::unique_ptr<syncer::EntityChange> EntityChangeDeleteFromSpecifics(
     const sync_pb::CollaborationGroupSpecifics& specifics) {
-  return syncer::EntityChange::CreateDelete(specifics.collaboration_id());
+  return syncer::EntityChange::CreateDelete(specifics.collaboration_id(),
+                                            syncer::EntityData());
 }
 
 MATCHER(NotNullTime, "") {
@@ -144,6 +146,7 @@ class MockModelObserver : public GroupDataModel::Observer {
               OnMemberRemoved,
               (const GroupId&, const GaiaId&, const base::Time&),
               (override));
+  MOCK_METHOD(void, OnSyncBridgeUpdateTypeChanged, (SyncBridgeUpdateType));
 };
 
 class GroupDataModelTest : public testing::Test {
@@ -218,10 +221,44 @@ class GroupDataModelTest : public testing::Test {
     return id;
   }
 
+  std::vector<GroupId> MimicMultipleGroupsAddedServerSide(
+      size_t number_of_groups) {
+    syncer::EntityChangeList entity_changes;
+    std::vector<GroupId> group_ids;
+    for (size_t i = 0; i < number_of_groups; i++) {
+      std::string display_name = "Group" + base::NumberToString(i);
+      const GroupId id = sdk_delegate_.AddGroupAndReturnId(display_name);
+      group_ids.emplace_back(id);
+
+      entity_changes.push_back(EntityChangeAddFromSpecifics(
+          MakeSpecifics(id, next_changed_at_millis_since_unix_epoch_++)));
+    }
+
+    collaboration_group_bridge_->ApplyIncrementalSyncChanges(
+        collaboration_group_bridge_->CreateMetadataChangeList(),
+        std::move(entity_changes));
+
+    return group_ids;
+  }
+
   void WaitForGroupAdded(const GroupId& group_id) {
     base::RunLoop run_loop;
     EXPECT_CALL(observer_, OnGroupAdded(group_id, NotNullTime()))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  void WaitForMultipleGroupsAdded(size_t number_of_groups) {
+    base::RunLoop run_loop;
+    size_t call_count = 0;
+    EXPECT_CALL(observer_, OnGroupAdded(_, NotNullTime()))
+        .Times(::testing::AtLeast(0))
+        .WillRepeatedly(::testing::DoAll(::testing::Invoke([&]() {
+          ++call_count;
+          if (call_count == number_of_groups) {
+            run_loop.Quit();
+          }
+        })));
     run_loop.Run();
   }
 
@@ -359,6 +396,22 @@ TEST_F(GroupDataModelTest, ShouldGetAllGroups) {
                           HasDisplayName(group_display_name2)));
 }
 
+TEST_F(GroupDataModelTest, FetchWorksCorrectlyForLargeNumberOfGroups) {
+  WaitForModelLoaded();
+
+  EXPECT_TRUE(model().GetAllGroups().empty());
+
+  size_t number_of_groups = 250;
+  const std::vector<GroupId> group_ids =
+      MimicMultipleGroupsAddedServerSide(number_of_groups);
+  ASSERT_EQ(number_of_groups, group_ids.size());
+  WaitForMultipleGroupsAdded(number_of_groups);
+  EXPECT_EQ(number_of_groups, model().GetAllGroups().size());
+  for (const GroupId& group_id : group_ids) {
+    EXPECT_TRUE(model().GetGroup(group_id).has_value());
+  }
+}
+
 TEST_F(GroupDataModelTest, ShouldUpdateGroup) {
   WaitForModelLoaded();
 
@@ -421,6 +474,13 @@ TEST_F(GroupDataModelTest, ShouldNotifyAboutGroupChanges) {
               OnMemberRemoved(group_id, member_gaia_id, NotNullTime()));
   MimicMemberRemovedServerSide(group_id, member_gaia_id);
   WaitForGroupUpdated(group_id);
+}
+
+TEST_F(GroupDataModelTest, ShouldNotifyOnSyncBridgeUpdateTypeChanged) {
+  EXPECT_CALL(model_observer(), OnSyncBridgeUpdateTypeChanged(
+                                    Eq(SyncBridgeUpdateType::kDisableSync)))
+      .Times(1);
+  model().OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDisableSync);
 }
 
 TEST_F(GroupDataModelTest, ShouldDeleteGroup) {

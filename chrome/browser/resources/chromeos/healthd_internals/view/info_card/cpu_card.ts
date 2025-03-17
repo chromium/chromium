@@ -8,7 +8,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import type {CpuUsage} from '../../model/cpu_usage_helper.js';
 import {getAverageCpuUsage} from '../../utils/cpu_usage_utils.js';
-import {HealthdApiPhysicalCpuResult, HealthdApiTelemetryResult} from '../../utils/externs.js';
+import type {HealthdApiPhysicalCpuResult, HealthdApiTelemetryResult} from '../../utils/externs.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
 
 import {getTemplate} from './cpu_card.html.js';
@@ -39,7 +39,7 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
       'Overall': '0.00%',
       'System': '0.00%',
       'User': '0.00%',
-      'Idle': '0.00%'
+      'Idle': '0.00%',
     });
   }
 
@@ -82,11 +82,7 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
     }
   }
 
-  updateCpuUsageData(physcialCpuUsage: (CpuUsage|null)[][]) {
-    let systemPercentage = 0;
-    let userPercentage = 0;
-    let idlePercentage = 0;
-
+  updateCpuUsageData(physcialCpuUsage: Array<Array<CpuUsage|null>>) {
     const flattenCpuUsage: (CpuUsage)[] =
         physcialCpuUsage.flat().filter(usage => usage !== null);
     const averageUsage = getAverageCpuUsage(flattenCpuUsage);

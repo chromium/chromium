@@ -26,8 +26,7 @@ namespace display {
 // a few utility postprocessings.
 class DISPLAY_UTIL_EXPORT EdidParser {
  public:
-  explicit EdidParser(std::vector<uint8_t>&& edid_blob,
-                      bool is_external = false);
+  explicit EdidParser(std::vector<uint8_t> edid_blob, bool is_external = false);
 
   EdidParser(const EdidParser&) = delete;
   EdidParser& operator=(const EdidParser&) = delete;

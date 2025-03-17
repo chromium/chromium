@@ -1,6 +1,7 @@
 [INTERFACES]
 interface AI
     attribute @@toStringTag
+    getter languageDetector
     getter languageModel
     getter rewriter
     getter summarizer
@@ -12,8 +13,19 @@ interface AICreateMonitor : EventTarget
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
+interface AILanguageDetector
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method detect
+interface AILanguageDetectorFactory
+    attribute @@toStringTag
+    method availability
+    method constructor
+    method create
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
+    getter expectedInputLanguages
     getter maxTokens
     getter oncontextoverflow
     getter temperature
@@ -27,27 +39,32 @@ interface AILanguageModel : EventTarget
     method prompt
     method promptStreaming
     setter oncontextoverflow
-interface AILanguageModelCapabilities
-    attribute @@toStringTag
-    getter available
-    getter defaultTemperature
-    getter defaultTopK
-    getter maxTopK
-    method constructor
-    method languageAvailable
 interface AILanguageModelFactory
     attribute @@toStringTag
-    method capabilities
+    method availability
     method constructor
     method create
+    method params
+interface AILanguageModelParams
+    attribute @@toStringTag
+    getter defaultTemperature
+    getter defaultTopK
+    getter maxTemperature
+    getter maxTopK
+    method constructor
 interface AIRewriter
     attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
     getter format
+    getter inputQuota
     getter length
+    getter outputLanguage
     getter sharedContext
     getter tone
     method constructor
     method destroy
+    method measureInputUsage
     method rewrite
     method rewriteStreaming
 interface AIRewriterFactory
@@ -57,48 +74,50 @@ interface AIRewriterFactory
     method create
 interface AISummarizer
     attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
     getter format
+    getter inputQuota
     getter length
+    getter outputLanguage
     getter sharedContext
     getter type
     method constructor
     method destroy
+    method measureInputUsage
     method summarize
     method summarizeStreaming
-interface AISummarizerCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method createOptionsAvailable
-    method languageAvailable
 interface AISummarizerFactory
     attribute @@toStringTag
-    method capabilities
+    method availability
     method constructor
     method create
 interface AITranslator
     attribute @@toStringTag
+    getter sourceLanguage
+    getter targetLanguage
     method constructor
     method destroy
     method translate
-interface AITranslatorCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method languagePairAvailable
+    method translateStreaming
 interface AITranslatorFactory
     attribute @@toStringTag
-    method capabilities
+    method availability
     method constructor
     method create
 interface AIWriter
     attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
     getter format
+    getter inputQuota
     getter length
+    getter outputLanguage
     getter sharedContext
     getter tone
     method constructor
     method destroy
+    method measureInputUsage
     method write
     method writeStreaming
 interface AIWriterFactory
@@ -131,6 +150,7 @@ interface AsyncDisposableStack
     getter disposed
     method Symbol(Symbol.asyncDispose)
     method adopt
+    method constructor
     method defer
     method disposeAsync
     method move
@@ -231,8 +251,14 @@ interface CanvasFilter
     method constructor
 interface CanvasGradient
     attribute @@toStringTag
+    getter colorInterpolationMethod
+    getter hueInterpolationMethod
+    getter premultipliedAlpha
     method addColorStop
     method constructor
+    setter colorInterpolationMethod
+    setter hueInterpolationMethod
+    setter premultipliedAlpha
 interface CanvasPattern
     attribute @@toStringTag
     method constructor
@@ -522,6 +548,7 @@ interface DisposableStack
     getter disposed
     method Symbol(Symbol.dispose)
     method adopt
+    method constructor
     method defer
     method dispose
     method move
@@ -688,6 +715,9 @@ interface FileSystemWritableFileStream : WritableStream
     method seek
     method truncate
     method write
+interface Float16Array : TypedArray
+    attribute BYTES_PER_ELEMENT
+    method constructor
 interface FontFace
     attribute @@toStringTag
     getter ascentOverride
@@ -740,10 +770,8 @@ interface GPU
     method requestAdapter
 interface GPUAdapter
     attribute @@toStringTag
-    getter featureLevel
     getter features
     getter info
-    getter isCompatibilityMode
     getter isFallbackAdapter
     getter limits
     method constructor
@@ -753,6 +781,8 @@ interface GPUAdapterInfo
     getter architecture
     getter description
     getter device
+    getter subgroupMaxSize
+    getter subgroupMinSize
     getter vendor
     method constructor
 interface GPUBindGroup
@@ -1010,14 +1040,16 @@ interface GPUSupportedLimits
     getter maxComputeWorkgroupsPerDimension
     getter maxDynamicStorageBuffersPerPipelineLayout
     getter maxDynamicUniformBuffersPerPipelineLayout
-    getter maxInterStageShaderComponents
     getter maxInterStageShaderVariables
     getter maxSampledTexturesPerShaderStage
     getter maxSamplersPerShaderStage
     getter maxStorageBufferBindingSize
+    getter maxStorageBuffersInFragmentStage
+    getter maxStorageBuffersInVertexStage
     getter maxStorageBuffersPerShaderStage
+    getter maxStorageTexturesInFragmentStage
+    getter maxStorageTexturesInVertexStage
     getter maxStorageTexturesPerShaderStage
-    getter maxSubgroupSize
     getter maxTextureArrayLayers
     getter maxTextureDimension1D
     getter maxTextureDimension2D
@@ -1028,7 +1060,6 @@ interface GPUSupportedLimits
     getter maxVertexBufferArrayStride
     getter maxVertexBuffers
     getter minStorageBufferOffsetAlignment
-    getter minSubgroupSize
     getter minUniformBufferOffsetAlignment
     method constructor
 interface GPUTexture
@@ -1232,18 +1263,13 @@ interface ImageData
     getter colorSpace
     getter data
     getter height
-    getter storageFormat
+    getter pixelFormat
     getter width
     method constructor
 interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
-interface LanguageTranslator
-    attribute @@toStringTag
-    method constructor
-    method destroy
-    method translate
 interface Lock
     attribute @@toStringTag
     getter mode
@@ -1419,6 +1445,7 @@ interface Observable
     method drop
     method every
     method filter
+    method finally
     method find
     method first
     method flatMap
@@ -1461,6 +1488,7 @@ interface OffscreenCanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter lang
     getter letterSpacing
     getter lineCap
     getter lineDashOffset
@@ -1501,6 +1529,7 @@ interface OffscreenCanvasRenderingContext2D
     method fillRect
     method fillText
     method fillTextCluster
+    method getContextAttributes
     method getImageData
     method getLineDash
     method getTextureFormat
@@ -1526,6 +1555,7 @@ interface OffscreenCanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
+    method strokeTextCluster
     method transferBackFromGPUTexture
     method transferToGPUTexture
     method transform
@@ -1541,6 +1571,7 @@ interface OffscreenCanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter lang
     setter letterSpacing
     setter lineCap
     setter lineDashOffset
@@ -1638,6 +1669,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     attribute @@toStringTag
     getter connectEnd
     getter connectStart
+    getter contentEncoding
     getter contentType
     getter decodedBodySize
     getter deliveryType
@@ -1866,18 +1898,6 @@ interface Response
 interface RestrictionTarget
     attribute @@toStringTag
     method constructor
-interface Sanitizer
-    attribute @@toStringTag
-    method allowAttribute
-    method allowElement
-    method constructor
-    method get
-    method removeAttribute
-    method removeElement
-    method removeUnsafe
-    method replaceWithChildrenElement
-    method setComments
-    method setDataAttributes
 interface Scheduler
     attribute @@toStringTag
     method constructor
@@ -2014,8 +2034,8 @@ interface TextCluster
     attribute @@toStringTag
     getter align
     getter baseline
-    getter begin
     getter end
+    getter start
     getter x
     getter y
     method constructor
@@ -2085,11 +2105,6 @@ interface TransformStreamDefaultController
     method enqueue
     method error
     method terminate
-interface Translation
-    attribute @@toStringTag
-    method canTranslate
-    method constructor
-    method createTranslator
 interface TrustedHTML
     static method fromLiteral
     attribute @@toStringTag
@@ -3606,7 +3621,6 @@ interface WorkerGlobalScope : EventTarget
     getter performance
     getter scheduler
     getter self
-    getter translation
     getter trustedTypes
     method atob
     method btoa
@@ -3630,7 +3644,6 @@ interface WorkerGlobalScope : EventTarget
     setter origin
     setter performance
     setter scheduler
-    setter translation
 interface WorkerLocation
     attribute @@toStringTag
     getter hash

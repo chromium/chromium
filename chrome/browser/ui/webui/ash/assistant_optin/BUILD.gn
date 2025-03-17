@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("assistant_optin") {
   sources = [
@@ -30,7 +28,6 @@ static_library("assistant_optin") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//build:buildflag_header_h",
@@ -42,6 +39,7 @@ static_library("assistant_optin") {
     "//chrome/browser/ui/ash/login",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/assistant/public/cpp",
     "//components/consent_auditor",
     "//components/prefs",

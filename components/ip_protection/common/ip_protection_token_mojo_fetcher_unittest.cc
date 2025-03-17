@@ -4,12 +4,17 @@
 
 #include "components/ip_protection/common/ip_protection_token_mojo_fetcher.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
-#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/mojom/core.mojom.h"
@@ -28,6 +33,11 @@ class FakeCoreHost : public ip_protection::mojom::CoreHost {
   }
 
   void GetProxyConfig(GetProxyConfigCallback callback) override {
+    NOTREACHED();
+  }
+
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override {
     NOTREACHED();
   }
 };

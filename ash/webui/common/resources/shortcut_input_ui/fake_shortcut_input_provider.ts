@@ -4,8 +4,8 @@
 
 import {FakeObservables} from '../fake_observables.js';
 
-import {KeyEvent} from './input_device_settings.mojom-webui.js';
-import {ShortcutInputObserverInterface, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
+import type {KeyEvent} from './input_device_settings.mojom-webui.js';
+import type {ShortcutInputObserverInterface, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
 
 export class FakeShortcutInputProvider implements
     ShortcutInputProviderInterface {

@@ -292,15 +292,19 @@
                                     group:
                                         (base::WeakPtr<const TabGroup>)tabGroup
                                sourceView:(UIView*)sourceView {
+  if (!tabGroup) {
+    return;
+  }
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       actionType:actionType
                       sourceView:sourceView];
   __weak BaseGridCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
   [_tabGroupConfirmationCoordinator start];
   self.gridViewController.tabGroupConfirmationHandler =
       _tabGroupConfirmationCoordinator;
@@ -310,15 +314,19 @@
                                     group:
                                         (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  if (!tabGroup) {
+    return;
+  }
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       actionType:actionType
                 sourceButtonItem:sourceButtonItem];
   __weak BaseGridCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
   [_tabGroupConfirmationCoordinator start];
   self.gridViewController.tabGroupConfirmationHandler =
       _tabGroupConfirmationCoordinator;
@@ -345,7 +353,7 @@
   __weak id<TabGridCommands> tabGridHandler =
       HandlerForProtocol(dispatcher, TabGridCommands);
   void (^openTabGroupPanelAction)() = ^{
-    [tabGridHandler showTabGroupsPanelAnimated:YES];
+    [tabGridHandler showPage:TabGridPageTabGroups animated:YES];
   };
 
   // Create and config the snackbar.
@@ -373,6 +381,10 @@
 
 - (void)showManageForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
   [self.tabContextMenuDelegate manageTabGroup:tabGroup];
+}
+
+- (void)showShareForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  [self.tabContextMenuDelegate shareTabGroup:tabGroup];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
@@ -445,6 +457,20 @@
         [self.mediator closeTabGroup:weakGroup.get() andDeleteGroup:YES];
       }
       break;
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      if (weakGroup) {
+        [self.mediator leaveSharedTabGroup:weakGroup.get()];
+      }
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      if (weakGroup) {
+        [self.mediator deleteSharedTabGroup:weakGroup.get()];
+      }
+      break;
+
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      NOTREACHED();
   }
 
   if (_tabGroupCoordinator) {

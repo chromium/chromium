@@ -196,7 +196,7 @@ std::unique_ptr<views::Label> CreateErrorMessageLabel() {
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetProperty(views::kElementIdentifierKey,
                    PlusAddressCreationView::kPlusAddressCreateErrorId)
-      .SetEnabledColorId(ui::kColorSysError)
+      .SetEnabledColor(ui::kColorSysError)
       .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 16, 0))
       .SetTextStyle(views::style::TextStyle::STYLE_BODY_5)
       .SetVisible(false)
@@ -315,7 +315,7 @@ PlusAddressCreationDialogDelegate::PlusAddressContainerView::
           .Build());
   generation_message_->SetLineHeight(2 * generation_message_->GetLineHeight());
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       // TODO(b/342330801): Figure out the correct color for the
       // background and move the definition to the mixer.
       ui::kColorSysHeaderContainer,
@@ -351,7 +351,7 @@ std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetProperty(views::kElementIdentifierKey,
                        PlusAddressCreationView::kPlusAddressReserveErrorId)
-          .SetEnabledColorId(ui::kColorSysError)
+          .SetEnabledColor(ui::kColorSysError)
           .SetSelectable(true)
           .CopyAddressTo(&error_message_)
           .Build();
@@ -581,7 +581,7 @@ std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::CreateLogo() {
                                      kGoogleGLogoWidth),
       ui::ImageModel::FromVectorIcon(kDarkGoogleGLogoIcon, ui::kColorIcon,
                                      kGoogleGLogoWidth),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                           base::Unretained(this)));
   logo->SetProperty(views::kMarginsKey,
                     gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));

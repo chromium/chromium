@@ -100,6 +100,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
+  void ShowWindowControlsMenu(const gfx::Point& point) override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   bool HasCapture() const override;

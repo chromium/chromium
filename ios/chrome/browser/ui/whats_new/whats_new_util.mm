@@ -16,7 +16,6 @@
 // is not triggered again until the next version of What's New.
 // Note that we no longer write userDefault.
 bool WasWhatsNewUsed() {
-
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kWhatsNewM116UsageEntryKey];
 }
@@ -75,6 +74,12 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "PriceHistory";
     case WhatsNewType::kOtherBuyingOptions:
       return "OtherBuyingOptions";
+    case WhatsNewType::kLensSearchWhatYouSee:
+      return "LensSearchWhatYouSee";
+    case WhatsNewType::kLensTranslate:
+      return "LensTranslate";
+    case WhatsNewType::kLensQuestion:
+      return "LensQuestion";
     case WhatsNewType::kError:
       return nil;
   };

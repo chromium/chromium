@@ -4,11 +4,12 @@
 
 #include "chromeos/ash/components/network/cellular_utils.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -126,7 +127,7 @@ std::vector<CellularESimProfile> GenerateProfilesFromHermes() {
        HermesManagerClient::Get()->GetAvailableEuiccs()) {
     std::vector<CellularESimProfile> profiles_from_euicc =
         GenerateProfilesFromEuicc(euicc_path);
-    base::ranges::copy(profiles_from_euicc, std::back_inserter(profiles));
+    std::ranges::copy(profiles_from_euicc, std::back_inserter(profiles));
   }
 
   return profiles;

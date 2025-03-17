@@ -11,8 +11,6 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -42,11 +40,9 @@ BASE_FEATURE_PARAM(int,
                    "ad-auction-signals-max-size-bytes",
                    10000);
 
-// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-// Changes default Permissions Policy for features join-ad-interest-group and
-// run-ad-auction to a more restricted EnableForSelf.
-BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
-             "AdInterestGroupAPIRestrictedPolicyByDefault",
+// Avoids copying ResourceRequest::TrustedParams when possible.
+BASE_FEATURE(kAvoidTrustedParamsCopies,
+             "AvoidTrustedParamsCopies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Block all MIDI access with the MIDI_SYSEX permission
@@ -144,9 +140,10 @@ BASE_FEATURE(kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe,
              "AvoidForcedLayoutOnInitialEmptyDocumentInSubframe",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(https://crbug.com/327075943): Delete this.
 BASE_FEATURE(kBFCacheOpenBroadcastChannel,
              "BFCacheOpenBroadcastChannel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
              "BackForwardCacheDWCOnJavaScriptExecution",
@@ -190,12 +187,6 @@ BASE_FEATURE_PARAM(std::string,
                    "allow_list",
                    "");
 
-// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-// Feature flag to enable debug reporting APIs.
-BASE_FEATURE(kBiddingAndScoringDebugReportingAPI,
-             "BiddingAndScoringDebugReportingAPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Boost the priority of the first N not-small images.
 // crbug.com/1431169
 BASE_FEATURE(kBoostImagePriority,
@@ -238,12 +229,6 @@ BASE_FEATURE(kBoostRenderBlockingStyleLoadingTaskPriority,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBoostNonRenderBlockingStyleLoadingTaskPriority,
              "BoostNonRenderBlockingStyleLoadingTaskPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// https://github.com/patcg-individual-drafts/topics
-// Kill switch for the Topics API.
-BASE_FEATURE(kBrowsingTopics,
-             "BrowsingTopics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the check for whether the IP address is publicly routable will be
@@ -513,8 +498,6 @@ BASE_FEATURE(kCorrectFloatExtensionTestForWebGL,
              "CorrectFloatExtensionTestForWebGL",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCrabbyAvif, "CrabbyAvif", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, add a new option, {imageOrientation: 'none'}, to
 // createImageBitmap, which ignores the image orientation metadata of the source
 // and renders the image as encoded.
@@ -524,7 +507,7 @@ BASE_FEATURE(kCreateImageBitmapOrientationNone,
 
 BASE_FEATURE(kDeferRendererTasksAfterInput,
              "DeferRendererTasksAfterInput",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kDeferRendererTasksAfterInputPolicyParamName[] = "policy";
 const char kDeferRendererTasksAfterInputMinimalTypesPolicyName[] =
@@ -554,7 +537,7 @@ BASE_FEATURE_ENUM_PARAM(TaskDeferralPolicy,
                         kTaskDeferralPolicyParam,
                         &kDeferRendererTasksAfterInput,
                         kDeferRendererTasksAfterInputPolicyParamName,
-                        TaskDeferralPolicy::kAllDeferrableTypes,
+                        TaskDeferralPolicy::kAllTypes,
                         &kTaskDeferralOptions);
 
 BASE_FEATURE(kDelayAsyncScriptExecution,
@@ -589,7 +572,7 @@ const base::FeatureParam<DelayAsyncScriptTarget>::Option
 BASE_FEATURE_ENUM_PARAM(DelayAsyncScriptTarget,
                         kDelayAsyncScriptTargetParam,
                         &kDelayAsyncScriptExecution,
-                        "delay_async_exec_target",
+                        "delay_async_exec_target_site",
                         DelayAsyncScriptTarget::kAll,
                         &delay_async_script_target_types);
 
@@ -641,9 +624,25 @@ const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>::Option
 BASE_FEATURE_ENUM_PARAM(AsyncScriptExperimentalSchedulingTarget,
                         kDelayAsyncScriptExecutionTargetParam,
                         &kDelayAsyncScriptExecution,
-                        "delay_async_exec_target",
+                        "delay_async_exec_target_script_category",
                         AsyncScriptExperimentalSchedulingTarget::kBoth,
                         &async_script_experimental_scheduling_targets);
+
+// If true, kDelayAsyncScriptExecution will not change the script
+// evaluation timing for the non parser inserted script.
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncExecExcludeNonParserInsertedParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_exclude_non_parser_inserted",
+                   false);
+
+// If true, kDelayAsyncScriptExecution will not change the script
+// evaluation timing for the scripts that were added via document.write().
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncExecExcludeDocumentWriteParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_exclude_document_write",
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam,
@@ -699,54 +698,15 @@ BASE_FEATURE(kDisableThirdPartyStoragePartitioning3DeprecationTrial,
              "DisableThirdPartyStoragePartitioning3DeprecationTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Drop input events before user sees first paint https://crbug.com/1255485
-BASE_FEATURE(kDropInputEventsBeforeFirstPaint,
-             "DropInputEventsBeforeFirstPaint",
+// Drop input events at the browser process until the process receives the first
+// signal that the renderer has sent a frame to cc (https://crbug.com/40057499).
+BASE_FEATURE(kDropInputEventsWhilePaintHolding,
+             "DropInputEventsWhilePaintHolding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEstablishGpuChannelAsync,
              "EstablishGpuChannelAsync",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             // TODO(crbug.com/1278147): Experiment with this more on desktop to
-             // see if it can help.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-// Enables unload handler deprecation via Permissions-Policy.
-// https://crbug.com/1324111
-BASE_FEATURE(kDeprecateUnload,
-             "DeprecateUnload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// If < 100, each user experiences the deprecation on this % of origins.
-// Which origins varies per user.
-BASE_FEATURE_PARAM(int,
-                   kDeprecateUnloadPercent,
-                   &kDeprecateUnload,
-                   "rollout_percent",
-                   100);
-// This buckets users, with users in each bucket having a consistent experience
-// of the unload deprecation rollout.
-BASE_FEATURE_PARAM(int,
-                   kDeprecateUnloadBucket,
-                   &kDeprecateUnload,
-                   "rollout_bucket",
-                   0);
-
-// Only used if `kDeprecateUnload` is enabled. The deprecation will only apply
-// if the host is on the allow-list.
-BASE_FEATURE(kDeprecateUnloadByAllowList,
-             "DeprecateUnloadByAllowList",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// A list of hosts for which deprecation of unload is allowed. If it's empty
-// the all hosts are allowed.
-BASE_FEATURE_PARAM(std::string,
-                   kDeprecateUnloadAllowlist,
-                   &kDeprecateUnloadByAllowList,
-                   "allowlist",
-                   "");
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to respect loading=lazy attribute for images when they are on
 // invisible pages.
@@ -788,17 +748,27 @@ BASE_FEATURE_PARAM(int,
                    kCullRectPixelDistanceToExpand,
                    &kExpandCompositedCullRect,
                    "pixels",
-                   4000);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+                   2000
+#else
+                   4000
+#endif
+);
 BASE_FEATURE_PARAM(double,
                    kCullRectExpansionDPRCoef,
                    &kExpandCompositedCullRect,
                    "dpr_coef",
-                   0);
+                   1);
 BASE_FEATURE_PARAM(bool,
                    kSmallScrollersUseMinCullRect,
                    &kExpandCompositedCullRect,
                    "small_scroller_opt",
-                   false);
+                   true);
+BASE_FEATURE_PARAM(int,
+                   kCullRectChangedEnoughDistance,
+                   &kExpandCompositedCullRect,
+                   "changed_enough",
+                   512);
 
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
 // this feature does not automatically expose this element to the web, it only
@@ -821,6 +791,10 @@ BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
              "FencedFramesAutomaticBeaconCredentials",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeaconData,
+             "FencedFramesCrossOriginAutomaticBeaconData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls functionality related to network revocation/local unpartitioned
 // data access in fenced frames.
 BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
@@ -829,7 +803,7 @@ BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
 
 BASE_FEATURE(kFencedFramesReportEventHeaderChanges,
              "FencedFramesReportEventHeaderChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a bug fix that allows a 'src' allowlist in the |allow| parameter of a
 // <fencedframe> or <iframe> loaded with a FencedFrameConfig to behave as
@@ -899,12 +873,55 @@ BASE_FEATURE_PARAM(std::string,
                    "FledgeBiddingAndAuctionKeyConfig",
                    "");
 
+// See https://github.com/WICG/turtledove/issues/1334
+BASE_FEATURE(kFledgeOriginScopedKeys,
+             "FledgeOriginScopedKeys",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kFledgeOriginScopedKeyConfig,
+                   &kFledgeOriginScopedKeys,
+                   "FledgeOriginScopedKeyConfig",
+                   "");
+
 // See in the header.
 BASE_FEATURE(kFledgeConsiderKAnonymity,
              "FledgeConsiderKAnonymity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFledgeEnforceKAnonymity,
              "FledgeEnforceKAnonymity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// See the header for more details.
+BASE_FEATURE(kFledgeLimitSelectableBuyerAndSellerReportingIds,
+             "FledgeLimitSelectableBuyerAndSellerReportingIds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit,
+                   &kFledgeLimitSelectableBuyerAndSellerReportingIds,
+                   "SelectableBuyerAndSellerReportingIdsSoftLimit",
+                   -1);
+BASE_FEATURE_PARAM(int,
+                   kFledgeSelectableBuyerAndSellerReportingIdsHardLimit,
+                   &kFledgeLimitSelectableBuyerAndSellerReportingIds,
+                   "SelectableBuyerAndSellerReportingIdsHardLimit",
+                   -1);
+
+BASE_FEATURE(kFledgeMaxGroupLifetimeFeature,
+             "FledgeMaxGroupLifetimeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeMaxGroupLifetime,
+                   &kFledgeMaxGroupLifetimeFeature,
+                   "fledge_max_group_lifetime",
+                   base::Days(30));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeMaxGroupLifetimeForMetadata,
+                   &kFledgeMaxGroupLifetimeFeature,
+                   "fledge_max_group_lifetime_for_metadata",
+                   base::Days(30));
+
+BASE_FEATURE(kFledgeEnableSampleDebugReportOnCookieSetting,
+             "FledgeEnableSampleDebugReportOnCookieSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFledgeSampleDebugReports,
@@ -942,60 +959,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "fledge_enable_filtering_debug_report_starting_from",
                    base::Milliseconds(0));
 
-BASE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL,
-             "FledgeSplitTrustedSignalsFetchingURL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE_PARAM(int,
                    kFledgeCustomMaxAuctionAdComponentsValue,
                    &kFledgeCustomMaxAuctionAdComponents,
                    "FledgeAdComponentLimit",
                    40);
-
-BASE_FEATURE(kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
-             "FledgeBidderWorkletGroupByOriginContextsToKeep",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue,
-                   &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
-                   "GroupByOriginContextLimit",
-                   10);
-
-BASE_FEATURE(kFledgeAlwaysReuseBidderContext,
-             "FledgeAlwaysReuseBidderContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
-             "FledgeAlwaysReuseSellerContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgePrepareBidderContextsInAdvance,
-             "FledgePrepareBidderContextsInAdvance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kFledgeMaxBidderContextsPerThreadInAdvance,
-                   &kFledgePrepareBidderContextsInAdvance,
-                   "MaxBidderContextsPerThread",
-                   10);
-BASE_FEATURE_PARAM(int,
-                   kFledgeBidderContextsDivisor,
-                   &kFledgePrepareBidderContextsInAdvance,
-                   "BidderContextsDivisor",
-                   2);
-BASE_FEATURE_PARAM(int,
-                   kFledgeBidderContextsMultiplier,
-                   &kFledgePrepareBidderContextsInAdvance,
-                   "BidderContextsMultiplier",
-                   1);
-
-BASE_FEATURE(kFledgePrepareSellerContextsInAdvance,
-             "FledgePrepareSellerContextsInAdvance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kFledgeMaxSellerContextsPerThreadInAdvance,
-                   &kFledgePrepareSellerContextsInAdvance,
-                   "MaxSellerContextsPerThread",
-                   10);
 
 BASE_FEATURE_PARAM(int,
                    kFledgeRealTimeReportingNumBuckets,
@@ -1029,8 +997,8 @@ BASE_FEATURE(kFledgeEnforcePermissionPolicyContributeOnEvent,
              "FledgeEnforcePermissionPolicyContributeOnEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFledgeNoWasmLazyCompilation,
-             "FledgeNoWasmLazyCompilation",
+BASE_FEATURE(kFledgeDisableLocalAdsAuctions,
+             "FledgeDisableLocalAdsAuctions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
@@ -1139,6 +1107,10 @@ BASE_FEATURE(kHiddenSelectionBounds,
              "HiddenSelectionBounds",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIgnoreInputWhileHidden,
+             "IgnoreInputWhileHidden",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kImageLoadingPrioritizationFix,
              "ImageLoadingPrioritizationFix",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1154,6 +1126,10 @@ constexpr base::FeatureParam<int>
 
 BASE_FEATURE(kInputPredictorTypeChoice,
              "InputPredictorTypeChoice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kInputScenarioPriorityBoost,
+             "InputScenarioPriorityBoost",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, wake ups from throttleable TaskQueues are limited to 1 per
@@ -1188,38 +1164,6 @@ const char kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[] =
 BASE_FEATURE(kInteractiveDetectorIgnoreFcp,
              "InteractiveDetectorIgnoreFcp",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch for the Interest Group API, i.e. if disabled, the
-// API exposure will be disabled regardless of the OT config.
-BASE_FEATURE(kInterestGroupStorage,
-             "InterestGroupStorage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// TODO(crbug.com/1197209): Adjust these limits in response to usage.
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxOwners,
-                   &kInterestGroupStorage,
-                   "max_owners",
-                   1000);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxStoragePerOwner,
-                   &kInterestGroupStorage,
-                   "max_storage_per_owner",
-                   10 * 1024 * 1024);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxGroupsPerOwner,
-                   &kInterestGroupStorage,
-                   "max_groups_per_owner",
-                   2000);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxNegativeGroupsPerOwner,
-                   &kInterestGroupStorage,
-                   "max_negative_groups_per_owner",
-                   20000);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxOpsBeforeMaintenance,
-                   &kInterestGroupStorage,
-                   "max_ops_before_maintenance",
-                   1000);
 
 // Allow process isolation of iframes with the 'sandbox' attribute set. Whether
 // or not such an iframe will be isolated may depend on options specified with
@@ -1256,6 +1200,15 @@ BASE_FEATURE(kAttributionReportingInBrowserMigration,
              "AttributionReportingInBrowserMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLimitLayerMergeDistance,
+             "LimitLayerMergeDistance",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kLayerMergeDistanceLimit,
+                   &kLimitLayerMergeDistance,
+                   "limit",
+                   0x10000000);
+
 BASE_FEATURE(kLCPCriticalPathPredictor,
              "LCPCriticalPathPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1277,6 +1230,12 @@ BASE_FEATURE_PARAM(bool,
                    &kLCPCriticalPathPredictor,
                    "lcpp_adjust_image_load_priority_override_first_n_boost",
                    false);
+
+BASE_FEATURE_PARAM(double,
+                   kLcppAdjustImageLoadPriorityConfidenceThreshold,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_adjust_image_load_priority_confidence_threshold",
+                   0);
 
 const base::FeatureParam<LcppRecordedLcpElementTypes>::Option
     lcpp_recorded_element_types[] = {
@@ -1314,7 +1273,7 @@ BASE_FEATURE_PARAM(int,
                    kLCPCriticalPathPredictorMaxHostsToTrack,
                    &kLCPCriticalPathPredictor,
                    "lcpp_max_hosts_to_track",
-                   1000);
+                   100);
 
 BASE_FEATURE_PARAM(int,
                    kLCPCriticalPathPredictorHistogramSlidingWindowSize,
@@ -1509,7 +1468,7 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If true, do not make a preload request.
 BASE_FEATURE_PARAM(bool,
@@ -1529,7 +1488,7 @@ BASE_FEATURE_ENUM_PARAM(LcppPreloadLazyLoadImageType,
                         kLCPCriticalPathPredictorPreloadLazyLoadImageType,
                         &kLCPPLazyLoadImagePreload,
                         "lcpp_preload_lazy_load_image_type",
-                        LcppPreloadLazyLoadImageType::kNone,
+                        LcppPreloadLazyLoadImageType::kNativeLazyLoading,
                         &lcpp_preload_lazy_load_image);
 
 BASE_FEATURE(kPreloadSystemFonts,
@@ -1565,7 +1524,7 @@ BASE_FEATURE_ENUM_PARAM(LcppMultipleKeyTypes,
                         kLcppMultipleKeyType,
                         &kLCPPMultipleKey,
                         "lcpp_multiple_key_type",
-                        LcppMultipleKeyTypes::kDefault,
+                        LcppMultipleKeyTypes::kLcppKeyStat,
                         &lcpp_multiple_key_types);
 
 BASE_FEATURE_PARAM(int,
@@ -1681,7 +1640,7 @@ BASE_FEATURE(kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
 // (Canvas2DImageChromium is disabled).
 BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
              "LowLatencyCanvas2dImageChromium",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -1791,7 +1750,7 @@ BASE_FEATURE_PARAM(
     bool,
     kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam,
     &kLowPriorityAsyncScriptExecution,
-    "low_pri_async_exec__opt_out_low_fetch_priority_hint",
+    "low_pri_async_exec_opt_out_low_fetch_priority_hint",
     false);
 // kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
 // auto.
@@ -1877,6 +1836,10 @@ BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
 
 BASE_FEATURE(kNoThrottlingVisibleAgent,
              "NoThrottlingVisibleAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNoThrowForCSPBlockedWorker,
+             "NoThrowForCSPBlockedWorker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop,
@@ -2019,9 +1982,11 @@ BASE_FEATURE(kPreloadingViewportHeuristics,
              "PreloadingViewportHeuristics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrerender2InNewTab,
-             "Prerender2InNewTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Firing pagehide events for intended prerender cancellation. See
+// crbug.com/353628449 for more details.
+BASE_FEATURE(kPageHideEventForPrerender2,
+             "PageHideEventForPrerender2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrerender2MainFrameNavigation,
              "Prerender2MainFrameNavigation",
@@ -2040,10 +2005,6 @@ const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
 BASE_FEATURE(kPrerender2EarlyDocumentLifecycleUpdate,
              "Prerender2EarlyDocumentLifecycleUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrerender2NoVarySearch,
-             "Prerender2NoVarySearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrerender2WarmUpCompositor,
              "Prerender2WarmUpCompositor",
@@ -2147,7 +2108,7 @@ BASE_FEATURE_PARAM(bool,
 // kPrivateAggregationApiProtectedAudienceExtensionsEnabled.
 BASE_FEATURE(kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
              "PrivateAggregationApiProtectedAudienceAdditionalExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
@@ -2218,12 +2179,6 @@ BASE_FEATURE_PARAM(std::string,
                    "build_version",
                    "0");
 
-BASE_FEATURE_PARAM(bool,
-                   kAllExceptLegacyWindowsPlatform,
-                   &kReduceUserAgentPlatformOsCpu,
-                   "all_except_legacy_windows_platform",
-                   true);
-
 // Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
 // strong references to resources on memory pressure.
 BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,
@@ -2255,10 +2210,6 @@ BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
              "RenderSizeInScoreAdBrowserSignals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReportFirstFrameTimeAsRenderTime,
-             "ReportFirstFrameTimeAsRenderTime",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kResamplingInputEvents,
              "ResamplingInputEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2270,10 +2221,6 @@ BASE_FEATURE(kResamplingScrollEvents,
 BASE_FEATURE(kResourceFetcherStoresStrongReferences,
              "ResourceFetcherStoresStrongReferences",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
-             "RunTextInputUpdatePostLifecycle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 BASE_FEATURE(kSafelistFTPToRegisterProtocolHandler,
@@ -2337,82 +2284,11 @@ BASE_FEATURE(kSetLowPriorityForBeacon,
              "SetLowPriorityForBeacon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the setTimeout(..., 0) will not clamp to 1ms.
+// If enabled, calling setInterval(..., 0) will not clamp to 1ms.
 // Tracking bug: https://crbug.com/402694.
-BASE_FEATURE(kSetTimeoutWithoutClamp,
-             "SetTimeoutWithoutClamp",
+BASE_FEATURE(kSetIntervalWithoutClamp,
+             "SetIntervalWithoutClamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable the shared storage API. Note that enabling this feature does not
-// automatically expose this API to the web, it only allows the element to be
-// enabled by the runtime enabled feature, for origin trials.
-// https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
-BASE_FEATURE(kSharedStorageAPI,
-             "SharedStorageAPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(size_t,
-                   kSharedStorageURLSelectionOperationInputURLSizeLimit,
-                   &kSharedStorageAPI,
-                   "url_selection_operation_input_url_size_limit",
-                   8);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStoragePageSize,
-                   &kSharedStorageAPI,
-                   "MaxSharedStoragePageSize",
-                   4096);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStorageCacheSize,
-                   &kSharedStorageAPI,
-                   "MaxSharedStorageCacheSize",
-                   1024);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStorageInitTries,
-                   &kSharedStorageAPI,
-                   "MaxSharedStorageInitTries",
-                   2);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStorageIteratorBatchSize,
-                   &kSharedStorageAPI,
-                   "MaxSharedStorageIteratorBatchSize",
-                   100);
-BASE_FEATURE_PARAM(int,
-                   kSharedStorageBitBudget,
-                   &kSharedStorageAPI,
-                   "SharedStorageBitBudget",
-                   12);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageBudgetInterval,
-                   &kSharedStorageAPI,
-                   "SharedStorageBudgetInterval",
-                   base::Hours(24));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageStalePurgeInitialInterval,
-                   &kSharedStorageAPI,
-                   "SharedStorageStalePurgeInitialInterval",
-                   base::Minutes(2));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageStalePurgeRecurringInterval,
-                   &kSharedStorageAPI,
-                   "SharedStorageStalePurgeRecurringInterval",
-                   base::Hours(2));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageStalenessThreshold,
-                   &kSharedStorageAPI,
-                   "SharedStorageStalenessThreshold",
-                   base::Days(30));
-BASE_FEATURE_PARAM(size_t,
-                   kSharedStorageMaxAllowedFencedFrameDepthForSelectURL,
-                   &kSharedStorageAPI,
-                   "SharedStorageMaxAllowedFencedFrameDepthForSelectURL",
-                   1);
-// NOTE: To preserve user privacy, the
-// `kSharedStorageExposeDebugMessageForSettingsStatus` feature param MUST remain
-// false by default.
-BASE_FEATURE_PARAM(bool,
-                   kSharedStorageExposeDebugMessageForSettingsStatus,
-                   &kSharedStorageAPI,
-                   "ExposeDebugMessageForSettingsStatus",
-                   false);
 
 BASE_FEATURE(kSharedStorageWorkletSharedBackingThreadImplementation,
              "SharedStorageWorkletSharedBackingThreadImplementation",
@@ -2420,7 +2296,7 @@ BASE_FEATURE(kSharedStorageWorkletSharedBackingThreadImplementation,
 
 BASE_FEATURE(kSharedStorageCreateWorkletCustomDataOrigin,
              "SharedStorageCreateWorkletCustomDataOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedStorageSelectURLSavedQueries,
              "SharedStorageSelectURLSavedQueries",
@@ -2483,12 +2359,21 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", false};
 
-// If enabled, ServiceWorkerStorage suppresses posting tasks when it is
-// possible. This behavior is expected to improve performance by getting rid of
-// redundant posting tasks.
-BASE_FEATURE(kServiceWorkerStorageSuppressPostTask,
-             "ServiceWorkerStorageSuppressPostTask",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// (crbug.com/352578800): Enables building a sysnthetic response by
+// ServiceWorker. For navigation requests, the pre-learned static response
+// header is returned in parallel with dispatching the network request.
+BASE_FEATURE(kServiceWorkerSyntheticResponse,
+             "ServiceWorkerSyntheticResponse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Define the allowed websites to enable SyntheticResponse. Allowed urls are
+// expected to be passed as a comma separated string.
+// e.g. https://example1.test,https://example2.test/foo?query
+BASE_FEATURE_PARAM(std::string,
+                   kServiceWorkerSyntheticResponseAllowedUrls,
+                   &kServiceWorkerSyntheticResponse,
+                   "allowed_urls",
+                   "");
 
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
@@ -2521,6 +2406,14 @@ BASE_FEATURE_PARAM(bool,
                    kBoostRenderProcessForLoadingPrioritizePrerenderingOnly,
                    &kBoostRenderProcessForLoading,
                    "prioritize_prerendering_only",
+                   false);
+
+// If true is specified, kBoostRenderProcessForLoading feature also prioritizes
+// the renderer process for restore cases.
+BASE_FEATURE_PARAM(bool,
+                   kBoostRenderProcessForLoadingPrioritizeRestore,
+                   &kBoostRenderProcessForLoading,
+                   "prioritize_restore",
                    false);
 
 // Freeze scheduler task queues in background after allowed grace time.
@@ -2557,6 +2450,12 @@ BASE_FEATURE(kThreadedBodyLoader,
 BASE_FEATURE(kThreadedPreloadScanner,
              "ThreadedPreloadScanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kThrottleFrameRateOnInitialization,
+                   &features::kRenderBlockingFullFrameRate,
+                   "throttle-frame-rate-on-initialization",
+                   false);
 
 // Enable throttling of fetch() requests from service workers in the
 // installing state.  The limit of 3 was chosen to match the limit
@@ -2598,10 +2497,6 @@ BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
-             "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Changes behavior of User-Agent Client Hints to send blank headers when the
 // User-Agent string is overridden, instead of disabling the headers altogether.
 BASE_FEATURE(kUACHOverrideBlank,
@@ -2616,26 +2511,15 @@ BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
              "kEmulateLoadStartedForInspectorOncePerResource",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics,
-             "BlinkSchedulerDiscreteInputMatchesResponsivenessMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
              "ThreadedScrollPreventRenderingStarvation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the usage of unload handlers causes a blocklisted reason for
 // BFCache. The purpose is to capture their source location.
 BASE_FEATURE(kUnloadBlocklisted,
              "UnloadBlocklisted",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether to use 'TexImage2D' instead of 'TexStorage2DEXT' when creating a
-// staging texture for |DrawingBuffer|. This is a killswitch; remove when
-// launched.
-BASE_FEATURE(kUseImageInsteadOfStorageForStagingBuffer,
-             "UseImageInsteadOfStorageForStagingBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
 // heuristic where images occupying the full viewport are ignored.
@@ -2799,11 +2683,6 @@ BASE_FEATURE(kWebRtcUseMinMaxVEADimensions,
 // Allow access to WebSQL APIs.
 BASE_FEATURE(kWebSQLAccess, "kWebSQLAccess", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow access to WebSQL on Android WebView.
-BASE_FEATURE(kWebSQLWebViewAccess,
-             "kWebSQLWebViewAccess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for https://crbug.com/338955051.
 BASE_FEATURE(kWebUSBTransferSizeLimit,
              "WebUSBTransferSizeLimit",
@@ -2852,8 +2731,8 @@ bool IsParkableImagesToDiskEnabled() {
   return base::FeatureList::IsEnabled(kParkableImagesToDisk);
 }
 
-bool IsSetTimeoutWithoutClampEnabled() {
-  return base::FeatureList::IsEnabled(features::kSetTimeoutWithoutClamp);
+bool IsSetIntervalWithoutClampEnabled() {
+  return base::FeatureList::IsEnabled(features::kSetIntervalWithoutClamp);
 }
 
 bool IsUnloadBlocklisted() {

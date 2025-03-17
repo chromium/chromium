@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -34,7 +35,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -76,6 +76,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/os_registrations_table.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -557,11 +558,12 @@ AttributionStorageSql::AttributionStorageSql(
     : path_to_database_(user_data_directory.empty()
                             ? base::FilePath()
                             : DatabasePath(user_data_directory)),
-      db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 32},
+      db_(sql::DatabaseOptions().set_page_size(4096).set_cache_size(32),
           /*tag=*/"Conversions"),
       delegate_(delegate),
       rate_limit_table_(delegate_),
-      aggregatable_debug_rate_limit_table_(delegate_) {
+      aggregatable_debug_rate_limit_table_(delegate_),
+      os_registrations_table_(delegate_) {
   DCHECK(delegate_);
 }
 
@@ -1010,7 +1012,7 @@ void SelectScopes(ScopeDataMap scope_datas,
     selected.emplace_back(scope_datas.extract(scope_datas.begin()));
   }
 
-  base::ranges::make_heap(selected, cmp);
+  std::ranges::make_heap(selected, cmp);
 
   while (!scope_datas.empty()) {
     auto scope = scope_datas.extract(scope_datas.begin());
@@ -1018,9 +1020,9 @@ void SelectScopes(ScopeDataMap scope_datas,
     if (cmp(scope, selected.front())) {
       // Unfortunately, there is no existing function for replacing the top
       // of the heap, necessitating pop-then-push here.
-      base::ranges::pop_heap(selected, cmp);
+      std::ranges::pop_heap(selected, cmp);
       std::swap(selected.back(), scope);
-      base::ranges::push_heap(selected, cmp);
+      std::ranges::push_heap(selected, cmp);
     }
 
     if (keep_selected) {
@@ -1607,12 +1609,33 @@ bool AttributionStorageSql::AdjustOfflineReportTimes(
 void AttributionStorageSql::ClearDataWithFilter(
     base::Time delete_begin,
     base::Time delete_end,
-    StoragePartition::StorageKeyMatcherFunction filter,
+    absl::variant<StoragePartition::StorageKeyMatcherFunction, url::Origin>
+        filter_or_origin,
     bool delete_rate_limit_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return;
   }
+
+  // The deletion of OS-registration data doesn't need to be atomic with respect
+  // to deletion of web-registration data as they're completely independent.
+  StoragePartition::StorageKeyMatcherFunction filter = absl::visit(
+      base::Overloaded{
+          [&](StoragePartition::StorageKeyMatcherFunction filter_cb) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+            os_registrations_table_.ClearDataForOriginsInRange(
+                &db_, delete_begin, delete_end, filter_cb);
+            return filter_cb;
+          },
+          [&](const url::Origin& origin) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+            os_registrations_table_.ClearDataForRegistrationOrigin(
+                &db_, delete_begin, delete_end, origin);
+            return base::BindRepeating(
+                std::equal_to<blink::StorageKey>(),
+                blink::StorageKey::CreateFirstParty(origin));
+          }},
+      std::move(filter_or_origin));
 
   // Delete the data in a transaction to avoid cases where the source part
   // of a report is deleted without deleting the associated report, or
@@ -1689,6 +1712,10 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return;
   }
+
+  // The deletion of OS-registration data doesn't need to be atomic with respect
+  // to deletion of web-registration data as they're completely independent.
+  os_registrations_table_.ClearAllDataAllTime(&db_);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1808,6 +1835,29 @@ int64_t AttributionStorageSql::CountAggregatableReportsWithDestinationSite(
     return -1;
   }
   return statement.ColumnInt64(0);
+}
+
+int64_t AttributionStorageSql::
+    CountUniqueDailyReportingOriginsPerReportingSiteForSource(
+        const net::SchemefulSite& reporting_site,
+        base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return rate_limit_table_
+      .CountUniqueDailyReportingOriginsPerReportingSiteForSource(
+          &db_, reporting_site, source_time);
+}
+
+int64_t AttributionStorageSql::
+    CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+        const net::SchemefulSite& destination_site,
+        const net::SchemefulSite& reporting_site,
+        base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return rate_limit_table_
+      .CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+          &db_, destination_site, reporting_site, source_time);
 }
 
 std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
@@ -2368,6 +2418,10 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
   }
 
+  if (!os_registrations_table_.CreateTable(&db_)) {
+    return false;
+  }
+
   if (sql::MetaTable meta_table;
       !meta_table.Init(&db_, kCurrentVersionNumber, kCompatibleVersionNumber)) {
     return false;
@@ -2615,6 +2669,7 @@ bool AggregatableAttributionAllowedForBudgetLimit(
 
 bool AttributionStorageSql::AdjustBudgetConsumedForSource(
     StoredSource::Id source_id,
+    bool has_trigger_context_id,
     int additional_budget_consumed,
     const StoredSource::AggregatableNamedBudgets* budgets) {
   DCHECK_GE(additional_budget_consumed, 0);
@@ -2630,12 +2685,13 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
       "remaining_aggregatable_attribution_budget="
       "remaining_aggregatable_attribution_budget-?,"
       "num_aggregatable_attribution_reports="
-      "num_aggregatable_attribution_reports+1 "
+      "num_aggregatable_attribution_reports+? "
       "WHERE source_id=?";
   sql::Statement budget_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
   budget_statement.BindInt64(0, additional_budget_consumed);
-  budget_statement.BindInt64(1, *source_id);
+  budget_statement.BindInt64(1, has_trigger_context_id ? 0 : 1);
+  budget_statement.BindInt64(2, *source_id);
 
   if (!budget_statement.Run() || db_.GetLastChangeCount() != 1) {
     return false;
@@ -2772,6 +2828,7 @@ AttributionStorageSql::StoreAttributionReport(
 CreateReportResult::Aggregatable
 AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
     const StoredSource& source,
+    bool has_trigger_context_id,
     int remaining_aggregatable_attribution_budget,
     int num_aggregatable_attribution_reports,
     std::optional<uint64_t> dedup_key,
@@ -2787,7 +2844,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
   DCHECK(aggregatable_attribution);
 
   if (int max = delegate_->GetMaxAggregatableReportsPerSource();
-      num_aggregatable_attribution_reports >= max) {
+      !has_trigger_context_id && num_aggregatable_attribution_reports >= max) {
     return CreateReportResult::ExcessiveAggregatableReports(max);
   }
 
@@ -2832,7 +2889,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
 
   StoredSource::Id source_id = source.source_id();
   if (!AdjustBudgetConsumedForSource(
-          source_id, budget_required_value,
+          source_id, has_trigger_context_id, budget_required_value,
           named_budget_iter != source_named_budgets.end()
               ? &source_named_budgets
               : nullptr)) {
@@ -2885,6 +2942,8 @@ AttributionStorageSql::GetAllDataKeys() {
   rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
 
   aggregatable_debug_rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
+
+  os_registrations_table_.AppendOsRegistrationDataKeys(&db_, keys);
 
   return keys;
 }
@@ -2978,11 +3037,23 @@ bool AttributionStorageSql::AdjustForAggregatableDebugReport(
   return transaction.Commit();
 }
 
+void AttributionStorageSql::StoreOsRegistrations(
+    const base::flat_set<url::Origin>& origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
+    return;
+  }
+
+  os_registrations_table_.AddOsRegistrations(&db_, origins);
+}
+
 void AttributionStorageSql::SetDelegate(AttributionResolverDelegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate);
   aggregatable_debug_rate_limit_table_.SetDelegate(*delegate);
   rate_limit_table_.SetDelegate(*delegate);
+  os_registrations_table_.SetDelegate(*delegate);
   delegate_ = delegate;
 }
 

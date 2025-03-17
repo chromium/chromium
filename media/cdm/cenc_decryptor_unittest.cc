@@ -83,7 +83,7 @@ TEST(CencDecryptorTest, OneBlock) {
       CreateEncryptedBuffer(encrypted_block, kIv, subsamples);
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, kKey);
   ASSERT_TRUE(decrypted_buffer);
-  EXPECT_EQ(kOneBlock, decrypted_buffer->AsSpan());
+  EXPECT_EQ(kOneBlock, base::span(*decrypted_buffer));
 }
 
 TEST(CencDecryptorTest, ExtraData) {
@@ -123,7 +123,7 @@ TEST(CencDecryptorTest, NoSubsamples) {
       CreateEncryptedBuffer(encrypted_block, kIv, subsamples);
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, kKey);
   ASSERT_TRUE(decrypted_buffer);
-  EXPECT_EQ(kOneBlock, decrypted_buffer->AsSpan());
+  EXPECT_EQ(kOneBlock, base::span(*decrypted_buffer));
 }
 
 TEST(CencDecryptorTest, BadSubsamples) {
@@ -153,7 +153,7 @@ TEST(CencDecryptorTest, InvalidIv) {
       CreateEncryptedBuffer(encrypted_block, kBadIv, subsamples);
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, kKey);
   ASSERT_TRUE(decrypted_buffer);
-  EXPECT_NE(kOneBlock, decrypted_buffer->AsSpan());
+  EXPECT_NE(kOneBlock, base::span(*decrypted_buffer));
 }
 
 TEST(CencDecryptorTest, InvalidKey) {
@@ -170,7 +170,7 @@ TEST(CencDecryptorTest, InvalidKey) {
       CreateEncryptedBuffer(encrypted_block, kIv, subsamples);
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, kBadKey);
   ASSERT_TRUE(decrypted_buffer);
-  EXPECT_NE(kOneBlock, decrypted_buffer->AsSpan());
+  EXPECT_NE(kOneBlock, base::span(*decrypted_buffer));
 }
 
 TEST(CencDecryptorTest, PartialBlock) {
@@ -184,7 +184,7 @@ TEST(CencDecryptorTest, PartialBlock) {
       CreateEncryptedBuffer(encrypted_block, kIv, subsamples);
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, kKey);
   ASSERT_TRUE(decrypted_buffer);
-  EXPECT_EQ(kPartialBlock, decrypted_buffer->AsSpan());
+  EXPECT_EQ(kPartialBlock, base::span(*decrypted_buffer));
 }
 
 TEST(CencDecryptorTest, MultipleSubsamples) {
@@ -202,7 +202,7 @@ TEST(CencDecryptorTest, MultipleSubsamples) {
       CreateEncryptedBuffer(encrypted_block, kIv, subsamples);
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, kKey);
   ASSERT_TRUE(decrypted_buffer);
-  EXPECT_EQ(plaintext, decrypted_buffer->AsSpan());
+  EXPECT_EQ(plaintext, base::span(*decrypted_buffer));
 }
 
 TEST(CencDecryptorTest, MultipleSubsamplesWithClearBytes) {
@@ -230,7 +230,7 @@ TEST(CencDecryptorTest, MultipleSubsamplesWithClearBytes) {
   auto encrypted_buffer = CreateEncryptedBuffer(input_data, kIv, subsamples);
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, kKey);
   ASSERT_TRUE(decrypted_buffer);
-  EXPECT_EQ(expected_result, decrypted_buffer->AsSpan());
+  EXPECT_EQ(expected_result, base::span(*decrypted_buffer));
 }
 
 }  // namespace media

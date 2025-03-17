@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/hats/hats_service_android.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -247,10 +247,10 @@ void HatsServiceAndroid::RecordSurveyAsShown(std::string trigger_id) {
   // take a survey from the same trigger, regardless of whether the survey was
   // updated.
   auto trigger_survey_config =
-      base::ranges::find(survey_configs_by_triggers_, trigger_id,
-                         [](const SurveyConfigs::value_type& pair) {
-                           return pair.second.trigger_id;
-                         });
+      std::ranges::find(survey_configs_by_triggers_, trigger_id,
+                        [](const SurveyConfigs::value_type& pair) {
+                          return pair.second.trigger_id;
+                        });
 
   CHECK(trigger_survey_config != survey_configs_by_triggers_.end(),
         base::NotFatalUntil::M130);

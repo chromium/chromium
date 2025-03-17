@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
@@ -226,7 +227,7 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
       dm_protocol::kChromeExtensionPolicyType, component_policy_cache_path_,
       cloud_policy_client.get(), schema_registry());
   core()->Connect(std::move(cloud_policy_client));
-  client()->AddObserver(this);
+  observed_cloud_policy_client_.Observe(client());
 
   external_data_manager_->Connect(system_url_loader_factory);
 
@@ -258,7 +259,7 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
     OnCloudPolicyServiceInitializationCompleted();
   } else {
     // Wait for the CloudPolicyStore to finish initializing.
-    service()->AddObserver(this);
+    observed_cloud_policy_service_.Observe(service());
   }
 
   app_install_event_log_uploader_ =
@@ -345,12 +346,8 @@ void UserCloudPolicyManagerAsh::Shutdown() {
   local_files_cleanup_.reset();
   app_install_event_log_uploader_.reset();
   report_scheduler_.reset();
-  if (client()) {
-    client()->RemoveObserver(this);
-  }
-  if (service()) {
-    service()->RemoveObserver(this);
-  }
+  observed_cloud_policy_client_.Reset();
+  observed_cloud_policy_service_.Reset();
   token_fetcher_.reset();
   external_data_manager_->Disconnect();
   CloudPolicyManager::Shutdown();
@@ -368,7 +365,7 @@ bool UserCloudPolicyManagerAsh::IsInitializationComplete(
 }
 
 void UserCloudPolicyManagerAsh::OnCloudPolicyServiceInitializationCompleted() {
-  service()->RemoveObserver(this);
+  observed_cloud_policy_service_.Reset();
 
   // If the CloudPolicyClient isn't registered at this stage then it needs an
   // OAuth token for the initial registration (there's no cached policy).
@@ -501,7 +498,7 @@ void UserCloudPolicyManagerAsh::OnUserProfileLoaded(
     return;
   }
 
-  session_manager::SessionManager::Get()->RemoveObserver(this);
+  observed_session_manager_.Reset();
   StartReportSchedulerIfReady(false /* enable_delayed_creation */);
 }
 
@@ -511,6 +508,8 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 
   em::PolicyData const* const policy_data = cloud_policy_store->policy();
 
+  bool is_managed = cloud_policy_store->is_managed();
+  bool is_affiliated = false;
   if (policy_data) {
     // We have cached policy in the store, so update the various flags to
     // reflect that we have policy.
@@ -524,14 +523,14 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 
     policy::BrowserPolicyConnectorAsh const* const connector =
         g_browser_process->platform_part()->browser_policy_connector_ash();
-    const bool is_affiliated = policy::IsUserAffiliated(
+    is_affiliated = policy::IsUserAffiliated(
         base::flat_set<std::string>(policy_data->user_affiliation_ids().begin(),
                                     policy_data->user_affiliation_ids().end()),
         connector->device_affiliation_ids(), account_id_.GetUserEmail());
-
-    user_manager::UserManager::Get()->SetUserAffiliated(account_id_,
-                                                        is_affiliated);
   }
+
+  user_manager::UserManager::Get()->SetUserPolicyStatus(account_id_, is_managed,
+                                                        is_affiliated);
 }
 
 void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
@@ -550,7 +549,7 @@ void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
     base::CommandLine command_line =
         base::CommandLine(base::CommandLine::NO_PROGRAM);
     command_line.AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
-                                   policy_required ? "true" : "false");
+                                   base::ToString(policy_required));
     base::CommandLine::StringVector flags;
     flags.assign(command_line.argv().begin() + 1, command_line.argv().end());
     DCHECK_EQ(1u, flags.size());
@@ -759,7 +758,7 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
   // doesn't finish, the creation of |report_scheduler_| will be delayed and
   // relies on SessionManagerObserver methods to monitor the progress.
   if (enable_delayed_creation && !primary_user->is_profile_created()) {
-    session_manager::SessionManager::Get()->AddObserver(this);
+    observed_session_manager_.Observe(session_manager::SessionManager::Get());
     VLOG(0) << "Report scheduler is delayed to create because the primary "
                "user profile hasn't been loaded. This is a designed behavior.";
     return;
@@ -847,10 +846,6 @@ UserCloudPolicyManagerAsh::GetReportSchedulerForTesting() {
 // static
 void UserCloudPolicyManagerAsh::EnsureFactoryBuilt() {
   UserCloudPolicyManagerAshNotifierFactory::GetInstance();
-}
-
-std::string_view UserCloudPolicyManagerAsh::name() const {
-  return "UserCloudPolicyManagerAsh";
 }
 
 }  // namespace policy

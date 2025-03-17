@@ -3,6 +3,8 @@ include_rules = [
   # details.
   "-chrome",
 
+  "+chromeos/ash/components/scheduler_config",
+
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
   "+chrome/browser/ash/app_restore",
@@ -26,7 +28,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/scheduled_task_handler",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/scheduler_config",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",

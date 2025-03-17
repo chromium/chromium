@@ -118,8 +118,7 @@ void OffTheRecordProfileIOSIOData::Handle::LazyInitialize() const {
       nullptr, CFNotificationSuspensionBehaviorCoalesce);
 }
 
-std::unique_ptr<
-    ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
+std::unique_ptr<ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
 OffTheRecordProfileIOSIOData::Handle::GetAllContextGetters() {
   std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters(
       new IOSChromeURLRequestContextGetterVector());

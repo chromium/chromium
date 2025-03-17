@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/notreached.h"
+
 namespace remoting::internal {
 
 namespace {
@@ -19,30 +21,16 @@ const std::string& GetEmptyStringRef() {
 }
 }  // namespace
 
-std::string DoNothingProto::GetTypeName() const {
-  return "";
-}
-
 // DoNothingProto
 
-google::protobuf::MessageLite* DoNothingProto::New(
-    google::protobuf::Arena* arena) const {
-  return nullptr;
+const google::protobuf::internal::ClassData* DoNothingProto::GetClassData()
+    const {
+  NOTREACHED();
 }
 
 void DoNothingProto::Clear() {}
 
-bool DoNothingProto::IsInitialized() const {
-  return true;
-}
-
-void DoNothingProto::CheckTypeAndMergeFrom(const MessageLite& other) {}
-
 size_t DoNothingProto::ByteSizeLong() const {
-  return 0;
-}
-
-int DoNothingProto::GetCachedSize() const {
   return 0;
 }
 
@@ -128,10 +116,18 @@ std::unique_ptr<UpdateRemoteAccessHostRequest> GetUpdateRemoteAccessHostRequest(
 // SessionAuthzService helpers
 // ===========================
 
+std::string_view GetRemoteAccessSessionAuthzPath() {
+  return {};
+}
+
+std::string_view GetRemoteSupportSessionAuthzPath() {
+  return {};
+}
+
 // GenerateHostToken
 
-std::string GetGenerateHostTokenRequestPath() {
-  return "";
+std::string_view GetGenerateHostTokenRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<GenerateHostTokenRequest> GetGenerateHostTokenRequest(
@@ -146,8 +142,8 @@ GetGenerateHostTokenResponseStruct(const GenerateHostTokenResponse&) {
 
 // VerifySessionToken
 
-std::string GetVerifySessionTokenRequestPath() {
-  return "";
+std::string_view GetVerifySessionTokenRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<VerifySessionTokenRequest> GetVerifySessionTokenRequest(
@@ -162,8 +158,8 @@ GetVerifySessionTokenResponseStruct(const VerifySessionTokenResponse&) {
 
 // ReauthorizeHost
 
-std::string GetReauthorizeHostRequestPath() {
-  return "";
+std::string_view GetReauthorizeHostRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<ReauthorizeHostRequest> GetReauthorizeHostRequest(
@@ -180,10 +176,18 @@ GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&) {
 // LoggingService helpers
 // ======================
 
+std::string_view GetRemoteAccessLoggingPath() {
+  return {};
+}
+
+std::string_view GetRemoteSupportLoggingPath() {
+  return {};
+}
+
 // ReportSessionDisconnected
 
-std::string GetReportSessionDisconnectedRequestPath() {
-  return "";
+std::string_view GetReportSessionDisconnectedRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<ReportSessionDisconnectedRequest>

@@ -365,9 +365,6 @@ TEST_F(NotificationPermissionReviewServiceTest, ResultWarrantsNewNotification) {
 }
 
 TEST_F(NotificationPermissionReviewServiceTest, UpdateAsync) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kSafetyHub);
-
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
 
@@ -400,9 +397,6 @@ TEST_F(NotificationPermissionReviewServiceTest, UpdateAsync) {
 }
 
 TEST_F(NotificationPermissionReviewServiceTest, LatestResultInSync) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kSafetyHub);
-
   // Create mock notifications before the service is started.
   CreateMockNotificationPermissionsForReview();
 

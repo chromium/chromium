@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           PaymentsWindowUserConsentDialogView::kTopViewId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           NameViewRelative(PaymentsWindowUserConsentDialogView::kTopViewId,
                            payments_user_consent_dialog_root_view,
                            [](views::View* dialog_view) {
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                                   kSuppressedScreenshotError),
           Screenshot(payments_user_consent_dialog_root_view,
                      /*screenshot_name=*/"consent_popup",
-                     /*baseline_cl=*/"5338589"))));
+                     /*baseline_cl=*/"5338589")));
 }
 
 // Ensures the UI can be shown, and verifies that the dialog shown histogram
@@ -120,8 +120,8 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
       InSameContext(
-          Steps(PressButton(views::DialogClientView::kOkButtonElementId),
-                WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId))));
+          PressButton(views::DialogClientView::kOkButtonElementId),
+          WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId)));
 }
 
 // Ensures the UI can be shown, and verifies that accepting the dialog logs to
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kOkButtonElementId),
           WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId),
           Check([this]() {
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                        kPaymentsWindowUserConsentDialogResultVcn3dsHistogramName, /*sample=*/
                        autofill_metrics::PaymentsWindowUserConsentDialogResult::
                            kAcceptButtonClicked) == 1;
-          }))));
+          })));
 }
 
 // Ensures the UI can be shown, and verifies that cancelling the dialog runs the
@@ -158,8 +158,8 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
       InSameContext(
-          Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
-                WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId))));
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId)));
 }
 
 // Ensures the UI can be shown, and verifies that cancelling the dialog logs to
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           views::DialogClientView::kCancelButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kCancelButtonElementId),
           WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId),
           Check([this]() {
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                        kPaymentsWindowUserConsentDialogResultVcn3dsHistogramName, /*sample=*/
                        autofill_metrics::PaymentsWindowUserConsentDialogResult::
                            kCancelButtonClicked) == 1;
-          }))));
+          })));
 }
 
 // Ensures the UI can be shown, and verifies that pressing the escape key on the
@@ -195,12 +195,12 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
       InSameContext(
-          Steps(WithView(PaymentsWindowUserConsentDialogView::kTopViewId,
-                         [](views::View* dialog_view) {
-                           return dialog_view->GetWidget()->CloseWithReason(
-                               views::Widget::ClosedReason::kEscKeyPressed);
-                         }),
-                WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId))));
+          WithView(PaymentsWindowUserConsentDialogView::kTopViewId,
+                   [](views::View* dialog_view) {
+                     return dialog_view->GetWidget()->CloseWithReason(
+                         views::Widget::ClosedReason::kEscKeyPressed);
+                   }),
+          WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId)));
 }
 
 // Ensures the UI can be shown, and verifies that pressing the escape key on the
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           PaymentsWindowUserConsentDialogView::kTopViewId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           WithView(PaymentsWindowUserConsentDialogView::kTopViewId,
                    [](views::View* dialog_view) {
                      return dialog_view->GetWidget()->CloseWithReason(
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                        kPaymentsWindowUserConsentDialogResultVcn3dsHistogramName, /*sample=*/
                        autofill_metrics::PaymentsWindowUserConsentDialogResult::
                            kEscapeKeyPressed) == 1;
-          }))));
+          })));
 }
 
 // Ensures the UI can be shown, and verifies that closing the tab while the
@@ -237,9 +237,9 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           PaymentsWindowUserConsentDialogView::kTopViewId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(Do([this]() {
+      InSameContext(Do([this]() {
         browser()->tab_strip_model()->GetActiveWebContents()->Close();
-      }))));
+      })));
 }
 
 // Ensures the UI can be shown, and verifies that closing the tab while the
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           PaymentsWindowUserConsentDialogView::kTopViewId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           Do([this]() {
             browser()->tab_strip_model()->GetActiveWebContents()->Close();
           }),
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                        kPaymentsWindowUserConsentDialogResultVcn3dsHistogramName, /*sample=*/
                        autofill_metrics::PaymentsWindowUserConsentDialogResult::
                            kTabOrBrowserClosed) == 1;
-          }))));
+          })));
 }
 
 // Ensures the UI can be shown, and verifies that closing the browser while the
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           PaymentsWindowUserConsentDialogView::kTopViewId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(Do([this]() { browser()->window()->Close(); }))));
+      InSameContext(Do([this]() { browser()->window()->Close(); })));
 }
 
 // Ensures the UI can be shown, and verifies that closing the browser while the
@@ -286,14 +286,14 @@ IN_PROC_BROWSER_TEST_F(
           PaymentsWindowUserConsentDialogView::kTopViewId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           Do([this]() { browser()->window()->Close(); }), Check([this]() {
             return histogram_tester_.GetBucketCount(
                        /*name=*/
                        kPaymentsWindowUserConsentDialogResultVcn3dsHistogramName, /*sample=*/
                        autofill_metrics::PaymentsWindowUserConsentDialogResult::
                            kTabOrBrowserClosed) == 1;
-          }))));
+          })));
 }
 
 }  // namespace autofill::payments

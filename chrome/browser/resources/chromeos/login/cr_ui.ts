@@ -12,7 +12,7 @@ import '//resources/js/cr.js';
 
 import {assert} from '//resources/js/assert.js';
 
-import {ApiKeysNoticeElement} from './components/api_keys_notice.js';
+import type {ApiKeysNoticeElement} from './components/api_keys_notice.js';
 import {OobeTypes} from './components/oobe_types.js';
 import {DisplayManager} from './display_manager.js';
 import {loadTimeData} from './i18n_setup.js';

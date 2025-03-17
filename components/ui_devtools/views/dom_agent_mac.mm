@@ -6,8 +6,9 @@
 
 #import <AppKit/AppKit.h>
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "components/ui_devtools/views/widget_element.h"
 #include "ui/views/widget/native_widget_mac.h"
 
@@ -49,7 +50,7 @@ std::vector<UIElement*> DOMAgentMac::CreateChildrenForRoot() {
 
 void DOMAgentMac::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
-  roots_.erase(base::ranges::find(roots_, widget), roots_.end());
+  roots_.erase(std::ranges::find(roots_, widget), roots_.end());
 }
 
 void DOMAgentMac::OnNativeWidgetAdded(views::NativeWidgetMac* native_widget) {

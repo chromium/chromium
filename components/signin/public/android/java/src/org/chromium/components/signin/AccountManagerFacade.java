@@ -12,10 +12,11 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -23,6 +24,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import java.util.List;
 
 /** Interface for {@link AccountManagerFacadeImpl}. */
+@NullMarked
 public interface AccountManagerFacade {
     /** A callback for getAccessToken. */
     interface GetAccessTokenCallback {
@@ -136,7 +138,20 @@ public interface AccountManagerFacade {
      *     one) is ready.
      */
     @MainThread
+    // TODO(crbug.com/355388109): Remove this method following the migration to
+    // `checkIsSubjectToParentalControls`.
     void checkChildAccountStatus(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
+
+    /**
+     * Check whether the account is subject to parental controls.
+     *
+     * @param coreAccountInfo The CoreAccountInfo to check is subject to parental controls.
+     * @param listener The listener is called when the status of the account (whether it is subject
+     *     to parental controls) is ready.
+     */
+    @MainThread
+    void checkIsSubjectToParentalControls(
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
 
     /**
@@ -147,14 +162,14 @@ public interface AccountManagerFacade {
     Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo);
 
     /**
-     * Creates an intent that will ask the user to add a new account to the device. See
-     * {@link AccountManager#addAccount} for details.
-     * @param callback The callback to get the created intent. Will be invoked on the main
-     *         thread. If there is an issue while creating the intent, callback will receive
-     *         null.
+     * Creates an intent that will ask the user to add a new account to the device. See {@link
+     * AccountManager#addAccount} for details.
+     *
+     * @param callback The callback to get the created intent. Will be invoked on the main thread.
+     *     If there is an issue while creating the intent, callback will receive null.
      */
     @AnyThread
-    void createAddAccountIntent(Callback<Intent> callback);
+    void createAddAccountIntent(Callback<@Nullable Intent> callback);
 
     /**
      * Asks the user to enter a new password for an account, updating the saved credentials for the
@@ -174,7 +189,8 @@ public interface AccountManagerFacade {
      *     knowledge of the account's credentials.
      */
     @AnyThread
-    void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback);
+    void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback);
 
     /** Whether fetching the list of accounts from the device eventually succeeded. */
     // TODO(crbug.com/330304719): Handle this with exceptions rather than a boolean.

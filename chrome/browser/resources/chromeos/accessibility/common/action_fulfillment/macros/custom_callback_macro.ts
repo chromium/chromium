@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro, RunMacroResult, ToggleDirection} from './macro.js';
-import {MacroName} from './macro_names.js';
+import type {RunMacroResult} from './macro.js';
+import {Macro, ToggleDirection} from './macro.js';
+import type {MacroName} from './macro_names.js';
 
 /** Class that implements a macro that runs the supplied callback. */
 export class CustomCallbackMacro extends Macro {

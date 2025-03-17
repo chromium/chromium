@@ -379,7 +379,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     await waitAfterNextRender(container);
     assertTrue(container.isHelpBubbleShowing());
     const bubble = container.getHelpBubbleForTesting('p1')!;
-    const closeButton = bubble.shadowRoot!.querySelector<HTMLElement>('#close');
+    const closeButton = bubble.shadowRoot.querySelector<HTMLElement>('#close');
     assertTrue(!!closeButton);
     assertEquals(CLOSE_BUTTON_ALT_TEXT, closeButton.getAttribute('aria-label'));
   });
@@ -390,7 +390,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertTrue(container.isHelpBubbleShowing());
     const bubble = container.getHelpBubbleForTesting('p1')!;
     assertEquals(bubble.bodyIconName, defaultParams.bodyIconName);
-    const bodyIcon = bubble.shadowRoot!.querySelector<HTMLElement>('#bodyIcon');
+    const bodyIcon = bubble.shadowRoot.querySelector<HTMLElement>('#bodyIcon');
     assertTrue(!!bodyIcon);
     const ironIcon = bodyIcon.querySelector('cr-icon');
     assertTrue(!!ironIcon);
@@ -406,7 +406,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         const bubble = container.getHelpBubbleForTesting('p1')!;
         assertEquals(bubble.bodyIconName, null);
         const bodyIcon =
-            bubble.shadowRoot!.querySelector<HTMLElement>('#bodyIcon');
+            bubble.shadowRoot.querySelector<HTMLElement>('#bodyIcon');
         assertTrue(!!bodyIcon);
         assertTrue(bodyIcon.hidden);
       });
@@ -631,8 +631,8 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     const bubble2 = container.getHelpBubbleForTesting('p1');
     assertTrue(!!bubble1);
     assertTrue(!!bubble2);
-    assertEquals(container.$.title, bubble1!.getAnchorElement());
-    assertEquals(container.$.p1, bubble2!.getAnchorElement());
+    assertEquals(container.$.title, bubble1.getAnchorElement());
+    assertEquals(container.$.p1, bubble2.getAnchorElement());
     assertTrue(isVisible(bubble1));
     assertTrue(isVisible(bubble2));
   });
@@ -829,7 +829,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#bulletList');
     assertTrue(listItemBubble !== null, 'help bubble is registered');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown');
 
     // re-register when help bubble is not showing
@@ -839,17 +839,17 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         listItemBubble !== null,
         'help bubble can be re-registered with same nativeId');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown after re-registering');
 
     // un-register directly when help bubble is not showing
     container.unregisterHelpBubble(LIST_ITEM_NATIVE_ID);
     assertFalse(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble cannot be shown');
     // unregisterHelpBubble clears out the nativeIds
     assertThrows(
-        () => container.showHelpBubble(listItemBubble!, defaultParams),
+        () => container.showHelpBubble(listItemBubble, defaultParams),
         'Can\'t show help bubble',
     );
   });
@@ -859,12 +859,12 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#list-item');
     assertTrue(listItemBubble !== null, 'help bubble is registered');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown');
     assertFalse(container.isHelpBubbleShowing());
     assertFalse(container.isHelpBubbleShowingForTesting('list-item'));
 
-    container.showHelpBubble(listItemBubble!, defaultParams);
+    container.showHelpBubble(listItemBubble, defaultParams);
     assertTrue(container.isHelpBubbleShowing());
     assertTrue(container.isHelpBubbleShowingForTesting('list-item'));
 

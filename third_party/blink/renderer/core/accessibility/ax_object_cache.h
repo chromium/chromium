@@ -266,6 +266,12 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Determine if a serialization is in the process or not.
   virtual bool IsSerializationInFlight() const = 0;
 
+  // Clears the cached fragment data associated with `block_flow` if it exists.
+  virtual void ClearBlockFlowCachedData(const LayoutObject* object) = 0;
+
+  // Gets the node on which this cache considers to have accessibility focus.
+  virtual Node* GetAccessibilityFocus() const = 0;
+
  protected:
   friend class ScopedBlinkAXEventIntent;
   FRIEND_TEST_ALL_PREFIXES(ScopedBlinkAXEventIntentTest, SingleIntent);

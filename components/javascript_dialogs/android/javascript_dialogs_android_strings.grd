@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <grit latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="values-af/javascript_dialogs_android_strings.xml" lang="af" type="android" />
     <output filename="values-am/javascript_dialogs_android_strings.xml" lang="am" type="android" />

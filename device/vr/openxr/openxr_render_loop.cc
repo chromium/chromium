@@ -4,12 +4,12 @@
 
 #include "device/vr/openxr/openxr_render_loop.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -38,11 +38,11 @@ device::mojom::XRRenderInfoPtr GetRenderInfo(
     const device::mojom::XRFrameData& frame_data) {
   device::mojom::XRRenderInfoPtr result = device::mojom::XRRenderInfo::New();
 
-  result->frame_id = frame_data.frame_id;
-  result->mojo_from_viewer = frame_data.mojo_from_viewer.Clone();
+  result->frame_id = frame_data.render_info->frame_id;
+  result->mojo_from_viewer = frame_data.render_info->mojo_from_viewer.Clone();
 
-  for (size_t i = 0; i < frame_data.views.size(); i++) {
-    result->views.push_back(frame_data.views[i]->Clone());
+  for (size_t i = 0; i < frame_data.render_info->views.size(); i++) {
+    result->views.push_back(frame_data.render_info->views[i]->Clone());
   }
 
   return result;
@@ -193,9 +193,10 @@ void OpenXrRenderLoop::GetFrameData(
                                 base::Unretained(this), std::move(callback),
                                 std::move(pending_frame_->frame_data_)));
 
-  next_frame_id_ += 1;
-  if (next_frame_id_ < 0) {
+  if (next_frame_id_ == std::numeric_limits<int16_t>::max()) {
     next_frame_id_ = 0;
+  } else {
+    next_frame_id_++;
   }
 }
 
@@ -351,8 +352,6 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   // Only set boolean options that we need. Default is false, and we should be
   // able to safely ignore ones that our implementation doesn't care about.
   transport_options->wait_for_transfer_notification = true;
-
-  LogViewerType(VrViewerType::OPENXR_UNKNOWN);
 
   auto submit_frame_sink = device::mojom::XRPresentationConnection::New();
   submit_frame_sink->provider =
@@ -621,16 +620,27 @@ void OpenXrRenderLoop::SendFrameData(
 
   // We have posted a message to allow other calls to get through, and now state
   // may have changed.  WebXR may not be presenting any more, or may be hidden.
-  std::move(callback).Run(is_presenting_ && is_visible &&
-                                  (webxr_visible_ || on_webxr_submitted_)
-                              ? std::move(frame_data)
-                              : mojom::XRFrameData::New());
+  if (is_presenting_ && is_visible && (webxr_visible_ || on_webxr_submitted_)) {
+    DCHECK(frame_data->render_info);
+    std::move(callback).Run(std::move(frame_data));
+  } else {
+    auto empty_frame_data = mojom::XRFrameData::New();
+    empty_frame_data->render_info = mojom::XRRenderInfo::New();
+    if (frame_data->render_info) {
+      // Ensure that the frame_id is accurate, even if the rest of the frame
+      // data has been suppressed.
+      empty_frame_data->render_info->frame_id =
+          frame_data->render_info->frame_id;
+    }
+    std::move(callback).Run(std::move(empty_frame_data));
+  }
 }
 
 mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   DVLOG(3) << __func__;
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
-  frame_data->frame_id = next_frame_id_;
+  frame_data->render_info = mojom::XRRenderInfo::New();
+  frame_data->render_info->frame_id = next_frame_id_;
 
   if (XR_FAILED(openxr_->BeginFrame())) {
     return frame_data;
@@ -647,20 +657,24 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   const XrTime frame_time = openxr_->GetPredictedDisplayTime();
 
   frame_data->time_delta = base::Nanoseconds(frame_time);
-  frame_data->views = openxr_->GetViews();
+  frame_data->render_info->views = openxr_->GetViews();
   frame_data->input_state = openxr_->GetInputState();
 
-  frame_data->mojo_from_viewer = openxr_->GetViewerPose();
+  frame_data->render_info->mojo_from_viewer = openxr_->GetViewerPose();
 
   UpdateStageParameters();
+
+  std::optional<gfx::Transform> local_from_floor = openxr_->GetLocalFromFloor();
+  if (local_from_floor) {
+    frame_data->mojo_from_floor = mojo_from_local() * *local_from_floor;
+  }
 
   if (openxr_->HasFrameState()) {
     OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
 
     if (anchor_manager) {
       frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
-          openxr_.get(), current_stage_parameters_,
-          frame_data->input_state.value(), frame_time);
+          openxr_.get(), frame_data->input_state.value(), frame_time);
     }
 
     OpenXrLightEstimator* light_estimator = openxr_->GetLightEstimator();
@@ -674,11 +688,13 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
       openxr_->GetSceneUnderstandingManager();
 
-  if (scene_understanding_manager && frame_data->mojo_from_viewer->position &&
-      frame_data->mojo_from_viewer->orientation) {
+  if (scene_understanding_manager &&
+      frame_data->render_info->mojo_from_viewer->position &&
+      frame_data->render_info->mojo_from_viewer->orientation) {
     scene_understanding_manager->OnFrameUpdate(frame_time);
-    device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
-                                  *frame_data->mojo_from_viewer->orientation);
+    device::Pose mojo_from_viewer(
+        *frame_data->render_info->mojo_from_viewer->position,
+        *frame_data->render_info->mojo_from_viewer->orientation);
     // Get results for hit test subscriptions.
     frame_data->hit_test_subscription_results =
         scene_understanding_manager->GetHitTestResults(
@@ -687,7 +703,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   OpenXrDepthSensor* depth_sensor = openxr_->GetDepthSensor();
   if (depth_sensor) {
-    depth_sensor->PopulateDepthData(frame_time, frame_data->views);
+    depth_sensor->PopulateDepthData(frame_time, frame_data->render_info->views);
   }
 
   return frame_data;
@@ -863,12 +879,7 @@ void OpenXrRenderLoop::UpdateStageParameters() {
   if (openxr_->GetStageParameters(stage_bounds, local_from_stage)) {
     mojom::VRStageParametersPtr stage_parameters =
         mojom::VRStageParameters::New();
-    // mojo_from_local is currently identity.
-    gfx::Transform mojo_from_local;
-    // stage_from_floor is identity.
-    gfx::Transform stage_from_floor;
-    stage_parameters->mojo_from_floor =
-        mojo_from_local * local_from_stage * stage_from_floor;
+    stage_parameters->mojo_from_stage = mojo_from_local() * local_from_stage;
     stage_parameters->bounds = std::move(stage_bounds);
     SetStageParameters(std::move(stage_parameters));
   } else {

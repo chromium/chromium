@@ -232,7 +232,8 @@ public class AdaptiveToolbarStatePredictorTest {
             boolean toolbarSettingsToggleEnabled,
             Integer manualOverride,
             Integer segmentationResult) {
-        return new AdaptiveToolbarStatePredictor(mActivity, mProfile, mAndroidPermissionDelegate) {
+        return new AdaptiveToolbarStatePredictor(
+                mActivity, mProfile, mAndroidPermissionDelegate, /* behavior= */ null) {
             @Override
             int readManualOverrideFromPrefs() {
                 return manualOverride;

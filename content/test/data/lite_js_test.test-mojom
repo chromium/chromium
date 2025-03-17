@@ -57,6 +57,11 @@ interface TestMessageTarget {
 
   RequestSubinterface(pending_receiver<Subinterface> receiver,
                       pending_remote<SubinterfaceClient> client);
+
+  // This ensures we properly handle method parameters that have reserved
+  // javascript names when generating js bindings.
+  MethodWithReservedNameParameter(array<int32> arguments)
+      => (array<int32> arguments);
 };
 
 interface Subinterface {

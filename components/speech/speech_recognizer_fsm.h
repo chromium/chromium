@@ -11,6 +11,7 @@
 #include "components/speech/audio_buffer.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_recognition_context.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
 
 namespace speech {
@@ -43,6 +44,7 @@ class SpeechRecognizerFsm {
     EVENT_STOP_CAPTURE,
     EVENT_AUDIO_DATA,
     EVENT_ENGINE_RESULT,
+    EVENT_UPDATE_RECOGNITION_CONTEXT,
     EVENT_ENGINE_ERROR,
     EVENT_AUDIO_ERROR,
     EVENT_MAX_VALUE = EVENT_AUDIO_ERROR
@@ -57,6 +59,7 @@ class SpeechRecognizerFsm {
     media::mojom::AudioDataS16Ptr audio_data;
     scoped_refptr<AudioChunk> audio_chunk;
     std::vector<media::mojom::WebSpeechRecognitionResultPtr> engine_results;
+    media::SpeechRecognitionRecognitionContext recognition_context;
     media::mojom::SpeechRecognitionError engine_error;
   };
 
@@ -85,6 +88,7 @@ class SpeechRecognizerFsm {
   virtual FSMState AbortWithError(const FSMEventArgs& event_args) = 0;
   virtual FSMState Abort(const media::mojom::SpeechRecognitionError& error) = 0;
   virtual FSMState DetectEndOfSpeech(const FSMEventArgs& event_args) = 0;
+  virtual FSMState UpdateRecognitionContext(const FSMEventArgs& event_args) = 0;
   virtual FSMState DoNothing(const FSMEventArgs& event_args) const = 0;
   virtual FSMState NotFeasible(const FSMEventArgs& event_args) = 0;
 

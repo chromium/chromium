@@ -107,7 +107,6 @@ class CORE_EXPORT CoreInitializer {
   // TODO(nverne): remove this and restore to WebDevToolsAgentImpl once that
   // class is a controller/ crbug:731490
   virtual void InitInspectorAgentSession(DevToolsSession*,
-                                         bool,
                                          InspectorDOMAgent*,
                                          InspectedFrames*,
                                          Page*) const = 0;

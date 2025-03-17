@@ -7,7 +7,10 @@
 #include <lib/inspect/component/cpp/component.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
 #include "ui/accessibility/platform/fuchsia/browser_accessibility_fuchsia.h"
 
@@ -142,6 +145,30 @@ void BrowserAccessibilityManagerFuchsia::FireBlinkEvent(
   // it here.
   if (event_type == ax::mojom::Event::kHover)
     OnHitTestResult(action_request_id, node);
+}
+
+void BrowserAccessibilityManagerFuchsia::FireGeneratedEvent(
+    AXEventGenerator::Event event_type,
+    const AXNode* node) {
+  BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
+
+  if (!GetAccessibilityBridge()) {
+    return;
+  }
+
+  switch (event_type) {
+    case AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
+    case AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED: {
+      BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+          ToBrowserAccessibilityFuchsia(GetFromAXNode(node));
+
+      browser_accessibility_fuchsia->OnScrollChanged();
+      break;
+    }
+
+    default:
+      break;
+  }
 }
 
 void BrowserAccessibilityManagerFuchsia::OnHitTestResult(

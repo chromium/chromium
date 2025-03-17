@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -141,11 +142,12 @@ std::optional<FormData> CreateFormDataFromWebForm(
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache,
-    const CallTimerState& timer_state) {
+    const CallTimerState& timer_state,
+    const SynchronousFormCache& form_cache) {
   if (!web_form) {
     return std::nullopt;
   }
-  std::optional<FormData> form_data = form_util::ExtractFormData(
+  std::optional<FormData> form_data = form_cache.GetOrExtractForm(
       web_form.GetDocument(), web_form, field_data_manager, timer_state);
   if (!form_data) {
     return std::nullopt;
@@ -159,8 +161,9 @@ std::optional<FormData> CreateFormDataFromUnownedInputElements(
     const WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    const CallTimerState& timer_state) {
-  std::optional<FormData> form_data = form_util::ExtractFormData(
+    const CallTimerState& timer_state,
+    const SynchronousFormCache& form_cache) {
+  std::optional<FormData> form_data = form_cache.GetOrExtractForm(
       frame.GetDocument(), WebFormElement(), field_data_manager, timer_state);
   if (!form_data) {
     return std::nullopt;

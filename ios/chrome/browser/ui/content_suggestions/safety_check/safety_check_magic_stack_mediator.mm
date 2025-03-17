@@ -114,8 +114,7 @@ int ImpressionsCount(const base::Value::List& impressions,
       _notificationsObserver.delegate = self;
     }
 
-    if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
-            IsHomeCustomizationEnabled() ? _userState : _localState)) {
+    if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState)) {
       if (!_prefObserverBridge) {
         _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
       }
@@ -131,12 +130,14 @@ int ImpressionsCount(const base::Value::List& impressions,
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
           &_prefChangeRegistrar);
+
+      _userPrefChangeRegistrar.Init(userState);
+
       _prefObserverBridge->ObserveChangesForPreference(
           safety_check_prefs::kSafetyCheckInMagicStackDisabledPref,
-          &_prefChangeRegistrar);
+          &_userPrefChangeRegistrar);
 
       if (IsHomeCustomizationEnabled()) {
-        _userPrefChangeRegistrar.Init(userState);
         _prefObserverBridge->ObserveChangesForPreference(
             prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
             &_userPrefChangeRegistrar);
@@ -147,8 +148,7 @@ int ImpressionsCount(const base::Value::List& impressions,
       _safetyCheckState.delegate = self;
 
       if (ShouldHideSafetyCheckModuleIfNoIssues()) {
-        [self updateIssueCount:[_safetyCheckState numberOfIssues]
-               withPrefService:localState];
+        [self updateIssueCount:[_safetyCheckState numberOfIssues]];
       }
 
       _safetyCheckManagerObserver =
@@ -199,8 +199,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 }
 
 - (void)disableModule {
-  safety_check_prefs::DisableSafetyCheckInMagicStack(
-      IsHomeCustomizationEnabled() ? _userState : _localState);
+  safety_check_prefs::DisableSafetyCheckInMagicStack(_userState);
 }
 
 - (void)reset {
@@ -258,12 +257,10 @@ int ImpressionsCount(const base::Value::List& impressions,
   _safetyCheckState.shouldShowSeeMore = [_safetyCheckState numberOfIssues] > 2;
 
   if (ShouldHideSafetyCheckModuleIfNoIssues()) {
-    [self updateIssueCount:[_safetyCheckState numberOfIssues]
-           withPrefService:_localState];
+    [self updateIssueCount:[_safetyCheckState numberOfIssues]];
   }
 
-  if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
-          IsHomeCustomizationEnabled() ? _userState : _localState)) {
+  if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState)) {
     // Safety Check can be disabled by long-pressing the module, so
     // SafetyCheckManager can still be running and returning results even after
     // disabling.
@@ -291,8 +288,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 - (void)profileState:(ProfileState*)profileState
     willTransitionToInitStage:(ProfileInitStage)nextInitStage
                 fromInitStage:(ProfileInitStage)fromInitStage {
-  if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
-          IsHomeCustomizationEnabled() ? _userState : _localState) &&
+  if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState) &&
       nextInitStage == ProfileInitStage::kFinal &&
       profileState.firstSceneHasInitializedUI &&
       _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
@@ -369,7 +365,7 @@ int ImpressionsCount(const base::Value::List& impressions,
     [self runningStateChanged:_safetyCheckState.runningState];
   } else if (preferenceName ==
              safety_check_prefs::kSafetyCheckInMagicStackDisabledPref) {
-    if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
+    if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState)) {
       [self.delegate removeSafetyCheckModule];
     }
   } else if (preferenceName ==
@@ -491,13 +487,11 @@ int ImpressionsCount(const base::Value::List& impressions,
 }
 
 // Persists the current number of Safety Check issues, `issuesCount`, to
-// `localPrefService`.
-- (void)updateIssueCount:(NSUInteger)issuesCount
-         withPrefService:(PrefService*)localPrefService {
-  CHECK(localPrefService);
+// `_userState`.
+- (void)updateIssueCount:(NSUInteger)issuesCount {
   CHECK(ShouldHideSafetyCheckModuleIfNoIssues());
 
-  localPrefService->SetInteger(
+  _userState->SetInteger(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, issuesCount);
 }
 
@@ -507,7 +501,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 
   BOOL isOptedIn = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, "");
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 
   if (isOptedIn) {
     return NO;

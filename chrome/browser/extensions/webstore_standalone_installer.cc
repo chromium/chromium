@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -165,11 +167,11 @@ WebstoreStandaloneInstaller::CreateInstallUI() {
   return std::make_unique<ExtensionInstallPrompt>(GetWebContents());
 }
 
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreStandaloneInstaller::CreateApproval() const {
-  std::unique_ptr<WebstoreInstaller::Approval> approval(
-      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          profile_, id_, manifest_->Clone(), true));
+std::unique_ptr<InstallApproval> WebstoreStandaloneInstaller::CreateApproval()
+    const {
+  std::unique_ptr<InstallApproval> approval(
+      InstallApproval::CreateWithNoInstallPrompt(profile_, id_,
+                                                 manifest_->Clone(), true));
   approval->skip_post_install_ui = !ShouldShowPostInstallUI();
   approval->installing_icon = gfx::ImageSkia::CreateFrom1xBitmap(icon_);
   return approval;
@@ -191,7 +193,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
 
   DCHECK(payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
 
-  std::unique_ptr<WebstoreInstaller::Approval> approval = CreateApproval();
+  std::unique_ptr<InstallApproval> approval = CreateApproval();
 
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
   const Extension* installed_extension =
@@ -200,6 +202,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
     std::string install_message;
     webstore_install::Result install_result = webstore_install::SUCCESS;
 
+    auto* extension_registrar = ExtensionRegistrar::Get(profile_);
     ExtensionService* extension_service =
         ExtensionSystem::Get(profile_)->extension_service();
     if (blocklist_prefs::IsExtensionBlocklisted(
@@ -207,7 +210,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
       // Don't install a blocklisted extension.
       install_result = webstore_install::BLOCKLISTED;
       install_message = webstore_install::kExtensionIsBlocklisted;
-    } else if (!extension_service->IsExtensionEnabled(id_)) {
+    } else if (!extension_registrar->IsExtensionEnabled(id_)) {
       // If the extension is installed but disabled, and not blocklisted,
       // enable it.
       extension_service->EnableExtension(id_);

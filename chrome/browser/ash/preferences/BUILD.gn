@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("preferences") {
   sources = [
@@ -46,10 +46,10 @@ static_library("preferences") {
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/update_engine:proto",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
     "//chromeos/components/disks:prefs",

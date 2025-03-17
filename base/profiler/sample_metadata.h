@@ -174,6 +174,15 @@ BASE_EXPORT void AddProfileMetadata(std::string_view name,
                                     int64_t value,
                                     SampleMetadataScope scope);
 
+// Adds metadata as metadata global to the sampling profile for another thread
+// other than calling thread. Has the effect of applying the metadata to all
+// samples in the profile, even ones collected earlier in time. This is probably
+// not what you want for most use cases; prefer using SampleMetadata /
+// ScopedSampleMetadata / ApplyMetadataToPastSamples instead.
+BASE_EXPORT void AddProfileMetadataForThread(std::string_view name,
+                                             int64_t value,
+                                             PlatformThreadId other_thread);
+
 // Returns the process-global metadata recorder instance used for tracking
 // sampling profiler metadata.
 //

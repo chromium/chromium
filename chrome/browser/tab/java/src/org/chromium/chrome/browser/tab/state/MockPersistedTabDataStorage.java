@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab.state;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -16,8 +18,9 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 /** Mock implementation of {@link PersistedTabDataStorage} for tests */
+@NullMarked
 public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
-    private Semaphore mSemaphore;
+    private @Nullable Semaphore mSemaphore;
     private final Map<String, ByteBuffer> mStorage = new HashMap<>();
 
     @Override
@@ -40,7 +43,7 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     @Override
-    public void restore(int tabId, String tabDataId, Callback<ByteBuffer> callback) {
+    public void restore(int tabId, String tabDataId, Callback<@Nullable ByteBuffer> callback) {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -56,12 +59,12 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
 
     // Unused
     @Override
-    public ByteBuffer restore(int tabId, String tabDataId) {
+    public @Nullable ByteBuffer restore(int tabId, String tabDataId) {
         return null;
     }
 
     @Override
-    public <U extends PersistedTabDataResult> U restore(
+    public <U extends PersistedTabDataResult> @Nullable U restore(
             int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
         assert false : "Restore with maapper currently unused in MockPersistedTabDataStorage";
         return null;

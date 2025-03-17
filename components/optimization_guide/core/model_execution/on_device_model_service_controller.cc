@@ -112,8 +112,10 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     if (!on_device_component_state_manager_) {
       return OnDeviceModelEligibilityReason::kModelNotEligible;
     }
+    optimization_guide::OnDeviceModelStatus on_device_model_status =
+        on_device_component_state_manager_->GetOnDeviceModelStatus();
 
-    switch (on_device_component_state_manager_->GetOnDeviceModelStatus()) {
+    switch (on_device_model_status) {
       case optimization_guide::OnDeviceModelStatus::kNotEligible:
         return OnDeviceModelEligibilityReason::kModelNotEligible;
       case optimization_guide::OnDeviceModelStatus::kInsufficientDiskSpace:
@@ -124,9 +126,13 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
       case optimization_guide::OnDeviceModelStatus::kModelInstalledTooLate:
       case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
       case optimization_guide::OnDeviceModelStatus::kNoOnDeviceFeatureUsed:
-        return OnDeviceModelEligibilityReason::kModelToBeInstalled;
       case optimization_guide::OnDeviceModelStatus::kReady:
         // The model is downloaded but the installation is not completed yet.
+        base::UmaHistogramEnumeration(
+            base::StrCat({"OptimizationGuide.ModelExecution."
+                          "OnDeviceModelToBeInstalledReason.",
+                          GetStringNameForModelExecutionFeature(feature)}),
+            on_device_model_status);
         return OnDeviceModelEligibilityReason::kModelToBeInstalled;
     }
   }
@@ -151,8 +157,6 @@ OnDeviceModelServiceController::CreateSession(
     ModelBasedCapabilityKey feature,
     ExecuteRemoteFn execute_remote_fn,
     base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
-    base::WeakPtr<ModelQualityLogsUploaderService>
-        model_quality_uploader_service,
     const std::optional<SessionConfigParams>& config_params) {
   OnDeviceModelEligibilityReason reason = CanCreateSession(feature);
   CHECK_NE(reason, OnDeviceModelEligibilityReason::kUnknown);
@@ -177,7 +181,7 @@ OnDeviceModelServiceController::CreateSession(
   auto* adaptation_metadata = GetFeatureMetadata(feature);
   CHECK(adaptation_metadata);
 
-  SessionImpl::OnDeviceOptions opts;
+  OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
       feature, weak_ptr_factory_.GetWeakPtr(), model_paths,
       base::OptionalFromPtr(adaptation_metadata->asset_paths()));
@@ -192,11 +196,6 @@ OnDeviceModelServiceController::CreateSession(
   opts.adapter = adaptation_metadata->adapter();
 
   opts.logger = optimization_guide_logger;
-  opts.log_uploader =
-      (config_params && config_params->logging_mode ==
-                            SessionConfigParams::LoggingMode::kAlwaysDisable
-           ? nullptr
-           : model_quality_uploader_service);
 
   return std::make_unique<SessionImpl>(
       feature, std::move(opts), std::move(execute_remote_fn), config_params);
@@ -352,7 +351,8 @@ void OnDeviceModelServiceController::StartValidation() {
 
   MaybeCreateBaseModelRemote(PopulateModelPaths());
   mojo::Remote<on_device_model::mojom::Session> session;
-  base_model_remote_->StartSession(session.BindNewPipeAndPassReceiver());
+  base_model_remote_->StartSession(session.BindNewPipeAndPassReceiver(),
+                                   nullptr);
   model_validator_ = std::make_unique<OnDeviceModelValidator>(
       model_metadata_->validation_config(),
       base::BindOnce(&OnDeviceModelServiceController::FinishValidation,
@@ -445,7 +445,7 @@ OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
     default;
 
-std::unique_ptr<SessionImpl::OnDeviceModelClient>
+std::unique_ptr<OnDeviceOptions::Client>
 OnDeviceModelServiceController::OnDeviceModelClient::Clone() const {
   return std::make_unique<OnDeviceModelServiceController::OnDeviceModelClient>(
       feature_, controller_, model_paths_, adaptation_assets_);
@@ -457,10 +457,11 @@ bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
              OnDeviceModelEligibilityReason::kSuccess;
 }
 
-mojo::Remote<on_device_model::mojom::OnDeviceModel>&
-OnDeviceModelServiceController::OnDeviceModelClient::GetModelRemote() {
-  return controller_->GetOrCreateModelRemote(feature_, model_paths_,
-                                             adaptation_assets_);
+void OnDeviceModelServiceController::OnDeviceModelClient::StartSession(
+    mojo::PendingReceiver<on_device_model::mojom::Session> pending) {
+  controller_
+      ->GetOrCreateModelRemote(feature_, model_paths_, adaptation_assets_)
+      ->StartSession(std::move(pending), nullptr);
 }
 
 void OnDeviceModelServiceController::OnDeviceModelClient::

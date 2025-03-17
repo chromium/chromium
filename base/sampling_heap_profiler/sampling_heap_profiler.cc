@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 
 #include <algorithm>
@@ -72,8 +67,9 @@ using base::allocator::dispatcher::AllocationSubsystem;
 const char* GetAndLeakThreadName() {
   const char* thread_name =
       base::ThreadIdNameManager::GetInstance()->GetNameForCurrentThread();
-  if (thread_name && *thread_name != '\0')
+  if (thread_name && *thread_name != '\0') {
     return thread_name;
+  }
 
   // prctl requires 16 bytes, snprintf requires 19, pthread_getname_np requires
   // 64 on macOS, see PlatformThread::SetName in platform_thread_apple.mm.
@@ -84,25 +80,28 @@ const char* GetAndLeakThreadName() {
   // not be set in cases where the thread started before heap profiling was
   // enabled.
   int err = prctl(PR_GET_NAME, name);
-  if (!err)
+  if (!err) {
     return strdup(name);
+  }
 #elif BUILDFLAG(IS_APPLE)
   int err = pthread_getname_np(pthread_self(), name, kBufferLen);
-  if (err == 0 && *name != '\0')
+  if (err == 0 && *name != '\0') {
     return strdup(name);
+  }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
   // Use tid if we don't have a thread name.
   snprintf(name, sizeof(name), "Thread %lu",
-           static_cast<unsigned long>(base::PlatformThread::CurrentId()));
+           static_cast<unsigned long>(base::PlatformThread::CurrentId().raw()));
   return strdup(name);
 }
 
 const char* UpdateAndGetThreadName(const char* name) {
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
-  if (name)
+  if (name) {
     thread_local_data->thread_name = name;
+  }
   if (!thread_local_data->thread_name) {
     thread_local_data->thread_name = GetAndLeakThreadName();
   }
@@ -156,16 +155,18 @@ uint32_t SamplingHeapProfiler::Start() {
   unwinder_.store(unwinder, std::memory_order_release);
 
   AutoLock lock(start_stop_mutex_);
-  if (!running_sessions_++)
+  if (!running_sessions_++) {
     PoissonAllocationSampler::Get()->AddSamplesObserver(this);
+  }
   return last_sample_ordinal_.load(std::memory_order_acquire);
 }
 
 void SamplingHeapProfiler::Stop() {
   AutoLock lock(start_stop_mutex_);
   DCHECK_GT(running_sessions_, 0);
-  if (!--running_sessions_)
+  if (!--running_sessions_) {
     PoissonAllocationSampler::Get()->RemoveSamplesObserver(this);
+  }
 }
 
 void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval_bytes) {
@@ -258,8 +259,9 @@ void SamplingHeapProfiler::CaptureNativeStack(const char* context,
   if (!context) {
     const auto* tracker =
         trace_event::AllocationContextTracker::GetInstanceForCurrentThread();
-    if (tracker)
+    if (tracker) {
       context = tracker->TaskContext();
+    }
   }
   sample->context = context;
 }
@@ -285,8 +287,9 @@ std::vector<SamplingHeapProfiler::Sample> SamplingHeapProfiler::GetSamples(
   samples.reserve(samples_.size());
   for (auto& it : samples_) {
     Sample& sample = it.second;
-    if (sample.ordinal > profile_id)
+    if (sample.ordinal > profile_id) {
       samples.push_back(sample);
+    }
   }
   return samples;
 }

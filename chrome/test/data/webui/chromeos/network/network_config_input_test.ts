@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/network/network_config_input.js';
 
-import {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
+import type {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';

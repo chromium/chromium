@@ -74,6 +74,12 @@ export interface PaymentsManagerProxy {
   removeVirtualCard(cardId: string): void;
 
   /**
+   * Request the list of pay over time issuers.
+   */
+  getPayOverTimeIssuerList():
+      Promise<chrome.autofillPrivate.PayOverTimeIssuerEntry[]>;
+
+  /**
    * A null response means that there is no platform authenticator.
    */
   isUserVerifyingPlatformAuthenticatorAvailable(): Promise<boolean|null>;
@@ -133,7 +139,7 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
   }
 
   removeCreditCard(guid: string) {
-    chrome.autofillPrivate.removeEntry(guid);
+    chrome.autofillPrivate.removePaymentsEntity(guid);
   }
 
   saveCreditCard(creditCard: chrome.autofillPrivate.CreditCardEntry) {
@@ -145,7 +151,7 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
   }
 
   removeIban(guid: string) {
-    chrome.autofillPrivate.removeEntry(guid);
+    chrome.autofillPrivate.removePaymentsEntity(guid);
   }
 
   migrateCreditCards() {
@@ -166,6 +172,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   removeVirtualCard(serverId: string) {
     chrome.autofillPrivate.removeVirtualCard(serverId);
+  }
+
+  getPayOverTimeIssuerList() {
+    return chrome.autofillPrivate.getPayOverTimeIssuerList();
   }
 
   isUserVerifyingPlatformAuthenticatorAvailable() {

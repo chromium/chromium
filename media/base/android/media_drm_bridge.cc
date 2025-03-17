@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <sys/system_properties.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -25,11 +26,11 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge_client.h"
@@ -189,14 +190,16 @@ KeySystemManager::KeySystemManager() {
         UUID(kClearKeyUuid, kClearKeyUuid + std::size(kClearKeyUuid));
   }
   MediaDrmBridgeClient* client = GetMediaDrmBridgeClient();
-  if (client)
+  if (client) {
     client->AddKeySystemUUIDMappings(&key_system_uuid_map_);
+  }
 }
 
 UUID KeySystemManager::GetUUID(const std::string& key_system) {
   KeySystemUuidMap::iterator it = key_system_uuid_map_.find(key_system);
-  if (it == key_system_uuid_map_.end())
+  if (it == key_system_uuid_map_.end()) {
     return UUID();
+  }
   return it->second;
 }
 
@@ -205,8 +208,9 @@ std::vector<std::string> KeySystemManager::GetPlatformKeySystemNames() {
   for (KeySystemUuidMap::iterator it = key_system_uuid_map_.begin();
        it != key_system_uuid_map_.end(); ++it) {
     // Rule out the key system handled by Chrome explicitly.
-    if (it->first != kWidevineKeySystem)
+    if (it->first != kWidevineKeySystem) {
       key_systems.push_back(it->first);
+    }
   }
   return key_systems;
 }
@@ -245,10 +249,12 @@ bool IsKeySystemSupportedWithTypeImpl(const std::string& key_system,
 
 MediaDrmBridge::SecurityLevel GetSecurityLevelFromString(
     const std::string& security_level_str) {
-  if (0 == security_level_str.compare("L1"))
+  if (0 == security_level_str.compare("L1")) {
     return MediaDrmBridge::SECURITY_LEVEL_1;
-  if (0 == security_level_str.compare("L3"))
+  }
+  if (0 == security_level_str.compare("L3")) {
     return MediaDrmBridge::SECURITY_LEVEL_3;
+  }
   DCHECK(security_level_str.empty());
   return MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
 }
@@ -370,8 +376,9 @@ bool MediaDrmBridge::IsPerApplicationProvisioningSupported() {
   // and thus is cached.
   static int first_api_level = GetFirstApiLevel();
   DVLOG(1) << "first_api_level = " << first_api_level;
-  if (first_api_level >= base::android::SDK_VERSION_OREO)
+  if (first_api_level >= base::android::SDK_VERSION_OREO) {
     return true;
+  }
 
   // If "ro.product.first_api_level" does not match, then check build number.
   DVLOG(1) << "api_level = "
@@ -408,15 +415,17 @@ std::vector<uint8_t> MediaDrmBridge::GetUUID(const std::string& key_system) {
 }
 
 // static
-base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
+MediaDrmBridge::GetVersionResult MediaDrmBridge::GetVersion(
+    const std::string& key_system,
+    MediaDrmBridge::SecurityLevel security_level) {
   auto media_drm_bridge = MediaDrmBridge::CreateWithoutSessionSupport(
-      key_system, /* origin_id= */ "", MediaDrmBridge::SECURITY_LEVEL_DEFAULT,
-      "GetVersion", base::NullCallback());
+      key_system, /* origin_id= */ "", security_level, "GetVersion",
+      base::NullCallback());
   if (!media_drm_bridge.has_value()) {
     DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system
              << ", CreateCdmStatus: "
              << (media::StatusCodeType)media_drm_bridge.code();
-    return base::Version();
+    return base::unexpected(media_drm_bridge.code());
   }
 
   std::string version_str = media_drm_bridge->GetVersionInternal();
@@ -449,10 +458,11 @@ MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateInternal(
   // TODO(crbug.com/41433110): Check that |origin_id| is specified on devices
   // that support it.
 
-  scoped_refptr<MediaDrmBridge> media_drm_bridge(new MediaDrmBridge(
-      scheme_uuid, origin_id, security_level, message, requires_media_crypto,
-      std::move(storage), std::move(create_fetcher_cb), session_message_cb,
-      session_closed_cb, session_keys_change_cb, session_expiration_update_cb));
+  auto media_drm_bridge = base::MakeRefCounted<MediaDrmBridge>(
+      base::PassKey<MediaDrmBridge>(), scheme_uuid, origin_id, security_level,
+      message, requires_media_crypto, std::move(storage),
+      std::move(create_fetcher_cb), session_message_cb, session_closed_cb,
+      session_keys_change_cb, session_expiration_update_cb);
 
   if (!media_drm_bridge->j_media_drm_) {
     DCHECK_NE(media_drm_bridge->last_create_error_,
@@ -474,8 +484,9 @@ MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateWithoutSessionSupport(
   DVLOG(1) << __func__;
 
   UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
-  if (scheme_uuid.empty())
+  if (scheme_uuid.empty()) {
     return CreateCdmTypedStatus::Codes::kUnsupportedKeySystem;
+  }
 
   // When created without session support, MediaCrypto is not needed.
   const bool requires_media_crypto = false;
@@ -685,13 +696,13 @@ bool MediaDrmBridge::IsSecureCodecRequired() {
   // TODO(xhwang): This is specific to Widevine. See http://crbug.com/459400.
   // To fix it, we could call MediaCrypto.requiresSecureDecoderComponent().
   // See http://crbug.com/727918.
-  if (base::ranges::equal(scheme_uuid_, kWidevineUuid)) {
+  if (std::ranges::equal(scheme_uuid_, kWidevineUuid)) {
     return SECURITY_LEVEL_1 == GetSecurityLevel();
   }
 
   // If UUID is ClearKey, we should automatically return false since secure
   // codecs should not be required.
-  if (base::ranges::equal(scheme_uuid_, kClearKeyUuid)) {
+  if (std::ranges::equal(scheme_uuid_, kClearKeyUuid)) {
     return false;
   }
 
@@ -771,8 +782,9 @@ void MediaDrmBridge::SetMediaCryptoReadyCB(
   DCHECK(!media_crypto_ready_cb_);
   media_crypto_ready_cb_ = std::move(media_crypto_ready_cb);
 
-  if (!j_media_crypto_)
+  if (!j_media_crypto_) {
     return;
+  }
 
   std::move(media_crypto_ready_cb_)
       .Run(CreateJavaObjectPtr(j_media_crypto_->obj()),
@@ -993,6 +1005,7 @@ void MediaDrmBridge::OnCreateError(JNIEnv* env, jint j_error_code) {
 // The following are private methods.
 
 MediaDrmBridge::MediaDrmBridge(
+    base::PassKey<MediaDrmBridge>,
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
     SecurityLevel security_level,
@@ -1047,8 +1060,9 @@ MediaDrmBridge::~MediaDrmBridge() {
 
   // After the call to Java_MediaDrmBridge_destroy() Java won't call native
   // methods anymore, this is ensured by MediaDrmBridge.java.
-  if (j_media_drm_)
+  if (j_media_drm_) {
     Java_MediaDrmBridge_destroy(env, j_media_drm_);
+  }
 
   if (media_crypto_ready_cb_) {
     std::move(media_crypto_ready_cb_).Run(CreateJavaObjectPtr(nullptr), false);
@@ -1093,8 +1107,9 @@ void MediaDrmBridge::NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto) {
   UMA_HISTOGRAM_BOOLEAN("Media.EME.MediaCryptoAvailable",
                         !j_media_crypto_->is_null());
 
-  if (!media_crypto_ready_cb_)
+  if (!media_crypto_ready_cb_) {
     return;
+  }
 
   // We have to use scoped_ptr to pass ScopedJavaGlobalRef with a callback.
   std::move(media_crypto_ready_cb_)
@@ -1124,8 +1139,9 @@ void MediaDrmBridge::ProcessProvisionResponse(bool success,
   DCHECK(provision_fetcher_) << "No provision request pending.";
   provision_fetcher_.reset();
 
-  if (!success)
+  if (!success) {
     VLOG(1) << "Device provision failure: can't get server response";
+  }
 
   JNIEnv* env = AttachCurrentThread();
 

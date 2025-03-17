@@ -20,9 +20,9 @@
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
-#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -228,12 +228,12 @@ TEST_F(WebNNTensorImplBackendTest, CreateTensorImplTest) {
 
   ASSERT_TRUE(webnn_context_remote.is_bound());
 
-  EXPECT_TRUE(CreateWebNNTensor(
-                  webnn_context_remote,
-                  mojom::TensorInfo::New(
-                      *OperandDescriptor::Create(OperandDataType::kFloat32,
-                                                 std::array<uint32_t, 2>{3, 4}),
-                      MLTensorUsage()))
+  EXPECT_TRUE(CreateWebNNTensor(webnn_context_remote,
+                                mojom::TensorInfo::New(
+                                    OperandDescriptor::UnsafeCreateForTesting(
+                                        OperandDataType::kFloat32,
+                                        std::array<uint32_t, 2>{3, 4}),
+                                    MLTensorUsage()))
                   .has_value());
 
   webnn_context_remote.FlushForTesting();
@@ -257,8 +257,8 @@ TEST_F(WebNNTensorImplBackendTest, CreateTensorImplManyTest) {
   }
 
   const auto tensor_info = mojom::TensorInfo::New(
-      *OperandDescriptor::Create(OperandDataType::kInt32,
-                                 std::array<uint32_t, 2>{4, 3}),
+      OperandDescriptor::UnsafeCreateForTesting(OperandDataType::kInt32,
+                                                std::array<uint32_t, 2>{4, 3}),
       MLTensorUsage());
 
   EXPECT_TRUE(CreateWebNNTensor(webnn_context_remote, tensor_info->Clone())
@@ -269,6 +269,43 @@ TEST_F(WebNNTensorImplBackendTest, CreateTensorImplManyTest) {
 
   webnn_context_remote.FlushForTesting();
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
+}
+
+// Test creating a WebNNTensor larger than tensor byte length limit.
+// The test is failing on android x86 builds: https://crbug.com/390358145.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_CreateTooLargeTensorTest DISABLED_CreateTooLargeTensorTest
+#else
+#define MAYBE_CreateTooLargeTensorTest CreateTooLargeTensorTest
+#endif  // #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+TEST_F(WebNNTensorImplBackendTest, MAYBE_CreateTooLargeTensorTest) {
+  const std::array<uint32_t, 3> large_shape{std::numeric_limits<int32_t>::max(),
+                                            2, 2};
+
+  BadMessageTestHelper bad_message_helper;
+
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
+  base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
+      context_result = CreateWebNNContext();
+  if (!context_result.has_value() &&
+      context_result.error() == mojom::Error::Code::kNotSupportedError) {
+    GTEST_SKIP() << "WebNN not supported on this platform.";
+  } else {
+    webnn_context_remote =
+        std::move(context_result.value().webnn_context_remote);
+  }
+
+  // The callback will not be called when the tensor is invalid.
+  mojom::WebNNContext::CreateTensorCallback create_tensor_callback =
+      base::BindOnce([](mojom::CreateTensorResultPtr create_tensor_result) {});
+  webnn_context_remote->CreateTensor(
+      mojom::TensorInfo::New(OperandDescriptor::UnsafeCreateForTesting(
+                                 OperandDataType::kUint8, large_shape),
+                             MLTensorUsage{MLTensorUsageFlags::kWrite}),
+      std::move(create_tensor_callback));
+
+  webnn_context_remote.FlushForTesting();
+  EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidTensor);
 }
 
 // TODO(https://crbug.com/40278771): Test the tensor gets destroyed.
@@ -292,8 +329,8 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTest) {
       CreateWebNNTensor(
           webnn_context_remote,
           mojom::TensorInfo::New(
-              *OperandDescriptor::Create(OperandDataType::kUint8,
-                                         std::array<uint32_t, 2>{2, 2}),
+              OperandDescriptor::UnsafeCreateForTesting(
+                  OperandDataType::kUint8, std::array<uint32_t, 2>{2, 2}),
               MLTensorUsage{MLTensorUsageFlags::kWrite,
                             MLTensorUsageFlags::kRead}));
   if (tensor_result.has_value()) {
@@ -336,8 +373,8 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTooLargeTest) {
       CreateWebNNTensor(
           webnn_context_remote,
           mojom::TensorInfo::New(
-              *OperandDescriptor::Create(OperandDataType::kUint8,
-                                         std::array<uint32_t, 2>{2, 2}),
+              OperandDescriptor::UnsafeCreateForTesting(
+                  OperandDataType::kUint8, std::array<uint32_t, 2>{2, 2}),
               MLTensorUsage{MLTensorUsageFlags::kWrite}));
   if (tensor_result.has_value()) {
     webnn_tensor_remote = std::move(tensor_result.value().webnn_tensor_remote);

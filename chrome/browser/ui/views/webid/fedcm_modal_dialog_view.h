@@ -14,6 +14,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
+namespace webid {
+
 // A dialog allowing the user to complete a flow (e.g. signing in to an identity
 // provider) prompted by FedCM.
 // TODO(crbug.com/40263254): Rename modal dialog to pop-up window.
@@ -128,5 +130,7 @@ class FedCmModalDialogView : public content::WebContentsObserver {
 
   base::WeakPtrFactory<FedCmModalDialogView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_MODAL_DIALOG_VIEW_H_

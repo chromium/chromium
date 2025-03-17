@@ -8,20 +8,19 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/variations_switches.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/u2f/u2f_client.h"  // nogncheck
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/u2f/u2f_client.h"
 #endif
 
 namespace {
@@ -64,7 +63,7 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // ChromeBrowserMainExtraPartsMetrics::RecordMetrics() requires a U2FClient,
     // which would ordinarily have been set up by browser DBus initialization.
     chromeos::U2FClient::InitializeFake();
@@ -72,7 +71,7 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     task_environment_.RunUntilIdle();
     chromeos::U2FClient::Shutdown();
 #endif

@@ -20,32 +20,8 @@ proto_library("key_pinning_proto") {
   ]
 }
 
-proto_library("server_certificate_database_proto") {
-  sources = [ "server_certificate_database.proto" ]
-}
-
 if (is_android) {
   java_cpp_enum("secure_dns_management_mode_generated_enum") {
     sources = [ "secure_dns_config.h" ]
-  }
-}
-
-if (chrome_root_store_cert_management_ui || enable_webui_certificate_viewer) {
-  static_library("server_certificate_database_test_support") {
-    testonly = true
-
-    sources = [
-      "server_certificate_database_test_util.cc",
-      "server_certificate_database_test_util.h",
-    ]
-
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//crypto",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-    public_deps = [ "//chrome/browser" ]
   }
 }

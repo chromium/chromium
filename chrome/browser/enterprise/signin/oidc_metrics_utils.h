@@ -44,7 +44,8 @@ enum class OidcInterceptionResult {
   kFailedToRegisterProfile = 4,
   kInvalidProfile = 5,
   kRegistrationTimeout = 6,
-  kMaxValue = kRegistrationTimeout,
+  kBrowserSigninDisabled = 7,
+  kMaxValue = kBrowserSigninDisabled,
 };
 
 // Outcomes of the OIDC profile enrolllment flow after profile registration.

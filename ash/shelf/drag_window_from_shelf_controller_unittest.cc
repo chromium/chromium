@@ -1766,4 +1766,28 @@ TEST_F(FloatDragWindowFromShelfControllerTest,
   EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 }
 
+TEST_F(FloatDragWindowFromShelfControllerTest,
+       DragFloatedWindowWithTransientChildWindow) {
+  // Create one maximized, one floated window and one child of the floated
+  // window.
+  auto maximized_window = CreateTestWindow();
+  auto floated_window = CreateFloatedWindow();
+  auto transient_child_window = CreateTransientModalChildWindow(
+      floated_window.get(), gfx::Rect(0, 20, 1366, 728));
+  wm::TransientWindowManager::GetOrCreate(transient_child_window.get())
+      ->set_parent_controls_visibility(true);
+  wm::ActivateWindow(floated_window.get());
+
+  // Try to drag the maximized window from shelf.
+  // This should keep the floated window visible.
+  StartDrag(maximized_window.get(), GetShelfBounds().CenterPoint());
+  Drag(gfx::Point(0, 200), 1.f, 1.f);
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+  EndDrag(gfx::Point(0, 200), /*velocity_y=*/std::nullopt);
+
+  // The transient child of the floated window is visible.
+  EXPECT_TRUE(transient_child_window->IsVisible());
+}
+
 }  // namespace ash

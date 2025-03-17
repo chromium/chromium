@@ -105,4 +105,25 @@ for (var i in contexts) {
   tests.push(makeCreateTest("normal", [ contexts[i] ]));
 }
 
+// Add tests for various errors when using promise based calls. Note: since
+// promise based API signatures are only exposed in MV3, we only add these for
+// the service worker tests.
+if (inServiceWorker) {
+  tests.push(
+      async function updateWithUnusedId() {
+        await chrome.test.assertPromiseRejects(
+            chrome.contextMenus.update('unused-id', {title: 'Non-existing'}),
+            'Error: Cannot find menu item with id unused-id');
+        chrome.test.succeed();
+      },
+
+      async function removeWithUnusedId() {
+        await chrome.test.assertPromiseRejects(
+            chrome.contextMenus.remove('unused-id'),
+            'Error: Cannot find menu item with id unused-id');
+        chrome.test.succeed();
+      },
+  );
+}
+
 chrome.test.runTests(tests);

@@ -9,8 +9,6 @@
 #ifndef CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 #define CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 
-#include <windows.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -26,6 +24,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
 
 class RegistryEntry;

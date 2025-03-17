@@ -217,8 +217,8 @@ public class CreatorCoordinatorTest {
         ButtonCompat followingButton =
                 creatorProfileView.findViewById(R.id.creator_following_button);
 
-        assertEquals(followButton.getVisibility(), View.GONE);
-        assertEquals(followingButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, followButton.getVisibility());
+        assertEquals(View.VISIBLE, followingButton.getVisibility());
     }
 
     @Test
@@ -295,10 +295,10 @@ public class CreatorCoordinatorTest {
         PropertyModel creatorModel = creatorCoordinator.getCreatorModel();
         View creatorView = creatorCoordinator.getView();
         FrameLayout mButtonsContainer = creatorView.findViewById(R.id.creator_all_buttons_toolbar);
-        assertEquals(mButtonsContainer.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mButtonsContainer.getVisibility());
 
         creatorModel.set(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY, true);
-        assertEquals(mButtonsContainer.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mButtonsContainer.getVisibility());
     }
 
     @Test
@@ -313,12 +313,12 @@ public class CreatorCoordinatorTest {
                 creatorProfileView.findViewById(R.id.creator_following_button);
 
         creatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, false);
-        assertEquals(followButton.getVisibility(), View.VISIBLE);
-        assertEquals(followingButton.getVisibility(), View.GONE);
+        assertEquals(View.VISIBLE, followButton.getVisibility());
+        assertEquals(View.GONE, followingButton.getVisibility());
 
         creatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
-        assertEquals(followButton.getVisibility(), View.GONE);
-        assertEquals(followingButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, followButton.getVisibility());
+        assertEquals(View.VISIBLE, followingButton.getVisibility());
     }
 
     @Test
@@ -346,7 +346,7 @@ public class CreatorCoordinatorTest {
                 newCreatorCoordinator(
                         DEFAULT_URL, mWebFeedIdDefault, mEntryPointDefault, mFollowingDefault);
         ViewGroup creatorViewGroup = creatorCoordinator.getView();
-        assertEquals(creatorViewGroup.getChildCount(), 2);
+        assertEquals(2, creatorViewGroup.getChildCount());
         View contentPreviewsBottomSheet =
                 creatorViewGroup.findViewById(R.id.creator_content_preview_bottom_sheet);
         assertNotNull(

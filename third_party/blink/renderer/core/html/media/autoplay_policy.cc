@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 
 #include "build/build_config.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -93,7 +93,7 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
 
   bool permissions_policy_enabled =
       document.GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kAutoplay);
+          network::mojom::PermissionsPolicyFeature::kAutoplay);
 
   for (Frame* frame = document.GetFrame(); frame;
        frame = frame->Tree().Parent()) {
@@ -348,7 +348,7 @@ bool AutoplayPolicy::IsGestureNeededForPlayback() const {
 bool AutoplayPolicy::CanPlayWhileHidden() const {
   return element_->GetExecutionContext() &&
          element_->GetExecutionContext()->IsFeatureEnabled(
-             mojom::blink::PermissionsPolicyFeature::
+             network::mojom::PermissionsPolicyFeature::
                  kMediaPlaybackWhileNotVisible);
 }
 
@@ -435,7 +435,7 @@ void AutoplayPolicy::MaybeSetAutoplayInitiated() {
   bool permissions_policy_enabled =
       element_->GetExecutionContext() &&
       element_->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kAutoplay);
+          network::mojom::PermissionsPolicyFeature::kAutoplay);
 
   for (Frame* frame = element_->GetDocument().GetFrame(); frame;
        frame = frame->Tree().Parent()) {

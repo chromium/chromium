@@ -322,7 +322,7 @@ void ClickView(const views::View* view) {
 // If `wait_for_ui` is true, wait for the callback from the model to update the
 // UI.
 void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
-  if (ash::features::IsSavedDeskUiRevampEnabled()) {
+  if (ash::features::IsForestFeatureEnabled()) {
     // Get the menu option to save the desk as a template and click it.
     views::MenuItemView* menu_item =
         ash::DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
@@ -514,8 +514,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksClientTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        ash::features::kDesksTemplates,
-        chromeos::features::kOverviewSessionInitOptimizations};
+        ash::features::kDesksTemplates};
     std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kDeskTemplateSync};
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -883,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   // Verify that the settings window has been launched on the new desk (desk B).
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
   auto it =
-      base::ranges::find_if(*BrowserList::GetInstance(), [](Browser* browser) {
+      std::ranges::find_if(*BrowserList::GetInstance(), [](Browser* browser) {
         return ash::IsBrowserForSystemWebApp(browser,
                                              ash::SystemWebAppType::SETTINGS);
       });
@@ -1485,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
   // Note that this button needs at least one window to show up. Browser tests
   // have an existing browser window, so no new window needs to be created.
   // TODO(http://b/350771229): Remove `if` when Forest is enabled.
-  if (ash::features::IsSavedDeskUiRevampEnabled()) {
+  if (ash::features::IsForestFeatureEnabled()) {
     ClickSaveDeskAsTemplateButton();
   } else {
     const views::Button* save_desk_as_template_button =
@@ -1731,8 +1730,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
       ash::GetSavedDeskDialogAcceptButton();
   ASSERT_TRUE(dialog_accept_button);
   // MaterialNext uses PillButton instead of dialog buttons.
-  if (std::string_view(dialog_accept_button->GetClassName()) ==
-      std::string_view(ash::PillButton::kViewClassName)) {
+  if (dialog_accept_button->GetClassName() == ash::PillButton::kViewClassName) {
     ClickView(dialog_accept_button);
   } else {
     // Use a key press to accept the dialog instead of a click as
@@ -1898,13 +1896,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   // be [`new_browser_window`, `settings_window`, `help_window`].
   parent = settings_window->parent();
   aura::Window::Windows app_windows = parent->children();
-  app_windows.erase(
-      base::ranges::remove_if(app_windows,
-                              [](aura::Window* w) {
-                                return w->GetProperty(chromeos::kAppTypeKey) ==
-                                       chromeos::AppType::NON_APP;
-                              }),
-      app_windows.end());
+  auto to_remove = std::ranges::remove_if(app_windows, [](aura::Window* w) {
+    return w->GetProperty(chromeos::kAppTypeKey) == chromeos::AppType::NON_APP;
+  });
+  app_windows.erase(to_remove.begin(), to_remove.end());
   ASSERT_THAT(app_windows,
               ElementsAre(new_browser_window, settings_window, help_window));
 
@@ -2993,7 +2988,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   // TODO(http://b/350771229): This test tests clicking the "Save desk for
   // later" button that will not be shown if the feature is enabled. This test
   // will be fixed before the button change is no longer hidden behind the flag.
-  if (ash::features::IsSavedDeskUiRevampEnabled()) {
+  if (ash::features::IsForestFeatureEnabled()) {
     GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
   }
 
@@ -3032,7 +3027,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   // TODO(http://b/350771229): This test tests clicking the "Save desk for
   // later" button that will not be shown if the feature is enabled. This test
   // will be fixed before the button change is no longer hidden behind the flag.
-  if (ash::features::IsSavedDeskUiRevampEnabled()) {
+  if (ash::features::IsForestFeatureEnabled()) {
     GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
   }
 
@@ -3534,11 +3529,11 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   // expect the new window to have an index that is higher than the old.
   const auto& container = new_browser_window_one->parent()->children();
   size_t new_index_one =
-      base::ranges::find(container, new_browser_window_one) - container.begin();
+      std::ranges::find(container, new_browser_window_one) - container.begin();
   size_t new_index_two =
-      base::ranges::find(container, new_browser_window_two) - container.begin();
+      std::ranges::find(container, new_browser_window_two) - container.begin();
   size_t old_index =
-      base::ranges::find(container, old_browser_window) - container.begin();
+      std::ranges::find(container, old_browser_window) - container.begin();
 
   EXPECT_GT(new_index_one, new_index_two);
   EXPECT_GT(new_index_two, old_index);

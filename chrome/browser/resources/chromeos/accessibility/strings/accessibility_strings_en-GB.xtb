@@ -1073,7 +1073,7 @@
 <translation id="8058636807889143711">No next maths expression</translation>
 <translation id="8066678206530322333">Banner</translation>
 <translation id="8076492880354921740">Tabs</translation>
-<translation id="8083115023881784332">No current ChromeVox focus. Press Alt+Shift+L to go to the launcher.</translation>
+<translation id="8083115023881784332">No current ChromeVox focus. Press Alt+Shift+L to go to the Launcher.</translation>
 <translation id="8091452896542422286">Space</translation>
 <translation id="8096975275316362544">Mint Cream</translation>
 <translation id="8098587210054821856">Slate grey</translation>
@@ -1115,6 +1115,7 @@
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8326783648485765113">Lawn green</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pound}other{# pound signs}}</translation>
+<translation id="8351821207686449674">Toggle captions</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Auto-completion inline and list</translation>
 <translation id="8394908167088220973">Media Play/Pause</translation>

@@ -75,7 +75,7 @@ public class TabGroupSyncRemoteToLocalTest {
     public void setUp() {
         setUpUrlConstants();
         mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule);
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
         SyncTestUtil.waitForHistorySyncEnabled();
         mHelper.assertSyncEntityCount(0);
 
@@ -133,6 +133,7 @@ public class TabGroupSyncRemoteToLocalTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "crbug.com/390146523")
     public void testTwoGroups() {
         GroupInfo[] groups =
                 TabGroupSyncIntegrationTestHelper.createGroupInfos(

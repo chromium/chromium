@@ -250,7 +250,8 @@ public class AndroidProtocolHandler {
                     mimeType = AndroidProtocolHandlerJni.get().getWellKnownMimeType(path);
                 }
 
-                if (mimeType != null) {
+                assert mimeType != null;
+                if (!mimeType.isEmpty()) {
                     return mimeType;
                 }
             }

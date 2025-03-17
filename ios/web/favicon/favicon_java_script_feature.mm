@@ -57,8 +57,9 @@ void FaviconJavaScriptFeature::ScriptMessageReceived(
   const GURL url = message.request_url().value();
 
   std::vector<FaviconURL> urls;
-  if (!ExtractFaviconURL(message.body()->GetList(), url, &urls))
+  if (!ExtractFaviconURL(message.body()->GetList(), url, &urls)) {
     return;
+  }
 
   if (!urls.empty()) {
     WebStateImpl::FromWebState(web_state)->OnFaviconUrlUpdated(urls);

@@ -12,6 +12,7 @@ namespace vr {
 // Each draw phase is rendered independently in the order specified below.
 // TODO(crbug.com/41361860): We don't really need all these draw phases as
 // the draw order depends on an element's insert order.
+// LINT.IfChange(DrawPhaseType)
 enum DrawPhase : int {
   // kPhaseNone is to be used for elements that do not draw. Eg, layouts.
   kPhaseNone = 0,
@@ -20,6 +21,7 @@ enum DrawPhase : int {
   kPhaseOverlayForeground,
   kNumDrawPhases = kPhaseOverlayForeground
 };
+// LINT.ThenChange(//chrome/browser/vr/elements/draw_phase.cc:DrawPhaseType)
 
 std::string DrawPhaseToString(DrawPhase phase);
 

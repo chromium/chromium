@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,7 +22,6 @@
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondWebContents);
 
 enum class TestContentSettings {
   kKeyboardLock,
@@ -32,11 +32,13 @@ enum class TestContentSettings {
 }  // namespace
 
 class ExclusiveAccessPermissionPromptInteractiveTest
-    : public InteractiveBrowserTest {
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   ExclusiveAccessPermissionPromptInteractiveTest() {
-    feature_list_.InitAndEnableFeature(
-        permissions::features::kKeyboardAndPointerLockPrompt);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        permissions::features::kKeyboardLockPrompt,
+        {{"use_pepc_ui", base::ToString(GetParam())}});
   }
 
   void SetUp() override {
@@ -85,8 +87,8 @@ class ExclusiveAccessPermissionPromptInteractiveTest
 
   MultiStep PressPromptButton(ui::ElementIdentifier button_identifier) {
     return InAnyContext(
-        Steps(WaitForShow(button_identifier), PressButton(button_identifier),
-              WaitForHide(ExclusiveAccessPermissionPromptView::kMainViewId)));
+        WaitForShow(button_identifier), PressButton(button_identifier),
+        WaitForHide(ExclusiveAccessPermissionPromptView::kMainViewId));
   }
 
   MultiStep CheckOutcome(TestContentSettings test_content_settings,
@@ -121,9 +123,17 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   ui::ElementIdentifier GetButtonViewId(ContentSetting expected_value) {
     switch (expected_value) {
       case CONTENT_SETTING_ALLOW:
-        return ExclusiveAccessPermissionPromptView::kAlwaysAllowId;
+        if (permissions::feature_params::kKeyboardLockPromptUIStyle.Get()) {
+          return ExclusiveAccessPermissionPromptView::kAlwaysAllowId;
+        } else {
+          return PermissionPromptBubbleBaseView::kAllowButtonElementId;
+        }
       case CONTENT_SETTING_BLOCK:
-        return ExclusiveAccessPermissionPromptView::kNeverAllowId;
+        if (permissions::feature_params::kKeyboardLockPromptUIStyle.Get()) {
+          return ExclusiveAccessPermissionPromptView::kNeverAllowId;
+        } else {
+          return PermissionPromptBubbleBaseView::kBlockButtonElementId;
+        }
       default:
         NOTREACHED();
     }
@@ -164,119 +174,18 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExclusiveAccessPermissionPromptInteractiveTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessPermissionPromptInteractiveTest,
                        AllowKeyboardLock) {
   TestPermissionPrompt(TestContentSettings::kKeyboardLock,
                        CONTENT_SETTING_ALLOW);
 }
 
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessPermissionPromptInteractiveTest,
                        BlockKeyboardLock) {
   TestPermissionPrompt(TestContentSettings::kKeyboardLock,
                        CONTENT_SETTING_BLOCK);
-}
-
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
-                       AllowPointerLock) {
-  TestPermissionPrompt(TestContentSettings::kPointerLock,
-                       CONTENT_SETTING_ALLOW);
-}
-
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
-                       BlockPointerLock) {
-  TestPermissionPrompt(TestContentSettings::kPointerLock,
-                       CONTENT_SETTING_BLOCK);
-}
-
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
-                       AllowKeyboardLockAndPointerLock) {
-  TestPermissionPrompt(TestContentSettings::kKeyboardAndPointerLock,
-                       CONTENT_SETTING_ALLOW);
-}
-
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
-                       BlockKeyboardLockAndPointerLock) {
-  TestPermissionPrompt(TestContentSettings::kKeyboardAndPointerLock,
-                       CONTENT_SETTING_BLOCK);
-}
-
-// Validates that the pointer lock request which is initiated from the
-// RenderWidgetHostImpl instance is isolated to the instance which
-// initiated the pointer lock request. For context on a page with iframes
-// each iframe (security context) would have its own RWHI instance.
-// Please note that this requires the iframes to exist in different site
-// instances.
-//
-// TODO(crbug.com/371112529): Add similar tests for pointer lock widget in
-// content.
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
-                       PointerLockIsPerRenderWidgetHost) {
-  // Step 1: Navigate to the custom page with two sandboxed iframes
-  GURL main_url = ui_test_utils::GetTestUrl(
-      base::FilePath(FILE_PATH_LITERAL("pointer_lock")),
-      base::FilePath(FILE_PATH_LITERAL("page_with_two_iframes.html")));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-
-  content::RenderFrameHost* frame1 = nullptr;
-  content::RenderFrameHost* frame2 = nullptr;
-
-  // Step 2: Use ForEachRenderFrameHost to find both iframes
-  // TODO: Use FrameTree to find the iframes we are interested in.
-  web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* frame) {
-    std::string frame_name = frame->GetFrameName();
-    if (frame_name == "frame1") {
-      frame1 = frame;
-    } else if (frame_name == "frame2") {
-      frame2 = frame;
-    }
-  });
-
-  // Ensure that both iframes are found
-  ASSERT_TRUE(frame1);
-  ASSERT_TRUE(frame2);
-
-  RunTestSequence(
-      InstrumentTab(kWebContents), FocusWebContents(kWebContents),
-      ExecuteJsAt(kWebContents, DeepQuery{"#pointer-lock"}, "click"),
-      // Step 5: Verify that the pointer lock prompt is displayed for frame1.
-      CheckPointerLockPrompt(/*displayed=*/true),
-      // Step 6: Interact with the pointer lock prompt (simulate clicking
-      // "Allow").
-      PressPromptButton(GetButtonViewId(CONTENT_SETTING_ALLOW)));
-
-  // Step 6: Ensure that the pointer lock is granted for frame1 and not for
-  // frame2.
-  EXPECT_TRUE(frame1->GetRenderWidgetHost()->GetView()->IsPointerLocked());
-  EXPECT_FALSE(frame2->GetRenderWidgetHost()->GetView()->IsPointerLocked());
-}
-
-// Verifies that we can select the permission prompt after losing focus
-// to another tab and getting focus back.
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
-                       AllowPointerLockAfterLosingFocus) {
-  TestContentSettings test_content_settings = TestContentSettings::kPointerLock;
-
-  RunTestSequence(
-      // Step 1: Verify the pointer lock prompt is not displayed initially.
-      CheckPointerLockPrompt(/*displayed=*/false),
-      // Step 2: Navigate and trigger the pointer lock prompt.
-      ShowPrompt(test_content_settings),
-      // Step 3: Verify that the pointer lock prompt is now displayed.
-      CheckPointerLockPrompt(/*displayed=*/true),
-      // Step 4: Create a new tab and simulate losing focus by switching to it.
-      AddInstrumentedTab(kSecondWebContents, GURL(url::kAboutBlankURL)),
-      // Step 5: Focus the new tab.
-      FocusWebContents(kSecondWebContents),
-      // Step 6: Switch back to the original tab to regain focus.
-      SelectTab(kTabStripElementId, 0), WaitForShow(kWebContents),
-      // Step 7: Interact with the pointer lock prompt (simulate clicking
-      // "Allow").
-      PressPromptButton(GetButtonViewId(CONTENT_SETTING_ALLOW)),
-      // Step 8: Verify the expected outcome (pointer lock should be granted).
-      CheckOutcome(test_content_settings, CONTENT_SETTING_ALLOW));
 }

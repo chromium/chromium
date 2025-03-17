@@ -1339,7 +1339,7 @@ static char* StackString(void** pcs, int n, char* buf, int maxlen,
     } else {
       snprintf(buf + len, count, " %p", pcs[i]);
     }
-    len += strlen(&buf[len]);
+    len += static_cast<int>(strlen(&buf[len]));
   }
   return buf;
 }

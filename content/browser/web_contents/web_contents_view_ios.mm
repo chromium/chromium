@@ -21,6 +21,10 @@
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if BUILDFLAG(IS_IOS_TVOS)
+#include "content/browser/renderer_host/render_widget_host_view_tvos.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -29,6 +33,12 @@ WebContentsViewIOS::RenderWidgetHostViewCreateFunction
     g_create_render_widget_host_view = nullptr;
 
 }  // namespace
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+using RenderWidgetHostViewClass = RenderWidgetHostViewIOS;
+#else
+using RenderWidgetHostViewClass = RenderWidgetHostViewTVOS;
+#endif
 
 // static
 void WebContentsViewIOS::InstallCreateHookForTests(
@@ -63,6 +73,7 @@ WebContentsViewIOS::WebContentsViewIOS(
   [ui_view_->view_ setScrollEnabled:NO];
   [ui_view_->view_ setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                        UIViewAutoresizingFlexibleHeight];
+  ui_view_->view_.backgroundColor = [UIColor lightGrayColor];
 }
 
 WebContentsViewIOS::~WebContentsViewIOS() {}
@@ -187,7 +198,6 @@ void WebContentsViewIOS::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -195,9 +205,9 @@ void WebContentsViewIOS::ShowPopupMenu(
     bool allow_multiple_selection) {
   popup_menu_helper_ = std::make_unique<PopupMenuHelper>(
       this, render_frame_host, std::move(popup_client));
-  popup_menu_helper_->ShowPopupMenu(bounds, item_height, item_font_size,
-                                    selected_item, std::move(menu_items),
-                                    right_aligned, allow_multiple_selection);
+  popup_menu_helper_->ShowPopupMenu(bounds, item_font_size, selected_item,
+                                    std::move(menu_items), right_aligned,
+                                    allow_multiple_selection);
 }
 
 void WebContentsViewIOS::OnMenuClosed() {
@@ -211,12 +221,12 @@ RenderWidgetHostViewBase* WebContentsViewIOS::CreateViewForWidget(
   if (g_create_render_widget_host_view) {
     return g_create_render_widget_host_view(render_widget_host);
   }
-  return new RenderWidgetHostViewIOS(render_widget_host);
+  return new RenderWidgetHostViewClass(render_widget_host);
 }
 
 RenderWidgetHostViewBase* WebContentsViewIOS::CreateViewForChildWidget(
     RenderWidgetHost* render_widget_host) {
-  return new RenderWidgetHostViewIOS(render_widget_host);
+  return new RenderWidgetHostViewClass(render_widget_host);
 }
 
 void WebContentsViewIOS::SetPageTitle(const std::u16string& title) {

@@ -6,7 +6,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {$} from '//resources/js/util.js';
 
-import {OobeTypes} from './components/oobe_types.js';
+import type {OobeTypes} from './components/oobe_types.js';
 
 /**
  * Listens to key events on input element.

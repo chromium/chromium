@@ -13,8 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -116,74 +114,6 @@ class PathParser {
   base::raw_span<const PathElement> elements_;
   size_t command_index_ = 0;
 };
-
-// Translates a string such as "MOVE_TO" into a command such as MOVE_TO.
-CommandType CommandFromString(const std::string& source) {
-#define RETURN_IF_IS(command) \
-  if (source == #command)     \
-    return command;
-
-  RETURN_IF_IS(NEW_PATH);
-  RETURN_IF_IS(FILL_RULE_NONZERO);
-  RETURN_IF_IS(PATH_COLOR_ALPHA);
-  RETURN_IF_IS(PATH_COLOR_ARGB);
-  RETURN_IF_IS(PATH_MODE_CLEAR);
-  RETURN_IF_IS(STROKE);
-  RETURN_IF_IS(CAP_SQUARE);
-  RETURN_IF_IS(MOVE_TO);
-  RETURN_IF_IS(R_MOVE_TO);
-  RETURN_IF_IS(ARC_TO);
-  RETURN_IF_IS(R_ARC_TO);
-  RETURN_IF_IS(LINE_TO);
-  RETURN_IF_IS(R_LINE_TO);
-  RETURN_IF_IS(H_LINE_TO);
-  RETURN_IF_IS(R_H_LINE_TO);
-  RETURN_IF_IS(V_LINE_TO);
-  RETURN_IF_IS(R_V_LINE_TO);
-  RETURN_IF_IS(CUBIC_TO);
-  RETURN_IF_IS(R_CUBIC_TO);
-  RETURN_IF_IS(CUBIC_TO_SHORTHAND);
-  RETURN_IF_IS(QUADRATIC_TO);
-  RETURN_IF_IS(R_QUADRATIC_TO);
-  RETURN_IF_IS(QUADRATIC_TO_SHORTHAND);
-  RETURN_IF_IS(R_QUADRATIC_TO_SHORTHAND);
-  RETURN_IF_IS(CIRCLE);
-  RETURN_IF_IS(OVAL);
-  RETURN_IF_IS(ROUND_RECT);
-  RETURN_IF_IS(CLOSE);
-  RETURN_IF_IS(CANVAS_DIMENSIONS);
-  RETURN_IF_IS(CLIP);
-  RETURN_IF_IS(DISABLE_AA);
-  RETURN_IF_IS(FLIPS_IN_RTL);
-#undef RETURN_IF_IS
-
-  NOTREACHED() << "Unrecognized command: " << source;
-}
-
-bool StringToDouble(std::string_view piece, double* out) {
-  if (piece[piece.size() - 1] == 'f') {
-    piece.remove_suffix(1);
-  }
-
-  return base::StringToDouble(piece, out);
-}
-
-std::vector<PathElement> PathFromSource(const std::string& source) {
-  std::vector<PathElement> path;
-  std::vector<std::string> pieces = base::SplitString(
-      source, "\n ,", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& piece : pieces) {
-    double value = 0;
-    int hex_value = 0;
-    if (StringToDouble(piece, &value)) {
-      path.push_back(PathElement(SkDoubleToScalar(value)));
-    } else if (base::HexStringToInt(piece, &hex_value))
-      path.push_back(PathElement(SkIntToScalar(hex_value)));
-    else
-      path.push_back(PathElement(CommandFromString(piece)));
-  }
-  return path;
-}
 
 bool IsCommandTypeCurve(CommandType command) {
   return command == CUBIC_TO || command == R_CUBIC_TO ||
@@ -441,8 +371,12 @@ class VectorIconSource : public CanvasImageSource {
 
   VectorIconSource(const std::string& definition, int dip_size, SkColor color)
       : CanvasImageSource(Size(dip_size, dip_size)),
-        data_(kNoneIcon, dip_size, color, &kNoneIcon),
-        path_(PathFromSource(definition)) {}
+        data_(VectorIcon::EmptyIcon(),
+              dip_size,
+              color,
+              &VectorIcon::EmptyIcon()) {
+    ParsePathElements(definition, paths_);
+  }
 
   VectorIconSource(const VectorIconSource&) = delete;
   VectorIconSource& operator=(const VectorIconSource&) = delete;
@@ -455,18 +389,18 @@ class VectorIconSource : public CanvasImageSource {
   }
 
   void Draw(Canvas* canvas) override {
-    if (path_.empty()) {
+    if (paths_.empty() || paths_[0].empty()) {
       PaintVectorIcon(canvas, *data_.icon, size_.width(), data_.color);
       if (!data_.badge_icon->is_empty())
         PaintVectorIcon(canvas, *data_.badge_icon, size_.width(), data_.color);
     } else {
-      PaintPath(canvas, path_, size_.width(), data_.color);
+      PaintPath(canvas, paths_[0], size_.width(), data_.color);
     }
   }
 
  private:
   const IconDescription data_;
-  const std::vector<PathElement> path_;
+  std::vector<std::vector<PathElement>> paths_;
 };
 
 // This class caches vector icons (as ImageSkia) so they don't have to be drawn
@@ -510,14 +444,12 @@ IconDescription::IconDescription(const VectorIcon& icon,
     : icon(icon),
       dip_size(dip_size),
       color(color),
-      badge_icon(badge_icon ? *badge_icon : kNoneIcon) {
+      badge_icon(badge_icon ? *badge_icon : VectorIcon::EmptyIcon()) {
   if (dip_size == 0)
     this->dip_size = GetDefaultSizeOfVectorIcon(icon);
 }
 
 IconDescription::~IconDescription() {}
-
-const VectorIcon kNoneIcon = {};
 
 void PaintVectorIcon(Canvas* canvas, const VectorIcon& icon, SkColor color) {
   PaintVectorIcon(canvas, icon, GetDefaultSizeOfVectorIcon(icon), color);
@@ -550,7 +482,8 @@ ImageSkia CreateVectorIcon(const VectorIcon& icon, SkColor color) {
 ImageSkia CreateVectorIcon(const VectorIcon& icon,
                            int dip_size,
                            SkColor color) {
-  return CreateVectorIcon(IconDescription(icon, dip_size, color, &kNoneIcon));
+  return CreateVectorIcon(
+      IconDescription(icon, dip_size, color, &VectorIcon::EmptyIcon()));
 }
 
 ImageSkia CreateVectorIconWithBadge(const VectorIcon& icon,

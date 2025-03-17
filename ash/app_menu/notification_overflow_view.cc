@@ -4,8 +4,9 @@
 
 #include "ash/app_menu/notification_overflow_view.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -110,8 +111,8 @@ void NotificationOverflowView::AddIcon(
 }
 
 void NotificationOverflowView::RemoveIcon(const std::string& notification_id) {
-  auto it = base::ranges::find(image_views_, notification_id,
-                               &NotificationOverflowImageView::notification_id);
+  auto it = std::ranges::find(image_views_, notification_id,
+                              &NotificationOverflowImageView::notification_id);
   if (it != image_views_.end()) {
     RemoveChildViewT(*it);
     image_views_.erase(it);

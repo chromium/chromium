@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
 
 class Profile;
 

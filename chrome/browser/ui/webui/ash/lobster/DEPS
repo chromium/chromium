@@ -14,6 +14,8 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bubble",
+  "+chrome/browser/ui/webui/ash/mako/mako_bubble_event_handler.h",
+  "+chrome/browser/ui/webui/ash/mako/draggable_bubble_dialog_view.h",
   "+chrome/browser/ui/webui/top_chrome",
   "+chrome/test",
 ]

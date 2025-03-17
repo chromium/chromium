@@ -21,6 +21,7 @@
 #include "chrome/common/extensions/api/quick_unlock_private.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/account_id/account_id.h"
@@ -94,10 +95,6 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     return;
   }
 
-  auto on_authenticated =
-      base::BindOnce(&QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-
   const auto* password_factor =
       user_context->GetAuthFactorsData().FindFactorByType(
           cryptohome::AuthFactorType::kPassword);
@@ -108,9 +105,20 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     if (pin_factor) {
       if (!pin_factor->GetPinStatus().IsLockedFactor()) {
         const std::string salt = GetUserSalt(user_context->GetAccountId());
+        auto on_authenticated = base::BindOnce(
+            &QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
+            weak_factory_.GetWeakPtr(), std::move(callback));
+
         auth_performer_.AuthenticateWithPin(password_, salt,
                                             std::move(user_context),
                                             std::move(on_authenticated));
+        return;
+      } else {
+        // User has only PIN factor, and it's currently locked out
+        LOG(WARNING) << "The PIN only user's pin is temporarily disabled";
+        std::move(callback).Run(
+            std::nullopt,
+            ash::AuthenticationError(ash::AuthFailure::AUTH_DISABLED));
         return;
       }
     }
@@ -122,6 +130,10 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
                               user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)));
     return;
   }
+
+  auto on_authenticated =
+      base::BindOnce(&QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
 
   auth_performer_.AuthenticateWithPassword(
       *(password_factor->ref().label()), std::move(password_),

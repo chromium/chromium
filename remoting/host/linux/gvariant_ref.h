@@ -7,6 +7,7 @@
 
 #include <glib-object.h>
 #include <glib.h>
+#include <glibconfig.h>
 
 #include <algorithm>
 #include <array>
@@ -14,9 +15,8 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <functional>
+#include <cstring>
 #include <iterator>
-#include <locale>
 #include <map>
 #include <optional>
 #include <ranges>
@@ -30,7 +30,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/span.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -242,8 +242,25 @@ namespace gvariant {
 //     must be used to check if the array is, in fact, empty.
 // gvariant::ObjectPath (type code "o") - Wrapper around a std::string that
 //     contains a DBus object path.
+// gvariant::ObjectPathCStr ([Try]From() only, type code "o") - An owned object
+//     path that can be used as a function parameter (somewhat analogous to a
+//     string_view) or to hold a compile-time-verified object path constant.
 // gvariant::TypeSignature (type code "g") - Wrapper around a std::string
 //     that contains a DBus type signature.
+// gvariant::TypeSignatureCStr ([Try]From() only, type code "g") - An owned type
+//     signature that can be used as a function parameter (somewhat analogous to
+//     a string_view) or to hold a compile-time-verified type signature
+//     constant.
+//
+// Convenience functions:
+//
+// GVariantFrom(value) - Like GVariantRef<C>::From(), but infers C from value's
+//     type.
+// gvariant::BoxedRef(value) - Returns a gvariant::Boxed that holds a const
+//     reference to value. (Whereas Boxed{value} would hold a copy of value.)
+// gvariant::FilledMaybeRef(value) - Returns a gvariant::FilledMaybe that holds
+//     a const reference to value. (Whereas FilledMaybe{value} would hold a copy
+//     of value.)
 template <Type C = Type("*")>
 class GVariantRef;
 
@@ -313,6 +330,8 @@ class GVariantBase {
   // be definite.
   Type<> GetType() const;
 
+  friend bool operator==(const GVariantBase& lhs, const GVariantBase& rhs);
+
  protected:
   // clang-format off
   static constexpr struct {} kTake;
@@ -329,11 +348,11 @@ class GVariantBase {
   GVariantBase& operator=(GVariantBase&& other);
   ~GVariantBase();
 
-  bool operator==(const GVariantBase& other) const;
-
  private:
   raw_ptr<GVariant> variant_;
 };
+
+bool operator==(const GVariantBase& lhs, const GVariantBase& rhs);
 
 template <Type C>
 class GVariantRef : public GVariantBase {
@@ -499,13 +518,16 @@ class GVariantRef : public GVariantBase {
   static GVariantRef RefUnchecked(GVariant* variant);
   static GVariantRef RefSinkUnchecked(GVariant* variant);
 
-  template <Type D>
-  bool operator==(const GVariantRef<D>& other) const
-    requires(C.HasCommonTypeWith(D));
-
  private:
   using GVariantBase::GVariantBase;
 };
+
+// Constructs a new GVariantRef from the provided value, inferring the type
+// string.
+template <typename T>
+static GVariantRef<Mapping<T>::kType> GVariantFrom(const T& value) {
+  return GVariantRef<Mapping<T>::kType>::From(value);
+}
 
 // Wrapper types and special types
 
@@ -519,47 +541,181 @@ struct Ignored {};
 template <typename T>
 struct Boxed {
   T value;
-
-  bool operator==(const Boxed& other) const = default;
 };
+
+template <typename T, typename U>
+bool operator==(const Boxed<T>& lhs, const Boxed<U>& rhs)
+  requires requires(T t, U u) { t == u; }
+{
+  return lhs.value == rhs.value;
+}
+
+// Returns a gvariant::Boxed that holds a const reference to value. (Whereas
+// Boxed{value} would hold a copy of value.) Useful to avoid making an extra
+// copy when constructing a GVariantRef.
+template <typename T>
+Boxed<const T&> BoxedRef(const T& value LIFETIME_BOUND) {
+  return {value};
+}
 
 // Wrapper for a value that should appear inside a maybe, but will always be
 // present.
 template <typename T>
 struct FilledMaybe {
   T value;
-
-  bool operator==(const FilledMaybe& other) const = default;
 };
+
+template <typename T, typename U>
+bool operator==(const FilledMaybe<T>& lhs, const FilledMaybe<U>& rhs)
+  requires requires(T t, U u) { t == u; }
+{
+  return lhs.value == rhs.value;
+}
+
+// Returns a gvariant::FilledMaybe that holds a const reference to value.
+// (Whereas FilledMaybe{value} would hold a copy of value.) Useful to avoid
+// making an extra copy when constructing a GVariantRef.
+template <typename T>
+FilledMaybe<const T&> FilledMaybeRef(const T& value LIFETIME_BOUND) {
+  return {value};
+}
 
 // Represents an empty array of the given type.
 template <Type C>
 struct EmptyArrayOf {};
 
-// Represents a D-Bus object path.
-class ObjectPath {
- public:
-  static base::expected<ObjectPath, std::string> TryFrom(std::string path);
-  const std::string& value() const;
+class ObjectPath;
 
-  bool operator==(const ObjectPath& other) const = default;
+// Holds an unowned pointer to a null-terminated string known to be a valid
+// D-Bus object path.
+class ObjectPathCStr {
+ public:
+  // Constructs from a compile-time constant. The passed string is checked at
+  // compile time to be a valid object path.
+  // Allows implicit construction so string constants can easily be passed to
+  // ObjectPathCStr parameters.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  consteval ObjectPathCStr(const char* path);
+  // Constructs from an ObjectPath object. The resulting ObjectPathCStr is only
+  // valid as long as the ObjectPath to which it refers.
+  // Allows explicit construction so ObjectPaths can easily be passed to
+  // ObjectPathCStr parameters.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ObjectPathCStr(const ObjectPath& path LIFETIME_BOUND);
+
+  // Attempts to construct from an existing C string. Returns an error string
+  // if |path| is not a valid object path.
+  static base::expected<ObjectPathCStr, std::string> TryFrom(
+      const char* path LIFETIME_BOUND);
+
+  // Gets the object path C string.
+  constexpr const char* c_str() const LIFETIME_BOUND;
+
+  friend constexpr bool operator==(const ObjectPathCStr& lhs,
+                                   const ObjectPathCStr& rhs);
 
  private:
-  explicit ObjectPath(std::string);
+  struct Checked {};
+  // Construct from already-checked path. Extra parameter to avoid conflicting
+  // with consteval constructor.
+  ObjectPathCStr(const char* path LIFETIME_BOUND, Checked);
+
+  const char* path_;
+};
+
+constexpr bool operator==(const ObjectPathCStr& lhs, const ObjectPathCStr& rhs);
+
+// Represents an owned D-Bus object path.
+class ObjectPath {
+ public:
+  // Constructs an instance of the root path "/"
+  ObjectPath();
+
+  // Constructs an owned copy of |path|.
+  explicit ObjectPath(ObjectPathCStr path);
+
+  // Attempts to construct from an existing std::string. Returns an error string
+  // if |path| is not a valid object path.
+  static base::expected<ObjectPath, std::string> TryFrom(std::string path);
+
+  // Gets the object path.
+  const std::string& value() const LIFETIME_BOUND;
+
+  // Shorthand for .value().c_str()
+  const char* c_str() const LIFETIME_BOUND;
+
+ private:
+  // Construct from already-checked path.
+  explicit ObjectPath(std::string path);
   std::string path_;
   friend struct Mapping<ObjectPath>;
 };
 
-// Represents a D-Bus type signature.
-class TypeSignature {
- public:
-  static base::expected<TypeSignature, std::string> TryFrom(
-      std::string signature);
-  const std::string& value() const;
+class TypeSignature;
 
-  bool operator==(const TypeSignature& other) const = default;
+// Holds an unowned pointer to a null-terminated string known to be a valid
+// D-Bus type signature.
+class TypeSignatureCStr {
+ public:
+  // Constructs from a compile-time constant. The passed string is checked at
+  // compile time to be a valid type signature.
+  // Allows implicit construction so string constants can easily be passed to
+  // TypeSignatureCStr parameters.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  consteval TypeSignatureCStr(const char* signature);
+
+  // Constructs from a TypeSignature object. The resulting TypeSignatureCStr is
+  // only valid as long as the TypeSignature to which it refers.
+  // Allows implicit construction so TypeSignatures can easily be passed to
+  // TypeSignatureCStr parameters.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  TypeSignatureCStr(const TypeSignature& signature LIFETIME_BOUND);
+
+  // Attempts to construct from an existing C string. Returns an error string
+  // if |signature| is not a valid type signature.
+  static base::expected<TypeSignatureCStr, std::string> TryFrom(
+      const char* signature LIFETIME_BOUND);
+
+  // Gets the type signature C string.
+  constexpr const char* c_str() const LIFETIME_BOUND;
+
+  friend constexpr bool operator==(const TypeSignatureCStr& lhs,
+                                   const TypeSignatureCStr& rhs);
 
  private:
+  struct Checked {};
+  // Construct from already-checked path. Extra parameter to avoid conflicting
+  // with consteval constructor.
+  TypeSignatureCStr(const char* signature LIFETIME_BOUND, Checked);
+
+  const char* signature_;
+};
+
+constexpr bool operator==(const TypeSignatureCStr& lhs,
+                          const TypeSignatureCStr& rhs);
+
+// Represents an owned D-Bus type signature.
+class TypeSignature {
+ public:
+  // Constructs an empty type signature.
+  TypeSignature();
+
+  // Constructs an owned copy of |signature|.
+  explicit TypeSignature(TypeSignatureCStr signature);
+
+  // Attempts to construct from an existing std::string. Returns an error string
+  // if |signature| is not a valid type signature.
+  static base::expected<TypeSignature, std::string> TryFrom(
+      std::string signature);
+
+  // Gets the type signature.
+  const std::string& value() const LIFETIME_BOUND;
+
+  // Shorthand for .value().c_str()
+  const char* c_str() const LIFETIME_BOUND;
+
+ private:
+  // Construct from already-checked signature.
   explicit TypeSignature(std::string);
   std::string signature_;
   friend struct Mapping<TypeSignature>;
@@ -883,12 +1039,87 @@ GVariantRef<C> GVariantRef<C>::RefSinkUnchecked(GVariant* variant) {
   return GVariantRef<C>(kRefSink, variant);
 }
 
-template <Type C>
-template <Type D>
-bool GVariantRef<C>::operator==(const GVariantRef<D>& other) const
-  requires(C.HasCommonTypeWith(D))
-{
-  return GVariantBase::operator==(other);
+// Wrapper implementation
+
+consteval ObjectPathCStr::ObjectPathCStr(const char* path) {
+  // SAFETY: Since this constructor is consteval, it can only execute at compile
+  // time. Thus, a read past the end triggered by a missing null terminator will
+  // result in a compile-time error, with no risk at runtime.
+
+  // TODO: bug 400761089 - Remove UNSAFE_BUFFERS annotations when Clang no
+  // longer flags consteval code.
+
+  // CHECKs cannot actually print messages at compile time, but a failed check
+  // will trigger a compiler error pointing to the failed check, allowing the
+  // message to be seen in the source code.
+  CHECK_EQ(*path, '/') << "Path must start with a '/'";
+  const char* prev_char = path;
+  const char* current_char = UNSAFE_BUFFERS(path + 1);
+  while (*current_char != '\0') {
+    CHECK((*current_char >= 'A' && *current_char <= 'Z') ||
+          (*current_char >= 'a' && *current_char <= 'z') ||
+          (*current_char >= '0' && *current_char <= '9') ||
+          *current_char == '_' || *current_char == '/')
+        << "Path contains invalid character";
+    CHECK(*prev_char != '/' || *current_char != '/')
+        << "Two '/' characters may not appear in a row";
+    UNSAFE_BUFFERS(++prev_char);
+    UNSAFE_BUFFERS(++current_char;)
+  }
+  CHECK(*prev_char != '/' || prev_char == path)
+      << "Path may not end in '/' unless the whole path is only a single '/' "
+         "referring to the root path";
+  path_ = path;
+}
+
+constexpr const char* ObjectPathCStr::c_str() const {
+  return path_;
+}
+
+constexpr bool operator==(const ObjectPathCStr& lhs,
+                          const ObjectPathCStr& rhs) {
+  if (std::is_constant_evaluated()) {
+    return std::string_view(lhs.c_str()) == std::string_view(rhs.c_str());
+  } else {
+    return std::strcmp(lhs.c_str(), rhs.c_str()) == 0;
+  }
+}
+
+consteval TypeSignatureCStr::TypeSignatureCStr(const char* signature) {
+  // SAFETY: Since this constructor is consteval, it can only execute at compile
+  // time. Thus, a read past the end triggered by a missing null terminator will
+  // result in a compile-time error, with no risk at runtime.
+
+  // TODO: bug 400761089 - Remove UNSAFE_BUFFERS annotations when Clang no
+  // longer flags consteval code.
+
+  // CHECKs cannot actually print messages at compile time, but a failed check
+  // will trigger a compiler error pointing to the failed check, allowing the
+  // message to be seen in the source code.
+  CHECK(Type("(", signature, ")").IsValid()) << "Not a valid signature";
+  CHECK(Type("(", signature, ")").IsDefinite()) << "Signature must be definite";
+  char prev_char = '\0';
+  for (const char* current_char = signature; *current_char != '\0';
+       UNSAFE_BUFFERS(++current_char)) {
+    CHECK(*current_char != 'm') << "Maybe type not valid in D-Bus signature";
+    CHECK(*current_char != '{' || prev_char == 'a')
+        << "Dict entry not part of a dictionary.";
+    prev_char = *current_char;
+  }
+  signature_ = signature;
+}
+
+constexpr const char* TypeSignatureCStr::c_str() const {
+  return signature_;
+}
+
+constexpr bool operator==(const TypeSignatureCStr& lhs,
+                          const TypeSignatureCStr& rhs) {
+  if (std::is_constant_evaluated()) {
+    return std::string_view(lhs.c_str()) == std::string_view(rhs.c_str());
+  } else {
+    return std::strcmp(lhs.c_str(), rhs.c_str()) == 0;
+  }
 }
 
 // Iterator implementation
@@ -1778,10 +2009,22 @@ struct Mapping<EmptyArrayOf<C>> {
 };
 
 template <>
+struct Mapping<ObjectPathCStr> {
+  static constexpr Type kType{"o"};
+  static GVariantRef<kType> From(const ObjectPathCStr& value);
+};
+
+template <>
 struct Mapping<ObjectPath> {
   static constexpr Type kType{"o"};
   static GVariantRef<kType> From(const ObjectPath& value);
   static ObjectPath Into(const GVariantRef<kType>& variant);
+};
+
+template <>
+struct Mapping<TypeSignatureCStr> {
+  static constexpr Type kType{"g"};
+  static GVariantRef<kType> From(const TypeSignatureCStr& value);
 };
 
 template <>
@@ -1793,6 +2036,7 @@ struct Mapping<TypeSignature> {
 
 }  // namespace gvariant
 
+using gvariant::GVariantFrom;
 using gvariant::GVariantRef;
 
 }  // namespace remoting

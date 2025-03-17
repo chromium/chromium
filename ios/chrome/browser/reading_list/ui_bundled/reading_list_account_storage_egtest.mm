@@ -7,6 +7,11 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_constants.h"
@@ -16,11 +21,6 @@
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -54,7 +54,7 @@ const char kPage1URL[] = "/page1";
 NSString* kPage2Title = @"Page 2 Title";
 const char kPage2URL[] = "/page2";
 constexpr base::TimeDelta kLongPressDuration = base::Seconds(1);
-constexpr base::TimeDelta kSyncInitializedTimeout = base::Seconds(5);
+constexpr base::TimeDelta kSyncActiveTimeout = base::Seconds(5);
 
 id<GREYMatcher> SignedInSnackbar(NSString* email) {
   NSString* snackbarMessage = l10n_util::GetNSStringF(
@@ -135,8 +135,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // TODO(crbug.com/40065405): Remove this when ChromeTestCase will always wait
   // for sign-out completion.
   [ChromeEarlGrey signOutAndClearIdentities];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncInitializedTimeout];
   // Shutdown network process after tests run to avoid hanging from
   // clearing browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
@@ -446,7 +444,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Ensure that the first sync spinner has disappeared.
   [ChromeEarlGreyUI waitForAppToIdle];
   [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Verify that the cloud icon is shown on the first item.
   [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
       assertWithMatcher:grey_notNil()];
@@ -488,7 +486,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kTableViewNavigationDismissButtonId)]
@@ -524,7 +522,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kTableViewNavigationDismissButtonId)]
@@ -535,8 +533,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Sign-out.
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncInitializedTimeout];
   // Verify that only Page 1 is visible with no cloud icon.
   OpenReadingList();
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
@@ -566,7 +562,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kTableViewNavigationDismissButtonId)]
@@ -588,8 +584,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
   // Sign-out and sign-in with the same account.
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncInitializedTimeout];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -599,7 +593,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Verify that only the page 2 is still in the Reading list.
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_nil()];
@@ -625,7 +619,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kTableViewNavigationDismissButtonId)]
@@ -670,8 +664,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                   @"The unread entries count is incorrect.");
   // Sign-out and sign-in with the same account.
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncInitializedTimeout];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -681,7 +673,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Verify that both items are visible and only one of them is unread.
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_notNil()];

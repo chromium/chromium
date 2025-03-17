@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/features.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 group("mojo_service_manager") {
   public_deps = [ ":mojo_service_manager_impl" ]
@@ -37,11 +36,30 @@ component("mojo_service_manager_impl") {
 static_library("fake_mojo_service_manager") {
   visibility = [
     ":*",
-    "//chrome/browser/ash/arc/session:unit_tests",
+    "//chromeos/ash/experiences/arc:unit_tests",
   ]
   sources = [
     "fake_mojo_service_manager.cc",
     "fake_mojo_service_manager.h",
   ]
   public_deps = [ ":mojo_service_manager_impl" ]
+}
+
+static_library("mojo_service_manager_connection") {
+  sources = [
+    "connection_helper.cc",
+    "connection_helper.h",
+    "utility_process_bridge.cc",
+    "utility_process_bridge.h",
+  ]
+  deps = [
+    ":mojo_service_manager",
+    "//base",
+    "//chromeos:features",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+  ]
+  if (!use_real_chromeos_services) {
+    deps += [ "//chromeos/ash/services/cros_healthd/public/cpp:fakes" ]
+  }
 }

@@ -32,6 +32,7 @@
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -196,7 +197,8 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
     Run(std::move(callback));
   }
   void Clear(url::Origin context_origin,
-             base::OnceCallback<void(OperationResult)> callback) override {
+             base::OnceCallback<void(OperationResult)> callback,
+             DataClearSource source) override {
     Run(std::move(callback));
   }
   void Length(url::Origin context_origin,
@@ -405,7 +407,7 @@ class SharedStorageManagerTest : public testing::Test {
 
   virtual void InitSharedStorageFeature() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
+        {network::features::kSharedStorageAPI},
         // Set these intervals to be long enough not to interfere with the
         // basic tests.
         {{"SharedStorageStalePurgeInitialInterval",
@@ -422,7 +424,7 @@ class SharedStorageManagerTest : public testing::Test {
   // Return the relative file path in the "storage/" subdirectory of test data
   // for the SQL file from which to initialize an async shared storage database
   // instance.
-  virtual std::string GetRelativeFilePath() { return nullptr; }
+  virtual std::string GetRelativeFilePath() { return ""; }
 
   virtual DBType GetType() { return DBType::kInMemory; }
 

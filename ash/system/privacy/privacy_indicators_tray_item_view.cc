@@ -165,7 +165,6 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   // Set up a solid color layer to paint the background color, then add a layer
   // to each child so that they are visible and can perform layer animation.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2});
   layer()->SetIsFastRoundedCorner(true);
@@ -581,16 +580,16 @@ void PrivacyIndicatorsTrayItemView::UpdateTooltipText() {
           : std::u16string();
 
   if (cam_and_mic_status.empty()) {
-    SetCachedTooltipText(screen_share_status);
+    SetTooltipText(screen_share_status);
     return;
   }
 
   if (screen_share_status.empty()) {
-    SetCachedTooltipText(cam_and_mic_status);
+    SetTooltipText(cam_and_mic_status);
     return;
   }
 
-  SetCachedTooltipText(
+  SetTooltipText(
       l10n_util::GetStringFUTF16(IDS_PRIVACY_INDICATORS_VIEW_TOOLTIP,
                                  {cam_and_mic_status, screen_share_status},
                                  /*offsets=*/nullptr));

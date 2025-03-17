@@ -3,3 +3,8 @@ include_rules = [
   "+chrome/browser/performance_manager/metrics/metrics_provider_desktop.h",
   "+chrome/services/util_win/util_win_impl.h",
 ]
+specific_include_rules = {
+  "process_memory_metrics_emitter_browsertest\.cc": [
+    "+third_party/iaccessible2",
+  ],
+}

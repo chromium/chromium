@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/user_metrics.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
@@ -19,8 +20,12 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
 #import "url/gurl.h"
 
 using manual_fill::ManualFillDataType;
@@ -74,9 +79,41 @@ using manual_fill::ManualFillDataType;
 }
 
 - (void)stop {
+  [super stop];
+
+  // On iPad, dismiss the popover.
+  if (IsKeyboardAccessoryUpgradeEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      self.viewController.presentingViewController) {
+    [self.viewController dismissViewControllerAnimated:true completion:nil];
+  }
+
   [self stopChildCoordinators];
   _manualFillPlusAddressMediator = nil;
   self.expandedManualFillViewController = nil;
+}
+
+- (void)presentFromButton:(UIButton*)button {
+  self.expandedManualFillViewController.modalPresentationStyle =
+      UIModalPresentationPopover;
+
+  // `topFrontWindow` is used in order to present above the keyboard. This way,
+  // the popover will be dismissed on keyboard interaction and it won't be
+  // covered when the keyboard is near the top of the screen.
+  UIWindow* topFrontWindow = ios::provider::GetKeyboardWindow();
+  [topFrontWindow.rootViewController presentViewController:self.viewController
+                                                  animated:YES
+                                                completion:nil];
+
+  UIPopoverPresentationController* popoverPresentationController =
+      self.viewController.popoverPresentationController;
+  popoverPresentationController.sourceView = button;
+  popoverPresentationController.sourceRect = button.bounds;
+  popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
+  popoverPresentationController.delegate = self;
+  popoverPresentationController.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
 }
 
 - (UIViewController*)viewController {
@@ -102,8 +139,10 @@ using manual_fill::ManualFillDataType;
 
 - (void)fallbackCoordinatorDidDismissPopover:
     (FallbackCoordinator*)fallbackCoordinator {
-  // No-op as the expanded manual fill view is never presented as a popover for
-  // now.
+  // No-op. On phones, the expanded manual fill view is never presented as a
+  // popover. On tablets, it can be presented as a popoover, but fallback
+  // coordinators are subviews of the expanded manual fill view controller and
+  // can't dismiss this popup.
 }
 
 #pragma mark - FormInputInteractionDelegate
@@ -124,6 +163,14 @@ using manual_fill::ManualFillDataType;
   if (autofillFormButtonCurrentlyVisible != shouldAutofillFormButtonBeVisible) {
     [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
   }
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (void)popoverPresentationControllerDidDismissPopover:
+    (UIPopoverPresentationController*)popoverPresentationController {
+  base::RecordAction(base::UserMetricsAction("ManualFallback_ClosePopover"));
+  [self.delegate expandedManualFillCoordinatorDidDismissPopover:self];
 }
 
 #pragma mark - Private

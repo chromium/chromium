@@ -20,6 +20,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -105,6 +106,12 @@ void WebContentsDelegate::CanDownload(const GURL& url,
 
 bool WebContentsDelegate::HandleContextMenu(RenderFrameHost& render_frame_host,
                                             const ContextMenuParams& params) {
+  return false;
+}
+
+bool WebContentsDelegate::PreHandleMouseEvent(
+    WebContents* source,
+    const blink::WebMouseEvent& event) {
   return false;
 }
 
@@ -408,6 +415,12 @@ PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
   return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
+int WebContentsDelegate::AllowedPrerenderingCount(WebContents& web_contents) {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kPrerender2NewLimitAndScheduler,
+      "max_num_of_running_embedder_prerenders", 2);
+}
+
 NavigationController::UserAgentOverrideOption
 WebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
   return NavigationController::UA_OVERRIDE_INHERIT;
@@ -450,6 +463,11 @@ bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
 
 #if BUILDFLAG(IS_ANDROID)
 SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
+  return SkBitmap();
+}
+
+SkBitmap
+WebContentsDelegate::GetBackForwardTransitionFallbackUXInternalPageIcon() {
   return SkBitmap();
 }
 

@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -14,8 +15,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -308,6 +307,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests that creates a tab group and opens the grouped tab.
 - (void)testCompleteTabGroupCreation {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [ChromeEarlGreyUI openTabGrid];
 
   // Open the creation view.
@@ -333,6 +336,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests that cancels a tab group creation.
 - (void)testCancelTabGroupCreation {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [ChromeEarlGreyUI openTabGrid];
 
   // Open the creation view.
@@ -351,6 +358,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests clearing the text field in Tab Group creation flow.
 - (void)testClearTextTabGroupCreation {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [ChromeEarlGreyUI openTabGrid];
 
   // Open the creation view.
@@ -380,18 +391,30 @@ UIViewController* TopPresentedViewController() {
 // Tests the group creation based on the context menu a tab cell in the regular
 // grid.
 - (void)testGroupCreationUsingTabContextMenuInRegularGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testGroupCreationUsingTabContextMenuInGrid:/*incognito*/ NO];
 }
 
 // Tests the group creation based on the context menu a tab cell in the
 // incognito grid.
 - (void)testGroupCreationUsingTabContextMenuInIncognitoGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testGroupCreationUsingTabContextMenuInGrid:/*incognito*/ YES];
 }
 
 // Tests the group creation based on the context menu a tab cell in one of the
 // grids.
 - (void)testGroupCreationUsingTabContextMenuInGrid:(BOOL)incognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   if (incognito) {
     [ChromeEarlGrey openNewIncognitoTab];
@@ -443,18 +466,30 @@ UIViewController* TopPresentedViewController() {
 // Tests adding a tab to a group from the tab's context menu in the regular
 // grid.
 - (void)testAddingTabToGroupUsingTabContextMenuInRegularGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testAddingTabToGroupUsingTabContextMenuInGrid:/*incognito*/ NO];
 }
 
 // Tests adding a tab to a group from the tab's context menu in the incognito
 // grid.
 - (void)testAddingTabToGroupUsingTabContextMenuInIncognitoGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testAddingTabToGroupUsingTabContextMenuInGrid:/*incognito*/ YES];
 }
 
 // Tests adding a tab to a group from the tab's context menu in one of the
 // grids.
 - (void)testAddingTabToGroupUsingTabContextMenuInGrid:(BOOL)incognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   if (incognito) {
     [ChromeEarlGrey openNewIncognitoTab];
@@ -507,16 +542,28 @@ UIViewController* TopPresentedViewController() {
 
 // Tests the group renaming from the group's context menu in the regular grid.
 - (void)testRenamingGroupUsingGridContextMenuInRegularGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testRenamingGroupUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
 // Tests the group renaming from the group's context menu in the incognito grid.
 - (void)testRenamingGroupUsingGridContextMenuInIncognitoGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testRenamingGroupUsingGridContextMenuInGrid:/*incognito*/ YES];
 }
 
 // Tests the group renaming from the group's context menu in one of the grids.
 - (void)testRenamingGroupUsingGridContextMenuInGrid:(BOOL)incognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   if (incognito) {
     [ChromeEarlGrey openNewIncognitoTab];
@@ -543,16 +590,28 @@ UIViewController* TopPresentedViewController() {
 
 // Tests the ungrouping of a group from its context menu in the regular grid.
 - (void)testUngroupingGroupUsingGridContextMenuInRegularGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testUngroupingGroupUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
 // Tests the ungrouping of a group from its context menu in the incognito grid.
 - (void)testUngroupingGroupUsingGridContextMenuInIncognitoGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testUngroupingGroupUsingGridContextMenuInGrid:/*incognito*/ YES];
 }
 
 // Tests the ungrouping of a group from its context menu in one of the grids.
 - (void)testUngroupingGroupUsingGridContextMenuInGrid:(BOOL)incognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   if (incognito) {
     [ChromeEarlGrey openNewIncognitoTab];
@@ -578,6 +637,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests the group deletion from the group's context menu in the regular grid.
 - (void)testDeletingGroupUsingGridContextMenuInRegularGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -602,6 +665,10 @@ UIViewController* TopPresentedViewController() {
 // Tests the group deletion from the group's context menu in the incognito grid
 // is not available.
 - (void)testDeletingGroupUsingGridContextMenuInIncognitoGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
@@ -618,18 +685,30 @@ UIViewController* TopPresentedViewController() {
 // Tests closing a group from the group's context menu action in the regular
 // grid.
 - (void)testClosingGroupUsingGridContextMenuInRegularGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testClosingGroupUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
 // Tests closing a group from the group's context menu action in the incognito
 // grid.
 - (void)testClosingGroupUsingGridContextMenuInIncognitoGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testClosingGroupUsingGridContextMenuInGrid:/*incognito*/ YES];
 }
 
 // Tests closing a group from the group's context menu action in one of the
 // grids.
 - (void)testClosingGroupUsingGridContextMenuInGrid:(BOOL)incognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   if (incognito) {
     [ChromeEarlGrey openNewIncognitoTab];
@@ -669,6 +748,10 @@ UIViewController* TopPresentedViewController() {
   testMovingBetweenGroupsUsingGridContextMenuInRegularGrid
 #endif
 - (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
@@ -681,10 +764,18 @@ UIViewController* TopPresentedViewController() {
   testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid
 #endif
 - (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ YES];
 }
 
 - (void)testMovingBetweenGroupsUsingGridContextMenuInGrid:(BOOL)incognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   if (incognito) {
     [ChromeEarlGrey openNewIncognitoTab];
@@ -733,6 +824,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests ungrouping of a group from the overflow menu in the group view.
 - (void)testUngroupingGroupFromGroupView {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -767,6 +862,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests the group deletion from the overflow menu in the group view.
 - (void)testDeletingGroupFromGroupView {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -798,6 +897,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests tapping on the "+" button in the Tab Group view.
 - (void)testAddNewTabButtonFromGroupView {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -835,6 +938,10 @@ UIViewController* TopPresentedViewController() {
 // Tests cancelling of the deletion of a group from the overflow menu in the
 // group view.
 - (void)testCancellingActionToGroupFromGroupView {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -872,6 +979,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests closing the group from the close button.
 - (void)testCloseTabGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.iph_feature_enabled = "IPH_iOSSavedTabGroupClosed";
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -926,6 +1037,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests the creation of a new group in selection mode.
 - (void)testGroupCreationInSelectionMode {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -965,6 +1080,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests the adding a tab to a group in selection mode.
 - (void)testAddingTabToGroupInSelectionMode {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1024,6 +1143,10 @@ UIViewController* TopPresentedViewController() {
 // Tests the creation of a new group by selecting another group in the selection
 // mode.
 - (void)testGroupCreationFromAnotherGroupInSelectionMode {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
 
@@ -1081,6 +1204,10 @@ UIViewController* TopPresentedViewController() {
 
 // Checks that all the options are displayed in the group's overflow menu.
 - (void)testAppropriateOverflowMenuInGroupView {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1107,6 +1234,10 @@ UIViewController* TopPresentedViewController() {
 // Tests closing all tabs and groups in grid, and that the closing is reversible
 // when pressing the undo button.
 - (void)testCloseAllAndUndo {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1164,6 +1295,10 @@ UIViewController* TopPresentedViewController() {
 // Tests opening a tab group after resetting the incognito browser (i.e. closing
 // all incognito tabs).
 - (void)testOpenTabGroupAfterBrowserReset {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create one incognito tab then close all of them to reset the browser.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
@@ -1187,6 +1322,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests drag and drop the last tab from a group to another window.
 - (void)testDragAndDropLastTabToOtherWindow {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -1217,6 +1356,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests re-opening a group from Search in another window.
 - (void)testReopenGroupFromAnotherWindow {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -1301,6 +1444,10 @@ UIViewController* TopPresentedViewController() {
 // Tests that the TabGrid is correctly updated when it was presenting a group
 // before being backgrounded while incognito reauth is enabled.
 - (void)testIncognitoReauth {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -1342,6 +1489,10 @@ UIViewController* TopPresentedViewController() {
 // Tests that the group view is correctly updated after backgrounding and
 // foregrounding the app.
 - (void)testBackgroundingGroupViewWithMultipleNTPs {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [ChromeEarlGreyUI openTabGrid];
 
   CreateDefaultFirstGroupFromTabCellAtIndex(0);
@@ -1382,6 +1533,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests opening a tab from the group view.
 - (void)testOpenTabFromGroupView {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   std::string URL1 = "chrome://version";
   std::string URL2 = "chrome://about";
   std::string content1 = "Revision";
@@ -1442,6 +1597,10 @@ UIViewController* TopPresentedViewController() {
 // Ensures inactive tabs are moved correctly when creating a group from search
 // result.
 - (void)testCreateGroupFromInactiveTab {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   std::string URL1 = "chrome://version";
   std::string content1 = "Revision";
 
@@ -1459,7 +1618,6 @@ UIViewController* TopPresentedViewController() {
 
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -1519,6 +1677,10 @@ UIViewController* TopPresentedViewController() {
 
 // Ensures to create a group from a pinned tab and the tab is no longer pinned.
 - (void)testCreateGroupFromPinnedTab {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // This test is not relevant on iPads because there is no pinned tabs in iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
@@ -1557,6 +1719,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests the group creation with a tab from another window using search result.
 - (void)testCreateGroupFromTabInAnotherWindow {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -1619,6 +1785,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests closing a group in grid using the selection mode.
 - (void)testCloseFromSelection {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1661,6 +1831,10 @@ UIViewController* TopPresentedViewController() {
 // Tests closing a group in grid using the selection mode with kTabGroupSync
 // disabled.
 - (void)testCloseFromSelectionSyncDisabled {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1698,6 +1872,10 @@ UIViewController* TopPresentedViewController() {
 
 // Tests renaming a group from the overflow menu in the group view.
 - (void)testRenamingGroupFromGroupView {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1734,6 +1912,10 @@ UIViewController* TopPresentedViewController() {
 // Tests that the group colored dot is present even when the Dynamic Font is set
 // to a large Accessibility size.
 - (void)testColoredDotPresent {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1753,6 +1935,41 @@ UIViewController* TopPresentedViewController() {
   // Check that the dot is still visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kGroupGridCellColoredDotIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Ensures that creating a group doesn't change the state of pinned tabs.
+- (void)testCreateGroupWithPinnedTab {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  // This test is not relevant on iPads because there is no pinned tabs in iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+
+  // Create a pinned tab.
+  CreatePinnedTabs(1, self.testServer);
+
+  // Open the creation view.
+  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+
+  // Set the group name.
+  SetTabGroupCreationName(kGroup1Name);
+
+  // Valid the creation.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+
+  // Ensure that the group is created and the pinned tab is visible.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

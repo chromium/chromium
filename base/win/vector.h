@@ -17,7 +17,6 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/winrt_foundation_helpers.h"
 
 namespace base {
@@ -81,19 +80,22 @@ class VectorIterator
     *has_current = FALSE;
     unsigned size;
     HRESULT hr = view_->get_Size(&size);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return hr;
+    }
 
     // Check if we're already past the last item.
-    if (current_index_ >= size)
+    if (current_index_ >= size) {
       return E_BOUNDS;
+    }
 
     // Move to the next item.
     current_index_++;
 
     // Set |has_current| to TRUE if we're still on a valid item.
-    if (current_index_ < size)
+    if (current_index_ < size) {
       *has_current = TRUE;
+    }
 
     return hr;
   }
@@ -154,8 +156,9 @@ class VectorView
   }
 
   ~VectorView() override {
-    if (vector_)
+    if (vector_) {
       vector_->remove_VectorChanged(vector_changed_token_);
+    }
   }
 
   // ABI::Windows::Foundation::Collections::IVectorView:
@@ -231,8 +234,9 @@ class Vector
 
   // ABI::Windows::Foundation::Collections::IVector:
   IFACEMETHODIMP GetAt(unsigned index, AbiT* item) override {
-    if (index >= vector_.size())
+    if (index >= vector_.size()) {
       return E_BOUNDS;
+    }
     return internal::CopyTo(vector_[index], item);
   }
 
@@ -249,7 +253,7 @@ class Vector
   }
 
   IFACEMETHODIMP IndexOf(AbiT value, unsigned* index, boolean* found) override {
-    auto iter = base::ranges::find_if(vector_, [&value](const StorageT& elem) {
+    auto iter = std::ranges::find_if(vector_, [&value](const StorageT& elem) {
       return internal::IsEqual(elem, value);
     });
     *index = iter != vector_.end() ? std::distance(vector_.begin(), iter) : 0;
@@ -258,8 +262,9 @@ class Vector
   }
 
   IFACEMETHODIMP SetAt(unsigned index, AbiT item) override {
-    if (index >= vector_.size())
+    if (index >= vector_.size()) {
       return E_BOUNDS;
+    }
 
     vector_[index] = std::move(item);
     NotifyVectorChanged(
@@ -269,8 +274,9 @@ class Vector
   }
 
   IFACEMETHODIMP InsertAt(unsigned index, AbiT item) override {
-    if (index > vector_.size())
+    if (index > vector_.size()) {
       return E_BOUNDS;
+    }
 
     vector_.insert(std::next(vector_.begin(), index), std::move(item));
     NotifyVectorChanged(
@@ -280,8 +286,9 @@ class Vector
   }
 
   IFACEMETHODIMP RemoveAt(unsigned index) override {
-    if (index >= vector_.size())
+    if (index >= vector_.size()) {
       return E_BOUNDS;
+    }
 
     vector_.erase(std::next(vector_.begin(), index));
     NotifyVectorChanged(
@@ -299,8 +306,9 @@ class Vector
   }
 
   IFACEMETHODIMP RemoveAtEnd() override {
-    if (vector_.empty())
+    if (vector_.empty()) {
       return E_BOUNDS;
+    }
 
     vector_.pop_back();
     NotifyVectorChanged(
@@ -320,8 +328,9 @@ class Vector
                          unsigned capacity,
                          AbiT* value,
                          unsigned* actual) override {
-    if (start_index > vector_.size())
+    if (start_index > vector_.size()) {
       return E_BOUNDS;
+    }
 
     *actual = std::min<unsigned>(vector_.size() - start_index, capacity);
     return internal::CopyN(std::next(vector_.begin(), start_index), *actual,
@@ -359,8 +368,9 @@ class Vector
     // Invoking the handlers could result in mutations to the map, thus we make
     // a copy beforehand.
     auto handlers = handlers_;
-    for (auto& handler : handlers)
+    for (auto& handler : handlers) {
       handler.second->Invoke(this, args.Get());
+    }
   }
 
   // ABI::Windows::Foundation::Collections::IIterable:

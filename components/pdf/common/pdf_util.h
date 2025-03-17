@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_PDF_COMMON_PDF_UTIL_H_
 #define COMPONENTS_PDF_COMMON_PDF_UTIL_H_
 
+#include "base/containers/span.h"
 #include "third_party/skia/include/core/SkColor.h"
-
-namespace url {
-class Origin;
-}  // namespace url
+#include "url/origin.h"
 
 // Must be kept in sync with PDFLoadStatus enum in histograms.xml.
 // This enum should be treated as append-only.
@@ -31,7 +29,9 @@ bool IsPdfExtensionOrigin(const url::Origin& origin);
 // Returns `true` if the origin is allowed to create the internal PDF plugin.
 // Note that for the Pepper-free plugin, this applies to the origin of the
 // parent of the frame that contains the in-process plugin.
-bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin);
+bool IsPdfInternalPluginAllowedOrigin(
+    const url::Origin& origin,
+    base::span<const url::Origin> additional_allowed_origins);
 
 // Returns the background color of the PDF extension.
 SkColor GetPdfBackgroundColor();

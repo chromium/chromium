@@ -45,13 +45,11 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
     private Animator mBackAnimator;
     private final MessageContainer mContainer;
     private final Callback<Animator> mAnimatorStartCallback;
-    private final boolean mAreExtraHistogramsEnabled;
 
     public MessageAnimationCoordinator(
             MessageContainer messageContainer, Callback<Animator> animatorStartCallback) {
         mContainer = messageContainer;
         mAnimatorStartCallback = animatorStartCallback;
-        mAreExtraHistogramsEnabled = MessageFeatureList.areExtraHistogramsEnabled();
     }
 
     // TODO(crbug.com/40762119): Compare current shown messages with last shown ones.
@@ -109,7 +107,9 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
             return;
         }
 
-        if (mAreExtraHistogramsEnabled && currentFront != nextFront && nextFront != null) {
+        if (MessageFeatureList.areExtraHistogramsEnabled()
+                && currentFront != nextFront
+                && nextFront != null) {
             MessagesMetrics.recordRequestToFullyShow(nextFront.handler.getMessageIdentifier());
         }
 
@@ -123,10 +123,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
             if (!mMessageQueueDelegate.isPendingShow()) {
                 mMessageQueueDelegate.onRequestShowing(onFinished);
             }
-            if (mAreExtraHistogramsEnabled && currentFront != nextFront && nextFront != null) {
-                MessagesMetrics.recordBlockedByBrowserControl(
-                        nextFront.handler.getMessageIdentifier());
-            }
             return;
         }
 
@@ -134,10 +130,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         // message is still waiting its animation to be triggered. Early return to avoid cancelling
         // that animation accidentally. Second message will be added after its animation is done.
         if (mContainer.isIsInitializingLayout()) {
-            if (mAreExtraHistogramsEnabled && currentFront != nextFront && nextFront != null) {
-                MessagesMetrics.recordBlockedByContainerInitializing(
-                        nextFront.handler.getMessageIdentifier());
-            }
             return;
         }
 
@@ -280,11 +272,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         if (candidates.get(0) == null) {
             runnable.run();
         } else {
-            boolean initialized = mContainer.runAfterInitialMessageLayout(runnable);
-            if (mAreExtraHistogramsEnabled && !initialized) {
-                MessagesMetrics.recordBlockedByContainerNotInitialized(
-                        candidates.get(0).handler.getMessageIdentifier());
-            }
+            mContainer.runAfterInitialMessageLayout(runnable);
         }
     }
 

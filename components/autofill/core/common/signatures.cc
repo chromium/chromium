@@ -39,7 +39,7 @@ std::string StripDigitsIfRequired(std::string_view input) {
 
     // If `input[i]` is a digit, find the range of consecutive digits starting
     // at `i`. If this range is shorter than 5 characters append it to `result`.
-    auto end_it = base::ranges::find_if_not(input.substr(i), IsDigit);
+    auto end_it = std::ranges::find_if_not(input.substr(i), IsDigit);
     std::string_view digits = base::MakeStringPiece(input.begin() + i, end_it);
     DCHECK(std::ranges::all_of(digits, IsDigit));
     if (digits.size() < 5)
@@ -91,12 +91,25 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
   std::string form_signature_field_names;
 
   for (const FormFieldData& field : form_data.fields()) {
-    if (!IsCheckable(field.check_status())) {
-      // Add all supported form fields (including with empty names) to the
-      // signature.  This is a requirement for Autofill servers.
-      base::StrAppend(
-          &form_signature_field_names,
-          {"&", StripDigitsIfRequired(base::UTF16ToUTF8(field.name()))});
+    switch (field.form_control_type()) {
+      case mojom::FormControlType::kInputCheckbox:
+      case mojom::FormControlType::kInputDate:
+      case mojom::FormControlType::kInputRadio:
+        break;
+      case mojom::FormControlType::kContentEditable:
+      case mojom::FormControlType::kInputEmail:
+      case mojom::FormControlType::kInputMonth:
+      case mojom::FormControlType::kInputNumber:
+      case mojom::FormControlType::kInputPassword:
+      case mojom::FormControlType::kInputSearch:
+      case mojom::FormControlType::kInputTelephone:
+      case mojom::FormControlType::kInputText:
+      case mojom::FormControlType::kInputUrl:
+      case mojom::FormControlType::kSelectOne:
+      case mojom::FormControlType::kTextArea:
+        base::StrAppend(
+            &form_signature_field_names,
+            {"&", StripDigitsIfRequired(base::UTF16ToUTF8(field.name()))});
     }
   }
 
@@ -120,15 +133,29 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
 
   std::string form_signature_field_types;
   for (const FormFieldData& field : form_data.fields()) {
-    if (!IsCheckable(field.check_status())) {
-      // Add all supported form fields' form control types to the signature.
-      // We use the string representation of the FormControlType because
-      // changing the signature algorithm is non-trivial. If and when the
-      // sectioning algorithm, we could use the raw FormControlType enum
-      // instead.
-      base::StrAppend(
-          &form_signature_field_types,
-          {"&", FormControlTypeToString(field.form_control_type())});
+    switch (field.form_control_type()) {
+      case mojom::FormControlType::kInputCheckbox:
+      case mojom::FormControlType::kInputDate:
+      case mojom::FormControlType::kInputRadio:
+        break;
+      case mojom::FormControlType::kContentEditable:
+      case mojom::FormControlType::kInputEmail:
+      case mojom::FormControlType::kInputMonth:
+      case mojom::FormControlType::kInputNumber:
+      case mojom::FormControlType::kInputPassword:
+      case mojom::FormControlType::kInputSearch:
+      case mojom::FormControlType::kInputTelephone:
+      case mojom::FormControlType::kInputText:
+      case mojom::FormControlType::kInputUrl:
+      case mojom::FormControlType::kSelectOne:
+      case mojom::FormControlType::kTextArea:
+        // We use the string representation of the FormControlType because
+        // changing the signature algorithm is non-trivial. If and when the
+        // sectioning algorithm changes, we could use the raw FormControlType
+        // enum instead.
+        base::StrAppend(
+            &form_signature_field_types,
+            {"&", FormControlTypeToString(field.form_control_type())});
     }
   }
 

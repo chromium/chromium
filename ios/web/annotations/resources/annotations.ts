@@ -70,7 +70,7 @@ class MutationsDuringClickTracker {
   constructor(private readonly initialEvent: Event) {
     this.mutationObserver =
         new MutationObserver((mutationList: MutationRecord[]) => {
-          for (let mutation of mutationList) {
+          for (const mutation of mutationList) {
             if (mutation.target.contains(this.initialEvent.target as Node)) {
               this.hasMutations = true;
               this.stopObserving();
@@ -127,17 +127,20 @@ function hasNoIntentDetection() {
 // assigned 'no'.
 function noFormatDetectionTypes(): Set<string> {
   const metas = document.getElementsByTagName('meta');
-  let types = new Set<string>();
+  const types = new Set<string>();
   for (const meta of metas) {
-    if (meta.getAttribute('name') !== 'format-detection')
+    if (meta.getAttribute('name') !== 'format-detection') {
       continue;
-    let content = meta.getAttribute('content');
-    if (!content)
+    }
+    const content = meta.getAttribute('content');
+    if (!content) {
       continue;
-    let matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/g);
-    if (!matches)
+    }
+    const matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/g);
+    if (!matches) {
       continue;
-    for (let match of matches) {
+    }
+    for (const match of matches) {
       if (match && match[2] === 'no' && match[1]) {
         types.add(match[1]);
       }
@@ -167,8 +170,8 @@ function hasNoTranslate(): boolean {
  */
 function getMetaContentByHttpEquiv(httpEquiv: string) {
   const metaTags = document.getElementsByTagName('meta');
-  for (let metaTag of metaTags) {
-    if (metaTag.httpEquiv.toLowerCase() === httpEquiv) {
+  for (const metaTag of metaTags) {
+    if (metaTag.httpEquiv && metaTag.httpEquiv.toLowerCase() === httpEquiv) {
       return metaTag.content;
     }
   }
@@ -211,7 +214,7 @@ function extractText(maxChars: number, seqId: number): void {
   if (decorations.length) {
     removeDecorations();
   }
-  let disabledTypes = noFormatDetectionTypes();
+  const disabledTypes = noFormatDetectionTypes();
   sendWebKitMessage('annotations', {
     command: 'annotations.extractedText',
     text: getPageText(maxChars),
@@ -238,8 +241,9 @@ function extractText(maxChars: number, seqId: number): void {
  */
 function decorateAnnotations(annotations: Annotation[]): void {
   // Avoid redoing without going through `removeDecorations` first.
-  if (decorations.length || !annotations.length)
+  if (decorations.length || !annotations.length) {
     return;
+  }
 
   let failures = 0;
   decorations = [];
@@ -253,8 +257,9 @@ function decorateAnnotations(annotations: Annotation[]): void {
   // Reparse page finding annotations and styling them.
   let annotationIndex = 0;
   enumerateSectionsNodes((node, index, text) => {
-    if (!node.parentNode || text === '\n')
+    if (!node.parentNode || text === '\n') {
       return true;
+    }
 
     // Skip annotation with end before index. This would happen if some nodes
     // are deleted between text fetching and decorating.
@@ -286,7 +291,7 @@ function decorateAnnotations(annotations: Annotation[]): void {
         const annotationText =
             annotation.text.substring(annotationLeft, annotationRight);
         // Text has changed, forget the rest of this annotation.
-        if (nodeText != annotationText) {
+        if (nodeText !== annotationText) {
           failures++;
           annotationIndex++;
           continue;
@@ -333,7 +338,7 @@ function decorateAnnotations(annotations: Annotation[]): void {
     successes: annotations.length - failures,
     failures: failures,
     annotations: annotations.length,
-    cancelled: []
+    cancelled: [],
   });
 }
 
@@ -341,13 +346,14 @@ function decorateAnnotations(annotations: Annotation[]): void {
  * Remove current decorations.
  */
 function removeDecorations(): void {
-  for (let decoration of decorations) {
+  for (const decoration of decorations) {
     const replacements = decoration.replacements;
     const parentNode = replacements[0]!.parentNode;
-    if (!parentNode)
+    if (!parentNode) {
       return;
+    }
     parentNode.insertBefore(decoration.original, replacements[0]!);
-    for (let replacement of replacements) {
+    for (const replacement of replacements) {
       parentNode.removeChild(replacement);
     }
   }
@@ -359,21 +365,22 @@ function removeDecorations(): void {
  * @param type - the type of annotations to remove.
  */
 function removeDecorationsWithType(type: string): void {
-  var remainingDecorations: Decoration[] = [];
-  for (let decoration of decorations) {
+  const remainingDecorations: Decoration[] = [];
+  for (const decoration of decorations) {
     const replacements = decoration.replacements;
     const parentNode = replacements[0]!.parentNode;
-    if (!parentNode)
+    if (!parentNode) {
       return;
+    }
 
-    var hasReplacementOfType = false;
-    var hasReplacementOfAnotherType = false;
-    for (let replacement of replacements) {
+    let hasReplacementOfType = false;
+    let hasReplacementOfAnotherType = false;
+    for (const replacement of replacements) {
       if (!(replacement instanceof HTMLElement)) {
         continue;
       }
-      var element = replacement as HTMLElement;
-      var replacementType = element.getAttribute('data-type');
+      const element = replacement as HTMLElement;
+      const replacementType = element.getAttribute('data-type');
       if (replacementType === type) {
         hasReplacementOfType = true;
       } else {
@@ -389,7 +396,7 @@ function removeDecorationsWithType(type: string): void {
     if (!hasReplacementOfAnotherType) {
       // Restore previous node
       parentNode.insertBefore(decoration.original, replacements[0]!);
-      for (let replacement of replacements) {
+      for (const replacement of replacements) {
         parentNode.removeChild(replacement);
       }
       continue;
@@ -397,19 +404,19 @@ function removeDecorationsWithType(type: string): void {
 
     // The decoration is of mixed type. Just replace the <chrome_annotation>
     // of `type` by a text node with same text content.
-    let newReplacements: Node[] = [];
-    for (let replacement of replacements) {
+    const newReplacements: Node[] = [];
+    for (const replacement of replacements) {
       if (!(replacement instanceof HTMLElement)) {
         newReplacements.push(replacement);
         continue;
       }
-      var element = replacement as HTMLElement;
-      var replacementType = element.getAttribute('data-type');
+      const element = replacement as HTMLElement;
+      const replacementType = element.getAttribute('data-type');
       if (replacementType !== type) {
         newReplacements.push(replacement);
         continue;
       }
-      let text = document.createTextNode(element.textContent ?? '');
+      const text = document.createTextNode(element.textContent ?? '');
       parentNode.replaceChild(text, element);
       newReplacements.push(text);
     }
@@ -423,8 +430,8 @@ function removeDecorationsWithType(type: string): void {
  * Removes any highlight on all annotations.
  */
 function removeHighlight(): void {
-  for (let decoration of decorations) {
-    for (let replacement of decoration.replacements) {
+  for (const decoration of decorations) {
+    for (const replacement of decoration.replacements) {
       if (!(replacement instanceof HTMLElement)) {
         continue;
       }
@@ -453,7 +460,7 @@ function enumerateTextNodes(
   let isPreviousSpace = true;
 
   while (nodes.length > 0) {
-    let node = nodes.pop();
+    const node = nodes.pop();
     if (!node) {
       break;
     }
@@ -469,10 +476,12 @@ function enumerateTextNodes(
         continue;
       }
       if (node.nodeName === 'BR') {
-        if (isPreviousSpace)
+        if (isPreviousSpace) {
           continue;
-        if (!process(node, index, '\n'))
+        }
+        if (!process(node, index, '\n')) {
           break;
+        }
         isPreviousSpace = true;
         index += 1;
         continue;
@@ -486,15 +495,16 @@ function enumerateTextNodes(
       // No need to add a line break before `body` as it is the first element.
       if (node.nodeName.toUpperCase() !== 'BODY' &&
           style.display !== 'inline' && !isPreviousSpace) {
-        if (!process(node, index, '\n'))
+        if (!process(node, index, '\n')) {
           break;
+        }
         isPreviousSpace = true;
         index += 1;
       }
 
       if (includeShadowDOM) {
         const element = node as Element;
-        if (element.shadowRoot && element.shadowRoot != node) {
+        if (element.shadowRoot && element.shadowRoot !== node) {
           nodes.push(element.shadowRoot);
           continue;
         }
@@ -508,10 +518,12 @@ function enumerateTextNodes(
       }
     } else if (node.nodeType === Node.TEXT_NODE && node.textContent) {
       const isSpace = node.textContent.trim() === '';
-      if (isSpace && isPreviousSpace)
+      if (isSpace && isPreviousSpace) {
         continue;
-      if (!process(node, index, node.textContent))
+      }
+      if (!process(node, index, node.textContent)) {
         break;
+      }
       isPreviousSpace = isSpace;
       index += node.textContent.length;
     }
@@ -522,15 +534,17 @@ function enumerateTextNodes(
  * Alternative to `enumerateTextNodes` using sections.
  */
 function enumerateSectionsNodes(process: EnumNodesFunction): void {
-  for (let section of sections) {
+  for (const section of sections) {
     const node: Node|undefined = section.node.deref();
-    if (!node)
+    if (!node) {
       continue;
+    }
 
     const text: string|null =
         node.nodeType === Node.ELEMENT_NODE ? '\n' : node.textContent;
-    if (text && !process(node, section.index, text))
+    if (text && !process(node, section.index, text)) {
       break;
+    }
   }
 }
 
@@ -614,8 +628,8 @@ function highlightAnnotation(annotation: HTMLElement) {
   // Using webkit edit selection kills a second tapping on the element and also
   // causes a merge with the edit menu in some circumstance.
   // Using custom highlight instead.
-  for (let decoration of decorations) {
-    for (let replacement of decoration.replacements) {
+  for (const decoration of decorations) {
+    for (const replacement of decoration.replacements) {
       if (!(replacement instanceof HTMLElement)) {
         continue;
       }
@@ -669,7 +683,7 @@ function replaceNode(
 
   let cursor = 0;
   const parts: Node[] = [];
-  for (let replacement of replacements) {
+  for (const replacement of replacements) {
     if (replacement.left > cursor) {
       parts.push(
           document.createTextNode(text.substring(cursor, replacement.left)));
@@ -684,7 +698,7 @@ function replaceNode(
     // the text to be parsed and '\n' to be upgraded to <br>.
     element.textContent = replacement.text;
 
-    if (replacement.type == 'PHONE_NUMBER' || replacement.type == 'EMAIL') {
+    if (replacement.type === 'PHONE_NUMBER' || replacement.type === 'EMAIL') {
       element.style.cssText = decorationStylesForPhoneAndEmail;
     } else {
       element.style.cssText = decorationStyles;
@@ -698,7 +712,7 @@ function replaceNode(
     parts.push(document.createTextNode(text.substring(cursor, text.length)));
   }
 
-  for (let part of parts) {
+  for (const part of parts) {
     parentNode.insertBefore(part, node);
   }
   parentNode.removeChild(node);
@@ -716,7 +730,7 @@ function rectFromElement(element: Element) {
     x: domRect.x,
     y: domRect.y,
     width: domRect.width,
-    height: domRect.height
+    height: domRect.height,
   };
 }
 

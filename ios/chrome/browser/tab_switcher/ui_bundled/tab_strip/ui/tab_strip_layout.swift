@@ -683,6 +683,15 @@ class TabStripLayout: UICollectionViewFlowLayout {
   )
     -> UICollectionViewLayoutAttributes?
   {
+    if indexPathsOfDeletingItems.contains(itemIndexPath) {
+      // Animate the disappearing item by fading it out and translating it down
+      // by its height.
+      attributes.alpha = 0
+      attributes.transform = CGAffineTransform(
+        translationX: 0,
+        y: attributes.frame.size.height
+      )
+    }
     return attributes
   }
 
@@ -770,9 +779,17 @@ class TabStripLayout: UICollectionViewFlowLayout {
     var width =
       tabGroupItem.title?.size(withAttributes: [
         .font: UIFont.systemFont(ofSize: TabStripConstants.GroupItem.fontSize, weight: .medium)
-      ]).width ?? 0
-    width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalMargin
-    width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalPadding
+      ]).width.rounded(.up) ?? 0
+    width += TabStripConstants.GroupItem.minCellWidth
+    if let groupItemIdentifier = TabStripItemIdentifier.groupIdentifier(tabGroupItem),
+      let indexPath = dataSource?.indexPath(for: groupItemIdentifier),
+      let groupCell = collectionView?.cellForItem(at: indexPath) as? TabStripGroupCell
+    {
+      width += groupCell.hasNotificationDot ? TabStripConstants.GroupItem.notificationDotSize : 0
+      width +=
+        groupCell.hasNotificationDot
+        ? TabStripConstants.GroupItem.titleContainerHorizontalMargin : 0
+    }
     width = min(width, TabStripConstants.GroupItem.maxCellWidth)
     return CGSize(width: width, height: TabStripConstants.GroupItem.height)
   }

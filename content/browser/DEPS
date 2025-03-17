@@ -10,6 +10,8 @@ include_rules = [
   "+components/discardable_memory/service",
   "+components/download/database",
   "+components/download/public/common",
+  "+components/embedder_support/switches.h",
+  "+components/embedder_support/user_agent_utils.h",
   "+components/file_access",
   "+components/filename_generation",
   "+components/grit",
@@ -37,6 +39,7 @@ include_rules = [
   "+components/system_media_controls",
   "+components/tracing",
   "+components/ukm",
+  "+components/unexportable_keys/features.h",
   "+components/url_formatter",
   "+components/viz",
   "+components/web_package",
@@ -165,6 +168,9 @@ specific_include_rules = {
     "+services/network/url_loader.h",
     "+services/network/url_request_context_owner.h",
   ],
+  "network_service_browsertest\.cc": [
+    "+services/network/network_service.h",
+  ],
   "network_service_instance_impl\.cc": [
     # Used to instantiate a CertVerifierServiceFactory in the browser process.
     "+services/cert_verifier/cert_verifier_service_factory.h",
@@ -198,6 +204,9 @@ specific_include_rules = {
   ],
   "utility_sandbox_delegate_win\.cc": [
     "+content/utility/sandbox_delegate_data.mojom.h"
+  ],
+  "utility_process_host\.cc": [
+    "+ui/ozone/public/ozone_switches.h",
   ],
   "web_app_system_media_controls_manager.cc": [
     "+components/remote_cocoa/browser"

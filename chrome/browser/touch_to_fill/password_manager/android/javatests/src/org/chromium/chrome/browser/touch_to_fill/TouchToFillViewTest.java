@@ -682,8 +682,9 @@ public class TouchToFillViewTest {
                 getActivity()
                         .getString(
                                 R.string
-                                        .touch_to_fill_password_credential_accessibility_description,
-                                ANA.getFormattedUsername());
+                                        .touch_to_fill_password_credential_accessibility_description_with_url,
+                                ANA.getFormattedUsername(),
+                                ANA.getDisplayName());
         assertEquals(
                 getCredentials().getChildAt(0).getContentDescription(),
                 getActivity()
@@ -740,8 +741,9 @@ public class TouchToFillViewTest {
                 getActivity()
                         .getString(
                                 R.string
-                                        .touch_to_fill_password_credential_accessibility_description,
-                                ANA.getFormattedUsername()));
+                                        .touch_to_fill_password_credential_accessibility_description_with_url,
+                                ANA.getFormattedUsername(),
+                                ANA.getDisplayName()));
 
         assertNotNull(getCredentials().getChildAt(1));
         assertEquals(
@@ -942,7 +944,8 @@ public class TouchToFillViewTest {
                                 .getString(
                                         R.string.touch_to_fill_sheet_passkey_credential_context)));
 
-        CredManSupportProvider.setupForTesting(/*override*/ false);
+        CredManSupportProvider.setupForTesting(
+                /* overrideAndroidVersion= */ null, /* overrideForcesGpm= */ null);
     }
 
     private ChromeActivity getActivity() {

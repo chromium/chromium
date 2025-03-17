@@ -104,7 +104,9 @@ DepthOrderedLayoutObjectList::Ordered() {
   if (data_->objects_.empty() || !data_->ordered_objects_.empty())
     return data_->ordered_objects_;
 
-  data_->ordered_objects_.assign(data_->objects_);
+  data_->ordered_objects_.assign(data_->objects_, [](LayoutObject* object) {
+    return LayoutObjectWithDepth(object);
+  });
   std::sort(data_->ordered_objects_.begin(), data_->ordered_objects_.end());
   return data_->ordered_objects_;
 }

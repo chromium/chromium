@@ -9,11 +9,13 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.shared_preferences.KnownPreferenceKeyRegistries;
 import org.chromium.base.shared_preferences.PreferenceKeyRegistry;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.cached_flags.CachedFlagsSharedPreferences;
 
 import java.util.Set;
 
 @CheckDiscard("Preference key checking should only happen on build with asserts")
+@NullMarked
 public class AllPreferenceKeyRegistries {
     @VisibleForTesting
     static final Set<PreferenceKeyRegistry> KNOWN_REGISTRIES =

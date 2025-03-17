@@ -262,7 +262,7 @@ void ScopedWindowTucker::InitializeTuckHandleWidget() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   auto app_window_it =
-      base::ranges::find_if(mru_windows, [this](aura::Window* w) {
+      std::ranges::find_if(mru_windows, [this](aura::Window* w) {
         CHECK(WindowState::Get(w));
         return w != window() && !WindowState::Get(w)->IsMinimized();
       });

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -34,7 +36,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest_mac.h"
@@ -89,6 +90,11 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_settings_commands_handler_
                      forProtocol:@protocol(SettingsCommands)];
+    mock_google_one_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(GoogleOneCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_google_one_commands_handler_
+                     forProtocol:@protocol(GoogleOneCommands)];
     mock_save_to_photos_mediator_ = OCMClassMock([SaveToPhotosMediator class]);
     mock_account_picker_coordinator_ =
         OCMClassMock([AccountPickerCoordinator class]);
@@ -110,7 +116,8 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
                                               signin::IdentityManager*>(
                                               [OCMArg anyPointer])
                 manageStorageAlertHandler:[OCMArg any]
-                       applicationHandler:[OCMArg any]])
+                       applicationHandler:[OCMArg any]
+                         googleOneHandler:[OCMArg any]])
         .andReturn(mock_save_to_photos_mediator_);
   }
 
@@ -164,6 +171,7 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
   id mock_snackbar_commands_handler_;
   id mock_application_commands_handler_;
   id mock_settings_commands_handler_;
+  id mock_google_one_commands_handler_;
 };
 
 // Tests that the SaveToPhotosCoordinator creates the mediator when started and
@@ -193,6 +201,8 @@ TEST_F(SaveToPhotosCoordinatorTest, StartsAndDisconnectsMediator) {
           manageStorageAlertHandler:static_cast<id<ManageStorageAlertCommands>>(
                                         browser_->GetCommandDispatcher())
                  applicationHandler:static_cast<id<ApplicationCommands>>(
+                                        browser_->GetCommandDispatcher())
+                   googleOneHandler:static_cast<id<GoogleOneCommands>>(
                                         browser_->GetCommandDispatcher())])
       .andReturn(mock_save_to_photos_mediator_);
   ASSERT_TRUE(
@@ -432,8 +442,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);
                 EXPECT_FALSE(command.identity);
-                EXPECT_EQ(signin_metrics::AccessPoint::
-                              ACCESS_POINT_SAVE_TO_PHOTOS_IOS,
+                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToPhotosIos,
                           command.accessPoint);
                 EXPECT_EQ(
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,

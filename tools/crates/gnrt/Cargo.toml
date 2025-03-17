@@ -35,3 +35,17 @@ features = ["color"]
 
 [dev-dependencies]
 tempfile = "3"
+
+# Patch `guppy` in a way that corresponds to
+# https://github.com/guppy-rs/guppy/pull/453
+# (and an already discussed follow-up, not-yet-raised PR
+# for `host_links` and `target_links` accessors).
+#
+# TODO(https://crbug.com/395924069): Stop patching `guppy` after the upstream
+# discussion of the PR concludes whether to 1) merge it as-is, or 2) tweak it.
+[dependencies.guppy]
+git = 'https://github.com/anforowicz/guppy.git'
+branch = 'cargo-set-more-links-accessors'
+[dependencies.target-spec]
+git = 'https://github.com/anforowicz/guppy.git'
+branch = 'cargo-set-more-links-accessors'

@@ -39,8 +39,9 @@
 
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   NSString* key = fakeIdentity.gaiaID;
-  if ([_details objectForKey:key])
+  if ([_details objectForKey:key]) {
     return;
+  }
 
   DCHECK(![_orderedKeys containsObject:key]);
   _details[key] =

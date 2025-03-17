@@ -1815,19 +1815,19 @@ TEST_F(AutocompleteProviderTest, ResizeMatches) {
   // The first `max_matches` matches should keep their relevance score and have
   // `culled_by_provider` set to false.
   ACMatches provider_matches = provider->get_matches();
-  base::ranges::for_each(provider_matches.begin(),
-                         std::next(provider_matches.begin(), kMaxMatches),
-                         [&](auto match) {
-                           EXPECT_NE(match.relevance, 0);
-                           EXPECT_FALSE(match.culled_by_provider);
-                         });
+  std::ranges::for_each(provider_matches.begin(),
+                        std::next(provider_matches.begin(), kMaxMatches),
+                        [&](auto match) {
+                          EXPECT_NE(match.relevance, 0);
+                          EXPECT_FALSE(match.culled_by_provider);
+                        });
   // Any match beyond that should have their relevance score zeroed and
   // `culled_by_provider` set.
-  base::ranges::for_each(std::next(provider_matches.begin(), kMaxMatches),
-                         provider_matches.end(), [&](auto match) {
-                           EXPECT_EQ(match.relevance, 0);
-                           EXPECT_TRUE(match.culled_by_provider);
-                         });
+  std::ranges::for_each(std::next(provider_matches.begin(), kMaxMatches),
+                        provider_matches.end(), [&](auto match) {
+                          EXPECT_EQ(match.relevance, 0);
+                          EXPECT_TRUE(match.culled_by_provider);
+                        });
 
   // Now disable the flag. With ML Scoring disabled, `matches_` should actually
   // be resized and `relevance` and `culled_by_provider` should be untouched.
@@ -1836,7 +1836,7 @@ TEST_F(AutocompleteProviderTest, ResizeMatches) {
 
   provider->ResizeMatches(kMaxMatches, false);
   EXPECT_EQ(provider->get_matches().size(), kMaxMatches);
-  base::ranges::for_each(provider->get_matches(), [&](auto match) {
+  std::ranges::for_each(provider->get_matches(), [&](auto match) {
     EXPECT_NE(match.relevance, 0);
     EXPECT_FALSE(match.culled_by_provider);
   });

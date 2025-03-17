@@ -1,0 +1,74 @@
+Document Level=0
+++Group Level=0
+++++Text IsControlElement=false Level=2
+++++Text IsControlElement=false Level=3
+++++Text IsControlElement=false Level=4
+++++Group Level=0
+++++++Text IsControlElement=false Level=4
+++++++Text IsControlElement=false Level=5
+++++++Group Level=0
+++++++++Text IsControlElement=false Level=1
+++++++Window Name='container dialog' Level=0 Window.IsModal=false
+++++++++Text IsControlElement=false Level=4
+++++++++Text IsControlElement=false Level=1
+++Group Level=0
+++++Text IsControlElement=false Level=9
+++++Text IsControlElement=false Level=9
+++++Text IsControlElement=false Level=9
+++++Text IsControlElement=false Level=9
+++++Text IsControlElement=false Level=9
+++++Text IsControlElement=false Level=9
+++++Group Level=0
+++++++Text IsControlElement=false Level=1
+++++Window Name='container dialog' Level=0 Window.IsModal=false
+++++++Text IsControlElement=false Level=9
+++Group Level=0
+++++Text IsControlElement=false Level=1
+++++Text IsControlElement=false Level=2
+++++Text IsControlElement=false Level=3
+++++Text IsControlElement=false Level=4
+++++Text IsControlElement=false Level=5
+++++Text IsControlElement=false Level=6
+++++Group Level=0
+++++++Text IsControlElement=false Level=1
+++++Window Name='container dialog' Level=0 Window.IsModal=false
+++++++Text IsControlElement=false Level=1
+++Group Level=0
+++++Text IsControlElement=false Level=2
+++++Text IsControlElement=false Level=2
+++Group Level=0
+++++Text IsControlElement=false Level=2
+++++Text IsControlElement=false Level=3
+++++Text IsControlElement=false Level=3
+++++Text IsControlElement=false Level=2
+++Group Level=0
+++++Text IsControlElement=false Level=2
+++++Group Level=0
+++++++Text IsControlElement=false Level=4
+++++++Text IsControlElement=false Level=6
+++++++Text IsControlElement=false Level=4
+++Group Level=0
+++++Text IsControlElement=false Level=2
+++++Text IsControlElement=false Level=4
+++Text IsControlElement=false Level=2
+++Text IsControlElement=false Level=3
+++Text IsControlElement=false Level=3
+++Text IsControlElement=false Level=4
+++Text IsControlElement=false Level=2
+++Text IsControlElement=false Level=3
+++Text IsControlElement=false Level=3
+++Text IsControlElement=false Level=4
+++Text IsControlElement=false Level=9
+++Text IsControlElement=false Level=9
+++Text IsControlElement=false Level=1
+++Text IsControlElement=false Level=2
+++Group Level=0
+++++Text IsControlElement=false Level=2
+++++Text IsControlElement=false Level=3
+++++Text IsControlElement=false Level=2
+++++Text IsControlElement=false Level=3
+++++Text IsControlElement=false Level=1
+++++Text IsControlElement=false Level=2
+++Group Level=0
+++++Text IsControlElement=false Level=5
+++Text Level=3

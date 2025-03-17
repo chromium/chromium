@@ -30,28 +30,38 @@ For convenience, add `third_party/llvm-build/Release+Asserts/bin` to `$PATH`.
 
 LLVM uses C++11 and CMake. Source code for Chromium clang tools lives in
 [//tools/clang]. It is generally easiest to use one of the already-written tools
-as the base for writing a new tool.
+as the base for writing a new tool; the tool in [//tools/clang/ast_rewriter] is
+designed for this purpose, and includes explanations its major parts.
 
 Chromium clang tools generally follow this pattern:
 
 1.  Instantiate a
     [`clang::ast_matchers::MatchFinder`][clang-docs-match-finder].
-2.  Call `addMatcher()` to register
+2.  Develop one or most [AST matchers][clang-matcher-tutorial] to locate the
+    patterns of interest.
+    1. `clang-query` is of great use for this part
+3.  Create a subclass of
     [`clang::ast_matchers::MatchFinder::MatchCallback`][clang-docs-match-callback]
-    actions to execute when [matching][matcher-reference] the AST.
+    to determine what actions to take on each match, and register it with
+    `addMatcher()`.
 3.  Create a new `clang::tooling::FrontendActionFactory` from the `MatchFinder`.
 4.  Run the action across the specified files with
     [`clang::tooling::ClangTool::run`][clang-docs-clang-tool-run].
 5.  Serialize generated [`clang::tooling::Replacement`][clang-docs-replacement]s
     to `stdout`.
 
-Other useful references when writing the tool:
+Useful references when writing the tool:
 
 *   [Clang doxygen reference][clang-docs]
 *   [Tutorial for building tools using LibTooling and
     LibASTMatchers][clang-tooling-tutorial]
+*   [Tutorial for AST matchers][clang-matcher-tutorial]
+*   [AST matcher reference][matcher-reference]
 
 ### Edit serialization format
+Tools do not directly edit files; rather, they output a series of _edits_ to be
+applied later, which have the following format:
+
 ```
 ==== BEGIN EDITS ====
 r:::path/to/file/to/edit:::offset1:::length1:::replacement text
@@ -103,7 +113,8 @@ tools/clang/scripts/build.py --bootstrap --without-android --without-fuchsia \
 Running this command builds the [Oilpan plugin][//tools/clang/blink_gc_plugin],
 the [Chrome style plugin][//tools/clang/plugins], and the [Blink to Chrome style
 rewriter][//tools/clang/rewrite_to_chrome_style]. Additional arguments to
-`--extra-tools` should be the name of subdirectories in [//tools/clang].
+`--extra-tools` should be the name of subdirectories in [//tools/clang]. The
+tool binary will be located in `third_party/llvm-build/Release+Asserts/bin`.
 
 It is important to use --bootstrap as there appear to be [bugs](https://crbug.com/580745)
 in the clang library this script produces if you build it with gcc, which is the default.
@@ -192,11 +203,17 @@ clang++ -Xclang -ast-dump -std=c++14 foo.cc | less -R
 ```
 
 Using `clang-query` to dynamically test matchers (requires checking out
-and building [clang-tools-extra][]):
+and building [clang-tools-extra][]; this should happen automatically).
+The binary is located in `third_party/llvm-build/Release+Asserts/bin`:
 
 ```shell
 clang-query -p path/to/compdb base/memory/ref_counted.cc
 ```
+
+If you're running it on a test file instead of a real one, the compdb is
+optional; it will complain but it still works. Test matchers against the
+specified file by running `match <matcher>`, or simply `m <matcher>`. Use of
+`rlwrap` is highly recommended.
 
 `printf` debugging:
 
@@ -229,6 +246,7 @@ When `--apply-edits` switch is not presented, tool outputs are compared to
 that in this case, only one test file is expected.
 
 [//tools/clang]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/
+[//tools/clang/ast_rewriter]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/ast_rewriter
 [clang-docs-match-finder]: http://clang.llvm.org/doxygen/classclang_1_1ast__matchers_1_1MatchFinder.html
 [clang-docs-match-callback]: http://clang.llvm.org/doxygen/classclang_1_1ast__matchers_1_1MatchFinder_1_1MatchCallback.html
 [matcher-reference]: http://clang.llvm.org/docs/LibASTMatchersReference.html
@@ -239,4 +257,5 @@ that in this case, only one test file is expected.
 [//tools/clang/blink_gc_plugin]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/blink_gc_plugin/
 [//tools/clang/plugins]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/plugins/
 [//tools/clang/rewrite_to_chrome_style]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/rewrite_to_chrome_style/
-[clang-tools-extra]: (https://github.com/llvm-mirror/clang-tools-extra)
+[clang-tools-extra]: (https://clang.llvm.org/extra/index.html)
+[clang-matcher-tutorial]: (https://clang.llvm.org/docs/LibASTMatchers.html#astmatchers-writing)

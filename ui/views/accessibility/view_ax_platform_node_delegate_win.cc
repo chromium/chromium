@@ -33,7 +33,8 @@
 namespace views {
 
 // static
-std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+std::unique_ptr<ViewAccessibility>
+ViewAXPlatformNodeDelegate::CreatePlatformSpecific(View* view) {
   auto result = std::make_unique<ViewAXPlatformNodeDelegateWin>(view);
   result->Init();
   return result;
@@ -148,16 +149,6 @@ gfx::Point ViewAXPlatformNodeDelegateWin::ScreenToDIPPoint(
   // coordinates adjusted for multiple displays of different resolutions.
   return ToRoundedPoint(
       display::win::ScreenWin::ScreenToDIPPoint(gfx::PointF(screen_point)));
-}
-
-void ViewAXPlatformNodeDelegateWin::EnsureAtomicViewAXTreeManager() {
-  DCHECK(needs_ax_tree_manager());
-  if (atomic_view_ax_tree_manager_) {
-    return;
-  }
-
-  atomic_view_ax_tree_manager_ =
-      views::AtomicViewAXTreeManager::Create(this, data());
 }
 
 }  // namespace views

@@ -5,8 +5,7 @@
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
 
 #import "base/strings/utf_string_conversions.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -30,12 +29,11 @@ UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
 
 void GetSearchEngineFavicon(
     const TemplateURL& template_url,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
     TemplateURLService* template_url_service,
     FaviconLoader* favicon_loader,
     FaviconLoader::FaviconAttributesCompletionBlock favicon_block_handler) {
-  if (search_engines::IsEeaChoiceCountry(
-          search_engine_choice_service->GetCountryId()) &&
+  if (regional_capabilities.IsInEeaCountry() &&
       template_url.prepopulate_id() > 0) {
     // For EEA countries, embedded favicons should be prefered, with a fall
     // back using FaviconLoader APIs.

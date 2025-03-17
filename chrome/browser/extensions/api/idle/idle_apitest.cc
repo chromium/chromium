@@ -5,26 +5,15 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/idle/idle_manager_factory.h"
 #include "extensions/browser/api/idle/test_idle_provider.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace extensions {
 
-#if BUILDFLAG(IS_ANDROID)
-using IdleApiTestBase = ExtensionPlatformApiTest;
-#else
-using IdleApiTestBase = ExtensionApiTest;
-#endif  // BUILDFLAG(IS_ANDROID)
-
-class IdleApiTest : public IdleApiTestBase {
+class IdleApiTest : public ExtensionApiTest {
  public:
   IdleApiTest() = default;
   ~IdleApiTest() override = default;

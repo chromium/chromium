@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Configuration;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
@@ -36,11 +35,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -62,12 +58,10 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeoutException;
 
 /** Tests tabbed mode app menu popup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -139,21 +133,6 @@ public class TabbedAppMenuTest {
                 });
     }
 
-    /** Verify opening a new tab from the menu. */
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    public void testMenuNewTab() {
-        final int tabCountBefore = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mActivityTestRule.getActivity());
-        final int tabCountAfter = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        Assert.assertTrue(
-                "Expected: " + (tabCountBefore + 1) + " Got: " + tabCountAfter,
-                tabCountBefore + 1 == tabCountAfter);
-    }
-
     /**
      * Test bounds when accessing the menu through the keyboard. Make sure that the menu stays open
      * when trying to move past the first and last items.
@@ -203,77 +182,16 @@ public class TabbedAppMenuTest {
 
     /**
      * Test that hitting ENTER on the top item actually triggers the top item. Catches regressions
-     * for https://crbug.com/191239 for shrunken menus.
+     * for https://crbug.com/191239 for shrunken menus in landscape.
      */
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    public void testKeyboardMenuEnterOnTopItemLandscape() {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+    public void testKeyboardMenuEnterOnTopItem() {
         showAppMenuAndAssertMenuShown();
         moveToBoundary(true, false);
         assertEquals(0, getCurrentFocusedRow());
         hitEnterAndAssertAppMenuDismissed();
-    }
-
-    /** Test that hitting ENTER on the top item doesn't crash Chrome. */
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    public void testKeyboardMenuEnterOnTopItemPortrait() {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
-        showAppMenuAndAssertMenuShown();
-        moveToBoundary(true, false);
-        assertEquals(0, getCurrentFocusedRow());
-        hitEnterAndAssertAppMenuDismissed();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @Restriction(DeviceFormFactor.PHONE)
-    public void testHideMenuOnToggleOverview() throws TimeoutException {
-        // App menu is shown during setup.
-        Assert.assertTrue("App menu should be showing.", mAppMenuHandler.isAppMenuShowing());
-        Assert.assertFalse(
-                "Overview shouldn't be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
-
-        Assert.assertTrue(
-                "Overview should be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-        Assert.assertFalse("App menu shouldn't be showing.", mAppMenuHandler.isAppMenuShowing());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(
-                            "App menu should be allowed to show.",
-                            AppMenuTestSupport.shouldShowAppMenu(
-                                    mActivityTestRule.getAppMenuCoordinator()));
-                });
-        showAppMenuAndAssertMenuShown();
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
-        Assert.assertFalse(
-                "Overview shouldn't be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-        CriteriaHelper.pollUiThread(
-                () -> !mAppMenuHandler.isAppMenuShowing(), "App menu shouldn't be showing.");
     }
 
     @Test
@@ -310,17 +228,6 @@ public class TabbedAppMenuTest {
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.TITLE_CONDENSED));
         mRenderTestRule.render(
                 getListView().getChildAt(0), "rounded_corner_icon_row_page_bookmarked");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main", "RenderTest"})
-    public void testDividerLineMenuItem() throws IOException {
-        int firstDividerLineIndex =
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
-        Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);
-        mRenderTestRule.render(getListView().getChildAt(firstDividerLineIndex), "divider_line");
     }
 
     @Test

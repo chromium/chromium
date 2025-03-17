@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/web_location_bar.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
@@ -134,8 +134,8 @@ bool ChromeOmniboxClientIOS::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
       ->IsUsingFakeHttpsForTesting();
 }
 
-gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
-    const AutocompleteMatch& match) const {
+gfx::Image ChromeOmniboxClientIOS::GetExtensionIcon(
+    const TemplateURL* template_url) const {
   // Extensions are not supported on iOS.
   return gfx::Image();
 }
@@ -170,13 +170,12 @@ const gfx::VectorIcon& ChromeOmniboxClientIOS::GetVectorIcon() const {
   return location_bar_->GetLocationBarModel()->GetVectorIcon();
 }
 
-bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
+void ChromeOmniboxClientIOS::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
   // Extensions are not supported on iOS.
-  return false;
 }
 
 void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,

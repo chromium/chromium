@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -48,6 +49,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -64,9 +66,9 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -467,7 +469,7 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
     return GURL("chrome://os-settings/app-management/detail?id=" + app_id);
 #else
     return GURL("chrome://app-settings/" + app_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
  protected:
@@ -487,12 +489,12 @@ IN_PROC_BROWSER_TEST_F(
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page
   // opens in the OS Settings app, and not a normal browser tab.
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install an app so that the related application section will have something
   // to show. We don't actually care about the app in this test though.
@@ -529,12 +531,12 @@ IN_PROC_BROWSER_TEST_F(
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page
   // opens in the OS Settings app, and not a normal browser tab.
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install and launch the web app.
   auto app_id = web_app::test::InstallDummyWebApp(
@@ -591,17 +593,19 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
 
  protected:
   void SetUpFeatureList() override {
-    feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+    feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
   }
 
   Browser* InstallAndLaunchIsolatedWebApp() {
     Profile* profile = browser()->profile();
-    auto iwa_dev_server = web_app::CreateAndStartDevServer(
-        FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    auto iwa_url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-        profile, iwa_dev_server->GetOrigin());
+
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().SetName("Test App"))
+            .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo iwa_url_info = app->InstallChecked(profile);
     app_id_ = iwa_url_info.app_id();
+
     content::RenderFrameHost* iwa_frame =
         web_app::OpenIsolatedWebApp(profile, app_id_);
 
@@ -669,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the hostname label.
-      CheckHostnameLabel(kFirstPartyAllowedRow, u"Simple Isolated App"));
+      CheckHostnameLabel(kFirstPartyAllowedRow, u"Test App"));
 }
 
 class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
@@ -682,7 +686,7 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
-        {blink::features::kSharedStorageAPI, blink::features::kFencedFrames,
+        {network::features::kSharedStorageAPI, blink::features::kFencedFrames,
          features::kPrivacySandboxAdsAPIsOverride},
         {});
   }

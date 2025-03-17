@@ -57,7 +57,6 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/WebRTC Logs", ""));
   EXPECT_TRUE(
       IsAccessAllowed("/home/chronos/user/google-assistant-library/log", ""));
-  EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/lacros/lacros.log", ""));
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/log", ""));
   EXPECT_TRUE(IsAccessAllowed("/media", ""));
   EXPECT_TRUE(IsAccessAllowed("/opt/oem", ""));
@@ -78,8 +77,8 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/lacros", ""));
   EXPECT_FALSE(
       IsAccessAllowed("/home/chronos/user/lacros/subdir/lacros.log", ""));
+  EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/lacros/lacros.log", ""));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If profile path is given, the following additional paths are allowed.
   EXPECT_TRUE(IsAccessAllowed("/profile/MyFiles/Downloads", "/profile"));
   EXPECT_TRUE(IsAccessAllowed("/profile/MyFiles", "/profile"));
@@ -94,17 +93,6 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
     base::test::ScopedRunningOnChromeOS running_on_chromeos;
     EXPECT_FALSE(IsAccessAllowed(downloads_dir.AsUTF8Unsafe(), ""));
   }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // System level documents and downloads directories are allowed.
-  base::FilePath documents_dir;
-  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &documents_dir);
-  EXPECT_TRUE(IsAccessAllowed(documents_dir.AsUTF8Unsafe(), ""));
-  base::FilePath downloads_dir;
-  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_dir);
-  EXPECT_TRUE(IsAccessAllowed(downloads_dir.AsUTF8Unsafe(), ""));
-#endif
 
   // WebRTC logs for the current profile are allowed.
   EXPECT_TRUE(IsAccessAllowed("/profile/WebRTC Logs", "/profile"));

@@ -38,7 +38,7 @@ class TestItem extends CrLitElement {
   }
 
   override focus() {
-    this.shadowRoot!.querySelector('button')!.focus();
+    this.shadowRoot.querySelector('button')!.focus();
   }
 
   name: string = '';
@@ -53,12 +53,14 @@ class TestApp extends CrLitElement {
 
   static override get properties() {
     return {
+      chunkSize: {type: Number},
       listItems: {type: Array},
       restoreFocusElement_: {type: Object},
       scrollOffset: {type: Number},
     };
   }
 
+  chunkSize: number = 0;
   listItems: Array<{name: string}> = [];
   scrollOffset: number = 0;
   private restoreFocusElement_: HTMLElement|null = null;
@@ -67,7 +69,7 @@ class TestApp extends CrLitElement {
     return html`
     <div style="height: ${this.scrollOffset}px"></div>
     <cr-lazy-list .items="${this.listItems}" .scrollTarget="${this}"
-        .scrollOffset="${this.scrollOffset}"
+        .scrollOffset="${this.scrollOffset}" .chunkSize="${this.chunkSize}"
         .restoreFocusElement="${this.restoreFocusElement_}"
         .template=${(item: {name: string}, idx: number) => html`
             <test-item name="${item.name}"
@@ -79,7 +81,7 @@ class TestApp extends CrLitElement {
   }
 
   private onRenderedItemsChanged_() {
-    this.restoreFocusElement_ = this.shadowRoot!.querySelector('[name="Two"]');
+    this.restoreFocusElement_ = this.shadowRoot.querySelector('[name="Two"]');
   }
 }
 
@@ -113,12 +115,45 @@ class TestDocumentTargetApp extends CrLitElement {
 
 customElements.define('test-document-target-app', TestDocumentTargetApp);
 
+class TestListPaddingApp extends CrLitElement {
+  static get is() {
+    return 'test-list-padding-app';
+  }
+
+  static override get properties() {
+    return {
+      chunkSize: {type: Number},
+      listItems: {type: Array},
+    };
+  }
+
+  chunkSize: number = 0;
+  listItems: Array<{name: string}> = [];
+
+  override render() {
+    return html`
+    <cr-lazy-list
+        style="padding: 16px;" item-size="${SAMPLE_ITEM_HEIGHT}"
+        chunk-size="${this.chunkSize}"
+        .items="${this.listItems}" .scrollTarget="${this}"
+        .template=${(item: {name: string}, idx: number) => html`
+            <test-item name="${item.name}"
+                id="item-${idx}">
+            </test-item>
+          `}>
+    </lazy-list>`;
+  }
+}
+
+customElements.define('test-list-padding-app', TestListPaddingApp);
+
 suite('CrLazyListTest', () => {
   let lazyList: CrLazyListElement;
   let testApp: TestApp;
 
   async function setupTest(
-      sampleData: Array<{name: string}>, scrollOffset: number = 0) {
+      sampleData: Array<{name: string}>, scrollOffset: number = 0,
+      chunkSize: number = 0) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testApp = document.createElement('test-app') as TestApp;
     testApp.style.height = `${SAMPLE_AVAIL_HEIGHT}px`;
@@ -127,12 +162,14 @@ suite('CrLazyListTest', () => {
     testApp.style.overflowY = 'auto';
     testApp.style.overflowX = 'hidden';
     document.body.appendChild(testApp);
+    lazyList = testApp.shadowRoot.querySelector('cr-lazy-list')!;
+    assertTrue(!!lazyList);
+    const listFilled = eventToPromise('viewport-filled', lazyList);
+    testApp.chunkSize = chunkSize;
     testApp.listItems = sampleData;
     testApp.scrollOffset = scrollOffset;
 
-    lazyList = testApp.shadowRoot!.querySelector('cr-lazy-list')!;
-    assertTrue(!!lazyList);
-    await eventToPromise('viewport-filled', lazyList);
+    await listFilled;
     await microtasksFinished();
   }
 
@@ -204,14 +241,16 @@ suite('CrLazyListTest', () => {
 
     // Scrolling 50% of the viewport renders 50% more items.
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT / 2;
-    await eventToPromise('fill-height-end', testApp);
+    await eventToPromise('viewport-filled', testApp);
+    await microtasksFinished();
 
     assertEquals(
         3 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT / 2, queryItems().length);
 
     // Scrolling to the end renders remaining items.
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT;
-    await eventToPromise('fill-height-end', testApp);
+    await eventToPromise('viewport-filled', testApp);
+    await microtasksFinished();
     assertEquals(numItems, queryItems().length);
 
     // Scrolling back to the top --> all items are still rendered.
@@ -225,7 +264,7 @@ suite('CrLazyListTest', () => {
     await setupTest(getTestItems(numItems));
     const items = queryItems();
     assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, items.length);
-    const button = items[1]!.shadowRoot!.querySelector('button');
+    const button = items[1]!.shadowRoot.querySelector('button');
     assertTrue(!!button);
     button.focus();
     assertEquals(getDeepActiveElement(), button);
@@ -234,7 +273,7 @@ suite('CrLazyListTest', () => {
     testApp.listItems = getTestItems(numItems + 1).slice(1);
     await eventToPromise('focus-restored-for-test', lazyList);
     const newItems = queryItems();
-    const newButton = newItems[0]!.shadowRoot!.querySelector('button');
+    const newButton = newItems[0]!.shadowRoot.querySelector('button');
     const active = getDeepActiveElement();
     assertEquals(active, newButton);
   });
@@ -303,7 +342,7 @@ suite('CrLazyListTest', () => {
     document.body.appendChild(testDocumentTargetApp);
     testDocumentTargetApp.listItems = getTestItems(3);
 
-    lazyList = testDocumentTargetApp.shadowRoot!.querySelector('cr-lazy-list')!;
+    lazyList = testDocumentTargetApp.shadowRoot.querySelector('cr-lazy-list')!;
     assertTrue(!!lazyList);
     await eventToPromise('viewport-filled', lazyList);
     await microtasksFinished();
@@ -344,5 +383,174 @@ suite('CrLazyListTest', () => {
         'Assertion failed: Items array changed in place; ' +
             'rendered result may be incorrect.',
         error);
+  });
+
+  test('List size updates in chunking mode', async () => {
+    // Test with a chunkSize of 4 to ensure partially filled chunks
+    // work as expected.
+    await setupTest(getTestItems(1), /* scrollOffset = */ 0, 4);
+    assertEquals(1, queryItems().length);
+    // 1 chunk holding the item.
+    let chunks = lazyList.querySelectorAll('.chunk');
+    assertEquals(1, chunks.length);
+    assertEquals(1, chunks[0]!.querySelectorAll('test-item').length);
+
+    // Ensure that on updating the list with an array smaller in size
+    // than the viewport item count, all the array items are rendered.
+    const items = getTestItems(3);
+    testApp.listItems = items;
+    await eventToPromise('viewport-filled', lazyList);
+    assertEquals(3, queryItems().length);
+    // Still 1 chunk holding the items.
+    chunks = lazyList.querySelectorAll('.chunk');
+    assertEquals(1, chunks.length);
+    assertEquals(3, chunks[0]!.querySelectorAll('test-item').length);
+
+    // Ensure that on updating the list with an array greater in size than
+    // the viewport item count, only a chunk of array items are rendered.
+    testApp.listItems = getTestItems(2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT);
+    await eventToPromise('viewport-filled', lazyList);
+    assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems().length);
+    // 2 chunks holding the items.
+    chunks = lazyList.querySelectorAll('.chunk');
+    assertEquals(2, chunks.length);
+    assertEquals(4, chunks[0]!.querySelectorAll('test-item').length);
+    assertEquals(
+        SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT - 4,
+        chunks[1]!.querySelectorAll('test-item').length);
+  });
+
+  test('Scroll in chunking mode', async () => {
+    const numItems = 2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT;
+    await setupTest(getTestItems(numItems), /* scrollOffset = */ 0, 4);
+    assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems().length);
+
+    // 2 chunks holding the items.
+    let chunks = lazyList.querySelectorAll('.chunk');
+    assertEquals(2, chunks.length);
+    assertEquals(4, chunks[0]!.querySelectorAll('test-item').length);
+    assertEquals(2, chunks[1]!.querySelectorAll('test-item').length);
+
+    // Scrolling 50% of the viewport renders 50% more items.
+    let listFilled = eventToPromise('viewport-filled', testApp);
+    testApp.scrollTop = SAMPLE_AVAIL_HEIGHT / 2;
+    await listFilled;
+    await microtasksFinished();
+
+    assertEquals(
+        3 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT / 2, queryItems().length);
+    // 3 chunks holding the items (9 items = 4 + 4 + 1)
+    chunks = lazyList.querySelectorAll('.chunk');
+    assertEquals(3, chunks.length);
+    assertEquals(4, chunks[0]!.querySelectorAll('test-item').length);
+    assertEquals(4, chunks[1]!.querySelectorAll('test-item').length);
+    assertEquals(1, chunks[2]!.querySelectorAll('test-item').length);
+
+    // Scrolling to the end renders remaining items.
+    listFilled = eventToPromise('viewport-filled', testApp);
+    testApp.scrollTop = SAMPLE_AVAIL_HEIGHT;
+    await listFilled;
+    await microtasksFinished();
+    assertEquals(numItems, queryItems().length);
+    // 3 chunks holding the items, now all are full.
+    chunks = lazyList.querySelectorAll('.chunk');
+    assertEquals(3, chunks.length);
+    for (const chunk of chunks) {
+      assertEquals(4, chunk.querySelectorAll('test-item').length);
+    }
+
+    // Scrolling back to the top --> all items are still rendered.
+    testApp.scrollTop = 0;
+    await new Promise(resolve => setTimeout(resolve, 1));
+    assertEquals(numItems, queryItems().length);
+    // Still 3 chunks holding the items.
+    chunks = lazyList.querySelectorAll('.chunk');
+    assertEquals(3, chunks.length);
+    for (const chunk of chunks) {
+      assertEquals(4, chunk.querySelectorAll('test-item').length);
+    }
+  });
+
+  test('Restores focus in chunking mode', async () => {
+    const numItems = SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT;
+    await setupTest(getTestItems(numItems), /* scrollOffset= */ 0, 4);
+    const items = queryItems();
+    assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, items.length);
+    const button = items[1]!.shadowRoot.querySelector('button');
+    assertTrue(!!button);
+    button.focus();
+    assertEquals(getDeepActiveElement(), button);
+
+    // Change items
+    testApp.listItems = getTestItems(numItems + 1).slice(1);
+    await eventToPromise('focus-restored-for-test', lazyList);
+    const newItems = queryItems();
+    const newButton = newItems[0]!.shadowRoot.querySelector('button');
+    const active = getDeepActiveElement();
+    assertEquals(active, newButton);
+  });
+
+  function setUpListPaddingApp(chunkSize: number = 0): TestListPaddingApp {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const testListPaddingApp =
+        document.createElement('test-list-padding-app') as TestListPaddingApp;
+    testListPaddingApp.style.display = 'block';
+    testListPaddingApp.style.overflowY = 'auto';
+    testListPaddingApp.style.overflowX = 'hidden';
+    testListPaddingApp.style.height = `${SAMPLE_AVAIL_HEIGHT}px`;
+    testListPaddingApp.style.maxHeight = `${SAMPLE_AVAIL_HEIGHT}px`;
+    testListPaddingApp.chunkSize = chunkSize;
+    document.body.appendChild(testListPaddingApp);
+    return testListPaddingApp;
+  }
+
+  test('List padding does not change item estimates', async () => {
+    const testListPaddingApp = setUpListPaddingApp();
+    testListPaddingApp.listItems = getTestItems(12);
+
+    lazyList = testListPaddingApp.shadowRoot.querySelector('cr-lazy-list')!;
+    assertTrue(!!lazyList);
+    await eventToPromise('viewport-filled', lazyList);
+    await microtasksFinished();
+    // Should render 6 items, because exactly 6 fit in the viewport.
+    assertEquals(6, queryItems().length);
+  });
+
+  test('List padding does not change item estimates', async () => {
+    const testListPaddingApp = setUpListPaddingApp(3);
+    testListPaddingApp.listItems = getTestItems(12);
+
+    lazyList = testListPaddingApp.shadowRoot.querySelector('cr-lazy-list')!;
+    assertTrue(!!lazyList);
+    await eventToPromise('viewport-filled', lazyList);
+    await microtasksFinished();
+    // Should render 6 items, because exactly 6 fit in the viewport.
+    assertEquals(6, queryItems().length);
+  });
+
+  test('Fires items-rendered event', async () => {
+    await setupTest(getTestItems(1));
+    assertEquals(1, queryItems().length);
+
+    const items = getTestItems(12);
+    // Fires event when the list adds items.
+    testApp.listItems = items.slice(0, 6);
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(6, queryItems().length);
+
+    // Still fires the event if the list changes to a list with the same
+    // length and different items.
+    testApp.listItems = items.slice(6);
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(6, queryItems().length);
+
+    // Event fires if list changes to shorter length (e.g. items removed).
+    testApp.listItems = items.slice(6, 8);
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(2, queryItems().length);
+
+    testApp.listItems = [];
+    await eventToPromise('items-rendered', lazyList);
+    assertEquals(0, queryItems().length);
   });
 });

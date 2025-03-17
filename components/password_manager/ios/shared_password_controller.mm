@@ -20,7 +20,6 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/ranges/algorithm.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -36,6 +35,7 @@
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/autofill/core/common/signatures.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
@@ -472,8 +472,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     // form when Autofill across frames is enabled.
 
     // Split the browser form into renderer forms.
+    // The cast is safe: every AutofillClient on iOS is an AutofillClientIOS.
     const autofill::AutofillDriverRouter& router =
-        autofill::AutofillDriverIOSFactory::FromWebState(_webState)->router();
+        static_cast<autofill::AutofillClientIOS&>(manager.client())
+            .GetAutofillDriverFactory()
+            .router();
     std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
     // Process predictions for each renderer form.
@@ -641,7 +644,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     [suggestions addObject:suggestion];
   }
 
-  if ([self canGeneratePasswordForForm:formQuery.formRendererID
+  if (!formQuery.onlyPassword &&
+      [self canGeneratePasswordForForm:formQuery.formRendererID
                        fieldIdentifier:formQuery.fieldRendererID
                              fieldType:formQuery.fieldType
                                inFrame:frame]) {

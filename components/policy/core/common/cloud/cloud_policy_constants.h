@@ -76,6 +76,7 @@ extern const char kValueRequestChromeOsUserReport[];
 extern const char kValueRequestCertProvisioningRequest[];
 extern const char kValueRequestChromeProfileReport[];
 extern const char kValueRequestFmRegistrationTokenUpload[];
+extern const char kValueRequestDeterminePromotionEligibility[];
 
 // Policy type strings for the policy_type field in PolicyFetchRequest.
 extern const char kChromeDevicePolicyType[];
@@ -173,7 +174,9 @@ enum DeviceManagementStatus {
   // Service error: Illegal account for packaged EDU license.
   DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE = 908,
   // Service error: Packaged license device can't enroll KIOSK.
-  DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK = 909
+  DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK = 909,
+  // Service error: Org Unit enrollment limit has been exceeded.
+  DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED = 910
 };
 
 // List of modes that the device can be locked into. Some IDs are skipped

@@ -50,6 +50,8 @@ const char* GetUseCounterHistogramName(
       return "Blink.UseCounter.PermissionsPolicy.Header2";
     case FeatureType::kPermissionsPolicyIframeAttribute:
       return "Blink.UseCounter.PermissionsPolicy.Allow2";
+    case FeatureType::kPermissionsPolicyEnabledPrivacySensitive:
+      return "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled";
   }
 }
 
@@ -68,12 +70,12 @@ class UseCounterMetricsRecorderTest
     if (feature.type() == blink::mojom::UseCounterFeatureType::kWebFeature) {
       tester()->histogram_tester().ExpectBucketCount(
           GetUseCounterHistogramName(FeatureType::kWebFeature, true),
-          static_cast<base::Histogram::Sample>(feature.value()), count);
+          static_cast<base::HistogramBase::Sample32>(feature.value()), count);
     }
 
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(feature.type(), false),
-        static_cast<base::Histogram::Sample>(feature.value()), count);
+        static_cast<base::HistogramBase::Sample32>(feature.value()), count);
   }
 
   void HistogramBasicTest(
@@ -133,15 +135,15 @@ class UseCounterMetricsRecorderTest
     // Verify that kPageVisits is observed on commit.
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kWebFeature, false),
-        static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
+        static_cast<base::HistogramBase::Sample32>(WebFeature::kPageVisits), 1);
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kWebFeature, true),
-        static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
+        static_cast<base::HistogramBase::Sample32>(WebFeature::kPageVisits), 1);
 
     // Verify that page visit is recorded for WebDX Feature histogram.
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kWebDXFeature, false),
-        static_cast<base::Histogram::Sample>(WebDXFeature::kPageVisits), 1);
+        static_cast<base::HistogramBase::Sample32>(WebDXFeature::kPageVisits), 1);
 
     // Verify that page visit is recorded for CSS histograms.
     tester()->histogram_tester().ExpectBucketCount(
@@ -254,12 +256,12 @@ class UseCounterPageLoadMetricsObserverTest
     if (feature.type() == blink::mojom::UseCounterFeatureType::kWebFeature) {
       tester()->histogram_tester().ExpectBucketCount(
           GetUseCounterHistogramName(FeatureType::kWebFeature, true),
-          static_cast<base::Histogram::Sample>(feature.value()), count);
+          static_cast<base::HistogramBase::Sample32>(feature.value()), count);
     }
 
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(feature.type()),
-        static_cast<base::Histogram::Sample>(feature.value()), count);
+        static_cast<base::HistogramBase::Sample32>(feature.value()), count);
   }
 
   void HistogramBasicTest(
@@ -271,14 +273,14 @@ class UseCounterPageLoadMetricsObserverTest
     // Verify that kPageVisits is observed on commit.
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kWebFeature),
-        static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
+        static_cast<base::HistogramBase::Sample32>(WebFeature::kPageVisits), 1);
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kWebFeature, true),
-        static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
+        static_cast<base::HistogramBase::Sample32>(WebFeature::kPageVisits), 1);
     // Verify that page visit is recorded for WebDX Feature histogram.
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kWebDXFeature),
-        static_cast<base::Histogram::Sample>(WebDXFeature::kPageVisits), 1);
+        static_cast<base::HistogramBase::Sample32>(WebDXFeature::kPageVisits), 1);
     // Verify that page visit is recorded for CSS histograms.
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kCssProperty),

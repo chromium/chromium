@@ -26,6 +26,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_internal.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
@@ -570,7 +571,6 @@ template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
         partition_alloc::FreeFlags::kNoHooks |
-            partition_alloc::FreeFlags::kZap |
             partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 // static
@@ -619,7 +619,7 @@ void ConfigurePartitions(
     size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
-    UsePoolOffsetFreelists use_pool_offset_freelists,
+    FewerMemoryRegions fewer_memory_regions,
     UseSmallSingleSlotSpans use_small_single_slot_spans) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
@@ -643,6 +643,7 @@ void ConfigurePartitions(
         opts.backup_ref_ptr =
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;
+        opts.backup_ref_ptr_extra_extras_size = brp_extra_extras_size;
         opts.zapping_by_free_flags =
             zapping_by_free_flags
                 ? partition_alloc::PartitionOptions::kEnabled
@@ -651,6 +652,9 @@ void ConfigurePartitions(
             eventually_zero_freed_memory
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
+        opts.fewer_memory_regions =
+            fewer_memory_regions ? partition_alloc::PartitionOptions::kEnabled
+                                 : partition_alloc::PartitionOptions::kDisabled;
         opts.scheduler_loop_quarantine =
             scheduler_loop_quarantine
                 ? partition_alloc::PartitionOptions::kEnabled
@@ -663,9 +667,7 @@ void ConfigurePartitions(
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
         opts.use_pool_offset_freelists =
-            use_pool_offset_freelists
-                ? partition_alloc::PartitionOptions::kEnabled
-                : partition_alloc::PartitionOptions::kDisabled;
+            partition_alloc::PartitionOptions::kEnabled;
         opts.use_small_single_slot_spans =
             use_small_single_slot_spans
                 ? partition_alloc::PartitionOptions::kEnabled

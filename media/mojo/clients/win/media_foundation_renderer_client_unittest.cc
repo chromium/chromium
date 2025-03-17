@@ -260,13 +260,8 @@ class MediaFoundationRendererClientTest
 
   void InitializeFramePool() {
     gfx::GpuMemoryBufferHandle gpu_handle;
-    HANDLE shared_texture_handle = INVALID_HANDLE_VALUE;
-    base::win::ScopedHandle scoped_shared_texture_handle;
-    scoped_shared_texture_handle.Set(shared_texture_handle);
-
-    gpu_handle.dxgi_handle = std::move(scoped_shared_texture_handle);
-    gpu_handle.dxgi_token = gfx::DXGIHandleToken();
     gpu_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
+    gpu_handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
 
     auto frame_info = media::mojom::FrameTextureInfo::New();
     frame_info->token = base::UnguessableToken::Create();

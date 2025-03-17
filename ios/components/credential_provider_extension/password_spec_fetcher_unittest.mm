@@ -13,9 +13,9 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-using autofill::PasswordRequirementsSpec_CharacterClass;
-using autofill::PasswordRequirementsSpec;
 using autofill::DomainSuggestions;
+using autofill::PasswordRequirementsSpec;
+using autofill::PasswordRequirementsSpec_CharacterClass;
 
 class PasswordSpecFetcherTest : public PlatformTest {};
 

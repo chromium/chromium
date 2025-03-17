@@ -42,7 +42,7 @@ class GuestPageHolderImpl : public GuestPageHolder,
 
   // GuestPageHolder implementation.
   NavigationController& GetController() override;
-  RenderFrameHost* GetGuestMainFrame() override;
+  RenderFrameHostImpl* GetGuestMainFrame() override;
   bool IsAudioMuted() override;
   void SetAudioMuted(bool mute) override;
   RenderFrameHost* GetOpener() override;
@@ -58,6 +58,9 @@ class GuestPageHolderImpl : public GuestPageHolder,
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
   FrameTree* GetOwnedPictureInPictureFrameTree() override;
   FrameTree* GetPictureInPictureOpenerFrameTree() override;
+  bool OnRenderFrameProxyVisibilityChanged(
+      RenderFrameProxyHost* render_frame_proxy_host,
+      blink::mojom::FrameVisibility visibility) override;
 
   // NavigationControllerDelegate implementation.
   void NotifyNavigationStateChangedFromController(
@@ -77,6 +80,7 @@ class GuestPageHolderImpl : public GuestPageHolder,
   void SetAudioMutedFromWebContents(bool web_contents_muted);
 
   const blink::RendererPreferences& GetRendererPrefs();
+  const blink::web_pref::WebPreferences& GetWebPreferences();
 
   FrameTree* CreateNewWindow(WindowOpenDisposition disposition,
                              const GURL& url,
@@ -102,6 +106,7 @@ class GuestPageHolderImpl : public GuestPageHolder,
   bool audio_muted_ = false;
 
   blink::RendererPreferences renderer_preferences_;
+  std::unique_ptr<blink::web_pref::WebPreferences> web_preferences_;
 
   base::RepeatingClosureList load_stop_callbacks_for_testing_;
 

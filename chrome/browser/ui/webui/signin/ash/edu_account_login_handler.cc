@@ -71,8 +71,8 @@ EduAccountLoginHandler::~EduAccountLoginHandler() {
 
 EduAccountLoginHandler::ProfileImageFetcher::ProfileImageFetcher(
     image_fetcher::ImageFetcher* image_fetcher,
-    const std::map<std::string, GURL>& profile_image_urls,
-    base::OnceCallback<void(std::map<std::string, gfx::Image> profile_images)>
+    const std::map<GaiaId, GURL>& profile_image_urls,
+    base::OnceCallback<void(std::map<GaiaId, gfx::Image> profile_images)>
         callback)
     : image_fetcher_(image_fetcher),
       profile_image_urls_(profile_image_urls),
@@ -87,7 +87,7 @@ void EduAccountLoginHandler::ProfileImageFetcher::FetchProfileImages() {
 }
 
 void EduAccountLoginHandler::ProfileImageFetcher::FetchProfileImage(
-    const std::string& obfuscated_gaia_id,
+    const GaiaId& obfuscated_gaia_id,
     const GURL& profile_image_url) {
   if (!profile_image_url.is_valid()) {
     OnImageFetched(obfuscated_gaia_id, gfx::Image(),
@@ -109,7 +109,7 @@ void EduAccountLoginHandler::ProfileImageFetcher::FetchProfileImage(
 }
 
 void EduAccountLoginHandler::ProfileImageFetcher::OnImageFetched(
-    const std::string& obfuscated_gaia_id,
+    const GaiaId& obfuscated_gaia_id,
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
   fetched_profile_images_[obfuscated_gaia_id] = std::move(image);
@@ -183,7 +183,8 @@ void EduAccountLoginHandler::HandleParentSignin(const base::Value::List& args) {
   DCHECK(obfuscated_gaia_id);
 
   const std::string* password = args[2].GetIfString();
-  FetchAccessToken(*obfuscated_gaia_id, password ? *password : std::string());
+  FetchAccessToken(GaiaId(*obfuscated_gaia_id),
+                   password ? *password : std::string());
 }
 
 void EduAccountLoginHandler::FetchFamilyMembers() {
@@ -201,7 +202,7 @@ void EduAccountLoginHandler::FetchFamilyMembers() {
 
 void EduAccountLoginHandler::FetchParentImages(
     base::Value::List parents,
-    std::map<std::string, GURL> profile_image_urls) {
+    std::map<GaiaId, GURL> profile_image_urls) {
   DCHECK(!profile_image_fetcher_);
   image_fetcher::ImageFetcher* fetcher =
       ImageFetcherServiceFactory::GetForKey(
@@ -214,9 +215,8 @@ void EduAccountLoginHandler::FetchParentImages(
   profile_image_fetcher_->FetchProfileImages();
 }
 
-void EduAccountLoginHandler::FetchAccessToken(
-    const std::string& obfuscated_gaia_id,
-    const std::string& password) {
+void EduAccountLoginHandler::FetchAccessToken(const GaiaId& obfuscated_gaia_id,
+                                              const std::string& password) {
   DCHECK(!access_token_fetcher_);
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
@@ -236,7 +236,7 @@ void EduAccountLoginHandler::FetchAccessToken(
 
 void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
     const std::string& child_oauth_access_token,
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential) {
   DCHECK(!gaia_auth_fetcher_);
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -262,7 +262,7 @@ void EduAccountLoginHandler::OnListFamilyMembersSuccess(
     const kidsmanagement::ListMembersResponse& response) {
   list_family_members_fetcher_.reset();
   base::Value::List parents;
-  std::map<std::string, GURL> profile_image_urls;
+  std::map<GaiaId, GURL> profile_image_urls;
 
   for (const auto& member : response.members()) {
     if (member.role() != kidsmanagement::HEAD_OF_HOUSEHOLD &&
@@ -276,7 +276,7 @@ void EduAccountLoginHandler::OnListFamilyMembersSuccess(
     parent.Set(kObfuscatedGaiaIdKey, member.user_id());
 
     parents.Append(std::move(parent));
-    profile_image_urls[member.user_id()] =
+    profile_image_urls[GaiaId(member.user_id())] =
         GURL(member.profile().profile_image_url());
   }
 
@@ -293,7 +293,7 @@ void EduAccountLoginHandler::OnListFamilyMembersFailure(
 
 void EduAccountLoginHandler::OnParentProfileImagesFetched(
     base::Value::List parents,
-    std::map<std::string, gfx::Image> profile_images) {
+    std::map<GaiaId, gfx::Image> profile_images) {
   profile_image_fetcher_.reset();
 
   for (auto& parent : parents) {
@@ -301,7 +301,7 @@ void EduAccountLoginHandler::OnParentProfileImagesFetched(
         parent.GetDict().FindString(kObfuscatedGaiaIdKey);
     DCHECK(obfuscated_gaia_id);
     std::string profile_image;
-    if (profile_images[*obfuscated_gaia_id].IsEmpty()) {
+    if (profile_images[GaiaId(*obfuscated_gaia_id)].IsEmpty()) {
       gfx::ImageSkia default_icon =
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER);
@@ -310,7 +310,7 @@ void EduAccountLoginHandler::OnParentProfileImagesFetched(
           default_icon.GetRepresentation(1.0f).GetBitmap());
     } else {
       profile_image = webui::GetBitmapDataUrl(
-          profile_images[*obfuscated_gaia_id].AsBitmap());
+          profile_images[GaiaId(*obfuscated_gaia_id)].AsBitmap());
     }
     parent.GetDict().Set("profileImage", profile_image);
   }
@@ -320,7 +320,7 @@ void EduAccountLoginHandler::OnParentProfileImagesFetched(
 }
 
 void EduAccountLoginHandler::CreateReAuthProofTokenForParent(
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {

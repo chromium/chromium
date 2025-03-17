@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_H264_RATE_CONTROLLER_H_
 #define MEDIA_GPU_H264_RATE_CONTROLLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/moving_window.h"
@@ -92,12 +93,12 @@ struct MEDIA_GPU_EXPORT H264RateControllerSettings {
 // video stream bitrate close to the target bitrate. The controller supports
 // up to two temporal layers, each with its own HRD buffer. The HRD buffer
 // stores the encoded frames from the current layer and all the lower layers
-// that it depens on.
+// that it depends on.
 //
 // The prediction of the QP parameter for intra encoded frames is based on the
 // R-D model, using the expected size of the encoded frame as an input.
 // For inter encoded frames, the QP is calculated based on the long-term and
-// short-term statistics of the estamated QP and frame size, the prediction
+// short-term statistics of the estimated QP and frame size, the prediction
 // error of the frame size prediction for the previously encoded frames,
 // and the HRD buffer fullness.
 //
@@ -399,7 +400,7 @@ class MEDIA_GPU_EXPORT H264RateController {
   //    frame_duration = 1 / frame_rate
   //
   //    In overflow case
-  //        owerflow_size =
+  //        overflow_size =
   //            frame_size_target + buffer_level_current - buffer_target_high
   //        size_correction =
   //            -overflow_size * frame_duration / size_correction_window

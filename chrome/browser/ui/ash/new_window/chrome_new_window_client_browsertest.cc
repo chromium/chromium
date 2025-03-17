@@ -25,15 +25,16 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace {
 
 constexpr char kTestUserName1[] = "test1@test.com";
-constexpr char kTestUser1GaiaId[] = "1111111111";
+constexpr GaiaId::Literal kTestUser1GaiaId("1111111111");
 constexpr char kTestUserName2[] = "test2@test.com";
-constexpr char kTestUser2GaiaId[] = "2222222222";
+constexpr GaiaId::Literal kTestUser2GaiaId("2222222222");
 
 void CreateAndStartUserSession(const AccountId& account_id) {
   using ::ash::ProfileHelper;
@@ -44,7 +45,9 @@ void CreateAndStartUserSession(const AccountId& account_id) {
       account_id, user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  SessionManager::Get()->CreateSession(account_id, user_id_hash, false);
+  SessionManager::Get()->CreateSession(account_id, user_id_hash,
+                                       /*new_user=*/false,
+                                       /*has_active_session=*/false);
   profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
       ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
@@ -116,8 +119,6 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
-  CreateAndStartUserSession(
-      AccountId::FromUserEmailGaiaId(kTestUserName1, kTestUser2GaiaId));
   Profile* profile = ProfileManager::GetActiveUserProfile();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 

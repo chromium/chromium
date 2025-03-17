@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/canvas.h"
@@ -176,7 +177,7 @@ class MenuScrollViewContainer::MenuScrollView : public View {
 
  public:
   MenuScrollView(View* child, MenuScrollViewContainer* owner) : owner_(owner) {
-    AddChildView(child);
+    AddChildViewRaw(child);
   }
   MenuScrollView(const MenuScrollView&) = delete;
   MenuScrollView& operator=(const MenuScrollView&) = delete;
@@ -438,14 +439,13 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   // When a custom background color is used, ensure that the border uses
   // the custom background color for its insets.
   if (border_color_id_.has_value()) {
-    SetBorder(
-        views::CreateThemedSolidSidedBorder(insets, border_color_id_.value()));
+    SetBorder(views::CreateSolidSidedBorder(insets, border_color_id_.value()));
     return;
   }
 
-  SetBackground(CreateThemedRoundedRectBackground(
-      ui::kColorMenuBackground, corner_radius_,
-      views::RoundRectPainter::kBorderWidth));
+  SetBackground(
+      CreateRoundedRectBackground(ui::kColorMenuBackground, corner_radius_,
+                                  views::RoundRectPainter::kBorderWidth));
 
   const auto* const color_provider = GetColorProvider();
   SkColor color = color_provider
@@ -472,7 +472,10 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   }
 #endif
   id = border_color_id_.value_or(id);
-  auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type, id);
+
+  auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type);
+  bubble_border->SetColor(id);
+
   const MenuConfig& menu_config = MenuConfig::instance();
   bubble_border->set_md_shadow_elevation(
       content_view_->GetMenuItem()->GetParentMenuItem()
@@ -523,7 +526,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
         CreateEmptyBorder(std::exchange(additional_insets_, {})));
 
     background_view_->SetBackground(
-        CreateThemedRoundedRectBackground(id, corner_radius_));
+        CreateRoundedRectBackground(id, corner_radius_));
     background_view_->layer()->SetRoundedCornerRadius(GetRoundedCorners());
 
 #if BUILDFLAG(IS_CHROMEOS)

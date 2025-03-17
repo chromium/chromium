@@ -75,7 +75,7 @@ namespace blink {
 
 WebServiceWorkerInstalledScriptsManagerParams::
     WebServiceWorkerInstalledScriptsManagerParams(
-        WebVector<WebURL> installed_scripts_urls,
+        std::vector<WebURL> installed_scripts_urls,
         CrossVariantMojoReceiver<
             mojom::blink::ServiceWorkerInstalledScriptsManagerInterfaceBase>
             manager_receiver,
@@ -116,7 +116,11 @@ void WebEmbeddedWorkerImpl::StartWorkerContext(
     CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
         browser_interface_broker,
     InterfaceRegistry* interface_registry,
-    scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
+    CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
+        coep_reporting_observer,
+    CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
+        dip_reporting_observer) {
   DCHECK(!asked_to_terminate_);
 
   std::unique_ptr<ServiceWorkerInstalledScriptsManager>
@@ -133,7 +137,8 @@ void WebEmbeddedWorkerImpl::StartWorkerContext(
       std::make_unique<ServiceWorkerContentSettingsProxy>(
           std::move(content_settings)),
       std::move(cache_storage), std::move(browser_interface_broker),
-      interface_registry, std::move(initiator_thread_task_runner));
+      interface_registry, std::move(initiator_thread_task_runner),
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
 }
 
 void WebEmbeddedWorkerImpl::TerminateWorkerContext() {
@@ -154,7 +159,11 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
     mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
         browser_interface_broker,
     InterfaceRegistry* interface_registry,
-    scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
+    mojo::PendingReceiver<mojom::blink::ReportingObserver>
+        coep_reporting_observer,
+    mojo::PendingReceiver<mojom::blink::ReportingObserver>
+        dip_reporting_observer) {
   DCHECK(!asked_to_terminate_);
 
   // For now we don't use global scope name for service workers.
@@ -217,7 +226,13 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       worker_start_data->ukm_source_id, std::nullopt, /* parent_context_token */
       false, /* parent_cross_origin_isolated_capability */
       false, /* parent_is_isolated_context */
-      interface_registry);
+      interface_registry,
+      nullptr /* agent_group_scheduler_compositor_task_runner */,
+      nullptr /* top_level_frame_security_origin */,
+      net::StorageAccessApiStatus::kNone,
+      false /* require_cross_site_request_for_cookies */,
+      nullptr /* origin_to_use */, std::move(coep_reporting_observer),
+      std::move(dip_reporting_observer));
 
   worker_thread_ = std::make_unique<ServiceWorkerThread>(
       std::make_unique<ServiceWorkerGlobalScopeProxy>(

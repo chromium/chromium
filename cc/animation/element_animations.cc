@@ -20,7 +20,6 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
 namespace cc {

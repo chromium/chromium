@@ -10,14 +10,19 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
+#include "third_party/libyuv/include/libyuv/convert.h"
+#include "ui/gfx/geometry/rect.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 namespace {
 
@@ -26,199 +31,201 @@ constexpr int kCharacterWidth = 3;    // Logical pixel width of one character.
 constexpr int kCharacterHeight = 5;   // Logical pixel height of one character.
 constexpr int kCharacterSpacing = 1;  // Logical pixels between each character.
 constexpr int kLineSpacing = 2;  // Logical pixels between each line of chars.
-constexpr int kPlane = 0;        // Y-plane in YUV formats.
 
-// For each pixel in the |rect| (logical coordinates), either decrease the
+// The total height of each line of characters.
+constexpr int kLineHeight = (kCharacterHeight + kLineSpacing) * kScale;
+
+// Y-plane in YUV formats.
+constexpr int kPlane = 0;
+
+// Total number of pixels per character.
+constexpr int kPixelsPerChar = (kCharacterWidth + kCharacterSpacing) * kScale;
+
+// A map from an ASCII character to the set of rectangles corresponding to how
+// it should be rendered on the frame.
+const auto& GetCharacterRenderMap() {
+  static const base::NoDestructor<base::flat_map<char, std::vector<gfx::Rect>>>
+      kCharacterRenderMap({
+          {'!', {gfx::Rect(1, 0, 1, 3), gfx::Rect(1, 4, 1, 1)}},
+          {'%',
+           {gfx::Rect(0, 0, 1, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(1, 2, 1, 1),
+            gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 4, 1, 1)}},
+          {'+',
+           {gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 3, 1, 1),
+            gfx::Rect(0, 2, 3, 1)}},
+          {'-', {gfx::Rect(0, 2, 3, 1)}},
+          {'.', {gfx::Rect(1, 4, 1, 1)}},
+          {'0',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 3), gfx::Rect(2, 1, 1, 3),
+            gfx::Rect(0, 4, 3, 1)}},
+          {'1', {gfx::Rect(1, 0, 1, 5)}},
+          {'2',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
+            gfx::Rect(0, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
+          {'3',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
+            gfx::Rect(2, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
+          {'4',
+           {gfx::Rect(0, 0, 1, 2), gfx::Rect(2, 0, 1, 5),
+            gfx::Rect(0, 2, 2, 1)}},
+          {'5',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
+            gfx::Rect(2, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
+          {'6',
+           {gfx::Rect(1, 0, 2, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
+            gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1),
+            gfx::Rect(0, 4, 3, 1)}},
+          {'7',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 2),
+            gfx::Rect(1, 3, 1, 2)}},
+          {'8',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1),
+            gfx::Rect(0, 2, 3, 1), gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1),
+            gfx::Rect(0, 4, 3, 1)}},
+          {'9',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1),
+            gfx::Rect(0, 2, 3, 1), gfx::Rect(2, 3, 1, 1),
+            gfx::Rect(0, 4, 2, 1)}},
+          {':', {gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 3, 1, 1)}},
+          {'e',
+           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(0, 2, 2, 1),
+            gfx::Rect(0, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
+          {'x',
+           {gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(1, 2, 1, 1),
+            gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1)}},
+      });
+
+  return *kCharacterRenderMap;
+}
+
+scoped_refptr<VideoFrame> CopyVideoFrame(scoped_refptr<VideoFrame> source) {
+  // Currently Cast only supports I420, and converts NV12 frames before passing
+  // them to the VideoSender.
+  CHECK_EQ(source->format(), media::PIXEL_FORMAT_I420);
+
+  // Allocate a new frame, identical in configuration to `source`, then copy
+  // over all data and metadata.
+  const scoped_refptr<VideoFrame> frame = VideoFrame::CreateFrame(
+      media::PIXEL_FORMAT_I420, source->coded_size(), source->visible_rect(),
+      source->natural_size(), source->timestamp());
+  if (!frame) {
+    return nullptr;
+  }
+
+  // Copy the contents of the VideoFrame over.
+  libyuv::I420Copy(source->data(media::VideoFrame::Plane::kY),
+                   source->stride(media::VideoFrame::Plane::kY),
+                   source->data(media::VideoFrame::Plane::kU),
+                   source->stride(media::VideoFrame::Plane::kU),
+                   source->data(media::VideoFrame::Plane::kV),
+                   source->stride(media::VideoFrame::Plane::kV),
+                   frame->writable_data(media::VideoFrame::Plane::kY),
+                   frame->stride(media::VideoFrame::Plane::kY),
+                   frame->writable_data(media::VideoFrame::Plane::kU),
+                   frame->stride(media::VideoFrame::Plane::kU),
+                   frame->writable_data(media::VideoFrame::Plane::kV),
+                   frame->stride(media::VideoFrame::Plane::kV),
+                   source->coded_size().width(), source->coded_size().height());
+
+  frame->metadata().MergeMetadataFrom(source->metadata());
+
+  // Important: After all consumers are done with the frame, copy-back the
+  // changed/new metadata to the source frame, as it contains feedback signals
+  // that need to propagate back up the video stack. The destruction callback
+  // for the `frame` holds a ref-counted reference to the source frame to ensure
+  // the source frame has the right metadata before its destruction observers
+  // are invoked.
+  frame->AddDestructionObserver(base::BindOnce(
+      [](const VideoFrameMetadata& sent_frame_metadata,
+         scoped_refptr<VideoFrame> source_frame) {
+        source_frame->set_metadata(sent_frame_metadata);
+      },
+      frame->metadata(), std::move(source)));
+
+  return frame;
+}
+
+// For each pixel in the `rect` (logical coordinates), either decrease the
 // intensity or increase it so that the resulting pixel has a perceivably
-// different value than it did before.  |p_ul| is a pointer to the pixel at
-// coordinate (0,0) in a single-channel 8bpp bitmap.  |stride| is the number of
-// bytes per row in the output bitmap.
+// different value than it did before.  `p_ul` is a pointer to the pixel at
+// coordinate (0,0) in a single-channel 8bpp bitmap.  `stride` is the number
+// of bytes per row in the output bitmap.
 void DivergePixels(const gfx::Rect& rect,
                    base::span<uint8_t> p_ul,
                    int stride) {
   CHECK_GT(stride, 0);
 
   // These constants and heuristics were chosen based on experimenting with a
-  // wide variety of content, and converging on a readable result.  The amount
-  // by which the darker pixels are changed is less because each unit of change
-  // has a larger visual impact on the darker end of the spectrum.  Each pixel's
-  // intensity value is changed as follows:
+  // wide variety of content, and converging on a readable result.
+  // Intensity value are changed as follows:
   //
-  //    [16,31] --> [32,63]   (always a difference of +16)
-  //    [32,64] --> 16        (a difference between -16 and -48)
-  //   [65,235] --> [17,187]  (always a difference of -48)
-  constexpr int kDivergeDownThreshold = 32;
+  //    [16,63] --> [64,111]   (always a difference of +48)
+  //   [64,235] --> [16,187]  (always a difference of -48)
+  constexpr int kDivergeDownThreshold = 64;
   constexpr int kDivergeDownAmount = 48;
-  constexpr int kDivergeUpAmount = 32;
-  constexpr int kMinIntensity = 16;
+  constexpr int kDivergeUpAmount = 48;
 
-  const int top = rect.y() * kScale;
-  const int bottom = rect.bottom() * kScale;
-  const int left = rect.x() * kScale;
-  const int right = rect.right() * kScale;
-  CHECK_GE(top, 0);
-  CHECK_GE(bottom, 0);
-  CHECK_GE(left, 0);
-  CHECK_GE(right, 0);
-  CHECK_LE(top, bottom);
-  CHECK_LE(left, right);
+  const gfx::Rect scaled_rect = gfx::ScaleToRoundedRect(rect, kScale);
+  CHECK_GE(scaled_rect.y(), 0);
+  CHECK_GE(scaled_rect.x(), 0);
 
-  for (int y = top; y < bottom; ++y) {
+  for (int y = scaled_rect.y(); y < scaled_rect.bottom(); ++y) {
     base::span<uint8_t> p_l = p_ul.subspan(static_cast<size_t>(y * stride));
-    for (int x = left; x < right; ++x) {
+    for (int x = scaled_rect.x(); x < scaled_rect.right(); ++x) {
       int intensity = p_l[x];
-      if (intensity >= kDivergeDownThreshold)
-        intensity = std::max(kMinIntensity, intensity - kDivergeDownAmount);
-      else
+      if (intensity >= kDivergeDownThreshold) {
+        intensity = intensity - kDivergeDownAmount;
+      } else {
         intensity += kDivergeUpAmount;
+      }
       p_l[x] = static_cast<uint8_t>(intensity);
     }
   }
 }
 
-// Render |line| into |frame| at physical pixel row |top| and aligned to the
+// Render `line` into `frame` at physical pixel row `top` and aligned to the
 // right edge.  Only number digits and a smattering of punctuation characters
 // will be rendered.
-void RenderLineOfText(const std::string& line, int top, VideoFrame* frame) {
-  // Compute number of physical pixels wide the rendered |line| would be,
+void RenderLineOfText(const std::string& line, int top, VideoFrame& frame) {
+  // Compute number of physical pixels wide the rendered `line` would be,
   // including padding.
   const int line_width =
       (((kCharacterWidth + kCharacterSpacing) * static_cast<int>(line.size())) +
-           kCharacterSpacing) * kScale;
+       kCharacterSpacing) *
+      kScale;
 
   // Determine if any characters would render past the left edge of the frame,
   // and compute the index of the first character to be rendered.
-  const int pixels_per_char = (kCharacterWidth + kCharacterSpacing) * kScale;
-  const size_t first_idx = (line_width < frame->visible_rect().width()) ? 0u :
-      static_cast<size_t>(
-          ((line_width - frame->visible_rect().width()) / pixels_per_char) + 1);
+  const size_t first_idx =
+      (line_width < frame.visible_rect().width())
+          ? 0u
+          : static_cast<size_t>(
+                ((line_width - frame.visible_rect().width()) / kPixelsPerChar) +
+                1);
 
   // Compute the pointer to the pixel at the upper-left corner of the first
   // character to be rendered.
-  const int stride = frame->stride(kPlane);
+  const int stride = frame.stride(kPlane);
   base::span<uint8_t> p_ul =
       // Start at the first pixel in the first row...
-      frame->GetWritableVisiblePlaneData(kPlane).subspan(
+      frame.GetWritableVisiblePlaneData(kPlane).subspan(
           stride * top
           // ...now move to the right edge of the visible part of the frame...
-          + frame->visible_rect().width()
+          + frame.visible_rect().width()
           // ...now move left to where line[0] would be rendered...
           - line_width
           // ...now move right to where line[first_idx] would be rendered.
-          + first_idx * pixels_per_char);
+          + first_idx * kPixelsPerChar);
 
   // Render each character.
+  static const auto& kCharacterRenderMap = GetCharacterRenderMap();
   for (size_t i = first_idx; i < line.size(); ++i) {
-    p_ul = p_ul.subspan(static_cast<size_t>(pixels_per_char));
-    switch (line[i]) {
-      case '0':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 1, 1, 3), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 3), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 3, 1), p_ul, stride);
-        break;
-      case '1':
-        DivergePixels(gfx::Rect(1, 0, 1, 5), p_ul, stride);
-        break;
-      case '2':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 3, 1), p_ul, stride);
-        break;
-      case '3':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 3, 1), p_ul, stride);
-        break;
-      case '4':
-        DivergePixels(gfx::Rect(0, 0, 1, 2), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 0, 1, 5), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 2, 1), p_ul, stride);
-        break;
-      case '5':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 3, 1), p_ul, stride);
-        break;
-      case '6':
-        DivergePixels(gfx::Rect(1, 0, 2, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 3, 1), p_ul, stride);
-        break;
-      case '7':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 2), p_ul, stride);
-        DivergePixels(gfx::Rect(1, 3, 1, 2), p_ul, stride);
-        break;
-      case '8':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 3, 1), p_ul, stride);
-        break;
-      case '9':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 2, 1), p_ul, stride);
-        break;
-      case 'e':
-      case 'E':
-        DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 2, 2, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 4, 3, 1), p_ul, stride);
-        break;
-      case '.':
-        DivergePixels(gfx::Rect(1, 4, 1, 1), p_ul, stride);
-        break;
-      case '+':
-        DivergePixels(gfx::Rect(1, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(1, 3, 1, 1), p_ul, stride);
-        [[fallthrough]];
-      case '-':
-        DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
-        break;
-      case 'x':
-        DivergePixels(gfx::Rect(0, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(1, 2, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 3, 1, 1), p_ul, stride);
-        break;
-      case ':':
-        DivergePixels(gfx::Rect(1, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(1, 3, 1, 1), p_ul, stride);
-        break;
-      case '!':
-        DivergePixels(gfx::Rect(1, 0, 1, 3), p_ul, stride);
-        DivergePixels(gfx::Rect(1, 4, 1, 1), p_ul, stride);
-        break;
-      case '%':
-        DivergePixels(gfx::Rect(0, 0, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 1, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(1, 2, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(0, 3, 1, 1), p_ul, stride);
-        DivergePixels(gfx::Rect(2, 4, 1, 1), p_ul, stride);
-        break;
-      case ' ':
-      default:
-        break;
+    p_ul = p_ul.subspan(static_cast<size_t>(kPixelsPerChar));
+    auto it = kCharacterRenderMap.find(base::ToLowerASCII(line[i]));
+    if (it != kCharacterRenderMap.end()) {
+      for (const auto& rect : it->second) {
+        DivergePixels(rect, p_ul, stride);
+      }
     }
   }
 }
@@ -245,50 +252,19 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
   }
 
   // Compute the physical pixel top row for the bottom-most line of text.
-  const int line_height = (kCharacterHeight + kLineSpacing) * kScale;
-  int top = source->visible_rect().height() - line_height;
+  int top = source->visible_rect().height() - kLineHeight;
   if (top < 0) {
-    return source;  // No pixels would change: Return source frame.
+    // No pixels would change: Return source frame.
+    return source;
   }
 
-  // Allocate a new frame, identical in configuration to |source| and copy over
-  // all data and metadata.
-  const scoped_refptr<VideoFrame> frame = VideoFrame::CreateFrame(
-      source->format(), source->coded_size(), source->visible_rect(),
-      source->natural_size(), source->timestamp());
+  // Generally speaking, we unfortunately cannot modify the video frame in place
+  // so need to create a copy for modification. Allocate a new frame, identical
+  // in configuration to `source` and copy over all data and metadata.
+  scoped_refptr<VideoFrame> frame = CopyVideoFrame(source);
   if (!frame) {
     return source;  // Allocation failure: Return source frame.
   }
-
-  for (size_t plane = 0, num_planes = VideoFrame::NumPlanes(source->format());
-       plane < num_planes; ++plane) {
-    const size_t row_count = VideoFrame::Rows(plane, source->format(),
-                                              source->visible_rect().height());
-    const size_t bytes_per_row = VideoFrame::RowBytes(
-        plane, source->format(), source->visible_rect().width());
-    base::span<const uint8_t> src = source->GetVisiblePlaneData(plane);
-    const size_t src_stride = source->stride(plane);
-    base::span<uint8_t> dst = frame->GetWritableVisiblePlaneData(plane);
-    const size_t dst_stride = frame->stride(plane);
-    for (size_t row = 0; row < row_count; ++row) {
-      auto dst_row = dst.take_first(dst_stride);
-      auto src_row = src.take_first(src_stride);
-      dst_row.copy_prefix_from(src_row.first(bytes_per_row));
-    }
-  }
-  frame->metadata().MergeMetadataFrom(source->metadata());
-  // Important: After all consumers are done with the frame, copy-back the
-  // changed/new metadata to the source frame, as it contains feedback signals
-  // that need to propagate back up the video stack. The destruction callback
-  // for the |frame| holds a ref-counted reference to the source frame to ensure
-  // the source frame has the right metadata before its destruction observers
-  // are invoked.
-  frame->AddDestructionObserver(base::BindOnce(
-      [](const VideoFrameMetadata& sent_frame_metadata,
-         scoped_refptr<VideoFrame> source_frame) {
-        source_frame->set_metadata(sent_frame_metadata);
-      },
-      frame->metadata(), std::move(source)));
 
   // Line 3: Frame duration, resolution, and timestamp.
   int frame_duration_ms = 0;
@@ -310,10 +286,10 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
                          frame_duration_ms_frac, frame->visible_rect().width(),
                          frame->visible_rect().height(), minutes, seconds,
                          hundredth_seconds),
-      top, frame.get());
+      top, *frame);
 
   // Move up one line's worth of pixels.
-  top -= line_height;
+  top -= kLineHeight;
   if (top < 0) {
     return frame;
   }
@@ -336,10 +312,10 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
       base::StringPrintf("%d %4.1d%c %4.1d", capture_duration_ms,
                          target_playout_delay_ms,
                          in_low_latency_mode ? '!' : '.', target_kbits),
-      top, frame.get());
+      top, *frame);
 
   // Move up one line's worth of pixels.
-  top -= line_height;
+  top -= kLineHeight;
   if (top < 0) {
     return frame;
   }
@@ -350,10 +326,9 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
   const int lossy_pct = base::saturated_cast<int>(lossiness * 100.0 + 0.5);
   RenderLineOfText(base::StringPrintf("%d %3.1d%% %3.1d%%", frames_ago,
                                       encoder_pct, lossy_pct),
-                   top, frame.get());
+                   top, *frame);
 
   return frame;
 }
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

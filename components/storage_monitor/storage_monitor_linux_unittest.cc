@@ -64,7 +64,7 @@ struct TestDeviceData {
   uint64_t partition_size_in_bytes;
 };
 
-const auto kTestDeviceData = std::to_array<TestDeviceData>({
+constexpr auto kTestDeviceData = std::to_array<TestDeviceData>({
     {kDeviceDCIM1, "UUID:FFF0-000F",
      StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM, 88788},
     {kDeviceDCIM2, "VendorModelSerial:ComName:Model2010:8989",

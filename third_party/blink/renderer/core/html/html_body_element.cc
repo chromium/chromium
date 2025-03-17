@@ -62,7 +62,7 @@ bool HTMLBodyElement::IsPresentationAttribute(const QualifiedName& name) const {
 void HTMLBodyElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kBackgroundAttr) {
     AddHTMLBackgroundImageToStyle(style, value, localName());
   } else if (name == html_names::kMarginwidthAttr ||

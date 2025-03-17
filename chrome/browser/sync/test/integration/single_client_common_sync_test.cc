@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -10,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
@@ -194,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   }
 }
 
-// ChromeOS-Ash doesn't support primary account signout.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// ChromeOS doesn't support primary account signout.
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Note: See also SyncErrorTest.ClientDataObsoleteTest, which ensures the cache
 // GUID does *not* get reused if the client's data needs to be reset.
@@ -277,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   }
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
@@ -431,9 +433,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::AUTOFILL_WALLET_DATA), 1);
-  histograms.ExpectBucketCount(
-      "Sync.ClearMetadataWhileStopped",
-      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES), 1);
 
   // But for data types that use a single model in both transport mode and
   // Sync-the-feature mode (and that support transport mode in the first place),
@@ -447,6 +446,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
+
+  // With `kSeparateLocalAndAccountSearchEngines`, the same model is used for
+  // both transport mode and Sync-the-feature mode, so the metadata should *not*
+  // have been cleared.
+  histograms.ExpectBucketCount(
+      "Sync.ClearMetadataWhileStopped",
+      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES),
+      base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)? 0 : 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

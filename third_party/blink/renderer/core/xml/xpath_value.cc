@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
 
 #include <limits>
+
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -131,7 +132,7 @@ String Value::ToString() const {
         return std::signbit(number_) ? "-Infinity" : "Infinity";
       return String::Number(number_);
     case kBooleanValue:
-      return bool_ ? "true" : "false";
+      return String::Boolean(bool_);
   }
   NOTREACHED();
 }

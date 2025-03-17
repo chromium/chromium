@@ -43,6 +43,7 @@ component("media") {
     "video_decode_stats_reporter.cc",
     "video_decode_stats_reporter.h",
     "video_frame_compositor.cc",
+    "video_frame_compositor.h",
     "web_content_decryption_module_access_impl.cc",
     "web_content_decryption_module_access_impl.h",
     "web_content_decryption_module_impl.cc",
@@ -63,6 +64,7 @@ component("media") {
   ]
   public_deps = [
     "//base",
+    "//cc",
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
@@ -73,7 +75,6 @@ component("media") {
     "//url",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/viz/common",
     "//media:media_buildflags",
     "//media:shared_memory_support",
@@ -103,7 +104,6 @@ component("media") {
       "//services/media_session/public/cpp:base_cpp",
     ]
     deps += [
-      "//cc",
       "//media/learning/mojo/public/cpp",
       "//third_party/blink/public/strings:strings_grit",
     ]

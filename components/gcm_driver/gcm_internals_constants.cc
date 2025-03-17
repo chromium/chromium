@@ -6,10 +6,6 @@
 
 namespace gcm_driver {
 
-// Resource paths.
-const char kGcmInternalsCSS[] = "gcm_internals.css";
-const char kGcmInternalsJS[] = "gcm_internals.js";
-
 // Message handlers.
 const char kGetGcmInternalsInfo[] = "getGcmInternalsInfo";
 const char kSetGcmInternalsInfo[] = "set-gcm-internals-info";

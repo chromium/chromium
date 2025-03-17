@@ -10,8 +10,8 @@ build_webui("build") {
   static_files = [ "index.html" ]
   web_component_files = [ "app.ts" ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/ui/webui/ash/vm/vm.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ash/guest_os/guest_os_diagnostics.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/vm/vm.mojom-webui.ts",
   ]
   mojo_files_deps = [
     "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom_ts__generator",

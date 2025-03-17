@@ -1,0 +1,7 @@
+[document web]
+++[section]
+++++[combo box]
+++++++[menu]
+++++++++[menu item] name='Option 1' selectable selected
+++++++++[menu item] name='Option 2' selectable
+++++++++[menu item] name='Option 3' selectable

@@ -24,6 +24,8 @@ namespace {
 // Allows to check if sets has non-empty intersection without allocating.
 template <typename T1, typename T2>
 struct CountingOutputIterator {
+  using difference_type = ptrdiff_t;
+
   CountingOutputIterator& operator++() {
     ++count;
     return *this;
@@ -35,25 +37,11 @@ struct CountingOutputIterator {
 
   CountingOutputIterator& operator*() { return *this; }
   CountingOutputIterator& operator=(const T1&) { return *this; }
-  CountingOutputIterator& operator=(const T2&) { return *this; }
-
-  uint32_t count = 0;
-};
-
-// Override of CountingOutputIterator<T1, T2> when types are identical.
-template <typename T>
-struct CountingOutputIterator<T, T> {
-  CountingOutputIterator& operator++() {
-    ++count;
+  CountingOutputIterator& operator=(const T2&)
+    requires(!std::same_as<T1, T2>)
+  {
     return *this;
   }
-  CountingOutputIterator& operator++(int) {
-    ++count;
-    return *this;
-  }
-
-  CountingOutputIterator& operator*() { return *this; }
-  CountingOutputIterator& operator=(const T&) { return *this; }
 
   uint32_t count = 0;
 };
@@ -61,11 +49,11 @@ struct CountingOutputIterator<T, T> {
 // Returns whether the two sets have non-empty intersection.
 template <typename Range1, typename Range2>
 constexpr bool HasIntersection(Range1&& range1, Range2&& range2) {
-  auto result = base::ranges::set_intersection(
+  auto result = std::ranges::set_intersection(
       std::forward<Range1>(range1), std::forward<Range2>(range2),
       CountingOutputIterator<decltype(*range1.begin()),
                              decltype(*range2.begin())>{});
-  return result.count != 0;
+  return result.out.count != 0;
 }
 
 // Returns the sessions identifiers for all `browsers`.

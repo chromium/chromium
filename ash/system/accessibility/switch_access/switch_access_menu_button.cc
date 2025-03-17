@@ -53,7 +53,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
                        .SetText(label_text)
                        .SetTextContext(views::style::CONTEXT_BUTTON)
                        .SetAutoColorReadabilityEnabled(false)
-                       .SetEnabledColorId(kColorAshTextColorPrimary)
+                       .SetEnabledColor(kColorAshTextColorPrimary)
                        .SetMultiLine(true)
                        .SetMaximumWidth(kLabelMaxWidthDip))
       .BuildChildren();
@@ -86,8 +86,8 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
 }
 
 void SwitchAccessMenuButton::OnButtonPressed() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
-                           /*send_native_event=*/false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kClicked,
+                                     /*send_native_event=*/false);
 }
 
 BEGIN_METADATA(SwitchAccessMenuButton)

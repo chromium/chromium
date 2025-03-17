@@ -122,7 +122,7 @@ TEST(TrustTokenQueryAnswerer, TokenQueryHandlesFailureToAssociateIssuer) {
           }));
 
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kResourceLimited);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kSiteIssuerLimit);
 }
 
 TEST(TrustTokenQueryAnswerer, TokenQuerySuccessWithNoTokens) {

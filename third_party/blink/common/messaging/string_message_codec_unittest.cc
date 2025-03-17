@@ -60,8 +60,8 @@ WebMessagePayload DecodeWithV8(const TransferableMessage& message) {
       v8::Local<v8::String> js_str = value->ToString(context).ToLocalChecked();
       std::u16string str;
       str.resize(js_str->Length());
-      js_str->Write(isolate, reinterpret_cast<uint16_t*>(&str[0]), 0,
-                    str.size());
+      js_str->WriteV2(isolate, 0, str.size(),
+                      reinterpret_cast<uint16_t*>(&str[0]));
       result = str;
     }
     if (value->IsArrayBuffer()) {

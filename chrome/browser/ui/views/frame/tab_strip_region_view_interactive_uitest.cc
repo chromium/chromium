@@ -47,11 +47,11 @@ class TabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
   TabStrip* tab_strip() { return browser_view()->tabstrip(); }
 
   TabSearchContainer* tab_search_container() {
-    return tab_strip_region_view()->GetTabSearchContainer();
+    return tab_strip_region_view()->tab_search_container_for_testing();
   }
 
   TabSearchButton* tab_search_button() {
-    return tab_search_container()->tab_search_button();
+    return tab_strip_region_view()->GetTabSearchButton();
   }
 
   views::View* new_tab_button() {
@@ -113,10 +113,18 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
   EXPECT_TRUE(tab_2->HasFocus());
 
   move_forward_over_tab(tab_2);
-  EXPECT_TRUE(new_tab_button()->HasFocus());
+  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+    EXPECT_TRUE(tab_search_button()->HasFocus());
+  } else {
+    EXPECT_TRUE(new_tab_button()->HasFocus());
+  }
 
   press_right();
-  EXPECT_TRUE(tab_search_button()->HasFocus());
+  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+    EXPECT_TRUE(new_tab_button()->HasFocus());
+  } else {
+    EXPECT_TRUE(tab_search_button()->HasFocus());
+  }
 
   // Focus should cycle back around to tab_0.
   press_right();
@@ -153,10 +161,18 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
 
   // Pressing left should immediately cycle back around to the last button.
   press_left();
-  EXPECT_TRUE(tab_search_button()->HasFocus());
+  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+    EXPECT_TRUE(new_tab_button()->HasFocus());
+  } else {
+    EXPECT_TRUE(tab_search_button()->HasFocus());
+  }
 
   press_left();
-  EXPECT_TRUE(new_tab_button()->HasFocus());
+  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+    EXPECT_TRUE(tab_search_button()->HasFocus());
+  } else {
+    EXPECT_TRUE(new_tab_button()->HasFocus());
+  }
 
   move_back_to_tab(tab_2);
   EXPECT_TRUE(tab_2->HasFocus());
@@ -186,12 +202,20 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 #if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->end_key()));
-    EXPECT_TRUE(new_tab_button()->HasFocus());
+    if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+      EXPECT_TRUE(tab_search_button()->HasFocus());
+    } else {
+      EXPECT_TRUE(new_tab_button()->HasFocus());
+    }
 #endif  // !BUILDFLAG(IS_WIN)
 
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->home_key()));
-    EXPECT_TRUE(tab_search_button()->HasFocus());
+    if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+      EXPECT_TRUE(new_tab_button()->HasFocus());
+    } else {
+      EXPECT_TRUE(tab_search_button()->HasFocus());
+    }
 
   } else {
     // The first tab should be active.
@@ -200,7 +224,11 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 #if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->end_key()));
-    EXPECT_TRUE(tab_search_button()->HasFocus());
+    if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+      EXPECT_TRUE(new_tab_button()->HasFocus());
+    } else {
+      EXPECT_TRUE(tab_search_button()->HasFocus());
+    }
 #endif  // !BUILDFLAG(IS_WIN)
 
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(

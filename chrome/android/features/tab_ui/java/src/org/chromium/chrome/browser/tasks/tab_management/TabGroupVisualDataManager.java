@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -46,18 +48,22 @@ public class TabGroupVisualDataManager {
                         if (tabs.isEmpty()) return;
 
                         TabGroupModelFilter filter = filterFromTab(tabs.get(0));
-                        LazyOneshotSupplier<Set<Integer>> remainingRootIds =
-                                filter.getLazyAllRootIdsInComprehensiveModel(tabs);
-                        Set<Integer> processedRootIds = new HashSet<>();
+                        LazyOneshotSupplier<Set<Token>> remainingTabGroupIds =
+                                filter.getLazyAllTabGroupIds(
+                                        tabs, /* includePendingClosures= */ true);
+                        Set<Token> processedTabGroupIds = new HashSet<>();
                         for (Tab tab : tabs) {
-                            int rootId = tab.getRootId();
-                            boolean wasAdded = processedRootIds.add(rootId);
+                            @Nullable Token tabGroupId = tab.getTabGroupId();
+                            if (tabGroupId == null) continue;
+
+                            boolean wasAdded = processedTabGroupIds.add(tabGroupId);
                             if (!wasAdded) continue;
 
                             // If any related tab still exist keep the data as size 1 groups are
                             // valid.
-                            if (remainingRootIds.get().contains(rootId)) continue;
+                            if (remainingTabGroupIds.get().contains(tabGroupId)) continue;
 
+                            int rootId = tab.getRootId();
                             Runnable deleteTask =
                                     () -> {
                                         filter.deleteTabGroupTitle(rootId);
@@ -66,7 +72,7 @@ public class TabGroupVisualDataManager {
                                             filter.deleteTabGroupCollapsed(rootId);
                                         }
                                     };
-                            if (filter.isTabGroupHiding(tab.getTabGroupId())) {
+                            if (filter.isTabGroupHiding(tabGroupId)) {
                                 // Post this work because if the closure is non-undoable, but the
                                 // tab group is hiding we don't want sync to pick up this deletion
                                 // and we should post so all the observers are notified before we do
@@ -82,7 +88,7 @@ public class TabGroupVisualDataManager {
         mFilterObserver =
                 new TabGroupModelFilterObserver() {
                     @Override
-                    public void willMergeTabToGroup(Tab movedTab, int newRootId) {
+                    public void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
                         String sourceGroupTitle = filter.getTabGroupTitle(movedTab.getRootId());
                         String targetGroupTitle = filter.getTabGroupTitle(newRootId);
@@ -98,28 +104,26 @@ public class TabGroupVisualDataManager {
                         // handover the stored color to the group after merge.
                         if (sourceGroupColor != TabGroupColorUtils.INVALID_COLOR_ID
                                 && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
-                           filter.setTabGroupColor(newRootId, sourceGroupColor);
+                            filter.setTabGroupColor(newRootId, sourceGroupColor);
                         } else if (sourceGroupColor == TabGroupColorUtils.INVALID_COLOR_ID
                                 && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
-                           filter.setTabGroupColor(
-                                    newRootId,
-                                    TabGroupColorUtils.getNextSuggestedColorId(filter));
+                            filter.setTabGroupColor(
+                                    newRootId, TabGroupColorUtils.getNextSuggestedColorId(filter));
                         }
                     }
 
                     @Override
-                    public void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {
+                    public void willMoveTabOutOfGroup(
+                            Tab movedTab, @Nullable Token destinationTabGroupId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
-                        int rootId = movedTab.getRootId();
-                        String title = filter.getTabGroupTitle(rootId);
 
-                        // If the group size is 2, i.e. the group becomes a single tab after
-                        // ungroup, delete the stored visual data. When tab groups of size 1 are
-                        // supported this behavior is no longer valid.
+                        // If the group will become empty (0 tabs) delete the title.
                         boolean shouldDeleteVisualData =
-                                filter.getRelatedTabCountForRootId(rootId)
+                                filter.getTabCountForGroup(movedTab.getTabGroupId())
                                         <= DELETE_DATA_GROUP_SIZE_THRESHOLD;
                         if (shouldDeleteVisualData) {
+                            int rootId = movedTab.getRootId();
+                            @Nullable String title = filter.getTabGroupTitle(rootId);
                             if (title != null) {
                                 filter.deleteTabGroupTitle(rootId);
                             }

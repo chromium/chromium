@@ -26,6 +26,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -77,23 +78,32 @@ namespace {
 
 // This function should match to the user-agent stylesheet.
 AppearanceValue AutoAppearanceFor(const Element& element) {
-  if (IsA<HTMLButtonElement>(element))
+  if (IsA<HTMLButtonElement>(element)) {
     return AppearanceValue::kButton;
-  if (IsA<HTMLMeterElement>(element))
+  }
+  if (IsA<ScrollButtonPseudoElement>(element)) {
+    return AppearanceValue::kButton;
+  }
+  if (IsA<HTMLMeterElement>(element)) {
     return AppearanceValue::kMeter;
-  if (IsA<HTMLProgressElement>(element))
+  }
+  if (IsA<HTMLProgressElement>(element)) {
     return AppearanceValue::kProgressBar;
-  if (IsA<HTMLTextAreaElement>(element))
+  }
+  if (IsA<HTMLTextAreaElement>(element)) {
     return AppearanceValue::kTextArea;
-  if (IsA<SpinButtonElement>(element))
+  }
+  if (IsA<SpinButtonElement>(element)) {
     return AppearanceValue::kInnerSpinButton;
+  }
   if (const auto* select = DynamicTo<HTMLSelectElement>(element)) {
     return select->UsesMenuList() ? AppearanceValue::kMenulist
                                   : AppearanceValue::kListbox;
   }
 
-  if (const auto* input = DynamicTo<HTMLInputElement>(element))
+  if (const auto* input = DynamicTo<HTMLInputElement>(element)) {
     return input->AutoAppearance();
+  }
 
   if (element.IsInUserAgentShadowRoot()) {
     const AtomicString& id_value =
@@ -192,12 +202,18 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
     case AppearanceValue::kMediaVolumeSliderThumb:
     case AppearanceValue::kMediaControl:
       return appearance;
-    case AppearanceValue::kBaseSelect:
-      CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-      return IsA<HTMLSelectElement>(element) ||
-                     HTMLSelectElement::IsPopoverForAppearanceBase(element)
-                 ? appearance
-                 : auto_appearance;
+    case AppearanceValue::kBaseSelect: {
+      if (!HTMLSelectElement::CustomizableSelectEnabled(element)) {
+        return auto_appearance;
+      }
+      bool base_appearance_allowed = false;
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        base_appearance_allowed = !select->IsMultiple();
+      } else if (HTMLSelectElement::IsPopoverForAppearanceBase(element)) {
+        base_appearance_allowed = true;
+      }
+      return base_appearance_allowed ? appearance : auto_appearance;
+    }
 
     // Aliases of 'auto'.
     // https://drafts.csswg.org/css-ui-4/#typedef-appearance-compat-auto
@@ -437,8 +453,7 @@ bool LayoutTheme::IsControlStyled(AppearanceValue appearance,
       return builder.HasAuthorBackground() || builder.HasAuthorBorder();
 
     case AppearanceValue::kMeter:
-      return RuntimeEnabledFeatures::MeterDevolveAppearanceEnabled() &&
-             (builder.HasAuthorBackground() || builder.HasAuthorBorder());
+      return builder.HasAuthorBackground() || builder.HasAuthorBorder();
 
     case AppearanceValue::kMenulist:
     case AppearanceValue::kSearchField:
@@ -736,6 +751,13 @@ Color LayoutTheme::SystemColorFromColorProvider(
     case CSSValueID::kWindowframe:
       system_theme_color = color_provider->GetColor(ui::kColorCssSystemBtnText);
       break;
+    case CSSValueID::kField:
+      system_theme_color = color_provider->GetColor(ui::kColorCssSystemField);
+      break;
+    case CSSValueID::kFieldtext:
+      system_theme_color =
+          color_provider->GetColor(ui::kColorCssSystemFieldText);
+      break;
     case CSSValueID::kGraytext:
       system_theme_color =
           color_provider->GetColor(ui::kColorCssSystemGrayText);
@@ -747,7 +769,6 @@ Color LayoutTheme::SystemColorFromColorProvider(
           color_provider->GetColor(ui::kColorCssSystemHighlightText);
       break;
     case CSSValueID::kCanvas:
-    case CSSValueID::kField:
     // Deprecated colors, see DefaultSystemColor().
     case CSSValueID::kAppworkspace:
     case CSSValueID::kBackground:
@@ -759,7 +780,6 @@ Color LayoutTheme::SystemColorFromColorProvider(
       system_theme_color = color_provider->GetColor(ui::kColorCssSystemWindow);
       break;
     case CSSValueID::kCanvastext:
-    case CSSValueID::kFieldtext:
     // Deprecated colors, see DefaultSystemColor().
     case CSSValueID::kActivecaption:
     case CSSValueID::kCaptiontext:

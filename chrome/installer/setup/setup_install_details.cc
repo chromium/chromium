@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/setup_install_details.h"
 
 #include <optional>
@@ -29,14 +24,14 @@ namespace {
 const install_static::InstallConstants* FindInstallMode(
     const base::CommandLine& command_line) {
   // Search for a mode whose switch is on the command line.
-  for (int i = 1; i < install_static::NUM_INSTALL_MODES; ++i) {
+  for (size_t i = 1; i < install_static::kInstallModes.size(); ++i) {
     const install_static::InstallConstants& mode =
         install_static::kInstallModes[i];
     if (command_line.HasSwitch(mode.install_switch))
       return &mode;
   }
   // The first mode is always the default if all else fails.
-  return &install_static::kInstallModes[0];
+  return &install_static::kInstallModes.front();
 }
 
 // Returns the value of `switch_name` from `command_line` if it is present, or

@@ -9,11 +9,11 @@
 
 #include "device/fido/ctap_make_credential_request.h"
 
+#include <algorithm>
 #include <limits>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "components/cbor/values.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
@@ -24,7 +24,7 @@ namespace device {
 namespace {
 bool IsMakeCredentialOptionMapFormatCorrect(
     const cbor::Value::MapValue& option_map) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       option_map, [](const auto& param) {
         return param.first.is_string() &&
                (param.first.GetString() == kResidentKeyMapKey ||
@@ -35,7 +35,7 @@ bool IsMakeCredentialOptionMapFormatCorrect(
 
 bool AreMakeCredentialRequestMapKeysCorrect(
     const cbor::Value::MapValue& request_map) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       request_map, [](const auto& param) {
         return (param.first.is_integer() && 1u <= param.first.GetInteger() &&
                 param.first.GetInteger() <= 10u);

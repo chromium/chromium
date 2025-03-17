@@ -27,6 +27,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
@@ -267,7 +268,12 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                               const std::string& ad_json);
   // Adds an entry to forDebuggingOnly report lockout table if the table is
   // empty. Otherwise replaces the existing entry.
-  void RecordDebugReportLockout(base::Time last_report_sent_time);
+  void RecordDebugReportLockout(base::Time starting_time,
+                                base::TimeDelta duration);
+  // Adds an entry with random duration to forDebuggingOnly report lockout
+  // table. This is used to avoid new user bias when changing from allowing 3PC
+  // to disallowing 3PC.
+  void RecordRandomDebugReportLockout(base::Time starting_time);
   // Adds an entry to forDebuggingOnly report cooldown table for `origin` if it
   // does not exist, otherwise replaces the existing entry.
   void RecordDebugReportCooldown(const url::Origin& origin,
@@ -339,11 +345,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;
 
-  // Returns a user agent override string for the given frame tree node,
-  // if one is available and the feature is enabled.
-  std::optional<std::string> MaybeGetUserAgentOverride(
-      const FrameTreeNodeId& frame_tree_node_id);
-
   // Enqueues reports for the specified URLs. Virtual for testing.
   virtual void EnqueueReports(
       ReportType report_type,
@@ -379,18 +380,28 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Update B&A keys for a coordinator. This function will overwrite any
   // existing keys for the coordinator.
-  void SetBiddingAndAuctionServerKeys(
+  void SetBiddingAndAuctionServerKeys(const url::Origin& coordinator,
+                                      std::string serialized_keys,
+                                      base::Time expiration);
+
+  // Add a debugging override for B&A keys. Unlike with
+  // `SetBiddingAndAuctionServerKeys` the keys set will not affect the state of
+  // the database, but will affect `GetTrustedServerKey` while the current
+  // process is running. The callback will be invoked with nullopt on
+  // success, an error string on failure. Failures include being called when
+  // a configuration for `coordinator` already exists, including from a previous
+  // code to this method.
+  void AddTrustedServerKeysDebugOverride(
+      TrustedServerAPIType api,
       const url::Origin& coordinator,
-      const std::vector<BiddingAndAuctionServerKey>& keys,
-      base::Time expiration);
+      std::string serialized_keys,
+      base::OnceCallback<void(std::optional<std::string>)> callback);
 
   // Load stored B&A server keys for a coordinator along with the keys'
   // expiration.
   void GetBiddingAndAuctionServerKeys(
       const url::Origin& coordinator,
-      base::OnceCallback<
-          void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
-          callback);
+      base::OnceCallback<void(std::pair<base::Time, std::string>)> callback);
 
   // Clears the InterestGroupPermissionsChecker's cache of the results of
   // .well-known fetches.
@@ -506,7 +517,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Get the public key to use for the auction data. The `callback` may be
   // called synchronously if the key is already available or the coordinator is
   // not recognized.
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedServerKey(
+      TrustedServerAPIType api,
+      const url::Origin& seller,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
@@ -544,6 +557,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   }
 
  private:
+  friend class InterestGroupManagerImplTestPeer;
+
   // InterestGroupUpdateManager calls private members to write updates to the
   // database.
   friend class InterestGroupUpdateManager;
@@ -556,6 +571,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     // Real time reporting histograms to be sent in POST request's body. Null
     // for other report types.
     std::optional<std::vector<uint8_t>> real_time_histogram;
+
+    // The flip probability that was used to calculate the real time report's
+    // noise using RAPPOR.
+    std::optional<double> real_time_report_flip_probability;
 
     url::Origin frame_origin;
     network::mojom::ClientSecurityState client_security_state;
@@ -700,9 +719,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Constructs the AuctionAdata when the load is complete and calls the
   // provided callback.
-  void OnAdAuctionDataLoadComplete(
-      AdAuctionDataLoaderState state,
-      std::optional<base::Time> last_report_sent_time);
+  void OnAdAuctionDataLoadComplete(AdAuctionDataLoaderState state,
+                                   std::optional<DebugReportLockout> lockout);
 
   // Helper to that returns bound NotifyInterestGroupAccessed() callbacks to
   // allow notifications to be sent after a database update.

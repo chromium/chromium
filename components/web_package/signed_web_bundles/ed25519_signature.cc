@@ -4,7 +4,8 @@
 
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/stringprintf.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
@@ -39,7 +40,7 @@ bool Ed25519Signature::operator!=(const Ed25519Signature& other) const {
 Ed25519Signature Ed25519Signature::Create(
     base::span<const uint8_t, kLength> bytes) {
   std::array<uint8_t, kLength> array;
-  base::ranges::copy(bytes, array.begin());
+  std::ranges::copy(bytes, array.begin());
   return Ed25519Signature(array);
 }
 

@@ -11,12 +11,15 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
+#include "components/data_sharing/public/logger.h"
+#include "components/data_sharing/public/logger_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/internal/stats.h"
 #include "components/saved_tab_groups/internal/sync_data_type_configuration.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/utils.h"
@@ -27,6 +30,7 @@ namespace tab_groups {
 TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
     SavedTabGroupModel* model,
     PrefService* pref_service,
+    data_sharing::Logger* logger,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration)
     : model_(model),
@@ -57,8 +61,13 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
         &shared_bridge_model_wrapper_,
         std::move(shared_tab_group_configuration->data_type_store_factory),
         std::move(shared_tab_group_configuration->change_processor),
-        pref_service);
+        pref_service, logger);
   }
+
+  // This new value is written after the old value is read inside the
+  // `shared_bridge_` constructor, hence there is no race.
+  pref_service->SetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession,
+                           !!shared_bridge_);
 }
 
 TabGroupSyncBridgeMediator::~TabGroupSyncBridgeMediator() = default;
@@ -278,6 +287,12 @@ void TabGroupSyncBridgeMediator::SavedTabGroupLastUserInteractionTimeUpdated(
     CHECK(saved_bridge_);
     saved_bridge_->SavedTabGroupLastUserInteractionTimeUpdated(group_guid);
   }
+}
+
+void TabGroupSyncBridgeMediator::UntrackEntitiesForCollaboration(
+    const syncer::CollaborationId& collaboration_id) {
+  CHECK(shared_bridge_);
+  shared_bridge_->UntrackEntitiesForCollaboration(collaboration_id);
 }
 
 void TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded(

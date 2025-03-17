@@ -27,18 +27,19 @@
 }
 
 - (instancetype)
-initWithURLLoaderFactory:
-    (scoped_refptr<network::SharedURLLoaderFactory>)shared_url_loader_factory
-                delegate:(id<RetryableURLFetcherDelegate>)delegate
-           backoffPolicy:(const net::BackoffEntry::Policy*)policy {
+    initWithURLLoaderFactory:(scoped_refptr<network::SharedURLLoaderFactory>)
+                                 shared_url_loader_factory
+                    delegate:(id<RetryableURLFetcherDelegate>)delegate
+               backoffPolicy:(const net::BackoffEntry::Policy*)policy {
   self = [super init];
   if (self) {
     DCHECK(shared_url_loader_factory);
     DCHECK(delegate);
     _shared_url_loader_factory = shared_url_loader_factory;
     _delegate = delegate;
-    if (policy)
+    if (policy) {
       _backoffEntry.reset(new net::BackoffEntry(policy));
+    }
   }
   return self;
 }
@@ -80,8 +81,9 @@ initWithURLLoaderFactory:
     return;
   }
   NSString* response = nil;
-  if (response_body)
+  if (response_body) {
     response = base::SysUTF8ToNSString(*response_body);
+  }
   [_delegate processSuccessResponse:response];
 }
 

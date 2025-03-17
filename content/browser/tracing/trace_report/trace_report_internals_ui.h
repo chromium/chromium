@@ -6,8 +6,8 @@
 #define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_INTERNALS_UI_H_
 
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace content {
@@ -18,10 +18,10 @@ class TraceReportInternalsUI;
 
 // WebUIConfig for the chrome://traces page.
 class TraceReportInternalsUIConfig
-    : public DefaultWebUIConfig<TraceReportInternalsUI> {
+    : public DefaultInternalWebUIConfig<TraceReportInternalsUI> {
  public:
   TraceReportInternalsUIConfig()
-      : DefaultWebUIConfig(kChromeUIScheme, kChromeUITracesInternalsHost) {}
+      : DefaultInternalWebUIConfig(kChromeUITracesInternalsHost) {}
 };
 
 // WebUIController for the chrome://traces page.

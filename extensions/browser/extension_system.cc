@@ -10,8 +10,7 @@
 
 namespace extensions {
 
-ExtensionSystem::ExtensionSystem() {
-}
+ExtensionSystem::ExtensionSystem() = default;
 
 ExtensionSystem::~ExtensionSystem() {
 }

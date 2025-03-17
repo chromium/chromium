@@ -6,16 +6,18 @@
 #include <cstring>
 #include <iterator>
 
+int UnsafeIndex();  // This function might return an out-of-bound index.
+
 void fct() {
   // Expected rewrite:
   // auto buf = std::to_array<int>({1, 2, 3, 4});
   int buf[] = {1, 2, 3, 4};
-  buf[1] = 1;
+  buf[UnsafeIndex()] = 1;
 
   // Expected rewrite:
   // auto buf2 = std::to_array<char>({'x', 'y', 'z'});
   char buf2[] = {'x', 'y', 'z'};
-  buf2[1] = 'a';
+  buf2[UnsafeIndex()] = 'a';
 
   // Expected rewrite:
   // memcpy(buf2.data(), buf.data(), 1);
@@ -35,7 +37,7 @@ void fct2() {
   // Expected rewrite:
   // std::array<char, 10> data;
   char data[10];
-  data[1] = 'a';
+  data[UnsafeIndex()] = 'a';
   File f;
   // Expected rewrite:
   // f.ReadAtCurrentPos(data.data(), 10);
@@ -46,7 +48,7 @@ void fct3() {
   // Expected rewrite:
   // std::array<char, 10> data;
   char data[10];
-  data[1] = 'a';
+  data[UnsafeIndex()] = 'a';
   // No rewrite expected. This is because std::size() etc. accepts std::array.
   std::ignore = std::size(data);
   std::ignore = std::begin(data);
@@ -62,6 +64,19 @@ void fct4() {
   // Expected rewrite:
   // const std::string_view buf = "123456789";
   const char buf[] = "123456789";
-  std::ignore = buf[1];
+  std::ignore = buf[UnsafeIndex()];
+  // Expected rewrite:
+  // std::ignore = memcmp(buf.data(), "xxx456789", 3);
   std::ignore = memcmp(buf, "xxx456789", 3);
+}
+
+void fct5() {
+  // TODO(crbug.com/400492894): Rewrite the following code to compilable code.
+  // Expected rewrite:
+  // auto buf = std::to_array<char>({"hello, world"});
+  char buf[]{"hello, world"};
+  std::ignore = buf[UnsafeIndex()];
+  // Expected rewrite:
+  // std::string s(buf.data());
+  std::string s(buf);
 }

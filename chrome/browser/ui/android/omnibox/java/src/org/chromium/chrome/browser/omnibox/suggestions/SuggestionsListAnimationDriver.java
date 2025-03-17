@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public interface SuggestionsListAnimationDriver {
     /**
      * Called to signal an omnibox session is about to begin or end so that the driver can begin

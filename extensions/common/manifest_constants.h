@@ -146,7 +146,6 @@ inline constexpr char kShortName[] = "short_name";
 inline constexpr char kSockets[] = "sockets";
 inline constexpr char kStorageManagedSchema[] = "storage.managed_schema";
 inline constexpr char kSuggestedKey[] = "suggested_key";
-inline constexpr char kSystemIndicator[] = "system_indicator";
 inline constexpr char kTheme[] = "theme";
 inline constexpr char kThemeColors[] = "colors";
 inline constexpr char kThemeDisplayProperties[] = "properties";
@@ -196,36 +195,6 @@ inline constexpr char kBrowserActionCommandEvent[] = "_execute_browser_action";
 inline constexpr char kIncognitoNotAllowed[] = "not_allowed";
 inline constexpr char kIncognitoSplit[] = "split";
 inline constexpr char kIncognitoSpanning[] = "spanning";
-inline constexpr char kKeybindingPlatformChromeOs[] = "chromeos";
-inline constexpr char kKeybindingPlatformDefault[] = "default";
-inline constexpr char kKeybindingPlatformLinux[] = "linux";
-inline constexpr char kKeybindingPlatformMac[] = "mac";
-inline constexpr char kKeybindingPlatformWin[] = "windows";
-inline constexpr char kKeyAlt[] = "Alt";
-inline constexpr char kKeyComma[] = "Comma";
-inline constexpr char kKeyCommand[] = "Command";
-inline constexpr char kKeyCtrl[] = "Ctrl";
-inline constexpr char kKeyDel[] = "Delete";
-inline constexpr char kKeyDown[] = "Down";
-inline constexpr char kKeyEnd[] = "End";
-inline constexpr char kKeyHome[] = "Home";
-inline constexpr char kKeyIns[] = "Insert";
-inline constexpr char kKeyLeft[] = "Left";
-inline constexpr char kKeyMacCtrl[] = "MacCtrl";
-inline constexpr char kKeyMediaNextTrack[] = "MediaNextTrack";
-inline constexpr char kKeyMediaPlayPause[] = "MediaPlayPause";
-inline constexpr char kKeyMediaPrevTrack[] = "MediaPrevTrack";
-inline constexpr char kKeyMediaStop[] = "MediaStop";
-inline constexpr char kKeyPgDwn[] = "PageDown";
-inline constexpr char kKeyPgUp[] = "PageUp";
-inline constexpr char kKeyPeriod[] = "Period";
-inline constexpr char kKeyRight[] = "Right";
-inline constexpr char kKeySearch[] = "Search";
-inline constexpr char kKeySeparator[] = "+";
-inline constexpr char kKeyShift[] = "Shift";
-inline constexpr char kKeySpace[] = "Space";
-inline constexpr char kKeyTab[] = "Tab";
-inline constexpr char kKeyUp[] = "Up";
 inline constexpr char kLaunchContainerPanelDeprecated[] = "panel";
 inline constexpr char kLaunchContainerTab[] = "tab";
 inline constexpr char kLaunchContainerWindow[] = "window";
@@ -278,8 +247,6 @@ inline constexpr char kCannotScriptGallery[] =
     "The extensions gallery cannot be scripted.";
 inline constexpr char kCannotScriptNtp[] =
     "The New Tab Page cannot be scripted.";
-inline constexpr char kCannotScriptSigninPage[] =
-    "The sign-in page cannot be scripted.";
 inline constexpr char16_t kChromeStyleInvalidForManifestV3[] =
     u"The chrome_style option cannot be used with manifest version 3.";
 inline constexpr char kChromeVersionTooLow[] =
@@ -591,8 +558,6 @@ inline constexpr char16_t kInvalidShortName[] =
     u"Invalid value for 'short_name'.";
 inline constexpr char kInvalidStartupOverrideURL[] =
     "Invalid value for overriding startup URL: '[*]'.";
-inline constexpr char16_t kInvalidSystemIndicator[] =
-    u"Invalid value for 'system_indicator'.";
 inline constexpr char16_t kInvalidTheme[] = u"Invalid value for 'theme'.";
 inline constexpr char16_t kInvalidThemeColors[] =
     u"Invalid value for theme colors - colors must be integers";
@@ -655,11 +620,8 @@ inline constexpr char16_t kInvalidVersion[] =
     "dot-separated integers each between 0 and 65536.";
 inline constexpr char16_t kInvalidVersionName[] =
     u"Invalid value for 'version_name'.";
-inline constexpr char kInvalidWebAccessibleResourcesList[] =
-    "Invalid value for 'web_accessible_resources'.";
 inline constexpr char kInvalidWebAccessibleResource[] =
     "Invalid value for 'web_accessible_resources[*]'. *";
-inline constexpr char kInvalidSidePanel[] = "Invalid value for 'side_panel'. *";
 inline constexpr char16_t kInvalidWebview[] = u"Invalid value for 'webview'.";
 inline constexpr char16_t kInvalidWebviewAccessibleResourcesList[] =
     u"Invalid value for'webview.accessible_resources'.";
@@ -673,10 +635,6 @@ inline constexpr char16_t kInvalidWebviewPartitionsList[] =
     u"Invalid value for 'webview.partitions'.";
 inline constexpr char kInvalidWebURL[] = "Invalid value for 'app.urls[*]': *";
 inline constexpr char kInvalidWebURLs[] = "Invalid value for 'app.urls'.";
-inline constexpr char kInvalidZipHash[] =
-    "Required key 'zip_hash' is missing or invalid.";
-inline constexpr char kKeyIsDeprecatedWithReplacement[] =
-    "Key \"*\" is deprecated.  Key \"*\" should be used instead.";
 inline constexpr char16_t kLaunchPathAndExtentAreExclusive[] =
     u"The 'app.launch.local_path' and 'app.urls' keys cannot both be set.";
 inline constexpr char16_t kLaunchPathAndURLAreExclusive[] =
@@ -753,8 +711,6 @@ inline constexpr char16_t
         "persistent background page.";
 inline constexpr char kUnrecognizedManifestKey[] =
     "Unrecognized manifest key '*'.";
-inline constexpr char kUnrecognizedManifestProperty[] =
-    "Unrecognized property '*' of manifest key '*'.";
 inline constexpr char16_t kWebRequestConflictsWithLazyBackground[] =
     u"The 'webRequest' API cannot be used with event pages.";
 #if BUILDFLAG(IS_CHROMEOS)

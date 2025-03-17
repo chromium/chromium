@@ -25,7 +25,8 @@
 import {KeyCode} from '/common/key_code.js';
 
 import {Command, CommandCategory} from './command.js';
-import {KeyBinding, KeySequence, SerializedKeySequence} from './key_sequence.js';
+import type {KeyBinding, SerializedKeySequence} from './key_sequence.js';
+import {KeySequence} from './key_sequence.js';
 
 export class CommandStore {
   /**
@@ -960,6 +961,13 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
     category: CommandCategory.HELP_COMMANDS,
     msgId: 'toggle_braille_table',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.G]}},
+  },
+  [Command.TOGGLE_CAPTIONS]: {
+    // TODO(crbug.com/383403295): Set an appropriate category when feature is
+    // launched.
+    category: CommandCategory.NO_CATEGORY,
+    msgId: 'toggle_captions',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.C]}},
   },
   [Command.TOGGLE_DICTATION]: {
     category: CommandCategory.ACTIONS,

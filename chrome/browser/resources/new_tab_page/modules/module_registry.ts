@@ -98,8 +98,8 @@ export class ModuleRegistry {
         return 0;  // Keep current order.
       });
     }
-    const elements =
-        await Promise.all(descriptors.map(d => d.initialize(timeout)));
+    const elements = await Promise.all(
+        descriptors.map(d => d.initialize(timeout, /*onNtpLoad=*/ true)));
     return elements.map((e, i) => ({elements: e, descriptor: descriptors[i]}))
         .filter(m => !!m.elements)
         .map(m => ({
@@ -108,5 +108,35 @@ export class ModuleRegistry {
                     descriptor: m.descriptor,
                   }) as Module)
         .filter(m => m.elements.length !== 0);
+  }
+
+  /**
+   * Initializes a module based on the provided module id.
+   * Serves as a convenience method for cases where the caller already knows the
+   * desired module id to load.
+   *
+   * @param moduleId A module id to be leveraged when determining the
+   *     module to be initialized.
+   * @param timeout Timeout in milliseconds after which initialization of a
+   *     the module aborts.
+   */
+  async initializeModuleById(id: string, timeout: number):
+      Promise<Module|null> {
+    const descriptor = this.descriptors_.find(d => d.id === id);
+    if (!descriptor) {
+      console.error('Missing descriptor for module id ', id);
+      return null;
+    }
+
+    const elements = await descriptor.initialize(timeout, /*onNtpLoad=*/ false);
+    if (!elements) {
+      console.error('No elements initialized for module id ', id);
+      return null;
+    }
+
+    return {
+      elements: Array.isArray(elements) ? elements : [elements],
+      descriptor: descriptor,
+    } as Module;
   }
 }

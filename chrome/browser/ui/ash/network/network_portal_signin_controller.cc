@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -41,10 +41,12 @@ namespace ash {
 
 namespace {
 
-bool ProxyActive(Profile* profile) {
+static NetworkPortalSigninController* g_instance = nullptr;
+
+bool ProxyActive(PrefService& local_state, Profile* profile) {
   std::unique_ptr<ProxyConfigDictionary> proxy_config =
       ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
-          profile->GetPrefs(), g_browser_process->local_state());
+          profile->GetPrefs(), &local_state);
   if (!proxy_config) {
     return false;
   }
@@ -82,15 +84,30 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
 
 }  // namespace
 
-// static
-NetworkPortalSigninController* NetworkPortalSigninController::Get() {
-  static base::NoDestructor<NetworkPortalSigninController> instance;
-  return instance.get();
-}
-
-NetworkPortalSigninController::NetworkPortalSigninController() = default;
+NetworkPortalSigninController::NetworkPortalSigninController(
+    PrefService& local_state)
+    : local_state_(local_state) {}
 
 NetworkPortalSigninController::~NetworkPortalSigninController() = default;
+
+// static
+void NetworkPortalSigninController::Init(PrefService& local_state) {
+  CHECK(!g_instance);
+  g_instance = new NetworkPortalSigninController(local_state);
+}
+
+// static
+void NetworkPortalSigninController::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+  g_instance = nullptr;
+}
+
+// static
+NetworkPortalSigninController* NetworkPortalSigninController::Get() {
+  CHECK(g_instance);
+  return g_instance;
+}
 
 void NetworkPortalSigninController::ShowSignin(SigninSource source) {
   GURL url;
@@ -186,7 +203,7 @@ NetworkPortalSigninController::GetSigninMode(
   // tab to avoid providing cookies, see b/245578628 for details.
   const bool ignore_proxy = profile->GetPrefs()->GetBoolean(
       chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy);
-  if (!ignore_proxy && ProxyActive(profile)) {
+  if (!ignore_proxy && ProxyActive(local_state_.get(), profile)) {
     return SigninMode::kNormalTab;
   }
 

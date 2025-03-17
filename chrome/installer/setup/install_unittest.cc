@@ -22,6 +22,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat_win.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
@@ -304,7 +305,7 @@ class InstallShortcutTest : public testing::Test {
       initial_prefs += (i == 0 ? "\"" : ",\"");
       initial_prefs += desired_prefs[i].pref_name;
       initial_prefs += "\":";
-      initial_prefs += desired_prefs[i].is_desired ? "true" : "false";
+      initial_prefs += base::ToString(desired_prefs[i].is_desired);
     }
     initial_prefs += "}}";
 

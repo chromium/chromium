@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "device/fido/device_response_converter.h"
 
 #include <memory>
@@ -344,7 +349,7 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     return std::nullopt;
   }
   if (GetResponseCode(buffer) != CtapDeviceResponseCode::kSuccess) {
-    FIDO_LOG(ERROR) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
+    FIDO_LOG(DEBUG) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
     return std::nullopt;
   }
 

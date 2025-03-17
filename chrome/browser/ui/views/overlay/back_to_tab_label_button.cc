@@ -74,8 +74,8 @@ void BackToTabLabelButton::OnThemeChanged() {
   SetBackground(views::CreateRoundedRectBackground(
       color_provider->GetColor(kColorPipWindowBackToTabButtonBackground),
       kBackToTabBorderRadius));
-  SetEnabledTextColorIds(kColorPipWindowForeground);
-  SetTextColorId(views::Button::STATE_DISABLED, kColorPipWindowForeground);
+  SetEnabledTextColors(kColorPipWindowForeground);
+  SetTextColor(views::Button::STATE_DISABLED, kColorPipWindowForeground);
 }
 
 void BackToTabLabelButton::SetWindowSize(const gfx::Size& window_size) {

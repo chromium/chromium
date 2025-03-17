@@ -14,10 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_types.h"
@@ -54,6 +50,10 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/quickstart_controller.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 // Make sure to include new screen to all relevant metric enums.
 // LINT.IfChange(UsageMetrics)
 #include "chrome/browser/ash/login/screens/account_selection_screen.h"
@@ -147,7 +147,10 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -445,6 +448,8 @@ WizardController::WizardController(WizardContext* wizard_context)
     // TODO(crbug.com/40138102): Remove this logic after WebUI split is done,
     // as screens should work with late binding/early unbinding in that case.
     oobe_ui_observation_.Observe(GetOobeUI());
+
+    MaybeEnablePreConsentMetrics();
   }
 }
 
@@ -493,9 +498,7 @@ void WizardController::Init(OobeScreenId first_screen) {
   //
   // TODO (ygorshenin@): implement handling of the local state
   // corruption in the case of asynchronous loading.
-  bool is_enterprise_managed =
-      ash::InstallAttributes::Get()->IsEnterpriseManaged();
-  if (!is_enterprise_managed) {
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     const PrefService::PrefInitializationStatus status =
         GetLocalState()->GetInitializationStatus();
     if (status == PrefService::INITIALIZATION_STATUS_ERROR) {
@@ -518,11 +521,8 @@ void WizardController::Init(OobeScreenId first_screen) {
     }
   }
 
-  const bool device_is_owned =
-      is_enterprise_managed ||
-      !user_manager::UserManager::Get()->GetUsers().empty();
   // Do not show the HID Detection screen if device is owned.
-  if (!device_is_owned && HIDDetectionScreen::CanShowScreen() &&
+  if (!StartupUtils::IsDeviceOwned() && HIDDetectionScreen::CanShowScreen() &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // TODO(https://crbug.com/1275960): Move logic into
     // HIDDetectionScreen::MaybeSkip.
@@ -1047,6 +1047,11 @@ void WizardController::ShowQuickStartScreen() {
 }
 
 void WizardController::ShowNetworkScreen() {
+  if (switches::IsOOBENetworkSetupSkippedForTesting()) {
+    OnNetworkScreenExit(NetworkScreen::Result::NOT_APPLICABLE);
+    return;
+  }
+
   SetCurrentScreen(GetScreen(NetworkScreenView::kScreenId));
 }
 
@@ -1312,6 +1317,15 @@ void WizardController::ShowOsTrialScreen() {
 }
 
 void WizardController::ShowConsolidatedConsentScreen() {
+  // Disable PreConsent metrics if the user is affiliated or managed.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    if (metrics::CrOSPreConsentMetricsManager::Get()) {
+      metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+    }
+  }
+
   SetCurrentScreen(GetScreen(ConsolidatedConsentScreenView::kScreenId));
 }
 
@@ -1433,6 +1447,8 @@ void WizardController::OnUserCreationScreenExit(
       break;
     case UserCreationScreen::Result::ENTERPRISE_ENROLL_TRIAGE:
     case UserCreationScreen::Result::ENTERPRISE_ENROLL_SHORTCUT:
+      wizard_context_->enrollment_preference_ =
+          WizardContext::EnrollmentPreference::kEnterprise;
       ShowEnrollmentScreenIfEligible();
       break;
     case UserCreationScreen::Result::KIOSK_ENTERPRISE_ENROLL:
@@ -2843,11 +2859,13 @@ void WizardController::OnDeviceModificationCanceled() {
   }
 
   LOG(WARNING) << "No previous screen on unowned device";
-  if (prescribed_enrollment_config_.should_enroll()) {
-    ShowPackagedLicenseScreen();
-  } else {
-    ShowLoginScreen();
+  // The WelcomeView is not available when we enter OOBE from the login screen.
+  // TODO(crbug.com/393041544) Determine if safeguard is really required.
+  if (HasScreen(WelcomeView::kScreenId)) {
+    ShowWelcomeScreen();
+    return;
   }
+  ShowLoginScreen();
 }
 
 void WizardController::OnManagementTransitionScreenExit() {
@@ -2912,8 +2930,13 @@ void WizardController::OnOobeFlowFinished() {
   GetLocalState()->ClearPref(prefs::kOobeStartTime);
 
   GetLocalState()->ClearPref(prefs::kOobeMetricsClientIdAtOobeStart);
-  GetLocalState()->ClearPref(prefs::kOobeMetricsReportedAsEnabled);
-  GetLocalState()->ClearPref(prefs::kOobeStatsReportingControllerReportedReset);
+
+  // Check if pre-consent metrics is still enabled.
+  if (metrics::CrOSPreConsentMetricsManager::Get()) {
+    LOG(ERROR) << "OOBE flow is finished and Pre-consent metrics is still "
+      << "enabled. Disabling pre-consent metrics.";
+    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  }
 
   // Launch browser and delete login host controller.
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -3567,7 +3590,8 @@ void WizardController::StartEnrollmentScreen() {
 void WizardController::ShowEnrollmentScreenIfEligible() {
   const bool enterprise_managed =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
-  const bool has_users = !user_manager::UserManager::Get()->GetUsers().empty();
+  const bool has_users =
+      !user_manager::UserManager::Get()->GetPersistedUsers().empty();
   if (!has_users && !enterprise_managed) {
     AdvanceToScreen(EnrollmentScreenView::kScreenId);
   }
@@ -3626,6 +3650,27 @@ void WizardController::MaybeAbortQuickStartFlow(
     quick_start::QuickStartController::AbortFlowReason reason) {
   if (wizard_context_->quick_start_setup_ongoing) {
     quickstart_controller_->AbortFlow(reason);
+  }
+}
+
+void WizardController::MaybeEnablePreConsentMetrics() {
+  // Enable pre-consent metrics if this device is in oobe and is the first
+  // user.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    VLOG(1) << "Device enrolled. Do not enable pre consent metrics.";
+    return;
+  }
+
+  if (!wizard_context_->is_add_person_flow &&
+      metrics::CrOSPreConsentMetricsManager::Get()) {
+    // Update stats reporter that the current metrics consent is enabled. This
+    // will make sure that any changes in the future are properly propagated
+    // when using the API.
+    StatsReportingController::Get()->SetEnabled(
+        ProfileManager::GetActiveUserProfile(), true);
+    metrics::CrOSPreConsentMetricsManager::Get()->Enable();
   }
 }
 

@@ -126,7 +126,7 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
                         AccountId::FromUserEmail(*email));
   });
 
-  const user_manager::UserList& users = user_manager->GetUsers();
+  const user_manager::UserList& users = user_manager->GetPersistedUsers();
   for (const user_manager::User* user : users) {
     base::Value email_value(user->GetAccountId().GetUserEmail());
     if (!base::Contains(email_list, email_value))

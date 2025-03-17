@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_
 
@@ -32,6 +27,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -120,6 +116,7 @@ class CORE_EXPORT CSSSelector {
     kUnknown,
     kInvalidList,       // Used as a marker in CSSSelectorList.
     kTag,               // Example: div
+    kUniversalTag,      // Example: * (possibly with namespace)
     kId,                // Example: #id
     kClass,             // Example: .class
     kPseudoClass,       // Example: :nth-child(2)
@@ -262,6 +259,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoFocusVisible,
     kPseudoFocusWithin,
     kPseudoFullPageMedia,
+    kPseudoHasInterest,
     kPseudoHasSlotted,
     kPseudoHorizontal,
     kPseudoHover,
@@ -449,11 +447,14 @@ class CORE_EXPORT CSSSelector {
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
+  // SAFETY: Performance-sensitive. Trusts that SetLastInComplexSelector()
+  // has been called on the last element in the array to prevent an OOB
+  // access from occurring.
   const CSSSelector* NextSimpleSelector() const {
-    return IsLastInComplexSelector() ? nullptr : this + 1;
+    return IsLastInComplexSelector() ? nullptr : UNSAFE_BUFFERS(this + 1);
   }
   CSSSelector* NextSimpleSelector() {
-    return IsLastInComplexSelector() ? nullptr : this + 1;
+    return IsLastInComplexSelector() ? nullptr : UNSAFE_BUFFERS(this + 1);
   }
 
   static const AtomicString& UniversalSelectorAtom() { return g_null_atom; }
@@ -491,18 +492,15 @@ class CORE_EXPORT CSSSelector {
     return *data_.rare_data_->ident_list_;
   }
   bool ContainsPseudoInsideHasPseudoClass() const {
-    return HasRareData() ? data_.rare_data_->bits_.has_.contains_pseudo_
-                         : false;
+    return HasRareData() && data_.rare_data_->bits_.has_.contains_pseudo_;
   }
   bool ContainsComplexLogicalCombinationsInsideHasPseudoClass() const {
-    return HasRareData() ? data_.rare_data_->bits_.has_
-                               .contains_complex_logical_combinations_
-                         : false;
+    return HasRareData() &&
+           data_.rare_data_->bits_.has_.contains_complex_logical_combinations_;
   }
   bool HasArgumentMatchInShadowTree() const {
-    return HasRareData()
-               ? data_.rare_data_->bits_.has_.argument_match_in_shadow_tree_
-               : false;
+    return HasRareData() &&
+           data_.rare_data_->bits_.has_.argument_match_in_shadow_tree_;
   }
 
 #if DCHECK_IS_ON()
@@ -756,7 +754,7 @@ class CORE_EXPORT CSSSelector {
   // The type tag for DataUnion is actually inferred from multiple state
   // variables in the containing CSSSelector using the following rules.
   //
-  //  if (Match() == kTag) {
+  //  if (Match() == kTag || Match() == kUniversalTag) {
   //     /* data_.tag_q_name_or_attribute_ is valid (is tag_q_name) */
   //  } else if (Match() == kAttributeSet) {
   //     /* data_.tag_q_name_or_attribute_ is valid (is attribute) */
@@ -798,9 +796,10 @@ class CORE_EXPORT CSSSelector {
 
     AtomicString value_;
 
-    // For kTag, used for tag_q_name. For kAttributeSet, used for the attribute
-    // selector if and only if it's a value-less match (for other kAttribute*,
-    // no room, and we have to store attribute + value in RareData).
+    // For kTag or kUniversalTag, used for tag_q_name. For kAttributeSet, used
+    // for the attribute selector if and only if it's a value-less match (for
+    // other kAttribute*, no room, and we have to store attribute + value in
+    // RareData).
     QualifiedName tag_q_name_or_attribute_;
 
     Member<RareData> rare_data_;
@@ -840,6 +839,7 @@ inline bool CSSSelector::IsASCIILower(const AtomicString& value) {
 inline void CSSSelector::SetValue(const AtomicString& value,
                                   bool match_lower_case = false) {
   DCHECK_NE(Match(), static_cast<unsigned>(kTag));
+  DCHECK_NE(Match(), static_cast<unsigned>(kUniversalTag));
   DCHECK(!(Match() == kPseudoClass && GetPseudoType() == kPseudoParent));
   if (match_lower_case && !HasRareData() && !IsASCIILower(value)) {
     CreateRareData();
@@ -869,7 +869,12 @@ inline CSSSelector::CSSSelector()
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
                                 bool tag_is_implicit)
-    : bits_(RelationField::encode(kSubSelector) | MatchField::encode(kTag) |
+    : bits_(RelationField::encode(kSubSelector) |
+            MatchField::encode(
+                (tag_q_name == AnyQName() ||
+                 tag_q_name.LocalName() == CSSSelector::UniversalSelectorAtom())
+                    ? kUniversalTag
+                    : kTag) |
             PseudoTypeField::encode(kPseudoUnknown) |
             IsLastInSelectorListField::encode(false) |
             IsLastInComplexSelectorField::encode(false) |
@@ -914,7 +919,8 @@ inline CSSSelector::CSSSelector(const AtomicString& pseudo_name,
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)
     : bits_(o.bits_), data_(DataUnion::kConstructUninitialized) {
-  if (o.Match() == kTag || o.Match() == kAttributeSet) {
+  if (o.Match() == kTag || o.Match() == kUniversalTag ||
+      o.Match() == kAttributeSet) {
     new (&data_.tag_q_name_or_attribute_)
         QualifiedName(o.data_.tag_q_name_or_attribute_);
   } else if (o.Match() == kPseudoClass && o.GetPseudoType() == kPseudoParent) {
@@ -937,7 +943,7 @@ inline CSSSelector::CSSSelector(CSSSelector&& o)
 }
 
 inline CSSSelector::~CSSSelector() {
-  if (Match() == kTag || Match() == kAttributeSet) {
+  if (Match() == kTag || Match() == kUniversalTag || Match() == kAttributeSet) {
     data_.tag_q_name_or_attribute_.~QualifiedName();
   } else if (Match() == kPseudoClass && GetPseudoType() == kPseudoParent)
     ;  // Nothing to do.
@@ -955,7 +961,8 @@ inline CSSSelector& CSSSelector::operator=(CSSSelector&& other) {
 }
 
 inline const QualifiedName& CSSSelector::TagQName() const {
-  DCHECK_EQ(Match(), static_cast<unsigned>(kTag));
+  DCHECK(Match() == static_cast<unsigned>(kTag) ||
+         Match() == static_cast<unsigned>(kUniversalTag));
   return data_.tag_q_name_or_attribute_;
 }
 
@@ -967,6 +974,7 @@ inline const StyleRule* CSSSelector::ParentRule() const {
 
 inline const AtomicString& CSSSelector::Value() const {
   DCHECK_NE(Match(), static_cast<unsigned>(kTag));
+  DCHECK_NE(Match(), static_cast<unsigned>(kUniversalTag));
   if (HasRareData()) {
     return data_.rare_data_->matching_value_;
   }
@@ -975,6 +983,7 @@ inline const AtomicString& CSSSelector::Value() const {
 
 inline const AtomicString& CSSSelector::SerializingValue() const {
   DCHECK_NE(Match(), static_cast<unsigned>(kTag));
+  DCHECK_NE(Match(), static_cast<unsigned>(kUniversalTag));
   if (HasRareData()) {
     return data_.rare_data_->serializing_value_;
   }

@@ -12,7 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
@@ -30,19 +30,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_names.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/user_manager/user_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::_;
 using ::testing::Mock;
@@ -91,9 +85,7 @@ class DlpReportingManagerTest : public testing::Test {
     EXPECT_EQ(events_[event_number].triggered_rule_name(), kRuleName);
     EXPECT_EQ(events_[event_number].triggered_rule_id(), kRuleId);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ReportEventAndCheckUser(user_manager::UserManager* user_manager,
                                const AccountId& account_id,
                                const user_manager::User* user,
@@ -108,24 +100,7 @@ class DlpReportingManagerTest : public testing::Test {
     EXPECT_EQ(events_[event_number].user_type(), DlpUserType);
     user_manager->RemoveUserFromList(account_id);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  void SetSessionType(crosapi::mojom::SessionType session_type) {
-    auto init_params = crosapi::mojom::BrowserInitParams::New();
-    init_params->session_type = session_type;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-  }
-
-  void ReportEventAndCheckUser(DlpPolicyEvent_UserType dlp_user_type,
-                               unsigned int event_number) {
-    manager_->ReportEvent(kCompanyUrl, Rule::Restriction::kPrinting,
-                          Rule::Level::kBlock, kRuleName, kRuleId);
-    ASSERT_EQ(events_.size(), event_number + 1);
-    EXPECT_EQ(events_[event_number].user_type(), dlp_user_type);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -135,9 +110,6 @@ class DlpReportingManagerTest : public testing::Test {
   std::vector<DlpPolicyEvent> events_;
   base::ScopedTempDir location_;
   uint8_t signature_verification_public_key_[reporting::kKeySize];
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService lacros_service_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(DlpReportingManagerTest, ReportEvent) {
@@ -237,7 +209,7 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
       Rule::Restriction::kUnknownRestriction, 1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DlpReportingManagerTest, UserType) {
   ScopedTestingLocalState local_state{TestingBrowserProcess::GetGlobal()};
   auto* user_manager = new ash::FakeChromeUserManager();
@@ -274,31 +246,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
                           true);
   EXPECT_EQ(manager_->events_reported(), 6u);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(DlpReportingManagerTest, UserType) {
-  SetSessionType(crosapi::mojom::SessionType::kRegularSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_REGULAR, 0u);
-
-  SetSessionType(crosapi::mojom::SessionType::kPublicSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_MANAGED_GUEST, 1u);
-
-  SetSessionType(crosapi::mojom::SessionType::kAppKioskSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_KIOSK, 2u);
-
-  SetSessionType(crosapi::mojom::SessionType::kWebKioskSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_KIOSK, 3u);
-
-  SetSessionType(crosapi::mojom::SessionType::kGuestSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 4u);
-
-  SetSessionType(crosapi::mojom::SessionType::kChildSession);
-  ReportEventAndCheckUser(DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 5u);
-
-  EXPECT_EQ(manager_->events_reported(), 6u);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
   DlpPolicyEvent event =

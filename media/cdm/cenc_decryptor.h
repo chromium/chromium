@@ -9,10 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 
-namespace crypto {
-class SymmetricKey;
-}
-
 namespace media {
 class DecoderBuffer;
 
@@ -38,9 +34,6 @@ class DecoderBuffer;
 
 // Decrypts the encrypted buffer |input| using |key| and values found in
 // |input|->DecryptConfig. The key size must be 128 bits.
-MEDIA_EXPORT scoped_refptr<DecoderBuffer> DecryptCencBuffer(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& key);
 MEDIA_EXPORT scoped_refptr<DecoderBuffer> DecryptCencBuffer(
     const DecoderBuffer& input,
     base::span<const uint8_t> key);

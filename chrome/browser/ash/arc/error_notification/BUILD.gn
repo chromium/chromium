@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("error_notification") {
   sources = [
@@ -17,12 +17,12 @@ static_library("error_notification") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/vector_icons",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/vector_icons",
     "//ui/message_center",
   ]
 }

@@ -4,6 +4,10 @@
 
 #include "remoting/host/setup/host_starter_base.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -30,7 +34,6 @@ constexpr char kGetTokensResponse[] = R"({
             "expires_in": 3600,
             "token_type": "Bearer"
          })";
-constexpr char kGetUserEmailResponseForUser[] = R"({"email": "user@test.com"})";
 constexpr char kGetUserEmailResponseForServiceAccount[] =
     R"({"email": "robot@chromoting.com"})";
 
@@ -144,8 +147,8 @@ class TestHostStarter : public HostStarterBase {
   ~TestHostStarter() override;
 
   // HostStarterBase implementation.
-  void RegisterNewHost(const std::string& public_key,
-                       std::optional<std::string> access_token) override;
+  void RetrieveApiAccessToken() override;
+  void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_removed) override;
   void ApplyConfigValues(base::Value::Dict& config) override;
   void ReportError(const std::string& error_message,
@@ -153,6 +156,8 @@ class TestHostStarter : public HostStarterBase {
 
   std::string& user_access_token() { return user_access_token_; }
   std::string& error_message() { return error_message_; }
+
+  void clear_api_access_token() { api_access_token_.clear(); }
 
   void clear_directory_id() { directory_id_.clear(); }
 
@@ -166,6 +171,7 @@ class TestHostStarter : public HostStarterBase {
   std::string user_access_token_;
   std::string error_message_;
 
+  std::string api_access_token_{kAccessToken};
   std::string directory_id_{kTestDirectoryId};
   std::string owner_account_email_{kTestUserEmail};
   std::string service_account_email_{kTestRobotEmail};
@@ -186,8 +192,15 @@ TestHostStarter::TestHostStarter(
 
 TestHostStarter::~TestHostStarter() = default;
 
-void TestHostStarter::RegisterNewHost(const std::string& public_key,
-                                      std::optional<std::string> access_token) {
+void TestHostStarter::RetrieveApiAccessToken() {
+  if (!api_access_token_.empty()) {
+    RegisterNewHost(api_access_token_);
+  } else {
+    HostStarterBase::RetrieveApiAccessToken();
+  }
+}
+
+void TestHostStarter::RegisterNewHost(std::optional<std::string> access_token) {
   // Set up the TestUrlLoaderFactory so it will provide service account
   // responses rather than user account responses.
   std::move(configure_gaia_for_service_account_).Run();
@@ -297,14 +310,6 @@ void HostStarterBaseTest::CompletionHandler(HostStarter::Result result) {
   quit_closure_.Run();
 }
 
-void HostStarterBaseTest::ConfigureGaiaResponseForUser() {
-  test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
-  test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
-      kGetUserEmailResponseForUser);
-}
-
 void HostStarterBaseTest::ConfigureGaiaResponseForServiceAccount() {
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
@@ -319,8 +324,6 @@ TEST_F(HostStarterBaseTest, StartHostUsingOAuth) {
   params.name = kTestMachineName;
   params.auth_code = "auth_me_dude";
   params.redirect_url = "/redirect";
-
-  ConfigureGaiaResponseForUser();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -364,6 +367,9 @@ TEST_F(HostStarterBaseTest, CorpCodePath) {
   HostStarter::Params params;
   params.username = kTestUserEmail;
 
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
+
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
@@ -405,6 +411,9 @@ TEST_F(HostStarterBaseTest, CloudCodePath) {
   params.owner_email = kTestUserEmail;
   params.api_key = "API_KEY_FOR_TESTING";
 
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
+
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
@@ -445,6 +454,9 @@ TEST_F(HostStarterBaseTest, LegacyCloudCodePath) {
   HostStarter::Params params;
   params.owner_email = kTestUserEmail;
   params.pin = "123456";
+
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -491,6 +503,9 @@ TEST_F(HostStarterBaseTest, ExistingHostIsStopped) {
   test_daemon_controller_delegate().set_initial_config(
       std::move(initial_config));
 
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
+
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
@@ -504,28 +519,12 @@ TEST_F(HostStarterBaseTest, ExistingHostIsStopped) {
   EXPECT_TRUE(test_daemon_controller_delegate().stop_called());
 }
 
-TEST_F(HostStarterBaseTest, OAuthFlowWithMismatchedOwnerEmail) {
-  HostStarter::Params params;
-  params.owner_email = "not-the-person-who-generated-the-auth-code@fraud.com";
-  params.auth_code = "auth_me_dude";
-  params.redirect_url = "/redirect";
-
-  ConfigureGaiaResponseForUser();
-
-  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
-  RunUntilQuit();
-
-  // Make sure the operation failed for the expected reason.
-  EXPECT_EQ(start_result(), HostStarter::PERMISSION_DENIED);
-
-  // Verify no user access token was provided and an error was reported.
-  EXPECT_EQ(test_host_starter().user_access_token(), std::string());
-  EXPECT_FALSE(test_host_starter().error_message().empty());
-}
-
 TEST_F(HostStarterBaseTest, CorpFlowWithMismatchedOwnerEmailValue) {
   HostStarter::Params params;
   params.owner_email = "PLACEHOLDER_VALUE";
+
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -548,6 +547,9 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideId) {
   HostStarter::Params params;
   params.owner_email = kTestUserEmail;
 
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
+
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
@@ -562,6 +564,9 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackProvideMismatchedId) {
   HostStarter::Params params;
   params.id = "my-guid";
   params.owner_email = kTestUserEmail;
+
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -579,6 +584,9 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideAuthCode) {
   HostStarter::Params params;
   params.owner_email = kTestUserEmail;
 
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
+
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
@@ -594,6 +602,9 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideOwnerEmail) {
 
   HostStarter::Params params;
   params.owner_email = kTestUserEmail;
+
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -616,6 +627,9 @@ TEST_F(HostStarterBaseTest,
   HostStarter::Params params;
   params.owner_email = kTestUserEmail;
 
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
+
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
@@ -636,6 +650,9 @@ TEST_F(HostStarterBaseTest, NewHostFailsToStart) {
 
   HostStarter::Params params;
   params.owner_email = kTestUserEmail;
+
+  // Run the non-OAuth codepath.
+  test_host_starter().clear_api_access_token();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();

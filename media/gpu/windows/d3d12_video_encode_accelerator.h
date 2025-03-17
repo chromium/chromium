@@ -5,8 +5,10 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_ACCELERATOR_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_ACCELERATOR_H_
 
-#include <d3d12.h>
-#include <d3d12video.h>
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12video.h"
+// Windows SDK headers should be included after DirectX headers.
+
 #include <wrl.h>
 
 #include <vector>
@@ -15,7 +17,9 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/video/video_encode_accelerator.h"
 
@@ -38,6 +42,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
       Microsoft::WRL::ComPtr<ID3D12Device> device);
   ~D3D12VideoEncodeAccelerator() override;
 
+  void SetEncoderFactoryForTesting(
+      std::unique_ptr<VideoEncodeDelegateFactoryInterface> encoder_factory);
+
   SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config,
                   Client* client,
@@ -50,12 +57,19 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
       const std::optional<gfx::Size>& size) override;
   void Destroy() override;
 
- private:
-  friend class D3D12VideoEncodeAcceleratorTest;
+  base::SingleThreadTaskRunner* GetEncoderTaskRunnerForTesting() const;
+  size_t GetInputFramesQueueSizeForTesting() const;
+  size_t GetBitstreamBuffersSizeForTesting() const;
 
+ private:
   void InitializeTask(const Config& config);
 
   void UseOutputBitstreamBufferTask(BitstreamBuffer buffer);
+
+  void RequestEncodingParametersChangeTask(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size);
 
   Microsoft::WRL::ComPtr<ID3D12Resource>
   CreateResourceForGpuMemoryBufferVideoFrame(const VideoFrame& frame);
@@ -98,12 +112,17 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
 
   bool error_occurred_ = false;
 
-  // The alternate factory to create the |encoder_| for testing.
+  std::unique_ptr<D3D12CopyCommandQueueWrapper> copy_command_queue_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+
   std::unique_ptr<VideoEncodeDelegateFactoryInterface> encoder_factory_;
   std::unique_ptr<D3D12VideoEncodeDelegate> encoder_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   size_t num_frames_in_flight_ = 0;
+
+  // Used for frame format conversion.
+  VideoFrameConverter frame_converter_;
 
   struct InputFrameRef;
 

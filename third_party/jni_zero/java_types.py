@@ -116,7 +116,8 @@ class JavaClass:
     return '$' in self.name
 
   def get_outer_class(self):
-    return JavaClass(f'{self.package_with_slashes}/{self.outer_class_name}')
+    return JavaClass(f'{self.package_with_slashes}/{self.outer_class_name}',
+                     self._prefix)
 
   def is_system_class(self):
     return self._fqn.startswith(('android/', 'java/'))
@@ -139,7 +140,7 @@ class JavaClass:
     return JavaClass(f'{prefix}/{self._fqn}', prefix)
 
   def make_nested(self, name):
-    return JavaClass(f'{self._fqn}${name}')
+    return JavaClass(f'{self._fqn}${name}', self._prefix)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -219,11 +220,14 @@ class JavaType:
       name = f'L{self.java_class.full_name_with_slashes};'
     return ('[' * self.array_dimensions) + name
 
-  def to_java(self, type_resolver=None):
+  def to_java(self, type_resolver=None, with_prefix=True):
     if self.primitive_name:
       ret = self.primitive_name
     else:
-      ret = self.java_class.to_java(type_resolver)
+      java_class = self.java_class
+      if not with_prefix:
+        java_class = java_class.class_without_prefix
+      ret = java_class.to_java(type_resolver)
     return ret + '[]' * self.array_dimensions
 
   def to_cpp(self):

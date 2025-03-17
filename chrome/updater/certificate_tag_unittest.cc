@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "chrome/updater/certificate_tag.h"
@@ -16,6 +16,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -32,10 +33,7 @@ TEST(CertificateTag, RoundTrip) {
   ASSERT_TRUE(base::ReadFileToString(
       updater::test::GetTestFilePath("signed.exe.gz"), &exe));
   ASSERT_TRUE(compression::GzipUncompress(exe, &exe));
-  const base::span<const uint8_t> exe_span(
-      reinterpret_cast<const uint8_t*>(exe.data()), exe.size());
-
-  std::unique_ptr<BinaryInterface> bin(CreatePEBinary(exe_span));
+  std::unique_ptr<BinaryInterface> bin(CreatePEBinary(base::as_byte_span(exe)));
   ASSERT_TRUE(bin);
 
   // Binary should be untagged on disk.
@@ -491,8 +489,10 @@ void Validate(const MSIBinary& bin,
       std::memcpy(&entry, &bin.contents_[offset], sizeof(MSIDirEntry));
 
       // Skip the mini stream and signature entries.
+      // SAFETY: byte manipulation of a C data structure.
       if (entry.stream_size < kMiniStreamCutoffSize ||
-          std::equal(entry.name, entry.name + entry.num_name_bytes,
+          std::equal(entry.name,
+                     UNSAFE_BUFFERS(entry.name + entry.num_name_bytes),
                      std::begin(kSignatureName))) {
         continue;
       }
@@ -575,7 +575,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CertificateTagMsiValidateTest, TestCases) {
   base::MemoryMappedFile mapped_file;
   ASSERT_TRUE(mapped_file.Initialize(
-      test::GetTestFilePath("tagged_msi").AppendASCII(GetParam().infile)));
+      test::GetTestFilePath("tagged_msi").AppendUTF8(GetParam().infile)));
   const std::unique_ptr<MSIBinary> bin = MSIBinary::Parse(mapped_file.bytes());
   ASSERT_TRUE(bin);
 

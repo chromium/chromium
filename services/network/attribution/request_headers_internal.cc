@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -13,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "net/http/structured_headers.h"
@@ -98,7 +98,7 @@ void ApplyGrease(std::vector<net::structured_headers::DictionaryMember>& dict,
   if (dict.size() > 1 && options.reverse) {
     // Dictionaries retain order during serialization, so reordering helps
     // ensure that recipients do not depend on it.
-    base::ranges::reverse(dict);
+    std::ranges::reverse(dict);
   }
 }
 
@@ -225,6 +225,54 @@ std::string GetAttributionSupportHeader(
           net::structured_headers::Dictionary(std::move(registrars)));
   DCHECK(support_header.has_value());
   return std::move(*support_header);
+}
+
+std::string SerializeAdAuctionRegistrationEligibleHeader(
+    mojom::AttributionReportingEligibility eligibility,
+    const AttributionReportingHeaderGreaseOptions& options) {
+  constexpr char kView[] = "view";
+  constexpr char kClick[] = "click";
+
+  std::vector<net::structured_headers::DictionaryMember> eligibilities;
+
+  const char* grease1;
+  const char* grease2;
+  switch (eligibility) {
+    case AttributionReportingEligibility::kUnset:
+      NOTREACHED();
+    case AttributionReportingEligibility::kEmpty:
+      grease1 = kView;
+      grease2 = kClick;
+      break;
+    case AttributionReportingEligibility::kEventSource:
+      AddTrueValuedDictMember(eligibilities, kView);
+      grease1 = kClick;
+      grease2 = kView;
+      break;
+    case AttributionReportingEligibility::kNavigationSource:
+      AddTrueValuedDictMember(eligibilities, kClick);
+      grease1 = kView;
+      grease2 = kClick;
+      break;
+    case AttributionReportingEligibility::kTrigger:
+      grease1 = kView;
+      grease2 = kClick;
+      break;
+    case AttributionReportingEligibility::kEventSourceOrTrigger:
+      AddTrueValuedDictMember(eligibilities, kView);
+      grease1 = kClick;
+      grease2 = kView;
+      break;
+  }
+
+  ApplyGrease(eligibilities, options, grease1, grease2);
+
+  std::optional<std::string> eligible_header =
+      net::structured_headers::SerializeDictionary(
+          net::structured_headers::Dictionary(std::move(eligibilities)));
+  DCHECK(eligible_header.has_value());
+
+  return std::move(*eligible_header);
 }
 
 }  // namespace network

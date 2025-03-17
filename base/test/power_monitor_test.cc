@@ -10,8 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 class PowerMonitorTestSource : public PowerMonitorSource {
  public:
@@ -184,5 +183,4 @@ void PowerMonitorTestObserver::OnSpeedLimitChange(int speed_limit) {
   last_speed_limit_ = speed_limit;
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

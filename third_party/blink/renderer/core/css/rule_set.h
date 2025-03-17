@@ -20,14 +20,12 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/memory/stack_allocated.h"
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/types/pass_key.h"
@@ -97,10 +95,6 @@ enum class ValidPropertyFilter : unsigned {
   // Defined in a @position-try rule. Only properties listed in
   // https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
   kPositionTry,
-  // Defined in an @page rule. Will only allow properties and descriptors that
-  // have an effect with PageMarginBoxes disabled (i.e. page size, margins and
-  // orientation).
-  kLimitedPageContext,
   // Defined in an @page rule.
   // See https://drafts.csswg.org/css-page-3/#page-property-list
   kPageContext,
@@ -153,17 +147,14 @@ class CORE_EXPORT RuleData {
 
   unsigned Specificity() const { return specificity_; }
   unsigned LinkMatchType() const { return link_match_type_; }
-  ValidPropertyFilter GetValidPropertyFilter(
-      bool is_matching_ua_rules = false) const {
-    return is_matching_ua_rules
-               ? ValidPropertyFilter::kNoFilter
-               : static_cast<ValidPropertyFilter>(valid_property_filter_);
+  ValidPropertyFilter GetValidPropertyFilter() const {
+    return static_cast<ValidPropertyFilter>(valid_property_filter_);
   }
 
   // Member functions related to the descendant Bloom filter.
   const base::span<const uint16_t> DescendantSelectorIdentifierHashes(
       const Vector<uint16_t>& backing) const {
-    return {backing.data() + bloom_hash_pos_, bloom_hash_size_};
+    return UNSAFE_TODO({backing.data() + bloom_hash_pos_, bloom_hash_size_});
   }
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
                                 Vector<uint16_t>& backing);
@@ -269,10 +260,6 @@ class RuleMap {
       const RuleSet& old_rule_set,
       RuleSet& new_rule_set);
   base::span<const RuleData> Find(const AtomicString& key) const {
-    if (buckets.IsNull()) {
-      return {};
-    }
-
     // Go through all the buckets and check for equality, brute force.
     // Note that we don't check for IsNull() to get an early abort
     // on empty buckets; the comparison of AtomicString is so cheap
@@ -283,8 +270,8 @@ class RuleMap {
     if (bucket == nullptr) {
       return {};
     } else {
-      return {backing.begin() + bucket->value.start_index,
-              bucket->value.length};
+      return UNSAFE_TODO(
+          {backing.begin() + bucket->value.start_index, bucket->value.length});
     }
   }
   bool IsEmpty() const { return backing.empty(); }
@@ -296,6 +283,9 @@ class RuleMap {
   void Trace(Visitor* visitor) const { visitor->Trace(backing); }
 
   struct ConstIterator {
+    STACK_ALLOCATED();
+
+   public:
     RobinHoodMap<AtomicString, Extent>::const_iterator sub_it;
     const RuleMap* rule_map;
 
@@ -321,16 +311,18 @@ class RuleMap {
 
  private:
   base::span<RuleData> GetRulesFromExtent(Extent extent) {
-    return {backing.begin() + extent.start_index, extent.length};
+    return UNSAFE_TODO({backing.begin() + extent.start_index, extent.length});
   }
   base::span<const RuleData> GetRulesFromExtent(Extent extent) const {
-    return {backing.begin() + extent.start_index, extent.length};
+    return UNSAFE_TODO({backing.begin() + extent.start_index, extent.length});
   }
   base::span<unsigned> GetBucketNumberFromExtent(Extent extent) {
-    return {bucket_number_.begin() + extent.start_index, extent.length};
+    return UNSAFE_TODO(
+        {bucket_number_.begin() + extent.start_index, extent.length});
   }
   base::span<const unsigned> GetBucketNumberFromExtent(Extent extent) const {
-    return {bucket_number_.begin() + extent.start_index, extent.length};
+    return UNSAFE_TODO(
+        {bucket_number_.begin() + extent.start_index, extent.length});
   }
 
   RobinHoodMap<AtomicString, Extent> buckets;
@@ -509,6 +501,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       CompactRules();
     }
   }
+
+  void AssertCompacted() const { DCHECK(!need_compaction_); }
 
   bool HasSlottedRules() const {
     return !slotted_pseudo_element_rules_.empty();

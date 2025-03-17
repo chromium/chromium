@@ -32,7 +32,7 @@ source_set("elements") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

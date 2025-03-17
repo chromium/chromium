@@ -4,6 +4,7 @@
 
 #include "ash/shelf/login_shelf_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -38,7 +39,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -126,7 +126,7 @@ class LoginShelfViewTest : public LoginTestBase {
         return false;
       }
     }
-    const size_t visible_buttons = base::ranges::count_if(
+    const size_t visible_buttons = std::ranges::count_if(
         login_shelf_view_->children(), &views::View::GetVisible);
     return visible_buttons == ids.size();
   }
@@ -228,7 +228,7 @@ TEST_F(LoginShelfViewTest,
        ShouldUpdateUiAfterShutdownPolicyChangeAtLockScreen) {
   EXPECT_TRUE(ShowsShelfButtons({}));
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -252,7 +252,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
   // The initial state of |reboot_on_shutdown| is false.
   EXPECT_TRUE(ShowsShelfButtons({}));
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
 
   NotifySessionStateChanged(SessionState::LOCKED);
@@ -270,7 +270,7 @@ TEST_F(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_FALSE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
 }
@@ -470,7 +470,7 @@ TEST_F(LoginShelfViewTest, ClickShutdownButton) {
 }
 
 TEST_F(LoginShelfViewTest, ClickShutdownButtonOnLockScreen) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   ShutdownAndConfirm();
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
@@ -480,13 +480,13 @@ TEST_F(LoginShelfViewTest, ClickShutdownButtonOnLockScreen) {
 // session that starts with side shelf. See https://crbug.com/1050192.
 TEST_F(LoginShelfViewTest,
        ClickShutdownButtonOnLockScreenWithVerticalInSessionShelf) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   SetShelfAlignmentPref(
       Shell::Get()->session_controller()->GetPrimaryUserPrefService(),
       GetPrimaryDisplay().id(), ShelfAlignment::kLeft);
   ClearLogin();
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   ShutdownAndConfirm();
@@ -495,7 +495,7 @@ TEST_F(LoginShelfViewTest,
 
 TEST_F(LoginShelfViewTest, ClickRestartButton) {
   // The Restart button is not available in OOBE session state.
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
@@ -507,7 +507,7 @@ TEST_F(LoginShelfViewTest, ClickRestartButton) {
 }
 
 TEST_F(LoginShelfViewTest, ClickSignOutButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_EQ(session_manager::SessionState::ACTIVE,
             Shell::Get()->session_controller()->GetSessionState());
 
@@ -520,7 +520,7 @@ TEST_F(LoginShelfViewTest, ClickSignOutButton) {
 TEST_F(LoginShelfViewTest, ClickCancelButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
   EXPECT_CALL(*client, CancelAddUser());
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOGIN_SECONDARY);
   Click(LoginShelfView::kCancel);
 }
@@ -544,7 +544,7 @@ TEST_F(LoginShelfViewTest, ClickEnterpriseEnrollmentButton) {
 }
 
 TEST_F(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -584,7 +584,7 @@ TEST_F(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
 }
 
 TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipText) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -597,7 +597,7 @@ TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipText) {
 
   LoginShelfButton* button =
       login_shelf_view_->GetLoginShelfButtonByID(LoginShelfView::kShutdown);
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), u"");
   EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
   EXPECT_EQ(button->GetText(),
             l10n_util::GetStringUTF16(IDS_ASH_SHELF_SHUTDOWN_BUTTON));
@@ -605,40 +605,40 @@ TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipText) {
   gfx::Size zero_size;
   button->label()->SetElideBehavior(gfx::ELIDE_TAIL);
   button->label()->SetBoundsRect(gfx::Rect(zero_size));
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringUTF16(IDS_ASH_SHELF_SHUTDOWN_BUTTON));
   EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
 
   std::u16string sample_text = u"Sample Text";
   button->SetText(sample_text);
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), sample_text);
   EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
 
   button->label()->SetElideBehavior(gfx::NO_ELIDE);
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), sample_text);
   EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
 
   gfx::Size minimum_size(1, 1);
   button->label()->SetBoundsRect(gfx::Rect(minimum_size));
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), sample_text);
   EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
 
   gfx::Size enough_size(100, 100);
   button->label()->SetBoundsRect(gfx::Rect(enough_size));
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), u"");
   EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
 
   const std::u16string empty_text;
   button->label()->SetText(empty_text);
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), u"");
   EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
   button->label()->SetBoundsRect(gfx::Rect(zero_size));
-  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(button->GetRenderedTooltipText(gfx::Point()), u"");
   EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
 }
 
 TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipTextAccessibility) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -654,9 +654,9 @@ TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipTextAccessibility) {
   ui::AXNodeData data;
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 
   gfx::Size zero_size;
   button->label()->SetElideBehavior(gfx::ELIDE_TAIL);
@@ -664,61 +664,61 @@ TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipTextAccessibility) {
   data = ui::AXNodeData();
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 
   std::u16string sample_text = u"Sample Text";
   button->SetText(sample_text);
   data = ui::AXNodeData();
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 
   button->label()->SetElideBehavior(gfx::NO_ELIDE);
   data = ui::AXNodeData();
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 
   gfx::Size minimum_size(1, 1);
   button->label()->SetBoundsRect(gfx::Rect(minimum_size));
   data = ui::AXNodeData();
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 
   gfx::Size enough_size(100, 100);
   button->label()->SetBoundsRect(gfx::Rect(enough_size));
   data = ui::AXNodeData();
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 
   const std::u16string empty_text;
   button->label()->SetText(empty_text);
   data = ui::AXNodeData();
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 
   button->label()->SetBoundsRect(gfx::Rect(zero_size));
   data = ui::AXNodeData();
   button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            button->GetTooltipText(gfx::Point()));
+            button->GetRenderedTooltipText(gfx::Point()));
 }
 
 TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterAddButtonStatusChange) {
@@ -837,7 +837,7 @@ TEST_F(LoginShelfViewTest, ParentAccessButtonVisibility) {
 }
 
 TEST_F(LoginShelfViewTest, ParentAccessButtonVisibilityChangeOnLockScreen) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -949,7 +949,7 @@ TEST_F(LoginShelfViewTest, MouseWheelOnLoginShelf) {
     test_mouse_wheel_noop(location);
   }
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   for (const auto& location : kLocations) {
@@ -1045,7 +1045,7 @@ TEST_F(LoginShelfViewTest, AccessiblePreviousAndNextFocus) {
 
   // Simulate the lock screen scenario to verify the previous focus is updated.
   Shell::Get()->login_screen_controller()->ShowLockScreen();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
 
   data = ui::AXNodeData();
@@ -1199,7 +1199,7 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
 // shutdown button on the lockscreen
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldShowAfterShutdownButtonLockSession) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1242,7 +1242,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
 // cancel button on the shutdown confirmation bubble and could be shown again.
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAfterCancelButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1283,7 +1283,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
 // down.
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAndShutdownAfterConfirmButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1311,7 +1311,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
 
 // Checks that shutdown confirmation bubble disappears after inactive.
 TEST_F(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1341,7 +1341,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
 // Checks that shutdown confirmation was first cancelled, then confirmed
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAndShutdownAfterCancelAndConfirmButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1444,7 +1444,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, DisplayOff) {
 }
 
 TEST_F(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
@@ -1460,7 +1460,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
 
 TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShelfShutdownConfirmationBubbleAccessibleProperties) {
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   NotifySessionStateChanged(SessionState::LOCKED);
   Click(LoginShelfView::kShutdown);
   auto* confirmation_bubble =

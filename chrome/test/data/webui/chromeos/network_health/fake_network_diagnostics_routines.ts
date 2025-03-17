@@ -132,9 +132,10 @@ export class FakeNetworkDiagnostics implements
   /**
    * NOT IMPLEMENTED: getAllResult API is not currently used in the UI.
    */
-  getAllResults(): Promise<{results: Map<RoutineType, RoutineResult>}> {
+  getAllResults():
+      Promise<{results: Partial<Record<RoutineType, RoutineResult>>}> {
     return Promise.resolve({
-      results: new Map(),
+      results: {},
     });
   }
 }

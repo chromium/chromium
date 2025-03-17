@@ -189,6 +189,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   void SetThreadType(base::PlatformThreadId thread_id,
                      base::ThreadType) override;
 #endif
+  std::optional<int> GetWebUIBundledCodeCacheResourceId(
+      const GURL& webui_resource_url) override;
   std::unique_ptr<blink::WebDedicatedWorkerHostFactoryClient>
   CreateDedicatedWorkerHostFactoryClient(
       blink::WebDedicatedWorker*,
@@ -232,9 +234,12 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   SkBitmap* GetSadPageBitmap() override;
   std::unique_ptr<blink::WebV8ValueConverter> CreateWebV8ValueConverter()
       override;
+  bool DisallowV8FeatureFlagOverrides() const override;
   void AppendContentSecurityPolicy(
       const blink::WebURL& url,
-      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
+      std::vector<blink::WebContentSecurityPolicyHeader>* csp) override;
+  bool IsFilePickerAllowedForCrossOriginSubframe(
+      const blink::WebSecurityOrigin& origin) override;
   base::PlatformThreadId GetIOThreadId() const override;
   scoped_refptr<base::SingleThreadTaskRunner> VideoFrameCompositorTaskRunner()
       override;
@@ -250,13 +255,19 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   // plus eTLD+1, such as https://google.com), or to a more specific origin.
   void SetIsLockedToSite();
 
+  void set_webui_resource_to_code_cache_id_map(
+      const base::flat_map<GURL, int>& resource_map) {
+    webui_resource_to_code_cache_id_map_ = resource_map;
+  }
+
  private:
   bool CheckPreparsedJsCachingEnabled() const;
 
   void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
                                    const gpu::GPUInfo& gpu_info) const;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   std::unique_ptr<blink::WebSandboxSupport> sandbox_support_;
 #endif
 
@@ -285,6 +296,10 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   // [std::numeric_limits<int32_t>::max() + 1,
   // std::numeric_limits<uint32_t>::max()] range.
   uint32_t next_frame_sink_id_;
+
+  // Maps WebUI resource URLs to the resource ID of their associated bundled
+  // code cache.
+  base::flat_map<GURL, int> webui_resource_to_code_cache_id_map_;
 
   THREAD_CHECKER(main_thread_checker_);
 

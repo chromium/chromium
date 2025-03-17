@@ -17,6 +17,5 @@
 *   Prioritize stability and "bake time", as well as other ways to reduce the
     release risk in your timeline discussions.
 *   Consider API adoption timelines: code may not be exercised until developers
-    adopt API, so feature freeze and branch could have minimal impact on
-    stability.
+    adopt API, so branch could have minimal impact on stability.
 

@@ -6,20 +6,12 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
-#include "chromeos/crosapi/mojom/probe_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chromeos/ash/components/telemetry_extension/telemetry/probe_service_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -41,21 +33,10 @@ RemoteProbeServiceStrategy* RemoteProbeServiceStrategy::Get() {
 // Returns the probe service currently enabled in this platform.
 crosapi::mojom::TelemetryProbeService*
 RemoteProbeServiceStrategy::GetRemoteProbeService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (test_service_) {
     return test_service_.get();
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->probe_service_ash();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::TelemetryProbeService>()) {
-    return nullptr;
-  }
-  return LacrosService::Get()
-      ->GetRemote<crosapi::mojom::TelemetryProbeService>()
-      .get();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 // Override platform service to use a fake service, should only be called in
@@ -63,17 +44,10 @@ RemoteProbeServiceStrategy::GetRemoteProbeService() {
 // exist in test.
 void RemoteProbeServiceStrategy::SetServiceForTesting(
     mojo::PendingRemote<crosapi::mojom::TelemetryProbeService> test_service) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (test_service_.is_bound()) {
     test_service_.reset();
   }
   test_service_.Bind(std::move(test_service));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService::Get()->InjectRemoteForTesting(
-      std::move(test_service));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace chromeos

@@ -75,6 +75,13 @@ suite('Logger', () => {
     assertEquals(2, metrics.getCallCount('recordHighlightOff'));
   });
 
+  test('highlight granularity change', () => {
+    logger.logHighlightGranularity(0);
+    logger.logHighlightGranularity(4);
+
+    assertEquals(2, metrics.getCallCount('recordHighlightGranularity'));
+  });
+
   test('text settings', async () => {
     logger.logTextSettingsChange(ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     assertEquals(
@@ -136,7 +143,7 @@ suite('Logger', () => {
         await metrics.whenCalled('recordVoiceType'));
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('logSpeechPlaySession with other voice on ChromeOS', async () => {
     logger.logSpeechPlaySession(
         defaultSpeechStartTime, createSpeechSynthesisVoice({name: 'Sleepy'}));
@@ -147,7 +154,7 @@ suite('Logger', () => {
   });
   // </if>
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   test('logSpeechPlaySession with other voice on Desktop', async () => {
     logger.logSpeechPlaySession(
         defaultSpeechStartTime, createSpeechSynthesisVoice({name: 'Dopey'}));
@@ -204,7 +211,7 @@ suite('Logger', () => {
     assertGT(startTime, recordedTime);
   });
 
-  test('logTimeBetween uses correct uma name', async () => {
+  test('logTimeBetween uses correct uma name', () => {
     assertTimeMetricIsCalled(
         TimeFrom.APP, TimeTo.CONNNECTED_CALLBACK,
         'Accessibility.ReadAnything.TimeFromAppStartedToConnectedCallback');

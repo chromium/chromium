@@ -31,6 +31,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/query_parser.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -226,6 +227,25 @@ TEST_F(ProfileWriterTest, CheckBookmarksAfterWritingDataTwice) {
   VerifyBookmarksCount(bookmarks_record, bookmark_model, 2);
 }
 
+TEST_F(ProfileWriterTest, CheckBookmarksWrittenToAccountStorageIfPresent) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  CreateImportedBookmarksEntries();
+  BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+  bookmark_model->CreateAccountPermanentFolders();
+
+  scoped_refptr<TestProfileWriter> profile_writer(
+      new TestProfileWriter(profile()));
+  profile_writer->AddBookmarks(bookmarks_, u"Imported from Firefox");
+
+  // Check that bookmarks have been imported only to account storage.
+  EXPECT_EQ(bookmark_model->bookmark_bar_node()->children().size(), 0u);
+  EXPECT_EQ(bookmark_model->account_bookmark_bar_node()->children().size(), 2u);
+}
+
 std::unique_ptr<TemplateURL> ProfileWriterTest::CreateTemplateURL(
     const std::string& keyword,
     const std::string& url,
@@ -237,7 +257,7 @@ std::unique_ptr<TemplateURL> ProfileWriterTest::CreateTemplateURL(
   return std::make_unique<TemplateURL>(data);
 }
 
-// Verify that history entires are not duplicated when added twice.
+// Verify that history entries are not duplicated when added twice.
 TEST_F(ProfileWriterTest, CheckHistoryAfterWritingDataTwice) {
   profile()->BlockUntilHistoryProcessesPendingRequests();
 

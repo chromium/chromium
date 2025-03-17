@@ -58,7 +58,7 @@ class MockCardUnmaskPromptController
   // controller.
   MOCK_METHOD(void,
               OnUnmaskPromptAccepted,
-              (const std::u16string& cvc,
+              (std::u16string_view cvc,
                const std::u16string& exp_month,
                const std::u16string& exp_year,
                bool enable_fido_auth,

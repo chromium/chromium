@@ -58,7 +58,7 @@ TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
       AccountId::FromUserEmailGaiaId("owner@example.com", GaiaId("1234567890"));
 
   // Log in the user and create the profile.
-  user_manager().AddUser(kOwnerAccountId);
+  user_manager().AddGaiaUser(kOwnerAccountId, user_manager::UserType::kRegular);
   user_manager().UserLoggedIn(
       kOwnerAccountId,
       user_manager::FakeUserManager::GetFakeUsernameHash(kOwnerAccountId),
@@ -84,7 +84,7 @@ TEST_F(ProfileUserManagerControllerTest, AnnotateAccountId) {
       "account@example.com", GaiaId("1234567890"));
 
   // Log in the user and create the profile.
-  user_manager().AddUser(kAccountId);
+  user_manager().AddGaiaUser(kAccountId, user_manager::UserType::kRegular);
   user_manager().UserLoggedIn(
       kAccountId,
       user_manager::FakeUserManager::GetFakeUsernameHash(kAccountId),

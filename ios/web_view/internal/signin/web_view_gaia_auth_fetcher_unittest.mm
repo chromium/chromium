@@ -4,10 +4,10 @@
 
 #import "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
 
-#include "google_apis/gaia/gaia_auth_consumer.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "google_apis/gaia/gaia_auth_consumer.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 namespace ios_web_view {
 

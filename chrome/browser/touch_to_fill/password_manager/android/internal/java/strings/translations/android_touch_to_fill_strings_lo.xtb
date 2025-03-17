@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">ລາຍການຂໍ້ມູນປະຈຳຕົວທີ່ຈະຕື່ມເມື່ອແຕະເປີດຢູ່ລະດັບລວງສູງເຕັມຈໍ.</translation>
 <translation id="5591247451101092906">ໃຊ້ລະຫັດຜ່ານ ຫຼື ກະແຈຜ່ານທີ່ບັນທຶກໄວ້ບໍ?</translation>
 <translation id="5624120631404540903">ຈັດການລະ​ຫັດ​ຜ່ານ​</translation>
+<translation id="592182999816790476">ລະຫັດຜ່ານສໍາລັບ <ph name="USERNAME" /> ໄດ້ຖືກບັນທຶກໄວ້ສໍາລັບ <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">ກະແຈຜ່ານສຳລັບ <ph name="USERNAME" />, ໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ລະຫັດຜ່ານໃໝ່ສຳລັບເວັບໄຊນີ້}other{ລະຫັດຜ່ານໃໝ່ສຳລັບເວັບໄຊນີ້}}</translation>
 <translation id="7286867818472074330">ເລືອກກະແຈຜ່ານ</translation>

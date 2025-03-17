@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/native_library.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image.h"
@@ -46,8 +45,8 @@ class ScopedModuleModifier {
       : modification_region_(address) {
     uint8_t modification[ModificationLength];
 
-    base::ranges::transform(modification_region_, std::begin(modification),
-                            [](uint8_t byte) { return byte + 1U; });
+    std::ranges::transform(modification_region_, std::begin(modification),
+                           [](uint8_t byte) { return byte + 1U; });
     SIZE_T bytes_written = 0;
     EXPECT_NE(
         0, WriteProcessMemory(GetCurrentProcess(),
@@ -63,8 +62,8 @@ class ScopedModuleModifier {
   ~ScopedModuleModifier() {
     uint8_t modification[ModificationLength];
 
-    base::ranges::transform(modification_region_, std::begin(modification),
-                            [](uint8_t byte) { return byte - 1U; });
+    std::ranges::transform(modification_region_, std::begin(modification),
+                           [](uint8_t byte) { return byte - 1U; });
     SIZE_T bytes_written = 0;
     EXPECT_NE(
         0, WriteProcessMemory(GetCurrentProcess(),

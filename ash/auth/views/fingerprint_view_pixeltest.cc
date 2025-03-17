@@ -63,7 +63,7 @@ class FingerprintViewPixelTest : public AshTestBase {
 
     container_view->SetPreferredSize(gfx::Size({400, 300}));
 
-    container_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    container_view->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated, 0));
 
     fingerprint_view_ =
@@ -96,12 +96,12 @@ TEST_F(FingerprintViewPixelTest, AvailableTest) {
   fingerprint_view_->SetState(FingerprintState::AVAILABLE_DEFAULT);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "AvailableDark", /*revision_number=*/0, fingerprint_view_));
+      "AvailableDark", /*revision_number=*/1, fingerprint_view_));
 
   // Switch to day mode.
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Available", /*revision_number=*/0, fingerprint_view_));
+      "Available", /*revision_number=*/1, fingerprint_view_));
 }
 
 // Verify the AVAILABLE_WITH_TOUCH_SENSOR_WARNING state.
@@ -111,13 +111,13 @@ TEST_F(FingerprintViewPixelTest, AvailableWithTouchSensorWarningTest) {
   fingerprint_view_->SetState(
       FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "AvailableWithTouchSensorWarningDark", /*revision_number=*/0,
+      "AvailableWithTouchSensorWarningDark", /*revision_number=*/1,
       fingerprint_view_));
 
   // Switch to day mode.
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "AvailableWithTouchSensorWarning", /*revision_number=*/0,
+      "AvailableWithTouchSensorWarning", /*revision_number=*/1,
       fingerprint_view_));
 }
 
@@ -132,12 +132,12 @@ TEST_F(FingerprintViewPixelTest, AvailableWithFailedAttemptTest) {
   // To avoid flakiness we just verify the first and last frames.
   test_api.ShowFirstFrame();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "AvailableWithFailedAttemptFirstFrame", /*revision_number=*/1,
+      "AvailableWithFailedAttemptFirstFrame", /*revision_number=*/2,
       fingerprint_view_));
 
   test_api.ShowLastFrame();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "AvailableWithFailedAttemptLastFrame", /*revision_number=*/1,
+      "AvailableWithFailedAttemptLastFrame", /*revision_number=*/2,
       fingerprint_view_));
 }
 
@@ -152,12 +152,12 @@ TEST_F(FingerprintViewPixelTest, DisabledFromAttemptsTest) {
   FingerprintView::TestApi test_api(fingerprint_view_);
   test_api.ShowFirstFrame();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DisabledFromAttemptsFirstFrame", /*revision_number=*/0,
+      "DisabledFromAttemptsFirstFrame", /*revision_number=*/1,
       fingerprint_view_));
 
   test_api.ShowLastFrame();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DisabledFromAttemptsLastFrame", /*revision_number=*/0,
+      "DisabledFromAttemptsLastFrame", /*revision_number=*/1,
       fingerprint_view_));
 }
 
@@ -167,12 +167,12 @@ TEST_F(FingerprintViewPixelTest, DisabledFromTimeoutTest) {
 
   fingerprint_view_->SetState(FingerprintState::DISABLED_FROM_TIMEOUT);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DisabledFromTimeoutDark", /*revision_number=*/0, fingerprint_view_));
+      "DisabledFromTimeoutDark", /*revision_number=*/1, fingerprint_view_));
 
   // Switch to day mode.
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DisabledFromTimeout", /*revision_number=*/0, fingerprint_view_));
+      "DisabledFromTimeout", /*revision_number=*/1, fingerprint_view_));
 }
 
 }  // namespace ash

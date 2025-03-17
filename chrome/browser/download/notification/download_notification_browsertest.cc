@@ -24,7 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -59,6 +59,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -66,39 +67,35 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #endif
 
 namespace {
 
-enum {
-  DUMMY_ACCOUNT_INDEX = 0,
-  PRIMARY_ACCOUNT_INDEX = 1,
-  SECONDARY_ACCOUNT_INDEX_START = 2,
-};
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Structure to describe an account info.
 struct TestAccountInfo {
   const char* const email;
-  const char* const gaia_id;
+  const GaiaId::Literal gaia_id;
   const char* const hash;
   const char* const display_name;
 };
 
 // Accounts for multi profile test.
 static const TestAccountInfo kTestAccounts[] = {
-    {"__dummy__@invalid.domain", "10000", "hashdummy", "Dummy Account"},
-    {"alice@invalid.domain", "10001", "hashalice", "Alice"},
-    {"bob@invalid.domain", "10002", "hashbobbo", "Bob"},
-    {"charlie@invalid.domain", "10003", "hashcharl", "Charlie"},
+    {"__dummy__@invalid.domain", GaiaId::Literal("10000"), "hashdummy",
+     "Dummy Account"},
+    {"alice@invalid.domain", GaiaId::Literal("10001"), "hashalice", "Alice"},
+    {"bob@invalid.domain", GaiaId::Literal("10002"), "hashbobbo", "Bob"},
+    {"charlie@invalid.domain", GaiaId::Literal("10003"), "hashcharl",
+     "Charlie"},
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
  public:
@@ -1021,9 +1018,8 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
   chrome::CloseWindow(incognito_browser());
 }
 
-// These tests have ash dependency so they are only available for ash.
-// TODO(crbug.com/40204280): Enable these tests for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// These tests depend on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 
 //////////////////////////////////////////////////
 // Test with multi profiles
@@ -1046,9 +1042,9 @@ class MultiProfileDownloadNotificationTest
 
     // Logs in to a dummy profile.
     command_line->AppendSwitchASCII(ash::switches::kLoginUser,
-                                    kTestAccounts[DUMMY_ACCOUNT_INDEX].email);
+                                    kTestAccounts[0].email);
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
-                                    kTestAccounts[DUMMY_ACCOUNT_INDEX].hash);
+                                    kTestAccounts[0].hash);
     // Don't require policy for our sessions - this is required because
     // this test creates a secondary profile synchronously, so we need to
     // let the policy code know not to expect cached policy.
@@ -1056,24 +1052,24 @@ class MultiProfileDownloadNotificationTest
                                     "false");
   }
 
-  // Logs in to the primary profile.
-  void SetUpOnMainThread() override {
-    const TestAccountInfo& info = kTestAccounts[PRIMARY_ACCOUNT_INDEX];
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
 
-    AddUser(info, true);
-    DownloadNotificationTestBase::SetUpOnMainThread();
+    // Register a persisted user.
+    ScopedListPrefUpdate prefs_user_update(
+        local_state, user_manager::prefs::kRegularUsersPref);
+    for (const auto& test_account : kTestAccounts) {
+      prefs_user_update->Append(test_account.email);
+    }
   }
 
-  // Loads all users to the current session and sets up necessary fields.
-  // This is used for preparing all accounts in PRE_ test setup, and for testing
-  // actual login behavior.
-  void AddAllUsers() {
-    for (size_t i = 0; i < std::size(kTestAccounts); ++i) {
-      // The primary account was already set up in SetUpOnMainThread, so skip it
-      // here.
-      if (i == PRIMARY_ACCOUNT_INDEX)
-        continue;
-      AddUser(kTestAccounts[i], i >= SECONDARY_ACCOUNT_INDEX_START);
+  // Logs in to the primary profile.
+  void SetUpOnMainThread() override {
+    DownloadNotificationTestBase::SetUpOnMainThread();
+
+    // Add all users, except the first one, which is already logged in.
+    for (size_t i = 1; i < std::size(kTestAccounts); ++i) {
+      AddUser(kTestAccounts[i]);
     }
   }
 
@@ -1084,12 +1080,13 @@ class MultiProfileDownloadNotificationTest
   }
 
   // Adds a new user for testing to the current session.
-  void AddUser(const TestAccountInfo& info, bool log_in) {
-    if (log_in) {
-      session_manager::SessionManager::Get()->CreateSession(
-          AccountId::FromUserEmailGaiaId(info.email, info.gaia_id), info.hash,
-          false);
-    }
+  void AddUser(const TestAccountInfo& info) {
+    session_manager::SessionManager::Get()->CreateSession(
+        AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
+        info.hash,
+        /*new_user=*/false,
+        /*has_active_session=*/false);
+
     user_manager::UserManager::Get()->SaveUserDisplayName(
         AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
         base::UTF8ToUTF16(info.display_name));
@@ -1109,14 +1106,7 @@ class MultiProfileDownloadNotificationTest
 };
 
 IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
-                       PRE_DownloadMultipleFiles) {
-  AddAllUsers();
-}
-
-IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
                        DownloadMultipleFiles) {
-  AddAllUsers();
-
   GURL url(SlowDownloadInterceptor::kUnknownSizeUrl);
 
   Profile* profile1 = GetProfileByIndex(1);
@@ -1227,4 +1217,4 @@ IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
     EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

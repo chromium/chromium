@@ -10,7 +10,7 @@
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a137f
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a236b android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -27,7 +27,7 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -65,8 +65,6 @@
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
-# OOP-Canvas
-# tags: [ oop-c no-oop-c ]
 # WebGPU Backend Validation
 # tags: [ dawn-backend-validation dawn-no-backend-validation ]
 # WebGPU Adapter
@@ -78,6 +76,8 @@
 #         webgpu-service-worker
 #         webgpu-dedicated-worker
 #         webgpu-shared-worker ]
+# WebGPU Compat context
+# tags: [ compat-default compat-min-es31 ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
@@ -187,8 +187,6 @@ crbug.com/364179193 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
-crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
@@ -205,24 +203,45 @@ crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatency
 crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatencyWebGLDrawImage [ Failure ]
 crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatencyWebGLRoundedCorners [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_lt_535.183.01 release-x64 target-cpu-64 win11 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_lt_535.183.01 release-x64 target-cpu-64 win11 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_lt_535.183.01 release-x64 target-cpu-64 win11 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_lt_535.183.01 release-x64 target-cpu-64 win11 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_lt_535.183.01 release-x64 target-cpu-64 win11 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_lt_535.183.01 release-x64 target-cpu-64 win11 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
+crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
 # Fail or flaky on Windows and Linux. Flaky timeout on Mac.
-crbug.com/371949935 [ debug-x64 graphite-disabled nvidia-0x2184 nvidia_lt_535.183.01 target-cpu-64 win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
-crbug.com/371949935 [ graphite-disabled intel-0x9bc5 release-x64 target-cpu-64 win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ graphite-enabled no-clang-coverage qualcomm-0x41333430 release target-cpu-64 win11 ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ angle-opengl debug display-server-x linux no-clang-coverage nvidia-0x2184 nvidia_lt_535.183.01 renderer-skia-gl ] TraceTest_ViewTransitionsCapture [ Failure ]
-crbug.com/371949935 [ angle-metal apple graphite-enabled mac-arm64 no-asan no-clang-coverage release sonoma ] TraceTest_ViewTransitionsCapture [ Failure ]
-crbug.com/371949935 [ intel mac mac-x86_64 no-asan release ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ angle-metal graphite-enabled intel-0x3e9b mac-x86_64 no-asan release sonoma ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ win angle-d3d11 graphite-disabled qualcomm-0x41333430 ] TraceTest_ViewTransitionsCapture [ Slow ]
 
+# TODO(crbug.com/398784712): Remove these once culprit is reverted.
+crbug.com/398784712 [ win intel-0x9bc5 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
+crbug.com/398784712 [ win amd-0x7340 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
 
-# One particular Linux Bot consistently failures
-crbug.com/331488870 [ linux intel-0x9bc5 angle-opengl passthrough ] TraceTest_Canvas2DBlitText [ Failure ]
+# Win/AMD RX 7600 failures
+crbug.com/402989071 [ win11 amd-0x7480 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginCacheHits [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineMainThread [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineWorkerAsync [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineMainThread [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineWorkerAsync [ Failure ]
+
+# DirectionComposition seems to flakily fail
+crbug.com/403536258 [ win angle-d3d11 intel-0x4680 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -382,7 +382,7 @@ void OptOutStoreSQL::LoadBlockList(
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!db_) {
     db_ = std::make_unique<sql::Database>(
-        sql::DatabaseOptions{
+        sql::DatabaseOptions()
             // The entry size should be between 11 and 10 + x bytes, where x is
             // the the length of the host name string in bytes. The total number
             // of entries per host is bounded at 32, and the total number of
@@ -394,8 +394,8 @@ void OptOutStoreSQL::LoadBlockList(
             // in their top 20 hosts. It should be closer to 32 * 100 * 20 for
             // most users, which is about 4096 * 15. The total size of the
             // database will be capped at 3200 entries.
-            .page_size = 4096,
-            .cache_size = 250},
+            .set_page_size(4096)
+            .set_cache_size(250),
         // TODO(crbug.com/40134470): Migrate to OptOutBlocklist and update any
         // backend code that may depend on this tag.
         sql::Database::Tag("OptOutBlacklist"));

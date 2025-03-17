@@ -42,7 +42,7 @@ const int kCaptionButtonHeight = 18;
 
 class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
  public:
-  TestLayoutDelegate() : show_caption_buttons_(true), maximized_(false) {}
+  TestLayoutDelegate() = default;
 
   TestLayoutDelegate(const TestLayoutDelegate&) = delete;
   TestLayoutDelegate& operator=(const TestLayoutDelegate&) = delete;
@@ -96,8 +96,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
 
  private:
   std::u16string window_title_;
-  bool show_caption_buttons_;
-  bool maximized_;
+  bool show_caption_buttons_ = true;
+  bool maximized_ = false;
 };
 
 }  // namespace
@@ -184,7 +184,7 @@ class OpaqueBrowserFrameViewLayoutTest
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    root_view_->AddChildView(window_title_.get());
+    root_view_->AddChildViewRaw(window_title_.get());
   }
 
   int CaptionY() const {

@@ -51,11 +51,9 @@ class BrowserContext;
 class RenderProcessHost;
 }  // namespace content
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 class FileSystemProviderProvidedFileSystemTest;
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 namespace extensions {
 class Extension;
@@ -89,10 +87,10 @@ class EventRouter : public KeyedService,
  public:
   // These constants convey the state of our knowledge of whether we're in
   // a user-caused gesture as part of DispatchEvent.
-  enum UserGestureState {
-    USER_GESTURE_UNKNOWN = 0,
-    USER_GESTURE_ENABLED = 1,
-    USER_GESTURE_NOT_ENABLED = 2,
+  enum class UserGestureState {
+    kUnknown = 0,
+    kEnabled = 1,
+    kNotEnabled = 2,
   };
 
   // The pref key for the list of event names for which an extension has
@@ -353,6 +351,7 @@ class EventRouter : public KeyedService,
   }
 
  private:
+  friend class BookmarksApiEventsTest;
   friend class EventRouterFilterTest;
   friend class EventRouterTest;
   friend class ash::file_system_provider::
@@ -721,5 +720,22 @@ struct EventListenerInfo {
 };
 
 }  // namespace extensions
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<extensions::EventRouter,
+                               extensions::EventRouter::TestObserver> {
+  static void AddObserver(extensions::EventRouter* source,
+                          extensions::EventRouter::TestObserver* observer) {
+    source->AddObserverForTesting(observer);
+  }
+  static void RemoveObserver(extensions::EventRouter* source,
+                             extensions::EventRouter::TestObserver* observer) {
+    source->RemoveObserverForTesting(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // EXTENSIONS_BROWSER_EVENT_ROUTER_H_

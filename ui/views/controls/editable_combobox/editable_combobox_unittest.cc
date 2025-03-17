@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -123,7 +124,7 @@ class EditableComboboxTest : public ViewsTestBase {
   void ClickTextfield();
   void FocusTextfield();
   bool IsTextfieldFocused() const;
-  std::u16string GetSelectedText() const;
+  std::u16string_view GetSelectedText() const;
   void SetContextMenuController(ContextMenuController* controller);
   void DragMouseTo(const gfx::Point& location);
   MenuRunner* GetMenuRunner();
@@ -294,7 +295,7 @@ bool EditableComboboxTest::IsTextfieldFocused() const {
   return combobox_->textfield_->HasFocus();
 }
 
-std::u16string EditableComboboxTest::GetSelectedText() const {
+std::u16string_view EditableComboboxTest::GetSelectedText() const {
   return combobox_->textfield_->GetSelectedText();
 }
 

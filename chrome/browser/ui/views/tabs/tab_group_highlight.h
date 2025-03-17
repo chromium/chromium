@@ -30,7 +30,6 @@ class TabGroupHighlight : public views::View {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  bool GetCanProcessEventsWithinSubtree() const override;
 
  private:
   // Returns the highlight shape, which immitates the tab highlight shape.

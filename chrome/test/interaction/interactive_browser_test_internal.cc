@@ -4,6 +4,8 @@
 
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 
+#include <compare>
+#include <functional>
 #include <memory>
 #include <sstream>
 
@@ -30,7 +32,7 @@
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/aura/window.h"
 #endif
@@ -42,33 +44,53 @@ namespace internal {
 // isn't properly communicated, so this serves as a backup.
 class BrowserWidgetFocusSupplier
     : public views::test::internal::WidgetFocusSupplier,
-      public BrowserListObserver {
+      public BrowserListObserver,
+      public views::WidgetObserver {
  public:
   BrowserWidgetFocusSupplier() {
     observation_.Observe(BrowserList::GetInstance());
   }
-  ~BrowserWidgetFocusSupplier() override = default;
+
+  ~BrowserWidgetFocusSupplier() override {
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      OnBrowserRemoved(browser);
+    }
+  }
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
-  void OnBrowserSetLastActive(Browser* browser) override {
+  void OnBrowserAdded(Browser* browser) override {
     if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
       if (auto* const widget = view->GetWidget()) {
-        if (gfx::NativeView native_view = widget->GetNativeView()) {
-          OnWidgetFocusChanged(native_view);
-        }
+        widget->AddObserver(this);
+      }
+    }
+  }
+
+  void OnBrowserRemoved(Browser* browser) override {
+    if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
+      if (auto* const widget = view->GetWidget()) {
+        widget->RemoveObserver(this);
+      }
+    }
+  }
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      if (gfx::NativeView native_view = widget->GetNativeView()) {
+        OnWidgetFocusChanged(native_view);
       }
     }
   }
 
  protected:
   views::Widget::Widgets GetAllWidgets() const override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On Ash, this call is required to include shell/desktop widgets in
     // addition to other widgets - see documentation in widget_test_aura.cc.
     views::Widget::Widgets result;
     for (const auto& window : ash::Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(window->GetRootWindow(), &result);
+      result.merge(views::Widget::GetAllChildWidgets(window->GetRootWindow()));
     }
     return result;
 #else
@@ -154,6 +176,18 @@ bool InteractiveBrowserTestPrivate::IsInstrumentedWebContents(
     ui::ElementIdentifier element_id) const {
   for (const auto& existing : instrumented_web_contents_) {
     if (existing->page_identifier() == element_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool InteractiveBrowserTestPrivate::UninstrumentWebContents(
+    ui::ElementIdentifier to_remove) {
+  for (auto it = instrumented_web_contents_.begin();
+       it != instrumented_web_contents_.end(); ++it) {
+    if ((*it)->page_identifier() == to_remove) {
+      instrumented_web_contents_.erase(it);
       return true;
     }
   }
@@ -273,6 +307,126 @@ InteractiveBrowserTestPrivate::DebugDumpElement(
   } else {
     return InteractiveViewsTestPrivate::DebugDumpElement(el);
   }
+}
+
+MatchableValue::MatchableValue() noexcept = default;
+MatchableValue::MatchableValue(const base::Value& value) noexcept
+    : value_(value.Clone()) {}
+MatchableValue::MatchableValue(base::Value&& value) noexcept
+    : value_(std::move(value)) {}
+MatchableValue::MatchableValue(const MatchableValue& value) noexcept
+    : value_(value.value_.Clone()) {}
+MatchableValue::MatchableValue(MatchableValue&&) noexcept = default;
+MatchableValue& MatchableValue::operator=(const base::Value& value) noexcept {
+  value_ = value.Clone();
+  return *this;
+}
+MatchableValue& MatchableValue::operator=(base::Value&& value) noexcept {
+  value_ = std::move(value);
+  return *this;
+}
+MatchableValue& MatchableValue::operator=(
+    const MatchableValue& value) noexcept {
+  if (this != &value) {
+    value_ = value.value_.Clone();
+  }
+  return *this;
+}
+MatchableValue& MatchableValue::operator=(MatchableValue&&) noexcept = default;
+MatchableValue::~MatchableValue() = default;
+
+void CheckValueTypes(const MatchableValue& source,
+                     const MatchableValue& target) {
+  using Type = base::Value::Type;
+  const auto source_type = source.value().type();
+  const auto target_type = target.value().type();
+
+  if (target_type == Type::DOUBLE &&
+      (source_type == Type::DOUBLE || source_type == Type::INTEGER)) {
+    // This is an allowed conversion.
+    return;
+  }
+
+  // Explicitly don't allow downcast to integer for comparison.
+  if (target_type == Type::INTEGER) {
+    CHECK_NE(source_type, Type::DOUBLE)
+        << "JS returned a floating-point value (" << source
+        << ") but comparison was with an integer (" << target
+        << "). If there is any chance the value will be floating-point, "
+           "compare to a double value instead.";
+  }
+
+  // Otherwise, the types *must* match.
+  CHECK_EQ(source_type, target_type) << "Type mismatch attempting to compare "
+                                     << source << " (from JS) and " << target;
+}
+
+bool MatchableValue::operator==(const MatchableValue& other) const {
+  CheckValueTypes(*this, other);
+  if (other.value_.type() == base::Value::Type::DOUBLE) {
+    return value_.GetDouble() == other.value_.GetDouble();
+  }
+  return value_ == other.value_;
+}
+
+namespace {
+
+template <template <typename...> class Op>
+bool MatchableValueCompare(const MatchableValue& lhs,
+                           const MatchableValue& rhs) {
+  CheckValueTypes(lhs, rhs);
+  switch (rhs.value().type()) {
+    case base::Value::Type::DOUBLE:
+      return Op<double>()(lhs.value().GetDouble(), rhs.value().GetDouble());
+    case base::Value::Type::INTEGER:
+      return Op<double>()(lhs.value().GetInt(), rhs.value().GetInt());
+    case base::Value::Type::STRING:
+      return Op<std::string>()(lhs.value().GetString(),
+                               rhs.value().GetString());
+    default:
+      NOTREACHED() << "Target value " << rhs << " (" << rhs.value().type()
+                   << ") does not support greater than/less than comparison.";
+  }
+}
+
+}  // namespace
+
+MatchableValue::operator std::string() const {
+  return value_.GetString();
+}
+
+bool MatchableValue::operator<(const MatchableValue& other) const {
+  return MatchableValueCompare<std::less>(*this, other);
+}
+
+bool MatchableValue::operator>(const MatchableValue& other) const {
+  return MatchableValueCompare<std::greater>(*this, other);
+}
+
+bool MatchableValue::operator<=(const MatchableValue& other) const {
+  return MatchableValueCompare<std::less_equal>(*this, other);
+}
+
+bool MatchableValue::operator>=(const MatchableValue& other) const {
+  return MatchableValueCompare<std::greater_equal>(*this, other);
+}
+
+std::ostream& operator<<(std::ostream& out, const MatchableValue& value) {
+  return out << value.value();
+}
+
+bool IsTruthyMatcher::MatchAndExplain(
+    const internal::MatchableValue& x,
+    testing::MatchResultListener* listener) const {
+  return WebContentsInteractionTestUtil::IsTruthy(x.value());
+}
+
+void IsTruthyMatcher::DescribeTo(std::ostream* os) const {
+  *os << "is truthy";
+}
+
+void IsTruthyMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "is falsy";
 }
 
 }  // namespace internal

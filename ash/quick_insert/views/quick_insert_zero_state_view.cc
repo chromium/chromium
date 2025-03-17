@@ -37,7 +37,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -84,6 +84,8 @@ EditorSubmenu GetEditorSubmenu(
     case chromeos::editor_menu::PresetQueryCategory::kEmojify:
       return EditorSubmenu::kTone;
     case chromeos::editor_menu::PresetQueryCategory::kProofread:
+      return EditorSubmenu::kNone;
+    case chromeos::editor_menu::PresetQueryCategory::kLobster:
       return EditorSubmenu::kNone;
   }
 }

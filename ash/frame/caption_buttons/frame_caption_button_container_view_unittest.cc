@@ -313,7 +313,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, TestSizeButtonBehaviorOverride) {
 
   FrameCaptionButtonContainerView container(widget);
   InitContainer(&container);
-  widget->GetContentsView()->AddChildView(&container);
+  widget->GetContentsView()->AddChildViewRaw(&container);
   views::test::RunScheduledLayout(&container);
   FrameCaptionButtonContainerView::TestApi testApi(&container);
 
@@ -372,7 +372,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
 
   FrameCaptionButtonContainerView container(widget);
   InitContainer(&container);
-  widget->GetContentsView()->AddChildView(&container);
+  widget->GetContentsView()->AddChildViewRaw(&container);
   views::test::RunScheduledLayout(&container);
   FrameCaptionButtonContainerView::TestApi testApi(&container);
 
@@ -466,7 +466,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, TestFloatButtonBehavior) {
 
   FrameCaptionButtonContainerView container(widget);
   InitContainer(&container);
-  widget->GetContentsView()->AddChildView(&container);
+  widget->GetContentsView()->AddChildViewRaw(&container);
   views::test::RunScheduledLayout(&container);
   FrameCaptionButtonContainerView::TestApi test_api(&container);
 

@@ -18,7 +18,7 @@ namespace borealis {
 
 class BorealisSurveyHandlerTest : public ChromeAshTestBase {
  public:
-  // AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override {
     ChromeAshTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();

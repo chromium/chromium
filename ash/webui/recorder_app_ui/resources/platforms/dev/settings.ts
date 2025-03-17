@@ -14,7 +14,13 @@ export enum ColorTheme {
 }
 
 export const devSettingsSchema = z.object({
+  // Force language picker or dropdown display even if there's only one
+  // language option.
+  forceLanguageSelection: z.boolean(),
   forceTheme: z.optional(z.nativeEnum(ColorTheme)),
+  // Simulate GenAI model download error.
+  // TODO(hsuanling): Use enum to mock need-reboot error.
+  forceGenAiModelDownloadError: z.withDefault(z.boolean(), false),
   // Simulate first time soda installation cross session.
   sodaInstalled: z.boolean(),
   canUseSpeakerLabel: z.boolean(),
@@ -25,7 +31,9 @@ export const devSettingsSchema = z.object({
 type DevSettings = Infer<typeof devSettingsSchema>;
 
 const defaultSettings: DevSettings = {
+  forceLanguageSelection: false,
   forceTheme: ColorTheme.LIGHT,
+  forceGenAiModelDownloadError: false,
   sodaInstalled: false,
   canUseSpeakerLabel: true,
   canCaptureSystemAudioWithLoopback: true,

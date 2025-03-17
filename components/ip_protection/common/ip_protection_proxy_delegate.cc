@@ -4,30 +4,34 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "base/containers/contains.h"
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 #include "net/base/features.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "url/url_constants.h"
 
 namespace ip_protection {
 
@@ -51,14 +55,6 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
             << ") - " << message;
   };
 
-  const std::string& always_proxy = net::features::kIpPrivacyAlwaysProxy.Get();
-  if (!always_proxy.empty()) {
-    if (url.host() == always_proxy) {
-      return ProxyResolutionResult::kAttemptProxy;
-    }
-    return ProxyResolutionResult::kNoMdlMatch;
-  }
-
   // Check eligibility of this request.
   if (!ip_protection_core_->IsMdlPopulated()) {
     vlog("proxy allow list not populated");
@@ -79,19 +75,9 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   // - The token cache is not available.
   // - The token cache does not have tokens.
   // - No proxy list is available.
-  // - `kEnableIpProtection` is `false`.
   // - `is_ip_protection_enabled_` is `false` (in other words, the user has
-  //   disabled IP Protection via user settings).
+  //   disabled IP Protection via user settings or enterprise policy).
   // - `kIpPrivacyDirectOnly` is `true`.
-
-  // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
-  // done and IpProtectionProxyDelegate is only created in cases where IP
-  // Protection should be used, remove this check.
-  if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
-    vlog("ip protection proxy cannot be enabled");
-    return ProxyResolutionResult::kFeatureDisabled;
-  }
-
   if (!ip_protection_core_->IsIpProtectionEnabled()) {
     vlog("ip protection proxy is not currently enabled");
     return ProxyResolutionResult::kSettingDisabled;
@@ -112,6 +98,13 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   } else if (!auth_tokens_are_available) {
     vlog("no auth token available from cache");
     return ProxyResolutionResult::kTokensExhausted;
+  }
+
+  // Check if the protection has been disabled via User Bypass.
+  if (net::features::kIpPrivacyEnableUserBypass.Get() &&
+      ip_protection_core_->HasTrackingProtectionException(
+          network_anonymization_key.GetTopFrameSite()->GetURL())) {
+    return ProxyResolutionResult::kHasSiteException;
   }
 
   return ProxyResolutionResult::kAttemptProxy;
@@ -139,14 +132,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
       // chains.
       CHECK(proxy_chain.is_multi_proxy());
 
-      // For debugging..
-      if (net::features::kIpPrivacyUseSingleProxy.Get()) {
-        proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection({
-            proxy_chain.GetProxyServer(0),
-        }));
-      } else {
-        proxy_list.AddProxyChain(std::move(proxy_chain));
-      }
+      proxy_list.AddProxyChain(std::move(proxy_chain));
     }
   }
 
@@ -249,6 +235,15 @@ net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
 
 void IpProtectionProxyDelegate::SetProxyResolutionService(
     net::ProxyResolutionService* proxy_resolution_service) {}
+
+bool IpProtectionProxyDelegate::AliasRequiresProxyOverride(
+    const std::string scheme,
+    const std::vector<std::string>& dns_aliases,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  // TODO(crbug.com/383134117): Iterate through aliases and invoke mdl manager
+  // to check if any match a 3p resource.
+  return false;
+}
 
 // static
 net::ProxyList IpProtectionProxyDelegate::MergeProxyRules(

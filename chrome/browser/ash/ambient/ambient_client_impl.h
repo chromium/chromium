@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 
 class GoogleServiceAuthError;
 

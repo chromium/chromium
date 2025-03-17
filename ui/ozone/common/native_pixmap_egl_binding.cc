@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/common/native_pixmap_egl_binding.h"
+
+#include <array>
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -184,39 +181,39 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   }
 
   if (plane_ == gfx::BufferPlane::DEFAULT) {
-    constexpr EGLint kPlaneFDAttrs[] = {
+    constexpr auto kPlaneFDAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_FD_EXT,
         EGL_DMA_BUF_PLANE1_FD_EXT,
         EGL_DMA_BUF_PLANE2_FD_EXT,
         EGL_DMA_BUF_PLANE3_FD_EXT,
-    };
-    constexpr EGLint kPlaneOffsetAttrs[] = {
+    });
+    constexpr auto kPlaneOffsetAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_OFFSET_EXT,
         EGL_DMA_BUF_PLANE1_OFFSET_EXT,
         EGL_DMA_BUF_PLANE2_OFFSET_EXT,
         EGL_DMA_BUF_PLANE3_OFFSET_EXT,
-    };
+    });
 
-    constexpr EGLint kPlanePitchAttrs[] = {
+    constexpr auto kPlanePitchAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_PITCH_EXT,
         EGL_DMA_BUF_PLANE1_PITCH_EXT,
         EGL_DMA_BUF_PLANE2_PITCH_EXT,
         EGL_DMA_BUF_PLANE3_PITCH_EXT,
-    };
+    });
 
-    constexpr EGLint kPlaneLoModifierAttrs[] = {
+    constexpr auto kPlaneLoModifierAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
         EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
         EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT,
         EGL_DMA_BUF_PLANE3_MODIFIER_LO_EXT,
-    };
+    });
 
-    constexpr EGLint kPlaneHiModifierAttrs[] = {
+    constexpr auto kPlaneHiModifierAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
         EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT,
         EGL_DMA_BUF_PLANE2_MODIFIER_HI_EXT,
         EGL_DMA_BUF_PLANE3_MODIFIER_HI_EXT,
-    };
+    });
 
     bool has_dma_buf_import_modifier =
         gl::GLSurfaceEGL::GetGLDisplayEGL()

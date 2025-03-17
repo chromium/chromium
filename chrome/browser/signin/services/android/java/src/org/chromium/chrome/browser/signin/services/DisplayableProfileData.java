@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.signin.services;
 
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Immutable holder for displayable profile data. */
+@NullMarked
 public class DisplayableProfileData {
     private final String mAccountEmail;
     private final Drawable mImage;
@@ -18,7 +20,7 @@ public class DisplayableProfileData {
 
     public DisplayableProfileData(
             String accountEmail,
-            Drawable image,
+            @Nullable Drawable image,
             @Nullable String fullName,
             @Nullable String givenName,
             boolean hasDisplayableEmailAddress) {

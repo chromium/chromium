@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "printing/backend/cups_helper.h"
 
 #include <cups/ppd.h>
@@ -163,21 +168,22 @@ std::pair<std::vector<gfx::Size>, gfx::Size> GetResolutionSettings(
   std::vector<gfx::Size> dpis;
   gfx::Size default_dpi;
   if (res) {
-    UNSAFE_TODO({
-      for (int i = 0; i < res->num_choices; i++) {
-        char* choice = res->choices[i].choice;
-        CHECK(choice);
-        std::optional<gfx::Size> parsed_size = ParseResolutionString(choice);
-        if (!parsed_size.has_value()) {
-          continue;
-        }
-
-        dpis.push_back(parsed_size.value());
-        if (!strcmp(choice, res->defchoice)) {
-          default_dpi = dpis.back();
-        }
+    // SAFETY: Required from CUPS.
+    auto choices = UNSAFE_BUFFERS(base::span<const ppd_choice_t>(
+        res->choices, static_cast<size_t>(res->num_choices)));
+    for (const auto& choice : choices) {
+      const char* choice_str = choice.choice;
+      CHECK(choice_str);
+      std::optional<gfx::Size> parsed_size = ParseResolutionString(choice_str);
+      if (!parsed_size.has_value()) {
+        continue;
       }
-    });
+
+      dpis.push_back(parsed_size.value());
+      if (!strcmp(choice_str, res->defchoice)) {
+        default_dpi = dpis.back();
+      }
+    }
   } else {
     // If there is no resolution option, then check for a standalone
     // DefaultResolution.
@@ -865,63 +871,62 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
     VLOG(1) << "Paper list size - " << ppd->num_sizes;
     ppd_option_t* paper_option = ppdFindOption(ppd, kPageSize);
     bool is_default_found = false;
-    UNSAFE_TODO({
-      for (int i = 0; i < ppd->num_sizes; ++i) {
-        const gfx::Size paper_size_um(
-            ConvertUnit(ppd->sizes[i].width, kPointsPerInch, kMicronsPerInch),
-            ConvertUnit(ppd->sizes[i].length, kPointsPerInch, kMicronsPerInch));
-        if (!paper_size_um.IsEmpty()) {
-          std::string display_name;
-          if (paper_option) {
-            ppd_choice_t* paper_choice =
-                ppdFindChoice(paper_option, ppd->sizes[i].name);
-            // Human readable paper name should be UTF-8 encoded, but some PPDs
-            // do not follow this standard.
-            if (paper_choice && base::IsStringUTF8(paper_choice->text)) {
-              display_name = paper_choice->text;
-            }
-          }
-          int printable_area_left_um =
-              ConvertUnit(ppd->sizes[i].left, kPointsPerInch, kMicronsPerInch);
-          int printable_area_bottom_um = ConvertUnit(
-              ppd->sizes[i].bottom, kPointsPerInch, kMicronsPerInch);
-          // ppd->sizes[i].right is the horizontal distance from the left of the
-          // paper to the right of the printable area.
-          int printable_area_right_um =
-              ConvertUnit(ppd->sizes[i].right, kPointsPerInch, kMicronsPerInch);
-          // ppd->sizes[i].top is the vertical distance from the bottom of the
-          // paper to the top of the printable area.
-          int printable_area_top_um =
-              ConvertUnit(ppd->sizes[i].top, kPointsPerInch, kMicronsPerInch);
-
-          gfx::Rect printable_area_um(
-              printable_area_left_um, printable_area_bottom_um,
-              /*width=*/printable_area_right_um - printable_area_left_um,
-              /*height=*/printable_area_top_um - printable_area_bottom_um);
-
-          // Default to the paper size if printable area is empty.
-          // We've seen some drivers have a printable area that goes out of
-          // bounds of the paper size. In those cases, set the printable area to
-          // be the size. (See crbug.com/1412305.)
-          const gfx::Rect size_um_rect = gfx::Rect(paper_size_um);
-          if (printable_area_um.IsEmpty() ||
-              !size_um_rect.Contains(printable_area_um)) {
-            printable_area_um = size_um_rect;
-          }
-
-          PrinterSemanticCapsAndDefaults::Paper paper(
-              display_name,
-              /*vendor_id=*/ppd->sizes[i].name, paper_size_um,
-              printable_area_um);
-
-          caps.papers.push_back(paper);
-          if (ppd->sizes[i].marked) {
-            caps.default_paper = paper;
-            is_default_found = true;
+    // SAFETY: Required from CUPS.
+    auto sizes = UNSAFE_BUFFERS(base::span<const ppd_size_t>(
+        ppd->sizes, static_cast<size_t>(ppd->num_sizes)));
+    for (const auto& size : sizes) {
+      const gfx::Size paper_size_um(
+          ConvertUnit(size.width, kPointsPerInch, kMicronsPerInch),
+          ConvertUnit(size.length, kPointsPerInch, kMicronsPerInch));
+      if (!paper_size_um.IsEmpty()) {
+        std::string display_name;
+        if (paper_option) {
+          ppd_choice_t* paper_choice = ppdFindChoice(paper_option, size.name);
+          // Human readable paper name should be UTF-8 encoded, but some PPDs
+          // do not follow this standard.
+          if (paper_choice && base::IsStringUTF8(paper_choice->text)) {
+            display_name = paper_choice->text;
           }
         }
+        int printable_area_left_um =
+            ConvertUnit(size.left, kPointsPerInch, kMicronsPerInch);
+        int printable_area_bottom_um =
+            ConvertUnit(size.bottom, kPointsPerInch, kMicronsPerInch);
+        // `size.right` is the horizontal distance from the left of the paper to
+        // the right of the printable area.
+        int printable_area_right_um =
+            ConvertUnit(size.right, kPointsPerInch, kMicronsPerInch);
+        // `size.top` is the vertical distance from the bottom of the paper to
+        // the top of the printable area.
+        int printable_area_top_um =
+            ConvertUnit(size.top, kPointsPerInch, kMicronsPerInch);
+
+        gfx::Rect printable_area_um(
+            printable_area_left_um, printable_area_bottom_um,
+            /*width=*/printable_area_right_um - printable_area_left_um,
+            /*height=*/printable_area_top_um - printable_area_bottom_um);
+
+        // Default to the paper size if printable area is empty.
+        // We've seen some drivers have a printable area that goes out of
+        // bounds of the paper size. In those cases, set the printable area to
+        // be the size. (See crbug.com/1412305.)
+        const gfx::Rect size_um_rect = gfx::Rect(paper_size_um);
+        if (printable_area_um.IsEmpty() ||
+            !size_um_rect.Contains(printable_area_um)) {
+          printable_area_um = size_um_rect;
+        }
+
+        PrinterSemanticCapsAndDefaults::Paper paper(
+            display_name,
+            /*vendor_id=*/size.name, paper_size_um, printable_area_um);
+
+        caps.papers.push_back(paper);
+        if (size.marked) {
+          caps.default_paper = paper;
+          is_default_found = true;
+        }
       }
-    });
+    }
     if (!is_default_found) {
       gfx::Size locale_paper_um = GetDefaultPaperSizeFromLocaleMicrons(locale);
       for (const PrinterSemanticCapsAndDefaults::Paper& paper : caps.papers) {

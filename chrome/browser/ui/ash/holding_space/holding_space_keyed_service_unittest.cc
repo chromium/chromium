@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -22,6 +21,8 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -60,6 +61,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -69,6 +71,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
@@ -195,7 +198,7 @@ GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
     result.emplace(
         base::StrCat({kTotalCountV2HistogramPrefix, ".All.FileSystemType.",
                       holding_space_util::ToString(fs_type)}),
-        std::vector<Bucket>({Bucket(/*sample=*/base::ranges::count(
+        std::vector<Bucket>({Bucket(/*sample=*/std::ranges::count(
                                         model->items(), fs_type,
                                         [&](const auto& item) {
                                           return item->file().file_system_type;
@@ -208,8 +211,8 @@ GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
     result.emplace(base::StrCat({kTotalCountV2HistogramPrefix, ".",
                                  holding_space_util::ToString(type)}),
                    std::vector<Bucket>({Bucket(
-                       /*sample=*/base::ranges::count(model->items(), type,
-                                                      &HoldingSpaceItem::type),
+                       /*sample=*/std::ranges::count(model->items(), type,
+                                                     &HoldingSpaceItem::type),
                        /*count=*/1u)}));
 
     // Fill "HoldingSpace.Item.TotalCountV2.{type}.FileSystemType.{fs_type}".
@@ -219,7 +222,7 @@ GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
                         holding_space_util::ToString(type), ".FileSystemType.",
                         holding_space_util::ToString(fs_type)}),
           std::vector<Bucket>({Bucket(
-              /*sample=*/base::ranges::count_if(
+              /*sample=*/std::ranges::count_if(
                   model->items(),
                   [&](const auto& item) {
                     return item->type() == type &&
@@ -251,7 +254,7 @@ std::map<std::string, std::vector<Bucket>> MergeHistogramSamples(
     // Case: Name *did* exist in other map.
     for (const auto& bucket : buckets) {
       auto bucket_it =
-          base::ranges::find(result_buckets, bucket.min, &Bucket::min);
+          std::ranges::find(result_buckets, bucket.min, &Bucket::min);
 
       // Case: Bucket did *not* exist in other map. Add bucket.
       if (bucket_it == result_buckets.end()) {
@@ -604,12 +607,11 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   TestingProfile* CreateSecondaryProfile(
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs = nullptr) {
     constexpr char kSecondaryProfileName[] = "secondary_profile";
-    LogIn(kSecondaryProfileName);
-    auto* profile = profile_manager()->CreateTestingProfile(
+    const GaiaId kFakeGaia2("fakegaia2");
+    LogIn(kSecondaryProfileName, kFakeGaia2);
+    return profile_manager()->CreateTestingProfile(
         kSecondaryProfileName, std::move(prefs), /*user_name=*/std::u16string(),
         /*avatar_id=*/0, GetTestingFactories());
-    OnUserProfileCreated(kSecondaryProfileName, profile);
-    return profile;
   }
 
   using PopulatePrefStoreCallback = base::OnceCallback<void(TestingPrefStore*)>;
@@ -633,12 +635,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   void ActivateSecondaryProfile() {
     const std::string kSecondaryProfileName = "secondary_profile";
     const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-    GetSessionControllerClient()->AddUserSession(kSecondaryProfileName);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-  }
-
-  TestSessionControllerClient* GetSessionControllerClient() {
-    return ash_test_helper()->test_session_controller_client();
+    ash::Shell::Get()->session_controller()->SwitchActiveUser(account_id);
   }
 
   // Resolves an absolute file path in the file manager's file system context,
@@ -766,7 +763,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     // needed because `profile_` is owned by the test not `TestProfileManager`.
     ash_test_helper()->prefs_provider()->ClearUnownedUserPrefs(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
-    profile_.reset();
+    profile_ = nullptr;
     HoldingSpaceKeyedServiceWithExperimentalFeatureTest::TearDown();
   }
 
@@ -774,14 +771,13 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     return user_manager::kGuestUserName;
   }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     CHECK_EQ(email, user_manager::kGuestUserName);
-    auto account_id = user_manager::GuestAccountId();
-
-    user_manager()->AddGuestUser(account_id);
+    auto* user = user_manager()->AddGuestUser();
     user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        user->GetAccountId(),
+        user_manager::FakeUserManager::GetFakeUsernameHash(
+            user->GetAccountId()),
         /*browser_restart=*/false,
         /*is_child=*/false);
   }
@@ -794,8 +790,6 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     // Profile is created outside of TestingProfileManager management
     // to inject more factories.
     TestingProfile::Builder guest_profile_builder;
-    guest_profile_builder.SetGuestSession();
-    guest_profile_builder.SetProfileName(profile_name);
     guest_profile_builder.AddTestingFactories(
         {TestingProfile::TestingFactory{
              arc::ArcFileSystemBridge::GetFactory(),
@@ -803,9 +797,9 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
          TestingProfile::TestingFactory{
              file_manager::VolumeManagerFactory::GetInstance(),
              base::BindRepeating(&BuildVolumeManager)}});
-    profile_ = guest_profile_builder.Build();
-    OnUserProfileCreated(profile_name, profile_.get());
-    return profile_.get();
+    profile_ =
+        profile_manager()->CreateGuestProfile(std::move(guest_profile_builder));
+    return profile_;
   }
 
   std::unique_ptr<Browser> CreateBrowser(
@@ -818,7 +812,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
   }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

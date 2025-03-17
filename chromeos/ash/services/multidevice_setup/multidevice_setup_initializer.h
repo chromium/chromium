@@ -19,10 +19,6 @@ class PrefService;
 
 namespace ash {
 
-namespace device_sync {
-class GcmDeviceInfoProvider;
-}
-
 namespace multidevice_setup {
 
 class AndroidSmsAppHelperDelegate;
@@ -46,7 +42,6 @@ class MultiDeviceSetupInitializer
         OobeCompletionTracker* oobe_completion_tracker,
         AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
         bool is_secondary_user);
     static void SetFactoryForTesting(Factory* test_factory);
 
@@ -59,7 +54,6 @@ class MultiDeviceSetupInitializer
         OobeCompletionTracker* oobe_completion_tracker,
         AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
         bool is_secondary_user) = 0;
 
    private:
@@ -100,7 +94,6 @@ class MultiDeviceSetupInitializer
       OobeCompletionTracker* oobe_completion_tracker,
       AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
       bool is_secondary_user);
 
   // mojom::MultiDeviceSetup:
@@ -150,7 +143,6 @@ class MultiDeviceSetupInitializer
   raw_ptr<OobeCompletionTracker> oobe_completion_tracker_;
   raw_ptr<AndroidSmsAppHelperDelegate> android_sms_app_helper_delegate_;
   raw_ptr<AndroidSmsPairingStateTracker> android_sms_pairing_state_tracker_;
-  raw_ptr<const device_sync::GcmDeviceInfoProvider> gcm_device_info_provider_;
   bool is_secondary_user_;
 
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_impl_;

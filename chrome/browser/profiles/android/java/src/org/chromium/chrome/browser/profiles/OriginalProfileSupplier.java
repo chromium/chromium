@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.profiles;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A {@link OneshotSupplierImpl} for the first, non-incognito, {@link Profile} created.
@@ -19,6 +20,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
  * synchronously returned. Like {@link org.chromium.base.supplier.OneshotSupplier}, this class must
  * only be accessed from a single thread.
  */
+@NullMarked
 public class OriginalProfileSupplier extends OneshotSupplierImpl<Profile>
         implements Destroyable, ProfileManager.Observer {
     public OriginalProfileSupplier() {

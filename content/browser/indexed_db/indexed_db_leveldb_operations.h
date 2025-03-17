@@ -187,10 +187,10 @@ template <typename Transaction>
 
 // Maximum time delays for tombstone sweeping and compaction tasks, throttled on
 // global and per-bucket frequencies, triggered by backing store close.
-static constexpr base::TimeDelta kMaxGlobalSweepDelay = base::Hours(1);
-static constexpr base::TimeDelta kMaxBucketSweepDelay = base::Days(3);
-static constexpr base::TimeDelta kMaxGlobalCompactionDelay = base::Hours(1);
-static constexpr base::TimeDelta kMaxBucketCompactionDelay = base::Days(3);
+inline constexpr base::TimeDelta kMaxGlobalSweepDelay = base::Hours(1);
+inline constexpr base::TimeDelta kMaxBucketSweepDelay = base::Days(3);
+inline constexpr base::TimeDelta kMaxGlobalCompactionDelay = base::Hours(1);
+inline constexpr base::TimeDelta kMaxBucketCompactionDelay = base::Days(3);
 
 // Get or update the earliest tombstone sweeping and compaction times, using
 // global and per-bucket delays.

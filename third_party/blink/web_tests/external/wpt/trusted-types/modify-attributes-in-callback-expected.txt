@@ -10,3 +10,4 @@ This is a testharness.js-based test.
 [FAIL] Ensure setAttribute results in right attribute value.
   assert_equals: expected 2 but got 3
 Harness: the test ran to completion.
+

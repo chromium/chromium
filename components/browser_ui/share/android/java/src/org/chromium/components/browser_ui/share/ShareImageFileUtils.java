@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.share;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -15,7 +17,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -33,6 +34,9 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -49,6 +53,7 @@ import java.io.OutputStream;
 import java.util.Locale;
 
 /** Utility class for file operations for image data. */
+@NullMarked
 public class ShareImageFileUtils {
     private static final String TAG = "share";
 
@@ -73,7 +78,8 @@ public class ShareImageFileUtils {
      * @param folder The folder that may contain the |fileUrl|.
      * @return Whether the |fileUri| is in the |folder|.
      */
-    private static boolean isUriInDirectory(Uri fileUri, File folder) {
+    @Contract("null, _ -> false")
+    private static boolean isUriInDirectory(@Nullable Uri fileUri, File folder) {
         if (fileUri == null) return false;
 
         Uri chromeUriPrefix = FileProviderUtils.getContentUriFromFile(folder);
@@ -88,7 +94,7 @@ public class ShareImageFileUtils {
      *
      * @return The file name if system clipboard contains a Uri from Chrome, otherwise return null.
      */
-    private static String getClipboardCurrentFilepath() throws IOException {
+    private static @Nullable String getClipboardCurrentFilepath() throws IOException {
         Uri clipboardUri = Clipboard.getInstance().getImageUriIfSharedByThisApp();
         if (isUriInDirectory(clipboardUri, getSharedFilesDirectory())) {
             return clipboardUri.getPath();
@@ -156,7 +162,7 @@ public class ShareImageFileUtils {
         FileOutputStreamWriter fileWriter =
                 (fos, cb) -> {
                     writeImageData(fos, imageData);
-                    cb.onResult(/* success= */ true);
+                    cb.onResult(/* result= */ true);
                 };
 
         saveImage(
@@ -191,7 +197,7 @@ public class ShareImageFileUtils {
         FileOutputStreamWriter fileWriter =
                 (fos, cb) -> {
                     writeBitmap(fos, bitmap);
-                    cb.onResult(/* success= */ true);
+                    cb.onResult(/* result= */ true);
                 };
 
         saveImage(
@@ -204,7 +210,7 @@ public class ShareImageFileUtils {
     }
 
     public static void getBitmapFromUriAsync(
-            Context context, Uri imageUri, Callback<Bitmap> callback) {
+            Context context, Uri imageUri, Callback<@Nullable Bitmap> callback) {
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
@@ -281,13 +287,13 @@ public class ShareImageFileUtils {
      */
     private static void saveImage(
             String fileName,
-            FilePathProvider filePathProvider,
+            @Nullable FilePathProvider filePathProvider,
             OnImageSaveListener listener,
             FileOutputStreamWriter writer,
             boolean isTemporary,
             String fileExtension) {
-        Callback<Uri> saveImageCallback =
-                (Uri uri) -> {
+        Callback<@Nullable Uri> saveImageCallback =
+                (@Nullable Uri uri) -> {
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
@@ -328,8 +334,8 @@ public class ShareImageFileUtils {
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 new Runnable() {
-                    FileOutputStream mFileOut;
-                    File mDestFile;
+                    @Nullable FileOutputStream mFileOut;
+                    @Nullable File mDestFile;
 
                     @Override
                     public void run() {
@@ -345,7 +351,8 @@ public class ShareImageFileUtils {
                                         (success) -> {
                                             StreamUtil.closeQuietly(mFileOut);
                                             if (success) {
-                                                outputStreamWriteCallback.onResult(mDestFile);
+                                                outputStreamWriteCallback.onResult(
+                                                        assumeNonNull(mDestFile));
                                             } else {
                                                 saveImageCallback.onResult(null);
                                             }
@@ -354,7 +361,7 @@ public class ShareImageFileUtils {
                                 Log.w(
                                         TAG,
                                         "Share failed -- Unable to create or write to destination"
-                                            + " file.");
+                                                + " file.");
                                 StreamUtil.closeQuietly(mFileOut);
                                 saveImageCallback.onResult(null);
                             }
@@ -376,7 +383,7 @@ public class ShareImageFileUtils {
      *
      * @return The new File object.
      */
-    private static File createFile(
+    private static @Nullable File createFile(
             String fileName, String filePath, boolean isTemporary, String fileExtension)
             throws IOException {
         File path;
@@ -468,7 +475,7 @@ public class ShareImageFileUtils {
     }
 
     @RequiresApi(29)
-    public static Uri addToMediaStore(File file) {
+    public static @Nullable Uri addToMediaStore(File file) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
         final ContentValues contentValues = new ContentValues();
@@ -514,7 +521,7 @@ public class ShareImageFileUtils {
      * @param callback The callback that will be called once the screenshot is saved.
      */
     public static void captureScreenshotForContents(
-            WebContents contents, int width, int height, Callback<Uri> callback) {
+            WebContents contents, int width, int height, Callback<@Nullable Uri> callback) {
         RenderWidgetHostView rwhv = contents.getRenderWidgetHostView();
         if (rwhv == null) {
             callback.onResult(null);
@@ -568,22 +575,22 @@ public class ShareImageFileUtils {
     }
 
     private static class ExternallyVisibleUriCallback implements Callback<String> {
-        private Callback<Uri> mComposedCallback;
+        private Callback<@Nullable Uri> mComposedCallback;
 
-        ExternallyVisibleUriCallback(Callback<Uri> cb) {
+        ExternallyVisibleUriCallback(Callback<@Nullable Uri> cb) {
             mComposedCallback = cb;
         }
 
         @Override
         public void onResult(final String path) {
-            if (TextUtils.isEmpty(path)) {
+            if (path.isEmpty()) {
                 mComposedCallback.onResult(null);
                 return;
             }
 
-            new AsyncTask<Uri>() {
+            new AsyncTask<@Nullable Uri>() {
                 @Override
-                protected Uri doInBackground() {
+                protected @Nullable Uri doInBackground() {
                     try {
                         return FileProviderUtils.getContentUriFromFile(new File(path));
                     } catch (IllegalArgumentException e) {
@@ -592,7 +599,7 @@ public class ShareImageFileUtils {
                 }
 
                 @Override
-                protected void onPostExecute(Uri uri) {
+                protected void onPostExecute(@Nullable Uri uri) {
                     mComposedCallback.onResult(uri);
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

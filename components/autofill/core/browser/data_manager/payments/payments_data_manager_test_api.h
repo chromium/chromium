@@ -30,6 +30,10 @@ class PaymentsDataManagerTestApi {
   // database.
   void AddOfferData(std::unique_ptr<AutofillOfferData> offer_data);
 
+  // Adds 'bnpl_issuer' to the local cache of linked/unlinked buy-now-pay-later
+  // issuers based on the value of the issuer.
+  void AddBnplIssuer(const BnplIssuer& bnpl_issuer);
+
   // Returns the number of credit card benefits.
   size_t GetCreditCardBenefitsCount() {
     return payments_data_manager_->credit_card_benefits_.size();

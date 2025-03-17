@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("system_web_apps") {
   sources = [
@@ -27,9 +27,9 @@ static_library("system_web_apps") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -44,7 +44,6 @@ static_library("system_web_apps") {
     "//ash/constants",
     "//ash/webui/camera_app_ui",
     "//ash/webui/system_apps/public:system_web_app_config",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ash/boca",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/profiles",
@@ -142,12 +141,13 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/system_web_apps/test_support",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/components/kiosk:test_support",
     "//components/prefs",
     "//components/webapps/browser",

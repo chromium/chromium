@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -125,7 +124,7 @@ void AnimationBuilder::Observer::OnLayerAnimationWillRepeat(
   // Only trigger the repeat callback on the last LayerAnimationSequence on
   // which this observer is attached.
   const int next_cycle = ++repeat_map_[sequence];
-  if (base::ranges::none_of(
+  if (std::ranges::none_of(
           repeat_map_, [next_cycle](int count) { return count < next_cycle; },
           &RepeatMap::value_type::second)) {
     on_will_repeat_.Run();
@@ -182,15 +181,22 @@ struct AnimationBuilder::Value {
   base::TimeDelta original_duration;
   std::unique_ptr<ui::LayerAnimationElement> element;
 
-  auto operator<=>(const Value& key) const {
+  auto operator<=>(const Value& rhs) const {
     // Animations with zero duration need to be ordered before animations with
     // nonzero of the same start time to prevent the DCHECK from happening in
     // TerminateSequence(). These animations don't count as overlapping
     // properties.
     auto element_properties = element->properties();
-    auto key_element_properties = key.element->properties();
+    auto rhs_element_properties = rhs.element->properties();
     return std::tie(start, original_duration, element_properties) <=>
-           std::tie(key.start, key.original_duration, key_element_properties);
+           std::tie(rhs.start, rhs.original_duration, rhs_element_properties);
+  }
+
+  bool operator==(const Value& rhs) const {
+    auto element_properties = element->properties();
+    auto rhs_element_properties = rhs.element->properties();
+    return std::tie(start, original_duration, element_properties) ==
+           std::tie(rhs.start, rhs.original_duration, rhs_element_properties);
   }
 };
 
@@ -285,7 +291,7 @@ void AnimationBuilder::AddLayerAnimationElement(
     std::unique_ptr<ui::LayerAnimationElement> element) {
   auto& values = values_[key];
   Value value = {start, original_duration, std::move(element)};
-  auto it = base::ranges::upper_bound(values, value);
+  auto it = std::ranges::upper_bound(values, value);
   values.insert(it, std::move(value));
 }
 

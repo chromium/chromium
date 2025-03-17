@@ -4,10 +4,11 @@
 
 #include "content/browser/renderer_host/ancestor_throttle.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -39,7 +40,7 @@ namespace {
 
 bool HeadersContainFrameAncestorsCSP(
     const network::mojom::ParsedHeadersPtr& headers) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       headers->content_security_policy, [](const auto& csp) {
         return csp->header->type ==
                    network::mojom::ContentSecurityPolicyType::kEnforce &&

@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -43,6 +45,8 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator.h"
@@ -67,8 +71,6 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -93,6 +95,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     LocationBarViewControllerDelegate,
     LocationBarSteadyViewConsumer,
     OmniboxControllerDelegate,
+    OmniboxStateProvider,
     URLDragDataSource> {
   // API endpoint for omnibox.
   std::unique_ptr<WebLocationBarImpl> _locationBar;
@@ -158,8 +161,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)start {
   DCHECK(self.browser);
 
-  if (self.started)
+  if (self.started) {
     return;
+  }
 
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -172,13 +176,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
+  self.viewController.profilePrefs = self.browser->GetProfile()->GetPrefs();
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.viewController.dispatcher =
-      static_cast<id<ActivityServiceCommands, ApplicationCommands,
-                     LoadQueryCommands, LensOverlayCommands, OmniboxCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.viewController.dispatcher = static_cast<
+      id<ActivityServiceCommands, ApplicationCommands, LoadQueryCommands,
+         LensCommands, LensOverlayCommands, OmniboxCommands>>(
+      self.browser->GetCommandDispatcher());
   self.viewController.tracker =
       feature_engagement::TrackerFactory::GetForProfile(
           self.browser->GetProfile());
@@ -288,14 +293,23 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.viewController);
 
+  OmniboxPositionBrowserAgent* omniboxPositionBrowserAgent =
+      OmniboxPositionBrowserAgent::FromBrowser(self.browser);
+  /// The location bar is the OmniboxStateProvider because omnibox is used both
+  /// in browser and lens overlay.
+  if (omniboxPositionBrowserAgent) {
+    omniboxPositionBrowserAgent->SetOmniboxStateProvider(self);
+  }
+
   self.started = YES;
 
   [self setUpDragAndDrop];
 }
 
 - (void)stop {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
 
   [self.contextualPanelEntrypointCoordinator stop];
@@ -449,6 +463,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (LocationBarModel*)locationBarModel {
   return _locationBarModel.get();
+}
+
+#pragma mark - OmniboxStateProvider
+
+- (BOOL)isOmniboxFocused {
+  return [self isOmniboxFirstResponder] || [self showingOmniboxPopup];
 }
 
 #pragma mark - LocationBarViewControllerDelegate
@@ -616,14 +636,16 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)searchImage:(std::optional<gfx::Image>)optionalImage
           usingLens:(BOOL)usingLens {
-  if (!optionalImage)
+  if (!optionalImage) {
     return;
+  }
 
   // If the Browser has been destroyed, then the UI should
   // no longer be active. Return early to avoid crashing.
   Browser* browser = self.browser;
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   UIImage* image = optionalImage->ToUIImage();
   if (usingLens) {

@@ -61,7 +61,7 @@ class StyleImageSet final : public StyleImage {
   bool IsAccessAllowed(String& failing_url) const override;
   bool IsOriginClean() const override { return is_origin_clean_; }
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,

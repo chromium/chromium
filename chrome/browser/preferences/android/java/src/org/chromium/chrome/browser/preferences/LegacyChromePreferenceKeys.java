@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.preferences;
 
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  * "Chrome.FooBar.FooEnabled", and add them to {@link ChromePreferenceKeys#getKeysInUse()}.
  */
 @CheckDiscard("Validation is performed in tests and in debug builds.")
+@NullMarked
 public class LegacyChromePreferenceKeys {
     /**
      * @return The list of [keys in use] that do not conform to the "Chrome.[Feature].[Key]" format.
@@ -103,13 +105,11 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE,
                 ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN,
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION,
-                ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT,
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES,
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION,
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED,
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_SUPPRESSION_PERIOD_START,
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED,
-                ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED,
                 ChromePreferenceKeys.SIGNIN_LEGACY_PRIMARY_ACCOUNT_EMAIL,
                 ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED,
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME,

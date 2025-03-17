@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller.h"
@@ -82,26 +81,21 @@ PasswordChangeInfoBubbleView::GetController() const {
 
 std::unique_ptr<views::View> PasswordChangeInfoBubbleView::CreateBodyText(
     PasswordChangeDelegate::State state) {
-  switch (state) {
-    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
-      return CreateLabel(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_DETAILS));
-    case PasswordChangeDelegate::State::kChangingPassword: {
-      base::RepeatingClosure open_password_manager_closure =
-          base::BindRepeating(&PasswordChangeInfoBubbleController::
-                                  OnGooglePasswordManagerLinkClicked,
-                              base::Unretained(&controller_));
-      return CreateGooglePasswordManagerLabel(
-          /*text_message_id=*/
-          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_DETAILS,
-          /*link_message_id=*/
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
-          CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
-    }
-    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
-      NOTIMPLEMENTED();
+  if (state == PasswordChangeDelegate::State::kWaitingForChangePasswordForm) {
+    return CreateLabel(l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_DETAILS));
+  }
+  if (state == PasswordChangeDelegate::State::kChangingPassword) {
+    base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
+        &PasswordChangeInfoBubbleController::OnGooglePasswordManagerLinkClicked,
+        base::Unretained(&controller_));
+    return CreateGooglePasswordManagerLabel(
+        /*text_message_id=*/
+        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_DETAILS,
+        /*link_message_id=*/
+        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+        controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
+        CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
   }
   NOTREACHED();
 }

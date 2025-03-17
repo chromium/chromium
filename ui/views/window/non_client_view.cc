@@ -150,7 +150,7 @@ View::Views NonClientFrameView::GetChildrenInZOrder() {
 }
 
 void NonClientFrameView::InsertClientView(ClientView* client_view) {
-  AddChildView(client_view);
+  AddChildViewRaw(client_view);
 }
 
 NonClientFrameView::NonClientFrameView() {
@@ -210,7 +210,7 @@ void NonClientView::SetOverlayView(View* view) {
 
   overlay_view_ = view;
   if (parent()) {
-    AddChildView(overlay_view_.get());
+    AddChildViewRaw(overlay_view_.get());
   }
 }
 
@@ -331,7 +331,7 @@ void NonClientView::ViewHierarchyChanged(
     AddChildViewAt(frame_view_.get(), 0);
     frame_view_->InsertClientView(client_view_);
     if (overlay_view_) {
-      AddChildView(overlay_view_.get());
+      AddChildViewRaw(overlay_view_.get());
     }
   }
 }

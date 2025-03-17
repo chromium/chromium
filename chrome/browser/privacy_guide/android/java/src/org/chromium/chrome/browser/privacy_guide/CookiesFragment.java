@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,21 @@ public class CookiesFragment extends PrivacyGuideBasePage
         mBlockThirdPartyIncognito = view.findViewById(R.id.block_third_party_incognito);
         mBlockThirdParty = view.findViewById(R.id.block_third_party);
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
+            TextView header = view.findViewById(R.id.cookies_step_header);
+            header.setText(getContext().getString(R.string.privacy_guide_cookies_header));
+            int allowSubheaderId =
+                    R.string.settings_privacy_guide_cookies_card_block_tpc_allow_subheader;
+            mBlockThirdPartyIncognito.setPrimaryText(getContext().getString(allowSubheaderId));
+            mBlockThirdPartyIncognito.setDescriptionText(
+                    getContext().getString(R.string.privacy_guide_cookies_allow_description));
+            int blockSubheaderId =
+                    R.string.settings_privacy_guide_cookies_card_block_tpc_block_subheader;
+            mBlockThirdParty.setPrimaryText(getContext().getString(blockSubheaderId));
+            mBlockThirdParty.setDescriptionText(
+                    getContext().getString(R.string.privacy_guide_cookies_block_description));
+        }
+
         boolean allowCookies =
                 WebsitePreferenceBridge.isCategoryEnabled(
                         getProfile(), ContentSettingsType.COOKIES);
@@ -52,6 +68,7 @@ public class CookiesFragment extends PrivacyGuideBasePage
 
     @Override
     public void onCheckedChanged(RadioGroup group, int clickedButtonId) {
+        // TODO(crbug.com/370008370): Remove following line, it's a no-op
         WebsitePreferenceBridge.setCategoryEnabled(getProfile(), ContentSettingsType.COOKIES, true);
 
         if (clickedButtonId == R.id.block_third_party_incognito) {

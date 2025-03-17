@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">অনুগ্ৰহ কৰি এক মান্য মান দিয়ক। নিকটৱর্তী মান্য মান দুটা হৈছে <ph name="VALID_VALUE_LOW" /> আৰু <ph name="VALID_VALUE_HIGHER" />।</translation>
 <translation id="4522570452068850558">সবিশেষ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'ৰ পাছত থকা অংশত '<ph name="INVALIDCHARACTER" />' চিহ্নটো থাকিব নালাগে।</translation>
+<translation id="4703271465972936359">অডিঅ’ ট্ৰেক</translation>
 <translation id="4718048029184481307">চিত্ৰৰ ভিতৰত চিত্ৰ ম'ড-ত প্লে 'কৰি থকা হৈছে</translation>
 <translation id="4812940957355064477">অনুগ্রহ কৰি ফ’ন কোনো নম্বৰ দিয়ক।</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />টা বাছনি কৰা হৈছে</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">কাষ্ট কৰক</translation>
 <translation id="5630795885300617244">১০ছেকেণ্ড এৰি যাবলৈ সোঁ বা বাওঁফালে দুবাৰ টিপক</translation>
 <translation id="57838592816432529">মিউট কৰক</translation>
+<translation id="5868587040512539609">ভিডিঅ’ ট্ৰেক</translation>
 <translation id="588258955323874662">পূৰ্ণস্ক্ৰীণ</translation>
 <translation id="5888666972993069672">এতিয়া <ph name="DEVICE_FRIENDLY_NAME" />ত কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="5939518447894949180">ৰিছেট কৰক</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">আকৰ্ষণীয় প্ৰিণ্ট</translation>
 <translation id="6550675742724504774">বিকল্প</translation>
 <translation id="6643016212128521049">মচক</translation>
+<translation id="6661136971638885481">ট্ৰেক #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">অন্য...</translation>
 <translation id="6709093583001123835">মানটো <ph name="VALUE" /> হ’বই লাগিব।</translation>
 <translation id="6709570249143506788">প্লে’বেকৰ মান নিম্নমানৰ</translation>

@@ -6,6 +6,7 @@
 
 #include <array>
 #include <ostream>
+#include <string_view>
 #include <vector>
 
 #include "ash/birch/birch_item.h"
@@ -125,20 +126,20 @@ bool IsLoadingState(State state) {
 
 #if DCHECK_IS_ON()
 // Gets the string of given state.
-std::ostream& operator<<(std::ostream& stream, State state) {
+std::string_view ToString(State state) {
   switch (state) {
     case State::kLoading:
-      return stream << "loading";
+      return "loading";
     case State::kLoadingForInformedRestore:
-      return stream << "loading for informed restore";
+      return "loading for informed restore";
     case State::kLoadingByUser:
-      return stream << "loading by user";
+      return "loading by user";
     case State::kReloading:
-      return stream << "reloading";
+      return "reloading";
     case State::kShuttingDown:
-      return stream << "shutting down";
+      return "shutting down";
     case State::kNormal:
-      return stream << "normal";
+      return "normal";
   }
 }
 
@@ -227,8 +228,8 @@ void BirchBarView::SetState(State state) {
 
 #if DCHECK_IS_ON()
   if (!IsValidStateTransition(state_, state)) {
-    NOTREACHED() << "Transition from state " << state_ << " to state " << state
-                 << " is invalid.";
+    NOTREACHED() << "Transition from state " << ToString(state_) << " to state "
+                 << ToString(state) << " is invalid.";
   }
 #endif
 
@@ -416,8 +417,11 @@ std::unique_ptr<BirchChipButtonBase> BirchBarView::CreateChipForItem(
       item->GetType() == BirchItemType::kCoral
           ? std::make_unique<CoralChipButton>()
           : std::make_unique<BirchChipButton>();
-  chip->Init(item);
+
+  // Setting preferred size ahead since the preferred size may be needed during
+  // initialization.
   chip->SetPreferredSize(chip_size_);
+  chip->Init(item);
   return chip;
 }
 

@@ -10,7 +10,6 @@ assert(enable_pdf, "enable_pdf check failed")
 build_webui_tests("build") {
   resource_path_prefix = "pdf"
 
-  ts_tsconfig_base = "../../../../tools/typescript/tsconfig_base_polymer.json"
   ts_path_mappings =
       [ "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
@@ -40,9 +39,11 @@ build_webui_tests("build") {
     "touch_handling_test.ts",
     "viewer_attachment_bar_test.ts",
     "viewer_attachment_test.ts",
+    "viewer_file_picker_test.ts",
     "viewer_password_dialog_test.ts",
     "viewer_pdf_sidenav_test.ts",
     "viewer_properties_dialog_test.ts",
+    "viewer_searchify_test.ts",
     "viewer_thumbnail_bar_test.ts",
     "viewer_thumbnail_test.ts",
     "viewer_toolbar_test.ts",
@@ -74,12 +75,12 @@ build_webui_tests("build") {
       "ink2_viewer_toolbar_test.ts",
     ]
 
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       files += [ "ink2_disabled_test.ts" ]
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     files += [ "printing_icon_test.ts" ]
   }
 

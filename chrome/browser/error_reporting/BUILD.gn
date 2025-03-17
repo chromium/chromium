@@ -1,7 +1,6 @@
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/chromeos/ui_mode.gni")
 
 # TODO(crbug.com/40188745): fuchsia cannot use components/crash.
 assert(!is_android && !is_fuchsia)
@@ -11,7 +10,6 @@ source_set("constants") {
     "constants.cc",
     "constants.h",
   ]
-  deps = [ "//build:chromeos_buildflags" ]
 }
 
 static_library("error_reporting") {
@@ -22,7 +20,6 @@ static_library("error_reporting") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//components/crash/content/browser/error_reporting",
     "//components/crash/core/app",
@@ -53,7 +50,6 @@ source_set("test_support") {
     ":error_reporting",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//components/crash/content/browser/error_reporting",
     "//components/variations",

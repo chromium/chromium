@@ -82,6 +82,7 @@ include_rules = [
   "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
   "+chrome/services/file_util/public/cpp",
+  "+chrome/browser/sync/sync_service_factory.h",
 ]
 
 specific_include_rules = {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 
 const char kIOSCredentialProviderPromoImpressionHistogram[] =
@@ -55,6 +56,11 @@ void RecordAction(IOSCredentialProviderPromoSource source,
   }
 
   base::UmaHistogramEnumeration(name.data(), action);
+
+  if (action == IOSCredentialProviderPromoAction::kTurnOnAutofill) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileCredentialProviderExtensionPromoTurnOnAutoFill"));
+  }
 }
 
 }  // namespace credential_provider_promo

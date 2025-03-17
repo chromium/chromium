@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
+
 #include "base/containers/contains.h"
 
 FakeHttpsUpgradeService::FakeHttpsUpgradeService() = default;

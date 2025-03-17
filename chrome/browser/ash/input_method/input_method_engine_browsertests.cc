@@ -12,6 +12,7 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1484,8 +1484,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
     ExtensionTestMessageListener keydown_listener(
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:false:false");
 
-    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
-                                                false, false, false));
+    ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::VKEY_A, 0);
 
     ASSERT_TRUE(keydown_listener.WaitUntilSatisfied());
     EXPECT_TRUE(keydown_listener.was_satisfied());

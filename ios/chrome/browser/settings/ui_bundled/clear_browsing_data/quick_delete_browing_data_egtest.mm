@@ -11,12 +11,12 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -135,8 +135,8 @@ void NoDeleteBrowsingDataDialogHistogram(
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
@@ -145,8 +145,8 @@ void NoDeleteBrowsingDataDialogHistogram(
   // Close any open UI to avoid test flakiness.
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -514,7 +514,13 @@ void NoDeleteBrowsingDataDialogHistogram(
 }
 
 // Tests the "sign out of Chrome" link in the footer.
-- (void)testSignOutFooterLink {
+// TODO(crbug.com/395061778): Test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSignOutFooterLink FLAKY_testSignOutFooterLink
+#else
+#define MAYBE_testSignOutFooterLink testSignOutFooterLink
+#endif
+- (void)MAYBE_testSignOutFooterLink {
   // Sign in is required to show the footer.
   [self signIn];
 

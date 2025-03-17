@@ -87,6 +87,9 @@ class IwaInternalsHandler {
 
   void ResetPinnedVersionForIsolatedWebApp(const webapps::AppId& app_id);
 
+  void SetAllowDowngradesForIsolatedWebApp(bool allow_downgrades,
+                                           const webapps::AppId& app_id);
+
  private:
   class IsolatedWebAppDevBundleSelectListener;
   class IwaManifestInstallUpdateHandler;
@@ -138,6 +141,7 @@ class IwaInternalsHandler {
   const raw_ref<Profile> profile_;
 
   base::flat_map<webapps::AppId, base::Version> pinned_versions_;
+  base::flat_set<webapps::AppId> app_ids_allowing_downgrades_;
 
   // Runs updates for manifest-installed dev-mode apps.
   // Will be nullptr if WebAppProvider is not available for the current

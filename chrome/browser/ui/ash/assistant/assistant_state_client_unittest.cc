@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -17,9 +15,12 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class AssistantStateClientTest : public ChromeAshTestBase {
@@ -44,7 +45,7 @@ class AssistantStateClientTest : public ChromeAshTestBase {
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)));
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), "1234567890"));
+        profile()->GetProfileUserName(), GaiaId("1234567890")));
     GetFakeUserManager()->AddUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
 

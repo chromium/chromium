@@ -20,7 +20,7 @@ message SoundAnalysisPreprocessing {
      c.f. https://arxiv.org/pdf/1609.09430.pdf
 
      The preprocessing takes input a single channel (monophonic) audio samples
-     975 miliseconds long, sampled at 16KHz, i.e., 15600 samples 1D multiarray
+     975 milliseconds long, sampled at 16KHz, i.e., 15600 samples 1D multiarray
      and produces preprocessed samples in multiarray of shape [1, 96, 64]
 
    (1) Splits the input audio samples into overlapping frames, where each

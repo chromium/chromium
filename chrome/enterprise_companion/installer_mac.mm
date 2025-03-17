@@ -80,7 +80,7 @@ bool InstallToDir(const base::FilePath& install_directory) {
     return false;
   }
 
-  base::FilePath source_app_bundle_path =
+  const base::FilePath source_app_bundle_path =
       base::apple::GetInnermostAppBundlePath(source_exe_path);
   if (source_app_bundle_path.empty()) {
     VLOG(1) << "Failed to determine the path to the app bundle containing "
@@ -89,9 +89,14 @@ bool InstallToDir(const base::FilePath& install_directory) {
     return false;
   }
 
-  if (!base::CopyDirectory(source_app_bundle_path,
-                           install_directory.AppendASCII(
-                               base::StrCat({PRODUCT_FULLNAME_STRING, ".app"})),
+  const base::FilePath dest_app_bundle_path =
+      install_directory.Append(base::StrCat({PRODUCT_FULLNAME_STRING, ".app"}));
+  if (!base::DeletePathRecursively(dest_app_bundle_path)) {
+    VLOG(1) << "Failed to delete " << dest_app_bundle_path;
+    return false;
+  }
+
+  if (!base::CopyDirectory(source_app_bundle_path, dest_app_bundle_path,
                            /*recursive=*/true)) {
     VLOG(1)
         << "Failed to copy the application bundle to the install directory.";
@@ -117,9 +122,9 @@ bool Install() {
     return false;
   }
 
-  base::FilePath app_path = install_directory->AppendASCII(
+  base::FilePath app_path = install_directory->Append(
       base::StrCat({PRODUCT_FULLNAME_STRING, ".app"}));
-  base::FilePath backup_path = app_path.AddExtensionASCII("old");
+  base::FilePath backup_path = app_path.AddExtension("old");
   if (base::PathExists(app_path) &&
       !base::CopyDirectory(app_path, backup_path, /*recursive=*/true)) {
     VLOG(1) << "Failed to backup existing installation.";
@@ -140,7 +145,7 @@ bool Install() {
     return false;
   }
 
-  base::FilePath asan_dylib_path = dir_exe.AppendASCII(kAsanDylibFilename);
+  base::FilePath asan_dylib_path = dir_exe.Append(kAsanDylibFilename);
   if (base::PathExists(asan_dylib_path) &&
       !base::CopyFile(asan_dylib_path,
                       install_directory->Append(asan_dylib_path.BaseName()))) {
@@ -152,7 +157,10 @@ bool Install() {
 
   if (!RegisterInstallation(*install_directory)) {
     if (base::PathExists(backup_path)) {
-      if (!base::Move(backup_path, app_path)) {
+      if (!base::DeletePathRecursively(app_path)) {
+        VLOG(1) << "Failed to delete " << app_path
+                << " while trying to restore backup.";
+      } else if (!base::Move(backup_path, app_path)) {
         VLOG(1) << "Failed to restore installation backup.";
       }
     } else {

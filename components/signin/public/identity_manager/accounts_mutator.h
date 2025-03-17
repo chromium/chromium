@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
@@ -36,7 +35,7 @@ class AccountsMutator {
 
   // Updates the information of the account associated with |gaia_id|, first
   // adding that account to the system if it is not known.
-  // Passing `signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN` preserves the
+  // Passing `signin_metrics::AccessPoint::kUnknown` preserves the
   // current access point if it's already set.
   virtual CoreAccountId AddOrUpdateAccount(
       const GaiaId& gaia_id,
@@ -84,7 +83,7 @@ class AccountsMutator {
                            const CoreAccountId& account_id) = 0;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Seeds account into AccountTrackerService. Used by UserSessionManager to
   // manually seed the primary account before credentials are loaded.
   // TODO(crbug.com/40176006): Remove after adding an account cache to

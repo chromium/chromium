@@ -4,11 +4,15 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android && !is_ios)
 
 mojom("mojo_bindings") {
-  sources = [ "help_bubble.mojom" ]
+  sources = [
+    "custom_help_bubble.mojom",
+    "help_bubble.mojom",
+  ]
 
   public_deps = [
     "//mojo/public/mojom/base",
@@ -22,6 +26,7 @@ build_webui("build") {
   grd_prefix = "cr_components_help_bubble"
 
   non_web_component_files = [
+    "custom_help_bubble_proxy.ts",
     "help_bubble.html.ts",
     "help_bubble.ts",
     "help_bubble_controller.ts",
@@ -40,7 +45,10 @@ build_webui("build") {
   icons_html_files = [ "help_bubble_icons.html" ]
 
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
-  mojo_files = [ "$target_gen_dir/help_bubble.mojom-webui.ts" ]
+  mojo_files = [
+    "$target_gen_dir/help_bubble.mojom-webui.ts",
+    "$target_gen_dir/custom_help_bubble.mojom-webui.ts",
+  ]
 
   html_to_wrapper_template = "detect"
 
@@ -57,4 +65,5 @@ build_webui("build") {
   webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+  generate_code_cache = enable_webui_generate_code_cache
 }

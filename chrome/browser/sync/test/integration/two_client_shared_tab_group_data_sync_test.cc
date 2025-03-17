@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/sync/base/collaboration_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -26,25 +27,13 @@ namespace {
 using testing::ElementsAre;
 using testing::SizeIs;
 
-constexpr char kCollaborationId[] = "collaboration";
-
 class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
  public:
   TwoClientSharedTabGroupDataSyncTest() : SyncTest(TWO_CLIENT) {
     feature_overrides_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
-  }
-
-  void SetUpOnMainThread() override {
-    // Creates the fake server.
-    SyncTest::SetUpOnMainThread();
-
-    // Add the user to the collaboration before making any changes (to prevent
-    // filtration of local entities on GetUpdates).
-    GetFakeServer()->AddCollaboration(kCollaborationId);
   }
 
   ~TwoClientSharedTabGroupDataSyncTest() override = default;
@@ -94,8 +83,9 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
 #endif
   }
 
-  void FakeCollaborationAvailable(int profile_index,
-                                  const std::string& collaborationId) {
+  void FakeCollaborationAvailable(
+      int profile_index,
+      const syncer::CollaborationId& collaborationId) {
     CollaborationFinder* collaboration_finder =
         GetTabGroupSyncService(profile_index)
             ->GetCollaborationFinderForTesting();
@@ -108,13 +98,19 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncGroupWithTabs) {
+  const syncer::CollaborationId kCollaborationId("collaboration");
+
+  // Add the user to the collaboration before making any changes (to prevent
+  // filtration of local entities on GetUpdates).
+  GetFakeServer()->AddCollaboration(kCollaborationId.value());
+
   ASSERT_TRUE(SetupSync());
   FakeCollaborationAvailable(0, kCollaborationId);
   FakeCollaborationAvailable(1, kCollaborationId);
 
   SavedTabGroup group(u"title", TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(CollaborationId(kCollaborationId));
+  group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab_1(GURL("http://google.com/1"), u"tab 1",
                          group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("http://google.com/2"), u"tab 2",
@@ -135,6 +131,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncTabPositions) {
+  const syncer::CollaborationId kCollaborationId("collaboration");
+
+  // Add the user to the collaboration before making any changes (to prevent
+  // filtration of local entities on GetUpdates).
+  GetFakeServer()->AddCollaboration(kCollaborationId.value());
+
   ASSERT_TRUE(SetupSync());
   FakeCollaborationAvailable(0, kCollaborationId);
   FakeCollaborationAvailable(1, kCollaborationId);
@@ -143,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                       /*urls=*/{}, /*position=*/std::nullopt);
   FakeLocalOpeningOfGroup(group);
 
-  group.SetCollaborationId(CollaborationId(kCollaborationId));
+  group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab_1(GURL("http://google.com/1"), u"tab 1",
                          group.saved_guid(), /*position=*/std::nullopt);
   FakeLocalOpeningOfTab(tab_1);

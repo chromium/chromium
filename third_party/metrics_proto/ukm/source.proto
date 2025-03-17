@@ -28,6 +28,7 @@ enum SourceType {
   CHROMEOS_WEBSITE_ID = 11;
   EXTENSION_ID = 12;
   NOTIFICATION_ID = 13;
+  CDM_ID = 14;
 }
 
 // Android Activity Type defined by

@@ -23,6 +23,9 @@ enum class UserFeedbackSender {
   UnitConversion,
   // Sent from a content notification.
   ContentNotification,
+  // TODO(crbug.com/398183785): Remove once we got feedback.
+  // Sent from tab group.
+  TabGroup,
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_USER_FEEDBACK_SENDER_H_

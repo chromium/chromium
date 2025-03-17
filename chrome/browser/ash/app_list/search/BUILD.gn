@@ -5,7 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("search") {
   sources = [
@@ -63,8 +63,6 @@ static_library("search") {
     "search_provider.h",
     "search_session_metrics_manager.cc",
     "search_session_metrics_manager.h",
-    "sparky_event_rewriter.cc",
-    "sparky_event_rewriter.h",
     "types.cc",
     "types.h",
   ]
@@ -84,14 +82,13 @@ static_library("search") {
   ]
 
   deps = [
+    "//ash/app_list/vector_icons",
     "//ash/assistant/util",
-    "//ash/components/arc:arc_app_constants",
     "//ash/webui/help_app_ui",
     "//ash/webui/personalization_app",
     "//ash/webui/shortcut_customization_ui",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/util",
-    "//chrome/browser/ash/app_list/vector_icons",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/release_notes",
@@ -103,6 +100,7 @@ static_library("search") {
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chromeos/ash/components/string_matching",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/federated/public/cpp",
     "//chromeos/ash/services/federated/public/mojom",
@@ -173,8 +171,6 @@ source_set("unit_tests") {
     ":search",
     ":test_support",
     "//ash",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/cpp/assistant/test_support",
@@ -188,7 +184,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
@@ -215,6 +210,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/string_matching",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/services/federated/public/cpp:test_support",
     "//chromeos/strings",
     "//components/crx_file",
@@ -293,12 +290,12 @@ static_library("test_support") {
 
   deps = [
     ":search",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/extensions",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/sync/model",
     "//extensions:test_support",
     "//testing/gtest",

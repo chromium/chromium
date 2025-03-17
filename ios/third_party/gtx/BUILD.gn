@@ -10,6 +10,13 @@ config("config") {
   include_dirs = [ "src/Classes" ]
 }
 
+config("internal_config") {
+  include_dirs = [
+    "src/OOPClasses",
+    "../../../third_party/protobuf/src",
+  ]
+}
+
 # GTXiLibCore.m uses `-keyWindow` method which is deprecated since iOS 13.0.
 # Disable the warning until the library is updated to a version thats do not
 # use the deprecated method. See https://crbug.com/1237312 for progress.
@@ -58,16 +65,20 @@ source_set("oop_classes") {
     "src/OOPClasses/ui_element.h",
   ]
 
-  deps = [ ":proto" ]
+  deps = [
+    ":proto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
 
-  # Don't use the gtx provided compiled protobuf header. Use an -include here to
-  # force that.
+  # Don't use the gtx provided compiled protobuf header. The ordering of these
+  # include_dirs enforces that.
   cflags_cc = [
     "-include",
-    rebase_path(
-        "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos/gtx.pb.h",
-        root_build_dir),
+    rebase_path("redirect_compiled_header.h", root_build_dir),
   ]
+  include_dirs =
+      [ "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos" ]
+  configs += [ ":internal_config" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
 }
@@ -197,21 +208,18 @@ ios_framework_bundle("gtx") {
   deps = [
     ":oop_classes",
     "//build/config/ios:xctest",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
-  # Don't use the gtx provided compiled protobuf header. Use an -include here to
-  # force that.
+  # Don't use the gtx provided compiled protobuf header. The ordering of these
+  # include_dirs enforces that.
   cflags_objcc = [
     "-include",
-    rebase_path(
-        "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos/gtx.pb.h",
-        root_build_dir),
+    rebase_path("redirect_compiled_header.h", root_build_dir),
   ]
-
-  include_dirs = [
-    "src/OOPClasses",
-    "../../../third_party/protobuf/src",
-  ]
+  include_dirs =
+      [ "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos" ]
+  configs += [ ":internal_config" ]
 
   frameworks = [
     "CoreGraphics.framework",

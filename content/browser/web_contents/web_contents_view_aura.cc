@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -767,8 +766,8 @@ void WebContentsViewAura::PrepareDropData(
     if (std::optional<std::vector<ui::FileInfo>> virtual_filenames =
             data.GetVirtualFilenames();
         virtual_filenames.has_value()) {
-      base::ranges::move(virtual_filenames.value(),
-                         std::back_inserter(drop_data->filenames));
+      std::ranges::move(virtual_filenames.value(),
+                        std::back_inserter(drop_data->filenames));
     }
   }
 #endif
@@ -797,6 +796,10 @@ void WebContentsViewAura::PrepareDropData(
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
+  // `drag_in_progress_` could still be true, if the `PerformDropCallback()`
+  // terminates early and the `end_drag_runner` runs `EndDrag()` before reaching
+  // the CompleteDrop() call.
+  drag_in_progress_ = false;
   drag_security_info_.OnDragEnded();
 
   if (!web_contents_)
@@ -1231,7 +1234,7 @@ gfx::Size WebContentsViewAura::GetMinimumSize() const {
 }
 
 std::optional<gfx::Size> WebContentsViewAura::GetMaximumSize() const {
-  return gfx::Size();
+  return std::nullopt;
 }
 
 void WebContentsViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
@@ -1604,7 +1607,6 @@ void WebContentsViewAura::PerformDropCallback(
     std::unique_ptr<ui::OSExchangeData> data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
-  drag_in_progress_ = false;
   base::ScopedClosureRunner end_drag_runner(std::move(end_drag_runner_));
 
   if (!target) {
@@ -1723,6 +1725,7 @@ WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
 }
 
 void WebContentsViewAura::CompleteDrop(OnPerformingDropContext drop_context) {
+  drag_in_progress_ = false;
   web_contents_->Focus();
 
   const int key_modifiers =
@@ -1856,7 +1859,6 @@ void WebContentsViewAura::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,

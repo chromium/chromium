@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/input/input_constants.h"
 #include "content/child/child_process.h"
-#include "content/common/content_constants_internal.h"
 #include "content/renderer/pepper/audio_helper.h"
 #include "content/renderer/pepper/pepper_audio_output_host.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
@@ -47,7 +47,8 @@ PepperPlatformAudioOutputDev* PepperPlatformAudioOutputDev::Create(
           render_frame_id, device_id,
           // Set authorization request timeout at 80% of renderer hung timeout,
           // but no more than kMaxAuthorizationTimeout.
-          std::min(kHungRendererDelay * 8 / 10, kMaxAuthorizationTimeout)));
+          std::min(input::kHungRendererDelay * 8 / 10,
+                   kMaxAuthorizationTimeout)));
 
   if (audio_output->Initialize(sample_rate, frames_per_buffer, client)) {
     // Balanced by Release invoked in

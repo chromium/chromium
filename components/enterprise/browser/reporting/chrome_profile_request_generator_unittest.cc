@@ -24,7 +24,6 @@ namespace {
 
 const base::FilePath::CharType kProfilePath[] =
     FILE_PATH_LITERAL("profile-path");
-constexpr char kProfileName[] = "profile-name";
 constexpr char kBrowserExePath[] = "browser-path";
 
 }  // namespace
@@ -33,7 +32,6 @@ class ChromeProfileRequestGeneratorTest : public ::testing::Test {
  public:
   ChromeProfileRequestGeneratorTest()
       : generator_(base::FilePath(kProfilePath),
-                   kProfileName,
                    &delegate_factory_) {}
   void Verify(ReportRequestQueue requests) {
     ASSERT_EQ(1u, requests.size());
@@ -56,7 +54,6 @@ class ChromeProfileRequestGeneratorTest : public ::testing::Test {
     auto profile_report = browser_report.chrome_user_profile_infos(0);
     EXPECT_EQ(ObfuscateFilePath(base::FilePath(kProfilePath).AsUTF8Unsafe()),
               profile_report.id());
-    EXPECT_EQ(kProfileName, profile_report.name());
     EXPECT_TRUE(profile_report.is_detail_available());
   }
   void GenerateAndVerify() {

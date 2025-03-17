@@ -7,7 +7,10 @@
 #import <Foundation/Foundation.h>
 
 #import <optional>
+#import <variant>
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
@@ -40,6 +43,38 @@ using web::ContentWorld;
 using web::WebFrame;
 
 namespace {
+
+// Enumeration describing the possible outcomes of handling a form submission
+// message.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FormSubmissionOutcomeIOS)
+enum class FormSubmissionOutcome {
+  // Form submission message was valid. Observers were notified about the form
+  // submission event.
+  kHandled = 0,
+  // Form submission message did not have a body or wasn't a dict.
+  kInvalidMessageBody = 1,
+  // Form submission message did not have a frame ID.
+  kNoFrameID = 2,
+  // There is no existing WebFrame for the submitted form.
+  kNoFrame = 3,
+  // The submission message indicates it originated from the main
+  // frame while the matching WebFrame is not or viceversa.
+  kIsMainFrameDiscrepancy = 4,
+  // Form submission message is missing the href field.
+  kMissingHref = 5,
+  // The payload was missing the `formData` field or it wasn't a base::Dict.
+  kMissingFormData = 6,
+  // The formData was invalid. Inspect
+  // Autofill.iOS.FormSubmission.Outcome.InvalidFormReason to investigate the
+  // cause.
+  kFormExtractionFailure = 7,
+  kMaxValue = kFormExtractionFailure,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:FormSubmissionOutcomeIOS)
 
 void RecordMetrics(const base::Value::Dict& message_body) {
   const base::Value::Dict* metadata = message_body.FindDict("metadata");
@@ -75,6 +110,18 @@ void RecordMetrics(const base::Value::Dict& message_body) {
   }
 }
 
+// Logs the outcome of form submissions to metrics.
+void RecordFormSubmissionOutcome(FormSubmissionOutcome outcome) {
+  base::UmaHistogramEnumeration(autofill::kFormSubmissionOutcomeHistogram,
+                                outcome);
+}
+
+// Logs form submission failures due to invalid form data.
+void RecordFormExtractionFailure(autofill::ExtractFormDataFailure failure) {
+  base::UmaHistogramEnumeration(autofill::kInvalidSubmittedFormReasonHistogram,
+                                failure);
+}
+
 // Finds the frame with `frame_id` in the given content world.
 web::WebFrame* GetFrameInContentWorld(std::string frame_id,
                                       ContentWorld content_world,
@@ -87,12 +134,19 @@ web::WebFrame* GetFrameInContentWorld(std::string frame_id,
 // `remote_frame_token` in autofill::ChildFrameRegistrar.
 std::optional<LocalFrameToken> LookupLocalFrame(std::string remote_frame_token,
                                                 web::WebState* web_state) {
-  std::optional<base::UnguessableToken> remote =
-      autofill::DeserializeJavaScriptFrameId(remote_frame_token);
+  if (std::optional<base::UnguessableToken> remote =
+          autofill::DeserializeJavaScriptFrameId(remote_frame_token)) {
+    auto* registrar =
+        autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state);
+    return registrar->LookupChildFrame(autofill::RemoteFrameToken(*remote));
+  }
 
-  auto* registrar =
-      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state);
-  return registrar->LookupChildFrame(autofill::RemoteFrameToken(*remote));
+  SCOPED_CRASH_KEY_STRING32(/*category=*/"FormSubmission",
+                            /*name=*/"remote_frame_token",
+                            /*value=*/remote_frame_token);
+  base::debug::DumpWithoutCrashing();
+
+  return std::nullopt;
 }
 
 // Finds the WebFrame in the isolated content world corresponding to a page
@@ -230,12 +284,14 @@ void FormActivityTabHelper::FormSubmissionHandler(
     const web::ScriptMessage& message) {
   if (!message.body() || !message.body()->is_dict()) {
     // Ignore invalid message.
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kInvalidMessageBody);
     return;
   }
 
   const base::Value::Dict& message_body = message.body()->GetDict();
   const std::string* frame_id = message_body.FindString("frameID");
   if (!frame_id) {
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kNoFrameID);
     return;
   }
 
@@ -255,6 +311,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
       sender_frame = isolated_frame_with_token->first;
       local_frame_token = isolated_frame_with_token->second;
     } else {
+      RecordFormSubmissionOutcome(FormSubmissionOutcome::kNoFrame);
       return;
     }
   } else {
@@ -265,19 +322,21 @@ void FormActivityTabHelper::FormSubmissionHandler(
   }
 
   if (!sender_frame) {
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kNoFrame);
     return;
   }
 
   if (sender_frame->IsMainFrame() != message.is_main_frame()) {
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kIsMainFrameDiscrepancy);
     return;
   }
 
   if (!message_body.FindString("href")) {
     DLOG(WARNING) << "JS message parameter not found: href";
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kMissingHref);
     return;
   }
   const std::string* maybe_form_name = message_body.FindString("formName");
-  const std::string* maybe_form_data = message_body.FindString("formData");
 
   // We decide the form is user-submitted if the user has interacted with
   // the main page (using logic from the popup blocker), or if the keyboard
@@ -289,37 +348,48 @@ void FormActivityTabHelper::FormSubmissionHandler(
   if (maybe_form_name) {
     form_name = *maybe_form_name;
   }
-  std::string form_data;
-  if (maybe_form_data) {
-    form_data = *maybe_form_data;
-  }
 
   FieldDataManager* fieldDataManager =
       FieldDataManagerFactoryIOS::FromWebFrame(sender_frame);
+
+  const base::Value::Dict* form_data = message_body.FindDict("formData");
+  if (!form_data) {
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kMissingFormData);
+    return;
+  }
+
   // We need to pass `frame_id` when extracting the form even if the frame is
-  // from the page world. `ExtractFormsData` checks that the frame id matches
+  // from the page world. `ExtractFormData` checks that the frame id matches
   // the id of the frame that contains the forms. For page world forms, we set
   // FormData::host_frame with the corresponding isolated world frame in
   // `local_frame_token`.
-  std::optional<std::vector<FormData>> forms = autofill::ExtractFormsData(
-      base::SysUTF8ToNSString(form_data), true, base::UTF8ToUTF16(form_name),
-      web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
-      *fieldDataManager, *frame_id, local_frame_token);
-  if (!forms || forms->size() != 1) {
+  std::variant<FormData, ExtractFormDataFailure> form_or_failure =
+      autofill::ExtractFormDataOrFailure(
+          *form_data, true, base::UTF8ToUTF16(form_name),
+          web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
+          *fieldDataManager, *frame_id, local_frame_token);
+
+  if (std::holds_alternative<ExtractFormDataFailure>(form_or_failure)) {
+    RecordFormSubmissionOutcome(FormSubmissionOutcome::kFormExtractionFailure);
+    RecordFormExtractionFailure(
+        std::get<ExtractFormDataFailure>(form_or_failure));
     return;
   }
+
+  FormData form = std::get<FormData>(form_or_failure);
 
   if (std::optional<bool> programmatic_submission =
           message_body.FindBool("programmaticSubmission")) {
     base::UmaHistogramBoolean(kProgrammaticFormSubmissionHistogram,
                               *programmatic_submission);
   }
-  FormData form = forms.value()[0];
 
   for (auto& observer : observers_) {
     observer.DocumentSubmitted(web_state, sender_frame, form,
                                submitted_by_user);
   }
+
+  RecordFormSubmissionOutcome(FormSubmissionOutcome::kHandled);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FormActivityTabHelper)

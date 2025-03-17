@@ -27,6 +27,7 @@ class MEDIA_MOJO_EXPORT MediaDrmSupportService final
 
   // mojom::MediaDrmSupport interface
   void IsKeySystemSupported(const std::string& key_system,
+                            bool is_secure,
                             IsKeySystemSupportedCallback callback) override;
 
  private:

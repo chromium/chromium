@@ -9,7 +9,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRouterForTesting, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
+import type {Router} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('Router', () => {

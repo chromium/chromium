@@ -4,6 +4,7 @@
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -37,7 +38,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -1644,13 +1644,13 @@ void WorkspaceWindowResizer::RestackWindows() {
   aura::Window* parent = GetTarget()->parent();
   const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows(
       parent->children());
-  map[base::ranges::find(windows, GetTarget()) - windows.begin()] = GetTarget();
+  map[std::ranges::find(windows, GetTarget()) - windows.begin()] = GetTarget();
   for (aura::Window* attached_window : attached_windows_) {
     if (attached_window->parent() != parent) {
       return;
     }
     size_t index =
-        base::ranges::find(windows, attached_window) - windows.begin();
+        std::ranges::find(windows, attached_window) - windows.begin();
     map[index] = attached_window;
   }
 

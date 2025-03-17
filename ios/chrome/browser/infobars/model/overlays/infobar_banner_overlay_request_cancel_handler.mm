@@ -33,8 +33,9 @@ InfobarBannerOverlayRequestCancelHandler::
 void InfobarBannerOverlayRequestCancelHandler::ModalCompleted() {
   // Only cancel the banner if the modal being completed was presented from this
   // banner.
-  if (presenting_modal_)
+  if (presenting_modal_) {
     CancelRequest();
+  }
 }
 
 #pragma mark InfobarOverlayRequestCancelHandler
@@ -76,8 +77,9 @@ void InfobarBannerOverlayRequestCancelHandler::InsertionObserver::
     InfobarRequestInserted(InfobarOverlayRequestInserter* inserter,
                            const InsertParams& params) {
   if (infobar_ == params.infobar &&
-      params.source == InfobarOverlayInsertionSource::kBanner)
+      params.source == InfobarOverlayInsertionSource::kBanner) {
     cancel_handler_->ModalPresentedFromBanner();
+  }
 }
 
 void InfobarBannerOverlayRequestCancelHandler::InsertionObserver::

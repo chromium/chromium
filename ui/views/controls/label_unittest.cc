@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -253,7 +255,7 @@ class LabelSelectionTest : public LabelTest {
     return label()->GetRenderTextForSelectionController()->GetNumLines();
   }
 
-  std::u16string GetSelectedText() { return label()->GetSelectedText(); }
+  std::u16string_view GetSelectedText() { return label()->GetSelectedText(); }
 
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
@@ -317,12 +319,12 @@ TEST_F(LabelTest, ColorPropertyOnEnabledColorIdChange) {
   const auto color = label()->GetWidget()->GetColorProvider()->GetColor(
       ui::kColorPrimaryForeground);
   label()->SetAutoColorReadabilityEnabled(false);
-  label()->SetEnabledColorId(ui::kColorPrimaryForeground);
+  label()->SetEnabledColor(ui::kColorPrimaryForeground);
   EXPECT_EQ(color, label()->GetEnabledColor());
 
   // Update the enabled id and verify the actual enabled color is updated to
   // reflect the color id change. Regression test case for: b/262402965.
-  label()->SetEnabledColorId(ui::kColorAccent);
+  label()->SetEnabledColor(ui::kColorAccent);
   EXPECT_EQ(
       label()->GetWidget()->GetColorProvider()->GetColor(ui::kColorAccent),
       label()->GetEnabledColor());
@@ -342,17 +344,11 @@ TEST_F(LabelTest, BackgroundColorId) {
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
             label()->GetBackgroundColor());
 
-  label()->SetBackgroundColorId(ui::kColorAlertHighSeverity);
+  label()->SetBackgroundColor(ui::kColorAlertHighSeverity);
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
             label()->GetBackgroundColor());
 
-  // A color id takes precedence.
-  label()->SetBackgroundColor(SK_ColorBLUE);
-  EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
-            label()->GetBackgroundColor());
-
-  // Once a color id is no longer set, colors can be set again.
-  label()->SetBackgroundColorId(std::nullopt);
+  // Use SkColor instead of ColorId.
   label()->SetBackgroundColor(SK_ColorBLUE);
   EXPECT_EQ(SK_ColorBLUE, label()->GetBackgroundColor());
 }
@@ -606,74 +602,74 @@ TEST_F(LabelTest, TooltipProperty) {
 
   // Initially, label has no bounds, its text does not fit, and therefore its
   // text should be returned as the tooltip text.
-  EXPECT_EQ(label()->GetText(), label()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(label()->GetText(), label()->GetTooltipText());
 
   // While tooltip handling is disabled, GetTooltipText() should fail.
   label()->SetHandlesTooltips(false);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
   label()->SetHandlesTooltips(true);
 
   // When set, custom tooltip text should be returned instead of the label's
   // text.
   std::u16string tooltip_text(u"The tooltip!");
-  label()->SetTooltipText(tooltip_text);
-  EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
+  label()->SetCustomTooltipText(tooltip_text);
+  EXPECT_EQ(tooltip_text, label()->GetTooltipText());
 
   // While tooltip handling is disabled, GetTooltipText() should fail.
   label()->SetHandlesTooltips(false);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
   label()->SetHandlesTooltips(true);
 
   // When the tooltip text is set to an empty string, the original behavior is
   // restored.
-  label()->SetTooltipText(std::u16string());
-  EXPECT_EQ(label()->GetText(), label()->GetTooltipText(gfx::Point()));
+  label()->SetCustomTooltipText(std::u16string());
+  EXPECT_EQ(label()->GetText(), label()->GetTooltipText());
 
   // While tooltip handling is disabled, GetTooltipText() should fail.
   label()->SetHandlesTooltips(false);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
   label()->SetHandlesTooltips(true);
 
   // Make the label big enough to hold the text
   // and expect there to be no tooltip.
   label()->SetBounds(0, 0, 1000, 40);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
 
   // Shrinking the single-line label's height shouldn't trigger a tooltip.
   label()->SetBounds(
       0, 0, 1000, label()->GetPreferredSize(SizeBounds(1000, {})).height() / 2);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
 
   // Verify that explicitly set tooltip text is shown, regardless of size.
-  label()->SetTooltipText(tooltip_text);
-  EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
+  label()->SetCustomTooltipText(tooltip_text);
+  EXPECT_EQ(tooltip_text, label()->GetTooltipText());
   // Clear out the explicitly set tooltip text.
-  label()->SetTooltipText(std::u16string());
+  label()->SetCustomTooltipText(std::u16string());
 
   // Shrink the bounds and the tooltip should come back.
   label()->SetBounds(0, 0, 10, 10);
-  EXPECT_FALSE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_FALSE(label()->GetTooltipText().empty());
 
   // Make the label obscured and there is no tooltip.
   label()->SetObscured(true);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
 
   // Obscuring the text shouldn't permanently clobber the tooltip.
   label()->SetObscured(false);
-  EXPECT_FALSE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_FALSE(label()->GetTooltipText().empty());
 
   // Making the label multiline shouldn't eliminate the tooltip.
   label()->SetMultiLine(true);
-  EXPECT_FALSE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_FALSE(label()->GetTooltipText().empty());
   // Expanding the multiline label bounds should eliminate the tooltip.
   label()->SetBounds(0, 0, 1000, 1000);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
 
   // Verify that setting the tooltip still shows it.
-  label()->SetTooltipText(tooltip_text);
-  EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
+  label()->SetCustomTooltipText(tooltip_text);
+  EXPECT_EQ(tooltip_text, label()->GetTooltipText());
   // Clear out the tooltip.
-  label()->SetTooltipText(std::u16string());
+  label()->SetCustomTooltipText(std::u16string());
 }
 
 TEST_F(LabelTest, TooltipPropertyAccessibility) {
@@ -684,7 +680,7 @@ TEST_F(LabelTest, TooltipPropertyAccessibility) {
   // text should be returned as the tooltip text.
   // Since the tooltip text should be the same as the name, we shouldn't be
   // using it for the accessible description.
-  EXPECT_EQ(label()->GetText(), label()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(label()->GetText(), label()->GetTooltipText());
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
   EXPECT_FALSE(
       ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
@@ -695,8 +691,8 @@ TEST_F(LabelTest, TooltipPropertyAccessibility) {
   // text. The tooltip text should be used for the accessible description.
   std::u16string tooltip_text(u"The tooltip!");
   ax_data = ui::AXNodeData();
-  label()->SetTooltipText(tooltip_text);
-  EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
+  label()->SetCustomTooltipText(tooltip_text);
+  EXPECT_EQ(tooltip_text, label()->GetTooltipText());
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
   EXPECT_EQ(tooltip_text, ax_data.GetString16Attribute(
                               ax::mojom::StringAttribute::kDescription));
@@ -705,7 +701,7 @@ TEST_F(LabelTest, TooltipPropertyAccessibility) {
   label()->SetHandlesTooltips(false);
   ax_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
   EXPECT_FALSE(
       ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
   label()->SetHandlesTooltips(true);
@@ -713,43 +709,43 @@ TEST_F(LabelTest, TooltipPropertyAccessibility) {
   // When the tooltip text is set to an empty string, the original behavior is
   // restored, and the accessible description should be cleared since the
   // accessible name would be the same as the tooltip text.
-  label()->SetTooltipText(std::u16string());
+  label()->SetCustomTooltipText(std::u16string());
   ax_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
-  EXPECT_EQ(label()->GetText(), label()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(label()->GetText(), label()->GetTooltipText());
   EXPECT_FALSE(
       ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
 
   // Verify that explicitly set tooltip text is shown. It should become the
   // accessible description.
-  label()->SetTooltipText(tooltip_text);
+  label()->SetCustomTooltipText(tooltip_text);
   ax_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
-  EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip_text, label()->GetTooltipText());
   EXPECT_EQ(tooltip_text, ax_data.GetString16Attribute(
                               ax::mojom::StringAttribute::kDescription));
 
   // Clear out the explicitly set tooltip text. We now should not have a
   // description.
-  label()->SetTooltipText(std::u16string());
+  label()->SetCustomTooltipText(std::u16string());
   ax_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
   EXPECT_FALSE(
       ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
 
   ax_data = ui::AXNodeData();
-  label()->SetTooltipText(tooltip_text);
+  label()->SetCustomTooltipText(tooltip_text);
 
   // Make the label obscured and there is no tooltip.
   label()->SetObscured(true);
-  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_TRUE(label()->GetTooltipText().empty());
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
   EXPECT_FALSE(
       ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
 
   // Unobscuring should restore the tooltip.
   label()->SetObscured(false);
-  EXPECT_FALSE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_FALSE(label()->GetTooltipText().empty());
   ax_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
   EXPECT_EQ(tooltip_text, ax_data.GetString16Attribute(
@@ -809,7 +805,7 @@ TEST_F(LabelTest, Accessibility) {
 }
 
 TEST_F(LabelTest, SetTextNotifiesAccessibilityEvent) {
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   // Changing the text affects the accessible name, so it should notify.
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
@@ -1102,7 +1098,7 @@ TEST_F(LabelTest, GetTooltipHandlerForPoint) {
   label()->SetBounds(0, 0, 500, 50);
   EXPECT_FALSE(label()->GetTooltipHandlerForPoint(gfx::Point(2, 2)));
 
-  label()->SetTooltipText(u"a tooltip");
+  label()->SetCustomTooltipText(u"a tooltip");
   // If the point hits the label, and tooltip is set, the label should be
   // returned as its tooltip handler.
   EXPECT_EQ(label(), label()->GetTooltipHandlerForPoint(gfx::Point(2, 2)));
@@ -1202,7 +1198,7 @@ TEST_F(LabelTest, NoSchedulePaintInOnPaint) {
   label.SetEnabled(false);
   expect_paint_count_increased();
 
-  label.SetText(label.GetText() + u"Changed");
+  label.SetText(base::StrCat({label.GetText(), u"Changed"}));
   expect_paint_count_increased();
 
   label.SizeToPreferredSize();
@@ -1319,8 +1315,9 @@ TEST_F(LabelTest, GetSubstringBounds) {
 #endif
 // Ensures DCHECK for subpixel rendering on transparent layer is working.
 TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
-  View view;
-  Label* label = view.AddChildView(std::make_unique<TestLabel>());
+  View* view =
+      widget()->GetContentsView()->AddChildView(std::make_unique<View>());
+  Label* label = view->AddChildView(std::make_unique<TestLabel>());
   EXPECT_TRUE(label->GetSubpixelRenderingEnabled());
 
   gfx::Canvas canvas;
@@ -1329,11 +1326,11 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
   label->OnPaint(&canvas);
 
   // Painting to an opaque layer should also be fine.
-  view.SetPaintToLayer();
+  view->SetPaintToLayer();
   label->OnPaint(&canvas);
 
   // Set up a transparent layer for the parent view.
-  view.layer()->SetFillsBoundsOpaquely(false);
+  view->layer()->SetFillsBoundsOpaquely(false);
 
   // Painting on a transparent layer should DCHECK.
   EXPECT_DCHECK_DEATH(label->OnPaint(&canvas));
@@ -1345,7 +1342,7 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
 
   // Painting onto a transparent layer should not DCHECK if there's an opaque
   // background in a parent of the Label.
-  view.SetBackground(CreateSolidBackground(SK_ColorWHITE));
+  view->SetBackground(CreateSolidBackground(SK_ColorWHITE));
   label->OnPaint(&canvas);
 }
 

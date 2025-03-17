@@ -149,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   EXPECT_NE(expected_fre_finished, fre_service()->ShouldOpenFirstRun());
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   histogram_tester.ExpectUniqueSample(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
   histogram_tester.ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",

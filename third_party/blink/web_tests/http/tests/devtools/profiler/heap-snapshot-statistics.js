@@ -41,6 +41,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     var systemObj =
         new HeapProfilerTestRunner.HeapNode('SystemObject', 900000000, HeapProfilerTestRunner.HeapNode.Type.object);
     strongRoots.linkNode(systemObj, HeapProfilerTestRunner.HeapEdge.Type.internal, '0');
+    builder.extraNativeBytes = 10;
     return builder.generateSnapshot();
   }
 
@@ -50,7 +51,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
     async function step1(arg, result) {
       var statistics = await result;
-      TestRunner.addResult(JSON.stringify(statistics));
+      TestRunner.addResult(JSON.stringify(statistics, null, '  '));
       setTimeout(next, 0);
     }
   }]);

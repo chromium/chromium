@@ -78,7 +78,14 @@ static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(
     jint state) {
   return safe_browsing::SetSafeBrowsingState(
       GetPrefService(j_profile), static_cast<SafeBrowsingState>(state),
-      /*is_esb_enabled_in_sync=*/false);
+      /*is_esb_enabled_by_account_integration=*/false);
+}
+
+static void JNI_SafeBrowsingBridge_EnableSafeBrowsingSettingSetLocallyPref(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return safe_browsing::EnableSafeBrowsingSettingSetLocallyPref(
+      GetPrefService(j_profile));
 }
 
 static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(

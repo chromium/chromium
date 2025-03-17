@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -39,6 +40,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
@@ -86,32 +88,6 @@ constexpr char kRequestNotifications[] = R"(
         });
       })
       )";
-
-// Test implementation of PermissionUiSelector that always returns a canned
-// decision.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      const Decision& canned_decision)
-      : canned_decision_(canned_decision) {}
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(canned_decision_);
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  Decision canned_decision_;
-};
 
 class ChipExpansionObserver : PermissionChipView::Observer {
  public:
@@ -703,7 +679,7 @@ class QuietChipAutoPopupBubbleInteractiveTest
   void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
                            std::optional<WarningReason> warning_reason) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+        std::make_unique<MockPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
                                                         warning_reason)));
   }
@@ -1073,12 +1049,19 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       std::nullopt);
 
-  RequestPermission(permissions::RequestType::kGeolocation);
+  RequestPermission(permissions::RequestType::kCameraStream);
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+
+  RequestPermission(permissions::RequestType::kGeolocation);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -1116,7 +1099,7 @@ class QuietChipFailFastInteractiveTest
   void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
                            std::optional<WarningReason> warning_reason) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+        std::make_unique<MockPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
                                                         warning_reason)));
   }
@@ -1560,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
 
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_TRUE(observer.request_shown());
-  EXPECT_TRUE(manager->view_for_testing());
+  EXPECT_TRUE(manager->GetCurrentPrompt());
   EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
 
   // At first, we verify that the same document navigation on both, top level
@@ -1605,9 +1588,9 @@ class TestWebContentsObserver : content::WebContentsObserver {
   void Wait() { loop_.Run(); }
 
   void OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType capability_type,
+      content::WebContentsCapabilityType capability_type,
       bool used) override {
-    if (capability_type == content::WebContents::CapabilityType::kGeolocation) {
+    if (capability_type == content::WebContentsCapabilityType::kGeolocation) {
       loop_.Quit();
     }
   }
@@ -1647,7 +1630,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
   ASSERT_TRUE(main_rfh);
   ASSERT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1662,11 +1645,11 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
   observer_1.Wait();
   EXPECT_TRUE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
   TestWebContentsObserver observer_2(embedder_contents);
   observer_2.Wait();
   EXPECT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
@@ -1683,7 +1666,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   ASSERT_TRUE(main_rfh);
 
   ASSERT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1702,13 +1685,13 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
   observer_1.Wait();
   EXPECT_TRUE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
   // javascript clearWatch() should stop geolocation service.
   TestWebContentsObserver observer_2(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
   observer_2.Wait();
   EXPECT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
@@ -1725,7 +1708,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   ASSERT_TRUE(main_rfh);
 
   ASSERT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1747,15 +1730,15 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
   observer_1.Wait();
   EXPECT_TRUE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
   ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
   EXPECT_TRUE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
   TestWebContentsObserver observer_2(embedder_contents);
   ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
   observer_2.Wait();
   EXPECT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
@@ -1772,7 +1755,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   ASSERT_TRUE(main_rfh);
 
   ASSERT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1798,7 +1781,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
   observer_2.Wait();
   tab_strip->ActivateTabAt(0);
   EXPECT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
@@ -1814,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
   ASSERT_TRUE(main_rfh);
 
   ASSERT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 
   // Set geolocation permission to allow.
   SetPermission(ContentSettingsType::GEOLOCATION,
@@ -1829,10 +1812,10 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
   ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
   observer_1.Wait();
   EXPECT_TRUE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
   content::TestNavigationObserver reload_observer(embedder_contents);
   main_rfh->Reload();
   reload_observer.Wait();
   EXPECT_FALSE(embedder_contents->IsCapabilityActive(
-      content::WebContents::CapabilityType::kGeolocation));
+      content::WebContentsCapabilityType::kGeolocation));
 }

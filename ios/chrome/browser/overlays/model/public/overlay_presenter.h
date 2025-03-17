@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_PRESENTER_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_PRESENTER_H_
 
-
 #include "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 
 class Browser;

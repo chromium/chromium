@@ -1136,7 +1136,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   // second time when it detects that it was poisoned during the first attempt.
   histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.Error",
-      base::checked_cast<base::HistogramBase::Sample>(
+      base::checked_cast<base::HistogramBase::Sample32>(
           sql::SqliteLoggedResultCode::kCorrupt),
       /*expected_bucket_count=*/2);
 
@@ -1454,7 +1454,7 @@ class AggregationServiceStorageSqlMigrationsTest
     sql::Database db(sql::test::kTestTag);
     // Use `db_path()` if none is specified.
     ASSERT_TRUE(db.Open(db_path ? *db_path : this->db_path()));
-    ASSERT_TRUE(db.Execute(contents));
+    ASSERT_TRUE(db.ExecuteScriptForTesting(contents));
   }
 
   std::string GetCurrentSchema() {

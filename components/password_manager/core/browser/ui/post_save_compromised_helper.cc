@@ -4,10 +4,11 @@
 
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -75,7 +76,7 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
 
 void PostSaveCompromisedHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  base::ranges::move(results, std::back_inserter(passwords_));
+  std::ranges::move(results, std::back_inserter(passwords_));
   forms_received_.Run();
 }
 
@@ -91,7 +92,7 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal() {
       }
     }
 
-    if (base::ranges::any_of(form->password_issues, [](const auto& issue) {
+    if (std::ranges::any_of(form->password_issues, [](const auto& issue) {
           return !issue.second.is_muted;
         })) {
       compromised_count_++;

@@ -9,6 +9,7 @@
 
 #include "media/gpu/h264_decoder.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -16,11 +17,12 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/media_switches.h"
 #include "media/parsers/h264_level_limits.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 namespace {
@@ -524,8 +526,9 @@ void H264Decoder::ConstructReferencePicListsB() {
 
   // If lists identical, swap first two entries in RefPicList1 (spec 8.2.4.2.3)
   if (ref_pic_list_b1_.size() > 1 &&
-      base::ranges::equal(ref_pic_list_b0_, ref_pic_list_b1_))
+      std::ranges::equal(ref_pic_list_b0_, ref_pic_list_b1_)) {
     std::swap(ref_pic_list_b1_[0], ref_pic_list_b1_[1]);
+  }
 }
 
 // See 8.2.4
@@ -977,8 +980,8 @@ bool H264Decoder::SlidingWindowPictureMarking() {
 
   // 8.2.5.3. Ensure the DPB doesn't overflow by discarding the oldest picture.
   int num_ref_pics = dpb_.CountRefPics();
-  DCHECK_LE(num_ref_pics, std::max<int>(sps->max_num_ref_frames, 1));
-  if (num_ref_pics == std::max<int>(sps->max_num_ref_frames, 1)) {
+  int effective_max_num_ref_frames = std::max<int>(sps->max_num_ref_frames, 1);
+  if (num_ref_pics == effective_max_num_ref_frames) {
     // Max number of reference pics reached, need to remove one of the short
     // term ones. Find smallest frame_num_wrap short reference picture and mark
     // it as unused.
@@ -990,6 +993,9 @@ bool H264Decoder::SlidingWindowPictureMarking() {
     }
 
     to_unmark->ref = false;
+  } else if (num_ref_pics > effective_max_num_ref_frames) {
+    DVLOG(1) << "Too many reference pictures in DPB";
+    return false;
   }
 
   return true;
@@ -999,7 +1005,10 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
   // Finish processing the picture.
   // Start by storing previous picture data for later use.
   if (pic->ref) {
-    ReferencePictureMarking(pic);
+    if (!ReferencePictureMarking(pic)) {
+      return false;
+    }
+
     prev_ref_has_memmgmnt5_ = pic->mem_mgmt_5;
     prev_ref_top_field_order_cnt_ = pic->top_field_order_cnt;
     prev_ref_pic_order_cnt_msb_ = pic->pic_order_cnt_msb;
@@ -1705,51 +1714,58 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         if (parser_.ParseSEI(&sei) != H264Parser::kOk)
           break;
 
-        for (auto& sei_msg : sei.msgs) {
-          switch (sei_msg.type) {
-            case H264SEIMessage::kSEIRecoveryPoint:
-              // If we are after reset, we can also resume from a SEI recovery
-              // point (spec D.2.8) if one is present. However, if we are
-              // already in the process of handling one, skip any subsequent
-              // ones until we are done processing.
-              if (state_ == State::kAfterReset && !recovery_frame_cnt_ &&
-                  !recovery_frame_num_) {
-                recovery_frame_cnt_ = sei_msg.recovery_point.recovery_frame_cnt;
+        for (const auto& sei_msg : sei.msgs) {
+          if (!absl::visit(
+                  base::Overloaded{
+                      [this](const H264SEIRecoveryPoint& recovery_point) {
+                        // If we are after reset, we can also resume from a SEI
+                        // recovery point (spec D.2.8) if one is present.
+                        // However, if we are already in the process of handling
+                        // one, skip any subsequent ones until we are done
+                        // processing.
+                        if (state_ == State::kAfterReset &&
+                            !recovery_frame_cnt_ && !recovery_frame_num_) {
+                          recovery_frame_cnt_ =
+                              recovery_point.recovery_frame_cnt;
 
-                if (0 > *recovery_frame_cnt_) {
-                  DVLOG(1) << "Invalid recovery_frame_cnt="
-                           << *recovery_frame_cnt_
-                           << " (it must not be less then 0)";
-                  SET_ERROR_AND_RETURN();
-                }
-                DVLOG(3) << "Recovery point SEI is found, recovery_frame_cnt_="
-                         << *recovery_frame_cnt_;
-              }
-              break;
-            case H264SEIMessage::kSEIContentLightLevelInfo:
-              // H264 HDR metadata may appears in the below places:
-              // 1. Container.
-              // 2. Bitstream.
-              // 3. Both container and bitstream.
-              // Thus we should also extract HDR metadata here in case we
-              // miss the information.
-              if (!hdr_metadata_.has_value()) {
-                hdr_metadata_.emplace();
-              }
-              hdr_metadata_->cta_861_3 =
-                  sei_msg.content_light_level_info.ToGfx();
-              break;
-            case H264SEIMessage::kSEIMasteringDisplayInfo:
-              if (!hdr_metadata_.has_value()) {
-                hdr_metadata_.emplace();
-              }
-              hdr_metadata_->smpte_st_2086 =
-                  sei_msg.mastering_display_info.ToGfx();
-              break;
-            default:
-              break;
+                          if (0 > *recovery_frame_cnt_) {
+                            DVLOG(1) << "Invalid recovery_frame_cnt="
+                                     << *recovery_frame_cnt_
+                                     << " (it must not be less then 0)";
+                            return false;
+                          }
+                          DVLOG(3) << "Recovery point SEI is found, "
+                                      "recovery_frame_cnt_="
+                                   << *recovery_frame_cnt_;
+                        }
+                        return true;
+                      },
+                      [this](const H264SEIContentLightLevelInfo& info) {
+                        // H264 HDR metadata may appears in the below places:
+                        // 1. Container.
+                        // 2. Bitstream.
+                        // 3. Both container and bitstream.
+                        // Thus we should also extract HDR metadata here in case
+                        // we miss the information.
+                        if (!hdr_metadata_.has_value()) {
+                          hdr_metadata_.emplace();
+                        }
+                        hdr_metadata_->cta_861_3 = info.ToGfx();
+                        return true;
+                      },
+                      [this](const H264SEIMasteringDisplayInfo& info) {
+                        if (!hdr_metadata_.has_value()) {
+                          hdr_metadata_.emplace();
+                        }
+                        hdr_metadata_->smpte_st_2086 = info.ToGfx();
+                        return true;
+                      },
+                      [](const absl::monostate) { return true; }},
+                  sei_msg)) {
+            SET_ERROR_AND_RETURN();
           }
         }
+
         break;
       }
 

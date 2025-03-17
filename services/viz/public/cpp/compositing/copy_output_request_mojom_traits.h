@@ -18,6 +18,16 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<viz::mojom::CopyOutputRequestIpcPriority,
+                  viz::CopyOutputRequest::IpcPriority> {
+  static viz::mojom::CopyOutputRequestIpcPriority ToMojom(
+      viz::CopyOutputRequest::IpcPriority priority);
+
+  static bool FromMojom(viz::mojom::CopyOutputRequestIpcPriority input,
+                        viz::CopyOutputRequest::IpcPriority* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::CopyOutputRequestDataView,
                     std::unique_ptr<viz::CopyOutputRequest>> {
   static viz::CopyOutputRequest::ResultFormat result_format(
@@ -28,6 +38,11 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
   static viz::CopyOutputRequest::ResultDestination result_destination(
       const std::unique_ptr<viz::CopyOutputRequest>& request) {
     return request->result_destination();
+  }
+
+  static viz::CopyOutputRequest::IpcPriority ipc_priority(
+      const std::unique_ptr<viz::CopyOutputRequest>& request) {
+    return request->ipc_priority();
   }
 
   static const gfx::Vector2d& scale_from(

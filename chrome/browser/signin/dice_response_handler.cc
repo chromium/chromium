@@ -383,16 +383,13 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          ::switches::kPreconnectAccountCapabilitiesPostSignin)) {
-    // The user is signing in, which means that account fetching will shortly be
-    // triggered.
-    //
-    // Notify identity manager. This will trigger pre-connecting the network
-    // socket to the AccountCapabilities endpoint, in parallel with the LST and
-    // access token requests (instead of waiting for these to complete).
-    identity_manager_->PrepareForAddingNewAccount();
-  }
+  // The user is signing in, which means that account fetching will shortly be
+  // triggered.
+  //
+  // Notify identity manager. This will trigger pre-connecting the network
+  // socket to the AccountCapabilities endpoint, in parallel with the LST and
+  // access token requests (instead of waiting for these to complete).
+  identity_manager_->PrepareForAddingNewAccount();
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::expected<raw_ref<RegistrationTokenHelper>, TokenBindingOutcome>

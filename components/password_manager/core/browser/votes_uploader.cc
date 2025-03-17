@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/votes_uploader.h"
 
+#include <algorithm>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -194,8 +194,8 @@ int GetRandomSpecialSymbol() {
 // It is expected that |password| contains at least one special symbol.
 int GetRandomSpecialSymbolFromPassword(const std::u16string& password) {
   std::vector<int> symbols;
-  base::ranges::copy_if(password, std::back_inserter(symbols),
-                        &password_manager_util::IsSpecialSymbol);
+  std::ranges::copy_if(password, std::back_inserter(symbols),
+                       &password_manager_util::IsSpecialSymbol);
   DCHECK(!symbols.empty()) << "Password must contain at least one symbol.";
   return symbols[base::RandGenerator(symbols.size())];
 }
@@ -264,7 +264,7 @@ void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
 bool IsUsernameInAlternativeUsernames(
     const std::u16string& username,
     const AlternativeElementVector& all_alternative_usernames) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       all_alternative_usernames,
       [username](const AlternativeElement& alternative_username) {
         return alternative_username.value == username;
@@ -628,10 +628,10 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
 #if !BUILDFLAG(IS_ANDROID)
   bool should_send_votes =
       (should_send_username_first_flow_votes_ ||
-       base::ranges::any_of(single_username_votes_data_,
-                            [](const SingleUsernameVoteData& vote_data) {
-                              return vote_data.is_form_overrule;
-                            }));
+       std::ranges::any_of(single_username_votes_data_,
+                           [](const SingleUsernameVoteData& vote_data) {
+                             return vote_data.is_form_overrule;
+                           }));
   // Send single username votes in two cases:
   // (1) `should_send_username_first_flow_votes_` is true, meaning Username
   // First Flow was observed.
@@ -693,12 +693,9 @@ void VotesUploader::CalculateUsernamePromptEditState(
     if (!vote_data.username_candidate_value.empty()) {
       vote_data.prompt_edit = CalculateUsernamePromptEdit(
           saved_username, vote_data.username_candidate_value);
-      vote_data.is_form_overrule =
-          CalculateInFormOverrule(saved_username,
-                                  vote_data.username_candidate_value,
-                                  all_alternative_usernames) &&
-          base::FeatureList::IsEnabled(
-              features::kUsernameFirstFlowWithIntermediateValuesVoting);
+      vote_data.is_form_overrule = CalculateInFormOverrule(
+          saved_username, vote_data.username_candidate_value,
+          all_alternative_usernames);
     }
   }
   for (auto& [field_id, vote_data] : forgot_password_vote_data_) {
@@ -859,7 +856,7 @@ VotesUploader::GeneratePasswordAttributesMetadata(
   bool respond_randomly = base::RandGenerator(2);
   bool randomized_value_for_character_class =
       respond_randomly ? base::RandGenerator(2)
-                       : base::ranges::any_of(password_value, predicate);
+                       : std::ranges::any_of(password_value, predicate);
   PasswordAttributesMetadata password_attributes;
   password_attributes.password_attributes_vote = std::make_pair(
       character_class_attribute, randomized_value_for_character_class);

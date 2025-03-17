@@ -28,7 +28,7 @@ suite('NoLogsModuleTest', function() {
     // The table should be non-empty. Test for a few rows that should be there.
     assertGT(rows.length, 0);
     const rowsKeys = Array.from(rows).map(
-        el => (el!.firstElementChild as HTMLElement).innerText);
+        el => (el.firstElementChild as HTMLElement).innerText);
     assertTrue(rowsKeys.includes('Client ID'));
     assertTrue(rowsKeys.includes('Metrics Reporting Enabled'));
   });
@@ -43,7 +43,7 @@ suite('NoLogsModuleTest', function() {
     // there.
     assertGT(rows.length, 0);
     const rowsKeys = Array.from(rows).map(
-        el => (el!.firstElementChild as HTMLElement).innerText);
+        el => (el.firstElementChild as HTMLElement).innerText);
     assertTrue(rowsKeys.includes('Channel'));
     assertTrue(rowsKeys.includes('Version'));
     assertTrue(rowsKeys.includes('Platform'));

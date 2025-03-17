@@ -16,9 +16,8 @@
 #include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/metrics.mojom.h"
+#include "chrome/common/ppapi_metrics.mojom.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_thread.h"
@@ -56,10 +55,6 @@ const char* const kAllowedHistogramPrefixes[] = {
     "3FEA4650221C5E6C39CF5C5C9F464FF74EAB6CE1",  // see http://crbug.com/521189
 };
 
-const base::FilePath::CharType* const kAllowedPluginBaseNames[] = {
-    ChromeContentClient::kPDFInternalPluginPath,
-};
-
 std::string HashPrefix(const std::string& histogram) {
   const std::string id_hash =
       base::SHA1HashString(histogram.substr(0, histogram.find('.')));
@@ -75,17 +70,10 @@ PepperUMAHost::PepperUMAHost(content::RendererPpapiHost* host,
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       document_url_(host->GetDocumentURL(instance)),
       is_plugin_in_process_(host->IsRunningInProcess()) {
-  if (host->GetPluginInstance(instance)) {
-    plugin_base_name_ =
-        host->GetPluginInstance(instance)->GetModulePath().BaseName();
-  }
-
   for (size_t i = 0; i < std::size(kPredefinedAllowedUMAOrigins); ++i)
     allowed_origins_.insert(kPredefinedAllowedUMAOrigins[i]);
   for (size_t i = 0; i < std::size(kAllowedHistogramPrefixes); ++i)
     allowed_histogram_prefixes_.insert(kAllowedHistogramPrefixes[i]);
-  for (size_t i = 0; i < std::size(kAllowedPluginBaseNames); ++i)
-    allowed_plugin_base_names_.insert(kAllowedPluginBaseNames[i]);
 }
 
 PepperUMAHost::~PepperUMAHost() = default;
@@ -125,9 +113,6 @@ bool PepperUMAHost::IsHistogramAllowed(const std::string& histogram) {
       base::Contains(allowed_histogram_prefixes_, HashPrefix(histogram))) {
     return true;
   }
-
-  if (base::Contains(allowed_plugin_base_names_, plugin_base_name_.value()))
-    return true;
 
   LOG(ERROR) << "Host or histogram name is not allowed to use the UMA API.";
   return false;
@@ -214,7 +199,7 @@ int32_t PepperUMAHost::OnIsCrashReportingEnabled(
   if (!IsPluginAllowed())
     return PP_ERROR_NOACCESS;
   bool enabled = false;
-  mojo::Remote<chrome::mojom::MetricsService> metrics_service;
+  mojo::Remote<chrome::mojom::PpapiMetricsService> metrics_service;
   content::RenderThread::Get()->BindHostReceiver(
       metrics_service.BindNewPipeAndPassReceiver());
   metrics_service->IsMetricsAndCrashReportingEnabled(&enabled);

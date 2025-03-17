@@ -4,6 +4,7 @@
 
 #include "device/fido/get_assertion_request_handler.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -15,12 +16,10 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -261,7 +260,8 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     specialized_request.user_verification =
         AtLeastUVPreferred(specialized_request.user_verification);
   }
-  if (preselected_credential) {
+  if (preselected_credential &&
+      preselected_credential->source == authenticator.GetType()) {
     specialized_request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey, preselected_credential->cred_id,
         {preselected_credential->source == device::AuthenticatorType::kPhone
@@ -294,7 +294,7 @@ bool IsOnlyHybridOrInternal(const PublicKeyCredentialDescriptor& credential) {
   if (credential.transports.empty()) {
     return false;
   }
-  return base::ranges::all_of(credential.transports, [](const auto& transport) {
+  return std::ranges::all_of(credential.transports, [](const auto& transport) {
     return transport == FidoTransportProtocol::kHybrid ||
            transport == FidoTransportProtocol::kInternal;
   });
@@ -302,12 +302,12 @@ bool IsOnlyHybridOrInternal(const PublicKeyCredentialDescriptor& credential) {
 
 bool AllowListOnlyHybridOrInternal(const CtapGetAssertionRequest& request) {
   return !request.allow_list.empty() &&
-         base::ranges::all_of(request.allow_list, &IsOnlyHybridOrInternal);
+         std::ranges::all_of(request.allow_list, &IsOnlyHybridOrInternal);
 }
 
 bool AllowListIncludedTransport(const CtapGetAssertionRequest& request,
                                 FidoTransportProtocol transport) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       request.allow_list,
       [transport](const PublicKeyCredentialDescriptor& cred) {
         return cred.transports.empty() ||
@@ -357,7 +357,7 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
           request_, FidoTransportProtocol::kNearFieldCommunication);
   transport_availability_info().request_is_internal_only =
       !request_.allow_list.empty() &&
-      base::ranges::all_of(
+      std::ranges::all_of(
           request_.allow_list, [](const PublicKeyCredentialDescriptor& cred) {
             return cred.transports ==
                    std::vector{FidoTransportProtocol::kInternal};
@@ -385,9 +385,26 @@ void GetAssertionRequestHandler::PreselectAccount(
   preselected_credential_ = std::move(credential);
 }
 
+void GetAssertionRequestHandler::ProvideClientDataJson(
+    std::string client_data_json) {
+  CHECK(!client_data_json.empty());
+  request_.SetClientDataJson(std::move(client_data_json));
+  RequestReady();
+}
+
 base::WeakPtr<GetAssertionRequestHandler>
 GetAssertionRequestHandler::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void GetAssertionRequestHandler::RequestReady() {
+  std::vector<base::WeakPtr<FidoAuthenticator>> pending_requests;
+  pending_requests.swap(pending_authenticator_requests_);
+  for (auto& authenticator : pending_requests) {
+    if (authenticator) {
+      DispatchRequest(authenticator.get());
+    }
+  }
 }
 
 void GetAssertionRequestHandler::OnBluetoothAdapterEnumerated(
@@ -411,6 +428,12 @@ void GetAssertionRequestHandler::OnBluetoothAdapterEnumerated(
 void GetAssertionRequestHandler::DispatchRequest(
     FidoAuthenticator* authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  if (request_.client_data_json.empty()) {
+    // ChallengeUrl can asynchronously retrieve the challenge for ClientData, in
+    // which case the request has to be held pending.
+    pending_authenticator_requests_.push_back(authenticator->GetWeakPtr());
+    return;
+  }
 
   if (state_ != State::kWaitingForTouch) {
     FIDO_LOG(DEBUG) << "Not dispatching request to "

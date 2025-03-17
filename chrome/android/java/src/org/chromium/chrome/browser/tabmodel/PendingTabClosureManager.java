@@ -42,9 +42,6 @@ public class PendingTabClosureManager {
          */
         void finalizeClosure(Tab tab);
 
-        /** Notify observers about completion of undo action to restore all tabs. */
-        void notifyAllTabsClosureUndone();
-
         /**
          * Request to notify observers that {@code tabs} will be closed.
          *
@@ -373,11 +370,6 @@ public class PendingTabClosureManager {
             }
             break;
         }
-    }
-
-    /** Notify observers about completion of undo action to restore all tabs. */
-    public void notifyAllTabsClosureUndone() {
-        mDelegate.notifyAllTabsClosureUndone();
     }
 
     /**

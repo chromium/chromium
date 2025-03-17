@@ -72,6 +72,27 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
                          -> std::unique_ptr<KeyedService> { return nullptr; }));
 }
 
+void AITestUtils::AITestBase::SetupMockSession() {
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          StartSession(testing::_, testing::_))
+      .WillByDefault([&] {
+        return std::make_unique<
+            testing::NiceMock<optimization_guide::MockSession>>(&session_);
+      });
+  ON_CALL(session_, GetExecutionInputSizeInTokens(testing::_, testing::_))
+      .WillByDefault(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) {
+            std::move(callback).Run(
+                blink::mojom::kWritingAssistanceMaxInputTokenSize);
+          });
+}
+
+blink::mojom::AIManager* AITestUtils::AITestBase::GetAIManagerInterface() {
+  return ai_manager_.get();
+}
+
 mojo::Remote<blink::mojom::AIManager>
 AITestUtils::AITestBase::GetAIManagerRemote() {
   mojo::Remote<blink::mojom::AIManager> ai_manager;
@@ -109,4 +130,59 @@ const optimization_guide::TokenLimits& AITestUtils::GetFakeTokenLimits() {
 const optimization_guide::proto::Any& AITestUtils::GetFakeFeatureMetadata() {
   static base::NoDestructor<optimization_guide::proto::Any> data;
   return *data;
+}
+
+// static
+void AITestUtils::CheckWritingAssistanceApiRequest(
+    const google::protobuf::MessageLite& request_metadata,
+    const std::string& expected_shared_context,
+    const std::string& expected_context,
+    const optimization_guide::proto::WritingAssistanceApiOptions&
+        expected_options,
+    const std::string& expected_input) {
+  const optimization_guide::proto::WritingAssistanceApiRequest* request =
+      static_cast<
+          const optimization_guide::proto::WritingAssistanceApiRequest*>(
+          &request_metadata);
+  EXPECT_EQ(request->shared_context(), expected_shared_context);
+  EXPECT_EQ(request->context(), expected_context);
+  EXPECT_EQ(request->options().output_tone(), expected_options.output_tone());
+  EXPECT_EQ(request->options().output_format(),
+            expected_options.output_format());
+  EXPECT_EQ(request->options().output_length(),
+            expected_options.output_length());
+  EXPECT_EQ(request->rewrite_text(), expected_input);
+}
+
+// static
+void AITestUtils::CheckSummarizeRequest(
+    const google::protobuf::MessageLite& request_metadata,
+    const std::string& expected_shared_context,
+    const std::string& expected_context,
+    const optimization_guide::proto::SummarizeOptions& expected_options,
+    const std::string& expected_input) {
+  const optimization_guide::proto::SummarizeRequest* request =
+      static_cast<const optimization_guide::proto::SummarizeRequest*>(
+          &request_metadata);
+  EXPECT_EQ(request->context(), AISummarizer::CombineContexts(
+                                    expected_shared_context, expected_context));
+  EXPECT_EQ(request->options().output_type(), expected_options.output_type());
+  EXPECT_EQ(request->options().output_format(),
+            expected_options.output_format());
+  EXPECT_EQ(request->options().output_length(),
+            expected_options.output_length());
+  EXPECT_EQ(request->article(), expected_input);
+}
+
+// static
+std::vector<blink::mojom::AILanguageCodePtr> AITestUtils::ToMojoLanguageCodes(
+    const std::vector<std::string>& language_codes) {
+  std::vector<blink::mojom::AILanguageCodePtr> result;
+  result.reserve(language_codes.size());
+  std::ranges::transform(
+      language_codes, std::back_inserter(result),
+      [](const std::string& language_code) {
+        return blink::mojom::AILanguageCode::New(language_code);
+      });
+  return result;
 }

@@ -99,10 +99,11 @@ bool IsAttached(ExecutionContext* execution_context) {
 void StartMemoryMeasurement(LocalDOMWindow* window,
                             MeasureMemoryController* controller,
                             WebMemoryMeasurement::Mode mode) {
-  Document* document = window->document();
-  document->GetResourceCoordinator()->OnWebMemoryMeasurementRequested(
-      mode, WTF::BindOnce(&MeasureMemoryController::MeasurementComplete,
-                          WrapPersistent(controller)));
+  if (auto* coordinator = window->document()->GetResourceCoordinator()) {
+    coordinator->OnWebMemoryMeasurementRequested(
+        mode, WTF::BindOnce(&MeasureMemoryController::MeasurementComplete,
+                            WrapPersistent(controller)));
+  }
 }
 
 void StartMemoryMeasurement(WorkerGlobalScope* worker,

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file implements the ABI of libtranslatekit only for testing. It is not
 // used in production.
 // This file's CreateTranslateKit() method returns 0 to test the behavior of the
@@ -9,6 +14,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
@@ -22,6 +28,18 @@
 #endif
 
 extern "C" {
+
+TRANSLATE_KIT_EXPORT bool GetTranslateKitVersion(TranslateKitVersion* version) {
+  CHECK(version);
+  CHECK(version->buffer);
+  CHECK(version->buffer_size);
+
+  // Always return a maximum version.
+  constexpr char kMaxVersion[] = "9999.99.99.99";
+  strncpy(version->buffer, kMaxVersion, sizeof(kMaxVersion));
+  version->buffer_size = sizeof(kMaxVersion) - 1;
+  return true;
+}
 
 TRANSLATE_KIT_EXPORT void InitializeStorageBackend(
     FileExistsFn file_exists,

@@ -5,6 +5,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -42,7 +44,7 @@ namespace views {
 
 MdTextButton::MdTextButton(
     PressedCallback callback,
-    const std::u16string& text,
+    std::u16string_view text,
     int button_context,
     bool use_text_color_for_icon,
     std::unique_ptr<LabelButtonImageContainer> image_container)
@@ -219,7 +221,7 @@ void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   OnCornerRadiusValueChanged();
 }
 
-void MdTextButton::SetEnabledTextColors(std::optional<SkColor> color) {
+void MdTextButton::SetEnabledTextColors(std::optional<ui::ColorVariant> color) {
   LabelButton::SetEnabledTextColors(std::move(color));
   UpdateColors();
 }
@@ -233,7 +235,7 @@ std::optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
   return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
-void MdTextButton::SetText(const std::u16string& text) {
+void MdTextButton::SetText(std::u16string_view text) {
   LabelButton::SetText(text);
   UpdatePadding();
 }
@@ -294,14 +296,14 @@ void MdTextButton::UpdateTextColor() {
 
   const auto& typography_provider = TypographyProvider::Get();
   const auto colors = explicitly_set_colors();
-  LabelButton::SetEnabledTextColorIds(
+  LabelButton::SetEnabledTextColors(
       typography_provider.GetColorId(label()->GetTextContext(), text_style));
   // Disabled buttons need the disabled color explicitly set.
   // This ensures that label()->GetEnabledColor() returns the correct color as
   // the basis for calculating the stroke color. enabled text color id isn't
   // used since a descendant could have overridden the label enabled color.
   if (GetState() == STATE_DISABLED) {
-    LabelButton::SetTextColorId(
+    LabelButton::SetTextColor(
         STATE_DISABLED, typography_provider.GetColorId(
                             label()->GetTextContext(), style::STYLE_DISABLED));
   }

@@ -22,6 +22,7 @@
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -37,8 +38,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "ui/accessibility/ax_tree_id.h"
-#import "ui/gfx/geometry/rect_f.h"
 #import "url/origin.h"
 
 namespace autofill {
@@ -69,8 +68,10 @@ base::TimeDelta GetFilteredDocumentFormScanPeriod() {
 AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndWebFrame(
     web::WebState* web_state,
     web::WebFrame* web_frame) {
-  return AutofillDriverIOSFactory::FromWebState(web_state)->DriverForFrame(
-      web_frame);
+  if (AutofillClientIOS* client = AutofillClientIOS::FromWebState(web_state)) {
+    return client->GetAutofillDriverFactory().DriverForFrame(web_frame);
+  }
+  return nullptr;
 }
 
 // static
@@ -158,21 +159,16 @@ bool AutofillDriverIOS::IsActive() const {
   return true;
 }
 
-bool AutofillDriverIOS::IsInAnyMainFrame() const {
-  web::WebFrame* frame = web_frame();
-  return frame ? frame->IsMainFrame() : true;
-}
-
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   // Give the shared-autofill permission to the main frame of the webstate by
   // default.
-  if (IsInAnyMainFrame()) {
+  if (!web_frame() || web_frame()->IsMainFrame()) {
     return true;
   }
 
   // Also propagate that permission to the direct children of the main
   // frame on the same origin as the main frame.
-  if (parent_ && parent_->web_frame() && parent_->IsInAnyMainFrame() &&
+  if (parent_ && parent_->web_frame() && parent_->web_frame()->IsMainFrame() &&
       web_frame()) {
     return parent_->web_frame()->GetSecurityOrigin() ==
            web_frame()->GetSecurityOrigin();
@@ -496,9 +492,9 @@ void AutofillDriverIOS::CaretMovedInFormField(const FormData& form,
   GetAutofillManager().OnCaretMovedInFormField(form, field_id, caret_bounds);
 }
 
-void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
-                                           const FieldGlobalId& field_id,
-                                           base::TimeTicks timestamp) {
+void AutofillDriverIOS::TextFieldValueChanged(const FormData& form,
+                                              const FieldGlobalId& field_id,
+                                              base::TimeTicks timestamp) {
   auto callback = [&](AutofillDriver& driver, const FormData& form,
                       const FieldGlobalId& field_global_id,
                       base::TimeTicks timestamp) {
@@ -506,11 +502,12 @@ void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
         /*form_data=*/form,
         /*formless_field=*/form.renderer_id() ? FieldRendererId()
                                               : field_global_id.renderer_id);
-    driver.GetAutofillManager().OnTextFieldDidChange(form, field_id, timestamp);
+    driver.GetAutofillManager().OnTextFieldValueChanged(form, field_id,
+                                                        timestamp);
   };
 
   if (IsAcrossIframesEnabled()) {
-    router_->TextFieldDidChange(callback, *this, form, field_id, timestamp);
+    router_->TextFieldValueChanged(callback, *this, form, field_id, timestamp);
   } else {
     callback(*this, form, field_id, timestamp);
   }
@@ -623,15 +620,15 @@ void AutofillDriverIOS::FormsRemoved(
     if (FormStructure* form =
             GetAutofillManager().FindCachedFormById(synthetic_global_id)) {
       std::set<FieldRendererId> form_fields;
-      base::ranges::transform(form->fields(),
-                              std::inserter(form_fields, form_fields.begin()),
-                              [](const std::unique_ptr<AutofillField>& field) {
-                                return field->renderer_id();
-                              });
+      std::ranges::transform(form->fields(),
+                             std::inserter(form_fields, form_fields.begin()),
+                             [](const std::unique_ptr<AutofillField>& field) {
+                               return field->renderer_id();
+                             });
       // If the synthetic form fields are a subset of the removed fields, it
       // means that all the synthetic form fields were removed.
       const bool is_deleted =
-          base::ranges::includes(removed_unowned_fields, form_fields);
+          std::ranges::includes(removed_unowned_fields, form_fields);
       if (is_deleted) {
         forms_to_report.emplace_back(synthetic_global_id);
       }

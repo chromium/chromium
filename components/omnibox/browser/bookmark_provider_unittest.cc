@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/omnibox/browser/bookmark_provider.h"
+
 #include "components/query_parser/query_parser.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "components/omnibox/browser/bookmark_provider.h"
 
 #include <stddef.h>
 
@@ -333,7 +333,7 @@ TEST_F(BookmarkProviderTest, Rankings) {
     // |matches| specifies the titles for all bookmarks expected to be matched
     // by the |query|
     const std::string matches[3];
-  } query_data[] = {
+  } query_datas[] = {
       // Basic ranking test.
       {"abc",
        3,
@@ -379,30 +379,30 @@ TEST_F(BookmarkProviderTest, Rankings) {
         "burning worms #2"}},  // not boosted
   };
 
-  for (size_t i = 0; i < std::size(query_data); ++i) {
-    AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
+  for (auto& query_data : query_datas) {
+    AutocompleteInput input(base::ASCIIToUTF16(query_data.query),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, /*minimal_changes=*/false);
     const ACMatches& matches(provider_->matches());
     // Validate number and content of results is as expected.
-    for (size_t j = 0; j < std::max(query_data[i].match_count, matches.size());
+    for (size_t j = 0; j < std::max(query_data.match_count, matches.size());
          ++j) {
-      EXPECT_LT(j, query_data[i].match_count)
+      EXPECT_LT(j, query_data.match_count)
           << "    Unexpected match '"
           << base::UTF16ToUTF8(matches[j].description) << "' for query: '"
-          << query_data[i].query << "'.";
-      if (j >= query_data[i].match_count)
+          << query_data.query << "'.";
+      if (j >= query_data.match_count)
         continue;
       EXPECT_LT(j, matches.size())
-          << "    Missing match '" << query_data[i].matches[j]
-          << "' for query: '" << query_data[i].query << "'.";
+          << "    Missing match '" << query_data.matches[j] << "' for query: '"
+          << query_data.query << "'.";
       if (j >= matches.size())
         continue;
-      EXPECT_EQ(query_data[i].matches[j],
+      EXPECT_EQ(query_data.matches[j],
                 base::UTF16ToUTF8(matches[j].description))
           << "    Mismatch at [" << base::NumberToString(j) << "] for query '"
-          << query_data[i].query << "'.";
+          << query_data.query << "'.";
     }
   }
 }

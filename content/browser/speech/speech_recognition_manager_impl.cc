@@ -164,10 +164,11 @@ SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
   return g_speech_recognition_manager_impl;
 }
 
-bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionAvailable(
+bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionInstalled(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-  return speech::IsOnDeviceSpeechRecognitionAvailable(config.language);
+  return speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ==
+         media::mojom::AvailabilityStatus::kAvailable;
 #else
   return false;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
@@ -178,9 +179,6 @@ SpeechRecognitionManagerImpl::SpeechRecognitionManagerImpl(
     MediaStreamManager* media_stream_manager)
     : audio_system_(audio_system),
       media_stream_manager_(media_stream_manager),
-      primary_session_id_(kSessionIDInvalid),
-      last_session_id_(kSessionIDInvalid),
-      is_dispatching_event_(false),
       delegate_(GetContentClient()
                     ->browser()
                     ->CreateSpeechRecognitionManagerDelegate()),
@@ -215,22 +213,50 @@ int SpeechRecognitionManagerImpl::CreateSession(
   DCHECK(!SessionExists(session_id));
 
   base::UmaHistogramBoolean(kWebSpeechAudioOnDeviceAvailableHistogram,
-                            IsOnDeviceSpeechRecognitionAvailable(config));
+                            IsOnDeviceSpeechRecognitionInstalled(config));
   base::UmaHistogramBoolean(kWebSpeechAudioUseOnDeviceHistogram,
                             UseOnDeviceSpeechRecognition(config));
   base::UmaHistogramBoolean(kWebSpeechAudioUseAudioForwarderHistogram,
                             audio_forwarder_config.has_value());
 
-  // If on-device speech recognition must be used but is not available, throw a
-  // language-not-supported error and don't create the session.
-  if (UseOnDeviceSpeechRecognition(config) &&
-      !IsOnDeviceSpeechRecognitionAvailable(config)) {
+  // Initialize the error to be none.
+  media::mojom::SpeechRecognitionErrorCode error =
+      media::mojom::SpeechRecognitionErrorCode::kNone;
+
+  if (UseOnDeviceSpeechRecognition(config)) {
+    // Set the error if on-device speech recognition must be used but is not
+    // available.
+    if (!IsOnDeviceSpeechRecognitionInstalled(config)) {
+      error = media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported;
+    }
+  } else {
+    // Set the error if on-device speech recognition is not used but recognition
+    // context is set.
+    if (config.recognition_context.has_value()) {
+      error = media::mojom::SpeechRecognitionErrorCode::
+          kRecognitionContextNotSupported;
+    }
+  }
+
+  // Throw the error and do not create the session if error is found.
+  if (error != media::mojom::SpeechRecognitionErrorCode::kNone) {
     mojo::Remote<media::mojom::SpeechRecognitionSessionClient> client(
         std::move(client_remote));
-    client->ErrorOccurred(media::mojom::SpeechRecognitionError::New(
-        media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported,
-        media::mojom::SpeechAudioErrorDetails::kNone));
-    client->Ended();
+    if (client.is_bound()) {
+      client->ErrorOccurred(media::mojom::SpeechRecognitionError::New(
+          error, media::mojom::SpeechAudioErrorDetails::kNone));
+      client->Ended();
+    } else if (config.event_listener) {
+      // The client may have been moved into the event_listener such as what
+      // SpeechRecognitionDispatcherHost does, so throw the error there.
+      config.event_listener.get()->OnRecognitionError(
+          session_id, media::mojom::SpeechRecognitionError(
+                          error, media::mojom::SpeechAudioErrorDetails::kNone));
+      config.event_listener.get()->OnRecognitionEnd(session_id);
+    } else {
+      // At least a client should be have been informed of the error.
+      NOTREACHED();
+    }
     return session_id;
   }
 
@@ -366,27 +392,29 @@ void SpeechRecognitionManagerImpl::StartSession(int session_id) {
   if (!SessionExists(session_id))
     return;
 
-  // If there is another active session, abort that.
-  if (primary_session_id_ != kSessionIDInvalid &&
-      primary_session_id_ != session_id) {
-    AbortSession(primary_session_id_);
+  if (sessions_[session_id]->use_microphone) {
+    // If there is another session using the microphone, abort that.
+    if (microphone_session_id_ != kSessionIDInvalid &&
+        microphone_session_id_ != session_id) {
+      AbortSession(microphone_session_id_);
+    }
+
+    microphone_session_id_ = session_id;
+
+    if (delegate_) {
+      delegate_->CheckRecognitionIsAllowed(
+          session_id,
+          base::BindOnce(
+              &SpeechRecognitionManagerImpl::RecognitionAllowedCallback,
+              weak_factory_.GetWeakPtr(), session_id));
+    }
+    return;
   }
 
-  primary_session_id_ = session_id;
-
-  if (!sessions_[session_id]->use_microphone) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
-                       weak_factory_.GetWeakPtr(), session_id, EVENT_START));
-
-  } else if (delegate_) {
-    delegate_->CheckRecognitionIsAllowed(
-        session_id,
-        base::BindOnce(
-            &SpeechRecognitionManagerImpl::RecognitionAllowedCallback,
-            weak_factory_.GetWeakPtr(), session_id));
-  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
+                     weak_factory_.GetWeakPtr(), session_id, EVENT_START));
 }
 
 void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
@@ -523,6 +551,22 @@ void SpeechRecognitionManagerImpl::StopAudioCaptureForSession(int session_id) {
                                 EVENT_STOP_CAPTURE));
 }
 
+void SpeechRecognitionManagerImpl::UpdateRecognitionContextForSession(
+    int session_id,
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+  auto iter = sessions_.find(session_id);
+  if (iter == sessions_.end()) {
+    return;
+  }
+  iter->second->recognition_context = recognition_context;
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
+                                weak_factory_.GetWeakPtr(), session_id,
+                                EVENT_UPDATE_RECOGNITION_CONTEXT));
+}
+
 // Here begins the SpeechRecognitionEventListener interface implementation,
 // which will simply relay the events to the proper listener registered for the
 // particular session and to the catch-all listener provided by the delegate
@@ -542,7 +586,6 @@ void SpeechRecognitionManagerImpl::OnRecognitionStart(int session_id) {
         /*screen_capture_ids=*/{}, MediaStreamUI::StateChangeCallback());
   }
 
-  DCHECK_EQ(primary_session_id_, session_id);
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnRecognitionStart(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -554,7 +597,6 @@ void SpeechRecognitionManagerImpl::OnAudioStart(int session_id) {
   if (!SessionExists(session_id))
     return;
 
-  DCHECK_EQ(primary_session_id_, session_id);
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnAudioStart(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -566,7 +608,6 @@ void SpeechRecognitionManagerImpl::OnSoundStart(int session_id) {
   if (!SessionExists(session_id))
     return;
 
-  DCHECK_EQ(primary_session_id_, session_id);
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnSoundStart(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -661,7 +702,8 @@ bool SpeechRecognitionManagerImpl::UseOnDeviceSpeechRecognition(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   return config.on_device &&
-         (speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ||
+         (speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ==
+              media::mojom::AvailabilityStatus::kAvailable ||
           !config.allow_cloud_fallback);
 #else
   return false;
@@ -726,6 +768,8 @@ void SpeechRecognitionManagerImpl::ExecuteTransitionAndGetNextState(
       switch (event) {
         case EVENT_START:
           return SessionStart(*session);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return SessionUpdateRecognitionContext(*session);
         case EVENT_ABORT:
           return SessionAbort(*session);
         case EVENT_RECOGNITION_ENDED:
@@ -738,6 +782,8 @@ void SpeechRecognitionManagerImpl::ExecuteTransitionAndGetNextState(
       break;
     case SESSION_STATE_CAPTURING_AUDIO:
       switch (event) {
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return SessionUpdateRecognitionContext(*session);
         case EVENT_STOP_CAPTURE:
           return SessionStopAudioCapture(*session);
         case EVENT_ABORT:
@@ -751,6 +797,8 @@ void SpeechRecognitionManagerImpl::ExecuteTransitionAndGetNextState(
       break;
     case SESSION_STATE_WAITING_FOR_RESULT:
       switch (event) {
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return SessionUpdateRecognitionContext(*session);
         case EVENT_ABORT:
           return SessionAbort(*session);
         case EVENT_AUDIO_ENDED:
@@ -781,7 +829,6 @@ SpeechRecognitionManagerImpl::GetSessionState(int session_id) const {
 //  - Are guaranteed to be not reentrant (themselves and each other);
 
 void SpeechRecognitionManagerImpl::SessionStart(const Session& session) {
-  DCHECK_EQ(primary_session_id_, session.id);
   const blink::MediaStreamDevices& devices = session.context.devices;
   std::string device_id;
   if (devices.empty()) {
@@ -800,9 +847,16 @@ void SpeechRecognitionManagerImpl::SessionStart(const Session& session) {
   session.recognizer->StartRecognition(device_id);
 }
 
+void SpeechRecognitionManagerImpl::SessionUpdateRecognitionContext(
+    const Session& session) {
+  CHECK(session.recognizer.get());
+  session.recognizer->UpdateRecognitionContext(session.recognition_context);
+}
+
 void SpeechRecognitionManagerImpl::SessionAbort(const Session& session) {
-  if (primary_session_id_ == session.id)
-    primary_session_id_ = kSessionIDInvalid;
+  if (microphone_session_id_ == session.id) {
+    microphone_session_id_ = kSessionIDInvalid;
+  }
   DCHECK(session.recognizer.get());
   session.recognizer->AbortRecognition();
 }
@@ -815,15 +869,15 @@ void SpeechRecognitionManagerImpl::SessionStopAudioCapture(
 
 void SpeechRecognitionManagerImpl::ResetCapturingSessionId(
     const Session& session) {
-  DCHECK_EQ(primary_session_id_, session.id);
-  primary_session_id_ = kSessionIDInvalid;
+  microphone_session_id_ = kSessionIDInvalid;
 }
 
 void SpeechRecognitionManagerImpl::SessionDelete(Session* session) {
   DCHECK(session->recognizer.get() == nullptr ||
          !session->recognizer->IsActive());
-  if (primary_session_id_ == session->id)
-    primary_session_id_ = kSessionIDInvalid;
+  if (microphone_session_id_ == session->id) {
+    microphone_session_id_ = kSessionIDInvalid;
+  }
   if (!session->context.label.empty())
     media_stream_manager_->CancelRequest(session->context.label);
   sessions_.erase(session->id);

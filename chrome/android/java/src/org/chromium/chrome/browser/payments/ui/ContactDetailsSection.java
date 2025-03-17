@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.Section;
 
@@ -164,16 +165,18 @@ public class ContactDetailsSection extends SectionInformation {
         boolean requestPayerPhone = mContactEditor.getRequestPayerPhone();
         boolean requestPayerEmail = mContactEditor.getRequestPayerEmail();
         String name =
-                requestPayerName && !TextUtils.isEmpty(profile.getFullName())
-                        ? profile.getFullName()
+                requestPayerName && !TextUtils.isEmpty(profile.getInfo(FieldType.NAME_FULL))
+                        ? profile.getInfo(FieldType.NAME_FULL)
                         : null;
         String phone =
-                requestPayerPhone && !TextUtils.isEmpty(profile.getPhoneNumber())
-                        ? profile.getPhoneNumber()
+                requestPayerPhone
+                                && !TextUtils.isEmpty(
+                                        profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER))
+                        ? profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER)
                         : null;
         String email =
-                requestPayerEmail && !TextUtils.isEmpty(profile.getEmailAddress())
-                        ? profile.getEmailAddress()
+                requestPayerEmail && !TextUtils.isEmpty(profile.getInfo(FieldType.EMAIL_ADDRESS))
+                        ? profile.getInfo(FieldType.EMAIL_ADDRESS)
                         : null;
 
         if (name != null || phone != null || email != null) {

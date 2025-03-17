@@ -68,7 +68,8 @@ bool DisplayResourceProvider::OnMemoryDump(
 
     bool backing_memory_allocated = false;
     if (resource.transferable.is_software)
-      backing_memory_allocated = !!resource.shared_bitmap;
+      backing_memory_allocated =
+          resource.shared_image_representation_created_and_set;
     else
       backing_memory_allocated = !!resource.image_context;
 
@@ -102,14 +103,9 @@ bool DisplayResourceProvider::OnMemoryDump(
     // GPU service will use a lower one.
     constexpr int kImportance =
         static_cast<int>(gpu::TracingImportance::kServiceOwner);
-    if (resource.transferable.is_software) {
-      pmd->CreateSharedMemoryOwnershipEdge(
-          dump->guid(), resource.shared_bitmap_tracing_guid, kImportance);
-    } else {
       auto guid = GetSharedImageGUIDForTracing(resource.transferable.mailbox());
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
-    }
   }
 
   return true;
@@ -120,9 +116,9 @@ base::WeakPtr<DisplayResourceProvider> DisplayResourceProvider::GetWeakPtr() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) const {
+bool DisplayResourceProvider::IsBackedBySurfaceView(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.is_backed_by_surface_texture;
+  return resource->transferable.is_backed_by_surface_view;
 }
 #endif
 
@@ -143,6 +139,11 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
   // be doing so on Android in rare cases. Handle this gracefully until a
   // better solution can be found. https://crbug.com/811858
   return resource && resource->transferable.is_overlay_candidate;
+}
+
+bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {
+  const ChildResource* resource = TryGetResource(id);
+  return resource && resource->transferable.is_low_latency_rendering;
 }
 
 SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) const {
@@ -244,12 +245,6 @@ void DisplayResourceProvider::ReceiveFromChild(
     }
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
-
-    // If using legacy shared bitmaps, verify that the format is supported.
-    DCHECK(!transferable_resource.is_software ||
-           transferable_resource.IsSoftwareSharedImage() ||
-           (!transferable_resource.IsSoftwareSharedImage() &&
-            transferable_resource.format.IsBitmapFormatSupported()));
     resources_.emplace(local_id,
                        ChildResource(child_id, transferable_resource));
     child_info.child_to_parent_map[transferable_resource.id] = local_id;

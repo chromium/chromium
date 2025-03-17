@@ -79,6 +79,15 @@
   <message name="IDS_EXTENSIONS_DEVELOPER_MODE" desc="The text displayed next to the checkbox to toggle developer mode in the extensions page.">
     Developer mode
   </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE" desc="Text shown in the extension card for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_DETAILS" desc="Text shown in the details extension view for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, but only if you trust the extension. It may contain experimental features and hasn't been reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_TOAST" desc="Text displayed in a toast popup message when extensions are disabled due to unsupported developer mode.">
+    Developer Mode Off. Some extensions were disabled.
+  </message>
   <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
     This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
   </message>
@@ -252,6 +261,12 @@
   </message>
   <message name="IDS_EXTENSIONS_ITEM_ALLOW_INCOGNITO" desc="The text next to the checkbox to enable an extension in Incognito mode.">
     Allow in Incognito
+  </message>
+  <message name="IDS_EXTENSIONS_ITEM_ALLOW_USER_SCRIPTS" desc="The text next to the checkbox to enable an extension to run user scripts.">
+    Allow User Scripts
+  </message>
+  <message name="IDS_EXTENSIONS_ALLOW_USER_SCRIPTS_WARNING" desc="Warns the user that the extension will be able to run code not review by Google. Displayed in extensions management UI after an extension is selected to allow these scripts.">
+    The extension will be able to run code which has not been reviewed by Google. It may be unsafe and you should only enable this if you know what you are doing.
   </message>
   <message name="IDS_EXTENSIONS_ITEM_DEPENDENCIES" desc="The label above a list of any extensions that depend on this extension.">
     The following extensions depend on this extension:
@@ -490,8 +505,8 @@
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT_BUTTON_LABEL" desc="The label for a button to edit the shortcut.">
     Edit shortcut <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
   </message>
-  <message name="IDS_EXTENSIONS_SHORTCUT_NOT_SET" desc="The label to indicate that an extension has no shortcut set for a given command.">
-    Not set
+  <message name="IDS_EXTENSIONS_SET_SHORTCUT_IN_SYSTEM_SETTINGS" desc="The label to indicate that shortcuts are managed in system settings instead of within Chrome.">
+    Set in system settings
   </message>
   <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL" desc="The label for the dropdown menu that lets the user choose the scope of an extension command (within chrome or global).">
     Scope of <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
@@ -547,12 +562,6 @@
   <message name="IDS_EXTENSIONS_TOOLBAR_UPDATING_TOAST" desc="Text displayed in a toast popup message while extensions are updating.">
     Updating...
   </message>
-  <message name="IDS_EXTENSIONS_SHORTCUT_SET" desc="Text used to notify screen readers when a shortcut is successfully set.">
-    Shortcut set: <ph name="IDS_SHORT_SET_COMMAND">$1<ex>Ctrl + S</ex></ph>
-  </message>
-  <message name="IDS_EXTENSIONS_TYPE_A_SHORTCUT" desc="The prompt to the user to enter a keyboard shortcut in order to assign it to an extension.">
-    Type a shortcut
-  </message>
   <message name="IDS_EXTENSIONS_SUBPAGE_BUTTON" is_accessibility_with_no_ui="true" desc="Accessibility description for a button navigating the user from an extension's settings page to its settings subpage.">
     Subpage button
   </message>
@@ -589,6 +598,9 @@
   <!-- Extension Safety Check review panel labels and texts for icons -->
   <message name="IDS_EXTENSIONS_SC_KEEP_EXT" desc="The label on the overflow menu to keep an extension.">
     Keep this extension
+  </message>
+  <message name="IDS_EXTENSIONS_SC_THREEDOT_DETAILS" desc="The label on the overflow menu to go to the extensions detail page.">
+    Get more details
   </message>
   <message name="IDS_EXTENSIONS_SC_REMOVE_ALL" desc="The generic label for a button to remove all extensions.">
     Remove all
@@ -659,16 +671,6 @@
   <message name="IDS_EXTENSIONS_CANT_INSTALL_MV2_EXTENSION" desc="The text shown to a user when they try to install an extension that is no longer supported by the browser.">
     Cannot install extension because it uses an unsupported manifest version.
   </message>
-<if expr="is_macosx">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
-    Include Ctrl, Alt, or ⌘
-  </message>
-</if>
-<if expr="chromeos_ash">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Search key.">
-    Include Ctrl, Alt, or Search
-  </message>
-</if>
 <if expr="is_chromeos">
   <message name="IDS_EXTENSIONS_WFH_PERMISSION_HANDLER_FILES" desc="Label showing file names in singular or plural form.">
     {FILE_COUNT, plural,
@@ -677,24 +679,8 @@
     }
   </message>
 </if>
-<if expr="is_macosx or chromeos_ash">
-  <message name="IDS_EXTENSIONS_TOO_MANY_MODIFIERS" desc="Error message explaining not to use so many modifiers in a shortcut.">
-    Invalid combination
-  </message>
-</if>
-<if expr="not is_macosx and not chromeos_ash">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control key or the Alt key.">
-    Include either Ctrl or Alt
-  </message>
-  <message name="IDS_EXTENSIONS_TOO_MANY_MODIFIERS" desc="Error message explaining not to use both Ctrl and Alt in a shortcut.">
-    Use either Ctrl or Alt
-  </message>
-</if>
-<message name="IDS_EXTENSIONS_NEED_CHARACTER" desc="Error message explaining that a shortcut needs a character. This is only shown if a valid modifier is already entered.">
-  Type a letter
-</message>
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
   <!-- Extensions Kiosk apps -->
   <message name="IDS_EXTENSIONS_MANAGE_KIOSK_APP" desc="Label of the button to bring up kiosk management overlay on chrome extensions page.">
     Manage kiosk applications

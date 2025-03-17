@@ -139,8 +139,8 @@ class WaylandFrameManager {
   void SetVideoCapture();
   void ReleaseVideoCapture();
 
-  void OnWindowActivationChanged();
   void OnWindowSuspensionChanged();
+  void FrameCallbackTimeout();
 
   static base::TimeDelta GetPresentationFlushTimerDurationForTesting();
 
@@ -257,20 +257,34 @@ class WaylandFrameManager {
   // Set when invalid frame data is sent and the gpu process must be terminated.
   std::string fatal_error_message_;
 
-  uint32_t frames_in_flight_ = 0;
-  base::OneShotTimer freeze_timeout_timer_;
-
   base::OneShotTimer presentation_flush_timer_;
+
+  base::OneShotTimer frame_callback_timer_;
 
   int video_capture_count_ = 0;
 
+  // Indicates that a graphics freeze was detected from the compositor no longer
+  // sending frame callbacks, which is the case in mutter before before it sends
+  // the suspended state. If this occurs during tab capture, the captured
+  // content would look frozen until the suspended state is received.
+  // This is set when that is detected and a fallback rendering can be used
+  // during tab capture without relying on frame callbacks. See
+  // |should_skip_frame_callbacks_| below.
+  int frame_callback_freeze_detected_ = false;
+
   // Indicates if fallback rendering should be used by not relying on frame
-  // callbacks.
+  // callbacks to drive playback when |frame_callback_freeze_detected_| is true
+  // and |video_capture_count_| is more than 0. The frame callbacks are still
+  // set to be able to get notified once the compositor starts sending frame
+  // callbacks again so that they can be used for playback again.
   bool should_skip_frame_callbacks_ = false;
 
   // Indicates if rendering should continue in the background without sending
   // surface commits to wayland. This is used to ensure video capture works when
   // we know the window is occluded and can simply bypass wayland in this case.
+  // This optimized rendering path can only be used after we are notified of
+  // suspended state which may be sent a few seconds after the window gets
+  // occluded, as is the case in mutter.
   bool should_ack_swap_without_commit_ = false;
 
   base::WeakPtrFactory<WaylandFrameManager> weak_factory_;

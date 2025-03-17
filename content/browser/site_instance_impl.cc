@@ -7,6 +7,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -61,6 +62,19 @@ bool ShouldCompareEffectiveURLs(BrowserContext* browser_context,
 }
 
 SiteInstanceId::Generator g_site_instance_id_generator;
+
+// Produce a crash report stack trace when GetProcess() is called on a
+// SiteInstance that does not have a bound process.
+// These calls should either be replaced with GetOrCreateProcess() if process
+// creation was intentional, or the caller should be changed to avoid
+// unnecessarily creating a process.
+BASE_FEATURE(kTraceSiteInstanceGetProcessCreation,
+             "TraceSiteInstanceGetProcessCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to crash if GetProcess is called on a SiteInstance without a process.
+const base::FeatureParam<bool> kCrashOnGetProcessCreation{
+    &kTraceSiteInstanceGetProcessCreation, "crash_on_creation", true};
 
 }  // namespace
 
@@ -290,8 +304,10 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
         browser_context, embedder_site_instance->GetStoragePartitionConfig()));
   }
   DCHECK_EQ(embedder_site_instance->IsGuest(), site_instance->IsGuest());
-  site_instance->ReuseExistingProcessIfPossible(
-      embedder_site_instance->GetProcess());
+  if (embedder_site_instance->HasProcess()) {
+    site_instance->ReuseExistingProcessIfPossible(
+        embedder_site_instance->GetProcess());
+  }
   return site_instance;
 }
 
@@ -312,6 +328,10 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
       ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
+  // Proactively create a process since many callers of this function in tests
+  // rely on site_instance->GetProcess().
+  site_instance->GetOrCreateProcess(
+      ProcessAllocationContext{ProcessAllocationSource::kTest});
   return site_instance;
 }
 
@@ -380,11 +400,6 @@ const IsolationContext& SiteInstanceImpl::GetIsolationContext() {
   return browsing_instance_->isolation_context();
 }
 
-RenderProcessHost* SiteInstanceImpl::GetSiteInstanceGroupProcessIfAvailable() {
-  return browsing_instance_->site_instance_group_manager()
-      .GetExistingGroupProcess(this);
-}
-
 bool SiteInstanceImpl::IsDefaultSiteInstance() const {
   return default_site_instance_state_ != nullptr;
 }
@@ -409,7 +424,7 @@ bool SiteInstanceImpl::HasProcess() {
     return true;
 
   // If we would use process-per-site for this site, also check if there is an
-  // existing process that we would use if GetProcess() were called.
+  // existing process that we would use if GetOrCreateProcess() were called.
   if (ShouldUseProcessPerSite() &&
       RenderProcessHostImpl::GetSoleProcessHostForSite(GetIsolationContext(),
                                                        site_info_)) {
@@ -420,6 +435,27 @@ bool SiteInstanceImpl::HasProcess() {
 }
 
 RenderProcessHost* SiteInstanceImpl::GetProcess() {
+  // TODO(crbug.com/388998723):
+  // Change this function to either add a CHECK(HasProcess()) or return null if
+  // there is no bound process after collecting and fixing any
+  // DumpWithoutCrashing reports.
+  if (!HasProcess() &&
+      base::FeatureList::IsEnabled(kTraceSiteInstanceGetProcessCreation)) {
+    if (kCrashOnGetProcessCreation.Get()) {
+      CHECK(false);
+    }
+  }
+  return GetOrCreateProcess(ProcessAllocationContext{
+      ProcessAllocationSource::kNoProcessCreationExpected});
+}
+
+RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
+    const ProcessAllocationContext& context) {
+  if (!HasProcess() &&
+      base::FeatureList::IsEnabled(kTraceSiteInstanceGetProcessCreation) &&
+      context.source == ProcessAllocationSource::kNoProcessCreationExpected) {
+    base::debug::DumpWithoutCrashing();
+  }
   // Create a new SiteInstanceGroup and RenderProcessHost if there isn't one.
   // All SiteInstances within a SiteInstanceGroup share a process and
   // AgentSchedulingGroupHost. A group must have a process. If the process gets
@@ -432,12 +468,23 @@ RenderProcessHost* SiteInstanceImpl::GetProcess() {
     } else if (process_reuse_policy_ == ProcessReusePolicy::PROCESS_PER_SITE) {
       process_reuse_policy_ = ProcessReusePolicy::DEFAULT;
     }
-    SetProcessInternal(
-        RenderProcessHostImpl::GetProcessHostForSiteInstance(this));
+    ProcessAllocationContext allocation_context = context;
+    if (allocation_context.navigation_context.has_value()) {
+      allocation_context.navigation_context->requires_new_process_for_coop =
+          coop_reuse_process_failed_;
+    }
+    SetProcessInternal(RenderProcessHostImpl::GetProcessHostForSiteInstance(
+        this, allocation_context));
   }
   DCHECK(site_instance_group_);
 
   return site_instance_group_->process();
+}
+
+RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess() {
+  CHECK_IS_TEST();
+  return GetOrCreateProcess(
+      ProcessAllocationContext{ProcessAllocationSource::kTest});
 }
 
 SiteInstanceGroupId SiteInstanceImpl::GetSiteInstanceGroupId() {
@@ -505,11 +552,6 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   if (has_site_) {
     GetContentClient()->browser()->SiteInstanceGotProcessAndSite(this);
   }
-
-  // Notify SiteInstanceGroupManager that the process was set on this
-  // SiteInstance. This must be called after LockProcessIfNeeded() because
-  // the SiteInstanceGroupManager does suitability checks that use the lock.
-  browsing_instance_->site_instance_group_manager().OnProcessSet(this);
 }
 
 bool SiteInstanceImpl::CanAssociateWithSpareProcess() {
@@ -641,12 +683,6 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
           site_instance_group_->process(), this);
     }
   }
-
-  // Notify SiteInstanceGroupManager that the SiteInfo was set on this
-  // SiteInstance. This must be called after LockProcessIfNeeded() because
-  // the SiteInstanceGroupManager does suitability checks that use the lock.
-  browsing_instance_->site_instance_group_manager().OnSiteInfoSet(this,
-                                                                  has_group());
 }
 
 void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
@@ -766,8 +802,30 @@ SiteInstanceImpl::GetCoopRelatedSiteInstanceImpl(const UrlInfo& url_info) {
 }
 
 AgentSchedulingGroupHost& SiteInstanceImpl::GetOrCreateAgentSchedulingGroup() {
-  if (!site_instance_group_)
+  // Currently GetOrCreateAgentSchedulingGroup is called in the following
+  // cases:
+  // * From the RFH constructor created by CreateSpeculativeRenderFrameHost,
+  //   the function will explicitly create the process for the site instance
+  //   before constructing the RFH.
+  // * From the RFH constructor created by InitRoot, the function will
+  //   explicitly create the process for the site instance before
+  //   constructing the RFH.
+  // * From the RFH constructor created by InitChild, the child RFH is assumed
+  //   to share the same process as the parent so the process will already be
+  //   present.
+  // * In SharedStorageRenderThreadWorkletDriver::StartWorkletService, the
+  //   constructor of SharedStorageRenderThreadWorkletDriver will create
+  //   the process for the site instance.
+  // Since this is called when SiteInstance already has a process in all these
+  // cases, and since site_instance_group_ is created when the SiteInstance's
+  // process is set, there should be no case here when there is no
+  // site_instance_group_, and no need to call GetOrCreateProcess().
+  //
+  // TODO(crbug.com/388998723): Remove the call to GetProcess() after
+  // verifying there is no DumpWithoutCrashing reports.
+  if (!site_instance_group_) {
     GetProcess();
+  }
 
   return site_instance_group_->agent_scheduling_group();
 }
@@ -1360,15 +1418,6 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
   if (url.SchemeIs(url::kFileScheme))
     return false;
 
-  // Don't use the default SiteInstance when
-  // kProcessSharingWithStrictSiteInstances is enabled because we want each
-  // site to have its own SiteInstance object and logic elsewhere ensures
-  // that those SiteInstances share a process.
-  if (base::FeatureList::IsEnabled(
-          features::kProcessSharingWithStrictSiteInstances)) {
-    return false;
-  }
-
   // Don't use the default SiteInstance when SiteInstance doesn't assign a
   // site URL for |url|, since in that case the SiteInstance should remain
   // unused, and a subsequent navigation should always be able to reuse it,
@@ -1610,11 +1659,6 @@ RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
           browsing_instance_->default_site_instance()) {
     return default_instance->HasProcess() ? default_instance->GetProcess()
                                           : nullptr;
-  }
-  if (browsing_instance_->site_instance_group_manager().default_process()) {
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kProcessSharingWithStrictSiteInstances));
-    return browsing_instance_->site_instance_group_manager().default_process();
   }
   return nullptr;
 }

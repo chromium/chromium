@@ -75,29 +75,6 @@ enum VideoConferenceMediaDevice {
   kCamera,
 };
 
-// Interface between the Ash system and clients (lacros, ARC++, etc.)
-// for Video Conference Manager. Implemented in Ash.
-[Uuid="7dc5b924-abb8-4c0b-b2c0-676458afde5f"]
-interface VideoConferenceManager {
-  // Notifies the manager of changes in media apps.
-  NotifyMediaUsageUpdate@0(VideoConferenceMediaUsageStatus status)
-      => (bool success);
-
-  // Registers a mojo client on the manager.
-  RegisterMojoClient@1(pending_remote<VideoConferenceManagerClient> client,
-                       mojo_base.mojom.UnguessableToken client_id)
-      => (bool success);
-
-  // Notifies the manager of an app trying to access a media device
-  // while the device is system disabled.
-  NotifyDeviceUsedWhileDisabled@2(VideoConferenceMediaDevice device,
-                                  mojo_base.mojom.String16 app_name)
-      => (bool success);
-
-  // Notifies the manager of a client update.
-  [MinVersion=1] NotifyClientUpdate@3(VideoConferenceClientUpdate update);
-};
-
 // Note to keep this in sync with VideoConferenceAppType in enums.xml.
 [Extensible]
 enum VideoConferenceAppType {

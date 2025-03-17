@@ -8,8 +8,6 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace {
 
@@ -30,12 +28,6 @@ class FormInteractionTabHelper::GraphObserver
   GraphObserver& operator=(const GraphObserver&) = delete;
 
  private:
-  // Should be called on the UI thread to dispatch the OnHadFormInteraction
-  // signal received on the PM sequence.
-  static void DispatchOnHadFormInteraction(
-      base::WeakPtr<content::WebContents> contents,
-      bool had_form_interaction);
-
   // performance_manager::PageNodeObserver:
   void OnHadFormInteractionChanged(
       const performance_manager::PageNode* page_node) override;
@@ -45,31 +37,19 @@ class FormInteractionTabHelper::GraphObserver
   void OnTakenFromGraph(performance_manager::Graph* graph) override;
 };
 
-// static
-void FormInteractionTabHelper::GraphObserver::DispatchOnHadFormInteraction(
-    base::WeakPtr<content::WebContents> contents,
-    bool had_form_interaction) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // If the web contents is still alive then dispatch to the actual
-  // implementation in TabLifecycleUnitSource.
-  if (contents) {
-    // Notifications can be emitted by extensions, ignore these.
-    if (auto* tab_helper =
-            FormInteractionTabHelper::FromWebContents(contents.get())) {
-      // Sanity check against spurious changes.
-      DCHECK_NE(tab_helper->had_form_interaction_, had_form_interaction);
-      tab_helper->had_form_interaction_ = had_form_interaction;
-    }
-  }
-}
-
 void FormInteractionTabHelper::GraphObserver::OnHadFormInteractionChanged(
     const performance_manager::PageNode* page_node) {
-  // Forward the notification over to the UI thread.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&GraphObserver::DispatchOnHadFormInteraction,
-                                page_node->GetWebContents(),
-                                page_node->HadFormInteraction()));
+  base::WeakPtr<content::WebContents> contents = page_node->GetWebContents();
+  CHECK(contents);
+  bool had_form_interaction = page_node->HadFormInteraction();
+
+  // Notifications can be emitted by extensions, ignore these.
+  if (auto* tab_helper =
+          FormInteractionTabHelper::FromWebContents(contents.get())) {
+    // Sanity check against spurious changes.
+    DCHECK_NE(tab_helper->had_form_interaction_, had_form_interaction);
+    tab_helper->had_form_interaction_ = had_form_interaction;
+  }
 }
 
 void FormInteractionTabHelper::GraphObserver::OnPassedToGraph(

@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/traits_bag.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -80,9 +79,6 @@ class WebAppPublisherHelperTest : public testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = builder.Build();
 
     provider_ = WebAppProvider::GetForWebApps(profile());
@@ -155,7 +151,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_ScopeExtension) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
   info->validated_scope_extensions = {
-      ScopeExtensionInfo{.origin = url::Origin::Create(extended_scope_url)}};
+      ScopeExtensionInfo::CreateForScope(extended_scope_url)};
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
@@ -181,8 +177,8 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_WildcardScopeExtension) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
   info->validated_scope_extensions = {
-      ScopeExtensionInfo{.origin = url::Origin::Create(extended_scope_url),
-                         .has_origin_wildcard = true}};
+      ScopeExtensionInfo::CreateForScope(extended_scope_url,
+                                         /*has_origin_wildcard*/ true)};
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
@@ -303,14 +299,14 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
     new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
     apps::FileHandler::AcceptEntry accept_entry;
-    proto::WebAppOsIntegrationState test_state;
+    proto::os_state::WebAppOsIntegration test_state;
 
     accept_entry.mime_type = "text/plain";
     accept_entry.file_extensions.insert(".txt");
     apps::FileHandler file_handler;
     file_handler.action = GURL("https://example.com/path/handler.html");
 
-    proto::FileHandling::FileHandler* file_handler_proto =
+    proto::os_state::FileHandling::FileHandler* file_handler_proto =
         test_state.mutable_file_handling()->add_file_handlers();
     file_handler_proto->set_action(file_handler.action.spec());
     auto* accept_entry_proto = file_handler_proto->add_accept();

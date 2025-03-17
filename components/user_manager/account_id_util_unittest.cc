@@ -18,9 +18,7 @@ namespace user_manager {
 namespace {
 constexpr char kUserEmail[] = "default_account@gmail.com";
 constexpr char kOtherEmail[] = "renamed_account@gmail.com";
-constexpr char kGaiaID[] = "fake-gaia-id";
-// Active directory users are deprecated, but full cleanup is not finished yet.
-constexpr char kObjGuid[] = "fake-obj-guid";
+constexpr GaiaId::Literal kGaiaID("fake-gaia-id");
 }  // namespace
 
 // Base class for tests of known_user.
@@ -36,29 +34,27 @@ class AccountIdUtilTest : public testing::Test {
 
  protected:
   const AccountId kDefaultAccountId =
-      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
+      AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
 };
 
 TEST_F(AccountIdUtilTest, LoadGoogleAccountWithGaiaId) {
   base::Value::Dict dict = base::Value::Dict()
                                .Set("account_type", "google")
                                .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID)
-                               .Set("obj_guid", kObjGuid);
+                               .Set("gaia_id", kGaiaID.ToString());
   std::optional<AccountId> result = LoadAccountId(dict);
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_valid());
   EXPECT_EQ(result->GetAccountType(), AccountType::GOOGLE);
   EXPECT_EQ(result->GetUserEmail(), kUserEmail);
   ASSERT_TRUE(result->HasAccountIdKey());
-  ASSERT_EQ(result->GetGaiaId().ToString(), kGaiaID);
+  ASSERT_EQ(result->GetGaiaId(), kGaiaID);
 }
 
 TEST_F(AccountIdUtilTest, LoadGoogleAccountWithoutGaiaId) {
   base::Value::Dict dict = base::Value::Dict()
                                .Set("account_type", "google")
-                               .Set("email", kUserEmail)
-                               .Set("obj_guid", kObjGuid);
+                               .Set("email", kUserEmail);
   std::optional<AccountId> result = LoadAccountId(dict);
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_valid());
@@ -73,8 +69,7 @@ TEST_F(AccountIdUtilTest, DISABLED_LoadUnknownAccount) {
   base::Value::Dict dict = base::Value::Dict()
                                .Set("account_type", "unknown")
                                .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID)
-                               .Set("obj_guid", kObjGuid);
+                               .Set("gaia_id", kGaiaID.ToString());
   ASSERT_DEATH({ LoadAccountId(dict); }, "Unknown account type");
 }
 
@@ -89,25 +84,11 @@ TEST_F(AccountIdUtilTest, LoadAccountEmailOnly) {
   ASSERT_FALSE(result->HasAccountIdKey());
 }
 
-TEST_F(AccountIdUtilTest, LoadDeprecatedActiveDirectoryUser) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "ad")
-                               .Set("email", kUserEmail)
-                               .Set("obj_guid", kObjGuid);
-  std::optional<AccountId> result = LoadAccountId(dict);
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(result->is_valid());
-  EXPECT_EQ(result->GetAccountType(), AccountType::ACTIVE_DIRECTORY);
-  EXPECT_EQ(result->GetUserEmail(), kUserEmail);
-  ASSERT_TRUE(result->HasAccountIdKey());
-  EXPECT_EQ(result->GetObjGuid(), kObjGuid);
-}
-
 TEST_F(AccountIdUtilTest, MatchByCorrectEmail) {
   base::Value::Dict dict = base::Value::Dict()
                                .Set("account_type", "google")
                                .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID);
+                               .Set("gaia_id", kGaiaID.ToString());
   AccountId id = AccountId::FromUserEmail(kUserEmail);
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
@@ -116,7 +97,7 @@ TEST_F(AccountIdUtilTest, MatchByIncorrectEmail) {
   base::Value::Dict dict = base::Value::Dict()
                                .Set("account_type", "google")
                                .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID);
+                               .Set("gaia_id", kGaiaID.ToString());
   AccountId id = AccountId::FromUserEmail(kOtherEmail);
   ASSERT_FALSE(AccountIdMatches(id, dict));
 }
@@ -125,8 +106,8 @@ TEST_F(AccountIdUtilTest, MatchByGaiaIdSameEmail) {
   base::Value::Dict dict = base::Value::Dict()
                                .Set("account_type", "google")
                                .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID);
-  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
+                               .Set("gaia_id", kGaiaID.ToString());
+  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
@@ -134,8 +115,8 @@ TEST_F(AccountIdUtilTest, MatchByGaiaIdOtherEmail) {
   base::Value::Dict dict = base::Value::Dict()
                                .Set("account_type", "google")
                                .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID);
-  AccountId id = AccountId::FromUserEmailGaiaId(kOtherEmail, GaiaId(kGaiaID));
+                               .Set("gaia_id", kGaiaID.ToString());
+  AccountId id = AccountId::FromUserEmailGaiaId(kOtherEmail, kGaiaID);
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
@@ -155,21 +136,12 @@ TEST_F(AccountIdUtilTest, StoreEmailOnly) {
 }
 
 TEST_F(AccountIdUtilTest, StoreGoogleAccount) {
-  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
+  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
   base::Value::Dict dict;
   StoreAccountId(id, dict);
   EXPECT_EQ(dict.Find("account_type")->GetString(), "google");
   EXPECT_EQ(dict.Find("email")->GetString(), kUserEmail);
-  EXPECT_EQ(dict.Find("gaia_id")->GetString(), kGaiaID);
-}
-
-TEST_F(AccountIdUtilTest, StoreDeprecatedADAccount) {
-  AccountId id = AccountId::AdFromUserEmailObjGuid(kUserEmail, kObjGuid);
-  base::Value::Dict dict;
-  StoreAccountId(id, dict);
-  EXPECT_EQ(dict.Find("account_type")->GetString(), "ad");
-  EXPECT_EQ(dict.Find("email")->GetString(), kUserEmail);
-  EXPECT_EQ(dict.Find("obj_guid")->GetString(), kObjGuid);
+  EXPECT_EQ(dict.Find("gaia_id")->GetString(), kGaiaID.ToString());
 }
 
 }  // namespace user_manager

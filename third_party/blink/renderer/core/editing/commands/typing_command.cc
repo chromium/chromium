@@ -219,11 +219,8 @@ void TypingCommand::DeleteSelection(Document& document, Options options) {
   if (TypingCommand* last_typing_command =
           LastTypingCommandIfStillOpenForTyping(frame)) {
     UpdateSelectionIfDifferentFromCurrentSelection(last_typing_command, frame);
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
 
-    if (RuntimeEnabledFeatures::
-            ResetInputTypeToNoneBeforeCharacterInputEnabled()) {
-      last_typing_command->input_type_ = InputEvent::InputType::kNone;
-    }
     // InputMethodController uses this function to delete composition
     // selection.  It won't be aborted.
     last_typing_command->DeleteSelection(options & kSmartDelete,
@@ -269,10 +266,7 @@ void TypingCommand::DeleteKeyPressed(Document& document,
         UpdateSelectionIfDifferentFromCurrentSelection(last_typing_command,
                                                        frame);
         EditingState editing_state;
-        if (RuntimeEnabledFeatures::
-                ResetInputTypeToNoneBeforeCharacterInputEnabled()) {
-          last_typing_command->input_type_ = InputEvent::InputType::kNone;
-        }
+        last_typing_command->input_type_ = InputEvent::InputType::kNone;
         last_typing_command->DeleteKeyPressed(granularity, options & kKillRing,
                                               &editing_state);
         return;
@@ -496,10 +490,7 @@ bool TypingCommand::InsertLineBreak(Document& document) {
           LastTypingCommandIfStillOpenForTyping(document.GetFrame())) {
     EditingState editing_state;
     EventQueueScope event_queue_scope;
-    if (RuntimeEnabledFeatures::
-            ResetInputTypeToNoneBeforeCharacterInputEnabled()) {
-      last_typing_command->input_type_ = InputEvent::InputType::kNone;
-    }
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
     last_typing_command->InsertLineBreak(&editing_state);
     return !editing_state.IsAborted();
   }
@@ -514,10 +505,7 @@ bool TypingCommand::InsertParagraphSeparatorInQuotedContent(
           LastTypingCommandIfStillOpenForTyping(document.GetFrame())) {
     EditingState editing_state;
     EventQueueScope event_queue_scope;
-    if (RuntimeEnabledFeatures::
-            ResetInputTypeToNoneBeforeCharacterInputEnabled()) {
-      last_typing_command->input_type_ = InputEvent::InputType::kNone;
-    }
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
     last_typing_command->InsertParagraphSeparatorInQuotedContent(
         &editing_state);
     return !editing_state.IsAborted();
@@ -533,10 +521,7 @@ bool TypingCommand::InsertParagraphSeparator(Document& document) {
           LastTypingCommandIfStillOpenForTyping(document.GetFrame())) {
     EditingState editing_state;
     EventQueueScope event_queue_scope;
-    if (RuntimeEnabledFeatures::
-            ResetInputTypeToNoneBeforeCharacterInputEnabled()) {
-      last_typing_command->input_type_ = InputEvent::InputType::kNone;
-    }
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
     last_typing_command->InsertParagraphSeparator(&editing_state);
     return !editing_state.IsAborted();
   }
@@ -813,19 +798,16 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
 
   // The selection is updated prior to the removal of the element
   // that makes the node empty. (see crbug.com/40876506)
-  if (RuntimeEnabledFeatures::
-          HandleSelectionChangeOnDeletingEmptyElementEnabled()) {
-    LocalFrame* const frame = GetDocument().GetFrame();
-    const SelectionInDOMTree& new_selection =
-        SelectionInDOMTree::Builder()
-            .Collapse(Position::FirstPositionInNode(*root))
-            .Build();
-    frame->Selection().SetSelection(
-        new_selection, SetSelectionOptions::Builder()
-                           .SetIsDirectional(SelectionIsDirectional())
-                           .Build());
-    SetEndingSelection(SelectionForUndoStep::From(new_selection));
-  }
+  LocalFrame* const frame = GetDocument().GetFrame();
+  const SelectionInDOMTree& new_selection =
+      SelectionInDOMTree::Builder()
+          .Collapse(Position::FirstPositionInNode(*root))
+          .Build();
+  frame->Selection().SetSelection(
+      new_selection, SetSelectionOptions::Builder()
+                         .SetIsDirectional(SelectionIsDirectional())
+                         .Build());
+  SetEndingSelection(SelectionForUndoStep::From(new_selection));
 
   RemoveAllChildrenIfPossible(root, editing_state);
   if (editing_state->IsAborted() || root->firstChild())
@@ -834,18 +816,6 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
   AddBlockPlaceholderIfNeeded(root, editing_state);
   if (editing_state->IsAborted())
     return false;
-
-  // If the feature to handle selection change on deleting an empty element is
-  // not enabled, manually set the ending selection. Otherwise, the selection is
-  // already handled by the feature.
-  if (!(RuntimeEnabledFeatures::
-            HandleSelectionChangeOnDeletingEmptyElementEnabled())) {
-    const SelectionInDOMTree& selection =
-        SelectionInDOMTree::Builder()
-            .Collapse(Position::FirstPositionInNode(*root))
-            .Build();
-    SetEndingSelection(SelectionForUndoStep::From(selection));
-  }
 
   return true;
 }

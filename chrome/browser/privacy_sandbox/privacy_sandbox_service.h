@@ -113,6 +113,8 @@ class PrivacySandboxService : public KeyedService {
     // has made the decision (accepted or declined the consent).
     kConsentClosedNoDecision = 10,
 
+    // TODO(crbug.com/386240885): Clean up old learn more, as it is not used for
+    // any of the Privacy Sandbox Dialogs anymore.
     // Interaction with notice bubble: click on the link to open interests
     // settings.
     kNoticeLearnMore = 11,
@@ -212,6 +214,16 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kWaitingForGraduationRestrictedNoticeFlowCompleted,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacySandboxPromptStartupState)
+
+  // Enum for the different events that can be triggered from the
+  // PrivacySandboxApis Dialog. It used to bubble up some Dialog events to other
+  // components.
+  enum class AdsDialogCallbackNoArgsEvents {
+    kShowDialog,
+    kCloseDialog,
+    kOpenAdsPrivacySettings,
+    kOpenMeasurementSettings,
+  };
 
   // Returns whether |url| is suitable to display the Privacy Sandbox prompt
   // over. Only about:blank and certain chrome:// URLs are considered

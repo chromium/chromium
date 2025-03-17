@@ -96,7 +96,6 @@ class WebContentsViewAndroid : public WebContentsView,
       RenderFrameHost* render_frame_host,
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int item_height,
       double item_font_size,
       int selected_item,
       std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -168,11 +167,9 @@ class WebContentsViewAndroid : public WebContentsView,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
                            std::optional<gfx::PointF> transformed_pt);
   void OnDragExited();
-  void OnPerformDrop(std::unique_ptr<DropData> drop_data,
-                     const gfx::PointF& location,
+  void OnPerformDrop(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
-  void PerformDropCallback(std::unique_ptr<DropData> drop_data,
-                           const gfx::PointF& location,
+  void PerformDropCallback(const gfx::PointF& location,
                            const gfx::PointF& screen_location,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
                            std::optional<gfx::PointF> transformed_pt);
@@ -231,6 +228,8 @@ class WebContentsViewAndroid : public WebContentsView,
   base::WeakPtr<RenderWidgetHostImpl> current_source_rwh_for_drag_;
   // base::FeatureList::IsEnabled(features::kAndroidDragDropOopif).
   bool drag_drop_oopif_enabled_ = false;
+  // Current drop data set on drop event.
+  std::unique_ptr<DropData> drop_data_;
   // Metadata for the current drag.
   std::vector<DropData::Metadata> drag_metadata_;
   // We keep track of the target RenderWidgetHost we are currently over when

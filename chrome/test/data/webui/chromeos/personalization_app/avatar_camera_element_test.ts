@@ -11,7 +11,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestUserProvider} from './test_user_interface_provider';
+import type {TestUserProvider} from './test_user_interface_provider.js';
 
 type WebcamUtilsInterface = typeof webcamUtils;
 

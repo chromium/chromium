@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
+import org.chromium.ui.util.XrUtils;
 
 /** Util class to handle various color operations shared between hub classes. */
 public final class HubColors {
@@ -38,6 +39,9 @@ public final class HubColors {
     /** Returns the background color generic surfaces should use per the given color scheme. */
     public static @ColorInt int getBackgroundColor(
             Context context, @HubColorScheme int colorScheme) {
+        // On an XRDevice in FSM the background color of the Hub view is set to transparent always.
+        if (XrUtils.getInstance().isFsmOnXrDevice()) return Color.TRANSPARENT;
+
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
                 return SemanticColorUtils.getDefaultBgColor(context);

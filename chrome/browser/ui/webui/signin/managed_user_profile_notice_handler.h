@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
@@ -124,7 +123,11 @@ class ManagedUserProfileNoticeHandler
   ProfileAttributesEntry* GetProfileEntry() const;
 
   std::string GetPictureUrl();
-  void OnUserChoiceHandled(signin::SigninChoiceOperationResult result);
+  void OnUserChoiceHandled(signin::SigninChoiceOperationResult result,
+                           signin::SigninChoiceErrorType error_type =
+                               signin::SigninChoiceErrorType::kNoError);
+
+  void FireErrorEvent(signin::SigninChoiceErrorType error);
 
   base::FilePath profile_path_;
   base::ScopedObservation<ProfileAttributesStorage,

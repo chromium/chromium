@@ -10,7 +10,11 @@
 <translation id="2447485272386224171">‏Chrome קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" /> Chromium<ph name="END_LINK_CHROMIUM" /> ו<ph name="BEGIN_LINK_OSS" />תוכנות קוד פתוח<ph name="END_LINK_OSS" /> נוספות.</translation>
 <translation id="2588322182880276190">‏הלוגו של Chrome</translation>
 <translation id="3444832043240812445">דף זה מציג מידע על הקריסות האחרונות בלבד אם <ph name="BEGIN_LINK" />תפעיל את אפשרות הדיווח על קריסות<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">‏הדפים האלה מיועדים למפתחי Chrome. יכול להיות שהם לא מתוחזקים או נבדקים באופן פעיל. כדי להפעיל אותם, עוברים לכתובת <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, לוחצים על הכפתור כדי להפעיל את מצב ניפוי הבאגים בדפים, ואז מנווטים בחזרה לדף הזה.</translation>
 <translation id="3875312571075912821">‏כדאי לשנות את הגדרות חומת האש או האנטי-וירוס כדי לאפשר ל-Chrome לגשת לרשת.</translation>
+<translation id="4949828774841497663">‏עוברים אל "אפליקציות" &gt; "הגדרות המערכת" &gt; "רשת", ובוחרים את
+          הרשת הפעילה, לוחצים על הכפתור "פרטים…" ומבטלים את הבחירה בכל שרתי ה-proxy
+          שנבחרו.</translation>
 <translation id="5005121315113832363">‏הדף הזה נחסם על ידי Chrome</translation>
 <translation id="6011049234605203654">‏יש לעבור אל
           תפריט Chrome‏ &gt;
@@ -38,10 +42,7 @@
           &gt;
           הגדרות LAN
           ולבטל את הבחירה באפשרות "שימוש בשרת עבור רשת LAN".</translation>
-<translation id="7230956101631259640">‏מוצג דף מאובטח של Ghrome</translation>
-<translation id="8187289872471304532">‏יש לעבור אל
-          'יישומים' &gt; 'העדפות מערכת' &gt; 'רשת' &gt; 'מתקדם' &gt; שרתי Proxy'
-          ולבטל את הבחירה בשרתי proxy שנבחרו.</translation>
+<translation id="7230956101631259640">‏מוצג דף מאובטח של Chrome</translation>
 <translation id="8232971017369963250">‏Chrome קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">‏Chrome קיים גם הודות ל<ph name="BEGIN_LINK_OSS" />תוכנת קוד פתוח<ph name="END_LINK_OSS" /> אחרת.</translation>
 <translation id="8544217240017914508">‏Google Chrome מנסה לשנות את ההגדרות למילוי אמצעי תשלום.</translation>

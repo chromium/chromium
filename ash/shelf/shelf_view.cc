@@ -124,6 +124,12 @@ constexpr float kDraggedImageOpacity = 0.5f;
 
 namespace {
 
+// `BoundsAnimator` drives the animation and the delegate itself does not.
+// Hence the animation delegate that is used by `BoundsAnimator` to notify
+// animation progress can just be `gfx::AnimationDelegate` and does not need to
+// be a `views::AnimationDelegateViews`.
+using BoundsAnimatorDelegate = gfx::AnimationDelegate;
+
 // The dimensions, in pixels, of the separator between pinned and unpinned
 // items.
 constexpr int kSeparatorSize = 20;
@@ -272,9 +278,9 @@ class ShelfView::FadeInAnimationDelegate
   raw_ptr<ShelfView> shelf_view_ = nullptr;
 };
 
-// AnimationDelegate used when deleting an item. This steadily decreased the
-// opacity of the layer as the animation progress.
-class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
+// FadeOutAnimationDelegate used when deleting an item. This steadily decreased
+// the opacity of the layer as the animation progress.
+class ShelfView::FadeOutAnimationDelegate : public BoundsAnimatorDelegate {
  public:
   FadeOutAnimationDelegate(ShelfView* host, std::unique_ptr<views::View> view)
       : shelf_view_(host), view_(std::move(view)) {}
@@ -284,7 +290,7 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
 
   ~FadeOutAnimationDelegate() override = default;
 
-  // AnimationDelegate overrides:
+  // BoundsAnimatorDelegate overrides:
   void AnimationProgressed(const Animation* animation) override {
     view_->layer()->SetOpacity(1 - animation->GetCurrentValue());
   }
@@ -304,10 +310,10 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
   std::unique_ptr<views::View> view_;
 };
 
-// AnimationDelegate used to trigger fading an element in. When an item is
-// inserted this delegate is attached to the animation that expands the size of
-// the item.  When done it kicks off another animation to fade the item in.
-class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
+// StartFadeAnimationDelegate used to trigger fading an element in. When an item
+// is inserted this delegate is attached to the animation that expands the size
+// of the item.  When done it kicks off another animation to fade the item in.
+class ShelfView::StartFadeAnimationDelegate : public BoundsAnimatorDelegate {
  public:
   StartFadeAnimationDelegate(ShelfView* host, views::View* view)
       : shelf_view_(host), view_(view) {}
@@ -318,7 +324,7 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
 
   ~StartFadeAnimationDelegate() override = default;
 
-  // AnimationDelegate overrides:
+  // BoundsAnimatorDelegate overrides:
   void AnimationEnded(const Animation* animation) override {
     shelf_view_->FadeIn(view_);
   }
@@ -365,7 +371,7 @@ ShelfView::ShelfView(ShelfModel* model,
   SetProperty(views::kElementIdentifierKey, kShelfViewElementId);
 
   announcement_view_ = new views::View();
-  AddChildView(announcement_view_.get());
+  AddChildViewRaw(announcement_view_.get());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
   GetViewAccessibility().SetName(
@@ -1128,12 +1134,13 @@ bool ShelfView::StartDrag(const std::string& app_id,
   if (!ShouldHandleDrag(app_id, location_in_screen))
     return false;
 
+  // If the AppsGridView (which was dispatching this event) was opened by our
+  // button, ShelfView dragging operations are locked and we have to unlock.
+  CancelDrag();
+
   DCHECK(!is_active_drag_and_drop_host_);
   is_active_drag_and_drop_host_ = true;
 
-  // If the AppsGridView (which was dispatching this event) was opened by our
-  // button, ShelfView dragging operations are locked and we have to unlock.
-  CancelDrag(std::nullopt);
   drag_and_drop_item_pinned_ = false;
   drag_and_drop_shelf_id_ = ShelfID(app_id);
   // Check if the application is pinned - if not, we have to pin it so
@@ -1142,9 +1149,7 @@ bool ShelfView::StartDrag(const std::string& app_id,
   if (!model_->IsAppPinned(app_id)) {
     ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
 
-    if (model_->ItemIndexByAppID(app_id) >= 0) {
-      model_->PinExistingItemWithID(app_id);
-    } else {
+    if (model_->ItemIndexByAppID(app_id) < 0) {
       model_->AddAndPinAppWithFactoryConstructedDelegate(app_id);
       drag_and_drop_item_pinned_ = true;
     }
@@ -1157,7 +1162,7 @@ bool ShelfView::StartDrag(const std::string& app_id,
   // Since there is already an icon presented by the caller, we hide this item
   // for now. That has to be done by reducing the size since the visibility will
   // change once a regrouping animation is performed.
-  pre_drag_and_drop_size_ = drag_and_drop_view->size();
+  // The size will be restored to ideal bounds in `EndDrag()`.
   drag_and_drop_view->SetSize(gfx::Size());
 
   // First we have to center the mouse cursor over the item.
@@ -1185,8 +1190,8 @@ bool ShelfView::Drag(const gfx::Point& location_in_screen,
 
   drag_icon_bounds_in_screen_ = drag_icon_bounds_in_screen;
   gfx::Point pt = location_in_screen;
-  views::View* drag_and_drop_view =
-      view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
+  const int item_index = model_->ItemIndexByID(drag_and_drop_shelf_id_);
+  views::View* drag_and_drop_view = view_model_->view_at(item_index);
   ConvertPointFromScreen(drag_and_drop_view, &pt);
   gfx::Point point_in_root = location_in_screen;
   wm::ConvertPointFromScreen(window_util::GetRootWindowAt(location_in_screen),
@@ -1198,30 +1203,28 @@ bool ShelfView::Drag(const gfx::Point& location_in_screen,
 }
 
 void ShelfView::EndDrag(bool cancel) {
-  drag_scroll_dir_ = 0;
-  scrolling_timer_.Stop();
-  speed_up_drag_scrolling_.Stop();
-
   if (drag_and_drop_shelf_id_.IsNull()) {
-    is_active_drag_and_drop_host_ = false;
+    ClearDragState();
     return;
   }
 
+  // `PointerReleasedOnButton()` clears drag state, so cache parts of the state
+  // needed later on.
+  const auto item_id = drag_and_drop_shelf_id_;
   views::View* drag_and_drop_view =
-      view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
+      view_model_->view_at(model_->ItemIndexByID(item_id));
   PointerReleasedOnButton(drag_and_drop_view, DRAG_AND_DROP, cancel);
 
-  // Either destroy the temporarily created item - or - make the item visible.
-  if (drag_and_drop_item_pinned_ && cancel) {
-    ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
-    model_->UnpinAppWithID(drag_and_drop_shelf_id_.app_id);
-  } else if (drag_and_drop_view) {
-    std::unique_ptr<gfx::AnimationDelegate> animation_delegate;
+  // Animate drag and drop view to visible if it hasn't been removed by
+  // `PointerReleasedOnButton()`.
+  const int item_index = model_->ItemIndexByID(item_id);
+  if (item_index >= 0) {
+    drag_and_drop_view = view_model_->view_at(item_index);
 
     // Resets the dragged view's opacity at the end of drag. Otherwise, if
     // the app is already pinned on shelf before drag starts, the dragged view
     // will be invisible when drag ends.
-    animation_delegate =
+    auto animation_delegate =
         std::make_unique<StartFadeAnimationDelegate>(this, drag_and_drop_view);
 
     if (cancel) {
@@ -1235,14 +1238,13 @@ void ShelfView::EndDrag(bool cancel) {
         bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
                                                std::move(animation_delegate));
       }
-
     } else {
-      drag_and_drop_view->SetSize(pre_drag_and_drop_size_);
+      // Restore drag and drop view size, which was cleared in `StartDrag` to
+      // hide the item view.
+      const int button_size = GetButtonSize();
+      drag_and_drop_view->SetSize(gfx::Size(button_size, button_size));
     }
   }
-  drag_icon_bounds_in_screen_ = gfx::Rect();
-  drag_and_drop_shelf_id_ = ShelfID();
-  is_active_drag_and_drop_host_ = false;
 }
 
 void ShelfView::SwapButtons(views::View* button_to_swap, bool with_next) {
@@ -1319,31 +1321,31 @@ void ShelfView::PointerDraggedOnButton(const views::View* view,
 void ShelfView::PointerReleasedOnButton(const views::View* view,
                                         Pointer pointer,
                                         bool canceled) {
-  drag_scroll_dir_ = 0;
-  scrolling_timer_.Stop();
-  speed_up_drag_scrolling_.Stop();
-
   is_repost_event_on_same_item_ = false;
-
   if (canceled) {
-    CancelDrag(std::nullopt);
+    CancelDrag();
   } else if (drag_pointer_ == pointer) {
+    // `dragged_off_shelf_` gets reset in in `FinalizeRipOffDrag()` - cache the
+    // value so it can be used to decide whether to update dragged view pin
+    // status.
+    const bool was_dragged_off = dragged_off_shelf_;
     FinalizeRipOffDrag(false);
     drag_pointer_ = NONE;
 
     // Check if the pin status of |drag_view_| should be changed when
-    // |drag_view_| is dragged over the separator. Do nothing if |drag_view_| is
-    // already handled in FinalizedRipOffDrag.
-    if (drag_view_) {
-      if (ShouldUpdateDraggedViewPinStatus(
-              view_model_->GetIndexOfView(view).value())) {
-        const std::string drag_app_id = ShelfItemForView(drag_view_)->id.app_id;
-        ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
-        if (model_->IsAppPinned(drag_app_id)) {
-          model_->UnpinAppWithID(drag_app_id);
-        } else {
-          model_->PinExistingItemWithID(drag_app_id);
-        }
+    // |drag_view_| is dragged over the separator. Keep the current pin state
+    // if the view has been dragged off the shelf - `FinalizeRipOffDrag()`
+    // should have already updated the item pin state appropriately in this
+    // case.
+    if (drag_view_ && !was_dragged_off &&
+        ShouldUpdateDraggedViewPinStatus(
+            view_model_->GetIndexOfView(view).value())) {
+      const std::string drag_app_id = ShelfItemForView(drag_view_)->id.app_id;
+      ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
+      if (model_->IsAppPinned(drag_app_id)) {
+        model_->UnpinAppWithID(drag_app_id);
+      } else {
+        model_->PinExistingItemWithID(drag_app_id);
       }
     }
     AnimateToIdealBounds();
@@ -1372,9 +1374,7 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
 
   // If the drag pointer is NONE, no drag operation is going on and the
   // |drag_view_| can be released.
-  drag_view_ = nullptr;
-  drag_view_relative_to_ideal_bounds_ = RelativePosition::kNotAvailable;
-  RemoveGhostView();
+  ClearDragState();
 }
 
 void ShelfView::AnimateDragImageLayer(
@@ -1573,10 +1573,9 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
   DCHECK(drag_view_);
   drag_pointer_ = pointer;
   start_drag_index_ = view_model_->GetIndexOfView(drag_view_);
-  drag_scroll_dir_ = 0;
 
   if (!start_drag_index_.has_value()) {
-    CancelDrag(std::nullopt);
+    CancelDrag();
     return;
   }
 
@@ -1638,9 +1637,6 @@ void ShelfView::ContinueDrag(const ui::LocatedEvent& event) {
     HandleRipOffDrag(event);
     // Check if the item got ripped off the shelf - if it did we are done.
     if (dragged_off_shelf_) {
-      drag_scroll_dir_ = 0;
-      scrolling_timer_.Stop();
-      speed_up_drag_scrolling_.Stop();
       if (!dragged_off_shelf_before)
         model_->OnItemRippedOff();
       return;
@@ -1724,8 +1720,8 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
     if (target_index == current_item_index &&
         old_relative_position != drag_view_relative_to_ideal_bounds_) {
       AnimateToIdealBounds();
-      NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                               true /* send_native_event */);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                         true /* send_native_event */);
     }
   }
 
@@ -1857,27 +1853,31 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
       drag_view_->SetVisible(false);
       ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
       model_->UnpinAppWithID(model_->items()[current_index.value()].id.app_id);
+      // Show the view if unpinning the app does not remove it from shelf (e.g.
+      // if the app ripped of shelf has an open instance).
+      if (drag_view_) {
+        drag_view_->SetVisible(true);
+      }
     }
   }
+
   if (cancel || snap_back) {
-    if (!cancelling_drag_model_changed_) {
-      // Only do something if the change did not come through a model change.
-      gfx::Rect drag_bounds = drag_icon_proxy_->GetBoundsInScreen();
-      gfx::Point relative_to = GetBoundsInScreen().origin();
-      gfx::Rect target(
-          gfx::PointAtOffsetFromOrigin(drag_bounds.origin() - relative_to),
-          drag_bounds.size());
-      drag_view_->SetBoundsRect(target);
-      // Hide the status from the active item since we snap it back now. Upon
-      // animation end the flag gets cleared if |snap_back_from_rip_off_view_|
-      // is set.
-      snap_back_from_rip_off_view_ = drag_view_;
-      drag_view_->AddState(ShelfAppButton::STATE_HIDDEN);
-      // When a canceling drag model is happening, the view model is diverged
-      // from the menu model and movements / animations should not be done.
-      model_->Move(current_index.value(), start_drag_index_.value());
-      AnimateToIdealBounds();
-    }
+    // Only do something if the change did not come through a model change.
+    gfx::Rect drag_bounds = drag_icon_proxy_->GetBoundsInScreen();
+    gfx::Point relative_to = GetBoundsInScreen().origin();
+    gfx::Rect target(
+        gfx::PointAtOffsetFromOrigin(drag_bounds.origin() - relative_to),
+        drag_bounds.size());
+    drag_view_->SetBoundsRect(target);
+    // Hide the status from the active item since we snap it back now. Upon
+    // animation end the flag gets cleared if |snap_back_from_rip_off_view_|
+    // is set.
+    snap_back_from_rip_off_view_ = drag_view_;
+    drag_view_->AddState(ShelfAppButton::STATE_HIDDEN);
+    // When a canceling drag model is happening, the view model is diverged
+    // from the menu model and movements / animations should not be done.
+    model_->Move(current_index.value(), start_drag_index_.value());
+    AnimateToIdealBounds();
     drag_view_->layer()->SetOpacity(1.0f);
     model_->OnItemReturnedFromRipOff(model_->item_count() - 1);
   }
@@ -1980,11 +1980,8 @@ bool ShelfView::CanDragAcrossSeparator(views::View* drag_view) const {
   // Only unpinned running apps on shelf can be dragged across the separator to
   // pin.
   bool can_change_pin_state = ShelfItemForView(drag_view)->type == TYPE_APP;
-
-  // Note that |drag_and_drop_shelf_id_| is set only when the current drag view
-  // is from app list, which can not be dragged to the unpinned app side.
   return !ShelfItemForView(drag_view)->IsPinStateForced() &&
-         drag_and_drop_shelf_id_ == ShelfID() && can_change_pin_state;
+         can_change_pin_state;
 }
 
 void ShelfView::OnFadeInAnimationEnded() {
@@ -2129,45 +2126,56 @@ gfx::Rect ShelfView::GetBoundsForDragInsertInScreen() {
   return bounds;
 }
 
-std::optional<size_t> ShelfView::CancelDrag(
-    std::optional<size_t> modified_index) {
-  drag_scroll_dir_ = 0;
-  scrolling_timer_.Stop();
-  speed_up_drag_scrolling_.Stop();
+void ShelfView::CancelDrag() {
+  if (!dragging()) {
+    // Clear any drag state that may have been set before dragging started - for
+    // example, `PointerPressedOnButton()` may set `drag_view_`.
+    if (drag_view_) {
+      ClearDragState();
+    }
+    return;
+  }
 
   FinalizeRipOffDrag(true);
 
-  delegate_->CancelScrollForItemDrag();
-  drag_icon_proxy_.reset();
-  drag_image_layer_.reset();
+  if (drag_view_) {
+    // If the item was pinned for drag and drop, the item view is about to be
+    // removed from shelf view, so there is no point in updating its appearance.
+    if (!drag_and_drop_item_pinned_) {
+      drag_view_->layer()->SetOpacity(1.0f);
+    }
+    auto drag_view_index = view_model_->GetIndexOfView(drag_view_);
+    drag_view_ = nullptr;
 
-  if (!drag_view_)
-    return modified_index;
-  bool was_dragging = dragging();
-  auto drag_view_index = view_model_->GetIndexOfView(drag_view_);
+    if (drag_and_drop_item_pinned_) {
+      ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
+      model_->UnpinAppWithID(drag_and_drop_shelf_id_.app_id);
+    } else {
+      model_->Move(drag_view_index.value(), start_drag_index_.value());
+    }
+  }
+
+  ClearDragState();
+}
+
+void ShelfView::ClearDragState() {
   drag_pointer_ = NONE;
   drag_view_ = nullptr;
-  if (drag_view_index == modified_index) {
-    // The view that was being dragged is being modified. Don't do anything.
-    return modified_index;
-  }
-  if (!was_dragging)
-    return modified_index;
+  start_drag_index_.reset();
+  drag_view_relative_to_ideal_bounds_ = RelativePosition::kNotAvailable;
+  drag_icon_bounds_in_screen_ = gfx::Rect();
 
-  // Restore previous position, tracking the position of the modified view.
-  bool at_end = modified_index == view_model_->view_size();
-  views::View* modified_view =
-      (modified_index.has_value() && !at_end)
-          ? view_model_->view_at(modified_index.value())
-          : nullptr;
-  model_->Move(drag_view_index.value(), start_drag_index_.value());
+  drag_icon_proxy_.reset();
+  drag_image_layer_.reset();
+  dragged_off_shelf_ = false;
 
-  // If the modified view will be at the end of the list, return the new end of
-  // the list.
-  if (at_end)
-    return view_model_->view_size();
-  return modified_view ? view_model_->GetIndexOfView(modified_view)
-                       : std::nullopt;
+  delegate_->CancelScrollForItemDrag();
+
+  drag_and_drop_shelf_id_ = ShelfID();
+  drag_and_drop_item_pinned_ = false;
+  is_active_drag_and_drop_host_ = false;
+
+  RemoveGhostView();
 }
 
 void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
@@ -2220,11 +2228,10 @@ void ShelfView::ShelfItemAdded(int model_index) {
   const ShelfItem& item(model_->items()[model_index]);
   views::View* view = CreateViewForItem(item);
 
-  {
-    base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
-                                          true);
-    model_index = static_cast<int>(CancelDrag(model_index).value());
+  if (start_drag_index_ >= 0 && model_index <= start_drag_index_) {
+    start_drag_index_ = *start_drag_index_ + 1;
   }
+
   view_model_->Add(view, static_cast<size_t>(model_index));
 
   // If |item| is pinned and the mutation is user-triggered, report the pinning
@@ -2286,8 +2293,7 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // works better with zero animation duration.
   if (!bounds_animator_->GetAnimationDuration().is_zero()) {
     bounds_animator_->SetAnimationDelegate(
-        view, std::unique_ptr<gfx::AnimationDelegate>(
-                  new StartFadeAnimationDelegate(this, view)));
+        view, std::make_unique<StartFadeAnimationDelegate>(this, view));
   }
 }
 
@@ -2316,7 +2322,6 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   // If std::move is not called on |view|, |view| will be deleted once out of
   // scope.
   std::unique_ptr<views::View> view(view_model_->view_at(model_index));
-
   shelf_button_delegate_->OnButtonWillBeRemoved();
 
   if (old_item.is_promise_app) {
@@ -2325,17 +2330,19 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   }
   view_model_->Remove(model_index);
 
+  if (drag_view_ == view.get()) {
+    ClearDragState();
+  } else {
+    if (start_drag_index_ >= 0 && model_index < start_drag_index_) {
+      start_drag_index_ = *start_drag_index_ - 1;
+    }
+  }
+
   if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
     shelf_menu_model_adapter_->Cancel();
 
   if (old_item.id == item_awaiting_response_)
     ResetActiveMenuModelRequest();
-
-  {
-    base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
-                                          true);
-    CancelDrag(std::nullopt);
-  }
 
   if (view.get() == shelf_->tooltip()->GetCurrentAnchorView())
     shelf_->tooltip()->Close();
@@ -2408,41 +2415,6 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
         &ShelfView::ShelfItemsUpdatedForDeskChange, base::Unretained(this)));
   }
 
-  if (old_item.type != item.type) {
-    // Type changed, swap the views.
-    model_index = static_cast<int>(CancelDrag(model_index).value());
-    std::unique_ptr<views::View> old_view(view_model_->view_at(model_index));
-    bounds_animator_->StopAnimatingView(old_view.get());
-    // Removing and re-inserting a view in our view model will strip the ideal
-    // bounds from the item. To avoid recalculation of everything the bounds
-    // get remembered and restored after the insertion to the previous value.
-    gfx::Rect old_ideal_bounds = view_model_->ideal_bounds(model_index);
-    view_model_->Remove(model_index);
-    views::View* new_view = CreateViewForItem(item);
-    // The view must be added to the |view_model_| before it's added as a child
-    // so that the model is consistent when UpdateShelfItemViewsVisibility() is
-    // called as a result the hierarchy changes caused by AddChildView(). See
-    // ScrollableShelfView::ViewHierarchyChanged().
-    view_model_->Add(new_view, model_index);
-    AddChildView(new_view);
-    view_model_->set_ideal_bounds(model_index, old_ideal_bounds);
-
-    bounds_animator_->StopAnimatingView(new_view);
-    new_view->SetBoundsRect(old_view->bounds());
-    bounds_animator_->AnimateViewTo(new_view, old_ideal_bounds);
-
-    // If an item is being pinned or unpinned, show the new status of the
-    // shelf immediately so that the separator gets drawn as needed.
-    if (old_item.type == TYPE_PINNED_APP || item.type == TYPE_PINNED_APP) {
-      if (model_->is_current_mutation_user_triggered()) {
-        AnnouncePinUnpinEvent(old_item, item.type == TYPE_PINNED_APP);
-        RecordPinUnpinUserAction(item.type == TYPE_PINNED_APP);
-      }
-      AnimateToIdealBounds();
-    }
-    return;
-  }
-
   views::View* view = view_model_->view_at(model_index);
   switch (item.type) {
     case TYPE_PINNED_APP:
@@ -2457,6 +2429,18 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
     }
     case TYPE_UNDEFINED:
       break;
+  }
+
+  if (old_item.type != item.type) {
+    // If an item is being pinned or unpinned, show the new status of the
+    // shelf immediately so that the separator gets drawn as needed.
+    if (old_item.type == TYPE_PINNED_APP || item.type == TYPE_PINNED_APP) {
+      if (model_->is_current_mutation_user_triggered()) {
+        AnnouncePinUnpinEvent(old_item, item.type == TYPE_PINNED_APP);
+        RecordPinUnpinUserAction(item.type == TYPE_PINNED_APP);
+      }
+      AnimateToIdealBounds();
+    }
   }
 }
 
@@ -2475,19 +2459,21 @@ void ShelfView::ShelfItemsUpdatedForDeskChange() {
 }
 
 void ShelfView::ShelfItemMoved(int start_index, int target_index) {
+  if (start_drag_index_ > start_index && start_drag_index_ < target_index) {
+    start_drag_index_ = *start_drag_index_ - 1;
+  } else if (start_drag_index_ > target_index &&
+             start_drag_index_ < start_index) {
+    start_drag_index_ = *start_drag_index_ + 1;
+  }
+
   view_model_->Move(start_index, target_index);
 
   // Reorder the child view to be in the same order as in the |view_model_|.
   ReorderChildView(view_model_->view_at(target_index), target_index);
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                           true /* send_native_event */);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                     true /* send_native_event */);
 
-  // When cancelling a drag due to a shelf item being added, the currently
-  // dragged item is moved back to its initial position. AnimateToIdealBounds
-  // will be called again when the new item is added to the |view_model_| but
-  // at this time the |view_model_| is inconsistent with the |model_|.
-  if (!cancelling_drag_model_changed_)
-    AnimateToIdealBounds();
+  AnimateToIdealBounds();
 }
 
 void ShelfView::ShelfItemDelegateChanged(const ShelfID& id,

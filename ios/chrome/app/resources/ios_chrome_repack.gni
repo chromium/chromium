@@ -28,13 +28,13 @@ template("ios_chrome_repack_locales") {
   repack_locales(target_name) {
     forward_variables_from(invoker, "*")
     source_patterns = [
-      "${root_gen_dir}/components/strings/search_engine_descriptions_strings_",
-      "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_",
+      "${root_gen_dir}/components/strings/components_branded_strings_",
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/components/strings/components_strings_",
+      "${root_gen_dir}/components/strings/search_engine_descriptions_strings_",
       "${root_gen_dir}/components/omnibox/resources/omnibox_pedal_synonyms_",
       "${root_gen_dir}/components/plus_addresses/resources/strings/plus_addresses_strings_",
-      "${root_gen_dir}/ios/chrome/ios_${branding_path_product}_strings_",
+      "${root_gen_dir}/ios/chrome/ios_branded_strings_",
       "${root_gen_dir}/ios/chrome/ios_strings_",
       "${root_gen_dir}/ios/chrome/ios_whats_new_strings_",
       "${root_gen_dir}/third_party/libaddressinput/address_input_strings_",
@@ -45,33 +45,26 @@ template("ios_chrome_repack_locales") {
 
     foreach(_source_pattern, ios_locales_pack_extra_source_patterns) {
       _source_pattern =
-          string_replace(_source_pattern, "%branding%", branding_path_product)
-      _source_pattern =
           string_replace(_source_pattern, "%root_gen_dir%", root_gen_dir)
 
       source_patterns += [ _source_pattern ]
     }
 
     deps = [
-      "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
-      "//components/plus_addresses/resources/strings",
-      "//components/strings:components_branded_strings",
-      "//components/strings:components_locale_settings",
-      "//components/strings:components_strings",
-      "//components/strings:search_engine_descriptions_strings",
-      "//ios/chrome/app/strings:ios_branded_strings",
-      "//ios/chrome/app/strings:ios_strings",
-      "//ios/chrome/browser/ui/whats_new/strings:strings",
-      "//third_party/libaddressinput:strings",
-      "//ui/strings:app_locale_settings",
-      "//ui/strings:ax_strings",
-      "//ui/strings:ui_strings",
-    ]
-
-    foreach(_target, ios_locales_pack_extra_deps) {
-      _target = string_replace(_target, "%branding%", branding_path_product)
-      deps += [ _target ]
-    }
+             "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
+             "//components/plus_addresses/resources/strings",
+             "//components/strings:components_branded_strings",
+             "//components/strings:components_locale_settings",
+             "//components/strings:components_strings",
+             "//components/strings:search_engine_descriptions_strings",
+             "//ios/chrome/app/strings:ios_branded_strings",
+             "//ios/chrome/app/strings:ios_strings",
+             "//ios/chrome/browser/ui/whats_new/strings:strings",
+             "//third_party/libaddressinput:strings",
+             "//ui/strings:app_locale_settings",
+             "//ui/strings:ax_strings",
+             "//ui/strings:ui_strings",
+           ] + ios_locales_pack_extra_deps
 
     copy_data_to_bundle = true
   }

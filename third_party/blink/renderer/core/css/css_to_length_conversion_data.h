@@ -37,10 +37,11 @@
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
+#include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -48,7 +49,6 @@ namespace blink {
 class AnchorEvaluator;
 class ComputedStyle;
 class Element;
-class Font;
 class FontSizeStyle;
 class LayoutView;
 
@@ -56,10 +56,6 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   STACK_ALLOCATED();
 
  public:
-  // NOTE: Both `FontSizes` and `LineHeightSize` have a pointer to a `Font`.
-  // Typically these classes are just on the stack. However if they are heap
-  // allocated (as part of another object), you need to ensure that *something*
-  // (typically a `ComputedStyle`) is keeping the `Font` object alive.
   class CORE_EXPORT FontSizes {
     DISALLOW_NEW();
 
@@ -91,15 +87,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
       DCHECK(root_font_);
     }
 
-    FontSizes(const FontSizeStyle& style, const ComputedStyle* root_style)
-        : FontSizes(style.SpecifiedFontSize(),
-                    root_style ? root_style->SpecifiedFontSize()
-                               : style.SpecifiedFontSize(),
-                    &style.GetFont(),
-                    root_style ? &root_style->GetFont() : &style.GetFont(),
-                    style.EffectiveZoom(),
-                    root_style ? root_style->EffectiveZoom()
-                               : style.EffectiveZoom()) {}
+    FontSizes(const FontSizeStyle& style, const ComputedStyle* root_style);
 
     float Em(float zoom) const { return em_ * zoom; }
     float Rem(float zoom) const { return rem_ * zoom; }
@@ -112,11 +100,16 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float Cap(float zoom) const;
     float Rcap(float zoom) const;
 
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(font_);
+      visitor->Trace(root_font_);
+    }
+
    private:
     float em_ = 0;
     float rem_ = 0;
-    const Font* font_ = nullptr;
-    const Font* root_font_ = nullptr;
+    Member<const Font> font_;
+    Member<const Font> root_font_;
     // Font-metrics-based units (ex, ch, ic) are pre-zoomed by a factor of
     // `font_zoom_`.
     float font_zoom_ = 1;
@@ -147,13 +140,18 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float Lh(float zoom) const;
     float Rlh(float zoom) const;
 
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(font_);
+      visitor->Trace(root_font_);
+    }
+
    private:
     Length line_height_;
     Length root_line_height_;
     // Note that this Font may be different from the instance held
     // by FontSizes (for the same CSSToLengthConversionData object).
-    const Font* font_ = nullptr;
-    const Font* root_font_ = nullptr;
+    Member<const Font> font_ = nullptr;
+    Member<const Font> root_font_ = nullptr;
     // Like ex/ch/ic, lh is also based on font-metrics and is pre-zoomed by
     // a factor of `font_zoom_`.
     float font_zoom_ = 1;
@@ -332,8 +330,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                             float zoom,
                             Flags&,
                             const Element*);
-  template <typename ComputedStyleOrBuilder>
-  CSSToLengthConversionData(const ComputedStyleOrBuilder& element_style,
+  CSSToLengthConversionData(const ComputedStyle& element_style,
                             const ComputedStyle* parent_style,
                             const ComputedStyle* root_style,
                             const ViewportSize& viewport_size,
@@ -341,19 +338,16 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                             const AnchorData& anchor_data,
                             float zoom,
                             Flags& flags,
-                            const Element* element)
-      : CSSToLengthConversionData(
-            element_style.GetWritingMode(),
-            FontSizes(element_style.GetFontSizeStyle(), root_style),
-            LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
-                                        : element_style.GetFontSizeStyle(),
-                           root_style),
-            viewport_size,
-            container_sizes,
-            anchor_data,
-            zoom,
-            flags,
-            element) {}
+                            const Element* element);
+  CSSToLengthConversionData(const ComputedStyleBuilder& element_style,
+                            const ComputedStyle* parent_style,
+                            const ComputedStyle* root_style,
+                            const ViewportSize& viewport_size,
+                            const ContainerSizes& container_sizes,
+                            const AnchorData& anchor_data,
+                            float zoom,
+                            Flags& flags,
+                            const Element* element);
 
   float EmFontSize(float zoom) const override;
   float RemFontSize(float zoom) const override;

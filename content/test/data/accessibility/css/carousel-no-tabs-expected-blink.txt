@@ -1,0 +1,25 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable
+++++++++button focusable name='Scroll up'
+++++++++++staticText name='u'
+++++++++++++inlineTextBox name='u'
+++++++++button focusable name='Scroll left'
+++++++++++staticText name='<'
+++++++++++++inlineTextBox name='<'
+++++++++button focusable name='Scroll right'
+++++++++++staticText name='>'
+++++++++++++inlineTextBox name='>'
+++++++++button focusable name='Scroll down'
+++++++++++staticText name='d'
+++++++++++++inlineTextBox name='d'
+++++++++genericContainer
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++genericContainer
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++genericContainer
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'

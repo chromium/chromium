@@ -5,7 +5,6 @@
 #include "sandbox/policy/switches.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace sandbox::policy::switches {
 

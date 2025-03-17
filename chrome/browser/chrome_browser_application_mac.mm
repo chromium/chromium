@@ -156,6 +156,14 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   cocoa_l10n_util::ApplyForcedRTL();
 }
 
+- (void)orderFrontCharacterPalette:sender {
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:@"ChromeWillOrderFrontCharacterPalette"
+                    object:nil];
+
+  [super orderFrontCharacterPalette:sender];
+}
+
 // Initialize NSApplication using the custom subclass.  Check whether NSApp
 // was already initialized using another class, because that would break
 // some things.
@@ -200,8 +208,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   // BrowserAccessibilityStateImplMac. The context is the browser's
   // global accessibility object, which we must check to ensure we're acting
   // on a notification we set up (vs. NSApplication, say).
-  if (_sonomaAccessibilityRefinementsAreActive &&
-      [keyPath isEqualToString:@"voiceOverEnabled"] &&
+  if ([keyPath isEqualToString:@"voiceOverEnabled"] &&
       context == content::BrowserAccessibilityState::GetInstance()) {
     NSNumber* newValueNumber = [change objectForKey:NSKeyValueChangeNewKey];
 
@@ -212,6 +219,10 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 
     if ([newValueNumber isKindOfClass:[NSNumber class]]) {
       [self voiceOverStateChanged:[newValueNumber boolValue]];
+      content::BrowserAccessibilityState* browser_ax_state =
+          content::BrowserAccessibilityState::GetInstance();
+      browser_ax_state->SetKnownScreenReaderAppActive(
+          [newValueNumber boolValue]);
     }
 
     return;
@@ -524,22 +535,10 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
   // This is an undocumented attribute that's set when VoiceOver is turned
-  // on/off.
+  // on/off. We track VoiceOver state changes using KVO, but monitor this
+  // attribute in case other ATs use it to request accessibility activation.
   if ([attribute isEqualToString:@"AXEnhancedUserInterface"]) {
-    if (_sonomaAccessibilityRefinementsAreActive) {
-      // We no longer rely on this signal for VoiceOver state changes, but we
-      // pay attention to it in case other applications use it to request
-      // accessibility activation.
-      [self enableScreenReaderCompleteModeAfterDelay:[value boolValue]];
-    } else {
-      content::BrowserAccessibilityState* accessibility_state =
-          content::BrowserAccessibilityState::GetInstance();
-      if ([value boolValue]) {
-        accessibility_state->OnScreenReaderDetected();
-      } else {
-        accessibility_state->OnScreenReaderStopped();
-      }
-    }
+    [self enableScreenReaderCompleteModeAfterDelay:[value boolValue]];
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
 }

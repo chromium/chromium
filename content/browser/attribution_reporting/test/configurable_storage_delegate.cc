@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -91,6 +91,12 @@ ConfigurableStorageDelegate::GetDeleteExpiredRateLimitsFrequency() const {
   return delete_expired_rate_limits_frequency_;
 }
 
+base::TimeDelta
+ConfigurableStorageDelegate::GetDeleteExpiredOsRegistrationsFrequency() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delete_expired_os_registrations_frequency_;
+}
+
 base::Uuid ConfigurableStorageDelegate::NewReportID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DefaultExternalReportID();
@@ -106,7 +112,7 @@ void ConfigurableStorageDelegate::ShuffleReports(
     std::vector<AttributionReport>& reports) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (reverse_reports_on_shuffle_) {
-    base::ranges::reverse(reports);
+    std::ranges::reverse(reports);
   }
 }
 
@@ -190,6 +196,12 @@ void ConfigurableStorageDelegate::set_delete_expired_rate_limits_frequency(
     base::TimeDelta frequency) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delete_expired_rate_limits_frequency_ = frequency;
+}
+
+void ConfigurableStorageDelegate::set_delete_expired_os_registrations_frequency(
+    base::TimeDelta frequency) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delete_expired_os_registrations_frequency_ = frequency;
 }
 
 void ConfigurableStorageDelegate::set_report_delay(

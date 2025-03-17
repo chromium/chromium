@@ -55,14 +55,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
-namespace network {
-namespace mojom {
-namespace blink {
-class DataPipeGetter;
-}  // namespace blink
-}  // namespace mojom
-}  // namespace network
-
 namespace blink {
 namespace mojom {
 namespace blink {
@@ -217,7 +209,6 @@ class PLATFORM_EXPORT BlobDataHandle
 
   mojo::PendingRemote<mojom::blink::Blob> CloneBlobRemote();
   void CloneBlobRemote(mojo::PendingReceiver<mojom::blink::Blob>);
-  mojo::PendingRemote<network::mojom::blink::DataPipeGetter> AsDataPipeGetter();
 
   void ReadAll(mojo::ScopedDataPipeProducerHandle,
                mojo::PendingRemote<mojom::blink::BlobReaderClient>);

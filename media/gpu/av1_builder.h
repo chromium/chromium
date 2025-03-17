@@ -59,8 +59,8 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
 struct AV1BitstreamBuilder::SequenceHeader {
   uint32_t profile;
   uint32_t operating_points_cnt_minus_1;
-  uint32_t level[kMaxTemporalLayerNum];
-  uint32_t tier[kMaxTemporalLayerNum];
+  std::array<uint32_t, kMaxTemporalLayerNum> level;
+  std::array<uint32_t, kMaxTemporalLayerNum> tier;
   uint32_t frame_width_bits_minus_1;
   uint32_t frame_height_bits_minus_1;
   uint32_t width;
@@ -88,28 +88,29 @@ struct AV1BitstreamBuilder::FrameHeader {
   bool disable_frame_end_update_cdf;
   uint32_t base_qindex;
   uint8_t order_hint;
-  uint32_t filter_level[2];
+  std::array<uint32_t, 2> filter_level;
   uint32_t filter_level_u;
   uint32_t filter_level_v;
   uint32_t sharpness_level;
   bool loop_filter_delta_enabled;
   uint8_t primary_ref_frame;
-  uint8_t ref_frame_idx[7];
+  std::array<uint8_t, 7> ref_frame_idx;
   uint8_t refresh_frame_flags;
-  uint32_t ref_order_hint[8];
-  uint8_t cdef_y_pri_strength[8];
-  uint8_t cdef_y_sec_strength[8];
-  uint8_t cdef_uv_pri_strength[8];
-  uint8_t cdef_uv_sec_strength[8];
+  std::array<uint32_t, 8> ref_order_hint;
+  std::array<uint8_t, 8> cdef_y_pri_strength;
+  std::array<uint8_t, 8> cdef_y_sec_strength;
+  std::array<uint8_t, 8> cdef_uv_pri_strength;
+  std::array<uint8_t, 8> cdef_uv_sec_strength;
   bool reduced_tx_set;
   bool segmentation_enabled;
   bool segmentation_update_map;
   bool segmentation_temporal_update;
   bool segmentation_update_data;
   uint32_t segment_number;
-  uint32_t feature_mask[8 /*libgav1::kMaxSegments*/];
-  uint32_t feature_data[8 /*libgav1::kMaxSegments*/]
-                       [8 /*libgav1::kSegmentFeatureMax*/];
+  std::array<uint32_t, 8 /*libgav1::kMaxSegments*/> feature_mask;
+  std::array<std::array<uint32_t, 8 /*libgav1::kMaxSegments*/>,
+             8 /*libgav1::kSegmentFeatureMax*/>
+      feature_data;
 };
 
 }  // namespace media

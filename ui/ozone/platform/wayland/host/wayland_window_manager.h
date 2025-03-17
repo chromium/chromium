@@ -124,6 +124,8 @@ class WaylandWindowManager {
   float DetermineUiScale() const;
   void SetFontScale(float new_font_scale);
 
+  void UpdateActivationState();
+
   void DumpState(std::ostream& out) const;
 
  private:

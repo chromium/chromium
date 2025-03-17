@@ -13,7 +13,6 @@
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/prefetch_traffic_annotation.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
-#include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -24,7 +23,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
@@ -36,6 +34,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
@@ -100,7 +99,6 @@ void PrefetchResource(
     const GURL& page,
     const url::Origin& page_origin,
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::RequestDestination destination) {
   const auto site_for_cookies = net::SiteForCookies::FromUrl(page);
   network::ResourceRequest request;
@@ -117,9 +115,10 @@ void PrefetchResource(
   request.referrer_policy = kExpectedReferrerPolicy;
 
   auto& headers = request.headers;
-  headers.SetHeader("Purpose", "prefetch");
-  headers.SetHeader(prefetch::headers::kSecPurposeHeaderName,
-                    prefetch::headers::kSecPurposePrefetchHeaderValue);
+  headers.SetHeader(blink::kPurposeHeaderName,
+                    blink::kSecPurposePrefetchHeaderValue);
+  headers.SetHeader(blink::kSecPurposeHeaderName,
+                    blink::kSecPurposePrefetchHeaderValue);
 
   // Client hints headers.
   //
@@ -283,7 +282,7 @@ void PerformNetworkContextPrefetch(Profile* profile,
   const std::string user_agent =
       embedder_support::GetUserAgent(user_agent_reduction);
 
-  for (const auto& [url, network_anonymization_key, destination] : requests) {
+  for (const auto& [url, destination] : requests) {
     auto resource_type = GetResourceTypeForPrefetch(destination);
     if (!resource_type) {
       // TODO(crbug.com/342445996): Support more resource types.
@@ -304,7 +303,7 @@ void PerformNetworkContextPrefetch(Profile* profile,
         ComputeAcceptLanguageHeaderValue(page_origin, url, profile, prefs);
     PrefetchResource(network_context, ua_metadata, user_agent, accept_language,
                      resource_type.value(), page, page_origin, url,
-                     network_anonymization_key, destination);
+                     destination);
   }
 }
 

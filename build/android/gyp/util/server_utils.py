@@ -9,9 +9,7 @@ import pathlib
 import socket
 import platform
 import sys
-import subprocess
 import struct
-import time
 
 sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..'))
 from util import build_utils
@@ -32,10 +30,14 @@ SERVER_SCRIPT = pathlib.Path(
 ) / 'build' / 'android' / 'fast_local_dev_server.py'
 
 
+def AssertEnvironmentVariables():
+  assert os.environ.get('AUTONINJA_BUILD_ID')
+  assert os.environ.get('AUTONINJA_STDOUT_NAME')
+
+
 def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
   """Returns True if the command was successfully sent to the build server."""
-
-  if platform.system() == "Darwin":
+  if not use_build_server or platform.system() == 'Darwin':
     # Build server does not support Mac.
     return False
 
@@ -46,11 +48,16 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
   if BUILD_SERVER_ENV_VARIABLE in os.environ:
     return False
 
-  if not use_build_server:
+  build_id = os.environ.get('AUTONINJA_BUILD_ID')
+  if not build_id:
+    raise Exception(
+        'AUTONINJA_BUILD_ID is not set. Should have been set by autoninja.')
+  stdout_name = os.environ.get('AUTONINJA_STDOUT_NAME')
+  # If we get a bad tty (happens when autoninja is not run from the terminal
+  # directly but as part of another script), ignore the build server and build
+  # normally since the build server will not know where to output to otherwise.
+  if not stdout_name or not os.path.exists(stdout_name):
     return False
-
-  autoninja_tty = os.environ.get('AUTONINJA_STDOUT_NAME')
-  autoninja_build_id = os.environ.get('AUTONINJA_BUILD_ID')
 
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
     try:
@@ -65,30 +72,39 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
       raise e
 
     SendMessage(
-        sock,
-        json.dumps({
+        sock, {
             'name': name,
             'message_type': ADD_TASK,
-            'cmd': argv,
+            'cmd': [sys.executable] + argv,
             'cwd': os.getcwd(),
-            'tty': autoninja_tty,
-            'build_id': autoninja_build_id,
+            'build_id': build_id,
             'stamp_file': stamp_file,
-        }).encode('utf8'))
+        })
 
   # Siso needs the stamp file to be created in order for the build step to
   # complete. If the task fails when the build server runs it, the build server
   # will delete the stamp file so that it will be run again next build.
-  pathlib.Path(stamp_file).touch()
+  build_utils.Touch(stamp_file)
   return True
 
 
-def SendMessage(sock: socket.socket, message: bytes):
-  size_prefix = struct.pack('!i', len(message))
-  sock.sendall(size_prefix + message)
+def MaybeTouch(stamp_file):
+  """Touch |stamp_file| if we are not running under the build_server."""
+  # If we are running under the build server, the stamp file has already been
+  # touched when the task was created. If we touch it again, siso will consider
+  # the target dirty.
+  if BUILD_SERVER_ENV_VARIABLE in os.environ:
+    return
+  build_utils.Touch(stamp_file)
 
 
-def ReceiveMessage(sock: socket.socket):
+def SendMessage(sock: socket.socket, message: dict):
+  data = json.dumps(message).encode('utf-8')
+  size_prefix = struct.pack('!i', len(data))
+  sock.sendall(size_prefix + data)
+
+
+def ReceiveMessage(sock: socket.socket) -> dict:
   size_prefix = b''
   remaining = 4  # sizeof(int)
   while remaining > 0:
@@ -105,4 +121,6 @@ def ReceiveMessage(sock: socket.socket):
       break
     received.append(data)
     remaining -= len(data)
-  return b''.join(received)
+  if received:
+    return json.loads(b''.join(received))
+  return None

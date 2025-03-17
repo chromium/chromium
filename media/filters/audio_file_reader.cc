@@ -308,8 +308,9 @@ bool AudioFileReader::OnNewFrame(
         reinterpret_cast<float*>(frame->data[0]), frames_read);
   } else if (codec_context_->sample_fmt == AV_SAMPLE_FMT_FLTP) {
     for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      memcpy(audio_bus->channel(ch), frame->extended_data[ch],
-             sizeof(float) * frames_read);
+      audio_bus->channel_span(ch).copy_from_nonoverlapping(
+          base::span(reinterpret_cast<float*>(frame->extended_data[ch]),
+                     static_cast<size_t>(frames_read)));
     }
   } else {
     int bytes_per_sample = av_get_bytes_per_sample(codec_context_->sample_fmt);

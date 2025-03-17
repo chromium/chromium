@@ -21,6 +21,9 @@ class TargetImpl {
   flattenUnions(unions) {}
   flattenMap(map) {}
   requestSubinterface(request, client) {}
+  methodWithReservedNameParameter(arguments_) {
+    return Promise.resolve({arguments: arguments_});
+  }
 }
 
 promise_test(() => {
@@ -31,6 +34,16 @@ promise_test(() => {
     assert_equals(impl.numPokes, 1);
   });
 }, 'messages with replies return Promises that resolve on reply received');
+
+
+promise_test(() => {
+  let impl = new TargetImpl;
+  let remote = impl.target.$.bindNewPipeAndPassRemote();
+  return remote.methodWithReservedNameParameter([1, 2, 3, 4]).then(reply => {
+    assert_array_equals(reply.arguments, [1, 2, 3, 4]);
+  });
+}, 'Methods with reserved argument names are properly handled.');
+
 
 promise_test(() => {
   let impl = new TargetImpl;

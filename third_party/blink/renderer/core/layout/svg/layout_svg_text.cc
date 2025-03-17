@@ -246,21 +246,18 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   BlockNode(this).Layout(builder.ToConstraintSpace());
 
   needs_update_bounding_box_ = true;
-  if (RuntimeEnabledFeatures::SvgTspanBboxCacheEnabled()) {
-    InvalidateDescendantObjectBoundingBoxes();
-  }
+  InvalidateDescendantObjectBoundingBoxes();
 
   const gfx::RectF boundaries = ObjectBoundingBox();
-  const bool bounds_changed = old_boundaries != boundaries;
-
-  SVGLayoutResult result;
-  if (bounds_changed) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = old_boundaries != boundaries;
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
-  return result;
+
+  // Any element of the <text> subtree is advertised as having a viewport
+  // dependence. On any viewport size change, we have to relayout the text
+  // subtree, as the effective 'on-screen' font size may change.
+  return SVGLayoutResult(bounds_changed, /*has_viewport_dependence=*/true);
 }
 
 bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

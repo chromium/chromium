@@ -61,6 +61,24 @@ class FontDataServiceImpl : public mojom::FontDataService {
                        mojom::TypefaceStylePtr style,
                        MatchFamilyNameCallback callback) override;
 
+  // Provides fallback font data for `character`.
+  void MatchFamilyNameCharacter(
+      const std::string& family_name,
+      mojom::TypefaceStylePtr style,
+      const std::vector<std::string>& bcp47s,
+      int32_t character,
+      MatchFamilyNameCharacterCallback callback) override;
+
+  // Gets all the available font families on the system. Usage of this function
+  // is strongly discouraged as it iterates over all installed fonts.
+  void GetAllFamilyNames(GetAllFamilyNamesCallback callback) override;
+
+  // Gets a typeface matching `family_name` and `style`, or the default typeface
+  // if `family_name` is `nullopt`.
+  void LegacyMakeTypeface(const std::optional<std::string>& family_name,
+                          mojom::TypefaceStylePtr style,
+                          LegacyMakeTypefaceCallback callback) override;
+
  protected:
   // Returns a file handle based on the SkTypeface. The file handle may be empty
   // if there is no file associated with the typeface or if the typeface is
@@ -71,6 +89,11 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // Checks the shared memory region cache and returns an index if found. On
   // cache miss, creates a new entry caching the data.
   size_t GetOrCreateAssetIndex(std::unique_ptr<SkStreamAsset> asset);
+
+  // Prepares a MatchFamilyNameResult representing `typeface` that can be sent
+  // over mojo from `MatchFamilyName*` calls.
+  mojom::MatchFamilyNameResultPtr CreateMatchFamilyNameResult(
+      sk_sp<SkTypeface> typeface);
 
   mojo::ReceiverSet<mojom::FontDataService> receivers_;
 

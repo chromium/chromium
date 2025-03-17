@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -63,7 +64,7 @@ struct CONTENT_EXPORT DebugReportCooldown {
 struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
   DebugReportLockoutAndCooldowns();
   DebugReportLockoutAndCooldowns(
-      std::optional<base::Time> last_report_sent_time,
+      std::optional<DebugReportLockout> lockout,
       std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map);
   DebugReportLockoutAndCooldowns(DebugReportLockoutAndCooldowns&);
   DebugReportLockoutAndCooldowns& operator=(DebugReportLockoutAndCooldowns&&) =
@@ -71,8 +72,8 @@ struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
   DebugReportLockoutAndCooldowns(DebugReportLockoutAndCooldowns&&);
   ~DebugReportLockoutAndCooldowns();
 
-  // The last time a forDebuggingOnly report was sent.
-  std::optional<base::Time> last_report_sent_time;
+  // The lockout of sending forDebuggingOnly reports.
+  std::optional<DebugReportLockout> lockout;
   // The key is an ad tech origin, and value is its cooldown of sending
   // forDebuggingOnly reports.
   std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map = {};

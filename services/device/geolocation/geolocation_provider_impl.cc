@@ -4,6 +4,7 @@
 
 #include "services/device/geolocation/geolocation_provider_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
@@ -111,10 +111,6 @@ GeolocationProviderImpl::AddLocationUpdateCallback(
   }
 
   return subscription;
-}
-
-bool GeolocationProviderImpl::HighAccuracyLocationInUse() {
-  return !high_accuracy_callbacks_.empty();
 }
 
 void GeolocationProviderImpl::OverrideLocationForTesting(
@@ -495,7 +491,8 @@ void GeolocationProviderImpl::NotifyClientsSystemPermissionDenied() {
   auto error_result =
       mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
           mojom::GeopositionErrorCode::kPermissionDenied,
-          kSystemPermissionDeniedErrorMessage, ""));
+          kSystemPermissionDeniedErrorMessage,
+          kSystemPermissionDeniedErrorTechnical));
   NotifyClients(std::move(error_result));
 }
 #endif

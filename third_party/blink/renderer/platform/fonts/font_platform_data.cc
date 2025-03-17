@@ -18,17 +18,14 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "hb-ot.h"
 #include "hb.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -282,7 +279,9 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 
   font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
 
-  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
+  if ((RuntimeEnabledFeatures::NoFontAntialiasingEnabled() &&
+       !WebTestSupport::IsFontAntialiasingEnabledForTest()) ||
+      (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem())) {
     font.setEdging(SkFont::Edging::kAlias);
   }
 
@@ -323,8 +322,7 @@ IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
     base::span<const uint8_t> table_data_span;
     sk_sp<SkData> table_data = typeface_->copyTableData(table_tag);
     if (table_data) {
-      table_data_span =
-          base::span<const uint8_t>(table_data->bytes(), table_data->size());
+      table_data_span = skia::as_byte_span(*table_data);
     }
     builder.AddAtomic(table_data_span);
   }

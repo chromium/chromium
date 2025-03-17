@@ -14,6 +14,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/css_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/find_paint_offset_needing_update.h"
@@ -64,18 +66,19 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_disable_side_effects_scope.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 #include "third_party/blink/renderer/core/paint/transform_utils.h"
+#include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -233,8 +236,10 @@ class FragmentPaintPropertyTreeBuilder {
       const std::optional<gfx::Vector2d>&);
   ALWAYS_INLINE void SetNeedsPaintPropertyUpdateIfNeeded();
   ALWAYS_INLINE void UpdateForObjectLocation(
-      std::optional<gfx::Vector2d>& paint_offset_translation);
-  ALWAYS_INLINE void UpdateStickyTranslation();
+      std::optional<gfx::Vector2d>& paint_offset_translation,
+      PhysicalOffset& extra_sticky_offset);
+  ALWAYS_INLINE void UpdateStickyTranslation(
+      const PhysicalOffset& extra_sticky_offset);
   ALWAYS_INLINE void UpdateAnchorPositionScrollTranslation();
 
   void UpdateIndividualTransform(
@@ -259,6 +264,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateTransform();
   ALWAYS_INLINE void UpdateTransformForSVGChild(CompositingReasons);
   ALWAYS_INLINE bool NeedsEffect() const;
+  ALWAYS_INLINE bool NeedsEffectFor2DScaleTransform() const;
   ALWAYS_INLINE bool EffectCanUseCurrentClipAsOutputClip() const;
   ALWAYS_INLINE void UpdateViewTransitionSubframeRootEffect();
   ALWAYS_INLINE void UpdateViewTransitionEffect();
@@ -420,7 +426,16 @@ class FragmentPaintPropertyTreeBuilder {
   // These are updated in UpdateClipPathClip() and used in UpdateEffect() if
   // needs_mask_base_clip_path_ is true.
   bool needs_mask_based_clip_path_ = false;
-  std::optional<gfx::RectF> clip_path_bounding_box_;
+  // True if, among all transform-relaed properties, there is a
+  // non-identity transform that *is* a 2D scale.
+  bool has_scale2d_transform_ = false;
+  // True if, among all transform-relaed properties, there is a
+  // non-identity transform that *is not* a 2D scale.
+  bool has_non_scale2d_transform_ = false;
+  std::optional<gfx::RectF> precise_clip_path_rect_;
+  // Used to indicate an expanded clip path rect is required a cc clip path
+  // animation.
+  bool requires_expanded_clip_rect_ = false;
 };
 
 // True if a scroll node and a ScrollTranslation transform node are needed.
@@ -600,6 +615,14 @@ static bool NeedsPaintOffsetTranslation(
   return false;
 }
 
+static bool IsViewTransitionGroupWithNesting(const LayoutObject& object) {
+  const Node* node = object.GetNode();
+  if (!node || !node->IsViewTransitionGroupPseudoElement()) {
+    return false;
+  }
+  return To<Element>(node)->HasViewTransitionGroupChildren();
+}
+
 bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
     const {
   if (!object_.HasLayer())
@@ -734,14 +757,17 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
   }
 }
 
-void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
+void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
+    const PhysicalOffset& extra_sticky_offset) {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
-      TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
-          gfx::Vector2dF(box_model.StickyPositionOffset()))}};
+      auto total_offset =
+          extra_sticky_offset + box_model.StickyPositionOffset();
+      TransformPaintPropertyNode::State state{
+          {gfx::Transform::MakeTranslation(ToRoundedVector2d(total_offset))}};
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReason::kStickyPosition;
@@ -798,6 +824,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
           constraint->scroll_container_relative_containing_block_rect =
               gfx::RectF(layout_constraint
                              ->scroll_container_relative_containing_block_rect);
+
+          constraint->pixel_snap_offset = gfx::Vector2dF(extra_sticky_offset);
+          // gfx::Vector2dF rounds differently than PhysicalOffset at
+          // half-integral negative values. This hack works around that
+          // situation.
+          // See https://issues.chromium.org/issues/401693546#comment6
+          float adjustment_left = 0.0;
+          float adjustment_top = 0.0;
+          if (extra_sticky_offset.left == LayoutUnit(-0.5)) {
+            adjustment_left = 0.001;
+          }
+          if (extra_sticky_offset.top == LayoutUnit(-0.5)) {
+            adjustment_top = 0.001;
+          }
+          constraint->pixel_snap_offset +=
+              gfx::Vector2dF(adjustment_left, adjustment_top);
+
           if (const LayoutBoxModelObject* sticky_box_shifting_ancestor =
                   layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
             constraint->nearest_element_shifting_sticky_box =
@@ -848,8 +891,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       // TODO(crbug.com/1309178): We should disable composited scrolling if the
       // snapshot's scrollers do not match the current scrollers.
 
-      DCHECK(full_context_.direct_compositing_reasons &
-             CompositingReason::kAnchorPosition);
+      DCHECK(object_.GetDocument().Printing() ||
+             (full_context_.direct_compositing_reasons &
+              CompositingReason::kAnchorPosition));
       state.direct_compositing_reasons = CompositingReason::kAnchorPosition;
 
       // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
@@ -1205,6 +1249,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
           CompositorElementIdNamespace::kPrimaryTransform;
 
       const ComputedStyle& style = object_.StyleRef();
+      bool new_rendering_context = false;
       if (object_.IsBox()) {
         auto& box = To<LayoutBox>(object_);
         // Each individual fragment should have its own transform origin, based
@@ -1231,13 +1276,22 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         state.transform_and_origin =
             TransformAndOriginState(box, reference_box, compute_matrix);
 
-        // TODO(trchen): transform-style should only be respected if a
-        // PaintLayer is created. If a node with transform-style: preserve-3d
-        // does not exist in an existing rendering context, it establishes a
-        // new one.
+        has_non_scale2d_transform_ =
+            has_non_scale2d_transform_ ||
+            (!state.transform_and_origin.matrix.IsScale2d() &&
+             !state.transform_and_origin.matrix.IsIdentity());
+        has_scale2d_transform_ =
+            has_scale2d_transform_ ||
+            (state.transform_and_origin.matrix.IsScale2d() &&
+             !state.transform_and_origin.matrix.IsIdentity());
+
+        // If a node with transform-style: preserve-3d does not exist in an
+        // existing rendering context, it establishes a new one.
         state.rendering_context_id = context_.rendering_context_id;
-        if (handling_transform_property && style.Preserves3D() &&
-            !state.rendering_context_id) {
+        new_rendering_context = handling_transform_property &&
+                                style.Preserves3D() &&
+                                !state.rendering_context_id;
+        if (new_rendering_context) {
           state.rendering_context_id = WTF::GetHash(&object_);
         }
 
@@ -1264,14 +1318,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         if (object_.HasHiddenBackface()) {
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kHidden;
-        } else if (!context_.can_inherit_backface_visibility ||
+        } else if (new_rendering_context ||
+                   !context_.can_inherit_backface_visibility ||
                    style.Has3DTransformOperation()) {
-          // We want to set backface-visibility back to visible, if the
-          // parent doesn't allow this element to inherit backface visibility
-          // (e.g. if the parent preserves 3d), or this element has a
-          // syntactically-3D transform in *any* of the transform properties
-          // (not just 'transform'). This means that backface-visibility on
-          // an ancestor element no longer affects this element.
+          // We want to set backface-visibility back to visible, if
+          // - this element establishes a new 3d rendering context,
+          // - the parent doesn't allow this element to inherit backface
+          //   visibility (e.g. if the parent preserves 3d), or
+          // - this element has a syntactically-3D transform in *any* of the
+          //   transform properties (not just 'transform').
+          // This means that backface-visibility on an ancestor element no
+          // longer affects this element.
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kVisible;
         } else {
@@ -1424,13 +1481,22 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
   }
 }
 
-static bool NeedsClipPathClipOrMask(const LayoutObject& object) {
+static bool NeedsClipPathClipOrMask(
+    const LayoutObject& object,
+    bool fully_resolve_composited_state = false) {
+  // Ensure clip path status is populated even if the other checks fail.s
+  bool has_composite_clip_path_animation =
+      ClipPathClipper::HasCompositeClipPathAnimation(
+          object,
+          fully_resolve_composited_state
+              ? ClipPathClipper::CompositedStateResolutionType::kFullResolve
+              : ClipPathClipper::CompositedStateResolutionType::
+                    kInitialResolve);
   // We only apply clip-path if the LayoutObject has a layer or is an SVG
   // child. See NeedsEffect() for additional information on the former.
-  return !object.IsText() &&
-         (ClipPathClipper::HasCompositeClipPathAnimation(object) ||
-          (object.StyleRef().HasClipPath() &&
-           (object.HasLayer() || object.IsSVGChild())));
+  return !object.IsText() && (has_composite_clip_path_animation ||
+                              (object.StyleRef().HasClipPath() &&
+                               (object.HasLayer() || object.IsSVGChild())));
 }
 
 static bool NeedsEffectForViewTransition(const LayoutObject& object) {
@@ -1459,7 +1525,23 @@ static bool NeedsEffectForViewTransition(const LayoutObject& object) {
          !object.IsLayoutView();
 }
 
-static bool NeedsEffectIgnoringClipPath(
+// Scale transforms need effects so that they can be considered for
+// promotion to render surfaces if possible to improve quality of
+// renerdering. See crbug.com/40084005.
+bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
+  if (!RuntimeEnabledFeatures::RenderSurfaceFor2DScaleTransformEnabled() ||
+      object_.IsLayoutReplaced()) {
+    return false;
+  }
+  if (object_.StyleRef().HasWillChangeTransformHint() ||
+      object_.StyleRef().IsRunningTransformAnimationOnCompositor()) {
+    return false;
+  }
+
+  return has_scale2d_transform_ && !has_non_scale2d_transform_;
+}
+
+static bool NeedsEffectIgnoringClipPathAnd2DScale(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
   if (object.IsText()) {
@@ -1495,9 +1577,9 @@ static bool NeedsEffectIgnoringClipPath(
   }
 
   if (object.IsBlendingAllowed() &&
-      WebCoreCompositeToSkiaComposite(
-          kCompositeSourceOver, style.GetBlendMode()) != SkBlendMode::kSrcOver)
+      ToSkBlendMode(style.GetBlendMode()) != SkBlendMode::kSrcOver) {
     return true;
+  }
 
   if (!style.BackdropFilter().IsEmpty())
     return true;
@@ -1527,8 +1609,11 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffect() const {
   // A mask-based clip-path needs an effect node, similar to a normal mask.
   if (needs_mask_based_clip_path_)
     return true;
-  return NeedsEffectIgnoringClipPath(object_,
-                                     full_context_.direct_compositing_reasons);
+  if (NeedsEffectFor2DScaleTransform()) {
+    return true;
+  }
+  return NeedsEffectIgnoringClipPathAnd2DScale(
+      object_, full_context_.direct_compositing_reasons);
 }
 
 // An effect node can use the current clip as its output clip if the clip won't
@@ -1584,16 +1669,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       std::optional<gfx::RectF> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
       if (mask_clip || needs_mask_based_clip_path_) {
-        DCHECK(mask_clip || clip_path_bounding_box_.has_value());
+        DCHECK(mask_clip || precise_clip_path_rect_);
         gfx::RectF combined_clip =
-            mask_clip ? *mask_clip : *clip_path_bounding_box_;
+            mask_clip ? *mask_clip : *precise_clip_path_rect_;
         if (mask_clip && needs_mask_based_clip_path_)
-          combined_clip.Intersect(*clip_path_bounding_box_);
+          combined_clip.Intersect(*precise_clip_path_rect_);
         OnUpdateClip(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(
                 *context_.current.transform, combined_clip,
-                FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)))));
+                FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)),
+                requires_expanded_clip_rect_)));
         // We don't use MaskClip as the output clip of Effect, Mask and
         // ClipPathMask because we only want to apply MaskClip to the contents,
         // not the masks.
@@ -1613,8 +1699,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         state.output_clip = context_.current.clip;
       state.opacity = style.Opacity();
       if (object_.IsBlendingAllowed()) {
-        state.blend_mode = WebCoreCompositeToSkiaComposite(
-            kCompositeSourceOver, style.GetBlendMode());
+        state.blend_mode = ToSkBlendMode(style.GetBlendMode());
       }
       if (object_.IsBoxModelObject()) {
         if (auto* layer = To<LayoutBoxModelObject>(object_).Layer()) {
@@ -1629,6 +1714,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           }
         }
       }
+
+      state.has_2d_scale_transform = NeedsEffectFor2DScaleTransform();
 
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
@@ -1847,32 +1934,25 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
         properties_->ViewTransitionEffect()
             ->SelfOrAncestorParticipatesInViewTransition();
 
-    const bool is_view_transition_element =
+    const bool needs_view_transition_effect =
         full_context_.direct_compositing_reasons &
         CompositingReason::kViewTransitionElement;
-
-    const bool needs_view_transition_effect =
-        is_view_transition_element ||
-        (object_.IsLayoutView() && !IsInLocalSubframe(object_) &&
-         !object_.GetDocument().IsSVGDocument());
 
     if (needs_view_transition_effect) {
       auto* transition =
           ViewTransitionUtils::GetTransition(object_.GetDocument());
-      DCHECK(!is_view_transition_element || transition);
+      DCHECK(transition);
 
       EffectPaintPropertyNode::State state;
+      state.direct_compositing_reasons =
+          CompositingReason::kViewTransitionElement;
       state.local_transform_space = context_.current.transform;
       state.output_clip = context_.current.clip;
       state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
           object_.UniqueId(),
           CompositorElementIdNamespace::kViewTransitionElement);
-      if (is_view_transition_element) {
-        state.direct_compositing_reasons =
-            CompositingReason::kViewTransitionElement;
-        state.view_transition_element_resource_id =
-            transition->GetSnapshotId(object_);
-      }
+      state.view_transition_element_resource_id =
+          transition->GetSnapshotId(object_);
 
       // The value isn't set on the root, since clipping rules are different for
       // the root view transition element.
@@ -2152,26 +2232,45 @@ static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
 
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
-    DCHECK(!clip_path_bounding_box_.has_value());
-    if (NeedsClipPathClipOrMask(object_)) {
-      clip_path_bounding_box_ =
+    DCHECK(!precise_clip_path_rect_.has_value());
+    if (NeedsClipPathClipOrMask(object_,
+                                /*fully_resolve_composited_state=*/true)) {
+      precise_clip_path_rect_ =
           ClipPathClipper::LocalClipPathBoundingBox(object_);
-      if (clip_path_bounding_box_) {
-        // SVG "children" does not have a paint offset, but for <foreignObject>
-        // the paint offset can still be non-zero since it contains the 'x' and
-        // 'y' portion of the geometry. (See also comment in
-        // `NeedsPaintOffsetTranslation()`.)
+
+      if (ClipPathClipper::HasCompositeClipPathAnimation(
+              object_,
+              ClipPathClipper::CompositedStateResolutionType::kReadCache)) {
+        needs_mask_based_clip_path_ = true;
+        // If there's a composited clip path animation, we use a larger bounding
+        // rect that can encompass the entire animation, that way no new main
+        // frames are needed to resize the clip area.
+        requires_expanded_clip_rect_ = true;
+        // In the case where clip-path: none, it is okay for the precise clip
+        // path to equal the expanded rect, since we need to assign it a value
+        if (!precise_clip_path_rect_) {
+          precise_clip_path_rect_ =
+              ClipPathPaintImageGenerator::GetAnimationBoundingRect();
+        }
+      }
+
+      if (precise_clip_path_rect_) {
+        // SVG "children" does not have a paint offset, but for
+        // <foreignObject> the paint offset can still be non-zero since it
+        // contains the 'x' and 'y' portion of the geometry. (See also comment
+        // in `NeedsPaintOffsetTranslation()`.)
         const gfx::Vector2dF paint_offset =
             !object_.IsSVGChild()
                 ? gfx::Vector2dF(context_.current.paint_offset)
                 : gfx::Vector2dF();
-        clip_path_bounding_box_->Offset(paint_offset);
+        precise_clip_path_rect_->Offset(paint_offset);
         if (std::optional<Path> path =
                 ClipPathClipper::PathBasedClip(object_)) {
           path->Translate(paint_offset);
           std::optional<FloatRoundedRect> rrect;
-          // TODO(crbug.com/337191311): The optimization breaks view-transition
-          // if the bounding box of clip-path is larger than the contents.
+          // TODO(crbug.com/337191311): The optimization breaks
+          // view-transition if the bounding box of clip-path is larger than
+          // the contents.
           if (!(full_context_.direct_compositing_reasons &
                 (CompositingReason::kViewTransitionElement |
                  CompositingReason::
@@ -2179,24 +2278,25 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
             rrect = PathToRRect(*path);
           }
           ClipPaintPropertyNode::State state(
-              *context_.current.transform, *clip_path_bounding_box_,
+              *context_.current.transform, *precise_clip_path_rect_,
               rrect.value_or(FloatRoundedRect(
-                  gfx::ToEnclosingRect(*clip_path_bounding_box_))));
+                  gfx::ToEnclosingRect(*precise_clip_path_rect_))));
           if (!rrect) {
             state.clip_path = path;
           }
           OnUpdateClip(properties_->UpdateClipPathClip(*context_.current.clip,
                                                        std::move(state)));
         } else {
-          // This means that the clip-path is too complex to be represented as a
-          // Path. Will create ClipPathMask in UpdateEffect().
+          // This means that the clip-path is too complex to be represented as
+          // a Path. Will create ClipPathMask in UpdateEffect().
           needs_mask_based_clip_path_ = true;
         }
       }
     }
 
-    if (!clip_path_bounding_box_ || needs_mask_based_clip_path_)
+    if (!precise_clip_path_rect_ || needs_mask_based_clip_path_) {
       OnClearClip(properties_->ClearClipPathClip());
+    }
   }
 
   if (properties_->ClipPathClip()) {
@@ -2451,25 +2551,43 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
       const auto& box = To<LayoutBox>(object_);
       PhysicalRect box_rect(context_.current.paint_offset, box.Size());
       gfx::RectF layout_clip_rect =
-          RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(), box_rect)
+          ContouredBorderGeometry::ContouredInnerBorder(box.StyleRef(),
+                                                        box_rect)
               .Rect();
-      FloatRoundedRect paint_clip_rect =
-          RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
-                                                                box_rect);
+      ContouredRect paint_clip_rect =
+          ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+              box.StyleRef(), box_rect);
 
       gfx::Vector2dF offset(-OffsetInStitchedFragments(BoxFragment()));
       layout_clip_rect.Offset(offset);
       paint_clip_rect.Move(offset);
 
+      FloatRoundedRect rounded_rect = paint_clip_rect.AsRoundedRect();
+
+      // TODO(crbug.com/397459628) Apply corner-shape to overflow-clip-margin
       AdjustRoundedClipForOverflowClipMargin(box, layout_clip_rect,
-                                             paint_clip_rect);
+                                             rounded_rect);
       ClipPaintPropertyNode::State state(*context_.current.transform,
-                                         layout_clip_rect, paint_clip_rect);
+                                         layout_clip_rect, rounded_rect);
+      if (!paint_clip_rect.HasRoundCurvature()) {
+        state.SetClipRect(layout_clip_rect,
+                          FloatRoundedRect(paint_clip_rect.Rect()));
+        state.clip_path = paint_clip_rect.GetPath();
+      }
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
           *context_.current.clip, std::move(state)));
     } else {
       OnClearClip(properties_->ClearInnerBorderRadiusClip());
     }
+  }
+
+  // TODO(crbug.com/401543213): This is a workaround. The proper fix is to
+  // figure out how to construct an effect tree referencing a proper
+  // transform node without also breaking crbug.com/328339028.
+  // Note that this is intentionally triggering an update whether or not
+  // NeedsPaintPropertyUpdate is true.
+  if (IsViewTransitionGroupWithNesting(object_)) {
+    OnUpdateClip(PaintPropertyChangeType::kChangedOnlyNonRerasterValues);
   }
 
   if (auto* border_radius_clip = properties_->InnerBorderRadiusClip())
@@ -2506,13 +2624,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         }
         // LayoutReplaced clips the foreground by rounded content box.
         auto clip_rect =
-            RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+            ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
                 replaced.StyleRef(), content_rect,
                 PhysicalBoxStrut(
                     -(replaced.PaddingTop() + replaced.BorderTop()),
                     -(replaced.PaddingRight() + replaced.BorderRight()),
                     -(replaced.PaddingBottom() + replaced.BorderBottom()),
-                    -(replaced.PaddingLeft() + replaced.BorderLeft())));
+                    -(replaced.PaddingLeft() + replaced.BorderLeft())))
+                .AsRoundedRect();
         if (replaced.IsLayoutEmbeddedContent()) {
           // Embedded objects are always sized to fit the content rect, but they
           // could overflow by 1px due to pre-snapping. Adjust clip rect to
@@ -2689,7 +2808,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       UpdateScrollNode();
       UpdateOverflowControlEffects();
       UpdateScrollTranslation();
+      if (RuntimeEnabledFeatures::
+              ScrollableAreasWithScrollNodeOptimizationEnabled()) {
+        object_.GetFrameView()->AddScrollableAreaWithScrollNode(
+            *To<LayoutBox>(object_).GetScrollableArea());
+      }
     } else {
+      if (RuntimeEnabledFeatures::
+              ScrollableAreasWithScrollNodeOptimizationEnabled()) {
+        if (properties_->Scroll() &&
+            To<LayoutBox>(object_).GetScrollableArea()) {
+          object_.GetFrameView()->RemoveScrollableAreaWithScrollNode(
+              *To<LayoutBox>(object_).GetScrollableArea());
+        }
+      }
       OnClearScroll(properties_->ClearScroll());
       OnClearEffect(properties_->ClearVerticalScrollbarEffect());
       OnClearEffect(properties_->ClearHorizontalScrollbarEffect());
@@ -3170,10 +3302,16 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
-    std::optional<gfx::Vector2d>& paint_offset_translation) {
+    std::optional<gfx::Vector2d>& paint_offset_translation,
+    PhysicalOffset& extra_sticky_offset) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
   UpdateForPaintOffsetTranslation(paint_offset_translation);
+
+  if (NeedsStickyTranslation(object_)) {
+    extra_sticky_offset = context_.current.paint_offset;
+    ResetPaintOffset();
+  }
 
   PhysicalOffset paint_offset_delta =
       fragment_data_.PaintOffset() - context_.current.paint_offset;
@@ -3247,7 +3385,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // This is not in FindObjectPropertiesNeedingUpdateScope because paint offset
   // can change without NeedsPaintPropertyUpdate.
   std::optional<gfx::Vector2d> paint_offset_translation;
-  UpdateForObjectLocation(paint_offset_translation);
+  PhysicalOffset extra_sticky_offset;
+  UpdateForObjectLocation(paint_offset_translation, extra_sticky_offset);
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
 
@@ -3267,7 +3406,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #endif
 
   if (properties_) {
-    UpdateStickyTranslation();
+    UpdateStickyTranslation(extra_sticky_offset);
     UpdateAnchorPositionScrollTranslation();
     if (object_.IsSVGChild()) {
       // TODO(crbug.com/1278452): Merge SVG handling into the primary codepath.
@@ -3282,28 +3421,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateElementCaptureEffect();
     UpdateViewTransitionSubframeRootEffect();
 
-    // When layered capture is enabled (see the inverse condition below), the
-    // effects (clip/clip-path/opacity/mask/filter) are rendered in an ancestor
-    // of the view transition capture. The corresponding CSS is copied to the
-    // view-transition pseudo-elements instead of being captured into the
-    // texture as content.
-
-    const bool delegate_effects_to_view_transition = ViewTransitionUtils::
-        ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(object_);
-    if (!delegate_effects_to_view_transition) {
-      UpdateViewTransitionEffect();
-      UpdateViewTransitionClip();
-    }
+    UpdateViewTransitionEffect();
+    UpdateViewTransitionClip();
     UpdateClipPathClip();
     UpdateEffect();
     UpdateCssClip();
     UpdateFilter();
-
-    // See comment above in inverse condition.
-    if (delegate_effects_to_view_transition) {
-      UpdateViewTransitionEffect();
-      UpdateViewTransitionClip();
-    }
     UpdateOverflowControlsClip();
     UpdateBackgroundClip();
   } else if (!object_.IsAnonymous()) {
@@ -3413,8 +3536,8 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
        NeedsScale(object_, context_.direct_compositing_reasons) ||
        NeedsOffset(object_, context_.direct_compositing_reasons) ||
        NeedsTransform(object_, context_.direct_compositing_reasons) ||
-       NeedsEffectIgnoringClipPath(object_,
-                                   context_.direct_compositing_reasons) ||
+       NeedsEffectIgnoringClipPathAnd2DScale(
+           object_, context_.direct_compositing_reasons) ||
        NeedsClipPathClipOrMask(object_) ||
        NeedsTransformForSVGChild(object_,
                                  context_.direct_compositing_reasons) ||
@@ -3461,16 +3584,16 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
     fragment.EnsureId();
     fragment.EnsurePaintProperties();
   } else if (auto* properties = fragment.PaintProperties()) {
-    if (properties->HasTransformNode()) {
+    if (properties->HasNode<TransformPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.transform_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
-    if (properties->HasClipNode()) {
+    if (properties->HasNode<ClipPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.clip_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
-    if (properties->HasEffectNode()) {
+    if (properties->HasNode<EffectPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.effect_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
@@ -3524,19 +3647,10 @@ void PaintPropertyTreeBuilder::UpdateFragmentData() {
     object_.GetMutableForPainting().FragmentList().Shrink(1);
 
     if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
-      // We're not fragmented, but we may have been previously. Reset the
-      // fragmentainer index.
-      fragment.SetFragmentID(0);
-
+      // We're not fragmented, but we may have been previously.
       if (old_fragment_count > 1u) {
         object_.GetMutableForPainting().FragmentCountChanged();
       }
-    } else {
-      // We're inside monolithic content, but further out there's a
-      // fragmentation context. Keep the fragmentainer index, so that the
-      // contents end up in the right one.
-      fragment.SetFragmentID(
-          context_.fragment_context.current.fragmentainer_idx);
     }
   }
 }
@@ -3557,13 +3671,41 @@ void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
   DCHECK(context_.painting_layer == object_.PaintingLayer());
 }
 
+// https://www.w3.org/TR/compositing-1/#pagebackdrop
+// We need to paint the view background in the root-element group if the
+// root element has some effects.
+static bool NeedsRootElementGroupForViewBackground(const LayoutObject& object) {
+  if (!IsA<LayoutView>(object)) {
+    return false;
+  }
+  const Document& document = object.GetDocument();
+  if (!ViewPainter::ShouldApplyRootBackgroundBehavior(document)) {
+    return false;
+  }
+  if (const Element* root = document.documentElement()) {
+    if (const LayoutObject* root_object = root->GetLayoutObject()) {
+      if (NeedsEffectIgnoringClipPathAnd2DScale(
+              *root_object,
+              CompositingReasonFinder::DirectReasonsForPaintProperties(
+                  *root_object))) {
+        return true;
+      }
+      if (NeedsClipPathClipOrMask(*root_object)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void PaintPropertyTreeBuilder::UpdateForSelf() {
   // These are not inherited from the parent context but calculated here.
   context_.direct_compositing_reasons =
       CompositingReasonFinder::DirectReasonsForPaintProperties(
           object_, context_.container_for_fixed_position);
   if (const auto* box = DynamicTo<LayoutBox>(object_)) {
-    box->GetMutableForPainting().UpdateBackgroundPaintLocation();
+    box->GetMutableForPainting().UpdateBackgroundPaintLocation(
+        NeedsRootElementGroupForViewBackground(object_));
     if (auto* scrollable_area = box->GetScrollableArea()) {
       bool force_prefer_compositing =
           CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
@@ -3613,7 +3755,8 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       pre_paint_info_->fragmentainer_is_oof_containing_block &&
       IsA<LayoutBox>(object_) &&
       (To<LayoutBox>(object_).PhysicalFragmentCount() > 1);
-  ClipPathClipper::ResolveClipPathStatus(object_, is_in_fragment_container);
+  ClipPathClipper::FallbackClipPathAnimationIfNecessary(
+      object_, is_in_fragment_container);
 
   UpdatePaintingLayer();
   UpdateFragmentData();
@@ -3623,6 +3766,11 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
                                            GetFragmentData());
   builder.UpdateForSelf();
   properties_changed_.Merge(builder.PropertiesChanged());
+
+  // Clip path status should have been resolved when initializing the paint
+  // properties or when updating ClipPathClip, via a call to
+  // NeedsClipPathClipOrMask.
+  CHECK(ClipPathClipper::ClipPathStatusResolved(object_));
 
   if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
     object_.GetMutableForPainting()
@@ -3655,9 +3803,6 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
   if (!ObjectTypeMightNeedPaintProperties())
     return;
 
-  // For now, only consider single fragment elements as possible isolation
-  // boundaries.
-  // TODO(crbug.com/890932): See if this is needed.
   bool is_isolated = true;
   FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
                                            GetFragmentData());
@@ -3762,7 +3907,7 @@ bool PaintPropertyTreeBuilder::ScheduleDeferredOpacityNodeUpdate(
   return false;
 }
 
-// Fast-path for directly updating transforms. Returns true if successful. This
+// Fast-path for directly updating transforms. This
 // is similar to |FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform|.
 void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
     const LayoutObject& object) {
@@ -3893,6 +4038,17 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
   // Cannot directly update properties if they have not been created yet.
   if (!properties || !properties->Transform())
     return false;
+
+  if (auto* effect = properties->Effect()) {
+    // If there is already potentially an optimization to allocate a render
+    // surface for a scale transform (see crbug.com/40084005), we can't use
+    // the fast path. (However, we intentionally allow the fast path to
+    // happen when changing *to* a scale transform, to avoid performance
+    // problems detecting this situation.
+    if (effect->Has2DScaleTransform()) {
+      return false;
+    }
+  }
 
   return true;
 }

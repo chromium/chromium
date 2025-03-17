@@ -32,7 +32,7 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
   bool IsCommandIdEnabled(int command_id) const override;
 
   // TextServicesContextMenu::Delegate:
-  std::u16string GetSelectedText() const override;
+  std::u16string_view GetSelectedText() const override;
   bool IsTextDirectionEnabled(
       base::i18n::TextDirection direction) const override;
   bool IsTextDirectionChecked(

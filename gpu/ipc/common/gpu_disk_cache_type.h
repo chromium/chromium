@@ -8,11 +8,11 @@
 #include <array>
 #include <limits>
 #include <ostream>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/types/id_type.h"
 #include "gpu/gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gpu {
 
@@ -74,10 +74,10 @@ using GpuDiskCacheDawnGraphiteHandle =
 //
 // Variant handle that encompasses all possible handles, and utilities.
 //
-using GpuDiskCacheHandle = absl::variant<absl::monostate,
-                                         GpuDiskCacheGlShaderHandle,
-                                         GpuDiskCacheDawnWebGPUHandle,
-                                         GpuDiskCacheDawnGraphiteHandle>;
+using GpuDiskCacheHandle = std::variant<std::monostate,
+                                        GpuDiskCacheGlShaderHandle,
+                                        GpuDiskCacheDawnWebGPUHandle,
+                                        GpuDiskCacheDawnGraphiteHandle>;
 GPU_EXPORT GpuDiskCacheType GetHandleType(const GpuDiskCacheHandle& handle);
 GPU_EXPORT int32_t GetHandleValue(const GpuDiskCacheHandle& handle);
 

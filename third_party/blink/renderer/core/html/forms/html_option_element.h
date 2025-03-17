@@ -78,7 +78,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void setSelectedForBinding(bool);
 
   HTMLDataListElement* OwnerDataListElement() const;
-  HTMLSelectElement* OwnerSelectElement() const;
+
+  // OwnerSelectElement gets nearest_ancestor_select_ and SetOwnerSelectElement
+  // assigns to it. See comment on nearest_ancestor_select_.
+  HTMLSelectElement* OwnerSelectElement(bool skip_check = false) const;
+  void SetOwnerSelectElement(HTMLSelectElement*);
 
   String label() const;
   void setLabel(const AtomicString&);
@@ -116,19 +120,14 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void FinishParsingChildren() override;
 
-  // These methods mutate the shadowroot to switch between rendering all
-  // children or only text content. SetTextOnlyRendering is used for
-  // appearance:base-select. The mechanism by which these methods render all
-  // children or only text content is that the UA shadowroot has a manually
-  // updated text node for text-only mode or a slot element which just slots all
-  // nodes into it for the render everything mode. SetTextOnlyRendering switches
-  // the ShadowRoot state based on the provided argument.
-  void SetTextOnlyRendering(bool);
-
   // Callback for OptionTextObserver.
   void DidChangeTextContent();
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
+
+  // This method returns true if the provided element is the label_container_ of
+  // an HTMLOptionElement.
+  static bool IsLabelContainerElement(const Element& element);
 
  private:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
@@ -146,7 +145,23 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void DefaultEventHandlerInternal(Event&);
 
+  void RecalcOwnerSelectElement() const;
+
   Member<OptionTextObserver> text_observer_;
+
+  // The closest ancestor <select> in the DOM tree, without crossing any shadow
+  // boundaries. This is cached as a performance optimization for
+  // OwnerSelectElement(), and is kept up to date in InsertedInto() and
+  // RemovedFrom(). Only set when SelectParserRelaxation is enabled.
+  // TODO(crbug.com/1511354): Consider using a flat tree traversal here
+  // instead of a node traversal. That would probably also require changing
+  // HTMLOptionsCollection to support flat tree traversals as well.
+  Member<HTMLSelectElement> nearest_ancestor_select_;
+
+  // label_container_ contains the text content of DisplayLabel(). Based on UA
+  // style rules, it is rendered when this option is not inside of a select
+  // element with appearance:base-select.
+  Member<HTMLElement> label_container_;
 
   // Represents 'selectedness'.
   // https://html.spec.whatwg.org/C/#concept-option-selectedness

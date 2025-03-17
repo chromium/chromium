@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -840,7 +841,7 @@ TEST_F(ExternalAppResolutionCommandTest, GetWebAppInstallInfoFailed) {
   EXPECT_EQ(result.code,
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
   ASSERT_FALSE(result.app_id.has_value());
-  EXPECT_TRUE(registrar().IsNotInRegistrar(kWebAppId));
+  EXPECT_FALSE(registrar().IsInRegistrar(kWebAppId));
 }
 
 TEST_F(ExternalAppResolutionCommandTest, UpgradeLock) {
@@ -1184,7 +1185,6 @@ TEST_F(ExternalAppResolutionCommandTest,
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   GURL old_app_url("http://old-app.com");
   const webapps::AppId old_app =
@@ -1217,14 +1217,13 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
             registrar().GetInstallState(*result.app_id));
 
-  std::optional<proto::WebAppOsIntegrationState> os_state =
+  std::optional<proto::os_state::WebAppOsIntegration> os_state =
       registrar().GetAppCurrentOsIntegrationState(*result.app_id);
   ASSERT_TRUE(os_state.has_value());
   EXPECT_TRUE(os_state->has_shortcut());
   EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-            proto::RunOnOsLoginMode::WINDOWED);
+            proto::os_state::RunOnOsLogin::MODE_WINDOWED);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(ExternalAppResolutionCommandTest, WriteDataToDiskFailed) {
   ExternalInstallOptions install_options(

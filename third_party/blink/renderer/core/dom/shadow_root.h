@@ -43,6 +43,8 @@ namespace blink {
 
 class Document;
 class ExceptionState;
+class SetHTMLOptions;
+class SetHTMLUnsafeOptions;
 class SlotAssignment;
 class ReferenceTargetIdObserver;
 class V8ShadowRootMode;
@@ -121,7 +123,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   String innerHTML() const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
   void setHTMLUnsafe(const String& html, ExceptionState&);
-  void setHTMLUnsafe(const String& html, SetHTMLOptions*, ExceptionState&);
+  void setHTMLUnsafe(const String& html,
+                     SetHTMLUnsafeOptions*,
+                     ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
 
   Node* Clone(Document& factory,
@@ -218,6 +222,30 @@ inline ShadowRoot* Node::GetShadowRoot() const {
   if (!this_element)
     return nullptr;
   return this_element->GetShadowRoot();
+}
+
+inline bool IsShadowHost(const Node* node) {
+  return node && node->GetShadowRoot();
+}
+
+inline bool IsShadowHost(const Node& node) {
+  return node.GetShadowRoot();
+}
+
+inline bool IsShadowHost(const Element* element) {
+  return element && element->GetShadowRoot();
+}
+
+inline bool IsShadowHost(const Element& element) {
+  return element.GetShadowRoot();
+}
+
+inline bool IsAtShadowBoundary(const Element* element) {
+  if (!element) {
+    return false;
+  }
+  ContainerNode* parent_node = element->parentNode();
+  return parent_node && parent_node->IsShadowRoot();
 }
 
 template <>

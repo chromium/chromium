@@ -39,6 +39,8 @@ class MockSmartCardContextFactory
               (const std::string& reader,
                device::mojom::SmartCardShareMode share_mode,
                device::mojom::SmartCardProtocolsPtr preferred_protocols,
+               mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+                   connection_watcher,
                ConnectCallback callback),
               (override));
 

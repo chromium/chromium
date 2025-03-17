@@ -14,10 +14,10 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -136,6 +137,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
   void UpdateManifestInstalledIsolatedWebApp(
       const webapps::AppId& app_id,
       std::optional<base::Version> pinned_version,
+      bool allow_downgrades,
       Handler::UpdateManifestInstalledIsolatedWebAppCallback callback) {
     if (base::Contains(update_requests_, app_id)) {
       std::move(callback).Run(
@@ -175,7 +177,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
         /*update_channel=*/
         isolation_data.update_channel().value_or(
             UpdateChannel::default_channel()),
-        /*allow_downgrades=*/false, pinned_version,
+        allow_downgrades, pinned_version,
         /*dev_mode=*/true);
   }
 
@@ -394,7 +396,7 @@ void IwaInternalsHandler::OnIsolatedWebAppDevModeBundleSelectedForUpdate(
   }
 
   IwaSourceDevModeWithFileOp source(
-      IwaSourceBundleDevModeWithFileOp(*path, kDefaultBundleDevFileOp));
+      IwaSourceBundleDevModeWithFileOp(*path, IwaSourceBundleDevFileOp::kCopy));
   ApplyDevModeUpdate(app_id, source, std::move(callback));
 }
 
@@ -458,7 +460,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
     if (base::Contains(pinned_versions_, app.app_id())) {
       pinned_version = pinned_versions_[app.app_id()].GetString();
     }
-
+    bool allow_downgrades = app_ids_allowing_downgrades_.contains(app.app_id());
     absl::visit(
         base::Overloaded{
             [&](const IwaSourceBundleDevMode& source) {
@@ -472,7 +474,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
                             isolation_data.update_channel()
                                 .value_or(UpdateChannel::default_channel())
                                 .ToString(),
-                            pinned_version)
+                            pinned_version, allow_downgrades)
                       : nullptr));
             },
             [&](const IwaSourceProxy& source) {
@@ -535,8 +537,8 @@ void IwaInternalsHandler::ApplyDevModeUpdate(
   auto& manager = provider->iwa_update_manager();
   manager.DiscoverApplyAndPrioritizeLocalDevModeUpdate(
       location.has_value() ? *location
-                           : IwaSourceDevModeWithFileOp(
-                                 source.WithFileOp(kDefaultBundleDevFileOp)),
+                           : IwaSourceDevModeWithFileOp(source.WithFileOp(
+                                 IwaSourceBundleDevFileOp::kCopy)),
       *url_info,
       base::BindOnce([](base::expected<base::Version, std::string> result) {
         if (result.has_value()) {
@@ -566,9 +568,10 @@ void IwaInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
 
   std::optional<base::Version> pinned_version =
       base::OptionalFromPtr(base::FindOrNull(pinned_versions_, app_id));
+  bool allow_downgrades = app_ids_allowing_downgrades_.contains(app_id);
 
-  update_handler_->UpdateManifestInstalledIsolatedWebApp(app_id, pinned_version,
-                                                         std::move(callback));
+  update_handler_->UpdateManifestInstalledIsolatedWebApp(
+      app_id, pinned_version, allow_downgrades, std::move(callback));
 }
 
 void IwaInternalsHandler::SetUpdateChannelForIsolatedWebApp(
@@ -618,8 +621,7 @@ void IwaInternalsHandler::SetPinnedVersionForIsolatedWebApp(
     return;
   }
 
-  RETURN_IF_ERROR(GetIsolatedWebAppById(provider->registrar_unsafe(), app_id),
-                  [&](auto) { std::move(callback).Run(/*success=*/false); });
+  RETURN_IF_ERROR(GetIsolatedWebAppById(provider->registrar_unsafe(), app_id), [&](auto) { std::move(callback).Run(/*success=*/false); });
 
   base::Version version = base::Version(pinned_version);
   if (!version.IsValid()) {
@@ -634,6 +636,24 @@ void IwaInternalsHandler::SetPinnedVersionForIsolatedWebApp(
 void IwaInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
     const webapps::AppId& app_id) {
   pinned_versions_.erase(app_id);
+}
+
+void IwaInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
+    bool allow_downgrades,
+    const webapps::AppId& app_id) {
+  auto* provider = WebAppProvider::GetForWebApps(profile());
+  if (!provider || provider->registrar_unsafe().GetInstallState(app_id)
+      != proto::INSTALLED_WITH_OS_INTEGRATION) {
+    return;
+  }
+
+  // Removes `app_id` for which downgrades were turned off.
+  if (base::Contains(app_ids_allowing_downgrades_, app_id) &&
+      !allow_downgrades) {
+    app_ids_allowing_downgrades_.erase(app_id);
+    return;
+  }
+  app_ids_allowing_downgrades_.insert(app_id);
 }
 
 void IwaInternalsHandler::DownloadWebBundleToFile(

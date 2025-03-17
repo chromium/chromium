@@ -10,7 +10,7 @@
 
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 
@@ -357,12 +357,6 @@ void AddressFieldParserNG::AddClassifications(
   }
 }
 
-base::span<const MatchPatternRef> AddressFieldParserNG::GetMatchPatterns(
-    std::string_view name) {
-  return ::autofill::GetMatchPatterns(name, context_->page_language,
-                                      context_->pattern_file);
-}
-
 std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     FieldType field_type) {
   // Naming convention: In the following code,
@@ -411,8 +405,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     // preferred attribute match.
     auto MatchAttribute = [&](bool match_label) -> std::optional<double> {
       if (FieldMatchesMatchPatternRef(
-              *context_, GetMatchPatterns(pattern_name), *scanner_->Cursor(),
-              pattern_name.data(),
+              *context_, *scanner_->Cursor(), pattern_name,
               {match_label ? MatchOnlyLabel : MatchOnlyName,
                match_pattern_projection})) {
         return score + (match_label == prefer_label ? 0.05 : 0.0);
@@ -674,6 +667,26 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NUMERIC_QUANTITY:
     case SEARCH_TERM:
     case IMPROVED_PREDICTION:
+    case PASSPORT_NAME_TAG:
+    case PASSPORT_NUMBER:
+    case PASSPORT_ISSUING_COUNTRY:
+    case PASSPORT_EXPIRATION_DATE:
+    case PASSPORT_ISSUE_DATE:
+    case LOYALTY_MEMBERSHIP_PROGRAM:
+    case LOYALTY_MEMBERSHIP_PROVIDER:
+    case LOYALTY_MEMBERSHIP_ID:
+    case VEHICLE_OWNER_TAG:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_VIN:
+    case VEHICLE_MAKE:
+    case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
+    case DRIVERS_LICENSE_NAME_TAG:
+    case DRIVERS_LICENSE_REGION:
+    case DRIVERS_LICENSE_NUMBER:
+    case DRIVERS_LICENSE_EXPIRATION_DATE:
+    case DRIVERS_LICENSE_ISSUE_DATE:
     case MAX_VALID_FIELD_TYPE:
       return std::nullopt;
   }

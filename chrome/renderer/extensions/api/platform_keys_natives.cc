@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_crypto_normalize.h"
 
 namespace extensions {
@@ -66,7 +66,7 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
       if (rsa_hashed_key_gen) {
         builder.Set("modulusLength", rsa_hashed_key_gen->ModulusLengthBits());
 
-        const blink::WebVector<unsigned char>& public_exponent =
+        const std::vector<unsigned char>& public_exponent =
             rsa_hashed_key_gen->PublicExponent();
         v8::Local<v8::ArrayBuffer> buffer =
             v8::ArrayBuffer::New(isolate, public_exponent.size());

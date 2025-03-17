@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -56,7 +57,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/key_system_config_selector.h"
-#include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -270,13 +270,9 @@ std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
     scoped_refptr<base::SingleThreadTaskRunner>
         main_thread_compositor_task_runner,
     const cc::LayerTreeSettings& settings,
-    media::MediaLog* media_log,
-    content::RenderFrame* render_frame) {
-  DCHECK(features::UseSurfaceLayerForVideo());
-  content::RenderThreadImpl* render_thread =
-      content::RenderThreadImpl::current();
-  if (!render_thread)
-    return nullptr;
+    media::MediaLog* media_log) {
+  CHECK(features::UseSurfaceLayerForVideo());
+  CHECK(content::RenderThreadImpl::current());
 
   auto log_roughness_cb =
       base::BindRepeating(LogRoughness, base::Owned(media_log->Clone()));
@@ -436,10 +432,9 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
 
   const bool use_surface_layer = features::UseSurfaceLayerForVideo();
   std::unique_ptr<blink::WebVideoFrameSubmitter> submitter =
-      use_surface_layer
-          ? CreateSubmitter(main_thread_compositor_task_runner, settings,
-                            media_log.get(), render_frame_)
-          : nullptr;
+      use_surface_layer ? CreateSubmitter(main_thread_compositor_task_runner,
+                                          settings, media_log.get())
+                        : nullptr;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner =
       render_thread->GetMediaSequencedTaskRunner();
@@ -450,11 +445,6 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
     // See https://crbug.com/775393.
     return nullptr;
   }
-
-  auto video_frame_compositor_task_runner =
-      blink::Platform::Current()->VideoFrameCompositorTaskRunner();
-  auto vfc = std::make_unique<blink::VideoFrameCompositor>(
-      video_frame_compositor_task_runner, std::move(submitter));
 
   std::unique_ptr<media::Demuxer> demuxer_override =
       GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
@@ -476,7 +466,7 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
 
   return media_player_builder_->Build(
       web_frame, client, encrypted_client, delegate,
-      std::move(factory_selector), std::move(vfc), std::move(media_log),
+      std::move(factory_selector), std::move(submitter), std::move(media_log),
       player_id,
       base::BindRepeating(&RenderFrameImpl::DeferMediaLoad,
                           base::Unretained(render_frame_),
@@ -484,7 +474,7 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       std::move(audio_renderer_sink), std::move(media_task_runner),
       std::move(compositor_worker_task_runner),
       render_thread->compositor_task_runner(),
-      std::move(video_frame_compositor_task_runner), initial_cdm,
+      blink::Platform::Current()->VideoFrameCompositorTaskRunner(), initial_cdm,
       request_routing_token_cb_, media_observer,
       enable_instant_source_buffer_gc, embedded_media_experience_enabled,
       std::move(metrics_provider),
@@ -766,10 +756,9 @@ MediaFactory::CreateWebMediaPlayerForMediaStream(
 
   const bool use_surface_layer = features::UseSurfaceLayerForVideo();
   std::unique_ptr<blink::WebVideoFrameSubmitter> submitter =
-      use_surface_layer
-          ? CreateSubmitter(main_thread_compositor_task_runner, settings,
-                            media_log.get(), render_frame_)
-          : nullptr;
+      use_surface_layer ? CreateSubmitter(main_thread_compositor_task_runner,
+                                          settings, media_log.get())
+                        : nullptr;
 
   return std::make_unique<blink::WebMediaPlayerMS>(
       frame, client, GetWebMediaPlayerDelegate(), std::move(media_log),

@@ -287,7 +287,8 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
 
   // Simulate successful Commit request.
   EntityChangeList entity_changes;
-  entity_changes.push_back(EntityChange::CreateDelete(storage_key));
+  entity_changes.push_back(
+      EntityChange::CreateDelete(storage_key, syncer::EntityData()));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_changes));
 

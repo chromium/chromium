@@ -132,26 +132,26 @@ public class AllPlusAddressesBottomSheetModuleTest {
         layoutPlusAddressView(view);
 
         RecyclerView profilesView = view.getContentView().findViewById(R.id.sheet_item_list);
-        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+        assertEquals(1, profilesView.getAdapter().getItemCount());
 
         SearchView searchView =
                 view.getContentView().findViewById(R.id.all_plus_addresses_search_view);
 
         // Query by origin, the plus profile should stay.
         searchView.setQuery("google", /* submit= */ true);
-        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+        assertEquals(1, profilesView.getAdapter().getItemCount());
 
         // Query by email, the plus profile should stay.
         searchView.setQuery("gmail.com", /* submit= */ true);
-        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+        assertEquals(1, profilesView.getAdapter().getItemCount());
 
         // No profiles should be shown for this field.
         searchView.setQuery("fff", /* submit= */ true);
-        assertEquals(profilesView.getAdapter().getItemCount(), 0);
+        assertEquals(0, profilesView.getAdapter().getItemCount());
 
         // All profiles should be displayed for an empty query.
         searchView.setQuery("", /* submit= */ true);
-        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+        assertEquals(1, profilesView.getAdapter().getItemCount());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
 
         // Verify that only 1 profile is shown.
         RecyclerView profilesView = view.getContentView().findViewById(R.id.sheet_item_list);
-        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+        assertEquals(1, profilesView.getAdapter().getItemCount());
 
         // Click on the plus address chip and verify that bottom sheet is closed and the plus
         // address is returned.

@@ -71,7 +71,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -1400,7 +1400,7 @@ TEST_F(QuickInsertViewTest, NoMainResultsAndNoEmojisIsAnnounced) {
   widget->Show();
   QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   future.Take().Run({});
 
@@ -1427,7 +1427,7 @@ TEST_P(QuickInsertViewEmojiTest, NoMainResultsAndSomeEmojisIsAnnounced) {
   widget->Show();
   QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   future.Take().Run({});
 
@@ -2824,6 +2824,8 @@ TEST_P(QuickInsertViewEmojiTest,
 }
 
 TEST_F(QuickInsertViewTest, ClickingGifsButtonOpensGifPickerWithQuerySearch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPickerGifs);
   FakeQuickInsertViewDelegate delegate(
       {.available_categories = {QuickInsertCategory::kEmojisGifs}});
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -2948,7 +2950,7 @@ TEST_F(
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
 
@@ -2969,7 +2971,7 @@ TEST_F(
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
   task_environment()->FastForwardBy(

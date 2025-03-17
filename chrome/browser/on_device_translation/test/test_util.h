@@ -9,10 +9,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
+#include "chrome/browser/on_device_translation/translation_manager_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class Browser;
@@ -56,7 +58,7 @@ class MockComponentManager : public ComponentManager {
   // language pack key in `language_pack_keys` and install the fake language
   // pack later as a result of the call.
   void ExpectCallRegisterLanguagePackComponentAndInstall(
-      std::vector<LanguagePackKey> language_pack_keys);
+      const base::span<const LanguagePackKey>& language_pack_keys);
 
   // Installs the mock TranslateKit component.
   // The mock component's translate method returns the concatenation of the
@@ -95,7 +97,24 @@ class MockComponentManager : public ComponentManager {
   void InstallComponent(base::FilePath library_path);
 
   const base::FilePath package_dir_;
+  base::AutoReset<ComponentManager*> mock_component_manager_;
   base::WeakPtrFactory<MockComponentManager> weak_ptr_factory_{this};
+};
+
+class MockTranslationManagerImpl : public TranslationManagerImpl {
+ public:
+  explicit MockTranslationManagerImpl(content::BrowserContext* browser_context,
+                                      const url::Origin& origin);
+  ~MockTranslationManagerImpl() override;
+
+  MockTranslationManagerImpl(const MockTranslationManagerImpl&) = delete;
+  MockTranslationManagerImpl& operator=(const MockTranslationManagerImpl&) =
+      delete;
+
+  MOCK_METHOD(base::TimeDelta, GetTranslatorDownloadDelay, (), (override));
+
+ private:
+  base::AutoReset<TranslationManagerImpl*> mock_translation_manager_impl_;
 };
 
 // Creates a fake dictionary data file for the given source and target
@@ -109,32 +128,25 @@ std::string CreateFakeDictionaryData(const std::string_view sourceLang,
 // Tests that the simple translation works. The dictionary data generated using
 // CreateFakeDictionaryData() must be installed to pass the test.
 void TestSimpleTranslationWorks(Browser* browser,
+                                LanguagePackKey language_pack_key);
+void TestSimpleTranslationWorks(Browser* browser,
                                 const std::string_view sourceLang,
                                 const std::string_view targetLang);
 
 // Tests that the createTranslator() returns the expected result.
 void TestCreateTranslator(Browser* browser,
+                          LanguagePackKey language_pack_key,
+                          const std::string_view result);
+void TestCreateTranslator(Browser* browser,
                           const std::string_view sourceLang,
                           const std::string_view targetLang,
                           const std::string_view result);
 
-// Tests that the canTranslate() returns the expected result.
-void TestCanTranslate(Browser* browser,
-                      const std::string_view sourceLang,
-                      const std::string_view targetLang,
-                      const std::string_view result);
-
-// Tests that the AITranslatorCapabilities.available returns the expected
-// result.
-void TestTranslatorCapabilitiesAvailable(Browser* browser,
-                                         const std::string_view result);
-
-// Tests that the AITranslatorCapabilities.languagePairAvailable() returns the
-// expected result.
-void TestLanguagePairAvailable(Browser* browser,
-                               const std::string_view sourceLang,
-                               const std::string_view targetLang,
-                               const std::string_view result);
+// Tests that`availability()` returns the expected result.
+void TestTranslationAvailable(Browser* browser,
+                              const std::string_view sourceLang,
+                              const std::string_view targetLang,
+                              const std::string_view result);
 
 }  // namespace on_device_translation
 

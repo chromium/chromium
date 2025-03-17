@@ -19,7 +19,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -37,7 +37,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -195,7 +195,7 @@ bool HistogramExists(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name) != nullptr;
 }
 
-base::HistogramBase::Count GetHistogramDeltaTotalCount(std::string_view name) {
+base::HistogramBase::Count32 GetHistogramDeltaTotalCount(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name)
       ->SnapshotDelta()
       ->TotalCount();
@@ -213,7 +213,8 @@ IN_PROC_BROWSER_TEST_P(MetricsReportingStateTestParameterized,
   ChangeMetricsReportingStateWithReply(
       is_metrics_reporting_enabled_final_value(),
       base::BindOnce(&OnMetricsReportingStateChanged, &value_after_change,
-                     run_loop.QuitClosure()));
+                     run_loop.QuitClosure()),
+      ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
   run_loop.Run();
 
   // Verify that the reporting state has been duly updated.
@@ -310,12 +311,12 @@ INSTANTIATE_TEST_SUITE_P(
     MetricsReportingStateTests,
     MetricsReportingStateClearDataTest,
     testing::ValuesIn<ChangeMetricsReportingStateCalledFrom>(
-        {ChangeMetricsReportingStateCalledFrom::kUnknown,
-         ChangeMetricsReportingStateCalledFrom::kUiSettings,
+        {ChangeMetricsReportingStateCalledFrom::kUiSettings,
          ChangeMetricsReportingStateCalledFrom::kUiFirstRun,
+         ChangeMetricsReportingStateCalledFrom::kSessionCrashedDialog,
          ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange}));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Used to verify that managed/unmanged devices returns correct values based on
 // management state.
 class MetricsReportingStateManagedTest

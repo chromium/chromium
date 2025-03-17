@@ -42,11 +42,6 @@ struct VectorIcon;
 class AutocompleteControllerEmitter;
 class PrefService;
 
-using BitmapFetchedCallback =
-    base::RepeatingCallback<void(int result_index, const SkBitmap& bitmap)>;
-using FaviconFetchedCallback =
-    base::OnceCallback<void(const gfx::Image& favicon)>;
-
 // Interface that allows the omnibox component to interact with its embedder
 // (e.g., getting information about the current page, retrieving objects
 // associated with the current tab, or performing operations that rely on such
@@ -120,10 +115,11 @@ class OmniboxClient {
   // be true on iOS.
   virtual bool IsUsingFakeHttpsForHttpsUpgradeTesting() const = 0;
 
-  // Returns the icon corresponding to |match| if match is an extension match
-  // and an empty icon otherwise.
-  virtual gfx::Image GetIconIfExtensionMatch(
-      const AutocompleteMatch& match) const;
+  // Returns the icon corresponding to extension `template_url`.
+  virtual gfx::Image GetExtensionIcon(const TemplateURL* template_url) const;
+
+  // Returns the given |bitmap| with the correct size.
+  virtual gfx::Image GetSizedIcon(const SkBitmap* bitmap) const;
 
   // Returns the given |vector_icon_type| with the correct size.
   virtual gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
@@ -170,16 +166,16 @@ class OmniboxClient {
   virtual std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const;
 
-  // Checks whether |template_url| is an extension keyword; if so, asks the
-  // ExtensionOmniboxEventRouter to process |match| for it and returns true.
-  // Otherwise returns false. |observer| is the OmniboxNavigationObserver
-  // that was created by CreateOmniboxNavigationObserver() for |match|; in some
+  // Asks the `ExtensionOmniboxEventRouter` to process `match` for it.
+  // Some more processing is done to separate the keyword from the
+  // text if in keyword mode. `observer` is the OmniboxNavigationObserver that
+  // was created by `CreateOmniboxNavigationObserver()` for `match`; in some
   // embedding contexts, processing an extension keyword involves invoking
   // action on this observer.
-  virtual bool ProcessExtensionKeyword(const std::u16string& text,
-                                       const TemplateURL* template_url,
-                                       const AutocompleteMatch& match,
-                                       WindowOpenDisposition disposition);
+  virtual void ProcessExtensionMatch(const std::u16string& text,
+                                     const TemplateURL* template_url,
+                                     const AutocompleteMatch& match,
+                                     WindowOpenDisposition disposition);
 
   // Called to notify clients that the omnibox input state has changed.
   virtual void OnInputStateChanged() {}
@@ -197,6 +193,8 @@ class OmniboxClient {
   // results pages should preload only if `should_preload` is true. If the
   // implementation supports fetching of bitmaps for URLs (not all embedders
   // do), `on_bitmap_fetched` will be called when the bitmap has been fetched.
+  using BitmapFetchedCallback =
+      base::RepeatingCallback<void(int result_index, const SkBitmap& bitmap)>;
   virtual void OnResultChanged(const AutocompleteResult& result,
                                bool default_match_changed,
                                bool should_preload,
@@ -208,6 +206,8 @@ class OmniboxClient {
   // Otherwise, they return an empty gfx::Image and |on_favicon_fetched| may or
   // may not be called asynchronously later. |on_favicon_fetched| will never be
   // run synchronously, and will never be run with an empty result.
+  using FaviconFetchedCallback =
+      base::OnceCallback<void(const gfx::Image& favicon)>;
   virtual gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched);

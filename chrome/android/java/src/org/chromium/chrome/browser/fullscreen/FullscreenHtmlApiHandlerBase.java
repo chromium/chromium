@@ -491,10 +491,12 @@ public abstract class FullscreenHtmlApiHandlerBase
 
         // Ensure that the layout change listener to bring back browser controls is called on
         // automotive devices that never hide system bars.
-        // TODO(peilinwang/clhager) When edge to edge is enabled, onLayoutChange doesn't trigger,
-        // which results in not showing the browser controls when we're supposed to, and also messes
-        // up the viewport and toolbar.
-        if (BuildInfo.getInstance().isAutomotive || EdgeToEdgeUtils.isEnabled()) {
+        // TODO(peilinwang/clhager) When edge to edge is enabled, or when we are in multi window
+        //  mode, onLayoutChange doesn't trigger, which results in not showing the browser controls
+        //  when we're supposed to, and also messes up the viewport and toolbar.
+        if (BuildInfo.getInstance().isAutomotive
+                || EdgeToEdgeUtils.isEnabled()
+                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
             ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.exitFullScreen");
         }
     }

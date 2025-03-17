@@ -306,8 +306,9 @@ void AddWidevine(const media::KeySystemCapability& capability,
   SupportedCodecs codecs = media::EME_CODEC_NONE;
   SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
 #if BUILDFLAG(IS_WIN)
-  SupportedCodecs hw_secure_codecs_clear_lead_support_not_required =
-      media::EME_CODEC_NONE;
+  // The experimental key system has a different set of hardware codecs, where
+  // these hardware codecs do not require clear lead support.
+  SupportedCodecs hw_secure_codecs_experimental = media::EME_CODEC_NONE;
 #endif
   base::flat_set<::media::EncryptionScheme> encryption_schemes;
   base::flat_set<::media::EncryptionScheme> hw_secure_encryption_schemes;
@@ -333,16 +334,12 @@ void AddWidevine(const media::KeySystemCapability& capability,
   if (capability.hw_cdm_capability_or_status.has_value()) {
     const auto& hw_secure_capability =
         capability.hw_cdm_capability_or_status.value();
-    // For the default Widevine key system, we support a codec only when it
-    // supports clear lead, unless `force_support_clear_lead` is set to true.
-    const bool force_support_clear_lead =
-        media::kHardwareSecureDecryptionForceSupportClearLead.Get();
-    hw_secure_codecs =
-        GetSupportedCodecs(hw_secure_capability, !force_support_clear_lead);
+    hw_secure_codecs = GetSupportedCodecs(hw_secure_capability);
+
 #if BUILDFLAG(IS_WIN)
     // For the experimental Widevine key system, we do not have to filter the
     // hardware secure codecs by whether they support clear lead or not.
-    hw_secure_codecs_clear_lead_support_not_required =
+    hw_secure_codecs_experimental =
         GetSupportedCodecs(hw_secure_capability,
                            /*requires_clear_lead_support=*/false);
 #endif  // BUILDFLAG(IS_WIN)
@@ -386,21 +383,12 @@ void AddWidevine(const media::KeySystemCapability& capability,
   // On Android we support hardware secure if possible.
   max_audio_robustness = Robustness::HW_SECURE_CRYPTO;
   max_video_robustness = Robustness::HW_SECURE_ALL;
-#else
-  // The hardware secure robustness for the two keys systems are guarded by
-  // different flags. The audio and video robustness should be set differently
-  // for the experimental and normal key system.
-  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
-    max_audio_robustness = Robustness::HW_SECURE_CRYPTO;
-    max_video_robustness = Robustness::HW_SECURE_ALL;
-  }
-#if BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(
           media::kHardwareSecureDecryptionExperiment)) {
     max_experimental_audio_robustness = Robustness::HW_SECURE_CRYPTO;
     max_experimental_video_robustness = Robustness::HW_SECURE_ALL;
   }
-#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Others.
@@ -432,27 +420,13 @@ void AddWidevine(const media::KeySystemCapability& capability,
     // experimental key system would not serve clear lead content.
     auto experimental_key_system_info = std::make_unique<WidevineKeySystemInfo>(
         codecs, encryption_schemes, session_types,
-        hw_secure_codecs_clear_lead_support_not_required,
-        hw_secure_encryption_schemes, hw_secure_session_types,
-        max_experimental_audio_robustness, max_experimental_video_robustness,
-        persistent_state_support, distinctive_identifier_support);
+        hw_secure_codecs_experimental, hw_secure_encryption_schemes,
+        hw_secure_session_types, max_experimental_audio_robustness,
+        max_experimental_video_robustness, persistent_state_support,
+        distinctive_identifier_support);
     experimental_key_system_info->set_experimental();
 
     key_systems->emplace_back(std::move(experimental_key_system_info));
-
-    // Register another WidevineKeySystemInfo on Windows only for
-    // `kWidevineExperiment2KeySystem`. This key system is the same as the
-    // experimental key system above except clear lead support is required.
-    auto experimental_two_key_system_info =
-        std::make_unique<WidevineKeySystemInfo>(
-            codecs, encryption_schemes, session_types, hw_secure_codecs,
-            hw_secure_encryption_schemes, hw_secure_session_types,
-            max_experimental_audio_robustness,
-            max_experimental_video_robustness, persistent_state_support,
-            distinctive_identifier_support);
-    experimental_two_key_system_info->set_experimental_two();
-
-    key_systems->emplace_back(std::move(experimental_two_key_system_info));
   }
 #endif  // BUILDFLAG(IS_WIN)
 }

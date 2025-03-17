@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 
 namespace blink {
@@ -93,7 +94,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
     return image_device_pixel_ratio_;
   }
 
-  void IntrinsicSizeChanged() override {
+  void NaturalSizeChanged() override {
     NOT_DESTROYED();
     // The replaced content transform depends on the intrinsic size (see:
     // FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform).
@@ -123,8 +124,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
  protected:
   SVGImage* EmbeddedSVGImage() const;
-  bool CanApplyObjectViewBox() const override;
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
@@ -169,8 +169,11 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                    HitTestPhase) final;
 
   void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
-  void UpdateIntrinsicSizeIfNeeded(const PhysicalSize&);
-  bool NeedsLayoutOnIntrinsicSizeChange() const;
+  bool UpdateNaturalSizeIfNeeded();
+  bool NeedsLayoutOnNaturalSizeChange() const;
+
+  // The natural dimensions for the image.
+  PhysicalNaturalSizingInfo natural_dimensions_;
 
   // This member wraps the associated decoded image.
   //

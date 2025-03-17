@@ -46,9 +46,6 @@ struct UrlHandlers : public Extension::ManifestData {
   // |url|.
   static bool CanPlatformAppHandleUrl(const Extension* app, const GURL& url);
 
-  // Determines whether |app| has at least one URL handler that matches |url|.
-  static bool CanBookmarkAppHandleUrl(const Extension* app, const GURL& url);
-
   // Finds a matching URL handler for |app|, if any. Returns nullptr if none
   // are found.
   static const UrlHandlerInfo* GetMatchingPlatformAppUrlHandler(

@@ -9,8 +9,8 @@ from __future__ import annotations
 import argparse
 import collections
 import contextlib
+import dataclasses
 import datetime
-import json
 import os
 import pathlib
 import re
@@ -30,29 +30,26 @@ from util import server_utils
 
 _SOCKET_TIMEOUT = 60  # seconds
 
-_LOGFILES = {}
 _LOGFILE_NAME = 'buildserver.log'
 _MAX_LOGFILES = 6
 
-FIRST_LOG_LINE = '#### Start of log for build_id = {build_id} ####\n'
-BUILD_ID_RE = re.compile(r'^#### .*build_id = (?P<build_id>.+) ####')
+FIRST_LOG_LINE = """\
+#### Start of log for build: {build_id}
+#### CWD: {outdir}
+"""
+BUILD_ID_RE = re.compile(r'^#### Start of log for build: (?P<build_id>.+)')
 
 
-def log(msg: str, quiet: bool = False):
-  if quiet:
+def server_log(msg: str):
+  if OptionsManager.is_quiet():
     return
   # Ensure we start our message on a new line.
   print('\n' + msg)
 
 
-def set_status(msg: str, *, quiet: bool = False, build_id: str = None):
-  prefix = f'[{TaskStats.prefix()}] '
-  # if message is specific to a build then also output to its logfile.
-  if build_id:
-    log_to_file(f'{prefix}{msg}', build_id=build_id)
-
+def print_status(prefix: str, msg: str):
   # No need to also output to the terminal if quiet.
-  if quiet:
+  if OptionsManager.is_quiet():
     return
   # Shrink the message (leaving a 2-char prefix and use the rest of the room
   # for the suffix) according to terminal size so it is always one line.
@@ -68,53 +65,82 @@ def set_status(msg: str, *, quiet: bool = False, build_id: str = None):
   print(f'\r{prefix}{msg}\033[K', end='', flush=True)
 
 
-def log_to_file(message: str, build_id: str):
-  logfile = _LOGFILES[build_id]
-  print(message, file=logfile, flush=True)
-
-
 def _exception_hook(exctype: type, exc: Exception, tb):
+  # Let KeyboardInterrupt through.
+  if issubclass(exctype, KeyboardInterrupt):
+    sys.__excepthook__(exctype, exc, tb)
+    return
+  stacktrace = ''.join(traceback.format_exception(exctype, exc, tb))
+  stacktrace_lines = [f'\n⛔{line}' for line in stacktrace.splitlines()]
   # Output uncaught exceptions to all live terminals
-  BuildManager.broadcast(''.join(traceback.format_exception(exctype, exc, tb)))
+  # Extra newline since siso's output often erases the current line.
+  BuildManager.broadcast(''.join(stacktrace_lines) + '\n')
   # Cancel all pending tasks cleanly (i.e. delete stamp files if necessary).
   TaskManager.deactivate()
-  sys.__excepthook__(exctype, exc, tb)
+  # Reset all remote terminal titles.
+  BuildManager.update_remote_titles('')
 
 
-def create_logfile(build_id, outdir):
-  if logfile := _LOGFILES.get(build_id, None):
-    return logfile
+# Stores global options so as to not keep passing along and storing options
+# everywhere.
+class OptionsManager:
+  _options = None
 
-  outdir = pathlib.Path(outdir)
-  latest_logfile = outdir / f'{_LOGFILE_NAME}.0'
+  @classmethod
+  def set_options(cls, options):
+    cls._options = options
 
-  if latest_logfile.exists():
-    with latest_logfile.open('rt') as f:
-      first_line = f.readline()
-      if log_build_id := BUILD_ID_RE.search(first_line):
-        # If the newest logfile on disk is referencing the same build we are
-        # currently processing, we probably crashed previously and we should
-        # pick up where we left off in the same logfile.
-        if log_build_id.group('build_id') == build_id:
-          _LOGFILES[build_id] = latest_logfile.open('at')
-          return _LOGFILES[build_id]
+  @classmethod
+  def is_quiet(cls):
+    assert cls._options is not None
+    return cls._options.quiet
 
-  # Do the logfile name shift.
-  filenames = os.listdir(outdir)
-  logfiles = {f for f in filenames if f.startswith(_LOGFILE_NAME)}
-  for idx in reversed(range(_MAX_LOGFILES)):
-    current_name = f'{_LOGFILE_NAME}.{idx}'
-    next_name = f'{_LOGFILE_NAME}.{idx+1}'
-    if current_name in logfiles:
-      shutil.move(os.path.join(outdir, current_name),
-                  os.path.join(outdir, next_name))
+  @classmethod
+  def should_remote_print(cls):
+    assert cls._options is not None
+    return not cls._options.no_remote_print
 
-  # Create a new 0th logfile.
-  logfile = latest_logfile.open('wt')
-  _LOGFILES[build_id] = logfile
-  logfile.write(FIRST_LOG_LINE.format(build_id=build_id))
-  logfile.flush()
-  return logfile
+
+class LogfileManager:
+  _logfiles: dict[str, IO[str]] = {}
+  _lock = threading.RLock()
+
+  @classmethod
+  def create_logfile(cls, build_id, outdir):
+    with cls._lock:
+      if logfile := cls._logfiles.get(build_id, None):
+        return logfile
+
+      outdir = pathlib.Path(outdir)
+      latest_logfile = outdir / f'{_LOGFILE_NAME}.0'
+
+      if latest_logfile.exists():
+        with latest_logfile.open('rt') as f:
+          first_line = f.readline()
+          if log_build_id := BUILD_ID_RE.search(first_line):
+            # If the newest logfile on disk is referencing the same build we are
+            # currently processing, we probably crashed previously and we should
+            # pick up where we left off in the same logfile.
+            if log_build_id.group('build_id') == build_id:
+              cls._logfiles[build_id] = latest_logfile.open('at')
+              return cls._logfiles[build_id]
+
+      # Do the logfile name shift.
+      filenames = os.listdir(outdir)
+      logfiles = {f for f in filenames if f.startswith(_LOGFILE_NAME)}
+      for idx in reversed(range(_MAX_LOGFILES)):
+        current_name = f'{_LOGFILE_NAME}.{idx}'
+        next_name = f'{_LOGFILE_NAME}.{idx+1}'
+        if current_name in logfiles:
+          shutil.move(os.path.join(outdir, current_name),
+                      os.path.join(outdir, next_name))
+
+      # Create a new 0th logfile.
+      logfile = latest_logfile.open('wt')
+      logfile.write(FIRST_LOG_LINE.format(build_id=build_id, outdir=outdir))
+      logfile.flush()
+      cls._logfiles[build_id] = logfile
+      return logfile
 
 
 class TaskStats:
@@ -122,10 +148,6 @@ class TaskStats:
   _num_processes = 0
   _completed_tasks = 0
   _total_tasks = 0
-  _total_task_count_per_build = collections.defaultdict(int)
-  _completed_task_count_per_build = collections.defaultdict(int)
-  _running_processes_count_per_build = collections.defaultdict(int)
-  _outdir_per_build = {}
   _lock = threading.RLock()
 
   @classmethod
@@ -134,69 +156,60 @@ class TaskStats:
       return cls._num_processes == 0
 
   @classmethod
-  def add_task(cls, build_id: str, outdir: str):
+  def add_task(cls):
     with cls._lock:
       cls._total_tasks += 1
-      cls._total_task_count_per_build[build_id] += 1
-      cls._outdir_per_build[build_id] = outdir
 
   @classmethod
-  def add_process(cls, build_id: str):
+  def add_process(cls):
     with cls._lock:
       cls._num_processes += 1
-      cls._running_processes_count_per_build[build_id] += 1
 
   @classmethod
-  def remove_process(cls, build_id: str):
+  def remove_process(cls):
     with cls._lock:
       cls._num_processes -= 1
-      cls._running_processes_count_per_build[build_id] -= 1
 
   @classmethod
-  def complete_task(cls, build_id: str):
+  def complete_task(cls):
     with cls._lock:
       cls._completed_tasks += 1
-      cls._completed_task_count_per_build[build_id] += 1
 
   @classmethod
-  def num_pending_tasks(cls, build_id: str = None):
+  def num_pending_tasks(cls):
     with cls._lock:
-      if build_id:
-        return cls._total_task_count_per_build[
-            build_id] - cls._completed_task_count_per_build[build_id]
       return cls._total_tasks - cls._completed_tasks
 
   @classmethod
-  def num_completed_tasks(cls, build_id: str = None):
+  def num_completed_tasks(cls):
     with cls._lock:
-      if build_id:
-        return cls._completed_task_count_per_build[build_id]
       return cls._completed_tasks
 
   @classmethod
-  def query_build(cls, query_build_id: str = None):
+  def total_tasks(cls):
     with cls._lock:
-      active_builds = BuildManager.get_live_builds()
-      if query_build_id:
-        build_ids = [query_build_id]
-      else:
-        build_ids = sorted(
-            set(active_builds) | set(cls._total_task_count_per_build))
-      builds = []
-      for build_id in build_ids:
-        current_tasks = TaskManager.get_current_tasks(build_id)
-        builds.append({
-            'build_id': build_id,
-            'is_active': build_id in active_builds,
-            'completed_tasks': cls.num_completed_tasks(build_id),
-            'pending_tasks': cls.num_pending_tasks(build_id),
-            'active_tasks': [t.cmd for t in current_tasks],
-            'outdir': cls._outdir_per_build.get(build_id),  # None if no tasks.
-        })
-      return {
-          'pid': os.getpid(),
-          'builds': builds,
-      }
+      return cls._total_tasks
+
+  @classmethod
+  def get_title_message(cls):
+    with cls._lock:
+      return f'Analysis Steps: {cls._completed_tasks}/{cls._total_tasks}'
+
+  @classmethod
+  def query_build(cls, query_build_id: str = None):
+    builds = []
+    if query_build_id:
+      if build := BuildManager.get_build(query_build_id):
+        builds.append(build)
+    else:
+      builds = BuildManager.get_all_builds()
+    build_infos = []
+    for build in builds:
+      build_infos.append(build.query_build_info())
+    return {
+        'pid': os.getpid(),
+        'builds': build_infos,
+    }
 
   @classmethod
   def prefix(cls, build_id: str = None):
@@ -206,9 +219,10 @@ class TaskStats:
     # its tasks.
     with cls._lock:
       if build_id:
-        _num_processes = cls._running_processes_count_per_build[build_id]
-        _completed_tasks = cls._completed_task_count_per_build[build_id]
-        _total_tasks = cls._total_task_count_per_build[build_id]
+        build = BuildManager.get_build(build_id)
+        _num_processes = build.process_count()
+        _completed_tasks = build.completed_task_count()
+        _total_tasks = build.total_task_count()
       else:
         _num_processes = cls._num_processes
         _completed_tasks = cls._completed_tasks
@@ -226,50 +240,229 @@ def check_pid_alive(pid: int):
   return True
 
 
+@dataclasses.dataclass
+class Build:
+  id: str
+  pid: int
+  env: dict
+  stdout: IO[str]
+  cwd: Optional[str] = None
+  _logfile: Optional[IO[str]] = None
+  _is_ninja_alive: bool = True
+  _tasks: List[Task] = dataclasses.field(default_factory=list)
+  _completed_task_count = 0
+  _active_process_count = 0
+  _lock: threading.RLock = dataclasses.field(default_factory=threading.RLock,
+                                             repr=False,
+                                             init=False)
+
+  def __hash__(self):
+    return hash((self.id, self.pid, self.cwd))
+
+  def add_task(self, task: Task):
+    self._status_update(f'QUEUED {task.name}')
+    with self._lock:
+      self._tasks.append(task)
+    TaskStats.add_task()
+    TaskManager.add_task(task)
+
+  def add_process(self, task: Task):
+    self._status_update(f'STARTING {task.name}')
+    with self._lock:
+      self._active_process_count += 1
+    TaskStats.add_process()
+
+  def task_done(self, task: Task, status_string: str):
+    self._status_update(f'{status_string} {task.name}')
+    TaskStats.complete_task()
+    TaskManager.task_done(task)
+    with self._lock:
+      self._completed_task_count += 1
+
+    # We synchronize all terminal title info rather than having it per build
+    # since if two builds are happening in the same terminal concurrently, both
+    # builds will be overriding each other's titles continuously. Usually we
+    # only have the one build anyways so it should equivalent in most cases.
+    BuildManager.update_remote_titles()
+    with self._lock:
+      if not self.is_active():
+        self._logfile.close()
+        # Reset in case its the last build.
+        BuildManager.update_remote_titles('')
+
+  def process_complete(self):
+    with self._lock:
+      self._active_process_count -= 1
+    TaskStats.remove_process()
+
+  def ensure_logfile(self):
+    with self._lock:
+      if not self._logfile:
+        assert self.cwd is not None
+        self._logfile = LogfileManager.create_logfile(self.id, self.cwd)
+
+  def log(self, message: str):
+    with self._lock:
+      self.ensure_logfile()
+      if self._logfile.closed:
+        # BuildManager#broadcast can call log after the build is done and the
+        # log is closed. Might make sense to separate out that flow so we can
+        # raise an exception here otherwise.
+        return
+      print(message, file=self._logfile, flush=True)
+
+  def _status_update(self, status_message):
+    prefix = f'[{TaskStats.prefix(self.id)}] '
+    self.log(f'{prefix}{status_message}')
+    print_status(prefix, status_message)
+
+  def total_task_count(self):
+    with self._lock:
+      return len(self._tasks)
+
+  def completed_task_count(self):
+    with self._lock:
+      return self._completed_task_count
+
+  def pending_task_count(self):
+    with self._lock:
+      return self.total_task_count() - self.completed_task_count()
+
+  def process_count(self):
+    with self._lock:
+      return self._active_process_count
+
+  def is_active(self):
+    if self.pending_task_count() > 0:
+      return True
+    # Ninja is not coming back to life so only check on it if last we checked it
+    # was still alive.
+    if self._is_ninja_alive:
+      self._is_ninja_alive = check_pid_alive(self.pid)
+    return self._is_ninja_alive
+
+  def query_build_info(self):
+    current_tasks = TaskManager.get_current_tasks(self.id)
+    return {
+        'build_id': self.id,
+        'is_active': self.is_active(),
+        'completed_tasks': self.completed_task_count(),
+        'pending_tasks': self.pending_task_count(),
+        'active_tasks': [t.cmd for t in current_tasks],
+        'outdir': self.cwd,
+    }
+
+
 class BuildManager:
-  _live_builders: dict[str, int] = dict()
-  _build_ttys: dict[str, IO[str]] = dict()
+  _builds_by_id: dict[str, Build] = dict()
+  _cached_ttys: dict[(int, int), tuple[IO[str], bool]] = dict()
   _lock = threading.RLock()
 
   @classmethod
-  def register_builder(cls, build_id, builder_pid):
+  def register_builder(cls, env, pid, cwd):
+    build_id = env['AUTONINJA_BUILD_ID']
+    stdout = cls.open_tty(env['AUTONINJA_STDOUT_NAME'])
+    # Tells the script not to re-delegate to build server.
+    env[server_utils.BUILD_SERVER_ENV_VARIABLE] = '1'
+
     with cls._lock:
-      cls._live_builders[build_id] = int(builder_pid)
+      build = Build(id=build_id,
+                    pid=pid,
+                    cwd=cwd,
+                    env=env,
+                    stdout=stdout)
+      cls.maybe_init_cwd(build, cwd)
+      cls._builds_by_id[build_id] = build
+    cls.update_remote_titles()
 
   @classmethod
-  def register_tty(cls, build_id, tty):
-    with cls._lock:
-      cls._build_ttys[build_id] = tty
+  def maybe_init_cwd(cls, build: Build, cwd: str):
+    if cwd is not None:
+      with cls._lock:
+        if build.cwd is None:
+          build.cwd = cwd
+        else:
+          assert pathlib.Path(cwd).samefile(
+              build.cwd), f'{repr(cwd)} != {repr(build.cwd)}'
+        build.ensure_logfile()
 
   @classmethod
-  def get_live_builds(cls):
+  def get_build(cls, build_id):
     with cls._lock:
-      for build_id, builder_pid in list(cls._live_builders.items()):
-        if not check_pid_alive(builder_pid):
-          del cls._live_builders[build_id]
-      return list(cls._live_builders.keys())
+      return cls._builds_by_id.get(build_id, None)
+
+  @classmethod
+  def open_tty(cls, tty_path):
+    # Do not open the same tty multiple times. Use st_ino and st_dev to compare
+    # file descriptors.
+    tty = open(tty_path, 'at')
+    st = os.stat(tty.fileno())
+    tty_key = (st.st_ino, st.st_dev)
+    with cls._lock:
+      # Dedupes ttys
+      if tty_key not in cls._cached_ttys:
+        # TTYs are kept open for the lifetime of the server so that broadcast
+        # messages (e.g. uncaught exceptions) can be sent to them even if they
+        # are not currently building anything.
+        cls._cached_ttys[tty_key] = (tty, tty.isatty())
+      else:
+        tty.close()
+      return cls._cached_ttys[tty_key][0]
+
+  @classmethod
+  def get_active_builds(cls) -> List[Build]:
+    builds = cls.get_all_builds()
+    return list(build for build in builds if build.is_active())
+
+  @classmethod
+  def get_all_builds(cls) -> List[Build]:
+    with cls._lock:
+      return list(cls._builds_by_id.values())
 
   @classmethod
   def broadcast(cls, msg: str):
-    seen = set()
     with cls._lock:
-      for tty in cls._build_ttys.values():
-        # Do not output to the same tty multiple times. Use st_ino and st_dev to
-        # compare open file descriptors.
-        st = os.stat(tty.fileno())
-        key = (st.st_ino, st.st_dev)
-        if key in seen:
-          continue
-        seen.add(key)
+      ttys = list(cls._cached_ttys.values())
+      builds = list(cls._builds_by_id.values())
+    if OptionsManager.should_remote_print():
+      for tty, _unused in ttys:
         try:
           tty.write(msg + '\n')
           tty.flush()
         except BrokenPipeError:
           pass
+    for build in builds:
+      build.log(msg)
+    # Write to the current terminal if we have not written to it yet.
+    st = os.stat(sys.stderr.fileno())
+    stderr_key = (st.st_ino, st.st_dev)
+    if stderr_key not in cls._cached_ttys:
+      print(msg, file=sys.stderr)
 
   @classmethod
-  def has_live_builds(cls):
-    return bool(cls.get_live_builds())
+  def update_remote_titles(cls, new_title=None):
+    if new_title is None:
+      if not cls.has_active_builds() and TaskStats.num_pending_tasks() == 0:
+        # Setting an empty title causes most terminals to go back to the
+        # default title (and at least prevents the tab title from being
+        # "Analysis Steps: N/N" forevermore.
+        new_title = ''
+      else:
+        new_title = TaskStats.get_title_message()
+
+    with cls._lock:
+      ttys = list(cls._cached_ttys.values())
+    for tty, isatty in ttys:
+      if isatty:
+        try:
+          tty.write(f'\033]2;{new_title}\007')
+          tty.flush()
+        except BrokenPipeError:
+          pass
+
+  @classmethod
+  def has_active_builds(cls):
+    return bool(cls.get_active_builds())
 
 
 class TaskManager:
@@ -280,26 +473,21 @@ class TaskManager:
   _lock = threading.RLock()
 
   @classmethod
-  def add_task(cls, task: Task, options):
+  def add_task(cls, task: Task):
     assert not cls._deactivated
-    TaskStats.add_task(task.build_id, task.cwd)
     with cls._lock:
       cls._queue.appendleft(task)
-    set_status(f'QUEUED {task.name}',
-               quiet=options.quiet,
-               build_id=task.build_id)
     cls._maybe_start_tasks()
 
   @classmethod
   def task_done(cls, task: Task):
-    TaskStats.complete_task(build_id=task.build_id)
     with cls._lock:
-      cls._current_tasks.remove(task)
+      cls._current_tasks.discard(task)
 
   @classmethod
   def get_current_tasks(cls, build_id):
     with cls._lock:
-      return [t for t in cls._current_tasks if t.build_id == build_id]
+      return [t for t in cls._current_tasks if t.build.id == build_id]
 
   @classmethod
   def deactivate(cls):
@@ -323,13 +511,13 @@ class TaskManager:
     with cls._lock:
       # Cancel pending tasks.
       for task in cls._queue:
-        if task.build_id == build_id:
+        if task.build.id == build_id:
           terminated_pending_tasks.append(task)
       for task in terminated_pending_tasks:
         cls._queue.remove(task)
       # Cancel running tasks.
       for task in cls._current_tasks:
-        if task.build_id == build_id:
+        if task.build.id == build_id:
           terminated_current_tasks.append(task)
     # Terminate tasks outside lock since task threads need the lock to finish
     # terminating.
@@ -379,15 +567,11 @@ class TaskManager:
 class Task:
   """Class to represent one task and operations on it."""
 
-  def __init__(self, name: str, cwd: str, cmd: List[str], tty: IO[str],
-               stamp_file: str, build_id: str, options):
+  def __init__(self, name: str, build: Build, cmd: List[str], stamp_file: str):
     self.name = name
-    self.cwd = cwd
+    self.build = build
     self.cmd = cmd
     self.stamp_file = stamp_file
-    self.tty = tty
-    self.build_id = build_id
-    self.options = options
     self._terminated = False
     self._replaced = False
     self._lock = threading.RLock()
@@ -398,25 +582,19 @@ class Task:
 
   @property
   def key(self):
-    return (self.cwd, self.name)
+    return (self.build.cwd, self.name)
 
   def __hash__(self):
-    return hash((self.key, self.build_id))
+    return hash((self.key, self.build.id))
 
   def __eq__(self, other):
-    return self.key == other.key and self.build_id == other.build_id
+    return self.key == other.key and self.build is other.build
 
   def start(self, on_complete_callback: Callable[[], None]) -> int:
     """Starts the task if it has not already been terminated.
 
     Returns the number of processes that have been started. This is called at
     most once when the task is popped off the task queue."""
-
-    # The environment variable forces the script to actually run in order to
-    # avoid infinite recursion.
-    env = os.environ.copy()
-    env[server_utils.BUILD_SERVER_ENV_VARIABLE] = '1'
-
     with self._lock:
       if self._terminated:
         return 0
@@ -424,18 +602,15 @@ class Task:
       # Use os.nice(19) to ensure the lowest priority (idle) for these analysis
       # tasks since we want to avoid slowing down the actual build.
       # TODO(wnwen): Use ionice to reduce resource consumption.
-      TaskStats.add_process(self.build_id)
-      set_status(f'STARTING {self.name}',
-                 quiet=self.options.quiet,
-                 build_id=self.build_id)
+      self.build.add_process(self)
       # This use of preexec_fn is sufficiently simple, just one os.nice call.
       # pylint: disable=subprocess-popen-preexec-fn
       self._proc = subprocess.Popen(
           self.cmd,
           stdout=subprocess.PIPE,
           stderr=subprocess.STDOUT,
-          cwd=self.cwd,
-          env=env,
+          cwd=self.build.cwd,
+          env=self.build.env,
           text=True,
           preexec_fn=lambda: os.nice(19),
       )
@@ -473,7 +648,7 @@ class Task:
     # constructed with text=True.
     stdout: str = self._proc.communicate()[0]
     self._return_code = self._proc.returncode
-    TaskStats.remove_process(build_id=self.build_id)
+    self.build.process_complete()
     self._complete(stdout)
     on_complete_callback()
 
@@ -502,60 +677,42 @@ class Task:
       ]
 
       message = '\n'.join(preamble + [stdout])
-      log_to_file(message, build_id=self.build_id)
-      log(message, quiet=self.options.quiet)
-      if self.tty:
+      self.build.log(message)
+      server_log(message)
+
+      if OptionsManager.should_remote_print():
         # Add emoji to show that output is from the build server.
         preamble = [f'⏩ {line}' for line in preamble]
         remote_message = '\n'.join(preamble + [stdout])
         # Add a new line at start of message to clearly delineate from previous
         # output/text already on the remote tty we are printing to.
-        self.tty.write(f'\n{remote_message}')
-        self.tty.flush()
+        self.build.stdout.write(f'\n{remote_message}')
+        self.build.stdout.flush()
     if delete_stamp:
       # Force siso to consider failed targets as dirty.
       try:
-        os.unlink(os.path.join(self.cwd, self.stamp_file))
+        os.unlink(os.path.join(self.build.cwd, self.stamp_file))
       except FileNotFoundError:
         pass
-    else:
-      # We do not care about the action writing a too new mtime. Siso only cares
-      # about the mtime that is recorded in its database at the time the
-      # original action finished.
-      pass
-    TaskManager.task_done(self)
-    set_status(f'{status_string} {self.name}',
-               quiet=self.options.quiet,
-               build_id=self.build_id)
+    self.build.task_done(self, status_string)
 
 
-def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task], options):
+def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task]):
   """Handle messages of type ADD_TASK."""
   build_id = data['build_id']
-  task_outdir = data['cwd']
-  tty_name = data.get('tty')
-
-  tty = None
-  if tty_name:
-    tty = open(tty_name, 'wt')
-    BuildManager.register_tty(build_id, tty)
-
-  # Make sure a logfile for the build_id exists.
-  create_logfile(build_id, task_outdir)
+  build = BuildManager.get_build(build_id)
+  BuildManager.maybe_init_cwd(build, data.get('cwd'))
 
   new_task = Task(name=data['name'],
-                  cwd=task_outdir,
                   cmd=data['cmd'],
-                  tty=tty,
-                  build_id=build_id,
-                  stamp_file=data['stamp_file'],
-                  options=options)
+                  build=build,
+                  stamp_file=data['stamp_file'])
   existing_task = current_tasks.get(new_task.key)
   if existing_task:
     existing_task.terminate(replaced=True)
   current_tasks[new_task.key] = new_task
 
-  TaskManager.add_task(new_task, options)
+  build.add_task(new_task)
 
 
 def _handle_query_build(data, connection: socket.socket):
@@ -564,7 +721,7 @@ def _handle_query_build(data, connection: socket.socket):
   response = TaskStats.query_build(build_id)
   try:
     with connection:
-      server_utils.SendMessage(connection, json.dumps(response).encode('utf8'))
+      server_utils.SendMessage(connection, response)
   except BrokenPipeError:
     # We should not die because the client died.
     pass
@@ -574,10 +731,10 @@ def _handle_heartbeat(connection: socket.socket):
   """Handle messages of type POLL_HEARTBEAT."""
   try:
     with connection:
-      server_utils.SendMessage(connection,
-                               json.dumps({
-                                   'status': 'OK'
-                               }).encode('utf8'))
+      server_utils.SendMessage(connection, {
+          'status': 'OK',
+          'pid': os.getpid(),
+      })
   except BrokenPipeError:
     # We should not die because the client died.
     pass
@@ -585,35 +742,38 @@ def _handle_heartbeat(connection: socket.socket):
 
 def _handle_register_builder(data):
   """Handle messages of type REGISTER_BUILDER."""
-  build_id = data['build_id']
-  builder_pid = data['builder_pid']
-  BuildManager.register_builder(build_id, builder_pid)
+  env = data['env']
+  pid = int(data['builder_pid'])
+  cwd = data['cwd']
+
+  BuildManager.register_builder(env, pid, cwd)
 
 
 def _handle_cancel_build(data):
   """Handle messages of type CANCEL_BUILD."""
   build_id = data['build_id']
   TaskManager.cancel_build(build_id)
+  BuildManager.update_remote_titles('')
 
 
 def _listen_for_request_data(sock: socket.socket):
   """Helper to encapsulate getting a new message."""
   while True:
     conn = sock.accept()[0]
-    message_bytes = server_utils.ReceiveMessage(conn)
-    if message_bytes:
-      yield json.loads(message_bytes), conn
+    message = server_utils.ReceiveMessage(conn)
+    if message:
+      yield message, conn
 
 
-def _register_cleanup_signal_handlers(options):
+def _register_cleanup_signal_handlers():
   original_sigint_handler = signal.getsignal(signal.SIGINT)
   original_sigterm_handler = signal.getsignal(signal.SIGTERM)
 
   def _cleanup(signum, frame):
-    log('STOPPING SERVER...', quiet=options.quiet)
+    server_log('STOPPING SERVER...')
     # Gracefully shut down the task manager, terminating all queued tasks.
     TaskManager.deactivate()
-    log('STOPPED', quiet=options.quiet)
+    server_log('STOPPED')
     if signum == signal.SIGINT:
       if callable(original_sigint_handler):
         original_sigint_handler(signum, frame)
@@ -630,16 +790,15 @@ def _register_cleanup_signal_handlers(options):
   signal.signal(signal.SIGTERM, _cleanup)
 
 
-def _process_requests(sock: socket.socket, options):
+def _process_requests(sock: socket.socket, exit_on_idle: bool):
   """Main loop for build server receiving request messages."""
   # Since dicts in python can contain anything, explicitly type tasks to help
   # make static type checking more useful.
   tasks: Dict[Tuple[str, str], Task] = {}
-  log(
+  server_log(
       'READY... Remember to set android_static_analysis="build_server" in '
-      'args.gn files',
-      quiet=options.quiet)
-  _register_cleanup_signal_handlers(options)
+      'args.gn files')
+  _register_cleanup_signal_handlers()
   # pylint: disable=too-many-nested-blocks
   while True:
     try:
@@ -647,40 +806,36 @@ def _process_requests(sock: socket.socket, options):
         message_type = data.get('message_type', server_utils.ADD_TASK)
         if message_type == server_utils.POLL_HEARTBEAT:
           _handle_heartbeat(connection)
-        if message_type == server_utils.ADD_TASK:
+        elif message_type == server_utils.ADD_TASK:
           connection.close()
-          _handle_add_task(data, tasks, options)
-        if message_type == server_utils.QUERY_BUILD:
+          _handle_add_task(data, tasks)
+        elif message_type == server_utils.QUERY_BUILD:
           _handle_query_build(data, connection)
-        if message_type == server_utils.REGISTER_BUILDER:
+        elif message_type == server_utils.REGISTER_BUILDER:
           connection.close()
           _handle_register_builder(data)
-        if message_type == server_utils.CANCEL_BUILD:
+        elif message_type == server_utils.CANCEL_BUILD:
           connection.close()
           _handle_cancel_build(data)
+        else:
+          connection.close()
     except TimeoutError:
       # If we have not received a new task in a while and do not have any
       # pending tasks or running builds, then exit. Otherwise keep waiting.
       if (TaskStats.num_pending_tasks() == 0
-          and not BuildManager.has_live_builds() and options.exit_on_idle):
+          and not BuildManager.has_active_builds() and exit_on_idle):
         break
     except KeyboardInterrupt:
       break
+  BuildManager.update_remote_titles('')
 
 
-def query_build_info(build_id):
+def query_build_info(build_id=None):
   """Communicates with the main server to query build info."""
-  with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
-    sock.connect(server_utils.SOCKET_ADDRESS)
-    sock.settimeout(3)
-    server_utils.SendMessage(
-        sock,
-        json.dumps({
-            'message_type': server_utils.QUERY_BUILD,
-            'build_id': build_id,
-        }).encode('utf8'))
-    response_bytes = server_utils.ReceiveMessage(sock)
-    return json.loads(response_bytes)
+  return _send_message_with_response({
+      'message_type': server_utils.QUERY_BUILD,
+      'build_id': build_id,
+  })
 
 
 def _wait_for_build(build_id):
@@ -708,12 +863,50 @@ def _wait_for_build(build_id):
     time.sleep(1)
 
 
+def _wait_for_idle():
+  """Communicates with the main server waiting for all builds to complete."""
+  start_time = datetime.datetime.now()
+  while True:
+    try:
+      builds = query_build_info()['builds']
+    except ConnectionRefusedError:
+      print('No server running. It likely finished all tasks.')
+      print('You can check $OUTDIR/buildserver.log.0 to be sure.')
+      return 0
+
+    all_pending_tasks = 0
+    all_completed_tasks = 0
+    for build_info in builds:
+      pending_tasks = build_info['pending_tasks']
+      completed_tasks = build_info['completed_tasks']
+      active = build_info['is_active']
+      # Ignore completed builds.
+      if active or pending_tasks:
+        all_pending_tasks += pending_tasks
+        all_completed_tasks += completed_tasks
+    total_tasks = all_pending_tasks + all_completed_tasks
+
+    if all_pending_tasks == 0:
+      print('\nServer Idle, All tasks complete.')
+      return 0
+
+    current_time = datetime.datetime.now()
+    duration = current_time - start_time
+    print(
+        f'\rWaiting for {all_pending_tasks} remaining tasks. '
+        f'({all_completed_tasks}/{total_tasks} tasks complete) '
+        f'[{str(duration)}]\033[K',
+        end='',
+        flush=True)
+    time.sleep(0.5)
+
+
 def _check_if_running():
   """Communicates with the main server to make sure its running."""
   with socket.socket(socket.AF_UNIX) as sock:
     try:
       sock.connect(server_utils.SOCKET_ADDRESS)
-    except socket.error:
+    except OSError:
       print('Build server is not running and '
             'android_static_analysis="build_server" is set.\nPlease run '
             'this command in a separate terminal:\n\n'
@@ -726,8 +919,16 @@ def _check_if_running():
 def _send_message_and_close(message_dict):
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
     sock.connect(server_utils.SOCKET_ADDRESS)
-    sock.settimeout(3)
-    server_utils.SendMessage(sock, json.dumps(message_dict).encode('utf8'))
+    sock.settimeout(1)
+    server_utils.SendMessage(sock, message_dict)
+
+
+def _send_message_with_response(message_dict):
+  with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
+    sock.connect(server_utils.SOCKET_ADDRESS)
+    sock.settimeout(1)
+    server_utils.SendMessage(sock, message_dict)
+    return server_utils.ReceiveMessage(sock)
 
 
 def _send_cancel_build(build_id):
@@ -738,19 +939,41 @@ def _send_cancel_build(build_id):
   return 0
 
 
-def _register_builder(build_id, builder_pid):
+def _register_builder(build_id, builder_pid, output_directory):
+  if output_directory is not None:
+    output_directory = str(pathlib.Path(output_directory).absolute())
   for _attempt in range(3):
     try:
+      # Ensure environment variables that the server expects to be there are
+      # present.
+      server_utils.AssertEnvironmentVariables()
+
       _send_message_and_close({
           'message_type': server_utils.REGISTER_BUILDER,
-          'build_id': build_id,
+          'env': dict(os.environ),
           'builder_pid': builder_pid,
+          'cwd': output_directory,
       })
       return 0
-    except socket.error:
+    except OSError:
       time.sleep(0.05)
   print(f'Failed to register builer for build_id={build_id}.')
   return 1
+
+
+def poll_server(retries=3):
+  """Communicates with the main server to query build info."""
+  for _attempt in range(retries):
+    try:
+      response = _send_message_with_response(
+          {'message_type': server_utils.POLL_HEARTBEAT})
+      if response:
+        break
+    except OSError:
+      time.sleep(0.05)
+  else:
+    return None
+  return response['pid']
 
 
 def _print_build_status_all():
@@ -798,8 +1021,15 @@ def _print_build_status_all():
 
 
 def _print_build_status(build_id):
+  server_path = os.path.relpath(str(server_utils.SERVER_SCRIPT))
   try:
-    build_info = query_build_info(build_id)['builds'][0]
+    builds = query_build_info(build_id)['builds']
+    if not builds:
+      print(f'No build found with id ({build_id})')
+      print('To see the status of all builds:',
+            shlex.join([server_path, '--print-status-all']))
+      return 1
+    build_info = builds[0]
   except ConnectionRefusedError:
     print('No server running. Consult $OUTDIR/buildserver.log.0')
     return 0
@@ -809,30 +1039,28 @@ def _print_build_status(build_id):
 
   # Print nothing if we never got any tasks.
   if completed_tasks:
+    print(f'Build Server Status: [{completed_tasks}/{total_tasks}]')
     if pending_tasks:
-      print('Build server is still running in the background. ' +
-            f'[{completed_tasks}/{total_tasks}] Tasks Done.')
-      print('Run this to wait for the pending tasks:')
-      server_path = os.path.relpath(str(server_utils.SERVER_SCRIPT))
-      print(' '.join([server_path, '--wait-for-build', build_id]))
-    else:
-      print('Build Server is done with all background tasks. ' +
-            f'Completed [{completed_tasks}/{total_tasks}].')
+      print('To wait for jobs:', shlex.join([server_path, '--wait-for-idle']))
   return 0
 
 
-def _wait_for_task_requests(args):
+def _wait_for_task_requests(exit_on_idle):
   with socket.socket(socket.AF_UNIX) as sock:
     sock.settimeout(_SOCKET_TIMEOUT)
     try:
       sock.bind(server_utils.SOCKET_ADDRESS)
-    except socket.error as e:
+    except OSError as e:
       # errno 98 is Address already in use
       if e.errno == 98:
+        if not OptionsManager.is_quiet():
+          pid = poll_server()
+          print(f'Another instance is already running (pid: {pid}).',
+                file=sys.stderr)
         return 1
       raise
     sock.listen()
-    _process_requests(sock, args)
+    _process_requests(sock, exit_on_idle)
   return 0
 
 
@@ -850,10 +1078,17 @@ def main():
   parser.add_argument('--quiet',
                       action='store_true',
                       help='Do not output status updates.')
+  parser.add_argument('--no-remote-print',
+                      action='store_true',
+                      help='Do not output errors to remote terminals.')
   parser.add_argument('--wait-for-build',
                       metavar='BUILD_ID',
                       help='Wait for build server to finish with all tasks '
                       'for BUILD_ID and output any pending messages.')
+  parser.add_argument('--wait-for-idle',
+                      action='store_true',
+                      help='Wait for build server to finish with all '
+                      'pending tasks.')
   parser.add_argument('--print-status',
                       metavar='BUILD_ID',
                       help='Print the current state of a build.')
@@ -864,25 +1099,32 @@ def main():
       '--register-build-id',
       metavar='BUILD_ID',
       help='Inform the build server that a new build has started.')
+  parser.add_argument('--output-directory',
+                      help='Build directory (use with --register-build-id)')
   parser.add_argument('--builder-pid',
                       help='Builder process\'s pid for build BUILD_ID.')
   parser.add_argument('--cancel-build',
                       metavar='BUILD_ID',
                       help='Cancel all pending and running tasks for BUILD_ID.')
   args = parser.parse_args()
+  OptionsManager.set_options(args)
+
   if args.fail_if_not_running:
     return _check_if_running()
   if args.wait_for_build:
     return _wait_for_build(args.wait_for_build)
+  if args.wait_for_idle:
+    return _wait_for_idle()
   if args.print_status:
     return _print_build_status(args.print_status)
   if args.print_status_all:
     return _print_build_status_all()
   if args.register_build_id:
-    return _register_builder(args.register_build_id, args.builder_pid)
+    return _register_builder(args.register_build_id, args.builder_pid,
+                             args.output_directory)
   if args.cancel_build:
     return _send_cancel_build(args.cancel_build)
-  return _wait_for_task_requests(args)
+  return _wait_for_task_requests(args.exit_on_idle)
 
 
 if __name__ == '__main__':

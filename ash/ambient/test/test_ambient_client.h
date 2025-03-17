@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 
 namespace network {
@@ -24,8 +25,8 @@ class ASH_PUBLIC_EXPORT TestAmbientClient : public AmbientClient {
   explicit TestAmbientClient(device::TestWakeLockProvider* wake_lock_provider);
   ~TestAmbientClient() override;
 
-  static const char* kTestGaiaId;
-  static const char* kTestAccessToken;
+  static const GaiaId::Literal kTestGaiaId;
+  static const char kTestAccessToken[];
 
   // AmbientClient:
   bool IsAmbientModeAllowed() override;

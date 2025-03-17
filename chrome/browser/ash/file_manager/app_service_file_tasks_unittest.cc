@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -43,6 +44,7 @@
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,8 +141,8 @@ class AppServiceFileTasksTest : public testing::Test {
     file_tasks::FindAppServiceTasks(profile(), entries, file_urls,
                                     dlp_source_urls, &resulting_tasks->tasks);
     // Sort by app ID so we don't rely on ordering.
-    base::ranges::sort(
-        resulting_tasks->tasks, base::ranges::less(),
+    std::ranges::sort(
+        resulting_tasks->tasks, std::ranges::less(),
         [](const auto& task) { return task.task_descriptor.app_id; });
 
     return resulting_tasks;
@@ -624,20 +626,8 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceArcAppWithExtensionMatching) {
   EXPECT_TRUE(tasks[0].is_file_extension_match);
 }
 
-// Enable MV3 File Handlers.
-class AppServiceFileHandlersTest : public AppServiceFileTasksTest {
- public:
-  AppServiceFileHandlersTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Verify App Service tasks for extensions with MV3 File Handlers.
-TEST_F(AppServiceFileHandlersTest, FindAppServiceExtension) {
+TEST_F(AppServiceFileTasksTest, FileHandlersFindAppServiceExtension) {
   static constexpr char kAction[] = "/open.html";
   const std::string manifest = base::StringPrintf(R"(
     "version": "0.0.1",
@@ -937,7 +927,7 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTest {
     AppServiceFileTasksTest::SetUp();
 
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
         fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(

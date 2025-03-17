@@ -31,10 +31,11 @@ void FragmentDirectiveUtils::RemoveSelectorsFromUrl(LocalFrame* frame) {
   // Replace the current history entry with the new url, so that the text
   // fragment shown in the URL matches the state of the highlight on the page.
   // This is equivalent to history.replaceState in javascript.
+  // Won't need to screenshot because this is a replace navigation.
   frame->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
       url, nullptr, mojom::blink::SameDocumentNavigationType::kFragment,
       /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
-      FirePopstate::kYes);
+      FirePopstate::kYes, /*should_skip_screenshot=*/true);
 }
 
 }  // namespace blink

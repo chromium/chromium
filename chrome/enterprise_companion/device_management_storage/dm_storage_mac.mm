@@ -75,9 +75,9 @@ base::FilePath GetEnrollmentTokenFilePath() {
     return base::FilePath();
   }
 
-  return lib_path.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(BROWSER_NAME_STRING)
-      .AppendASCII("CloudManagementEnrollmentToken");
+  return lib_path.Append(COMPANY_SHORTNAME_STRING)
+      .Append(BROWSER_NAME_STRING)
+      .Append("CloudManagementEnrollmentToken");
 }
 
 // DM token path:
@@ -90,8 +90,7 @@ base::FilePath GetDmTokenFilePath() {
     return base::FilePath();
   }
 
-  return app_path.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII("CloudManagement");
+  return app_path.Append(COMPANY_SHORTNAME_STRING).Append("CloudManagement");
 }
 
 std::string LoadTokenFromFile(const base::FilePath& token_file_path) {
@@ -206,7 +205,7 @@ scoped_refptr<DMStorage> GetDefaultDMStorage() {
   std::optional<base::FilePath> keystone_path =
       updater::GetKeystoneFolderPath(updater::UpdaterScope::kSystem);
   return keystone_path
-             ? CreateDMStorage(keystone_path->AppendASCII("DeviceManagement"))
+             ? CreateDMStorage(keystone_path->Append("DeviceManagement"))
              : nullptr;
 }
 

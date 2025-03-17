@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/render_thread_impl.h"
 
+#include <algorithm>
 #include <atomic>
 #include <limits>
 #include <map>
@@ -42,11 +38,11 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -276,7 +272,7 @@ BASE_FEATURE(kUseThreadPoolForMediaTaskRunner,
 void UpdateForegroundCrashKey(bool foreground) {
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "renderer_foreground", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(crash_key, foreground ? "true" : "false");
+  base::debug::SetCrashKeyString(crash_key, base::ToString(foreground));
 }
 
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
@@ -285,7 +281,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
     bool support_locking,
     bool support_gles2_interface,
     bool support_raster_interface,
-    bool support_oop_rasterization,
+    bool support_gpu_rasterization,
     bool support_grcontext,
     bool automatic_flushes,
     viz::command_buffer_metrics::ContextType type,
@@ -306,7 +302,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
   attributes.enable_grcontext = support_grcontext;
   // Using RasterDecoder for OOP-R backend, so we need support_raster_interface
   // and !support_gles2_interface.
-  attributes.enable_oop_rasterization = support_oop_rasterization &&
+  attributes.enable_gpu_rasterization = support_gpu_rasterization &&
                                         support_raster_interface &&
                                         !support_gles2_interface;
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
@@ -543,10 +539,6 @@ void RenderThreadImpl::Init() {
   SCOPED_UMA_HISTOGRAM_TIMER("Renderer.RenderThreadImpl.Init");
 
   GetContentClient()->renderer()->PostIOThreadCreated(GetIOTaskRunner().get());
-
-  base::trace_event::TraceLog::GetInstance()->SetThreadSortIndex(
-      base::PlatformThread::CurrentId(),
-      kTraceEventRendererMainThreadSortIndex);
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   // On Mac and Android Java UI, the select popups are rendered by the browser.
@@ -919,9 +911,9 @@ void RenderThreadImpl::InitializeRenderer(
   user_agent_metadata_ = user_agent_metadata;
   cors_exempt_header_list_ = cors_exempt_header_list;
 
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+  std::vector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  base::ranges::transform(
+  std::ranges::transform(
       cors_exempt_header_list, web_cors_exempt_header_list.begin(),
       [](const auto& header) { return blink::WebString::FromLatin1(header); });
   blink::SetCorsExemptHeaderList(web_cors_exempt_header_list);
@@ -967,6 +959,12 @@ void RenderThreadImpl::RegisterSchemes() {
   if (base::FeatureList::IsEnabled(features::kWebUICodeCache)) {
     WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(chrome_scheme);
     WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
+        chrome_untrusted_scheme);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache)) {
+    WebSecurityPolicy::RegisterURLSchemeAsWebUIBundledBytecode(chrome_scheme);
+    WebSecurityPolicy::RegisterURLSchemeAsWebUIBundledBytecode(
         chrome_untrusted_scheme);
   }
 
@@ -1088,9 +1086,9 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
       std::move(gpu_channel_host),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       GetMediaSequencedTaskRunner(), std::move(media_context_provider),
-      std::move(codec_factory), GetGpuMemoryBufferManager(),
-      enable_video_gpu_memory_buffers, enable_media_stream_gpu_memory_buffers,
-      enable_video_decode_accelerator, enable_video_encode_accelerator));
+      std::move(codec_factory), enable_video_gpu_memory_buffers,
+      enable_media_stream_gpu_memory_buffers, enable_video_decode_accelerator,
+      enable_video_encode_accelerator));
 
   gpu_factories_.back()->SetRenderingColorSpace(rendering_color_space_);
   return gpu_factories_.back().get();
@@ -1181,10 +1179,13 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
 
   bool support_locking = false;
   bool support_raster_interface = true;
+  // TODO(zmo): today if Skia backend is set, Chrome either runs in GPU
+  // acceleration mode, either on top of real GPU, or on top of SwiftShader
+  // (for testing). This may change in the future if we move Skia software
+  // rendering to be OOP as well.
   bool support_oop_rasterization =
-      gpu_channel_host->gpu_feature_info()
-          .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
-      gpu::kGpuFeatureStatusEnabled;
+      gpu_channel_host->gpu_info().skia_backend_type !=
+      gpu::SkiaBackendType::kNone;
   bool support_gles2_interface = false;
   bool support_grcontext = !support_oop_rasterization;
   // Enable automatic flushes to improve canvas throughput.
@@ -1452,6 +1453,11 @@ void RenderThreadImpl::SetIsWebSecurityDisabled(bool value) {
 
 void RenderThreadImpl::SetIsIsolatedContext(bool value) {
   blink::SetIsIsolatedContext(value);
+}
+
+void RenderThreadImpl::SetWebUIResourceUrlToCodeCacheMap(
+    const base::flat_map<GURL, int>& resource_map) {
+  blink_platform_impl_->set_webui_resource_to_code_cache_id_map(resource_map);
 }
 
 void RenderThreadImpl::CompositingModeFallbackToSoftware() {

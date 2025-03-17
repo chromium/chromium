@@ -99,7 +99,7 @@ public class CompositorVisibilityTest {
                     public void run() {
                         mCompositorView =
                                 new CompositorView(sActivityTestRule.getActivity(), mRenderHost);
-                        Assert.assertEquals(mCompositorView.getChildCount(), 1);
+                        Assert.assertEquals(1, mCompositorView.getChildCount());
                         Assert.assertTrue(mCompositorView.getChildAt(0) instanceof SurfaceView);
                     }
                 });

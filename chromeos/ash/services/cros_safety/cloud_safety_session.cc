@@ -32,6 +32,8 @@ std::optional<ImageType> ToWalrusImageType(SafetyRuleset ruleset) {
       return ImageType::kOutputImage;
     case SafetyRuleset::kMantisGeneratedRegion:
       return ImageType::kGeneratedRegion;
+    case SafetyRuleset::kMantisGeneratedRegionOutpainting:
+      return ImageType::kGeneratedRegionOutpainting;
     default:
       LOG(WARNING) << "Unexpected ruleset for Walrus filter: " << ruleset;
       return std::nullopt;
@@ -51,6 +53,8 @@ SafetyClassifierVerdict ToSafetyClassifierVerdict(
       return SafetyClassifierVerdict::kInvalidInput;
     case manta::MantaStatusCode::kBackendFailure:
       return SafetyClassifierVerdict::kBackendFailure;
+    case manta::MantaStatusCode::kNoInternetConnection:
+      return SafetyClassifierVerdict::kNoInternetConnection;
     default:
       return SafetyClassifierVerdict::kGenericError;
   }

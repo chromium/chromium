@@ -170,8 +170,10 @@ const BAD_TODO_FORMAT_REGEX = new RegExp(
      '\\(' +            // Old format TODO: Starts with 'TODO('
      '(?![a-z]+\\))' +  // And isn't followed by '<ldap>)'
      '|' +
-     ': ' +                 // New format TODO: Starts with 'TODO:'
-     '(?!(b\\/\\d+) - )' +  // And isn't followed by 'b/<num> - '
+     ': ' +                             // New format TODO: Starts with 'TODO:'
+     '(' +                              // And isn't followed by 'b/<num> - '
+     '?!((b|crbug\\.com)\\/\\d+) - ' +  // nor 'crbug.com/<num> - '
+     ')' +
      ')'),
   'gd',
 );
@@ -232,7 +234,8 @@ function reportRegexMatches(context, loc, str, regex, messageId) {
  *
  * Specifically, we currently allow the following:
  *  - Old style with ldap `TODO(ldap): xxx`.
- *  - New style with bug link `TODO: b/123 - xxx`.
+ *  - New style with bug link `TODO: b/123 - xxx` or
+ *    `TODO: crbug.com/123 - xxx`.
  *
  * Non-trivial TODOs should be tracked in a bug and use the new style TODO.
  */

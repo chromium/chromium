@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/content_notifications/content_notifications_mediator.h"
@@ -58,7 +59,7 @@
       AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+  const GaiaId gaiaID(identity.gaiaID);
   PrefService* prefService = self.browser->GetProfile()->GetPrefs();
 
   self.viewController = [[ContentNotificationsViewController alloc]
@@ -98,6 +99,7 @@
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  _optInAlertCoordinator.accessPoint = NotificationOptInAccessPoint::kSettings;
   _optInAlertCoordinator.clientIds = clientIds;
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);

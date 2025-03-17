@@ -4,23 +4,26 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.List;
 
 /** This class regroups sign-in checks when chrome starts up and when accounts change on device */
+@NullMarked
 public class SigninChecker implements AccountsChangeObserver, Destroyable {
     private static final String TAG = "SigninChecker";
     private final AccountManagerFacade mAccountManagerFacade;
@@ -64,8 +67,13 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
     }
 
     private void checkChildAccount(List<CoreAccountInfo> coreAccountInfos) {
-        AccountUtils.checkChildAccountStatus(
-                mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)) {
+            AccountUtils.checkIsSubjectToParentalControls(
+                    mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+        } else {
+            AccountUtils.checkChildAccountStatus(
+                    mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+        }
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {

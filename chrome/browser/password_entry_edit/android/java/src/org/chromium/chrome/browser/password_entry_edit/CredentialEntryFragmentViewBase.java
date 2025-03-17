@@ -11,16 +11,19 @@ import android.view.MenuItem;
 
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 /**
  * Base structure to be shared by fragments displaying: saved credentials to be edited, saved
  * federated credentials and sites blocklisted for saving by the user.
  */
+@NullMarked
 public abstract class CredentialEntryFragmentViewBase extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage {
-    ComponentStateDelegate mComponentStateDelegate;
-    UiActionHandler mUiActionHandler;
+    @Nullable ComponentStateDelegate mComponentStateDelegate;
+    @Nullable UiActionHandler mUiActionHandler;
 
     /**
      * To be implemented by classes which need to know about the fragment's state

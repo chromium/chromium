@@ -102,6 +102,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
       is_off_the_record_profile_(is_off_the_record_profile),
+      non_refreshed_cookie_names_(expected_cookie_names_),
       debug_info_(std::move(debug_info)) {
   CHECK(refresh_url.is_valid());
 }
@@ -144,6 +145,11 @@ BoundSessionRefreshCookieFetcherImpl::TakeSecSessionChallengeResponseIfAny() {
   std::optional<std::string> response;
   std::swap(response, sec_session_challenge_response_);
   return response;
+}
+
+base::flat_set<std::string>
+BoundSessionRefreshCookieFetcherImpl::GetNonRefreshedCookieNames() {
+  return non_refreshed_cookie_names_;
 }
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
@@ -271,6 +277,12 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
     return Result::kServerTransientError;
   }
 
+  if (response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
+    // Treat proxy errors as connection errors. It makes sense to retry again
+    // once the user responds to the authentication challenge.
+    return Result::kConnectionError;
+  }
+
   if (response_code >= net::HTTP_BAD_REQUEST) {
     // Server error 4xx.
     return Result::kServerPersistentError;
@@ -283,7 +295,7 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
 void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   reported_cookies_notified_timer_.Stop();
   CHECK(cookie_refresh_completed_);
-  if (result_ == Result::kSuccess && !expected_cookies_set_) {
+  if (result_ == Result::kSuccess && !non_refreshed_cookie_names_.empty()) {
     result_ = Result::kServerUnexepectedResponse;
   }
   TRACE_EVENT("browser",
@@ -429,21 +441,18 @@ void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
     }
 
     reported_cookies_notified_ = true;
-    bool all_cookies_set = true;
     for (const std::string& expected_cookie_name : expected_cookie_names_) {
-      auto it = base::ranges::find_if(
+      auto it = std::ranges::find_if(
           cookie_details->cookie_list,
           [this, &expected_cookie_name](
               const network::mojom::CookieOrLineWithAccessResultPtr& cookie) {
             return IsExpectedCookie(expected_cookie_domain_,
                                     expected_cookie_name, cookie);
           });
-      if (it == cookie_details->cookie_list.end()) {
-        all_cookies_set = false;
-        break;
+      if (it != cookie_details->cookie_list.end()) {
+        non_refreshed_cookie_names_.erase(expected_cookie_name);
       }
     }
-    expected_cookies_set_ = expected_cookies_set_ || all_cookies_set;
   }
 
   if (cookie_refresh_completed_ && reported_cookies_notified_) {

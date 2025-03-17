@@ -54,15 +54,17 @@ void AtomicFlagSet::AtomicFlag::SetActive(bool active) {
 }
 
 void AtomicFlagSet::AtomicFlag::ReleaseAtomicFlag() {
-  if (!group_)
+  if (!group_) {
     return;
+  }
 
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   SetActive(false);
 
   // If |group_| was full then add it on the partially free list.
-  if (group_->IsFull())
+  if (group_->IsFull()) {
     outer_->AddToPartiallyFreeList(group_);
+  }
 
   size_t index = Group::IndexOfFirstFlagSet(flag_bit_);
   DCHECK(!group_->flag_callbacks[index].is_null());
@@ -97,8 +99,9 @@ AtomicFlagSet::AtomicFlag AtomicFlagSet::AddFlag(RepeatingClosure callback) {
   size_t flag_bit = size_t{1} << first_unoccupied_index;
   group->allocated_flags |= flag_bit;
 
-  if (group->IsFull())
+  if (group->IsFull()) {
     RemoveFromPartiallyFreeList(group);
+  }
 
   return AtomicFlag(this, group, flag_bit);
 }
@@ -154,8 +157,9 @@ size_t AtomicFlagSet::Group::IndexOfFirstFlagSet(size_t flag) {
 
 void AtomicFlagSet::AddToAllocList(std::unique_ptr<Group> group) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (alloc_list_head_)
+  if (alloc_list_head_) {
     alloc_list_head_->prev = group.get();
+  }
 
   group->next = std::move(alloc_list_head_);
   alloc_list_head_ = std::move(group);
@@ -163,8 +167,9 @@ void AtomicFlagSet::AddToAllocList(std::unique_ptr<Group> group) {
 
 void AtomicFlagSet::RemoveFromAllocList(Group* group) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (group->next)
+  if (group->next) {
     group->next->prev = group->prev;
+  }
 
   if (group->prev) {
     group->prev->next = std::move(group->next);
@@ -178,8 +183,9 @@ void AtomicFlagSet::AddToPartiallyFreeList(Group* group) {
   DCHECK_NE(partially_free_list_head_, group);
   DCHECK(!group->partially_free_list_prev);
   DCHECK(!group->partially_free_list_next);
-  if (partially_free_list_head_)
+  if (partially_free_list_head_) {
     partially_free_list_head_->partially_free_list_prev = group;
+  }
 
   group->partially_free_list_next = partially_free_list_head_;
   partially_free_list_head_ = group;

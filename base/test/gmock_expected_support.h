@@ -209,11 +209,11 @@ inline internal::ErrorIsMatcher<typename std::decay_t<T>> ErrorIs(T&& matcher) {
 
 }  // namespace base::test
 
-// Executes an expression that returns an `expected<T, E>` or some subclass
-// thereof, and assigns the contained `T` to `lhs` if the result is a value. If
-// the result is an error, generates a test failure and returns from the current
-// function, which must have a `void` return type. For more usage examples and
-// caveats, see the documentation for `ASSIGN_OR_RETURN`.
+// Executes an expression that returns an `expected<T, E>` or
+// `std::optional<T>`, and assigns the contained `T` to `lhs` if the result is a
+// value. If the result is an error, generates a test failure and returns from
+// the current function, which must have a `void` return type. For more usage
+// examples and caveats, see the documentation for `ASSIGN_OR_RETURN`.
 //
 // Example: Declaring and initializing a new value:
 //   ASSERT_OK_AND_ASSIGN(ValueType value, MaybeGetValue(arg));
@@ -221,12 +221,17 @@ inline internal::ErrorIsMatcher<typename std::decay_t<T>> ErrorIs(T&& matcher) {
 // Example: Assigning to an existing value:
 //   ValueType value;
 //   ASSERT_OK_AND_ASSIGN(value, MaybeGetValue(arg));
-#define ASSERT_OK_AND_ASSIGN(lhs, rexpr)                               \
-  ASSIGN_OR_RETURN(lhs, rexpr, [](const auto& e) {                     \
-    return GTEST_MESSAGE_(                                             \
-        base::StrCat({#rexpr, " returned error: ", base::ToString(e)}) \
-            .c_str(),                                                  \
-        ::testing::TestPartResult::kFatalFailure);                     \
+#define ASSERT_OK_AND_ASSIGN(lhs, rexpr)                             \
+  ASSIGN_OR_RETURN(lhs, rexpr, []<typename... Ts>(const Ts&... e) {  \
+    std::string message;                                             \
+    if constexpr (sizeof...(Ts) > 0) {                               \
+      message = base::StrCat(                                        \
+          {#rexpr, " returned error: ", (..., base::ToString(e))});  \
+    } else {                                                         \
+      message = base::StrCat({#rexpr, " returned nullopt"});         \
+    }                                                                \
+    return GTEST_MESSAGE_(message.c_str(),                           \
+                          ::testing::TestPartResult::kFatalFailure); \
   })
 
 namespace base {

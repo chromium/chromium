@@ -44,14 +44,17 @@ class TaskGraphTest : public testing::Test {
   void CreateSequence(int sequence_key, bool manual_validation = false) {
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
-    SequenceId sequence_id = task_graph_->CreateSequence(
-        base::DoNothing(),
+
+    auto sequence = std::make_unique<TaskGraph::Sequence>(
+        task_graph_.get(),
         manual_validation ? scoped_refptr<base::SingleThreadTaskRunner>()
                           : base::SingleThreadTaskRunner::GetCurrentDefault(),
         kNamespaceId, command_buffer_id);
 
-    sequence_info_.emplace(sequence_key,
-                           SequenceInfo(sequence_id, command_buffer_id));
+    sequence_info_.emplace(
+        sequence_key, SequenceInfo(sequence->sequence_id(), command_buffer_id));
+
+    task_graph_->AddSequence(std::move(sequence));
   }
 
   SequenceId GetSequenceId(int sequence_key) {

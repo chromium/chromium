@@ -43,7 +43,7 @@
     // platforms that has not been explicitly specified and should always be
     // present.
     initial: {
-      valid_keys: ["Android", "Win", "ChromeOS_Ash", "ChromeOS_Lacros", "Mac", "Linux"],
+      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Linux"],
     },
     invalidate: {
       default: [],
@@ -126,8 +126,7 @@
         "Mac": "mojom::blink::EditingBehavior::kEditingMacBehavior",
         "Win": "mojom::blink::EditingBehavior::kEditingWindowsBehavior",
         "Android": "mojom::blink::EditingBehavior::kEditingAndroidBehavior",
-        "ChromeOS_Ash": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
-        "ChromeOS_Lacros": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
+        "ChromeOS": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
         "default": "mojom::blink::EditingBehavior::kEditingUnixBehavior",
       },
       type: "mojom::EditingBehavior",
@@ -505,7 +504,7 @@
     {
       name: "accessibilityFontScaleFactor",
       initial: "1.0",
-      invalidate: ["TextAutosizing"],
+      invalidate: ["TextAutosizing", "FontScaleFactor"],
       type: "double",
     },
 
@@ -1088,6 +1087,15 @@
       initial: false,
       invalidate: ["ForcedColors"],
       type: "bool",
+    },
+
+    // Holds the browser's theme color to be used to render root non-overlay
+    // Fluent scrollbars. Stored from an SkColor as ARGB.
+    {
+      name: "rootScrollbarThemeColor",
+      initial: "std::nullopt",
+      invalidate: ["Paint"],
+      type: "std::optional<SkColor>",
     },
 
     // The preferred color scheme set by the user's browser settings. The

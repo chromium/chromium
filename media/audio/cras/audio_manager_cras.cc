@@ -404,11 +404,7 @@ bool AudioManagerCras::IsDefault(const std::string& device_id, bool is_input) {
 }
 
 enum CRAS_CLIENT_TYPE AudioManagerCras::GetClientType() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return CRAS_CLIENT_TYPE_CHROME;
-#else
-  return CRAS_CLIENT_TYPE_LACROS;
-#endif
 }
 
 }  // namespace media

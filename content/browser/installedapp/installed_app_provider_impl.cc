@@ -4,11 +4,12 @@
 
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_callbacks.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "content/browser/browser_thread_impl.h"

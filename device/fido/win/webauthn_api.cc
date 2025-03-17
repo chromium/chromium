@@ -4,6 +4,7 @@
 
 #include "device/fido/win/webauthn_api.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -476,9 +476,9 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   std::vector<WEBAUTHN_CREDENTIAL_EX> exclude_list_credentials =
       ToWinCredentialExVector(&request.exclude_list);
   std::vector<WEBAUTHN_CREDENTIAL_EX*> exclude_list_ptrs;
-  base::ranges::transform(exclude_list_credentials,
-                          std::back_inserter(exclude_list_ptrs),
-                          [](auto& cred) { return &cred; });
+  std::ranges::transform(exclude_list_credentials,
+                         std::back_inserter(exclude_list_ptrs),
+                         [](auto& cred) { return &cred; });
   WEBAUTHN_CREDENTIAL_LIST exclude_credential_list{
       base::checked_cast<DWORD>(exclude_list_ptrs.size()),
       exclude_list_ptrs.data()};
@@ -571,9 +571,9 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   std::vector<WEBAUTHN_CREDENTIAL_EX> allow_list_credentials =
       ToWinCredentialExVector(&request.allow_list);
   std::vector<WEBAUTHN_CREDENTIAL_EX*> allow_list_ptrs;
-  base::ranges::transform(allow_list_credentials,
-                          std::back_inserter(allow_list_ptrs),
-                          [](auto& cred) { return &cred; });
+  std::ranges::transform(allow_list_credentials,
+                         std::back_inserter(allow_list_ptrs),
+                         [](auto& cred) { return &cred; });
   WEBAUTHN_CREDENTIAL_LIST allow_credential_list{
       base::checked_cast<DWORD>(allow_list_ptrs.size()),
       allow_list_ptrs.data()};

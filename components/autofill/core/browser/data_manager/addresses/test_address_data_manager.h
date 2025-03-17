@@ -28,7 +28,6 @@ class TestAddressDataManager : public AddressDataManager {
   // AddressDataManager overrides:
   void AddProfile(const AutofillProfile& profile) override;
   void UpdateProfile(const AutofillProfile& profile) override;
-  void RemoveProfile(const std::string& guid) override;
   void LoadProfiles() override;
   void RecordUseOf(const AutofillProfile& profile) override;
   AddressCountryCode GetDefaultCountryCodeForNewAddress() const override;
@@ -54,6 +53,9 @@ class TestAddressDataManager : public AddressDataManager {
   }
 
  private:
+  void RemoveProfileImpl(const std::string& guid,
+                         bool is_deduplication_initiated) override;
+
   std::optional<AddressCountryCode> default_country_code_;
   std::optional<bool> autofill_profile_enabled_;
   std::optional<bool> eligible_for_account_storage_;

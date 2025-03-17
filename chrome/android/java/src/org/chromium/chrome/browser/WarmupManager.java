@@ -83,7 +83,7 @@ import java.util.Set;
  * This class is a singleton that holds utilities for warming up Chrome and prerendering urls
  * without creating the Activity.
  *
- * This class is not thread-safe and must only be used on the UI thread.
+ * <p>This class is not thread-safe and must only be used on the UI thread.
  */
 public class WarmupManager {
     private static final String TAG = "WarmupManager";
@@ -434,7 +434,10 @@ public class WarmupManager {
         // TODO(twellington): Look at improving code sharing with ChromeBaseAppCompatActivity
         // if the number of these overlays grows. The two below are experimental / are planned to be
         // removed by mid 2025 or sooner.
-        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+        // TODO(https://crbug.com/392634251): Explore setting elegantTextHeight to 'true' on older
+        // OS versions.
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()
+                && Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             context.getTheme().applyStyle(elegantTextHeightOverlay, true);
         }
@@ -707,7 +710,7 @@ public class WarmupManager {
                             /* initiallyHidden= */ true,
                             /* targetNetwork= */ NetId.INVALID);
             mObserver = new RenderProcessGoneObserver();
-            mSpareWebContents.addObserver(mObserver);
+            mObserver.observe(mSpareWebContents);
         }
     }
 
@@ -742,7 +745,7 @@ public class WarmupManager {
             WebContents result = mSpareWebContents;
             if (result == null) return null;
             mSpareWebContents = null;
-            result.removeObserver(mObserver);
+            mObserver.observe(null);
             mObserver = null;
             if (!initiallyHidden) result.updateWebContentsVisibility(Visibility.VISIBLE);
             return result;
@@ -757,7 +760,7 @@ public class WarmupManager {
     }
 
     private void destroySpareWebContentsInternal() {
-        mSpareWebContents.removeObserver(mObserver);
+        mObserver.observe(null);
         mSpareWebContents.destroy();
         mSpareWebContents = null;
         mObserver = null;

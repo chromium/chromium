@@ -64,12 +64,14 @@ type EventStreamFiltersPrefValue = Record<string, boolean>;
 
 /**
  * Represents a voice as sent from the TTS Handler class.
- * |name| is the user-facing voice name.
+ * |name| is the internal voice name.
+ * |displayName| is the user-facing voice name.
  * |remote| is whether the TTS voice is online (versus on-device).
  * |extensionId| is the Chrome Extension ID for the TTS voice.
  */
 interface TtsHandlerVoice {
   name: string;
+  displayName: string;
   remote: boolean;
   extensionId: string;
 }
@@ -361,6 +363,14 @@ export class SettingsChromeVoxSubpageElement extends
   private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
   private brailleTables_: BrailleTable[];
 
+  // Regular expressions that will match against a voice name if it contains a
+  // speaker ID in it.
+  private omitLocalSpeakerName_: RegExp = /-x-.*-local/;
+  private omitNetworkSpeakerName_: RegExp = /-x-.*-network/;
+  // Replacements that are used if the above regular expressions match.
+  private localSpeakerNameReplacement_ = '-x-local';
+  private networkSpeakerNameReplacement_ = '-x-network';
+
   // TODO(270619855): Add tests to verify these controls change their prefs.
   constructor() {
     super();
@@ -429,13 +439,30 @@ export class SettingsChromeVoxSubpageElement extends
         'settings.a11y.chromevox.capital_strategy', capitalStrategyBackup);
   }
 
+  populateVoiceListForTesting(voices: TtsHandlerVoice[]): void {
+    this.populateVoiceList_(voices);
+  }
+
   /**
    * Populates the list of voices for the UI to use in display.
    */
   private populateVoiceList_(voices: TtsHandlerVoice[]): void {
     // TODO(b/271422242): voiceName can actually be omitted in the TTS engine.
     // We should generate a name in that case.
-    voices.forEach(voice => voice.name = voice.name || '');
+    voices.forEach(voice => {
+      voice.name = voice.name || '';
+      voice.displayName = voice.displayName || voice.name;
+
+      if (this.omitLocalSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitLocalSpeakerName_, this.localSpeakerNameReplacement_);
+      } else if (this.omitNetworkSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitNetworkSpeakerName_, this.networkSpeakerNameReplacement_);
+      }
+    });
     voices.sort((a, b) => {
       function score(voice: TtsHandlerVoice): number {
         // Prefer Google tts voices over all others.
@@ -462,7 +489,10 @@ export class SettingsChromeVoxSubpageElement extends
         value: SYSTEM_VOICE,
         name: this.i18n('chromeVoxSystemVoice'),
       },
-      ...voices.map(({name}) => ({value: name, name})),
+      // `name` is what is displayed in the UI, `value` is used to set the
+      // associated pref value.
+      ...voices.map(
+          ({name, displayName}) => ({name: displayName, value: name})),
     ];
   }
 
@@ -530,11 +560,11 @@ export class SettingsChromeVoxSubpageElement extends
     }
     if (table.grade && !table.variant) {
       return this.i18n(
-          'chromeVoxBrailleTableNameWithGrade', baseName, table.grade!);
+          'chromeVoxBrailleTableNameWithGrade', baseName, table.grade);
     }
     if (!table.grade && table.variant) {
       return this.i18n(
-          'chromeVoxBrailleTableNameWithVariant', baseName, table.variant!);
+          'chromeVoxBrailleTableNameWithVariant', baseName, table.variant);
     }
 
     return this.i18n(

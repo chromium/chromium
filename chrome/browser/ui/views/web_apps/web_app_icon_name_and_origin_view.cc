@@ -41,15 +41,15 @@ WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
 
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromImageSkia(icon_image));
-  AddChildView(icon_view.release());
+  AddChildViewRaw(icon_view.release());
 
   views::View* labels = new views::View();
-  AddChildView(labels);
+  AddChildViewRaw(labels);
   labels->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  labels->AddChildView(web_app::CreateNameLabel(app_title).release());
-  labels->AddChildView(
+  labels->AddChildViewRaw(web_app::CreateNameLabel(app_title).release());
+  labels->AddChildViewRaw(
       web_app::CreateOriginLabelFromStartUrl(start_url, false).release());
 }
 

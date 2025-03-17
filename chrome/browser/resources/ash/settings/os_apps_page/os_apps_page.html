@@ -105,7 +105,7 @@
               actionable$="[[androidAppsInfo.playStoreEnabled]]"
               on-click="onAndroidAppsSubpageClick_">
             <iron-icon id="androidAppsRowIcon"
-                icon="os-settings:google-play-revamp">
+                icon="os-settings:google-play">
             </iron-icon>
             <div class="start settings-box-text">
               $i18n{androidAppsPageLabel}
@@ -209,9 +209,9 @@
     <template is="dom-if" route-path="/androidAppsDetails">
       <os-settings-subpage page-title="$i18n{androidAppsPageLabel}">
         <settings-android-apps-subpage
-          prefs="{{prefs}}"
-          android-apps-info="[[androidAppsInfo]]"
-          is-arc-vm-manage-usb-available="[[isArcVmManageUsbAvailable_]]">
+            prefs="{{prefs}}"
+            android-apps-info="[[androidAppsInfo]]"
+            is-arc-vm-manage-usb-available="[[isArcVmManageUsbAvailable_]]">
         </settings-android-apps-subpage>
       </os-settings-subpage>
     </template>
@@ -221,7 +221,7 @@
     <template is="dom-if" route-path="/androidAppsDetails/sharedUsbDevices">
       <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
          <settings-guest-os-shared-usb-devices guest-os-type="arcvm"
-           prefs="{{prefs}}">
+            prefs="{{prefs}}">
          </settings-guest-os-shared-usb-devices>
       </os-settings-subpage>
     </template>
@@ -240,7 +240,7 @@
         route-path="/app-management/pluginVm/sharedUsbDevices">
       <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
         <settings-guest-os-shared-usb-devices guest-os-type="pluginVm"
-          prefs="{{prefs}}">
+            prefs="{{prefs}}">
         </settings-guest-os-shared-usb-devices>
       </os-settings-subpage>
     </template>

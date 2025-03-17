@@ -127,6 +127,9 @@ HttpStreamPool::JobController::JobController(
           dict.Set("alternative_destination",
                    alternative_->stream_key.destination().Serialize());
         }
+        dict.Set("enable_ip_based_pooling", enable_ip_based_pooling_);
+        dict.Set("enable_alternative_services", enable_alternative_services_);
+        dict.Set("respect_limits", respect_limits_ == RespectLimits::kRespect);
         return dict;
       });
 
@@ -156,6 +159,16 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
       this, /*websocket_handshake_stream_create_helper=*/nullptr, net_log,
       HttpStreamRequest::HTTP_STREAM);
   stream_request_ = stream_request.get();
+
+  if (!IsPortAllowedForScheme(origin_stream_key_.destination().port(),
+                              origin_stream_key_.destination().scheme())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpStreamPool::JobController::CallOnStreamFailed,
+                       weak_ptr_factory_.GetWeakPtr(), ERR_UNSAFE_PORT,
+                       NetErrorDetails(), ResolveErrorInfo()));
+    return stream_request;
+  }
 
   std::unique_ptr<HttpStream> quic_http_stream =
       MaybeCreateStreamFromExistingQuicSession();
@@ -236,7 +249,8 @@ int HttpStreamPool::JobController::Preconnect(
   SpdySessionKey spdy_session_key =
       origin_stream_key_.CalculateSpdySessionKey();
   bool had_spdy_session = spdy_session_pool()->HasAvailableSession(
-      spdy_session_key, /*is_websocket=*/false);
+      spdy_session_key, /*enable_ip_based_pooling=*/true,
+      /*is_websocket=*/false);
   if (pool_->FindAvailableSpdySession(origin_stream_key_, spdy_session_key,
                                       /*enable_ip_based_pooling=*/true)) {
     net_log_.AddEvent(
@@ -250,6 +264,11 @@ int HttpStreamPool::JobController::Preconnect(
     return ERR_HTTP_1_1_REQUIRED;
   }
 
+  Group& group = pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);
+  if (group.ActiveStreamSocketCount() >= num_streams) {
+    return OK;
+  }
+
   if (pool_->delegate_for_testing_) {
     // Some tests expect OnPreconnect() is called after checking existing
     // sessions.
@@ -260,9 +279,12 @@ int HttpStreamPool::JobController::Preconnect(
     }
   }
 
-  return pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
-      .Preconnect(num_streams, origin_quic_version_, net_log_,
-                  std::move(callback));
+  preconnect_callback_ = std::move(callback);
+  origin_job_ =
+      std::make_unique<Job>(this, &group, origin_quic_version_,
+                            NextProto::kProtoUnknown, net_log_, num_streams);
+  origin_job_->Start();
+  return ERR_IO_PENDING;
 }
 
 RequestPriority HttpStreamPool::JobController::priority() const {
@@ -360,6 +382,14 @@ void HttpStreamPool::JobController::OnNeedsClientAuth(
       FROM_HERE, base::BindOnce(&JobController::CallOnNeedsClientAuth,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 base::RetainedRef(cert_info)));
+}
+
+void HttpStreamPool::JobController::OnPreconnectComplete(Job* job, int status) {
+  CHECK(!alternative_job_);
+  CHECK_EQ(origin_job_.get(), job);
+  CHECK(preconnect_callback_);
+  origin_job_.reset();
+  std::move(preconnect_callback_).Run(status);
 }
 
 LoadState HttpStreamPool::JobController::GetLoadState() const {

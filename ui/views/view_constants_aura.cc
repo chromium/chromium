@@ -9,6 +9,6 @@
 
 namespace views {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(views::View*, kHostViewKey, NULL)
+DEFINE_UI_CLASS_PROPERTY_KEY(views::View*, kHostViewKey, nullptr)
 
 }  // namespace views

@@ -25,6 +25,7 @@
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/android/mock_password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,6 +77,7 @@
 using password_manager::GetLocalUpmMinGmsVersion;
 using password_manager::UsesSplitStoresAndUPMForLocal;
 using password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores;
+using password_manager::prefs::kUpmUnmigratedPasswordsExported;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::
@@ -83,6 +85,7 @@ using password_manager::prefs::UseUpmLocalAndSeparateStoresState::
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
 using password_manager_android_util::GmsVersionCohort;
 using password_manager_android_util::PasswordAccessLossWarningType;
+using testing::Return;
 
 namespace password_manager_android_util {
 namespace {
@@ -196,6 +199,8 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
         false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kSettingsMigratedToUPMLocal, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
 
     SetPasswordSyncEnabledPref(false);
     base::WriteFile(login_db_directory_.Append(
@@ -1011,6 +1016,104 @@ TEST_F(
             static_cast<int>(kOff));
   EXPECT_FALSE(PathExists(profile_db_path));
   EXPECT_FALSE(PathExists(account_db_path));
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       PasswordManagerNotAvailableNoInternalBackend) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+  // Make sure all the other criteria are fulfilled.
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion()));
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOn));
+  pref_service()->SetBoolean(kUpmUnmigratedPasswordsExported, false);
+
+  std::unique_ptr<MockPasswordManagerUtilBridge> mock_util_bridge =
+      std::make_unique<MockPasswordManagerUtilBridge>();
+  EXPECT_CALL(*mock_util_bridge, IsInternalBackendPresent)
+      .WillOnce(Return(false));
+  EXPECT_FALSE(
+      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       PasswordManagerNotAvailableGmsVersionTooLow) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+
+  std::unique_ptr<MockPasswordManagerUtilBridge> mock_util_bridge =
+      std::make_unique<MockPasswordManagerUtilBridge>();
+  EXPECT_CALL(*mock_util_bridge, IsInternalBackendPresent)
+      .WillOnce(Return(true));
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOn));
+  pref_service()->SetBoolean(kUpmUnmigratedPasswordsExported, false);
+
+  // Set a GMS Core version that is lower than the min required version.
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
+
+  EXPECT_FALSE(
+      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       PasswordManagerNotAvailablePasswordsUnmigratedPasswords) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+  std::unique_ptr<MockPasswordManagerUtilBridge> mock_util_bridge =
+      std::make_unique<MockPasswordManagerUtilBridge>();
+  EXPECT_CALL(*mock_util_bridge, IsInternalBackendPresent)
+      .WillOnce(Return(true));
+
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion()));
+
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOffAndMigrationPending));
+  pref_service()->SetBoolean(kUpmUnmigratedPasswordsExported, false);
+
+  EXPECT_FALSE(
+      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
+}
+
+TEST_F(PasswordManagerAndroidUtilTest, PasswordManagerAvailableNoUpmMigration) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+  std::unique_ptr<MockPasswordManagerUtilBridge> mock_util_bridge =
+      std::make_unique<MockPasswordManagerUtilBridge>();
+  EXPECT_CALL(*mock_util_bridge, IsInternalBackendPresent)
+      .WillOnce(Return(true));
+
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion()));
+
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOffAndMigrationPending));
+  pref_service()->SetBoolean(kUpmUnmigratedPasswordsExported, true);
+
+  EXPECT_TRUE(
+      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
+}
+
+TEST_F(PasswordManagerAndroidUtilTest, PasswordManagerAvailableUpmMigration) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+  std::unique_ptr<MockPasswordManagerUtilBridge> mock_util_bridge =
+      std::make_unique<MockPasswordManagerUtilBridge>();
+  EXPECT_CALL(*mock_util_bridge, IsInternalBackendPresent)
+      .WillOnce(Return(true));
+
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion()));
+
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOn));
+  pref_service()->SetBoolean(kUpmUnmigratedPasswordsExported, false);
+
+  EXPECT_TRUE(
+      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
 }
 
 // Integration test for UsesSplitStoresAndUPMForLocal(), which emulates restarts

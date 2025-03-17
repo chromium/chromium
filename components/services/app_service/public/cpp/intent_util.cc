@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/intent_util.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -14,10 +15,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 

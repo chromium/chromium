@@ -1,0 +1,26 @@
+caption: Configure <ph name="CLASS_TOOLS_NAME">Class Tools</ph> sending content feature
+default: true
+desc: |-
+  Setting the policy specifies if selected teachers can send and lock content on students' screens.
+
+    If set to true of unset they can send and lock content.
+
+    If set to false they cannot access the feature.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow teachers to send and lock content to students' screens
+  value: true
+- caption: Prevent teachers from sending and locking content to students' screens
+  value: false
+owners:
+- cros-edu-eng@google.com
+- aprilzhou@google.com
+schema:
+  type: boolean
+future_on:
+- chrome_os
+tags: []
+type: main

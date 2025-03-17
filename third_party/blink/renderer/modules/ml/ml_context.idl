@@ -16,153 +16,158 @@ dictionary MLContextLostInfo {
   DOMString message;
 };
 
-dictionary MLSupportLimits {
+dictionary MLDataTypeLimits {
   sequence<DOMString> dataTypes;
 };
 
+dictionary MLRankRange {
+  unsigned long min;
+  unsigned long max;
+};
+
+dictionary MLTensorLimits : MLDataTypeLimits {
+  MLRankRange rankRange;
+};
+
 dictionary MLBinarySupportLimits {
-  MLSupportLimits a;
-  MLSupportLimits b;
-  MLSupportLimits output;
+  MLTensorLimits a;
+  MLTensorLimits b;
+  MLDataTypeLimits output;
 };
 
 dictionary MLBatchNormalizationSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits mean;
-  MLSupportLimits variance;
-  MLSupportLimits scale;
-  MLSupportLimits bias;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits mean;
+  MLTensorLimits variance;
+  MLTensorLimits scale;
+  MLTensorLimits bias;
+  MLDataTypeLimits output;
 };
 
 dictionary MLConcatSupportLimits {
-  MLSupportLimits inputs;
-  MLSupportLimits output;
+  MLTensorLimits inputs;
+  MLDataTypeLimits output;
 };
 
 dictionary MLConv2dSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits filter;
-  MLSupportLimits bias;
-  MLSupportLimits output;
-};
-
-dictionary MLCumulativeSumSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits filter;
+  MLTensorLimits bias;
+  MLDataTypeLimits output;
 };
 
 dictionary MLGatherSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits indices;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits indices;
+  MLDataTypeLimits output;
 };
 
 dictionary MLGemmSupportLimits {
-  MLSupportLimits a;
-  MLSupportLimits b;
-  MLSupportLimits c;
-  MLSupportLimits output;
+  MLTensorLimits a;
+  MLTensorLimits b;
+  MLTensorLimits c;
+  MLDataTypeLimits output;
 };
 
 dictionary MLGruSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits weight;
-  MLSupportLimits recurrentWeight;
-  MLSupportLimits bias;
-  MLSupportLimits recurrentBias;
-  MLSupportLimits initialHiddenState;
-  MLSupportLimits outputs;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits initialHiddenState;
+  MLDataTypeLimits outputs;
 };
 
 dictionary MLGruCellSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits weight;
-  MLSupportLimits recurrentWeight;
-  MLSupportLimits hiddenState;
-  MLSupportLimits bias;
-  MLSupportLimits recurrentBias;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits hiddenState;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLDataTypeLimits output;
 };
 
 dictionary MLLstmSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits weight;
-  MLSupportLimits recurrentWeight;
-  MLSupportLimits bias;
-  MLSupportLimits recurrentBias;
-  MLSupportLimits peepholeWeight;
-  MLSupportLimits initialHiddenState;
-  MLSupportLimits initialCellState;
-  MLSupportLimits outputs;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits peepholeWeight;
+  MLTensorLimits initialHiddenState;
+  MLTensorLimits initialCellState;
+  MLDataTypeLimits outputs;
 };
 
 dictionary MLLstmCellSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits weight;
-  MLSupportLimits recurrentWeight;
-  MLSupportLimits hiddenState;
-  MLSupportLimits cellState;
-  MLSupportLimits bias;
-  MLSupportLimits recurrentBias;
-  MLSupportLimits peepholeWeight;
-  MLSupportLimits outputs;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits hiddenState;
+  MLTensorLimits cellState;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits peepholeWeight;
+  MLDataTypeLimits outputs;
 };
 
 dictionary MLNormalizationSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits scale;
-  MLSupportLimits bias;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits scale;
+  MLTensorLimits bias;
+  MLDataTypeLimits output;
 };
 
 dictionary MLPreluSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits slope;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits slope;
+  MLDataTypeLimits output;
 };
 
 dictionary MLQuantizeDequantizeLinearSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits scale;
-  MLSupportLimits zeroPoint;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits scale;
+  MLTensorLimits zeroPoint;
+  MLDataTypeLimits output;
 };
 
 dictionary MLLogicalNotSupportLimits {
-  MLSupportLimits a;
-  MLSupportLimits output;
+  MLTensorLimits a;
+  MLDataTypeLimits output;
 };
 
 dictionary MLSingleInputSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLDataTypeLimits output;
 };
 
 dictionary MLScatterSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits indices;
-  MLSupportLimits updates;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits indices;
+  MLTensorLimits updates;
+  MLDataTypeLimits output;
 };
 
 dictionary MLSplitSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits outputs;
+  MLTensorLimits input;
+  MLDataTypeLimits outputs;
 };
 
 dictionary MLWhereSupportLimits {
-  MLSupportLimits condition;
-  MLSupportLimits trueValue;
-  MLSupportLimits falseValue;
-  MLSupportLimits output;
+  MLTensorLimits condition;
+  MLTensorLimits trueValue;
+  MLTensorLimits falseValue;
+  MLDataTypeLimits output;
 };
 
 dictionary MLOpSupportLimits {
   MLInputOperandLayout preferredInputLayout;
-  MLSupportLimits input;
-  MLSupportLimits constant;
-  MLSupportLimits output;
+  [EnforceRange] unsigned long long maxTensorByteLength;
+  MLDataTypeLimits input;
+  MLDataTypeLimits constant;
+  MLDataTypeLimits output;
 
   MLSingleInputSupportLimits argMin;
   MLSingleInputSupportLimits argMax;
@@ -190,6 +195,7 @@ dictionary MLOpSupportLimits {
   MLBinarySupportLimits greaterOrEqual;
   MLBinarySupportLimits lesser;
   MLBinarySupportLimits lesserOrEqual;
+  MLBinarySupportLimits notEqual;
   MLBinarySupportLimits logicalAnd;
   MLBinarySupportLimits logicalOr;
   MLBinarySupportLimits logicalXor;
@@ -274,7 +280,7 @@ typedef record<USVString, MLTensor> MLNamedTensors;
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
   SecureContext,
-  Exposed=(Window, DedicatedWorker)
+  Exposed=(Window, Worker)
 ] interface MLContext {
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,

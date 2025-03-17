@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DataSharingMemberRoleEnum} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {MemberRole} from 'chrome-untrusted://data-sharing/group_data.mojom-webui.js';
 import type {GroupData} from 'chrome-untrusted://data-sharing/group_data.mojom-webui.js';
 import {toMojomGroupData} from 'chrome-untrusted://data-sharing/mojom_conversion_utils.js';
@@ -18,6 +19,12 @@ suite('MojomConversionUtilsTest', () => {
     const accessToken: string = 'testAccessToken';
     const givenName: string = 'TEST_GIVEN_NAME';
 
+    const formerAvatarUrl: string = 'http://former.com';
+    const formerDisplayName: string = 'FORMER_DISPLAY_NAME';
+    const formerGaiaId: string = 'FORMER_GAIA_ID';
+    const formerEmail: string = 'former@gmail.com';
+    const formerGivenName: string = 'TEST_FORMER_GIVEN_NAME';
+
     const groupData: GroupData = toMojomGroupData({
       groupId: groupId,
       displayName: groupName,
@@ -26,9 +33,17 @@ suite('MojomConversionUtilsTest', () => {
         focusObfuscatedGaiaId: gaiaId,
         displayName,
         email,
-        role: 'invitee',
+        role: DataSharingMemberRoleEnum.INVITEE,
         avatarUrl,
         givenName,
+      }],
+      formerMembers: [{
+        focusObfuscatedGaiaId: formerGaiaId,
+        displayName: formerDisplayName,
+        email: formerEmail,
+        role: DataSharingMemberRoleEnum.FORMER_MEMBER,
+        avatarUrl: formerAvatarUrl,
+        givenName: formerGivenName,
       }],
     });
 
@@ -43,6 +58,14 @@ suite('MojomConversionUtilsTest', () => {
         role: MemberRole.kInvitee,
         avatarUrl: {url: avatarUrl},
         givenName,
+      }],
+      formerMembers: [{
+        gaiaId: formerGaiaId,
+        displayName: formerDisplayName,
+        email: formerEmail,
+        role: MemberRole.kFormerMember,
+        avatarUrl: {url: formerAvatarUrl},
+        givenName: formerGivenName,
       }],
     };
 

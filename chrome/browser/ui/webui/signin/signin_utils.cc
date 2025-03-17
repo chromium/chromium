@@ -19,12 +19,13 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace signin {
 
 namespace {
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
 // Default timeout used to wait for account capabilities fetch.
 const int kMinorModeRestrictionsFetchDeadlineMs = 1000;
 #endif
@@ -34,6 +35,7 @@ const int kMinorModeRestrictionsFetchDeadlineMs = 1000;
 EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     AccountInfo account_info,
     bool is_oidc_account,
+    bool turn_sync_on_signed_profile,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     SigninChoiceCallbackVariant process_user_choice_callback,
@@ -41,6 +43,7 @@ EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     base::RepeatingClosure retry_callback)
     : account_info(account_info),
       is_oidc_account(is_oidc_account),
+      turn_sync_on_signed_profile(turn_sync_on_signed_profile),
       profile_creation_required_by_policy(profile_creation_required_by_policy),
       show_link_data_option(show_link_data_option),
       process_user_choice_callback(std::move(process_user_choice_callback)),
@@ -82,8 +85,8 @@ Browser* GetDesktopBrowser(content::WebUI* web_ui) {
 }
 
 base::TimeDelta GetMinorModeRestrictionsDeadline() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Not implemented for those platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Not implemented for this platform.
   NOTREACHED();
 #else
   return base::Milliseconds(kMinorModeRestrictionsFetchDeadlineMs);
@@ -102,7 +105,7 @@ void SetInitializedModalHeight(Browser* browser,
       static_cast<int>(height));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void ClearProfileWithManagedAccounts(Profile* profile) {
   policy::UserPolicySigninServiceFactory::GetForProfile(profile)
       ->ShutdownCloudPolicyManager();

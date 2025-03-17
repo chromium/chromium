@@ -47,7 +47,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
           colorSchemeModeOptions.forEach((innerMode: ColorSchemeModeOption) => {
             const checked = innerMode.id === mode.id;
             assertEquals(
-                element.shadowRoot!
+                element.shadowRoot
                     .querySelector(`segmented-button-option[name="${
                         innerMode.id}"]`)!.hasAttribute('checked'),
                 checked);
@@ -62,7 +62,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
 
               // Action.
               const button =
-                  element.shadowRoot!.querySelector('segmented-button');
+                  element.shadowRoot.querySelector('segmented-button');
               assertTrue(!!button);
               button.selected = mode.id;
               await microtasksFinished();

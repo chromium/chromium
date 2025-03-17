@@ -6,13 +6,13 @@
 
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 
 using ::component_testing::ChildRef;
 using ::component_testing::Directory;
@@ -42,7 +42,7 @@ void AppendCommandLineArgumentsToProgram(
     // Create a new "args" list and insert it at the proper location in the
     // program's entries; entries' keys must be sorted as per
     // https://fuchsia.dev/reference/fidl/fuchsia.data?hl=en#Dictionary.
-    auto lower_bound = base::ranges::lower_bound(
+    auto lower_bound = std::ranges::lower_bound(
         *entries, "args", /*comp=*/{},
         [](const fuchsia::data::DictionaryEntry& entry) { return entry.key; });
     auto it = entries->emplace(lower_bound);

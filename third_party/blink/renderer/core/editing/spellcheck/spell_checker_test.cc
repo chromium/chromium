@@ -79,6 +79,46 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
 
+// https://issues.chromium.org/issues/398288325
+TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithCrossEditableNoCrash) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "<div contenteditable='false'>"
+      "<div contenteditable id='div'>"
+      "</div></div></div>");
+  Element* div = GetElementById("div");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // Do not crash in AdvanceToNextMisspelling.
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+  // in design mode
+  GetDocument().setDesignMode("on");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // Do not crash in AdvanceToNextMisspelling.
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+}
+
+// https://issues.chromium.org/issues/398431390
+// The test is used to check for the presence of an infinite loop. There are no
+// `EXPECT_*` in this test. If the test does not hang, it is considered to have
+// passed.
+TEST_F(SpellCheckerTest, AdvanceToNextMisspellingNoUnresponsive) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "<div contenteditable='false'>"
+      "<div contenteditable id='div'></div>"
+      "<div style='height: 100px;'></div>"
+      "</div>"
+      "<div>test</div>"
+      "</div>");
+  Element* div = GetElementById("div");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // No unresponsive in AdvanceToNextMisspelling
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+}
+
 TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
   auto* input =

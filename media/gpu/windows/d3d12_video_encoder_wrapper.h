@@ -5,38 +5,42 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODER_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODER_WRAPPER_H_
 
-#include <d3d12.h>
-#include <d3d12video.h>
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12video.h"
+// Windows SDK headers should be included after DirectX headers.
+
 #include <wrl.h>
 
 #include "base/containers/span.h"
 #include "media/base/encoder_status.h"
+#include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d12_helpers.h"
 
 namespace media {
 
-class D3D12VideoEncoderWrapper {
+class MEDIA_GPU_EXPORT D3D12VideoEncoderWrapper {
  public:
   D3D12VideoEncoderWrapper(
       Microsoft::WRL::ComPtr<ID3D12VideoEncoder> video_encoder,
       Microsoft::WRL::ComPtr<ID3D12VideoEncoderHeap> video_encoder_heap);
-  ~D3D12VideoEncoderWrapper();
+  virtual ~D3D12VideoEncoderWrapper();
 
-  bool Initialize();
+  virtual bool Initialize();
 
   // Do the encode and wait for the completion of the encoding.
-  EncoderStatus Encode(
+  virtual EncoderStatus Encode(
       const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS& input_arguments,
       const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE& reconstructed_picture);
 
   // Get the number of bytes written to the bitstream buffer or log the encoding
   // error.
-  EncoderStatus::Or<uint64_t> GetEncodedBitstreamWrittenBytesCount() const;
+  virtual EncoderStatus::Or<uint64_t> GetEncodedBitstreamWrittenBytesCount()
+      const;
 
   // Readback bitstream from GPU memory to |data|. The |size| must be no greater
   // than the value returned by |GetEncodedBitstreamWrittenBytesCount()|.
-  EncoderStatus ReadbackBitstream(base::span<uint8_t> data) const;
+  virtual EncoderStatus ReadbackBitstream(base::span<uint8_t> data) const;
 
  private:
   Microsoft::WRL::ComPtr<ID3D12VideoEncoder> video_encoder_;
@@ -53,6 +57,11 @@ class D3D12VideoEncoderWrapper {
 
   D3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS output_arguments_{};
 
+  union {
+    D3D12_VIDEO_ENCODER_PROFILE_H264 h264_profile_;
+    D3D12_VIDEO_ENCODER_PROFILE_HEVC hevc_profile_;
+    D3D12_VIDEO_ENCODER_AV1_PROFILE av1_profile_;
+  } profile_data_;
   D3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS
   resolve_metadata_input_arguments_{};
   D3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS

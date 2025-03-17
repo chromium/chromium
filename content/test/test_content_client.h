@@ -21,6 +21,7 @@ class TestContentClient : public ContentClient {
   ~TestContentClient() override;
 
   // ContentClient:
+  bool HasDataResource(int resource_id) const override;
   std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;

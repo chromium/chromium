@@ -19,7 +19,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
@@ -183,7 +182,6 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         return result;
     }
 
-    @NullUnmarked
     private void registerListItemTypes() {
         mAdapter.registerType(
                 ListMenuItemType.MENU_ITEM,
@@ -193,5 +191,9 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                 ListMenuItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.list_section_divider),
                 ListSectionDividerViewBinder::bind);
+    }
+
+    public ModelListAdapter getAdapterForTesting() {
+        return mAdapter;
     }
 }

@@ -13,7 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -30,6 +30,7 @@ struct ProfilesToSuggestOptions {
   const bool exclude_disused_addresses = true;
   const bool require_non_empty_value_on_trigger_field = true;
   const bool prefix_match_suggestions = true;
+  const bool remove_profiles_with_equal_value_on_trigger_field = false;
   const bool deduplicate_suggestions = true;
 };
 
@@ -64,7 +65,8 @@ std::vector<AutofillProfile> GetProfilesToSuggestForTest(
     FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const FieldTypeSet& field_types);
+    const FieldTypeSet& field_types,
+    SuggestionType suggestion_type = SuggestionType::kAddressEntry);
 
 // Exposes `CreateSuggestionsFromProfiles` in tests.
 std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(

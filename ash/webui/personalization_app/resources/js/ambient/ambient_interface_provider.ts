@@ -11,7 +11,8 @@
 import 'chrome://resources/mojo/mojo/public/js/bindings.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientProvider, AmbientProviderInterface} from '../../personalization_app.mojom-webui.js';
+import type {AmbientProviderInterface} from '../../personalization_app.mojom-webui.js';
+import {AmbientProvider} from '../../personalization_app.mojom-webui.js';
 
 let ambientProvider: AmbientProviderInterface|null = null;
 

@@ -114,7 +114,7 @@ const char kBiddingContentBase[] =
 //     "keyGroupOutputs": [
 //       {
 //         "tags": [
-//           "renderUrls"
+//           "renderURLs"
 //         ],
 //         "keyValues": {
 //           "https://foo.test/": {
@@ -124,7 +124,7 @@ const char kBiddingContentBase[] =
 //       },
 //       {
 //         "tags": [
-//           "adComponentRenderUrls"
+//           "adComponentRenderURLs"
 //         ],
 //         "keyValues": {
 //           "https://foosub.test/": {
@@ -137,8 +137,8 @@ const char kBiddingContentBase[] =
 // ]
 const char kScoringContentBase[] =
     "81A2626964006F6B657947726F75704F75747075747382A26474616773816A72656E646572"
-    "55726C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA1657661"
-    "6C75656131A2647461677381756164436F6D706F6E656E7452656E64657255726C73696B65"
+    "55524C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA1657661"
+    "6C75656131A2647461677381756164436F6D706F6E656E7452656E64657255524C73696B65"
     "7956616C756573A17468747470733A2F2F666F6F7375622E746573742FA16576616C756563"
     "5B325D";
 
@@ -308,7 +308,9 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
           v8::Context::Scope context_scope(context);
 
           v8::Local<v8::Value> value = result_map.at(index)->GetScoringSignals(
-              v8_helper_.get(), context, render_url, ad_component_render_urls);
+              v8_helper_.get(), context, render_url,
+              CreateMojoCreativeInfoWithoutOwnerVector(
+                  ad_component_render_urls));
 
           if (v8_helper_->ExtractJson(context, value,
                                       /*script_timeout=*/nullptr, &result) !=

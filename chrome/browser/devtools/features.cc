@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 
 namespace features {
 
@@ -52,6 +54,12 @@ const base::FeatureParam<DevToolsFreestylerExecutionMode>
         &kDevToolsFreestyler, "execution_mode",
         /*default_value=*/DevToolsFreestylerExecutionMode::kAllScripts,
         &devtools_freestyler_execution_mode_options};
+const base::FeatureParam<bool> kDevToolsFreestylerPatching{
+    &kDevToolsFreestyler, "patching", /*default_value=*/false};
+const base::FeatureParam<bool> kDevToolsFreestylerMultimodal{
+    &kDevToolsFreestyler, "multimodal", /*default_value=*/false};
+const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling{
+    &kDevToolsFreestyler, "function_calling", /*default_value=*/false};
 
 // Whether the DevTools AI Assistance Network Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceNetworkAgent,
@@ -86,6 +94,10 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &kDevToolsAiAssistancePerformanceAgent, "user_tier",
         /*default_value=*/DevToolsFreestylerUserTier::kPublic,
         &devtools_freestyler_user_tier_options};
+const base::FeatureParam<bool>
+    kDevToolsAiAssistancePerformanceAgentInsightsEnabled{
+        &kDevToolsAiAssistancePerformanceAgent, "insights_enabled",
+        /*default_value=*/false};
 
 // Whether the DevTools AI Assistance File Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceFileAgent,
@@ -120,6 +132,42 @@ const base::FeatureParam<bool> kDevToolsVeLoggingTesting{
 // Whether showing animation styles in the styles tab is enabled.
 BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
              "DevToolsAnimationStylesInStylesTab",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether DevTools will attempt to automatically connect Workspace folders.
+// See http://go/chrome-devtools:automatic-workspace-folders-design for details.
+BASE_FEATURE(kDevToolsAutomaticFileSystems,
+             "DevToolsAutomaticFileSystems",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether DevTools will attempt to load project settings from a well-known
+// URI. See https://goo.gle/devtools-json-design for additional details.
+// This is enabled by default starting with M-136.
+BASE_FEATURE(kDevToolsWellKnown,
+             "DevToolsWellKnown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether DevTools will offer the new CSS value tracing UI.
+BASE_FEATURE(kDevToolsCssValueTracing,
+             "DevToolsCssValueTracing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether the DevTools AI generated annotation labels in timeline are enabled.
+BASE_FEATURE(kDevToolsAiGeneratedTimelineLabels,
+             "DevToolsAiGeneratedTimelineLabels",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// If enabled, DevTools does not accept remote debugging connections unless
+// using a non-default user data dir via the --user-data-dir switch.
+BASE_FEATURE(kDevToolsDebuggingRestrictions,
+             "DevToolsDebuggingRestrictions",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace features

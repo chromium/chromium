@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_PERFORMANCE_LOG_SOURCE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -28,7 +29,7 @@ class PerformanceLogSource : public SystemLogsSource {
  private:
   void PopulatePerformanceSettingLogs(SystemLogsResponse* response);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Battery and battery saver logs are not used on ChromeOS.
   void PopulateBatteryDetailLogs(SystemLogsResponse* response);
 #endif

@@ -562,6 +562,8 @@ void ResetFileCache(const std::wstring &Name)
 
 
 
+
+
 // Delete symbolic links in file path, if any, and replace them by directories.
 // Prevents extracting files outside of destination folder with symlink chains.
 bool LinksToDirs(const std::wstring &SrcName,const std::wstring &SkipPart,std::wstring &LastChecked)

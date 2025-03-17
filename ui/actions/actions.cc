@@ -7,9 +7,15 @@
 #include <algorithm>
 #include <limits>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/no_destructor.h"
+#include "ui/actions/action_utils.h"
+#include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(actions::ActionPinnableState)
 namespace actions {
 
 namespace {
@@ -29,7 +35,10 @@ std::optional<GlobalActionManager>& GetGlobalManager() {
 
 }  // namespace
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemPinnableKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<ActionPinnableState>,
+                             kActionItemPinnableKey,
+                             std::underlying_type_t<ActionPinnableState>(
+                                 ActionPinnableState::kNotPinnable))
 
 ActionList::ActionList(Delegate* delegate) : delegate_(delegate) {}
 
@@ -150,15 +159,15 @@ ActionItem::ActionItem(InvokeActionCallback callback)
 
 ActionItem::~ActionItem() = default;
 
-std::u16string ActionItem::GetAccessibleName() const {
+std::u16string_view ActionItem::GetAccessibleName() const {
   return accessible_name_;
 }
 
-void ActionItem::SetAccessibleName(const std::u16string accessible_name) {
+void ActionItem::SetAccessibleName(std::u16string_view accessible_name) {
   if (accessible_name_ == accessible_name) {
     return;
   }
-  accessible_name_ = accessible_name;
+  accessible_name_ = std::u16string(accessible_name);
   ActionItemChanged();
 }
 
@@ -250,27 +259,27 @@ void ActionItem::SetImage(const ui::ImageModel& image) {
   ActionItemChanged();
 }
 
-const std::u16string ActionItem::GetText() const {
+std::u16string_view ActionItem::GetText() const {
   return text_;
 }
 
-void ActionItem::SetText(const std::u16string& text) {
+void ActionItem::SetText(std::u16string_view text) {
   if (text_ == text) {
     return;
   }
-  text_ = text;
+  text_ = std::u16string(text);
   ActionItemChanged();
 }
 
-const std::u16string ActionItem::GetTooltipText() const {
+std::u16string_view ActionItem::GetTooltipText() const {
   return tooltip_;
 }
 
-void ActionItem::SetTooltipText(const std::u16string& tooltip) {
+void ActionItem::SetTooltipText(std::u16string_view tooltip) {
   if (tooltip_ == tooltip) {
     return;
   }
-  tooltip_ = tooltip;
+  tooltip_ = std::u16string(tooltip);
   ActionItemChanged();
 }
 
@@ -364,14 +373,14 @@ void ActionItem::EndUpdate() {
 }
 
 BEGIN_METADATA(ActionItem)
-ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string_view, AccessibleName)
 ADD_PROPERTY_METADATA(std::optional<ActionId>, ActionId)
 ADD_PROPERTY_METADATA(ui::Accelerator, Accelerator)
 ADD_PROPERTY_METADATA(bool, Checked)
 ADD_PROPERTY_METADATA(bool, Enabled)
 ADD_PROPERTY_METADATA(std::optional<int>, GroupId)
-ADD_PROPERTY_METADATA(std::u16string, Text)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, TooltipText)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_READONLY_PROPERTY_METADATA(int, InvokeCount)
 ADD_READONLY_PROPERTY_METADATA(std::optional<base::TimeTicks>, LastInvokeTime)

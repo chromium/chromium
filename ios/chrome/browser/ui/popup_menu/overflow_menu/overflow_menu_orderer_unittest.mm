@@ -1627,7 +1627,6 @@ TEST_F(OverflowMenuOrdererTest, UpdateDoesntReorderMenu) {
 // Tests that if a hidden destination gets an error badge, that badge appears on
 // settings instead.
 TEST_F(OverflowMenuOrdererTest, HiddenDestinationPropagatesErrorBadge) {
-
   DestinationRanking all_destinations = SampleDestinations();
   DestinationRanking current_destinations = {
       overflow_menu::Destination::Settings,

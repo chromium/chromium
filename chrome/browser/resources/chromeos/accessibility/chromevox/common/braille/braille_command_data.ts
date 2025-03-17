@@ -123,6 +123,8 @@ export namespace BrailleCommandData {
     map([8], Command.FORCE_CLICK_ON_CURRENT_ITEM);
     map([3, 4], Command.TOGGLE_SEARCH_WIDGET);
 
+    map([1, 4, 7], Command.TOGGLE_CAPTIONS);
+
     // Question.
     map([1, 4, 5, 6], Command.TOGGLE_KEYBOARD_HELP);
 

@@ -14,6 +14,8 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,6 +38,7 @@ import java.util.List;
  * <li>Determining which sub-frames are visible given the current viewport and showing them.<li/>
  * </ul>
  */
+@NullMarked
 class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediatorDelegate {
     /** The GUID associated with the frame that this class is representing. */
     private final UnguessableToken mGuid;
@@ -77,7 +80,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     private final PlayerFrameBitmapStateController mBitmapStateController;
 
     private PlayerGestureListener mGestureListener;
-    private Runnable mInitialViewportSizeAvailable;
+    private @Nullable Runnable mInitialViewportSizeAvailable;
 
     PlayerFrameMediator(
             PropertyModel model,
@@ -88,7 +91,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
             int initialScrollX,
             int initialScrollY,
             float initialScaleFactor,
-            Runnable initialViewportSizeAvailable) {
+            @Nullable Runnable initialViewportSizeAvailable) {
         mBitmapScaleMatrix = new Matrix();
         mOffsetForScaling = new Point();
         mModel = model;
@@ -333,7 +336,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     @Override
-    public void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
+    public void updateBitmapMatrix(Bitmap @Nullable [][] bitmapMatrix) {
         mModel.set(PlayerFrameProperties.BITMAP_MATRIX, bitmapMatrix);
     }
 

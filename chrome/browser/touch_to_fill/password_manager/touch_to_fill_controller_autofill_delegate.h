@@ -51,10 +51,6 @@ class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
   using ShowHybridOption = base::StrongAlias<struct ShowHybridOptionTag, bool>;
-  using ShowPasswordMigrationWarningCallback = base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
   using ShowDataLossWarningCallback = base::RepeatingCallback<void(void)>;
 
   // The action a user took when interacting with the Touch To Fill sheet.
@@ -100,7 +96,6 @@ class TouchToFillControllerAutofillDelegate
       const password_manager::PasswordForm* form_to_fill,
       autofill::FieldRendererId focused_field_renderer_id,
       ShowHybridOption should_show_hybrid_option,
-      ShowPasswordMigrationWarningCallback show_password_migration_warning,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           data_loss_warning_bridge);
 
@@ -154,8 +149,6 @@ class TouchToFillControllerAutofillDelegate
   void CleanUpFillerAndReportOutcome(TouchToFillOutcome outcome,
                                      bool show_virtual_keyboard);
 
-  void ShowPasswordMigrationWarningIfNeeded();
-
   void OnFillingCredentialComplete(const std::u16string& username,
                                    bool triggered_submission);
 
@@ -189,10 +182,6 @@ class TouchToFillControllerAutofillDelegate
 
   // Whether the controller should show an option for passkey hybrid sign-in.
   ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);
-
-  // Shows the password migration warning (expected to be shown after filling
-  // user's credentials).
-  ShowPasswordMigrationWarningCallback show_password_migration_warning_;
 
   // Bridge used to show the data loss warning (expected to be shown after
   // filling user's credentials).

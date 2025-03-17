@@ -1,3 +1,14 @@
 include_rules = [
-  "+ash/public/cpp",
+  "+chromeos/ash/services/bluetooth_config/public",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/bluetooth_config_service.h",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    # Allows fake implementations.
+    "+chromeos/ash/services/bluetooth_config",
+  ]
+}

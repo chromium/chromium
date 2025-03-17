@@ -2347,5 +2347,32 @@ TEST_P(QuicChromiumClientSessionTest, OnOriginFrame) {
   EXPECT_TRUE(session_->received_origins().count(origin4));
 }
 
+TEST_P(QuicChromiumClientSessionTest, SettingEcn) {
+  quic::QuicTagVector copt;
+  copt.push_back(quic::kPRGC);  // Prague Cubic congestion control, uses ECT(1).
+  config_.SetClientConnectionOptions(copt);
+  MockQuicData quic_data(version_);
+  char packet[] = {
+      0x40, 0x72, 0x72, 0x72, 0x72, 0x72, 0x72, 0x72, 0x72, 0x01,
+      0x00, 0x00, 0x01, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a,
+      0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a,
+  };
+  quic_data.AddReadPause();
+  quic_data.AddWrite(ASYNC, std::make_unique<quic::QuicEncryptedPacket>(
+                                packet, sizeof(packet)));
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  auto* mock_socket = reinterpret_cast<const MockUDPClientSocket*>(
+      session_->GetDefaultSocket());
+
+  // The first packet write changes the socket ECN setting.
+  EXPECT_EQ(mock_socket->outgoing_ecn(), ECN_NOT_ECT);
+  session_->connection()->SetEncrypter(
+      quic::ENCRYPTION_FORWARD_SECURE,
+      std::make_unique<quic::test::TaggingEncrypter>(0x0a));
+  session_->connection()->SendPing();
+  EXPECT_EQ(mock_socket->outgoing_ecn(), ECN_ECT1);
+}
+
 }  // namespace
 }  // namespace net::test

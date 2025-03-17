@@ -386,7 +386,7 @@ struct VideoFrameMetadata {
 
   VideoTransformation? transformation;
 
-  bool texture_owner;
+  bool in_surface_view;
 
   bool wants_promotion_hint;
 
@@ -430,6 +430,7 @@ struct VideoFrameMetadata {
   mojo_base.mojom.TimeDelta? wallclock_frame_duration;
 
   uint64? frame_sequence;
+  uint64? source_id;
 
   EffectState background_blur;
 };
@@ -495,6 +496,9 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
 struct SharedImageVideoFrameData {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
+  // TODO(crbug.com/40263579): Remove this bool once all VideoFrame
+  // clients use MappableSI.
+  bool is_mappable_si_enabled;
   // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the
   // video is hardware decoded and the display compositor uses Vulkan.
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;

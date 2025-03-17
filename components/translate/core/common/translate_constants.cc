@@ -6,8 +6,6 @@
 
 namespace translate {
 
-const char* const kUnknownLanguageCode = "und";
-
 const int kDesktopPartialTranslateTextSelectionMaxCharacters = 500;
 
 const int kDesktopPartialTranslateBubbleShowDelayMs = 500;

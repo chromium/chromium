@@ -19,21 +19,18 @@ MIXIN_GROUPS = {
     'gpu': [
         # ChromeOS amd64-generic omitted since it is run on GCE instances.
         # ChromeOS volteer omitted since it runs in Skylab.
-        # gpu_samsung_a13_stable omitted until devices are available
-        # motorola_moto_g_power_5g omitted since the configuration has been
-        #    dropped
-        # win10_nvidia_rtx_4070_super_stable omitted until additional machines
-        #    are ready
         'chromium_nexus_5x_oreo',
         'chromium_pixel_2_pie',
         'gpu_nvidia_shield_tv_stable',
         'gpu_pixel_4_stable',
         'gpu_pixel_6_experimental',
         'gpu_pixel_6_stable',
+        'gpu_samsung_a13_stable',
         'gpu_samsung_a23_stable',
         'gpu_samsung_s23_stable',
         'gpu_samsung_s24_stable',
         'linux_amd_rx_5500_xt',
+        'linux_amd_rx_7600_stable',
         'linux_intel_uhd_630_experimental',
         'linux_intel_uhd_630_stable',
         'linux_intel_uhd_770_stable',
@@ -56,6 +53,8 @@ MIXIN_GROUPS = {
         'win10_intel_uhd_770_stable',
         'win10_nvidia_gtx_1660_experimental',
         'win10_nvidia_gtx_1660_stable',
+        'win11_amd_rx_7600_stable',
+        'win11_nvidia_rtx_4070_super_stable',
         'win11_qualcomm_adreno_690_stable',
     ],
 }
@@ -116,7 +115,7 @@ def ParseArgs() -> argparse.Namespace:
   detection_modifiers.add_argument(
       '--random-chance-probability-threshold',
       type=float,
-      default=0.005,
+      default=0.0005,
       help=('Used with the random chance detection method. Sets how unlikely '
             'it has to be that a bot randomly got at least as many failures as '
             'it did in order for it to be considered bad.'))

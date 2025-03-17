@@ -19,9 +19,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -30,11 +34,12 @@ import java.util.function.Function;
  * Default implementation of the NotificationManagerProxy, which passes through all calls to the
  * normal Android Notification Manager.
  */
+@NullMarked
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
     private final NotificationManagerCompat mNotificationManager;
 
-    private static NotificationManagerProxy sInstance;
+    private static @Nullable NotificationManagerProxy sInstance;
 
     public static NotificationManagerProxy getInstance() {
         // No need to cache the real instance, it makes testing more difficult as tests that shadow
@@ -103,15 +108,18 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         runCallableAndReply(
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels"),
                 () -> mNotificationManager.getNotificationChannels(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
-    public void getNotificationChannel(String channelId, Callback<NotificationChannel> callback) {
+    public void getNotificationChannel(
+            String channelId, Callback<@Nullable NotificationChannel> callback) {
         runCallableAndReply(
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannel"),
                 () -> mNotificationManager.getNotificationChannel(channelId),
-                callback);
+                callback,
+                null);
     }
 
     @Override
@@ -119,7 +127,8 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         runCallableAndReply(
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannelGroups"),
                 () -> mNotificationManager.getNotificationChannelGroups(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
@@ -186,7 +195,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     @Override
-    public NotificationChannel getNotificationChannel(String channelId) {
+    public @Nullable NotificationChannel getNotificationChannel(String channelId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannel")) {
@@ -237,11 +246,12 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
                     }
                     return notifications;
                 },
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     /** Helper method to run an runnable inside a scoped event. */
-    private void runRunnable(TraceEvent scopedEvent, Runnable runnable) {
+    private void runRunnable(@Nullable TraceEvent scopedEvent, Runnable runnable) {
         try (scopedEvent) {
             NotificationProxyUtils.recordNotificationEventHistogram(
                     NotificationEvent.NO_CALLBACK_START);
@@ -259,19 +269,26 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
      * Helper method to run an runnable inside a scoped event in background, and executes callback
      * on the ui thread.
      */
-    private <T> void runCallableAndReply(
-            TraceEvent scopedEvent, Callable<T> callable, Callback callback) {
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+    private <T extends @Nullable Object> void runCallableAndReply(
+            @Nullable TraceEvent scopedEvent,
+            Callable<T> callable,
+            Callback<T> callback,
+            T defaultValue) {
+        T result;
+        @NotificationEvent int event;
         try (scopedEvent) {
             NotificationProxyUtils.recordNotificationEventHistogram(
                     NotificationEvent.HAS_CALLBACK_START);
-            T result = callable.call();
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(result));
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.HAS_CALLBACK_SUCCESS);
+            result = callable.call();
+            event = NotificationEvent.HAS_CALLBACK_SUCCESS;
         } catch (Exception e) {
             Log.e(TAG, "Unable to call method.", e);
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.HAS_CALLBACK_FAILED);
+            event = NotificationEvent.HAS_CALLBACK_FAILED;
+            result = defaultValue;
         }
+        NotificationProxyUtils.recordNotificationEventHistogram(event);
+        T finalResult = result;
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(finalResult));
     }
 }

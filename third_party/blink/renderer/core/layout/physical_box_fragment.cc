@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -58,15 +59,34 @@ bool HasControlClip(const PhysicalBoxFragment& self) {
   return box && box->HasControlClip();
 }
 
+bool IsFlexibleBoxWithSingleChildElement(const LayoutObject& layout_object) {
+  if (!RuntimeEnabledFeatures::
+          UsePositionForPointInFlexibleBoxWithSingleChildElementEnabled()) {
+    return false;
+  }
+  auto* node = layout_object.GetNode();
+  if (!node || !layout_object.IsFlexibleBox()) {
+    return false;
+  }
+  return ElementTraversal::FirstChild(*node) ==
+         ElementTraversal::LastChild(*node);
+}
+
 bool ShouldUsePositionForPointInBlockFlowDirection(
     const LayoutObject& layout_object) {
   const LayoutBlockFlow* const layout_block_flow =
       DynamicTo<LayoutBlockFlow>(layout_object);
-  if (!layout_block_flow) {
-    // For <tr>, see editing/selection/click-before-and-after-table.html
+  // If it is not a layout block flow,  it should return false to prevent table
+  // elements like `<tr>` from being included. See
+  // editing/selection/click-before-and-after-table.html for more details.
+  // Additionally, if it is a flex block and it has only one child element, it
+  // should also return false. See https://issues.chromium.org/issues/40889098
+  // for more details.
+  if (!layout_block_flow &&
+      !IsFlexibleBoxWithSingleChildElement(layout_object)) {
     return false;
   }
-  if (layout_block_flow->StyleRef().SpecifiesColumns()) {
+  if (layout_object.StyleRef().SpecifiesColumns()) {
     // Columns are laid out in inline direction.
     return false;
   }
@@ -304,17 +324,14 @@ PhysicalBoxFragment::PhysicalBoxFragment(
   DCHECK(layout_object_->IsBoxModelObject());
   DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());
 
-  children_.resize(builder->children_.size());
+  children_.ReserveInitialCapacity(builder->children_.size());
   PhysicalSize size = Size();
   const WritingModeConverter converter(
       {block_or_line_writing_mode, builder->Direction()}, size);
-  wtf_size_t i = 0;
   for (auto& child : builder->children_) {
-    children_[i].offset =
-        converter.ToPhysical(child.offset, child.fragment->Size());
-    // Fragments in |builder| are not used after |this| was constructed.
-    children_[i].fragment = child.fragment.Release();
-    ++i;
+    children_.emplace_back(
+        std::move(child.fragment),
+        converter.ToPhysical(child.offset, child.fragment->Size()));
   }
 
   if (HasItems()) {
@@ -334,14 +351,14 @@ PhysicalBoxFragment::PhysicalBoxFragment(
       has_scrollable_overflow + !!builder->frame_set_layout_data_ +
       !!builder->mathml_paint_info_ + !!builder->table_grid_rect_ +
       !!builder->table_collapsed_borders_ +
-      !!builder->table_collapsed_borders_geometry_ + !!builder->gap_geometry_ +
+      !!builder->table_collapsed_borders_geometry_ +
       !!builder->table_cell_column_index_ +
       (builder->table_section_row_offsets_.empty() ? 0 : 2) +
       !!builder->page_name_ + !!borders + !!scrollbar + !!padding +
       inflow_bounds.has_value() + !!builder->Style().MayHaveMargin();
 
   if (rare_fields_size > 0 || !builder->table_column_geometries_.empty() ||
-      !builder->reading_flow_nodes_.empty()) {
+      !builder->reading_flow_nodes_.empty() || builder->gap_geometry_) {
     rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(
         has_scrollable_overflow ? &scrollable_overflow : nullptr, borders,
         scrollbar, padding, inflow_bounds, *builder, rare_fields_size);
@@ -552,7 +569,7 @@ const PhysicalBoxFragment* PhysicalBoxFragment::PostLayout() const {
 
 // TODO(crbug.com/1241721): Revert https://crrev.com/c/3108806 to re-enable this
 // DCHECK on CrOS.
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
   DCHECK(AllowPostLayoutScope::IsAllowed());
 #endif
   return post_layout;
@@ -803,6 +820,20 @@ PhysicalBoxFragment::GetMutableForContainerLayout() const {
   DCHECK(layout_object_->GetFrameView()->IsInPerformLayout());
   return MutableForContainerLayout(base::PassKey<PhysicalBoxFragment>(),
                                    const_cast<PhysicalBoxFragment&>(*this));
+}
+
+void PhysicalBoxFragment::MutableForCloning::ReplaceChildren(
+    const PhysicalBoxFragment& new_fragment) {
+  // Replacing children that establish an inline formatting context is not
+  // supported. An anonymous wrapper block should have been created.
+  DCHECK(!new_fragment.HasItems());
+  DCHECK(!fragment_.HasItems());
+
+  fragment_.children_.clear();
+  fragment_.children_.AppendVector(new_fragment.children_);
+
+  // Replace propagated data.
+  fragment_.propagated_data_ = new_fragment.propagated_data_;
 }
 
 void PhysicalBoxFragment::MutableForOofFragmentation::AddChildFragmentainer(

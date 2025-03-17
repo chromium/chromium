@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import android.accounts.Account;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Date;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Optional;
  * Interface to send backend requests to a downstream implementation to fulfill password store
  * jobs. All methods are expected to respond asynchronously to callbacks.
  */
+@NullMarked
 public interface PasswordStoreAndroidBackend {
     /** Serves as a general exception for failed requests to the PasswordStoreAndroidBackend. */
     public class BackendException extends Exception {

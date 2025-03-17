@@ -462,4 +462,26 @@ TEST_F(SysInfoTest, ScopedRunningOnChromeOS) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_POSIX)
+TEST_F(SysInfoTest, KernelVersionNumber) {
+  auto current_kernel_version = SysInfo::KernelVersionNumber::Current();
+
+  EXPECT_GT(current_kernel_version, SysInfo::KernelVersionNumber());
+  // Chromium will realistically never run on a kernel as old as 2.1.11
+  EXPECT_GT(current_kernel_version, SysInfo::KernelVersionNumber(2, 1, 11));
+
+  SysInfo::KernelVersionNumber next_major_kernel_version(
+      current_kernel_version.major + 1);
+  EXPECT_LT(current_kernel_version, next_major_kernel_version);
+
+  SysInfo::KernelVersionNumber next_minor_kernel_version(
+      current_kernel_version.major, current_kernel_version.minor + 1);
+  EXPECT_LT(current_kernel_version, next_minor_kernel_version);
+
+  SysInfo::KernelVersionNumber next_bugfix_kernel_version(
+      current_kernel_version.major, current_kernel_version.minor,
+      current_kernel_version.bugfix + 1);
+  EXPECT_LT(current_kernel_version, next_bugfix_kernel_version);
+}
+#endif  // BUILDFLAG(IS_POSIX)
 }  // namespace base

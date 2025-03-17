@@ -4,7 +4,8 @@
 
 #include "chrome/test/media_router/media_router_cast_ui_for_test.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
@@ -151,7 +152,7 @@ void MediaRouterCastUiForTest::OnDialogModelUpdated(
 
   const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
       sink_views = dialog_view->sink_views_for_test();
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           sink_views, [&, this](CastDialogSinkView* sink_view) {
             switch (watch_type_) {
               case WatchType::kSink:
@@ -233,10 +234,10 @@ CastDialogSinkView* MediaRouterCastUiForTest::GetSinkView(
   CHECK(dialog_view);
   const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
       sink_views = dialog_view->sink_views_for_test();
-  auto it = base::ranges::find(sink_views, base::UTF8ToUTF16(sink_name),
-                               [](CastDialogSinkView* sink_view) {
-                                 return sink_view->sink().friendly_name;
-                               });
+  auto it = std::ranges::find(sink_views, base::UTF8ToUTF16(sink_name),
+                              [](CastDialogSinkView* sink_view) {
+                                return sink_view->sink().friendly_name;
+                              });
   if (it == sink_views.end()) {
     NOTREACHED() << "Sink view not found for sink: " << sink_name;
   } else {

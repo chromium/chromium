@@ -26,12 +26,9 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AndroidEvictionReason">
-  <int value="0" label="TabUnusedTooLong"/>
-  <int value="1" label="TabUnusedInSession"/>
-  <int value="2" label="LimitOfActiveTabs"/>
-  <int value="3" label="EvictNTabs"/>
-  <int value="4" label="EvictAll"/>
+<enum name="BooleanAreAllPagesFrozen">
+  <int value="0" label="Not all pages are frozen"/>
+  <int value="1" label="All pages are frozen"/>
 </enum>
 
 <enum name="BooleanGreaterOrEqualThan200MB">
@@ -56,13 +53,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Critical memory pressure"/>
 </enum>
 
-<enum name="MemoryPressureLevelChanges">
-  <int value="0" label="No pressure to moderate pressure"/>
-  <int value="1" label="No pressure to critical pressure"/>
-  <int value="2" label="Moderate pressure to critical pressure"/>
-  <int value="3" label="Critical pressure to moderate pressure"/>
-  <int value="4" label="Critical pressure to no pressure"/>
-  <int value="5" label="Moderate pressure to no pressure"/>
+<enum name="SelfCompactionCancellationReason">
+  <int value="0" label="Frozen by App Freezer"/>
+  <int value="1" label="Page resumed"/>
 </enum>
 
 <enum name="VmmmsRequestPriority">

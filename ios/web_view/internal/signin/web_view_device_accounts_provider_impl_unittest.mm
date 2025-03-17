@@ -5,20 +5,21 @@
 #import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 
 #import <Foundation/Foundation.h>
-#include <map>
-#include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/test/bind.h"
-#include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
+#import <map>
+#import <utility>
+
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/test/bind.h"
+#import "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_errors.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace ios_web_view {
@@ -54,7 +55,7 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAccessToken) {
   bool callback_called = false;
   WebViewDeviceAccountsProviderImpl accounts_provider;
   accounts_provider.GetAccessToken(
-      "gaia-id", "client-id", {"scope-1", "scope-2"},
+      GaiaId("gaia-id"), "client-id", {"scope-1", "scope-2"},
       base::BindLambdaForTesting(
           [&](DeviceAccountsProvider::AccessTokenResult result) {
             callback_called = true;
@@ -86,8 +87,8 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAllAccounts) {
   ASSERT_EQ(1UL, accounts.size());
   DeviceAccountsProvider::AccountInfo account_info = accounts[0];
   EXPECT_EQ("foo@chromium.org", account_info.email);
-  EXPECT_EQ("gaia-id", account_info.gaia);
+  EXPECT_EQ(GaiaId("gaia-id"), account_info.gaia);
 
   [data_source verify];
 }
-}
+}  // namespace ios_web_view

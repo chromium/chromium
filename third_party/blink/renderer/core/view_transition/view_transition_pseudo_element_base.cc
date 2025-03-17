@@ -14,12 +14,14 @@ ViewTransitionPseudoElementBase::ViewTransitionPseudoElementBase(
     Element* parent,
     PseudoId pseudo_id,
     const AtomicString& view_transition_name,
+    bool is_generated_name,
     const ViewTransitionStyleTracker* style_tracker)
     : PseudoElement(parent, pseudo_id, view_transition_name),
       style_tracker_(style_tracker) {
   DCHECK(IsTransitionPseudoElement(pseudo_id));
   DCHECK(pseudo_id == kPseudoIdViewTransition || view_transition_name);
   DCHECK(style_tracker_);
+  SetIsGeneratedName(is_generated_name);
 }
 
 bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(

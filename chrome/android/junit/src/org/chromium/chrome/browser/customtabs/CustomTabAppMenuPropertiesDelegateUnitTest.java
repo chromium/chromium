@@ -21,10 +21,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -42,11 +42,14 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /** Unit tests for {@link CustomTabAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({
+    ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT,
+    ContentFeatureList.ANDROID_OPEN_PDF_INLINE,
+    ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT
+})
 public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
@@ -70,11 +73,6 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(new GURL("https://google.com"));
         when(mTab.isNativePage()).thenReturn(false);
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT, false);
-        featureMap.put(ContentFeatureList.ANDROID_OPEN_PDF_INLINE, false);
-        featureMap.put(ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT, false);
-        FeatureList.setTestFeatures(featureMap);
     }
 
     private Menu createMenu(Context context, int menuResourceId) {
@@ -113,7 +111,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* showShare= */ true,
                         /* showStar= */ true,
                         /* showDownload= */ true,
-                        /* isIncognito= */ false,
+                        /* isIncognitoBranded= */ false,
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,

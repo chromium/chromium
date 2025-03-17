@@ -35,16 +35,18 @@ void IOSChromeStabilityMetricsProvider::OnRecordingDisabled() {
 }
 
 void IOSChromeStabilityMetricsProvider::LogRendererCrash() {
-  if (!recording_enabled_)
+  if (!recording_enabled_) {
     return;
+  }
 
   helper_.LogRendererCrash();
 }
 
 void IOSChromeStabilityMetricsProvider::WebStateDidStartLoading(
     web::WebState* web_state) {
-  if (!recording_enabled_)
+  if (!recording_enabled_) {
     return;
+  }
 
   UMA_HISTOGRAM_BOOLEAN(kPageLoadCountLoadingStartedMetric, true);
 }
@@ -52,8 +54,9 @@ void IOSChromeStabilityMetricsProvider::WebStateDidStartLoading(
 void IOSChromeStabilityMetricsProvider::WebStateDidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!recording_enabled_)
+  if (!recording_enabled_) {
     return;
+  }
 
   PageLoadCountNavigationType type =
       PageLoadCountNavigationType::PAGE_LOAD_NAVIGATION;
@@ -70,8 +73,9 @@ void IOSChromeStabilityMetricsProvider::WebStateDidStartNavigation(
 
 void IOSChromeStabilityMetricsProvider::RenderProcessGone(
     web::WebState* web_state) {
-  if (!recording_enabled_)
+  if (!recording_enabled_) {
     return;
+  }
   LogRendererCrash();
   // TODO(crbug.com/41297697): web_state->GetLastCommittedURL() is likely the
   // URL that caused a renderer crash and can be logged here.

@@ -17,11 +17,11 @@ namespace web {
 
 std::unique_ptr<net::SystemCookieStore> CreateSystemCookieStore(
     BrowserState* browser_state) {
-    // Using WKHTTPCookieStore guarantee that cookies are always in sync and
-    // allows SystemCookieStore to handle cookies for OffTheRecord browser.
-    WKWebViewConfigurationProvider& config_provider =
-        WKWebViewConfigurationProvider::FromBrowserState(browser_state);
-    return std::make_unique<web::WKHTTPSystemCookieStore>(&config_provider);
+  // Using WKHTTPCookieStore guarantee that cookies are always in sync and
+  // allows SystemCookieStore to handle cookies for OffTheRecord browser.
+  WKWebViewConfigurationProvider& config_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(browser_state);
+  return std::make_unique<web::WKHTTPSystemCookieStore>(&config_provider);
 }
 
 }  // namespace web

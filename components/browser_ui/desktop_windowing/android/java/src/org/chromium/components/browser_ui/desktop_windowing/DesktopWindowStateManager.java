@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.desktop_windowing;
 import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Interface to observe and retrieve desktop windowing mode state and updates. */
 @NullMarked
@@ -34,7 +35,7 @@ public interface DesktopWindowStateManager {
     /**
      * @return The window's {@link AppHeaderState} information.
      */
-    AppHeaderState getAppHeaderState();
+    @Nullable AppHeaderState getAppHeaderState();
 
     /**
      * @return {@code true} if the activity is in a desktop window irrespective of focus state,

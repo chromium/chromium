@@ -25,6 +25,10 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
       return LensEntrypoint::LensOverlayOverflowMenu;
     case LensOverlayEntrypoint::kSearchImageContextMenu:
       return LensEntrypoint::ContextMenu;
+    case LensOverlayEntrypoint::kLVFCameraCapture:
+      return LensEntrypoint::LensOverlayLvfShutterButton;
+    case LensOverlayEntrypoint::kLVFImagePicker:
+      return LensEntrypoint::LensOverlayLvfGallery;
   }
 }
 

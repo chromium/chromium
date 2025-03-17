@@ -35,8 +35,7 @@ constexpr wchar_t kTempTestKeyPath[] = L"Software\\Chromium\\TempTestKeys";
 void DeleteStaleTestKeys(const base::Time& now,
                          const std::wstring& test_key_root) {
   base::win::RegKey test_root_key;
-  if (test_root_key.Open(HKEY_CURRENT_USER,
-                         test_key_root.c_str(),
+  if (test_root_key.Open(HKEY_CURRENT_USER, test_key_root.c_str(),
                          KEY_ALL_ACCESS) != ERROR_SUCCESS) {
     // This will occur on first-run, but is harmless.
     return;
@@ -49,8 +48,9 @@ void DeleteStaleTestKeys(const base::Time& now,
     std::vector<std::u16string_view> tokens = base::SplitStringPiece(
         base::AsStringPiece16(key_name), kTimestampDelimiter,
         base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (tokens.empty())
+    if (tokens.empty()) {
       continue;
+    }
     int64_t key_name_as_number = 0;
 
     if (!base::StringToInt64(tokens[0], &key_name_as_number)) {
@@ -61,8 +61,9 @@ void DeleteStaleTestKeys(const base::Time& now,
     base::Time key_time = base::Time::FromInternalValue(key_name_as_number);
     base::TimeDelta age = now - key_time;
 
-    if (age > base::Hours(24))
+    if (age > base::Hours(24)) {
       test_root_key.DeleteKey(key_name.c_str());
+    }
   }
 }
 
@@ -82,8 +83,8 @@ RegistryOverrideManager::ScopedRegistryKeyOverride::ScopedRegistryKeyOverride(
     const std::wstring& key_path)
     : override_(override), key_path_(key_path) {}
 
-RegistryOverrideManager::
-    ScopedRegistryKeyOverride::~ScopedRegistryKeyOverride() {
+RegistryOverrideManager::ScopedRegistryKeyOverride::
+    ~ScopedRegistryKeyOverride() {
   ::RegOverridePredefKey(override_, NULL);
   base::win::RegKey(HKEY_CURRENT_USER, L"", KEY_QUERY_VALUE)
       .DeleteKey(key_path_.c_str());
@@ -130,8 +131,9 @@ void RegistryOverrideManager::OverrideRegistry(HKEY override,
 
   overrides_.push_back(
       std::make_unique<ScopedRegistryKeyOverride>(override, key_path));
-  if (override_path)
+  if (override_path) {
     override_path->assign(key_path);
+  }
 }
 
 void RegistryOverrideManager::SetAllowHKLMRegistryOverrideForIntegrationTests(

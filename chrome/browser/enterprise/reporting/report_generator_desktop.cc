@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace em = enterprise_management;
 
@@ -27,7 +27,7 @@ namespace enterprise_reporting {
 // TODO(crbug.com/40703888): Split up Chrome OS reporting code into its own
 // delegates, then move this method's implementation to ReportGeneratorChromeOS.
 void ReportGeneratorDesktop::SetAndroidAppInfos(ReportRequest* basic_request) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(basic_request);
   basic_request->GetDeviceReportRequest().clear_android_app_infos();
 
@@ -54,7 +54,7 @@ void ReportGeneratorDesktop::SetAndroidAppInfos(ReportRequest* basic_request) {
         .mutable_android_app_infos()
         ->AddAllocated(generator.Generate(prefs, app_id).release());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace enterprise_reporting

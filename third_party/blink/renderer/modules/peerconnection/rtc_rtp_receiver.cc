@@ -6,6 +6,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -182,8 +183,9 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  LogMessage(base::StringPrintf("%s({transform_shortcircuited_=%s})", __func__,
-                                transform_shortcircuited_ ? "true" : "false"));
+  LogMessage(
+      base::StringPrintf("%s({transform_shortcircuited_=%s})", __func__,
+                         base::ToString(transform_shortcircuited_).c_str()));
   if (transform_shortcircuited_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Too late to create encoded streams");

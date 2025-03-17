@@ -11,7 +11,7 @@ have interfaces for both, e.g. `BluetoothAdapter` & `BluetoothDevice`.
 
 |           | Classic |  Low Energy |
 |-----------|:-------:|:-----------:|
-| Android   |   no    |     yes     |
+| Android   |   some  |     yes     |
 | Chrome OS |   yes   |     yes     |
 | Linux     |   yes   |     yes     |
 | Mac       |   yes   |     yes     |

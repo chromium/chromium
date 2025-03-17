@@ -260,6 +260,12 @@ TriggerManager::FinishCollectingThreatDetails(
         has_threat_details_in_map);
   }
 
+  if (trigger_type == TriggerType::GAIA_PASSWORD_REUSE) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit",
+        num_visits > 0);
+  }
+
   // Make sure there's a ThreatDetails collector running on this tab.
   if (!has_threat_details_in_map)
     return FinishCollectingThreatDetailsResult(

@@ -3,23 +3,21 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startURL(
+  const {dp, session} = await testRunner.startURL(
       'http://devtools.test:8000/inspector-protocol/resources/empty.html',
       'Test that clicking an anchor with attributionsrc in an insecure context triggers an issue.');
 
   await dp.Audits.enable();
 
-  await dp.Runtime.evaluate({expression: `
-    document.body.innerHTML = '<a id="adlink" href="https://a.com" attributionsrc="https://b.com" target="_blank">Link</a>';
-  `});
+  await session.evaluate(`
+    document.body.innerHTML = '<a id="adlink" href="https://devtools.test:8443/" attributionsrc="https://devtools.test:8443/" target="_blank">Link</a>'
+  `);
 
-  const issue = dp.Audits.onceIssueAdded();
+  session.evaluateAsyncWithUserGesture(
+      `document.getElementById('adlink').click()`);
 
-  await dp.Runtime.evaluate({
-    expression: `document.getElementById('adlink').click()`,
-    userGesture: true,
-  });
+  const issue = await dp.Audits.onceIssueAdded();
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

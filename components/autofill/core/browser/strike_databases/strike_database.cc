@@ -24,7 +24,7 @@ namespace {
 const int kMaxInitAttempts = 3;
 }  // namespace
 
-const base::FilePath::StringPieceType kStrikeDatabaseFileName =
+const base::FilePath::StringViewType kStrikeDatabaseFileName =
     FILE_PATH_LITERAL("AutofillStrikeDatabase");
 
 StrikeDatabase::StrikeDatabase(

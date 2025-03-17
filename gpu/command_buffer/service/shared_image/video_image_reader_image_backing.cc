@@ -345,14 +345,15 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     NOTIMPLEMENTED();
     return {};
   }
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
+      override {
     // Writes are not intended to be used with video backed representations.
     NOTIMPLEMENTED();
     return {};
   }
   void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
     DCHECK(!scoped_hardware_buffer_);
 
     // Obtain the AHB for the current video frame.
@@ -461,9 +462,10 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
         /*sampleCount=*/1, skgpu::Mipmapped::kNo, webgpu_format, webgpu_format,
         texture_descriptor.usage, wgpu::TextureAspect::All, /*slice=*/0,
         ahb_properties.yCbCrInfo);
-    return {skgpu::graphite::BackendTextures::MakeDawn(
-        SkISize::Make(ahb_desc.width, ahb_desc.height), dawn_texture_info,
-        texture_.Get())};
+    return {base::MakeRefCounted<GraphiteTextureHolder>(
+        skgpu::graphite::BackendTextures::MakeDawn(
+            SkISize::Make(ahb_desc.width, ahb_desc.height), dawn_texture_info,
+            texture_.Get()))};
   }
 
   void EndReadAccess() override {

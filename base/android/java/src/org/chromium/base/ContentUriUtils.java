@@ -118,11 +118,10 @@ public abstract class ContentUriUtils {
             DocumentsContract.Document.COLUMN_LAST_MODIFIED,
         };
 
+        Uri uri = Uri.parse(uriString);
         Uri queryUri = null;
         try {
-            DocumentFile file =
-                    DocumentFile.fromTreeUri(
-                            ContextUtils.getApplicationContext(), Uri.parse(uriString));
+            DocumentFile file = DocumentFile.fromTreeUri(ContextUtils.getApplicationContext(), uri);
             if (file != null) {
                 if (listFiles) {
                     String documentId = DocumentsContract.getDocumentId(file.getUri());
@@ -134,11 +133,17 @@ public abstract class ContentUriUtils {
                 }
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to get Documents URI for %s, listFiles=%s", uriString, listFiles);
+            // Ignore.
         }
+
         if (queryUri == null) {
-            // If URI is not a documents URI, then try to get size from AFD.
-            if (!listFiles) {
+            if (listFiles) {
+                return;
+            }
+            if (DocumentsContract.isDocumentUri(ContextUtils.getApplicationContext(), uri)) {
+                queryUri = uri;
+            } else {
+                // If URI is not a documents URI, then try to get size from AFD.
                 AssetFileDescriptor afd = getAssetFileDescriptor(uriString, "r");
                 if (afd != null) {
                     ContentUriUtilsJni.get()
@@ -146,19 +151,24 @@ public abstract class ContentUriUtils {
                                     nativeVector, uriString, null, false, afd.getLength(), 0);
                     StreamUtil.closeQuietly(afd);
                 }
+                return;
             }
-            return;
         }
 
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         try (Cursor c = assumeNonNull(resolver.query(queryUri, columns, null, null, null))) {
             while (c.moveToNext()) {
-                String uri =
-                        c.isNull(0)
-                                ? null
-                                : DocumentsContract.buildDocumentUriUsingTree(
-                                                queryUri, c.getString(0))
-                                        .toString();
+                String path = null;
+                if (listFiles) {
+                    path =
+                            c.isNull(0)
+                                    ? null
+                                    : DocumentsContract.buildDocumentUriUsingTree(
+                                                    queryUri, c.getString(0))
+                                            .toString();
+                } else {
+                    path = uriString;
+                }
                 String displayName = c.isNull(1) ? null : c.getString(1);
                 boolean isDirectory =
                         !c.isNull(2)
@@ -167,7 +177,7 @@ public abstract class ContentUriUtils {
                 long lastModified = c.isNull(4) ? 0 : c.getLong(4);
                 ContentUriUtilsJni.get()
                         .addFileInfoToVector(
-                                nativeVector, uri, displayName, isDirectory, size, lastModified);
+                                nativeVector, path, displayName, isDirectory, size, lastModified);
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed query for uri=" + uriString + ", listFiles=" + listFiles, e);

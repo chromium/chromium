@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -17,11 +18,13 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "storage/browser/blob/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -203,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
 }
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
-                       TestUseCounterForCrossPartitionBlobURLFetch) {
+                       TestUseCounterForCrossPartitionSameOriginBlobURLFetch) {
   GURL main_url = embedded_test_server()->GetURL(
       "c.com", "/cross_site_iframe_factory.html?c(b(c))");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -225,10 +228,109 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
   EXPECT_CALL(
       GetMockClient(),
       LogWebFeatureForCurrentPage(
-          testing::_, blink::mojom::WebFeature::kCrossPartitionBlobURLFetch))
+          testing::_,
+          blink::mojom::WebFeature::kCrossPartitionSameOriginBlobURLFetch))
       .Times(1);
 
-  EXPECT_TRUE(ExecJs(
+  std::string fetch_blob_url_js = JsReplace(
+      "async function test() {"
+      " const blob = await fetch($1).then(response => response.blob());"
+      " await blob.text();}"
+      "test();",
+      blob_url);
+
+  EXPECT_FALSE(ExecJs(rfh_b, fetch_blob_url_js));
+
+  EXPECT_TRUE(ExecJs(rfh_c_2, fetch_blob_url_js));
+
+  EXPECT_TRUE(ExecJs(rfh_c, JsReplace("URL.revokeObjectURL($1)", blob_url)));
+
+  EXPECT_FALSE(ExecJs(rfh_c_2, fetch_blob_url_js));
+}
+
+class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
+ protected:
+  BlobUrlDevToolsIssueTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kBlockCrossPartitionBlobUrlFetching);
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void WaitForIssueAndCheckUrl(const std::string& url,
+                               TestDevToolsProtocolClient* client,
+                               const std::string& expected_info_enum) {
+    auto is_blob_url_issue = [](const base::Value::Dict& params) {
+      const std::string* issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return issue_code && *issue_code == "PartitioningBlobURLIssue";
+    };
+
+    // Wait for notification of a Partitioning Blob URL Issue.
+    base::Value::Dict params = client->WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(is_blob_url_issue));
+
+    EXPECT_EQ(*params.FindStringByDottedPath("issue.code"),
+              "PartitioningBlobURLIssue");
+
+    base::Value::Dict* partitioning_blob_url_issue_details =
+        params.FindDictByDottedPath(
+            "issue.details.partitioningBlobURLIssueDetails");
+    ASSERT_TRUE(partitioning_blob_url_issue_details);
+
+    // Verify the reported blob_url match the expected url.
+    std::string* blob_url_ptr =
+        partitioning_blob_url_issue_details->FindString("url");
+    EXPECT_EQ(*blob_url_ptr, url);
+
+    // Verify the reported partitioningBlobURLInfo matches the expected enum.
+    std::string* info_enum_ptr =
+        partitioning_blob_url_issue_details->FindString(
+            "partitioningBlobURLInfo");
+    ASSERT_TRUE(info_enum_ptr);
+    EXPECT_EQ(*info_enum_ptr, expected_info_enum);
+
+    // Clear existing notifications so subsequent calls don't fail by checking
+    // `url` against old notifications.
+    client->ClearNotifications();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
+  // TODO(https://crbug.com/395911627): convert browser_tests to
+  // inspector-protocol test
+  GURL main_url = embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(b(c))");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* rfh_c = shell()->web_contents()->GetPrimaryMainFrame();
+
+  std::string blob_url_string =
+      EvalJs(
+          rfh_c,
+          "const blob_url = URL.createObjectURL(new "
+          "Blob(['<!doctype html><body>potato</body>'], {type: 'text/html'}));"
+          "blob_url;")
+          .ExtractString();
+  GURL blob_url(blob_url_string);
+
+  RenderFrameHost* rfh_b = ChildFrameAt(rfh_c, 0);
+  RenderFrameHost* rfh_c_2 = ChildFrameAt(rfh_b, 0);
+
+  std::unique_ptr<content::TestDevToolsProtocolClient> client =
+      std::make_unique<content::TestDevToolsProtocolClient>();
+  client->AttachToFrameTreeHost(rfh_c_2);
+  client->SendCommandSync("Audits.enable");
+  client->ClearNotifications();
+
+  EXPECT_FALSE(ExecJs(
       rfh_c_2,
       JsReplace(
           "async function test() {"
@@ -236,6 +338,63 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
           "await blob.text();}"
           "test();",
           blob_url)));
+  WaitForIssueAndCheckUrl(blob_url_string, client.get(),
+                          "BlockedCrossPartitionFetching");
+  client->DetachProtocolClient();
+}
+
+IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest,
+                       PartitioningBlobUrlNavigationIssue) {
+  // TODO(https://crbug.com/395911627): convert browser_tests to
+  // inspector-protocol test
+  // 1. Navigate to c.com.
+  GURL main_url = embedded_test_server()->GetURL("c.com", "/title1.html");
+  WebContents* web_contents = shell()->web_contents();
+  EXPECT_TRUE(NavigateToURL(web_contents, main_url));
+  RenderFrameHost* rfh_c = web_contents->GetPrimaryMainFrame();
+
+  std::string blob_url_string =
+      EvalJs(
+          rfh_c,
+          "const blob_url = URL.createObjectURL(new "
+          "Blob(['<!doctype html><body>potato</body>'], {type: 'text/html'}));"
+          "blob_url;")
+          .ExtractString();
+
+  // 2. Create blob_url in c.com (blob url origin is c.com).
+  GURL blob_url(blob_url_string);
+
+  // 3. window.open b.com with c.com embedded.
+  // 3a. Navigate to b.com.
+  GURL b_url = embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(c)");
+
+  // 3b. Open new tab from b.com context.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      content::ExecJs(rfh_c, content::JsReplace("window.open($1)", b_url)));
+
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContents* new_contents = new_shell->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+
+  RenderFrameHost* rfh_b = new_contents->GetPrimaryMainFrame();
+  RenderFrameHost* rfh_c_in_b = ChildFrameAt(rfh_b, 0);
+
+  // 4. Attach DevTools client to the innermost frame (c.com inside b.com).
+  std::unique_ptr<TestDevToolsProtocolClient> client =
+      std::make_unique<TestDevToolsProtocolClient>();
+  client->AttachToFrameTreeHost(rfh_c_in_b);
+  client->SendCommandSync("Audits.enable");
+  client->ClearNotifications();
+
+  // 4. Do the window.open of blob url from c.com.
+  EXPECT_TRUE(
+      ExecJs(rfh_c_in_b, JsReplace("handle = window.open($1);", blob_url)));
+
+  WaitForIssueAndCheckUrl(blob_url_string, client.get(),
+                          "EnforceNoopenerForNavigation");
+  client->DetachProtocolClient();
 }
 
 class BlobURLBrowserTestP : public base::test::WithFeatureOverride,

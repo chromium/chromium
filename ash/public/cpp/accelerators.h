@@ -297,8 +297,9 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
     {true, ui::VKEY_OEM_103, ui::EF_NONE, AcceleratorAction::kMediaRewind},
     {true, ui::VKEY_OEM_104, ui::EF_NONE, AcceleratorAction::kMediaFastForward},
 
-    // Assistant shortcuts.
-    {true, ui::VKEY_A, ui::EF_COMMAND_DOWN, AcceleratorAction::kStartAssistant},
+    // Assistant shortcut. Assistant has two shortcuts, a dedicated Assistant
+    // key and Search+A. Search+A is defined below as
+    // `kAssistantSearchPlusAAcceleratorData`.
     {true, ui::VKEY_ASSISTANT, ui::EF_NONE, AcceleratorAction::kStartAssistant},
 
     // IME mode change key.
@@ -355,6 +356,11 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
     {true, ui::VKEY_G, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleGameDashboard},
 });
+
+ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
+    kAssistantSearchPlusAAcceleratorData[] = {
+        {true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
+         AcceleratorAction::kStartAssistant}};
 
 // Accelerators that are enabled/disabled with new accelerator mapping.
 // crbug.com/1067269
@@ -442,7 +448,7 @@ ASH_PUBLIC_EXPORT inline constexpr auto kTilingWindowResizeAcceleratorData =
 
 ASH_PUBLIC_EXPORT inline constexpr AcceleratorData kGeminiAcceleratorData[] = {
     {true, ui::VKEY_F23, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kToggleGeminiApp},
+     AcceleratorAction::kToggleGeminiApp, /*accelerator_locked=*/true},
 };
 ASH_PUBLIC_EXPORT inline constexpr size_t kGeminiAcceleratorDataLength =
     std::size(kGeminiAcceleratorData);
@@ -455,6 +461,15 @@ ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
 ASH_PUBLIC_EXPORT inline constexpr size_t
     kToggleDoNotDisturbAcceleratorDataLength =
         std::size(kToggleDoNotDisturbAcceleratorData);
+
+ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
+    kToggleCameraAllowedAcceleratorData[] = {
+        {true, ui::VKEY_CAMERA_ACCESS_TOGGLE, ui::EF_NONE,
+         AcceleratorAction::kToggleCameraAllowed},
+};
+ASH_PUBLIC_EXPORT inline constexpr size_t
+    kToggleCameraAllowedAcceleratorDataLength =
+        std::size(kToggleCameraAllowedAcceleratorData);
 
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.

@@ -9,11 +9,8 @@
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/rtc_base/network.h"
+#include "third_party/webrtc/rtc_base/ip_address.h"
 #include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
-
-namespace rtc {
-class IPAddress;
-}  // namespace rtc
 
 namespace blink {
 

@@ -144,6 +144,7 @@ mojom("mojo_bindings") {
         {
           mojom = "content_settings.mojom.RuleMetaData"
           cpp = "::content_settings::RuleMetaData"
+          move_only = true
         },
       ]
       traits_headers = [ "content_settings_mojom_traits.h" ]

@@ -13,6 +13,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
@@ -65,15 +66,22 @@ FeatureState FeatureStateForContext(RequestContext request_context) {
 
 }  // namespace
 
-Policy DerivePrivateNetworkRequestPolicy(
-    const PolicyContainerPolicies& policies,
-    RequestContext private_network_request_context) {
-  return DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
-                                           policies.is_web_secure_context,
-                                           private_network_request_context);
-}
+Policy DerivePolicyForNonSecureContext(
+    AddressSpace ip_address_space,
+    bool local_network_access_checks_enabled) {
+  if (local_network_access_checks_enabled) {
+    // LNA blocks all local network access requests coming from non-secure
+    // contexts.
+    // See:
+    // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#integration-with-fetch
+    //
+    // TODO(crbug.com/395895368): figure out how this interacts with https
+    // upgrades.
+    return network::features::kLocalNetworkAccessChecksWarn.Get()
+               ? Policy::kPermissionWarn
+               : Policy::kBlock;
+  }
 
-Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
   switch (ip_address_space) {
     case AddressSpace::kUnknown:
       // Requests from the `unknown` address space are controlled separately
@@ -108,7 +116,16 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
   }
 }
 
-Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
+Policy DerivePolicyForSecureContext(AddressSpace ip_address_space,
+                                    bool local_network_access_checks_enabled) {
+  if (local_network_access_checks_enabled) {
+    // See:
+    // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#permission-prompts
+    return network::features::kLocalNetworkAccessChecksWarn.Get()
+               ? Policy::kPermissionWarn
+               : Policy::kPermissionBlock;
+  }
+
   // The goal is to eliminate occurrences of this case as much as possible,
   // before removing this special case.
   if (ip_address_space == AddressSpace::kUnknown) {
@@ -154,7 +171,8 @@ Policy ApplyFeatureStateToPolicy(FeatureState feature_state, Policy policy) {
 Policy DerivePrivateNetworkRequestPolicy(
     AddressSpace ip_address_space,
     bool is_web_secure_context,
-    RequestContext private_network_request_context) {
+    RequestContext private_network_request_context,
+    bool local_network_access_checks_enabled) {
   // Disable PNA checks entirely when running with `--disable-web-security`.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity)) {
@@ -164,11 +182,45 @@ Policy DerivePrivateNetworkRequestPolicy(
   FeatureState feature_state =
       FeatureStateForContext(private_network_request_context);
 
-  Policy policy = is_web_secure_context
-                      ? DerivePolicyForSecureContext(ip_address_space)
-                      : DerivePolicyForNonSecureContext(ip_address_space);
+  Policy policy =
+      is_web_secure_context
+          ? DerivePolicyForSecureContext(ip_address_space,
+                                         local_network_access_checks_enabled)
+          : DerivePolicyForNonSecureContext(
+                ip_address_space, local_network_access_checks_enabled);
 
-  return ApplyFeatureStateToPolicy(feature_state, policy);
+  if (local_network_access_checks_enabled) {
+    return policy;
+  } else {
+    return ApplyFeatureStateToPolicy(feature_state, policy);
+  }
+}
+
+Policy DerivePrivateNetworkRequestPolicy(
+    const PolicyContainerPolicies& policies,
+    RequestContext private_network_request_context) {
+  return DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
+                                           policies.is_web_secure_context,
+                                           private_network_request_context);
+}
+
+Policy DerivePrivateNetworkRequestPolicy(
+    AddressSpace ip_address_space,
+    bool is_web_secure_context,
+    RequestContext private_network_request_context) {
+  return DerivePrivateNetworkRequestPolicy(
+      ip_address_space, is_web_secure_context, private_network_request_context,
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks));
+}
+
+Policy DerivePrivateNetworkRequestPolicy(
+    const PolicyContainerPolicies& policies,
+    RequestContext private_network_request_context,
+    bool local_network_access_checks_enabled) {
+  return DerivePrivateNetworkRequestPolicy(
+      policies.ip_address_space, policies.is_web_secure_context,
+      private_network_request_context, local_network_access_checks_enabled);
 }
 
 network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(

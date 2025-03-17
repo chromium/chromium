@@ -453,8 +453,9 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   ParsedCookie pc21("name=value; path=" + too_long_path, &status);
   EXPECT_TRUE(pc21.IsValid());
   EXPECT_FALSE(pc21.HasPath());
-  EXPECT_TRUE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
+  EXPECT_TRUE(
+      status.HasWarningReason(CookieInclusionStatus::WarningReason::
+                                  WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
 
   // NOTE: max_domain is based on the max attribute value as defined in
   // RFC6525bis, but this is larger than what is recommended by RFC1123.
@@ -472,8 +473,9 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   ParsedCookie pc31("name=value; domain=" + too_long_domain);
   EXPECT_TRUE(pc31.IsValid());
   EXPECT_FALSE(pc31.HasDomain());
-  EXPECT_TRUE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
+  EXPECT_TRUE(
+      status.HasWarningReason(CookieInclusionStatus::WarningReason::
+                                  WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
 
   std::string pc40_suffix = "; domain=example.com";
 

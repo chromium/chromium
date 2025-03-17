@@ -26,10 +26,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_widget_types.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "components/zoom/zoom_observer.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -58,19 +55,10 @@ class PasswordGenerationPopupView;
 // determining the location of the popup, handling keypress events while the
 // popup is active, and notifying both the renderer and the password manager
 // if the password is accepted.
-//
-// NOTE: This is used on Android only to display the editing popup.
-//
-// TODO(crbug.com/40619484): Clean up the popup code on Android to make its use
-// clear and remove unused code.
 class PasswordGenerationPopupControllerImpl
     : public PasswordGenerationPopupController,
-      public content::WebContentsObserver
-#if !BUILDFLAG(IS_ANDROID)
-    ,
-      public zoom::ZoomObserver
-#endif  // !BUILDFLAG(IS_ANDROID)
-{
+      public content::WebContentsObserver,
+      public zoom::ZoomObserver {
  public:
   // Create a controller or return |previous| if it is suitable. Will hide
   // |previous| if it is not returned. |bounds| is the bounds of the element
@@ -127,22 +115,20 @@ class PasswordGenerationPopupControllerImpl
   // Returns true if the popup is visible, or false otherwise.
   bool IsVisible() const;
 
-#if !BUILDFLAG(IS_ANDROID)
   // ZoomObserver:
   void OnZoomControllerDestroyed(
       zoom::ZoomController* zoom_controller) override;
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
-#endif
 
 #if defined(UNIT_TEST)
   PasswordGenerationPopupView* view() const { return view_; }
   void SetViewForTesting(PasswordGenerationPopupView* view) { view_ = view; }
   void SelectAcceptButtonForTesting() {
-    SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
+    SelectElement(PasswordGenerationPopupElement::kAcceptButton);
   }
   void SelectCancelButtonForTesting() {
-    SelectElement(PasswordGenerationPopupElement::kNudgePasswordCancelButton);
+    SelectElement(PasswordGenerationPopupElement::kCancelButton);
   }
 #endif
 
@@ -161,9 +147,8 @@ class PasswordGenerationPopupControllerImpl
   // Defines different elements of the popup that can be selected.
   enum class PasswordGenerationPopupElement {
     kNone = 0,
-    kUseStrongPassword = 1,
-    kNudgePasswordAcceptButton = 2,
-    kNudgePasswordCancelButton = 3,
+    kAcceptButton = 1,
+    kCancelButton = 2,
   };
 
   // AutofillPopupViewDelegate implementation:
@@ -178,14 +163,8 @@ class PasswordGenerationPopupControllerImpl
   // PasswordGenerationPopupController implementation:
   void PasswordAccepted() override;
   void PasswordRejected() override;
-  void SetSelected() override;
-  void SelectionCleared() override;
-#if !BUILDFLAG(IS_ANDROID)
   std::u16string GetPrimaryAccountEmail() override;
-  bool ShouldShowNudgePassword() const override;
-#endif  // !BUILDFLAG(IS_ANDROID)
   GenerationUIState state() const override;
-  bool password_selected() const override;
   bool accept_button_selected() const override;
   bool cancel_button_selected() const override;
   const std::u16string& password() const override;
@@ -245,10 +224,8 @@ class PasswordGenerationPopupControllerImpl
 
   std::unique_ptr<KeyPressRegistrator> key_press_handler_manager_;
 
-#if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
       zoom_observation_{this};
-#endif
 
   base::WeakPtrFactory<PasswordGenerationPopupControllerImpl> weak_ptr_factory_{
       this};

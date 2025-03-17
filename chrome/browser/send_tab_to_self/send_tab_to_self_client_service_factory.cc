@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
@@ -16,7 +16,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #endif
@@ -63,7 +63,7 @@ SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
   SendTabToSelfSyncService* sync_service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Create SendTabToSelfClientService only for profiles of Gaia users.
   // ChromeOS has system level profiles, such as the sign-in profile, or
   // users that are not Gaia users, such as public account users. Do not
@@ -71,12 +71,14 @@ SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // Ensure that the profile is a user profile.
-  if (!user)
+  if (!user) {
     return nullptr;
+  }
   // Ensure that the user is a Gaia user, since other types of user should not
   // have access to the service.
-  if (!user->HasGaiaAccount())
+  if (!user->HasGaiaAccount()) {
     return nullptr;
+  }
 #endif
 
   // TODO(crbug.com/40632832) refactor profile out of STTSClient constructor.

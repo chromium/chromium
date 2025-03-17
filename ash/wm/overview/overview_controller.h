@@ -16,7 +16,6 @@
 #include "ash/wm/overview/overview_session_metrics_recorder.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_window_occlusion_calculator.h"
-#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -219,10 +218,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
       occlusion_tracker_pauser_;
   base::CancelableOnceClosure reset_pauser_task_;
-
-  // In order to guarantee relative ordering between occlusion updates and
-  // raster scale updates, we need to pause raster scale updates sometimes.
-  std::optional<ScopedPauseRasterScaleUpdates> raster_scale_pauser_;
 
   std::unique_ptr<OverviewSession> overview_session_;
 

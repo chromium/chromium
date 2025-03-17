@@ -19,6 +19,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/build_config.h"
 #include "components/metal_util/device.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -294,9 +295,11 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
 - (id)init {
   if ((self = [super init])) {
     id<MTLDevice> device = metal::GetDefaultDevice();
+#if !BUILDFLAG(IS_IOS_TVOS)
     if (@available(iOS 16.0, *)) {
       self.wantsExtendedDynamicRangeContent = YES;
     }
+#endif
     self.device = device;
     self.opaque = NO;
     self.presentsWithTransaction = YES;
@@ -346,6 +349,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   }
 
   // Set metadata for tone mapping.
+#if !BUILDFLAG(IS_IOS_TVOS)
   if (@available(iOS 16.0, *)) {
     if (_colorSpace != colorSpace || _hdrMetadata != hdrMetadata) {
       CAEDRMetadata* edrMetadata = nil;
@@ -366,6 +370,8 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
       _hdrMetadata = hdrMetadata;
     }
   }
+#endif
+
   // Migrate to the MTLDevice on which the CAMetalLayer is being composited, if
   // known.
   if (device) {

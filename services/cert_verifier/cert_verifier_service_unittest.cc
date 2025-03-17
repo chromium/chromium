@@ -457,15 +457,15 @@ TEST_F(CertVerifierServiceTest, TestCVServiceDisconnection) {
 // call to the underlying net::CertVerifier.
 TEST_F(CertVerifierServiceTest, StoresConfig) {
   CreateImpl(/*wait_for_update=*/false);
-  ASSERT_FALSE(dummy_cv()->config()->disable_symantec_enforcement);
+  ASSERT_FALSE(dummy_cv()->config()->require_rev_checking_local_anchors);
 
   net::CertVerifier::Config config;
-  config.disable_symantec_enforcement = true;
+  config.require_rev_checking_local_anchors = true;
 
   cv_service_remote()->SetConfig(config);
   cv_service_remote().FlushForTesting();
 
-  ASSERT_TRUE(dummy_cv()->config()->disable_symantec_enforcement);
+  ASSERT_TRUE(dummy_cv()->config()->require_rev_checking_local_anchors);
 }
 
 // CertVerifierService should register an Observer on the underlying

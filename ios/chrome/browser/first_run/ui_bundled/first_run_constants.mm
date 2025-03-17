@@ -12,6 +12,9 @@ NSString* const kFirstRunSignInScreenAccessibilityIdentifier =
 NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
     @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
 
+NSString* const kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier =
+    @"firstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier";
+
 NSString* const kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier =
     @"firstRunOmniboxPositionChoiceScreenAccessibilityIdentifier";
 
@@ -25,4 +28,4 @@ NSString* const kLaunchScreenAccessibilityIdentifier =
 NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier =
     @"enterpriseLoadingScreenAccessibilityIdentifier";
 
-}  // first_run
+}  // namespace first_run

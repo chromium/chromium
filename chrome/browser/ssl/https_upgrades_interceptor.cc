@@ -409,8 +409,12 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
       std::move(callback));
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
+
+  CHECK(tentative_resource_request.trusted_params);
   network_context->IsHSTSActiveForHost(
       tentative_resource_request.url.host(),
+      tentative_resource_request.trusted_params->isolation_info
+          .IsOutermostMainFrameRequest(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(query_complete_callback),
           /*is_hsts_active_for_host=*/false));

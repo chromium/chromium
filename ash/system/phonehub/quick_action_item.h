@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_PHONEHUB_QUICK_ACTION_ITEM_H_
 #define ASH_SYSTEM_PHONEHUB_QUICK_ACTION_ITEM_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "base/memory/raw_ptr.h"
@@ -52,7 +54,7 @@ class ASH_EXPORT QuickActionItem : public views::View {
   bool IsToggled() const;
 
   // Get the title/label text of the item.
-  const std::u16string& GetItemLabel() const;
+  std::u16string_view GetItemLabel() const;
 
   // Set the item to be enabled or disabled. When disabled, the button cannot be
   // clicked and the labels are greyed out.

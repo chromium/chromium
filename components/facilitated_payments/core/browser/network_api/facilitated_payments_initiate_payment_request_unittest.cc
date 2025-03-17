@@ -37,7 +37,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
 
   EXPECT_EQ(request->GetRequestUrlPath(),
-            "payments/apis/chromepaymentsservice/initiatepayment");
+            "payments/apis-secure/chromepaymentsservice/initiatepayment");
   EXPECT_EQ(request->GetRequestContentType(), "application/json");
   // Verify that all the data is added to the request content.
   EXPECT_EQ(
@@ -73,7 +73,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
 
   EXPECT_EQ(request->GetRequestUrlPath(),
-            "payments/apis/chromepaymentsservice/initiatepayment");
+            "payments/apis-secure/chromepaymentsservice/initiatepayment");
   EXPECT_EQ(request->GetRequestContentType(), "application/json");
   // Verify that all the data is added to the request content.
   EXPECT_EQ(
@@ -111,7 +111,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
 }
 
 TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
-       ParseResponse_WithActionToken) {
+       ParseResponse_WithSecurePayload) {
   auto request_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
   // Set `payment_link_` in `request_details` to pass the check in the
@@ -124,12 +124,19 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   // The action token "token" is base64 encoded as "dG9rZW4=" in the response
   // content.
   std::optional<base::Value> response = base::JSONReader::Read(
-      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9rZW4=\"}}");
+      "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
+      "\"dG9rZW4=\",\"secure_data\":[{\"key\":1,\"value\":\"secure_data_"
+      "value\"}]}}}");
   request->ParseResponse(response->GetDict());
 
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
-  EXPECT_EQ(expected_action_token, request->response_details_->action_token_);
-
+  EXPECT_EQ(expected_action_token,
+            request->response_details_->secure_payload_.action_token);
+  EXPECT_EQ(1u, request->response_details_->secure_payload_.secure_data.size());
+  SecureData secure_data =
+      request->response_details_->secure_payload_.secure_data[0];
+  EXPECT_EQ(1, secure_data.key);
+  EXPECT_EQ("secure_data_value", secure_data.value);
   // Verify that the response is considered complete.
   EXPECT_TRUE(request->IsResponseComplete());
 }
@@ -148,12 +155,86 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   // Set a corrupt base64 action token to simulate Base64Decode to return an
   // empty vector.
   std::optional<base::Value> response = base::JSONReader::Read(
-      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9r00ZW4=\"}}");
+      "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
+      "\"dG9r00ZW4=\",\"secure_data\":[{\"key\":1,\"value\":\"secure_data_"
+      "value\"}]}}}");
   request->ParseResponse(response->GetDict());
 
-  EXPECT_TRUE(request->response_details_->action_token_.empty());
+  EXPECT_TRUE(request->response_details_->secure_payload_.action_token.empty());
+  EXPECT_EQ(0u, request->response_details_->secure_payload_.secure_data.size());
   // Verify that the response is considered incomplete.
   EXPECT_FALSE(request->IsResponseComplete());
+}
+
+TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
+       ParseResponse_MissingSecureDataKey) {
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  // Set `payment_link_` in `request_details` to pass the check in the
+  // constructor of `FacilitatedPaymentsInitiatePaymentRequest`.
+  request_details->payment_link_ = "a valid payment link";
+  auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::move(request_details),
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+  // Set a corrupt base64 action token to simulate Base64Decode to return an
+  // empty vector.
+  std::optional<base::Value> response = base::JSONReader::Read(
+      "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
+      "\"dG9rZW4=\",\"secure_data\":[{\"value\":\"secure_data_"
+      "value\"}]}}}");
+  request->ParseResponse(response->GetDict());
+
+  EXPECT_EQ(0u, request->response_details_->secure_payload_.secure_data.size());
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(request->IsResponseComplete());
+}
+
+TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
+       ParseResponse_MissingSecureDataValue) {
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  // Set `payment_link_` in `request_details` to pass the check in the
+  // constructor of `FacilitatedPaymentsInitiatePaymentRequest`.
+  request_details->payment_link_ = "a valid payment link";
+  auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::move(request_details),
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+  // Set a corrupt base64 action token to simulate Base64Decode to return an
+  // empty vector.
+  std::optional<base::Value> response = base::JSONReader::Read(
+      "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
+      "\"dG9rZW4=\",\"secure_data\":[{\"key\":1}]}}}");
+  request->ParseResponse(response->GetDict());
+
+  EXPECT_EQ(0u, request->response_details_->secure_payload_.secure_data.size());
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(request->IsResponseComplete());
+}
+
+TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
+       ParseResponse_ActionTokenContainedInOldFormatAndNew) {
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  // Set `payment_link_` in `request_details` to pass the check in the
+  // constructor of `FacilitatedPaymentsInitiatePaymentRequest`.
+  request_details->payment_link_ = "a valid payment link";
+  auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::move(request_details),
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+  // Set a corrupt base64 action token to simulate Base64Decode to return an
+  // empty vector.
+  std::optional<base::Value> response = base::JSONReader::Read(
+      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9rZW4=\","
+      "\"secure_payload\":{\"opaque_token\":\"dG9rZW4=\",\"secure_data\":[{"
+      "\"key\":1,\"value\":\"secure_data_value\"}]}}}");
+  request->ParseResponse(response->GetDict());
+
+  EXPECT_EQ(1u, request->response_details_->secure_payload_.secure_data.size());
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(request->IsResponseComplete());
 }
 
 TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,

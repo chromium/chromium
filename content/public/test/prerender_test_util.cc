@@ -425,37 +425,49 @@ FrameTreeNodeId PrerenderHostCreationWaiter::Wait() {
 }
 
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList()
-    : ScopedPrerenderFeatureList(/*force_disable_prerender2fallback=*/true) {}
+    : ScopedPrerenderFeatureList(/*force_disable_prerender2_fallback=*/true,
+                                 /*force_enable_prerender2_in_new_tab=*/true) {}
 
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
-    bool force_disable_prerender2fallback) {
+    bool force_disable_prerender2_fallback,
+    bool force_enable_prerender2_in_new_tab) {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+
+  // Explicitly enables blink::features::kPrerender2InNewTab to override
+  // SpeculationRulesTargetHint.
+  if (force_enable_prerender2_in_new_tab) {
+    enabled_features.push_back(blink::features::kPrerender2InNewTab);
+  }
+
   // Disable the memory requirement of Prerender2
   // so the test can run on any bot.
-  if (force_disable_prerender2fallback) {
-    // In addition, disable `kPrerender2FallbackPrefetchSpecRules` if the user
-    // of `PrerenderTestHelper` is not ready for it as it changes
-    // `PrerenderFinalStatus` to `PrerenderFailedDuringPrefetch`, so that we
-    // enable it in fieldtrial testing config and then fix them one by one.
-    feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2InNewTab},
-        {blink::features::kPrerender2MemoryControls,
-         features::kPrerender2FallbackPrefetchSpecRules});
-  } else {
-    feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2InNewTab},
-        {blink::features::kPrerender2MemoryControls});
+  disabled_features.push_back(blink::features::kPrerender2MemoryControls);
+
+  // In addition, disable `kPrerender2FallbackPrefetchSpecRules` if the user
+  // of `PrerenderTestHelper` is not ready for it as it changes
+  // `PrerenderFinalStatus` to `PrerenderFailedDuringPrefetch`, so that we
+  // enable it in fieldtrial testing config and then fix them one by one.
+  if (force_disable_prerender2_fallback) {
+    disabled_features.push_back(features::kPrerender2FallbackPrefetchSpecRules);
   }
+
+  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : feature_list_(ScopedPrerenderFeatureList(
-          /*force_disable_prerender2fallback=*/true)),
+          /*force_disable_prerender2_fallback=*/true,
+          /*force_enable_prerender2_in_new_tab*/ true)),
       get_web_contents_fn_(fn) {}
 
-PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn,
-                                         bool force_disable_prerender2fallback)
+PrerenderTestHelper::PrerenderTestHelper(
+    const WebContents::Getter& fn,
+    bool force_disable_prerender2_fallback,
+    bool force_enable_prerender2_in_new_tab)
     : feature_list_(
-          ScopedPrerenderFeatureList(force_disable_prerender2fallback)),
+          ScopedPrerenderFeatureList(force_disable_prerender2_fallback,
+                                     force_enable_prerender2_in_new_tab)),
       get_web_contents_fn_(fn) {}
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;
@@ -657,6 +669,8 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       PreloadingHoldbackStatus::kUnspecified,
+      PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender),
       /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{});
 }
@@ -704,13 +718,18 @@ void PrerenderTestHelper::CancelPrerenderedPage(FrameTreeNodeId host_id) {
 // static
 std::unique_ptr<content::TestNavigationObserver>
 PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
-                                              const GURL& url) {
+                                              const GURL& url,
+                                              ui::PageTransition transition) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrimaryPage",
               "web_contents", web_contents, "url", url);
-  if (web_contents.IsLoading()) {
+  const bool is_renderer_initiated =
+      PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK);
+  if (is_renderer_initiated && web_contents.IsLoading()) {
     // Ensure that any ongoing navigation is complete prior to the construction
     // of |observer| below (this navigation may complete while executing ExecJs
     // machinery).
+    // Skip this wait when testing browser initiated navigations which don't
+    // expect this wait.
     content::TestNavigationObserver initial_observer(&web_contents);
     initial_observer.set_wait_event(
         content::TestNavigationObserver::WaitEvent::kLoadStopped);
@@ -722,29 +741,39 @@ PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
       std::make_unique<content::TestNavigationObserver>(&web_contents);
   observer->set_wait_event(
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
-  // Ignore the result of ExecJs().
-  //
-  // Depending on timing, activation could destroy a navigating frame before
-  // ExecJs() gets a result from the frame. This results in execution failure
-  // even when the navigation succeeded.
-  std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
-                       JsReplace("location = $1", url));
+  if (is_renderer_initiated) {
+    // Ignore the result of ExecJs().
+    //
+    // Depending on timing, activation could destroy a navigating frame before
+    // ExecJs() gets a result from the frame. This results in execution failure
+    // even when the navigation succeeded.
+    std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
+                         JsReplace("location = $1", url));
+  } else {
+    web_contents.OpenURL(
+        OpenURLParams(url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+                      transition, is_renderer_initiated),
+        /*navigation_handle_callback=*/{});
+  }
   return observer;
 }
 
 std::unique_ptr<content::TestNavigationObserver>
-PrerenderTestHelper::NavigatePrimaryPageAsync(const GURL& url) {
-  return NavigatePrimaryPageAsync(*GetWebContents(), url);
+PrerenderTestHelper::NavigatePrimaryPageAsync(const GURL& url,
+                                              ui::PageTransition transition) {
+  return NavigatePrimaryPageAsync(*GetWebContents(), url, transition);
 }
 
 // static
 void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
-                                              const GURL& url) {
-  NavigatePrimaryPageAsync(web_contents, url)->Wait();
+                                              const GURL& url,
+                                              ui::PageTransition transition) {
+  NavigatePrimaryPageAsync(web_contents, url, transition)->Wait();
 }
 
-void PrerenderTestHelper::NavigatePrimaryPage(const GURL& url) {
-  NavigatePrimaryPage(*GetWebContents(), url);
+void PrerenderTestHelper::NavigatePrimaryPage(const GURL& url,
+                                              ui::PageTransition transition) {
+  NavigatePrimaryPage(*GetWebContents(), url, transition);
 }
 
 void PrerenderTestHelper::OpenNewWindowWithoutOpener(WebContents& web_contents,

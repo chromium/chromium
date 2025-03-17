@@ -197,7 +197,8 @@ suite('HistoryAppTest', function() {
         lastUrlVisitTimestamp: 1000,
       },
     }));
-    const removeVisitsArg = await browserService.whenCalled('removeVisits');
+    const removeVisitsArg =
+        await browserService.handler.whenCalled('removeVisits');
     assertEquals(1, removeVisitsArg.length);
     assertEquals('http://google.com', removeVisitsArg[0].url);
     assertEquals(1, removeVisitsArg[0].timestamps.length);

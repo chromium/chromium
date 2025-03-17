@@ -120,8 +120,10 @@ bool PublicKeyEvaluateHelper(
     const auction_worklet::mojom::TrustedSignalsPublicKey* public_key,
     base::expected<BiddingAndAuctionServerKey, std::string> expected_key) {
   if (expected_key.has_value() && public_key) {
-    return expected_key->id == public_key->id &&
-           expected_key->key == public_key->key;
+    uint32_t key_id = 0;
+    EXPECT_TRUE(base::HexStringToUInt(
+        std::string_view(expected_key->id).substr(0, 2), &key_id));
+    return key_id == public_key->id && expected_key->key == public_key->key;
   } else if (!expected_key.has_value() && !public_key) {
     return true;
   } else {
@@ -311,6 +313,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
+      bool browser_signal_for_debugging_only_sampling,
       blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
@@ -484,6 +487,9 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
           auction_ad_config_non_shared_params,
       auction_worklet::mojom::TrustedSignalsCacheKeyPtr
           trusted_signals_cache_key,
+      auction_worklet::mojom::CreativeInfoWithoutOwnerPtr ad,
+      std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
+          ad_components,
       const std::optional<GURL>& direct_from_seller_seller_signals,
       const std::optional<std::string>&
           direct_from_seller_seller_signals_header_ad_slot,
@@ -494,15 +500,13 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
           browser_signals_other_seller,
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
-      const GURL& browser_signal_render_url,
       const std::optional<std::string>&
           browser_signal_selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>&
           browser_signal_buyer_and_seller_reporting_id,
-      const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
-      const std::optional<blink::AdSize>& browser_signal_render_size,
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
+      bool browser_signal_for_debugging_only_sampling,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
       const url::Origin& bidder_joining_origin,
@@ -743,6 +747,7 @@ class MockAuctionProcessManager
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
       std::optional<uint16_t> experiment_group_id,
+      std::optional<bool> send_creative_scanning_metadata,
       auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key,
       mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
           load_seller_worklet_client) override {
@@ -948,7 +953,8 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
   std::optional<std::string> GetCookieDeprecationLabel() override {
     return std::nullopt;
   }
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedKeyValueServerKey(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                              std::string>)> callback) override {
@@ -1053,6 +1059,7 @@ TEST_F(AuctionWorkletManagerTest, SingleSellerWorklet) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -1109,6 +1116,7 @@ TEST_F(AuctionWorkletManagerTest,
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       /*process_assigned_callback=*/base::OnceClosure(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -1188,6 +1196,7 @@ TEST_F(AuctionWorkletManagerTest,
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -1321,6 +1330,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
         /*trusted_scoring_signals_url=*/std::nullopt,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_scoring_signals_coordinator=*/std::nullopt,
+        /*send_creative_scanning_metadata=*/std::nullopt,
         seller_helper.ProcessAssignedCallback(),
         seller_helper.WorkletAvailableCallback(),
         NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -1355,6 +1365,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -1514,6 +1525,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       seller_helper1.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper1.handle(),
@@ -1539,6 +1551,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
       kAuction2, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -1570,6 +1583,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
       kAuction3, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper3.ProcessAssignedCallback(),
       seller_helper3.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper3.handle(),
@@ -1599,6 +1613,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
       kAuction4, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper4.ProcessAssignedCallback(),
       seller_helper4.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper4.handle(),
@@ -1875,6 +1890,7 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       seller_helper1.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper1.handle(),
@@ -1898,6 +1914,7 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
       kAuction1, kDifferentDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -1922,6 +1939,7 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
       /*trusted_scoring_signals_url=*/std::nullopt,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper3.ProcessAssignedCallback(),
       seller_helper3.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper3.handle(),
@@ -1950,6 +1968,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl, kExperiment1,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       seller_helper1.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper1.handle(),
@@ -1965,6 +1984,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl, kExperiment2,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -1981,6 +2001,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kWasmUrl, kExperiment1,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper3.ProcessAssignedCallback(),
       seller_helper3.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper3.handle(),
@@ -2002,6 +2023,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
       kAuction1, kDecisionLogicUrl,
       /*trusted_scoring_signals_url=*/std::nullopt, kExperiment1,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper4.ProcessAssignedCallback(),
       seller_helper4.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper4.handle(),
@@ -2023,6 +2045,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
       /*trusted_scoring_signals_url=*/std::nullopt,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper5.ProcessAssignedCallback(),
       seller_helper5.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper5.handle(),
@@ -2039,6 +2062,64 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
             seller_helper5.handle()->GetSellerWorklet());
   EXPECT_NE(seller_helper4.handle()->GetSellerWorklet(),
             seller_helper5.handle()->GetSellerWorklet());
+}
+
+// Test seller worklet matching with different setting for sending creative
+// scanning metadata.
+TEST_F(AuctionWorkletManagerTest, SellerWorkletSendCreativeScanningMetadata) {
+  SellerWorkletHelper seller_helper1;
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
+      seller_helper1.ProcessAssignedCallback(),
+      seller_helper1.WorkletAvailableCallback(),
+      NeverInvokedFatalErrorCallback(), seller_helper1.handle(),
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  seller_helper1.WaitForWorklet();
+  EXPECT_TRUE(seller_helper1.handle()->GetSellerWorklet());
+  std::unique_ptr<MockSellerWorklet> seller_worklet1 =
+      auction_process_manager_->WaitForSellerWorklet();
+
+  // Request one with a different `send_creative_scanning_metadata`. Should
+  // result in a different worklet.
+  SellerWorkletHelper seller_helper2;
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/true,
+      seller_helper2.ProcessAssignedCallback(),
+      seller_helper2.WorkletAvailableCallback(),
+      NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  seller_helper2.WaitForWorklet();
+  EXPECT_TRUE(seller_helper2.handle()->GetSellerWorklet());
+  std::unique_ptr<MockSellerWorklet> seller_worklet2 =
+      auction_process_manager_->WaitForSellerWorklet();
+  EXPECT_NE(seller_helper1.handle()->GetSellerWorklet(),
+            seller_helper2.handle()->GetSellerWorklet());
+
+  // "false" is different from nullopt because of AuctionConfig serialization.
+  SellerWorkletHelper seller_helper3;
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/false,
+      seller_helper3.ProcessAssignedCallback(),
+      seller_helper3.WorkletAvailableCallback(),
+      NeverInvokedFatalErrorCallback(), seller_helper3.handle(),
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  seller_helper3.WaitForWorklet();
+  EXPECT_TRUE(seller_helper3.handle()->GetSellerWorklet());
+  std::unique_ptr<MockSellerWorklet> seller_worklet3 =
+      auction_process_manager_->WaitForSellerWorklet();
+  EXPECT_NE(seller_helper3.handle()->GetSellerWorklet(),
+            seller_helper1.handle()->GetSellerWorklet());
+  EXPECT_NE(seller_helper3.handle()->GetSellerWorklet(),
+            seller_helper2.handle()->GetSellerWorklet());
 }
 
 TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
@@ -2200,6 +2281,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       seller_helper1.WorkletAvailableCallback(),
       seller_helper1.FatalErrorCallback(), seller_helper1.handle(),
@@ -2231,6 +2313,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -2253,6 +2336,7 @@ TEST_F(AuctionWorkletManagerTest,
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       /*process_assigned_callback=*/base::OnceClosure(),
       seller_helper1.WorkletAvailableCallback(),
       seller_helper1.FatalErrorCallback(), seller_helper1.handle(),
@@ -2284,6 +2368,7 @@ TEST_F(AuctionWorkletManagerTest,
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -2358,6 +2443,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       seller_helper1.WorkletAvailableCallback(),
       seller_helper1.FatalErrorCallback(), seller_helper1.handle(),
@@ -2391,6 +2477,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
       kAuction2, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -2518,6 +2605,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletDeleteOnError) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       base::BindLambdaForTesting(
@@ -2644,6 +2732,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -2717,6 +2806,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletWithKVv2FeatureDisabled) {
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -2737,7 +2827,7 @@ TEST(WorkletKeyTest, HashConsistentForEqualKeys) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/
-      false, 0x85u,
+      false, /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2746,7 +2836,8 @@ TEST(WorkletKeyTest, HashConsistentForEqualKeys) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2761,7 +2852,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentType) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2770,7 +2862,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentType) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2784,7 +2877,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentScriptUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2793,7 +2887,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentScriptUrl) {
       GURL("https://different.example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2807,7 +2902,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentWasmUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2816,7 +2912,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentWasmUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://different.example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2830,7 +2927,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptWasmUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2838,7 +2936,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptWasmUrl) {
       AuctionWorkletManager::WorkletType::kBidder,
       GURL("https://example.test/script_url"), std::nullopt,
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2852,7 +2951,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentSignalsUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2861,7 +2961,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentSignalsUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://different.example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2875,7 +2976,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptSignalsUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2883,7 +2985,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptSignalsUrl) {
       AuctionWorkletManager::WorkletType::kBidder,
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"), std::nullopt,
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2897,7 +3000,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentExperiment) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2906,7 +3010,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentExperiment) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x48u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x48u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2920,7 +3025,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptExperiment) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2929,7 +3035,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptExperiment) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, std::nullopt,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2943,7 +3050,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentCORSForAdditionalBid) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2952,7 +3060,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentCORSForAdditionalBid) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/true, 0x85u,
+      /*needs_cors_for_additional_bid=*/true,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2965,7 +3074,8 @@ TEST(WorkletKeyTest, HashIsSameForDifferentSlotSizeParamWhenNoSignalsUrl) {
       AuctionWorkletManager::WorkletType::kBidder,
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"), /*signals_url=*/std::nullopt,
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2973,7 +3083,8 @@ TEST(WorkletKeyTest, HashIsSameForDifferentSlotSizeParamWhenNoSignalsUrl) {
       AuctionWorkletManager::WorkletType::kBidder,
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"), /*signals_url=*/std::nullopt,
-      /*needs_cors_for_additional_bid=*/true, 0x85u,
+      /*needs_cors_for_additional_bid=*/true,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"foo=bar",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2987,7 +3098,8 @@ TEST(WorkletKeyTest, HashIsDifferentForDifferentSlotSizeParamWithSignalsUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -2996,7 +3108,8 @@ TEST(WorkletKeyTest, HashIsDifferentForDifferentSlotSizeParamWithSignalsUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/true, 0x85u,
+      /*needs_cors_for_additional_bid=*/true,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"foo=bar",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -3010,7 +3123,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentCoordinator) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       url::Origin::Create(GURL("https://foo.test")));
 
@@ -3019,7 +3133,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentCoordinator) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       url::Origin::Create(GURL("https://bar.test")));
 
@@ -3033,7 +3148,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptCoordinator) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       url::Origin::Create(GURL("https://foo.test")));
 
@@ -3042,7 +3158,58 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptCoordinator) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
-      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentForKeysWithCreativeScanning) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/true, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/false, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptCreativeScanning) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/true, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false,
+      /*send_creative_scanning_metadata=*/std::nullopt, 0x85u,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_signals_coordinator=*/std::nullopt);
 
@@ -3087,7 +3254,8 @@ class AuctionWorkletManagerKVv2Test : public AuctionWorkletManagerTest {
 
   ~AuctionWorkletManagerKVv2Test() override { DCHECK(!fetch_key_callback_); }
 
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedKeyValueServerKey(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                              std::string>)> callback) override {
@@ -3111,13 +3279,13 @@ class AuctionWorkletManagerKVv2Test : public AuctionWorkletManagerTest {
 
   bool synchronous_fetch_ = true;
   base::expected<BiddingAndAuctionServerKey, std::string> key_{
-      BiddingAndAuctionServerKey("public-key", /*id=*/0)};
+      BiddingAndAuctionServerKey("public-key", /*id=*/"00")};
 };
 
 TEST_F(AuctionWorkletManagerKVv2Test,
        SingleBidderWorkletSyncFetchedKeyBeforeProcessAssigned) {
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
-      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/"00"),
                        base::unexpected("Failed to fetch public key.")};
 
   for (const auto& key : expected_keys) {
@@ -3148,7 +3316,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
 TEST_F(AuctionWorkletManagerKVv2Test,
        SingleBidderWorkletAsyncFetchedKeyBeforeProcessAssigned) {
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
-      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/"00"),
                        base::unexpected("Failed to fetch public key.")};
   auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
@@ -3183,7 +3351,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
 TEST_F(AuctionWorkletManagerKVv2Test,
        SingleBidderWorkletAsyncFetchedKeyAfterProcessAssigned) {
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
-      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/"00"),
                        base::unexpected("Failed to fetch public key.")};
   auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
@@ -3417,7 +3585,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, BidderWorkletWithoutCoordinator) {
 TEST_F(AuctionWorkletManagerKVv2Test,
        SingleSellerWorkletSyncFetchedKeyBeforeProcessAssigned) {
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
-      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/"00"),
                        base::unexpected("Failed to fetch public key.")};
 
   for (const auto& key : expected_keys) {
@@ -3429,6 +3597,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_scoring_signals_coordinator=*/
         url::Origin::Create(GURL("https://origin.test/")),
+        /*send_creative_scanning_metadata=*/std::nullopt,
         seller_helper.ProcessAssignedCallback(),
         seller_helper.WorkletAvailableCallback(),
         NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -3448,7 +3617,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
 TEST_F(AuctionWorkletManagerKVv2Test,
        SingleSellerWorkletAsyncFetchedKeyBeforeProcessAssigned) {
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
-      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/"00"),
                        base::unexpected("Failed to fetch public key.")};
   auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
@@ -3462,6 +3631,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_scoring_signals_coordinator=*/
         url::Origin::Create(GURL("https://origin.test/")),
+        /*send_creative_scanning_metadata=*/std::nullopt,
         seller_helper.ProcessAssignedCallback(),
         seller_helper.WorkletAvailableCallback(),
         NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -3483,7 +3653,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
 TEST_F(AuctionWorkletManagerKVv2Test,
        SingleSellerWorkletAsyncFetchedKeyAfterProcessAssigned) {
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
-      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/"00"),
                        base::unexpected("Failed to fetch public key.")};
   auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
@@ -3497,6 +3667,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_scoring_signals_coordinator=*/
         url::Origin::Create(GURL("https://origin.test/")),
+        /*send_creative_scanning_metadata=*/std::nullopt,
         seller_helper.ProcessAssignedCallback(),
         seller_helper.WorkletAvailableCallback(),
         NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -3525,6 +3696,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://a.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       seller_helper1.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper1.handle(),
@@ -3551,6 +3723,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://b.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -3570,7 +3743,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
               UnorderedElementsAre(kAuction2));
 }
 
-// Test that requests with the same parameters reuse bidder worklets.
+// Test that requests with the same parameters reuse seller worklets.
 TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   // Load a KVv2 seller worklet.
   SellerWorkletHelper seller_helper1;
@@ -3578,6 +3751,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, coordinator_,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       seller_helper1.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper1.handle(),
@@ -3604,6 +3778,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction2, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, coordinator_,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       seller_helper2.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -3635,6 +3810,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction3, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, coordinator_,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper3.ProcessAssignedCallback(),
       seller_helper3.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper3.handle(),
@@ -3664,6 +3840,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction4, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, coordinator_,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper4.ProcessAssignedCallback(),
       seller_helper4.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper4.handle(),
@@ -3691,6 +3868,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, SellerWorkletWithoutCoordinator) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -3734,6 +3912,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, coordinator_,
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper.ProcessAssignedCallback(),
       seller_helper.WorkletAvailableCallback(),
       NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -3762,6 +3941,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       process_assigned1.GetCallback(), helper1.GetCallback(),
       NeverInvokedFatalErrorCallback(), helper1.handle(),
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
@@ -3783,6 +3963,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       process_assigned2.GetCallback(), helper2.GetCallback(),
       NeverInvokedFatalErrorCallback(), helper2.handle(),
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
@@ -3823,6 +4004,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         /*trusted_scoring_signals_url=*/std::nullopt,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_scoring_signals_coordinator=*/std::nullopt,
+        /*send_creative_scanning_metadata=*/std::nullopt,
         seller_helper.ProcessAssignedCallback(),
         seller_helper.WorkletAvailableCallback(),
         NeverInvokedFatalErrorCallback(), seller_helper.handle(),
@@ -3853,6 +4035,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       process_assigned.GetCallback(), helper.GetCallback(),
       NeverInvokedFatalErrorCallback(), helper.handle(),
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
@@ -3886,6 +4069,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper1.ProcessAssignedCallback(),
       base::MakeExpectedNotRunClosure(FROM_HERE),
       seller_helper1.FatalErrorCallback(), seller_helper1.handle(),
@@ -3906,6 +4090,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
       seller_helper2.ProcessAssignedCallback(),
       base::MakeExpectedNotRunClosure(FROM_HERE),
       seller_helper2.FatalErrorCallback(), seller_helper2.handle(),
@@ -3947,6 +4132,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ProcessAssignedReentrancy) {
               /*experiment_group_id=*/std::nullopt,
               /*trusted_scoring_signals_coordinator=*/
               url::Origin::Create(GURL("https://origin.test/")),
+              /*send_creative_scanning_metadata=*/std::nullopt,
               seller_helper2.ProcessAssignedCallback(),
               seller_helper2.WorkletAvailableCallback(),
               NeverInvokedFatalErrorCallback(), seller_helper2.handle(),
@@ -3959,6 +4145,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ProcessAssignedReentrancy) {
         /*experiment_group_id=*/std::nullopt,
         /*trusted_scoring_signals_coordinator=*/
         url::Origin::Create(GURL("https://origin.test/")),
+        /*send_creative_scanning_metadata=*/std::nullopt,
         std::move(request_seller2_callback),
         seller_helper1.WorkletAvailableCallback(),
         NeverInvokedFatalErrorCallback(), seller_helper1.handle(),

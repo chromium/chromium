@@ -22,6 +22,7 @@ class AtRuleDescriptorParser {
  public:
   static bool ParseDescriptorValue(StyleRule::RuleType,
                                    AtRuleDescriptorID,
+                                   const AtomicString& variable_name,
                                    CSSParserTokenStream&,
                                    const CSSParserContext&,
                                    HeapVector<CSSPropertyValue, 64>&);
@@ -45,6 +46,9 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseAtViewTransitionDescriptor(AtRuleDescriptorID,
                                                    CSSParserTokenStream&,
                                                    const CSSParserContext&);
+  static CSSValue* ParseAtFunctionDescriptor(AtRuleDescriptorID,
+                                             CSSParserTokenStream&,
+                                             const CSSParserContext&);
 };
 
 }  // namespace blink

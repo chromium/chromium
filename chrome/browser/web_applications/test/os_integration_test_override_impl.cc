@@ -917,7 +917,7 @@ SkColor OsIntegrationTestOverrideImpl::ReadColorFromShortcutMenuIcoFile(
   HICON icon = static_cast<HICON>(
       LoadImage(NULL, file_path.value().c_str(), IMAGE_ICON, 32, 32,
                 LR_LOADTRANSPARENT | LR_LOADFROMFILE));
-  base::win::ScopedHICON scoped_icon(icon);
+  base::win::ScopedGDIObject<HICON> scoped_icon(icon);
   SkBitmap output_image =
       IconUtil::CreateSkBitmapFromHICON(scoped_icon.get(), gfx::Size(32, 32));
   SkColor color = output_image.getColor(output_image.dimensions().width() / 2,

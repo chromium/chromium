@@ -11,9 +11,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "components/flags_ui/feature_entry.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/webui/flags/feature_entry.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -22,8 +22,6 @@ namespace commerce {
 
 BASE_DECLARE_FEATURE(kCommerceAllowLocalImages);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
-BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkBatchUpdates);
-BASE_DECLARE_FEATURE(kCommerceAllowServerImages);
 BASE_DECLARE_FEATURE(kCommerceLocalPDPDetection);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
@@ -43,13 +41,13 @@ extern const char kPriceInsightsShowFeedbackParam[];
 extern const base::FeatureParam<bool> kPriceInsightsShowFeedback;
 extern const char kPriceInsightsUseCacheParam[];
 extern const base::FeatureParam<bool> kPriceInsightsUseCache;
-extern const char kProductSpecsMigrateToMultiSpecificsParam[];
-extern const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics;
 BASE_DECLARE_FEATURE(kPriceTrackingPromo);
+BASE_DECLARE_FEATURE(kShopCard);
+
+std::string ShopCardExperiment();
 
 BASE_DECLARE_FEATURE(kProductSpecifications);
 BASE_DECLARE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields);
-BASE_DECLARE_FEATURE(kProductSpecificationsMultiSpecifics);
 BASE_DECLARE_FEATURE(kCompareConfirmationToast);
 BASE_DECLARE_FEATURE(kProductSpecificationsCache);
 BASE_DECLARE_FEATURE(kCompareManagementInterface);
@@ -104,23 +102,12 @@ BASE_DECLARE_FEATURE(kDiscountConsentV2);
 // Feature flag for Code-based RBD.
 BASE_DECLARE_FEATURE(kCodeBasedRBD);
 
-// Feature flag for parcel tracking.
-BASE_DECLARE_FEATURE(kParcelTracking);
-BASE_DECLARE_FEATURE(kParcelTrackingRegionLaunched);
-
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>
     kShoppingListBookmarkpdateIntervalParam(
         &kShoppingList,
         "shopping-list-bookmark-update-interval",
         base::Hours(6));
-
-// The maximum number of products to update per update cycle for the shopping
-// list.
-constexpr base::FeatureParam<int> kShoppingListBookmarkpdateBatchMaxParam(
-    &kCommerceAllowOnDemandBookmarkBatchUpdates,
-    "shopping-list-bookmark-update-batch-max",
-    150);
 
 // Shopping list revert page action icon on failure.
 extern const char kRevertIconOnFailureParam[];
@@ -139,9 +126,8 @@ constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
 // The heuristics of cart pages are from top 100 US shopping domains.
 // https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
 constexpr base::FeatureParam<std::string> kCartPattern{
-  &ntp_features::kNtpChromeCartModule,
-      "cart-pattern",
-      // clang-format off
+    &ntp_features::kNtpChromeCartModule, "cart-pattern",
+    // clang-format off
     "(^https?://cart\\.)"
     "|"
     "(/("
@@ -157,20 +143,17 @@ constexpr base::FeatureParam<std::string> kCartPattern{
       "|"
       "(cart-show)"
     ")(/|\\.|$))"
-  // clang-format on
+    // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kCartPatternMapping{
-  &ntp_features::kNtpChromeCartModule,
-      "cart-pattern-mapping",
-      // Empty JSON string.
-      ""
-};
+    &ntp_features::kNtpChromeCartModule, "cart-pattern-mapping",
+    // Empty JSON string.
+    ""};
 
 constexpr base::FeatureParam<std::string> kCheckoutPattern{
-  &ntp_features::kNtpChromeCartModule,
-      "checkout-pattern",
-      // clang-format off
+    &ntp_features::kNtpChromeCartModule, "checkout-pattern",
+    // clang-format off
     "/("
     "("
       "("
@@ -183,15 +166,21 @@ constexpr base::FeatureParam<std::string> kCheckoutPattern{
     "|"
     "(\\w+(checkout|chkout)(s)?)"
     ")(#|/|\\.|$|\\?)"
-  // clang-format on
+    // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
-  &ntp_features::kNtpChromeCartModule,
-      "checkout-pattern-mapping",
-      // Empty JSON string.
-      ""
-};
+    &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
+    // Empty JSON string.
+    ""};
+
+inline constexpr base::FeatureParam<std::string> kShopCardVariation{
+    &kShopCard, "ShopCardVariant", ""};
+
+extern const char kShopCardArm1[];
+extern const char kShopCardArm2[];
+extern const char kShopCardArm3[];
+extern const char kShopCardArm4[];
 
 // Feature params for product specifications.
 extern const char kProductSpecificationsSetValidForClusteringTimeParam[];

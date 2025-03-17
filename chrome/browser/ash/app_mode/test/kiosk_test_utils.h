@@ -53,13 +53,16 @@ namespace ash::kiosk::test {
 [[nodiscard]] bool IsAppInstalled(Profile& profile, const KioskApp& app);
 
 // Returns the version string of the Chrome `app` installed in the given
-// `profile`. CHECKs when the app is not installed.
+// `profile`. CHECKs when `app` is not a Chrome app or not installed.
 [[nodiscard]] std::string InstalledChromeAppVersion(Profile& profile,
                                                     const KioskApp& app);
+[[nodiscard]] std::string InstalledChromeAppVersion(Profile& profile,
+                                                    std::string_view app_id);
 
 // Returns the version string of the Chrome `app` in the device local account
 // external cache. CHECKs when the app is not cached.
 [[nodiscard]] std::string CachedChromeAppVersion(const KioskApp& app);
+[[nodiscard]] std::string CachedChromeAppVersion(std::string_view app_id);
 
 // Returns the current profile. Makes sense to be called after Kiosk launch.
 [[nodiscard]] Profile& CurrentProfile();
@@ -73,6 +76,10 @@ void WaitNetworkScreen();
 // Presses the accelerator to display the network dialog in the splash screen.
 // Returns true if the accelerator was processed.
 [[nodiscard]] bool PressNetworkAccelerator();
+
+// Presses the accelerator to cancel (bailout) Kiosk launch. Returns true if the
+// accelerator was processed.
+[[nodiscard]] bool PressBailoutAccelerator();
 
 // Closes the window of the given `app`.
 void CloseAppWindow(const KioskApp& app);

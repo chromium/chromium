@@ -16,6 +16,8 @@ import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /** ContentProvider for incognito PDF file by taking a file path and returning a content URI. */
+@NullMarked
 public class PdfContentProvider extends ContentProvider {
     private static final String[] COLUMNS =
             new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
@@ -58,7 +61,7 @@ public class PdfContentProvider extends ContentProvider {
      * @param fileName Display name of the file.
      * @return A content Uri to access the file by other apps.
      */
-    public static Uri createContentUri(String filePath, String fileName) {
+    public static @Nullable Uri createContentUri(String filePath, String fileName) {
         synchronized (LOCK) {
             for (Map.Entry<Uri, PdfFileInfo> entry : sPdfUriMap.entrySet()) {
                 PdfFileInfo info = entry.getValue();
@@ -90,7 +93,7 @@ public class PdfContentProvider extends ContentProvider {
      *
      * @param uri Uri to be removed.
      */
-    public static void removeContentUri(String uri) {
+    public static void removeContentUri(@Nullable String uri) {
         if (uri == null) {
             return;
         }
@@ -122,7 +125,7 @@ public class PdfContentProvider extends ContentProvider {
      * @see ContentProvider#getType(Uri)
      */
     @Override
-    public String getType(Uri uri) {
+    public @Nullable String getType(Uri uri) {
         synchronized (LOCK) {
             if (uri == null || !sPdfUriMap.containsKey(uri)) {
                 return null;
@@ -135,7 +138,7 @@ public class PdfContentProvider extends ContentProvider {
      * @see ContentProvider#getStreamTypes(Uri, String)
      */
     @Override
-    public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
+    public String @Nullable [] getStreamTypes(Uri uri, String mimeTypeFilter) {
         synchronized (LOCK) {
             if (uri == null || !sPdfUriMap.containsKey(uri)) {
                 return null;
@@ -173,10 +176,10 @@ public class PdfContentProvider extends ContentProvider {
     @Override
     public Cursor query(
             Uri uri,
-            String[] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+            String @Nullable [] projection,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs,
+            @Nullable String sortOrder) {
         String fileName;
         long fileSize = 0;
         synchronized (LOCK) {
@@ -222,21 +225,25 @@ public class PdfContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
+    public int update(
+            Uri uri,
+            @Nullable ContentValues values,
+            @Nullable String where,
+            String @Nullable [] whereArgs) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, @Nullable String selection, String @Nullable [] selectionArgs) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(Uri uri, @Nullable ContentValues values) {
         throw new UnsupportedOperationException();
     }
 
-    private static PdfFileInfo getPdfFileInfo(String filePath, String fileName) {
+    private static @Nullable PdfFileInfo getPdfFileInfo(String filePath, String fileName) {
         if (!filePath.startsWith(PDF_FILE_PREFIX)) {
             Log.e(TAG, "File path may not contain a valid file descriptor.");
         } else {

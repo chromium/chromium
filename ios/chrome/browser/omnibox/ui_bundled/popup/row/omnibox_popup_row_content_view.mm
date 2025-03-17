@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_delegate.h"
@@ -89,12 +89,9 @@ const double kContentSizeMultiplierAccesibility = 2.0;
     // Background.
     self.backgroundColor = UIColor.clearColor;
     _selectedBackgroundView = [[GradientView alloc]
-        initWithTopColor:
-            [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
-                colorWithAlphaComponent:kTopGradientColorOpacity]
-             bottomColor:
-                 [UIColor
-                     colorNamed:@"omnibox_suggestion_row_highlight_color"]];
+        initWithTopColor:[[UIColor colorNamed:kStaticBlueColor]
+                             colorWithAlphaComponent:kTopGradientColorOpacity]
+             bottomColor:[UIColor colorNamed:kStaticBlueColor]];
     _selectedBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     _selectedBackgroundView.layer.zPosition = -1;
     _selectedBackgroundView.hidden = YES;

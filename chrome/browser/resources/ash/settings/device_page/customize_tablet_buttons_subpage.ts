@@ -167,7 +167,7 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
     }
 
     this.inputDeviceSettingsProvider_.setGraphicsTabletSettings(
-        this.selectedTablet!.id, this.selectedTablet!.settings);
+        this.selectedTablet.id, this.selectedTablet.settings);
   }
 
   private getDescription_(): string {
@@ -175,7 +175,7 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       return '';
     }
     return this.i18n(
-        'customizeTabletButtonSubpageDescription', this.selectedTablet!.name);
+        'customizeTabletButtonSubpageDescription', this.selectedTablet.name);
   }
 
   private getcustomizeTabletButtonsNudgeHeader_(): string {

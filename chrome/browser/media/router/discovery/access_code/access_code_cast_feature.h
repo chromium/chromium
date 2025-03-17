@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_FEATURE_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_FEATURE_H_
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 
 class PrefRegistrySimple;
@@ -13,12 +12,6 @@ class Profile;
 
 namespace base {
 class TimeDelta;
-}
-
-namespace features {
-BASE_DECLARE_FEATURE(kAccessCodeCastRememberDevices);
-BASE_DECLARE_FEATURE(kAccessCodeCastTabSwitchingUI);
-BASE_DECLARE_FEATURE(kAccessCodeCastFreezeUI);
 }
 
 namespace media_router {

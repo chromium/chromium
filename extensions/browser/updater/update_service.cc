@@ -93,7 +93,7 @@ void UpdateService::SendUninstallPing(const std::string& id,
   update_client_->SendPing(
       crx,
       {.event_type = update_client::protocol_request::kEventUninstall,
-       .result = 1,
+       .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
        .extra_code1 = reason},
       base::BindOnce([](std::unique_ptr<ScopedExtensionUpdaterKeepAlive>,

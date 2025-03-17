@@ -18,7 +18,7 @@ found in the LICENSE file.
     android:paddingStart="@dimen/single_tab_module_padding_bottom"
     android:paddingEnd="@dimen/single_tab_module_padding_bottom"
     android:paddingTop="@dimen/single_tab_module_padding_top"
-    android:paddingBottom="@dimen/educational_tip_module_padding_bottom"
+    android:paddingBottom="@dimen/single_tab_module_padding_top"
     android:background="@drawable/home_surface_ui_background"
     android:foreground="@drawable/single_tab_card_ripple"
     android:orientation="vertical">
@@ -37,7 +37,7 @@ found in the LICENSE file.
             android:singleLine="true"
             android:text="@string/educational_tip_module_title"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary" />
     </LinearLayout>
 
     <LinearLayout
@@ -116,6 +116,5 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:layout_gravity="bottom|end"
         android:singleLine="true"
-        android:textAppearance="@style/TextAppearance.Button.Text.Filled"
         android:text="@string/educational_tip_module_button" />
 </org.chromium.chrome.browser.educational_tip.EducationalTipModuleView>

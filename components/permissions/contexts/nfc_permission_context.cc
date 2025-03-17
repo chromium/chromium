@@ -7,16 +7,17 @@
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_request_id.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
 NfcPermissionContext::NfcPermissionContext(
     content::BrowserContext* browser_context,
     std::unique_ptr<Delegate> delegate)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::NFC,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound),
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::NFC,
+          network::mojom::PermissionsPolicyFeature::kNotFound),
       delegate_(std::move(delegate)) {}
 
 NfcPermissionContext::~NfcPermissionContext() = default;

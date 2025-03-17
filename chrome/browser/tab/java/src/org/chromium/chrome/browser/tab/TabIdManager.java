@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>TODO(dfalcantara): Tab ID generation prior to M45 is haphazard and dependent on which Activity
  * is started first. Unify the ways the maximum Tab ID is set (crbug.com/502384).
  */
+@NullMarked
 public class TabIdManager {
     private static TabIdManager sInstance = new TabIdManager();
 

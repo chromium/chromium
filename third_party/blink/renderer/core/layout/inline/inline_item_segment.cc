@@ -231,13 +231,14 @@ void InlineItemSegments::Split(unsigned index, unsigned offset) {
                    InlineItemSegment(end_offset, segment.segment_data_));
 }
 
-void InlineItemSegments::ComputeItemIndex(const HeapVector<InlineItem>& items) {
-  DCHECK_EQ(items.back().EndOffset(), EndOffset());
+void InlineItemSegments::ComputeItemIndex(const InlineItems& items) {
+  DCHECK_EQ(items.back()->EndOffset(), EndOffset());
   unsigned segment_index = 0;
   const InlineItemSegment* segment = segments_.data();
   unsigned item_index = 0;
   items_to_segments_.resize(items.size());
-  for (const InlineItem& item : items) {
+  for (const Member<InlineItem>& item_ptr : items) {
+    const InlineItem& item = *item_ptr;
     while (segment_index < segments_.size() &&
            item.StartOffset() >= segment->EndOffset()) {
       ++segment_index;

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -13,6 +12,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
@@ -30,6 +31,7 @@ import java.util.List;
  * <p>An instance of this class must be created, used, and destroyed on the UI thread.
  */
 @JNINamespace("optimization_guide::android")
+@NullMarked
 public class OptimizationGuideBridge {
     private long mNativeOptimizationGuideBridge;
 
@@ -202,7 +204,7 @@ public class OptimizationGuideBridge {
     private static void onOptimizationGuideDecision(
             OptimizationGuideCallback callback,
             @OptimizationGuideDecision int optimizationGuideDecision,
-            @Nullable byte[] serializedAnyMetadata) {
+            byte @Nullable [] serializedAnyMetadata) {
         callback.onOptimizationGuideDecision(
                 optimizationGuideDecision, deserializeAnyMetadata(serializedAnyMetadata));
     }
@@ -213,7 +215,7 @@ public class OptimizationGuideBridge {
             GURL url,
             int optimizationTypeInt,
             @OptimizationGuideDecision int optimizationGuideDecision,
-            @Nullable byte[] serializedAnyMetadata) {
+            byte @Nullable [] serializedAnyMetadata) {
         OptimizationType optimizationType = OptimizationType.forNumber(optimizationTypeInt);
         if (optimizationType == null) return;
         callback.onOnDemandOptimizationGuideDecision(
@@ -262,7 +264,7 @@ public class OptimizationGuideBridge {
 
     /** Returns a 2D byte array of all cached push notifications for the given optimization type. */
     @CalledByNative
-    private static byte[][] getEncodedPushNotifications(int optimizationTypeInt) {
+    private static byte @Nullable [][] getEncodedPushNotifications(int optimizationTypeInt) {
         OptimizationType optimizationType = OptimizationType.forNumber(optimizationTypeInt);
         if (optimizationType == null) return null;
 
@@ -297,12 +299,12 @@ public class OptimizationGuideBridge {
     @CalledByNative
     private static OptimizationGuideDecisionWithMetadata createDecisionWithMetadata(
             @OptimizationGuideDecision int optimizationGuideDecision,
-            @Nullable byte[] serializedAnyMetadata) {
+            byte @Nullable [] serializedAnyMetadata) {
         return new OptimizationGuideDecisionWithMetadata(
                 optimizationGuideDecision, deserializeAnyMetadata(serializedAnyMetadata));
     }
 
-    private static @Nullable Any deserializeAnyMetadata(@Nullable byte[] serializedAnyMetadata) {
+    private static @Nullable Any deserializeAnyMetadata(byte @Nullable [] serializedAnyMetadata) {
         if (serializedAnyMetadata == null) {
             return null;
         }

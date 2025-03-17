@@ -19,6 +19,8 @@
                 "First Run",
                 "icudtl.dat",
                 "interactive_ui_tests.exe",
+                "IwaKeyDistribution\\iwa-key-distribution.pb",
+                "IwaKeyDistribution\\manifest.json",
                 "libEGL.dll",
                 "libGLESv2.dll",
                 "MEIPreload\\manifest.json",

@@ -28,6 +28,8 @@ const string kNativeHeapProfilerSourceName =
     "org.chromium.native_heap_profiler";
 const string kSystemMetricsSourceName =
     "org.chromium.system_metrics";
+const string kHistogramSampleSourceName =
+    "org.chromium.histogram_sample";
 
 // Brief description of the flow: There's a per-process ProducerClient which
 // connects to the central PerfettoService and establishes a two-way connection
@@ -132,6 +134,7 @@ struct DataSourceConfig {
   mojo_base.mojom.ByteString track_event_config_raw;
   mojo_base.mojom.ByteString etw_config_raw;
   mojo_base.mojom.ByteString system_metrics_config_raw;
+  mojo_base.mojom.ByteString histogram_samples_config_raw;
 };
 
 struct DataSourceRegistration {
@@ -157,6 +160,10 @@ interface ProducerHost {
   // Called by a ProducerClient to let the Host know it can provide a specific
   // datasource.
   RegisterDataSource(DataSourceRegistration registration_info);
+
+  // Similar to RegisterDataSource, but allows to update a specific datasource
+  // that was already registered.
+  UpdateDataSource(DataSourceRegistration registration_info);
 
   // Called by the ProducerClient to associate a TraceWriter with a target
   // buffer, which is required to support scraping of the SMB by the service.

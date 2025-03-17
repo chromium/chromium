@@ -4,12 +4,22 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# The features file is separate because it is the only common WebNN header
+# that has no dependencies on other WebNN Mojom files. This separation
+# allows WebNN-dependent components to use features without importing the
+# rest of WebNN (ex. //gpu/config).
+mojom_component("features") {
+  output_prefix = "webnn_mojom_features"
+  macro_prefix = "WEBNN_MOJOM_FEATURES"
+
+  sources = [ "features.mojom" ]
+}
+
 mojom_component("mojom") {
   output_prefix = "webnn_mojom"
   macro_prefix = "WEBNN_MOJOM"
 
   sources = [
-    "features.mojom",
     "webnn_context.mojom",
     "webnn_context_properties.mojom",
     "webnn_context_provider.mojom",
@@ -20,10 +30,13 @@ mojom_component("mojom") {
   ]
 
   deps = [
+    ":features",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//third_party/blink/public/mojom/tokens",
   ]
+
+  public_deps = [ ":features" ]
 
   shared_webnn_typemaps = [
     {
@@ -56,6 +69,14 @@ mojom_component("mojom") {
           cpp = "::webnn::SupportedDataTypes"
         },
         {
+          mojom = "webnn.mojom.SupportedRanks"
+          cpp = "::webnn::SupportedRanks"
+        },
+        {
+          mojom = "webnn.mojom.SupportedTensors"
+          cpp = "::webnn::SupportedTensors"
+        },
+        {
           mojom = "webnn.mojom.TensorUsage"
           cpp = "::webnn::MLTensorUsage"
           copyable_pass_by_value = true
@@ -67,6 +88,7 @@ mojom_component("mojom") {
         "operand_descriptor_mojom_traits.h",
         "range_traits.h",
         "supported_data_types_mojom_traits.h",
+        "supported_tensors_mojom_traits.h",
         "tensor_usage_mojom_traits.h",
       ]
       traits_public_deps = [ ":webnn_mojom_traits" ]
@@ -106,6 +128,7 @@ source_set("tests") {
     ":webnn_mojom_traits",
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
+    "//services/webnn:tests",
     "//testing/gtest",
   ]
 }

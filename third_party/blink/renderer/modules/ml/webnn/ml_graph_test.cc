@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+
+#include <limits.h>
 
 #include <array>
 #include <numeric>
@@ -84,6 +91,9 @@ class FakeWebNNTensor;
 
 namespace {
 
+static constexpr webnn::SupportedRanks kMaxRank =
+    webnn::SupportedRanks::UpTo(8);
+
 // BuildResult is returned by Build() method. If the graph building is
 // successful, `graph` points to the MLGraph and `error_name` and
 // `error_message` are null. Otherwise, `graph` is a nullptr and
@@ -109,7 +119,7 @@ struct OperandInfo {
 
 webnn::OperandDescriptor ToDescriptor(webnn::OperandDataType data_type,
                                       base::span<const uint32_t> shape) {
-  return *webnn::OperandDescriptor::Create(data_type, shape);
+  return webnn::OperandDescriptor::UnsafeCreateForTesting(data_type, shape);
 }
 
 template <typename T>
@@ -247,6 +257,8 @@ MLOperand* BuildElementWiseBinaryOperator(
       return builder->lesser(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       return builder->lesserOrEqual(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kNotEqual:
+      return builder->notEqual(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
       return builder->logicalAnd(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
@@ -286,9 +298,6 @@ MLOperand* BuildElementWiseBinary(
 
 class MLGraphTest : public testing::Test {
  public:
-  MLGraphTest()
-      : scoped_feature_list_(webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
-
   void SetGraphInfo(blink_mojom::GraphInfoPtr graph_info) {
     graph_info_ = std::move(graph_info);
   }
@@ -332,7 +341,8 @@ class MLGraphTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork};
   test::TaskEnvironment task_environment_;
 
   blink_mojom::GraphInfoPtr graph_info_;
@@ -541,116 +551,189 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
 
     webnn::ContextProperties context_properties(
         webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kAny,
+        /*tensor_byte_length_limit=*/INT_MAX,
         {/*input=*/webnn::SupportedDataTypes::All(),
          /*constant=*/webnn::SupportedDataTypes::All(),
          /*arg_min_max_input=*/
-         webnn::SupportedDataTypes::All(),
+         {webnn::SupportedDataTypes::All(), kMaxRank},
          /*arg_min_max_output=*/
          webnn::SupportedDataTypes::All(),
-         /*batch_normalization_input=*/webnn::SupportedDataTypes::All(),
-         /*cast_input=*/webnn::SupportedDataTypes::All(),
-         /*clamp_input=*/webnn::SupportedDataTypes::All(),
+         /*batch_normalization_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*batch_normalization_mean=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*cast_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*clamp_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
          /*concat_inputs=*/
-         webnn::SupportedDataTypes::All(),
-         /*conv2d_input=*/webnn::SupportedDataTypes::All(),
-         /*conv_transpose2d_input=*/webnn::SupportedDataTypes::All(),
-         /*cumulative_sum_input=*/webnn::SupportedDataTypes::All(),
-         /*dequantize_linear_input=*/webnn::SupportedDataTypes::All(),
-         /*dequantize_linear_scale=*/webnn::SupportedDataTypes::All(),
-         /*add_input=*/webnn::SupportedDataTypes::All(),
-         /*sub_input=*/webnn::SupportedDataTypes::All(),
-         /*mul_input=*/webnn::SupportedDataTypes::All(),
-         /*div_input=*/webnn::SupportedDataTypes::All(),
-         /*max_input=*/webnn::SupportedDataTypes::All(),
-         /*min_input=*/webnn::SupportedDataTypes::All(),
-         /*pow_input=*/webnn::SupportedDataTypes::All(),
-         /*equal_input=*/webnn::SupportedDataTypes::All(),
-         /*greater_input=*/webnn::SupportedDataTypes::All(),
-         /*greater_or_equal_input=*/webnn::SupportedDataTypes::All(),
-         /*lesser_input=*/webnn::SupportedDataTypes::All(),
-         /*lesser_or_equal_input=*/webnn::SupportedDataTypes::All(),
-         /*logical_and_input=*/webnn::SupportedDataTypes::All(),
-         /*logical_or_input=*/webnn::SupportedDataTypes::All(),
-         /*logical_xor_input=*/webnn::SupportedDataTypes::All(),
-         /*logical_not_input=*/webnn::SupportedDataTypes::All(),
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*conv2d_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*conv2d_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*conv_transpose2d_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*conv_transpose2d_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*cumulative_sum_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*dequantize_linear_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*dequantize_linear_scale=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*dequantize_linear_zero_point=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*add_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*sub_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*mul_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*div_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*max_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*min_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*pow_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*equal_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*greater_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*greater_or_equal_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lesser_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lesser_or_equal_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*not_equal_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*logical_and_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*logical_or_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*logical_xor_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*logical_not_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*logical_output=*/webnn::SupportedDataTypes::All(),
-         /*abs_input=*/webnn::SupportedDataTypes::All(),
-         /*ceil_input=*/webnn::SupportedDataTypes::All(),
-         /*cos_input=*/webnn::SupportedDataTypes::All(),
-         /*erf_input=*/webnn::SupportedDataTypes::All(),
-         /*exp_input=*/webnn::SupportedDataTypes::All(),
-         /*floor_input=*/webnn::SupportedDataTypes::All(),
-         /*identity_input=*/webnn::SupportedDataTypes::All(),
-         /*log_input=*/webnn::SupportedDataTypes::All(),
-         /*neg_input=*/webnn::SupportedDataTypes::All(),
-         /*reciprocal_input=*/webnn::SupportedDataTypes::All(),
-         /*sign_input=*/webnn::SupportedDataTypes::All(),
-         /*sin_input=*/webnn::SupportedDataTypes::All(),
-         /*sqrt_input=*/webnn::SupportedDataTypes::All(),
-         /*tan_input=*/webnn::SupportedDataTypes::All(),
-         /*elu_input=*/webnn::SupportedDataTypes::All(),
-         /*expand_input=*/webnn::SupportedDataTypes::All(),
-         /*gather_input=*/webnn::SupportedDataTypes::All(),
-         /*gather_indices=*/
-         webnn::SupportedDataTypes::All(),
-         /*gather_elements_input=*/webnn::SupportedDataTypes::All(),
+         /*abs_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*ceil_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*cos_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*erf_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*exp_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*floor_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*identity_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*log_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*neg_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reciprocal_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*sign_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*sin_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*sqrt_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*tan_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*elu_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*expand_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_indices=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_elements_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gather_elements_indices=*/
-         webnn::SupportedDataTypes::All(),
-         /*gather_nd_input=*/webnn::SupportedDataTypes::All(),
-         /*gather_nd_indices=*/
-         webnn::SupportedDataTypes::All(),
-         /*gelu_input=*/webnn::SupportedDataTypes::All(),
-         /*gemm_input=*/webnn::SupportedDataTypes::All(),
-         /*gru_input=*/webnn::SupportedDataTypes::All(),
-         /*gru_cell_input=*/webnn::SupportedDataTypes::All(),
-         /*hard_sigmoid_input=*/webnn::SupportedDataTypes::All(),
-         /*hard_swish_input=*/webnn::SupportedDataTypes::All(),
-         /*instance_normalization_input=*/webnn::SupportedDataTypes::All(),
-         /*layer_normalization_input=*/webnn::SupportedDataTypes::All(),
-         /*leaky_relu_input=*/webnn::SupportedDataTypes::All(),
-         /*linear_input=*/webnn::SupportedDataTypes::All(),
-         /*lstm_input=*/webnn::SupportedDataTypes::All(),
-         /*lstm_cell_input=*/webnn::SupportedDataTypes::All(),
-         /*matmul_input=*/webnn::SupportedDataTypes::All(),
-         /*pad_input=*/webnn::SupportedDataTypes::All(),
-         /*average_pool2d_input=*/webnn::SupportedDataTypes::All(),
-         /*l2_pool2d_input=*/webnn::SupportedDataTypes::All(),
-         /*max_pool2d_input=*/webnn::SupportedDataTypes::All(),
-         /*prelu_input=*/webnn::SupportedDataTypes::All(),
-         /*quantize_linear_input=*/webnn::SupportedDataTypes::All(),
-         /*quantize_linear_zero_point=*/webnn::SupportedDataTypes::All(),
-         /*reduce_l1_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_l2_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_log_sum_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_log_sum_exp_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_max_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_mean_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_min_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_product_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_sum_input=*/webnn::SupportedDataTypes::All(),
-         /*reduce_sum_square_input=*/webnn::SupportedDataTypes::All(),
-         /*relu_input=*/webnn::SupportedDataTypes::All(),
-         /*resample2d_input=*/webnn::SupportedDataTypes::All(),
-         /*reshape_input=*/webnn::SupportedDataTypes::All(),
-         /*reverse_input=*/webnn::SupportedDataTypes::All(),
-         /*scatter_elements_input=*/webnn::SupportedDataTypes::All(),
-         /*scatter_elements_indices=*/webnn::SupportedDataTypes::All(),
-         /*scatter_nd_input=*/webnn::SupportedDataTypes::All(),
-         /*scatter_nd_indices=*/webnn::SupportedDataTypes::All(),
-         /*sigmoid_input=*/webnn::SupportedDataTypes::All(),
-         /*slice_input=*/webnn::SupportedDataTypes::All(),
-         /*softmax_input=*/webnn::SupportedDataTypes::All(),
-         /*softplus_input=*/webnn::SupportedDataTypes::All(),
-         /*softsign_input=*/webnn::SupportedDataTypes::All(),
-         /*split_input=*/webnn::SupportedDataTypes::All(),
-         /*tanh_input=*/webnn::SupportedDataTypes::All(),
-         /*tile_input=*/webnn::SupportedDataTypes::All(),
-         /*transpose_input=*/webnn::SupportedDataTypes::All(),
-         /*triangular_input=*/webnn::SupportedDataTypes::All(),
-         /*where_condition=*/
-         webnn::SupportedDataTypes::All(),
-         /*where_value=*/
-         webnn::SupportedDataTypes::All()});
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_nd_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_nd_indices=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gelu_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gemm_a=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gemm_c=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_cell_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_cell_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*hard_sigmoid_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*hard_swish_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*instance_normalization_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*instance_normalization_scale=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*layer_normalization_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*leaky_relu_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*linear_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_cell_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_cell_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*matmul_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*pad_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*average_pool2d_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*l2_pool2d_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*max_pool2d_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*prelu_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*quantize_linear_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*quantize_linear_zero_point=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_l1_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_l2_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_log_sum_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_log_sum_exp_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_max_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_mean_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_min_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_product_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_sum_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reduce_sum_square_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*relu_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*resample2d_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reshape_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*reverse_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*scatter_elements_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*scatter_elements_indices=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*scatter_nd_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*scatter_nd_indices=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*scatter_nd_updates=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*sigmoid_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*slice_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*softmax_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*softplus_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*softsign_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*split_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*tanh_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*tile_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*transpose_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*triangular_input=*/
+         {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*where_condition=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*where_value=*/{webnn::SupportedDataTypes::All(), kMaxRank}});
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(context_properties),
         blink::WebNNContextToken());
@@ -664,8 +747,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
 
 class ScopedWebNNServiceBinder {
  public:
-  explicit ScopedWebNNServiceBinder(MLGraphTest& helper,
-                                    V8TestingScope& scope)
+  explicit ScopedWebNNServiceBinder(MLGraphTest& helper, V8TestingScope& scope)
       : fake_webnn_context_provider_(
             std::make_unique<FakeWebNNContextProvider>(helper)),
         interface_broker_(

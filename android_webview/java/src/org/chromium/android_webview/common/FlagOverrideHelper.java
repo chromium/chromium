@@ -6,13 +6,14 @@ package org.chromium.android_webview.common;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Set;
  * Helper class to apply multiple features/flags to the global CommandLine singleton. This class and
  * its static methods assume the CommandLine has already been initialized.
  */
+@NullMarked
 public class FlagOverrideHelper {
     private Map<String, Flag> mFlagMap = new HashMap<>();
 
@@ -34,13 +36,12 @@ public class FlagOverrideHelper {
 
     @VisibleForTesting
     public static List<String> getCommaDelimitedSwitchValue(String name) {
-        return CommandLine.getInstance().hasSwitch(name)
-                ? Arrays.asList(CommandLine.getInstance().getSwitchValue(name).split(","))
-                : new ArrayList<>();
+        String value = CommandLine.getInstance().getSwitchValue(name);
+        return value != null ? Arrays.asList(value.split(",")) : Collections.emptyList();
     }
 
     @VisibleForTesting
-    public static void setCommaDelimitedSwitchValue(String name, @NonNull List<String> value) {
+    public static void setCommaDelimitedSwitchValue(String name, List<String> value) {
         if (value.isEmpty()) {
             CommandLine.getInstance().removeSwitch(name);
         } else {
@@ -96,7 +97,7 @@ public class FlagOverrideHelper {
      * @return the desired {@link Flag}.
      * @throws RuntimeException if this cannot find {@code name} in the list.
      */
-    public Flag getFlagForName(@NonNull String name) {
+    public Flag getFlagForName(String name) {
         if (mFlagMap.containsKey(name)) {
             return mFlagMap.get(name);
         }

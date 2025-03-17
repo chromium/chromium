@@ -9,6 +9,10 @@
 
 #include "base/memory/scoped_refptr.h"
 
+namespace net {
+class ClientCertStore;
+}  // namespace net
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -18,7 +22,8 @@ namespace remoting {
 class HostStarter;
 
 extern std::unique_ptr<HostStarter> ProvisionCorpMachine(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store);
 
 }  // namespace remoting
 

@@ -20,6 +20,7 @@
 #include "content/public/common/content_features.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -223,7 +224,8 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   blink::InterestGroup ig_different_owner;
   ig_different_owner.owner = url::Origin::Create(GURL("https://www.other.com"));
   ig_different_owner.name = "other";
-  ig_different_owner.expiry = base::Time::Now() + base::Days(30);
+  ig_different_owner.expiry =
+      base::Time::Now() + blink::MaxInterestGroupLifetime();
 
   std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
@@ -519,7 +521,8 @@ TEST_F(InterestGroupCachingStorageTest, CacheWorksWhenPointerReleased) {
   blink::InterestGroup ig_different_owner;
   ig_different_owner.owner = owner2;
   ig_different_owner.name = "other";
-  ig_different_owner.expiry = base::Time::Now() + base::Days(30);
+  ig_different_owner.expiry =
+      base::Time::Now() + blink::MaxInterestGroupLifetime();
 
   JoinInterestGroup(caching_storage.get(), ig1, joining_url);
   JoinInterestGroup(caching_storage.get(), ig2, joining_url);
@@ -846,6 +849,34 @@ TEST_F(InterestGroupCachingStorageTest, DontLoadCachedInterestGroupsIfExpired) {
   std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
+}
+
+// See crbug.com/395087859 for why this test is necessary.
+TEST_F(InterestGroupCachingStorageTest,
+       UpdateCachedOriginsWithNullPriorResult) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgeUsePreconnectCache);
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+
+  GURL test_url("https://www.test.test");
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.test/"));
+  blink::InterestGroup ig = MakeInterestGroup(owner, "1");
+
+  JoinInterestGroup(caching_storage.get(), ig, test_url);
+
+  // Get a previous cached result, but let it expire + go out of scope.
+  {
+    std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+        GetInterestGroupsForOwner(caching_storage.get(), owner);
+
+    ASSERT_TRUE(loaded_igs.value());
+    task_environment_.FastForwardBy(
+        InterestGroupCachingStorage::kMinimumCacheHoldTime + base::Seconds(1));
+  }
+
+  // Make sure we don't crash when we try UpdateCachedOrigins.
+  caching_storage->UpdateCachedOriginsIfEnabled(owner);
 }
 
 TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {

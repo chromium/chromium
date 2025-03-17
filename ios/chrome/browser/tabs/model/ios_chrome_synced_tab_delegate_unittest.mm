@@ -164,8 +164,8 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
   system_identity_manager->AddIdentity(identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile.get());
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service->SignIn(identity,
+                                 signin_metrics::AccessPoint::kUnknown);
 
   // Create a navigation entry (so that there's something to sync).
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();

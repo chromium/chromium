@@ -26,7 +26,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/parameter_pack.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -43,6 +42,7 @@
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer.h"
+#include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"
 #include "cc/resources/ui_resource_request.h"
@@ -61,7 +61,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -434,11 +433,12 @@ void LayerTreeImpl::InvalidateRegionForImages(
 
 void LayerTreeImpl::InvalidateRasterInducingScrolls(
     const base::flat_set<ElementId>& scrolls_to_invalidate) {
+  DCHECK(IsSyncTree());
   if (scrolls_to_invalidate.empty()) {
+    did_raster_inducing_scroll_ = false;
     return;
   }
-  DCHECK(IsSyncTree());
-  set_did_raster_inducing_scroll(true);
+  did_raster_inducing_scroll_ = true;
   for (PictureLayerImpl* picture_layer : picture_layers_) {
     picture_layer->InvalidateRasterInducingScrolls(scrolls_to_invalidate);
   }
@@ -703,21 +703,29 @@ void LayerTreeImpl::PullPropertiesFrom(
     ClearSurfaceRanges();
     SetSurfaceRanges(commit_state.SurfaceRanges());
   }
-  TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
-  lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
 
-  for (const ElementId& id : commit_state.scrollers_clobbering_active_value) {
-    property_trees()->scroll_tree_mutable().SetScrollOffsetClobberActiveValue(
-        id);
+  {
+    DiscardableImageMapUpdater updater(this);
+    TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
+    lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
+
+    for (const ElementId& id : commit_state.scrollers_clobbering_active_value) {
+      property_trees()->scroll_tree_mutable().SetScrollOffsetClobberActiveValue(
+          id);
+    }
+
+    // This must happen after synchronizing property trees and after pushing
+    // properties,  which updates the clobber_active_value flag (specifically in
+    // Layer::PushPropertiesTo).
+    // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
+    property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
+        unsafe_state.property_trees, this,
+        settings().commit_fractional_scroll_deltas);
+
+    // The scope should end (when the DiscardableImageMapUpdater will update
+    // discardable image maps) after scroll updates because the discardable
+    // image map may depend on raster-inducing scroll offsets.
   }
-
-  // This must happen after synchronizing property trees and after pushing
-  // properties,  which updates the clobber_active_value flag (specifically in
-  // Layer::PushPropertiesTo).
-  // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
-  property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
-      unsafe_state.property_trees, this,
-      settings().commit_fractional_scroll_deltas);
 
   PullLayerTreePropertiesFrom(commit_state);
 
@@ -947,7 +955,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   target_tree->set_trace_id(trace_id());
   target_tree->set_background_color(background_color());
   target_tree->set_have_scroll_event_handlers(have_scroll_event_handlers());
-  target_tree->set_did_raster_inducing_scroll(did_raster_inducing_scroll());
+  target_tree->did_raster_inducing_scroll_ = did_raster_inducing_scroll_;
   target_tree->set_event_listener_properties(
       EventListenerClass::kTouchStartOrMove,
       event_listener_properties(EventListenerClass::kTouchStartOrMove));
@@ -1112,7 +1120,7 @@ void LayerTreeImpl::SetBackdropFilterMutated(
 
 void LayerTreeImpl::AddPresentationCallbacks(
     std::vector<PresentationTimeCallbackBuffer::Callback> callbacks) {
-  base::ranges::move(callbacks, std::back_inserter(presentation_callbacks_));
+  std::ranges::move(callbacks, std::back_inserter(presentation_callbacks_));
 }
 
 std::vector<PresentationTimeCallbackBuffer::Callback>
@@ -1125,8 +1133,8 @@ LayerTreeImpl::TakePresentationCallbacks() {
 void LayerTreeImpl::AddSuccessfulPresentationCallbacks(
     std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
         callbacks) {
-  base::ranges::move(callbacks,
-                     std::back_inserter(successful_presentation_callbacks_));
+  std::ranges::move(callbacks,
+                    std::back_inserter(successful_presentation_callbacks_));
 }
 
 std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
@@ -1654,12 +1662,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
     draw_property_utils::CalculateDrawProperties(
         this, &render_surface_list_, output_update_layer_list_for_testing);
 
-    if (settings().single_thread_proxy_scheduler) {
-      // This metric is only recorded for the Browser.
-      UMA_HISTOGRAM_COUNTS_1M(
-          "Compositing.Browser.LayerTreeImpl.CalculateDrawPropertiesUs",
-          timer.Elapsed().InMicroseconds());
-    } else {
+    if (!settings().single_thread_proxy_scheduler) {
       // This metric is only recorded for the Renderer.
       UMA_HISTOGRAM_COUNTS_100(
           "Compositing.Renderer.NumRenderSurfaces",
@@ -1703,6 +1706,8 @@ bool LayerTreeImpl::UpdateDrawProperties(
             render_surface->EffectTreeIndex());
         draw_property_utils::ConcatInverseSurfaceContentsScale(effect_node,
                                                                &draw_transform);
+        draw_transform.PostTranslate(
+            occlusion_surface->pixel_alignment_offset());
       }
 
       Occlusion occlusion =
@@ -1803,8 +1808,8 @@ LayerImpl* LayerTreeImpl::LayerById(int id) const {
 // TODO(masonf): If this shows up on profiles, this could use
 // a layer_element_map_ approach similar to LayerById().
 LayerImpl* LayerTreeImpl::LayerByElementId(ElementId element_id) const {
-  auto it = base::ranges::find(base::Reversed(*this), element_id,
-                               &LayerImpl::element_id);
+  auto it = std::ranges::find(base::Reversed(*this), element_id,
+                              &LayerImpl::element_id);
   if (it == rend())
     return nullptr;
   return *it;
@@ -2207,7 +2212,7 @@ void LayerTreeImpl::RegisterPictureLayerImpl(PictureLayerImpl* layer) {
 }
 
 void LayerTreeImpl::UnregisterPictureLayerImpl(PictureLayerImpl* layer) {
-  auto it = base::ranges::find(picture_layers_, layer);
+  auto it = std::ranges::find(picture_layers_, layer);
   CHECK(it != picture_layers_.end(), base::NotFatalUntil::M130);
   picture_layers_.erase(it);
 
@@ -2473,6 +2478,8 @@ static void FindClosestMatchingLayer(const gfx::PointF& screen_space_point,
                                      LayerImpl* root_layer,
                                      const Functor& func,
                                      FindClosestMatchingLayerState* state) {
+  CHECK(root_layer);
+
   // We want to iterate from front to back when hit testing.
   for (auto* layer : base::Reversed(*root_layer->layer_tree_impl())) {
     if (!func(layer))
@@ -3028,8 +3035,33 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
       return true;
     }
   }
-
   return false;
+}
+
+base::flat_set<blink::ViewTransitionToken>
+LayerTreeImpl::GetCaptureViewTransitionTokens() const {
+  base::flat_set<blink::ViewTransitionToken> result;
+  // This effectively disables the new mode, since none of the capture tokens
+  // will apply.
+  if (!base::FeatureList::IsEnabled(
+          features::kViewTransitionCaptureAndDisplay)) {
+    return result;
+  }
+
+  for (const auto& request : view_transition_requests_) {
+    // We need to gather all save directive tokens, with the exceptionm of
+    // subframe snapshot. For subframe snapshot, we actually want to display the
+    // capture frame via pseudo elements instead of the new frame (which can be
+    // blank in a lot of navigation cases. Since this is used for iframes only,
+    // there is no risk of unclipped/unfiltered contents leaking since the
+    // iframe itself will still participate in all those operations in its
+    // parent.
+    if (request->type() == ViewTransitionRequest::Type::kSave &&
+        !request->HasSubframeSnapshot()) {
+      result.insert(request->token());
+    }
+  }
+  return result;
 }
 
 void LayerTreeImpl::SetViewTransitionContentRect(
@@ -3052,6 +3084,28 @@ bool LayerTreeImpl::IsReadyToActivate() const {
 
 void LayerTreeImpl::RequestImplSideInvalidationForRerasterTiling() {
   host_impl_->RequestImplSideInvalidationForRerasterTiling();
+}
+
+void LayerTreeImpl::AddLayerNeedingUpdateDiscardableImageMap(
+    PictureLayerImpl* layer) {
+  CHECK(discardable_image_map_updater_);
+  discardable_image_map_updater_->AddLayerNeedingUpdate(layer);
+}
+
+LayerTreeImpl::DiscardableImageMapUpdater::DiscardableImageMapUpdater(
+    LayerTreeImpl* layer_tree_impl)
+    : layer_tree_impl_(layer_tree_impl) {
+  CHECK(layer_tree_impl->IsSyncTree());
+  CHECK(!layer_tree_impl->discardable_image_map_updater_);
+  layer_tree_impl_->discardable_image_map_updater_ = this;
+}
+
+LayerTreeImpl::DiscardableImageMapUpdater::~DiscardableImageMapUpdater() {
+  DCHECK_EQ(layer_tree_impl_->discardable_image_map_updater_, this);
+  for (auto& layer : layers_needing_update_) {
+    layer->RegenerateDiscardableImageMap();
+  }
+  layer_tree_impl_->discardable_image_map_updater_ = nullptr;
 }
 
 }  // namespace cc

@@ -48,7 +48,7 @@ struct InitialLengthData {
   int8_t value;
   uint8_t unit;
 };
-const auto g_initial_lengths_table = std::to_array<InitialLengthData>({
+constexpr auto g_initial_lengths_table = std::to_array<InitialLengthData>({
     {0, CAST_UNIT(kUserUnits)},
     {-10, CAST_UNIT(kPercentage)},
     {0, CAST_UNIT(kPercentage)},

@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -358,11 +357,12 @@ void URLIndexPrivateData::ScheduleUpdateRecentVisits(
 
 bool URLIndexPrivateData::DeleteURL(const GURL& url) {
   // Find the matching entry in the history_info_map_.
-  auto pos = base::ranges::find(
+  // To avoid creating a temporary GURL instance,
+  // the lambda expression should return the GURL reference.
+  auto pos = std::ranges::find(
       history_info_map_, url,
-      [](const std::pair<const HistoryID, HistoryInfoMapValue>& item) {
-        return item.second.url_row.url();
-      });
+      [](const std::pair<const HistoryID, HistoryInfoMapValue>& item)
+          -> const GURL& { return item.second.url_row.url(); });
   if (pos == history_info_map_.end())
     return false;
   RemoveRowFromIndex(pos->second.url_row);
@@ -702,7 +702,7 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
 
     bool is_highly_visited_host =
         !host_filter.empty() ||
-        base::ranges::find(HighlyVisitedHosts(), hist_item.url().host()) !=
+        std::ranges::find(HighlyVisitedHosts(), hist_item.url().host()) !=
             HighlyVisitedHosts().end();
     ScoredHistoryMatch new_scored_match(
         hist_item, hist_pos->second.visits, lower_raw_string, lower_raw_terms,

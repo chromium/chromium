@@ -79,7 +79,8 @@ class ReaderTestThread : public base::PlatformThread::Delegate {
     // NOTE: Thread ID's are not unique on Fuchsia. Also, thread ID's on
     // Fuchsia are very large and thread_id_ may not hold the true thread ID
     // value. Regardless, the unit tests will run successfully.
-    thread_id_ = base::PlatformThread::CurrentId();
+    thread_id_ = static_cast<uint32_t>(
+        base::PlatformThread::CurrentId().truncate_to_int32_for_display_only());
     for (int i = 0;
          static_cast<uint32_t>(i) < thread_test_config_.dbg_commands[0].size();
          ++i) {

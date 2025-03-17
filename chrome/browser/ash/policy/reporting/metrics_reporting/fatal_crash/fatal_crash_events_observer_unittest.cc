@@ -231,40 +231,15 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
   void SimulateUserLogin(std::string_view user_email,
                          user_manager::UserType user_type,
                          bool is_user_affiliated) {
-    if (is_user_affiliated) {
-      SimulateAffiliatedUserLogin(user_email, user_type);
-    } else {
-      // Calls the proxy of the parent's `SimulateUserLogin`.
-      SimulateUserLogin(std::string(user_email), user_type);
-    }
+    NoSessionAshTestBase::SimulateUserLogin(
+        {.display_email = user_email,
+         .user_type = user_type,
+         .is_account_managed = is_user_affiliated});
   }
 
   FatalCrashEventsObserver::TestEnvironment fatal_crash_test_environment_;
 
  private:
-  // Similar to `AshTestBase::SimulateUserLogin`, except the user is
-  // affiliated.
-  void SimulateAffiliatedUserLogin(std::string_view user_email,
-                                   user_manager::UserType user_type) {
-    const auto account_id = AccountId::FromUserEmail(std::string(user_email));
-    GetSessionControllerClient()->AddUserSession(
-        account_id, account_id.GetUserEmail(), user_type,
-        /*provide_pref_service=*/true, /*is_new_profile=*/false,
-        /*given_name=*/std::string(), /*is_managed=*/true);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-    GetSessionControllerClient()->SetSessionState(
-        session_manager::SessionState::ACTIVE);
-  }
-
-  // A proxy of parent's `AshTestBase::SimulateUserLogin`. This is to make it
-  // private so that it won't be accidentally called, because every user login
-  // simulation in the tests should specify whether the user is affiliated. Use
-  // `SimulateUserLogin` defined in this class instead.
-  void SimulateUserLogin(const std::string& user_email,
-                         user_manager::UserType user_type) {
-    NoSessionAshTestBase::SimulateUserLogin(user_email, user_type);
-  }
-
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 

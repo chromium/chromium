@@ -46,6 +46,7 @@
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <sanitizer/asan_interface.h>
+
 #include "base/debug/asan_service.h"
 #endif
 
@@ -166,12 +167,12 @@ static_assert([]() constexpr {
     Int* array = new Int[4]();
     {
       raw_ptr<Int, base::RawPtrTraits::kAllowPtrArithmetic> ra(array);
-      ++ra;      // operator++()
-      --ra;      // operator--()
-      ra++;      // operator++(int)
-      ra--;      // operator--(int)
-      ra += 1u;  // operator+=()
-      ra -= 1u;  // operator-=()
+      ++ra;                                    // operator++()
+      --ra;                                    // operator--()
+      ra++;                                    // operator++(int)
+      ra--;                                    // operator--(int)
+      ra += 1u;                                // operator+=()
+      ra -= 1u;                                // operator-=()
       ra = ra + 1;                             // operator+(raw_ptr,int)
       ra = 1 + ra;                             // operator+(int,raw_ptr)
       ra = ra - 2;                             // operator-(raw_ptr,int)
@@ -286,9 +287,7 @@ struct Derived : Base1, Base2 {
 
 class RawPtrTest : public Test {
  protected:
-  void SetUp() override {
-    RawPtrCountingImpl::ClearCounters();
-  }
+  void SetUp() override { RawPtrCountingImpl::ClearCounters(); }
 };
 
 // Use this instead of std::ignore, to prevent the instruction from getting
@@ -454,11 +453,11 @@ TEST_F(RawPtrTest, ClearAndDelete) {
   ptr.ClearAndDelete();
 
   EXPECT_THAT((CountingRawPtrExpectations{
-                .wrap_raw_ptr_cnt = 1,
-                .release_wrapped_ptr_cnt = 1,
-                .get_for_dereference_cnt = 0,
-                .get_for_extraction_cnt = 1,
-                .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_cnt = 1,
+                  .release_wrapped_ptr_cnt = 1,
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 1,
+                  .wrapped_ptr_swap_cnt = 0,
               }),
               CountersMatch());
   EXPECT_EQ(ptr.get(), nullptr);
@@ -469,11 +468,11 @@ TEST_F(RawPtrTest, ClearAndDeleteArray) {
   ptr.ClearAndDeleteArray();
 
   EXPECT_THAT((CountingRawPtrExpectations{
-                .wrap_raw_ptr_cnt = 1,
-                .release_wrapped_ptr_cnt = 1,
-                .get_for_dereference_cnt = 0,
-                .get_for_extraction_cnt = 1,
-                .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_cnt = 1,
+                  .release_wrapped_ptr_cnt = 1,
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 1,
+                  .wrapped_ptr_swap_cnt = 0,
               }),
               CountersMatch());
   EXPECT_EQ(ptr.get(), nullptr);
@@ -915,11 +914,14 @@ TEST_F(RawPtrTest, UpcastPerformance) {
 
   {
     Derived derived_val(42, 84, 1024);
-    CountingRawPtr<Derived> checked_derived_ptr = &derived_val;
-    CountingRawPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr));
-    CountingRawPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr));
-    checked_base1_ptr = std::move(checked_derived_ptr);
-    checked_base2_ptr = std::move(checked_derived_ptr);
+    CountingRawPtr<Derived> checked_derived_ptr1 = &derived_val;
+    CountingRawPtr<Derived> checked_derived_ptr2 = &derived_val;
+    CountingRawPtr<Derived> checked_derived_ptr3 = &derived_val;
+    CountingRawPtr<Derived> checked_derived_ptr4 = &derived_val;
+    CountingRawPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr1));
+    CountingRawPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr2));
+    checked_base1_ptr = std::move(checked_derived_ptr3);
+    checked_base2_ptr = std::move(checked_derived_ptr4);
   }
 
   EXPECT_THAT((CountingRawPtrExpectations{
@@ -1310,6 +1312,20 @@ TEST_F(RawPtrTest, OperatorsUseGetForComparison) {
 
 // This test checks how the std library handles collections like
 // std::vector<raw_ptr<T>>.
+//
+// Currently, reallocating std::vector's storage (e.g. when growing the vector)
+// requires calling raw_ptr's destructor on the old storage (after
+// std::move-ing the data to the new storage).  In the future we hope that
+// TRIVIAL_ABI (or [trivially_relocatable]] proposed by P1144 [1]) will allow
+// memcpy-ing the elements into the new storage (without invoking destructors
+// and move constructors and/or move assignment operators).  At that point, the
+// assert in the test should be modified to capture the new, better behavior.
+//
+// In the meantime, this test ensures that raw_ptr<T> stored in a std::vector
+// passes basic smoke tests.
+//
+// [1]
+// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1144r5.html#wording-attribute
 TEST_F(RawPtrTest, TrivialRelocability) {
   std::vector<CountingRawPtr<int>> vector;
   int x = 123;
@@ -1326,7 +1342,19 @@ TEST_F(RawPtrTest, TrivialRelocability) {
     }
     number_of_capacity_changes++;
   } while (number_of_capacity_changes < 10);
+#if PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||   \
+    PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) || \
+    PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||     \
+    PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+  // TODO(lukasza): In the future (once C++ language and std library
+  // support custom trivially relocatable objects) this #if branch can
+  // be removed (keeping only the right long-term expectation from the
+  // #else branch).
+  EXPECT_NE(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
+#else
+  // This is the right long-term expectation.
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
+#endif
   // Basic smoke test that raw_ptr elements in a vector work okay.
   for (const auto& elem : vector) {
     EXPECT_EQ(elem.get(), &x);

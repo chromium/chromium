@@ -55,6 +55,9 @@ TraceNetLogObserver::~TraceNetLogObserver() {
 
 void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
   base::Value::Dict params = entry.params.Clone();
+  // Add source's start time as a parameter. The net-log viewer requires it.
+  params.Set("source_start_time",
+             NetLog::TickCountToString(entry.source.start_time));
   switch (entry.phase) {
     case NetLogEventPhase::BEGIN:
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(

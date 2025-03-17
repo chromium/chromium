@@ -25,8 +25,8 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
@@ -103,8 +103,8 @@ void GetBundlePathFromCommandLine(
             }
 
             return IsolatedWebAppInstallSource::FromDevCommandLine(
-                IwaSourceBundleDevModeWithFileOp(absolute_path,
-                                                 kDefaultBundleDevFileOp));
+                IwaSourceBundleDevModeWithFileOp(
+                    absolute_path, IwaSourceBundleDevFileOp::kCopy));
           },
           std::move(switch_value)),
       std::move(callback));
@@ -318,7 +318,7 @@ IsolatedWebAppInstallationManager::CreateInstallSource(
           base::Overloaded{
               [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
                 return IwaSourceBundleDevModeWithFileOp(
-                    std::move(path), kDefaultBundleDevFileOp);
+                    std::move(path), IwaSourceBundleDevFileOp::kCopy);
               },
               [](const base::ScopedTempFile* temp_file)
                   -> IwaSourceDevModeWithFileOp {

@@ -66,7 +66,8 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                 new AdaptiveToolbarStatePredictor(
                         getContext(),
                         getProfile(),
-                        new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
+                        new ActivityAndroidPermissionDelegate(new WeakReference(getActivity())),
+                        /* behavior= */ null));
         mRadioButtonGroup.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     AdaptiveToolbarPrefs.saveToolbarButtonManualOverride((int) newValue);

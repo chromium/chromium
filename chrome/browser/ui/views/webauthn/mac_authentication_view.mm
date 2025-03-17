@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/scoped_lacontext.h"
@@ -155,12 +156,12 @@ void MacAuthenticationView::OnAuthenticationComplete(bool success) {
 }
 
 void MacAuthenticationView::OnTouchIDAnimationComplete(bool success) {
-  std::optional<crypto::ScopedLAContext> lacontext;
+  std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
   if (success) {
-    lacontext.emplace(storage_->context);
+    local_auth_token.emplace(storage_->context);
   }
   storage_->context = nil;
-  std::move(callback_).Run(std::move(lacontext));
+  std::move(callback_).Run(std::move(local_auth_token));
 }
 
 BEGIN_METADATA(MacAuthenticationView)

@@ -867,6 +867,63 @@ class OperatorCatchSubscribeDelegate final
   Member<V8CatchCallback> catch_callback_;
 };
 
+class OperatorFinallySubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorFinallySubscribeDelegate(Observable* source_observable,
+                                   V8VoidFunction* callback)
+      : source_observable_(source_observable), callback_(callback) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    subscriber->addTeardown(callback_);
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+    visitor->Trace(callback_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* subscriber, ScriptState* script_state)
+        : subscriber_(subscriber), script_state_(script_state) {
+      CHECK(subscriber_);
+      CHECK(script_state_);
+    }
+
+    void Next(ScriptValue value) override { subscriber_->next(value); }
+
+    void Error(ScriptState*, ScriptValue error) override {
+      subscriber_->error(script_state_, error);
+    }
+
+    void Complete() override { subscriber_->complete(script_state_); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+  Member<V8VoidFunction> callback_;
+};
+
 // This is the subscribe delegate for the `inspect()` operator. It allows one to
 // supply a pseudo "Observer" dictionary, specifically an `ObservableInspector`,
 // which can tap into the direct outputs of a source Observable. It mirrors its
@@ -1655,15 +1712,6 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         return;
       }
 
-      // This happens if `ScriptIterator::FromIterable()`, which runs script,
-      // aborts the subscription. In that case, we respect the abort and leave
-      // the iterator alone.
-      if (subscriber_->signal()->aborted()) {
-        return;
-      }
-
-      abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
-
       // Note that it's possible for `iterator_.IsNull()` to be true here, and
       // we have to handle it appropriately. Here's why:
       //
@@ -1682,11 +1730,19 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         // The object failed to convert to an async or sync iterable.
         v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
             script_state->GetIsolate(), "Object must be iterable");
-        ClearAbortAlgorithm();
         subscriber->error(script_state,
                           ScriptValue(script_state->GetIsolate(), type_error));
         return;
       }
+
+      // This happens if `ScriptIterator::FromIterable()`, which runs script,
+      // aborts the subscription. In that case, we respect the abort and leave
+      // the iterator alone.
+      if (subscriber_->signal()->aborted()) {
+        return;
+      }
+
+      abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
 
       // "Run |nextAlgorithm| given |subscriber| and |iteratorRecord|."
       GetNextValue(subscriber, script_state);
@@ -1987,6 +2043,28 @@ class OperatorFromIterableSubscribeDelegate final
         return;
       }
 
+      // This happens if the `@@iterator` implementation is undefined or null.
+      // When `ScriptIterator::FromIterable()` encounters this, instead of
+      // throwing as ECMAScript's `GetIterator()` [1] calls for, it silently
+      // returns a null iterator to give embedders a chance to override the
+      // behavior. We do not want to override the behavior in this case, so we
+      // throw, which is called for in the Observable spec [2].
+      //
+      // [1]: https://tc39.es/ecma262/#sec-getiterator.
+      // [2]: http://wicg.github.io/observable/#from-iterable-conversion
+      if (iterator_.IsNull()) {
+        v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
+            script_state->GetIsolate(),
+            "@@iterator must not be undefined or null");
+        ApplyContextToException(
+            script_state_, type_error,
+            ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
+                             "subscribe"));
+        subscriber->error(script_state,
+                          ScriptValue(script_state->GetIsolate(), type_error));
+        return;
+      }
+
       // This happens if `ScriptIterator::FromIterable()`, which runs script,
       // aborts the subscription. In that case, we respect the abort and leave
       // the iterator alone.
@@ -1996,17 +2074,14 @@ class OperatorFromIterableSubscribeDelegate final
 
       abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
 
-      if (!iterator_.IsNull()) {
-        while (
-            iterator_.Next(execution_context, PassThroughException(isolate))) {
-          CHECK(!try_catch.HasCaught());
+      while (iterator_.Next(execution_context, PassThroughException(isolate))) {
+        CHECK(!try_catch.HasCaught());
 
-          v8::Local<v8::Value> value = iterator_.GetValue().ToLocalChecked();
-          subscriber->next(ScriptValue(isolate, value));
+        v8::Local<v8::Value> value = iterator_.GetValue().ToLocalChecked();
+        subscriber->next(ScriptValue(isolate, value));
 
-          if (subscriber->signal()->aborted()) {
-            break;
-          }
+        if (subscriber->signal()->aborted()) {
+          break;
         }
       }
 
@@ -2565,39 +2640,40 @@ void Observable::SubscribeInternal(
   //      this specific subscription. No `observer_union` is passed in.
   CHECK_NE(!!observer_union, !!internal_observer);
 
-  // Build and initialize a `Subscriber` with a dictionary of `Observer`
-  // callbacks.
-  Subscriber* subscriber = nullptr;
+  ObservableInternalObserver* observer = nullptr;
   if (observer_union) {
     // Case (1) above.
     switch (observer_union->GetContentType()) {
       case V8UnionObserverOrObserverCallback::ContentType::kObserver: {
-        Observer* observer = observer_union->GetAsObserver();
-        ScriptCallbackInternalObserver* constructed_internal_observer =
-            MakeGarbageCollected<ScriptCallbackInternalObserver>(
-                observer->hasNext() ? observer->next() : nullptr,
-                observer->hasError() ? observer->error() : nullptr,
-                observer->hasComplete() ? observer->complete() : nullptr);
-
-        subscriber = MakeGarbageCollected<Subscriber>(
-            PassKey(), script_state, constructed_internal_observer, options);
+        Observer* script_observer = observer_union->GetAsObserver();
+        observer = MakeGarbageCollected<ScriptCallbackInternalObserver>(
+            script_observer->hasNext() ? script_observer->next() : nullptr,
+            script_observer->hasError() ? script_observer->error() : nullptr,
+            script_observer->hasComplete() ? script_observer->complete()
+                                           : nullptr);
         break;
       }
       case V8UnionObserverOrObserverCallback::ContentType::kObserverCallback:
-        ScriptCallbackInternalObserver* constructed_internal_observer =
-            MakeGarbageCollected<ScriptCallbackInternalObserver>(
-                /*next=*/observer_union->GetAsObserverCallback(),
-                /*error_callback=*/nullptr, /*complete_callback=*/nullptr);
-
-        subscriber = MakeGarbageCollected<Subscriber>(
-            PassKey(), script_state, constructed_internal_observer, options);
+        observer = MakeGarbageCollected<ScriptCallbackInternalObserver>(
+            /*next=*/observer_union->GetAsObserverCallback(),
+            /*error_callback=*/nullptr, /*complete_callback=*/nullptr);
         break;
     }
   } else {
     // Case (2) above.
-    subscriber = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
-                                                  internal_observer, options);
+    observer = internal_observer;
   }
+
+  CHECK(observer);
+  if (weak_subscriber_ && weak_subscriber_->active()) {
+    weak_subscriber_->RegisterNewObserver(script_state, observer, options);
+    return;
+  }
+
+  // Construct `weak_subscriber_` for the first subscription. This will take
+  // care of registering `observer` as the first observer.
+  weak_subscriber_ = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
+                                                      observer, options);
 
   // Exactly one of `subscribe_callback_` or `subscribe_delegate_` is non-null.
   // Use whichever is provided.
@@ -2605,7 +2681,7 @@ void Observable::SubscribeInternal(
       << "Exactly one of subscribe_callback_ or subscribe_delegate_ should be "
          "non-null";
   if (subscribe_delegate_) {
-    subscribe_delegate_->OnSubscribe(subscriber, script_state);
+    subscribe_delegate_->OnSubscribe(weak_subscriber_, script_state);
     return;
   }
 
@@ -2627,10 +2703,30 @@ void Observable::SubscribeInternal(
 
   ScriptState::Scope scope(script_state);
   v8::TryCatch try_catch(script_state->GetIsolate());
-  std::ignore = subscribe_callback_->Invoke(nullptr, subscriber);
+  std::ignore = subscribe_callback_->Invoke(nullptr, weak_subscriber_);
   if (try_catch.HasCaught()) {
-    subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
-                                                try_catch.Exception()));
+    // There are two cases where we might have a JS exception on the stack here:
+    //   1. The `subscribe_callback_` immediately started pushing values to the
+    //      observer, and somewhere along the way an exception was thrown. In
+    //      this case, `weak_subscriber_` is non-null, and still active. Report
+    //      the exception to it.
+    if (weak_subscriber_->active()) {
+      weak_subscriber_->error(
+          script_state,
+          ScriptValue(script_state->GetIsolate(), try_catch.Exception()));
+    } else {
+      // 2. The `subscriber_callback_` immediately closed the subscription, and
+      //    during this, an error was thrown (an exception-throwing `complete()`
+      //    handler for example). In that case, `weak_subscriber_` is non-null
+      //    but inactive. Report the exception to the global instead of the
+      //    subscriber.
+      if (!script_state->ContextIsValid()) {
+        CHECK(!GetExecutionContext());
+        return;
+      }
+      V8ScriptRunner::ReportException(script_state->GetIsolate(),
+                                      try_catch.Exception());
+    }
   }
 }
 
@@ -2862,6 +2958,13 @@ Observable* Observable::catchImpl(ScriptState*,
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
       MakeGarbageCollected<OperatorCatchSubscribeDelegate>(this, callback));
+  return return_observable;
+}
+
+Observable* Observable::finally(ScriptState*, V8VoidFunction* callback) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorFinallySubscribeDelegate>(this, callback));
   return return_observable;
 }
 
@@ -3193,6 +3296,7 @@ ScriptPromise<IDLAny> Observable::ReduceInternal(
 void Observable::Trace(Visitor* visitor) const {
   visitor->Trace(subscribe_callback_);
   visitor->Trace(subscribe_delegate_);
+  visitor->Trace(weak_subscriber_);
 
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

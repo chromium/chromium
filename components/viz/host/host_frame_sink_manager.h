@@ -221,6 +221,18 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
           rir_delegate_receiver);
 
+  // Notifies the VizCompositor thread (at InputManager level) about block state
+  // changes of |render_input_routers|, for input event handling with
+  // InputVizard.
+  void NotifyRendererBlockStateChanged(
+      bool blocked,
+      const std::vector<FrameSinkId>& render_input_routers);
+
+  // Requests input handling to be transferred back to BrowserMain thread from
+  // VizCompositor thread for cases like touch selection, overscrolls. See
+  // crbug.com/392044047 for more details.
+  void RequestInputBack();
+
   using ScreenshotDestinationReadyCallback =
       base::OnceCallback<void(const SkBitmap& copy_output)>;
   // Sets the callback which is invoked when a `CopyOutputResult` associated

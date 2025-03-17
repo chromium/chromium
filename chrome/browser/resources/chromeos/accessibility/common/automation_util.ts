@@ -9,7 +9,8 @@
 import {AutomationPredicate} from './automation_predicate.js';
 import {constants} from './constants.js';
 import {TestImportManager} from './testing/test_import_manager.js';
-import {AutomationTreeWalker, AutomationTreeWalkerRestriction} from './tree_walker.js';
+import type {AutomationTreeWalkerRestriction} from './tree_walker.js';
+import {AutomationTreeWalker} from './tree_walker.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 const HasPopup = chrome.automation.HasPopup;

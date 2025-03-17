@@ -89,10 +89,10 @@ class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
     raw_storage_->budgets_data()->TryGetData(site_key, &budgets);
 
     google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
-        budget_entries =
-            budget_key.api() == PrivateAggregationCallerApi::kProtectedAudience
-                ? budgets.mutable_protected_audience_budgets()
-                : budgets.mutable_shared_storage_budgets();
+        budget_entries = budget_key.caller_api() ==
+                                 PrivateAggregationCallerApi::kProtectedAudience
+                             ? budgets.mutable_protected_audience_budgets()
+                             : budgets.mutable_shared_storage_budgets();
 
     proto::PrivateAggregationBudgetEntry* new_budget = budget_entries->Add();
     new_budget->set_entry_start_timestamp(timestamp);
@@ -208,7 +208,7 @@ class PrivateAggregationBudgeterTest : public testing::Test {
     return PrivateAggregationBudgetKey::CreateForTesting(
         /*origin=*/url::Origin::Create(GURL("https://a.example/")),
         /*api_invocation_time=*/kExampleTime,
-        /*api=*/PrivateAggregationCallerApi::kProtectedAudience);
+        /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience);
   }
 
   base::FilePath db_path() const {
@@ -2091,7 +2091,7 @@ TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedAfterConsumeBudget) {
       PrivateAggregationBudgetKey::CreateForTesting(
           /*origin=*/url::Origin::Create(GURL("https://b.example/")),
           /*api_invocation_time=*/kExampleTime,
-          /*api=*/PrivateAggregationCallerApi::kProtectedAudience);
+          /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience);
   base::RunLoop run_loop;
   budgeter()->ConsumeBudget(
       /*budget=*/1, non_stale_key,

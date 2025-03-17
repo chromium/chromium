@@ -75,10 +75,14 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
   bool was_callback_invoked = false;
   PurchaseActionResult purchase_action_result = PurchaseActionResult::kResultOk;
   signin::IdentityTestEnvironment identity_test_environment;
+  SecurePayload secure_payload;
+  secure_payload.action_token = {'A', 'c', 't', 'i', 'o', 'n'};
+  secure_payload.secure_data.emplace_back(1, "value_1");
+  secure_payload.secure_data.emplace_back(2, "value_2");
 
   apiClient.InvokePurchaseAction(
       identity_test_environment.MakeAccountAvailable("test@example.test"),
-      std::vector<uint8_t>{'A', 'c', 't', 'i', 'o', 'n'},
+      secure_payload,
       base::BindOnce(&CaptureResultEnum, &was_callback_invoked,
                      &purchase_action_result));
 

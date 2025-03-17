@@ -25,7 +25,7 @@ suite('AppearanceTest', () => {
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let metrics: MetricsTracker;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
@@ -175,7 +175,7 @@ suite('AppearanceTest', () => {
         // Act.
         appearanceElement.$.setClassicChromeButton.focus();
         assertEquals(
-            appearanceElement.shadowRoot!.activeElement,
+            appearanceElement.shadowRoot.activeElement,
             appearanceElement.$.setClassicChromeButton);
 
         theme = createTheme();
@@ -184,7 +184,7 @@ suite('AppearanceTest', () => {
 
         // Assert.
         assertEquals(
-            appearanceElement.shadowRoot!.activeElement,
+            appearanceElement.shadowRoot.activeElement,
             appearanceElement.$.editThemeButton);
       });
 
@@ -197,7 +197,7 @@ suite('AppearanceTest', () => {
 
         callbackRouterRemote.setTheme(theme);
         await callbackRouterRemote.$.flushForTesting();
-        const focusedElement = appearanceElement.shadowRoot!.activeElement;
+        const focusedElement = appearanceElement.shadowRoot.activeElement;
         assertNotEquals(
             focusedElement, appearanceElement.$.setClassicChromeButton);
 
@@ -209,7 +209,7 @@ suite('AppearanceTest', () => {
 
         // Assert.
         assertEquals(
-            appearanceElement.shadowRoot!.activeElement, focusedElement);
+            appearanceElement.shadowRoot.activeElement, focusedElement);
       });
 
   test('1P view shows when 3P theme info not set', async () => {
@@ -368,7 +368,7 @@ suite('AppearanceTest', () => {
                     appearanceElement.$.followThemeToggle.hidden,
                     showDeviceThemeToggle);
                 assertNotEquals(
-                    (appearanceElement.shadowRoot!.querySelectorAll(
+                    (appearanceElement.shadowRoot.querySelectorAll(
                          '.sp-hr')[1]! as HTMLElement)
                         .hidden,
                     showBottomDivider);
@@ -464,7 +464,7 @@ suite('AppearanceTest', () => {
     await clickEvent;
   });
 
-  suite('WallpaperSearch', async () => {
+  suite('WallpaperSearch', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         'wallpaperSearchEnabled': true,
@@ -524,7 +524,7 @@ suite('AppearanceTest', () => {
 
     test('wallpaper search button shows if it is enabled', () => {
       // Both edit buttons show.
-      assertTrue(!!appearanceElement.shadowRoot!.querySelector(
+      assertTrue(!!appearanceElement.shadowRoot.querySelector(
           '#wallpaperSearchButton'));
       assertTrue(!!appearanceElement.$.editThemeButton);
       // Buttons share space in their parent container.
@@ -599,7 +599,7 @@ suite('AppearanceTest', () => {
 
       test('wallpaper search button is not shown if it is disabled', () => {
         // Only edit theme button shows.
-        assertFalse(!!appearanceElement.shadowRoot!.querySelector(
+        assertFalse(!!appearanceElement.shadowRoot.querySelector(
             '#wallpaperSearchButton'));
         assertTrue(!!appearanceElement.$.editThemeButton);
         // Edit theme button takes up the full container.
@@ -641,9 +641,9 @@ suite('AppearanceTest', () => {
       idsControlledByIsSourceTabFirstPartyNtp.forEach(
           id => assertEquals(
               isSourceTabFirstPartyNtp,
-              !!appearanceElement.shadowRoot!.querySelector(id)));
+              !!appearanceElement.shadowRoot.querySelector(id)));
       idsNotControlledByIsSourceTabFirstPartyNtp.forEach(
-          id => assertTrue(!!appearanceElement.shadowRoot!.querySelector(id)));
+          id => assertTrue(!!appearanceElement.shadowRoot.querySelector(id)));
     };
 
     await[true, false].forEach(async b => {

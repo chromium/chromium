@@ -146,12 +146,11 @@ class ProfilePrefStoreManagerTest : public testing::Test,
         mock_validation_delegate_record_);
 
     ProfilePrefStoreManager::RegisterProfilePrefs(profile_pref_registry_.get());
-    for (const prefs::TrackedPreferenceMetadata* it = kConfiguration;
-         it != kConfiguration + std::size(kConfiguration); ++it) {
-      if (it->strategy == PrefTrackingStrategy::ATOMIC) {
-        profile_pref_registry_->RegisterStringPref(it->name, std::string());
+    for (const prefs::TrackedPreferenceMetadata& config : kConfiguration) {
+      if (config.strategy == PrefTrackingStrategy::ATOMIC) {
+        profile_pref_registry_->RegisterStringPref(config.name, std::string());
       } else {
-        profile_pref_registry_->RegisterDictionaryPref(it->name);
+        profile_pref_registry_->RegisterDictionaryPref(config.name);
       }
     }
     profile_pref_registry_->RegisterStringPref(kUnprotectedPref, std::string());

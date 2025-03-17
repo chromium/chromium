@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/viz/common/features.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
@@ -76,16 +75,7 @@ VizCompositorThreadRunnerWebView::VizCompositorThreadRunnerWebView()
 void VizCompositorThreadRunnerWebView::InitFrameSinkManagerOnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
 
-  // Android doesn't support software compositing, but in some cases
-  // unaccelerated canvas can use SharedBitmaps as resource so we create
-  // SharedBitmapManager anyway.
-  // TODO(crbug.com/40120216): Stop using SharedBitmapManager after fixing
-  // fallback to SharedBitmap.
-  server_shared_bitmap_manager_ =
-      std::make_unique<viz::ServerSharedBitmapManager>();
-
-  auto init_params = viz::FrameSinkManagerImpl::InitParams(
-      server_shared_bitmap_manager_.get());
+  auto init_params = viz::FrameSinkManagerImpl::InitParams();
 
   if (features::UseWebViewNewInvalidateHeuristic()) {
     // HWUI has 2 frames pipelineing and we need another one because we force

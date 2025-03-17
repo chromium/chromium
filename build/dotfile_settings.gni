@@ -6,7 +6,7 @@
 # to make it easier to roll new versions of //build in.
 
 build_dotfile_settings = {
-  exec_script_whitelist = [
+  exec_script_allowlist = [
     "//build/config/android/rules.gni",
     "//build/config/apple/mobile_config.gni",
     "//build/config/chromeos/rules.gni",
@@ -25,7 +25,6 @@ build_dotfile_settings = {
     "//build/config/mac/rules.gni",
     "//build/config/posix/BUILD.gn",
     "//build/config/rust.gni",
-    "//build/config/sysroot.gni",
     "//build/config/win/BUILD.gn",
     "//build/config/win/visual_studio_version.gni",
     "//build/rust/analyze.gni",
@@ -35,11 +34,14 @@ build_dotfile_settings = {
     "//build/toolchain/concurrent_links.gni",
     "//build/toolchain/nacl/BUILD.gn",
     "//build/toolchain/rbe.gni",
-    "//build/toolchain/siso.gni",
     "//build/toolchain/toolchain.gni",
     "//build/toolchain/win/BUILD.gn",
     "//build/toolchain/win/win_toolchain_data.gni",
     "//build/toolchain/zos/BUILD.gn",
     "//build/util/branding.gni",
   ]
+
+  # TODO(crbug.com/389986807) - move other clients to `exec_script_allowlist`
+  # so that we don't need to keep supporting `exec_script_whitelist`.
+  exec_script_whitelist = exec_script_allowlist
 }

@@ -92,7 +92,6 @@ source_set("webrtc") {
     "//base",
     "//build:android_buildflags",
     "//build:buildflag_header_h",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/common:mojo_bindings",
@@ -129,8 +128,10 @@ source_set("webrtc") {
     "//chrome/browser/media/prefs",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/policy:policy_util",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:channel_info",
@@ -224,12 +225,12 @@ source_set("webrtc") {
     deps += [ "//components/remote_cocoa/browser" ]
   }
 
-  if ((is_linux || is_chromeos_lacros) && use_ozone) {
+  if (is_linux && use_ozone) {
     sources += [ "window_icon_util_ozone.cc" ]
     deps += [ "//ui/ozone" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "desktop_media_list_ash.cc",
       "desktop_media_list_ash.h",
@@ -246,6 +247,7 @@ source_set("webrtc") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/media_client",
       "//chromeos/ash/components/system",
@@ -263,14 +265,6 @@ source_set("webrtc") {
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos/policy/dlp" ]
   }
 
   if (is_win) {

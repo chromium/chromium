@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -31,7 +32,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 
 /** Unit tests for LocationBarFocusScrimHandler. */
@@ -44,7 +45,7 @@ public class LocationBarFocusScrimHandlerTest {
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private Configuration mConfiguration;
-    @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private ScrimManager mScrimManager;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
 
@@ -57,7 +58,7 @@ public class LocationBarFocusScrimHandlerTest {
         doReturn(mConfiguration).when(mResources).getConfiguration();
         mScrimHandler =
                 new LocationBarFocusScrimHandler(
-                        mScrimCoordinator,
+                        mScrimManager,
                         (visible) -> {},
                         mContext,
                         mLocationBarDataProvider,
@@ -72,14 +73,14 @@ public class LocationBarFocusScrimHandlerTest {
         doReturn(false).when(mNewTabPageDelegate).isLocationBarShown();
         mScrimHandler.onUrlFocusChange(true);
 
-        verify(mScrimCoordinator).showScrim(any());
+        verify(mScrimManager).showScrim(any());
 
         mScrimHandler.onUrlFocusChange(false);
-        verify(mScrimCoordinator).hideScrim(true);
+        verify(mScrimManager).hideScrim(any(), eq(true));
 
         // A second de-focus shouldn't trigger another hide.
         mScrimHandler.onUrlFocusChange(false);
-        verify(mScrimCoordinator, times(1)).hideScrim(true);
+        verify(mScrimManager, times(1)).hideScrim(any(), eq(true));
     }
 
     @Test
@@ -88,10 +89,10 @@ public class LocationBarFocusScrimHandlerTest {
         doReturn(true).when(mNewTabPageDelegate).isLocationBarShown();
         mScrimHandler.onUrlFocusChange(true);
 
-        verify(mScrimCoordinator, never()).showScrim(any());
+        verify(mScrimManager, never()).showScrim(any());
 
         mScrimHandler.onUrlAnimationFinished(true);
-        verify(mScrimCoordinator).showScrim(any());
+        verify(mScrimManager).showScrim(any());
     }
 
     @Test

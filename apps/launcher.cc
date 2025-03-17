@@ -21,7 +21,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -130,15 +129,6 @@ class PlatformAppPathLauncher
   PlatformAppPathLauncher(const PlatformAppPathLauncher&) = delete;
   PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
-  void set_action_data(std::optional<app_runtime::ActionData> action_data) {
-#if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kApiRuntimeActionData)) {
-      action_data_ = std::move(action_data);
-    }
-#endif
-  }
-
   void set_launch_source(extensions::AppLaunchSource launch_source) {
     launch_source_ = launch_source;
   }
@@ -223,13 +213,6 @@ class PlatformAppPathLauncher
 
     app_runtime::LaunchData launch_data;
 
-    // TODO(crbug.com/40235429): This conditional block is being added here
-    // temporarily, and should be removed once the underlying type of
-    // |launch_data.action_data| is wrapped with std::optional<T>.
-    if (action_data_) {
-      launch_data.action_data = std::move(*action_data_);
-      action_data_.reset();
-    }
     if (!handler_id_.empty())
       launch_data.id = handler_id_;
 
@@ -345,8 +328,7 @@ class PlatformAppPathLauncher
     }
 
     AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
-        context_, app, launch_source_, handler_id_, entries_, granted_entries,
-        std::move(action_data_));
+        context_, app, launch_source_, handler_id_, entries_, granted_entries);
   }
 
   const Extension* GetExtension() const {
@@ -362,7 +344,6 @@ class PlatformAppPathLauncher
   const extensions::ExtensionId extension_id;
   extensions::AppLaunchSource launch_source_ =
       extensions::AppLaunchSource::kSourceFileHandler;
-  std::optional<app_runtime::ActionData> action_data_;
   // A list of files and directories to be passed through to the app.
   std::vector<base::FilePath> entry_paths_;
   // A corresponding list with EntryInfo for every base::FilePath in
@@ -398,7 +379,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
   // check in case this scenario does occur.
   if (extensions::KioskModeInfo::IsKioskOnly(app)) {
     bool in_kiosk_mode = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
 #endif
@@ -453,11 +434,9 @@ void LaunchPlatformAppWithFilePaths(
 }
 
 void LaunchPlatformAppWithAction(content::BrowserContext* context,
-                                 const extensions::Extension* app,
-                                 app_runtime::ActionData action_data) {
+                                 const extensions::Extension* app) {
   scoped_refptr<PlatformAppPathLauncher> launcher =
       new PlatformAppPathLauncher(context, app, base::FilePath());
-  launcher->set_action_data(std::move(action_data));
   launcher->set_launch_source(extensions::AppLaunchSource::kSourceUntracked);
   launcher->Launch();
 }
@@ -475,7 +454,7 @@ void LaunchPlatformAppWithFileHandler(
     const Extension* app,
     const std::string& handler_id,
     const std::vector<base::FilePath>& entry_paths) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       app->id(), handler_id, entry_paths);
   full_restore::SaveAppLaunchInfo(context->GetPath(), std::move(launch_info));

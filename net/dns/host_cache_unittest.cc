@@ -4,6 +4,7 @@
 
 #include "net/dns/host_cache.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -18,7 +19,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -93,8 +93,8 @@ IPAddress MakeIP(std::string_view literal) {
 
 std::vector<IPEndPoint> MakeEndpoints(std::vector<std::string> my_addresses) {
   std::vector<IPEndPoint> out(my_addresses.size());
-  base::ranges::transform(my_addresses, out.begin(),
-                          [](auto& s) { return IPEndPoint(MakeIP(s), 0); });
+  std::ranges::transform(my_addresses, out.begin(),
+                         [](auto& s) { return IPEndPoint(MakeIP(s), 0); });
   return out;
 }
 

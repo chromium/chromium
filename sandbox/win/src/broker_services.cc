@@ -735,6 +735,10 @@ void BrokerServicesBase::DestroyDesktops() {
   alt_desktop_.reset();
 }
 
+BrokerServicesDelegate* BrokerServicesBase::GetMetricsDelegate() {
+  return broker_services_delegate_.get();
+}
+
 void BrokerServicesBase::SetBrokerServicesDelegateForTesting(
     std::unique_ptr<BrokerServicesDelegate> delegate) {
   broker_services_delegate_ = std::move(delegate);

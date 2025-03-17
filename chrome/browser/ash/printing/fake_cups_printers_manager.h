@@ -62,7 +62,8 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
   void MarkPrinterAsNotAutoconfigurable(const std::string& printer_id);
   void QueryPrinterForAutoConf(
       const chromeos::Printer& printer,
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)> callback)
+      override;
   void TriggerLocalPrintersObserver();
 
  private:

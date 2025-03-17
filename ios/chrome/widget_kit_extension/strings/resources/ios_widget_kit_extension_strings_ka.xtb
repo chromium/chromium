@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1149198577555059081">მოიძიეთ ან აკრიფეთ URL</translation>
 <translation id="1324575488877808473">გახსენით Chrome, აქ თქვენი ყველაზე ხშირად მონახულებადი საიტები რომ იხილოთ.</translation>
 <translation id="2513892053093488070">ხმოვანი ძიება</translation>
 <translation id="2535710892645968259">გადადით Chrome დინოზავრის თამაშზე თქვენი ჩაკეტილი ეკრანიდან.</translation>
@@ -15,7 +16,6 @@
 <translation id="405442954313519726">ძიება და ნავიგაცია ახალ ჩანართში, ინკოგნიტო რეჟიმში, ხმის მეშვეობით ან QR კოდის საშუალებით.</translation>
 <translation id="4557098988773644458">Chrome დინოზავრის თამაშზე გადასვლა</translation>
 <translation id="4678859075583681103">წამოიწყეთ ახალი ძიება, ან გახსენით თქვენ მიერ ყველაზე ხშირად მონახულებადი საიტები თქვენი iPhone-ის მთავარი გვერდიდან.</translation>
-<translation id="4954445889641385956">მოიძიეთ ან აკრიფეთ URL</translation>
 <translation id="4962772945748414465">გაიხსნას WEBSITE_PLACEHOLDER</translation>
 <translation id="5234725349196694896">მოიძიეთ Chrome-ში თქვენი რჩეული საძიებო სისტემის მეშვეობით.</translation>
 <translation id="5277852985315196237">მოიძიეთ ან აკრიფეთ URL</translation>

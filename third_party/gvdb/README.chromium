@@ -1,0 +1,17 @@
+Name: gvdb
+URL: https://gitlab.gnome.org/GNOME/gvdb
+Version: N/A
+Revision: b54bc5da25127ef416858a3ad92e57159ff565b3
+License: LGPL-2.1
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+A simple database file format that stores a mapping from strings to GVariant
+values in a way that is extremely efficient for lookups.
+
+This is only used in tests.
+
+Local Modifications:
+None.

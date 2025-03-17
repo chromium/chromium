@@ -54,6 +54,20 @@ ParseUrlForVcn3ds(const GURL& url,
                               kAuthenticationNotCompleted);
 }
 
+PaymentsWindowManager::BnplPopupStatus ParseUrlForBnpl(
+    const GURL& url,
+    const PaymentsWindowManager::BnplContext& bnpl_context) {
+  if (url.spec().find(bnpl_context.success_url_prefix.spec()) == 0) {
+    return PaymentsWindowManager::BnplPopupStatus::kSuccess;
+  }
+
+  if (url.spec().find(bnpl_context.failure_url_prefix.spec()) == 0) {
+    return PaymentsWindowManager::BnplPopupStatus::kFailure;
+  }
+
+  return PaymentsWindowManager::BnplPopupStatus::kNotFinished;
+}
+
 UnmaskRequestDetails CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,

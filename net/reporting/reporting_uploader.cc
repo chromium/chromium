@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/elements_upload_data_stream.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
@@ -242,6 +243,12 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     upload->request->SetExtraRequestHeaderByName(
         HttpRequestHeaders::kContentType, kUploadContentType, true);
 
+    if (base::FeatureList::IsEnabled(
+            net::features::kReportingApiCorsOriginHeader)) {
+      upload->request->SetExtraRequestHeaderByName(
+          HttpRequestHeaders::kOrigin, upload->report_origin.Serialize(), true);
+    }
+
     upload->request->set_upload(ElementsUploadDataStream::CreateWithReader(
         std::move(upload->payload_reader)));
 
@@ -343,6 +350,8 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
 
   void HandlePayloadResponse(std::unique_ptr<PendingUpload> upload,
                              int response_code) {
+    // Skip the CORS check here because the result of the report upload is
+    // not exposed to the page.
     upload->RunCallback(ResponseCodeToOutcome(response_code));
   }
 

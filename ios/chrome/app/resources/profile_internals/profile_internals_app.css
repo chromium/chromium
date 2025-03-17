@@ -1,0 +1,37 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --odd-row-background-color: rgb(239, 243, 255);
+  font-size: 2rem;
+}
+
+.profile-name {
+  font-weight: bold;
+  padding-top: 40px;
+  margin: 10px;
+}
+
+.profile-attributes {
+  margin: 10px;
+}
+
+table {
+  border-style: hidden;
+  border-collapse: collapse;
+  padding-top: 20px;
+}
+
+table tr:nth-child(odd) {
+  background: var(--odd-row-background-color);
+}
+
+table td {
+  padding: 5px;
+}

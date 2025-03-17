@@ -28,8 +28,9 @@
 }
 
 - (void)failWithError:(NSError*)error expression:(NSString*)expression {
-  if (!error)
+  if (!error) {
     return;
+  }
 
   NSString* name = [NSString stringWithFormat:@"%@ helper error", [self class]];
   NSString* reason =
@@ -43,8 +44,9 @@
 - (void)fail:(BOOL)fail
      expression:(NSString*)expression
     description:(NSString*)description {
-  if (!fail)
+  if (!fail) {
     return;
+  }
 
   DLOG(WARNING) << "\n" << base::debug::StackTrace(/*count=*/15).ToString();
 

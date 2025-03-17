@@ -53,6 +53,9 @@ struct FirstPartySetsContextConfig {
   // keys are member sites and the values are the ultimate entries of the final
   // First-Party Sets combining the public sets and the modifications.
   map<SchemefulSite, FirstPartySetEntryOverride> customizations;
+
+  // The aliases that are found in customizations.
+  map<SchemefulSite, SchemefulSite> aliases;
 };
 
 // This struct must match the class fields defined in
@@ -86,7 +89,4 @@ struct GlobalFirstPartySets {
   // The config induced by the manually-supplied set. This config contains all
   // relevant ccTLD aliases.
   FirstPartySetsContextConfig manual_config;
-
-  // The aliases contained in the manually-supplied set.
-  map<SchemefulSite, SchemefulSite> manual_aliases;
 };

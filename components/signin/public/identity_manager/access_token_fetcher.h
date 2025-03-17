@@ -150,6 +150,15 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   // forever if the user is not signed in and doesn't sign in.
   enum class Mode { kImmediate, kWaitUntilRefreshTokenAvailable };
 
+  // Specifies the source of the access token which can be stored either in the
+  // profile or on the device itself.
+  enum class Source {
+    kProfile,
+#if BUILDFLAG(IS_IOS)
+    kDevice,
+#endif
+  };
+
   // Callback for when a request completes (successful or not). On successful
   // requests, |error| is NONE and |access_token_info| contains info of the
   // obtained OAuth2 access token. On failed requests, |error| contains the
@@ -171,7 +180,8 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                      const ScopeSet& scopes,
                      TokenCallback callback,
                      Mode mode,
-                     bool require_sync_consent_for_scope_verification);
+                     bool require_sync_consent_for_scope_verification,
+                     Source token_source = Source::kProfile);
 
   // Instantiates a fetcher and immediately starts the process of obtaining an
   // OAuth2 access token for |account_id| and |scopes|, allowing clients to pass
@@ -187,7 +197,8 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
       const ScopeSet& scopes,
       TokenCallback callback,
       Mode mode,
-      bool require_sync_consent_for_scope_verification);
+      bool require_sync_consent_for_scope_verification,
+      Source token_source = Source::kProfile);
 
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
   AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
@@ -235,6 +246,7 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   // contract.
   TokenCallback callback_;
   const Mode mode_;
+  const Source token_source_;
 
   // TODO(crbug.com/40067025): Remove this field once
   // kReplaceSyncPromosWithSignInPromos launches.

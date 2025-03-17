@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppNotificationsSubpage} from 'chrome://os-settings/lazy_load.js';
-import {OsSettingsRoutes, Router, routes, setAppNotificationProviderForTesting, SettingsToggleButtonElement, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {AppNotificationsSubpage} from 'chrome://os-settings/lazy_load.js';
+import type {OsSettingsRoutes, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, setAppNotificationProviderForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

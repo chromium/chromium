@@ -8,6 +8,8 @@ import("//components/vector_icons/vector_icons.gni")
 aggregate_vector_icons("components_vector_icons") {
   icon_directory = "."
 
+  generate_unittests = true
+
   sources = [
     "${branding_path_component}/product.icon",
     "${branding_path_component}/product_refresh.icon",
@@ -15,6 +17,7 @@ aggregate_vector_icons("components_vector_icons") {
     "account_circle_chrome_refresh.icon",
     "account_circle_off_chrome_refresh.icon",
     "add.icon",
+    "add_link.icon",
     "ads.icon",
     "ads_chrome_refresh.icon",
     "ads_click.icon",
@@ -52,6 +55,7 @@ aggregate_vector_icons("components_vector_icons") {
     "chat.icon",
     "chat_spark.icon",
     "check_circle.icon",
+    "checklist.icon",
     "close.icon",
     "close_chrome_refresh.icon",
     "close_rounded.icon",
@@ -72,6 +76,7 @@ aggregate_vector_icons("components_vector_icons") {
     "description.icon",
     "devices.icon",
     "devices_off.icon",
+    "directions_car.icon",
     "document_scanner.icon",
     "dogfood.icon",
     "edit.icon",
@@ -87,12 +92,12 @@ aggregate_vector_icons("components_vector_icons") {
     "extension_off.icon",
     "extension_on.icon",
     "family_link.icon",
+    "feedback.icon",
     "file_download.icon",
     "file_download_chrome_refresh.icon",
     "file_download_off_chrome_refresh.icon",
     "fingerprint.icon",
     "fingerprint_off.icon",
-    "fit_screen.icon",
     "folder.icon",
     "folder_chrome_refresh.icon",
     "folder_managed_refresh.icon",
@@ -114,6 +119,7 @@ aggregate_vector_icons("components_vector_icons") {
     "history.icon",
     "history_chrome_refresh.icon",
     "https_valid.icon",
+    "id_card.icon",
     "iframe.icon",
     "iframe_off.icon",
     "image_search.icon",
@@ -136,6 +142,7 @@ aggregate_vector_icons("components_vector_icons") {
     "location_on.icon",
     "location_on_chrome_refresh.icon",
     "lock.icon",
+    "loyalty.icon",
     "magic_button.icon",
     "media_next_track.icon",
     "media_previous_track.icon",
@@ -183,6 +190,7 @@ aggregate_vector_icons("components_vector_icons") {
     "protocol_handler_chrome_refresh.icon",
     "protocol_handler_off_chrome_refresh.icon",
     "radio_button_checked.icon",
+    "receipt_long.icon",
     "reload.icon",
     "reload_chrome_refresh.icon",
     "replay.icon",
@@ -305,6 +313,20 @@ static_library("vector_icons") {
     ":components_vector_icons",
     "//base",
     "//skia",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = filter_include(get_target_outputs(":components_vector_icons"),
+                           [ "*unittest.h" ])
+  sources += [ "vector_icons_unittest.cc" ]
+
+  deps = [
+    ":components_vector_icons",
+    "//base",
+    "//testing/gtest",
     "//ui/gfx",
   ]
 }

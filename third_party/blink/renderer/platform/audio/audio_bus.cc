@@ -35,11 +35,12 @@
 
 #include <assert.h>
 #include <math.h>
+
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
@@ -524,8 +525,8 @@ void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
     return;
   }
 
-  const float* sources[kMaxBusChannels];
-  float* destinations[kMaxBusChannels];
+  std::array<const float*, kMaxBusChannels> sources;
+  std::array<float*, kMaxBusChannels> destinations;
 
   for (unsigned i = 0; i < number_of_channels; ++i) {
     sources[i] = source_bus.Channel(i)->Data();
@@ -695,7 +696,7 @@ scoped_refptr<AudioBus> AudioBus::CreateByMixingToMono(
 }
 
 bool AudioBus::IsSilent() const {
-  return base::ranges::all_of(channels_, &AudioChannel::IsSilent);
+  return std::ranges::all_of(channels_, &AudioChannel::IsSilent);
 }
 
 void AudioBus::ClearSilentFlag() {

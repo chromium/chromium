@@ -9,8 +9,9 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -18,13 +19,13 @@
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
 #include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
-#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
-#include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -38,12 +39,6 @@ constexpr char abandoned_str[] = "Abandoned";
 constexpr char eligibility[] = "Autofill.FormsAI.Funnel.%s.Eligibility";
 constexpr char readiness_after_eligibility[] =
     "Autofill.FormsAI.Funnel.%s.ReadinessAfterEligibility";
-constexpr char suggestion_after_readiness[] =
-    "Autofill.FormsAI.Funnel.%s.SuggestionAfterReadiness";
-constexpr char loading_after_suggestion[] =
-    "Autofill.FormsAI.Funnel.%s.LoadingAfterSuggestion";
-constexpr char filling_suggestion_after_loading[] =
-    "Autofill.FormsAI.Funnel.%s.FillingSuggestionAfterLoading";
 constexpr char fill_after_suggestion[] =
     "Autofill.FormsAI.Funnel.%s.FillAfterSuggestion";
 constexpr char correction_after_fill[] =
@@ -62,30 +57,6 @@ std::string GetReadinessAfterEligibilityHistogram() {
 }
 std::string GetReadinessAfterEligibilityHistogram(bool submitted) {
   return base::StringPrintf(readiness_after_eligibility,
-                            submitted ? submitted_str : abandoned_str);
-}
-
-std::string GetSuggestionAfterReadinessHistogram() {
-  return base::StringPrintf(suggestion_after_readiness, "Aggregate");
-}
-std::string GetSuggestionAfterReadinessHistogram(bool submitted) {
-  return base::StringPrintf(suggestion_after_readiness,
-                            submitted ? submitted_str : abandoned_str);
-}
-
-std::string GetLoadingAfterSuggestionHistogram() {
-  return base::StringPrintf(loading_after_suggestion, "Aggregate");
-}
-std::string GetLoadingAfterSuggestionHistogram(bool submitted) {
-  return base::StringPrintf(loading_after_suggestion,
-                            submitted ? submitted_str : abandoned_str);
-}
-
-std::string GetFillingSuggestionAfterLoadingHistogram() {
-  return base::StringPrintf(filling_suggestion_after_loading, "Aggregate");
-}
-std::string GetFillingSuggestionAfterLoadingHistogram(bool submitted) {
-  return base::StringPrintf(filling_suggestion_after_loading,
                             submitted ? submitted_str : abandoned_str);
 }
 
@@ -108,31 +79,32 @@ std::string GetCorrectionAfterFillHistogram(bool submitted) {
 class BaseAutofillAiTest : public testing::Test {
  public:
   BaseAutofillAiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillAi, {{"skip_allowlist", "true"},
-                      {"extract_ax_tree_for_predictions", "true"}});
-    manager_ = std::make_unique<AutofillAiManager>(&client_, &decider_,
-                                                   &strike_database_);
+    manager_ = std::make_unique<AutofillAiManager>(&client_, &strike_database_);
     ON_CALL(client_, GetAutofillClient)
         .WillByDefault(testing::ReturnRef(autofill_client_));
-    ON_CALL(client_, GetUserAnnotationsService)
-        .WillByDefault(testing::Return(&user_annotations_service_));
+    ON_CALL(client_, GetEntityDataManager)
+        .WillByDefault(testing::Return(&entity_data_manager_));
   }
 
   AutofillAiManager& manager() { return *manager_; }
 
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
+  void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
+    entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
+    webdata_helper_.WaitUntilIdle();
+  }
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
+ private:
+  autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::TestAutofillClient autofill_client_;
-  testing::NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
   testing::NiceMock<MockAutofillAiClient> client_;
   std::unique_ptr<AutofillAiManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
-  user_annotations::TestUserAnnotationsService user_annotations_service_;
+  autofill::AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<autofill::EntityTable>()};
+  autofill::EntityDataManager entity_data_manager_{
+      webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
+      /*strike_database=*/nullptr};
 };
 
 // Test that the funnel metrics are logged correctly given different scenarios.
@@ -141,7 +113,7 @@ class BaseAutofillAiTest : public testing::Test {
 // funnel that was reached:
 //
 // 0) A form was loaded
-// 1) The form was detected eligible for prediction improvements filling
+// 1) The form was detected eligible for AutofillAi.
 // 2) The user had data stored to fill the loaded form.
 // 3) The user saw prediction improvements entry-point suggestions.
 // 4) The user started loading filling suggestions.
@@ -158,7 +130,7 @@ class AutofillAiFunnelMetricsTest
   bool is_form_eligible() { return std::get<1>(GetParam()) > 0; }
   bool user_has_data() { return std::get<1>(GetParam()) > 1; }
   bool user_saw_suggestions() { return std::get<1>(GetParam()) > 2; }
-  bool user_triggered_loading() { return std::get<1>(GetParam()) > 3; }
+  bool user_triggered_manual_fallbacks() { return std::get<1>(GetParam()) > 3; }
   bool user_saw_filling_suggestions() { return std::get<1>(GetParam()) > 4; }
   bool user_filled_suggestion() { return std::get<1>(GetParam()) > 5; }
   bool user_corrected_filling() { return std::get<1>(GetParam()) > 6; }
@@ -170,12 +142,6 @@ class AutofillAiFunnelMetricsTest
     histogram_tester.ExpectTotalCount(GetEligibilityHistogram(!submitted()), 0);
     histogram_tester.ExpectTotalCount(
         GetReadinessAfterEligibilityHistogram(!submitted()), 0);
-    histogram_tester.ExpectTotalCount(
-        GetSuggestionAfterReadinessHistogram(!submitted()), 0);
-    histogram_tester.ExpectTotalCount(
-        GetLoadingAfterSuggestionHistogram(!submitted()), 0);
-    histogram_tester.ExpectTotalCount(
-        GetFillingSuggestionAfterLoadingHistogram(!submitted()), 0);
     histogram_tester.ExpectTotalCount(
         GetFillAfterSuggestionHistogram(!submitted()), 0);
     histogram_tester.ExpectTotalCount(
@@ -202,46 +168,6 @@ class AutofillAiFunnelMetricsTest
     }
 
     if (user_has_data()) {
-      histogram_tester.ExpectUniqueSample(
-          GetSuggestionAfterReadinessHistogram(), user_saw_suggestions(), 1);
-      histogram_tester.ExpectUniqueSample(
-          GetSuggestionAfterReadinessHistogram(submitted()),
-          user_saw_suggestions(), 1);
-    } else {
-      histogram_tester.ExpectTotalCount(GetSuggestionAfterReadinessHistogram(),
-                                        0);
-      histogram_tester.ExpectTotalCount(
-          GetSuggestionAfterReadinessHistogram(submitted()), 0);
-    }
-
-    if (user_saw_suggestions()) {
-      histogram_tester.ExpectUniqueSample(GetLoadingAfterSuggestionHistogram(),
-                                          user_triggered_loading(), 1);
-      histogram_tester.ExpectUniqueSample(
-          GetLoadingAfterSuggestionHistogram(submitted()),
-          user_triggered_loading(), 1);
-    } else {
-      histogram_tester.ExpectTotalCount(GetLoadingAfterSuggestionHistogram(),
-                                        0);
-      histogram_tester.ExpectTotalCount(
-          GetLoadingAfterSuggestionHistogram(submitted()), 0);
-    }
-
-    if (user_triggered_loading()) {
-      histogram_tester.ExpectUniqueSample(
-          GetFillingSuggestionAfterLoadingHistogram(),
-          user_saw_filling_suggestions(), 1);
-      histogram_tester.ExpectUniqueSample(
-          GetFillingSuggestionAfterLoadingHistogram(submitted()),
-          user_saw_filling_suggestions(), 1);
-    } else {
-      histogram_tester.ExpectTotalCount(
-          GetFillingSuggestionAfterLoadingHistogram(), 0);
-      histogram_tester.ExpectTotalCount(
-          GetFillingSuggestionAfterLoadingHistogram(submitted()), 0);
-    }
-
-    if (user_saw_filling_suggestions()) {
       histogram_tester.ExpectUniqueSample(GetFillAfterSuggestionHistogram(),
                                           user_filled_suggestion(), 1);
       histogram_tester.ExpectUniqueSample(
@@ -266,20 +192,16 @@ class AutofillAiFunnelMetricsTest
     }
   }
 
+  // A form is made eligible by adding an AutofillAi type prediction.
   std::unique_ptr<autofill::FormStructure> CreateEligibleForm() {
     autofill::FormData form_data;
     auto form = std::make_unique<autofill::FormStructure>(form_data);
-    autofill::AutofillField& prediction_improvement_field =
-        test_api(*form).PushField();
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kAutofillAiRegexes,
-        autofill::IMPROVED_PREDICTION);
-#else
-    prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kLegacyRegexes,
-        autofill::IMPROVED_PREDICTION);
-#endif
+    autofill::AutofillField& autofill_ai_field = test_api(*form).PushField();
+    autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+        FieldPrediction prediction;
+    prediction.set_type(autofill::PASSPORT_NAME_TAG);
+    autofill_ai_field.set_server_predictions({prediction});
+
     return form;
   }
 
@@ -289,7 +211,8 @@ class AutofillAiFunnelMetricsTest
     autofill::AutofillField& prediction_improvement_field =
         test_api(*form).PushField();
     prediction_improvement_field.SetTypeTo(
-        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER));
+        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER),
+        autofill::AutofillPredictionSource::kHeuristics);
     return form;
   }
 };
@@ -309,13 +232,11 @@ TEST_P(AutofillAiFunnelMetricsTest, Logger) {
 
   test_api(manager()).logger().OnFormEligibilityAvailable(form.global_id(),
                                                           is_form_eligible());
+
   if (user_has_data()) {
     test_api(manager()).logger().OnFormHasDataToFill(form.global_id());
   }
-  if (user_saw_suggestions()) {
-    test_api(manager()).logger().OnSuggestionsShown(form.global_id());
-  }
-  if (user_triggered_loading()) {
+  if (user_triggered_manual_fallbacks()) {
     test_api(manager()).logger().OnTriggeredFillingSuggestions(
         form.global_id());
   }
@@ -343,30 +264,14 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   std::unique_ptr<autofill::FormStructure> form =
       is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
   // This will dictate whether we consider the form ready to be filled or not.
-  user_annotations_service_.ReplaceAllEntries(
-      {user_has_data()
-           ? std::vector<optimization_guide::proto::
-                             UserAnnotationsEntry>{optimization_guide::proto::
-                                                       UserAnnotationsEntry()}
-           : std::vector<optimization_guide::proto::UserAnnotationsEntry>{}});
+  if (user_has_data()) {
+    AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
+  }
   manager().OnFormSeen(*form);
 
-  if (user_saw_suggestions()) {
-    manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kRetrieveAutofillAi}, form->ToFormData(),
-        autofill::FormFieldData(),
-        /*update_suggestions_callback=*/{});
-  }
-  if (user_triggered_loading()) {
-    manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kAutofillAiLoadingState}, form->ToFormData(),
-        autofill::FormFieldData(),
-        /*update_suggestions_callback=*/{});
-  }
   if (user_saw_filling_suggestions()) {
     manager().OnSuggestionsShown({autofill::SuggestionType::kFillAutofillAi},
-                                 form->ToFormData(), autofill::FormFieldData(),
-                                 /*update_suggestions_callback=*/{});
+                                 form->global_id());
   }
   if (user_filled_suggestion()) {
     manager().OnDidFillSuggestion(form->global_id());

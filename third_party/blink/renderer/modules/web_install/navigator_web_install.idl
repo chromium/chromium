@@ -9,5 +9,6 @@
   ImplementedAs=NavigatorWebInstall
 ] partial interface Navigator {
   [CallWith=ScriptState, RaisesException] Promise<WebInstallResult> install();
-  [CallWith=ScriptState, RaisesException] Promise<WebInstallResult> install(USVString manifest_id, USVString install_url);
+  [CallWith=ScriptState, RaisesException] Promise<WebInstallResult> install(USVString install_url);
+  [CallWith=ScriptState, RaisesException] Promise<WebInstallResult> install(USVString install_url, USVString manifest_id);
 };

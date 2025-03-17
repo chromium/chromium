@@ -79,6 +79,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
+    static final String VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM =
+            "Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards";
     static final String MANDATORY_REAUTH_OPT_IN_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptIn";
     static final String MANDATORY_REAUTH_OPT_OUT_HISTOGRAM =
@@ -239,7 +241,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 ChromeFeatureList
                                         .AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS)
                         || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE))) {
+                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO))) {
             Preference cardBenefitsPref = new Preference(getStyledContext());
             cardBenefitsPref.setTitle(R.string.autofill_settings_page_card_benefits_label);
             cardBenefitsPref.setSummary(
@@ -258,9 +260,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             card_pref.setTitle(card.getCardLabel());
 
             // Show virtual card enabled status for enrolled cards, expiration date otherwise.
-            if (card.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
+            if (card.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED) {
                 card_pref.setSummary(R.string.autofill_virtual_card_enrolled_text);
             } else {
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE)
@@ -280,20 +280,14 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                             card.getCardArtUrl(),
                             card.getIssuerIconDrawableId(),
                             ImageSize.LARGE,
-                            ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
+                            /* showCustomIcon= */ true));
 
             if (card.getIsLocal()) {
                 card_pref.setOnPreferenceClickListener(
                         this::showLocalCardEditPageAfterAuthenticationIfRequired);
             } else {
                 card_pref.setFragment(AutofillServerCardEditor.class.getName());
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
-                    card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
-                } else {
-                    card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_text_label);
-                }
+                card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
             }
 
             Bundle args = card_pref.getExtras();
@@ -301,17 +295,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             getPreferenceScreen().addPreference(card_pref);
         }
 
-        boolean showLocalIbans =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN);
-        boolean showServerIbans =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN);
-
         // Display all IBANs.
         for (Iban iban : personalDataManager.getIbansForSettings()) {
-            if ((iban.getRecordType() == IbanRecordType.LOCAL_IBAN && !showLocalIbans)
-                    || (iban.getRecordType() == IbanRecordType.SERVER_IBAN && !showServerIbans)) {
-                continue;
-            }
             Preference iban_pref = new Preference(getStyledContext());
             iban_pref.setIcon(R.drawable.iban_icon);
             iban_pref.setSingleLineTitle(false);
@@ -358,6 +343,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                             startActivity(intent);
                         });
                 getPreferenceScreen().addPreference(addFirstCardPref);
+                RecordHistogram.recordBooleanHistogram(
+                        VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM, true);
             } else {
                 Preference addCardPref = new Preference(getStyledContext());
                 Drawable plusIcon =
@@ -370,13 +357,17 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 addCardPref.setTitle(R.string.autofill_create_credit_card);
                 addCardPref.setFragment(AutofillLocalCardEditor.class.getName());
                 getPreferenceScreen().addPreference(addCardPref);
+                // TODO: crbug.com/392952237 - Update histogram when feature flag is
+                // being cleaned up.
+                RecordHistogram.recordBooleanHistogram(
+                        VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                        personalDataManager.getCreditCardsForSettings().isEmpty());
             }
         }
 
         // Add 'Add IBAN' button. Tapping it brings up the IBAN editor which allows users to type in
         // a new IBAN.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN)
-                && personalDataManager.isAutofillPaymentMethodsEnabled()
+        if (personalDataManager.isAutofillPaymentMethodsEnabled()
                 && personalDataManager.shouldShowAddIbanButtonOnSettingsPage()) {
             Preference add_iban_pref = new Preference(getStyledContext());
             Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
@@ -492,7 +483,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
-                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
+                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
         // We require user authentication every time user tries to change this
         // preference. Set useLastValidAuth=false to skip the grace period.
         mReauthenticatorBridge.reauthenticate(
@@ -509,12 +500,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         RecordHistogram.recordEnumeratedHistogram(
                                 histogramName,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
                     } else {
                         RecordHistogram.recordEnumeratedHistogram(
                                 histogramName,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
                     }
                 });
         // Returning false here holds the toggle to still display the old value while
@@ -544,7 +535,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
                 MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
-                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
+                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
         // When mandatory reauth is enabled, offer device authentication challenge.
         mReauthenticatorBridge.reauthenticate(
                 success -> {
@@ -554,13 +545,13 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         RecordHistogram.recordEnumeratedHistogram(
                                 MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
                         showLocalCardEditPage(preference);
                     } else {
                         RecordHistogram.recordEnumeratedHistogram(
                                 MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
                     }
                 });
         return true;

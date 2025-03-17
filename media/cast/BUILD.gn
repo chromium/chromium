@@ -31,8 +31,6 @@ source_set("common") {
     "constants.h",
 
     # NOTE: Logging code is pulled in by CastEnvironment.
-    "logging/encoding_event_subscriber.cc",
-    "logging/encoding_event_subscriber.h",
     "logging/log_event_dispatcher.cc",
     "logging/log_event_dispatcher.h",
     "logging/logging_defines.cc",
@@ -40,19 +38,21 @@ source_set("common") {
     "logging/proto/proto_utils.cc",
     "logging/proto/proto_utils.h",
     "logging/raw_event_subscriber.h",
-    "logging/raw_event_subscriber_bundle.cc",
-    "logging/raw_event_subscriber_bundle.h",
     "logging/receiver_time_offset_estimator.h",
     "logging/receiver_time_offset_estimator_impl.cc",
     "logging/receiver_time_offset_estimator_impl.h",
-    "logging/simple_event_subscriber.cc",
-    "logging/simple_event_subscriber.h",
     "logging/stats_event_subscriber.cc",
     "logging/stats_event_subscriber.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//media",
+    "//media/mojo/mojom:remoting_common",
     "//third_party/openscreen/src/platform:base",
   ]
 
@@ -94,6 +94,11 @@ source_set("encoding") {
     "encoding/vpx_quantizer_parser.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     "//base",
     "//media",
@@ -103,7 +108,6 @@ source_set("encoding") {
 
   deps = [
     ":common",
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/openscreen/src/cast/streaming:common",
     "//third_party/opus",
   ]
@@ -143,6 +147,11 @@ source_set("sender") {
     "sender/video_sender.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     ":common",
     ":encoding",
@@ -150,6 +159,7 @@ source_set("sender") {
     "//components/openscreen_platform",
     "//media",
     "//media/capture:capture_base",
+    "//third_party/libyuv",
     "//third_party/openscreen/src/cast/streaming:sender",
     "//third_party/openscreen/src/platform:api",
     "//ui/gfx/geometry",
@@ -167,6 +177,10 @@ static_library("test_support") {
     "test/fake_video_encode_accelerator_factory.h",
     "test/mock_openscreen_environment.cc",
     "test/mock_openscreen_environment.h",
+    "test/mock_video_encoder.cc",
+    "test/mock_video_encoder.h",
+    "test/test_with_cast_environment.cc",
+    "test/test_with_cast_environment.h",
     "test/utility/audio_utility.cc",
     "test/utility/audio_utility.h",
     "test/utility/default_config.cc",
@@ -177,6 +191,7 @@ static_library("test_support") {
 
   deps = [
     ":common",
+    ":encoding",
     ":sender",
     "//base/test:test_support",
     "//media",
@@ -196,11 +211,12 @@ test("cast_unittests") {
     "encoding/audio_encoder_unittest.cc",
     "encoding/encoding_support_unittest.cc",
     "encoding/external_video_encoder_unittest.cc",
+    "encoding/media_video_encoder_wrapper_unittest.cc",
+    "encoding/size_adaptable_video_encoder_base_unittest.cc",
     "encoding/video_encoder_unittest.cc",
     "encoding/vpx_quantizer_parser_unittest.cc",
-    "logging/encoding_event_subscriber_unittest.cc",
+    "logging/log_event_dispatcher_unittest.cc",
     "logging/receiver_time_offset_estimator_impl_unittest.cc",
-    "logging/simple_event_subscriber_unittest.cc",
     "logging/stats_event_subscriber_unittest.cc",
     "sender/audio_sender_unittest.cc",
     "sender/openscreen_frame_sender_unittest.cc",
@@ -216,6 +232,7 @@ test("cast_unittests") {
     "//base",
     "//base/test:test_support",
     "//components/openscreen_platform",
+    "//gpu:test_support",
     "//media:test_support",
     "//media/cast/openscreen:unit_tests",
     "//media/test:run_all_unittests",

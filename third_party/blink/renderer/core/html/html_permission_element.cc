@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -97,6 +98,9 @@ constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
 // being too close.
 constexpr int kMinMargin = 4;
 constexpr float kIntersectionThreshold = 1.0f;
+
+constexpr float kDefaultSmallFontSize = 13;     // Default 'small' font size.
+constexpr float kDefaultXxxLargeFontSize = 48;  // Default 'xxxlarge' font size.
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -217,15 +221,15 @@ uint16_t GetUntranslatedMessageIDMultiplePermissions(bool granted) {
 }
 
 // Helper to get `PermissionsPolicyFeature` from permission name
-mojom::blink::PermissionsPolicyFeature PermissionNameToPermissionsPolicyFeature(
-    PermissionName permission_name) {
+network::mojom::PermissionsPolicyFeature
+PermissionNameToPermissionsPolicyFeature(PermissionName permission_name) {
   switch (permission_name) {
     case PermissionName::AUDIO_CAPTURE:
-      return mojom::blink::PermissionsPolicyFeature::kMicrophone;
+      return network::mojom::PermissionsPolicyFeature::kMicrophone;
     case PermissionName::VIDEO_CAPTURE:
-      return mojom::blink::PermissionsPolicyFeature::kCamera;
+      return network::mojom::PermissionsPolicyFeature::kCamera;
     case PermissionName::GEOLOCATION:
-      return mojom::blink::PermissionsPolicyFeature::kGeolocation;
+      return network::mojom::PermissionsPolicyFeature::kGeolocation;
     default:
       NOTREACHED() << "Not supported permission " << permission_name;
   }
@@ -566,8 +570,6 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return "being recently attached to layout tree";
-    case DisableReason::kIntersectionRecentlyFullyVisible:
-      return "being recently fully visible";
     case DisableReason::kIntersectionWithViewportChanged:
       return "intersection with viewport changed";
     case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
@@ -588,8 +590,6 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return UserInteractionDeniedReason::kRecentlyAttachedToLayoutTree;
-    case DisableReason::kIntersectionRecentlyFullyVisible:
-      return UserInteractionDeniedReason::kIntersectionRecentlyFullyVisible;
     case DisableReason::kIntersectionWithViewportChanged:
       return UserInteractionDeniedReason::kIntersectionWithViewportChanged;
     case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
@@ -611,8 +611,6 @@ AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return AtomicString("recently_attached");
-    case DisableReason::kIntersectionRecentlyFullyVisible:
-      return AtomicString("intersection_visible");
     case DisableReason::kIntersectionWithViewportChanged:
       return AtomicString("intersection_changed");
     case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
@@ -873,6 +871,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
                                     kMaxHorizontalPaddingToFontSizeRatio,
                                 /*should_multiply_by_content_size=*/false));
       builder.SetPaddingRight(builder.PaddingLeft());
+      builder.SetWidth(Length::FitContent());
     } else {
       builder.ResetPaddingLeft();
       builder.ResetPaddingRight();
@@ -894,9 +893,23 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
         /*upper_bound=*/builder.FontSize() * kMaxVerticalPaddingToFontSizeRatio,
         /*should_multiply_by_content_size=*/false));
     builder.SetPaddingBottom(builder.PaddingTop());
+    builder.SetHeight(Length::FitContent());
   } else {
     builder.ResetPaddingTop();
     builder.ResetPaddingBottom();
+  }
+
+  if (builder.BorderBottomWidth() > builder.FontSize()) {
+    builder.SetBorderBottomWidth(builder.FontSize());
+  }
+  if (builder.BorderTopWidth() > builder.FontSize()) {
+    builder.SetBorderTopWidth(builder.FontSize());
+  }
+  if (builder.BorderLeftWidth() > builder.FontSize()) {
+    builder.SetBorderLeftWidth(builder.FontSize());
+  }
+  if (builder.BorderRightWidth() > builder.FontSize()) {
+    builder.SetBorderRightWidth(builder.FontSize());
   }
 }
 
@@ -1029,15 +1042,24 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
     EmbeddedPermissionControlResult result) {
   pending_request_created_ = std::nullopt;
 
+  // The events `kDismiss` and `kResolve` will be deprecated and replaced by
+  // `kPromptaction` and `kPromptdismiss`. We will keep both for backward
+  // compability and will remove the old events in M138.
   switch (result) {
     case EmbeddedPermissionControlResult::kDismissed:
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
       DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kDismiss));
       return;
     case EmbeddedPermissionControlResult::kGranted:
       aggregated_permission_status_ = MojoPermissionStatus::GRANTED;
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptaction));
       DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kDenied:
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptaction));
       DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kNotSupported:
@@ -1065,8 +1087,9 @@ void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
 
   // Always keep `clicking_enabled_state_` up-to-date
   clicking_enabled_state_ = state;
-  DispatchEvent(*Event::CreateCancelableBubble(
-      event_type_names::kValidationstatuschange));
+  EnqueueEvent(
+      *Event::CreateCancelableBubble(event_type_names::kValidationstatuschange),
+      TaskType::kDOMManipulation);
 }
 
 void HTMLPermissionElement::UpdateSnapshot() {
@@ -1289,11 +1312,11 @@ void HTMLPermissionElement::RefreshDisableReasonsAndUpdateTimer() {
 }
 
 void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
-  if (base::ranges::any_of(permission_status_map_, [](const auto& status) {
+  if (std::ranges::any_of(permission_status_map_, [](const auto& status) {
         return status.value == MojoPermissionStatus::DENIED;
       })) {
     aggregated_permission_status_ = MojoPermissionStatus::DENIED;
-  } else if (base::ranges::any_of(
+  } else if (std::ranges::any_of(
                  permission_status_map_, [](const auto& status) {
                    return status.value == MojoPermissionStatus::ASK;
                  })) {
@@ -1344,11 +1367,13 @@ void HTMLPermissionElement::UpdateText() {
 }
 
 void HTMLPermissionElement::AddConsoleError(String error) {
+  LOG(ERROR) << error;
   AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRendering,
                     mojom::blink::ConsoleMessageLevel::kError, error);
 }
 
 void HTMLPermissionElement::AddConsoleWarning(String warning) {
+  LOG(WARNING) << warning;
   AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRendering,
                     mojom::blink::ConsoleMessageLevel::kWarning, warning);
 }
@@ -1358,7 +1383,7 @@ void HTMLPermissionElement::OnIntersectionChanged(
   CHECK(!entries.empty());
   Member<IntersectionObserverEntry> latest_observation = entries.back();
   CHECK_EQ(this, latest_observation->target());
-  IntersectionVisibility intersection_visibility =
+  IntersectionVisibility new_intersection_visibility =
       IntersectionVisibility::kFullyVisible;
   // `intersectionRatio` >= `kIntersectionThreshold` (1.0f) means the element is
   // fully visible on the viewport (vs `intersectionRatio` < 1.0f means its
@@ -1366,27 +1391,31 @@ void HTMLPermissionElement::OnIntersectionChanged(
   // `isVisible` false means the element is occluded by something else or has
   // distorted visual effect applied.
   if (!latest_observation->isVisible()) {
-    intersection_visibility =
+    new_intersection_visibility =
         latest_observation->intersectionRatio() >= kIntersectionThreshold
             ? IntersectionVisibility::kOccludedOrDistorted
             : IntersectionVisibility::kOutOfViewportOrClipped;
   }
 
-  if (intersection_visibility_ == intersection_visibility) {
+  if (intersection_visibility_ == new_intersection_visibility) {
     return;
   }
-  intersection_visibility_ = intersection_visibility;
+
+  intersection_visibility_ = new_intersection_visibility;
   occluder_node_id_ = kInvalidDOMNodeId;
   switch (intersection_visibility_) {
     case IntersectionVisibility::kFullyVisible: {
-      std::optional<base::TimeDelta> interval =
+      std::optional<base::TimeDelta> recently_attached_timeout_remaining =
           GetRecentlyAttachedTimeoutRemaining();
-      DisableClickingTemporarily(
-          DisableReason::kIntersectionRecentlyFullyVisible,
-          interval ? interval.value() : kDefaultDisableTimeout);
-      EnableClicking(DisableReason::kIntersectionVisibilityOccludedOrDistorted);
-      EnableClicking(
-          DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped);
+      base::TimeDelta interval =
+          recently_attached_timeout_remaining
+              ? recently_attached_timeout_remaining.value()
+              : kDefaultDisableTimeout;
+      EnableClickingAfterDelay(
+          DisableReason::kIntersectionVisibilityOccludedOrDistorted, interval);
+      EnableClickingAfterDelay(
+          DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped,
+          interval);
       break;
     }
     case IntersectionVisibility::kOccludedOrDistorted:
@@ -1453,13 +1482,17 @@ bool HTMLPermissionElement::IsStyleValid() {
       GetComputedStyle()->EffectiveZoom() /
       GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor();
 
+  bool is_font_monospace =
+      GetComputedStyle()->GetFontDescription().IsMonospace();
+
   // The min size is what `font-size:small` looks like when rendered in the
   // document element of the local root frame, without any intervening CSS
   // zoom factors applied.
   float min_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
-      GetComputedStyle()->GetFontDescription().IsMonospace());
-  if (font_size_dip < min_font_size_dip / css_zoom_factor) {
+      is_font_monospace);
+  if (font_size_dip <
+      std::min(min_font_size_dip, kDefaultSmallFontSize) / css_zoom_factor) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too small",
                        GetType().Utf8().c_str()));
@@ -1473,8 +1506,9 @@ bool HTMLPermissionElement::IsStyleValid() {
   // zoom factors applied.
   float max_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
-      GetComputedStyle()->GetFontDescription().IsMonospace());
-  if (font_size_dip > max_font_size_dip / css_zoom_factor) {
+      is_font_monospace);
+  if (font_size_dip >
+      std::max(max_font_size_dip, kDefaultXxxLargeFontSize) / css_zoom_factor) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too large",
                        GetType().Utf8().c_str()));

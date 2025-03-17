@@ -37,7 +37,7 @@ NetworkListTetherHostsHeaderView::NetworkListTetherHostsHeaderView(
   entry_row->AddViewAndLabel(
       std::move(image_view),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_TETHER_HOSTS));
-  entry_row->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  entry_row->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                              *entry_row->text_label());
   entry_row->SetExpandable(true);

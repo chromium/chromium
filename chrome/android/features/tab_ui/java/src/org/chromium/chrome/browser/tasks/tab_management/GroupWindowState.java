@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * State enum to track where a group lives. It can either be in the current tab
@@ -27,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
     GroupWindowState.COUNT,
 })
 @Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE_USE})
 @interface GroupWindowState {
     int IN_CURRENT = 0;
     int IN_CURRENT_CLOSING = 1;

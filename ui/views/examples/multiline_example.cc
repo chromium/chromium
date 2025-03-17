@@ -75,8 +75,8 @@ class MultilineExample::RenderTextView : public View {
   RenderTextView() : render_text_(gfx::RenderText::CreateRenderText()) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     render_text_->SetMultiline(true);
-    SetBorder(CreateThemedSolidBorder(
-        2, ExamplesColorIds::kColorMultilineExampleBorder));
+    SetBorder(
+        CreateSolidBorder(2, ExamplesColorIds::kColorMultilineExampleBorder));
   }
 
   RenderTextView(const RenderTextView&) = delete;
@@ -205,7 +205,7 @@ void MultilineExample::CreateExampleView(View* container) {
   label_ = container->AddChildView(std::make_unique<PreferredSizeLabel>());
   label_->SetText(kTestString);
   label_->SetMultiLine(true);
-  label_->SetBorder(CreateThemedSolidBorder(
+  label_->SetBorder(CreateSolidBorder(
       2, ExamplesColorIds::kColorMultilineExampleLabelBorder));
 
   elision_checkbox_ = container->AddChildView(std::make_unique<Checkbox>(

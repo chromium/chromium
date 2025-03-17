@@ -49,6 +49,26 @@ std::string CreateConditionParamForCap(base::cstring_view campaign_type,
                                        base::cstring_view event_type,
                                        int cap);
 
+// Returns the max `campaign_id` (exclusive) can be recorded in the histogram.
+// Campaign will be logged in a histogram named by rounding the `campaign_id`
+// to the next five hundred. For examples:
+//   `campaign_id`: 0 =>
+//   "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500" `campaign_id`:
+//   100 => "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500"
+//   `campaign_id`: 499 =>
+//   "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500" `campaign_id`:
+//   500 => "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns1000"
+//   `campaign_id`: 501 =>
+//   "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns1000"
+//   `campaign_id`: 1000 =>
+//   "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns1500"
+//   `campaign_id`: 9999 =>
+//   "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns10000"
+//   `campaign_id`: 10000 =>
+//   "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns10500"
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
+int GetHistogramMaxCampaignId(int campaign_id);
+
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
 std::string ToString(bool value);
 

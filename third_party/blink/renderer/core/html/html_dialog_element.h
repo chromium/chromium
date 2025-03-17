@@ -53,14 +53,17 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
+  // open_attribute_being_removed should only be true when `close()` is being
+  // run from the attribute change steps for the `open` attribute.
   void close(const String& return_value = String(),
-             bool ignore_open_attribute = false);
+             bool open_attribute_being_removed = false);
   void requestClose(ExceptionState& exception_state) {
     requestClose(String(), exception_state);
   }
   void requestClose(const String& return_value, ExceptionState&);
   void show(ExceptionState&);
   void showModal(ExceptionState&);
+  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
   bool IsModal() const { return is_modal_; }

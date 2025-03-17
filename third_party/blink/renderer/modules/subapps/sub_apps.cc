@@ -279,7 +279,7 @@ bool SubApps::CheckPreconditionsMaybeThrow(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
-               mojom::blink::PermissionsPolicyFeature::kSubApps)) {
+               network::mojom::PermissionsPolicyFeature::kSubApps)) {
     exception_state.ThrowSecurityError(
         "The executing top-level browsing context is not granted the "
         "\"sub-apps\" permissions policy.");

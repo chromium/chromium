@@ -49,7 +49,7 @@ public class DisclosureInfobarTest {
         mInfobar =
                 new DisclosureInfobar(
                         RuntimeEnvironment.application.getResources(),
-                        mSnackbarManager,
+                        () -> mSnackbarManager,
                         mModel,
                         mLifecycleDispatcher);
     }

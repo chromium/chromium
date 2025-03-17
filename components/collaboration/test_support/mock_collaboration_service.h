@@ -37,6 +37,12 @@ class MockCollaborationService : public CollaborationService {
               GetGroupData,
               (const data_sharing::GroupId& group_id),
               (override));
+  MOCK_METHOD2(DeleteGroup,
+               void(const data_sharing::GroupId&,
+                    base::OnceCallback<void(bool)>));
+  MOCK_METHOD2(LeaveGroup,
+               void(const data_sharing::GroupId&,
+                    base::OnceCallback<void(bool)>));
 };
 
 }  // namespace collaboration

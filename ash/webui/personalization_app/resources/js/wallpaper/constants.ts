@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {GooglePhotosPhoto, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import type {GooglePhotosPhoto, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 
 // A special unique symbol that represents the device default image, normally
 // not accessible by the user.

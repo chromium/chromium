@@ -10,30 +10,39 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 class Profile;
 
 namespace chromeos {
+
+enum class WebKioskInstallState {
+  kUnknown,
+  kInstalled,
+  kPlaceholderInstalled,
+  kNotInstalled,
+};
+
 // Convenience alias for the result of `GetWebKioskAppInstallState`.
 //
 // The `AppId` is only present when `WebKioskInstallState` is `kInstalled`.
 // Otherwise it is `std::nullopt`.
-using KioskWebAppInstallState = std::tuple<crosapi::mojom::WebKioskInstallState,
-                                           std::optional<webapps::AppId>>;
+using KioskWebAppInstallState =
+    std::tuple<WebKioskInstallState, std::optional<webapps::AppId>>;
 
 // Returns the install state of a web app given by its `install_url` in the
 // given `profile`.
 KioskWebAppInstallState GetKioskWebAppInstallState(Profile& profile,
                                                    const GURL& install_url);
 
+using InstallWebKioskCallback =
+    base::OnceCallback<void(const std::optional<std::string>&)>;
+
 // Installs the web app given by `install_url` in the given `profile`.
-void InstallKioskWebApp(
-    Profile& profile,
-    const GURL& install_url,
-    crosapi::mojom::WebKioskInstaller::InstallWebKioskCallback on_done);
+void InstallKioskWebApp(Profile& profile,
+                        const GURL& install_url,
+                        InstallWebKioskCallback on_done);
 
 }  // namespace chromeos
 

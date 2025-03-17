@@ -131,16 +131,8 @@ void ScheduleLoadForRestoredTabs(
     }
   }
 
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::vector<BackgroundTabLoadingPolicy::PageNodeData>
-                 page_node_data_vector,
-             performance_manager::Graph* graph) {
-            BackgroundTabLoadingPolicy::GetInstance()
-                ->ScheduleLoadForRestoredTabs(std::move(page_node_data_vector));
-          },
-          std::move(page_node_data_vector)));
+  BackgroundTabLoadingPolicy::GetInstance()->ScheduleLoadForRestoredTabs(
+      std::move(page_node_data_vector));
 }
 
 BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(

@@ -5,18 +5,11 @@
 #include "chrome/browser/ui/browser_actions.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "ui/base/ui_base_features.h"
 
-class BrowserActionsTest : public BrowserWithTestWindowTest {
- public:
-  BrowserActionsTest() = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kToolbarPinning};
-};
+using BrowserActionsTest = BrowserWithTestWindowTest;
 
 TEST_F(BrowserActionsTest, DidCreateBrowserActions) {
   BrowserActions* browser_actions = browser()->browser_actions();

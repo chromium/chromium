@@ -27,16 +27,6 @@
 #include "components/sync/service/sync_service.h"
 
 namespace promos_utils {
-// TODO(crbug.com/339262105): Clean up the old password promo methods after the
-// generic promo launch.
-// Max impression count per user for the iOS password promo on desktop.
-constexpr int kiOSPasswordPromoMaxImpressionCount = 2;
-
-// TODO(crbug.com/339262105): Clean up the old password promo methods after the
-// generic promo launch.
-// Minimum time threshold between impressions for a given user to see the iOS
-// password promo on desktop.
-constexpr base::TimeDelta kiOSPasswordPromoCooldownTime = base::Days(60);
 
 // Max impression count per user, per promo for the iOS desktop promos on
 // desktop.
@@ -185,24 +175,6 @@ bool CanShowPromos() {
   return true;
 }
 
-// TODO(crbug.com/339262105): Clean up the old password promo methods after
-// the generic promo launch.
-// RecordIOSPasswordPromoShownHistogram records which impression (count) was
-// shown to the user.
-void RecordIOSPasswordPromoShownHistogram(int impression_count) {
-  if (impression_count == 1) {
-    base::UmaHistogramEnumeration(
-        "IOS.DesktopPasswordPromo.Shown",
-        promos_utils::DesktopIOSPasswordPromoImpression::kFirstImpression);
-  } else if (impression_count == 2) {
-    base::UmaHistogramEnumeration(
-        "IOS.DesktopPasswordPromo.Shown",
-        promos_utils::DesktopIOSPasswordPromoImpression::kSecondImpression);
-  } else {
-    NOTREACHED();
-  }
-}
-
 // RecordIOSDesktopPromoShownHistogram records which impression (count) was
 // shown to the user depending on the given promo type.
 void RecordIOSDesktopPromoShownHistogram(IOSPromoType promo_type,
@@ -314,22 +286,6 @@ const base::Feature& GetIOSDesktopPromoFeatureEngagement(
   return *promo_prefs.promo_feature;
 }
 
-// TODO(crbug.com/339262105): Clean up the old password promo methods after
-// the generic promo launch.
-void RecordIOSPasswordPromoUserInteractionHistogram(
-    int impression_count,
-    DesktopIOSPasswordPromoAction action) {
-  if (impression_count == 1) {
-    base::UmaHistogramEnumeration(
-        "IOS.DesktopPasswordPromo.FirstImpression.Action", action);
-  } else if (impression_count == 2) {
-    base::UmaHistogramEnumeration(
-        "IOS.DesktopPasswordPromo.SecondImpression.Action", action);
-  } else {
-    NOTREACHED();
-  }
-}
-
 // RecordIOSDesktopPromoUserInteractionHistogram records which impression
 // (count) depending on the promo type.
 void RecordIOSDesktopPromoUserInteractionHistogram(
@@ -352,26 +308,6 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
   } else {
     NOTREACHED();
   }
-}
-
-// TODO(crbug.com/339262105): Clean up the old password promo methods after
-// the generic promo launch.
-bool ShouldShowIOSPasswordPromo(Profile* profile) {
-  // Show the promo if the user hasn't opted out, is not in the cooldown
-  // period and is within the impression limit for this promo.
-  if (profile->GetPrefs()->GetInteger(
-          promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter) <
-          kiOSPasswordPromoMaxImpressionCount &&
-      profile->GetPrefs()->GetTime(
-          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp) +
-              kiOSPasswordPromoCooldownTime <
-          base::Time::Now() &&
-      !profile->GetPrefs()->GetBoolean(
-          promos_prefs::kDesktopToiOSPasswordPromoOptOut)) {
-    return true;
-  }
-
-  return false;
 }
 
 bool ShouldShowIOSDesktopPromo(Profile* profile,
@@ -442,24 +378,6 @@ bool UserNotClassifiedAsMobileDeviceSwitcher(
          !base::Contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kIosTabletLabel);
-}
-
-// TODO(crbug.com/339262105): Clean up the old password promo methods after
-// the generic promo launch.
-void iOSPasswordPromoShown(Profile* profile) {
-  int new_impression_count =
-      profile->GetPrefs()->GetInteger(
-          promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter) +
-      1;
-
-  profile->GetPrefs()->SetInteger(
-      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter,
-      new_impression_count);
-  profile->GetPrefs()->SetTime(
-      promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
-      base::Time::Now());
-
-  RecordIOSPasswordPromoShownHistogram(new_impression_count);
 }
 
 void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type) {

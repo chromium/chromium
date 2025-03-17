@@ -43,7 +43,6 @@ class ProductSpecificationsIconView : public PageActionIconView {
   void MaybeShowPageActionLabel();
   void HidePageActionLabel();
   bool IsInProductSpecificationsSet() const;
-  void ShowConfirmationToast(std::u16string set_name);
 
   const raw_ptr<Browser> browser_;
 

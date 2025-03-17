@@ -13,12 +13,12 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -55,10 +55,6 @@ const CGSize kEntrypointContainerShadowOffset = {0, 3};
 
 // The point size of the entrypoint's symbol.
 const CGFloat kEntrypointSymbolPointSize = 15;
-
-// The colorset used for the Contextual Panel's entrypoint background.
-NSString* const kContextualPanelEntrypointBackgroundColor =
-    @"contextual_panel_entrypoint_background_color";
 
 // Accessibility identifier for the entrypoint's image view.
 NSString* const kContextualPanelEntrypointImageViewIdentifier =
@@ -204,8 +200,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 - (UIButton*)configuredEntrypointContainer {
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.backgroundColor =
-      [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+  button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   button.clipsToBounds = NO;
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
@@ -405,9 +400,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   // Entrypoint container background color.
   UIColor* untappedEntrypointColor =
-      _infobarBadgesCurrentlyShown
-          ? nil
-          : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+      _infobarBadgesCurrentlyShown ? nil
+                                   : [UIColor colorNamed:kBackgroundColor];
 
   _entrypointContainer.backgroundColor =
       _entrypointTapped ? [UIColor colorNamed:kTertiaryBackgroundColor]
@@ -420,13 +414,12 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 // Applies the correct color to the entrypoint (highlighted blue when the
 // in-product help is present), otherwise back to the normal colorset.
 - (void)styleEntrypointForColoredState:(BOOL)colored {
-  _imageView.tintColor =
-      colored ? [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor]
-              : [UIColor colorNamed:kBlue600Color];
+  _imageView.tintColor = colored ? [UIColor colorNamed:kBackgroundColor]
+                                 : [UIColor colorNamed:kBlue600Color];
 
   _entrypointContainer.backgroundColor =
       colored ? [UIColor colorNamed:kBlue600Color]
-              : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+              : [UIColor colorNamed:kBackgroundColor];
 }
 
 // User swiped the large entrypoint chip towards the leading edge, intending to
@@ -650,6 +643,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
@@ -662,5 +656,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [self updateLabelFont];
   }
 }
+#endif
 
 @end

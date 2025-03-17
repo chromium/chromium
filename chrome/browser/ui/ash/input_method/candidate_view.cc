@@ -109,7 +109,7 @@ std::unique_ptr<views::Label> CreateAnnotationLabel() {
   auto label = views::Builder<views::Label>()
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetElideBehavior(gfx::NO_ELIDE)
-                   .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+                   .SetEnabledColor(ui::kColorLabelForegroundSecondary)
                    .Build();
   label->SetFontList(label->font_list().DeriveWithSizeDelta(kFontSizeDelta));
   return label;
@@ -150,7 +150,7 @@ CandidateView::CandidateView(PressedCallback callback,
   if (orientation == ui::CandidateWindow::VERTICAL) {
     infolist_icon_ =
         AddChildView(views::Builder<views::View>()
-                         .SetBackground(views::CreateThemedSolidBackground(
+                         .SetBackground(views::CreateSolidBackground(
                              ui::kColorFocusableBorderFocused))
                          .Build());
   }
@@ -202,10 +202,9 @@ void CandidateView::SetHighlighted(bool highlighted) {
 
   highlighted_ = highlighted;
   if (highlighted) {
-    SetBackground(views::CreateThemedSolidBackground(
-        ui::kColorTextfieldSelectionBackground));
-    SetBorder(
-        views::CreateThemedSolidBorder(1, ui::kColorFocusableBorderFocused));
+    SetBackground(
+        views::CreateSolidBackground(ui::kColorTextfieldSelectionBackground));
+    SetBorder(views::CreateSolidBorder(1, ui::kColorFocusableBorderFocused));
 
     // Cancel currently focused one.
     for (View* view : parent()->children()) {
@@ -224,9 +223,8 @@ void CandidateView::StateChanged(ButtonState old_state) {
   Button::StateChanged(old_state);
   int text_style = GetState() == STATE_DISABLED ? views::style::STYLE_DISABLED
                                                 : views::style::STYLE_PRIMARY;
-  shortcut_label_->SetEnabledColorId(
-      views::TypographyProvider::Get().GetColorId(views::style::CONTEXT_LABEL,
-                                                  text_style));
+  shortcut_label_->SetEnabledColor(views::TypographyProvider::Get().GetColorId(
+      views::style::CONTEXT_LABEL, text_style));
   if (GetState() == STATE_PRESSED) {
     SetHighlighted(true);
   }

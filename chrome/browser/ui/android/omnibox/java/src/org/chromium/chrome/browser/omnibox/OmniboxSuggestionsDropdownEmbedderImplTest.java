@@ -98,7 +98,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         mAnchorView,
                         mHorizontalAlignmentView,
                         false,
-                        null,
+                        mContentView,
                         () -> 0,
                         () -> mBottomWindowPadding);
     }
@@ -178,6 +178,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(mIntermediateView).when(mAnchorView).getParent();
         doReturn(mContentView).when(mIntermediateView).getParent();
         doReturn(INTERMEDIATE_VIEW_TOP).when(mIntermediateView).getTop();
+        doReturn(Integer.MAX_VALUE).when(mIntermediateView).getMeasuredHeight();
 
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(60).when(mHorizontalAlignmentView).getTop();

@@ -35,9 +35,16 @@ constexpr char kGetAssertionStatusHistogram[] =
 
 // Some methods trigger an OS modal dialog that needs to be completed or
 // dismissed before the method returns. These methods are cancelled explicitly
-// once original WebAuthn request times out. Hence, they are invoked with
-// infinite DBus timeouts.
-const int kU2FInfiniteTimeout = dbus::ObjectProxy::TIMEOUT_INFINITE;
+// once original WebAuthn request times out.
+//
+// W3C spec recommends 5 min timeout:
+// https://w3c.github.io/webauthn/#sctn-timeout-recommended-range
+//
+// Chrome since M120 can support up to 20 hours:
+// https://lists.w3.org/Archives/Public/public-webauthn/2023Oct/0151.html
+//
+// In practice, `TIMEOUT_MAX` (1 hour) should be long enough.
+const int kU2FMaxTimeout = dbus::ObjectProxy::TIMEOUT_MAX;
 
 // Timeout for methods which don't take time proportional to the number of total
 // credentials.
@@ -165,7 +172,7 @@ void U2FClientImpl::MakeCredential(
   dbus::MessageWriter writer(&method_call);
   writer.AppendProtoAsArrayOfBytes(request);
   proxy_->CallMethod(
-      &method_call, kU2FInfiniteTimeout,
+      &method_call, kU2FMaxTimeout,
       base::BindOnce(
           [](DBusMethodCallback<u2f::MakeCredentialResponse> callback,
              dbus::Response* dbus_response) {
@@ -203,7 +210,7 @@ void U2FClientImpl::GetAssertion(
       },
       std::move(callback));
   proxy_->CallMethod(
-      &method_call, kU2FInfiniteTimeout,
+      &method_call, kU2FMaxTimeout,
       base::BindOnce(&U2FClientImpl::HandleResponse<u2f::GetAssertionResponse>,
                      weak_factory_.GetWeakPtr(),
                      std::move(uma_callback_wrapper)));
@@ -343,7 +350,12 @@ U2FClient* U2FClient::Get() {
 // static
 void U2FClient::IsU2FServiceAvailable(
     base::OnceCallback<void(bool is_supported)> callback) {
-  chromeos::TpmManagerClient::Get()->GetSupportedFeatures(
+  auto* tpm_manager_client = chromeos::TpmManagerClient::Get();
+  if (!tpm_manager_client) {
+    std::move(callback).Run(false);
+    return;
+  }
+  tpm_manager_client->GetSupportedFeatures(
       tpm_manager::GetSupportedFeaturesRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(bool is_available)> callback,

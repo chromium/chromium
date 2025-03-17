@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,23 +17,26 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-// The BrowserTaskExecutor's job is to map base::TaskTraits to actual task
-// queues for the browser process.
-//
-// We actually have two TaskExecutors:
-// * BrowserTaskExecutor::UIThreadExecutor registered with UI thread TLS.
-// * BrowserTaskExecutor::IOThreadExecutor registered with IO thread TLS.
-//
-// This lets us efficiently implement base::CurrentThread on UI and IO threads.
 namespace content {
 
-class BrowserTaskExecutorTest;
 class BrowserProcessIOThread;
 
-class CONTENT_EXPORT BaseBrowserTaskExecutor {
+// The BrowserTaskExecutor's job is to map base::TaskTraits to actual task
+// queues for the browser process.
+class CONTENT_EXPORT BrowserTaskExecutor {
  public:
-  BaseBrowserTaskExecutor();
-  virtual ~BaseBrowserTaskExecutor();
+  // Creates and registers a BrowserTaskExecutor on the current thread which
+  // owns a BrowserUIThreadScheduler. This facilitates posting tasks to a
+  // BrowserThread via //base/task/post_task.h.
+  // TODO(crbug.com/40108370): Clean this up now that post_task.h is deprecated.
+  // All BrowserThread::UI task queues except best effort ones are also enabled.
+  // TODO(carlscab): These queues should be enabled in
+  // BrowserMainLoop::InitializeMainThread() but some Android tests fail if we
+  // do so.
+  static void Create();
+
+  BrowserTaskExecutor(const BrowserTaskExecutor&) = delete;
+  BrowserTaskExecutor& operator=(const BrowserTaskExecutor&) = delete;
 
   // Returns the task runner for |traits| under |identifier|. Note: during the
   // migration away from task traits extension, |traits| may also contain a
@@ -51,26 +53,6 @@ class CONTENT_EXPORT BaseBrowserTaskExecutor {
   // class in its role as a base::TaskExecutor.
   static BrowserTaskQueues::QueueType GetQueueType(
       const BrowserTaskTraits& traits);
-
- protected:
-  scoped_refptr<BrowserUIThreadScheduler::Handle> browser_ui_thread_handle_;
-  scoped_refptr<BrowserIOThreadDelegate::Handle> browser_io_thread_handle_;
-};
-
-class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
- public:
-  // Creates and registers a BrowserTaskExecutor on the current thread which
-  // owns a BrowserUIThreadScheduler. This facilitates posting tasks to a
-  // BrowserThread via //base/task/post_task.h.
-  // TODO(crbug.com/40108370): Clean this up now that post_task.h is deprecated.
-  // All BrowserThread::UI task queues except best effort ones are also enabled.
-  // TODO(carlscab): These queues should be enabled in
-  // BrowserMainLoop::InitializeMainThread() but some Android tests fail if we
-  // do so.
-  static void Create();
-
-  BrowserTaskExecutor(const BrowserTaskExecutor&) = delete;
-  BrowserTaskExecutor& operator=(const BrowserTaskExecutor&) = delete;
 
   // Creates the IO thread using the scheduling infrastructure set up in the
   // Create() method. That means that clients have access to TaskRunners
@@ -129,16 +111,6 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler,
       std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate);
 
-  // This must be called after the FeatureList has been initialized in order
-  // for scheduling experiments to function.
-  static void PostFeatureListSetup();
-
-  // Called when some part of the browser begins handling input. Must be called
-  // from the browser UI thread and the value must be reset once input is
-  // finished.
-  static std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
-  OnUserInputStart();
-
   // Winds down the BrowserTaskExecutor, after this no tasks can be executed
   // and the base::TaskExecutor APIs are non-functional but won't crash if
   // called. In unittests however we need to clean up, so
@@ -162,79 +134,23 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
 
  private:
   friend class BrowserIOThreadDelegate;
-  friend class BrowserTaskExecutorTest;
-
-  // Constructed on UI thread and registered with UI thread TLS. This backs the
-  // implementation of base::CurrentThread for the browser UI thread.
-  class UIThreadExecutor : public BaseBrowserTaskExecutor {
-   public:
-    explicit UIThreadExecutor(
-        std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler);
-
-    ~UIThreadExecutor() override;
-
-    scoped_refptr<BrowserUIThreadScheduler::Handle> GetUIThreadHandle();
-
-    void SetIOThreadHandle(
-        scoped_refptr<BrowserUIThreadScheduler::Handle> io_thread_handle);
-
-    void BindToCurrentThread();
-
-    std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
-    OnUserInputStart();
-
-    void PostFeatureListSetup();
-
-   private:
-    std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler_;
-  };
-
-  // Constructed on UI thread and later registered with IO thread TLS. This
-  // backs the implementation of base::CurrentThread for the browser IO thread.
-  class IOThreadExecutor : public BaseBrowserTaskExecutor {
-   public:
-    explicit IOThreadExecutor(
-        std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate);
-
-    ~IOThreadExecutor() override;
-
-    scoped_refptr<BrowserUIThreadScheduler::Handle> GetIOThreadHandle();
-
-    void SetUIThreadHandle(
-        scoped_refptr<BrowserUIThreadScheduler::Handle> ui_thread_handle);
-
-    std::unique_ptr<BrowserIOThreadDelegate> TakeDelegate() {
-      return std::move(browser_io_thread_delegate_);
-    }
-
-   private:
-    std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate_;
-  };
 
   static void CreateInternal(
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler,
       std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate);
 
-  // For GetProxyTaskRunnerForThread().
-  FRIEND_TEST_ALL_PREFIXES(BrowserTaskExecutorTest,
-                           EnsureUIThreadTraitPointsToExpectedQueue);
-  FRIEND_TEST_ALL_PREFIXES(BrowserTaskExecutorTest,
-                           EnsureIOThreadTraitPointsToExpectedQueue);
-  FRIEND_TEST_ALL_PREFIXES(BrowserTaskExecutorTest,
-                           BestEffortTasksRunAfterStartup);
-
-  // For Get();
-  FRIEND_TEST_ALL_PREFIXES(BrowserTaskExecutorTest,
-                           RegisterExecutorForBothThreads);
   explicit BrowserTaskExecutor(
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler,
       std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate);
-  ~BrowserTaskExecutor() override;
+  ~BrowserTaskExecutor();
 
   static BrowserTaskExecutor* Get();
 
-  std::unique_ptr<UIThreadExecutor> ui_thread_executor_;
-  std::unique_ptr<IOThreadExecutor> io_thread_executor_;
+  std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler_;
+  scoped_refptr<BrowserUIThreadScheduler::Handle> browser_ui_thread_handle_;
+
+  std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate_;
+  scoped_refptr<BrowserIOThreadDelegate::Handle> browser_io_thread_handle_;
 };
 
 }  // namespace content

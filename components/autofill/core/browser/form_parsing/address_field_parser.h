@@ -73,6 +73,11 @@ class AddressFieldParser : public FormFieldParser {
 
   bool ParseStreetLocation(ParsingContext& context, AutofillScanner* scanner);
 
+  bool ParseDependentLocality(ParsingContext& context,
+                              AutofillScanner* scanner);
+
+  bool ParseLandmark(ParsingContext& context, AutofillScanner* scanner);
+
   bool ParseStreetName(ParsingContext& context, AutofillScanner* scanner);
 
   bool ParseHouseNumber(ParsingContext& context, AutofillScanner* scanner);
@@ -108,17 +113,16 @@ class AddressFieldParser : public FormFieldParser {
   bool ParseFieldSpecificsForHouseNumberAndApt(ParsingContext& context,
                                                AutofillScanner* scanner);
 
-  // Like ParseField(), but applies `pattern` against the name and
-  // label of the current field separately. If the return value is
+  // Like ParseField(), but applies pattern named with `regex_name` against the
+  // name and label of the current field separately. If the return value is
   // RESULT_MATCH_NAME_LABEL, then `scanner` advances and `match` is filled if
   // it is non-NULL. Otherwise `scanner` does not advance and `match` does not
   // change.
   static ParseNameLabelResult ParseNameAndLabelSeparately(
       ParsingContext& context,
       AutofillScanner* scanner,
-      base::span<const MatchPatternRef> patterns,
-      std::optional<FieldAndMatchInfo>* match,
-      const char* regex_name);
+      const char* regex_name,
+      std::optional<FieldAndMatchInfo>* match);
 
   // Run matches on the name and label separately. If the return result is
   // RESULT_MATCH_NAME_LABEL, then `scanner` advances and the field is set.
@@ -138,6 +142,13 @@ class AddressFieldParser : public FormFieldParser {
 
   ParseNameLabelResult ParseNameAndLabelForLandmark(ParsingContext& context,
                                                     AutofillScanner* scanner);
+
+  // Used in `ParseAddressField()` to parse `ADDRESS_HOME_STREET_LOCATION`
+  // field. Currently only supported in India. Uses India specific regex
+  // patterns.
+  ParseNameLabelResult ParseNameAndLabelForStreetLocation(
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   ParseNameLabelResult ParseNameAndLabelForBetweenStreets(
       ParsingContext& context,
@@ -174,8 +185,10 @@ class AddressFieldParser : public FormFieldParser {
       std::optional<FormFieldParser::FieldAndMatchInfo>* match);
 
   // Return true if the form being parsed shows an indication of being a
-  // structured address form.
-  bool PossiblyAStructuredAddressForm() const;
+  // structured address form. `country_code` is currently only used for India
+  // where the `street_location_`, `dependent_locality_` and `landmark_` fields
+  // are required.
+  bool PossiblyAStructuredAddressForm(GeoIpCountryCode country_code) const;
 
   std::optional<FieldAndMatchInfo> company_;
   std::optional<FieldAndMatchInfo> street_location_;

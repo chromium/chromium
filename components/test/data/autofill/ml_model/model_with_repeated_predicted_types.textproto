@@ -1,0 +1,23 @@
+input_token: "username"
+input_token: "repeat"
+input_token: "new"
+input_token: "password"
+input_token: "confirm"
+input_token: "number"
+output_type: 1
+output_type: 76
+output_type: 86
+output_type: 95
+input_version: 3
+encoding_parameters {
+  maximum_number_of_fields: 30
+  max_tokens_per_feature: 5
+  features: FEATURE_LABEL
+  features: FEATURE_PLACEHOLDER
+  features: FEATURE_AUTOCOMPLETE
+  lowercase: true
+  replace_chars_with_whitespace: "#$%&()\\*+,-./:;<=>?@[]^_`{|}~'×—•∗…–“▼)\u200b\u3164\u2062\u2063"
+}
+postprocessing_parameters {
+  disallow_same_type_predictions: true
+}

@@ -59,9 +59,6 @@ public class ShoppingPersistedTabDataTest {
 
     @Mock protected NavigationHandle mNavigationHandle;
 
-    // For R8 optimizer - see b/303266326.
-    @Mock private Tab mDoNotUseTab;
-
     @Mock private ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
 
     @Mock ShoppingService mShoppingService;

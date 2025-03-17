@@ -7,9 +7,12 @@ package org.chromium.android_webview.test;
 import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
+import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
@@ -27,6 +30,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.AwNoVarySearchData;
+import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.common.AwFeatures;
@@ -45,6 +49,7 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.net.test.ServerCertificate;
 
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
@@ -52,6 +57,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
@@ -79,6 +85,10 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private static final String PRERENDER_URL = "/android_webview/test/data/prerender.html";
     private static final String PRERENDER_SETUP_SCRIPT_URL =
             "/android_webview/test/data/prerender-test-setup.js";
+
+    private static final String FINAL_STATUS_UMA =
+            "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView";
+
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private AwEmbeddedTestServer mTestServer;
@@ -91,18 +101,30 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private TestWebMessageListener mDeferredWebMessageListener;
     private TestWebMessageListener mPrerenderLifecycleWebMessageListener;
 
-    private class ActivationCallbackHelper extends CallbackHelper {
-        public Callback<Void> getActivationCallback() {
+    private static class ActivationCallbackHelper extends CallbackHelper {
+        public Callback<Void> getCallback() {
             return new Callback<Void>() {
                 @Override
                 public void onResult(Void result) {
-                    mActivationCallbackHelper.notifyCalled();
+                    notifyCalled();
+                }
+            };
+        }
+    }
+
+    private static class PrerenderErrorCallbackHelper extends CallbackHelper {
+        public Callback<Throwable> getCallback() {
+            return new Callback<Throwable>() {
+                @Override
+                public void onResult(Throwable result) {
+                    notifyCalled();
                 }
             };
         }
     }
 
     private ActivationCallbackHelper mActivationCallbackHelper;
+    private PrerenderErrorCallbackHelper mPrerenderErrorCallbackHelper;
 
     @Before
     public void setUp() throws Exception {
@@ -166,28 +188,30 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 mAwContents, injectedObjectForPostMessage, "awPostMessageFuture");
 
         mTestServer =
-                AwEmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
+                AwEmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_TEST_NAMES);
 
-        mPageUrl = mTestServer.getURL(INITIAL_URL);
-        mPrerenderingUrl = mTestServer.getURL(PRERENDER_URL);
+        mPageUrl = getUrl(INITIAL_URL);
+        mPrerenderingUrl = getUrl(PRERENDER_URL);
 
         mActivationCallbackHelper = new ActivationCallbackHelper();
+        mPrerenderErrorCallbackHelper = new PrerenderErrorCallbackHelper();
     }
 
     // Returns a URL. This requires ContentSwitches.HOST_RESOLVER_RULES.
     public String getUrl(final String relativeUrl) {
-        return mTestServer.getURLWithHostName("a.com", relativeUrl);
+        return mTestServer.getURLWithHostName("a.test", relativeUrl);
     }
 
     // This is similar to getUrl() but returns a same-site cross-origin URL against getUrl().
     public String getSameSiteCrossOriginUrl(final String relativeUrl) {
-        return mTestServer.getURLWithHostName("b.a.com", relativeUrl);
+        return mTestServer.getURLWithHostName("b.a.test", relativeUrl);
     }
 
     // This is similar to getUrl() but returns a cross-site URL against getUrl().
     public String getCrossSiteUrl(final String relativeUrl) {
-        return mTestServer.getURLWithHostName("c.com", relativeUrl);
+        return mTestServer.getURLWithHostName("c.test", relativeUrl);
     }
 
     public void setSpeculativeLoadingAllowed(@SpeculativeLoadingAllowedFlags int allowed) {
@@ -261,23 +285,78 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
     // Triggers prerendering for `url`.
     private void startPrerendering(
-            String url, AwPrefetchParameters prefetchParameters, Callback<Void> activationCallback)
+            String url,
+            AwPrefetchParameters prefetchParameters,
+            CancellationSignal cancellationSignal,
+            Callback<Void> activationCallback,
+            Callback<Throwable> errorCallback)
             throws Exception {
+        Executor callbackExecutor = (Runnable r) -> r.run();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAwContents.startPrerendering(url, prefetchParameters, activationCallback);
+                    mAwContents.startPrerendering(
+                            url,
+                            prefetchParameters,
+                            cancellationSignal,
+                            callbackExecutor,
+                            activationCallback,
+                            errorCallback);
                 });
     }
 
     // Triggers prerendering for `url` and then waits until a prerendered page starts running
     // JavaScript.
     private void startPrerenderingAndWait(
-            String url, AwPrefetchParameters prefetchParameters, Callback<Void> activationCallback)
+            String url,
+            AwPrefetchParameters prefetchParameters,
+            CancellationSignal cancellationSignal,
+            Callback<Void> activationCallback,
+            Callback<Throwable> errorCallback)
             throws Exception {
-        startPrerendering(url, prefetchParameters, activationCallback);
+        startPrerendering(
+                url, prefetchParameters, cancellationSignal, activationCallback, errorCallback);
 
         // Wait until the prerendered page starts running JavaScript.
         mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
+    }
+
+    // Triggers prefetching for `url` and then waits until response completion.
+    private void startPrefetchingAndWait(String url, AwPrefetchParameters prefetchParameters)
+            throws Exception {
+        CallbackHelper prefetchCallbackHelper = new CallbackHelper();
+        AwPrefetchCallback callback =
+                new AwPrefetchCallback() {
+                    @Override
+                    public void onStatusUpdated(
+                            @StatusCode int statusCode, @Nullable Bundle extras) {
+                        switch (statusCode) {
+                            case StatusCode.PREFETCH_RESPONSE_COMPLETED:
+                                prefetchCallbackHelper.notifyCalled();
+                                break;
+                            default:
+                                Assert.assertFalse(true);
+                                prefetchCallbackHelper.notifyFailed("Failed");
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        prefetchCallbackHelper.notifyFailed(e.getMessage());
+                    }
+                };
+
+        Executor callbackExecutor = (Runnable r) -> r.run();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getAwBrowserContext()
+                            .getPrefetchManager()
+                            .startPrefetchRequest(
+                                    url, prefetchParameters, callback, callbackExecutor);
+                });
+
+        prefetchCallbackHelper.waitForNext();
     }
 
     // Navigates the primary page to `url` by client side redirection.
@@ -324,7 +403,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Wait until the page is activated.
         onPageStartedHelper.waitForCallback(
                 currentOnPageStartedCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(onPageStartedHelper.getUrl(), expectedActivatedUrl);
+        Assert.assertEquals(expectedActivatedUrl, onPageStartedHelper.getUrl());
 
         // Make sure the page was actually prerendered and then activated. These checks are
         // available only for a page served from PRERENDER_URL, as these depend on JavaScript code
@@ -351,6 +430,13 @@ public class AwPrerenderTest extends AwParameterizedTest {
         activatePage(activateUrl, activateUrl, activationBy);
     }
 
+    private void setMaxPrerenders(int maxPrerenders) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getAwBrowserContext().setMaxPrerenders(maxPrerenders);
+                });
+    }
+
     private void testPrerenderingWithInvalidAdditionalHeaders(
             Map<String, String> invalidAdditionalHeaders) {
         AwPrefetchParameters prefetchParameters =
@@ -358,13 +444,19 @@ public class AwPrerenderTest extends AwParameterizedTest {
                         invalidAdditionalHeaders,
                         /* expectedNoVarySearch= */ null,
                         /* isJavascriptEnabled= */ true);
+        Executor callbackExecutor = (Runnable r) -> r.run();
 
         Assert.assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             try {
                                 mAwContents.startPrerendering(
-                                        mPrerenderingUrl, prefetchParameters, null);
+                                        mPrerenderingUrl,
+                                        prefetchParameters,
+                                        /* cancellationSignal= */ null,
+                                        callbackExecutor,
+                                        mActivationCallbackHelper.getCallback(),
+                                        mPrerenderErrorCallbackHelper.getCallback());
                                 return false;
                             } catch (IllegalArgumentException e) {
                                 return true;
@@ -393,11 +485,13 @@ public class AwPrerenderTest extends AwParameterizedTest {
     }
 
     private static HistogramWatcher createFinalStatusHistogramWatcher(int expectedStatus) {
-        return HistogramWatcher.newBuilder()
-                .expectIntRecord(
-                        "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView",
-                        expectedStatus)
-                .build();
+        return createFinalStatusHistogramWatcher(new int[] {expectedStatus});
+    }
+
+    private static HistogramWatcher createFinalStatusHistogramWatcher(int[] expectedStatuses) {
+        HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
+        builder.expectIntRecords(FINAL_STATUS_UMA, expectedStatuses);
+        return builder.build();
     }
 
     // Tests basic end-to-end behavior of speculation rules prerendering on WebView with
@@ -406,6 +500,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testSpeculationRulesPrerenderingRendererInitiatedActivation() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -414,7 +509,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -426,6 +521,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testSpeculationRulesPrerenderingEmbedderInitiatedActivation() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -434,10 +530,41 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+    }
+
+    // Tests the case where speculation rules triggers prerendering and then loadUrl attempts to
+    // activate it with additional headers. This activation seems to fail because speculation
+    // rules doesn't send the additional headers, but actually the activation should succeed as an
+    // exceptional case (see https://crbug.com/399478939 for details).
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testSpeculationRulesPrerenderingEmbedderInitiatedActivationWithAdditionalHeaders()
+            throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kActivated*/ 0)
+                        .build();
+
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Attempt to activate with additional headers.
+        HashMap<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("Test-Header", "1");
+        activatePage(mPrerenderingUrl, mPrerenderingUrl, ActivationBy.LOAD_URL, additionalHeaders);
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     // Tests basic end-to-end behavior of WebView prerendering trigger with
@@ -446,6 +573,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingEmbedderInitiatedActivation() throws Throwable {
         loadInitialPage();
 
@@ -453,12 +581,18 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         int currentCallCount = mActivationCallbackHelper.getCallCount();
 
+        var cancellationSignal = new CancellationSignal();
+
         startPrerenderingAndWait(
-                mPrerenderingUrl, null, mActivationCallbackHelper.getActivationCallback());
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                cancellationSignal,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         // Make sure that prerendering navigation has the Sec-Purpose header.
@@ -470,6 +604,41 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Wait until the navigation activates the prerendered page.
         mActivationCallbackHelper.waitForCallback(currentCallCount);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Cancel after activation should not cause a runtime error.
+        Assert.assertFalse(cancellationSignal.isCanceled());
+        cancellationSignal.cancel();
+        Assert.assertTrue(cancellationSignal.isCanceled());
+    }
+
+    // Tests the case where a user navigates to a page different from a prerendered page.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testNavigationToNonPrerenderedPage() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/* kTriggerDestroyed */ 16);
+
+        startPrerenderingAndWait(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
+
+        // Navigate to `prerender.html?b=42` that doesn't match the prerendered page. This should
+        // cancel prerendering.
+        String url = getUrl(PRERENDER_URL.concat("?b=42"));
+        navigatePage(url);
+
+        // Wait until prerendering is canceled.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // The error callback should not be called in this case.
+        Assert.assertEquals(0, mPrerenderErrorCallbackHelper.getCallCount());
     }
 
     // Tests prerendering navigation that is redirected to same-origin.
@@ -477,13 +646,14 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testSameOriginRedirection() throws Throwable {
         loadInitialPage();
 
         // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
         final String initialPrerenderingPath =
                 "/server-redirect-echoheader?url=" + encodeUrl(PRERENDER_URL);
-        final String initialPrerenderingUrl = mTestServer.getURL(initialPrerenderingPath);
+        final String initialPrerenderingUrl = getUrl(initialPrerenderingPath);
 
         var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
 
@@ -492,7 +662,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
-                mActivationCallbackHelper.getActivationCallback());
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
 
         activatePage(initialPrerenderingUrl, mPrerenderingUrl, ActivationBy.LOAD_URL);
 
@@ -535,7 +707,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
-                mActivationCallbackHelper.getActivationCallback());
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
 
         activatePage(
                 initialPrerenderingUrl,
@@ -570,6 +744,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 "/server-redirect-echoheader?url=" + encodeUrl(getCrossSiteUrl(PRERENDER_URL));
         final String initialPrerenderingUrl = getUrl(initialPrerenderingPath);
 
+        int currentCallCount = mPrerenderErrorCallbackHelper.getCallCount();
         var histogramWatcher =
                 createFinalStatusHistogramWatcher(/*kCrossSiteRedirectInInitialNavigation */ 44);
 
@@ -578,9 +753,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
-                /* activationCallback= */ null);
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
 
         // Wait until prerendering is canceled, as cross-site prerendering is disallowed.
+        mPrerenderErrorCallbackHelper.waitForCallback(currentCallCount);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
 
         // Make sure that prerendering navigation has the Sec-Purpose header.
@@ -589,8 +767,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals("prefetch;prerender", initialHeaders.get("Sec-Purpose"));
         // On the other hand, the redirected request should not be sent to the server for the
         // cross-site restriction.
-        // TODO(crbug.com/41490450): Add a new test helper to make sure that a request is not sent
-        // to a given URL.
+        Assert.assertEquals(0, mTestServer.getRequestCountForUrl(PRERENDER_URL));
     }
 
     // Tests additional request headers on WebView prerendering trigger.
@@ -598,6 +775,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testAdditionalHeaders() throws Throwable {
         loadInitialPage();
 
@@ -620,7 +798,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 mPrerenderingUrl,
                 prefetchParameters,
-                mActivationCallbackHelper.getActivationCallback());
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
 
         // shouldInterceptRequest should see the additional headers on prerendering navigation.
         shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
@@ -633,7 +813,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals("2", mainHeaders.get("Test-Header2"));
         // But shouldInterceptRequest should not see the headers on subresource requests.
         shouldInterceptRequestHelper.waitForNext();
-        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+        String scriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
         AwContentsClient.AwWebResourceRequest scriptRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(scriptUrl);
         Assert.assertNotNull(scriptRequest);
@@ -665,6 +845,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testInvalidAdditionalHeaders() throws Throwable {
         loadInitialPage();
 
@@ -681,6 +862,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testNoVarySearchHeader() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -698,7 +880,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Navigate to `prerender.html?a=42`. This doesn't exactly match the prerendering URL but
         // should activate the prerendered page for the No-Vary-Search header.
-        String url = mTestServer.getURL(PRERENDER_URL.concat("?a=42"));
+        String url = getUrl(PRERENDER_URL.concat("?a=42"));
         activatePage(url, ActivationBy.JAVASCRIPT);
 
         // Wait until the navigation activates the prerendered page.
@@ -710,6 +892,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testNoVarySearchHeaderMultipleParams() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -726,12 +909,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Start prerendering `?a=1&b=2&c=3`. This response will have
         // `No-Vary-Search: key-order, params, except=("a" "c")` header.
-        final String prerenderingUrl = mTestServer.getURL(path.concat("?a=1&b=2&c=3"));
+        final String prerenderingUrl = getUrl(path.concat("?a=1&b=2&c=3"));
         injectSpeculationRulesAndWait(prerenderingUrl);
 
         // Navigate to `?c=3&b=20&a=1`. This doesn't exactly match the prerendering URL but should
         // activate the prerendered page for the No-Vary-Search header.
-        final String navigatingUrl = mTestServer.getURL(path.concat("?c=3&b=20&a=1"));
+        final String navigatingUrl = getUrl(path.concat("?c=3&b=20&a=1"));
         activatePage(navigatingUrl, ActivationBy.JAVASCRIPT);
 
         // Wait until the navigation activates the prerendered page.
@@ -745,6 +928,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testNoVarySearchHeaderUnignorableSearchParam() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -762,7 +946,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Navigate to `prerender.html?b=42`. This doesn't match even with the No-Vary-Search
         // header.
-        String url = mTestServer.getURL(PRERENDER_URL.concat("?b=42"));
+        String url = getUrl(PRERENDER_URL.concat("?b=42"));
         navigatePage(url);
 
         // Wait until prerendering is canceled for navigation to the URL whose search param is
@@ -775,6 +959,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testNoVarySearchHintAndHeader() throws Throwable {
         loadInitialPage();
 
@@ -795,7 +980,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 mPrerenderingUrl,
                 prefetchParameters,
-                mActivationCallbackHelper.getActivationCallback());
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
 
         // Navigate to `prerender.html?a=42` without waiting for completion of prerendering so that
         // activation match is conducted based on the No-Vary-Search hint (not the No-Vary-Search
@@ -808,33 +995,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // the infra to suspend prerendering is not available.
         // TODO(crbug.com/41490450): Implement the test infra to suspend prerendering and test the
         // No-Vary-Search hint using that.
-        String url = mTestServer.getURL(PRERENDER_URL.concat("?a=42"));
+        String url = getUrl(PRERENDER_URL.concat("?a=42"));
         activatePage(url, ActivationBy.LOAD_URL);
 
         // Wait until the navigation activates the prerendered page.
         mActivationCallbackHelper.waitForCallback(currentCallCount);
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    // Tests WebView prerendering trigger with null activation callback.
-    @Test
-    @LargeTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
-    public void testNullActivationCallback() throws Throwable {
-        loadInitialPage();
-
-        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
-
-        AwPrefetchParameters prefetchParameters =
-                new AwPrefetchParameters(
-                        /* additionalHeaders= */ null,
-                        /* noVarySearchData= */ null,
-                        /* isJavascriptEnabled= */ true);
-        startPrerenderingAndWait(
-                mPrerenderingUrl, prefetchParameters, /* activationCallback= */ null);
-
-        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
@@ -847,14 +1012,15 @@ public class AwPrerenderTest extends AwParameterizedTest {
         BlinkFeatures.PRERENDER2_MEMORY_CONTROLS,
         "Prerender2FallbackPrefetchSpecRules"
     })
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testAwContentsIoThreadClientHandleFrameTreeSwapForward() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
-        String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
-        String url2 = mTestServer.getURL(PRERENDER_URL);
-        String url3 = mTestServer.getURL(INITIAL_URL.concat("?q=3"));
-        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+        String url1 = getUrl(INITIAL_URL.concat("?q=1"));
+        String url2 = getUrl(PRERENDER_URL);
+        String url3 = getUrl(INITIAL_URL.concat("?q=3"));
+        String scriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
 
         final TestAwContentsClient.ShouldInterceptRequestHelper helper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -906,14 +1072,15 @@ public class AwPrerenderTest extends AwParameterizedTest {
         BlinkFeatures.PRERENDER2_MEMORY_CONTROLS,
         "Prerender2FallbackPrefetchSpecRules"
     })
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testAwContentsIoThreadClientHandleFrameTreeSwapBack() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
-        String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
-        String url2 = mTestServer.getURL(PRERENDER_URL);
-        String url4 = mTestServer.getURL(INITIAL_URL.concat("?q=4"));
-        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+        String url1 = getUrl(INITIAL_URL.concat("?q=1"));
+        String url2 = getUrl(PRERENDER_URL);
+        String url4 = getUrl(INITIAL_URL.concat("?q=4"));
+        String scriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
 
         final TestAwContentsClient.ShouldInterceptRequestHelper helper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -979,6 +1146,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingAndShouldInterceptRequest() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -995,7 +1163,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNotNull(request);
         HashMap<String, String> requestHeaders = request.requestHeaders;
         Assert.assertNotNull(requestHeaders);
-        Assert.assertEquals(requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        Assert.assertEquals("prefetch;prerender", requestHeaders.get("Sec-Purpose"));
 
         currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -1014,17 +1182,18 @@ public class AwPrerenderTest extends AwParameterizedTest {
         BlinkFeatures.PRERENDER2_MEMORY_CONTROLS,
         "Prerender2FallbackPrefetchSpecRules"
     })
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingAndShouldInterceptRequestForSubresources() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         final String prerenderingUrl =
-                mTestServer.getURL("/android_webview/test/data/prerender-send-beacon.html");
-        final String setupScriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+                getUrl("/android_webview/test/data/prerender-send-beacon.html");
+        final String setupScriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
         // Beacon to be sent during prerendering.
-        final String beaconUrl = mTestServer.getURL("/beacon");
+        final String beaconUrl = getUrl("/beacon");
         // Beacon to be sent during the prerenderingchange event (after activation).
-        final String beaconUrl2 = mTestServer.getURL("/beacon-prerenderingchange");
+        final String beaconUrl2 = getUrl("/beacon-prerenderingchange");
 
         final TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -1045,7 +1214,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNotNull(request);
         HashMap<String, String> requestHeaders = request.requestHeaders;
         Assert.assertNotNull(requestHeaders);
-        Assert.assertEquals(requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        Assert.assertEquals("prefetch;prerender", requestHeaders.get("Sec-Purpose"));
 
         // Check if the first subresource request (sendBeacon) was intercepted during prerendering.
         AwContentsClient.AwWebResourceRequest beaconRequest =
@@ -1053,7 +1222,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNotNull(beaconRequest);
         HashMap<String, String> beaconRequestHeaders = beaconRequest.requestHeaders;
         Assert.assertNotNull(beaconRequestHeaders);
-        Assert.assertEquals(beaconRequestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        Assert.assertEquals("prefetch;prerender", beaconRequestHeaders.get("Sec-Purpose"));
 
         // Activate the page. This should not be intercepted.
         activatePage(prerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -1081,6 +1250,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         BlinkFeatures.PRERENDER2_MEMORY_CONTROLS,
         "Prerender2FallbackPrefetchSpecRules"
     })
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingWithCustomResponse() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1090,15 +1260,14 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // This test will attempt to prerender a non-existent URL. Generally this should fail, but
         // in this test shouldInterceptRequestHelper will serve a custom response instead.
-        final String nonExistentUrl =
-                mTestServer.getURL("/android_webview/test/data/non_existent.html");
+        final String nonExistentUrl = getUrl("/android_webview/test/data/non_existent.html");
 
         // Construct a custom response.
         FileInputStream body = new FileInputStream(UrlUtils.getIsolatedTestFilePath(PRERENDER_URL));
         WebResourceResponseInfo response = new WebResourceResponseInfo("text/html", "utf-8", body);
         shouldInterceptRequestHelper.setReturnValueForUrl(nonExistentUrl, response);
 
-        final String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+        final String scriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
         FileInputStream scriptBody =
                 new FileInputStream(UrlUtils.getIsolatedTestFilePath(PRERENDER_SETUP_SCRIPT_URL));
         WebResourceResponseInfo scriptResponse =
@@ -1131,6 +1300,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingAndShouldOverrideUrlLoading() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1149,7 +1319,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
-                requestHeadersOnShouldOverride.get("Sec-Purpose"), "prefetch;prerender");
+                "prefetch;prerender", requestHeadersOnShouldOverride.get("Sec-Purpose"));
 
         currentShouldOverrideUrlLoadingCallCount = shouldOverrideUrlLoadingHelper.getCallCount();
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
@@ -1169,6 +1339,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         BlinkFeatures.PRERENDER2_MEMORY_CONTROLS,
         "Prerender2FallbackPrefetchSpecRules"
     })
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testRedirectedPrerenderingAndShouldOverrideUrlLoading() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1180,8 +1351,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
         final String initialPrerenderingUrl =
-                mTestServer.getURL(
-                        "/server-redirect-echoheader?url=" + encodeUrl(mPrerenderingUrl));
+                getUrl("/server-redirect-echoheader?url=" + encodeUrl(mPrerenderingUrl));
 
         injectSpeculationRules(initialPrerenderingUrl);
 
@@ -1195,7 +1365,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
-                requestHeadersOnShouldOverride.get("Sec-Purpose"), "prefetch;prerender");
+                "prefetch;prerender", requestHeadersOnShouldOverride.get("Sec-Purpose"));
 
         // Check if the redirected prerendering navigation is also visible to
         // shouldOverrideUrlLoading.
@@ -1207,7 +1377,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         requestHeadersOnShouldOverride = shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
-                requestHeadersOnShouldOverride.get("Sec-Purpose"), "prefetch;prerender");
+                "prefetch;prerender", requestHeadersOnShouldOverride.get("Sec-Purpose"));
 
         currentShouldOverrideUrlLoadingCallCount = shouldOverrideUrlLoadingHelper.getCallCount();
 
@@ -1232,17 +1402,16 @@ public class AwPrerenderTest extends AwParameterizedTest {
         BlinkFeatures.PRERENDER2_MEMORY_CONTROLS,
         "Prerender2FallbackPrefetchSpecRules"
     })
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testSubframeOfPrerenderedPageAndShouldInterceptRequest() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
-        String subframeUrl1 = mTestServer.getURL("/android_webview/test/data/hello_world.html?q=1");
-        String subframeUrl2 = mTestServer.getURL("/android_webview/test/data/hello_world.html?q=2");
+        String subframeUrl1 = getUrl("/android_webview/test/data/hello_world.html?q=1");
+        String subframeUrl2 = getUrl("/android_webview/test/data/hello_world.html?q=2");
         String prerenderUrl =
-                mTestServer.getURL(
-                        "/android_webview/test/data/prerender.html?iframeSrc="
-                                .concat(subframeUrl1));
-        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+                getUrl("/android_webview/test/data/prerender.html?iframeSrc=".concat(subframeUrl1));
+        String scriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
 
         final TestAwContentsClient.ShouldInterceptRequestHelper helper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -1254,7 +1423,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(prerenderUrl));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(prerenderUrl);
-            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+            Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
 
         {
@@ -1264,7 +1433,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             Assert.assertEquals(helper.getUrls(), Arrays.asList(scriptUrl));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(scriptUrl);
             // Subframe navigation of prerendered page also has a Sec-Purpose header.
-            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+            Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
 
         {
@@ -1274,7 +1443,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             Assert.assertEquals(helper.getUrls(), Arrays.asList(subframeUrl1));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl1);
             // Subframe navigation of prerendered page also has a Sec-Purpose header.
-            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+            Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
 
         {
@@ -1307,6 +1476,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPostMessageDuringPrerendering() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1315,7 +1485,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
-        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(1, onPageStartedHelper.getCallCount());
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         // This future is notified after a message is posted. However, messages posted by
@@ -1349,6 +1519,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingCanceledWhenAddingJSInterface() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1381,6 +1552,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingCanceledWhenRemovingJSInterface() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1417,6 +1589,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingCanceledWhenAddingWebMessageListener() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1445,6 +1618,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingCanceledWhenAddingDocumentStartJavascript() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1474,6 +1648,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingCanceledWhenRemovingDocumentStartJavascript() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1507,6 +1682,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrerenderingManuallyCancelled() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
@@ -1531,6 +1707,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testSpeculativeLoadingDisabled() throws Throwable {
         // Do not `setSpeculativeLoadingAllowed()`.
         loadInitialPage();
@@ -1547,5 +1724,444 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Wait until prerendering is canceled for the listener addition.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests that prerendering can consume a prefetched response.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testPrefetchAndPrerender() throws Throwable {
+        loadInitialPage();
+
+        // Start prefetching and wait until response completion.
+        startPrefetchingAndWait(mPrerenderingUrl, /* prefetchParameters= */ null);
+
+        // Prefetching should send a request.
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(PRERENDER_URL));
+        // Make sure that the prefetch request has the Sec-Purpose header. The value should be
+        // "prefetch", not "prefetch;prerender".
+        HashMap<String, String> headers = mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertEquals("prefetch", headers.get("Sec-Purpose"));
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        // Start prerendering and wait until completion. This should consume the prefetched
+        // response.
+        startPrerenderingAndWait(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
+
+        // Prerendering should consume the prefetched request. It shouldn't send a request.
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(PRERENDER_URL));
+
+        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
+        mActivationCallbackHelper.waitForNext();
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Activation shouldn't send a request.
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(PRERENDER_URL));
+    }
+
+    // Tests the following scenario:
+    // 1) Prefetching sends a request to "?a=12". This response allows to ignore the parameter for
+    //    the No-Vary-Search header.
+    // 2) Prerendering starts for "?a=124". Thanks to the header, this should be able to consume the
+    //    prefetched response, the parameter is different though.
+    // 3) Navigation starts for "?a=91". Thanks to the header, this should be able to activate the
+    //    prerendered page.
+    //
+    // In the end, a request should be sent only to "?a=12" one time.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testPrefetchAndPrerenderWithNoVarySearchHeader() throws Throwable {
+        loadInitialPage();
+
+        // Start prefetching and wait until response completion. This response will have
+        // `No-Vary-Search: params=("a")` header.
+        String prefetchPath = PRERENDER_URL.concat("?a=12");
+        String prefetchUrl = getUrl(prefetchPath);
+        startPrefetchingAndWait(prefetchUrl, /* prefetchParameters= */ null);
+
+        // Prefetching should send a request to "?a=12".
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(prefetchPath));
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        // Start prerendering and wait until completion. This has the different query parameter but
+        // should consume the prefetched response for the No-Vary-Search header.
+        String prerenderPath = PRERENDER_URL.concat("?a=124");
+        String prerenderUrl = getUrl(prerenderPath);
+        startPrerenderingAndWait(
+                prerenderUrl,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
+
+        // Prerendering shouldn't send a request to "?a=12" or "?a=124".
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(prefetchPath));
+        Assert.assertEquals(0, mTestServer.getRequestCountForUrl(prerenderPath));
+
+        // Start navigation to the URL with yet another parameter. This should activate the
+        // prerendered page.
+        String navigationPath = PRERENDER_URL.concat("?a=91");
+        String navigationUrl = getUrl(navigationPath);
+        activatePage(navigationUrl, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
+        mActivationCallbackHelper.waitForNext();
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Activation shouldn't send a request to "?a=12", "?a=124", or "?a=91".
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(prefetchPath));
+        Assert.assertEquals(0, mTestServer.getRequestCountForUrl(prerenderPath));
+        Assert.assertEquals(0, mTestServer.getRequestCountForUrl(navigationPath));
+    }
+
+    // Tests the case where prerendering is triggered for the same URL multiple times. Only one
+    // prerendering navigation should happen.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testDuplicatePrerender_Success() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        var activationCallbackHelper1 = new ActivationCallbackHelper();
+        var activationCallbackHelper2 = new ActivationCallbackHelper();
+        var errorCallbackHelper1 = new PrerenderErrorCallbackHelper();
+        var errorCallbackHelper2 = new PrerenderErrorCallbackHelper();
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                activationCallbackHelper1.getCallback(),
+                errorCallbackHelper1.getCallback());
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                activationCallbackHelper2.getCallback(),
+                errorCallbackHelper2.getCallback());
+
+        // Wait until the prerendered page is loaded.
+        mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
+
+        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page. Both the activation callbacks
+        // should be called.
+        activationCallbackHelper1.waitForNext();
+        activationCallbackHelper2.waitForNext();
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(PRERENDER_URL));
+    }
+
+    // Tests the case where prerendering is triggered for the same URL multiple times and then
+    // canceled by an unexpected error.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testDuplicatePrerender_UnexpectedError() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kAllPrerenderingCanceled*/ 81);
+
+        var activationCallbackHelper1 = new ActivationCallbackHelper();
+        var activationCallbackHelper2 = new ActivationCallbackHelper();
+        var errorCallbackHelper1 = new PrerenderErrorCallbackHelper();
+        var errorCallbackHelper2 = new PrerenderErrorCallbackHelper();
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                activationCallbackHelper1.getCallback(),
+                errorCallbackHelper1.getCallback());
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                activationCallbackHelper2.getCallback(),
+                errorCallbackHelper2.getCallback());
+
+        // Wait until the prerendered page is loaded.
+        mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
+
+        // Emulate cancellation by an unexpected error.
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.cancelAllPrerendering());
+
+        // Wait until the prerendered page is canceled. Both the cancel callbacks should be called.
+        errorCallbackHelper1.waitForNext();
+        errorCallbackHelper2.waitForNext();
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests the case where prerendering is triggered for the same URL multiple times and then
+    // canceled by CancellationSignal.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testDuplicatePrerender_CancellationSignal() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kTriggerDestroyed*/ 16);
+
+        var cancellationSignal1 = new CancellationSignal();
+        var cancellationSignal2 = new CancellationSignal();
+        var activationCallbackHelper1 = new ActivationCallbackHelper();
+        var activationCallbackHelper2 = new ActivationCallbackHelper();
+        var errorCallbackHelper1 = new PrerenderErrorCallbackHelper();
+        var errorCallbackHelper2 = new PrerenderErrorCallbackHelper();
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                cancellationSignal1,
+                activationCallbackHelper1.getCallback(),
+                errorCallbackHelper1.getCallback());
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                cancellationSignal2,
+                activationCallbackHelper2.getCallback(),
+                errorCallbackHelper2.getCallback());
+
+        Assert.assertFalse(cancellationSignal1.isCanceled());
+        Assert.assertFalse(cancellationSignal2.isCanceled());
+
+        // Cancel prerendering 2 using CancellationSignal. This is an intentional cancellation, so
+        // the error callbacks should not be called.
+        cancellationSignal2.cancel();
+
+        Assert.assertFalse(cancellationSignal1.isCanceled());
+        Assert.assertTrue(cancellationSignal2.isCanceled());
+
+        // Wait until the prerendered page is canceled.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // The error callbacks should not be called.
+        Assert.assertEquals(0, errorCallbackHelper1.getCallCount());
+        Assert.assertEquals(0, errorCallbackHelper2.getCallCount());
+
+        // Calling the other cancellation signal after cancellation should not cause a runtime
+        // error.
+        cancellationSignal1.cancel();
+        Assert.assertTrue(cancellationSignal1.isCanceled());
+    }
+
+    // Tests the case where prerendering is triggered for different URLs.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testMultiplePrerenderingSuccess() throws Throwable {
+        loadInitialPage();
+
+        // Expect kActivated(0) and kOtherPrerenderedPageActivated(84).
+        var histogramWatcher = createFinalStatusHistogramWatcher(new int[] {0, 84});
+
+        var activationCallbackHelper1 = new ActivationCallbackHelper();
+        var activationCallbackHelper2 = new ActivationCallbackHelper();
+        var errorCallbackHelper1 = new PrerenderErrorCallbackHelper();
+        var errorCallbackHelper2 = new PrerenderErrorCallbackHelper();
+
+        String prerenderingUrl1 = getUrl(PRERENDER_URL + "?b=12");
+        String prerenderingUrl2 = getUrl(PRERENDER_URL + "?b=124");
+
+        startPrerenderingAndWait(
+                prerenderingUrl1,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                activationCallbackHelper1.getCallback(),
+                errorCallbackHelper1.getCallback());
+
+        startPrerenderingAndWait(
+                prerenderingUrl2,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
+                activationCallbackHelper2.getCallback(),
+                errorCallbackHelper2.getCallback());
+
+        // Activate prerendering 1. Prerendering 2 should be canceled during activation.
+        activatePage(prerenderingUrl1, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
+        activationCallbackHelper1.waitForNext();
+
+        // The error callback for prerendering 1 is never called in the case where other
+        // prerendering is activated.
+        Assert.assertEquals(0, errorCallbackHelper2.getCallCount());
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests the case where prerendering is triggered for different URLs with changing the max
+    // prerender limit.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testMultiplePrerenderingLimit() throws Throwable {
+        loadInitialPage();
+
+        // This test will start prerendering 5 times.
+        int numberOfPrerenders = 5;
+
+        var activationCallbackHelpers = new ActivationCallbackHelper[numberOfPrerenders];
+        for (int i = 0; i < numberOfPrerenders; ++i) {
+            activationCallbackHelpers[i] = new ActivationCallbackHelper();
+        }
+        var errorCallbackHelpers = new PrerenderErrorCallbackHelper[numberOfPrerenders];
+        for (int i = 0; i < numberOfPrerenders; ++i) {
+            errorCallbackHelpers[i] = new PrerenderErrorCallbackHelper();
+        }
+        String[] prerenderingUrls = new String[numberOfPrerenders];
+        for (int i = 0; i < numberOfPrerenders; ++i) {
+            prerenderingUrls[i] = getUrl(PRERENDER_URL + "?b=" + i);
+        }
+
+        // Expect 1 kActivated(0), 3 kTriggerDestroyed(16), and 1 kOtherPrerenderedPageActivated(84)
+        // in the end.
+        var histogramWatcherAll =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(FINAL_STATUS_UMA, 0, 1)
+                        .expectIntRecordTimes(FINAL_STATUS_UMA, 16, 3)
+                        .expectIntRecordTimes(FINAL_STATUS_UMA, 84, 1)
+                        .build();
+
+        // Start with 2 slots for startPrerendering().
+        setMaxPrerenders(2);
+
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = []
+        //   Cancelled     = []
+
+        {
+            // Start prerendering from 0 to 2. Prerendering 0 should be canceled with
+            // kTriggerDestroyed(16), as the current limit is 2.
+            var histogramWatcher = createFinalStatusHistogramWatcher(16);
+            for (int i = 0; i < 3; ++i) {
+                startPrerendering(
+                        prerenderingUrls[i],
+                        /* prefetchParameters= */ null,
+                        /* cancellationSignal= */ null,
+                        activationCallbackHelpers[i].getCallback(),
+                        errorCallbackHelpers[i].getCallback());
+            }
+            histogramWatcher.assertExpected();
+        }
+
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = [1, 2]
+        //   Cancelled     = [0]
+
+        // Set max prerenders to 3. This allocates one more slot for startPrerendering().
+        setMaxPrerenders(3);
+
+        {
+            // Start prerendering 3. No prerendering should be canceled.
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder().expectNoRecords(FINAL_STATUS_UMA).build();
+            startPrerendering(
+                    prerenderingUrls[3],
+                    /* prefetchParameters= */ null,
+                    /* cancellationSignal= */ null,
+                    activationCallbackHelpers[3].getCallback(),
+                    errorCallbackHelpers[3].getCallback());
+            histogramWatcher.assertExpected();
+        }
+
+        // Current status:
+        //   MaxPrerenders = 3
+        //   Prerendered   = [1, 2, 3]
+        //   Cancelled     = [0]
+
+        {
+            // Set max prerenders to 2. This is smaller than the number of ongoing prerendering (3),
+            // but it doesn't cancel them now and instead defers it until startPrerendering() is
+            // called.
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder().expectNoRecords(FINAL_STATUS_UMA).build();
+            setMaxPrerenders(2);
+            histogramWatcher.assertExpected();
+        }
+
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = [1, 2, 3]
+        //   Cancelled     = [0]
+
+        {
+            // Start prerendering 4. Prerendering 1 and 2 should be canceled with
+            // kTriggerDestroyed(16), as the current limit is 2.
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecordTimes(FINAL_STATUS_UMA, 16, 2)
+                            .build();
+            startPrerendering(
+                    prerenderingUrls[4],
+                    /* prefetchParameters= */ null,
+                    /* cancellationSignal= */ null,
+                    activationCallbackHelpers[4].getCallback(),
+                    errorCallbackHelpers[4].getCallback());
+            histogramWatcher.assertExpected();
+        }
+
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered   = [3, 4]
+        //   Cancelled     = [0, 1, 2]
+
+        {
+            // Activate prerendering 3. Prerendering 4 should be canceled with
+            // kOtherPrerenderedPageActivated(84) during activation.
+            var histogramWatcher = createFinalStatusHistogramWatcher(new int[] {0, 84});
+            activatePage(prerenderingUrls[3], ActivationBy.LOAD_URL);
+
+            // Wait until the navigation activates the prerendered page.
+            activationCallbackHelpers[3].waitForNext();
+
+            // The error callbacks are never called in the case where prerendering is canceled for
+            // the limit or other prerendering is activated.
+            for (int i = 0; i < numberOfPrerenders; ++i) {
+                Assert.assertEquals(0, errorCallbackHelpers[i].getCallCount());
+            }
+            histogramWatcher.assertExpected();
+        }
+
+        // Current status:
+        //   MaxPrerenders = 2
+        //   Prerendered  = []
+        //   Cancelled    = [0, 1, 2] (kTriggerDestroyed = 16)
+        //   NotActivated = [4]       (kOtherPrerenderedPageActivated = 84)
+        //   Activated    = [3]       (kActivated = 0)
+
+        histogramWatcherAll.assertExpected();
     }
 }

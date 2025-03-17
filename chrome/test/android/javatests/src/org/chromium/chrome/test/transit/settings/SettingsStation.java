@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.settings;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.FragmentElement;
 import org.chromium.base.test.transit.Station;
@@ -39,9 +38,10 @@ public class SettingsStation<FragmentT extends ChromeBaseSettingsFragment>
         String title = mFragmentElement.get().findPreference(prefKey).getTitle().toString();
         return enterFacilitySync(
                 new PreferenceFacility(title),
-                Transition.newOptions().withPossiblyAlreadyFulfilled().build(),
-                () ->
-                        ThreadUtils.runOnUiThreadBlocking(
-                                () -> mFragmentElement.get().scrollToPreference(prefKey)));
+                Transition.newOptions()
+                        .withPossiblyAlreadyFulfilled()
+                        .withRunTriggerOnUiThread()
+                        .build(),
+                () -> mFragmentElement.get().scrollToPreference(prefKey));
     }
 }

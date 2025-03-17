@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -303,9 +302,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
       return;
     }
 
-    // Connect may take an arbitrary length of time, so use no timeout.
+    // Connect may take an arbitrary length of time, so use the max timeout.
     object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        &method_call, dbus::ObjectProxy::TIMEOUT_MAX,
         base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothDeviceClientImpl::OnError,
@@ -327,9 +326,10 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
       return;
     }
 
-    // ConnectClassic may take an arbitrary length of time, so use no timeout.
+    // ConnectClassic may take an arbitrary length of time, so use the max
+    // timeout.
     object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        &method_call, dbus::ObjectProxy::TIMEOUT_MAX,
         base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothDeviceClientImpl::OnError,
@@ -351,9 +351,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
       return;
     }
 
-    // ConnectLE may take an arbitrary length of time, so use no timeout.
+    // ConnectLE may take an arbitrary length of time, so use the max timeout.
     object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        &method_call, dbus::ObjectProxy::TIMEOUT_MAX,
         base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothDeviceClientImpl::OnError,
@@ -425,9 +425,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
       return;
     }
 
-    // Connect may take an arbitrary length of time, so use no timeout.
+    // Connect may take an arbitrary length of time, so use the max timeout.
     object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        &method_call, dbus::ObjectProxy::TIMEOUT_MAX,
         base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothDeviceClientImpl::OnError,
@@ -477,9 +477,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
       return;
     }
 
-    // Pairing may take an arbitrary length of time, so use no timeout.
+    // Pairing may take an arbitrary length of time, so use the max timeout.
     object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        &method_call, dbus::ObjectProxy::TIMEOUT_MAX,
         base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothDeviceClientImpl::OnError,

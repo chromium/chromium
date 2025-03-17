@@ -28,7 +28,7 @@ class FieldOptions extends \Google\Protobuf\Internal\Message
      * The packed option can be enabled for repeated primitive fields to enable
      * a more efficient representation on the wire. Rather than repeatedly
      * writing the tag and type for each element, the entire array is encoded as
-     * a single length-delimited blob. In proto3, only explicit setting it to
+     * a single length-prefixed blob. In proto3, only explicit setting it to
      * false will avoid using packed encoding.
      *
      * Generated from protobuf field <code>optional bool packed = 2;</code>
@@ -74,10 +74,8 @@ class FieldOptions extends \Google\Protobuf\Internal\Message
      * implementation must either *always* check its required fields, or *never*
      * check its required fields, regardless of whether or not the message has
      * been parsed.
-     * As of 2021, lazy does no correctness checks on the byte stream during
-     * parsing.  This may lead to crashes if and when an invalid byte stream is
-     * finally parsed upon access.
-     * TODO(b/211906113):  Enable validation on lazy fields.
+     * As of May 2022, lazy verifies the contents of the byte stream during
+     * parsing.  An invalid byte stream will cause the overall parsing to fail.
      *
      * Generated from protobuf field <code>optional bool lazy = 5 [default = false];</code>
      */
@@ -127,7 +125,7 @@ class FieldOptions extends \Google\Protobuf\Internal\Message
      *           The packed option can be enabled for repeated primitive fields to enable
      *           a more efficient representation on the wire. Rather than repeatedly
      *           writing the tag and type for each element, the entire array is encoded as
-     *           a single length-delimited blob. In proto3, only explicit setting it to
+     *           a single length-prefixed blob. In proto3, only explicit setting it to
      *           false will avoid using packed encoding.
      *     @type int $jstype
      *           The jstype option determines the JavaScript type used for values of the
@@ -165,10 +163,8 @@ class FieldOptions extends \Google\Protobuf\Internal\Message
      *           implementation must either *always* check its required fields, or *never*
      *           check its required fields, regardless of whether or not the message has
      *           been parsed.
-     *           As of 2021, lazy does no correctness checks on the byte stream during
-     *           parsing.  This may lead to crashes if and when an invalid byte stream is
-     *           finally parsed upon access.
-     *           TODO(b/211906113):  Enable validation on lazy fields.
+     *           As of May 2022, lazy verifies the contents of the byte stream during
+     *           parsing.  An invalid byte stream will cause the overall parsing to fail.
      *     @type bool $unverified_lazy
      *           unverified_lazy does no correctness checks on the byte stream. This should
      *           only be used where lazy with verification is prohibitive for performance
@@ -235,7 +231,7 @@ class FieldOptions extends \Google\Protobuf\Internal\Message
      * The packed option can be enabled for repeated primitive fields to enable
      * a more efficient representation on the wire. Rather than repeatedly
      * writing the tag and type for each element, the entire array is encoded as
-     * a single length-delimited blob. In proto3, only explicit setting it to
+     * a single length-prefixed blob. In proto3, only explicit setting it to
      * false will avoid using packed encoding.
      *
      * Generated from protobuf field <code>optional bool packed = 2;</code>
@@ -354,10 +350,8 @@ class FieldOptions extends \Google\Protobuf\Internal\Message
      * implementation must either *always* check its required fields, or *never*
      * check its required fields, regardless of whether or not the message has
      * been parsed.
-     * As of 2021, lazy does no correctness checks on the byte stream during
-     * parsing.  This may lead to crashes if and when an invalid byte stream is
-     * finally parsed upon access.
-     * TODO(b/211906113):  Enable validation on lazy fields.
+     * As of May 2022, lazy verifies the contents of the byte stream during
+     * parsing.  An invalid byte stream will cause the overall parsing to fail.
      *
      * Generated from protobuf field <code>optional bool lazy = 5 [default = false];</code>
      * @return bool
@@ -402,10 +396,8 @@ class FieldOptions extends \Google\Protobuf\Internal\Message
      * implementation must either *always* check its required fields, or *never*
      * check its required fields, regardless of whether or not the message has
      * been parsed.
-     * As of 2021, lazy does no correctness checks on the byte stream during
-     * parsing.  This may lead to crashes if and when an invalid byte stream is
-     * finally parsed upon access.
-     * TODO(b/211906113):  Enable validation on lazy fields.
+     * As of May 2022, lazy verifies the contents of the byte stream during
+     * parsing.  An invalid byte stream will cause the overall parsing to fail.
      *
      * Generated from protobuf field <code>optional bool lazy = 5 [default = false];</code>
      * @param bool $var

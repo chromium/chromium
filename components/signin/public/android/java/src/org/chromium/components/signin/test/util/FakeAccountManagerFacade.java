@@ -24,10 +24,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -204,6 +206,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
+    public void checkIsSubjectToParentalControls(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
+        AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
+        if (accountHolder.getAccountCapabilities().isSubjectToParentalControls() == Tribool.TRUE) {
+            listener.onStatusReady(true, coreAccountInfo);
+        } else {
+            listener.onStatusReady(false, /* childAccount= */ null);
+        }
+    }
+
+    @Override
     public Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo) {
         AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
         return Promise.fulfilled(accountHolder.getAccountCapabilities());
@@ -252,6 +265,39 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAccountHolders.add(new AccountHolder(accountInfo));
+                    assert (mBlockedGetCoreAccountInfosPromise == null)
+                            == (mBlockedGetAccountsPromise == null);
+                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                        fireOnAccountsChangedNotification();
+                    }
+                });
+    }
+
+    /**
+     * Updates that account that is already present. Uses `AccountInfo.getId()` and `CoreAccountId`
+     * equality to search for the account to update. Throws if the account can't be found.
+     */
+    public void updateAccount(AccountInfo accountInfo) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    synchronized (mAccountHolders) {
+                        @Nullable
+                        AccountHolder accountHolder =
+                                mAccountHolders.stream()
+                                        .filter(
+                                                (ah) ->
+                                                        ah.getAccountInfo()
+                                                                .getId()
+                                                                .equals(accountInfo.getId()))
+                                        .findFirst()
+                                        .orElse(null);
+                        if (accountHolder == null) {
+                            throw new IllegalArgumentException(
+                                    "Account " + accountInfo.getEmail() + " can't be found!");
+                        }
+                        mAccountHolders.remove(accountHolder);
+                        mAccountHolders.add(new AccountHolder(accountInfo));
+                    }
                     assert (mBlockedGetCoreAccountInfosPromise == null)
                             == (mBlockedGetAccountsPromise == null);
                     if (mBlockedGetCoreAccountInfosPromise == null) {
@@ -316,14 +362,14 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /** Converts an email to a fake gaia Id. */
-    public static String toGaiaId(String email) {
-        return "gaia-id-" + email.replace("@", "_at_");
+    public static GaiaId toGaiaId(String email) {
+        return new GaiaId("gaia-id-" + email.replace("@", "_at_"));
     }
 
     /**
-     * Creates an email used to identify child accounts in tests.
-     * A child-specific prefix will be appended to the base name so that the created account
-     * will be considered a child account in {@link FakeAccountManagerFacade}.
+     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
+     * appended to the base name so that the created account will be considered a child account in
+     * {@link FakeAccountManagerFacade}.
      */
     public static String generateChildEmail(String baseEmail) {
         return CHILD_ACCOUNT_NAME_PREFIX + baseEmail;

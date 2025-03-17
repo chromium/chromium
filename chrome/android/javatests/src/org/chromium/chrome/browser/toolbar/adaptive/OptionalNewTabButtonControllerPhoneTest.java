@@ -217,7 +217,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                 .perform(click());
 
         assertThat(
-                /* reason= */ userActionTester.toString(),
+                /* message= */ userActionTester.toString(),
                 userActionTester.getActions(),
                 Matchers.hasItem("MobileTopToolbarOptionalButtonNewTab"));
     }

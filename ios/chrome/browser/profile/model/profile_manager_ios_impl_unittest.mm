@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 
 #import "base/containers/contains.h"
+#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/scoped_observation.h"
@@ -121,13 +122,11 @@ class ProfileManagerIOSImplTest : public TestWithProfile {
 // Tests that LoadProfileAsync(...) correctly loads a known Profile, and that
 // the load is not blocking the main thread.
 TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
-  // Pretends that a Profile named `kProfileName1` exists. Required as
-  // LoadProfileAsync(...) won't create new Profiles.
-  attributes_storage().AddProfile(kProfileName1);
+  // Reserve a new profile name and mark it as existing.
+  const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   base::RunLoop run_loop;
@@ -140,7 +139,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
   {
     base::ScopedDisallowBlocking disallow_blocking;
     const bool success = profile_manager().LoadProfileAsync(
-        kProfileName1,
+        profile_name,
         CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
         CaptureParam(&created_profile));
 
@@ -165,13 +164,11 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
 // Tests that calls LoadProfileAsync(...) on a loaded Profile return the Profile
 // immediately and still don't block the main thread.
 TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
-  // Pretends that a Profile named `kProfileName1` exists. Required as
-  // LoadProfileAsync(...) won't create new Profiles.
-  attributes_storage().AddProfile(kProfileName1);
+  // Reserve a new profile name and mark it as existing.
+  const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   // Load the Profile a first time.
@@ -186,7 +183,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
     {
       base::ScopedDisallowBlocking disallow_blocking;
       const bool success = profile_manager().LoadProfileAsync(
-          kProfileName1,
+          profile_name,
           CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
           CaptureParam(&created_profile));
 
@@ -221,7 +218,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
     {
       base::ScopedDisallowBlocking disallow_blocking;
       const bool success = profile_manager().LoadProfileAsync(
-          kProfileName1,
+          profile_name,
           CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
           CaptureParam(&created_profile));
 
@@ -324,8 +321,10 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile_MarkedForDeletion) {
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
 
-  // Ensures that the profile cannot be created.
+  // Ensures that the profile cannot be created and has been removed from
+  // the profile attributes storage.
   ASSERT_FALSE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
 }
 
 // Tests that calling CreateProfileAsync(...) a second time returns the Profile
@@ -404,24 +403,22 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync_Reload) {
 // Tests that LoadProfile(...) correctly loads a known Profile in a synchronous
 // fashion (i.e. blocks the main thread).
 TEST_F(ProfileManagerIOSImplTest, LoadProfile) {
-  // Pretends that a Profile named `kProfileName1` exists. Required as
-  // LoadProfile(...) won't create new Profiles.
-  attributes_storage().AddProfile(kProfileName1);
+  // Reserve a new profile name and mark it as existing.
+  const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   // Load the Profile synchronously.
-  ProfileIOS* profile = profile_manager().LoadProfile(kProfileName1);
+  ProfileIOS* profile = profile_manager().LoadProfile(profile_name);
 
   // The Profile should have been successfully loaded and initialized.
   EXPECT_TRUE(profile);
 
   // Calling LoadProfile(...) a second time should return the same
   // object.
-  EXPECT_EQ(profile, profile_manager().LoadProfile(kProfileName1));
+  EXPECT_EQ(profile, profile_manager().LoadProfile(profile_name));
 }
 
 // Tests that LoadProfile(...) fails to load an unknown Profile.
@@ -456,34 +453,27 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile) {
 }
 
 // Check that if there are not profile marked as the personal profile, then
-// the first profile created is marked as the personal profile.
-TEST_F(ProfileManagerIOSImplTest, FirstProfileCreatedMarkedAsPersonalProfile) {
-  ASSERT_TRUE(GetLoadedProfileNames().empty());
-  ASSERT_TRUE(attributes_storage().GetPersonalProfileName().empty());
-
-  // Create a profile. It should be marked as the personal profile.
-  EXPECT_TRUE(profile_manager().CreateProfile(kProfileName1));
-
-  // The profile should've been marked as the personal profile.
-  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
+// a profile is automatically created and marked as personal profile.
+TEST_F(ProfileManagerIOSImplTest, PersonalProfileExists) {
+  const std::string& personal_profile =
+      attributes_storage().GetPersonalProfileName();
+  EXPECT_TRUE(profile_manager().HasProfileWithName(personal_profile));
 }
 
 // Check that if there is a profile marked as the personal profile, creating
 // a new profile does not overwrite the personal profile.
 TEST_F(ProfileManagerIOSImplTest, CreatingProfileDontOverwritePersonalProfile) {
-  ASSERT_TRUE(GetLoadedProfileNames().empty());
-  ASSERT_TRUE(attributes_storage().GetPersonalProfileName().empty());
-
-  // Mark kProfileName1 as the personal profile.
-  attributes_storage().AddProfile(kProfileName1);
-  attributes_storage().SetPersonalProfileName(kProfileName1);
-  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
+  // Record the personal profile (created by the constructor).
+  const std::string profile_name1 =
+      attributes_storage().GetPersonalProfileName();
+  ASSERT_NE(profile_name1, std::string());
 
   // Create another profile, this should not change the personal profile.
-  EXPECT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  const std::string profile_name2 = profile_manager().ReserveNewProfileName();
+  EXPECT_TRUE(profile_manager().CreateProfile(profile_name2));
 
   // The personal profile should not have been changed.
-  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
+  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), profile_name1);
 }
 
 // Tests that unloading a profile invoke OnProfileUnloaded(...) on the
@@ -566,8 +556,6 @@ TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles_LoadPending) {
 // randomly generated, and register it with ProfileAttributesStorageIOS. The
 // name must also be a valid UUID.
 TEST_F(ProfileManagerIOSImplTest, ReserveNewProfileName) {
-  ASSERT_EQ(attributes_storage().GetNumberOfProfiles(), 0u);
-
   const std::string name = profile_manager().ReserveNewProfileName();
   EXPECT_FALSE(name.empty());
 
@@ -600,7 +588,8 @@ TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
   profile_manager().MarkProfileForDeletion(kProfileName2);
 
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
-  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
   EXPECT_TRUE(observer.on_profile_marked_for_permanent_deletation_called());
 }
 
@@ -633,6 +622,7 @@ TEST_F(ProfileManagerIOSImplTest,
 
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
   EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
 }
 
@@ -643,6 +633,7 @@ TEST_F(ProfileManagerIOSImplTest,
   // Create a few profiles synchronously.
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+
   // Check that the profiles are accessible.
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
@@ -650,4 +641,68 @@ TEST_F(ProfileManagerIOSImplTest,
   // Mark profile for deletion.
   profile_manager().MarkProfileForDeletion(kProfileName2);
   EXPECT_FALSE(profile_manager().CanCreateProfileWithName(kProfileName2));
+  EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
+}
+
+// Tests that PurgeProfilesMarkedForDeletion(...) works correctly and delete
+// the data for the profile from the disk.
+TEST_F(ProfileManagerIOSImplTest, PurgeProfilesMarkedForDeletion) {
+  // Reserve profiles without creating them, then write data on disk and
+  // mark them for deletion. By not loading the profile we ensure that
+  // there is no risk for the test to be flaky because WKWebsiteStoage
+  // is still in use on the IO thread.
+  const std::string profile1 = profile_manager().ReserveNewProfileName();
+  const std::string profile2 = profile_manager().ReserveNewProfileName();
+  const std::string profile3 = profile_manager().ReserveNewProfileName();
+
+  ASSERT_TRUE(profile_manager().HasProfileWithName(profile1));
+  ASSERT_TRUE(profile_manager().HasProfileWithName(profile2));
+  ASSERT_TRUE(profile_manager().HasProfileWithName(profile3));
+
+  // Create fake data for the profiles (just a directory is enough for
+  // this test).
+  const base::FilePath profile1_dir = profile_data_dir().Append(profile1);
+  const base::FilePath profile2_dir = profile_data_dir().Append(profile2);
+  const base::FilePath profile3_dir = profile_data_dir().Append(profile3);
+
+  ASSERT_TRUE(base::CreateDirectory(profile1_dir));
+  ASSERT_TRUE(base::CreateDirectory(profile2_dir));
+  ASSERT_TRUE(base::CreateDirectory(profile3_dir));
+
+  // Mark some of the profiles for deletion.
+  profile_manager().MarkProfileForDeletion(profile1);
+  profile_manager().MarkProfileForDeletion(profile2);
+
+  // Check that the data has not been deleted yet.
+  EXPECT_TRUE(base::DirectoryExists(profile1_dir));
+  EXPECT_TRUE(base::DirectoryExists(profile2_dir));
+  EXPECT_TRUE(base::DirectoryExists(profile3_dir));
+
+  EXPECT_TRUE(profile_manager().IsProfileMarkedForDeletion(profile1));
+  EXPECT_TRUE(profile_manager().IsProfileMarkedForDeletion(profile2));
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile3));
+
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile1));
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile2));
+  EXPECT_TRUE(profile_manager().HasProfileWithName(profile3));
+
+  // Schedule the profile deletion and wait for the operation to complete.
+  base::RunLoop run_loop;
+  profile_manager().PurgeProfilesMarkedForDeletion(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the data has been deleted, and the profiles are no longer
+  // marked for deletion. The data should not be deleted for the profiles
+  // not marked for deletion.
+  EXPECT_FALSE(base::DirectoryExists(profile1_dir));
+  EXPECT_FALSE(base::DirectoryExists(profile2_dir));
+  EXPECT_TRUE(base::DirectoryExists(profile3_dir));
+
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile1));
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile2));
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile3));
+
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile1));
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile2));
+  EXPECT_TRUE(profile_manager().HasProfileWithName(profile3));
 }

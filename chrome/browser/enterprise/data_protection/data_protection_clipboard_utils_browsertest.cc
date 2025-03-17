@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
@@ -40,6 +41,7 @@ content::ClipboardPasteData MakeClipboardPasteData(
   return clipboard_paste_data;
 }
 
+// TODO(crbug.com/387484337): Set up equivalent browser tests for Clank.
 // Tests for functions and classes declared in data_protection_clipboard_utils.h
 // For browser tests that test data protection integration with Chrome's
 // clipboard logic, see clipboard_browsertests.cc
@@ -376,10 +378,10 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_FALSE(paste_data);
 }
 
-// Ash requires extra boilerplate to run this test, and since copy-pasting
-// between profiles on Ash isn't a meaningful test it is simply omitted from
-// running this.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// ChromeOS requires extra boilerplate to run this test, and since copy-pasting
+// between profiles on ChromeOS isn't a meaningful test it is simply omitted
+// from running this.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteBlockedByDataControls_SourceRule) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
@@ -557,7 +559,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   auto paste_data = future.Get();
   EXPECT_FALSE(paste_data);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteReportedByDataControls_DestinationRule) {
@@ -618,10 +620,10 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
             "image");
 }
 
-// Ash requires extra boilerplate to run this test, and since copy-pasting
-// between profiles on Ash isn't a meaningful test it is simply omitted from
-// running this.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// ChromeOS requires extra boilerplate to run this test, and since copy-pasting
+// between profiles on ChromeOS isn't a meaningful test it is simply omitted
+// from running this.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteReportedByDataControls_SourceRule) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
@@ -678,7 +680,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
             "image");
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyAllowed) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
@@ -879,7 +881,11 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
-  EXPECT_FALSE(future.IsReady());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
@@ -946,7 +952,11 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
-  EXPECT_FALSE(future.IsReady());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,

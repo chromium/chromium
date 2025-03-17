@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/files/file_proxy.h"
@@ -76,7 +77,7 @@ class LocalFileReader : public FileOperations::Reader {
 
  private:
   void OnEnsureUserResult(OpenCallback callback,
-                          protocol::FileTransferResult<absl::monostate> result);
+                          protocol::FileTransferResult<std::monostate> result);
   void OnFileChooserResult(OpenCallback callback, FileChooser::Result result);
   void OnOpenResult(OpenCallback callback, base::File::Error error);
   void OnGetInfoResult(OpenCallback callback,
@@ -194,7 +195,7 @@ FileOperations::State LocalFileReader::state() const {
 
 void LocalFileReader::OnEnsureUserResult(
     FileOperations::Reader::OpenCallback callback,
-    protocol::FileTransferResult<absl::monostate> result) {
+    protocol::FileTransferResult<std::monostate> result) {
   if (!result) {
     SetState(FileOperations::kFailed);
     std::move(callback).Run(std::move(result.error()));
@@ -310,7 +311,7 @@ void LocalFileWriter::Open(const base::FilePath& filename, Callback callback) {
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce([] {
         return EnsureUserContext().AndThen(
-            [](absl::monostate) { return GetFileUploadDirectory(); });
+            [](std::monostate) { return GetFileUploadDirectory(); });
       }),
       base::BindOnce(&LocalFileWriter::OnGetTargetDirectoryResult,
                      weak_ptr_factory_.GetWeakPtr(), filename,

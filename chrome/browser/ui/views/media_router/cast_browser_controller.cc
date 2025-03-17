@@ -80,8 +80,7 @@ void CastBrowserController::OnFreezeInfoChanged() {
 // TODO(crbug.com/375030079): Move this logic to the profile controller to avoid
 // recalculating the icon for every browser.
 void CastBrowserController::UpdateIcon() {
-  if (features::IsToolbarPinningEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     auto* action_item = static_cast<actions::StatefulImageActionItem*>(
         actions::ActionManager::Get().FindAction(
             kActionRouteMedia,

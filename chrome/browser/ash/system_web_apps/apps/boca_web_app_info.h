@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -34,6 +34,7 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAllowMaximize() const override;
   bool ShouldHaveTabStrip() const override;
   bool ShouldHideNewTabButton() const override;
+  bool ShouldHaveExtensionsContainerInToolbar() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool ShouldPinTab(GURL url) const override;
   bool IsAppEnabled() const override;

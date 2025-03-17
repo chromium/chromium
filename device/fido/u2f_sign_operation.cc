@@ -4,9 +4,12 @@
 
 #include "device/fido/u2f_sign_operation.h"
 
+#include <cstdint>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/apdu/apdu_response.h"
@@ -14,11 +17,16 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_response_converter.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/u2f_command_constructor.h"
 
 namespace device {
+
+void LogU2fSignOperationResult(U2fSignOperationResult result) {
+  base::UmaHistogramEnumeration("WebAuthentication.U2fSignOperation", result);
+}
 
 U2fSignOperation::U2fSignOperation(FidoDevice* device,
                                    const CtapGetAssertionRequest& request,
@@ -44,6 +52,9 @@ void U2fSignOperation::Start() {
 }
 
 void U2fSignOperation::Cancel() {
+  LogU2fSignOperationResult(
+      failed_and_retried_ ? U2fSignOperationResult::kLowLevelErrorThenCancelled
+                          : U2fSignOperationResult::kCancelled);
   canceled_ = true;
 }
 
@@ -66,18 +77,36 @@ void U2fSignOperation::OnSignResponseReceived(
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;
-  const auto apdu_response =
-      device_response
-          ? apdu::ApduResponse::CreateFromMessage(std::move(*device_response))
-          : std::nullopt;
-  if (apdu_response) {
-    result = apdu_response->status();
+  std::optional<apdu::ApduResponse> apdu_response;
+  if (device_response) {
+    FIDO_LOG(DEBUG) << "U2F device responded with "
+                    << base::HexEncode(*device_response);
+    apdu_response =
+        apdu::ApduResponse::CreateFromMessage(std::move(*device_response));
+    if (apdu_response) {
+      result = apdu_response->status();
+      FIDO_LOG(DEBUG) << "U2F result code: " << static_cast<uint16_t>(result);
+    } else {
+      FIDO_LOG(ERROR) << "U2F response is invalid";
+    }
+  } else {
+    FIDO_LOG(ERROR) << "U2F device responded with empty response";
+    if (base::FeatureList::IsEnabled(device::kWebAuthnRetryU2FErrors)) {
+      failed_and_retried_ = true;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&U2fSignOperation::WinkAndTrySign,
+                         weak_factory_.GetWeakPtr()),
+          kU2fRetryDelay);
+      return;
+    }
   }
 
   // Older U2F devices may respond with the length of the input as an error
   // response if the length is unexpected.
   if (result == static_cast<apdu::ApduResponse::Status>(key_handle().size())) {
     result = apdu::ApduResponse::Status::SW_WRONG_LENGTH;
+    FIDO_LOG(ERROR) << "U2F device responded with length of input";
   }
 
   switch (result) {
@@ -92,6 +121,11 @@ void U2fSignOperation::OnSignResponseReceived(
               std::move(application_parameter), apdu_response->data(),
               key_handle(), device()->DeviceTransport());
       if (!sign_response) {
+        FIDO_LOG(ERROR) << "Failed to generate valid U2F signature";
+        LogU2fSignOperationResult(
+            failed_and_retried_
+                ? U2fSignOperationResult::kLowLevelErrorThenFatalError
+                : U2fSignOperationResult::kFatalError);
         std::move(callback())
             .Run(CtapDeviceResponseCode::kCtap2ErrOther, std::nullopt);
         return;
@@ -100,6 +134,10 @@ void U2fSignOperation::OnSignResponseReceived(
       FIDO_LOG(DEBUG)
           << "Received successful U2F sign response from authenticator: "
           << base::HexEncode(apdu_response->data());
+      LogU2fSignOperationResult(
+          failed_and_retried_
+              ? U2fSignOperationResult::kLowLevelErrorThenSuccess
+              : U2fSignOperationResult::kSuccess);
       std::move(callback())
           .Run(CtapDeviceResponseCode::kSuccess, std::move(sign_response));
       break;
@@ -136,6 +174,11 @@ void U2fSignOperation::OnSignResponseReceived(
 
     default:
       // Some sort of failure occurred. Abandon this device and move on.
+      FIDO_LOG(ERROR) << "U2F device has unknown failure. Dropping device.";
+      LogU2fSignOperationResult(
+          failed_and_retried_
+              ? U2fSignOperationResult::kLowLevelErrorThenFatalError
+              : U2fSignOperationResult::kFatalError);
       std::move(callback())
           .Run(CtapDeviceResponseCode::kCtap2ErrOther, std::nullopt);
       return;
@@ -171,6 +214,10 @@ void U2fSignOperation::OnEnrollmentResponseReceived(
 
   switch (result) {
     case apdu::ApduResponse::Status::SW_NO_ERROR:
+      LogU2fSignOperationResult(
+          failed_and_retried_
+              ? U2fSignOperationResult::kLowLevelErrorThenNoCredentials
+              : U2fSignOperationResult::kNoCredentials);
       std::move(callback())
           .Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, std::nullopt);
       break;
@@ -186,6 +233,10 @@ void U2fSignOperation::OnEnrollmentResponseReceived(
 
     default:
       // Some sort of failure occurred. Abandon this device and move on.
+      LogU2fSignOperationResult(
+          failed_and_retried_
+              ? U2fSignOperationResult::kLowLevelErrorThenFatalError
+              : U2fSignOperationResult::kFatalError);
       std::move(callback())
           .Run(CtapDeviceResponseCode::kCtap2ErrOther, std::nullopt);
       return;

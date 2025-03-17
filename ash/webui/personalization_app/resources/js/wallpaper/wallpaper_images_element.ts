@@ -12,11 +12,12 @@
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
-import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import type {CurrentWallpaper, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {OnlineImageType, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {dismissTimeOfDayBanner} from '../ambient/ambient_controller.js';
 import {isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {PersonalizationRouterElement} from '../personalization_router_element.js';
@@ -25,7 +26,7 @@ import {setColorModeAutoSchedule} from '../theme/theme_controller.js';
 import {getThemeProvider} from '../theme/theme_interface_provider.js';
 import {ThemeObserver} from '../theme/theme_observer.js';
 
-import {ImageTile} from './constants.js';
+import type {ImageTile} from './constants.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isWallpaperImage} from './utils.js';
 import {getShouldShowTimeOfDayWallpaperDialog, selectWallpaper} from './wallpaper_controller.js';
 import {getTemplate} from './wallpaper_images_element.html.js';
@@ -62,7 +63,7 @@ export function getImageTiles(
     isDarkModeActive: boolean, images: WallpaperImage[]): ImageTile[] {
   const tileMap = images.reduce((result, next) => {
     if (result.has(next.unitId)) {
-      const tile = result.get(next.unitId)! as ImageTile;
+      const tile = result.get(next.unitId)!;
       if (!tile.hasPreviewImage) {
         tile.preview.push(next.url);
       }
@@ -74,7 +75,7 @@ export function getImageTiles(
     }
     // Populate the assetId and attribution based on image type and system's
     // color mode.
-    const tile = result.get(next.unitId)! as ImageTile;
+    const tile = result.get(next.unitId)!;
     switch (next.type) {
       case OnlineImageType.kLight:
         if (!isDarkModeActive) {
@@ -276,7 +277,7 @@ export class WallpaperImagesElement extends WithPersonalizationStore {
       return getLoadingPlaceholders(() => 1);
     }
 
-    const imageArr = images[collectionId]!;
+    const imageArr = images[collectionId];
     return getImageTiles(isDarkModeActive, imageArr);
   }
 

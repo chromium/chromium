@@ -68,8 +68,8 @@ NSNumber* GetDefaultMaxLength() {
   return @524288;
 }
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Text fixture to test AutofillJavaScriptFeature.
 class AutofillJavaScriptFeatureTest : public PlatformTest {
@@ -173,6 +173,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"id_attribute" : @"firstname",
         @"identifier" : @"firstname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -191,6 +192,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"id_attribute" : @"lastname",
         @"identifier" : @"lastname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -209,6 +211,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"id_attribute" : @"email",
         @"identifier" : @"email",
         @"form_control_type" : @"email",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -272,6 +275,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"id_attribute" : @"firstname",
         @"identifier" : @"firstname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -290,6 +294,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"id_attribute" : @"lastname",
         @"identifier" : @"lastname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -308,6 +313,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"id_attribute" : @"email",
         @"identifier" : @"email",
         @"form_control_type" : @"email",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,

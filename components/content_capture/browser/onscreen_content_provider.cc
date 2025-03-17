@@ -150,6 +150,17 @@ void OnscreenContentProvider::TitleWasSet(content::NavigationEntry* entry) {
   }
 }
 
+void OnscreenContentProvider::FlushCaptureContent(
+    ContentCaptureReceiver* content_capture_receiver,
+    const ContentCaptureFrame& data) {
+  ContentCaptureSession parent_session;
+  BuildContentCaptureSession(content_capture_receiver, true /* ancestor_only */,
+                             &parent_session);
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->FlushCaptureContent(parent_session, data);
+  }
+}
+
 void OnscreenContentProvider::DidCaptureContent(
     ContentCaptureReceiver* content_capture_receiver,
     const ContentCaptureFrame& data) {

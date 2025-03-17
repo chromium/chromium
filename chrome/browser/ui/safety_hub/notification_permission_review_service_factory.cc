@@ -58,7 +58,6 @@ bool NotificationPermissionsReviewServiceFactory::
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(features::kSafetyHub);
 #else   // BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(features::kSafetyHub) &&
-         base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
+  return base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

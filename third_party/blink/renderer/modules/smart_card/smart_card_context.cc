@@ -191,7 +191,7 @@ ScriptPromise<SmartCardConnectResult> SmartCardContext::connect(
   SetOperationInProgress(resolver);
   scard_context_->Connect(
       reader_name, ToMojoSmartCardShareMode(access_mode),
-      ToMojoSmartCardProtocols(preferred_protocols),
+      ToMojoSmartCardProtocols(preferred_protocols), mojo::NullRemote(),
       WTF::BindOnce(&SmartCardContext::OnConnectDone, WrapPersistent(this),
                     WrapPersistent(resolver)));
 

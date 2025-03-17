@@ -62,7 +62,7 @@ class DeviceStatusIconRenderer : public DeviceSystemTrayIconRenderer,
   int about_device_message_id_;
 
   // Reference to our status icon (if any) - owned by the StatusTray.
-  raw_ptr<StatusIcon, DanglingUntriaged> status_icon_ = nullptr;
+  raw_ptr<StatusIcon> status_icon_ = nullptr;
 
   // The mapping of clickable system tray icon items to their click handlers
   std::vector<base::RepeatingClosure> command_id_callbacks_;

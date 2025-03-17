@@ -42,6 +42,7 @@
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/vmar.h>
 #include <zircon/types.h>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 
@@ -133,8 +134,9 @@ size_t AlignToPageSize(size_t size) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool UseAshmemUnpinningForDiscardableMemory() {
-  if (!ashmem_device_is_supported())
+  if (!ashmem_device_is_supported()) {
     return false;
+  }
 
   // If we are participating in the discardable memory backing trial, only
   // enable ashmem unpinning when we are in the corresponding trial group.
@@ -159,24 +161,28 @@ DiscardableSharedMemory::~DiscardableSharedMemory() = default;
 bool DiscardableSharedMemory::CreateAndMap(size_t size) {
   CheckedNumeric<size_t> checked_size = size;
   checked_size += AlignToPageSize(sizeof(SharedState));
-  if (!checked_size.IsValid())
+  if (!checked_size.IsValid()) {
     return false;
+  }
 
   shared_memory_region_ =
       UnsafeSharedMemoryRegion::Create(checked_size.ValueOrDie());
 
-  if (!shared_memory_region_.IsValid())
+  if (!shared_memory_region_.IsValid()) {
     return false;
+  }
 
   shared_memory_mapping_ = shared_memory_region_.Map();
-  if (!shared_memory_mapping_.IsValid())
+  if (!shared_memory_mapping_.IsValid()) {
     return false;
+  }
 
   locked_page_count_ =
       AlignToPageSize(mapped_memory().size()) / base::GetPageSize();
 #if DCHECK_IS_ON()
-  for (size_t page = 0; page < locked_page_count_; ++page)
+  for (size_t page = 0; page < locked_page_count_; ++page) {
     locked_pages_.insert(page);
+  }
 #endif
 
   DCHECK(last_known_usage_.is_null());
@@ -189,27 +195,31 @@ bool DiscardableSharedMemory::CreateAndMap(size_t size) {
 
 bool DiscardableSharedMemory::Map(size_t size) {
   DCHECK(!shared_memory_mapping_.IsValid());
-  if (shared_memory_mapping_.IsValid())
+  if (shared_memory_mapping_.IsValid()) {
     return false;
+  }
 
   shared_memory_mapping_ = shared_memory_region_.MapAt(
       0, AlignToPageSize(sizeof(SharedState)) + size);
-  if (!shared_memory_mapping_.IsValid())
+  if (!shared_memory_mapping_.IsValid()) {
     return false;
+  }
 
   locked_page_count_ =
       AlignToPageSize(mapped_memory().size()) / base::GetPageSize();
 #if DCHECK_IS_ON()
-  for (size_t page = 0; page < locked_page_count_; ++page)
+  for (size_t page = 0; page < locked_page_count_; ++page) {
     locked_pages_.insert(page);
+  }
 #endif
 
   return true;
 }
 
 bool DiscardableSharedMemory::Unmap() {
-  if (!shared_memory_mapping_.IsValid())
+  if (!shared_memory_mapping_.IsValid()) {
     return false;
+  }
 
   shared_memory_mapping_ = WritableSharedMemoryMapping();
   locked_page_count_ = 0;
@@ -220,7 +230,8 @@ bool DiscardableSharedMemory::Unmap() {
 }
 
 DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
-    size_t offset, size_t length) {
+    size_t offset,
+    size_t length) {
   DCHECK_EQ(AlignToPageSize(offset), offset);
   DCHECK_EQ(AlignToPageSize(length), length);
 
@@ -234,8 +245,9 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   if (!locked_page_count_) {
     // Return false when instance has been purged or not initialized properly
     // by checking if |last_known_usage_| is NULL.
-    if (last_known_usage_.is_null())
+    if (last_known_usage_.is_null()) {
       return FAILED;
+    }
 
     SharedState old_state(SharedState::UNLOCKED, last_known_usage_);
     SharedState new_state(SharedState::LOCKED, Time());
@@ -251,8 +263,9 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   }
 
   // Zero for length means "everything onward".
-  if (!length)
+  if (!length) {
     length = AlignToPageSize(mapped_memory().size()) - offset;
+  }
 
   size_t start = offset / base::GetPageSize();
   size_t end = start + length / base::GetPageSize();
@@ -272,8 +285,9 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
 #endif
 
   // Always behave as if memory was purged when trying to lock a 0 byte segment.
-  if (!length)
-      return PURGED;
+  if (!length) {
+    return PURGED;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   // Ensure that the platform won't discard the required pages.
@@ -310,8 +324,9 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
 
   // Passing zero for |length| means "everything onward". Note that |length| may
   // still be zero after this calculation, e.g. if the mapped size is zero.
-  if (!length)
+  if (!length) {
     length = AlignToPageSize(mapped_memory().size()) - offset;
+  }
 
   DCHECK(shared_memory_mapping_.IsValid());
 
@@ -339,8 +354,9 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
 
   // Early out and avoid releasing the platform independent lock if some pages
   // are still locked.
-  if (locked_page_count_)
+  if (locked_page_count_) {
     return;
+  }
 
   Time current_time = Now();
   DCHECK(!current_time.is_null());
@@ -418,9 +434,9 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #define MADV_PURGE_ARGUMENT MADV_REMOVE
 #elif BUILDFLAG(IS_APPLE)
-// MADV_FREE_REUSABLE is similar to MADV_FREE, but also marks the pages with the
-// reusable bit, which allows both Activity Monitor and memory-infra to
-// correctly track the pages.
+  // MADV_FREE_REUSABLE is similar to MADV_FREE, but also marks the pages with
+  // the reusable bit, which allows both Activity Monitor and memory-infra to
+  // correctly track the pages.
 #define MADV_PURGE_ARGUMENT MADV_FREE_REUSABLE
 #else
 #define MADV_PURGE_ARGUMENT MADV_FREE
@@ -532,10 +548,12 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::LockPages(
     if (UseAshmemUnpinningForDiscardableMemory()) {
       int pin_result =
           ashmem_pin_region(region.GetPlatformHandle(), offset, length);
-      if (pin_result == ASHMEM_WAS_PURGED)
+      if (pin_result == ASHMEM_WAS_PURGED) {
         return PURGED;
-      if (pin_result < 0)
+      }
+      if (pin_result < 0) {
         return FAILED;
+      }
     }
   }
 #endif

@@ -338,10 +338,18 @@ class TestStaple(unittest.TestCase):
 
 class TestRetry(unittest.TestCase):
 
-    def test_retry(self):
+    def test_retry_default(self):
         retry = notarize.Retry('test')
         self.assertTrue(retry.failed_should_retry())
         self.assertTrue(retry.keep_going())
+        self.assertTrue(retry.failed_should_retry())
+        self.assertTrue(retry.keep_going())
+        self.assertFalse(retry.failed_should_retry())
+        with self.assertRaises(RuntimeError):
+            retry.keep_going()
+
+    def test_retry_max_tries(self):
+        retry = notarize.Retry('test', max_tries=2)
         self.assertTrue(retry.failed_should_retry())
         self.assertTrue(retry.keep_going())
         self.assertFalse(retry.failed_should_retry())

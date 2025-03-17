@@ -39,7 +39,7 @@ AppDialogView::~AppDialogView() = default;
 
 std::optional<std::u16string> AppDialogView::GetTitleTextForTesting() const {
   if (title_) {
-    return title_->GetText();
+    return std::u16string(title_->GetText());
   }
   return std::nullopt;
 }
@@ -88,7 +88,7 @@ void AppDialogView::SetSubtitleText(const std::u16string& text) {
 
 std::u16string AppDialogView::GetAccessibleWindowTitle() const {
   if (title_) {
-    return title_->GetText();
+    return std::u16string(title_->GetText());
   }
   return std::u16string();
 }

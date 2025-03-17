@@ -41,10 +41,10 @@ android_library("nonembedded_java") {
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
-    "//components/about_ui/android:aboutui_java",
     "//components/crash/android:java",
     "//components/embedder_support/android:application_java",
     "//components/minidump_uploader:minidump_uploader_java",
+    "//components/webui/about/android:aboutui_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -210,7 +210,7 @@ source_set("nonembedded") {
     "//url",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
-    "//components/about_ui:about_ui_android",
+    "//components/webui/about:about_ui_android",
   ]
 
   # Disallow depending on content.

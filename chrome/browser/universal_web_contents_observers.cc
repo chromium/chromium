@@ -25,13 +25,11 @@ void AttachUniversalWebContentsObservers(content::WebContents* web_contents) {
   // and not every WebContents has (or needs) every tab helper.
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (extensions::ChromeContentBrowserClientExtensionsPart::
+  if (!extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(web_contents->GetBrowserContext())) {
-    return;
+    extensions::ExtensionsBrowserClient::Get()
+        ->CreateExtensionWebContentsObserver(web_contents);
   }
-
-  extensions::ExtensionsBrowserClient::Get()
-      ->CreateExtensionWebContentsObserver(web_contents);
 #endif
 
   if (auto* pm_registry =

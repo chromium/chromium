@@ -25,10 +25,9 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
@@ -251,11 +250,12 @@ class PolicyPrefMappingTest {
 class SimplePolicyPrefMappingTest {
  public:
   SimplePolicyPrefMappingTest(const std::string& policy_name,
-                              const base::Value::Dict& test) {
+                              const base::Value::Dict& test,
+                              const bool is_os_supported) {
     const std::string* pref_name = test.FindString("pref_name");
     if (!pref_name) {
       ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'pref_name'";
+                    << " is missing a 'pref_name'";
       return;
     }
 
@@ -263,32 +263,51 @@ class SimplePolicyPrefMappingTest {
     const base::Value::Dict* policy_settings = test.FindDict("policy_settings");
 
     const base::Value* default_value = test.Find("default_value");
-    if (!default_value) {
-      ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'default_value'";
+    const base::Value* default_for_enterprise_users = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+    default_for_enterprise_users = test.Find("default_for_enterprise_users");
+    if (!default_value && !default_for_enterprise_users) {
+      ADD_FAILURE()
+          << "Simple test for " << policy_name
+          << " is missing a 'default_value' (or alternatively a "
+             "'default_for_enterprise_users' if the policy defines one)";
       return;
     }
+#else   // BUILDFLAG(IS_CHROMEOS)
+    if (!default_value && is_os_supported) {
+      ADD_FAILURE() << "Simple test for " << policy_name
+                    << " is missing a 'default_value'";
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     const base::Value::List* values_to_test = test.FindList("values_to_test");
     if (!values_to_test || values_to_test->empty()) {
       ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'values_to_test' or is empty";
+                    << " is missing a 'values_to_test' or is empty";
       return;
     }
 
     // Build test case for default value.
-    base::Value::Dict default_value_test_dict;
-    base::Value::Dict default_value_prefs_dict;
-    base::Value::Dict default_value_pref_dict;
-    default_value_pref_dict.Set("default_value", default_value->Clone());
-    if (location) {
-      default_value_pref_dict.Set("location", *location);
+    if (default_value || default_for_enterprise_users) {
+      base::Value::Dict default_value_test_dict;
+      base::Value::Dict default_value_prefs_dict;
+      base::Value::Dict default_value_pref_dict;
+      if (default_for_enterprise_users) {
+        default_value_pref_dict.Set("value",
+                                    default_for_enterprise_users->Clone());
+      } else {
+        default_value_pref_dict.Set("default_value", default_value->Clone());
+      }
+      if (location) {
+        default_value_pref_dict.Set("location", *location);
+      }
+      default_value_prefs_dict.Set(*pref_name,
+                                   std::move(default_value_pref_dict));
+      default_value_test_dict.Set("prefs", std::move(default_value_prefs_dict));
+      policy_pref_mapping_test_dicts_.push_back(
+          std::move(default_value_test_dict));
     }
-    default_value_prefs_dict.Set(*pref_name,
-                                 std::move(default_value_pref_dict));
-    default_value_test_dict.Set("prefs", std::move(default_value_prefs_dict));
-    policy_pref_mapping_test_dicts_.push_back(
-        std::move(default_value_test_dict));
 
     // Build test case for each `value_to_test`.
     for (const base::Value& value_to_test : *values_to_test) {
@@ -382,7 +401,7 @@ class PolicyTestCase {
         test_case.FindDict("simple_policy_pref_mapping_test");
     if (simple_policy_pref_mapping_test_dict) {
       const SimplePolicyPrefMappingTest simple_policy_pref_mapping_test(
-          policy_name, *simple_policy_pref_mapping_test_dict);
+          policy_name, *simple_policy_pref_mapping_test_dict, IsOsSupported());
       for (const base::Value::Dict& policy_pref_mapping_test_dict :
            simple_policy_pref_mapping_test.policy_pref_mapping_test_dicts()) {
         AddPolicyPrefMappingTest(policy_pref_mapping_test_dict);
@@ -403,12 +422,14 @@ class PolicyTestCase {
   }
 
   bool IsOsSupported() const {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+    // For prefs testing desktop Android is considered a separate OS because it
+    // registers some additional prefs (e.g. extensions prefs).
+    const std::string os("desktop_android");
+#elif BUILDFLAG(IS_ANDROID)
     const std::string os("android");
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
     const std::string os("chromeos_ash");
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    const std::string os("chromeos_lacros");
 #elif BUILDFLAG(IS_IOS)
     const std::string os("ios");
 #elif BUILDFLAG(IS_LINUX)
@@ -429,6 +450,11 @@ class PolicyTestCase {
 #if BUILDFLAG(IS_CHROMEOS)
     return base::Contains(supported_os_, "chromeos_ash") ||
            base::Contains(supported_os_, "chromeos_lacros");
+#elif BUILDFLAG(IS_ANDROID)
+    // Android policies that apply to desktop Android are covered as part of the
+    // desktop Android build because they may invoke desktop-only code.
+    return base::Contains(supported_os_, "android") ||
+           base::Contains(supported_os_, "desktop_android");
 #else
     return IsOsSupported();
 #endif
@@ -719,10 +745,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
           continue;
         }
 
-#if BUILDFLAG(IS_WIN)
-        // TODO(b/333460350) Remove logs here added temporarily for debugging.
-        LOG(INFO) << policy_name << " # " << idx << " # " << i;
-#endif
         for (const auto& pref_case : pref_mapping->prefs()) {
           SCOPED_TRACE(::testing::Message() << "Pref: " << pref_case->pref());
           PrefService* prefs =
@@ -788,11 +810,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
       }
     }
   }
-
-#if BUILDFLAG(IS_WIN)
-  // TODO(b/333460350) Remove logs here added temporarily for debugging.
-  LOG(INFO) << "Done";
-#endif
 }
 
 }  // namespace policy

@@ -59,7 +59,7 @@ namespace blink {
 
 namespace {
 
-using CursorSet = HeapHashSet<WeakMember<IDBCursor>>;
+using CursorSet = GCedHeapHashSet<WeakMember<IDBCursor>>;
 
 CursorSet& GetGlobalCursorSet() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CursorSet>>,
@@ -111,22 +111,6 @@ void IDBCursor::Trace(Visitor* visitor) const {
 
 void IDBCursor::ContextWillBeDestroyed() {
   ResetPrefetchCache();
-}
-
-// Keep the request's wrapper alive as long as the cursor's wrapper is alive,
-// so that the same script object is seen each time the cursor is used.
-v8::Local<v8::Object> IDBCursor::AssociateWithWrapper(
-    v8::Isolate* isolate,
-    const WrapperTypeInfo* wrapper_type,
-    v8::Local<v8::Object> wrapper) {
-  wrapper =
-      ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type, wrapper);
-  if (!wrapper.IsEmpty()) {
-    static const V8PrivateProperty::SymbolKey kPrivatePropertyRequest;
-    V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyRequest)
-        .Set(wrapper, request_->ToV8(isolate, wrapper));
-  }
-  return wrapper;
 }
 
 IDBRequest* IDBCursor::update(ScriptState* script_state,

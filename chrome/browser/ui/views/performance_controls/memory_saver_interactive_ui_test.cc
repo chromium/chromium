@@ -284,11 +284,9 @@ class MemorySaverChipInteractiveTest
       const ui::ElementIdentifier& contents_id) {
     MultiStep result;
     for (int i = 0; i < MemorySaverChipTabHelper::kChipAnimationCount; i++) {
-      MultiStep temp = std::move(result);
-      result = Steps(std::move(temp),
-                     SelectTab(kTabStripElementId, non_discard_tab_index),
-                     DiscardAndReloadTab(discard_tab_index, contents_id),
-                     CheckChipIsExpandedState(true));
+      result += Steps(SelectTab(kTabStripElementId, non_discard_tab_index),
+                      DiscardAndReloadTab(discard_tab_index, contents_id),
+                      CheckChipIsExpandedState(true));
     }
 
     return result;
@@ -339,8 +337,14 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 
 // Page Action chip should stay collapsed when navigating between two
 // discarded tabs
+// TODO(crbug.com/391482960): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChipCollapseRemainCollapse DISABLED_ChipCollapseRemainCollapse
+#else
+#define MAYBE_ChipCollapseRemainCollapse ChipCollapseRemainCollapse
+#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       ChipCollapseRemainCollapse) {
+                       MAYBE_ChipCollapseRemainCollapse) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
@@ -583,7 +587,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
             performance_manager::user_tuning::UserPerformanceTuningManager::
                 PreDiscardResourceUsage::FromWebContents(web_contents);
         pre_discard_resource_usage->UpdateDiscardInfo(
-            135 * 1024, LifecycleUnitDiscardReason::PROACTIVE);
+            135 * 1024, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
       })),
       PressButton(kMemorySaverChipElementId),
       WaitForShow(

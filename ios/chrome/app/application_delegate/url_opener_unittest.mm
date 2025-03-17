@@ -183,11 +183,12 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
           // Tests.
           EXPECT_EQ(isValid, result);
           if (!applicationIsActive) {
-            if (result)
+            if (result) {
               EXPECT_EQ([params externalURL],
                         connectionInformation.startupParameters.externalURL);
-            else
+            } else {
               EXPECT_EQ(nil, connectionInformation.startupParameters);
+            }
           } else if (result) {
             if ([params completeURL].SchemeIsFile()) {
               // External file:// URL will be loaded by WebState, which expects

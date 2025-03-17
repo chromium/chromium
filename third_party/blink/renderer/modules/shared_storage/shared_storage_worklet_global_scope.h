@@ -147,6 +147,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     return permissions_policy_state_;
   }
 
+  bool add_module_finished() const { return add_module_finished_; }
+
  private:
   void OnModuleScriptDownloaded(
       const KURL& script_source_url,

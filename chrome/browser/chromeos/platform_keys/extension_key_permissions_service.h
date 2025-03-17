@@ -120,6 +120,7 @@ class ExtensionKeyPermissionsService {
   // account the particular case of signing with an asymmetric key, by checking
   // the extension's state store entry (if present).
   void CanUseKey(const std::vector<uint8_t>& public_key_spki_der,
+                 bool is_sign_operation,
                  ExtensionKeyPermissionQueryCallback callback);
 
   // Must be called when the extension with id |extension_id| used the private
@@ -142,7 +143,7 @@ class ExtensionKeyPermissionsService {
 
   // Sets the user granted permission that the extension with id |extension_id|
   // can use the private key matching |public_key_spki_der| for signing.
-  void SetUserGrantedPermission(
+  void SetUserGrantedSigningPermission(
       const std::vector<uint8_t>& public_key_spki_der,
       ExtensionKeyPermissionOperationCallback callback);
 
@@ -201,10 +202,11 @@ class ExtensionKeyPermissionsService {
   bool PolicyAllowsCorporateKeyUsage() const;
 
   void CanUseKeyWithFlags(ExtensionKeyPermissionQueryCallback callback,
+                          bool is_sign_operation,
                           bool sign_unlimited_allowed,
                           crosapi::mojom::GetKeyTagsResultPtr key_tags);
 
-  void SetUserGrantedPermissionWithFlag(
+  void SetUserGrantedSigningPermissionWithFlag(
       const std::vector<uint8_t>& public_key_spki_der,
       ExtensionKeyPermissionOperationCallback callback,
       bool can_user_grant_permission);

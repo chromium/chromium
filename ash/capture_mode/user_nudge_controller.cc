@@ -68,10 +68,8 @@ UserNudgeController::UserNudgeController(CaptureModeSession* session,
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled() ? SK_ColorWHITE
                                                               : SK_ColorBLACK;
   base_ring_.SetColor(ring_color);
-  base_ring_.SetFillsBoundsOpaquely(false);
   base_ring_.SetOpacity(0);
   ripple_ring_.SetColor(ring_color);
-  ripple_ring_.SetFillsBoundsOpaquely(false);
   ripple_ring_.SetOpacity(0);
 
   Reposition();
@@ -79,7 +77,7 @@ UserNudgeController::UserNudgeController(CaptureModeSession* session,
 
 UserNudgeController::~UserNudgeController() {
   if (should_dismiss_nudge_forever_)
-    CaptureModeController::Get()->DisableUserNudgeForever();
+    CaptureModeController::Get()->DisableSunfishRegionNudgeForever();
   capture_session_->capture_toast_controller()->MaybeDismissCaptureToast(
       CaptureToastType::kUserNudge,
       /*animate=*/false);

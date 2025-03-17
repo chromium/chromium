@@ -9,6 +9,9 @@ struct OverflowMenuView: View {
 
   var uiConfiguration: OverflowMenuUIConfiguration
 
+  /// Sync'ed with pref OverflowMenuDestinationList.HighlightedDestinationBounds
+  @State private var highlightedDestinationBounds: Anchor<CGRect>?
+
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   /// The namespace for the animation of this view appearing or disappearing.
@@ -42,9 +45,15 @@ struct OverflowMenuView: View {
       }
       .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
       .onPreferenceChange(OverflowMenuDestinationList.HighlightedDestinationBounds.self) { pref in
-        if let pref = pref {
-          uiConfiguration.highlightedDestinationFrame = geometry[pref]
+          highlightedDestinationBounds = pref
+      }
+      .onGeometryChange(for: CGRect?.self) { proxy in
+        if let highlightedDestinationBounds = highlightedDestinationBounds {
+          return proxy[highlightedDestinationBounds]
         }
+        return nil
+      } action: { frame in
+        uiConfiguration.highlightedDestinationFrame = frame ?? .zero
       }
     }
   }

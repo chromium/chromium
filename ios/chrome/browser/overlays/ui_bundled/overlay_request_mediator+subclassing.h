@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_OVERLAY_REQUEST_MEDIATOR_SUBCLASSING_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_OVERLAY_REQUEST_MEDIATOR_SUBCLASSING_H_
 
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
-
 #include <memory>
 
 #include "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
 
 // Exposes shared functionality for OverlayRequestMediator subclasses.
 @interface OverlayRequestMediator (Subclassing)

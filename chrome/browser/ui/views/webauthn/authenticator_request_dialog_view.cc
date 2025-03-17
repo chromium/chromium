@@ -10,12 +10,11 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_account_info_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/pin_options_button.h"
-#include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -36,48 +35,59 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 using Step = AuthenticatorRequestDialogModel::Step;
 
-// static
-void ShowAuthenticatorRequestDialog(
+AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     content::WebContents* web_contents,
-    scoped_refptr<AuthenticatorRequestDialogModel> model) {
-  // The authenticator request dialog will only be shown for common user-facing
-  // WebContents, which have a |manager|. Most other sources without managers,
-  // like service workers and extension background pages, do not allow WebAuthn
-  // requests to be issued in the first place.
-  // TODO(crbug.com/41392632): There are some niche WebContents where the
-  // WebAuthn API is available, but there is no |manager| available. Currently,
-  // we will not be able to show a dialog, so the |model| will be immediately
-  // destroyed. The request may be able to still run to completion if it does
-  // not require any user input, otherise it will be blocked and time out. We
-  // should audit this.
-  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
-      constrained_window::GetTopLevelWebContents(web_contents));
-  if (!manager) {
+    AuthenticatorRequestDialogModel* model)
+    : content::WebContentsObserver(web_contents),
+      model_(model),
+      web_contents_hidden_(web_contents->GetVisibility() ==
+                           content::Visibility::HIDDEN) {
+  // TODO(crbug.com/338254375): Remove the following two lines once this is the
+  // default state for widgets and the delegates.
+  SetOwnedByWidget(false);  // Already owned-by-widget as the content view.
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  SetShowTitle(false);
+
+  SetModalType(ui::mojom::ModalType::kChild);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  // Currently, all sheets have a label on top and controls at the bottom.
+  // Consider moving this to AuthenticatorRequestSheetView if this changes.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+}
+
+AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() = default;
+
+void AuthenticatorRequestDialogView::Show() {
+  if (web_contents_hidden_) {
+    // Calling Widget::Show() while the tab is not in foreground shows the
+    // dialog on the foreground tab (https://crbug.com/969153). Instead, wait
+    // for OnVisibilityChanged() to signal the tab going into foreground again,
+    // and then show the widget.
     return;
   }
 
-  new AuthenticatorRequestDialogView(web_contents, std::move(model));
-}
-
-AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
-  model_->observers.RemoveObserver(this);
-  RemoveAllChildViews();
+  GetWidget()->Show();
 }
 
 void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
   DCHECK(new_sheet);
 
-  other_mechanisms_menu_runner_.reset();
-
-  delete sheet_;
-  DCHECK(children().empty());
+  if (sheet_) {
+    RemoveChildViewT(sheet_);
+  }
+  CHECK(children().empty());
 
   sheet_ = new_sheet.get();
-  AddChildView(new_sheet.release());
+  AddChildView(std::move(new_sheet));
 
   UpdateUIForCurrentSheet();
 }
@@ -88,10 +98,10 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   sheet_->ReInitChildViews();
 
   int buttons = static_cast<int>(ui::mojom::DialogButton::kNone);
-  if (sheet()->model()->IsAcceptButtonVisible()) {
+  if (sheet_->model()->IsAcceptButtonVisible()) {
     buttons |= static_cast<int>(ui::mojom::DialogButton::kOk);
   }
-  if (sheet()->model()->IsCancelButtonVisible()) {
+  if (sheet_->model()->IsCancelButtonVisible()) {
     buttons |= static_cast<int>(ui::mojom::DialogButton::kCancel);
   }
   SetButtons(buttons);
@@ -161,7 +171,19 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     return;
   }
 
-  UpdateFooter();
+  auto* frame_view = GetBubbleFrameView();
+  if (model_->step() == Step::kGPMCreatePin ||
+      model_->step() == Step::kGPMCreateArbitraryPin ||
+      model_->step() == Step::kGPMChangePin ||
+      model_->step() == Step::kGPMChangeArbitraryPin ||
+      model_->step() == Step::kGPMEnterPin ||
+      model_->step() == Step::kGPMEnterArbitraryPin) {
+    frame_view->SetFootnoteView(
+        std::make_unique<AuthenticatorGpmAccountInfoView>(
+            static_cast<AuthenticatorGpmPinSheetModelBase*>(sheet_->model())));
+  } else {
+    frame_view->SetFootnoteView(nullptr);
+  }
 
   // Force re-layout of the entire dialog client view, which includes the sheet
   // content as well as the button row on the bottom.
@@ -209,18 +231,13 @@ bool AuthenticatorRequestDialogView::ShouldOtherMechanismsButtonBeVisible()
   return sheet_->model()->IsOtherMechanismButtonVisible();
 }
 
-void AuthenticatorRequestDialogView::AddedToWidget() {
-  // Updating footer requires widget to be present.
-  UpdateFooter();
-}
-
 bool AuthenticatorRequestDialogView::Accept() {
-  sheet()->model()->OnAccept();
+  sheet_->model()->OnAccept();
   return false;
 }
 
 bool AuthenticatorRequestDialogView::Cancel() {
-  sheet()->model()->OnCancel();
+  sheet_->model()->OnCancel();
   return false;
 }
 
@@ -230,7 +247,7 @@ bool AuthenticatorRequestDialogView::IsDialogButtonEnabled(
     case ui::mojom::DialogButton::kNone:
       break;
     case ui::mojom::DialogButton::kOk:
-      return sheet()->model()->IsAcceptButtonEnabled();
+      return sheet_ && sheet_->model()->IsAcceptButtonEnabled();
     case ui::mojom::DialogButton::kCancel:
       return true;  // Cancel is always enabled if visible.
   }
@@ -245,14 +262,19 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
   //  3. Other transport selection button, if visible.
   //  4. `Cancel` / `Close` button.
 
+  // During widget creation, there is no sheet yet.
+  if (!sheet_) {
+    return nullptr;
+  }
+
   views::View* intially_focused_sheet_control =
-      sheet()->GetInitiallyFocusedView();
+      sheet_->GetInitiallyFocusedView();
   if (intially_focused_sheet_control) {
     return intially_focused_sheet_control;
   }
 
-  if (sheet()->model()->IsAcceptButtonVisible() &&
-      sheet()->model()->IsAcceptButtonEnabled()) {
+  if (sheet_->model()->IsAcceptButtonVisible() &&
+      sheet_->model()->IsAcceptButtonEnabled()) {
     return GetOkButton();
   }
 
@@ -260,7 +282,7 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
     return GetExtraView();
   }
 
-  if (sheet()->model()->IsCancelButtonVisible()) {
+  if (sheet_->model()->IsCancelButtonVisible()) {
     return GetCancelButton();
   }
 
@@ -268,39 +290,8 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
 }
 
 std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
-  return sheet()->model()->GetStepTitle();
-}
-
-void AuthenticatorRequestDialogView::OnModelDestroyed(
-    AuthenticatorRequestDialogModel* model) {
-  NOTREACHED() << "The model should outlive this view.";
-}
-
-void AuthenticatorRequestDialogView::OnStepTransition() {
-  DCHECK(model_) << "Model must be valid since this is a model observer method";
-  if (model_->should_dialog_be_closed()) {
-    if (!first_shown_) {
-      // No widget has ever been created for this dialog, thus there will be no
-      // DeleteDelegate() call to delete this view.
-      DCHECK(!GetWidget());
-      delete this;
-      return;
-    }
-    if (GetWidget()) {
-      GetWidget()->Close();  // DeleteDelegate() will delete |this|.
-    }
-    return;
-  }
-  ReplaceCurrentSheetWith(CreateSheetViewForCurrentStepOf(model_.get()));
-  Show();
-}
-
-void AuthenticatorRequestDialogView::OnSheetModelChanged() {
-  UpdateUIForCurrentSheet();
-}
-
-void AuthenticatorRequestDialogView::OnButtonsStateChanged() {
-  DialogModelChanged();
+  // During widget creation, there is no sheet yet. The title will be set later.
+  return sheet_ ? sheet_->model()->GetStepTitle() : std::u16string();
 }
 
 void AuthenticatorRequestDialogView::OnVisibilityChanged(
@@ -314,48 +305,6 @@ void AuthenticatorRequestDialogView::OnVisibilityChanged(
       !GetWidget()->IsVisible()) {
     GetWidget()->Show();
   }
-}
-
-AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
-    content::WebContents* web_contents,
-    scoped_refptr<AuthenticatorRequestDialogModel> model)
-    : content::WebContentsObserver(web_contents),
-      model_(model),
-      web_contents_hidden_(web_contents->GetVisibility() ==
-                           content::Visibility::HIDDEN) {
-  SetShowTitle(false);
-  DCHECK(!model_->should_dialog_be_closed());
-  model_->observers.AddObserver(this);
-
-  SetModalType(ui::mojom::ModalType::kChild);
-  SetShowCloseButton(false);
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-
-  // Currently, all sheets have a label on top and controls at the bottom.
-  // Consider moving this to AuthenticatorRequestSheetView if this changes.
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-}
-
-void AuthenticatorRequestDialogView::Show() {
-  if (!first_shown_) {
-    views::Widget* widget =
-        constrained_window::ShowWebModalDialogViews(this, web_contents());
-    DCHECK(widget);
-    extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
-    first_shown_ = true;
-    return;
-  }
-
-  if (web_contents_hidden_) {
-    // Calling Widget::Show() while the tab is not in foreground shows the
-    // dialog on the foreground tab (https://crbug/969153). Instead, wait for
-    // OnVisibilityChanged() to signal the tab going into foreground again, and
-    // then show the widget.
-    return;
-  }
-
-  GetWidget()->Show();
 }
 
 void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
@@ -372,26 +321,6 @@ void AuthenticatorRequestDialogView::ForgotGPMPinPressed() {
 
 void AuthenticatorRequestDialogView::GPMPinOptionChosen(bool is_arbitrary) {
   sheet_->model()->OnGPMPinOptionChosen(is_arbitrary);
-}
-
-void AuthenticatorRequestDialogView::UpdateFooter() {
-  if (!GetWidget()) {
-    return;
-  }
-
-  auto* frame_view = GetBubbleFrameView();
-  if (model_->step() == Step::kGPMCreatePin ||
-      model_->step() == Step::kGPMCreateArbitraryPin ||
-      model_->step() == Step::kGPMChangePin ||
-      model_->step() == Step::kGPMChangeArbitraryPin ||
-      model_->step() == Step::kGPMEnterPin ||
-      model_->step() == Step::kGPMEnterArbitraryPin) {
-    frame_view->SetFootnoteView(
-        std::make_unique<AuthenticatorGpmAccountInfoView>(
-            static_cast<AuthenticatorGpmPinSheetModelBase*>(sheet_->model())));
-  } else {
-    frame_view->SetFootnoteView(nullptr);
-  }
 }
 
 BEGIN_METADATA(AuthenticatorRequestDialogView)

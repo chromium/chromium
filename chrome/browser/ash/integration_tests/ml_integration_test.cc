@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
-
 #include "chrome/test/base/chromeos/crosier/upstart.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
@@ -20,13 +19,16 @@ IN_PROC_BROWSER_TEST_F(MLIntegrationTest, Bootstrap) {
   std::string ml_service = "ml-service";
   std::vector<std::string> extra_args{"TASK=mojo_service"};
 
+  base::RunLoop run_loop;
   // Ensure the ml-service is stopped before testing startup.
   ASSERT_TRUE(upstart::StopJob(ml_service, extra_args));
   ASSERT_TRUE(upstart::WaitForJobStatus(
       ml_service, upstart::Goal::kStop, upstart::State::kWaiting,
       upstart::WrongGoalPolicy::kReject, extra_args));
+  // If the job is killed, we have to wait until ServiceConnection's disconnect
+  // handler is triggered before executing the remaining parts of the test.
+  run_loop.RunUntilIdle();
 
-  base::RunLoop run_loop;
   mojo::Remote<chromeos::machine_learning::mojom::Model> model;
 
   // Load a model. This should start the ML service.

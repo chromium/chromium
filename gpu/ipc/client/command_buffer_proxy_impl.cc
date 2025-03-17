@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -16,6 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -70,7 +70,8 @@ ContextResult CommandBufferProxyImpl::Initialize(
     CommandBufferProxyImpl* share_group,
     gpu::SchedulingPriority stream_priority,
     const gpu::ContextCreationAttribs& attribs,
-    const GURL& active_url) {
+    const GURL& active_url,
+    const std::string_view label) {
   DCHECK(!share_group || (stream_id_ == share_group->stream_id_));
   TRACE_EVENT0("gpu", "GpuChannelHost::CreateViewCommandBuffer");
 
@@ -85,6 +86,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
   params->stream_priority = stream_priority;
   params->attribs = attribs;
   params->active_url = active_url;
+  params->label = label;
 
   TRACE_EVENT0("gpu", "CommandBufferProxyImpl::Initialize");
   std::tie(shared_state_shm_, shared_state_mapping_) =
@@ -442,7 +444,7 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,login", kEnsureWorkVisible,
                                   TRACE_ID_LOCAL(kEnsureWorkVisible));
 
-  if (base::ShouldLogHistogramForCpuReductionExperiment()) {
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
     GetUMAHistogramEnsureWorkVisibleDuration()->Add(
         elapsed_timer.Elapsed().InMicroseconds());
 
@@ -706,9 +708,9 @@ CommandBufferProxyImpl::GetUMAHistogramEnsureWorkVisibleDuration() {
     //
     // Histogram values are in microseconds.
 
-    std::vector<base::HistogramBase::Sample> intervals;
-    constexpr base::HistogramBase::Sample k15Milliseconds = 15 * 1000;
-    constexpr base::HistogramBase::Sample k30Seconds = 30 * 1000 * 1000;
+    std::vector<base::HistogramBase::Sample32> intervals;
+    constexpr base::HistogramBase::Sample32 k15Milliseconds = 15 * 1000;
+    constexpr base::HistogramBase::Sample32 k30Seconds = 30 * 1000 * 1000;
     constexpr int kFirstPartCount = 60;
     constexpr int kSecondPartCount = 120;
     intervals.reserve(kFirstPartCount + kSecondPartCount);

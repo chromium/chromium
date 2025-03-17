@@ -24,7 +24,7 @@ const CGFloat kButtonSize = 44;
 const CGFloat kButtonDividerSpacing = 19;
 // Width of the divider.
 const CGFloat kDividerWidth = 1;
-}
+}  // namespace
 
 @interface TextZoomViewController ()
 

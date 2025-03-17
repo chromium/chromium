@@ -55,12 +55,13 @@ static inline int PartialStringToInt(const String& string,
 
 }  // namespace
 
-WebVector<gfx::Size> WebIconSizesParser::ParseIconSizes(
+std::vector<gfx::Size> WebIconSizesParser::ParseIconSizes(
     const WebString& web_sizes_string) {
   String sizes_string = web_sizes_string;
-  Vector<gfx::Size> icon_sizes;
-  if (sizes_string.empty())
+  std::vector<gfx::Size> icon_sizes;
+  if (sizes_string.empty()) {
     return icon_sizes;
+  }
 
   wtf_size_t length = sizes_string.length();
   for (wtf_size_t i = 0; i < length; ++i) {
@@ -104,9 +105,9 @@ WebVector<gfx::Size> WebIconSizesParser::ParseIconSizes(
     wtf_size_t height_end = i;
 
     // Append the parsed size to iconSizes.
-    icon_sizes.push_back(
-        gfx::Size(PartialStringToInt(sizes_string, width_start, width_end),
-                  PartialStringToInt(sizes_string, height_start, height_end)));
+    icon_sizes.emplace_back(
+        PartialStringToInt(sizes_string, width_start, width_end),
+        PartialStringToInt(sizes_string, height_start, height_end));
   }
   return icon_sizes;
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/favicon_base/favicon_url_parser.h"
 
 #include <string_view>
@@ -133,6 +138,12 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
     } else if (key == "size" && !StringToPositiveInt(it.GetUnescapedValue(),
                                                      &parsed->size_in_dip)) {
       return false;
+    } else if (key == "fallbackToHost") {
+      const std::string val = it.GetUnescapedValue();
+      if (!(val == "0" || val == "1")) {
+        return false;
+      }
+      parsed->fallback_to_host = val == "1";
     }
   }
 

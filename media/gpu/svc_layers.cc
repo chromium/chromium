@@ -9,6 +9,8 @@
 
 #include "media/gpu/svc_layers.h"
 
+#include <array>
+
 #include "base/logging.h"
 
 namespace media {
@@ -87,10 +89,10 @@ FrameConfig GetFrameConfig(size_t num_temporal_layers, size_t frame_num) {
       //      [TL1]
       //     /
       // [TL0]-----[TL0]
-      constexpr FrameConfig TL2Pattern[] = {
+      constexpr auto TL2Pattern = std::to_array<FrameConfig>({
           FrameConfig(0, kReferenceAndUpdate, kNone, true),
           FrameConfig(1, kReference, kNone, true),
-      };
+      });
       return TL2Pattern[frame_num % std::size(TL2Pattern)];
     }
     case 3: {
@@ -101,12 +103,12 @@ FrameConfig GetFrameConfig(size_t num_temporal_layers, size_t frame_num) {
       //    _/   [TL1]--/
       //   /_______/
       // [TL0]--------------[TL0]
-      constexpr FrameConfig TL3Pattern[] = {
+      constexpr auto TL3Pattern = std::to_array<FrameConfig>({
           FrameConfig(0, kReferenceAndUpdate, kNone, true),
           FrameConfig(2, kReference, kNone, true),
           FrameConfig(1, kReference, kUpdate, true),
           FrameConfig(2, kNone, kReference, false),
-      };
+      });
       return TL3Pattern[frame_num % std::size(TL3Pattern)];
     }
     default:

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -233,17 +234,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionAILanguageModelBrowserTest,
                        MAYBE_TestLanguageModelFactoryExistence) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(GetManifest());
-  auto bool_to_str = [](bool value) { return value ? "true" : "false"; };
   bool is_self_ai_accessible = IsPromptAPIForWebPlatformEnabled(GetParam());
   bool is_chrome_ai_accessible =
       (IsPromptAPIForExtensionEnabled(GetParam()) ||
        IsExtensionParticipatingInOriginTrial(GetParam())) &&
       IsExtensionPermissionRequested(GetParam()) &&
       !IsPromptAPIForExtensionKillSwitchTriggered(GetParam());
-  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"),
-                     base::StringPrintf(kServiceWorkerScript,
-                                        bool_to_str(is_self_ai_accessible),
-                                        bool_to_str(is_chrome_ai_accessible)));
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("sw.js"),
+      base::StringPrintf(kServiceWorkerScript,
+                         base::ToString(is_self_ai_accessible),
+                         base::ToString(is_chrome_ai_accessible)));
   ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);

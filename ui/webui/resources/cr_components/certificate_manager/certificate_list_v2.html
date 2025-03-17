@@ -40,16 +40,18 @@
       </cr-button>
     </div>
     <cr-expand-button id="expandButton" expanded="{{expanded_}}" no-hover
+        aria-label="[[i18n('certificateManagerV2ListExpandAriaLabel', headerText)]]"
         hidden$="[[hideCollapseButton_(noCollapse, hasCerts_)]]">
     </cr-expand-button>
   </div>
 
-  <cr-collapse id="certs" opened="[[expanded_]]">
+  <cr-collapse id="certs" opened="[[expanded_]]" aria-live="polite">
     <template is="dom-repeat" items="[[certificates_]]">
       <certificate-entry-v2
           cert-source="[[certSource]]"
           display-name="[[item.displayName]]"
           sha256hash-hex="[[item.sha256hashHex]]"
+          show-edit-icon="[[certMetadataEditable]]"
           is-deletable="[[item.isDeletable]]"
           on-delete-result="onDeleteResult_">
       </certificate-entry-v2>

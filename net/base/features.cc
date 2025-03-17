@@ -128,21 +128,12 @@ BASE_FEATURE(kSplitCacheByNetworkIsolationKey,
              "SplitCacheByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Note: Use of this feature is gated on the HTTP cache itself being
+// partitioned, which is controlled by the kSplitCacheByNetworkIsolationKey
+// feature.
 BASE_FEATURE(kSplitCacheByCrossSiteMainFrameNavigationBoolean,
              "SplitCacheByCrossSiteMainFrameNavigationBoolean",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSplitCacheByMainFrameNavigationInitiator,
-             "SplitCacheByMainFrameNavigationInitiator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSplitCacheByNavigationInitiator,
-             "SplitCacheByNavigationInitiator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kHttpCacheKeyingExperimentControlGroup2024,
-             "HttpCacheKeyingExperimentControlGroup2024",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSplitCodeCacheByNetworkIsolationKey,
              "SplitCodeCacheByNetworkIsolationKey",
@@ -157,6 +148,10 @@ BASE_FEATURE(kPostQuantumKyber,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchEnginePreconnectInterval,
+             "SearchEnginePreconnectInterval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
@@ -204,7 +199,7 @@ BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
 
 BASE_FEATURE(kAllowSameSiteNoneCookiesInSandbox,
              "AllowSameSiteNoneCookiesInSandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWaitForFirstPartySetsInit,
              "WaitForFirstPartySetsInit",
@@ -218,12 +213,12 @@ extern const base::FeatureParam<base::TimeDelta>
         "kWaitForFirstPartySetsInitNavigationThrottleTimeout",
         base::Seconds(0)};
 
-BASE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies,
-             "AncestorChainBitEnabledInPartitionedCookies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRequestStorageAccessNoCorsRequired,
              "RequestStorageAccessNoCorsRequired",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kStorageAccessApiFollowsSameOriginPolicy,
+             "StorageAccessApiFollowsSameOriginPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStaticKeyPinningEnforcement,
@@ -338,10 +333,26 @@ const base::FeatureParam<std::string> kIpPrivacyTokenServer{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
     /*default_value=*/"https://prod.ipprotectionauth.goog"};
 
+const base::FeatureParam<std::string> kIpPrivacyProbabilisticRevealTokenServer{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyProbabilisticRevealTokenServer",
+    /*default_value=*/"https://prod.probabilisticrevealtoken.goog"};
+
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetInitialDataPath{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyTokenServerGetInitialDataPath",
     /*default_value=*/"/v1/ipblinding/getInitialData"};
+
+const base::FeatureParam<std::string>
+    kIpPrivacyProbabilisticRevealTokenServerPath{
+        &kEnableIpProtectionProxy,
+        /*name=*/"IpPrivacyProbabilisticRevealTokenServerPath",
+        /*default_value=*/"/v1/ipblinding/getProbabilisticRevealToken"};
+
+const base::FeatureParam<bool> kIpPrivacyStoreProbabilisticRevealTokens{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyStoreProbabilisticRevealTokens",
+    /*default_value=*/false};
 
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetTokensPath{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServerGetTokensPath",
@@ -428,16 +439,6 @@ const base::FeatureParam<bool> kIpPrivacyUseQuicProxiesOnly{
     /*name=*/"IpPrivacyUseQuicProxiesOnly",
     /*default_value=*/false};
 
-const base::FeatureParam<bool> kIpPrivacyUseSingleProxy{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyUseSingleProxy",
-    /*default_value=*/false};
-
-const base::FeatureParam<std::string> kIpPrivacyAlwaysProxy{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyAlwaysProxy",
-    /*default_value=*/""};
-
 const base::FeatureParam<bool> kIpPrivacyFallbackToDirect{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyFallbackToDirect",
@@ -448,11 +449,6 @@ const base::FeatureParam<int> kIpPrivacyDebugExperimentArm{
     /*name=*/"IpPrivacyDebugExperimentArm",
     /*default_value=*/0};
 
-const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyCacheTokensByGeo",
-    /*default_value=*/false};
-
 const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyAlwaysCreateCore",
@@ -462,6 +458,21 @@ const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyOnlyInIncognito",
     /*default_value=*/false};
+
+const base::FeatureParam<bool> kIpPrivacyEnableUserBypass{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyEnableUserBypass",
+    /*default_value=*/false};
+
+BASE_FEATURE(kExcludeLargeBodyReports,
+             "ExcludeLargeReportBodies",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kMaxReportBodySizeKB,
+                   &kExcludeLargeBodyReports,
+                   "max_report_body_size_kb",
+                   1024);
 
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
@@ -498,6 +509,12 @@ BASE_FEATURE(kEnableSchemeBoundCookies,
              "EnableSchemeBoundCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disallows cookies to have non ascii values in their name or value.
+NET_EXPORT BASE_DECLARE_FEATURE(kDisallowNonAsciiCookies);
+BASE_FEATURE(kDisallowNonAsciiCookies,
+             "DisallowNonAsciiCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTimeLimitedInsecureCookies,
              "TimeLimitedInsecureCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -526,18 +543,14 @@ BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
              "SpdyHeadersToHttpResponseUseBuilder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReportEcn, "ReportEcn", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReportEcn, "ReportEcn", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseNewAlpsCodepointHttp2,
              "UseNewAlpsCodepointHttp2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseNewAlpsCodepointQUIC,
              "UseNewAlpsCodepointQUIC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired,
-             "TreatHTTPExpiresHeaderValueZeroAsExpired",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTruncateBodyToContentLength,
@@ -556,9 +569,13 @@ BASE_FEATURE(kDeviceBoundSessions,
 BASE_FEATURE(kPersistDeviceBoundSessions,
              "PersistDeviceBoundSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStoreConnectionSubtype,
-             "StoreConnectionSubtype",
+BASE_FEATURE_PARAM(bool,
+                   kDeviceBoundSessionsForceEnableForTesting,
+                   &kDeviceBoundSessions,
+                   "ForceEnableForTesting",
+                   false);
+BASE_FEATURE(kDeviceBoundSessionsRefreshQuota,
+             "DeviceBoundSessionsRefreshQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartitionProxyChains,
@@ -637,7 +654,7 @@ BASE_FEATURE(kIgnoreHSTSForLocalhost,
 
 BASE_FEATURE(kSimpleCachePrioritizedCaching,
              "SimpleCachePrioritizedCaching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
     kSimpleCachePrioritizedCachingPrioritizationFactor{
@@ -661,5 +678,33 @@ BASE_FEATURE(kNewClientCertPathBuilding,
 BASE_FEATURE(kHstsTopLevelNavigationsOnly,
              "HstsTopLevelNavigationsOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHttpCacheNoVarySearch,
+             "HttpCacheNoVarySearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kHttpCacheNoVarySearchCacheMaxEntries,
+                   &kHttpCacheNoVarySearch,
+                   "max_entries",
+                   1000);
+
+BASE_FEATURE(kReportingApiCorsOriginHeader,
+             "ReportingApiCorsOriginHeader",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kUseCertTransparencyAwareApiForOsCertVerify,
+             "UseCertTransparencyAwareApiForOsCertVerify",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kSelfSignedLocalNetworkInterstitial,
+             "SelfSignedLocalNetworkInterstitial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+BASE_FEATURE(kVerifyQWACs, "VerifyQWACs", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 }  // namespace net::features

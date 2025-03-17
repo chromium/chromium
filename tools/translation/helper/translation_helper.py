@@ -68,7 +68,7 @@ class GRDFile:
 
 
 def get_translatable_grds(repo_root, all_grd_paths,
-                          translation_expectations_path):
+                          translation_expectations_path, is_cog):
   """Returns all the grds that should be translated as a list of GRDFiles.
 
   This verifies that every grd file that appears translatable is listed in
@@ -80,24 +80,39 @@ def get_translatable_grds(repo_root, all_grd_paths,
     all_grd_paths: All grd paths in the repository relative to repo_root.
     translation_expectations_path: The path to the translation expectations
         file, which specifies which grds to translate and into which languages.
+    is_cog: Whether the repository is a cog workspace (go/cog).
   """
   parsed_expectations = _parse_translation_expectations(
       translation_expectations_path)
   grd_to_langs, untranslated_grds, internal_grds = parsed_expectations
+  grds_with_expectations = set(grd_to_langs.keys()).union(untranslated_grds)
 
   errors = []
-  # Make sure that grds in internal_grds aren't processed, since they might
-  # contain pieces not available publicly.
-  for internal_grd in internal_grds:
-    try:
-      all_grd_paths.remove(internal_grd)
-    except ValueError:
-      errors.append(
-          '%s is listed in translation expectations as an internal file to be '
-          'ignored, but this grd file does not exist.' % internal_grd)
+  if is_cog and not all_grd_paths:
+    # Cog doesn't support git, so all_grd_paths will be an empty list.  We can
+    # still check that the expected grds exist, though.
+    all_grd_paths = [
+       p for p in grds_with_expectations
+       if os.path.exists(os.path.join(repo_root, p))
+    ]
+    for internal_grd in internal_grds:
+      if not os.path.exists(os.path.join(repo_root, internal_grd)):
+        errors.append(
+            '%s is listed in translation expectations as an internal file to '
+            'be ignored, but this grd file does not exist.' % internal_grd)
+  else:
+    # Make sure that grds in internal_grds aren't processed, since they might
+    # contain pieces not available publicly.
+    for internal_grd in internal_grds:
+      try:
+        all_grd_paths.remove(internal_grd)
+      except ValueError:
+        errors.append(
+            '%s is listed in translation expectations as an internal file to '
+            'be ignored, but this grd file does not exist.' % internal_grd)
+
   # Check that every grd that appears translatable is listed in
-  # the translation expectations.
-  grds_with_expectations = set(grd_to_langs.keys()).union(untranslated_grds)
+  # the translation expectations.  This is a no-op for Cog workspaces.
   all_grds = {p: GRDFile(os.path.join(repo_root, p)) for p in all_grd_paths}
   for path, grd in all_grds.items():
     if grd.appears_translatable:

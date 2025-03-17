@@ -128,7 +128,7 @@ class URLRequestTestJobBackedByFileEventsTest : public TestWithTaskEnvironment {
   void RunSuccessfulRequestWithString(
       const std::string& content,
       const std::string& expected_content,
-      const base::FilePath::StringPieceType& file_extension,
+      const base::FilePath::StringViewType& file_extension,
       const Range* range);
 
   // Creates and runs a TestURLRequestTestJobBackedByFile job to read from file
@@ -167,7 +167,7 @@ void URLRequestTestJobBackedByFileEventsTest::RunSuccessfulRequestWithString(
 void URLRequestTestJobBackedByFileEventsTest::RunSuccessfulRequestWithString(
     const std::string& raw_content,
     const std::string& expected_content,
-    const base::FilePath::StringPieceType& file_extension,
+    const base::FilePath::StringViewType& file_extension,
     const Range* range) {
   ASSERT_TRUE(directory_.CreateUniqueTempDir());
   base::FilePath path = directory_.GetPath().Append(FILE_PATH_LITERAL("test"));
@@ -262,7 +262,13 @@ TEST_F(URLRequestTestJobBackedByFileEventsTest, SmallFile) {
   RunSuccessfulRequestWithString(MakeContentOfSize(17 * 1024), nullptr);
 }
 
-TEST_F(URLRequestTestJobBackedByFileEventsTest, BigFile) {
+// TODO(crbug.com/398792039): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_BigFile DISABLED_BigFile
+#else
+#define MAYBE_BigFile BigFile
+#endif
+TEST_F(URLRequestTestJobBackedByFileEventsTest, MAYBE_BigFile) {
   RunSuccessfulRequestWithString(MakeContentOfSize(3 * 1024 * 1024), nullptr);
 }
 

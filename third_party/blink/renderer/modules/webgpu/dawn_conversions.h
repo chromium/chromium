@@ -22,8 +22,9 @@
 
 namespace blink {
 
-class GPUImageCopyTexture;
-class GPUImageDataLayout;
+class ExceptionState;
+class GPUTexelCopyBufferLayout;
+class GPUTexelCopyTextureInfo;
 class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
 
 // These conversions are used multiple times and are declared here. Conversions
@@ -47,12 +48,13 @@ bool ConvertToDawn(const V8GPUOrigin3D* in,
 bool ConvertToDawn(const V8GPUOrigin2D* in,
                    wgpu::Origin2D* out,
                    ExceptionState&);
-bool ConvertToDawn(const GPUImageCopyTexture* in,
-                   wgpu::ImageCopyTexture* out,
+bool ConvertToDawn(const GPUTexelCopyTextureInfo* in,
+                   wgpu::TexelCopyTextureInfo* out,
                    ExceptionState&);
 
-const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
-                                      wgpu::TextureDataLayout* layout);
+const char* ValidateTexelCopyBufferLayout(
+    const GPUTexelCopyBufferLayout* webgpu_layout,
+    wgpu::TexelCopyBufferLayout* layout);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.

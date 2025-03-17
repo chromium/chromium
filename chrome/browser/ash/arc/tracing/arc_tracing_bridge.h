@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/tracing.mojom-forward.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "chromeos/ash/experiences/arc/mojom/tracing.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

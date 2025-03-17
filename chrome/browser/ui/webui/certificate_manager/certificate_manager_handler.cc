@@ -14,20 +14,23 @@
 #include "build/build_config.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
-#include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_manager/chrome_root_store_cert_source.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/browser/ui/webui/certificate_manager/enterprise_cert_sources.h"
-#include "chrome/browser/ui/webui/certificate_manager/platform_cert_sources.h"
 #include "chrome/browser/ui/webui/certificate_manager/user_cert_sources.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/certificate_manager/platform_cert_sources.h"
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
@@ -46,8 +49,12 @@ void GetUserCertsCountAsync(
 void GetCertManagementMetadataAsync(
     ProfileNetworkContextService::CertificatePoliciesForView policies,
     CertificateManagerPageHandler::GetCertManagementMetadataCallback callback,
-    base::WeakPtr<Profile> profile,
-    cert_verifier::mojom::PlatformRootStoreInfoPtr info) {
+    base::WeakPtr<Profile> profile
+#if !BUILDFLAG(IS_CHROMEOS)
+    ,
+    cert_verifier::mojom::PlatformRootStoreInfoPtr info
+#endif
+) {
   certificate_manager_v2::mojom::CertManagementMetadataPtr metadata =
       certificate_manager_v2::mojom::CertManagementMetadata::New();
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -55,10 +62,7 @@ void GetCertManagementMetadataAsync(
       policies.certificate_policies->include_system_trust_store;
   metadata->is_include_system_trust_store_managed =
       policies.is_include_system_trust_store_managed;
-#else
-  // TODO(crbug.com/40928765): figure out how this should be displayed for
-  // ChromeOS
-  metadata->include_system_trust_store = true;
+  metadata->num_user_added_system_certs = info->user_added_certs.size();
 #endif
 
   metadata->num_policy_certs =
@@ -70,7 +74,6 @@ void GetCertManagementMetadataAsync(
           .size() +
       policies.certificate_policies->all_certificates.size();
 
-  metadata->num_user_added_system_certs = info->user_added_certs.size();
   net::ServerCertificateDatabaseService* server_cert_service =
       profile
           ? net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
@@ -176,6 +179,7 @@ CertificateManagerPageHandler::GetCertSource(
           kEnterpriseDistrustedCerts:
         source_ptr = std::make_unique<EnterpriseDistrustedCertSource>(profile_);
         break;
+#if !BUILDFLAG(IS_CHROMEOS)
       case certificate_manager_v2::mojom::CertificateSource::
           kPlatformUserTrustedCerts:
         source_ptr = std::make_unique<PlatformCertSource>(
@@ -193,6 +197,7 @@ CertificateManagerPageHandler::GetCertSource(
             "distrusted_certs",
             cert_verifier::mojom::CertificateTrust::kDistrusted);
         break;
+#endif
       case certificate_manager_v2::mojom::CertificateSource::kUserTrustedCerts:
         source_ptr = std::make_unique<UserCertSource>(
             "trusted_certs",
@@ -239,9 +244,15 @@ void CertificateManagerPageHandler::GetCertManagementMetadata(
       ProfileNetworkContextServiceFactory::GetForContext(profile_);
   ProfileNetworkContextService::CertificatePoliciesForView policies =
       service->GetCertificatePolicyForView();
+#if !BUILDFLAG(IS_CHROMEOS)
   content::GetCertVerifierServiceFactory()->GetPlatformRootStoreInfo(
       base::BindOnce(&GetCertManagementMetadataAsync, std::move(policies),
                      std::move(callback), profile_->GetWeakPtr()));
+#else
+  GetCertManagementMetadataAsync(std::move(policies), std::move(callback),
+                                 profile_->GetWeakPtr());
+
+#endif
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

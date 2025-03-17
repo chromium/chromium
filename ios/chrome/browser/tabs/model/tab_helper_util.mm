@@ -194,7 +194,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     // created before AppLauncherTabHelper, which will filter out
     // unhandled schemes.
     LensTabHelper::CreateForWebState(web_state);
-    if (IsLensOverlayAvailable()) {
+    if (IsLensOverlayAvailable(profile->GetPrefs())) {
       LensOverlayTabHelper::CreateForWebState(web_state);
     }
     AppLauncherTabHelper::CreateForWebState(

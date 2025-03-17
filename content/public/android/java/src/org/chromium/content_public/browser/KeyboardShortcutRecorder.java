@@ -7,11 +7,13 @@ package org.chromium.content_public.browser;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Records physical keyboard shortcut events. Suitable for use by any content embedder. */
+@NullMarked
 public class KeyboardShortcutRecorder {
     // This should be kept in sync with the definition |PhysicalKeyboardShortcut| in
     // tools/metrics/histograms/enums.xml and

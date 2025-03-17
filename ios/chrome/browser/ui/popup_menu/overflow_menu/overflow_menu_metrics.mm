@@ -73,6 +73,10 @@ IOSOverflowMenuAction HistogramActionFromActionType(
       return IOSOverflowMenuAction::kEditActions;
     case overflow_menu::ActionType::LensOverlay:
       return IOSOverflowMenuAction::kLensOverlay;
+    case overflow_menu::ActionType::AIPrototype:
+      return IOSOverflowMenuAction::kAIPrototype;
+    case overflow_menu::ActionType::SetTabReminder:
+      return IOSOverflowMenuAction::kSetTabReminder;
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_api.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -882,7 +882,7 @@ LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
       input_method_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Find and remove the matching input method id.
-  const auto& pos = base::ranges::find(input_method_list, input_method_id);
+  const auto& pos = std::ranges::find(input_method_list, input_method_id);
   if (pos != input_method_list.end()) {
     input_method_list.erase(pos);
     prefs->SetString(pref_name, base::JoinString(input_method_list, ","));

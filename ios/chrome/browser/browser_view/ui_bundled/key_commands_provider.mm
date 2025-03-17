@@ -248,7 +248,7 @@ using base::UserMetricsAction;
           l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_EDIT_BOOKMARK);
     }
   }
-  return [super validateCommand:command];
+  [super validateCommand:command];
 }
 
 #pragma mark - Key Command Actions
@@ -389,8 +389,7 @@ using base::UserMetricsAction;
 
   NSString* title = tab_util::GetTabTitle(currentWebState);
   [_bookmarksHandler
-      createOrEditBookmarkWithURL:[[URLWithTitle alloc] initWithURL:URL
-                                                              title:title]];
+      addOrEditBookmark:[[URLWithTitle alloc] initWithURL:URL title:title]];
 }
 
 - (void)keyCommand_reload {

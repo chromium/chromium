@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +26,9 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.ViewCompat;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -60,6 +63,7 @@ import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -151,10 +155,6 @@ public class TabListEditorMenuTest {
         }
     }
 
-    // For R8 optimizer message
-    @Mock private Tab mTabDoNotUse;
-
-    // Real mocks.
     @Mock private TabModel mTabModel;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     private SelectionDelegate<Integer> mSelectionDelegate;
@@ -193,8 +193,7 @@ public class TabListEditorMenuTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSelectionDelegate = new SelectionDelegate<>();
-                    mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
+                    mSelectionDelegate = new SelectionDelegate<>(true);
                     LinearLayout layout = new LinearLayout(sActivity);
                     LinearLayout.LayoutParams layoutParams =
                             new LinearLayout.LayoutParams(
@@ -636,8 +635,54 @@ public class TabListEditorMenuTest {
         closeMenu(listener);
     }
 
+    @Test
+    @SmallTest
+    public void testAccessibilityPaneDescription_beforeSelection() {
+        assertNull(ViewCompat.getAccessibilityPaneTitle(mToolbar));
+    }
+
+    @Test
+    @SmallTest
+    public void testAccessibilityPaneDescription_afterSelectOne() {
+        // Set has to be mutable. If not, modification will be attempted and throw an error.
+        setSelectedItems(new HashSet<>(Set.of(TAB_ID_1)));
+        assertEquals(
+                mToolbar.getContext().getString(R.string.accessibility_toolbar_multi_select, 1),
+                ViewCompat.getAccessibilityPaneTitle(mToolbar));
+    }
+
+    @Test
+    @SmallTest
+    public void testAccessibilityPaneDescription_afterSelectTwo() {
+        setSelectedItems(new HashSet<>(Set.of(TAB_ID_1)));
+        setSelectedItems(new HashSet<>(Set.of(TAB_ID_1, TAB_ID_2)));
+        assertEquals(
+                mToolbar.getContext().getString(R.string.accessibility_toolbar_multi_select, 2),
+                ViewCompat.getAccessibilityPaneTitle(mToolbar));
+    }
+
+    @Test
+    @SmallTest
+    public void testAccessibilityPaneDescription_afterSelectThenDeselect() {
+        setSelectedItems(new HashSet<>(Set.of(TAB_ID_1, TAB_ID_2)));
+        setSelectedItems(new HashSet<>());
+        assertEquals(
+                mToolbar.getContext().getString(R.string.accessibility_toolbar_multi_select, 0),
+                ViewCompat.getAccessibilityPaneTitle(mToolbar));
+    }
+
+    @Test
+    @SmallTest
+    public void testAccessibilityPaneDescription_afterSelectThenClear() {
+        setSelectedItems(new HashSet<>(Set.of(TAB_ID_1, TAB_ID_2)));
+        ThreadUtils.runOnUiThreadBlocking(mSelectionDelegate::clearSelection);
+        assertEquals(
+                mToolbar.getContext().getString(R.string.accessibility_toolbar_multi_select, 0),
+                ViewCompat.getAccessibilityPaneTitle(mToolbar));
+    }
+
     /** Helper for detecting menu shown popup events. */
-    static class PopupListener implements ListMenuButton.PopupMenuShownListener {
+    static class PopupListener implements ListMenuHost.PopupMenuShownListener {
         private CallbackHelper mShown = new CallbackHelper();
         private CallbackHelper mHidden = new CallbackHelper();
 

@@ -10,6 +10,9 @@ source_set("chrome_coordinator") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }

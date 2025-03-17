@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file implements the ABI of libtranslatekit only for testing. It is not
 // used in production.
 // This mock implementation runs as follows:
@@ -21,6 +26,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <string>
 #include <string_view>
 
@@ -29,6 +35,7 @@
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
@@ -182,6 +189,18 @@ class FakeTranslateKit {
 
 extern "C" {
 
+TRANSLATE_KIT_EXPORT bool GetTranslateKitVersion(TranslateKitVersion* version) {
+  CHECK(version);
+  CHECK(version->buffer);
+  CHECK(version->buffer_size);
+
+  // Always return a maximum version.
+  constexpr char kMaxVersion[] = "9999.99.99.99";
+  strncpy(version->buffer, kMaxVersion, sizeof(kMaxVersion));
+  version->buffer_size = sizeof(kMaxVersion) - 1;
+  return true;
+}
+
 TRANSLATE_KIT_EXPORT void InitializeStorageBackend(
     FileExistsFn file_exists,
     OpenForReadOnlyMemoryMapFn open_for_read_only_memory_map,
@@ -285,9 +304,9 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslatorTranslate(
         "Result of Open(): ",
         data ? "OK" : "Failed",
         ", result of FileExists(): ",
-        file_exists ? "true" : "false",
+        base::ToString(file_exists),
         ", is_directory: ",
-        is_directory ? "true" : "false",
+        base::ToString(is_directory),
     });
     callback(TranslateKitOutputText(result.data(), result.size()), user_data);
     return true;

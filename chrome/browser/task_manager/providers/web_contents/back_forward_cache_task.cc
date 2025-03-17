@@ -30,12 +30,14 @@ std::u16string GetTaskTitle(
   const GURL& site_url = site_instance->GetSiteURL();
   const std::u16string name = base::UTF8ToUTF16(site_url.spec());
 
+  const bool is_main_frame = !parent_task;
   int message_id;
-  if (!parent_task) {
+  if (is_main_frame) {
     message_id = is_incognito
                      ? IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_PREFIX
                      : IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX;
   } else {
+    // Otherwise, it is a subframe.
     message_id =
         is_incognito
             ? IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_SUBFRAME_PREFIX
@@ -44,7 +46,7 @@ std::u16string GetTaskTitle(
   return l10n_util::GetStringFUTF16(message_id, name);
 }
 
-}  // anonymous namespace
+}  // namespace
 
 namespace task_manager {
 

@@ -52,6 +52,24 @@ source_set("google_groups_updater") {
   ]
 }
 
+source_set("bookmark_model_metrics") {
+  sources = [
+    "bookmark_model_metrics_service.h",
+    "bookmark_model_metrics_service.mm",
+    "bookmark_model_metrics_service_factory.h",
+    "bookmark_model_metrics_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
 source_set("model") {
   sources = [
     "incognito_usage_app_state_agent.h",
@@ -102,6 +120,7 @@ source_set("model") {
     "//components/metrics:net",
     "//components/metrics:ui",
     "//components/metrics/demographics",
+    "//components/metrics/dwa",
     "//components/metrics_services_manager",
     "//components/navigation_metrics",
     "//components/omnibox/browser",
@@ -125,6 +144,7 @@ source_set("model") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/ntp/shared/metrics:utils",
@@ -137,12 +157,13 @@ source_set("model") {
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state:incognito_session_tracker",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:incognito_session_tracker",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -161,7 +182,6 @@ source_set("model") {
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
-    "//ios/web/public/deprecated",
     "//ios/web/public/navigation",
     "//url",
   ]
@@ -194,6 +214,7 @@ source_set("unit_tests") {
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/metrics",
     "//components/metrics:test_support",
+    "//components/metrics/dwa",
     "//components/network_time:network_time",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -333,6 +354,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "demographics_egtest.mm",
+    "dwa_egtest.mm",
     "tab_usage_recorder_egtest.mm",
     "ukm_egtest.mm",
   ]
@@ -341,10 +363,11 @@ source_set("eg2_tests") {
     ":tab_usage_recorder_metrics",
     "//base/test:test_support",
     "//components/metrics/demographics",
+    "//components/metrics/dwa",
     "//components/strings",
     "//components/ukm",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -380,6 +403,7 @@ source_set("eg_app_support+eg2") {
     "//base/test:test_support",
     "//components/metrics",
     "//components/metrics/demographics:test_support",
+    "//components/metrics/dwa",
     "//components/metrics_services_manager",
     "//components/network_time",
     "//components/prefs",
@@ -403,6 +427,7 @@ source_set("eg_test_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/metrics/dwa",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

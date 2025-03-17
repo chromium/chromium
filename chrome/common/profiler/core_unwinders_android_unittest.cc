@@ -47,24 +47,24 @@ TEST(UnwindPrerequisitesTest, RequestInstall) {
     bool enable_feature_install_android_unwind_dfm;
     bool is_installation_expected;
   } test_cases[] = {
-    {version_info::Channel::CANARY, false, false},
-    {version_info::Channel::DEV, false, false},
-    {version_info::Channel::BETA, false, false},
-    {version_info::Channel::STABLE, false, false},
-    {version_info::Channel::UNKNOWN, false, false},
+      {version_info::Channel::CANARY, false, false},
+      {version_info::Channel::DEV, false, false},
+      {version_info::Channel::BETA, false, false},
+      {version_info::Channel::STABLE, false, false},
+      {version_info::Channel::UNKNOWN, false, false},
 #if UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {version_info::Channel::CANARY, true, true},
-    {version_info::Channel::DEV, true, true},
-    {version_info::Channel::BETA, true, true},
-    {version_info::Channel::STABLE, true, true},
-    {version_info::Channel::UNKNOWN, true, true},
+      {version_info::Channel::CANARY, true, true},
+      {version_info::Channel::DEV, true, true},
+      {version_info::Channel::BETA, true, true},
+      {version_info::Channel::STABLE, true, true},
+      {version_info::Channel::UNKNOWN, true, true},
 #else
-    {version_info::Channel::CANARY, true, false},
-    {version_info::Channel::DEV, true, false},
-    {version_info::Channel::BETA, true, false},
-    {version_info::Channel::STABLE, true, false},
-    {version_info::Channel::UNKNOWN, true, false},
+      {version_info::Channel::CANARY, true, false},
+      {version_info::Channel::DEV, true, false},
+      {version_info::Channel::BETA, true, false},
+      {version_info::Channel::STABLE, true, false},
+      {version_info::Channel::UNKNOWN, true, false},
 #endif
   };
 
@@ -108,35 +108,36 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     raw_ptr<UnwindPrerequisitesDelegate> delegate;
     bool are_unwind_prerequisites_expected;
   } test_cases[] = {
-    // Android unwinders require the presence of the unwinder module.
-    {version_info::Channel::CANARY, &false_mock_delegate, false},
-    {version_info::Channel::DEV, &false_mock_delegate, false},
-    {version_info::Channel::BETA, &false_mock_delegate, false},
-    {version_info::Channel::STABLE, &false_mock_delegate, false},
-    {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
+      // Android unwinders require the presence of the unwinder module.
+      {version_info::Channel::CANARY, &false_mock_delegate, false},
+      {version_info::Channel::DEV, &false_mock_delegate, false},
+      {version_info::Channel::BETA, &false_mock_delegate, false},
+      {version_info::Channel::STABLE, &false_mock_delegate, false},
+      {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
 
 #if UNWINDING_SUPPORTED
-    {version_info::Channel::CANARY, &true_mock_delegate, true},
-    {version_info::Channel::DEV, &true_mock_delegate, true},
-    {version_info::Channel::BETA, &true_mock_delegate, true},
+      {version_info::Channel::CANARY, &true_mock_delegate, true},
+      {version_info::Channel::DEV, &true_mock_delegate, true},
+      {version_info::Channel::BETA, &true_mock_delegate, true},
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // Since DFMs can be installed even if not requested by Chrome explicitly
-    // (for instance, in some app stores), for official builds, we
-    // only consider the unwinder module to be available for specific channels
-    // (which does not include `STABLE` and `UNKNOWN`).
-    {version_info::Channel::STABLE, &true_mock_delegate, false},
-    {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
+      // Since DFMs can be installed even if not requested by Chrome explicitly
+      // (for instance, in some app stores), for official builds, we
+      // only consider the unwinder module to be available for specific channels
+      // (which does not include `STABLE` and `UNKNOWN`).
+      {version_info::Channel::STABLE, &true_mock_delegate, false},
+      {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
 #else  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {version_info::Channel::STABLE, &true_mock_delegate, true},
-    {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
+      {version_info::Channel::STABLE, &true_mock_delegate, true},
+      {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
 #endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #else   // UNWINDING_SUPPORTED
-    // Unwinding on any other platforms is not currently supported for Android.
-    {version_info::Channel::CANARY, &true_mock_delegate, false},
-    {version_info::Channel::DEV, &true_mock_delegate, false},
-    {version_info::Channel::BETA, &true_mock_delegate, false},
-    {version_info::Channel::STABLE, &true_mock_delegate, false},
-    {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
+      // Unwinding on any other platforms is not currently supported for
+      // Android.
+      {version_info::Channel::CANARY, &true_mock_delegate, false},
+      {version_info::Channel::DEV, &true_mock_delegate, false},
+      {version_info::Channel::BETA, &true_mock_delegate, false},
+      {version_info::Channel::STABLE, &true_mock_delegate, false},
+      {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
 #endif  // UNWINDING_SUPPORTED
   };
 

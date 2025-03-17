@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -33,12 +34,59 @@ namespace {
 
 using DemoModeApp = DemoSessionMetricsRecorder::DemoModeApp;
 
+using ExitSessionFrom = DemoSessionMetricsRecorder::ExitSessionFrom;
+
+using SessionType = DemoSessionMetricsRecorder::SessionType;
+
+DemoSessionMetricsRecorder* g_demo_session_metrics_recorder = nullptr;
+
+// It is reset to this default value every session, and DemoLoginController will
+// set it to the other session type if needed.
+//
+// We keep it as a global variable instead of owning by
+// DemoSessionMetricsRecorder, because DemoSessionMetricsRecorder is not
+// initiated yet when DemoLoginController is setting its value before entering
+// the session.
+SessionType current_session_type = SessionType::kClassicMGS;
+
 // How often to sample.
 constexpr auto kSamplePeriod = base::Seconds(1);
+
+// Minimum app usage time.
+constexpr base::TimeDelta kMinimumAppUsageTime = base::Seconds(1);
 
 // Redefining chromeos::preinstalled_web_apps::kHelpAppId as ash can't depend on
 // chrome.
 constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
+
+constexpr char kDemoModeSignedInShopperDwellTime[] =
+    "DemoMode.SignedIn.Shopper.DwellTime";
+constexpr char kDemoModeSignedInMGSFallbackShopperDwellTime[] =
+    "DemoMode.SignedIn.MGSFallback.Shopper.DwellTime";
+
+constexpr char kSetupDemoAccountRequestResult[] =
+    "DemoMode.SignedIn.Request.SetupResult";
+constexpr char kCleanupDemoAccountRequestResult[] =
+    "DemoMode.SignedIn.Request.CleanupResult";
+constexpr char kAppUsageTimeHistogramPrefix[] = "DemoMode.AppUsageTime.";
+
+struct AppHistogramSuffix {
+  const DemoModeApp app_type;
+  const std::string name;
+};
+
+// Apps in Demo mode have the highest launched count. Note that
+// `DemoModeApp::kOtherChromeApp` includes the demo mode SWA. Not recording this
+// one until we exclude it from `DemoModeApp::kOtherChromeApp`.
+const AppHistogramSuffix kAppsHistogramSuffix[] = {
+    {DemoModeApp::kGooglePhotos, "GooglePhoto"},
+    {DemoModeApp::kStardewValley, "StardewValley"},
+    {DemoModeApp::kMinecraft, "Minecraft"},
+    {DemoModeApp::kPlayStore, "PlayStore"},
+    {DemoModeApp::kOtherArcApp, "OtherArcApp"},
+    {DemoModeApp::kBrowser, "Browser"},
+    {DemoModeApp::kYoutubePwa, "YouTubePwa"},
+};
 
 // How many periods to wait for user activity before discarding samples.
 // This timeout is low because demo sessions tend to be very short. If we
@@ -60,96 +108,143 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kScreensaver;
   }
 
-  if (app_id == app_constants::kChromeAppId)
+  if (app_id == app_constants::kChromeAppId) {
     return DemoModeApp::kBrowser;
-  if (app_id == extension_misc::kFilesManagerAppId)
+  }
+  if (app_id == extension_misc::kFilesManagerAppId) {
     return DemoModeApp::kFiles;
-  if (app_id == extension_misc::kCalculatorAppId)
+  }
+  if (app_id == extension_misc::kCalculatorAppId) {
     return DemoModeApp::kCalculator;
-  if (app_id == extension_misc::kCalendarDemoAppId)
+  }
+  if (app_id == extension_misc::kCalendarDemoAppId) {
     return DemoModeApp::kCalendar;
-  if (app_id == extension_misc::kGoogleDocsDemoAppId)
+  }
+  if (app_id == extension_misc::kGoogleDocsDemoAppId) {
     return DemoModeApp::kGoogleDocsChromeApp;
-  if (app_id == extension_misc::kGoogleDocsPwaAppId)
+  }
+  if (app_id == extension_misc::kGoogleDocsPwaAppId) {
     return DemoModeApp::kGoogleDocsPwa;
-  if (app_id == extension_misc::kGoogleMeetPwaAppId)
+  }
+  if (app_id == extension_misc::kGoogleMeetPwaAppId) {
     return DemoModeApp::kGoogleMeetPwa;
-  if (app_id == extension_misc::kGoogleSheetsDemoAppId)
+  }
+  if (app_id == extension_misc::kGoogleSheetsDemoAppId) {
     return DemoModeApp::kGoogleSheetsChromeApp;
-  if (app_id == extension_misc::kGoogleSheetsPwaAppId)
+  }
+  if (app_id == extension_misc::kGoogleSheetsPwaAppId) {
     return DemoModeApp::kGoogleSheetsPwa;
-  if (app_id == extension_misc::kGoogleSlidesDemoAppId)
+  }
+  if (app_id == extension_misc::kGoogleSlidesDemoAppId) {
     return DemoModeApp::kGoogleSlidesChromeApp;
-  if (app_id == kHelpAppId)
+  }
+  if (app_id == kHelpAppId) {
     return DemoModeApp::kGetHelp;
-  if (app_id == extension_misc::kGoogleKeepAppId)
+  }
+  if (app_id == extension_misc::kGoogleKeepAppId) {
     return DemoModeApp::kGoogleKeepChromeApp;
-  if (app_id == extensions::kWebStoreAppId)
+  }
+  if (app_id == extensions::kWebStoreAppId) {
     return DemoModeApp::kWebStore;
-  if (app_id == extension_misc::kYoutubeAppId)
+  }
+  if (app_id == extension_misc::kYoutubeAppId) {
     return DemoModeApp::kYouTube;
-  if (app_id == extension_misc::kYoutubePwaAppId)
+  }
+  if (app_id == extension_misc::kYoutubePwaAppId) {
     return DemoModeApp::kYoutubePwa;
-  if (app_id == extension_misc::kSpotifyAppId)
+  }
+  if (app_id == extension_misc::kSpotifyAppId) {
     return DemoModeApp::kSpotify;
-  if (app_id == extension_misc::kBeFunkyAppId)
+  }
+  if (app_id == extension_misc::kBeFunkyAppId) {
     return DemoModeApp::kBeFunky;
-  if (app_id == extension_misc::kClipchampAppId)
+  }
+  if (app_id == extension_misc::kClipchampAppId) {
     return DemoModeApp::kClipchamp;
-  if (app_id == extension_misc::kGeForceNowAppId)
+  }
+  if (app_id == extension_misc::kGeForceNowAppId) {
     return DemoModeApp::kGeForceNow;
-  if (app_id == extension_misc::kZoomAppId)
+  }
+  if (app_id == extension_misc::kZoomAppId) {
     return DemoModeApp::kZoom;
-  if (app_id == extension_misc::kSumoAppId)
+  }
+  if (app_id == extension_misc::kSumoAppId) {
     return DemoModeApp::kSumo;
-  if (app_id == extension_misc::kAdobeSparkAppId)
+  }
+  if (app_id == extension_misc::kAdobeSparkAppId) {
     return DemoModeApp::kAdobeSpark;
+  }
 
   return DemoModeApp::kOtherChromeApp;
+}
+
+const std::string GetAppHistogramSuffix(DemoModeApp app_type) {
+  const AppHistogramSuffix* suffix = std::ranges::find(
+      kAppsHistogramSuffix, app_type, &AppHistogramSuffix::app_type);
+  if (suffix == std::end(kAppsHistogramSuffix)) {
+    return std::string();
+  }
+  return suffix->name;
 }
 
 // Maps an ARC++ package name to a DemoModeApp value for metrics.
 DemoModeApp GetAppFromPackageName(const std::string& package_name) {
   // Google apps.
   if (package_name == "com.google.Photos" ||
-      package_name == "com.google.android.apps.photos")
+      package_name == "com.google.android.apps.photos") {
     return DemoModeApp::kGooglePhotos;
+  }
   if (package_name == "com.google.Sheets" ||
-      package_name == "com.google.android.apps.docs.editors.sheets")
+      package_name == "com.google.android.apps.docs.editors.sheets") {
     return DemoModeApp::kGoogleSheetsAndroidApp;
+  }
   if (package_name == "com.google.Slides" ||
-      package_name == "com.google.android.apps.docs.editors.slides")
+      package_name == "com.google.android.apps.docs.editors.slides") {
     return DemoModeApp::kGoogleSlidesAndroidApp;
-  if (package_name == "com.google.android.keep")
+  }
+  if (package_name == "com.google.android.keep") {
     return DemoModeApp::kGoogleKeepAndroidApp;
-  if (package_name == "com.android.vending")
+  }
+  if (package_name == "com.android.vending") {
     return DemoModeApp::kPlayStore;
+  }
 
   // Third-party apps.
-  if (package_name == "com.gameloft.android.ANMP.GloftA8HMD")
+  if (package_name == "com.gameloft.android.ANMP.GloftA8HMD") {
     return DemoModeApp::kAsphalt8;
+  }
   if (package_name == "com.gameloft.android.ANMP.GloftA9HM" ||
-      package_name == "com.gameloft.android.ANMP.GloftA9HMD")
+      package_name == "com.gameloft.android.ANMP.GloftA9HMD") {
     return DemoModeApp::kAsphalt9;
+  }
   if (package_name == "com.chucklefish.stardewvalley" ||
-      package_name == "com.chucklefish.stardewvalleydemo")
+      package_name == "com.chucklefish.stardewvalleydemo") {
     return DemoModeApp::kStardewValley;
+  }
   if (package_name == "com.nexstreaming.app.kinemasterfree" ||  // nocheck
       package_name ==
           "com.nexstreaming.app.kinemasterfree.demo.chromebook") {  // nocheck
     return DemoModeApp::kKinemaster;                                // nocheck
   }
   if (package_name == "com.pixlr.express" ||
-      package_name == "com.pixlr.express.chromebook.demo")
+      package_name == "com.pixlr.express.chromebook.demo") {
     return DemoModeApp::kPixlr;
-  if (package_name == "com.brakefield.painter")
+  }
+  if (package_name == "com.brakefield.painter") {
     return DemoModeApp::kInfinitePainter;
-  if (package_name == "com.myscript.nebo.demo")
+  }
+  if (package_name == "com.myscript.nebo.demo") {
     return DemoModeApp::kMyScriptNebo;
-  if (package_name == "com.steadfastinnovation.android.projectpapyrus")
+  }
+  if (package_name == "com.steadfastinnovation.android.projectpapyrus") {
     return DemoModeApp::kSquid;
-  if (package_name == "com.autodesk.autocadws.demo")
+  }
+  if (package_name == "com.autodesk.autocadws.demo") {
     return DemoModeApp::kAutoCAD;
+  }
+  if (package_name == "com.mojang.minecrafttrialpe") {
+    return DemoModeApp::kMinecraft;
+  }
 
   return DemoModeApp::kOtherArcApp;
 }
@@ -223,6 +318,33 @@ void ReportHistogramLongSecondsTimes100(const char* name,
                                  /*min=*/1, /*max=*/60 * 60, /*buckets=*/100);
 }
 
+std::string GetExitSessionActionName(ExitSessionFrom recorded_from,
+                                     bool for_signed_in_session) {
+  if (for_signed_in_session) {
+    switch (recorded_from) {
+      case ExitSessionFrom::kShelf:
+        return "DemoMode.SignedIn.ExitFromShelf";
+      case ExitSessionFrom::kSystemTray:
+        return "DemoMode.SignedIn.ExitFromSystemTray";
+      case ExitSessionFrom::kSystemTrayPowerButton:
+        return "DemoMode.SignedIn.ExitFromSystemTrayPowerButton";
+      default:
+        NOTREACHED();
+    }
+  } else {
+    switch (recorded_from) {
+      case ExitSessionFrom::kShelf:
+        return "DemoMode.ExitFromShelf";
+      case ExitSessionFrom::kSystemTray:
+        return "DemoMode.ExitFromSystemTray";
+      case ExitSessionFrom::kSystemTrayPowerButton:
+        return "DemoMode.ExitFromSystemTrayPowerButton";
+      default:
+        NOTREACHED();
+    }
+  }
+}
+
 }  // namespace
 
 // Observes for changes in a window's ArcPackageName property for the purpose of
@@ -243,8 +365,9 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key != kArcPackageNameKey)
+    if (key != kArcPackageNameKey) {
       return;
+    }
 
     const std::string* package_name = GetArcPackageName(window);
 
@@ -259,8 +382,9 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    if (scoped_observations_.IsObservingSource(window))
+    if (scoped_observations_.IsObservingSource(window)) {
       scoped_observations_.RemoveObservation(window);
+    }
   }
 
   void ObserveWindow(aura::Window* window) {
@@ -278,6 +402,9 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
 
 // Observes changes in a window's ArcPackageName property for the purpose of
 // logging of unique launches of ARC apps.
+// TODO(crbug.com/393457908): Remove this.
+// `UniqueAppsLaunchedArcPackageNameObserver` is a singleton and cannot observe
+// multiple arc package launch at the same time.
 class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
     : public aura::WindowObserver {
  public:
@@ -294,8 +421,9 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key != kArcPackageNameKey)
+    if (key != kArcPackageNameKey) {
       return;
+    }
 
     const std::string* package_name = GetArcPackageName(window);
 
@@ -326,6 +454,51 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
       scoped_observation_{this};
 };
 
+// static
+void DemoSessionMetricsRecorder::RecordExitSessionAction(
+    ExitSessionFrom recorded_from) {
+  // Record generic exit demo session user action regardless of the signed-in
+  // status.
+  const std::string action_name =
+      GetExitSessionActionName(recorded_from, false);
+  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+
+  if (current_session_type == SessionType::kSignedInDemoSession) {
+    // Record signed-in session related action.
+    const std::string signed_in_action_name =
+        GetExitSessionActionName(recorded_from, true);
+    base::RecordAction(base::UserMetricsAction(signed_in_action_name.c_str()));
+  }
+}
+
+// static
+DemoSessionMetricsRecorder* DemoSessionMetricsRecorder::Get() {
+  return g_demo_session_metrics_recorder;
+}
+
+// static
+void DemoSessionMetricsRecorder::ReportDemoAccountSetupResult(
+    DemoAccountRequestResultCode result_code) {
+  base::UmaHistogramEnumeration(kSetupDemoAccountRequestResult, result_code);
+}
+
+// static
+void DemoSessionMetricsRecorder::ReportDemoAccountCleanupResult(
+    DemoAccountRequestResultCode result_code) {
+  base::UmaHistogramEnumeration(kCleanupDemoAccountRequestResult, result_code);
+}
+
+// static
+void DemoSessionMetricsRecorder::SetCurrentSessionType(
+    SessionType session_type) {
+  current_session_type = session_type;
+}
+
+// static
+SessionType DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting() {
+  return current_session_type;
+}
+
 DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
     std::unique_ptr<base::RepeatingTimer> timer)
     : timer_(std::move(timer)),
@@ -333,9 +506,13 @@ DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
           std::make_unique<UniqueAppsLaunchedArcPackageNameObserver>(this)),
       active_app_arc_package_name_observer_(
           std::make_unique<ActiveAppArcPackageNameObserver>(this)) {
+  CHECK(!g_demo_session_metrics_recorder);
+  g_demo_session_metrics_recorder = this;
+
   // Outside of tests, use a normal repeating timer.
-  if (!timer_.get())
+  if (!timer_.get()) {
     timer_ = std::make_unique<base::RepeatingTimer>();
+  }
 
   StartRecording();
   observation_.Observe(ui::UserActivityDetector::Get());
@@ -351,12 +528,14 @@ DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
 }
 
 DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
-  // TODO(mlcui): Investigate whether the metrics emitted here are gracefully
-  // handled during session / device shutdown.
+  // TODO(crbug.com/393457908): Fix under reported metric record during
+  // shutdown.
 
   // Report any remaining stored samples on exit. (If the user went idle, there
   // won't be any.)
   ReportSamples();
+
+  ReportShopperSessionDwellTime();
 
   ReportDwellTime();
 
@@ -366,8 +545,11 @@ DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
   activation_client_->RemoveObserver(this);
 
   ReportUniqueAppsLaunched();
+
+  g_demo_session_metrics_recorder = nullptr;
 }
 
+// TODO(crbug.com/393457908): This metric is under reported.
 void DemoSessionMetricsRecorder::RecordAppLaunch(const std::string& id,
                                                  chromeos::AppType app_type) {
   if (!ShouldRecordAppLaunch(id)) {
@@ -402,12 +584,14 @@ bool DemoSessionMetricsRecorder::ShouldRecordAppLaunch(
 void DemoSessionMetricsRecorder::OnWindowActivated(ActivationReason reason,
                                                    aura::Window* gained_active,
                                                    aura::Window* lost_active) {
-  if (!gained_active)
+  if (!gained_active) {
     return;
+  }
 
   // Don't count popup windows.
-  if (gained_active->GetType() != aura::client::WINDOW_TYPE_NORMAL)
+  if (gained_active->GetType() != aura::client::WINDOW_TYPE_NORMAL) {
     return;
+  }
 
   chromeos::AppType app_type = GetAppType(gained_active);
 
@@ -434,25 +618,31 @@ void DemoSessionMetricsRecorder::OnWindowActivated(ActivationReason reason,
 
   // Some app_ids are empty, i.e the "You will be signed out
   // in X seconds" modal dialog in Demo Mode, so skip those.
-  if (app_id.empty())
+  if (app_id.empty()) {
     return;
+  }
 
   RecordAppLaunch(app_id, app_type);
 }
 
 void DemoSessionMetricsRecorder::OnUserActivity(const ui::Event* event) {
-  // Record the first and last time activity was observed.
+  // Record the first and last user activities upon observing them.
+  base::TimeTicks now = base::TimeTicks::Now();
   if (first_user_activity_.is_null()) {
-    first_user_activity_ = base::TimeTicks::Now();
+    first_user_activity_ = now;
   }
-  last_user_activity_ = base::TimeTicks::Now();
+  if (shopper_session_first_user_activity_.is_null()) {
+    shopper_session_first_user_activity_ = now;
+  }
+  last_user_activity_ = now;
 
   // Report samples recorded since the last activity.
   ReportSamples();
 
   // Restart the timer if the device has been idle.
-  if (!timer_->IsRunning())
+  if (!timer_->IsRunning()) {
     StartRecording();
+  }
   periods_since_activity_ = 0;
 }
 
@@ -468,6 +658,61 @@ void DemoSessionMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() == ui::EventType::kTouchPressed) {
     user_clicks_and_presses_++;
   }
+}
+
+void DemoSessionMetricsRecorder::ReportShopperSessionDwellTime() {
+  if (shopper_session_first_user_activity_.is_null()) {
+    return;
+  }
+  if (current_session_type == SessionType::kSignedInDemoSession ||
+      current_session_type == SessionType::kFallbackMGS) {
+    DCHECK(!last_user_activity_.is_null());
+    DCHECK_LE(shopper_session_first_user_activity_, last_user_activity_);
+
+    base::TimeDelta dwell_time =
+        last_user_activity_ - shopper_session_first_user_activity_;
+    ReportHistogramLongSecondsTimes100(
+        current_session_type == SessionType::kSignedInDemoSession
+            ? kDemoModeSignedInShopperDwellTime
+            : kDemoModeSignedInMGSFallbackShopperDwellTime,
+        dwell_time);
+  }
+  shopper_session_first_user_activity_ = base::TimeTicks();
+}
+
+void DemoSessionMetricsRecorder::OnAppCreation(
+    const std::string& app_id_or_package,
+    const bool is_arc_app) {
+  const DemoModeApp app = is_arc_app ? GetAppFromPackageName(app_id_or_package)
+                                     : GetAppFromAppId(app_id_or_package);
+  if (GetAppHistogramSuffix(app).empty()) {
+    return;
+  }
+  apps_start_time_[app] = base::TimeTicks::Now();
+}
+
+void DemoSessionMetricsRecorder::OnAppDestruction(
+    const std::string& app_id_or_package,
+    const bool is_arc_app) {
+  const DemoModeApp app = is_arc_app ? GetAppFromPackageName(app_id_or_package)
+                                     : GetAppFromAppId(app_id_or_package);
+  if (!apps_start_time_.contains(app)) {
+    return;
+  }
+
+  const auto duration = base::TimeTicks::Now() - apps_start_time_[app];
+  apps_start_time_.erase(app);
+
+  // Some Arc app gets quickly created and destructed after `OnAppDestruction`
+  // get called. Ignore reporting if the duration is too short.
+  if (duration < kMinimumAppUsageTime) {
+    return;
+  }
+
+  const std::string histogram_suffix = GetAppHistogramSuffix(app);
+  ReportHistogramLongSecondsTimes100(
+      base::StrCat({kAppUsageTimeHistogramPrefix, histogram_suffix}).c_str(),
+      duration);
 }
 
 void DemoSessionMetricsRecorder::StartRecording() {
@@ -490,8 +735,9 @@ void DemoSessionMetricsRecorder::TakeSampleOrPause() {
   }
 
   aura::Window* window = Shell::Get()->activation_client()->GetActiveWindow();
-  if (!window)
+  if (!window) {
     return;
+  }
 
   // If there is no ARC package name available, set up a listener
   // to be informed when it is available.
@@ -507,15 +753,17 @@ void DemoSessionMetricsRecorder::TakeSampleOrPause() {
 }
 
 void DemoSessionMetricsRecorder::ReportSamples() {
-  for (DemoModeApp app : unreported_samples_)
+  for (DemoModeApp app : unreported_samples_) {
     UMA_HISTOGRAM_ENUMERATION("DemoMode.ActiveApp", app);
+  }
   unreported_samples_.clear();
 }
 
 void DemoSessionMetricsRecorder::ReportUniqueAppsLaunched() {
-  if (unique_apps_launched_recording_enabled_)
+  if (unique_apps_launched_recording_enabled_) {
     UMA_HISTOGRAM_COUNTS_100("DemoMode.UniqueAppsLaunched",
                              unique_apps_launched_.size());
+  }
   unique_apps_launched_.clear();
 }
 

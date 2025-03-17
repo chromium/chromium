@@ -9,7 +9,6 @@ import {currentReadHighlightClass, previousReadHighlightClass} from 'chrome-untr
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {FakeTree} from './fake_tree_builder.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
@@ -28,7 +27,6 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 // has been or is being read out loud.
 suite('UpdateContentSelectionWithHighlights', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let fakeTree: FakeTree;
 
   const textNodeIds = [3, 5, 7, 9];
@@ -40,13 +38,14 @@ suite('UpdateContentSelectionWithHighlights', () => {
   ];
 
   setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
+    // Don't use await createApp() when using a FakeTree, as it seems to cause
+    // flakiness.
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
 
@@ -55,7 +54,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     fakeTree = new FakeTreeBuilder()
                    .root(1)
                    .addTag(2, /* parentId= */ 1, 'p')
-                   .addText(textNodeIds[0]!!, /* parentId= */ 2, texts[0]!)
+                   .addText(textNodeIds[0]!, /* parentId= */ 2, texts[0]!)
                    .addTag(4, /* parentId= */ 1, 'p')
                    .addText(textNodeIds[1]!, /* parentId= */ 4, texts[1]!)
                    .addTag(6, /* parentId= */ 1, 'p')
@@ -115,7 +114,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     // Looks for the node containing the given text inside the given selectors
     function getTextNode(selector: string, text: string): Node {
       const nodesToCheck =
-          Array.from(app.shadowRoot!.querySelectorAll(selector));
+          Array.from(app.shadowRoot.querySelectorAll(selector));
       const parentNodeWithText =
           nodesToCheck.find((element) => element.textContent!.includes(text));
       return parentNodeWithText!.firstChild!;
@@ -164,7 +163,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       // (offset 12) of the third paragraph.
       await selectNodes(
           afterSelector, expectedAnchorOffset, texts[1]!, expectedFocusOffset,
-          texts[3]!);
+          texts[3]);
 
       assertEquals(expectedAnchorId, actualAnchorId);
       assertEquals(expectedFocusId, actualFocusId);
@@ -196,7 +195,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedFocusOffset = 7;
       await selectNodes(
           previousSelector, expectedAnchorOffset, texts[0]!,
-          expectedFocusOffset, texts[1]!);
+          expectedFocusOffset, texts[1]);
 
       assertEquals(textNodeIds[0]!, actualAnchorId);
       assertEquals(textNodeIds[1]!, actualFocusId);
@@ -233,7 +232,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedFocusOffset = 7;
       await selectNodes(
           previousSelector, expectedAnchorOffset, texts[0]!,
-          expectedFocusOffset, texts[1]!);
+          expectedFocusOffset, texts[1]);
 
       assertEquals(textNodeIds[0]!, actualAnchorId);
       assertEquals(textNodeIds[1]!, actualFocusId);
@@ -301,7 +300,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
       // select node starting after the end of the highlight
       const selectedText = texts[2]!.slice(highlightEnd);
-      const nodesToCheck = Array.from(app.shadowRoot!.querySelectorAll('span'));
+      const nodesToCheck = Array.from(app.shadowRoot.querySelectorAll('span'));
       const parentNodeWithText = nodesToCheck.find(
           (element) => element.textContent!.includes(selectedText));
       const textNode = parentNodeWithText!.lastChild!;
@@ -337,7 +336,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedFocusOffset = 10;
       await selectNodes(
           afterSelector, expectedAnchorOffset, texts[1]!, expectedFocusOffset,
-          texts[2]!);
+          texts[2]);
 
       assertEquals(textNodeIds[1]!, actualAnchorId);
       assertEquals(textNodeIds[2]!, actualFocusId);

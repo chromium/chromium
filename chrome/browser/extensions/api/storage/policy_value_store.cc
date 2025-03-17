@@ -130,6 +130,10 @@ size_t PolicyValueStore::GetBytesInUse() {
   return 0;
 }
 
+ValueStore::ReadResult PolicyValueStore::GetKeys() {
+  return delegate_->GetKeys();
+}
+
 ValueStore::ReadResult PolicyValueStore::Get(const std::string& key) {
   return delegate_->Get(key);
 }

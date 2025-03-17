@@ -22,6 +22,8 @@ AutofillSaveCardDelegate::AutofillSaveCardDelegate(
 AutofillSaveCardDelegate::~AutofillSaveCardDelegate() = default;
 
 void AutofillSaveCardDelegate::OnUiShown() {
+  // TODO(crbug.com/394337666): Remove logging `AutofillMetrics::InfoBarMetric`
+  // for iOS.
   LogInfoBarAction(AutofillMetrics::INFOBAR_SHOWN);
 }
 
@@ -52,6 +54,8 @@ void AutofillSaveCardDelegate::OnUiCanceled() {
   RunSaveCardPromptCallback(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
+  // TODO(crbug.com/394337666): Remove logging `AutofillMetrics::InfoBarMetric`
+  // for iOS.
   LogInfoBarAction(AutofillMetrics::INFOBAR_DENIED);
   if (options_.card_save_type !=
       payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly) {
@@ -74,6 +78,11 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
           is_for_upload(), options_);
     }
   }
+}
+
+const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+AutofillSaveCardDelegate::GetSaveCreditCardOptions() const {
+  return options_;
 }
 
 void AutofillSaveCardDelegate::OnFinishedGatheringConsent(

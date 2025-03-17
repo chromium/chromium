@@ -33,13 +33,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
@@ -310,10 +310,16 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
         if (isTabletOrAuto) {
             setTheme(R.style.Theme_Chromium_TabbedMode);
-        } else if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
+        } else if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                && DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
             // For consistency with tablets, the status bar should be black on phones with large
             // screen, where the FRE is shown as dialog.
-            StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);
+            StatusBarColorController.setStatusBarColor(
+                    (getEdgeToEdgeManager() != null)
+                            ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                            : null,
+                    getWindow(),
+                    Color.BLACK);
         }
         super.onPreCreate();
     }
@@ -370,9 +376,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 new FirstRunFlowSequencer(
                         getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
                     @Override
-                    public void onFlowIsKnown(Bundle freProperties) {
-                        assert freProperties != null;
-                        mFreProperties = freProperties;
+                    public void onFlowIsKnown(boolean isChild) {
+                        mFreProperties = new Bundle();
                         RecordHistogram.recordTimesHistogram(
                                 "MobileFre.FromLaunch.ChildStatusAvailable",
                                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
@@ -384,7 +389,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         RecordHistogram.recordTimesHistogram(
                                 "MobileFre.FromLaunch.FirstFragmentInflatedV2",
                                 inflationCompletion - mIntentCreationElapsedRealtimeMs);
-                        getFirstRunAppRestrictionInfo()
+                        getAppRestrictionSupplier()
                                 .getCompletionElapsedRealtimeMs(
                                         restrictionsCompletion -> {
                                             if (restrictionsCompletion > inflationCompletion) {
@@ -432,10 +437,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private void onNativeDependenciesFullyInitialized() {
         mNativeInitializationPromise.fulfill(null);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            mPager.setOffscreenPageLimit(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
-        }
+        mPager.setOffscreenPageLimit(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
 
         onInternalStateChanged();
     }

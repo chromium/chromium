@@ -27,6 +27,10 @@ const char kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillFirst";
 const char kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillSecond";
+const char
+    kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestoreIncognito
+        [] = "PageLoad.PaintTiming.NavigationToFirstPaint."
+             "BFCachePolyfillSecond.Incognito";
 const char kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillThird";
 const char kHistogramFirstInputDelayAfterBackForwardCacheRestore[] =
@@ -47,10 +51,26 @@ const char
              "UserInteractionLatency."
              "HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore";
 const char
+    kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito
+        [] = "PageLoad.InteractiveTiming."
+             "UserInteractionLatency."
+             "HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore."
+             "Incognito";
+const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
         [] = "PageLoad.InteractiveTiming."
              "WorstUserInteractionLatency."
              "MaxEventDuration.AfterBackForwardCacheRestore";
+
+const char
+    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore[] =
+        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2";
+const char
+    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito
+        [] = "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+             "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2."
+             "Incognito";
 
 // Enables to emit zero values for some key metrics when back-forward cache is
 // used.
@@ -76,7 +96,8 @@ BASE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics,
 }  // namespace internal
 
 BackForwardCachePageLoadMetricsObserver::
-    BackForwardCachePageLoadMetricsObserver() = default;
+    BackForwardCachePageLoadMetricsObserver(bool is_incognito)
+    : is_incognito_(is_incognito) {}
 
 BackForwardCachePageLoadMetricsObserver::
     ~BackForwardCachePageLoadMetricsObserver() {
@@ -239,6 +260,13 @@ void BackForwardCachePageLoadMetricsObserver::
           kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore,
       request_animation_frames[2]);
 
+  if (is_incognito_) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::
+            kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestoreIncognito,
+        request_animation_frames[1]);
+  }
+
   // HistoryNavigation is a singular event, and we share the same instance as
   // long as we use the same source ID.
   ukm::builders::HistoryNavigation builder(
@@ -376,6 +404,15 @@ void BackForwardCachePageLoadMetricsObserver::
           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
       high_percentile2_max_event_duration, base::Milliseconds(1),
       base::Seconds(60), 50);
+
+  if (is_incognito_) {
+    UmaHistogramCustomTimes(
+        internal::
+            kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito,
+        high_percentile2_max_event_duration, base::Milliseconds(1),
+        base::Seconds(60), 50);
+  }
+
   base::UmaHistogramCounts1000(
       internal::kNumInteractions_AfterBackForwardCacheRestore,
       responsiveness_metrics_normalization.num_user_interactions());
@@ -424,12 +461,19 @@ void BackForwardCachePageLoadMetricsObserver::
             page_load_metrics::LayoutShiftUkmValue(
                 normalized_cls_data
                     .session_windows_gap1000ms_max5000ms_max_cls));
+    auto sample = page_load_metrics::LayoutShiftUmaValue10000(
+        normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls);
     base::UmaHistogramCustomCounts(
-        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",
-        page_load_metrics::LayoutShiftUmaValue10000(
-            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
-        1, 24000, 50);
+        internal::
+            kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore,
+        sample, 1, 24000, 50);
+
+    if (is_incognito_) {
+      base::UmaHistogramCustomCounts(
+          internal::
+              kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito,
+          sample, 1, 24000, 50);
+    }
   }
 
   builder.Record(ukm::UkmRecorder::Get());

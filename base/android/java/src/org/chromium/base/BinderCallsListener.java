@@ -7,6 +7,7 @@ package org.chromium.base;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.SystemClock;
 
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -18,6 +19,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.function.BiConsumer;
 
 /**
@@ -36,6 +39,95 @@ public class BinderCallsListener {
 
     private static @Nullable BinderCallsListener sInstance;
 
+    /** A means of reporting an exception/stack without crashing. */
+    private static @Nullable Callback<Throwable> sExceptionReporter;
+
+    private static final long LONG_BINDER_CALL_LIMIT_MILLIS = 2;
+    private static final double UPLOAD_PROBABILITY = 0.2;
+    private static final int MAX_UPLOADS_PER_SESSION = 3;
+    private static final HashSet<String> sSlowBinderCallAllowList = new HashSet<>();
+
+    // The comments mostly correspond to the slow use cases.
+    static {
+        Collections.addAll(
+                sSlowBinderCallAllowList,
+                // Callbacks for lifecycle events.
+                "android.app.IActivityTaskManager",
+                // Used for getActivityInfo, hasSystemFeature, and getSystemAvailableFeatures calls.
+                "android.content.pm.IPackageManager",
+                // Called by Choreographer.
+                "android.view.IWindowSession",
+                // Check whether UI mode is TV.
+                "android.app.IUiModeManager",
+                // Used to add Incognito launcher shortcut.
+                "android.content.pm.IShortcutService",
+                // Interactions with activities, services and content providers.
+                "android.app.IActivityManager",
+                // Used for getService calls.
+                "android.os.IServiceManager",
+                // Checks if power saving mode is enabled.
+                "android.os.IPowerManager",
+                // Used by Android code.
+                "android.content.IContentProvider",
+                "android.view.accessibility.IAccessibilityManager",
+                "android.os.IUserManager",
+                "android.hardware.devicestate.IDeviceStateManager",
+                "com.android.internal.telephony.ISub",
+                "com.android.internal.app.IAppOpsService",
+                "android.view.IGraphicsStats",
+                "android.app.job.IJobCallback",
+                "android.app.trust.ITrustManager",
+                "android.media.IAudioService",
+                "com.android.internal.inputmethod.IImeTracker",
+                "com.android.internal.inputmethod.IInputMethodSession",
+                "com.android.internal.app.IVoiceInteractionManagerService",
+                "com.android.internal.textservice.ITextServicesManager",
+                // Gets activity task ID during startup; cached.
+                "android.app.IActivityClientController",
+                // Used to check if stylus is enabled.
+                "com.android.internal.view.IInputMethodManager",
+                // Registers content observers.
+                "android.content.IContentService",
+                // BackgroundTaskScheduler.
+                "android.app.job.IJobScheduler",
+                // ConnectivitiyManager#getNetworkInfo.
+                "android.net.IConnectivityManager",
+                // Used to get Window Insets.
+                "android.view.IWindowManager",
+                // Determines if specific permissions are revoked by policy.
+                "android.permission.IPermissionManager",
+                // Used to get the system locale to set the UI language.
+                "android.app.ILocaleManager",
+                // Gets all search widget IDs.
+                "com.android.internal.appwidget.IAppWidgetService",
+                // Registers HDR:SDR change listener.
+                "android.hardware.display.IDisplayManager",
+                // Register Clipboard listener.
+                "android.content.IClipboard",
+                // Register input device change listener.
+                "android.hardware.input.IInputManager",
+                // Creates notification channels for devices on Android O and above.
+                "android.app.INotificationManager",
+                // AppTask#getTaskInfo
+                "android.app.IAppTask",
+                // Used to determine if device can authenticate with a given level of strength.
+                "android.hardware.biometrics.IAuthService",
+                // Context#getExternalFilesDirs for download directories.
+                "android.os.storage.IStorageManager",
+                // Watches changes to Android prefs backed up using Android KV backup.
+                "android.app.backup.IBackupManager",
+                // Used in test screenshots.
+                "android.app.IUiAutomationConnection",
+                // PowerMonitor#getCurrentThermalStatus.
+                "android.os.IThermalService",
+                // StrictMode#setVmPolicy. Only enabled for local builds and 1% of Dev users.
+                "android.os.INetworkManagementService",
+                // Records background restrictions imposed on Chrome by Android.
+                "android.app.usage.IUsageStatsManager",
+                // Used for EditText UI elements.
+                "android.view.autofill.IAutoFillManager");
+    }
+
     private @Nullable Object mImplementation;
     private @Nullable InterfaceInvocationHandler mInvocationHandler;
     private boolean mInstalled;
@@ -46,6 +138,13 @@ public class BinderCallsListener {
 
         if (sInstance == null) sInstance = new BinderCallsListener();
         return sInstance;
+    }
+
+    /**
+     * @param reporter A means of reporting an exception without crashing.
+     */
+    public static void setExceptionReporter(Callback<Throwable> reporter) {
+        sExceptionReporter = reporter;
     }
 
     private BinderCallsListener() {
@@ -124,6 +223,9 @@ public class BinderCallsListener {
     private static class InterfaceInvocationHandler implements InvocationHandler {
         private @Nullable String mCurrentInterfaceDescriptor;
         private @Nullable BiConsumer<String, String> mObserver;
+        private int mCurrentTransactionId;
+        private int mNumUploads;
+        private long mCurrentTransactionStartTimeMillis;
 
         @Override
         public @Nullable Object invoke(Object proxy, Method method, Object[] args) {
@@ -131,22 +233,55 @@ public class BinderCallsListener {
             switch (method.getName()) {
                 case "onTransactStarted":
                     IBinder binder = (IBinder) args[0];
+                    mCurrentTransactionId++;
+                    mCurrentTransactionStartTimeMillis = SystemClock.uptimeMillis();
                     try {
                         mCurrentInterfaceDescriptor = binder.getInterfaceDescriptor();
                     } catch (RemoteException e) {
                         mCurrentInterfaceDescriptor = null;
+                        return null;
                     }
 
                     TraceEvent.begin("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
                     if (mObserver != null) {
                         mObserver.accept("onTransactStarted", mCurrentInterfaceDescriptor);
                     }
+                    if (!sSlowBinderCallAllowList.contains(mCurrentInterfaceDescriptor)) {
+                        return mCurrentTransactionId;
+                    }
                     return null;
                 case "onTransactEnded":
                     TraceEvent.end("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
-
                     if (mObserver != null) {
                         mObserver.accept("onTransactEnded", mCurrentInterfaceDescriptor);
+                    }
+
+                    Integer session = (Integer) args[0];
+                    if (session == null || session != mCurrentTransactionId) {
+                        return null;
+                    }
+
+                    long transactionDurationMillis =
+                            SystemClock.uptimeMillis() - mCurrentTransactionStartTimeMillis;
+
+                    // Only report a subset of slow calls for non-local builds.
+                    boolean shouldReportSlowCall =
+                            transactionDurationMillis >= LONG_BINDER_CALL_LIMIT_MILLIS
+                                    && Math.random() < UPLOAD_PROBABILITY
+                                    && mNumUploads < MAX_UPLOADS_PER_SESSION;
+                    if (shouldReportSlowCall && sExceptionReporter != null) {
+                        // If there was a new Binder call introduced, consider moving it to a
+                        // background thread if possible. If not, add it to the allow list.
+                        String message =
+                                "BinderCallsListener detected a slow call on the UI thread by: "
+                                        + mCurrentInterfaceDescriptor
+                                        + " with duration="
+                                        + transactionDurationMillis
+                                        + "ms (max allowed: "
+                                        + LONG_BINDER_CALL_LIMIT_MILLIS
+                                        + "ms)";
+                        sExceptionReporter.onResult(new Throwable(message));
+                        mNumUploads++;
                     }
                     return null;
             }

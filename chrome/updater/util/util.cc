@@ -19,6 +19,8 @@
 #include "base/logging_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#include <algorithm>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -29,7 +31,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,7 +75,7 @@ std::optional<base::FilePath> GetVersionedInstallDirectory(
   if (!path) {
     return std::nullopt;
   }
-  return path->AppendASCII(version.GetString());
+  return path->AppendUTF8(version.GetString());
 }
 
 std::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope) {
@@ -92,18 +93,12 @@ std::optional<base::FilePath> GetUpdaterExecutablePath(
   return path->Append(GetExecutableRelativePath());
 }
 
-#if !BUILDFLAG(IS_MAC)
-std::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
-  return GetInstallDirectory(scope);
-}
-#endif
-
-std::optional<base::FilePath> GetCrxDiffCacheDirectory(UpdaterScope scope) {
-  const std::optional<base::FilePath> cache_path(GetCacheBaseDirectory(scope));
+std::optional<base::FilePath> GetCrxCacheDirectory(UpdaterScope scope) {
+  const std::optional<base::FilePath> cache_path(GetInstallDirectory(scope));
   if (!cache_path) {
     return std::nullopt;
   }
-  return std::optional<base::FilePath>(cache_path->AppendASCII("crx_cache"));
+  return std::optional<base::FilePath>(cache_path->AppendUTF8("crx_cache"));
 }
 
 std::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
@@ -112,7 +107,7 @@ std::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
 
 std::optional<base::FilePath> GetCrashDatabasePath(UpdaterScope scope) {
   const std::optional<base::FilePath> path(GetVersionedInstallDirectory(scope));
-  return path ? std::optional<base::FilePath>(path->AppendASCII("Crashpad"))
+  return path ? std::optional<base::FilePath>(path->AppendUTF8("Crashpad"))
               : std::nullopt;
 }
 
@@ -135,15 +130,15 @@ TagParsingResult& TagParsingResult::operator=(const TagParsingResult&) =
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line) {
   std::string tag = command_line.HasSwitch(kInstallSwitch)
-                        ? command_line.GetSwitchValueASCII(kInstallSwitch)
-                        : command_line.GetSwitchValueASCII(kHandoffSwitch);
+                        ? command_line.GetSwitchValueUTF8(kInstallSwitch)
+                        : command_line.GetSwitchValueUTF8(kHandoffSwitch);
   if (tag.empty()) {
     return {};
   }
 
   tagging::TagArgs tag_args;
   const tagging::ErrorCode error = tagging::Parse(
-      tag, command_line.GetSwitchValueASCII(kAppArgsSwitch), tag_args);
+      tag, command_line.GetSwitchValueUTF8(kAppArgsSwitch), tag_args);
   VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
       << "Tag parsing returned " << error << ".";
   return {tag_args, error};
@@ -160,12 +155,17 @@ std::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
   }
 
   const std::vector<tagging::AppArgs>& apps_args = tag_args->apps;
-  std::vector<tagging::AppArgs>::const_iterator it = base::ranges::find_if(
+  std::vector<tagging::AppArgs>::const_iterator it = std::ranges::find_if(
       apps_args, [&app_id](const tagging::AppArgs& app_args) {
         return base::EqualsCaseInsensitiveASCII(app_args.app_id, app_id);
       });
   return it != std::end(apps_args) ? std::optional<tagging::AppArgs>(*it)
                                    : std::nullopt;
+}
+
+std::string GetTagLanguage() {
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  return tag_args ? tag_args->language : "";
 }
 
 std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id) {
@@ -261,16 +261,18 @@ GURL AppendQueryParameter(const GURL& url,
 
 #if BUILDFLAG(IS_WIN)
 
-std::wstring GetTaskNamePrefix(UpdaterScope scope) {
-  std::wstring task_name = GetTaskDisplayName(scope);
+std::wstring GetTaskNamePrefix(UpdaterScope scope,
+                               const base::Version& version) {
+  std::wstring task_name = GetTaskDisplayName(scope, version);
   std::erase_if(task_name, base::IsAsciiWhitespace<wchar_t>);
   return task_name;
 }
 
-std::wstring GetTaskDisplayName(UpdaterScope scope) {
-  return base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" Task ",
+std::wstring GetTaskDisplayName(UpdaterScope scope,
+                                const base::Version& version) {
+  return base::StrCat({base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L" Task ",
                        IsSystemInstall(scope) ? L"System " : L"User ",
-                       kUpdaterVersionUtf16});
+                       base::UTF8ToWide(version.GetString())});
 }
 
 base::CommandLine GetCommandLineLegacyCompatible() {

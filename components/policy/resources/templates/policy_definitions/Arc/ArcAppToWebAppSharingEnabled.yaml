@@ -14,8 +14,8 @@ items:
 - caption: Disable Android to Web App sharing.
   value: false
 owners:
-- tsergeant@chromium.org
-- chromeos-apps-foundation-team@google.com
+- ovn@google.com
+- cros-web-apps-team@google.com
 schema:
   type: boolean
 supported_on:

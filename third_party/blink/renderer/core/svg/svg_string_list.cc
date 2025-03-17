@@ -18,13 +18,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_string_list.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -60,11 +56,13 @@ void SVGStringListBase::ParseInternal(const CharType* ptr,
                                       char list_delimiter) {
   while (ptr < end) {
     const CharType* start = ptr;
-    while (ptr < end && *ptr != list_delimiter && !IsHTMLSpace<CharType>(*ptr))
-      ptr++;
+    while (ptr < end && *ptr != list_delimiter &&
+           !IsHTMLSpace<CharType>(*ptr)) {
+      UNSAFE_TODO(ptr++);
+    }
     if (ptr == start)
       break;
-    values_.push_back(String(base::span(start, ptr)));
+    values_.push_back(String(UNSAFE_TODO(base::span(start, ptr))));
     SkipOptionalSVGSpacesOrDelimiter(ptr, end, list_delimiter);
   }
 }
@@ -95,9 +93,9 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
   Vector<String>::const_iterator it_end = values_.end();
   if (it != it_end) {
     builder.Append(*it);
-    ++it;
+    UNSAFE_TODO(++it);
 
-    for (; it != it_end; ++it) {
+    for (; it != it_end; UNSAFE_TODO(++it)) {
       builder.Append(list_delimiter);
       builder.Append(*it);
     }

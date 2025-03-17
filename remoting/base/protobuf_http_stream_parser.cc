@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "remoting/base/protobuf_http_stream_parser.h"
 
 #include <string.h>
@@ -10,8 +15,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/io_buffer.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/protobuf/src/google/protobuf/wire_format_lite.h"
 
@@ -142,7 +147,7 @@ bool ProtobufHttpStreamParser::ParseOneField(
         return false;
       }
       VLOG(1) << "Client status decoded.";
-      std::move(stream_closed_callback_).Run(ProtobufHttpStatus(status));
+      std::move(stream_closed_callback_).Run(HttpStatus(status));
       break;
     }
 
@@ -173,8 +178,7 @@ bool ProtobufHttpStreamParser::ValidateWireType(
       "Invalid wire type %d for field number %d", wire_type, field_number);
   LOG(WARNING) << error_message;
   std::move(stream_closed_callback_)
-      .Run(
-          ProtobufHttpStatus(ProtobufHttpStatus::Code::UNKNOWN, error_message));
+      .Run(HttpStatus(HttpStatus::Code::UNKNOWN, error_message));
   return false;
 }
 

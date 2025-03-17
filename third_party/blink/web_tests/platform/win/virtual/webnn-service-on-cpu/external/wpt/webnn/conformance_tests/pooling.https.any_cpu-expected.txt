@@ -1,12 +1,14 @@
 This is a testharness.js-based test.
 [FAIL] averagePool2d float32 4D tensor options.padding
-  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 41.94932556152344 should be close enough to expected 52.43666076660156 by the acceptable 27 ULP distance, but they have 2749192 ULP distance expected true got false
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 41.9493293762207 should be close enough to expected 52.43666076660156 by the acceptable 27 ULP distance, but they have 2749191 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.dilations
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
 [FAIL] averagePool2d float32 4D tensor options.roundingType=floor
   assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 4736288 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
   assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 4736288 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil and no padding
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 50.63130569458008 should be close enough to expected 40.29140853881836 by the acceptable 11 ULP distance, but they have 2710542 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
   assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 4736288 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
@@ -48,8 +50,8 @@ This is a testharness.js-based test.
 [FAIL] maxPool2d float32 4D tensor options.dilations
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
 [FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
-  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2158652698 ULP distance expected true got false
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2229449938 ULP distance expected true got false
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2158652698 ULP distance expected true got false
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.28312683105469 should be close enough to expected -39.03501892089844 by the acceptable 0 ULP distance, but they have 2229449938 ULP distance expected true got false
 Harness: the test ran to completion.
 

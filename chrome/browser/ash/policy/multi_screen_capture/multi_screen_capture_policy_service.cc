@@ -37,7 +37,7 @@ void MultiScreenCapturePolicyService::Init() {
 
 bool MultiScreenCapturePolicyService::IsMultiScreenCaptureAllowed(
     const GURL& url) const {
-  CHECK(BUILDFLAG(IS_CHROMEOS_ASH));
+  static_assert(BUILDFLAG(IS_CHROMEOS));
   for (auto const& value : multi_screen_capture_allow_list_on_login_) {
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(value.GetString());

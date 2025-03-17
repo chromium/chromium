@@ -1,19 +1,66 @@
 diff --git a/third_party/iaccessible2/ia2_api_all.idl b/third_party/iaccessible2/ia2_api_all.idl
-index 97bf11594646..07121230dc73 100644
+index dd7ddf72b5ba1..c8b3f354d96d8 100644
 --- a/third_party/iaccessible2/ia2_api_all.idl
 +++ b/third_party/iaccessible2/ia2_api_all.idl
-@@ -1296,6 +1296,7 @@ IA2_STATE_PINNED =					0x80000
+@@ -1324,7 +1324,8 @@ IA2_STATE_PINNED =					0x80000
+  @section _interfaces Interfaces
    IAccessible2\n
    IAccessible2_2\n
-   IAccessible2_3\n
+-  IAccessible2_3 [Deprecated]\n
++  IAccessible2_3\n
 +  IAccessible2_4\n
    IAccessibleAction\n
    IAccessibleApplication\n
    IAccessibleComponent\n
-@@ -2104,6 +2105,36 @@ interface IAccessible2_3 : IAccessible2_2
-       [out, retval] long *nRanges
-     );
+@@ -2085,6 +2086,81 @@ interface IAccessible2_2 : IAccessible2
+ 
  }
+ 
++/**
++ * This structure represents a directional range of the content. It is defined
++ * by two points in the content, where each one is defined by an accessible
++ * object and an offset relative to it. A typical case of a range point is
++ * a text accessible and text offset within it.
++ *
++ * The "anchor" is one point of the range and typically remains constant.
++ * The other point is the "active" point, which typically corresponds to
++ * the user's focus or point of interest. The user moves the active point to
++ * expand or collapse the range. In most cases, anchor is the start of the range
++ * and active is the end. However, in case of selection, when selecting
++ * backwards (e.g. pressing shift+left arrow in a text field), the start of
++ * the range is the active point, as the user moves this to manipulate
++ * the selection.
++ */
++typedef struct IA2Range {
++  IUnknown* anchor;
++  long anchorOffset;
++  IUnknown* active;
++  long activeOffset;
++} IA2Range;
++
++/**
++ * @brief This interface is an extension of IAccessible2_2 and IAccessible2
++ * interfaces.
++ */
++[object, uuid(5BE18059-762E-4E73-9476-ABA294FED411)]
++interface IAccessible2_3 : IAccessible2_2
++{
++  /**
++   * @brief Returns an array of ranges for selections within the accessible.
++   * @param [out] ranges
++     The array of selection ranges, allocated by the server. The client must
++     free it with CoTaskMemFree.
++   * @param [out] nRanges
++     the array length
++   * @retval S_OK
++   * @retval S_FALSE returned if there is no selection within the accessible
++  */
++  [propget] HRESULT selectionRanges
++    (
++      [out, size_is(,*nRanges)] IA2Range **ranges,
++      [out, retval] long *nRanges
++    );
++}
 +
 +/**
 + * @brief This interface is an extension of IAccessible2_3 which exposes a
@@ -47,3 +94,374 @@ index 97bf11594646..07121230dc73 100644
  /*************************************************************************
   *
   *  File Name (AccessibleComponent.idl)
+@@ -2209,6 +2285,7 @@ interface IAccessibleComponent : IUnknown
+      [out, retval] IA2Color *background
+     );
+ }
++
+ /*************************************************************************
+  *
+  *  File Name (AccessibleValue.idl)
+@@ -5682,6 +5759,7 @@ library IAccessible2Lib
+     importlib ("oleacc.dll");
+     interface IAccessible2;
+     interface IAccessible2_2;
++    interface IAccessible2_3;
+     interface IAccessibleAction;
+     interface IAccessibleApplication;
+     interface IAccessibleComponent;
+diff --git a/third_party/iaccessible2/set_selection_ranges.patch b/third_party/iaccessible2/set_selection_ranges.patch
+index 17229419061ce..159ad89b234d2 100644
+--- a/third_party/iaccessible2/set_selection_ranges.patch
++++ b/third_party/iaccessible2/set_selection_ranges.patch
+@@ -1,19 +1,66 @@
+ diff --git a/third_party/iaccessible2/ia2_api_all.idl b/third_party/iaccessible2/ia2_api_all.idl
+-index 97bf11594646..07121230dc73 100644
++index dd7ddf72b5ba1..3c7ccf935f55e 100644
+ --- a/third_party/iaccessible2/ia2_api_all.idl
+ +++ b/third_party/iaccessible2/ia2_api_all.idl
+-@@ -1296,6 +1296,7 @@ IA2_STATE_PINNED =					0x80000
++@@ -1324,7 +1324,8 @@ IA2_STATE_PINNED =					0x80000
++  @section _interfaces Interfaces
+    IAccessible2\n
+    IAccessible2_2\n
+-   IAccessible2_3\n
++-  IAccessible2_3 [Deprecated]\n
+++  IAccessible2_3\n
+ +  IAccessible2_4\n
+    IAccessibleAction\n
+    IAccessibleApplication\n
+    IAccessibleComponent\n
+-@@ -2104,6 +2105,36 @@ interface IAccessible2_3 : IAccessible2_2
+-       [out, retval] long *nRanges
+-     );
++@@ -2085,6 +2086,81 @@ interface IAccessible2_2 : IAccessible2
++ 
+  }
++ 
+++/**
+++ * This structure represents a directional range of the content. It is defined
+++ * by two points in the content, where each one is defined by an accessible
+++ * object and an offset relative to it. A typical case of a range point is
+++ * a text accessible and text offset within it.
+++ *
+++ * The "anchor" is one point of the range and typically remains constant.
+++ * The other point is the "active" point, which typically corresponds to
+++ * the user's focus or point of interest. The user moves the active point to
+++ * expand or collapse the range. In most cases, anchor is the start of the range
+++ * and active is the end. However, in case of selection, when selecting
+++ * backwards (e.g. pressing shift+left arrow in a text field), the start of
+++ * the range is the active point, as the user moves this to manipulate
+++ * the selection.
+++ */
+++typedef struct IA2Range {
+++  IUnknown* anchor;
+++  long anchorOffset;
+++  IUnknown* active;
+++  long activeOffset;
+++} IA2Range;
+++
+++/**
+++ * @brief This interface is an extension of IAccessible2_2 and IAccessible2
+++ * interfaces.
+++ */
+++[object, uuid(5BE18059-762E-4E73-9476-ABA294FED411)]
+++interface IAccessible2_3 : IAccessible2_2
+++{
+++  /**
+++   * @brief Returns an array of ranges for selections within the accessible.
+++   * @param [out] ranges
+++     The array of selection ranges, allocated by the server. The client must
+++     free it with CoTaskMemFree.
+++   * @param [out] nRanges
+++     the array length
+++   * @retval S_OK
+++   * @retval S_FALSE returned if there is no selection within the accessible
+++  */
+++  [propget] HRESULT selectionRanges
+++    (
+++      [out, size_is(,*nRanges)] IA2Range **ranges,
+++      [out, retval] long *nRanges
+++    );
+++}
+ +
+ +/**
+ + * @brief This interface is an extension of IAccessible2_3 which exposes a
+@@ -47,3 +94,277 @@ index 97bf11594646..07121230dc73 100644
+  /*************************************************************************
+   *
+   *  File Name (AccessibleComponent.idl)
++@@ -2209,6 +2285,7 @@ interface IAccessibleComponent : IUnknown
++      [out, retval] IA2Color *background
++     );
++ }
+++
++ /*************************************************************************
++  *
++  *  File Name (AccessibleValue.idl)
++diff --git a/third_party/iaccessible2/set_selection_ranges.patch b/third_party/iaccessible2/set_selection_ranges.patch
++index 17229419061ce..688ea6c94f911 100644
++--- a/third_party/iaccessible2/set_selection_ranges.patch
+++++ b/third_party/iaccessible2/set_selection_ranges.patch
++@@ -1,21 +1,69 @@
++ diff --git a/third_party/iaccessible2/ia2_api_all.idl b/third_party/iaccessible2/ia2_api_all.idl
++-index 97bf11594646..07121230dc73 100644
+++index dd7ddf72b5ba1..cb32591e99b63 100644
++ --- a/third_party/iaccessible2/ia2_api_all.idl
++ +++ b/third_party/iaccessible2/ia2_api_all.idl
++-@@ -1296,6 +1296,7 @@ IA2_STATE_PINNED =					0x80000
+++@@ -1324,7 +1324,8 @@ IA2_STATE_PINNED =					0x80000
+++  @section _interfaces Interfaces
++    IAccessible2\n
++    IAccessible2_2\n
++-   IAccessible2_3\n
+++-  IAccessible2_3 [Deprecated]\n
++++  IAccessible2_3\n
++ +  IAccessible2_4\n
++    IAccessibleAction\n
++    IAccessibleApplication\n
++    IAccessibleComponent\n
++-@@ -2104,6 +2105,36 @@ interface IAccessible2_3 : IAccessible2_2
++-       [out, retval] long *nRanges
+++@@ -2209,6 +2210,82 @@ interface IAccessibleComponent : IUnknown
+++      [out, retval] IA2Color *background
++      );
++  }
++ +
++ +/**
++++ * This structure represents a directional range of the content. It is defined
++++ * by two points in the content, where each one is defined by an accessible
++++ * object and an offset relative to it. A typical case of a range point is
++++ * a text accessible and text offset within it.
++++ *
++++ * The "anchor" is one point of the range and typically remains constant.
++++ * The other point is the "active" point, which typically corresponds to
++++ * the user's focus or point of interest. The user moves the active point to
++++ * expand or collapse the range. In most cases, anchor is the start of the range
++++ * and active is the end. However, in case of selection, when selecting
++++ * backwards (e.g. pressing shift+left arrow in a text field), the start of
++++ * the range is the active point, as the user moves this to manipulate
++++ * the selection.
++++ */
++++typedef struct IA2Range {
++++  IUnknown* anchor;
++++  long anchorOffset;
++++  IUnknown* active;
++++  long activeOffset;
++++} IA2Range;
++++
++++/**
++++ * @brief This interface is an extension of IAccessible2_2 and IAccessible2
++++ * interfaces.
++++ */
++++[object, uuid(5BE18059-762E-4E73-9476-ABA294FED411)]
++++interface IAccessible2_3 : IAccessible2_2
++++{
++++  /**
++++   * @brief Returns an array of ranges for selections within the accessible.
++++   * @param [out] ranges
++++     The array of selection ranges, allocated by the server. The client must
++++     free it with CoTaskMemFree.
++++   * @param [out] nRanges
++++     the array length
++++   * @retval S_OK
++++   * @retval S_FALSE returned if there is no selection within the accessible
++++  */
++++  [propget] HRESULT selectionRanges
++++    (
++++      [out, size_is(,*nRanges)] IA2Range **ranges,
++++      [out, retval] long *nRanges
++++    );
++++}
++++
++++/**
++ + * @brief This interface is an extension of IAccessible2_3 which exposes a
++ + * single method for setting the current selection given a number of selection
++ + * ranges.
++@@ -46,4 +94,185 @@ index 97bf11594646..07121230dc73 100644
++ +
++  /*************************************************************************
++   *
++-  *  File Name (AccessibleComponent.idl)
+++  *  File Name (AccessibleValue.idl)
+++diff --git a/third_party/iaccessible2/set_selection_ranges.patch b/third_party/iaccessible2/set_selection_ranges.patch
+++index 17229419061ce..7105fa56ee2be 100644
+++--- a/third_party/iaccessible2/set_selection_ranges.patch
++++++ b/third_party/iaccessible2/set_selection_ranges.patch
+++@@ -1,21 +1,45 @@
+++ diff --git a/third_party/iaccessible2/ia2_api_all.idl b/third_party/iaccessible2/ia2_api_all.idl
+++-index 97bf11594646..07121230dc73 100644
++++index dd7ddf72b5ba1..dca6d6e201222 100644
+++ --- a/third_party/iaccessible2/ia2_api_all.idl
+++ +++ b/third_party/iaccessible2/ia2_api_all.idl
+++-@@ -1296,6 +1296,7 @@ IA2_STATE_PINNED =					0x80000
++++@@ -1324,7 +1324,8 @@ IA2_STATE_PINNED =					0x80000
++++  @section _interfaces Interfaces
+++    IAccessible2\n
+++    IAccessible2_2\n
+++-   IAccessible2_3\n
++++-  IAccessible2_3 [Deprecated]\n
+++++  IAccessible2_3\n
+++ +  IAccessible2_4\n
+++    IAccessibleAction\n
+++    IAccessibleApplication\n
+++    IAccessibleComponent\n
+++-@@ -2104,6 +2105,36 @@ interface IAccessible2_3 : IAccessible2_2
+++-       [out, retval] long *nRanges
++++@@ -2209,6 +2210,58 @@ interface IAccessibleComponent : IUnknown
++++      [out, retval] IA2Color *background
+++      );
+++  }
+++ +
+++ +/**
+++++ * This structure represents a directional range of the content. It is defined
+++++ * by two points in the content, where each one is defined by an accessible
+++++ * object and an offset relative to it. A typical case of a range point is
+++++ * a text accessible and text offset within it.
+++++ *
+++++ * The "anchor" is one point of the range and typically remains constant.
+++++ * The other point is the "active" point, which typically corresponds to
+++++ * the user's focus or point of interest. The user moves the active point to
+++++ * expand or collapse the range. In most cases, anchor is the start of the range
+++++ * and active is the end. However, in case of selection, when selecting
+++++ * backwards (e.g. pressing shift+left arrow in a text field), the start of
+++++ * the range is the active point, as the user moves this to manipulate
+++++ * the selection.
+++++ */
+++++typedef struct IA2Range {
+++++  IUnknown* anchor;
+++++  long anchorOffset;
+++++  IUnknown* active;
+++++  long activeOffset;
+++++} IA2Range;
+++++
+++++/**
+++ + * @brief This interface is an extension of IAccessible2_3 which exposes a
+++ + * single method for setting the current selection given a number of selection
+++ + * ranges.
+++@@ -46,4 +70,124 @@ index 97bf11594646..07121230dc73 100644
+++ +
+++  /*************************************************************************
+++   *
+++-  *  File Name (AccessibleComponent.idl)
++++  *  File Name (AccessibleValue.idl)
++++diff --git a/third_party/iaccessible2/set_selection_ranges.patch b/third_party/iaccessible2/set_selection_ranges.patch
++++index 17229419061ce..754c46e4c2067 100644
++++--- a/third_party/iaccessible2/set_selection_ranges.patch
+++++++ b/third_party/iaccessible2/set_selection_ranges.patch
++++@@ -1,21 +1,45 @@
++++ diff --git a/third_party/iaccessible2/ia2_api_all.idl b/third_party/iaccessible2/ia2_api_all.idl
++++-index 97bf11594646..07121230dc73 100644
+++++index dd7ddf72b5ba1..433965f8a77f6 100644
++++ --- a/third_party/iaccessible2/ia2_api_all.idl
++++ +++ b/third_party/iaccessible2/ia2_api_all.idl
++++-@@ -1296,6 +1296,7 @@ IA2_STATE_PINNED =					0x80000
+++++@@ -1324,7 +1324,8 @@ IA2_STATE_PINNED =					0x80000
+++++  @section _interfaces Interfaces
++++    IAccessible2\n
++++    IAccessible2_2\n
++++-   IAccessible2_3\n
+++++-  IAccessible2_3 [Deprecated]\n
++++++  IAccessible2_3
++++ +  IAccessible2_4\n
++++    IAccessibleAction\n
++++    IAccessibleApplication\n
++++    IAccessibleComponent\n
++++-@@ -2104,6 +2105,36 @@ interface IAccessible2_3 : IAccessible2_2
++++-       [out, retval] long *nRanges
+++++@@ -2209,6 +2210,58 @@ interface IAccessibleComponent : IUnknown
+++++      [out, retval] IA2Color *background
++++      );
++++  }
++++ +
++++ +/**
++++++ * This structure represents a directional range of the content. It is defined
++++++ * by two points in the content, where each one is defined by an accessible
++++++ * object and an offset relative to it. A typical case of a range point is
++++++ * a text accessible and text offset within it.
++++++ *
++++++ * The "anchor" is one point of the range and typically remains constant.
++++++ * The other point is the "active" point, which typically corresponds to
++++++ * the user's focus or point of interest. The user moves the active point to
++++++ * expand or collapse the range. In most cases, anchor is the start of the range
++++++ * and active is the end. However, in case of selection, when selecting
++++++ * backwards (e.g. pressing shift+left arrow in a text field), the start of
++++++ * the range is the active point, as the user moves this to manipulate
++++++ * the selection.
++++++ */
++++++typedef struct IA2Range {
++++++  IUnknown* anchor;
++++++  long anchorOffset;
++++++  IUnknown* active;
++++++  long activeOffset;
++++++} IA2Range;
++++++
++++++/**
++++ + * @brief This interface is an extension of IAccessible2_3 which exposes a
++++ + * single method for setting the current selection given a number of selection
++++ + * ranges.
++++@@ -46,4 +70,63 @@ index 97bf11594646..07121230dc73 100644
++++ +
++++  /*************************************************************************
++++   *
++++-  *  File Name (AccessibleComponent.idl)
+++++  *  File Name (AccessibleValue.idl)
+++++diff --git a/third_party/iaccessible2/set_selection_ranges.patch b/third_party/iaccessible2/set_selection_ranges.patch
+++++index 17229419061ce..3e2081010d688 100644
+++++--- a/third_party/iaccessible2/set_selection_ranges.patch
++++++++ b/third_party/iaccessible2/set_selection_ranges.patch
+++++@@ -1,21 +1,43 @@
+++++ diff --git a/third_party/iaccessible2/ia2_api_all.idl b/third_party/iaccessible2/ia2_api_all.idl
+++++-index 97bf11594646..07121230dc73 100644
++++++index dd7ddf72b5ba1..bb6602208e69b 100644
+++++ --- a/third_party/iaccessible2/ia2_api_all.idl
+++++ +++ b/third_party/iaccessible2/ia2_api_all.idl
+++++-@@ -1296,6 +1296,7 @@ IA2_STATE_PINNED =					0x80000
++++++@@ -1325,6 +1325,7 @@ IA2_STATE_PINNED =					0x80000
+++++    IAccessible2\n
+++++    IAccessible2_2\n
+++++-   IAccessible2_3\n
++++++   IAccessible2_3 [Deprecated]\n
+++++ +  IAccessible2_4\n
+++++    IAccessibleAction\n
+++++    IAccessibleApplication\n
+++++    IAccessibleComponent\n
+++++-@@ -2104,6 +2105,36 @@ interface IAccessible2_3 : IAccessible2_2
+++++-       [out, retval] long *nRanges
++++++@@ -2209,6 +2210,58 @@ interface IAccessibleComponent : IUnknown
++++++      [out, retval] IA2Color *background
+++++      );
+++++  }
+++++ +
+++++ +/**
+++++++ * This structure represents a directional range of the content. It is defined
+++++++ * by two points in the content, where each one is defined by an accessible
+++++++ * object and an offset relative to it. A typical case of a range point is
+++++++ * a text accessible and text offset within it.
+++++++ *
+++++++ * The "anchor" is one point of the range and typically remains constant.
+++++++ * The other point is the "active" point, which typically corresponds to
+++++++ * the user's focus or point of interest. The user moves the active point to
+++++++ * expand or collapse the range. In most cases, anchor is the start of the range
+++++++ * and active is the end. However, in case of selection, when selecting
+++++++ * backwards (e.g. pressing shift+left arrow in a text field), the start of
+++++++ * the range is the active point, as the user moves this to manipulate
+++++++ * the selection.
+++++++ */
+++++++typedef struct IA2Range {
+++++++  IUnknown* anchor;
+++++++  long anchorOffset;
+++++++  IUnknown* active;
+++++++  long activeOffset;
+++++++} IA2Range;
+++++++
+++++++/**
+++++ + * @brief This interface is an extension of IAccessible2_3 which exposes a
+++++ + * single method for setting the current selection given a number of selection
+++++ + * ranges.
+++++@@ -46,4 +68,4 @@ index 97bf11594646..07121230dc73 100644
+++++ +
+++++  /*************************************************************************
+++++   *
+++++-  *  File Name (AccessibleComponent.idl)
++++++  *  File Name (AccessibleValue.idl)

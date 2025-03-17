@@ -102,6 +102,7 @@ class TestingApplicationContext : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+  auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   optimization_guide::OnDeviceModelServiceController*
   GetOnDeviceModelServiceController(
@@ -138,6 +139,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
+  std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_

@@ -88,14 +88,15 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is the delegate to which WebViewProxy forwards all API calls.
  *
- * Most of the actual functionality is implemented by AwContents (or WebContents within
- * it). This class also contains WebView-specific APIs that require the creation of other
- * adapters (otherwise org.chromium.content would depend on the webview.chromium package)
- * and a small set of no-op deprecated APIs.
+ * <p>Most of the actual functionality is implemented by AwContents (or WebContents within it). This
+ * class also contains WebView-specific APIs that require the creation of other adapters (otherwise
+ * org.chromium.content would depend on the webview.chromium package) and a small set of no-op
+ * deprecated APIs.
  */
 @SuppressWarnings("deprecation")
 @Lifetime.WebView
@@ -135,6 +136,8 @@ class WebViewChromium
     static void enableSlowWholeDocumentDraw() {
         sRecordWholeDocumentEnabledByApi = true;
     }
+
+    private static final AtomicBoolean sFirstWebViewInstanceCreated = new AtomicBoolean();
 
     // Used to record the UMA histogram WebView.WebViewApiCall. Since these values are persisted to
     // logs, they should never be renumbered or reused.
@@ -704,7 +707,8 @@ class WebViewChromium
     public void init(
             final Map<String, Object> javaScriptInterfaces, final boolean privateBrowsing) {
         long startTime = SystemClock.uptimeMillis();
-        boolean isFirstWebViewInit = !mFactory.isChromiumInitialized();
+        boolean wasChromiumAlreadyInitialized = mFactory.isChromiumInitialized();
+        boolean isFirstWebViewInstance = !sFirstWebViewInstanceCreated.getAndSet(true);
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
                 mFactory.startYourEngines(true);
@@ -750,6 +754,10 @@ class WebViewChromium
                 mFactory.startYourEngines(true);
             }
 
+            // At this point it is guaranteed that global Chromium init has completed on the UI
+            // thread, as all paths have called startYourEngines. However, this function itself is
+            // *not* necessarily running on the UI thread due to the pre-JBMR2 case above.
+
             final boolean isAccessFromFileUrlsGrantedByDefault =
                     mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
             final boolean areLegacyQuirksEnabled =
@@ -794,6 +802,9 @@ class WebViewChromium
 
             mSharedWebViewChromium.init(mContentsClientAdapter);
 
+            // In the normal case where we are currently on the UI thread, this will run initForReal
+            // synchronously. For pre-JBMR2 apps we might not be on the UI thread, in which case it
+            // will be posted and we do not wait for it.
             mFactory.addTask(
                     new Runnable() {
                         @Override
@@ -811,31 +822,42 @@ class WebViewChromium
                     });
         }
 
-        // If initialization hasn't been deferred, record a startup time histogram entry
-        // and trace event(s).
-        if (mFactory.isChromiumInitialized()) {
-            if (isFirstWebViewInit) {
+        long elapsedTime = SystemClock.uptimeMillis() - startTime;
+        if (isFirstWebViewInstance) {
+            if (wasChromiumAlreadyInitialized) {
+                // This is the first WebView created, but global Chromium initialization happened
+                // before the constructor was called.
                 RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
-                        SystemClock.uptimeMillis() - startTime);
-
-                TraceEvent.webViewStartupTotalFactoryInit(
-                        mFactory.getInitInfo().mTotalFactoryInitStartTime,
-                        mFactory.getInitInfo().mTotalFactoryInitDuration);
-
-                TraceEvent.webViewStartupStage1(
-                        mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
-
-                TraceEvent.webViewStartupStage2(
-                        startTime, SystemClock.uptimeMillis() - startTime, true);
+                        "Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup",
+                        elapsedTime);
+                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, false);
             } else {
+                // This is the first WebView created, and we blocked running global Chromium
+                // initialization during the constructor.
                 RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
-                        SystemClock.uptimeMillis() - startTime);
-
-                TraceEvent.webViewStartupStage2(
-                        startTime, SystemClock.uptimeMillis() - startTime, false);
+                        "Android.WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup",
+                        elapsedTime);
+                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, true);
             }
+        } else {
+            // This is not the first WebView created; global Chromium initialization must have
+            // happened beforehand.
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.NotFirstInstance", elapsedTime);
+            TraceEvent.webViewStartupNotFirstInstance(startTime, elapsedTime);
+        }
+
+        // Record "legacy" metrics. These have suboptimal definitions because they don't allow for
+        // the case where global Chromium initialization happened before the first WebView instance
+        // was constructed, and just use "cold/warm" to refer to whether global Chromium
+        // initialization had to be run during the constructor or not, giving the "cold" case a
+        // bimodal distribution.
+        if (!wasChromiumAlreadyInitialized) {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold", elapsedTime);
+        } else {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm", elapsedTime);
         }
     }
 

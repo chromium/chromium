@@ -20,7 +20,17 @@ public class TabGroupUtil {
      *
      * <p>English-specific, for testing.
      */
-    public static String getSnackbarMessageString(int numberOfTabs) {
+    public static String getUndoGroupTabsSnackbarMessageString(int numberOfTabs) {
         return getNumberOfTabsString(numberOfTabs) + " grouped";
+    }
+
+    /**
+     * Returns the message shown on the snackbar when tab groups get closed (hidden). This assumes
+     * tab group sync is enabled.
+     *
+     * <p>English-specific, for testing.
+     */
+    public static String getUndoCloseGroupSnackbarMessageString(String groupTitle) {
+        return groupTitle + " tab group closed and saved";
     }
 }

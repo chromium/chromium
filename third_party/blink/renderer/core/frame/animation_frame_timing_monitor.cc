@@ -647,6 +647,13 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
       .property_like_name = property_like_name,
       .source_location = {.url = location->Url(),
                           .char_position = location->CharPosition()}};
+
+  if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
+    pending_script_info_->source_location.line_number =
+        location->LineNumber() + 1;
+    pending_script_info_->source_location.column_number =
+        location->ColumnNumber() + 1;
+  }
 }
 
 void AnimationFrameTimingMonitor::Will(
@@ -664,7 +671,10 @@ void AnimationFrameTimingMonitor::Will(
                           ? ScriptTimingInfo::InvokerType::kModuleScript
                           : ScriptTimingInfo::InvokerType::kClassicScript,
       .start_time = probe_data.CaptureStartTime(),
-      .source_location = {.url = url, .char_position = 0}};
+      .source_location = {.url = url,
+                          .char_position = 0,
+                          .line_number = 0,
+                          .column_number = 0}};
   if (probe_data.sanitize) {
     pending_script_info_->execution_start_time =
         pending_script_info_->start_time;
@@ -729,6 +739,11 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
   source_location.function_name =
       ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName());
   source_location.char_position = function->GetScriptStartPosition();
+  if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
+    v8::Location location = function->GetScriptLocation();
+    source_location.line_number = location.GetLineNumber() + 1;
+    source_location.column_number = location.GetColumnNumber() + 1;
+  }
   return source_location;
 }
 
@@ -750,6 +765,13 @@ void AnimationFrameTimingMonitor::Will(
           probe_data.script_state.GetIsolate(),
           probe_data.callback ? probe_data.callback->CallbackObject()
                               : probe_data.function)};
+}
+
+void AnimationFrameTimingMonitor::Did(const probe::FrameRelatedTask& probe) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(probe.context)) {
+    OnTaskCompleted(probe.CaptureStartTime(), probe.CaptureEndTime(),
+                    window->GetFrame());
+  }
 }
 
 void AnimationFrameTimingMonitor::Will(

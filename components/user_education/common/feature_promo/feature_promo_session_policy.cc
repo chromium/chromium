@@ -45,6 +45,7 @@ FeaturePromoPriorityProvider::GetPromoPriorityInfo(
     case FeaturePromoSpecification::PromoType::kSnooze:
     case FeaturePromoSpecification::PromoType::kTutorial:
     case FeaturePromoSpecification::PromoType::kCustomAction:
+    case FeaturePromoSpecification::PromoType::kCustomUi:
       promo_info.weight = PromoWeight::kHeavy;
       break;
     case FeaturePromoSpecification::PromoType::kUnspecified:

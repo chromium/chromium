@@ -44,6 +44,7 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
 FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
     SchedulingAffectingFeatureHandle(SchedulingAffectingFeatureHandle&& other)
     : feature_(other.feature_),
+      policy_(std::move(other.policy_)),
       feature_and_js_location_(other.feature_and_js_location_),
       scheduler_(std::move(other.scheduler_)) {
   other.scheduler_ = nullptr;
@@ -102,10 +103,9 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy::Feature feature,
     SchedulingPolicy policy) {
   DCHECK(scheduler::IsFeatureSticky(feature));
-  if (v8::Isolate::TryGetCurrent()) {
-    // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
-    // is running.
-    OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
+  auto source_location = CaptureSourceLocation();
+  if (source_location && !source_location->IsUnknown()) {
+    OnStartedUsingStickyFeature(feature, policy, std::move(source_location));
   } else {
     OnStartedUsingStickyFeature(feature, policy, nullptr);
   }

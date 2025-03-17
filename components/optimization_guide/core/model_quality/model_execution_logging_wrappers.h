@@ -67,8 +67,8 @@ void ExecuteModelWithLogging(
                   ->set_model_execution_error_enum(
                       static_cast<uint32_t>(result.response.error().error()));
             }
-            // Drop the ModelQualityLogEntry from the result. This will be
-            // removed entirely as part of bug 372535824. Instead, the caller
+            // Drop the ModelQualityLogEntry from the result.
+            // TODO: crbug.com/372535824 - Remove entirely. Instead, the caller
             // is responsible for creating a new ModelQualityLogEntry and
             // storing the ModelExecutionProto in it.
             ModelQualityLogEntry::Drop(std::move(log_entry));
@@ -133,11 +133,6 @@ void ExecuteModelSessionWithLogging(
                   ->set_model_execution_error_enum(
                       static_cast<uint32_t>(result.response.error().error()));
             }
-            // Drop the ModelQualityLogEntry from the result. This will be
-            // removed entirely as part of bug 372535824. Instead, the caller
-            // is responsible for creating a new ModelQualityLogEntry and
-            // storing the ModelExecutionProto in it.
-            ModelQualityLogEntry::Drop(std::move(result.log_entry));
             // Copy the model_execution_proto so we can pass in the ownership to
             // the callback.
             auto model_execution_proto_copy =

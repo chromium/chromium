@@ -44,7 +44,7 @@ bool Presenter::ScheduleCALayer(const ui::CARendererLayerParams& params) {
   return false;
 }
 
-void Presenter::ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) {
+void Presenter::ScheduleDCLayers(std::vector<DCLayerOverlayParams> overlays) {
   NOTIMPLEMENTED();
 }
 

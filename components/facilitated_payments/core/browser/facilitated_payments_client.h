@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -18,6 +18,7 @@
 namespace autofill {
 class BankAccount;
 class PaymentsDataManager;
+class StrikeDatabase;
 }  // namespace autofill
 
 namespace payments::facilitated {
@@ -46,23 +47,24 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Returns true if the device is being used in the landscape mode.
   virtual bool IsInLandscapeMode() = 0;
 
+  // Returns true if the device is a foldable device.
+  virtual bool IsFoldable() = 0;
+
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
-  // If the UI was shown, `on_user_decision_callback` is used to inform the
-  // result of user's selection: a boolean for acceptance or cancellation and
-  // the selected instrument ID in case of acceptance. `pix_account_suggestions`
-  // is the list of PIX accounts to be shown to the user for payment.
+  // `bank_account_suggestions` is the list of PIX accounts to be shown to the
+  // user for payment. `on_payment_account_selected` is the callback called with
+  // the instrument id of the bank account selected by the user for payment.
   virtual void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Shows the user's eWallet accounts from their Google Wallet, and prompts to
-  // pay. If the UI was shown, `on_user_decision_callback` is used to inform the
-  // result of user's selection: a boolean for acceptance or cancellation and
-  // the selected instrument ID in case of acceptance. `ewallet_suggestions` is
-  // the list of eWallets to be shown to the user for payment.
+  // pay. `ewallet_suggestions` is the list of eWallets to be shown to the user
+  // for payment. `on_payment_account_selected` is the callback called with the
+  // instrument id of the eWallet account selected by the user for payment.
   virtual void ShowEwalletPaymentPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.
@@ -78,6 +80,10 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Enables features to pass a callback to listen to UI events.
   virtual void SetUiEventListener(
       base::RepeatingCallback<void(UiEvent)> ui_event_listener);
+
+  // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
+  // returned so check before use.
+  virtual autofill::StrikeDatabase* GetStrikeDatabase() = 0;
 };
 
 }  // namespace payments::facilitated

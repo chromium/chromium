@@ -8,8 +8,6 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
-#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_configuration.h"
@@ -40,7 +38,6 @@ ShareKitServiceFactory::ShareKitServiceFactory()
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
-  DependsOn(IOSChromeFaviconLoaderFactory::GetInstance());
 }
 
 ShareKitServiceFactory::~ShareKitServiceFactory() = default;
@@ -68,15 +65,10 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
     return share_kit_service;
   }
 
-  FaviconLoader* favicon_loader =
-      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
-
   std::unique_ptr<ShareKitServiceConfiguration> configuration =
       std::make_unique<ShareKitServiceConfiguration>(
           IdentityManagerFactory::GetForProfile(profile),
           AuthenticationServiceFactory::GetForProfile(profile),
-          data_sharing_service, collaboration_service, sync_service,
-          std::make_unique<TabGroupFaviconsGridConfigurator>(sync_service,
-                                                             favicon_loader));
+          data_sharing_service, collaboration_service, sync_service);
   return ios::provider::CreateShareKitService(std::move(configuration));
 }

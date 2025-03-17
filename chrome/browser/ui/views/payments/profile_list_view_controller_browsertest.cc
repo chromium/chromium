@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
   autofill::AutofillProfile partial = CreateProfileWithPartialAddress();
   complete.FinalizeAfterImport();
   partial.FinalizeAfterImport();
-  partial.set_use_count(1000);
+  partial.usage_history().set_use_count(1000);
 
   AddAutofillProfile(complete);
   AddAutofillProfile(partial);

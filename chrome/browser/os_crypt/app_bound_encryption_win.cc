@@ -33,8 +33,6 @@ namespace os_crypt {
 
 namespace {
 
-bool g_non_standard_user_data_dir_supported_for_testing = false;
-
 ProtectionLevel AddFlags(ProtectionLevel protection_level,
                          elevation_service::EncryptFlags flags) {
   // Check protection_level fits into 8-bits.
@@ -58,13 +56,25 @@ ProtectionLevel AddFlags(ProtectionLevel protection_level,
 namespace features {
 BASE_FEATURE(kAppBoundDataReencrypt,
              "AppBoundDataReencrypt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
   // Must be a system install.
   if (!install_static::IsSystemInstall()) {
     return SupportLevel::kNotSystemLevel;
+  }
+
+  const auto maybe_using_default_user_data_dir =
+      chrome::IsUsingDefaultDataDirectory();
+
+  if (!maybe_using_default_user_data_dir.has_value()) {
+    return SupportLevel::kApiFailed;
+  }
+
+  // User data dir can be overridden by policy or by a command line option.
+  if (!maybe_using_default_user_data_dir.value()) {
+    return SupportLevel::kNotUsingDefaultUserDataDir;
   }
 
   // Policy allows disabling App-Bound encryption. Note, this will not disable
@@ -103,19 +113,6 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
   // data to the local machine.
   if (user_data_dir.IsNetwork()) {
     return SupportLevel::kUserDataDirNotLocalDisk;
-  }
-
-  base::FilePath default_user_data_dir;
-  if (!chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
-    return SupportLevel::kApiFailed;
-  }
-
-  // Overridden by policy or by a command line option. This might mean that the
-  // user data dir could move in future, so disable App-Bound as a matter of
-  // caution.
-  if (user_data_dir != default_user_data_dir &&
-      !g_non_standard_user_data_dir_supported_for_testing) {
-    return SupportLevel::kNotUsingDefaultUserDataDir;
   }
 
   std::string image_path(MAX_PATH, L'\0');
@@ -256,10 +253,6 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
 
   last_error = ERROR_SUCCESS;
   return S_OK;
-}
-
-void SetNonStandardUserDataDirSupportedForTesting(bool supported) {
-  g_non_standard_user_data_dir_supported_for_testing = supported;
 }
 
 }  // namespace os_crypt

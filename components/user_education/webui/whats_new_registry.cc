@@ -133,11 +133,11 @@ const std::vector<std::string_view> WhatsNewRegistry::GetActiveFeatureNames()
   const auto current_edition_name =
       storage_service_->FindEditionForCurrentVersion();
   if (current_edition_name.has_value()) {
-    // Request this edition again.
+    // An edition is tied to this milestone. Request this edition again.
     feature_names.emplace_back(*current_edition_name);
-  } else {
-    // Only request other unused editions if there was not one shown during
-    // this version.
+  } else if (!storage_service_->WasVersionPageUsedForCurrentMilestone()) {
+    // Only request other unused editions if no other page was shown
+    // during this milestone (version page or other edition page).
     for (const auto& [key, edition] : editions_) {
       if (edition.IsFeatureEnabled() &&
           feature_names.size() < kRequestEntropyLimit &&
@@ -252,6 +252,10 @@ void WhatsNewRegistry::SetEditionUsed(std::string edition_name) const {
   if (found_edition != editions_.end()) {
     storage_service_->SetEditionUsed(edition_name);
   }
+}
+
+void WhatsNewRegistry::SetVersionUsed() const {
+  storage_service_->SetVersionUsed();
 }
 
 void WhatsNewRegistry::ClearUnregisteredModules() const {

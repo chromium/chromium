@@ -221,8 +221,9 @@ constexpr CGFloat preferredCornerRadius = 20;
   // block was created and its invocation. So check whether
   // the WebState identifier is the same.
   NSString* webStateIdentifier = webState->GetStableIdentifier();
-  if (![webStateIdentifier isEqualToString:identifier])
+  if (![webStateIdentifier isEqualToString:identifier]) {
     return;
+  }
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   web::WebFrame* mainFrame =

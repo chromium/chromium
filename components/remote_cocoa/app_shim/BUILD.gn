@@ -78,6 +78,7 @@ component("app_shim") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//ui/accelerated_widget_mac",
+    "//ui/accessibility",
     "//ui/base",
     "//ui/base/dragdrop:types",
     "//ui/base/emoji",

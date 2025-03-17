@@ -1,11 +1,9 @@
 {
   "name": "Shared Module Import Locale Test",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1.0",
-  "app": {
-    "background": {
-      "page": "main.html"
-    }
+  "background": {
+    "service_worker": "check.js"
   },
   "default_locale": "en",
   "import": [{

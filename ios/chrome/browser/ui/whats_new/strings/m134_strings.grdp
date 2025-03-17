@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+ <!-- Milestone specific strings -->
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_TITLE" desc="LensSearchWhatYouSee Title displayed in What's New. [iOS only]">
+        Search what you see
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_SUBTITLE" desc="LensSearchWhatYouSee Subtitle displayed in What's New. [iOS only]">
+        Draw, highlight, or tap to select anything you want to search and get results without leaving your tab
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of LensSearchWhatYouSee in What's New. [iOS only]">
+        Go to any page you like
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of LensSearchWhatYouSee in What's New. [iOS only]">
+        In the address bar, tap on the Google Lens camera icon
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of LensSearchWhatYouSee in What's New. [iOS only]">
+        Draw, highlight or tap anything on your screen to search
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSTRANSLATE_TITLE" desc="LensTranslate Title displayed in What's New. [iOS only]">
+        Translate text in images
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSTRANSLATE_SUBTITLE" desc="LensTranslate Subtitle displayed in What's New. [iOS only]">
+        Highlight words in a picture or video to translate them
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSTRANSLATE_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of LensTranslate in What's New. [iOS only]">
+        Go to any page you like
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSTRANSLATE_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of LensTranslate in What's New. [iOS only]">
+        In the address bar, tap on the Google Lens camera icon
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSTRANSLATE_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of LensTranslate in What's New. [iOS only]">
+        Highlight text you want to translate
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSTRANSLATE_INSTRUCTIONS_STEP_4" desc="Text of the row indicating step 4 of LensTranslate in What's New. [iOS only]">
+        Select Google Translate in the menu
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSQUESTION_TITLE" desc="LensQuestion Title displayed in What's New. [iOS only]">
+        Add text to your visual search
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSQUESTION_SUBTITLE" desc="LensQuestion Subtitle displayed in What's New. [iOS only]">
+        Ask questions or refine your search to explore more options
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSQUESTION_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of LensQuestion in What's New. [iOS only]">
+        Go to any page you like
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSQUESTION_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of LensQuestion in What's New. [iOS only]">
+        In the address bar, tap on the Google Lens camera icon
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSQUESTION_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of LensQuestion in What's New. [iOS only]">
+        Draw, highlight or tap anything on your screen to search
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSQUESTION_INSTRUCTIONS_STEP_4" desc="Text of the row indicating step 4 of LensQuestion in What's New. [iOS only]">
+        Add a question or more search terms in the search box to explore more options
+</message>
+</grit-part>

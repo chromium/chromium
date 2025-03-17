@@ -12,6 +12,48 @@
       {
         "policies": {
           "ExtensionAllowedTypes": [
+            "extension"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_types": {
+            "value": [
+              1
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionAllowedTypes": [
+            "theme"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_types": {
+            "value": [
+              2
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionAllowedTypes": [
+            "user_script"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_types": {
+            "value": [
+              3
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionAllowedTypes": [
             "hosted_app"
           ]
         },
@@ -19,6 +61,48 @@
           "extensions.allowed_types": {
             "value": [
               4
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionAllowedTypes": [
+            "legacy_packaged_app"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_types": {
+            "value": [
+              5
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionAllowedTypes": [
+            "platform_app"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_types": {
+            "value": [
+              6
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionAllowedTypes": [
+            "chromeos_system_extension"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_types": {
+            "value": [
+              9
             ]
           }
         }

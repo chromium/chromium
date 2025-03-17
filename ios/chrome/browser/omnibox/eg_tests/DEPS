@@ -1,0 +1,6 @@
+include_rules = [
+  "+ios/chrome/browser/autocomplete/model",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/toolbar/ui_bundled/public",
+]

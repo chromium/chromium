@@ -33,6 +33,8 @@ clipboard-read
 clipboard-write
 compute-pressure
 cross-origin-isolated
+deferred-fetch
+deferred-fetch-minimal
 display-capture
 encrypted-media
 fullscreen

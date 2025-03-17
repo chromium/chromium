@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Az érintéssel kitöltendő hitelesítő adatok listája teljes magasságban megnyitva.</translation>
 <translation id="5591247451101092906">Mentett jelszót vagy azonosítókulcsot szeretne használni?</translation>
 <translation id="5624120631404540903">Jelszavak kezelése</translation>
+<translation id="592182999816790476"><ph name="USERNAME" /> jelszava, amely a(z) <ph name="WEBSITE" /> webhelyhez van mentve</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> azonosítókulcsa, használja a képernyőzárat</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Új jelszó ehhez a webhelyhez}other{Új jelszavak ehhez a webhelyhez}}</translation>
 <translation id="7286867818472074330">Azonosítókulcs kiválasztása</translation>

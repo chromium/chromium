@@ -197,9 +197,9 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return;
     }
 
-    this.selectedMouse!.settings!.swapRight = this.primaryRightPref_.value;
+    this.selectedMouse.settings.swapRight = this.primaryRightPref_.value;
     this.inputDeviceSettingsProvider_.setMouseSettings(
-        this.selectedMouse!.id, this.selectedMouse!.settings);
+        this.selectedMouse.id, this.selectedMouse.settings);
   }
 
   private getDescription_(): string {
@@ -207,7 +207,7 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return '';
     }
     return this.i18n(
-        'customizeButtonSubpageDescription', this.selectedMouse!.name);
+        'customizeButtonSubpageDescription', this.selectedMouse.name);
   }
 
   private getcustomizeMouseButtonsNudgeHeader_(): string {

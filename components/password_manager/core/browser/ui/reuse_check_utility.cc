@@ -64,7 +64,7 @@ bool AllUsernameAreEquivalent(
 }
 
 bool HasOnlyAndroidApps(const CredentialUIEntry* credential) {
-  return base::ranges::all_of(credential->facets, [](const auto& facet) {
+  return std::ranges::all_of(credential->facets, [](const auto& facet) {
     return affiliations::IsValidAndroidFacetURI(facet.signon_realm);
   });
 }

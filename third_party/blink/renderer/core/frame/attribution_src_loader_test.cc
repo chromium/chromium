@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -31,11 +32,11 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -245,7 +246,9 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
       mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>
           data_host,
       attribution_reporting::mojom::RegistrationEligibility eligibility,
-      bool is_for_background_requests) override {
+      bool is_for_background_requests,
+      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+          reporting_origins) override {
     mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
   }
 
@@ -629,50 +632,7 @@ TEST_F(AttributionSrcLoaderTest, HeadersSize_RecordsMetrics) {
                                 register_source_json.length(), 1);
 }
 
-class AttributionSrcLoaderCrossAppWebRuntimeDisabledTest
-    : public AttributionSrcLoaderTest {
- public:
-  AttributionSrcLoaderCrossAppWebRuntimeDisabledTest() {
-    WebRuntimeFeatures::EnableFeatureFromString(
-        /*name=*/"AttributionReportingCrossAppWeb", /*enable=*/false);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      network::features::kAttributionReportingCrossAppWeb};
-};
-
-TEST_F(AttributionSrcLoaderCrossAppWebRuntimeDisabledTest,
-       OsTriggerNotRegistered) {
-  GetPage().SetAttributionSupport(AttributionSupport::kWebAndOs);
-
-  KURL test_url = ToKURL("https://example1.com/foo.html");
-
-  ResourceRequest request(test_url);
-  ResourceResponse response(test_url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterOSTrigger,
-      AtomicString(R"("https://r.test/x")"));
-
-  EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
-      request, response));
-}
-
-class AttributionSrcLoaderCrossAppWebEnabledTest
-    : public AttributionSrcLoaderTest {
- public:
-  AttributionSrcLoaderCrossAppWebEnabledTest() {
-    WebRuntimeFeatures::EnableFeatureFromString(
-        /*name=*/"AttributionReportingCrossAppWeb", /*enable=*/true);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      network::features::kAttributionReportingCrossAppWeb};
-};
-
-TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
+TEST_F(AttributionSrcLoaderTest, SupportHeader_Register) {
   auto attribution_support = AttributionSupport::kWebAndOs;
 
   GetPage().SetAttributionSupport(attribution_support);
@@ -689,8 +649,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
             attribution_support);
 }
 
-TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
-       SupportHeader_RegisterNavigation) {
+TEST_F(AttributionSrcLoaderTest, SupportHeader_RegisterNavigation) {
   auto attribution_support = AttributionSupport::kWebAndOs;
 
   GetPage().SetAttributionSupport(attribution_support);
@@ -710,7 +669,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
             attribution_support);
 }
 
-TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
+TEST_F(AttributionSrcLoaderTest, RegisterOsTrigger) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request =
@@ -737,8 +696,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
                       .url = GURL("https://r.test/x")})));
 }
 
-TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
-       HeadersSize_OsMetricsRecorded) {
+TEST_F(AttributionSrcLoaderTest, HeadersSize_OsMetricsRecorded) {
   base::HistogramTester histograms;
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
@@ -800,7 +758,7 @@ TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
 
     EXPECT_EQ(attribution_src_loader_->MaybeRegisterAttributionHeaders(
                   request, response),
-              is_keep_alive ? false : true);
+              !is_keep_alive);
   }
 }
 
@@ -942,7 +900,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
 };
 
 class AttributionSrcLoaderPreferredPlatformEnabledTest
-    : public AttributionSrcLoaderCrossAppWebEnabledTest,
+    : public AttributionSrcLoaderTest,
       public ::testing::WithParamInterface<PreferredPlatformTestCase> {};
 
 class AttributionSrcLoaderPreferredPlatformSourceTest
@@ -1132,8 +1090,7 @@ TEST_F(AttributionSrcLoaderTest,
   }
 }
 
-TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
-       InvalidOsHeader_ErrorReported) {
+TEST_F(AttributionSrcLoaderTest, InvalidOsHeader_ErrorReported) {
   const struct {
     AtomicString header_name;
     attribution_reporting::RegistrationHeaderErrorDetails error_details;

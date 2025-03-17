@@ -25,10 +25,7 @@ struct Environment {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
-  for (const bool cross_app_web_enabled : {false, true}) {
-    std::ignore = attribution_reporting::RegistrationInfo::ParseInfo(
-        std::string_view(reinterpret_cast<const char*>(data), size),
-        cross_app_web_enabled);
-  }
+  std::ignore = attribution_reporting::RegistrationInfo::ParseInfo(
+      std::string_view(reinterpret_cast<const char*>(data), size));
   return 0;
 }

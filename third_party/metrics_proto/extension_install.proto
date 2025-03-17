@@ -64,9 +64,17 @@ message ExtensionInstallProto {
   // one type of action.
   enum ActionType {
     NO_ACTION = 0;
+
     BROWSER_ACTION = 1;
+
     PAGE_ACTION = 2;
-    SYSTEM_INDICATOR = 3;
+
+    // Deprecated, this API was removed in M134.
+    SYSTEM_INDICATOR = 3 [deprecated = true];
+
+    // In manifest version 3, PAGE_ACTION and BROWSER_ACTION are replaced with a
+    // single ACTION type.
+    ACTION = 4;
   }
 
   optional ActionType action_type = 4;
@@ -171,6 +179,12 @@ message ExtensionInstallProto {
     // example, an unpacked extension) while the developer mode in
     // chrome://extensions is OFF.
     UNSUPPORTED_DEVELOPER_EXTENSION = 21;
+
+    // Disabled because of an unknown reason. This can happen when newer
+    // versions of the browser sync reasons which are not known to the current
+    // version. We never actually write this to prefs. This is used to indicate
+    // (at runtime) that unknown reasons are present in the prefs.
+    UNKNOWN = 22;
   }
 
   // Any DisableReasons in effect for the extension. An empty list means the

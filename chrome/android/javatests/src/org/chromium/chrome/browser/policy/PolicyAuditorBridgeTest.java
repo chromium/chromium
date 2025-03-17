@@ -27,6 +27,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
@@ -109,6 +110,7 @@ public class PolicyAuditorBridgeTest {
                 new WebContentsObserver() {
                     @Override
                     public void didFinishLoadInPrimaryMainFrame(
+                            Page page,
                             GlobalRenderFrameHostId rfhId,
                             GURL url,
                             boolean isKnownValid,
@@ -118,7 +120,7 @@ public class PolicyAuditorBridgeTest {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tab.getWebContents().addObserver(observer);
+                    observer.observe(tab.getWebContents());
                     tab.loadUrl(new LoadUrlParams(invalidUrl));
                 });
 
@@ -127,7 +129,7 @@ public class PolicyAuditorBridgeTest {
         } finally {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        tab.getWebContents().removeObserver(observer);
+                        observer.observe(null);
                     });
         }
 

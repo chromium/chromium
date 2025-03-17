@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsClearPersonalizedDataDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrSettingsPrefs, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsClearPersonalizedDataDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 
@@ -35,7 +36,7 @@ suite('<os-settings-japanese-clear-ime-data-dialog>', () => {
   test(
       'There exists page contents for the clear personalized data page', () => {
         const dialogBody =
-            clearPersonalizedDataPage.shadowRoot!.querySelector<HTMLDivElement>(
+            clearPersonalizedDataPage.shadowRoot!.querySelector<HTMLElement>(
                 '#dialogBody');
         assertTrue(!!dialogBody);
         assertFalse(dialogBody.hidden);

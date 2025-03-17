@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -50,6 +51,13 @@ auto AsView(Matcher matcher) {
       Pointee(matcher));
 }
 
+MATCHER_P(AccessibleNameIs, value, "") {
+  ui::AXNodeData node_data;
+  arg.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  return node_data.GetString16Attribute(ax::mojom::StringAttribute::kName) ==
+         value;
+}
+
 class MockEmojiBarViewDelegate : public QuickInsertEmojiBarViewDelegate {
  public:
   MOCK_METHOD(void,
@@ -70,7 +78,9 @@ TEST_F(QuickInsertEmojiBarViewTest, HasGridRole) {
   MockEmojiBarViewDelegate mock_delegate;
   QuickInsertEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
-  EXPECT_EQ(emoji_bar.GetAccessibleRole(), ax::mojom::Role::kGrid);
+  ui::AXNodeData node_data;
+  emoji_bar.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kGrid);
 }
 
 TEST_F(QuickInsertEmojiBarViewTest, HasAccessibleNameWithGifsEnabled) {
@@ -78,7 +88,9 @@ TEST_F(QuickInsertEmojiBarViewTest, HasAccessibleNameWithGifsEnabled) {
   QuickInsertEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth,
                                     /*is_gifs_enabled=*/true);
 
-  EXPECT_EQ(emoji_bar.GetAccessibleName(),
+  ui::AXNodeData node_data;
+  emoji_bar.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(
                 IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME));
 }
@@ -88,8 +100,10 @@ TEST_F(QuickInsertEmojiBarViewTest, HasAccessibleNameWithGifsDisabled) {
   QuickInsertEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth,
                                     /*is_gifs_enabled=*/false);
 
+  ui::AXNodeData node_data;
+  emoji_bar.GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(
-      emoji_bar.GetAccessibleName(),
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringUTF16(IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
 }
 
@@ -97,9 +111,10 @@ TEST_F(QuickInsertEmojiBarViewTest, HasSingleChildRowRole) {
   MockEmojiBarViewDelegate mock_delegate;
   QuickInsertEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
-  EXPECT_THAT(emoji_bar.children(),
-              ElementsAre(Pointee(Property(&views::View::GetAccessibleRole,
-                                           ax::mojom::Role::kRow))));
+  ui::AXNodeData node_data;
+  emoji_bar.children()[0]->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kRow);
 }
 
 TEST_F(QuickInsertEmojiBarViewTest, CreatesSearchResultItems) {
@@ -146,13 +161,10 @@ TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNamesHaveAccessibleNames) {
        QuickInsertEmojiResult::Symbol(u"♬", u"music"),
        QuickInsertEmojiResult::Emoticon(u"(°□°)", u"surprise")});
 
-  EXPECT_THAT(
-      emoji_bar.GetItemsForTesting(),
-      ElementsAre(
-          Pointee(Property(&views::View::GetAccessibleName, u"happy emoji")),
-          Pointee(Property(&views::View::GetAccessibleName, u"music")),
-          Pointee(Property(&views::View::GetAccessibleName,
-                           u"surprise emoticon"))));
+  EXPECT_THAT(emoji_bar.GetItemsForTesting(),
+              ElementsAre(Pointee(AccessibleNameIs(u"happy emoji")),
+                          Pointee(AccessibleNameIs(u"music")),
+                          Pointee(AccessibleNameIs(u"surprise emoticon"))));
 }
 
 TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNoNameHaveNoTooltips) {
@@ -180,13 +192,10 @@ TEST_F(QuickInsertEmojiBarViewTest,
   emoji_bar.SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊"),
                               QuickInsertEmojiResult::Symbol(u"♬"),
                               QuickInsertEmojiResult::Emoticon(u"(°□°)")});
-
-  EXPECT_THAT(
-      emoji_bar.GetItemsForTesting(),
-      ElementsAre(
-          Pointee(Property(&views::View::GetAccessibleName, u"😊")),
-          Pointee(Property(&views::View::GetAccessibleName, u"♬")),
-          Pointee(Property(&views::View::GetAccessibleName, u"(°□°)"))));
+  EXPECT_THAT(emoji_bar.GetItemsForTesting(),
+              ElementsAre(Pointee(AccessibleNameIs(u"😊")),
+                          Pointee(AccessibleNameIs(u"♬")),
+                          Pointee(AccessibleNameIs(u"(°□°)"))));
 }
 
 TEST_F(QuickInsertEmojiBarViewTest, ClearsSearchResults) {
@@ -240,6 +249,8 @@ TEST_F(QuickInsertEmojiBarViewTest,
 
 TEST_F(QuickInsertEmojiBarViewTest,
        ClickingGifsButtonDoesNotToggleCheckedState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPickerGifs);
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -274,6 +285,27 @@ TEST_F(QuickInsertEmojiBarViewTest, ClickingGifsToggleTogglesCheckedState) {
   ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
+}
+
+TEST_F(QuickInsertEmojiBarViewTest,
+       ClickingGifsToggleDoesNotChangeToggleHeight) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
+  MockEmojiBarViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<QuickInsertEmojiBarView>(
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/true));
+  widget->Show();
+  ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
+  const int untoggled_height = emoji_bar->gifs_button_for_testing()->height();
+  ASSERT_GT(untoggled_height, 0);
+
+  LeftClickOn(*emoji_bar->gifs_button_for_testing());
+  widget->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(emoji_bar->gifs_button_for_testing()->height(), untoggled_height);
 }
 
 TEST_F(QuickInsertEmojiBarViewTest, GifsButtonNotVisibleWhenDisabled) {

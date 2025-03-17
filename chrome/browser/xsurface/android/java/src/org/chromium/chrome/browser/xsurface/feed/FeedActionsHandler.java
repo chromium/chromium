@@ -8,6 +8,8 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 
 import java.lang.annotation.Retention;
@@ -19,6 +21,7 @@ import java.util.Map;
  *
  * Interface to provide chromium calling points for a feed.
  */
+@NullMarked
 public interface FeedActionsHandler {
     String KEY = "FeedActions";
 

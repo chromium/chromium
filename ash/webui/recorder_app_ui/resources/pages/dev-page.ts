@@ -17,6 +17,7 @@ import {ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {LanguageCode} from '../core/soda/language_info.js';
+import {TestHelper} from '../core/test_helper.js';
 
 /**
  * Dev page of Recorder App.
@@ -57,6 +58,10 @@ export class DevPage extends ReactiveLitElement {
 
   private readonly textareaRef = createRef<HTMLTextAreaElement>();
 
+  private readonly inputRef = createRef<HTMLInputElement>();
+
+  private readonly importRecordingDataResult = signal<string>('');
+
   /**
    * Contains model response of the suggested titles.
    */
@@ -80,6 +85,31 @@ export class DevPage extends ReactiveLitElement {
     await this.recordingDataManager.clear();
   }
 
+  private async onRecordingDataImport() {
+    const files = this.inputRef.value?.files ?? null;
+    this.importRecordingDataResult.value = 'Importing…';
+
+    if (files === null) {
+      this.importRecordingDataResult.value = '';
+      return;
+    }
+
+    const importErrors: string[] = [];
+    for (const file of files) {
+      try {
+        const fileContent = await file.text();
+        await TestHelper.importRecordings(JSON.parse(fileContent));
+      } catch (err) {
+        importErrors.push(`Failed to import ${file.name}: ${err}`);
+      }
+    }
+    if (importErrors.length > 0) {
+      this.importRecordingDataResult.value = importErrors.join('\n');
+    } else {
+      this.importRecordingDataResult.value = 'Imported successfully';
+    }
+  }
+
   override render(): RenderResult {
     // TODO(shik): Make this prettier.
     return html`
@@ -98,6 +128,12 @@ export class DevPage extends ReactiveLitElement {
           <md-filled-button @click=${this.onSuggestTitleClick}>
             Suggest Title
           </md-filled-button>
+        </div>
+        <div class="section">
+          <pre>Select RecordingData to import</pre>
+          <input type="file" accept=".json" multiple
+            ${ref(this.inputRef)} @change=${this.onRecordingDataImport}>
+          <p>${this.importRecordingDataResult.value}</p>
         </div>
         ${this.platformHandler.renderDevUi()}
       </div>

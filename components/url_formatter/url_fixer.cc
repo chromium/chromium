@@ -11,13 +11,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/char_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -115,7 +115,7 @@ base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
 void PrepareStringForFileOps(const base::FilePath& text, std::string* output) {
   TrimWhitespace(text.AsUTF16Unsafe(), base::TRIM_ALL, output);
 #if BUILDFLAG(IS_WIN)
-  base::ranges::replace(*output, '/', '\\');
+  std::ranges::replace(*output, '/', '\\');
 #endif
 }
 
@@ -382,7 +382,7 @@ bool HasPort(const std::string& original_text,
   //
   // https://url.spec.whatwg.org/#url-port-string says that "A URL-port string
   // must be zero or more ASCII digits".
-  if (!base::ranges::all_of(port_piece, base::IsAsciiDigit<char>)) {
+  if (!std::ranges::all_of(port_piece, base::IsAsciiDigit<char>)) {
     return false;
   }
 
@@ -563,7 +563,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
 
 }  // namespace
 
-std::string SegmentURL(const std::string& text, url::Parsed* parts) {
+std::string SegmentURL(std::string_view text, url::Parsed* parts) {
   std::string mutable_text(text);
   return SegmentURLInternal(&mutable_text, parts);
 }

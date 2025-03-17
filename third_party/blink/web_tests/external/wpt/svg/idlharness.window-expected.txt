@@ -1,13 +1,9 @@
 This is a testharness.js-based test.
-Found 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 173 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGElement interface: attribute correspondingElement
   assert_true: The prototype object must have a property "correspondingElement" expected true got false
 [FAIL] SVGElement interface: attribute correspondingUseElement
   assert_true: The prototype object must have a property "correspondingUseElement" expected true got false
-[FAIL] SVGGeometryElement interface: operation isPointInFill(optional DOMPointInit)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] SVGGeometryElement interface: operation isPointInStroke(optional DOMPointInit)
-  assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] SVGAnimatedRect interface: objects.svg.viewBox must inherit property "baseVal" with the proper type
   assert_true: wrong type: not a DOMRect expected true got false
 [FAIL] SVGAnimatedRect interface: objects.svg.viewBox must inherit property "animVal" with the proper type
@@ -114,10 +110,6 @@ Found 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: wrong type: not a DOMMatrix expected true got false
 [FAIL] SVGTransformList interface: operation createSVGTransformFromMatrix(optional DOMMatrix2DInit)
   assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] SVGElement interface: objects.path must inherit property "correspondingElement" with the proper type
-  assert_inherits: property "correspondingElement" not found in prototype chain
-[FAIL] SVGElement interface: objects.path must inherit property "correspondingUseElement" with the proper type
-  assert_inherits: property "correspondingUseElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.rect must inherit property "correspondingElement" with the proper type
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.rect must inherit property "correspondingUseElement" with the proper type
@@ -142,8 +134,6 @@ Found 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.polygon must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGTextContentElement interface: operation getCharNumAtPosition(optional DOMPointInit)
-  assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] SVGElement interface: objects.text must inherit property "correspondingElement" with the proper type
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.text must inherit property "correspondingUseElement" with the proper type
@@ -200,10 +190,6 @@ Found 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "download" expected true got false
 [FAIL] SVGAElement interface: attribute ping
   assert_true: The prototype object must have a property "ping" expected true got false
-[FAIL] SVGAElement interface: attribute rel
-  assert_true: The prototype object must have a property "rel" expected true got false
-[FAIL] SVGAElement interface: attribute relList
-  assert_true: The prototype object must have a property "relList" expected true got false
 [FAIL] SVGAElement interface: attribute hreflang
   assert_true: The prototype object must have a property "hreflang" expected true got false
 [FAIL] SVGAElement interface: attribute type
@@ -236,10 +222,6 @@ Found 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "download" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "ping" with the proper type
   assert_inherits: property "ping" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "rel" with the proper type
-  assert_inherits: property "rel" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "relList" with the proper type
-  assert_inherits: property "relList" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "hreflang" with the proper type
   assert_inherits: property "hreflang" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "type" with the proper type

@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "media/base/cdm_factory.h"
@@ -21,8 +21,10 @@
 #include "media/cdm/cdm_context_ref_impl.h"
 #include "third_party/blink/renderer/platform/media/create_cdm_uma_helper.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
 CdmSessionAdapter::CdmSessionAdapter(media::KeySystems* key_systems)
     : key_systems_(key_systems), trace_id_(0) {
   DCHECK(key_systems_);
@@ -48,13 +50,13 @@ void CdmSessionAdapter::CreateCdm(media::CdmFactory* cdm_factory,
 
   cdm_factory->Create(
       cdm_config,
-      base::BindRepeating(&CdmSessionAdapter::OnSessionMessage, weak_this),
-      base::BindRepeating(&CdmSessionAdapter::OnSessionClosed, weak_this),
-      base::BindRepeating(&CdmSessionAdapter::OnSessionKeysChange, weak_this),
-      base::BindRepeating(&CdmSessionAdapter::OnSessionExpirationUpdate,
-                          weak_this),
-      base::BindOnce(&CdmSessionAdapter::OnCdmCreated, this, cdm_config,
-                     start_time));
+      WTF::BindRepeating(&CdmSessionAdapter::OnSessionMessage, weak_this),
+      WTF::BindRepeating(&CdmSessionAdapter::OnSessionClosed, weak_this),
+      WTF::BindRepeating(&CdmSessionAdapter::OnSessionKeysChange, weak_this),
+      WTF::BindRepeating(&CdmSessionAdapter::OnSessionExpirationUpdate,
+                         weak_this),
+      WTF::BindOnce(&CdmSessionAdapter::OnCdmCreated, WTF::RetainedRef(this),
+                    cdm_config, start_time));
 }
 
 void CdmSessionAdapter::SetServerCertificate(
@@ -164,8 +166,8 @@ void CdmSessionAdapter::OnCdmCreated(
   DCHECK(!cdm_);
 
   TRACE_EVENT_NESTABLE_ASYNC_END2("media", "CdmSessionAdapter::CreateCdm",
-                                  trace_id_, "success",
-                                  (cdm ? "true" : "false"), "status", status);
+                                  trace_id_, "success", base::ToString(cdm),
+                                  "status", status);
 
   auto key_system_uma_prefix = GetUMAPrefixForCdm(cdm_config);
   ReportCreateCdmStatusUMA(key_system_uma_prefix, cdm != nullptr, status);

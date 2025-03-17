@@ -20,10 +20,11 @@ found in the LICENSE file.
         style="@style/ToolbarHoverableButton"
         android:src="@drawable/btn_toolbar_home"
         android:contentDescription="@string/accessibility_toolbar_btn_home"
+        android:tooltipText="@string/accessibility_toolbar_btn_home"
         android:visibility="gone"
         app:menuVerticalOverlapAnchor="false"
         app:menuMaxWidth="@dimen/home_button_list_menu_width"
-        app:menuPositionedAtEnd="false"
+        app:menuPositionedAtStart="true"
         app:tint="@color/default_icon_color_tint_list" />
 
     <org.chromium.chrome.browser.omnibox.LocationBarPhone

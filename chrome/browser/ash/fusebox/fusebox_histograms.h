@@ -7,10 +7,6 @@
 
 #include "base/files/file.h"
 
-namespace storage {
-class FileSystemURL;
-}
-
 namespace fusebox {
 
 // A subset of POSIX error codes (like ENOENT) whose numerical values are
@@ -44,35 +40,6 @@ enum class HistogramEnumPosixErrorCode {
 
 HistogramEnumPosixErrorCode GetHistogramEnumPosixErrorCode(
     int posix_error_code);
-
-// A subset of the storage::FileSystemType enum that is defined in
-// storage/common/file_system/file_system_types.h. Importantly, and unlike
-// storage::FileSystemType, its numeric values are stable (and thus suitable
-// for UMA histograms).
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class HistogramEnumFileSystemType {
-  kUnknown = 0,
-  kNonExternal = 1,
-  kOther = 2,
-  kLocal = 3,
-  kLocalMedia = 4,
-  kDeviceMedia = 5,
-  kProvided = 6,
-  kDeviceMediaAsFileStorage = 7,
-  kArcContent = 8,
-  kArcDocumentsProvider = 9,
-  kDriveFs = 10,
-
-  kMaxValue = kDriveFs,
-};
-
-HistogramEnumFileSystemType GetHistogramEnumFileSystemType(
-    const storage::FileSystemURL& fs_url);
-
-const char* NameForHistogramEnumFileSystemType(
-    const HistogramEnumFileSystemType type);
 
 }  // namespace fusebox
 

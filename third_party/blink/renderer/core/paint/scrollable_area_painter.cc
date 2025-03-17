@@ -31,11 +31,8 @@ namespace blink {
 namespace {
 
 bool VisibleToHitTesting(const LayoutBox& box) {
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return ObjectPainter(box).GetHitTestOpaqueness() !=
-           cc::HitTestOpaqueness::kTransparent;
-  }
-  return box.VisibleToHitTesting();
+  return ObjectPainter(box).GetHitTestOpaqueness() !=
+         cc::HitTestOpaqueness::kTransparent;
 }
 
 }  // namespace
@@ -335,8 +332,7 @@ void ScrollableAreaPainter::PaintNativeScrollbar(GraphicsContext& context,
   if (scrollbar.GetTheme().AllowsHitTest()) {
     hit_test_opaqueness =
         ObjectPainter(*scrollable_area_.GetLayoutBox()).GetHitTestOpaqueness();
-    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-        hit_test_opaqueness == cc::HitTestOpaqueness::kMixed) {
+    if (hit_test_opaqueness == cc::HitTestOpaqueness::kMixed) {
       // A scrollbar is always opaque to hit test if it's visible to hit test,
       // which is assumed in cc for non-solid-color scrollbar layers.
       hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;

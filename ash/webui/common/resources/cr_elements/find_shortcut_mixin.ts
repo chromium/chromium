@@ -5,7 +5,8 @@
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {KeyboardShortcutList} from '//resources/js/keyboard_shortcut_list.js';
 import {isMac} from '//resources/js/platform.js';
-import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview Listens for a find keyboard shortcut (i.e. Ctrl/Cmd+f or /)
@@ -50,7 +51,7 @@ export const FindShortcutManager = (() => {
     // should be called is the right before it in |listeners| such that the
     // goes from inner-most to outer-most.
     const index = focusIndex <= 0 ? listeners.length - 1 : focusIndex - 1;
-    if (listeners[index]!.handleFindShortcut(modalContextOpen)) {
+    if (listeners[index].handleFindShortcut(modalContextOpen)) {
       e.preventDefault();
     }
   });

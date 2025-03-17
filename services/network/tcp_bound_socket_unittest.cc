@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <stdint.h>
 
 #include <string>
@@ -366,7 +371,7 @@ TEST_F(TCPBoundSocketTest, ReadWrite) {
     }
     if (result != MOJO_RESULT_OK)
       break;
-    base::ranges::fill(buffer, 0);
+    std::ranges::fill(buffer, 0);
     client_socket_send_handle->EndWriteData(buffer.size());
   }
   // Wait for write error on the client socket. Don't check exact error, out of

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_service") {
   sources = [
@@ -139,11 +139,6 @@ source_set("browser_tests") {
     "//ash:test_support",
     "//ash/app_list",
     "//ash/app_list/model:app_list_model",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -167,6 +162,11 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/constants",
     "//components/account_id",
     "//components/services/app_service",

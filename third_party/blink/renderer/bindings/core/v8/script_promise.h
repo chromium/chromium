@@ -309,22 +309,6 @@ class ScriptPromise {
         v8_promise.FromMaybe(v8::Local<v8::Promise>()));
   }
 
-  template <typename ResolveClass, typename RejectClass>
-  ScriptPromise<IDLAny> ThenWithNoTypeChecks(
-      ScriptState* script_state,
-      ThenCallable<IDLAny, ResolveClass, IDLUndefined>* on_fulfilled,
-      ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
-    if (IsEmpty()) {
-      return ScriptPromise<IDLAny>();
-    }
-    auto v8_promise = V8Promise()->Then(
-        script_state->GetContext(), on_fulfilled->ToV8Function(script_state),
-        on_rejected->ToV8Function(script_state));
-    return ScriptPromise<IDLAny>::FromV8Promise(
-        script_state->GetIsolate(),
-        v8_promise.FromMaybe(v8::Local<v8::Promise>()));
-  }
-
   template <typename RejectReactType, typename RejectClass>
   ScriptPromise<IDLResolvedType> Catch(
       ScriptState* script_state,

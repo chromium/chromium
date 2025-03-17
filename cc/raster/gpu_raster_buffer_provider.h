@@ -6,17 +6,21 @@
 #define CC_RASTER_GPU_RASTER_BUFFER_PROVIDER_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
 #include "cc/trees/raster_capabilities.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/sync_token.h"
+
+class GURL;
 
 namespace gpu {
 namespace raster {
@@ -69,13 +73,10 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   void Flush() override;
 
  private:
-  class GpuRasterBacking;
-
   class RasterBufferImpl : public RasterBuffer {
    public:
     RasterBufferImpl(GpuRasterBufferProvider* client,
                      const ResourcePool::InUsePoolResource& in_use_resource,
-                     GpuRasterBacking* backing,
                      bool resource_has_previous_content,
                      bool depends_on_at_raster_decodes,
                      bool depends_on_hardware_accelerated_jpeg_candidates,
@@ -122,14 +123,11 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
         const gfx::AxisTransform2d& transform,
         const RasterSource::PlaybackSettings& playback_settings);
 
-    // These fields may only be used on the compositor thread.
+    // These fields are safe to access on both the compositor and worker thread.
     const raw_ptr<GpuRasterBufferProvider> client_;
-    raw_ptr<GpuRasterBacking> backing_;
+    raw_ptr<ResourcePool::Backing> backing_;
 
     // These fields are for use on the worker thread.
-    const gfx::Size resource_size_;
-    const viz::SharedImageFormat shared_image_format_;
-    const gfx::ColorSpace color_space_;
     const bool resource_has_previous_content_;
     const bool depends_on_at_raster_decodes_;
     const bool depends_on_hardware_accelerated_jpeg_candidates_;

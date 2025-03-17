@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("profile_internals") {
+  sources = [
+    "profile_internals_handler.h",
+    "profile_internals_handler.mm",
+    "profile_internals_ui.h",
+    "profile_internals_ui.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/resources/profile_internals:resources",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/web/public/webui",
+  ]
+}

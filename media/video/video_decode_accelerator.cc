@@ -8,6 +8,7 @@
 #include <GLES2/gl2ext.h>
 
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/video_util.h"
 
@@ -24,7 +25,7 @@ VideoDecodeAccelerator::Config::~Config() = default;
 std::string VideoDecodeAccelerator::Config::AsHumanReadableString() const {
   std::ostringstream s;
   s << "profile: " << GetProfileName(profile) << " encrypted? "
-    << (is_encrypted() ? "true" : "false");
+    << base::ToString(is_encrypted());
   return s.str();
 }
 

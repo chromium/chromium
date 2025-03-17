@@ -8,9 +8,7 @@
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
@@ -92,8 +90,7 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
     }
   }
 
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-      (flags & kLayerTreeIncludesDebugInfo) &&
+  if ((flags & kLayerTreeIncludesDebugInfo) &&
       layer.hit_test_opaqueness() != cc::HitTestOpaqueness::kOpaque) {
     json->SetString("hitTestOpaqueness",
                     cc::HitTestOpaquenessToString(layer.hit_test_opaqueness()));

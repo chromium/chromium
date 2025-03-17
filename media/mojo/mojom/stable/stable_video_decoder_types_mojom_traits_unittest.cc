@@ -570,7 +570,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, EmptyVideoFrameMetadata) {
   EXPECT_TRUE(deserialized_video_frame_metadata.allow_overlay);
   EXPECT_FALSE(deserialized_video_frame_metadata.copy_required);
   EXPECT_FALSE(deserialized_video_frame_metadata.end_of_stream);
-  EXPECT_FALSE(deserialized_video_frame_metadata.texture_owner);
+  EXPECT_FALSE(deserialized_video_frame_metadata.in_surface_view);
   EXPECT_FALSE(deserialized_video_frame_metadata.wants_promotion_hint);
   EXPECT_FALSE(deserialized_video_frame_metadata.protected_video);
   EXPECT_FALSE(deserialized_video_frame_metadata.hw_protected);
@@ -640,7 +640,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoFrameMetadata) {
   EXPECT_TRUE(deserialized_video_frame_metadata.allow_overlay);
   EXPECT_FALSE(deserialized_video_frame_metadata.copy_required);
   EXPECT_FALSE(deserialized_video_frame_metadata.end_of_stream);
-  EXPECT_FALSE(deserialized_video_frame_metadata.texture_owner);
+  EXPECT_FALSE(deserialized_video_frame_metadata.in_surface_view);
   EXPECT_FALSE(deserialized_video_frame_metadata.wants_promotion_hint);
   EXPECT_FALSE(deserialized_video_frame_metadata.is_webgpu_compatible);
   EXPECT_TRUE(deserialized_video_frame_metadata.power_efficient);
@@ -1072,7 +1072,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest,
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.id = gfx::GpuMemoryBufferId(10);
   gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
-  gmb_handle.region = base::UnsafeSharedMemoryRegion::Create(100);
+  gmb_handle.set_region(base::UnsafeSharedMemoryRegion::Create(100));
   gmb_handle.offset = 2;
   gmb_handle.stride = 10;
 

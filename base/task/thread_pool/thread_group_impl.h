@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/profiler/thread_group_profiler.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/task_source.h"
@@ -23,6 +24,7 @@
 namespace base {
 
 class WorkerThreadObserver;
+class ThreadGroupProfiler;
 
 namespace internal {
 
@@ -43,10 +45,12 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // It must not be empty. |thread group_label| is used to label the thread
   // group's threads, it must not be empty. |thread_type_hint| is the preferred
   // thread type; the actual thread type depends on shutdown state and platform
-  // capabilities. |task_tracker| keeps track of tasks.
+  // capabilities. |thread_group_type| is used for thread group profiler to tag
+  // the profiles collected on this group. |task_tracker| keeps track of tasks.
   ThreadGroupImpl(std::string_view histogram_label,
                   std::string_view thread_group_label,
                   ThreadType thread_type_hint,
+                  int64_t thread_group_type,
                   TrackedRef<TaskTracker> task_tracker,
                   TrackedRef<Delegate> delegate);
 
@@ -64,9 +68,19 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
              scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
              WorkerThreadObserver* worker_thread_observer,
              WorkerEnvironment worker_environment,
-             bool synchronous_thread_start_for_testing = false,
-             std::optional<TimeDelta> may_block_threshold =
-                 std::optional<TimeDelta>()) override;
+             bool synchronous_thread_start_for_testing,
+             std::optional<TimeDelta> may_block_threshold) override;
+  void Start(size_t max_tasks,
+             size_t max_best_effort_tasks,
+             TimeDelta suggested_reclaim_time,
+             scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
+             WorkerThreadObserver* worker_thread_observer,
+             WorkerEnvironment worker_environment,
+             bool synchronous_thread_start_for_testing = false) {
+    Start(max_tasks, max_best_effort_tasks, suggested_reclaim_time,
+          service_thread_task_runner, worker_thread_observer,
+          worker_environment, synchronous_thread_start_for_testing, {});
+  }
   void JoinForTesting() override;
   void DidUpdateCanRunPolicy() override;
   void OnShutdownStarted() override;
@@ -122,6 +136,16 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // timeout expires, even if its WakeUp() method hasn't been called). A worker
   // is inserted on this set when it receives nullptr from GetWork().
   WorkerThreadSet idle_workers_set_ GUARDED_BY(lock_);
+
+  // This is used in ThreadGroupProfiler to tag as metadata on profiles
+  // collected for worker threads within this thread group.
+  const int64_t thread_group_type_;
+
+  // This is set in Start() if profiling is enabled, before any worker thread is
+  // created. If profiling is not enabled, this will remain std::nullopt. If
+  // created the ThreadGroupProfiler instance will exist until ThreadGroupImpl
+  // destruction.
+  std::optional<ThreadGroupProfiler> thread_group_profiler_;
 
   // Ensures recently cleaned up workers (ref.
   // WorkerDelegate::CleanupLockRequired()) had time to exit as

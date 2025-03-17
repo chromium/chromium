@@ -20,6 +20,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>Safe Mode is a mechanism that allows Chrome to prevent crashes gated behind flags used before
  * native from becoming a crash loop that cannot be recovered from by disabling the experiment.
  */
+@NullMarked
 public class CachedFlagsSafeMode {
     private static final String TAG = "Flags";
     private static final int CRASH_STREAK_TO_ENTER_SAFE_MODE = 2;
@@ -42,7 +45,7 @@ public class CachedFlagsSafeMode {
     @VisibleForTesting
     static final String PREF_SAFE_VALUES_VERSION = "Chrome.Flags.SafeValuesVersion";
 
-    private Boolean mSafeModeExperimentForcedForTesting;
+    private @Nullable Boolean mSafeModeExperimentForcedForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -273,7 +276,7 @@ public class CachedFlagsSafeMode {
         TraceEvent.end("writeSafeValues");
     }
 
-    Boolean isEnabled(String featureName, String preferenceName, boolean defaultValue) {
+    @Nullable Boolean isEnabled(String featureName, String preferenceName, boolean defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -292,7 +295,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    Boolean getBooleanFeatureParam(String preferenceName, boolean defaultValue) {
+    @Nullable Boolean getBooleanFeatureParam(String preferenceName, boolean defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -311,7 +314,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    Integer getIntFeatureParam(String preferenceName, int defaultValue) {
+    @Nullable Integer getIntFeatureParam(String preferenceName, int defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -330,7 +333,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    Double getDoubleFeatureParam(String preferenceName, double defaultValue) {
+    @Nullable Double getDoubleFeatureParam(String preferenceName, double defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -350,7 +353,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    String getStringFeatureParam(String preferenceName, String defaultValue) {
+    @Nullable String getStringFeatureParam(String preferenceName, String defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -369,8 +372,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    @Behavior
-    int getBehaviorForTesting() {
+    @Behavior int getBehaviorForTesting() {
         return mBehavior.get();
     }
 

@@ -11,13 +11,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -720,9 +720,8 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testMoveAndUndoFromModel:KindOfTest::kAccount
                               toModel:KindOfTest::kAccount];
 }
-// TODO(crbug.com/326425036): Moving the bookmarks fails in test but not when
-// reproduced manually.
-- (void)DISABLED_testMoveAndUndoLocalToAccount {
+
+- (void)testMoveAndUndoLocalToAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveAndUndoFromModel:KindOfTest::kLocal
                               toModel:KindOfTest::kAccount];

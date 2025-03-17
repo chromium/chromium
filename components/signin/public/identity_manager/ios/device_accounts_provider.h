@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "google_apis/gaia/gaia_id.h"
 
 enum AuthenticationErrorCategory {
   // Unknown errors.
@@ -36,7 +37,7 @@ class DeviceAccountsProvider {
  public:
   // Account information.
   struct AccountInfo {
-    std::string gaia;
+    GaiaId gaia;
     std::string email;
     std::string hosted_domain;
   };
@@ -53,6 +54,8 @@ class DeviceAccountsProvider {
     ~Observer() override = default;
 
     virtual void OnAccountsOnDeviceChanged() {}
+    virtual void OnAccountOnDeviceUpdated(
+        const DeviceAccountsProvider::AccountInfo& device_account) {}
   };
 
   // Result of GetAccessToken() passed to the callback. Contains either
@@ -80,7 +83,7 @@ class DeviceAccountsProvider {
 
   // Starts fetching an access token for the account with id |gaia_id| with
   // the given |scopes|. Once the token is obtained, |callback| is called.
-  virtual void GetAccessToken(const std::string& gaia_id,
+  virtual void GetAccessToken(const GaiaId& gaia_id,
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);

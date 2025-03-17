@@ -56,6 +56,12 @@ animation-range-end: normal
 animation-range-start: normal
 animation-timeline: auto
 animation-timing-function: ease
+animation-trigger-exit-range-end: normal
+animation-trigger-exit-range-start: normal
+animation-trigger-range-end: normal
+animation-trigger-range-start: normal
+animation-trigger-timeline: auto
+animation-trigger-type: once
 app-region: none
 appearance: none
 backdrop-filter: none
@@ -147,6 +153,14 @@ contain-intrinsic-width: none
 container-name: none
 container-type: normal
 content: normal
+corner-bottom-left-shape: round
+corner-bottom-right-shape: round
+corner-end-end-shape: round
+corner-end-start-shape: round
+corner-start-end-shape: round
+corner-start-start-shape: round
+corner-top-left-shape: round
+corner-top-right-shape: round
 cursor: auto
 cx: 0px
 cy: 0px
@@ -154,7 +168,7 @@ d: none
 direction: ltr
 display: block
 dominant-baseline: auto
-dynamic-range-limit: high
+dynamic-range-limit: no-limit
 empty-cells: show
 field-sizing: fixed
 fill: rgb(0, 0, 0)
@@ -211,6 +225,8 @@ inset-block-start: auto
 inset-inline-end: auto
 inset-inline-start: auto
 interactivity: auto
+interest-target-hide-delay: 0.5s
+interest-target-show-delay: 0.5s
 interpolate-size: numeric-only
 isolation: auto
 justify-content: normal
@@ -245,6 +261,7 @@ mask-position: 0% 0%
 mask-repeat: repeat
 mask-size: auto
 mask-type: luminance
+masonry-auto-tracks: auto
 masonry-direction: column
 masonry-fill: normal
 masonry-slack: normal
@@ -301,8 +318,6 @@ paint-order: normal
 perspective: none
 perspective-origin: 384.5px 0px
 pointer-events: auto
-popover-hide-delay: infinity * 1s
-popover-show-delay: 0.5s
 position: static
 position-anchor: auto
 position-area: none
@@ -311,6 +326,7 @@ position-try-order: normal
 position-visibility: always
 r: 0px
 reading-flow: normal
+reading-order: 0
 resize: none
 right: auto
 rotate: none
@@ -326,6 +342,7 @@ scroll-margin-block-end: 0px
 scroll-margin-block-start: 0px
 scroll-margin-inline-end: 0px
 scroll-margin-inline-start: 0px
+scroll-marker-contain: none
 scroll-marker-group: none
 scroll-padding-block-end: auto
 scroll-padding-block-start: auto
@@ -369,7 +386,7 @@ text-decoration-line: none
 text-decoration-skip-ink: auto
 text-decoration-style: solid
 text-emphasis-color: rgb(0, 0, 0)
-text-emphasis-position: over
+text-emphasis-position: auto
 text-emphasis-style: none
 text-indent: 0px
 text-overflow: clip

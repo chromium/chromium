@@ -11,6 +11,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -736,10 +737,11 @@ TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
   notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);
   EXPECT_EQ(action_buttons().size(), 2u);
+
   for (views::LabelButton* action_button : action_buttons()) {
-    EXPECT_NE(
-        notification_view()->GetActionButtonColorForTesting(action_button),
-        data.accent_color);
+    const auto& color =
+        notification_view()->GetActionButtonColorForTesting(action_button);
+    EXPECT_FALSE(color);
   }
 
   data.ignore_accent_color_for_text = false;
@@ -748,15 +750,18 @@ TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
   notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);
   EXPECT_EQ(action_buttons().size(), 2u);
+
   for (views::LabelButton* action_button : action_buttons()) {
-    EXPECT_EQ(
-        notification_view()->GetActionButtonColorForTesting(action_button),
-        data.accent_color);
+    const auto& color =
+        notification_view()->GetActionButtonColorForTesting(action_button);
+    CHECK(color);
+    EXPECT_EQ(color->ConvertToSkColor(notification_view()->GetColorProvider()),
+              data.accent_color);
   }
 }
 
 TEST_F(NotificationViewTest, UpdateFiresAccessibilityEvents) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
 
   // Setting the title does not result in a text-changed accessibility event

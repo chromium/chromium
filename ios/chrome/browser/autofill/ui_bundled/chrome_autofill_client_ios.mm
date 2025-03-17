@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 
+#import <algorithm>
 #import <optional>
 #import <utility>
 #import <vector>
@@ -15,7 +16,6 @@
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -30,6 +30,7 @@
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/infobars/core/infobar.h"
@@ -81,26 +82,25 @@
 namespace autofill {
 
 ChromeAutofillClientIOS::ChromeAutofillClientIOS(
+    FromWebStateImpl from_web_state_impl,
     ProfileIOS* profile,
     web::WebState* web_state,
     infobars::InfoBarManager* infobar_manager,
     id<AutofillClientIOSBridge, AutofillDriverIOSBridge> bridge)
-    : pref_service_(profile->GetPrefs()),
+    : AutofillClientIOS(from_web_state_impl, web_state, bridge),
+      pref_service_(profile->GetPrefs()),
       sync_service_(SyncServiceFactory::GetForProfile(profile)),
       personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
           profile->GetOriginalProfile())),
       autocomplete_history_manager_(
           AutocompleteHistoryManagerFactory::GetForProfile(profile)),
       profile_(profile),
-      web_state_(web_state),
       bridge_(bridge),
       identity_manager_(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
       infobar_manager_(infobar_manager),
       log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
-      ablation_study_(GetApplicationContext()->GetLocalState()) {
-  AutofillDriverIOSFactory::CreateForWebState(web_state, this, bridge);
-}
+      ablation_study_(GetApplicationContext()->GetLocalState()) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
@@ -124,17 +124,13 @@ version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
 }
 
 bool ChromeAutofillClientIOS::IsOffTheRecord() const {
-  return web_state_->GetBrowserState()->IsOffTheRecord();
+  return web_state()->GetBrowserState()->IsOffTheRecord();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutofillClientIOS::GetURLLoaderFactory() {
   return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      web_state_->GetBrowserState()->GetURLLoaderFactory());
-}
-
-AutofillDriverFactory& ChromeAutofillClientIOS::GetAutofillDriverFactory() {
-  return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
+      web_state()->GetBrowserState()->GetURLLoaderFactory());
 }
 
 AutofillCrowdsourcingManager&
@@ -148,21 +144,15 @@ ChromeAutofillClientIOS::GetCrowdsourcingManager() {
 }
 
 VotesUploader& ChromeAutofillClientIOS::GetVotesUploader() {
-  if (!votes_uploader_) {
-    // We need to do lazy evaluation because AutofillDriverIOSFactory is created
-    // only after ChromeAutofillClientIOS. This is OK because only
-    // BrowserAutofillManager, which is owned by AutofillClientIOS and thus
-    // instantiated after AutofillDriverIOSFactory, calls GetVotesUploader().
-    //
-    // TODO(crbug.com/355907668): Make AutofillDriverIOSFactory owned by
-    // ChromeAutofillClientIOS and initialize  `votes_uploader_` non-lazily.
-    votes_uploader_ = std::make_unique<VotesUploader>(this);
-  }
-  return *votes_uploader_;
+  return votes_uploader_;
 }
 
 PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
   return CHECK_DEREF(personal_data_manager_.get());
+}
+
+EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {
+  return nullptr;
 }
 
 FieldClassificationModelHandler*
@@ -237,7 +227,7 @@ AddressNormalizer* ChromeAutofillClientIOS::GetAddressNormalizer() {
 
 const GURL& ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameURL()
     const {
-  return web_state_->GetLastCommittedURL();
+  return web_state()->GetLastCommittedURL();
 }
 
 url::Origin ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameOrigin()
@@ -247,23 +237,24 @@ url::Origin ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameOrigin()
 
 security_state::SecurityLevel
 ChromeAutofillClientIOS::GetSecurityLevelForUmaHistograms() {
-  return security_state::GetSecurityLevelForWebState(web_state_);
+  return security_state::GetSecurityLevelForWebState(web_state());
 }
 
 const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
   // TODO(crbug.com/41430413): iOS vs other platforms extracts language from
   // the top level frame vs whatever frame directly holds the form.
-  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state_);
+  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state());
   if (translate_client) {
     auto* translate_manager = translate_client->GetTranslateManager();
-    if (translate_manager)
+    if (translate_manager) {
       return translate_manager->GetLanguageState();
+    }
   }
   return nullptr;
 }
 
 translate::TranslateDriver* ChromeAutofillClientIOS::GetTranslateDriver() {
-  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state_);
+  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state());
   if (translate_client) {
     return translate_client->GetTranslateDriver();
   }
@@ -351,17 +342,13 @@ void ChromeAutofillClientIOS::OfferPlusAddressCreation(
     bool is_manual_fallback,
     PlusAddressCallback callback) {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(web_state_);
+      AutofillBottomSheetTabHelper::FromWebState(web_state());
   bottomSheetTabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
 void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
-}
-
-void ChromeAutofillClientIOS::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
 }
 
 void ChromeAutofillClientIOS::HideAutofillSuggestions(
@@ -394,7 +381,7 @@ void ChromeAutofillClientIOS::DidFillForm(AutofillTriggerSource trigger_source,
                                           bool is_refill) {}
 
 bool ChromeAutofillClientIOS::IsContextSecure() const {
-  return IsContextSecureForWebState(web_state_);
+  return IsContextSecureForWebState(web_state());
 }
 
 FormInteractionsFlowId
@@ -470,15 +457,17 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
   // iframes is enabled.
   const auto GetRendererForm = [&]() -> std::optional<FormData> {
     const AutofillDriverRouter& router =
-        AutofillDriverIOSFactory::FromWebState(web_state_)->router();
+        static_cast<AutofillClientIOS&>(manager.client())
+            .GetAutofillDriverFactory()
+            .router();
 
     std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
     // Find the form to which `field_id` belongs.
     auto renderer_forms_it =
-        base::ranges::find_if(renderer_forms, [field_id](const FormData& form) {
-          return base::ranges::find(form.fields(), field_id,
-                                    &FormFieldData::global_id) !=
+        std::ranges::find_if(renderer_forms, [field_id](const FormData& form) {
+          return std::ranges::find(form.fields(), field_id,
+                                   &FormFieldData::global_id) !=
                  form.fields().end();
         });
     if (renderer_forms_it == renderer_forms.end()) {
@@ -509,7 +498,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
 
 AutofillSaveCardInfoBarDelegateIOS*
 ChromeAutofillClientIOS::GetAutofillSaveCardInfoBarDelegateIOS() {
-  const auto save_card_infobar = base::ranges::find(
+  const auto save_card_infobar = std::ranges::find(
       infobar_manager_->infobars(),
       infobars::InfoBarDelegate::AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE,
       &infobars::InfoBar::GetIdentifier);
@@ -520,7 +509,7 @@ ChromeAutofillClientIOS::GetAutofillSaveCardInfoBarDelegateIOS() {
 }
 
 void ChromeAutofillClientIOS::RemoveAutofillSaveCardInfoBar() {
-  const auto save_card_infobar = base::ranges::find(
+  const auto save_card_infobar = std::ranges::find(
       infobar_manager_->infobars(),
       infobars::InfoBarDelegate::AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE,
       &infobars::InfoBar::GetIdentifier);

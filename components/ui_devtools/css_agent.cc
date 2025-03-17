@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/ui_element.h"
 
@@ -129,7 +130,7 @@ std::vector<UIElement::ClassProperties> GetClassPropertiesWithBounds(
     if (ui_element->type() != VIEW) {
       bool visible;
       ui_element->GetVisible(&visible);
-      bound_properties.emplace_back(kVisibility, visible ? "true" : "false");
+      bound_properties.emplace_back(kVisibility, base::ToString(visible));
     }
     properties_vector.emplace_back(ui_element->GetTypeName(), bound_properties);
   }

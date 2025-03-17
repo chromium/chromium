@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.nio.ByteBuffer;
@@ -19,6 +21,7 @@ import java.util.Locale;
  * {@link LevelDBPersistedTabDataStorage} provides a level db backed implementation
  * of {@link PersistedTabDataStorage}.
  */
+@NullMarked
 public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, Destroyable {
     // In a mock environment, the native code will not be running so we should not
     // make assertions about mNativePersistedStateDB
@@ -58,7 +61,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
         assert false : "save with callback unused in LevelDBPersistedTabDataStorage";
     }
 
-    private static byte[] toByteArray(ByteBuffer buffer) {
+    private static byte @Nullable [] toByteArray(@Nullable ByteBuffer buffer) {
         if (buffer == null) {
             return null;
         }
@@ -78,7 +81,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
 
     @MainThread
     @Override
-    public void restore(int tabId, String dataId, Callback<ByteBuffer> callback) {
+    public void restore(int tabId, String dataId, Callback<@Nullable ByteBuffer> callback) {
         mPersistedDataStorage.load(
                 getKey(tabId, dataId),
                 (res) -> {
@@ -93,14 +96,14 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     @Deprecated
     @MainThread
     @Override
-    public ByteBuffer restore(int tabId, String dataId) {
+    public @Nullable ByteBuffer restore(int tabId, String dataId) {
         assert false : "Synchronous restore is not supported for LevelDBPersistedTabDataStorage";
         return null;
     }
 
     @MainThread
     @Override
-    public <U extends PersistedTabDataResult> U restore(
+    public <U extends PersistedTabDataResult> @Nullable U restore(
             int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
         assert false : "Restore with mapper currently unused in LevelDBPersistedTabDataStorage";
         return null;

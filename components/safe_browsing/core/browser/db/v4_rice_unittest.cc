@@ -6,7 +6,6 @@
 #include "base/logging.h"
 #include "testing/platform_test.h"
 
-using ::google::protobuf::int32;
 using ::google::protobuf::RepeatedField;
 
 namespace safe_browsing {
@@ -154,19 +153,19 @@ TEST_F(V4RiceTest, TestDecoderGetNextValueWithInterestingValues) {
 }
 
 TEST_F(V4RiceTest, TestDecoderIntegersWithNoData) {
-  RepeatedField<int32> out;
+  RepeatedField<int32_t> out;
   EXPECT_EQ(ENCODED_DATA_UNEXPECTED_EMPTY_FAILURE,
             V4RiceDecoder::DecodeIntegers(3, 5, 1, "", &out));
 }
 
 TEST_F(V4RiceTest, TestDecoderIntegersWithNegativeNumEntries) {
-  RepeatedField<int32> out;
+  RepeatedField<int32_t> out;
   EXPECT_EQ(NUM_ENTRIES_NEGATIVE_FAILURE,
             V4RiceDecoder::DecodeIntegers(3, 5, -1, "", &out));
 }
 
 TEST_F(V4RiceTest, TestDecoderIntegersWithNonPositiveRiceParameter) {
-  RepeatedField<int32> out;
+  RepeatedField<int32_t> out;
   EXPECT_EQ(RICE_PARAMETER_NON_POSITIVE_FAILURE,
             V4RiceDecoder::DecodeIntegers(3, 0, 1, "a", &out));
 
@@ -175,7 +174,7 @@ TEST_F(V4RiceTest, TestDecoderIntegersWithNonPositiveRiceParameter) {
 }
 
 TEST_F(V4RiceTest, TestDecoderIntegersWithOverflowValues) {
-  RepeatedField<int32> out;
+  RepeatedField<int32_t> out;
   EXPECT_EQ(DECODED_INTEGER_OVERFLOW_FAILURE,
             V4RiceDecoder::DecodeIntegers(
                 5, 28, 3,
@@ -183,14 +182,14 @@ TEST_F(V4RiceTest, TestDecoderIntegersWithOverflowValues) {
 }
 
 TEST_F(V4RiceTest, TestDecoderIntegersWithOneValue) {
-  RepeatedField<int32> out;
+  RepeatedField<int32_t> out;
   EXPECT_EQ(DECODE_SUCCESS, V4RiceDecoder::DecodeIntegers(3, 2, 0, "", &out));
   EXPECT_EQ(1, out.size());
   EXPECT_EQ(3, out.Get(0));
 }
 
 TEST_F(V4RiceTest, TestDecoderIntegersWithMultipleValues) {
-  RepeatedField<int32> out;
+  RepeatedField<int32_t> out;
   EXPECT_EQ(DECODE_SUCCESS,
             V4RiceDecoder::DecodeIntegers(5, 2, 2, "\xf7\x2", &out));
   EXPECT_EQ(3, out.size());

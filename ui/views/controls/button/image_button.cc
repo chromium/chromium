@@ -435,9 +435,9 @@ void ToggleImageButton::OnPaintBackground(gfx::Canvas* canvas) {
 ////////////////////////////////////////////////////////////////////////////////
 // ToggleImageButton, View overrides:
 
-void ToggleImageButton::OnSetTooltipText(const std::u16string& tooltip_text) {
-  ImageButton::OnSetTooltipText(tooltip_text);
-  untoggled_tooltip_text_ = GetCachedTooltipText();
+void ToggleImageButton::OnTooltipTextChanged(
+    const std::u16string& old_tooltip) {
+  untoggled_tooltip_text_ = GetTooltipText();
 }
 
 void ToggleImageButton::UpdateAccessibleName() {
@@ -448,23 +448,24 @@ void ToggleImageButton::UpdateAccessibleName() {
       GetViewAccessibility().SetName(toggled_tooltip_text_);
     }
   } else {
-    GetViewAccessibility().SetName(Button::GetTooltipText());
+    GetViewAccessibility().SetName(GetTooltipText());
   }
 }
 
 void ToggleImageButton::UpdateTooltipText() {
   if (toggled_ && !toggled_tooltip_text_.empty()) {
-    untoggled_tooltip_text_ = GetCachedTooltipText();
-    SetCachedTooltipText(toggled_tooltip_text_);
+    std::u16string previous_tooltip_text = GetTooltipText();
+    SetTooltipText(toggled_tooltip_text_);
+    untoggled_tooltip_text_ = previous_tooltip_text;
   } else {
-    SetCachedTooltipText(untoggled_tooltip_text_);
+    SetTooltipText(untoggled_tooltip_text_);
   }
 
   UpdateAccessibleName();
 
   // This corner case was needed to be handled separately.
-  if (GetViewAccessibility().GetCachedName() == GetCachedTooltipText() &&
-      GetViewAccessibility().GetCachedDescription() == GetCachedTooltipText()) {
+  if (GetViewAccessibility().GetCachedName() == GetTooltipText() &&
+      GetViewAccessibility().GetCachedDescription() == GetTooltipText()) {
     GetViewAccessibility().RemoveDescription();
   }
 }

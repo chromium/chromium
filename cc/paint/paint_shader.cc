@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_shader.h"
 
 #include <algorithm>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -101,7 +97,7 @@ sk_sp<PaintShader> PaintShader::MakeLinearGradient(
 
   // There are always two points, the start and the end.
   shader->start_point_ = points[0];
-  shader->end_point_ = points[1];
+  shader->end_point_ = UNSAFE_TODO(points[1]);
   shader->SetColorsAndPositions(colors, pos, count);
   shader->SetMatrixAndTiling(local_matrix, mode, mode);
   shader->SetFlagsAndFallback(flags, fallback_color);
@@ -228,7 +224,18 @@ sk_sp<PaintShader> PaintShader::MakePaintRecord(
 }
 
 // static:
-sk_sp<PaintShader> PaintShader::MakeSkSLCommand(std::string_view sksl) {
+sk_sp<PaintShader> PaintShader::MakeSkSLCommand(
+    std::string_view sksl,
+    std::vector<FloatUniform> float_uniforms,
+    std::vector<Float2Uniform> float2_uniforms,
+    std::vector<Float4Uniform> float4_uniforms,
+    std::vector<IntUniform> int_uniforms) {
+  if (float_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      float2_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      float4_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      int_uniforms.size() > PaintShader::kMaxNumUniformsPerType) {
+    return nullptr;
+  }
   SkString cmd(sksl);
   auto [effect, error] = SkRuntimeEffect::MakeForShader(cmd);
   if (!effect) {
@@ -236,7 +243,11 @@ sk_sp<PaintShader> PaintShader::MakeSkSLCommand(std::string_view sksl) {
     return nullptr;
   }
   sk_sp<PaintShader> shader(new PaintShader(Type::kSkSLCommand));
-  shader->sksl_command_ = cmd;
+  shader->sksl_command_ = std::move(cmd);
+  shader->scalar_uniforms_ = std::move(float_uniforms);
+  shader->float2_uniforms_ = std::move(float2_uniforms);
+  shader->float4_uniforms_ = std::move(float4_uniforms);
+  shader->int_uniforms_ = std::move(int_uniforms);
   return shader;
 }
 
@@ -270,7 +281,11 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
                                                   shader->colors_.size()) +
           PaintOpWriter::SerializedSizeOfElements(shader->positions_.data(),
                                                   shader->positions_.size()) +
-          PaintOpWriter::SerializedSize(shader->sksl_command_))
+          PaintOpWriter::SerializedSize(shader->sksl_command_) +
+          PaintOpWriter::SerializedSize(shader->scalar_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->float2_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->float4_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->int_uniforms_))
       .ValueOrDie();
 }
 
@@ -528,7 +543,20 @@ sk_sp<SkShader> PaintShader::GetSkShader(
         // Fallback the the color shader.
         break;
       }
-      return effect->makeShader(/*uniforms=*/nullptr, /*children=*/{});
+      SkRuntimeShaderBuilder builder(effect);
+      for (const auto& [name, value] : scalar_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : float2_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : float4_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : int_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      return builder.makeShader();
     }
     case Type::kShaderCount:
       NOTREACHED();
@@ -564,12 +592,12 @@ void PaintShader::SetColorsAndPositions(const SkColor4f* colors,
                                         int count) {
 #if DCHECK_IS_ON()
   static const int kMaxShaderColorsSupported = 10000;
-  DCHECK_GE(count, 2);
+  DCHECK_GE(count, 1);
   DCHECK_LE(count, kMaxShaderColorsSupported);
 #endif
-  colors_.assign(colors, colors + count);
+  colors_.assign(colors, UNSAFE_TODO(colors + count));
   if (positions)
-    positions_.assign(positions, positions + count);
+    positions_.assign(positions, UNSAFE_TODO(positions + count));
 }
 
 void PaintShader::SetMatrixAndTiling(const SkMatrix* matrix,
@@ -645,7 +673,7 @@ bool PaintShader::IsValid() const {
     case Type::kLinearGradient:
     case Type::kRadialGradient:
     case Type::kTwoPointConicalGradient:
-      return colors_.size() >= 2 &&
+      return colors_.size() >= 1 &&
              (positions_.empty() || positions_.size() == colors_.size());
     case Type::kImage:
       // We may not be able to decode the image, in which case it would be

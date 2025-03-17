@@ -12,7 +12,7 @@
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "chrome/test/supervised_user/family_member.h"
+#include "chrome/test/supervised_user/browser_user.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -23,11 +23,10 @@
 namespace supervised_user {
 
 // Refers to the family prefix in resources/signin/test_accounts.json
-const char* const kFamilyIdentifierSwitch =
+const char* const kAccountRepositoryPath =
+    "supervised-tests-account-repository-path";
+const char* const kFamilyFeatureIdentifierSwitch =
     "supervised-tests-family-identifier";
-// Legacy version of the above
-const char* const kFamilyIdentifierLegacySwitch =
-    "supervised-tests-family-legacy-identifier";
 
 // Alternatively, use these two to provide head of household's and child's
 // credentials directly, in <username>:<password> syntax (colon separated).
@@ -59,7 +58,7 @@ class FamilyLiveTest : public signin::test::LiveTest {
   // The provided family identifier will be used to select the test accounts.
   // Navigation will be allowed to extra hosts.
   FamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode,
-                 const std::vector<std::string>& extra_enabled_hosts);
+                 const std::vector<std::string_view>& extra_enabled_hosts);
 
   ~FamilyLiveTest() override;
 
@@ -69,7 +68,7 @@ class FamilyLiveTest : public signin::test::LiveTest {
 
   // Turns on sync and waits for the sync subsystem to start. Manages the list
   // of open service tabs.
-  void TurnOnSyncFor(FamilyMember& member);
+  void TurnOnSyncFor(BrowserUser& browser_user);
 
  protected:
   void SetUp() override;
@@ -82,30 +81,31 @@ class FamilyLiveTest : public signin::test::LiveTest {
   GURL GetRoutedUrl(std::string_view url_spec) const;
 
   // Members of the family.
-  FamilyMember& head_of_household() const;
-  FamilyMember& child() const;
+  BrowserUser& head_of_household() const;
+  BrowserUser& child() const;
 
   // Family member that will issue rpc.
-  FamilyMember& rpc_issuer() const;
+  BrowserUser& rpc_issuer() const;
 
  private:
   // Creates a FamilyMember entity using credentials from TestAccount.
-  void SetHeadOfHousehold(const signin::TestAccountSigninCredentials& account);
-  void SetChild(const signin::TestAccountSigninCredentials& account);
+  void SetHeadOfHousehold(const test_accounts::FamilyMember& credentials);
+  void SetChild(const test_accounts::FamilyMember& credentials);
 
   // Extracts requested account from test_accounts.json file, which must exist.
   signin::TestAccountSigninCredentials GetAccountFromFile(
       std::string_view account_name_suffix) const;
 
-  // Creates a new browser signed in to the specified account
-  std::unique_ptr<FamilyMember> MakeSignedInBrowser(
-      const signin::TestAccountSigninCredentials& account);
+  // Creates a new browser signed in to the specified account credentials that
+  // represent a family member.
+  std::unique_ptr<BrowserUser> MakeSignedInBrowser(
+      const test_accounts::FamilyMember& credentials);
 
   // Empty, if rpc_mode_ is kImpersonation.
-  std::unique_ptr<FamilyMember> head_of_household_;
+  std::unique_ptr<BrowserUser> head_of_household_;
 
   // Subject of testing.
-  std::unique_ptr<FamilyMember> child_;
+  std::unique_ptr<BrowserUser> child_;
 
   // List of additional hosts that will have host resolution enabled. Host
   // resolution is configured as part of test startup.
@@ -127,13 +127,13 @@ class InteractiveFamilyLiveTest
   explicit InteractiveFamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode);
   InteractiveFamilyLiveTest(
       FamilyLiveTest::RpcMode rpc_mode,
-      const std::vector<std::string>& extra_enabled_hosts);
+      const std::vector<std::string_view>& extra_enabled_hosts);
 
  protected:
   // After completion, supervised user settings are in `state`.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForStateSeeding(
       ui::test::StateIdentifier<InIntendedStateObserver> id,
-      const FamilyMember& browser_user,
+      const BrowserUser& browser_user,
       const FamilyLinkSettingsState& state_manager);
 };
 

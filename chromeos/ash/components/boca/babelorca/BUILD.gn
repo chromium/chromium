@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash,
-       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
 static_library("babelorca") {
   sources = [
@@ -20,15 +17,19 @@ static_library("babelorca") {
     "babel_orca_producer.h",
     "babel_orca_speech_recognizer.h",
     "babel_orca_translation_dispatcher.h",
+    "babel_orca_translation_dispatcher_impl.cc",
+    "babel_orca_translation_dispatcher_impl.h",
+    "caption_bubble_settings_impl.cc",
+    "caption_bubble_settings_impl.h",
     "caption_controller.cc",
     "caption_controller.h",
-    "live_caption_controller_wrapper.h",
-    "live_caption_controller_wrapper_impl.cc",
-    "live_caption_controller_wrapper_impl.h",
     "oauth_token_fetcher.cc",
     "oauth_token_fetcher.h",
+    "pref_names.h",
     "request_data_wrapper.cc",
     "request_data_wrapper.h",
+    "soda_installer.cc",
+    "soda_installer.h",
     "speech_recognition_event_handler.cc",
     "speech_recognition_event_handler.h",
     "tachyon_authed_client.h",
@@ -65,6 +66,7 @@ static_library("babelorca") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/babelorca/proto",
@@ -75,9 +77,12 @@ static_library("babelorca") {
     "//components/live_caption:constants",
     "//components/live_caption:live_translate",
     "//components/live_caption:utils",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//components/soda",
+    "//components/soda:constants",
     "//content/public/browser",
     "//google_apis",
     "//media/mojo/mojom:speech_recognition",
@@ -106,14 +111,19 @@ source_set("test_support") {
     "fakes/fake_token_manager.h",
     "fakes/fake_translation_dispatcher.cc",
     "fakes/fake_translation_dispatcher.h",
+    "testing_utils.cc",
+    "testing_utils.h",
   ]
 
   deps = [
     ":babelorca",
     "//base",
     "//components/live_caption",
+    "//components/live_caption:constants",
     "//components/live_caption:live_translate",
+    "//components/live_caption:utils",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//media/mojo/mojom:speech_recognition",
     "//net/traffic_annotation",
     "//third_party/protobuf:protobuf_lite",
@@ -129,8 +139,10 @@ source_set("unit_tests") {
     "babel_orca_consumer_unittest.cc",
     "babel_orca_manager_unittest.cc",
     "babel_orca_producer_unittest.cc",
+    "caption_bubble_settings_impl_unittest.cc",
     "caption_controller_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
+    "soda_installer_unittest.cc",
     "speech_recognition_event_handler_unittest.cc",
     "tachyon_authed_client_impl_unittest.cc",
     "tachyon_client_impl_unittest.cc",
@@ -147,6 +159,7 @@ source_set("unit_tests") {
   deps = [
     ":babelorca",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca:boca",
@@ -161,6 +174,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
+    "//components/soda",
+    "//components/soda:constants",
     "//google_apis",
     "//media/mojo/mojom:speech_recognition",
     "//mojo/public/cpp/bindings",

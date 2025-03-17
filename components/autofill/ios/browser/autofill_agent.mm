@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <cstdint>
 #import <memory>
 #import <optional>
@@ -26,7 +27,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/field_trial.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -36,8 +36,8 @@
 #import "base/values.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/autofill_field.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -76,8 +76,6 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -138,7 +136,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   auto it =
-      base::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
+      std::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
   return it != form.fields().end() && it->is_focusable();
 }
 
@@ -653,7 +651,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
       if (!popup_suggestion.labels.empty() &&
           !popup_suggestion.labels.front().empty() &&
-          IsKeyboardAccessoryUpgradeEnabled()) {
+          _delegate.isKeyboardAccessoryUpgradeEnabled) {
         displayDescription =
             SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
       }
@@ -724,9 +722,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
 - (void)showPlusAddressEmailOverrideNotification:
     (base::OnceClosure)emailOverrideUndoCallback {
-  CHECK(self.snackbarHandler);
-
-  [self.snackbarHandler
+  CHECK(_delegate);
+  [_delegate
       showSnackbarWithMessage:
           l10n_util::GetNSString(
               IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_IOS)
@@ -1142,8 +1139,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   if (!ContainsFocusableField(form, fieldIdentifier)) {
     return;
   }
-  driver->TextFieldDidChange(form, {form.host_frame(), fieldIdentifier},
-                             base::TimeTicks::Now());
+  driver->TextFieldValueChanged(form, {form.host_frame(), fieldIdentifier},
+                                base::TimeTicks::Now());
 }
 
 // Helper method to create icons for payment cards.
@@ -1352,10 +1349,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   constexpr int kMutationTrackingEnabledDelayInMs = 200;
   formHandlerFeature->TrackFormMutations(frame,
                                          kMutationTrackingEnabledDelayInMs);
-
-  formHandlerFeature->ToggleTrackingUserEditedFields(
-      frame,
-      /*track_user_edited_fields=*/true);
 
   driver->ScanForms(/*immediately=*/base::FeatureList::IsEnabled(
       kAutofillThrottleDocumentFormScanForceFirstScanIos));

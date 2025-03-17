@@ -79,12 +79,12 @@ class AMPPageLoadMetricsObserverTest
       return;
     tester()->histogram_tester().ExpectUniqueSample(
         histogram,
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             event.value().InMilliseconds()),
         1);
     tester()->histogram_tester().ExpectUniqueSample(
         view_type_histogram,
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             event.value().InMilliseconds()),
         1);
   }

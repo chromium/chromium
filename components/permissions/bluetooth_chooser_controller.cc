@@ -4,10 +4,11 @@
 
 #include "components/permissions/bluetooth_chooser_controller.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -187,7 +188,7 @@ void BluetoothChooserController::AddOrUpdateDevice(
     }
 
     auto device_it =
-        base::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
+        std::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
 
     CHECK(device_it != devices_.end(), base::NotFatalUntil::M130);
     // When Bluetooth device scanning stops, the |signal_strength_level|
@@ -216,7 +217,7 @@ void BluetoothChooserController::RemoveDevice(const std::string& device_id) {
     return;
 
   auto device_it =
-      base::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
+      std::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
 
   if (device_it != devices_.end()) {
     size_t index = device_it - devices_.begin();

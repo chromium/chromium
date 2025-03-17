@@ -347,29 +347,6 @@ scoped_refptr<GinJavaBoundObject> GinJavaBridgeDispatcherHost::FindObject(
   return nullptr;
 }
 
-void GinJavaBridgeDispatcherHost::OnGetMethods(
-    GinJavaBoundObject::ObjectID object_id,
-    std::vector<std::string>* returned_method_names) {
-  DCHECK(JavaBridgeThread::CurrentlyOn());
-  if (!allow_object_contents_inspection_)
-    return;
-  scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
-  if (object.get()) {
-    std::set<std::string> result = object->GetMethodNames();
-    *returned_method_names = {result.begin(), result.end()};
-  }
-}
-
-void GinJavaBridgeDispatcherHost::OnHasMethod(
-    GinJavaBoundObject::ObjectID object_id,
-    const std::string& method_name,
-    bool* result) {
-  DCHECK(JavaBridgeThread::CurrentlyOn());
-  scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
-  if (object.get())
-    *result = object->HasMethod(method_name);
-}
-
 void GinJavaBridgeDispatcherHost::OnInvokeMethod(
     const GlobalRenderFrameHostId& routing_id,
     GinJavaBoundObject::ObjectID object_id,

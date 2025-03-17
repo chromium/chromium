@@ -24,7 +24,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
@@ -152,12 +152,12 @@ void MagnificationManager::SetProfileForTest(Profile* profile) {
 MagnificationManager::MagnificationManager() {
   session_observation_.Observe(session_manager::SessionManager::Get());
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
-  views::AXEventManager::Get()->AddObserver(this);
+  views::AXUpdateNotifier::Get()->AddObserver(this);
 }
 
 MagnificationManager::~MagnificationManager() {
   CHECK(this == g_magnification_manager);
-  auto* event_manager = views::AXEventManager::Get();
+  auto* event_manager = views::AXUpdateNotifier::Get();
   if (event_manager) {
     event_manager->RemoveObserver(this);
   }

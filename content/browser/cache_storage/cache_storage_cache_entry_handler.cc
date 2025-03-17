@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -35,7 +36,7 @@ class DiskCacheStream : public net::SourceStream {
       CacheStorageCache::EntryIndex cache_index,
       uint64_t offset,
       uint64_t length)
-      : SourceStream(net::SourceStream::SourceType::TYPE_NONE),
+      : SourceStream(net::SourceStreamType::kNone),
         blob_entry_(blob_entry),
         cache_index_(cache_index),
         orig_offset_(offset),

@@ -33,4 +33,4 @@ SetUpAndReturnMockReauthenticationModuleForFormInputAccessory() {
       mock_reauthentication_module);
 }
 
-}  // namespace
+}  // namespace chrome_test_util

@@ -12,6 +12,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -28,6 +30,7 @@ import java.util.List;
  *
  * <p>
  */
+@NullMarked
 final class ProfileOAuth2TokenServiceDelegate {
     private static final String OAUTH2_SCOPE_PREFIX = "oauth2:";
 
@@ -141,7 +144,7 @@ final class ProfileOAuth2TokenServiceDelegate {
          *     completion.
          */
         void onOAuth2TokenFetched(
-                String authToken,
+                @Nullable String authToken,
                 long expirationTimeSecs,
                 boolean isTransientError,
                 long nativeCallback);

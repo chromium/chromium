@@ -4,6 +4,7 @@
 
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
@@ -11,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
@@ -83,15 +83,13 @@ UserInfo TranslateProfile(const AutofillProfile* profile) {
 std::vector<UserInfo> UserInfosForProfiles(
     const std::vector<const AutofillProfile*>& profiles) {
   std::vector<UserInfo> infos(profiles.size());
-  base::ranges::transform(profiles, infos.begin(), TranslateProfile);
+  std::ranges::transform(profiles, infos.begin(), TranslateProfile);
   return infos;
 }
 
 }  // namespace
 
 AddressAccessoryControllerImpl::~AddressAccessoryControllerImpl() {
-  if (personal_data_manager_)
-    personal_data_manager_->RemoveObserver(this);
   if (plus_profiles_provider_) {
     plus_profiles_provider_->RemoveObserver(this);
   }
@@ -116,9 +114,8 @@ AddressAccessoryControllerImpl::GetSheetData() const {
     plus_profiles = plus_profiles_provider_->GetAffiliatedPlusProfiles();
   }
   std::vector<const AutofillProfile*> profiles;
-  if (personal_data_manager_) {
-    profiles =
-        personal_data_manager_->address_data_manager().GetProfilesToSuggest();
+  if (const autofill::AddressDataManager* adm = adm_observation_.GetSource()) {
+    profiles = adm->GetProfilesToSuggest();
   }
   std::u16string user_info_title, plus_address_title;
   if (profiles.empty()) {
@@ -236,17 +233,15 @@ void AddressAccessoryControllerImpl::RegisterPlusProfilesProvider(
 void AddressAccessoryControllerImpl::RefreshSuggestions() {
   TRACE_EVENT0("passwords",
                "AddressAccessoryControllerImpl::RefreshSuggestions");
-  if (!personal_data_manager_) {
-    personal_data_manager_ =
-        autofill::PersonalDataManagerFactory::GetForBrowserContext(
-            GetWebContents().GetBrowserContext());
-    personal_data_manager_->AddObserver(this);
+  if (!adm_observation_.IsObserving()) {
+    adm_observation_.Observe(
+        &autofill::PersonalDataManagerFactory::GetForBrowserContext(
+             GetWebContents().GetBrowserContext())
+             ->address_data_manager());
   }
   CHECK(source_observer_);
   const bool address_data_available =
-      personal_data_manager_ && !personal_data_manager_->address_data_manager()
-                                     .GetProfilesToSuggest()
-                                     .empty();
+      !adm_observation_.GetSource()->GetProfilesToSuggest().empty();
   const bool plus_profiles_data_available =
       plus_profiles_provider_ &&
       !plus_profiles_provider_->GetAffiliatedPlusProfiles().empty();
@@ -260,7 +255,7 @@ AddressAccessoryControllerImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AddressAccessoryControllerImpl::OnPersonalDataChanged() {
+void AddressAccessoryControllerImpl::OnAddressDataChanged() {
   RefreshSuggestions();
 }
 
@@ -292,7 +287,6 @@ AddressAccessoryControllerImpl::AddressAccessoryControllerImpl(
     : content::WebContentsUserData<AddressAccessoryControllerImpl>(
           *web_contents),
       mf_controller_(std::move(mf_controller)),
-      personal_data_manager_(nullptr),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext())) {}
 

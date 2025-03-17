@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A controller to register/unregister {@link MenuOrKeyboardActionHandler} for menu or keyboard
  * actions and execute them.
  */
+@NullMarked
 public interface MenuOrKeyboardActionController {
     /**
      * A handler for menu or keyboard actions. Register via

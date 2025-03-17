@@ -74,8 +74,9 @@ function isValidMicId(
 /**
  * Return the deviceId of the selected microphone.
  *
- * In case the latest selected microphone is still connected, returns
- * `currentMicId`, otherwise, returns the deviceId of the default microphone.
+ * Returns `currentMicId` if the latest selected microphone is still connected.
+ * Otherwise, returns `deviceId` of the default microphone or null if no
+ * microphone is connected.
  *
  * @param microphoneList List of all connected microphones.
  * @param currentMicId DeviceId of the current selected microphone.
@@ -89,11 +90,9 @@ function getSelectedMicId(
     return currentMicId;
   }
 
-  // TODO(kamchonlathorn): Handle the case when there are no microphones,
-  // probably show an error dialog.
   if (microphoneList.length === 0) {
     console.error('There are no connected microphones.');
-    return '';
+    return null;
   }
 
   // In case the microphone is unplugged, fall back to the default device.

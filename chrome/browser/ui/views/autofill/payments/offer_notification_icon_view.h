@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_ICON_VIEW_H_
 
+#include <string_view>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -43,8 +45,7 @@ class OfferNotificationIconView : public PageActionIconView,
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  const std::u16string& GetIconLabelForTesting() const;
-  void SetAnimateOutTimerForTesting(base::RetainingOneShotTimer* timer);
+  std::u16string_view GetIconLabelForTesting() const;
 
  protected:
   // PageActionIconView:
@@ -54,23 +55,7 @@ class OfferNotificationIconView : public PageActionIconView,
 
  private:
   OfferNotificationBubbleController* GetController() const;
-  // IconLabelBubbleView:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
 
-  // Show page action label if it meets the requirements.
-  void MaybeShowPageActionLabel();
-  // Hides the page action label.
-  void HidePageActionLabel();
-  base::RetainingOneShotTimer& AnimateOutTimer();
-  // Animates out the price tracking icon label after a fixed period of time.
-  // This keeps the label visible for long enough to give users an opportunity
-  // to read the label text.
-  base::RetainingOneShotTimer animate_out_timer_;
-  raw_ptr<base::RetainingOneShotTimer> animate_out_timer_for_testing_ = nullptr;
-  // Boolean that tracks whether we should extend the duration for which the
-  // label is shown when it animates in.
-  bool should_extend_label_shown_duration_ = false;
   // Observing the bubble view.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

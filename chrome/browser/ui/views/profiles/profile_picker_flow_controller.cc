@@ -10,10 +10,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,7 +26,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -37,6 +42,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -53,7 +59,7 @@
 namespace {
 
 const signin_metrics::AccessPoint kAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER;
+    signin_metrics::AccessPoint::kUserManager;
 
 // Returns the URL to load as initial content for the profile picker. If an
 // empty URL is returned, the profile picker should not be shown until
@@ -82,6 +88,7 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
       return base_url.Resolve("new-profile");
     case ProfilePicker::EntryPoint::kFirstRun:
+    case ProfilePicker::EntryPoint::kGlicManager:
       // Should not be used for this entry point.
       NOTREACHED();
   }
@@ -321,24 +328,168 @@ std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
 }
 #endif
 
+void RecordProfilingFinishReason(
+    metrics::StartupProfilingFinishReason finish_reason) {
+  base::UmaHistogramEnumeration(
+      "ProfilePicker.FirstProfileTime.FirstWebContentsFinishReason",
+      finish_reason);
+}
+
+class FirstWebContentsProfilerForProfilePicker
+    : public metrics::FirstWebContentsProfilerBase {
+ public:
+  explicit FirstWebContentsProfilerForProfilePicker(
+      content::WebContents* web_contents,
+      base::TimeTicks pick_time);
+
+  FirstWebContentsProfilerForProfilePicker(
+      const FirstWebContentsProfilerForProfilePicker&) = delete;
+  FirstWebContentsProfilerForProfilePicker& operator=(
+      const FirstWebContentsProfilerForProfilePicker&) = delete;
+
+ protected:
+  // FirstWebContentsProfilerBase:
+  void RecordFinishReason(
+      metrics::StartupProfilingFinishReason finish_reason) override;
+  void RecordNavigationFinished(base::TimeTicks navigation_start) override;
+  void RecordFirstNonEmptyPaint() override;
+  bool WasStartupInterrupted() override;
+
+ private:
+  ~FirstWebContentsProfilerForProfilePicker() override;
+
+  const base::TimeTicks pick_time_;
+};
+
+FirstWebContentsProfilerForProfilePicker::
+    FirstWebContentsProfilerForProfilePicker(content::WebContents* web_contents,
+                                             base::TimeTicks pick_time)
+    : FirstWebContentsProfilerBase(web_contents), pick_time_(pick_time) {
+  DCHECK(!pick_time_.is_null());
+}
+
+FirstWebContentsProfilerForProfilePicker::
+    ~FirstWebContentsProfilerForProfilePicker() = default;
+
+void FirstWebContentsProfilerForProfilePicker::RecordFinishReason(
+    metrics::StartupProfilingFinishReason finish_reason) {
+  RecordProfilingFinishReason(finish_reason);
+}
+
+void FirstWebContentsProfilerForProfilePicker::RecordNavigationFinished(
+    base::TimeTicks navigation_start) {
+  // Nothing to record here for Profile Picker startups.
+}
+
+void FirstWebContentsProfilerForProfilePicker::RecordFirstNonEmptyPaint() {
+  const char histogram_name[] =
+      "ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint";
+  base::TimeTicks paint_time = base::TimeTicks::Now();
+  base::UmaHistogramLongTimes100(histogram_name, paint_time - pick_time_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0("startup", histogram_name,
+                                                   this, pick_time_);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("startup", histogram_name,
+                                                 this, paint_time);
+}
+
+bool FirstWebContentsProfilerForProfilePicker::WasStartupInterrupted() {
+  // We're assuming that no interruptions block opening an existing profile
+  // from the profile picker. We would detect this by observing really high
+  // latency on the tracked metric, and can start tracking interruptions if we
+  // find that such cases occur.
+  return false;
+}
+
+// Measures time to display the first web contents.
+void BeginFirstWebContentsProfiling(Browser* browser,
+                                    base::TimeTicks pick_time) {
+  content::WebContents* visible_contents =
+      metrics::FirstWebContentsProfilerBase::GetVisibleContents(browser);
+  if (!visible_contents) {
+    RecordProfilingFinishReason(metrics::StartupProfilingFinishReason::
+                                    kAbandonNoInitiallyVisibleContent);
+    return;
+  }
+
+  if (visible_contents->CompletedFirstVisuallyNonEmptyPaint()) {
+    RecordProfilingFinishReason(
+        metrics::StartupProfilingFinishReason::kAbandonAlreadyPaintedContent);
+    return;
+  }
+
+  // FirstWebContentsProfilerForProfilePicker owns itself and is also bound to
+  // |visible_contents|'s lifetime by observing WebContentsDestroyed().
+  new FirstWebContentsProfilerForProfilePicker(visible_contents, pick_time);
+}
+
+void ShowLocalProfileCustomization(
+    base::TimeTicks profile_picked_time_on_startup,
+    Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
+
+  DCHECK(browser->window());
+  Profile* profile = browser->profile();
+
+  TRACE_EVENT1("browser", "ShowLocalProfileCustomization", "profile_path",
+               profile->GetPath().AsUTF8Unsafe());
+
+  if (!profile_picked_time_on_startup.is_null()) {
+    BeginFirstWebContentsProfiling(browser, profile_picked_time_on_startup);
+  }
+
+  browser->signin_view_controller()->ShowModalProfileCustomizationDialog(
+      /*is_local_profile_creation=*/true);
+}
+
+void MaybeOpenPageInBrowser(Browser* browser,
+                            const GURL& target_page_url,
+                            bool open_settings) {
+  // User clicked 'Edit' from the profile card menu.
+  if (open_settings) {
+    chrome::ShowSettingsSubPage(browser, chrome::kManageProfileSubPage);
+    return;
+  }
+
+  // If no url is provided, proceed with the normal profile startup tabs
+  // behaviour.
+  if (target_page_url.is_empty()) {
+    return;
+  }
+
+  // Opens the target url upon user selecting a pre-existing profile.
+  if (target_page_url.spec() == chrome::kChromeUIHelpURL) {
+    chrome::ShowAboutChrome(browser);
+  } else if (target_page_url.spec() == chrome::kChromeUISettingsURL) {
+    chrome::ShowSettings(browser);
+  } else if (target_page_url.spec() == ProfilePicker::kTaskManagerUrl) {
+    chrome::OpenTaskManager(browser);
+  } else {
+    ShowSingletonTabOverwritingNTP(browser, target_page_url);
+  }
+}
+
 }  // namespace
 
 ProfilePickerFlowController::ProfilePickerFlowController(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
-    ProfilePicker::EntryPoint entry_point)
+    ProfilePicker::EntryPoint entry_point,
+    const GURL& selected_profile_target_url)
     : ProfileManagementFlowControllerImpl(host, std::move(clear_host_callback)),
-      entry_point_(entry_point) {}
+      entry_point_(entry_point),
+      selected_profile_target_url_(selected_profile_target_url) {}
 
 ProfilePickerFlowController::~ProfilePickerFlowController() = default;
 
-void ProfilePickerFlowController::Init(
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+void ProfilePickerFlowController::Init() {
   RegisterStep(Step::kProfilePicker,
                ProfileManagementStepController::CreateForProfilePickerApp(
                    host(), GetInitialURL(entry_point_)));
-  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true,
-               std::move(step_switch_finished_callback));
+  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -471,6 +622,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
       return;
     }
     case ProfilePicker::EntryPoint::kFirstRun:
+    case ProfilePicker::EntryPoint::kGlicManager:
       NOTREACHED()
           << "CancelPostSignInFlow() is not reachable from this entry point";
   }
@@ -507,15 +659,91 @@ ProfilePickerFlowController::CreateSignedInFlowController(
 
 void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
     Profile* profile,
-    PostHostClearedCallback post_host_cleared_callback,
     StepSwitchFinishedCallback step_switch_finished_callback) {
   CHECK(profile);
   created_profile_ = profile->GetWeakPtr();
   CreateSignedOutFlowWebContents(created_profile_.get());
 
   HandleIdentityStepsCompleted(
-      created_profile_.get(), std::move(post_host_cleared_callback),
+      created_profile_.get(),
+      PostHostClearedCallback(base::BindOnce(&ShowLocalProfileCustomization,
+                                             profile_picked_time_on_startup_)),
       /*is_continue_callback=*/false, std::move(step_switch_finished_callback));
+}
+
+void ProfilePickerFlowController::PickProfile(
+    const base::FilePath& profile_path,
+    ProfilePicker::ProfilePickingArgs args) {
+  if (args.should_record_startup_metrics &&
+      // Avoid overriding the picked time if already recorded. This can happen
+      // for example if multiple profiles are picked: https://crbug.com/1277466.
+      profile_picked_time_on_startup_.is_null()) {
+    profile_picked_time_on_startup_ = base::TimeTicks::Now();
+  }
+
+  profiles::SwitchToProfile(
+      profile_path, /*always_create=*/false,
+      base::BindOnce(&ProfilePickerFlowController::OnSwitchToProfileComplete,
+                     weak_ptr_factory_.GetWeakPtr(), args.open_settings));
+}
+
+void ProfilePickerFlowController::OnSwitchToProfileComplete(bool open_settings,
+                                                            Browser* browser) {
+  if (!browser || browser->is_delete_scheduled()) {
+    // The browser is destroyed or about to be destroyed.
+    return;
+  }
+
+  DCHECK(browser->window());
+  Profile* profile = browser->profile();
+  TRACE_EVENT1("browser",
+               "ProfilePickerFlowController::OnSwitchToProfileComplete",
+               "profile_path", profile->GetPath().AsUTF8Unsafe());
+
+  // Measure startup time to display first web contents if the profile picker
+  // was displayed on startup and if the initiating action is instrumented. For
+  // example we don't record pick time for profile creations.
+  if (!profile_picked_time_on_startup_.is_null()) {
+    BeginFirstWebContentsProfiling(browser, profile_picked_time_on_startup_);
+  }
+
+  // Only show the profile switch IPH when the user clicked the card, and there
+  // are multiple profiles.
+  std::vector<ProfileAttributesEntry*> entries =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetAllProfilesAttributes();
+  int profile_count =
+      std::ranges::count(entries, false, &ProfileAttributesEntry::IsOmitted);
+  if (profile_count > 1 && !open_settings &&
+      selected_profile_target_url_.is_empty()) {
+    browser->window()->MaybeShowProfileSwitchIPH();
+  }
+
+  if (profile->IsGuestSession()) {
+    RecordProfilePickerAction(ProfilePickerAction::kLaunchGuestProfile);
+  } else {
+    RecordProfilePickerAction(
+        open_settings
+            ? ProfilePickerAction::kLaunchExistingProfileCustomizeSettings
+            : ProfilePickerAction::kLaunchExistingProfile);
+  }
+
+  MaybeOpenPageInBrowser(browser, selected_profile_target_url_, open_settings);
+  // Closes the Profile Picker.
+  //
+  // Making sure the flow has not already exited here is needed, because
+  // potentially this specific flow can be run twice by the time the host was
+  // cleared; e.g. by clicking quickly multiple times when picking a Profile
+  // from the Profile Picker view.
+  // Depending on the state of the first call, subsequent calls may result in
+  // `BeginFirstWebContentsProfiling()` recording multiple metrics.
+  // TODO(crbug.com/389887233): Investigate further how often this happens to
+  // consider having a better architecture to avoid those issues with multiple
+  // flow-exiting calls being executed at the same time.
+  if (!HasFlowExited()) {
+    ExitFlow();
+  }
 }
 
 base::queue<ProfileManagementFlowController::Step>

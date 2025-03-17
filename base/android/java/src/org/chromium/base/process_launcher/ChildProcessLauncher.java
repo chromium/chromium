@@ -101,10 +101,10 @@ public class ChildProcessLauncher {
     private final ChildConnectionAllocator mConnectionAllocator;
 
     // The IBinder interfaces provided to the created service.
-    private final List<IBinder> mClientInterfaces;
+    private final @Nullable List<IBinder> mClientInterfaces;
 
-    // A binder box which can be used by the child to unpack additional binders. May be null.
-    private final IBinder mBinderBox;
+    // A binder box which can be used by the child to unpack additional binders.
+    private final @Nullable IBinder mBinderBox;
 
     // The actual service connection. Set once we have connected to the service. Volatile as it is
     // accessed from threads other than the Launcher thread.
@@ -128,8 +128,8 @@ public class ChildProcessLauncher {
             String[] commandLine,
             FileDescriptorInfo[] filesToBeMapped,
             ChildConnectionAllocator connectionAllocator,
-            List<IBinder> clientInterfaces,
-            IBinder binderBox) {
+            @Nullable List<IBinder> clientInterfaces,
+            @Nullable IBinder binderBox) {
         assert connectionAllocator != null;
         mLauncherHandler = launcherHandler;
         isRunningOnLauncherThread();
@@ -294,11 +294,11 @@ public class ChildProcessLauncher {
         return connection == null ? NULL_PROCESS_HANDLE : connection.getPid();
     }
 
-    public List<IBinder> getClientInterfaces() {
+    public @Nullable List<IBinder> getClientInterfaces() {
         return mClientInterfaces;
     }
 
-    public IBinder getBinderBox() {
+    public @Nullable IBinder getBinderBox() {
         return mBinderBox;
     }
 

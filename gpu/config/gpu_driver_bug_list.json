@@ -1315,7 +1315,7 @@
       "os": {
         "type": "android"
       },
-      "gl_vendor": "Intel.*",
+      "gl_vendor": ".*Intel.*",
       "features": [
         "msaa_is_slow"
       ]
@@ -1712,7 +1712,7 @@
     },
     {
       "id": 300,
-      "cr_bugs": [775898, 785648],
+      "cr_bugs": [775898],
       "description": "Direct composition causes rendering issues on Intel SandyBridge and IvyBridge GPUs on early versions of RS3",
       "os": {
         "type" : "win",
@@ -1727,7 +1727,7 @@
         "ivybridge"
       ],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -2558,18 +2558,6 @@
       ]
     },
     {
-      "id": 378,
-      "cr_bugs": [1227033],
-      "description": "Don't use the OOPR Canvas feature on Macs with NVIDIA GPUs",
-      "os": {
-        "type" : "macosx"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "disable_canvas_oop_rasterization"
-      ]
-    },
-    {
       "id": 379,
       "cr_bugs": [1217298],
       "description": "Disable VP9 HW encode on Intel Gen 9.5 SoCs using the i965 VA driver backend",
@@ -3083,25 +3071,6 @@
       ]
     },
     {
-      "id": 419,
-      "cr_bugs": [1473665],
-      "description": "Corruption when consecutive VP9 keyframes are requested from MFVEA on Intel.",
-      "comment": [
-        "In MFVEA, the Intel MFT driver currently misbehaves when requesting ",
-        "two consecutive keyframes. MFVEA fixes this by causing a delta frame ",
-        "encode in between the keyframes whose results are thrown away. ",
-        "External bitrate control isn't made aware that this happens."
-      ],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "any",
-      "features": [
-        "avoid_consecutive_keyframes_for_vp9"
-      ]
-    },
-    {
       "id": 420,
       "cr_bugs": [1475546],
       "description": "GPU process crash when decoding HEVC on Intel with specific drivers.",
@@ -3484,6 +3453,19 @@
       "gl_renderer": "Mali.*",
       "features": [
         "msaa_is_slow"
+      ]
+    },
+    {
+      "id": 441,
+      "description": "Limits the number of system-wide accelerated video decoders to 10 due to a driver crash.",
+      "cr_bugs": [333711204],
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x98e4"],
+      "features": [
+        "max_num_hw_video_decoders_10"
       ]
     }
   ]

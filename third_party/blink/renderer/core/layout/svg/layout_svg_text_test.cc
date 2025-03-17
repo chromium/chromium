@@ -24,7 +24,7 @@ TEST_F(LayoutSVGTextTest, RectBasedHitTest) {
   const auto& text = *GetElementById("text")->firstChild();
 
   // Rect based hit testing
-  auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
+  auto& results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
   int count = 0;
   EXPECT_EQ(2u, results.size());
   for (auto result : results) {
@@ -51,14 +51,14 @@ TEST_F(LayoutSVGTextTest, RectBasedHitTest_RotatedText) {
 
   {
     // Non-intersecting.
-    auto results = RectBasedHitTest(PhysicalRect(25, 10, 10, 100));
+    auto& results = RectBasedHitTest(PhysicalRect(25, 10, 10, 100));
     EXPECT_EQ(1u, results.size());
     EXPECT_TRUE(results.Contains(svg));
   }
   {
     // Intersects the axis-aligned bounding box of the text but not the actual
     // (local) bounding box.
-    auto results = RectBasedHitTest(PhysicalRect(12, 12, 50, 50));
+    auto& results = RectBasedHitTest(PhysicalRect(12, 12, 50, 50));
     EXPECT_EQ(1u, results.size());
     EXPECT_TRUE(results.Contains(svg));
   }

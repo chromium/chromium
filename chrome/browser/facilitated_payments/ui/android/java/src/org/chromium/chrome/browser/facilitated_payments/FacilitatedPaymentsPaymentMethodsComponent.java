@@ -24,11 +24,6 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
      * with.
      */
     interface Delegate {
-        // Deprecated: TODO: crbug.com/375089558 - Deprecate this method, onUiEvent replaces this
-        // method.
-        /** Called whenever the sheet is dismissed. */
-        void onDismissed();
-
         /**
          * Called whenever a UI event takes place.
          *
@@ -62,7 +57,7 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     boolean isInLandscapeMode();
 
     /** Displays a Pix FOP selector in a bottom sheet. */
-    void showSheet(List<BankAccount> bankAccounts);
+    void showSheetForPix(List<BankAccount> bankAccounts);
 
     /** Displays an eWallet FOP selector in a bottom sheet. */
     void showSheetForEwallet(List<Ewallet> eWallets);

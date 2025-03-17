@@ -72,11 +72,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
@@ -273,7 +271,7 @@ public class KeyboardAccessoryViewTest {
                     mModel.set(VISIBLE, true);
                 });
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
-        assertEquals(view.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, view.getVisibility());
 
         // After hiding the view, the view should still exist but be invisible.
         ThreadUtils.runOnUiThreadBlocking(
@@ -451,7 +449,6 @@ public class KeyboardAccessoryViewTest {
                                 .setItemTag("")
                                 .setSuggestionType(SuggestionType.CREATE_NEW_PLUS_ADDRESS)
                                 .setFeatureForIph("")
-                                .setIphDescriptionText("IPH description")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
@@ -468,7 +465,7 @@ public class KeyboardAccessoryViewTest {
                 });
 
         onViewWaiting(withText("Create plus address"));
-        waitForHelpBubble(withText("IPH description"));
+        waitForHelpBubble(withText(R.string.plus_address_create_suggestion_iph_android));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withChild(withText("Create plus address"))).check(matches(isSelected()));
         onView(withText("Create plus address")).perform(click());
@@ -478,6 +475,47 @@ public class KeyboardAccessoryViewTest {
                 tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION));
         onView(withChild(withText("Create plus address"))).check(matches(not(isSelected())));
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissesCardInfoRetrievalBubbleOnFilling() throws InterruptedException {
+        String descriptionText =
+                "You can autofill this card because your PayPay account is linked to Google";
+        AutofillBarItem itemWithIph =
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Card Info Retrieval")
+                                .setSubLabel("")
+                                .setItemTag("")
+                                .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
+                                .setIphDescriptionText(descriptionText)
+                                .setApplyDeactivatedStyle(false)
+                                .build(),
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
+        itemWithIph.setFeatureForIph(
+                FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE);
+
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
+                });
+
+        onViewWaiting(withText("Card Info Retrieval"));
+        waitForHelpBubble(withText(descriptionText));
+        assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
+        onView(withChild(withText("Card Info Retrieval"))).check(matches(isSelected()));
+        onView(withText("Card Info Retrieval")).perform(click());
+
+        assertThat(tracker.wasDismissed(), is(true));
+        assertThat(
+                tracker.getLastEmittedEvent(),
+                is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED));
+        onView(withChild(withText("Card Info Retrieval"))).check(matches(not(isSelected())));
     }
 
     @Test
@@ -701,7 +739,6 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
     public void testCustomIconUrlSet_imageReturnedByPersonalDataManager_customIconSetOnChipView()
             throws InterruptedException {
         GURL customIconUrl = mock(GURL.class);

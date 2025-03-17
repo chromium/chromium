@@ -538,28 +538,28 @@ using EnableIfFastCase = T;
 
 }  // namespace strings_internal
 
-ABSL_MUST_USE_RESULT inline std::string StrCat() { return std::string(); }
+[[nodiscard]] inline std::string StrCat() { return std::string(); }
 
 template <typename T>
-ABSL_MUST_USE_RESULT inline std::string StrCat(
+[[nodiscard]] inline std::string StrCat(
     strings_internal::EnableIfFastCase<T> a) {
   return strings_internal::SingleArgStrCat(a);
 }
-ABSL_MUST_USE_RESULT inline std::string StrCat(const AlphaNum& a) {
+[[nodiscard]] inline std::string StrCat(const AlphaNum& a) {
   return std::string(a.data(), a.size());
 }
 
-ABSL_MUST_USE_RESULT std::string StrCat(const AlphaNum& a, const AlphaNum& b);
-ABSL_MUST_USE_RESULT std::string StrCat(const AlphaNum& a, const AlphaNum& b,
-                                        const AlphaNum& c);
-ABSL_MUST_USE_RESULT std::string StrCat(const AlphaNum& a, const AlphaNum& b,
-                                        const AlphaNum& c, const AlphaNum& d);
+[[nodiscard]] std::string StrCat(const AlphaNum& a, const AlphaNum& b);
+[[nodiscard]] std::string StrCat(const AlphaNum& a, const AlphaNum& b,
+                                 const AlphaNum& c);
+[[nodiscard]] std::string StrCat(const AlphaNum& a, const AlphaNum& b,
+                                 const AlphaNum& c, const AlphaNum& d);
 
 // Support 5 or more arguments
 template <typename... AV>
-ABSL_MUST_USE_RESULT inline std::string StrCat(
-    const AlphaNum& a, const AlphaNum& b, const AlphaNum& c, const AlphaNum& d,
-    const AlphaNum& e, const AV&... args) {
+[[nodiscard]] inline std::string StrCat(const AlphaNum& a, const AlphaNum& b,
+                                        const AlphaNum& c, const AlphaNum& d,
+                                        const AlphaNum& e, const AV&... args) {
   return strings_internal::CatPieces(
       {a.Piece(), b.Piece(), c.Piece(), d.Piece(), e.Piece(),
        static_cast<const AlphaNum&>(args).Piece()...});

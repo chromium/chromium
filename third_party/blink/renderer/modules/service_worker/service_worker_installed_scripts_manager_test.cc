@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -162,7 +163,8 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
           installed_scripts_info) {
     auto installed_scripts_manager_params =
         std::make_unique<WebServiceWorkerInstalledScriptsManagerParams>(
-            std::move(installed_scripts_info->installed_urls),
+            base::ToVector(std::move(installed_scripts_info->installed_urls),
+                           ToWebURL),
             std::move(installed_scripts_info->manager_receiver),
             std::move(installed_scripts_info->manager_host_remote));
     installed_scripts_manager_ =

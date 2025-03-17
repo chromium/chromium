@@ -6,10 +6,14 @@ package org.chromium.components.background_task_scheduler;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Helper class to allow external code (typically Chrome-specific BackgroundTaskScheduler code) to
  * report UMA.
  */
+@NullMarked
 public abstract class BackgroundTaskSchedulerExternalUma {
     // BackgroundTaskId defined in tools/metrics/histograms/enums.xml
     public static final int BACKGROUND_TASK_NOT_FOUND = -1;
@@ -145,7 +149,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
      * @return The histogram pattern to be used for the given {@code taskId}.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public String getHistogramPatternForTaskId(int taskId) {
+    public @Nullable String getHistogramPatternForTaskId(int taskId) {
         switch (taskId) {
             case TaskIds.TEST:
                 return "Test";

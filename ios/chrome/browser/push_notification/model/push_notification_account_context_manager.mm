@@ -10,6 +10,7 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -31,6 +32,26 @@ struct PermissionsPref {
   const std::string profile_name;
 };
 
+// Helper for iteration over all profile attributes when looking for a profile
+// with a given gaia id.
+ProfileAttributesStorageIOS::IterationResult FindProfileWithGaiaId(
+    const GaiaId& gaia_id,
+    std::string& profile_name,
+    const ProfileAttributesIOS& attr) {
+  if (gaia_id == attr.GetGaiaId()) {
+    profile_name = attr.GetProfileName();
+    return ProfileAttributesStorageIOS::IterationResult::kTerminate;
+  }
+  return ProfileAttributesStorageIOS::IterationResult::kContinue;
+}
+
+// Helper to add account to PushNotificationAccountContextManager* for all
+// known profiles during iteration.
+void AddAccountToManager(PushNotificationAccountContextManager* manager,
+                         const ProfileAttributesIOS& attr) {
+  [manager addAccount:attr.GetGaiaId()];
+}
+
 }  // namespace
 
 @implementation PushNotificationAccountContextManager {
@@ -39,7 +60,7 @@ struct PermissionsPref {
 
   // A dictionary that maps a user's GAIA ID to an unsigned integer representing
   // the number of times the account is signed in across Profiles.
-  std::map<std::string, size_t> _contextMap;
+  std::map<GaiaId, size_t> _contextMap;
 }
 
 - (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager {
@@ -49,17 +70,14 @@ struct PermissionsPref {
     _profileManager = manager;
     ProfileAttributesStorageIOS* storage =
         manager->GetProfileAttributesStorage();
-    const size_t numberOfProfiles = storage->GetNumberOfProfiles();
-    for (size_t i = 0; i < numberOfProfiles; i++) {
-      ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
-      [self addAccount:attr.GetGaiaId()];
-    }
+    storage->IterateOverProfileAttributes(
+        base::BindRepeating(&AddAccountToManager, self));
   }
 
   return self;
 }
 
-- (BOOL)addAccount:(const std::string&)gaiaID {
+- (BOOL)addAccount:(const GaiaId&)gaiaID {
   if (gaiaID.empty()) {
     return NO;
   }
@@ -68,7 +86,7 @@ struct PermissionsPref {
   return YES;
 }
 
-- (BOOL)removeAccount:(const std::string&)gaiaID {
+- (BOOL)removeAccount:(const GaiaId&)gaiaID {
   auto iterator = _contextMap.find(gaiaID);
   if (iterator == _contextMap.end()) {
     // The account was unexpectedly not found, so return NO to indicate that
@@ -87,7 +105,7 @@ struct PermissionsPref {
 }
 
 - (void)enablePushNotification:(PushNotificationClientId)clientID
-                    forAccount:(const std::string&)gaiaID {
+                    forAccount:(const GaiaId&)gaiaID {
   PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
   // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
@@ -102,7 +120,7 @@ struct PermissionsPref {
 }
 
 - (void)disablePushNotification:(PushNotificationClientId)clientID
-                     forAccount:(const std::string&)gaiaID {
+                     forAccount:(const GaiaId&)gaiaID {
   PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
   // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
@@ -117,7 +135,7 @@ struct PermissionsPref {
 }
 
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
-                                forAccount:(const std::string&)gaiaID {
+                                forAccount:(const GaiaId&)gaiaID {
   PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
   // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
@@ -130,7 +148,7 @@ struct PermissionsPref {
 }
 
 - (NSDictionary<NSString*, NSNumber*>*)preferenceMapForAccount:
-    (const std::string&)gaiaID {
+    (const GaiaId&)gaiaID {
   ProfileIOS* profile = [self profileFrom:gaiaID];
   NSMutableDictionary<NSString*, NSNumber*>* result =
       [[NSMutableDictionary alloc] init];
@@ -150,12 +168,12 @@ struct PermissionsPref {
   NSMutableArray<NSString*>* keys =
       [[NSMutableArray alloc] initWithCapacity:_contextMap.size()];
   for (auto const& context : _contextMap) {
-    [keys addObject:base::SysUTF8ToNSString(context.first)];
+    [keys addObject:context.first.ToNSString()];
   }
   return keys;
 }
 
-- (NSUInteger)registrationCountForAccount:(const std::string&)gaiaID {
+- (NSUInteger)registrationCountForAccount:(const GaiaId&)gaiaID {
   DCHECK(base::Contains(_contextMap, gaiaID));
   return _contextMap[gaiaID];
 }
@@ -169,16 +187,16 @@ struct PermissionsPref {
 // where the given gaiaID is signed into multiple profiles, it is possible that
 // the push notification enabled features' permissions may be incorrectly
 // applied.
-- (ProfileIOS*)profileFrom:(const std::string&)gaiaID {
+- (ProfileIOS*)profileFrom:(const GaiaId&)gaiaID {
   ProfileAttributesStorageIOS* storage =
       _profileManager->GetProfileAttributesStorage();
 
-  const size_t numberOfProfiles = storage->GetNumberOfProfiles();
-  for (size_t i = 0; i < numberOfProfiles; i++) {
-    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
-    if (gaiaID == attr.GetGaiaId()) {
-      return _profileManager->GetProfileWithName(attr.GetProfileName());
-    }
+  std::string profileName;
+  storage->IterateOverProfileAttributes(base::BindRepeating(
+      &FindProfileWithGaiaId, gaiaID, std::ref(profileName)));
+
+  if (!profileName.empty()) {
+    return _profileManager->GetProfileWithName(profileName);
   }
 
   return nullptr;
@@ -187,14 +205,15 @@ struct PermissionsPref {
 // Returns the appropriate `PermissionsPref` for the given `clientID` and
 // `gaiaID`. This can be either profile prefs or LocalState prefs.
 - (PermissionsPref)prefsForClient:(PushNotificationClientId)clientID
-                          account:(const std::string&)gaiaID {
+                          account:(const GaiaId&)gaiaID {
   std::string clientKey =
       PushNotificationClientManager::PushNotificationClientIdToString(clientID);
   switch (clientID) {
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
-    case PushNotificationClientId::kSendTab: {
+    case PushNotificationClientId::kSendTab:
+    case PushNotificationClientId::kReminders: {
       ProfileIOS* profile = [self profileFrom:gaiaID];
       if (!profile) {
         // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome
@@ -229,9 +248,8 @@ struct PermissionsPref {
       ->UpdateAttributesForProfileWithName(
           profileName,
           base::BindOnce(
-              [](base::Value::Dict permissions, ProfileAttributesIOS attr) {
+              [](base::Value::Dict permissions, ProfileAttributesIOS& attr) {
                 attr.SetNotificationPermissions(std::move(permissions));
-                return attr;
               },
               permissions.Clone()));
 }

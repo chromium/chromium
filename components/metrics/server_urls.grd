@@ -10,7 +10,7 @@ Note that for LGPL compliance reasons, these URL strings are stored in resource 
 rather than the code.
 -->
 
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/metrics_server_urls.h" type="rc_header">
       <emit emit_type="prepend"></emit>

@@ -33,9 +33,6 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
   void CreateGroup(JNIEnv* env,
                    const JavaParamRef<jstring>& group_name,
                    const JavaParamRef<jobject>& j_callback);
-  void DeleteGroup(JNIEnv* env,
-                   const JavaParamRef<jstring>& group_id,
-                   const JavaParamRef<jobject>& j_callback);
   void InviteMember(JNIEnv* env,
                     const JavaParamRef<jstring>& group_id,
                     const JavaParamRef<jstring>& invitee_email,
@@ -65,6 +62,9 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
                                 const JavaParamRef<jstring>& access_token,
                                 const JavaParamRef<jobject>& j_callback);
   ScopedJavaLocalRef<jobject> GetUiDelegate(JNIEnv* env);
+  void Log(JNIEnv* env,
+           /*logger_common::mojom::LogSource*/ jint source,
+           const JavaParamRef<jstring>& message);
 
   // Returns the DataSharingServiceImpl java object.
   ScopedJavaLocalRef<jobject> GetJavaObject();

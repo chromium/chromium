@@ -43,6 +43,7 @@ source_set("unit_tests") {
   sources = [
     "web_data_service_base_unittest.cc",
     "web_database_migration_unittest.cc",
+    "web_database_service_unittest.cc",
   ]
 
   deps = [

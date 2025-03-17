@@ -23,7 +23,7 @@ promise_test(async () => {
   for await (const chunk of streamingResponse) {
     result += chunk;
   }
-  assert_true(result.length > 0);
+  assert_greater_than(result.length, 0);
 }, 'Simple AIWriter.writeStreaming() call');
 
 promise_test(async (t) => {

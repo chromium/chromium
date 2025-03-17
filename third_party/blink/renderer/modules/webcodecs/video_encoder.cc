@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_av_1.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_avc.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_hevc.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_vp_9.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h"
@@ -1072,19 +1073,25 @@ void VideoEncoder::ProcessEncode(Request* request) {
     frame->set_timestamp(blink_timestamp);
   }
 
-  if (frame->metadata().frame_duration) {
-    frame_metadata_[frame->timestamp()] =
-        FrameMetadata{*frame->metadata().frame_duration};
+  if (frame->metadata().frame_duration.has_value()) {
+    auto duration = *frame->metadata().frame_duration;
+    if (!duration.is_zero() && duration != media::kInfiniteDuration) {
+      frame_metadata_[frame->timestamp()] = FrameMetadata{duration};
+    }
   }
+
   request->StartTracingVideoEncode(encode_options.key_frame,
                                    frame->timestamp());
 
   bool mappable = frame->IsMappable() || frame->HasMappableGpuBuffer();
+  bool can_handle_shared_image =
+      encoder_info_.DoesSupportGpuSharedImages(frame->format()) &&
+      frame->HasSharedImage();
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
-  if (!mappable) {
+  if (!mappable && !can_handle_shared_image) {
     DCHECK(frame->HasSharedImage());
     // Stall request processing while we wait for the copy to complete. It'd
     // be nice to not have to do this, but currently the request processing
@@ -1117,12 +1124,26 @@ void VideoEncoder::ProcessEncode(Request* request) {
   // Currently underlying encoders can't handle alpha channel, so let's
   // wrap a frame with an alpha channel into a frame without it.
   // For example such frames can come from 2D canvas context with alpha = true.
-  DCHECK(mappable);
+  DCHECK(mappable || can_handle_shared_image);
   if (media::IsYuvPlanar(frame->format()) &&
       !media::IsOpaque(frame->format())) {
     frame = media::VideoFrame::WrapVideoFrame(
         frame, ToOpaqueMediaPixelFormat(frame->format()), frame->visible_rect(),
         frame->natural_size());
+  }
+
+  if (frame->HasSharedImage()) {
+    // This frame might have a sync token.  In order to transmit this sync
+    // token to the gpu process, it must be verified.  This flushes the
+    // renderer side command buffer and ensures tha the sync token is valid
+    // on the gpu process side.  The encoder will actually wait on the sync
+    // token before trying to acquire the shared image.
+    auto wrapper = SharedGpuContext::ContextProviderWrapper();
+    if (wrapper) {
+      gpu::SyncToken token = frame->acquire_sync_token();
+      wrapper->ContextProvider().SharedImageInterface()->VerifySyncToken(token);
+      frame->UpdateAcquireSyncToken(token);
+    }
   }
 
   --requested_encodes_;
@@ -1184,6 +1205,18 @@ media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
         break;
       }
       result.quantizer = request->encodeOpts->avc()->quantizer();
+      break;
+    case media::VideoCodec::kHEVC:
+      if (!active_config_->options.bitrate.has_value() ||
+          active_config_->options.bitrate->mode() !=
+              media::Bitrate::Mode::kExternal) {
+        break;
+      }
+      if (!request->encodeOpts->hasHevc() ||
+          !request->encodeOpts->hevc()->hasQuantizer()) {
+        break;
+      }
+      result.quantizer = request->encodeOpts->hevc()->quantizer();
       break;
     case media::VideoCodec::kVP8:
     default:
@@ -1379,6 +1412,8 @@ void VideoEncoder::OnMediaEncoderInfoChanged(
     ApplyCodecPressure();
   else
     ReleaseCodecPressure();
+
+  encoder_info_ = encoder_info;
 
   media::MediaLog* log = logger_->log();
   log->SetProperty<media::MediaLogProperty::kVideoEncoderName>(

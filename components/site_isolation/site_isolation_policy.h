@@ -85,6 +85,10 @@ class SiteIsolationPolicy {
   static bool ShouldDisableSiteIsolationDueToMemoryThreshold(
       content::SiteIsolationMode site_isolation_mode);
 
+  // Determines whether Origin Isolation should be disabled because the device
+  // does not have the minimum required amount of memory.
+  static bool ShouldDisableOriginIsolationDueToMemoryThreshold();
+
   // Returns true if the PDF compositor should be enabled to allow out-of-
   // process iframes (OOPIF's) to print properly.
   static bool ShouldPdfCompositorBeEnabledForOopifs();

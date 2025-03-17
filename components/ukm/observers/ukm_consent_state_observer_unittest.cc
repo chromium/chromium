@@ -18,12 +18,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/kiosk/kiosk_test_utils.h"  // nogncheck
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace ukm {
 
@@ -35,7 +32,7 @@ class MockSyncService : public syncer::TestSyncService {
     SetMaxTransportState(TransportState::INITIALIZING);
     SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SetAppSync(false);
 #endif
   }
@@ -75,7 +72,6 @@ class MockSyncService : public syncer::TestSyncService {
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetAppSync(bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto selected_os_types = GetUserSettings()->GetSelectedOsTypes();
 
     if (enabled) {
@@ -85,10 +81,6 @@ class MockSyncService : public syncer::TestSyncService {
     }
 
     GetUserSettings()->SetSelectedOsTypes(false, selected_os_types);
-#else
-    GetUserSettings()->SetAppsSyncEnabledByOs(enabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     NotifyObserversOfStateChanged();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -171,11 +163,11 @@ class UkmConsentStateObserverTest : public testing::TestWithParam<bool> {
 
 void ExpectDwaAllowedForAllProfiles(TestUkmConsentStateObserver& observer,
                                     bool expected_allowed) {
-  // App sync is turned off by default in CHROMEOS_ASH. This results in DWA not
+  // App sync is turned off by default in CHROMEOS. This results in DWA not
   // being allowed for that particular test setup, however can be enabled for
   // other platforms.
   // DWA and ChromeOS are tested further below.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(expected_allowed, observer.IsDwaAllowedForAllProfiles());
 #endif
 }
@@ -314,7 +306,7 @@ TEST_F(UkmConsentStateObserverTest, NoInitialUkmConsentState) {
   sync.Shutdown();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UkmConsentStateObserverTest, VerifyConsentStates) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
@@ -428,10 +420,6 @@ TEST_F(UkmConsentStateObserverTest, VerifyConflictingProfilesRevokesConsent) {
   EXPECT_FALSE(observer.ResetPurged());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-
 // Test consent state for kiosk.
 class KioskUkmConsentStateObserverTest : public UkmConsentStateObserverTest {
  public:
@@ -440,10 +428,10 @@ class KioskUkmConsentStateObserverTest : public UkmConsentStateObserverTest {
 
 TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
   // Enter Kiosk session.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManager::RegisterPrefs(local_state.registry());
   user_manager::ScopedUserManager user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      std::make_unique<user_manager::FakeUserManager>(&local_state));
   chromeos::SetUpFakeKioskSession();
 
   sync_preferences::TestingPrefServiceSyncable prefs;

@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -20,14 +22,19 @@
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/extensions/sync_helper.h"
 #include "components/sync/model/sync_change.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/launch_util.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -90,22 +97,41 @@ syncer::SyncDataList ToSyncerSyncDataList(
   return result;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 25),
-              "Please consider whether your new disable reason should be"
-              " syncable, and if so update this bitmask accordingly!");
-const int kKnownSyncableDisableReasons =
-    extensions::disable_reason::DISABLE_USER_ACTION |
-    extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE |
-    extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT |
-    extensions::disable_reason::DISABLE_GREYLIST |
-    extensions::disable_reason::DISABLE_REMOTE_INSTALL;
-const int kAllKnownDisableReasons =
-    extensions::disable_reason::DISABLE_REASON_LAST - 1;
-// We also include any future bits for newer clients that added another disable
-// reason.
-const int kSyncableDisableReasons =
-    kKnownSyncableDisableReasons | ~kAllKnownDisableReasons;
+// Given a set of disable reasons, returns the subset of syncable disable
+// reasons.
+base::flat_set<int> GetSyncableDisableReasons(
+    const base::flat_set<int>& disable_reasons) {
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 26),
+                "Please consider whether your new disable reason should be"
+                " syncable, and if so update the list below accordingly!");
+  const base::flat_set<int> kKnownSyncableDisableReasons = {
+      extensions::disable_reason::DISABLE_USER_ACTION,
+      extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
+      extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT,
+      extensions::disable_reason::DISABLE_GREYLIST,
+      extensions::disable_reason::DISABLE_REMOTE_INSTALL,
+  };
 
+  base::flat_set<int> syncable_disable_reasons;
+  for (const int reason : disable_reasons) {
+    // Newer browser versions may send reasons that are unknown to the current
+    // version. We treat such reasons as syncable, in addition to the known
+    // syncable reasons for the current version.
+    if (kKnownSyncableDisableReasons.contains(reason) ||
+        !extensions::IsValidDisableReason(reason)) {
+      syncable_disable_reasons.insert(reason);
+    }
+  }
+  return syncable_disable_reasons;
+}
+
+base::flat_set<int> GetLocalDisableReasons(
+    const base::flat_set<int>& disable_reasons) {
+  const base::flat_set<int> syncable_disable_reasons =
+      GetSyncableDisableReasons(disable_reasons);
+  return base::STLSetDifference<base::flat_set<int>>(disable_reasons,
+                                                     syncable_disable_reasons);
+}
 }  // namespace
 
 struct ExtensionSyncService::PendingUpdate {
@@ -195,6 +221,8 @@ ExtensionSyncService::MergeDataAndStartSyncing(
     }
   }
 
+  AccountExtensionTracker::Get(profile_)->OnInitialExtensionsSyncDataReceived();
+
   // Now push the local state to sync.
   // Note: We'd like to only send out changes for extensions which have
   // NeedsSync set. However, we can't tell if our changes ever made it to the
@@ -258,12 +286,17 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
     const Extension& extension) const {
   const std::string& id = extension.id();
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
-  int disable_reasons =
-      extension_prefs->GetDisableReasons(id) & kSyncableDisableReasons;
-  // Note that we're ignoring the enabled state during ApplySyncData (we check
-  // for the existence of disable reasons instead), we're just setting it here
-  // for older Chrome versions (<M48).
-  bool enabled = (disable_reasons == extensions::disable_reason::DISABLE_NONE);
+
+  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+  base::flat_set<int> current_disable_reasons =
+      extension_prefs->GetRawDisableReasons(passkey, id);
+  base::flat_set<int> syncable_disable_reasons =
+      GetSyncableDisableReasons(current_disable_reasons);
+
+  // Note that we're ignoring the enabled state during ApplySyncData (we
+  // check for the existence of disable reasons instead), we're just setting
+  // it here for older Chrome versions (<M48).
+  bool enabled = syncable_disable_reasons.empty();
   if (extensions::blocklist_prefs::IsExtensionBlocklisted(id,
                                                           extension_prefs)) {
     NOTREACHED() << "Blocklisted extensions should not be getting synced.";
@@ -279,15 +312,16 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
 
   const GURL update_url =
       extension_management->GetEffectiveUpdateURL(extension);
+
   ExtensionSyncData result =
       extension.is_app()
           ? ExtensionSyncData(
-                extension, enabled, disable_reasons, incognito_enabled,
+                extension, enabled, syncable_disable_reasons, incognito_enabled,
                 remote_install, update_url,
                 app_sorting->GetAppLaunchOrdinal(id),
                 app_sorting->GetPageOrdinal(id),
                 extensions::GetLaunchTypePrefValue(extension_prefs, id))
-          : ExtensionSyncData(extension, enabled, disable_reasons,
+          : ExtensionSyncData(extension, enabled, syncable_disable_reasons,
                               incognito_enabled, remote_install, update_url);
 
   // If there's a pending update, send the new version to sync instead of the
@@ -375,7 +409,6 @@ void ExtensionSyncService::ApplySyncData(
 
   // Extension from sync was uninstalled by the user as an external extension.
   // Honor user choice and skip installation/enabling.
-  // TODO(treib): Should we still apply pref changes?
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
   if (extension_prefs->IsExternalExtensionUninstalled(id)) {
     LOG(WARNING) << "Extension with id " << id
@@ -400,43 +433,55 @@ void ExtensionSyncService::ApplySyncData(
   }
 
   // Figure out the resulting set of disable reasons.
-  int disable_reasons = extension_prefs->GetDisableReasons(id);
+  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+  base::flat_set<int> disable_reasons =
+      extension_prefs->GetRawDisableReasons(passkey, id);
 
   // Chrome versions M37-M44 used |extension_sync_data.remote_install()| to tag
   // not-yet-approved remote installs. It's redundant now that disable reasons
   // are synced (DISABLE_REMOTE_INSTALL should be among them already), but some
   // old sync data may still be around, and it doesn't hurt to add the reason.
   // TODO(crbug.com/41240022): Deprecate and eventually remove |remote_install|.
-  if (extension_sync_data.remote_install())
-    disable_reasons |= extensions::disable_reason::DISABLE_REMOTE_INSTALL;
+  if (extension_sync_data.remote_install()) {
+    disable_reasons.insert(extensions::disable_reason::DISABLE_REMOTE_INSTALL);
+  }
 
   // Add/remove disable reasons based on the incoming sync data.
-  int incoming_disable_reasons = extension_sync_data.disable_reasons();
-  if (!!incoming_disable_reasons == extension_sync_data.enabled()) {
+  const base::flat_set<int> incoming_disable_reasons =
+      extension_sync_data.disable_reasons();
+
+  if (!incoming_disable_reasons.empty() == extension_sync_data.enabled()) {
     // The enabled flag disagrees with the presence of disable reasons. This
     // must either come from an old (<M45) client which doesn't sync disable
     // reasons, or the extension is blocklisted (which doesn't have a
     // corresponding disable reason).
     // Update |disable_reasons| based on the enabled flag.
-    if (extension_sync_data.enabled())
-      disable_reasons &= ~kKnownSyncableDisableReasons;
-    else  // Assume the extension was likely disabled by the user.
-      disable_reasons |= extensions::disable_reason::DISABLE_USER_ACTION;
+    if (extension_sync_data.enabled()) {
+      disable_reasons = GetLocalDisableReasons(disable_reasons);
+    } else {  // Assume the extension was likely disabled by the user.
+      disable_reasons.insert(extensions::disable_reason::DISABLE_USER_ACTION);
+    }
   } else {
     // Replace the syncable disable reasons:
     // 1. Remove any syncable disable reasons we might have.
-    disable_reasons &= ~kSyncableDisableReasons;
-    // 2. Add the incoming reasons. Mask with |kSyncableDisableReasons|, because
-    //    Chrome M45-M47 also wrote local disable reasons to sync, and we don't
-    //    want those.
-    disable_reasons |= incoming_disable_reasons & kSyncableDisableReasons;
+    disable_reasons = GetLocalDisableReasons(disable_reasons);
+
+    // 2. Remove any non-syncable reasons from the incoming data because Chrome
+    // M45-M47 also wrote local disable reasons to sync, and we don't want
+    // those.
+    base::flat_set<int> cleaned_incoming_disable_reasons_set =
+        GetSyncableDisableReasons(incoming_disable_reasons);
+
+    // 3. Add the incoming disable reasons.
+    disable_reasons = base::STLSetUnion<base::flat_set<int>>(
+        disable_reasons, cleaned_incoming_disable_reasons_set);
   }
 
   // Enable/disable the extension.
-  bool should_be_enabled =
-      (disable_reasons == extensions::disable_reason::DISABLE_NONE);
+  bool should_be_enabled = disable_reasons.empty();
   bool reenable_after_update = false;
-  if (should_be_enabled && !extension_service()->IsExtensionEnabled(id)) {
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile_);
+  if (should_be_enabled && !extension_registrar->IsExtensionEnabled(id)) {
     if (extension) {
       // Only grant permissions if the sync data explicitly sets the disable
       // reasons to extensions::disable_reason::DISABLE_NONE (as opposed to the
@@ -470,10 +515,13 @@ void ExtensionSyncService::ApplySyncData(
   } else if (!should_be_enabled) {
     // Note that |disable_reasons| includes any pre-existing reasons that
     // weren't explicitly removed above.
-    if (extension_service()->IsExtensionEnabled(id))
-      extension_service()->DisableExtension(id, disable_reasons);
-    else  // Already disabled, just replace the disable reasons.
-      extension_prefs->ReplaceDisableReasons(id, disable_reasons);
+    if (extension_registrar->IsExtensionEnabled(id)) {
+      extension_service()->DisableExtensionWithRawReasons(passkey, id,
+                                                          disable_reasons);
+    } else {
+      // Already disabled, just replace the disable reasons.
+      extension_prefs->ReplaceRawDisableReasons(passkey, id, disable_reasons);
+    }
   }
 
   // Update the incognito flag.
@@ -514,12 +562,9 @@ void ExtensionSyncService::ApplySyncData(
         PendingUpdate(extension_sync_data.version(), reenable_after_update);
     check_for_updates = true;
   } else if (state == NOT_INSTALLED) {
-    if (!extension_service()->pending_extension_manager()->AddFromSync(
-            id,
-            extension_sync_data.update_url(),
-            extension_sync_data.version(),
-            ShouldAllowInstall,
-            extension_sync_data.remote_install())) {
+    if (!extensions::PendingExtensionManager::Get(profile_)->AddFromSync(
+            id, extension_sync_data.update_url(), extension_sync_data.version(),
+            ShouldAllowInstall, extension_sync_data.remote_install())) {
       LOG(WARNING) << "Could not add pending extension for " << id;
       // This means that the extension is already pending installation, with a
       // non-INTERNAL location.  Add to pending_sync_data, even though it will
@@ -564,7 +609,8 @@ void ExtensionSyncService::OnExtensionInstalled(
       // changes to this extension, so we don't want to trigger sync activity
       // from the call to GrantPermissionsAndEnableExtension.
       base::AutoReset<bool> ignore_updates(&ignore_updates_, true);
-      extension_service()->GrantPermissionsAndEnableExtension(extension);
+      extensions::ExtensionRegistrar::Get(profile_)
+          ->GrantPermissionsAndEnableExtension(*extension);
     }
     if (compare_result >= 0)
       pending_updates_.erase(it);
@@ -614,21 +660,9 @@ void ExtensionSyncService::OnExtensionUninstalled(
   pending_updates_.erase(extension->id());
 }
 
-void ExtensionSyncService::OnExtensionStateChanged(
-    const std::string& extension_id,
-    bool state) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
-  const Extension* extension = registry->GetInstalledExtension(extension_id);
-  // We can get pref change notifications for extensions that aren't installed
-  // (yet). In that case, we'll pick up the change later via ExtensionRegistry
-  // observation (in OnExtensionInstalled).
-  if (extension)
-    SyncExtensionChangeIfNeeded(*extension);
-}
-
 void ExtensionSyncService::OnExtensionDisableReasonsChanged(
     const std::string& extension_id,
-    int disabled_reasons) {
+    extensions::DisableReasonSet disabled_reasons) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   const Extension* extension = registry->GetInstalledExtension(extension_id);
   // We can get pref change notifications for extensions that aren't installed
@@ -713,9 +747,12 @@ bool ExtensionSyncService::ShouldReceiveSyncData(
 
 bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
   // Only extensions associated with the signed in user's account should be
-  // synced for transport mode.
+  // synced for transport mode. Note that syncable component extensions are an
+  // exception to this, and may be synced even if they are not account
+  // extensions.
   if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile_) &&
-      !IsAccountExtension(profile_, extension.id())) {
+      !IsAccountExtension(profile_, extension.id()) &&
+      !extensions::sync_helper::IsSyncableComponentExtension(&extension)) {
     return false;
   }
 

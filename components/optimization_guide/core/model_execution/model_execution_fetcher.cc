@@ -4,12 +4,15 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
@@ -219,11 +222,19 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
+    case ModelBasedCapabilityKey::kFormsClassifications:
+      // TODO(crbug.com/389631477) - Add traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
+      // TODO(crbug.com/398296762): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kPermissionsAi:
     case ModelBasedCapabilityKey::kSummarize:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
       // On-device only feature.
       NOTREACHED();
   }
@@ -235,6 +246,16 @@ void RecordRequestStatusHistogram(ModelBasedCapabilityKey feature,
       base::StrCat({"OptimizationGuide.ModelExecutionFetcher.RequestStatus.",
                     GetStringNameForModelExecutionFeature(feature)}),
       status);
+}
+
+// Appends headers as specified by the command line arguments.
+void AppendHeadersIfNeeded(network::ResourceRequest& request) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kModelExecutionEnableRemoteDebugLogging)) {
+    return;
+  }
+  request.headers.SetHeaderIfMissing(
+      kOptimizationGuideModelExecutionDebugLogsHeaderKey, "");
 }
 
 }  // namespace
@@ -328,6 +349,7 @@ void ModelExecutionFetcher::OnAccessTokenReceived(
   resource_request->url = optimization_guide_service_url_;
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  AppendHeadersIfNeeded(*resource_request);
 
   active_url_loader_ = variations::CreateSimpleURLLoaderWithVariationsHeader(
       std::move(resource_request),

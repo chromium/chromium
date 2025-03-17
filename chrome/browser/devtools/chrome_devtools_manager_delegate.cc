@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
@@ -61,13 +60,10 @@
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/pref_names.h"
 #include "components/prefs/pref_service.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
 #endif
 
 using content::DevToolsAgentHost;
@@ -215,7 +211,7 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
           profile, ProfileKeepAliveOrigin::kRemoteDebugging);
     }
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 ChromeDevToolsManagerDelegate::~ChromeDevToolsManagerDelegate() {
@@ -316,15 +312,10 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
 
   if (auto* web_app_provider =
           web_app::WebAppProvider::GetForWebApps(profile)) {
-    // TODO(crbug.com/340952100): Evaluate call sites of
-    // FindBestAppWithUrlInScope for correctness.
     std::optional<webapps::AppId> app_id =
         web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
             rfh->GetMainFrame()->GetLastCommittedURL(),
-            {
-                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-            });
+            web_app::WebAppFilter::InstalledInChrome());
     if (app_id) {
       const auto* web_app =
           web_app_provider->registrar_unsafe().GetAppById(app_id.value());
@@ -441,7 +432,8 @@ void ChromeDevToolsManagerDelegate::ClientDetached(
 
 scoped_refptr<DevToolsAgentHost> ChromeDevToolsManagerDelegate::CreateNewTarget(
     const GURL& url,
-    DevToolsManagerDelegate::TargetType target_type) {
+    DevToolsManagerDelegate::TargetType target_type,
+    bool new_window) {
   NavigateParams params(ProfileManager::GetLastUsedProfile(), url,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

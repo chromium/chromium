@@ -35,6 +35,8 @@ enum class ToolbarTabGroupState;
 - (void)setUnderPageBackgroundColor:(UIColor*)underPageBackgroundColor;
 // Updates the toolbar for the given TabGroup state.
 - (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState;
+// Adds or removes a blue dot in the ToolbarTabGridButton.
+- (void)setTabGridButtonBlueDot:(BOOL)hasBlueDot;
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TOOLBAR_CONSUMER_H_

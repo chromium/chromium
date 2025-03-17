@@ -29,6 +29,7 @@ class BookmarkParentFolderChildrenTest : public testing::Test {
     model_->LoadEmptyForTest();
     merged_service_ = std::make_unique<BookmarkMergedSurfaceService>(
         model_.get(), /*managed_service*/ nullptr);
+    merged_service_->LoadForTesting({});
   }
 
   BookmarkModel& bookmark_model() { return *model_.get(); }
@@ -67,6 +68,7 @@ TEST_F(BookmarkParentFolderChildrenTest, FromNode) {
 TEST_F(BookmarkParentFolderChildrenTest, FromPermanentFolderOrderingTracker) {
   PermanentFolderOrderingTracker tracker(&bookmark_model(),
                                          BookmarkNode::Type::BOOKMARK_BAR);
+  tracker.Init(/*in_order_node_ids=*/{});
 
   BookmarkParentFolderChildren bookmark_bar_children(&tracker);
   EXPECT_EQ(bookmark_bar_children.size(), 0u);

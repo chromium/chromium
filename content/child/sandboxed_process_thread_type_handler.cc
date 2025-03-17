@@ -51,7 +51,7 @@ SandboxedProcessThreadTypeHandler* SandboxedProcessThreadTypeHandler::Get() {
 bool SandboxedProcessThreadTypeHandler::HandleThreadTypeChange(
     base::PlatformThreadId thread_id,
     base::ThreadType thread_type) {
-  thread_type_switcher_->SetThreadType(thread_id, thread_type);
+  thread_type_switcher_->SetThreadType(thread_id.raw(), thread_type);
   return true;
 }
 

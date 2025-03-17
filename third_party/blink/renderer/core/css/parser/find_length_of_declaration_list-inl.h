@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_FIND_LENGTH_OF_DECLARATION_LIST_INL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_FIND_LENGTH_OF_DECLARATION_LIST_INL_H_
 
@@ -54,6 +49,7 @@
 #include <arm_neon.h>
 #endif
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 #ifdef __SSE2__
@@ -64,7 +60,8 @@
 // saturating pack, since our values are in little-endian already.
 static inline __m128i LoadAndCollapseHighBytes(const UChar* ptr) {
   __m128i x1 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(ptr));
-  __m128i x2 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(ptr + 8));
+  __m128i x2 =
+      _mm_loadu_si128(UNSAFE_TODO(reinterpret_cast<const __m128i*>(ptr + 8)));
   return _mm_packus_epi16(x1, x2);
 }
 
@@ -85,9 +82,9 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
   __m128i prev_parens = _mm_setzero_si128();
 
   const CharType* ptr = begin;
-  while (ptr + 17 <= end) {
+  while (UNSAFE_TODO(ptr + 17) <= end) {
     __m128i x = LoadAndCollapseHighBytes(ptr);
-    __m128i next_x = LoadAndCollapseHighBytes(ptr + 1);
+    __m128i next_x = LoadAndCollapseHighBytes(UNSAFE_TODO(ptr + 1));
 
     // We don't want deal with escaped characters within strings,
     // and they are generally rare, so if we see any backslashes,
@@ -147,6 +144,13 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     quoted ^= _mm_slli_si128(quoted, 8);
     const __m128i mixed_quote =
         _mm_cmpeq_epi8(quoted, _mm_set1_epi8('\'' ^ '"'));
+    const __m128i is_quoted = _mm_cmpgt_epi8(quoted, _mm_setzero_si128());
+
+    // Unescaped newlines within quotes are not allowed; they terminate
+    // the string. We don't want to complicate our handling beyond
+    // detecting it, so we treat it as an error and abort.
+    const __m128i eq_newline = _mm_cmpeq_epi8(x, _mm_set1_epi8('\n'));
+    const __m128i quoted_newline = is_quoted & eq_newline;
 
     // Now we have a mask of bytes that are inside quotes
     // (which happens to include the first quote, though
@@ -159,7 +163,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // We can use this to simply ignore things inside strings.
     // (We don't need to mask next_x as it's only used for comments;
     // masking x will be sufficient.)
-    x = _mm_andnot_si128(_mm_cmpgt_epi8(quoted, _mm_setzero_si128()), x);
+    x = _mm_andnot_si128(is_quoted, x);
 
     // Look for start of comments; successive / and * characters.
     // We don't support them, as they are fairly rare and we'd need to
@@ -232,11 +236,12 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // We generally combine all of the end-parsing situations together
     // and figure out afterwards what the first one was, to determine
     // the return value.
-    const __m128i must_end = eq_backslash | mixed_quote | opening_block |
-                             comment_start | eq_rightbrace | parens;
+    const __m128i must_end = eq_backslash | mixed_quote | quoted_newline |
+                             opening_block | comment_start | eq_rightbrace |
+                             parens;
     if (_mm_movemask_epi8(must_end) != 0) {
       unsigned idx = __builtin_ctz(_mm_movemask_epi8(must_end));
-      ptr += idx;
+      UNSAFE_TODO(ptr += idx);
       if (*ptr == '}') {
         // Check that we have balanced parens at the end point
         // (the paren counter is zero).
@@ -253,7 +258,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
       }
     }
 
-    ptr += 16;
+    UNSAFE_TODO(ptr += 16);
     prev_quoted = _mm_srli_si128(quoted, 15);
     prev_parens = _mm_srli_si128(parens, 15);
   }
@@ -273,7 +278,8 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
 __attribute__((target("avx2"))) static inline __m256i
 LoadAndCollapseHighBytesAVX2(const UChar* ptr) {
   __m256i x1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(ptr));
-  __m256i x2 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(ptr + 16));
+  __m256i x2 = _mm256_loadu_si256(
+      reinterpret_cast<const __m256i*>(UNSAFE_TODO(ptr + 16)));
   __m256i packed = _mm256_packus_epi16(x1, x2);
 
   // AVX2 pack is per-lane (two separate 16 -> 8 packs),
@@ -351,9 +357,9 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
   __m256i prev_parens = _mm256_setzero_si256();
 
   const CharType* ptr = begin;
-  while (ptr + 33 <= end) {
+  while (UNSAFE_TODO(ptr + 33) <= end) {
     __m256i x = LoadAndCollapseHighBytesAVX2(ptr);
-    __m256i next_x = LoadAndCollapseHighBytesAVX2(ptr + 1);
+    __m256i next_x = LoadAndCollapseHighBytesAVX2(UNSAFE_TODO(ptr + 1));
 
     const __m256i eq_backslash = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('\\'));
 
@@ -376,6 +382,9 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
     // We need to convert this back into a byte mask so that we can mask out
     // parens within quotes.
     __m256i quoted_mask = MaskToAVX2(prefix_single_quote | prefix_double_quote);
+
+    const __m256i eq_newline = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('\n'));
+    const __m256i quoted_newline = quoted_mask & eq_newline;
 
     const __m256i comment_start =
         _mm256_cmpeq_epi8(x, _mm256_set1_epi8('/')) &
@@ -402,10 +411,11 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
     uint64_t must_end =
         (_mm256_movemask_epi8(opening_block | comment_start | eq_rightbrace) &
          ~quoted_bitmask) |
-        mixed_quote | _mm256_movemask_epi8(parens | eq_backslash);
+        mixed_quote |
+        _mm256_movemask_epi8(parens | eq_backslash | quoted_newline);
     if (must_end != 0) {
       unsigned idx = __builtin_ctzll(must_end);
-      ptr += idx;
+      UNSAFE_TODO(ptr += idx);
       if (*ptr == '}') {
         uint32_t mask = _mm256_movemask_epi8(
             _mm256_cmpeq_epi8(parens, _mm256_setzero_si256()));
@@ -420,7 +430,7 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
       }
     }
 
-    ptr += 32;
+    UNSAFE_TODO(ptr += 32);
 
     // We keep prev_*_quote as integers, unlike in SSE2; there's no need
     // to waste cross-lane shifts on them.
@@ -435,11 +445,11 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
 __attribute__((target("avx2,pclmul"))) inline size_t
 FindLengthOfDeclarationListAVX2(StringView str) {
   if (str.Is8Bit()) {
-    return FindLengthOfDeclarationListAVX2(str.Characters8(),
-                                           str.Characters8() + str.length());
+    return FindLengthOfDeclarationListAVX2(
+        str.Characters8(), UNSAFE_TODO(str.Characters8() + str.length()));
   } else {
-    return FindLengthOfDeclarationListAVX2(str.Characters16(),
-                                           str.Characters16() + str.length());
+    return FindLengthOfDeclarationListAVX2(
+        str.Characters16(), UNSAFE_TODO(str.Characters16() + str.length()));
   }
 }
 
@@ -448,8 +458,10 @@ FindLengthOfDeclarationListAVX2(StringView str) {
 static inline uint8x16_t LoadAndCollapseHighBytes(const UChar* ptr) {
   uint8x16_t x1;
   uint8x16_t x2;
-  memcpy(&x1, ptr, sizeof(x1));
-  memcpy(&x2, ptr + 8, sizeof(x2));
+  UNSAFE_TODO({
+    memcpy(&x1, ptr, sizeof(x1));
+    memcpy(&x2, ptr + 8, sizeof(x2));
+  });
   return vreinterpretq_u8_u64(
       vcombine_u64(vreinterpret_u64_u8(vqmovn_u16(vreinterpretq_u16_u8(x1))),
                    vreinterpret_u64_u8(vqmovn_u16(vreinterpretq_u16_u8(x2)))));
@@ -481,9 +493,9 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
   uint8x16_t prev_parens = vdupq_n_u8(0);
 
   const CharType* ptr = begin;
-  while (ptr + 17 <= end) {
+  while (UNSAFE_TODO(ptr + 17) <= end) {
     uint8x16_t x = LoadAndCollapseHighBytes(ptr);
-    const uint8x16_t next_x = LoadAndCollapseHighBytes(ptr + 1);
+    const uint8x16_t next_x = LoadAndCollapseHighBytes(UNSAFE_TODO(ptr + 1));
     const uint8x16_t eq_backslash = x == '\\';
     const uint8x16_t eq_double_quote = x == '"';
     const uint8x16_t eq_single_quote = x == '\'';
@@ -510,7 +522,11 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     quoted ^= prev_quoted;
     const uint8x16_t mixed_quote = quoted == static_cast<char>('\'' ^ '"');
 
-    x &= ~(quoted > vdupq_n_u8(0));
+    const uint8x16_t is_quoted = quoted > vdupq_n_u8(0);
+    const uint8x16_t eq_newline = x == '\n';
+    const uint8x16_t quoted_newline = is_quoted & eq_newline;
+
+    x &= ~is_quoted;
 
     const uint8x16_t comment_start = (x == '/') & (next_x == '*');
     const uint8x16_t opening_paren = x == '(';
@@ -541,15 +557,16 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
 
     const uint8x16_t opening_block = (x | vdupq_n_u8(0x20)) == '{';
     const uint8x16_t eq_rightbrace = x == '}';
-    uint8x16_t must_end = eq_backslash | mixed_quote | opening_block |
-                          comment_start | eq_rightbrace | parens_overflow;
+    uint8x16_t must_end = eq_backslash | mixed_quote | quoted_newline |
+                          opening_block | comment_start | eq_rightbrace |
+                          parens_overflow;
 
     // https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/porting-x86-vector-bitmask-optimizations-to-arm-neon
     uint64_t must_end_narrowed = vget_lane_u64(
         vreinterpret_u64_u8(vshrn_n_u16(vreinterpretq_u16_u8(must_end), 4)), 0);
     if (must_end_narrowed != 0) {
       unsigned idx = __builtin_ctzll(must_end_narrowed) >> 2;
-      ptr += idx;
+      UNSAFE_TODO(ptr += idx);
       if (*ptr == '}') {
         // Since we don't have cheap PMOVMSKB, and this is not on
         // the most critical path, we just chicken out here and let
@@ -566,7 +583,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     }
 
     // As mentioned above, broadcast instead of shifting.
-    ptr += 16;
+    UNSAFE_TODO(ptr += 16);
     prev_quoted = vdupq_lane_u8(
         vreinterpret_u8_u64(vget_high_u64(vreinterpretq_u64_u8(quoted))), 7);
     prev_parens = vdupq_lane_u8(
@@ -589,11 +606,11 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
 
 ALWAYS_INLINE static size_t FindLengthOfDeclarationList(StringView str) {
   if (str.Is8Bit()) {
-    return FindLengthOfDeclarationList(str.Characters8(),
-                                       str.Characters8() + str.length());
+    return FindLengthOfDeclarationList(
+        str.Characters8(), UNSAFE_TODO(str.Characters8() + str.length()));
   } else {
-    return FindLengthOfDeclarationList(str.Characters16(),
-                                       str.Characters16() + str.length());
+    return FindLengthOfDeclarationList(
+        str.Characters16(), UNSAFE_TODO(str.Characters16() + str.length()));
   }
 }
 

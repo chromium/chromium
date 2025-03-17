@@ -126,9 +126,30 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
 
   // Returns null if the `sksl` command is invalid.
   //
-  // *NOTE*: This is only intended for trusted shader (e.g., shaders that are
-  // part of the Chromium binary).
-  static sk_sp<PaintShader> MakeSkSLCommand(std::string_view sksl);
+  // NOTE:
+  // - This is only intended for trusted shader (e.g., shaders that are part of
+  //   the Chromium binary).
+  // - Not using flat_map because SkString does not have built-in comparator.
+  template <typename ValueType>
+  struct Uniform {
+    SkString name;
+    ValueType value;
+
+    bool operator==(const Uniform& other) const {
+      return name == other.name && value == other.value;
+    }
+  };
+  using FloatUniform = Uniform<SkScalar>;
+  using Float2Uniform = Uniform<SkV2>;
+  using Float4Uniform = Uniform<SkV4>;
+  using IntUniform = Uniform<int>;
+  constexpr static size_t kMaxNumUniformsPerType = 16u;
+  static sk_sp<PaintShader> MakeSkSLCommand(
+      std::string_view sksl,
+      std::vector<FloatUniform> float_uniforms,
+      std::vector<Float2Uniform> float2_uniforms,
+      std::vector<Float4Uniform> float4_uniforms,
+      std::vector<IntUniform> int_uniforms);
 
   static size_t GetSerializedSize(const PaintShader* shader);
 
@@ -301,9 +322,14 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   //
   // TODO(https://crbug.com/384532231): Consider cashing the Skia shader for
   // performance.
-  //
-  // TODO(https://crbug.com/384075578): Add support to shader uniforms.
   SkString sksl_command_;
+
+  // Uniforms for `sksl_command_`. The keys of the map are the variable name of
+  // the uniform.
+  std::vector<FloatUniform> scalar_uniforms_;
+  std::vector<Float2Uniform> float2_uniforms_;
+  std::vector<Float4Uniform> float4_uniforms_;
+  std::vector<IntUniform> int_uniforms_;
 };
 
 }  // namespace cc

@@ -38,11 +38,11 @@ suite('SearchboxBackButton', () => {
     await waitAfterNextRender(lensSidePanelElement);
     assertTrue(
         isVisible(lensSidePanelElement.shadowRoot!.querySelector<HTMLElement>(
-            '#backButton')!));
+            '#backButton')));
     testBrowserProxy.page.setBackArrowVisible(false);
     await waitAfterNextRender(lensSidePanelElement);
     assertFalse(
         isVisible(lensSidePanelElement.shadowRoot!.querySelector<HTMLElement>(
-            '#backButton')!));
+            '#backButton')));
   });
 });

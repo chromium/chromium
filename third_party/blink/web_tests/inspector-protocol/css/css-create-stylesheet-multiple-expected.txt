@@ -1,0 +1,42 @@
+Tests that rules could be added to multiple new stylesheets.
+Dumping matched rules: 
+Dumping inherited rules: 
+Creating inspector stylesheet.
+Style sheet added: inspector
+Adding a rule to the inspector stylesheet.
+==== Style sheet text ====
+#inspected.s1 {}
+
+Dumping matched rules: 
+Dumping inherited rules: 
+Creating inspector stylesheet.
+Adding a rule to the inspector stylesheet.
+==== Style sheet text ====
+#inspected.s1-updated {}
+#inspected.s1 {}
+
+Dumping matched rules: 
+Dumping inherited rules: 
+Creating inspector stylesheet.
+Style sheet added: inspector
+Adding a rule to the inspector stylesheet.
+==== Style sheet text ====
+#inspected.s2 {}
+#inspected.s1-updated {}
+#inspected.s1 {}
+
+Dumping matched rules: 
+Dumping inherited rules: 
+Creating inspector stylesheet.
+Style sheet added: inspector
+Adding a rule to the inspector stylesheet.
+==== Style sheet text ====
+#inspected.s3 {}
+#inspected.s2 {}
+#inspected.s1-updated {}
+#inspected.s1 {}
+
+Dumping matched rules: 
+Dumping inherited rules: 
+Count of unique ids: 3
+

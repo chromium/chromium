@@ -14,7 +14,7 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
-#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -62,8 +62,8 @@
 @property(nonatomic, strong) TabStripMediator* mediator;
 // Helper providing context menu for tab strip items.
 @property(nonatomic, strong) TabStripContextMenuHelper* contextMenuHelper;
-
-@property TabStripViewController* tabStripViewController;
+// The view controller for the tab strip.
+@property(nonatomic, strong) TabStripViewController* tabStripViewController;
 
 @end
 
@@ -107,10 +107,18 @@
   BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  collaboration::messaging::MessagingBackendService* messagingService =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
                              tabGroupSyncService:tabGroupSyncService
-                                     browserList:browserList];
+                                     browserList:browserList
+                                messagingService:messagingService
+                            collaborationService:collaborationService];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.profile = profile;
   self.mediator.browser = self.browser;
@@ -257,22 +265,35 @@
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
                                 groupItem:(TabGroupItem*)tabGroupItem
                                sourceView:(UIView*)sourceView {
+  if (actionType == TabGroupActionType::kLeaveOrKeepSharedTabGroup ||
+      actionType == TabGroupActionType::kDeleteOrKeepSharedTabGroup) {
+    sourceView = self.tabStripViewController.closedTabGroupView;
+  }
+
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       actionType:actionType
                       sourceView:sourceView];
   __weak TabStripCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
+    [weakSelf takeActionForActionType:actionType tabGroupItem:tabGroupItem];
+  };
+  _tabGroupConfirmationCoordinator.secondaryAction = ^{
     switch (actionType) {
       case TabGroupActionType::kUngroupTabGroup:
-        [weakSelf ungroupTabGroup:tabGroupItem];
-        break;
       case TabGroupActionType::kDeleteTabGroup:
-        [weakSelf deleteTabGroup:tabGroupItem];
+      case TabGroupActionType::kLeaveSharedTabGroup:
+      case TabGroupActionType::kDeleteSharedTabGroup:
+        NOTREACHED();
+
+      case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+        [weakSelf replaceLastTabByNewTabInGroup:tabGroupItem];
         break;
     }
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroupItem.title;
 
   [_tabGroupConfirmationCoordinator start];
   self.tabStripViewController.tabGroupConfirmationHandler =
@@ -294,7 +315,7 @@
       HandlerForProtocol(dispatcher, TabGridCommands);
   void (^openTabGroupPanelAction)() = ^{
     [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
-    [tabGridHandler showTabGroupsPanelAnimated:NO];
+    [tabGridHandler showPage:TabGridPageTabGroups animated:NO];
   };
 
   // Create and config the snackbar.
@@ -380,20 +401,41 @@
   _alertCoordinator = nil;
 }
 
-// Helper method to close a tab group and dismiss the confirmation coordinator.
-- (void)deleteTabGroup:(TabGroupItem*)tabGroupItem {
-  if (tabGroupItem) {
-    [_mediator deleteGroup:tabGroupItem];
+// Executes a corresponded action to `actionType` and dismiss
+// the confirmation coordinator.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                   tabGroupItem:(TabGroupItem*)tabGroupItem {
+  if (!tabGroupItem) {
+    return;
   }
+
+  switch (actionType) {
+    case TabGroupActionType::kUngroupTabGroup:
+      [_mediator ungroupGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kDeleteTabGroup:
+      [_mediator deleteGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kLeaveSharedTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      [_mediator leaveSharedGroup:tabGroupItem];
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      [_mediator deleteSharedGroup:tabGroupItem];
+      break;
+  }
+
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;
 }
 
-// Helper method to ungroup a tab group and dismiss the confirmation
-// coordinator.
-- (void)ungroupTabGroup:(TabGroupItem*)tabGroupItem {
+// Helper method to open a new tab when the last tab of a shared group is
+// closed. By doing that, the user is keeping the group instead of deleting it.
+- (void)replaceLastTabByNewTabInGroup:(TabGroupItem*)tabGroupItem {
   if (tabGroupItem) {
-    [_mediator ungroupGroup:tabGroupItem];
+    [_mediator addNewTabInGroup:tabGroupItem];
+    [_mediator closeSavedTabFromGroup:tabGroupItem];
   }
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;
@@ -414,10 +456,7 @@
 
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          std::make_unique<
-              collaboration::CollaborationFlowConfigurationShareOrManage>(
-              tabGroup->GetWeakPtr()));
+          browser, self.baseViewController);
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                tabGroup->tab_group_id());
 }

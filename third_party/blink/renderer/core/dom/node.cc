@@ -436,17 +436,17 @@ Node* Node::PseudoAwarePreviousSibling() const {
       [[fallthrough]];
     case kPseudoIdCheckMark:
       if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonInlineEnd:
-      if (Node* previous =
               parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
         return previous;
       }
       [[fallthrough]];
     case kPseudoIdScrollButtonBlockEnd:
+      if (Node* previous =
+              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonInlineEnd:
       if (Node* previous =
               parent->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
         return previous;
@@ -567,17 +567,17 @@ Node* Node::PseudoAwareNextSibling() const {
       [[fallthrough]];
     case kPseudoIdScrollButtonInlineStart:
       if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonBlockEnd:
-      if (Node* next =
               parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
         return next;
       }
       [[fallthrough]];
     case kPseudoIdScrollButtonInlineEnd:
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonBlockEnd:
       if (Node* next = parent->GetPseudoElement(kPseudoIdCheckMark)) {
         return next;
       }
@@ -694,11 +694,11 @@ Node* Node::PseudoAwareFirstChild() const {
       return first;
     }
     if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
       return first;
     }
     if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
@@ -774,11 +774,11 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     }
     if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
       return last;
     }
     if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
       return last;
     }
     if (Node* last = current_element->GetPseudoElement(
@@ -892,6 +892,12 @@ void Node::moveBefore(Node* new_child,
 
   insertBefore(new_child, ref_child, exception_state);
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  DCHECK(old_parent);
   new_child->MovedFrom(*old_parent);
 }
 
@@ -1021,55 +1027,12 @@ static Node* NodeOrStringToNode(
 // and script into text nodes via NodeOrStringToNode.
 // Returns nullptr if an exception was thrown.
 // static
-Node* Node::ConvertNodeUnionsIntoNode(
-    const ContainerNode* parent,
-    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
-    Document& document,
-    const char* property_name,
-    ExceptionState& exception_state) {
-  DCHECK(!RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
-
-  bool needs_check = IsA<HTMLScriptElement>(parent) &&
-                     document.GetExecutionContext() &&
-                     document.GetExecutionContext()->RequireTrustedTypes();
-  VectorOf<Node> nodes;
-  for (const auto& node_union : node_unions) {
-    Node* node = NodeOrStringToNode(node_union, document, needs_check,
-                                    property_name, exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-    if (node) {
-      nodes.push_back(node);
-    }
-  }
-
-  if (nodes.size() == 1u) {
-    return nodes[0];
-  }
-
-  Node* fragment = DocumentFragment::Create(document);
-  for (const auto& node : nodes) {
-    fragment->appendChild(node, exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-  }
-  return fragment;
-}
-
-// Converts |node_unions| from bindings into actual Nodes by converting strings
-// and script into text nodes via NodeOrStringToNode.
-// Returns nullptr if an exception was thrown.
-// static
 VectorOf<Node> Node::ConvertNodeUnionsIntoNodes(
     const ContainerNode* parent,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
     const char* property_name,
     ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
-
   bool needs_check = IsA<HTMLScriptElement>(parent) &&
                      document.GetExecutionContext() &&
                      document.GetExecutionContext()->RequireTrustedTypes();
@@ -1158,20 +1121,13 @@ void Node::prepend(
     return;
   }
 
-  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
-    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-        this_node, nodes, GetDocument(), "prepend", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    this_node->InsertBefore(node_vector, this_node->firstChild(),
-                            exception_state);
-  } else {
-    if (Node* node = ConvertNodeUnionsIntoNode(this_node, nodes, GetDocument(),
-                                               "prepend", exception_state)) {
-      this_node->InsertBefore(node, this_node->firstChild(), exception_state);
-    }
+  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+      this_node, nodes, GetDocument(), "prepend", exception_state);
+  if (exception_state.HadException()) {
+    return;
   }
+  this_node->InsertBefore(node_vector, this_node->firstChild(),
+                          exception_state);
 }
 
 void Node::append(
@@ -1185,19 +1141,12 @@ void Node::append(
     return;
   }
 
-  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
-    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-        this_node, nodes, GetDocument(), "append", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    this_node->AppendChildren(node_vector, exception_state);
-  } else {
-    if (Node* node = ConvertNodeUnionsIntoNode(this_node, nodes, GetDocument(),
-                                               "append", exception_state)) {
-      this_node->AppendChild(node, exception_state);
-    }
+  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+      this_node, nodes, GetDocument(), "append", exception_state);
+  if (exception_state.HadException()) {
+    return;
   }
+  this_node->AppendChildren(node_vector, exception_state);
 }
 
 void Node::before(
@@ -1207,27 +1156,16 @@ void Node::before(
   if (!parent)
     return;
   Node* viable_previous_sibling = FindViablePreviousSibling(*this, nodes);
-  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
-    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-        parent, nodes, GetDocument(), "before", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    parent->InsertBefore(node_vector,
-                         viable_previous_sibling
-                             ? viable_previous_sibling->nextSibling()
-                             : parent->firstChild(),
-                         exception_state);
-  } else {
-    if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                               "before", exception_state)) {
-      parent->InsertBefore(node,
-                           viable_previous_sibling
-                               ? viable_previous_sibling->nextSibling()
-                               : parent->firstChild(),
-                           exception_state);
-    }
+  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+      parent, nodes, GetDocument(), "before", exception_state);
+  if (exception_state.HadException()) {
+    return;
   }
+  parent->InsertBefore(node_vector,
+                       viable_previous_sibling
+                           ? viable_previous_sibling->nextSibling()
+                           : parent->firstChild(),
+                       exception_state);
 }
 
 void Node::after(
@@ -1237,19 +1175,12 @@ void Node::after(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
-    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-        parent, nodes, GetDocument(), "after", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
-  } else {
-    if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                               "after", exception_state)) {
-      parent->InsertBefore(node, viable_next_sibling, exception_state);
-    }
+  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+      parent, nodes, GetDocument(), "after", exception_state);
+  if (exception_state.HadException()) {
+    return;
   }
+  parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
 }
 
 void Node::replaceWith(
@@ -1259,28 +1190,15 @@ void Node::replaceWith(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
-    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-        parent, nodes, GetDocument(), "replaceWith", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    if (parent == parentNode()) {
-      parent->ReplaceChild(node_vector, this, exception_state);
-    } else {
-      parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
-    }
+  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+      parent, nodes, GetDocument(), "replaceWith", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  if (parent == parentNode()) {
+    parent->ReplaceChild(node_vector, this, exception_state);
   } else {
-    Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                           "replaceWith", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    if (parent == parentNode()) {
-      parent->ReplaceChild(node, this, exception_state);
-    } else {
-      parent->InsertBefore(node, viable_next_sibling, exception_state);
-    }
+    parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
   }
 }
 
@@ -1296,20 +1214,12 @@ void Node::replaceChildren(
     return;
   }
 
-  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
-    VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-        this_node, node_unions, GetDocument(), "replace", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    this_node->ReplaceChildren(nodes, exception_state);
-  } else {
-    Node* node = ConvertNodeUnionsIntoNode(
-        this_node, node_unions, GetDocument(), "replace", exception_state);
-    if (!exception_state.HadException()) {
-      this_node->ReplaceChildren(node, exception_state);
-    }
+  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
+      this_node, node_unions, GetDocument(), "replace", exception_state);
+  if (exception_state.HadException()) {
+    return;
   }
+  this_node->ReplaceChildren(nodes, exception_state);
 }
 
 void Node::remove(ExceptionState& exception_state) {
@@ -1737,6 +1647,10 @@ NodeListsNodeData* Node::NodeLists() {
   return data_ ? data_->NodeLists() : nullptr;
 }
 
+const NodeListsNodeData* Node::NodeLists() const {
+  return data_ ? data_->NodeLists() : nullptr;
+}
+
 void Node::ClearNodeLists() {
   RareData()->ClearNodeLists();
 }
@@ -1816,7 +1730,7 @@ bool Node::IsShadowIncludingAncestorOf(const Node& node) const {
     return false;
 
   auto* this_node = DynamicTo<ContainerNode>(this);
-  bool has_children = this_node ? this_node->HasChildren() : false;
+  bool has_children = this_node && this_node->HasChildren();
   bool has_shadow = IsShadowHost(this);
   if (!has_children && !has_shadow)
     return false;
@@ -2016,7 +1930,7 @@ bool Node::CanStartSelection() const {
       return true;
   }
   ContainerNode* parent = FlatTreeTraversal::Parent(*this);
-  return parent ? parent->CanStartSelection() : true;
+  return !parent || parent->CanStartSelection();
 }
 
 bool Node::IsRichlyEditableForAccessibility() const {
@@ -2042,6 +1956,15 @@ void Node::NotifyPriorityScrollAnchorStatusChanged() {
 
 bool Node::IsActiveSlot() const {
   return ToHTMLSlotElementIfSupportsAssignmentOrNull(*this);
+}
+
+bool Node::HasContainerTiming() const {
+  if (IsElementNode()) {
+    return To<Element>(*this).FastHasAttribute(
+        html_names::kContainertimingAttr);
+  } else {
+    return false;
+  }
 }
 
 AtomicString Node::SlotName() const {
@@ -2399,11 +2322,16 @@ void Node::setTextContent(const String& text) {
       auto* container = To<ContainerNode>(this);
 
       // Note: This is an intentional optimization.
-      // See crbug.com/352836 also.
-      // No need to do anything if the text is identical.
+      // See crbug.com/41095015, crbug.com/40553863, and crbug.com/391394132.
+      // No need to do anything if the text is identical *and* there are no
+      // mutation observer listeners attached.
       if (container->HasOneTextChild() &&
-          To<Text>(container->firstChild())->data() == text && !text.empty())
+          To<Text>(container->firstChild())->data() == text && !text.empty() &&
+          (!RuntimeEnabledFeatures::
+               SameValueTextContentFiresMutationObserversEnabled() ||
+           !GetDocument().HasMutationObservers())) {
         return;
+      }
 
       ChildListMutationScope mutation(*this);
       // Note: This API will not insert empty text nodes:
@@ -3630,8 +3558,7 @@ void Node::CheckSlotChange(SlotChangeType slot_change_type) {
 }
 
 bool Node::IsEffectiveRootScroller() const {
-  return GetLayoutObject() ? GetLayoutObject()->IsEffectiveRootScroller()
-                           : false;
+  return GetLayoutObject() && GetLayoutObject()->IsEffectiveRootScroller();
 }
 
 LayoutBox* Node::AutoscrollBox() {

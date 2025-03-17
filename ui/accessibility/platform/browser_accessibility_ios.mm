@@ -24,12 +24,7 @@ BrowserAccessibilityIOS::BrowserAccessibilityIOS(
     AXNode* node)
     : BrowserAccessibility(manager, node) {}
 
-BrowserAccessibilityIOS::~BrowserAccessibilityIOS() {
-  if (platform_node_) {
-    // `Destroy()` also deletes the object.
-    platform_node_.ExtractAsDangling()->Destroy();
-  }
-}
+BrowserAccessibilityIOS::~BrowserAccessibilityIOS() = default;
 
 void BrowserAccessibilityIOS::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
@@ -138,7 +133,7 @@ gfx::NativeViewAccessible BrowserAccessibilityIOS::GetNativeViewAccessible() {
 }
 
 AXPlatformNode* BrowserAccessibilityIOS::GetAXPlatformNode() const {
-  return platform_node_;
+  return platform_node_.get();
 }
 
 float BrowserAccessibilityIOS::GetDeviceScaleFactor() const {
@@ -147,9 +142,8 @@ float BrowserAccessibilityIOS::GetDeviceScaleFactor() const {
 
 void BrowserAccessibilityIOS::CreatePlatformNode() {
   CHECK(!platform_node_);
-  platform_node_ =
-      static_cast<AXPlatformNodeIOS*>(AXPlatformNode::Create(this));
-  platform_node_->SetIOSDelegate(this);
+  platform_node_ = AXPlatformNode::Create(this);
+  platform_node()->SetIOSDelegate(this);
 }
 
 }  // namespace ui

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -23,25 +24,31 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the signin promo card. */
-public final class SigninPromoCoordinator {
+public class SigninPromoCoordinator {
+    private static boolean sPromoDisabledForTesting;
     private final Context mContext;
     private final SigninPromoDelegate mDelegate;
     private final SigninPromoMediator mMediator;
     private ImpressionTracker mImpressionTracker;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
+    /** Disables promo in tests. */
+    public static void disablePromoForTesting() {
+        sPromoDisabledForTesting = true;
+        ResettersForTesting.register(() -> sPromoDisabledForTesting = false);
+    }
+
     /**
      * Creates an instance of the {@link SigninPromoCoordinator}.
      *
      * @param context The Android {@link Context}.
-     * @param profile A {@link Profile} object to access identity services.
+     * @param profile A {@link Profile} object to access identity services. This must be the
+     *     original profile, not the incognito one.
      * @param delegate A {@link SigninPromoDelegate} to customize the view.
      */
     public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
         mContext = context;
         mDelegate = delegate;
-        // TODO(crbug.com/327387704): Observe the AccountManagerFacade so that the promo gets
-        // properly updated when the list of accounts changes.
         ProfileDataCache profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         IdentityManager identityManager =
@@ -68,7 +75,7 @@ public final class SigninPromoCoordinator {
 
     /** Determines whether the signin promo can be shown. */
     public boolean canShowPromo() {
-        return mMediator.canShowPromo();
+        return !sPromoDisabledForTesting && mMediator.canShowPromo();
     }
 
     /** Builds a promo view object for the corresponding access point. */
@@ -96,13 +103,10 @@ public final class SigninPromoCoordinator {
         mImpressionTracker.setListener(mMediator::recordImpression);
     }
 
-    public void increasePromoShowCount() {
-        // TODO(crbug.com/327387704): Implement this method
-    }
-
     static int getLayoutResId(@SigninAccessPoint int accessPoint) {
         return switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER -> R.layout.sync_promo_view_bookmarks;
+            case SigninAccessPoint.HISTORY_PAGE -> R.layout.sync_promo_view_history_page;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> R.layout
                     .sync_promo_view_content_suggestions;
             case SigninAccessPoint.RECENT_TABS -> R.layout.sync_promo_view_recent_tabs;

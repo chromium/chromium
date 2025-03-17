@@ -49,10 +49,9 @@ void DeskTextfield::CommitChanges(views::Widget* widget) {
 
 gfx::Size DeskTextfield::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const std::u16string& text = GetText();
   int width = 0;
   int height = 0;
-  gfx::Canvas::SizeStringInt(text, GetFontList(), &width, &height, 0,
+  gfx::Canvas::SizeStringInt(GetText(), GetFontList(), &width, &height, 0,
                              gfx::Canvas::NO_ELLIPSIS);
   gfx::Size size{width + GetCaretBounds().width(), height};
   const auto insets = GetInsets();
@@ -119,9 +118,9 @@ void DeskTextfield::PreferredSizeChanged() {
 
 void DeskTextfield::UpdateTooltipText() {
   if (GetPreferredSize().width() > width()) {
-    SetCachedTooltipText(GetText());
+    SetTooltipText(std::u16string(GetText()));
   } else {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
   }
 }
 

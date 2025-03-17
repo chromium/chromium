@@ -17,6 +17,7 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -66,10 +67,9 @@ void OnDeviceSpeechRecognitionImpl::OnDeviceWebSpeechAvailable(
     OnDeviceSpeechRecognitionImpl::OnDeviceWebSpeechAvailableCallback
         callback) {
 #if BUILDFLAG(IS_ANDROID)
-  std::move(callback).Run(false);
+  std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
 #else
-  std::move(callback).Run(
-      speech::IsOnDeviceSpeechRecognitionAvailable(language));
+  std::move(callback).Run(IsOnDeviceSpeechRecognitionAvailable(language));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

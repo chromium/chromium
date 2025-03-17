@@ -390,16 +390,6 @@ public class PasswordSettingsTest {
         PasswordCheckFactory.destroy();
     }
 
-    @Test
-    @MediumTest
-    @Feature({"Preferences"})
-    public void testLocalPasswordsMigrationSheetTriggeredWhenShouldShow() {
-        mTestHelper.setPasswordSourceWithMultipleEntries(PasswordSettingsTestHelper.GREEK_GODS);
-        assertFalse(mTestHelper.getHandler().wasShowWarningCalled());
-        mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
-        assertTrue(mTestHelper.getHandler().wasShowWarningCalled());
-    }
-
     private static PrefService getPrefService() {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }

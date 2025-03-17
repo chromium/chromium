@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -14,7 +15,6 @@
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
@@ -96,8 +96,7 @@ class SingleClientPlusAddressSettingSyncTest
         /*enabled_features=*/{{plus_addresses::features::kPlusAddressesEnabled,
                                {{plus_addresses::features::
                                      kEnterprisePlusAddressServerUrl.name,
-                                 "https://not-used.com"}}},
-                              {syncer::kSyncPlusAddressSetting, {}}},
+                                 "https://not-used.com"}}}},
         /*disabled_features=*/{});
   }
 
@@ -143,7 +142,7 @@ class SingleClientPlusAddressSettingSyncTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     SingleClientPlusAddressSettingSyncTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS, sync-the-feature gets started automatically once a primary
     // account is signed in and transport mode is not a thing. As such, only run
     // the tests in sync-the-feature mode.
@@ -212,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
 }
 
 // ChromeOS does not support signing out of the primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
                        Signout_DataCleared) {
   InjectSpecificsToServer(
@@ -223,6 +222,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   // The enabled setting defaults to true if the state is unknown.
   EXPECT_TRUE(WaitForPlusAddressEnabledState(true));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

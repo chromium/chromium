@@ -125,6 +125,7 @@ struct PasswordNote {
 
   friend bool operator==(const PasswordNote& lhs,
                          const PasswordNote& rhs) = default;
+  friend auto operator<=>(const PasswordNote&, const PasswordNote&) = default;
 
   // The name displayed in the UI labeling this note. Currently unused and added
   // for future compatibility.
@@ -191,8 +192,9 @@ struct PasswordForm {
     kImported = 4,
     kReceivedViaSharing = 5,
     kImportedViaCredentialExchange = 6,
+    kChangeSubmission = 7,
     kMinValue = kFormSubmission,
-    kMaxValue = kImportedViaCredentialExchange,
+    kMaxValue = kChangeSubmission,
   };
 
   // Enum to keep track of what information has been sent to the server about

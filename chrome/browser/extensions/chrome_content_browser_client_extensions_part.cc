@@ -73,11 +73,14 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_webkit_preferences.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/extension_webkit_preferences.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #endif
 
@@ -817,8 +820,10 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
 }
 
 bool ChromeContentBrowserClientExtensionsPart::
-    OverrideWebPreferencesAfterNavigation(WebContents* web_contents,
-                                          WebPreferences* web_prefs) {
+    OverrideWebPreferencesAfterNavigation(
+        WebContents* web_contents,
+        content::SiteInstance& main_frame_site,
+        WebPreferences* web_prefs) {
   const ExtensionRegistry* registry =
       ExtensionRegistry::Get(web_contents->GetBrowserContext());
   if (!registry)
@@ -834,10 +839,9 @@ bool ChromeContentBrowserClientExtensionsPart::
   // `extension` below, they are not unset when navigating a tab from an
   // extension page to a regular web page. We should clear extension settings in
   // this case.
-  const GURL& site_url =
-      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL();
-  if (!site_url.SchemeIs(kExtensionScheme))
+  if (!main_frame_site.GetSiteURL().SchemeIs(kExtensionScheme)) {
     return false;
+  }
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // If a webview navigates to a webview accessible resource, extension
@@ -846,30 +850,30 @@ bool ChromeContentBrowserClientExtensionsPart::
   // after a navigation, we can remove this case so that extension settings can
   // apply to webview accessible resources without impacting web pages
   // subsequently loaded in the webview.
-  // TODO(crbug.com/40202416): Handle web preferences for MPArch based guests.
-  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch) &&
-      WebViewGuest::FromWebContents(web_contents)) {
+  if (main_frame_site.IsGuest()) {
     return false;
   }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  const Extension* extension =
-      registry->enabled_extensions().GetByID(site_url.host());
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      main_frame_site.GetSiteURL().host());
   extension_webkit_preferences::SetPreferences(extension, web_prefs);
 #endif
   return true;
 }
 
-void ChromeContentBrowserClientExtensionsPart::OverrideWebkitPrefs(
+void ChromeContentBrowserClientExtensionsPart::OverrideWebPreferences(
     WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     WebPreferences* web_prefs) {
-  OverrideWebPreferencesAfterNavigation(web_contents, web_prefs);
+  OverrideWebPreferencesAfterNavigation(web_contents, main_frame_site,
+                                        web_prefs);
 }
 
 void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(
     BrowserURLHandler* handler) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   handler->AddHandlerPair(&ExtensionWebUI::HandleChromeURLOverride,
                           BrowserURLHandler::null_handler());
   handler->AddHandlerPair(BrowserURLHandler::null_handler(),

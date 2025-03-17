@@ -13,6 +13,10 @@
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
+#include "gin/handle.h"
+#include "gin/public/gin_embedders.h"
+#include "gin/public/wrapper_info.h"
+#include "gin/wrappable.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -94,6 +98,13 @@ CreateMojomSetMethodFromParameters(
     return nullptr;
   }
 
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
+    return nullptr;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewSetMethod(
       network::mojom::SharedStorageSetMethod::New(
           arg0_key, arg1_value, ignore_if_present.value_or(false)));
@@ -155,6 +166,13 @@ CreateMojomAppendMethodFromParameters(
     return nullptr;
   }
 
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
+    return nullptr;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewAppendMethod(
       network::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
 
@@ -206,6 +224,13 @@ CreateMojomDeleteMethodFromParameters(
     return nullptr;
   }
 
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
+    return nullptr;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
       network::mojom::SharedStorageDeleteMethod::New(arg0_key));
 
@@ -246,6 +271,13 @@ CreateMojomClearMethodFromParameters(
     return nullptr;
   }
 
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
+    return nullptr;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewClearMethod(
       network::mojom::SharedStorageClearMethod::New());
 
@@ -253,48 +285,34 @@ CreateMojomClearMethodFromParameters(
       std::move(method), std::move(with_lock));
 }
 
-// SharedStorageMethod represents a method for modifying shared storage. It
-// manages its own lifecycle through weak reference handling to support
-// automatic garbage collection.
-class SharedStorageMethod {
+// SharedStorageMethod represents a method for modifying shared storage. This
+// class inherits from gin::Wrappable to leverage gin's JavaScript object
+// lifetime management capabilities. When the JavaScript object is garbage
+// collected, the corresponding C++ object will be properly cleaned up.
+class SharedStorageMethod : public gin::Wrappable<SharedStorageMethod> {
  public:
-  // Constructs a SharedStorageMethod with a Mojom method and sets up
-  // weak reference management.
-  //
-  // Responsibilities:
-  // - Create a V8 External wrapping the C++ object
-  // - Establish a persistent, weak reference to the External
-  // - Set the External as an internal field of the JavaScript object
-  // - Ensure proper cleanup when the JavaScript object is garbage collected
+  static gin::WrapperInfo kWrapperInfo;
+
   SharedStorageMethod(
       v8::Isolate* isolate,
       v8::Local<v8::Object> obj,
       network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method)
       : mojom_method_(std::move(mojom_method)) {
-    v8::Local<v8::External> external = v8::External::New(isolate, this);
-    persistent_external_.Reset(isolate, external);
-    obj->SetInternalField(0, external);
-    persistent_external_.SetWeak(this, WeakCallback,
-                                 v8::WeakCallbackType::kParameter);
+    gin::Handle<SharedStorageMethod> handler = gin::CreateHandle(isolate, this);
+    // Use an index that won't interfere with gin's reserved indexes.
+    obj->SetInternalField(gin::kNumberOfInternalFields, handler.ToV8());
   }
 
-  // Weak callback invoked by V8's garbage collector when the associated
-  // JavaScript object becomes unreachable.
-  //
-  // Responsibilities:
-  // - Clear the persistent external reference
-  // - Delete the SharedStorageMethod instance
-  static void WeakCallback(
-      const v8::WeakCallbackInfo<SharedStorageMethod>& data) {
-    SharedStorageMethod* method = data.GetParameter();
-    method->persistent_external_.Reset();
-    delete method;
+  const network::mojom::SharedStorageModifierMethodWithOptionsPtr&
+  mojom_method() const {
+    return mojom_method_;
   }
 
  private:
   network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method_;
-  v8::Persistent<v8::External> persistent_external_;
 };
+
+gin::WrapperInfo SharedStorageMethod::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 }  // namespace
 
@@ -351,6 +369,17 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
             clear_method_function)
       .Check();
 
+  // batchUpdate() is part of the Web Locks integration launch.
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageWebLocks)) {
+    v8::Local<v8::Function> batch_update_function =
+        v8::Function::New(context, &SharedStorageBindings::BatchUpdate, v8_this)
+            .ToLocalChecked();
+    shared_storage
+        ->Set(context, v8_helper_->CreateStringFromLiteral("batchUpdate"),
+              batch_update_function)
+        .Check();
+  }
+
   context->Global()
       ->Set(context, v8_helper_->CreateStringFromLiteral("sharedStorage"),
             shared_storage)
@@ -367,7 +396,8 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(v8_helper_->isolate(),
                                   &SharedStorageBindings::SetMethodConstructor,
                                   v8_this);
-    set_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    set_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
+        gin::kNumberOfInternalFields + 1);
     set_method_ctor_template->Inherit(base_modifier_method_template);
     set_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageSetMethodName));
@@ -383,7 +413,8 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),
             &SharedStorageBindings::AppendMethodConstructor, v8_this);
-    append_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    append_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
+        gin::kNumberOfInternalFields + 1);
     append_method_ctor_template->Inherit(base_modifier_method_template);
     append_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageAppendMethodName));
@@ -400,7 +431,8 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),
             &SharedStorageBindings::DeleteMethodConstructor, v8_this);
-    delete_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    delete_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
+        gin::kNumberOfInternalFields + 1);
     delete_method_ctor_template->Inherit(base_modifier_method_template);
     delete_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageDeleteMethodName));
@@ -417,7 +449,8 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),
             &SharedStorageBindings::ClearMethodConstructor, v8_this);
-    clear_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    clear_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
+        gin::kNumberOfInternalFields + 1);
     clear_method_ctor_template->Inherit(base_modifier_method_template);
     clear_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageClearMethodName));
@@ -508,6 +541,129 @@ void SharedStorageBindings::Clear(
 
   bindings->shared_storage_host_->SharedStorageUpdate(
       std::move(mojom_method), bindings->source_auction_worklet_function_);
+}
+
+// static
+void SharedStorageBindings::BatchUpdate(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
+      v8::External::Cast(*args.Data())->Value());
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+      mojom_methods;
+
+  scoped_refptr<AuctionV8Helper> ref_v8_helper(v8_helper);
+  auto collect_methods_callback = base::BindRepeating(
+      [](scoped_refptr<AuctionV8Helper> v8_helper,
+         AuctionV8Helper::TimeLimitScope& time_limit_scope,
+         std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>&
+             mojom_methods,
+         v8::Local<v8::Value> method_val) -> IdlConvert::Status {
+        v8::Isolate* isolate = v8_helper->isolate();
+        v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+        static constexpr char kTypeConversionError[] =
+            "Failed to convert value to 'SharedStorageModifierMethod'";
+
+        v8::Local<v8::Object> method_obj;
+        if (!method_val->ToObject(context).ToLocal(&method_obj)) {
+          return IdlConvert::Status::MakeErrorMessage(kTypeConversionError);
+        }
+
+        if (method_obj->InternalFieldCount() !=
+            gin::kNumberOfInternalFields + 1) {
+          return IdlConvert::Status::MakeErrorMessage(kTypeConversionError);
+        }
+
+        v8::Local<v8::Value> internal_val =
+            method_obj->GetInternalField(gin::kNumberOfInternalFields)
+                .As<v8::Value>();
+
+        SharedStorageMethod* modifier_method = nullptr;
+        if (!gin::ConvertFromV8(isolate, internal_val, &modifier_method)) {
+          return IdlConvert::Status::MakeErrorMessage(kTypeConversionError);
+        }
+
+        if (modifier_method && modifier_method->mojom_method()) {
+          mojom_methods.push_back(modifier_method->mojom_method().Clone());
+        } else {
+          return IdlConvert::Status::MakeErrorMessage(kTypeConversionError);
+        }
+
+        return IdlConvert::Status::MakeSuccess();
+      },
+      ref_v8_helper, std::ref(time_limit_scope), std::ref(mojom_methods));
+
+  static constexpr char kErrorPrefix[] = "sharedStorage.batchUpdate(): ";
+  static constexpr char kSequenceConversionError[] =
+      "Trouble converting argument 'methods' to a Sequence.";
+
+  ArgsConverter args_converter(v8_helper, time_limit_scope, kErrorPrefix, &args,
+                               /*min_required_args=*/1);
+
+  if (args_converter.is_success() && !args[0]->IsObject()) {
+    args_converter.SetStatus(IdlConvert::Status::MakeErrorMessage(
+        base::StrCat({kErrorPrefix, kSequenceConversionError})));
+  }
+
+  if (args_converter.is_success()) {
+    std::initializer_list<std::string_view> error_subject = {
+        "argument 'methods'"};
+
+    v8::Local<v8::Object> iterable = args[0].As<v8::Object>();
+    v8::Local<v8::Object> iterator_factory;
+
+    args_converter.SetStatus(IdlConvert::CheckForSequence(
+        isolate, kErrorPrefix, error_subject, iterable, iterator_factory));
+
+    if (iterator_factory.IsEmpty()) {
+      if (args_converter.is_success()) {
+        args_converter.SetStatus(IdlConvert::Status::MakeErrorMessage(
+            base::StrCat({kErrorPrefix, kSequenceConversionError})));
+      }
+    }
+
+    if (args_converter.is_success()) {
+      args_converter.SetStatus(IdlConvert::ConvertSequence(
+          v8_helper, kErrorPrefix, error_subject, iterable, iterator_factory,
+          std::move(collect_methods_callback)));
+    }
+  }
+
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 1) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope,
+        "sharedStorage.batchUpdate 'options' argument ", args[1]);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    return;
+  }
+
+  if (!bindings->shared_storage_permissions_policy_allowed_) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kPermissionsPolicyError)));
+    return;
+  }
+
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate,
+        base::StrCat({kErrorPrefix, network::kReservedLockNameErrorMessage}))));
+    return;
+  }
+
+  bindings->shared_storage_host_->SharedStorageBatchUpdate(
+      std::move(mojom_methods), with_lock,
+      bindings->source_auction_worklet_function_);
 }
 
 // static

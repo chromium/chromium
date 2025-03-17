@@ -67,8 +67,7 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto [adjusted_input, starter_pack_engine] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client_->GetTemplateURLService());
+      AdjustInputForStarterPackKeyword(input, client_->GetTemplateURLService());
 
   const query_parser::MatchingAlgorithm matching_algorithm =
       GetMatchingAlgorithm(adjusted_input);

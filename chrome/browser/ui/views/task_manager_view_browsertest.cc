@@ -6,13 +6,15 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -46,11 +48,11 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/widget_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace task_manager {
 
@@ -106,8 +108,8 @@ class TaskManagerViewTest : public InProcessBrowserTest {
   // Looks up a tab based on its tab ID.
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
     auto& all_tabs = AllTabContentses();
-    auto it = base::ranges::find(all_tabs, tab_id,
-                                 &sessions::SessionTabHelper::IdForTab);
+    auto it = std::ranges::find(all_tabs, tab_id,
+                                &sessions::SessionTabHelper::IdForTab);
     return (it == all_tabs.end()) ? nullptr : *it;
   }
 
@@ -153,14 +155,25 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AllColumnsHaveSortable) {
 // In the case of no settings stored in the user preferences local store, test
 // that the task manager table starts with the default columns visibility as
 // stored in |kColumns|.
-IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, TableStartsWithDefaultColumns) {
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest,
+                       TableStartsWithDefaultSortAndColumns) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
 
   chrome::ShowTaskManager(browser());
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
-  EXPECT_FALSE(table->GetIsSorted());
+  // Table should be sorted on the CPU column by default in descending order.
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    EXPECT_TRUE(table->GetIsSorted());
+    EXPECT_EQ(table->sort_descriptors().size(), 1u);
+    EXPECT_EQ(table->sort_descriptors()[0].column_id,
+              IDS_TASK_MANAGER_CPU_COLUMN);
+    EXPECT_FALSE(table->sort_descriptors()[0].ascending);
+  } else {
+    EXPECT_FALSE(table->GetIsSorted());
+  }
+
   for (size_t i = 0; i < kColumnsSize; ++i) {
     EXPECT_EQ(kColumns[i].default_visibility,
               table->IsColumnVisible(kColumns[i].id));
@@ -178,8 +191,10 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, ColumnsSettingsAreRestored) {
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
+  // Table should be sorted on the CPU column by default in descending order.
+  EXPECT_EQ(table->GetIsSorted(),
+            base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
   // Toggle the visibility of all columns.
-  EXPECT_FALSE(table->GetIsSorted());
   for (size_t i = 0; i < kColumnsSize; ++i) {
     EXPECT_EQ(kColumns[i].default_visibility,
               table->IsColumnVisible(kColumns[i].id));
@@ -239,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, HideAllColumnsAndRestored) {
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
-  EXPECT_FALSE(table->GetIsSorted());
+  EXPECT_EQ(table->GetIsSorted(),
+            base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
 
   // hide all visible columns except IDS_TASK_MANAGER_TASK_COLUMN
   int task_column_index = -1;
@@ -457,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAccelerator) {
   EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AppType) {
   chrome::ShowTaskManager(browser());
 
@@ -465,6 +481,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AppType) {
             GetView()->GetWidget()->GetNativeWindow()->GetProperty(
                 chromeos::kAppTypeKey));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace task_manager

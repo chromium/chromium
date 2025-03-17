@@ -9,7 +9,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -50,6 +50,33 @@ MockPaymentsAutofillClient::MockPaymentsAutofillClient(AutofillClient* client)
     : payments::TestPaymentsAutofillClient(client) {}
 
 MockPaymentsAutofillClient::~MockPaymentsAutofillClient() = default;
+
+MockCreditCardAccessManager::MockCreditCardAccessManager(
+    BrowserAutofillManager* bam)
+    : CreditCardAccessManager(bam,
+                              test_api(*bam).credit_card_form_event_logger()) {
+  ON_CALL(*this, FetchCreditCard)
+      .WillByDefault(
+          [this](const CreditCard* card, OnCreditCardFetchedCallback cb) {
+            CreditCardAccessManager::FetchCreditCard(card, std::move(cb));
+          });
+}
+
+MockCreditCardAccessManager::~MockCreditCardAccessManager() = default;
+
+TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
+    : autofill::TestBrowserAutofillManager(driver) {
+  test_api(*this).SetExternalDelegate(
+      std::make_unique<AutofillExternalDelegate>(this));
+  test_api(*this).set_credit_card_access_manager(
+      std::make_unique<MockCreditCardAccessManager>(this));
+}
+
+void TestBrowserAutofillManager::Reset() {
+  autofill::TestBrowserAutofillManager::Reset();
+  test_api(*this).set_credit_card_access_manager(
+      std::make_unique<MockCreditCardAccessManager>(this));
+}
 
 AutofillMetricsBaseTest::AutofillMetricsBaseTest() = default;
 
@@ -92,10 +119,6 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   auto browser_autofill_manager =
       std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
   autofill_driver_->set_autofill_manager(std::move(browser_autofill_manager));
-
-  test_api(autofill_manager())
-      .SetExternalDelegate(
-          std::make_unique<AutofillExternalDelegate>(&autofill_manager()));
 
 #if !BUILDFLAG(IS_IOS)
   test_api(autofill_manager().GetCreditCardAccessManager())
@@ -224,19 +247,14 @@ void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
       response);
 }
 
-void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
-    const FormData& form,
-    const FormFieldData& field,
-    AutofillTriggerSource trigger_source,
-    const std::u16string& real_pan,
-    bool is_virtual_card) {
-  credit_card_.set_record_type(is_virtual_card
-                                   ? CreditCard::RecordType::kVirtualCard
-                                   : CreditCard::RecordType::kMaskedServerCard);
-  credit_card_.SetNumber(real_pan);
-  test_api(autofill_manager())
-      .OnCreditCardFetched(form, field.global_id(), trigger_source,
-                           credit_card_);
+CreditCard AutofillMetricsBaseTest::BuildCard(const std::u16string& real_pan,
+                                              bool is_virtual_card) {
+  CreditCard card = test::WithCvc(test::GetMaskedServerCard());
+  card.set_record_type(is_virtual_card
+                           ? CreditCard::RecordType::kVirtualCard
+                           : CreditCard::RecordType::kMaskedServerCard);
+  card.SetNumber(real_pan);
+  return card;
 }
 
 void AutofillMetricsBaseTest::RecreateCreditCards(

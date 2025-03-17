@@ -174,8 +174,8 @@ sync_pb::AutofillWalletSpecifics
 CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
                                                  std::string issuer_id,
                                                  std::string currency,
-                                                 uint64_t price_lower_bound,
-                                                 uint64_t price_upper_bound) {
+                                                 int price_lower_bound,
+                                                 int price_upper_bound) {
   sync_pb::AutofillWalletSpecifics wallet_specifics;
   wallet_specifics.set_type(
       sync_pb::AutofillWalletSpecifics_WalletInfoType::

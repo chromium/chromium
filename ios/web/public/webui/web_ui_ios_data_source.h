@@ -15,7 +15,7 @@
 namespace webui {
 struct LocalizedString;
 struct ResourcePath;
-}
+}  // namespace webui
 
 namespace web {
 class BrowserState;

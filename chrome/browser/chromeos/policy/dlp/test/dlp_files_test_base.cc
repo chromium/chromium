@@ -8,6 +8,7 @@
 #include "chrome/test/base/testing_profile.h"
 
 namespace policy {
+#include "google_apis/gaia/gaia_id.h"
 
 DlpFilesTestBase::DlpFilesTestBase()
     : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()) {}
@@ -18,7 +19,7 @@ DlpFilesTestBase::~DlpFilesTestBase() = default;
 
 void DlpFilesTestBase::SetUp() {
   AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
 
   auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   {

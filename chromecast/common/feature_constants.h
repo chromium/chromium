@@ -58,6 +58,10 @@ extern const char kCastCoreLogJsConsoleMessages[];
 extern const char kCastCoreTurnOnScreen[];
 extern const char kCastCoreKeepScreenOn[];
 
+extern const char kCastCoreBitstreamAudioCodecsInfo[];
+extern const char kCastCoreCodecs[];
+extern const char kCastCoreSpatialRendering[];
+
 }  // namespace feature
 }  // namespace chromecast
 

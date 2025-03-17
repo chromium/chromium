@@ -2,88 +2,100 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <ctime>
 #include <memory>
 
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
+#include "components/user_education/common/feature_promo/impl/precondition_data.h"
+#include "components/user_education/common/user_education_features.h"
+#include "components/user_education/common/user_education_storage_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/test/ui_controls.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
-
-namespace {
-class TestAnchorProvider : public user_education::AnchorElementProviderCommon {
- public:
-  TestAnchorProvider(ui::ElementIdentifier id, bool in_any_context)
-      : AnchorElementProviderCommon(id) {
-    set_in_any_context(in_any_context);
-  }
-};
-}  // namespace
 
 class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
  public:
   BrowserFeaturePromoPreconditionsUiTest() = default;
   ~BrowserFeaturePromoPreconditionsUiTest() override = default;
 
-  std::unique_ptr<user_education::AnchorElementPrecondition>
-  CreateAnchorPrecondition(
-      ui::ElementIdentifier id,
-      bool in_any_context,
-      ui::ElementContext default_context = ui::ElementContext()) {
-    if (!default_context) {
-      default_context = browser()->window()->GetElementContext();
-    }
-    CHECK(!anchor_element_provider_ ||
-          (anchor_element_provider_->anchor_element_id() == id &&
-           anchor_element_provider_->in_any_context() == in_any_context));
-    if (!anchor_element_provider_) {
-      anchor_element_provider_ =
-          std::make_unique<TestAnchorProvider>(id, in_any_context);
-    }
-    return std::make_unique<user_education::AnchorElementPrecondition>(
-        *anchor_element_provider_, default_context);
+ protected:
+  auto CaptureAnchor(ui::ElementIdentifier id) {
+    return AfterShow(id, [this](ui::TrackedElement* el) {
+      anchor_element_data_.data() = el;
+    });
   }
 
- private:
-  std::unique_ptr<TestAnchorProvider> anchor_element_provider_;
+  auto CheckWindowActiveResult(user_education::FeaturePromoResult expected) {
+    return CheckResult(
+        [this]() {
+          WindowActivePrecondition active_precond;
+          user_education::FeaturePromoPrecondition::ComputedData data;
+          data.Add(user_education::AnchorElementPrecondition::kAnchorElement,
+                   anchor_element_data_);
+          return active_precond.CheckPrecondition(data);
+        },
+        expected);
+  }
+
+  user_education::internal::TypedPreconditionData<ui::SafeElementReference>
+      anchor_element_data_{
+          user_education::AnchorElementPrecondition::kAnchorElement};
 };
 
-using WindowActivePreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
+class WindowActivePreconditionUiTest
+    : public BrowserFeaturePromoPreconditionsUiTest {
+ public:
+  WindowActivePreconditionUiTest() = default;
+  ~WindowActivePreconditionUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    BrowserFeaturePromoPreconditionsUiTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, ElementInActiveBrowser) {
   RunTestSequence(
-      WaitForShow(kToolbarAppMenuButtonElementId),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kToolbarAppMenuButtonElementId,
-                                         /*in_any_context=*/false);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::Success()));
+      CaptureAnchor(kToolbarAppMenuButtonElementId),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
 }
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
@@ -91,24 +103,16 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
   auto* const incog = CreateIncognitoBrowser();
   RunTestSequence(
       WaitForShow(kToolbarAppMenuButtonElementId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              "Linux window activation issues."),
       InContext(incog->window()->GetElementContext(),
-                WaitForShow(kToolbarAppMenuButtonElementId)),
-      CheckResult(
-          [this, incog]() {
-            // On different platforms, activation of the second window can occur
-            // differently. So instead of trying to guess which will be active,
-            // explicitly find the inactive one.
-            Browser* inactive = incog->IsActive() ? browser() : incog;
-            EXPECT_FALSE(inactive->IsActive());
-            const auto anchor_precond = CreateAnchorPrecondition(
-                kToolbarAppMenuButtonElementId,
-                /*in_any_context=*/false,
-                inactive->window()->GetElementContext());
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
+                Steps(WaitForShow(kToolbarAppMenuButtonElementId),
+                      ActivateSurface(kToolbarAppMenuButtonElementId))),
+      WithElement(kToolbarAppMenuButtonElementId,
+                  [this](ui::TrackedElement* anchor) {
+                    anchor_element_data_.data() = anchor;
+                  }),
+      CheckWindowActiveResult(
           user_education::FeaturePromoResult::kBlockedByUi));
 }
 
@@ -118,18 +122,8 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInActiveTab) {
       InstrumentTab(kTabId),
       NavigateWebContents(kTabId,
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kWebUIIPHDemoElementIdentifier,
-                                         /*in_any_context=*/true);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::Success()));
+      InAnyContext(CaptureAnchor(kWebUIIPHDemoElementIdentifier)),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
 }
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInInactiveTab) {
@@ -139,40 +133,17 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInInactiveTab) {
       InstrumentTab(kTabId1),
       AddInstrumentedTab(kTabId2,
                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
+      InAnyContext(CaptureAnchor(kWebUIIPHDemoElementIdentifier)),
 
       // Switch away from the tab. It is no longer "active".
       SelectTab(kTabStripElementId, 0),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kWebUIIPHDemoElementIdentifier,
-                                         /*in_any_context=*/true);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            // When the tab is not the active tab, the element isn't even
-            // present.
-            EXPECT_FALSE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::kBlockedByUi),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::kBlockedByUi),
 
       // Switch back to the tab and verify that it is "active" again.
       SelectTab(kTabStripElementId, 1),
-      InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
-      CheckResult(
-          [this]() {
-            const auto anchor_precond =
-                CreateAnchorPrecondition(kWebUIIPHDemoElementIdentifier,
-                                         /*in_any_context=*/true);
-            WindowActivePrecondition active_precond;
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            // When the tab is not the active tab, the element isn't even
-            // present.
-            EXPECT_TRUE(anchor_precond->CheckPrecondition(data));
-            return active_precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::Success()));
+      // Since the element is recreated, need to capture again.
+      InAnyContext(CaptureAnchor(kWebUIIPHDemoElementIdentifier)),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
 }
 
 using OmniboxNotOpenPreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
@@ -297,4 +268,119 @@ IN_PROC_BROWSER_TEST_F(BrowserNotClosingPreconditionUiTest,
           },
           user_education::FeaturePromoResult::kBlockedByUi)
           .SetMustRemainVisible(false));
+}
+
+class UserNotActivePreconditionUiTest
+    : public BrowserFeaturePromoPreconditionsUiTest {
+ public:
+  UserNotActivePreconditionUiTest() = default;
+  ~UserNotActivePreconditionUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    BrowserFeaturePromoPreconditionsUiTest::SetUpOnMainThread();
+    less_than_activity_time_ =
+        user_education::features::GetIdleTimeBeforeHeavyweightPromo() / 2;
+    more_than_activity_time_ =
+        user_education::features::GetIdleTimeBeforeHeavyweightPromo() +
+        base::Seconds(1);
+    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    time_provider_.set_clock_for_testing(&test_clock_);
+    precondition_ = std::make_unique<UserNotActivePrecondition>(*browser_view,
+                                                                time_provider_);
+    test_clock_.Advance(more_than_activity_time_);
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        views::GetRootWindow(browser_view->GetWidget()),
+        browser_view->GetNativeWindow());
+  }
+
+  void TearDownOnMainThread() override {
+    precondition_.reset();
+    BrowserFeaturePromoPreconditionsUiTest::TearDownOnMainThread();
+  }
+
+  auto Advance(base::TimeDelta time) {
+    return Do([this, time]() { test_clock_.Advance(time); })
+        .SetDescription("Advance()");
+  }
+
+  auto CheckPrecondResult(user_education::FeaturePromoResult result) {
+    return CheckView(
+        kBrowserViewElementId,
+        [this](BrowserView* browser_view) {
+          user_education::FeaturePromoPrecondition::ComputedData data;
+          return precondition_->CheckPrecondition(data);
+        },
+        result);
+  }
+
+ protected:
+  base::TimeDelta less_than_activity_time_;
+  base::TimeDelta more_than_activity_time_;
+
+  base::SimpleTestClock test_clock_;
+  user_education::UserEducationTimeProvider time_provider_;
+  std::unique_ptr<UserNotActivePrecondition> precondition_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+};
+
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest, ReturnsSuccess) {
+  RunTestSequence(
+      WaitForShow(kBrowserViewElementId),
+      CheckPrecondResult(user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
+                       ReturnsBlockedAfterMouseClick) {
+  RunTestSequence(
+      WaitForShow(kBrowserViewElementId),
+      MoveMouseTo(ContentsWebView::kContentsWebViewElementId), ClickMouse(),
+      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
+      Advance(less_than_activity_time_),
+      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
+      Advance(more_than_activity_time_),
+      CheckPrecondResult(user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
+                       ReturnsSuccessWhenHoveringOutsideTopContainer) {
+  gfx::Point start;
+  gfx::Point finish;
+  RunTestSequence(
+      WaitForShow(kBrowserViewElementId),
+      WithView(ContentsWebView::kContentsWebViewElementId,
+               [&](views::View* contents) {
+                 // Pick a start and end point at opposite corners of the
+                 // contents pane, inset into the pane slightly.
+                 auto bounds = contents->GetBoundsInScreen();
+                 bounds.Inset(3);
+                 start = bounds.origin();
+                 finish = bounds.bottom_right();
+               }),
+      // Move to the starting point.
+      MoveMouseTo(std::ref(start)),
+      // Since the move might pass through the top container, wait long enough
+      // that it doesn't matter.
+      Advance(more_than_activity_time_),
+      CheckPrecondResult(user_education::FeaturePromoResult::Success()),
+      // Move to the ending point. Since the move does not pass through the top
+      // container, this should not affect the precondition.
+      MoveMouseTo(std::ref(finish)),
+      CheckPrecondResult(user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
+                       ReturnsBlockedAfterKeyPress) {
+  RunTestSequence(
+      WaitForShow(kBrowserViewElementId), Check([this]() {
+        // Use a keypress that is is not an accelerator but won't open the
+        // omnibox.
+        return ui_test_utils::SendKeyPressSync(browser(),
+                                               ui::KeyboardCode::VKEY_SPACE,
+                                               false, false, false, false);
+      }),
+      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
+      Advance(less_than_activity_time_),
+      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
+      Advance(more_than_activity_time_),
+      CheckPrecondResult(user_education::FeaturePromoResult::Success()));
 }

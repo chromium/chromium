@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -108,18 +108,18 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     // Exclude any paths that are parented at an enabled trash location.
-    if (base::ranges::any_of(trash_paths,
-                             [&path](const base::FilePath& trash_path) {
-                               return trash_path.IsParent(path);
-                             })) {
+    if (std::ranges::any_of(trash_paths,
+                            [&path](const base::FilePath& trash_path) {
+                              return trash_path.IsParent(path);
+                            })) {
       continue;
     }
     // Exclude any results that are not in the allowed extensions.
     if (!allowed_extensions.empty() &&
-        !base::ranges::any_of(allowed_extensions,
-                              [&path](const std::string& extension) {
-                                return path.MatchesFinalExtension(extension);
-                              })) {
+        !std::ranges::any_of(allowed_extensions,
+                             [&path](const std::string& extension) {
+                               return path.MatchesFinalExtension(extension);
+                             })) {
       continue;
     }
 

@@ -180,13 +180,6 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
     return AccountInfo(identity_manager_->GetPrimaryAccountInfo(
         GetConsentLevelNeededForPersonalizedFeed()));
   }
-  bool IsSupervisedAccount() override {
-    ::AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-        identity_manager_->GetPrimaryAccountInfo(
-            signin::ConsentLevel::kSignin));
-    return account_info.capabilities.is_subject_to_parental_controls() ==
-           signin::Tribool::kTrue;
-  }
   // Returns if signin is allowed on Android. Return true on other platform so
   // behavior is unchanged there.
   bool IsSigninAllowed() override {
@@ -201,6 +194,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   }
   void RegisterFeedUserSettingsFieldTrial(std::string_view group) override {
     service_delegate_->RegisterFeedUserSettingsFieldTrial(group);
+  }
+  void SetFeedLaunchCuiMetadata(const std::string& metadata) override {
+    service_delegate_->SetFeedLaunchCuiMetadata(metadata);
   }
 
   void Shutdown() {
@@ -334,6 +330,10 @@ void FeedService::ClearCachedData() {
 
 const Experiments& FeedService::GetExperiments() const {
   return delegate_->GetExperiments();
+}
+
+const std::string& FeedService::GetFeedLaunchCuiMetadata() const {
+  return delegate_->GetFeedLaunchCuiMetadata();
 }
 
 // static

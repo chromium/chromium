@@ -57,11 +57,6 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void ShowPasswordSuggestions(
       const PasswordSuggestionRequest& request) override {}
-#if BUILDFLAG(IS_ANDROID)
-  void ShowKeyboardReplacingSurface(
-      mojom::SubmissionReadinessState submission_readiness,
-      bool is_webauthn_form) override {}
-#endif
 
   void RecordSavePasswordProgress(const std::string& log) override {
     called_record_save_ = true;

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("crd") {
   sources = [
@@ -39,6 +39,7 @@ static_library("crd") {
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/policy/core",
     "//chrome/common:constants",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth",
     "//chromeos/ash/services/network_config:in_process_instance",
     "//components/policy/core/common",
     "//components/policy/proto:",

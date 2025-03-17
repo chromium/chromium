@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
@@ -55,9 +60,11 @@ ToSerializedAcceleratedImage(
       blink::mojom::blink::SerializedStaticBitmapImage::NewAcceleratedImage(
           blink::AcceleratedImageInfo{
               shared_image->Export(), cloned_image->GetSyncToken(),
-              cloned_image->GetSkImageInfo(),
-              cloned_image->SupportsDisplayCompositing(),
-              cloned_image->IsOverlayCandidate(),
+              SkImageInfo::Make(cloned_image->GetSize().width(),
+                                cloned_image->GetSize().height(),
+                                cloned_image->GetSkColorType(),
+                                cloned_image->GetAlphaType(),
+                                cloned_image->GetSkColorSpace()),
               WTF::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,
                             std::move(cloned_image))});
   return result;

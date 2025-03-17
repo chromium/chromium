@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
@@ -163,16 +164,12 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   std::vector<ui::AXNodeID> content_node_ids;
-  if (features::IsReadAnythingWithAlgorithmEnabled()) {
-    // Try with the algorithm first.
-    DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
-  }
+  // Try with the algorithm first.
+  DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
 
-  // If Read Anything with Screen 2x is enabled and Screen AI service is ready,
-  // kick off Screen 2x run, which distills the AXTree in the utility process
-  // using ML.
-  if (features::IsReadAnythingWithScreen2xEnabled() &&
-      screen_ai_service_ready_) {
+  // If Screen AI service is ready, kick off Screen 2x run, which distills the
+  // AXTree in the utility process using ML.
+  if (screen_ai_service_ready_) {
     DistillViaScreen2x(tree, snapshot, ukm_source_id, start_time,
                        &content_node_ids);
     return;

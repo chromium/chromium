@@ -29,9 +29,6 @@ enum class InProductHelpType : NSInteger {
   /// Help bubble to inform the user that they can tap the Lens button in the
   /// omnibox keyboard to search with their camera.
   kLensKeyboard,
-  /// Help bubble to inform the user that their tracked packages will appear in
-  /// the Magic Stack.
-  kParcelTracking,
   /// Fullscreen help bubble for the pull-to-refresh gesture.
   kPullToRefresh,
   /// Fullscreen help bubble for the gesture to swipe to navigate back/forward.
@@ -40,7 +37,9 @@ enum class InProductHelpType : NSInteger {
   /// toolbar to switch tabs.
   kToolbarSwipe,
   /// Help bubble for the lens overlay feature entrypoint.
-  kLensOverlayEntrypoint
+  kLensOverlayEntrypoint,
+  /// Help bubble to point the user to "Settings" in the overflow menu.
+  kSettingsInOverflowMenu,
 };
 
 /// Commands to control the display of in-product help UI ("bubbles").

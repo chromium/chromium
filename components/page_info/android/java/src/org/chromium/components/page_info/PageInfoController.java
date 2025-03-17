@@ -324,10 +324,7 @@ public class PageInfoController
                     }
 
                     @Override
-                    public void destroy() {
-                        super.destroy();
-                        // Force the dialog to close immediately in case the destroy was from Chrome
-                        // quitting.
+                    public void webContentsDestroyed() {
                         PageInfoController.this.destroy();
                     }
 
@@ -352,6 +349,11 @@ public class PageInfoController
     }
 
     private void destroy() {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+            mWebContentsObserver = null;
+        }
+
         if (mDialog != null) {
             mDialog.destroy();
             mDialog = null;
@@ -458,8 +460,9 @@ public class PageInfoController
             mCurrentSubpageController.onSubpageRemoved();
             mCurrentSubpageController = null;
         }
-        mWebContentsObserver.destroy();
-        mWebContentsObserver = null;
+
+        destroy();
+
         PageInfoControllerJni.get().destroy(mNativePageInfoController, PageInfoController.this);
         mNativePageInfoController = 0;
         mContext = null;
@@ -497,20 +500,23 @@ public class PageInfoController
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    public View getPageInfoViewForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public View getPageInfoView() {
         return mContainer;
     }
 
-    public PageInfoCookiesController getCookiesControllerForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public PageInfoCookiesController getCookiesController() {
         return mCookiesController;
     }
 
-    public PageInfoTrackingProtectionLaunchController
-            getTrackingProtectionLaunchControllerForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public PageInfoTrackingProtectionLaunchController getTrackingProtectionLaunchController() {
         return mTrackingProtectionLaunchController;
     }
 
-    public boolean isDialogShowingForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isDialogShowing() {
         return mDialog != null;
     }
 
@@ -566,7 +572,8 @@ public class PageInfoController
                                 dialogPosition));
     }
 
-    public static PageInfoController getLastPageInfoControllerForTesting() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static PageInfoController getLastPageInfoController() {
         return sLastPageInfoControllerForTesting != null
                 ? sLastPageInfoControllerForTesting.get()
                 : null;
@@ -587,6 +594,11 @@ public class PageInfoController
     @Override
     public BrowserContextHandle getBrowserContext() {
         return mDelegate.getBrowserContext();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public PageInfoControllerDelegate getPageInfoControllerDelegate() {
+        return mDelegate;
     }
 
     /** Launches a subpage for the specified controller. */

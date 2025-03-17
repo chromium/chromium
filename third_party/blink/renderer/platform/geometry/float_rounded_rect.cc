@@ -33,6 +33,7 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -182,6 +183,7 @@ void FloatRoundedRect::Radii::OutsetForShapeMargin(float outset) {
   bottom_right_ += outset_size;
 }
 
+// TODO(crbug.com/396173464) support curvature
 static inline float CornerRectIntercept(float y,
                                         const gfx::RectF& corner_rect) {
   DCHECK_GT(corner_rect.height(), 0);
@@ -189,6 +191,7 @@ static inline float CornerRectIntercept(float y,
          sqrt(1 - (y * y) / (corner_rect.height() * corner_rect.height()));
 }
 
+// TODO(crbug.com/396173464) support curvature
 bool FloatRoundedRect::XInterceptsAtY(float y,
                                       float& min_x_intercept,
                                       float& max_x_intercept) const {
@@ -372,6 +375,7 @@ String FloatRoundedRect::ToString() const {
   }
   if (GetRadii().IsZero())
     return String(Rect().ToString());
+
   return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() + ")";
 }
 

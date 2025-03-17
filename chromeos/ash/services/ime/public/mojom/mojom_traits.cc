@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/ime/public/mojom/mojom_traits.h"
 
+#include "base/strings/string_util.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom-shared.h"
 
 namespace mojo {
@@ -35,8 +36,8 @@ using AutocorrectSuggestionProviderMojo =
 base::Histogram* GetHistogramStrict(
     const std::string& name,
     ash::ime::mojom::HistogramBucketType bucket_type,
-    const base::Histogram::Sample minimum,
-    const base::Histogram::Sample maximum,
+    const base::HistogramBase::Sample32 minimum,
+    const base::HistogramBase::Sample32 maximum,
     const size_t bucket_count) {
   // When `InspectConstructionArguments` receives certain invalid parameters, it
   // will attempt to adjust them to be correct and return true. So in order to
@@ -300,9 +301,9 @@ bool StructTraits<
   }
 
   const auto minimum =
-      base::strict_cast<base::Histogram::Sample>(input.minimum());
+      base::strict_cast<base::HistogramBase::Sample32>(input.minimum());
   const auto maximum =
-      base::strict_cast<base::Histogram::Sample>(input.maximum());
+      base::strict_cast<base::HistogramBase::Sample32>(input.maximum());
   const auto bucket_count = base::strict_cast<size_t>(input.bucket_count());
 
   base::Histogram* counter = GetHistogramStrict(name, input.bucket_type(),

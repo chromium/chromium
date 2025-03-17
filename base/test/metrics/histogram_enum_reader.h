@@ -13,7 +13,7 @@
 
 namespace base {
 
-using HistogramEnumEntryMap = std::map<HistogramBase::Sample, std::string>;
+using HistogramEnumEntryMap = std::map<HistogramBase::Sample32, std::string>;
 
 // Find and read the enum with the given |enum_name| (with integer values) from
 // tools/metrics/histograms/enums.xml, or from enums.xml in the given

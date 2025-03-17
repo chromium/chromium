@@ -1,4 +1,9 @@
-load("@builtin//encoding.star", "json")
+# -*- bazel-starlark -*-
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Siso configuration for devtools-frontend."""
+
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")

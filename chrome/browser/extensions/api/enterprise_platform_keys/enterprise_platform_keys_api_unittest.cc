@@ -29,7 +29,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,15 +109,12 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
     return kUserEmail;
   }
 
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUserWithAffiliation(account_id,
-                                           /*is_affiliated=*/true);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    BrowserWithTestWindowTest::LogIn(email, gaia_id);
+    user_manager()->SetUserPolicyStatus(
+        AccountId::FromUserEmailGaiaId(email, gaia_id),
+        /*is_managed=*/true,
+        /*is_affiliated=*/true);
   }
 
   std::unique_ptr<KeyedService> CreateKeyPermissionsManagerService(
@@ -142,10 +138,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
       ExtensionFunction* function,
       base::Value::List args,
       content::BrowserContext* browser_context) {
-    auto dispatcher =
-        std::make_unique<ExtensionFunctionDispatcher>(browser_context);
     api_test_utils::RunFunction(
-        function, std::move(args), std::move(dispatcher),
+        function, std::move(args), browser_context,
         extensions::api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
     return function->GetError();
@@ -160,10 +154,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
     scoped_refptr<ExtensionFunction> function_owner(function);
     // Without a callback the function will not generate a result.
     function->set_has_callback(true);
-    auto dispatcher =
-        std::make_unique<ExtensionFunctionDispatcher>(browser_context);
     api_test_utils::RunFunction(
-        function, std::move(args), std::move(dispatcher),
+        function, std::move(args), browser_context,
         extensions::api_test_utils::FunctionMode::kNone);
     EXPECT_TRUE(function->GetError().empty())
         << "Unexpected error: " << function->GetError();
@@ -264,9 +256,8 @@ TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   EXPECT_CALL(*mock_tpm_challenge_key_, BuildResponse)
       .WillOnce(Invoke(FakeRunCheckNotRegister));
 
-  auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
   EXPECT_TRUE(api_test_utils::RunFunction(
-      func_.get(), CreateArgs(), std::move(dispatcher),
+      func_.get(), CreateArgs(), profile(),
       extensions::api_test_utils::FunctionMode::kNone));
 }
 
@@ -277,8 +268,6 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
               EnterprisePlatformKeysChallengeUserKeyFunction>()) {
     func_->set_extension(extension_.get());
   }
-
-  void SetUp() override { EPKChallengeKeyTestBase::SetUp(); }
 
   base::Value::List CreateArgs() { return CreateArgsInternal(true); }
 

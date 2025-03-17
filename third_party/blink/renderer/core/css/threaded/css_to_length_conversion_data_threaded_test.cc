@@ -17,8 +17,8 @@ namespace blink {
 TSAN_TEST(CSSToLengthConversionDataThreadedTest, Construction) {
   RunOnThreads([]() {
     FontDescription fontDescription;
-    Font font(fontDescription);
-    CSSToLengthConversionData::FontSizes font_sizes(16, 16, &font, 1);
+    Font* font = MakeGarbageCollected<Font>(fontDescription);
+    CSSToLengthConversionData::FontSizes font_sizes(16, 16, font, 1);
     CSSToLengthConversionData::LineHeightSize line_height_size;
     CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
@@ -33,8 +33,8 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, Construction) {
 TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionEm) {
   RunOnThreads([]() {
     FontDescription fontDescription;
-    Font font(fontDescription);
-    CSSToLengthConversionData::FontSizes font_sizes(16, 16, &font, 1);
+    Font* font = MakeGarbageCollected<Font>(fontDescription);
+    CSSToLengthConversionData::FontSizes font_sizes(16, 16, font, 1);
     CSSToLengthConversionData::LineHeightSize line_height_size;
     CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
@@ -55,8 +55,8 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionEm) {
 TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionPixel) {
   RunOnThreads([]() {
     FontDescription fontDescription;
-    Font font(fontDescription);
-    CSSToLengthConversionData::FontSizes font_sizes(16, 16, &font, 1);
+    Font* font = MakeGarbageCollected<Font>(fontDescription);
+    CSSToLengthConversionData::FontSizes font_sizes(16, 16, font, 1);
     CSSToLengthConversionData::LineHeightSize line_height_size;
     CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
@@ -77,8 +77,8 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionPixel) {
 TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionViewport) {
   RunOnThreads([]() {
     FontDescription fontDescription;
-    Font font(fontDescription);
-    CSSToLengthConversionData::FontSizes font_sizes(16, 16, &font, 1);
+    Font* font = MakeGarbageCollected<Font>(fontDescription);
+    CSSToLengthConversionData::FontSizes font_sizes(16, 16, font, 1);
     CSSToLengthConversionData::LineHeightSize line_height_size;
     CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
@@ -99,8 +99,8 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionViewport) {
 TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionRem) {
   RunOnThreads([]() {
     FontDescription fontDescription;
-    Font font(fontDescription);
-    CSSToLengthConversionData::FontSizes font_sizes(16, 16, &font, 1);
+    Font* font = MakeGarbageCollected<Font>(fontDescription);
+    CSSToLengthConversionData::FontSizes font_sizes(16, 16, font, 1);
     CSSToLengthConversionData::LineHeightSize line_height_size;
     CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;

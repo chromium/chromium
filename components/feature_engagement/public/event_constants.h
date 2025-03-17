@@ -114,6 +114,15 @@ extern const char kDefaultBrowserPromoShown[];
 // The user tapped Remind Me Later on a default browser promo.
 extern const char kDefaultBrowserPromoRemindMeLater[];
 
+// The non-modal default browser promo from omnibox paste was triggered.
+extern const char kNonModalDefaultBrowserPromoUrlPasteTrigger[];
+
+// The non-modal default browser promo from App switcher was triggered.
+extern const char kNonModalDefaultBrowserPromoAppSwitcherTrigger[];
+
+// The non-modal default browser promo from share was triggered.
+extern const char kNonModalDefaultBrowserPromoShareTrigger[];
+
 // The Password Manager widget promo was triggered.
 extern const char kPasswordManagerWidgetPromoTriggered[];
 
@@ -161,12 +170,6 @@ extern const char kHistoryOnOverflowMenuUsed[];
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 
-// The user has triggered Parcel Tracking.
-extern const char kParcelTrackingTriggered[];
-
-// The user has tracked a parcel.
-extern const char kParcelTracked[];
-
 // The user has more than one gesture to refresh a page in iOS. This includes
 // but not limited to re-typing the URL in omnibox and refreshing from context
 // menu.
@@ -180,6 +183,9 @@ extern const char kIOSPullToRefreshIPHDismissButtonTapped[];
 
 // The user has tapped "incognito" on the page control in the tab grid.
 extern const char kIOSIncognitoPageControlTapped[];
+
+// The sign-in fullscreen promo was triggered.
+extern const char kIOSSigninFullscreenPromoTrigger[];
 
 // The user has swiped right from regular tab grid to the incognito tab grid.
 extern const char kIOSSwipeRightForIncognitoUsed[];
@@ -277,6 +283,21 @@ extern const char kHomeCustomizationMenuUsed[];
 
 // The user has tapped on the lens overlay entrypoint.
 extern const char kLensOverlayEntrypointUsed[];
+
+// The user has scheduled a tab reminder.
+extern const char kIOSTabReminderScheduled[];
+
+// The Reminder Notifications Overflow Menu Bubble IPH was triggered.
+extern const char kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger[];
+
+// The user tapped the "Set a Reminder" item in the overflow menu.
+extern const char kIOSOverflowMenuSetTabReminderTapped[];
+
+// The Reminder Notifications Overflow Menu New Badge IPH was triggered.
+extern const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[];
+
+// The user has executed an action that is a trigger for the Auto-deletion IPH.
+extern const char kIOSDownloadAutoDeletionIPHCriterionMet[];
 
 #endif  // BUILDFLAG(IS_IOS)
 

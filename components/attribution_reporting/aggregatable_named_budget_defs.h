@@ -11,8 +11,12 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -38,7 +42,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableNamedBudgetDefs {
 
   const BudgetMap& budgets() const { return budgets_; }
 
-  void Serialize(base::Value::Dict& dict) const;
+  void Serialize(base::DictValue& dict) const;
 
   friend bool operator==(const AggregatableNamedBudgetDefs&,
                          const AggregatableNamedBudgetDefs&) = default;

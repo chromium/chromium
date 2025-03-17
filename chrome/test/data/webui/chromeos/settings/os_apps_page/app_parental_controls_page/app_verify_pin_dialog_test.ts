@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppVerifyPinDialogElement, ParentalControlsPinDialogError} from 'chrome://os-settings/lazy_load.js';
+import type {AppVerifyPinDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {ParentalControlsPinDialogError} from 'chrome://os-settings/lazy_load.js';
 import {setAppParentalControlsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

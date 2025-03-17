@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 // This file contains the binary format definition of the command buffer and
 // command buffer commands.
@@ -24,13 +20,13 @@ const int32_t CommandHeader::kMaxSize;
 namespace cmd {
 
 const char* GetCommandName(CommandId command_id) {
-  static const char* const names[] = {
-  #define COMMON_COMMAND_BUFFER_CMD_OP(name) # name,
+  static const auto names = std::to_array<const char*>({
+#define COMMON_COMMAND_BUFFER_CMD_OP(name) #name,
 
-  COMMON_COMMAND_BUFFER_CMDS(COMMON_COMMAND_BUFFER_CMD_OP)
+      COMMON_COMMAND_BUFFER_CMDS(COMMON_COMMAND_BUFFER_CMD_OP)
 
-  #undef COMMON_COMMAND_BUFFER_CMD_OP
-  };
+#undef COMMON_COMMAND_BUFFER_CMD_OP
+  });
 
   int id = static_cast<int>(command_id);
   return (id >= 0 && id < kNumCommands) ? names[id] : "*unknown-command*";
@@ -38,5 +34,4 @@ const char* GetCommandName(CommandId command_id) {
 
 }  // namespace cmd
 }  // namespace gpu
-
 

@@ -4,6 +4,7 @@
 
 #include "net/dns/host_resolver_manager.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iterator>
@@ -44,7 +45,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -251,6 +251,18 @@ base::Value::Dict NetLogResults(const HostCache::Entry& results) {
   return dict;
 }
 
+base::Value::Dict NetLogResults(
+    const std::set<std::unique_ptr<HostResolverInternalResult>>& results) {
+  auto list = base::Value::List::with_capacity(results.size());
+  for (const std::unique_ptr<HostResolverInternalResult>& result : results) {
+    list.Append(result->ToValue());
+  }
+
+  base::Value::Dict dict;
+  dict.Set("results", std::move(list));
+  return dict;
+}
+
 std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
                                         DnsQueryTypeSet query_types) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
@@ -263,12 +275,11 @@ std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
     return addresses;
 
   // Keep only the endpoints that match `want_family`.
-  addresses.erase(
-      base::ranges::remove_if(
-          addresses,
-          [want_family](AddressFamily family) { return family != want_family; },
-          &IPEndPoint::GetFamily),
-      addresses.end());
+  auto removed = std::ranges::remove_if(
+      addresses,
+      [want_family](AddressFamily family) { return family != want_family; },
+      &IPEndPoint::GetFamily);
+  addresses.erase(removed.begin(), removed.end());
   return addresses;
 }
 
@@ -426,6 +437,7 @@ HostResolverManager::HostResolverManager(
       check_ipv6_on_wifi_(options.check_ipv6_on_wifi),
       ipv6_reachability_override_(base::FeatureList::IsEnabled(
           features::kEnableIPv6ReachabilityOverride)),
+      is_happy_eyeballs_v3_enabled_(options.enable_happy_eyeballs_v3),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       https_svcb_options_(
           options.https_svcb_options
@@ -674,6 +686,13 @@ void HostResolverManager::SetIPv6ReachabilityOverride(
   ipv6_reachability_override_ = reachability_override;
 }
 
+bool HostResolverManager::IsHappyEyeballsV3Enabled() const {
+  if (is_happy_eyeballs_v3_enabled_.has_value()) {
+    return *is_happy_eyeballs_v3_enabled_;
+  }
+  return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
+}
+
 void HostResolverManager::SetMaxQueuedJobsForTesting(size_t value) {
   DCHECK_EQ(0u, dispatcher_->num_queued_jobs());
   DCHECK_GE(value, 0u);
@@ -892,13 +911,20 @@ HostCache::Entry HostResolverManager::ResolveLocally(
         return resolved.value();
       }
     } else if (task == TaskType::HOSTS) {
-      resolved = ServeFromHosts(job_key.host.GetHostname(), job_key.query_types,
-                                default_family_due_to_no_ipv6, *out_tasks);
-      if (resolved) {
+      std::set<std::unique_ptr<HostResolverInternalResult>> results =
+          ServeFromHosts(job_key.host.GetHostname(), job_key.query_types,
+                         default_family_due_to_no_ipv6, *out_tasks);
+
+      if (!results.empty() &&
+          std::ranges::any_of(results, [](const auto& result) {
+            return result->type() == HostResolverInternalResult::Type::kData;
+          })) {
         source_net_log.AddEvent(
             NetLogEventType::HOST_RESOLVER_MANAGER_HOSTS_HIT,
-            [&] { return NetLogResults(resolved.value()); });
-        return resolved.value();
+            [&] { return NetLogResults(results); });
+        return HostCache::Entry(results, base::Time::Now(),
+                                tick_clock_->NowTicks(),
+                                HostCache::Entry::SOURCE_HOSTS);
       }
     } else {
       NOTREACHED();
@@ -941,7 +967,7 @@ HostResolverManager::Job* HostResolverManager::AddJobWithoutRequest(
   auto insert_result = jobs_.emplace(std::move(key), std::move(new_job));
   auto& iterator = insert_result.first;
   bool is_new = insert_result.second;
-  DCHECK(is_new);
+  CHECK(is_new);
   auto& job = iterator->second;
   job->OnAddedToJobMap(iterator);
   return job.get();
@@ -1067,61 +1093,94 @@ void HostResolverManager::StartBootstrapFollowup(
   job->RunNextTask();
 }
 
-std::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
-    std::string_view hostname,
-    DnsQueryTypeSet query_types,
-    bool default_family_due_to_no_ipv6,
-    const std::deque<TaskType>& tasks) {
+std::set<std::unique_ptr<HostResolverInternalResult>>
+HostResolverManager::ServeFromHosts(std::string_view hostname,
+                                    DnsQueryTypeSet query_types,
+                                    bool default_family_due_to_no_ipv6,
+                                    const std::deque<TaskType>& tasks) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
   // Don't attempt a HOSTS lookup if there is no DnsConfig or the HOSTS lookup
   // is going to be done next as part of a system lookup.
   if (!dns_client_ || !HasAddressType(query_types) ||
-      (!tasks.empty() && tasks.front() == TaskType::SYSTEM))
-    return std::nullopt;
+      (!tasks.empty() && tasks.front() == TaskType::SYSTEM)) {
+    return {};
+  }
   const DnsHosts* hosts = dns_client_->GetHosts();
 
-  if (!hosts || hosts->empty())
-    return std::nullopt;
+  if (!hosts || hosts->empty()) {
+    return {};
+  }
 
   // HOSTS lookups are case-insensitive.
   std::string effective_hostname = base::ToLowerASCII(hostname);
 
-  // If |address_family| is ADDRESS_FAMILY_UNSPECIFIED other implementations
-  // (glibc and c-ares) return the first matching line. We have more
-  // flexibility, but lose implicit ordering.
-  // We prefer IPv6 because "happy eyeballs" will fall back to IPv4 if
-  // necessary.
-  std::vector<IPEndPoint> addresses;
+  std::unique_ptr<HostResolverInternalResult> ipv6_result;
   if (query_types.Has(DnsQueryType::AAAA)) {
     auto it = hosts->find(DnsHostsKey(effective_hostname, ADDRESS_FAMILY_IPV6));
-    if (it != hosts->end()) {
-      addresses.emplace_back(it->second, 0);
+    if (it == hosts->end()) {
+      ipv6_result = std::make_unique<HostResolverInternalErrorResult>(
+          std::string(hostname), DnsQueryType::AAAA,
+          /*expiration=*/std::nullopt, /*timed_expiration=*/std::nullopt,
+          HostResolverInternalErrorResult::Source::kHosts,
+          ERR_NAME_NOT_RESOLVED);
+    } else {
+      // HOSTS results are currently only for immediate use, so set the
+      // expiration to `Now()` to immediately expire.
+      ipv6_result = std::make_unique<HostResolverInternalDataResult>(
+          std::string(hostname), DnsQueryType::AAAA,
+          /*expiration=*/tick_clock_->NowTicks(),
+          /*timed_expiration=*/base::Time::Now(),
+          HostResolverInternalResult::Source::kHosts,
+          /*endpoints=*/std::vector<IPEndPoint>{{it->second, 0}},
+          /*strings=*/std::vector<std::string>{},
+          /*hosts=*/std::vector<HostPortPair>{});
     }
   }
 
+  std::unique_ptr<HostResolverInternalResult> ipv4_result;
   if (query_types.Has(DnsQueryType::A)) {
     auto it = hosts->find(DnsHostsKey(effective_hostname, ADDRESS_FAMILY_IPV4));
-    if (it != hosts->end()) {
-      addresses.emplace_back(it->second, 0);
+    if (it == hosts->end()) {
+      ipv4_result = std::make_unique<HostResolverInternalErrorResult>(
+          std::string(hostname), DnsQueryType::A,
+          /*expiration=*/std::nullopt, /*timed_expiration=*/std::nullopt,
+          HostResolverInternalErrorResult::Source::kHosts,
+          ERR_NAME_NOT_RESOLVED);
+    } else {
+      // HOSTS results are currently only for immediate use, so set the
+      // expiration to `Now()` to immediately expire.
+      ipv4_result = std::make_unique<HostResolverInternalDataResult>(
+          std::string(hostname), DnsQueryType::A,
+          /*expiration=*/tick_clock_->NowTicks(),
+          /*timed_expiration=*/base::Time::Now(),
+          HostResolverInternalResult::Source::kHosts,
+          /*endpoints=*/std::vector<IPEndPoint>{{it->second, 0}},
+          /*strings=*/std::vector<std::string>{},
+          /*hosts=*/std::vector<HostPortPair>{});
     }
   }
 
   // If got only loopback addresses and the family was restricted, resolve
   // again, without restrictions. See SystemHostResolverCall for rationale.
-  if (default_family_due_to_no_ipv6 &&
-      base::ranges::all_of(addresses, &IPAddress::IsIPv4,
-                           &IPEndPoint::address) &&
-      base::ranges::all_of(addresses, &IPAddress::IsLoopback,
-                           &IPEndPoint::address)) {
+  if (default_family_due_to_no_ipv6 && ipv4_result &&
+      ipv4_result->type() == HostResolverInternalResult::Type::kData &&
+      std::ranges::all_of(ipv4_result->AsData().endpoints(),
+                          &IPAddress::IsLoopback, &IPEndPoint::address)) {
+    CHECK(!ipv6_result) << "Requesting AAAA is incompatible with "
+                           "`default_family_due_to_no_ipv6`.";
     query_types.Put(DnsQueryType::AAAA);
-    return ServeFromHosts(hostname, query_types, false, tasks);
+    return ServeFromHosts(hostname, query_types,
+                          /*default_family_due_to_no_ipv6=*/false, tasks);
   }
 
-  if (addresses.empty())
-    return std::nullopt;
-
-  return HostCache::Entry(OK, std::move(addresses),
-                          /*aliases=*/{}, HostCache::Entry::SOURCE_HOSTS);
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  if (ipv6_result) {
+    results.insert(std::move(ipv6_result));
+  }
+  if (ipv4_result) {
+    results.insert(std::move(ipv4_result));
+  }
+  return results;
 }
 
 std::optional<HostCache::Entry> HostResolverManager::ServeLocalhost(
@@ -1160,8 +1219,8 @@ void HostResolverManager::CacheResult(HostCache* cache,
 std::unique_ptr<HostResolverManager::Job> HostResolverManager::RemoveJob(
     JobMap::iterator job_it) {
   CHECK(job_it != jobs_.end(), base::NotFatalUntil::M130);
-  DCHECK(job_it->second);
-  DCHECK_EQ(1u, jobs_.count(job_it->first));
+  CHECK(job_it->second);
+  CHECK(jobs_.find(job_it->first) != jobs_.end());
 
   std::unique_ptr<Job> job;
   job_it->second.swap(job);
@@ -1198,9 +1257,9 @@ bool HostResolverManager::ShouldForceSystemResolverDueToTestOverride() const {
   if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_) {
     DCHECK(dns_client_);
     DCHECK(dns_client_->GetEffectiveConfig());
-    DCHECK(base::ranges::none_of(dns_client_->GetEffectiveConfig()->nameservers,
-                                 &IPAddress::IsPubliclyRoutable,
-                                 &IPEndPoint::address))
+    DCHECK(std::ranges::none_of(dns_client_->GetEffectiveConfig()->nameservers,
+                                &IPAddress::IsPubliclyRoutable,
+                                &IPEndPoint::address))
         << "Test could query a publicly-routable address.";
   }
   return !host_resolver_system_params_.resolver_proc &&
@@ -1274,7 +1333,7 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
 
   constexpr TaskType kWantTasks[] = {TaskType::DNS, TaskType::SECURE_DNS};
   const bool no_dns_or_secure_tasks =
-      base::ranges::find_first_of(*out_tasks, kWantTasks) == out_tasks->end();
+      std::ranges::find_first_of(*out_tasks, kWantTasks) == out_tasks->end();
   // The system resolver can be used as a fallback for a non-existent or
   // failing DnsTask if allowed by the request parameters.
   if (system_task_allowed &&
@@ -1380,8 +1439,8 @@ void HostResolverManager::CreateTaskSequence(
 
   // `HOST_RESOLVER_CANONNAME` is only supported through system resolution.
   if (job_key.flags & HOST_RESOLVER_CANONNAME) {
-    DCHECK(base::ranges::find(*out_tasks, TaskType::DNS) == out_tasks->end());
-    DCHECK(base::ranges::find(*out_tasks, TaskType::MDNS) == out_tasks->end());
+    DCHECK(std::ranges::find(*out_tasks, TaskType::DNS) == out_tasks->end());
+    DCHECK(std::ranges::find(*out_tasks, TaskType::MDNS) == out_tasks->end());
   }
 }
 
@@ -1639,9 +1698,9 @@ void HostResolverManager::OnSystemDnsConfigChanged(
   // that we are not at risk of sending queries beyond the local network.
   if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_ &&
       config.has_value()) {
-    DCHECK(base::ranges::none_of(config->nameservers,
-                                 &IPAddress::IsPubliclyRoutable,
-                                 &IPEndPoint::address))
+    DCHECK(std::ranges::none_of(config->nameservers,
+                                &IPAddress::IsPubliclyRoutable,
+                                &IPEndPoint::address))
         << "Test could query a publicly-routable address.";
   }
 

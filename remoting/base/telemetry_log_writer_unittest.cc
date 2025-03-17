@@ -17,7 +17,7 @@
 #include "net/http/http_status_code.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/fake_oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/proto/remoting/v1/telemetry_messages.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,10 +76,9 @@ decltype(auto) DoSucceed(ProtobufHttpTestResponder* responder) {
 // Creates a failure action to be passed to WillOnce and friends.
 decltype(auto) DoFail(ProtobufHttpTestResponder* responder) {
   return [responder](const network::ResourceRequest& request) {
-    return responder->AddError(
-        request.url.spec(),
-        ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
-                           "The service is unavailable."));
+    return responder->AddError(request.url.spec(),
+                               HttpStatus(HttpStatus::Code::UNAVAILABLE,
+                                          "The service is unavailable."));
   };
 }
 

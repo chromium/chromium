@@ -45,6 +45,6 @@ void Group::Add(const AutocompleteMatch& match) {
 }
 
 void Group::GroupMatchesBySearchVsUrl() {
-  base::ranges::stable_sort(matches_.begin(), matches_.end(), {},
-                            [](const auto& m) { return m->GetSortingOrder(); });
+  std::ranges::stable_sort(matches_.begin(), matches_.end(), {},
+                           [](const auto& m) { return m->GetSortingOrder(); });
 }

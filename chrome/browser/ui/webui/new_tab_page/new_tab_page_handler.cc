@@ -26,7 +26,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -34,7 +33,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -527,6 +530,12 @@ NewTabPageHandler::NewTabPageHandler(
           ->AddModelExecutionSettingsEnabledObserver(this);
     }
   }
+
+  microsoft_auth_service_ = MicrosoftAuthServiceFactory::GetForProfile(profile);
+  if (microsoft_auth_service_) {
+    microsoft_auth_service_->AddObserver(this);
+  }
+
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
     ntp_custom_background_service_->VerifyCustomBackgroundImageURL();
@@ -541,6 +550,10 @@ NewTabPageHandler::NewTabPageHandler(
                           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kNtpDisabledModules,
+      base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNtpHiddenModules,
       base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
                           base::Unretained(this)));
 
@@ -562,11 +575,15 @@ NewTabPageHandler::~NewTabPageHandler() {
         ->RemoveModelExecutionSettingsEnabledObserver(this);
     optimization_guide_keyed_service_ = nullptr;
   }
+  if (microsoft_auth_service_) {
+    microsoft_auth_service_->RemoveObserver(this);
+  }
 }
 
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules);
+  registry->RegisterListPref(prefs::kNtpHiddenModules);
   registry->RegisterListPref(prefs::kNtpModulesOrder);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
   registry->RegisterIntegerPref(prefs::kNtpCustomizeChromeButtonOpenCount, 0);
@@ -759,16 +776,24 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
 }
 
 void NewTabPageHandler::UpdateDisabledModules() {
-  std::vector<std::string> module_ids;
+  std::set<std::string> module_ids_set;
   // If the module visibility is managed by policy we either disable all modules
   // (if invisible) or no modules (if visible).
   if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
-    const auto& module_ids_value =
+    const auto& disabled_module_ids_value =
         profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
-    for (const auto& id : module_ids_value) {
-      module_ids.push_back(id.GetString());
+    for (const auto& id : disabled_module_ids_value) {
+      module_ids_set.insert(id.GetString());
+    }
+
+    const auto& hidden_module_ids_value =
+        profile_->GetPrefs()->GetList(prefs::kNtpHiddenModules);
+    for (const auto& id : hidden_module_ids_value) {
+      module_ids_set.insert(id.GetString());
     }
   }
+  std::vector<std::string> module_ids(module_ids_set.begin(),
+                                      module_ids_set.end());
   page_->SetDisabledModules(
       !profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible),
       std::move(module_ids));
@@ -868,13 +893,27 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   }
 
   // Second, append Finch order for modules _not_ ordered by drag&drop.
-  base::ranges::copy_if(ntp_features::GetModulesOrder(),
-                        std::back_inserter(module_ids),
-                        [&module_ids](const std::string& id) {
-                          return !base::Contains(module_ids, id);
-                        });
+  std::ranges::copy_if(ntp_features::GetModulesOrder(),
+                       std::back_inserter(module_ids),
+                       [&module_ids](const std::string& id) {
+                         return !base::Contains(module_ids, id);
+                       });
+
+  // Third, append default module order for any modules not ordered by
+  // drag&drop or Finch.
+  std::ranges::copy_if(ntp_modules::kOrderedModuleIds,
+                       std::back_inserter(module_ids),
+                       [&module_ids](const std::string& id) {
+                         return !base::Contains(module_ids, id);
+                       });
 
   std::move(callback).Run(std::move(module_ids));
+}
+
+void NewTabPageHandler::UpdateModulesLoadable() {
+  if (!microsoft_auth_service_ || SyncMicrosoftModulesWithAuth()) {
+    page_->SetModulesLoadable();
+  }
 }
 
 void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
@@ -1265,6 +1304,10 @@ void NewTabPageHandler::OnChangeInFeatureCurrentlyEnabledState(
   page_->SetWallpaperSearchButtonVisibility(is_now_enabled);
 }
 
+void NewTabPageHandler::OnAuthStateUpdated() {
+  UpdateModulesLoadable();
+}
+
 void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                      int index) {
   DCHECK(choose_local_custom_background_callback_);
@@ -1543,7 +1586,7 @@ void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
     auto input_context =
         base::MakeRefCounted<segmentation_platform::InputContext>();
     input_context->metadata_args.emplace(
-        "active_days_limit", promos_utils::kiOSPasswordPromoLookbackWindow);
+        "active_days_limit", promos_utils::kiOSDesktopPromoLookbackWindow);
     input_context->metadata_args.emplace(
         "wait_for_device_info_in_seconds",
         segmentation_platform::processing::ProcessedValue(0));
@@ -1668,4 +1711,59 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelController(
   } else {
     page_->SetCustomizeChromeSidePanelVisibility(false);
   }
+}
+
+void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
+                                        bool hidden) {
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpHiddenModules);
+  base::Value::List& list = update.Get();
+  base::Value module_id_value(module_id);
+  if (hidden) {
+    if (!base::Contains(list, module_id_value)) {
+      list.Append(std::move(module_id_value));
+    }
+  } else {
+    list.EraseValue(module_id_value);
+  }
+}
+
+bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
+  MicrosoftAuthService::AuthState state =
+      microsoft_auth_service_->GetAuthState();
+
+  const std::vector<std::string> auth_dependent_modules(
+      ntp_modules::kMicrosoftAuthDependentModuleIds.begin(),
+      ntp_modules::kMicrosoftAuthDependentModuleIds.end());
+  const std::string auth_id = ntp_modules::kMicrosoftAuthenticationModuleId;
+  std::vector<std::string> enabled_modules;
+  std::vector<std::string> disabled_modules;
+  switch (state) {
+    case MicrosoftAuthService::AuthState::kNone:
+      break;
+    case MicrosoftAuthService::AuthState::kError:
+      enabled_modules.push_back(auth_id);
+      disabled_modules = auth_dependent_modules;
+      break;
+    case MicrosoftAuthService::AuthState::kSuccess:
+      enabled_modules = auth_dependent_modules;
+      disabled_modules.push_back(auth_id);
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  for (const auto& module_id : enabled_modules) {
+    SetModuleHidden(module_id, false);
+  }
+  for (const auto& module_id : disabled_modules) {
+    SetModuleHidden(module_id, true);
+  }
+
+  return state != MicrosoftAuthService::AuthState::kNone;
+}
+
+void NewTabPageHandler::ConnectToParentDocument(
+    mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+        child_untrusted_document_remote) {
+  page_->ConnectToParentDocument(std::move(child_untrusted_document_remote));
 }

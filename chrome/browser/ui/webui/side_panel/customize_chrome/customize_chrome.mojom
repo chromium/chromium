@@ -90,6 +90,8 @@ struct ModuleSettings {
   string? description;
   // Whether the module is enabled or not.
   bool enabled;
+  // Whether the module should be shown in Customize Chrome or not.
+  bool visible;
 };
 
 enum CustomizeChromeSection {

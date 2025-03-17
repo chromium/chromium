@@ -184,6 +184,11 @@ class PathFinder(object):
         return self._filesystem.dirname(
             self._filesystem.dirname(self._blink_base()))
 
+    @memoized
+    def is_cog(self):
+        """Checks the environment is cog, which is used by Cider G."""
+        return self._filesystem.getcwd().startswith('/google/cog/cloud')
+
     def web_tests_dir(self):
         return self.path_from_chromium_base('third_party', 'blink',
                                             'web_tests')

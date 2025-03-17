@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/login/login_handler.h"
 
+#include <algorithm>
 #include <list>
 #include <map>
 #include <tuple>
@@ -13,7 +14,6 @@
 #include "base/location.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -141,8 +141,8 @@ class LoginHandlerFake : public LoginHandler {
   ~LoginHandlerFake() override;
 
   void NotifyAuthNeeded() override;
-  void NotifyAuthSupplied(const std::u16string& username,
-                          const std::u16string& password) override;
+  void NotifyAuthSupplied(std::u16string_view username,
+                          std::u16string_view password) override;
   void NotifyAuthCancelled() override;
   bool BuildViewImpl(const std::u16string& authority,
                      const std::u16string& explanation,
@@ -164,7 +164,8 @@ class LoginTabHelperFake : public LoginTabHelper {
   std::unique_ptr<LoginHandler> CreateLoginHandler(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
-      LoginAuthRequiredCallback auth_required_callback) override {
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override {
     return std::make_unique<LoginHandlerFake>(auth_info, web_contents,
                                               std::move(auth_required_callback),
                                               browser_client_);
@@ -239,8 +240,8 @@ void LoginHandlerFake::NotifyAuthNeeded() {
   prompt_shown_ = true;
   LoginHandler::NotifyAuthNeeded();
 }
-void LoginHandlerFake::NotifyAuthSupplied(const std::u16string& username,
-                                          const std::u16string& password) {
+void LoginHandlerFake::NotifyAuthSupplied(std::u16string_view username,
+                                          std::u16string_view password) {
   browser_client_->auth_supplied_count++;
   prompt_responded_ = true;
   LoginHandler::NotifyAuthSupplied(username, password);
@@ -902,7 +903,7 @@ void MultiRealmLoginPromptBrowserTest::RunTest(const F& for_each_realm_func) {
   for (int i = 0; i < kMultiRealmTestRealmCount; ++i) {
     auto handlers = LoginHandler::GetAllLoginHandlersForTest();
     auto it =
-        base::ranges::find_if(handlers, [&seen_realms](LoginHandler* handler) {
+        std::ranges::find_if(handlers, [&seen_realms](LoginHandler* handler) {
           return seen_realms.count(handler->auth_info().realm) == 0;
         });
     ASSERT_TRUE(it != handlers.end());

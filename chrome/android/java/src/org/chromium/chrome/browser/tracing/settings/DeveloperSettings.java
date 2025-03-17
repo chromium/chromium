@@ -26,7 +26,7 @@ public class DeveloperSettings extends PreferenceFragmentCompat implements Embed
 
     // Non-translated strings:
     private static final String MSG_DEVELOPER_OPTIONS_TITLE = "Developer options";
-    private static final ObservableSupplier<String> sPageTitle =
+    private final ObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_DEVELOPER_OPTIONS_TITLE);
 
     private static Boolean sIsEnabledForTests;
@@ -62,6 +62,6 @@ public class DeveloperSettings extends PreferenceFragmentCompat implements Embed
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
     }
 }

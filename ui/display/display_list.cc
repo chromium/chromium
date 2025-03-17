@@ -25,12 +25,12 @@ void DisplayList::RemoveObserver(DisplayObserver* observer) {
 
 DisplayList::Displays::const_iterator DisplayList::FindDisplayById(
     int64_t id) const {
-  return base::ranges::find(displays_, id, &Display::id);
+  return std::ranges::find(displays_, id, &Display::id);
 }
 
 DisplayList::Displays::const_iterator DisplayList::GetPrimaryDisplayIterator()
     const {
-  return base::ranges::find(displays_, primary_id_, &Display::id);
+  return std::ranges::find(displays_, primary_id_, &Display::id);
 }
 
 void DisplayList::AddOrUpdateDisplay(const Display& display, Type type) {
@@ -170,7 +170,7 @@ bool DisplayList::IsValid() const {
 
 DisplayList::Displays::iterator DisplayList::FindDisplayByIdInternal(
     int64_t id) {
-  return base::ranges::find(displays_, id, &Display::id);
+  return std::ranges::find(displays_, id, &Display::id);
 }
 
 }  // namespace display

@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/http/structured_headers.h"
 
 namespace {
@@ -87,17 +88,22 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
       if (!value.is_string()) {
         continue;
       }
-      std::string path = value.GetString();
       // TODO(kristianm): Update this as same site requirements are solidified
-      std::string unescaped = base::UnescapeURLComponent(
-          path,
+      std::string unescaped_path = base::UnescapeURLComponent(
+          value.GetString(),
           base::UnescapeRule::PATH_SEPARATORS |
               base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
-      GURL candidate_endpoint = request_url.Resolve(unescaped);
-      if (candidate_endpoint.is_valid() &&
-          net::SchemefulSite(candidate_endpoint) ==
-              net::SchemefulSite(request_url)) {
-        registration_endpoint = std::move(candidate_endpoint);
+      // Registration endpoint can be a full URL (samesite with request origin)
+      // or a relative URL, starting with a "/" to make it origin-relative,
+      // and starting with anything else making it current-path-relative to
+      // request URL.
+      GURL candidate_registration_endpoint =
+          request_url.Resolve(unescaped_path);
+      if (candidate_registration_endpoint.is_valid() &&
+          IsSecure(candidate_registration_endpoint) &&
+          net::SchemefulSite::IsSameSite(candidate_registration_endpoint,
+                                         request_url)) {
+        registration_endpoint = std::move(candidate_registration_endpoint);
       }
     } else if (key == kChallengeParamKey && value.is_string()) {
       challenge = value.GetString();

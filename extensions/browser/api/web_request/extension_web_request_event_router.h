@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern_set.h"
+#include "net/base/completion_once_callback.h"
 
 namespace content {
 class BrowserContext;
@@ -57,7 +58,7 @@ class WebRequestEventRouter : public KeyedService {
   struct BlockedRequest;
 
   // The events denoting the lifecycle of a given network request.
-  enum EventTypes {
+  enum class EventTypes {
     kInvalidEvent = 0,
     kOnBeforeRequest = 1 << 0,
     kOnBeforeSendHeaders = 1 << 1,

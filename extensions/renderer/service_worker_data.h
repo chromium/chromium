@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -108,6 +109,8 @@ class ServiceWorkerData
   mojo::AssociatedRemote<mojom::RendererAutomationRegistry>
       renderer_automation_registry_remote_;
   mojo::AssociatedReceiver<mojom::ServiceWorker> receiver_{this};
+
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<ServiceWorkerData> weak_ptr_factory_{this};
 };

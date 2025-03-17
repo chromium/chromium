@@ -679,7 +679,7 @@ enum PositionType {
   };
 
   // Arguments for the find() and findAll() methods.
-  [nocompile, noinline_doc] dictionary FindParams {
+  [nocompile] dictionary FindParams {
     RoleType? role;
 
     // A map of $(ref:automation.StateType) to boolean, indicating for each
@@ -706,7 +706,7 @@ enum PositionType {
   };
 
   // Arguments for the setDocumentSelection() function.
-  [nocompile, noinline_doc] dictionary SetDocumentSelectionParams {
+  [nocompile] dictionary SetDocumentSelectionParams {
     // The node where the selection begins.
     [instanceOf=AutomationNode] object anchorObject;
 
@@ -720,7 +720,7 @@ enum PositionType {
     long focusOffset;
   };
 
-  [nocompile, noinline_doc] dictionary AutomationIntent {
+  [nocompile] dictionary AutomationIntent {
     // A command associated with this AutomationIntent.
     IntentCommandType command;
 
@@ -728,11 +728,11 @@ enum PositionType {
     IntentTextBoundaryType textBoundary;
 
     // A move direction associated with this AutomationIntent.
-    IntentMoveDirectionType moveDirection;
+    IntentMoveDirectionType? moveDirection;
   };
 
   // An event in the Automation tree.
-  [nocompile, noinline_doc] dictionary AutomationEvent {
+  [nocompile] dictionary AutomationEvent {
     // The $(ref:automation.AutomationNode) to which the event was targeted.
     AutomationNode target;
 
@@ -758,7 +758,7 @@ enum PositionType {
   callback AutomationListener = void(AutomationEvent event);
 
   // A change to the Automation tree.
-  [nocompile, noinline_doc] dictionary TreeChange {
+  [nocompile] dictionary TreeChange {
     // The $(ref:automation.AutomationNode) that changed.
     AutomationNode target;
 
@@ -783,13 +783,13 @@ enum PositionType {
   callback PerformActionCallbackWithNode = void(AutomationNode node);
   callback BoundsForRangeCallback = void(Rect bounds);
 
-      [nocompile, noinline_doc] dictionary CustomAction {
+  [nocompile] dictionary CustomAction {
     long id;
     DOMString description;
   };
 
     // A marker associated with an AutomationNode.
-  [nocompile, noinline_doc] dictionary Marker {
+  [nocompile] dictionary Marker {
     // The start offset within the text of the associated node.
     long startOffset;
 
@@ -806,7 +806,7 @@ enum PositionType {
   // be kept in sync with
   // extensions/renderer/api/automation/automation_position.h.
   // Some members there are kept private and not represented here.
-  [nocompile, noinline_doc] dictionary AutomationPosition {
+  [nocompile] dictionary AutomationPosition {
 
     AutomationNode? node;
     long childIndex;
@@ -876,7 +876,7 @@ enum PositionType {
   };
 
   // A single node in an Automation tree.
-  [nocompile, noinline_doc] dictionary AutomationNode {
+  [nocompile] dictionary AutomationNode {
     // The root node of the tree containing this AutomationNode.
     AutomationNode? root;
 

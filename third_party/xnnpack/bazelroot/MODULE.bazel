@@ -1,0 +1,16 @@
+'''Builds XNNPACK with a dummy toolchain to help generate BUILD.gn.'''
+# Targets for XNNPACK can be scraped with:
+# /usr/bin/bazel aquery --output=jsonproto --platforms='//:linux_aarch64' 'mnemonic("CppCompile", filter("//:", deps(@xnnpack//:XNNPACK)))'
+# Build identifier can be generated:
+# /usr/bin/bazel build '@xnnpack//:build_identifier.cc'
+bazel_dep(name = "xnnpack", version = "")
+
+local_path_override(
+    module_name = "xnnpack",
+    path = "../src/",
+)
+
+bazel_dep(name = "platforms", version = "0.0.10")
+register_toolchains(
+    "//:dummy_toolchain",
+)

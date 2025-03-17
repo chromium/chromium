@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DataSeries} from '../model/data_series.js';
-import type {HealthdInternalsSystemTrendElement} from '../view/pages/system_trend.js'
+import type {DataSeries} from '../model/data_series.js';
+import type {HealthdInternalsSystemTrendElement} from '../view/pages/system_trend.js';
 
 import {UnitLabel} from './unit_label.js';
 
@@ -184,9 +184,12 @@ export class SystemTrendController {
   private getCustomData(): DataSeriesList[] {
     const output: DataSeriesList[] = [];
     const allData = [
-      this.dataCollection.cpuUsage, this.dataCollection.cpuFrequency,
-      this.dataCollection.memory, this.dataCollection.zram,
-      this.dataCollection.battery, this.dataCollection.thermal
+      this.dataCollection.cpuUsage,
+      this.dataCollection.cpuFrequency,
+      this.dataCollection.memory,
+      this.dataCollection.zram,
+      this.dataCollection.battery,
+      this.dataCollection.thermal,
     ];
     for (const data of allData) {
       if (data.selectedIndices.length === 0) {

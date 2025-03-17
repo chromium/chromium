@@ -7,7 +7,10 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
@@ -18,6 +21,8 @@
 #include "net/cert/x509_certificate.h"
 
 namespace safe_browsing {
+
+class DeepScanningMetadata;
 
 // Enum to keep track why a particular download verdict was chosen.
 // Used for UMA metrics. Do not reorder.
@@ -106,6 +111,8 @@ enum class DeepScanEvent {
   kMaxValue = kIncorrectPassword,
 };
 void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event);
+void LogDeepScanEvent(const DeepScanningMetadata& metadata,
+                      DeepScanEvent event);
 void LogLocalDecryptionEvent(DeepScanEvent event);
 
 // Callback type which is invoked once the download request is done.
@@ -172,12 +179,18 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
     const content::FileSystemAccessWriteItem& item,
     int user_gesture_limit);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 // Returns true if dangerous download report should be sent.
 bool ShouldSendDangerousDownloadReport(
     download::DownloadItem* item,
     ClientSafeBrowsingReportRequest::ReportType report_type);
 #endif
+
+// If the item should be uploaded for deep scanning, this returns the content
+// analysis settings to use. If the item should not be uploaded, this returns
+// nullopt.
+std::optional<enterprise_connectors::AnalysisSettings>
+ShouldUploadBinaryForDeepScanning(download::DownloadItem* item);
 
 }  // namespace safe_browsing
 

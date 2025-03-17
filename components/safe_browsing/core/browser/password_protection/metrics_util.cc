@@ -115,6 +115,8 @@ const char kPasswordOnFocusRequestWithTokenHistogram[] =
     "PasswordProtection.RequestWithToken.PasswordFieldOnFocus";
 const char kAnyPasswordEntryRequestWithTokenHistogram[] =
     "PasswordProtection.RequestWithToken.AnyPasswordEntry";
+const char kReusedPasswordAccountTypeHistogram[] =
+    "PasswordProtection.ReusedPasswordAccountType";
 
 void LogPasswordProtectionRequestTokenHistogram(
     LoginReputationClientRequest::TriggerType trigger_type,
@@ -274,13 +276,6 @@ void LogPasswordProtectionVerdict(
   }
 }
 
-void LogSyncAccountType(SyncAccountType sync_account_type) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordProtection.PasswordReuseSyncAccountType", sync_account_type,
-      LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType_MAX +
-          1);
-}
-
 void LogPasswordProtectionNetworkResponseAndDuration(
     int response_code,
     int net_error,
@@ -402,6 +397,44 @@ void LogModalWarningDialogLifetime(
   DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "PasswordProtection.ModalWarningDialogLifetime",
       base::TimeTicks::Now() - modal_construction_start_time);
+}
+
+void LogReusedPasswordAccountType(
+    ReusedPasswordAccountType password_account_type) {
+  switch (password_account_type.account_type()) {
+    case ReusedPasswordAccountType::UNKNOWN:
+      UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                AccountTypeWithSyncState::UNKNOWN);
+      break;
+    case ReusedPasswordAccountType::GSUITE:
+      if (password_account_type.is_account_syncing()) {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GSUITE_SYNCING);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GSUITE);
+      }
+      break;
+    case ReusedPasswordAccountType::GMAIL:
+      if (password_account_type.is_account_syncing()) {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GMAIL_SYNCING);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                  AccountTypeWithSyncState::GMAIL);
+      }
+      break;
+    case ReusedPasswordAccountType::NON_GAIA_ENTERPRISE:
+      UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                AccountTypeWithSyncState::NON_GAIA_ENTERPRISE);
+      break;
+    case ReusedPasswordAccountType::SAVED_PASSWORD:
+      UMA_HISTOGRAM_ENUMERATION(kReusedPasswordAccountTypeHistogram,
+                                AccountTypeWithSyncState::SAVED_PASSWORD);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace safe_browsing

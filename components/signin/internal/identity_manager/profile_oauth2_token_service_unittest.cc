@@ -52,8 +52,9 @@ class RetryingTestingOAuth2AccessTokenManagerConsumer
 
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override {
-    if (retry_counter_ <= 0)
+    if (retry_counter_ <= 0) {
       return;
+    }
     retry_counter_--;
     TestingOAuth2AccessTokenManagerConsumer::OnGetTokenFailure(request, error);
     request_ = oauth2_service_->StartRequest(
@@ -93,8 +94,9 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
     : public FakeProfileOAuth2TokenServiceDelegate {
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override {
-    if (GetAuthError(account_id) == GoogleServiceAuthError::AuthErrorNone())
+    if (GetAuthError(account_id) == GoogleServiceAuthError::AuthErrorNone()) {
       return GetRefreshToken(account_id);
+    }
     return std::string();
   }
 
@@ -182,8 +184,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, GetAccounts) {
   EXPECT_TRUE(accounts.empty());
 
   // Load tokens from disk.
-  oauth2_service_->GetDelegate()->LoadCredentials(CoreAccountId(),
-                                                  /*is_syncing=*/false);
+  oauth2_service_->GetDelegate()->LoadCredentials(CoreAccountId());
 
   // |account_id_| should now be visible in the accounts.
   accounts = oauth2_service_->GetAccounts();

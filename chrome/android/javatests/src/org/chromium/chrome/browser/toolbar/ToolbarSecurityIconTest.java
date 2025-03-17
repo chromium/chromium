@@ -330,23 +330,6 @@ public final class ToolbarSecurityIconTest {
         assertEquals(
                 R.drawable.omnibox_https_valid_page_info,
                 mLocationBarModel.getSecurityIconResource(
-                        ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT,
-                        IS_SMALL_DEVICE,
-                        !IS_OFFLINE_PAGE,
-                        !IS_PAINT_PREVIEW,
-                        PdfPageType.NONE));
-        assertEquals(
-                R.drawable.omnibox_https_valid_page_info,
-                mLocationBarModel.getSecurityIconResource(
-                        ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT,
-                        !IS_SMALL_DEVICE,
-                        !IS_OFFLINE_PAGE,
-                        !IS_PAINT_PREVIEW,
-                        PdfPageType.NONE));
-
-        assertEquals(
-                R.drawable.omnibox_https_valid_page_info,
-                mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE,
                         IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,

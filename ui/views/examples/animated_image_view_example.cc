@@ -64,7 +64,7 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
                 .AddChild(
                     Builder<AnimatedImageView>()
                         .CopyAddressTo(&animated_image_view_)
-                        .SetBorder(CreateThemedSolidBorder(
+                        .SetBorder(CreateSolidBorder(
                             1, ExamplesColorIds::
                                    kColorAnimatedImageViewExampleBorder))),
             Builder<BoxLayoutView>()

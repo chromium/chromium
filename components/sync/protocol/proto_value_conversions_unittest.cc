@@ -62,12 +62,13 @@ using testing::Not;
 
 // We'd also like to check if we changed any field in our messages. However,
 // that's hard to do: sizeof could work, but it's platform-dependent.
-// default_instance().ByteSize() won't change for most changes, since most of
-// our fields are optional. So we just settle for comments in the proto files.
+// default_instance().ByteSizeLong() won't change for most changes, since most
+// of our fields are optional. So we just settle for comments in the proto
+// files.
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(53 == syncer::GetNumDataTypes(),
+static_assert(55 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -125,6 +126,8 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(web_app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(webauthn_credential)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wifi_configuration)
 DEFINE_SPECIFICS_TO_VALUE_TEST(workspace_desk)
+DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_loyalty_card)
+DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_account_data)
 
 TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   sync_pb::AutofillWalletSpecifics specifics;

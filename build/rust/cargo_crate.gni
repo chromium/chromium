@@ -111,14 +111,14 @@ template("cargo_crate") {
     _rustc_metadata = "${_crate_name}-${invoker.epoch}"
   }
 
+  _epochlabel = "vunknown"
+  if (defined(invoker.epoch)) {
+    _tempepoch = string_replace(invoker.epoch, ".", "_")
+    _epochlabel = "v${_tempepoch}"
+  }
+
   # Executables need to have unique names. Work out a prefix.
   if (defined(invoker.build_root)) {
-    _epochlabel = "vunknown"
-    if (defined(invoker.epoch)) {
-      _tempepoch = string_replace(invoker.epoch, ".", "_")
-      _epochlabel = "v${_tempepoch}"
-    }
-
     # This name includes the target name to ensure it's unique for each possible
     # build target in the same BUILD.gn file.
     _build_script_name =
@@ -168,19 +168,6 @@ template("cargo_crate") {
   if (defined(invoker.crate_type)) {
     _crate_type = invoker.crate_type
   }
-  if (_crate_type == "cdylib") {
-    # Crates are rarely cdylibs. The example encountered so far aims
-    # to expose a C API to other code. In a Chromium context, we don't
-    # want to build that as a dylib for a couple of reasons:
-    # * rust_shared_library does not work on Mac. rustc does not know
-    #   how to export the __llvm_profile_raw_version symbol.
-    # * even if it did work, this might require us to distribute extra
-    #   binaries (.so/.dylib etc.)
-    # For the only case we've had so far, it makes more sense to build
-    # the code as a static library which we can then link into downstream
-    # binaries.
-    _crate_type = "rlib"
-  }
   if (_crate_type == "bin") {
     _target_type = "rust_executable"
     assert(!defined(invoker.epoch))
@@ -196,6 +183,12 @@ template("cargo_crate") {
 
   if (defined(invoker.output_name)) {
     _output_name = invoker.output_name
+    not_needed([ "_epochlabel" ])
+  } else if (_crate_type == "proc-macro") {
+    # Proc macros are output to a top level directory (for the host toolchain).
+    # Since multiple versions of the same crate may coexist, the output file
+    # name must include the epoch to disambiguate.
+    _output_name = "${_crate_name}_${_epochlabel}"
   } else if (_crate_type != "bin") {
     # Note that file names of libraries must start with the crate name in
     # order for the compiler to find transitive dependencies in the
@@ -205,6 +198,9 @@ template("cargo_crate") {
     # of the exe should not add magic stuff to it. And bin crates can not be
     # transitive dependencies.
     _output_name = "${_crate_name}_${_orig_target_name}"
+    not_needed([ "_epochlabel" ])
+  } else {
+    not_needed([ "_epochlabel" ])
   }
 
   _testonly = false
@@ -253,10 +249,6 @@ template("cargo_crate") {
     testonly = _testonly
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
-    }
-    if (defined(crate_type) && crate_type == "cdylib") {
-      # See comments above about cdylib.
-      crate_type = "rlib"
     }
     crate_name = _crate_name
 
@@ -448,20 +440,6 @@ template("cargo_crate") {
           "--target-abi",
           cargo_target_abi,
         ]
-      }
-      if (current_cpu == "arm64" || current_cpu == "x64" ||
-          current_cpu == "loong64" || current_cpu == "riscv64") {
-        args += [
-          "--pointer-width",
-          "64",
-        ]
-      } else if (current_cpu == "arm" || current_cpu == "x86") {
-        args += [
-          "--pointer-width",
-          "32",
-        ]
-      } else {
-        assert(false, "Architecture not supported")
       }
       if (defined(invoker.features)) {
         args += [ "--features" ]

@@ -15,10 +15,11 @@ import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalizat
 import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {CurrentWallpaper, WallpaperLayout} from '../../personalization_app.mojom-webui.js';
+import type {CurrentWallpaper} from '../../personalization_app.mojom-webui.js';
+import {WallpaperLayout} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {DisplayableImage} from './constants.js';
+import type {DisplayableImage} from './constants.js';
 import {getWallpaperLayoutEnum, isGooglePhotosPhoto} from './utils.js';
 import {setFullscreenStateAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
@@ -216,11 +217,11 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
     }
   }
 
-  private async onClickExit_() {
+  private onClickExit_() {
     this.dispatch(setFullscreenStateAction(FullscreenPreviewState.OFF));
   }
 
-  private async onClickConfirm_() {
+  private onClickConfirm_() {
     // Confirm the preview wallpaper before exiting fullscreen. In tablet
     // splitscreen, this prevents `WallpaperController::OnOverviewModeWillStart`
     // from triggering first, which leads to preview wallpaper getting canceled

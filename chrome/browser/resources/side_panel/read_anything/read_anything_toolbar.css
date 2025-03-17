@@ -1,37 +1,110 @@
-/* Copyright 2024 The Chromium Authors
+/* Copyright 2025 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #import=./toolbar_styles_shared_lit.css.js
+ * #include=toolbar-styles-shared-lit md-select-lit cr-icons-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-cr-icon {
-  --icon-size: 20px;
-  height: var(--icon-size);
-  margin: 0px 8px 0px 4px;
-  width: var(--icon-size);
+#play-pause {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-fill-color: var(--color-sys-primary);
+  --cr-icon-button-size: 28px;
+  color: var(--color-side-panel-entry-icon);
 }
 
-cr-icon-button {
-  --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 24px;
-  color: var(--color-sys-on-surface-subtle);
-  margin: 0 4px;
+.audio-background-when-active-false {
+  --audio-controls-background: transparent;
+  --audio-controls-right-margin: 2px;
+  --audio-controls-right-padding: 0px;
 }
 
-cr-icon-button.active {
-  background-color: var(--cr-active-background-color);
+.audio-background-when-active-true {
+  --audio-controls-background: var(--color-sys-tonal-container);
+  --audio-controls-right-margin: 6px;
+  --audio-controls-right-padding: 4px;
 }
 
-.check-mark {
-  margin: 0;
+#audio-controls {
+  background: var(--audio-controls-background);
+  border-radius: 18px;
+  display: inline-block;
+  height: fit-content;
+  margin-inline-end: var(--audio-controls-right-margin);
+  padding: 4px var(--audio-controls-right-padding) 4px 2px;
 }
 
-.dropdown-item {
-  align-items: center;
+.audio-controls {
+  margin: 0px 2px;
+}
+
+#font-size-decrease {
+  margin-inline-start: 12px;
+}
+
+#font-size-reset {
+  margin-inline-end: 4px;
+}
+
+.text-button {
+  border: none;
   font-size: 13px;
-  min-width: 180px;
-  padding-left: 20px;
+}
+
+.check-mark-hidden-true {
+  visibility: hidden;
+}
+
+.check-mark-hidden-false {
+  visibility: visible;
+}
+
+.toolbar-container {
+  display: inline-block;
+  overflow: visible;
+  padding: 6px 8px;
+  white-space: var(--toolbar-white-space);
+}
+
+#more {
+  display: none;
+}
+
+.separator {
+  border: 1px solid var(--color-side-panel-divider);
+  display: inline;
+  height: 0px;
+  margin: 10px 4px;
+  transform: rotate(-90deg);
+  width: 20px;
+}
+
+.spinner {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.md-select {
+  --md-select-text-color: var(--cr-primary-text-color);
+  --md-select-width: fit-content;
+  margin: 4px 8px 4px 0px;
+}
+
+.md-select option {
+  --md-select-option-bg-color: var(--color-sys-base-container-elevated);
+}
+
+.more-options-icon {
+  margin: 8px 6px;
+}
+
+#more-options-menu-dialog::part(dialog) {
+  min-width: 92px;
 }

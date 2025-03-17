@@ -7,6 +7,7 @@
 
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
   ~MantisUntrustedService() override;
 
   mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedService>
-  BindNewPipeAndPassRemote();
+  BindNewPipeAndPassRemote(base::OnceClosure disconnect_handler);
 
   // Implements `media_app_ui::mojom::MantisUntrustedService`:
   void SegmentImage(const std::vector<uint8_t>& image,
@@ -52,6 +53,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
 
   void ClassifyImageSafety(const std::vector<uint8_t>& image,
                            ClassifyImageSafetyCallback callback) override;
+
+  void OutpaintImage(const std::vector<uint8_t>& image,
+                     const std::vector<uint8_t>& mask,
+                     uint32_t seed,
+                     OutpaintImageCallback callback) override;
 
  private:
   mojo::Receiver<media_app_ui::mojom::MantisUntrustedService> receiver_;

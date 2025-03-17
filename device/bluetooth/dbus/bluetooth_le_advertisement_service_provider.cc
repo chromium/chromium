@@ -109,6 +109,7 @@ class BluetoothAdvertisementServiceProviderImpl
     DCHECK(delegate_);
 
     delegate_->Released();
+    std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
   }
 
   // Called by dbus:: when the Bluetooth daemon fetches a single property of

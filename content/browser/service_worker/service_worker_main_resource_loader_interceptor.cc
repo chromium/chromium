@@ -10,22 +10,21 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
-#include "net/base/isolation_info.h"
 #include "net/base/url_util.h"
-#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
-#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -64,34 +63,6 @@ bool ShouldCreateForWorker(
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url);
 }
 
-// See the comment at
-// `ServiceWorkerMainResourceLoaderInterceptor::isolation_info_` for
-// `isolation_info_from_interceptor`.
-void InitializeServiceWorkerClient(
-    ServiceWorkerClient& service_worker_client,
-    const network::ResourceRequest& tentative_resource_request,
-    const net::IsolationInfo& isolation_info_from_interceptor) {
-  // Update the container host with this request, clearing old controller state
-  // if this is a redirect.
-  service_worker_client.SetControllerRegistration(
-      nullptr,
-      /*notify_controllerchange=*/false);
-  const GURL stripped_url =
-      net::SimplifyUrlForRequest(tentative_resource_request.url);
-
-  service_worker_client.UpdateUrls(
-      stripped_url,
-      // The storage key only has a top_level_site, not
-      // an origin, so we must extract the origin from
-      // trusted_params.
-      tentative_resource_request.trusted_params
-          ? tentative_resource_request.trusted_params->isolation_info
-                .top_frame_origin()
-          : std::nullopt,
-      service_worker_client.CalculateStorageKeyForUpdateUrls(
-          stripped_url, isolation_info_from_interceptor));
-}
-
 }  // namespace
 
 std::unique_ptr<NavigationLoaderInterceptor>
@@ -116,12 +87,40 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
           ->context()
           ->service_worker_client_owner()
           .CreateServiceWorkerClientForWindow(request_info.are_ancestors_secure,
-                                              request_info.frame_tree_node_id));
+                                              request_info.frame_tree_node_id),
+      request_info.isolation_info);
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle),
-      request_info.begin_params->skip_service_worker,
-      request_info.frame_tree_node_id, request_info.isolation_info));
+      request_info.begin_params->skip_service_worker));
+}
+
+std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
+ServiceWorkerMainResourceLoaderInterceptor::CreateForPrefetch(
+    const network::ResourceRequest& resource_request,
+    base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+
+  if (!ShouldCreateForNavigation(
+          resource_request.url, resource_request.destination,
+          navigation_handle->context_wrapper()->browser_context())) {
+    return nullptr;
+  }
+
+  if (!navigation_handle->context_wrapper()->context()) {
+    return nullptr;
+  }
+
+  navigation_handle->set_service_worker_client(
+      navigation_handle->context_wrapper()
+          ->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForPrefetch(),
+      resource_request.trusted_params->isolation_info);
+
+  return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
+      std::move(navigation_handle), resource_request.skip_service_worker));
 }
 
 std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
@@ -155,7 +154,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
           ->service_worker_client_owner()
           .CreateServiceWorkerClientForWorker(
               process_id,
-              absl::ConvertVariantTo<ServiceWorkerClientInfo>(worker_token)));
+              absl::ConvertVariantTo<ServiceWorkerClientInfo>(worker_token)),
+      isolation_info);
 
   // TODO(crbug.com/324939068): remove this UMA after the launch.
   if (resource_request.destination ==
@@ -172,8 +172,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
-      std::move(navigation_handle), resource_request.skip_service_worker,
-      FrameTreeNodeId(), isolation_info));
+      std::move(navigation_handle), resource_request.skip_service_worker));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -224,40 +223,28 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     }
   }
 
-  // Update `isolation_info_`  to equal the net::IsolationInfo needed for any
-  // service worker intercepting this request. Here, `isolation_info_` directly
-  // corresponds to the StorageKey used to look up the service worker's
-  // registration. That StorageKey will then be used later to recreate this
-  // net::IsolationInfo for use by the ServiceWorker itself.
-  url::Origin new_origin = url::Origin::Create(tentative_resource_request.url);
-  net::SiteForCookies new_site_for_cookies = isolation_info_.site_for_cookies();
-  new_site_for_cookies.CompareWithFrameTreeOriginAndRevise(new_origin);
-  isolation_info_ = net::IsolationInfo::Create(
-      isolation_info_.request_type(),
-      isolation_info_.top_frame_origin().value(), new_origin,
-      new_site_for_cookies, isolation_info_.nonce());
-
-  // Update the service worker client. This is important to do this on every
-  // requests/redirects before falling back to network below, so service worker
-  // APIs still work even if the service worker is bypassed for request
-  // interception.
-  InitializeServiceWorkerClient(*handle_->service_worker_client(),
-                                tentative_resource_request, isolation_info_);
+  handle_->InitializeForRequest(tentative_resource_request);
 
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
+  //
+  // crbug.com/352578800: `MaybeHasRegistrationForStorageKey()` doesn't reflect
+  // the fake registration initially. If the URL is eligible for
+  // SyntheticResponse, do not skip service worker.
   bool skip_service_worker =
       skip_service_worker_ ||
       !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
-      !handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
-          handle_->service_worker_client()->key());
+      !(handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
+            handle_->service_worker_client()->key()) ||
+        service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+            tentative_resource_request.url));
 
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
       context_core->AsWeakPtr(), handle_->fetch_event_client_id(),
       handle_->service_worker_client(), skip_service_worker,
-      frame_tree_node_id_, handle_->service_worker_accessed_callback());
+      handle_->service_worker_accessed_callback());
 
   request_handler_->MaybeCreateLoader(
       tentative_resource_request, browser_context, std::move(loader_callback),
@@ -280,13 +267,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
 ServiceWorkerMainResourceLoaderInterceptor::
     ServiceWorkerMainResourceLoaderInterceptor(
         base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-        bool skip_service_worker,
-        FrameTreeNodeId frame_tree_node_id,
-        const net::IsolationInfo& isolation_info)
-    : handle_(std::move(handle)),
-      skip_service_worker_(skip_service_worker),
-      isolation_info_(isolation_info),
-      frame_tree_node_id_(frame_tree_node_id) {
+        bool skip_service_worker)
+    : handle_(std::move(handle)), skip_service_worker_(skip_service_worker) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(handle_);
   CHECK(handle_->scoped_service_worker_client());

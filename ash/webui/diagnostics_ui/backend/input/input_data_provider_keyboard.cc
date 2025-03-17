@@ -8,8 +8,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
-
 #include <fcntl.h>
 #include <linux/input.h>
 
@@ -22,10 +20,13 @@
 #include "ash/shell.h"
 #include "ash/system/diagnostics/mojom/input.mojom-shared.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
+#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -151,6 +152,11 @@ constexpr uint32_t kScancodesDrallion[] = {
     0xAE, 0xB0, 0x44, 0x57, 0xd7, 0x8B, 0xD3,
 };
 
+// For Vivaldi keyboard, some are having delete key on the top row.
+constexpr uint32_t kScancodeDelete = 0xD3;
+constexpr auto kModelsWithTopRowDelete =
+    base::MakeFixedFlatSet<std::string_view>({"rull", "teltic"});
+
 // Turkish F-Type xkb keyboard layout id which is used to differentiate between
 // a device from 'tr' region with Q-Type vs F-Type.
 constexpr std::string_view kTurkishFLayoutId = "xkb:tr:f:tur";
@@ -248,10 +254,12 @@ constexpr mojom::TopRowKey ConvertTopRowActionKeyToDiagnosticsTopRowKey(
       return mojom::TopRowKey::kPlayPause;
     case ui::TopRowActionKey::kPrivacyScreenToggle:
       return mojom::TopRowKey::kPrivacyScreenToggle;
+    case ui::TopRowActionKey::kDictation:
+      return mojom::TopRowKey::kDictation;
+    case ui::TopRowActionKey::kAccessibility:
+      return mojom::TopRowKey::kAccessibility;
     case ui::TopRowActionKey::kAllApplications:
     case ui::TopRowActionKey::kEmojiPicker:
-    case ui::TopRowActionKey::kDictation:
-    case ui::TopRowActionKey::kAccessibility:
     case ui::TopRowActionKey::kDoNotDisturb:
     case ui::TopRowActionKey::kUnknown:
       return mojom::TopRowKey::kUnknown;
@@ -337,6 +345,19 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
         top_row_keys.push_back(top_row_key);
         top_row_key_scancode_indexes[top_row_scan_codes[i]] = index++;
       }
+
+      // If the model contains a delete key in the top row, append it to the
+      // last.
+      constexpr char kModelNameFileName[] = "/run/chromeos-config/v1/name";
+      std::string model_name;
+      if (base::ReadFileToString(base::FilePath(kModelNameFileName),
+                                 &model_name)) {
+        if (kModelsWithTopRowDelete.contains(model_name)) {
+          top_row_keys.push_back(mojom::TopRowKey::kDelete);
+          top_row_key_scancode_indexes[kScancodeDelete] = index++;
+        }
+      }
+
       break;
     }
 
@@ -467,6 +488,10 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
 
   result->has_assistant_key =
       device_info->event_device_info.HasKeyEvent(KEY_ASSISTANT);
+
+  result->bottom_left_layout = device_info->bottom_left_layout;
+  result->bottom_right_layout = device_info->bottom_right_layout;
+  result->numpad_layout = device_info->numpad_layout;
 
   return result;
 }

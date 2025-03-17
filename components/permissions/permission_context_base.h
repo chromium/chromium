@@ -20,7 +20,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 class GURL;
 
@@ -84,7 +84,7 @@ class PermissionContextBase : public content_settings::Observer {
   PermissionContextBase(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      blink::mojom::PermissionsPolicyFeature permissions_policy_feature);
+      network::mojom::PermissionsPolicyFeature permissions_policy_feature);
   ~PermissionContextBase() override;
 
   // A field trial used to enable the global permissions kill switch.
@@ -120,6 +120,7 @@ class PermissionContextBase : public content_settings::Observer {
   // This function updates the cached device permission status which can result
   // in the permission status changing and observers being notified.
   virtual content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
+      content::WebContents* web_contents,
       content::PermissionResult result,
       const GURL& requesting_origin,
       const GURL& embedding_origin);
@@ -140,7 +141,9 @@ class PermissionContextBase : public content_settings::Observer {
   void AddObserver(permissions::Observer* permission_observer);
   void RemoveObserver(permissions::Observer* permission_observer);
 
-  void MaybeUpdatePermissionStatusWithDeviceStatus();
+  // Update the value of `last_has_device_permission_result_` and notify
+  // observers if it changes.
+  void MaybeUpdateCachedHasDevicePermission(content::WebContents* web_contents);
 
   ContentSettingsType content_settings_type() const {
     return content_settings_type_;
@@ -217,6 +220,15 @@ class PermissionContextBase : public content_settings::Observer {
   // Implementors can override this method to avoid using automatic embargo.
   virtual bool UsesAutomaticEmbargo() const;
 
+  // Derived classes can use this function to find some particular permission
+  // request.
+  const PermissionRequest* FindPermissionRequest(
+      const PermissionRequestID& id) const;
+
+  // Implementors can override this method to use a different embedding origin.
+  // TODO(crbug.com/40220500): This should return a url::Origin instead.
+  virtual GURL GetEffectiveEmbedderOrigin(content::RenderFrameHost* rfh) const;
+
   base::ObserverList<permissions::Observer> permission_observers_;
 
   // Set by subclasses to inform the base class that they will handle adding
@@ -230,7 +242,8 @@ class PermissionContextBase : public content_settings::Observer {
       content::RenderFrameHost* rfh) const;
 
   // Called when a request is no longer used so it can be cleaned up.
-  void CleanUpRequest(const PermissionRequestID& id,
+  void CleanUpRequest(content::WebContents* web_contents,
+                      const PermissionRequestID& id,
                       bool embedded_permission_element_initiated);
 
   // This is the callback for PermissionRequest and is called once the user
@@ -248,7 +261,7 @@ class PermissionContextBase : public content_settings::Observer {
 
   raw_ptr<content::BrowserContext> browser_context_;
   const ContentSettingsType content_settings_type_;
-  const blink::mojom::PermissionsPolicyFeature permissions_policy_feature_;
+  const network::mojom::PermissionsPolicyFeature permissions_policy_feature_;
   std::unordered_map<
       std::string,
       std::pair<std::unique_ptr<PermissionRequest>, BrowserPermissionCallback>>

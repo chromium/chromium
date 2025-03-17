@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INVALIDATION_SET_TO_SELECTOR_MAP_H_
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/inspector/style_rule_to_style_sheet_contents_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -35,6 +36,7 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
     StyleRule* GetStyleRule() const;
     unsigned GetSelectorIndex() const;
     String GetSelectorText() const;
+    const StyleSheetContents* GetStyleSheetContents() const;
 
    private:
     friend struct WTF::HashTraits<
@@ -42,7 +44,7 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
     Member<StyleRule> style_rule_;
     unsigned selector_index_;
   };
-  using IndexedSelectorList = HeapHashSet<Member<IndexedSelector>>;
+  using IndexedSelectorList = GCedHeapHashSet<Member<IndexedSelector>>;
 
   enum class SelectorFeatureType {
     kUnknown,
@@ -57,6 +59,17 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
   // appropriate configuration has started, or deletes an existing mapping if
   // tracing is no longer enabled.
   static void StartOrStopTrackingIfNeeded(StyleEngine& style_engine);
+
+  // Call at the start and end of indexing rules within a StyleSheetContents.
+  static void BeginStyleSheetContents(const StyleSheetContents* contents);
+  static void EndStyleSheetContents();
+
+  // Helper object for a Begin/EndStylesheet pair.
+  class StyleSheetContentsScope {
+   public:
+    explicit StyleSheetContentsScope(const StyleSheetContents* contents);
+    ~StyleSheetContentsScope();
+  };
 
   // Call at the start and end of indexing features for a given selector.
   static void BeginSelector(StyleRule* style_rule, unsigned selector_index);
@@ -116,13 +129,28 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
   // execution.
   using InvalidationSetEntry = std::pair<SelectorFeatureType, AtomicString>;
   using InvalidationSetEntryMap =
-      HeapHashMap<InvalidationSetEntry, Member<IndexedSelectorList>>;
+      GCedHeapHashMap<InvalidationSetEntry, Member<IndexedSelectorList>>;
   using InvalidationSetMap =
-      HeapHashMap<const InvalidationSet*, Member<InvalidationSetEntryMap>>;
+      GCedHeapHashMap<const InvalidationSet*, Member<InvalidationSetEntryMap>>;
 
+  // Holds the back-map described above.
   Member<InvalidationSetMap> invalidation_set_map_;
+
+  // Used during back-map construction.
+  // Holds the stylesheet currently being analyzed.
+  Member<const StyleSheetContents> current_style_sheet_contents_;
+
+  // Used during back-map construction.
+  // Holds the selector currently being analyzed.
   Member<IndexedSelector> current_selector_;
+
+  // Used during back-map construction.
+  // Tracks how deeply we've recursed on InvalidationSet::Combine() operations.
   unsigned combine_recursion_depth_ = 0;
+
+  // Holds a table for mapping rules back to sheets on behalf of inner class
+  // IndexedSelector.
+  Member<StyleRuleToStyleSheetContentsMap> style_rule_to_sheet_map_;
 };
 
 }  // namespace blink

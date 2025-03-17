@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -1169,7 +1168,7 @@ TEST_P(VisualViewportTest, ScrollIntoViewFractionalOffset) {
     EXPECT_EQ(ScrollOffset(0, 900.75),
               layout_viewport_scrollable_area->GetScrollOffset());
   } else {
-    EXPECT_EQ(ScrollOffset(0, 900),
+    EXPECT_EQ(ScrollOffset(0, 901),
               layout_viewport_scrollable_area->GetScrollOffset());
   }
   EXPECT_EQ(ScrollOffset(250.25f, 100.25f), visual_viewport.GetScrollOffset());
@@ -1198,7 +1197,7 @@ TEST_P(VisualViewportTest, ScrollIntoViewFractionalOffset) {
     EXPECT_EQ(ScrollOffset(0, 900.75),
               layout_viewport_scrollable_area->GetScrollOffset());
   } else {
-    EXPECT_EQ(ScrollOffset(0, 900),
+    EXPECT_EQ(ScrollOffset(0, 901),
               layout_viewport_scrollable_area->GetScrollOffset());
   }
   EXPECT_EQ(ScrollOffset(250.875f, 100.875f),
@@ -1229,7 +1228,7 @@ TEST_P(VisualViewportTest, ScrollIntoViewFractionalOffset) {
     EXPECT_EQ(ScrollOffset(0, 900.5),
               layout_viewport_scrollable_area->GetScrollOffset());
   } else {
-    EXPECT_EQ(ScrollOffset(0, 900),
+    EXPECT_EQ(ScrollOffset(0, 901),
               layout_viewport_scrollable_area->GetScrollOffset());
   }
   EXPECT_EQ(ScrollOffset(250.5f, 100.5f), visual_viewport.GetScrollOffset());
@@ -1848,7 +1847,7 @@ TEST_P(VisualViewportTest, AccessibilityHitTestWhileZoomedIn) {
   WebAXObject hitNode =
       WebAXObject::FromWebDocument(web_doc).HitTest(gfx::Point(154, 165));
   ax::mojom::NameFrom name_from;
-  WebVector<WebAXObject> name_objects;
+  std::vector<WebAXObject> name_objects;
   EXPECT_EQ(std::string("Target4"),
             hitNode.GetName(name_from, name_objects).Utf8());
 }
@@ -2389,17 +2388,8 @@ TEST_F(VisualViewportSimTest, ScrollingContentsSmallerThanContainer) {
             visual_viewport.GetScrollNode()->ContentsRect());
 }
 
-class VisualViewportScrollIntoViewTest
-    : public VisualViewportSimTest,
-      public ::testing::WithParamInterface<
-          std::vector<base::test::FeatureRef>> {
+class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {
  public:
-  VisualViewportScrollIntoViewTest() {
-    feature_list_.InitWithFeatures(
-        GetParam(),
-        /*disabled_features=*/std::vector<base::test::FeatureRef>());
-  }
-
   void SetUp() override {
     VisualViewportSimTest::SetUp();
 
@@ -2428,42 +2418,24 @@ class VisualViewportScrollIntoViewTest
     // Shrink the height such that the fixed element is now off screen.
     WebView().ResizeVisualViewport(gfx::Size(400, 600 - 100));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    VisualViewportScrollIntoViewTest,
-    testing::Values(std::vector<base::test::FeatureRef>{},
-                    std::vector<base::test::FeatureRef>{
-                        features::kMultiSmoothScrollIntoView}));
-
-TEST_P(VisualViewportScrollIntoViewTest, ScrollingToFixed) {
+TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixed) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
   WebDocument web_doc = WebView().MainFrameImpl()->GetDocument();
   Element* bottom_element = web_doc.GetElementById("bottom");
-  bool is_for_scroll_sequence =
-      !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled();
   auto scroll_params = scroll_into_view_util::CreateScrollIntoViewParams(
       ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
       mojom::blink::ScrollType::kProgrammatic,
       /*make_visible_in_visual_viewport=*/true,
-      mojom::blink::ScrollBehavior::kInstant, is_for_scroll_sequence);
-  if (is_for_scroll_sequence) {
-    GetDocument().GetFrame()->CreateNewSmoothScrollSequence();
-  }
+      mojom::blink::ScrollBehavior::kInstant);
   WebView().GetPage()->GetVisualViewport().ScrollIntoView(
       bottom_element->BoundingBox(), PhysicalBoxStrut(), scroll_params);
-  if (is_for_scroll_sequence) {
-    visual_viewport.GetSmoothScrollSequencer()->RunQueuedAnimations();
-  }
   EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
 }
 
-TEST_P(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
+TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
   GetDocument().getElementById(AtomicString("bottom"))->scrollIntoView();

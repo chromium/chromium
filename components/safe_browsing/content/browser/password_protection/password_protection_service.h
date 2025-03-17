@@ -36,8 +36,6 @@ using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 using ReusedPasswordType = safe_browsing::LoginReputationClientRequest::
     PasswordReuseEvent::ReusedPasswordType;
-using SyncAccountType =
-    LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType;
 
 struct PasswordReuseInfo {
   PasswordReuseInfo();

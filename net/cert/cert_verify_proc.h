@@ -59,16 +59,12 @@ class NET_EXPORT CertVerifyProc
     // they are issued by non-public trust anchors.
     VERIFY_ENABLE_SHA1_LOCAL_ANCHORS = 1 << 2,
 
-    // If set, disables the policy enforcement described at
-    // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
-    VERIFY_DISABLE_SYMANTEC_ENFORCEMENT = 1 << 3,
-
     // Disable network fetches during verification. This will override
     // VERIFY_REV_CHECKING_ENABLED and
     // VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS if they are also specified.
     // (Note that this entirely disables the online revocation/AIA code paths.
     // Theoretically we could still check for cached results.)
-    VERIFY_DISABLE_NETWORK_FETCHES = 1 << 4,
+    VERIFY_DISABLE_NETWORK_FETCHES = 1 << 3,
 
     // Also update GetNetConstants() in net/log/net_log_util.cc when updating
     // this enum.
@@ -272,11 +268,7 @@ class NET_EXPORT CertVerifyProc
 
  private:
   friend class base::RefCountedThreadSafe<CertVerifyProc>;
-  FRIEND_TEST_ALL_PREFIXES(CertVerifyProcTest, DigiNotarCerts);
   FRIEND_TEST_ALL_PREFIXES(CertVerifyProcTest, TestHasTooLongValidity);
-  FRIEND_TEST_ALL_PREFIXES(CertVerifyProcTest,
-                           VerifyRejectsSHA1AfterDeprecationLegacyMode);
-  FRIEND_TEST_ALL_PREFIXES(CertVerifyProcTest, SymantecCertsRejected);
 
   // Performs the actual verification using the desired underlying
   //

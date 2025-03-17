@@ -14,9 +14,10 @@ using base::android::ScopedJavaLocalRef;
 
 namespace device {
 
-ScopedJavaLocalRef<jobject> BluetoothAdapterWrapper_CreateWithDefaultAdapter() {
+ScopedJavaLocalRef<jobject> BluetoothAdapterWrapper_CreateWithDefaultAdapter(
+    bool enable_classic) {
   return Java_BluetoothAdapterWrapper_createWithDefaultAdapter(
-      AttachCurrentThread());
+      AttachCurrentThread(), enable_classic);
 }
 
 }  // namespace device

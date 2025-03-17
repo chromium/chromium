@@ -68,6 +68,8 @@ class CORE_EXPORT InspectorEmulationAgent final
   protocol::Response setNavigatorOverrides(const String& platform) override;
   protocol::Response setDefaultBackgroundColorOverride(
       std::unique_ptr<protocol::DOM::RGBA>) override;
+  protocol::Response setSafeAreaInsetsOverride(
+      std::unique_ptr<protocol::Emulation::SafeAreaInsets> insets) override;
   protocol::Response setDeviceMetricsOverride(
       int width,
       int height,
@@ -118,6 +120,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   // InspectorBaseAgent overrides.
   protocol::Response disable() override;
   void Restore() override;
+  void DidCommitLoadForLocalFrame(LocalFrame*) override;
 
   void Trace(Visitor*) const override;
 
@@ -172,6 +175,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::BooleanMap disabled_image_types_;
   InspectorAgentState::Double cpu_throttling_rate_;
   InspectorAgentState::Boolean automation_override_;
+  InspectorAgentState::Bytes safe_area_insets_override_;
 };
 
 }  // namespace blink

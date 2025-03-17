@@ -43,13 +43,38 @@ class AIRewriter final : public ScriptWrappable, public ExecutionContextClient {
                                    const String& input,
                                    const AIRewriterRewriteOptions* options,
                                    ExceptionState& exception_state);
+  ScriptPromise<IDLDouble> measureInputUsage(
+      ScriptState* script_state,
+      const String& input,
+      const AIRewriterRewriteOptions* options,
+      ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
+
   String sharedContext() const {
     return options_->getSharedContextOr(g_empty_string);
   }
   V8AIRewriterTone tone() const { return options_->tone(); }
   V8AIRewriterFormat format() const { return options_->format(); }
   V8AIRewriterLength length() const { return options_->length(); }
+  std::optional<Vector<String>> expectedInputLanguages() const {
+    if (options_->hasExpectedInputLanguages()) {
+      return options_->expectedInputLanguages();
+    }
+    return std::nullopt;
+  }
+  std::optional<Vector<String>> expectedContextLanguages() const {
+    if (options_->hasExpectedContextLanguages()) {
+      return options_->expectedContextLanguages();
+    }
+    return std::nullopt;
+  }
+  String outputLanguage() const {
+    return options_->getOutputLanguageOr(String());
+  }
+  double inputQuota() const {
+    return static_cast<double>(
+        mojom::blink::kWritingAssistanceMaxInputTokenSize);
+  }
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

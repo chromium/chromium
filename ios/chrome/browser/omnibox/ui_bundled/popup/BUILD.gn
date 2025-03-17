@@ -40,7 +40,6 @@ source_set("popup") {
     "omnibox_popup_provider.h",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
-    "omnibox_popup_view_suggestions_delegate.h",
     "pedal_section_extractor.h",
     "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.h",
@@ -83,8 +82,9 @@ source_set("popup") {
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/carousel",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/debugger",
@@ -145,7 +145,7 @@ source_set("popup_ui") {
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/carousel",
@@ -177,7 +177,7 @@ source_set("popup_icon") {
     ":popup_ui_protocols",
     "//base",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_suggestion_icon_util",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -206,7 +206,7 @@ source_set("popup_internal") {
     "//base",
     "//components/omnibox/browser",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/shared/model/application_context",
@@ -255,6 +255,8 @@ source_set("unit_tests") {
     "//components/search_engines:test_support",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/test:test_support",
@@ -262,38 +264,4 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base",
   ]
-}
-
-source_set("eg2_tests") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "omnibox_popup_egtest.mm",
-    "omnibox_popup_pedal_egtest.mm",
-  ]
-  deps = [
-    ":popup_accessibility_identifier_constants",
-    "//base",
-    "//components/omnibox/common",
-    "//components/strings",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/history/ui_bundled:constants",
-    "//ios/chrome/browser/omnibox/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
-    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
-    "//ios/chrome/browser/settings/ui_bundled:constants",
-    "//ios/chrome/browser/settings/ui_bundled/cells:clear_browsing_data_constants",
-    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:features",
-    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
-    "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
-    "//ios/chrome/common/ui/confirmation_alert:constants",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net:test_support",
-    "//ui/base",
-    "//ui/strings",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }

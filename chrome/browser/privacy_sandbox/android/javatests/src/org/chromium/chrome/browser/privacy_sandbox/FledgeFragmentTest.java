@@ -78,7 +78,7 @@ public final class FledgeFragmentTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setBugComponent(RenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
                     .setRevision(1)
                     .build();
 
@@ -307,7 +307,7 @@ public final class FledgeFragmentTest {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
         startFledgeSettings();
-        onView(withText(containsString("managing your ad privacy")))
+        onView(withText(containsString("Learn more about site-suggested ads")))
                 .perform(clickOnClickableSpan(0));
         mRenderTestRule.render(getLearnMoreRootView(), "fledge_learn_more_v2");
     }
@@ -635,7 +635,7 @@ public final class FledgeFragmentTest {
     public void openLearnMoreAndVerifyMetrics() {
         startFledgeSettings();
         // Open the Fledge learn more activity
-        onView(withText(containsString("managing your ad privacy")))
+        onView(withText(containsString("Learn more about site-suggested ads")))
                 .perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_fledge_page_learn_more_heading))
                 .check(matches(isDisplayed()));
@@ -648,12 +648,27 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testFooterTopicsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
         // Open a Topics settings activity.
         onView(withText(containsString("ad topics"))).perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label_v2))
+                .check(matches(isDisplayed()));
+        // Close the additional activity by navigating back.
+        pressBack();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    public void testFooterTopicsLinkAdTopicsContentParity() throws IOException {
+        setFledgePrefEnabled(true);
+        startFledgeSettings();
+        // Open a Topics settings activity.
+        onView(withText(containsString("ad topics"))).perform(clickOnClickableSpan(0));
+        onViewWaiting(withText(R.string.settings_ad_topics_page_toggle_sub_label))
                 .check(matches(isDisplayed()));
         // Close the additional activity by navigating back.
         pressBack();

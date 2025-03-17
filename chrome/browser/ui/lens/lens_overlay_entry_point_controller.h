@@ -18,9 +18,13 @@
 class BrowserWindowInterface;
 class CommandUpdater;
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace views {
 class View;
-}
+}  // namespace views
 
 namespace lens {
 
@@ -41,8 +45,28 @@ class LensOverlayEntryPointController : public FullscreenObserver,
                   CommandUpdater* command_updater,
                   views::View* location_bar);
 
-  // Whether the entry points should be enabled.
-  bool IsEnabled();
+  // Whether the entry points should be enabled. Enabled means the Lens Overlay
+  // functionality is available.
+  bool IsEnabled() const;
+
+  // Returns true if the Lens Overlay entrypoints should be hidden. This is
+  // different from IsEnabled() as IsEnabled() returns true if the Lens Overlay
+  // functionality is available, while AreVisible() returns true if the Lens
+  // Overlay functionality is available and the entrypoints should be visible at
+  // this current moment in time. Sometimes, entrypoints are hidden ephermally,
+  // such as when the Lens Overlay is currently active, so entrypoints do
+  // nothing.
+  bool AreVisible();
+
+  // Updates the enable/disable and visibility state of entry points. If
+  // hide_toolbar_entrypoint is true, instead of just disabling the toolbar
+  // entrypoint, we will also hide the entrypoint from the user. All other
+  // entrypoints will be updated to their correct state.
+  void UpdateEntryPointsState(bool hide_toolbar_entrypoint);
+
+  // Invokes the entrypoint action.
+  static void InvokeAction(tabs::TabInterface* active_tab,
+                           const actions::ActionInvocationContext& context);
 
  private:
   // FullscreenObserver:
@@ -60,16 +84,15 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   void OnViewAddedToWidget(views::View* view) override;
   void OnViewRemovedFromWidget(views::View* view) override;
 
-  // Updates the enable/disable state of entry points. If hide_if_needed is
-  // true, instead of just disabling the entrypoint, we will also hide the
-  // entrypoint from the user.
-  void UpdateEntryPointsState(bool hide_if_needed);
-
   // Updates the Lens Overlay page action state.
   void UpdatePageActionState();
+  bool ShouldShowPageAction(tabs::TabInterface* active_tab) const;
 
   // Returns the ActionItem corresponding to our pinnable toolbar entrypoint.
   actions::ActionItem* GetToolbarEntrypoint();
+
+  // Return true if the Lens Overlay is active on the current tab.
+  bool IsOverlayActive();
 
   // Observer to check for browser window entering fullscreen.
   base::ScopedObservation<FullscreenController, FullscreenObserver>

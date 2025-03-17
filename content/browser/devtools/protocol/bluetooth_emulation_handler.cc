@@ -94,16 +94,23 @@ void BluetoothEmulationHandler::Wire(UberDispatcher* dispatcher) {
   BluetoothEmulation::Dispatcher::wire(dispatcher, this);
 }
 
-Response BluetoothEmulationHandler::Enable(const String& in_state) {
-  if (emulation_enabled_ || fake_central_.is_bound()) {
+Response BluetoothEmulationHandler::Enable(const String& in_state,
+                                           bool in_le_supported) {
+  if (emulation_enabled_) {
     return Response::ServerError("BluetoothEmulation already enabled");
   }
 
+  CHECK(!fake_central_.is_bound());
   emulation_enabled_ = true;
-  content::BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(
-      base::MakeRefCounted<bluetooth::FakeCentral>(
-          ToCentralState(in_state),
-          fake_central_.BindNewPipeAndPassReceiver()));
+  global_factory_values_ =
+      BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
+  global_factory_values_->SetLESupported(in_le_supported);
+  if (in_le_supported) {
+    content::BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(
+        base::MakeRefCounted<bluetooth::FakeCentral>(
+            ToCentralState(in_state),
+            fake_central_.BindNewPipeAndPassReceiver()));
+  }
   return Response::Success();
 }
 
@@ -114,9 +121,29 @@ Response BluetoothEmulationHandler::Disable() {
     // reset this only if this is the instance holding the bound central.
     content::BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(
         nullptr);
+  }
+  // The instance that has a valid `global_factory_values_` is the one that sets
+  // `emulation_enabled_`. Therefore, only that instance can reset
+  // `emulation_enabled_`.
+  if (global_factory_values_) {
+    global_factory_values_.reset();
     emulation_enabled_ = false;
   }
   return Response::Success();
+}
+
+void BluetoothEmulationHandler::SetSimulatedCentralState(
+    const String& in_state,
+    std::unique_ptr<SetSimulatedCentralStateCallback> callback) {
+  if (!fake_central_.is_bound()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+  fake_central_->SetState(
+      ToCentralState(in_state),
+      base::BindOnce(&SetSimulatedCentralStateCallback::sendSuccess,
+                     std::move(callback)));
 }
 
 void BluetoothEmulationHandler::SimulatePreconnectedPeripheral(

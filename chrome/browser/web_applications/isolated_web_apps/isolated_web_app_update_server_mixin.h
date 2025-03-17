@@ -18,8 +18,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-class InProcessBrowserTest;
-
 namespace web_app {
 
 class BundledIsolatedWebApp;

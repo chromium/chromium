@@ -28,6 +28,8 @@ import type {GestureEvent} from './selection_utils.js';
 import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
 import {Alignment, WritingDirection} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
+import type {TextCopyCallback, TextLayerBase} from './text_layer_base.js';
+import {getTextSeparator, isWordRenderable, translateWords} from './text_rendering.js';
 import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
 
@@ -73,28 +75,6 @@ function rotateCoordinateAroundOrigin(
   return {x: newX, y: newY};
 }
 
-// Returns true if the word has a valid bounding box and is renderable by the
-// TextLayer.
-function isWordRenderable(word: Word): boolean {
-  // For a word to be renderable, it must have a bounding box with normalized
-  // coordinates.
-  // TODO(b/330183480): Add rendering for IMAGE CoordinateType
-  const wordBoundingBox = word.geometry?.boundingBox;
-  if (!wordBoundingBox) {
-    return false;
-  }
-
-  return wordBoundingBox.coordinateType ===
-      CenterRotatedBox_CoordinateType.kNormalized;
-}
-
-// Return the text separator if there is one, else returns a space.
-function getTextSeparator(word: Word): string {
-  return (word.textSeparator !== null && word.textSeparator !== undefined) ?
-      word.textSeparator :
-      ' ';
-}
-
 // Returns true if index is in the range [start, end]. End index may be lesser
 // than start index.
 function isInRange(index: number, start: number, end: number): boolean {
@@ -133,7 +113,7 @@ interface TranslatedWordData {
 /*
  * Element responsible for highlighting and selection text.
  */
-export class TextLayerElement extends PolymerElement {
+export class TextLayerElement extends PolymerElement implements TextLayerBase {
   static get is() {
     return 'lens-text-layer';
   }
@@ -595,14 +575,23 @@ export class TextLayerElement extends PolymerElement {
           },
         }));
 
-    BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
-        this.getHighlightedText().replaceAll('\r\n', ' '), this.contentLanguage,
-        this.selectionStartIndex, this.selectionEndIndex);
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);
+    translateWords(
+        this.getHighlightedText(), this.contentLanguage,
+        this.selectionStartIndex, this.selectionEndIndex, this.browserProxy);
   }
 
   cancelGesture() {
     this.unselectWords();
+  }
+
+  onSelectionStart(): void {
+    // Do nothing.
+    return;
+  }
+
+  onSelectionFinish(): void {
+    // Do nothing.
+    return;
   }
 
   private unselectWords() {
@@ -1334,19 +1323,13 @@ export class TextLayerElement extends PolymerElement {
     return isRtlLanguage(language) ? 'rtl' : 'ltr';
   }
 
-  // Testing method to get the words on the page.
-  getWordNodesForTesting() {
-    return this.shadowRoot!.querySelectorAll('.word');
+  onCopyDetectedText(
+      _startIndex: number, _endIndex: number, _callbackFn: TextCopyCallback) {
+    // This layer does not support copying detected text. Only selected text.
   }
 
-  // Testing method to get the translated words on the page.
-  getTranslatedWordNodesForTesting() {
-    return this.shadowRoot!.querySelectorAll('.translated-word');
-  }
-
-  // Testing method to get the highlighted words on the page.
-  getHighlightedNodesForTesting() {
-    return this.shadowRoot!.querySelectorAll('.highlighted-line');
+  getElementForTesting(): Element {
+    return this;
   }
 }
 

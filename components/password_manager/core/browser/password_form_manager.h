@@ -142,7 +142,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Stores model predictions in the `parser_`.
   void ProcessModelPredictions(
-      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+      const base::flat_map<autofill::FieldRendererId, autofill::FieldType>&
           predictions);
 
   // Sends fill data to the renderer. If no server predictions exist, it
@@ -170,7 +170,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // the |observed_form()|.
   bool ObservedFormHasField(int driver_id,
                             autofill::FieldRendererId field_id) const;
-
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
   base::span<const PasswordForm> GetBestMatches() const override;

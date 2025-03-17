@@ -26,7 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #endif
 
@@ -83,9 +83,7 @@ MATCHER_P(UnorderedKeysAre, fields, "") {
 
 class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
  public:
-  DownloadWarningDesktopHatsUtilsTest() {
-    features_.InitAndEnableFeature(safe_browsing::kDownloadTailoredWarnings);
-  }
+  DownloadWarningDesktopHatsUtilsTest() = default;
 
   ~DownloadWarningDesktopHatsUtilsTest() override = default;
 
@@ -144,18 +142,16 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
 
     ON_CALL(*item, IsDone()).WillByDefault(Return(false));
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-    // Set tailored verdict for cookie theft with account info.
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+    // Set tailored verdict for cookie theft.
     safe_browsing::ClientDownloadResponse::TailoredVerdict tailored_verdict;
     tailored_verdict.set_tailored_verdict_type(
         safe_browsing::ClientDownloadResponse::TailoredVerdict::COOKIE_THEFT);
-    tailored_verdict.add_adjustments(safe_browsing::ClientDownloadResponse::
-                                         TailoredVerdict::ACCOUNT_INFO_STRING);
     safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
         item, "token",
         safe_browsing::ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE,
         std::move(tailored_verdict));
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
     ON_CALL(*item, HasUserGesture()).WillByDefault(Return(true));
   }
@@ -167,9 +163,8 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
     EXPECT_THAT(psd, StringDataMatches(Fields::kDangerType,
                                        HasSubstr("AccountCompromise")));
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-    EXPECT_THAT(psd,
-                StringDataMatches(Fields::kDangerType,
-                                  HasSubstr("Cookie theft with account info")));
+    EXPECT_THAT(
+        psd, StringDataMatches(Fields::kDangerType, HasSubstr("Cookie theft")));
 #endif
     EXPECT_THAT(psd, StringDataMatches(Fields::kWarningType, "Dangerous"));
     EXPECT_THAT(psd, BitsDataMatches(Fields::kUserGesture, true));

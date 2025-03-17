@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/json_web_key.h"
 
 #include <stddef.h>
@@ -49,13 +44,12 @@ class JSONWebKeyTest : public testing::Test {
     }
   }
 
-  void CreateLicenseAndExpect(const uint8_t* key_id,
-                              int key_id_length,
+  void CreateLicenseAndExpect(base::span<const uint8_t> key_id,
                               CdmSessionType session_type,
                               const std::string& expected_result) {
     std::vector<uint8_t> result;
     KeyIdList key_ids;
-    key_ids.push_back(std::vector<uint8_t>(key_id, key_id + key_id_length));
+    key_ids.emplace_back(key_id.begin(), key_id.end());
     CreateLicenseRequest(key_ids, session_type, &result);
     std::string s(result.begin(), result.end());
     EXPECT_EQ(expected_result, s);
@@ -63,30 +57,25 @@ class JSONWebKeyTest : public testing::Test {
 
   void ExtractKeyFromLicenseAndExpect(const std::string& license,
                                       bool expected_result,
-                                      const uint8_t* expected_key,
-                                      int expected_key_length) {
+                                      base::span<const uint8_t> expected_key) {
     std::vector<uint8_t> license_vector(license.begin(), license.end());
     std::vector<uint8_t> key;
     EXPECT_EQ(expected_result,
               ExtractFirstKeyIdFromLicenseRequest(license_vector, &key));
     if (expected_result)
-      VerifyKeyId(key, expected_key, expected_key_length);
+      VerifyKeyId(key, expected_key);
   }
 
   void VerifyKeyId(std::vector<uint8_t> key,
-                   const uint8_t* expected_key,
-                   int expected_key_length) {
-    std::vector<uint8_t> key_result(expected_key,
-                                    expected_key + expected_key_length);
+                   base::span<const uint8_t> expected_key) {
+    std::vector<uint8_t> key_result(expected_key.begin(), expected_key.end());
     EXPECT_EQ(key_result, key);
   }
 
-  KeyIdAndKeyPair MakeKeyIdAndKeyPair(const uint8_t* key,
-                                      int key_length,
-                                      const uint8_t* key_id,
-                                      int key_id_length) {
-    return std::make_pair(std::string(key_id, key_id + key_id_length),
-                          std::string(key, key + key_length));
+  KeyIdAndKeyPair MakeKeyIdAndKeyPair(base::span<const uint8_t> key,
+                                      base::span<const uint8_t> key_id) {
+    return std::make_pair(std::string(key_id.begin(), key_id.end()),
+                          std::string(key.begin(), key.end()));
   }
 };
 
@@ -97,28 +86,26 @@ TEST_F(JSONWebKeyTest, GenerateJWKSet) {
                            0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10};
 
   EXPECT_EQ("{\"keys\":[{\"k\":\"AQI\",\"kid\":\"AQI\",\"kty\":\"oct\"}]}",
-            GenerateJWKSet(data1, std::size(data1), data1, std::size(data1)));
+            GenerateJWKSet(data1, data1));
   EXPECT_EQ(
       "{\"keys\":[{\"k\":\"AQIDBA\",\"kid\":\"AQIDBA\",\"kty\":\"oct\"}]}",
-      GenerateJWKSet(data2, std::size(data2), data2, std::size(data2)));
+      GenerateJWKSet(data2, data2));
   EXPECT_EQ("{\"keys\":[{\"k\":\"AQI\",\"kid\":\"AQIDBA\",\"kty\":\"oct\"}]}",
-            GenerateJWKSet(data1, std::size(data1), data2, std::size(data2)));
+            GenerateJWKSet(data1, data2));
   EXPECT_EQ("{\"keys\":[{\"k\":\"AQIDBA\",\"kid\":\"AQI\",\"kty\":\"oct\"}]}",
-            GenerateJWKSet(data2, std::size(data2), data1, std::size(data1)));
+            GenerateJWKSet(data2, data1));
   EXPECT_EQ(
       "{\"keys\":[{\"k\":\"AQIDBAUGBwgJCgsMDQ4PEA\",\"kid\":"
       "\"AQIDBAUGBwgJCgsMDQ4PEA\",\"kty\":\"oct\"}]}",
-      GenerateJWKSet(data3, std::size(data3), data3, std::size(data3)));
+      GenerateJWKSet(data3, data3));
 
   KeyIdAndKeyPairs keys;
-  keys.push_back(
-      MakeKeyIdAndKeyPair(data1, std::size(data1), data1, std::size(data1)));
+  keys.push_back(MakeKeyIdAndKeyPair(data1, data1));
   EXPECT_EQ(
       "{\"keys\":[{\"k\":\"AQI\",\"kid\":\"AQI\",\"kty\":\"oct\"}],\"type\":"
       "\"temporary\"}",
       GenerateJWKSet(keys, CdmSessionType::kTemporary));
-  keys.push_back(
-      MakeKeyIdAndKeyPair(data2, std::size(data2), data2, std::size(data2)));
+  keys.push_back(MakeKeyIdAndKeyPair(data2, data2));
   EXPECT_EQ(
       "{\"keys\":[{\"k\":\"AQI\",\"kid\":\"AQI\",\"kty\":\"oct\"},{\"k\":"
       "\"AQIDBA\",\"kid\":\"AQIDBA\",\"kty\":\"oct\"}],\"type\":\"persistent-"
@@ -418,15 +405,14 @@ TEST_F(JSONWebKeyTest, CreateLicense) {
   const uint8_t data3[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
                            0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10};
 
-  CreateLicenseAndExpect(data1, std::size(data1), CdmSessionType::kTemporary,
+  CreateLicenseAndExpect(data1, CdmSessionType::kTemporary,
                          "{\"kids\":[\"AQI\"],\"type\":\"temporary\"}");
   CreateLicenseAndExpect(
-      data1, std::size(data1), CdmSessionType::kPersistentLicense,
+      data1, CdmSessionType::kPersistentLicense,
       "{\"kids\":[\"AQI\"],\"type\":\"persistent-license\"}");
-  CreateLicenseAndExpect(data2, std::size(data2), CdmSessionType::kTemporary,
+  CreateLicenseAndExpect(data2, CdmSessionType::kTemporary,
                          "{\"kids\":[\"AQIDBA\"],\"type\":\"temporary\"}");
-  CreateLicenseAndExpect(data3, std::size(data3),
-                         CdmSessionType::kPersistentLicense,
+  CreateLicenseAndExpect(data3, CdmSessionType::kPersistentLicense,
                          "{\"kids\":[\"AQIDBAUGBwgJCgsMDQ4PEA\"],\"type\":"
                          "\"persistent-license\"}");
 }
@@ -438,33 +424,32 @@ TEST_F(JSONWebKeyTest, ExtractLicense) {
                            0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10};
 
   ExtractKeyFromLicenseAndExpect("{\"kids\":[\"AQI\"],\"type\":\"temporary\"}",
-                                 true, data1, std::size(data1));
+                                 true, data1);
   ExtractKeyFromLicenseAndExpect(
-      "{\"kids\":[\"AQIDBA\"],\"type\":\"temporary\"}", true, data2,
-      std::size(data2));
+      "{\"kids\":[\"AQIDBA\"],\"type\":\"temporary\"}", true, data2);
   ExtractKeyFromLicenseAndExpect(
       "{\"kids\":[\"AQIDBAUGBwgJCgsMDQ4PEA\"],\"type\":\"persistent\"}", true,
-      data3, std::size(data3));
+      data3);
 
   // Try some incorrect JSON.
-  ExtractKeyFromLicenseAndExpect("", false, NULL, 0);
-  ExtractKeyFromLicenseAndExpect("!@#$%^&*()", false, NULL, 0);
+  ExtractKeyFromLicenseAndExpect("", false, {});
+  ExtractKeyFromLicenseAndExpect("!@#$%^&*()", false, {});
 
   // Valid JSON, but not a dictionary.
-  ExtractKeyFromLicenseAndExpect("6", false, NULL, 0);
-  ExtractKeyFromLicenseAndExpect("[\"AQI\"]", false, NULL, 0);
+  ExtractKeyFromLicenseAndExpect("6", false, {});
+  ExtractKeyFromLicenseAndExpect("[\"AQI\"]", false, {});
 
   // Dictionary, but missing expected tag.
-  ExtractKeyFromLicenseAndExpect("{\"kid\":[\"AQI\"]}", false, NULL, 0);
+  ExtractKeyFromLicenseAndExpect("{\"kid\":[\"AQI\"]}", false, {});
 
   // Correct tag, but empty list.
-  ExtractKeyFromLicenseAndExpect("{\"kids\":[]}", false, NULL, 0);
+  ExtractKeyFromLicenseAndExpect("{\"kids\":[]}", false, {});
 
   // Correct tag, but list doesn't contain a string.
-  ExtractKeyFromLicenseAndExpect("{\"kids\":[[\"AQI\"]]}", false, NULL, 0);
+  ExtractKeyFromLicenseAndExpect("{\"kids\":[[\"AQI\"]]}", false, {});
 
   // Correct tag, but invalid base64 encoding.
-  ExtractKeyFromLicenseAndExpect("{\"kids\":[\"!@#$%^&*()\"]}", false, NULL, 0);
+  ExtractKeyFromLicenseAndExpect("{\"kids\":[\"!@#$%^&*()\"]}", false, {});
 }
 
 TEST_F(JSONWebKeyTest, Base64UrlEncoding) {
@@ -483,12 +468,11 @@ TEST_F(JSONWebKeyTest, Base64UrlEncoding) {
   EXPECT_EQ(encoded_text.find('-'), std::string::npos);
   EXPECT_EQ(encoded_text.find('_'), std::string::npos);
 
-  CreateLicenseAndExpect(data1, std::size(data1), CdmSessionType::kTemporary,
+  CreateLicenseAndExpect(data1, CdmSessionType::kTemporary,
                          "{\"kids\":[\"-_37_fv9-w\"],\"type\":\"temporary\"}");
 
   ExtractKeyFromLicenseAndExpect(
-      "{\"kids\":[\"-_37_fv9-w\"],\"type\":\"temporary\"}", true, data1,
-      std::size(data1));
+      "{\"kids\":[\"-_37_fv9-w\"],\"type\":\"temporary\"}", true, data1);
 }
 
 TEST_F(JSONWebKeyTest, MultipleKeys) {
@@ -499,9 +483,9 @@ TEST_F(JSONWebKeyTest, MultipleKeys) {
 
   std::vector<uint8_t> result;
   KeyIdList key_ids;
-  key_ids.push_back(std::vector<uint8_t>(data1, data1 + std::size(data1)));
-  key_ids.push_back(std::vector<uint8_t>(data2, data2 + std::size(data2)));
-  key_ids.push_back(std::vector<uint8_t>(data3, data3 + std::size(data3)));
+  key_ids.emplace_back(std::begin(data1), std::end(data1));
+  key_ids.emplace_back(std::begin(data2), std::end(data2));
+  key_ids.emplace_back(std::begin(data3), std::end(data3));
   CreateLicenseRequest(key_ids, CdmSessionType::kTemporary, &result);
   std::string s(result.begin(), result.end());
   EXPECT_EQ(
@@ -523,16 +507,16 @@ TEST_F(JSONWebKeyTest, ExtractKeyIds) {
                                               &error_message));
   EXPECT_EQ(1u, key_ids.size());
   EXPECT_EQ(0u, error_message.length());
-  VerifyKeyId(key_ids[0], data1, std::size(data1));
+  VerifyKeyId(key_ids[0], data1);
 
   EXPECT_TRUE(ExtractKeyIdsFromKeyIdsInitData(
       "{\"kids\":[\"AQI\",\"AQIDBA\",\"AQIDBAUGBwgJCgsMDQ4PEA\"]}", &key_ids,
       &error_message));
   EXPECT_EQ(3u, key_ids.size());
   EXPECT_EQ(0u, error_message.length());
-  VerifyKeyId(key_ids[0], data1, std::size(data1));
-  VerifyKeyId(key_ids[1], data2, std::size(data2));
-  VerifyKeyId(key_ids[2], data3, std::size(data3));
+  VerifyKeyId(key_ids[0], data1);
+  VerifyKeyId(key_ids[1], data2);
+  VerifyKeyId(key_ids[2], data3);
 
   // Expect failure when non-ascii.
   EXPECT_FALSE(ExtractKeyIdsFromKeyIdsInitData(
@@ -597,19 +581,19 @@ TEST_F(JSONWebKeyTest, CreateInitData) {
   KeyIdList key_ids;
   std::string error_message;
 
-  key_ids.push_back(std::vector<uint8_t>(data1, data1 + std::size(data1)));
+  key_ids.emplace_back(std::begin(data1), std::end(data1));
   std::vector<uint8_t> init_data1;
   CreateKeyIdsInitData(key_ids, &init_data1);
   std::string result1(init_data1.begin(), init_data1.end());
   EXPECT_EQ(result1, "{\"kids\":[\"AQI\"]}");
 
-  key_ids.push_back(std::vector<uint8_t>(data2, data2 + std::size(data2)));
+  key_ids.emplace_back(std::begin(data2), std::end(data2));
   std::vector<uint8_t> init_data2;
   CreateKeyIdsInitData(key_ids, &init_data2);
   std::string result2(init_data2.begin(), init_data2.end());
   EXPECT_EQ(result2, "{\"kids\":[\"AQI\",\"AQIDBA\"]}");
 
-  key_ids.push_back(std::vector<uint8_t>(data3, data3 + std::size(data3)));
+  key_ids.emplace_back(std::begin(data3), std::end(data3));
   std::vector<uint8_t> init_data3;
   CreateKeyIdsInitData(key_ids, &init_data3);
   std::string result3(init_data3.begin(), init_data3.end());

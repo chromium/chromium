@@ -17,6 +17,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -89,6 +90,11 @@ public class RadioButtonGroupThemePreference extends Preference
         }
         mButtons.set(ThemeType.LIGHT, (RadioButtonWithDescription) holder.findViewById(R.id.light));
         mButtons.set(ThemeType.DARK, (RadioButtonWithDescription) holder.findViewById(R.id.dark));
+
+        final Context context = getContext();
+        for (int theme = 0; theme < mButtons.size(); theme++) {
+            mButtons.get(theme).setPrimaryText(NightModeUtils.getThemeSettingTitle(context, theme));
+        }
 
         mSettingRadioButton = mButtons.get(mSetting);
         mSettingRadioButton.setChecked(true);

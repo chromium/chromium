@@ -52,6 +52,23 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               (override));
 };
 
+class MockCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  explicit MockCreditCardAccessManager(BrowserAutofillManager* bam);
+  ~MockCreditCardAccessManager() override;
+  MOCK_METHOD(void,
+              FetchCreditCard,
+              (const CreditCard* card,
+               OnCreditCardFetchedCallback on_credit_card_fetched),
+              (override));
+};
+
+class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
+ public:
+  explicit TestBrowserAutofillManager(AutofillDriver* driver);
+  void Reset() override;
+};
+
 class AutofillMetricsBaseTest {
  public:
   AutofillMetricsBaseTest();
@@ -116,30 +133,29 @@ class AutofillMetricsBaseTest {
 
   // Convenience wrapper for `EmulateUserChangedTextFieldTo` that appends
   // '_changed' to the fields value.
-  void SimulateUserChangedTextField(FormData& form,
-                                    const FormFieldData& field,
-                                    base::TimeTicks timestamp = {}) {
-    SimulateUserChangedTextFieldTo(form, field.global_id(),
-                                   field.value() + u"_changed", timestamp);
+  void SimulateUserChangedField(FormData& form,
+                                const FormFieldData& field,
+                                base::TimeTicks timestamp = {}) {
+    SimulateUserChangedFieldTo(form, field.global_id(),
+                               field.value() + u"_changed", timestamp);
   }
 
   // TODO(crbug.com/40100455): Remove this overload.
-  void SimulateUserChangedTextFieldTo(FormData& form,
-                                      const FormFieldData& field,
-                                      const std::u16string& new_value,
-                                      base::TimeTicks timestamp = {}) {
-    SimulateUserChangedTextFieldTo(form, field.global_id(), new_value,
-                                   timestamp);
+  void SimulateUserChangedFieldTo(FormData& form,
+                                  const FormFieldData& field,
+                                  const std::u16string& new_value,
+                                  base::TimeTicks timestamp = {}) {
+    SimulateUserChangedFieldTo(form, field.global_id(), new_value, timestamp);
   }
 
   // Emulates that the user manually changed a field by resetting the
   // `is_autofilled` field attribute, settings the field's value to `new_value`
   // and notifying the `AutofillManager` of the change that is emulated to have
   // happened at `timestamp`.
-  void SimulateUserChangedTextFieldTo(FormData& form,
-                                      const FieldGlobalId& field_id,
-                                      const std::u16string& new_value,
-                                      base::TimeTicks timestamp = {}) {
+  void SimulateUserChangedFieldTo(FormData& form,
+                                  const FieldGlobalId& field_id,
+                                  const std::u16string& new_value,
+                                  base::TimeTicks timestamp = {}) {
     // TODO(crbug.com/40100455): Remove const_cast.
     FormFieldData& field = const_cast<FormFieldData&>(
         CHECK_DEREF(form.FindFieldByGlobalId(field_id)));
@@ -147,16 +163,13 @@ class AutofillMetricsBaseTest {
     ASSERT_NE(field.value(), new_value);
     field.set_is_autofilled(false);
     field.set_value(new_value);
-    autofill_manager().OnTextFieldDidChange(form, field.global_id(), timestamp);
-  }
-
-  // TODO(crbug.com/40240189): Remove this method once the metrics are fixed.
-  void SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(
-      const FormData& form,
-      FormFieldData& field,
-      base::TimeTicks timestamp = {}) {
-    field.set_is_autofilled(false);
-    autofill_manager().OnTextFieldDidChange(form, field.global_id(), timestamp);
+    if (field.IsSelectElement()) {
+      autofill_manager().OnSelectControlSelectionChanged(form,
+                                                         field.global_id());
+    } else {
+      autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
+                                                 timestamp);
+    }
   }
 
   void FillAutofillFormData(const FormData& form,
@@ -173,15 +186,8 @@ class AutofillMetricsBaseTest {
         form, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
-  // Mocks a credit card fetching was completed. This mock starts from the
-  // BrowserAutofillManager. Use these if your test does not depends on
-  // OnDidGetRealPan but just need to mock the card fetching result (so that
-  // you don't need to branch on what auth method was used).
-  void OnCreditCardFetchingSuccessful(const FormData& form,
-                                      const FormFieldData& field,
-                                      AutofillTriggerSource trigger_source,
-                                      const std::u16string& real_pan,
-                                      bool is_virtual_card = false);
+  static CreditCard BuildCard(const std::u16string& real_pan,
+                              bool is_virtual_card = false);
 
   FormData GetAndAddSeenForm(const test::FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);
@@ -249,6 +255,11 @@ class AutofillMetricsBaseTest {
     return *test_api(autofill_manager()).external_delegate();
   }
 
+  MockCreditCardAccessManager& credit_card_access_manager() {
+    return static_cast<MockCreditCardAccessManager&>(
+        autofill_manager().GetCreditCardAccessManager());
+  }
+
   TestPersonalDataManager& personal_data() {
     return autofill_client_->GetPersonalDataManager();
   }
@@ -271,8 +282,6 @@ class AutofillMetricsBaseTest {
 
  private:
   void CreateTestAutofillProfiles();
-
-  CreditCard credit_card_ = test::WithCvc(test::GetMaskedServerCard());
 };
 
 }  // namespace autofill::autofill_metrics

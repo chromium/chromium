@@ -9,9 +9,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 
 const char kMagicStackTopModuleImpressionHistogram[] =
     "IOS.MagicStack.Module.TopImpression";
@@ -62,17 +62,16 @@ void RecordMagicStackTabResumptionClick(bool isLocal,
       index, kMaxModuleImpressionIndex);
 }
 
-void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
+void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type,
+                                 PrefService* profile_pref_service) {
   switch (module_type) {
     case ContentSuggestionsModuleType::kMostVisited: {
-      PrefService* local_state = GetApplicationContext()->GetLocalState();
-      local_state->SetInteger(
+      profile_pref_service->SetInteger(
           prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, 0);
       break;
     }
     case ContentSuggestionsModuleType::kShortcuts: {
-      PrefService* local_state = GetApplicationContext()->GetLocalState();
-      local_state->SetInteger(
+      profile_pref_service->SetInteger(
           prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
           0);
       base::RecordAction(
@@ -80,8 +79,7 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
       break;
     }
     case ContentSuggestionsModuleType::kSafetyCheck: {
-      PrefService* local_state = GetApplicationContext()->GetLocalState();
-      local_state->SetInteger(
+      profile_pref_service->SetInteger(
           prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
           0);
       base::RecordAction(
@@ -89,8 +87,7 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
       break;
     }
     case ContentSuggestionsModuleType::kTabResumption: {
-      PrefService* local_state = GetApplicationContext()->GetLocalState();
-      local_state->SetInteger(
+      profile_pref_service->SetInteger(
           prefs::
               kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
           0);
@@ -99,6 +96,8 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
       break;
     }
     case ContentSuggestionsModuleType::kParcelTracking: {
+      // TODO(crbug.com/398880309): Remove Parcel Tracking Prefs 1+ year after
+      // successful deprecation.
       PrefService* local_state = GetApplicationContext()->GetLocalState();
       local_state->SetInteger(
           prefs::
@@ -113,17 +112,17 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
   }
 }
 
-void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
+void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type,
+                                   PrefService* profile_pref_service) {
   switch (module_type) {
     case ContentSuggestionsModuleType::kMostVisited: {
       // Increment freshness pref since it is an impression of
       // the latest Most Visited Sites as the top module, but only if there has
       // been a freshness signal.
-      int freshness_impression_count = local_state->GetInteger(
+      int freshness_impression_count = profile_pref_service->GetInteger(
           prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
       if (freshness_impression_count >= 0) {
-        local_state->SetInteger(
+        profile_pref_service->SetInteger(
             prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness,
             freshness_impression_count + 1);
       }
@@ -133,25 +132,24 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
       // Increment freshness pref since it is an impression of
       // the latest Shortcuts as the top module, but only if there has been a
       // freshness signal.
-      int freshness_impression_count = local_state->GetInteger(
+      int freshness_impression_count = profile_pref_service->GetInteger(
           prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
       if (freshness_impression_count >= 0) {
-        local_state->SetInteger(
+        profile_pref_service->SetInteger(
             prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
             freshness_impression_count + 1);
       }
       break;
     }
-
     case ContentSuggestionsModuleType::kSafetyCheck: {
       // Increment freshness pref since it is an impression of
       // the latest Safety Check results as the top module, but only if there
       // has been a freshness signal.
-      int freshness_impression_count = local_state->GetInteger(
+      int freshness_impression_count = profile_pref_service->GetInteger(
           prefs::
               kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
       if (freshness_impression_count >= 0) {
-        local_state->SetInteger(
+        profile_pref_service->SetInteger(
             prefs::
                 kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
             freshness_impression_count + 1);
@@ -162,11 +160,11 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
       // Increment freshness pref since it is an impression of
       // the latest Tab Resumption results as the top module, but only if there
       // has been a freshness signal.
-      int freshness_impression_count = local_state->GetInteger(
+      int freshness_impression_count = profile_pref_service->GetInteger(
           prefs::
               kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness);
       if (freshness_impression_count >= 0) {
-        local_state->SetInteger(
+        profile_pref_service->SetInteger(
             prefs::
                 kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
             freshness_impression_count + 1);
@@ -175,8 +173,9 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
     }
     case ContentSuggestionsModuleType::kParcelTracking: {
       // Increment freshness pref since it is an impression of
-      // the latest Tab Resumption results as the top module, but only if there
+      // the latest Parcel Tracking results as the top module, but only if there
       // has been a freshness signal.
+      PrefService* local_state = GetApplicationContext()->GetLocalState();
       int freshness_impression_count = local_state->GetInteger(
           prefs::
               kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
@@ -197,6 +196,7 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kPlaceholder:
+    case ContentSuggestionsModuleType::kShopCard:
       // Ephemeral Card
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:

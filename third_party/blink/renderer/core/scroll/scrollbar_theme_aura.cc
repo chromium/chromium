@@ -32,7 +32,6 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -394,6 +393,10 @@ ScrollbarThemeAura::BuildScrollbarThumbExtraParams(
     scrollbar_thumb.thumb_color =
         scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
   }
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    scrollbar_thumb.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
 
   return scrollbar_thumb;
 }
@@ -501,7 +504,7 @@ gfx::Size ScrollbarThemeAura::ButtonSize(const Scrollbar& scrollbar) const {
 }
 
 bool ScrollbarThemeAura::UsesSolidColorThumb() const {
-  return RuntimeEnabledFeatures::AuraScrollbarUsesSolidColorThumbEnabled();
+  return true;
 }
 
 gfx::Insets ScrollbarThemeAura::SolidColorThumbInsets(

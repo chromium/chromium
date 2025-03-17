@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
 
+#import <algorithm>
 #import <memory>
 
 #import "base/command_line.h"
@@ -12,7 +13,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -361,8 +361,6 @@ ChromePasswordProtectionService::GetPasswordProtectionWarningTriggerPref(
 LoginReputationClientRequest::UrlDisplayExperiment
 ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
   safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment experiment;
-  experiment.set_simplified_url_display_enabled(
-      base::FeatureList::IsEnabled(safe_browsing::kSimplifiedUrlDisplay));
   // Delayed warnings parameters:
   experiment.set_delayed_warnings_enabled(
       base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings));
@@ -394,8 +392,8 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
   }
   std::vector<CoreAccountInfo> signed_in_accounts =
       identity_manager->GetAccountsWithRefreshTokens();
-  auto account_iterator = base::ranges::find_if(
-      signed_in_accounts, [username](const auto& account) {
+  auto account_iterator =
+      std::ranges::find_if(signed_in_accounts, [username](const auto& account) {
         return password_manager::AreUsernamesSame(
             account.email,
             /*is_username1_gaia_account=*/true, username,
@@ -406,20 +404,6 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
   }
 
   return identity_manager->FindExtendedAccountInfo(*account_iterator);
-}
-
-LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
-ChromePasswordProtectionService::GetSyncAccountType() const {
-  const AccountInfo account_info = GetAccountInfo();
-  if (!IsPrimaryAccountSignedIn()) {
-    return PasswordReuseEvent::NOT_SIGNED_IN;
-  }
-
-  // For gmail or googlemail account, the hosted_domain will always be
-  // kNoHostedDomainFound.
-  return account_info.hosted_domain == kNoHostedDomainFound
-             ? PasswordReuseEvent::GMAIL
-             : PasswordReuseEvent::GSUITE;
 }
 
 bool ChromePasswordProtectionService::CanShowInterstitial(

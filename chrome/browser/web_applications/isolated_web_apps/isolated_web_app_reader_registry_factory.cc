@@ -56,7 +56,7 @@ IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceForBrowserContext(
 content::BrowserContext*
 IsolatedWebAppReaderRegistryFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(context)) {
+  if (!content::AreIsolatedWebAppsEnabled(context)) {
     return nullptr;
   }
 

@@ -36,11 +36,9 @@ class ServiceWorkerStorageControlImpl
  public:
   static mojo::SelfOwnedReceiverRef<mojom::ServiceWorkerStorageControl> Create(
       mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver,
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
+      const base::FilePath& user_data_directory);
   ServiceWorkerStorageControlImpl(
       const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
       mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver);
 
   ServiceWorkerStorageControlImpl(const ServiceWorkerStorageControlImpl&) =
@@ -55,9 +53,8 @@ class ServiceWorkerStorageControlImpl
   void LazyInitializeForTest();
 
  private:
-  ServiceWorkerStorageControlImpl(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
+  explicit ServiceWorkerStorageControlImpl(
+      const base::FilePath& user_data_directory);
   // mojom::ServiceWorkerStorageControl implementations:
   void Disable(DisableCallback callback) override;
   void Delete(DeleteCallback callback) override;
@@ -83,6 +80,10 @@ class ServiceWorkerStorageControlImpl
                              GetUsageForStorageKeyCallback callback) override;
   void GetAllRegistrationsDeprecated(
       GetAllRegistrationsDeprecatedCallback calback) override;
+  void GetFakeRegistrationForClientUrl(
+      const GURL& client_url,
+      const blink::StorageKey& key,
+      FindRegistrationForClientUrlCallback callback) override;
   void StoreRegistration(
       mojom::ServiceWorkerRegistrationDataPtr registration,
       std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,

@@ -953,6 +953,19 @@ class Parameter:
                                       rhs.default, rhs.attributes))
 
 
+class Result:
+
+  def __init__(self, success_kind, failure_kind):
+    self.success_kind = success_kind
+    self.failure_kind = failure_kind
+
+  def Repr(self):
+    return GenericRepr(self, {
+        'success_kind': self.success_kind,
+        'failure_kind': self.failure_kind,
+    })
+
+
 class Method:
   def __init__(self, interface, mojom_name, ordinal=None, attributes=None):
     self.interface = interface
@@ -963,6 +976,7 @@ class Method:
     self.parameters = []
     self.param_struct = None
     self.response_parameters = None
+    self.result_response = None
     self.response_param_struct = None
     self.attributes = attributes
 
@@ -1600,6 +1614,38 @@ def MethodPassesAssociatedKinds(method, visited_kinds=None):
 # Determines whether a method passes interfaces.
 def MethodPassesInterfaces(method):
   return _AnyMethodParameterRecursive(method, IsInterfaceKind)
+
+
+def MethodNeedsRemoteKind(method, kind_to_check, visited_kinds=None):
+
+  def needs_remote_import(reference_kind):
+    return (
+        (IsInterfaceKind(reference_kind) or IsPendingRemoteKind(reference_kind)
+         or IsPendingAssociatedRemoteKind(reference_kind))
+        # if types are compared directly, it will fail
+        # but the nested reference_kind.kind matches the top level
+        # kind_to_check.
+        and kind_to_check == reference_kind.kind)
+
+  return _AnyMethodParameterRecursive(method,
+                                      needs_remote_import,
+                                      visited_kinds=visited_kinds)
+
+
+def MethodNeedsReceiverKind(method, kind_to_check, visited_kinds=None):
+
+  def needs_receiver_import(reference_kind):
+    return (
+        (IsPendingReceiverKind(reference_kind)
+         or IsPendingAssociatedReceiverKind(reference_kind))
+        # if types are compared directly, it will fail
+        # but the nested reference_kind.kind matches the top level
+        # kind_to_check
+        and kind_to_check == reference_kind.kind)
+
+  return _AnyMethodParameterRecursive(method,
+                                      needs_receiver_import,
+                                      visited_kinds=visited_kinds)
 
 
 def GetSyncMethodOrdinals(interface):

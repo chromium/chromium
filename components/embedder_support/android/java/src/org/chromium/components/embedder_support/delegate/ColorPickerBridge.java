@@ -4,6 +4,8 @@
 
 package org.chromium.components.embedder_support.delegate;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
@@ -11,6 +13,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -20,15 +24,17 @@ import org.chromium.ui.base.WindowAndroid;
  * trigger onDialogDismissed() and closeColorPicker() methods.
  */
 @JNINamespace("web_contents_delegate_android")
+@NullMarked
 public class ColorPickerBridge {
     private long mNativeDialog;
     private final ColorPickerCoordinator mColorPickerCoordinator;
 
     @CalledByNative
-    static ColorPickerBridge create(long nativeDialog, WindowAndroid windowAndroid) {
+    static @Nullable ColorPickerBridge create(long nativeDialog, WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (ContextUtils.activityFromContext(context) == null) return null;
+        assumeNonNull(context);
         return new ColorPickerBridge(nativeDialog, context);
     }
 

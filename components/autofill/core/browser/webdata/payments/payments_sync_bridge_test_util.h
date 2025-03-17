@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 
 namespace sync_pb {
@@ -57,8 +57,8 @@ sync_pb::AutofillWalletSpecifics
 CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
                                                  std::string issuer_id,
                                                  std::string currency,
-                                                 uint64_t price_lower_bound,
-                                                 uint64_t price_upper_bound);
+                                                 int price_lower_bound,
+                                                 int price_upper_bound);
 
 sync_pb::AutofillWalletSpecifics
 CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(

@@ -60,8 +60,6 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
         const std::optional<GURL>& new_url) override;
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override {}
-    void PauseReadingBodyFromNet() override {}
-    void ResumeReadingBodyFromNet() override {}
 
     const std::vector<FollowRedirectParams>& follow_redirect_params() const {
       return follow_redirect_params_;

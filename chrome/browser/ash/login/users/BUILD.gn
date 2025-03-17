@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("users") {
   sources = [
@@ -37,7 +35,6 @@ static_library("users") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/browser:browser_process",
@@ -64,6 +61,7 @@ static_library("users") {
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/timezone",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/components/onc",
     "//chromeos/dbus/common",
     "//components/crash/core/common",
@@ -94,7 +92,6 @@ static_library("test_support") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",

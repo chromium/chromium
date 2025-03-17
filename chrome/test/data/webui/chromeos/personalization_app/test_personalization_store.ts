@@ -7,7 +7,8 @@
  * and manipulate state.
  */
 
-import {Actions, emptyState, PersonalizationState, PersonalizationStore, reduce} from 'chrome://personalization/js/personalization_app.js';
+import type {Actions, PersonalizationState} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, PersonalizationStore, reduce} from 'chrome://personalization/js/personalization_app.js';
 import {TestStore} from 'chrome://webui-test/test_store.js';
 
 /**

@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
@@ -63,6 +62,7 @@
 #include "third_party/blink/renderer/core/layout/mathml/math_token_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_under_over_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/replaced_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -169,7 +169,6 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
 template <typename Callback>
 NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
                                        const Callback& callback) {
-  const ComputedStyle& style = params.node.Style();
   const LayoutBox& box = *params.node.GetLayoutBox();
   if (box.IsFlexibleBox()) {
     CreateAlgorithmAndRun<FlexLayoutAlgorithm>(params, callback);
@@ -198,7 +197,7 @@ NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
   // we would have done block fragmentation with the legacy engine.
   // Otherwise writing data back into the legacy tree will fail. Look for
   // the flow thread.
-  else if (GetFlowThread(box) && style.SpecifiesColumns()) {
+  else if (GetFlowThread(box) && params.node.Style().SpecifiesColumns()) {
     CreateAlgorithmAndRun<ColumnLayoutAlgorithm>(params, callback);
   } else if (!box.Parent() && params.node.IsPaginatedRoot()) [[unlikely]] {
     CreateAlgorithmAndRun<PaginatedRootLayoutAlgorithm>(params, callback);
@@ -265,7 +264,7 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
       return false;
     }
     // Also consider transferred min/max sizes.
-    if (node.HasAspectRatio() &&
+    if (!style.AspectRatio().IsAuto() &&
         (style.LogicalMinHeight().HasPercentOrStretch() ||
          style.LogicalMaxHeight().HasPercentOrStretch())) {
       return false;
@@ -326,7 +325,26 @@ std::optional<LayoutUnit> ContentMinimumInlineSize(
 void AttachScrollMarkers(LayoutObject& parent,
                          Node::AttachContext& context,
                          bool has_absolute_containment = false,
-                         bool has_fixed_containment = false) {
+                         bool has_fixed_containment = false,
+                         bool has_ancestor_marker = false) {
+  auto display_lock_blocks_markers = [](const LayoutObject& object) -> bool {
+    if (DisplayLockContext* display_lock_context =
+            object.GetDisplayLockContext()) {
+      // We don't attach scroll markers for an object that is locked and
+      // non-auto. Also, don't prevent scroll markers if we're not styling auto
+      // locks either, which is a separate decision.
+      return display_lock_context->IsLocked() &&
+             (!display_lock_context->IsAuto() ||
+              !display_lock_context->ShouldStyleChildren());
+    }
+    return false;
+  };
+
+  // Avoid recursing into non-auto content-visibility locked subtrees.
+  if (display_lock_blocks_markers(parent)) {
+    return;
+  }
+
   if (parent.CanContainAbsolutePositionObjects()) {
     has_absolute_containment = true;
     if (parent.CanContainFixedPositionObjects()) {
@@ -340,10 +358,20 @@ void AttachScrollMarkers(LayoutObject& parent,
         (child->IsAbsolutePositioned() && !has_absolute_containment)) {
       continue;
     }
+
+    if (display_lock_blocks_markers(*child)) {
+      continue;
+    }
+
+    bool did_attach_marker = false;
     if (auto* element = DynamicTo<Element>(child->GetNode())) {
       if (PseudoElement* marker =
               element->GetPseudoElement(kPseudoIdScrollMarker)) {
         marker->AttachLayoutTree(context);
+        did_attach_marker = true;
+        if (has_ancestor_marker) {
+          element->GetDocument().CountUse(WebFeature::kNestedScrollMarkers);
+        }
       }
     }
     // Descend into the subtree of the child unless it is a scroll marker group,
@@ -354,9 +382,13 @@ void AttachScrollMarkers(LayoutObject& parent,
     // if the outer one is position:relative, and the inner one has a scroll
     // marker in an absolutely positioned subtree, the marker belongs in the
     // outermost scroll marker group.
-    if (!child->IsScrollMarkerGroup() && !child->GetScrollMarkerGroup()) {
-      AttachScrollMarkers(*child, context, has_absolute_containment,
-                          has_fixed_containment);
+    if (!child->IsScrollMarkerGroup()) {
+      auto* child_box = DynamicTo<LayoutBox>(child);
+      if (!child_box || !child_box->GetScrollMarkerGroup()) {
+        AttachScrollMarkers(*child, context, has_absolute_containment,
+                            has_fixed_containment,
+                            has_ancestor_marker || did_attach_marker);
+      }
     }
   }
 
@@ -603,8 +635,8 @@ const LayoutResult* BlockNode::Layout(
       // Ensure turning on/off scrollbars only once at most, when we call
       // |LayoutWithAlgorithm| recursively.
       DEFINE_STATIC_LOCAL(
-          Persistent<HeapHashSet<WeakMember<LayoutBox>>>, scrollbar_changed,
-          (MakeGarbageCollected<HeapHashSet<WeakMember<LayoutBox>>>()));
+          Persistent<GCedHeapHashSet<WeakMember<LayoutBox>>>, scrollbar_changed,
+          (MakeGarbageCollected<GCedHeapHashSet<WeakMember<LayoutBox>>>()));
       DCHECK(scrollbar_changed->insert(box_.Get()).is_new_entry);
 #endif
 
@@ -652,7 +684,7 @@ const LayoutResult* BlockNode::SimplifiedLayout(
   const LayoutResult* previous_result = box_->GetSingleCachedLayoutResult();
   DCHECK(previous_result);
 
-  // We might be be trying to perform simplfied layout on a fragment in the
+  // We might be trying to perform simplified layout on a fragment in the
   // "measure" cache slot, abort if this is the case.
   if (&previous_result->GetPhysicalFragment() != &previous_fragment) {
     return nullptr;
@@ -665,7 +697,8 @@ const LayoutResult* BlockNode::SimplifiedLayout(
          box_->ChildLayoutBlockedByDisplayLock());
 
   // Perform layout on ourselves using the previous constraint space.
-  const ConstraintSpace space(previous_result->GetConstraintSpaceForCaching());
+  const ConstraintSpace& space =
+      previous_result->GetConstraintSpaceForCaching();
   const LayoutResult* result = Layout(space, /* break_token */ nullptr);
 
   if (result->Status() != LayoutResult::kSuccess) {
@@ -1359,15 +1392,6 @@ void BlockNode::PlaceChildrenInFlowThread(
     PlaceChildrenInLayoutBox(child_fragment, previous_column_break_token,
                              /* needs_invalidation_check */ true);
 
-    // If the multicol container has inline children, there may still be floats
-    // there, but they aren't stored as child fragments of |column| in that case
-    // (but rather inside fragment items). Make sure that they get positioned,
-    // too.
-    if (const FragmentItems* items = child_fragment.Items()) {
-      CopyFragmentItemsToLayoutBox(child_fragment, *items,
-                                   previous_column_break_token);
-    }
-
     previous_column_break_token = child_fragment.GetBreakToken();
   }
 
@@ -1397,9 +1421,9 @@ void BlockNode::CopyChildFragmentPosition(
 
   DCHECK(layout_box->Parent()) << "Should be called on children only.";
 
-  LayoutPoint point = LayoutBoxUtils::ComputeLocation(
-      child_fragment, offset, container_fragment,
-      previous_container_break_token);
+  LayoutPoint point =
+      ComputeBoxLocation(child_fragment, offset, container_fragment,
+                         previous_container_break_token);
   layout_box->SetLocation(point);
 
   if (needs_invalidation_check)
@@ -1511,39 +1535,20 @@ bool BlockNode::IsInTopOrViewTransitionLayer() const {
   return GetLayoutBox()->IsInTopOrViewTransitionLayer();
 }
 
-bool BlockNode::HasAspectRatio() const {
-  if (!Style().AspectRatio().IsAuto()) {
-    DCHECK(!GetAspectRatio().IsEmpty());
-    return true;
-  }
-  LayoutBox* layout_object = GetLayoutBox();
-  if (!layout_object->IsImage() && !IsA<LayoutVideo>(layout_object) &&
-      !layout_object->IsCanvas() && !layout_object->IsSVGRoot()) {
-    return false;
-  }
+LogicalSize BlockNode::GetReplacedAspectRatio() const {
+  DCHECK(IsReplaced());
 
-  // Retrieving this and throwing it away is wasteful. We could make this method
-  // return Optional<LogicalSize> that returns the aspect_ratio if there is one.
-  return !GetAspectRatio().IsEmpty();
-}
-
-LogicalSize BlockNode::GetAspectRatio() const {
-  // The CSS parser will ensure that this will only be set if the feature
-  // is enabled.
   const EAspectRatioType ar_type = Style().AspectRatio().GetType();
-  if (ar_type == EAspectRatioType::kRatio ||
-      (ar_type == EAspectRatioType::kAutoAndRatio && !IsReplaced())) {
+  if (ar_type == EAspectRatioType::kRatio) {
     return Style().LogicalAspectRatio();
   }
 
   if (!ShouldApplySizeContainment()) {
-    IntrinsicSizingInfo legacy_sizing_info;
-    To<LayoutReplaced>(box_.Get())
-        ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+    const PhysicalNaturalSizingInfo legacy_sizing_info =
+        To<LayoutReplaced>(*box_).ComputeNaturalSizingInfo();
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
-      return StyleAspectRatio::LayoutRatioFromSizeF(
-                 legacy_sizing_info.aspect_ratio)
-          .ConvertToLogical(Style().GetWritingMode());
+      return legacy_sizing_info.aspect_ratio.ConvertToLogical(
+          Style().GetWritingMode());
     }
   }
 
@@ -1602,6 +1607,17 @@ void BlockNode::PopulateScrollMarkerGroup(const BlockNode& scroller) const {
 
   StyleEngine::AttachScrollMarkersScope scope(GetDocument().GetStyleEngine());
 
+  // We're about to repopulate the layout tree inside a scroll marker group,
+  // i.e. detach potentially old and attach current scroll markers.
+  //
+  // The scroll marker group may not be a true layout sibling of its scroller,
+  // if one is out-of-flow positioned, and the other one is not. Make sure that
+  // detaching and attaching don't mark outside the group subtree (and thus
+  // parts of the document tree that we may already be done with).
+  box_->SetNeedsLayout(layout_invalidation_reason::kScrollMarkersChanged,
+                       kMarkOnlyThis);
+  box_->SetChildNeedsLayout(kMarkOnlyThis);
+
   // Detach all markers.
   while (LayoutObject* child = GetLayoutBox()->SlowFirstChild()) {
     // Anonymous wrappers may have been inserted. Search for the marker.
@@ -1634,17 +1650,6 @@ void BlockNode::HandleScrollMarkerGroup() const {
 
   group_node.PopulateScrollMarkerGroup(*this);
 
-  // The ::scroll-marker-group has now been populated with markers. If the group
-  // comes after the principal box, we can return, and let the parent layout
-  // algorithm (whatever that is) handle it as part of normal layout.
-  if (!group_node.GetLayoutBox()->IsScrollMarkerGroupBefore()) {
-    return;
-  }
-
-  // If the group comes before the principal box, it means that we might already
-  // be past it, layout-wise. Lay it out again, and replace the innards of the
-  // fragment from the previous layout. This should be safe, as long as the box
-  // establishes sufficient amounts of containment.
   const LayoutResult* result =
       group_node.GetLayoutBox()->GetCachedLayoutResult(nullptr);
   if (!result) {
@@ -1653,6 +1658,17 @@ void BlockNode::HandleScrollMarkerGroup() const {
     // won't have to do the innards-replacement).
     return;
   }
+
+  // The ::scroll-marker-group has been populated with scroll markers. There's
+  // no easy way of telling whether the group comes before or after the
+  // scrollable container, layout-wise. The `before` / `after` value of the
+  // `scroll-marker-group` property doesn't tell the full story, since the
+  // scrollable container may be out-of-flow, and the marker group may not, for
+  // instance. This means that we cannot tell if "regular" scroll marker group
+  // layout is ahead of us, or if we're already past it. Therefore, lay out the
+  // scroll marker group now, and replace the innards of the fragment from any
+  // previous layout. This should be safe, as long as the box establishes
+  // sufficient amounts of containment.
   const auto& fragment = To<PhysicalBoxFragment>(result->GetPhysicalFragment());
 
   // A ::scroll-marker-group should be monolithic.
@@ -1697,9 +1713,9 @@ const LayoutResult* BlockNode::LayoutAtomicInline(
 
   builder.SetAvailableSize(parent_constraint_space.AvailableSize());
   builder.SetPercentageResolutionSize(
-      parent_constraint_space.PercentageResolutionSize());
-  builder.SetReplacedPercentageResolutionSize(
-      parent_constraint_space.ReplacedPercentageResolutionSize());
+      IsReplaced()
+          ? parent_constraint_space.ReplacedChildPercentageResolutionSize()
+          : parent_constraint_space.PercentageResolutionSize());
   ConstraintSpace constraint_space = builder.ToConstraintSpace();
   const LayoutResult* result = Layout(constraint_space);
   if (!DisableLayoutSideEffectsScope::IsDisabled()) {

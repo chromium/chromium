@@ -25,10 +25,10 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 void CaretBrowsingDialogDelegate::Show(gfx::NativeWindow parent_window,
@@ -52,7 +52,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<ui::KeyboardCode> key =
       ash::AccessibilityManager::Get()->GetCaretBrowsingActionKey();
   std::u16string key_string;
@@ -97,7 +97,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
 #else
   std::u16string message_text =
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_INFO);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* message_label = AddChildView(std::make_unique<views::Label>(
       message_text, views::style::CONTEXT_DIALOG_BODY_TEXT));

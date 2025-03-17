@@ -32,6 +32,8 @@ const char* ToString(mojom::blink::AnnotationType type) {
       return "UserNote";
     case mojom::blink::AnnotationType::kTextFinder:
       return "TextFinder";
+    case mojom::blink::AnnotationType::kGlic:
+      return "Glic";
   }
 }
 }  // namespace

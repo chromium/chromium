@@ -42,7 +42,7 @@ TEST_F(DateTrayPixelTest, InactiveDateTrayInBottomAndSideShelfPositions) {
   // By default `bottom_date_tray` should be inactive.
   ASSERT_FALSE(bottom_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bottom_shelf_inactive_date_tray", /*revision_number=*/0,
+      "bottom_shelf_inactive_date_tray", /*revision_number=*/1,
       bottom_date_tray));
 
   // Tests the side shelf.
@@ -52,7 +52,7 @@ TEST_F(DateTrayPixelTest, InactiveDateTrayInBottomAndSideShelfPositions) {
   // `side_date_tray` should remain inactive.
   ASSERT_FALSE(side_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "side_shelf_inactive_date_tray", /*revision_number=*/0, side_date_tray));
+      "side_shelf_inactive_date_tray", /*revision_number=*/1, side_date_tray));
 }
 
 // Tests the active date tray UI for bottom shelf alignment and side shelf
@@ -68,7 +68,7 @@ TEST_F(DateTrayPixelTest, ActiveDateTrayInBottomAndSideShelfPositions) {
   bottom_date_tray->SetIsActive(/*is_active=*/true);
   ASSERT_TRUE(bottom_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bottom_shelf_active_date_tray", /*revision_number=*/0,
+      "bottom_shelf_active_date_tray", /*revision_number=*/1,
       bottom_date_tray));
 
   // Tests the side shelf.
@@ -79,7 +79,7 @@ TEST_F(DateTrayPixelTest, ActiveDateTrayInBottomAndSideShelfPositions) {
   side_date_tray->SetIsActive(/*is_active=*/true);
   ASSERT_TRUE(side_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "side_shelf_active_date_tray", /*revision_number=*/0, side_date_tray));
+      "side_shelf_active_date_tray", /*revision_number=*/1, side_date_tray));
 }
 
 }  // namespace ash

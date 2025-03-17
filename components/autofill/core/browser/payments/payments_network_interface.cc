@@ -19,6 +19,9 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_requests/create_bnpl_payment_instrument_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_url_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_vcn_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
@@ -61,8 +64,9 @@ PaymentsNetworkInterface::PaymentsNetworkInterface(
 PaymentsNetworkInterface::~PaymentsNetworkInterface() = default;
 
 void PaymentsNetworkInterface::Prepare() {
-  if (access_token_.empty())
+  if (access_token_.empty()) {
     StartTokenFetch(false);
+  }
 }
 
 void PaymentsNetworkInterface::GetUnmaskDetails(
@@ -204,7 +208,7 @@ void PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument(
     const GetDetailsForCreateBnplPaymentInstrumentRequestDetails&
         request_details,
     base::OnceCallback<void(PaymentsRpcResult,
-                            std::u16string context_token,
+                            std::string context_token,
                             std::unique_ptr<base::Value::Dict>)> callback) {
   IssueRequest(
       std::make_unique<GetDetailsForCreateBnplPaymentInstrumentRequest>(
@@ -214,11 +218,37 @@ void PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument(
           std::move(callback)));
 }
 
+void PaymentsNetworkInterface::CreateBnplPaymentInstrument(
+    const CreateBnplPaymentInstrumentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult, std::string instrument_id)>
+        callback) {
+  IssueRequest(std::make_unique<CreateBnplPaymentInstrumentRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
+
 void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingVcn(
     GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const BnplFetchVcnResponseDetails&)> callback) {
-  // TODO(crbug.com/378518641): Implement GetBnplPaymentInstrument() in payments
-  // network interface.
+  IssueRequest(std::make_unique<GetBnplPaymentInstrumentForFetchingVcnRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
 }
+
+void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingUrl(
+    GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            const BnplFetchUrlResponseDetails&)> callback) {
+  IssueRequest(std::make_unique<GetBnplPaymentInstrumentForFetchingUrlRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
+
 }  // namespace autofill::payments

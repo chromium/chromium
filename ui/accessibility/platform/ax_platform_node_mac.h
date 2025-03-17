@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeMac
                           PlatformAttributeList* attributes) override;
 
  private:
-  friend AXPlatformNode* AXPlatformNode::Create(
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
       AXPlatformNodeDelegate* delegate);
 
   struct ObjCStorage;

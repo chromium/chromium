@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
-struct SkImageInfo;
-
 namespace gpu {
 class ClientSharedImage;
 struct ExportedSharedImage;
@@ -40,8 +38,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // the texture is bound to the shared image, stays alive and has a read lock
   // on the shared image until the |release_callback| is invoked.
   //
-  // |sk_image_info| provides the metadata associated with the backing.
-  //
   // |context_provider| is the context that the shared image was created with.
   // |context_thread_ref| and |context_task_runner| refer to the thread the
   // context is bound to. If the image is created on a different thread than
@@ -58,13 +54,14 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
-      const SkImageInfo& sk_image_info,
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      viz::ReleaseCallback release_callback,
-      bool supports_display_compositing,
-      bool is_overlay_candidate);
+      viz::ReleaseCallback release_callback);
 
   // Creates an image wrapping an external shared image.
   // The shared image may come from a different context,
@@ -72,11 +69,12 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // This takes ownership of the shared image.
   static scoped_refptr<AcceleratedStaticBitmapImage>
   CreateFromExternalSharedImage(
-      const gpu::ExportedSharedImage& exported_shared_image,
+      gpu::ExportedSharedImage exported_shared_image,
       const gpu::SyncToken& sync_token,
-      const SkImageInfo& sk_image_info,
-      bool supports_display_compositing,
-      bool is_overlay_candidate,
+      const gfx::Size& size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
   bool CurrentFrameKnownToBeOpaque() override;
@@ -128,14 +126,20 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   bool IsOriginTopLeft() const final {
     return shared_image_->surface_origin() == kTopLeft_GrSurfaceOrigin;
   }
-  bool SupportsDisplayCompositing() const final {
-    return supports_display_compositing_;
-  }
-  bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
 
   PaintImage PaintImageForCurrentFrame() override;
 
-  SkImageInfo GetSkImageInfo() const override;
+  gfx::Size GetSize() const override { return size_; }
+  SkAlphaType GetAlphaType() const override { return alpha_type_; }
+  SkColorType GetSkColorType() const override {
+    return viz::ToClosestSkColorType(format_);
+  }
+  sk_sp<SkColorSpace> GetSkColorSpace() const override {
+    return sk_color_space_;
+  }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return format_;
+  }
 
  private:
   struct ReleaseContext {
@@ -150,9 +154,10 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
-      const SkImageInfo& sk_image_info,
-      bool supports_display_compositing,
-      bool is_overlay_candidate,
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
@@ -163,9 +168,10 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   void InitializeTextureBacking(GLuint shared_image_texture_id);
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  const SkImageInfo sk_image_info_;
-  const bool supports_display_compositing_ : 1;
-  const bool is_overlay_candidate_ : 1;
+  gfx::Size size_;
+  viz::SharedImageFormat format_;
+  SkAlphaType alpha_type_;
+  sk_sp<SkColorSpace> sk_color_space_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;

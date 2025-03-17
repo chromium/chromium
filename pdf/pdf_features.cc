@@ -5,6 +5,7 @@
 #include "pdf/pdf_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "pdf/buildflags.h"
 
 namespace chrome_pdf::features {
@@ -17,7 +18,7 @@ BASE_FEATURE(kAccessiblePDFForm,
              "AccessiblePDFForm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPdfCr23, "PdfCr23", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPdfCr23, "PdfCr23", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // "Incremental loading" refers to loading the PDF as it arrives.
 // TODO(crbug.com/40123601): Remove this once incremental loading is fixed.
@@ -27,12 +28,6 @@ BASE_FEATURE(kPdfIncrementalLoading,
 
 BASE_FEATURE(kPdfOopif, "PdfOopif", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch in case this goes horribly wrong.
-// TODO(crbug.com/40216952): Remove after this lands safely in a Stable release.
-BASE_FEATURE(kPdfPaintManagerDrawsBackground,
-             "PdfPaintManagerDrawsBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // "Partial loading" refers to loading only specific parts of the PDF.
 // TODO(crbug.com/40123601): Remove this once partial loading is fixed.
 BASE_FEATURE(kPdfPartialLoading,
@@ -41,11 +36,28 @@ BASE_FEATURE(kPdfPartialLoading,
 
 BASE_FEATURE(kPdfPortfolio, "PdfPortfolio", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables PDF WebUI save to get PDF content from renderer in blocks.
+BASE_FEATURE(kPdfGetSaveDataInBlocks,
+             "PdfGetSaveDataInBlocks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Saves original PDFs to disk from the in-memory copy instead of redownloading
+// them.
+BASE_FEATURE(kPdfSaveOriginalFromMemory,
+             "PdfSaveOriginalFromMemory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPdfSearchifySave,
              "PdfSearchifySave",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables accessibility tags in PDFs to be parsed and integrated into the
+// accessibility tree by Chrome's PDF Viewer. Accessibility tags provide
+// structure and semantics to the text found in a PDF, e.g. they could mark a
+// specific piece of text as a heading, or a block of text as a paragraph.
+BASE_FEATURE(kPdfTags, "PdfTags", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPdfUseShowSaveFilePicker,
              "PdfUseShowSaveFilePicker",
@@ -62,6 +74,10 @@ BASE_FEATURE(kPdfXfaSupport,
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_FEATURE(kPdfInk2, "PdfInk2", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables text highlighting with the Ink highlighter brush.
+const base::FeatureParam<bool> kPdfInk2TextHighlighting{
+    &kPdfInk2, "text-highlighting", false};
 #endif
 
 void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {

@@ -15,6 +15,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -51,7 +53,8 @@ class PriceInsightsIconViewInteractiveTest
             UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
     test_features_.InitWithFeatures(
         /*enabled_features=*/{commerce::kPriceInsights},
-        /*disabled_features*/ {});
+        /*disabled_features*/ {commerce::kEnableDiscountInfoApi,
+                               commerce::kProductSpecifications});
   }
 
   void SetUp() override {
@@ -98,6 +101,7 @@ class PriceInsightsIconViewInteractiveTest
   std::optional<commerce::PriceInsightsInfo> price_insights_info_;
   std::optional<commerce::ProductInfo> product_info_;
   base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<commerce::MockAccountChecker> mock_account_checker_;
   bool is_browser_context_services_created{false};
 
  private:
@@ -108,6 +112,8 @@ class PriceInsightsIconViewInteractiveTest
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->profile()));
+    mock_account_checker_ = std::make_unique<commerce::MockAccountChecker>();
+    mock_shopping_service_->SetAccountChecker(mock_account_checker_.get());
 
     price_insights_info_ = commerce::CreateValidPriceInsightsInfo(
         true, true, commerce::PriceBucket::kLowPrice);
@@ -120,12 +126,9 @@ class PriceInsightsIconViewInteractiveTest
     product_info_->product_cluster_id = 12345L;
     mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
 
-    EXPECT_CALL(*mock_shopping_service_, IsPriceInsightsEligible)
-        .Times(testing::AnyNumber());
-
-    mock_shopping_service_->SetIsPriceInsightsEligible(true);
+    mock_account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    ASSERT_TRUE(commerce::IsPriceInsightsEligible(mock_account_checker_.get()));
     mock_shopping_service_->SetIsShoppingListEligible(false);
-    mock_shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
 
     MockGetProductInfoForUrlResponse();
     MockGetPriceInsightsInfoForUrlResponse();
@@ -183,8 +186,10 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        IconIsNotHighlightedAfterClicking) {
-  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
-  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
+  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl)
+      .Times(testing::AnyNumber());
 
   const bool expected_to_highlight = false;
 

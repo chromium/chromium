@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import './customize_button_select.js';
@@ -30,7 +29,7 @@ import {buttonsAreEqual} from './input_device_settings_utils.js';
 
 export interface CustomizeButtonRowElement {
   $: {
-    container: HTMLDivElement,
+    container: HTMLElement,
     remappingActionDropdown: CustomizeButtonSelectElement,
     renameButton: CrIconButtonElement,
     reorderButton: CrIconButtonElement,
@@ -141,9 +140,9 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     super.connectedCallback();
     this.observeButtonPresses();
     // Focus dropdown right away as this button was just pressed.
-    this.$.remappingActionDropdown!.focus();
+    this.$.remappingActionDropdown.focus();
 
-    this.$.reorderButton!.addEventListener(
+    this.$.reorderButton.addEventListener(
         'keydown', this.handleKeyDownReorderButton_);
     this.addEventListener(
         'reorder-button-direction', this.onButtonReorderDirectEvent_);
@@ -151,7 +150,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.$.reorderButton!.removeEventListener(
+    this.$.reorderButton.removeEventListener(
         'keydown', this.handleKeyDownReorderButton_);
     this.removeEventListener(
         'reorder-button-direction', this.onButtonReorderDirectEvent_);
@@ -222,7 +221,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
   onButtonPressed(button: Button): void {
     if (buttonsAreEqual(button, this.buttonRemapping_.button)) {
-      this.$.remappingActionDropdown!.focus();
+      this.$.remappingActionDropdown.focus();
     }
   }
 

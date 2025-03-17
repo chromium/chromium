@@ -112,7 +112,7 @@ enum Sandbox {
   // TODO(b/195769334): we're using the GPU process sandbox policy for now as a
   // transition step. However, we should create a policy that's tighter just for
   // hardware video decoding.
-  [EnableIf=is_chromeos_ash|is_linux] kHardwareVideoDecoding,
+  [EnableIf=is_chromeos|is_linux] kHardwareVideoDecoding,
 
   // Used to protect processes that perform hardware video encode acceleration.
   // Currently uses the same policy as the GPU process sandbox. Warm-up does
@@ -127,10 +127,10 @@ enum Sandbox {
   [EnableIf=is_chromeos|is_linux] kHardwareVideoEncoding,
 
   // Hosts Input Method Editors.
-  [EnableIf=is_chromeos_ash] kIme,
+  [EnableIf=is_chromeos] kIme,
 
   // Text-to-speech.
-  [EnableIf=is_chromeos_ash] kTts,
+  [EnableIf=is_chromeos] kTts,
 
   // Hosts the Libassistant service on ChromeOS Ash, only used for
   // Chrome branded builds.
@@ -145,7 +145,7 @@ enum Sandbox {
 
   // Hosts the shared Nearby library for both Nearby Connections and
   // Nearby Presence.
-  [EnableIf=is_chromeos_ash] kNearby,
+  [EnableIf=is_chromeos] kNearby,
 
   // Hosts On Device Translation service.
   // Currently the sandboxing of the On Device Translation service needs

@@ -93,7 +93,7 @@ void SetIdpSigninStatus(const blink::LocalFrameToken& local_frame_token,
   auto* auth_request = CredentialManagerProxy::From(local_frame->DomWindow())
                            ->FederatedAuthRequest();
   auth_request->SetIdpSigninStatus(SecurityOrigin::CreateFromUrlOrigin(origin),
-                                   status);
+                                   status, /*options=*/nullptr);
 }
 
 }  // namespace blink

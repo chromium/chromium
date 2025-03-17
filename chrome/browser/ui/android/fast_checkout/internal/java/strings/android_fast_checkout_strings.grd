@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="values-af/android_fast_checkout_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_fast_checkout_strings.xml" lang="am" type="android" />
@@ -237,6 +237,12 @@ found in the LICENSE file.
       </message>
       <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open credit card settings.">
         Manage payment methods
+      </message>
+      <message name="IDS_FAST_CHECKOUT_RECORD_TYPE_HOME" desc="Subtitle near the address icon on the autofill profile when home address is used.">
+        Home
+      </message>
+      <message name="IDS_FAST_CHECKOUT_RECORD_TYPE_WORK" desc="Subtitle near the address icon on the autofill profile when work address is used.">
+        Work
       </message>
     </messages>
   </release>

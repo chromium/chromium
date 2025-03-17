@@ -178,8 +178,8 @@ std::u16string GetCounterTextFromResult(
                   ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
                   : IDS_DEL_PASSWORDS_COUNTER,
               profile_passwords),
-          {CreateDomainExamples(profile_passwords,
-                                password_result->domain_examples())},
+          CreateDomainExamples(profile_passwords,
+                               password_result->domain_examples()),
           nullptr));
     }
 
@@ -188,8 +188,8 @@ std::u16string GetCounterTextFromResult(
           l10n_util::GetPluralStringFUTF16(
               IDS_DEL_ACCOUNT_PASSWORDS_COUNTER,
               password_result->account_passwords()),
-          {CreateDomainExamples(password_result->account_passwords(),
-                                password_result->account_domain_examples())},
+          CreateDomainExamples(password_result->account_passwords(),
+                               password_result->account_domain_examples()),
           nullptr));
     }
 
@@ -249,6 +249,7 @@ std::u16string GetCounterTextFromResult(
     AutofillCounter::ResultInt num_payment_methods =
         autofill_result->num_credit_cards();
     AutofillCounter::ResultInt num_addresses = autofill_result->num_addresses();
+    AutofillCounter::ResultInt num_entities = autofill_result->num_entities();
 
     std::vector<std::u16string> displayed_strings;
 
@@ -260,21 +261,26 @@ std::u16string GetCounterTextFromResult(
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
           IDS_DEL_AUTOFILL_COUNTER_ADDRESSES, num_addresses));
     }
-    if (num_suggestions) {
+
+    auto num_suggestions_and_entities = num_suggestions + num_entities;
+    if (num_suggestions_and_entities > 0) {
       // We use a different wording for autocomplete suggestions based on the
       // length of the entire string.
       switch (displayed_strings.size()) {
         case 0:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS,
+              num_suggestions_and_entities));
           break;
         case 1:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG,
+              num_suggestions_and_entities));
           break;
         case 2:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT,
+              num_suggestions_and_entities));
           break;
         default:
           NOTREACHED();
@@ -318,18 +324,7 @@ std::u16string GetCounterTextFromResult(
         NOTREACHED();
     }
 
-    AutofillCounter::ResultInt num_user_annotations =
-        autofill_result->num_user_annotation_entries();
-    if (num_user_annotations) {
-      return l10n_util::GetStringFUTF16(
-          IDS_DEL_AUTOFILL_SYNCABLE_NON_SYNCABLE_COMBINATION,
-          payment_methods_addresses_autocomplete_entries_part,
-          l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_USER_ANNOTATION_ENTRIES,
-              num_user_annotations));
-    } else {
-      return payment_methods_addresses_autocomplete_entries_part;
-    }
+    return payment_methods_addresses_autocomplete_entries_part;
   }
 
   NOTREACHED();

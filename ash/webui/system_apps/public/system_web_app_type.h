@@ -5,11 +5,9 @@
 #ifndef ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
 #define ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#error "Ash-only"
-#endif
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace ash {
 

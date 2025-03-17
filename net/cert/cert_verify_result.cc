@@ -30,7 +30,6 @@ void CertVerifyResult::Reset() {
   cert_status = 0;
   has_sha1 = false;
   is_issued_by_known_root = false;
-  is_issued_by_additional_trust_anchor = false;
 
   public_key_hashes.clear();
   ocsp_result = bssl::OCSPVerifyResult();
@@ -46,9 +45,6 @@ base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {
   if (net_error < 0)
     dict.Set("net_error", net_error);
   dict.Set("is_issued_by_known_root", is_issued_by_known_root);
-  if (is_issued_by_additional_trust_anchor) {
-    dict.Set("is_issued_by_additional_trust_anchor", true);
-  }
   dict.Set("cert_status", static_cast<int>(cert_status));
   // TODO(mattm): This double-wrapping of the certificate list is weird. Remove
   // this (probably requires updates to netlog-viewer).

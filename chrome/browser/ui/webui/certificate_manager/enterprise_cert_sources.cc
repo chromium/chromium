@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/net/x509_certificate_model.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
 #include "net/cert/x509_util.h"
@@ -143,6 +143,9 @@ void EnterpriseTrustedCertSource::ViewCertificate(
           metadata.mutable_constraints()->mutable_cidrs()->Add(
               std::move(proto_cidr));
         }
+        metadata.mutable_trust()->set_trust_type(
+            chrome_browser_server_certificate_database::CertificateTrust::
+                CERTIFICATE_TRUST_TYPE_TRUSTED);
         ShowCertificateDialog(std::move(web_contents),
                               net::x509_util::CreateCryptoBuffer(
                                   cert_with_constraints->certificate),

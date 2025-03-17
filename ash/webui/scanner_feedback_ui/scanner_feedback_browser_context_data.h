@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_BROWSER_CONTEXT_DATA_H_
 #define ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_BROWSER_CONTEXT_DATA_H_
 
+#include <optional>
+
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
@@ -22,7 +24,8 @@ class BrowserContext;
 namespace ash {
 
 // Sets `feedback_info` keyed by `id` in `browser_context`.
-// `feedback_info` can later be retrieved from the `Get` function below.
+// `feedback_info` can later be retrieved from the `Get` and `Take` functions
+// below.
 // Returns an object that, when destructed, also destructs `feedback_info` to
 // prevent memory leaks.
 base::ScopedClosureRunner SetScannerFeedbackInfoForBrowserContext(
@@ -35,6 +38,13 @@ base::ScopedClosureRunner SetScannerFeedbackInfoForBrowserContext(
 // If no `ScannerFeedbackInfo` exists for `id`, returns nullptr.
 ScannerFeedbackInfo* GetScannerFeedbackInfoForBrowserContext(
     content::BrowserContext& browser_context LIFETIME_BOUND,
+    base::UnguessableToken id);
+
+// Takes a `ScannerFeedbackInfo` keyed by `id` out of `browser_context`, set by
+// the `Set` function above - removing it in the process.
+// If no `ScannerFeedbackInfo` exists for `id`, returns nullopt.
+std::optional<ScannerFeedbackInfo> TakeScannerFeedbackInfoForBrowserContext(
+    content::BrowserContext& browser_context,
     base::UnguessableToken id);
 
 }  // namespace ash

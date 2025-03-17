@@ -51,6 +51,10 @@
 #include "components/prefs/pref_service.h"
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"  // nogncheck
+#endif
+
 using content::WebContents;
 
 namespace {
@@ -113,6 +117,7 @@ void RecordWebsiteStateAtApiRequest(history::HistoryLastVisitResult result,
 void CheckUrlForAllowlistAndRecordMetric(
     const GURL& url,
     history::HistoryLastVisitResult result) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   auto* safe_browsing_service_internal =
       reinterpret_cast<safe_browsing::SafeBrowsingServiceInterface*>(
           g_browser_process->safe_browsing_service());
@@ -132,6 +137,9 @@ void CheckUrlForAllowlistAndRecordMetric(
                 RecordWebsiteStateAtApiRequest(result, on_allowlist);
               },
               result));
+#else
+  RecordWebsiteStateAtApiRequest(result, std::nullopt);
+#endif
 }
 
 }  // namespace
@@ -168,16 +176,16 @@ bool FullscreenController::IsFullscreenForBrowser() const {
 }
 
 void FullscreenController::ToggleBrowserFullscreenMode(bool user_initiated) {
-  extension_caused_fullscreen_ = GURL();
+  extension_url_.reset();
   ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId,
                                user_initiated);
 }
 
 void FullscreenController::ToggleBrowserFullscreenModeWithExtension(
     const GURL& extension_url) {
-  // |extension_caused_fullscreen_| will be reset if this causes fullscreen to
+  // |extension_url_| will be reset if this causes fullscreen to
   // exit.
-  extension_caused_fullscreen_ = extension_url;
+  extension_url_ = extension_url;
   ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId,
                                /*user_initiated=*/false);
 }
@@ -187,7 +195,7 @@ bool FullscreenController::IsWindowFullscreenForTabOrPending() const {
 }
 
 bool FullscreenController::IsExtensionFullscreenOrPending() const {
-  return !extension_caused_fullscreen_.is_empty();
+  return extension_url_.has_value();
 }
 
 bool FullscreenController::IsControllerInitiatedFullscreen() const {
@@ -284,8 +292,7 @@ void FullscreenController::EnterFullscreenModeForTab(
     SetTabWithExclusiveAccess(nullptr);
   }
   SetTabWithExclusiveAccess(web_contents);
-  requesting_origin_ =
-      requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+  requesting_origin_ = requesting_frame->GetLastCommittedOrigin();
 
   if (was_window_fullscreen_for_tab_or_pending) {
     // While an element is in fullscreen, requesting fullscreen for a different
@@ -442,7 +449,7 @@ void FullscreenController::WindowFullscreenStateChanged() {
   PostFullscreenChangeNotification();
   if (exiting_fullscreen) {
     toggled_into_fullscreen_ = false;
-    extension_caused_fullscreen_ = GURL();
+    extension_url_.reset();
     NotifyTabExclusiveAccessLost();
   } else {
     toggled_into_fullscreen_ = true;
@@ -536,11 +543,16 @@ void FullscreenController::ExitExclusiveAccessToPreviousState() {
   }
 }
 
-GURL FullscreenController::GetURLForExclusiveAccessBubble() const {
+url::Origin FullscreenController::GetOriginForExclusiveAccessBubble() const {
   if (exclusive_access_tab()) {
     return GetRequestingOrigin();
   }
-  return extension_caused_fullscreen_;
+
+  if (extension_url_.has_value()) {
+    return url::Origin::Create(extension_url_.value());
+  }
+
+  return url::Origin();
 }
 
 void FullscreenController::ExitExclusiveAccessIfNecessary() {
@@ -567,7 +579,7 @@ void FullscreenController::NotifyTabExclusiveAccessLost() {
   if (exclusive_access_tab()) {
     WebContents* web_contents = exclusive_access_tab();
     SetTabWithExclusiveAccess(nullptr);
-    requesting_origin_ = GURL();
+    requesting_origin_ = url::Origin();
     bool will_cause_resize = IsFullscreenCausedByTab();
     state_prior_to_tab_fullscreen_ = STATE_INVALID;
     tab_fullscreen_ = false;
@@ -615,9 +627,9 @@ void FullscreenController::EnterFullscreenModeInternal(
   started_fullscreen_transition_ = true;
   toggled_into_fullscreen_ = true;
   bool entering_tab_fullscreen = option == TAB && !tab_fullscreen_;
-  GURL url;
+  url::Origin origin;
   if (option == TAB) {
-    url = GetRequestingOrigin();
+    origin = GetRequestingOrigin();
     tab_fullscreen_ = true;
     WebContents* web_contents =
         WebContents::FromRenderFrameHost(requesting_frame);
@@ -646,8 +658,8 @@ void FullscreenController::EnterFullscreenModeInternal(
     tab_fullscreen_target_display_id_ =
         display_id == display::kInvalidDisplayId ? current_display : display_id;
   } else {
-    if (!extension_caused_fullscreen_.is_empty()) {
-      url = extension_caused_fullscreen_;
+    if (extension_url_) {
+      origin = url::Origin::Create(extension_url_.value());
     }
   }
 
@@ -659,7 +671,7 @@ void FullscreenController::EnterFullscreenModeInternal(
   // from tab fullscreen out to browser with toolbar.
 
   exclusive_access_manager()->context()->EnterFullscreen(
-      url, exclusive_access_manager()->GetExclusiveAccessExitBubbleType(),
+      origin, exclusive_access_manager()->GetExclusiveAccessExitBubbleType(),
       display_id);
 
   // WindowFullscreenStateChanged() is called once the window is fullscreen.
@@ -692,7 +704,7 @@ void FullscreenController::ExitFullscreenModeInternal() {
   NotifyTabExclusiveAccessLost();
 #endif
   exclusive_access_manager()->context()->ExitFullscreen();
-  extension_caused_fullscreen_ = GURL();
+  extension_url_.reset();
   exclusive_access_manager()->UpdateBubble(base::NullCallback());
 }
 
@@ -735,20 +747,20 @@ bool FullscreenController::IsFullscreenWithinTab(
   return false;
 }
 
-GURL FullscreenController::GetRequestingOrigin() const {
+url::Origin FullscreenController::GetRequestingOrigin() const {
   DCHECK(exclusive_access_tab());
 
-  if (!requesting_origin_.is_empty()) {
+  if (!requesting_origin_.opaque()) {
     return requesting_origin_;
   }
 
-  return exclusive_access_tab()->GetLastCommittedURL();
+  return url::Origin::Create(exclusive_access_tab()->GetLastCommittedURL());
 }
 
-GURL FullscreenController::GetEmbeddingOrigin() const {
+url::Origin FullscreenController::GetEmbeddingOrigin() const {
   DCHECK(exclusive_access_tab());
 
-  return exclusive_access_tab()->GetLastCommittedURL();
+  return url::Origin::Create(exclusive_access_tab()->GetLastCommittedURL());
 }
 
 void FullscreenController::RecordMetricsOnFullscreenApiRequested(
@@ -760,7 +772,7 @@ void FullscreenController::RecordMetricsOnFullscreenApiRequested(
     // Check if the origin has been visited more than a day ago and whether it's
     // on an allowlist, then record those bits of information in a metric.
     service->GetLastVisitToOrigin(
-        url::Origin(requesting_frame->GetLastCommittedOrigin()), base::Time(),
+        requesting_frame->GetLastCommittedOrigin(), base::Time(),
         base::Time::Now() - base::Days(1),
         base::BindOnce(&CheckUrlForAllowlistAndRecordMetric,
                        GURL(requesting_frame->GetLastCommittedURL())),

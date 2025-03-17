@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_restore") {
   sources = [
@@ -43,14 +43,14 @@ static_library("app_restore") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/scheduler_config",
     "//chrome/browser/profiles:profile",
     "//chrome/common:buildflags",
     "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/components/scheduler_config",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/ui/base",
     "//components/app_restore",
@@ -72,9 +72,6 @@ static_library("app_restore") {
   deps = [
     "//apps",
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:arc_metrics_constants",
     "//ash/constants",
     "//ash/webui/settings/public/constants:mojom",
     "//ash/webui/settings/public/constants:mojom_shared",
@@ -101,6 +98,9 @@ static_library("app_restore") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:arc_metrics_constants",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/constants",
     "//chromeos/ui/frame",
@@ -148,9 +148,6 @@ static_library("test_support") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
@@ -158,6 +155,9 @@ static_library("test_support") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/shelf/app_service",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/app_restore",
     "//components/exo",
     "//content/test:test_support",
@@ -182,9 +182,6 @@ source_set("browser_tests") {
     ":test_support",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_type",
@@ -213,6 +210,9 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/base/ash/util:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
     "//components/app_constants",
     "//components/app_restore",
     "//components/exo",
@@ -256,11 +256,9 @@ source_set("unit_tests") {
     ":app_restore",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc:arc_features",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
@@ -271,6 +269,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc:arc_features",
     "//chromeos/ui/base",
     "//components/account_id",
     "//components/app_constants",

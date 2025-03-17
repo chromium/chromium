@@ -41,6 +41,7 @@ source_set("hooks") {
   testonly = true
   sources = [ "xcuitests_hook.mm" ]
   deps = [
+    "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/app:tests_hook",
   ]

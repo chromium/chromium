@@ -9,6 +9,14 @@
 
 class PrefService;
 
+// Enum to represent arms of feature kFeedSwipeInProductHelp.
+enum class FeedSwipeIPHVariation {
+  kDisabled,
+  kStaticAfterFRE,
+  kStaticInSecondRun,
+  kAnimated,
+};
+
 #pragma mark - Feature declarations
 
 // Feature flag to enable static resource serving for the Discover feed.
@@ -44,9 +52,8 @@ BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
 // disc.
 BASE_DECLARE_FEATURE(kIdentityDiscAccountMenu);
 
-// Feature flag to move the entry point for the following feed into the discover
-// feed.
-BASE_DECLARE_FEATURE(kIOSNewFollowingFeedEntryPoints);
+// Feature flag to enable in-product help for swipe action on the Feed.
+BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
 
 #pragma mark - Feature parameters
 
@@ -77,6 +84,28 @@ extern const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[];
 // A parameter value for the feed referrer.
 extern const char kFeedSettingDiscoverReferrerParameter[];
 
+// Parameters for the `kDeprecateFeedHeader` feature.
+//
+// A parameter to indicate whether the label should be removed from the discover
+// feed header.
+extern const char kDeprecateFeedHeaderParameterRemoveLabel[];
+// A parameter to indicate whether we should enlarge the Doodle and the fakebox.
+extern const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[];
+// Parameters controlling the padding/spacing between NTP elements.
+extern const char kDeprecateFeedHeaderParameterTopPadding[];
+extern const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[];
+extern const char kDeprecateFeedHeaderParameterSpaceBetweenModules[];
+extern const char kDeprecateFeedHeaderParameterHeaderBottomPadding[];
+
+// Parameter to remove the three-dot menu from the account menu.
+extern const char kDisableAccountMenuEllipsisParam[];
+// Parameter to show the settings button in the account menu.
+extern const char kShowSettingsInAccountMenuParam[];
+
+// Parameter to indicate which arm of feature kFeedSwipeInProductHelp is
+// enabled.
+extern const char kFeedSwipeInProductHelpArmParam[];
+
 #pragma mark - Helpers
 
 // Whether the NTP view hierarchy repair is enabled.
@@ -97,8 +126,23 @@ bool IsSignedOutViewDemotionEnabled();
 // Whether ghost cards are enabled on the iPad feeds.
 bool IsiPadFeedGhostCardsEnabled();
 
-// Returns whether the user should enter the following feed through the entry
-// points in the discover feed.
-bool IsNewFollowingFeedEntryPointsEnabled();
+// YES if the NTP and feed header elements should be re-positioned as described.
+bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine);
+bool ShouldEnlargeLogoAndFakebox();
+
+// If feed header should be deprecated, retrieve the value for `param_name` for
+// the `kDeprecateFeedHeader`. Otherwise, return the default value.
+double GetDeprecateFeedHeaderParameterValueAsDouble(
+    const std::string& param_name,
+    double default_value);
+
+// YES if the account menu is enabled without the three-dot menu.
+bool IdentityDiscAccountMenuEnabledWithoutEllipsis();
+
+// YES if the account menu is enabled with the settings button.
+bool IdentityDiscAccountMenuEnabledWithSettings();
+
+// Returns the enabled variation of feature kFeedSwipeInProductHelp.
+FeedSwipeIPHVariation GetFeedSwipeIPHVariation();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

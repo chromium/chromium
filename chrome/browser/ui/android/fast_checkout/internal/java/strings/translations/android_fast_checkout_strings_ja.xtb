@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1122068467107743258">仕事</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="138513070655895675">このメニュー項目で他のお支払い方法に切り替えます。</translation>
 <translation id="2129442648318919291">住所を管理する。</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">配送先住所</translation>
 <translation id="8873105120914375071">すばやく決済</translation>
 <translation id="9032876013752408138">情報を自動入力</translation>
+<translation id="932327136139879170">ホーム</translation>
 <translation id="984275831282074731">お支払い方法</translation>
 </translationbundle>

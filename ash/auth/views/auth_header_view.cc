@@ -4,6 +4,8 @@
 
 #include "ash/auth/views/auth_header_view.h"
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/login/ui/non_accessible_view.h"
@@ -50,7 +52,7 @@ AuthHeaderView::TestApi::~TestApi() = default;
 AuthHeaderView::Observer::Observer() = default;
 AuthHeaderView::Observer::~Observer() = default;
 
-const std::u16string& AuthHeaderView::TestApi::GetCurrentTitle() const {
+std::u16string_view AuthHeaderView::TestApi::GetCurrentTitle() const {
   return view_->title_label_->GetText();
 }
 
@@ -97,13 +99,13 @@ AuthHeaderView::AuthHeaderView(const AccountId& account_id,
                                   views::style::STYLE_PRIMARY);
   title_label_->SetMultiLine(true);
   title_label_->SizeToFit(kTitleLineWidthDp);
-  title_label_->SetEnabledColorId(kTitleColorId);
+  title_label_->SetEnabledColor(kTitleColorId);
   title_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTitleFont));
   title_label_->GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);
   title_label_->GetViewAccessibility().SetName(title);
   decorate_label(title_label_);
-  AddChildView(title_label_.get());
+  AddChildViewRaw(title_label_.get());
 
   // Add vertical space separator.
   add_spacer(kTitleToDescriptionDistanceDp);
@@ -113,11 +115,11 @@ AuthHeaderView::AuthHeaderView(const AccountId& account_id,
       description, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
   description_label_->SetMultiLine(true);
   description_label_->SizeToFit(kDescriptionLineWidthDp);
-  description_label_->SetEnabledColorId(kDescriptionColorId);
+  description_label_->SetEnabledColor(kDescriptionColorId);
   description_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kDescriptionFont));
   decorate_label(description_label_);
-  AddChildView(description_label_.get());
+  AddChildViewRaw(description_label_.get());
 }
 
 AuthHeaderView::~AuthHeaderView() {
@@ -138,18 +140,19 @@ gfx::Size AuthHeaderView::CalculatePreferredSize(
 
 void AuthHeaderView::SetErrorTitle(const std::u16string& error_str) {
   title_label_->SetText(error_str);
-  title_label_->SetEnabledColorId(kTitleErrorColorId);
+  title_label_->SetEnabledColor(kTitleErrorColorId);
   NotifyTitleChanged(error_str);
   title_label_->GetViewAccessibility().SetName(error_str);
-  title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                                         /*send_native_event=*/true);
+  title_label_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kTextChanged,
+      /*send_native_event=*/true);
   title_label_->GetViewAccessibility().AnnounceText(error_str);
 }
 
 void AuthHeaderView::RestoreTitle() {
   if (title_label_->GetText() != title_str_) {
     title_label_->SetText(title_str_);
-    title_label_->SetEnabledColorId(kTitleColorId);
+    title_label_->SetEnabledColor(kTitleColorId);
     NotifyTitleChanged(title_str_);
   }
 }

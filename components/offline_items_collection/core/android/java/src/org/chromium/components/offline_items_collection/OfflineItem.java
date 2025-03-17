@@ -4,6 +4,8 @@
 
 package org.chromium.components.offline_items_collection;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -15,6 +17,7 @@ import java.util.Objects;
  * For all member variable descriptions see the C++ class.
  * TODO(dtrainor): Investigate making all class members for this and the C++ counterpart const.
  */
+@NullMarked
 public class OfflineItem implements Cloneable {
     /**
      * This class is the Java counterpart to the C++ OfflineItemProgress
@@ -22,10 +25,10 @@ public class OfflineItem implements Cloneable {
      */
     public static class Progress {
         public final long value;
-        public final Long max;
+        public final @Nullable Long max;
         @OfflineItemProgressUnit public final int unit;
 
-        public Progress(long value, Long max, int unit) {
+        public Progress(long value, @Nullable Long max, int unit) {
             this.value = value;
             this.max = max;
             this.unit = unit;
@@ -65,11 +68,11 @@ public class OfflineItem implements Cloneable {
         }
     }
 
-    public ContentId id;
+    public @Nullable ContentId id;
 
     // Display metadata.
-    public String title;
-    public String description;
+    public @Nullable String title;
+    public @Nullable String description;
     @OfflineItemFilter public int filter;
     public boolean isTransient;
     public boolean isSuggested;
@@ -86,15 +89,15 @@ public class OfflineItem implements Cloneable {
     public long completionTimeMs;
     public long lastAccessedTimeMs;
     public boolean isOpenable;
-    public String filePath;
-    public String mimeType;
+    public @Nullable String filePath;
+    public @Nullable String mimeType;
 
     // Request Metadata.
-    public GURL url;
-    public GURL originalUrl;
+    public @Nullable GURL url;
+    public @Nullable GURL originalUrl;
     public boolean isOffTheRecord;
-    public String otrProfileId;
-    public GURL referrerUrl;
+    public @Nullable String otrProfileId;
+    public @Nullable GURL referrerUrl;
     public boolean hasUserGesture;
 
     // In Progress Metadata.
@@ -102,7 +105,7 @@ public class OfflineItem implements Cloneable {
     public boolean isResumable;
     public boolean allowMetered;
     public long receivedBytes;
-    public Progress progress;
+    public @Nullable Progress progress;
     public long timeRemainingMs;
     public boolean isDangerous;
     @FailState public int failState;

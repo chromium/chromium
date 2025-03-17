@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
@@ -18,7 +19,6 @@
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -218,7 +218,7 @@ bool IsValid(int budget,
     return false;
   }
 
-  return base::ranges::all_of(data, [&](const auto& p) {
+  return std::ranges::all_of(data, [&](const auto& p) {
     return IsValueInRange(p.second.value(), budget);
   });
 }

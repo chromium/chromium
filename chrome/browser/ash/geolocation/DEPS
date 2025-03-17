@@ -20,3 +20,10 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "system_geolocation_source_browsertest\.cc": [
+    "+chrome/browser/ash/login",
+    "+chrome/browser/ui/ash/login",
+  ]
+}

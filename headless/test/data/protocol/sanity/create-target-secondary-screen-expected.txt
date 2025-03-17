@@ -1,0 +1,2 @@
+Tests Target.createTarget() on a secodnary screen.
+Screen: #2

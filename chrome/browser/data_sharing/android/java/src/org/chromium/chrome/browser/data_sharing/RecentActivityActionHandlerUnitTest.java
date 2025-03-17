@@ -76,10 +76,10 @@ public class RecentActivityActionHandlerUnitTest {
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getRootIdFromStableId(TOKEN_1)).thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TOKEN_1)).thenReturn(ROOT_ID_1);
         List<Tab> relatedTabs = new ArrayList<>();
         relatedTabs.add(mTab1);
-        when(mTabGroupModelFilter.getStableIdFromRootId(ROOT_ID_1)).thenReturn(TOKEN_1);
+        when(mTabGroupModelFilter.getTabGroupIdFromRootId(ROOT_ID_1)).thenReturn(TOKEN_1);
         when(mTabGroupModelFilter.getRelatedTabList(ROOT_ID_1)).thenReturn(relatedTabs);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
@@ -106,8 +106,7 @@ public class RecentActivityActionHandlerUnitTest {
     @Test
     public void testFocusTab() {
         mRecentActivityActionHandler.focusTab(TAB_ID_1);
-        verify(mTabModelSelector, times(1)).selectModel(false);
-        verify(mTabModel, times(1)).setIndex(eq(0), anyInt());
+        verify(mDataSharingTabGroupsDelegate, times(1)).hideTabSwitcherAndShowTab(eq(TAB_ID_1));
     }
 
     @Test

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Uuid as mojoBase_mojom_Uuid,} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
+
 import {MahiUntrustedPageCallbackRouter, MahiUntrustedServiceRemote, MantisUntrustedPageCallbackRouter, OcrUntrustedPageCallbackRouter, OcrUntrustedServiceRemote, UntrustedServiceFactory} from './media_app_ui_untrusted.mojom-webui.js';
 
 // Used to make calls on the remote OcrUntrustedService interface. Singleton
@@ -59,8 +61,9 @@ export async function isMantisAvailable() {
   return result;
 }
 
-export async function connectToMantisUntrustedService() {
+export async function connectToMantisUntrustedService(
+    dlcUuid: (mojoBase_mojom_Uuid|null)) {
   const {result} = await factoryRemote.createMantisUntrustedService(
-      mantisCallbackRouter.$.bindNewPipeAndPassRemote());
+      mantisCallbackRouter.$.bindNewPipeAndPassRemote(), dlcUuid);
   return result;
 }

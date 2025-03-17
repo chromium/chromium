@@ -7,22 +7,21 @@ package org.chromium.components.cached_flags;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A String-type {@link CachedFeatureParam}. */
+@NullMarked
 public class StringCachedFeatureParam extends CachedFeatureParam<String> {
-    private Supplier<String> mValueSupplier;
+    private @Nullable Supplier<String> mValueSupplier;
 
     public StringCachedFeatureParam(
-            FeatureMap featureMap,
-            String featureName,
-            String variationName,
-            @NonNull String defaultValue) {
+            FeatureMap featureMap, String featureName, String variationName, String defaultValue) {
         super(featureMap, featureName, variationName, FeatureParamType.STRING, defaultValue);
     }
 
@@ -33,7 +32,8 @@ public class StringCachedFeatureParam extends CachedFeatureParam<String> {
     public String getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        String testValue = FeatureList.getTestValueForFieldTrialParam(mFeatureName, mParamName);
+        String testValue =
+                FeatureOverrides.getTestValueForFieldTrialParam(mFeatureName, mParamName);
         if (testValue != null) {
             return testValue;
         }
@@ -71,16 +71,17 @@ public class StringCachedFeatureParam extends CachedFeatureParam<String> {
         editor.putString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
     }
 
+    @Override
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor, String value) {
+        editor.putString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
+    }
+
     /**
      * Forces the parameter to return a specific value for testing.
      *
      * @param overrideValue the value to be returned
-     * @deprecated use <code>@EnableFeatures("Feature:param/value")</code> instead.
      */
-    @Deprecated
     public void setForTesting(String overrideValue) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(this, overrideValue);
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
+        FeatureOverrides.overrideParam(getFeatureName(), getName(), overrideValue);
     }
 }

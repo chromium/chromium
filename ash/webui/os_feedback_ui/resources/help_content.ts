@@ -16,9 +16,10 @@ import {strictQuery} from '//resources/ash/common/typescript_utils/strict_query.
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchResult} from './feedback_types.js';
+import type {SearchResult} from './feedback_types.js';
 import {getTemplate} from './help_content.html.js';
-import {HelpContent, HelpContentType} from './os_feedback_ui.mojom-webui.js';
+import type {HelpContent} from './os_feedback_ui.mojom-webui.js';
+import {HelpContentType} from './os_feedback_ui.mojom-webui.js';
 
 /** The host of trusted parent page. */
 export const OS_FEEDBACK_TRUSTED_ORIGIN = 'chrome://os-feedback';

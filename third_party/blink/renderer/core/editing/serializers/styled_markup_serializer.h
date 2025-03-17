@@ -40,6 +40,8 @@
 
 namespace blink {
 
+template <typename... ElementTypes>
+inline Node* FirstAncestorOfTypes(const Node& current);
 template <typename Strategy>
 class StyledMarkupSerializer final {
   STACK_ALLOCATED();
@@ -56,6 +58,8 @@ class StyledMarkupSerializer final {
   bool ShouldAnnotate() const {
     return options_.ShouldAnnotateForInterchange();
   }
+
+  bool DetermineParentTagAndUpdateLastClosed(Node* first_node, Node* past_end);
 
   const PositionTemplate<Strategy> start_;
   const PositionTemplate<Strategy> end_;

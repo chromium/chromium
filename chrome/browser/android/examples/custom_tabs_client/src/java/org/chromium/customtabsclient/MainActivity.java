@@ -66,6 +66,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -1128,10 +1129,21 @@ public class MainActivity extends AppCompatActivity
         if (!TextUtils.isEmpty(mToolbarColor)) {
             builder.setToolbarColor(Color.parseColor(mToolbarColor));
         }
+        int closeButton = mCloseButtonIcon.getCheckedButtonId();
+        @DrawableRes int closeIconId;
+        if (closeButton == R.id.check_button) {
+            closeIconId = R.drawable.baseline_check_white;
+        } else if (closeButton == R.id.back_button) {
+            closeIconId = R.drawable.ic_arrow_back;
+        } else {
+            closeIconId = R.drawable.baseline_close_white;
+        }
+        Bitmap closeIcon = BitmapFactory.decodeResource(getResources(), closeIconId);
         AuthTabIntent authIntent =
                 new AuthTabIntent.Builder()
                         .setColorScheme(colorScheme)
                         .setDefaultColorSchemeParams(builder.build())
+                        .setCloseButtonIcon(closeIcon)
                         .build();
         authIntent.intent.setPackage(mPackageNameToBind);
         String scheme = ((EditText) findViewById(R.id.custom_scheme)).getText().toString();

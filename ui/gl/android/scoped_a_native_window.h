@@ -40,7 +40,10 @@ class GL_EXPORT ScopedANativeWindow {
 
   void DestroyIfNeeded();
 
-  // RAW_PTR_EXCLUSION: #global-scope
+  // RAW_PTR_EXCLUSION: This pointer is managed by the android API, and is to
+  // a reference-counted object. It can't dangle because the ref counting
+  // enforces that it isn't freed until the pointer is released, and we null
+  // it immediately afterwards.
   RAW_PTR_EXCLUSION ANativeWindow* a_native_window_ = nullptr;
 };
 

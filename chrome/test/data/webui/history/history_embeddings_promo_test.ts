@@ -8,7 +8,7 @@ import {HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY, HISTORY_EMBEDDINGS_PROMO_SHO
 import type {HistoryEmbeddingsPromoElement} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HistoryEmbeddingsPromoTest', function() {
   let element: HistoryEmbeddingsPromoElement;
@@ -20,11 +20,12 @@ suite('HistoryEmbeddingsPromoTest', function() {
     document.body.appendChild(element);
   });
 
-  test('Dismisses', () => {
+  test('Dismisses', async () => {
     assertFalse(Boolean(
         window.localStorage.getItem(HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY)));
     assertTrue(isVisible(element.$.promo));
     element.$.close.click();
+    await microtasksFinished();
     assertFalse(isVisible(element.$.promo));
     assertTrue(Boolean(
         window.localStorage.getItem(HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY)));
@@ -45,6 +46,7 @@ suite('HistoryEmbeddingsPromoTest', function() {
     document.body.appendChild(newPromo);
     assertTrue(isVisible(newPromo.$.promo));
     newPromo.$.close.click();
+    await microtasksFinished();
     assertFalse(isVisible(newPromo.$.promo));
     assertTrue(Boolean(window.localStorage.getItem(
         HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY)));

@@ -11,6 +11,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "pdf/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -21,10 +22,7 @@ namespace whats_new {
 using BrowserCommand = browser_command::mojom::Command;
 
 namespace features {
-BASE_FEATURE(kSafetyAwareness,
-             "SafetyAwareness",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kSpark, "Spark", base::FEATURE_DISABLED_BY_DEFAULT);
+// Define local features here.
 }  // namespace features
 
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
@@ -45,23 +43,11 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
 #endif
 
   registry->RegisterModule(
-      WhatsNewModule(::features::kToolbarPinning, "corising@google.com",
-                     BrowserCommand::kShowCustomizeChromeToolbar));
-
-  registry->RegisterModule(
-      WhatsNewModule(performance_manager::features::kPerformanceInterventionUI,
-                     "agale@google.com"));
+      WhatsNewModule(::features::kReadAnythingReadAloud, "trewin@google.com"));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   // Register editions here.
-  // 130
-  registry->RegisterEdition(
-      WhatsNewEdition(features::kSafetyAwareness, "mickeyburks@google.com"));
-
-  // 131
-  registry->RegisterEdition(
-      WhatsNewEdition(features::kSpark, "mickeyburks@google.com"));
 }
 
 std::unique_ptr<WhatsNewRegistry> CreateWhatsNewRegistry() {

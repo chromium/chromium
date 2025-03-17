@@ -12,6 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 
 namespace visited_url_ranking {
 
@@ -133,6 +134,12 @@ class VisitedURLRankingService : public KeyedService {
       ScoredURLUserAction action,
       const std::string& visit_id,
       segmentation_platform::TrainingRequestId visit_request_id) = 0;
+
+  // Sets additional transformers for fetching visits and data. Does not replace
+  // an existing transformer of same type.
+  virtual void RegisterTransformer(
+      URLVisitAggregatesTransformType type,
+      std::unique_ptr<URLVisitAggregatesTransformer> transformer) = 0;
 };
 
 }  // namespace visited_url_ranking

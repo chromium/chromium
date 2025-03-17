@@ -54,7 +54,7 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
           AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES);
     }
 
-    if (new_mode_flags & AXMode::kScreenReader) {
+    if (new_mode_flags & AXMode::kExtendedProperties) {
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
     }
@@ -85,9 +85,9 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
   }
 
   // Record forms control flag transitioning from unset to set.
-  int new_experimental_mode_flags =
-      mode.experimental_flags() & (~previous_mode.experimental_flags());
-  if (new_experimental_mode_flags & AXMode::kExperimentalFormControls) {
+  int new_filter_mode_flags =
+      mode.filter_flags() & (~previous_mode.filter_flags());
+  if (new_filter_mode_flags & AXMode::kFormsAndLabelsOnly) {
     switch (prefix) {
       case AXHistogramPrefix::kNone:
         base::UmaHistogramBoolean(

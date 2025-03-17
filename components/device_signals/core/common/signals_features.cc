@@ -10,43 +10,24 @@ BASE_FEATURE(kAllowClientCertificateReportingForUsers,
              "AllowClientCertificateReportingForUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewEvSignalsEnabled,
-             "NewEvSignalsEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables the addition of device signals fields to Profile-level Chrome
+// Reports.
+BASE_FEATURE(kProfileSignalsReportingEnabled,
+             "ProfileSignalsReportingEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kDisableFileSystemInfo{
-    &kNewEvSignalsEnabled, "DisableFileSystemInfo", false};
-const base::FeatureParam<bool> kDisableSettings{&kNewEvSignalsEnabled,
-                                                "DisableSettings", false};
-const base::FeatureParam<bool> kDisableAntiVirus{&kNewEvSignalsEnabled,
-                                                 "DisableAntiVirus", false};
-const base::FeatureParam<bool> kDisableHotfix{&kNewEvSignalsEnabled,
-                                              "DisableHotfix", false};
+// Enables the addition of device signals fields to Browser-level Chrome
+// Reports.
+BASE_FEATURE(kBrowserSignalsReportingEnabled,
+             "BrowserSignalsReportingEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
-  // AntiVirus and Hotfix are considered "Launched". So only rely on the value
-  // of the kill-switch to control the feature's behavior.
-  bool disable_function = false;
-  switch (new_ev_function) {
-    case NewEvFunction::kFileSystemInfo:
-      disable_function = kDisableFileSystemInfo.Get();
-      break;
-    case NewEvFunction::kSettings:
-      disable_function = kDisableSettings.Get();
-      break;
-    case NewEvFunction::kAntiVirus:
-      disable_function = kDisableAntiVirus.Get();
-      break;
-    case NewEvFunction::kHotfix:
-      disable_function = kDisableHotfix.Get();
-      break;
-  }
+bool IsProfileSignalsReportingEnabled() {
+  return base::FeatureList::IsEnabled(kProfileSignalsReportingEnabled);
+}
 
-  if (!base::FeatureList::IsEnabled(kNewEvSignalsEnabled)) {
-    return false;
-  }
-
-  return !disable_function;
+bool IsBrowserSignalsReportingEnabled() {
+  return base::FeatureList::IsEnabled(kBrowserSignalsReportingEnabled);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
@@ -67,13 +48,5 @@ bool IsConsentDialogEnabled() {
 BASE_FEATURE(kNewEvSignalsUnaffiliatedEnabled,
              "NewEvSignalsUnaffiliatedEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClearClientCertsOnExtensionReport,
-             "ClearClientCertsOnExtensionReport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsClearClientCertsOnExtensionReportEnabled() {
-  return base::FeatureList::IsEnabled(kClearClientCertsOnExtensionReport);
-}
 
 }  // namespace enterprise_signals::features

@@ -698,7 +698,7 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.application, URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME);
 
         assertNotNull(resolveInfo);
-        assertEquals(resolveInfo.activityInfo.packageName, WEBAPK_PACKAGE_NAME);
+        assertEquals(WEBAPK_PACKAGE_NAME, resolveInfo.activityInfo.packageName);
     }
 
     @Test

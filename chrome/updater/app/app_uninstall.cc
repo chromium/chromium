@@ -65,7 +65,7 @@ std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope) {
 
         // Skip if the folder is not named as a valid version. All updater
         // version directories are named as valid versions.
-        if (!base::Version(version_folder_path.BaseName().MaybeAsASCII())
+        if (!base::Version(version_folder_path.BaseName().AsUTF8Unsafe())
                  .IsValid()) {
           return;
         }
@@ -230,7 +230,7 @@ void AppUninstall::UninstallAll(int reason) {
   update_client::UpdateClientFactory(config_)->SendPing(
       uninstall_data,
       {.event_type = update_client::protocol_request::kEventUninstall,
-       .result = 1,
+       .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
        .extra_code1 = reason},
       base::BindOnce(

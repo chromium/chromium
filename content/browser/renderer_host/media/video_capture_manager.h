@@ -323,7 +323,9 @@ class CONTENT_EXPORT VideoCaptureManager
       scoped_refptr<VideoCaptureController> controller,
       const media::VideoCaptureParams& params,
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor);
+          video_effects_processor,
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_video_effects_manager);
   void DoStopDevice(VideoCaptureController* controller);
   void ProcessDeviceStartRequestQueue();
 

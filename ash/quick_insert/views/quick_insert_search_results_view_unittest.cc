@@ -39,7 +39,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
@@ -53,6 +53,7 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Not;
@@ -92,7 +93,9 @@ auto MatchesResultSection(QuickInsertSectionType section_type, int num_items) {
       Property(
           &QuickInsertSectionView::title_label_for_testing,
           Property(&views::Label::GetText,
-                   GetSectionTitleForQuickInsertSectionType(section_type))),
+                   // NOTE: Eq() here serves to store the underlying
+                   // std::u16string and prevent it from dangling.
+                   Eq(GetSectionTitleForQuickInsertSectionType(section_type)))),
       Property(&QuickInsertSectionView::item_views_for_testing,
                SizeIs(num_items)));
 }
@@ -104,7 +107,9 @@ auto MatchesResultSectionWithOneItem(QuickInsertSectionType section_type,
       Property(
           &QuickInsertSectionView::title_label_for_testing,
           Property(&views::Label::GetText,
-                   GetSectionTitleForQuickInsertSectionType(section_type))),
+                   // NOTE: Eq() here serves to store the underlying
+                   // std::u16string and prevent it from dangling.
+                   Eq(GetSectionTitleForQuickInsertSectionType(section_type)))),
       Property(&QuickInsertSectionView::item_views_for_testing,
                ElementsAre(item_matcher)));
 }
@@ -673,7 +678,7 @@ TEST_F(QuickInsertSearchResultsViewTest,
           &mock_delegate, kQuickInsertWidth, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->AppendSearchResults(QuickInsertSearchResultsSection(
       QuickInsertSectionType::kNone, {}, /*has_more_results=*/false));
   view->SearchStopped(/*illustration=*/{}, u"");
@@ -693,7 +698,7 @@ TEST_F(QuickInsertSearchResultsViewTest,
           &mock_delegate, kQuickInsertWidth, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_TRUE(view->SearchStopped(/*illustration=*/{}, u""));
 
   EXPECT_EQ(view->GetAccessibleName(),
@@ -713,7 +718,7 @@ TEST_F(QuickInsertSearchResultsViewTest,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
   view->SetNumEmojiResultsForA11y(5);
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_TRUE(view->SearchStopped(/*illustration=*/{}, u""));
 
   EXPECT_EQ(view->GetAccessibleName(), u"5 emojis. No other results.");
@@ -731,7 +736,7 @@ TEST_F(QuickInsertSearchResultsViewTest,
           &mock_delegate, kQuickInsertWidth, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->SearchStopped(/*illustration=*/{}, u"");
   view->SearchStopped(/*illustration=*/{}, u"");
 
@@ -751,7 +756,7 @@ TEST_F(QuickInsertSearchResultsViewTest,
           &mock_delegate, kQuickInsertWidth, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->SearchStopped(/*illustration=*/{}, u"");
   view->AppendSearchResults(QuickInsertSearchResultsSection(
       QuickInsertSectionType::kNone, {}, /*has_more_results=*/false));
@@ -773,7 +778,7 @@ TEST_F(QuickInsertSearchResultsViewTest, ClearingSearchResultsDoesNotAnnounce) {
           &mock_delegate, kQuickInsertWidth, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   view->ClearSearchResults();
 
   EXPECT_EQ(view->GetAccessibleName(), u"");

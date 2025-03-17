@@ -17,8 +17,8 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "remoting/base/corp_service_client.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/setup/buildflags.h"
 #include "remoting/host/setup/host_starter.h"
@@ -32,8 +32,9 @@ namespace {
 // A helper class which provisions a corp machine for Chrome Remote Desktop.
 class CorpHostStarter : public HostStarterBase {
  public:
-  explicit CorpHostStarter(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  CorpHostStarter(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store);
 
   CorpHostStarter(const CorpHostStarter&) = delete;
   CorpHostStarter& operator=(const CorpHostStarter&) = delete;
@@ -41,8 +42,7 @@ class CorpHostStarter : public HostStarterBase {
   ~CorpHostStarter() override;
 
   // HostStarterBase implementation.
-  void RegisterNewHost(const std::string& public_key,
-                       std::optional<std::string> access_token) override;
+  void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
   void ApplyConfigValues(base::Value::Dict& config) override;
   void ReportError(const std::string& error_message,
@@ -50,7 +50,7 @@ class CorpHostStarter : public HostStarterBase {
 
   // CorpServiceClient callback.
   void OnProvisionCorpMachineResponse(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::ProvisionCorpMachineResponse> response);
 
  private:
@@ -62,29 +62,29 @@ class CorpHostStarter : public HostStarterBase {
 };
 
 CorpHostStarter::CorpHostStarter(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store)
     : HostStarterBase(url_loader_factory),
-      corp_service_client_(std::make_unique<CorpServiceClient>(
-          url_loader_factory)) {}
+      corp_service_client_(
+          std::make_unique<CorpServiceClient>(url_loader_factory,
+                                              std::move(client_cert_store))) {}
 
 CorpHostStarter::~CorpHostStarter() = default;
 
-void CorpHostStarter::RegisterNewHost(const std::string& public_key,
-                                      std::optional<std::string> access_token) {
+void CorpHostStarter::RegisterNewHost(std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // We don't expect |access_token| to be populated for this flow but
-  // |public_key| is required.
-  DCHECK(!public_key.empty());
+  // We don't expect |access_token| to be populated for this flow.
   DCHECK(!access_token.has_value());
 
   corp_service_client_->ProvisionCorpMachine(
-      params().username, params().name, public_key, existing_host_id(),
+      params().username, params().name, key_pair().GetPublicKey(),
+      existing_host_id(),
       base::BindOnce(&CorpHostStarter::OnProvisionCorpMachineResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CorpHostStarter::OnProvisionCorpMachineResponse(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::ProvisionCorpMachineResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -126,8 +126,8 @@ void CorpHostStarter::ReportError(const std::string& message,
   corp_service_client_->ReportProvisioningError(
       host_id, message,
       base::BindOnce(
-          [](base::OnceClosure on_error_reported,
-             const ProtobufHttpStatus& status, std::unique_ptr<Empty>) {
+          [](base::OnceClosure on_error_reported, const HttpStatus& status,
+             std::unique_ptr<Empty>) {
             if (!status.ok()) {
               LOG(ERROR) << "Failed to report provisioning error: "
                          << static_cast<int>(status.error_code());
@@ -140,8 +140,10 @@ void CorpHostStarter::ReportError(const std::string& message,
 }  // namespace
 
 std::unique_ptr<HostStarter> ProvisionCorpMachine(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<CorpHostStarter>(url_loader_factory);
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store) {
+  return std::make_unique<CorpHostStarter>(url_loader_factory,
+                                           std::move(client_cert_store));
 }
 
 }  // namespace remoting

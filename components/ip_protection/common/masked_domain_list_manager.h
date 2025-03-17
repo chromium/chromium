@@ -5,20 +5,27 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
+#include "base/files/file.h"
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/base/scheme_host_port_matcher.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom-forward.h"
+#include "services/network/public/mojom/proxy_config.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace ip_protection {
+
+class MaskedDomainList;
 
 // Class MaskedDomainListManager is a pseudo-singleton owned by the
 // NetworkService. It uses the MaskedDomainList to generate the
@@ -30,9 +37,6 @@ class MaskedDomainListManager {
       network::mojom::IpProtectionProxyBypassPolicy);
   ~MaskedDomainListManager();
   MaskedDomainListManager(const MaskedDomainListManager&);
-
-  static MaskedDomainListManager CreateForTesting(
-      const std::map<std::string, std::set<std::string>>& first_party_map);
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
@@ -53,37 +57,30 @@ class MaskedDomainListManager {
   // eligible for the proxy.
   // TODO(crbug.com/354649091): Public Suffix List domains and subdomains
   // proxy 1st party requests because no same-origin check is performed.
-  bool Matches(
-      const GURL& request_url,
-      const net::NetworkAnonymizationKey& network_anonymization_key) const;
+  bool Matches(const GURL& request_url,
+               const net::NetworkAnonymizationKey& network_anonymization_key,
+               MdlType mdl_type) const;
 
   // Use the Masked Domain List and exclusion list to generate the allow list
   // and the 1P bypass rules.
   void UpdateMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl,
                               const std::vector<std::string>& exclusion_list);
+  void UpdateMaskedDomainListFlatbuffer(base::File default_file,
+                                        uint64_t default_file_size,
+                                        base::File regular_browsing_file,
+                                        uint64_t regular_browsing_file_size);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListManagerBaseTest,
-                           ExclusionSetDomainsRemovedFromMDL);
-
-  // Removes domains from the MDL which are either part of the exclusion list
-  // themselves or are subdomains of an entry in the exclusion list.
-  // Returns MDL after removing such domains.
-  std::set<std::string> ExcludeDomainsFromMDL(
-      const std::set<std::string>& mdl_domains,
-      const std::set<std::string>& excluded_domains);
-
-  // Determines whether or not the resource URL matches any URL listed in the
-  // public suffix list.
-  bool MatchesPublicSuffixList(const GURL& resource_url) const;
-
-  // Add domains to the `public_suffix_list_matcher_`.
-  void AddPublicSuffixListRules(const std::set<std::string>& domains);
+  void RecordCreationTime();
 
   // Sanitizes the given URL by removing a trailing dot from its host if
   // present. Returns a reference to either the modified sanitized URL or the
   // original URL if no changes were made.
   const GURL& SanitizeURLIfNeeded(const GURL& url, GURL& sanitized_url) const;
+
+  // The MDLs, for each MdlType.
+  std::unique_ptr<MaskedDomainList> default_mdl_;
+  std::unique_ptr<MaskedDomainList> regular_browsing_mdl_;
 
   // Policy that determines which domains are bypassed from IP Protection.
   network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
@@ -91,11 +88,8 @@ class MaskedDomainListManager {
   // Contains match rules from the Masked Domain List.
   UrlMatcherWithBypass url_matcher_with_bypass_;
 
-  // Matcher which matches against the public suffix list domains.
-  net::SchemeHostPortMatcher public_suffix_list_matcher_;
-
   // If UpdateMaskedDomainList has not yet been called, stores the time at which
-  // the manager was created. The first call to UpdateMaskedDomainList clears
+  // the manager was created. The first call to `RecordCreationTime` clears
   // this to nullopt on entry.
   std::optional<base::TimeTicks> creation_time_for_mdl_update_metric_;
 };

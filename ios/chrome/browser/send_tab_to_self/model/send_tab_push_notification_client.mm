@@ -97,13 +97,13 @@ void SendTabPushNotificationClient::OnURLLoadedInNewTab(std::string guid,
         AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+    const GaiaId gaiaID(identity.gaiaID);
     if (!push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kSendTab, gaiaID)) {
       PushNotificationService* service =
           GetApplicationContext()->GetPushNotificationService();
-      service->SetPreference(base::SysUTF8ToNSString(gaiaID),
+      service->SetPreference(gaiaID.ToNSString(),
                              PushNotificationClientId::kSendTab, true);
     }
   }

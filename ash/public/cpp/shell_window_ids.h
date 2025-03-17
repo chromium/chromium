@@ -146,8 +146,9 @@ enum ShellWindowId {
   // The container for menus.
   kShellWindowId_MenuContainer,
 
-  // The container for the search results panel, which is stacked above the
-  // Capture Mode shield layer and UI while Capture Mode is in session.
+  // The container for the search results panel and related dialogs, which are
+  // stacked above the Capture Mode shield layer and UI while Capture Mode is in
+  // session.
   kShellWindowId_CaptureModeSearchResultsPanel,
 
   // The container for drag/drop images, tooltips and widgets that are tagged

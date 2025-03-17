@@ -142,29 +142,18 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
           tab_lifecycle_unit_external->GetWebContents();
 
       info->tab_url = contents->GetLastCommittedURL().spec();
-      info->title = base::UTF16ToUTF8(lifecycle_unit->GetTitle());
-      info->visibility =
-          GetLifecycleUnitVisibility(lifecycle_unit->GetVisibility());
+      info->title = base::UTF16ToUTF8(contents->GetTitle());
+      info->visibility = GetLifecycleUnitVisibility(contents->GetVisibility());
       info->loading_state = lifecycle_unit->GetLoadingState();
       info->state = lifecycle_unit->GetState();
-      resource_coordinator::DecisionDetails discard_details;
-      info->can_discard = lifecycle_unit->CanDiscard(
-          ::mojom::LifecycleUnitDiscardReason::PROACTIVE, &discard_details);
-      info->cannot_discard_reasons = discard_details.GetFailureReasonStrings();
 
-      // When the "RunPerformanceManagerOnMainThreadSync" feature is enabled,
-      // the Performance Manager runs on the main thread and it is valid to call
-      // `performance_manager::freezing::GetCannotFreezeReasonsForPageNode`
-      // synchronously from here to get freezing info.
-      //
-      // Since the "RunPerformanceManagerOnMainThreadSync" feature will be
-      // enabled everywhere in the near term, no effort is made to provide
-      // freezing info when the feature is disabled.
-      base::WeakPtr<performance_manager::PageNode> page_node;
-      if (base::FeatureList::IsEnabled(
-              performance_manager::features::kRunOnMainThreadSync) &&
-          (page_node = performance_manager::PerformanceManager::
-               GetPrimaryPageNodeForWebContents(contents))) {
+      base::WeakPtr<performance_manager::PageNode> page_node =
+          performance_manager::PerformanceManager::
+              GetPrimaryPageNodeForWebContents(contents);
+      if (page_node) {
+        info->cannot_discard_reasons = performance_manager::user_tuning::
+            GetCannotDiscardReasonsForPageNode(page_node.get());
+        info->can_discard = info->cannot_discard_reasons.empty();
         info->cannot_freeze_reasons = base::ToVector(
             performance_manager::freezing::GetCannotFreezeReasonsForPageNode(
                 page_node.get()));
@@ -172,6 +161,7 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
                                ? discards::mojom::CanFreeze::YES
                                : discards::mojom::CanFreeze::NO;
       } else {
+        info->can_discard = false;
         info->can_freeze = discards::mojom::CanFreeze::UNKNOWN;
       }
 
@@ -222,26 +212,20 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
                    DiscardByIdCallback callback) override {
     auto* lifecycle_unit = GetLifecycleUnitById(id);
     if (lifecycle_unit) {
-      // Callback to do the discard with the memory estimate.
-      auto discard_callback = base::BindOnce(
-          [](int32_t id, mojom::LifecycleUnitDiscardReason reason,
-             DiscardByIdCallback post_discard_callback,
-             uint64_t memory_estimate) {
-            // Look up lifecycle_unit by id again, in case it's deleted while
-            // waiting.
-            auto* lifecycle_unit = GetLifecycleUnitById(id);
-            if (lifecycle_unit) {
-              lifecycle_unit->Discard(reason, memory_estimate);
-            }
-            std::move(post_discard_callback).Run();
-          },
-          id, reason, std::move(callback));
+      content::WebContents* web_contents =
+          lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents();
+      CHECK(web_contents);
 
-      performance_manager::user_tuning::
-          GetDiscardedMemoryEstimateForWebContents(
-              lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
-              std::move(discard_callback));
+      base::WeakPtr<performance_manager::PageNode> page_node =
+          performance_manager::PerformanceManager::
+              GetPrimaryPageNodeForWebContents(web_contents);
+      CHECK(page_node);
+
+      performance_manager::user_tuning::DiscardPage(
+          page_node.get(), reason,
+          /*ignore_minimum_time_in_background=*/true);
     }
+    std::move(callback).Run();
   }
 
   void FreezeById(int32_t id) override {
@@ -262,9 +246,9 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   }
 
   void Discard(DiscardCallback callback) override {
-    resource_coordinator::TabManager* tab_manager =
-        g_browser_process->GetTabManager();
-    tab_manager->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
+    performance_manager::user_tuning::DiscardAnyPage(
+        mojom::LifecycleUnitDiscardReason::URGENT,
+        /*ignore_minimum_time_in_background=*/true);
     std::move(callback).Run();
   }
 
@@ -328,9 +312,9 @@ void DiscardsUI::BindInterface(
     mojo::PendingReceiver<discards::mojom::SiteDataProvider> receiver) {
   if (performance_manager::PerformanceManager::IsAvailable()) {
     // Forward the interface receiver directly to the service.
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(&SiteDataProviderImpl::CreateAndBind,
-                                  std::move(receiver), profile_id_));
+    SiteDataProviderImpl::CreateAndBind(
+        std::move(receiver), profile_id_,
+        performance_manager::PerformanceManager::GetGraph());
   }
 }
 
@@ -338,8 +322,8 @@ void DiscardsUI::BindInterface(
     mojo::PendingReceiver<discards::mojom::GraphDump> receiver) {
   if (performance_manager::PerformanceManager::IsAvailable()) {
     // Forward the interface receiver directly to the service.
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(&DiscardsGraphDumpImpl::CreateAndBind,
-                                  std::move(receiver)));
+    DiscardsGraphDumpImpl::CreateAndBind(
+        std::move(receiver),
+        performance_manager::PerformanceManager::GetGraph());
   }
 }

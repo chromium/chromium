@@ -5,12 +5,66 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/application_mode_fetcher/application_mode_fetcher_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
+
+namespace {
+
+// This enum is used for Histogram. Items should not be removed or reordered and
+// this enum should be kept synced with `IOSAppModeFetchingOutcomeType` in
+// histograms.xml. The four states correspond to:
+// - APP_MODE_FETCHED_INCOGNITO: The application mode fetching response was
+// successful and the fetched app mode is incognito.
+// - APP_MODE_FETCHED_NON_INCOGNITO: The application mode fetching response was
+// successful and the fetched app mode is non-incognito.
+// - APP_MODE_FETCHED_FAILURE: The application mode fetching results in an error
+// (different from a time out error)
+// - APP_MODE_FETCHED_TIME_OUT: The application mode fetching results in a time
+// out error.
+enum class AppModeFetchingOutcomeType {
+  kIncognito,
+  kNonIncognito,
+  kFailure,
+  kTimeOut,
+  kMaxValue = kTimeOut
+};
+
+// Returns whether the application should be requested based on the id of the
+// app requesting the opening of an external link.
+bool ShouldRequestAppMode(NSString* app_id) {
+  if (IsYoutubeIncognitoTargetAllEnabled()) {
+    return true;
+  }
+  if (IsYoutubeIncognitoTargetFirstPartyEnabled()) {
+    return IsCallerAppFirstParty(app_id);
+  }
+  return IsCallerAppAllowListed(app_id);
+}
+
+// Returns a `ApplicationModeRequestStatus` based on the source `app_ID`, the
+// `ApplicationModeRequestStatus` and if the mode is forced or not.
+ApplicationModeRequestStatus ApplicationModeAvailability(
+    NSString* app_id,
+    ApplicationModeForTabOpening mode,
+    bool application_mode_forced) {
+  // The `ApplicationModeRequestStatus` is considered available if, either it
+  // can't be requested (based on the source app requesting the opening of the
+  // URL) or it is incognito forced.
+  if ((application_mode_forced &&
+       mode == ApplicationModeForTabOpening::INCOGNITO) ||
+      !ShouldRequestAppMode(app_id)) {
+    return ApplicationModeRequestStatus::kAvailable;
+  }
+  return ApplicationModeRequestStatus::kUnavailable;
+}
+
+}  // namespace
 
 @implementation AppStartupParameters {
   GURL _externalURL;
@@ -51,9 +105,7 @@
     _externalURL = externalURL;
     _completeURL = completeURL;
     _applicationMode = mode;
-    _applicationModeRequestStatus =
-        forceApplicationMode ? ApplicationModeRequestStatus::kAvailable
-                             : ApplicationModeRequestStatus::kUnavailable;
+    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
     _forceApplicationMode = forceApplicationMode;
   }
   return self;
@@ -71,8 +123,7 @@
     _sourceAppID = [sourceAppID copy];
     _applicationMode = mode;
     _applicationModeRequestStatus =
-        forceApplicationMode ? ApplicationModeRequestStatus::kAvailable
-                             : ApplicationModeRequestStatus::kUnavailable;
+        ApplicationModeAvailability(sourceAppID, mode, forceApplicationMode);
     _forceApplicationMode = forceApplicationMode;
   }
   return self;
@@ -220,14 +271,19 @@
       CHECK(!_pendingBlocks);
       _pendingBlocks = [[NSMutableArray alloc] init];
       [_pendingBlocks addObject:block];
+      _applicationModeRequestStatus = ApplicationModeRequestStatus::kRequested;
       __weak __typeof(self) weakSelf = self;
-      auto callback = base::BindOnce(
-          [](AppStartupParameters* startupParams, bool isAppSwitcherIncognito) {
-            [startupParams handleApplicationModeRequest:isAppSwitcherIncognito];
+      auto fetching_response = base::BindOnce(
+          [](AppStartupParameters* startupParams,
+             base::TimeTicks startFetchTime, bool isAppSwitcherIncognito,
+             NSError* error) {
+            [startupParams handleApplicationModeRequest:isAppSwitcherIncognito
+                                                  error:error
+                                         startFetchTime:startFetchTime];
           },
-          weakSelf);
+          weakSelf, base::TimeTicks::Now());
       ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
-                                          std::move(callback));
+                                          std::move(fetching_response));
       break;
     }
   }
@@ -254,16 +310,36 @@
   return _applicationMode;
 }
 
-- (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito {
+- (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito
+                               error:(NSError*)error
+                      startFetchTime:(base::TimeTicks)startFetchTime {
   _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+  AppModeFetchingOutcomeType outcome =
+      AppModeFetchingOutcomeType::kNonIncognito;
   if (isAppSwitcherIncognito) {
+    // When the `applicationMode` needs changing the error associated to the
+    // response must be nil.
+    CHECK(!error);
     _applicationMode = ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO;
+    outcome = AppModeFetchingOutcomeType::kIncognito;
+  } else {
+    if (error &&
+        !IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled()) {
+      _applicationMode =
+          ApplicationModeForTabOpening::APP_SWITCHER_UNDETERMINED;
+      outcome = [error.domain isEqualToString:@"AppSwitcherTimeoutError"]
+                    ? AppModeFetchingOutcomeType::kTimeOut
+                    : AppModeFetchingOutcomeType::kFailure;
+    }
   }
 
   for (AppModeRequestBlock block in _pendingBlocks) {
     block(_applicationMode);
   }
   _pendingBlocks = nil;
+  UMA_HISTOGRAM_ENUMERATION("IOS.AppModeFetching.Outcome", outcome);
+  UMA_HISTOGRAM_TIMES("IOS.AppModeFetching.Duration",
+                      base::TimeTicks::Now() - startFetchTime);
 }
 
 @end

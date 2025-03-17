@@ -7,9 +7,13 @@ package org.chromium.content.browser.accessibility;
 import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.LinkedList;
 
 /** Helper class for tracking accessibility actions and events for end-to-end tests. */
+@NullMarked
 public class AccessibilityActionAndEventTracker {
     private LinkedList<String> mEvents;
     private boolean mTestComplete;
@@ -26,7 +30,7 @@ public class AccessibilityActionAndEventTracker {
         }
     }
 
-    public void addAction(int action, Bundle arguments) {
+    public void addAction(int action, @Nullable Bundle arguments) {
         // In rare cases there may be a lingering action, so only add if the test is not complete.
         if (!mTestComplete) {
             mEvents.add(actionToString(action, arguments));
@@ -72,7 +76,7 @@ public class AccessibilityActionAndEventTracker {
      * @param arguments         Bundle arguments
      * @return                  String representation of the given action
      */
-    private String actionToString(int action, Bundle arguments) {
+    private String actionToString(int action, @Nullable Bundle arguments) {
         StringBuilder builder = new StringBuilder();
         builder.append(AccessibilityNodeInfoUtils.toString(action));
 
@@ -84,12 +88,8 @@ public class AccessibilityActionAndEventTracker {
             for (String key : arguments.keySet()) {
                 argsBuilder.append(" {");
                 argsBuilder.append(key);
-                // In case of null values, check what the key returns.
-                if (arguments.get(key) != null) {
-                    argsBuilder.append(arguments.get(key).toString());
-                } else {
-                    argsBuilder.append("null");
-                }
+                // In case of null values, use "null".
+                argsBuilder.append(arguments.get(key));
                 argsBuilder.append("},");
             }
             argsBuilder.append(" ]");
@@ -109,7 +109,7 @@ public class AccessibilityActionAndEventTracker {
      * @param event             AccessibilityEvent event to get a string for
      * @return                  String representation of the given event
      */
-    private static String eventToString(AccessibilityEvent event) {
+    private static @Nullable String eventToString(AccessibilityEvent event) {
         // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED with no
         // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag)
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED

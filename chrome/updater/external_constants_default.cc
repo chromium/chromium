@@ -48,7 +48,7 @@ class DefaultExternalConstants : public ExternalConstants {
     return crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
   }
 
-  base::Value::Dict GroupPolicies() const override {
+  base::Value::Dict DictPolicies() const override {
     return base::Value::Dict();
   }
 
@@ -59,8 +59,6 @@ class DefaultExternalConstants : public ExternalConstants {
   base::TimeDelta IdleCheckPeriod() const override { return base::Minutes(5); }
 
   std::optional<bool> IsMachineManaged() const override { return std::nullopt; }
-
-  bool EnableDiffUpdates() const override { return false; }
 
   base::TimeDelta CecaConnectionTimeout() const override {
     return kCecaConnectionTimeout;

@@ -1734,26 +1734,35 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
       *test::android::GetInMemoryContentUriFromCacheDirFilePath(file);
   FilePath content_uri_dir_in_memory =
       *test::android::GetInMemoryContentUriFromCacheDirFilePath(dir);
-  FilePath content_uri_dir_tree =
+  FilePath content_uri_document =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(file);
+  FilePath content_uri_document_tree =
       *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
 
   // GetInfo() should work the same for files and content-URIs.
   File::Info info;
   File::Info content_uri_info;
   File::Info content_uri_in_memory_info;
+  File::Info content_uri_document_info;
   EXPECT_TRUE(GetFileInfo(file, &info));
   EXPECT_TRUE(GetFileInfo(content_uri_file, &content_uri_info));
+  EXPECT_TRUE(GetFileInfo(content_uri_document, &content_uri_document_info));
   EXPECT_TRUE(
       GetFileInfo(content_uri_file_in_memory, &content_uri_in_memory_info));
   EXPECT_EQ(12u, info.size);
   EXPECT_EQ(12u, content_uri_info.size);
   EXPECT_EQ(12u, content_uri_in_memory_info.size);
+  EXPECT_EQ(12u, content_uri_document_info.size);
   EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
   // Java InMemory provider sets last-modified to unix epoch.
   EXPECT_EQ(content_uri_in_memory_info.last_modified, Time::FromTimeT(0));
+  // Java DocumentProvider only does resolution to seconds.
+  EXPECT_EQ(info.last_modified.ToTimeT(),
+            content_uri_document_info.last_modified.ToTimeT());
   EXPECT_FALSE(info.is_directory);
   EXPECT_FALSE(content_uri_info.is_directory);
   EXPECT_FALSE(content_uri_in_memory_info.is_directory);
+  EXPECT_FALSE(content_uri_document_info.is_directory);
 
   // GetInfo() should work the same for dirs and content-URIs.
   EXPECT_TRUE(GetFileInfo(dir, &info));
@@ -1762,12 +1771,15 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
   EXPECT_FALSE(
       GetFileInfo(content_uri_dir_in_memory, &content_uri_in_memory_info));
   File::Info content_uri_tree_info;
-  EXPECT_TRUE(GetFileInfo(content_uri_dir_tree, &content_uri_tree_info));
+  EXPECT_TRUE(GetFileInfo(content_uri_document_tree, &content_uri_tree_info));
   EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
   // Java uses FileEnumerator::FileInfo which only does resolution to seconds.
   EXPECT_EQ(info.last_modified.ToTimeT(),
             content_uri_tree_info.last_modified.ToTimeT());
   EXPECT_TRUE(info.is_directory);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(info.size, 0u);
+#endif
   EXPECT_TRUE(content_uri_info.is_directory);
   EXPECT_TRUE(content_uri_tree_info.is_directory);
 
@@ -3049,7 +3061,7 @@ TEST_F(FileUtilTest, FileToFILE) {
 
   stream = FileToFILE(std::move(file), "w");
   EXPECT_TRUE(stream);
-  EXPECT_FALSE(file.IsValid());
+  EXPECT_FALSE(file.IsValid());  // NOLINT(bugprone-use-after-move)
   EXPECT_TRUE(CloseFile(stream));
 }
 
@@ -4477,7 +4489,21 @@ TEST_F(FileUtilTest, NonExistentContentUriTest) {
   File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_FALSE(file.IsValid());
 }
-#endif
+
+// Validate crbug.com/398066589 where CreateDirectory() fails when a user does
+// not have stat() access to all subpaths.
+TEST_F(FileUtilTest, CreateDirectoryOnlyCheckMissingSubpaths) {
+  // Apps have access to the android external-storage-dir (e.g.
+  // /storage/emulated/0), but for security will usually not have access such as
+  // stat() to its parent. In tests, DIR_ANDROID_APP_DATA is subdir
+  // chromium_tests_root. The directory should always exist before this test
+  // runs, but even if not it should create ok even though stat() would fail on
+  // some of the subpaths.
+  FilePath dir = PathService::CheckedGet(DIR_ANDROID_APP_DATA);
+  EXPECT_TRUE(CreateDirectory(dir));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     defined(ARCH_CPU_32_BITS)

@@ -5,8 +5,10 @@
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "base/time/time.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
@@ -24,12 +26,18 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/android/window_android.h"
+#include "ui/base/prediction/linear_resampling.h"
+#include "ui/base/prediction/one_euro_filter.h"
 #include "ui/display/screen.h"
 #include "ui/events/back_gesture_event.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -48,8 +56,39 @@ using AnimationAbortReason =
 
 static constexpr char kAnimationAbortedReason[] =
     "Navigation.GestureTransition.AnimationAbortReason";
+static constexpr char kNewCommitInPrimaryMainFrame[] =
+    "Navigation.GestureTransition.NewCommitInPrimaryMainFrame";
+static constexpr char kNewCommitWhileDisplayingCanceledAnimation[] =
+    "Navigation.GestureTransition.NewCommitWhileDisplayingCanceledAnimation";
+static constexpr char kNewCommitWhileDisplayingCrossFadeAnimation[] =
+    "Navigation.GestureTransition.NewCommitWhileDisplayingCrossFadeAnimation";
+static constexpr char kNewCommitWhileWaitingForNewRendererToDraw[] =
+    "Navigation.GestureTransition.NewCommitWhileWaitingForNewRendererToDraw";
+
+// Indicates the type of the scheme of the navigation request.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(NavigationRequestSchemeType)
+enum class NavigationRequestSchemeType {
+  kOther = 0,
+  kChrome = 1,
+  kChromeNative = 2,
+
+  kMaxValue = kChromeNative,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationRequestSchemeType)
 
 static constexpr base::TimeDelta kDismissScreenshotAfter = base::Seconds(4);
+
+static constexpr double kOneEuroFilterMincutoff =
+    ui::OneEuroFilter::kDefaultMincutoff;
+// Beta is in a different scale than the default because the filter for the
+// animator deals with small values (0 to 1.0).
+static constexpr double kOneEuroFilterBeta =
+    ui::OneEuroFilter::kDefaultBeta * 100.;
 
 void ResetTransformForLayer(cc::slim::Layer* layer) {
   CHECK(layer);
@@ -93,6 +132,16 @@ bool ShouldUseFallbackScreenshot(
                                 CacheHitOrMissReason::kCacheMissColdStart));
 
   return use_fallback_screenshot;
+}
+
+NavigationRequestSchemeType GetNavigationRequestSchemeType(
+    NavigationRequest* request) {
+  if (request->GetURL().SchemeIs(content::kChromeNativeScheme)) {
+    return NavigationRequestSchemeType::kChromeNative;
+  } else if (request->GetURL().SchemeIs(content::kChromeUIScheme)) {
+    return NavigationRequestSchemeType::kChrome;
+  }
+  return NavigationRequestSchemeType::kOther;
 }
 
 const char* IgnoringInputReasonToString(IgnoringInputReason reason) {
@@ -271,6 +320,13 @@ constexpr static float kRRectRadiusDip = 20.f;
 // Relative position of the favicon with respect to the rounded rectangle.
 constexpr static int kFaviconPosDip = 16;
 
+// Returns true for an internal url.
+bool IsInternalScheme(const GURL& url) {
+  ContentBrowserClient* content_browser_client = GetContentClient()->browser();
+  return url.SchemeIs(kChromeUIScheme) ||
+         content_browser_client->IsInternalScheme(url);
+}
+
 static constexpr LinearModelConfig<float, 4u> kRRectOpacityModel{
     .target_property = TargetProperty::kFaviconOpacity,
     // The opacity is 0.f until 25% progress, and reaches 1.f at 50% progress.
@@ -425,7 +481,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     WebContentsViewAndroid* web_contents_view_android,
     NavigationControllerImpl* controller,
-    const ui::BackGestureEvent& gesture,
+    const ui::BackGestureEvent& first_gesture,
     NavigationDirection nav_direction,
     SwipeEdge initiating_edge,
     NavigationEntryImpl* destination_entry,
@@ -443,7 +499,9 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
                                ->GetDipScale()),
       physics_model_(GetViewportWidthPx(),
                      web_contents_view_android->GetNativeView()->GetDipScale()),
-      latest_progress_gesture_(gesture) {
+      input_predictor_(std::make_unique<ui::LinearResampling>()),
+      input_filter_(std::make_unique<ui::OneEuroFilter>(kOneEuroFilterMincutoff,
+                                                        kOneEuroFilterBeta)) {
   if (ShouldUseFallbackScreenshot(animation_manager_, destination_entry)) {
     fallback_ux_ = {
         .color_config = animation_manager_->web_contents_view_android()
@@ -455,7 +513,7 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     };
   }
   state_ = State::kStarted;
-  SetupForScreenshotPreview(std::move(embedder_content));
+  SetupForScreenshotPreview(std::move(embedder_content), first_gesture);
   ProcessState();
 }
 
@@ -469,18 +527,17 @@ void BackForwardTransitionAnimator::OnGestureProgressed(
   // swiped.
   CHECK(IsGreaterThanOrEqual(gesture.progress(), 0.f));
   CHECK(IsLessThanOrEqual(gesture.progress(), 1.f));
-
-  float progress_delta =
-      gesture.progress() - latest_progress_gesture_.progress();
-  const float movement = progress_delta * GetViewportWidthPx();
-  latest_progress_gesture_ = gesture;
-
-  const PhysicsModel::Result result =
-      physics_model_.OnGestureProgressed(movement, base::TimeTicks::Now());
-  CHECK(!result.done);
-  // The gesture animations are never considered "finished".
-  bool animations_finished = SetLayerTransformationAndTickEffect(result);
-  CHECK(!animations_finished);
+  gfx::PointF progress_position(gesture.progress(), 0.f);
+  ui::InputPredictor::InputData input(progress_position, gesture.time());
+  input_predictor_->Update(input);
+  if (input_predictor_->HasPrediction()) {
+    animation_manager_->web_contents_view_android()
+        ->GetTopLevelNativeWindow()
+        ->SetNeedsAnimate();
+  } else {
+    // Animate the layers now for a new trajectory.
+    OnAnimateGestureProgressed(gesture);
+  }
 }
 
 void BackForwardTransitionAnimator::OnGestureCancelled() {
@@ -557,6 +614,15 @@ void BackForwardTransitionAnimator::OnAnimate(
   bool animation_finished = false;
 
   switch (state_) {
+    case State::kStarted:
+      // This state of the animation is purely driven by the progress of the
+      // user gesture.
+      if (auto input = input_predictor_->GeneratePrediction(frame_begin_time)) {
+        input_filter_->Filter(input->time_stamp, &input->pos);
+        OnAnimateGestureProgressed(
+            ui::BackGestureEvent(input->pos.x(), input->time_stamp));
+      }
+      break;
     case State::kDisplayingCancelAnimation: {
       PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
       std::ignore = SetLayerTransformationAndTickEffect(result);
@@ -594,7 +660,6 @@ void BackForwardTransitionAnimator::OnAnimate(
       animation_finished = effect_.keyframe_models().empty();
       break;
     }
-    case State::kStarted:
     case State::kWaitingForBeforeUnloadUserInteraction:
     case State::kWaitingForNewRendererToDraw:
     case State::kWaitingForContentForNavigationEntryShown:
@@ -919,6 +984,9 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // expected.
       CHECK(!tracked_request_);
       CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
+      base::UmaHistogramEnumeration(
+          kNewCommitInPrimaryMainFrame,
+          GetNavigationRequestSchemeType(navigation_request));
       break;
     case State::kDisplayingInvokeAnimation: {
       // We can only get to `kDisplayingInvokeAnimation` if we have started
@@ -977,6 +1045,9 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // Before a dialog is shown, another navigation can start and commit.
         // We don't need to abort the animation since when the other navigation
         // commits, we just swap out the live page.
+        base::UmaHistogramEnumeration(
+            kNewCommitInPrimaryMainFrame,
+            GetNavigationRequestSchemeType(navigation_request));
       } else {
         // Our navigation has already committed while a second navigation
         // commits. This can be a client redirect: A.com -> B.com and B.com's
@@ -984,6 +1055,9 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // commit-pending invoke animation to bring B.com's screenshot to the
         // center of the viewport.
         CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+        base::UmaHistogramEnumeration(
+            kNewCommitInPrimaryMainFrame,
+            GetNavigationRequestSchemeType(navigation_request));
         // TODO(https://crbug.com/375478872): Ideally, we only need to fake
         // Viz's frame notification if the redirect is cross-origin. We
         // shouldn't need to fake the frame notification for same-doc
@@ -996,6 +1070,9 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     case State::kDisplayingCancelAnimation: {
       // A new navigation to C commits while we are displaying the cancel
       // animation. The live page will be replaced by C.
+      base::UmaHistogramEnumeration(
+          kNewCommitWhileDisplayingCanceledAnimation,
+          GetNavigationRequestSchemeType(navigation_request));
       break;
     }
     case State::kWaitingForNewRendererToDraw:
@@ -1004,6 +1081,9 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // redirects to C.com, before B.com's renderer even submits a new frame.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
+      base::UmaHistogramEnumeration(
+          kNewCommitWhileWaitingForNewRendererToDraw,
+          GetNavigationRequestSchemeType(navigation_request));
       PostNavigationFirstFrameActivated();
       break;
     case State::kWaitingForContentForNavigationEntryShown:
@@ -1020,6 +1100,9 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // to whatever is underneath the screenshot.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
+      base::UmaHistogramEnumeration(
+          kNewCommitWhileDisplayingCrossFadeAnimation,
+          GetNavigationRequestSchemeType(navigation_request));
       break;
     }
     case State::kWaitingForBeforeUnloadUserInteraction: {
@@ -1410,6 +1493,8 @@ void BackForwardTransitionAnimator::
         },
         this, effect_);
   }
+  // The effect is assumed to start at time zero.
+  effect_.Tick(base::TimeTicks());
 }
 
 void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
@@ -1418,6 +1503,20 @@ void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
   CHECK(effect_.keyframe_models().empty());
 
   AddLinearModelToEffect(kCrossFadeAnimation, this, effect_);
+}
+
+// Called by OnAnimate when the user is still executing the gesture.
+void BackForwardTransitionAnimator::OnAnimateGestureProgressed(
+    const ui::BackGestureEvent& gesture) {
+  float progress = std::clamp(gesture.progress(), 0.f, 1.f);
+  const float movement = (progress - latest_progress_) * GetViewportWidthPx();
+  latest_progress_ = progress;
+  const PhysicsModel::Result result =
+      physics_model_.OnGestureProgressed(movement, gesture.time());
+  CHECK(!result.done);
+  // The gesture animations are never considered "finished".
+  bool animations_finished = SetLayerTransformationAndTickEffect(result);
+  CHECK(!animations_finished);
 }
 
 void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
@@ -1572,7 +1671,8 @@ void BackForwardTransitionAnimator::ProcessState() {
 }
 
 void BackForwardTransitionAnimator::SetupForScreenshotPreview(
-    SkBitmap embedder_content) {
+    SkBitmap embedder_content,
+    const ui::BackGestureEvent& first_gesture) {
   NavigationControllerImpl* nav_controller =
       animation_manager_->navigation_controller();
   int entry_index =
@@ -1620,11 +1720,19 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
   screenshot_layer_->AddChild(screenshot_scrim_);
   screenshot_scrim_->SetContentsOpaque(false);
 
+  SkBitmap favicon_bitmap;
+  if (IsInternalScheme(destination_entry->GetURL())) {
+    // If internal url, set a privileged internal icon as the favicon in the
+    // fallback ux and should draw rrect.
+    favicon_bitmap = animation_manager_
+                         ->GetBackForwardTransitionFallbackUXInternalPageIcon();
+  } else {
+    favicon_bitmap = destination_entry->navigation_transition_data().favicon();
+  }
+
   // Add the rounded rectangle and the favicon. We need to do this after setting
   // up the scrim because the scrim shouldn't be applied to the rounded
   // rectangle and the favicon.
-  const auto& favicon_bitmap =
-      destination_entry->navigation_transition_data().favicon();
   // Do not draw the rrect if we don't have a valid bitmap.
   bool should_draw_rrect = fallback_ux_ && !favicon_bitmap.drawsNothing();
   if (should_draw_rrect) {
@@ -1653,7 +1761,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
 
   // Calling `OnGestureProgressed` manually. This will ask the physics model to
   // move the layers to their respective initial positions.
-  OnGestureProgressed(latest_progress_gesture_);
+  OnGestureProgressed(first_gesture);
 }
 
 void BackForwardTransitionAnimator::SetupProgressBar() {
@@ -1978,17 +2086,14 @@ void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {
 }
 
 int BackForwardTransitionAnimator::GetViewportWidthPx() const {
-  return animation_manager_->web_contents_view_android()
-      ->GetNativeView()
-      ->GetPhysicalBackingSize()
-      .width();
+  return DipToPx(
+      animation_manager_->web_contents_view_android()->GetViewBounds().width());
 }
 
 int BackForwardTransitionAnimator::GetViewportHeightPx() const {
-  return animation_manager_->web_contents_view_android()
-      ->GetNativeView()
-      ->GetPhysicalBackingSize()
-      .height();
+  return DipToPx(animation_manager_->web_contents_view_android()
+                     ->GetViewBounds()
+                     .height());
 }
 
 void BackForwardTransitionAnimator::StartInputSuppression(
@@ -2062,8 +2167,8 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
   const std::vector<scoped_refptr<cc::slim::Layer>> layers =
       parent_layer->children();
   auto itr =
-      base::ranges::find(layers, animation_manager_->web_contents_view_android()
-                                     ->parent_for_web_page_widgets());
+      std::ranges::find(layers, animation_manager_->web_contents_view_android()
+                                    ->parent_for_web_page_widgets());
   CHECK(itr != layers.end());
   std::ptrdiff_t web_page_widgets_index = std::distance(layers.begin(), itr);
 

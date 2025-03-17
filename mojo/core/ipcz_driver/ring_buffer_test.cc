@@ -4,6 +4,7 @@
 
 #include "mojo/core/ipcz_driver/ring_buffer.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -14,7 +15,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/ranges/algorithm.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -194,7 +194,7 @@ TEST_F(RingBufferTest, DirectWriter) {
     EXPECT_EQ(0u, ring.buffer().data_size());
     EXPECT_EQ(8u, ring.buffer().available_capacity());
 
-    base::ranges::copy(AsBytes("abc"), writer.bytes().begin());
+    std::ranges::copy(AsBytes("abc"), writer.bytes().begin());
     EXPECT_TRUE(std::move(writer).Commit(3));
     EXPECT_EQ(3u, ring.buffer().data_size());
     EXPECT_EQ(5u, ring.buffer().available_capacity());
@@ -210,7 +210,7 @@ TEST_F(RingBufferTest, DirectWriter) {
     EXPECT_EQ(7u, ring.buffer().available_capacity());
     EXPECT_EQ(5u, writer.bytes().size());
 
-    base::ranges::copy(AsBytes("defgh"), writer.bytes().begin());
+    std::ranges::copy(AsBytes("defgh"), writer.bytes().begin());
     EXPECT_TRUE(std::move(writer).Commit(5));
   }
 
@@ -224,7 +224,7 @@ TEST_F(RingBufferTest, DirectWriter) {
     EXPECT_EQ(5u, ring.buffer().available_capacity());
     EXPECT_EQ(5u, writer.bytes().size());
 
-    base::ranges::copy(AsBytes("12345"), writer.bytes().begin());
+    std::ranges::copy(AsBytes("12345"), writer.bytes().begin());
     EXPECT_TRUE(std::move(writer).Commit(5));
   }
 
@@ -287,8 +287,8 @@ TEST_F(RingBufferTest, BasicRead) {
 
 TEST_F(RingBufferTest, ExtendDataRange) {
   TestRingBuffer ring(8);
-  base::ranges::copy(AsBytes("abcdefgh"),
-                     ring.buffer().mapping().bytes().begin());
+  std::ranges::copy(AsBytes("abcdefgh"),
+                    ring.buffer().mapping().bytes().begin());
   EXPECT_EQ(0u, ring.buffer().data_size());
   EXPECT_EQ(8u, ring.buffer().available_capacity());
 

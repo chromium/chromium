@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -99,18 +99,26 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
+    // UserManager is created in ArcAppTest.
+    session_manager_.OnUserManagerCreated(user_manager::UserManager::Get());
+
     chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 
+    session_manager_.SetSessionState(
+        session_manager::SessionState::LOGIN_PRIMARY);
+
     profile_ = std::make_unique<TestingProfile>();
     profile_->SetIsSupervisedProfile();
+    // TODO(hidehiko): we should set up kChild account from the beginning,
+    // but ArcAppTest does not support such a case. Fix the test helper.
     arc_test_.SetUp(profile());
 
     session_manager_.CreateSession(
         account_id(),
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()), true);
-    session_manager_.SetSessionState(
-        session_manager::SessionState::LOGIN_PRIMARY);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
 
     ChildStatusReportingServiceFactory::GetInstance()->SetTestingFactory(
         profile(),

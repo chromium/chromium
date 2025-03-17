@@ -4,6 +4,7 @@
 
 #include "components/affiliations/core/browser/sql_table_builder.h"
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -151,7 +151,7 @@ void SQLTableBuilder::RenameColumn(const std::string& old_name,
 
   DCHECK(FindLastColumnByName(new_name) == columns_.rend());
   // Check there is no index in the current version that references |old_name|.
-  DCHECK(base::ranges::none_of(indices_, [&old_name](const Index& index) {
+  DCHECK(std::ranges::none_of(indices_, [&old_name](const Index& index) {
     return index.max_version == kInvalidVersion &&
            base::Contains(index.columns, old_name);
   }));
@@ -187,7 +187,7 @@ void SQLTableBuilder::DropColumn(const std::string& name) {
   auto column = FindLastColumnByName(name);
   DCHECK(column != columns_.rend());
   // Check there is no index in the current version that references |old_name|.
-  DCHECK(base::ranges::none_of(indices_, [&name](const Index& index) {
+  DCHECK(std::ranges::none_of(indices_, [&name](const Index& index) {
     return index.max_version == kInvalidVersion &&
            base::Contains(index.columns, name);
   }));
@@ -214,11 +214,11 @@ void SQLTableBuilder::AddIndex(std::string name,
   DCHECK(FindLastIndexByName(name) == indices_.rend());
   // Check that all referenced columns are present in the last version by making
   // sure that the inner predicate applies to all columns names in |columns|.
-  DCHECK(base::ranges::all_of(columns, [this](const std::string& column_name) {
+  DCHECK(std::ranges::all_of(columns, [this](const std::string& column_name) {
     // Check if there is any column with the required name which is also
     // present in the latest version. Note that we don't require the last
     // version to be sealed.
-    return base::ranges::any_of(columns_, [&column_name](const Column& col) {
+    return std::ranges::any_of(columns_, [&column_name](const Column& col) {
       return col.name == column_name && col.max_version == kInvalidVersion;
     });
   }));
@@ -271,7 +271,7 @@ bool SQLTableBuilder::CreateTable(sql::Database* db) const {
 
   std::string constraints = ComputeConstraints(sealed_version_);
   DCHECK(!constraints.empty() ||
-         base::ranges::any_of(columns_, &Column::is_primary_key));
+         std::ranges::any_of(columns_, &Column::is_primary_key));
 
   std::string names;  // Names and types of the current columns.
   for (const Column& column : columns_) {
@@ -302,7 +302,7 @@ bool SQLTableBuilder::CreateTable(sql::Database* db) const {
   auto execute = [&db](const auto& sql) { return db->Execute(sql); };
   sql::Transaction transaction(db);
   return transaction.Begin() && execute(create_table_statement) &&
-         base::ranges::all_of(create_index_sqls, execute) &&
+         std::ranges::all_of(create_index_sqls, execute) &&
          transaction.Commit();
 }
 
@@ -355,7 +355,7 @@ std::vector<std::string_view> SQLTableBuilder::AllPrimaryKeyNames() const {
 
 size_t SQLTableBuilder::NumberOfColumns() const {
   DCHECK(IsVersionLastAndSealed(sealed_version_));
-  return base::checked_cast<size_t>(base::ranges::count_if(
+  return base::checked_cast<size_t>(std::ranges::count_if(
       columns_,
       [this](const Column& column) { return IsColumnInLastVersion(column); }));
 }
@@ -491,7 +491,7 @@ bool SQLTableBuilder::MigrateToNextFrom(unsigned old_version,
     };
     sql::Transaction transaction(db);
     if (!(transaction.Begin() &&
-          base::ranges::all_of(names_of_new_columns_list, add_column) &&
+          std::ranges::all_of(names_of_new_columns_list, add_column) &&
           transaction.Commit())) {
       return false;
     }
@@ -532,12 +532,12 @@ bool SQLTableBuilder::MigrateIndicesToNextFrom(unsigned old_version,
 
 std::vector<SQLTableBuilder::Column>::reverse_iterator
 SQLTableBuilder::FindLastColumnByName(const std::string& name) {
-  return base::ranges::find(base::Reversed(columns_), name, &Column::name);
+  return std::ranges::find(base::Reversed(columns_), name, &Column::name);
 }
 
 std::vector<SQLTableBuilder::Index>::reverse_iterator
 SQLTableBuilder::FindLastIndexByName(const std::string& name) {
-  return base::ranges::find(base::Reversed(indices_), name, &Index::name);
+  return std::ranges::find(base::Reversed(indices_), name, &Index::name);
 }
 
 bool SQLTableBuilder::IsVersionLastAndSealed(unsigned version) const {
@@ -549,8 +549,8 @@ bool SQLTableBuilder::IsVersionLastAndSealed(unsigned version) const {
            column_or_index.max_version != sealed_version_;
   };
   return sealed_version_ == version &&
-         base::ranges::all_of(columns_, is_last_sealed) &&
-         base::ranges::all_of(indices_, is_last_sealed);
+         std::ranges::all_of(columns_, is_last_sealed) &&
+         std::ranges::all_of(indices_, is_last_sealed);
 }
 
 bool SQLTableBuilder::IsColumnInLastVersion(const Column& column) const {

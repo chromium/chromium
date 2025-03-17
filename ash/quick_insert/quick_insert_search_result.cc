@@ -102,13 +102,15 @@ QuickInsertGifResult::QuickInsertGifResult(const GURL& preview_url,
                                            const gfx::Size& preview_dimensions,
                                            const GURL& full_url,
                                            const gfx::Size& full_dimensions,
-                                           std::u16string content_description)
+                                           std::u16string content_description,
+                                           size_t rank)
     : preview_url(preview_url),
       preview_image_url(preview_image_url),
       preview_dimensions(preview_dimensions),
       full_url(full_url),
       full_dimensions(full_dimensions),
-      content_description(std::move(content_description)) {}
+      content_description(std::move(content_description)),
+      rank(rank) {}
 
 QuickInsertGifResult::QuickInsertGifResult(const QuickInsertGifResult&) =
     default;

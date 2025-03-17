@@ -68,7 +68,7 @@ suite('CategoriesTest', () => {
     await handler.whenCalled('getBackgroundCollections');
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     handler = installMock(
@@ -86,7 +86,7 @@ suite('CategoriesTest', () => {
     await setInitialSettings({numCollections: numCollections});
 
     const collections =
-        categoriesElement.shadowRoot!.querySelectorAll('.collection');
+        categoriesElement.shadowRoot.querySelectorAll('.collection');
     assertEquals(numCollections, collections.length);
   });
 
@@ -103,7 +103,7 @@ suite('CategoriesTest', () => {
         await setInitialSettings({numCollections: numCollections});
 
         const collections =
-            categoriesElement.shadowRoot!.querySelectorAll('.collection');
+            categoriesElement.shadowRoot.querySelectorAll('.collection');
         assertEquals(numCollections, collections.length);
         if (!errorDetectionEnabled) {
           assertTrue(isVisible(collections[0]!));
@@ -127,7 +127,7 @@ suite('CategoriesTest', () => {
             {numCollections: numCollections, shouldReplaceBrokenImages: true});
 
         const images =
-            categoriesElement.shadowRoot!.querySelectorAll<CrAutoImgElement>(
+            categoriesElement.shadowRoot.querySelectorAll<CrAutoImgElement>(
                 '.collection img');
         assertEquals(numCollections, images.length);
         const img1Error = eventToPromise('error', images[0]!);
@@ -157,7 +157,7 @@ suite('CategoriesTest', () => {
           assertFalse(isVisible(collection));
         }
 
-        const img1 = collection!.querySelector<CrAutoImgElement>('img');
+        const img1 = collection.querySelector<CrAutoImgElement>('img');
         assertTrue(!!img1);
         img1.dispatchEvent(new Event('load'));
 
@@ -169,12 +169,13 @@ suite('CategoriesTest', () => {
                 'NewTabPage.Images.ShownTime.CollectionPreviewImage'));
       });
 
-      test('error detection metrics fire correctly', async () => {
+      // TODO(crbug.com/394712092): Flaky on multiple platforms.
+      test.skip('error detection metrics fire correctly', async () => {
         const numCollections = 2;
         await setInitialSettings({numCollections: 2});
 
         const images =
-            categoriesElement.shadowRoot!.querySelectorAll<CrAutoImgElement>(
+            categoriesElement.shadowRoot.querySelectorAll<CrAutoImgElement>(
                 '.collection img');
         assertEquals(numCollections, images.length);
         const img1Error = eventToPromise('error', images[0]!);
@@ -210,7 +211,7 @@ suite('CategoriesTest', () => {
     const imageLoadTime = 678.90;
     windowProxy.setResultFor('now', imageLoadTime);
 
-    categoriesElement.shadowRoot!.querySelectorAll('.collection')[0]!
+    categoriesElement.shadowRoot.querySelectorAll('.collection')[0]!
         .querySelector('img')!.dispatchEvent(new Event('load'));
 
     assertEquals(2, windowProxy.getCallCount('now'));
@@ -228,7 +229,7 @@ suite('CategoriesTest', () => {
 
     const eventPromise = eventToPromise('collection-select', categoriesElement);
     const category =
-        categoriesElement.shadowRoot!.querySelector<HTMLElement>('.collection');
+        categoriesElement.shadowRoot.querySelector<HTMLElement>('.collection');
     assertTrue(!!category);
     category.click();
     const event = (await eventPromise) as CustomEvent<BackgroundCollection>;
@@ -300,7 +301,7 @@ suite('CategoriesTest', () => {
 
     // Check that classic chrome is selected.
     let checkedCategories =
-        categoriesElement.shadowRoot!.querySelectorAll('[checked]');
+        categoriesElement.shadowRoot.querySelectorAll('[checked]');
     assertEquals(1, checkedCategories.length);
     assertEquals(checkedCategories[0]!.parentElement!.id, 'classicChromeTile');
     assertEquals(
@@ -317,7 +318,7 @@ suite('CategoriesTest', () => {
 
     // Check that upload image is selected.
     checkedCategories =
-        categoriesElement.shadowRoot!.querySelectorAll('[checked]');
+        categoriesElement.shadowRoot.querySelectorAll('[checked]');
     assertEquals(1, checkedCategories.length);
     assertEquals(checkedCategories[0]!.parentElement!.id, 'uploadImageTile');
     assertEquals(
@@ -334,7 +335,7 @@ suite('CategoriesTest', () => {
 
     // Check that collection is selected.
     checkedCategories =
-        categoriesElement.shadowRoot!.querySelectorAll('[checked]');
+        categoriesElement.shadowRoot.querySelectorAll('[checked]');
     assertEquals(1, checkedCategories.length);
     assertEquals(
         checkedCategories[0]!.parentElement!.className, 'tile collection');
@@ -353,7 +354,7 @@ suite('CategoriesTest', () => {
 
     // Check that no category is selected.
     checkedCategories =
-        categoriesElement.shadowRoot!.querySelectorAll('[checked]');
+        categoriesElement.shadowRoot.querySelectorAll('[checked]');
     assertEquals(0, checkedCategories.length);
   });
 
@@ -392,7 +393,7 @@ suite('CategoriesTest', () => {
           async () => {
             await setInitialSettings({numCollections: 0});
             assertEquals(
-                !!categoriesElement.shadowRoot!.querySelector(
+                !!categoriesElement.shadowRoot.querySelector(
                     '#wallpaperSearchTile'),
                 flagEnabled);
           });
@@ -413,7 +414,7 @@ suite('CategoriesTest', () => {
         // Check that wallpaper search is selected if flag is enabled and
         // nothing is selected if flag is disabled.
         const checkedCategories =
-            categoriesElement.shadowRoot!.querySelectorAll('[checked]');
+            categoriesElement.shadowRoot.querySelectorAll('[checked]');
         if (flagEnabled) {
           assertEquals(1, checkedCategories.length);
           assertEquals(
@@ -438,9 +439,9 @@ suite('CategoriesTest', () => {
     test('choosing collection sets metric', async () => {
       await setInitialSettings({numCollections: 1});
 
-      const tile = categoriesElement.shadowRoot!.querySelector('.collection');
+      const tile = categoriesElement.shadowRoot.querySelector('.collection');
       assertTrue(!!tile);
-      (tile! as HTMLElement).click();
+      (tile as HTMLElement).click();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
@@ -470,9 +471,9 @@ suite('CategoriesTest', () => {
       await setInitialSettings({numCollections: 0});
 
       const tile =
-          categoriesElement.shadowRoot!.querySelector('#wallpaperSearchTile');
+          categoriesElement.shadowRoot.querySelector('#wallpaperSearchTile');
       assertTrue(!!tile);
-      (tile! as HTMLElement).click();
+      (tile as HTMLElement).click();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));

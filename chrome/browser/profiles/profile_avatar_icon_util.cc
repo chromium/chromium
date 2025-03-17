@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <memory>
 #include <string_view>
@@ -27,7 +28,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -92,13 +92,48 @@ namespace {
 constexpr float kIconToneDark = 40.f;
 constexpr float kIconToneLight = 80.f;
 
+// Values are expressed as a proportion of resulting image size.
+struct AvatarWithDottedRingParams {
+  // Radius of the dotted ring.
+  float dotted_ring_radius = 0;
+  // The stroke is fully inside the ring.
+  float ring_stroke_width = 0;
+  // Padding around the image to fit it inside the ring.
+  float image_padding = 0;
+};
+
+constexpr AvatarWithDottedRingParams kAvatarWithDottedRingParamsWithPadding = {
+    .dotted_ring_radius = 0.29,
+    .ring_stroke_width = 0.05,
+    .image_padding = 0.3,
+};
+
+constexpr AvatarWithDottedRingParams kAvatarWithDottedRingParamsNoPadding = {
+    .dotted_ring_radius = 0.5,
+    .ring_stroke_width = 0.075,
+    .image_padding = 0.13,
+};
+
+// Sanity check: the dotted ring is smaller than the full image.
+static_assert(kAvatarWithDottedRingParamsWithPadding.dotted_ring_radius <= 0.5);
+static_assert(kAvatarWithDottedRingParamsNoPadding.dotted_ring_radius <= 0.5);
+
+// Sanity check: the avatar image fits inside the dotted ring (taking the ring
+// stroke width into account).
+static_assert(kAvatarWithDottedRingParamsWithPadding.dotted_ring_radius >
+              0.5 - kAvatarWithDottedRingParamsWithPadding.image_padding +
+                  kAvatarWithDottedRingParamsWithPadding.ring_stroke_width);
+static_assert(kAvatarWithDottedRingParamsNoPadding.dotted_ring_radius >
+              0.5 - kAvatarWithDottedRingParamsNoPadding.image_padding +
+                  kAvatarWithDottedRingParamsNoPadding.ring_stroke_width);
+
 #if BUILDFLAG(IS_WIN)
 const int kOldAvatarIconWidth = 38;
 const int kOldAvatarIconHeight = 31;
 
 // 2x sized versions of the old profile avatar icons.
 // TODO(crbug.com/41444689): Clean this up.
-const int kProfileAvatarIconResources2x[] = {
+constexpr auto kProfileAvatarIconResources2x = std::to_array<int>({
     IDR_PROFILE_AVATAR_2X_0,  IDR_PROFILE_AVATAR_2X_1,
     IDR_PROFILE_AVATAR_2X_2,  IDR_PROFILE_AVATAR_2X_3,
     IDR_PROFILE_AVATAR_2X_4,  IDR_PROFILE_AVATAR_2X_5,
@@ -113,7 +148,7 @@ const int kProfileAvatarIconResources2x[] = {
     IDR_PROFILE_AVATAR_2X_22, IDR_PROFILE_AVATAR_2X_23,
     IDR_PROFILE_AVATAR_2X_24, IDR_PROFILE_AVATAR_2X_25,
     IDR_PROFILE_AVATAR_2X_26,
-};
+});
 
 // Returns a copied SkBitmap for the given image that can be safely passed to
 // another thread.
@@ -389,7 +424,7 @@ constexpr base::FilePath::CharType kHighResAvatarFolderName[] =
 // The size of the function-static kDefaultAvatarIconResources array below.
 #if BUILDFLAG(IS_ANDROID)
 constexpr size_t kDefaultAvatarIconsCount = 1;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 constexpr size_t kDefaultAvatarIconsCount = 27;
 #else
 constexpr size_t kDefaultAvatarIconsCount = 56;
@@ -410,12 +445,15 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-  return ui::ImageModel::FromVectorIcon(
-      kUserAccountAvatarRefreshIcon,
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-          ? ui::kColorMenuIcon
-          : ui::kColorAvatarIconGuest,
-      size);
+  int color_id = ui::kColorMenuIcon;
+  const gfx::VectorIcon* vector_icon = &kUserAccountAvatarRefreshIcon;
+  if (base::FeatureList::IsEnabled(switches::kEnableImprovedGuestProfileMenu)) {
+    // Guest profiles generally use the default theme, no need to go through the
+    // `ThemeService`.
+    color_id = ui::kColorSysPrimary;
+    vector_icon = &kAccountBoxIcon;
+  }
+  return ui::ImageModel::FromVectorIcon(*vector_icon, color_id, size);
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
@@ -460,39 +498,27 @@ ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size) {
             gfx::Size(size, size)));
   }
   const ui::VectorIconModel& model = image.GetVectorIcon();
-  if (model.has_color()) {
-    return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color(),
-                                          size);
-  }
-  return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color_id(),
+  return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color(),
                                         size);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
-                                       int size_with_padding,
+                                       int size,
+                                       bool has_padding,
+                                       bool has_background,
                                        ui::ColorProvider* color_provider) {
   DCHECK(!image.IsEmpty());
-  // Values are expressed as a proportion of `size`.
-  // Radius of the dotted ring.
-  constexpr float kAvatarDottedRingRadius = 0.29;
-  // Padding around the image to fit it inside the ring.
-  constexpr float kAvatarPaddingForRing = 0.3;
-  // The stroke is fully inside `kAvatarDottedRingRadius`.
-  constexpr float kAvatarRingStrokeWidth = 0.05;
-  // Sanity check: the dotted ring is smaller than the full image.
-  static_assert(kAvatarDottedRingRadius < 0.5);
-  // Sanity check: the avatar image fits inside the dotted ring (taking the ring
-  // stroke width into account).
-  static_assert(kAvatarDottedRingRadius >
-                0.5 - kAvatarPaddingForRing + kAvatarRingStrokeWidth);
 
-  const int avatar_padding =
-      std::nearbyint(kAvatarPaddingForRing * size_with_padding);
+  const AvatarWithDottedRingParams& params =
+      has_padding ? kAvatarWithDottedRingParamsWithPadding
+                  : kAvatarWithDottedRingParamsNoPadding;
+
+  const int avatar_padding = std::nearbyint(params.image_padding * size);
   const int avatar_ring_radius =
-      std::nearbyint(kAvatarDottedRingRadius * size_with_padding);
-  const int avatar_size = size_with_padding - 2 * avatar_padding;
-  const float avatar_ring_stroke = kAvatarRingStrokeWidth * size_with_padding;
+      std::nearbyint(params.dotted_ring_radius * size);
+  const int avatar_size = size - 2 * avatar_padding;
+  const float avatar_ring_stroke = params.ring_stroke_width * size;
 
   // Shrink the avatar to fit inside the dotted ring.
   gfx::ImageSkia sized_avatar_image =
@@ -503,14 +529,16 @@ gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
   gfx::ImageSkia padded_image = gfx::CanvasImageSource::CreatePadded(
       sized_avatar_image, gfx::Insets(avatar_padding));
   // Add background color.
-  gfx::ImageSkia padded_image_with_background = AddBackgroundToImage(
-      padded_image, color_provider->GetColor(ui::kColorBubbleBackground));
+  if (has_background) {
+    padded_image = AddBackgroundToImage(
+        padded_image, color_provider->GetColor(ui::kColorBubbleBackground));
+  }
   // Add dotted ring.
   return gfx::ImageSkia(
       std::make_unique<ImageWithDottedCircleSource>(
-          padded_image_with_background, avatar_ring_radius, avatar_ring_stroke,
+          padded_image, avatar_ring_radius, avatar_ring_stroke,
           color_provider->GetColor(ui::kColorSysStateInactiveRing)),
-      gfx::Size(size_with_padding, size_with_padding));
+      gfx::Size(size, size));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -556,8 +584,10 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
   // Get a higher res than 16px so it looks good after cropping to a circle.
   gfx::Image icon = entry->GetAvatarIcon(
       kAvatarIconSize, /*download_high_res=*/false, icon_params);
-  return profiles::GetSizedAvatarIcon(
-      icon, kMenuAvatarIconSize, kMenuAvatarIconSize, profiles::SHAPE_CIRCLE);
+  constexpr int kMenuAvatarIconSizeForNSMenu = 20;
+  return profiles::GetSizedAvatarIcon(icon, kMenuAvatarIconSizeForNSMenu,
+                                      kMenuAvatarIconSizeForNSMenu,
+                                      profiles::SHAPE_CIRCLE);
 }
 #endif
 
@@ -575,7 +605,7 @@ size_t GetPlaceholderAvatarIndex() {
 }
 
 size_t GetModernAvatarIconStartIndex() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   return GetPlaceholderAvatarIndex() + 1;
 #else
   // Only use the placeholder avatar on ChromeOS and Android.
@@ -609,113 +639,128 @@ std::string GetPlaceholderAvatarIconUrl() {
 
 const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
   CHECK_LT(index, kDefaultAvatarIconsCount);
-  static const IconResourceInfo resource_info[kDefaultAvatarIconsCount] = {
+  static const std::array<IconResourceInfo, kDefaultAvatarIconsCount>
+      resource_info = {{
   // Old avatar icons:
 #if !BUILDFLAG(IS_ANDROID)
-    {IDR_PROFILE_AVATAR_0, "avatar_generic.png", IDS_DEFAULT_AVATAR_LABEL_0},
-    {IDR_PROFILE_AVATAR_1, "avatar_generic_aqua.png",
-     IDS_DEFAULT_AVATAR_LABEL_1},
-    {IDR_PROFILE_AVATAR_2, "avatar_generic_blue.png",
-     IDS_DEFAULT_AVATAR_LABEL_2},
-    {IDR_PROFILE_AVATAR_3, "avatar_generic_green.png",
-     IDS_DEFAULT_AVATAR_LABEL_3},
-    {IDR_PROFILE_AVATAR_4, "avatar_generic_orange.png",
-     IDS_DEFAULT_AVATAR_LABEL_4},
-    {IDR_PROFILE_AVATAR_5, "avatar_generic_purple.png",
-     IDS_DEFAULT_AVATAR_LABEL_5},
-    {IDR_PROFILE_AVATAR_6, "avatar_generic_red.png",
-     IDS_DEFAULT_AVATAR_LABEL_6},
-    {IDR_PROFILE_AVATAR_7, "avatar_generic_yellow.png",
-     IDS_DEFAULT_AVATAR_LABEL_7},
-    {IDR_PROFILE_AVATAR_8, "avatar_secret_agent.png",
-     IDS_DEFAULT_AVATAR_LABEL_8},
-    {IDR_PROFILE_AVATAR_9, "avatar_superhero.png", IDS_DEFAULT_AVATAR_LABEL_9},
-    {IDR_PROFILE_AVATAR_10, "avatar_volley_ball.png",
-     IDS_DEFAULT_AVATAR_LABEL_10},
-    {IDR_PROFILE_AVATAR_11, "avatar_businessman.png",
-     IDS_DEFAULT_AVATAR_LABEL_11},
-    {IDR_PROFILE_AVATAR_12, "avatar_ninja.png", IDS_DEFAULT_AVATAR_LABEL_12},
-    {IDR_PROFILE_AVATAR_13, "avatar_alien.png", IDS_DEFAULT_AVATAR_LABEL_13},
-    {IDR_PROFILE_AVATAR_14, "avatar_awesome.png", IDS_DEFAULT_AVATAR_LABEL_14},
-    {IDR_PROFILE_AVATAR_15, "avatar_flower.png", IDS_DEFAULT_AVATAR_LABEL_15},
-    {IDR_PROFILE_AVATAR_16, "avatar_pizza.png", IDS_DEFAULT_AVATAR_LABEL_16},
-    {IDR_PROFILE_AVATAR_17, "avatar_soccer.png", IDS_DEFAULT_AVATAR_LABEL_17},
-    {IDR_PROFILE_AVATAR_18, "avatar_burger.png", IDS_DEFAULT_AVATAR_LABEL_18},
-    {IDR_PROFILE_AVATAR_19, "avatar_cat.png", IDS_DEFAULT_AVATAR_LABEL_19},
-    {IDR_PROFILE_AVATAR_20, "avatar_cupcake.png", IDS_DEFAULT_AVATAR_LABEL_20},
-    {IDR_PROFILE_AVATAR_21, "avatar_dog.png", IDS_DEFAULT_AVATAR_LABEL_21},
-    {IDR_PROFILE_AVATAR_22, "avatar_horse.png", IDS_DEFAULT_AVATAR_LABEL_22},
-    {IDR_PROFILE_AVATAR_23, "avatar_margarita.png",
-     IDS_DEFAULT_AVATAR_LABEL_23},
-    {IDR_PROFILE_AVATAR_24, "avatar_note.png", IDS_DEFAULT_AVATAR_LABEL_24},
-    {IDR_PROFILE_AVATAR_25, "avatar_sun_cloud.png",
-     IDS_DEFAULT_AVATAR_LABEL_25},
+          {IDR_PROFILE_AVATAR_0, "avatar_generic.png",
+           IDS_DEFAULT_AVATAR_LABEL_0},
+          {IDR_PROFILE_AVATAR_1, "avatar_generic_aqua.png",
+           IDS_DEFAULT_AVATAR_LABEL_1},
+          {IDR_PROFILE_AVATAR_2, "avatar_generic_blue.png",
+           IDS_DEFAULT_AVATAR_LABEL_2},
+          {IDR_PROFILE_AVATAR_3, "avatar_generic_green.png",
+           IDS_DEFAULT_AVATAR_LABEL_3},
+          {IDR_PROFILE_AVATAR_4, "avatar_generic_orange.png",
+           IDS_DEFAULT_AVATAR_LABEL_4},
+          {IDR_PROFILE_AVATAR_5, "avatar_generic_purple.png",
+           IDS_DEFAULT_AVATAR_LABEL_5},
+          {IDR_PROFILE_AVATAR_6, "avatar_generic_red.png",
+           IDS_DEFAULT_AVATAR_LABEL_6},
+          {IDR_PROFILE_AVATAR_7, "avatar_generic_yellow.png",
+           IDS_DEFAULT_AVATAR_LABEL_7},
+          {IDR_PROFILE_AVATAR_8, "avatar_secret_agent.png",
+           IDS_DEFAULT_AVATAR_LABEL_8},
+          {IDR_PROFILE_AVATAR_9, "avatar_superhero.png",
+           IDS_DEFAULT_AVATAR_LABEL_9},
+          {IDR_PROFILE_AVATAR_10, "avatar_volley_ball.png",
+           IDS_DEFAULT_AVATAR_LABEL_10},
+          {IDR_PROFILE_AVATAR_11, "avatar_businessman.png",
+           IDS_DEFAULT_AVATAR_LABEL_11},
+          {IDR_PROFILE_AVATAR_12, "avatar_ninja.png",
+           IDS_DEFAULT_AVATAR_LABEL_12},
+          {IDR_PROFILE_AVATAR_13, "avatar_alien.png",
+           IDS_DEFAULT_AVATAR_LABEL_13},
+          {IDR_PROFILE_AVATAR_14, "avatar_awesome.png",
+           IDS_DEFAULT_AVATAR_LABEL_14},
+          {IDR_PROFILE_AVATAR_15, "avatar_flower.png",
+           IDS_DEFAULT_AVATAR_LABEL_15},
+          {IDR_PROFILE_AVATAR_16, "avatar_pizza.png",
+           IDS_DEFAULT_AVATAR_LABEL_16},
+          {IDR_PROFILE_AVATAR_17, "avatar_soccer.png",
+           IDS_DEFAULT_AVATAR_LABEL_17},
+          {IDR_PROFILE_AVATAR_18, "avatar_burger.png",
+           IDS_DEFAULT_AVATAR_LABEL_18},
+          {IDR_PROFILE_AVATAR_19, "avatar_cat.png",
+           IDS_DEFAULT_AVATAR_LABEL_19},
+          {IDR_PROFILE_AVATAR_20, "avatar_cupcake.png",
+           IDS_DEFAULT_AVATAR_LABEL_20},
+          {IDR_PROFILE_AVATAR_21, "avatar_dog.png",
+           IDS_DEFAULT_AVATAR_LABEL_21},
+          {IDR_PROFILE_AVATAR_22, "avatar_horse.png",
+           IDS_DEFAULT_AVATAR_LABEL_22},
+          {IDR_PROFILE_AVATAR_23, "avatar_margarita.png",
+           IDS_DEFAULT_AVATAR_LABEL_23},
+          {IDR_PROFILE_AVATAR_24, "avatar_note.png",
+           IDS_DEFAULT_AVATAR_LABEL_24},
+          {IDR_PROFILE_AVATAR_25, "avatar_sun_cloud.png",
+           IDS_DEFAULT_AVATAR_LABEL_25},
 #endif
-    // Placeholder avatar icon:
-    {IDR_PROFILE_AVATAR_26, nullptr, IDS_DEFAULT_AVATAR_LABEL_26},
+          // Placeholder avatar icon:
+          {IDR_PROFILE_AVATAR_26, nullptr, IDS_DEFAULT_AVATAR_LABEL_26},
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-    // Modern avatar icons:
-    {IDR_PROFILE_AVATAR_27, "avatar_origami_cat.png",
-     IDS_DEFAULT_AVATAR_LABEL_27},
-    {IDR_PROFILE_AVATAR_28, "avatar_origami_corgi.png",
-     IDS_DEFAULT_AVATAR_LABEL_28},
-    {IDR_PROFILE_AVATAR_29, "avatar_origami_dragon.png",
-     IDS_DEFAULT_AVATAR_LABEL_29},
-    {IDR_PROFILE_AVATAR_30, "avatar_origami_elephant.png",
-     IDS_DEFAULT_AVATAR_LABEL_30},
-    {IDR_PROFILE_AVATAR_31, "avatar_origami_fox.png",
-     IDS_DEFAULT_AVATAR_LABEL_31},
-    {IDR_PROFILE_AVATAR_32, "avatar_origami_monkey.png",
-     IDS_DEFAULT_AVATAR_LABEL_32},
-    {IDR_PROFILE_AVATAR_33, "avatar_origami_panda.png",
-     IDS_DEFAULT_AVATAR_LABEL_33},
-    {IDR_PROFILE_AVATAR_34, "avatar_origami_penguin.png",
-     IDS_DEFAULT_AVATAR_LABEL_34},
-    {IDR_PROFILE_AVATAR_35, "avatar_origami_pinkbutterfly.png",
-     IDS_DEFAULT_AVATAR_LABEL_35},
-    {IDR_PROFILE_AVATAR_36, "avatar_origami_rabbit.png",
-     IDS_DEFAULT_AVATAR_LABEL_36},
-    {IDR_PROFILE_AVATAR_37, "avatar_origami_unicorn.png",
-     IDS_DEFAULT_AVATAR_LABEL_37},
-    {IDR_PROFILE_AVATAR_38, "avatar_illustration_basketball.png",
-     IDS_DEFAULT_AVATAR_LABEL_38},
-    {IDR_PROFILE_AVATAR_39, "avatar_illustration_bike.png",
-     IDS_DEFAULT_AVATAR_LABEL_39},
-    {IDR_PROFILE_AVATAR_40, "avatar_illustration_bird.png",
-     IDS_DEFAULT_AVATAR_LABEL_40},
-    {IDR_PROFILE_AVATAR_41, "avatar_illustration_cheese.png",
-     IDS_DEFAULT_AVATAR_LABEL_41},
-    {IDR_PROFILE_AVATAR_42, "avatar_illustration_football.png",
-     IDS_DEFAULT_AVATAR_LABEL_42},
-    {IDR_PROFILE_AVATAR_43, "avatar_illustration_ramen.png",
-     IDS_DEFAULT_AVATAR_LABEL_43},
-    {IDR_PROFILE_AVATAR_44, "avatar_illustration_sunglasses.png",
-     IDS_DEFAULT_AVATAR_LABEL_44},
-    {IDR_PROFILE_AVATAR_45, "avatar_illustration_sushi.png",
-     IDS_DEFAULT_AVATAR_LABEL_45},
-    {IDR_PROFILE_AVATAR_46, "avatar_illustration_tamagotchi.png",
-     IDS_DEFAULT_AVATAR_LABEL_46},
-    {IDR_PROFILE_AVATAR_47, "avatar_illustration_vinyl.png",
-     IDS_DEFAULT_AVATAR_LABEL_47},
-    {IDR_PROFILE_AVATAR_48, "avatar_abstract_avocado.png",
-     IDS_DEFAULT_AVATAR_LABEL_48},
-    {IDR_PROFILE_AVATAR_49, "avatar_abstract_cappuccino.png",
-     IDS_DEFAULT_AVATAR_LABEL_49},
-    {IDR_PROFILE_AVATAR_50, "avatar_abstract_icecream.png",
-     IDS_DEFAULT_AVATAR_LABEL_50},
-    {IDR_PROFILE_AVATAR_51, "avatar_abstract_icewater.png",
-     IDS_DEFAULT_AVATAR_LABEL_51},
-    {IDR_PROFILE_AVATAR_52, "avatar_abstract_melon.png",
-     IDS_DEFAULT_AVATAR_LABEL_52},
-    {IDR_PROFILE_AVATAR_53, "avatar_abstract_onigiri.png",
-     IDS_DEFAULT_AVATAR_LABEL_53},
-    {IDR_PROFILE_AVATAR_54, "avatar_abstract_pizza.png",
-     IDS_DEFAULT_AVATAR_LABEL_54},
-    {IDR_PROFILE_AVATAR_55, "avatar_abstract_sandwich.png",
-     IDS_DEFAULT_AVATAR_LABEL_55},
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+          // Modern avatar icons:
+          {IDR_PROFILE_AVATAR_27, "avatar_origami_cat.png",
+           IDS_DEFAULT_AVATAR_LABEL_27},
+          {IDR_PROFILE_AVATAR_28, "avatar_origami_corgi.png",
+           IDS_DEFAULT_AVATAR_LABEL_28},
+          {IDR_PROFILE_AVATAR_29, "avatar_origami_dragon.png",
+           IDS_DEFAULT_AVATAR_LABEL_29},
+          {IDR_PROFILE_AVATAR_30, "avatar_origami_elephant.png",
+           IDS_DEFAULT_AVATAR_LABEL_30},
+          {IDR_PROFILE_AVATAR_31, "avatar_origami_fox.png",
+           IDS_DEFAULT_AVATAR_LABEL_31},
+          {IDR_PROFILE_AVATAR_32, "avatar_origami_monkey.png",
+           IDS_DEFAULT_AVATAR_LABEL_32},
+          {IDR_PROFILE_AVATAR_33, "avatar_origami_panda.png",
+           IDS_DEFAULT_AVATAR_LABEL_33},
+          {IDR_PROFILE_AVATAR_34, "avatar_origami_penguin.png",
+           IDS_DEFAULT_AVATAR_LABEL_34},
+          {IDR_PROFILE_AVATAR_35, "avatar_origami_pinkbutterfly.png",
+           IDS_DEFAULT_AVATAR_LABEL_35},
+          {IDR_PROFILE_AVATAR_36, "avatar_origami_rabbit.png",
+           IDS_DEFAULT_AVATAR_LABEL_36},
+          {IDR_PROFILE_AVATAR_37, "avatar_origami_unicorn.png",
+           IDS_DEFAULT_AVATAR_LABEL_37},
+          {IDR_PROFILE_AVATAR_38, "avatar_illustration_basketball.png",
+           IDS_DEFAULT_AVATAR_LABEL_38},
+          {IDR_PROFILE_AVATAR_39, "avatar_illustration_bike.png",
+           IDS_DEFAULT_AVATAR_LABEL_39},
+          {IDR_PROFILE_AVATAR_40, "avatar_illustration_bird.png",
+           IDS_DEFAULT_AVATAR_LABEL_40},
+          {IDR_PROFILE_AVATAR_41, "avatar_illustration_cheese.png",
+           IDS_DEFAULT_AVATAR_LABEL_41},
+          {IDR_PROFILE_AVATAR_42, "avatar_illustration_football.png",
+           IDS_DEFAULT_AVATAR_LABEL_42},
+          {IDR_PROFILE_AVATAR_43, "avatar_illustration_ramen.png",
+           IDS_DEFAULT_AVATAR_LABEL_43},
+          {IDR_PROFILE_AVATAR_44, "avatar_illustration_sunglasses.png",
+           IDS_DEFAULT_AVATAR_LABEL_44},
+          {IDR_PROFILE_AVATAR_45, "avatar_illustration_sushi.png",
+           IDS_DEFAULT_AVATAR_LABEL_45},
+          {IDR_PROFILE_AVATAR_46, "avatar_illustration_tamagotchi.png",
+           IDS_DEFAULT_AVATAR_LABEL_46},
+          {IDR_PROFILE_AVATAR_47, "avatar_illustration_vinyl.png",
+           IDS_DEFAULT_AVATAR_LABEL_47},
+          {IDR_PROFILE_AVATAR_48, "avatar_abstract_avocado.png",
+           IDS_DEFAULT_AVATAR_LABEL_48},
+          {IDR_PROFILE_AVATAR_49, "avatar_abstract_cappuccino.png",
+           IDS_DEFAULT_AVATAR_LABEL_49},
+          {IDR_PROFILE_AVATAR_50, "avatar_abstract_icecream.png",
+           IDS_DEFAULT_AVATAR_LABEL_50},
+          {IDR_PROFILE_AVATAR_51, "avatar_abstract_icewater.png",
+           IDS_DEFAULT_AVATAR_LABEL_51},
+          {IDR_PROFILE_AVATAR_52, "avatar_abstract_melon.png",
+           IDS_DEFAULT_AVATAR_LABEL_52},
+          {IDR_PROFILE_AVATAR_53, "avatar_abstract_onigiri.png",
+           IDS_DEFAULT_AVATAR_LABEL_53},
+          {IDR_PROFILE_AVATAR_54, "avatar_abstract_pizza.png",
+           IDS_DEFAULT_AVATAR_LABEL_54},
+          {IDR_PROFILE_AVATAR_55, "avatar_abstract_sandwich.png",
+           IDS_DEFAULT_AVATAR_LABEL_55},
 #endif
-  };
+      }};
   return &resource_info[index];
 }
 
@@ -781,7 +826,6 @@ int GetDefaultAvatarIconResourceIDAtIndex(size_t index) {
 
 #if BUILDFLAG(IS_WIN)
 int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index) {
-  DCHECK_LT(index, std::size(kProfileAvatarIconResources2x));
   return kProfileAvatarIconResources2x[index];
 }
 #endif  // BUILDFLAG(IS_WIN)

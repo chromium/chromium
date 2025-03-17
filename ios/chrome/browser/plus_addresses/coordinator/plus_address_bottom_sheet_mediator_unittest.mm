@@ -117,9 +117,6 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
 
 // Tests that the settings service is informed that the notice was accepted.
 TEST_F(PlusAddressBottomSheetMediatorTest, AcceptNoticeNotifiesService) {
-  base::test::ScopedFeatureList features_{
-      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice())
       .WillByDefault(Return(false));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice());
@@ -131,9 +128,6 @@ TEST_F(PlusAddressBottomSheetMediatorTest, AcceptNoticeNotifiesService) {
 // Tests that the settings service is not informed when the bottomsheet was
 // accepted if the notice has already been accepted before.
 TEST_F(PlusAddressBottomSheetMediatorTest, NoticeAlreadyAccepted) {
-  base::test::ScopedFeatureList features_{
-      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice())
       .WillByDefault(Return(true));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice()).Times(0);

@@ -679,14 +679,13 @@ export class Graph implements GraphChangeStreamInterface {
   initialize() {
 
     // Create the simulation and set up the permanent forces.
-    const simulation =
-        d3.forceSimulation() as d3.Simulation<GraphNode, undefined>;
+    const simulation: d3.Simulation<GraphNode, undefined> =
+        d3.forceSimulation();
     simulation.on('tick', this.onTick_.bind(this));
 
     const linkForce =
-        (d3.forceLink() as
-         d3.ForceLink<GraphNode, d3.SimulationLinkDatum<GraphNode>>)
-            .id(d => d.id.toString());
+        d3.forceLink<GraphNode, d3.SimulationLinkDatum<GraphNode>>().id(
+            d => d.id.toString());
     const defaultStrength = linkForce.strength();
 
     // Override the default link strength function to apply scaling factors
@@ -704,8 +703,8 @@ export class Graph implements GraphChangeStreamInterface {
     // negative number is repulsion).
     simulation.force(
         'charge',
-        (d3.forceManyBody() as d3.ForceManyBody<GraphNode>)
-            .strength(this.getManyBodyStrength_.bind(this)));
+        d3.forceManyBody<GraphNode>().strength(
+            this.getManyBodyStrength_.bind(this)));
 
     this.simulation_ = simulation;
 
@@ -933,9 +932,9 @@ export class Graph implements GraphChangeStreamInterface {
 
     // Select the nodes, except for any dead ones that are still transitioning.
     const nodes = Array.from(this.nodes_.values());
-    const node = (this.nodeGroup_!.selectAll('g:not(.dead)') as
-                  d3.Selection<any, GraphNode, SVGGElement, unknown>)
-                     .data(nodes, d => d.id as unknown as number);
+    const node =
+        this.nodeGroup_!.selectAll<SVGGElement, GraphNode>('g:not(.dead)')
+            .data(nodes, d => d.id as unknown as number);
 
     // Add new nodes, if any.
     if (!node.enter().empty()) {
@@ -974,7 +973,7 @@ export class Graph implements GraphChangeStreamInterface {
       // Turn down the node associated tooltips.
       deletedNodes.each(d => {
         if (d.tooltip) {
-          d.tooltip!.goAway();
+          d.tooltip.goAway();
         }
       });
 
@@ -1002,8 +1001,8 @@ export class Graph implements GraphChangeStreamInterface {
         !dashedLink.enter().empty() || !dashedLink.exit().empty()) {
       this.simulation_!.nodes(nodes);
       const links = this.links_.concat(this.dashedLinks_);
-      (this.simulation_!.force('link')! as d3.ForceLink<GraphNode, any>)
-          .links(links);
+      this.simulation_!.force<d3.ForceLink<GraphNode, any>>('link')!.links(
+          links);
 
       this.restartSimulation_();
     }
@@ -1186,7 +1185,7 @@ export class Graph implements GraphChangeStreamInterface {
 
     // Reset both X and Y attractive forces, as they're cached.
     const xForce = d3.forceX().x(this.width_ / 2).strength(0.1);
-    const yForce = (d3.forceY() as d3.ForceY<GraphNode>)
+    const yForce = d3.forceY<GraphNode>()
                        .y(this.getTargetPositionY_.bind(this))
                        .strength(this.getTargetPositionStrengthY_.bind(this));
     this.simulation_!.force('x_pos', xForce);

@@ -721,7 +721,9 @@ Response EmulationHandler::SetDeviceMetricsOverride(
         gfx::Point(position_x.value_or(0), position_y.value_or(0));
   }
   params.device_scale_factor = device_scale_factor;
-  params.view_size = gfx::Size(width, height);
+  if (width > 0 || height > 0) {
+    params.view_size = gfx::Size(width, height);
+  }
   params.scale = scale.value_or(1);
   params.screen_orientation_type = orientationType;
   params.screen_orientation_angle = orientationAngle;

@@ -136,6 +136,7 @@ public class SharedPreferencesManager {
      * @return a {@link SharedPreferencesManager} that operates on SharedPreferences keys registered
      *     in the passed |registry|
      */
+    @SuppressWarnings("NullAway") // Cannot assumeNonNull(sInstances) due to @GuardedBy warning.
     public static SharedPreferencesManager getInstanceForRegistry(
             @Nullable PreferenceKeyRegistry registry) {
         if (!BuildConfig.ENABLE_ASSERTS) {
@@ -143,7 +144,6 @@ public class SharedPreferencesManager {
         }
         SharedPreferencesManager manager;
         synchronized (sInstances) {
-            assumeNonNull(sInstances);
             manager = sInstances.get(registry);
             if (manager == null) {
                 manager = new SharedPreferencesManager(registry);
@@ -197,7 +197,6 @@ public class SharedPreferencesManager {
      * @return unmodifiable Set with the values
      */
     @Contract("_, !null -> !null")
-    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1104
     public @Nullable Set<String> readStringSet(String key, @Nullable Set<String> defaultValue) {
         checkIsKeyInUse(key);
         Set<String> values = ContextUtils.getAppSharedPreferences().getStringSet(key, defaultValue);
@@ -541,7 +540,7 @@ public class SharedPreferencesManager {
      */
     @CalledByNative
     public void writeString(
-            @JniType("std::string") String key, @JniType("std::string") String value) {
+            @JniType("std::string") String key, @Nullable @JniType("std::string") String value) {
         SharedPreferences.Editor ed = getEditor();
         ed.putString(key, value);
         ed.apply();
@@ -611,6 +610,21 @@ public class SharedPreferencesManager {
      */
     public void removeKeysWithPrefix(KeyPrefix prefix) {
         checkIsPrefixInUse(prefix);
+        removeKeysWithPrefixInternal(prefix);
+    }
+
+    /**
+     * Removes all shared preference entries which have a prefix of prefix.createKey(infix + "*").
+     *
+     * @param prefix The KeyPrefix from which the prefix is constructed.
+     * @param infix The String infix from which the prefix is constructed.
+     */
+    public void removeKeysWithPrefix(KeyPrefix prefix, String infix) {
+        checkIsPrefixInUse(prefix);
+        removeKeysWithPrefixInternal(new KeyPrefix(prefix.createKey(infix + "*")));
+    }
+
+    private void removeKeysWithPrefixInternal(KeyPrefix prefix) {
         SharedPreferences.Editor ed = getEditor();
         Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
         for (Map.Entry<String, ?> pref : allPrefs.entrySet()) {

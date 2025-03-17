@@ -508,15 +508,14 @@ void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
 }
 
-void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForSmoothness(
+void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForUkms(
     content::RenderFrameHost* render_frame_host,
-    base::ReadOnlySharedMemoryRegion shared_memory) {
+    base::ReadOnlySharedMemoryRegion smoothness_memory,
+    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
   const bool is_main_frame = client_->IsPageMainFrame(render_frame_host);
   if (is_main_frame) {
-    client_->SetUpSharedMemoryForSmoothness(std::move(shared_memory));
-  } else {
-    // TODO(crbug.com/40144214): Merge smoothness metrics from OOPIFs with the
-    // main-frame.
+    client_->SetUpSharedMemoryForUkms(std::move(smoothness_memory),
+                                      std::move(dropped_frames_memory));
   }
 }
 

@@ -80,9 +80,31 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
 [ linux ] foo/test [ Failure ]
 """
 
+FAKE_EXPECTATION_FILE_CONTENTS_WITH_MULTIPLE_DUPLICATES = """\
+# tags: [ win linux ]
+# results: [ Failure RetryOnFailure Skip Pass ]
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
 
-class CreateTestExpectationMapUnittest(unittest.TestCase):
+[ linux ] foo/test [ Failure ]
+
+crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
+[ linux ] foo/test [ Failure ]
+crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+[ linux ] foo/test [ Failure ]
+crbug.com/4567 [ linux ] some/good/test [ Pass ]
+
+# Stale comment to remove
+[ linux ] foo/test [ Failure ]
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
+"""
+
+
+class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
+
   def setUp(self) -> None:
+    self.setUpPyfakefs()
     self.instance = expectations.Expectations()
 
     self._expectation_content = {}
@@ -90,11 +112,28 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
         'unexpected_passes_common.expectations._GetNonRecentExpectationContent')
     self._content_mock = self._content_patcher.start()
     self.addCleanup(self._content_patcher.stop)
+    self._header_patcher = mock.patch.object(self.instance,
+                                             '_GetExpectationFileTagHeader')
+    self._header_mock = self._header_patcher.start()
+    self.addCleanup(self._header_patcher.stop)
 
-    def SideEffect(filepath, _):
+    def ContentSideEffect(filepath, _):
       return self._expectation_content[filepath]
 
-    self._content_mock.side_effect = SideEffect
+    self._content_mock.side_effect = ContentSideEffect
+
+    def HeaderSideEffect(filepath: str) -> str:
+      header_lines = []
+      with open(filepath, encoding='utf-8') as infile:
+        content = infile.read()
+      for line in content.splitlines(keepends=True):
+        if line.startswith('#'):
+          header_lines.append(line)
+        else:
+          break
+      return ''.join(header_lines)
+
+    self._header_mock.side_effect = HeaderSideEffect
 
   def testExclusiveOr(self) -> None:
     """Tests that only one input can be specified."""
@@ -107,8 +146,11 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 
   def testExpectationFile(self) -> None:
     """Tests reading expectations from an expectation file."""
-    filename = '/tmp/foo'
+    filename = '/foo'
     self._expectation_content[filename] = FAKE_EXPECTATION_FILE_CONTENTS
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
+
     expectation_map = self.instance.CreateTestExpectationMap(
         filename, None, datetime.timedelta(days=0))
     # Skip expectations should be omitted, but everything else should be
@@ -132,12 +174,16 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 
   def testMultipleExpectationFiles(self) -> None:
     """Tests reading expectations from multiple files."""
-    filename1 = '/tmp/foo'
-    filename2 = '/tmp/bar'
+    filename1 = '/foo'
+    filename2 = '/bar'
     expectation_files = [filename1, filename2]
     self._expectation_content[filename1] = FAKE_EXPECTATION_FILE_CONTENTS
     self._expectation_content[
         filename2] = SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS
+    with open(filename1, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
+    with open(filename2, 'w', encoding='utf-8') as outfile:
+      outfile.write(SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
 
     expectation_map = self.instance.CreateTestExpectationMap(
         expectation_files, None, datetime.timedelta(days=0))
@@ -175,17 +221,116 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
-  def testDuplicateExpectation(self):
-    """Tests behavior when duplicate expectations exist."""
-    filename = '/tmp/foo'
+  def testDuplicateExpectationRemoved(self):
+    """Tests behavior when duplicate expectations exist but are removed."""
+    filename = '/foo'
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE)
+
+    def ContentSideEffect(_, __) -> str:
+      with open(filename, encoding='utf-8') as infile:
+        return infile.read()
+
+    self._content_mock.side_effect = ContentSideEffect
+
+    expectation_map = self.instance.CreateTestExpectationMap(
+        filename, None, datetime.timedelta(days=0))
+    # Skip expectations should be omitted, but everything else should be
+    # present.
+    # yapf: disable
+    expected_expectation_map = {
+        filename: {
+            data_types.Expectation(
+                'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
+            data_types.Expectation(
+                'foo/another/test', ['win'], ['RetryOnFailure'],
+                'crbug.com/5678 crbug.com/6789'): {},
+            data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
+            data_types.Expectation(
+                'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
+        },
+    }
+    # yapf: enable
+    self.assertEqual(expectation_map, expected_expectation_map)
+    self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
+
+    with open(filename, encoding='utf-8') as infile:
+      content = infile.read()
+
+    self.assertEqual(content, FAKE_EXPECTATION_FILE_CONTENTS + '\n')
+
+  def testDuplicateExpectationNotRemoved(self):
+    """Tests behavior when duplicate expectations still exist."""
+    filename = '/foo'
     self._expectation_content[filename] = (
         FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE)
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE)
+
     with self.assertRaisesRegex(
         RuntimeError,
         'Duplicate expectation \\[ linux \\] foo/test \\[ Failure \\]'):
       self.instance.CreateTestExpectationMap(filename, None,
                                              datetime.timedelta(days=0))
 
+
+
+class RemoveDuplicateExpectationsUnittest(fake_filesystem_unittest.TestCase):
+
+  def setUp(self):
+    self.setUpPyfakefs()
+    self.instance = expectations.Expectations()
+
+    self._header_patcher = mock.patch.object(self.instance,
+                                             '_GetExpectationFileTagHeader')
+    self._header_mock = self._header_patcher.start()
+    self.addCleanup(self._header_mock.stop)
+
+    def SideEffect(filepath: str) -> str:
+      header_lines = []
+      with open(filepath, encoding='utf-8') as infile:
+        content = infile.read()
+      for line in content.splitlines(keepends=True):
+        if line.startswith('#'):
+          header_lines.append(line)
+        else:
+          break
+      return ''.join(header_lines)
+
+    self._header_mock.side_effect = SideEffect
+
+  def testNoDuplicates(self):
+    """Tests that the file is left unchanged if no duplicates exist."""
+    filename = '/foo'
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
+
+    self.instance._RemoveDuplicateExpectations(filename)
+
+    with open(filename, encoding='utf-8') as infile:
+      self.assertEqual(infile.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+
+  def testSingleDuplicate(self):
+    """Tests that a single duplicate is removed properly."""
+    filename = '/foo'
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE)
+
+    self.instance._RemoveDuplicateExpectations(filename)
+
+    with open(filename, encoding='utf-8') as infile:
+      self.assertEqual(infile.read(), FAKE_EXPECTATION_FILE_CONTENTS + '\n')
+
+  def testMultipleDuplicates(self):
+    """Tests that multiple duplicate are removed properly."""
+    filename = '/foo'
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_MULTIPLE_DUPLICATES)
+
+    self.instance._RemoveDuplicateExpectations(filename)
+
+    with open(filename, encoding='utf-8') as infile:
+      self.assertEqual(infile.read(), FAKE_EXPECTATION_FILE_CONTENTS + '\n')
 
 
 class GetNonRecentExpectationContentUnittest(unittest.TestCase):

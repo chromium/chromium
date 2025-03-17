@@ -11,7 +11,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/base/histograms.h"
@@ -160,7 +159,7 @@ void LayerTreeImpl::RequestCopyOfOutput(
     std::unique_ptr<viz::CopyOutputRequest> request) {
   if (request->has_source()) {
     const base::UnguessableToken& source = request->source();
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         copy_requests_for_next_frame_,
         [&source](const std::unique_ptr<viz::CopyOutputRequest>& x) {
           return x->has_source() && x->source() == source;
@@ -492,7 +491,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
     // embed something. There is no way to provide an offset value without an
     // embedded viz::Surface to look the value up from.
     // TODO(b/334144355): Don't tag quads if no definition is added.
-    if (layer->surface_id().is_valid()) {
+    if (layer->surface_range().IsValid()) {
       out_frame.metadata.offset_tag_definitions.push_back(
           layer->GetOffsetTagDefinition(tag));
     }

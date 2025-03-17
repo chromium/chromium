@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"  // IWYU pragma: export
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/load_states.h"
@@ -133,7 +134,7 @@ base::Value GetActiveFieldTrialList() {
 
 }  // namespace
 
-base::Value::Dict GetNetConstants() {
+base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
   base::Value::Dict constants_dict;
 
   // Version of the file format.
@@ -166,7 +167,7 @@ base::Value::Dict GetNetConstants() {
   }
 
   {
-    static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 4),
+    static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 3),
                   "Update with new flags");
     constants_dict.Set(
         "certVerifyFlags",
@@ -177,8 +178,6 @@ base::Value::Dict GetNetConstants() {
                  CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS)
             .Set("VERIFY_ENABLE_SHA1_LOCAL_ANCHORS",
                  CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS)
-            .Set("VERIFY_DISABLE_SYMANTEC_ENFORCEMENT",
-                 CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT)
             .Set("VERIFY_DISABLE_NETWORK_FETCHES",
                  CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES));
   }
@@ -335,6 +334,10 @@ base::Value::Dict GetNetConstants() {
   // "clientInfo" key is required for some log readers. Provide a default empty
   // value for compatibility.
   constants_dict.Set("clientInfo", base::Value::Dict());
+
+  if (request_mode == NetConstantsRequestMode::kTracing) {
+    return constants_dict;
+  }
 
   // Add a list of field experiments active at the start of the capture.
   // Additional trials may be enabled later in the browser session.
@@ -521,6 +524,13 @@ NET_EXPORT void CreateNetLogEntriesForActiveObjects(
                       request->creation_time(), request->GetStateAsValue());
     observer->OnAddEntry(entry);
   }
+}
+
+perfetto::Flow NetLogWithSourceToFlow(const NetLogWithSource& net_log) {
+  const uint64_t flow_id =
+      (reinterpret_cast<uint64_t>(net_log.net_log()) << 32) |
+      net_log.source().id;
+  return perfetto::Flow::ProcessScoped(flow_id);
 }
 
 }  // namespace net

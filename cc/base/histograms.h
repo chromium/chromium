@@ -100,20 +100,20 @@ class CC_BASE_EXPORT ScopedUMAHistogramAreaTimerBase {
   void SetArea(const base::CheckedNumeric<int>& area) { area_ = area; }
 
  protected:
-  using Sample = base::HistogramBase::Sample;
+  using Sample32 = base::HistogramBase::Sample32;
 
   ScopedUMAHistogramAreaTimerBase();
   ~ScopedUMAHistogramAreaTimerBase();
 
   // Returns true if histograms should be recorded (i.e. values are valid).
-  bool GetHistogramValues(Sample* time_microseconds,
-                          Sample* pixels_per_ms) const;
+  bool GetHistogramValues(Sample32* time_microseconds,
+                          Sample32* pixels_per_ms) const;
 
  private:
   static bool GetHistogramValues(base::TimeDelta elapsed,
                                  int area,
-                                 Sample* time_microseconds,
-                                 Sample* pixels_per_ms);
+                                 Sample32* time_microseconds,
+                                 Sample32* pixels_per_ms);
 
   base::ElapsedTimer timer_;
   base::CheckedNumeric<int> area_;

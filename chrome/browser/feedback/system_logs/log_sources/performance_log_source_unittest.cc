@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/feedback/system_logs/log_sources/performance_log_source.h"
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/power_monitor_test_utils.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/feedback/system_logs/log_sources/performance_log_source.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
@@ -39,7 +40,7 @@ namespace {
 
 constexpr char kMemorySaverModeActiveKey[] = "high_efficiency_mode_active";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kBatterySaverModeStateKey[] = "battery_saver_state";
 constexpr char kBatterySaverModeActiveKey[] = "battery_saver_mode_active";
 constexpr char kBatterySaverModeDisabledForSessionKey[] =
@@ -129,7 +130,7 @@ TEST_F(PerformanceLogSourceTest, CheckMemorySaverModeLogs) {
   EXPECT_EQ("false", response->at(kMemorySaverModeActiveKey));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Battery and battery saver logs are not used on ChromeOS.
 TEST_F(PerformanceLogSourceTest, CheckBatterySaverModeLogs) {
   SetBatterySaverModeEnabled(true);

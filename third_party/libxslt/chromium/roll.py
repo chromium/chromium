@@ -88,6 +88,7 @@ SHARED_XSLT_CONFIGURE_OPTIONS = [
     ('--without-mem-debug', 'mem_debug=no'),
     ('--without-plugins', 'modules=no'),
     ('--without-crypto', 'crypto=no'),
+    ('--without-python', 'python=no'),
 ]
 
 # These options are only available in configure.ac for Linux and Mac.
@@ -250,7 +251,7 @@ def patch_config():
     sed_in_place('config.h', 's/#define HAVE_MKTIME 1//')
 
     sed_in_place('config.log',
-                 's/[a-z.0-9]\+\.corp\.google\.com/REDACTED/')
+                 r's/[a-z.0-9]\+\.corp\.google\.com/REDACTED/')
 
 
 def prepare_libxslt_distribution(src_path, libxslt_repo_path, temp_dir):
@@ -396,7 +397,7 @@ def roll_libxslt_mac(src_path):
 
 def check_clean(path):
     with WorkingDir(path):
-        status = subprocess.check_output(['git', 'status', '-s']).decode('ascii')
+        status = subprocess.check_output(['git', 'status', '-s', '-uno']).decode('ascii')
         if len(status) > 0:
             raise Exception('repository at %s is not clean' % path)
 

@@ -21,6 +21,10 @@ GlobalAcceleratorListener::~GlobalAcceleratorListener() {
 bool GlobalAcceleratorListener::RegisterAccelerator(
     const ui::Accelerator& accelerator,
     Observer* observer) {
+  if (IsShortcutHandlingSuspended()) {
+    return false;
+  }
+
   AcceleratorMap::const_iterator it = accelerator_map_.find(accelerator);
   if (it != accelerator_map_.end()) {
     // The accelerator has been registered.
@@ -44,6 +48,10 @@ bool GlobalAcceleratorListener::RegisterAccelerator(
 void GlobalAcceleratorListener::UnregisterAccelerator(
     const ui::Accelerator& accelerator,
     Observer* observer) {
+  if (IsShortcutHandlingSuspended()) {
+    return;
+  }
+
   auto it = accelerator_map_.find(accelerator);
   // We should never get asked to unregister something that we didn't register.
   CHECK(it != accelerator_map_.end(), base::NotFatalUntil::M130);
@@ -57,8 +65,11 @@ void GlobalAcceleratorListener::UnregisterAccelerator(
   }
 }
 
-std::vector<ui::Accelerator> GlobalAcceleratorListener::UnregisterAccelerators(
-    Observer* observer) {
+void GlobalAcceleratorListener::UnregisterAccelerators(Observer* observer) {
+  if (IsShortcutHandlingSuspended()) {
+    return;
+  }
+
   std::vector<ui::Accelerator> removed_accelerators;
 
   auto it = accelerator_map_.begin();
@@ -71,8 +82,34 @@ std::vector<ui::Accelerator> GlobalAcceleratorListener::UnregisterAccelerators(
       ++it;
     }
   }
+}
 
-  return removed_accelerators;
+void GlobalAcceleratorListener::SetShortcutHandlingSuspended(bool suspended) {
+  if (shortcut_handling_suspended_ == suspended) {
+    return;
+  }
+
+  shortcut_handling_suspended_ = suspended;
+  for (auto& it : accelerator_map_) {
+    // On Linux, when shortcut handling is suspended we cannot simply early
+    // return in NotifyKeyPressed (similar to what we do for non-global
+    // shortcuts) because we'd eat the keyboard event thereby preventing the
+    // user from setting the shortcut. Therefore we must unregister while
+    // handling is suspended and register when handling resumes.
+    if (shortcut_handling_suspended_) {
+      StopListeningForAccelerator(it.first);
+    } else {
+      StartListeningForAccelerator(it.first);
+    }
+  }
+}
+
+bool GlobalAcceleratorListener::IsShortcutHandlingSuspended() const {
+  return shortcut_handling_suspended_;
+}
+
+bool GlobalAcceleratorListener::IsRegistrationHandledExternally() const {
+  return false;
 }
 
 void GlobalAcceleratorListener::NotifyKeyPressed(

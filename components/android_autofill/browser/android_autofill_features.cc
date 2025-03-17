@@ -20,7 +20,7 @@ namespace autofill::features {
 
 namespace {
 
-const base::Feature* kFeaturesExposedToJava[] = {
+const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillBottomSheetWorkaround,
     &kAndroidAutofillDeprecateAccessibilityApi};
 
@@ -39,15 +39,6 @@ BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
 // which provides alternative paths to handle autofill requests.
 BASE_FEATURE(kAndroidAutofillDeprecateAccessibilityApi,
              "AndroidAutofillDeprecateAccessibilityApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, offer prefill requests (i.e. calls to
-// `AutofillManager.notifyVirtualViewsReady`) to change
-// password forms as well. A form can't be login and change password at the same
-// time so order of the check whether it's login or change password shouldn't
-// matter.
-BASE_FEATURE(kAndroidAutofillPrefillRequestsForChangePassword,
-             "AndroidAutofillPrefillRequestsForChangePassword",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {

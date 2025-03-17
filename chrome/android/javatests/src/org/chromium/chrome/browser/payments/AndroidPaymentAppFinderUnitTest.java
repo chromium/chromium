@@ -14,6 +14,7 @@ import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
@@ -174,6 +175,13 @@ public class AndroidPaymentAppFinderUnitTest {
                 .thenReturn(new HashMap<String, PaymentDetailsModifier>());
         Mockito.when(mParams.getMayCrawl()).thenReturn(false);
         Mockito.when(mDelegate.getParams()).thenReturn(mParams);
+        Mockito.when(mDelegate.getDialogController())
+                .thenReturn(
+                        new DialogControllerImpl(
+                                mWebContents,
+                                (context, style) -> {
+                                    return new AlertDialog.Builder(context, style);
+                                }));
         AndroidPaymentAppFinder finder =
                 new AndroidPaymentAppFinder(
                         mPaymentManifestWebDataService,
@@ -182,7 +190,7 @@ public class AndroidPaymentAppFinderUnitTest {
                         packageManagerDelegate,
                         mDelegate,
                         /* factory= */ null);
-        finder.bypassIsReadyToPayServiceInTest();
+        AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
         finder.findAndroidPaymentApps();
         return mDelegate;
     }

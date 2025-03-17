@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/policy_constants.h"
@@ -139,6 +141,16 @@ IN_PROC_BROWSER_TEST_P(EnterpriseBadgingTest, CanShowEnterpriseBadging) {
              managed_profile()));
 }
 
+IN_PROC_BROWSER_TEST_P(EnterpriseBadgingTest,
+                       CanNotShowEnterpriseBadgingForOTRProfile) {
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      true));
+  // Profile badging should always return false in incognito.
+  EXPECT_FALSE(CanShowEnterpriseBadgingForAvatar(incognito_browser->profile()));
+  EXPECT_FALSE(CanShowEnterpriseBadgingForMenu(incognito_browser->profile()));
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          EnterpriseBadgingTest,
                          testing::Combine(testing::Bool(),
@@ -146,5 +158,46 @@ INSTANTIATE_TEST_SUITE_P(,
                                           testing::Bool(),
                                           testing::Bool()));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+class ManagedBrowserUtilsDeviceSignalsBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kEnterpriseUpdatedProfileCreationScreen, GetParam());
+    InProcessBrowserTest::SetUp();
+  }
+
+  bool EnterpriseUpdatedProfileCreationScreenEnabled() { return GetParam(); }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ManagedBrowserUtilsDeviceSignalsBrowserTest,
+                       UserAcceptedAccountManagementSharesDeviceSignals) {
+  Profile* profile = browser()->profile();
+  auto* user_permission_service =
+      enterprise_signals::UserPermissionServiceFactory::GetForProfile(profile);
+
+  ASSERT_FALSE(user_permission_service->HasUserConsented());
+  ASSERT_FALSE(UserAcceptedAccountManagement(profile));
+
+  // User has not consented to anything.
+  SetUserAcceptedAccountManagement(profile, false);
+  ASSERT_FALSE(UserAcceptedAccountManagement(profile));
+  ASSERT_FALSE(user_permission_service->HasUserConsented());
+
+  // User has consented to sharing signals for the lifetime of the profile.
+  SetUserAcceptedAccountManagement(profile, true);
+  ASSERT_TRUE(UserAcceptedAccountManagement(profile));
+  ASSERT_EQ(user_permission_service->HasUserConsented(),
+            EnterpriseUpdatedProfileCreationScreenEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ManagedBrowserUtilsDeviceSignalsBrowserTest,
+                         testing::Bool());
 }  // namespace enterprise_util
 

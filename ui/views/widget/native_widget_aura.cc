@@ -267,14 +267,15 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   if (params.type == Widget::InitParams::TYPE_BUBBLE) {
     wm::SetHideOnDeactivate(window_, true);
   }
-  window_->SetTransparent(params.opacity ==
-                          Widget::InitParams::WindowOpacity::kTranslucent);
 
   // Check for ShadowType::kNone before aura::Window::Init() to ensure observers
   // do not add useless shadow layers by deriving one from the window type.
   SetShadowElevationFromInitParams(window_, params);
 
   window_->Init(params.layer_type);
+  window_->SetTransparent(params.opacity ==
+                          Widget::InitParams::WindowOpacity::kTranslucent);
+
   // Set name after layer init so it propagates to layer.
   window_->SetName(params.name.empty() ? "NativeWidgetAura" : params.name);
   if (params.type == Widget::InitParams::TYPE_CONTROL) {
@@ -1106,7 +1107,10 @@ gfx::Size NativeWidgetAura::GetMinimumSize() const {
 std::optional<gfx::Size> NativeWidgetAura::GetMaximumSize() const {
   // Do no check maximizability as EXO clients can have maximum size and be
   // maximizable at the same time.
-  return delegate_ ? delegate_->GetMaximumSize() : gfx::Size();
+  const gfx::Size max_size =
+      delegate_ ? delegate_->GetMaximumSize() : gfx::Size();
+  return !max_size.IsZero() ? std::make_optional<gfx::Size>(max_size)
+                            : std::nullopt;
 }
 
 void NativeWidgetAura::OnBoundsChanged(const gfx::Rect& old_bounds,
@@ -1490,39 +1494,45 @@ NativeWidgetPrivate* NativeWidgetPrivate::GetTopLevelNativeWidget(
 }
 
 // static
-void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
-                                             Widget::Widgets* children) {
-  {
-    // Code expects widget for |native_view| to be added to |children|.
-    NativeWidgetPrivate* native_widget = static_cast<NativeWidgetPrivate*>(
-        GetNativeWidgetForNativeView(native_view));
-    if (native_widget && native_widget->GetWidget()) {
-      children->insert(native_widget->GetWidget());
-    }
+Widget::Widgets NativeWidgetPrivate::GetAllChildWidgets(
+    gfx::NativeView native_view) {
+  Widget::Widgets children;
+
+  // Code expects widget for |native_view| to be added to |children|.
+  NativeWidgetPrivate* native_widget = static_cast<NativeWidgetPrivate*>(
+      GetNativeWidgetForNativeView(native_view));
+  if (native_widget && native_widget->GetWidget()) {
+    children.insert(native_widget->GetWidget());
   }
 
   for (aura::Window* child_window : native_view->children()) {
-    GetAllChildWidgets(child_window, children);
+    children.merge(GetAllChildWidgets(child_window));
   }
+
+  return children;
 }
 
 // static
-void NativeWidgetPrivate::GetAllOwnedWidgets(gfx::NativeView native_view,
-                                             Widget::Widgets* owned) {
+Widget::Widgets NativeWidgetPrivate::GetAllOwnedWidgets(
+    gfx::NativeView native_view) {
+  Widget::Widgets owned;
+
   // Add all owned widgets.
   for (aura::Window* transient_child : wm::GetTransientChildren(native_view)) {
     NativeWidgetPrivate* native_widget = static_cast<NativeWidgetPrivate*>(
         GetNativeWidgetForNativeView(transient_child));
     if (native_widget && native_widget->GetWidget()) {
-      owned->insert(native_widget->GetWidget());
+      owned.insert(native_widget->GetWidget());
     }
-    GetAllOwnedWidgets(transient_child, owned);
+    owned.merge(GetAllOwnedWidgets(transient_child));
   }
 
   // Add all child windows.
   for (aura::Window* child : native_view->children()) {
-    GetAllChildWidgets(child, owned);
+    owned.merge(GetAllChildWidgets(child));
   }
+
+  return owned;
 }
 
 // static
@@ -1535,8 +1545,7 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
     return;
   }
 
-  Widget::Widgets widgets;
-  GetAllChildWidgets(native_view, &widgets);
+  Widget::Widgets widgets = GetAllChildWidgets(native_view);
 
   // First notify all the widgets that they are being disassociated
   // from their previous parent.

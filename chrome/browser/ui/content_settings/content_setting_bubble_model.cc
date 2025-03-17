@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -191,13 +192,12 @@ struct ContentSettingsTypeIdEntry {
   int id;
 };
 
-int GetIdForContentType(const ContentSettingsTypeIdEntry* entries,
-                        size_t num_entries,
+int GetIdForContentType(base::span<const ContentSettingsTypeIdEntry> entries,
                         ContentSettingsType type) {
-  for (size_t i = 0; i < num_entries; ++i) {
-    if (entries[i].type == type) {
-      return entries[i].id;
-    }
+  if (auto found =
+          std::ranges::find(entries, type, &ContentSettingsTypeIdEntry::type);
+      found != entries.end()) {
+    return found->id;
   }
   return 0;
 }
@@ -312,13 +312,18 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_TITLE},
   };
-  const ContentSettingsTypeIdEntry* title_ids = kBlockedTitleIDs;
-  size_t num_title_ids = std::size(kBlockedTitleIDs);
-  if (IsContentAllowed()) {
-    title_ids = kAccessedTitleIDs;
-    num_title_ids = std::size(kAccessedTitleIDs);
-  }
-  int title_id = GetIdForContentType(title_ids, num_title_ids, content_type());
+
+  int title_id = [&]() {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (content_type() == ContentSettingsType::SMART_CARD_GUARD) {
+      return IDS_ACCESSED_SMART_CARD_READER_TITLE;
+    }
+#endif
+    if (IsContentAllowed()) {
+      return GetIdForContentType(kAccessedTitleIDs, content_type());
+    }
+    return GetIdForContentType(kBlockedTitleIDs, content_type());
+  }();
   if (title_id) {
     set_title(l10n_util::GetStringUTF16(title_id));
   }
@@ -355,14 +360,18 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
            ? IDS_ALLOWED_SENSORS_MESSAGE
            : IDS_ALLOWED_MOTION_SENSORS_MESSAGE},
   };
-  const ContentSettingsTypeIdEntry* message_ids = kBlockedMessageIDs;
-  size_t num_message_ids = std::size(kBlockedMessageIDs);
-  if (IsContentAllowed()) {
-    message_ids = kAccessedMessageIDs;
-    num_message_ids = std::size(kAccessedMessageIDs);
-  }
-  int message_id =
-      GetIdForContentType(message_ids, num_message_ids, content_type());
+
+  int message_id = [&]() {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (content_type() == ContentSettingsType::SMART_CARD_GUARD) {
+      return IDS_ACCESSED_SMART_CARD_READER_BODY;
+    }
+#endif
+    if (IsContentAllowed()) {
+      return GetIdForContentType(kAccessedMessageIDs, content_type());
+    }
+    return GetIdForContentType(kBlockedMessageIDs, content_type());
+  }();
   if (message_id) {
     set_message(l10n_util::GetStringUTF16(message_id));
   }
@@ -387,8 +396,7 @@ void ContentSettingSimpleBubbleModel::SetCustomLink() {
   static const ContentSettingsTypeIdEntry kCustomIDs[] = {
       {ContentSettingsType::MIXEDSCRIPT, IDS_ALLOW_INSECURE_CONTENT_BUTTON},
   };
-  int custom_link_id =
-      GetIdForContentType(kCustomIDs, std::size(kCustomIDs), content_type());
+  int custom_link_id = GetIdForContentType(kCustomIDs, content_type());
   if (custom_link_id) {
     set_custom_link(l10n_util::GetStringUTF16(custom_link_id));
   }
@@ -668,12 +676,10 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
 
   std::u16string radio_allow_label;
   if (allowed) {
-    int resource_id = GetIdForContentType(
-        kAllowedAllowIDs, std::size(kAllowedAllowIDs), content_type());
+    int resource_id = GetIdForContentType(kAllowedAllowIDs, content_type());
     radio_allow_label = l10n_util::GetStringUTF16(resource_id);
   } else {
-    int resource_id = GetIdForContentType(
-        kBlockedAllowIDs, std::size(kBlockedAllowIDs), content_type());
+    int resource_id = GetIdForContentType(kBlockedAllowIDs, content_type());
     if (content_type() == ContentSettingsType::COOKIES) {
       radio_allow_label = l10n_util::GetStringUTF16(resource_id);
     } else {
@@ -703,16 +709,15 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
 
   std::u16string radio_block_label;
   if (allowed) {
-    int resource_id = GetIdForContentType(
-        kAllowedBlockIDs, std::size(kAllowedBlockIDs), content_type());
+    int resource_id = GetIdForContentType(kAllowedBlockIDs, content_type());
     if (content_type() == ContentSettingsType::COOKIES) {
       radio_block_label = l10n_util::GetStringUTF16(resource_id);
     } else {
       radio_block_label = l10n_util::GetStringFUTF16(resource_id, display_url);
     }
   } else {
-    radio_block_label = l10n_util::GetStringUTF16(GetIdForContentType(
-        kBlockedBlockIDs, std::size(kBlockedBlockIDs), content_type()));
+    radio_block_label = l10n_util::GetStringUTF16(
+        GetIdForContentType(kBlockedBlockIDs, content_type()));
   }
 
   radio_group.radio_items = {radio_allow_label, radio_block_label};
@@ -1930,6 +1935,11 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     case ContentSettingsType::STORAGE_ACCESS:
       return std::make_unique<ContentSettingStorageAccessBubbleModel>(
           delegate, web_contents);
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::SMART_CARD_GUARD:
+      return std::make_unique<ContentSettingSimpleBubbleModel>(
+          delegate, web_contents, content_type);
+#endif
     default:
       NOTREACHED() << "No bubble for the content type "
                    << static_cast<int32_t>(content_type) << ".";

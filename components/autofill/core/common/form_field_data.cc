@@ -367,13 +367,11 @@ base::optional_ref<const SelectOption> FormFieldData::selected_option() const {
 
 bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
   auto equality_tuple = [](const FormFieldData& f) {
-    return std::tuple_cat(
-        std::tie(f.label_, f.name_, f.name_attribute_, f.id_attribute_,
-                 f.form_control_type_, f.autocomplete_attribute_,
-                 f.placeholder_, f.max_length_, f.css_classes_, f.is_focusable_,
-                 f.should_autocomplete_, f.role_, f.text_direction_,
-                 f.options_),
-        std::make_tuple(IsCheckable(f.check_status_)));
+    return std::tie(f.label_, f.name_, f.name_attribute_, f.id_attribute_,
+                    f.form_control_type_, f.autocomplete_attribute_,
+                    f.placeholder_, f.max_length_, f.css_classes_,
+                    f.is_focusable_, f.should_autocomplete_, f.role_,
+                    f.text_direction_, f.options_);
   };
   return equality_tuple(*this) == equality_tuple(field);
 }
@@ -424,6 +422,8 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "contenteditable";
     case FormControlType::kInputCheckbox:
       return "checkbox";
+    case FormControlType::kInputDate:
+      return "date";
     case FormControlType::kInputEmail:
       return "email";
     case FormControlType::kInputMonth:
@@ -444,8 +444,6 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "url";
     case FormControlType::kSelectOne:
       return "select-one";
-    case FormControlType::kSelectMultiple:
-      return "select-multiple";
     case FormControlType::kTextArea:
       return "textarea";
   }

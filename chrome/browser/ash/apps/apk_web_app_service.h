@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -48,11 +47,10 @@ namespace ash {
 class ApkWebAppService : public KeyedService,
                          public ApkWebAppInstaller::Owner,
                          public ArcAppListPrefs::Observer,
-                         public apps::AppRegistryCache::Observer,
-                         public crosapi::WebAppServiceAsh::Observer {
+                         public apps::AppRegistryCache::Observer {
  public:
-  // Handles app install/uninstall operations to external processes (ARC and
-  // Lacros) to stub out in tests.
+  // Handles app install/uninstall operations to external processes (ARC) to
+  // stub out in tests.
   class Delegate {
    public:
     using WebAppInstallCallback = base::OnceCallback<void(
@@ -65,22 +63,6 @@ class ApkWebAppService : public KeyedService,
         base::OnceCallback<void(webapps::UninstallResultCode code)>;
 
     virtual ~Delegate();
-
-    // Kicks off installation of a web app in Lacros. It will first fetch the
-    // icon of a package identified by |package_name| from ARC, and then use
-    // |web_app_info| and the icon to perform the installation in Lacros. If
-    // either ARC or Lacros are not connected, the function does nothing.
-    virtual void MaybeInstallWebAppInLacros(
-        const std::string& package_name,
-        arc::mojom::WebAppInfoPtr web_app_info,
-        WebAppInstallCallback callback) = 0;
-
-    // Tells Lacros to remove a web app install source "ARC" for a web app
-    // with ID |web_app_id|. If no other sources left, the web app will be
-    // uninstalled. Does nothing if Lacros is not connected.
-    virtual void MaybeUninstallWebAppInLacros(
-        const webapps::AppId& web_app_id,
-        WebAppUninstallCallback callback) = 0;
 
     // Tells ARC to uninstall a package identified by |package_name|. Returns
     // true if the call to ARC was successful, false if ARC is not running.
@@ -174,10 +156,6 @@ class ApkWebAppService : public KeyedService,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  // croapi::WebAppServiceAsh::Observer overrides:
-  void OnWebAppProviderBridgeConnected() override;
-  void OnWebAppServiceAshDestroyed() override;
-
   void MaybeRemoveArcPackageForWebApp(const webapps::AppId& web_app_id);
   void OnDidGetWebAppIcon(const std::string& package_name,
                           arc::mojom::WebAppInfoPtr web_app_info,
@@ -225,10 +203,6 @@ class ApkWebAppService : public KeyedService,
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observer_{this};
-
-  base::ScopedObservation<crosapi::WebAppServiceAsh,
-                          crosapi::WebAppServiceAsh::Observer>
-      web_app_service_observer_{this};
 
   // Must go last.
   base::WeakPtrFactory<ApkWebAppService> weak_ptr_factory_{this};

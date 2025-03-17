@@ -25,6 +25,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -310,8 +311,12 @@ void MediaAppGuestUI::IsMantisAvailable(IsMantisAvailableCallback callback) {
   // Mantis does not live in //chrome, no need to use delegate.
   if (mantis_untrusted_service_manager_ == nullptr) {
     mantis_untrusted_service_manager_ =
-        std::make_unique<MantisUntrustedServiceManager>();
+        std::make_unique<MantisUntrustedServiceManager>(
+            delegate_->GetFeatureAccessChecker(
+                MantisUntrustedServiceManager::GetFeatureAccessConfig(),
+                web_ui()));
   }
+
   mantis_untrusted_service_manager_->IsAvailable(
       delegate_->GetPrefService(web_ui()),
       base::BindOnce(&MediaAppGuestUI::OnMantisAvailableDone,
@@ -320,13 +325,14 @@ void MediaAppGuestUI::IsMantisAvailable(IsMantisAvailableCallback callback) {
 
 void MediaAppGuestUI::CreateMantisUntrustedService(
     mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page,
+    const std::optional<base::Uuid>& dlc_uuid,
     CreateMantisUntrustedServiceCallback callback) {
   if (!is_mantis_available_.value_or(false)) {
     untrusted_service_factory_.ReportBadMessage(
         "Trying to bind interface when feature is not available.");
     return;
   }
-  mantis_untrusted_service_manager_->Create(std::move(page),
+  mantis_untrusted_service_manager_->Create(std::move(page), dlc_uuid,
                                             std::move(callback));
 }
 

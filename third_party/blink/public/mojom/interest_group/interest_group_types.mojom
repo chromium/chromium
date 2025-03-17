@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -41,6 +42,12 @@ struct InterestGroupAd {
   // receive reports with macros. All origins must be HTTPS. Only meaningful in
   // `InterestGroup.ads`, but ignored in `InterestGroup.ad_components`.
   array<url.mojom.Origin>? allowed_reporting_origins;
+
+  // Optional metadata sent to trusted seller signals server in V1 protocol,
+  // ostensively to help do things like scan creatives against malware.
+  // This is opaque to Chrome, and will be passed to the server URL verbatim
+  // (modulo escaping required by being a query param).
+  string? creative_scanning_metadata;
 };
 
 // The maximum size of a valid interest group in bytes.
@@ -172,6 +179,9 @@ struct InterestGroup {
   // An optional field for matching the encryption key, and indicating which
   // version of the key-value server this interest group uses.
   url.mojom.Origin? trusted_bidding_signals_coordinator;
+  // Stores the set of origins that are allowed to provide view and click
+  // counts to this interest group's generateBid() function.
+  array<url.mojom.Origin>? view_and_click_counts_providers;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? user_bidding_signals;
   array<InterestGroupAd>? ads;
@@ -211,6 +221,42 @@ struct PreviousWin {
   string ad_json;
 };
 
+// Used by ClickAndViewCounts -- both view and click counts share the same time
+// bucketing scheme.
+//
+// There can be some imprecison due to the fact that counts older than one hour
+// get compacted by DB maintenance to the nearest hour, to save storage.
+//
+// Note that the longer time intervals include all events in the shorter time
+// intervals. For example, every event in the past hour is also an event in the
+// past day, etc.
+struct ViewOrClickCounts {
+  // Views or clicks within the past hour.
+  int32 past_hour = 0;
+
+  // Views or clicks within the past day.
+  int32 past_day = 0;
+
+  // Views or clicks within the past week.
+  int32 past_week = 0;
+
+  // Views or clicks within the past 30 days.
+  int32 past_30_days = 0;
+
+  // Views or clicks within the past 90 days.
+  int32 past_90_days = 0;
+};
+
+// A part of BiddingBrowserSignals that provides counts of views and clicks for
+// the given buyer origin (the "eligible origin") over various time buckets.
+struct ViewAndClickCounts {
+  // Counts for view events for the given buyer origin.
+  ViewOrClickCounts view_counts;
+
+  // Counts for click events for the given buyer origin.
+  ViewOrClickCounts click_counts;
+};
+
 // Browser signals passed to the BidderWorklet's generateBid() method that are
 // stored on disk and updated by the browser, as opposed to coming from the
 // frame running the auction, or from the definition of the InterestGroup taking
@@ -229,6 +275,10 @@ struct BiddingBrowserSignals {
   // Whether the browser is under lockout or the buyer's origin is under
   // cooldown for sending forDebuggingOnly reports.
   bool for_debugging_only_in_cooldown_or_lockout;
+
+  // Loaded time-bucketed view and click counts aggregated across the
+  // `view_and_click_counts_providers` for this interest group.
+  ViewAndClickCounts view_and_click_counts;
 };
 
 // Represents an interest group with associated metadata. This struct is
@@ -656,6 +706,10 @@ struct AuctionAdConfig {
   // Origin for the Coordinator to be used for the seller's Private Aggregation
   // requests.
   url.mojom.Origin? aggregation_coordinator_origin;
+
+  // If true, data from creative_scanning_metadata field of interest groups
+  // will be sent to V1 trusted seller signals server.
+  bool? send_creative_scanning_metadata;
 };
 
 // Per-buyer config for GetInterestGroupAdAuctionData().
@@ -665,6 +719,8 @@ struct AuctionDataBuyerConfig {
 };
 
 // Configuration to pass to GetInterestGroupAdAuctionData().
+// The behavior of `request_size` and `per_buyer_configs` is described in
+// https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#buyer-controls
 struct AuctionDataConfig {
   // A specific list of buyers to include in the encrypted request and any
   // specific options for them.
@@ -672,4 +728,17 @@ struct AuctionDataConfig {
 
   // Maximum size to make the returned encrypted request.
   uint32? request_size;
+};
+
+union AdAuctionRequestOrError {
+  mojo_base.mojom.BigBuffer request;
+  string error;
+};
+
+// The per seller ad auction data for running an external auction on a bidding
+// and auction server. Upon success, `data` will contain the encrypted ad
+// auction data, or an error message upon failure.
+struct AdAuctionPerSellerRequest {
+  url.mojom.Origin seller;
+  AdAuctionRequestOrError data;
 };

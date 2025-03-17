@@ -44,18 +44,11 @@ extern const char kApiAccessToken[];
 extern const char kLocalJid[];
 extern const char kDirectoryBotJidValue[];
 extern const char kIsEnterpriseAdminUser[];
-extern const char kSuppressUserDialogs[];
-extern const char kSuppressNotifications[];
-extern const char kCurtainLocalUserSession[];
-extern const char kTerminateUponInput[];
-extern const char kAllowTroubleshootingTools[];
-extern const char kShowTroubleshootingTools[];
-extern const char kAllowReconnections[];
-extern const char kAllowFileTransfer[];
 extern const char kUseElevatedHost[];
 extern const char kUseSignalingProxy[];
 extern const char kIceConfig[];
 extern const char kAuthorizedHelper[];
+extern const char kUseCorpSessionAuthz[];
 // Response sent back to the client after the Connect message has been handled.
 extern const char kConnectResponse[];
 

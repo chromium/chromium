@@ -37,11 +37,9 @@ typedef enum {
 // Enum is used to represent the action to be taken by the authentication once
 // the user is successfully signed in.
 enum class PostSignInAction {
-  // No post action after sign-in.
-  kNone,
-  kFirstType = kNone,
   // Shows a snackbar displaying the account that just signed-in.
   kShowSnackbar,
+  kFirstType = kShowSnackbar,
   // Enables SelectableType::kBookmarks for the account that just signed-in from
   // the bookmarks manager.
   kEnableUserSelectableTypeBookmarks,

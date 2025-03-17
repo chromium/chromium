@@ -23,7 +23,6 @@
 
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -165,7 +164,7 @@ void ThreadSafeHelper::ProxyToCups(std::vector<uint8_t> request,
   in_flight_->io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       base::MakeRefCounted<net::IOBufferWithSize>(request.size()),
       request.size());
-  base::ranges::copy(request, in_flight_->io_buffer->data());
+  std::ranges::copy(request, in_flight_->io_buffer->data());
 
   ConnectIfNeeded();
 }

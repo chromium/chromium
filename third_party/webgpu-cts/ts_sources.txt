@@ -181,6 +181,7 @@ src/webgpu/api/operation/compute_pipeline/entry_point_name.spec.ts
 src/webgpu/api/operation/compute_pipeline/overrides.spec.ts
 src/webgpu/api/operation/device/all_limits_and_features.spec.ts
 src/webgpu/api/operation/device/lost.spec.ts
+src/webgpu/api/operation/limits/max_combined_limits.spec.ts
 src/webgpu/api/operation/memory_sync/operation_context_helper.ts
 src/webgpu/api/operation/memory_sync/buffer/buffer_sync_test.ts
 src/webgpu/api/operation/memory_sync/buffer/multiple_buffers.spec.ts
@@ -189,6 +190,7 @@ src/webgpu/api/operation/memory_sync/texture/readonly_depth_stencil.spec.ts
 src/webgpu/api/operation/memory_sync/texture/texture_sync_test.ts
 src/webgpu/api/operation/memory_sync/texture/same_subresource.spec.ts
 src/webgpu/api/operation/pipeline/default_layout.spec.ts
+src/webgpu/api/operation/pipeline/pipeline_layout_created_with_null_bind_group_layout.spec.ts
 src/webgpu/api/operation/queue/writeBuffer.spec.ts
 src/webgpu/api/operation/render_pass/clear_value.spec.ts
 src/webgpu/api/operation/render_pass/resolve.spec.ts
@@ -226,7 +228,6 @@ src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/storage_texture/read_only.spec.ts
 src/webgpu/api/operation/storage_texture/read_write.spec.ts
 src/webgpu/api/operation/texture_view/format_reinterpretation.spec.ts
-src/webgpu/api/operation/texture_view/read.spec.ts
 src/webgpu/api/operation/texture_view/write.spec.ts
 src/webgpu/api/operation/vertex_state/correctness.spec.ts
 src/webgpu/api/operation/vertex_state/index_format.spec.ts
@@ -274,7 +275,11 @@ src/webgpu/api/validation/capability_checks/limits/maxInterStageShaderVariables.
 src/webgpu/api/validation/capability_checks/limits/maxSampledTexturesPerShaderStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxSamplersPerShaderStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxStorageBufferBindingSize.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageBuffersInFragmentStage.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageBuffersInVertexStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxStorageBuffersPerShaderStage.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageTexturesInFragmentStage.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageTexturesInVertexStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxStorageTexturesPerShaderStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxTextureArrayLayers.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxTextureDimension1D.spec.ts
@@ -360,14 +365,18 @@ src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts
 src/webgpu/compat/compatibility_test.ts
 src/webgpu/compat/api/validation/createBindGroup.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout.spec.ts
+src/webgpu/compat/api/validation/createBindGroupLayout_limits.spec.ts
+src/webgpu/compat/api/validation/createPipelineLayout.spec.ts
 src/webgpu/shader/types.ts
 src/webgpu/shader/validation/decl/util.ts
+src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/compat/api/validation/pipeline_creation.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
 src/webgpu/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/depth_stencil_state.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/fragment_state.spec.ts
+src/webgpu/compat/api/validation/render_pipeline/in_stage_limits.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/unsupported_wgsl.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/vertex_state.spec.ts
 src/webgpu/compat/api/validation/texture/createTexture.spec.ts
@@ -375,6 +384,7 @@ src/webgpu/compat/api/validation/texture/cubeArray.spec.ts
 src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constructable.spec.ts
 src/webgpu/idl/exposed.html.ts
+src/webgpu/idl/javascript.spec.ts
 src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/values.ts
 src/webgpu/shader/execution/float_parse.spec.ts
@@ -628,7 +638,6 @@ src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureDimensions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGather.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGatherCompare.spec.ts
@@ -961,6 +970,7 @@ src/webgpu/web_platform/copyToTexture/ImageBitmap.spec.ts
 src/webgpu/web_platform/copyToTexture/ImageData.spec.ts
 src/webgpu/web_platform/copyToTexture/canvas.spec.ts
 src/webgpu/web_platform/copyToTexture/image.spec.ts
+src/webgpu/web_platform/copyToTexture/image_file.spec.ts
 src/webgpu/web_platform/copyToTexture/video.spec.ts
 src/webgpu/web_platform/external_texture/video.spec.ts
 src/webgpu/web_platform/reftests/gpu_ref_test.ts

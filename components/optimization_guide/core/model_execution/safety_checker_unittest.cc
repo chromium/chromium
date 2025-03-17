@@ -13,10 +13,10 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/safety_client.h"
@@ -61,12 +61,16 @@ bool GetIsUnsafe(const proto::InternalOnDeviceModelExecutionInfo& log) {
   return log.response().text_safety_model_response().is_unsafe();
 }
 
-proto::ComposeRequest UrlAndInputRequest(const std::string& url,
-                                         const std::string& input) {
+MultimodalMessage UserInputOverlayRequest(const std::string& input) {
+  return MultimodalMessage(UserInputRequest(input));
+}
+
+MultimodalMessage UrlAndInputRequest(const std::string& url,
+                                     const std::string& input) {
   proto::ComposeRequest req;
   req.mutable_page_metadata()->set_page_url(url);
   req.mutable_generate_params()->set_user_input(input);
-  return req;
+  return MultimodalMessage(req);
 }
 
 proto::Any SimpleResponse(const std::string& output) {
@@ -472,7 +476,7 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnmetRequiredLanguage) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRequestChecks(UserInputRequest("english input"),
+  checker->RunRequestChecks(UserInputOverlayRequest("english input"),
                             future_.GetCallback());
   auto result = future_.Take();
 
@@ -502,7 +506,7 @@ TEST_F(SafetyCheckerTest,
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRequestChecks(UserInputRequest("english input"),
+  checker->RunRequestChecks(UserInputOverlayRequest("english input"),
                             future_.GetCallback());
   auto result = future_.Take();
 
@@ -531,7 +535,7 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithMetRequiredLanguage) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRequestChecks(UserInputRequest("esperanto input"),
+  checker->RunRequestChecks(UserInputOverlayRequest("esperanto input"),
                             future_.GetCallback());
   auto result = future_.Take();
 
@@ -562,7 +566,7 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithLanguageOnly) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRequestChecks(UserInputRequest("esperanto input"),
+  checker->RunRequestChecks(UserInputOverlayRequest("esperanto input"),
                             future_.GetCallback());
   auto result = future_.Take();
 
@@ -592,7 +596,7 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithLanguageOnly) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRequestChecks(UserInputRequest("english input"),
+  checker->RunRequestChecks(UserInputOverlayRequest("english input"),
                             future_.GetCallback());
   auto result = future_.Take();
 

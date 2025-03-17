@@ -8,12 +8,16 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/win/win_util.h"
+#include "chrome/windows_services/elevated_tracing_service/service_integration.h"
+#include "chrome/windows_services/service_program/crash_reporting.h"
 #include "chrome/windows_services/service_program/get_calling_process.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
+#include "chrome/windows_services/service_program/user_crash_state.h"
 #include "components/tracing/common/etw_system_data_source_win.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -64,13 +68,16 @@ HRESULT SystemTracingSession::AcceptInvitation(const wchar_t* server_name,
     return kErrorSessionAlreadyActive;
   }
 
-  // Impersonate the client to get a handle to the client's process.
+  // Impersonate the client to get a handle to the client's process and per-user
+  // state related to crash handling.
   base::Process client_process;
+  std::unique_ptr<UserCrashState> user_crash_state;
   if (ScopedClientImpersonation impersonate; impersonate.is_valid()) {
     client_process = GetCallingProcess();
     if (!client_process.IsValid()) {
       return kErrorCouldNotObtainCallingProcess;
     }
+    user_crash_state = UserCrashState::Create(impersonate, client_process);
   } else {
     return impersonate.result();
   }
@@ -94,6 +101,14 @@ HRESULT SystemTracingSession::AcceptInvitation(const wchar_t* server_name,
       CastToUnknown(), std::move(client_process));
   if (!session) {
     return kErrorSessionInProgress;
+  }
+
+  // Start the crash handler with a user-specific database.
+  if (user_crash_state) {
+    windows_services::StartCrashHandler(
+        std::move(user_crash_state),
+        /*directory_name=*/elevated_tracing_service::GetStorageDirBasename(),
+        /*process_type=*/"elevated-tracing-service", task_runner_);
   }
 
   auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(server_name);

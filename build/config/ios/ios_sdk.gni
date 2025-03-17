@@ -63,17 +63,31 @@ ios_use_xcode_symlinks =
 
 if (ios_sdk_path == "") {
   # Compute default target.
-  if (target_environment == "simulator") {
-    ios_sdk_name = "iphonesimulator"
-    ios_sdk_platform = "iPhoneSimulator"
-  } else if (target_environment == "device") {
-    ios_sdk_name = "iphoneos"
-    ios_sdk_platform = "iPhoneOS"
-  } else if (target_environment == "catalyst") {
-    ios_sdk_name = "macosx"
-    ios_sdk_platform = "MacOSX"
+  if (target_platform == "iphoneos") {
+    if (target_environment == "simulator") {
+      ios_sdk_name = "iphonesimulator"
+      ios_sdk_platform = "iPhoneSimulator"
+    } else if (target_environment == "device") {
+      ios_sdk_name = "iphoneos"
+      ios_sdk_platform = "iPhoneOS"
+    } else if (target_environment == "catalyst") {
+      ios_sdk_name = "macosx"
+      ios_sdk_platform = "MacOSX"
+    } else {
+      assert(false, "unsupported target_environment=$target_environment")
+    }
+  } else if (target_platform == "tvos") {
+    if (target_environment == "simulator") {
+      ios_sdk_name = "appletvsimulator"
+      ios_sdk_platform = "AppleTVSimulator"
+    } else if (target_environement == "device") {
+      ios_sdk_name = "appletv"
+      ios_sdk_platform = "AppleTVOS"
+    } else {
+      assert(false, "unsupported target_environment=$target_environment")
+    }
   } else {
-    assert(false, "unsupported environment: $target_environment")
+    assert(false, "unsupported target_platform=$target_platform")
   }
 
   ios_sdk_info_args = [

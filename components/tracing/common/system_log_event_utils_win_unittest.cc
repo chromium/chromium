@@ -6,12 +6,12 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/sid.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -185,7 +185,7 @@ TEST(SystemLogEventUtilsTest, CopyUserSidx64) {
   // too far.
   auto more_bytes = base::HeapArray<uint8_t>::Uninit(bytes_span.size() + 1);
   // Copy the data and set some byte at the end.
-  *base::ranges::copy(bytes_span, more_bytes.begin()) = 0x44;
+  *std::ranges::copy(bytes_span, more_bytes.begin()).out = 0x44;
   // Read out the sid.
   base::BufferIterator<const uint8_t> iterator3(more_bytes);
   ASSERT_NE(CopySid(sizeof(uint64_t), iterator3), std::nullopt);

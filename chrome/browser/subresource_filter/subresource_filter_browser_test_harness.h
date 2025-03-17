@@ -96,7 +96,7 @@ class SubresourceFilterSharedBrowserTest : public PlatformBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override;
 
-  GURL GetTestUrl(const std::string& relative_url) const;
+  virtual GURL GetTestUrl(const std::string& relative_url) const;
 
   content::WebContents* web_contents();
 

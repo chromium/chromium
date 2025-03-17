@@ -8,15 +8,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "device/fido/virtual_fido_device.h"
-
+#include <algorithm>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -27,6 +25,7 @@
 #include "device/fido/large_blob.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
+#include "device/fido/virtual_fido_device.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -676,8 +675,8 @@ VirtualFidoDevice::RegistrationData* VirtualFidoDevice::FindRegistrationData(
   if (it == mutable_state()->registrations.end())
     return nullptr;
 
-  if (!base::ranges::equal(application_parameter,
-                           it->second.application_parameter)) {
+  if (!std::ranges::equal(application_parameter,
+                          it->second.application_parameter)) {
     return nullptr;
   }
 

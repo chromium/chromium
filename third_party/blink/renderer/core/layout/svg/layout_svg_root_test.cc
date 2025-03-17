@@ -113,7 +113,7 @@ TEST_P(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
 
   // The center of this rect does not overlap the SVG element, but the
   // rect itself does.
-  auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
+  auto& results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
   int count = 0;
   EXPECT_EQ(2u, results.size());
   for (auto result : results) {

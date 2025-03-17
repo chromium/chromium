@@ -125,7 +125,7 @@ pub fn readme_file_from_package<'a>(
         let does_crbug_369075726_apply = !shipped
             && crate_config
                 .as_ref()
-                .map_or(false, |cfg| cfg.no_license_file_tracked_in_crbug_369075726);
+                .is_some_and(|cfg| cfg.no_license_file_tracked_in_crbug_369075726);
         if !does_crbug_369075726_apply {
             bail!(
                 "License file not found for crate {name}.\n
@@ -179,6 +179,7 @@ pub fn readme_file_from_package<'a>(
     Ok((dir, readme))
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Eq, Hash, PartialEq, Clone, Copy)]
 enum LicenseKind {
     /// https://spdx.org/licenses/Apache-2.0.html
@@ -252,8 +253,10 @@ static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<Licens
             "(MIT OR Apache-2.0) AND Unicode-3.0",
             vec![LicenseKind::Apache2, LicenseKind::Unicode3],
         );
+        h.insert("MIT AND (MIT OR Apache-2.0)", vec![LicenseKind::Apache2]);
         h.insert("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
         h.insert("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
+        h.insert("Unicode-3.0", vec![LicenseKind::Unicode3]);
         h.insert("Zlib", vec![LicenseKind::Zlib]);
         h
     });

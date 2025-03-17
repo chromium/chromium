@@ -32,6 +32,11 @@
   TableViewTextLinkCell* cell =
       base::apple::ObjCCastStrict<TableViewTextLinkCell>(tableCell);
   [cell setText:self.text linkURLs:self.linkURLs linkRanges:self.linkRanges];
+  cell.logo.image = self.logoImage;
+  if (self.logoImageDescription) {
+    cell.logo.isAccessibilityElement = YES;
+    cell.logo.accessibilityLabel = self.logoImageDescription;
+  }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
@@ -60,22 +65,33 @@
         @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
     _textView.backgroundColor = UIColor.clearColor;
 
+    _logo = [[UIImageView alloc] init];
+    _logo.translatesAutoresizingMaskIntoConstraints = NO;
+    _logo.contentMode = UIViewContentModeLeft;
+
+    UIStackView* verticalStackView =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ _textView, _logo ]];
+    verticalStackView.axis = UILayoutConstraintAxisVertical;
+    verticalStackView.alignment = UIStackViewAlignmentLeading;
+    verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+
     // Add subviews to View Hierarchy.
-    [self.contentView addSubview:_textView];
+    [self.contentView addSubview:verticalStackView];
 
     // Set and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
       // Title Label Constraints.
-      [_textView.leadingAnchor
+      [verticalStackView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_textView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
-      [_textView.bottomAnchor
+      [verticalStackView.topAnchor
+          constraintEqualToAnchor:self.contentView.topAnchor],
+      [verticalStackView.bottomAnchor
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:0],
-      [_textView.trailingAnchor
+      [verticalStackView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kTableViewHorizontalSpacing]
+                         constant:-kTableViewHorizontalSpacing],
     ]];
   }
   return self;
@@ -113,16 +129,35 @@
   self.delegate = nil;
 }
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
+  if (@available(iOS 17, *)) {
+    return NO;
+  }
+
   DCHECK(self.textView == textView);
   DCHECK(URL);
   CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
   [self.delegate tableViewTextLinkCell:self didRequestOpenURL:crurl];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  DCHECK(self.textView == textView);
+  NSURL* URL = textItem.link;
+  DCHECK(URL);
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate tableViewTextLinkCell:weakSelf didRequestOpenURL:crurl];
+  }];
 }
 
 @end

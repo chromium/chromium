@@ -25,7 +25,8 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
@@ -45,7 +46,7 @@ namespace blink {
 namespace {
 
 static Vector<TextCheckingResult> ToCoreResults(
-    const WebVector<WebTextCheckingResult>& results) {
+    const std::vector<WebTextCheckingResult>& results) {
   Vector<TextCheckingResult> core_results;
   for (size_t i = 0; i < results.size(); ++i)
     core_results.push_back(results[i]);
@@ -58,7 +59,7 @@ class WebTextCheckingCompletionImpl : public WebTextCheckingCompletion {
       : request_(request) {}
 
   void DidFinishCheckingText(
-      const WebVector<WebTextCheckingResult>& results) override {
+      const std::vector<WebTextCheckingResult>& results) override {
     if (request_)
       request_->DidSucceed(ToCoreResults(results));
     request_ = nullptr;
@@ -259,8 +260,8 @@ void SpellCheckRequester::EnqueueRequest(SpellCheckRequest* request) {
   // overwrite each other.
   if (!continuation) {
     RequestQueue::const_iterator same_element_request =
-        base::ranges::find(request_queue_, request->RootEditableElement(),
-                           &SpellCheckRequest::RootEditableElement);
+        std::ranges::find(request_queue_, request->RootEditableElement(),
+                          &SpellCheckRequest::RootEditableElement);
     if (same_element_request != request_queue_.end())
       request_queue_.erase(same_element_request);
   }

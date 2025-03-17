@@ -5,9 +5,7 @@
 #include "components/offline_pages/core/request_header/offline_page_header.h"
 
 #include "base/base64.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/url_features.h"
 
 namespace offline_pages {
 
@@ -37,31 +35,7 @@ class OfflinePageHeaderTest : public testing::Test {
   }
 };
 
-// Non-special URLs behavior is affected by the
-// StandardCompliantNonSpecialSchemeURLParsing feature.
-// See https://crbug.com/40063064 for details.
-class OfflinePageHeaderParamTest : public OfflinePageHeaderTest,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  OfflinePageHeaderParamTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(OfflinePageHeaderParamTest, Parse) {
+TEST_F(OfflinePageHeaderTest, Parse) {
   bool need_to_persist;
   OfflinePageHeader::Reason reason;
   std::string id;
@@ -218,23 +192,15 @@ TEST_F(OfflinePageHeaderTest, ToEmptyString) {
   EXPECT_EQ("", header.GetHeaderValueString());
 }
 
-TEST_P(OfflinePageHeaderParamTest, ToString) {
+TEST_F(OfflinePageHeaderTest, ToString) {
   OfflinePageHeader header;
   header.need_to_persist = true;
   header.reason = OfflinePageHeader::Reason::DOWNLOAD;
   header.id = "a1b2";
-
   const char* url = "content://foo/Bar \"\'\\Test";
   header.intent_url = GURL(url);
-
-  // With the StandardCompliantNonSpecialSchemeURLParsing feature enabled, any
-  // space (' ') or double quote ('"') characters within the path of
-  // non-special URLs are percent-encoded.
-  const char* url_spec = use_standard_compliant_non_special_scheme_url_parsing_
-                             ? "content://foo/Bar%20%22\'\\Test"
-                             : "content://foo/Bar \"\'\\Test";
-  EXPECT_EQ(GURL(url).spec(), url_spec);
-
+  const char* url_spec = "content://foo/Bar%20%22\'\\Test";
+  EXPECT_EQ(GURL(url).spec(), "content://foo/Bar%20%22\'\\Test");
   EXPECT_EQ(
       "X-Chrome-offline: persist=1 reason=download id=a1b2 "
       "intent_url=" +
@@ -245,7 +211,5 @@ TEST_P(OfflinePageHeaderParamTest, ToString) {
                 Base64EncodeString(url_spec),
             header.GetHeaderValueString());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, OfflinePageHeaderParamTest, ::testing::Bool());
 
 }  // namespace offline_pages

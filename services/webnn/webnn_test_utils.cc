@@ -4,10 +4,13 @@
 
 #include "services/webnn/webnn_test_utils.h"
 
+#include <limits.h>
+
 #include "base/check_is_test.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -25,7 +28,8 @@ uint64_t GraphInfoBuilder::BuildOperand(const std::vector<uint32_t>& dimensions,
                                         mojom::Operand::Kind kind) {
   mojom::OperandPtr operand = mojom::Operand::New();
 
-  operand->descriptor = *OperandDescriptor::Create(type, dimensions);
+  operand->descriptor =
+      OperandDescriptor::UnsafeCreateForTesting(type, dimensions);
   operand->kind = kind;
 
   CHECK(graph_info_->id_to_operand_map.find(operand_id_) ==
@@ -569,116 +573,142 @@ mojom::GraphInfoPtr CloneGraphInfoForTesting(
 }
 
 ContextProperties GetContextPropertiesForTesting() {
+  static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(8);
   return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      /*tensor_byte_length_limit=*/INT_MAX,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
-       /*arg_min_max_input=*/SupportedDataTypes::All(),
+       /*arg_min_max_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
        /*arg_min_max_output=*/
        {OperandDataType::kInt32, OperandDataType::kInt64},
-       /*batch_normalization_input=*/SupportedDataTypes::All(),
-       /*cast_input=*/SupportedDataTypes::All(),
-       /*clamp_input=*/SupportedDataTypes::All(),
-       /*concat_inputs=*/
-       SupportedDataTypes::All(),
-       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*conv_transpose2d_input=*/
-       DataTypeConstraint::kFloat16To32,
-       /*cumulative_sum_input=*/DataTypeConstraint::kFloat16To32,
-       /*dequantize_linear_input=*/SupportedDataTypes::All(),
-       /*dequantize_linear_scale=*/SupportedDataTypes::All(),
-       /*add_input=*/SupportedDataTypes::All(),
-       /*sub_input=*/SupportedDataTypes::All(),
-       /*mul_input=*/SupportedDataTypes::All(),
-       /*div_input=*/SupportedDataTypes::All(),
-       /*max_input=*/SupportedDataTypes::All(),
-       /*min_input=*/SupportedDataTypes::All(),
-       /*pow_input=*/SupportedDataTypes::All(),
-       /*equal_input=*/SupportedDataTypes::All(),
-       /*greater_input=*/SupportedDataTypes::All(),
-       /*greater_or_equal_input=*/SupportedDataTypes::All(),
-       /*lesser_input=*/SupportedDataTypes::All(),
-       /*lesser_or_equal_input=*/SupportedDataTypes::All(),
-       /*logical_and_input=*/DataTypeConstraint::kUint8,
-       /*logical_or_input=*/DataTypeConstraint::kUint8,
-       /*logical_xor_input=*/DataTypeConstraint::kUint8,
-       /*logical_not_input=*/SupportedDataTypes::All(),
+       /*batch_normalization_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*batch_normalization_mean=*/{SupportedDataTypes::All(), kMaxRank},
+       /*cast_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*clamp_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*concat_inputs=*/{SupportedDataTypes::All(), kMaxRank},
+       /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*conv2d_bias=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*conv_transpose2d_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*conv_transpose2d_bias=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*cumulative_sum_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*dequantize_linear_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*dequantize_linear_scale=*/{SupportedDataTypes::All(), kMaxRank},
+       /*dequantize_linear_zero_point=*/{SupportedDataTypes::All(), kMaxRank},
+       /*add_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*sub_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*mul_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*div_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*max_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*min_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*pow_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*greater_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*greater_or_equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lesser_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lesser_or_equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*not_equal_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*logical_and_input=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_or_input=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_xor_input=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_not_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*logical_output=*/SupportedDataTypes::All(),
-       /*abs_input=*/SupportedDataTypes::All(),
-       /*ceil_input=*/SupportedDataTypes::All(),
-       /*cos_input=*/SupportedDataTypes::All(),
-       /*erf_input=*/SupportedDataTypes::All(),
-       /*exp_input=*/SupportedDataTypes::All(),
-       /*floor_input=*/SupportedDataTypes::All(),
-       /*identity_input=*/SupportedDataTypes::All(),
-       /*log_input=*/SupportedDataTypes::All(),
-       /*neg_input=*/SupportedDataTypes::All(),
-       /*reciprocal_input=*/SupportedDataTypes::All(),
-       /*sign_input=*/SupportedDataTypes::All(),
-       /*sin_input=*/SupportedDataTypes::All(),
-       /*sqrt_input=*/SupportedDataTypes::All(),
-       /*tan_input=*/SupportedDataTypes::All(),
-       /*elu_input=*/SupportedDataTypes::All(),
-       /*expand_input=*/SupportedDataTypes::All(),
-       /*gather_input=*/SupportedDataTypes::All(),
-       /*gather_indices=*/
-       SupportedDataTypes::All(),
-       /*gather_elements_input=*/SupportedDataTypes::All(),
-       /*gather_elements_indices=*/
-       SupportedDataTypes::All(),
-       /*gather_nd_input=*/SupportedDataTypes::All(),
-       /*gather_nd_indices=*/
-       SupportedDataTypes::All(),
-       /*gelu_input=*/SupportedDataTypes::All(),
-       /*gemm_input=*/SupportedDataTypes::All(),
-       /*gru_input=*/SupportedDataTypes::All(),
-       /*gru_cell_input=*/SupportedDataTypes::All(),
-       /*hard_sigmoid_input=*/SupportedDataTypes::All(),
-       /*hard_swish_input=*/SupportedDataTypes::All(),
-       /*instance_normalization_input=*/SupportedDataTypes::All(),
-       /*layer_normalization_input=*/SupportedDataTypes::All(),
-       /*leaky_relu_input=*/SupportedDataTypes::All(),
-       /*linear_input=*/SupportedDataTypes::All(),
-       /*lstm_input=*/SupportedDataTypes::All(),
-       /*lstm_cell_input=*/SupportedDataTypes::All(),
-       /*matmul_input=*/SupportedDataTypes::All(),
-       /*pad_input=*/SupportedDataTypes::All(),
-       /*average_pool2d_input=*/SupportedDataTypes::All(),
-       /*l2_pool2d_input=*/SupportedDataTypes::All(),
-       /*max_pool2d_input=*/SupportedDataTypes::All(),
-       /*prelu_input=*/SupportedDataTypes::All(),
-       /*quantize_linear_input=*/SupportedDataTypes::All(),
-       /*quantize_linear_zero_point=*/SupportedDataTypes::All(),
-       /*reduce_l1_input=*/SupportedDataTypes::All(),
-       /*reduce_l2_input=*/SupportedDataTypes::All(),
-       /*reduce_log_sum_input=*/SupportedDataTypes::All(),
-       /*reduce_log_sum_exp_input=*/SupportedDataTypes::All(),
-       /*reduce_max_input=*/SupportedDataTypes::All(),
-       /*reduce_mean_input=*/SupportedDataTypes::All(),
-       /*reduce_min_input=*/SupportedDataTypes::All(),
-       /*reduce_product_input=*/SupportedDataTypes::All(),
-       /*reduce_sum_input=*/SupportedDataTypes::All(),
-       /*reduce_sum_square_input=*/SupportedDataTypes::All(),
-       /*relu_input=*/SupportedDataTypes::All(),
-       /*resample2d_input=*/SupportedDataTypes::All(),
-       /*reshape_input=*/SupportedDataTypes::All(),
-       /*reverse_input=*/SupportedDataTypes::All(),
-       /*scatter_elements_input=*/SupportedDataTypes::All(),
-       /*scatter_elements_indices=*/SupportedDataTypes::All(),
-       /*scatter_nd_input=*/SupportedDataTypes::All(),
-       /*scatter_nd_indices=*/SupportedDataTypes::All(),
-       /*sigmoid_input=*/SupportedDataTypes::All(),
-       /*slice_input=*/SupportedDataTypes::All(),
-       /*softmax_input=*/SupportedDataTypes::All(),
-       /*softplus_input=*/SupportedDataTypes::All(),
-       /*softsign_input=*/SupportedDataTypes::All(),
-       /*split_input=*/SupportedDataTypes::All(),
-       /*tanh_input=*/SupportedDataTypes::All(),
-       /*tile_input=*/SupportedDataTypes::All(),
-       /*transpose_input=*/SupportedDataTypes::All(),
-       /*triangular_input=*/SupportedDataTypes::All(),
-       /*where_condition=*/SupportedDataTypes::All(),
-       /*where_value=*/SupportedDataTypes::All()}));
+       /*abs_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*ceil_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*cos_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*erf_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*exp_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*floor_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*identity_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*log_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*neg_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*reciprocal_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*sign_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*sin_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*sqrt_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*tan_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*elu_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*expand_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gather_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gather_indices=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gather_elements_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gather_elements_indices=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gather_nd_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gather_nd_indices=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gelu_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gemm_a=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gemm_c=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gru_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gru_bias=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gru_cell_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gru_cell_bias=*/{SupportedDataTypes::All(), kMaxRank},
+       /*hard_sigmoid_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*hard_swish_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*instance_normalization_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*instance_normalization_scale=*/{SupportedDataTypes::All(), kMaxRank},
+       /*layer_normalization_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*leaky_relu_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*linear_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lstm_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lstm_bias=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lstm_cell_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lstm_cell_bias=*/{SupportedDataTypes::All(), kMaxRank},
+       /*matmul_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*pad_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*average_pool2d_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*l2_pool2d_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*max_pool2d_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*prelu_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*quantize_linear_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*quantize_linear_zero_point=*/{SupportedDataTypes::All(), kMaxRank},
+       /*reduce_l1_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*reduce_l2_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*reduce_log_sum_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reduce_log_sum_exp_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reduce_max_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reduce_mean_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reduce_min_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reduce_product_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reduce_sum_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reduce_sum_square_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*relu_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*resample2d_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*reshape_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*reverse_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*scatter_elements_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*scatter_elements_indices=*/{SupportedDataTypes::All(), kMaxRank},
+       /*scatter_nd_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*scatter_nd_indices=*/{SupportedDataTypes::All(), kMaxRank},
+       /*scatter_nd_updates=*/{SupportedDataTypes::All(), kMaxRank},
+       /*sigmoid_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*slice_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*softmax_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*softplus_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*softsign_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*split_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*tanh_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*tile_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*transpose_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*triangular_input=*/
+       {SupportedDataTypes::All(), kMaxRank},
+       /*where_condition=*/{SupportedDataTypes::All(), kMaxRank},
+       /*where_value=*/{SupportedDataTypes::All(), kMaxRank}}));
 }
 
 }  // namespace webnn

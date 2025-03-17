@@ -61,6 +61,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -168,7 +169,8 @@ MATCHER_P6(BubbleStep,
          arg.next_button_callback().is_null() != has_next_button &&
          util::GetHelpBubbleModalType(ext_props) ==
              ui::mojom::ModalType::kSystem &&
-         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon;
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() ==
+             &gfx::VectorIcon::EmptyIcon();
 }
 
 MATCHER_P7(BubbleStep,
@@ -189,7 +191,8 @@ MATCHER_P7(BubbleStep,
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
-         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() ==
+             &gfx::VectorIcon::EmptyIcon() &&
          util::GetHelpBubbleModalType(ext_props) ==
              ui::mojom::ModalType::kSystem;
 }
@@ -215,7 +218,8 @@ MATCHER_P8(BubbleStep,
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
-         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() ==
+             &gfx::VectorIcon::EmptyIcon() &&
          util::GetHelpBubbleModalType(ext_props) ==
              ui::mojom::ModalType::kSystem;
 }
@@ -266,7 +270,7 @@ MATCHER_P(TutorialDescriptionEqInternal, tutorial_description, "") {
   return std::tie(arg.can_be_restarted, arg.complete_button_text_id) ==
              std::tie(tutorial_description->data.can_be_restarted,
                       tutorial_description->data.complete_button_text_id) &&
-         base::ranges::equal(
+         std::ranges::equal(
              arg.steps, tutorial_description->data.steps,
              [](auto& a, auto& b) { return Matches(StepEq(a))(b); });
 }
@@ -400,12 +404,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // Add a primary and secondary user session for the first time. This should
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
-  session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
+  SimulateUserLogin({.is_new_profile = true, .activate_session = false},
+                    primary_account_id);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to be registered and started as well as notify observers. Note that
@@ -438,8 +438,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 
   // Switch to the secondary user session and back again. This should *not*
   // trigger the Welcome Tour to start.
-  session_controller_client->SwitchActiveUser(secondary_account_id);
-  session_controller_client->SwitchActiveUser(primary_account_id);
+  SimulateUserLogin({.is_new_profile = true}, secondary_account_id);
+  SwitchActiveUser(primary_account_id);
 
   // Deactivate and then reactivate the primary user session. This should *not*
   // trigger the Welcome Tour to start.
@@ -470,51 +470,6 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
       EXPECT_FALSE(WelcomeTourDialog::Get());
     }
   }
-}
-
-// Verifies that the Welcome Tour is started when the primary user session is
-// first activated and the last active user pref service is not null.
-TEST_F(WelcomeTourControllerTest, StartsTourWhenUserPrefServiceIsNotNull) {
-  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
-
-  // Ensure controller exists.
-  auto* const welcome_tour_controller = WelcomeTourController::Get();
-  ASSERT_TRUE(welcome_tour_controller);
-
-  // Ensure delegate exists and disallow any tutorial registrations/starts.
-  auto* const user_education_delegate = this->user_education_delegate();
-  ASSERT_TRUE(user_education_delegate);
-  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
-  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
-
-  // Observe the `WelcomeTourController` for start/end events.
-  StrictMock<MockWelcomeTourControllerObserver> observer;
-  base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
-      observation{&observer};
-  observation.Observe(welcome_tour_controller);
-
-  // Add a primary user without pref service for the first time. This should
-  // *not* trigger the Welcome Tour to start.
-  auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/false, /*is_new_profile=*/true);
-
-  // Activate the primary user session. This should *not* trigger the Welcome
-  // Tour to start because the last active user pref service is null.
-  session_controller_client->SetSessionState(SessionState::ACTIVE);
-  Mock::VerifyAndClearExpectations(user_education_delegate);
-  Mock::VerifyAndClearExpectations(&observer);
-
-  // Set the pref service. This *should* trigger the Welcome Tour to be
-  // registered and started as well as notify observers.
-  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(1);
-  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(1);
-  EXPECT_CALL(observer, OnWelcomeTourStarted);
-
-  session_controller_client->ProvidePrefServiceForUser(primary_account_id);
-  Mock::VerifyAndClearExpectations(user_education_delegate);
-  Mock::VerifyAndClearExpectations(&observer);
 }
 
 // Verifies that the Welcome Tour can be aborted via the dialog.
@@ -825,14 +780,10 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
 // supported but is enabled.
 TEST_P(WelcomeTourControllerChromeVoxTest,
        MaybePreventTourFromStartingIfChromeVoxEnabled) {
-  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
-
   base::HistogramTester histogram_tester;
-  TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
-  session->SwitchActiveUser(primary_account_id);
+  auto primary_account_id = SimulateUserLogin({.display_email = "primary@test",
+                                               .is_new_profile = true,
+                                               .activate_session = false});
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.
@@ -858,6 +809,7 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(expect_prevent ? 1 : 0);
 
+  TestSessionControllerClient* const session = GetSessionControllerClient();
   session->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
 
@@ -988,20 +940,6 @@ class WelcomeTourControllerUserEligibilityTest
   // WelcomeTourControllerTest:
   void SetUp() override {
     WelcomeTourControllerTest::SetUp();
-
-    // Provide an implementation of `IsNewUser()` which returns whether a given
-    // user should be considered "new" cross-device based on test
-    // parameterization.
-    ON_CALL(*user_education_delegate(), IsNewUser)
-        .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
-
-    // Add a user based on test parameterization.
-    TestSessionControllerClient* const session = GetSessionControllerClient();
-    session->AddUserSession(primary_account_id_.GetUserEmail(), GetUserType(),
-                            /*provide_pref_service=*/true,
-                            /*is_new_profile=*/IsNewUserLocally(),
-                            /*given_name=*/std::string(), IsManagedUser());
-    session->SwitchActiveUser(primary_account_id_);
   }
 
   // Used to conditionally force user eligibility based on test
@@ -1069,8 +1007,18 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
 
   base::HistogramTester histogram_tester;
 
-  // Activate the user session and verify expectations.
-  GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
+  // Provide an implementation of `IsNewUser()` which returns whether a given
+  // user should be considered "new" cross-device based on test
+  // parameterization.
+  ON_CALL(*user_education_delegate(), IsNewUser)
+      .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
+
+  // Login into the user session and verify expectations.
+  SimulateUserLogin({.display_email = "primary@test",
+                     .user_type = GetUserType(),
+                     .is_new_profile = IsNewUserLocally(),
+                     .is_account_managed = IsManagedUser()});
+
   Mock::VerifyAndClearExpectations(user_education_delegate());
 
   // Verify histograms.

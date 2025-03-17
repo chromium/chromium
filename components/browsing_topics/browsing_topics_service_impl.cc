@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 
+#include <algorithm>
 #include <random>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
@@ -270,7 +270,14 @@ enum class BrowsingTopicsApiActionType {
   // <iframe src=[url] browsingtopics> request.
   kObserveViaIframeAttributeApi = 5,
 
-  kMaxValue = kObserveViaIframeAttributeApi,
+  // Get topics via <img src=[url] browsingtopics>.
+  kGetViaImgAttributeApi = 6,
+
+  // Observe topics via the "Sec-Browsing-Topics: ?1" response header for the
+  // <img src=[url] browsingtopics> request.
+  kObserveViaImgAttributeApi = 7,
+
+  kMaxValue = kObserveViaImgAttributeApi,
 };
 
 void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
@@ -310,6 +317,24 @@ void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
     base::UmaHistogramEnumeration(
         kBrowsingTopicsApiActionTypeHistogramId,
         BrowsingTopicsApiActionType::kObserveViaIframeAttributeApi);
+
+    return;
+  }
+
+  if (caller_source == ApiCallerSource::kImgAttribute) {
+    if (get_topics) {
+      DCHECK(!observe);
+
+      base::UmaHistogramEnumeration(
+          kBrowsingTopicsApiActionTypeHistogramId,
+          BrowsingTopicsApiActionType::kGetViaImgAttributeApi);
+      return;
+    }
+
+    DCHECK(observe);
+    base::UmaHistogramEnumeration(
+        kBrowsingTopicsApiActionTypeHistogramId,
+        BrowsingTopicsApiActionType::kObserveViaImgAttributeApi);
 
     return;
   }
@@ -1006,7 +1031,7 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper(
   }
 
   // Reorder the epochs from latest to oldest.
-  base::ranges::reverse(webui_state->epochs);
+  std::ranges::reverse(webui_state->epochs);
 
   std::move(callback).Run(
       mojom::WebUIGetBrowsingTopicsStateResult::NewBrowsingTopicsState(

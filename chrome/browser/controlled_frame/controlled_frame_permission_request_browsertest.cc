@@ -29,8 +29,8 @@
 #include "extensions/common/extension_features.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 using testing::Contains;
 using testing::StartsWith;
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
   )";
   test_case.permission_name = "media";
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kCamera});
+      {network::mojom::PermissionsPolicyFeature::kCamera});
   test_case.content_settings_type.insert(
       {ContentSettingsType::MEDIASTREAM_CAMERA});
 
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
   )";
   test_case.permission_name = "media";
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kMicrophone});
+      {network::mojom::PermissionsPolicyFeature::kMicrophone});
   test_case.content_settings_type.insert(
       {ContentSettingsType::MEDIASTREAM_MIC});
 
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
   )";
   test_case.permission_name = "geolocation";
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kGeolocation});
+      {network::mojom::PermissionsPolicyFeature::kGeolocation});
   test_case.content_settings_type.insert({ContentSettingsType::GEOLOCATION});
 
   PermissionRequestTestParam test_param = GetParam();
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest, WebHid) {
   test_case.permission_name = "hid";
 
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kHid});
+      {network::mojom::PermissionsPolicyFeature::kHid});
   // No embedder content settings for WebHid.
 
   PermissionRequestTestParam test_param = GetParam();

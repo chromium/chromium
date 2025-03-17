@@ -491,10 +491,6 @@ class AccessibilityDetailedViewTest : public AshTestBase,
                                  detailed_menu_->color_correction_view_);
   }
 
-  const char* GetDetailedViewClassName() {
-    return detailed_menu_->GetClassName();
-  }
-
   void SetUpKioskSession() {
     auto* session_controller = Shell::Get()->session_controller();
     SessionInfo info;
@@ -1463,7 +1459,7 @@ class AccessibilityDetailedViewSodaTest
     }
   }
 
-  std::u16string GetFeatureViewSubtitleText() {
+  std::u16string_view GetFeatureViewSubtitleText() {
     switch (GetParam()) {
       case SodaFeature::kDictation:
         return detailed_menu()->dictation_view_->sub_text_label()->GetText();

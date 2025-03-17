@@ -108,7 +108,9 @@ MediaQueryExpValue MediaFeatureOverrides::ParseMediaQueryValue(
   // Document to get the ExecutionContext so the extra parameter should be
   // removed.
   MediaQueryExpBounds bounds =
-      MediaQueryExp::Create(feature, stream, *fake_context).Bounds();
+      MediaQueryExp::Create(feature, stream, *fake_context,
+                            /*supports_element_dependent*/ false)
+          .Bounds();
   DCHECK(!bounds.left.IsValid());
   return bounds.right.value;
 }

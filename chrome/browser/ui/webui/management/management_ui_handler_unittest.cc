@@ -55,6 +55,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -151,7 +152,7 @@ struct ContextualManagementSourceUpdate {
 #if BUILDFLAG(IS_CHROMEOS)
 namespace {
 const char kUser[] = "user@domain.com";
-const char kGaiaId[] = "gaia_id";
+const GaiaId::Literal kGaiaId("gaia_id");
 }  // namespace
 
 // This class is just to mock the behaviour of the few flags we need for
@@ -487,7 +488,8 @@ class ManagementUIHandlerTests :
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
-    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
     user_ = fake_user_manager_->FindUserAndModify(account_id);
 
     install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(

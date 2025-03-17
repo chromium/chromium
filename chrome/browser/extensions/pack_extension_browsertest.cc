@@ -51,7 +51,7 @@ class PackExtensionOnStartupBrowserTest : public InProcessBrowserTest {
 
     // Packing extensions has a different exit code.
     set_expected_exit_code(
-        chrome::RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS);
+        CHROME_RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS);
   }
 
  protected:

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/task/common/operations_controller.h"
-#include "base/check_op.h"
-#include "base/synchronization/waitable_event.h"
 
 #include <ostream>
 
-namespace base {
-namespace internal {
+#include "base/check_op.h"
+#include "base/synchronization/waitable_event.h"
+
+namespace base::internal {
 
 OperationsController::OperationsController() = default;
 
@@ -104,5 +104,4 @@ void OperationsController::DecrementBy(uint32_t n) {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

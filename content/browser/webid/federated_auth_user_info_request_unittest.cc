@@ -172,7 +172,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     for (const AccountConfig& account_config : config_.accounts) {
       accounts.emplace_back(base::MakeRefCounted<IdentityRequestAccount>(
           account_config.id, GenerateEmailForUserId(account_config.id),
-          kAccountName, kAccountGivenName, GURL(kAccountPicture),
+          kAccountName, GenerateEmailForUserId(account_config.id), kAccountName,
+          kAccountGivenName, GURL(kAccountPicture),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>(), account_config.login_state));
@@ -521,7 +522,7 @@ TEST_F(FederatedAuthUserInfoRequestTest,
   std::vector<std::optional<bool>> kTestCases = {std::nullopt, true};
 
   for (const std::optional<bool>& test_case : kTestCases) {
-    EXPECT_CALL(*permission_delegate_, SetIdpSigninStatus(_, false));
+    EXPECT_CALL(*permission_delegate_, SetIdpSigninStatus(_, false, _));
 
     Config config = kValidConfig;
     config.idp_signin_status = test_case;

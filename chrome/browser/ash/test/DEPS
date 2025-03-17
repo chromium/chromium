@@ -11,8 +11,6 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login",
-  "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/lifetime/termination_notification.h",
   "+chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h",
 ]
@@ -20,5 +18,14 @@ include_rules = [
 specific_include_rules = {
   "device_restriction_schedule_controller_browsertest\.cc": [
     "+ui/message_center",
-  ]
+  ],
+  ".*_browser_test_mixin\.(h|cc)": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+    "+chrome/browser/ash/settings/stub_cros_settings_provider.h",
+    "+chrome/test/base/mixin_based_in_process_browser_test.h",
+  ],
+  ".*_browsertest\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
 }

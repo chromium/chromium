@@ -491,13 +491,7 @@ function setTailoredVerdictOverride(e) {
   // The structured data to send to the browser.
   const inputValue = {
     tailored_verdict_type: inputs['tailored_verdict_type'].value,
-    adjustments: [],
   };
-  inputs['adjustments'].forEach((checkbox) => {
-    if (checkbox.checked) {
-      inputValue.adjustments.push(checkbox.value);
-    }
-  });
 
   sendWithPromise('setTailoredVerdictOverride', inputValue)
       .then(displayTailoredVerdictOverride);

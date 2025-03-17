@@ -69,8 +69,8 @@ void HistoryQuickProvider::Start(const AutocompleteInput& input,
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto [adjusted_input, starter_pack_engine] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService());
+      AdjustInputForStarterPackKeyword(input,
+                                       client()->GetTemplateURLService());
   autocomplete_input_ = std::move(adjusted_input);
   starter_pack_engine_ = starter_pack_engine;
 

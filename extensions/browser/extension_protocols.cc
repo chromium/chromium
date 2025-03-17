@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -193,15 +194,6 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
   if (is_incognito &&
       !ExtensionCanLoadInIncognito(is_main_frame, extension,
                                    extension_enabled_in_incognito)) {
-    return false;
-  }
-
-  // Prevent unexpected use of a dynamic url request. `chrome.runtime.getURL()`
-  // returns a dynamic url when using the extension feature and when
-  // `use_dynamic_url` is true for the resource.
-  if (extension && extension->guid() == request.url.host() &&
-      !base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection)) {
     return false;
   }
 
@@ -485,8 +477,9 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
         // Note: We still pass the data to |verify_job_|, even if there was a
         // read error, because some errors are ignorable. See
         // ContentVerifyJob::BytesRead() for more details.
-        verify_job_->BytesRead(static_cast<const char*>(buffer.data()),
-                               result->bytes_read, result->result);
+        verify_job_->BytesRead(
+            buffer.first(static_cast<size_t>(result->bytes_read)),
+            result->result);
       }
     }
   }
@@ -545,8 +538,6 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
  private:
   ~ExtensionURLLoader() override = default;
@@ -602,9 +593,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         extensions::util::IsIncognitoEnabled(extension_id, browser_context_);
 
     // Redirect guid to id.
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kExtensionDynamicURLRedirection) &&
-        extension && request_.url.host() == extension->guid()) {
+    if (extension && request_.url.host() == extension->guid()) {
       GURL::Replacements replace_host;
       replace_host.SetHostStr(extension->id());
       upstream_url_ = request_.url;

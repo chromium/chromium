@@ -15,7 +15,7 @@
 namespace net {
 
 TestDnsConfigService::TestDnsConfigService()
-    : DnsConfigService(base::FilePath::StringPieceType() /* hosts_file_path */,
+    : DnsConfigService(base::FilePath::StringViewType() /* hosts_file_path */,
                        std::nullopt /* config_change_delay */) {}
 
 TestDnsConfigService::~TestDnsConfigService() = default;
@@ -54,7 +54,7 @@ HostsReadingTestDnsConfigService::HostsReader::HostsReader(
     TestDnsConfigService& service,
     HostsParserFactory hosts_parser_factory)
     : DnsConfigService::HostsReader(
-          /*hosts_file_path=*/base::FilePath::StringPieceType(),
+          /*hosts_file_path=*/base::FilePath::StringViewType(),
           service),
       hosts_parser_factory_(std::move(hosts_parser_factory)) {}
 

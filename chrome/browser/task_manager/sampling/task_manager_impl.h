@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
@@ -27,13 +26,12 @@
 #include "gpu/ipc/common/memory_stats.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/task_manager/sampling/arc_shared_sampler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace task_manager {
 
-class CrosapiTaskProviderAsh;
 class SharedSampler;
 
 // Defines a concrete implementation of the TaskManagerInterface.
@@ -74,6 +72,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   const gfx::ImageSkia& GetIcon(TaskId task_id) const override;
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;
+  TaskId GetRootTaskId(TaskId task_id) const override;
   Task::Type GetType(TaskId task_id) const override;
   Task::SubType GetSubType(TaskId task_id) const override;
   SessionID GetTabId(TaskId task_id) const override;
@@ -98,13 +97,13 @@ class TaskManagerImpl : public TaskManagerInterface,
   bool IsRunningInVM(TaskId task_id) const override;
   TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const override;
+  bool IsTaskValid(TaskId task_id) const override;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override;
   void TaskRemoved(Task* task) override;
   void TaskUnresponsive(Task* task) override;
-  void ActiveTaskFetched(TaskId active_task_id) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void TaskIdsListToBeInvalidated() override;
 #endif
 
@@ -158,10 +157,6 @@ class TaskManagerImpl : public TaskManagerInterface,
   // PIDs.
   PidToTaskGroupMap arc_vm_task_groups_by_proc_id_;
 
-  // Map Lacros TaskGroups received from crosapi by the IDs of the processes
-  // they represent.
-  PidToTaskGroupMap crosapi_task_groups_by_proc_id_;
-
   // Map each task by its ID to the TaskGroup on which it resides.
   // Keys are unique but values will have duplicates (i.e. multiple tasks
   // running on the same process represented by a single TaskGroup).
@@ -187,16 +182,11 @@ class TaskManagerImpl : public TaskManagerInterface,
   // subset of resources for all processes at once.
   scoped_refptr<SharedSampler> shared_sampler_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // A sampler shared with all instances of TaskGroup that hold ARC tasks and
   // calculates memory footprint for all processes at once.
   std::unique_ptr<ArcSharedSampler> arc_shared_sampler_;
-
-  // Task provider handling crosapi task data.
-  // Once CrosapiTaskProvider is created and added to the task_providers_, it
-  // should never be removed from task_providers_ unless in the destructor.
-  raw_ptr<CrosapiTaskProviderAsh> crosapi_task_provider_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // This will be set to true while there are observers and the task manager is
   // running.

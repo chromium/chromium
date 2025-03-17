@@ -73,6 +73,11 @@ export function getHtml(this: ExtensionsReviewPanelElement) {
         @click="${this.onKeepExtensionClick_}">
       $i18n{safetyCheckKeepExtension}
     </button>
+    <button id="detailsButton" class="dropdown-item"
+        @click="${this.onDetailsClick_}"
+        ?hidden="${!this.shouldShowThreeDotDetails_()}">
+      $i18n{safetyCheckExtensionThreeDotDetails}
+    </button>
   </cr-action-menu>
 </div>
 <!--_html_template_end_-->`;

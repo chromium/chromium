@@ -326,7 +326,7 @@ void SharesheetHeaderView::ShowTextPreview() {
     }
     auto file_label = CreatePreviewLabel(file_text);
     if (!filenames_tooltip_text.empty()) {
-      file_label->SetTooltipText(filenames_tooltip_text);
+      file_label->SetCustomTooltipText(filenames_tooltip_text);
       file_label->GetViewAccessibility().SetName(
           base::StrCat({file_text, u" ", filenames_tooltip_text}));
     }
@@ -400,7 +400,7 @@ SharesheetHeaderView::ExtractShareText() {
           extracted_text.url, format_types, base::UnescapeRule::NORMAL,
           /*new_parsed=*/nullptr,
           /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
-      url_label->SetTooltipText(formatted_text);
+      url_label->SetCustomTooltipText(formatted_text);
       url_label->GetViewAccessibility().SetName(formatted_text);
       preview_labels.push_back(std::move(url_label));
       text_icon_ = TextPlaceholderIcon::kLink;

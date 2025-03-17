@@ -7,12 +7,14 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
@@ -191,6 +193,8 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
                         HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         ConnectJob* job) override;
+  Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                        ConnectJob* job) override;
 
   // In some cases, a timeout that's stricter than the TCP (+SSL, if applicable)
   // is used for HTTP proxies during connection establishment and SSL

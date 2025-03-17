@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_page_handler_impl.h"
 
 #include <stdint.h>
@@ -116,6 +121,8 @@ std::string GetPromoTypeString(
       return "Tutorial";
     case user_education::FeaturePromoSpecification::PromoType::kRotating:
       return "Rotating";
+    case user_education::FeaturePromoSpecification::PromoType::kCustomUi:
+      return "Custom UI";
   }
 }
 
@@ -195,11 +202,8 @@ std::vector<std::string> GetSupportedPlatforms(
       case Platforms::kLinux:
         result.push_back("Linux");
         break;
-      case Platforms::kChromeOSAsh:
-        result.push_back("ChromeOS Ash");
-        break;
-      case Platforms::kChromeOSLacros:
-        result.push_back("ChromeOS Lacros");
+      case Platforms::kChromeOS:
+        result.push_back("ChromeOS");
         break;
     }
   }
@@ -291,6 +295,9 @@ std::vector<std::string> GetPromoInstructions(
       oss << l10n_util::GetStringUTF8(promo->bubble_body_string_id());
       instructions.push_back(oss.str());
     }
+  } else if (spec.promo_type() !=
+             user_education::FeaturePromoSpecification::PromoType::kCustomUi) {
+    instructions.push_back("This is a custom help bubble.");
   } else {
     if (spec.bubble_title_string_id()) {
       instructions.push_back(
@@ -537,11 +544,6 @@ void UserEducationInternalsPageHandlerImpl::GetSessionData(
                                            heavyweight_promo_cooldown_end));
     }
   }
-  if (!base::FeatureList::IsEnabled(
-          user_education::features::kUserEducationExperienceVersion2)) {
-    data.emplace_back(FormatDemoPageData(
-        "(Feature Engagement session data not available.)", ""));
-  }
   return std::move(callback).Run(std::move(data));
 }
 
@@ -662,6 +664,7 @@ void UserEducationInternalsPageHandlerImpl::ClearFeaturePromoData(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
   if (!tracker || !tracker->IsInitialized()) {
     std::move(callback).Run(std::string("Feature Engagement not ready."));
+    return;
   }
 
   auto* const storage_service = GetStorageService(profile_);

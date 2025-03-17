@@ -15,9 +15,6 @@ struct OfferNotificationOptions {
   // TODO(crbug.com/40931835): Revisit if we can consolidate
   // notification_has_been_shown and show_notification_automatically.
   bool notification_has_been_shown = false;
-  // Indicates whether the notification will automatically expand upon being
-  // shown.
-  bool expand_notification_icon = false;
   // Indicates whether the notification bubble should be shown automatically
   // when the user navigates to the qualified page.
   bool show_notification_automatically = false;

@@ -7,6 +7,8 @@
 #include <cstring>
 #include <tuple>
 
+#include "base/containers/span.h"
+
 // No rewrite expected.
 extern const int kPropertyVisitedIDs[];
 
@@ -18,68 +20,79 @@ struct Type1 {
 
 }  // namespace ns1
 
+int UnsafeIndex();  // This function might return an out-of-bound index.
+
+struct Component {
+  // Expected rewrite:
+  // std::array<int, 10> values;
+  std::array<int, 10> values;
+};
+
 void fct() {
   // Expected rewrite:
   // auto buf = std::to_array<int>({1, 2, 3, 4});
   auto buf = std::to_array<int>({1, 2, 3, 4});
-  int index = 0;
-  buf[index] = 11;
+  buf[UnsafeIndex()] = 11;
+
+  Component component;
+  // Triggers the rewrite of Component::values
+  component.values[UnsafeIndex()]++;
 
   // Expected rewrite:
   // std::array<int, 5> buf2 = {1, 1, 1, 1, 1};
   std::array<int, 5> buf2 = {1, 1, 1, 1, 1};
-  buf2[index] = 11;
+  buf2[UnsafeIndex()] = 11;
 
   constexpr int size = 5;
   // Expected rewrite:
   // constexpr std::array<int, size> buf3 = {1, 1, 1, 1, 1};
   constexpr std::array<int, size> buf3 = {1, 1, 1, 1, 1};
-  (void)buf3[index];
+  (void)buf3[UnsafeIndex()];
 
   // Expected rewrite:
   // std::array<int, buf3[0]> buf4;
   std::array<int, buf3[0]> buf4;
-  buf4[index] = 11;
+  buf4[UnsafeIndex()] = 11;
 
   // Expected rewrite:
   // auto buf5 = std::to_array<ns1::Type1>({{1}, {1}, {1}, {1}, {1}});
   auto buf5 = std::to_array<ns1::Type1>({{1}, {1}, {1}, {1}, {1}});
-  buf5[index].value = 11;
+  buf5[UnsafeIndex()].value = 11;
 
   // Expected rewrite:
   // auto buf6 = std::to_array<uint16_t>({1, 1, 1});
   auto buf6 = std::to_array<uint16_t>({1, 1, 1});
-  buf6[index] = 1;
+  buf6[UnsafeIndex()] = 1;
 
   // Expected rewrite:
   // std::array<int (*)(int), 16> buf7 = {};
   std::array<int (*)(int), 16> buf7 = {};
-  buf7[index] = nullptr;
+  buf7[UnsafeIndex()] = nullptr;
 
   // Expected rewrite:
-  // std::array<int(**)[], 16> buf8 = {};
-  std::array<int(**)[], 16> buf8 = {};
-  buf8[index] = nullptr;
+  // std::array<int (**)[], 16> buf8 = {};
+  std::array<int (**)[], 16> buf8 = {};
+  buf8[UnsafeIndex()] = nullptr;
 
-  using Arr = int(**)[];
+  using Arr = int (**)[];
   // Expected rewrite:
   // std::array<Arr, buf3[0]> buf9 = {};
   std::array<Arr, buf3[0]> buf9 = {};
-  buf9[index] = nullptr;
+  buf9[UnsafeIndex()] = nullptr;
 
   // Expected rewrite:
   // static auto buf10 = std::to_array<const volatile char*>({"1", "2", "3"});
   static auto buf10 = std::to_array<const volatile char*>({"1", "2", "3"});
-  buf10[index] = nullptr;
+  buf10[UnsafeIndex()] = nullptr;
 
-  index = kPropertyVisitedIDs[index];
+  std::ignore = kPropertyVisitedIDs[UnsafeIndex()];
 }
 
 void sizeof_array_expr() {
   // Expected rewrite:
   // auto buf = std::to_array<int>({1});
   auto buf = std::to_array<int>({1});
-  std::ignore = buf[0];
+  std::ignore = buf[UnsafeIndex()];
 
   // Expected rewrite:
   // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
@@ -87,8 +100,9 @@ void sizeof_array_expr() {
   // Expected rewrite:
   // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
   std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
-  // The following won't be rewritten.
-  std::ignore = sizeof *buf;
+  // Expected rewrite:
+  // std::ignore = sizeof buf[0];
+  std::ignore = sizeof buf[0];
   std::ignore = sizeof buf[0];
 }
 
@@ -98,4 +112,33 @@ void crbug_383424943() {
   int buf[]{1};
   // Using sizeof was causing buf to be rewritten.
   memset(buf, 'x', sizeof(buf));
+}
+
+// Expected rewrite:
+// void c_ptr_param(base::span<int> ptr)
+void c_ptr_param(base::span<int> ptr) {
+  std::ignore = ptr[UnsafeIndex()];
+}
+
+// Expected rewrite:
+// void c_array_param(base::span<int, 1 + 2> arr)
+void c_array_param(base::span<int, 1 + 2> arr) {
+  std::ignore = arr[UnsafeIndex()];
+}
+
+// Expected rewrite:
+// void c_array_nosize_param(base::span<int> arr)
+void c_array_nosize_param(base::span<int> arr) {
+  std::ignore = arr[UnsafeIndex()];
+}
+
+void test_func_params() {
+  // Expected rewrite:
+  // auto arr = std::to_array<int>({1, 2, 3});
+  auto arr = std::to_array<int>({1, 2, 3});
+  std::ignore = arr[UnsafeIndex()];
+
+  c_ptr_param(arr);
+  c_array_param(arr);
+  c_array_nosize_param(arr);
 }

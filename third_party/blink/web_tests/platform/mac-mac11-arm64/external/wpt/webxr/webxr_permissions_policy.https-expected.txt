@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Validate xr compatibility requests without xr-spatial-tracking policy
+  Cannot read properties of null (reading 'getContextAttributes')
+Harness: the test ran to completion.

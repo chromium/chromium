@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -107,10 +108,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Called when main frame navigates. Not called for in-page navigations.
   void DidNavigateMainFrame();
 
-  // Called if no suggestions were found. Assumed to be mutually exclusive with
-  // |OnAddPasswordFillData|.
-  void OnNoCredentialsFound();
-
   PasswordManualFallbackMetricsRecorder&
   GetPasswordManualFallbackMetricsRecorder() {
     return CHECK_DEREF(manual_fallback_metrics_recorder_.get());
@@ -125,6 +122,9 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   inline PasswordSuggestionFlow* manual_fallback_flow() {
     return manual_fallback_flow_.get();
   }
+
+  // If there is a popup waiting to be displayed with a delay, this cancels it.
+  void FocusedInputChanged();
 
   base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
 
@@ -199,6 +199,14 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Hides the popup.
   void HidePopup();
 
+  // Completion of `OnShowPasswordSuggestions`, which can sometimes be deferred.
+  void ContinueShowingPasswordSuggestions(
+      autofill::FieldRendererId element_id,
+      base::i18n::TextDirection text_direction,
+      const std::u16string& typed_username,
+      ShowWebAuthnCredentials show_webauthn_credentials,
+      const gfx::RectF& bounds);
+
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
   password_manager::PasswordSuggestionGenerator suggestion_generator_;
@@ -240,6 +248,10 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // `manual_fallback_flow_` and dies when `manual_fallback_flow_` dies.
   std::unique_ptr<PasswordManualFallbackMetricsRecorder>
       manual_fallback_metrics_recorder_;
+
+  // This timer is used to delay showing the suggestions popup if passkey
+  // suggestions are allowed but the passkey list has not yet arrived.
+  base::OneShotTimer wait_for_passkeys_timer_;
 
   // Stores the controller of warning popup UI on cross domain filling.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \

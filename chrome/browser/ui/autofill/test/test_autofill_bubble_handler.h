@@ -49,7 +49,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      autofill_ai::SaveAutofillAiDataController* controller) override;
+      autofill_ai::SaveOrUpdateAutofillAiDataController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* contents,
       std::unique_ptr<SaveAddressBubbleController> controller,
@@ -61,8 +61,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowAddressSignInPromo(
       content::WebContents* web_contents,
-      base::OnceCallback<void(content::WebContents*)> move_address_callback)
-      override;
+      const AutofillProfile& autofill_profile) override;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,

@@ -98,7 +98,10 @@ std::u16string LocationBarModelImpl::GetFormattedURL(
   // url_formatter parses everything past blob: as path, not domain, so swap
   // the url here to be just origin.
   if (url.SchemeIsBlob()) {
-    url = url::Origin::Create(url).GetURL();
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.host().empty()) {
+      url = origin.GetURL();
+    }
   }
 #endif  // BUILDFLAG(IS_IOS)
 

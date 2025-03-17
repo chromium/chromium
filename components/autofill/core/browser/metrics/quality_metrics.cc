@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -21,12 +22,11 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
-#include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace autofill::autofill_metrics {
 
@@ -69,26 +69,6 @@ void LogPerfectFillingMetric(const FormStructure& form) {
   }
 }
 
-void LogPreFillMetrics(const FormStructure& form) {
-  for (const std::unique_ptr<AutofillField>& field : form) {
-    const FormType form_type_of_field =
-        FieldTypeGroupToFormType(field->Type().group());
-    const bool is_address_form_field =
-        form_type_of_field == FormType::kAddressForm;
-    const bool credit_card_form_field =
-        form_type_of_field == FormType::kCreditCardForm;
-    if (is_address_form_field || credit_card_form_field) {
-      const std::string_view form_type_name =
-          FormTypeToStringView(form_type_of_field);
-      LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
-                              field->Type().GetStorableType());
-      LogPreFilledFieldClassifications(form_type_name,
-                                       field->initial_value_changed(),
-                                       field->may_use_prefilled_placeholder());
-    }
-  }
-}
-
 // Logs metrics related to how long it took the user from load/interaction time
 // till form submission.
 void LogDurationMetrics(const FormStructure& form,
@@ -96,8 +76,8 @@ void LogDurationMetrics(const FormStructure& form,
                         base::TimeTicks interaction_time,
                         base::TimeTicks submission_time) {
   size_t num_detected_field_types =
-      base::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
-                             &std::unique_ptr<AutofillField>::operator*);
+      std::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
+                            &std::unique_ptr<AutofillField>::operator*);
   bool form_has_autofilled_fields = std::ranges::any_of(
       form, [](const auto& field) { return field->is_autofilled(); });
   bool has_observed_one_time_code_field =
@@ -143,6 +123,41 @@ void LogDurationMetrics(const FormStructure& form,
   }
 }
 
+// Returns the character set of the submitted value for the alternative name
+// field.
+AutofillAlternativeNameFieldValueCharacterSet
+GetAlternativeNameFieldValueCharacterSet(
+    const std::u16string& submitted_value) {
+  UErrorCode error = U_ZERO_ERROR;
+  for (base::i18n::UTF16CharIterator iter(submitted_value); !iter.end();
+       iter.Advance()) {
+    if (uscript_getScript(iter.get(), &error) == USCRIPT_KATAKANA) {
+      return AutofillAlternativeNameFieldValueCharacterSet::kKatakana;
+    } else if (uscript_getScript(iter.get(), &error) == USCRIPT_HIRAGANA) {
+      return AutofillAlternativeNameFieldValueCharacterSet::kHiragana;
+    }
+  }
+  return AutofillAlternativeNameFieldValueCharacterSet::kOther;
+}
+
+// Records the character set of the submitted value for each alternative name
+// field in the form.
+void LogSubmittedAlternativeNameCharacterSetValues(const FormStructure& form) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    return;
+  }
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    if (IsAlternativeNameType(field->Type().GetStorableType()) &&
+        !field->value(ValueSemantics::kCurrent).empty()) {
+      base::UmaHistogramEnumeration(
+          "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
+          GetAlternativeNameFieldValueCharacterSet(
+              field->value(ValueSemantics::kCurrent)));
+    }
+  }
+}
+
 void LogExtractionMetrics(const FormStructure& form) {
   for (const std::unique_ptr<AutofillField>& field : form) {
     CHECK(!field->possible_types().empty());
@@ -169,7 +184,7 @@ void LogPredictionMetrics(
     LogOverallPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
                                        form, *field, metric_type);
     LogEmailFieldPredictionMetrics(*field);
-    LogShadowPredictionComparison(*field, GetActiveHeuristicSource());
+    LogFieldPredictionOverlapMetrics(*field);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // If ML predictions are the active heuristic source, don't record samples
     // as these would be redundant to the ".Heuristic" sub-metric of
@@ -198,7 +213,6 @@ void LogFillingMetrics(const FormStructure& form,
     return;
   }
   LogPerfectFillingMetric(form);
-  LogPreFillMetrics(form);
   LogFieldFillingStatsAndScore(form);
   LogFillingQualityMetrics(form);
 
@@ -236,6 +250,9 @@ void LogQualityMetrics(const FormStructure& form_structure,
   LogFillingMetrics(form_structure, form_interactions_ukm_logger, source_id,
                     observed_submission);
   if (observed_submission) {
+    // TODO(crbug.com/359768803): Remove this metric once the feature is
+    // launched.
+    LogSubmittedAlternativeNameCharacterSetValues(form_structure);
     LogExtractionMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);

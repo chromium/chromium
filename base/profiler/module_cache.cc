@@ -4,12 +4,12 @@
 
 #include "base/profiler/module_cache.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 
 namespace base {
@@ -65,14 +65,18 @@ ModuleCache::~ModuleCache() {
 }
 
 const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
-  if (const ModuleCache::Module* module = GetExistingModuleForAddress(address))
+  if (const ModuleCache::Module* module =
+          GetExistingModuleForAddress(address)) {
     return module;
+  }
 
   std::unique_ptr<const Module> new_module = CreateModuleForAddress(address);
-  if (!new_module && auxiliary_module_provider_)
+  if (!new_module && auxiliary_module_provider_) {
     new_module = auxiliary_module_provider_->TryCreateModuleForAddress(address);
-  if (!new_module)
+  }
+  if (!new_module) {
     return nullptr;
+  }
 
   const auto result = native_modules_.insert(std::move(new_module));
   // TODO(crbug.com/40150346): Reintroduce DCHECK(result.second) after
@@ -83,10 +87,12 @@ const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
 std::vector<const ModuleCache::Module*> ModuleCache::GetModules() const {
   std::vector<const Module*> result;
   result.reserve(native_modules_.size());
-  for (const std::unique_ptr<const Module>& module : native_modules_)
+  for (const std::unique_ptr<const Module>& module : native_modules_) {
     result.push_back(module.get());
-  for (const std::unique_ptr<const Module>& module : non_native_modules_)
+  }
+  for (const std::unique_ptr<const Module>& module : non_native_modules_) {
     result.push_back(module.get());
+  }
   return result;
 }
 
@@ -104,22 +110,20 @@ void ModuleCache::UpdateNonNativeModules(
   //
   // stable_partition is O(m*log(r)) where m is the number of current modules
   // and r is the number of modules to remove. insert and erase are both O(r).
-  auto first_module_defunct_modules = ranges::stable_partition(
+  auto defunct_modules_subrange = std::ranges::stable_partition(
       non_native_modules_,
       [&defunct_modules_set](const std::unique_ptr<const Module>& module) {
         return defunct_modules_set.find(module.get()) ==
                defunct_modules_set.end();
       });
   // All modules requested to be removed should have been found.
-  DCHECK_EQ(
-      static_cast<ptrdiff_t>(defunct_modules.size()),
-      std::distance(first_module_defunct_modules, non_native_modules_.end()));
+  DCHECK_EQ(defunct_modules.size(), defunct_modules_subrange.size());
   inactive_non_native_modules_.insert(
       inactive_non_native_modules_.end(),
-      std::make_move_iterator(first_module_defunct_modules),
-      std::make_move_iterator(non_native_modules_.end()));
-  non_native_modules_.erase(first_module_defunct_modules,
-                            non_native_modules_.end());
+      std::make_move_iterator(defunct_modules_subrange.begin()),
+      std::make_move_iterator(defunct_modules_subrange.end()));
+  non_native_modules_.erase(defunct_modules_subrange.begin(),
+                            defunct_modules_subrange.end());
 
   // Insert the modules to be added. This operation is O((m + a) + a*log(a))
   // where m is the number of current modules and a is the number of modules to
@@ -150,12 +154,14 @@ void ModuleCache::AddCustomNativeModule(std::unique_ptr<const Module> module) {
 const ModuleCache::Module* ModuleCache::GetExistingModuleForAddress(
     uintptr_t address) const {
   const auto non_native_module_loc = non_native_modules_.find(address);
-  if (non_native_module_loc != non_native_modules_.end())
+  if (non_native_module_loc != non_native_modules_.end()) {
     return non_native_module_loc->get();
+  }
 
   const auto native_module_loc = native_modules_.find(address);
-  if (native_module_loc != native_modules_.end())
+  if (native_module_loc != native_modules_.end()) {
     return native_module_loc->get();
+  }
 
   return nullptr;
 }

@@ -9,7 +9,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -95,6 +94,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::InvokeCallback& probe_data) {
     PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   }
+  void Will(const probe::FrameRelatedTask& probe) { probe.CaptureStartTime(); }
+  void Did(const probe::FrameRelatedTask& probe);
   void Will(const probe::UserEntryPoint&);
   void Did(const probe::UserEntryPoint&);
   void Will(const probe::InvokeEventHandler&);

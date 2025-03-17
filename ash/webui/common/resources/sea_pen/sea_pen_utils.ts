@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {getSeaPenTemplates, parseTemplateText, QUERY, Query, SeaPenImageId, SeaPenOption, SeaPenTemplate} from './constants.js';
-import {SeaPenQuery} from './sea_pen.mojom-webui.js';
-import {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
+import type {Query, SeaPenImageId, SeaPenOption, SeaPenTemplate} from './constants.js';
+import {getSeaPenTemplates, parseTemplateText, QUERY} from './constants.js';
+import type {SeaPenQuery} from './sea_pen.mojom-webui.js';
+import type {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 
 // Returns true if `maybeDataUrl` is a Url that contains a base64 encoded image.
 export function isImageDataUrl(maybeDataUrl: unknown): maybeDataUrl is Url {
@@ -224,4 +225,19 @@ export function shuffle<T>(array: T[]): T[] {
 export function isArrayEqual<T>(arr1: T[], arr2: T[]): boolean {
   return arr1.length === arr2.length &&
       arr1.every((value, index) => value === arr2[index]);
+}
+
+/**
+ * Announces the given message to users when screen reader is enabled.
+ */
+export class IronAnnounceEvent extends CustomEvent<{text: string}> {
+  constructor(message: string) {
+    super('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: message,
+      },
+    });
+  }
 }

@@ -79,9 +79,9 @@ class ProfileStatisticsAggregatorTest : public testing::Test {
   std::unique_ptr<ProfileStatisticsAggregator> CreateAggregator(
       base::OnceClosure done_callback) {
     return std::make_unique<ProfileStatisticsAggregator>(
-        autofill_web_data_service_, &personal_data_manager_, &bookmark_model_,
-        &history_service_, profile_password_store_, &pref_service_,
-        /*user_annotations_service=*/nullptr,
+        autofill_web_data_service_, &personal_data_manager_,
+        /*entity_data_manager=*/nullptr, &bookmark_model_, &history_service_,
+        profile_password_store_, &pref_service_,
         /*platform_credential_store=*/nullptr, std::move(done_callback));
   }
 

@@ -31,6 +31,23 @@ const char* InvalidCredentialsReasonToString(
       NOTREACHED();
   }
 }
+
+const char* ScopeLimitedUnrecoverableErrorReasonToString(
+    GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason reason) {
+  using enum GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason;
+  switch (reason) {
+    case kInvalidGrantRaptError:
+      return "invalid grant rapt error";
+    case kInvalidScope:
+      return "invalid scope";
+    case kRestrictedClient:
+      return "restricted client";
+    case kAdminPolicyEnforced:
+      return "admin policy enforced";
+    default:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
 bool GoogleServiceAuthError::operator==(
@@ -39,6 +56,8 @@ bool GoogleServiceAuthError::operator==(
          (error_message_ == b.error_message_) &&
          (invalid_gaia_credentials_reason_ ==
           b.invalid_gaia_credentials_reason_) &&
+         (scope_limited_unrecoverable_error_reason_ ==
+          b.scope_limited_unrecoverable_error_reason_) &&
          (token_binding_challenge_ == b.token_binding_challenge_);
 }
 
@@ -55,10 +74,26 @@ GoogleServiceAuthError::GoogleServiceAuthError(State s)
 
 GoogleServiceAuthError::GoogleServiceAuthError(State state,
                                                const std::string& error_message)
-    : GoogleServiceAuthError(
-          state,
-          (state == CONNECTION_FAILED) ? net::ERR_FAILED : 0) {
-  error_message_ = error_message;
+    : GoogleServiceAuthError(state,
+                             (state == CONNECTION_FAILED) ? net::ERR_FAILED : 0,
+                             std::nullopt,
+                             error_message) {}
+
+GoogleServiceAuthError::GoogleServiceAuthError(State s, int error)
+    : GoogleServiceAuthError(s, error, std::nullopt, std::string()) {}
+
+GoogleServiceAuthError::GoogleServiceAuthError(
+    State s,
+    int error,
+    std::optional<ScopeLimitedUnrecoverableErrorReason> reason,
+    const std::string& error_message)
+    : state_(s),
+      network_error_(error),
+      error_message_(error_message),
+      scope_limited_unrecoverable_error_reason_(reason) {
+  CHECK(s != SCOPE_LIMITED_UNRECOVERABLE_ERROR ||
+        scope_limited_unrecoverable_error_reason_.has_value())
+      << "SCOPE_LIMITED_UNRECOVERABLE_ERROR type errors must provide a reason.";
 }
 
 GoogleServiceAuthError::GoogleServiceAuthError(
@@ -89,10 +124,11 @@ GoogleServiceAuthError GoogleServiceAuthError::FromServiceUnavailable(
 
 // static
 GoogleServiceAuthError
-GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-    const std::string& error_message) {
-  return GoogleServiceAuthError(SCOPE_LIMITED_UNRECOVERABLE_ERROR,
-                                error_message);
+GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+    ScopeLimitedUnrecoverableErrorReason reason) {
+  GoogleServiceAuthError error(SCOPE_LIMITED_UNRECOVERABLE_ERROR, 0, reason,
+                               std::string());
+  return error;
 }
 
 // static
@@ -165,6 +201,13 @@ GoogleServiceAuthError::GetInvalidGaiaCredentialsReason() const {
   return invalid_gaia_credentials_reason_;
 }
 
+GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+GoogleServiceAuthError::GetScopeLimitedUnrecoverableErrorReason() const {
+  CHECK_EQ(SCOPE_LIMITED_UNRECOVERABLE_ERROR, state());
+  CHECK(scope_limited_unrecoverable_error_reason_.has_value());
+  return scope_limited_unrecoverable_error_reason_.value();
+}
+
 std::string GoogleServiceAuthError::ToString() const {
   switch (state_) {
     case NONE:
@@ -188,8 +231,11 @@ std::string GoogleServiceAuthError::ToString() const {
       return base::StringPrintf("Service responded with error: '%s'",
                                 error_message_.c_str());
     case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-      return base::StringPrintf("OAuth scope error: '%s'",
-                                error_message_.c_str());
+      CHECK(scope_limited_unrecoverable_error_reason_.has_value());
+      return base::StringPrintf(
+          "OAuth scope error (%s).",
+          ScopeLimitedUnrecoverableErrorReasonToString(
+              scope_limited_unrecoverable_error_reason_.value()));
     case CHALLENGE_RESPONSE_REQUIRED:
       return "Service responded with a token binding challenge.";
     case NUM_STATES:
@@ -219,8 +265,3 @@ bool GoogleServiceAuthError::IsTransientError() const {
       return false;
   }
 }
-
-GoogleServiceAuthError::GoogleServiceAuthError(State s, int error)
-    : state_(s),
-      network_error_(error),
-      invalid_gaia_credentials_reason_(InvalidGaiaCredentialsReason::UNKNOWN) {}

@@ -10,12 +10,14 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ForceHiddenElementsVisibleObserverInterface, ForceHiddenElementsVisibleObserverReceiver} from './accessibility_features.mojom-webui.js';
+import type {ForceHiddenElementsVisibleObserverInterface} from './accessibility_features.mojom-webui.js';
+import {ForceHiddenElementsVisibleObserverReceiver} from './accessibility_features.mojom-webui.js';
 import {getAccessibilityFeaturesInterface} from './mojo_interface_provider.js';
 import {getTemplate} from './scan_preview.html.js';
 import {AppState} from './scanning_app_types.js';

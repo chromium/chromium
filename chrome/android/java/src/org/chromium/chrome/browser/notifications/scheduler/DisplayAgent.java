@@ -331,7 +331,7 @@ public class DisplayAgent {
 
             // TODO(xingliu): Support button icon. See https://crbug.com/983354
             builder.addAction(
-                    /* icon_id= */ 0,
+                    /* icon= */ 0,
                     button.text,
                     PendingIntentProvider.getBroadcast(
                             context,

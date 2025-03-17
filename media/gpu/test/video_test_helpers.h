@@ -34,8 +34,11 @@
 #include "media/parsers/h265_parser.h"
 #endif
 
-namespace media {
-namespace test {
+namespace gpu {
+class TestSharedImageInterface;
+}
+
+namespace media::test {
 
 // Helper class allowing one thread to wait on a notification from another.
 // If notifications come in faster than they are Wait()'d for, they are
@@ -267,7 +270,8 @@ class AlignedDataHelper {
       VideoFrame::StorageType storage_type,
       const RawVideo::FrameData& src_frame,
       const VideoFrameLayout& src_layout,
-      const VideoFrameLayout& dst_layout);
+      const VideoFrameLayout& dst_layout,
+      gpu::TestSharedImageInterface* test_sii);
 
   const raw_ptr<const RawVideo> video_;
   // The number of frames in the given |stream|.
@@ -294,6 +298,8 @@ class AlignedDataHelper {
 
   // The frame data returned by GetNextFrame().
   std::vector<VideoFrameData> video_frame_data_;
+
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 // Small helper class to extract video frames from raw data streams.
@@ -321,7 +327,6 @@ class RawDataHelper {
 
   const bool reverse_;
 };
-}  // namespace test
-}  // namespace media
+}  // namespace media::test
 
 #endif  // MEDIA_GPU_TEST_VIDEO_TEST_HELPERS_H_

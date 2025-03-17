@@ -10,10 +10,13 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_mediator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/parcel_tracking_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -33,9 +36,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
-#import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -63,9 +63,7 @@ using signin_metrics::PromoAction;
     SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
 @end
 
-@implementation GoogleServicesSettingsCoordinator {
-  ParcelTrackingSettingsCoordinator* _parcelTrackingSettingsCoordinator;
-}
+@implementation GoogleServicesSettingsCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -117,8 +115,6 @@ using signin_metrics::PromoAction;
 
 - (void)stop {
   _signOutCoordinator = nil;
-  [_parcelTrackingSettingsCoordinator stop];
-  _parcelTrackingSettingsCoordinator = nil;
   [self dismissSignoutCoordinator];
 }
 
@@ -132,16 +128,6 @@ using signin_metrics::PromoAction;
                                        (signin_ui::SignoutCompletionCallback)
                                            completion {
   [self dismissSignoutCoordinator];
-  // Provide additional data retention options if the user is
-  // syncing their data.
-  // TODO(crbug.com/40066949): Simplify once kSync becomes
-  // unreachable or is deleted from the codebase. See
-  // ConsentLevel::kSync documentation for details.
-  if (self.identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    [self showDataRetentionOptionsWithTargetRect:targetRect
-                                      completion:completion];
-    return;
-  }
   [self signOutWithCompletion:completion];
 }
 
@@ -245,51 +231,15 @@ using signin_metrics::PromoAction;
   [self.signOutCoordinator start];
 }
 
-- (void)showParcelTrackingSettingsPage {
-  _parcelTrackingSettingsCoordinator =
-      [[ParcelTrackingSettingsCoordinator alloc]
-          initWithBaseNavigationController:_baseNavigationController
-                                   browser:self.browser];
-  [_parcelTrackingSettingsCoordinator start];
-}
-
-// Displays the option to keep or clear data for a syncing user.
-- (void)showDataRetentionOptionsWithTargetRect:(CGRect)targetRect
-                                    completion:
-                                        (signin_ui::SignoutCompletionCallback)
-                                            completion {
-  DCHECK(completion);
-  self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                            rect:targetRect
-                            view:self.viewController.view
-        forceSnackbarOverToolbar:NO
-                      withSource:signin_metrics::ProfileSignout::
-                                     kUserClickedSignoutSettings];
-  __weak GoogleServicesSettingsCoordinator* weakSelf = self;
-  self.signoutActionSheetCoordinator.delegate = self;
-  self.signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
-    if (completion) {
-      completion(success);
-    }
-    [weakSelf.signoutActionSheetCoordinator stop];
-    weakSelf.signoutActionSheetCoordinator = nil;
-  };
-  [self.signoutActionSheetCoordinator start];
-}
-
 // Signs the user out of Chrome, only clears data for managed accounts.
 - (void)signOutWithCompletion:(signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   [self.googleServicesSettingsViewController preventUserInteraction];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
-  self.authService->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      /*force_clear_browsing_data=*/NO, ^{
-        if (!weakSelf) {
-          return;
-        }
+  signin::MultiProfileSignOut(
+      self.browser,
+      signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn,
+      /*force_snackbar_over_toolbar=*/false, nil, ^{
         [weakSelf.googleServicesSettingsViewController allowUserInteraction];
         completion(YES);
       });

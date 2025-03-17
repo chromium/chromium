@@ -3,39 +3,18 @@
 // found in the LICENSE file.
 
 import type {Destination, DestinationStore, LocalDestinationInfo,
-             // <if expr="is_chromeos">
-             PrintPreviewDestinationDialogCrosElement,
-             // </if>
-             // <if expr="not is_chromeos">
              PrintPreviewDestinationDialogElement,
-             // </if>
              PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {
-  // <if expr="is_chromeos">
-  DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS,
-  // </if>
   GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-// <if expr="is_chromeos">
-import {MockTimer} from 'chrome://webui-test/mock_timer.js';
-
-// </if>
-
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getExtensionDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 
 suite('DestinationDialogTest', function() {
-  // <if expr="is_chromeos">
-  let dialog: PrintPreviewDestinationDialogCrosElement;
-  // </if>
-  // <if expr="not is_chromeos">
   let dialog: PrintPreviewDestinationDialogElement;
-  // </if>
 
   let destinationStore: DestinationStore;
 
@@ -47,10 +26,6 @@ suite('DestinationDialogTest', function() {
 
   const localDestinations: LocalDestinationInfo[] = [];
 
-  // <if expr="is_chromeos">
-  let mockTimer: MockTimer;
-  // </if>
-
   suiteSetup(function() {
     setupTestListenerElement();
   });
@@ -59,11 +34,6 @@ suite('DestinationDialogTest', function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    mockTimer = new MockTimer();
-    mockTimer.install();
-    setNativeLayerCrosInstance();
-    // </if>
     destinationStore = createDestinationStore();
     destinations = getDestinations(localDestinations);
     const extensionDestinationConfig = getExtensionDestinations();
@@ -74,19 +44,11 @@ suite('DestinationDialogTest', function() {
 
   function finishSetup() {
     // Set up dialog
-    // <if expr="is_chromeos">
-    dialog = document.createElement('print-preview-destination-dialog-cros');
-    // </if>
-    // <if expr="not is_chromeos">
     dialog = document.createElement('print-preview-destination-dialog');
-    // </if>
     dialog.destinationStore = destinationStore;
     document.body.appendChild(dialog);
     destinationStore.startLoadAllDestinations();
     dialog.show();
-    // <if expr="is_chromeos">
-    mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
-    // </if>
   }
 
   function validatePrinterList() {
@@ -118,8 +80,7 @@ suite('DestinationDialogTest', function() {
     // as native.
     let whenPrinterListReady = nativeLayer.waitForGetPrinters(1);
     destinationStore.init(
-        false /* pdfPrinterDisabled */, false /* saveToDriveDisabled */,
-        'FooDevice' /* printerName */,
+        false /* pdfPrinterDisabled */, 'FooDevice' /* printerName */,
         '' /* serializedDefaultDestinationSelectionRulesStr */,
         [makeRecentDestination(destinations[4]!)] /* recentDestinations */);
     await whenPrinterListReady;
@@ -140,8 +101,7 @@ suite('DestinationDialogTest', function() {
         // printers are recent.
         const whenAllPreloaded = nativeLayer.waitForGetPrinters(2);
         destinationStore.init(
-            false /* pdfPrinterDisabled */, false /* saveToDriveDisabled */,
-            'FooDevice' /* printerName */,
+            false /* pdfPrinterDisabled */, 'FooDevice' /* printerName */,
             '' /* serializedDefaultDestinationSelectionRulesStr */, [
               makeRecentDestination(destinations[4]!),
               makeRecentDestination(extensionDestinations[0]!),

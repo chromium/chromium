@@ -28,7 +28,6 @@ class TokenManagerImpl : public TokenManager {
  public:
   explicit TokenManagerImpl(
       std::unique_ptr<TokenFetcher> token_fetcher,
-      base::TimeDelta expiration_buffer = base::Seconds(5),
       base::Clock* clock = base::DefaultClock::GetInstance());
 
   TokenManagerImpl(const TokenManagerImpl&) = delete;
@@ -46,7 +45,6 @@ class TokenManagerImpl : public TokenManager {
   void OnTokenFetchCompleted(std::optional<TokenDataWrapper> token_data);
 
   const std::unique_ptr<TokenFetcher> token_fetcher_;
-  const base::TimeDelta expiration_buffer_;
   const raw_ref<const base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);

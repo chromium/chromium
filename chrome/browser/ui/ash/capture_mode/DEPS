@@ -28,6 +28,8 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/screen_ai",
+  "+chrome/browser/search_engines",
+  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/screenshot_area.h",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/ash/web_view",

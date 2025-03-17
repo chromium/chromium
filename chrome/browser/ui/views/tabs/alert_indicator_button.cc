@@ -56,15 +56,13 @@ std::unique_ptr<gfx::MultiAnimation> CreateTabRecordingIndicatorAnimation() {
   gfx::MultiAnimation::Parts parts;
   for (size_t i = 0; i < kFadeInFadeOutCycles; ++i) {
     // Fade-in:
-    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeInDuration,
-                                              gfx::Tween::EASE_IN));
+    parts.emplace_back(kIndicatorFadeInDuration, gfx::Tween::EASE_IN);
     // Fade-out (from 1 to 0):
-    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeOutDuration,
-                                              gfx::Tween::EASE_IN, 1.0, 0.0));
+    parts.emplace_back(kIndicatorFadeOutDuration, gfx::Tween::EASE_IN, 1.0,
+                       0.0);
   }
   // Finish by fading in to show the indicator.
-  parts.push_back(
-      gfx::MultiAnimation::Part(kIndicatorFadeInDuration, gfx::Tween::EASE_IN));
+  parts.emplace_back(kIndicatorFadeInDuration, gfx::Tween::EASE_IN);
 
   auto animation =
       std::make_unique<gfx::MultiAnimation>(parts, kIndicatorFrameInterval);
@@ -328,9 +326,7 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
       alert_state == TabAlertState::VIDEO_RECORDING ||
       alert_state == TabAlertState::TAB_CAPTURING ||
       alert_state == TabAlertState::DESKTOP_CAPTURING) {
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kImprovedSemanticsActivityIndicators) &&
-        (alert_state == TabAlertState::MEDIA_RECORDING ||
+    if ((alert_state == TabAlertState::MEDIA_RECORDING ||
          alert_state == TabAlertState::AUDIO_RECORDING ||
          alert_state == TabAlertState::VIDEO_RECORDING) &&
         camera_mic_indicator_start_time_ == base::Time()) {
@@ -348,9 +344,7 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
   gfx::MultiAnimation::Parts parts;
   const bool is_for_fade_in = alert_state.has_value();
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kImprovedSemanticsActivityIndicators) &&
-      !is_for_fade_in && camera_mic_indicator_start_time_ != base::Time()) {
+  if (!is_for_fade_in && camera_mic_indicator_start_time_ != base::Time()) {
     base::TimeDelta delay =
         base::Time::Now() - camera_mic_indicator_start_time_;
     camera_mic_indicator_start_time_ = base::Time();
@@ -360,11 +354,11 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
                      kIndicatorFadeOutDuration);
 
     fadeout_animation_duration_for_testing_ = delay;
-    parts.push_back(gfx::MultiAnimation::Part(delay, gfx::Tween::EASE_IN));
+    parts.emplace_back(delay, gfx::Tween::EASE_IN);
   } else {
-    parts.push_back(gfx::MultiAnimation::Part(
+    parts.emplace_back(
         is_for_fade_in ? kIndicatorFadeInDuration : kIndicatorFadeOutDuration,
-        gfx::Tween::EASE_IN));
+        gfx::Tween::EASE_IN);
   }
 
   auto animation =
@@ -379,7 +373,7 @@ Tab* AlertIndicatorButton::GetTab() {
 }
 
 // Returns a cached image, to be shown by the alert indicator for the given
-// |alert_state|.  Uses the global ui::ResourceBundle shared instance.
+// `alert_state`.  Uses the global ui::ResourceBundle shared instance.
 ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
     TabAlertState alert_state,
     ui::ColorId button_color) {
@@ -428,7 +422,7 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
       icon = &vector_icons::kCardboardIcon;
       break;
     case TabAlertState::GLIC_ACCESSING:
-      icon = &vector_icons::kFitScreenIcon;
+      icon = &kTvIcon;
       break;
   }
   DCHECK(icon);

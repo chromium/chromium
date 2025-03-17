@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/search_engines/prepopulated_engines.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -16,6 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 @interface SearchEngineTestCase : ChromeTestCase
 @end
@@ -28,16 +29,16 @@
   // Make sure the search engine has been reset, to avoid any issues if it was
   // not by a previous test.
   [SettingsAppInterface resetSearchEngine];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)tearDownHelper {
   // Reset the default search engine to Google
   [SettingsAppInterface resetSearchEngine];
   // Release the histogram tester.
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -204,17 +205,14 @@
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(
                           kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:1
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kLearnMoreWasDisplayed)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:1 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kLearnMoreWasDisplayed)
+      forHistogram:eventHistogram]);
   // Close the Learn More dialog.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
@@ -232,17 +230,14 @@
   [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:2
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kDefaultWasSet)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:2 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:
+             static_cast<int>(
+                 search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet)
+      forHistogram:eventHistogram]);
 }
 
 @end

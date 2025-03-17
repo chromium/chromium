@@ -8,11 +8,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "url/gurl.h"
 
 namespace {
@@ -51,7 +54,13 @@ class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    client_impl_ = std::make_unique<SystemTrayClientImpl>();
+    client_impl_ = std::make_unique<SystemTrayClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()
+                        ->platform_part()
+                        ->GetSystemClock()),
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()
+                        ->platform_part()
+                        ->browser_policy_connector_ash()));
     settings_window_manager_ = std::make_unique<TestSettingsWindowManager>();
 
     chrome::SettingsWindowManager::SetInstanceForTesting(

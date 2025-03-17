@@ -62,8 +62,9 @@ std::unique_ptr<net::CookieMonster> CreateCookieMonster(
       CreatePersistentCookieStore(config.path, restore_old_session_cookies);
   std::unique_ptr<net::CookieMonster> cookie_monster(
       new net::CookieMonster(persistent_store.get(), net_log));
-  if (restore_old_session_cookies)
+  if (restore_old_session_cookies) {
     cookie_monster->SetPersistSessionCookies(true);
+  }
   return cookie_monster;
 }
 
@@ -84,8 +85,9 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
     const CookieStoreConfig& config,
     std::unique_ptr<net::SystemCookieStore> system_cookie_store,
     net::NetLog* net_log) {
-  if (config.cookie_store_type == CookieStoreConfig::COOKIE_MONSTER)
+  if (config.cookie_store_type == CookieStoreConfig::COOKIE_MONSTER) {
     return CreateCookieMonster(config, net_log);
+  }
 
   // Using the SystemCookieStore will allow URLFetcher and any other users of
   // net:CookieStore to in iOS to use cookies directly from WKHTTPCookieStore.

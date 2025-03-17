@@ -63,6 +63,18 @@ static_library("enterprise") {
     ]
   }
 
+  if (!is_ios && !is_android) {
+    sources += [
+      "browser/promotion/promotion_eligibility_checker.cc",
+      "browser/promotion/promotion_eligibility_checker.h",
+    ]
+  }
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//base",
     "//components/policy/core/browser",
@@ -92,6 +104,14 @@ static_library("enterprise") {
     ]
 
     deps += [ "//third_party/abseil-cpp:absl" ]
+  }
+
+  if (enterprise_client_certificates) {
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
+
+  if (!is_ios && !is_android) {
+    deps += [ "//components/signin/public/identity_manager:identity_manager" ]
   }
 }
 
@@ -137,6 +157,10 @@ source_set("unit_tests") {
     "common/proto/connectors_unittest.cc",
   ]
 
+  if (!is_ios && !is_android) {
+    sources += [ "browser/promotion/promotion_eligibility_checker_unittest.cc" ]
+  }
+
   deps = [
     ":enterprise",
     ":reporting_test_support",
@@ -144,9 +168,11 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/identifiers:test_support",
+    "//components/enterprise/signin:unit_tests",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/version_info",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/content_analysis_sdk:liblcasdk",
@@ -172,6 +198,8 @@ source_set("unit_tests") {
       "//components/enterprise/common/proto:extensions_workflow_events_proto",
       "//components/reporting/client:mock_report_queue_provider",
       "//components/reporting/client:test_support",
+      "//components/signin/public/identity_manager:identity_manager",
+      "//components/signin/public/identity_manager:test_support",
     ]
   }
 

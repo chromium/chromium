@@ -39,6 +39,6 @@ export function createResult(verdict: RoutineVerdict): RoutineResult {
     timestamp: {
       internalValue: BigInt(0),
     },
-    resultValue: undefined,
+    resultValue: null,
   };
 }

@@ -10,12 +10,12 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -27,9 +27,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Responsible for providing UI resources for showing price insights action on optional toolbar
@@ -66,7 +68,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                 tabSupplier,
                 modalDialogManager,
                 buttonDrawable,
-                /* contentDescriptionResId= */ context.getString(R.string.price_insights_title),
+                /* contentDescription= */ context.getString(R.string.price_insights_title),
                 /* actionChipLabelResId= */ R.string.price_insights_price_is_low_title,
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
@@ -95,7 +97,12 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
+        ShoppingService shoppingService = mShoppingServiceSupplier.get();
+        if (shoppingService == null) {
+            showErrorToastMessage();
+            return;
+        }
+        if (CommerceFeatureUtils.isDiscountInfoApiEnabled(shoppingService)) {
             assert mCommerceBottomSheetContentController.get() != null;
             mCommerceBottomSheetContentController.get().requestShowContent();
         } else {
@@ -109,11 +116,16 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             if (mBottomSheetCoordinatorForTesting != null) {
                 mBottomSheetCoordinator = mBottomSheetCoordinatorForTesting;
             } else {
+                Tab tab = mTabSupplier.get();
+                if (tab == null) {
+                    showErrorToastMessage();
+                    return;
+                }
                 mBottomSheetCoordinator =
                         new PriceInsightsBottomSheetCoordinator(
                                 mContext,
                                 mBottomSheetController,
-                                mTabSupplier.get(),
+                                tab,
                                 mTabModelSelectorSupplier.get(),
                                 mShoppingServiceSupplier.get(),
                                 mPriceInsightsDelegate);
@@ -147,5 +159,10 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             PriceInsightsBottomSheetCoordinator coordinator) {
         mBottomSheetCoordinatorForTesting = coordinator;
         ResettersForTesting.register(() -> mBottomSheetCoordinatorForTesting = null);
+    }
+
+    private void showErrorToastMessage() {
+        @StringRes int textResId = R.string.price_insights_content_price_tracking_error_message;
+        Toast.makeText(mContext, textResId, Toast.LENGTH_SHORT).show();
     }
 }

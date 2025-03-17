@@ -17,8 +17,8 @@ std::atomic<bool> StartupTrace::startup_in_progress_ = false;
 
 // static
 StartupTrace* StartupTrace::GetInstance() {
-  static StartupTrace g_instance;
-  return &g_instance;
+  static base::NoDestructor<StartupTrace> g_instance;
+  return g_instance.get();
 }
 
 // static

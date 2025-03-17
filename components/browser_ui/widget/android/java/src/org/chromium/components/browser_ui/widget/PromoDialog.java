@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -16,7 +18,11 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Generic builder for promo dialogs. */
+@NullMarked
 public abstract class PromoDialog extends AlwaysDismissedDialog
         implements View.OnClickListener, DialogInterface.OnDismissListener {
     /** Parameters that can be used to create a new PromoDialog. */
@@ -40,7 +46,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
          * This parameter is mutually exclusive with {@link #drawableResource} and
          * {@link #vectorDrawableResource}.
          */
-        public Drawable drawableInstance;
+        public @Nullable Drawable drawableInstance;
 
         /** Resource ID of the String to show as the promo title. */
         public int headerStringResource;
@@ -49,13 +55,13 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
          * Optional: CharSequence to show as promo title.
          * This parameter takes precedence over {@link #headerStringResoruce}
          */
-        public CharSequence headerCharSequence;
+        public @Nullable CharSequence headerCharSequence;
 
         /**
          * Optional: CharSequence to show as descriptive text.
          * This parameter takes precedence over {@link #subheaderStringResoruce}
          */
-        public CharSequence subheaderCharSequence;
+        public @Nullable CharSequence subheaderCharSequence;
 
         /** Optional: Boolean flag set to true if descriptive text has a link. */
         public boolean subheaderIsLink;
@@ -73,7 +79,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
          * Optional: CharSequence to show on the primary/ok button.
          * This parameter takes precedence over {@link #primaryButtonStringResource}
          */
-        public CharSequence primaryButtonCharSequence;
+        public @Nullable CharSequence primaryButtonCharSequence;
 
         /** Optional: Resource ID of the String to show on the secondary/cancel button. */
         public int secondaryButtonStringResource;
@@ -84,8 +90,8 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
     private final FrameLayout mScrimView;
     private PromoDialogLayout mDialogLayout;
 
-    protected PromoDialog(Activity activity) {
-        super(activity, R.style.PromoDialog);
+    protected PromoDialog(Activity activity, boolean shouldPadForWindowInsets) {
+        super(activity, R.style.PromoDialog, shouldPadForWindowInsets);
 
         mScrimView = new FrameLayout(activity);
         mScrimView.setBackgroundColor(activity.getColor(R.color.modal_dialog_scrim_color));
@@ -115,14 +121,14 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(mScrimView);
 
         mDialogLayout.initialize(getDialogParams());
 
         // Force the window to allow the dialog contents be as wide as necessary.
-        getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        assumeNonNull(getWindow()).setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
         // Connect all the buttons to this class.
         for (int interactiveViewId : CLICKABLE_BUTTON_IDS) {

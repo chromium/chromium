@@ -48,6 +48,11 @@ class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
                            PrefValueMap* prefs) override;
 
  private:
+  // Returns a list of covered GenAI policies to which the default value can be
+  // applied.
+  std::vector<GenAiPolicyDetails> GetUnsetGenAiPolicies(
+      const PolicyMap& policies);
+
   // GenAI policies for which the default should be applied when unset.
   std::vector<GenAiPolicyDetails> gen_ai_policies_;
 };

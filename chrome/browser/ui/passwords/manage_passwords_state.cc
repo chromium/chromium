@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -48,7 +48,7 @@ void AppendDeepCopyVector(base::span<const PasswordForm> forms,
 // Returns true if the form was found and updated.
 bool UpdateFormInVector(const PasswordForm& updated_form,
                         std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       *forms, [&updated_form](const std::unique_ptr<PasswordForm>& form) {
         return ArePasswordFormUniqueKeysEqual(*form, updated_form);
       });
@@ -63,7 +63,7 @@ bool UpdateFormInVector(const PasswordForm& updated_form,
 // Returns true iff the form was deleted.
 bool RemoveFormFromVector(const PasswordForm& form_to_delete,
                           std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       *forms, [&form_to_delete](const std::unique_ptr<PasswordForm>& form) {
         return ArePasswordFormUniqueKeysEqual(*form, form_to_delete);
       });
@@ -91,14 +91,6 @@ void ManagePasswordsState::OnPendingPassword(
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
   SetState(password_manager::ui::PENDING_PASSWORD_STATE);
-}
-
-void ManagePasswordsState::OnDefaultStoreChanged(
-    std::unique_ptr<PasswordFormManagerForUI> form_manager) {
-  // OnPendingPassword() sets the state to PENDING_PASSWORD_STATE, so
-  // TransitionToState() needs to be called second.
-  OnPendingPassword(std::move(form_manager));
-  TransitionToState(password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
 }
 
 void ManagePasswordsState::OnUpdatePassword(
@@ -175,7 +167,7 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
   // pending password is already present in the `local_credentials_forms_`. That
   // can happen when this is a confirmation of a password update done via
   // CredentialManager.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       local_credentials_forms_,
       [this](const std::unique_ptr<PasswordForm>& form) {
         return ArePasswordFormUniqueKeysEqual(
@@ -277,9 +269,7 @@ void ManagePasswordsState::TransitionToState(
         state ==
             password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE ||
         state == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS ||
-        state ==
-            password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE ||
-        state == password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE)
+        state == password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE)
       << state_;
   if (state_ == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
     if (!credentials_callback_.is_null()) {

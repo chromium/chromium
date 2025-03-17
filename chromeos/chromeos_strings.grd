@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/chromeos_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -393,7 +393,7 @@
         Enter a prompt like "write a thank you note"
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode.">
-        Rewrite
+        Refine
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode.">
         Enter a prompt like "make it more confident"
@@ -433,12 +433,6 @@
       <message name="IDS_MAHI_SUMMARIZE_INDICATOR_LABEL" desc="The text label that indicates the result is a summary">
         Summary
       </message>
-      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP" desc="The tooltip of summary button.">
-        Click to summarize the webpage/PDF file
-      </message>
-      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION" desc="The tooltip of summary button for selected text.">
-        Click to summarize the selected text
-      </message>
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT" desc="The tooltip of summary button when selected text is too short.">
         Not enough words to summarize
       </message>
@@ -447,9 +441,6 @@
       </message>
       <message name="IDS_MAHI_SIMPLIFY_INDICATOR_LABEL" desc="The text label that indicates the result is a simplication">
         Simplified text
-      </message>
-      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_ENABLED" desc="The tooltip of the simplify button when it's enabled">
-        Click to simplify the selected text
       </message>
       <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_EMPTY" desc="The tooltip of the simplify button when it's disabled because of no selected text">
         Select some text to simplify
@@ -461,7 +452,7 @@
         Too many words to simplify
       </message>
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
-        Ask question, e.g. "What is this page about?"
+        Ask a question
       </message>
       <message name="IDS_MAHI_PANEL_SUMMARY_SECTION_NAME" desc="The name for the summary section that lies within the Mahi panel">
         Summary
@@ -497,6 +488,58 @@
       </message>
       <message name="IDS_ASH_MAHI_CONDENSED_MENU_BUTTON_LABEL" desc="The label that appears on the condensed Mahi menu button">
         Summarize with Help me read
+      </message>
+
+      <!-- Mako Feedback -->
+      <message name="IDS_MAKO_FEEDBACK_LINK_ARIA_LABEL" desc="aria-label for links on the Mako feedback form. Makes it clear that it will only open in a different tab. This is appened after the standard label for the link">
+        <ph name="LINK_TEXT">$1</ph>, opens in new tab
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_TITLE" desc="Title of the Mako feedback form">
+        Send feedback
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_SUBTITLE" desc="Subtitle of the Mako feedback form">
+        Thanks for sharing your experience. Your feedback helps us create more accurate and beneficial content.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_QUESTION" desc="Label for the question on the Mako feedback form">
+        What didn’t work well?
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_QUESTION_PLACEHOLDER" desc="Placeholder for the question on the Mako feedback form">
+        Share your feedback or describe your issue. Make sure to not include anything that is personal, sensitive, or confidential.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_OFFENSIVE_OR_UNSAFE" desc="Button label for &quot;offensive or unsafe&quot; on the Mako feedback form">
+        Offensive/Unsafe
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_FACTUALLY_INCORRECT" desc="Button label for &quot;factually incorrect&quot; on the Mako feedback form">
+        Factually incorrect
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_LEGAL_ISSUE" desc="Button label for &quot;legal issue&quot; on the Mako feedback form">
+        Legal issue
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_FEEDBACK_DISCLAIMER" desc="Label for the feedback disclaimer on the Mako feedback form">
+        When you select send, your feedback and content (shown below) will be sent to Google, reviewed by humans, and used to train or improve our products and services subject to the <ph name="LINK_POLICY_BEGIN">$1</ph>Privacy Policy<ph name="LINK_POLICY_END">$2</ph> and <ph name="LINK_TERMS_OF_SERVICE_BEGIN">$3</ph>Google Terms of Service<ph name="LINK_TERMS_OF_SERVICE_END">$4</ph>.
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_PRIVACY_POLICY" desc="Label for privacy policy links on the Mako feedback form">
+        Privacy Policy
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_TERMS_OF_SERVICE" desc="Label for Google Terms of Service links on the Mako feedback form">
+        Google Terms of Service
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_CANCEL" desc="Button label for cancelling feedback on the Mako feedback form">
+        Cancel
+      </message>
+      <message name="IDS_MAKO_FEEDBACK_SEND" desc="Button label for sending feedback on the Mako feedback form">
+        Send
+      </message>
+
+      <!-- Lobster -->
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_TAB_LABEL" desc="The label for Image Generation tab in the Editor menu card.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_CHIP_LABEL" desc="The label for Image Generation chip in the Editor menu card.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu Card when the Image Generation tab is selected.">
+        Enter a prompt like "draw a misty forest"
       </message>
 
       <!-- Multitask Menu -->
@@ -722,9 +765,9 @@
           ChromeOS Input Method Service
         </message>
 
-        <!-- Content Transfer App -->
-        <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Content Transfer app in the app shelf. The Content Transfer app allows user to transfer data from their EDU account to their consumer account.">
-          Content Transfer
+        <!-- Content transfer App -->
+        <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Content transfer app in the app shelf. The Content transfer app allows user to transfer data from their EDU account to their consumer account.">
+          Content transfer
         </message>
         <message name="IDS_GRADUATION_APP_BACK_BUTTON_LABEL" desc="Text for a button that navigates to the previous step of the Transfer flow.">
           Back
@@ -738,25 +781,25 @@
         <message name="IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Takeout webview is loading.">
           Please wait...
         </message>
-        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_TITLE" desc="The title of the welcome page shown when the Content Transfer app is opened.">
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_TITLE" desc="The title of the welcome page shown when the Content transfer app is opened.">
           Take your Gmail and Google Drive files with you
         </message>
-        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_DESCRIPTION" desc="The description of the welcome page shown when the Content Transfer app is opened.">
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_DESCRIPTION" desc="The description of the welcome page shown when the Content transfer app is opened.">
           When you lose access to your school account, you will no longer have access to the associated email and Google Drive files such as Gmail, Docs, Slides, and more.
         </message>
-        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_SUB_DESCRIPTION" desc="An additional description shown on the welcome page when the Content Transfer app is opened.">
-          Make sure to use the Content Transfer app by Google to move your school account data to your personal account before you lose access.
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_SUB_DESCRIPTION" desc="An additional description shown on the welcome page when the Content transfer app is opened.">
+          Make sure to use the Content transfer app by Google to move your school account data to your personal account before you lose access.
         </message>
-        <message name="IDS_GRADUATION_APP_ERROR_PAGE_TITLE" desc="The title of the page shown in the Content Transfer app when an error has occurred.">
+        <message name="IDS_GRADUATION_APP_ERROR_PAGE_TITLE" desc="The title of the page shown in the Content transfer app when an error has occurred.">
           An error occurred
         </message>
-        <message name="IDS_GRADUATION_APP_ERROR_PAGE_DESCRIPTION" desc="The description of the page shown in the Content Transfer app when an error has occurred.">
+        <message name="IDS_GRADUATION_APP_ERROR_PAGE_DESCRIPTION" desc="The description of the page shown in the Content transfer app when an error has occurred.">
           Please try again later
         </message>
-        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_TITLE" desc="The title of the page shown in the Content Transfer app when the network is not available.">
+        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_TITLE" desc="The title of the page shown in the Content transfer app when the network is not available.">
           Can’t connect to the internet
         </message>
-        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_DESCRIPTION" desc="The description of the page shown in the Content Transfer app when the network is not available.">
+        <message name="IDS_GRADUATION_APP_OFFLINE_PAGE_DESCRIPTION" desc="The description of the page shown in the Content transfer app when the network is not available.">
           Check your internet connection
         </message>
 
@@ -2510,6 +2553,9 @@
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_OPEN" desc="Label for the button to open wallpaper description dialog">
           About the art
         </message>
+        <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_LEARN_MORE" desc="Label for the link to learn more about the currently selected wallpaper.">
+          Learn more
+        </message>
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_CLOSE" desc="Label for the close button on wallpaper description dialog">
           Close
         </message>
@@ -2973,6 +3019,9 @@
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_NEW_MEXICO_ALBUM_TITLE" desc="Title for the new mexico video in the ambient section of the hub.">
           Earth Flow
         </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_JUPITER_ALBUM_TITLE" desc="Title for the jupiter video in the ambient section of the hub.">
+          Jupiter
+        </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION" desc="Common description all videos in the ambient section of the hub.">
           Exclusive to <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
         </message>
@@ -3266,7 +3315,7 @@
           Your Chromebook was reset to safe defaults. You can adjust these changes anytime in Settings.
         </message>
         <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Summary title">
-          Summary
+          Your Chromebook was reset to safe defaults. You can make changes anytime in Settings.
         </message>
         <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the safety reset done dialog">
           Done
@@ -3274,32 +3323,53 @@
         <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" desc="Accordion title for extension resets">
           Extensions
         </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE_SUBHEADER" desc="Subheader for instructions to re-enable extensions">
+          Extensions
+        </message>
         <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" desc="Instructions to re-enable extensions">
-          Only turn on extensions you trust
+          Extensions disabled to prevent changes to settings. Only turn on extensions you trust.
         </message>
         <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" desc="Accordion title for ChromeOS resets">
           ChromeOS Settings
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" desc="Instructions to adjust ChromeOS Inputs">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT_SUBHEADER" desc="Subheader for instructions to adjust ChromeOS Inputs">
           Input method
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" desc="Instructions to adjust ChromeOS Network">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" desc="Instructions to adjust ChromeOS Inputs">
+          Reset to prevent others from accessing data. Only use input methods you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK_SUBHEADER" desc="Subheader for instructions to adjust ChromeOS Network">
           Network
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" desc="Instructions to adjust ChromeOS Network">
+          Reset to protect data sent through your networks. Only use networks you trust.
         </message>
         <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" desc="Accordion title for Chrome resets">
           Chrome Settings
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" desc="Instructions to adjust Chrome site content settings">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT_SUBHEADER" desc="Subheader for instructions to adjust Chrome site content settings">
           Site content
         </message>
-        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" desc="Instruction to adjust Chrome startup settings">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" desc="Instructions to adjust Chrome site content settings">
+          Reset to stop others from using your microphone or camera. Only grant permissions to sites you trust.
+        </message>
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP_SUBHEADER" desc="Subheader for instruction to adjust Chrome startup settings">
           Startup preferences
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" desc="Instructions to adjust Chrome homepage settings">
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" desc="Instruction to adjust Chrome startup settings">
+          Reset to make sure the default startup page is not a phishing website. Only use websites you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE_SUBHEADER" desc="Subheader for instructions to adjust Chrome homepage settings">
           Homepage
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" desc="Instruction to adjust Chrome language settings">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" desc="Instructions to adjust Chrome homepage settings">
+          Reset to make sure the default homepage is not a phishing site. Only use websites you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES_SUBHEADER" desc="Subheader for instruction to adjust Chrome language settings">
           Language
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" desc="Instruction to adjust Chrome language settings">
+          Reset to make sure you can access information in your preferred language. Check that only preferred languages are used.
         </message>
         <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" desc="Button label to redirect to Chrome Extensions page">
           Extensions
@@ -3330,7 +3400,7 @@
         </message>
         <message name="IDS_SANITIZE_WARNING" desc="Warning text in the safety reset">
           Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
-          Your tabs, files, cookies, and history won’t be changed.
+          Your default search engine will be reset, but your tabs, files, cookies, and history won’t be changed.
         </message>
         <message name="IDS_SANITIZE_FEEDBACK" translateable="false" desc="Feedback label in the Reset Profile Settings dialog">
           Help make ChromeOS better by reporting the current settings
@@ -3476,14 +3546,10 @@
         All created images will automatically appear here.
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_TITLE" desc="The title of the introduction dialog displayed on the first time the user enters Sea Pen subpage.">
-          How to create with AI and a few things to keep in mind
-        </message>
-        <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_FIRST_PARAGRAPH" desc="Option to fill in the SEA_PEN_INTRO_FIRST_PARAGRAPH of the IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT.">
-          Choose a theme and then select the underlined words to personalize your AI images.
+          A few things to keep in mind
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog.">
-          <ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH">$1<ex>Choose a theme and then select the underlined words to personalize your AI images.</ex></ph>
-          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Choose a theme and then select the underlined words to personalize your AI images.<ph name="LINE_BREAK">&lt;br&gt;</ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Select "Inspire me" to get more unique and varied AI images options.
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
@@ -3493,13 +3559,31 @@
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Generative AI is experimental, in early development, and currently has limited availability.
         </message>
+        <message name="IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog when freeform is enabled.">
+          When you select “Create your own,” write a custom prompt. Or you can select “Choose a theme” and then select the underlined words to personalize your AI wallpaper.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Select "Inspire me" to get more unique and varied AI images options.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          When you create your own wallpaper, the prompt is sent to Google servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Terms of Service and Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>. Don't include anything personal, sensitive, or confidential.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Generative AI can make mistakes, including about people, so double-check it. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER">&lt;a target="_blank" href="https://support.google.com/chromebook?p=octocorallia"&gt;</ph>Learn more<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>
+        </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON" desc="The button to close the introduction dialog.">
           Got it
         </message>
+        <message name="IDS_SEA_PEN_ARIA_DESCRIPTION_GENERATED_IMAGE" desc="Informational text presented to screen readers to inform users that an image is generated">
+          Generated image
+        </message>
 
         <!-- Freeform prompts -->
-        <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_TEMPLATES_LABEL" desc="Label for the Wallpaper AI templates feature.">
-          AI Wallpapers
+        <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_LABEL" desc="Label for the Wallpaper AI freeform feature.">
+          Create your own
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATES_WALLPAPER_LABEL" desc="Label for the Wallpaper AI templates feature.">
+          Choose a theme
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL" desc="Label for a list of sample prompts, used to help users write prompts to generate AI images.">
           Sample prompts
@@ -3513,6 +3597,9 @@
         <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
         Describe the wallpaper you want to create
         </message>
+        <message name="IDS_SEA_PEN_FREEFORM_DISCLAIMER" desc="Aria label for a button that shuffles a list of suggestions (IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS)">
+          Generative AI can make mistakes, including about people, so double-check it
+        </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
         </message>
@@ -3525,9 +3612,6 @@
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_BLOCKED_OUTPUTS" desc="Error message displayed when the search results were blocked.">
           Can't create images of this. Try another prompt.
         </message>
-        <message name="IDS_SEA_PEN_FREEFORM_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
-          Powered by Google AI
-        </message>
         <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS" desc="Section heading that shows previously-generated wallpapers.">
           Previous prompts
         </message>
@@ -3535,13 +3619,10 @@
           Your 3 most recent prompts and outputs. You can only access these while you're using Wallpaper &amp; style.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE" desc="A link to a guide with instructions on how to write a prompt to generate AI images.">
-          Select prompt to create or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a target="_blank" href="https://cloud.google.com/vertex-ai/generative-ai/docs/image/img-gen-prompt-guide"&gt;</ph>prompt guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
+          Select prompt to create or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a target="_blank" href="https://support.google.com/chromebook?p=octocorallia"&gt;</ph>prompt guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION" desc="Description shown in each template page to help users navigate to freeform page.">
           You can also <ph name="BEGIN_LINK_FREEFORM_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/sea-pen/freeform"&gt;</ph>write your own prompt<ph name="END_LINK_FREEFORM_SUBPAGE">&lt;/a&gt;</ph>
-        </message>
-        <message name="IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_FIRST_PARAGRAPH" desc="Option to fill in the SEA_PEN_INTRO_FIRST_PARAGRAPH of the IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT.">
-          When you select “Create with AI,” write a custom prompt. Or you can select “AI wallpapers,” to choose a theme and then select the underlined words to personalize your AI wallpaper.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SAMPLE_PROMPTS" desc="Aria label for a list of sample text prompts to be used to generate AI images (IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL)">
           Sample prompts
@@ -3551,6 +3632,12 @@
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SHUFFLE_SUGGESTIONS" desc="Aria label for a button that shuffles a list of suggestions (IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS)">
           Shuffle suggestions
+        </message>
+        <message name="IDS_SEA_PEN_ARIA_ANNOUNCE_SAMPLE_PROMPTS_SHUFFLED" desc="Text read out by the screen reader after the sample prompts are shuffled.">
+          Sample prompts shuffled
+        </message>
+        <message name="IDS_SEA_PEN_ARIA_ANNOUNCE_SUGGESTIONS_SHUFFLED" desc="Text read out by the screen reader after the prompt suggestions are shuffled.">
+          Suggestions shuffled
         </message>
 
         <!-- Sea Pen Templates (AUTOGENERATED - contact assistive-eng@google.com before editing) -->
@@ -5811,8 +5898,8 @@
         <message name="IDS_FIRMWARE_UPDATE_BUTTON_TEXT" desc="Label for button to start the firmware update.">
           Update
         </message>
-        <message name="IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL" desc="A11y Label for button to start the firmware update.">
-          Update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+        <message name="IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL" desc="A11y Label for button to start the firmware update, announces the device name and version to update to.">
+          Update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> to version <ph name="VERSION">$2<ex>3.0.2</ex></ph>
         </message>
         <message name="IDS_FIRMWARE_OK_BUTTON_TEXT" desc="Label for button shown when an install fails.">
           OK
@@ -5836,7 +5923,7 @@
           While the firmware is updating, do not unplug this external device or shut down your computer. You can minimize this window. This update may take a few minutes and your external device may not work during this time.
         </message>
         <message name="IDS_UEFI_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
-          This update requires you to restart your computer to complete installation. This update may take a few minutes to complete. While the firmware is updating, do not unplug or shut down your computer.
+          Installing this update will take a few minutes. Keep your device plugged in and powered on when the update is being downloaded. Your device may reboot itself several times and show a black screen during this process. You will be prompted to restart your device to complete installation.
         </message>
         <message name="IDS_FIRMWARE_INSTALLING_TEXT" desc="Label that displays what percentage of the update has been installed.">
           Updating (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
@@ -5878,7 +5965,7 @@
           This update is provided by the external device manufacturer and hasn't been verified by Google.
         </message>
         <message name="IDS_UEFI_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google, but isn't externally located.">
-          This update is provided by the device manufacturer and hasn't been verified by Google.
+          This update is provided by the device manufacturer and has not been verified by Google
         </message>
         <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL" desc="The alt-text read by the screen reader when the warning disclaimer is selected.">
           Warning
@@ -6484,6 +6571,9 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB" desc="The text read aloud by the screen reader describing the keyboard icon 'do not disturb'.">
           do not disturb
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CAMERA_ACCESS_TOGGLE" desc="The text read aloud by the screen reader describing the keyboard icon 'camera access toggle'.">
+          toggle camera access
+        </message>
 
         <!-- End of Shortcut Customization -->
 
@@ -6930,6 +7020,9 @@
       <message name="IDS_ON_TASK_NOTIFICATION_TITLE" desc="School Tools title for OnTask notifications">
         School Tools
       </message>
+      <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_COUNTDOWN_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the teachers lock students' screen.">
+        Your teacher will lock your screen in <ph name="NUM_SECONDS">$1<ex>5</ex></ph> seconds
+      </message>
       <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE" desc="Notification message telling students that their teachers have locked their screen.">
         Your teacher has locked your screen
       </message>
@@ -6946,6 +7039,29 @@
         Your teacher has removed content in School Tools
       </message>
 
+      <!-- Strings for the OnTask pod -->
+      <message name="IDS_ON_TASK_POD_ACCESSIBLE_NAME" desc="Accessible name for the OnTask pod widget.">
+        OnTask Pod
+      </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_BACK_ACCESSIBLE_NAME" desc="Accessible name for the Navigate back button in the OnTask pod.">
+        Click to go back
+      </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_FORWARD_ACCESSIBLE_NAME" desc="Accessible name for the Navigate forward button in the OnTask pod.">
+        Click to go forward
+      </message>
+      <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
+        Reload tab
+      </message>
+      <message name="IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME" desc="Accessible name for the show tab strip button in the OnTask pod.">
+        Show tabs
+      </message>
+      <message name="IDS_ON_TASK_POD_UNPIN_TAP_STRIP_ACCESSIBLE_NAME" desc="Accessible name for the hide tab strip button in the OnTask pod.">
+        Hide tabs
+      </message>
+      <message name="IDS_ON_TASK_POD_TOGGLE_SNAP_LOCATION_ACCESSIBLE_NAME" desc="Accessible name for the toggle snap location button in the OnTask pod.">
+        Toggle snap location
+      </message>
+
       <!-- Strings for School Tools -->
       <message name="IDS_SCHOOL_TOOLS_TITLE" desc="Title of the School Tools App">
         School Tools
@@ -6955,14 +7071,17 @@
       <message name="IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that they're currently connected to a school tools session.">
         School Tools is connected to students
       </message>
-            <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open school tools app.">
+      <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open school tools app.">
         Open app
       </message>
       <message name="IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that school tools is currently using their microphone.">
         School Tools is using your microphone
       </message>
-       <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the school tools notification">
+      <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the school tools notification">
         School Tools
+      </message>
+      <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">
+        Your teacher will view your screen in <ph name="NUM_SECONDS">$1<ex>3</ex></ph> seconds
       </message>
     </messages>
   </release>

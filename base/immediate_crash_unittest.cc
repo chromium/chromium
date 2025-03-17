@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/base_paths.h"
@@ -18,7 +19,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -161,8 +161,9 @@ std::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
     std::vector<Instruction> instructions) {
   auto iter = instructions.begin();
   for (const auto inst : kRequiredBody) {
-    if (iter == instructions.end())
+    if (iter == instructions.end()) {
       return std::nullopt;
+    }
     EXPECT_EQ(inst, *iter);
     iter++;
   }
@@ -173,8 +174,9 @@ std::vector<Instruction> MaybeSkipOptionalFooter(
     std::vector<Instruction> instructions) {
   auto iter = instructions.begin();
   for (const auto inst : kOptionalFooter) {
-    if (iter == instructions.end() || *iter != inst)
+    if (iter == instructions.end() || *iter != inst) {
       break;
+    }
     iter++;
   }
   return std::vector<Instruction>(iter, instructions.end());
@@ -184,8 +186,9 @@ std::vector<Instruction> MaybeSkipOptionalFooter(
 bool MatchPrefix(const std::vector<Instruction>& haystack,
                  const base::span<const Instruction>& needle) {
   for (size_t i = 0; i < needle.size(); i++) {
-    if (i >= haystack.size() || needle[i] != haystack[i])
+    if (i >= haystack.size() || needle[i] != haystack[i]) {
       return false;
+    }
   }
   return true;
 }
@@ -193,8 +196,9 @@ bool MatchPrefix(const std::vector<Instruction>& haystack,
 std::vector<Instruction> DropUntilMatch(
     std::vector<Instruction> haystack,
     const base::span<const Instruction>& needle) {
-  while (!haystack.empty() && !MatchPrefix(haystack, needle))
+  while (!haystack.empty() && !MatchPrefix(haystack, needle)) {
     haystack.erase(haystack.begin());
+  }
   return haystack;
 }
 
@@ -241,7 +245,7 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   // false - but let's still go through the motions above so we spot any
   // problems in this _test code_ in as many build permutations as possible.
 #if defined(OFFICIAL_BUILD)
-  auto it = ranges::find(body, kRet);
+  auto it = std::ranges::find(body, kRet);
   ASSERT_NE(body.end(), it) << "Failed to find return opcode";
   it++;
 

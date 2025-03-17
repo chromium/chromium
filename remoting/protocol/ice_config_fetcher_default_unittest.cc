@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/proto/remoting/v1/network_traversal_messages.pb.h"
 #include "remoting/protocol/ice_config.h"
@@ -86,7 +86,7 @@ TEST_F(IceConfigFetcherDefaultTest, FailedRequest) {
 
   ASSERT_LT(0, test_responder_.GetNumPending());
   test_responder_.AddErrorToMostRecentRequestUrl(
-      ProtobufHttpStatus(ProtobufHttpStatus::Code::INVALID_ARGUMENT, ""));
+      HttpStatus(HttpStatus::Code::INVALID_ARGUMENT, ""));
   run_loop.Run();
 
   EXPECT_FALSE(received_config.has_value());

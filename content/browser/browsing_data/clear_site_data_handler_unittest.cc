@@ -357,7 +357,7 @@ TEST_F(ClearSiteDataHandlerTest, InvalidHeader) {
 
     std::string multiline_message;
     for (const auto& message : console_delegate.GetMessagesForTesting()) {
-      EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError, message.level);
+      EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning, message.level);
       multiline_message += message.text + "\n";
     }
 

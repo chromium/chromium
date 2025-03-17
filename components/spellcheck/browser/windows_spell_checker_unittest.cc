@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/spellcheck/browser/spellcheck_platform.h"
+#include "components/spellcheck/browser/windows_spell_checker.h"
 
 #include <stddef.h>
+
+#include <algorithm>
 #include <ostream>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,7 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
-#include "components/spellcheck/browser/windows_spell_checker.h"
+#include "components/spellcheck/browser/spellcheck_platform.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "components/spellcheck/spellcheck_buildflags.h"

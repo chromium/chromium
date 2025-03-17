@@ -255,14 +255,14 @@ TEST_P(PlatformVideoFramePoolTest, GetOriginalFrame) {
   ASSERT_TRUE(Initialize(fourcc.value()));
   scoped_refptr<FrameResource> frame_1 = GetFrame(10);
   scoped_refptr<FrameResource> frame_2 = frame_1->CreateWrappingFrame();
-  EXPECT_EQ(pool_->GetOriginalFrame(frame_1->GetSharedMemoryId()),
-            pool_->GetOriginalFrame(frame_2->GetSharedMemoryId()));
-  EXPECT_EQ(frame_1->GetSharedMemoryId().id, frame_2->GetSharedMemoryId().id);
+  EXPECT_EQ(pool_->GetOriginalFrame(frame_1->tracking_token()),
+            pool_->GetOriginalFrame(frame_2->tracking_token()));
+  EXPECT_EQ(frame_1->tracking_token(), frame_2->tracking_token());
 
   scoped_refptr<FrameResource> frame_3 = GetFrame(20);
-  EXPECT_NE(pool_->GetOriginalFrame(frame_1->GetSharedMemoryId()),
-            pool_->GetOriginalFrame(frame_3->GetSharedMemoryId()));
-  EXPECT_NE(frame_1->GetSharedMemoryId().id, frame_3->GetSharedMemoryId().id);
+  EXPECT_NE(pool_->GetOriginalFrame(frame_1->tracking_token()),
+            pool_->GetOriginalFrame(frame_3->tracking_token()));
+  EXPECT_NE(frame_1->tracking_token(), frame_3->tracking_token());
 }
 
 TEST_P(PlatformVideoFramePoolTest,

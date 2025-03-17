@@ -56,6 +56,10 @@ class GWSAbandonedPageLoadMetricsObserver
   GetCustomUserTimingMarkNames() const override;
   bool IsAllowedToLogUKM() const override;
 
+  // Whether we've reached and logged all loading milestones, from kParseStart
+  // to kBodyChunkEnd.
+  bool DidLogAllLoadingMilestones() const override;
+
   // Set to true if we see the navigation involves non-SRP URL, which will be
   // specially marked in the logged metrics.
   bool did_request_non_srp_ = false;

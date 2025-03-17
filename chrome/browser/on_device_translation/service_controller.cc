@@ -4,6 +4,8 @@
 
 #include "chrome/browser/on_device_translation/service_controller.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -11,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,6 +40,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 
 using blink::mojom::CanCreateTranslatorResult;
@@ -83,6 +85,8 @@ CreateTranslatorError ToCreateTranslatorError(CreateTranslatorResult result) {
       return CreateTranslatorError::kFailedToInitialize;
     case CreateTranslatorResult::kErrorFailedToCreateTranslator:
       return CreateTranslatorError::kFailedToCreateTranslator;
+    case CreateTranslatorResult::kErrorInvalidVersion:
+      return CreateTranslatorError::kInvalidVersion;
   }
 }
 
@@ -117,8 +121,6 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
         base::BindRepeating(&OnDeviceTranslationServiceController::
                                 OnTranslateKitBinaryPathChanged,
                             base::Unretained(this)));
-    // Registers the TranslateKit component.
-    ComponentManager::GetInstance().RegisterTranslateKitComponent();
   }
   if (!ComponentManager::GetInstance().HasLanguagePackInfoFromCommandLine()) {
     // Start listening to pref changes for language pack keys.
@@ -154,10 +156,11 @@ void OnDeviceTranslationServiceController::CreateTranslator(
                                       to_be_registered_packs);
 
     if (!to_be_registered_packs.empty()) {
-      if (kTranslationAPILimitLanguagePackCount.Get() &&
-          to_be_registered_packs.size() >
-              GetInstallablePackageCount(
-                  ComponentManager::GetRegisteredLanguagePacks().size())) {
+      if (!base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
+          (kTranslationAPILimitLanguagePackCount.Get() &&
+           to_be_registered_packs.size() >
+               GetInstallablePackageCount(
+                   ComponentManager::GetRegisteredLanguagePacks().size()))) {
         RecordLanguagePairUma(
             "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
             source_lang, target_lang);
@@ -177,7 +180,13 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       }
     }
   }
-  // If there is no TranslteKit or there are required language packs that are
+
+  if (!ComponentManager::HasTranslateKitLibraryPathFromCommandLine()) {
+    // Registers the TranslateKit component.
+    ComponentManager::GetInstance().RegisterTranslateKitComponent();
+  }
+
+  // If there is no TranslateKit or there are required language packs that are
   // not installed, we will wait until they are installed to create the
   // translator.
   if (ComponentManager::GetTranslateKitLibraryPath().empty() ||
@@ -312,6 +321,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   }
 
   if (!to_be_registered_packs.empty() &&
+      !base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
       kTranslationAPILimitLanguagePackCount.Get() &&
       to_be_registered_packs.size() >
           GetInstallablePackageCount(
@@ -364,11 +374,11 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
   std::vector<PendingTask> pending_tasks = std::move(pending_tasks_);
   for (auto& task : pending_tasks) {
-    if (base::ranges::all_of(task.required_packs.begin(),
-                             task.required_packs.end(),
-                             [&](const LanguagePackKey& key) {
-                               return installed_packs.contains(key);
-                             })) {
+    if (std::ranges::all_of(task.required_packs.begin(),
+                            task.required_packs.end(),
+                            [&](const LanguagePackKey& key) {
+                              return installed_packs.contains(key);
+                            })) {
       std::move(task.once_closure).Run();
     } else {
       pending_tasks_.push_back(std::move(task));
@@ -449,14 +459,12 @@ void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
   CHECK(to_be_registered_packs.empty());
   required_packs = CalculateRequiredLanguagePacks(source_lang, target_lang);
   const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
-  base::ranges::set_difference(
-      required_packs, installed_packs,
-      std::back_inserter(required_not_installed_packs));
+  std::ranges::set_difference(required_packs, installed_packs,
+                              std::back_inserter(required_not_installed_packs));
   const auto registered_packs = ComponentManager::GetRegisteredLanguagePacks();
-  base::ranges::set_difference(required_not_installed_packs, registered_packs,
-                               std::back_inserter(to_be_registered_packs));
+  std::ranges::set_difference(required_not_installed_packs, registered_packs,
+                              std::back_inserter(to_be_registered_packs));
 }
-
 
 void OnDeviceTranslationServiceController::OnServiceIdle() {
   service_remote_.reset();

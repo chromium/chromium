@@ -194,7 +194,9 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
   }
 
   XRViewData* viewData = view->ViewData();
-  viewData->ApplyViewportScaleForFrame();
+  if (viewData->ApplyViewportScaleForFrame()) {
+    gpu_layer->MarkViewportUpdated();
+  }
 
   gfx::Rect viewport = GetViewportForView(layer, viewData);
 

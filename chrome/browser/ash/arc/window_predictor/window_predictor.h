@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/window_predictor/arc_predictor_app_launch_handler.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 
 namespace arc {
 

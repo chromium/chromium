@@ -7,19 +7,14 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
-#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
-#import "components/sync_preferences/pref_service_mock_factory.h"
-#import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
@@ -59,8 +54,6 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     SupervisedUserErrorContainer::CreateForWebState(&web_state_);
     security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
         &web_state_);
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
   }
 
   // Signs the user into `email` as the primary Chrome account and sets the
@@ -136,7 +129,6 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SupervisedUserURLFilterTabHelperTest,

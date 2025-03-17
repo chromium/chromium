@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/font_size_style.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
@@ -85,6 +86,17 @@ std::optional<double> FindSizeForContainerAxis(
 
 }  // namespace
 
+CSSToLengthConversionData::FontSizes::FontSizes(const FontSizeStyle& style,
+                                                const ComputedStyle* root_style)
+    : FontSizes(
+          style.SpecifiedFontSize(),
+          root_style ? root_style->SpecifiedFontSize()
+                     : style.SpecifiedFontSize(),
+          style.GetFont(),
+          root_style ? root_style->GetFont() : style.GetFont(),
+          style.EffectiveZoom(),
+          root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
+
 float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
@@ -109,7 +121,7 @@ float CSSToLengthConversionData::FontSizes::Rex(float zoom) const {
 
 float CSSToLengthConversionData::FontSizes::Ch(float zoom) const {
   DCHECK(font_);
-  const SimpleFontData* font_data = font_->PrimaryFont();
+  const SimpleFontData* font_data = font_->PrimaryFontWithDigitZero();
   if (!font_data) {
     return 0;
   }
@@ -120,7 +132,7 @@ float CSSToLengthConversionData::FontSizes::Ch(float zoom) const {
 
 float CSSToLengthConversionData::FontSizes::Rch(float zoom) const {
   DCHECK(root_font_);
-  const SimpleFontData* font_data = root_font_->PrimaryFont();
+  const SimpleFontData* font_data = root_font_->PrimaryFontWithDigitZero();
   if (!font_data) {
     return 0;
   }
@@ -131,7 +143,7 @@ float CSSToLengthConversionData::FontSizes::Rch(float zoom) const {
 
 float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   DCHECK(font_);
-  const SimpleFontData* font_data = font_->PrimaryFont();
+  const SimpleFontData* font_data = font_->PrimaryFontWithCjkWater();
   std::optional<float> full_width;
   if (font_data) {
     full_width = font_data->IdeographicInlineSize();
@@ -146,7 +158,7 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
 
 float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
   DCHECK(root_font_);
-  const SimpleFontData* font_data = root_font_->PrimaryFont();
+  const SimpleFontData* font_data = root_font_->PrimaryFontWithCjkWater();
   std::optional<float> full_width;
   if (font_data) {
     full_width = font_data->IdeographicInlineSize();
@@ -188,8 +200,8 @@ CSSToLengthConversionData::LineHeightSize::LineHeightSize(
           style.SpecifiedLineHeight(),
           root_style ? root_style->SpecifiedLineHeight()
                      : style.SpecifiedLineHeight(),
-          &style.GetFont(),
-          root_style ? &root_style->GetFont() : &style.GetFont(),
+          style.GetFont(),
+          root_style ? root_style->GetFont() : style.GetFont(),
           style.EffectiveZoom(),
           root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
 
@@ -320,6 +332,52 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       anchor_data_(anchor_data),
       flags_(&flags),
       element_(element) {}
+
+CSSToLengthConversionData::CSSToLengthConversionData(
+    const ComputedStyle& element_style,
+    const ComputedStyle* parent_style,
+    const ComputedStyle* root_style,
+    const ViewportSize& viewport_size,
+    const ContainerSizes& container_sizes,
+    const AnchorData& anchor_data,
+    float zoom,
+    Flags& flags,
+    const Element* element)
+    : CSSToLengthConversionData(
+          element_style.GetWritingMode(),
+          FontSizes(element_style.GetFontSizeStyle(), root_style),
+          LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
+                                      : element_style.GetFontSizeStyle(),
+                         root_style),
+          viewport_size,
+          container_sizes,
+          anchor_data,
+          zoom,
+          flags,
+          element) {}
+
+CSSToLengthConversionData::CSSToLengthConversionData(
+    const ComputedStyleBuilder& element_style,
+    const ComputedStyle* parent_style,
+    const ComputedStyle* root_style,
+    const ViewportSize& viewport_size,
+    const ContainerSizes& container_sizes,
+    const AnchorData& anchor_data,
+    float zoom,
+    Flags& flags,
+    const Element* element)
+    : CSSToLengthConversionData(
+          element_style.GetWritingMode(),
+          FontSizes(element_style.GetFontSizeStyle(), root_style),
+          LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
+                                      : element_style.GetFontSizeStyle(),
+                         root_style),
+          viewport_size,
+          container_sizes,
+          anchor_data,
+          zoom,
+          flags,
+          element) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {
   SetFlag(Flag::kEm);

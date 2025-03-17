@@ -380,7 +380,7 @@ TEST_F(LabelButtonTest, AccessibleState) {
   EXPECT_EQ(label_text, accessible_node_data.GetString16Attribute(
                             ax::mojom::StringAttribute::kName));
   EXPECT_EQ(label_text, button()->GetText());
-  EXPECT_EQ(tooltip_text, button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
 }
 
 // Test ViewAccessibility::GetAccessibleNodeData() for default buttons.
@@ -767,16 +767,17 @@ TEST_F(LabelButtonTest, SetEnabledTextColorIds) {
   ASSERT_NE(ui::kColorLabelForeground, ui::kColorAccent);
 
   // Initially the test should have the normal colors.
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorLabelForeground);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(),
+            ui::kColorLabelForeground);
 
   // Setting the enabled text colors should replace the label's enabled color.
-  button()->SetEnabledTextColorIds(ui::kColorAccent);
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  button()->SetEnabledTextColors(ui::kColorAccent);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
 
   // Toggle dark mode. This should not replace the enabled text color as it's
   // been manually overridden above.
   UseDarkColors();
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
   EXPECT_EQ(button()->label()->GetEnabledColor(),
             button()->GetColorProvider()->GetColor(ui::kColorAccent));
 }
@@ -942,11 +943,6 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
     dummy_widget_ = CreateTopLevelPlatformWidget();
 
     MakeButtonAsContent(test_widget_)->SetID(1);
-
-    style_of_inactive_widget_ =
-        PlatformStyle::kInactiveWidgetControlsAppearDisabled
-            ? Button::STATE_DISABLED
-            : Button::STATE_NORMAL;
   }
 
   void TearDown() override {
@@ -979,7 +975,10 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
 
   raw_ptr<Widget> test_widget_ = nullptr;
   raw_ptr<Widget> dummy_widget_ = nullptr;
-  Button::ButtonState style_of_inactive_widget_;
+  static constexpr Button::ButtonState style_of_inactive_widget_ =
+      PlatformStyle::kInactiveWidgetControlsAppearDisabled
+          ? Button::STATE_DISABLED
+          : Button::STATE_NORMAL;
 };
 
 TEST_F(LabelButtonVisualStateTest, IndependentWidget) {

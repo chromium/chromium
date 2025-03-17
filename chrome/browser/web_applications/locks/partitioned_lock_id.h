@@ -13,14 +13,15 @@ namespace web_app {
 struct PartitionedLockId {
   int partition;
   std::string key;
+
+  friend auto operator<=>(const PartitionedLockId&,
+                          const PartitionedLockId&) = default;
+  friend bool operator==(const PartitionedLockId&,
+                         const PartitionedLockId&) = default;
 };
 
 // Logging support.
 std::ostream& operator<<(std::ostream& out, const PartitionedLockId& range);
-
-bool operator<(const PartitionedLockId& x, const PartitionedLockId& y);
-bool operator==(const PartitionedLockId& x, const PartitionedLockId& y);
-bool operator!=(const PartitionedLockId& x, const PartitionedLockId& y);
 
 }  // namespace web_app
 

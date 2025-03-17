@@ -35,7 +35,7 @@ RichNudge::RichNudge(aura::Window* parent_window)
                                       views::BubbleBorder::FLOAT,
                                       views::BubbleBorder::NO_SHADOW) {
   set_parent_window(parent_window);
-  set_color(SK_ColorTRANSPARENT);
+  set_background_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);
   set_accept_events(false);

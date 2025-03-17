@@ -318,6 +318,7 @@ mediapipe_cc_test(
     # A non-empty "data" param is needed to build the "_test_wasm" target.
     data = [":node_chain_subgraph.proto"],
     requires_full_emulation = False,
+    test_host = None,
     deps = [
         ":node_chain_subgraph_cc_proto",
         ":node_chain_subgraph_options_lib",
@@ -864,6 +865,7 @@ mediapipe_cc_test(
     timeout = "long",
     srcs = ["switch_demux_calculator_test.cc"],
     requires_full_emulation = False,
+    test_host = None,
     deps = [
         ":container_util",
         ":switch_demux_calculator",
@@ -901,6 +903,7 @@ mediapipe_cc_test(
     timeout = "long",
     srcs = ["switch_mux_calculator_test.cc"],
     requires_full_emulation = False,
+    test_host = None,
     deps = [
         ":container_util",
         ":switch_mux_calculator",
@@ -975,6 +978,62 @@ cc_test(
         "//mediapipe/framework/stream_handler:immediate_input_stream_handler",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "graph_runtime_info_logger",
+    srcs = ["graph_runtime_info_logger.cc"],
+    hdrs = ["graph_runtime_info_logger.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":graph_runtime_info_utils",
+        "//mediapipe/framework:calculator_cc_proto",
+        "//mediapipe/framework:graph_runtime_info_cc_proto",
+        "//mediapipe/framework:vlog_utils",
+        "//mediapipe/framework/port:logging",
+        "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:threadpool",
+        "@com_google_absl//absl/base:log_severity",
+        "@com_google_absl//absl/functional:any_invocable",
+        "@com_google_absl//absl/log",
+        "@com_google_absl//absl/log:absl_check",
+        "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings:string_view",
+        "@com_google_absl//absl/synchronization",
+        "@com_google_absl//absl/time",
+    ],
+)
+
+cc_test(
+    name = "graph_runtime_info_logger_test",
+    size = "small",
+    srcs = ["graph_runtime_info_logger_test.cc"],
+    deps = [
+        ":graph_runtime_info_logger",
+        "//mediapipe/framework:calculator_cc_proto",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:status_matchers",
+        "@com_google_absl//absl/synchronization",
+        "@com_google_absl//absl/time",
+    ],
+)
+
+cc_library(
+    name = "graph_runtime_info_utils",
+    srcs = ["graph_runtime_info_utils.cc"],
+    hdrs = ["graph_runtime_info_utils.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/framework:graph_runtime_info_cc_proto",
+        "//mediapipe/framework:timestamp",
+        "//mediapipe/framework:vlog_utils",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_absl//absl/time",
     ],
 )
 

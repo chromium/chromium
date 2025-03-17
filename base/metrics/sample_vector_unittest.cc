@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/metrics/sample_vector.h"
 
 #include <limits.h>
@@ -227,9 +232,9 @@ TEST_F(SampleVectorTest, Iterate) {
 
   int i;
   size_t index;
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   for (i = 1; !it->Done(); i++, it->Next()) {
     it->Get(&min, &max, &count);
     EXPECT_EQ(i, min);
@@ -268,9 +273,9 @@ TEST_F(SampleVectorTest, Iterator_InvalidSingleSample) {
 
   // Create an iterator. Verify that the new samples are returned, and that the
   // invalid sample is not (it was discarded).
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   it = samples.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -328,9 +333,9 @@ TEST_F(SampleVectorTest, IterateDoneDeath) {
 
   EXPECT_TRUE(it->Done());
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   EXPECT_DCHECK_DEATH(it->Get(&min, &max, &count));
 
   EXPECT_DCHECK_DEATH(it->Next());
@@ -361,9 +366,9 @@ TEST_F(SampleVectorTest, SingleSample) {
   EXPECT_EQ(600, samples.redundant_count());
 
   // Ensure that the iterator returns only one value.
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -445,9 +450,9 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   EXPECT_EQ(200, samples2.GetCount(3));
   EXPECT_FALSE(HasSamplesCounts(samples2));
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples2.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -533,16 +538,16 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   EXPECT_FALSE(HasSamplesCounts(samples1));
 
   // Because the delayed allocation can be shared with other objects (the
-  // |offset| parameter allows concatinating multiple data blocks into the
+  // |offset| parameter allows concatenating multiple data blocks into the
   // same allocation), it's possible that the allocation gets realized from
   // the outside even though the data block being accessed is all zero.
   allocation.Get<uint8_t>();
   EXPECT_EQ(200, samples1.GetCount(3));
   EXPECT_FALSE(HasSamplesCounts(samples1));
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples1.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);

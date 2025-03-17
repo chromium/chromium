@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/unload_controller.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -60,7 +61,7 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
   // non-web browser scenarios.
   if (browser_->IsLockedForOnTask()) {
@@ -278,9 +279,8 @@ void UnloadController::CancelWindowClose() {
   // case some of this code might not have an effect, but it's still useful to,
   // for example, call the notification(s).
   tabs_needing_before_unload_fired_.clear();
-  for (auto it = tabs_needing_unload_fired_.begin();
-       it != tabs_needing_unload_fired_.end(); ++it) {
-    DevToolsWindow::OnPageCloseCanceled(*it);
+  for (const auto& it : tabs_needing_unload_fired_) {
+    DevToolsWindow::OnPageCloseCanceled(it);
   }
   tabs_needing_unload_fired_.clear();
   if (is_calling_before_unload_handlers()) {
@@ -453,7 +453,7 @@ bool UnloadController::RemoveFromSet(UnloadListenerSet* set,
                                      content::WebContents* web_contents) {
   DCHECK(is_attempting_to_close_browser_);
 
-  auto iter = base::ranges::find(*set, web_contents);
+  auto iter = std::ranges::find(*set, web_contents);
   if (iter != set->end()) {
     set->erase(iter);
     return true;

@@ -64,6 +64,7 @@ TEST(PDFiumPageHelperTest, ScopedUnloadPreventer) {
 void CompareTextRuns(const AccessibilityTextRunInfo& expected_text_run,
                      const AccessibilityTextRunInfo& actual_text_run) {
   EXPECT_EQ(expected_text_run.len, actual_text_run.len);
+  EXPECT_EQ(expected_text_run.tag_type, actual_text_run.tag_type);
   EXPECT_RECTF_EQ(expected_text_run.bounds, actual_text_run.bounds);
   EXPECT_EQ(expected_text_run.direction, actual_text_run.direction);
 
@@ -508,7 +509,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumPageLinkTest, testing::Bool());
 
 using PDFiumPageImageTest = PDFiumTestBase;
 
-TEST_P(PDFiumPageImageTest, CalculateImages) {
+TEST_P(PDFiumPageImageTest, PopulateImageAltText) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("image_alt_text.pdf"));
@@ -516,7 +517,8 @@ TEST_P(PDFiumPageImageTest, CalculateImages) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  page.CalculateImages();
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  page.PopulateTextRunTypeAndImageAltText(text_runs);
   ASSERT_EQ(3u, page.images_.size());
   EXPECT_EQ(gfx::Rect(380, 78, 67, 68), page.images_[0].bounding_rect);
   EXPECT_EQ("Image 1", page.images_[0].alt_text);
@@ -534,7 +536,8 @@ TEST_P(PDFiumPageImageTest, ImageAltText) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  page.CalculateImages();
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  page.PopulateTextRunTypeAndImageAltText(text_runs);
   ASSERT_EQ(3u, page.images_.size());
   EXPECT_EQ(gfx::Rect(380, 78, 67, 68), page.images_[0].bounding_rect);
   EXPECT_EQ("Image 1", page.images_[0].alt_text);
@@ -577,7 +580,8 @@ TEST_P(PDFiumPageImageForOcrTest, LowResolutionImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  page.CalculateImages();
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  page.PopulateTextRunTypeAndImageAltText(text_runs);
   ASSERT_EQ(3u, page.images_.size());
 
   ASSERT_FALSE(page.images_[0].alt_text.empty());
@@ -605,7 +609,8 @@ TEST_P(PDFiumPageImageForOcrTest, HighResolutionImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  page.CalculateImages();
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  page.PopulateTextRunTypeAndImageAltText(text_runs);
   ASSERT_EQ(1u, page.images_.size());
 
   SkBitmap image_bitmap = engine->GetImageForOcr(
@@ -625,7 +630,8 @@ TEST_P(PDFiumPageImageForOcrTest, RotatedPage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  page.CalculateImages();
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  page.PopulateTextRunTypeAndImageAltText(text_runs);
   ASSERT_EQ(1u, page.images_.size());
 
   // This page is rotated, therefore the extracted image size is 25x100 while
@@ -644,7 +650,8 @@ TEST_P(PDFiumPageImageForOcrTest, NonImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  page.CalculateImages();
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  page.PopulateTextRunTypeAndImageAltText(text_runs);
   ASSERT_EQ(3u, page.images_.size());
   ASSERT_EQ(1, page.images_[0].page_object_index);
 
@@ -765,21 +772,21 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfo) {
   // text run lengths respectively. There are text runs preceding and
   // succeeding them.
   auto expected_text_runs = std::to_array<AccessibilityTextRunInfo>({
-      {7, gfx::RectF(26.666666f, 189.333333f, 38.666672f, 13.333344f),
+      {7, "", gfx::RectF(26.666666f, 189.333333f, 38.666672f, 13.333344f),
        AccessibilityTextDirection::kLeftToRight, expected_style_1},
-      {16, gfx::RectF(70.666664f, 189.333333f, 108.0f, 14.666672f),
+      {16, "", gfx::RectF(70.666664f, 189.333333f, 108.0f, 14.666672f),
        AccessibilityTextDirection::kLeftToRight, expected_style_1},
-      {20, gfx::RectF(181.333333f, 189.333333f, 117.333333f, 14.666672f),
+      {20, "", gfx::RectF(181.333333f, 189.333333f, 117.333333f, 14.666672f),
        AccessibilityTextDirection::kLeftToRight, expected_style_1},
-      {9, gfx::RectF(28.0f, 117.33334f, 89.333328f, 20.0f),
+      {9, "", gfx::RectF(28.0f, 117.33334f, 89.333328f, 20.0f),
        AccessibilityTextDirection::kLeftToRight, expected_style_2},
-      {15, gfx::RectF(126.66666f, 117.33334f, 137.33334f, 20.0f),
+      {15, "", gfx::RectF(126.66666f, 117.33334f, 137.33334f, 20.0f),
        AccessibilityTextDirection::kLeftToRight, expected_style_2},
-      {20, gfx::RectF(266.66666f, 118.66666f, 169.33334f, 18.666664f),
+      {20, "", gfx::RectF(266.66666f, 118.66666f, 169.33334f, 18.666664f),
        AccessibilityTextDirection::kLeftToRight, expected_style_2},
-      {5, gfx::RectF(28.0f, 65.333336f, 40.0f, 18.666664f),
+      {5, "", gfx::RectF(28.0f, 65.333336f, 40.0f, 18.666664f),
        AccessibilityTextDirection::kLeftToRight, expected_style_2},
-      {17, gfx::RectF(77.333336f, 64.0f, 160.0f, 20.0f),
+      {17, "", gfx::RectF(77.333336f, 64.0f, 160.0f, 20.0f),
        AccessibilityTextDirection::kLeftToRight, expected_style_2},
   });
 
@@ -826,18 +833,17 @@ TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
       "Helvetica", 0,          AccessibilityTextRenderMode::kFill,
       16,          0xff000000, 0xff000000,
       false,       false};
-  auto expected_text_runs = std::to_array<AccessibilityTextRunInfo>({
-      {5, gfx::RectF(1.3333334f, 198.66667f, 46.666668f, 14.666672f),
-       AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
-      {7, gfx::RectF(50.666668f, 198.66667f, 47.999996f, 17.333328f),
-       AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
-      {7, gfx::RectF(106.66666f, 198.66667f, 73.333336f, 18.666672f),
-       AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
-      {2, gfx::RectF(181.33333f, 202.66667f, 16.0f, 14.66667f),
-       AccessibilityTextDirection::kNone, kExpectedStyle},
-      {2, gfx::RectF(198.66667f, 202.66667f, 21.333328f, 10.666672f),
-       AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
-  });
+  auto expected_text_runs = std::to_array<AccessibilityTextRunInfo>(
+      {{5, "", gfx::RectF(1.3333334f, 198.66667f, 46.666668f, 14.666672f),
+        AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
+       {7, "", gfx::RectF(50.666668f, 198.66667f, 47.999996f, 17.333328f),
+        AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
+       {7, "", gfx::RectF(106.66666f, 198.66667f, 73.333336f, 18.666672f),
+        AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
+       {2, "", gfx::RectF(181.33333f, 202.66667f, 16.0f, 14.66667f),
+        AccessibilityTextDirection::kNone, kExpectedStyle},
+       {2, "", gfx::RectF(198.66667f, 202.66667f, 21.333328f, 10.666672f),
+        AccessibilityTextDirection::kLeftToRight, kExpectedStyle}});
 
   if (UsingTestFonts()) {
     expected_text_runs[2].bounds =

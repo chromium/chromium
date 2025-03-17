@@ -9,10 +9,13 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Set;
 
 /** Error messages for web payment.  */
 @JNINamespace("payments::android")
+@NullMarked
 public class ErrorMessageUtil {
     /**
      * Returns the "payment method not supported" message.

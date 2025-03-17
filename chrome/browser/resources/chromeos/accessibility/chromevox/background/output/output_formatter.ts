@@ -15,13 +15,14 @@ import {AutomationTreeWalker} from '/common/tree_walker.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {Msgs} from '../../common/msgs.js';
 import {SettingsManager} from '../../common/settings_manager.js';
-import {Spannable} from '../../common/spannable.js';
+import type {Spannable} from '../../common/spannable.js';
 import {PhoneticData} from '../phonetic_data.js';
 
-import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
-import {OutputFormatTree} from './output_format_tree.js';
-import {AnnotationOptions, OutputInterface} from './output_interface.js';
-import {OutputFormatLogger} from './output_logger.js';
+import type {OutputFormatParserObserver} from './output_format_parser.js';
+import {OutputFormatParser} from './output_format_parser.js';
+import type {OutputFormatTree} from './output_format_tree.js';
+import type {AnnotationOptions, OutputInterface} from './output_interface.js';
+import type {OutputFormatLogger} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
 import * as outputTypes from './output_types.js';
 

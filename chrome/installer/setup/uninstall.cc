@@ -67,6 +67,7 @@
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
+#include "chrome/windows_services/elevated_tracing_service/service_integration.h"
 #include "content/public/common/result_codes.h"
 #include "rlz/lib/rlz_lib_clear.h"
 #include "rlz/lib/supplementary_branding.h"
@@ -153,7 +154,7 @@ bool RemoveInstallerFiles(const base::FilePath& installer_directory) {
 class ProcessPathPrefixFilter : public base::ProcessFilter {
  public:
   explicit ProcessPathPrefixFilter(
-      const base::FilePath::StringPieceType& process_path_prefix)
+      base::FilePath::StringViewType process_path_prefix)
       : process_path_prefix_(process_path_prefix) {}
 
   // base::ProcessFilter:
@@ -178,7 +179,7 @@ class ProcessPathPrefixFilter : public base::ProcessFilter {
   }
 
  private:
-  const base::FilePath::StringPieceType process_path_prefix_;
+  const base::FilePath::StringViewType process_path_prefix_;
 };
 
 // Kills all Chrome processes in |target_path|, immediately.
@@ -374,13 +375,15 @@ InstallStatus IsChromeActiveOrUserCancelled(
   if (LaunchChromeAndWait(installer_state.target_path(), options, &exit_code)) {
     VLOG(1) << "chrome.exe launched for uninstall confirmation returned: "
             << exit_code;
-    if ((exit_code == chrome::RESULT_CODE_UNINSTALL_CHROME_ALIVE) ||
-        (exit_code == chrome::RESULT_CODE_UNINSTALL_USER_CANCEL) ||
-        (exit_code == content::RESULT_CODE_HUNG))
+    if ((exit_code == CHROME_RESULT_CODE_UNINSTALL_CHROME_ALIVE) ||
+        (exit_code == CHROME_RESULT_CODE_UNINSTALL_USER_CANCEL) ||
+        (exit_code == content::RESULT_CODE_HUNG)) {
       return installer::UNINSTALL_CANCELLED;
+    }
 
-    if (exit_code == chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE)
+    if (exit_code == CHROME_RESULT_CODE_UNINSTALL_DELETE_PROFILE) {
       return installer::UNINSTALL_DELETE_PROFILE;
+    }
   } else {
     PLOG(ERROR) << "Failed to launch chrome.exe for uninstall confirmation.";
   }
@@ -641,6 +644,18 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
             {install_static::GetTracingServiceIid()})) {
       LOG(WARNING) << "Failed to delete "
                    << install_static::GetTracingServiceName();
+    }
+    // Delete any storage written by the elevated tracing service.
+    base::FilePath path;
+    if (base::PathService::Get(base::DIR_SYSTEM_TEMP, &path)) {
+      path = path.Append(
+          base::FilePath(elevated_tracing_service::GetStorageDirBasename()));
+      if (base::DeletePathRecursively(path)) {
+        VLOG(1) << "Deleted elevated_tracing_service state in " << path;
+      } else {
+        PLOG(WARNING) << "Error deleting elevated_tracing_service state in "
+                      << path;
+      }
     }
   }
 

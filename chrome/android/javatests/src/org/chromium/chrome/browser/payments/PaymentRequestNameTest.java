@@ -212,6 +212,8 @@ public class PaymentRequestNameTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // https://crbug.com/383399707
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         int expectedSample =
                 Event2.SHOWN

@@ -1,0 +1,40 @@
+Document
+++Group IsControlElement=false
+++++CheckBox Name='Test 1: Flash the screen 2 times.' Toggle.ToggleState='Off'
+++++Group IsControlElement=false
+++++++Text Name='Test 1: Flash the screen '
+++++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='2'
+++++++Text Name=' times.'
+++Group IsControlElement=false
+++++CheckBox Name='Test 2: Flash the screen 2 times.' Toggle.ToggleState='Off'
+++++Group IsControlElement=false
+++++++Text Name='Test 2: Flash the screen '
+++++++List Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++ListItem Name='1' SelectionItem.IsSelected=false
+++++++++ListItem Name='2' SelectionItem.IsSelected=true
+++++++++ListItem Name='3' SelectionItem.IsSelected=false
+++++++Text Name=' times.'
+++Group IsControlElement=false
+++++CheckBox Name='Test 3: Flash the screen two times.' Toggle.ToggleState='Off'
+++++Group IsControlElement=false
+++++++Text Name='Test 3: Flash the screen '
+++++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='two'
+++++++Text Name=' times.'
+++Group IsControlElement=false
+++++CheckBox Name='Test 4: Flash the screen two times.' Toggle.ToggleState='Off'
+++++Group IsControlElement=false
+++++++Text Name='Test 4: Flash the screen '
+++++++List Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++ListItem Name='1' SelectionItem.IsSelected=false
+++++++++ListItem Name='two' SelectionItem.IsSelected=true
+++++++++ListItem Name='3' SelectionItem.IsSelected=false
+++++++Text Name=' times.'
+++Group IsControlElement=false
+++++CheckBox Name='Test 5: Flash the screen two 3 times.' Toggle.ToggleState='Off'
+++++Group IsControlElement=false
+++++++Text Name='Test 5: Flash the screen '
+++++++List Selection.CanSelectMultiple=true Selection.IsSelectionRequired=false
+++++++++ListItem Name='1' SelectionItem.IsSelected=false
+++++++++ListItem Name='two' SelectionItem.IsSelected=true
+++++++++ListItem Name='3' SelectionItem.IsSelected=true
+++++++Text Name=' times.'

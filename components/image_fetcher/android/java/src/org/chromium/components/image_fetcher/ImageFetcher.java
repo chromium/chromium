@@ -7,18 +7,20 @@ package org.chromium.components.image_fetcher;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
  * Blueprint and some implementation for image fetching. Use ImageFetcherFactory for any
  * ImageFetcher instantiation.
  */
+@NullMarked
 public abstract class ImageFetcher {
     // All UMA client names collected here to prevent duplicates. While adding a new client, please
     // update the histogram suffix ImageFetcherClients in histograms.xml as well.
@@ -228,6 +230,7 @@ public abstract class ImageFetcher {
     }
 
     // Singleton ImageFetcherBridge.
+    @SuppressWarnings("NullAway.Init")
     private ImageFetcherBridge mImageFetcherBridge;
 
     /** Copy-constructor to support composite instances of ImageFetcher. */
@@ -253,11 +256,10 @@ public abstract class ImageFetcher {
      * @param bitmap The input bitmap, will be recycled if scaled.
      * @param width The desired width of the output.
      * @param height The desired height of the output.
-     *
-     * @return The resized image, or the original image if the  conditions aren't met.
+     * @return The resized image, or the original image if the conditions aren't met.
      */
     @VisibleForTesting
-    public static Bitmap resizeImage(@Nullable Bitmap bitmap, int width, int height) {
+    public static @Nullable Bitmap resizeImage(@Nullable Bitmap bitmap, int width, int height) {
         if (bitmap != null
                 && width > 0
                 && height > 0
@@ -290,21 +292,21 @@ public abstract class ImageFetcher {
      * Fetch the gif for the given url.
      *
      * @param params The parameters to specify image fetching details. If using CachedImageFetcher
-     *         to fetch images and gifs, use separate {@link Params#clientName} for them.
+     *     to fetch images and gifs, use separate {@link Params#clientName} for them.
      * @param callback The function which will be called when the image is ready; will be called
-     *         with null result if fetching fails.
+     *     with null result if fetching fails.
      */
     public abstract void fetchGif(
-            final ImageFetcher.Params params, Callback<BaseGifImage> callback);
+            final ImageFetcher.Params params, Callback<@Nullable BaseGifImage> callback);
 
     /**
      * Fetches the image based on customized parameters specified.
      *
      * @param params The parameters to specify image fetching details.
      * @param callback The function which will be called when the image is ready; will be called
-     *         with null result if fetching fails;
+     *     with null result if fetching fails;
      */
-    public abstract void fetchImage(final Params params, Callback<Bitmap> callback);
+    public abstract void fetchImage(final Params params, Callback<@Nullable Bitmap> callback);
 
     /** Clear the cache of any bitmaps that may be in-memory. */
     public abstract void clear();

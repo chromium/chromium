@@ -134,41 +134,27 @@ public class TabModelUtils {
      * @param index The index of the {@link Tab} to select.
      */
     public static void setIndex(TabModel model, int index) {
-        setIndex(model, index, TabSelectionType.FROM_USER);
-    }
-
-    /**
-     * A helper method that allows specifying a {@link TabSelectionType} type to {@link
-     * TabModel#setIndex(int, TabSelectionType)}.
-     *
-     * @param model The {@link TabModel} to act on.
-     * @param index The index of the {@link Tab} to select.
-     * @param type {@link TabSelectionType} how the tab selection was initiated.
-     */
-    public static void setIndex(TabModel model, int index, @TabSelectionType int type) {
-        model.setIndex(index, type);
+        model.setIndex(index, TabSelectionType.FROM_USER);
     }
 
     /**
      * Returns the most recently visited Tab in the specified TabList that is not {@code tabId}.
      *
      * @param model The {@link TabModel} to act on.
-     * @param tabId The ID of the {@link Tab} to skip or {@link Tab.INVALID_TAB_ID}.
+     * @param tabIdToSkip The ID of the {@link Tab} to skip or {@link Tab.INVALID_TAB_ID}.
      * @return the most recently visited Tab or null if none can be found.
      */
-    public static Tab getMostRecentTab(TabList model, int tabId) {
-        Tab mostRecentTab = null;
+    public static Tab getMostRecentTab(TabList model, int tabIdToSkip) {
+        @Nullable Tab mostRecentTab = null;
         long mostRecentTabTime = 0;
         for (int i = 0; i < model.getCount(); i++) {
-            final Tab currentTab = model.getTabAt(i);
-            if (currentTab.getId() == tabId || currentTab.isClosing()) continue;
+            final Tab tab = model.getTabAt(i);
+            if (tab.getId() == tabIdToSkip || tab.isClosing()) continue;
 
-            final long currentTime = currentTab.getTimestampMillis();
-            // TODO(b/301642179) Consider using Optional on Tab interface for getTimestampMillis()
-            // to signal that the timestamp is unknown.
-            if (currentTime != Tab.INVALID_TIMESTAMP && mostRecentTabTime < currentTime) {
-                mostRecentTabTime = currentTime;
-                mostRecentTab = currentTab;
+            final long timestamp = tab.getTimestampMillis();
+            if (timestamp != Tab.INVALID_TIMESTAMP && mostRecentTabTime < timestamp) {
+                mostRecentTabTime = timestamp;
+                mostRecentTab = tab;
             }
         }
         return mostRecentTab;
@@ -204,6 +190,28 @@ public class TabModelUtils {
 
             tabModelSelector.addObserver(observer);
         }
+    }
+
+    /**
+     * Similar to the above function, but waits for all provided {@link TabModelSelector}s to
+     * initialize (in series).
+     */
+    public static void runOnTabStateInitialized(
+            Runnable callback, @NonNull TabModelSelector... tabModelSelectors) {
+        runOnTabStateInitializedImpl(callback, /* currentIndex= */ 0, tabModelSelectors);
+    }
+
+    private static void runOnTabStateInitializedImpl(
+            Runnable callback, int currentIndex, @NonNull TabModelSelector... tabModelSelectors) {
+        if (currentIndex >= tabModelSelectors.length) {
+            callback.run();
+            return;
+        }
+        runOnTabStateInitialized(
+                tabModelSelectors[currentIndex],
+                (selector) -> {
+                    runOnTabStateInitializedImpl(callback, currentIndex + 1, tabModelSelectors);
+                });
     }
 
     /**
@@ -244,7 +252,7 @@ public class TabModelUtils {
 
     /**
      * @param tab The {@link Tab} to find the {@link TabGroupModelFilter} for.
-     * @return the associated {@link TabGroupModelFilter} if found.
+     * @return the associated {@link TabGroupModelFilter} if found or null.
      */
     public static TabGroupModelFilter getTabGroupModelFilterByTab(@NonNull Tab tab) {
         final WindowAndroid windowAndroid = tab.getWindowAndroid();
@@ -277,17 +285,6 @@ public class TabModelUtils {
 
         for (int i = 0; i < tabList.getCount(); i++) {
             list.add(tabList.getTabAt(i));
-        }
-        return list;
-    }
-
-    /** Converts a {@link TabList} to a {@link List<Integer>} tab ids. */
-    public static @NonNull List<Integer> convertTabListToListOfTabIds(@Nullable TabList tabList) {
-        ArrayList<Integer> list = new ArrayList<>();
-        if (tabList == null) return list;
-
-        for (int i = 0; i < tabList.getCount(); i++) {
-            list.add(tabList.getTabAt(i).getId());
         }
         return list;
     }

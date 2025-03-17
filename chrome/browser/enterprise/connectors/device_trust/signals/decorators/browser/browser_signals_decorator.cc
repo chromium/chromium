@@ -11,10 +11,11 @@
 #include "base/check.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -23,6 +24,10 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "components/device_signals/core/common/win/win_types.h"
+#endif
 
 namespace enterprise_connectors {
 
@@ -43,6 +48,14 @@ std::optional<std::string> TryGetEnrollmentDomain(
                                     : policy->display_domain();
   }
   return std::nullopt;
+}
+
+std::vector<std::string> RemoveDuplicates(std::vector<std::string> addresses) {
+  std::sort(addresses.begin(), addresses.end());
+  addresses.erase(std::unique(addresses.begin(), addresses.end()),
+                  addresses.end());
+
+  return addresses;
 }
 
 }  // namespace
@@ -99,6 +112,10 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
   if (signals_aggregator_) {
     device_signals::SignalsAggregationRequest request;
     request.signal_names.emplace(device_signals::SignalName::kAgent);
+
+    if (IsDTCAntivirusSignalEnabled()) {
+      request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
+    }
     signals_aggregator_->GetSignals(
         request,
         base::BindOnce(&BrowserSignalsDecorator::OnAggregatedSignalsReceived,
@@ -119,7 +136,7 @@ void BrowserSignalsDecorator::OnDeviceInfoFetched(
   signals.Set(device_signals::names::kDeviceHostName,
               device_info.device_host_name);
   signals.Set(device_signals::names::kMacAddresses,
-              ToListValue(device_info.mac_addresses));
+              ToListValue(RemoveDuplicates(device_info.mac_addresses)));
 
   if (device_info.windows_machine_domain) {
     signals.Set(device_signals::names::kWindowsMachineDomain,
@@ -152,6 +169,18 @@ void BrowserSignalsDecorator::OnAggregatedSignalsReceived(
                   std::move(serialized_crowdstrike_signals.value()));
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (IsDTCAntivirusSignalEnabled()) {
+    device_signals::InstalledAntivirusState antivirus_state{
+        device_signals::InstalledAntivirusState::kNone};
+    if (response.av_signal_response) {
+      antivirus_state = response.av_signal_response->antivirus_state;
+    }
+    signals.Set(device_signals::names::kAntivirusState,
+                static_cast<int>(antivirus_state));
+  }
+#endif
 
   std::move(done_closure).Run();
 }

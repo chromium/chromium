@@ -9,6 +9,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace collaboration::messaging {
 
@@ -28,32 +29,51 @@ class TabGroupChangeNotifier
     // observer before calling Initialize().
     virtual void OnTabGroupChangeNotifierInitialized() = 0;
 
+    // Invoked when sync is disabled which includes sign out or disabling sync
+    // for tabs. On receiving this event, the messaging service is expected to
+    // clear the database, in-memory model, and hide any outstanding messages.
+    virtual void OnSyncDisabled() = 0;
+
     // A new tab group was added.
-    virtual void OnTabGroupAdded(
-        const tab_groups::SavedTabGroup& added_group) = 0;
+    virtual void OnTabGroupAdded(const tab_groups::SavedTabGroup& added_group,
+                                 tab_groups::TriggerSource source) = 0;
     // Tab group was removed, and the old group is provided.
-    virtual void OnTabGroupRemoved(tab_groups::SavedTabGroup removed_group) = 0;
+    virtual void OnTabGroupRemoved(tab_groups::SavedTabGroup removed_group,
+                                   tab_groups::TriggerSource source) = 0;
     // Called whenever there is a relevant update to tab group name.
     // Note: This is not invoked on tab changes within a tab group.
     virtual void OnTabGroupNameUpdated(
-        const tab_groups::SavedTabGroup& updated_group) = 0;
+        const tab_groups::SavedTabGroup& updated_group,
+        tab_groups::TriggerSource source) = 0;
     // Called whenever there is a relevant update to tab group color.
     // Note: This is not invoked on tab changes within a tab group.
     virtual void OnTabGroupColorUpdated(
-        const tab_groups::SavedTabGroup& updated_group) = 0;
+        const tab_groups::SavedTabGroup& updated_group,
+        tab_groups::TriggerSource source) = 0;
+
+    // A saved tab group was opened, e.g. from tab group revisit surface.
+    virtual void OnTabGroupOpened(
+        const tab_groups::SavedTabGroup& tab_group) = 0;
+
+    // A saved tab group was closed.
+    virtual void OnTabGroupClosed(
+        const tab_groups::SavedTabGroup& tab_group) = 0;
 
     // A new tab was added to the given tab group.
-    virtual void OnTabAdded(const tab_groups::SavedTabGroupTab& added_tab) = 0;
+    virtual void OnTabAdded(const tab_groups::SavedTabGroupTab& added_tab,
+                            tab_groups::TriggerSource source) = 0;
     // A tab was removed from the given tab group. The last known information
     // about the tab is provided.
-    virtual void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab) = 0;
+    virtual void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab,
+                              tab_groups::TriggerSource source,
+                              bool is_selected) = 0;
     // A tab has been updated.
-    virtual void OnTabUpdated(
-        const tab_groups::SavedTabGroupTab& updated_tab) = 0;
-    // A tab has been selected. The parameter is empty if the selected tab could
-    // not be found, i.e. it is not part of a shared tab group.
-    virtual void OnTabSelected(
-        std::optional<tab_groups::SavedTabGroupTab> selected_tab) = 0;
+    virtual void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab,
+                              tab_groups::TriggerSource source,
+                              bool is_selected) = 0;
+    // A tab was selected or deselected.
+    virtual void OnTabSelectionChanged(const tab_groups::LocalTabID& tab_id,
+                                       bool is_selected) = 0;
   };
 
   ~TabGroupChangeNotifier() override;

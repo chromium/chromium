@@ -170,7 +170,7 @@ FingerprintView::FingerprintView() {
   label_->SetAutoColorReadabilityEnabled(false);
 
   // kTextColorId, kTextFont defined in auth_common.h
-  label_->SetEnabledColorId(kTextColorId);
+  label_->SetEnabledColor(kTextColorId);
   label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
 
@@ -199,8 +199,8 @@ void FingerprintView::SetState(FingerprintState state) {
   state_ = state;
   DisplayCurrentState();
   if (NeedA11yAlertFromState()) {
-    label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                     /*send_native_event=*/true);
+    label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                               /*send_native_event=*/true);
   }
 }
 

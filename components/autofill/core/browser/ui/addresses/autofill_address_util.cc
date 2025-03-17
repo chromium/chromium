@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -14,12 +15,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -87,7 +87,7 @@ void ExtendAddressComponents(
        country.address_format_extensions()) {
     // Find the location of `rule.placed_after` in `components`.
     // `components.field` is only valid if `components.literal.empty()`.
-    auto prev_component = base::ranges::find_if(
+    auto prev_component = std::ranges::find_if(
         components, [&rule](const AutofillAddressUIComponent& component) {
           return component.literal.empty() &&
                  component.field == rule.placed_after;
@@ -153,10 +153,9 @@ void GetAddressComponents(
   }
   // Filter empty lines. Those can appear e.g. when the line consists only of
   // literals and |include_literals| is false.
-  address_components->erase(
-      base::ranges::remove_if(*address_components,
-                              [](auto line) { return line.empty(); }),
-      address_components->end());
+  auto to_remove = std::ranges::remove_if(
+      *address_components, [](auto line) { return line.empty(); });
+  address_components->erase(to_remove.begin(), to_remove.end());
 }
 
 std::vector<AutofillAddressUIComponent> GetAddressComponents(
@@ -222,7 +221,8 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
       address += component.literal;
       continue;
     }
-    if (!include_recipient && component.field == NAME_FULL) {
+    if (!include_recipient && (component.field == NAME_FULL ||
+                               component.field == ALTERNATIVE_FULL_NAME)) {
       continue;
     }
     FieldType type = component.field;
@@ -276,12 +276,13 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale) {
-  // `FieldTypeSet` is unordered, but since NAME_FULL < EMAIL_ADDRESS <
-  // PHONE_HOME_WHOLE_NUBER, the differences are returned in the correct order.
   std::vector<ProfileValueDifference> differences_for_ui =
       AutofillProfileComparator::GetProfileDifference(
           first_profile, second_profile,
-          {NAME_FULL, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}, app_locale);
+          {NAME_FULL, ALTERNATIVE_FULL_NAME, EMAIL_ADDRESS,
+           PHONE_HOME_WHOLE_NUMBER},
+          app_locale);
+
   // ADDRESS_HOME_ADDRESS is handled separately.
   std::u16string first_address = GetEnvelopeStyleAddress(
       first_profile, app_locale, /*include_recipient=*/false,
@@ -290,12 +291,32 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
       second_profile, app_locale, /*include_recipient=*/false,
       /*include_country=*/true);
   if (first_address != second_address) {
-    // Insert right after NAME_FULL (if present).
-    differences_for_ui.insert(
-        differences_for_ui.begin() + (!differences_for_ui.empty() &&
-                                      differences_for_ui[0].type == NAME_FULL),
+    differences_for_ui.push_back(
         {ADDRESS_HOME_ADDRESS, first_address, second_address});
   }
+
+  auto get_priority = [](FieldType type) -> size_t {
+    switch (type) {
+      case NAME_FULL:
+        return 0;
+      case ALTERNATIVE_FULL_NAME:
+        return 1;
+      case ADDRESS_HOME_ADDRESS:
+        return 2;
+      case EMAIL_ADDRESS:
+        return 3;
+      case PHONE_HOME_WHOLE_NUMBER:
+        return 4;
+      default:
+        NOTREACHED();
+    }
+  };
+
+  std::ranges::sort(differences_for_ui,
+                    [get_priority](const ProfileValueDifference& a,
+                                   const ProfileValueDifference& b) {
+                      return get_priority(a.type) < get_priority(b.type);
+                    });
   return differences_for_ui;
 }
 

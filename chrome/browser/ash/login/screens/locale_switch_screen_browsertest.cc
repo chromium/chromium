@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -112,7 +113,7 @@ void LocaleSwitchScreenBrowserTest::SetPeopleAPIResponseLocale(
 
 void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
   LoginManagerMixin::TestUserInfo user_{AccountId::FromUserEmailGaiaId(
-      FakeGaiaMixin::kFakeUserEmail, GaiaId(FakeGaiaMixin::kFakeUserGaiaId))};
+      FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserGaiaId)};
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   login_manager_mixin_.LoginAsNewRegularUser(user_context);
@@ -121,7 +122,7 @@ void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info = identity_manager->FindExtendedAccountInfoByGaiaId(
-      GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+      FakeGaiaMixin::kFakeUserGaiaId);
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.SetAllSupportedCapabilities(false);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
@@ -175,6 +176,10 @@ IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
   EXPECT_EQ(screen_result, LocaleSwitchScreen::Result::kSwitchSucceded);
 
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), new_locale);
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  EXPECT_EQ(*user->GetAccountLocale(), new_locale);
 }
 
 }  // namespace ash

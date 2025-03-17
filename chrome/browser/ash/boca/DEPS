@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/test_extension_environment.h",
   "+chrome/browser/extensions/test_extension_system.h",
+  "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/gcm/gcm_profile_service_factory.h",
   "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   "+chrome/browser/login_detection/login_detection_util.h",
@@ -30,38 +31,53 @@ include_rules = [
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_command_controller.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/exclusive_access/exclusive_access_manager.h",
+  "+chrome/browser/ui/exclusive_access/fullscreen_controller.h",
+  "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_strip_model_delegate.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
-  "+chrome/test/base/browser_with_test_window_test.h",
+  "+chrome/browser/ui/views/frame/immersive_mode_controller.h",
   "+chrome/test/base/in_process_browser_test.h",
-  "+chrome/test/base/testing_browser_process.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
   "+chrome/browser/ash/settings/device_settings_service.h",
   "+components/sessions",
   # Files needed by babelorca/
-  "+chrome/browser/accessibility/live_caption/live_caption_controller_factory.h",
-  "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
-  "+chrome/browser/speech/speech_recognition_client_browser_interface.h",
-  "+chrome/browser/speech/speech_recognition_client_browser_interface_factory.h",
   "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
   "+chrome/browser/browser_process.h",
+  # Files needed by spotlight/
+  "+chrome/browser/ash/policy/remote_commands/crd",
 ]
 
 specific_include_rules = {
-    "on_task_locked_session_navigation_throttle_browsertest.cc": [
+  "content_settings_handler_unittest.cc": [
+      "+chrome/browser/content_settings/host_content_settings_map_factory.h",
+  ],
+  "on_task_locked_session_navigation_throttle_interactive_ui_test.cc": [
+      "+chrome/browser/ui/browser_navigator_params.h",
+      "+chrome/browser/ui/test/test_browser_closed_waiter.h",
+      "+chrome/test/base/interactive_test_utils.h",
       "+chrome/test/base/ui_test_utils.h",
-    ],
-    "on_task_locked_session_window_tracker_browsertest.cc": [
-        "+chrome/app/chrome_command_ids.h",
-        "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
-        "+chrome/common/chrome_paths.h",
-        "+chrome/test/base/ui_test_utils.h"
-    ]
+  ],
+  "on_task_locked_session_window_tracker_browsertest.cc": [
+      "+chrome/app/chrome_command_ids.h",
+      "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
+      "+chrome/common/chrome_paths.h",
+      "+chrome/test/base/ui_test_utils.h"
+  ],
+  "on_task_pod_controller_impl_browsertest.cc": [
+      "+chrome/browser/ui/tabs/tab_strip_model.h",
+      "+chrome/test/base/ui_test_utils.h",
+  ],
+  "on_task_session_manager_browsertest.cc": [
+      "+chrome/browser/ui/browser_commands.h",
+      "+chrome/test/base/ui_test_utils.h"
+  ]
 }

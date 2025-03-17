@@ -610,6 +610,11 @@ INSTANTIATE_TEST_SUITE_P(
                             net::OK,
                             418,
                             PROTO_STRING(kResponseEmpty)),
+        FailedRequestParams(
+            DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED,
+            net::OK,
+            419,
+            PROTO_STRING(kResponseEmpty)),
         FailedRequestParams(DM_STATUS_SERVICE_TOO_MANY_REQUESTS,
                             net::OK,
                             429,
@@ -864,6 +869,48 @@ TEST_F(DeviceManagementServiceTest, RequestWithProfileId) {
 
   QueryParams query_params(request->request.url.query());
   EXPECT_TRUE(query_params.Check(dm_protocol::kParamProfileID, kProfileID));
+
+  // Generate the response.
+  SendResponse(net::OK, 200, std::string());
+}
+
+TEST_F(DeviceManagementServiceTest, RequestWithCookies) {
+  auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
+      DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT,
+      service_.get(), kClientID, shared_url_loader_factory_);
+  params.use_cookies = true;
+  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, std::string()));
+  EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartJob(std::move(params)));
+
+  auto* request = GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  const auto& rr = request->request;
+  EXPECT_TRUE(rr.SendsCookies());
+  EXPECT_TRUE(rr.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(GURL(kServiceUrl))));
+
+  // Generate the response.
+  SendResponse(net::OK, 200, std::string());
+}
+
+TEST_F(DeviceManagementServiceTest, RequestWithoutCookies) {
+  auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
+      DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT,
+      service_.get(), kClientID, shared_url_loader_factory_);
+  params.use_cookies = false;
+  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, std::string()));
+  EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartJob(std::move(params)));
+
+  auto* request = GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  const auto& rr = request->request;
+  EXPECT_FALSE(rr.SendsCookies());
 
   // Generate the response.
   SendResponse(net::OK, 200, std::string());

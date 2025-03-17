@@ -22,7 +22,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/url_pattern_index/url_pattern.h"
 #include "components/url_pattern_index/url_rule_test_support.h"
@@ -1146,8 +1145,8 @@ TEST_F(UrlPatternIndexTest, EmbedderConditions) {
       });
   EmbedderConditionsMatcher match_has_evens =
       base::BindRepeating([](const flatbuffers::Vector<uint8_t>& conditions) {
-        return base::ranges::any_of(conditions,
-                                    [](int i) { return i % 2 == 0; });
+        return std::ranges::any_of(conditions,
+                                   [](int i) { return i % 2 == 0; });
       });
 
   struct Cases {

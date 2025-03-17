@@ -40,7 +40,7 @@ TEST(PersistedDataTest, Simple) {
   items.push_back("someappid");
   items.push_back("someappid.withdot");
   test::SetDateLastData(metadata.get(), items, 3383);
-  EXPECT_EQ("", metadata->GetInstallId("someappid"));
+  EXPECT_EQ("installation 1", metadata->GetInstallId("someappid"));
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid.withdot"));
   EXPECT_EQ(3383, metadata->GetInstallDate("someappid"));
@@ -92,8 +92,7 @@ TEST(PersistedDataTest, Simple) {
 
   EXPECT_TRUE(metadata->GetFingerprint("someappid").empty());
   metadata->SetFingerprint("someappid", "somefingerprint");
-  EXPECT_STREQ("somefingerprint",
-               metadata->GetFingerprint("someappid").c_str());
+  EXPECT_EQ("somefingerprint", metadata->GetFingerprint("someappid"));
 }
 
 TEST(PersistedDataTest, MixedCase) {
@@ -289,9 +288,12 @@ TEST(PersistedDataTest, ActivityData) {
   EXPECT_EQ(3, metadata->GetDaysSinceLastRollCall("id2"));
   EXPECT_EQ(4, metadata->GetDaysSinceLastRollCall("id3"));
 
+  metadata->SetInstallId("id2", "iid2");
   test::SetDateLastData(metadata.get(), items, 5678);
+  EXPECT_EQ("iid2", metadata->GetInstallId("id2"));
   activity_service->SetActiveBit("id2", true);
   test::SetDateLastData(metadata.get(), items, 6789);
+  EXPECT_EQ("", metadata->GetInstallId("id2"));
   EXPECT_EQ(false, test::GetActiveBit(metadata.get(), "id1"));
   EXPECT_EQ(false, test::GetActiveBit(metadata.get(), "id2"));
   EXPECT_EQ(false, test::GetActiveBit(metadata.get(), "id3"));
@@ -310,6 +312,7 @@ TEST(PersistedDataTest, ActivityData) {
   EXPECT_EQ(1234, metadata->GetInstallDate("id1"));
   EXPECT_EQ(1234, metadata->GetInstallDate("id2"));
   EXPECT_EQ(1234, metadata->GetInstallDate("id3"));
+  test::SetDateLastData(metadata.get(), items, 6790);
 }
 
 TEST(PersistedDataTest, LastUpdateCheckError) {

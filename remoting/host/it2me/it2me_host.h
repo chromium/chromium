@@ -12,10 +12,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -31,6 +33,7 @@ namespace remoting {
 
 class ChromotingHost;
 class ChromotingHostContext;
+class CorpHostStatusLogger;
 class DesktopEnvironmentFactory;
 class FtlSignalingConnector;
 class HostEventLogger;
@@ -76,6 +79,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     bool use_ftl_signaling = false;
     // Only set when FTL signaling is being used.
     std::string ftl_device_id;
+
+    // Use corp SessionAuthz auth instead of shared secret auth.
+    bool use_corp_session_authz = false;
   };
 
   using CreateDeferredConnectContext =
@@ -156,7 +162,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   protocol::ValidatingAuthenticator::ValidationCallback
   GetValidationCallbackForTesting();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetHostEventReporterFactoryForTesting(HostEventReporterFactory factory);
 #endif
 
@@ -197,12 +203,18 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
                            const base::TimeDelta& lifetime,
                            protocol::ErrorCode error_code);
 
-  // Handlers for NAT traversal and domain policies.
-  void UpdateNatPolicies(bool nat_policy_value, bool relay_policy_value);
+  std::optional<ErrorCode> OnEffectiveSessionPoliciesReceived(
+      const SessionPolicies& session_policies);
+
+  // Reports the NAT policies to the observer. Will always report if no policies
+  // have been reported, and will not report if the policies have not changed.
+  void ReportNatPolicies(const SessionPolicies& session_policies);
+
+  // Handlers for domain policies.
   void UpdateHostDomainListPolicy(std::vector<std::string> host_domain_list);
   void UpdateClientDomainListPolicy(
       std::vector<std::string> client_domain_list);
-  void UpdateSessionPolicies(const base::Value::Dict& platform_policies);
+  void UpdateLocalSessionPolicies(const base::Value::Dict& platform_policies);
 
   void DisconnectOnNetworkThread(
       protocol::ErrorCode error_code = protocol::ErrorCode::OK);
@@ -237,18 +249,27 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::optional<ReconnectParams> reconnect_params_;
 
   std::string support_id_;
+
+  // This is empty if shared secret auth is not supported.
   std::string host_secret_;
+
   std::string ftl_device_id_;
   scoped_refptr<RsaKeyPair> host_key_pair_;
   std::unique_ptr<RegisterSupportHostRequest> register_request_;
   std::unique_ptr<HostStatusLogger> host_status_logger_;
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<HostEventLogger> host_event_logger_;
-  LocalSessionPoliciesProvider local_session_policies_provider_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<LocalSessionPoliciesProvider>
+      local_session_policies_provider_;
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<HostEventReporter> host_event_reporter_;
   HostEventReporterFactory host_event_reporter_factory_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  bool use_corp_session_authz_ = false;
+
+  // Only set if |use_corp_session_authz_| is true.
+  std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
   int failed_login_attempts_ = 0;
@@ -256,11 +277,18 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<It2MeConfirmationDialogFactory> confirmation_dialog_factory_;
   std::unique_ptr<It2MeConfirmationDialogProxy> confirmation_dialog_proxy_;
 
-  // Stores the current nat traversal policy value.
-  bool nat_traversal_enabled_ = false;
+  // Indicates whether the session policies can still change. Once the session
+  // has connected, any changes to the session policies will disconnect the
+  // session.
+  bool session_policies_finalized_ = false;
 
-  // Stores the current relay connections allowed policy value.
-  bool relay_connections_allowed_ = false;
+  // Stores the last nat traversal policy and relay connections allowed policy
+  // values that have been reported to the observer. nullopt indicates that the
+  // policy has not be reported.
+  // Note: if these policies are not specified in SessionPolicies, they will be
+  // `true` rather than nullopt.
+  std::optional<bool> last_reported_nat_traversal_enabled_ = false;
+  std::optional<bool> last_reported_relay_connections_allowed_ = false;
 
   // Set when the session was initiated for a managed Chrome OS device by an
   // admin using the admin console.

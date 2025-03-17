@@ -5,14 +5,18 @@
 package org.chromium.chrome.browser.notifications.permissions;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationRationaleResult;
 import org.chromium.chrome.browser.notifications.R;
@@ -25,13 +29,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 /** Bottom sheet to explain the advantages of Chrome notifications. */
+@NullMarked
 public class NotificationPermissionRationaleBottomSheet
         implements RationaleDelegate, BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final Context mContext;
-    private Callback<Integer> mResponseCallback;
+    private @Nullable Callback<Integer> mResponseCallback;
     private final BottomSheetObserver mBottomSheetObserver;
-    private View mContentView;
+    private @Nullable View mContentView;
     private boolean mWasSheetOpened;
 
     public NotificationPermissionRationaleBottomSheet(
@@ -147,12 +152,13 @@ public class NotificationPermissionRationaleBottomSheet
 
     /* BottomSheetContent implementation. */
     @Override
+    @NullUnmarked
     public View getContentView() {
         return mContentView;
     }
 
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -201,7 +207,7 @@ public class NotificationPermissionRationaleBottomSheet
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.notification_permission_rationale_content_description);
     }
 
@@ -214,19 +220,19 @@ public class NotificationPermissionRationaleBottomSheet
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
         assert false : "This method should not be called";
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.notification_permission_rationale_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.notification_permission_rationale_closed_description;
     }
 }

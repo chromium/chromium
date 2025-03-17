@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/logging.h"
 #include "components/ip_protection/mojom/core.mojom.h"
-#include "components/ip_protection/mojom/data_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ip_protection {
 

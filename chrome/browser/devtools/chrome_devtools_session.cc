@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
@@ -32,7 +32,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/devtools/protocol/window_manager_handler.h"
 #endif
 
@@ -100,7 +100,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
   if (IsDomainAvailableToUntrustedClient<TargetHandler>() ||
       channel->GetClient()->IsTrusted()) {
     target_handler_ = std::make_unique<TargetHandler>(
-        &dispatcher_, channel->GetClient()->IsTrusted());
+        &dispatcher_, channel->GetClient()->IsTrusted(),
+        channel->GetClient()->MayReadLocalFiles());
   }
   if (IsDomainAvailableToUntrustedClient<BrowserHandler>() ||
       channel->GetClient()->IsTrusted()) {
@@ -120,7 +121,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
           std::make_unique<PWAHandler>(&dispatcher_, agent_host->GetId());
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   window_manager_handler_ =
       std::make_unique<WindowManagerHandler>(&dispatcher_);
 #endif
@@ -128,8 +129,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
 
 ChromeDevToolsSession::~ChromeDevToolsSession() = default;
 
-base::HistogramBase::Sample GetCommandUmaId(std::string_view command_name) {
-  return static_cast<base::HistogramBase::Sample>(
+base::HistogramBase::Sample32 GetCommandUmaId(std::string_view command_name) {
+  return static_cast<base::HistogramBase::Sample32>(
       base::HashMetricName(command_name));
 }
 
@@ -142,7 +143,7 @@ void ChromeDevToolsSession::HandleCommand(
       dispatcher_.Dispatch(dispatchable);
 
   auto command_uma_id = GetCommandUmaId(std::string_view(
-      reinterpret_cast<const char*>(dispatchable.Method().begin()),
+      reinterpret_cast<const char*>(dispatchable.Method().data()),
       dispatchable.Method().size()));
   std::string client_type = client_channel_->GetClient()->GetTypeForMetrics();
   DCHECK(client_type == "DevTools" || client_type == "Extension" ||

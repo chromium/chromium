@@ -31,13 +31,16 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "ui/gfx/geometry/size.h"
 
 class GURL;
+
+namespace signin {
+class IdentityManager;
+}
 
 namespace safe_browsing {
 
@@ -342,11 +345,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
                                    const GURL& main_frame_url) = 0;
 
   void CheckCsdAllowlistOnIOThread(const GURL& url, bool* check_result);
-
-  // Gets the type of sync account associated with current profile or
-  // |NOT_SIGNED_IN|.
-  virtual LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
-  GetSyncAccountType() const = 0;
 
   // Get information about Delayed Warnings and Omnibox URL display experiments.
   // This information is sent in PhishGuard pings.

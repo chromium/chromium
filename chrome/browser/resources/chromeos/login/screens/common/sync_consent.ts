@@ -23,7 +23,7 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {CrCheckboxElement} from '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
@@ -40,8 +40,6 @@ import {getTemplate} from './sync_consent.html.js';
 enum SyncUiSteps {
   ASH_SYNC = 'ash-sync',
   LOADING = 'loading',
-  LACROS_OVERVIEW = 'lacros-overview',
-  LACROS_CUSTOMIZE = 'lacros-customize',
 }
 
 
@@ -52,7 +50,6 @@ enum UserAction {
   CONTINUE = 'continue',
   SYNC_EVERYTHING = 'sync-everything',
   SYNC_CUSTOM = 'sync-custom',
-  LACROS_DECLINE = 'lacros-decline',
 }
 
 
@@ -68,13 +65,6 @@ interface OsSyncItems {
 
 const SyncConsentScreenElementBase =
     LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
-
-/**
- * Data that is passed to the screen during onBeforeShow.
- */
-interface SyncConsentScreenData {
-  isLacrosEnabled: boolean;
-}
 
 export class SyncConsentScreen extends SyncConsentScreenElementBase {
   static get is() {
@@ -99,11 +89,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
        * Indicates whether user is minor mode user (e.g. under age of 18).
        */
       isMinorMode: Boolean,
-
-      /**
-       * Indicates whether Lacros is enabled.
-       */
-      isLacrosEnabled: Boolean,
 
       /**
        * The text key for the opt-in button (it could vary based on whether
@@ -134,7 +119,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
 
   osSyncItemsStatus: OsSyncItems;
   private isMinorMode: boolean;
-  private isLacrosEnabled: boolean;
   private optInButtonTextKey: string;
   private consentDescription: string[];
   private consentConfirmation: string;
@@ -144,7 +128,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
     super();
 
     this.isMinorMode = false;
-    this.isLacrosEnabled = false;
     this.osSyncItemsStatus = {
       osApps: true,
       osPreferences: true,
@@ -165,14 +148,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override getOobeUIInitialState(): OobeUiState {
     return OobeUiState.ONBOARDING;
-  }
-
-  /**
-   * Event handler that is invoked just before the screen is shown.
-   */
-  override onBeforeShow(data: SyncConsentScreenData): void {
-    super.onBeforeShow(data);
-    this.isLacrosEnabled = data['isLacrosEnabled'];
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -208,33 +183,8 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
   /**
    * This is called when SyncScreenBehavior becomes Shown.
    */
-  showLoadedStep(isSyncLacros: boolean): void {
-    if (isSyncLacros) {
-      this.showLacrosOverview();
-    } else {
-      this.showAshSync();
-    }
-  }
-
-  /**
-   * This is called to set ash-sync step.
-   */
-  private showAshSync(): void {
+  showLoadedStep(): void {
     this.setUIStep(SyncUiSteps.ASH_SYNC);
-  }
-
-  /**
-   * This is called to set lacros-overview step.
-   */
-  private showLacrosOverview(): void {
-    this.setUIStep(SyncUiSteps.LACROS_OVERVIEW);
-  }
-
-  /**
-   * This is called to set lacros-customize step.
-   */
-  private showLacrosCustomize(): void {
-    this.setUIStep(SyncUiSteps.LACROS_CUSTOMIZE);
   }
 
   /**
@@ -316,12 +266,7 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
     return consentDescription;
   }
 
-  private getReviewSettingText(locale: string, isArcRestricted: boolean):
-      string {
-    if (isArcRestricted) {
-      return this.i18nDynamic(
-          locale, 'syncConsentReviewSyncOptionsWithArcRestrictedText');
-    }
+  private getReviewSettingText(locale: string): string {
     return this.i18nDynamic(locale, 'syncConsentReviewSyncOptionsText');
   }
 
@@ -331,50 +276,6 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
   private getOptInButtonTextKey(isMinorMode: boolean): string {
     return isMinorMode ? 'syncConsentTurnOnSync' :
                          'syncConsentAcceptAndContinue';
-  }
-
-  private onSyncEverything(e: Event): void {
-    this.userActed([
-      UserAction.SYNC_EVERYTHING,
-      this.getConsentDescription(),
-      this.getConsentConfirmation((e.composedPath()) as HTMLElement[]),
-    ]);
-  }
-
-  private onManageClicked(e: Event): void {
-    this.consentDescription = this.getConsentDescription();
-    this.consentConfirmation =
-        this.getConsentConfirmation((e.composedPath()) as HTMLElement[]);
-    this.showLacrosCustomize();
-  }
-
-  private onBackClicked(): void {
-    this.showLacrosOverview();
-  }
-
-  private onNextClicked(): void {
-    this.userActed([
-      UserAction.SYNC_CUSTOM,
-      this.osSyncItemsStatus,
-      this.consentDescription,
-      this.consentConfirmation,
-    ]);
-  }
-
-  private onLacrosDeclineClicked(): void {
-    this.userActed(UserAction.LACROS_DECLINE);
-  }
-
-  private getAriaLabeltooltip(locale: string): string {
-    return this.i18nDynamic(locale, 'syncConsentScreenOsSyncAppsTooltipText') +
-        this.i18nDynamic(
-            locale, 'syncConsentScreenOsSyncAppsTooltipAdditionalText');
-  }
-
-  private getAriaLabelToggleButtons(
-      locale: string, title: string, subtitle: string): string {
-    return this.i18nDynamic(locale, title) + '. ' +
-        this.i18nDynamic(locale, subtitle);
   }
 }
 

@@ -7,6 +7,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/supervised_user/aw_supervised_user_safemode_action.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_functions.h"
@@ -57,12 +58,9 @@ void AwSupervisedUserUrlClassifier::ShouldBlockUrl(
     const GURL& request_url,
     UrlClassifierCallback callback) {
   JNIEnv* env = AttachCurrentThread();
-  auto request_url_java = url::GURLAndroid::FromNativeGURL(env, request_url);
-  intptr_t callback_id = reinterpret_cast<intptr_t>(
-      new UrlClassifierCallback(std::move(callback)));
-
   return Java_AwSupervisedUserUrlClassifier_shouldBlockUrl(
-      env, request_url_java, callback_id);
+      env, url::GURLAndroid::FromNativeGURL(env, request_url),
+      base::android::ToJniCallback(env, std::move(callback)));
 }
 
 void AwSupervisedUserUrlClassifier::SetUserRequiresUrlChecks(
@@ -76,15 +74,6 @@ void AwSupervisedUserUrlClassifier::SetUserRequiresUrlChecks(
   base::UmaHistogramBoolean(
       "Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache",
       value_matches);
-}
-
-static void JNI_AwSupervisedUserUrlClassifier_OnShouldBlockUrlResult(
-    JNIEnv* env,
-    jlong callback_id,
-    jboolean shouldBlockUrl) {
-  std::unique_ptr<UrlClassifierCallback> cb(
-      reinterpret_cast<UrlClassifierCallback*>(callback_id));
-  std::move(*cb).Run(shouldBlockUrl);
 }
 
 static void JNI_AwSupervisedUserUrlClassifier_SetUserRequiresUrlChecks(

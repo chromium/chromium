@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.maybeRecordAbusiveNotificationRevokedInteraction;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordRevokedPermissionsInteraction;
 
 import android.os.Bundle;
@@ -65,10 +66,15 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                                     (PermissionsData[]) actionData);
                             recordRevokedPermissionsInteraction(
                                     PermissionsModuleInteractions.UNDO_ACKNOWLEDGE_ALL);
+                            maybeRecordAbusiveNotificationRevokedInteraction(
+                                    (PermissionsData[]) actionData,
+                                    PermissionsModuleInteractions.UNDO_ACKNOWLEDGE_ALL);
                         }
                     },
                     permissionsDataList);
             recordRevokedPermissionsInteraction(PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
+            maybeRecordAbusiveNotificationRevokedInteraction(
+                    permissionsDataList, PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
         }
     }
 
@@ -90,10 +96,19 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                                     (PermissionsData) actionData);
                             recordRevokedPermissionsInteraction(
                                     PermissionsModuleInteractions.UNDO_ALLOW_AGAIN);
+                            PermissionsData[] permissionsDataList =
+                                    new PermissionsData[] {(PermissionsData) actionData};
+                            maybeRecordAbusiveNotificationRevokedInteraction(
+                                    permissionsDataList,
+                                    PermissionsModuleInteractions.UNDO_ALLOW_AGAIN);
                         }
                     },
                     permissionsData);
             recordRevokedPermissionsInteraction(PermissionsModuleInteractions.ALLOW_AGAIN);
+            PermissionsData[] permissionsDataList = new PermissionsData[] {permissionsData};
+            permissionsDataList[0] = permissionsData;
+            maybeRecordAbusiveNotificationRevokedInteraction(
+                    permissionsDataList, PermissionsModuleInteractions.ALLOW_AGAIN);
         }
         return false;
     }

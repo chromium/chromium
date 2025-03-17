@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -40,6 +39,12 @@ class VectorWStream : public SkWStream {
   raw_ptr<Vector<unsigned char>> dst_;
 };
 
+enum ImageEncodingMimeType {
+  kMimeTypePng,
+  kMimeTypeJpeg,
+  kMimeTypeWebp,
+};
+
 class PLATFORM_EXPORT ImageEncoder {
   USING_FAST_MALLOC(ImageEncoder);
 
@@ -55,6 +60,11 @@ class PLATFORM_EXPORT ImageEncoder {
   static bool Encode(Vector<unsigned char>* dst,
                      const SkPixmap& src,
                      const SkWebpEncoder::Options&);
+
+  static bool Encode(Vector<unsigned char>* dst,
+                     const SkPixmap& src,
+                     ImageEncodingMimeType mime_type,
+                     double quality);
 
   static int MaxDimension(ImageEncodingMimeType mime_type);
 

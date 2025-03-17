@@ -121,7 +121,7 @@ class CORE_EXPORT InlineItemSegments {
                                       unsigned segment_index);
 
   // Compute an internal items-to-segments index for faster access.
-  void ComputeItemIndex(const HeapVector<InlineItem>& items);
+  void ComputeItemIndex(const HeapVector<Member<InlineItem>>& items);
 
   using RunSegmenterRanges = Vector<RunSegmenter::RunSegmenterRange, 16>;
   void ToRanges(RunSegmenterRanges& ranges) const;

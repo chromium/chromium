@@ -16,10 +16,6 @@ namespace autofill {
 std::unique_ptr<FormFieldParser> StandaloneCvcFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
-    return nullptr;
-  }
 
   // Ignore gift card fields as both |kGiftCardRe| and |kCardCvcRe| matches
   // "gift card pin" and "gift card code" but it should only match
@@ -29,12 +25,7 @@ std::unique_ptr<FormFieldParser> StandaloneCvcFieldParser::Parse(
   }
 
   std::optional<FieldAndMatchInfo> match;
-  base::span<const MatchPatternRef> cvc_patterns =
-      GetMatchPatterns(CREDIT_CARD_VERIFICATION_CODE, context.page_language,
-                       context.pattern_file);
-
-  if (ParseField(context, scanner, cvc_patterns, &match,
-                 "CREDIT_CARD_VERIFICATION_CODE(standalone)")) {
+  if (ParseField(context, scanner, "CREDIT_CARD_VERIFICATION_CODE", &match)) {
     return std::make_unique<StandaloneCvcFieldParser>(std::move(*match));
   }
 
@@ -50,12 +41,8 @@ bool StandaloneCvcFieldParser::MatchGiftCard(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> gift_card_patterns = GetMatchPatterns(
-      "GIFT_CARD", context.page_language, context.pattern_file);
-
   size_t saved_cursor = scanner->SaveCursor();
-  const bool gift_card_match =
-      ParseField(context, scanner, gift_card_patterns, nullptr, "GIFT_CARD");
+  const bool gift_card_match = ParseField(context, scanner, "GIFT_CARD");
   // MatchGiftCard only wants to test the presence of a gift card but not
   // consume the field.
   scanner->RewindTo(saved_cursor);

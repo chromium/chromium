@@ -7,14 +7,16 @@ package org.chromium.components.webapps.pwa_restore_ui;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.webapps.R;
 
 /** The class handling the bottom sheet install for the PWA Restore UI. */
+@NullMarked
 public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     // The view for our bottom sheet.
     private final PwaRestoreBottomSheetView mView;
@@ -48,9 +50,8 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
         return mView.getContentView();
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -98,22 +99,22 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.pwa_restore_bottom_sheet_accessibility);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.pwa_restore_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.pwa_restore_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.pwa_restore_bottom_sheet_accessibility;
     }
 }

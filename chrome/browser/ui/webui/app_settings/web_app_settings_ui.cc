@@ -39,6 +39,9 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementNotificationsDescription",
        IDS_APP_MANAGEMENT_NOTIFICATIONS_DESCRIPTION},
 #endif
+      {"appManagementAppVersionTitle", IDS_APP_MANAGEMENT_APP_VERSION_TITLE},
+      {"appManagementAppSizeTitle", IDS_APP_MANAGEMENT_APP_SIZE_TITLE},
+      {"appManagementAppDataSizeTitle", IDS_APP_MANAGEMENT_APP_DATA_SIZE_TITLE},
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},
       {"appManagementMicrophonePermissionLabel", IDS_APP_MANAGEMENT_MICROPHONE},

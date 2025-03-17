@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 import("../build_webui_tests.gni")
 
-assert(!is_chromeos_ash)
+assert(!is_chromeos)
 
 build_webui_tests("build") {
   files = [
@@ -17,12 +16,10 @@ build_webui_tests("build") {
     "profile_picker_main_view_test.ts",
     "profile_switch_test.ts",
     "profile_type_choice_test.ts",
-    "signin_reauth_test.ts",
     "sync_confirmation_test.ts",
     "test_manage_profiles_browser_proxy.ts",
     "test_managed_user_profile_notice_browser_proxy.ts",
     "test_profile_customization_browser_proxy.ts",
-    "test_signin_reauth_browser_proxy.ts",
     "test_sync_confirmation_browser_proxy.ts",
   ]
 
@@ -55,9 +52,6 @@ build_webui_tests("build") {
             target_gen_dir),
     "chrome://sync-confirmation/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/tsc/sync_confirmation/*",
-            target_gen_dir),
-    "chrome://signin-reauth/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/signin/tsc/signin_reauth/*",
             target_gen_dir),
     "chrome://batch-upload/batch_upload.js|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/batch_upload/tsc/batch_upload.d.ts",

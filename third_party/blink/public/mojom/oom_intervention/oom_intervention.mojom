@@ -23,17 +23,8 @@ interface OomInterventionHost {
 // OOM. Setting a threshold to 0 means that OOM detection will not consider
 // that threshold.
 struct DetectionArgs {
-  // Limit on V8 + BlinkGC + PartitionAlloc.
-  uint64 blink_workload_threshold;
-
   // Limit on total private footprint of the process.
   uint64 private_footprint_threshold;
-
-  // Limit on total swap footprint of the process.
-  uint64 swap_threshold;
-
-  // Limit on total virtual memory used by the process.
-  uint64 virtual_memory_thresold;
 };
 
 // Renderer side interface for OOM intervention. An instance of this interface

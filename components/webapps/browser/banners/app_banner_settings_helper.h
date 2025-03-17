@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/time/time.h"
 
 namespace content {

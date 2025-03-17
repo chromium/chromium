@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.gcm_driver.InstanceIDFlags;
 import org.chromium.components.gcm_driver.LazySubscriptionsManager;
 import org.chromium.components.gcm_driver.SubscriptionFlagManager;
@@ -20,6 +21,7 @@ import java.io.IOException;
  * Performs disk/network operations on a background thread and replies asynchronously.
  */
 @JNINamespace("instance_id")
+@NullMarked
 public class InstanceIDBridge {
     private final String mSubtype;
     private long mNativeInstanceIDAndroid;
@@ -28,6 +30,7 @@ public class InstanceIDBridge {
      * Underlying InstanceIDWithSubtype. May be shared by multiple InstanceIDBridges. Must be
      * initialized on a background thread.
      */
+    @SuppressWarnings("NullAway.Init")
     private InstanceIDWithSubtype mInstanceID;
 
     private static boolean sBlockOnAsyncTasksForTesting;

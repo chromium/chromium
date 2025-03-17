@@ -26,10 +26,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/vector_icons.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -97,16 +97,13 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
     TestWithBrowserView::TearDown();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+#if BUILDFLAG(IS_CHROMEOS)
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    BrowserWithTestWindowTest::LogIn(email, gaia_id);
+    user_manager()->SetUserPolicyStatus(
+        AccountId::FromUserEmailGaiaId(email, gaia_id),
+        /*is_managed=*/true,
+        /*is_affiliated=*/true);
   }
 #endif
 
@@ -721,13 +718,11 @@ TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,
       DefaultCookieInfoForTests();
   cookie_info.is_incognito = true;
   content_view()->SetCookieInfo(cookie_info);
-
   EXPECT_EQ(
       third_party_cookies_description_label()->GetText(),
       l10n_util::GetStringFUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION,
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK)));
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
 }
 
 TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,

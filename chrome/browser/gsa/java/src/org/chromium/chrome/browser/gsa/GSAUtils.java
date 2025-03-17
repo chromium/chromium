@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.gsa;
 import android.content.pm.PackageInfo;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** This class provides utilities for the state of Google Search App. */
+@NullMarked
 public class GSAUtils {
     public static final String GSA_PACKAGE_NAME = "com.google.android.googlequicksearchbox";
     public static final String GSA_CLASS_NAME =
@@ -33,7 +34,7 @@ public class GSAUtils {
      * @return Whether the AGSA version on the device is below the given minimum
      */
     public static boolean isAgsaVersionBelowMinimum(
-            String installedVersionName, String minimumVersionName) {
+            @Nullable String installedVersionName, @Nullable String minimumVersionName) {
         if (TextUtils.isEmpty(installedVersionName) || TextUtils.isEmpty(minimumVersionName)) {
             return true;
         }

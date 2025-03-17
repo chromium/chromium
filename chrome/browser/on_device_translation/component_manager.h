@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom-forward.h"
 
@@ -24,7 +25,8 @@ class ComponentManager {
   static ComponentManager& GetInstance();
 
   // Sets the singleton instance of ComponentManager for testing.
-  static void SetForTesting(ComponentManager* manager);
+  static base::AutoReset<ComponentManager*> SetForTesting(
+      ComponentManager* manager);
 
   // Returns the path of the TranslateKit library. If the path is set by the
   // command line, returns the path from the command line

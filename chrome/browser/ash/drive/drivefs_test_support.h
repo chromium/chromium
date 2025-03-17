@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class Profile;
 
@@ -24,7 +25,7 @@ class FakeDriveFsHelper {
  public:
   static const char kPredefinedProfileSalt[];
   static const char kDefaultUserEmail[];
-  static const char kDefaultGaiaId[];
+  static const GaiaId::Literal kDefaultGaiaId;
 
   FakeDriveFsHelper(Profile* profile, const base::FilePath& mount_path);
 

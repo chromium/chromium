@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -17951,7 +17950,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
           sequence.ResetLinks();
           return pedal.second->IsConceptMatch(sequence);
         };
-        auto iter = base::ranges::find_if(pedals, is_match);
+        auto iter = std::ranges::find_if(pedals, is_match);
         EXPECT_NE(iter, pedals.end()) << "Pedal not found for: " << expression;
         EXPECT_EQ(iter->second.get(), canonical_pedal)
             << "Found wrong Pedal for: " << expression;

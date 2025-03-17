@@ -35,6 +35,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,7 +91,11 @@ class UserScriptListenerTest : public testing::Test {
   UserScriptListenerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         profile_manager_(
-            new TestingProfileManager(TestingBrowserProcess::GetGlobal())) {}
+            new TestingProfileManager(TestingBrowserProcess::GetGlobal())) {
+    // Allow unpacked extensions without developer mode for testing.
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionDisableUnsupportedDeveloper);
+  }
 
   ~UserScriptListenerTest() override = default;
 
@@ -114,7 +119,7 @@ class UserScriptListenerTest : public testing::Test {
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
 
     auto instance = content::SiteInstance::Create(profile_);
-    instance->GetProcess()->Init();
+    instance->GetOrCreateProcess()->Init();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_, std::move(instance));
   }
@@ -170,6 +175,7 @@ class UserScriptListenerTest : public testing::Test {
                                               persistent_urls);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;

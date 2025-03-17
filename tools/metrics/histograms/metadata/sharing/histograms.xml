@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
-    enum="LinkGenerationSharedStatus" expires_after="2025-04-27">
+    enum="LinkGenerationSharedStatus" expires_after="2025-08-31">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error"
-    enum="LinkGenerationError" expires_after="2025-06-08">
+    enum="LinkGenerationError" expires_after="2025-08-10">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2025-06-08">
+    enum="LinkGenerationError" expires_after="2025-08-10">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -210,18 +210,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ClickToCallDevicesToShow" units="devices"
-    expires_after="2022-10-23">
-<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The number of available devices that are about to be shown in a UI for
-    picking a device to start a phone call on. Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.ClickToCallDialerPresent" enum="BooleanPresent"
     expires_after="2023-06-25">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -233,42 +221,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ClickToCallDialogShown" enum="SharingDialogType"
-    expires_after="2021-10-25">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Logged whenever a dialog is shown for the Click to Call feature. Desktop
-    only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.ClickToCallSelectedAppIndex" units="index"
-    expires_after="2023-03-05">
-<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The index of the app selected by the user for Click to Call. Zero based.
-    Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.ClickToCallSelectedDeviceIndex" units="index"
-    expires_after="2024-03-24">
-<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The index of the device selected by the user for Click to Call. Zero based.
-    Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
-    expires_after="2025-06-15">
+    expires_after="2025-08-17">
   <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -279,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LocalSharingTargetInfoSupportsSync" enum="Boolean"
-    expires_after="2025-03-27">
+    expires_after="2025-08-27">
   <owner>rushans@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -290,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -305,9 +259,9 @@ chromium-metrics-reviews@google.com.
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
-    The time to download the favicon as the image preview for sharing an link
-    using Android share sheet. Recorded when sharing a link with Android share
-    sheet only.
+    The time to download the favicon as the image preview or processing the
+    provided preview image as URI, for sharing an link using Android share
+    sheet. Recorded when sharing a link with Android share sheet only.
   </summary>
 </histogram>
 
@@ -354,22 +308,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2025-06-08">
-<!-- Name completed by histogram_suffixes SharingChannelType,
-    SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
-
+<histogram name="Sharing.SendMessageResult{SharingDevicePlatform}"
+    enum="SharingSendMessageResult" expires_after="2025-08-10">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Result of sending a SharingMessage by the Sharing service. Logged after the
     send message callback is run. Not logged for sending ack messages. All
-    platforms.
+    platforms. {SharingDevicePlatform}
   </summary>
+  <token key="SharingDevicePlatform">
+    <variant name=""/>
+    <variant name=".Android" summary="Android OS"/>
+    <variant name=".ChromeOS" summary="Chrome OS"/>
+    <variant name=".iOS" summary="iOS"/>
+    <variant name=".Linux" summary="Linux OS"/>
+    <variant name=".Mac" summary="Mac OS"/>
+    <variant name=".Server" summary="Server"/>
+    <variant name=".Unknown" summary="Device type unknown"/>
+    <variant name=".Windows" summary="Windows OS"/>
+  </token>
 </histogram>
 
 <histogram name="Sharing.SendMessageUsingSync" enum="Boolean"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>rushans@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -379,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageWithSyncAckFcmConfiguration" enum="Boolean"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>rushans@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -389,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="2025-04-13">
+    enum="SendTabToSelfNotificationStatus" expires_after="2025-08-24">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -398,41 +360,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SharedClipboardDevicesToShow" units="devices"
-    expires_after="M88">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The number of available devices that are about to be shown in a UI for
-    picking a device to share the clipboard with. On desktop, it gets recorded
-    when the user right clicks on selected text. On Android, it gest recorded
-    when the user does long press, share and &quot;Send text to Your
-    Devices&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.SharedClipboardDialogShown" enum="SharingDialogType"
-    expires_after="M88">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Logged whenever a dialog is shown for the Shared Clipboard feature.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.SharedClipboardSelectedDeviceIndex" units="index"
-    expires_after="M88">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The index of the device selected by the user for Shared Clipboard gets
-    recorded when the user chooses the destination device for sharing text. Zero
-    based.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharingHubAndroid.CustomAction"
-    enum="ShareCustomAction" expires_after="2025-05-04">
+    enum="ShareCustomAction" expires_after="2025-09-07">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -442,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="2025-06-15">
+    expires_after="2025-08-17">
   <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -464,7 +393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToCustomAction" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2025-09-07">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -512,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -523,7 +452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherScreenOnAndUnlocked" enum="Boolean"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -534,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
-    expires_after="2025-03-30">
+    expires_after="2025-08-10">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -556,7 +485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.{ShareSurface}.ShareContentType"
-    enum="SharingContentTypeAndroid" expires_after="2025-04-13">
+    enum="SharingContentTypeAndroid" expires_after="2025-08-24">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>

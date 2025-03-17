@@ -30,8 +30,11 @@
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
+#include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/update_client/timed_callback.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
@@ -49,22 +52,25 @@ FallbackPolicyFetcher::FallbackPolicyFetcher(scoped_refptr<PolicyFetcher> impl,
 FallbackPolicyFetcher::~FallbackPolicyFetcher() = default;
 
 void FallbackPolicyFetcher::FetchPolicies(
+    policy::PolicyFetchReason reason,
     PolicyFetchCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   fetch_complete_callback_ = std::move(callback);
-  impl_->FetchPolicies(base::BindOnce(&FallbackPolicyFetcher::PolicyFetched,
-                                      base::Unretained(this)));
+  impl_->FetchPolicies(reason,
+                       base::BindOnce(&FallbackPolicyFetcher::PolicyFetched,
+                                      base::Unretained(this), reason));
 }
 
 void FallbackPolicyFetcher::PolicyFetched(
+    policy::PolicyFetchReason reason,
     int result,
     scoped_refptr<PolicyManagerInterface> policy_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__ << " result: " << result;
   if (result != 0 && next_) {
     VLOG(1) << __func__ << ": Falling back to next PolicyFetcher.";
-    next_->FetchPolicies(std::move(fetch_complete_callback_));
+    next_->FetchPolicies(reason, std::move(fetch_complete_callback_));
   } else {
     std::move(fetch_complete_callback_).Run(result, policy_manager);
   }
@@ -76,7 +82,8 @@ class InProcessPolicyFetcher : public PolicyFetcher {
       const GURL& server_url,
       std::optional<PolicyServiceProxyConfiguration> proxy_configuration,
       std::optional<bool> override_is_managed_device);
-  void FetchPolicies(PolicyFetchCompleteCallback callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     PolicyFetchCompleteCallback callback) override;
 
  private:
   ~InProcessPolicyFetcher() override;
@@ -84,11 +91,13 @@ class InProcessPolicyFetcher : public PolicyFetcher {
   void RegisterDevice(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       base::OnceCallback<void(bool, DMClient::RequestResult)> callback);
-  void OnRegisterDeviceRequestComplete(PolicyFetchCompleteCallback callback,
+  void OnRegisterDeviceRequestComplete(policy::PolicyFetchReason reason,
+                                       PolicyFetchCompleteCallback callback,
                                        bool is_enrollment_mandatory,
                                        DMClient::RequestResult result);
 
-  void FetchPolicy(PolicyFetchCompleteCallback callback);
+  void FetchPolicy(policy::PolicyFetchReason reason,
+                   PolicyFetchCompleteCallback callback);
   void OnFetchPolicyRequestComplete(
       PolicyFetchCompleteCallback callback,
       DMClient::RequestResult result,
@@ -117,6 +126,7 @@ InProcessPolicyFetcher::InProcessPolicyFetcher(
 InProcessPolicyFetcher::~InProcessPolicyFetcher() = default;
 
 void InProcessPolicyFetcher::FetchPolicies(
+    policy::PolicyFetchReason reason,
     PolicyFetchCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
@@ -128,7 +138,7 @@ void InProcessPolicyFetcher::FetchPolicies(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(
               &InProcessPolicyFetcher::OnRegisterDeviceRequestComplete,
-              base::Unretained(this),
+              base::Unretained(this), reason,
               base::BindPostTaskToCurrentDefault(std::move(callback)))));
 }
 
@@ -156,6 +166,7 @@ void InProcessPolicyFetcher::RegisterDevice(
 }
 
 void InProcessPolicyFetcher::OnRegisterDeviceRequestComplete(
+    policy::PolicyFetchReason reason,
     PolicyFetchCompleteCallback callback,
     bool is_enrollment_mandatory,
     DMClient::RequestResult result) {
@@ -165,8 +176,9 @@ void InProcessPolicyFetcher::OnRegisterDeviceRequestComplete(
   if (result == DMClient::RequestResult::kSuccess ||
       result == DMClient::RequestResult::kAlreadyRegistered) {
     sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&InProcessPolicyFetcher::FetchPolicy,
-                                  base::Unretained(this), std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&InProcessPolicyFetcher::FetchPolicy,
+                       base::Unretained(this), reason, std::move(callback)));
   } else {
     VLOG(1) << "Device registration failed, skip fetching policies.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -178,9 +190,11 @@ void InProcessPolicyFetcher::OnRegisterDeviceRequestComplete(
   }
 }
 
-void InProcessPolicyFetcher::FetchPolicy(PolicyFetchCompleteCallback callback) {
+void InProcessPolicyFetcher::FetchPolicy(policy::PolicyFetchReason reason,
+                                         PolicyFetchCompleteCallback callback) {
   VLOG(1) << __func__;
   DMClient::FetchPolicy(
+      reason,
       DMClient::CreateDefaultConfigurator(server_url_,
                                           policy_service_proxy_configuration_),
       device_management_storage::GetDefaultDMStorage(),
@@ -231,16 +245,17 @@ class OutOfProcessPolicyFetcher : public PolicyFetcher {
                             base::TimeDelta connection_timeout);
 
   // Overrides for `PolicyFetcher`.
-  void FetchPolicies(PolicyFetchCompleteCallback callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     PolicyFetchCompleteCallback callback) override;
 
  private:
   ~OutOfProcessPolicyFetcher() override;
 
   void OnConnected(
+      policy::PolicyFetchReason reason,
       std::unique_ptr<mojo::IsolatedConnection> connection,
       mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote);
   void OnPoliciesFetched(enterprise_companion::mojom::StatusPtr status);
-  void OnRPCDropped();
 
   SEQUENCE_CHECKER(sequence_checker_);
   mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote_;
@@ -262,21 +277,27 @@ OutOfProcessPolicyFetcher::OutOfProcessPolicyFetcher(
 OutOfProcessPolicyFetcher::~OutOfProcessPolicyFetcher() = default;
 
 void OutOfProcessPolicyFetcher::FetchPolicies(
+    policy::PolicyFetchReason reason,
     PolicyFetchCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   CHECK(!fetch_complete_callback_);
-  fetch_complete_callback_ = std::move(callback);
+  fetch_complete_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      update_client::MakeTimedCallback(std::move(callback), connection_timeout_,
+                                       kErrorIpcDisconnect,
+                                       scoped_refptr<PolicyManagerInterface>()),
+      kErrorIpcDisconnect, nullptr);
 
   enterprise_companion::ConnectAndLaunchServer(
       base::DefaultClock::GetInstance(), connection_timeout_,
       persisted_data_->GetUsageStatsEnabled(),
       persisted_data_->GetCohort(enterprise_companion::kCompanionAppId),
       base::BindOnce(&OutOfProcessPolicyFetcher::OnConnected,
-                     base::WrapRefCounted(this)));
+                     base::WrapRefCounted(this), reason));
 }
 
 void OutOfProcessPolicyFetcher::OnConnected(
+    policy::PolicyFetchReason reason,
     std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -291,15 +312,18 @@ void OutOfProcessPolicyFetcher::OnConnected(
 
   connection_ = std::move(connection);
   remote_ = std::move(remote);
-  remote_->FetchPolicies(mojo::WrapCallbackWithDropHandler(
-      base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
-                     base::WrapRefCounted(this)),
-      base::BindOnce(&OutOfProcessPolicyFetcher::OnRPCDropped,
-                     base::WrapRefCounted(this))));
+  remote_->FetchPolicies(
+      reason, base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
+                             base::WrapRefCounted(this)));
 }
 
 void OutOfProcessPolicyFetcher::OnPoliciesFetched(
     enterprise_companion::mojom::StatusPtr mojom_status) {
+  if (!mojom_status) {
+    VLOG(1) << "Received null status from out-of-process fetcher.";
+    std::move(fetch_complete_callback_).Run(kErrorIpcDisconnect, nullptr);
+    return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Policy fetch status: " << mojom_status->code
           << ", space: " << mojom_status->space
@@ -332,12 +356,6 @@ void OutOfProcessPolicyFetcher::OnPoliciesFetched(
     }
     std::move(fetch_complete_callback_).Run(result, nullptr);
   }
-}
-
-void OutOfProcessPolicyFetcher::OnRPCDropped() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "RPC connection dropped during policy fetch.";
-  std::move(fetch_complete_callback_).Run(kErrorIpcDisconnect, nullptr);
 }
 
 scoped_refptr<PolicyFetcher> CreateInProcessPolicyFetcher(

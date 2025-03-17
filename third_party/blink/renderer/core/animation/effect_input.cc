@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings_generated.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
@@ -668,8 +668,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
 
   // 5.3 Sort processed keyframes by the computed keyframe offset of each
   // keyframe in increasing order.
-  Vector<double> keys;
-  WTF::CopyKeysToVector(keyframes, keys);
+  Vector<double> keys(keyframes.Keys());
   std::sort(keys.begin(), keys.end());
 
   // Steps 5.5 - 5.12 deal with assigning the user-specified offset, easing, and

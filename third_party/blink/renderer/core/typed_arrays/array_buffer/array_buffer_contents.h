@@ -30,7 +30,6 @@
 #include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
-#include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -132,12 +131,9 @@ class CORE_EXPORT ArrayBufferContents {
   size_t MaxDataLength() const {
     return backing_store_ ? backing_store_->MaxByteLength() : 0;
   }
-  bool IsShared() const {
-    return backing_store_ ? backing_store_->IsShared() : false;
-  }
+  bool IsShared() const { return backing_store_ && backing_store_->IsShared(); }
   bool IsResizableByUserJavaScript() const {
-    return backing_store_ ? backing_store_->IsResizableByUserJavaScript()
-                          : false;
+    return backing_store_ && backing_store_->IsResizableByUserJavaScript();
   }
   bool IsValid() const { return backing_store_ && backing_store_->Data(); }
   base::span<uint8_t> ByteSpan() const {

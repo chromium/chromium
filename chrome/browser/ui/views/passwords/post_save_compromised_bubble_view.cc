@@ -22,7 +22,7 @@ PostSaveCompromisedBubbleView::PostSaveCompromisedBubbleView(
     views::View* anchor_view)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
-                             /*auto_dismissable=*/false),
+                             /*easily_dismissable=*/false),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 

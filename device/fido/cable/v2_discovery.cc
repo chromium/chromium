@@ -209,8 +209,7 @@ void Discovery::PairingIsInvalid(std::unique_ptr<Pairing> pairing) {
 
 // static
 std::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
-    const std::optional<base::span<const uint8_t, kQRKeySize>>
-        qr_generator_key) {
+    std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key) {
   if (!qr_generator_key) {
     return std::nullopt;
   }
@@ -244,10 +243,9 @@ std::vector<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
       continue;
     }
 
-    std::optional<Discovery::UnpairedKeys> keys =
-        KeysFromQRGeneratorKey(sized_server_link_data_span.value());
-    if (keys.has_value()) {
-      ret.emplace_back(std::move(keys.value()));
+    if (std::optional<Discovery::UnpairedKeys> keys =
+            KeysFromQRGeneratorKey(sized_server_link_data_span.value())) {
+      ret.emplace_back(*std::move(keys));
     }
   }
 

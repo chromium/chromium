@@ -28,7 +28,7 @@ source_set("soda") {
     "//media/mojo/mojom",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cros_soda_client.cc",
       "cros_soda_client.h",

@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/drive/drive_notification_manager_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync_file_system/drive_backend/callback_helper.h"
@@ -52,6 +51,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -195,13 +195,13 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   drive::DriveNotificationManager* notification_manager =
       drive::DriveNotificationManagerFactory::GetForBrowserContext(context);
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(context)->extension_service();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
+  extensions::ExtensionRegistrar* extension_registrar =
+      extensions::ExtensionRegistrar::Get(context);
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);
 
@@ -209,7 +209,7 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
   auto sync_engine = base::WrapUnique(new SyncEngine(
       ui_task_runner.get(), worker_task_runner.get(), drive_task_runner.get(),
       GetSyncFileSystemDir(context->GetPath()), task_logger,
-      notification_manager, extension_service, extension_registry,
+      notification_manager, extension_registrar, extension_registry,
       identity_manager, url_loader_factory,
       std::make_unique<DriveServiceFactory>(), nullptr /* env_override */));
 
@@ -323,15 +323,10 @@ void SyncEngine::InitializeInternal(
   worker_observer_ = std::make_unique<WorkerObserver>(
       ui_task_runner_.get(), weak_ptr_factory_.GetWeakPtr());
 
-  base::WeakPtr<extensions::ExtensionServiceInterface>
-      extension_service_weak_ptr;
-  if (extension_service_)
-    extension_service_weak_ptr = extension_service_->AsWeakPtr();
-
   if (!sync_worker) {
     sync_worker = std::make_unique<SyncWorker>(
-        sync_file_system_dir_, extension_service_weak_ptr, extension_registry_,
-        env_override_);
+        sync_file_system_dir_, extension_registrar_->GetWeakPtr(),
+        extension_registry_->GetWeakPtr(), env_override_);
   }
 
   sync_worker_ = std::move(sync_worker);
@@ -661,7 +656,7 @@ SyncEngine::SyncEngine(
     const base::FilePath& sync_file_system_dir,
     TaskLogger* task_logger,
     drive::DriveNotificationManager* notification_manager,
-    extensions::ExtensionServiceInterface* extension_service,
+    extensions::ExtensionRegistrar* extension_registrar,
     extensions::ExtensionRegistry* extension_registry,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -673,7 +668,7 @@ SyncEngine::SyncEngine(
       sync_file_system_dir_(sync_file_system_dir),
       task_logger_(task_logger),
       notification_manager_(notification_manager),
-      extension_service_(extension_service),
+      extension_registrar_(extension_registrar),
       extension_registry_(extension_registry),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),

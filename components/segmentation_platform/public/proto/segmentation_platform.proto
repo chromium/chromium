@@ -31,7 +31,7 @@ enum SegmentId {
   // Reserved fields are `OptimizationTarget`s that are not used by segmentation
   // to prevent accidental misuse.
   reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26, 30, 31, 33, 34, 35,
-      36, 39, 40, 42, 43, 44, 47, 48, 49;
+      36, 39, 40, 42, 43, 44, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Target for segmentation: New tab page user.
@@ -79,6 +79,8 @@ enum SegmentId {
   OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER = 46;
   // Target for metrics based segmentation clustering.
   OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING = 50;
+  // Target for segmentation: FedCM user.
+  OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER = 58;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not
@@ -112,4 +114,6 @@ enum SegmentId {
   EPHEMERAL_HOME_MODULE_BACKEND = 1011;
   // Test model for EPHEMERAL_HOME_MODULE_BACKEND.
   EPHEMERAL_HOME_MODULE_BACKEND_TEST = 1012;
+  // Segment for users who use FedCM.
+  FEDCM_USER = 1013;
 };

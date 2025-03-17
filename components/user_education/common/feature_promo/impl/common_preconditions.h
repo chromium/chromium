@@ -83,11 +83,13 @@ class MeetsFeatureEngagementCriteriaPrecondition
 // Represents the requirement that an anchor element is present and visible.
 class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
  public:
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::optional<int>, kRotatingPromoIndex);
   DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ui::SafeElementReference,
                                        kAnchorElement);
 
   AnchorElementPrecondition(const AnchorElementProvider& provider,
-                            ui::ElementContext default_context);
+                            ui::ElementContext default_context,
+                            bool pre_increment_index);
   ~AnchorElementPrecondition() override;
 
   // FeaturePromoPrecondition:
@@ -96,6 +98,10 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
  private:
   const raw_ref<const AnchorElementProvider> provider_;
   const ui::ElementContext default_context_;
+
+  // Whether to increment the rotating promo index before computing.
+  // Used for demos in certain cases; see constructor call site.
+  const bool pre_increment_index_;
 };
 
 // Wraps a FeaturePromoLifecycle to determine if a promo can be shown.

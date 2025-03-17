@@ -5,6 +5,7 @@
 #include "ui/views/examples/colored_dialog_example.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -166,11 +167,11 @@ void ColoredDialogChooser::ButtonPressed() {
   widget->Show();
 }
 
-void ColoredDialogChooser::OnFeedbackSubmit(std::u16string text) {
+void ColoredDialogChooser::OnFeedbackSubmit(std::u16string_view text) {
   constexpr base::TimeDelta kConfirmationDuration = base::Seconds(3);
 
   confirmation_label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_COLORED_DIALOG_CHOOSER_CONFIRM_LABEL, text));
+      IDS_COLORED_DIALOG_CHOOSER_CONFIRM_LABEL, std::u16string(text)));
   confirmation_label_->SetVisible(true);
 
   confirmation_timer_.Start(

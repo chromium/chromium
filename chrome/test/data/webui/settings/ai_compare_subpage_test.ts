@@ -8,7 +8,7 @@ import {AiEnterpriseFeaturePrefName, AiPageActions} from 'chrome://settings/lazy
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {AiPageCompareInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -60,6 +60,9 @@ suite('CompareSubpage', function() {
     const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
     assertTrue(!!linkout);
 
+    const noLinkRow = subpage.shadowRoot!.querySelector('.cr-row');
+    assertFalse(!!noLinkRow);
+
     linkout.click();
     await assertFeatureInteractionMetrics(
         AiPageCompareInteractions.FEATURE_LINK_CLICKED,
@@ -75,12 +78,7 @@ suite('CompareSubpage', function() {
     await createPage();
 
     const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
-    assertTrue(!!linkout);
-
-    assertTrue(linkout.disabled);
-    linkout.click();
-    assertEquals(
-        0, metricsBrowserProxy.getCallCount('recordAiPageCompareInteractions'));
+    assertFalse(!!linkout);
   });
 
   test('compareLearnMore', async () => {

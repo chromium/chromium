@@ -38,13 +38,6 @@ WKWebView* BuildWKWebView(CGRect frame,
                           id<CRWInputViewProvider> input_view_provider,
                           id<CRWEditMenuBuilder> edit_menu_builder);
 
-// Creates and returns a new WKWebView for displaying regular web content.
-// The preconditions for the creation of a WKWebView are the same as the
-// previous method.
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state);
-
 }  // namespace web
 
 #endif  // IOS_WEB_WEB_STATE_WEB_VIEW_INTERNAL_CREATION_UTIL_H_

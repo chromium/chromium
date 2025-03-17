@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -11,6 +13,8 @@ import androidx.annotation.IntDef;
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * and when generalizing it we did not change these names to maintain continuity when
  * analyzing the histograms.
  */
+@NullMarked
 public class AutofillProviderUMA {
     // Records whether the Autofill service is enabled or not.
     public static final String UMA_AUTOFILL_ENABLED = "Autofill.WebView.Enabled";
@@ -149,7 +154,7 @@ public class AutofillProviderUMA {
         public static final int EVENT_FORM_SUBMITTED = 1 << 6;
         public static final int EVENT_BOTTOM_SHEET_SHOWN = 1 << 7;
 
-        private Long mSuggestionTimeMillis;
+        private @Nullable Long mSuggestionTimeMillis;
 
         public void record(int event) {
             // Do not record any event until we get EVENT_VIRTUAL_STRUCTURE_PROVIDED, which makes
@@ -334,11 +339,11 @@ public class AutofillProviderUMA {
         }
     }
 
-    private SessionRecorder mRecorder;
-    private Boolean mAutofillDisabledOnSessionStart;
+    private @Nullable SessionRecorder mRecorder;
+    private @Nullable Boolean mAutofillDisabledOnSessionStart;
 
     private final boolean mIsAwGCurrentAutofillService;
-    private ServerPredictionRecorder mServerPredictionRecorder;
+    private @Nullable ServerPredictionRecorder mServerPredictionRecorder;
 
     private final @Provider int mCurrentProvider;
 
@@ -427,6 +432,7 @@ public class AutofillProviderUMA {
      *     starts.
      */
     public void onServerTypeAvailable(FormData formData, boolean afterSessionStarted) {
+        assumeNonNull(mRecorder);
         mRecorder.onServerTypeAvailable(formData, afterSessionStarted);
     }
 

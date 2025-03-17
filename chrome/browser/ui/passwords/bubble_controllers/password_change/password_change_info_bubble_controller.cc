@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller.h"
 
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,8 +13,10 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/url_formatter/elide_url.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace metrics_util = password_manager::metrics_util;
 
 PasswordChangeInfoBubbleController::PasswordChangeInfoBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate,
@@ -39,23 +40,21 @@ PasswordChangeInfoBubbleController::~PasswordChangeInfoBubbleController() {
 }
 
 std::u16string PasswordChangeInfoBubbleController::GetTitle() const {
-  switch (state_) {
-    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE);
-    case PasswordChangeDelegate::State::kChangingPassword:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_TITLE);
-    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
-      NOTIMPLEMENTED();
-      break;
+  if (state_ == PasswordChangeDelegate::State::kWaitingForChangePasswordForm) {
+    return l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE);
+  }
+  if (state_ == PasswordChangeDelegate::State::kChangingPassword) {
+    return l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_TITLE);
   }
   NOTREACHED();
 }
 
 void PasswordChangeInfoBubbleController::ReportInteractions() {
-  // TODO(crbug.com/381053884): Report metrics.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChange.InformationBubble", dismissal_reason_,
+      metrics_util::NUM_UI_RESPONSES);
 }
 
 void PasswordChangeInfoBubbleController::OnStateChanged(
@@ -72,18 +71,18 @@ void PasswordChangeInfoBubbleController::OnPasswordChangeStopped(
 }
 
 void PasswordChangeInfoBubbleController::CancelPasswordChange() {
+  dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   CHECK(password_change_delegate_);
   PasswordBubbleViewBase::CloseCurrentBubble();
   password_change_delegate_->Stop();
 }
 
 std::u16string PasswordChangeInfoBubbleController::GetDisplayOrigin() {
-  return url_formatter::FormatUrlForSecurityDisplay(
-      password_change_delegate_->GetChangePasswordUrl(),
-      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  return password_change_delegate_->GetDisplayOrigin();
 }
 
 void PasswordChangeInfoBubbleController::OnGooglePasswordManagerLinkClicked() {
+  dismissal_reason_ = metrics_util::CLICKED_MANAGE_PASSWORD;
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);

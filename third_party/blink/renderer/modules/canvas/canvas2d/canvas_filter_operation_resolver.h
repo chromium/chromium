@@ -43,7 +43,7 @@ class MODULES_EXPORT CanvasFilterOperationResolver {
       const String& filter_string,
       const ExecutionContext& execution_context,
       Element* style_resolution_host,
-      const Font& font);
+      const Font* font);
 };
 
 }  // namespace blink

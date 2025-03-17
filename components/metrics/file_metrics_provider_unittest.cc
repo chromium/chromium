@@ -79,8 +79,9 @@ class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override {
     // Only remember locally created histograms; they have exactly 2 chars.
-    if (strlen(histogram.histogram_name()) == 2)
-      recorded_delta_histogram_names_.push_back(histogram.histogram_name());
+    if (histogram.histogram_name().length() == 2) {
+      recorded_delta_histogram_names_.emplace_back(histogram.histogram_name());
+    }
   }
 
   std::vector<std::string> GetRecordedDeltaHistogramNames() {

@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 
@@ -33,10 +34,11 @@ void UpdateServiceStubWin::GetVersion(
 }
 
 void UpdateServiceStubWin::FetchPolicies(
+    policy::PolicyFetchReason reason,
     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  impl_->FetchPolicies(std::move(callback).Then(task_end_listener_));
+  impl_->FetchPolicies(reason, std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStubWin::RegisterApp(const RegistrationRequest& request,

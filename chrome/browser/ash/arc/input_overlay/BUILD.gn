@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("input_overlay") {
   sources = [
@@ -34,9 +34,6 @@ static_library("input_overlay") {
   deps = [
     "//ash",
     "//ash/app_list",
-    "//ash/components/arc",
-    "//ash/components/arc/input_overlay/resources",
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_list/arc",
@@ -45,6 +42,9 @@ static_library("input_overlay") {
     "//chrome/browser/ash/arc/input_overlay/db",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
     "//chrome/browser/ash/arc/input_overlay/ui",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/input_overlay/resources",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/strings:strings_grit",
     "//components/app_restore",
     "//components/exo",
@@ -79,14 +79,14 @@ source_set("unit_tests") {
     ":input_overlay",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/input_overlay/resources",
     "//ash/public/cpp",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/input_overlay/actions",
     "//chrome/browser/ash/arc/input_overlay/test:test_support",
     "//chrome/browser/ash/arc/input_overlay/ui",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/input_overlay/resources",
     "//chromeos/strings",
     "//components/exo:test_support",
     "//components/ukm:test_support",

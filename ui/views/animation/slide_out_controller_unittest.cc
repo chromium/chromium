@@ -77,16 +77,15 @@ class SlideOutControllerTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     View* root = widget_->GetRootView();
 
-    View* target_ = new View();
-    target_->SetPaintToLayer(ui::LAYER_TEXTURED);
-    target_->SetSize(gfx::Size(kTargetWidth, 50));
+    View* target = root->AddChildView(std::make_unique<View>());
+    target->SetPaintToLayer(ui::LAYER_TEXTURED);
+    target->SetSize(gfx::Size(kTargetWidth, 50));
 
-    root->AddChildView(target_);
     widget_->Show();
 
-    delegate_ = std::make_unique<TestSlideOutControllerDelegate>(target_);
+    delegate_ = std::make_unique<TestSlideOutControllerDelegate>(target);
     slide_out_controller_ =
-        std::make_unique<SlideOutController>(target_, delegate_.get());
+        std::make_unique<SlideOutController>(target, delegate_.get());
   }
 
   void TearDown() override {

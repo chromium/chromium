@@ -6,15 +6,16 @@ package org.chromium.chrome.test.transit.hub;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.transit.AppMenuFacility;
+import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 
 import java.util.Collections;
 
 /** The app menu shown when pressing ("...") in the Hub on a tab switcher pane. */
-public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStation> {
+public class TabSwitcherAppMenuFacility extends CtaAppMenuFacility<TabSwitcherStation> {
     public static final int CLOSE_ALL_TABS_ID = R.id.close_all_tabs_menu_id;
     public static final int CLOSE_INCOGNITO_TABS_ID = R.id.close_all_incognito_tabs_menu_id;
     public static final int SELECT_TABS_ID = R.id.menu_select_tabs;
@@ -25,7 +26,7 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
     private Item<Void> mCloseAllTabs;
     private Item<Void> mCloseIncognitoTabs;
     private Item<TabSwitcherListEditorFacility> mSelectTabs;
-    private Item<Void> mClearBrowsingData;
+    private Item<QuickDeleteDialogFacility> mQuickDelete;
     private Item<SettingsStation> mSettings;
 
     public TabSwitcherAppMenuFacility(boolean isIncognito) {
@@ -66,7 +67,9 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
                     declareDisabledMenuItem(items, SELECT_TABS_ID);
                 }
             }
-            mClearBrowsingData = declareStubMenuItem(items, DELETE_BROWSING_DATA_ID);
+            mQuickDelete =
+                    declareMenuItemToFacility(
+                            items, DELETE_BROWSING_DATA_ID, this::createQuickDeleteDialogFacility);
         } else {
             // Incognito Hub Tab Switcher
 
@@ -103,5 +106,11 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
 
     private TabSwitcherListEditorFacility createListEditorFacility() {
         return new TabSwitcherListEditorFacility(Collections.emptyList(), Collections.emptyList());
+    }
+
+    /** Select "Delete browsing data" from the app menu. */
+    public QuickDeleteDialogFacility clearBrowsingData() {
+        assert !mIsIncognito;
+        return mQuickDelete.scrollToAndSelect();
     }
 }

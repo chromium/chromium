@@ -10,7 +10,7 @@
 namespace web {
 class BrowserState;
 class WebState;
-}
+}  // namespace web
 
 // Accessibility label for the back button.
 extern NSString* const kWebShellBackButtonAccessibilityLabel;

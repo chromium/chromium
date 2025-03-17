@@ -58,7 +58,7 @@ const tests = [
     chrome.test.assertEq(2, numRequests);
 
     // Click on "Edited".
-    const buttons = downloadsElement.shadowRoot!.querySelectorAll('button');
+    const buttons = downloadsElement.shadowRoot.querySelectorAll('button');
     onSave = eventToPromise('save', downloadsElement);
     buttons[0]!.click();
     e = await onSave;

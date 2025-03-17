@@ -34,8 +34,8 @@ class ChromeAccountManagerServiceObserverBridge
 
  private:
   // ChromeAccountManagerService::Observer implementation.
-  void OnIdentityListChanged() override;
-  void OnIdentityUpdated(id<SystemIdentity> identity) override;
+  void OnIdentitiesInProfileChanged() override;
+  void OnIdentityInProfileUpdated(id<SystemIdentity> identity) override;
   void OnChromeAccountManagerServiceShutdown(
       ChromeAccountManagerService* chrome_account_manager_service) override;
 

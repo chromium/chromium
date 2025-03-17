@@ -6,12 +6,14 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_ui_settings.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +37,7 @@ class AmbientUiSettingsTest : public ::testing::Test {
         ambient::prefs::kAmbientUiSettings, std::move(default_settings));
   }
 
+  system::ScopedFakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple test_pref_service_;
 };
 
@@ -70,7 +73,28 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
       Eq(AmbientTheme::kVideo));
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).video(),
-      Eq(kDefaultAmbientVideo));
+      Eq(GetDefaultAmbientVideo()));
+}
+
+TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettingsWithCustomizationId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      personalization_app::GetTimeOfDayFeatures(), {});
+  ASSERT_TRUE(features::IsTimeOfDayScreenSaverEnabled());
+  statistics_provider_.SetMachineStatistic(
+      system::kCustomizationIdKey,
+      std::string(kJupiterScreensaverCustomizationId));
+  // No prior set up for kAmbientUiSettings prefs. With TOD features, kVideo
+  // is set as default.
+  test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
+                             base::Value::Dict());
+  EXPECT_THAT(
+      AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
+      Eq(AmbientTheme::kVideo));
+  EXPECT_THAT(
+      AmbientUiSettings::ReadFromPrefService(test_pref_service_).video(),
+      Eq(GetDefaultAmbientVideo()));
+  EXPECT_EQ(AmbientVideo::kJupiter, GetDefaultAmbientVideo());
 }
 
 TEST_F(AmbientUiSettingsTest, PrefManagement) {

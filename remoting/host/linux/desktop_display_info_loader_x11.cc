@@ -65,26 +65,33 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderX11::GetCurrentDisplayInfo() {
   DesktopDisplayInfo result;
 
   for (const auto& monitor : monitors_) {
-    DisplayGeometry info;
-    // webrtc::ScreenCapturerX11 uses the |name| Atom as the monitor ID.
-    info.id = static_cast<int32_t>(monitor.name);
-    info.is_default = monitor.primary;
-    info.x = monitor.x;
-    info.y = monitor.y;
-    info.width = monitor.width;
-    info.height = monitor.height;
+    std::string display_name;
+    auto reply = connection_->GetAtomName({monitor.name}).Sync();
+    if (reply) {
+      display_name = reply->name;
+    }
 
-    // Hard-code the default DPI instead of calculating it from the monitor's
-    // resolution and physical size. This avoids an issue where the website
-    // pre-multiplies the ClientResolution sizes by the host's pixels/DIPs
-    // ratio, sometimes leading to a feedback loop of ever-increasing resizes.
-    //
-    // TODO: b/309174172 - Change this back to GetMonitorDpi(monitor).x() when
-    // the website issue has been addressed.
-    info.dpi = kDefaultDpi;
-    info.bpp = 24;
-
-    result.AddDisplay(info);
+    result.AddDisplay({
+        // webrtc::ScreenCapturerX11 uses the |name| Atom as the monitor ID.
+        static_cast<int32_t>(monitor.name),
+        monitor.x,
+        monitor.y,
+        monitor.width,
+        monitor.height,
+        // Hard-code the default DPI instead of calculating it from the
+        // monitor's resolution and physical size. This avoids an issue where
+        // the website pre-multiplies the ClientResolution sizes by the host's
+        // pixels/DIPs ratio, sometimes leading to a feedback loop of
+        // ever-increasing resizes.
+        //
+        // TODO: crbug.com/40941037 - Change this back to
+        // GetMonitorDpi(monitor).x() when the website issue has been
+        // addressed.
+        kDefaultDpi,
+        /* bpp */ 24,
+        /* is_default */ static_cast<bool>(monitor.primary),
+        display_name,
+    });
   }
   return result;
 }

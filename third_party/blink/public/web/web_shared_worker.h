@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom-shared.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_host.mojom-shared.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-shared.h"
@@ -80,7 +82,7 @@ class BLINK_EXPORT WebSharedWorker {
       bool is_constructor_secure_context,
       const WebString& user_agent,
       const UserAgentMetadata& ua_metadata,
-      const WebVector<WebContentSecurityPolicy>& content_security_policies,
+      const std::vector<WebContentSecurityPolicy>& content_security_policies,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<mojom::WorkerContentSettingsProxyInterfaceBase>
@@ -95,7 +97,11 @@ class BLINK_EXPORT WebSharedWorker {
       CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase>,
       WebSharedWorkerClient*,
       ukm::SourceId ukm_source_id,
-      bool require_cross_site_request_for_cookies);
+      bool require_cross_site_request_for_cookies,
+      CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
+          coep_reporting_observer,
+      CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
+          dip_reporting_observer);
 
   // Sends a connect event to the SharedWorker context.
   virtual void Connect(int connection_request_id,

@@ -24,13 +24,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -39,7 +35,6 @@
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -201,18 +196,6 @@ void DispatchAccessibilityFocusChangedEvent(
 }  // namespace
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
-  std::string url = args()[0].GetString();
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->embedded_accessibility_helper_client_ash()
-      ->ClipboardCopyInActiveGoogleDoc(url);
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
 AccessibilityPrivateDarkenScreenFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
@@ -237,6 +220,15 @@ AccessibilityPrivateEnableMouseEventsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
   bool enabled = args()[0].GetBool();
   ash::EventRewriterController::Get()->SetSendMouseEvents(enabled);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateEnableLiveCaptionFunction::Run() {
+  std::optional<accessibility_private::EnableLiveCaption::Params> params =
+      accessibility_private::EnableLiveCaption::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  AccessibilityManager::Get()->EnableLiveCaption(params->enabled);
   return RespondNow(NoArguments());
 }
 
@@ -497,6 +489,9 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       break;
     case accessibility_private::AccessibilityFeature::kFaceGaze:
       enabled = ::features::IsAccessibilityFaceGazeEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::kCaptionsOnBrailleDisplay:
+      enabled = ::features::IsAccessibilityCaptionsOnBrailleDisplayEnabled();
       break;
     case accessibility_private::AccessibilityFeature::kNone:
       return RespondNow(Error("Unrecognized feature"));
@@ -1268,10 +1263,4 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
   ash::AccessibilityController::Get()->ShowSwitchAccessMenu(anchor,
                                                             actions_to_show);
   return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateIsLacrosPrimaryFunction::Run() {
-  return RespondNow(
-      WithArguments(crosapi::lacros_startup_state::IsLacrosEnabled()));
 }

@@ -11,6 +11,7 @@ namespace blink {
 
 class ContainerNode;
 class SetHTMLOptions;
+class SetHTMLUnsafeOptions;
 class ExceptionState;
 
 class SanitizerAPI final {
@@ -19,7 +20,7 @@ class SanitizerAPI final {
                                    SetHTMLOptions* options,
                                    ExceptionState& exception_state);
   static void SanitizeUnsafeInternal(ContainerNode* element,
-                                     SetHTMLOptions* options,
+                                     SetHTMLUnsafeOptions* options,
                                      ExceptionState& exception_state);
 };
 

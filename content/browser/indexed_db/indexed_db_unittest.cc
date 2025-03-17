@@ -617,8 +617,8 @@ TEST_P(IndexedDBTest, CloseConnectionBeforeUpgrade) {
 
   base::RunLoop loop;
   connection = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), url::Origin::Create(GURL(kOrigin)),
-      kDatabaseName, kDBVersion, kTransactionId);
+      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
+      kTransactionId);
   EXPECT_CALL(
       *connection->open_callbacks,
       MockedUpgradeNeeded(IsAssociatedInterfacePtrInfoValid(true),
@@ -734,8 +734,8 @@ TEST_P(IndexedDBTest, MAYBE_OpenNewConnectionWhileUpgrading) {
   base::RunLoop loop;
   // Open connection 1, and expect the upgrade needed.
   connection1 = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), url::Origin::Create(GURL(kOrigin)),
-      kDatabaseName, kDBVersion, kTransactionId);
+      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
+      kTransactionId);
 
   EXPECT_CALL(
       *connection1->open_callbacks,
@@ -831,8 +831,8 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
   base::RunLoop loop;
   // Open connection.
   connection = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), url::Origin::Create(GURL(kOrigin)),
-      kDatabaseName, kDBVersion, kTransactionId);
+      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion,
+      kTransactionId);
 
   EXPECT_CALL(
       *connection->open_callbacks,
@@ -910,8 +910,7 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
   connection.reset();
 }
 
-// Flaky: crbug.com/772067
-TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBListChanged) {
+TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
   const int64_t kDBVersion1 = 1;
   const int64_t kDBVersion2 = 2;
   const int64_t kDBVersion3 = 3;
@@ -928,13 +927,18 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBListChanged) {
   TestIndexedDBObserver observer(remote.InitWithNewPipeAndPassReceiver());
   context()->AddObserver(std::move(remote));
 
+  EXPECT_EQ(0, observer.notify_list_changed_count);
+  EXPECT_EQ(0, observer.notify_content_changed_count);
+
   // Bind the IDBFactory.
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
+  BucketContextHandle bucket_context_handle = CreateBucketHandle();
+  const BucketLocator& bucket_locator = bucket_context_handle->bucket_locator();
   BindFactory(std::move(checker_remote),
               bounded_factory_remote.BindNewPipeAndPassReceiver(),
-              storage::BucketInfo());
+              ToBucketInfo(bucket_locator));
 
   // Open connection 1.
   std::unique_ptr<TestDatabaseConnection> connection1;
@@ -959,7 +963,6 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBListChanged) {
 
     // Queue open request message.
     connection1->Open(bounded_factory_remote.get());
-
     loop.Run();
   }
   EXPECT_TRUE(pending_database1.is_valid());
@@ -996,8 +999,12 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBListChanged) {
     loop.Run();
   }
 
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  EXPECT_EQ(1, observer.notify_list_changed_count);
 
+  // Connection need to be closed before opening another connection. Because if
+  // one connection triggers a version change, it can affect other open
+  // connections as well.
+  connection1.reset();
   // Open connection 2.
   std::unique_ptr<TestDatabaseConnection> connection2;
 
@@ -1010,8 +1017,8 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBListChanged) {
         base::BarrierClosure(2, loop.QuitClosure());
 
     connection2 = std::make_unique<TestDatabaseConnection>(
-        context()->IDBTaskRunner(), url::Origin::Create(GURL(kOrigin)),
-        kDatabaseName, kDBVersion2, kTransactionId2);
+        context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
+        kDBVersion2, kTransactionId2);
 
     EXPECT_CALL(*connection2->open_callbacks,
                 MockedUpgradeNeeded(
@@ -1056,7 +1063,9 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBListChanged) {
 
     loop.Run();
   }
-  EXPECT_EQ(3, observer.notify_list_changed_count);
+  EXPECT_EQ(2, observer.notify_list_changed_count);
+
+  connection2.reset();
 
   // Open connection 3.
   std::unique_ptr<TestDatabaseConnection> connection3;
@@ -1112,11 +1121,9 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBListChanged) {
 
     loop.Run();
   }
-  EXPECT_EQ(4, observer.notify_list_changed_count);
+  EXPECT_EQ(3, observer.notify_list_changed_count);
 
   // Close the connections to finish the test nicely.
-  connection1.reset();
-  connection2.reset();
   connection3.reset();
 }
 
@@ -1124,8 +1131,7 @@ MATCHER(IsSuccessKey, "") {
   return arg->is_key();
 }
 
-// The test is flaky. See https://crbug.com/324111895
-TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBContentChanged) {
+TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   const int64_t kDBVersion1 = 1;
   const int64_t kDBVersion2 = 2;
   const int64_t kTransactionId1 = 1;
@@ -1148,15 +1154,18 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBContentChanged) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
+
+  BucketContextHandle bucket_context_handle = CreateBucketHandle();
+  const BucketLocator& bucket_locator = bucket_context_handle->bucket_locator();
   BindFactory(std::move(checker_remote),
               bounded_factory_remote.BindNewPipeAndPassReceiver(),
-              storage::BucketInfo());
+              ToBucketInfo(bucket_locator));
 
   base::RunLoop loop;
   // Open connection 1.
   connection1 = std::make_unique<TestDatabaseConnection>(
-      context()->IDBTaskRunner(), url::Origin::Create(GURL(kOrigin)),
-      kDatabaseName, kDBVersion1, kTransactionId1);
+      context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName, kDBVersion1,
+      kTransactionId1);
 
   EXPECT_CALL(
       *connection1->open_callbacks,
@@ -1216,9 +1225,12 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBContentChanged) {
 
   loop2.Run();
 
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  EXPECT_EQ(1, observer.notify_list_changed_count);
   EXPECT_EQ(1, observer.notify_content_changed_count);
 
+  // Connection need to be closed before opening another connection. Because if
+  // one connection triggers a version change, it can affect other open
+  // connections as well.
   connection1.reset();
 
   std::unique_ptr<TestDatabaseConnection> connection2;
@@ -1270,8 +1282,8 @@ TEST_P(IndexedDBTest, DISABLED_NotifyIndexedDBContentChanged) {
 
   loop5.Run();
 
-  // +2 list changed, one for the transaction, the other for the ~DatabaseImpl
-  EXPECT_EQ(4, observer.notify_list_changed_count);
+  // +1 list changed for the transaction
+  EXPECT_EQ(2, observer.notify_list_changed_count);
   EXPECT_EQ(2, observer.notify_content_changed_count);
 
   // Close the connection to finish the test nicely.
@@ -1997,7 +2009,7 @@ TEST_P(IndexedDBTest, FactoryForceClose) {
 TEST_P(IndexedDBTest, CloseThenAddReceiver) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Trigger the bucket context to be created.
@@ -2041,7 +2053,7 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
 TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Bind the IDBFactory.
@@ -2081,7 +2093,7 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
 TEST_P(IndexedDBTest, DeleteDatabase) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Bind the IDBFactory.
@@ -2149,7 +2161,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
 TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Bind the IDBFactory.
@@ -2205,7 +2217,7 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
 TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Bind the IDBFactory.
@@ -2256,7 +2268,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
   // Bind the IDBFactory.
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -2291,7 +2303,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
 TEST_P(IndexedDBTest, DatabaseFailedOpen) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
   const std::u16string db_name(u"db");
 
@@ -2347,7 +2359,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
 TEST_P(IndexedDBTest, DataLoss) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
   const std::u16string db_name(u"test_db");
 
@@ -2417,7 +2429,7 @@ TEST_P(IndexedDBTest, DataLoss) {
 TEST_P(IndexedDBTest, TaskRunnerPriority) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = BucketLocator();
+  BucketLocator bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
   const std::u16string db_name(u"test_db");
 

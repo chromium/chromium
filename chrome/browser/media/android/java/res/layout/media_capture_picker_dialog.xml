@@ -21,5 +21,5 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         app:leading="@dimen/text_size_large_leading" />
 
-    <include layout="@layout/media_capture_picker_list"/>
+    <include layout="@layout/media_capture_picker_list" />
 </LinearLayout>

@@ -9,11 +9,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/page_info/core/merchant_trust_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -38,9 +41,6 @@ base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
 
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MerchantTrustChipButtonController,
-                                      kElementIdForTesting);
-
 MerchantTrustChipButtonController::MerchantTrustChipButtonController(
     OmniboxChipButton* chip_button,
     LocationIconView* location_icon_view,
@@ -56,7 +56,8 @@ MerchantTrustChipButtonController::MerchantTrustChipButtonController(
   chip_button_->SetCallback(base::BindRepeating(
       &MerchantTrustChipButtonController::OpenPageInfoSubpage,
       weak_factory_.GetWeakPtr()));
-  chip_button_->SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
+  chip_button_->SetProperty(views::kElementIdentifierKey,
+                            kMerchantTrustChipElementId);
 }
 
 MerchantTrustChipButtonController::~MerchantTrustChipButtonController() =
@@ -122,6 +123,12 @@ void MerchantTrustChipButtonController::Show() {
       gfx::RoundedCornersF(radius, 0, 0, radius));
   chip_button_->SetCornerRadii(gfx::RoundedCornersF(0, radius, radius, 0));
   chip_button_->SetVisible(true);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&MerchantTrustChipButtonController::
+                         MaybeShowMerchantTrustFeaturePromo,
+                     weak_factory_.GetWeakPtr()),
+      kExpandAnimationDuration);
 }
 
 void MerchantTrustChipButtonController::Hide() {
@@ -167,7 +174,24 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
           chip_button_->GetWidget()->GetNativeWindow(), web_contents(),
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::DoNothing(),
-          /*allow_about_this_site=*/true, std::nullopt, true);
+          /*allow_extended_site_info=*/true, std::nullopt, true);
   bubble->SetHighlightedButton(chip_button_);
   bubble->GetWidget()->Show();
+}
+
+void MerchantTrustChipButtonController::MaybeShowMerchantTrustFeaturePromo() {
+  if (!web_contents()) {
+    return;
+  }
+
+  if (auto* interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents())) {
+    bool can_show_promo = interface->CanShowFeaturePromo(
+        feature_engagement::kIPHMerchantTrustFeature);
+    if (can_show_promo) {
+      interface->MaybeShowFeaturePromo(
+          feature_engagement::kIPHMerchantTrustFeature);
+    }
+  }
 }

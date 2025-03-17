@@ -60,7 +60,6 @@ if (is_android) {
       "media_server_crash_listener.h",
       "media_service_throttler.cc",
       "media_service_throttler.h",
-      "media_url_interceptor.h",
       "stream_texture_wrapper.h",
     ]
     configs += [ "//media:subcomponent_config" ]

@@ -289,15 +289,12 @@ void PaintManager::DoPaint() {
   for (const auto& ready_rect : ready_now) {
     const SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
 
-    if (base::FeatureList::IsEnabled(
-            features::kPdfPaintManagerDrawsBackground)) {
-      // Paint the page's white background, and then paint the page's contents.
-      // If `ready_rect.image()` has transparencies, this is necessary to paint
-      // over the stale data in `skia_rect` in `surface_`.
-      SkPaint paint;
-      paint.setColor(SK_ColorWHITE);
-      surface_->getCanvas()->drawRect(skia_rect, paint);
-    }
+    // Paint the page's white background, and then paint the page's contents.
+    // If `ready_rect.image()` has transparencies, this is necessary to paint
+    // over the stale data in `skia_rect` in `surface_`.
+    SkPaint paint;
+    paint.setColor(SK_ColorWHITE);
+    surface_->getCanvas()->drawRect(skia_rect, paint);
 
     surface_->getCanvas()->drawImageRect(
         ready_rect.image(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,

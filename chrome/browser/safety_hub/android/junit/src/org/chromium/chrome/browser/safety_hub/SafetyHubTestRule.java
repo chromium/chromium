@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -53,6 +54,7 @@ public class SafetyHubTestRule implements TestRule {
     @Mock private SigninManager mSigninManager;
     @Mock private SyncService mSyncService;
     @Mock private PendingIntent mPasswordCheckIntentForAccountCheckup;
+    @Mock private PendingIntent mPasswordCheckIntentForLocalCheckup;
 
     private FakePasswordCheckupClientHelper mFakePasswordCheckupClientHelper;
 
@@ -73,7 +75,6 @@ public class SafetyHubTestRule implements TestRule {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         setUpPasswordManagerBackendForTesting();
         setSignedInState(true);
-        setUPMStatus(true);
     }
 
     private void setUpPasswordManagerBackendForTesting() {
@@ -93,6 +94,8 @@ public class SafetyHubTestRule implements TestRule {
                 (FakePasswordCheckupClientHelper) passwordCheckupClientHelperFactory.createHelper();
         mFakePasswordCheckupClientHelper.setIntentForAccountCheckup(
                 mPasswordCheckIntentForAccountCheckup);
+        mFakePasswordCheckupClientHelper.setIntentForLocalCheckup(
+                mPasswordCheckIntentForLocalCheckup);
     }
 
     public void setSignedInState(boolean isSignedIn) {
@@ -100,18 +103,30 @@ public class SafetyHubTestRule implements TestRule {
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(
                         isSignedIn
-                                ? CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0")
+                                ? CoreAccountInfo.createFromEmailAndGaiaId(
+                                        TEST_EMAIL_ADDRESS, new GaiaId("0"))
                                 : null);
     }
 
-    public void setUPMStatus(boolean isUPMEnabled) {
-        when(mPasswordManagerUtilBridgeNatives.shouldUseUpmWiring(mSyncService, mPrefService))
-                .thenReturn(isUPMEnabled);
-        when(mPasswordManagerUtilBridgeNatives.areMinUpmRequirementsMet()).thenReturn(isUPMEnabled);
+    public void setPasswordManagerAvailable(
+            boolean isPasswordManagerAvailable, boolean isLoginDbDeprecationEnabled) {
+        if (isLoginDbDeprecationEnabled) {
+            when(mPasswordManagerUtilBridgeNatives.isPasswordManagerAvailable(mPrefService, true))
+                    .thenReturn(isPasswordManagerAvailable);
+        } else {
+            when(mPasswordManagerUtilBridgeNatives.shouldUseUpmWiring(mSyncService, mPrefService))
+                    .thenReturn(isPasswordManagerAvailable);
+            when(mPasswordManagerUtilBridgeNatives.areMinUpmRequirementsMet())
+                    .thenReturn(isPasswordManagerAvailable);
+        }
     }
 
     public PendingIntent getIntentForAccountPasswordCheckup() {
         return mPasswordCheckIntentForAccountCheckup;
+    }
+
+    public PendingIntent getIntentForLocalPasswordCheckup() {
+        return mPasswordCheckIntentForLocalCheckup;
     }
 
     public FakePasswordCheckupClientHelper getPasswordCheckupClientHelper() {

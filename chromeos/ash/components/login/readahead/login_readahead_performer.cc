@@ -111,14 +111,24 @@ LoginReadaheadResult ReadaheadEntireFile(
 
 // Perform readahead based on the predefined list.
 LoginReadaheadResult ReadaheadFiles(scoped_refptr<CancelNotifier> notifier) {
+  LoginReadaheadResult result = LoginReadaheadResult::kSucceeded;
+
   for (const char* path : kFilePaths) {
-    LoginReadaheadResult result =
-        ReadaheadEntireFile(base::FilePath(path), notifier);
-    if (result != LoginReadaheadResult::kSucceeded) {
-      return result;
+    switch (ReadaheadEntireFile(base::FilePath(path), notifier)) {
+      case LoginReadaheadResult::kCanceled:
+        return LoginReadaheadResult::kCanceled;
+
+      case LoginReadaheadResult::kFailed:
+        // Continue to next file while marking the final result as failure.
+        result = LoginReadaheadResult::kFailed;
+        continue;
+
+      case LoginReadaheadResult::kSucceeded:
+        break;
     }
   }
-  return LoginReadaheadResult::kSucceeded;
+
+  return result;
 }
 
 void ReadaheadFilesAndReportResult(scoped_refptr<CancelNotifier> notifier) {

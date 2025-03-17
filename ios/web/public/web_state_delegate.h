@@ -5,10 +5,10 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_DELEGATE_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_DELEGATE_H_
 
-#include <set>
-
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+#include <set>
 
 #include "base/functional/callback.h"
 #include "build/blink_buildflags.h"

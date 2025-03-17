@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_STORAGE_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_STORAGE_H_
 
-#include <vector>
-
 #import <UIKit/UIKit.h>
+
+#include <vector>
 
 class SnapshotID;
 namespace base {

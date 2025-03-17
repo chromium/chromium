@@ -1,0 +1,21 @@
+{
+  "linux-crossbench": {
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "crossbench_smoketests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "crossbench_smoketests",
+        "test_id_prefix": "ninja://chrome/test:crossbench_smoketests/"
+      }
+    ]
+  }
+}

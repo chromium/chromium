@@ -35,6 +35,26 @@
   background-color: black;
 }
 
+#element-for-pseudo::before {
+  content: '';
+  background-color: white;
+  animation: 1s --color infinite;
+}
+
+#sda-non-scrolling {
+  width: 120px;
+  height: 120px;
+  animation: --color linear;
+  animation-timeline: scroll();
+}
+
+#animation-start-delay {
+  width: 120px;
+  height: 120px;
+  animation: --color linear;
+  animation-start-delay: 100s;
+}
+
 @keyframes --color {
   from {
     color: red;
@@ -61,6 +81,9 @@
 <div class='grand-parent'>
   <div class='parent'>
     <div id='element'>Text</div>
+    <div id='element-for-pseudo'></div>
+    <div id='sda-non-scrolling'></div>
+    <div id='animation-start-delay'></div>
   </div>
 </div>
 `,
@@ -187,6 +210,46 @@
   logCondition(
       'Second inherited entry is empty (.parent does not have any transitions)',
       inheritedForPseudo[1].transitionsStyle === undefined);
+
+  testRunner.log('\nAnimations for pseudo ::before when its origin element does not have any animations');
+  const nodeForPseudo = nodeTracker.nodes().find(
+    node => DOMHelper.attributes(node).get('id') === 'element-for-pseudo');
+  const beforeNodeIdForPseudo = getPseudoElement(nodeForPseudo, 'before').nodeId;
+  const {
+    result: {
+      animationStyles: animationStylesForPseudoWithoutParentAnimations,
+    }
+  } = await dp.CSS.getAnimatedStylesForNode({nodeId: beforeNodeIdForPseudo});
+  logCondition(
+    'There is only 1 animation', animationStylesForPseudoWithoutParentAnimations.length === 1);
+  logCondition(
+      'The name of the animation is --color',
+      animationStylesForPseudoWithoutParentAnimations[0].name === '--color');
+  logCondition(
+      'The color property is animated',
+      animationStylesForPseudoWithoutParentAnimations[0].style.cssProperties[0].name === 'color');
+
+  testRunner.log('\nScroll driven animations in a non-scrollable container');
+  const sdaNodeId = nodeTracker.nodes().find(
+    node => DOMHelper.attributes(node).get('id') === 'sda-non-scrolling').nodeId;
+  const {
+    result: {
+      animationStyles: animationStylesForNonScrollingSda,
+    }
+  } = await dp.CSS.getAnimatedStylesForNode({nodeId: sdaNodeId});
+  logCondition(
+    'There is no animation', animationStylesForNonScrollingSda.length === 0);
+
+  testRunner.log('\nAnimations with `animation-start-delay` before the delay passes');
+  const animationStartDelayNodeId = nodeTracker.nodes().find(
+    node => DOMHelper.attributes(node).get('id') === 'animation-start-delay').nodeId;
+  const {
+    result: {
+      animationStyles: animationStartDelayAnimationStyles,
+    }
+  } = await dp.CSS.getAnimatedStylesForNode({nodeId: animationStartDelayNodeId});
+  logCondition(
+    'There is no animation', animationStartDelayAnimationStyles.length === 0);
 
   testRunner.completeTest();
   function logCondition(text, condition) {

@@ -91,37 +91,42 @@ void SetCurrentAccessLevel(
                   static_cast<int>(access_level));
 }
 
-class ContentBlockObservationImpl : public ContentBlockObservation,
-                                    public SessionObserver {
+class ContentBlockObservationImpl : public ContentBlockObservation {
  public:
   // Access restricted constructor.
   ContentBlockObservationImpl(SessionController* session_controller,
                               SystemPermissionChangedCallback callback)
-      : callback_(std::move(callback)), session_observation_(this) {
-    session_observation_.Observe(session_controller);
-  }
-
-  ~ContentBlockObservationImpl() override = default;
-
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override {
-    // Subscribing to pref changes.
-    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    pref_change_registrar_->Init(pref_service);
-    pref_change_registrar_->Add(
+      : callback_(std::move(callback)) {
+    // Microphone and camera settings are following the active user's
+    // preferences. Subscribing to the active user's pref changes.
+    CHECK(Shell::Get()->session_controller());
+    active_user_pref_change_registrar_ =
+        std::make_unique<PrefChangeRegistrar>();
+    active_user_pref_change_registrar_->Init(
+        Shell::Get()->session_controller()->GetActivePrefService());
+    active_user_pref_change_registrar_->Add(
         prefs::kUserCameraAllowed,
         base::BindRepeating(&ContentBlockObservationImpl::OnPreferenceChanged,
                             base::Unretained(this)));
-    pref_change_registrar_->Add(
+    active_user_pref_change_registrar_->Add(
         prefs::kUserMicrophoneAllowed,
         base::BindRepeating(&ContentBlockObservationImpl::OnPreferenceChanged,
                             base::Unretained(this)));
-    pref_change_registrar_->Add(
+
+    // Geolocation setting is exclusively controlled by the primary user of the
+    // session. This is different from the camera and microphone implementation.
+    // Subscribing to the primary user's pref changes.
+    primary_user_pref_change_registrar_ =
+        std::make_unique<PrefChangeRegistrar>();
+    primary_user_pref_change_registrar_->Init(
+        Shell::Get()->session_controller()->GetPrimaryUserPrefService());
+    primary_user_pref_change_registrar_->Add(
         prefs::kUserGeolocationAccessLevel,
         base::BindRepeating(&ContentBlockObservationImpl::OnPreferenceChanged,
                             base::Unretained(this)));
   }
-  void OnChromeTerminating() override { session_observation_.Reset(); }
+
+  ~ContentBlockObservationImpl() override = default;
 
  private:
   // Handles changes in the user pref ( e.g. toggling the camera switch on
@@ -148,9 +153,8 @@ class ContentBlockObservationImpl : public ContentBlockObservation,
   }
 
   SystemPermissionChangedCallback callback_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  base::ScopedObservation<SessionController, ContentBlockObservationImpl>
-      session_observation_;
+  std::unique_ptr<PrefChangeRegistrar> active_user_pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> primary_user_pref_change_registrar_;
   base::WeakPtrFactory<ContentBlockObservationImpl> weak_ptr_factory_{this};
 };
 }  // namespace
@@ -232,6 +236,10 @@ bool IsCrosLocationOobeNegotiationNeeded() {
   }
 
   return true;
+}
+
+GeolocationAccessLevel GetSystemGeolocationAccessLevel() {
+  return GeolocationPrivacySwitchController::Get()->AccessLevel();
 }
 
 namespace {
@@ -362,7 +370,6 @@ std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
 
   auto observation = std::make_unique<ContentBlockObservationImpl>(
       session_controller, std::move(callback));
-  observation->OnActiveUserPrefServiceChanged(pref_service);
   return observation;
 }
 
@@ -390,7 +397,7 @@ void OpenSystemSettings(ContentType type) {
   }
 
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetPrimaryUserProfile(), settings_path);
+      ProfileManager::GetActiveUserProfile(), settings_path);
 }
 
 ScopedUserPermissionPrefForTest::ScopedUserPermissionPrefForTest(

@@ -40,6 +40,7 @@ source_set("buttons") {
     "//ios/chrome/browser/toolbar/ui_bundled/buttons/resources",
     "//ios/chrome/browser/toolbar/ui_bundled/public",
     "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/ui_bundled/tab_groups:features_utils",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/colors",

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_METRICS_PERSISTENT_MEMORY_ALLOCATOR_H_
 #define BASE_METRICS_PERSISTENT_MEMORY_ALLOCATOR_H_
 
@@ -20,7 +15,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -345,19 +340,25 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
   virtual ~PersistentMemoryAllocator();
 
-  // Check if memory segment is acceptable for creation of an Allocator. This
+  // Checks if memory segment is acceptable for creation of an Allocator. This
   // doesn't do any analysis of the data and so doesn't guarantee that the
   // contents are valid, just that the paramaters won't cause the program to
   // abort. The IsCorrupt() method will report detection of data problems
   // found during construction and general operation.
-  static bool IsMemoryAcceptable(const void* data, size_t size,
-                                 size_t page_size, bool readonly);
+  static bool IsMemoryAcceptable(const void* data,
+                                 size_t size,
+                                 size_t page_size,
+                                 bool readonly);
 
-  // Get the internal identifier for this persistent memory segment.
+  // Returns the internal identifier for this persistent memory segment.
   uint64_t Id() const;
 
-  // Get the internal name of this allocator (possibly an empty string).
-  const char* Name() const;
+  // Returns the internal name of this allocator (possibly an empty string).
+  // The returned string_view references a bounded span within the shared
+  // memory region. As such, it should be treated as a volatile but bounded
+  // block of memory. In particular, clients should respect the 'length()' of
+  // the returned view instead of relying on a terminating NUL char.
+  std::string_view Name() const;
 
   // Is this segment open only for read?
   bool IsReadonly() const { return access_mode_ == kReadOnly; }
@@ -366,7 +367,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   void SetMemoryState(uint8_t memory_state);
   uint8_t GetMemoryState() const;
 
-  // Create internal histograms for tracking memory use and allocation sizes
+  // Creates internal histograms for tracking memory use and allocation sizes
   // for allocator of `name` (which can simply be the result of Name()). This
   // is done separately from construction for situations such as when the
   // histograms will be backed by memory provided by this very allocator.
@@ -398,9 +399,10 @@ class BASE_EXPORT PersistentMemoryAllocator {
   const void* data() const { return const_cast<const char*>(mem_base_); }
   size_t length() const { return mem_size_; }
   size_t size() const { return mem_size_; }
+  size_t page_size() const { return mem_page_; }
   size_t used() const;
 
-  // Get an object referenced by a `ref`. For safety reasons, the `type_id`
+  // Returns the object referenced by a `ref`. For safety reasons, the `type_id`
   // code and size-of(`T`) are compared to ensure the reference is valid
   // and cannot return an object outside of the memory segment. A `type_id` of
   // kTypeIdAny (zero) will match any though the size is still checked. NULL is
@@ -421,7 +423,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // elements, or manually insert padding fields as appropriate for the
   // largest architecture, including at the end.
   //
-  // To protected against mistakes, all objects must have the attribute
+  // To protect against mistakes, all objects must have the attribute
   // `kExpectedInstanceSize` (static constexpr size_t)  that is a hard-coded
   // numerical value -- NNN, not sizeof(T) -- that can be tested. If the
   // instance size is not fixed, at least one build will fail.
@@ -458,7 +460,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
         GetBlockData(ref, T::kPersistentTypeId, sizeof(T), alloc_size)));
   }
 
-  // Like GetAsObject() but get an array of simple, fixed-size types.
+  // Like GetAsObject() but returns an array of simple, fixed-size types.
   //
   // Use a `count` of the required number of array elements, or kSizeAny.
   // The, optionally returned, `alloc_size` can be used to calculate the upper
@@ -489,12 +491,12 @@ class BASE_EXPORT PersistentMemoryAllocator {
         GetBlockData(ref, type_id, count * sizeof(T), alloc_size)));
   }
 
-  // Get the corresponding reference for an object held in persistent memory.
+  // Gets the corresponding reference for an object held in persistent memory.
   // If the `memory` is not valid or the type does not match, a kReferenceNull
   // result will be returned.
   Reference GetAsReference(const void* memory, uint32_t type_id) const;
 
-  // Access the internal "type" of an object. This generally isn't necessary
+  // Accesses the internal "type" of an object. This generally isn't necessary
   // but can be used to "clear" the type and so effectively mark it as deleted
   // even though the memory stays valid and allocated. Changing the type is
   // an atomic compare/exchange and so requires knowing the existing value.
@@ -526,7 +528,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Changing the type does not alter its "iterable" status.
   void MakeIterable(Reference ref);
 
-  // Get the information about the amount of free space in the allocator. The
+  // Gets the information about the amount of free space in the allocator. The
   // amount of free space should be treated as approximate due to extras from
   // alignment and metadata. Concurrent allocations from other threads will
   // also make the true amount less than what is reported.
@@ -554,7 +556,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // While the above works much like malloc & free, these next methods provide
   // an "object" interface similar to new and delete.
 
-  // Reserve space in the memory segment of the desired `size` and `type_id`.
+  // Reserves space in the memory segment of the desired `size` and `type_id`.
   //
   // A return value of zero indicates the allocation failed, otherwise the
   // returned reference can be used by any process to get a real pointer via
@@ -564,8 +566,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
                      uint32_t type_id,
                      size_t* alloc_size = nullptr);
 
-  // Allocate and construct an object in persistent memory. The type must have
-  // both (size_t) kExpectedInstanceSize and (uint32_t) kPersistentTypeId
+  // Allocates and constructs an object in persistent memory. The type must
+  // have both (size_t) kExpectedInstanceSize and (uint32_t) kPersistentTypeId
   // static constexpr fields that are used to ensure compatibility between
   // software versions. An optional size parameter can be specified to force
   // the allocation to be bigger than the size of the object; this is useful
@@ -573,13 +575,15 @@ class BASE_EXPORT PersistentMemoryAllocator {
   template <typename T>
   T* New(size_t size) {
     static_assert(alignof(T) <= kAllocAlignment);
-    if (size < sizeof(T))
+    if (size < sizeof(T)) {
       size = sizeof(T);
+    }
     Reference ref = Allocate(size, T::kPersistentTypeId);
     void* mem =
         const_cast<void*>(GetBlockData(ref, T::kPersistentTypeId, size));
-    if (!mem)
+    if (!mem) {
       return nullptr;
+    }
     DCHECK_EQ(0U, reinterpret_cast<uintptr_t>(mem) & (alignof(T) - 1));
     return new (mem) T();
   }
@@ -604,8 +608,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
     // to change the type back.
     size_t alloc_size = 0;
     void* mem = const_cast<void*>(GetBlockData(ref, 0, sizeof(T), &alloc_size));
-    if (!mem)
+    if (!mem) {
       return nullptr;
+    }
 
     DCHECK_LE(sizeof(T), alloc_size) << "alloc not big enough for obj";
 
@@ -617,8 +622,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
     // of the object should another thread be simultaneously iterating over
     // data. This will "acquire" the memory so no changes get reordered before
     // it.
-    if (!ChangeType(ref, kTypeIdTransitioning, from_type_id, clear))
+    if (!ChangeType(ref, kTypeIdTransitioning, from_type_id, clear)) {
       return nullptr;
+    }
     // Construct an object of the desired type on this memory, just as if
     // New() had been called to create it.
     T* obj = new (mem) T();
@@ -640,8 +646,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
     // where another thread could find the object through iteration while it
     // is been destructed. This will "acquire" the memory so no changes get
     // reordered before it. It will fail if `ref` is invalid.
-    if (!ChangeType(ref, kTypeIdTransitioning, T::kPersistentTypeId, false))
+    if (!ChangeType(ref, kTypeIdTransitioning, T::kPersistentTypeId, false)) {
       return;
+    }
     // Destruct the object.
     obj->~T();
     // Finally change the type to the desired value. This will "release" all
@@ -665,6 +672,21 @@ class BASE_EXPORT PersistentMemoryAllocator {
   void MakeIterable(const T* obj) {
     MakeIterable(GetAsReference<T>(obj));
   }
+
+  // Returns a string_view of a c-style string that is located at the end of an
+  // allocated memory block. It is the caller's responsibility to know/ensure
+  // that `object` is of some type that ends with a c-style string and that
+  // said string begins at `offset` bytes from `object`. `alloc_size` must be
+  // the size of the allocation, as returned by the allocator. If `object` is
+  // `nullptr` or `offset >= alloc_size` then an empty string_view is returned.
+  // Users should treat the returned view as a volatile bounded memory region;
+  // it references the underlying shared memory, whose contents can be changed
+  // or corrupted at any time.  In particular, clients should respect the
+  // 'length()' of the returned view instead of relying on a terminating NUL
+  // char.
+  static std::string_view StringViewAt(const void* object,
+                                       size_t offset,
+                                       size_t alloc_size);
 
  protected:
   enum MemoryType {
@@ -698,11 +720,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
   // there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION volatile char* const
-      mem_base_;                   // Memory base. (char so sizeof guaranteed 1)
-  const MemoryType mem_type_;      // Type of memory allocation.
-  const uint32_t mem_size_;        // Size of entire memory segment.
-  const uint32_t mem_page_;        // Page size allocations shouldn't cross.
-  const size_t vm_page_size_;      // The page size used by the OS.
+      mem_base_;               // Memory base. (char so sizeof guaranteed 1)
+  const MemoryType mem_type_;  // Type of memory allocation.
+  const uint32_t mem_size_;    // Size of entire memory segment.
+  const uint32_t mem_page_;    // Page size allocations shouldn't cross.
+  const size_t vm_page_size_;  // The page size used by the OS.
 
  private:
   struct SharedMetadata;
@@ -783,14 +805,18 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Histogram recording used space.
   raw_ptr<HistogramBase> used_histogram_ = nullptr;
 
-  // TODO(crbug.com/40064026) For debugging purposes. Remove these once done.
+  // TODO(crbug.com/40064026): Remove these. They are used to investigate
+  // unexpected failures and code paths.
   friend class DelayedPersistentAllocation;
   friend class metrics::FileMetricsProvider;
+  void DumpWithoutCrashing(Reference ref,
+                           uint32_t expected_type,
+                           size_t expected_size,
+                           bool dump_block_header) const;
 
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);
 };
-
 
 // This allocator uses a local memory block it allocates from the general
 // heap. It is generally used when some kind of "death rattle" handler will
@@ -819,7 +845,6 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
   // Deallocates a block of local `memory` of the specified `size`.
   static void DeallocateLocalMemory(void* memory, size_t size, MemoryType type);
 };
-
 
 // This allocator takes a writable shared memory mapping object and performs
 // allocation from it. The allocator takes ownership of the mapping object.
@@ -972,8 +997,8 @@ class BASE_EXPORT DelayedPersistentAllocation {
     // will result.
     CHECK_EQ(offset_ % alignof(T), 0u);
     span<uint8_t> untyped = GetUntyped();
-    return span(reinterpret_cast<T*>(untyped.data()),
-                untyped.size() / sizeof(T));
+    return UNSAFE_TODO(
+        span(reinterpret_cast<T*>(untyped.data()), untyped.size() / sizeof(T)));
   }
 
   // Gets the internal reference value. If this returns a non-zero value then

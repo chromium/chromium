@@ -509,7 +509,7 @@ served (e.g. no document.cookie).
 ### Are PDF files static content in Chromium?
 
 No. PDF files have some powerful capabilities including invoking printing or
-posting form data. To mitigate abuse of these capabiliies, such as beaconing
+posting form data. To mitigate abuse of these capabilities, such as beaconing
 upon document open, we require interaction with the document (a "user gesture")
 before allowing their use.
 
@@ -685,6 +685,15 @@ In general, dangling pointer issues should be assigned to feature teams as
 ordinary bugs and be fixed by them. However, they can be considered only if
 there is a demonstrable way to show a memory corruption. e.g. with a POC causing
 crash with ASAN **without the flags above**.
+
+<a name="TOC-hard-coded-lists"></a>
+### My domain is on the [Public Suffix List / HSTS preload list / etc.] upstream but this is not yet reflected in Chrome! Is this a security bug?
+
+Chrome does not make any guarantees about how soon additions to or removals from
+external lists like the [HSTS preload list](https://hstspreload.org) or the
+[Public Suffix List (PSL)](https://publicsuffix.org/) will be incorporated into Chrome.
+If you believe Chrome's copies of these lists are notably out-of-date, we are
+happy to field bug reports but we do not consider this to be a vulnerability.
 
 ## Certificates & Connection Indicators
 
@@ -1071,6 +1080,11 @@ See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/ch
 
 See our [Chrome Custom Tabs security FAQ](custom-tabs-faq.md).
 
+<a name="TOC-What-is-the-security-story-for-Fullscreen-"></a>
+### What is the security story for Fullscreen?
+
+See our dedicated [Fullscreen Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/fullscreen.md).
+
 <a name="TOC-How-is-security-different-in-Chrome-for-iOS--"></a>
 ### How is security different in Chrome for iOS?
 
@@ -1168,14 +1182,14 @@ improvement is the removal of a broken feature.
 
 <a name="TOC-How-can-I-appeal-a-Safe-Browsing-warning-"></a>
 ### How can I appeal a Safe Browsing warning?
-To request a review of phishing warnings relating to your own website, use the
+To request a review of warnings relating to your own website, use the
 [Security Issues report](https://support.google.com/webmasters/answer/9044101)
 page in your Google Search Console. If the warning applies to another site, you
 may be able to use
 [https://safebrowsing.google.com/safebrowsing/report_error/](https://safebrowsing.google.com/safebrowsing/report_error/),
 though you are likely better off contacting the site owner.
 
-If your concern relates to download warnings, you may find the warning in your
+If your concern relates to malware warnings, you may find the warning in your
 Security Issues report and request a review from there. There is no separate
 appeal form or process at this time. Please follow these
 [guidelines](https://developers.google.com/search/docs/monitor-debug/security/malware#guidelines)

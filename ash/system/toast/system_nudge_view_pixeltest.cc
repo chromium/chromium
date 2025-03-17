@@ -54,8 +54,8 @@ class SystemNudgeViewPixelTest : public AshTestBase {
         views::Builder<views::FlexLayoutView>()
             .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
             .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-            .SetBackground(views::CreateThemedSolidBackground(
-                cros_tokens::kCrosSysSystemBase))
+            .SetBackground(
+                views::CreateSolidBackground(cros_tokens::kCrosSysSystemBase))
             .Build());
   }
 
@@ -84,7 +84,7 @@ TEST_F(SystemNudgeViewPixelTest, TextOnly) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/0, GetContentsView()));
+      "screenshot", /*revision_number=*/1, GetContentsView()));
 }
 
 TEST_F(SystemNudgeViewPixelTest, TextOnly_LongText) {
@@ -96,7 +96,7 @@ TEST_F(SystemNudgeViewPixelTest, TextOnly_LongText) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/0, GetContentsView()));
+      "screenshot", /*revision_number=*/1, GetContentsView()));
 }
 
 TEST_F(SystemNudgeViewPixelTest, WithButtons) {
@@ -110,7 +110,7 @@ TEST_F(SystemNudgeViewPixelTest, WithButtons) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/0, GetContentsView()));
+      "screenshot", /*revision_number=*/1, GetContentsView()));
 }
 
 TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
@@ -126,7 +126,7 @@ TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/0, GetContentsView()));
+      "screenshot", /*revision_number=*/1, GetContentsView()));
 }
 
 TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
@@ -144,7 +144,7 @@ TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/0, GetContentsView()));
+      "screenshot", /*revision_number=*/1, GetContentsView()));
 }
 
 TEST_F(SystemNudgeViewPixelTest, AnchoredNudgeWithPointyCorner) {
@@ -160,7 +160,7 @@ TEST_F(SystemNudgeViewPixelTest, AnchoredNudgeWithPointyCorner) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/0, GetContentsView()));
+      "screenshot", /*revision_number=*/1, GetContentsView()));
 }
 
 }  // namespace ash

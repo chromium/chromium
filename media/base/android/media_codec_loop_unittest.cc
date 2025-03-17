@@ -127,7 +127,7 @@ class MediaCodecLoopTest : public testing::Test {
   void ExpectQueueInputBuffer(int input_buffer_index,
                               scoped_refptr<DecoderBuffer> data,
                               MediaCodecResult status = OkStatus()) {
-    EXPECT_CALL(Codec(), QueueInputBuffer(input_buffer_index, data->AsSpan(),
+    EXPECT_CALL(Codec(), QueueInputBuffer(input_buffer_index, base::span(*data),
                                           data->timestamp()))
         .Times(1)
         .WillOnce(Return(status));

@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -47,6 +48,7 @@ class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
+class OnDeviceAssetManager;
 class OnDeviceModelAvailabilityObserver;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
@@ -152,6 +154,8 @@ class OptimizationGuideKeyedService
   std::optional<optimization_guide::SamplingParamsConfig>
   GetSamplingParamsConfig(
       optimization_guide::ModelBasedCapabilityKey feature) override;
+  std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
 
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on
@@ -162,7 +166,7 @@ class OptimizationGuideKeyedService
 
   // Returns true if signed-in user is allowed to execute models, disregarding
   // the `allow_unsigned_user` switch.
-  bool ShouldFeatureAllowModelExecutionForSignedInUser(
+  virtual bool ShouldFeatureAllowModelExecutionForSignedInUser(
       optimization_guide::UserVisibleFeatureKey feature) const;
 
   // Returns whether the `feature` should be currently allowed for showing the
@@ -178,7 +182,7 @@ class OptimizationGuideKeyedService
   // Returns true if the user passes all sign-in checks and is allowed to use
   // model execution. This does not perform any feature related checks such as
   // allowed by enterprise policy.
-  bool ShouldModelExecutionBeAllowedForUser() const;
+  virtual bool ShouldModelExecutionBeAllowedForUser() const;
 
   // Adds `observer` which can observe the change in feature settings.
   void AddModelExecutionSettingsEnabledObserver(
@@ -224,6 +228,9 @@ class OptimizationGuideKeyedService
   GetModelQualityLogsUploaderService() {
     return model_quality_logs_uploader_service_.get();
   }
+
+  virtual optimization_guide::ModelExecutionFeaturesController*
+  GetModelExecutionFeaturesController();
 
  private:
   friend class BrowserView;
@@ -352,6 +359,9 @@ class OptimizationGuideKeyedService
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
+
+  std::unique_ptr<optimization_guide::OnDeviceAssetManager>
+      on_device_asset_manager_;
 
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>

@@ -43,6 +43,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
@@ -645,7 +646,6 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {
   EXPECT_CALL(mock_ntp_custom_background_service_,
               SelectLocalBackgroundImage(An<const base::FilePath&>()))
       .Times(1);
-  EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
   ASSERT_EQ(0, user_action_tester().GetActionCount(
                    "NTPRicherPicker.Backgrounds.UploadConfirmed"));
   handler().ChooseLocalCustomBackground(callback.Get());
@@ -829,6 +829,48 @@ TEST_F(CustomizeChromePageHandlerTest, UpdateScrollToSection) {
   EXPECT_EQ(side_panel::mojom::CustomizeChromeSection::kAppearance, section);
 }
 
+class CustomizeChromePageHandlerWallpaperSearchTest
+    : public CustomizeChromePageHandlerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CustomizeChromePageHandlerWallpaperSearchTest() {
+    std::vector<base::test::FeatureRef> kWallpaperSearchFeatures = {
+        ntp_features::kCustomizeChromeWallpaperSearch,
+        optimization_guide::features::kOptimizationGuideModelExecution};
+
+    if (WallpaperSearchEnabled()) {
+      scoped_feature_list_.InitWithFeatures(kWallpaperSearchFeatures, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({}, kWallpaperSearchFeatures);
+    }
+  }
+  bool WallpaperSearchEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(CustomizeChromePageHandlerWallpaperSearchTest,
+       ChooseLocalCustomBackground) {
+  base::MockCallback<
+      CustomizeChromePageHandler::ChooseLocalCustomBackgroundCallback>
+      callback;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(false));
+
+  if (WallpaperSearchEnabled()) {
+    EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(0);
+  } else {
+    EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
+  }
+
+  handler().ChooseLocalCustomBackground(callback.Get());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CustomizeChromePageHandlerWallpaperSearchTest,
+                         ::testing::Bool());
+
 class CustomizeChromePageHandlerWithModulesTest
     : public CustomizeChromePageHandlerTest {
  public:
@@ -947,6 +989,32 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
   EXPECT_EQ(ntp_modules::kMicrosoftAuthenticationModuleId,
             microsoft_auth_settings->id);
   EXPECT_TRUE(microsoft_auth_settings->enabled);
+}
+
+TEST_F(CustomizeChromePageHandlerWithModulesTest,
+       SetModuleHiddenInCustomizeChrome) {
+  std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
+  EXPECT_CALL(mock_page_, SetModulesSettings)
+      .Times(1)
+      .WillRepeatedly(Invoke(
+          [&modules_settings](std::vector<side_panel::mojom::ModuleSettingsPtr>
+                                  modules_settings_arg,
+                              bool managed_arg, bool visible_arg) {
+            modules_settings = std::move(modules_settings_arg);
+          }));
+
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kMostRelevantTabResumptionModuleId);
+
+  profile().GetPrefs()->SetList(prefs::kNtpHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+
+  EXPECT_EQ(2u, modules_settings.size());
+  const auto& tab_resumption_settings = modules_settings[0];
+  EXPECT_FALSE(tab_resumption_settings->visible);
+  const auto& microsoft_auth_settings = modules_settings[1];
+  EXPECT_TRUE(microsoft_auth_settings->visible);
 }
 
 class CustomizeChromePageHandlerWithModulesVisibilityTest

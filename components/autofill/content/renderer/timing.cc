@@ -39,8 +39,8 @@ std::string_view CallSiteToString(CallTimerState::CallSite call_site) {
       return "NotifyPasswordManagerAboutClearedForm";
     case kOnProvisionallySaveForm:
       return "OnProvisionallySaveForm";
-    case kOnTextFieldDidChange:
-      return "OnTextFieldDidChange";
+    case kOnTextFieldValueChanged:
+      return "OnTextFieldValueChanged";
     case kQueryAutofillSuggestions:
       return "QueryAutofillSuggestions";
     case kShowSuggestionPopup:

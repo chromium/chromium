@@ -50,7 +50,7 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
-  set_color(SK_ColorTRANSPARENT);
+  set_background_color(SK_ColorTRANSPARENT);
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
   set_accept_events(!tap_callback.is_null());
@@ -74,7 +74,7 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   label_->SetBorder(views::CreateEmptyBorder(margins));
-  label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+  label_->SetEnabledColor(cros_tokens::kCrosSysSecondary);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *label_);
 

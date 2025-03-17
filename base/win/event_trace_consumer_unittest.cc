@@ -152,8 +152,9 @@ class EtwTraceConsumerRealtimeTest : public EtwTraceConsumerBaseTest {
     EXPECT_TRUE(consumer_ready_.is_valid());
     consumer_thread_.Set(
         ::CreateThread(nullptr, 0, ConsumerThreadMainProc, this, 0, nullptr));
-    if (consumer_thread_.get() == nullptr)
+    if (consumer_thread_.get() == nullptr) {
       return HRESULT_FROM_WIN32(::GetLastError());
+    }
 
     HANDLE events[] = {consumer_ready_.get(), consumer_thread_.get()};
     DWORD result =
@@ -165,11 +166,13 @@ class EtwTraceConsumerRealtimeTest : public EtwTraceConsumerBaseTest {
       case WAIT_OBJECT_0 + 1: {
         // The thread finished. This may race with the event, so check
         // explicitly for the event here, before concluding there's trouble.
-        if (::WaitForSingleObject(consumer_ready_.get(), 0) == WAIT_OBJECT_0)
+        if (::WaitForSingleObject(consumer_ready_.get(), 0) == WAIT_OBJECT_0) {
           return S_OK;
+        }
         DWORD exit_code = 0;
-        if (::GetExitCodeThread(consumer_thread_.get(), &exit_code))
+        if (::GetExitCodeThread(consumer_thread_.get(), &exit_code)) {
           return exit_code;
+        }
         return HRESULT_FROM_WIN32(::GetLastError());
       }
       default:
@@ -185,8 +188,9 @@ class EtwTraceConsumerRealtimeTest : public EtwTraceConsumerBaseTest {
     }
 
     DWORD exit_code = 0;
-    if (::GetExitCodeThread(consumer_thread_.get(), &exit_code))
+    if (::GetExitCodeThread(consumer_thread_.get(), &exit_code)) {
       return exit_code;
+    }
 
     return HRESULT_FROM_WIN32(::GetLastError());
   }
@@ -293,8 +297,9 @@ class EtwTraceConsumerDataTest : public EtwTraceConsumerBaseTest {
     // Set up a file session.
     HRESULT hr = controller.StartFileSession(session_name_.c_str(),
                                              temp_file_.value().c_str());
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return hr;
+    }
 
     // Enable our provider.
     EXPECT_HRESULT_SUCCEEDED(controller.EnableProvider(
@@ -317,8 +322,9 @@ class EtwTraceConsumerDataTest : public EtwTraceConsumerBaseTest {
     // Now consume the event(s).
     TestConsumer consumer_;
     HRESULT hr = consumer_.OpenFileSession(temp_file_.value().c_str());
-    if (SUCCEEDED(hr))
+    if (SUCCEEDED(hr)) {
       hr = consumer_.Consume();
+    }
     consumer_.Close();
     // And nab the result.
     events_.swap(TestConsumer::events_);
@@ -329,15 +335,18 @@ class EtwTraceConsumerDataTest : public EtwTraceConsumerBaseTest {
     DeleteFile(temp_file_);
 
     HRESULT hr = LogEventToTempSession(header);
-    if (SUCCEEDED(hr))
+    if (SUCCEEDED(hr)) {
       hr = ConsumeEventFromTempSession();
+    }
 
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return hr;
+    }
 
     // We should now have the event in the queue.
-    if (events_.empty())
+    if (events_.empty()) {
       return E_FAIL;
+    }
 
     *trace = &events_.back();
     return S_OK;

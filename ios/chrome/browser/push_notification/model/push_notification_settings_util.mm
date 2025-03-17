@@ -15,7 +15,7 @@
 namespace push_notification_settings {
 
 ClientPermissionState GetNotificationPermissionState(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     PrefService* pref_service) {
   static std::vector<PushNotificationClientId> client_ids =
       PushNotificationClientManager::GetClients();
@@ -48,7 +48,7 @@ ClientPermissionState GetNotificationPermissionState(
 
 ClientPermissionState GetClientPermissionStateForMultipleClients(
     std::vector<PushNotificationClientId> client_ids,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     PrefService* pref_service) {
   size_t enabled_clients_count = 0;
   size_t disabled_clients_count = 0;
@@ -80,7 +80,7 @@ ClientPermissionState GetClientPermissionStateForMultipleClients(
 
 ClientPermissionState GetClientPermissionState(
     PushNotificationClientId client_id,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     PrefService* pref_service) {
   switch (client_id) {
     case PushNotificationClientId::kCommerce: {
@@ -101,7 +101,8 @@ ClientPermissionState GetClientPermissionState(
     case PushNotificationClientId::kSendTab:
     case PushNotificationClientId::kTips:
     case PushNotificationClientId::kSafetyCheck:
-    case PushNotificationClientId::kSports: {
+    case PushNotificationClientId::kSports:
+    case PushNotificationClientId::kReminders: {
       BOOL mobile_notifications =
           GetMobileNotificationPermissionStatusForClient(client_id, gaia_id);
 
@@ -113,7 +114,7 @@ ClientPermissionState GetClientPermissionState(
   }
 }
 
-BOOL IsMobileNotificationsEnabledForAnyClient(const std::string& gaia_id,
+BOOL IsMobileNotificationsEnabledForAnyClient(const GaiaId& gaia_id,
                                               PrefService* pref_service) {
   std::vector<PushNotificationClientId> client_ids =
       PushNotificationClientManager::GetClients();
@@ -127,7 +128,7 @@ BOOL IsMobileNotificationsEnabledForAnyClient(const std::string& gaia_id,
 
 BOOL GetMobileNotificationPermissionStatusForClient(
     PushNotificationClientId client_id,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
   PushNotificationAccountContextManager* manager =
@@ -139,7 +140,7 @@ BOOL GetMobileNotificationPermissionStatusForClient(
 
 BOOL GetMobileNotificationPermissionStatusForMultipleClients(
     std::vector<PushNotificationClientId> client_ids,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   for (PushNotificationClientId clientId : client_ids) {
     // In case one out of the joined clientIDs return NO, return NO for purposes
     // of enabling both at the same time.

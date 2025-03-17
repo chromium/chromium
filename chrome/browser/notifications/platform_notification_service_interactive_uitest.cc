@@ -18,7 +18,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -245,6 +244,11 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "Notifications.PersistentWebNotificationClickResult",
       0 /* SERVICE_WORKER_OK */, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.Engagement.Displayed.Volume0", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.Engagement.Clicked.Volume0", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
@@ -434,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 }
 
 // Chrome OS shows the notification settings inline.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
                        WebNotificationSiteSettingsButton) {
   GrantNotificationPermissionForTest();
@@ -875,8 +879,7 @@ IN_PROC_BROWSER_TEST_F(
 #if !BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/40132496) Test is flaky on Linux TSan.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TestShouldDisplayFullscreen DISABLED_TestShouldDisplayFullscreen
 #else
 #define MAYBE_TestShouldDisplayFullscreen TestShouldDisplayFullscreen

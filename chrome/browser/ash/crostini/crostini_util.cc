@@ -53,6 +53,7 @@
 namespace crostini {
 namespace {
 
+// Keep 'penguin' terminal label for backwards-consistent appearance.
 constexpr char kCrostiniAppLaunchHistogram[] = "Crostini.AppLaunch";
 constexpr char kCrostiniAppLaunchResultHistogram[] = "Crostini.AppLaunchResult";
 constexpr char kCrostiniAppLaunchResultHistogramTerminal[] =
@@ -191,9 +192,7 @@ bool ShouldConfigureDefaultContainer(Profile* profile) {
       profile->GetPrefs()->GetFilePath(prefs::kCrostiniAnsiblePlaybookFilePath);
   bool default_container_configured = profile->GetPrefs()->GetBoolean(
       prefs::kCrostiniDefaultContainerConfigured);
-  return base::FeatureList::IsEnabled(
-             features::kCrostiniAnsibleInfrastructure) &&
-         !default_container_configured && !ansible_playbook_file_path.empty();
+  return !default_container_configured && !ansible_playbook_file_path.empty();
 }
 
 bool ShouldAllowContainerUpgrade(Profile* profile) {
@@ -449,6 +448,13 @@ std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
 const guest_os::GuestId& DefaultContainerId() {
   static const base::NoDestructor<guest_os::GuestId> container_id(
       kCrostiniDefaultVmType, kCrostiniDefaultVmName,
+      kCrostiniDefaultContainerName);
+  return *container_id;
+}
+
+const guest_os::GuestId& DefaultBaguetteContainerId() {
+  static const base::NoDestructor<guest_os::GuestId> container_id(
+      kBaguetteDefaultVmType, kCrostiniDefaultVmName,
       kCrostiniDefaultContainerName);
   return *container_id;
 }

@@ -25,7 +25,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
@@ -50,9 +49,6 @@ public class StartupPaintPreviewTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    // Tell R8 not to break the ability to mock the class.
-    @Mock private static PaintPreviewTabService sUnused;
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =

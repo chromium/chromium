@@ -149,13 +149,15 @@ class ChromePaymentsAutofillClientTest
     ChromeAutofillClient::CreateForWebContents(web_contents());
     auto mock_virtual_card_bubble_controller =
         std::make_unique<MockVirtualCardEnrollBubbleController>(web_contents());
-    web_contents()->SetUserData(
-        mock_virtual_card_bubble_controller->UserDataKey(),
-        std::move(mock_virtual_card_bubble_controller));
+    const auto* user_data_key =
+        mock_virtual_card_bubble_controller->UserDataKey();
+    web_contents()->SetUserData(user_data_key,
+                                std::move(mock_virtual_card_bubble_controller));
 #if !BUILDFLAG(IS_ANDROID)
     auto mock_save_card_bubble_controller =
         std::make_unique<MockSaveCardBubbleController>(web_contents());
-    web_contents()->SetUserData(mock_save_card_bubble_controller->UserDataKey(),
+    user_data_key = mock_save_card_bubble_controller->UserDataKey();
+    web_contents()->SetUserData(user_data_key,
                                 std::move(mock_save_card_bubble_controller));
 #endif
   }
@@ -610,10 +612,7 @@ class ChromePaymentsAutofillIOSPromoClientTest
   ChromePaymentsAutofillIOSPromoClientTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {::features::kIOSPromoPaymentBubble,
-         features::kAutofillEnableSaveCardLoadingAndConfirmation,
-         features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
-         features::kAutofillEnableCvcStorageAndFilling,
+        {features::kAutofillEnableCvcStorageAndFilling,
          features::kAutofillEnablePrefetchingRiskDataForRetrieval},
         /*disabled_features=*/{});
   }

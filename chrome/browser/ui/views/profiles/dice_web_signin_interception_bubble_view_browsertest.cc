@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -98,11 +99,11 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
   GetTestBubbleParametersWithInterceptType(
       WebSigninInterceptor::SigninInterceptionType intercept_type) {
     AccountInfo account;
-    account.account_id = CoreAccountId::FromGaiaId("ID1");
+    account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID1"));
     AccountInfo primary_account;
     if (intercept_type !=
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
-      primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
+      primary_account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID2"));
     }
 
     ProfileAttributesEntry* entry =
@@ -179,18 +180,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
       testing::ContainerEq(expected_histogram_total_count));
 }
 
-class DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest
-    : public DiceWebSigninInterceptionBubbleBrowserTest {
- private:
-  // Activates some new UI behaviors around dismissing the bubles.
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
 // Tests that the callback is called once when the bubble is dismissed.
-IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
-    BubbleDismissedByEscapeKey) {
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       BubbleDismissedByEscapeKey) {
   base::HistogramTester histogram_tester;
   // Creating the bubble through the static function.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
@@ -243,9 +235,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Same as the above test, but dismissing by pressing the avatar button.
 // Only difference in expectations is the histograms records.
-IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
-    BubbleDismissedByPressingAvatarButton) {
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       BubbleDismissedByPressingAvatarButton) {
   base::HistogramTester histogram_tester;
   // Creating the bubble through the static function.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
@@ -536,8 +527,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kAccepted, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
-      1);
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble, 1);
   base::HistogramTester::CountsMap expected_time_histogram_total_count = {
       {"Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 1},
   };
@@ -591,8 +581,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kDeclined, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
-      1);
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble, 1);
   base::HistogramTester::CountsMap expected_time_histogram_total_count = {
       {"Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 1},
   };
@@ -640,10 +629,6 @@ class DiceWebSigninInterceptionBubbleWithParamBrowserTest
   std::u16string expected_avatar_text() {
     return l10n_util::GetStringUTF16(GetParam().expected_avatar_text_id);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,

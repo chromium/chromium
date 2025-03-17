@@ -519,7 +519,7 @@ TEST_F(TailoredSecurityServiceTest, NotifiesSyncForDisabled) {
   tailored_security_service()->SetNotifySyncUserCallback(
       run_loop.QuitClosure());
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION,
-                       /*is_esb_enabled_in_sync=*/true);
+                       /*is_esb_enabled_by_account_integration=*/true);
   prefs()->SetTime(prefs::kAccountTailoredSecurityUpdateTimestamp,
                    base::Time::Now());
   run_loop.Run();

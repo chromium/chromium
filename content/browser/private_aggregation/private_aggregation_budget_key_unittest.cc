@@ -39,7 +39,7 @@ TEST(PrivateAggregationBudgetKeyTest, Fields_MatchInputs) {
   EXPECT_EQ(protected_audience_key->origin(), example_origin);
   EXPECT_EQ(protected_audience_key->time_window().start_time(),
             kExampleMinuteBoundary);
-  EXPECT_EQ(protected_audience_key->api(),
+  EXPECT_EQ(protected_audience_key->caller_api(),
             PrivateAggregationCallerApi::kProtectedAudience);
 
   std::optional<PrivateAggregationBudgetKey> shared_storage_key =
@@ -50,7 +50,7 @@ TEST(PrivateAggregationBudgetKeyTest, Fields_MatchInputs) {
   EXPECT_EQ(shared_storage_key->origin(), example_origin);
   EXPECT_EQ(shared_storage_key->time_window().start_time(),
             kExampleMinuteBoundary);
-  EXPECT_EQ(shared_storage_key->api(),
+  EXPECT_EQ(shared_storage_key->caller_api(),
             PrivateAggregationCallerApi::kSharedStorage);
 }
 

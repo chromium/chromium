@@ -45,6 +45,7 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
     return nullptr;
   }
   Animation* compositable_animation = nullptr;
+
   // We'd composite only if it is the only animation of its type on
   // this element.
   unsigned count = 0;
@@ -61,14 +62,25 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
     return nullptr;
   }
 
-  // If we are here, this element must have one animation of the CSSProperty
-  // type only. Fall back to the main thread if it is not composite:replace.
+  if (!AnimationIsValidForPaintWorklets(compositable_animation, element,
+                                        property, filter)) {
+    return nullptr;
+  }
+
+  return compositable_animation;
+}
+
+bool NativeCssPaintDefinition::AnimationIsValidForPaintWorklets(
+    Animation* compositable_animation,
+    const Element* element,
+    const CSSProperty& property,
+    ValueFilter filter) {
   const AnimationEffect* effect = compositable_animation->effect();
 
   // TODO(crbug.com/1429770): Implement positive delay fix for bgcolor.
   if (effect->SpecifiedTiming().start_delay.AsTimeValue().InSecondsF() > 0.f) {
     if (property.PropertyID() != CSSPropertyID::kClipPath) {
-      return nullptr;
+      return false;
     }
   }
 
@@ -76,17 +88,17 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
   const KeyframeEffectModelBase* model =
       static_cast<const KeyframeEffect*>(effect)->Model();
   if (model->AffectedByUnderlyingAnimations()) {
-    return nullptr;
+    return false;
   }
   const PropertySpecificKeyframeVector* frames =
       model->GetPropertySpecificKeyframes(PropertyHandle(property));
   DCHECK_GE(frames->size(), 2u);
   for (const auto& frame : *frames) {
     if (!CanGetValueFromKeyframe(element, frame, model, filter)) {
-      return nullptr;
+      return false;
     }
   }
-  return compositable_animation;
+  return true;
 }
 
 bool NativeCssPaintDefinition::DefaultValueFilter(

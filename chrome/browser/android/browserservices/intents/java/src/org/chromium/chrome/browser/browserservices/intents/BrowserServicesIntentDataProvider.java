@@ -16,16 +16,15 @@ import android.graphics.drawable.Drawable;
 import android.widget.RemoteViews;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -38,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Base class for model classes which parse incoming intent for customization data. */
+@NullMarked
 public abstract class BrowserServicesIntentDataProvider {
     // The type of UI for Custom Tab to use.
     @IntDef({
@@ -127,7 +127,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The session specified in the intent, or null.
      */
-    public @Nullable CustomTabsSessionToken getSession() {
+    public @Nullable SessionHolder<?> getSession() {
         return null;
     }
 
@@ -208,19 +208,19 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return ColorProvider to be used.
      */
-    public abstract @NonNull ColorProvider getColorProvider();
+    public abstract ColorProvider getColorProvider();
 
     /**
      * @return ColorProvider when the system is in light mode.
      */
-    public @NonNull ColorProvider getLightColorProvider() {
+    public ColorProvider getLightColorProvider() {
         return getColorProvider();
     }
 
     /**
      * @return ColorProvider when the system is in dark mode.
      */
-    public @NonNull ColorProvider getDarkColorProvider() {
+    public ColorProvider getDarkColorProvider() {
         return getColorProvider();
     }
 
@@ -277,8 +277,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return A array of {@link View} ids, of which the onClick event is handled by the Activity.
      */
-    @Nullable
-    public int[] getClickableViewIDs() {
+    public int @Nullable [] getClickableViewIDs() {
         return null;
     }
 
@@ -427,8 +426,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return Additional origins associated with a Trusted Web Activity client app.
      */
-    @Nullable
-    public List<String> getTrustedWebActivityAdditionalOrigins() {
+    public @Nullable List<String> getTrustedWebActivityAdditionalOrigins() {
         return null;
     }
 
@@ -436,8 +434,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return All origins associated with a TrustedWebActivity client app, including the initially
      *     loaded origin.
      */
-    @Nullable
-    public Set<Origin> getAllTrustedWebActivityOrigins() {
+    public @Nullable Set<Origin> getAllTrustedWebActivityOrigins() {
         return null;
     }
 
@@ -533,8 +530,7 @@ public abstract class BrowserServicesIntentDataProvider {
         return TwaDisclosureUi.DEFAULT;
     }
 
-    @Nullable
-    public int[] getGsaExperimentIds() {
+    public int @Nullable [] getGsaExperimentIds() {
         return null;
     }
 
@@ -665,23 +661,28 @@ public abstract class BrowserServicesIntentDataProvider {
         return getTargetNetwork() != NetId.INVALID;
     }
 
+    /** Return whether the close button is enabled and visible in the custom tab. */
+    public boolean isCloseButtonEnabled() {
+        return true;
+    }
+
     /** Return {@code true} if the service was launched for authentication. */
     public boolean isAuthTab() {
         return false;
     }
 
     /** Return the custom redirect scheme for AuthTab. */
-    public String getAuthRedirectScheme() {
+    public @Nullable String getAuthRedirectScheme() {
         return null;
     }
 
     /** Return the https redirect URL host (origin) for AuthTab. */
-    public String getAuthRedirectHost() {
+    public @Nullable String getAuthRedirectHost() {
         return null;
     }
 
     /** Return the https redirect URL path for AuthTab. */
-    public String getAuthRedirectPath() {
+    public @Nullable String getAuthRedirectPath() {
         return null;
     }
 }

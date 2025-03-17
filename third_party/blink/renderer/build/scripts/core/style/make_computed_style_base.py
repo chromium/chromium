@@ -8,7 +8,6 @@ import math
 import json5_generator
 import template_expander
 import keyword_utils
-import bisect
 
 from blinkbuild.name_style_converter import NameStyleConverter
 from core.css import css_properties
@@ -37,6 +36,7 @@ ALIGNMENT_ORDER = [
     'std::optional<gfx::Size>',
     'double',
     'StyleViewTransitionGroup',
+    'Superellipse',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
     'NamedGridAreaMap',
@@ -239,6 +239,31 @@ def _create_enums(properties):
     return list(sorted(enums.values(), key=lambda e: e.type_name))
 
 
+def _find_size_for_property(property_):
+    if property_.field_template == 'keyword':
+        assert property_.field_size is None, \
+            ("'" + property_.name + "' is a keyword field, "
+             "so it should not specify a field_size")
+        return int(math.ceil(math.log(len(property_.keywords), 2)))
+    elif property_.field_template == 'multi_keyword':
+        return len(property_.keywords) - 1  # Subtract 1 for 'none' keyword
+    elif property_.field_template == 'bitset_keyword':
+        return len(property_.keywords)
+    elif property_.field_template == 'external':
+        return None
+    elif property_.field_template == 'primitive':
+        # pack bools with 1 bit.
+        return 1 if property_.type_name == 'bool' else property_.field_size
+    elif property_.field_template == 'pointer':
+        return None
+    elif property_.field_template == 'derived_flag':
+        return 2
+    else:
+        assert property_.field_template == 'monotonic_flag', \
+            "Please use a valid value for field_template"
+        return 1
+
+
 def _create_property_field(property_):
     """
     Create a property field.
@@ -249,29 +274,7 @@ def _create_property_field(property_):
         'MakeComputedStyleBase requires an default value for all fields, ' \
         'none specified for property ' + property_.name
 
-    type_name = property_.type_name
-    if property_.field_template == 'keyword':
-        assert property_.field_size is None, \
-            ("'" + property_.name + "' is a keyword field, "
-             "so it should not specify a field_size")
-        size = int(math.ceil(math.log(len(property_.keywords), 2)))
-    elif property_.field_template == 'multi_keyword':
-        size = len(property_.keywords) - 1  # Subtract 1 for 'none' keyword
-    elif property_.field_template == 'bitset_keyword':
-        size = len(property_.keywords)
-    elif property_.field_template == 'external':
-        size = None
-    elif property_.field_template == 'primitive':
-        # pack bools with 1 bit.
-        size = 1 if type_name == 'bool' else property_.field_size
-    elif property_.field_template == 'pointer':
-        size = None
-    elif property_.field_template == 'derived_flag':
-        size = 2
-    else:
-        assert property_.field_template == 'monotonic_flag', \
-            "Please use a valid value for field_template"
-        size = 1
+    size = _find_size_for_property(property_)
 
     return Field(
         'property',
@@ -411,131 +414,46 @@ def _reorder_fields(fields):
         bit_fields)
 
 
-def _get_properties_ranking_using_partition_rule(properties_ranking,
-                                                 partition_rule):
-    """Take the contents of the properties ranking file and produce a dictionary
-    of css properties with their group number based on the partition_rule
-
-    Args:
-        properties_ranking: rankings map as read from CSSPropertyRanking.json5
-        partition_rule: cumulative distribution over properties_ranking
-
-    Returns:
-        dictionary with keys are css properties' name values are the group
-        that each css properties belong to. Smaller group number is higher
-        popularity in the ranking.
-    """
-    return dict(
-        zip(properties_ranking, [
-            bisect.bisect_left(partition_rule,
-                               float(i) / len(properties_ranking)) + 1
-            for i in range(len(properties_ranking))
-        ]))
-
-
-def _best_rank(prop, ranking_map):
-    """Return the best ranking value for the specified property.
-
-    This function collects ranking values for not only the property's real name
-    but also its aliases, and returns the best (lower is better) value.
-    If no ranking values for the property is available, this returns -1.
-    """
-    worst_rank = max(ranking_map.values()) + 1
-    best_rank = ranking_map.get(prop.name.original, worst_rank)
-
-    for alias_name in prop.aliases:
-        best_rank = min(best_rank, ranking_map.get(alias_name, worst_rank))
-    return best_rank if best_rank != worst_rank else -1
-
-
-def _evaluate_rare_non_inherited_group(properties,
-                                       properties_ranking,
-                                       num_layers,
-                                       partition_rule=None):
-    """Re-evaluate the grouping of RareNonInherited groups based on each
-    property's popularity.
+def _evaluate_misc_group(properties, bitfield_properties, inherited):
+    """Re-evaluate the grouping of Misc groups.
 
     Args:
         properties: list of all css properties
-        properties_ranking: map of property rankings
-        num_layers: the number of group to split
-        partition_rule: cumulative distribution over properties_ranking
-                        Ex: [0.3, 0.6, 1]
+        bitfield_properties: set of properties that are bitfields
+        inherited: whether we are considering inherited properties
+                   (otherwise, only non-inherited)
     """
-    if partition_rule is None:
-        partition_rule = [
-            1.0 * (i + 1) / num_layers for i in range(num_layers)
-        ]
+    base_name = "misc"
+    if inherited:
+        base_name += "-inherited"
 
-    assert num_layers == len(partition_rule), \
-        "Length of rule and num_layers mismatch"
-
-    layers_name = [
-        "rare-non-inherited-usage-less-than-{}-percent".format(
-            int(round(partition_rule[i] * 100))) for i in range(num_layers)
-    ]
-    properties_ranking = _get_properties_ranking_using_partition_rule(
-        properties_ranking, partition_rule)
-
-    for property_ in properties:
-        rank = _best_rank(property_, properties_ranking)
-        if (property_.field_group is not None and "*" in property_.field_group
-                and not property_.inherited and rank >= 0):
-
-            assert property_.field_group == "*", \
-                "The property {}  will be automatically assigned a group, " \
-                "please put '*' as the field_group".format(property_.name)
-
-            property_.field_group = "->".join(layers_name[0:rank])
-        elif (property_.field_group is not None
-              and "*" in property_.field_group and not property_.inherited
-              and rank < 0):
-            group_tree = property_.field_group.split("->")[1:]
-            group_tree = [layers_name[0], layers_name[0] + "-sub"] + group_tree
-            property_.field_group = "->".join(group_tree)
-
-
-def _evaluate_rare_inherit_group(properties,
-                                 properties_ranking,
-                                 num_layers,
-                                 partition_rule=None):
-    """Re-evaluate the grouping of RareInherited groups based on each property's
-    popularity.
-
-    Args:
-        properties: list of all css properties
-        properties_ranking: map of property rankings
-        num_layers: the number of group to split
-        partition_rule: cumulative distribution over properties_ranking
-                        Ex: [0.4, 1]
-    """
-    if partition_rule is None:
-        partition_rule = [
-            1.0 * (i + 1) / num_layers for i in range(num_layers)
-        ]
-
-    assert num_layers == len(partition_rule), \
-        "Length of rule and num_layers mismatch"
-
-    layers_name = [
-        "rare-inherited-usage-less-than-{}-percent".format(
-            int(round(partition_rule[i] * 100))) for i in range(num_layers)
-    ]
-
-    properties_ranking = _get_properties_ranking_using_partition_rule(
-        properties_ranking, partition_rule)
-
-    for property_ in properties:
-        rank = _best_rank(property_, properties_ranking)
-        if (property_.field_group is not None and "*" in property_.field_group
-                and property_.inherited and rank >= 0):
-            property_.field_group = "->".join(layers_name[0:rank])
-        elif (property_.field_group is not None
-              and "*" in property_.field_group and property_.inherited
-              and rank < 0):
-            group_tree = property_.field_group.split("->")[1:]
-            group_tree = [layers_name[0], layers_name[0] + "-sub"] + group_tree
-            property_.field_group = "->".join(group_tree)
+    i = 0
+    for prop in properties:
+        if (prop.field_group is not None and prop.field_group == "*"
+                and prop.inherited == inherited):
+            if prop.name.original in bitfield_properties:
+                # Putting a small (usually 1-bit, but we allow up to 7-bit) field
+                # into a deep misc group is a very risky business. Essentially,
+                # if the bet pays off (the field isn't used), we save one bit.
+                # But if the field _is_ used, we need to allocate a raredata group,
+                # which as of February 2025 is often 100 bytes.
+                #
+                # Taking a 800:1 bet is very unlikely to be worth it. (Of course,
+                # with multiple fields,  the math is going to be different, but the
+                # basic idea stands. In any case, we _also_ pay the price of pointer
+                # chasing every time we access them, which further tilts the balance.)
+                # So we put them on the top of the misc group.
+                prop.field_group = base_name
+            else:
+                # TODO(sesse): This basically splits groups alphabetically by number
+                # of elements (hopefully those with a common prefix are somewhat related).
+                # Consider doing something _slightly_ smarter, like e.g. balancing the groups
+                # by size. (We used to have a popularity-based system, but it was no better
+                # than this and much more complex.)
+                group_size = 16
+                prop.field_group = base_name + "->" + base_name + str(
+                    i // group_size + 1)
+                i += 1
 
 
 class ComputedStyleBaseWriter(json5_generator.Writer):
@@ -574,22 +492,17 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         group_parameters = dict([
             (conf["name"], conf["cumulative_distribution"])
             for conf in json5_generator.Json5File.load_from_files(
-                [json5_file_paths[6]]).name_dictionaries
+                [json5_file_paths[5]]).name_dictionaries
         ])
 
-        properties_ranking = [
-            x["name"].original
-            for x in json5_generator.Json5File.load_from_files(
-                [json5_file_paths[5]]).name_dictionaries
-        ]
-        _evaluate_rare_non_inherited_group(
-            self._properties, properties_ranking,
-            len(group_parameters["rare_non_inherited_properties_rule"]),
-            group_parameters["rare_non_inherited_properties_rule"])
-        _evaluate_rare_inherit_group(
-            self._properties, properties_ranking,
-            len(group_parameters["rare_inherited_properties_rule"]),
-            group_parameters["rare_inherited_properties_rule"])
+        bitfield_properties = {
+            p.name.original
+            for p in self._properties if p.field_template is not None
+            and int(_find_size_for_property(p) or 64) < 8
+        }
+
+        _evaluate_misc_group(self._properties, bitfield_properties, False)
+        _evaluate_misc_group(self._properties, bitfield_properties, True)
         self._root_group = _create_groups(self._properties)
         # We create separate groups/fields for generating ComputedStyle-
         # BuilderBase. The only difference between these fields and the regular

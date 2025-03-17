@@ -110,6 +110,9 @@ def Gnrt(*args) -> str:
 def GnrtUpdate(args: List[str], check_stdout: bool,
                check_exitcode: bool) -> str:
     """Runs `gnrt update` command."""
+    # See the `[dependencies.cxxbridge-cmd]` section in
+    # `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+    # `-Zbindeps` flag is needed.
     args = ["update", "--"] + args + ["-Zunstable-options", "-Zbindeps"]
     return RunCommandAndCheckForErrors([RUN_GNRT] + list(args),
                                        check_stdout=check_stdout,
@@ -317,7 +320,7 @@ def FindUpdateableCrates(args) -> List[str]:
     `("syn@2.0.50", "syn@2.0.51")`) that represent possible updates.
     (Idempotent - afterwards it runs `git reset --hard` to undo any changes.)"""
     print("Checking which crates can be updated...")
-    assert not Git("status", "--porcelain")  # No local changes expected here.
+    assert not IsGitDirty()  # No local changes expected here.
     old_crate_ids = GetCurrentCrateIds()
     GnrtUpdate(args.remaining_args, check_stdout=False, check_exitcode=False)
     new_crate_ids = GetCurrentCrateIds()
@@ -343,7 +346,7 @@ def FindSizeOfCrateUpdate(old_crate_id: str, new_crate_id: str,
 
     print(
         f"Measuring the delta of updating {old_crate_id} => {new_crate_id}...")
-    assert not Git("status", "--porcelain")  # No local changes expected here.
+    assert not IsGitDirty()  # No local changes expected here.
     old_crate_ids = GetCurrentCrateIds()
     GnrtUpdateCrate(old_crate_id,
                     new_crate_id,
@@ -483,9 +486,9 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
     only_minor_updates = not DoArgsAskForBreakingChanges(args.remaining_args)
 
     print(f"Updating {old_crate_id} to {new_crate_id}...")
-    assert not Git("status", "--porcelain")  # No local changes expected here.
+    assert not IsGitDirty()  # No local changes expected here.
     Git("checkout", upstream_branch)
-    assert not Git("status", "--porcelain")  # No local changes expected here.
+    assert not IsGitDirty()  # No local changes expected here.
 
     # gnrt update
     old_crate_ids = GetCurrentCrateIds()
@@ -563,7 +566,7 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     Gnrt("gen")
     # Some crates (e.g. ones in the `remove_crates` list of `gnrt_config.toml`)
     # may result in no changes - this is why we have an `if` below...
-    if Git("status", "--porcelain"):
+    if IsGitDirty():
         GitAddRustFiles()
         GitCommit(args, "gnrt gen")
 
@@ -631,12 +634,20 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
         exempted_crate_name = ConvertCrateIdToCrateName(exempted_crate_id)
         print(f"  WARNING: The `{exempted_crate_name}` crate "\
                "is covered by an exemption rather than an audit. "\
-               "Please bump the exemption in `vet_config.toml.hbs` "\
+               "Please bump the exemption in "\
+               "`third_party/rust/chromium_crates_io/vet_config.toml.hbs` "\
                "and run `tools/crates/run_gnrt.py vendor` again.")
 
 
 def IsGitDirty():
-    if Git("status", "--porcelain"):
+    # Make sure there are no uncommitted changes in //third_party/rust,
+    # including untracked files, because any untracked files might conflict
+    # with new files that might need to be added.
+    #
+    # Since the roll script won't add new files outside //third_party/rust
+    # though, ignore untracked changes there.
+    if Git("status", "--porcelain", "third_party/rust") and Git(
+            "status", "--porcelain", "--untracked-files=no"):
         return True
     else:
         return False
@@ -686,7 +697,7 @@ def GitClUpload(*args):
     # to suppress a prompt, although I am not sure what prompt + why that prompt
     # appears.
     Git("cl", "upload", "--bypass-hooks", "--force", "-o", "banned-words~skip",
-        *args)
+        "--squash", *args)
 
 
 def GitCommit(args, title, error_if_no_changes=True):

@@ -98,7 +98,7 @@ class EntryTokenDeleter {
     }
 
     token->clear_value();
-    return token->ByteSize() == 0;
+    return token->ByteSizeLong() == 0;
   }
 
  private:
@@ -106,7 +106,7 @@ class EntryTokenDeleter {
     metadata->clear_status();
     metadata->clear_observations();
     metadata->clear_value_hash();
-    return metadata->ByteSize() == 0;
+    return metadata->ByteSizeLong() == 0;
   }
 };
 
@@ -207,19 +207,21 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
 
   specifics.set_guid(profile.guid());
   specifics.set_address_type(RecordTypeToAddressType(profile.record_type()));
-  specifics.set_use_count(profile.use_count());
+  specifics.set_use_count(profile.usage_history().use_count());
   specifics.set_use_date_unix_epoch_seconds(
-      (profile.use_date() - base::Time::UnixEpoch()).InSeconds());
-  if (auto use_date2 = profile.use_date(2)) {
+      (profile.usage_history().use_date() - base::Time::UnixEpoch())
+          .InSeconds());
+  if (auto use_date2 = profile.usage_history().use_date(2)) {
     specifics.set_use_date2_unix_epoch_seconds(
         (*use_date2 - base::Time::UnixEpoch()).InSeconds());
   }
-  if (auto use_date3 = profile.use_date(3)) {
+  if (auto use_date3 = profile.usage_history().use_date(3)) {
     specifics.set_use_date3_unix_epoch_seconds(
         (*use_date3 - base::Time::UnixEpoch()).InSeconds());
   }
   specifics.set_date_modified_unix_epoch_seconds(
-      (profile.modification_date() - base::Time::UnixEpoch()).InSeconds());
+      (profile.usage_history().modification_date() - base::Time::UnixEpoch())
+          .InSeconds());
   specifics.set_language_code(profile.language_code());
   specifics.set_profile_label(profile.profile_label());
 
@@ -231,6 +233,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_name_first(), NAME_FIRST);
   s.Set(specifics.mutable_name_middle(), NAME_MIDDLE);
   s.Set(specifics.mutable_name_last(), NAME_LAST);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    s.Set(specifics.mutable_name_last_prefix(), NAME_LAST_PREFIX);
+    s.Set(specifics.mutable_name_last_core(), NAME_LAST_CORE);
+  }
   s.Set(specifics.mutable_name_last_first(), NAME_LAST_FIRST);
   s.Set(specifics.mutable_name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.mutable_name_last_second(), NAME_LAST_SECOND);
@@ -342,22 +348,23 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
                           AddressTypeToRecordType(specifics.address_type()),
                           AddressCountryCode(country_code));
 
-  profile.set_use_count(specifics.use_count());
-  profile.set_use_date(base::Time::UnixEpoch() +
-                       base::Seconds(specifics.use_date_unix_epoch_seconds()));
+  profile.usage_history().set_use_count(specifics.use_count());
+  profile.usage_history().set_use_date(
+      base::Time::UnixEpoch() +
+      base::Seconds(specifics.use_date_unix_epoch_seconds()));
   if (specifics.has_use_date2_unix_epoch_seconds()) {
-    profile.set_use_date(
+    profile.usage_history().set_use_date(
         base::Time::UnixEpoch() +
             base::Seconds(specifics.use_date2_unix_epoch_seconds()),
         2);
   }
   if (specifics.has_use_date3_unix_epoch_seconds()) {
-    profile.set_use_date(
+    profile.usage_history().set_use_date(
         base::Time::UnixEpoch() +
             base::Seconds(specifics.use_date3_unix_epoch_seconds()),
         3);
   }
-  profile.set_modification_date(
+  profile.usage_history().set_modification_date(
       base::Time::UnixEpoch() +
       base::Seconds(specifics.date_modified_unix_epoch_seconds()));
   profile.set_language_code(specifics.language_code());
@@ -370,6 +377,10 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.name_first(), NAME_FIRST);
   s.Set(specifics.name_middle(), NAME_MIDDLE);
   s.Set(specifics.name_last(), NAME_LAST);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    s.Set(specifics.name_last_prefix(), NAME_LAST_PREFIX);
+    s.Set(specifics.name_last_core(), NAME_LAST_CORE);
+  }
   s.Set(specifics.name_last_first(), NAME_LAST_FIRST);
   s.Set(specifics.name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.name_last_second(), NAME_LAST_SECOND);
@@ -457,6 +468,14 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_name_last())) {
     trimmed_specifics.clear_name_last();
+  }
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    if (d.Delete(trimmed_specifics.mutable_name_last_prefix())) {
+      trimmed_specifics.clear_name_last_prefix();
+    }
+    if (d.Delete(trimmed_specifics.mutable_name_last_core())) {
+      trimmed_specifics.clear_name_last_core();
+    }
   }
   if (d.Delete(trimmed_specifics.mutable_name_last_first())) {
     trimmed_specifics.clear_name_last_first();

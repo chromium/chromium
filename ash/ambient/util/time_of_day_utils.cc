@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/constants/ash_features.h"
@@ -21,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash {
@@ -111,10 +113,26 @@ void InstallAmbientVideoDlcInBackground() {
                           base::DoNothing());
 }
 
+AmbientVideo GetDefaultAmbientVideo() {
+  return ShouldShowJupiterVideo() ? AmbientVideo::kJupiter
+                                  : AmbientVideo::kNewMexico;
+}
+
+bool ShouldShowJupiterVideo() {
+  const std::optional<std::string_view> customization_id =
+      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kCustomizationIdKey);
+  VLOG(1) << __func__
+          << " customization_id: " << customization_id.value_or("null");
+  return customization_id == kJupiterScreensaverCustomizationId;
+}
+
 const base::FilePath::CharType kTimeOfDayCloudsVideo[] =
     FILE_PATH_LITERAL("clouds.webm");
 const base::FilePath::CharType kTimeOfDayNewMexicoVideo[] =
     FILE_PATH_LITERAL("new_mexico.webm");
+const base::FilePath::CharType kTimeOfDayJupiterVideo[] =
+    FILE_PATH_LITERAL("jupiter.webm");
 const base::FilePath::CharType kTimeOfDayVideoHtmlSubPath[] =
     FILE_PATH_LITERAL("personalization/time_of_day/src/ambient_video.html");
 

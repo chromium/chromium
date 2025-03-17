@@ -13,6 +13,7 @@
 #include <linux/usbdevice_fs.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
 #include <numeric>
 #include <tuple>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,6 +38,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#include "services/device/public/cpp/device_features.h"
+#include "services/device/usb/usb_interface_detach_allowlist.h"
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 namespace device {
 
@@ -147,41 +152,6 @@ UsbTransferStatus ConvertTransferResult(int rc) {
 
 }  // namespace
 
-class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
- public:
-  BlockingTaskRunnerHelper(
-      base::ScopedFD fd,
-      base::ScopedFD lifeline_fd,
-      base::WeakPtr<UsbDeviceHandleUsbfs> device_handle,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
-  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
-
-  ~BlockingTaskRunnerHelper();
-
-  void Start();
-  void ReleaseFileDescriptor();
-
-  bool SetConfiguration(int configuration_value);
-  bool ReleaseInterface(int interface_number);
-  bool SetInterface(int interface_number, int alternate_setting);
-  bool ResetDevice();
-  bool ClearHalt(uint8_t endpoint_address);
-  void DiscardUrb(Transfer* transfer);
-
- private:
-  // Called when |fd_| is writable without blocking.
-  void OnFileCanWriteWithoutBlocking();
-
-  base::ScopedFD fd_;
-  base::ScopedFD lifeline_fd_;
-  base::WeakPtr<UsbDeviceHandleUsbfs> device_handle_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  std::unique_ptr<base::FileDescriptorWatcher::Controller> watch_controller_;
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
 struct UsbDeviceHandleUsbfs::Transfer final {
   Transfer() = delete;
   Transfer(scoped_refptr<base::RefCountedBytes> buffer,
@@ -204,7 +174,7 @@ struct UsbDeviceHandleUsbfs::Transfer final {
   bool cancelled = false;
 
   // When the URB is |cancelled| these two flags track whether the URB has both
-  // been |discarded| and |reaped| since the possiblity of last-minute
+  // been |discarded| and |reaped| since the possibility of last-minute
   // completion makes these two conditions race.
   bool discarded = false;
   bool reaped = false;
@@ -219,15 +189,23 @@ struct UsbDeviceHandleUsbfs::Transfer final {
   usbdevfs_urb urb;
 };
 
-UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper(
+UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+void UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::Initialize(
     base::ScopedFD fd,
     base::ScopedFD lifeline_fd,
     base::WeakPtr<UsbDeviceHandleUsbfs> device_handle,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : fd_(std::move(fd)),
-      lifeline_fd_(std::move(lifeline_fd)),
-      device_handle_(std::move(device_handle)),
-      task_runner_(std::move(task_runner)) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(fd.is_valid());
+
+  fd_ = std::move(fd);
+  lifeline_fd_ = std::move(lifeline_fd);
+  device_handle_ = std::move(device_handle);
+  task_runner_ = std::move(task_runner);
+
   // Linux indicates that URBs are available to reap by marking the file
   // descriptor writable.
   watch_controller_ = base::FileDescriptorWatcher::WatchWritable(
@@ -263,6 +241,21 @@ bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::SetConfiguration(
   return true;
 }
 
+bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ClaimInterface(
+    int interface_number) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  int rc = HANDLE_EINTR(
+      ioctl(fd_.get(), USBDEVFS_CLAIMINTERFACE, &interface_number));
+  if (rc) {
+    USB_PLOG(DEBUG) << "Failed to claim interface " << interface_number;
+    return false;
+  }
+  return true;
+}
+
 bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ReleaseInterface(
     int interface_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -275,9 +268,78 @@ bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ReleaseInterface(
     USB_PLOG(DEBUG) << "Failed to release interface " << interface_number;
     return false;
   }
-
   return true;
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::DetachInterface(
+    int interface_number,
+    const CombinedInterfaceInfo& interface_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  std::string driver_name = GetKernelDriver(interface_number);
+  if (driver_name.empty()) {
+    USB_PLOG(DEBUG) << "Nothing to detach, interface " << interface_number
+                    << " can be claimed right away";
+    return true;
+  }
+
+  if (!UsbInterfaceDetachAllowlist::Get().CanDetach(
+          driver_name, *interface_info.alternate)) {
+    USB_PLOG(DEBUG) << "Not allowed to detach interface " << interface_number
+                    << " attached to driver " << driver_name;
+    return false;
+  }
+
+  struct usbdevfs_ioctl cmd = {};
+  cmd.ifno = interface_number;
+  cmd.ioctl_code = USBDEVFS_DISCONNECT;
+
+  int rc = HANDLE_EINTR(ioctl(fd_.get(), USBDEVFS_IOCTL, &cmd));
+  // ENODATA is a benign error code which is when the interface isn't
+  // associated with any driver.
+  if (rc < 0 && errno != ENODATA) {
+    USB_PLOG(DEBUG) << "Failed to detach interface " << interface_number;
+    return false;
+  }
+  detached_interfaces_.insert(interface_number);
+  return true;
+}
+
+std::string UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::GetKernelDriver(
+    int interface_number) const {
+  struct usbdevfs_getdriver cmd = {};
+  cmd.interface = interface_number;
+
+  int rc = HANDLE_EINTR(ioctl(fd_.get(), USBDEVFS_GETDRIVER, &cmd));
+  return rc < 0 ? "" : cmd.driver;
+}
+
+bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ReattachInterface(
+    int interface_number) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!detached_interfaces_.contains(interface_number)) {
+    return true;
+  }
+  detached_interfaces_.erase(interface_number);
+
+  struct usbdevfs_ioctl cmd = {};
+  cmd.ifno = interface_number;
+  cmd.ioctl_code = USBDEVFS_CONNECT;
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  int rc = HANDLE_EINTR(ioctl(fd_.get(), USBDEVFS_IOCTL, &cmd));
+  if (rc < 0) {
+    USB_PLOG(DEBUG) << "Failed to reattach interface " << interface_number;
+    return false;
+  }
+  return true;
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::SetInterface(
     int interface_number,
@@ -356,8 +418,9 @@ void UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::
     usbdevfs_urb* urb = nullptr;
     int rc = HANDLE_EINTR(ioctl(fd_.get(), USBDEVFS_REAPURBNDELAY, &urb));
     if (rc || !urb) {
-      if (errno == EAGAIN)
+      if (errno == EAGAIN) {
         break;
+      }
       USB_PLOG(DEBUG) << "Failed to reap urbs";
       if (errno == ENODEV) {
         // Device has disconnected. Stop watching the file descriptor to avoid
@@ -430,19 +493,33 @@ UsbDeviceHandleUsbfs::UsbDeviceHandleUsbfs(
     base::ScopedFD lifeline_fd,
     const std::string& client_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
+    : UsbDeviceHandleUsbfs::UsbDeviceHandleUsbfs(
+          std::move(device),
+          std::move(fd),
+          std::move(lifeline_fd),
+          client_id,
+          std::move(blocking_task_runner),
+          std::make_unique<BlockingTaskRunnerHelper>()) {}
+UsbDeviceHandleUsbfs::UsbDeviceHandleUsbfs(
+    scoped_refptr<UsbDevice> device,
+    base::ScopedFD fd,
+    base::ScopedFD lifeline_fd,
+    const std::string& client_id,
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+    std::unique_ptr<BlockingTaskRunnerHelper> helper)
     : device_(std::move(device)),
       fd_(fd.get()),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      helper_(std::move(blocking_task_runner), std::move(helper)) {
   DCHECK(device_);
-  DCHECK(fd.is_valid());
 
   if (!client_id.empty()) {
     client_id_ = client_id;
   }
 
-  helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
-      std::move(blocking_task_runner), std::move(fd), std::move(lifeline_fd),
-      weak_factory_.GetWeakPtr(), task_runner_);
+  helper_.AsyncCall(&BlockingTaskRunnerHelper::Initialize)
+      .WithArgs(std::move(fd), std::move(lifeline_fd),
+                weak_factory_.GetWeakPtr(), task_runner_);
 }
 
 scoped_refptr<UsbDevice> UsbDeviceHandleUsbfs::GetDevice() const {
@@ -452,14 +529,16 @@ scoped_refptr<UsbDevice> UsbDeviceHandleUsbfs::GetDevice() const {
 
 void UsbDeviceHandleUsbfs::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!device_)
+  if (!device_) {
     return;  // Already closed.
+  }
 
   // Cancelling transfers may run or destroy callbacks holding the last
   // reference to this object so hold a reference for the rest of this method.
   scoped_refptr<UsbDeviceHandleUsbfs> self(this);
-  for (const auto& transfer : transfers_)
+  for (const auto& transfer : transfers_) {
     CancelTransfer(transfer.get(), UsbTransferStatus::CANCELLED);
+  }
 
   // On the |task_runner_| thread check |device_| to see if the handle is
   // closed. In |helper_| thread check |fd_.is_valid()| to see if the handle is
@@ -501,13 +580,16 @@ void UsbDeviceHandleUsbfs::ClaimInterface(int interface_number,
     return;
   }
 
-  if (base::Contains(interfaces_, interface_number)) {
+  if (IsInterfaceClaimedByAny(interface_number)) {
     USB_LOG(DEBUG) << "Interface " << interface_number << " already claimed.";
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(std::move(callback), false));
     return;
   }
 
+  // First detach the interface from a kernel driver that might be attached to
+  // it, then claim the interface.
+  // Note: |ClaimInterface| is invoked from |DetachInterfaceComplete|.
 #if BUILDFLAG(IS_CHROMEOS)
   if (client_id_.has_value()) {
     chromeos::PermissionBrokerClient::Get()->DetachInterface(
@@ -517,6 +599,27 @@ void UsbDeviceHandleUsbfs::ClaimInterface(int interface_number,
     return;
   }
 #endif
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kAutomaticUsbDetach)) {
+    const mojom::UsbConfigurationInfo* config =
+        device_->GetActiveConfiguration();
+    if (!config) {
+      USB_PLOG(DEBUG) << "No active configuration for detaching interface "
+                      << interface_number;
+      DetachInterfaceComplete(interface_number, std::move(callback), false);
+      return;
+    }
+
+    CombinedInterfaceInfo interface_info = FindInterfaceInfoFromConfig(
+        config, interface_number, /*alternate_setting=*/0);
+    CHECK(interface_info.IsValid());
+    helper_.AsyncCall(&BlockingTaskRunnerHelper::DetachInterface)
+        .WithArgs(interface_number, interface_info)
+        .Then(base::BindOnce(&UsbDeviceHandleUsbfs::DetachInterfaceComplete,
+                             this, interface_number, std::move(callback)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   DetachInterfaceComplete(interface_number, std::move(callback), true);
 }
 
@@ -524,6 +627,13 @@ void UsbDeviceHandleUsbfs::ReleaseInterface(int interface_number,
                                             ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!device_) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  if (!IsInterfaceClaimedByThis(interface_number)) {
+    USB_LOG(DEBUG) << "Interface " << interface_number << " was not claimed.";
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(std::move(callback), false));
     return;
@@ -728,8 +838,9 @@ const mojom::UsbInterfaceInfo* UsbDeviceHandleUsbfs::FindInterfaceByEndpoint(
     uint8_t endpoint_address) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = endpoints_.find(endpoint_address);
-  if (it != endpoints_.end())
+  if (it != endpoints_.end()) {
     return it->second.interface;
+  }
   return nullptr;
 }
 
@@ -788,17 +899,26 @@ void UsbDeviceHandleUsbfs::DetachInterfaceComplete(int interface_number,
     return;
   }
 
-  // It appears safe to assume that this ioctl will not block.
-  int rc = HANDLE_EINTR(ioctl(fd_, USBDEVFS_CLAIMINTERFACE, &interface_number));
-  if (rc) {
-    USB_PLOG(DEBUG) << "Failed to claim interface " << interface_number;
-  } else {
+  helper_.AsyncCall(&BlockingTaskRunnerHelper::ClaimInterface)
+      .WithArgs(interface_number)
+      .Then(base::BindOnce(&UsbDeviceHandleUsbfs::ClaimInterfaceComplete, this,
+                           interface_number, std::move(callback)));
+}
+
+void UsbDeviceHandleUsbfs::ClaimInterfaceComplete(int interface_number,
+                                                  ResultCallback callback,
+                                                  bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!success) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (device_) {
+    // Only refresh endpoints if a device is still attached.
     interfaces_[interface_number].alternate_setting = 0;
     RefreshEndpointInfo();
   }
-
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(std::move(callback), rc == 0));
+  std::move(callback).Run(true);
 }
 
 void UsbDeviceHandleUsbfs::ReleaseInterfaceComplete(int interface_number,
@@ -822,6 +942,14 @@ void UsbDeviceHandleUsbfs::ReleaseInterfaceComplete(int interface_number,
   if (client_id_.has_value()) {
     chromeos::PermissionBrokerClient::Get()->ReattachInterface(
         client_id_.value(), interface_number, std::move(callback));
+    return;
+  }
+#endif
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kAutomaticUsbDetach)) {
+    helper_.AsyncCall(&BlockingTaskRunnerHelper::ReattachInterface)
+        .WithArgs(interface_number)
+        .Then(std::move(callback));
     return;
   }
 #endif
@@ -858,8 +986,9 @@ void UsbDeviceHandleUsbfs::IsochronousTransferInternal(
   transfer->urb.endpoint = endpoint_address;
   transfer->urb.buffer_length = total_length;
 
-  for (size_t i = 0; i < packet_lengths.size(); ++i)
+  for (size_t i = 0; i < packet_lengths.size(); ++i) {
     transfer->urb.iso_frame_desc[i].length = packet_lengths[i];
+  }
 
   // USBDEVFS_SUBMITURB appears to be non-blocking as completion is reported
   // by USBDEVFS_REAPURBNDELAY. This code assumes a recent kernel that can
@@ -885,8 +1014,9 @@ void UsbDeviceHandleUsbfs::ReapedUrbs(const std::vector<usbdevfs_urb*>& urbs) {
 
     if (transfer->cancelled) {
       transfer->reaped = true;
-      if (transfer->discarded)
+      if (transfer->discarded) {
         RemoveFromTransferList(transfer);
+      }
     } else {
       TransferComplete(RemoveFromTransferList(transfer));
     }
@@ -896,8 +1026,9 @@ void UsbDeviceHandleUsbfs::ReapedUrbs(const std::vector<usbdevfs_urb*>& urbs) {
 void UsbDeviceHandleUsbfs::TransferComplete(
     std::unique_ptr<Transfer> transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (transfer->cancelled)
+  if (transfer->cancelled) {
     return;
+  }
 
   // The transfer will soon be freed. Cancel the timeout callback so that the
   // raw pointer it holds to |transfer| is not used.
@@ -939,8 +1070,9 @@ void UsbDeviceHandleUsbfs::RefreshEndpointInfo() {
   endpoints_.clear();
 
   const mojom::UsbConfigurationInfo* config = device_->GetActiveConfiguration();
-  if (!config)
+  if (!config) {
     return;
+  }
 
   for (const auto& entry : interfaces_) {
     CombinedInterfaceInfo interface = FindInterfaceInfoFromConfig(
@@ -976,8 +1108,9 @@ void UsbDeviceHandleUsbfs::ReportIsochronousError(
 void UsbDeviceHandleUsbfs::SetUpTimeoutCallback(Transfer* transfer,
                                                 unsigned int timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (timeout == 0)
+  if (timeout == 0) {
     return;
+  }
 
   transfer->timeout_closure.Reset(
       base::BindOnce(&UsbDeviceHandleUsbfs::OnTimeout, this, transfer));
@@ -992,8 +1125,8 @@ void UsbDeviceHandleUsbfs::OnTimeout(Transfer* transfer) {
 std::unique_ptr<UsbDeviceHandleUsbfs::Transfer>
 UsbDeviceHandleUsbfs::RemoveFromTransferList(Transfer* transfer_ptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(transfers_, transfer_ptr,
-                               &std::unique_ptr<Transfer>::get);
+  auto it = std::ranges::find(transfers_, transfer_ptr,
+                              &std::unique_ptr<Transfer>::get);
   CHECK(it != transfers_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<Transfer> transfer = std::move(*it);
   transfers_.erase(it);
@@ -1005,8 +1138,9 @@ void UsbDeviceHandleUsbfs::CancelTransfer(Transfer* transfer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(device_);
 
-  if (transfer->cancelled)
+  if (transfer->cancelled) {
     return;
+  }
 
   // |transfer| must stay in |transfers_| as it is still being processed by the
   // kernel and will be reaped later.
@@ -1039,8 +1173,23 @@ void UsbDeviceHandleUsbfs::CancelTransfer(Transfer* transfer,
 void UsbDeviceHandleUsbfs::UrbDiscarded(Transfer* transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   transfer->discarded = true;
-  if (transfer->reaped)
+  if (transfer->reaped) {
     RemoveFromTransferList(transfer);
+  }
+}
+
+bool UsbDeviceHandleUsbfs::IsInterfaceClaimedByThis(
+    int interface_number) const {
+  return base::Contains(interfaces_, interface_number);
+}
+
+bool UsbDeviceHandleUsbfs::IsInterfaceClaimedByAny(int interface_number) const {
+  return std::ranges::any_of(
+      GetDevice()->handles(), [interface_number](UsbDeviceHandle* h) {
+        // All handles are of the same type depending on the platform
+        UsbDeviceHandleUsbfs* handle = static_cast<UsbDeviceHandleUsbfs*>(h);
+        return handle && handle->IsInterfaceClaimedByThis(interface_number);
+      });
 }
 
 }  // namespace device

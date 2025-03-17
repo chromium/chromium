@@ -16,6 +16,8 @@
 namespace autofill {
 
 // Common base class for those AutofillClients that have the //content layer.
+//
+// There must be at most one instance per content::WebContents.
 class ContentAutofillClient
     : public AutofillClient,
       public content::WebContentsUserData<ContentAutofillClient> {

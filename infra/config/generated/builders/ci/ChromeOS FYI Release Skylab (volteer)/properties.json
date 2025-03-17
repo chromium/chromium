@@ -34,7 +34,6 @@
                 ],
                 "config": "chromium"
               },
-              "run_tests_serially": true,
               "skylab_upload_location": {
                 "gs_bucket": "chromium-ci-skylab",
                 "gs_extra": "chromeos_gpu"
@@ -55,21 +54,19 @@
           "builder": "gpu-fyi-try-chromeos-skylab-volteer",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ChromeOS FYI Release Skylab (volteer)/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

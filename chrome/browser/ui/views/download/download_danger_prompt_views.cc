@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -225,12 +224,14 @@ void DownloadDangerPromptViews::RunDone(Action action) {
         RecordDownloadDangerPromptHistogram("Proceed", *download_);
       }
       RecordDownloadWarningEvent(action, download_);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       // Do not send cancel report since it's not a terminal action.
       if (accept) {
         SendSafeBrowsingDownloadReport(
             ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API, accept,
             download_);
       }
+#endif
     }
     download_->RemoveObserver(this);
     download_ = nullptr;

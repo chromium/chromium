@@ -319,7 +319,6 @@ class AnnotationTextManagerViewportTest : public AnnotationTextManagerTest {
       const AnnotationTextManagerViewportTest&) = delete;
 
  protected:
-
   std::string GetScriptName() override { return kViewportScriptName; }
 
   void LoadHtmlAndExtractText(const std::string& html) override {
@@ -412,7 +411,6 @@ TEST_F(AnnotationTextManagerViewportTest, CheckWkMetadata) {
   }));
   EXPECT_TRUE(observer()->metadata().FindBool("wkNoTelephone").value());
 }
-
 
 TEST_F(AnnotationTextManagerViewportTest, CheckNoMetadata) {
   LoadHtmlAndExtractText("<html>"

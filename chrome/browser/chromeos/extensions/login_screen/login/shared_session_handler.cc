@@ -39,7 +39,7 @@ constexpr size_t kScryptMaxMemory = 1024 * 1024 * 32;
 
 const user_manager::User* GetManagedGuestSessionUser() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  for (const user_manager::User* user : user_manager->GetUsers()) {
+  for (const user_manager::User* user : user_manager->GetPersistedUsers()) {
     if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
       continue;
     }

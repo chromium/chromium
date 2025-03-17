@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Скасавана</translation>
 <translation id="1020274983236703756">Цяпер даступны эксклюзіўныя аб’екты <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Рух Зямлі</translation>
+<translation id="102432830749687801">Праграма "Перанос змесціва" ад Google дазваляе перанесці даныя вучэбнага ўліковага запісу ў асабісты ўліковы запіс да таго, як вы страціце да іх доступ.</translation>
 <translation id="1026212596705997935">Спалучэнне клавіш выкарыстоўваецца для дзеяння "<ph name="CONFLICT_ACCEL_NAME" />". Націсніце новае спалучэнне. Каб замяніць існуючае, націсніце новае спалучэнне клавіш яшчэ раз.</translation>
 <translation id="1030856839388844477">Скінуць даныя выкарыстання трафіка</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -61,6 +62,7 @@
 <translation id="1223498995510244364">Падсумаваць</translation>
 <translation id="123124571410524056">Магчыма, выяўлены партал</translation>
 <translation id="1232610416724362657">вадаспад</translation>
+<translation id="1238163879850290856">Скіньце налады, каб іншыя асобы не маглі атрымаць доступ да даных. Выкарыстоўвайце толькі тыя спосабы ўводу, якім давяраеце.</translation>
 <translation id="1238612778414822719">Затрымка HTTPS</translation>
 <translation id="1252766349417594414">Джойсцік</translation>
 <translation id="1270369111467284986">Магчыма, партал узаемадзеяння</translation>
@@ -79,6 +81,7 @@
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Колер шпалер</translation>
+<translation id="1329478709358066995">Расшыфроўка:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Дапасаваць да вобласці сканіравання</translation>
 <translation id="1343442362630695901">салёнае возера</translation>
@@ -93,6 +96,7 @@
 <translation id="1394661041439318933">Узровень зараду акумулятара чахла: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Можна выканаць праверку ping для шлюза</translation>
 <translation id="1398634363027580500">Вельмі вялікая затрымка HTTPS</translation>
+<translation id="1406389211945506521">Дзякуй за водгук. Вы дапамагаеце нам ствараць больш дакладнае і карыснае змесціва.</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -123,7 +127,17 @@
 <translation id="1515129336378114413">галоўны экран браўзера</translation>
 <translation id="1526389707933164996">Анімацыя застаўкі</translation>
 <translation id="152892567002884378">Павялічыць гучнасць</translation>
+<translation id="1531038290222364269">Паказваць укладкі</translation>
 <translation id="1539864135338521185">лазурыт</translation>
+<translation id="1548555207631326346">Выберыце тэму, а потым націсніце на падкрэсленыя словы, каб персаналізаваць відарысы, створаныя з дапамогай AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Націсніце "Натхні мяне", каб атрымаць яшчэ больш унікальных і разнастайных відарысаў ад AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Калі вы выкарыстоўваеце штучны інтэлект, ваш запыт адпраўляецца на серверы Google, каб згенерыраваць відарысы і палепшыць прадукт. Гэта робіцца ў адпаведнасці з <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Палітыкай прыватнасці Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генератыўны штучны інтэлект – гэта эксперыментальная функцыя, якая знаходзіцца на раннім этапе распрацоўкі і пакуль даступная не ўсім.</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="155865706765934889">Сэнсарная панэль</translation>
 <translation id="1561927818299383735">колер падсветкі</translation>
@@ -198,8 +212,11 @@
 <translation id="1808803439260407870">Класічнае мастацтва</translation>
 <translation id="181434555916624618">На гэты момант вынікі, на якіх прысутнічаюць людзі, не паказваюцца. Паспрабуйце выкарыстаць іншы запыт.</translation>
 <translation id="1815850098929213707">Выбрана клавіша <ph name="KEYS" />. Каб змяніць выбар, націсніце на кнопку.</translation>
+<translation id="1818174214124933000">Пры націсканні кнопкі адпраўкі ваш водгук разам з паказаным ніжэй змесцівам будзе адпраўлены ў Google і разгледжаны спецыялістамі, пасля чаго ён будзе выкарыстоўвацца для навучання ці паляпшэння нашых прадуктаў і сэрвісаў у адпаведнасці з <ph name="LINK_POLICY_BEGIN" />Палітыкай прыватнасці<ph name="LINK_POLICY_END" /> і <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Умовамі выкарыстання Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Тэмы</translation>
 <translation id="1827738518074806965">Мастацкая галерэя</translation>
+<translation id="183287940576828840">Абразлівае або небяспечнае змесціва</translation>
+<translation id="1834032517784994783">Выбраць мову расшыфроўкі</translation>
 <translation id="1836553715834333258">Колер сістэмы</translation>
 <translation id="183675228220305365">рэалізм</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
@@ -225,6 +242,7 @@
 <translation id="1908234395526491708">Збоі запытаў UDP</translation>
 <translation id="1908394185991500139">стрэлка ўлева</translation>
 <translation id="1914144885717544695">у пятніцу</translation>
+<translation id="1915960750806557358">Напішыце водгук або апішыце праблему. Не ўказвайце асабістую і канфідэнцыяльную інфармацыю.</translation>
 <translation id="1923388006036088459">Колеравыя акцэнты</translation>
 <translation id="1945403655450283000">Дыктафон</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
@@ -245,7 +263,6 @@
 <translation id="2011174342667534258">Версія SDK:</translation>
 <translation id="2016697457005847575">Паспрабуйце знайсці і выправіць непаладку</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Выберыце тэму, а потым націсніце на падкрэсленыя словы, каб персаналізаваць відарысы, створаныя з дапамогай AI.</translation>
 <translation id="2045814230297767491">сталовыя прыборы</translation>
 <translation id="2047316797244836561">Каб праглядзець застаўку, падключыце прыладу да інтэрнэту і перазагрузіце старонку.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -273,6 +290,7 @@
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
 <translation id="2161656808144014275">Тэкст</translation>
 <translation id="2163937499206714165">Уключыць цёмны рэжым</translation>
+<translation id="2164131940279488868">Каб пачаць запіс аўдыя, праверце, ці падключаны мікрафон</translation>
 <translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2180197493692062006">Нешта пайшло не так. Паспрабуйце адкрыць праграму паўторна.</translation>
 <translation id="2189104374785738357">Змяненне падрабязных звестак пра APN</translation>
@@ -297,6 +315,7 @@
 <translation id="2244834438220057800">зялёны</translation>
 <translation id="225692081236532131">Стан актывацыі</translation>
 <translation id="2267285889943769271">Дадаць здымак экрана</translation>
+<translation id="2268044343513325586">Удакладніць</translation>
 <translation id="2271469253353559191">Расклад уключэння цёмнага рэжыму</translation>
 <translation id="2276999893457278469">Папулярнае даведачнае змесціва</translation>
 <translation id="2277631741861284101">З лёгкасцю запісвайце і абагульвайце аўдыя</translation>
@@ -309,7 +328,6 @@
 <translation id="2308243864813041101">Каб працягнуць абнаўленне, адключыце кабель USB ад прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2320295602967756579">Уключыць светлую тэму</translation>
 <translation id="2323506179655536734">ПРАПУШЧАНА</translation>
-<translation id="2323755382216917952">Гэта абнаўленне патрабуе, каб вы перазапусцілі камп’ютар і завяршылі ўсталяванне. Для завяршэння абнаўлення можа спатрэбіцца некалькі хвілін. Падчас абнаўлення ўбудаванага ПЗ не адключайце камп’ютар ад сеткі сілкавання і не завяршайце яго працу.</translation>
 <translation id="2324354238778375592">Зрабіць акно плаваючым</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Выдатны (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -355,7 +373,6 @@
 <translation id="2561093647892030937">лімоны</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2573178735329662769">Запіс усяго аўдыя Chromebook</translation>
-<translation id="2575552334616524665">Гэту функцыю заўсёды можна выключыць у наладах або ў меню <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Для мадэлі патрабуецца 2 ГБ у сховішчы</translation>
 <translation id="2584547424703650812">Зіхатлівыя краявіды</translation>
 <translation id="2584559707064218956">Каб задаць канфігурацыю, перайдзіце ў Налады</translation>
@@ -389,6 +406,7 @@
 <translation id="2731700343119398978">Пачакайце...</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Абагулена</translation>
+<translation id="2749164457515831917">Прапановы перамешаны</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
 <translation id="2754757901767760034">лямпа</translation>
 <translation id="2780756493585863768">Нядаўнія фоны, створаныя з дапамогай AI ад Google</translation>
@@ -397,6 +415,7 @@
 <translation id="2787237339470862294">Гэта мова пакуль што не падтрымліваецца</translation>
 <translation id="2787435249130282949">большая яркасць клавіятуры</translation>
 <translation id="2805756323405976993">Праграмы</translation>
+<translation id="2822702442014805146">Ідзе спампоўванне мадэлі стварэння зводкі і назвы</translation>
 <translation id="28232023175184696">Няма падключэння да інтэрнэту. Націсніце, каб паўтарыць спробу.</translation>
 <translation id="2855718259207180827">воўна</translation>
 <translation id="2859243502336719778">Важнае абнаўленне</translation>
@@ -442,6 +461,7 @@
 <translation id="3122883569442693641">Дадатковая інфармацыя</translation>
 <translation id="3124039320086536031">Прылада падключана.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Выдаліць старонку?}=1{Выдаліць старонку {PAGE_NUMBER}?}one{Выдаліць старонку {PAGE_NUMBER}?}few{Выдаліць старонку {PAGE_NUMBER}?}many{Выдаліць старонку {PAGE_NUMBER}?}other{Выдаліць старонку {PAGE_NUMBER}?}}</translation>
+<translation id="3134486240968249588">Што трэба помніць</translation>
 <translation id="3140130301071865159">снег</translation>
 <translation id="3146655726035122603">Эксклюзіўна для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
@@ -455,7 +475,6 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Увядзіце запыт, напрыклад: "Зрабі тон больш упэўненым"</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
-<translation id="3188931456353313123">Гэта абнаўленне пастаўлена вытворцам прылады і не было праверана Google.</translation>
 <translation id="319101249942218879">Відарыс аватара зменены</translation>
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
@@ -464,8 +483,8 @@
 <translation id="3226405216343213872">Ідзе пошук сканераў</translation>
 <translation id="3226657629376379887">Меню дзеянняў з макетам</translation>
 <translation id="3227186760713762082">Падзяліць значэнне "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Перапісванне</translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
+<translation id="3248791727258378769">Расшыфроўка не будзе створана</translation>
 <translation id="324961752321393509">Ваш адміністратар не дазваляе закрываць гэту праграму</translation>
 <translation id="3263941347294171263">Каб працягнуць абнаўленне, адключыце і падключыце зноў прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
@@ -494,8 +513,8 @@
 <translation id="3373141842870501561">Шпалеры "Рух Зямлі"</translation>
 <translation id="33736539805963175">Колер фону – <ph name="LETTERS_COLOR" />, літара "<ph name="LETTERS_LETTER" />"</translation>
 <translation id="3383623117265110236">Эксклюзіўна</translation>
+<translation id="3395147534045164351">Уключыць/выключыць месца прывязкі</translation>
 <translation id="3404249063913988450">Уключыць застаўку</translation>
-<translation id="3410165745972100556">Функцыя расшыфроўкі выключана</translation>
 <translation id="3413935475507503304">Каб працягнуць абнаўленне, націсніце "Далей".</translation>
 <translation id="3428551088151258685">на вольным паветры</translation>
 <translation id="3428971106895559033">пастэльны</translation>
@@ -509,6 +528,7 @@
 <translation id="3462187165860821523">Ідзе абнаўленне прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="346423161771747987">Ток</translation>
 <translation id="346539236881580388">Перазняць</translation>
+<translation id="3479552764303398839">Не зараз</translation>
 <translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп’ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
 <translation id="3486220673238053218">азначэнне</translation>
 <translation id="3487866404496702283">Водгук пра функцыю</translation>
@@ -546,11 +566,13 @@
 <translation id="3628462041319107639">Спампоўваецца мадэль расшыфроўкі…</translation>
 <translation id="3632040286124154621">Удалая прапанова</translation>
 <translation id="3632579075709132555">Пераключэнне экрана прыватнасці</translation>
+<translation id="3634941468757842845">Выбраць тэму</translation>
 <translation id="3639873154908477486">Назва (ад А да Я)</translation>
 <translation id="3644695927181369554">Няўдалая прапанова</translation>
 <translation id="3651050199673793219">Выберыце адзінку вымярэння тэмпературы</translation>
 <translation id="3661106764436337772">Пішыце хутчэй і з большай упэўненасцю</translation>
 <translation id="3662461537616691585">бардовы і цёмна-бардовы</translation>
+<translation id="3664755900672940272">Прыклады запытаў перамешаны</translation>
 <translation id="3668449597372804501">Шпалеры "Рух аблокаў"</translation>
 <translation id="3668570675727296296">Налады мовы</translation>
 <translation id="3675132884790542448">свінні</translation>
@@ -564,8 +586,10 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
+<translation id="3763034084412196440">Рэгуліроўка гучнасці</translation>
 <translation id="3767737419527918477">Шукаць файлы запісаў</translation>
 <translation id="3771294271822695279">Відэафайлы</translation>
+<translation id="3771694256347217732">Умовы выкарыстання Google</translation>
 <translation id="3780740315729837296">Прызначце клавішу клавіятуры</translation>
 <translation id="3784455785234192852">Блакіроўка</translation>
 <translation id="3785643128701396311">піксельная графіка</translation>
@@ -576,8 +600,6 @@
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="382043424867370667">Шпалеры "Захад сонца"</translation>
 <translation id="3824259034819781947">Далучыць файлы</translation>
-<translation id="383586991013681190">Выберыце мову расшыфроўкі і спампуйце яе ў Наладах</translation>
-<translation id="3836587210832263413">Уключайце толькі тыя пашырэнні, якім вы давяраеце</translation>
 <translation id="3838338534323494292">Новы пароль</translation>
 <translation id="3845880861638660475">Каб закрыць дыялогавае акно, націсніце <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">зацямніць клавіятуру</translation>
@@ -593,6 +615,7 @@
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
 <translation id="3877066159641251281">Праслухаць пераклад</translation>
 <translation id="3880601782712134623">аўтаматычна вызначаць асобныя галасы і прызначаць кожнаму суразмоўніку агульную метку, напрыклад, "Суразмоўнік 1" і "Суразмоўнік 2";</translation>
+<translation id="38811596981744338">Парушэнне заканадаўства</translation>
 <translation id="3885327323343477505">Змяніць застаўку</translation>
 <translation id="3889914174935857450">Дата скіду</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -600,7 +623,6 @@
 <translation id="391412459402535266">Не ўдаецца пратэсціраваць прыладу. Каб пачаць тэсціраванне, перайдзіце ў рэжым ноўтбука.</translation>
 <translation id="3916998944874125962">зрабіць здымак экрана</translation>
 <translation id="3923184630988645767">Выкарыстанне трафіка</translation>
-<translation id="3924445055519423964">Націсніце, каб падсумаваць змесціва вэб-старонкі ці файла PDF</translation>
 <translation id="3932043219784172185">Няма падключаных прылад</translation>
 <translation id="3934185438132762746">Не прызначана: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
@@ -641,6 +663,7 @@
 <translation id="4113067922640381334">Цяпер у вас ёсць доступ да новых <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />шпалер<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Цёмны рэжым</translation>
 <translation id="4126551873361000548">Перайсці назад на 10 с</translation>
+<translation id="4128271910628504223">Увядзіце запыт, напрыклад: "Нарысуй лес у тумане"</translation>
 <translation id="4130035430755296270">Навядзіце і ўтрымлівайце курсор, каб убачыць іншыя параметры макета</translation>
 <translation id="4130750466177569591">Згаджаюся</translation>
 <translation id="4131410914670010031">Чорна-белы друк</translation>
@@ -663,6 +686,7 @@
 <translation id="420283545744377356">Выключыць застаўку</translation>
 <translation id="4210636113897977670">Захаваць і выйсці</translation>
 <translation id="4210659479607886331">ледніковая рака</translation>
+<translation id="4212169537710712814">Мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />" спампавана</translation>
 <translation id="42126664696688958">Экспартаваць</translation>
 <translation id="4213104098953699324">Клавіятура з USB</translation>
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
@@ -691,6 +715,7 @@
 <translation id="4354430579665871434">клавіша</translation>
 <translation id="4356100841225547054">Выключыць гук</translation>
 <translation id="4361257691546579041">Тып APN: "Стандартна".</translation>
+<translation id="4368101969572512692">Перамяшаць прапановы</translation>
 <translation id="437294888293595148">Скінуць усе спалучэнні клавіш</translation>
 <translation id="437477383107495720">зайцы</translation>
 <translation id="4376423484621194274">Ваш адміністратар не дазваляе закрываць праграму "<ph name="APP_NAME" />"</translation>
@@ -708,6 +733,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />: выключана</translation>
 <translation id="4428840632568803690">Суразмоўнік <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Дзеянне білета Kerberos хутка скончыцца</translation>
+<translation id="4430019312045809116">Гучнасць</translation>
 <translation id="4431821876790500265">Паглядзець справаздачу</translation>
 <translation id="4443192710976771874">чырвоны</translation>
 <translation id="4447592701292766824">Не ўдаецца стварыць зводку для гэтага змесціва</translation>
@@ -729,7 +755,6 @@
 <translation id="4507392511610824664">павялічыць яркасць</translation>
 <translation id="4511264077854731334">Партал</translation>
 <translation id="4513946894732546136">Водгук</translation>
-<translation id="4516323842122524821">Гучнасць</translation>
 <translation id="4521826082652183069">Супадзенне па альтэрнатыўным імені суб’екта</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4536864596629708641">Канфігурацыя IP-адраса</translation>
@@ -757,7 +782,9 @@
 <translation id="4650608062294027130">Shift справа</translation>
 <translation id="4654549501020883054">Змяняць штодня</translation>
 <translation id="4655868084888499342">Відарыс зададзены ў якасці шпалер</translation>
+<translation id="4660989616054030633">Генератыўны штучны інтэлект можа рабіць памылкі, у тым ліку ў інфармацыі пра людзей, таму пераправярайце атрыманыя звесткі</translation>
 <translation id="4661249927038176904">Сюррэалістычны відарыс</translation>
+<translation id="4661392828086261436">Гэта абнаўленне пастаўлена вытворцам прылады і не было праверана Google</translation>
 <translation id="4664651912255946953">поўсць</translation>
 <translation id="4665014895760275686">Вытворца</translation>
 <translation id="467510802200863975">Паролі не супадаюць</translation>
@@ -771,6 +798,7 @@
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
 <translation id="4750394297954878236">Прапановы</translation>
+<translation id="4763771683769971829">Спіс даступных моў</translation>
 <translation id="4771607256327216405">клавіятура ярчэй</translation>
 <translation id="4771923071974529837">заўтра</translation>
 <translation id="4773299976671772492">Спынена</translation>
@@ -809,6 +837,7 @@
 <translation id="4891842000192098784">Нагрузка</translation>
 <translation id="4897058166682006107">Узровень зараду акумулятара ў левым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Уключыце гэту функцыю, каб выбраць параметры застаўкі</translation>
+<translation id="4910853326379896417">Спампоўванне мадэлі стварэння зводкі і назвы завершана</translation>
 <translation id="4910858703033903787">Тыпы APN</translation>
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="4917889632206600977">Спынена: скончылася папера</translation>
@@ -816,6 +845,7 @@
 <translation id="4921665434385737356">Зараджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4930320165497208503">Каб наладзіць або абнавіць падключэнне, перайдзіце ў <ph name="BEGIN_LINK" />Налады<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, адкрыецца ў новай укладцы</translation>
 <translation id="4946927805998996217">Зводка ствараецца</translation>
 <translation id="4950314376641394653">Убудаванае праграмнае забеспячэнне прылады "<ph name="DEVICE_NAME" />" абноўлена да версіі <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">тунэль з дрэў</translation>
@@ -832,7 +862,6 @@
 <translation id="4988526792673242964">Старонкі</translation>
 <translation id="4989542687859782284">Недаступна</translation>
 <translation id="4999333166442584738">Схаваць справаздачу</translation>
-<translation id="5005695757087124131">Спрасціць выбраны тэкст</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Колер тэмы</translation>
@@ -843,8 +872,10 @@
 <translation id="5050042263972837708">Назва групы</translation>
 <translation id="5051044138948155788">Гэта адзіная старонка. Вы будзеце перанакіраваны на пачатковы экран сканіравання.</translation>
 <translation id="5053233795640754917">Прыпыніць</translation>
+<translation id="5056587122125565772">Стварыць відарыс</translation>
 <translation id="5078711626843651677">Мадэлі галасоў захоўваюцца на прыладзе да той пары, пакуль прызначэнне метак суразмоўнікам не будзе завершана. Гэту функцыю заўсёды можна выключыць у наладах.</translation>
 <translation id="5078983345702708852">футурыстычны</translation>
+<translation id="5085224064082122501">Не ўдалося спампаваць мадэль стварэння зводкі і назвы. Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="5087864757604726239">назад</translation>
 <translation id="5088172560898466307">Назва хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
@@ -852,10 +883,12 @@
 <translation id="5095761549884461003">Каб працягнуць абнаўленне, адключыце кабель USB прылады "<ph name="DEVICE_NAME" />", а потым падключыце яго зноў</translation>
 <translation id="5099354524039520280">уверх</translation>
 <translation id="5107243100836678918">Спалучэнне клавіш, у якім не выкарыстоўваецца клавіша "<ph name="META_KEY" />", можа канфліктаваць са спалучэннямі клавіш іншых праграм. Націсніце гэта спалучэнне клавіш яшчэ раз, калі вы хочаце выкарыстоўваць яго і далей, або націсніце іншае спалучэнне клавіш, у якім выкарыстоўваецца клавіша "<ph name="KEY" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Не ўдаецца спампаваць мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />". Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="5108781503443873320">Маюць падобнае значэнне:</translation>
 <translation id="5121677070210013200">Не ўдаецца спампаваць мадэль расшыфроўкі. Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">Поўны экран</translation>
+<translation id="5139813694804168398">Не турбаваць</translation>
 <translation id="5140788690559353412">Страціўшы доступ да вучэбнага ўліковага запісу, вы таксама страціце доступ да прывязанага да яго адраса электроннай пошты і файлаў на Google Дыску, напрыклад Gmail, Дакументаў, Прэзентацый і іншых.</translation>
 <translation id="5142961317498132443">Аўтэнтыфікацыя</translation>
 <translation id="5144311987923128508">Кнопка "Пацвердзіць" зараз неактыўная</translation>
@@ -900,6 +933,7 @@
 <translation id="5302048478445481009">Мова</translation>
 <translation id="5303837385540978511">Эксклюзіўныя шпалеры <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="530883153651464140">Абнавіце прыладу <ph name="DEVICE_NAME" /> да версіі <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Ідэнтыфікатар</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318310531701770497">Не ўдаецца стварыць назвы. Паспрабуйце даўжэйшую расшыфроўку.</translation>
@@ -926,6 +960,7 @@
 <translation id="5431318178759467895">Колер</translation>
 <translation id="5457599981699367932">Праглядаць як госць</translation>
 <translation id="54609108002486618">Пад кіраваннем</translation>
+<translation id="5461608756903394951">Спампоўваецца мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="5470776029649730099">мешкавіна</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Засталася {0} спроба}one{Засталася {0} спроба}few{Засталося {0} спробы}many{Засталося {0} спроб}other{Засталося {0} спробы}}</translation>
 <translation id="5488280942828718790">пурпурны</translation>
@@ -976,7 +1011,6 @@
 <translation id="5703716265115423771">паменшыць гучнасць</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Кнопка "Змяніць" для апісання "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
-<translation id="5733298426544876109">Абнавіць убудаванае ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="5736820754189340309">Даныя выкарыстання трафіка скінуты</translation>
 <translation id="574392208103952083">Сярэдні</translation>
 <translation id="5744175046705638478">Перакласці "<ph name="QUERY" />"</translation>
@@ -1013,6 +1047,8 @@
 <translation id="5904994456462260490">Дадаванне новай назвы пункта доступу</translation>
 <translation id="590746845088109442">кошкі</translation>
 <translation id="5907649332524363701">колер клавіш</translation>
+<translation id="5908813850962688338">Усталяванне абнаўлення зойме некалькі хвілін. Падчас спампоўвання абнаўлення не адключайце прыладу ад крыніцы сілкавання. Прылада можа перазагружацца некалькі разоў, а экран – гаснуць. Каб завяршыць усталяванне, вам трэба будзе перазапусціць прыладу.</translation>
+<translation id="5915794087373112615">Ваш выкладчык праглядзіць экран праз <ph name="NUM_SECONDS" /> с</translation>
 <translation id="5916084858004523819">Забароненая</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Сканіраванне завершана. Файл захаваны ў папку <ph name="LINK_BEGIN" />"<ph name="FOLDER_NAME" />"<ph name="LINK_END" />.}one{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1050,8 +1086,8 @@
 <translation id="6074752328838739425">Схаваць зводку</translation>
 <translation id="6075872808778243331">(Android) Затрымка HTTP-запытаў</translation>
 <translation id="6078323886959318429">Дадаць ярлык</translation>
+<translation id="6079693086494835199">Скіньце налады, каб упэўніцца, што стандартная галоўная старонка не з’яўляецца фішынгавым сайтам. Выкарыстоўвайце толькі тыя вэб-сайты, якім давяраеце.</translation>
 <translation id="6091080061796993741">жоўты</translation>
-<translation id="6093853427925392522">Праграма "Перанос змесціва" ад Google дазваляе перанесці даныя вучэбнага ўліковага запісу ў асабісты ўліковы запіс да таго, як вы страціце да іх доступ.</translation>
 <translation id="6104112872696127344">Сканіраванне скасавана</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
 <translation id="6108689792487843350">Шлюз недаступны</translation>
@@ -1074,6 +1110,7 @@
 <translation id="6156030503438652198">каштанавы і ружовы</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Скіньце налады, каб іншыя асобы не маглі выкарыстоўваць ваш мікрафон ці камеру. Давайце дазволы толькі тым вэб-сайтам, якім давяраеце.</translation>
 <translation id="6188737759358894319">Дата стварэння: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Ёмістасць акумулятара зніжаецца па меры яго выкарыстання</translation>
 <translation id="6189987971574353264">Прайграць</translation>
@@ -1098,10 +1135,9 @@
 <translation id="628726841779494414">Вы можаце кіраваць прынтарамі ў адпаведных наладах</translation>
 <translation id="6292095526077353682">Падчас зарадкі паказваць застаўку</translation>
 <translation id="629550705077076970">зацямненне клавіятуры</translation>
-<translation id="6301193653204230066">Пашырэнні ў браўзеры Chrome будуць адключаны, а налады сеткі і іншыя налады скінуты да бяспечных стандартных значэнняў.
-          Гэта не паўплывае на вашы ўкладкі, файлы (у тым ліку файлы cookie) і гісторыю.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тэст скасаваны</translation>
 <translation id="631063167932043783">Праграма "Агляд"</translation>
+<translation id="6314333689576767865">Налады вашай прылады Chromebook былі скінуты да бяспечных стандартных значэнняў. Гэты параметр можна ў любы час змяніць у наладах.</translation>
 <translation id="6318437367327684789">назаўжды</translation>
 <translation id="6319207335391420837">Абнаўленне ўбудаванага ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6321407676395378991">Уключыць застаўку</translation>
@@ -1109,14 +1145,12 @@
 <translation id="6325525973963619867">Збой</translation>
 <translation id="6327262166342360252">Гэтыя шпалеры былі створаны з дапамогай штучнага інтэлекту па наступным запыце: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Аўтаматычнае ўключэнне цёмнай тэмы</translation>
-<translation id="6335228876613776082">Спампоўванне мадэлі завершана</translation>
 <translation id="6340526405444716530">Персаналізацыя</translation>
 <translation id="6348252528297699679">Для выключэння вызначэння месцазнаходжання неабходна перайсці ў раздзел "Налады &gt; Прыватнасць і бяспека &gt; Налады прыватнасці &gt; Доступ да месцазнаходжання". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Імя карыстальніка і пароль</translation>
 <translation id="6352210854422428614">іншая планета</translation>
 <translation id="6359706544163531585">Адключыць светлую тэму</translation>
 <translation id="6359919876285606596">Гэта дзеянне немагчыма адрабіць</translation>
-<translation id="6368342879959028556">Выбраўшы "Стварыць з дапамогай AI", напішыце свой запыт. Або націсніце "Шпалеры ад AI", каб выбраць тэму, а потым націсніце падкрэсленыя словы, каб персаналізаваць шпалеры ад AI.</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="6369221585240879141">Не ўдаецца стварыць назвы запісаў для гэтай мовы расшыфроўкі</translation>
 <translation id="6373461326814131011">сажалка</translation>
@@ -1177,6 +1211,7 @@
 <translation id="6595046262780525922">Уключыць функцыю расшыфроўкі і спампаваць мадэль расшыфроўкі?</translation>
 <translation id="6596816719288285829">IP-адрас</translation>
 <translation id="6599673642868607614">Дзякуй за водгук. Ён дапаможа нам палепшыць работу Chromebook і будзе разгледжаны нашай камандай. Да нас звяртаецца вялікая колькасць людзей, і таму мы не зможам адправіць вам адказ.</translation>
+<translation id="6608043585557830684">Расшыфроўка выключана. Уключыць яе можна ў наладах ці ў меню <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Клавішы кіравання мышшу</translation>
 <translation id="6618744767048954150">Выконваецца</translation>
 <translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>
@@ -1188,20 +1223,11 @@
 <translation id="6657240842932274095">Дазволіць сістэмным службам выкарыстоўваць даныя пра ваша месцазнаходжанне?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="66621959568103627">каралава-ружовы</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Націсніце "Натхні мяне", каб атрымаць яшчэ больш унікальных і разнастайных відарысаў ад AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Калі вы выкарыстоўваеце штучны інтэлект, ваш запыт адпраўляецца на серверы штучнага інтэлекту ад Google, каб згенерыраваць відарысы і палепшыць прадукт. Гэта робіцца ў адпаведнасці з <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Палітыкай прыватнасці Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генератыўны штучны інтэлект – гэта эксперыментальная функцыя, якая знаходзіцца на раннім этапе распрацоўкі і пакуль даступная не ўсім.</translation>
 <translation id="6673898378497337661">павялічыць яркасць клавіятуры</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6694534975463174713">блакіроўка</translation>
 <translation id="6700703207451721535">Доступ да гэтай спасылкі забаронены. Спытайце пра доступ у выкладчыка.</translation>
+<translation id="6703179086771097594">Што вам не спадабалася?</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
 <translation id="6712933881624804031">даліна</translation>
 <translation id="6716013206176357696">суніцы</translation>
@@ -1217,6 +1243,7 @@
 <translation id="6747035363363040417">нейтральны</translation>
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>
 <translation id="6749473226660745022">Фота</translation>
+<translation id="6752960629591143793">Выберыце мову расшыфроўкі і спампуйце яе ў наладах ці меню "<ph name="THREE_DOTS_MENU_ICON" />"</translation>
 <translation id="6753452347192452143">Гэта камп’ютар.</translation>
 <translation id="6756731097889387912">Не ўдалося скасаваць сканіраванне</translation>
 <translation id="6760706756348334449">Паменшыць гучнасць</translation>
@@ -1236,6 +1263,7 @@
 <translation id="6862416241246624313">Водгук адпраўлены</translation>
 <translation id="6866732840889595464">стакротка</translation>
 <translation id="6871256179359663621">светла-фіялетавы</translation>
+<translation id="6887967050249348172">Каб прадухіліць змяненне налад, пашырэнні адключаны. Уключайце толькі тыя пашырэнні, якім вы давяраеце.</translation>
 <translation id="6889786074662672253">Падчас перазапуску не адключайце гэту знешнюю прыладу і не выключайце камп’ютар. Гэта акно можна згарнуць. Перазапуск зойме некалькі хвілін – у гэты час знешняя прылада можа не працаваць.</translation>
 <translation id="6899460405678814458">Паказаць зводку</translation>
 <translation id="6900701049656042631">У гэтым альбоме няма фота. Дадаць фота можна з сайта <ph name="LINK" />.</translation>
@@ -1250,6 +1278,7 @@
 <translation id="6930597342185648547">Пра фон</translation>
 <translation id="6939667434404433010">Шукаць па назве запісу</translation>
 <translation id="6939766318048400022">Кафэ</translation>
+<translation id="6942253772720771875">Напішыце водгук або апішыце праблему</translation>
 <translation id="6943893908656559156">Аддаленае пасведчанне (неабавязкова)</translation>
 <translation id="6953137545147683679">залаты</translation>
 <translation id="6957231940976260713">Імя сэрвісу</translation>
@@ -1262,6 +1291,7 @@
 <translation id="6975620886940770104">Пейзаж: <ph name="GLOWSCAPES_LANDSCAPE" /> і <ph name="GLOWSCAPES_FEATURE" /> (са ззяннем)</translation>
 <translation id="6975981640379148271">каалы</translation>
 <translation id="6977381486153291903">Версія ўбудаванага ПЗ</translation>
+<translation id="6978396562261420054">Згенерыраваны відарыс</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="6982462588253070448">пясчаныя дзюны</translation>
 <translation id="7005833343836210400">Прылада па-за сеткай</translation>
@@ -1270,10 +1300,13 @@
 <translation id="7040230719604914234">Аператар</translation>
 <translation id="7040729769968826896">Вызначаць удзельнікаў гаворкі</translation>
 <translation id="7041549558901442110">Прылада не падключана.</translation>
+<translation id="704183341263526038">Юпітэр</translation>
 <translation id="7046522406494308071">Скінуць усе спалучэнні клавіш да стандартных?</translation>
 <translation id="7049916119678019302">Спампуйце мадэль расшыфроўкі ў Наладах</translation>
 <translation id="7058278511608979688">Завяршыць і захаваць</translation>
 <translation id="7059230779847288458">Ідзе зарадка, <ph name="TIME_VALUE" /> да поўнай зарадкі</translation>
+<translation id="7064209589142995848">Перанос змесціва</translation>
+<translation id="7065336548231472971">Выбрана мова: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">клавіша <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Падрыхтоўка прылады</translation>
 <translation id="7076851914315147928">Шпалеры</translation>
@@ -1297,7 +1330,6 @@
 <translation id="7135814714616751706">Пошук ярлыкоў</translation>
 <translation id="7138614237884624401">Спрошчаны тэкст</translation>
 <translation id="7138668887584231801">Недастаткова слоў для падсумавання</translation>
-<translation id="7141470099673912333">Перанос змесціва</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="7144954474087165241">пагада</translation>
@@ -1315,6 +1347,7 @@
 <translation id="7182063559013288142">Імгненны хот-спот</translation>
 <translation id="7184043045742675738">Каб наладзіць кнопку, націсніце на любую клавішу. Каб змяніць пазіцыю клавішы, выкарыстоўвайце мыш або клавішы са стрэлкамі.</translation>
 <translation id="7187669805838282391">у сераду</translation>
+<translation id="7205318498545665455">Выбраць мікрафон</translation>
 <translation id="7206979415662233817">Умовы выкарыстання</translation>
 <translation id="7210635925306941239">блакітны</translation>
 <translation id="7212547870105584639">Кіраванне наладамі сеткавых APN. З дапамогай APN устанаўліваецца падключэнне паміж сотавай сеткай і інтэрнэтам. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1324,6 +1357,7 @@
 <translation id="7233782086689993269">Спалучэнне клавіш адноўлена</translation>
 <translation id="725133483556299729">Выбраць адрас электроннай пошты</translation>
 <translation id="7255187042098209569">ружовы і фіялетавы</translation>
+<translation id="7267918995585557751">Скіньце налады, каб упэўніцца, што стандартная пачатковая старонка не з’яўляецца фішынгавым сайтам. Выкарыстоўвайце толькі тыя вэб-сайты, якім давяраеце.</translation>
 <translation id="7271000785316964275">класіцызм</translation>
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
 <translation id="7271932918253517778">Спалучэнні клавіш, у якіх выкарыстоўваюцца клавішы верхняга рада, павінны ўключаць у сябе клавішу "<ph name="META_KEY" />".</translation>
@@ -1359,15 +1393,16 @@
 <translation id="7388345524791662148">Іншыя варыянты для элемента "<ph name="RECORDING_NAME" />"</translation>
 <translation id="7388959671917308825">Убудаваная сэнсарная панэль</translation>
 <translation id="7397270852490618635">Выключыць светлую тэму</translation>
+<translation id="7400166052988585408">Ваш выкладчык заблакіруе экран праз <ph name="NUM_SECONDS" /> с</translation>
 <translation id="7401543881546089382">Выдаліць спалучэнне клавіш</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" />: гатова да абнаўлення</translation>
 <translation id="741244894080940828">перавод адзінак вымярэння</translation>
 <translation id="7415801143053185905">Вельмі вялікая затрымка HTTP-запытаў</translation>
 <translation id="7418738250896500352">Занадта многа слоў для спрашчэння</translation>
 <translation id="7425037327577270384">Дапамога з напісаннем</translation>
+<translation id="7425832472614771259">Мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />" спампавана на <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не ўдалося адключыць або выдаліць гэты ідэнтыфікатар APN. Вам трэба адключыць або выдаліць APN, якія маюць тып "<ph name="ATTACH" />" і былі ўключаны.</translation>
-<translation id="7453118953486228603">Націсніце, каб падсумаваць выбраны тэкст</translation>
 <translation id="7458970041932198923">Каб праглядаць і задаваць аватары, падключыце прыладу да інтэрнэту і перазагрузіце старонку.</translation>
 <translation id="7469648432129124067">Выяўлены партал</translation>
 <translation id="7481312909269577407">Далей</translation>
@@ -1397,13 +1432,15 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сэнсарны экран з USB</translation>
 <translation id="757747079855995705">камень</translation>
+<translation id="7584853321964440104">Не ўдалося спампаваць. Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="7590883480672980941">Налады ўводу</translation>
 <translation id="7595982850646262331">Застаецца <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Адміністратар <ph name="MANAGER" /> указаў, калі можна выкарыстоўваць прыладу "<ph name="DEVICE_TYPE" />".</translation>
 <translation id="7613724632293948900">Для перамяшчэння выкарыстоўвайце мыш або клавішы са стрэлкамі.</translation>
+<translation id="7618216277886673749">Выбраць мову "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="7618774594543487847">Нейтральны</translation>
 <translation id="7620771111601174153">Атрымаць больш інфармацыі ў Даведачным цэнтры</translation>
-<translation id="7625095758347640998">Шпалеры ад AI</translation>
+<translation id="7623327321610992184">Модуль OnTask</translation>
 <translation id="763165478673169849">Час апошняга скіду</translation>
 <translation id="7633068090678117093">Фонавы відарыс</translation>
 <translation id="763873111564339966">індыга</translation>
@@ -1446,6 +1483,7 @@
 <translation id="7828503206075800057">Кафэ, тып – <ph name="CAFE_TYPE" />, стыль – <ph name="CAFE_STYLE" /></translation>
 <translation id="7841134249932030522">Уключыць цёмны рэжым</translation>
 <translation id="7846634333498149051">Клавіятура</translation>
+<translation id="7847923465436619066">Інструмент выбару мовы для расшыфроўкі</translation>
 <translation id="7849030488395653706">паўночнае ззянне</translation>
 <translation id="7849737607196682401">карункі</translation>
 <translation id="7850320739366109486">Не турбаваць</translation>
@@ -1466,6 +1504,7 @@
 <translation id="7903695460270716054">Выбраць падабраныя творы і відарысы</translation>
 <translation id="7912005977894000746">Вярнуцца на галоўную старонку</translation>
 <translation id="7915220255123750251">Кіраванне наладамі сеткавых APN. З дапамогай APN устанаўліваецца падключэнне паміж сотавай сеткай і інтэрнэтам.</translation>
+<translation id="7915759923880480519">Скіньце налады, каб абараніць даныя, якія адпраўляюцца па вашых сетках. Выкарыстоўвайце толькі тыя сеткі, якім давяраеце.</translation>
 <translation id="7936303884198020182">Серверы даменных імён не знойдзены</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7943235353293548836">Пастаянны інтэрвал для паведамлення keepalive</translation>
@@ -1493,6 +1532,7 @@
 <translation id="8054112564438735763">бэжавы</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" />, колер – <ph name="CHARACTERS_COLOR" />, фон – <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Каб пачаць запіс аўдыя, падключыце мікрафон</translation>
 <translation id="8067126283828232460">APN падключана.</translation>
 <translation id="8067208048261192356">карычневы</translation>
 <translation id="8067224607978179455">Выдаліць <ph name="ACTION_NAME" /></translation>
@@ -1512,6 +1552,7 @@
 <translation id="8132480444149501833">Запытаць лічыльнікі трафіка</translation>
 <translation id="8135609423982943441">Налады вашай прылады Chromebook былі скінуты да бяспечных стандартных значэнняў. Вы можаце скарэкціраваць гэтыя змяненні ў любы час у Наладах.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">Стварыць уласную</translation>
 <translation id="8143951647992294073">Выбраць <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Інструменты распрацоўшчыкаў</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />: <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1522,6 +1563,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Выкарыстоўвайце штучны інтэлект ад Google для больш эфектыўнай працы</translation>
+<translation id="82003371436638355">Выберыце "Стварыць уласны варыянт" і напішыце свой запыт. Або націсніце "Выбраць тэму", а потым выберыце падкрэсленыя словы, каб персаналізаваць шпалеры ад AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Націсніце "Натхні мяне", каб атрымаць яшчэ больш унікальных і разнастайных відарысаў ад AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Калі вы ствараеце ўласныя шпалеры, ваш запыт адпраўляецца на серверы Google, каб згенерыраваць відарысы і палепшыць прадукт. Гэта робіцца ў адпаведнасці з <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Умовамі выкарыстання і Палітыкай прыватнасці Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Пры выкарыстанні гэтых функцый не ўключайце ў тэксты асабістую і канфідэнцыяльную інфармацыю.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генератыўны штучны інтэлект можа рабіць памылкі, у тым ліку ў інфармацыі пра людзей, таму пераправярайце атрыманыя звесткі. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Даведацца больш<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
@@ -1535,7 +1586,6 @@
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8262870577632766028">1 гадзіна</translation>
 <translation id="827422111966801947">Індыга</translation>
-<translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8286154143153872371">Каб праглядаць шпалеры, падключыце прыладу да інтэрнэту і перазагрузіце старонку.</translation>
 <translation id="8291967909914612644">Родная краіна аператара</translation>
 <translation id="8294431847097064396">Крыніца</translation>
@@ -1544,6 +1594,7 @@
 <translation id="8312330582793120272">прайграць медыязмесціва</translation>
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8320910311642849813">лес</translation>
+<translation id="8322464149031882595">Націснуць, каб рухацца далей</translation>
 <translation id="8329018942023753850">праграма "Калькулятар"</translation>
 <translation id="8336739000755212683">Змяніць відарыс уліковага запісу на прыладзе</translation>
 <translation id="8339024191194156249">Даведацца больш пра аўтазапуск</translation>
@@ -1564,6 +1615,7 @@
 <translation id="8395584934117017006">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе арганізацыя</translation>
 <translation id="8398927464629426868">Цяперашняя хуткасць зарадкі або разрадкі прылады</translation>
 <translation id="8403988360557588704">Карціна – <ph name="ART_FEATURE" />, стыль – <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Згенерыраваная зводка:</translation>
 <translation id="8410244574650205435">Вызначана аўтаматычна</translation>
 <translation id="8420955526972171689">Запуск праверак, а таксама пошук і выпраўленне непаладак, звязаных з апаратным забеспячэннем</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1581,6 +1633,7 @@
 <translation id="8476942730579767658">Вокны і працоўныя сталы</translation>
 <translation id="8477536061607044749">графічны дызайн</translation>
 <translation id="8477551185774834963">Затрымка DNS крыху перавышае дапушчальнае парогавае значэнне</translation>
+<translation id="8481308460877552925">Няправільныя звесткі</translation>
 <translation id="8482376765267780829">Выберыце фрагмент тэксту для спрашчэння</translation>
 <translation id="8483248364096924578">IP-адрас</translation>
 <translation id="8491311378305535241">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTP з праграм Android</translation>
@@ -1595,6 +1648,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
 <translation id="8538236298648811558">На аснове штучнага інтэлекту ад Google</translation>
+<translation id="8543574988889671960">Перазагрузіць укладку</translation>
 <translation id="8550364285433943656">Выберыце элементы кіравання для дзеянняў, каб гуляць з дапамогай клавіш клавіятуры</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Магчыма, вам спатрэбіцца ўключыць гэту наладу, каб падключыцца да сеткі вашага аператара. Звяжыцеся з аператарам, каб даведацца больш.</translation>
@@ -1606,6 +1660,7 @@
 <translation id="8626489604350149811">Іншыя дзеянні з прыладай "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">Светла-фіялетавы</translation>
 <translation id="8647595191512746911">Расшыфроўка аўдыя</translation>
+<translation id="8648578954147795914">Згенерыраваныя назвы:</translation>
 <translation id="8650852232143958317">Прыхапіце з сабой файлы Gmail і Google Дыска</translation>
 <translation id="8651481478098336970">выключэнне гуку</translation>
 <translation id="8655295600908251630">Версія</translation>
@@ -1629,17 +1684,17 @@
 <translation id="8747900814994928677">Пацвярджэнне змен</translation>
 <translation id="8749478549112817787">Фон для камеры</translation>
 <translation id="8755946156089753497">вежа</translation>
-<translation id="8756235582947991808">Як ствараць змесціва з дапамогай AI і пра што трэба памятаць</translation>
 <translation id="8760616037557661287">Папярэднія запыты</translation>
+<translation id="876280838467039397">Спампаваць і выбраць мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фота</translation>
 <translation id="8775713578693478175">APN мадэма</translation>
-<translation id="877735394245039557">Ідзе спампоўванне мадэлі</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Гэта сетка можа мець партал узаемадзеяння</translation>
 <translation id="8797082062139985406">Згенерыраваць назву з дапамогай штучнага інтэлекту ад Google</translation>
 <translation id="8798099450830957504">Стандартна</translation>
 <translation id="8798441408945964110">Назва пастаўшчыка</translation>
+<translation id="8804164990146287819">Палітыка прыватнасці</translation>
 <translation id="8808828119384186784">Налады Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Шпалеры</translation>
@@ -1660,6 +1715,7 @@
 <translation id="8876270629542503161">Гэта планшэт.</translation>
 <translation id="8881098542468797602">Праверка пройдзена</translation>
 <translation id="8882789155418924367">совы</translation>
+<translation id="8885038613856655272">Падключыце мікрафон</translation>
 <translation id="8892443466059986410">Не змяняць спалучэнне клавіш</translation>
 <translation id="8897043028305808902">Файл перайменаваны</translation>
 <translation id="8898840733695078011">Сіла сігналу</translation>
@@ -1685,11 +1741,13 @@
 <translation id="8961025972867871808">пінгвіны</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
 <translation id="8970109610781093811">Выканаць яшчэ раз</translation>
+<translation id="8972061581514441296">Націснуць, каб вярнуцца</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Адсканіраваць}=1{Адсканіраваць старонку {NUMBER_OF_PAGES}}one{Адсканіраваць старонку {NUMBER_OF_PAGES}}few{Адсканіраваць старонку {NUMBER_OF_PAGES}}many{Адсканіраваць старонку {NUMBER_OF_PAGES}}other{Адсканіраваць старонку {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">вёска</translation>
 <translation id="8997710128084572139">Узровень зараду акумулятара прылады: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Недаступна на вашай прыладзе</translation>
+<translation id="9000871120886759611">Скіньце налады, каб атрымаць доступ да інфармацыі на выбранай мове. Праверце, каб выкарыстоўваліся толькі выбраныя мовы.</translation>
 <translation id="9003499805101629690">піца</translation>
 <translation id="9003704114456258138">Частата</translation>
 <translation id="901834265349196618">электронная пошта</translation>
@@ -1745,11 +1803,14 @@
 <translation id="9218016617214286986">Паказаць вядомыя APN</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Пераканайцеся, што мікрафон падключаны, або перазапусціце Chromebook</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="950520315903467048">Для напрамку "<ph name="DIRECTION" />" не ўказана клавіша. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">параўноўваць галасы ва ўсім запісе, каб у расшыфроўцы было зразумела, што і калі сказаў кожны суразмоўнік.</translation>
 <translation id="952992212772159698">Неактыўнае</translation>
 <translation id="95718197892796296">гліна</translation>
+<translation id="959792926760890141">Пашырэнні ў браўзеры Chrome будуць адключаны, а налады сеткі і іншыя налады скінуты да бяспечных стандартных значэнняў.
+          Налады стандартнай пошукавай сістэмы будуць скінуты, але на вашы ўкладкі, асабістыя файлы, файлы cookie і гісторыю браўзера гэта не паўплывае.</translation>
 <translation id="960719561871045870">Код аператара</translation>
 <translation id="965918541715156800">жоўты і сіне-зялёны</translation>
 <translation id="966787709310836684">меню</translation>

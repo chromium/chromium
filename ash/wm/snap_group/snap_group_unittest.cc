@@ -1339,7 +1339,6 @@ TEST_F(FasterSplitScreenTest, KeyboardAndWorkAreaBoundsChanges) {
       Shell::Get()->docked_magnifier_controller();
   docked_magnifier_controller->SetEnabled(/*enabled=*/true);
   EXPECT_FALSE(IsInOverviewSession());
-  // TODO(sophiewen): Consider testing no faster splitview widget.
 }
 
 // Test to verify that there will be no crash when dragging the snapped window
@@ -2091,12 +2090,9 @@ class SnapGroupTest : public SnapGroupTestBase {
   template <typename... TaskEnvironmentTraits>
   explicit SnapGroupTest(TaskEnvironmentTraits&&... traits)
       : SnapGroupTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {
-    scoped_feature_list_
-        .InitWithFeatures(/*enabled_features=*/
-                          {features::kSameAppWindowCycle,
-                           chromeos::features::
-                               kOverviewSessionInitOptimizations},
-                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                          {features::kSameAppWindowCycle},
+                                          /*disabled_features=*/{});
   }
   SnapGroupTest(const SnapGroupTest&) = delete;
   SnapGroupTest& operator=(const SnapGroupTest&) = delete;
@@ -3337,6 +3333,7 @@ TEST_F(SnapGroupTest, NoCrashWhenReSnappingSecondaryToPrimaryWithTransient) {
       CreateAppWindow(gfx::Rect(500, 0, 300, 300)));
   // Create a bubble widget that's anchored to `w1`.
   auto bubble_delegate1 = std::make_unique<views::BubbleDialogDelegateView>(
+      views::BubbleDialogDelegateView::CreatePassKey(),
       NonClientFrameViewAsh::Get(w1.get()), views::BubbleBorder::TOP_RIGHT);
   // The line below is essential to make sure that the bubble doesn't get closed
   // when entering overview.
@@ -5941,6 +5938,7 @@ TEST_F(SnapGroupOverviewTest, HideBubbleTransientInOverview) {
 
   // Create a bubble widget that's anchored to `w0`.
   auto bubble_delegate0 = std::make_unique<views::BubbleDialogDelegateView>(
+      views::BubbleDialogDelegateView::CreatePassKey(),
       NonClientFrameViewAsh::Get(w0.get()), views::BubbleBorder::TOP_RIGHT);
 
   // The line below is essential to make sure that the bubble doesn't get closed
@@ -6092,7 +6090,8 @@ TEST_F(SnapGroupDesksTest,
 
   // Create a bubble widget that's anchored to `w0`.
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
-      child_view, views::BubbleBorder::TOP_RIGHT);
+      views::BubbleDialogDelegateView::CreatePassKey(), child_view,
+      views::BubbleBorder::TOP_RIGHT);
 
   // The line below is essential to make sure that the bubble doesn't get closed
   // when entering overview.
@@ -6796,7 +6795,7 @@ TEST_F(SnapGroupDesksTest, OnlyHideSnapGroupOnActiveDesk) {
 // exiting overview mode. See regression at http://b/335301800.
 TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDeskOld) {
   base::test::ScopedFeatureList disable;
-  disable.InitAndDisableFeature(features::kSavedDeskUiRevamp);
+  disable.InitAndDisableFeature(features::kForestFeature);
 
   OverviewController* overview_controller = OverviewController::Get();
 
@@ -6876,7 +6875,7 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDeskOld) {
 // exiting overview mode. See regression at http://b/335301800.
 TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
   saved_desk_test_helper()->WaitForDeskModels();
-  base::test::ScopedFeatureList enable{features::kSavedDeskUiRevamp};
+  base::test::ScopedFeatureList enable{features::kForestFeature};
 
   OverviewController* overview_controller = OverviewController::Get();
   // Explicitly disable `disable_app_id_check_for_saved_desks_` otherwise "Save

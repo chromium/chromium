@@ -216,7 +216,8 @@ TEST_F(BaseFetchContextTest, CheckCSPForRequest) {
   EXPECT_EQ(std::nullopt,
             fetch_context_->CheckCSPForRequest(
                 mojom::blink::RequestContextType::SCRIPT,
-                network::mojom::RequestDestination::kScript, url, options,
+                network::mojom::RequestDestination::kScript,
+                network::mojom::RequestMode::kCors, url, options,
                 ReportingDisposition::kReport,
                 KURL(NullURL(), "http://www.redirecting.com/"),
                 ResourceRequest::RedirectStatus::kFollowedRedirect));

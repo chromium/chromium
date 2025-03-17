@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -113,7 +112,7 @@ void ShowBookmarkAccountStorageMoveDialog(
     avatar_and_email_view->AddChildView(
         std::make_unique<views::Label>(base::UTF8ToUTF16(account_info.email)));
     int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+        DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL);
     avatar_and_email_view
         ->SetLayoutManager(std::make_unique<views::BoxLayout>())
         ->set_between_child_spacing(horizontal_spacing);

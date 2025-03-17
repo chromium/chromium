@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 
 class PrefService;
 

@@ -9,6 +9,8 @@
 
 @implementation TestLensOverlayController
 
+@synthesize visibleAreaLayoutGuide = _visibleAreaLayoutGuide;
+
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate {
   // NO-OP
 }
@@ -49,6 +51,14 @@
 
 - (void)disableFlyoutMenu:(BOOL)disable {
   // NO-OP
+}
+
+- (BOOL)translateFilterActive {
+  return NO;
+}
+
+- (CGRect)selectionRect {
+  return CGRectZero;
 }
 
 @end

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
@@ -26,11 +27,15 @@
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -48,6 +53,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
@@ -68,6 +76,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
@@ -927,15 +936,13 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
 
   // After typing L, the highlighted text will be replaced by L.
   KeyPress(ui::VKEY_L);
-  std::u16string selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hel");
-  EXPECT_EQ(u"", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"");
 
   // After handling autocomplete, the highlighted text will show again.
   ProcessAutocomplete();
-  selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
-  EXPECT_EQ(u"lo world!", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"lo world!");
 
   EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
 }
@@ -1030,9 +1037,8 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
 
   ProcessAutocomplete();
 
-  std::u16string selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
-  EXPECT_EQ(u"llo world!", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo world!");
   view()->search_box()->SetText(std::u16string());
 
   // Simulate IME composition text. The autocomplete should not be handled.
@@ -1042,9 +1048,8 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   view()->set_highlight_range_for_test(gfx::Range(2, 2));
   ProcessAutocomplete();
 
-  selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"he");
-  EXPECT_EQ(u"", selected_text);
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"");
 
   EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
 }
@@ -1307,8 +1312,9 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
   ui::AXNodeData data;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(view()->search_box()->GetText(), u"hello list");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
-                                       view()->search_box()->GetText()),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
+                std::u16string(view()->search_box()->GetText())),
             data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 
   EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
@@ -1318,19 +1324,149 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
   ui::AXNodeData data2;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data2);
   EXPECT_EQ(view()->search_box()->GetText(), u"hello list2");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
-                                       view()->search_box()->GetText()),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
+                std::u16string(view()->search_box()->GetText())),
             data2.GetString16Attribute(ax::mojom::StringAttribute::kValue));
+}
+
+class AssistantNewEntryPointTestBase
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  explicit AssistantNewEntryPointTestBase(bool enable_new_entry_point) {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::assistant::features::kEnableNewEntryPoint, enable_new_entry_point);
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    if (IsTabletMode()) {
+      ash::TabletModeControllerTestApi().EnterTabletMode();
+    }
+  }
+
+  void TearDown() override {
+    if (IsTabletMode()) {
+      ash::TabletModeControllerTestApi().LeaveTabletMode();
+    }
+
+    AshTestBase::TearDown();
+  }
+
+  ~AssistantNewEntryPointTestBase() override = default;
+
+  static std::string GenerateParamName(
+      const testing::TestParamInfo<bool>& info) {
+    return info.param ? "Tablet" : "Clamshell";
+  }
+
+ protected:
+  bool IsTabletMode() const { return GetParam(); }
+
+  assistant::ScopedAssistantBrowserDelegate scoped_assistant_browser_delegate_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class AssistantNewEntryPointTest : public AssistantNewEntryPointTestBase {
+ public:
+  AssistantNewEntryPointTest()
+      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/true) {}
+  ~AssistantNewEntryPointTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AssistantNewEntryPointTest,
+                         testing::Bool(),
+                         &AssistantNewEntryPointTestBase::GenerateParamName);
+
+TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonVisibility) {
+  GetAppListTestHelper()->ShowAppList();
+
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  ASSERT_TRUE(new_entry_point_button);
+  EXPECT_TRUE(new_entry_point_button->GetVisible());
+
+  views::ImageButton* assistant_button =
+      GetAppListTestHelper()->GetSearchBoxView()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  EXPECT_FALSE(assistant_button->GetVisible());
+}
+
+TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonOpensNewEntryPoint) {
+  base::test::TestFuture<void> open_new_entry_point_future;
+  scoped_assistant_browser_delegate_.SetOpenNewEntryPointClosure(
+      open_new_entry_point_future.GetCallback());
+
+  base::UserActionTester user_action_tester;
+
+  GetAppListTestHelper()->ShowAppList();
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  ASSERT_TRUE(new_entry_point_button);
+  ASSERT_TRUE(new_entry_point_button->GetVisible());
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  if (IsTabletMode()) {
+    generator->GestureTapAt(
+        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+  } else {
+    generator->MoveMouseTo(
+        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+  }
+
+  EXPECT_TRUE(open_new_entry_point_future.Wait())
+      << "Expect OpenNewEntryPoint to be called";
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("Assistant.NewEntryPoint.Launcher"));
+}
+
+class AssistantNewEntryPointDisabledTest
+    : public AssistantNewEntryPointTestBase {
+ public:
+  AssistantNewEntryPointDisabledTest()
+      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/false) {}
+  ~AssistantNewEntryPointDisabledTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AssistantNewEntryPointDisabledTest,
+                         testing::Bool(),
+                         &AssistantNewEntryPointTestBase::GenerateParamName);
+
+TEST_P(AssistantNewEntryPointDisabledTest, NewEntryPointButtonHidden) {
+  GetAppListTestHelper()->ShowAppList();
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  EXPECT_FALSE(new_entry_point_button);
 }
 
 class SunfishLauncherButtonTest : public AshTestBase,
                                   public testing::WithParamInterface<bool> {
  public:
   SunfishLauncherButtonTest() {
+    std::vector<base::test::FeatureRef> sunfish_features = {
+        features::kSunfishFeature,
+        features::kScannerUpdate,
+        features::kScannerDogfood,
+    };
     if (IsSunfishEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/sunfish_features, /*disabled_features=*/{});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/sunfish_features);
     }
   }
   ~SunfishLauncherButtonTest() override = default;
@@ -1359,11 +1495,26 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
   ASSERT_EQ(sunfish_button->GetVisible(), IsSunfishEnabled());
 
   if (IsSunfishEnabled()) {
-    // `SetShowSunfishButton` should control the visibility of the button.
-    GetSearchModel()->search_box()->SetShowSunfishButton(false);
+    // `SetSunfishButtonVisibility` should control the visibility and icon of
+    // the button.
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kHidden);
     EXPECT_FALSE(sunfish_button->GetVisible());
-    GetSearchModel()->search_box()->SetShowSunfishButton(true);
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
+    // There is no way of getting the exact `ui::ImageModel` for an
+    // `IconButton`, but we can indirectly get the icon by looking at the size.
     EXPECT_TRUE(sunfish_button->GetVisible());
+    EXPECT_NE(sunfish_button->GetImage(views::ImageButton::STATE_NORMAL).size(),
+              gfx::Size(24, 24));
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kHidden);
+    EXPECT_FALSE(sunfish_button->GetVisible());
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
+    EXPECT_TRUE(sunfish_button->GetVisible());
+    EXPECT_EQ(sunfish_button->GetImage(views::ImageButton::STATE_NORMAL).size(),
+              gfx::Size(24, 24));
 
     // The app list will contain the sunfish launcher button next to the search
     // field.
@@ -1374,6 +1525,42 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
     ASSERT_EQ(BehaviorType::kSunfish,
               session->active_behavior()->behavior_type());
   }
+}
+
+TEST_P(SunfishLauncherButtonTest,
+       SunfishSessionTurnedDisallowedWhileButtonShown) {
+  if (!IsSunfishEnabled()) {
+    // TODO: crbug.com/356877313: Consider unparametizing these tests.
+    GTEST_SKIP() << "skip if not enabled";
+  }
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  // Only control Sunfish policy in this test, not Scanner, for simplicity.
+  prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                    static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  const HomeButton* home_button =
+      GetPrimaryShelf()->navigation_widget()->GetHomeButton();
+  EXPECT_FALSE(home_button->IsShowingAppList());
+
+  LeftClickOn(home_button);
+
+  ASSERT_TRUE(home_button->IsShowingAppList());
+  auto* sunfish_button =
+      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  ASSERT_TRUE(sunfish_button->GetVisible());
+  auto* test_capture_mode_delegate = static_cast<TestCaptureModeDelegate*>(
+      CaptureModeController::Get()->delegate_for_testing());
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  ASSERT_TRUE(sunfish_button->GetVisible());
+
+  // The app list will contain the sunfish launcher button next to the search
+  // field.
+  LeftClickOn(sunfish_button);
+
+  auto* session = CaptureModeController::Get()->capture_mode_session();
+  EXPECT_FALSE(session);
+  EXPECT_FALSE(sunfish_button->GetVisible());
 }
 
 TEST_P(SunfishLauncherButtonTest, TabletModeAppList) {

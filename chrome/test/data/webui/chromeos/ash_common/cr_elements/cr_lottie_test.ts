@@ -5,10 +5,11 @@
 // clang-format off
 import 'chrome://resources/ash/common/cr_elements/cr_lottie/cr_lottie.js';
 
-import {CrLottieElement} from 'chrome://resources/ash/common/cr_elements/cr_lottie/cr_lottie.js';
+import type {CrLottieElement} from 'chrome://resources/ash/common/cr_elements/cr_lottie/cr_lottie.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
+import type { MockMethod} from 'chrome://webui-test/mock_controller.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -305,7 +306,7 @@ suite('cr_lottie_test', function() {
     assertTrue(canvas.hidden);
   });
 
-  test('TestDetachBeforeImageLoaded', async () => {
+  test('TestDetachBeforeImageLoaded', () => {
     const mockXhr = {
       onreadystatechange: () => {},
     } as unknown as XMLHttpRequest;
@@ -334,7 +335,7 @@ suite('cr_lottie_test', function() {
     mockController.verifyMocks();
   });
 
-  test('TestLoadNewImageWhileOldImageIsStillLoading', async () => {
+  test('TestLoadNewImageWhileOldImageIsStillLoading', () => {
     const mockXhr = {
       onreadystatechange: () => {},
     } as unknown as XMLHttpRequest;

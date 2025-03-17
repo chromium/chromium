@@ -118,7 +118,7 @@ class FakePasswordAutofillAgent
                const std::u16string&,
                const std::u16string&),
               (override));
-  MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
+  MOCK_METHOD(void, InformNoSavedCredentials, (), (override));
   MOCK_METHOD(void,
               FillIntoFocusedField,
               (bool, const std::u16string&),
@@ -143,7 +143,6 @@ class FakePasswordAutofillAgent
                SubmitChangePasswordFormCallback),
               (override));
 #if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void, KeyboardReplacingSurfaceClosed, (bool), (override));
   MOCK_METHOD(void, TriggerFormSubmission, (), (override));
 #endif
   MOCK_METHOD(void,
@@ -380,7 +379,7 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
 
   driver->FillField(
       u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 1);
 
@@ -391,7 +390,7 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   driver->FillSuggestionById(
       autofill::FieldRendererId(), autofill::FieldRendererId(), u"username",
       u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 3);
 

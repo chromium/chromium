@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {I18nMixin, I18nMixinInterface} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import type {SanitizeInnerHtmlOpts} from '//resources/ash/common/parse_html_subset.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {SanitizeInnerHtmlOpts} from '//resources/ash/common/parse_html_subset.js';
-
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**

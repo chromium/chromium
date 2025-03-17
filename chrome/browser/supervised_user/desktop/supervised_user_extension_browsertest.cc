@@ -69,7 +69,7 @@ using SupervisionMixinSigninModeCallback =
 
 // Tests interaction between supervised users and extensions.
 class SupervisionExtensionTestBase
-    : public ExtensionBrowserTest,
+    : public InProcessBrowserTestMixinHostSupport<ExtensionBrowserTest>,
       public ::testing::WithParamInterface<
           std::tuple<ExtensionsParentalControlState,
                      ExtensionManagementSwitch,
@@ -116,59 +116,6 @@ class SupervisionExtensionTestBase
 
   ~SupervisionExtensionTestBase() override { scoped_feature_list_.Reset(); }
 
-  // We have to essentially replicate what MixinBasedInProcessBrowserTest does
-  // here because ExtensionBrowserTest doesn't inherit from that class.
-  void SetUp() override {
-    mixin_host_.SetUp();
-    ExtensionBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpCommandLine(command_line);
-    ExtensionBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpDefaultCommandLine(command_line);
-    ExtensionBrowserTest::SetUpDefaultCommandLine(command_line);
-  }
-
-  bool SetUpUserDataDirectory() override {
-    return mixin_host_.SetUpUserDataDirectory() &&
-           ExtensionBrowserTest::SetUpUserDataDirectory();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    mixin_host_.SetUpInProcessBrowserTestFixture();
-    ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
-    ExtensionBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-
-  void SetUpOnMainThread() override {
-    mixin_host_.SetUpOnMainThread();
-    ExtensionBrowserTest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    mixin_host_.TearDownOnMainThread();
-    ExtensionBrowserTest::TearDownOnMainThread();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    mixin_host_.TearDownInProcessBrowserTestFixture();
-    ExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  void TearDown() override {
-    mixin_host_.TearDown();
-    ExtensionBrowserTest::TearDown();
-  }
-
  protected:
   bool IsDisabledForCustodianApproval(const std::string& extension_id) {
     ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
@@ -207,8 +154,6 @@ class SupervisionExtensionTestBase
   supervised_user::SupervisionMixin::SignInMode GetMixinSigninMode() {
     return std::get<2>(GetParam()).Run();
   }
-
-  InProcessBrowserTestMixinHost mixin_host_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

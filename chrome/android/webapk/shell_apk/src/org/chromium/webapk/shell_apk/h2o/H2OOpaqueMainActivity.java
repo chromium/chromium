@@ -11,8 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import org.chromium.webapk.shell_apk.R;
-
 /**
  * Launches {@link SplashActivity}. SplashActivity does not handle android.intent.action.MAIN
  * because when the root activity is singleTask and the root activity handles
@@ -29,10 +27,7 @@ public class H2OOpaqueMainActivity extends Activity {
 
         if (enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT) {
             // H2OOpaqueMainActivity is disabled by default for old-style WebAPKs.
-            // R.bool.opaque_main_activity_enabled_default is inaccurate for old-style WebAPKs.
-            return isNewStyleWebApk
-                    && context.getResources()
-                            .getBoolean(R.bool.opaque_main_activity_enabled_default);
+            return isNewStyleWebApk;
         }
         return enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }

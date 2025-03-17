@@ -309,14 +309,14 @@ public class MessageSurveyUiDelegateUnitTest {
         mTestMessageDispatcher.acceptMessage();
         assertEquals(
                 "Delegate state should end as ACCEPTED",
-                mMessageSurveyUiDelegate.getStateForTesting(),
-                State.ACCEPTED);
+                State.ACCEPTED,
+                mMessageSurveyUiDelegate.getStateForTesting());
 
         mMessageSurveyUiDelegate.dismiss();
         assertEquals(
                 "Delegate state should remain unchanged.",
-                mMessageSurveyUiDelegate.getStateForTesting(),
-                State.ACCEPTED);
+                State.ACCEPTED,
+                mMessageSurveyUiDelegate.getStateForTesting());
     }
 
     @Test

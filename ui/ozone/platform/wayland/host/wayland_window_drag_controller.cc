@@ -274,6 +274,19 @@ bool WaylandWindowDragController::IsDragInProgress() const {
   return state_ != State::kIdle;
 }
 
+void WaylandWindowDragController::CancelDragSession() {
+  if (!IsActiveDragAndDropSession()) {
+    return;
+  }
+
+  VLOG(1) << "Cancelling the drag session. state=" << state_;
+
+  // Per the spec, destroying the data source triggers session cancellation. See
+  // https://wayland.app/protocols/wayland#wl_data_device:request:start_drag
+  data_source_.reset();
+  HandleDragEnd(/*completed=*/true, EventTimeForNow());
+}
+
 bool WaylandWindowDragController::IsDragSource() const {
   CHECK(!IsDragInProgress() || !!data_source_) << " state=" << state_;
   return IsDragInProgress();
@@ -531,12 +544,11 @@ uint32_t WaylandWindowDragController::DispatchEvent(
   // drag session has effectively started, so as a best-effort heuristic we
   // consider it started once wl_data_device.enter has been received at least
   // once.
-  auto cancel_drag_cb = base::BindOnce(
-      &WaylandWindowDragController::OnDataSourceFinish, base::Unretained(this),
-      data_source_.get(), EventTimeForNow(), /*completed=*/false);
-  if (wl::MaybeHandlePlatformEventForDrag(
-          event, /*start_drag_ack_received=*/has_received_enter_,
-          std::move(cancel_drag_cb))) {
+  if (wl::EventShouldCancelDrag(event)) {
+    if (!has_received_enter_) {
+      CancelDragSession();
+      return POST_DISPATCH_PERFORM_DEFAULT;
+    }
     return POST_DISPATCH_STOP_PROPAGATION;
   }
 
@@ -733,7 +745,8 @@ void WaylandWindowDragController::DumpState(std::ostream& out) const {
       << ", events_grabber=" << GetWindowName(events_grabber_.get())
       << ", origin_window=" << GetWindowName(origin_window_.get())
       << ", drag_target_window=" << GetWindowName(drag_target_window_.get())
-      << ", nested_dispatcher=" << !!nested_dispatcher_;
+      << ", nested_dispatcher=" << !!nested_dispatcher_
+      << ", has_received_enter=" << has_received_enter_;
 }
 
 std::ostream& operator<<(std::ostream& out,

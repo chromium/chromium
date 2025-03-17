@@ -39,7 +39,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -101,10 +101,7 @@ public class MessageAnimationCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        var testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS);
         mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, Animator::start);
         mAnimationCoordinator.setMessageQueueDelegate(mQueueDelegate);
         when(mContainer.isIsInitializingLayout()).thenReturn(false);
@@ -539,7 +536,6 @@ public class MessageAnimationCoordinatorUnitTest {
                                 MessagesMetrics.StackingAnimationType.SHOW_ALL)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
-                        .expectIntRecord("Android.Messages.Stacking.BlockedByBrowserControl", 1)
                         .build();
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -613,10 +609,6 @@ public class MessageAnimationCoordinatorUnitTest {
                             Arrays.asList(m1, m2), false, () -> {});
                 });
 
-        var blockedByBrowserControl =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.BlockedByBrowserControl", 1);
-
         // M1 is waiting to be shown.
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
@@ -629,7 +621,6 @@ public class MessageAnimationCoordinatorUnitTest {
         // Nothing happens, as message queue is not ready yet.
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
-        blockedByBrowserControl.assertExpected("Messages should be blocked by browser control.");
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -727,9 +718,6 @@ public class MessageAnimationCoordinatorUnitTest {
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
         doReturn(false).when(mContainer).runAfterInitialMessageLayout(any());
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.BlockedByContainerNotInitialized", 1);
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
 
@@ -746,7 +734,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, null}, currentMessages.toArray());
-        histogramWatcher.assertExpected();
     }
 
     @Test

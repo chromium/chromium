@@ -5,16 +5,26 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "ui/actions/actions.h"
+#include "ui/events/event.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/view.h"
+
+namespace ui {
+class MouseEvent;
+}  // namespace ui
 
 namespace page_actions {
 
 class PageActionController;
+class PageActionModelInterface;
+struct PageActionViewParams;
 
 // PageActionView is the view displaying the page action. There is one per
 // browser, per page action.
@@ -23,34 +33,51 @@ class PageActionView : public IconLabelBubbleView,
   METADATA_HEADER(PageActionView, IconLabelBubbleView)
  public:
   PageActionView(actions::ActionItem* action_item,
-                 IconLabelBubbleView::Delegate* parent_delegate);
+                 const PageActionViewParams& params);
   PageActionView(const PageActionView&) = delete;
   PageActionView& operator=(const PageActionView&) = delete;
   ~PageActionView() override;
-
-  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
   // Sets the controller for this view, and attaches this view in the
   // controller.
   void OnNewActiveController(PageActionController* controller);
 
-  // PageActionModelObserver
-  void OnPageActionModelChanged(PageActionModel* model) override;
-  void OnPageActionModelWillBeDeleted(PageActionModel* model) override;
+  // As an alternative to OnNewActiveController(), just set the observed model.
+  // TODO(crbug.com/388524315): Merge OnNewActiveController and this method.
+  void SetModel(PageActionModelInterface* model);
 
-  // IconLabelBubbleView
+  // Indicates whether this view is showing a suggestion chip.
+  // A chip is considered showing even if it is mid-animation (i.e. while
+  // expanding and collapsing).
+  bool IsChipVisible() const;
+
+  using ChipVisibilityChanged = base::RepeatingCallback<void(PageActionView*)>;
+  base::CallbackListSubscription AddChipVisibiltyChangedCallback(
+      ChipVisibilityChanged callback);
+
+  // PageActionModelObserver:
+  void OnPageActionModelChanged(const PageActionModelInterface& model) override;
+  void OnPageActionModelWillBeDeleted(
+      const PageActionModelInterface& model) override;
+
+  // IconLabelBubbleView:
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
   void OnTouchUiChanged() override;
-  bool ShouldShowLabel() const override;
   void UpdateBorder() override;
+  bool ShouldShowLabelAfterAnimation() const override;
   bool ShouldShowSeparator() const override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
+  void NotifyClick(const ui::Event& event) override;
+  gfx::Size GetMinimumSize() const override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnClickCanceled(const ui::Event& event) override;
 
   actions::ActionId GetActionId() const;
 
-  void SetShouldShowLabelForTesting(bool should_show_label);
+  views::View* GetLabelForTesting();
+  gfx::SlideAnimation& GetSlideAnimationForTesting();
 
  private:
   // The image associated with the `action_item_` size may be different from the
@@ -58,26 +85,35 @@ class PageActionView : public IconLabelBubbleView,
   // update the image size if needed.
   void UpdateIconImage();
 
-  bool should_show_label_ = false;
+  // Changes to label visibility indicate that the chip state of this page
+  // action changed. This handler ensures the view is updated accordingly.
+  void OnLabelVisibilityChanged();
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
-  base::ScopedObservation<PageActionModel, PageActionModelObserver>
+  base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
       observation_{this};
-};
 
-class PageActionViewInterface : public views::LabelButtonActionViewInterface {
- public:
-  explicit PageActionViewInterface(PageActionView* action_view,
-                                   PageActionModel* model);
-  PageActionViewInterface(const PageActionViewInterface&) = delete;
-  PageActionViewInterface& operator=(const PageActionViewInterface&) = delete;
-  ~PageActionViewInterface() override;
+  // The view creates and holds the current controller's subscription to
+  // ActionItem updates. This ensures that updates aren't unnecessarily
+  // propagated to every tab's controller.
+  base::CallbackListSubscription action_item_controller_subscription_;
 
-  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+  const int icon_size_;
+  const gfx::Insets icon_insets_;
 
- private:
-  raw_ptr<PageActionView> action_view_;
-  raw_ptr<PageActionModel> model_;
+  // Used to track whether the mouse was pressed when associated ephemeral UI
+  // (eg. a bubble that closes on focus loss) was showing, to avoid
+  // re-triggering the action if so. This is necessary because the bubble will
+  // have closed by the time the view invokes the action on button click.
+  bool skip_action_invocation_ = false;
+
+  // Subscription to changes in label visibility, used for updating properties
+  // dependent on label visibility and notifying others of chip state changes.
+  base::CallbackListSubscription label_visibility_changed_subscription_;
+
+  // Client-provided callbacks for changes to chip state.
+  base::RepeatingCallbackList<void(PageActionView*)>
+      chip_visibility_changed_callbacks_;
 };
 
 }  // namespace page_actions

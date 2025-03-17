@@ -16,8 +16,8 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -192,9 +192,7 @@ void AutofillHandler::SetAddresses(
       // available addresses.
       // TODO(b/40270486): Offer a test address version for when the new model
       // is enabled.
-      if (test_address_country == u"Germany" &&
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillUseDEAddressModel)) {
+      if (test_address_country == u"Germany") {
         continue;
       }
 

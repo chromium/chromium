@@ -4,6 +4,8 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
 
+#include "partition_alloc/shim/allocator_shim.h"
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #include "base/test/multiprocess_test.h"
@@ -45,7 +47,7 @@ class ExtremeLightweightDetectorMallocShimsTest
         /*scheduler_loop_quarantine_capacity_in_bytes=*/0,
         allocator_shim::ZappingByFreeFlags(false),
         allocator_shim::EventuallyZeroFreedMemory(false),
-        allocator_shim::UsePoolOffsetFreelists(true),
+        allocator_shim::FewerMemoryRegions(false),
         allocator_shim::UseSmallSingleSlotSpans(true));
     InstallExtremeLightweightDetectorHooks(
         {.sampling_frequency = kSamplingFrequency,

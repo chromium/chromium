@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
+#import "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/no_destructor.h"
+#import "base/no_destructor.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 
@@ -30,8 +30,7 @@ WebViewStrikeDatabaseFactory* WebViewStrikeDatabaseFactory::GetInstance() {
 WebViewStrikeDatabaseFactory::WebViewStrikeDatabaseFactory()
     : BrowserStateKeyedServiceFactory(
           "AutofillStrikeDatabase",
-          BrowserStateDependencyManager::GetInstance()) {
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 WebViewStrikeDatabaseFactory::~WebViewStrikeDatabaseFactory() {}
 

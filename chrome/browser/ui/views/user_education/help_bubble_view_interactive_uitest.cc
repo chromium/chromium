@@ -52,6 +52,8 @@ using user_education::HelpBubbleArrow;
 using user_education::HelpBubbleParams;
 using user_education::HelpBubbleView;
 
+class TestBubbleView;
+
 namespace {
 
 // It is very important to create a situation in which the transparent bubble
@@ -59,34 +61,6 @@ namespace {
 // inside the contents view. This should be sufficient.
 constexpr gfx::Rect kTestBubbleAnchorRect{10, 10, 10, 10};
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestBubbleElementId);
-
-// A bubble that anchors to the top left of the contents view in a browser and
-// which should be transparent to events/not activatable.
-class TestBubbleView : public views::BubbleDialogDelegateView {
- public:
-  explicit TestBubbleView(views::View* anchor_view)
-      : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT) {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-    SetPreferredSize(gfx::Size(100, 100));
-    SetCanActivate(false);
-    set_focus_traversable_from_anchor_view(false);
-    SetProperty(views::kElementIdentifierKey, kTestBubbleElementId);
-  }
-
-  ~TestBubbleView() override = default;
-
-  METADATA_HEADER(TestBubbleView, BubbleDialogDelegateView)
-
-  // views::BubbleDialogDelegateView:
-  gfx::Rect GetAnchorRect() const override {
-    gfx::Rect rect = kTestBubbleAnchorRect;
-    rect.Offset(GetAnchorView()->GetBoundsInScreen().OffsetFromOrigin());
-    return rect;
-  }
-};
-
-BEGIN_METADATA(TestBubbleView)
-END_METADATA
 
 class TestHelpBubbleFactory : public user_education::HelpBubbleFactoryViews {
  public:
@@ -124,6 +98,34 @@ DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubbleFactory)
 
 }  // namespace
 
+// A bubble that anchors to the top left of the contents view in a browser and
+// which should be transparent to events/not activatable.
+class TestBubbleView : public views::BubbleDialogDelegateView {
+ public:
+  explicit TestBubbleView(views::View* anchor_view)
+      : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT) {
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+    SetPreferredSize(gfx::Size(100, 100));
+    SetCanActivate(false);
+    set_focus_traversable_from_anchor_view(false);
+    SetProperty(views::kElementIdentifierKey, kTestBubbleElementId);
+  }
+
+  ~TestBubbleView() override = default;
+
+  METADATA_HEADER(TestBubbleView, BubbleDialogDelegateView)
+
+  // views::BubbleDialogDelegateView:
+  gfx::Rect GetAnchorRect() const override {
+    gfx::Rect rect = kTestBubbleAnchorRect;
+    rect.Offset(GetAnchorView()->GetBoundsInScreen().OffsetFromOrigin());
+    return rect;
+  }
+};
+
+BEGIN_METADATA(TestBubbleView)
+END_METADATA
+
 class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
  public:
   HelpBubbleViewInteractiveUiTest() = default;
@@ -159,8 +161,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
                       help_bubbles_.emplace_back(factories().CreateHelpBubble(
                           anchor, std::move(params)));
                     }),
-        std::move(WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting)
-                      .SetTransitionOnlyOnEvent(true)));
+        WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting)
+            .SetTransitionOnlyOnEvent(true));
   }
 
   // Closes the current help bubble and waits for it to hide.
@@ -168,8 +170,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
                  [](HelpBubbleView* bubble) { bubble->GetWidget()->Close(); }),
-        std::move(WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
-                      .SetTransitionOnlyOnEvent(true)));
+        WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
+            .SetTransitionOnlyOnEvent(true));
   }
 
   user_education::HelpBubbleFactoryRegistry& factories() { return factories_; }

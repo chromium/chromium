@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -45,6 +47,8 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
@@ -57,6 +61,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -78,6 +83,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/page_zoom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -97,6 +103,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -161,6 +168,12 @@ SkColor GetFrameColor(Browser* browser) {
 
 class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  public:
+  WebAppFrameToolbarBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPinnableDownloadsButton, features::kPageActionsMigration},
+        {});
+  }
+
   WebAppFrameToolbarTestHelper* helper() {
     return &web_app_frame_toolbar_helper_;
   }
@@ -176,7 +189,25 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
            model->IsEnabledAt(index);
   }
 
+ protected:
+  // Previously, the page action icon was added as a direct child of the
+  // toolbar. With the new page action framework, the `PageActionContainer` is
+  // added as the toolbar child. As a result, the positioning should be
+  // offsetted.
+  int GetPageActionViewOffset() {
+    if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+      return helper()
+          ->web_app_frame_toolbar()
+          ->get_right_container_for_testing()
+          ->page_action_container()
+          ->x();
+    }
+
+    return 0;
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
@@ -202,13 +233,25 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(toolbar_right_container->parent(),
             helper()->web_app_frame_toolbar());
 
-  std::vector<const PageActionIconView*> page_actions =
-      helper()
-          ->web_app_frame_toolbar()
-          ->GetPageActionIconControllerForTesting()
-          ->GetPageActionIconViewsForTesting();
-  for (const PageActionIconView* action : page_actions) {
+  std::vector<const views::View*> page_action_views = {};
+  for (auto action_id : helper()
+                            ->app_browser()
+                            ->GetAppBrowserController()
+                            ->GetTitleBarPageActions()) {
+    auto* page_action_view =
+        helper()->web_app_frame_toolbar()->GetPageActionView(action_id);
+    ASSERT_NE(nullptr, page_action_view);
+    EXPECT_EQ(page_action_view->parent(),
+              toolbar_right_container->page_action_container());
+    page_action_views.push_back(page_action_view);
+  }
+  for (const PageActionIconView* action :
+       helper()
+           ->web_app_frame_toolbar()
+           ->GetPageActionIconControllerForTesting()
+           ->GetPageActionIconViewsForTesting()) {
     EXPECT_EQ(action->parent(), toolbar_right_container);
+    page_action_views.emplace_back(action);
   }
 
   views::View* const menu_button =
@@ -229,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 #endif
 
   // Initially the page action icons are not visible.
-  EXPECT_EQ(GetLastVisible(page_actions), nullptr);
+  EXPECT_EQ(GetLastVisible(page_action_views), nullptr);
   const int original_menu_button_width = menu_button->width();
   EXPECT_GT(original_menu_button_width, 0);
 
@@ -252,14 +295,16 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_LT(window_title->width(), original_window_title_width);
 #endif
 
-  EXPECT_NE(GetLastVisible(page_actions), nullptr);
+  EXPECT_NE(GetLastVisible(page_action_views), nullptr);
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 
   // Resize the WebAppFrameToolbarView just enough to clip out the page action
   // icons (and toolbar contents left of them).
   const int original_toolbar_width = helper()->web_app_frame_toolbar()->width();
-  const int new_toolbar_width = toolbar_right_container->width() -
-                                GetLastVisible(page_actions)->bounds().right();
+  const int new_toolbar_width =
+      toolbar_right_container->width() -
+      (GetPageActionViewOffset() +
+       GetLastVisible(page_action_views)->bounds().right());
   const int new_frame_width = helper()->frame_view()->width() -
                               original_toolbar_width + new_toolbar_width;
 
@@ -279,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 
   // The page action icons should be hidden while the app menu button retains
   // its full width.
-  EXPECT_EQ(GetLastVisible(page_actions), nullptr);
+  EXPECT_EQ(GetLastVisible(page_action_views), nullptr);
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 
@@ -329,6 +374,25 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
     EXPECT_EQ(get_ink_drop_color(), original_ink_drop_color);
   }
 #endif
+}
+
+// Test that there are no buttons in the PinnedToolbarActionsContainer by
+// default.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
+                       NoPinnedActionsByDefault) {
+  const GURL app_url("https://test.org");
+  helper()->InstallAndLaunchWebApp(browser(), app_url);
+
+  int button_count = 0;
+  for (views::View* child : helper()
+                                ->web_app_frame_toolbar()
+                                ->GetPinnedToolbarActionsContainer()
+                                ->children()) {
+    if (views::Button::AsButton(child)) {
+      button_count++;
+    }
+  }
+  EXPECT_EQ(button_count, 0);
 }
 
 // Test that a tooltip is shown when hovering over a truncated title.
@@ -396,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
 
   EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
             u"Customize and control A minimal-ui app");
-  EXPECT_EQ(menu_button->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(menu_button->GetRenderedTooltipText(gfx::Point()),
             u"Customize and control A minimal-ui app");
 }
 
@@ -441,6 +505,38 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu,
       toolbar_button_container->extensions_container();
   EXPECT_TRUE(extensions_container->GetVisible());
   EXPECT_TRUE(extensions_container->IsExtensionsMenuShowing());
+}
+
+class IsolatedWebAppFrameToolbarBrowserTest
+    : public WebAppFrameToolbarBrowserTest {
+ private:
+  base::test::ScopedFeatureList features_{features::kIsolatedWebApps};
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppFrameToolbarBrowserTest,
+                       NoExtensionsInToolbarOrMenu) {
+  std::unique_ptr iwa =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+
+  auto* profile = browser()->profile();
+  web_app::IsolatedWebAppUrlInfo url_info =
+      helper()->InstallAndLaunchIsolatedWebApp(profile, iwa.get());
+
+  // There should be no menu entry for opening the Extensions menu regardless of
+  // whether there are extensions installed.
+  EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
+
+  // Install test Extension.
+  LoadTestPopUpExtension(profile);
+
+  // There should be no visible Extensions icon for IWAs.
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  EXPECT_FALSE(toolbar_button_container->extensions_container()->GetVisible());
+
+  // There should be no menu entry for opening the Extensions menu regardless of
+  // whether there are extensions installed.
+  EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
 }
 
 class WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu
@@ -491,11 +587,24 @@ class BorderlessIsolatedWebAppBrowserTest
   }
 
   void InstallAndLaunchIsolatedWebApp(bool uses_borderless) {
-    isolated_web_app_dev_server_ = CreateAndStartServer(
-        FILE_PATH_LITERAL(uses_borderless ? "web_apps/borderless_isolated_app"
-                                          : "web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-        isolated_web_app_dev_server().GetOrigin());
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        uses_borderless
+            ? web_app::IsolatedWebAppBuilder(
+                  web_app::ManifestBuilder()
+                      .SetDisplayModeOverride(
+                          {blink::mojom::DisplayMode::kBorderless})
+                      .AddPermissionsPolicy(
+                          network::mojom::PermissionsPolicyFeature::
+                              kWindowManagement,
+                          true, {})
+                      .SetStartUrl("/index.html"))
+                  .AddFolderFromDisk("/", "web_apps/borderless_isolated_app")
+                  .BuildBundle()
+            : web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+                  .BuildBundle();
+
+    web_app::IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
+
     browser_ = GetBrowserFromFrame(OpenApp(url_info.app_id()));
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_);
 
@@ -543,10 +652,6 @@ class BorderlessIsolatedWebAppBrowserTest
   }
 
   BrowserNonClientFrameView* frame_view() { return frame_view_; }
-
-  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
-    return *isolated_web_app_dev_server_.get();
-  }
 
   // Opens a new popup window from `browser_` by running
   // `window_open_script` and returns the `BrowserView` of the popup it opened.
@@ -606,7 +711,6 @@ class BorderlessIsolatedWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
   raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_;
@@ -1674,7 +1778,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // the app browser or the non-app browser.
   WebAppToolbarButtonContainer* toolbar_button_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
-  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_EQ(toolbar_button_container->GetDownloadButton(), nullptr);
   EXPECT_FALSE(non_app_browser->window()
                    ->GetDownloadBubbleUIController()
                    ->GetDownloadDisplayController()
@@ -1687,9 +1791,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       ui_test_utils::GetTestUrl(
           base::FilePath().AppendASCII("downloads"),
           base::FilePath().AppendASCII("a_zip_file.zip")));
+  views::test::WaitForAnimatingLayoutManager(
+      BrowserView::GetBrowserViewForBrowser(helper()->app_browser())
+          ->toolbar_button_provider()
+          ->GetPinnedToolbarActionsContainer());
 
   // The download button is visible in the app browser.
-  EXPECT_TRUE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_TRUE(toolbar_button_container->GetDownloadButton()->GetVisible());
 
   // The download button is not visible in the non-app browser.
   EXPECT_FALSE(non_app_browser->window()
@@ -1712,7 +1820,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // the app browser or the non-app browser.
   WebAppToolbarButtonContainer* toolbar_button_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
-  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_EQ(toolbar_button_container->GetDownloadButton(), nullptr);
   EXPECT_FALSE(non_app_browser->window()
                    ->GetDownloadBubbleUIController()
                    ->GetDownloadDisplayController()
@@ -1726,7 +1834,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                            base::FilePath().AppendASCII("a_zip_file.zip")));
 
   // The download button is not visible in the app browser.
-  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_EQ(toolbar_button_container->GetDownloadButton(), nullptr);
 
   // The download button is visible in the non-app browser.
   EXPECT_TRUE(non_app_browser->window()
@@ -1887,7 +1995,7 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
                       std::optional<bool> web_api_can_resize_expected) {
     EXPECT_EQ(helper()->browser_view()->CanResize(),
               browser_view_can_resize_expected);
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
               web_api_can_resize_expected);
 
 #if defined(USE_AURA)
@@ -1976,13 +2084,13 @@ IN_PROC_BROWSER_TEST_F(
 
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
   // Navigates to the second page of the app.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2000,7 +2108,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
   // Sets the resizability true for the second page.
   SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
@@ -2011,9 +2119,10 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
   // Reads the resizability from the BFCache if it's enabled. Otherwise null.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+    EXPECT_FALSE(helper()->browser_view()->GetWebApiWindowResizable().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
+              std::nullopt);
   }
 
   // Navigates forward to the already visited second page.
@@ -2021,15 +2130,24 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
   // Reads the resizability from the BFCache if it's enabled. Otherwise null.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+    EXPECT_TRUE(helper()->browser_view()->GetWebApiWindowResizable().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
+              std::nullopt);
   }
 }
 
+// TODO(crbug.com/362078628): Gardening. This test has been flaky for long.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability \
+  DISABLED_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability
+#else
+#define MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability \
+  NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability) {
+    MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
@@ -2044,16 +2162,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
                                            GURL("http://www.google.com/")));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
   // Returning to the original URL then reads the resizability from the BFCache
   // if it's enabled.
   web_contents->GetController().GoBack();
   content::WaitForLoadStop(web_contents);
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+    EXPECT_TRUE(helper()->browser_view()->GetWebApiWindowResizable().value());
   } else {
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), std::nullopt);
+    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
+              std::nullopt);
   }
 }
 
@@ -2676,9 +2795,9 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    web_app::ScopeExtensionInfo scope_extension;
-    scope_extension.origin = url::Origin::Create(extension_url());
-    scope_extension.has_origin_wildcard = false;
+    auto scope_extension = web_app::ScopeExtensionInfo::CreateForOrigin(
+        url::Origin::Create(extension_url()),
+        /*has_origin_wildcard*/ false);
     web_app_info->scope_extensions = {std::move(scope_extension)};
     helper()->InstallAndLaunchCustomWebApp(browser(), std::move(web_app_info),
                                            app_url());

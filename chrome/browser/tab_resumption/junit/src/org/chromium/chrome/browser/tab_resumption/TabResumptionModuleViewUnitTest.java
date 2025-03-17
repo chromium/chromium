@@ -180,7 +180,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(24 - 3, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(24 - 3, 0, 0));
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -239,7 +239,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(24 - 3, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(24 - 3, 0, 0));
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -301,7 +301,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                         /* sourceName= */ "My Tablet",
                         /* url= */ expectedUrl,
                         /* title= */ "Blue website with a very long title that might not fit",
-                        /* timestamp= */ makeTimestamp(24 - 1, 60 - 16, 0));
+                        /* lastActiveTime= */ makeTimestamp(24 - 1, 60 - 16, 0));
         TabResumptionTileView tile1 = Mockito.mock(TabResumptionTileView.class);
 
         mTileContainerView.loadTileUrlImage(
@@ -309,12 +309,12 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                 mUrlImageProvider,
                 tile1,
                 /* isSingle= */ false,
-                /* usSalientImage= */ true);
+                /* useSalientImage= */ true);
 
         verify(mUrlImageProvider)
                 .fetchSalientImage(
                         eq(expectedUrl),
-                        /* isSingle= */ eq(false),
+                        /* showBigImage= */ eq(false),
                         mFetchSalientImageCallbackCaptor.capture());
 
         // Verifies the case that a salient image is returned.
@@ -513,13 +513,13 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                         /* sourceName= */ "My Tablet",
                         /* url= */ JUnitTestGURLs.BLUE_3,
                         /* title= */ "Blue website with a very long title that might not fit",
-                        /* timestamp= */ makeTimestamp(24 - 1, 60 - 16, 0));
+                        /* lastActiveTime= */ makeTimestamp(24 - 1, 60 - 16, 0));
         SuggestionEntry entry2 =
                 SuggestionEntry.createFromForeignFields(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(24 - 3, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(24 - 3, 0, 0));
         mSuggestionBundle.entries.add(entry1);
         mSuggestionBundle.entries.add(entry2);
 
@@ -595,7 +595,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(24 - 3, 0, 0));
+                        /* lastActiveTime= */ makeTimestamp(24 - 3, 0, 0));
         mSuggestionBundle.entries.add(entry1);
         mSuggestionBundle.entries.add(entry2);
 
@@ -1111,7 +1111,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         mModuleView.setSuggestionBundle(mSuggestionBundle);
         Assert.assertEquals(1, mTileContainerView.getChildCount());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-        assertEquals(entry1.getLocalTabId(), Tab.INVALID_TAB_ID);
+        assertEquals(Tab.INVALID_TAB_ID, entry1.getLocalTabId());
         verify(mOnModuleShowConfigFinalizedCallback, never()).onResult(anyInt());
 
         // Verifies that a TabResumptionTileView is created for the history suggestion.

@@ -17,3 +17,11 @@ include_rules = [
   "+ui/gfx/image",
   "+url",
 ]
+
+specific_include_rules = {
+  "test_helper.cc": [
+    "+chromeos/ash/components/cryptohome/cryptohome_parameters.h",
+    "+chromeos/ash/components/dbus/userdataauth/userdataauth_client.h",
+    "+components/policy/core/common",
+  ]
+}

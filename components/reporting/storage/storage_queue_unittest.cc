@@ -26,7 +26,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/decompression.h"
 #include "components/reporting/encryption/test_encryption_module.h"
@@ -75,10 +74,10 @@ const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 // Forbidden file/folder names
 const base::FilePath::StringType kInvalidFilePrefix = FILE_PATH_LITERAL("..");
 #if BUILDFLAG(IS_WIN)
-const base::FilePath::StringPieceType kInvalidDirectoryPath =
+const base::FilePath::StringViewType kInvalidDirectoryPath =
     FILE_PATH_LITERAL("o:\\some\\inaccessible\\dir");
 #else
-const base::FilePath::StringPieceType kInvalidDirectoryPath =
+const base::FilePath::StringViewType kInvalidDirectoryPath =
     FILE_PATH_LITERAL("////////////");
 #endif
 
@@ -403,7 +402,7 @@ class StorageQueueTest
           // unique_ptr and pass to SequenceBoundUpload to own.
           // MockUpload outlives TestUploader and is destructed together with
           // SequenceBoundUpload (on a sequenced task runner).
-          mock_upload_(new ::testing::NiceMock<const MockUpload>()),
+          mock_upload_(new ::testing::NiceMock<MockUpload>()),
           sequence_bound_upload_(self->main_task_runner_,
                                  base::WrapUnique(mock_upload_.get())) {
       DETACH_FROM_SEQUENCE(test_uploader_checker_);

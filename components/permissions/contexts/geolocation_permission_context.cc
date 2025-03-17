@@ -11,7 +11,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/origin.h"
 
 namespace permissions {
@@ -22,7 +22,7 @@ GeolocationPermissionContext::GeolocationPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::GEOLOCATION,
-          blink::mojom::PermissionsPolicyFeature::kGeolocation),
+          network::mojom::PermissionsPolicyFeature::kGeolocation),
       delegate_(std::move(delegate)) {}
 
 GeolocationPermissionContext::~GeolocationPermissionContext() = default;

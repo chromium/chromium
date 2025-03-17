@@ -37,8 +37,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 
-namespace chrome {
-namespace startup {
+namespace chrome::startup {
 
 namespace {
 
@@ -215,5 +214,4 @@ void WriteWebAppsToFile(const base::FilePath& output_file,
   GetWebApps::Start(output_file, profile_base_name);
 }
 
-}  // namespace startup
-}  // namespace chrome
+}  // namespace chrome::startup

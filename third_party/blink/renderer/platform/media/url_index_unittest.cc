@@ -176,4 +176,15 @@ TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
   EXPECT_NE(url_data, url_index_.GetByUrl(url, cors, UrlData::kCacheDisabled));
 }
 
+TEST_F(UrlIndexTest, ValidateDataOrigin) {
+  KURL url("http://foo.bar.com");
+  KURL data_url;
+  scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  EXPECT_TRUE(a->ValidateDataOrigin(data_url));
+
+  // First call assigns the data origin, second call will assert them are the
+  // same.
+  EXPECT_TRUE(a->ValidateDataOrigin(data_url));
+}
+
 }  // namespace blink

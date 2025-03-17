@@ -171,11 +171,9 @@ OpenedWebContentsSet OpenAllHelper(
         initial_disposition == WindowOpenDisposition::OFF_THE_RECORD;
   }
 
-  for (std::vector<UrlAndId>::const_iterator url_and_id_it =
-           bookmark_urls.begin();
-       url_and_id_it != bookmark_urls.end(); ++url_and_id_it) {
+  for (const auto& bookmark_url : bookmark_urls) {
     const bool url_allowed_in_incognito =
-        IsURLAllowedInIncognito(url_and_id_it->url);
+        IsURLAllowedInIncognito(bookmark_url.url);
 
     // Set the browser from which the URL will be opened. If neither
     // `incognito_browser` nor `regular_browser` is set we use the original
@@ -194,7 +192,7 @@ OpenedWebContentsSet OpenAllHelper(
     if (browser_to_use) {
       profile = browser_to_use->profile();
     }
-    NavigateParams params(profile, url_and_id_it->url,
+    NavigateParams params(profile, bookmark_url.url,
                           ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     params.disposition = disposition;
     params.browser = browser_to_use;
@@ -216,11 +214,11 @@ OpenedWebContentsSet OpenAllHelper(
           ->SetLaunchAction(launch_action.value(), disposition);
     }
 
-    if (url_and_id_it->id != -1) {
+    if (bookmark_url.id != -1) {
       ChromeNavigationUIData* ui_data =
           static_cast<ChromeNavigationUIData*>(handle->GetNavigationUIData());
       if (ui_data) {
-        ui_data->set_bookmark_id(url_and_id_it->id);
+        ui_data->set_bookmark_id(bookmark_url.id);
       }
     }
 

@@ -29,7 +29,6 @@ enum class MantaMetricType {
   kMahiSummary,
   kMahiElucidation,
   kMahiQA,
-  kSparky,
   kWalrus,
 };
 

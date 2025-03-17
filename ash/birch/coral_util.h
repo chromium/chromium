@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/values.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "components/prefs/pref_service.h"
 
 namespace aura {
 class Window;
@@ -44,6 +45,17 @@ SplitContentData(const std::vector<coral::mojom::EntityPtr>& content);
 base::Value::List EntitiesToListValue(
     const std::vector<coral::mojom::EntityPtr>& entities);
 std::string GroupToString(const coral::mojom::GroupPtr& group);
+
+enum class GenAISmartGroupingSettings {
+  kAllowed = 0,            // Allow and improve AI models
+  kAllowedWithoutLogging,  // Allow without improving AI models
+  kDisabled,               // Do not allow
+};
+
+// Returns if the use feedback of Coral feature is allowed by the policy.
+bool IsCoralFeedbackAllowedByPolicy(PrefService* pref_service);
+// Returns if the Coral feature is allowed by the policy.
+bool IsCoralAllowedByPolicy(PrefService* pref_service);
 
 }  // namespace ash::coral_util
 

@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
@@ -42,10 +41,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchCriticalTest extends ContextualSearchInstrumentationBase {
-
-    // Needed to avoid issues on Release builds where Natives is made final and can not be Spy'd
-    // below.
-    @Mock ContextualSearchManagerJni mUnusedContextualSearchManagerJni;
 
     private ContextualSearchManager.Natives mContextualSearchManagerNatives;
 

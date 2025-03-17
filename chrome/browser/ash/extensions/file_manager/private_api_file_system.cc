@@ -28,7 +28,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
+#include "chrome/browser/ash/extensions/file_manager/private_api_file_system.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
@@ -75,7 +75,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -98,7 +97,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
-#include "private_api_file_system.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -1105,8 +1103,8 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   for (const auto& [level, urls, components] : dlp_restriction_details) {
     DlpRestrictionDetails details;
     details.level = DlpRulesManagerLevelToApiEnum(level);
-    base::ranges::move(urls.begin(), urls.end(),
-                       std::back_inserter(details.urls));
+    std::ranges::move(urls.begin(), urls.end(),
+                      std::back_inserter(details.urls));
     for (const auto& component : components) {
       details.components.push_back(
           DlpRulesManagerComponentToApiEnum(component));

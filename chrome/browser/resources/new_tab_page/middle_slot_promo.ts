@@ -274,8 +274,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
       if (!promo) {
         this.hasDefaultPromo_ = false;
       } else {
-        const promoContainer =
-            this.shadowRoot!.getElementById('promoContainer');
+        const promoContainer = this.shadowRoot.getElementById('promoContainer');
         if (promoContainer) {
           promoContainer.remove();
         }

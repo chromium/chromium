@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -237,7 +237,7 @@ class AcceptLanguageNegotiation final : public ContentNegotiationAlgorithm {
                               const std::string& preferred_lang,
                               std::vector<std::string>* output) {
     if (preferred_lang == "*") {
-      base::ranges::copy(available_values, std::back_inserter(*output));
+      std::ranges::copy(available_values, std::back_inserter(*output));
       return;
     }
 
@@ -371,7 +371,7 @@ std::optional<size_t> GetPossibleKeysIndex(
   DCHECK_EQ(variant_key.size(), sorted_variants.size());
   size_t index = 0;
   for (size_t i = 0; i < sorted_variants.size(); ++i) {
-    auto found = base::ranges::find(sorted_variants[i], variant_key[i]);
+    auto found = std::ranges::find(sorted_variants[i], variant_key[i]);
     if (found == sorted_variants[i].end())
       return std::nullopt;
 
@@ -631,7 +631,7 @@ std::optional<size_t> WebPackageRequestMatcher::FindBestMatchingIndex(
         negotiation_algorithm->run(variant_axis.second, request_value);
     if (sorted_values.empty())
       return std::nullopt;
-    auto it = base::ranges::find(variant_axis.second, sorted_values.front());
+    auto it = std::ranges::find(variant_axis.second, sorted_values.front());
     if (it == variant_axis.second.end())
       return std::nullopt;
     size_t best_value_index = it - variant_axis.second.begin();

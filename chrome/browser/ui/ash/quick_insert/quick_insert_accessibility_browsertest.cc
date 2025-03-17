@@ -389,7 +389,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+class QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest
+    : public QuickInsertAccessibilityBrowserTest {
+ public:
+  QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kPickerGifs);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest,
                        FocusingGifsButtonAnnouncesLabel) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -674,16 +685,24 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
-                       ImageGridItemAnnouncesTitle) {
+                       SetDescendantToImageGridItemAnnouncesTitle) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .BuildClientOwnsWidget();
-  auto* view =
-      widget->SetContentsView(std::make_unique<ash::QuickInsertSectionListView>(
+  ash::QuickInsertKeyEventHandler key_event_handler;
+  ash::QuickInsertPerformanceMetrics metrics;
+  auto* container_view =
+      widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
+  auto* search_field_view = container_view->AddChildView(
+      std::make_unique<ash::QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  search_field_view->SetPlaceholderText(u"cat");
+  auto* contents_view = container_view->AddChildView(
+      std::make_unique<ash::QuickInsertSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::QuickInsertSectionView* section = view->AddSection();
+  ash::QuickInsertSectionView* section = contents_view->AddSection();
   section->AddTitleLabel(u"Section1");
   ash::QuickInsertImageItemView* item1 =
       section->AddImageGridItem(std::make_unique<ash::QuickInsertImageItemView>(
@@ -705,32 +724,37 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
           u"title3", base::DoNothing()));
 
-  sm_.Call([item1]() { item1->RequestFocus(); });
+  sm_.Call([search_field_view]() { search_field_view->RequestFocus(); });
+
+  sm_.Call([search_field_view, item1]() {
+    search_field_view->SetTextfieldActiveDescendant(item1);
+  });
 
   sm_.ExpectSpeechPattern("Insert title1");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
   sm_.ExpectSpeechPattern("1 of 3");
-  sm_.ExpectSpeechPattern("Press * to activate");
 
-  sm_.Call([item2]() { item2->RequestFocus(); });
+  sm_.Call([search_field_view, item2]() {
+    search_field_view->SetTextfieldActiveDescendant(item2);
+  });
 
   // TODO: b/362129770 - item2 should not have "List end".
   sm_.ExpectSpeechPattern("Open title2");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
-  sm_.ExpectSpeechPattern("2 of 3");
+  sm_.ExpectSpeechPattern("3 of 3");
   sm_.ExpectSpeechPattern("List end");
-  sm_.ExpectSpeechPattern("Press * to activate");
 
-  sm_.Call([item3]() { item3->RequestFocus(); });
+  sm_.Call([search_field_view, item3]() {
+    search_field_view->SetTextfieldActiveDescendant(item3);
+  });
 
   // TODO: b/362129770 - item3 should have "List end".
   sm_.ExpectSpeechPattern("title3");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
-  sm_.ExpectSpeechPattern("3 of 3");
-  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.ExpectSpeechPattern("2 of 3");
 
   sm_.Replay();
 }

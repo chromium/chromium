@@ -142,7 +142,7 @@ class LicenseParserTest(unittest.TestCase):
     temp_file = self._write_readme_file("")
 
     self.assertRaisesRegex(Exception, "Failed to parse any valid metadata",
-                           lambda: license_utils.parse_chromium_readme_file(
+                         lambda: license_utils.parse_chromium_readme_file(
                                temp_file.name,
                                lambda x: x))
 
@@ -181,7 +181,7 @@ class LicenseParserTest(unittest.TestCase):
         ]))
       # COPYING file must exist as we check for symlink to make sure that
       # they still exist.
-      create_android_metadata_license.update_license(temp_directory, {})
+      create_android_metadata_license.update_license(temp_directory, {}, reachable_through_dependencies=False)
       self.assertTrue(os.path.exists(os.path.join(crate_path, "METADATA")))
       self.assertTrue(os.path.islink(os.path.join(crate_path, "LICENSE")))
       self.assertTrue(os.path.exists(
@@ -212,7 +212,7 @@ class LicenseParserTest(unittest.TestCase):
       # COPYING file must exist as we check for symlink to make sure that
       # they still exist.
       self._write_empty_file(os.path.join(temp_directory, "COPYING"))
-      create_android_metadata_license.update_license(temp_directory, {})
+      create_android_metadata_license.update_license(temp_directory, {}, reachable_through_dependencies=False)
       self.assertTrue(
           os.path.exists(os.path.join(temp_directory, "METADATA")))
       self.assertTrue(os.path.islink(os.path.join(temp_directory, "LICENSE")))
@@ -240,14 +240,15 @@ class LicenseParserTest(unittest.TestCase):
       # COPYING file must exist as we check for symlink to make sure that
       # they still exist.
       self._write_empty_file(os.path.join(temp_directory, "COPYING"))
-      create_android_metadata_license.update_license(temp_directory, {})
+      create_android_metadata_license.update_license(temp_directory, {}, reachable_through_dependencies=False)
       self.assertTrue(
           os.path.exists(os.path.join(temp_directory, "METADATA")))
       os.remove(os.path.join(temp_directory, "METADATA"))
       self.assertRaisesRegex(Exception, "Failed to find metadata",
                              lambda: create_android_metadata_license.update_license(
                                  temp_directory, {},
-                                 verify_only=True))
+                                 verify_only=True,
+                                 reachable_through_dependencies=False))
 
   def _write_empty_file(self, path: str):
     Path(path).touch()
@@ -265,7 +266,7 @@ class LicenseParserTest(unittest.TestCase):
       # COPYING file must exist as we check for symlink to make sure that
       # they still exist.
       self._write_empty_file(os.path.join(temp_directory, "COPYING"))
-      create_android_metadata_license.update_license(temp_directory, {})
+      create_android_metadata_license.update_license(temp_directory, {}, reachable_through_dependencies=False)
       metadata_path = os.path.join(temp_directory, "METADATA")
       self.assertTrue(os.path.exists(metadata_path))
       # The METADATA header must exist otherwise it will be considered a
@@ -277,7 +278,19 @@ class LicenseParserTest(unittest.TestCase):
                              "Please re-run create_android_metadata_license.py",
                              lambda: create_android_metadata_license.update_license(
                                  temp_directory, {},
-                                 verify_only=True))
+                                 verify_only=True,
+                                 reachable_through_dependencies=False))
+
+  def test_transitive_dependency_discovery_mode(self):
+    self.assertEqual(
+        create_android_metadata_license.get_all_readme_through_gn(
+            create_android_metadata_license.REPOSITORY_ROOT,
+            ["//components/cronet/license/tests/target_a:target_a"]),
+        set([
+            "components/cronet/license/tests/target_a/README.chromium",
+            "components/cronet/license/tests/target_b/README.chromium",
+            "components/cronet/license/tests/target_c/README.chromium"
+        ]))
 
   def test_verify_only_mode_missing_license(self):
     with tempfile.TemporaryDirectory() as temp_directory:
@@ -289,30 +302,11 @@ class LicenseParserTest(unittest.TestCase):
             "License: Apache 2.0",
             "License File: COPYING"
         ]))
-      create_android_metadata_license.update_license(temp_directory, {})
-      self.assertTrue(os.path.islink(os.path.join(temp_directory, "LICENSE")))
-      os.remove(os.path.join(temp_directory, "LICENSE"))
-      self.assertRaisesRegex(Exception, "License symlink does not exist",
+      self.assertRaisesRegex(Exception, "License file .* does not exist",
                              lambda: create_android_metadata_license.update_license(
                                  temp_directory, {},
-                                 verify_only=True))
-
-  def test_verify_only_mode_bad_symlink(self):
-    with tempfile.TemporaryDirectory() as temp_directory:
-      with open(os.path.join(temp_directory, "README.chromium"),
-                "w", encoding="utf-8") as readme:
-        readme.write("\n".join([
-            "Name: some_name",
-            "URL: some_site",
-            "License: Apache 2.0",
-            "License File: COPYING"
-        ]))
-      create_android_metadata_license.update_license(temp_directory, {})
-      self.assertTrue(os.path.islink(os.path.join(temp_directory, "LICENSE")))
-      self.assertRaisesRegex(Exception, "License symlink does not exist",
-                             lambda: create_android_metadata_license.update_license(
-                                 temp_directory, {},
-                                 verify_only=True))
+                                 verify_only=True,
+                                 reachable_through_dependencies=False))
 
   def test_verify_only_mode_missing_module(self):
     with tempfile.TemporaryDirectory() as temp_directory:
@@ -327,14 +321,15 @@ class LicenseParserTest(unittest.TestCase):
       # COPYING file must exist as we check for symlink to make sure that
       # they still exist.
       self._write_empty_file(os.path.join(temp_directory, "COPYING"))
-      create_android_metadata_license.update_license(temp_directory, {})
+      create_android_metadata_license.update_license(temp_directory, {}, reachable_through_dependencies=False)
       self.assertTrue(os.path.exists(
           os.path.join(temp_directory, "MODULE_LICENSE_APACHE_2_0")))
       os.remove(os.path.join(temp_directory, "MODULE_LICENSE_APACHE_2_0"))
       self.assertRaisesRegex(Exception, "Failed to find module file",
                              lambda: create_android_metadata_license.update_license(
                                  temp_directory, {},
-                                 verify_only=True))
+                                 verify_only=True,
+                                 reachable_through_dependencies=False))
 
   @unittest.skip("b/372449684")
   def test_license_for_aosp(self):
@@ -344,7 +339,7 @@ class LicenseParserTest(unittest.TestCase):
     # hence why repo_path=os.getcwd()
     try:
       create_android_metadata_license.update_license(repo_path=os.getcwd(),
-                                                     verify_only=True)
+                                                     verify_only=True, reachable_through_dependencies=False)
     except Exception:
       self.fail(
           "Please update the licensing by running create_android_metadata_license.py")

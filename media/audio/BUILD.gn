@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -143,7 +142,6 @@ source_set("audio") {
     "//base",
     "//build:android_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media/base",
     "//third_party/flac",
     "//third_party/opus:opus",
@@ -216,6 +214,8 @@ source_set("audio") {
     sources += [
       "win/audio_device_listener_win.cc",
       "win/audio_device_listener_win.h",
+      "win/audio_ducker_win.cc",
+      "win/audio_ducker_win.h",
       "win/audio_low_latency_input_win.cc",
       "win/audio_low_latency_input_win.h",
       "win/audio_low_latency_output_win.cc",
@@ -256,14 +256,18 @@ source_set("audio") {
       "android/audio_track_output_stream.cc",
       "android/audio_track_output_stream.h",
       "android/muteable_audio_output_stream.h",
-      "android/opensles_input.cc",
-      "android/opensles_input.h",
-      "android/opensles_output.cc",
-      "android/opensles_output.h",
-      "android/opensles_util.cc",
-      "android/opensles_util.h",
-      "android/opensles_wrapper.cc",
     ]
+    if (media_use_opensles) {
+      sources += [
+        "android/opensles_input.cc",
+        "android/opensles_input.h",
+        "android/opensles_output.cc",
+        "android/opensles_output.h",
+        "android/opensles_util.cc",
+        "android/opensles_util.h",
+        "android/opensles_wrapper.cc",
+      ]
+    }
     libs += [ "aaudio" ]
 
     deps += [ "//media/base/android:media_jni_headers" ]
@@ -390,7 +394,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
 
     # Do not add any other //media deps except this; it will automatically pull
     # a dep on //media which is required to ensure test_support targets all use
@@ -435,7 +438,6 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -474,7 +476,7 @@ source_set("unit_tests") {
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
   }
 
-  if (is_chromeos_ash || is_castos || is_cast_android) {
+  if (is_chromeos || is_castos || is_cast_android) {
     sources += [
       "flac_audio_handler_unittest.cc",
       "test_data.h",

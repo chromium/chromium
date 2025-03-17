@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 
@@ -24,43 +25,24 @@ constexpr char kDismissedHistogramName[] =
 constexpr char kImpressionHistogramName[] =
     "Ash.Growth.Ui.Impression.Campaigns%d";
 
-constexpr int kCampaignsCountPerHistogram = 500;
-
-// Get the max `campaign_id` (exclusive) can be recorded in the histogram.
-// Campaign will be logged in a histogram named by rounding the `campaign_id`
-// to the next five hundred. For examples:
-//   `campaign_id`: 0 => "Ash.Growth.Ui.Dismissed.Campaigns500"
-//   `campaign_id`: 100 => "Ash.Growth.Ui.Dismissed.Campaigns500"
-//   `campaign_id`: 499 => "Ash.Growth.Ui.Dismissed.Campaigns500"
-//   `campaign_id`: 500 => "Ash.Growth.Ui.Dismissed.Campaigns1000"
-//   `campaign_id`: 501 => "Ash.Growth.Ui.Dismissed.Campaigns1000"
-//   `campaign_id`: 1000 => "Ash.Growth.Ui.Dismissed.Campaigns1500"
-//   `campaign_id`: 9999 => "Ash.Growth.Ui.Dismissed.Campaigns10000"
-//   `campaign_id`: 10000 => "Ash.Growth.Ui.Dismissed.Campaigns10500"
-int GetHistogramMaxCampaignId(int campaign_id) {
-  // `campaign_id` starts at 0.
-  return (campaign_id / kCampaignsCountPerHistogram + 1) *
-         kCampaignsCountPerHistogram;
-}
-
 std::string GetButtonPressedHistogramName(int campaign_id,
                                           CampaignButtonId button_id) {
   // E.g. "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500".
   return base::StringPrintf(kButtonPressedHistogramName,
                             static_cast<int>(button_id),
-                            GetHistogramMaxCampaignId(campaign_id));
+                            growth::GetHistogramMaxCampaignId(campaign_id));
 }
 
 std::string GetDismissedHistogramName(int campaign_id) {
   // E.g. "Ash.Growth.Ui.Dismissed.Campaigns500".
   return base::StringPrintf(kDismissedHistogramName,
-                            GetHistogramMaxCampaignId(campaign_id));
+                            growth::GetHistogramMaxCampaignId(campaign_id));
 }
 
 std::string GetImpressionHistogramName(int campaign_id) {
   // E.g. "Ash.Growth.Ui.Impression.Campaigns500".
   return base::StringPrintf(kImpressionHistogramName,
-                            GetHistogramMaxCampaignId(campaign_id));
+                            growth::GetHistogramMaxCampaignId(campaign_id));
 }
 
 }  // namespace

@@ -10,6 +10,8 @@ import android.view.ViewOutlineProvider;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A custom {@link ViewOutlineProvider} that is able to render content with rounded off corners. The
  * instance guarantees that only the actual bounds of the view are rounded, ie. if the content does
@@ -23,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
  *     myView.setClipToOutline(true);
  * </code>
  */
+@NullMarked
 public class RoundedCornerOutlineProvider extends ViewOutlineProvider {
     /** Radius of each corner. */
     private int mRadius;

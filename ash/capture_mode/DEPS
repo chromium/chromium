@@ -4,6 +4,8 @@ include_rules = [
   "+chromeos/ash/services/recording/public/mojom",
   "+chromeos/ash/services/recording/recording_service_test_api.h",
   "+components/capture_mode/camera_video_frame_handler.h",
+  "+components/lens",
+  "+components/search_engines",
   "+components/viz/client/client_resource_provider.h",
   "+google_apis",
   "+gpu/command_buffer/client/client_shared_image.h",
@@ -23,5 +25,8 @@ include_rules = [
 specific_include_rules = {
   "capture_mode_camera_unittests\.cc": [
     "+components/viz/test/test_in_process_context_provider.h",
+  ],
+  "sunfish_unittest\.cc": [
+    "+chromeos/ash/components/specialized_features",
   ],
 }

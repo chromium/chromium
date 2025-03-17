@@ -35,7 +35,7 @@ export class CheckMarkWrapperElement extends CrLitElement {
     };
   }
 
-  checked: boolean = false;
+  accessor checked: boolean = false;
 }
 
 declare global {

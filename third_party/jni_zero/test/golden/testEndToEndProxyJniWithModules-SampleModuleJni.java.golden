@@ -5,7 +5,6 @@ package org.jni_zero;
 
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniTestInstanceHolder;
-import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.internal.NullUnmarked;
 import org.jni_zero.internal.Nullable;
 import org.jni_zero.module_GEN_JNI;
@@ -20,7 +19,6 @@ class SampleModuleJni implements SampleModule.Natives {
     if (holder != null && holder.value != null) {
       return (SampleModule.Natives) holder.value;
     }
-    NativeLibraryLoadedStatus.checkLoaded();
     return new SampleModuleJni();
   }
 

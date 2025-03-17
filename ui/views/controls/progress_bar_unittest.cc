@@ -69,7 +69,7 @@ TEST_F(ProgressBarTest, AccessibleNodeData) {
 
 // Verifies the correct a11y events are raised for an accessible progress bar.
 TEST_F(ProgressBarTest, AccessibilityEvents) {
-  test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   bar()->SetValue(0.50);

@@ -963,8 +963,8 @@ void VideoOverlayWindowViews::SetUpViews() {
     favicon_view->SetSize(kFaviconSize);
     origin = std::make_unique<views::Label>(std::u16string(),
                                             views::style::CONTEXT_LABEL,
-                                            views::style::STYLE_BODY_4_MEDIUM);
-    origin->SetEnabledColorId(ui::kColorSysOnSurface);
+                                            views::style::STYLE_BODY_4);
+    origin->SetEnabledColor(ui::kColorSysOnSurface);
     origin->SetBackgroundColor(SK_ColorTRANSPARENT);
     origin->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     origin->SetElideBehavior(gfx::ELIDE_HEAD);
@@ -1060,7 +1060,7 @@ void VideoOverlayWindowViews::SetUpViews() {
     timestamp = std::make_unique<views::Label>(std::u16string(),
                                                views::style::CONTEXT_LABEL,
                                                views::style::STYLE_BODY_4);
-    timestamp->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+    timestamp->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
     timestamp->SetBackgroundColor(SK_ColorTRANSPARENT);
     timestamp->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   } else {

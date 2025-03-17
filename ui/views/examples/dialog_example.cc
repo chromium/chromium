@@ -5,6 +5,8 @@
 #include "ui/views/examples/dialog_example.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -72,7 +74,7 @@ class DialogExample::Delegate : public virtual DialogType {
 
  protected:
   std::u16string GetWindowTitle() const override {
-    return parent_->title_->GetText();
+    return std::u16string(parent_->title_->GetText());
   }
 
   bool Cancel() override { return parent_->AllowDialogClose(false); }

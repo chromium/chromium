@@ -15,7 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -54,10 +54,10 @@ constexpr char kErrorKey[] = "error";
 constexpr char kErrorSubTypeKey[] = "error_subtype";
 constexpr char kErrorDescriptionKey[] = "error_description";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kRaptRequiredError[] = "rapt_required";
 constexpr char kInvalidRaptError[] = "invalid_rapt";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 OAuth2AccessTokenFetcherImpl::OAuth2Response
 OAuth2ResponseErrorToOAuth2Response(const std::string& error) {
@@ -90,6 +90,14 @@ OAuth2ResponseErrorToOAuth2Response(const std::string& error) {
 
   if (error == "internal_failure")
     return OAuth2AccessTokenFetcherImpl::kInternalFailure;
+
+  if (error == "admin_policy_enforced") {
+    return OAuth2AccessTokenFetcherImpl::kAdminPolicyEnforced;
+  }
+
+  if (error == "access_denied") {
+    return OAuth2AccessTokenFetcherImpl::kAccessDenied;
+  }
 
   return OAuth2AccessTokenFetcherImpl::kUnknownError;
 }
@@ -129,7 +137,7 @@ static std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
 GoogleServiceAuthError CreateErrorForInvalidGrant(
     const std::string& error_subtype,
     const std::string& error_description) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS cannot handle RAPT-type re-authentication requests and is
   // supposed to be excluded from RAPT re-authentication on the server side.
   // Just to be safe we need to handle this anyways. If we do not handle this,
@@ -139,10 +147,11 @@ GoogleServiceAuthError CreateErrorForInvalidGrant(
   std::string error_subtype_lowercase = base::ToLowerASCII(error_subtype);
   if (error_subtype_lowercase == kRaptRequiredError ||
       error_subtype_lowercase == kInvalidRaptError) {
-    return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-        error_description);
+    return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+        GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+            kInvalidGrantRaptError);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Persistent error requiring the user to sign in again.
   return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -211,8 +220,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
   if (net_failure) {
     int net_error = url_loader_->NetError();
-    DLOG(WARNING) << "Could not reach Authorization servers: errno "
-                  << net_error;
     RecordResponseCodeUma(net_error);
     OnGetTokenFailure(GoogleServiceAuthError::FromConnectionError(net_error));
     return;
@@ -230,7 +237,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     } else {
       // Successful (net::HTTP_OK) unexpected format is considered as a
       // transient error.
-      DLOG(WARNING) << "Response doesn't match expected format";
       RecordOAuth2Response(OAuth2Response::kOkUnexpectedFormat);
       OnGetTokenFailure(
           GoogleServiceAuthError::FromServiceUnavailable(response_str));
@@ -253,6 +259,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
     case kRateLimitExceeded:
     case kInternalFailure:
+    case kAccessDenied:
       // Transient error.
       error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
       break;
@@ -261,19 +268,29 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       error = CreateErrorForInvalidGrant(error_subtype, error_description);
       break;
 
+    // Scope persistent errors that can't be fixed by user action.
     case kInvalidScope:
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+      break;
+
     case kRestrictedClient:
-      // Scope persistent error that can't be fixed by user action.
-      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-          response_str);
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kRestrictedClient);
+      break;
+
+    case kAdminPolicyEnforced:
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kAdminPolicyEnforced);
       break;
 
     case kInvalidRequest:
     case kInvalidClient:
     case kUnauthorizedClient:
     case kUnsuportedGrantType:
-      DLOG(ERROR) << "Unexpected persistent error: error code = "
-                  << oauth2_error;
       error = GoogleServiceAuthError::FromServiceError(response_str);
       break;
 
@@ -281,17 +298,15 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     case kErrorUnexpectedFormat:
       // Failed request with unknown error code or unexpected format is
       // treated as a persistent error case.
-      DLOG(ERROR) << "Unexpected error/format: error code = " << oauth2_error;
       break;
   }
 
   if (!error.has_value()) {
     // Fallback to http status code.
-    if (response_code == net::HTTP_OK) {
-      NOTREACHED();
-    } else if (response_code == net::HTTP_FORBIDDEN ||
-               response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED ||
-               response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
+    CHECK_NE(response_code, net::HTTP_OK);
+    if (response_code == net::HTTP_FORBIDDEN ||
+        response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED ||
+        response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
       // HTTP_FORBIDDEN (403): is treated as transient error, because it may be
       //                       '403 Rate Limit Exeeded.'
       // HTTP_PROXY_AUTHENTICATION_REQUIRED (407): is treated as a network error
@@ -302,11 +317,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       // persistent errors.
       // HTTP_BAD_REQUEST errors usually contains errors as per
       // http://tools.ietf.org/html/rfc6749#section-5.2.
-      if (response == kInvalidGrant) {
-        error = CreateErrorForInvalidGrant(error_subtype, error_description);
-      } else {
-        error = GoogleServiceAuthError::FromServiceError(response_str);
-      }
+      error = GoogleServiceAuthError::FromServiceError(response_str);
     }
   }
 
@@ -377,11 +388,11 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
     const std::string& response_body,
     OAuth2AccessTokenConsumer::TokenResponse* token_response) {
   CHECK(token_response);
-  auto value = base::JSONReader::Read(response_body);
-  if (!value.has_value() || !value->is_dict())
+  auto dict = base::JSONReader::ReadDict(response_body);
+  if (!dict) {
     return false;
+  }
 
-  const base::Value::Dict* dict = value->GetIfDict();
   // Refresh and id token are optional and don't cause an error if missing.
   const std::string* refresh_token = dict->FindString(krefreshTokenKey);
   if (refresh_token)
@@ -415,11 +426,11 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
   CHECK(error);
   CHECK(error_subtype);
   CHECK(error_description);
-  auto value = base::JSONReader::Read(response_body);
-  if (!value.has_value() || !value->is_dict())
+  auto dict = base::JSONReader::ReadDict(response_body);
+  if (!dict) {
     return false;
+  }
 
-  const base::Value::Dict* dict = value->GetIfDict();
   const std::string* error_value = dict->FindString(kErrorKey);
   if (!error_value)
     return false;

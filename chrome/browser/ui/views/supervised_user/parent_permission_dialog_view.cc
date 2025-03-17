@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -346,7 +345,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
 
 struct ParentPermissionDialogView::Params {
   Params();
-  explicit Params(const Params& params);
+  Params(const Params& params);
   ~Params();
 
   // The icon to be displayed. Usage depends on whether extension is set.
@@ -494,7 +493,7 @@ bool ParentPermissionDialogView::Accept() {
   // Clear out the invalid credential label, so that it disappears/reappears to
   // the user to emphasize that the password check happened again.
   invalid_credential_label_->SetText(std::u16string());
-  std::string parent_obfuscated_gaia_id =
+  GaiaId parent_obfuscated_gaia_id =
       GetParentObfuscatedGaiaID(selected_parent_permission_email_);
   std::string parent_credential =
       base::UTF16ToUTF8(parent_permission_credential_);
@@ -555,7 +554,7 @@ void ParentPermissionDialogView::CreateContents() {
 
     // Add this outside the scrolling section, so it can't be obscured by
     // scrolling.
-    AddChildView(permissions_header);
+    AddChildViewRaw(permissions_header);
 
     // Create permissions view.
     auto permissions_view = std::make_unique<ExtensionPermissionsView>();
@@ -700,16 +699,14 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
-  std::u16string primary_parent_email =
-      base::UTF8ToUTF16(service->GetCustodianEmailAddress());
-  if (!primary_parent_email.empty()) {
-    parent_permission_email_addresses_.push_back(primary_parent_email);
+  if (service->GetCustodian()) {
+    parent_permission_email_addresses_.push_back(
+        base::UTF8ToUTF16(service->GetCustodian()->GetEmailAddress()));
   }
 
-  std::u16string secondary_parent_email =
-      base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
-  if (!secondary_parent_email.empty()) {
-    parent_permission_email_addresses_.push_back(secondary_parent_email);
+  if (service->GetSecondCustodian()) {
+    parent_permission_email_addresses_.push_back(
+        base::UTF8ToUTF16(service->GetSecondCustodian()->GetEmailAddress()));
   }
 }
 
@@ -724,23 +721,25 @@ void ParentPermissionDialogView::CloseWithReason(
   }
 }
 
-std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
+GaiaId ParentPermissionDialogView::GetParentObfuscatedGaiaID(
     const std::u16string& parent_email) const {
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
-  if (service->GetCustodianEmailAddress() == base::UTF16ToUTF8(parent_email)) {
-    return service->GetCustodianObfuscatedGaiaId();
+  if (service->GetCustodian() && service->GetCustodian()->GetEmailAddress() ==
+                                     base::UTF16ToUTF8(parent_email)) {
+    return service->GetCustodian()->GetObfuscatedGaiaId();
   }
 
-  CHECK_EQ(service->GetSecondCustodianEmailAddress(),
-           base::UTF16ToUTF8(parent_email))
+  CHECK(service->GetSecondCustodian() &&
+        service->GetSecondCustodian()->GetEmailAddress() ==
+            base::UTF16ToUTF8(parent_email))
       << "Tried to get obfuscated gaia id for a non-custodian email address";
-  return service->GetSecondCustodianObfuscatedGaiaId();
+  return service->GetSecondCustodian()->GetObfuscatedGaiaId();
 }
 
 void ParentPermissionDialogView::StartReauthAccessTokenFetch(
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential) {
   // The first step of Reauth is to fetch an OAuth2 access token for the
   // Reauth API scope.
@@ -758,7 +757,7 @@ void ParentPermissionDialogView::StartReauthAccessTokenFetch(
 }
 
 void ParentPermissionDialogView::OnAccessTokenFetchComplete(
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -777,7 +776,7 @@ void ParentPermissionDialogView::OnAccessTokenFetchComplete(
 
 void ParentPermissionDialogView::StartParentReauthProofTokenFetch(
     const std::string& child_access_token,
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& credential) {
   reauth_token_fetcher_ = std::make_unique<GaiaAuthFetcher>(
       this, gaia::GaiaSource::kChromeOS,
@@ -838,7 +837,7 @@ void ParentPermissionDialogView::OnReAuthProofTokenFailure(
       invalid_credential_label_->SetProperty(
           views::kElementIdentifierKey,
           ParentPermissionDialog::kIncorrectParentPasswordIdForTesting);
-      invalid_credential_label_->NotifyAccessibilityEvent(
+      invalid_credential_label_->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kAlert, true);
       return;
     }
@@ -877,7 +876,7 @@ class ParentPermissionDialogImpl : public ParentPermissionDialog,
                                    public ParentPermissionDialogView::Observer {
  public:
   // Constructor for a generic ParentPermissionDialogImpl
-  ParentPermissionDialogImpl(
+  explicit ParentPermissionDialogImpl(
       std::unique_ptr<ParentPermissionDialogView::Params> params);
 
   ~ParentPermissionDialogImpl() override;

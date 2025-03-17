@@ -28,6 +28,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
@@ -424,7 +425,8 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest,
         registry->disabled_extensions().GetByID(extension_id);
     ASSERT_TRUE(extension_v2);
     // Enable the extension.
-    extension_service()->GrantPermissionsAndEnableExtension(extension_v2);
+    ExtensionRegistrar::Get(profile())->GrantPermissionsAndEnableExtension(
+        *extension_v2);
     EXPECT_TRUE(catcher.GetNextResult());
   }
 }
@@ -558,12 +560,8 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
     EventsApiTest::SetUpOnMainThread();
     ProcessManager* process_manager = ProcessManager::Get(profile());
     ProcessManager::Get(profile())->AddObserver(this);
-    const ProcessManager::FrameSet& frames = process_manager->GetAllFrames();
-    for (auto* frame : frames) {
-      const Extension* extension =
-          process_manager->GetExtensionForRenderFrameHost(frame);
-      if (extension)
-        observed_extension_names_.insert(extension->name());
+    for (ExtensionHost* host : process_manager->background_hosts()) {
+      observed_extension_names_.insert(host->extension()->name());
     }
   }
 
@@ -957,8 +955,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener extension_oninstall_listener_fired(
       "installed listener fired");
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("events/memory"));
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/listener_spins_forever"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
   ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
@@ -975,26 +973,27 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
 
   // Confirm the `EventInfo` for the above event is still unacked.
   EventRouter* event_router = EventRouter::Get(profile());
-  EventAckData::EventInfo* unacked_event_info =
-      // 1 is inferred since the extension has two listeners and the above
-      // navigation should be the second event encountered.
-      event_router->event_ack_data()->GetUnackedEventForTesting(/*event_id=*/1);
-  ASSERT_TRUE(unacked_event_info);
-  content::RenderProcessHost* worker_render_process_host =
-      content::RenderProcessHost::FromID(unacked_event_info->render_process_id);
-  ASSERT_TRUE(worker_render_process_host);
-  ASSERT_EQ(unacked_event_info->render_process_id,
-            worker_render_process_host->GetDeprecatedID());
+  // 1 is inferred since the extension has two listeners and the above
+  // navigation should be the second event encountered.
+  EXPECT_TRUE(event_router->event_ack_data()->HasUnackedEventForTesting(
+      /*event_id=*/1));
 
   // Terminate worker's RenderProcessHost which triggers the cleanup logic.
+  std::vector<WorkerId> service_workers =
+      ProcessManager::Get(profile())->GetServiceWorkersForExtension(
+          extension->id());
+  ASSERT_EQ(1u, service_workers.size());
+  content::RenderProcessHost* extension_process =
+      content::RenderProcessHost::FromID(service_workers[0].render_process_id);
+  ASSERT_TRUE(extension_process);
   content::RenderProcessHostWatcher process_exit_observer(
-      worker_render_process_host,
+      extension_process,
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  worker_render_process_host->Shutdown(content::RESULT_CODE_KILLED);
+  extension_process->Shutdown(content::RESULT_CODE_KILLED);
   process_exit_observer.Wait();
 
   // Confirm we no longer have the `EventInfo` for the unacked event.
-  EXPECT_FALSE(event_router->event_ack_data()->GetUnackedEventForTesting(
+  EXPECT_FALSE(event_router->event_ack_data()->HasUnackedEventForTesting(
       /*event_id=*/1));
 }
 

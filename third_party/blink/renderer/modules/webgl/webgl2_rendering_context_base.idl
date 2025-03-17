@@ -457,7 +457,7 @@ interface mixin WebGL2RenderingContextBase {
     [NoAllocDirectCall] void clearBufferfi(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil);
 
     /* Query Objects */
-    WebGLQuery? createQuery();
+    WebGLQuery createQuery();
     void deleteQuery(WebGLQuery? query);
     GLboolean isQuery(WebGLQuery? query);
     void beginQuery(GLenum target, WebGLQuery query);
@@ -466,7 +466,7 @@ interface mixin WebGL2RenderingContextBase {
     [CallWith=ScriptState] any getQueryParameter(WebGLQuery query, GLenum pname);
 
     /* Sampler Objects */
-    WebGLSampler? createSampler();
+    WebGLSampler createSampler();
     void deleteSampler(WebGLSampler? sampler);
     GLboolean isSampler(WebGLSampler? sampler);
     void bindSampler(GLuint unit, WebGLSampler? sampler);
@@ -484,7 +484,7 @@ interface mixin WebGL2RenderingContextBase {
     [CallWith=ScriptState] any getSyncParameter(WebGLSync sync, GLenum pname);
 
     /* Transform Feedback */
-    WebGLTransformFeedback? createTransformFeedback();
+    WebGLTransformFeedback createTransformFeedback();
     void deleteTransformFeedback(WebGLTransformFeedback? feedback);
     GLboolean isTransformFeedback(WebGLTransformFeedback? feedback);
     void bindTransformFeedback(GLenum target, WebGLTransformFeedback? feedback);
@@ -507,7 +507,7 @@ interface mixin WebGL2RenderingContextBase {
     void uniformBlockBinding(WebGLProgram program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
 
     /* Vertex Array Objects */
-    WebGLVertexArrayObject? createVertexArray();
+    WebGLVertexArrayObject createVertexArray();
     void deleteVertexArray(WebGLVertexArrayObject? vertexArray);
     GLboolean isVertexArray(WebGLVertexArrayObject? vertexArray);
     void bindVertexArray(WebGLVertexArrayObject? vertexArray);

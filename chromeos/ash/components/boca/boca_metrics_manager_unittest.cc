@@ -44,9 +44,10 @@ class MockBocaAppClient : public BocaAppClient {
 class MockSessionManager : public BocaSessionManager {
  public:
   MockSessionManager()
-      : BocaSessionManager(/*=session_client_impl*/ nullptr,
+      : BocaSessionManager(/*session_client_impl=*/nullptr,
+                           /*pref_service=*/nullptr,
                            AccountId::FromUserEmail(kTestEmail1),
-                           /*=is_producer*/ true) {}
+                           /*is_producer=*/true) {}
   ~MockSessionManager() override = default;
   MOCK_METHOD(::boca::Session*, GetPreviousSession, (), (override));
 };

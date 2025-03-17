@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/task_manager/task_manager_tester.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -203,6 +203,11 @@ std::vector<std::u16string> TaskManagerTester::GetWebContentsTaskTitles() {
       titles.push_back(GetRowTitle(row));
   }
   return titles;
+}
+
+bool TaskManagerTester::UpdateModel(const DisplayCategory display_category,
+                                    std::u16string_view search_term) {
+  return model_->UpdateModel(display_category, search_term);
 }
 
 TaskManagerInterface* TaskManagerTester::task_manager() {

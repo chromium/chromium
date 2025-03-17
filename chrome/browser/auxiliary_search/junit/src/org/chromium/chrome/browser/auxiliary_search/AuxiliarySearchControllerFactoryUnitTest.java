@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -23,13 +21,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,6 +45,7 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
     @Mock private FaviconHelper.Natives mMockFaviconHelperJni;
+    @Mock private AuxiliarySearchHooks mHooks;
 
     private AuxiliarySearchControllerFactory mFactory;
 
@@ -63,6 +60,7 @@ public class AuxiliarySearchControllerFactoryUnitTest {
         AuxiliarySearchDonor.setSkipInitializationForTesting(true);
 
         mFactory = AuxiliarySearchControllerFactory.getInstance();
+        mFactory.setHooksForTesting(mHooks);
     }
 
     @Test
@@ -71,33 +69,12 @@ public class AuxiliarySearchControllerFactoryUnitTest {
         mFactory.setHooksForTesting(null);
         assertFalse(mFactory.isEnabled());
 
-        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
-        when(hooksMock.isEnabled()).thenReturn(false);
-        mFactory.setHooksForTesting(hooksMock);
+        when(mHooks.isEnabled()).thenReturn(false);
+        mFactory.setHooksForTesting(mHooks);
         assertFalse(mFactory.isEnabled());
 
-        when(hooksMock.isEnabled()).thenReturn(true);
-        mFactory.setHooksForTesting(hooksMock);
+        when(mHooks.isEnabled()).thenReturn(true);
         assertTrue(mFactory.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_V2)
-    @Config(sdk = VERSION_CODES.Q)
-    public void testCreateAuxiliarySearchController_LessThanS() {
-        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
-        when(hooksMock.isEnabled()).thenReturn(false);
-        mFactory.setHooksForTesting(hooksMock);
-        assertFalse(mFactory.isEnabled());
-        assertNull(mFactory.createAuxiliarySearchController(mContext, mProfile, mTabModelSelector));
-
-        when(hooksMock.isEnabled()).thenReturn(true);
-        mFactory.setHooksForTesting(hooksMock);
-        assertTrue(mFactory.isEnabled());
-        mFactory.createAuxiliarySearchController(mContext, mProfile, mTabModelSelector);
-        verify(hooksMock)
-                .createAuxiliarySearchController(eq(mContext), eq(mProfile), eq(mTabModelSelector));
     }
 
     @Test
@@ -105,48 +82,55 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_V2)
     @Config(sdk = VERSION_CODES.S)
     public void testCreateAuxiliarySearchController() {
-        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
-        when(hooksMock.isEnabled()).thenReturn(false);
-        mFactory.setHooksForTesting(hooksMock);
+        when(mHooks.isEnabled()).thenReturn(false);
         assertFalse(mFactory.isEnabled());
         assertNull(mFactory.createAuxiliarySearchController(mContext, mProfile, mTabModelSelector));
 
-        when(hooksMock.isEnabled()).thenReturn(true);
-        mFactory.setHooksForTesting(hooksMock);
+        when(mHooks.isEnabled()).thenReturn(true);
         assertTrue(mFactory.isEnabled());
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
         AuxiliarySearchController controller =
                 mFactory.createAuxiliarySearchController(mContext, mProfile, mTabModelSelector);
         assertTrue(controller instanceof AuxiliarySearchControllerImpl);
-        verify(hooksMock, never())
-                .createAuxiliarySearchController(eq(mContext), eq(mProfile), eq(mTabModelSelector));
     }
 
     @Test
     @SmallTest
     public void testIsSettingDefaultEnabledByOs() {
-        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
-        when(hooksMock.isEnabled()).thenReturn(false);
-        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
-        mFactory.setHooksForTesting(hooksMock);
+        when(mHooks.isEnabled()).thenReturn(false);
+        when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
 
         assertTrue(mFactory.isSettingDefaultEnabledByOs());
 
-        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
+        when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(false);
         assertFalse(mFactory.isSettingDefaultEnabledByOs());
     }
 
     @Test
     @SmallTest
     public void testSetIsTablet() {
-        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
-        mFactory.setHooksForTesting(hooksMock);
+        mFactory.resetIsTabletForTesting();
+        mFactory.setIsTablet(false);
+        assertFalse(mFactory.isTablet());
 
         mFactory.setIsTablet(true);
-        verify(hooksMock).setIsTablet(eq(true));
+        assertTrue(mFactory.isTablet());
 
+        // Verifies the isTablet() never goes from true to false.
         mFactory.setIsTablet(false);
-        verify(hooksMock).setIsTablet(eq(false));
+        assertTrue(mFactory.isTablet());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetSupportedPackageName() {
+        String packageName = "name";
+        when(mHooks.getSupportedPackageName()).thenReturn(packageName);
+
+        assertEquals(packageName, mFactory.getSupportedPackageName());
+
+        mFactory.setHooksForTesting(null);
+        assertNull(mFactory.getSupportedPackageName());
     }
 }

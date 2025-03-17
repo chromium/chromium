@@ -37,7 +37,6 @@ class OpenXrAnchorManager {
 
   device::mojom::XRAnchorsDataPtr ProcessAnchorsForFrame(
       OpenXrApiWrapper* openxr,
-      const mojom::VRStageParametersPtr& current_stage_parameters,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state,
       XrTime predicted_display_time);
 
@@ -73,7 +72,6 @@ class OpenXrAnchorManager {
   XrSpace GetAnchorSpace(AnchorId anchor_id) const;
   void ProcessCreateAnchorRequests(
       OpenXrApiWrapper* openxr,
-      const mojom::VRStageParametersPtr& current_stage_parameters,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
   device::mojom::XRAnchorsDataPtr GetCurrentAnchorsData(
       XrTime predicted_display_time);
@@ -85,14 +83,12 @@ class OpenXrAnchorManager {
   };
   std::optional<XrLocation> GetXrLocationFromNativeOriginInformation(
       OpenXrApiWrapper* openxr,
-      const mojom::VRStageParametersPtr& current_stage_parametersm,
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& native_origin_from_anchor,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state) const;
 
   std::optional<XrLocation> GetXrLocationFromReferenceSpace(
       OpenXrApiWrapper* openxr,
-      const mojom::VRStageParametersPtr& current_stage_parameters,
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& native_origin_from_anchor) const;
 

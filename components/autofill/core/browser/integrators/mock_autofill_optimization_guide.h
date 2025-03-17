@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_MOCK_AUTOFILL_OPTIMIZATION_GUIDE_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,7 +20,7 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
 
   MOCK_METHOD(void,
               OnDidParseForm,
-              (const FormStructure&, const PersonalDataManager&),
+              (const FormStructure&, const PaymentsDataManager&),
               (override));
   MOCK_METHOD(CreditCardCategoryBenefit::BenefitCategory,
               AttemptToGetEligibleCreditCardBenefitCategory,
@@ -37,6 +37,10 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
   MOCK_METHOD(bool,
               ShouldBlockBenefitSuggestionLabelsForCardAndUrl,
               (const CreditCard& card, const GURL& url),
+              (const override));
+  MOCK_METHOD(bool,
+              IsUrlEligibleForCheckoutAmountSearchForIssuerId,
+              (std::string_view issuer_id, const GURL& url),
               (const override));
 };
 

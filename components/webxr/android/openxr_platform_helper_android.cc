@@ -43,6 +43,11 @@ void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
       std::move(shutdown_callback));
 }
 
+void OpenXrPlatformHelperAndroid::PrepareForSessionShutdown(
+    base::OnceClosure shutdown_ready_callback) {
+  session_coordinator_->EndSession(std::move(shutdown_ready_callback));
+}
+
 void OpenXrPlatformHelperAndroid::OnXrActivityReady(
     PlatformCreateInfoReadyCallback callback,
     const base::android::JavaParamRef<jobject>& activity) {

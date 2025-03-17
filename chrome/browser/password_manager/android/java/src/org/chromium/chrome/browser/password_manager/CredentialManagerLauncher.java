@@ -9,11 +9,13 @@ import android.content.Intent;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Interface for the launcher responsible for opening the Credential Manager. */
+@NullMarked
 public interface CredentialManagerLauncher {
     /**
      * These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -29,6 +31,7 @@ public interface CredentialManagerLauncher {
         CredentialManagerError.BACKEND_NOT_AVAILABLE,
         CredentialManagerError.API_EXCEPTION,
         CredentialManagerError.OTHER_API_ERROR,
+        CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE,
         CredentialManagerError.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -61,7 +64,11 @@ public interface CredentialManagerLauncher {
         // by the API implementation outside of Chrome.
         int OTHER_API_ERROR = 7;
 
-        int COUNT = 8;
+        // With the login DB deprecation, the password manager becomes unavailable for clients who
+        // do not fulfill all the criteria for using the GMS Core backend.
+        int PASSWORD_MANAGER_NOT_AVAILABLE = 8;
+
+        int COUNT = 9;
     }
 
     /** Serves as a general exception for failed requests to the credential manager backend. */

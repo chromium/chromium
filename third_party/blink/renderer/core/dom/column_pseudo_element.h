@@ -14,8 +14,7 @@ namespace blink {
 // will create one of these, during layout.
 class ColumnPseudoElement : public PseudoElement {
  public:
-  ColumnPseudoElement(Element* originating_element, wtf_size_t index)
-      : PseudoElement(originating_element, kPseudoIdColumn), index_(index) {}
+  ColumnPseudoElement(Element* originating_element, wtf_size_t index);
 
   bool IsColumnPseudoElement() const final { return true; }
   wtf_size_t Index() const { return index_; }
@@ -23,6 +22,9 @@ class ColumnPseudoElement : public PseudoElement {
   // The column rectangle, relatively to the multicol container.
   const PhysicalRect& ColumnRect() const { return column_rect_; }
   void SetColumnRect(PhysicalRect column_rect) { column_rect_ = column_rect; }
+
+  // Return the first element that starts in the column, in DOM order.
+  Element* FirstChildInDOMOrder() const;
 
   void AttachLayoutTree(AttachContext&) final;
   void DetachLayoutTree(bool performing_reattach) final;

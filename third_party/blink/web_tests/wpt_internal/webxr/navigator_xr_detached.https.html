@@ -13,9 +13,9 @@ promise_test((t) => {
   var nav_xr = window.frames[0].navigator.xr;
   const dom_exception = window.frames[0].DOMException;
   document.getElementById("subframe").remove();
-  return promise_rejects_dom(t, "InvalidStateError", dom_exception, nav_xr.supportsSession('inline'))
+  return promise_rejects_dom(t, "InvalidStateError", dom_exception, nav_xr.isSessionSupported('inline'))
       .then(() => promise_rejects_dom(t, "InvalidStateError", dom_exception, nav_xr.requestSession('inline')));
-}, "Check that navigator.xr.supportsSession and navigator.xr.requestSession reject on a detached navigator.");
+}, "Check that navigator.xr.isSessionSupported and navigator.xr.requestSession reject on a detached navigator.");
 
 </script>
 </body>

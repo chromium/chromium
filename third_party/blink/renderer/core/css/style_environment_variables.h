@@ -30,6 +30,14 @@ enum class UADefinedVariable {
   kSafeAreaInsetBottom,
   kSafeAreaInsetRight,
 
+  // When safe-area-inset-* values can change dynamically during the browsing
+  // session, their maximum values are expressed as safe-area-max-inset-*.
+  // Currently only the bottom inset is dynamic, for Android edge-to-edge UI.
+  kSafeAreaMaxInsetTop,
+  kSafeAreaMaxInsetLeft,
+  kSafeAreaMaxInsetBottom,
+  kSafeAreaMaxInsetRight,
+
   // The keyboard area insets are six environment variables that define a
   // virtual keyboard rectangle by its top, right, bottom, left, width and
   // height insets
@@ -51,7 +59,10 @@ enum class UADefinedVariable {
   kTitlebarAreaX,
   kTitlebarAreaY,
   kTitlebarAreaWidth,
-  kTitlebarAreaHeight
+  kTitlebarAreaHeight,
+
+  // The text scale as chosen by the user in the OS accessibility settings.
+  kPreferredTextScale
 };
 
 enum class UADefinedTwoDimensionalVariable {
@@ -164,7 +175,8 @@ class CORE_EXPORT StyleEnvironmentVariables
 
   HeapVector<Member<StyleEnvironmentVariables>> children_;
   HeapHashMap<AtomicString, Member<CSSVariableData>> data_;
-  HeapHashMap<AtomicString, TwoDimensionVariableValues> two_dimension_data_;
+  HeapHashMap<AtomicString, Member<TwoDimensionVariableValues>>
+      two_dimension_data_;
   Member<StyleEnvironmentVariables> parent_;
 };
 

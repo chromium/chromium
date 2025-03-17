@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EnterpriseReportingBrowserProxy} from './browser_proxy.js';
-import {ErpHistoryData, ErpHistoryEvent, ErpHistoryEventParameter} from './enterprise_reporting.mojom-webui.js';
+import type {ErpHistoryData, ErpHistoryEvent, ErpHistoryEventParameter} from './enterprise_reporting.mojom-webui.js';
 import {getTemplate} from './reporting_history.html.js';
 
 /**
@@ -19,7 +19,7 @@ import {getTemplate} from './reporting_history.html.js';
 
 export interface ReportingHistoryElement {
   $: {
-    body: HTMLDivElement,
+    body: HTMLElement,
     erpTableFilter: HTMLSelectElement,
   };
 }

@@ -83,10 +83,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
   int GetCursorThemeSize() override;
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
       ui::LinuxInputMethodContextDelegate* delegate) const override;
-  bool GetTextEditCommandsForEvent(
-      const ui::Event& event,
-      int text_flags,
-      std::vector<ui::TextEditCommandAuraLinux>* commands) override;
+  ui::TextEditCommand GetTextEditCommandForEvent(const ui::Event& event,
+                                                 int text_flags) override;
   gfx::FontRenderParams GetDefaultFontRenderParams() override;
   bool AnimationsEnabled() const override;
   void AddWindowButtonOrderObserver(
@@ -110,7 +108,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
   void SetAccentColor(std::optional<SkColor> accent_color) override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
-                                                  bool tiled) override;
+                                                  bool tiled,
+                                                  bool maximized) override;
 
  private:
   using TintMap = std::map<int, color_utils::HSL>;
@@ -196,10 +195,10 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   // Paints a native window frame.  Typically only one of these will be
   // non-null.  The exception is when the user starts or stops their compositor
-  // while Chrome is running.  This 2D array is indexed first by whether the
+  // while Chrome is running.  This 3D array is indexed first by whether the
   // frame is translucent (0) or solid(1), then by whether the frame is normal
-  // (0) or tiled (1).
-  std::unique_ptr<ui::WindowFrameProvider> frame_providers_[2][2];
+  // (0) or tiled (1), then by whether the frame is maximized (0) or not (1).
+  std::unique_ptr<ui::WindowFrameProvider> frame_providers_[2][2][2];
 
   // Objects to notify when the window frame button order changes.
   base::ObserverList<ui::WindowButtonOrderObserver>::Unchecked

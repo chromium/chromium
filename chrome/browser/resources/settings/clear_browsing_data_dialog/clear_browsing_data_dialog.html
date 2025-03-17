@@ -212,7 +212,7 @@
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <div class="search-history-box"
-                hidden="[[!isSignedIn_]]">
+                hidden="[[!showSearchHistoryBox_(syncStatus.signedInState)]]">
               <cr-icon class="search-history-box-icon" aria-hidden="true"
                   icon="settings20:googleg">
               </cr-icon>
@@ -321,8 +321,8 @@
       </div>
 <if expr="not is_chromeos">
       <template is="dom-if"
-          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState,
-              isClearPrimaryAccountAllowed_)]]"
+          if="[[shouldShowFooter_(
+              syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]"
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
@@ -331,13 +331,13 @@
           <div class="divider"></div>
           <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
             <span id="signin-info"
-                hidden="[[!showSigninInfo_(isSignedIn_,
+                hidden="[[!showSigninInfo_(
                     syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataSignedIn}
             </span>
             <span id="sync-info"
-                hidden="[[!showSyncInfo_(isSignedIn_,
-                    syncStatus.signedInState)]]">
+                hidden="[[!showSyncInfo_(
+                    syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataWithSync}
             </span>
             <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">

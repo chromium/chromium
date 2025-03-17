@@ -36,7 +36,7 @@ class AutofillKeyboardAccessoryView {
   virtual void Show() = 0;
 
   // Makes announcement for acessibility.
-  virtual void AxAnnounce(const std::u16string& text);
+  virtual void AxAnnounce(const std::u16string& text) = 0;
 
   // Ask to confirm a deletion. Triggers the callback upon the user confirming
   // or declining the deletion. The detection callback parameter specifies

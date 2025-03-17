@@ -1,11 +1,5 @@
-::scroll-button(up),
-::scroll-button(down),
-::scroll-button(left),
-::scroll-button(right),
-::scroll-button(inline-start),
-::scroll-button(inline-end),
-::scroll-button(block-start),
-::scroll-button(block-end) {
+::scroll-button(*) {
+  appearance: auto;
   -internal-align-content-block: center;
   margin: 0__qem;
   font: -webkit-small-control;
@@ -28,37 +22,20 @@
   align-items: flex-start;
 }
 
-::scroll-button(up):disabled,
-::scroll-button(down):disabled,
-::scroll-button(left):disabled,
-::scroll-button(right):disabled,
-::scroll-button(inline-start):disabled,
-::scroll-button(inline-end):disabled,
-::scroll-button(block-start):disabled,
-::scroll-button(block-end):disabled {
+::scroll-button(*):disabled {
   background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
   border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
   color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
 }
 
-::scroll-button(up):active,
-::scroll-button(down):active,
-::scroll-button(left):active,
-::scroll-button(right):active,
-::scroll-button(inline-start):active,
-::scroll-button(inline-end):active,
-::scroll-button(block-start):active,
-::scroll-button(block-end):active {
+::scroll-button(*):active {
   border-style: inset;
 }
 
-::scroll-button(up):active:disabled,
-::scroll-button(down):active:disabled,
-::scroll-button(left):active:disabled,
-::scroll-button(right):active:disabled,
-::scroll-button(inline-start):active:disabled,
-::scroll-button(inline-end):active:disabled,
-::scroll-button(block-start):active:disabled,
-::scroll-button(block-end):active:disabled {
+::scroll-button(*):active:disabled {
   border-style: outset;
+}
+
+::scroll-button(*):focus-visible {
+  outline: auto 1px -webkit-focus-ring-color;
 }

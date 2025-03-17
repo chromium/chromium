@@ -11,11 +11,14 @@ import android.app.job.JobService;
 import android.content.Context;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * JobService base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatJobService extends JobService {
     private String mServiceClassName;
     private String mSplitName;
@@ -59,13 +62,13 @@ public class SplitCompatJobService extends JobService {
      * Holds the implementation of service logic. Will be called by {@link SplitCompatJobService}.
      */
     public abstract static class Impl {
-        private SplitCompatJobService mService;
+        private @Nullable SplitCompatJobService mService;
 
         private void setService(SplitCompatJobService service) {
             mService = service;
         }
 
-        protected final JobService getService() {
+        protected final @Nullable JobService getService() {
             return mService;
         }
 

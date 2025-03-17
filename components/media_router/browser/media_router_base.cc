@@ -50,8 +50,9 @@ void MediaRouterBase::NotifyPresentationConnectionStateChange(
   DCHECK_NE(state, PresentationConnectionState::CLOSED);
 
   auto it = presentation_connection_state_callbacks_.find(route_id);
-  if (it == presentation_connection_state_callbacks_.end())
+  if (it == presentation_connection_state_callbacks_.end()) {
     return;
+  }
 
   it->second->Notify(content::PresentationConnectionStateChangeInfo(state));
 }
@@ -63,8 +64,9 @@ void MediaRouterBase::NotifyPresentationConnectionClose(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto it = presentation_connection_state_callbacks_.find(route_id);
-  if (it == presentation_connection_state_callbacks_.end())
+  if (it == presentation_connection_state_callbacks_.end()) {
     return;
+  }
 
   content::PresentationConnectionStateChangeInfo info(
       PresentationConnectionState::CLOSED);

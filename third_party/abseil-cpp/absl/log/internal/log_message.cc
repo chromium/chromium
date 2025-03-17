@@ -48,6 +48,7 @@
 #include "absl/log/internal/log_format.h"
 #include "absl/log/internal/log_sink_set.h"
 #include "absl/log/internal/proto.h"
+#include "absl/log/internal/structured_proto.h"
 #include "absl/log/log_entry.h"
 #include "absl/log/log_sink.h"
 #include "absl/log/log_sink_registry.h"
@@ -290,16 +291,8 @@ LogMessage::LogMessage(absl::Nonnull<const char*> file, int line, WarningTag)
 LogMessage::LogMessage(absl::Nonnull<const char*> file, int line, ErrorTag)
     : LogMessage(file, line, absl::LogSeverity::kError) {}
 
-LogMessage::~LogMessage() {
-#ifdef ABSL_MIN_LOG_LEVEL
-  if (data_->entry.log_severity() <
-          static_cast<absl::LogSeverity>(ABSL_MIN_LOG_LEVEL) &&
-      data_->entry.log_severity() < absl::LogSeverity::kFatal) {
-    return;
-  }
-#endif
-  Flush();
-}
+// This cannot go in the header since LogMessageData is defined in this file.
+LogMessage::~LogMessage() = default;
 
 LogMessage& LogMessage::AtLocation(absl::string_view file, int line) {
   data_->entry.full_filename_ = file;
@@ -632,6 +625,47 @@ template void LogMessage::CopyToEncodedBuffer<LogMessage::StringType::kLiteral>(
 template void LogMessage::CopyToEncodedBuffer<
     LogMessage::StringType::kNotLiteral>(char ch, size_t num);
 
+template void LogMessage::CopyToEncodedBufferWithStructuredProtoField<
+    LogMessage::StringType::kLiteral>(StructuredProtoField field,
+                                      absl::string_view str);
+template void LogMessage::CopyToEncodedBufferWithStructuredProtoField<
+    LogMessage::StringType::kNotLiteral>(StructuredProtoField field,
+                                         absl::string_view str);
+
+template <LogMessage::StringType str_type>
+void LogMessage::CopyToEncodedBufferWithStructuredProtoField(
+    StructuredProtoField field, absl::string_view str) {
+  auto encoded_remaining_copy = data_->encoded_remaining();
+  size_t encoded_field_size = BufferSizeForStructuredProtoField(field);
+  constexpr uint8_t tag_value = str_type == StringType::kLiteral
+                                    ? ValueTag::kStringLiteral
+                                    : ValueTag::kString;
+  auto start = EncodeMessageStart(
+      EventTag::kValue,
+      encoded_field_size +
+          BufferSizeFor(tag_value, WireType::kLengthDelimited) + str.size(),
+      &encoded_remaining_copy);
+
+  // Write the encoded proto field.
+  if (!EncodeStructuredProtoField(field, encoded_remaining_copy)) {
+    // The header / field will not fit; zero `encoded_remaining()` so we
+    // don't write anything else later.
+    data_->encoded_remaining().remove_suffix(data_->encoded_remaining().size());
+    return;
+  }
+
+  // Write the string, truncating if necessary.
+  if (!EncodeStringTruncate(ValueTag::kString, str, &encoded_remaining_copy)) {
+    // The length of the string itself did not fit; zero `encoded_remaining()`
+    // so the value is not encoded at all.
+    data_->encoded_remaining().remove_suffix(data_->encoded_remaining().size());
+    return;
+  }
+
+  EncodeMessageLength(start, &encoded_remaining_copy);
+  data_->encoded_remaining() = encoded_remaining_copy;
+}
+
 // We intentionally don't return from these destructors. Disable MSVC's warning
 // about the destructor never returning as we do so intentionally here.
 #if defined(_MSC_VER) && !defined(__clang__)
@@ -649,7 +683,6 @@ LogMessageFatal::LogMessageFatal(absl::Nonnull<const char*> file, int line,
 }
 
 LogMessageFatal::~LogMessageFatal() {
-  Flush();
   FailWithoutStackTrace();
 }
 
@@ -658,7 +691,6 @@ LogMessageDebugFatal::LogMessageDebugFatal(absl::Nonnull<const char*> file,
     : LogMessage(file, line, absl::LogSeverity::kFatal) {}
 
 LogMessageDebugFatal::~LogMessageDebugFatal() {
-  Flush();
   FailWithoutStackTrace();
 }
 
@@ -669,7 +701,6 @@ LogMessageQuietlyDebugFatal::LogMessageQuietlyDebugFatal(
 }
 
 LogMessageQuietlyDebugFatal::~LogMessageQuietlyDebugFatal() {
-  Flush();
   FailQuietly();
 }
 
@@ -687,7 +718,6 @@ LogMessageQuietlyFatal::LogMessageQuietlyFatal(
 }
 
 LogMessageQuietlyFatal::~LogMessageQuietlyFatal() {
-  Flush();
   FailQuietly();
 }
 #if defined(_MSC_VER) && !defined(__clang__)

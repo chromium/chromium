@@ -209,8 +209,8 @@ void PairedKeyVerificationRunner::SendPairedKeyResultFrame(
       break;
   }
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection_->Write(std::move(data));
 }
@@ -243,8 +243,8 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
         certificate.metadata_encryption_key_tag());
   }
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection_->Write(std::move(data));
 }
@@ -276,8 +276,8 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
     encryption_frame->set_secret_id_hash(certificate_id_hash.data(),
                                          certificate_id_hash.size());
   }
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection_->Write(std::move(data));
 }

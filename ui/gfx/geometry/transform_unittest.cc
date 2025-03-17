@@ -3610,6 +3610,43 @@ TEST(XFormTest, Round2dTranslationComponents) {
   EXPECT_EQ(expected.ToString(), translation.ToString());
 }
 
+TEST(XFormTest, Floor2dTranslationComponents) {
+  Transform translation;
+  Transform expected;
+
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(1.0f, 1.0f);
+  expected.Translate(1.0f, 1.0f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(0.5f, 0.4f);
+  expected.Translate(0.0f, 0.0f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  // Flooring should only affect 2d translation components.
+  translation.Translate3d(0.f, 0.f, 0.5f);
+  expected.Translate3d(0.f, 0.f, 0.5f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(3.9f, 4.4f);
+  expected.Translate(3.0f, 4.0f);
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+
+  translation.Translate(3.9f, 4.4f);
+  translation.EnsureFullMatrixForTesting();
+  expected.Translate(3.0f, 4.0f);
+  translation.EnsureFullMatrixForTesting();
+
+  translation.Floor2dTranslationComponents();
+  EXPECT_EQ(expected.ToString(), translation.ToString());
+}
+
 TEST(XFormTest, BackFaceVisiblilityTolerance) {
   Transform backface_invisible;
   backface_invisible.set_rc(0, 3, 1.f);

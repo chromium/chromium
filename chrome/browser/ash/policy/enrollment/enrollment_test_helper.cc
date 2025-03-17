@@ -53,7 +53,7 @@ void EnrollmentTestHelper::SetUpEnrollmentTokenConfig(
 void EnrollmentTestHelper::DisableFREOnFlex() {
   command_line_->GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
+      AutoEnrollmentTypeChecker::kFlexForcedReEnrollmentNever);
 }
 
 void EnrollmentTestHelper::EnableFREOnFlex() {

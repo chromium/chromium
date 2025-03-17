@@ -4,6 +4,7 @@
 
 package org.chromium.components.webauthn.cred_man;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.components.webauthn.cred_man.CredManHelper.CRED_MAN_PREFIX;
 
 import android.content.ComponentName;
@@ -16,6 +17,8 @@ import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.GpmBrowserOptionsHelper;
 
 import java.util.Set;
@@ -25,6 +28,7 @@ import java.util.Set;
  * and Chrome specific values. The values may be used to theme CredMan UI with Google Password
  * Manager.
  */
+@NullMarked
 public class GpmCredManRequestDecorator implements CredManRequestDecorator {
     private static final ComponentName GPM_COMPONENT_NAME =
             ComponentName.createRelative(
@@ -37,7 +41,7 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
     private static final String PASSWORDS_WITH_NO_USERNAME_INCLUDED =
             "com.android.chrome.PASSWORDS_WITH_NO_USERNAME_INCLUDED";
 
-    private static GpmCredManRequestDecorator sInstance;
+    private static @Nullable GpmCredManRequestDecorator sInstance;
 
     public static GpmCredManRequestDecorator getInstance() {
         if (sInstance == null) {
@@ -70,6 +74,7 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void updateCreateCredentialRequestBuilder(
             CreateCredentialRequest.Builder builder, CredManCreateCredentialRequestHelper helper) {
+        assertNonNull(helper.getOrigin());
         builder.setOrigin(helper.getOrigin());
     }
 
@@ -95,6 +100,7 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void updateGetCredentialRequestBuilder(
             Builder builder, CredManGetCredentialRequestHelper helper) {
+        assertNonNull(helper.getOrigin());
         builder.setOrigin(helper.getOrigin());
     }
 

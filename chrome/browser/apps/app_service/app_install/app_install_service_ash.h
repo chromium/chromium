@@ -20,7 +20,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/native_window_tracker.h"
 
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH));
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace ash::app_install {
 class AppInstallDialog;

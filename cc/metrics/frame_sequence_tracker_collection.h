@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 
 namespace viz {
 struct BeginFrameArgs;
@@ -22,7 +23,6 @@ struct BeginFrameArgs;
 namespace cc {
 class FrameSequenceTracker;
 class CompositorFrameReportingController;
-class UkmManager;
 
 // Map of kCustom tracker results keyed by a sequence id.
 using CustomTrackerResults =
@@ -88,8 +88,6 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   FrameSequenceTracker* GetRemovalTrackerForTesting(
       FrameSequenceTrackerType type);
 
-  void SetUkmManager(UkmManager* manager);
-
   using NotifyCustomerTrackerResutlsCallback =
       base::RepeatingCallback<void(const CustomTrackerResults&)>;
   void set_custom_tracker_results_added_callback(
@@ -99,6 +97,10 @@ class CC_EXPORT FrameSequenceTrackerCollection {
 
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);
+
+  // Registers the shared memory location for PDF4 UKMs.
+  void SetUkmDroppedFramesDestination(
+      UkmDroppedFramesDataShared* dropped_frames_data);
 
  private:
   friend class FrameSequenceTrackerTest;
@@ -150,6 +152,9 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   size_t main_thread_driving_smoothness_ = 0;
   size_t compositor_thread_driving_smoothness_ = 0;
   size_t raster_thread_driving_smoothness_ = 0;
+
+  // Pointer to shared memory map for PDF4 UKMs
+  raw_ptr<UkmDroppedFramesDataShared> ukm_dropped_frames_data_ = nullptr;
 };
 
 }  // namespace cc

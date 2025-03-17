@@ -73,7 +73,7 @@ TEST_F(AudioHashTest, SampleOrder) {
   original_hash.Update(bus_one_.get(), bus_one_->frames());
 
   // Swap a sample in the bus.
-  std::swap(bus_one_->channel(0)[0], bus_one_->channel(0)[1]);
+  std::swap(bus_one_->channel_span(0)[0], bus_one_->channel_span(0)[1]);
 
   AudioHash swapped_hash;
   swapped_hash.Update(bus_one_.get(), bus_one_->frames());
@@ -155,7 +155,7 @@ TEST_F(AudioHashTest, VerifySimilarHash) {
   hash_one.Update(bus_one_.get(), bus_one_->frames());
 
   // Twiddle the values inside the first bus.
-  float* channel = bus_one_->channel(0);
+  auto channel = bus_one_->channel_span(0);
   for (int i = 0; i < bus_one_->frames(); i += bus_one_->frames() / 64)
     channel[i] += 0.0001f;
 

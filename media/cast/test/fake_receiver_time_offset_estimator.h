@@ -5,8 +5,8 @@
 #ifndef MEDIA_CAST_TEST_FAKE_RECEIVER_TIME_OFFSET_ESTIMATOR_H_
 #define MEDIA_CAST_TEST_FAKE_RECEIVER_TIME_OFFSET_ESTIMATOR_H_
 
-#include "base/time/time.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/receiver_time_offset_estimator.h"
 

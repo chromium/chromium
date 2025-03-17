@@ -82,6 +82,7 @@ test("dbus_unittests") {
     "dbus_statistics_unittest.cc",
     "end_to_end_async_unittest.cc",
     "end_to_end_sync_unittest.cc",
+    "exported_object_unittest.cc",
     "message_unittest.cc",
     "mock_unittest.cc",
     "object_manager_unittest.cc",

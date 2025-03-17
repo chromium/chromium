@@ -17,9 +17,13 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
@@ -110,7 +114,8 @@ class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
 class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
  public:
   BrowsingTopicsURLLoaderTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kBrowsingTopics);
+    scoped_feature_list_.InitAndEnableFeature(
+        network::features::kBrowsingTopics);
   }
 
   void SetUp() override {
@@ -171,17 +176,17 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
     auto simulator =
         NavigationSimulator::CreateBrowserInitiated(url, web_contents());
 
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
     policy.emplace_back(
-        blink::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
         /*allowed_origins=*/
-        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+        std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://google.com"))),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(
+                    *network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo1.com"))),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(
+                    *network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo2.com"))),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(
+                    *network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo3.com")))},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,

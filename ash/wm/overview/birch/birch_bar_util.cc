@@ -114,7 +114,7 @@ TabAppSelectionHost* GetVisibleTabAppSelectionHost() {
       birch_bar_controller->bar_views();
   for (BirchBarView* bar_view : bar_views) {
     auto iter =
-        base::ranges::find_if(bar_view->chips(), [](BirchChipButtonBase* chip) {
+        std::ranges::find_if(bar_view->chips(), [](BirchChipButtonBase* chip) {
           CoralChipButton* coral_chip =
               views::AsViewClass<CoralChipButton>(chip);
           if (!coral_chip) {

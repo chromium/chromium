@@ -39,24 +39,20 @@
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
 FontFallbackList::FontFallbackList(FontSelector* font_selector)
     : font_selector_(font_selector),
-      generation_(FontCache::Get().Generation()),
-      has_loading_fallback_(false),
-      has_custom_font_(false),
-      can_shape_word_by_word_(false),
-      can_shape_word_by_word_computed_(false),
-      is_invalid_(false),
-      nullify_primary_font_data_for_test_(false) {}
+      generation_(FontCache::Get().Generation()) {}
 
 void FontFallbackList::Trace(Visitor* visitor) const {
   visitor->Trace(font_list_);
-  visitor->Trace(cached_primary_simple_font_data_);
+  visitor->Trace(cached_primary_simple_font_data_with_space_);
+  visitor->Trace(cached_primary_simple_font_data_with_digit_zero_);
+  visitor->Trace(cached_primary_simple_font_data_with_cjk_water_);
   visitor->Trace(font_selector_);
-  visitor->Trace(ng_shape_cache_);
   visitor->Trace(shape_cache_);
 }
 
@@ -77,16 +73,18 @@ bool FontFallbackList::ShouldSkipDrawing() const {
 }
 
 const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontData(
-    const FontDescription& font_description) {
+    const FontDescription& font_description,
+    UChar32 lookup_character) {
   base::ElapsedTimer timer;
   const SimpleFontData* result =
-      DeterminePrimarySimpleFontDataCore(font_description);
+      DeterminePrimarySimpleFontDataCore(font_description, lookup_character);
   FontPerformance::AddPrimaryFontTime(timer.Elapsed());
   return result;
 }
 
 const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
-    const FontDescription& font_description) {
+    const FontDescription& font_description,
+    UChar32 lookup_character) {
   bool should_load_custom_font = true;
 
   for (unsigned font_index = 0;; ++font_index) {
@@ -95,7 +93,7 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
       // All fonts are custom fonts and are loading. Return the first FontData.
       font_data = FontDataAt(font_description, 0);
       if (font_data)
-        return font_data->FontDataForCharacter(kSpaceCharacter);
+        return font_data->FontDataForCharacter(lookup_character);
 
       FontCache& font_cache = FontCache::Get();
       const SimpleFontData* last_resort_fallback =
@@ -105,11 +103,12 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
     }
 
     const auto* segmented = DynamicTo<SegmentedFontData>(font_data);
-    if (segmented && !segmented->ContainsCharacter(kSpaceCharacter))
+    if (segmented && !segmented->ContainsCharacter(lookup_character)) {
       continue;
+    }
 
     const SimpleFontData* font_data_for_space =
-        font_data->FontDataForCharacter(kSpaceCharacter);
+        font_data->FontDataForCharacter(lookup_character);
     DCHECK(font_data_for_space);
 
     // When a custom font is loading, we should use the correct fallback font to
@@ -162,9 +161,6 @@ const FontData* FontFallbackList::GetFontData(
     if (!result && !curr_family->FamilyName().empty()) {
       result = FontCache::Get().GetFontData(font_description,
                                             curr_family->FamilyName());
-      font_selector_->ReportFontLookupByUniqueOrFamilyName(
-          curr_family->FamilyName(), font_description,
-          DynamicTo<SimpleFontData>(result));
     }
     if (result) {
       font_selector_->ReportSuccessfulFontFamilyMatch(
@@ -189,10 +185,6 @@ const FontData* FontFallbackList::GetFontData(
   // Still no result. Hand back our last resort fallback font.
   auto* last_resort =
       FontCache::Get().GetLastResortFallbackFont(font_description);
-  if (font_selector_) {
-    font_selector_->ReportLastResortFallbackFontLookup(font_description,
-                                                       last_resort);
-  }
   return last_resort;
 }
 
@@ -226,12 +218,45 @@ const FontData* FontFallbackList::FontDataAt(
   return result;
 }
 
+void FontFallbackList::ComputeFontFeatures(
+    const FontDescription& font_description) {
+  DCHECK(!is_font_features_computed_);
+  is_font_features_computed_ = true;
+  FontFeatureRange::FromFontDescription(font_description, font_features_);
+  has_non_initial_font_features_ =
+      !FontFeatureRange::IsInitial(font_features_) ||
+      // Features for `font-variant-alternates` is set in `GetFontData`.
+      font_description.GetFontVariantAlternates() ||
+      // Features for `font-variant-caps` is set while shaping.
+      font_description.VariantCaps() != FontDescription::kCapsNormal;
+}
+
+base::span<const FontFeatureRange> FontFallbackList::GetFontFeatures(
+    const FontDescription& font_description) {
+  if (!is_font_features_computed_) [[unlikely]] {
+    ComputeFontFeatures(font_description);
+  }
+  return font_features_;
+}
+
+bool FontFallbackList::HasNonInitialFontFeatures(
+    const FontDescription& font_description) {
+  if (HasCustomFont()) [[unlikely]] {
+    return true;
+  }
+  if (!is_font_features_computed_) [[unlikely]] {
+    ComputeFontFeatures(font_description);
+  }
+  return has_non_initial_font_features_;
+}
+
 bool FontFallbackList::ComputeCanShapeWordByWord(
     const FontDescription& font_description) {
   if (!font_description.GetTypesettingFeatures())
     return true;
 
-  const SimpleFontData* primary_font = PrimarySimpleFontData(font_description);
+  const SimpleFontData* primary_font =
+      PrimarySimpleFontDataWithSpace(font_description);
   if (!primary_font)
     return false;
 

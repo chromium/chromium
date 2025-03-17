@@ -4,9 +4,12 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for WebMessagePort.WebMessageCallback. */
+@NullMarked
 public interface WebMessageCallbackBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
     void onMessage(
             /* WebMessagePort */ InvocationHandler port,

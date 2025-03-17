@@ -15,6 +15,8 @@ SessionParams::Scope ParseScope(const base::Value::Dict& scope_dict) {
 
   std::optional<bool> include_site = scope_dict.FindBool("include_site");
   scope.include_site = include_site.value_or(false);
+  const std::string* origin = scope_dict.FindString("origin");
+  scope.origin = origin ? *origin : "";
   const base::Value::List* specifications_list =
       scope_dict.FindList("scope_specification");
   if (!specifications_list) {
@@ -73,7 +75,9 @@ std::vector<SessionParams::Credential> ParseCredentials(
 
 }  // namespace
 
-std::optional<ParsedSessionParams> ParseSessionInstructionJson(
+base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
+    GURL fetcher_url,
+    unexportable_keys::UnexportableKeyId key_id,
     std::string_view response_json) {
   // TODO(kristianm): Skip XSSI-escapes, see for example:
   // https://hg.mozilla.org/mozilla-central/rev/4cee9ec9155e
@@ -83,22 +87,29 @@ std::optional<ParsedSessionParams> ParseSessionInstructionJson(
   // to fail fully if any item is wrong, or if that item should be
   // ignored.
 
+  net::SchemefulSite fetcher_site(fetcher_url);
   std::optional<base::Value::Dict> maybe_root = base::JSONReader::ReadDict(
       response_json, base::JSON_PARSE_RFC, /*max_depth=*/5u);
   if (!maybe_root) {
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidConfigJson, fetcher_site,
+                     /*session_id=*/std::nullopt});
   }
 
   base::Value::Dict* scope_dict = maybe_root->FindDict("scope");
 
   std::string* session_id = maybe_root->FindString("session_identifier");
   if (!session_id || session_id->empty()) {
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidSessionId, fetcher_site,
+                     /*session_id=*/std::nullopt});
   }
 
   std::optional<bool> continue_value = maybe_root->FindBool("continue");
   if (continue_value.has_value() && *continue_value == false) {
-    return SessionTerminationParams(*session_id);
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kServerRequestedTermination,
+                     fetcher_site, *session_id});
   }
 
   std::string* refresh_url = maybe_root->FindString("refresh_url");
@@ -111,13 +122,15 @@ std::optional<ParsedSessionParams> ParseSessionInstructionJson(
   }
 
   if (credentials.empty()) {
-    return std::nullopt;
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidCredentials, fetcher_site,
+                     /*session_id=*/std::nullopt});
   }
 
   return SessionParams(
-      *session_id, refresh_url ? *refresh_url : "",
+      *session_id, fetcher_url, refresh_url ? *refresh_url : "",
       scope_dict ? ParseScope(*scope_dict) : SessionParams::Scope{},
-      std::move(credentials));
+      std::move(credentials), key_id);
 }
 
 }  // namespace net::device_bound_sessions

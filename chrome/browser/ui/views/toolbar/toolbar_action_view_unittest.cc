@@ -22,6 +22,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 
 namespace {
@@ -70,8 +71,7 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
 
 class OpenMenuListener : public views::ContextMenuController {
  public:
-  explicit OpenMenuListener(views::View* view)
-      : view_(view), opened_menu_(false) {
+  explicit OpenMenuListener(views::View* view) : view_(view) {
     view_->set_context_menu_controller(this);
   }
   OpenMenuListener(const OpenMenuListener&) = delete;
@@ -90,7 +90,7 @@ class OpenMenuListener : public views::ContextMenuController {
  private:
   raw_ptr<views::View> view_;
 
-  bool opened_menu_;
+  bool opened_menu_ = false;
 };
 
 }  // namespace
@@ -221,9 +221,9 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
 
   // Check that the tooltip and accessible state of the view match the
   // controller's.
-  EXPECT_EQ(tooltip, view->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip, view->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData ax_node_data;
-  view->GetAccessibleNodeData(&ax_node_data);
+  view->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data);
   EXPECT_EQ(name, ax_node_data.GetString16Attribute(
                       ax::mojom::StringAttribute::kName));
 

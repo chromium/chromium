@@ -62,14 +62,7 @@ void MockIsolatedWebAppResponseReader::Close(base::OnceClosure callback) {
 FakeResponseReaderFactory::FakeResponseReaderFactory(
     Profile& profile,
     base::expected<void, UnusableSwbnFileError> bundle_status)
-    : IsolatedWebAppResponseReaderFactory(
-          profile,
-          nullptr,
-          base::BindRepeating(
-              []() -> std::unique_ptr<
-                       web_package::SignedWebBundleSignatureVerifier> {
-                return nullptr;
-              })),
+    : IsolatedWebAppResponseReaderFactory(profile, nullptr),
       bundle_status_(std::move(bundle_status)) {}
 
 FakeResponseReaderFactory::~FakeResponseReaderFactory() = default;

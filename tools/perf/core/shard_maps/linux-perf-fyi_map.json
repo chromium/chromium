@@ -16,6 +16,10 @@
                 "display_name": "speedometer3.crossbench",
                 "arguments": []
             },
+            "speedometer_3.1": {
+                "display_name": "speedometer3.1.crossbench",
+                "arguments": []
+            },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
@@ -41,6 +45,10 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
+                "arguments": []
+            },
+            "speedometer_3.1": {
+                "display_name": "speedometer3.1.crossbench",
                 "arguments": []
             },
             "jetstream_2.2": {
@@ -70,6 +78,10 @@
                 "display_name": "speedometer3.crossbench",
                 "arguments": []
             },
+            "speedometer_3.1": {
+                "display_name": "speedometer3.1.crossbench",
+                "arguments": []
+            },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
@@ -77,6 +89,12 @@
             "motionmark_1.3": {
                 "display_name": "motionmark1.3.crossbench",
                 "arguments": []
+            },
+            "speedometer_2.1": {
+                "display_name": "speedometer2.1.crossbench",
+                "arguments": [
+                    "--fileserver"
+                ]
             }
         }
     },
@@ -97,6 +115,10 @@
                 "display_name": "speedometer3.crossbench",
                 "arguments": []
             },
+            "speedometer_3.1": {
+                "display_name": "speedometer3.1.crossbench",
+                "arguments": []
+            },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
@@ -108,14 +130,14 @@
         }
     },
     "extra_infos": {
-        "num_stories": 24,
-        "predicted_min_shard_time": 723.0,
+        "num_stories": 29,
+        "predicted_min_shard_time": 787.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 723.0,
-        "predicted_max_shard_index": 0,
-        "shard #0": 723.0,
-        "shard #1": 723.0,
-        "shard #2": 723.0,
-        "shard #3": 723.0
+        "predicted_max_shard_time": 847.0,
+        "predicted_max_shard_index": 2,
+        "shard #0": 787.0,
+        "shard #1": 787.0,
+        "shard #2": 847.0,
+        "shard #3": 787.0
     }
 }

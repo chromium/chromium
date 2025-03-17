@@ -97,7 +97,7 @@ class OriginValueMap {
                 const ContentSettingsPattern& secondary_pattern,
                 ContentSettingsType content_type,
                 base::Value value,
-                const RuleMetaData& metadata) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+                RuleMetaData metadata) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Deletes the map entry for the given |primary_pattern|,
   // |secondary_pattern|, |content_type| tuple.

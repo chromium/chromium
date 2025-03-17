@@ -23,7 +23,6 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/network_change_notifier.h"
@@ -167,14 +166,13 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
   return ::testing::AssertionSuccess();
 }
 
-[[nodiscard]] ::testing::AssertionResult ReadCompleteLogFile(
-    const base::FilePath& log_path,
-    std::unique_ptr<base::Value::Dict>* root) {
+[[nodiscard]] base::expected<base::Value::Dict, ::testing::AssertionResult>
+ReadCompleteLogFile(const base::FilePath& log_path) {
   DCHECK(!log_path.empty());
 
   if (!base::PathExists(log_path)) {
-    return ::testing::AssertionFailure()
-           << log_path.value() << " does not exist.";
+    return base::unexpected(::testing::AssertionFailure()
+                            << log_path.value() << " does not exist.");
   }
 
   // Check file permissions. These tests are only done on POSIX for simplicity,
@@ -182,8 +180,9 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 #if BUILDFLAG(IS_POSIX)
   int actual_permissions = 0;
   if (!base::GetPosixFilePermissions(log_path, &actual_permissions)) {
-    return ::testing::AssertionFailure()
-           << "Failed getting file permissions for " << log_path.value();
+    return base::unexpected(::testing::AssertionFailure()
+                            << "Failed getting file permissions for "
+                            << log_path.value());
   }
 
   // Creating the file will have requested permission 600 (or 644 on Chrome
@@ -200,42 +199,39 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
       ;
 
   if ((actual_permissions & expected_permissions) != actual_permissions) {
-    return ::testing::AssertionFailure()
-           << "Unexpected permissions: "
-           << base::StringPrintf("%o", actual_permissions) << " vs "
-           << base::StringPrintf("%o", expected_permissions);
+    return base::unexpected(::testing::AssertionFailure()
+                            << "Unexpected permissions: "
+                            << base::StringPrintf("%o", actual_permissions)
+                            << " vs "
+                            << base::StringPrintf("%o", expected_permissions));
   }
 #endif  // BUILDFLAG(IS_POSIX)
 
   // Parse log file contents into a dictionary
   std::string log_string;
   if (!base::ReadFileToString(log_path, &log_string)) {
-    return ::testing::AssertionFailure()
-           << log_path.value() << " could not be read.";
+    return base::unexpected(::testing::AssertionFailure()
+                            << log_path.value() << " could not be read.");
   }
-  std::optional<base::Value> log_parsed = base::JSONReader::Read(log_string);
-  if (!log_parsed || !log_parsed->is_dict()) {
-    return ::testing::AssertionFailure()
-           << "Contents of " << log_path.value()
-           << " do not form valid JSON dictionary.";
+  std::optional<base::Value::Dict> log_parsed =
+      base::JSONReader::ReadDict(log_string);
+  if (!log_parsed) {
+    return base::unexpected(::testing::AssertionFailure()
+                            << "Contents of " << log_path.value()
+                            << " do not form valid JSON dictionary.");
   }
 
-  *root = std::make_unique<base::Value::Dict>(std::move(log_parsed->GetDict()));
   // Make sure the "constants" section exists
-  const base::Value::Dict* constants = (*root)->FindDict("constants");
-  if (!constants) {
-    root->reset();
-    return ::testing::AssertionFailure()
-           << log_path.value() << " is missing constants.";
+  if (!log_parsed->FindDict("constants")) {
+    return base::unexpected(::testing::AssertionFailure()
+                            << log_path.value() << " is missing constants.");
   }
   // Make sure the "events" section exists
-  base::Value::List* events = (*root)->FindList("events");
-  if (!events) {
-    root->reset();
-    return ::testing::AssertionFailure()
-           << log_path.value() << " is missing events list.";
+  if (!log_parsed->FindList("events")) {
+    return base::unexpected(::testing::AssertionFailure()
+                            << log_path.value() << " is missing events list.");
   }
-  return ::testing::AssertionSuccess();
+  return std::move(*log_parsed);
 }
 
 // An implementation of NetExportFileWriter::StateObserver that allows waiting
@@ -447,12 +443,12 @@ class NetExportFileWriterTest : public ::testing::Test {
     }
 
     // Make sure the generated log file is valid.
-    std::unique_ptr<base::Value::Dict> root;
-    result = ReadCompleteLogFile(expected_log_path, &root);
-    if (!result) {
+    base::expected<base::Value::Dict, ::testing::AssertionResult> log_result =
+        ReadCompleteLogFile(expected_log_path);
+    if (!log_result.has_value()) {
       return ::testing::AssertionFailure()
              << "Log file after logging stopped is not valid:" << std::endl
-             << result.message();
+             << log_result.error().message();
     }
 
     return ::testing::AssertionSuccess();
@@ -714,9 +710,11 @@ TEST_F(NetExportFileWriterTest, StopWithPolledData) {
                                             kCaptureModeDefaultString));
 
   // Read polledData from log file.
-  std::unique_ptr<base::Value::Dict> root;
-  ASSERT_TRUE(ReadCompleteLogFile(default_log_path(), &root));
-  const base::Value::Dict* polled_data = root->FindDict("polledData");
+  base::expected<base::Value::Dict, ::testing::AssertionResult> log_result =
+      ReadCompleteLogFile(default_log_path());
+  ASSERT_TRUE(log_result.has_value());
+  const base::Value::Dict* polled_data =
+      log_result.value().FindDict("polledData");
   ASSERT_TRUE(polled_data);
 
   // Check that it contains the field from the polled data that was passed in.
@@ -789,7 +787,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
           },
           run_loop2.QuitClosure()));
 
-  // Wait for fetch to get some bytes accross. It will not be the entire
+  // Wait for fetch to get some bytes across. It will not be the entire
   // thing since the post-redirect URL will get blocked by the custom handler.
   run_loop.Run();
   ASSERT_TRUE(StartThenVerifyNewState(
@@ -799,9 +797,10 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   ASSERT_TRUE(StopThenVerifyNewStateAndFile(
       base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
   // Read events from log file.
-  std::unique_ptr<base::Value::Dict> root;
-  ASSERT_TRUE(ReadCompleteLogFile(default_log_path(), &root));
-  const base::Value::List* events = root->FindList("events");
+  base::expected<base::Value::Dict, ::testing::AssertionResult> log_result =
+      ReadCompleteLogFile(default_log_path());
+  ASSERT_TRUE(log_result.has_value());
+  const base::Value::List* events = log_result.value().FindList("events");
   ASSERT_TRUE(events);
 
   // Check there is at least one event as a result of the ongoing request.

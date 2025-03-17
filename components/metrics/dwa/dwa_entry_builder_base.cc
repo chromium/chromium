@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,18 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/metrics/dwa/mojom/dwa_interface.mojom.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/gurl.h"
 
 namespace dwa::internal {
+namespace {
+
+std::string GetEtldPlusOne(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+}  // namespace
 
 DwaEntryBuilderBase::DwaEntryBuilderBase(DwaEntryBuilderBase&&) = default;
 
@@ -50,6 +60,10 @@ void DwaEntryBuilderBase::Record(metrics::dwa::DwaRecorder* recorder) {
 
 metrics::dwa::mojom::DwaEntryPtr* DwaEntryBuilderBase::GetEntryForTesting() {
   return &entry_;
+}
+
+std::string DwaEntryBuilderBase::SanitizeContent(std::string_view content) {
+  return GetEtldPlusOne(GURL(content));
 }
 
 }  // namespace dwa::internal

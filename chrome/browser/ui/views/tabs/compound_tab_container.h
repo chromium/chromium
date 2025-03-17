@@ -36,9 +36,8 @@ class CompoundTabContainer : public TabContainer,
   // TabContainer:
   void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback) override;
-  Tab* AddTab(std::unique_ptr<Tab> tab,
-              int model_index,
-              TabPinned pinned) override;
+  std::vector<Tab*> AddTabs(
+      std::vector<TabInsertionParams> tabs_params) override;
   void MoveTab(int from_model_index, int to_model_index) override;
   void RemoveTab(int index, bool was_active) override;
   void SetTabPinned(int model_index, TabPinned pinned) override;
@@ -208,7 +207,7 @@ class CompoundTabContainer : public TabContainer,
   const raw_ptr<TabHoverCardController, DanglingUntriaged>
       hover_card_controller_;
 
-  // The View that is to be scrolled by |tab_scrolling_animation_|. May be
+  // The View that is to be scrolled by `tab_scrolling_animation_`. May be
   // nullptr in tests.
   const raw_ptr<views::View> scroll_contents_view_;
 

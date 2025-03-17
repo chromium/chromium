@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -134,11 +135,20 @@ void EphemeralHomeModuleBackend::ExecuteModelWithInput(
       home_modules_card_registry_->all_output_labels().size(),
       dont_show_result);
 
+  size_t position_types =
+      static_cast<size_t>(EphemeralHomeModuleRank::kNotShown);
+  base::flat_set<EphemeralHomeModuleRank> filled_positions = {
+      EphemeralHomeModuleRank::kNotShown};
+#if BUILDFLAG(IS_IOS)
+  filled_positions.insert(EphemeralHomeModuleRank::kLast);
+#endif  // BUILDFLAG(IS_IOS)
+
   for (const auto& card : all_cards) {
     CardSelectionSignals card_signals(&all_signals, card->card_name());
     CardSelectionInfo::ShowResult card_result =
         card->ComputeCardResult(card_signals);
-    if (card_result.position == EphemeralHomeModuleRank::kNotShown) {
+
+    if (filled_positions.contains(card_result.position)) {
       continue;
     }
     std::string label = card->card_name();
@@ -148,10 +158,13 @@ void EphemeralHomeModuleBackend::ExecuteModelWithInput(
     result[home_modules_card_registry_->get_label_index(
         *card_result.result_label)] =
         EphemeralHomeModuleRankToScore(card_result.position);
-    // This assumes only one card is shown, if more than one card need to be
-    // shown, update the priority of cards using EphemeralHomeModuleRank and
-    // wait for 2 cards here.
-    break;
+
+    filled_positions.insert(card_result.position);
+
+    // This assumes only one card per position type is shown.
+    if (filled_positions.size() == position_types + 1) {
+      break;
+    }
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

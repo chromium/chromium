@@ -29,6 +29,7 @@ using UpdateSessionCallback =
 class UpdateSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
   UpdateSessionRequest(google_apis::RequestSender* sender,
+                       std::string url_base,
                        ::boca::UserIdentity teacher,
                        std::string session_id,
                        UpdateSessionCallback callback);

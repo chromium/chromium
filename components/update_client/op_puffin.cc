@@ -84,7 +84,7 @@ void Patch(
     const base::FilePath& temp_dir,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
-  base::FilePath new_file = temp_dir.AppendASCII("puffpatch_out");
+  base::FilePath new_file = temp_dir.Append(FILE_PATH_LITERAL("puffpatch_out"));
   patcher->PatchPuffPatch(
       base::File(old_file, base::File::FLAG_OPEN | base::File::FLAG_READ),
       base::File(patch_file, base::File::FLAG_OPEN | base::File::FLAG_READ),
@@ -129,12 +129,12 @@ base::OnceClosure PuffOperation(
     scoped_refptr<Patcher> patcher,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
     const std::string& id,
-    const std::string& prev_fp,
+    const std::string& prev_hash,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
-  crx_cache->Get(
-      id, prev_fp,
+  crx_cache->GetByHash(
+      prev_hash,
       base::BindOnce(&CacheLookupDone, event_adder, patcher, patch_file,
                      patch_file.DirName(), std::move(callback)));
   return base::DoNothing();

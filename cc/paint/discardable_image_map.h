@@ -19,6 +19,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_worklet_input.h"
+#include "cc/paint/scroll_offset_map.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -54,9 +55,21 @@ class CC_PAINT_EXPORT DiscardableImageMap
     PaintImage::AnimationSequenceId reset_animation_sequence_id;
   };
 
+  using DecodingModeMap =
+      base::flat_map<PaintImage::Id, PaintImage::DecodingMode>;
+  using PaintWorkletInputWithImageId =
+      std::pair<scoped_refptr<PaintWorkletInput>, PaintImage::Id>;
+  using PaintWorkletInputs = std::vector<PaintWorkletInputWithImageId>;
+
   static scoped_refptr<DiscardableImageMap> Generate(
       const PaintOpBuffer& paint_op_buffer,
-      const gfx::Rect& bounds);
+      const gfx::Rect& bounds,
+      const ScrollOffsetMap& raster_inducing_scroll_offsets,
+      // These data are not stored in DiscardableImageMap because they should
+      // be consumed immediately. The caller can omit these parameters if they
+      // won't be used.
+      DecodingModeMap* decoding_mode_map = nullptr,
+      PaintWorkletInputs* paint_worklet_inputs = nullptr);
 
   bool empty() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -68,17 +81,6 @@ class CC_PAINT_EXPORT DiscardableImageMap
   const std::vector<AnimatedImageMetadata>& animated_images_metadata() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return animated_images_metadata_;
-  }
-
-  // This should only be called once from the compositor thread at commit time.
-  base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
-  TakeDecodingModeMap();
-
-  using PaintWorkletInputWithImageId =
-      std::pair<scoped_refptr<PaintWorkletInput>, PaintImage::Id>;
-  const std::vector<PaintWorkletInputWithImageId>& paint_worklet_inputs()
-      const {
-    return paint_worklet_inputs_;
   }
 
  private:
@@ -94,8 +96,6 @@ class CC_PAINT_EXPORT DiscardableImageMap
   std::vector<std::pair<DrawImage, gfx::Rect>> images_;
   // This r-tree is built lazily. The entries are DrawImage pointers in images_.
   mutable std::unique_ptr<RTree<const DrawImage*>> images_rtree_;
-  base::flat_map<PaintImage::Id, PaintImage::DecodingMode> decoding_mode_map_;
-  std::vector<PaintWorkletInputWithImageId> paint_worklet_inputs_;
 
   // The class should be used from single thread only.
   SEQUENCE_CHECKER(sequence_checker_);

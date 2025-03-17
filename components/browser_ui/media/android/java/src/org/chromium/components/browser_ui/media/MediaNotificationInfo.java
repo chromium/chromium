@@ -8,14 +8,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.services.media_session.MediaPosition;
 
 import java.util.Set;
 
 /** Exposes information about the current media notification to the external clients. */
+@NullMarked
 public class MediaNotificationInfo {
     // Bits defining various user actions supported by the media notification.
 
@@ -36,20 +37,20 @@ public class MediaNotificationInfo {
 
     /** Use this class to construct an instance of {@link MediaNotificationInfo}. */
     public static final class Builder {
-        private MediaMetadata mMetadata;
+        private @Nullable MediaMetadata mMetadata;
         private boolean mIsPaused;
-        private String mOrigin = "";
+        private @Nullable String mOrigin = "";
         private int mInstanceId = INVALID_ID;
         private boolean mIsPrivate = true;
         private int mNotificationSmallIcon;
-        private Bitmap mNotificationLargeIcon;
+        private @Nullable Bitmap mNotificationLargeIcon;
         private int mDefaultNotificationLargeIcon;
-        private Bitmap mMediaSessionImage;
+        private @Nullable Bitmap mMediaSessionImage;
         private int mActions = ACTION_PLAY_PAUSE | ACTION_SWIPEAWAY | ACTION_STOP;
         private int mId = INVALID_ID;
-        private Intent mContentIntent;
-        private MediaNotificationListener mListener;
-        private Set<Integer> mMediaSessionActions;
+        private @Nullable Intent mContentIntent;
+        private @Nullable MediaNotificationListener mListener;
+        private @Nullable Set<Integer> mMediaSessionActions;
         private @Nullable MediaPosition mMediaPosition;
 
         /** Initializes the builder with the default values. */
@@ -88,7 +89,7 @@ public class MediaNotificationInfo {
             return this;
         }
 
-        public Builder setOrigin(String origin) {
+        public Builder setOrigin(@Nullable String origin) {
             mOrigin = origin;
             return this;
         }
@@ -108,7 +109,7 @@ public class MediaNotificationInfo {
             return this;
         }
 
-        public Builder setNotificationLargeIcon(Bitmap icon) {
+        public Builder setNotificationLargeIcon(@Nullable Bitmap icon) {
             mNotificationLargeIcon = icon;
             return this;
         }
@@ -118,7 +119,7 @@ public class MediaNotificationInfo {
             return this;
         }
 
-        public Builder setMediaSessionImage(Bitmap image) {
+        public Builder setMediaSessionImage(@Nullable Bitmap image) {
             mMediaSessionImage = image;
             return this;
         }
@@ -181,7 +182,7 @@ public class MediaNotificationInfo {
     public final int notificationSmallIcon;
 
     /** The Bitmap resource used as the notification large icon. */
-    public final Bitmap notificationLargeIcon;
+    public final @Nullable Bitmap notificationLargeIcon;
 
     /** The id of the default notification large icon from R.drawable. */
     public final int defaultNotificationLargeIcon;
@@ -190,13 +191,13 @@ public class MediaNotificationInfo {
      * The Bitmap resource used for Android MediaSession image, which will be used on lock screen
      * and wearable devices.
      */
-    public final Bitmap mediaSessionImage;
+    public final @Nullable Bitmap mediaSessionImage;
 
     /** The id to use for the Android Notification. */
     public final int id;
 
     /** The intent to send when the notification is selected. */
-    public final Intent contentIntent;
+    public final @Nullable Intent contentIntent;
 
     /** The listener for the control events. */
     public final MediaNotificationListener listener;
@@ -252,14 +253,14 @@ public class MediaNotificationInfo {
             int instanceId,
             boolean isPrivate,
             int notificationSmallIcon,
-            Bitmap notificationLargeIcon,
+            @Nullable Bitmap notificationLargeIcon,
             int defaultNotificationLargeIcon,
-            Bitmap mediaSessionImage,
+            @Nullable Bitmap mediaSessionImage,
             int actions,
             int id,
-            Intent contentIntent,
+            @Nullable Intent contentIntent,
             MediaNotificationListener listener,
-            Set<Integer> mediaSessionActions,
+            @Nullable Set<Integer> mediaSessionActions,
             @Nullable MediaPosition mediaPosition) {
         this.metadata = metadata;
         this.isPaused = isPaused;
@@ -282,7 +283,7 @@ public class MediaNotificationInfo {
 
     @Override
     @SuppressWarnings("ReferenceEquality")
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) return true;
         if (!(obj instanceof MediaNotificationInfo)) return false;
 

@@ -341,7 +341,9 @@ void WmModeController::BuildPieMenu() {
   DCHECK(current_root_);
 
   pie_menu_widget_ = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = current_root_->GetChildById(kShellWindowId_MenuContainer);
   params.bounds = gfx::Rect(kPieMenuSize);

@@ -20,6 +20,7 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
       Element* parent,
       PseudoId,
       const AtomicString& view_transition_name,
+      bool is_generated_name,
       const ViewTransitionStyleTracker* style_tracker);
   ~ViewTransitionPseudoElementBase() override = default;
 

@@ -17,7 +17,6 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/browsing_topics/test_util.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -350,7 +350,7 @@ class BrowsingTopicsDisabledInternalsBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
-            blink::features::kBrowsingTopics,
+            network::features::kBrowsingTopics,
             blink::features::kBrowsingTopicsParameters,
             features::kPrivacySandboxAdsAPIsOverride,
         });
@@ -428,7 +428,7 @@ class BrowsingTopicsInternalsBrowserTest
         {{blink::features::kBrowsingTopicsParameters,
           {{"number_of_top_topics_per_epoch", "2"},
            {"time_period_per_epoch", "15s"}}},
-         {blink::features::kBrowsingTopics, {}},
+         {network::features::kBrowsingTopics, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {privacy_sandbox::kPrivacySandboxSettings4,
           {{"consent-required", "true"}}}},
@@ -436,13 +436,14 @@ class BrowsingTopicsInternalsBrowserTest
   }
 
   // BrowserTestBase::SetUpInProcessBrowserTestFixture
-  void SetUpInProcessBrowserTestFixture() override {
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&BrowsingTopicsInternalsBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FixedBrowsingTopicsService>();
+            }));
   }
 
   FixedBrowsingTopicsService* fixed_browsing_topics_service() {
@@ -452,21 +453,6 @@ class BrowsingTopicsInternalsBrowserTest
   }
 
  protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context, base::BindRepeating(&BrowsingTopicsInternalsBrowserTest::
-                                             CreateFixedBrowsingTopicsService,
-                                         base::Unretained(this)));
-  }
-
-  std::unique_ptr<KeyedService> CreateFixedBrowsingTopicsService(
-      content::BrowserContext* context) {
-    return std::make_unique<FixedBrowsingTopicsService>();
-  }
-
-  base::CallbackListSubscription subscription_;
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

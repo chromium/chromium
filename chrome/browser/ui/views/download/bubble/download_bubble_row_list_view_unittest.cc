@@ -10,8 +10,11 @@
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -43,7 +46,14 @@ class DownloadBubbleRowListViewTest : public TestWithBrowserView {
     TestWithBrowserView::TearDown();
   }
 
-  DownloadToolbarButtonView* toolbar_button() {
+  DownloadBubbleUIController* bubble_controller() {
+    return browser_view()->GetDownloadBubbleUIController();
+  }
+
+  DownloadBubbleNavigationHandler* navigation_handler() {
+    if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
+      return browser()->GetFeatures().download_toolbar_ui_controller();
+    }
     return browser_view()->toolbar()->download_button();
   }
 
@@ -71,9 +81,8 @@ class DownloadBubbleRowListViewTest : public TestWithBrowserView {
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
-        browser()->AsWeakPtr(),
-        toolbar_button()->bubble_controller()->GetWeakPtr(),
-        toolbar_button()->GetWeakPtr(), bubble_width, *info_);
+        browser()->AsWeakPtr(), bubble_controller()->GetWeakPtr(),
+        navigation_handler()->GetWeakPtr(), bubble_width, *info_);
   }
 
   // Creates a `DownloadUIModel` for the download item at `index` in

@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
 
@@ -114,10 +115,8 @@ class VIEWS_EXPORT ToggleButton : public Button {
   gfx::SlideAnimation slide_animation_{this};
   gfx::SlideAnimation hover_animation_{this};
   raw_ptr<ThumbView> thumb_view_;
-  absl::variant<ui::ColorId, SkColor> track_on_color_ =
-      ui::kColorToggleButtonTrackOn;
-  absl::variant<ui::ColorId, SkColor> track_off_color_ =
-      ui::kColorToggleButtonTrackOff;
+  ui::ColorVariant track_on_color_ = ui::kColorToggleButtonTrackOn;
+  ui::ColorVariant track_off_color_ = ui::kColorToggleButtonTrackOff;
 
   // When false, this button won't accept input. Different from View::SetEnabled
   // in that the view retains focus when this is false but not when disabled.

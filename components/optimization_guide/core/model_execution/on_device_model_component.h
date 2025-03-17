@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -17,6 +18,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 
 class PrefService;
 
@@ -32,12 +34,22 @@ enum class ModelBasedCapabilityKey;
 // Wraps the specification needed to determine compatibility of the
 // on-device base model with any feature specific code.
 struct OnDeviceBaseModelSpec {
+  OnDeviceBaseModelSpec();
+  OnDeviceBaseModelSpec(
+      const std::string& model_name,
+      const std::string& model_version,
+      const base::flat_set<proto::OnDeviceModelPerformanceHint>&
+          supported_performance_hints);
+  ~OnDeviceBaseModelSpec();
+  OnDeviceBaseModelSpec(const OnDeviceBaseModelSpec&);
+
   // The name of the base model currently available on-device.
   std::string model_name;
   // The version of the base model currently available on-device.
   std::string model_version;
-  // Note that we may need to read the manifest and expose additional
-  // information for b/310740288 beyond the name and version in the future.
+  // The supported performance hints for this device and base model.
+  base::flat_set<proto::OnDeviceModelPerformanceHint>
+      supported_performance_hints;
 };
 
 // Manages the state of the on-device component.
@@ -186,6 +198,12 @@ class OnDeviceModelComponentStateManager
   // Returns true if this is determined to be a low tier device.
   bool IsLowTierDevice() const;
 
+  // Returns the performance hint for this device based on the supported
+  // performance hints in the manifest.
+  std::optional<proto::OnDeviceModelPerformanceHint>
+  GetSupportedPerformanceHintForDeviceFromManifest(
+      const base::Value::List* manifest_performance_hints) const;
+
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -221,6 +239,11 @@ class OnDeviceModelComponentStateManager
 
   // Notifies the observers of the `feature` used for the first time.
   void NotifyOnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature);
+
+  // Reads the base model spec from the component manifest and potentially
+  // filters values to make it compatible with this device.
+  const std::optional<OnDeviceBaseModelSpec> ProcessBaseModelSpecFromManifest(
+      const base::Value::Dict& manifest);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);

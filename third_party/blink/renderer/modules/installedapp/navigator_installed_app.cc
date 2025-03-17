@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -46,13 +45,9 @@ NavigatorInstalledApp::getInstalledRelatedApps(
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(
       script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
   auto* app_controller = InstalledAppController::From(*navigator.DomWindow());
-  app_controller->GetInstalledRelatedApps(
-      std::make_unique<
-          CallbackPromiseAdapter<IDLSequence<RelatedApplication>, void>>(
-          resolver));
-  return promise;
+  app_controller->GetInstalledRelatedApps(resolver);
+  return resolver->Promise();
 }
 
 }  // namespace blink

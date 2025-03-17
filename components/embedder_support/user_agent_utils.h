@@ -17,11 +17,10 @@ namespace blink {
 struct UserAgentMetadata;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace embedder_support {
+
+enum class IncludeAndroidBuildNumber { Include, Exclude };
+enum class IncludeAndroidModel { Include, Exclude };
 
 // TODO(crbug.com/40843535): Remove this enum along with policy.
 enum class UserAgentReductionEnterprisePolicyState {
@@ -37,6 +36,10 @@ enum class UserAgentReductionEnterprisePolicyState {
 std::string GetProductAndVersion(
     UserAgentReductionEnterprisePolicyState user_agent_reduction =
         UserAgentReductionEnterprisePolicyState::kDefault);
+
+// Returns a user agent string passed via the kUserAgent command-line argument
+// when it is valid, or std::nullopt if it is not valid.
+std::optional<std::string> GetUserAgentFromCommandLine();
 
 // Returns the full or "reduced" user agent string, depending on the following:
 // 1) UserAgentReduction enterprise policy.
@@ -61,6 +64,12 @@ blink::UserAgentMetadata GetUserAgentMetadata(bool only_low_entropy_ch = false);
 blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* local_state,
                                               bool only_low_entropy_ch = false);
 
+// Returns a list of form-factors compliant with
+// https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors.
+std::vector<std::string> GetFormFactorsClientHint(
+    const blink::UserAgentMetadata& metadata,
+    bool is_mobile);
+
 // Return UserAgentBrandList based on the expected output version type.
 // Only use when adding additional brand version pair and overriding the default
 // product brand version, otherwise prefer to
@@ -69,7 +78,6 @@ blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     std::optional<std::string> brand,
     const std::string& version,
-    bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type,
     std::optional<blink::UserAgentBrandVersion> additional_brand_version =
         std::nullopt);
@@ -105,18 +113,7 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
 // https://wicg.github.io/ua-client-hints/#create-arbitrary-brands-section.
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     int seed,
-    bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type);
-
-#if BUILDFLAG(IS_ANDROID)
-// This sets a user agent string to simulate a desktop user agent on mobile.
-// If |override_in_new_tabs| is true, and the first navigation in the tab is
-// renderer initiated, then is-overriding-user-agent is set to true for the
-// NavigationEntry.
-void SetDesktopUserAgentOverride(content::WebContents* web_contents,
-                                 const blink::UserAgentMetadata& metadata,
-                                 bool override_in_new_tabs);
-#endif
 
 #if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting();
@@ -125,8 +122,76 @@ int GetHighestKnownUniversalApiContractVersionForTesting();
 // Returns the UserAgentReductionEnterprisePolicyState enum value corresponding
 // to the provided integer policy value for UserAgentReduction.
 // TODO(crbug.com/40843535): Remove this function with policy.
-embedder_support::UserAgentReductionEnterprisePolicyState
-GetUserAgentReductionFromPrefs(const PrefService* pref_service);
+UserAgentReductionEnterprisePolicyState GetUserAgentReductionFromPrefs(
+    const PrefService* pref_service);
+
+// Returns the (incorrectly named, for historical reasons) WebKit version, in
+// the form "major.minor (@chromium_git_revision)".
+std::string GetWebKitVersion();
+
+std::string GetChromiumGitRevision();
+
+// Returns the CPU architecture in Windows/Mac/POSIX/Fuchsia and the empty
+// string on Android or if unknown.
+std::string GetCpuArchitecture();
+
+// Returns the CPU bitness in Windows/Mac/POSIX/Fuchsia and the empty string on
+// Android.
+std::string GetCpuBitness();
+
+// We may also build the same User-agent compatible string describing OS and CPU
+// type by providing our own |os_version| and |cpu_type|. This is primarily
+// useful in testing.
+std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
+                                                  const std::string& cpu_type);
+
+// TODO(crbug.com/40200617): Remove this after user agent reduction phase 5 and
+// --force-major-version-to-minor is removed.
+// Return the <unifiedPlatform> token of a reduced User-Agent header.
+std::string GetUnifiedPlatformForTesting();
+
+// Helper function to generate a full user agent string from a short
+// product name.
+std::string BuildUserAgentFromProduct(const std::string& product);
+
+// Helper function to generate a reduced user agent string with unified
+// platform from a given product name.
+std::string BuildUnifiedPlatformUserAgentFromProduct(
+    const std::string& product);
+
+// Returns the model information. Returns a blank string if not on Android or
+// if on a codenamed (i.e. not a release) build of an Android.
+std::string BuildModelInfo();
+
+#if BUILDFLAG(IS_ANDROID)
+// Helper function to generate a full user agent string given a short
+// product name and some extra text to be added to the OS info.
+// This is currently only used for Android Web View.
+std::string BuildUserAgentFromProductAndExtraOSInfo(
+    const std::string& product,
+    const std::string& extra_os_info,
+    IncludeAndroidBuildNumber include_android_build_number);
+
+// Helper function to generate a reduced user agent string with unified
+// platform from a given product name and extra os information.
+std::string BuildUnifiedPlatformUAFromProductAndExtraOs(
+    const std::string& product,
+    const std::string& extra_os_info);
+
+// Helper function to generate just the OS info.
+std::string GetAndroidOSInfo(
+    IncludeAndroidBuildNumber include_android_build_number,
+    IncludeAndroidModel include_android_model);
+#endif
+
+// Builds a full user agent string given a string describing the OS and a
+// product name.
+std::string BuildUserAgentFromOSAndProduct(const std::string& os_info,
+                                           const std::string& product);
+
+// Returns true if the binary was built in 32-bit mode and is running on 64-bit
+// Windows; returns false otherwise.
+bool IsWoW64();
 
 }  // namespace embedder_support
 

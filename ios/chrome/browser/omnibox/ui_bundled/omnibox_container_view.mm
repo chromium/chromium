@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_container_view.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_thumbnail_button.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
@@ -225,31 +225,14 @@ const CGFloat kClearButtonImageSize = 17.0f;
 }
 
 - (void)setClearButtonHidden:(BOOL)isHidden {
-    self.textField.rightViewMode =
-        isHidden ? UITextFieldViewModeNever : UITextFieldViewModeAlways;
+  self.textField.rightViewMode =
+      isHidden ? UITextFieldViewModeNever : UITextFieldViewModeAlways;
 }
 
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute {
   [super setSemanticContentAttribute:semanticContentAttribute];
   _stackView.semanticContentAttribute = semanticContentAttribute;
-}
-
-- (void)updateAdditionalText:(NSString*)additionalText {
-  // Additional text in text field.
-  if (!additionalText) {
-    _textField.additionalText = nil;
-  } else {
-    NSMutableAttributedString* additionalAttributedText =
-        [[NSMutableAttributedString alloc] initWithString:additionalText];
-    [additionalAttributedText
-        addAttributes:@{
-          NSForegroundColorAttributeName :
-              [UIColor colorNamed:kTextSecondaryColor]
-        }
-                range:NSMakeRange(0, additionalAttributedText.length)];
-    _textField.additionalText = additionalAttributedText;
-  }
 }
 
 #pragma mark - TextFieldViewContaining

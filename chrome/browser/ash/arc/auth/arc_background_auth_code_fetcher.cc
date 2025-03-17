@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -15,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

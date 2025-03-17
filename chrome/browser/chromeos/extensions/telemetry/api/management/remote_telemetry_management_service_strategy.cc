@@ -6,17 +6,9 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
+#include "chromeos/ash/components/telemetry_extension/management/telemetry_management_service_ash.h"
 #include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/telemetry_extension/management/telemetry_management_service_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -24,7 +16,6 @@ namespace {
 
 namespace crosapi = ::crosapi::mojom;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class RemoteTelemetryManagementServiceStrategyAsh
     : public RemoteTelemetryManagementServiceStrategy {
  public:
@@ -45,40 +36,13 @@ class RemoteTelemetryManagementServiceStrategyAsh
 
   std::unique_ptr<crosapi::TelemetryManagementService> management_service_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class RemoteTelemetryManagementServiceStrategyLacros
-    : public RemoteTelemetryManagementServiceStrategy {
- public:
-  RemoteTelemetryManagementServiceStrategyLacros() = default;
-
-  ~RemoteTelemetryManagementServiceStrategyLacros() override = default;
-
-  // RemoteTelemetryManagementServiceStrategy:
-  mojo::Remote<crosapi::TelemetryManagementService>& GetRemoteService()
-      override {
-    return LacrosService::Get()
-        ->GetRemote<crosapi::TelemetryManagementService>();
-  }
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
 // static
 std::unique_ptr<RemoteTelemetryManagementServiceStrategy>
 RemoteTelemetryManagementServiceStrategy::Create() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<RemoteTelemetryManagementServiceStrategyAsh>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!LacrosService::Get()
-           ->IsAvailable<crosapi::TelemetryManagementService>()) {
-    return nullptr;
-  }
-  return std::make_unique<RemoteTelemetryManagementServiceStrategyLacros>();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 RemoteTelemetryManagementServiceStrategy::

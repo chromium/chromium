@@ -12,7 +12,6 @@
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/desktop_environment_options.h"
-#include "remoting/host/desktop_display_info_loader.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
@@ -78,6 +77,9 @@ class DesktopInteractionStrategy {
 // connection).
 class DesktopInteractionStrategyFactory {
  public:
+  using CreateCallback =
+      base::OnceCallback<void(std::unique_ptr<DesktopInteractionStrategy>)>;
+
   virtual ~DesktopInteractionStrategyFactory() = default;
 
   // Asynchronously creates a DesktopInteractionStrategy instance.
@@ -86,10 +88,8 @@ class DesktopInteractionStrategyFactory {
   // environment or otherwise setting up shared resources. The resulting session
   // object will be posted back on the same sequence, or nullptr if an error
   // occurs.
-  virtual void CreateSession(
-      const DesktopEnvironmentOptions& options,
-      base::OnceCallback<void(std::unique_ptr<DesktopInteractionStrategy>)>
-          callback) = 0;
+  virtual void Create(const DesktopEnvironmentOptions& options,
+                      CreateCallback callback) = 0;
 };
 
 }  // namespace remoting

@@ -8,6 +8,9 @@
 #include <aura-shell-server-protocol.h>
 #include <stdint.h>
 
+#include <string>
+#include <string_view>
+
 #include "ash/focus/focus_cycler.h"
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
@@ -80,7 +83,7 @@ class AuraSurface : public SurfaceObserver,
   void Pin(bool trusted);
   void Unpin();
   void SetOrientationLock(uint32_t orientation_lock);
-  void ShowTooltip(const char* text,
+  void ShowTooltip(std::u16string text,
                    const gfx::Point& position,
                    uint32_t trigger,
                    const base::TimeDelta& show_delay,
@@ -95,7 +98,7 @@ class AuraSurface : public SurfaceObserver,
   void OnDeskChanged(Surface* surface, int state) override;
   void ThrottleFrameRate(bool on) override;
   void OnTooltipShown(Surface* surface,
-                      const std::u16string& text,
+                      std::u16string_view text,
                       const gfx::Rect& bounds) override;
   void OnTooltipHidden(Surface* surface) override;
 

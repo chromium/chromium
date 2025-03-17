@@ -10,13 +10,13 @@
 namespace {
 
 // Constants used by tests.
-const char kProfileName[] = "Profile";
-const char kGaiaId1[] = "Gaia1";
-const char kGaiaId2[] = "Gaia2";
-const char kUserName[] = "email@example.com";
+constexpr char kProfileName[] = "Profile";
+constexpr GaiaId::Literal kGaiaId1("Gaia1");
+constexpr GaiaId::Literal kGaiaId2("Gaia2");
+constexpr char kUserName[] = "email@example.com";
 
-const char kFakeNotificationClient1[] = "CLIENT_1";
-const char kFakeNotificationClient2[] = "CLIENT_2";
+constexpr char kFakeNotificationClient1[] = "CLIENT_1";
+constexpr char kFakeNotificationClient2[] = "CLIENT_2";
 
 }  // namespace
 
@@ -55,7 +55,7 @@ TEST_F(ProfileAttributesIOSTest, GetName) {
 TEST_F(ProfileAttributesIOSTest, GetSetAuthenticationInfo) {
   ProfileAttributesIOS attributes =
       ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
-  EXPECT_EQ(attributes.GetGaiaId(), "");
+  EXPECT_EQ(attributes.GetGaiaId(), GaiaId());
   EXPECT_EQ(attributes.GetUserName(), "");
   EXPECT_FALSE(attributes.HasAuthenticationError());
   EXPECT_FALSE(attributes.IsAuthenticated());

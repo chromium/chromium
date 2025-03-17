@@ -42,8 +42,8 @@ BarPersistedTabDataAndroid::Serialize() {
   ptd::BarData bar_data;
   bar_data.set_value(bar_value_);
   std::unique_ptr<std::vector<uint8_t>> res =
-      std::make_unique<std::vector<uint8_t>>(bar_data.ByteSize());
-  bar_data.SerializeToArray(res->data(), bar_data.ByteSize());
+      std::make_unique<std::vector<uint8_t>>(bar_data.ByteSizeLong());
+  bar_data.SerializeToArray(res->data(), bar_data.ByteSizeLong());
   return res;
 }
 

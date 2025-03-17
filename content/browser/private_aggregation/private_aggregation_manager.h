@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <optional>
 #include <string>
@@ -35,25 +36,34 @@ class CONTENT_EXPORT PrivateAggregationManager {
 
   static PrivateAggregationManager* GetManager(BrowserContext& browser_context);
 
-  // Binds a new pending receiver for a worklet, allowing messages to be sent
-  // and processed. However, the receiver is not bound if the `worklet_origin`
-  // is not potentially trustworthy or if `context_id` is too long. The return
-  // value indicates whether the receiver was accepted. If `context_id` is set,
-  // and no `ContributeToHistogram()` calls are made by disconnection, a null
-  // report will still be sent. If `timeout` is set, the report will be sent as
-  // if the pipe closed after the timeout, regardless of when the disconnection
-  // actually happens. `timeout` must be positive if set. If
-  // `aggregation_coordinator_origin` is set, the origin must be on the
-  // allowlist. `filtering_id_max_bytes` must be positive and no greater than
-  // `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`.
+  // Attempts to bind a new pending receiver for a worklet, allowing messages to
+  // be sent and processed. The return value indicates whether the receiver was
+  // accepted. Virtual for testing.
+  //
+  // The receiver will only be bound when all of these conditions are met:
+  // * `worklet_origin` is potentially trustworthy.
+  // * `context_id`, if set, is not too long.
+  // * `aggregation_coordinator_origin`, if set, is on the allowlist.
+  // * `filtering_id_max_bytes` is positive and no greater than
+  //   `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`.
+  // * `max_contributions`, if set, is positive.
+  // * `timeout` is set iff a report should be sent deterministically, i.e.
+  //   `PrivateAggregationManager::ShouldSendReportDeterministically(caller_api,
+  //   context_id, filtering_id_max_bytes, max_contributions)` is true.
+  //
+  // When `timeout` is set and developer mode is not enabled, this host will
+  // send a report after the given duration of time has passed, regardless of
+  // when the receiver is actually disconnected. It is a fatal error for
+  // `timeout` to be zero or negative.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationCallerApi api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t filtering_id_max_bytes,
+      std::optional<size_t> max_contributions,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) = 0;
 
@@ -81,8 +91,10 @@ class CONTENT_EXPORT PrivateAggregationManager {
   // delay", meaning they may be sent after a fixed duration of time relative to
   // an event outside of the isolated context.
   [[nodiscard]] static bool ShouldSendReportDeterministically(
+      PrivateAggregationCallerApi caller_api,
       const std::optional<std::string>& context_id,
-      base::StrictNumeric<size_t> filtering_id_max_bytes);
+      base::StrictNumeric<size_t> filtering_id_max_bytes,
+      std::optional<size_t> requested_max_contributions);
 };
 
 }  // namespace content

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -131,17 +132,23 @@ class BLINK_COMMON_EXPORT Manifest {
     std::optional<std::u16string> id;
   };
 
-  // This struct replicates ManifestLaunchHandler with an added copy
-  // constructor, this enables containing classes to have a default copy
-  // constructor.
-  // TODO(crbug.com/1236358): Use mojom::blink::ManifestLaunchHandler directly
-  // when it can support copy/move.
+  // This class wraps mojom::blink::ManifestLaunchHandler but with the following
+  // changes:
+  // 1. Copy constructor support (See crbug.com/1236358).
+  // 2. Additional client mode parsing so that callsites don't have to worry
+  // about invalid values of the client_mode in the manifest.
+  // 3. Ability to determine if the client mode was directly provided in the
+  // manifest.
   // See ManifestLaunchHandler for class comments.
-  struct BLINK_COMMON_EXPORT LaunchHandler {
+  class BLINK_COMMON_EXPORT LaunchHandler {
+   public:
     using ClientMode = mojom::ManifestLaunchHandler_ClientMode;
 
     LaunchHandler();
-    explicit LaunchHandler(ClientMode client_mode);
+    explicit LaunchHandler(std::optional<ClientMode> client_mode);
+
+    ClientMode parsed_client_mode() const;
+    bool client_mode_valid_and_specified() const;
 
     bool operator==(const LaunchHandler& other) const;
     bool operator!=(const LaunchHandler& other) const;
@@ -149,7 +156,11 @@ class BLINK_COMMON_EXPORT Manifest {
     bool TargetsExistingClients() const;
     bool NeverNavigateExistingClients() const;
 
-    ClientMode client_mode;
+   private:
+    friend struct mojo::StructTraits<
+        blink::mojom::ManifestLaunchHandlerDataView,
+        ::blink::Manifest::LaunchHandler>;
+    std::optional<ClientMode> client_mode_;
   };
 
   // Structure containing translations for the translatable manifest fields.

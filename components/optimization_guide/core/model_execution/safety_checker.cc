@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -142,9 +143,8 @@ SafetyChecker::SafetyChecker(const SafetyChecker& orig)
       safety_cfg_(orig.safety_cfg_) {}
 SafetyChecker::~SafetyChecker() = default;
 
-void SafetyChecker::RunRequestChecks(
-    const google::protobuf::MessageLite& request,
-    ResultCallback callback) {
+void SafetyChecker::RunRequestChecks(const MultimodalMessage& request,
+                                     ResultCallback callback) {
   int num_checks = safety_cfg_.NumRequestChecks();
   if (num_checks == 0) {
     std::move(callback).Run(SafetyChecker::Result{});
@@ -158,7 +158,7 @@ void SafetyChecker::RunRequestChecks(
       num_checks,
       base::BindOnce(&SafetyChecker::Result::Merge).Then(std::move(callback)));
   for (int idx = 0; idx < num_checks; idx++) {
-    auto check_input = safety_cfg_.GetRequestCheckInput(idx, request);
+    auto check_input = safety_cfg_.GetRequestCheckInput(idx, request.read());
     if (!check_input) {
       merge_fn.Run(FailToRunResult());
       continue;
@@ -201,11 +201,10 @@ void SafetyChecker::RunRawOutputCheck(const std::string& raw_output,
                 .Then(std::move(callback)));
 }
 
-void SafetyChecker::RunResponseChecks(
-    const google::protobuf::MessageLite& request,
-    const proto::Any& response_as_any,
-    ResponseCompleteness completeness,
-    ResultCallback callback) {
+void SafetyChecker::RunResponseChecks(const MultimodalMessage& request,
+                                      const proto::Any& response_as_any,
+                                      ResponseCompleteness completeness,
+                                      ResultCallback callback) {
   int num_checks = safety_cfg_.NumResponseChecks();
   if (num_checks == 0) {
     std::move(callback).Run(SafetyChecker::Result{});
@@ -224,8 +223,8 @@ void SafetyChecker::RunResponseChecks(
       num_checks,
       base::BindOnce(&SafetyChecker::Result::Merge).Then(std::move(callback)));
   for (int idx = 0; idx < num_checks; idx++) {
-    auto check_input =
-        safety_cfg_.GetResponseCheckInput(idx, request, *response);
+    auto check_input = safety_cfg_.GetResponseCheckInput(
+        idx, request.read(), MultimodalMessageReadView(*response));
     if (!check_input) {
       merge_fn.Run(FailToRunResult());
       continue;

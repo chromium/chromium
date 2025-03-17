@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -11,8 +12,8 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
@@ -60,23 +61,23 @@ ContactInfoEditorViewController::GetFieldDefinitions() {
   }
 
   if (spec()->request_payer_name()) {
-    fields.push_back(EditorField(
+    fields.emplace_back(
         autofill::NAME_FULL,
         l10n_util::GetStringUTF16(IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS),
-        EditorField::LengthHint::HINT_SHORT, /*required=*/true));
+        EditorField::LengthHint::HINT_SHORT, /*required=*/true);
   }
   if (spec()->request_payer_phone()) {
-    fields.push_back(EditorField(
+    fields.emplace_back(
         autofill::PHONE_HOME_WHOLE_NUMBER,
         l10n_util::GetStringUTF16(IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS),
         EditorField::LengthHint::HINT_SHORT, /*required=*/true,
-        EditorField::ControlType::TEXTFIELD_NUMBER));
+        EditorField::ControlType::TEXTFIELD_NUMBER);
   }
   if (spec()->request_payer_email()) {
-    fields.push_back(EditorField(
+    fields.emplace_back(
         autofill::EMAIL_ADDRESS,
         l10n_util::GetStringUTF16(IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS),
-        EditorField::LengthHint::HINT_SHORT, /*required=*/true));
+        EditorField::LengthHint::HINT_SHORT, /*required=*/true);
   }
   return fields;
 }
@@ -153,7 +154,7 @@ void ContactInfoEditorViewController::PopulateProfile(
     autofill::AutofillProfile* profile) {
   for (const auto& field : text_fields()) {
     profile->SetInfoWithVerificationStatus(
-        field.second.type, field.first->GetText(),
+        field.second.type, std::u16string(field.first->GetText()),
         state()->GetApplicationLocale(),
         autofill::VerificationStatus::kUserVerified);
   }
@@ -191,7 +192,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 
 std::u16string
 ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
-    const std::u16string& text) {
+    std::u16string_view text) {
   return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
       base::UTF16ToUTF8(text),
       autofill::AutofillCountry::CountryCodeForLocale(*locale_)));

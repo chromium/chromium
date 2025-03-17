@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
+#include "components/data_sharing/public/logger.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -66,6 +67,8 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kDidEnableSharedTabGroupsInLastSession, true);
     ON_CALL(mock_shared_processor_, IsTrackingMetadata)
         .WillByDefault(Return(true));
     InitializeModelAndMediator();
@@ -134,7 +137,8 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
         .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }))
         .RetiresOnSaturation();
     bridge_mediator_ = std::make_unique<TabGroupSyncBridgeMediator>(
-        model_.get(), &pref_service_, std::move(saved_sync_configuration),
+        model_.get(), &pref_service_, /*logger=*/nullptr,
+        std::move(saved_sync_configuration),
         std::move(shared_sync_configuration));
     run_loop.Run();
   }
@@ -152,7 +156,7 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
     return mock_shared_processor_;
   }
 
- private:
+ protected:
   // Simulate browser shutdown and reset the bridges and the model.
   void Reset() {
     // Store sync metadata before cleaning up the model.
@@ -186,6 +190,8 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldInitializeEmptySavedTabGroups) {
   // The same but with disabled shared tab group data.
   InitializeModelAndMediator(/*initialize_shared_tab_group=*/false);
   EXPECT_TRUE(model().is_loaded());
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession));
 }
 
 TEST_F(TabGroupSyncBridgeMediatorTest, ShouldInitializeModelAfterRestart) {
@@ -202,6 +208,8 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldInitializeModelAfterRestart) {
   InitializeModelAndMediator();
   EXPECT_TRUE(model().is_loaded());
   EXPECT_EQ(model().Count(), 1);
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession));
 }
 
 TEST_F(TabGroupSyncBridgeMediatorTest, ShouldReturnSavedBridgeSyncing) {

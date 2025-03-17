@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/pending_connection_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -13,7 +14,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_connection_attempt.h"

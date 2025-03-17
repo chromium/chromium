@@ -70,6 +70,17 @@ def __filegroups(ctx):
                 "llvm-readobj*",
             ],
         }
+        fg[path.join(toolchain, "usr/bin") + ":llddeps"] = {
+            "type": "glob",
+            "includes": [
+                "*lld*",
+                "*clang*",
+                "sysroot_wrapper*",
+                "llvm-nm*",
+                "llvm-readelf*",
+                "llvm-readobj*",
+            ],
+        }
         fg[path.join(toolchain, "lib") + ":libs"] = {
             "type": "glob",
             "includes": ["*.so", "*.so.*", "*.a", "*.o"],
@@ -80,7 +91,7 @@ def __filegroups(ctx):
         }
         fg[path.join(toolchain, "usr/lib64") + ":libs"] = {
             "type": "glob",
-            "includes": ["*.so", "*.so.*", "*.a", "*.o"],
+            "includes": ["*.so", "*.so.*", "*.a", "*.o", "cfi_ignorelist.txt"],
         }
         fg[path.join(toolchain, "usr/armv7a-cros-linux-gnueabihf") + ":libs"] = {
             "type": "glob",
@@ -138,6 +149,8 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?cxx",
                 "command_prefix": path.join("../../", cros_target_cxx),
                 "remote": True,
+                # fast-deps is not safe with cros toolchain. crbug.com/391160876
+                "no_fast_deps": True,
                 "canonicalize_dir": True,
                 "timeout": "5m",
             },
@@ -151,6 +164,8 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?cc",
                 "command_prefix": path.join("../../", cros_target_cc),
                 "remote": True,
+                # fast-deps is not safe with cros toolchain. crbug.com/391160876
+                "no_fast_deps": True,
                 "canonicalize_dir": True,
                 "timeout": "5m",
             },
@@ -174,7 +189,7 @@ def __step_config(ctx, step_config):
                     "*.pak",
                     "*.py",
                 ],
-                "handler": "clang_alink",
+                "handler": "lld_thin_archive",
                 "remote": config.get(ctx, "remote-link"),
                 "canonicalize_dir": True,
                 "timeout": "5m",
@@ -234,7 +249,7 @@ def __step_config(ctx, step_config):
                     "*.pak",
                     "*.py",
                 ],
-                "handler": "clang_alink",
+                "handler": "lld_thin_archive",
                 "remote": config.get(ctx, "remote-link"),
                 "canonicalize_dir": True,
                 "timeout": "5m",
@@ -312,6 +327,16 @@ def __step_config(ctx, step_config):
             path.join(toolchain, "lib64") + ":libs",
             path.join(toolchain, "usr/bin:clang"),
             path.join(toolchain, "usr/lib64") + ":libs",
+            sysroot + ":libs",
+        ],
+        toolchain + ":link": [
+            path.join(toolchain, "bin") + ":llddeps",
+            path.join(toolchain, "lib") + ":libs",
+            path.join(toolchain, "lib64") + ":libs",
+            path.join(toolchain, "usr/bin") + ":llddeps",
+            path.join(toolchain, "usr/lib64") + ":libs",
+        ],
+        sysroot + ":link": [
             sysroot + ":libs",
         ],
     })

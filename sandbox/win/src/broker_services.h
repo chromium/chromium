@@ -74,6 +74,9 @@ class BrokerServicesBase final : public BrokerServices,
   void SetBrokerServicesDelegateForTesting(
       std::unique_ptr<BrokerServicesDelegate> delegate);
 
+  // Gets helper to log histograms from within the exe.
+  BrokerServicesDelegate* GetMetricsDelegate();
+
   static void FreezeTargetConfigForTesting(TargetConfig* config);
 
  private:

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 
 #include "media/media_buildflags.h"
@@ -181,8 +176,7 @@ AlternateSignedExchangeResourceInfo::FindMatchingEntry(
       matcher.FindBestMatchingVariantKey(variants, variant_keys_list);
   if (variant_keys_list_it == variant_keys_list.end())
     return nullptr;
-  return (entries.begin() + (variant_keys_list_it - variant_keys_list.begin()))
-      ->get();
+  return entries[variant_keys_list_it - variant_keys_list.begin()].get();
 }
 
 }  // namespace blink

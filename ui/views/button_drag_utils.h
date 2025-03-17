@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_BUTTON_DRAG_UTILS_H_
 #define UI_VIEWS_BUTTON_DRAG_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "ui/views/views_export.h"
@@ -32,11 +33,13 @@ VIEWS_EXPORT void SetURLAndDragImage(const GURL& url,
                                      ui::OSExchangeData* data);
 
 // As above, but only sets the image.
-VIEWS_EXPORT void SetDragImage(const GURL& url,
-                               const std::u16string& title,
-                               const gfx::ImageSkia& icon,
-                               const gfx::Point* press_pt,
-                               ui::OSExchangeData* data);
+VIEWS_EXPORT void SetDragImage(
+    const GURL& url,
+    const std::u16string& title,
+    const gfx::ImageSkia& icon,
+    const gfx::Point* press_pt,
+    ui::OSExchangeData* data,
+    std::optional<int> icon_label_spacing_override = std::nullopt);
 
 }  // namespace button_drag_utils
 

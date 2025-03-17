@@ -27,6 +27,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -634,7 +635,7 @@ std::string WebViewImpl::GetTabId() {
   return GetTab()->id_;
 }
 
-const WebViewImpl* WebViewImpl::GetTab() const {
+const WebViewImpl* WebViewImpl::GetTab() {
   const WebViewImpl* root_view = this;
   while (root_view->parent_ != nullptr) {
     root_view = root_view->parent_;
@@ -650,6 +651,10 @@ const WebViewImpl* WebViewImpl::GetTab() const {
 }
 
 Status WebViewImpl::GetActivePage(WebView** web_view) {
+  auto* page_tracker = GetTab()->GetPageTracker();
+  if (!page_tracker) {
+    return Status(kUnknownError, "page tracker not found");
+  }
   return GetTab()->GetPageTracker()->GetActivePage(web_view);
 }
 
@@ -776,8 +781,10 @@ Status WebViewImpl::Resume(const Timeout* timeout) {
                                          timeout);
 }
 
-Status WebViewImpl::StartBidiServer(std::string bidi_mapper_script) {
-  return client_->StartBidiServer(std::move(bidi_mapper_script));
+Status WebViewImpl::StartBidiServer(std::string bidi_mapper_script,
+                                    bool enable_unsafe_extension_debugging) {
+  return client_->StartBidiServer(std::move(bidi_mapper_script),
+                                  enable_unsafe_extension_debugging);
 }
 
 Status WebViewImpl::PostBidiCommand(base::Value::Dict command) {
@@ -797,11 +804,12 @@ Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
   }
   base::Value expected_id = maybe_cmd_id->Clone();
 
-  std::string* maybe_channel = command.FindString("channel");
+  std::string* maybe_channel = command.FindString("goog:channel");
   if (maybe_channel == nullptr || !maybe_channel->starts_with("/")) {
-    return Status{kUnknownError,
-                  "BiDi command does not contain a non-empty string 'channel' "
-                  "with a leading '/'"};
+    return Status{
+        kUnknownError,
+        "BiDi command does not contain a non-empty string 'goog:channel' "
+        "with a leading '/'"};
   }
   bidi_tracker_guard.Tracker().SetChannelSuffix(*maybe_channel);
 
@@ -1033,7 +1041,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
 
   std::string json;
   base::JSONWriter::Write(args, &json);
-  std::string w3c = w3c_compliant_ ? "true" : "false";
+  std::string w3c = base::ToString(w3c_compliant_);
   // TODO(zachconrad): Second null should be array of shadow host ids.
   std::string wrapper_function = base::StringPrintf(
       "function(){ return (%s).apply(null, [%s, %s, %s, arguments]); }",
@@ -1639,11 +1647,30 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
     keep_waiting = status.code() == kNoSuchExecutionContext ||
                    status.code() == kAbortedByNavigation;
   }
-  // if (status.code() == kTargetDetached) {
-  //   // TODO: Verify if this is okay to return Ok on target detached.
-  //   // probably need to check that it's part of an activation here.
-  //   return status;
-  // }
+
+  if (status.code() == kTargetDetached) {
+    // If this is a page being detached during an MPArch activation, we want to
+    // wait until the tab has acquired a new page and that has completed its
+    // navigation, before we call this original navigation as complete.
+    WebViewImpl* tab = const_cast<WebViewImpl*>(GetTab());
+    status = tab->WaitForPendingActivePage(timeout);
+    if (status.IsError()) {
+      return status;
+    }
+
+    WebView* maybe_new_page = nullptr;
+    status = tab->GetActivePage(&maybe_new_page);
+    if (status.IsError()) {
+      return status;
+    }
+
+    status = maybe_new_page->WaitForPendingNavigations("", timeout,
+                                                       stop_load_on_timeout);
+    if (status.IsError()) {
+      return status;
+    }
+  }
+
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";
     navigation_tracker_->set_timed_out(true);
@@ -2107,11 +2134,6 @@ Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,
   Status status =
       navigation_tracker_->IsPendingNavigation(timeout, &is_pending);
   if (status.IsError()) {
-    if (status.code() == kTargetDetached) {
-      // Special case handling: During MPArch activation, the frame is detached.
-      *is_not_pending = !is_pending;
-      return Status(kOk);
-    }
     return status;
   }
   // An alert may block the pending navigation.

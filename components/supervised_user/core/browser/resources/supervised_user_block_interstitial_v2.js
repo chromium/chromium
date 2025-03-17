@@ -52,13 +52,14 @@ function makeImageSet(url1x, url2x) {
 /** Perform all initialization that can be done at DOMContentLoaded time. */
 function initialize() {
   const allowAccessRequests = loadTimeData.getBoolean('allowAccessRequests');
-  const avatarURL1x = loadTimeData.getString('avatarURL1x');
-  const avatarURL2x = loadTimeData.getString('avatarURL2x');
   const custodianName = loadTimeData.getString('custodianName');
   localWebApprovalsEnabled =
       loadTimeData.getBoolean('isLocalWebApprovalsEnabled');
 
   if (custodianName && allowAccessRequests) {
+    const avatarURL1x = loadTimeData.getString('avatarURL1x');
+    const avatarURL2x = loadTimeData.getString('avatarURL2x');
+
     $('custodians-information').hidden = false;
     if (avatarURL1x) {
       $('custodian-avatar-img').style.content =
@@ -66,10 +67,11 @@ function initialize() {
     }
     $('custodian-name').textContent = custodianName;
     $('custodian-email').textContent = loadTimeData.getString('custodianEmail');
-    const secondAvatarURL1x = loadTimeData.getString('secondAvatarURL1x');
-    const secondAvatarURL2x = loadTimeData.getString('secondAvatarURL2x');
     const secondCustodianName = loadTimeData.getString('secondCustodianName');
     if (secondCustodianName) {
+      const secondAvatarURL1x = loadTimeData.getString('secondAvatarURL1x');
+      const secondAvatarURL2x = loadTimeData.getString('secondAvatarURL2x');
+
       $('second-custodian-information').hidden = false;
       $('second-custodian-avatar-img').hidden = false;
       if (secondAvatarURL1x) {

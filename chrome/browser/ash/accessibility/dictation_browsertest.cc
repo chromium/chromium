@@ -2060,10 +2060,6 @@ class NotificationCenterDictationTest : public DictationTest {
   ~NotificationCenterDictationTest() override = default;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     DictationTest::SetUpOnMainThread();
     ToggleDictationWithKeystroke();

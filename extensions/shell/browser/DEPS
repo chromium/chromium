@@ -1,6 +1,7 @@
 include_rules = [
   "+apps",
   "+chromeos",
+  "+components/embedder_support/user_agent_utils.h",
   "+components/keep_alive_registry",
   "+components/keyed_service",
   "+components/nacl/browser",

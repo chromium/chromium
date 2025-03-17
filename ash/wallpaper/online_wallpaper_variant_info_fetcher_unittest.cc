@@ -30,7 +30,7 @@ using ::testing::UnorderedElementsAreArray;
 
 constexpr char kUser1[] = "user1@test.com";
 const AccountId kAccount1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("1111"));
 constexpr char kDummyCollectionId[] = "testCollectionId";
 
 // Returns a set of images with the given |type|.

@@ -23,6 +23,7 @@ encoding_parameters {
   features: FEATURE_LABEL
   features: FEATURE_PLACEHOLDER
   features: FEATURE_AUTOCOMPLETE
+  features: FEATURE_NAME
   features: FEATURE_TYPE
   form_features: FEATURE_FORM_BUTTON_TITLES
   form_features: FEATURE_FORM_ID

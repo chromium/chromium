@@ -175,7 +175,6 @@ SkColor4f DarkModeFilter::AdjustDarkenColor(
     default:
       return color;
   }
-  NOTREACHED();
 }
 
 SkColor4f DarkModeFilter::InvertColorIfNeeded(
@@ -300,7 +299,6 @@ bool DarkModeFilter::ShouldApplyToColor(const SkColor4f& color,
     default:
       return false;
   }
-  NOTREACHED();
 }
 
 size_t DarkModeFilter::GetInvertedColorCacheSizeForTesting() {

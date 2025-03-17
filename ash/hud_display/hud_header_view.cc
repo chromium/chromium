@@ -34,7 +34,7 @@ class BottomLeftOuterBackground : public views::Background {
   // Background will have left bottom rounded corner with |top_rounding_radius|.
   BottomLeftOuterBackground(SkColor color, SkScalar top_rounding_radius)
       : inner_radius_(top_rounding_radius) {
-    SetNativeControlColor(color);
+    SetColor(color);
   }
 
   BottomLeftOuterBackground(const BottomLeftOuterBackground&) = delete;
@@ -59,7 +59,7 @@ class BottomLeftOuterBackground : public views::Background {
     flags.setAntiAlias(true);
     flags.setBlendMode(SkBlendMode::kSrc);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
     canvas->DrawPath(path, flags);
   }
 

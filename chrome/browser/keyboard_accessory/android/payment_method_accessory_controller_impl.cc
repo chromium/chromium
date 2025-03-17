@@ -4,6 +4,7 @@
 
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
@@ -24,12 +24,13 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -176,10 +177,8 @@ IbanInfo TranslateIban(const Iban& data) {
 
 }  // namespace
 
-PaymentMethodAccessoryControllerImpl::~PaymentMethodAccessoryControllerImpl() {
-  if (personal_data_manager_)
-    personal_data_manager_->RemoveObserver(this);
-}
+PaymentMethodAccessoryControllerImpl::~PaymentMethodAccessoryControllerImpl() =
+    default;
 
 void PaymentMethodAccessoryControllerImpl::RegisterFillingSourceObserver(
     FillingSourceObserver observer) {
@@ -203,10 +202,10 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
   if (!unmasked_cards.empty()) {
     // Add the cached server cards first, so that they show up on the top of the
     // manual filling view.
-    base::ranges::transform(unmasked_cards, std::back_inserter(info_to_add),
-                            [allow_filling](const CachedServerCardInfo* data) {
-                              return TranslateCachedCard(data, allow_filling);
-                            });
+    std::ranges::transform(unmasked_cards, std::back_inserter(info_to_add),
+                           [allow_filling](const CachedServerCardInfo* data) {
+                             return TranslateCachedCard(data, allow_filling);
+                           });
   }
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.
@@ -330,7 +329,7 @@ PaymentMethodAccessoryControllerImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void PaymentMethodAccessoryControllerImpl::OnPersonalDataChanged() {
+void PaymentMethodAccessoryControllerImpl::OnPaymentsDataChanged() {
   RefreshSuggestions();
 }
 
@@ -361,7 +360,7 @@ void PaymentMethodAccessoryControllerImpl::ApplyToField(
 void PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller,
-    PersonalDataManager* personal_data_manager,
+    PaymentsDataManager* payments_data_manager,
     BrowserAutofillManager* af_manager,
     AutofillDriver* af_driver) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
@@ -371,43 +370,44 @@ void PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
   web_contents->SetUserData(
       UserDataKey(), base::WrapUnique(new PaymentMethodAccessoryControllerImpl(
                          web_contents, std::move(mf_controller),
-                         personal_data_manager, af_manager, af_driver)));
+                         payments_data_manager, af_manager, af_driver)));
 }
 
 PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
     content::WebContents* web_contents)
     : content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>(
-          *web_contents),
-      personal_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext())) {
-  if (personal_data_manager_)
-    personal_data_manager_->AddObserver(this);
+          *web_contents) {
+  if (PersonalDataManager* pdm =
+          PersonalDataManagerFactory::GetForBrowserContext(
+              web_contents->GetBrowserContext())) {
+    paydm_observation_.Observe(&pdm->payments_data_manager());
+  }
 }
 
 PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller,
-    PersonalDataManager* personal_data_manager,
+    PaymentsDataManager* payments_data_manager,
     BrowserAutofillManager* af_manager,
     AutofillDriver* af_driver)
     : content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>(
           *web_contents),
       mf_controller_(mf_controller),
-      personal_data_manager_(personal_data_manager),
       af_manager_for_testing_(af_manager),
       af_driver_for_testing_(af_driver) {
-  if (personal_data_manager_)
-    personal_data_manager_->AddObserver(this);
+  if (payments_data_manager) {
+    paydm_observation_.Observe(payments_data_manager);
+  }
 }
 
 std::vector<PaymentMethodAccessoryControllerImpl::CardOrVirtualCard>
 PaymentMethodAccessoryControllerImpl::GetAllCreditCards() const {
-  if (!GetWebContents().GetFocusedFrame() || !personal_data_manager_)
+  if (!GetWebContents().GetFocusedFrame() || !paydm()) {
     return std::vector<CardOrVirtualCard>();
+  }
 
   std::vector<CardOrVirtualCard> cards;
-  for (const CreditCard* card : personal_data_manager_->payments_data_manager()
-                                    .GetCreditCardsToSuggest()) {
+  for (const CreditCard* card : GetCreditCardsToSuggest(*paydm())) {
     // If any of cards is enrolled for virtual cards and the feature is active,
     // then insert a virtual card suggestion right before the actual card.
     if (ShouldCreateVirtualCard(card)) {
@@ -428,13 +428,15 @@ PaymentMethodAccessoryControllerImpl::GetUnmaskedCreditCards() const {
   }
   std::vector<const CachedServerCardInfo*> unmasked_cards =
       autofill_manager->GetCreditCardAccessManager().GetCachedUnmaskedCards();
-  // Show unmasked virtual cards in the manual filling view if they exist. All
-  // other cards are dropped.
-  auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
+  // Show unmasked virtual cards and card info retrieval enrolled server cards
+  // in the manual filling view if they exist. All other cards are dropped.
+  auto non_runtime_retrieval_card = [](const CachedServerCardInfo* card_info) {
     return card_info->card.record_type() !=
-           CreditCard::RecordType::kVirtualCard;
+               CreditCard::RecordType::kVirtualCard &&
+           card_info->card.card_info_retrieval_enrollment_state() !=
+               CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
   };
-  std::erase_if(unmasked_cards, not_virtual_card);
+  std::erase_if(unmasked_cards, non_runtime_retrieval_card);
   return unmasked_cards;
 }
 
@@ -442,25 +444,24 @@ std::vector<const AutofillOfferData*>
 PaymentMethodAccessoryControllerImpl::GetPromoCodeOffers() const {
   const AutofillManager* autofill_manager =
       GetWebContents().GetFocusedFrame() ? GetAutofillManager() : nullptr;
-  if (!personal_data_manager_ || !autofill_manager)
+  if (!paydm() || !autofill_manager) {
     return std::vector<const AutofillOfferData*>();
+  }
 
-  return personal_data_manager_->payments_data_manager()
-      .GetActiveAutofillPromoCodeOffersForOrigin(
-          autofill_manager->client()
-              .GetLastCommittedPrimaryMainFrameURL()
-              .DeprecatedGetOriginAsURL());
+  return paydm()->GetActiveAutofillPromoCodeOffersForOrigin(
+      autofill_manager->client()
+          .GetLastCommittedPrimaryMainFrameURL()
+          .DeprecatedGetOriginAsURL());
 }
 
 std::vector<Iban> PaymentMethodAccessoryControllerImpl::GetIbans() const {
   const AutofillManager* autofill_manager =
       GetWebContents().GetFocusedFrame() ? GetAutofillManager() : nullptr;
-  if (!personal_data_manager_ || !autofill_manager) {
+  if (!paydm() || !autofill_manager) {
     return std::vector<Iban>();
   }
 
-  return personal_data_manager_->payments_data_manager()
-      .GetOrderedIbansToSuggest();
+  return paydm()->GetOrderedIbansToSuggest();
 }
 
 base::WeakPtr<ManualFillingController>
@@ -511,8 +512,8 @@ content::WebContents& PaymentMethodAccessoryControllerImpl::GetWebContents()
 bool PaymentMethodAccessoryControllerImpl::FetchIfCreditCardId(
     const std::string& selection_id) {
   std::vector<CardOrVirtualCard> cards = GetAllCreditCards();
-  auto card_iter = base::ranges::find_if(
-      cards, [&selection_id](const auto& card_or_virtual) {
+  auto card_iter =
+      std::ranges::find_if(cards, [&selection_id](const auto& card_or_virtual) {
         const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
         return card && card->guid() == selection_id;
       });
@@ -532,7 +533,7 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
     const std::string& selection_id) {
   std::vector<Iban> ibans = GetIbans();
   auto iban_iter =
-      base::ranges::find_if(ibans, [&selection_id](const Iban& available_iban) {
+      std::ranges::find_if(ibans, [&selection_id](const Iban& available_iban) {
         return available_iban.record_type() == Iban::kServerIban &&
                base::NumberToString(available_iban.instrument_id()) ==
                    selection_id;

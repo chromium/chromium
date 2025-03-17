@@ -29,7 +29,7 @@ PredictorsHandler::PredictorsHandler(Profile* profile) {
       predictors::LoadingPredictorFactory::GetForProfile(profile);
 }
 
-PredictorsHandler::~PredictorsHandler() {}
+PredictorsHandler::~PredictorsHandler() = default;
 
 void PredictorsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

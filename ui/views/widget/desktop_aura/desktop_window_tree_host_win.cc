@@ -4,6 +4,8 @@
 
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
+#include <dwmapi.h>
+
 #include <algorithm>
 #include <utility>
 #include <vector>
@@ -12,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -165,6 +166,19 @@ void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
     ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE);
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// DesktopWindowTreeHostWin, WidgetObserver implementation:
+void DesktopWindowTreeHostWin::OnWidgetThemeChanged(Widget* widget) {
+  // Ensure that DWM knows to apply the correct color scheme to the window
+  // backdrop whenever it changes.
+  BOOL use_dark_mode =
+      widget->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+  HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                     &use_dark_mode, sizeof(use_dark_mode));
+  CHECK_EQ(hr, S_OK);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:
 
@@ -198,6 +212,35 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   gfx::Rect pixel_bounds =
       display::win::ScreenWin::DIPToScreenRect(nullptr, params.bounds);
   message_handler_->Init(parent_hwnd, pixel_bounds);
+
+  // If the Redirection Surface is removed, there needs to be a replacement
+  // "background" of the Chromium window. `DWM_SYSTEMBACKDROP_TYPE` tells DWM
+  // to blur the contents behind the chromium window to yield a translucent
+  // "frosted glass" effect. This will show whenever the GPU crashes or is not
+  // ready by the time the window updates size or shape. Translucent windows
+  // do not need a backdrop as it would show up in unexpected ways - i.e. a
+  // gutter.
+  if (((message_handler_->window_ex_style() & WS_EX_NOREDIRECTIONBITMAP) ==
+       WS_EX_NOREDIRECTIONBITMAP) &&
+      !message_handler_->is_translucent()) {
+    // Observe the widget to update the backdrop when the color mode changes.
+    widget_observation_.Observe(GetWidget());
+
+    // Ensure that the hwnd has been created.
+    CHECK(GetHWND());
+    DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
+    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
+                                       &backdrop, sizeof(backdrop));
+    CHECK_EQ(hr, S_OK);
+
+    // Ensure that the backdrop honors the OS dark mode setting.
+    BOOL use_dark_mode =
+        GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+    hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                               &use_dark_mode, sizeof(use_dark_mode));
+    CHECK_EQ(hr, S_OK);
+  }
+
   CreateCompositor(params.force_software_compositing);
   OnAcceleratedWidgetAvailable();
   InitHost();
@@ -905,11 +948,19 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
   return native_widget_delegate_->GetNonClientComponent(dip_position);
 }
 
-void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
+void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
                                              SkPath* path) {
+  // Request the window mask for hwnd of `size_px`. The hwnd size must be
+  // adjusted by `window_enlargement` to return to the client-expected window
+  // size (see crbug.com/41047830).
+  const gfx::Size adjusted_size_in_px =
+      size_px - gfx::Size(window_enlargement_.x(), window_enlargement_.y());
+
   if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
     widget->non_client_view()->GetWindowMask(
-        display::win::ScreenWin::ScreenToDIPSize(GetHWND(), size), path);
+        display::win::ScreenWin::ScreenToDIPSize(GetHWND(),
+                                                 adjusted_size_in_px),
+        path);
     // Convert path in DIPs to pixels.
     if (!path->isEmpty()) {
       const float scale =
@@ -920,11 +971,8 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
       path->transform(matrix);
     }
   } else if (!window_enlargement_.IsZero()) {
-    gfx::Rect bounds(WidgetSizeIsClientSize()
-                         ? message_handler_->GetClientAreaBoundsInScreen()
-                         : message_handler_->GetWindowBoundsInScreen());
-    InsetBottomRight(&bounds, window_enlargement_);
-    path->addRect(SkRect::MakeXYWH(0, 0, bounds.width(), bounds.height()));
+    path->addRect(SkRect::MakeXYWH(0, 0, adjusted_size_in_px.width(),
+                                   adjusted_size_in_px.height()));
   }
 }
 
@@ -1387,7 +1435,7 @@ bool DesktopWindowTreeHostWin::IsModalWindowActive() const {
                ui::mojom::ModalType::kNone &&
            child->TargetVisibility();
   };
-  return base::ranges::any_of(window()->children(), is_active);
+  return std::ranges::any_of(window()->children(), is_active);
 }
 
 void DesktopWindowTreeHostWin::CheckForMonitorChange() {

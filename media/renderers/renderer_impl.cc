@@ -203,6 +203,15 @@ void RendererImpl::SetPreservesPitch(bool preserves_pitch) {
     audio_renderer_->SetPreservesPitch(preserves_pitch);
 }
 
+void RendererImpl::SetRenderMutedAudio(bool render_muted_audio) {
+  DVLOG(1) << __func__;
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  if (audio_renderer_) {
+    audio_renderer_->SetRenderMutedAudio(render_muted_audio);
+  }
+}
+
 void RendererImpl::SetWasPlayedWithUserActivationAndHighMediaEngagement(
     bool was_played_with_user_activation_and_high_media_engagement) {
   DVLOG(1) << __func__;

@@ -104,6 +104,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   void OpenIncognitoClearBrowsingDataDialog() override {}
   void CloseIncognitoWindows() override {}
   void PromptPageTranslation() override {}
+  void OpenLensOverlay() override {}
 
  private:
   raw_ptr<ProfileIOS> profile_;

@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -30,6 +31,11 @@ class IntentPickerTabHelper
  public:
   IntentPickerTabHelper(const IntentPickerTabHelper&) = delete;
   IntentPickerTabHelper& operator=(const IntentPickerTabHelper&) = delete;
+
+  // Updates visibility of the intent picker page action based on the current
+  // tab and whether the icon should be showed.
+  void UpdatePageAction(tabs::TabInterface* tab_interface,
+                        bool should_show_icon);
 
   ~IntentPickerTabHelper() override;
 

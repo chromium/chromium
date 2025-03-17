@@ -8,6 +8,10 @@
 class GURL;
 class TemplateURLService;
 
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}
+
 namespace web {
 class WebState;
 }
@@ -23,6 +27,8 @@ bool IsVisibleURLNewTabPage(web::WebState* web_state);
 bool IsNTPWithoutHistory(web::WebState* web_state);
 
 // Whether the feed should be hidden because of the DSE choice.
-bool ShouldHideFeedWithSearchChoice(TemplateURLService* template_url_service);
+bool ShouldHideFeedWithSearchChoice(
+    TemplateURLService* template_url_service,
+    regional_capabilities::RegionalCapabilitiesService* regional_capabilities);
 
 #endif  // IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_UTIL_H_

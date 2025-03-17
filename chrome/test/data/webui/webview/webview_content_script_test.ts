@@ -85,7 +85,7 @@ suite('WebviewContentScriptTest', function() {
       console.info('Step 2: postMessage to build connection.');
       const msg = [REQUEST_TO_COMM_CHANNEL_1];
       assertTrue(!!webview.contentWindow);
-      webview.contentWindow!.postMessage(JSON.stringify(msg), '*');
+      webview.contentWindow.postMessage(JSON.stringify(msg), '*');
     });
 
     const whenMessageReceived = new Promise<void>(resolve => {

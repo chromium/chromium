@@ -4,6 +4,8 @@
 
 package org.chromium.components.external_intents;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -15,6 +17,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.HashSet;
@@ -22,6 +28,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** This class contains the logic to determine effective navigation/redirect. */
+@NullMarked
 public class RedirectHandler {
     private static final String TAG = "RedirectHandler";
 
@@ -103,9 +110,9 @@ public class RedirectHandler {
         }
     }
 
-    private IntentState mIntentState;
+    private @Nullable IntentState mIntentState;
     private boolean mIsPrefetchLoadForIntent;
-    private NavigationChainState mNavigationChainState;
+    private @Nullable NavigationChainState mNavigationChainState;
 
     // Not part of NavigationChainState as this should persist through resetting of the
     // NavigationChain so that the history state can be correctly set even after the tab is hidden.
@@ -174,7 +181,8 @@ public class RedirectHandler {
      * occurs.
      */
     public void setShouldNotOverrideUrlLoadingOnCurrentRedirectChain() {
-        mNavigationChainState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain = true;
+        assumeNonNull(mNavigationChainState).mShouldNotOverrideUrlLoadingOnCurrentNavigationChain =
+                true;
     }
 
     /**
@@ -228,10 +236,12 @@ public class RedirectHandler {
         if (isBackOrForward) mNavigationChainState.mUsedBackOrForward = true;
     }
 
+    @RequiresNonNull({"mNavigationChainState"})
     private void updateNavigationChainState() {
         mNavigationChainState.mIsOnFirstLoadInChain = false;
     }
 
+    @EnsuresNonNull({"mNavigationChainState"})
     private void resetNavigationChainState(
             int pageTransType,
             boolean hasUserGesture,
@@ -269,12 +279,14 @@ public class RedirectHandler {
      *         navigation (eg. has followed a client or server redirect).
      */
     public boolean isOnNoninitialLoadForIntentNavigationChain() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mInitialNavigationState.isFromIntent
                 && !mNavigationChainState.mIsOnFirstLoadInChain;
     }
 
     /** @return whether we're on the first load in the current navigation chain. */
     public boolean isOnFirstLoadInNavigationChain() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mIsOnFirstLoadInChain;
     }
 
@@ -285,11 +297,13 @@ public class RedirectHandler {
 
     /** @return whether navigation is from a user's typing or not. */
     public boolean isNavigationFromUserTyping() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mInitialNavigationState.isFromTyping;
     }
 
     /** @return whether we should stay in Chrome or not. */
     public boolean shouldNotOverrideUrlLoading() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain;
     }
 
@@ -335,7 +349,7 @@ public class RedirectHandler {
     }
 
     /** @return The initial intent of the navigation chain, if available. */
-    public Intent getInitialIntent() {
+    public @Nullable Intent getInitialIntent() {
         return mIntentState != null ? mIntentState.mInitialIntent : null;
     }
 
@@ -345,15 +359,18 @@ public class RedirectHandler {
      * the user was started.
      */
     public boolean isNavigationChainExpired() {
+        assumeNonNull(mNavigationChainState);
         return currentRealtime() - mNavigationChainState.mNavigationChainStartTime
                 > NAVIGATION_CHAIN_TIMEOUT_MILLIS;
     }
 
     public boolean navigationChainUsedBackOrForward() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mUsedBackOrForward;
     }
 
     public InitialNavigationState getInitialNavigationState() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mInitialNavigationState;
     }
 
@@ -362,10 +379,12 @@ public class RedirectHandler {
     }
 
     public void setPerformedHiddenCrossFrameNavigation() {
+        assumeNonNull(mNavigationChainState);
         mNavigationChainState.mPerformedHiddenCrossFrameNavigation = true;
     }
 
     public boolean navigationChainPerformedHiddenCrossFrameNavigation() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mPerformedHiddenCrossFrameNavigation;
     }
 

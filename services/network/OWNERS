@@ -7,6 +7,7 @@ bashi@chromium.org
 ricea@chromium.org
 
 # Secondary
+horo@chromium.org
 cduvall@chromium.org
 dschinazi@chromium.org
 ericorth@chromium.org
@@ -15,8 +16,6 @@ mmenke@chromium.org
 morlovich@chromium.org
 reillyg@chromium.org
 toyoshim@chromium.org
-
-per-file cert_verifier_with_trust_anchors*=file://chromeos/ash/components/policy/OWNERS
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
@@ -38,3 +37,6 @@ per-file sec_header_helpers*=file://third_party/blink/SECURITY_OWNERS
 
 # WebTransport
 per-file web_transport*=file://net/OWNERS
+
+# Device Bound Session Credentials
+per-file device_bound_session_manager*=file://net/device_bound_sessions/OWNERS

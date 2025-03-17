@@ -6,14 +6,15 @@
 #define MEDIA_CAST_SENDER_VIDEO_BITRATE_SUGGESTER_H_
 
 #include "media/cast/cast_config.h"
-#include "media/cast/sender/frame_sender.h"
 
 namespace media::cast {
 
 class VideoBitrateSuggester {
  public:
+  using GetVideoNetworkBandwidthCB = base::RepeatingCallback<int()>;
+
   VideoBitrateSuggester(const FrameSenderConfig& config,
-                        FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb);
+                        GetVideoNetworkBandwidthCB get_bitrate_cb);
   VideoBitrateSuggester(VideoBitrateSuggester&& other) = delete;
   VideoBitrateSuggester& operator=(VideoBitrateSuggester&& other) = delete;
   VideoBitrateSuggester(const VideoBitrateSuggester&) = delete;
@@ -33,19 +34,19 @@ class VideoBitrateSuggester {
   void UpdateSuggestionUsingLinearAlgorithm();
 
   // The method for getting the recommended bitrate.
-  FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb_;
+  GetVideoNetworkBandwidthCB get_bandwidth_cb_;
 
   // The minimum and maximum bitrates set from the config.
-  int min_bitrate_ = 0;
-  int max_bitrate_ = 0;
+  const int min_bitrate_ = 0;
+  const int max_bitrate_ = 0;
 
-  // The suggested maximum bitrate, factoring in frame drops.
-  int suggested_max_bitrate_ = 0;
+  // The suggested bitrate, factoring in frame drops.
+  int suggested_bitrate_ = 0;
 
   // We keep track of how many frames get dropped in order to lower the video
   // bitrate when appropriate.
-  int number_of_frames_requested_ = 0;
-  int number_of_frames_dropped_ = 0;
+  int frames_requested_ = 0;
+  int frames_dropped_ = 0;
 };
 
 }  // namespace media::cast

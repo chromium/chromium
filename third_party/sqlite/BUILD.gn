@@ -84,11 +84,13 @@ config("common_sqlite3_compile_options") {
         # This is to fuzz SQLite's resilience to database corruption.
         "SQLITE_ENABLE_DESERIALIZE",
       ]
-
-      # The progress callback is used in fuzzing to cancel long-running queries
-      # so we don't spend too much time on them.
-      defines -= [ "SQLITE_OMIT_PROGRESS_CALLBACK" ]
     }
+  }
+
+  if (use_fuzzing_engine) {
+    # The progress callback is used in fuzzing to cancel long-running queries
+    # so we don't spend too much time on them.
+    defines -= [ "SQLITE_OMIT_PROGRESS_CALLBACK" ]
   }
 
   if (is_debug || dcheck_always_on) {
@@ -588,7 +590,7 @@ config("sqlite3_dbfuzz2_config") {
 }
 
 # Upstream fuzzer that tests corrupted database files.
-if (use_fuzzing_engine && !use_clang_coverage) {
+if (use_fuzzing_engine) {
   fuzzer_test("sqlite3_dbfuzz2_fuzzer") {
     include_dirs = [ "." ]
     sources = [ "src/test/dbfuzz2.c" ]

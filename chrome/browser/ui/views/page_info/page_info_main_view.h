@@ -69,7 +69,7 @@ class PageInfoMainView : public views::View,
                    PageInfoNavigationHandler* navigation_handler,
                    PageInfoHistoryController* history_controller,
                    base::OnceClosure initialized_callback,
-                   bool allow_about_this_site);
+                   bool allow_extended_site_info);
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
@@ -140,9 +140,19 @@ class PageInfoMainView : public views::View,
   // Creates 'Ad personalization' button that opens a subpage.
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationButton();
 
-  // Creates 'Merchant trust' button that opens a subpage.
+  // Creates 'Merchant trust' button.
   [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustButton(
       page_info::MerchantData value);
+
+  // Creates 'Merchant trust' button that opens a subpage.
+  [[nodiscard]] std::unique_ptr<RichHoverButton>
+  CreateMerchantTrustSubpageButton(page_info::MerchantData value);
+
+  // Creates 'Merchant trust' button that opens a side panel.
+  [[nodiscard]] std::unique_ptr<RichHoverButton>
+  CreateMerchantTrustLaunchButton(GURL url);
+
+  void OpenMerchantTrustSidePanel(const GURL& url);
 
   raw_ptr<PageInfo, AcrossTasksDanglingUntriaged> presenter_;
 

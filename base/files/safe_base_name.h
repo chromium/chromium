@@ -29,8 +29,8 @@ class BASE_EXPORT SafeBaseName {
   // Factory method that returns a valid SafeBaseName or std::nullopt.
   static std::optional<SafeBaseName> Create(const FilePath&);
 
-  // Same as above, but takes a StringPieceType for convenience.
-  static std::optional<SafeBaseName> Create(FilePath::StringPieceType);
+  // Same as above, but takes a StringViewType for convenience.
+  static std::optional<SafeBaseName> Create(FilePath::StringViewType);
   const FilePath& path() const LIFETIME_BOUND { return path_; }
 
   // Convenience functions.

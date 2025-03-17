@@ -113,11 +113,11 @@ void MediaRemotingDialogView::Init() {
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   body_text->SetMultiLine(true);
   body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(body_text);
+  AddChildViewRaw(body_text);
 
   remember_choice_checkbox_ = new views::Checkbox(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_REMOTING_DIALOG_CHECKBOX));
-  AddChildView(remember_choice_checkbox_.get());
+  AddChildViewRaw(remember_choice_checkbox_.get());
 }
 
 void MediaRemotingDialogView::ReportPermission(bool allowed) {

@@ -2,13 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 source_set("prefetch") {
   sources = [
     "pref_names.cc",
     "pref_names.h",
-    "prefetch_headers.cc",
-    "prefetch_headers.h",
   ]
 
-  public_deps = [ "//chrome/common:constants" ]
+  public_deps = [
+    "//chrome/common:constants",
+    "//third_party/blink/public/common:preloading_headers",
+  ]
 }

@@ -89,7 +89,7 @@ void SimulateAddAccountFromWeb() {
       chrome_test_util::HandlerForActiveBrowser();
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
+            accessPoint:signin_metrics::AccessPoint::kUnknown];
   UIViewController* baseViewController =
       GetForegroundActiveScene()
           .browserProviderInterface.mainBrowserProvider.viewController;
@@ -122,18 +122,21 @@ web::WebState* GetCurrentWebState() {
 
 web::WebState* GetNextWebState() {
   WebStateList* web_state_list = GetCurrentWebStateList();
-  if (!web_state_list || web_state_list->count() < 2)
+  if (!web_state_list || web_state_list->count() < 2) {
     return nullptr;
+  }
   int next_index = web_state_list->active_index() + 1;
-  if (next_index >= web_state_list->count())
+  if (next_index >= web_state_list->count()) {
     next_index = 0;
+  }
   return web_state_list->GetWebStateAt(next_index);
 }
 
 web::WebState* GetWebStateAtIndexInCurrentMode(int index) {
   WebStateList* web_state_list = GetCurrentWebStateList();
-  if (!web_state_list || !web_state_list->ContainsIndex(index))
+  if (!web_state_list || !web_state_list->ContainsIndex(index)) {
     return nullptr;
+  }
   return web_state_list->GetWebStateAt(index);
 }
 
@@ -148,8 +151,9 @@ NSString* GetNextTabTitle() {
 void CloseCurrentTab() {
   WebStateList* web_state_list = GetCurrentWebStateList();
   if (!web_state_list ||
-      web_state_list->active_index() == WebStateList::kInvalidIndex)
+      web_state_list->active_index() == WebStateList::kInvalidIndex) {
     return;
+  }
   web_state_list->CloseWebStateAt(web_state_list->active_index(),
                                   WebStateList::CLOSE_USER_ACTION);
 }
@@ -225,8 +229,9 @@ NSUInteger GetIncognitoTabCount() {
 BOOL ResetTabUsageRecorder() {
   TabUsageRecorderBrowserAgent* tab_usage_recorder =
       TabUsageRecorderBrowserAgent::FromBrowser(GetCurrentBrowser());
-  if (!tab_usage_recorder)
+  if (!tab_usage_recorder) {
     return NO;
+  }
   tab_usage_recorder->ResetAll();
   return YES;
 }
@@ -235,8 +240,9 @@ BOOL SetCurrentTabsToBeColdStartTabs() {
   TabUsageRecorderBrowserAgent* tab_usage_recorder =
       TabUsageRecorderBrowserAgent::FromBrowser(GetCurrentBrowser());
 
-  if (!tab_usage_recorder)
+  if (!tab_usage_recorder) {
     return NO;
+  }
   WebStateList* web_state_list = GetCurrentWebStateList();
 
   std::vector<web::WebState*> web_states;
@@ -252,8 +258,9 @@ BOOL SetCurrentTabsToBeColdStartTabs() {
 BOOL SimulateTabsBackgrounding() {
   TabUsageRecorderBrowserAgent* tab_usage_recorder =
       TabUsageRecorderBrowserAgent::FromBrowser(GetCurrentBrowser());
-  if (!tab_usage_recorder)
+  if (!tab_usage_recorder) {
     return NO;
+  }
   tab_usage_recorder->AppDidEnterBackground();
   return YES;
 }
@@ -295,8 +302,9 @@ BOOL CloseAllIncognitoTabs() {
 NSUInteger GetEvictedMainTabCount() {
   TabUsageRecorderBrowserAgent* tab_usage_recorder =
       TabUsageRecorderBrowserAgent::FromBrowser(GetMainBrowser());
-  if (!tab_usage_recorder)
+  if (!tab_usage_recorder) {
     return 0;
+  }
   return tab_usage_recorder->EvictedTabsMapSize();
 }
 

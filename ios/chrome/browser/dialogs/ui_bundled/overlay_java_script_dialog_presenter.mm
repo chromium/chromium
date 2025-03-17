@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/java_script_dialog_blocking_state.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -14,7 +15,6 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_confirm_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
-#import "ios/chrome/browser/dialogs/ui_bundled/java_script_dialog_blocking_state.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -28,8 +28,9 @@ void HandleJavaScriptAlertDialogResponse(
   JavaScriptDialogBlockingState* blocking_state =
       web_state ? JavaScriptDialogBlockingState::FromWebState(web_state)
                 : nullptr;
-  if (blocking_state)
+  if (blocking_state) {
     blocking_state->JavaScriptDialogWasShown();
+  }
 
   JavaScriptAlertDialogResponse* dialog_response =
       response ? response->GetInfo<JavaScriptAlertDialogResponse>() : nullptr;

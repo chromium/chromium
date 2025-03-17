@@ -88,7 +88,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
     // Set the background color is not opaque.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase, kTaskItemViewCornerRadius));
 
     const bool is_network_connected = glanceables_util::IsNetworkConnected();
@@ -114,11 +114,11 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
     task_title_ = AddChildView(std::make_unique<views::Label>());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *task_title_);
-    task_title_->SetEnabledColorId(is_network_connected
-                                       ? cros_tokens::kCrosSysOnSurface
-                                       : cros_tokens::kCrosSysDisabled);
+    task_title_->SetEnabledColor(is_network_connected
+                                     ? cros_tokens::kCrosSysOnSurface
+                                     : cros_tokens::kCrosSysDisabled);
     task_title_->SetText(title);
-    task_title_->SetTooltipText(title);
+    task_title_->SetCustomTooltipText(title);
     task_title_->SetBorder(views::CreateEmptyBorder(kTaskTitleLabelInsets));
     task_title_->SetEnabled(is_network_connected);
   }
@@ -136,7 +136,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   void UpdateTitle(const std::u16string& title) {
     radio_button_->GetViewAccessibility().SetDescription(title);
     task_title_->SetText(title);
-    task_title_->SetTooltipText(title);
+    task_title_->SetCustomTooltipText(title);
   }
 
   // Sets `radio_button_` as toggled which will update the button with a check
@@ -156,7 +156,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
         TypographyProvider::Get()
             ->ResolveTypographyToken(TypographyToken::kCrosButton2)
             .DeriveWithStyle(gfx::Font::FontStyle::STRIKE_THROUGH));
-    task_title_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+    task_title_->SetEnabledColor(cros_tokens::kCrosSysSecondary);
   }
 
  private:
@@ -314,6 +314,18 @@ void FocusModeTray::ShowBubble() {
   auto* controller = FocusModeController::Get();
   CHECK(controller->current_session());
 
+  session_snapshot_ =
+      controller->current_session()->GetSnapshot(base::Time::Now());
+
+  // In the ending moment, we need to make sure that `OnEndingBubbleShowing()`
+  // is called to hide the nudge (if it is showing) before we show the bubble.
+  // This is to prevent unexpected focus controller window activation issues.
+  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
+    controller->OnEndingBubbleShowing();
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kFocusModeEndingMomentNudge);
+  }
+
   auto bubble_view =
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/false));
@@ -331,8 +343,6 @@ void FocusModeTray::ShowBubble() {
   ending_moment_view_ = bubble_view_container_->AddChildView(
       std::make_unique<FocusModeEndingMomentView>());
 
-  session_snapshot_ =
-      controller->current_session()->GetSnapshot(base::Time::Now());
   UpdateAccessibleName();
   bubble_view->UpdateAccessibleName();
   UpdateBubbleViews(session_snapshot_.value());
@@ -345,12 +355,6 @@ void FocusModeTray::ShowBubble() {
   UpdateProgressRing();
 
   controller->tasks_model().RequestUpdate();
-
-  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
-    controller->OnEndingBubbleShown();
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kFocusModeEndingMomentNudge);
-  }
 }
 
 void FocusModeTray::UpdateTrayItemColor(bool is_active) {
@@ -546,7 +550,8 @@ void FocusModeTray::UpdateTrayIcon() {
   SkColor color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  image_view_->SetImage(CreateVectorIcon(kFocusModeLampIcon, color));
+  image_view_->SetImage(
+      ui::ImageModel::FromVectorIcon(kFocusModeLampIcon, color));
 }
 
 void FocusModeTray::FocusModeIconActivated(const ui::Event& event) {
@@ -702,7 +707,7 @@ void FocusModeTray::CloseBubbleAndMaybeReset(bool should_reset) {
 void FocusModeTray::UpdateAccessibleName() {
   if (!session_snapshot_) {
     GetViewAccessibility().RemoveName();
-    image_view_->SetCachedTooltipText(std::u16string());
+    image_view_->SetTooltipText(std::u16string());
     return;
   }
 

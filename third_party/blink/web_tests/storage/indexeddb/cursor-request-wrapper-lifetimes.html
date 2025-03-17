@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<body>
+<script>
+async_test(t => {
+  let open = indexedDB.open("test", 1);
+  open.onupgradeneeded = e => {
+    e.target.result.createObjectStore("test", { keyPath: "id" });
+  };
+
+  open.onsuccess = t.step_func(e => {
+    var trans = open.result.transaction(open.result.objectStoreNames, "readwrite");
+    trans.objectStore("test").put({ id: "id", val: "val" });
+    trans.objectStore("test").put({ id: "id2", val: "val2" });
+    trans.oncomplete = t.step_func(e => {
+      let store = open.result.transaction(open.result.objectStoreNames).objectStore("test");
+      store.openCursor().onsuccess = t.step_func(e => {
+        let request = e.target;
+        let cursor = e.target.result;
+        request.custom_property = 'request_value';
+        cursor.custom_property = 'cursor_value';
+        cursor.continue();
+        request.onsuccess = t.step_func(e => {
+          let request = e.target;
+          let cursor = request.result;
+          assert_true(request === cursor.request);
+          assert_true(cursor.custom_property === 'cursor_value');
+          assert_true(request.custom_property === 'request_value');
+          t.done();
+        });
+        cursor = undefined;
+        request = undefined;
+        gc();
+      });
+      gc();
+    });
+  });
+}, "ensure cursor and request wrappers aren't GCed while in flight");
+</script>
+</body>
+</html>

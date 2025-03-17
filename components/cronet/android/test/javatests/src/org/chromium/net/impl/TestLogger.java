@@ -4,7 +4,10 @@
 
 package org.chromium.net.impl;
 
+import android.os.Build;
 import android.os.ConditionVariable;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
@@ -78,6 +81,7 @@ public final class TestLogger extends CronetLogger {
         return mCallsToLogCronetEngineBuilderInitializedInfo.get();
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     public int callsToLogCronetTrafficInfo() {
         return mCallsToLogCronetTrafficInfo.get();
     }

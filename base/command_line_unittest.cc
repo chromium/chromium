@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,8 +106,8 @@ TEST(CommandLineTest, CommandLineConstructor) {
   EXPECT_EQ("", cl.GetSwitchValueASCII("foo"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("bar"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("cruller"));
-  EXPECT_EQ("--dog=canine --cat=feline", cl.GetSwitchValueASCII(
-      "other-switches"));
+  EXPECT_EQ("--dog=canine --cat=feline",
+            cl.GetSwitchValueASCII("other-switches"));
   EXPECT_EQ("45--output-rotation", cl.GetSwitchValueASCII("input-translation"));
 
   const CommandLine::StringVector& args = cl.GetArgs();
@@ -179,8 +180,8 @@ TEST(CommandLineTest, CommandLineFromString) {
   EXPECT_EQ("", cl.GetSwitchValueASCII("foo"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("bar"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("cruller"));
-  EXPECT_EQ("--dog=canine --cat=feline", cl.GetSwitchValueASCII(
-      "other-switches"));
+  EXPECT_EQ("--dog=canine --cat=feline",
+            cl.GetSwitchValueASCII("other-switches"));
   EXPECT_EQ("45--output-rotation", cl.GetSwitchValueASCII("input-translation"));
   EXPECT_EQ(kTricky, cl.GetSwitchValueNative("quotes"));
 
@@ -325,6 +326,102 @@ TEST(CommandLineTest, AppendSwitches) {
           kTrickyQuoted + L"\"",
       cl.GetCommandLineString());
 #endif
+}
+
+// Test methods for appending valid UTF8 values to a command line.
+TEST(CommandLineTest, UTF8Valid) {
+  std::string ascii_switch = "ascii";
+  std::string ascii_value = "Opdateringkontroleringfout";
+  std::string arabic_switch = "arabic";
+  std::string arabic_value = "خطأ في عملية التحقق من التحديث: 5555.";
+  std::string hindi_switch = "hindi";
+  std::string hindi_value = "अपडेट जांच में यह गड़बड़ी है: 5555.";
+  std::string japanese_switch = "japanese";
+  std::string japanese_value = "更新確認エラー: 5555。";
+
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+
+  cl.AppendSwitchUTF8(ascii_switch, ascii_value);
+  cl.AppendSwitchUTF8(arabic_switch, arabic_value);
+  cl.AppendSwitchUTF8(hindi_switch, hindi_value);
+  cl.AppendSwitchUTF8(japanese_switch, japanese_value);
+
+  EXPECT_TRUE(cl.HasSwitch(ascii_switch));
+  EXPECT_EQ(ascii_value, cl.GetSwitchValueASCII(ascii_switch));
+  EXPECT_EQ(ascii_value, cl.GetSwitchValueUTF8(ascii_switch));
+  EXPECT_TRUE(cl.HasSwitch(arabic_switch));
+  EXPECT_TRUE(cl.GetSwitchValueASCII(arabic_switch).empty());
+  EXPECT_EQ(arabic_value, cl.GetSwitchValueUTF8(arabic_switch));
+  EXPECT_TRUE(cl.HasSwitch(hindi_switch));
+  EXPECT_TRUE(cl.GetSwitchValueASCII(hindi_switch).empty());
+  EXPECT_EQ(hindi_value, cl.GetSwitchValueUTF8(hindi_switch));
+  EXPECT_TRUE(cl.HasSwitch(japanese_switch));
+  EXPECT_TRUE(cl.GetSwitchValueASCII(japanese_switch).empty());
+  EXPECT_EQ(japanese_value, cl.GetSwitchValueUTF8(japanese_switch));
+}
+
+class CommandLineUTF8InvalidTest
+    : public ::testing::TestWithParam<std::string> {
+ protected:
+  std::string switch_value() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    CommandLineUTF8InvalidTestCases,
+    CommandLineUTF8InvalidTest,
+    ::testing::Values(
+        // Invalid encoding of U+1FFFE (0x8F instead of 0x9F)
+        "\xF0\x8F\xBF\xBE",
+
+        // Surrogate code points
+        "\xED\xA0\x80\xED\xBF\xBF",
+        "\xED\xA0\x8F",
+        "\xED\xBF\xBF",
+
+        // Overlong sequences
+        "\xC0\x80",                  // U+0000
+        "\xC1\x80\xC1\x81",          // "AB"
+        "\xE0\x80\x80",              // U+0000
+        "\xE0\x82\x80",              // U+0080
+        "\xE0\x9F\xBF",              // U+07FF
+        "\xF0\x80\x80\x8D",          // U+000D
+        "\xF0\x80\x82\x91",          // U+0091
+        "\xF0\x80\xA0\x80",          // U+0800
+        "\xF0\x8F\xBB\xBF",          // U+FEFF (BOM)
+        "\xF8\x80\x80\x80\xBF",      // U+003F
+        "\xFC\x80\x80\x80\xA0\xA5",  // U+00A5
+
+        // Beyond U+10FFFF (the upper limit of Unicode codespace)
+        "\xF4\x90\x80\x80",          // U+110000
+        "\xF8\xA0\xBF\x80\xBF",      // 5 bytes
+        "\xFC\x9C\xBF\x80\xBF\x80",  // 6 bytes
+
+        // BOM in UTF-16(BE|LE)
+        "\xFE\xFF",
+        "\xFF\xFE",
+
+        // Strings in legacy encodings. We can certainly make up strings
+        // in a legacy encoding that are valid in UTF-8, but in real data,
+        // most of them are invalid as UTF-8.
+
+        // cafe with U+00E9 in ISO-8859-1
+        "caf\xE9",
+        // U+AC00, U+AC001 in EUC-KR
+        "\xB0\xA1\xB0\xA2",
+        // U+4F60 U+597D in Big5
+        "\xA7\x41\xA6\x6E",
+        // "abc" with U+201[CD] in windows-125[0-8]
+        // clang-format off
+        "\x93" "abc\x94",
+        // clang-format on
+        // U+0639 U+064E U+0644 U+064E in ISO-8859-6
+        "\xD9\xEE\xE4\xEE",
+        // U+03B3 U+03B5 U+03B9 U+03AC in ISO-8859-7
+        "\xE3\xE5\xE9\xDC"));
+
+TEST_P(CommandLineUTF8InvalidTest, Test) {
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+  EXPECT_DCHECK_DEATH({ cl.AppendSwitchUTF8("invalid", switch_value()); });
 }
 
 TEST(CommandLineTest, AppendSwitchesDashDash) {
@@ -529,10 +626,12 @@ TEST(CommandLineTest, Copy) {
   CommandLine assigned = *initial;
   CommandLine::SwitchMap switch_map = initial->GetSwitches();
   initial.reset();
-  for (const auto& pair : switch_map)
+  for (const auto& pair : switch_map) {
     EXPECT_TRUE(copy_constructed.HasSwitch(pair.first));
-  for (const auto& pair : switch_map)
+  }
+  for (const auto& pair : switch_map) {
     EXPECT_TRUE(assigned.HasSwitch(pair.first));
+  }
 }
 
 TEST(CommandLineTest, CopySwitches) {

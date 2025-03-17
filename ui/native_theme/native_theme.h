@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -24,7 +25,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/caption_style.h"
-#include "ui/native_theme/native_theme_export.h"
 #include "ui/native_theme/native_theme_observer.h"
 
 namespace cc {
@@ -56,7 +56,7 @@ namespace ui {
 //
 // NativeTheme also supports getting the default size of a given part with
 // the GetPartSize() method.
-class NATIVE_THEME_EXPORT NativeTheme {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
  public:
   // The part to be painted / sized.
   enum Part {
@@ -237,7 +237,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kRight,
   };
 
-  struct NATIVE_THEME_EXPORT MenuListExtraParams {
+  struct COMPONENT_EXPORT(NATIVE_THEME) MenuListExtraParams {
     bool has_border = false;
     bool has_border_radius = false;
     int arrow_x = 0;
@@ -297,6 +297,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     // This allows clients to directly override the color values to support
     // element-specific web platform CSS.
     std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
     bool is_thumb_minimal_mode = false;
     bool is_web_test = false;
   };
@@ -335,7 +336,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     bool right_to_left = false;
   };
 
-  struct NATIVE_THEME_EXPORT TextFieldExtraParams {
+  struct COMPONENT_EXPORT(NATIVE_THEME) TextFieldExtraParams {
     bool is_text_area = false;
     bool is_listbox = false;
     SkColor background_color = gfx::kPlaceholderColor;
@@ -400,16 +401,26 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                        float height) const;
 
   // Paint the part to the canvas.
-  virtual void Paint(
-      cc::PaintCanvas* canvas,
-      const ui::ColorProvider* color_provider,
-      Part part,
-      State state,
-      const gfx::Rect& rect,
-      const ExtraParams& extra,
-      ColorScheme color_scheme = ColorScheme::kDefault,
-      bool in_forced_colors = false,
-      const std::optional<SkColor>& accent_color = std::nullopt) const = 0;
+  virtual void Paint(cc::PaintCanvas* canvas,
+                     const ui::ColorProvider* color_provider,
+                     Part part,
+                     State state,
+                     const gfx::Rect& rect,
+                     const ExtraParams& extra,
+                     ColorScheme color_scheme,
+                     bool in_forced_colors,
+                     const std::optional<SkColor>& accent_color) const = 0;
+  void Paint(cc::PaintCanvas* canvas,
+             const ui::ColorProvider* color_provider,
+             Part part,
+             State state,
+             const gfx::Rect& rect,
+             const ExtraParams& extra,
+             ColorScheme color_scheme = ColorScheme::kDefault,
+             bool in_forced_colors = false) const {
+    Paint(canvas, color_provider, part, state, rect, extra, color_scheme,
+          in_forced_colors, std::nullopt);
+  }
 
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which
@@ -495,6 +506,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // colors, you probably shouldn't. Instead, use ColorProvider::GetColor().
   virtual bool ShouldUseDarkColors() const;
 
+  // Returns true when the system uses a light-on-dark color scheme. This method
+  // should only be used when building UI that is rendered on top of system UI.
+  // It should not be used for UI rendered inside the Chromium browser
+  // application.
+  virtual bool ShouldUseDarkColorsForSystemIntegratedUI() const;
+
   // Returns the user's current page colors.
   virtual PageColors GetPageColors() const;
 
@@ -539,6 +556,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   void set_use_dark_colors(bool should_use_dark_colors) {
     should_use_dark_colors_ = should_use_dark_colors;
+  }
+  void set_use_dark_colors_for_system_integrated_ui(
+      bool should_use_dark_colors_for_system_integrated_ui) {
+    should_use_dark_colors_for_system_integrated_ui_ = std::make_optional<bool>(
+        should_use_dark_colors_for_system_integrated_ui);
   }
   void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
   void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
@@ -635,7 +657,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // web native theme for Windows observes the corresponding ui native theme in
   // order to receive changes regarding the state of dark mode, forced colors
   // mode, preferred color scheme and preferred contrast.
-  class NATIVE_THEME_EXPORT ColorSchemeNativeThemeObserver
+  class COMPONENT_EXPORT(NATIVE_THEME) ColorSchemeNativeThemeObserver
       : public NativeThemeObserver {
    public:
     ColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
@@ -675,6 +697,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
   bool should_use_system_accent_color_ = true;
 
   bool should_use_dark_colors_ = false;
+
+  // On some OSes, there are different settings for dark mode between
+  // applications and the system. This tracks the state of the system dark mode
+  // setting.
+  std::optional<bool> should_use_dark_colors_for_system_integrated_ui_ =
+      std::nullopt;
+
   const ui::SystemTheme system_theme_;
   bool forced_colors_ = false;
   PageColors page_colors_ = PageColors::kOff;

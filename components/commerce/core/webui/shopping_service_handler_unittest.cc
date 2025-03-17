@@ -29,7 +29,6 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/features/product_specifications.pb.h"
@@ -153,7 +152,8 @@ TEST_F(ShoppingServiceHandlerTest,
        TestGetProductInfoForCurrentUrl_FeatureEligible) {
   base::RunLoop run_loop;
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   std::optional<commerce::ProductInfo> info;
   info.emplace();
@@ -177,8 +177,8 @@ TEST_F(ShoppingServiceHandlerTest,
 TEST_F(ShoppingServiceHandlerTest, TestGetProductInfoForUrl) {
   base::RunLoop run_loop;
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
-
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   std::optional<commerce::ProductInfo> info;
   info.emplace();
   info->title = "example_title";
@@ -210,7 +210,8 @@ TEST_F(ShoppingServiceHandlerTest,
   info.emplace();
   info->title = "example_title";
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
-  shopping_service_->SetIsPriceInsightsEligible(false);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          false);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
       [](base::RunLoop* run_loop, shared::mojom::ProductInfoPtr product_info) {
@@ -239,7 +240,8 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
   info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
   handler_->GetPriceInsightsInfoForCurrentUrl(base::BindOnce(
@@ -286,7 +288,8 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForUrl) {
   info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
   info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
   handler_->GetPriceInsightsInfoForUrl(
@@ -327,7 +330,8 @@ TEST_F(ShoppingServiceHandlerTest,
   info.emplace();
   info->product_cluster_id = 123u;
 
-  shopping_service_->SetIsPriceInsightsEligible(false);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          false);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
   handler_->GetPriceInsightsInfoForUrl(
@@ -428,22 +432,14 @@ TEST_F(ShoppingServiceHandlerTest,
 
   optimization_guide::proto::LogAiDataRequest* request =
       handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
-  ASSERT_EQ(
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
-          ->quality()
-          .user_feedback());
+  ASSERT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
+            request->product_specifications().quality().user_feedback());
 
   handler_->SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback::kUnspecified);
 
-  ASSERT_EQ(
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
-          ->quality()
-          .user_feedback());
+  ASSERT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
+            request->product_specifications().quality().user_feedback());
 }
 
 TEST_F(ShoppingServiceHandlerTest,
@@ -464,12 +460,8 @@ TEST_F(ShoppingServiceHandlerTest,
 
   optimization_guide::proto::LogAiDataRequest* request =
       handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
-  ASSERT_EQ(
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
-          ->quality()
-          .user_feedback());
+  ASSERT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
+            request->product_specifications().quality().user_feedback());
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestIsShoppingListEligible) {
@@ -633,10 +625,7 @@ TEST_F(ShoppingServiceHandlerTest,
                 handler->current_log_quality_entry_for_testing()
                     ->log_ai_data_request();
             CHECK(request);
-            auto quality_proto =
-                optimization_guide::ProductSpecificationsFeatureTypeMap::
-                    GetLoggingData(*request)
-                        ->quality();
+            auto quality_proto = request->product_specifications().quality();
             ASSERT_EQ(2, quality_proto.product_identifiers_size());
 
             auto product_specification_data_proto =
@@ -870,6 +859,38 @@ TEST_F(ShoppingServiceHandlerTest,
       .WillByDefault(testing::Return(false));
   account_checker_->SetSignedIn(true);
   account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+  SetTabCompareEnterprisePolicyPref(pref_service_.get(), 2);
+
+  // Zero sets. Management mode is false.
+  std::vector<ProductSpecificationsSet> sets;
+  ON_CALL(*product_spec_service_, GetAllProductSpecifications())
+      .WillByDefault(testing::Return(std::move(sets)));
+
+  base::RunLoop run_loop;
+  handler_->GetProductSpecificationsFeatureState(
+      base::BindOnce(
+          [](shopping_service::mojom::ProductSpecificationsFeatureStatePtr
+                 state) {
+            ASSERT_FALSE(state->can_load_full_page_ui);
+            ASSERT_FALSE(state->is_syncing_tab_compare);
+            ASSERT_FALSE(state->can_manage_sets);
+            ASSERT_FALSE(state->can_fetch_data);
+            ASSERT_FALSE(state->is_allowed_for_enterprise);
+            ASSERT_FALSE(state->is_quality_logging_allowed);
+          })
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestGetProductSpecificationsFeatureState_AllowedButSyncInactive) {
+  features_.InitWithFeaturesAndParameters({}, {{kProductSpecifications}});
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
+      .WillByDefault(testing::Return(true));
+  account_checker_->SetSignedIn(true);
+  account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+  account_checker_->SetSyncAvailable(false);
   SetTabCompareEnterprisePolicyPref(pref_service_.get(), 2);
 
   // Zero sets. Management mode is false.

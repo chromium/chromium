@@ -131,8 +131,9 @@ void PolicyUIHandler::RegisterMessages() {
         machine_status_provider_.get());
   }
 
-  if (!machine_status_provider_)
+  if (!machine_status_provider_) {
     machine_status_provider_ = std::make_unique<policy::PolicyStatusProvider>();
+  }
 
   GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
 

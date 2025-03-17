@@ -18,9 +18,11 @@ class AIMetrics {
     kWriter = 1,
     kRewriter = 2,
     kSummarizer = 3,
-    kMaxValue = kSummarizer,
+    kTranslator = 4,
+    kLanguageDetector = 5,
+    kMaxValue = kLanguageDetector,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histogram.xml:SessionType)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histograms.xml:SessionType)
 
   // This class contains all the model execution API supported.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -54,8 +56,7 @@ class AIMetrics {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 
   static std::string GetAIAPIUsageMetricName(AISessionType session_type);
-  static std::string GetAICapabilityAvailabilityMetricName(
-      AISessionType session_type);
+  static std::string GetAIAvailabilityMetricName(AISessionType session_type);
   static std::string GetAISessionRequestSizeMetricName(
       AISessionType session_type);
   static std::string GetAISessionResponseStatusMetricName(

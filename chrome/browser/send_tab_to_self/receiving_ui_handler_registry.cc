@@ -4,11 +4,11 @@
 
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
@@ -40,6 +40,10 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
 #if BUILDFLAG(IS_ANDROID)
   applicable_handlers_.push_back(
       std::make_unique<AndroidNotificationHandler>(profile));
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  applicable_handlers_.push_back(
+      std::make_unique<SendTabToSelfToolbarIconController>(profile));
 #endif
 }
 
@@ -56,12 +60,7 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
       return button_controller;
     }
   }
-
-  applicable_handlers_.push_back(
-      std::make_unique<SendTabToSelfToolbarIconController>(profile));
-  auto* button_controller = static_cast<SendTabToSelfToolbarIconController*>(
-      applicable_handlers_.back().get());
-  return button_controller;
+  return nullptr;
 #elif BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
@@ -92,13 +91,12 @@ ReceivingUiHandlerRegistry::GetHandlers() const {
 
 void ReceivingUiHandlerRegistry::OnProfileShutdown(Profile* profile) {
   // Remove all handlers for |profile|.
-  applicable_handlers_.erase(
-      base::ranges::remove_if(
-          applicable_handlers_,
-          [=](const std::unique_ptr<ReceivingUiHandler>& handler) {
-            return handler->profile() == profile;
-          }),
-      applicable_handlers_.end());
+  auto to_remove = std::ranges::remove_if(
+      applicable_handlers_,
+      [=](const std::unique_ptr<ReceivingUiHandler>& handler) {
+        return handler->profile() == profile;
+      });
+  applicable_handlers_.erase(to_remove.begin(), to_remove.end());
 }
 
 }  // namespace send_tab_to_self

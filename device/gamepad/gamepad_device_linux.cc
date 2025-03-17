@@ -16,6 +16,8 @@
 #include <linux/joystick.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
+#include <array>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
@@ -47,7 +49,7 @@ const float kMaxLinuxAxisValue = 32767.0;
 const int kInvalidEffectId = -1;
 const uint16_t kRumbleMagnitudeMax = 0xffff;
 
-const size_t kSpecialKeys[] = {
+constexpr auto kSpecialKeys = std::to_array<size_t>({
     // Xbox One S pre-FW update reports Xbox button as SystemMainMenu over BT.
     KEY_MENU,
     // Power is used for the Guide button on the Nvidia Shield 2015 gamepad.
@@ -56,9 +58,11 @@ const size_t kSpecialKeys[] = {
     KEY_SEARCH,
     // Start, Back, and Guide buttons are often reported as Consumer Home or
     // Back.
-    KEY_HOMEPAGE, KEY_BACK,
+    KEY_HOMEPAGE,
+    KEY_BACK,
     // Record is used for Xbox Series X's share button over BT.
-    KEY_RECORD};
+    KEY_RECORD,
+});
 const size_t kSpecialKeysLen = std::size(kSpecialKeys);
 
 #define LONG_BITS (CHAR_BIT * sizeof(long))
@@ -252,7 +256,6 @@ GamepadDeviceLinux::GamepadDeviceLinux(
     const std::string& syspath_prefix,
     scoped_refptr<base::SequencedTaskRunner> dbus_runner)
     : syspath_prefix_(syspath_prefix),
-      button_indices_used_(Gamepad::kButtonsLengthCap, false),
       dbus_runner_(dbus_runner),
       polling_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -384,8 +387,8 @@ void GamepadDeviceLinux::InitializeEvdevSpecialKeys() {
         continue;
 
       // Advance to the next unused button index.
-      while (button_indices_used_[button_index] &&
-             button_index < Gamepad::kButtonsLengthCap) {
+      while (button_index < Gamepad::kButtonsLengthCap &&
+             button_indices_used_[button_index]) {
         ++button_index;
       }
       if (button_index >= Gamepad::kButtonsLengthCap)
@@ -530,7 +533,7 @@ void GamepadDeviceLinux::CloseJoydevNode() {
   gamepad_id_ = GamepadId::kUnknownGamepad;
 
   // Button indices must be recomputed once the joydev node is closed.
-  button_indices_used_.clear();
+  std::ranges::fill(button_indices_used_, false);
   special_button_map_.clear();
   evdev_special_keys_initialized_ = false;
 }

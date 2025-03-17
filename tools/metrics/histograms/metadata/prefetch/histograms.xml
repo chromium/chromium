@@ -39,38 +39,13 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram
-    name="PrefetchProxy.AfterClick.BlockUntilHeadDuration.{WasServed}.{SpeculationEagerness}"
-    units="ms" expires_after="2025-05-11">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    If a prefetch request has started but the head of the prefetch response has
-    not been received yet when a navigation to a URL that matches the prefetch,
-    then the prefetch service will block until the head of the prefetch response
-    is received and then decide to serve or not serve the prefetch.
-
-    This histogram records the amount of time that the prefetch service blocked
-    until the head of the prefetch response was received. This histogram is only
-    recorded for prefetches that are {WasServed} and with an Eagerness of
-    {SpeculationEagerness}.
-
-    Only recorded if `kPrefetchNewWaitLoop` is disabled.
-    `PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}`
-    is the corresponding metric for the enabled case. This metric will be
-    removed once `kPrefetchNewWaitLoop` is launched.
-  </summary>
-  <token key="WasServed" variants="WasServed"/>
-  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
-</histogram>
-
-<histogram
     name="PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}"
-    units="ms" expires_after="2025-06-08">
+    units="ms" expires_after="2025-08-10">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    When a navigation started, `PrefetchMatchResolver2` collects potentially
+    When a navigation started, `PrefetchMatchResolver` collects potentially
     matching prefetches for it. Judging a prefetch accutally matches or not
     needs non-redirect header. If a prefetch has non-redirect header and
     actually matched, then this process ends synchronously. If not, it waits
@@ -83,8 +58,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram is only recorded for prefetches that are {WasServed} and with
     an Eagerness of {SpeculationEagerness}.
-
-    Only recorded if `kPrefetchNewWaitLoop` is enabled.
   </summary>
   <token key="WasServed" variants="WasServed"/>
   <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
@@ -96,7 +69,7 @@ chromium-metrics-reviews@google.com.
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    When a navigation started, `PrefetchMatchResolver2` collects potentially
+    When a navigation started, `PrefetchMatchResolver` collects potentially
     matching prefetches for it. Judging a prefetch accutally matches or not
     needs non-redirect header. If a prefetch has non-redirect header and
     actually matched, then this process ends synchronously. If not, it waits
@@ -114,8 +87,6 @@ chromium-metrics-reviews@google.com.
     PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}
     is that this is also recorded for non-blocked case (i.e. the blocked
     duration is zero).
-
-    Only recorded if `kPrefetchNewWaitLoop` is enabled.
   </summary>
   <token key="WasServed" variants="WasServed"/>
   <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
@@ -213,12 +184,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.{SpeculationEagerness}"
-    enum="Boolean" expires_after="2025-06-08">
+    enum="Boolean" expires_after="2025-08-10">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    When a navigation started, `PrefetchMatchResolver2` collects potentially
+    When a navigation started, `PrefetchMatchResolver` collects potentially
     matching prefetches for it. Judging a prefetch accutally matches or not
     needs non-redirect header. If a prefetch has non-redirect header and
     actually matched, then this process ends synchronously. If not, it waits
@@ -230,14 +201,12 @@ chromium-metrics-reviews@google.com.
 
     This histogram is only for prefetches with an eagerness of
     {SpeculationEagerness}.
-
-    Only recorded if `kPrefetchNewWaitLoop` is enabled.
   </summary>
   <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
-    expires_after="2025-05-07">
+    expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -250,32 +219,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.{SpeculationEagerness}"
-    enum="Boolean" expires_after="2025-05-11">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    If a prefetch request has started but the non-redirect header of the
-    prefetch response has not been received yet when a navigation to a URL that
-    is expected to matche the prefetch, then the prefetch service will block
-    until the non-redirect header of the prefetch response is received and then
-    decide to serve or not serve the prefetch.
-
-    This histogram records whether or not prefetch service will block or not for
-    a prefetch. This histogram is only for prefetches with an Eagerness of
-    {SpeculationEagerness}.
-
-    Only recorded if `kPrefetchNewWaitLoop` is disabled.
-    `PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.{SpeculationEagerness}`
-    is the corresponding metric for the enabled case. This metric will be
-    removed once `kPrefetchNewWaitLoop` is launched.
-  </summary>
-  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
-</histogram>
-
 <histogram name="PrefetchProxy.AfterClick.WasFullRedirectChainServed"
-    enum="Boolean" expires_after="2025-05-11">
+    enum="Boolean" expires_after="2025-07-13">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -300,7 +245,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
-    enum="CanaryCheckLookupResult" expires_after="2025-05-04">
+    enum="CanaryCheckLookupResult" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -318,7 +263,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
-    enum="BooleanSuccess" expires_after="2025-05-04">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -335,7 +280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
-    enum="NetErrorCodes" expires_after="2025-05-04">
+    enum="NetErrorCodes" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -372,7 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -388,7 +333,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -415,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"
-    expires_after="2025-05-07">
+    expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -430,7 +375,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2025-09-07">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -454,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
-    enum="NetErrorCodes" expires_after="2025-05-04">
+    enum="NetErrorCodes" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -467,7 +412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
-    enum="HttpResponseCode" expires_after="2025-06-08">
+    enum="HttpResponseCode" expires_after="2025-08-10">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -488,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -564,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.RedirectChainSize" units="count"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -575,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus"
-    enum="PrefetchStreamingURLLoaderStatus" expires_after="2025-05-11">
+    enum="PrefetchStreamingURLLoaderStatus" expires_after="2025-07-13">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -603,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2025-04-27">
+    expires_after="2025-08-31">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -629,7 +574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Redirect.Result" enum="PrefetchRedirectResult"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

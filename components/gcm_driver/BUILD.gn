@@ -197,6 +197,9 @@ source_set("unit_tests") {
       "gcm_stats_recorder_impl_unittest.cc",
     ]
 
-    deps += [ "//components/signin/public/identity_manager:test_support" ]
+    deps += [
+      "//components/signin/public/identity_manager:test_support",
+      "//google_apis",
+    ]
   }
 }

@@ -39,7 +39,6 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_renderer.h"
 #include "components/viz/service/display/viz_perftest.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -233,7 +232,7 @@ void CreateTestTileDrawQuad(ResourceId resource_id,
 class RendererPerfTest : public VizPerfTest {
  public:
   RendererPerfTest()
-      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
+      : manager_(FrameSinkManagerImpl::InitParams()),
         support_(
             std::make_unique<CompositorFrameSinkSupport>(nullptr,
                                                          &manager_,
@@ -278,7 +277,7 @@ class RendererPerfTest : public VizPerfTest {
     output_surface->SetNeedsSwapSizeNotifications(true);
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     display_ = std::make_unique<Display>(
-        &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
+        /*shared_image_manager=*/nullptr,
         /*gpu_scheduler=*/nullptr, renderer_settings_, &debug_settings_,
         kArbitraryFrameSinkId, std::move(display_controller),
         std::move(output_surface), std::move(overlay_processor),
@@ -605,7 +604,6 @@ class RendererPerfTest : public VizPerfTest {
   WaitForSwapDisplayClient client_;
   ParentLocalSurfaceIdAllocator id_allocator_;
   std::unique_ptr<BeginFrameSource> begin_frame_source_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   RendererSettings renderer_settings_;

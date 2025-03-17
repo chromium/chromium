@@ -1,64 +1,93 @@
 diff --git a/src/google/protobuf/compiler/cpp/helpers.cc b/src/google/protobuf/compiler/cpp/helpers.cc
-index 4b7c5c9d912b1..5288fa321270b 100644
+index e6a89222c432f..f515316381b81 100644
 --- a/src/google/protobuf/compiler/cpp/helpers.cc
 +++ b/src/google/protobuf/compiler/cpp/helpers.cc
-@@ -72,6 +72,14 @@ namespace {
- static const char kAnyMessageName[] = "Any";
- static const char kAnyProtoFile[] = "google/protobuf/any.proto";
-
+@@ -73,6 +73,14 @@ namespace {
+ constexpr absl::string_view kAnyMessageName = "Any";
+ constexpr absl::string_view kAnyProtoFile = "google/protobuf/any.proto";
+ 
 +// TODO(crbug.com/332939935): This is used to allow generating an AnyLite proto
 +// compatible with /third_party/medialite instead of checking in compiled
 +// protobufs that complicate rolling.
 +// Upstream should be fixed so that we don't need to generate a separate
 +// AnyLite, then this patch/change should be dropped.
-+static const char kAnyLiteMessageName[] = "AnyLite";
-+static const char kAnyLiteProtoFile[] = "google/protobuf/any_lite.proto";
++constexpr absl::string_view kAnyLiteMessageName = "AnyLite";
++constexpr absl::string_view kAnyLiteProtoFile = "google/protobuf/any_lite.proto";
 +
- std::string DotsToColons(const std::string& name) {
-   return StringReplace(name, ".", "::", true);
+ static const char* const kKeywordList[] = {
+     // clang-format off
+     "NULL",
+@@ -1217,11 +1225,13 @@ bool IsStringOrMessage(const FieldDescriptor* field) {
  }
-@@ -1082,11 +1090,13 @@ FieldOptions::CType EffectiveStringCType(const FieldDescriptor* field,
- }
-
- bool IsAnyMessage(const FileDescriptor* descriptor, const Options& options) {
+ 
+ bool IsAnyMessage(const FileDescriptor* descriptor) {
 -  return descriptor->name() == kAnyProtoFile;
 +  return descriptor->name() == kAnyProtoFile ||
 +         descriptor->name() == kAnyLiteProtoFile;
  }
-
- bool IsAnyMessage(const Descriptor* descriptor, const Options& options) {
+ 
+ bool IsAnyMessage(const Descriptor* descriptor) {
 -  return descriptor->name() == kAnyMessageName &&
 +  return (descriptor->name() == kAnyMessageName ||
 +          descriptor->name() == kAnyLiteMessageName) &&
-          IsAnyMessage(descriptor->file(), options);
+          IsAnyMessage(descriptor->file());
  }
-
+ 
 diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
-index dd1daa30b080f..24e303c55e54a 100644
+index 7bd9e9f7d0668..0c9632cd0899d 100644
 --- a/src/google/protobuf/compiler/cpp/message.cc
 +++ b/src/google/protobuf/compiler/cpp/message.cc
-@@ -2085,13 +2085,17 @@ void MessageGenerator::GenerateClassMethods(io::Printer* printer) {
-           "      message, type_url_field, value_field);\n"
-           "}\n");
-     }
--    format(
--        "bool $classname$::ParseAnyTypeUrl(\n"
--        "    ::PROTOBUF_NAMESPACE_ID::ConstStringParam type_url,\n"
--        "    std::string* full_type_name) {\n"
--        "  return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);\n"
--        "}\n"
--        "\n");
+@@ -2303,28 +2303,32 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
+     return;
+   }
+   if (IsAnyMessage(descriptor_)) {
+-    p->Emit({{"any_field_descriptor",
+-              [&] {
+-                if (!HasDescriptorMethods(descriptor_->file(), options_)) {
+-                  return;
 +    // TODO(crbug.com/332939935): Remove this workaround when the AnyLite patch
 +    // can go away.
 +    if (descriptor_->name() != "AnyLite") {
-+      format(
-+          "bool $classname$::ParseAnyTypeUrl(\n"
-+          "    ::PROTOBUF_NAMESPACE_ID::ConstStringParam type_url,\n"
-+          "    std::string* full_type_name) {\n"
-+          "  return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);\n"
-+          "}\n"
-+          "\n");
++      p->Emit({{"any_field_descriptor",
++                [&] {
++                  if (!HasDescriptorMethods(descriptor_->file(), options_)) {
++                    return;
++                  }
++                  p->Emit(
++                      R"cc(
++                        bool $classname$::GetAnyFieldDescriptors(
++                            const ::$proto_ns$::Message& message,
++                            const ::$proto_ns$::FieldDescriptor** type_url_field,
++                            const ::$proto_ns$::FieldDescriptor** value_field) {
++                          return ::_pbi::GetAnyFieldDescriptors(message, type_url_field, value_field);
++                        }
++                      )cc");
++                }}},
++              R"cc(
++                $any_field_descriptor$;
++                bool $classname$::ParseAnyTypeUrl(::absl::string_view type_url,
++                                                  std::string* full_type_name) {
++                  return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);
+                 }
+-                p->Emit(
+-                    R"cc(
+-                      bool $classname$::GetAnyFieldDescriptors(
+-                          const ::$proto_ns$::Message& message,
+-                          const ::$proto_ns$::FieldDescriptor** type_url_field,
+-                          const ::$proto_ns$::FieldDescriptor** value_field) {
+-                        return ::_pbi::GetAnyFieldDescriptors(message, type_url_field, value_field);
+-                      }
+-                    )cc");
+-              }}},
+-            R"cc(
+-              $any_field_descriptor$;
+-              bool $classname$::ParseAnyTypeUrl(::absl::string_view type_url,
+-                                                std::string* full_type_name) {
+-                return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);
+-              }
+-            )cc");
++              )cc");
 +    }
    }
-
-   format(
+   p->Emit(
+       {{"has_bit",

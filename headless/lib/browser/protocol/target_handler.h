@@ -29,8 +29,11 @@ class TargetHandler : public DomainHandler, public Target::Backend {
 
   // Target::Backend implementation
   Response CreateTarget(const std::string& url,
+                        std::optional<int> left,
+                        std::optional<int> top,
                         std::optional<int> width,
                         std::optional<int> height,
+                        std::optional<std::string> window_state,
                         std::optional<std::string> context_id,
                         std::optional<bool> enable_begin_frame_control,
                         std::optional<bool> new_window,

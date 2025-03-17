@@ -14,7 +14,7 @@ export const CrPolicyStrings: CrPolicyStringsType = {
   controlledSettingParent: 'parent',
   controlledSettingChildRestriction: 'Restricted for child',
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   controlledSettingShared: 'shared: $1',
   controlledSettingWithOwner: 'owner: $1',
   controlledSettingNoOwner: 'owner',

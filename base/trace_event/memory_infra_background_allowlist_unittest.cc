@@ -6,9 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-
-namespace trace_event {
+namespace base::trace_event {
 
 TEST(MemoryInfraBackgroundAllowlist, Allowlist) {
   // Global dumps that are of hex digits are all allowed for background use.
@@ -30,6 +28,4 @@ TEST(MemoryInfraBackgroundAllowlist, Allowlist) {
       IsMemoryAllocatorDumpNameInAllowlist("blink_gc/main/heap/0x123"));
 }
 
-}  // namespace trace_event
-
-}  // namespace base
+}  // namespace base::trace_event

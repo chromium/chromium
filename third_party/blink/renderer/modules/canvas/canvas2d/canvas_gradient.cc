@@ -26,8 +26,9 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_color_interpolation_method.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_hue_interpolation_method.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -35,7 +36,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -44,12 +44,67 @@
 namespace blink {
 class ExecutionContext;
 
+static Color::ColorSpace V8ColorSpaceToColorSpace(
+    V8ColorInterpolationMethod v8_color_space) {
+  switch (v8_color_space.AsEnum()) {
+    case V8ColorInterpolationMethod::Enum::kSRGB:
+      return Color::ColorSpace::kSRGB;
+    case V8ColorInterpolationMethod::Enum::kHsl:
+      return Color::ColorSpace::kHSL;
+    case V8ColorInterpolationMethod::Enum::kHwb:
+      return Color::ColorSpace::kHWB;
+    case V8ColorInterpolationMethod::Enum::kSRGBLinear:
+      return Color::ColorSpace::kSRGBLinear;
+    case V8ColorInterpolationMethod::Enum::kDisplayP3:
+      return Color::ColorSpace::kDisplayP3;
+    case V8ColorInterpolationMethod::Enum::kA98Rgb:
+      return Color::ColorSpace::kA98RGB;
+    case V8ColorInterpolationMethod::Enum::kProphotoRgb:
+      return Color::ColorSpace::kProPhotoRGB;
+    case V8ColorInterpolationMethod::Enum::kRec2020:
+      return Color::ColorSpace::kRec2020;
+    case V8ColorInterpolationMethod::Enum::kLab:
+      return Color::ColorSpace::kLab;
+    case V8ColorInterpolationMethod::Enum::kOklab:
+      return Color::ColorSpace::kOklab;
+    case V8ColorInterpolationMethod::Enum::kLch:
+      return Color::ColorSpace::kLch;
+    case V8ColorInterpolationMethod::Enum::kOklch:
+      return Color::ColorSpace::kOklch;
+    case V8ColorInterpolationMethod::Enum::kXyz:
+      return Color::ColorSpace::kXYZD50;
+    case V8ColorInterpolationMethod::Enum::kXyzD50:
+      return Color::ColorSpace::kXYZD50;
+    case V8ColorInterpolationMethod::Enum::kXyzD65:
+      return Color::ColorSpace::kXYZD65;
+  }
+
+  return Color::ColorSpace::kNone;
+}
+
+static Color::HueInterpolationMethod
+V8HueInterpolationMethodToHueInterpolationMethod(
+    V8HueInterpolationMethod v8_hue_method) {
+  switch (v8_hue_method.AsEnum()) {
+    case V8HueInterpolationMethod::Enum::kShorter:
+      return Color::HueInterpolationMethod::kShorter;
+    case V8HueInterpolationMethod::Enum::kLonger:
+      return Color::HueInterpolationMethod::kLonger;
+    case V8HueInterpolationMethod::Enum::kIncreasing:
+      return Color::HueInterpolationMethod::kIncreasing;
+    case V8HueInterpolationMethod::Enum::kDecreasing:
+      return Color::HueInterpolationMethod::kDecreasing;
+  }
+
+  return Color::HueInterpolationMethod::kShorter;
+}
+
 CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
     : gradient_(
           Gradient::CreateLinear(p0,
                                  p1,
-                                 kSpreadMethodPad,
-                                 Gradient::ColorInterpolation::kUnpremultiplied,
+                                 Gradient::SpreadMethod::kPad,
+                                 Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
@@ -67,8 +122,8 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0,
                                  p1,
                                  r1,
                                  1,
-                                 kSpreadMethodPad,
-                                 Gradient::ColorInterpolation::kUnpremultiplied,
+                                 Gradient::SpreadMethod::kPad,
+                                 Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
@@ -85,8 +140,8 @@ CanvasGradient::CanvasGradient(float startAngle, const gfx::PointF& center)
                                 startAngle,
                                 0,
                                 360,
-                                kSpreadMethodPad,
-                                Gradient::ColorInterpolation::kUnpremultiplied,
+                                Gradient::SpreadMethod::kPad,
+                                Gradient::PremultipliedAlpha::kUnpremultiplied,
                                 Gradient::DegenerateHandling::kDisallow)) {}
 
 void CanvasGradient::addColorStop(double value,
@@ -121,6 +176,24 @@ IdentifiableToken CanvasGradient::GetIdentifiableToken() const {
 
 void CanvasGradient::SetExecutionContext(ExecutionContext* context) {
   identifiability_study_helper_.SetExecutionContext(context);
+}
+
+void CanvasGradient::setColorInterpolationMethod(
+    const V8ColorInterpolationMethod& color_interpolation_method) {
+  color_interpolation_method_ = color_interpolation_method;
+  gradient_->SetColorInterpolationSpace(
+      V8ColorSpaceToColorSpace(color_interpolation_method_),
+      V8HueInterpolationMethodToHueInterpolationMethod(
+          hue_interpolation_method_));
+}
+
+void CanvasGradient::setHueInterpolationMethod(
+    const V8HueInterpolationMethod& hue_interpolation_method) {
+  hue_interpolation_method_ = hue_interpolation_method;
+  gradient_->SetColorInterpolationSpace(
+      V8ColorSpaceToColorSpace(color_interpolation_method_),
+      V8HueInterpolationMethodToHueInterpolationMethod(
+          hue_interpolation_method_));
 }
 
 void CanvasGradient::Trace(Visitor* visitor) const {

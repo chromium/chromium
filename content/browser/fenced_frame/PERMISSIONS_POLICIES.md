@@ -59,8 +59,8 @@ with specific features enabled. These features ***must*** be enabled for the
 fenced frame's origin. If any of the required features are disabled, the fenced
 frame will not load.
 
-See: `kFencedFrameFledgeDefaultRequiredFeatures` in
-`third_party/blink/public/common/frame/fenced_frame_permissions_policies.h`.
+See: `network::kFencedFrameFledgeDefaultRequiredFeatures` in
+`services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h`.
 
 ## Permissions for Fenced frames created with selectURL()
 
@@ -75,8 +75,8 @@ exfiltrate data out of a fenced frame, so they cannot be enabled. To be safe, we
 are currently only allowing a few permissions-backed features to be enabled that
 are required for functionality purposes.
 
-See: `kFencedFrameSharedStorageDefaultRequiredFeatures` in
-`third_party/blink/public/common/frame/fenced_frame_permissions_policies.h`.
+See: `network::kFencedFrameSharedStorageDefaultRequiredFeatures` in
+`services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h`.
 
 ## Permissions for fenced frames with unpartitioned data access
 
@@ -97,8 +97,8 @@ risk, we are currently allowing a small subset of permissions-backed features to
 be enabled. This can be expanded in the future if more use cases are found that
 require other features.
 
-See: `kFencedFrameAllowedFeatures` in
-`third_party/blink/public/common/frame/fenced_frame_permissions_policies.h`.
+See: `network::kFencedFrameAllowedFeatures` in
+`services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h`.
 
 ## Permissions policy-based features audit
 
@@ -332,13 +332,21 @@ kClientHintWidth, kClientHintUAMobile, kClientHintUAFullVersion,
 kClientHintUAPlatformVersion, kClientHintPrefersColorScheme,
 kClientHintUABitness, kClientHintViewportHeight, kClientHintUAFullVersionList,
 kClientHintUAWoW64, kClientHintSaveData, kClientHintPrefersReducedMotion,
-kClientHintUAFormFactor*
+kClientHintUAFormFactors*
 
 This allows a fenced frame to learn about the device it’s on, but no information
 will flow back to the embedder. Data is only sent at navigation time, as the
 client hints live in the HTTP request headers. This can be used for
 fingerprinting at navigation time (before network cutoff). **Note that this will
 require its own separate effort to enable**.
+### 🖐️ User-Agent Client Hints getHighEntropyValues(): fingerprinting risk
+*Feature: kClientHintUAHighEntropyValues*
+
+By default, the `navigator.userAgentData.getHighEntropyValues()` JS API can be
+called by embedded frames and may pose a fingerprinting risk, and unlike other
+Client Hints features, is unrelated to navigation. kClientHintUAHighEntropyValues
+can be used to limit which origins can collect high-entropy User-Agent
+client hints.
 
 ### ❌ Credentials Get: usability issues
 *Feature: kPublicKeyCredentialsGet, kOTPCredentials, kIdentityCredentialsGet*

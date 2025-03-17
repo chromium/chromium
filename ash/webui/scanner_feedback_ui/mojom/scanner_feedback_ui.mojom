@@ -16,7 +16,7 @@ struct FeedbackInfo {
   // A `chrome-untrusted://scanner-feedback/screenshots/UNGUESSABLETOKEN.png`
   // URL which, when accessed, will display the screenshot.
   // The contents are a (possibly resized) screen capture from Ash.
-  url.mojom.Url screenshot_url;
+  url.mojom.Url? screenshot_url;
 };
 
 // Handles communication from `chrome-untrusted://scanner-feedback` to the
@@ -35,4 +35,12 @@ interface PageHandler {
   // If no "close dialog" callback was attached to this page handler, calling
   // this will kill the renderer process by reporting a bad message.
   CloseDialog();
+
+  // Sends the user-specified description in a feedback report alongside the
+  // `FeedbackInfo` obtained from `GetFeedbackInfo()`.
+  //
+  // Detaches both the "send feedback" callback and the feedback information
+  // from this page handler. If either do not exist, calling this will kill the
+  // renderer process by reporting a bad message.
+  SendFeedback(string user_description);
 };

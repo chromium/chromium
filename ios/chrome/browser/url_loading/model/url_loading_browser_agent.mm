@@ -8,6 +8,7 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/immediate_crash.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/crash_report/model/crash_reporter_url_observer.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
@@ -304,10 +305,22 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
     return;
   }
 
-  if (params.in_incognito) {
-    IncognitoReauthSceneAgent* reauth_agent =
-        [IncognitoReauthSceneAgent agentFromScene:browser_->GetSceneState()];
-    DCHECK(!reauth_agent.authenticationRequired);
+  // Only open tab in incognito if re-authentication is not needed.
+  IncognitoReauthSceneAgent* reauth_agent =
+      [IncognitoReauthSceneAgent agentFromScene:browser_->GetSceneState()];
+  if (params.in_incognito && reauth_agent.authenticationRequired) {
+    base::OnceCallback<void(BOOL)> load_url_on_auth_success = base::BindOnce(
+        [](base::OnceClosure closure, BOOL success) {
+          if (success) {
+            std::move(closure).Run();
+          }
+        },
+        base::BindOnce(&UrlLoadingBrowserAgent::LoadUrlInNewTab,
+                       weak_ptr_factory_.GetWeakPtr(), params));
+    [reauth_agent
+        authenticateIncognitoContentWithCompletionBlock:
+            base::CallbackToBlock(std::move(load_url_on_auth_success))];
+    return;
   }
 
   ProfileIOS* active_profile =
@@ -345,10 +358,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   if (!params.in_background()) {
     LoadUrlInNewTabImpl(params, std::nullopt);
   } else {
-    __block void* hint = nullptr;
-    __block UrlLoadParams saved_params = params;
-    __block base::WeakPtr<UrlLoadingBrowserAgent> weak_ptr =
-        weak_ptr_factory_.GetWeakPtr();
+    void* hint = nullptr;
 
     if (params.append_to == OpenPosition::kCurrentTab) {
       hint = browser_->GetWebStateList()->GetActiveWebState();
@@ -359,22 +369,18 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
     // foreground one has time to be opened first.
     bool should_dispatch_load =
         params.in_incognito != active_profile->IsOffTheRecord();
-
-    auto load_url_block = ^{
-      if (weak_ptr) {
-        weak_ptr->LoadUrlInNewTabImpl(saved_params, hint);
-      }
-    };
+    base::OnceClosure load_url_closure =
+        base::BindOnce(&UrlLoadingBrowserAgent::LoadUrlInNewTabImpl,
+                       weak_ptr_factory_.GetWeakPtr(), params, hint);
+    if (should_dispatch_load) {
+      load_url_closure =
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             std::move(load_url_closure));
+    }
     [delegate_
         animateOpenBackgroundTabFromParams:params
-                                completion:^{
-                                  if (should_dispatch_load) {
-                                    dispatch_async(dispatch_get_main_queue(),
-                                                   load_url_block);
-                                  } else {
-                                    load_url_block();
-                                  }
-                                }];
+                                completion:base::CallbackToBlock(
+                                               std::move(load_url_closure))];
   }
 }
 

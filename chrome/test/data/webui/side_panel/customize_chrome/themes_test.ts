@@ -63,7 +63,7 @@ suite('ThemesTest', () => {
     await microtasksFinished();
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     handler = installMock(
@@ -90,8 +90,7 @@ suite('ThemesTest', () => {
     await setCollection('test', 2);
 
     // Check that setBackgroundImage was called on click.
-    const theme =
-        themesElement.shadowRoot!.querySelector<HTMLElement>('.theme');
+    const theme = themesElement.shadowRoot.querySelector<HTMLElement>('.theme');
     assertTrue(!!theme);
     theme.click();
     assertEquals(1, handler.getCallCount('setBackgroundImage'));
@@ -103,7 +102,7 @@ suite('ThemesTest', () => {
 
     let header = themesElement.$.heading;
     assertEquals('test1', header.textContent!.trim());
-    let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
+    let themes = themesElement.shadowRoot.querySelectorAll('.theme');
     assertEquals(themes.length, numImages);
     assertEquals(
         'https://preview_1.jpg',
@@ -120,7 +119,7 @@ suite('ThemesTest', () => {
 
     header = themesElement.$.heading;
     assertEquals('test2', header.textContent!.trim());
-    themes = themesElement.shadowRoot!.querySelectorAll('.theme');
+    themes = themesElement.shadowRoot.querySelectorAll('.theme');
     assertEquals(themes.length, numImages);
     assertEquals(
         'https://preview_1.jpg',
@@ -147,7 +146,7 @@ suite('ThemesTest', () => {
     const imageLoadTime = 678.90;
     windowProxy.setResultFor('now', imageLoadTime);
 
-    themesElement.shadowRoot!.querySelectorAll('.theme')[0]!
+    themesElement.shadowRoot.querySelectorAll('.theme')[0]!
         .querySelector('img')!.dispatchEvent(new Event('load'));
 
     assertEquals(2, windowProxy.getCallCount('now'));
@@ -236,7 +235,7 @@ suite('ThemesTest', () => {
 
     // Check that nothing is selected.
     let checkedThemes =
-        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+        themesElement.shadowRoot.querySelectorAll('.theme [checked]');
     assertEquals(0, checkedThemes.length);
 
     // Set theme within collection.
@@ -248,11 +247,11 @@ suite('ThemesTest', () => {
 
     // Check that 1 theme is selected.
     checkedThemes =
-        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+        themesElement.shadowRoot.querySelectorAll('.theme [checked]');
     assertEquals(1, checkedThemes.length);
     const checkedTile = checkedThemes[0]!.parentElement as HTMLElement;
-    assertEquals(checkedTile!.title, 'attribution1_1');
-    assertEquals(checkedTile!.getAttribute('aria-checked'), 'true');
+    assertEquals(checkedTile.title, 'attribution1_1');
+    assertEquals(checkedTile.getAttribute('aria-checked'), 'true');
 
     // Set daily refresh.
     theme.backgroundImage.collectionId = 'test_collection_id';
@@ -263,7 +262,7 @@ suite('ThemesTest', () => {
 
     // Check that nothing is selected.
     checkedThemes =
-        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+        themesElement.shadowRoot.querySelectorAll('.theme [checked]');
     assertEquals(0, checkedThemes.length);
 
     // Set a CWS theme.
@@ -278,7 +277,7 @@ suite('ThemesTest', () => {
 
     // Check that nothing is selected.
     checkedThemes =
-        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+        themesElement.shadowRoot.querySelectorAll('.theme [checked]');
     assertEquals(0, checkedThemes.length);
   });
 
@@ -328,8 +327,7 @@ suite('ThemesTest', () => {
   test('setting theme sets metric', async () => {
     await setCollection('test', 2);
 
-    const theme =
-        themesElement.shadowRoot!.querySelector<HTMLElement>('.theme');
+    const theme = themesElement.shadowRoot.querySelector<HTMLElement>('.theme');
     assertTrue(!!theme);
     theme.click();
 
@@ -353,7 +351,7 @@ suite('ThemesTest', () => {
         const numImages = 2;
         await setCollection('test1', numImages);
 
-        const themes = themesElement.shadowRoot!.querySelectorAll('.theme');
+        const themes = themesElement.shadowRoot.querySelectorAll('.theme');
         assertEquals(numImages, themes.length);
         if (!errorDetectionEnabled) {
           assertTrue(isVisible(themes[0]!));
@@ -369,7 +367,7 @@ suite('ThemesTest', () => {
 
         const theme = $$(themesElement, '.theme');
         assertTrue(!!theme);
-        const img = theme!.querySelector<CrAutoImgElement>('img');
+        const img = theme.querySelector<CrAutoImgElement>('img');
         assertTrue(!!img);
 
         if (errorDetectionEnabled) {

@@ -37,7 +37,7 @@ class SavedTabGroupTab {
           std::nullopt,
       std::optional<base::Time> update_time_windows_epoch_micros = std::nullopt,
       std::optional<gfx::Image> favicon = std::nullopt,
-      bool is_pending_sanitization = false);
+      bool is_pending_ntp = false);
   SavedTabGroupTab(const SavedTabGroupTab& other);
   SavedTabGroupTab& operator=(const SavedTabGroupTab& other);
   SavedTabGroupTab(SavedTabGroupTab&& other);
@@ -67,10 +67,10 @@ class SavedTabGroupTab {
   const std::vector<GURL>& redirect_url_chain() const {
     return redirect_url_chain_;
   }
-  bool is_pending_sanitization() const { return is_pending_sanitization_; }
   const SharedAttribution& shared_attribution() const {
     return shared_attribution_;
   }
+  bool is_pending_ntp() const { return is_pending_ntp_; }
 
   // Mutators.
   SavedTabGroupTab& SetURL(GURL url) {
@@ -117,8 +117,8 @@ class SavedTabGroupTab {
     redirect_url_chain_ = redirect_url_chain;
     return *this;
   }
-  SavedTabGroupTab& SetIsPendingSanitization(bool is_pending_sanitization) {
-    is_pending_sanitization_ = is_pending_sanitization;
+  SavedTabGroupTab& SetIsPendingNtp(bool is_pending_ntp) {
+    is_pending_ntp_ = is_pending_ntp;
     return *this;
   }
 
@@ -194,10 +194,13 @@ class SavedTabGroupTab {
   // URL, we don't do a navigation.
   std::vector<GURL> redirect_url_chain_;
 
-  // Whether there are pending saninization tasks on the tab. This could include
-  // URL or title sanitization. If a tab is pending sanitization, the group
-  // will not be synced until the pending state is cleared.
-  bool is_pending_sanitization_;
+  // Whether the current tab is a pending NTP. The pending NTPs are
+  // real NTPs in the local tab model, but never synced to the server side.
+  // Pending NTPs are converted to regular tabs and synced to the server
+  // side when there is a navigation or tab addition either locally or from the
+  // server side. A pending NTP always has the position zero and is the only
+  // tab in the group.
+  bool is_pending_ntp_ = false;
 };
 
 class SavedTabGroupTabBuilder {

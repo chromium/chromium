@@ -87,23 +87,23 @@ suite('cr-iconset', function() {
   });
 
   test('icon add/remove', () => {
-    const icon = document.createElement('test-element');
+    const icon = document.createElement('test-element') as TestElement;
     document.body.appendChild(icon);
 
     iconset.applyIcon(icon, 'arrow-drop-up');
-    let svgs = icon.shadowRoot!.querySelectorAll('svg');
+    let svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(1, svgs.length);
     assertSvgPath(svgs[0]!, 'M7 14l5-5 5 5z');
 
     // Applying a new icon removes the old one.
     iconset.applyIcon(icon, 'arrow-drop-down');
-    svgs = icon.shadowRoot!.querySelectorAll('svg');
+    svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(1, svgs.length);
     assertSvgPath(svgs[0]!, 'M7 10l5 5 5-5z');
 
     // Removing the icon works.
     iconset.removeIcon(icon);
-    svgs = icon.shadowRoot!.querySelectorAll('svg');
+    svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(0, svgs.length);
   });
 });

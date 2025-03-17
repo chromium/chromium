@@ -41,7 +41,7 @@ class AvatarFetcherTest : public testing::Test {
 TEST_F(AvatarFetcherTest, FetchSuccess) {
   GURL fake_avatar_url = GURL("https://www.example.com/fake_image");
   GURL fake_avatar_url_with_options =
-      GURL("https://www.example.com/fake_image=s20-c-ns");
+      GURL("https://www.example.com/fake_image=s20-cc-rp-ns");
 
   gfx::Image expected_image(gfx::test::CreateImageSkia(20, 20));
   base::test::TestFuture<const gfx::Image&> received_image;

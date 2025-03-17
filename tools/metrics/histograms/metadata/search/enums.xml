@@ -25,8 +25,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(AmbientSearchEntryPoint) -->
-
 <enum name="AmbientSearchEntryPoint">
   <summary>
     The entry point that initiated an ambient search query. (e.g. Context Menu
@@ -83,8 +81,6 @@ chromium-metrics-reviews@google.com.
       label="Lens Overlay Location Bar entry point that leads to Lens
              Overlay, entered via keyboard (Image)"/>
 </enum>
-
-<!-- LINT.ThenChange(//ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h:IOSLensEntrypoint) -->
 
 <enum name="AuxiliarySearchRequestStatus">
   <int value="0" label="Sent (overall number of requests issued)"/>
@@ -210,6 +206,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Succeed"/>
 </enum>
 
+<enum name="EntryClickedPosition">
+  <int value="0" label="1st position"/>
+  <int value="1" label="2nd position"/>
+  <int value="2" label="3rd position"/>
+  <int value="3" label="4th position"/>
+  <int value="4" label="5th position"/>
+  <int value="5" label="6th position"/>
+  <int value="6" label="7th position"/>
+  <int value="7" label="8th position"/>
+  <int value="8" label="9th position"/>
+  <int value="9" label="10th position"/>
+</enum>
+
 <enum name="KeywordTableHashValidationStatus">
   <int value="0" label="Hash was validated successfully"/>
   <int value="1" label="Decryption failed"/>
@@ -315,14 +324,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SCROLLED_CLICKED"/>
 </enum>
 
-<enum name="SearchAnswerRequestResult">
-  <int value="0" label="Another Request Started"/>
-  <int value="1" label="Failed"/>
-  <int value="2" label="No Answer"/>
-  <int value="3" label="Received Answer"/>
-  <int value="4" label="Received Answer - Too Large"/>
-</enum>
-
 <enum name="SearchEngineChoiceReprompt">
   <int value="0" label="Reprompt"/>
   <int value="1" label="No reprompt: invalid dictionary"/>
@@ -401,11 +402,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Command line flag"/>
 </enum>
 
-<enum name="SearchEntryPoint">
-  <int value="0" label="From search widget"/>
-  <int value="1" label="From omnibox"/>
-</enum>
-
 <enum name="SearchPolicyConflictType">
   <int value="0" label="No conflict"/>
   <int value="1" label="Conflict with featured search engine"/>
@@ -453,7 +449,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Cleared pref due to invalid country ID"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/search_engines/search_engine_choice/search_engine_choice_service.cc:UnknownCountryIdStored) -->
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:UnknownCountryIdStored) -->
 
 </enums>
 

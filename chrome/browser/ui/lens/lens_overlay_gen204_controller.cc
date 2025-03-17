@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 
+#include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/rand_util.h"
@@ -42,6 +43,7 @@ constexpr int kTextGleamsViewEndSemanticEventID = 234180;
 
 // Query parameter keys.
 constexpr char kEncodedAnalyticsIdParameter[] = "cad";
+constexpr char kEncodedRequestIdParameter[] = "vsrid";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kLatencyRequestTypeQueryParameter[] = "rt";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
@@ -54,9 +56,12 @@ constexpr char kFullPageTranslateFetchLatencyId[] = "fptf";
 constexpr char kPageContentUploadLatencyId[] = "pcu";
 constexpr char kPartialPageContentUploadLatencyId[] = "ppcu";
 constexpr char kInteractionFetchLatencyId[] = "lif";
-constexpr char kFetchStickyClusterInfoLatencyId[] = "sct";
+constexpr char kFetchStickyClusterInfoLatencyId[] = "sctr";
 constexpr char kInvocationToInitialClusterInfoRequestLatencyId[] = "cstcirs";
-constexpr char kInvocationToInitialFullObjectsRequestLatencyId[] = "cstiors";
+constexpr char kInvocationToInitialFullObjectsRequestSentLatencyId[] =
+    "cstiors";
+constexpr char kInvocationToInitialFullObjectsResponseReceivedLatencyId[] =
+    "cstiorr";
 constexpr char kInvocationToInitialInteractionRequestLatencyId[] = "cstiirs";
 constexpr char kInvocationToInitialPageContentRequestLatencyId[] = "cstipcurs";
 constexpr char kInvocationToInitialPartialPageContentRequestLatencyId[] =
@@ -116,7 +121,9 @@ std::string LatencyIdForType(LatencyType latency_type) {
     case LatencyType::kInvocationToInitialClusterInfoRequestSent:
       return kInvocationToInitialClusterInfoRequestLatencyId;
     case LatencyType::kInvocationToInitialFullPageObjectsRequestSent:
-      return kInvocationToInitialFullObjectsRequestLatencyId;
+      return kInvocationToInitialFullObjectsRequestSentLatencyId;
+    case LatencyType::kInvocationToInitialFullPageObjectsResponseReceived:
+      return kInvocationToInitialFullObjectsResponseReceivedLatencyId;
     case LatencyType::kInvocationToInitialInteractionRequestSent:
       return kInvocationToInitialInteractionRequestLatencyId;
     case LatencyType::kInvocationToInitialPageContentRequestSent:
@@ -134,6 +141,16 @@ std::string LatencyIdForType(LatencyType latency_type) {
     case LatencyType::kPartialPageContentUploadLatency:
       return kPartialPageContentUploadLatencyId;
   }
+}
+
+std::string EncodeRequestId(const lens::LensOverlayRequestId& request_id) {
+  std::string serialized_request_id;
+  CHECK(request_id.SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+  return encoded_request_id;
 }
 
 }  // namespace
@@ -155,7 +172,8 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
     base::TimeDelta latency_duration,
     std::string vit_query_param_value,
     std::optional<base::TimeDelta> cluster_info_latency,
-    std::optional<std::string> encoded_analytics_id) {
+    std::optional<std::string> encoded_analytics_id,
+    std::optional<lens::LensOverlayRequestId> request_id) {
   if (profile_ && lens::features::GetLensOverlaySendLatencyGen204()) {
     std::string cluster_info_latency_string =
         cluster_info_latency.has_value() &&
@@ -185,13 +203,19 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
           fetch_url, kEncodedAnalyticsIdParameter,
           encoded_analytics_id.value());
     }
+    if (request_id.has_value()) {
+      fetch_url = net::AppendOrReplaceQueryParameter(
+          fetch_url, kEncodedRequestIdParameter,
+          EncodeRequestId(request_id.value()));
+    }
     CheckMetricsConsentAndIssueGen204NetworkRequest(fetch_url);
   }
 }
 
 void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
     std::string encoded_analytics_id,
-    lens::mojom::UserAction user_action) {
+    lens::mojom::UserAction user_action,
+    lens::LensOverlayRequestId request_id) {
   if (profile_ && lens::features::GetLensOverlaySendTaskCompletionGen204()) {
     int task_id;
     switch (user_action) {
@@ -217,9 +241,10 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
         return;
     }
     std::string query = base::StringPrintf(
-        "gen_204?uact=4&%s=%" PRIu64 "&%s=%d&%s=%s",
+        "gen_204?uact=4&%s=%" PRIu64 "&%s=%d&%s=%s&%s=%s",
         kGen204IdentifierQueryParameter, gen204_id_, kEventIdParameter, task_id,
-        kEncodedAnalyticsIdParameter, encoded_analytics_id.c_str());
+        kEncodedAnalyticsIdParameter, encoded_analytics_id.c_str(),
+        kEncodedRequestIdParameter, EncodeRequestId(request_id).c_str());
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                               ->search_terms_data()
                               .GoogleBaseURLValue())
@@ -231,7 +256,8 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
 }
 
 void LensOverlayGen204Controller::SendSemanticEventGen204IfEnabled(
-    lens::mojom::SemanticEvent event) {
+    lens::mojom::SemanticEvent event,
+    std::optional<lens::LensOverlayRequestId> request_id) {
   if (profile_ && lens::features::GetLensOverlaySendSemanticEventGen204()) {
     int event_id;
     switch (event) {
@@ -252,16 +278,21 @@ void LensOverlayGen204Controller::SendSemanticEventGen204IfEnabled(
                          .Resolve(query);
     fetch_url =
         lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
+    if (request_id.has_value()) {
+      fetch_url = net::AppendOrReplaceQueryParameter(
+          fetch_url, kEncodedRequestIdParameter,
+          EncodeRequestId(request_id.value()));
+    }
     CheckMetricsConsentAndIssueGen204NetworkRequest(fetch_url);
   }
 }
 
-void LensOverlayGen204Controller::OnQueryFlowEnd(
-    std::string encoded_analytics_id) {
+void LensOverlayGen204Controller::OnQueryFlowEnd() {
   // Send a text gleams view end event because the event trigger from webui
   // will not fire when the overlay is closing. The server will dedupe
   // end events.
-  SendSemanticEventGen204IfEnabled(mojom::SemanticEvent::kTextGleamsViewEnd);
+  SendSemanticEventGen204IfEnabled(mojom::SemanticEvent::kTextGleamsViewEnd,
+                                   /*request_id=*/std::nullopt);
   profile_ = nullptr;
 }
 

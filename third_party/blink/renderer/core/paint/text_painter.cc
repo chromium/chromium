@@ -17,18 +17,17 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
-#include "third_party/blink/renderer/core/paint/text_shadow_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/paint_order_array.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 
 namespace blink {
 
@@ -64,49 +63,66 @@ SelectionStyleScope::SelectionStyleScope(const LayoutObject& layout_object,
     : layout_object_(layout_object),
       selection_style_(selection_style),
       styles_are_equal_(style == selection_style) {
-  if (styles_are_equal_) {
+  if (styles_are_equal_)
     return;
-  }
   DCHECK(!layout_object.IsSVGInlineText());
   SVGResources::UpdatePaints(layout_object_, nullptr, selection_style_);
 }
 
 SelectionStyleScope::~SelectionStyleScope() {
-  if (styles_are_equal_) {
+  if (styles_are_equal_)
     return;
-  }
   SVGResources::ClearPaints(layout_object_, &selection_style_);
+}
+
+sk_sp<cc::DrawLooper> CreateDrawLooper(
+    const ShadowList* shadow_list,
+    DrawLooperBuilder::ShadowAlphaMode alpha_mode,
+    const Color& current_color,
+    mojom::blink::ColorScheme color_scheme,
+    TextPainter::ShadowMode shadow_mode) {
+  DrawLooperBuilder draw_looper_builder;
+
+  // ShadowList nullptr means there are no shadows.
+  if (shadow_mode != TextPainter::kTextProperOnly && shadow_list) {
+    for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
+      const ShadowData& shadow = shadow_list->Shadows()[i];
+      draw_looper_builder.AddShadow(
+          shadow.Offset(), shadow.Blur(),
+          shadow.GetColor().Resolve(current_color, color_scheme),
+          DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
+    }
+  }
+  if (shadow_mode != TextPainter::kShadowsOnly) {
+    draw_looper_builder.AddUnmodifiedContent();
+  }
+  return draw_looper_builder.DetachDrawLooper();
 }
 
 void UpdateGraphicsContext(GraphicsContext& context,
                            const TextPaintStyle& text_style,
                            GraphicsContextStateSaver& state_saver,
-                           const TextShadowPaintPhase& phase) {
-  if (phase == TextShadowPaintPhase::kShadow) {
-    context.SetTextDrawingMode(kTextModeFill);
-    context.SetFillColor(Color::kBlack);
-  } else {
-    TextDrawingModeFlags mode = context.TextDrawingMode();
-    if (text_style.stroke_width > 0) {
-      TextDrawingModeFlags new_mode = mode | kTextModeStroke;
-      if (mode != new_mode) {
-        state_saver.SaveIfNeeded();
-        context.SetTextDrawingMode(new_mode);
-        mode = new_mode;
-      }
+                           TextPainter::ShadowMode shadow_mode) {
+  TextDrawingModeFlags mode = context.TextDrawingMode();
+  if (text_style.stroke_width > 0) {
+    TextDrawingModeFlags new_mode = mode | kTextModeStroke;
+    if (mode != new_mode) {
+      state_saver.SaveIfNeeded();
+      context.SetTextDrawingMode(new_mode);
+      mode = new_mode;
     }
+  }
 
-    if (mode & kTextModeFill && text_style.fill_color != context.FillColor()) {
-      context.SetFillColor(text_style.fill_color);
+  if (mode & kTextModeFill && text_style.fill_color != context.FillColor()) {
+    context.SetFillColor(text_style.fill_color);
+  }
+
+  if (mode & kTextModeStroke) {
+    if (text_style.stroke_color != context.StrokeColor()) {
+      context.SetStrokeColor(text_style.stroke_color);
     }
-
-    if (mode & kTextModeStroke) {
-      if (text_style.stroke_color != context.StrokeColor()) {
-        context.SetStrokeColor(text_style.stroke_color);
-      }
-      if (text_style.stroke_width != context.StrokeThickness()) {
-        context.SetStrokeThickness(text_style.stroke_width);
-      }
+    if (text_style.stroke_width != context.StrokeThickness()) {
+      context.SetStrokeThickness(text_style.stroke_width);
     }
   }
 
@@ -122,6 +138,22 @@ void UpdateGraphicsContext(GraphicsContext& context,
     case kPaintOrderMarkersStrokeFill:
       context.SetTextPaintOrder(kStrokeFill);
       break;
+  }
+
+  if (shadow_mode != TextPainter::kTextProperOnly) {
+    DCHECK(shadow_mode == TextPainter::kBothShadowsAndTextProper ||
+           shadow_mode == TextPainter::kShadowsOnly);
+
+    // If there are shadows, we definitely need a cc::DrawLooper, but if there
+    // are no shadows (nullptr), we still need one iff we’re in kShadowsOnly
+    // mode, because we suppress text proper by omitting AddUnmodifiedContent
+    // when building a looper (cf. CRC2DState::ShadowAndForegroundDrawLooper).
+    if (text_style.shadow || shadow_mode == TextPainter::kShadowsOnly) {
+      state_saver.SaveIfNeeded();
+      context.SetDrawLooper(CreateDrawLooper(
+          text_style.shadow.Get(), DrawLooperBuilder::kShadowIgnoresAlpha,
+          text_style.current_color, text_style.color_scheme, shadow_mode));
+    }
   }
 }
 
@@ -140,9 +172,8 @@ void PrepareStrokeGeometry(const TextPainter::SvgTextPaintState& state,
         stroke_scale_factor = state.InlineText().ScalingFactor();
         break;
       case SvgPaintMode::kTextDecoration: {
-        Font scaled_font;
-        LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-            layout_parent, stroke_scale_factor, scaled_font);
+        LayoutSVGInlineText::ComputeNewScaledFontForStyle(layout_parent,
+                                                          stroke_scale_factor);
         DCHECK(stroke_scale_factor);
         break;
       }
@@ -156,6 +187,27 @@ void PrepareStrokeGeometry(const TextPainter::SvgTextPaintState& state,
     stroke_data.SetThickness(stroke_data.Thickness() * stroke_scale_factor);
   }
   stroke_data.SetupPaint(&flags);
+}
+
+const ShadowList* GetTextShadows(const ComputedStyle& style,
+                                 const LayoutObject& layout_parent) {
+  // Text shadows are disabled when printing. http://crbug.com/258321
+  if (layout_parent.GetDocument().Printing()) {
+    return nullptr;
+  }
+  return style.TextShadow();
+}
+
+void PrepareTextShadow(const ShadowList* text_shadows,
+                       const ComputedStyle& style,
+                       cc::PaintFlags& flags) {
+  if (!text_shadows) {
+    return;
+  }
+  flags.setLooper(CreateDrawLooper(
+      text_shadows, DrawLooperBuilder::kShadowRespectsAlpha,
+      style.VisitedDependentColor(GetCSSPropertyColor()),
+      style.UsedColorScheme(), TextPainter::kBothShadowsAndTextProper));
 }
 
 struct SvgPaints {
@@ -217,11 +269,13 @@ void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
     paint_resource_scope.emplace(layout_parent, *layout_parent.Style(), style);
   }
 
+  const ShadowList* text_shadows = GetTextShadows(style, layout_parent);
   const AffineTransform* shader_transform = state.GetShaderTransform();
   if (SVGObjectPainter::HasFill(style, context_paints)) {
     if (object_painter.PreparePaint(state.GetPaintFlags(), style,
                                     kApplyToFillMode, paints.fill.emplace(),
                                     shader_transform)) {
+      PrepareTextShadow(text_shadows, style, *paints.fill);
       paints.fill->setAntiAlias(true);
     } else {
       paints.fill.reset();
@@ -231,6 +285,7 @@ void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
     if (object_painter.PreparePaint(state.GetPaintFlags(), style,
                                     kApplyToStrokeMode, paints.stroke.emplace(),
                                     shader_transform)) {
+      PrepareTextShadow(text_shadows, style, *paints.stroke);
       paints.stroke->setAntiAlias(true);
 
       PrepareStrokeGeometry(state, style, layout_parent, paint_mode,
@@ -286,43 +341,30 @@ void TextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
   DCHECK_LE(fragment_paint_info.from, fragment_paint_info.text.length());
   DCHECK_LE(fragment_paint_info.to, fragment_paint_info.text.length());
 
+  GraphicsContextStateSaver state_saver(graphics_context_, false);
+  UpdateGraphicsContext(graphics_context_, text_style, state_saver,
+                        shadow_mode);
   // TODO(layout-dev): Handle combine text here or elsewhere.
-  PaintWithTextShadow(
-      [&](TextShadowPaintPhase phase) {
-        GraphicsContextStateSaver state_saver(graphics_context_, false);
-        UpdateGraphicsContext(graphics_context_, text_style, state_saver,
-                              phase);
+  if (svg_text_paint_state_.has_value()) {
+    const AutoDarkMode svg_text_auto_dark_mode(
+        DarkModeFilter::ElementRole::kSVG,
+        auto_dark_mode.enabled &&
+            !svg_text_paint_state_->IsRenderingClipPathAsMaskImage());
+    PaintSvgTextFragment(fragment_paint_info, node_id, svg_text_auto_dark_mode);
+  } else {
+    graphics_context_.DrawText(font_, fragment_paint_info,
+                               gfx::PointF(text_origin_), node_id,
+                               auto_dark_mode);
+  }
 
-        if (svg_text_paint_state_.has_value()) {
-          // clipPath works on raw geometry even with shadow.
-          if (phase == TextShadowPaintPhase::kForeground ||
-              !svg_text_paint_state_->IsRenderingClipPathAsMaskImage()) {
-            const AutoDarkMode svg_text_auto_dark_mode(
-                DarkModeFilter::ElementRole::kSVG,
-                auto_dark_mode.enabled &&
-                    !svg_text_paint_state_->IsRenderingClipPathAsMaskImage());
-            PaintSvgTextFragment(fragment_paint_info, node_id,
-                                 svg_text_auto_dark_mode);
-          }
-        } else {
-          graphics_context_.DrawText(font_, fragment_paint_info,
-                                     gfx::PointF(text_origin_), node_id,
-                                     auto_dark_mode);
-        }
-
-        if (!emphasis_mark_.empty()) {
-          if (phase == TextShadowPaintPhase::kForeground &&
-              text_style.emphasis_mark_color != text_style.fill_color) {
-            graphics_context_.SetFillColor(text_style.emphasis_mark_color);
-          }
-          graphics_context_.DrawEmphasisMarks(
-              font_, fragment_paint_info, emphasis_mark_,
-              gfx::PointF(text_origin_) +
-                  gfx::Vector2dF(0, emphasis_mark_offset_),
-              auto_dark_mode);
-        }
-      },
-      graphics_context_, text_style, horizontal_, shadow_mode);
+  if (!emphasis_mark_.empty()) {
+    if (text_style.emphasis_mark_color != text_style.fill_color)
+      graphics_context_.SetFillColor(text_style.emphasis_mark_color);
+    graphics_context_.DrawEmphasisMarks(
+        font_, fragment_paint_info, emphasis_mark_,
+        gfx::PointF(text_origin_) + gfx::Vector2dF(0, emphasis_mark_offset_),
+        auto_dark_mode);
+  }
 
   // TODO(sohom): SubstringContainsOnlyWhitespaceOrEmpty() does not check
   // for all whitespace characters as defined in the spec definition of
@@ -351,9 +393,8 @@ void TextPainter::PaintSelectedText(
     const LineRelativeRect& selection_rect,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
-  if (!fragment_paint_info.shape_result) {
+  if (!fragment_paint_info.shape_result)
     return;
-  }
 
   // Use fast path if all glyphs fit in |selection_rect|. |visual_rect_| is the
   // ink bounds of all glyphs of this text fragment, including characters before
@@ -421,19 +462,18 @@ void TextPainter::PaintSelectedText(
 }
 
 void TextPainter::SetEmphasisMark(const AtomicString& emphasis_mark,
-                                  TextEmphasisPosition position) {
+                                  LineLogicalSide emphasis_line_side) {
   emphasis_mark_ = emphasis_mark;
   const SimpleFontData* font_data = font_.PrimaryFont();
   DCHECK(font_data);
 
   if (!font_data || emphasis_mark.IsNull()) {
     emphasis_mark_offset_ = 0;
-  } else if ((horizontal_ && IsOver(position)) ||
-             (!horizontal_ && IsRight(position))) {
+  } else if (emphasis_line_side == LineLogicalSide::kOver) {
     emphasis_mark_offset_ = -font_data->GetFontMetrics().Ascent() -
                             font_.EmphasisMarkDescent(emphasis_mark);
   } else {
-    DCHECK(!IsOver(position) || position == TextEmphasisPosition::kOverLeft);
+    DCHECK(emphasis_line_side == LineLogicalSide::kUnder);
     emphasis_mark_offset_ = font_data->GetFontMetrics().Descent() +
                             font_.EmphasisMarkAscent(emphasis_mark);
   }
@@ -481,9 +521,8 @@ void TextPainter::ClipDecorationsStripe(
     float stripe_width,
     float dilation) {
   if (fragment_paint_info.from >= fragment_paint_info.to ||
-      !fragment_paint_info.shape_result) {
+      !fragment_paint_info.shape_result)
     return;
-  }
 
   Vector<Font::TextIntercept> text_intercepts;
   font_.GetTextIntercepts(fragment_paint_info, graphics_context_.FillFlags(),
@@ -632,15 +671,13 @@ const LayoutObject& TextPainter::SvgTextPaintState::TextDecorationObject()
   while (result) {
     if (style_variant_ == StyleVariant::kFirstLine) {
       if (const ComputedStyle* style = result->FirstLineStyle()) {
-        if (style->GetTextDecorationLine() != TextDecorationLine::kNone) {
+        if (style->GetTextDecorationLine() != TextDecorationLine::kNone)
           break;
-        }
       }
     }
     if (const ComputedStyle* style = result->Style()) {
-      if (style->GetTextDecorationLine() != TextDecorationLine::kNone) {
+      if (style->GetTextDecorationLine() != TextDecorationLine::kNone)
         break;
-      }
     }
 
     result = result->Parent();

@@ -164,7 +164,7 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
   }
 
   private getSecurityItems_(): string[] {
-    return this.hotspotInfo!.allowedWifiSecurityModes.map(security => {
+    return this.hotspotInfo.allowedWifiSecurityModes.map(security => {
       return this.getWifiSecurityTypeString_(security);
     });
   }

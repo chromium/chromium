@@ -40,8 +40,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -55,7 +55,7 @@ public class DisplayCutoutControllerTest {
 
     @Mock private Tab mTab;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
 
     @Mock private WindowAndroid mWindowAndroid;
 
@@ -301,6 +301,22 @@ public class DisplayCutoutControllerTest {
                 DisplayCutoutController.getSafeAreaInsetsTracker(mTab).isViewportFitCover());
 
         reset(mTab);
+    }
+
+    @Test
+    public void testSafeAreaConstraint() {
+        mDisplayCutoutTabHelper.setSafeAreaConstraint(true);
+        DisplayCutoutController.SafeAreaInsetsTracker tracker =
+                DisplayCutoutController.getSafeAreaInsetsTracker(mTab);
+        Assert.assertNotNull(tracker);
+        Assert.assertTrue(
+                "SafeAreaConstrain did not pass through to the safe area insets tracker.",
+                tracker.hasSafeAreaConstraint());
+
+        mDisplayCutoutTabHelper.setSafeAreaConstraint(false);
+        Assert.assertFalse(
+                "SafeAreaConstrain did not pass through to the safe area insets tracker.",
+                tracker.hasSafeAreaConstraint());
     }
 
     @Test

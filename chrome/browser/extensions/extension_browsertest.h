@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_protocols.h"
@@ -34,7 +33,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
@@ -47,6 +45,7 @@ class ServiceWorkerContext;
 
 namespace extensions {
 class ChromeExtensionTestNotificationObserver;
+class ExtensionBrowserTestPlatformDelegate;
 class ExtensionCacheFake;
 class ExtensionService;
 class ExtensionSet;
@@ -74,6 +73,10 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
   }
 
  protected:
+  // The platform delegate is an implementation detail of the test harness
+  // and should be able to access anything any general test would access.
+  friend class ExtensionBrowserTestPlatformDelegate;
+
   explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
   ~ExtensionBrowserTest() override;
 
@@ -122,7 +125,8 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
-  void DisableExtension(const std::string& extension_id, int disable_reasons);
+  void DisableExtension(const ExtensionId& extension_id,
+                        const DisableReasonSet& disable_reasons);
 
   // Loads unpacked extension from |path| with manifest |manifest_relative_path|
   // and imitates that it is a component extension.
@@ -281,36 +285,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
                                   const std::string& path,
                                   int expected_hosts);
 
-  // Waits until `script` calls "chrome.test.sendScriptResult(result)",
-  // where `result` is a serializable value, and returns `result`. Fails
-  // the test and returns an empty base::Value if `extension_id` isn't
-  // installed in the test's profile or doesn't have a background page, or
-  // if executing the script fails. The argument `script_user_activation`
-  // determines if the script should be executed after a user activation.
-  base::Value ExecuteScriptInBackgroundPage(
-      const extensions::ExtensionId& extension_id,
-      const std::string& script,
-      browsertest_util::ScriptUserActivation script_user_activation =
-          browsertest_util::ScriptUserActivation::kDontActivate);
-
-  // Waits until |script| calls "window.domAutomationController.send(result)",
-  // where |result| is a string, and returns |result|. Fails the test and
-  // returns an empty base::Value if |extension_id| isn't installed in test's
-  // profile or doesn't have a background page, or if executing the script
-  // fails. The argument |script_user_activation| determines if the script
-  // should be executed after a user activation.
-  std::string ExecuteScriptInBackgroundPageDeprecated(
-      const extensions::ExtensionId& extension_id,
-      const std::string& script,
-      browsertest_util::ScriptUserActivation script_user_activation =
-          browsertest_util::ScriptUserActivation::kDontActivate);
-
-  bool ExecuteScriptInBackgroundPageNoWait(
-      const extensions::ExtensionId& extension_id,
-      const std::string& script,
-      browsertest_util::ScriptUserActivation script_user_activation =
-          browsertest_util::ScriptUserActivation::kDontActivate);
-
   // Get the ServiceWorkerContext for the default browser's profile.
   content::ServiceWorkerContext* GetServiceWorkerContext();
 
@@ -369,15 +343,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
 
   // Returns the WindowController for this test's browser window.
   WindowController* GetWindowController();
-
-  // Used for setting the default scoped current channel for extension browser
-  // tests to UNKNOWN (trunk), in order to enable channel restricted features.
-  // TODO(crbug.com/40261741): We should remove this and have the current
-  // channel respect what is defined on the builder. If a test requires a
-  // specific channel for a channel restricted feature, it should be defining
-  // its own scoped channel override. As this stands, it means we don't really
-  // have non-trunk coverage for most extension browser tests.
-  ScopedCurrentChannel current_channel_;
 
   // Disable external install UI.
   FeatureSwitch::ScopedOverride override_prompt_for_external_extensions_;

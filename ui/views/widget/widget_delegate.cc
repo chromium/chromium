@@ -32,6 +32,11 @@ std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
       widget, delegate->TransferOwnershipOfContentsView());
 }
 
+std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
+    Widget* widget) {
+  return nullptr;
+}
+
 std::unique_ptr<View> CreateDefaultOverlayView() {
   return nullptr;
 }
@@ -48,6 +53,8 @@ WidgetDelegate::WidgetDelegate()
     : widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
       client_view_factory_(
           base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
+      non_client_frame_view_factory_(
+          base::BindRepeating(&CreateDefaultNonClientFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 
 WidgetDelegate::~WidgetDelegate() {
@@ -160,7 +167,7 @@ bool WidgetDelegate::RotatePaneFocusFromView(View* focused_view,
   // Check to see if a pane already has focus and update the index accordingly.
   if (focused_view) {
     const auto i =
-        base::ranges::find_if(panes, [focused_view](const auto* pane) {
+        std::ranges::find_if(panes, [focused_view](const auto* pane) {
           return pane && pane->Contains(focused_view);
         });
     if (i != panes.cend()) {
@@ -369,7 +376,8 @@ ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
 
 std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
     Widget* widget) {
-  return nullptr;
+  CHECK(non_client_frame_view_factory_);
+  return non_client_frame_view_factory_.Run(widget);
 }
 
 View* WidgetDelegate::CreateOverlayView() {
@@ -540,6 +548,12 @@ void WidgetDelegate::RegisterDeleteDelegateCallback(
 void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
   DCHECK(!GetWidget());
   client_view_factory_ = std::move(factory);
+}
+
+void WidgetDelegate::SetNonClientFrameViewFactory(
+    NonClientFrameViewFactory factory) {
+  DCHECK(!GetWidget());
+  non_client_frame_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {

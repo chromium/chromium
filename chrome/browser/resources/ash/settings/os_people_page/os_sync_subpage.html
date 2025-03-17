@@ -116,22 +116,13 @@
   <div id="[[pageStatusEnum_.CONFIGURE]]"
       hidden$="[[!isStatus_(pageStatusEnum_.CONFIGURE, pageStatus_)]]">
     <div id="other-sync-items" class="list-frame">
-      <cr-link-row id="syncAdvancedRow"
-          label="[[getSyncAdvancedTitle_()]]"
+      <cr-link-row id="syncAdvancedRow" label="$i18n{syncAdvancedPageTitle}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onSyncAdvancedClick_">
       </cr-link-row>
 
-      <cr-link-row id="syncBrowserLink" class="hr"
-          label="$i18n{manageBrowserSyncedDataTitle}"
-          hidden="[[!showSyncSettingsRevamp_]]"
-          on-click="onManageChromeBrowserSyncClick_"
-          external>
-      </cr-link-row>
-
       <cr-link-row id="syncDashboardLink" class="hr"
           label="$i18n{manageSyncedDataTitle}"
-          sub-label="[[getManageSyncedDataSubtitle_()]]"
           on-click="onSyncDashboardLinkClick_"
           hidden="[[syncStatus.supervisedUser]]"
           external>

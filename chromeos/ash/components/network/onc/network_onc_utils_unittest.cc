@@ -22,8 +22,10 @@
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/test/chromeos_test_utils.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::onc {
@@ -38,12 +40,18 @@ class ONCUtilsTest : public testing::Test {
   ~ONCUtilsTest() override = default;
 
   void SetUp() override {
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    auto account_id = AccountId::FromUserEmail("account@test.com");
-    const user_manager::User* user = fake_user_manager->AddUser(account_id);
-    fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
-                                    /*browser_restart=*/false,
-                                    /*is_child=*/false);
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    auto fake_user_manager =
+        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+    auto account_id =
+        AccountId::FromUserEmailGaiaId("account@test.com", GaiaId("fakegaia"));
+    const user_manager::User* user = fake_user_manager->AddGaiaUser(
+        account_id, user_manager::UserType::kRegular);
+    fake_user_manager->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
     fake_user_manager->SwitchActiveUser(account_id);
 
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -64,6 +72,7 @@ class ONCUtilsTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
 };

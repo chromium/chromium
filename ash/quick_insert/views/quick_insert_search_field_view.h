@@ -85,8 +85,8 @@ class ASH_EXPORT QuickInsertSearchFieldView
   void ContentsChangedInternal(std::u16string_view new_contents);
 
   // Gets or sets the placeholder text to show when the textfield is empty.
-  const std::u16string& GetPlaceholderText() const;
-  void SetPlaceholderText(const std::u16string& new_placeholder_text);
+  std::u16string_view GetPlaceholderText() const;
+  void SetPlaceholderText(std::u16string_view new_placeholder_text);
 
   // Sets the active descendant of the underlying textfield to `view` for screen
   // readers. `view` may be null, in which case the active descendant is

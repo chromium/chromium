@@ -5,6 +5,10 @@
 import("//build/config/rust.gni")
 
 if (toolchain_has_rust) {
+  config("edition_2024") {
+    rustflags = [ "--edition=2024" ]
+  }
+
   config("edition_2021") {
     rustflags = [ "--edition=2021" ]
   }

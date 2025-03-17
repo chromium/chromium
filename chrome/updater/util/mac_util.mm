@@ -285,16 +285,6 @@ std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
               : std::nullopt;
 }
 
-std::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
-  base::FilePath caches_path;
-  if (!base::apple::GetLocalDirectory(NSCachesDirectory, &caches_path)) {
-    VLOG(1) << "Could not get Caches path";
-    return std::nullopt;
-  }
-  return std::optional<base::FilePath>(
-      caches_path.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING));
-}
-
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
   std::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   return install_dir
@@ -327,7 +317,7 @@ std::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
     }
     return base::apple::NSStringToFilePath(library_paths[0])
         .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
-        .AppendASCII(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
+        .Append(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
   }
 }
 
@@ -383,7 +373,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
                             kExecutableSuffix, ".app"}))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"))
-      .AppendASCII(base::StrCat(
+      .Append(base::StrCat(
           {BROWSER_NAME_STRING, "EnterpriseCompanion", kExecutableSuffix}));
 }
 

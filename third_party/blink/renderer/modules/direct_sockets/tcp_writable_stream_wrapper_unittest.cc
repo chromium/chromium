@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -154,7 +155,7 @@ TEST(TCPWritableStreamWrapperTest, WriteArrayBufferView) {
 }
 
 bool IsAllNulls(base::span<const uint8_t> data) {
-  return base::ranges::all_of(data, [](uint8_t c) { return !c; });
+  return std::ranges::all_of(data, [](uint8_t c) { return !c; });
 }
 
 TEST(TCPWritableStreamWrapperTest, AsyncWrite) {

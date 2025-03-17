@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FacialGesture} from './facial_gestures.js';
+import type {FacialGesture} from './facial_gestures.js';
 
 /** Minimum time duration for a gesture to be recognized. */
 const DEFAULT_MINIMUM_DURATION_MS = 150;

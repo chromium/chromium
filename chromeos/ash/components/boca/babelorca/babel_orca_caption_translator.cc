@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "components/live_caption/translation_dispatcher.h"
@@ -46,6 +47,8 @@ void BabelOrcaCaptionTranslator::Translate(
     OnTranslationCallback callback,
     const std::string& source_language,
     const std::string& target_language) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // no callback = noop
   if (!callback) {
     VLOG(1) << "Must pass a valid callback to translate.";
@@ -85,29 +88,16 @@ void BabelOrcaCaptionTranslator::Translate(
   current_source_language_ = source_language;
   current_target_language_ = target_language;
 
-  // Check the cache for work that is already done.
-  auto cache_result = translation_cache_.FindCachedTranslationOrRemaining(
-      recognition_result.transcription, source_language, target_language);
-  std::string cached_translation = cache_result.second;
-  std::string string_to_translate = cache_result.first;
+  // Enqueue the dispatch, we might have to wait until a pending translation is
+  // completed before dispatching the current one.
+  dispatch_queue_.push(
+      base::BindOnce(&BabelOrcaCaptionTranslator::DispatchTranslationRequest,
+                     weak_ptr_factory_.GetWeakPtr(), recognition_result,
+                     source_language, target_language, std::move(callback)));
 
-  // This logic mirrors the logic in SystemLiveCaptionService's
-  // OnSpeechResult translation logic.
-  if (!string_to_translate.empty()) {
-    // TODO(376329088) record translation metric.
-    translation_dispatcher_->GetTranslation(
-        string_to_translate, source_language, target_language,
-        base::BindOnce(
-            &BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-            cached_translation, string_to_translate, source_language,
-            target_language, recognition_result.is_final));
-  } else {
-    // If the entirety of the string to translate is found in the cache
-    // return the cached translation rather than performing a redundant
-    // translation.
-    std::move(callback).Run(media::SpeechRecognitionResult(
-        cached_translation, recognition_result.is_final));
+  // If there isn't a segment pending then we will dispatch immediately.
+  if (!pending_is_final_) {
+    PopQueue();
   }
 }
 
@@ -123,6 +113,53 @@ void BabelOrcaCaptionTranslator::UnsetCurrentLanguagesForTesting() {
   current_target_language_ = std::nullopt;
 }
 
+void BabelOrcaCaptionTranslator::DispatchTranslationRequest(
+    const media::SpeechRecognitionResult& sr_result,
+    const std::string& source_language,
+    const std::string& target_language,
+    OnTranslationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Because segments will always come in order if our current
+  // segment is not final and there is more than one dispatch
+  // in the queue we know that a subsequent dispatch contains a
+  // superstring of the current dispatch so we can skip the
+  // current dispatch to prevent redundant work.
+  if (!sr_result.is_final && !dispatch_queue_.empty()) {
+    PopQueue();
+    return;
+  }
+
+  // Check the cache for work that is already done.
+  auto cache_result = translation_cache_.FindCachedTranslationOrRemaining(
+      sr_result.transcription, source_language, target_language);
+  std::string cached_translation = cache_result.second;
+  std::string string_to_translate = cache_result.first;
+
+  // If we have the entirety of the translation in the cache there is no
+  // reason to dispatch, just return the cached value. In terms of the
+  // dispatch queue this is semantically equivalent to dispatching
+  // a translation and receiving the response, so flush the queue
+  // as well.
+  if (string_to_translate.empty()) {
+    std::move(callback).Run(
+        media::SpeechRecognitionResult(cached_translation, sr_result.is_final));
+    PopQueue();
+    return;
+  }
+
+  pending_is_final_ = sr_result.is_final;
+
+  // We actually have something to translate, so actually dispatch
+  // it.
+  translation_dispatcher_->GetTranslation(
+      string_to_translate, source_language, target_language,
+      base::BindOnce(
+          &BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          cached_translation, sr_result.transcription, source_language,
+          target_language, sr_result.is_final));
+}
+
 void BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback(
     OnTranslationCallback callback,
     const std::string& cached_translation,
@@ -130,8 +167,22 @@ void BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback(
     const std::string& source_language,
     const std::string& target_language,
     bool is_final,
-    const std::string& result) {
-  std::string formatted_result = result;
+    const captions::TranslateEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // In case of error just return the non-translated text and dip
+  // out.
+  //
+  // TODO(384018894) Record error metrics?
+  // TODO(384026579) Communicate something went wrong to the
+  // end user.
+  if (!event.has_value()) {
+    VLOG(1) << event.error();
+    std::move(callback).Run(
+        media::SpeechRecognitionResult(original_transcription, is_final));
+    return;
+  }
+
+  std::string formatted_result = event.value();
 
   bool is_non_ideographic_source_or_ideographic_target =
       IsNonIdeographicSourceOrIdeographicTarget(source_language,
@@ -147,7 +198,7 @@ void BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback(
   if (is_non_ideographic_source_or_ideographic_target && is_final) {
     translation_cache_.Clear();
   } else if (is_non_ideographic_source_or_ideographic_target) {
-    translation_cache_.InsertIntoCache(original_transcription, result,
+    translation_cache_.InsertIntoCache(original_transcription, event.value(),
                                        source_language, target_language);
   } else if (is_final) {
     // Append a space after final results when translating from an ideographic
@@ -161,8 +212,23 @@ void BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback(
     formatted_result += " ";
   }
 
-  auto text = base::StrCat({cached_translation, formatted_result});
-  std::move(callback).Run(media::SpeechRecognitionResult(text, is_final));
+  std::move(callback).Run(media::SpeechRecognitionResult(
+      base::StrCat({cached_translation, formatted_result}), is_final));
+
+  pending_is_final_ = false;
+
+  PopQueue();
+}
+
+void BabelOrcaCaptionTranslator::PopQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (dispatch_queue_.empty()) {
+    return;
+  }
+
+  auto cb = std::move(dispatch_queue_.front());
+  dispatch_queue_.pop();
+  std::move(cb).Run();
 }
 
 }  // namespace ash::babelorca

@@ -190,8 +190,7 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
   if (context_state_->context_lost())
     return false;
 
-  auto sk_color = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, format());
+  auto sk_color = viz::ToClosestSkColorType(format());
   const std::string label =
       "RawDrawImageBacking" + CreateLabelForSharedImageUsage(usage());
   GrDirectContext* direct_context = context_state_->gr_context();

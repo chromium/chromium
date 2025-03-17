@@ -30,8 +30,6 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -93,11 +91,6 @@ OverviewItemView::OverviewItemView(
 
   close_button_->SetPaintToLayer();
   close_button_->layer()->SetFillsBoundsOpaquely(false);
-  close_button_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification().WithOrder(
-          WindowMiniViewHeaderView::IconLabelFlexPriorities::
-              kIconOrCloseButton));
   views::InkDrop::Get(close_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   close_button_->GetViewAccessibility().SetName(

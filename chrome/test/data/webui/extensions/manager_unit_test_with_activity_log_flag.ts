@@ -71,7 +71,7 @@ suite('ExtensionManagerUnitTest', function() {
 
     await microtasksFinished();
     const activityLog =
-        manager.shadowRoot!.querySelector('extensions-activity-log');
+        manager.shadowRoot.querySelector('extensions-activity-log');
     assertTrue(!!activityLog);  // View should now be present.
     assertEquals(extension.id, activityLog.extensionInfo.id);
 

@@ -35,6 +35,7 @@ declare global {
       export function setPdfPluginAttributes(attributes: PdfPluginAttributes):
           void;
       export const onSave: ChromeEvent<(url: string) => void>;
+      export const onShouldUpdateViewport: ChromeEvent<(url: string) => void>;
     }
   }
 }

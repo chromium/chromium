@@ -20,8 +20,8 @@ namespace net {
 namespace test_server {
 class EmbeddedTestServer;
 struct HttpRequest;
-}
-}
+}  // namespace test_server
+}  // namespace net
 
 namespace web {
 class ResponseProvider;

@@ -16,16 +16,11 @@
 #include "ui/views/controls/webview/webview.h"
 
 class StatusBubbleViews;
+class WebContentsCloseHandler;
 
 namespace ui {
 class LayerTreeOwner;
-}
-
-#if BUILDFLAG(ENABLE_GLIC)
-namespace glic {
-class BorderView;
-}  // namespace glic
-#endif
+}  // namespace ui
 
 // ContentsWebView is used to present the WebContents of the active tab.
 class ContentsWebView : public views::WebView,
@@ -40,17 +35,13 @@ class ContentsWebView : public views::WebView,
   ContentsWebView& operator=(const ContentsWebView&) = delete;
   ~ContentsWebView() override;
 
-  // Sets the status bubble, which should be repositioned every time
-  // this view changes visible bounds.
-  void SetStatusBubble(StatusBubbleViews* status_bubble);
   StatusBubbleViews* GetStatusBubble() const;
+  WebContentsCloseHandler* GetWebContentsCloseHandler() const;
 
   // Toggles whether the background is visible.
   void SetBackgroundVisible(bool background_visible);
 
-  const gfx::RoundedCornersF& background_radii() const {
-    return background_radii_;
-  }
+  const gfx::RoundedCornersF& GetBackgroundRadii() const;
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
   // WebView overrides:
@@ -67,26 +58,15 @@ class ContentsWebView : public views::WebView,
   void CloneWebContentsLayer() override;
   void DestroyClonedLayer() override;
 
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::BorderView* glic_border() const { return glic_border_; }
-#endif
-
  private:
   void UpdateBackgroundColor();
-  raw_ptr<StatusBubbleViews> status_bubble_;
+  std::unique_ptr<StatusBubbleViews> status_bubble_ = nullptr;
+  std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_ =
+      nullptr;
 
   bool background_visible_ = true;
 
-  gfx::RoundedCornersF background_radii_;
-
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
-
-#if BUILDFLAG(ENABLE_GLIC)
-  // Always non-null, except during the View tree destruction. It draws a border
-  // around the web contents area, and is always the z-topmost child View of
-  // `this`.
-  raw_ptr<glic::BorderView> glic_border_ = nullptr;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_WEB_VIEW_H_

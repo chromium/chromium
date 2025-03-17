@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_html_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
@@ -62,7 +61,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
@@ -87,7 +85,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -171,7 +168,11 @@ static inline bool CollectChildrenAndRemoveFromOldParent(
     ExceptionState& exception_state) {
   if (auto* fragment = DynamicTo<DocumentFragment>(node)) {
     GetChildNodes(*fragment, nodes);
-    fragment->RemoveChildren();
+    if (fragment->HoldsUnnotifiedChildren()) {
+      fragment->ForgetChildren();
+    } else {
+      fragment->RemoveChildren();
+    }
     return !nodes.empty();
   }
   nodes.push_back(&node);
@@ -879,11 +880,15 @@ void ContainerNode::WillRemoveChildren() {
 }
 
 LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
-  return GetLayoutBox();
+  LayoutBox* box = GetLayoutBox();
+  if (box) {
+    box = box->ContentLayoutBox();
+  }
+  return box && box->IsScrollContainer() ? box : nullptr;
 }
 
 bool ContainerNode::IsReadingFlowContainer() const {
-  return GetLayoutBox() ? GetLayoutBox()->IsReadingFlowContainer() : false;
+  return GetLayoutBox() && GetLayoutBox()->IsReadingFlowContainer();
 }
 
 void ContainerNode::Trace(Visitor* visitor) const {
@@ -1247,7 +1252,8 @@ void ContainerNode::ParserAppendChildInDocumentFragment(Node* new_child) {
   probe::DidInsertDOMNode(this);
 }
 
-void ContainerNode::ParserFinishedBuildingDocumentFragment() {
+void ContainerNode::ParserFinishedBuildingDocumentFragment(
+    ShouldNotifyInsertedNodes call_mode) {
   EventDispatchForbiddenScope assert_no_event_dispatch;
   ScriptForbiddenScope forbid_script;
   const bool may_contain_shadow_roots = GetDocument().MayContainShadowRoots();
@@ -1256,10 +1262,11 @@ void ContainerNode::ParserFinishedBuildingDocumentFragment() {
       ChildrenChange::ForFinishingBuildingDocumentFragmentTree();
   for (Node& node : NodeTraversal::DescendantsOf(*this)) {
     NotifyNodeAtEndOfBuildingFragmentTree(node, change,
-                                          may_contain_shadow_roots);
+                                          may_contain_shadow_roots, call_mode);
   }
 
-  if (GetDocument().ShouldInvalidateNodeListCaches(nullptr)) {
+  if (call_mode == ShouldNotifyInsertedNodes::kNotify &&
+      GetDocument().ShouldInvalidateNodeListCaches(nullptr)) {
     GetDocument().InvalidateNodeListCaches(nullptr);
   }
 }
@@ -1267,7 +1274,8 @@ void ContainerNode::ParserFinishedBuildingDocumentFragment() {
 void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
     Node& node,
     const ChildrenChange& change,
-    bool may_contain_shadow_roots) {
+    bool may_contain_shadow_roots,
+    ShouldNotifyInsertedNodes call_mode) {
   // Fast path parser only creates disconnected nodes.
   DCHECK(!node.isConnected());
 
@@ -1287,13 +1295,15 @@ void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
   // kInsertionShouldCallDidNotifySubtreeInsertions, but only if the node
   // is connected. None of the nodes are connected at this point, so it's
   // not needed here.
-  node.InsertedInto(*this);
+  if (call_mode == ShouldNotifyInsertedNodes::kNotify) {
+    node.InsertedInto(*this);
+  }
 
   if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
     for (Node& shadow_node :
          NodeTraversal::InclusiveDescendantsOf(*shadow_root)) {
-      NotifyNodeAtEndOfBuildingFragmentTree(shadow_node, change,
-                                            may_contain_shadow_roots);
+      NotifyNodeAtEndOfBuildingFragmentTree(
+          shadow_node, change, may_contain_shadow_roots, call_mode);
     }
   }
 
@@ -1431,12 +1441,17 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   if (!change.IsChildInsertion())
     return;
   Node* inserted_node = change.sibling_changed;
-  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
+  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode()) {
     inserted_node->ClearFlatTreeNodeDataIfHostChanged(*this);
+  } else {
+    return;
+  }
   if (!InActiveDocument())
     return;
   if (Element* element = DynamicTo<Element>(this)) {
     if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+      // This is always safe, since `inserted_node` is either an element or text
+      // node, whose style can be dirtied.
       inserted_node->FlatTreeParentChanged();
     }
     if (!element->GetComputedStyle()) {
@@ -1448,8 +1463,7 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
       return;
     }
   }
-  if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
-    inserted_node->SetStyleChangeOnInsertion();
+  inserted_node->SetStyleChangeOnInsertion();
 }
 
 bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {
@@ -1507,24 +1521,6 @@ unsigned ContainerNode::CountChildren() const {
   for (Node* node = firstChild(); node; node = node->nextSibling())
     count++;
   return count;
-}
-
-bool ContainerNode::HasOnlyText() const {
-  bool has_text = false;
-  for (Node* child = firstChild(); child; child = child->nextSibling()) {
-    switch (child->getNodeType()) {
-      case kTextNode:
-      case kCdataSectionNode:
-        has_text = has_text || !To<Text>(child)->data().empty();
-        break;
-      case kCommentNode:
-        // Ignore comments.
-        break;
-      default:
-        return false;
-    }
-  }
-  return has_text;
 }
 
 Element* ContainerNode::QuerySelector(const AtomicString& selectors,
@@ -1855,34 +1851,6 @@ RadioNodeList* ContainerNode::GetRadioNodeList(const AtomicString& name,
   return EnsureCachedCollection<RadioNodeList>(type, name);
 }
 
-String ContainerNode::FindTextInElementWith(
-    const AtomicString& substring,
-    base::FunctionRef<bool(const String&)> validity_checker) const {
-  for (Element& element : ElementTraversal::DescendantsOf(*this)) {
-    String text;
-    if (element.HasTagName(html_names::kInputTag) &&
-        element.FastHasAttribute(html_names::kReadonlyAttr) &&
-        EqualIgnoringASCIICase(element.FastGetAttribute(html_names::kTypeAttr),
-                               "text") &&
-        RuntimeEnabledFeatures::FindTextInReadonlyTextInputEnabled()) {
-      text = To<HTMLInputElement>(element).Value();
-    } else if (element.HasOnlyText()) {
-      text = element.TextFromChildren();
-    }
-
-    if (text.empty()) {
-      continue;
-    }
-
-    if (text.FindIgnoringASCIICase(substring) != WTF::kNotFound &&
-        validity_checker(text)) {
-      return text;
-    }
-  }
-
-  return String();
-}
-
 StaticNodeList* ContainerNode::FindAllTextNodesMatchingRegex(
     const String& regex) const {
   blink::HeapVector<Member<Node>> nodes_matching_regex;
@@ -1961,29 +1929,6 @@ Element* ContainerNode::GetAutofocusDelegate() const {
   }
 
   return nullptr;
-}
-
-// https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
-void ContainerNode::ReplaceChildren(Node* new_child,
-                                    ExceptionState& exception_state) {
-  CHECK(!RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
-
-  if (!EnsurePreInsertionValidity(new_child, /* new_children*/ nullptr,
-                                  /*next*/ nullptr, /*old_child*/ nullptr,
-                                  exception_state)) {
-    return;
-  }
-
-  // 3. Replace all with node within this.
-  ChildListMutationScope mutation(*this);
-  while (Node* first_child = firstChild()) {
-    RemoveChild(first_child, exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-  }
-
-  AppendChild(new_child, exception_state);
 }
 
 // https://dom.spec.whatwg.org/#dom-parentnode-replacechildren

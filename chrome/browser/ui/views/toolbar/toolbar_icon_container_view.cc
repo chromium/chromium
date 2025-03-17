@@ -149,7 +149,7 @@ void ToolbarIconContainerView::AddMainItem(views::View* item) {
     ObserveButton(main_button);
   }
 
-  AddChildView(main_item_.get());
+  AddChildViewRaw(main_item_.get());
 }
 
 void ToolbarIconContainerView::ObserveButton(views::Button* button) {

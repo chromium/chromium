@@ -19,7 +19,7 @@ from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
 _SRC_PATH = pathlib.Path(build_utils.DIR_SOURCE_ROOT).resolve()
-sys.path.append(str(_SRC_PATH / 'build/gn_ast'))
+sys.path.insert(1, str(_SRC_PATH / 'build/gn_ast'))
 from gn_editor import NO_VALID_GN_STR
 
 
@@ -298,7 +298,7 @@ def main(argv):
       auto_add_deps=args.auto_add_deps)
   logging.info('Check completed.')
 
-  build_utils.Touch(args.stamp)
+  server_utils.MaybeTouch(args.stamp)
 
 
 if __name__ == '__main__':

@@ -231,7 +231,7 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
     message_body_label->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, horizontal_adjustment, 0, 0)));
   }
-  AddChildView(message_body_label);
+  AddChildViewRaw(message_body_label);
 }
 
 gfx::Size PasswordReuseModalWarningDialog::GetMinimumSize() const {

@@ -107,6 +107,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   NavigationEntryImpl* GetVisibleEntry() override;
   int GetCurrentEntryIndex() override;
   NavigationEntryImpl* GetLastCommittedEntry() override;
+  const NavigationEntryImpl* GetLastCommittedEntry() const override;
   int GetLastCommittedEntryIndex() override;
   bool CanViewSource() override;
   int GetEntryCount() override;
@@ -869,10 +870,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_new_entry,
       LoadCommittedDetails* commit_details);
 
-  // Broadcasts this controller's session history offset and length to all
-  // renderers involved in rendering the current page. The offset is
+  // Broadcasts this controller's session history index and length to all
+  // renderers involved in rendering the current page. The index is
   // GetLastCommittedEntryIndex() and length is GetEntryCount().
-  void BroadcastHistoryOffsetAndLength();
+  void BroadcastHistoryIndexAndLength();
 
   // Used by PopulateNavigationApiHistoryEntryVectors to initialize a single
   // vector. `last_index_checked` is an out parameter that indicates the last

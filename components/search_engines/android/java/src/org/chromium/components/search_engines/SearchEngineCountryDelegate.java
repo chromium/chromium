@@ -7,11 +7,12 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,6 +22,7 @@ import java.time.Instant;
  * Placeholder delegate class to get interact with internal device APIs involved in the search
  * engine choice experiences.
  */
+@NullMarked
 public abstract class SearchEngineCountryDelegate {
     @MainThread
     public SearchEngineCountryDelegate() {}

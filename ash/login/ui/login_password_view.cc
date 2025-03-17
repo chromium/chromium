@@ -153,8 +153,8 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
     const ui::ColorId background_color =
         cros_tokens::kCrosSysSystemBaseElevated;
 
-    SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                           corner_radius));
+    SetBackground(
+        views::CreateRoundedRectBackground(background_color, corner_radius));
   }
 
   ~LoginPasswordRow() override = default;
@@ -207,6 +207,15 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
       on_focus_closure_.Run();
     }
     views::Textfield::OnFocus();
+  }
+
+  // views::Textfield:
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
+    // Prevent context menu on password input fields.
+    return;
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
@@ -357,7 +366,7 @@ LoginPasswordView::LoginPasswordView()
       kJellyPasswordRowCornerRadiusDp,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-  password_row_->SetBackground(views::CreateThemedRoundedRectBackground(
+  password_row_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kJellyPasswordRowCornerRadiusDp));
 
   auto layout = std::make_unique<views::BoxLayout>(
@@ -457,7 +466,7 @@ void LoginPasswordView::Reset() {
   textfield_->ClearEditHistory();
   // |ContentsChanged| won't be called by |Textfield| if the text is changed
   // by |Textfield::SetText()|.
-  ContentsChanged(textfield_, textfield_->GetText());
+  ContentsChanged(textfield_, std::u16string(textfield_->GetText()));
 }
 
 void LoginPasswordView::InsertNumber(int value) {

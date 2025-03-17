@@ -1,0 +1,8 @@
+[document web]
+++[section]
+++++[list box] name='selection_list'
+++++++[panel] name='Enabled'
+++++++++[list item] name='One' selectable
+++++++++[list item] name='Two' selectable
+++++++++[list item] name='Three' selectable
+++++++++[list item] name='Four' selectable

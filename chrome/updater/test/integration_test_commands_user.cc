@@ -63,13 +63,14 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                             const bool verify_app_logo_loaded,
                             const bool expect_success,
                             const bool wait_for_the_installer,
+                            const int expected_exit_code,
                             const base::Value::List& additional_switches,
                             const base::FilePath& updater_path) const override {
     updater::test::InstallUpdaterAndApp(
         updater_scope_, app_id, is_silent_install, tag,
         child_window_text_to_find, always_launch_cmd, verify_app_logo_loaded,
-        expect_success, wait_for_the_installer, additional_switches,
-        updater_path);
+        expect_success, wait_for_the_installer, expected_exit_code,
+        additional_switches, updater_path);
   }
 
   void ExpectInstalled() const override {
@@ -102,8 +103,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
-  void SetGroupPolicies(const base::Value::Dict& values) const override {
-    updater::test::SetGroupPolicies(values);
+  void SetDictPolicies(const base::Value::Dict& values) const override {
+    updater::test::SetDictPolicies(values);
   }
 
   void SetPlatformPolicies(const base::Value::Dict& values) const override {
@@ -296,6 +297,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::CheckForUpdate(updater_scope_, app_id);
   }
 
+  void ExpectCheckForUpdateOppositeScopeFails(
+      const std::string& app_id) const override {
+    updater::test::ExpectCheckForUpdateOppositeScopeFails(updater_scope_,
+                                                          app_id);
+  }
+
   void Update(const std::string& app_id,
               const std::string& install_data_index) const override {
     updater::test::Update(updater_scope_, app_id, install_data_index);
@@ -360,6 +367,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void ExpectLegacyPolicyStatusSucceeds() const override {
     updater::test::ExpectLegacyPolicyStatusSucceeds(updater_scope_);
+  }
+
+  void LegacyInstallApp(const std::string& app_id,
+                        const base::Version& version) const override {
+    updater::test::LegacyInstallApp(updater_scope_, app_id, version);
   }
 
   void RunUninstallCmdLine() const override {
@@ -468,9 +480,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,
-                                       bool is_silent_install) override {
+                                       bool is_silent_install,
+                                       const std::string& language) override {
     updater::test::RunOfflineInstallOsNotSupported(
-        updater_scope_, is_legacy_install, is_silent_install);
+        updater_scope_, is_legacy_install, is_silent_install, language);
   }
 
   void DMPushEnrollmentToken(const std::string& enrollment_token) override {

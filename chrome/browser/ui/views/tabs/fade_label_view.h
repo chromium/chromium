@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_
 
+#include <string_view>
+
 #include "chrome/browser/ui/views/tabs/fade_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -74,9 +76,9 @@ class FadeLabelView : public FadeView<FadeLabel, FadeLabel, FadeLabelViewData> {
 
   ~FadeLabelView() override = default;
 
-  std::u16string GetText();
+  std::u16string_view GetText() const;
 
-  void SetEnabledColorId(ui::ColorId color);
+  void SetEnabledColor(ui::ColorId color);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_

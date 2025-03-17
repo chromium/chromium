@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -68,7 +69,7 @@ struct CORE_EXPORT InlineItemResult {
 
  public:
   InlineItemResult() = default;
-  InlineItemResult(const InlineItem*,
+  InlineItemResult(const InlineItem&,
                    unsigned index,
                    const TextOffsetRange& text_offset,
                    bool break_anywhere_if_overflow,
@@ -100,7 +101,9 @@ struct CORE_EXPORT InlineItemResult {
                   const String& indent = "") const;
 
   // The InlineItem and its index.
-  const InlineItem* item = nullptr;
+  // Note that use `item_index` with caution, which may not always be the actual
+  // item index in the items list. See `LineBreaker::AddItem`.
+  Member<const InlineItem> item;
   unsigned item_index = 0;
 
   // The range of text content for this item.

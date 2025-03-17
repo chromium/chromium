@@ -16,13 +16,10 @@ def _setup_sys_path():
         os.path.join(this_dir, *(['..'] * expected_path.count('/'))))
 
     module_dirs = (
-        # //third_party/blink/renderer/bindings/scripts/web_idl
         os.path.join(root_dir, 'third_party', 'blink', 'renderer', 'bindings',
                      'scripts'),
-        # //third_party/blink/renderer/build/scripts/blinkbuild
         os.path.join(root_dir, 'third_party', 'blink', 'renderer', 'build',
                      'scripts'),
-        # //third_party/mako/mako/mako
         os.path.join(root_dir, 'third_party', 'mako', 'mako'),
     )
     for module_dir in reversed(module_dirs):

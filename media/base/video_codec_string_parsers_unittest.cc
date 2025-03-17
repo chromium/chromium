@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/video_codec_string_parsers.h"
+
 #include "base/containers/flat_set.h"
 #include "base/strings/stringprintf.h"
-#include "media/base/video_codec_string_parsers.h"
 #include "media/base/video_color_space.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -627,6 +628,105 @@ TEST(ParseHEVCCodecIdTest, InvalidHEVCCodecIds) {
     auto result = ParseHEVCCodecId(codec_id);
     ASSERT_TRUE(result);
     EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+  }
+
+  if (base::FeatureList::IsEnabled(kHEVCRextCodecStringParsing)) {
+    // HEVC range extension 8b444
+    for (const auto* codec_id :
+         {"hvc1.4.10.L93.9E.28", "hvc1.4.10.L93.9E.20", "hvc1.4.10.L93.9E.8"}) {
+      auto result = ParseHEVCCodecId(codec_id);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(8u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k444, result->subsampling.value());
+    }
+    // HEVC range extension 10b422. For 8-bit 422, the constraint flag is the
+    // same as 10-bit 422, so the bit depth will be 10 here to indicate the
+    // maximum supported value.
+    for (const auto* codec_id :
+         {"hvc1.4.10.L93.9D.28", "hvc1.4.10.L93.9D.20", "hvc1.4.10.L93.9D.8"}) {
+      auto result = ParseHEVCCodecId(codec_id);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(10u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k422, result->subsampling.value());
+    }
+    // HEVC range extension 10b444
+    for (const auto* codec_id :
+         {"hvc1.4.10.L93.9C.28", "hvc1.4.10.L93.9C.20", "hvc1.4.10.L93.9C.8"}) {
+      auto result = ParseHEVCCodecId(codec_id);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(10u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k444, result->subsampling.value());
+    }
+    // HEVC range extension 12b420
+    for (const auto* codec_id : {"hvc1.4.10.L93.99.A0", "hvc1.4.10.L93.99.A8",
+                                 "hvc1.4.10.L93.99.88"}) {
+      auto result = ParseHEVCCodecId(codec_id);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(12u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k420, result->subsampling.value());
+    }
+    // HEVC range extension 12b422
+    for (const auto* codec_id :
+         {"hvc1.4.10.L93.99.20", "hvc1.4.10.L93.99.28", "hvc1.4.0.L93.99.8"}) {
+      auto result = ParseHEVCCodecId(codec_id);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(12u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k422, result->subsampling.value());
+    }
+    // HEVC range extension 12b444
+    for (const auto* codec_id :
+         {"hvc1.4.10.L93.98.20", "hvc1.4.10.L93.98.28", "hvc1.4.0.L93.98.8"}) {
+      auto result = ParseHEVCCodecId(codec_id);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(12u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k444, result->subsampling.value());
+    }
+    // HEVC range extension 16b monochrome
+    {
+      auto result = ParseHEVCCodecId("hvc1.4.10.L93.91.C8");
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(16u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k400, result->subsampling.value());
+    }
+
+    // HEVC range extension 16b444
+    for (const auto* codec_id :
+         {"hvc1.4.10.L93.90.20", "hvc1.4.10.L93.90.28"}) {
+      auto result = ParseHEVCCodecId(codec_id);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(HEVCPROFILE_REXT, result->profile);
+      EXPECT_TRUE(result->bit_depth.has_value());
+      EXPECT_EQ(16u, result->bit_depth.value());
+      EXPECT_TRUE(result->subsampling.has_value());
+      EXPECT_EQ(VideoChromaSampling::k444, result->subsampling.value());
+    }
+
+    // max_bits_flag must be valid for range extension.
+    EXPECT_FALSE(ParseHEVCCodecId("hvc1.4.10.L93.90.C8"));
+
+    // max_422_flag/max_444_flag/max_monochrome_flag combination must be valid.
+    EXPECT_FALSE(ParseHEVCCodecId("hvc1.4.10.L93.99.48"));
   }
 
   // Spec A.3.6

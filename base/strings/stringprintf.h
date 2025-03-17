@@ -26,42 +26,6 @@ template <typename... Args>
                                        const Args&... args) {
   return absl::StrFormat(format, args...);
 }
-// Returns a C++ string given `printf()`-like input. The format string must be a
-// run-time value (like with `std::vformat()`), or this will not compile.
-// Because this does not check arguments at compile-time, prefer
-// `StringPrintf()` whenever possible.
-template <typename... Args>
-[[nodiscard]] std::string StringPrintfNonConstexpr(std::string_view format,
-                                                   const Args&... args) {
-  std::string output;
-  CHECK(absl::FormatUntyped(&output, absl::UntypedFormatSpec(format),
-                            {absl::FormatArg(args)...}));
-  return output;
-}
-
-// If possible, guide users to use `StringPrintf()` instead of
-// `StringPrintfNonConstexpr()` when the format string is constexpr.
-//
-// It would be nice to do this with `std::enable_if`, but I don't know of a way;
-// whether a string constant's value is available at compile time is not
-// something easily obtained from the type system, and trying to pass various
-// forms of string constant to non-type template parameters produces a variety
-// of compile errors.
-#if HAS_ATTRIBUTE(enable_if)
-// Disable calling with a constexpr `std::string_view`.
-template <typename... Args>
-[[nodiscard]] std::string StringPrintfNonConstexpr(std::string_view format,
-                                                   const Args&... args)
-    ENABLE_IF_ATTR(
-        [](std::string_view s) { return s.empty() || s[0] == s[0]; }(format),
-        "Use StringPrintf() for constexpr format strings") = delete;
-// Disable calling with a constexpr `char[]` or `char*`.
-template <typename... Args>
-[[nodiscard]] std::string StringPrintfNonConstexpr(const char* format,
-                                                   const Args&... args)
-    ENABLE_IF_ATTR([](const char* s) { return !!s; }(format),
-                   "Use StringPrintf() for constexpr format strings") = delete;
-#endif
 
 // Returns a C++ string given `vprintf()`-like input.
 [[nodiscard]] PRINTF_FORMAT(1, 0) BASE_EXPORT std::string

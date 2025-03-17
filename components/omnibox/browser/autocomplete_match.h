@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
@@ -209,6 +209,15 @@ struct AutocompleteMatch {
     DRIVE_FOLDER,
     DRIVE_OTHER,
     DOCUMENT_TYPE_SIZE
+  };
+
+  // Enterprise search aggregator subtype, for suggestions from the
+  // EnterpriseSearchAggregatorProvider provider.
+  enum class EnterpriseSearchAggregatorType {
+    NONE = 0,
+    QUERY,
+    PEOPLE,
+    CONTENT,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -692,7 +701,7 @@ struct AutocompleteMatch {
   template <typename UnaryPredicate>
   bool MatchOrDuplicateMeets(UnaryPredicate predicate) const {
     return predicate(*this) ||
-           base::ranges::any_of(duplicate_matches, std::move(predicate));
+           std::ranges::any_of(duplicate_matches, std::move(predicate));
   }
 
   // Finds first action where `predicate` returns true. This is a special use
@@ -700,7 +709,7 @@ struct AutocompleteMatch {
   // need to be selected. If no such action is found, returns nullptr.
   template <typename UnaryPredicate>
   OmniboxAction* GetActionWhere(UnaryPredicate predicate) const {
-    auto it = base::ranges::find_if(actions, std::move(predicate));
+    auto it = std::ranges::find_if(actions, std::move(predicate));
     return it != actions.end() ? it->get() : nullptr;
   }
 
@@ -792,10 +801,17 @@ struct AutocompleteMatch {
   // for how headers should be represented.
   std::string extra_headers;
 
-  // Optional image information. Used for entity suggestions. The dominant color
-  // can be used to paint the image placeholder while fetching the image.
+  // Optional image information. Used for some types of suggestions, such as
+  // entity suggestions, that want to display an associated image, which will be
+  // rendered larger than a regular suggestion icon.
+  // The dominant color can be used to paint an image placeholder while fetching
+  // the image. The value is a hex string (for example, "#424242").
   std::string image_dominant_color;
   GURL image_url;
+
+  // Optional icon URL. Providers may set this to override the default icon for
+  // the match.
+  GURL icon_url;
 
   // Optional entity id for entity suggestions. Empty string means no entity ID.
   // This is not meant for display, but internal use only. The actual UI display
@@ -806,8 +822,12 @@ struct AutocompleteMatch {
   // URI.
   std::string website_uri;
 
-  // Optional override to use for types that specify an icon sub-type.
+  // Used for document suggestions to show the mime-corresponding icons.
   DocumentType document_type = DocumentType::NONE;
+
+  // Used for enterprise search aggregator suggestions for grouping.
+  EnterpriseSearchAggregatorType enterprise_search_aggregator_type =
+      EnterpriseSearchAggregatorType::NONE;
 
   // Holds the common part of tail suggestion. Used to indent the contents.
   // Can't simply store the character length of the string, as different
@@ -914,7 +934,14 @@ struct AutocompleteMatch {
   // it!
   std::u16string keyword;
 
-  // Set in matches originating from keyword results.
+  // Set in matches originating in keyword mode. `from_keyword` can be true even
+  // if `keyword` is empty and vice versa. `from_keyword` basically means the
+  // user input is in keyword mode. `!keyword.empty()` basically means the match
+  // was generated using a template URL.
+  //
+  // CAUTION: Not consistently set by all providers. That's fine-ish since this
+  // field isn't used much. But code relying on this feature to be correctly set
+  // should take care.
   bool from_keyword = false;
 
   // The visible actions relevant to this match.

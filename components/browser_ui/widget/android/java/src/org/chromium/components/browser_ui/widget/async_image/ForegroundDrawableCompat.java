@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -72,6 +74,7 @@ import org.chromium.ui.base.ViewUtils;
  *     }
  * }
  */
+@NullMarked
 public class ForegroundDrawableCompat
         implements OnAttachStateChangeListener, OnLayoutChangeListener {
     private final RectF mTempSrc = new RectF();
@@ -81,7 +84,7 @@ public class ForegroundDrawableCompat
     private final View mView;
 
     private boolean mOnBoundsChanged;
-    private Drawable mDrawable;
+    private @Nullable Drawable mDrawable;
 
     private ImageView.ScaleType mScaleType = ImageView.ScaleType.FIT_CENTER;
 
@@ -101,7 +104,7 @@ public class ForegroundDrawableCompat
      * @param drawable The {@link Drawable} to set as a foreground {@link Drawable} on the
      *                 {@link View}.
      */
-    public void setDrawable(Drawable drawable) {
+    public void setDrawable(@Nullable Drawable drawable) {
         if (mDrawable == drawable) return;
 
         if (mDrawable != null) {
@@ -132,7 +135,7 @@ public class ForegroundDrawableCompat
     }
 
     /** @return The currently set foreground {@link Drawable}. */
-    public Drawable getDrawable() {
+    public @Nullable Drawable getDrawable() {
         return mDrawable;
     }
 

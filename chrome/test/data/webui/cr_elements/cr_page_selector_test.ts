@@ -129,18 +129,18 @@ suite('cr-page-selector nested slots', () => {
     assertTrue(isVisible(element.querySelector('#a.selected')));
     assertFalse(isVisible(element.querySelector('#b')));
     assertFalse(isVisible(element.querySelector('#c')));
-    assertFalse(isVisible(element.shadowRoot!.querySelector('#z')));
+    assertFalse(isVisible(element.shadowRoot.querySelector('#z')));
 
     element.page = 'c';
     await microtasksFinished();
     assertTrue(isVisible(element.querySelector('#c.selected')));
     assertFalse(isVisible(element.querySelector('#a')));
     assertFalse(isVisible(element.querySelector('#b')));
-    assertFalse(isVisible(element.shadowRoot!.querySelector('#z')));
+    assertFalse(isVisible(element.shadowRoot.querySelector('#z')));
 
     element.page = 'z';
     await microtasksFinished();
-    assertTrue(isVisible(element.shadowRoot!.querySelector('#z.selected')));
+    assertTrue(isVisible(element.shadowRoot.querySelector('#z.selected')));
     assertFalse(isVisible(element.querySelector('#a')));
     assertFalse(isVisible(element.querySelector('#b')));
     assertFalse(isVisible(element.querySelector('#c')));
@@ -152,7 +152,7 @@ suite('cr-page-selector nested slots', () => {
     assertFalse(isVisible(element.querySelector('#a')));
     assertFalse(isVisible(element.querySelector('#b')));
     assertFalse(isVisible(element.querySelector('#c')));
-    assertFalse(isVisible(element.shadowRoot!.querySelector('#z')));
+    assertFalse(isVisible(element.shadowRoot.querySelector('#z')));
 
     // Make sure the slotchange event for the nested slot triggers
     // iron-items-changed.
@@ -170,7 +170,7 @@ suite('cr-page-selector nested slots', () => {
     assertFalse(isVisible(element.querySelector('#a')));
     assertFalse(isVisible(element.querySelector('#b')));
     assertFalse(isVisible(element.querySelector('#c')));
-    assertFalse(isVisible(element.shadowRoot!.querySelector('#z')));
+    assertFalse(isVisible(element.shadowRoot.querySelector('#z')));
 
     // Make sure the slotchange event for the non-nested slot triggers
     // iron-items-changed.
@@ -178,7 +178,7 @@ suite('cr-page-selector nested slots', () => {
     divY.setAttribute('path', 'y');
     divY.id = 'y';
     divY.textContent = 'Page Y';
-    const selector = element.shadowRoot!.querySelector('cr-page-selector');
+    const selector = element.shadowRoot.querySelector('cr-page-selector');
     assertTrue(!!selector);
     selector.appendChild(divY);
     await eventToPromise('iron-items-changed', element);
@@ -187,11 +187,11 @@ suite('cr-page-selector nested slots', () => {
     element.page = 'y';
     await microtasksFinished();
 
-    assertTrue(isVisible(element.shadowRoot!.querySelector('#y.selected')));
+    assertTrue(isVisible(element.shadowRoot.querySelector('#y.selected')));
     assertFalse(isVisible(element.querySelector('#a')));
     assertFalse(isVisible(element.querySelector('#b')));
     assertFalse(isVisible(element.querySelector('#c')));
     assertFalse(isVisible(element.querySelector('#d')));
-    assertFalse(isVisible(element.shadowRoot!.querySelector('#z')));
+    assertFalse(isVisible(element.shadowRoot.querySelector('#z')));
   });
 });

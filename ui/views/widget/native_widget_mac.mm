@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
@@ -62,8 +63,12 @@ uint64_t StyleMaskForParams(const Widget::InitParams& params) {
   // If the Widget is modal, it will be displayed as a sheet. This works best if
   // it has NSWindowStyleMaskTitled. For example, with
   // NSWindowStyleMaskBorderless, the parent window still accepts input.
+  // A sheet will not have a titlebar despite being NSWindowStyleMaskTitled.
   // NSWindowStyleMaskFullSizeContentView ensures that calculating the modal's
   // content rect doesn't account for a nonexistent title bar.
+  // TODO(crbug.com/390441085): a window-modal should always have a parent.
+  // Otherwise, it will not be displayed as a sheet. Then it will show a native
+  // titlebar, which will cover the content.
   if (params.delegate &&
       params.delegate->GetModalType() == ui::mojom::ModalType::kWindow) {
     return NSWindowStyleMaskTitled | NSWindowStyleMaskFullSizeContentView;
@@ -116,7 +121,7 @@ class NativeWidgetMac::ZoomFocusMonitor : public FocusChangeListener {
       return;
     }
     // Web content handles its own zooming.
-    if (strcmp("WebView", focused_now->GetClassName()) == 0) {
+    if (focused_now->GetClassName() == "WebView") {
       return;
     }
     NSRect rect = NSRectFromCGRect(focused_now->GetBoundsInScreen().ToCGRect());
@@ -306,9 +311,11 @@ void NativeWidgetMac::OnWidgetInitDone() {
 void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
   gfx::NativeView child = GetNativeView();
   DCHECK_NE(child, new_parent);
-  DCHECK([new_parent.GetNativeNSView() window]);
-  CHECK(new_parent);
-  CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
+  if (new_parent) {
+    DCHECK([new_parent.GetNativeNSView() window]);
+    CHECK(new_parent);
+    CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
+  }
 
   NativeWidgetMacNSWindowHost* child_window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeView(child);
@@ -322,24 +329,24 @@ void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
       [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
   DCHECK(widget_window && ![widget_window.GetNativeNSWindow() isSheet]);
 
-  NativeWidgetMacNSWindowHost* parent_window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent);
+  NativeWidgetMacNSWindowHost* new_parent_window_host =
+      new_parent ? NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent)
+                 : nullptr;
 
   // Early out for no-op changes.
-  if (child == widget_view &&
-      child_window_host->parent() == parent_window_host) {
+  if (new_parent_window_host && child == widget_view &&
+      child_window_host->parent() == new_parent_window_host) {
     return;
   }
 
   // First notify all the widgets that they are being disassociated from their
   // previous parent.
-  Widget::Widgets widgets;
-  GetAllChildWidgets(child, &widgets);
+  Widget::Widgets widgets = GetAllChildWidgets(child);
   for (Widget* widget : widgets) {
     widget->NotifyNativeViewHierarchyWillChange();
   }
 
-  child_window_host->SetParent(parent_window_host);
+  child_window_host->SetParent(new_parent_window_host);
 
   // And now, notify them that they have a brand new parent.
   for (Widget* widget : widgets) {
@@ -756,6 +763,13 @@ ui::ZOrderLevel NativeWidgetMac::GetZOrderLevel() const {
   return z_order_level_;
 }
 
+void NativeWidgetMac::SetActivationIndependence(bool independence) {
+  if (!GetNSWindowMojo()) {
+    return;
+  }
+  GetNSWindowMojo()->SetActivationIndependence(independence);
+}
+
 void NativeWidgetMac::SetVisibleOnAllWorkspaces(bool always_visible) {
   if (!GetNSWindowMojo()) {
     return;
@@ -1124,6 +1138,19 @@ void NativeWidgetMac::OnDidChangeFocus(View* focused_before,
   }
 }
 
+void NativeWidgetMac::OnFocusManagerDestroying(FocusManager* focus_manager) {
+  // TODO(crbug.com/348369180): An observer of FocusManager is still observing
+  // the manager on the manager's destruction. NativeWidgetMac is the suspect.
+  CHECK_EQ(focus_manager, focus_manager_);
+  focus_manager->RemoveFocusChangeListener(this);
+
+  // Log the widget name in crash key.
+  static crash_reporter::CrashKeyString<32> window_info_key("widgetName");
+  crash_reporter::ScopedCrashKeyString scopedWindowKey(&window_info_key, name_);
+
+  base::debug::DumpWithoutCrashing();
+}
+
 ui::EventDispatchDetails NativeWidgetMac::DispatchKeyEventPostIME(
     ui::KeyEvent* key) {
   DCHECK(focus_manager_);
@@ -1225,8 +1252,10 @@ NativeWidgetPrivate* NativeWidgetPrivate::GetTopLevelNativeWidget(
 }
 
 // static
-void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
-                                             Widget::Widgets* children) {
+Widget::Widgets NativeWidgetPrivate::GetAllChildWidgets(
+    gfx::NativeView native_view) {
+  Widget::Widgets children;
+
   NativeWidgetMacNSWindowHost* window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeView(native_view);
   if (!window_host) {
@@ -1235,22 +1264,22 @@ void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
     // are. Support returning Widgets that are parented to the NSWindow, except:
     // - Ignore requests for children of an NSView that is not a contentView.
     // - We do not add a Widget for |native_view| to |children| (there is none).
-    if ([[ns_view window] contentView] != ns_view) {
-      return;
+    if (ns_view.window.contentView != ns_view) {
+      return children;
     }
 
     // Collect -sheets and -childWindows. A window should never appear in both,
     // since that causes AppKit to glitch.
-    NSArray* sheet_children = [[ns_view window] sheets];
+    NSArray* sheet_children = ns_view.window.sheets;
     for (NSWindow* native_child in sheet_children) {
-      GetAllChildWidgets([native_child contentView], children);
+      children.merge(GetAllChildWidgets(native_child.contentView));
     }
 
-    for (NSWindow* native_child in [[ns_view window] childWindows]) {
+    for (NSWindow* native_child in ns_view.window.childWindows) {
       DCHECK(![sheet_children containsObject:native_child]);
-      GetAllChildWidgets([native_child contentView], children);
+      children.merge(GetAllChildWidgets(native_child.contentView));
     }
-    return;
+    return children;
   }
 
   // If |native_view| is a subview of the contentView, it will share an
@@ -1260,12 +1289,12 @@ void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
   // a corresponding Widget of its own in this case (and so can't have Widget
   // children of its own on Mac).
   if (window_host->native_widget_mac()->GetNativeView() != native_view) {
-    return;
+    return children;
   }
 
   // Code expects widget for |native_view| to be added to |children|.
   if (window_host->native_widget_mac()->GetWidget()) {
-    children->insert(window_host->native_widget_mac()->GetWidget());
+    children.insert(window_host->native_widget_mac()->GetWidget());
   }
 
   // When the NSWindow *is* a Widget, only consider children(). I.e. do not
@@ -1273,25 +1302,30 @@ void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
   // above. -childWindows does not support hidden windows, and anything in there
   // which is not in children() would have been added by AppKit.
   for (NativeWidgetMacNSWindowHost* child : window_host->children()) {
-    GetAllChildWidgets(child->native_widget_mac()->GetNativeView(), children);
+    children.merge(
+        GetAllChildWidgets(child->native_widget_mac()->GetNativeView()));
   }
+
+  return children;
 }
 
 // static
-void NativeWidgetPrivate::GetAllOwnedWidgets(gfx::NativeView native_view,
-                                             Widget::Widgets* owned) {
+Widget::Widgets NativeWidgetPrivate::GetAllOwnedWidgets(
+    gfx::NativeView native_view) {
   NativeWidgetMacNSWindowHost* window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeView(native_view);
   if (!window_host) {
-    GetAllChildWidgets(native_view, owned);
-    return;
+    return GetAllChildWidgets(native_view);
   }
   if (window_host->native_widget_mac()->GetNativeView() != native_view) {
-    return;
+    return Widget::Widgets();
   }
+  Widget::Widgets owned;
   for (NativeWidgetMacNSWindowHost* child : window_host->children()) {
-    GetAllChildWidgets(child->native_widget_mac()->GetNativeView(), owned);
+    owned.merge(
+        GetAllChildWidgets(child->native_widget_mac()->GetNativeView()));
   }
+  return owned;
 }
 
 // static

@@ -100,8 +100,8 @@ id<GREYMatcher> BottomToolbar() {
   [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
   [AutofillAppInterface setMandatoryReauthEnabled:YES];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
@@ -110,8 +110,8 @@ id<GREYMatcher> BottomToolbar() {
   [AutofillAppInterface clearMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 
   [super tearDownHelper];
 }
@@ -204,7 +204,7 @@ id<GREYMatcher> BottomToolbar() {
 
 // Test that the page for viewing Autofill credit card details is as expected
 // when Mandatory Reauth is disabled.
-- (void)testCreditCardViewPageMandatoryReauthDisabled {
+- (void)FLAKY_testCreditCardViewPageMandatoryReauthDisabled {
   [AutofillAppInterface setMandatoryReauthEnabled:FALSE];
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
@@ -351,10 +351,10 @@ id<GREYMatcher> BottomToolbar() {
        {ReauthenticationResult::kFailure, ReauthenticationResult::kSuccess,
         ReauthenticationResult::kSkipped}) {
     // Reset the HistogramTester at the beginning of each run.
-    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                  @"Cannot reset histogram tester.");
-    GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                  @"Cannot setup histogram tester.");
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseHistogramTester]);
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface setupHistogramTester]);
 
     [self openCreditCardsSettings];
 

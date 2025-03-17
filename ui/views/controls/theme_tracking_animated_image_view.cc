@@ -22,7 +22,7 @@ namespace views {
 ThemeTrackingAnimatedImageView::ThemeTrackingAnimatedImageView(
     int light_animation_lottie_id,
     int dark_animation_lottie_id,
-    base::RepeatingCallback<SkColor()> get_background_color_callback)
+    base::RepeatingCallback<ui::ColorVariant()> get_background_color_callback)
     : light_animation_lottie_id_(light_animation_lottie_id),
       dark_animation_lottie_id_(dark_animation_lottie_id),
       get_background_color_callback_(std::move(get_background_color_callback)) {
@@ -33,7 +33,8 @@ ThemeTrackingAnimatedImageView::~ThemeTrackingAnimatedImageView() = default;
 void ThemeTrackingAnimatedImageView::OnThemeChanged() {
   AnimatedImageView::OnThemeChanged();
   const bool is_dark =
-      color_utils::IsDark(get_background_color_callback_.Run());
+      color_utils::IsDark(get_background_color_callback_.Run().ConvertToSkColor(
+          GetColorProvider()));
   UpdateAnimatedImage(is_dark ? dark_animation_lottie_id_
                               : light_animation_lottie_id_);
 }

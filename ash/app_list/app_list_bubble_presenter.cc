@@ -22,6 +22,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -280,8 +281,12 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
 
   // Show the sunfish nudge after the widget is shown, so the anchor view is
   // visible.
-  controller_->MaybeShowSunfishLauncherNudge(
-      bubble_view_->search_box_view()->sunfish_button());
+  views::ImageButton* sunfish_button =
+      bubble_view_->search_box_view()->sunfish_button();
+  // `sunfish_button` is always initialised in `SearchBoxView`'s
+  // constructor.
+  CHECK(sunfish_button);
+  controller_->MaybeShowSunfishLauncherNudge(sunfish_button);
 }
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {

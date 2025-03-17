@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -40,7 +41,7 @@ class ChosenObjectView : public views::View {
   // views::View:
   void OnThemeChanged() override;
 
-  const std::u16string& GetObjectNameForTesting() const;
+  std::u16string_view GetObjectNameForTesting() const;
   views::ImageButton* GetDeleteButtonForTesting() const;
 
  private:

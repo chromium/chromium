@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/allocator/dispatcher/testing/dispatcher_test.h"
+
 #include "base/allocator/dispatcher/reentry_guard.h"
 
 namespace base::allocator::dispatcher::testing {

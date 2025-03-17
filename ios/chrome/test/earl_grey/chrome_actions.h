@@ -6,13 +6,13 @@
 #define IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_H_
 
 #import <Foundation/Foundation.h>
-
 #import <UIKit/UIKit.h>
 
 #include <string>
 
 @class ElementSelector;
 @protocol GREYAction;
+typedef NS_ENUM(NSInteger, GREYDirection);
 
 namespace chrome_test_util {
 
@@ -80,6 +80,11 @@ id<GREYAction> SwipeToShowDeleteButton();
 // simulate it, it is changing the content offset and triggering scroll view
 // delegate methods as there is no way to actually trigger the gesture.
 id<GREYAction> AccessibilitySwipeRight();
+
+// Swipes down and to the left or right depending on the given `direction`.
+// Use `kGREYDirectionDown` to indicate that the swipe should only be down and
+// not have a horizontal component.
+id<GREYAction> OverscrollSwipe(GREYDirection direction);
 
 }  // namespace chrome_test_util
 

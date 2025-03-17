@@ -8,12 +8,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Stores values related to the collection of variations service metrics.
  *
  * The values maintained by this class can be initialized from and serialized to a dedicated
  * variations SharedPreferences, or from a Bundle suitable for sending in AIDL IPC calls.
  */
+@NullMarked
 public class VariationsServiceMetricsHelper {
     private static final String PREF_FILE_NAME = "variations_prefs";
 

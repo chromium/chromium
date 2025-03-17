@@ -8,12 +8,12 @@
 
 #include "base/android/build_info.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
@@ -24,6 +24,8 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "ui/android/browser_controls_offset_tag_constraints.h"
+#include "ui/android/browser_controls_offset_tag_definitions.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
@@ -126,59 +128,47 @@ void DelegatedFrameHostAndroid::SetIsFrameSinkIdOwner(bool is_owner) {
 }
 
 void DelegatedFrameHostAndroid::RegisterOffsetTags(
-    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
-  const viz::OffsetTag& bottom_controls_offset_tag =
-      tags_info.bottom_controls_offset_tag;
-  const viz::OffsetTag& top_controls_offset_tag =
-      tags_info.top_controls_offset_tag;
-  const viz::OffsetTag& content_offset_tag = tags_info.content_offset_tag;
+    const BrowserControlsOffsetTagDefinitions& tag_definitions) {
+  const cc::BrowserControlsOffsetTags& tags = tag_definitions.tags;
+  const BrowserControlsOffsetTagConstraints& constraints =
+      tag_definitions.constraints;
 
+  const viz::OffsetTag& bottom_controls_offset_tag =
+      tags.bottom_controls_offset_tag;
   if (!bottom_controls_offset_tag.IsEmpty()) {
-    int bottom_controls_height = tags_info.bottom_controls_height;
-    int bottom_controls_additional_height =
-        tags_info.bottom_controls_additional_height;
-    viz::OffsetTagConstraints bottom_controls_constraints(
-        0, 0, 0, bottom_controls_height + bottom_controls_additional_height);
     content_layer_->RegisterOffsetTag(bottom_controls_offset_tag,
-                                      bottom_controls_constraints);
+                                      constraints.bottom_controls_constraints);
   }
 
   // TOOD(peilinwang) Enforce that either both tags exist or are both empty
   // after the NoBrowserFramesWithAdditionalCaptures BCIV experiment ramps up.
+  const viz::OffsetTag& top_controls_offset_tag = tags.top_controls_offset_tag;
+  const viz::OffsetTag& content_offset_tag = tags.content_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
     CHECK(!content_offset_tag.IsEmpty());
-
-    int top_controls_height = tags_info.top_controls_height;
-    int top_controls_hairline_height = tags_info.top_controls_hairline_height;
-    viz::OffsetTagConstraints top_controls_constraints(
-        0, 0, -(top_controls_height + top_controls_hairline_height), 0);
     content_layer_->RegisterOffsetTag(top_controls_offset_tag,
-                                      top_controls_constraints);
+                                      constraints.top_controls_constraints);
   }
-
   if (!content_offset_tag.IsEmpty()) {
-    int top_controls_height = tags_info.top_controls_height;
-    viz::OffsetTagConstraints content_constraints(0, 0, -top_controls_height,
-                                                  0);
-    content_layer_->RegisterOffsetTag(content_offset_tag, content_constraints);
+    content_layer_->RegisterOffsetTag(content_offset_tag,
+                                      constraints.content_constraints);
   }
 }
 
 void DelegatedFrameHostAndroid::UnregisterOffsetTags(
-    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
-  const viz::OffsetTag& top_controls_offset_tag =
-      tags_info.top_controls_offset_tag;
+    const cc::BrowserControlsOffsetTags& tags) {
+  const viz::OffsetTag& top_controls_offset_tag = tags.top_controls_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(top_controls_offset_tag);
   }
 
-  const viz::OffsetTag& content_offset_tag = tags_info.content_offset_tag;
+  const viz::OffsetTag& content_offset_tag = tags.content_offset_tag;
   if (!content_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(content_offset_tag);
   }
 
   const viz::OffsetTag& bottom_controls_offset_tag =
-      tags_info.bottom_controls_offset_tag;
+      tags.bottom_controls_offset_tag;
   if (!bottom_controls_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(bottom_controls_offset_tag);
   }
@@ -192,7 +182,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback,
-    bool capture_exact_surface_id) {
+    bool capture_exact_surface_id,
+    viz::CopyOutputRequest::IpcPriority ipc_priority) {
   DCHECK(CanCopyFromCompositingSurface());
 
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
@@ -221,6 +212,7 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
                 std::move(copy_result).Run(scoped_bitmap.GetOutScopedBitmap());
               },
               std::move(callback), std::move(keep_surface_alive)));
+  request->set_ipc_priority(ipc_priority);
 
   // `CopyOutputRequestCallback` holds a `ReadbackRefCallback` which must only
   // be executed on the UI thread. Since the result callback can be dispatched
@@ -300,6 +292,11 @@ DelegatedFrameHostAndroid::GetFirstSurfaceIdAfterNavigationForTesting() const {
                         first_local_surface_id_after_navigation_);
 }
 
+viz::SurfaceId
+DelegatedFrameHostAndroid::GetBFCacheFallbackSurfaceIdForTesting() const {
+  return viz::SurfaceId(frame_sink_id_, bfcache_fallback_);
+}
+
 void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
   const std::optional<viz::SurfaceId> fallback_surface_id =
       content_layer_->oldest_acceptable_fallback();
@@ -330,16 +327,7 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
       !first_local_surface_id_after_navigation_.is_valid()) {
     // If we have a valid `pre_navigation_local_surface_id_`, we must not be in
     // BFCache.
-    {
-      // TODO(https://crbug.com/349073060): Remove the scope when the bug is
-      // fixed.
-      SCOPED_CRASH_KEY_STRING64("crbug/349073060", "bfc_fallback_crashed",
-                                bfcache_fallback_.ToString().c_str());
-      SCOPED_CRASH_KEY_STRING64(
-          "crbug/349073060", "pre_nav_lsid_crashed",
-          pre_navigation_local_surface_id_.ToString().c_str());
-      CHECK(!bfcache_fallback_.is_valid());
-    }
+    CHECK(!bfcache_fallback_.is_valid());
     EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
     content_layer_->SetBackgroundColor(SkColors::kTransparent);
   }
@@ -606,6 +594,24 @@ void DelegatedFrameHostAndroid::DidNavigateMainFramePreCommit() {
   pre_navigation_local_surface_id_ = local_surface_id_;
   first_local_surface_id_after_navigation_ = viz::LocalSurfaceId();
   SetLocalSurfaceId(viz::LocalSurfaceId());
+
+  // The page is either activated or evicted from BFCache without notifying the
+  // DelegatedFrameHost. In either cases, `bfcache_fallback_` must be
+  // invalidated.
+  //
+  // TODO(https://crbug.com/356337182): Remove the DumpWithoutCrashing when the
+  // bug is fixed.
+  if (bfcache_fallback_.is_valid()) {
+    SCOPED_CRASH_KEY_STRING64("crbug-356337182", "bfc_fallback_crashed",
+                              bfcache_fallback_.ToString().c_str());
+    SCOPED_CRASH_KEY_STRING64(
+        "crbug-356337182", "pre_nav_lsid_crashed",
+        pre_navigation_local_surface_id_.ToString().c_str());
+    SCOPED_CRASH_KEY_STRING64("crbug-356337182", "current_lsid_crashed",
+                              local_surface_id_.ToString().c_str());
+    base::debug::DumpWithoutCrashing();
+    bfcache_fallback_ = viz::LocalSurfaceId();
+  }
 }
 
 void DelegatedFrameHostAndroid::DidEnterBackForwardCache() {
@@ -626,6 +632,10 @@ void DelegatedFrameHostAndroid::DidEnterBackForwardCache() {
     bfcache_fallback_ = pre_navigation_local_surface_id_;
     pre_navigation_local_surface_id_ = viz::LocalSurfaceId();
   }
+}
+
+void DelegatedFrameHostAndroid::ActivatedOrEvictedFromBackForwardCache() {
+  bfcache_fallback_ = viz::LocalSurfaceId();
 }
 
 void DelegatedFrameHostAndroid::

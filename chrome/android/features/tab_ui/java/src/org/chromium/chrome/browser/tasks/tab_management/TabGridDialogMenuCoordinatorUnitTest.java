@@ -33,8 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -99,7 +98,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         new TabGridDialogMenuCoordinator(
                                 mOnItemClickedCallback,
                                 () -> mTabModel,
-                                () -> TAB_ID,
+                                () -> TAB_GROUP_TOKEN,
                                 mTabGroupSyncService,
                                 mCollaborationService));
     }
@@ -112,11 +111,8 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuItems_NoCollaborationData() {
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ false);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         List<Integer> menuIds =
                 List.of(
@@ -131,11 +127,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuItems_HasCollaborationData() {
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ true);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         List<Integer> menuIds =
                 List.of(
@@ -149,11 +141,9 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuItems_Incognito() {
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ true,
-                /* isTabGroupSyncEnabled= */ true,
-                /* hasCollaborationData= */ false);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         List<Integer> menuIds =
                 List.of(
@@ -167,11 +157,8 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuItems_NoDelete() {
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* isTabGroupSyncEnabled= */ false,
-                /* hasCollaborationData= */ false);
+        mMenuCoordinator.setTabGroupSyncServiceForTesting(null);
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
 
         List<Integer> menuIds =
                 List.of(
@@ -198,7 +185,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         View.OnClickListener clickListener = mMenuCoordinator.getOnClickListener();
         clickListener.onClick(mView);
 
-        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(false), eq(true), eq(true));
+        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)
                 .buildCollaborationMenuItems(mModelListCaptor.capture(), eq(MemberRole.MEMBER));
 
@@ -224,7 +211,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         View.OnClickListener clickListener = mMenuCoordinator.getOnClickListener();
         clickListener.onClick(mView);
 
-        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(false), eq(true), eq(true));
+        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)
                 .buildCollaborationMenuItems(mModelListCaptor.capture(), eq(MemberRole.OWNER));
 

@@ -12,14 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
-
-class PrefChangeRegistrar;
 
 namespace content {
 class BrowserContext;
@@ -33,6 +32,7 @@ namespace captions {
 
 class CaptionBubbleController;
 class CaptionBubbleContext;
+class LiveCaptionBubbleSettings;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live Caption Controller
@@ -45,15 +45,14 @@ class CaptionBubbleContext;
 //
 class LiveCaptionController : public KeyedService,
                               public speech::SodaInstaller::Observer,
-                              public ui::NativeThemeObserver {
+                              public CaptionControllerBase {
  public:
   LiveCaptionController(
       PrefService* profile_prefs,
       PrefService* global_prefs,
       const std::string& application_locale,
       content::BrowserContext* browser_context,
-      base::RepeatingCallback<void()> create_ui_callback_for_testing_ =
-          base::RepeatingCallback<void()>());
+      std::unique_ptr<CaptionControllerBase::Delegate> delegate = nullptr);
   ~LiveCaptionController() override;
   LiveCaptionController(const LiveCaptionController&) = delete;
   LiveCaptionController& operator=(const LiveCaptionController&) = delete;
@@ -87,15 +86,14 @@ class LiveCaptionController : public KeyedService,
   void OnToggleFullscreen(CaptionBubbleContext* caption_bubble_context);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void ToggleLiveCaptionForBabelOrca(bool enabled);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   CaptionBubbleController* caption_bubble_controller_for_testing() {
-    return caption_bubble_controller_.get();
+    return caption_bubble_controller();
   }
 
  private:
+  // CaptionControllerBase:
+  CaptionBubbleSettings* caption_bubble_settings() override;
+
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaProgress(speech::LanguageCode language_code,
@@ -103,42 +101,21 @@ class LiveCaptionController : public KeyedService,
   void OnSodaInstallError(speech::LanguageCode language_code,
                           speech::SodaInstaller::ErrorCode error_code) override;
 
-  // ui::NativeThemeObserver:
-  void OnCaptionStyleUpdated() override;
-
   void OnLiveCaptionEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   bool IsLiveCaptionEnabled();
   void StartLiveCaption();
   void StopLiveCaption();
-  void CreateUI();
-  void DestroyUI();
   const std::string GetLanguageCode() const;
 
   void MaybeSetLiveCaptionLanguage();
 
-  raw_ptr<PrefService> profile_prefs_;
   raw_ptr<PrefService> global_prefs_;
   raw_ptr<content::BrowserContext> browser_context_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
-  std::optional<ui::CaptionStyle> caption_style_;
-  base::RepeatingCallback<void()> create_ui_callback_for_testing_;
-
-  const std::string application_locale_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Tracks whether or not Live Caption has been enabled for babel orca.
-  bool enabled_for_babel_orca_ = false;
-#endif
+  const std::unique_ptr<LiveCaptionBubbleSettings> caption_bubble_settings_;
 
   // Whether Live Caption is enabled.
   bool enabled_ = false;
-
-  // Whether the UI has been created. The UI is created asynchronously from the
-  // feature being enabled--we wait for SODA to download first. This flag
-  // ensures that the UI is not constructed or deconstructed twice.
-  bool is_ui_constructed_ = false;
 };
 
 }  // namespace captions

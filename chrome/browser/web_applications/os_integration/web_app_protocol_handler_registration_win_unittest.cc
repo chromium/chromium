@@ -71,7 +71,8 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   }
 
   // Ensures that URLAssociations entries are created for a given protocol.
-  // "HKEY_CURRENT_USER\Software\<prog_id>\Capabilities\URLAssociations\<protocol>".
+  // "HKEY_CURRENT_USER\Software\<prog_id>\Capabilities\
+  // URLAssociations\<protocol>".
   bool ProgIdRegisteredForProtocol(const std::string& protocol,
                                    const webapps::AppId& app_id,
                                    Profile* profile) {

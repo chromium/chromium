@@ -81,6 +81,13 @@ AttributionResolverDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
   return base::Minutes(5);
 }
 
+base::TimeDelta
+AttributionResolverDelegateImpl::GetDeleteExpiredOsRegistrationsFrequency()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::Minutes(5);
+}
+
 base::Time AttributionResolverDelegateImpl::GetEventLevelReportTime(
     const attribution_reporting::EventReportWindows& event_report_windows,
     base::Time source_time,

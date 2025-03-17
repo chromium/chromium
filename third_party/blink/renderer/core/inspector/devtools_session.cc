@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,7 +49,9 @@ bool ShouldInterruptForMethod(const String& method) {
 std::vector<uint8_t> Get8BitStringFrom(v8_inspector::StringBuffer* msg) {
   const v8_inspector::StringView& s = msg->string();
   DCHECK(s.is8Bit());
-  return std::vector<uint8_t>(s.characters8(), s.characters8() + s.length());
+  // SAFETY: `s.characters8()` valid for `s.length()` bytes.
+  return std::vector<uint8_t>(s.characters8(),
+                              UNSAFE_BUFFERS(s.characters8() + s.length()));
 }
 }  // namespace
 
@@ -128,6 +126,12 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
     }
   }
 
+  void UnpauseAndTerminate() override {
+    inspector_task_runner_->AppendTask(
+        CrossThreadBindOnce(&::blink::DevToolsSession::UnpauseAndTerminate,
+                            MakeUnwrappingCrossThreadWeakHandle(session_)));
+  }
+
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
@@ -143,6 +147,7 @@ DevToolsSession::DevToolsSession(
         main_receiver,
     mojo::PendingReceiver<mojom::blink::DevToolsSession> io_receiver,
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+    const String& script_to_evaluate_on_load,
     bool client_expects_binary_responses,
     bool client_is_trusted,
     const String& session_id,
@@ -155,6 +160,7 @@ DevToolsSession::DevToolsSession(
       client_is_trusted_(client_is_trusted),
       v8_session_state_(kV8StateKey),
       v8_session_state_cbor_(&v8_session_state_, /*default_value=*/{}),
+      script_to_evaluate_on_load_(script_to_evaluate_on_load),
       session_id_(session_id),
       session_waits_for_debugger_(session_waits_for_debugger) {
   receiver_.Bind(std::move(main_receiver), mojo_task_runner);
@@ -277,9 +283,8 @@ void DevToolsSession::DispatchProtocolCommandImpl(
 }
 
 void DevToolsSession::DidStartProvisionalLoad(LocalFrame* frame) {
-  if (v8_session_ && agent_->inspected_frames_->Root() == frame) {
-    v8_session_->setSkipAllPauses(true);
-    v8_session_->resume(true /* terminate on resume */);
+  if (agent_->inspected_frames_->Root() == frame) {
+    UnpauseAndTerminate();
   }
 }
 
@@ -431,6 +436,14 @@ blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
   auto mojo_msg = mojom::blink::DevToolsMessage::New();
   mojo_msg->data = {message_to_send};
   return mojo_msg;
+}
+
+void DevToolsSession::UnpauseAndTerminate() {
+  if (!v8_session_) {
+    return;
+  }
+  v8_session_->setSkipAllPauses(true);
+  v8_session_->resume(true /* terminate on resume */);
 }
 
 }  // namespace blink

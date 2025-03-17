@@ -40,6 +40,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
@@ -873,7 +874,7 @@ class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
   PrivacySandboxSettingsAttestProtectedAudienceBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeBiddingAndAuctionServer,
          blink::features::kFencedFrames,
@@ -926,7 +927,7 @@ class
         /*disabled_features=*/{});
   }
 
-  size_t GetTotalSampleCount(const std::string& histogram_name) {
+  size_t GetTotalSampleCount(std::string_view histogram_name) {
     auto buckets = histogram_tester_.GetAllSamples(histogram_name);
     size_t count = 0;
     for (const auto& bucket : buckets) {
@@ -949,9 +950,9 @@ class
     auto histogram_observer = std::make_unique<
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
         histogram_name,
-        base::BindLambdaForTesting([&](const char* histogram_name,
+        base::BindLambdaForTesting([&](std::string_view histogram_name,
                                        uint64_t name_hash,
-                                       base::HistogramBase::Sample sample) {
+                                       base::HistogramBase::Sample32 sample) {
           if (GetTotalSampleCount(histogram_name) >= expected_sample_count) {
             run_loop.Quit();
           }

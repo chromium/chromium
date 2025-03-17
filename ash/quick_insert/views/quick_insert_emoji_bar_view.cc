@@ -34,9 +34,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -73,6 +75,12 @@ constexpr int kItemGap = 8;
 
 // Horizontal gap between the GIFs button icon and the label.
 constexpr int kGifsButtonIconLabelSpacing = 2;
+
+// Size of the GIFs button icon.
+constexpr int kGifsButtonIconSize = 16;
+
+// Height of the GIFs button.
+constexpr int kGifsButtonHeight = 24;
 
 std::unique_ptr<views::View> CreateEmptyCell() {
   auto cell_view = std::make_unique<views::View>();
@@ -157,7 +165,7 @@ class GifsButton : public views::LabelButton {
         .SetCallback(base::BindRepeating(&GifsButton::OnButtonPressed,
                                          base::Unretained(this))
                          .Then(std::move(pressed_callback)))
-        .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface)
+        .SetEnabledTextColors(cros_tokens::kCrosSysOnSurface)
         .SetImageLabelSpacing(kGifsButtonIconLabelSpacing)
         .BuildChildren();
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
@@ -172,6 +180,8 @@ class GifsButton : public views::LabelButton {
     SetProperty(views::kElementIdentifierKey, kQuickInsertGifElementId);
 
     if (base::FeatureList::IsEnabled(features::kPickerGifs)) {
+      SetMinSize(gfx::Size(0, kGifsButtonHeight));
+      SetMaxSize(gfx::Size(0, kGifsButtonHeight));
       GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
       GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
     }
@@ -185,13 +195,37 @@ class GifsButton : public views::LabelButton {
     views::LabelButton::StateChanged(old_state);
     UpdateBackground();
   }
+  gfx::Size GetMaximumSize() const override {
+    if (!base::FeatureList::IsEnabled(features::kPickerGifs)) {
+      return GetPreferredSize();
+    }
+    const int max_height = views::LabelButton::GetMaximumSize().height();
+    return gfx::Size(
+        GetPreferredSize().width() +
+            (is_checked_ ? 0
+                         : kGifsButtonIconSize + kGifsButtonIconLabelSpacing),
+        max_height);
+  }
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    views::LabelButton::PaintButtonContents(canvas);
+
+    if (is_checked_ &&
+        GetState() == views::Button::ButtonState::STATE_HOVERED) {
+      SkPath mask;
+      mask.addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
+                        kGifsButtonCornerRadius, kGifsButtonCornerRadius);
+      canvas->ClipPath(mask, true);
+      canvas->DrawColor(
+          GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle));
+    }
+  }
 
   void UpdateBackground() {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        GetState() == views::Button::ButtonState::STATE_HOVERED
-            ? cros_tokens::kCrosSysHoverOnSubtle
-            : (is_checked_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                           : cros_tokens::kCrosSysSystemOnBase),
+    SetBackground(views::CreateRoundedRectBackground(
+        (is_checked_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                     : (GetState() == views::Button::ButtonState::STATE_HOVERED
+                            ? cros_tokens::kCrosSysHoverOnSubtle
+                            : cros_tokens::kCrosSysSystemOnBase)),
         kGifsButtonCornerRadius));
   }
 
@@ -202,12 +236,13 @@ class GifsButton : public views::LabelButton {
     }
 
     is_checked_ = !is_checked_;
-    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                  is_checked_
-                      ? std::make_optional(ui::ImageModel::FromVectorIcon(
-                            kCheckIcon,
-                            cros_tokens::kCrosSysSystemOnPrimaryContainer, 16))
-                      : std::nullopt);
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        is_checked_
+            ? std::make_optional(ui::ImageModel::FromVectorIcon(
+                  kCheckIcon, cros_tokens::kCrosSysSystemOnPrimaryContainer,
+                  kGifsButtonIconSize))
+            : std::nullopt);
     PreferredSizeChanged();
     GetViewAccessibility().SetCheckedState(
         is_checked_ ? ax::mojom::CheckedState::kTrue
@@ -235,7 +270,7 @@ QuickInsertEmojiBarView::QuickInsertEmojiBarView(
       is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
                       : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
   SetProperty(views::kElementIdentifierKey, kQuickInsertEmojiBarElementId);
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kQuickInsertContainerBorderRadius,
@@ -397,7 +432,7 @@ void QuickInsertEmojiBarView::ToggleGifs(bool is_checked) {
 
 int QuickInsertEmojiBarView::CalculateAvailableWidthForItemRow() {
   return quick_insert_view_width_ - kEmojiBarMargins.width() -
-         kItemRowAndGifsSpacing - gifs_button_->GetPreferredSize().width() -
+         kItemRowAndGifsSpacing - gifs_button_->GetMaximumSize().width() -
          kGifsAndMoreEmojisSpacing -
          more_emojis_button_->GetPreferredSize().width();
 }

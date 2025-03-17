@@ -17,4 +17,9 @@ bool AwGWSPageLoadMetricsObserver::IsBrowserStartupComplete() {
   return true;
 }
 
+bool AwGWSPageLoadMetricsObserver::IsIncognitoProfile() const {
+  // Always returns false since WebView does not have Incognito mode.
+  return false;
+}
+
 }  // namespace android_webview

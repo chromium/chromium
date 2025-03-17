@@ -333,6 +333,7 @@ def _load_library_perf_tests(estimated_runtime=3):
   return ExecutableConfig('load_library_perf_tests',
                           estimated_runtime=estimated_runtime)
 
+
 def _performance_browser_tests(estimated_runtime=67):
   return ExecutableConfig(
       'performance_browser_tests',
@@ -363,7 +364,23 @@ def _views_perftests(estimated_runtime=7):
                           estimated_runtime=estimated_runtime)
 
 
+# Speedometer:
+def _crossbench_speedometer2_0(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('speedometer2.0.crossbench',
+                          'speedometer_2.0',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 def _crossbench_speedometer2_1(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('speedometer2.1.crossbench',
+                          'speedometer_2.1',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
+def _crossbench_speedometer2(estimated_runtime=60, arguments=None):
+  """Alias for the latest Speedometer 2.X version."""
   return CrossbenchConfig('speedometer2.1.crossbench',
                           'speedometer_2.1',
                           estimated_runtime=estimated_runtime,
@@ -377,52 +394,130 @@ def _crossbench_speedometer3_0(estimated_runtime=60, arguments=None):
                           arguments=arguments)
 
 
+def _crossbench_speedometer3_1(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('speedometer3.1.crossbench',
+                          'speedometer_3.1',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
+def _crossbench_speedometer3(estimated_runtime=60, arguments=None):
+  """Alias for the latest Speedometer 3.X version."""
+  return CrossbenchConfig('speedometer3.crossbench',
+                          'speedometer_3.0',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
+def _crossbench_speedometer_main(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('speedometer_main.crossbench',
+                          'speedometer_main',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
+# MotionMark:
+def _crossbench_motionmark1_2(estimated_runtime=360):
+  return CrossbenchConfig('motionmark1.2.crossbench',
+                          'motionmark_1.2',
+                          estimated_runtime=estimated_runtime)
+
+
+def _crossbench_motionmark1_3_0(estimated_runtime=360):
+  return CrossbenchConfig('motionmark1.3.0.crossbench',
+                          'motionmark_1.3.0',
+                          estimated_runtime=estimated_runtime)
+
+
+def _crossbench_motionmark1_3_1(estimated_runtime=360):
+  return CrossbenchConfig('motionmark1.3.1.crossbench',
+                          'motionmark_1.3.1',
+                          estimated_runtime=estimated_runtime)
+
 def _crossbench_motionmark1_3(estimated_runtime=360):
+  """Alias for the latest MotionMark 1.3.X version."""
   return CrossbenchConfig('motionmark1.3.crossbench',
                           'motionmark_1.3',
                           estimated_runtime=estimated_runtime)
 
 
+def _crossbench_motionmark_main(estimated_runtime=360):
+  return CrossbenchConfig('motionmark_main.crossbench',
+                          'motionmark_main',
+                          estimated_runtime=estimated_runtime)
+
+
+# JetStream:
+def _crossbench_jetstream2_0(estimated_runtime=180):
+  return CrossbenchConfig('jetstream2.0.crossbench',
+                          'jetstream_2.0',
+                          estimated_runtime=estimated_runtime)
+
+
 def _crossbench_jetstream2_1(estimated_runtime=180):
+  return CrossbenchConfig('jetstream2.1.crossbench',
+                          'jetstream_2.1',
+                          estimated_runtime=estimated_runtime)
+
+
+def _crossbench_jetstream2_2(estimated_runtime=180):
+  return CrossbenchConfig('jetstream2.2.crossbench',
+                          'jetstream_2.2',
+                          estimated_runtime=estimated_runtime)
+
+
+def _crossbench_jetstream2(estimated_runtime=180):
+  """Alias of the latest JetStream 2.X version."""
   return CrossbenchConfig('jetstream2.crossbench',
                           'jetstream_2.2',
                           estimated_runtime=estimated_runtime)
 
 
+def _crossbench_jetstream_main(estimated_runtime=180):
+  return CrossbenchConfig('jetstream_main.crossbench',
+                          'jetstream_main',
+                          estimated_runtime=estimated_runtime)
+
+
+# LoadLine:
 def _crossbench_loadline_phone(estimated_runtime=7000, arguments=None):
   return CrossbenchConfig('loadline_phone.crossbench',
-                          'loadline-phone',
+                          'loadline-phone-fast',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
 def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
   return CrossbenchConfig('loadline_tablet.crossbench',
-                          'loadline-tablet',
+                          'loadline-tablet-fast',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
-    _crossbench_jetstream2_1(),
+    _crossbench_jetstream2(),
     _crossbench_speedometer3_0(),
+    _crossbench_speedometer3_1(),
 ])
 
 _CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
     _crossbench_motionmark1_3(),
     _crossbench_speedometer3_0(),
+    _crossbench_speedometer3_1(),
 ])
 
 _CROSSBENCH_BENCHMARKS_ALL = frozenset([
-    _crossbench_speedometer2_1(arguments=['--fileserver']),
+    _crossbench_speedometer2(arguments=['--fileserver']),
     _crossbench_speedometer3_0(),
+    _crossbench_speedometer3_1(),
     _crossbench_motionmark1_3(),
-    _crossbench_jetstream2_1(),
+    _crossbench_jetstream2(),
 ])
 
 # TODO(b/338630584): Remove it when other benchmarks can be run on Android.
 _CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3_0(arguments=['--fileserver']),
+    _crossbench_speedometer3_1(arguments=['--fileserver']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
@@ -431,7 +526,6 @@ _CROSSBENCH_ANDROID = frozenset([
 
 _CROSSBENCH_TANGOR = frozenset([
     _crossbench_loadline_tablet(arguments=[
-        '--repeat=20',
         '--cool-down-threshold=moderate',
         '--no-splash',
     ]),
@@ -447,45 +541,23 @@ FUCHSIA_EXEC_ARGS = {
     'nelson': None,
     'nuc': None
 }
-FUCHSIA_EXEC_CONFIGS = {
-    'astro': None,
-    'sherlock': None,
-    'atlas': None,
-    'nelson': None,
-    'nuc': None
-}
 _IMAGE_PATHS = {
     'astro': ('astro-release', 'smart_display_eng_arrested'),
     'sherlock': ('sherlock-release', 'smart_display_max_eng_arrested'),
     'nelson': ('nelson-release', 'smart_display_m3_eng_paused'),
 }
 
-# Some image paths are just a product-bundle, which is not a relative path.
-_PB_IMAGE_PATHS = {
-    'atlas': 'workstation_eng.chromebook-x64',
-    'nuc': 'workstation_eng.x64',
-}
-
-_FUCHSIA_IMAGE_DIR = '../../third_party/fuchsia-sdk/images-internal/%s/%s'
-_COMMON_FUCHSIA_ARGS = ['-d', '--os-check=check']
+# TODO(zijiehe): Fuchsia should check the os version, i.e. --os-check=check, but
+# perf test run multiple suites in sequential and the os checks are performed
+# multiple times. Currently there isn't a simple way to check only once at the
+# beginning of the test.
+# See the revision:
+# https://crsrc.org/c/tools/perf/core/bot_platforms.py
+#   ;drc=93a804bc8c5871e1fb70a762e461d787749cb2d7;l=470
+_COMMON_FUCHSIA_ARGS = ['-d', '--os-check=ignore']
 for board, path_parts in _IMAGE_PATHS.items():
-  image_dir = _FUCHSIA_IMAGE_DIR % path_parts
-  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS + [
-      '--system-image-dir=%s' % image_dir
-  ]
+  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS
 
-for board, pb_name in _PB_IMAGE_PATHS.items():
-  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS + [
-      f'--system-image-dir={pb_name}'
-  ]
-  FUCHSIA_EXEC_CONFIGS[board] = frozenset([
-      _base_perftests(900,
-                      path='bin/run_base_perftests',
-                      additional_flags=FUCHSIA_EXEC_ARGS[board]),
-      _sync_performance_tests(900,
-                              path='bin/run_sync_performance_tests',
-                              additional_flags=FUCHSIA_EXEC_ARGS[board]),
-  ])
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
 ]).Add([
@@ -620,6 +692,7 @@ _WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(125),
     _views_perftests(),
 ])
+_WIN_11_LOW_END_BENCHMARK_CONFIGS = _WIN_ARM64_BENCHMARK_CONFIGS
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -689,13 +762,11 @@ _ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset(
     [_components_perftests(60)])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('rendering.desktop')])
-_FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS = PerfSuite([
+_FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('media.mobile'),
+    _GetBenchmarkConfig('v8.browsing_mobile'),
 ])
-_FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = \
-    _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer2-minorms'),
@@ -823,6 +894,13 @@ WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      3,
                                      'win',
                                      pinpoint_only=True)
+WIN_11_LOW_END = PerfPlatform('win-11_laptop_low_end-perf',
+                              'Low end windows 11 laptops.'
+                              'SSD, 4GB RAM.',
+                              _WIN_11_LOW_END_BENCHMARK_CONFIGS,
+                              2,
+                              'win',
+                              crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 WIN_11 = PerfPlatform('win-11-perf',
                       'Windows Dell PowerEdge R350',
                       _WIN_11_BENCHMARK_CONFIGS,
@@ -907,9 +985,11 @@ ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
     'android',
     executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
-ANDROID_PIXEL_FOLD = PerfPlatform('android-pixel-fold-perf', 'Android U',
+ANDROID_PIXEL_FOLD = PerfPlatform(
+    'android-pixel-fold-perf',
+    'Android U',
     _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS,
-    2,  # testing on the first two connected devices
+    18,  # testing on the first 18 connected devices
     'android',
     executables=_ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL_TANGOR = PerfPlatform(
@@ -953,16 +1033,17 @@ ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
 # Cros
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
                                    '',
-                                   _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS,
-                                   3,
+                                   _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
+                                   1,
                                    'fuchsia',
                                    is_fyi=True)
-FUCHSIA_PERF_SHERLOCK = PerfPlatform('fuchsia-perf-shk',
-                                     '',
-                                     _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS,
-                                     3,
-                                     'fuchsia',
-                                     is_fyi=True)
+FUCHSIA_PERF_SHERLOCK = PerfPlatform(
+    'fuchsia-perf-shk',
+    '',
+    _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
+    1,
+    'fuchsia',
+    is_fyi=True)
 
 # FYI bots
 WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(

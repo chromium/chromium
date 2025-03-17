@@ -33,6 +33,7 @@
 // * No tests with min_allocator and no tests counting allocations.
 //   Flat sets currently don't support allocators.
 
+#include <algorithm>
 #include <deque>
 #include <forward_list>
 #include <functional>
@@ -41,14 +42,12 @@
 #include <string>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -127,7 +126,7 @@ class Emplaceable {
 
 struct TemplateConstructor {
   template <typename T>
-  TemplateConstructor(const T&) {}
+  explicit TemplateConstructor(const T&) {}
 
   friend bool operator<(const TemplateConstructor&,
                         const TemplateConstructor&) {
@@ -173,7 +172,7 @@ using EmplaceableTree = flat_tree<Emplaceable,
                                   std::less<>,
                                   std::vector<Emplaceable>>;
 using ReversedTree =
-    flat_tree<int, std::identity, std::greater<int>, std::vector<int>>;
+    flat_tree<int, std::identity, std::greater<>, std::vector<int>>;
 
 using TreeWithStrangeCompare = flat_tree<int,
                                          std::identity,
@@ -219,7 +218,7 @@ TEST(FlatTree, NoExcept) {
 
 TEST(FlatTree, IncompleteType) {
   struct A {
-    using Tree = flat_tree<A, std::identity, std::less<A>, std::vector<A>>;
+    using Tree = flat_tree<A, std::identity, std::less<>, std::vector<A>>;
     int data;
     Tree set_with_incomplete_type;
     Tree::iterator it;
@@ -241,8 +240,8 @@ TEST(FlatTree, Stability) {
   Tree cont({{0, 0}, {1, 0}, {0, 1}, {2, 0}, {0, 2}, {1, 1}});
 
   auto AllOfSecondsAreZero = [&cont] {
-    return ranges::all_of(cont,
-                          [](const Pair& elem) { return elem.second == 0; });
+    return std::ranges::all_of(
+        cont, [](const Pair& elem) { return elem.second == 0; });
   };
 
   EXPECT_TRUE(AllOfSecondsAreZero()) << "constructor should be stable";
@@ -378,9 +377,9 @@ TEST(FlatTree, ContainerMoveConstructor) {
   // first item, the second allows us to test for stability. Using a move
   // only type to ensure the vector is not copied.
   std::vector<Pair> storage;
-  storage.push_back(Pair(2, MoveOnlyInt(0)));
-  storage.push_back(Pair(1, MoveOnlyInt(0)));
-  storage.push_back(Pair(2, MoveOnlyInt(1)));
+  storage.emplace_back(2, MoveOnlyInt(0));
+  storage.emplace_back(1, MoveOnlyInt(0));
+  storage.emplace_back(2, MoveOnlyInt(1));
 
   using Tree =
       flat_tree<Pair, std::identity, LessByFirst<Pair>, std::vector<Pair>>;
@@ -462,8 +461,8 @@ TEST(FlatTree, SortedUniqueVectorMoveConstructor) {
   using Pair = std::pair<int, MoveOnlyInt>;
 
   std::vector<Pair> storage;
-  storage.push_back(Pair(1, MoveOnlyInt(0)));
-  storage.push_back(Pair(2, MoveOnlyInt(0)));
+  storage.emplace_back(1, MoveOnlyInt(0));
+  storage.emplace_back(2, MoveOnlyInt(0));
 
   using Tree =
       flat_tree<Pair, std::identity, LessByFirst<Pair>, std::vector<Pair>>;
@@ -798,8 +797,8 @@ TEST(FlatTree, InsertIterIter) {
     }
   };
 
-  using IntIntMap = flat_tree<int, GetKeyFromIntIntPair, std::less<int>,
-                              std::vector<IntPair>>;
+  using IntIntMap =
+      flat_tree<int, GetKeyFromIntIntPair, std::less<>, std::vector<IntPair>>;
 
   {
     IntIntMap cont;
@@ -862,8 +861,8 @@ TEST(FlatTree, InsertRange) {
     }
   };
 
-  using IntIntMap = flat_tree<int, GetKeyFromIntIntPair, std::less<int>,
-                              std::vector<IntPair>>;
+  using IntIntMap =
+      flat_tree<int, GetKeyFromIntIntPair, std::less<>, std::vector<IntPair>>;
 
   {
     IntIntMap cont;
@@ -997,7 +996,7 @@ TYPED_TEST_P(FlatTreeTest, Extract) {
   cont.emplace(4);
 
   TypeParam body = std::move(cont).extract();
-  EXPECT_THAT(cont, IsEmpty());
+  EXPECT_THAT(cont, IsEmpty());  // NOLINT(bugprone-use-after-move)
   EXPECT_THAT(body, ElementsAre(1, 2, 3, 4));
 }
 
@@ -1061,8 +1060,9 @@ TYPED_TEST_P(FlatTreeTest, ErasePosition) {
     T v(0);
 
     auto it = cont.find(v);
-    if (it != cont.end())
+    if (it != cont.end()) {
       cont.erase(it);
+    }
   }
 }
 
@@ -1146,10 +1146,10 @@ TYPED_TEST_P(FlatTreeTest, EraseEndDeath) {
 TEST(FlatTree, KeyComp) {
   ReversedTree cont({1, 2, 3, 4, 5});
 
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.key_comp()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.key_comp()));
   int new_elements[] = {6, 7, 8, 9, 10};
-  ranges::copy(new_elements, std::inserter(cont, cont.end()));
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.key_comp()));
+  std::ranges::copy(new_elements, std::inserter(cont, cont.end()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.key_comp()));
 }
 
 // value_compare value_comp() const
@@ -1157,10 +1157,10 @@ TEST(FlatTree, KeyComp) {
 TEST(FlatTree, ValueComp) {
   ReversedTree cont({1, 2, 3, 4, 5});
 
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.value_comp()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.value_comp()));
   int new_elements[] = {6, 7, 8, 9, 10};
-  ranges::copy(new_elements, std::inserter(cont, cont.end()));
-  EXPECT_TRUE(ranges::is_sorted(cont, cont.value_comp()));
+  std::ranges::copy(new_elements, std::inserter(cont, cont.end()));
+  EXPECT_TRUE(std::ranges::is_sorted(cont, cont.value_comp()));
 }
 
 // ----------------------------------------------------------------------------
@@ -1587,5 +1587,4 @@ using IntSequenceContainers =
     ::testing::Types<std::deque<int>, std::vector<int>>;
 INSTANTIATE_TYPED_TEST_SUITE_P(My, FlatTreeTest, IntSequenceContainers);
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

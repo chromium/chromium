@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -111,6 +111,17 @@ id<GREYMatcher> DefaultPromoSubtitle() {
     config.additional_args.push_back("-ForceExperienceForShopper");
     config.additional_args.push_back("true");
   }
+  // Disable feature since SegmentedDefaultBrowserPromo and
+  // AnimatedDefaultBrowserPromoInFRE experiments will be run disjointly and
+  // Animated Default Browser introduces a new Default Browser screen with a
+  // different ID.
+  config.additional_args.push_back(
+      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
+  // Disable feature since SegmentedDefaultBrowserPromo and
+  // UpdatedFirstRunSequence experiments will be run disjointly and only one
+  // will be launched.
+  config.additional_args.push_back(
+      "--disable-features=UpdatedFirstRunSequence");
   return config;
 }
 
@@ -142,8 +153,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 // Signs out and clears sync data.
 - (void)reset {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 }
 

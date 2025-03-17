@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GraduationUiHandler, GraduationUiHandlerInterface} from '../mojom/graduation_ui.mojom-webui.js';
+import type {GraduationUiHandlerInterface} from '../mojom/graduation_ui.mojom-webui.js';
+import {GraduationUiHandler} from '../mojom/graduation_ui.mojom-webui.js';
 
 let graduationUiHandler: GraduationUiHandlerInterface|null;
 

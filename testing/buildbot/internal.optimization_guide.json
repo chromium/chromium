@@ -966,7 +966,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16b40"
+          "16c5032a"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -989,7 +989,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -1005,7 +1005,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16b40"
+          "16c5032a"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1028,7 +1028,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -1053,7 +1053,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16b40"
+          "16c5032a"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1078,7 +1078,7 @@
               "path": "Runtime-ios-18.0"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -1098,7 +1098,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16b40"
+          "16c5032a"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1123,7 +1123,7 @@
               "path": "Runtime-ios-18.0"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -1358,8 +1358,7 @@
   },
   "optimization_guide-mac-arm64": {
     "additional_compile_targets": [
-      "ondevice_model_benchmark",
-      "ondevice_model_example"
+      "ondevice_model_benchmark"
     ],
     "gtest_tests": [
       {
@@ -1441,7 +1440,6 @@
           "Google Chrome",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1565,8 +1563,7 @@
   },
   "optimization_guide-mac-x64": {
     "additional_compile_targets": [
-      "ondevice_model_benchmark",
-      "ondevice_model_example"
+      "ondevice_model_benchmark"
     ],
     "gtest_tests": [
       {
@@ -1648,7 +1645,6 @@
           "Google Chrome",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1772,8 +1768,7 @@
   },
   "optimization_guide-win-arm64": {
     "additional_compile_targets": [
-      "ondevice_model_benchmark",
-      "ondevice_model_example"
+      "ondevice_model_benchmark"
     ],
     "gtest_tests": [
       {
@@ -1964,8 +1959,7 @@
   },
   "optimization_guide-win32": {
     "additional_compile_targets": [
-      "ondevice_model_benchmark",
-      "ondevice_model_example"
+      "ondevice_model_benchmark"
     ],
     "gtest_tests": [
       {
@@ -2233,8 +2227,7 @@
   },
   "optimization_guide-win64": {
     "additional_compile_targets": [
-      "ondevice_model_benchmark",
-      "ondevice_model_example"
+      "ondevice_model_benchmark"
     ],
     "gtest_tests": [
       {

@@ -87,6 +87,6 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
   bool should_replace_i18n_in_js_;
 };
 
-}  // web
+}  // namespace web
 
 #endif  // IOS_WEB_WEBUI_WEB_UI_IOS_DATA_SOURCE_IMPL_H_

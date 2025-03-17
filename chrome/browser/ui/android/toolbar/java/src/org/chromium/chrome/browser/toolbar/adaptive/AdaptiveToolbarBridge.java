@@ -19,18 +19,6 @@ import java.util.List;
 /** Bridge between UI layer and native where segmentation platform is invoked. */
 public class AdaptiveToolbarBridge {
     /**
-     * Called to get the per-session button variant to show on the adaptive toolbar.
-     *
-     * @param profile The current profile.
-     * @param callback The callback to be invoked after getting the button.
-     */
-    public static void getSessionVariantButton(
-            Profile profile, Callback<Pair<Boolean, Integer>> callback) {
-        AdaptiveToolbarBridgeJni.get()
-                .getSessionVariantButton(profile, result -> callback.onResult(result));
-    }
-
-    /**
      * Called to get the per-session button list to show on the adaptive toolbar.
      *
      * @param profile The current profile.

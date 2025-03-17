@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/metrics/histogram_samples.h"
 
 #include <limits>
@@ -40,22 +45,21 @@ class SampleCountPickleIterator : public SampleCountIterator {
 
   bool Done() const override;
   void Next() override;
-  void Get(HistogramBase::Sample* min,
+  void Get(HistogramBase::Sample32* min,
            int64_t* max,
-           HistogramBase::Count* count) override;
+           HistogramBase::Count32* count) override;
 
  private:
   const raw_ptr<PickleIterator> iter_;
 
-  HistogramBase::Sample min_;
+  HistogramBase::Sample32 min_;
   int64_t max_;
-  HistogramBase::Count count_;
-  bool is_done_;
+  HistogramBase::Count32 count_;
+  bool is_done_ = false;
 };
 
 SampleCountPickleIterator::SampleCountPickleIterator(PickleIterator* iter)
-    : iter_(iter),
-      is_done_(false) {
+    : iter_(iter) {
   Next();
 }
 
@@ -71,9 +75,9 @@ void SampleCountPickleIterator::Next() {
   }
 }
 
-void SampleCountPickleIterator::Get(HistogramBase::Sample* min,
+void SampleCountPickleIterator::Get(HistogramBase::Sample32* min,
                                     int64_t* max,
-                                    HistogramBase::Count* count) {
+                                    HistogramBase::Count32* count) {
   DCHECK(!Done());
   *min = min_;
   *max = max_;
@@ -91,8 +95,9 @@ HistogramSamples::SingleSample HistogramSamples::AtomicSingleSample::Load()
   AtomicSingleSample single_sample(subtle::Acquire_Load(&as_atomic));
 
   // If the sample was extracted/disabled, it's still zero to the outside.
-  if (single_sample.as_atomic == kDisabledSingleSample)
+  if (single_sample.as_atomic == kDisabledSingleSample) {
     single_sample.as_atomic = 0;
+  }
 
   return single_sample.as_parts;
 }
@@ -144,9 +149,10 @@ HistogramSamples::AtomicSingleSample::ExtractAndDisable() {
 
 bool HistogramSamples::AtomicSingleSample::Accumulate(
     size_t bucket,
-    HistogramBase::Count count) {
-  if (count == 0)
+    HistogramBase::Count32 count) {
+  if (count == 0) {
     return true;
+  }
 
   // Convert the parameters to 16-bit variables because it's all 16-bit below.
   // To support decrements/subtractions, divide the |count| into sign/value and
@@ -170,14 +176,16 @@ bool HistogramSamples::AtomicSingleSample::Accumulate(
   bool sample_updated;
   do {
     subtle::Atomic32 original = subtle::Acquire_Load(&as_atomic);
-    if (original == kDisabledSingleSample)
+    if (original == kDisabledSingleSample) {
       return false;
+    }
     single_sample.as_atomic = original;
     if (single_sample.as_atomic != 0) {
       // Only the same bucket (parameter and stored) can be counted multiple
       // times.
-      if (single_sample.as_parts.bucket != bucket16)
+      if (single_sample.as_parts.bucket != bucket16) {
         return false;
+      }
     } else {
       // The |single_ sample| was zero so becomes the |bucket| parameter, the
       // contents of which were checked above to fit in 16 bits.
@@ -186,16 +194,19 @@ bool HistogramSamples::AtomicSingleSample::Accumulate(
 
     // Update count, making sure that it doesn't overflow.
     CheckedNumeric<uint16_t> new_count(single_sample.as_parts.count);
-    if (count_is_negative)
+    if (count_is_negative) {
       new_count -= count16;
-    else
+    } else {
       new_count += count16;
-    if (!new_count.AssignIfValid(&single_sample.as_parts.count))
+    }
+    if (!new_count.AssignIfValid(&single_sample.as_parts.count)) {
       return false;
+    }
 
     // Don't let this become equivalent to the "disabled" value.
-    if (single_sample.as_atomic == kDisabledSingleSample)
+    if (single_sample.as_atomic == kDisabledSingleSample) {
       return false;
+    }
 
     // Store the updated single-sample back into memory. |existing| is what
     // was in that memory location at the time of the call; if it doesn't
@@ -218,14 +229,14 @@ HistogramSamples::LocalMetadata::LocalMetadata() {
   memset(this, 0, sizeof(*this));
 }
 
-HistogramSamples::HistogramSamples(uint64_t id, Metadata* meta)
-    : meta_(meta) {
+HistogramSamples::HistogramSamples(uint64_t id, Metadata* meta) : meta_(meta) {
   DCHECK(meta_->id == 0 || meta_->id == id);
 
   // It's possible that |meta| is contained in initialized, read-only memory
   // so it's essential that no write be done in that case.
-  if (!meta_->id)
+  if (!meta_->id) {
     meta_->id = id;
+  }
 }
 
 HistogramSamples::HistogramSamples(uint64_t id, std::unique_ptr<Metadata> meta)
@@ -245,10 +256,11 @@ bool HistogramSamples::Add(const HistogramSamples& other) {
 
 bool HistogramSamples::AddFromPickle(PickleIterator* iter) {
   int64_t sum;
-  HistogramBase::Count redundant_count;
+  HistogramBase::Count32 redundant_count;
 
-  if (!iter->ReadInt64(&sum) || !iter->ReadInt(&redundant_count))
+  if (!iter->ReadInt64(&sum) || !iter->ReadInt(&redundant_count)) {
     return false;
+  }
 
   IncreaseSumAndCount(sum, redundant_count);
 
@@ -303,9 +315,9 @@ void HistogramSamples::Serialize(Pickle* pickle) const {
   pickle->WriteInt64(sum());
   pickle->WriteInt(redundant_count());
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   for (std::unique_ptr<SampleCountIterator> it = Iterator(); !it->Done();
        it->Next()) {
     it->Get(&min, &max, &count);
@@ -315,8 +327,8 @@ void HistogramSamples::Serialize(Pickle* pickle) const {
   }
 }
 
-bool HistogramSamples::AccumulateSingleSample(HistogramBase::Sample value,
-                                              HistogramBase::Count count,
+bool HistogramSamples::AccumulateSingleSample(HistogramBase::Sample32 value,
+                                              HistogramBase::Count32 count,
                                               size_t bucket) {
   if (single_sample().Accumulate(bucket, count)) {
     // Success. Update the (separate) sum and redundant-count.
@@ -327,7 +339,7 @@ bool HistogramSamples::AccumulateSingleSample(HistogramBase::Sample value,
 }
 
 void HistogramSamples::IncreaseSumAndCount(int64_t sum,
-                                           HistogramBase::Count count) {
+                                           HistogramBase::Count32 count) {
 #ifdef ARCH_CPU_64_BITS
   subtle::NoBarrier_AtomicIncrement(&meta_->sum, sum);
 #else
@@ -337,7 +349,7 @@ void HistogramSamples::IncreaseSumAndCount(int64_t sum,
 }
 
 void HistogramSamples::RecordNegativeSample(NegativeSampleReason reason,
-                                            HistogramBase::Count increment) {
+                                            HistogramBase::Count32 increment) {
   UMA_HISTOGRAM_ENUMERATION("UMA.NegativeSamples.Reason", reason,
                             MAX_NEGATIVE_SAMPLE_REASONS);
   UMA_HISTOGRAM_CUSTOM_COUNTS("UMA.NegativeSamples.Increment", increment, 1,
@@ -360,48 +372,52 @@ std::string HistogramSamples::GetAsciiHeader(std::string_view histogram_name,
   std::string output;
   StrAppend(&output, {"Histogram: ", histogram_name, " recorded ",
                       NumberToString(TotalCount()), " samples"});
-  if (flags)
+  if (flags) {
     StringAppendF(&output, " (flags = 0x%x)", flags);
+  }
   return output;
 }
 
 std::string HistogramSamples::GetAsciiBody() const {
-  HistogramBase::Count total_count = TotalCount();
+  HistogramBase::Count32 total_count = TotalCount();
   double scaled_total_count = total_count / 100.0;
 
   // Determine how wide the largest bucket range is (how many digits to print),
   // so that we'll be able to right-align starts for the graphical bars.
   // Determine which bucket has the largest sample count so that we can
   // normalize the graphical bar-width relative to that sample count.
-  HistogramBase::Count largest_count = 0;
-  HistogramBase::Sample largest_sample = 0;
+  HistogramBase::Count32 largest_count = 0;
+  HistogramBase::Sample32 largest_sample = 0;
   std::unique_ptr<SampleCountIterator> it = Iterator();
   while (!it->Done()) {
-    HistogramBase::Sample min;
+    HistogramBase::Sample32 min;
     int64_t max;
-    HistogramBase::Count count;
+    HistogramBase::Count32 count;
     it->Get(&min, &max, &count);
-    if (min > largest_sample)
+    if (min > largest_sample) {
       largest_sample = min;
-    if (count > largest_count)
+    }
+    if (count > largest_count) {
       largest_count = count;
+    }
     it->Next();
   }
   // Scale histogram bucket counts to take at most 72 characters.
   // Note: Keep in sync w/ kLineLength sample_vector.cc
   const double kLineLength = 72;
   double scaling_factor = 1;
-  if (largest_count > kLineLength)
+  if (largest_count > kLineLength) {
     scaling_factor = kLineLength / largest_count;
+  }
   size_t print_width = GetSimpleAsciiBucketRange(largest_sample).size() + 1;
 
   // iterate over each item and display them
   it = Iterator();
   std::string output;
   while (!it->Done()) {
-    HistogramBase::Sample min;
+    HistogramBase::Sample32 min;
     int64_t max;
-    HistogramBase::Count count;
+    HistogramBase::Count32 count;
     it->Get(&min, &max, &count);
 
     // value is min, so display it
@@ -410,7 +426,7 @@ std::string HistogramSamples::GetAsciiBody() const {
     if (const auto range_size = range.size(); print_width >= range_size) {
       output.append(print_width + 1 - range_size, ' ');
     }
-    HistogramBase::Count current_size = round(count * scaling_factor);
+    HistogramBase::Count32 current_size = round(count * scaling_factor);
     WriteAsciiBucketGraph(current_size, kLineLength, &output);
     WriteAsciiBucketValue(count, scaled_total_count, &output);
     output.append(1, '\n');
@@ -433,14 +449,14 @@ void HistogramSamples::WriteAsciiBucketGraph(double x_count,
   }
 }
 
-void HistogramSamples::WriteAsciiBucketValue(HistogramBase::Count current,
+void HistogramSamples::WriteAsciiBucketValue(HistogramBase::Count32 current,
                                              double scaled_sum,
                                              std::string* output) const {
   StringAppendF(output, " (%d = %3.1f%%)", current, current / scaled_sum);
 }
 
 const std::string HistogramSamples::GetSimpleAsciiBucketRange(
-    HistogramBase::Sample sample) const {
+    HistogramBase::Sample32 sample) const {
   return StringPrintf("%d", sample);
 }
 
@@ -451,9 +467,9 @@ bool SampleCountIterator::GetBucketIndex(size_t* index) const {
   return false;
 }
 
-SingleSampleIterator::SingleSampleIterator(HistogramBase::Sample min,
+SingleSampleIterator::SingleSampleIterator(HistogramBase::Sample32 min,
                                            int64_t max,
-                                           HistogramBase::Count count,
+                                           HistogramBase::Count32 count,
                                            size_t bucket_index,
                                            bool value_was_extracted)
     : min_(min),
@@ -479,9 +495,9 @@ void SingleSampleIterator::Next() {
   count_ = 0;
 }
 
-void SingleSampleIterator::Get(HistogramBase::Sample* min,
+void SingleSampleIterator::Get(HistogramBase::Sample32* min,
                                int64_t* max,
-                               HistogramBase::Count* count) {
+                               HistogramBase::Count32* count) {
   DCHECK(!Done());
   *min = min_;
   *max = max_;
@@ -490,8 +506,9 @@ void SingleSampleIterator::Get(HistogramBase::Sample* min,
 
 bool SingleSampleIterator::GetBucketIndex(size_t* index) const {
   DCHECK(!Done());
-  if (bucket_index_ == kSizeMax)
+  if (bucket_index_ == kSizeMax) {
     return false;
+  }
   *index = bucket_index_;
   return true;
 }

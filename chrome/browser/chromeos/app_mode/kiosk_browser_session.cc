@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
@@ -232,6 +231,7 @@ void KioskBrowserSession::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kKioskBrowserPermissionsAllowedForOrigins,
                              PrefRegistrySimple::NO_REGISTRATION_FLAGS);
   registry->RegisterBooleanPref(prefs::kKioskWebAppOfflineEnabled, true);
+  registry->RegisterBooleanPref(prefs::kKioskChromeAppsForceAllowed, false);
 }
 
 void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {

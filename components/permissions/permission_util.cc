@@ -21,9 +21,10 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -86,7 +87,7 @@ PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
                       : PermissionRequestGestureType::NO_GESTURE;
 }
 
-std::optional<blink::mojom::PermissionsPolicyFeature>
+std::optional<network::mojom::PermissionsPolicyFeature>
 PermissionUtil::GetPermissionsPolicyFeature(ContentSettingsType permission) {
   PermissionType permission_type;
   bool success =
@@ -211,6 +212,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::WEB_APP_INSTALLATION:
       *out = PermissionType::WEB_APP_INSTALLATION;
       break;
+    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
+      *out = PermissionType::LOCAL_NETWORK_ACCESS;
+      break;
     default:
       return false;
   }
@@ -226,6 +230,26 @@ bool PermissionUtil::IsLowPriorityPermissionRequest(
     const PermissionRequest* request) {
   return request->request_type() == RequestType::kNotifications ||
          request->request_type() == RequestType::kGeolocation;
+}
+
+bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
+    PermissionPrompt::Delegate* delegate) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
+    return false;
+  }
+
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
+  return std::ranges::all_of(
+      requests, [](permissions::PermissionRequest* request) {
+        return (request->request_type() ==
+                    permissions::RequestType::kCameraStream ||
+                request->request_type() ==
+                    permissions::RequestType::kGeolocation ||
+                request->request_type() ==
+                    permissions::RequestType::kMicStream) &&
+               request->IsEmbeddedPermissionElementInitiated();
+      });
 }
 
 bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {
@@ -363,6 +387,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingsTypeSafe(
       return ContentSettingsType::AUTOMATIC_FULLSCREEN;
     case PermissionType::WEB_APP_INSTALLATION:
       return ContentSettingsType::WEB_APP_INSTALLATION;
+    case PermissionType::LOCAL_NETWORK_ACCESS:
+      return ContentSettingsType::LOCAL_NETWORK_ACCESS;
     case PermissionType::NUM:
       break;
   }
@@ -401,8 +427,6 @@ ContentSetting PermissionUtil::PermissionStatusToContentSetting(
     default:
       return CONTENT_SETTING_BLOCK;
   }
-
-  NOTREACHED();
 }
 
 blink::mojom::PermissionStatus PermissionUtil::ContentSettingToPermissionStatus(

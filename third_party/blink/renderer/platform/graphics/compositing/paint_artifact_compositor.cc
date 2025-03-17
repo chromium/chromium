@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "cc/base/features.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/paint/display_item_list.h"
@@ -23,6 +19,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/view_transition/view_transition_request.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/adjust_mask_layer_geometry.h"
@@ -120,6 +117,14 @@ void PaintArtifactCompositor::SetLCDTextPreference(
   lcd_text_preference_ = preference;
 }
 
+void PaintArtifactCompositor::SetDevicePixelRatio(float ratio) {
+  if (device_pixel_ratio_ == ratio) {
+    return;
+  }
+  SetNeedsUpdate();
+  device_pixel_ratio_ = ratio;
+}
+
 std::unique_ptr<JSONArray> PaintArtifactCompositor::GetPendingLayersAsJSON()
     const {
   std::unique_ptr<JSONArray> result = std::make_unique<JSONArray>();
@@ -170,13 +175,9 @@ PaintArtifactCompositor::ScrollTranslationStateForLayer(
     return pending_layer.ScrollTranslationForScrollHitTestLayer();
   }
 
-  // When HitTestOpaqueness is enabled, use the correct scroll state for fixed
-  // position content, so scrolls on fixed content is correctly handled on the
-  // compositor if the fixed content is opaque to hit test.
-  const auto& transform = pending_layer.GetPropertyTreeState().Transform();
-  return RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-             ? transform.ScrollTranslationState()
-             : transform.NearestScrollTranslationNode();
+  return pending_layer.GetPropertyTreeState()
+      .Transform()
+      .ScrollTranslationState();
 }
 
 bool PaintArtifactCompositor::NeedsCompositedScrolling(
@@ -246,8 +247,8 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
   // the opaqueness of the scrolling contents. If it has an opaque rect
   // covering the whole scrolling contents, we can use composited scrolling
   // without losing LCD text.
-  for (auto next = chunk_cursor + 1; next != artifact.GetPaintChunks().end();
-       ++next) {
+  for (auto next = UNSAFE_TODO(chunk_cursor + 1);
+       next != artifact.GetPaintChunks().end(); UNSAFE_TODO(++next)) {
     if (&next->properties.Transform() ==
         &chunk_cursor->properties.Transform()) {
       // Skip scroll controls that are painted in the same transform space
@@ -278,14 +279,10 @@ void PaintArtifactCompositor::UpdatePaintedScrollTranslationsBeforeLayerization(
     if (it == painted_scroll_translations_.end()) {
       painted_scroll_translations_.insert(
           &scroll_translation,
-          ScrollTranslationInfo{.scrolling_contents_cull_rect =
-                                    hit_test_data->scrolling_contents_cull_rect,
-                                .is_composited = is_composited});
+          ScrollTranslationInfo{.is_composited = is_composited});
     } else {
       // The node was added in the second half of this function before.
       // Update the is_composited field now.
-      it->value.scrolling_contents_cull_rect =
-          hit_test_data->scrolling_contents_cull_rect;
       if (is_composited) {
         it->value.is_composited = true;
         it->value.force_main_thread_repaint = false;
@@ -349,7 +346,8 @@ PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(
     return PendingLayer::kScrollHitTestLayer;
   }
   if (chunk.size() == 1) {
-    const auto& item = artifact.GetDisplayItemList()[chunk.begin_index];
+    const auto& item =
+        UNSAFE_TODO(artifact.GetDisplayItemList()[chunk.begin_index]);
     if (item.IsForeignLayer()) {
       return PendingLayer::kForeignLayer;
     }
@@ -372,7 +370,7 @@ cc::Layer* ForeignLayer(const PaintChunk& chunk,
   if (chunk.size() != 1)
     return nullptr;
   const auto& first_display_item =
-      artifact.GetDisplayItemList()[chunk.begin_index];
+      UNSAFE_TODO(artifact.GetDisplayItemList()[chunk.begin_index]);
   auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(first_display_item);
   return foreign_layer ? foreign_layer->GetLayer() : nullptr;
 }
@@ -538,7 +536,9 @@ class PaintArtifactCompositor::Layerizer {
   Layerizer(PaintArtifactCompositor& compositor,
             const PaintArtifact& artifact,
             wtf_size_t reserve_capacity)
-      : compositor_(compositor),
+      : layer_merge_distance_limit_(base::saturated_cast<wtf_size_t>(
+            features::kLayerMergeDistanceLimit.Get())),
+        compositor_(compositor),
         artifact_(artifact),
         chunk_cursor_(artifact.GetPaintChunks().begin()) {
     pending_layers_.reserve(reserve_capacity);
@@ -573,6 +573,7 @@ class PaintArtifactCompositor::Layerizer {
                          const EffectPaintPropertyNode& effect,
                          wtf_size_t layer_index);
 
+  const wtf_size_t layer_merge_distance_limit_;
   PaintArtifactCompositor& compositor_;
   const PaintArtifact& artifact_;
   PaintChunks::const_iterator chunk_cursor_;
@@ -707,7 +708,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
       pending_layers_.emplace_back(
           artifact_, *chunk_cursor_,
           compositor_.ChunkCompositingType(artifact_, *chunk_cursor_));
-      ++chunk_cursor_;
+      UNSAFE_TODO(++chunk_cursor_);
       // force_draws_content doesn't apply to pending layers that require own
       // layer, specifically scrollbar layers, foreign layers, scroll hit
       // testing layers.
@@ -764,10 +765,14 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
     auto is_composited_scroll = [this](const TransformPaintPropertyNode& t) {
       return compositor_.NeedsCompositedScrolling(t);
     };
-    for (wtf_size_t candidate_index = pending_layers_.size() - 1;
-         candidate_index-- > first_layer_in_current_group;) {
+    wtf_size_t candidate_index = pending_layers_.size() - 1;
+    while (candidate_index > first_layer_in_current_group &&
+           pending_layers_.size() - candidate_index <=
+               layer_merge_distance_limit_) {
+      --candidate_index;
       PendingLayer& candidate_layer = pending_layers_[candidate_index];
       if (candidate_layer.Merge(new_layer, compositor_.lcd_text_preference_,
+                                compositor_.device_pixel_ratio_,
                                 is_composited_scroll)) {
         pending_layers_.pop_back();
         break;
@@ -869,14 +874,14 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
     bool needs_layer,
     CompositorElementId& mask_isolation_id,
     CompositorElementId& mask_effect_id) {
-  auto entry = base::ranges::find_if(
-      synthesized_clip_cache_, [&clip](const auto& entry) {
+  auto entry =
+      std::ranges::find_if(synthesized_clip_cache_, [&clip](const auto& entry) {
         return entry.key == &clip && !entry.in_use;
       });
   if (entry == synthesized_clip_cache_.end()) {
     synthesized_clip_cache_.push_back(SynthesizedClipEntry{
         &clip, std::make_unique<SynthesizedClip>(), false});
-    entry = synthesized_clip_cache_.end() - 1;
+    entry = UNSAFE_TODO(synthesized_clip_cache_.end() - 1);
   }
 
   entry->in_use = true;
@@ -945,10 +950,10 @@ void PaintArtifactCompositor::UpdateCompositorViewportProperties(
     CHECK(NeedsCompositedScrolling(*properties.outer_scroll_translation));
     painted_scroll_translations_.insert(
         properties.inner_scroll_translation,
-        ScrollTranslationInfo{InfiniteIntRect(), true});
+        ScrollTranslationInfo{.is_composited = true});
     painted_scroll_translations_.insert(
         properties.outer_scroll_translation,
-        ScrollTranslationInfo{InfiniteIntRect(), true});
+        ScrollTranslationInfo{.is_composited = true});
   }
 
   layer_tree_host->RegisterViewportPropertyIds(ids);
@@ -1012,12 +1017,12 @@ void PaintArtifactCompositor::Update(
   for (auto& node : scroll_translation_nodes) {
     property_tree_manager.EnsureCompositorScrollNode(*node);
   }
-  for (auto& [node, info] : painted_scroll_translations_) {
-    property_tree_manager.EnsureCompositorScrollAndTransformNode(
-        *node, info.scrolling_contents_cull_rect);
+  for (auto& [node, _] : painted_scroll_translations_) {
+    property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
   }
 
   cc::LayerSelection layer_selection;
+  HashSet<int> layers_having_text;
   for (auto& pending_layer : pending_layers_) {
     pending_layer.UpdateCompositedLayer(
         old_pending_layer_matcher.Find(pending_layer), layer_selection,
@@ -1048,9 +1053,12 @@ void PaintArtifactCompositor::Update(
 
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollAndTransformNode(
-            ScrollTranslationStateForLayer(pending_layer), InfiniteIntRect());
+            ScrollTranslationStateForLayer(pending_layer));
 
     layer_list_builder.Add(&layer);
+    if (pending_layer.HasText()) {
+      layers_having_text.insert(layer.id());
+    }
 
     layer.set_property_tree_sequence_number(
         root_layer_->property_tree_sequence_number());
@@ -1082,7 +1090,8 @@ void PaintArtifactCompositor::Update(
       g_s_property_tree_sequence_number);
 
   auto layers = layer_list_builder.Finalize();
-  property_tree_manager.UpdateConditionalRenderSurfaceReasons(layers);
+  property_tree_manager.UpdateConditionalRenderSurfaceReasons(
+      layers, layers_having_text);
   root_layer_->SetChildLayerList(std::move(layers));
 
   // Mark the property trees as having been rebuilt.
@@ -1523,15 +1532,6 @@ void PaintArtifactCompositor::ShowDebugData() {
                    .Utf8();
 }
 #endif
-
-void PaintArtifactCompositor::ForAllContentLayersForTesting(
-    base::FunctionRef<void(ContentLayerClientImpl*)> func) const {
-  for (auto& pending_layer : pending_layers_) {
-    if (auto* client = pending_layer.GetContentLayerClient()) {
-      func(client);
-    }
-  }
-}
 
 ContentLayerClientImpl* PaintArtifactCompositor::ContentLayerClientForTesting(
     wtf_size_t i) const {

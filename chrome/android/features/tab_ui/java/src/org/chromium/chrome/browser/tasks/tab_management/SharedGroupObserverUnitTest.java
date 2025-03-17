@@ -29,13 +29,16 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 
 import java.util.List;
 
@@ -51,9 +54,8 @@ public class SharedGroupObserverUnitTest {
     @Mock private CollaborationService mCollaborationService;
     @Mock private Callback<Integer> mOnSharedGroupStateChanged;
 
+    @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mSyncObserverCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
-
-    private SharedGroupTestHelper mSharedGroupTestHelper;
 
     @Test
     public void testDestroy() {
@@ -182,7 +184,7 @@ public class SharedGroupObserverUnitTest {
     }
 
     @Test
-    public void testOnChanged() {
+    public void testOnShareChanged() {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = null;
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
@@ -226,5 +228,62 @@ public class SharedGroupObserverUnitTest {
 
         collaborationId = observer.getCollaborationIdSupplier().get();
         assertNull(collaborationId);
+    }
+
+    @Test
+    public void testOnSyncChanged() {
+        SavedTabGroup syncGroup = new SavedTabGroup();
+        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        syncGroup.collaborationId = null;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(syncGroup);
+
+        SharedGroupObserver observer =
+                new SharedGroupObserver(
+                        TAB_GROUP_ID,
+                        mTabGroupSyncService,
+                        mDataSharingService,
+                        mCollaborationService);
+        verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
+        verify(mTabGroupSyncService).addObserver(mSyncObserverCaptor.capture());
+        ObservableSupplier<Integer> sharedStateSupplier = observer.getGroupSharedStateSupplier();
+        assertEquals(GroupSharedState.NOT_SHARED, sharedStateSupplier.get().intValue());
+
+        // savedTabGroup.collaborationId is still null, cannot match up the groups yet.
+        GroupData shareGroup =
+                SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        when(mCollaborationService.getGroupData(COLLABORATION_ID1)).thenReturn(shareGroup);
+        mSharingObserverCaptor.getValue().onGroupAdded(shareGroup);
+        assertEquals(GroupSharedState.NOT_SHARED, sharedStateSupplier.get().intValue());
+
+        syncGroup.collaborationId = COLLABORATION_ID1;
+        mSyncObserverCaptor.getValue().onTabGroupUpdated(syncGroup, TriggerSource.LOCAL);
+        assertEquals(GroupSharedState.HAS_OTHER_USERS, sharedStateSupplier.get().intValue());
+    }
+
+    @Test
+    public void testNoCollaborationOnInitUntilLocalIdEvent() {
+        SavedTabGroup syncGroup = new SavedTabGroup();
+        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        syncGroup.collaborationId = null;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(syncGroup);
+
+        SharedGroupObserver observer =
+                new SharedGroupObserver(
+                        TAB_GROUP_ID,
+                        mTabGroupSyncService,
+                        mDataSharingService,
+                        mCollaborationService);
+        verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
+        verify(mTabGroupSyncService).addObserver(mSyncObserverCaptor.capture());
+        ObservableSupplier<Integer> sharedStateSupplier = observer.getGroupSharedStateSupplier();
+        assertEquals(GroupSharedState.NOT_SHARED, sharedStateSupplier.get().intValue());
+
+        GroupData shareGroup =
+                SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        when(mCollaborationService.getGroupData(COLLABORATION_ID1)).thenReturn(shareGroup);
+
+        syncGroup.collaborationId = COLLABORATION_ID1;
+        mSyncObserverCaptor.getValue().onTabGroupLocalIdChanged("sync_id", syncGroup.localId);
+        assertEquals(GroupSharedState.HAS_OTHER_USERS, sharedStateSupplier.get().intValue());
     }
 }

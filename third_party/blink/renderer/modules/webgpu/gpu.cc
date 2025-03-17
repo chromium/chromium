@@ -151,8 +151,8 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 GPU::GPU(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      wgsl_language_features_(
-          MakeGarbageCollected<WGSLLanguageFeatures>(GatherWGSLFeatures())),
+      wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>(
+          GatherWGSLLanguageFeatures())),
       mappable_buffer_handles_(
           base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
 
@@ -215,7 +215,6 @@ void GPU::OnRequestAdapterCallback(
     // there are error messages.
     case wgpu::RequestAdapterStatus::Unavailable:
     case wgpu::RequestAdapterStatus::Error:
-    case wgpu::RequestAdapterStatus::Unknown:
     case wgpu::RequestAdapterStatus::InstanceDropped:
       break;
   }

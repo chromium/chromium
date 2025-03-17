@@ -213,13 +213,13 @@ public class HomeSurfaceTestUtils {
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         tabId,
                         /* encrypted= */ false,
-                        /* isFlatBuffer= */ false);
+                        /* isFlatbuffer= */ false);
         writeFile(file, M26_GOOGLE_COM.encodedTabState);
 
         CipherFactory unusedCipherFactory = new CipherFactory();
         TabState tabState =
                 TabStateFileManager.restoreTabStateInternal(
-                        file, /* encrypted= */ false, unusedCipherFactory);
+                        file, /* isEncrypted= */ false, unusedCipherFactory);
         tabState.rootId = rootId;
         TabStateFileManager.saveStateInternal(
                 file, tabState, /* encrypted= */ false, unusedCipherFactory);

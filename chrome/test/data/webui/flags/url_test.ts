@@ -60,27 +60,28 @@ const mockFeatures: Feature[] = [
   },
 ];
 
-suite('UrlWithSupportedFeatureTest', function() {
-  let app: FlagsAppElement;
-  let browserProxy: TestFlagsBrowserProxy;
+let app: FlagsAppElement;
+let browserProxy: TestFlagsBrowserProxy;
 
-  setup(async function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    browserProxy = new TestFlagsBrowserProxy();
-    browserProxy.setFeatureData(Object.assign(
-        {}, experimentalFeaturesData, {supportedFeatures: mockFeatures}));
-    FlagsBrowserProxyImpl.setInstance(browserProxy);
-    app = document.createElement('flags-app');
-    document.body.appendChild(app);
-    app.setAnnounceStatusDelayMsForTesting(0);
-    app.setSearchDebounceDelayMsForTesting(0);
-    await app.experimentalFeaturesReadyForTesting();
-  });
+function createFlagsAppElement(
+    featureType: 'supportedFeatures'|'unsupportedFeatures') {
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  browserProxy = new TestFlagsBrowserProxy();
+  browserProxy.setFeatureData(Object.assign(
+      {}, experimentalFeaturesData, {[featureType]: mockFeatures}));
+  FlagsBrowserProxyImpl.setInstance(browserProxy);
+  app = document.createElement('flags-app');
+  document.body.appendChild(app);
+  app.setAnnounceStatusDelayMsForTesting(0);
+  app.setSearchDebounceDelayMsForTesting(0);
+  return app.experimentalFeaturesReadyForTesting();
+}
 
-  test('check referenced experiment is highlighted', async function() {
-    // check the available tab is selected
+suite('UrlTest', function() {
+  function assertHighlightedExperimentInTab(selectedTab: number) {
+    // check tab is selected
     const crTabs = app.getRequiredElement('cr-tabs');
-    assertEquals(0, crTabs.selected);
+    assertEquals(selectedTab, crTabs.selected);
 
     const referencedExperiment =
         app.getRequiredElement<ExperimentElement>(window.location.hash);
@@ -89,37 +90,34 @@ suite('UrlWithSupportedFeatureTest', function() {
 
     // check experiment is highlighted
     assertTrue(referencedExperiment.classList.contains('referenced'));
-  });
+  }
+
+  test(
+      'check referenced experiment is highlighted for supported features',
+      async function() {
+        assertEquals('#test-feature', window.location.hash);
+        await createFlagsAppElement('supportedFeatures');
+        assertHighlightedExperimentInTab(0);
+        assertEquals('#test-feature', window.location.hash);
+      });
+
+  test(
+      'check referenced experiment is highlighted for unsupported features',
+      async function() {
+        assertEquals('#test-feature', window.location.hash);
+        await createFlagsAppElement('unsupportedFeatures');
+        assertHighlightedExperimentInTab(1);
+        assertEquals('#test-feature', window.location.hash);
+      });
 });
 
-suite('UrlWithUnsupportedFeatureTest', function() {
-  let app: FlagsAppElement;
-  let browserProxy: TestFlagsBrowserProxy;
+suite('UrlWithInvalidReferencedFlagHashTest', function() {
+  test('check invalid referenced flag hash is removed', async function() {
+    window.location.hash = '#invalid-hash.';
 
-  setup(async function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    browserProxy = new TestFlagsBrowserProxy();
-    browserProxy.setFeatureData(Object.assign(
-        {}, experimentalFeaturesData, {unsupportedFeatures: mockFeatures}));
-    FlagsBrowserProxyImpl.setInstance(browserProxy);
-    app = document.createElement('flags-app');
-    document.body.appendChild(app);
-    app.setAnnounceStatusDelayMsForTesting(0);
-    app.setSearchDebounceDelayMsForTesting(0);
-    await app.experimentalFeaturesReadyForTesting();
-  });
+    // Reload page.
+    await createFlagsAppElement('supportedFeatures');
 
-  test('check referenced experiment is highlighted', async function() {
-    // check the unavailable tab is selected
-    const crTabs = app.getRequiredElement('cr-tabs');
-    assertEquals(1, crTabs.selected);
-
-    const referencedExperiment =
-        app.getRequiredElement<ExperimentElement>(window.location.hash);
-    assertTrue(!!referencedExperiment);
-    assertEquals(referencedFlagName, referencedExperiment.id);
-
-    // check experiment is highlighted
-    assertTrue(referencedExperiment.classList.contains('referenced'));
+    assertEquals('', window.location.hash);
   });
 });

@@ -10,6 +10,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/edusumer/graduation_utils.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -171,16 +172,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2},
       {"accountManagerSecondaryAccountsDisabledText",
        IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2},
-      {"removeLacrosAccountDialogTitle",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_TITLE},
-      {"removeLacrosAccountDialogBody",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_BODY},
-      {"removeLacrosAccountDialogRemove",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_REMOVE},
-      {"removeLacrosAccountDialogCancel",
-       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL},
-      {"accountNotUsedInArcLabel",
-       IDS_SETTINGS_ACCOUNT_MANAGER_NOT_USED_IN_ARC_LABEL},
       {"accountNotAllowedInArcLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_NOT_ALLOWED_IN_ARC_LABEL},
       {"accountUseInArcButtonLabel",
@@ -189,17 +180,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_STOP_USING_IN_ARC_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-    html_source->AddString("accountListDescription",
-                           l10n_util::GetStringFUTF16(
-                               IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION_V2,
-                               ui::GetChromeOSDeviceName()));
-  } else {
-    html_source->AddLocalizedString(
-        "accountListDescription",
-        IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION);
-  }
+  html_source->AddLocalizedString(
+      "accountListDescription", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION);
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
@@ -221,11 +203,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       "accountManagerDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2,
                                  ui::GetChromeOSDeviceName()));
-  html_source->AddBoolean("lacrosEnabled",
-                          crosapi::browser_util::IsLacrosEnabled());
-  html_source->AddBoolean(
-      "arcAccountRestrictionsEnabled",
-      AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
@@ -480,14 +457,13 @@ void AddGraduationStrings(content::WebUIDataSource* html_source,
 
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
-  switch (account_key.account_type()) {
-    case account_manager::AccountType::kGaia:
-      return account_id.GetAccountType() == AccountType::GOOGLE &&
-             account_id.GetGaiaId() == GaiaId(account_key.id());
-    case account_manager::AccountType::kActiveDirectory:
-      return account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
-             account_id.GetObjGuid() == account_key.id();
-  }
+  // Currently, we only support `kGaia` account type. Should a new type be added
+  // in the future, consider removing the `CHECK_EQ()` below and handling the
+  // new type accordingly.
+  CHECK_EQ(account_key.account_type(), account_manager::AccountType::kGaia);
+
+  return (account_id.GetAccountType() == AccountType::GOOGLE) &&
+         (account_id.GetGaiaId() == GaiaId(account_key.id()));
 }
 
 }  // namespace

@@ -5,14 +5,24 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_callback.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -20,6 +30,7 @@
 #include "components/saved_tab_groups/public/utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 
 namespace tab_groups {
@@ -56,6 +67,12 @@ bool IsUserTriggeredMainFrameNavigation(
   return true;
 }
 
+bool IsMainFrameRendererNavigation(
+    content::NavigationHandle* navigation_handle) {
+  return navigation_handle->IsInPrimaryMainFrame() &&
+         navigation_handle->IsRendererInitiated();
+}
+
 bool WasNavigationInitiatedFromSync(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle) {
@@ -68,6 +85,38 @@ bool WasNavigationInitiatedFromSync(
 
 }  // namespace
 
+DeferredTabState::DeferredTabState(tabs::TabInterface* local_tab,
+                                   const GURL& url,
+                                   const std::u16string& title,
+                                   favicon::FaviconService* favicon_service)
+    : local_tab_(local_tab), url_(url), title_(title) {
+  favicon_tracker_ = std::make_unique<base::CancelableTaskTracker>();
+
+  favicon_service->GetFaviconImageForPageURL(
+      url_,
+      base::BindOnce(&DeferredTabState::OnGetFaviconImageResult,
+                     base::Unretained(this)),
+      favicon_tracker_.get());
+}
+DeferredTabState::~DeferredTabState() = default;
+
+void DeferredTabState::OnGetFaviconImageResult(
+    const favicon_base::FaviconImageResult& result) {
+  BrowserWindowInterface* browser_window =
+      local_tab_->GetBrowserWindowInterface();
+  if (!browser_window) {
+    return;
+  }
+
+  if (result.image.IsEmpty()) {
+    return;
+  }
+
+  favicon_ = ui::ImageModel::FromImage(result.image);
+  browser_window->GetTabStripModel()->NotifyTabChanged(local_tab_,
+                                                       TabChangeType::kAll);
+}
+
 void SavedTabGroupWebContentsListener::OnTabDiscarded(
     tabs::TabInterface* tab_interface,
     content::WebContents* old_content,
@@ -75,7 +124,7 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
   Observe(new_content);
 
   tab_foregrounded_subscription_ =
-      tab_interface->RegisterDidEnterForeground(base::BindRepeating(
+      tab_interface->RegisterDidActivate(base::BindRepeating(
           &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
           base::Unretained(this)));
 }
@@ -90,7 +139,7 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
   Observe(local_tab->GetContents());
 
   tab_foregrounded_subscription_ =
-      local_tab->RegisterDidEnterForeground(base::BindRepeating(
+      local_tab->RegisterDidActivate(base::BindRepeating(
           &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
           base::Unretained(this)));
 }
@@ -133,11 +182,18 @@ void SavedTabGroupWebContentsListener::NavigateToUrlInternal(const GURL& url) {
   // If deferring remote navigations is enabled and the tab is in the
   // background, then dont actually perform the navigation, instead cache the
   // URL for performing the navigation later.
-  if (!IsTabGroupsDeferringRemoteNavigations() ||
-      local_tab_->IsInForeground()) {
+  if (!IsTabGroupsDeferringRemoteNavigations() || local_tab_->IsActivated()) {
     PerformNavigation(url);
   } else {
-    cached_url_ = url;
+    favicon::FaviconService* favicon_service =
+        FaviconServiceFactory::GetForProfile(
+            local_tab_->GetBrowserWindowInterface()->GetProfile(),
+            ServiceAccessType::EXPLICIT_ACCESS);
+
+    g_browser_process->GetTabManager()->DiscardTabByExtension(
+        local_tab_->GetContents());
+    deferred_tab_state_.emplace(local_tab_, url, saved_tab->title(),
+                                favicon_service);
   }
 }
 
@@ -173,7 +229,6 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  UpdateTabRedirectChain(navigation_handle);
   TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
       local_tab_id(),
       group->collaboration_id() ? SavedTabGroupType::SHARED
@@ -183,12 +238,17 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   // If the navigation was the result of a sync update we don't want to update
   // the SavedTabGroupModel.
   if (WasNavigationInitiatedFromSync(navigation_handle)) {
+    // Update the redirect chain if the navigation is from sync, so that the
+    // sync update of the same URL later will be ignored.
+    UpdateTabRedirectChain(navigation_handle);
     // Create a tab state to indicate that the tab is restricted.
     TabGroupSyncTabState::Create(contents());
     return;
   }
 
-  if (IsUserTriggeredMainFrameNavigation(navigation_handle)) {
+  const bool is_user_triggered =
+      IsUserTriggeredMainFrameNavigation(navigation_handle);
+  if (is_user_triggered) {
     // Once the tab state is remove, restrictions will be removed from it.
     TabGroupSyncTabState::Reset(contents());
   }
@@ -197,18 +257,31 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
+  // Only update the redirect chain for navigations that are sent to sync so
+  // that the redirect chain will match the entry stored in sync db. This will
+  // prevent the case that if a renderer initiated navigation changes the tab
+  // URL, a sync update will not reload the page.
+  UpdateTabRedirectChain(navigation_handle);
+
   SavedTabGroupTab* tab = group->GetTab(local_tab_id());
   CHECK(tab);
 
-  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // TODO(crbug.com/359715038): Implement in TGSS then remove cast.
-    static_cast<TabGroupSyncServiceProxy*>(service_)->SetFaviconForTab(
-        group->local_group_id().value(), local_tab_id(),
-        favicon::TabFaviconFromWebContents(contents()));
-  }
-
   service_->NavigateTab(group->local_group_id().value(), local_tab_id(),
                         contents()->GetURL(), contents()->GetTitle());
+
+  if (is_user_triggered || IsMainFrameRendererNavigation(navigation_handle)) {
+    // We additionally want to record the last share update if it is due
+    // to a renderer navigation in the main frame.
+    // Note: this does not overlap with the conditions checked in
+    // IsUserTriggeredMainFrameNavigation.
+    if (MostRecentSharedTabUpdateStore* most_recent_shared_tab_update_store =
+            local_tab_->GetBrowserWindowInterface()
+                ->GetFeatures()
+                .most_recent_shared_tab_update_store()) {
+      most_recent_shared_tab_update_store->SetLastUpdatedTab(
+          group->local_group_id().value(), local_tab_id());
+    }
+  }
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
@@ -238,9 +311,9 @@ std::optional<SavedTabGroup> SavedTabGroupWebContentsListener::saved_group() {
 
 void SavedTabGroupWebContentsListener::OnTabEnteredForeground(
     tabs::TabInterface* tab_interface) {
-  if (cached_url_.has_value()) {
-    PerformNavigation(cached_url_.value());
-    cached_url_.reset();
+  if (deferred_tab_state_.has_value()) {
+    PerformNavigation(deferred_tab_state_.value().url());
+    deferred_tab_state_.reset();
   }
 }
 

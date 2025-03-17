@@ -32,7 +32,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -57,6 +56,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -84,6 +84,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -95,7 +96,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -109,7 +110,9 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // LINT.IfChange
@@ -119,11 +122,13 @@ namespace {
 // Key under which extension policies are grouped in JSON policy exports.
 constexpr char kExtensionsKey[] = "extensions";
 
-#if !BUILDFLAG(IS_ANDROID)
-constexpr char kPolicyPromotionBannerLocale[] = "en-US";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace
+
+namespace features {
+BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
+             "PolicyPagePromotionEligibilityCheckedBanner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace features
 
 PolicyUIHandler::PolicyUIHandler() = default;
 
@@ -310,7 +315,7 @@ void PolicyUIHandler::HandleListenPoliciesUpdates(
 
 void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
   reload_policies_count_ += 1;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allow user to manually fetch remote commands. Useful for testing or when
   // the invalidation service is not working properly.
   policy::CloudPolicyManager* const device_manager =
@@ -507,29 +512,53 @@ void PolicyUIHandler::SendStatus() {
 void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
   AllowJavascript();
 #if !BUILDFLAG(IS_ANDROID)
-  const bool should_show_promotion =
-      // The promotion banner should be shown if:
-      // 1. The feature is enabled
-      // 2. The user is dasher managed
-      // 3. The user is under en-US locale
-      // 4. The user has not dismissed the banner
-      base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner) &&
-      policy::ManagementServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui()))
-          ->IsAccountManaged() &&
-      g_browser_process->GetApplicationLocale() ==
-          kPolicyPromotionBannerLocale &&
-      !Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-          policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
-  // Log the UMA metric for the promotion banner displayed.
-  base::UmaHistogramBoolean("Enterprise.PolicyPromotionBannerDisplayed",
-                            should_show_promotion);
-  ResolveJavascriptCallback(args[0], should_show_promotion);
+  Profile* profile = Profile::FromWebUI(web_ui());
+  std::string callback_id = args[0].GetString();
+
+  if (!base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner) ||
+      profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+    OnPromotionEligibilityFetched(
+        callback_id,
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
+
+  auto* profile_id_service =
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile);
+  if (!profile_id_service->GetProfileId().has_value()) {
+    OnPromotionEligibilityFetched(
+        callback_id,
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+
+  std::string locale = g_browser_process->GetApplicationLocale();
+
+  bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
+      policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
+
+  std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
+      promotion_eligibility_checker =
+          std::make_unique<enterprise_promotion::PromotionEligibilityChecker>(
+              /*profile_id=*/profile_id_service->GetProfileId().value(),
+              /*client=*/
+              profile->GetCloudPolicyManager()->core()->client(),
+              /*identity_manager=*/identity_manager,
+              /*locale=*/locale,
+              /*dismissed_banner_pref=*/dismissed_banner_pref);
+  promotion_eligibility_checker->MaybeCheckPromotionEligibility(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      base::BindOnce(&PolicyUIHandler::OnPromotionEligibilityFetched,
+                     weak_factory_.GetWeakPtr(), callback_id));
+  return;
+
 #else
   // If the build is on Android, still handle the request but return false
   // so the banner does not show.
   ResolveJavascriptCallback(args[0], false);
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void PolicyUIHandler::HandleSetBannerDismissed(const base::Value::List& args) {
@@ -557,6 +586,22 @@ void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
   SendStatus();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+void PolicyUIHandler::OnPromotionEligibilityFetched(
+    const std::string& callback_id,
+    enterprise_management::GetUserEligiblePromotionsResponse response) {
+  AllowJavascript();
+
+  bool should_show_promotion = response.promotions().policy_page_promotion() ==
+                               enterprise_management::CHROME_ENTERPRISE_CORE;
+  // Log the UMA metric for the promotion banner displayed.
+  base::UmaHistogramBoolean("Enterprise.PolicyPromotionBannerDisplayed",
+                            should_show_promotion);
+
+  ResolveJavascriptCallback(base::Value(callback_id), should_show_promotion);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::string PolicyUIHandler::GetPoliciesAsJson() {
   base::Value::Dict policy_values =

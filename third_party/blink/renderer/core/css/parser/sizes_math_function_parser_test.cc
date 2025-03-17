@@ -54,8 +54,8 @@ static void VerifyCSSCalc(String text,
 
   ASSERT_TRUE(valid) << text;
 
-  Font font;
-  CSSToLengthConversionData::FontSizes font_sizes(font_size, font_size, &font,
+  Font* font = MakeGarbageCollected<Font>();
+  CSSToLengthConversionData::FontSizes font_sizes(font_size, font_size, font,
                                                   1);
   CSSToLengthConversionData::LineHeightSize line_height_size;
   CSSToLengthConversionData::ViewportSize viewport_size(viewport_width,

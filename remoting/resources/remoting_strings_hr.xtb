@@ -28,6 +28,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="2329392777730037872">Otvaranje URL-a <ph name="URL" /> na klijentu nije uspjelo.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće pristupiti hostu. To je vjerojatno zbog konfiguracije mreže koju upotrebljavate.</translation>
+<translation id="242591256144136845">Autorska prava 2025. Google LLC. Sva prava pridržana.</translation>
 <translation id="2504109125669302160">Dodijeli usluzi <ph name="PRODUCT_NAME" /> dopuštenje za "Pristupačnost"</translation>
 <translation id="2509394361235492552">Povezano s računalom <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Želite li dijeliti ovo računalo tako da ga neki drugi korisnik može vidjeti i upravljati njime?</translation>
@@ -133,6 +134,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="7067321367069083429">Zaslon se ponaša kao dodirni zaslon</translation>
 <translation id="7116737094673640201">Dobro došli na Udaljenu radnu površinu Chrome</translation>
 <translation id="7144878232160441200">Pokušaj ponovno</translation>
+<translation id="7298392173540380852">Autorska prava 2025. Autori Chromiuma. Sva prava pridržana.</translation>
 <translation id="7312846573060934304">Host je izvan mreže.</translation>
 <translation id="7319983568955948908">Zaustavi dijeljenje</translation>
 <translation id="7359298090707901886">Odabrani preglednik ne može se upotrebljavati za otvaranje URL-ova na lokalnom računalu.</translation>
@@ -149,7 +151,6 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="7693372326588366043">Osvježi popis hostova</translation>
 <translation id="7714222945760997814">Prijavite ovo</translation>
 <translation id="7868137160098754906">Unesite PIN za udaljeno računalo.</translation>
-<translation id="7881455334687220899">Autorska prava 2024. Autori Chromiuma. Sva prava pridržana.</translation>
 <translation id="7895403300744144251">Sigurnosna pravila na udaljenom računalu ne dopuštaju povezivanje s vašeg računa.</translation>
 <translation id="7936528439960309876">Usidri udesno</translation>
 <translation id="7970576581263377361">Autentifikacija nije uspjela. Prijavite se ponovo na Chromium.</translation>
@@ -181,7 +182,6 @@ Ako je okvir stavke "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, poništi
 <translation id="8747048596626351634">Sesija se srušila ili se nije pokrenula. Ako ~/.chrome-remote-desktop-session postoji na udaljenom računalu, neka pokrene dugotrajan postupak u prednjem planu kao što je okruženje radnje površine ili upravitelj prozora.</translation>
 <translation id="8804164990146287819">Pravila o privatnosti</translation>
 <translation id="8906511416443321782">Pristup mikrofonu potreban je za snimanje audiozapisa i emitiranje njegovog streama na klijentu udaljene radne površine Chrome.</translation>
-<translation id="9042277333359847053">Autorska prava 2024. Google LLC. Sva prava pridržana.</translation>
 <translation id="9111855907838866522">Povezani ste s udaljenim uređajem. Da biste otvorili izbornik, prstima dodirnite zaslon.</translation>
 <translation id="9126115402994542723">Nemoj ponovo tražiti PIN prilikom povezivanja s tim hostom s ovog uređaja.</translation>
 <translation id="916856682307586697">Pokrenite zadanu Xsesiju</translation>

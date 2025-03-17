@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -112,7 +113,7 @@ std::unique_ptr<HttpAuthDialog> HttpAuthDialog::Create(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
     const GURL& url,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   // This class cannot handle UI-less auth dialog requests. Once Lacros ships,
   // this should no longer be possible and this can become a CHECK.
   if (!web_contents) {
@@ -233,11 +234,11 @@ HttpAuthDialog::DialogView::~DialogView() = default;
 
 // Access the data in the username/password text fields.
 std::u16string HttpAuthDialog::DialogView::GetUsername() const {
-  return username_field_->GetText();
+  return std::u16string(username_field_->GetText());
 }
 
 std::u16string HttpAuthDialog::DialogView::GetPassword() const {
-  return password_field_->GetText();
+  return std::u16string(password_field_->GetText());
 }
 
 void HttpAuthDialog::DialogView::SetCredentialsForTest(
@@ -253,10 +254,11 @@ views::View* HttpAuthDialog::DialogView::GetInitiallyFocusedView() {
   return username_field_;
 }
 
-HttpAuthDialog::HttpAuthDialog(const net::AuthChallengeInfo& auth_info,
-                               content::WebContents* web_contents,
-                               const GURL& url,
-                               LoginAuthRequiredCallback auth_required_callback)
+HttpAuthDialog::HttpAuthDialog(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    const GURL& url,
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
     : callback_(std::move(auth_required_callback)),
       web_contents_(web_contents) {
   CHECK(!callback_.is_null());
@@ -318,7 +320,8 @@ void HttpAuthDialog::SupplyCredentials(std::u16string_view username,
   // synchronously invoked as a callback.
   auto run_callback = base::BindOnce(
       [](base::WeakPtr<HttpAuthDialog> dialog,
-         LoginAuthRequiredCallback callback, net::AuthCredentials credentials) {
+         content::LoginDelegate::LoginAuthRequiredCallback callback,
+         net::AuthCredentials credentials) {
         if (dialog) {
           std::move(callback).Run(std::move(credentials));
         }
@@ -336,7 +339,7 @@ void HttpAuthDialog::Cancel() {
   // synchronously invoked as a callback.
   auto run_callback = base::BindOnce(
       [](base::WeakPtr<HttpAuthDialog> dialog,
-         LoginAuthRequiredCallback callback) {
+         content::LoginDelegate::LoginAuthRequiredCallback callback) {
         if (dialog) {
           std::move(callback).Run(std::nullopt);
         }

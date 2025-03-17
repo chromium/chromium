@@ -19,7 +19,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
@@ -368,8 +367,7 @@ void ReportingClient::DeliverAsyncStartUploader(
     // provider. In case of missived Uploader will be provided by
     // EncryptedReportingServiceProvider so it does not need to be
     // enabled here.
-    if (!StorageSelector::is_uploader_required() ||
-        StorageSelector::is_use_missive() ||
+    if (StorageSelector::is_use_missive() ||
         storage() == nullptr  // report queue provider is not (yet?) ready
     ) {
       std::move(start_uploader_cb)

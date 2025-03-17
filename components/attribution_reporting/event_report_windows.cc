@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <optional>
@@ -16,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -46,7 +46,7 @@ bool IsReportWindowValid(base::TimeDelta report_window) {
 }
 
 bool IsStrictlyIncreasing(const std::vector<base::TimeDelta>& end_times) {
-  return base::ranges::adjacent_find(end_times, std::not_fn(std::less{})) ==
+  return std::ranges::adjacent_find(end_times, std::not_fn(std::less{})) ==
          end_times.end();
 }
 

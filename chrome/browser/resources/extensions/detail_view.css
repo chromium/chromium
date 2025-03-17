@@ -94,6 +94,10 @@
   }
 }
 
+#account-upload-button {
+  color: var(--cr-fallback-color-on-surface-subtle);
+}
+
 .keep-button {
   margin-inline-end: 10px;
   margin-inline-start: 40px;

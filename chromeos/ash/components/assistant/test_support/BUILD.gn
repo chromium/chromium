@@ -1,6 +1,4 @@
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non Chrome OS builds cannot depend on //chromeos/ash")
 
 static_library("test_support") {
   testonly = true

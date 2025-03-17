@@ -6,6 +6,7 @@
 #define MEDIA_GPU_CHROMEOS_VIDEO_FRAME_RESOURCE_H_
 
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -17,6 +18,8 @@ namespace media {
 // Implements a FrameResource that is backed by a media::VideoFrame.
 class VideoFrameResource : public FrameResource {
  public:
+  VideoFrameResource(base::PassKey<VideoFrameResource>,
+                     scoped_refptr<const VideoFrame> frame);
   VideoFrameResource(const VideoFrameResource&) = delete;
   VideoFrameResource& operator=(const VideoFrameResource&) = delete;
 
@@ -40,7 +43,6 @@ class VideoFrameResource : public FrameResource {
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
   std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const override;
-  gfx::GenericSharedMemoryId GetSharedMemoryId() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;
   int stride(size_t plane) const override;
@@ -52,6 +54,7 @@ class VideoFrameResource : public FrameResource {
   const VideoFrameMetadata& metadata() const override;
   VideoFrameMetadata& metadata() override;
   void set_metadata(const VideoFrameMetadata& metadata) override;
+  const base::UnguessableToken& tracking_token() const override;
   gfx::ColorSpace ColorSpace() const override;
   void set_color_space(const gfx::ColorSpace& color_space) override;
   const std::optional<gfx::HDRMetadata>& hdr_metadata() const override;
@@ -78,7 +81,6 @@ class VideoFrameResource : public FrameResource {
   scoped_refptr<const VideoFrame> GetVideoFrame() const;
 
  private:
-  explicit VideoFrameResource(scoped_refptr<const VideoFrame> frame);
   ~VideoFrameResource() override;
 
   const scoped_refptr<const VideoFrame> frame_;

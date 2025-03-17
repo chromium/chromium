@@ -107,8 +107,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) override;
   void StartRemoteDeviceWipe(
       const enterprise_management::SignedData& signed_command) override;
-  void ClearForcedReEnrollmentVpd(
-      chromeos::VoidDBusMethodCallback callback) override;
+  void ClearBlockDevmodeVpd(chromeos::VoidDBusMethodCallback callback) override;
   void StartTPMFirmwareUpdate(const std::string& update_mode) override;
   void RequestLockScreen() override;
   void NotifyLockScreenShown() override;
@@ -261,8 +260,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     psm_device_active_secret_ = psm_device_active_secret;
   }
 
-  int clear_forced_re_enrollment_vpd_call_count() const {
-    return clear_forced_re_enrollment_vpd_call_count_;
+  int clear_block_devmode_vpd_call_count() const {
+    return clear_block_devmode_vpd_call_count_;
   }
 
   int unblock_dev_mode_enrollment_call_count() const {
@@ -403,7 +402,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   AdbSideloadResponseCode adb_sideload_response_ =
       AdbSideloadResponseCode::SUCCESS;
 
-  int clear_forced_re_enrollment_vpd_call_count_ = 0;
+  int clear_block_devmode_vpd_call_count_ = 0;
   int unblock_dev_mode_enrollment_call_count_ = 0;
   int unblock_dev_mode_init_state_call_count_ = 0;
   int unblock_dev_mode_carrier_lock_call_count_ = 0;

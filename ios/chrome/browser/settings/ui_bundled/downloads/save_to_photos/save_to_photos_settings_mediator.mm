@@ -10,13 +10,14 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_confirmation_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 @interface SaveToPhotosSettingsMediator () <
     ChromeAccountManagerServiceObserver,
@@ -40,6 +41,9 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+
+  // raw_ptr to the PhotosService object.
+  raw_ptr<PhotosService> _photosService;
 }
 
 #pragma mark - Initialization
@@ -48,7 +52,8 @@
                     (ChromeAccountManagerService*)accountManagerService
                                   prefService:(PrefService*)prefService
                               identityManager:
-                                  (signin::IdentityManager*)identityManager {
+                                  (signin::IdentityManager*)identityManager
+                                photosService:(PhotosService*)photosService {
   self = [super init];
   if (self) {
     CHECK(accountManagerService);
@@ -73,6 +78,8 @@
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
+
+    _photosService = photosService;
   }
   return self;
 }
@@ -83,6 +90,7 @@
     (id<SaveToPhotosSettingsAccountConfirmationConsumer>)
         accountConfirmationConsumer {
   _accountConfirmationConsumer = accountConfirmationConsumer;
+  [self displayOrHideSaveToPhotosSettingsUI];
   [self updateConsumers];
 }
 
@@ -120,7 +128,7 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
@@ -128,7 +136,7 @@
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -145,16 +153,16 @@
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
+  [self displayOrHideSaveToPhotosSettingsUI];
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    [self.delegate hideSaveToPhotosSettings];
     return;
   }
   [self updateConsumers];
 }
 
 - (void)onAccountsOnDeviceChanged {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityListChanged` instead.
     return;
   }
@@ -162,7 +170,7 @@
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }
@@ -179,11 +187,23 @@
   [self updateConsumers];
 }
 
+// The Save to Photos settings UI will be displayed or removed depending on
+// whether the application's current state is configured to support Save to
+// Photos functionality.
+- (void)displayOrHideSaveToPhotosSettingsUI {
+  if (!_photosService || !_photosService->IsSupported()) {
+    [_accountConfirmationConsumer hideSaveToPhotosSettingsUI];
+    return;
+  }
+
+  [_accountConfirmationConsumer displaySaveToPhotosSettingsUI];
+}
+
 // Update consumers with information from `_prefService` and
 // `_accountManagerService`.
 - (void)updateConsumers {
-  const std::string savedGaiaID =
-      _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId);
+  const GaiaId savedGaiaID(
+      _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));
   id<SystemIdentity> savedIdentity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(savedGaiaID);
 

@@ -10,9 +10,11 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** View that handles orientation changes for Sad Tab / Crashed Renderer page. */
+@NullMarked
 public class SadTabView extends ScrollView {
     // Dimension (dp) at which reload button is dynamically sized and content centers
     private static final int MAX_BUTTON_WIDTH_DP = 620;

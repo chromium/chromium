@@ -14,7 +14,6 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -1255,24 +1254,6 @@ String Request::ContentType() const {
   String result;
   request_->HeaderList()->Get(http_names::kContentType, result);
   return result;
-}
-
-mojom::blink::RequestContextType Request::GetRequestContextType() const {
-  if (!request_) {
-    return mojom::blink::RequestContextType::UNSPECIFIED;
-  }
-  return mojom::blink::RequestContextType::FETCH;
-}
-
-network::mojom::RequestDestination Request::GetRequestDestination() const {
-  if (!request_) {
-    return network::mojom::RequestDestination::kEmpty;
-  }
-  return request_->Destination();
-}
-
-network::mojom::RequestMode Request::GetRequestMode() const {
-  return request_->Mode();
 }
 
 void Request::Trace(Visitor* visitor) const {

@@ -76,11 +76,10 @@ class VideoResourceUpdaterTest : public testing::Test {
     resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
   }
 
-  std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware(
-      bool use_stream_video_draw_quad = false) {
+  std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware() {
     return std::make_unique<VideoResourceUpdater>(
         context_provider_.get(), resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, use_stream_video_draw_quad,
+        /*shared_image_interface=*/nullptr,
         /*use_gpu_memory_buffer_resources=*/false,
         /*max_resource_size=*/10000);
   }
@@ -89,7 +88,6 @@ class VideoResourceUpdaterTest : public testing::Test {
     return std::make_unique<VideoResourceUpdater>(
         /*context_provider=*/nullptr, resource_provider_.get(),
         shared_image_interface_provider_.GetSharedImageInterface(),
-        /*use_stream_video_draw_quad=*/false,
         /*use_gpu_memory_buffer_resources=*/false, /*max_resource_size=*/10000);
   }
 
@@ -745,11 +743,10 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(VideoResourceUpdaterTest,
        CreateForHardwarePlanes_StreamTexture_CopyToNewTexture) {
-  // Note that |use_stream_video_draw_quad| is true for this test.
-  std::unique_ptr<VideoResourceUpdater> updater =
-      CreateUpdaterForHardware(true);
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame =
       CreateTestStreamTextureHardwareVideoFrame(/*needs_copy=*/false);
@@ -771,6 +768,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ((GLenum)GL_TEXTURE_2D, resource.resource.texture_target());
   EXPECT_EQ(1u, GetSharedImageCount());
 }
+#endif
 
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_TextureQuad) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
@@ -796,7 +794,6 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
 
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resource.type);
   EXPECT_TRUE(resource.release_callback);
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resource.resource.texture_target());
@@ -824,7 +821,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
   const viz::TextureDrawQuad* quad =
       pass->quad_list.ElementAt(0)->DynamicCast<viz::TextureDrawQuad>();
   EXPECT_NE(nullptr, quad);
-  EXPECT_EQ(true, quad->is_stream_video);
+  EXPECT_EQ(gfx::ProtectedVideoType::kHardwareProtected,
+            quad->protected_video_type);
   EXPECT_EQ(viz::OverlayPriority::kRequired, quad->overlay_priority_hint);
 
   updater->ReleaseFrameResource();

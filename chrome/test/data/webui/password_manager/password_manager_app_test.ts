@@ -401,4 +401,18 @@ suite('PasswordManagerAppTest', function() {
         await passwordManager.whenCalled(
             'dismissSafetyHubPasswordMenuNotification');
       });
+
+  test('change password page', async function() {
+    // Simulate direct navigation.
+    Router.getInstance().navigateTo(Page.PASSWORD_CHANGE);
+    await flushTasks();
+
+    const passwordsSection =
+        app.shadowRoot!.querySelector('password-change-details');
+    assertTrue(!!passwordsSection);
+    passwordsSection?.$.back.click();
+    await flushTasks();
+
+    assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
+  });
 });

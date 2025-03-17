@@ -5,7 +5,7 @@
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("dbus") {
   sources = [
@@ -56,7 +56,6 @@ static_library("dbus") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/policy/messaging_layer/storage_selector",
-    "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chromeos/ash/components/dbus/services",
     "//chromeos/dbus/missive",
     "//components/reporting/proto:record_proto",
@@ -69,18 +68,14 @@ static_library("dbus") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/webui/shimless_rma",
-    "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/tracing",
-    "//chrome/browser/ash/arc/video",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/net",
@@ -155,6 +150,9 @@ static_library("dbus") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/video",
     "//chromeos/ash/services/rollback_network_config/public/mojom",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus/constants",
@@ -246,7 +244,6 @@ source_set("unit_tests") {
 
   deps = [
     ":dbus",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -266,6 +263,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/dbus/dlp:dlp_proto",
     "//chromeos/dbus/missive",
     "//components/exo",

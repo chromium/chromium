@@ -145,7 +145,7 @@ NewScreencastPrecondition ServerBasedRecognitionAvailabilityToPrecondition(
   }
 }
 
-const base::FilePath::StringPieceType getMetadataFileExtension() {
+const base::FilePath::StringViewType getMetadataFileExtension() {
   return ash::kProjectorV2MetadataFileExtension;
 }
 
@@ -631,7 +631,7 @@ std::vector<base::FilePath> ProjectorControllerImpl::GetScreencastFilePaths()
   DCHECK(container_folder);
   const base::FilePath path_with_no_extension =
       projector_session_->GetScreencastFilePathNoExtension();
-  const base::FilePath::StringPieceType metadata_file_extension =
+  const base::FilePath::StringViewType metadata_file_extension =
       getMetadataFileExtension();
   return {path_with_no_extension.AddExtension(metadata_file_extension),
           path_with_no_extension.AddExtension(kProjectorMediaFileExtension),

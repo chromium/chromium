@@ -106,10 +106,6 @@ DatabaseTracker::DatabaseTracker(
                   ? profile_path_.Append(kIncognitoDatabaseDirectoryName)
                   : profile_path_.Append(kDatabaseDirectoryName)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{
-              .page_size = 4096,
-              .cache_size = 500,
-          },
           sql::Database::Tag("DatabaseTracker"))),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -149,8 +145,7 @@ void DatabaseTracker::RegisterQuotaClient() {
   mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
       quota_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
-                                       storage::QuotaClientType::kDatabase,
-                                       {blink::mojom::StorageType::kTemporary});
+                                       storage::QuotaClientType::kDatabase);
 
   task_runner_->PostTask(
       FROM_HERE,

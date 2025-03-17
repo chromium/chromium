@@ -18,6 +18,7 @@
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -48,7 +49,7 @@ class SharedStorageDatabaseMigrationsTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
+        {network::features::kSharedStorageAPI},
         {{"MaxSharedStorageInitTries", "2"}});
 
     // Get a temporary directory for the test DB files.
@@ -445,7 +446,7 @@ TEST_F(SharedStorageDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
 
     while (select_statement.Step()) {
       premigration_values[select_statement.ColumnInt64(0)] = std::make_tuple(
-          url::Origin::Create(GURL(select_statement.ColumnString(1))),
+          url::Origin::Create(GURL(select_statement.ColumnStringView(1))),
           select_statement.ColumnTime(2), select_statement.ColumnDouble(3));
     }
   }

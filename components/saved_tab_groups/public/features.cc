@@ -9,18 +9,26 @@
 #include "build/build_config.h"
 
 namespace tab_groups {
+
+// The default time interval to clean up a hidden tab group.
+const int kDefaultGroupCleanUpTimeInternalInSeconds = 60 * 60;
+
+// Finch parameter key value for the group clean up time interval in seconds.
+constexpr char kGroupCleanUpTimeIntervalInSecondsFinchKey[] =
+    "group_clean_up_time_internal_seconds";
+
 // Core feature flag for tab group sync on Android.
 // Controls registration with the sync service and tab model hookup UI layer.
 // TabGroupSyncService is eanbled when either this flag or kTabGroupPaneAndroid
 // is enabled.
 BASE_FEATURE(kTabGroupSyncAndroid,
              "TabGroupSyncAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag used to enable tab group revisit surface.
 BASE_FEATURE(kTabGroupPaneAndroid,
              "TabGroupPaneAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag used to determine whether the network layer is disabled for
 // tab group sync.
@@ -28,26 +36,18 @@ BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
              "TabGroupSyncDisableNetworkLayer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Builds off of the original TabGroupsSave feature by making some UI tweaks and
-// adjustments. This flag controls the v2 update of sync, restore, dialog
-// triggering, extension support etc. b/325123353
-BASE_FEATURE(kTabGroupsSaveV2,
-             "TabGroupsSaveV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This flag controls the UI update made to saved tab groups as well as model
-// and sync support for pinning saved tab groups.
-BASE_FEATURE(kTabGroupsSaveUIUpdate,
-             "TabGroupsSaveUIUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 // Feature flag specific to Desktop platforms. When enabled, desktop platforms
 // will use the TabGroupSyncService. When disabled, desktop platforms will
 // continue to use SavedTabGroupKeyedService.
 BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
              "TabGroupSyncServiceDesktopMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature flag for Java controller layer migration to use TabGroupSyncDelegate.
+// Noop when disabled.
+BASE_FEATURE(kTabGroupSyncDelegateAndroid,
+             "TabGroupSyncDelegateAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag specific to Desktop platforms. When enabled, desktop platforms
 // will defer remote navigations in a tab group when the tab is in a
@@ -98,16 +98,17 @@ BASE_FEATURE(kEnableUrlRestriction,
              "EnableUrlRestriction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsTabGroupsSaveV2Enabled() {
-  return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
-}
-
-bool IsTabGroupsSaveUIUpdateEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupsSaveUIUpdate);
-}
+// Enables clean up of hidden groups.
+BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
+             "EnableOriginatingSavedGroupCleanUp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);
+}
+
+bool IsTabGroupSyncDelegateAndroidEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupSyncDelegateAndroid);
 }
 
 bool IsTabGroupsDeferringRemoteNavigations() {
@@ -131,7 +132,11 @@ bool DeferMediaLoadInBackgroundTab() {
 }
 
 bool ShouldForceRemoveClosedTabGroupsOnStartup() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(kForceRemoveClosedTabGroupsOnStartup);
+#else
+  return false;
+#endif
 }
 
 bool IsTabTitleSanitizationEnabled() {
@@ -140,6 +145,18 @@ bool IsTabTitleSanitizationEnabled() {
 
 bool IsUrlRestrictionEnabled() {
   return base::FeatureList::IsEnabled(kEnableUrlRestriction);
+}
+
+bool IsOriginatingSavedGroupCleanUpEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOriginatingSavedGroupCleanUp);
+}
+
+base::TimeDelta GetOriginatingSavedGroupCleanUpTimeInterval() {
+  int time_in_seconds = base::GetFieldTrialParamByFeatureAsInt(
+      kEnableOriginatingSavedGroupCleanUp,
+      kGroupCleanUpTimeIntervalInSecondsFinchKey,
+      kDefaultGroupCleanUpTimeInternalInSeconds);
+  return base::Seconds(time_in_seconds);
 }
 
 }  // namespace tab_groups

@@ -8,11 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** A class for dealing with the Geolocation category. */
+@NullMarked
 public class LocationCategory extends SiteSettingsCategory {
     public LocationCategory(BrowserContextHandle browserContextHandle) {
         super(
@@ -42,7 +45,7 @@ public class LocationCategory extends SiteSettingsCategory {
     }
 
     @Override
-    protected Intent getIntentToEnableOsGlobalPermission(Context context) {
+    protected @Nullable Intent getIntentToEnableOsGlobalPermission(Context context) {
         if (enabledGlobally()) return null;
         return LocationUtils.getInstance().getSystemLocationSettingsIntent();
     }

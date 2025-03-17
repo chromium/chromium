@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.text.format.DateUtils;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,9 +32,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -142,7 +142,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private Supplier<CustomTabActivityTabController> mTabController;
     @Mock private Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
     @Mock private Supplier<CustomTabFeatureOverridesManager> mFeatureOverridesManagerSupplier;
-    @Mock private View mBaseChromeLayout;
     @Mock private Profile mProfile;
     @Mock private GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
     @Mock private ShoppingService mShoppingService;
@@ -212,7 +211,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mTabController,
                         mMinimizeDelegateSupplier,
                         mFeatureOverridesManagerSupplier,
-                        mBaseChromeLayout,
+                        CallbackUtils.emptyRunnable(),
                         mEdgeToEdgeManager) {
 
                     @Nullable
@@ -331,9 +330,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                                         .CCT_IS_OFF_THE_RECORD)
                         .build();
         FeatureList.setDisableNativeForTesting(true);
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(SigninFeatures.CCT_SIGN_IN_PROMPT, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(SigninFeatures.CCT_SIGN_IN_PROMPT);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);

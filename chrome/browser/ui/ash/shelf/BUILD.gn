@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/chromeos/crosier_tests.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("shelf") {
   sources = [
@@ -75,17 +74,12 @@ static_library("shelf") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/mall:app_id",
     "//ash/webui/projector_app/public/cpp",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/accessibility",
@@ -100,7 +94,6 @@ static_library("shelf") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/pip",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/extensions",
@@ -131,6 +124,10 @@ static_library("shelf") {
     "//chromeos/ash/components/default_pinned_apps",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/wm",
@@ -142,6 +139,7 @@ static_library("shelf") {
     "//components/prefs",
     "//components/sync_preferences",
     "//components/webapps/common",
+    "//extensions/browser",
     "//extensions/common",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
   ]
@@ -199,9 +197,6 @@ source_set("unit_tests") {
     ":shelf",
     ":test_support",
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/mall:app_id",
@@ -230,7 +225,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/test_support",
-    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",
     "//chrome/browser/sync",
@@ -239,6 +234,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/shelf/app_service",
+    "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
@@ -250,6 +246,10 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/scalable_iph:constants",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//components/account_id",
     "//components/app_constants",
     "//components/exo",
@@ -284,7 +284,6 @@ source_set("browser_tests") {
     ":shelf",
     ":test_support",
     "//ash",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//base/test:test_support",
@@ -317,6 +316,7 @@ source_set("browser_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/file_manager:constants",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/constants",
     "//components/app_constants",
     "//components/crx_file",

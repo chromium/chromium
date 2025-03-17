@@ -4,11 +4,28 @@
 
 #include "components/ip_protection/common/ip_protection_data_types.h"
 
+#include <array>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
+#include <vector>
+
+#include "base/base64.h"
+#include "base/containers/contains.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace ip_protection {
+
+namespace {
+
+// Size of a PRT when TLS serialized, before base64 encoding.
+constexpr size_t kPRTSize = 63;
+constexpr size_t kPRTPointSize = 29;
+
+}  // namespace
 
 std::string GetGeoIdFromGeoHint(const std::optional<GeoHint> geo_hint) {
   if (!geo_hint.has_value()) {
@@ -52,6 +69,79 @@ std::optional<GeoHint> GetGeoHintFromGeoIdForTesting(  // IN-TEST
   }
 
   return geo_hint;
+}
+
+std::vector<MdlType> FromMdlResourceProto(
+    const masked_domain_list::Resource& resource) {
+  std::vector<MdlType> mdl_types;
+
+  if (!resource.exclude_default_group()) {
+    mdl_types.emplace_back(MdlType::kIncognito);
+  }
+
+  if (base::Contains(resource.experiments(),
+                     masked_domain_list::Resource::Experiment::
+                         Resource_Experiment_EXPERIMENT_EXTERNAL_REGULAR)) {
+    mdl_types.emplace_back(MdlType::kRegularBrowsing);
+  }
+
+  return mdl_types;
+}
+
+TryGetProbabilisticRevealTokensOutcome::
+    TryGetProbabilisticRevealTokensOutcome() = default;
+TryGetProbabilisticRevealTokensOutcome::
+    ~TryGetProbabilisticRevealTokensOutcome() = default;
+TryGetProbabilisticRevealTokensOutcome::TryGetProbabilisticRevealTokensOutcome(
+    const TryGetProbabilisticRevealTokensOutcome& other) = default;
+TryGetProbabilisticRevealTokensOutcome::TryGetProbabilisticRevealTokensOutcome(
+    TryGetProbabilisticRevealTokensOutcome&& other) = default;
+TryGetProbabilisticRevealTokensOutcome&
+TryGetProbabilisticRevealTokensOutcome::operator=(
+    const TryGetProbabilisticRevealTokensOutcome&) = default;
+TryGetProbabilisticRevealTokensOutcome&
+TryGetProbabilisticRevealTokensOutcome::operator=(
+    TryGetProbabilisticRevealTokensOutcome&&) = default;
+
+/*
+Serialize and base64 encode the following struct given in TLS presentation
+language (rfc8446 section-3). Size of u and e depends on the version and only
+possible version value is 1 for now. Only possible size for u and e is 29.
+Returns null in case of failure.
+
+struct {
+  uint8 version;
+  opaque u<0..2^16-1>;
+  opaque e<0..2^16-1>;
+} tlsPRT;
+
+Once serialized (before base64 encoding), output bytes will be as follows.
+
+[1 byte for version |
+ 2 bytes for u size | 29 bytes for u |
+ 2 bytes for e size | 29 bytes for e ]
+*/
+std::optional<std::string> ProbabilisticRevealToken::SerializeAndEncode()
+    const {
+  if (version != 1 || u.size() != e.size() || u.size() != kPRTPointSize) {
+    return std::nullopt;
+  }
+  bssl::ScopedCBB cbb;
+  std::array<uint8_t, kPRTSize> prt;
+  size_t cbb_size = 0;
+  // CBB doc says CBB_init_fixed will not fail.
+  CHECK(CBB_init_fixed(cbb.get(), prt.data(), kPRTSize));
+  if (!CBB_add_u8(cbb.get(), version) || !CBB_add_u16(cbb.get(), u.size()) ||
+      !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(u.data()),
+                     u.size()) ||
+      !CBB_add_u16(cbb.get(), e.size()) ||
+      !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(e.data()),
+                     e.size()) ||
+      !CBB_finish(cbb.get(), nullptr, &cbb_size)) {
+    return std::nullopt;
+  }
+  CHECK_EQ(cbb_size, kPRTSize);
+  return base::Base64Encode(prt);
 }
 
 }  // namespace ip_protection

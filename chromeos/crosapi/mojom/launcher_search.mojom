@@ -202,32 +202,6 @@ interface SearchController {
       (pending_associated_receiver<SearchResultsPublisher> publisher);
 };
 
-// Interface to register the search controller. Implemented in ash.
-// Next min method ID: 1
-[Uuid="1dc4306b-50af-4b43-a1f0-552e7010971e"]
-interface SearchControllerRegistry {
-  // Lacros can register the search controller to ash so that ash can
-  // start making calls.
-  RegisterSearchController@0(
-      pending_remote<SearchController> search_controller);
-};
-
-// Interface to construct `SearchController` instances. Implemented in lacros.
-//
-// This interface is currently under construction until we can determine a
-// suitable API for all `SearchController` users.
-//
-// Next min method ID: 1
-[Uuid="cc869735-ba36-434e-9535-b82fea3c256c"]
-interface SearchControllerFactory {
-  // Creates a new `SearchController` for Picker.
-  CreateSearchControllerPicker@0(
-      pending_receiver<SearchController> controller,
-      bool bookmarks,
-      bool history,
-      bool open_tabs);
-};
-
 // Interface implemented by result objects to receive asynchronously-updated
 // data for one search result.
 // Next min method ID: 1

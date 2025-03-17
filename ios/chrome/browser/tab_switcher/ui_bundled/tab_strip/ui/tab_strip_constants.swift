@@ -48,6 +48,7 @@ public struct TabStripConstants {
     public static let minCellWidth =
       titleContainerHorizontalPadding * 2 + titleContainerHorizontalMargin * 2
     public static let maxCellWidth = maxTitleWidth + minCellWidth
+    public static let notificationDotSize: CGFloat = 6
   }
 
   /// New tab button constants.

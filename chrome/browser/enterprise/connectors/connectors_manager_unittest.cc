@@ -26,6 +26,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -33,7 +34,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
 #endif
@@ -50,6 +51,9 @@ namespace {
 constexpr AnalysisConnector kAllAnalysisConnectors[] = {
     AnalysisConnector::FILE_DOWNLOADED, AnalysisConnector::FILE_ATTACHED,
     AnalysisConnector::BULK_DATA_ENTRY, AnalysisConnector::PRINT};
+
+constexpr DataRegion kAllDataRegions[] = {
+    DataRegion::NO_PREFERENCE, DataRegion::UNITED_STATES, DataRegion::EUROPE};
 
 constexpr char kEmptySettingsPref[] = "[]";
 
@@ -154,7 +158,7 @@ class ConnectorsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This is necessary so the URL flag code works on CrOS. If it's absent, a
   // CrOS DCHECK fails when trying to access the
   // BrowserPolicyConnectorAsh as it is not completely initialized.
@@ -316,7 +320,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      kNormalLocalAnalysisSettingsPref)));
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
 
 namespace {
@@ -660,7 +664,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(kNormalCloudSourceDestinationSettingsPref)),
     testingTupleToString);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsManagerAnalysisConnectorsTest
@@ -745,7 +749,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      kNormalLocalAnalysisSettingsPref)));
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class ConnectorsManagerAnalysisConnectorsSourceDestinationTest
     : public ConnectorsManagerTest,
@@ -833,7 +837,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(kNormalCloudSourceDestinationSettingsPref,
                         kNormalLocalSourceDestinationSettingsPref)));
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 class ConnectorsManagerLocalAnalysisConnectorTest
@@ -924,26 +928,41 @@ INSTANTIATE_TEST_SUITE_P(ConnectorsManagerLocalAnalysisConnectorTest,
 #if !BUILDFLAG(IS_ANDROID)
 class ConnectorsManagerDataRegionTest
     : public ConnectorsManagerTest,
-      public testing::WithParamInterface<
-          std::tuple<AnalysisConnector, DataRegion>> {
+      public testing::WithParamInterface<std::tuple<AnalysisConnector,
+                                                    DataRegion,
+                                                    DataRegion,
+                                                    policy::PolicyScope>> {
  public:
-  ConnectorsManagerDataRegionTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kDlpRegionalizedEndpoints);
-  }
+  ConnectorsManagerDataRegionTest() = default;
+
   AnalysisConnector connector() const { return std::get<0>(GetParam()); }
 
-  DataRegion data_region() const { return std::get<1>(GetParam()); }
+  DataRegion user_data_region() const { return std::get<1>(GetParam()); }
+
+  DataRegion machine_data_region() const { return std::get<2>(GetParam()); }
+
+  policy::PolicyScope policy_scope() const { return std::get<3>(GetParam()); }
 
   const char* pref() const { return AnalysisConnectorPref(connector()); }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+ protected:
+  void SetUp() override {
+    ConnectorsManagerTest::SetUp();
+
+    // Set up the data region setting in both local state and profile prefs.
+    g_browser_process->local_state()->SetInteger(
+        prefs::kChromeDataRegionSetting,
+        static_cast<int>(machine_data_region()));
+    pref_service()->SetInteger(prefs::kChromeDataRegionSetting,
+                               static_cast<int>(user_data_region()));
+
+    // Set up connector scope.
+    pref_service()->SetInteger(AnalysisConnectorScopePref(connector()),
+                               policy_scope());
+  }
 };
 
 TEST_P(ConnectorsManagerDataRegionTest, RegionalizedEndpoint) {
-  pref_service()->SetInteger(prefs::kChromeDataRegionSetting,
-                             static_cast<int>(data_region()));
   ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   ScopedConnectorPref scoped_pref(pref_service(), pref(),
                                   kNormalCloudAnalysisSettingsPref);
@@ -952,9 +971,10 @@ TEST_P(ConnectorsManagerDataRegionTest, RegionalizedEndpoint) {
   auto settings_from_manager =
       manager.GetAnalysisSettings(GURL(kOnlyDlpUrl), connector());
   GURL expected_analysis_url =
-      GURL(GetServiceProviderConfig()
-               ->at("google")
-               .analysis->region_urls[static_cast<size_t>(data_region())]);
+      GURL(GetServiceProviderConfig()->at("google").analysis->region_urls
+               [static_cast<size_t>(policy_scope() == policy::POLICY_SCOPE_USER
+                                        ? user_data_region()
+                                        : machine_data_region())]);
   EXPECT_TRUE(settings_from_manager.has_value());
   if (settings_from_manager.has_value()) {
     EXPECT_EQ(
@@ -966,9 +986,11 @@ TEST_P(ConnectorsManagerDataRegionTest, RegionalizedEndpoint) {
 INSTANTIATE_TEST_SUITE_P(
     ConnectorsManagerDataRegionTest,
     ConnectorsManagerDataRegionTest,
-    testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
-                     testing::Values(DataRegion::NO_PREFERENCE,
-                                     DataRegion::UNITED_STATES,
-                                     DataRegion::EUROPE)));
+    testing::Combine(
+        testing::ValuesIn(kAllAnalysisConnectors),
+        testing::ValuesIn(kAllDataRegions),
+        testing::ValuesIn(kAllDataRegions),
+        testing::Values(policy::PolicyScope::POLICY_SCOPE_USER,
+                        policy::PolicyScope::POLICY_SCOPE_MACHINE)));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace enterprise_connectors

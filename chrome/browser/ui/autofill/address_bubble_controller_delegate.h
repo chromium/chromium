@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/types/optional_ref.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {

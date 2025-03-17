@@ -46,7 +46,6 @@ using blink::WebPluginParams;
 using blink::WebPrintParams;
 using blink::WebString;
 using blink::WebURL;
-using blink::WebVector;
 
 namespace content {
 

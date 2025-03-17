@@ -279,4 +279,5 @@ void PowerUserSegment::ExecuteModelWithInput(
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
+#undef RANK
 }  // namespace segmentation_platform

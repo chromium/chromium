@@ -17,8 +17,6 @@
 #include <arpa/inet.h>
 #endif
 
-using ::google::protobuf::int32;
-using ::google::protobuf::int64;
 using ::google::protobuf::RepeatedField;
 
 #if !defined(ARCH_CPU_LITTLE_ENDIAN) || (ARCH_CPU_LITTLE_ENDIAN != 1)
@@ -35,8 +33,8 @@ const unsigned int kMaxBitIndex = kBitsPerByte * sizeof(uint32_t);
 }  // namespace
 
 // static
-V4DecodeResult V4RiceDecoder::ValidateInput(const int32 rice_parameter,
-                                            const int32 num_entries,
+V4DecodeResult V4RiceDecoder::ValidateInput(const int32_t rice_parameter,
+                                            const int32_t num_entries,
                                             const std::string& encoded_data) {
   if (num_entries < 0) {
     return NUM_ENTRIES_NEGATIVE_FAILURE;
@@ -58,11 +56,11 @@ V4DecodeResult V4RiceDecoder::ValidateInput(const int32 rice_parameter,
 }
 
 // static
-V4DecodeResult V4RiceDecoder::DecodeIntegers(const int64 first_value,
-                                             const int32 rice_parameter,
-                                             const int32 num_entries,
+V4DecodeResult V4RiceDecoder::DecodeIntegers(const int64_t first_value,
+                                             const int32_t rice_parameter,
+                                             const int32_t num_entries,
                                              const std::string& encoded_data,
-                                             RepeatedField<int32>* out) {
+                                             RepeatedField<int32_t>* out) {
   DCHECK(out);
 
   V4DecodeResult result =
@@ -72,7 +70,7 @@ V4DecodeResult V4RiceDecoder::DecodeIntegers(const int64 first_value,
   }
 
   out->Reserve(num_entries + 1);
-  base::CheckedNumeric<int32> last_value(first_value);
+  base::CheckedNumeric<int32_t> last_value(first_value);
   out->Add(last_value.ValueOrDie());
   if (num_entries == 0) {
     return DECODE_SUCCESS;
@@ -98,9 +96,9 @@ V4DecodeResult V4RiceDecoder::DecodeIntegers(const int64 first_value,
 }
 
 // static
-V4DecodeResult V4RiceDecoder::DecodePrefixes(const int64 first_value,
-                                             const int32 rice_parameter,
-                                             const int32 num_entries,
+V4DecodeResult V4RiceDecoder::DecodePrefixes(const int64_t first_value,
+                                             const int32_t rice_parameter,
+                                             const int32_t num_entries,
                                              const std::string& encoded_data,
                                              std::vector<uint32_t>* out) {
   DCHECK(out);
@@ -129,8 +127,8 @@ V4DecodeResult V4RiceDecoder::DecodePrefixes(const int64 first_value,
         return DECODED_INTEGER_OVERFLOW_FAILURE;
       }
 
-      // This flipping is done so that the decoded uint32 is interpreted
-      // correcly as a string of 4 bytes.
+      // This flipping is done so that the decoded uint32_t is interpreted
+      // correctly as a string of 4 bytes.
       out->push_back(htonl(last_value.ValueOrDie()));
     }
   }

@@ -9,12 +9,13 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 
 /** A set of utils to be used alongside SelectableListLayout. */
+@NullMarked
 public class SelectableListUtils {
     @IntDef({ContentDescriptionSource.MENU_BUTTON, ContentDescriptionSource.REMOVE_BUTTON})
     public @interface ContentDescriptionSource {
@@ -34,8 +35,8 @@ public class SelectableListUtils {
      *         add.
      */
     public static void setContentDescriptionContext(
-            @NonNull Context context,
-            @NonNull View view,
+            Context context,
+            View view,
             @Nullable String accessibilityContext,
             @ContentDescriptionSource int source) {
         boolean missingContext = TextUtils.isEmpty(accessibilityContext);

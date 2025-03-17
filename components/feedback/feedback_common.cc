@@ -4,12 +4,13 @@
 
 #include "components/feedback/feedback_common.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_report.h"
@@ -61,7 +62,7 @@ constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
 bool BelowCompressionThreshold(const std::string& content) {
   if (content.length() > kFeedbackMaxLength)
     return false;
-  const size_t line_count = base::ranges::count(content, '\n');
+  const size_t line_count = std::ranges::count(content, '\n');
   if (line_count > kFeedbackMaxLineCount)
     return false;
   return true;
@@ -185,7 +186,11 @@ void FeedbackCommon::PrepareReport(
 
   if (image().size()) {
     userfeedback::PostedScreenshot screenshot;
-    screenshot.set_mime_type(kPngMimeType);
+    if (image_mime_type().empty()) {
+      screenshot.set_mime_type(kPngMimeType);
+    } else {
+      screenshot.set_mime_type(image_mime_type());
+    }
 
     // Set that we 'have' dimensions of the screenshot. These dimensions are
     // ignored by the server but are a 'required' field in the protobuf.
@@ -217,7 +222,7 @@ void FeedbackCommon::PrepareReport(
 
   if (is_offensive_or_unsafe_.has_value()) {
     AddFeedbackData(feedback_data, kIsOffensiveOrUnsafeKey,
-                    is_offensive_or_unsafe_.value() ? "true" : "false");
+                    base::ToString(is_offensive_or_unsafe_.value()));
   }
   if (!ai_metadata_.empty()) {
     // Add feedback data for each key/value pair.

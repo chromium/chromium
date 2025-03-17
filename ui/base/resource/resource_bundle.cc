@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -18,6 +19,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -28,7 +30,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -122,15 +123,6 @@ SkBitmap CreateEmptyBitmap() {
   return bitmap;
 }
 
-// Helper function for determining whether a resource is gzipped.
-bool HasGzipHeader(std::string_view data) {
-  net::GZipHeader header;
-  const char* header_end = nullptr;
-  net::GZipHeader::Status header_status =
-      header.ReadMore(data.data(), data.length(), &header_end);
-  return header_status == net::GZipHeader::COMPLETE_HEADER;
-}
-
 // Helper function for determining whether a resource is brotli compressed.
 bool HasBrotliHeader(std::string_view data) {
   // Check that the data is brotli decoded by checking for kBrotliConst in
@@ -191,7 +183,8 @@ bool BrotliDecompress(std::string_view input, OutputBufferType output) {
 
 // Helper function for decompressing resource.
 void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
-  if (!data.empty() && HasGzipHeader(data)) {
+  if (!data.empty() &&
+      net::GZipHeader::HasGZipHeader(base::as_byte_span(data))) {
     TRACE_EVENT0("ui", "DecompressIfNeeded::GzipUncompress");
     const uint32_t uncompressed_size = compression::GetUncompressedSize(data);
     bool success = compression::GzipUncompress(
@@ -204,7 +197,7 @@ void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
     DCHECK(success);
   } else {
     base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
-    base::ranges::copy(data, dest.data());
+    std::ranges::copy(data, dest.data());
   }
 }
 
@@ -476,6 +469,18 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
                   std::size(path_copy));
     base::debug::Alias(path_copy);
 #endif  // BUILDFLAG(IS_WIN)
+
+    // Collect diagnostic info for https://crbug.com/394631579 .
+#if BUILDFLAG(IS_MAC)
+    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "pref_locale",
+                              pref_locale);
+    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "app_locale", app_locale);
+    SCOPED_CRASH_KEY_STRING1024("LoadLocaleResources", "override_filepath",
+                                GetOverriddenPakPath().AsUTF8Unsafe());
+    SCOPED_CRASH_KEY_STRING1024("LoadLocaleResources", "locale_filepath",
+                                locale_file_path.AsUTF8Unsafe());
+#endif  // BUILDFLAG(IS_MAC)
+
     NOTREACHED();
   }
 
@@ -682,7 +687,8 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
   if (data.empty())
     return nullptr;
 
-  if (HasGzipHeader(data) || HasBrotliHeader(data)) {
+  if (net::GZipHeader::HasGZipHeader(base::as_byte_span(data)) ||
+      HasBrotliHeader(data)) {
     base::RefCountedString* bytes_string = new base::RefCountedString();
     DecompressIfNeeded(data, &bytes_string->as_string());
     return bytes_string;
@@ -790,7 +796,7 @@ bool ResourceBundle::IsGzipped(int resource_id) const {
   if (!raw_data.data())
     return false;
 
-  return HasGzipHeader(raw_data);
+  return net::GZipHeader::HasGZipHeader(base::as_byte_span(raw_data));
 }
 
 bool ResourceBundle::IsBrotli(int resource_id) const {

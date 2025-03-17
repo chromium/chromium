@@ -95,15 +95,9 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   }
 
   printer_info->printer_name = printer.name;
-  printer_info->is_default = printer.is_default;
 
   const char* info_option =
       cupsGetOption(kCUPSOptPrinterInfo, printer.num_options, printer.options);
-
-  const char* state =
-      cupsGetOption(kCUPSOptPrinterState, printer.num_options, printer.options);
-  if (state)
-    base::StringToInt(state, &printer_info->printer_status);
 
   const char* drv_info = cupsGetOption(kCUPSOptPrinterMakeAndModel,
                                        printer.num_options, printer.options);
@@ -111,12 +105,14 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
     printer_info->options[kDriverInfoTagName] = drv_info;
 
   // Store printer options.
-  UNSAFE_TODO({
-    for (int opt_index = 0; opt_index < printer.num_options; ++opt_index) {
-      printer_info->options[printer.options[opt_index].name] =
-          printer.options[opt_index].value;
+  if (printer.num_options > 0) {
+    // SAFETY: Required from CUPS.
+    auto options = UNSAFE_BUFFERS(base::span<const cups_option_t>(
+        printer.options, static_cast<size_t>(printer.num_options)));
+    for (const auto& option : options) {
+      printer_info->options[option.name] = option.value;
     }
-  });
+  }
   std::string_view info =
       info_option ? std::string_view(info_option) : std::string_view();
   printer_info->display_name = GetDisplayName(printer_info->printer_name, info);
@@ -181,18 +177,16 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
     return mojom::ResultCode::kSuccess;
   }
 
-  UNSAFE_TODO({
-    for (int printer_index = 0; printer_index < dests_data.num_dests;
-         ++printer_index) {
-      const cups_dest_t& printer = dests_data.dests[printer_index];
-
-      PrinterBasicInfo printer_info;
-      if (PrinterBasicInfoFromCUPS(printer, &printer_info) ==
-          mojom::ResultCode::kSuccess) {
-        printer_list.push_back(printer_info);
-      }
+  // SAFETY: Required from CUPS.
+  auto printers = UNSAFE_BUFFERS(base::span<const cups_dest_t>(
+      dests_data.dests, static_cast<size_t>(dests_data.num_dests)));
+  for (const auto& printer : printers) {
+    PrinterBasicInfo printer_info;
+    if (PrinterBasicInfoFromCUPS(printer, &printer_info) ==
+        mojom::ResultCode::kSuccess) {
+      printer_list.push_back(printer_info);
     }
-  });
+  }
 
   cupsFreeDests(dests_data.num_dests, dests_data.dests);
 

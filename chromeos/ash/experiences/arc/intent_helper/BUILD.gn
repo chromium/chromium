@@ -1,0 +1,93 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("intent_filter") {
+  sources = [
+    "intent_constants.h",
+    "intent_filter.cc",
+    "intent_filter.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+static_library("intent_helper") {
+  sources = [
+    "activity_icon_loader.cc",
+    "activity_icon_loader.h",
+    "adaptive_icon_delegate.h",
+    "arc_icon_cache_delegate.cc",
+    "arc_icon_cache_delegate.h",
+    "arc_intent_helper_bridge.cc",
+    "arc_intent_helper_bridge.h",
+    "arc_intent_helper_mojo_delegate.cc",
+    "arc_intent_helper_mojo_delegate.h",
+    "arc_intent_helper_observer.h",
+    "control_camera_app_delegate.h",
+    "custom_tab.cc",
+    "custom_tab.h",
+    "link_handler_model.cc",
+    "link_handler_model.h",
+    "open_url_delegate.h",
+  ]
+
+  public_deps = [
+    ":intent_filter",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//ui/aura",
+    "//ui/views",
+  ]
+
+  # Enable VLOG(1).
+  defines = [ "ENABLED_VLOG_LEVEL=1" ]
+
+  deps = [
+    ":arc_intent_helper_constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_metrics_constants",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
+    "//components/exo",
+    "//components/google/core/common",
+    "//components/url_formatter",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+static_library("arc_intent_helper_constants") {
+  sources = [ "arc_intent_helper_package.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "activity_icon_loader_unittest.cc",
+    "arc_intent_helper_bridge_unittest.cc",
+    "custom_tab_unittest.cc",
+    "link_handler_model_unittest.cc",
+  ]
+
+  deps = [
+    ":arc_intent_helper_constants",
+    ":intent_helper",
+    "//base/test:test_support",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
+    "//testing/gtest",
+    "//ui/aura:test_support",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//url",
+  ]
+}

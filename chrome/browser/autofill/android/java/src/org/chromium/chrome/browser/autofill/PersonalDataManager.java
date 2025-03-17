@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -780,7 +781,7 @@ public class PersonalDataManager implements Destroyable {
 
     public void deleteProfile(String guid) {
         ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().removeByGUID(mPersonalDataManagerAndroid, guid);
+        PersonalDataManagerJni.get().removeProfile(mPersonalDataManagerAndroid, guid);
     }
 
     public String setProfile(AutofillProfile profile) {
@@ -965,15 +966,6 @@ public class PersonalDataManager implements Destroyable {
     public void recordAndLogCreditCardUse(String guid) {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().recordAndLogCreditCardUse(mPersonalDataManagerAndroid, guid);
-    }
-
-    protected void clearImageDataForTesting() {
-        if (mImageFetcher == null) {
-            return;
-        }
-
-        ThreadUtils.assertOnUiThread();
-        mImageFetcher.clearCachedImagesForTesting();
     }
 
     /**
@@ -1172,14 +1164,6 @@ public class PersonalDataManager implements Destroyable {
         return mImageFetcher.getImageIfAvailable(customImageUrl, cardIconSpecs);
     }
 
-    /**
-     * Returns the {@link AutofillImageFetcher} that is used to download and cache icons for payment
-     * methods.
-     */
-    public AutofillImageFetcher getImageFetcherForTesting() {
-        return mImageFetcher;
-    }
-
     public void setImageFetcherForTesting(ImageFetcher imageFetcher) {
         var oldValue = this.mImageFetcher;
         this.mImageFetcher = new AutofillImageFetcher(imageFetcher);
@@ -1207,7 +1191,8 @@ public class PersonalDataManager implements Destroyable {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long init(PersonalDataManager caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativePersonalDataManagerAndroid);
@@ -1279,6 +1264,9 @@ public class PersonalDataManager implements Destroyable {
                 @JniType("std::u16string") String cardNumber, boolean emptyIfInvalid);
 
         void removeByGUID(
+                long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
+
+        void removeProfile(
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
 
         void recordAndLogProfileUse(

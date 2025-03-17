@@ -5,7 +5,7 @@ CPEPrefix: cpe:/a:sqlite:sqlite:3.45.2
 Included In Release: Yes
 Security Critical: Yes
 Shipped: yes
-License: Public domain
+License: blessing
 License File: LICENSE
 
 Chromium maintains a mirror of the official SQLite Git repository at

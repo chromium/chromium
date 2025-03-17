@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -15,14 +14,14 @@ static_library("login_screen_storage") {
   ]
 
   public_deps = [
-    "//chromeos/crosapi/mojom",
+    "//chromeos/ash/components/dbus/session_manager:login_manager_proto",
     "//extensions/browser",
   ]
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/dbus/session_manager",
   ]
 }
 
@@ -35,7 +34,6 @@ source_set("browser_tests") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",

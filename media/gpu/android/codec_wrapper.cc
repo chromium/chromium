@@ -16,6 +16,8 @@
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/media_codec_util.h"
@@ -27,12 +29,13 @@ namespace media {
 // CodecOutputBuffer are the only two things that hold references to it.
 class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   CodecWrapperImpl(CodecSurfacePair codec_surface_pair,
                    CodecWrapper::OutputReleasedCB output_buffer_release_cb,
                    const gfx::Size& initial_expected_size,
                    const gfx::ColorSpace& config_color_space,
                    std::optional<gfx::Size> coded_size_alignment);
-
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
   CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
 
@@ -478,11 +481,12 @@ CodecWrapper::CodecWrapper(CodecSurfacePair codec_surface_pair,
                            const gfx::Size& initial_expected_size,
                            const gfx::ColorSpace& config_color_space,
                            std::optional<gfx::Size> coded_size_alignment)
-    : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
-                                 std::move(output_buffer_release_cb),
-                                 initial_expected_size,
-                                 config_color_space,
-                                 coded_size_alignment)) {}
+    : impl_(base::MakeRefCounted<CodecWrapperImpl>(
+          std::move(codec_surface_pair),
+          std::move(output_buffer_release_cb),
+          initial_expected_size,
+          config_color_space,
+          coded_size_alignment)) {}
 
 CodecWrapper::~CodecWrapper() {
   // The codec must have already been taken.

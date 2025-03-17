@@ -14,17 +14,18 @@
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
@@ -92,6 +93,21 @@ void TapSecondaryActionButton() {
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }
 
+// Swipe all the way over to the end of the Magic Stack and tap the edit button,
+// which opens the customization menu at the Magic Stack page.
+void TapMagicStackEditButton() {
+  id<GREYMatcher> magicStackScrollView =
+      grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier);
+  CGFloat moduleSwipeAmount = kMagicStackWideWidth * 0.6;
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(grey_accessibilityID(
+                                 kMagicStackEditButtonAccessibilityIdentifier),
+                             grey_sufficientlyVisible(), nil)]
+         usingSearchAction:GREYScrollInDirectionWithStartPoint(
+                               kGREYDirectionRight, moduleSwipeAmount, 0.9, 0.5)
+      onElementWithMatcher:magicStackScrollView] performAction:grey_tap()];
+}
+
 }  // namespace
 
 #pragma mark - TestCase
@@ -109,21 +125,30 @@ void TapSecondaryActionButton() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
   config.additional_args.push_back("--test-ios-module-ranker=mvt");
-  if ([self isRunningTest:@selector
-            (DISABLED_testMagicStackSetUpListCompleteAllItems)] ||
-      [self isRunningTest:@selector(testMagicStackEditButton)] ||
+  if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
     config.features_disabled.push_back(kIOSTipsNotifications);
+    config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
+    config.features_disabled.push_back(
+        set_up_list::kSetUpListWithoutSignInItem);
   }
-  if ([self isRunningTest:@selector(testMVTInMagicStack)]) {
+  if ([self isRunningTest:@selector(testMVTInMagicStack)] ||
+      [self isRunningTest:@selector(testMVTInMagicStackToggleModule)]) {
     std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
                                  kMagicStackMostVisitedModuleParam + "/true";
     config.additional_args.push_back("--enable-features=" + enable_mvt_arg);
     config.features_disabled.push_back(
         segmentation_platform::features::
             kSegmentationPlatformTipsEphemeralCard);
+  }
+  if ([self isRunningTest:@selector
+            (testMagicStackCompactedSetUpListCompleteAllItems_v2)]) {
+    config.features_enabled.push_back(set_up_list::kSetUpListInFirstRun);
+    config.additional_args.push_back("--SetUpListInFirstRunParam=1");
+    config.features_disabled.push_back(
+        set_up_list::kSetUpListWithoutSignInItem);
   }
   return config;
 }
@@ -149,11 +174,13 @@ void TapSecondaryActionButton() {
 
 - (void)setUp {
   [super setUp];
+  [NewTabPageAppInterface disableSetUpList];
 }
 
 - (void)tearDownHelper {
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey removeFirstRunSentinel];
+  [NewTabPageAppInterface resetSetUpListPrefs];
   [super tearDownHelper];
 }
 
@@ -293,83 +320,6 @@ void TapSecondaryActionButton() {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the "All Set" module is shown after completing all Set Up List
-// Hero Cell modules in the Magic Stack.
-// TODO(crbug.com/41493926): Test is flaky, re-enable when fixed.
-- (void)DISABLED_testMagicStackSetUpListCompleteAllItems {
-  [self prepareToTestSetUpListInMagicStack];
-
-  // Tap the default browser item.
-  TapView(set_up_list::kDefaultBrowserItemID);
-  // Ensure the Default Browser Promo is displayed.
-  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
-      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss Default Browser Promo.
-  TapPromoStyleSecondaryActionButton();
-
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                set_up_list::kAutofillItemID),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for Autofill Set Up List Item expired.");
-  // Tap the autofill item.
-  TapView(set_up_list::kAutofillItemID);
-  // TODO - verify the CPE promo is displayed.
-  id<GREYMatcher> CPEPromoView =
-      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:CPEPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the CPE promo.
-  TapSecondaryActionButton();
-
-  condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                set_up_list::kSignInItemID),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for Sign in Set Up List Item expired.");
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // The fake signin UI appears. Dismiss it.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
-      performAction:grey_tap()];
-
-  // Verify the All Set item is shown.
-  condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                set_up_list::kAllSetItemID),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for the All Set Module to show expired.");
-}
-
 // Attempts to complete the Set Up List through the Compacted Magic Stack
 // module.
 - (void)testMagicStackCompactedSetUpListCompleteAllItems {
@@ -439,6 +389,95 @@ void TapSecondaryActionButton() {
       @"Timeout waiting for the All Set Module to show expired.");
 }
 
+// Attempts to complete the Set Up List through the Compacted Magic Stack
+// module. Tests the version of the Set Up List with the Docking, Address Bar,
+// Autofill, and Default Browser items.
+- (void)testMagicStackCompactedSetUpListCompleteAllItems_v2 {
+  [self prepareToTestSetUpListInMagicStack];
+
+  // Tap the Docking item.
+  TapView(set_up_list::kDockingItemID);
+  // Ensure the Docking promo is displayed.
+  id<GREYMatcher> dockingPromoView =
+      grey_accessibilityID(@"kDockingPromoAccessibilityId");
+  [[EarlGrey selectElementWithMatcher:dockingPromoView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss the Docking promo view.
+  TapSecondaryActionButton();
+
+  ConditionBlock condition = ^{
+    return [NewTabPageAppInterface setUpListItemDockingInMagicStackIsComplete];
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"SetUpList item Docking item not completed.");
+
+  // Tap the Address Bar item.
+  TapView(set_up_list::kAddressBarItemID);
+  id<GREYMatcher> addressBarPromoView = grey_accessibilityID(
+      first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:addressBarPromoView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss the Address Bar promo view.
+  TapPromoStyleSecondaryActionButton();
+
+  condition = ^{
+    return
+        [NewTabPageAppInterface setUpListItemAddressBarInMagicStackIsComplete];
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"SetUpList item Address Bar item not completed.");
+
+  // Completed Set Up List items last one impression
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+
+  // Tap the default browser item.
+  TapView(set_up_list::kDefaultBrowserItemID);
+  // Ensure the Default Browser Promo is displayed.
+  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
+      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss Default Browser Promo.
+  TapPromoStyleSecondaryActionButton();
+
+  condition = ^{
+    return [NewTabPageAppInterface
+        setUpListItemDefaultBrowserInMagicStackIsComplete];
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"SetUpList item Default Browser not completed.");
+
+  // Tap the autofill item.
+  TapView(set_up_list::kAutofillItemID);
+  id<GREYMatcher> CPEPromoView =
+      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
+  [[EarlGrey selectElementWithMatcher:CPEPromoView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss the CPE promo.
+  TapSecondaryActionButton();
+
+  // Verify the All Set item is shown.
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                                set_up_list::kAllSetItemID),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"Timeout waiting for the All Set Module to show expired.");
+}
+
 // Tests the edit button in the Magic Stack. Opens the edit half sheet, disables
 // Set Up List, returns to the Magic Stack and ensures Set Up List is not in the
 // Magic Stack anymore.
@@ -450,17 +489,7 @@ void TapSecondaryActionButton() {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self prepareToTestSetUpListInMagicStack];
-
-  // Swipe all the way over to the end of the Magic Stack and tap the edit
-  // button, which opens the customization menu at the Magic Stack page.
-  [[[EarlGrey selectElementWithMatcher:
-                  grey_allOf(grey_accessibilityID(
-                                 kMagicStackEditButtonAccessibilityIdentifier),
-                             grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_swipeFastInDirection(kGREYDirectionLeft)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
-      performAction:grey_tap()];
+  TapMagicStackEditButton();
 
   [[EarlGrey
       selectElementWithMatcher:
@@ -548,6 +577,71 @@ void TapSecondaryActionButton() {
           grey_allOf(
               chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle),
               grey_sufficientlyVisible(), nil)] assertWithMatcher:grey_nil()];
+}
+
+- (void)testMVTInMagicStackToggleModule {
+  [self setupMostVisitedTileLongPress];
+  // Tap to hide module.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_HIDE_CARD))]
+      performAction:grey_tap()];
+  // Check the module is removed.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Most visited tile is not hidden.");
+
+  // Turn back on MVT.
+  TapMagicStackEditButton();
+  id<GREYMatcher> switchCell = grey_allOf(
+      grey_anyOf(grey_kindOfClassName(@"TableViewSwitchCell"),
+                 grey_kindOfClassName(@"HomeCustomizationToggleCell"), nil),
+      grey_descendant(grey_text(l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))),
+      nil);
+  id<GREYMatcher> mvtSwitchElement = grey_allOf(
+      grey_kindOfClassName(@"UISwitch"), grey_ancestor(switchCell), nil);
+  // Make sure the toggle is off, and tap it.
+  [[EarlGrey selectElementWithMatcher:mvtSwitchElement]
+      assertWithMatcher:grey_switchWithOnState(NO)];
+  [[EarlGrey selectElementWithMatcher:mvtSwitchElement]
+      performAction:grey_turnSwitchOn(YES)];
+
+  // Dismiss the menu and verify MVT visibility.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_anyOf(
+              grey_accessibilityID(
+                  kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier),
+              grey_accessibilityID(kNavigationBarDismissButtonIdentifier), nil)]
+      performAction:grey_tap()];
+  // Swipe back to the first module, and check that it appears.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Most visited tile is not displayed.");
 }
 
 #pragma mark - Test utils

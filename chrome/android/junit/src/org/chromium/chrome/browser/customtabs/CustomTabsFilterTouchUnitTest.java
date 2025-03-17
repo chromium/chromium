@@ -67,6 +67,7 @@ public class CustomTabsFilterTouchUnitTest {
     @Test
     @SmallTest
     public void testInjectMissingEventInMultiWindowMode() {
+        mActivity.onEnterAnimationComplete();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
         assertTrue("Events should be consumed", mActivity.dispatchTouchEvent(mMotionEvent));
 

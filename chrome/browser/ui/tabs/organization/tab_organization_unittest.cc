@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -1250,8 +1249,9 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQuality) {
   std::unique_ptr<optimization_guide::ModelQualityLogEntry>
       model_quality_log_entry = std::make_unique<FakeModelQualityLogEntry>();
   optimization_guide::proto::TabOrganizationQuality* quality =
-      model_quality_log_entry
-          ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+      model_quality_log_entry->log_ai_data_request()
+          ->mutable_tab_organization()
+          ->mutable_quality();
 
   EXPECT_NE(quality, nullptr);
   EXPECT_NE(session.get(), nullptr);
@@ -1346,8 +1346,9 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
   std::unique_ptr<optimization_guide::ModelQualityLogEntry>
       model_quality_log_entry = std::make_unique<FakeModelQualityLogEntry>();
   optimization_guide::proto::TabOrganizationQuality* quality =
-      model_quality_log_entry
-          ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+      model_quality_log_entry->log_ai_data_request()
+          ->mutable_tab_organization()
+          ->mutable_quality();
 
   EXPECT_NE(quality, nullptr);
   EXPECT_NE(session.get(), nullptr);

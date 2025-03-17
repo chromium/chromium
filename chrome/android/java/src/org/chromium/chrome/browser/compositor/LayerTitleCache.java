@@ -13,14 +13,17 @@ import android.util.SparseIntArray;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TitleBitmapFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -71,8 +74,12 @@ public class LayerTitleCache {
     /** Responsible for building incognito or dark theme titles. */
     protected final TitleBitmapFactory mDarkTitleBitmapFactory;
 
-    /** Builds an instance of the LayerTitleCache. */
-    public LayerTitleCache(Context context, ResourceManager resourceManager) {
+    /**
+     * @param context The Android {@link Context}.
+     * @param resourceManager The manager for static resources to be used by native layers.
+     * @param tabStripHeightPx The height of the tab strip in pixels.
+     */
+    public LayerTitleCache(Context context, ResourceManager resourceManager, int tabStripHeightPx) {
         mContext = context;
         mResourceManager = resourceManager;
         Resources res = context.getResources();
@@ -84,8 +91,10 @@ public class LayerTitleCache {
         mSharedGroupAvatarPaddingPx =
                 res.getDimensionPixelSize(R.dimen.tablet_shared_group_avatar_padding);
         mFaviconSize = res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_size);
-        mStandardTitleBitmapFactory = new TitleBitmapFactory(context, false);
-        mDarkTitleBitmapFactory = new TitleBitmapFactory(context, true);
+        mStandardTitleBitmapFactory =
+                new TitleBitmapFactory(context, /* incognito= */ false, tabStripHeightPx);
+        mDarkTitleBitmapFactory =
+                new TitleBitmapFactory(context, /* incognito= */ true, tabStripHeightPx);
         mDefaultFaviconHelper = new DefaultFaviconHelper();
         mBubbleOuterCircleSize =
                 res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_bubble_outer_size);
@@ -94,8 +103,7 @@ public class LayerTitleCache {
         mBubbleOffset =
                 res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_bubble_offset);
         mBubbleBorderColor =
-                TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
-                        context, /* isIncognito= */ false, /* isActivityFocused= */ true);
+                TabUiThemeUtil.getTabStripBackgroundColor(context, /* isIncognito= */ false);
         mBubbleFillColor = TabUiThemeProvider.getTabBubbleFillColor(context);
         mNativeLayerTitleCache =
                 LayerTitleCacheJni.get()
@@ -116,6 +124,11 @@ public class LayerTitleCache {
 
     /** Destroys the native reference. */
     public void shutDown() {
+        if (mFaviconHelper != null) {
+            mFaviconHelper.destroy();
+            mFaviconHelper = null;
+        }
+
         if (mNativeLayerTitleCache == 0) return;
         LayerTitleCacheJni.get().destroy(mNativeLayerTitleCache);
         mNativeLayerTitleCache = 0;
@@ -215,7 +228,8 @@ public class LayerTitleCache {
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(incognito);
-        if (!filter.tabGroupExistsForRootId(groupRootId)) return;
+        @Nullable Token tabGroupId = filter.getTabGroupIdFromRootId(groupRootId);
+        if (tabGroupId == null || !filter.tabGroupExists(tabGroupId)) return;
 
         String titleString = filter.getTabGroupTitle(groupRootId);
         getUpdatedGroupTitle(groupRootId, titleString, incognito);
@@ -296,8 +310,19 @@ public class LayerTitleCache {
      */
     public void fetchFaviconWithCallback(final Tab tab, FaviconImageCallback callback) {
         if (mFaviconHelper == null) mFaviconHelper = new FaviconHelper();
-        mFaviconHelper.getLocalFaviconImageForURL(
-                tab.getProfile(), tab.getUrl(), mFaviconSize, callback);
+
+        if (tab.getTabGroupId() != null
+                && !tab.isOffTheRecord()
+                && ChromeFeatureList.sTabSwitcherForeignFaviconSupport.isEnabled()) {
+            // This mirrors the async tab favicon request implementation for tab list.
+            // See TabListFaviconProvider#getFaviconForTabAsync for more detailed notes.
+            // TODO(crbug.com/394165786): Unify with the aforementioned TabListFaviconProvider code.
+            mFaviconHelper.getForeignFaviconImageForURL(
+                    tab.getProfile(), tab.getUrl(), mFaviconSize, callback);
+        } else {
+            mFaviconHelper.getLocalFaviconImageForURL(
+                    tab.getProfile(), tab.getUrl(), mFaviconSize, callback);
+        }
     }
 
     /**
@@ -328,6 +353,13 @@ public class LayerTitleCache {
         int resId = View.generateViewId();
         dynamicResourceLoader.registerResource(resId, avatarResource);
         mSharedAvatarResIds.put(rootId, resId);
+    }
+
+    public void transferAvatarToNewRootId(int oldRootId, int newRootId) {
+        int avatarResId = mSharedAvatarResIds.get(oldRootId, ResourcesCompat.ID_NULL);
+        if (avatarResId == ResourcesCompat.ID_NULL) return;
+        mSharedAvatarResIds.delete(oldRootId);
+        mSharedAvatarResIds.put(newRootId, avatarResId);
     }
 
     private void unregisterSharedGroupAvatar(int resId) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenSamplePrompt} from './constants.js';
+import type {SeaPenSamplePrompt} from './constants.js';
 
 export const SEA_PEN_SUGGESTIONS: string[] = [
   '4k',
@@ -13,13 +13,12 @@ export const SEA_PEN_SUGGESTIONS: string[] = [
   'sunset',
   'pastel colors',
   'glowing',
-  'star filled sky',
+  'star-filled sky',
   'dramatic shadows',
   'covered in snow',
   'bioluminescent',
   'long exposure',
   'foggy',
-  'shooting star',
   'galaxy',
   'neon lights',
   'reflections',
@@ -43,7 +42,7 @@ export enum SeaPenSamplePromptId {
   CAT_RIDING_UNICORN = 2,
   ANIMATED_FLOWERS = 3,
   LILY_IN_RAIN = 4,
-  COLORFUL_TREEHOUSE = 5,
+  // Value 5 is deprecated.
   DALMATION = 6,
   DELOREAN = 7,
   BLACK_MOTORCYCLE = 8,
@@ -108,15 +107,6 @@ export const SEA_PEN_SAMPLES: SeaPenSamplePrompt[] =
         preview: {
           url:
               'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/freeform/a_closeup_of_an_intricate_dew-covered_pond_lily.jpeg',
-        },
-      },
-      {
-        id: SeaPenSamplePromptId.COLORFUL_TREEHOUSE,
-        prompt:
-            'a colorful treehouse with rounded shapes, rendered in the style of cinema4d, playful character design, futuristic chromatic waves, organic architecture, 3D render, cute and dreamy scene with a bright color palette using vibrant colors like pink, blue, green, orange, red, and yellow, purple, shown from the front view without a background and in high resolution',
-        preview: {
-          url:
-              'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/freeform/a_colorful_treehouse_with_rounded_shapes.jpeg',
         },
       },
       {
@@ -185,7 +175,7 @@ export const SEA_PEN_SAMPLES: SeaPenSamplePrompt[] =
       {
         id: SeaPenSamplePromptId.TREE_MADE_OF_STARS,
         prompt:
-            'a photo of a tree made of stars with a beautiful night sky and galaxy in the background',
+            'a photo of a glowing tree made of stars with a beautiful night sky and galaxy in the background',
         preview: {
           url:
               'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/freeform/a_photo_of_a_tree_made_of_stars.jpeg',

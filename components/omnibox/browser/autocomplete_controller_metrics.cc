@@ -79,8 +79,8 @@ void AutocompleteControllerMetrics::OnNotifyChanged(
   // TODO(crbug.com/364303536): `logged_finalization_metrics_` should be
   //   guaranteed false here (hence the DCHECK in
   //   `LogSuggestionFinalizationMetrics()`. But because of a temporary bandaid
-  //   to allow history embedding answers to ignore the stop timer, we need to
-  //   check it anyways.
+  //   to allow history embedding answers and unscoped extension suggestions to
+  //   ignore the stop timer, we need to check it anyways.
   if (controller_->done() && !logged_finalization_metrics_)
     LogSuggestionFinalizationMetrics();
 }
@@ -114,8 +114,14 @@ void AutocompleteControllerMetrics::OnStop() {
   // If the controller is done, `OnNotifyChanged()` should have already logged
   // finalization metrics. This case, i.e. `OnStop()` invoked even though the
   // controller is done, is possible because `OnStart()` calls `OnStop()`.
-  if (!controller_->done())
+  // TODO(crbug.com/364303536): `logged_finalization_metrics_` should be
+  //   guaranteed false here (hence the DCHECK in
+  //   `LogSuggestionFinalizationMetrics()`. But because of a temporary bandaid
+  //   to allow history embedding answers and unscoped extension answers to
+  //   ignore the stop timer, we need to check it anyways.
+  if (!controller_->done() && !logged_finalization_metrics_) {
     LogSuggestionFinalizationMetrics();
+  }
 }
 
 void AutocompleteControllerMetrics::LogSuggestionFinalizationMetrics() {

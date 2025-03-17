@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -45,6 +44,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/profiles:profile",

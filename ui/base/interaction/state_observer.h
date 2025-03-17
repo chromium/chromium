@@ -6,6 +6,7 @@
 #define UI_BASE_INTERACTION_STATE_OBSERVER_H_
 
 #include <algorithm>
+#include <concepts>
 #include <ostream>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/typed_identifier.h"
 
 namespace ui::test {
@@ -24,6 +26,7 @@ namespace ui::test {
 //
 // Value type `T` must be default-constructible and copy-assignable.
 template <typename T>
+  requires ::ui::test::internal::IsValidMatcherType<T>
 class StateObserver {
  public:
   using StateChangedCallback = base::RepeatingCallback<void(T)>;
@@ -59,6 +62,11 @@ class StateObserver {
  private:
   StateChangedCallback state_changed_callback_;
 };
+
+template <typename T>
+concept IsStateObserver = requires {
+  typename T::ValueType;
+} && std::derived_from<T, StateObserver<typename T::ValueType>>;
 
 // State observer that uses a `ScopedObservation<T, Source, Observer>` to watch
 // for state changes using an observer pattern.

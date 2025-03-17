@@ -98,6 +98,10 @@ class NavigationSheetMediator {
         mNewIncognitoTabText = context.getString(R.string.menu_new_incognito_tab);
     }
 
+    void destroy() {
+        mFaviconHelper.destroy();
+    }
+
     /**
      * Populate the sheet with the navigation history.
      *

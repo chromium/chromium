@@ -120,13 +120,7 @@ export class SettingsInputMethodOptionsPageElement extends
        * The content to be displayed in the page, auto generated every time when
        * the user enters the page.
        */
-      optionSections_: {
-        type: Array,
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
-      },
+      optionSections_: Array,
 
       showClearPersonalizedData_: {
         type: Boolean,
@@ -161,8 +155,8 @@ export class SettingsInputMethodOptionsPageElement extends
   // TODO(b/238031866): Convert these to be Polymer computed properties.
   /** Computed from id_. */
   private engineId_: string;
-  /** Computed from engineId_ */
-  private optionSections_: Section[];
+  /** Computed from engineId_. */
+  private optionSections_: Section[] = [];
 
   /**
    * RouteObserverMixin override
@@ -454,7 +448,7 @@ export class SettingsInputMethodOptionsPageElement extends
     }
     // Safety: `updatedSettings[engineId]` is guaranteed to be defined as we
     // defined it above.
-    updatedSettings[engineId]![optionName] = newValue;
+    updatedSettings[engineId][optionName] = newValue;
 
     this.setPrefValue(PREFS_PATH, updatedSettings);
   }

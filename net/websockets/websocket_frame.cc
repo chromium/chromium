@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/check.h"
@@ -15,7 +16,6 @@
 #include "base/containers/span_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"

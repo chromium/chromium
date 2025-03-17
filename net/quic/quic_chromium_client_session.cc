@@ -9,6 +9,7 @@
 
 #include "net/quic/quic_chromium_client_session.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -26,7 +27,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -303,6 +303,17 @@ enum class ZeroRttState {
   kNotAttempted = 2,
   kMaxValue = kNotAttempted,
 };
+
+std::string_view ZeroRttStateToString(ZeroRttState state) {
+  switch (state) {
+    case ZeroRttState::kAttemptedAndSucceeded:
+      return "AttemptedAndSucceeded";
+    case ZeroRttState::kAttemptedAndRejected:
+      return "AttemptedAndRejected";
+    case ZeroRttState::kNotAttempted:
+      return "NotAttempted";
+  }
+}
 
 void RecordHandshakeState(HandshakeState state) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicHandshakeState", state,
@@ -1141,10 +1152,10 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
   if (stats.max_sequence_reordering == 0) {
     return;
   }
-  const base::HistogramBase::Sample kMaxReordering = 100;
-  base::HistogramBase::Sample reordering = kMaxReordering;
+  const base::HistogramBase::Sample32 kMaxReordering = 100;
+  base::HistogramBase::Sample32 reordering = kMaxReordering;
   if (stats.min_rtt_us > 0) {
-    reordering = static_cast<base::HistogramBase::Sample>(
+    reordering = static_cast<base::HistogramBase::Sample32>(
         100 * stats.max_time_reordering_us / stats.min_rtt_us);
   }
   UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.MaxReorderingTime", reordering,
@@ -1153,9 +1164,9 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.MaxReorderingTimeLongRtt",
                                 reordering, 1, kMaxReordering, 50);
   }
-  UMA_HISTOGRAM_COUNTS_1M(
-      "Net.QuicSession.MaxReordering",
-      static_cast<base::HistogramBase::Sample>(stats.max_sequence_reordering));
+  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.MaxReordering",
+                          static_cast<base::HistogramBase::Sample32>(
+                              stats.max_sequence_reordering));
 }
 
 void QuicChromiumClientSession::Initialize() {
@@ -1338,7 +1349,7 @@ int QuicChromiumClientSession::TryCreateStream(StreamRequest* request) {
 void QuicChromiumClientSession::CancelRequest(StreamRequest* request) {
   // Remove |request| from the queue while preserving the order of the
   // other elements.
-  auto it = base::ranges::find(stream_requests_, request);
+  auto it = std::ranges::find(stream_requests_, request);
   if (it != stream_requests_.end()) {
     it = stream_requests_.erase(it);
   }
@@ -1761,6 +1772,10 @@ void QuicChromiumClientSession::LogZeroRttStats() {
                               early_data_reason,
                               ssl_early_data_reason_max_value + 1);
   }
+
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ZERO_RTT_STATE, [&] {
+    return base::Value::Dict().Set("state", ZeroRttStateToString(state));
+  });
 }
 
 void QuicChromiumClientSession::OnCryptoHandshakeMessageSent(

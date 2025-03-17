@@ -5,6 +5,7 @@
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/test/bind.h"
@@ -79,6 +80,7 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   using feature_engagement::EventConfig;
 
   feature_engagement::test::MockTracker tracker;
+  EXPECT_CALL(tracker, IsInitialized).WillRepeatedly(testing::Return(true));
   MeetsFeatureEngagementCriteriaPrecondition precond(kTestFeature, tracker);
 
   ComputedData data;
@@ -119,24 +121,38 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   static const ui::ElementContext kTestContext(1);
   ui::test::TestElement el(kTestId, kTestContext);
   el.Show();
-
   test::MockAnchorElementProvider provider;
-  AnchorElementPrecondition precond(provider, kTestContext);
+  AnchorElementPrecondition precond(provider, kTestContext, false);
 
+  test::TestUserEducationStorageService storage_service;
+  auto lifecycle_ptr = std::make_unique<FeaturePromoLifecycle>(
+      &storage_service, "", &kTestFeature,
+      FeaturePromoLifecycle::PromoType::kToast,
+      FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
   ComputedData data;
+  internal::TypedPreconditionData<std::unique_ptr<FeaturePromoLifecycle>>
+      lifecycle_data(LifecyclePrecondition::kLifecycle,
+                     std::move(lifecycle_ptr));
+  data.Add(LifecyclePrecondition::kLifecycle, lifecycle_data);
 
-  EXPECT_CALL(provider, GetAnchorElement(kTestContext))
+  EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::optional<int>()))
       .WillOnce(testing::Return(nullptr));
   EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition(data));
   EXPECT_EQ(nullptr, data.Get(AnchorElementPrecondition::kAnchorElement).get());
 
-  EXPECT_CALL(provider, GetAnchorElement(kTestContext))
+  EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::optional<int>()))
       .WillOnce(testing::Return(&el));
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(data));
   EXPECT_EQ(&el, data.Get(AnchorElementPrecondition::kAnchorElement).get());
 
-  EXPECT_CALL(provider, GetAnchorElement(kTestContext))
+  lifecycle_data.data() = std::make_unique<FeaturePromoLifecycle>(
+      &storage_service, "", &kTestFeature,
+      FeaturePromoLifecycle::PromoType::kRotating,
+      FeaturePromoLifecycle::PromoSubtype::kNormal, 3);
+  lifecycle_data.data()->SetPromoIndex(1);
+  EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::make_optional(2)))
       .WillOnce(testing::Return(nullptr));
+  EXPECT_CALL(provider, GetNextValidIndex(1)).WillOnce(testing::Return(2));
   EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition(data));
   EXPECT_EQ(nullptr, data.Get(AnchorElementPrecondition::kAnchorElement).get());
 }
@@ -149,12 +165,21 @@ TEST(CommonPreconditionsTest,
   el.Show();
 
   test::MockAnchorElementProvider provider;
-  AnchorElementPrecondition precond(provider, kTestContext);
+  AnchorElementPrecondition precond(provider, kTestContext, false);
 
   internal::PreconditionData::Collection coll;
+  test::TestUserEducationStorageService storage_service;
+  auto lifecycle_ptr = std::make_unique<FeaturePromoLifecycle>(
+      &storage_service, "", &kTestFeature,
+      FeaturePromoLifecycle::PromoType::kToast,
+      FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
   ComputedData cd;
+  internal::TypedPreconditionData<std::unique_ptr<FeaturePromoLifecycle>>
+      lifecycle_data(LifecyclePrecondition::kLifecycle,
+                     std::move(lifecycle_ptr));
+  cd.Add(LifecyclePrecondition::kLifecycle, lifecycle_data);
 
-  EXPECT_CALL(provider, GetAnchorElement(kTestContext))
+  EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::optional<int>()))
       .WillOnce(testing::Return(&el));
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(cd));
 
@@ -171,12 +196,21 @@ TEST(CommonPreconditionsTest,
   static const ui::ElementContext kTestContext(1);
 
   test::MockAnchorElementProvider provider;
-  AnchorElementPrecondition precond(provider, kTestContext);
+  AnchorElementPrecondition precond(provider, kTestContext, false);
 
   internal::PreconditionData::Collection coll;
+  test::TestUserEducationStorageService storage_service;
+  auto lifecycle_ptr = std::make_unique<FeaturePromoLifecycle>(
+      &storage_service, "", &kTestFeature,
+      FeaturePromoLifecycle::PromoType::kToast,
+      FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
   ComputedData cd;
+  internal::TypedPreconditionData<std::unique_ptr<FeaturePromoLifecycle>>
+      lifecycle_data(LifecyclePrecondition::kLifecycle,
+                     std::move(lifecycle_ptr));
+  cd.Add(LifecyclePrecondition::kLifecycle, lifecycle_data);
 
-  EXPECT_CALL(provider, GetAnchorElement(kTestContext))
+  EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::optional<int>()))
       .WillOnce(testing::Return(nullptr));
   EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition(cd));
 

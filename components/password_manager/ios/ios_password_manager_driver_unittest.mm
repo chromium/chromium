@@ -137,7 +137,7 @@ TEST_F(IOSPasswordManagerDriverTest, InformNoSavedCredentials) {
   OCMExpect([[password_controller_ ignoringNonObjectArgs]
                 onNoSavedCredentialsWithFrameId:""])
       .andCompareStringAtIndex(main_frame_id, 0);
-  driver_->InformNoSavedCredentials(true);
+  driver_->InformNoSavedCredentials();
 
   EXPECT_OCMOCK_VERIFY(password_controller_);
 }
@@ -198,7 +198,7 @@ TEST_F(IOSPasswordManagerDriverTest, FormEligibleForGenerationFound) {
                                       forFrameId:""]);
   OCMExpect([[password_controller_ ignoringNonObjectArgs]
       onNoSavedCredentialsWithFrameId:""]);
-  driver_->InformNoSavedCredentials(false);
+  driver_->InformNoSavedCredentials();
 
   // Inform the driver again that an eligible form for generation was found.
   // Verify that the listeners for proactive generation are immediately attached
@@ -266,7 +266,7 @@ TEST_F(IOSPasswordManagerDriverTest,
   }
   OCMExpect([[password_controller_ ignoringNonObjectArgs]
       onNoSavedCredentialsWithFrameId:""]);
-  driver_->InformNoSavedCredentials(false);
+  driver_->InformNoSavedCredentials();
 
   // Inform the driver again that an eligible form for generation was found.
   // Since the queue is now cleared, verify that the listeners for proactive

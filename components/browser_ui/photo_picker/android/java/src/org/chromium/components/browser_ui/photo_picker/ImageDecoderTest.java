@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
@@ -23,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.UrlUtils;
 
 import java.io.File;
@@ -127,6 +129,7 @@ public class ImageDecoderTest {
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R, message = "crbug.com/40276082")
     public void testServiceDecodeSimple() throws Exception {
         startDecoderService();
 

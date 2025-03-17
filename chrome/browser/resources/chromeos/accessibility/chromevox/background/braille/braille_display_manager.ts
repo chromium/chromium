@@ -7,11 +7,13 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {BrailleDisplayState, BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
+import type {BrailleDisplayState, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
+import {BrailleKeyCommand} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 
-import {BrailleCaptionsBackground, BrailleCaptionsListener} from './braille_captions_background.js';
+import type {BrailleCaptionsListener} from './braille_captions_background.js';
+import {BrailleCaptionsBackground} from './braille_captions_background.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {PanStrategy} from './pan_strategy.js';

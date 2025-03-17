@@ -6,19 +6,17 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 
@@ -34,7 +32,7 @@ bool AggregatableNamedBudgetKeyHasValidLength(const std::string& key) {
 
 bool IsValid(const AggregatableNamedBudgetDefs::BudgetMap& budgets) {
   return budgets.size() <= kMaxAggregatableNamedBudgetsPerSource &&
-         base::ranges::all_of(budgets, [](const auto& budget) {
+         std::ranges::all_of(budgets, [](const auto& budget) {
            return AggregatableNamedBudgetKeyHasValidLength(budget.first) &&
                   IsAggregatableBudgetInRange(budget.second);
          });
@@ -45,9 +43,7 @@ bool IsValid(const AggregatableNamedBudgetDefs::BudgetMap& budgets) {
 // static
 base::expected<AggregatableNamedBudgetDefs, SourceRegistrationError>
 AggregatableNamedBudgetDefs::FromJSON(const base::Value* v) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableNamedBudgets) ||
-      !v) {
+  if (!v) {
     return AggregatableNamedBudgetDefs();
   }
 

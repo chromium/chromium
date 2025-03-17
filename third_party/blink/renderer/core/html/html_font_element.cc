@@ -166,7 +166,7 @@ bool HTMLFontElement::IsPresentationAttribute(const QualifiedName& name) const {
 void HTMLFontElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kSizeAttr) {
     if (std::optional<CSSValueID> size_keyword =
             CssValueFromFontSizeNumber(value)) {
@@ -178,8 +178,8 @@ void HTMLFontElement::CollectStyleForPresentationAttribute(
   } else if (name == html_names::kFaceAttr && !value.empty()) {
     if (const CSSValueList* font_face_value = CreateFontFaceValueWithPool(
             value, GetExecutionContext()->GetSecureContextMode())) {
-      style->SetLonghandProperty(CSSPropertyValue(
-          CSSPropertyName(CSSPropertyID::kFontFamily), *font_face_value));
+      style.emplace_back(CSSPropertyName(CSSPropertyID::kFontFamily),
+                         *font_face_value);
     }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);

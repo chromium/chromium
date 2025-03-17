@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediarecorder/vpx_encoder.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
@@ -100,7 +96,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                frame->stride(VideoFrame::Plane::kY),
                frame->visible_data(VideoFrame::Plane::kUV),
                frame->stride(VideoFrame::Plane::kUV),
-               frame->visible_data(VideoFrame::Plane::kUV) + 1,
+               UNSAFE_TODO(frame->visible_data(VideoFrame::Plane::kUV) + 1),
                frame->stride(VideoFrame::Plane::kUV), duration, force_keyframe,
                &output_data, /*is_alpha=*/false, VPX_IMG_FMT_NV12);
       break;
@@ -165,7 +161,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                frame->visible_data(VideoFrame::Plane::kA),
                frame->stride(VideoFrame::Plane::kA), alpha_dummy_planes_.data(),
                base::checked_cast<int>(u_plane_stride_),
-               alpha_dummy_planes_.data() + v_plane_offset_,
+               UNSAFE_TODO(alpha_dummy_planes_.data() + v_plane_offset_),
                base::checked_cast<int>(v_plane_stride_), duration,
                alpha_force_keyframe, &output_data, /*is_alpha=*/true,
                VPX_IMG_FMT_I420);
@@ -240,12 +236,12 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
       // scoped_refptr.
       CHECK(*output_data);
       (*output_data)->WritableSideData().alpha_data =
-          base::HeapArray<uint8_t>::CopiedFrom(
-              base::span<const uint8_t>(alpha_data, pkt->data.frame.sz));
+          base::HeapArray<uint8_t>::CopiedFrom(UNSAFE_TODO(
+              base::span<const uint8_t>(alpha_data, pkt->data.frame.sz)));
     } else {
       *output_data = media::DecoderBuffer::CopyFrom(
-          {reinterpret_cast<const uint8_t*>(pkt->data.frame.buf),
-           pkt->data.frame.sz});
+          UNSAFE_TODO({reinterpret_cast<const uint8_t*>(pkt->data.frame.buf),
+                       pkt->data.frame.sz}));
     }
     (*output_data)
         ->set_is_key_frame((pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0);

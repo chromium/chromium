@@ -22,6 +22,7 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     health_spec = health_spec.DEFAULT,
     notifies = ["cr-fuchsia"],
+    reclient_enabled = False,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
@@ -310,6 +311,97 @@ ci.builder(
             console_view = "sheriff.fuchsia",
             category = "fyi",
             short_name = "x64-llemu",
+        ),
+    ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+)
+
+# TODO(fxbug.dev/370067428): Remove once Netstack2 no longer exists.
+ci.builder(
+    name = "fuchsia-netstack2-x64-cast-receiver-rel",
+    description_html = "x64 release build of fuchsia components using Netstack2 with cast receiver",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_netstack2_x64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "fuchsia",
+            "cast_receiver_size_optimized",
+            "x64",
+        ],
+    ),
+    # Do not forget to update
+    # infra/config/subprojects/chromium/ci/chromium.clang.star when adding or
+    # removing targets.
+    targets = targets.bundle(
+        targets = [
+            # Passthrough is used since these emulators use SwiftShader, which
+            # forces use of the passthrough decoder even if validating is
+            # specified.
+            "fuchsia_standard_passthrough_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "fuchsia-large-device-spec",
+            "isolate_profile_data",
+            "linux-jammy",
+            "fuchsia-netstack2-x64",
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "kvm": "1",
+                    },
+                ),
+            ),
+        ],
+        per_test_modifications = {
+            "blink_web_tests": [
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 1,
+                    ),
+                ),
+            ],
+            "blink_wpt_tests": [
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 1,
+                    ),
+                ),
+            ],
+            "chrome_wpt_tests": targets.remove(
+                reason = "Wptrunner does not work on Fuchsia",
+            ),
+            "headless_shell_wpt_tests": targets.remove(
+                reason = "Wptrunner does not work on Fuchsia",
+            ),
+        },
+    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            branch_selector = branches.selector.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fuchsia ci|x64",
+            short_name = "ns2",
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",

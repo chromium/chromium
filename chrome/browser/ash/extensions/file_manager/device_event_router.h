@@ -49,6 +49,7 @@ class DeviceEventRouter : public VolumeManagerObserver,
 
   // VolumeManagerObserver overrides.
   void OnDiskAdded(const ash::disks::Disk& disk, bool mounting) override;
+  void OnDiskAddBlockedByPolicy(const std::string& device_path) override;
   void OnDiskRemoved(const ash::disks::Disk& disk) override;
   void OnDeviceAdded(const std::string& device_path) override;
   void OnDeviceRemoved(const std::string& device_path) override;
@@ -88,8 +89,6 @@ class DeviceEventRouter : public VolumeManagerObserver,
       extensions::api::file_manager_private::DeviceEventType type,
       const std::string& device_path,
       const std::string& device_label) = 0;
-  // Returns external storage is disabled or not.
-  virtual bool IsExternalStorageDisabled() = 0;
 
   SystemNotificationManager* system_notification_manager() {
     return notification_manager_;

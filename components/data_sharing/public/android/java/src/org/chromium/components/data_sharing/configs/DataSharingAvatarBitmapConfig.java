@@ -7,16 +7,22 @@ package org.chromium.components.data_sharing.configs;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.ColorInt;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupMember;
 
 /** Config class for getting avatar as bitmap. */
+@NullMarked
 public final class DataSharingAvatarBitmapConfig {
 
-    private final Context mContext;
-    private final GroupMember mGroupMember;
+    private final @Nullable Context mContext;
+    private final @Nullable GroupMember mGroupMember;
     private final boolean mIsDarkMode;
     private final int mAvatarSizeInPixels;
-    private final DataSharingAvatarCallback mDataSharingAvatarCallback;
+    private final @ColorInt int mAvatarFallbackColor;
+    private final @Nullable DataSharingAvatarCallback mDataSharingAvatarCallback;
 
     /** Interface used to pass the result of avatar loading. */
     @FunctionalInterface
@@ -35,14 +41,15 @@ public final class DataSharingAvatarBitmapConfig {
         this.mGroupMember = builder.mGroupMember;
         this.mIsDarkMode = builder.mIsDarkMode;
         this.mAvatarSizeInPixels = builder.mAvatarSizeInPixels;
+        this.mAvatarFallbackColor = builder.mAvatarFallbackColor;
         this.mDataSharingAvatarCallback = builder.mDataSharingAvatarCallback;
     }
 
-    public Context getContext() {
+    public @Nullable Context getContext() {
         return mContext;
     }
 
-    public GroupMember getGroupMember() {
+    public @Nullable GroupMember getGroupMember() {
         return mGroupMember;
     }
 
@@ -54,17 +61,22 @@ public final class DataSharingAvatarBitmapConfig {
         return mAvatarSizeInPixels;
     }
 
-    public DataSharingAvatarCallback getDataSharingAvatarCallback() {
+    public @ColorInt int getAvatarFallbackColor() {
+        return mAvatarFallbackColor;
+    }
+
+    public @Nullable DataSharingAvatarCallback getDataSharingAvatarCallback() {
         return mDataSharingAvatarCallback;
     }
 
     /** Builder class for {@link DataSharingAvatarBitmapConfig}. */
     public static final class Builder {
-        private Context mContext;
-        private GroupMember mGroupMember;
+        private @Nullable Context mContext;
+        private @Nullable GroupMember mGroupMember;
         private boolean mIsDarkMode;
         private int mAvatarSizeInPixels;
-        private DataSharingAvatarCallback mDataSharingAvatarCallback;
+        private @ColorInt int mAvatarFallbackColor;
+        private @Nullable DataSharingAvatarCallback mDataSharingAvatarCallback;
 
         /**
          * Sets the application context.
@@ -79,9 +91,9 @@ public final class DataSharingAvatarBitmapConfig {
         /**
          * Sets the group member whose avatar should be fetched.
          *
-         * @param groupMember The group member object.
+         * @param groupMember The group member object. If null, returns a default fallback avatar.
          */
-        public Builder setGroupMember(GroupMember groupMember) {
+        public Builder setGroupMember(@Nullable GroupMember groupMember) {
             this.mGroupMember = groupMember;
             return this;
         }
@@ -103,6 +115,16 @@ public final class DataSharingAvatarBitmapConfig {
          */
         public Builder setAvatarSizeInPixels(int avatarSizeInPixels) {
             this.mAvatarSizeInPixels = avatarSizeInPixels;
+            return this;
+        }
+
+        /**
+         * Sets the fallback color for the avatar.This is used when monogram is shown.
+         *
+         * @param avatarFallbackColor The fallback color for avatar.
+         */
+        public Builder setAvatarFallbackColor(@ColorInt int avatarFallbackColor) {
+            this.mAvatarFallbackColor = avatarFallbackColor;
             return this;
         }
 

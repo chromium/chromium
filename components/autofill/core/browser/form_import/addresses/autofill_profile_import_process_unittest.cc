@@ -8,8 +8,9 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -80,6 +81,8 @@ class AutofillProfileImportProcessTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillSupportPhoneticNameForJP};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestAddressDataManager address_data_manager_;
@@ -112,7 +115,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(observed_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the import process for the scenario, that the import of a new profile
@@ -314,6 +318,86 @@ TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
               testing::UnorderedElementsAre(account_profile));
 }
 
+// Tests that importing an `ExtendedHiraganaProfile` with address fields is a
+// superset of a `HiraganaProfile` kAccount profile results in an update and
+// not an upload. The record type of the resulting profile remains kAccount.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportJapaneseSupersetProfile_kAccount_PostStorage) {
+  AutofillProfile account_profile = test::HiraganaProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  address_data_manager().AddProfile(account_profile);
+
+  ProfileImportProcess import_data(test::ExtendedHiraganaProfile(), "ja_JP",
+                                   url_, ukm_source_id(),
+                                   &address_data_manager(),
+                                   /*allow_only_silent_updates=*/false);
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kConfirmableMerge);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+  AutofillProfile expected_profile = test::ExtendedHiraganaProfile();
+  expected_profile.set_guid(account_profile.guid());
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedElementsAre(expected_profile));
+}
+
+// Tests that importing a profile that is semantically equal to a kAccount
+// profile is rejected as a duplicate.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportDifferentCharacterProfile_kAccount) {
+  AutofillProfile account_profile = test::HiraganaProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  address_data_manager().AddProfile(account_profile);
+
+  // Import a profile with equivalent data but saved in a different alphabet.
+  ProfileImportProcess import_data(test::KatakanaProfile1(), "ja_JP", url_,
+                                   ukm_source_id(), &address_data_manager(),
+                                   /*allow_only_silent_updates=*/false);
+  // The import is rejected as a duplicate.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kDuplicateImport);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_FALSE(import_data.ProfilesChanged());
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedElementsAre(account_profile));
+}
+
+// Tests that importing a Katakana profile with a different alternative name
+// than the existing Hiragana profile results in a new profile creation and user
+// is offered to save it.
+TEST_F(AutofillProfileImportProcessTest, ImportNewKatakanaProfile_UserAccepts) {
+  AutofillProfile existing_hiragana_profile = test::HiraganaProfile();
+  test_api(existing_hiragana_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  address_data_manager().AddProfile(existing_hiragana_profile);
+
+  AutofillProfile new_katakana_profile = test::KatakanaProfile2();
+
+  // Advance the test clock to make sure that the modification date of the new
+  // profile gets updated.
+  AdvanceClock(base::Days(1));
+
+  ProfileImportProcess import_data =
+      CreateProfileImportProcess(new_katakana_profile,
+                                 /*allow_only_silent_updates=*/false);
+  import_data.AcceptWithoutEdits();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+  EXPECT_EQ(import_data.import_type(), AutofillProfileImportType::kNewProfile);
+
+  std::vector<AutofillProfile> resulting_profiles =
+      ApplyImportAndGetProfiles(import_data);
+  ASSERT_EQ(resulting_profiles.size(), 2U);
+  EXPECT_THAT(resulting_profiles,
+              testing::UnorderedElementsAre(existing_hiragana_profile,
+                                            new_katakana_profile));
+  EXPECT_EQ(resulting_profiles.at(1).usage_history().modification_date(),
+            base::Time::Now());
+}
+
 // Tests that importing a profile that is a superset of a kAccount profile
 // results in an update. The record type of resulting profile remains kAccount.
 TEST_F(AutofillProfileImportProcessTest,
@@ -374,7 +458,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  mergeable_profile.set_modification_date(base::Time::Now());
+  mergeable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(mergeable_profile);
@@ -409,7 +493,8 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
       ApplyImportAndGetProfiles(import_data);
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles, testing::UnorderedElementsAre(final_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
@@ -421,7 +506,7 @@ TEST_F(AutofillProfileImportProcessTest,
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  mergeable_profile.set_modification_date(base::Time::Now());
+  mergeable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(mergeable_profile);
@@ -453,7 +538,8 @@ TEST_F(AutofillProfileImportProcessTest,
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(edited_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
@@ -506,7 +592,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   // Set a modification date and subsequently advance the test clock.
   // Since the merge is not accepted, the `modification_date` should not be
   // changed.
-  mergeable_profile.set_modification_date(base::Time::Now());
+  mergeable_profile.usage_history().set_modification_date(base::Time::Now());
   const base::Time earlier_time = base::Time::Now();
   AdvanceClock(base::Days(1));
 
@@ -538,7 +624,8 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(mergeable_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), earlier_time);
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            earlier_time);
 }
 
 // Tests the scenario in which the observed profile results in a silent update
@@ -549,7 +636,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  updateable_profile.set_modification_date(base::Time::Now());
+  updateable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(updateable_profile);
@@ -582,7 +669,8 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the scenario in which an observed profile can be merged with an
@@ -752,7 +840,7 @@ TEST_F(AutofillProfileImportProcessTest,
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  updateable_profile.set_modification_date(base::Time::Now());
+  updateable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(updateable_profile);
@@ -785,7 +873,8 @@ TEST_F(AutofillProfileImportProcessTest,
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the scenario in which the observed profile is not imported since the

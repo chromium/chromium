@@ -4,13 +4,13 @@
 
 #include "components/account_manager_core/account_manager_facade_impl.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -151,8 +151,8 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
   void GetAccounts(GetAccountsCallback callback) override {
     std::vector<crosapi::mojom::AccountPtr> mojo_accounts;
-    base::ranges::transform(accounts_, std::back_inserter(mojo_accounts),
-                            &ToMojoAccount);
+    std::ranges::transform(accounts_, std::back_inserter(mojo_accounts),
+                           &ToMojoAccount);
     std::move(callback).Run(std::move(mojo_accounts));
   }
 

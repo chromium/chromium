@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -47,7 +47,7 @@ namespace blink {
 
 class ExceptionState;
 class ImageBitmapOptions;
-class V8ImageDataStorageFormat;
+class V8ImageDataPixelFormat;
 class V8PredefinedColorSpace;
 
 class CORE_EXPORT ImageData final : public ScriptWrappable,
@@ -171,18 +171,18 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* CreateForTest(const gfx::Size&,
                                   NotShared<DOMArrayBufferView>,
                                   PredefinedColorSpace,
-                                  ImageDataStorageFormat);
+                                  SkColorType);
 
   ImageData(const gfx::Size&,
             NotShared<DOMArrayBufferView>,
             PredefinedColorSpace,
-            ImageDataStorageFormat);
+            SkColorType);
 
   gfx::Size Size() const { return size_; }
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
   V8PredefinedColorSpace colorSpace() const;
-  V8ImageDataStorageFormat storageFormat() const;
+  V8ImageDataPixelFormat pixelFormat() const;
 
   // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() const;
@@ -190,14 +190,14 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   const V8ImageDataArray* data() const { return data_.Get(); }
 
   bool IsBufferBaseDetached() const;
-  PredefinedColorSpace GetPredefinedColorSpace() const;
-  ImageDataStorageFormat GetImageDataStorageFormat() const;
+  PredefinedColorSpace GetPredefinedColorSpace() const { return color_space_; }
+  SkColorType GetSkColorType() const { return color_type_; }
 
   // Return an SkPixmap that references this data directly.
   SkPixmap GetSkPixmap() const;
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const override { return size_; }
+  ImageBitmapSourceStatus CheckUsability() const override { return base::ok(); }
   ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       std::optional<gfx::Rect> crop_rect,
@@ -220,11 +220,11 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
   PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
-  ImageDataStorageFormat storage_format_ = ImageDataStorageFormat::kUint8;
+  SkColorType color_type_ = kRGBA_8888_SkColorType;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
-      ImageDataStorageFormat,
+      SkColorType,
       bool initialize,
       ExceptionState&);
 };

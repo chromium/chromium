@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.webauthn.WebauthnModeProvider.isChrome;
 
 import android.annotation.SuppressLint;
@@ -14,19 +16,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
+import org.chromium.blink.mojom.GetAssertionResponse;
+import org.chromium.blink.mojom.GetCredentialResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.WebAuthnClientCapability;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -39,12 +44,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Android implementation of the authenticator.mojom interface. */
+@NullMarked
 public final class AuthenticatorImpl implements Authenticator, AuthenticationContextProvider {
-    private final Context mContext;
-    private final WebContents mWebContents;
+    private final @Nullable Context mContext;
+    private final @Nullable WebContents mWebContents;
     private final FidoIntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
-    private final CreateConfirmationUiDelegate mCreateConfirmationUiDelegate;
+    private final @Nullable CreateConfirmationUiDelegate mCreateConfirmationUiDelegate;
 
     /** Ensures only one request is processed at a time. */
     private boolean mIsOperationPending;
@@ -53,17 +59,17 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
      * The origin of the request. This may be overridden by an internal request from the browser
      * process.
      */
-    private Origin mOrigin;
+    private @Nullable Origin mOrigin;
 
     /** The origin of the main frame. */
-    private Origin mTopOrigin;
+    private @Nullable Origin mTopOrigin;
 
     /** The payment information to be added to the "clientDataJson". */
-    private PaymentOptions mPayment;
+    private @Nullable PaymentOptions mPayment;
 
-    private MakeCredential_Response mMakeCredentialCallback;
-    private GetAssertion_Response mGetAssertionCallback;
-    private Fido2CredentialRequest mPendingFido2CredentialRequest;
+    private @Nullable MakeCredential_Response mMakeCredentialCallback;
+    private @Nullable GetCredential_Response mGetCredentialCallback;
+    private @Nullable Fido2CredentialRequest mPendingFido2CredentialRequest;
     private Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
     // Information about the request cached here for metric reporting purposes.
@@ -74,7 +80,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     // `Fido2CredentialRequest` contains a `Context`. But this field is only
     // used in tests so a memory leak is irrelevent.
     @SuppressLint("StaticFieldLeak")
-    private static Fido2CredentialRequest sFido2CredentialRequestOverrideForTesting;
+    private static @Nullable Fido2CredentialRequest sFido2CredentialRequestOverrideForTesting;
 
     /**
      * Builds the Authenticator service implementation.
@@ -88,12 +94,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
      * @param topOrigin The origin of the main frame.
      */
     public AuthenticatorImpl(
-            Context context,
-            WebContents webContents,
+            @Nullable Context context,
+            @Nullable WebContents webContents,
             FidoIntentSender intentSender,
             @Nullable CreateConfirmationUiDelegate createConfirmationUiDelegate,
             RenderFrameHost renderFrameHost,
-            Origin topOrigin) {
+            @Nullable Origin topOrigin) {
         assert renderFrameHost != null;
         assert WebauthnModeProvider.getInstance().getWebauthnMode(webContents) != WebauthnMode.NONE;
 
@@ -173,7 +179,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mPendingFido2CredentialRequest.handleMakeCredentialRequest(
                 options,
                 maybeCreateBrowserOptions(),
-                mOrigin,
+                assertNonNull(mOrigin),
                 mTopOrigin,
                 mPayment,
                 this::onRegisterResponse,
@@ -191,17 +197,23 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     }
 
     @Override
-    public void getAssertion(
-            PublicKeyCredentialRequestOptions options, GetAssertion_Response callback) {
+    public void getCredential(
+            PublicKeyCredentialRequestOptions options, GetCredential_Response callback) {
         if (mIsOperationPending) {
-            callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
+            callback.call(
+                    getCredentialResponseForAssertion(AuthenticatorStatus.PENDING_REQUEST, null));
+            return;
+        }
+        if (options.mediation == Mediation.IMMEDIATE) {
+            callback.call(
+                    getCredentialResponseForAssertion(AuthenticatorStatus.NOT_IMPLEMENTED, null));
             return;
         }
 
-        mGetAssertionCallback = callback;
+        mGetCredentialCallback = callback;
         mIsOperationPending = true;
         mIsPaymentRequest = mPayment != null;
-        mIsConditionalRequest = options.isConditional;
+        mIsConditionalRequest = options.mediation == Mediation.CONDITIONAL;
 
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
@@ -213,7 +225,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleGetAssertionRequest(
                 options,
-                mOrigin,
+                assertNonNull(mOrigin),
                 mTopOrigin,
                 mPayment,
                 this::onSignResponse,
@@ -358,10 +370,11 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         // no way to cancel a request that has already triggered gmscore UI. Get requests can be
         // cancelled if they are pending conditional UI requests, or if they are discoverable
         // credential requests with the account selector being shown to the user.
-        if (!mIsOperationPending || mGetAssertionCallback == null) {
+        if (!mIsOperationPending || mGetCredentialCallback == null) {
             return;
         }
 
+        assumeNonNull(mPendingFido2CredentialRequest);
         mPendingFido2CredentialRequest.cancelConditionalGetAssertion();
     }
 
@@ -380,8 +393,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
 
-        assert mGetAssertionCallback != null;
-        mGetAssertionCallback.call(status, response, null);
+        assert mGetCredentialCallback != null;
+        mGetCredentialCallback.call(getCredentialResponseForAssertion(status, response));
         cleanupRequest();
     }
 
@@ -389,13 +402,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
 
-        assert ((mMakeCredentialCallback != null && mGetAssertionCallback == null)
-                || (mMakeCredentialCallback == null && mGetAssertionCallback != null));
+        assert ((mMakeCredentialCallback != null && mGetCredentialCallback == null)
+                || (mMakeCredentialCallback == null && mGetCredentialCallback != null));
         assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS;
         if (mMakeCredentialCallback != null) {
             mMakeCredentialCallback.call(status, null, null);
-        } else if (mGetAssertionCallback != null) {
-            mGetAssertionCallback.call(status, null, null);
+        } else if (mGetCredentialCallback != null) {
+            mGetCredentialCallback.call(getCredentialResponseForAssertion(status, null));
         }
         if (mPendingFido2CredentialRequest != null) mPendingFido2CredentialRequest.destroyBridge();
         cleanupRequest();
@@ -409,7 +422,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         }
         String event;
         String resultMetricName;
-        if (mGetAssertionCallback != null) {
+        if (mGetCredentialCallback != null) {
             event = "WebAuthn.SignCompletion";
             resultMetricName = "SignCompletionResult";
         } else if (mMakeCredentialCallback != null) {
@@ -434,7 +447,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private void cleanupRequest() {
         mIsOperationPending = false;
         mMakeCredentialCallback = null;
-        mGetAssertionCallback = null;
+        mGetCredentialCallback = null;
         mPendingFido2CredentialRequest = null;
     }
 
@@ -451,7 +464,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     }
 
     @Override
-    public Context getContext() {
+    public @Nullable Context getContext() {
         return mContext;
     }
 
@@ -466,15 +479,15 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mWebContents;
     }
 
     /** Implements {@link IntentSender} using a {@link WindowAndroid}. */
     public static class WindowIntentSender implements FidoIntentSender {
-        private final WindowAndroid mWindow;
+        private final @Nullable WindowAndroid mWindow;
 
-        WindowIntentSender(WindowAndroid window) {
+        WindowIntentSender(@Nullable WindowAndroid window) {
             mWindow = window;
         }
 
@@ -498,5 +511,15 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 mCallback.onResult(new Pair(resultCode, data));
             }
         }
+    }
+
+    private GetCredentialResponse getCredentialResponseForAssertion(
+            int status, @Nullable GetAssertionAuthenticatorResponse response) {
+        GetCredentialResponse finalResponse = new GetCredentialResponse();
+        GetAssertionResponse assertionResponse = new GetAssertionResponse();
+        assertionResponse.credential = response;
+        assertionResponse.status = status;
+        finalResponse.setGetAssertionResponse(assertionResponse);
+        return finalResponse;
     }
 }

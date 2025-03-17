@@ -59,7 +59,8 @@ class GraphBuilderTflite final {
     Result(flatbuffers::DetachedBuffer buffer,
            base::flat_map<std::string, int> input_name_to_index,
            base::flat_map<std::string, int> output_name_to_index,
-           std::vector<uint8_t> buffer_data);
+           std::vector<uint8_t> buffer_data,
+           bool graph_requires_fp32_precision);
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     Result(Result&&);
@@ -70,6 +71,7 @@ class GraphBuilderTflite final {
     base::flat_map<std::string, int> input_name_to_index;
     base::flat_map<std::string, int> output_name_to_index;
     std::vector<uint8_t> buffer_data;
+    bool graph_requires_fp32_precision;
   };
 
   GraphBuilderTflite(const GraphBuilderTflite&) = delete;
@@ -218,6 +220,17 @@ class GraphBuilderTflite final {
       ::tflite::TensorType input_tensor_type,
       int32_t output_tensor_index,
       ::tflite::TensorType output_tensor_type);
+
+  // Serializes specializations of the pow operator for the square and square
+  // root operations.
+  OperatorOffset SerializeSquareOperation(
+      int32_t input_tensor_index,
+      ::tflite::TensorType input_tensor_type,
+      int32_t output_tensor_index);
+  base::expected<OperatorOffset, std::string> SerializeSquareRootOperation(
+      int32_t input_tensor_index,
+      ::tflite::TensorType input_tensor_type,
+      int32_t output_tensor_index);
 
   // A helper function is used by WebNN binary operation direct or emulated
   // implementation.
@@ -394,7 +407,7 @@ class GraphBuilderTflite final {
   int32_t SerializeSubGraphPowMul(base::span<const int32_t> input_dimensions,
                                   ::tflite::TensorType input_tensor_type,
                                   int32_t input_tensor_index,
-                                  float pow_exponent,
+                                  int pow_exponent,
                                   float mul_alpha);
 
   // Serialize a sub graph (input * weight + bias) for gru cell.
@@ -675,10 +688,13 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeWhere(
       const mojom::Where& where);
 
+  bool RequiresFloat32Precision(const mojom::Operation& op);
+
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
   Result FinishAndTakeResult(base::span<const uint64_t> input_operands,
-                             base::span<const uint64_t> output_operands);
+                             base::span<const uint64_t> output_operands,
+                             bool has_fp32_operation);
 
   const ContextProperties context_properties_;
 

@@ -57,10 +57,10 @@ option {
   }
 }
 
-/* Styles for both the options and selectedoption */
+/* Styles for both the options and selectedcontent */
 
 option,
-selectedoption {
+selectedcontent {
   display: grid;
   gap: 1rem;
   font-size: 1rem;
@@ -69,7 +69,7 @@ selectedoption {
 
 /* Style what you see before you open the select dropdown */
 
-selectedoption {
+selectedcontent {
   padding: 0.5rem;
   grid-template-columns: 1.5rem auto;
 
@@ -126,7 +126,7 @@ figure {
 </style>
 <select name="currency-select" class="currency-select" aria-label="Currency for purchase">
   <button class="btn-to-open-select">
-    <selectedoption></selectedoption>
+    <selectedcontent></selectedcontent>
     <span class="arrow"></span>
   </button>
   <div class="datalist">

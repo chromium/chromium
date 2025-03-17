@@ -99,13 +99,26 @@ void OnPrinterQueriedForAutoConf(
     ash::CupsPrintersManager* printers_manager,
     mojom::LocalPrinter::GetCapabilityCallback callback,
     chromeos::Printer printer,
-    bool is_printer_autoconf) {
+    bool is_printer_autoconf,
+    const chromeos::IppPrinterInfo& info) {
   if (!is_printer_autoconf) {
     std::move(callback).Run(nullptr);
     return;
   }
 
   printer.mutable_ppd_reference()->autoconf = true;
+  printer.set_ipp_printer_info(info);
+  SetUpPrinter(printers_manager, printer, std::move(callback));
+}
+
+// Query the printer for setup metrics then continue with setup.
+void OnPrinterQueriedForAutoConfMetricsOnly(
+    ash::CupsPrintersManager* printers_manager,
+    mojom::LocalPrinter::GetCapabilityCallback callback,
+    chromeos::Printer printer,
+    bool is_printer_autoconf,
+    const chromeos::IppPrinterInfo& info) {
+  printer.set_ipp_printer_info(info);
   SetUpPrinter(printers_manager, printer, std::move(callback));
 }
 
@@ -141,7 +154,10 @@ void OnPrinterAuthenticated(
     // If the printer is autoconf compatible or has a valid PPD reference then
     // continue with normal setup.
     if (printer.ppd_reference().IsFilled()) {
-      SetUpPrinter(printers_manager, printer, std::move(callback));
+      printers_manager->QueryPrinterForAutoConf(
+          printer,
+          base::BindOnce(OnPrinterQueriedForAutoConfMetricsOnly,
+                         printers_manager, std::move(callback), printer));
       return;
     }
 
@@ -158,7 +174,9 @@ void OnPrinterAuthenticated(
     return;
   }
 
-  SetUpPrinter(printers_manager, printer, std::move(callback));
+  printers_manager->QueryPrinterForAutoConf(
+      printer, base::BindOnce(OnPrinterQueriedForAutoConfMetricsOnly,
+                              printers_manager, std::move(callback), printer));
 }
 
 void OnOAuthAccessTokenObtained(

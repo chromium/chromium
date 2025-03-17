@@ -36,6 +36,11 @@ class MockOptimizationGuideOnDeviceCapabilityProvider
               GetSamplingParamsConfig,
               (ModelBasedCapabilityKey),
               (override));
+
+  MOCK_METHOD(std::optional<const optimization_guide::proto::Any>,
+              GetFeatureMetadata,
+              (optimization_guide::ModelBasedCapabilityKey feature),
+              (override));
 };
 
 }  // namespace optimization_guide

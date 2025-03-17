@@ -23,15 +23,20 @@ class RecordCache;
 // A potentially tracable and/or lifetime affecting point in the object graph.
 class GraphPoint {
  public:
-  GraphPoint() : traced_(false) {}
   virtual ~GraphPoint() {}
-  void MarkTraced() { traced_ = true; }
-  bool IsProperlyTraced() { return traced_ || !NeedsTracing().IsNeeded(); }
-  bool IsInproperlyTraced() { return traced_ && NeedsTracing().IsIllegal(); }
+  void MarkTraced() { traced_ = TracedStatus::kTraced; }
+  void MarkTracedIfNeeded() { traced_ = TracedStatus::kTracedIfNeeded; }
+  bool IsProperlyTraced() {
+    return (traced_ != TracedStatus::kUntraced) || !NeedsTracing().IsNeeded();
+  }
+  bool IsInproperlyTraced() {
+    return (traced_ == TracedStatus::kTraced) && NeedsTracing().IsIllegal();
+  }
   virtual const TracingStatus NeedsTracing() = 0;
 
  private:
-  bool traced_;
+  enum class TracedStatus { kUntraced, kTraced, kTracedIfNeeded };
+  TracedStatus traced_ = TracedStatus::kUntraced;
 };
 
 class BasePoint : public GraphPoint {

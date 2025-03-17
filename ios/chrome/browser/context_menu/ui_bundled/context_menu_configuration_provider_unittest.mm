@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "testing/gtest_mac.h"
@@ -167,6 +168,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
         browser_->GetWebStateList()->GetActiveWebState());
   }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
@@ -335,7 +337,7 @@ TEST_F(ContextMenuConfigurationProviderTest,
   // Test that the element has the expected subtitle.
   EXPECT_TRUE([foundMenuElement.subtitle
       isEqualToString:l10n_util::GetNSString(
-                          IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION)]);
+                          IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)]);
 
   // Test that the element is disabled.
   EXPECT_EQ(base::apple::ObjCCast<UIAction>(foundMenuElement).attributes,

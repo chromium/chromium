@@ -5,6 +5,7 @@
 ../../build/android/pylib/constants/host_paths.py
 ../../build/android/pylib/utils/__init__.py
 ../../build/android/pylib/utils/decorators.py
+../../build/android/pylib/utils/google_storage_helper.py
 ../../build/android/pylib/utils/logdog_helper.py
 ../../components/variations/service/generate_ui_string_overrider.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/__init__.py
@@ -75,11 +76,11 @@
 ../../third_party/catapult/devil/devil/android/device_signal.py
 ../../third_party/catapult/devil/devil/android/device_temp_file.py
 ../../third_party/catapult/devil/devil/android/device_utils.py
+../../third_party/catapult/devil/devil/android/devil_util.py
 ../../third_party/catapult/devil/devil/android/flag_changer.py
 ../../third_party/catapult/devil/devil/android/forwarder.py
 ../../third_party/catapult/devil/devil/android/install_commands.py
 ../../third_party/catapult/devil/devil/android/logcat_monitor.py
-../../third_party/catapult/devil/devil/android/md5sum.py
 ../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../third_party/catapult/devil/devil/android/ndk/abis.py
 ../../third_party/catapult/devil/devil/android/perf/__init__.py
@@ -603,6 +604,8 @@ core/tbmv3/trace_processor.py
 core/testing.py
 core/upload_results_to_perf_dashboard.py
 cross_device_test_config.py
+json_constants.py
+json_util.py
 measurements/__init__.py
 measurements/dual_metric_measurement.py
 measurements/multipage_skpicture_printer.py

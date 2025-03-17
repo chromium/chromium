@@ -135,7 +135,7 @@ class GradientOverflowIndicatorStrategy
   }
 
  protected:
-  // The views, owned by |scroll_view_|, that indicate that there are more
+  // The views, owned by `scroll_view_`, that indicate that there are more
   // tabs overflowing to the left or right.
   raw_ptr<GradientIndicatorView> left_overflow_indicator_;
   raw_ptr<GradientIndicatorView> right_overflow_indicator_;

@@ -13,6 +13,7 @@
 #include "cc/test/test_skcanvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -127,6 +128,20 @@ TEST(PaintShaderTest, DecodePaintRecord) {
       image_provider.draw_image().paint_image().IsSameForTesting(paint_image));
   EXPECT_EQ(image_provider.draw_image().scale().width(), 0.25f);
   EXPECT_EQ(image_provider.draw_image().scale().height(), 0.25f);
+}
+
+TEST(PaintShaderTest, GradientSingleStopValidTest) {
+  SkPoint points[] = {
+    SkPoint::Make(0, 0),
+    SkPoint::Make(100, 100)
+  };
+  SkColor4f colors[] = {
+      SkColor4f::FromColor(SK_ColorGREEN),
+  };
+  SkScalar positions[] = {0.0f};
+  auto shader = PaintShader::MakeLinearGradient(points, colors, positions, 1,
+                                                SkTileMode::kClamp);
+  EXPECT_TRUE(shader->IsValid());
 }
 
 }  // namespace cc

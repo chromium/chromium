@@ -32,9 +32,9 @@ source_set("feature_list") {
     ":commerce_heuristics_data",
     ":pref_names",
     "//base",
-    "//components/flags_ui",
     "//components/prefs",
     "//components/search",
+    "//components/webui/flags",
     "//third_party/re2:re2",
     "//url:url",
   ]
@@ -201,8 +201,6 @@ static_library("shopping_service") {
   sources = [
     "bookmark_update_manager.cc",
     "bookmark_update_manager.h",
-    "discounts_storage.cc",
-    "discounts_storage.h",
     "metrics/scheduled_metrics_manager.cc",
     "metrics/scheduled_metrics_manager.h",
     "price_tracking_utils.cc",
@@ -234,7 +232,6 @@ static_library("shopping_service") {
     "//base",
     "//components/bookmarks/browser",
     "//components/commerce/core/compare",
-    "//components/commerce/core/parcel:parcel",
     "//components/commerce/core/product_specifications:product_specifications",
     "//components/history/core/browser",
     "//components/keyed_service/core",
@@ -283,8 +280,6 @@ source_set("shopping_service_test_support") {
   sources = [
     "mock_cluster_manager.cc",
     "mock_cluster_manager.h",
-    "mock_discounts_storage.cc",
-    "mock_discounts_storage.h",
     "mock_shopping_service.cc",
     "mock_shopping_service.h",
     "mock_tab_restore_service.cc",
@@ -335,7 +330,6 @@ source_set("shopping_service_unit_tests") {
   sources = [
     "bookmark_update_manager_unittest.cc",
     "commerce_info_cache_unittest.cc",
-    "discounts_storage_unittest.cc",
     "feature_utils_unittest.cc",
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
@@ -348,6 +342,7 @@ source_set("shopping_service_unit_tests") {
 
   deps = [
     ":account_checker_test_support",
+    ":commerce_constants",
     ":commerce_info_cache",
     ":discounts_db_content_proto",
     ":feature_utils",
@@ -355,7 +350,6 @@ source_set("shopping_service_unit_tests") {
     ":pref_names",
     ":shopping_service_test_support",
     "compare:unit_tests",
-    "parcel:unit_tests",
     "product_specifications",
     "product_specifications:test_support",
     "subscriptions:test_support",

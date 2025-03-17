@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -160,7 +161,7 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
     auto label = std::make_unique<FadeLabelView>(kHoverCardLabelMaxLines,
                                                  context, text_style);
     if (color_id) {
-      label->SetEnabledColorId(color_id.value());
+      label->SetEnabledColor(color_id.value());
     }
     label->SetProperty(views::kMarginsKey, insets);
     label->SetProperty(
@@ -276,22 +277,22 @@ void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {
   policy_label_->SetFade(percent);
 }
 
-std::u16string ToolbarActionHoverCardBubbleView::GetTitleTextForTesting()
+std::u16string_view ToolbarActionHoverCardBubbleView::GetTitleTextForTesting()
     const {
   return title_label_->GetText();
 }
 
-std::u16string ToolbarActionHoverCardBubbleView::GetActionTitleTextForTesting()
-    const {
+std::u16string_view
+ToolbarActionHoverCardBubbleView::GetActionTitleTextForTesting() const {
   return action_title_label_->GetText();
 }
 
-std::u16string
+std::u16string_view
 ToolbarActionHoverCardBubbleView::GetSiteAccessTitleTextForTesting() const {
   return site_access_title_label_->GetText();
 }
 
-std::u16string
+std::u16string_view
 ToolbarActionHoverCardBubbleView::GetSiteAccessDescriptionTextForTesting()
     const {
   return site_access_description_label_->GetText();

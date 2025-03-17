@@ -47,6 +47,7 @@
         "UpdateLayout",
         "WillHandlePromise",
         "UserEntryPoint",
+        "FrameRelatedTask",
       ]
     },
     InspectorIssueReporter: {
@@ -212,6 +213,10 @@
         "WebTransportCreated",
         "WebTransportConnectionEstablished",
         "WebTransportClosed",
+        "DirectTCPSocketCreated",
+        "DirectTCPSocketOpened",
+        "DirectTCPSocketAborted",
+        "DirectTCPSocketClosed",
         "WillCreateP2PSocketUdp",
         "WillCreateWebSocket",
         "WillDispatchEventSourceEvent",
@@ -223,6 +228,7 @@
         "WillSendWebSocketHandshakeRequest",
         "SetDevToolsIds",
         "IsCacheDisabled",
+        "ShouldApplyDevtoolsCookieSettingOverrides",
       ]
     },
     InspectorPageAgent: {

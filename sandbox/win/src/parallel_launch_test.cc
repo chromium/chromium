@@ -38,6 +38,8 @@ class TestBrokerServicesDelegateBase : public BrokerServicesDelegate {
 
   void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
                                                 DWORD process_id) override {}
+  void OnCreateThreadActionCreateFailure(DWORD last_error) override {}
+  void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {}
 };
 
 class ParallelLaunchTest : public testing::Test {

@@ -4,10 +4,13 @@
 
 #include "content/public/test/android/render_frame_host_test_ext.h"
 
+#include <optional>
+#include <string>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/render_frame_host_android.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -28,11 +31,10 @@ const void* const kRenderFrameHostTestExtKey = &kRenderFrameHostTestExtKey;
 
 void OnExecuteJavaScriptResult(const base::android::JavaRef<jobject>& jcallback,
                                base::Value value) {
-  std::string result;
-  JSONStringValueSerializer serializer(&result);
-  bool value_serialized = serializer.SerializeAndOmitBinaryValues(value);
-  DCHECK(value_serialized);
-  base::android::RunStringCallbackAndroid(jcallback, result);
+  std::optional<std::string> result = base::WriteJsonWithOptions(
+      value, base::JSONWriter::OPTIONS_OMIT_BINARY_VALUES);
+  DCHECK(result);
+  base::android::RunStringCallbackAndroid(jcallback, *result);
 }
 
 }  // namespace

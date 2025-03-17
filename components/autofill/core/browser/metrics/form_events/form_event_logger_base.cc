@@ -49,13 +49,7 @@ const char* AblationGroupToString(AblationGroup ablation_group) {
 }
 
 bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
-  // First, check the prerequisites.
-  // Without the feature being enabled, such forms are not parsed.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
-    return false;
-  }
-  // When the feature is enabled, the forms for which this classification is
+  // First, check the prerequisites. The forms for which this classification is
   // applicable must be inside a form tag (unless
   // `kAutofillEnableEmailHeuristicOutsideForms` is enabled), must not run
   // heuristics normally (i.e., their field count is below
@@ -80,24 +74,6 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
   }
   // No email fields, therefore this is not a heuristic-only email form.
   return false;
-}
-
-// This function encodes the integer value of a `FieldType` and the
-// boolean value of `suggestion_accepted` into a 14 bit integer.
-// The lower 2 bits are used to encode the filling acceptance and the higher 12
-// bits are used to encode the field type. This integer is used to determine
-// which bucket of the
-// "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType" metric
-// should be emitted.
-// Even though `suggestion_accepted` could be encoded in only 1 bit, 2 bits are
-// used to leave room for possible other future values.
-int GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-    FieldType field_type,
-    bool suggestion_accepted) {
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
-                "Autofill::FieldType value needs more than 12 bits.");
-
-  return (field_type << 2) | suggestion_accepted;
 }
 
 }  // namespace
@@ -127,17 +103,14 @@ void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
   }
 }
 
-void FormEventLoggerBase::OnDidPollSuggestions(const FormFieldData& field) {
+void FormEventLoggerBase::OnDidPollSuggestions(FieldGlobalId field_id) {
   // Record only one poll user action for consecutive polls of the same field.
   // This is to avoid recording too many poll actions (for example when a user
   // types in a field, triggering multiple queries) to make the analysis more
   // simple.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseFewerFormAndFieldComparison)
-          ? field.global_id() != last_polled_field_.global_id()
-          : !field.SameFieldAs(last_polled_field_)) {
+  if (field_id != last_polled_field_id_) {
     RecordPollSuggestions();
-    last_polled_field_ = field;
+    last_polled_field_id_ = field_id;
   }
 }
 
@@ -241,12 +214,14 @@ void FormEventLoggerBase::OnFormSubmitted(const FormStructure& form) {
   }
 }
 
-void FormEventLoggerBase::OnTypedIntoNonFilledField() {
-  has_logged_typed_into_non_filled_field_ = true;
+void FormEventLoggerBase::OnEditedNonFilledField(FieldGlobalId field_id) {
+  has_logged_edited_non_filled_field_ = true;
+  OnEditedField(field_id);
 }
 
-void FormEventLoggerBase::OnEditedAutofilledField() {
+void FormEventLoggerBase::OnEditedAutofilledField(FieldGlobalId field_id) {
   has_logged_edited_autofilled_field_ = true;
+  OnEditedField(field_id);
 }
 
 void FormEventLoggerBase::OnDestroyed() {
@@ -424,7 +399,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
         has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
         flow_id_, fast_checkout_run_id_);
   }
-  if (has_logged_typed_into_non_filled_field_ ||
+  if (has_logged_edited_non_filled_field_ ||
       has_logged_form_filling_suggestion_filled_) {
     RecordFormSubmission(logs);
   }
@@ -458,9 +433,8 @@ void FormEventLoggerBase::RecordFillingAcceptance(LogBuffer& logs) const {
   }
   LOG_AF(logs) << Tr{} << "FillingAcceptance"
                << has_logged_form_filling_suggestion_filled_;
-  // Note that `is_heuristic_only_email_form_` will only be true when the
-  // `kAutofillEnableEmailHeuristicOnlyAddressForms` feature is enabled and the
-  // form meets the requirements expressed in
+  // Note that `is_heuristic_only_email_form_` will only be true when the form
+  // meets the requirements expressed in
   // `DetermineHeuristicOnlyEmailFormStatus`.
   if (is_heuristic_only_email_form_) {
     base::UmaHistogramBoolean("Autofill.EmailHeuristicOnlyAcceptance",
@@ -470,16 +444,14 @@ void FormEventLoggerBase::RecordFillingAcceptance(LogBuffer& logs) const {
   static constexpr char acceptance_by_focused_field_type_histogram[] =
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType";
   for (auto field_type : field_types_with_shown_suggestions_) {
-    base::UmaHistogramSparse(
-        acceptance_by_focused_field_type_histogram,
-        GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-            field_type, /*suggestion_accepted=*/false));
+    base::UmaHistogramSparse(acceptance_by_focused_field_type_histogram,
+                             GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                 field_type, /*suggestion_accepted=*/false));
   }
   for (auto field_type : field_types_with_accepted_suggestions_) {
-    base::UmaHistogramSparse(
-        acceptance_by_focused_field_type_histogram,
-        GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-            field_type, /*suggestion_accepted=*/true));
+    base::UmaHistogramSparse(acceptance_by_focused_field_type_histogram,
+                             GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                 field_type, /*suggestion_accepted=*/true));
   }
 }
 
@@ -577,11 +549,10 @@ void FormEventLoggerBase::RecordUndoMetrics() const {
   }
 }
 
-void FormEventLoggerBase::OnTextFieldDidChange(
-    const FieldGlobalId& field_global_id) {
-  if (field_global_id != last_field_global_id_modified_by_user_) {
+void FormEventLoggerBase::OnEditedField(FieldGlobalId field_id) {
+  if (field_id != last_field_global_id_modified_by_user_) {
     ++form_interaction_counts_.form_element_user_modifications;
-    last_field_global_id_modified_by_user_ = field_global_id;
+    last_field_global_id_modified_by_user_ = field_id;
     UpdateFlowId();
   }
 }
@@ -609,15 +580,6 @@ FormEventLoggerBase::GetParsedAndFieldByFieldFormTypes() const {
   DenseSet<FormTypeNameForLogging> all_form_types = parsed_form_types_;
   all_form_types.insert_all(field_by_field_filled_form_types_);
   return all_form_types;
-}
-
-// static
-int FormEventLoggerBase::
-    GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
-        FieldType field_type,
-        bool suggestion_accepted) {
-  return GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-      field_type, suggestion_accepted);
 }
 
 }  // namespace autofill::autofill_metrics

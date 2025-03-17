@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1122068467107743258">Serviciu</translation>
 <translation id="1275718070701477396">Selectat</translation>
 <translation id="138513070655895675">Treci la altă metodă de plată din acest element de meniu.</translation>
 <translation id="2129442648318919291">Gestionează adresele.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Adresa de expediere</translation>
 <translation id="8873105120914375071">Finalizezi achiziția mai rapid?</translation>
 <translation id="9032876013752408138">Completează automat informațiile mele</translation>
+<translation id="932327136139879170">Pagina de pornire</translation>
 <translation id="984275831282074731">Metode de plată</translation>
 </translationbundle>

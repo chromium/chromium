@@ -117,14 +117,19 @@ void ProductSpecificationsPageActionController::
     OnProductSpecificationsSetUpdate(
         const ProductSpecificationsSet& before_set,
         const ProductSpecificationsSet& after_set) {
+  bool is_in_set = base::Contains(after_set.urls(), current_url_);
   if (!product_group_for_page_.has_value()) {
+    if (is_in_set) {
+      most_recent_comparison_table_uuid_for_page_ = after_set.uuid();
+      NotifyHost();
+    }
     return;
   }
-  bool is_in_set = base::Contains(after_set.urls(), current_url_);
   // Hide the page action if the page has been added to a set that is not
   // recommended set.
   if (product_group_for_page_->uuid != after_set.uuid()) {
     if (is_in_set) {
+      most_recent_comparison_table_uuid_for_page_ = after_set.uuid();
       product_group_for_page_ = std::nullopt;
       is_in_recommended_set_ = false;
       NotifyHost();
@@ -168,7 +173,7 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
     is_in_recommended_set_ = true;
   } else {
     GURL current_url = current_url_;
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         existing_url_infos, [&current_url](const UrlInfo& query_url_info) {
           return query_url_info.url == current_url;
         });
@@ -212,9 +217,20 @@ ProductSpecificationsPageActionController::GetComparisonSetName() {
 }
 
 GURL ProductSpecificationsPageActionController::GetComparisonTableURL() {
-  CHECK(product_group_for_page_.has_value());
-  return commerce::GetProductSpecsTabUrlForID(
-      product_group_for_page_.value().uuid);
+  CHECK(product_group_for_page_.has_value() ||
+        most_recent_comparison_table_uuid_for_page_.has_value());
+
+  if (most_recent_comparison_table_uuid_for_page_.has_value()) {
+    return commerce::GetProductSpecsTabUrlForID(
+        most_recent_comparison_table_uuid_for_page_.value());
+  }
+
+  if (product_group_for_page_.has_value()) {
+    return commerce::GetProductSpecsTabUrlForID(
+        product_group_for_page_.value().uuid);
+  }
+
+  NOTREACHED();
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

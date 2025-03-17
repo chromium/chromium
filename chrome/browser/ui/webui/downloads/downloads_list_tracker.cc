@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string>
@@ -16,7 +17,6 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,13 +30,11 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -49,7 +47,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
@@ -121,8 +119,6 @@ downloads::mojom::TailoredWarningType GetTailoredWarningType(
       return downloads::mojom::TailoredWarningType::kSuspiciousArchive;
     case TailoredWarningType::kCookieTheft:
       return downloads::mojom::TailoredWarningType::kCookieTheft;
-    case TailoredWarningType::kCookieTheftWithAccountInfo:
-      return downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo;
     case TailoredWarningType::kNoTailoredWarning:
       return downloads::mojom::TailoredWarningType::
           kNoApplicableTailoredWarningType;
@@ -130,7 +126,7 @@ downloads::mojom::TailoredWarningType GetTailoredWarningType(
 }
 
 downloads::mojom::SafeBrowsingState GetSafeBrowsingState(Profile* profile) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::SafeBrowsingState state =
       safe_browsing::GetSafeBrowsingState(*profile->GetPrefs());
   switch (state) {
@@ -251,7 +247,7 @@ int DownloadsListTracker::NumDangerousItemsSent() const {
   auto sent_items_end_it = sorted_items_.begin();
   std::advance(sent_items_end_it, sent_to_page_);
 
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       sorted_items_.begin(), sent_items_end_it,
       [](download::DownloadItem* item) { return item->IsDangerous(); });
 }
@@ -260,7 +256,7 @@ download::DownloadItem* DownloadsListTracker::GetFirstActiveWarningItem() {
   auto sent_items_end_it = sorted_items_.begin();
   std::advance(sent_items_end_it, sent_to_page_);
 
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       sorted_items_.begin(), sent_items_end_it,
       [](download::DownloadItem* item) {
         return item->GetState() != download::DownloadItem::CANCELLED &&
@@ -467,10 +463,14 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->is_dangerous = download_item->IsDangerous();
   file_value->is_insecure = download_item->IsInsecure();
   file_value->is_reviewable =
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
       enterprise_connectors::ShouldPromptReviewForDownload(
           Profile::FromBrowserContext(
               content::DownloadItemUtils::GetBrowserContext(download_item)),
           download_item);
+#else
+      false;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   file_value->last_reason_text = base::UTF16ToUTF8(last_reason_text);
   file_value->percent = percent;
@@ -500,20 +500,6 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     DownloadItemWarningData::AddWarningActionEvent(
         download_item, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
         DownloadItemWarningData::WarningAction::SHOWN);
-  }
-
-  if (tailored_warning_type ==
-      downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo) {
-    if (auto* identity_manager =
-            IdentityManagerFactory::GetForProfile(download_model.profile());
-        identity_manager) {
-      std::string email =
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .email;
-      if (!email.empty()) {
-        file_value->account_email = std::move(email);
-      }
-    }
   }
 
   return file_value;

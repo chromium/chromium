@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -22,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,9 +39,8 @@ class AutofillExperimentsTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    pref_service_.registry()->RegisterBooleanPref(prefs::kAutofillHasSeenIban,
-                                                  false);
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
+    prefs::RegisterProfilePrefs(pref_service_.registry());
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
     mock_device_authenticator_ = std::make_unique<MockDeviceAuthenticator>();
   }
@@ -57,7 +59,7 @@ class AutofillExperimentsTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   syncer::TestSyncService sync_service_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<LogManager> log_manager_;
@@ -233,8 +235,6 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_Syncing_AutofillDisabled) {
 // is among the UserSelectableTypes.
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillSelected) {
-  base::test::ScopedFeatureList feature{
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Migrate Dice users.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
@@ -250,8 +250,6 @@ TEST_F(AutofillExperimentsTest,
 }
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled) {
-  base::test::ScopedFeatureList features{
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Migrate Dice users.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
@@ -273,8 +271,6 @@ TEST_F(AutofillExperimentsTest,
 TEST_F(
     AutofillExperimentsTest,
     IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled_DiceMigration) {
-  base::test::ScopedFeatureList feature{
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
   // Dice user not migrated to explicit signin.
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
@@ -285,38 +281,8 @@ TEST_F(
       IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
                                     kSignedInAndWalletSyncTransportEnabled));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// Tests that for transport mode users, when CONTACT_INFO is unavailable, credit
-// card upload is offered independently of the kAutofill (address autofill +
-// autocomplete) UserSelectableType.
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_TransportWithoutAddresses_AutofillSelected) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill,
-                 syncer::UserSelectableType::kPayments});
-  EXPECT_TRUE(
-      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
-                                    kSignedInAndWalletSyncTransportEnabled));
-}
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_TransportWithoutAddresses_AutofillDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPayments});
-  EXPECT_TRUE(
-      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
-                                    kSignedInAndWalletSyncTransportEnabled));
-}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncServiceUsingExplicitPassphrase) {
@@ -389,5 +355,148 @@ TEST_F(
   EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 #endif
 }
+
+// Tests that setting and getting the AutofillSyncTransportOptIn works as
+// expected.
+// On mobile, no dedicated opt-in is required for WalletSyncTransport - the
+// user is always considered opted-in and thus this test doesn't make sense.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_GetAndSet) {
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
+  const CoreAccountId account2 = CoreAccountId::FromGaiaId(GaiaId("account2"));
+
+  // There should be no opt-in recorded at first.
+  ASSERT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+  ASSERT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account2));
+  // There should be no entry for the accounts in the dictionary.
+  EXPECT_TRUE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Set the opt-in for the first account.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account1, true);
+  EXPECT_TRUE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+  EXPECT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account2));
+  // There should only be one entry in the dictionary.
+  EXPECT_EQ(1U,
+            pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).size());
+
+  // Unset the opt-in for the first account.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account1, false);
+  EXPECT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+  EXPECT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account2));
+  // There should be no entry for the accounts in the dictionary.
+  EXPECT_TRUE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Set the opt-in for the second account.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account2, true);
+  EXPECT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+  EXPECT_TRUE(IsUserOptedInWalletSyncTransport(&pref_service_, account2));
+  // There should only be one entry in the dictionary.
+  EXPECT_EQ(1U,
+            pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).size());
+
+  // Set the opt-in for the first account too.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account1, true);
+  EXPECT_TRUE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+  EXPECT_TRUE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+  // There should be tow entries in the dictionary.
+  EXPECT_EQ(2U,
+            pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).size());
+}
+
+TEST_F(AutofillExperimentsTest, WalletSyncTransportPrefExplicitSignin) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRemovePaymentsButterDropdown};
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
+
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
+  // There should be no opt-in recorded at first.
+  ASSERT_FALSE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+
+  // Explicit browser signin opts the user in.
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+  EXPECT_TRUE(IsUserOptedInWalletSyncTransport(&pref_service_, account1));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+// Tests that AutofillSyncTransportOptIn is not stored using the plain text
+// account id.
+TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_UsesHashAccountId) {
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
+
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
+
+  // There should be no opt-in recorded at first.
+  EXPECT_TRUE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Set the opt-in for the first account.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account1, true);
+  EXPECT_FALSE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Make sure that the dictionary keys don't contain the account id.
+  const auto& dictionary =
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn);
+  EXPECT_EQ(std::nullopt, dictionary.FindInt(account1.ToString()));
+}
+
+// Tests that clearing the AutofillSyncTransportOptIn works as expected.
+TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_Clear) {
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
+
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
+  const CoreAccountId account2 = CoreAccountId::FromGaiaId(GaiaId("account2"));
+
+  // There should be no opt-in recorded at first.
+  EXPECT_TRUE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Set the opt-in for the first account.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account1, true);
+  EXPECT_FALSE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Set the opt-in for the second account.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account2, true);
+  EXPECT_FALSE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Clear all opt-ins. The dictionary should be empty.
+  prefs::ClearSyncTransportOptIns(&pref_service_);
+  EXPECT_TRUE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+}
+
+// Tests that the account id hash that we generate can be written and read from
+// JSON properly.
+TEST_F(AutofillExperimentsTest,
+       WalletSyncTransportPref_CanBeSetAndReadFromJSON) {
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
+
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));
+
+  // Set the opt-in for the first account.
+  SetUserOptedInWalletSyncTransport(&pref_service_, account1, true);
+  EXPECT_FALSE(
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  const base::Value::Dict& dictionary =
+      pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn);
+
+  std::string output_js;
+  ASSERT_TRUE(base::JSONWriter::Write(dictionary, &output_js));
+  EXPECT_EQ(dictionary, *base::JSONReader::Read(output_js));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillExperimentsTest,
+       FacilitatedPaymentsPixPref_DefaultValueSetToTrue) {
+  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kFacilitatedPaymentsPix));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

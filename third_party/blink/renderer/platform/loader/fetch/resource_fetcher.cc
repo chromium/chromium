@@ -366,16 +366,17 @@ int CompareResourcePriorities(const ResourcePriority& a,
   return a.intra_priority_value - b.intra_priority_value;
 }
 
-Resource* PopHighestPriorityVisibleResource(
+Resource* PopHighestPriorityDecodableResource(
     HeapHashSet<WeakMember<Resource>>& resources) {
   Resource* result = nullptr;
   for (Resource* resource : resources) {
-    const ResourcePriority& priority = resource->LastComputedPriority();
-    if (priority.visibility != ResourcePriority::kVisible) {
+    const ResourcePriority& priority = resource->PriorityFromObservers().first;
+    if (priority.visibility != ResourcePriority::kVisible ||
+        !resource->HasNonDegenerateSizeForDecode()) {
       continue;
     }
     if (!result || CompareResourcePriorities(
-                       priority, result->LastComputedPriority()) > 0) {
+                       priority, result->PriorityFromObservers().first) > 0) {
       result = resource;
     }
   }
@@ -1264,9 +1265,9 @@ ResourceFetcher::UpdateRequestForTransparentPlaceholderImage(
   // and block things we ought to block.
   if (Context().CheckAndEnforceCSPForRequest(
           resource_request.GetRequestContext(),
-          resource_request.GetRequestDestination(), params.Url(),
-          params.Options(), ReportingDisposition::kReport, params.Url(),
-          ResourceRequestHead::RedirectStatus::kNoRedirect) ==
+          resource_request.GetRequestDestination(), resource_request.GetMode(),
+          params.Url(), params.Options(), ReportingDisposition::kReport,
+          params.Url(), ResourceRequestHead::RedirectStatus::kNoRedirect) ==
       ResourceRequestBlockedReason::kCSP) {
     return ResourceRequestBlockedReason::kCSP;
   }
@@ -1382,6 +1383,33 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   const ResourceType resource_type = factory.GetType();
+  auto preloads_list_iterator = preloads_.end();
+  bool is_stale_revalidation = params.IsStaleRevalidation();
+
+  if (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
+    Context().ModifyRequestForMixedContentUpgrade(resource_request);
+    if (!resource_request.Url().IsValid()) {
+      auto* resource = ResourceForBlockedRequest(
+          params, factory, ResourceRequestBlockedReason::kOther, client);
+      StorePerformanceTimingInitiatorInformation(
+          resource, params.GetRenderBlockingBehavior());
+      auto info = resource_timing_info_map_.Take(resource);
+      if (!info.is_null()) {
+        PopulateAndAddResourceTimingInfo(
+            resource, info,
+            /*response_end=*/base::TimeTicks::Now());
+      }
+      return resource;
+    }
+
+    resource_request.SetCanChangeUrl(false);
+    if (!is_stale_revalidation && !archive_) {
+      preloads_list_iterator =
+          preloads_.find(PreloadKey(params.Url(), resource_type));
+      params.SetHasPreloadedResponseCandidate(preloads_list_iterator !=
+                                              preloads_.end());
+    }
+  }
 
   WebScopedVirtualTimePauser pauser;
 
@@ -1406,25 +1434,27 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   bool is_data_url = resource_request.Url().ProtocolIsData();
   bool is_static_data = is_data_url || archive_;
-  bool is_stale_revalidation = params.IsStaleRevalidation();
   DeferPolicy defer_policy = GetDeferPolicy(resource_type, params);
   // MHTML archives do not load from the network and must load immediately. Data
   // urls can also load immediately, except in cases when they should be
   // deferred.
+
   if (!is_stale_revalidation &&
       (archive_ || (is_data_url && defer_policy != DeferPolicy::kDefer))) {
-    prepare_helper.UpgradeForLoaderIfNecessary(pauser);
-    resource = CreateResourceForStaticData(params, factory);
-    if (resource) {
-      policy =
-          DetermineRevalidationPolicy(resource_type, params, *resource, true);
-    } else if (!is_data_url && archive_) {
-      // Abort the request if the archive doesn't contain the resource, except
-      // in the case of data URLs which might have resources such as fonts that
-      // need to be decoded only on demand. These data URLs are allowed to be
-      // processed using the normal ResourceFetcher machinery.
-      return ResourceForBlockedRequest(
-          params, factory, ResourceRequestBlockedReason::kOther, client);
+    if (!(is_data_url && params.HasPreloadedResponseCandidate())) {
+      prepare_helper.UpgradeForLoaderIfNecessary(pauser);
+      resource = CreateResourceForStaticData(params, factory);
+      if (resource) {
+        policy =
+            DetermineRevalidationPolicy(resource_type, params, *resource, true);
+      } else if (!is_data_url && archive_) {
+        // Abort the request if the archive doesn't contain the resource, except
+        // in the case of data URLs which might have resources such as fonts
+        // that need to be decoded only on demand. These data URLs are allowed
+        // to be processed using the normal ResourceFetcher machinery.
+        return ResourceForBlockedRequest(
+            params, factory, ResourceRequestBlockedReason::kOther, client);
+      }
     }
   }
 
@@ -1434,11 +1464,13 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation && !resource) {
     if (!prepare_helper.WasUpgradeForLoaderCalled() &&
-        preloads_.find(PreloadKey(params.Url(), resource_type)) !=
-            preloads_.end()) {
+        (params.HasPreloadedResponseCandidate() ||
+         (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
+          preloads_.find(PreloadKey(params.Url(), resource_type)) !=
+              preloads_.end()))) {
       prepare_helper.UpgradeForLoaderIfNecessary(pauser);
     }
-    resource = MatchPreload(params, resource_type);
+    resource = MatchPreload(params, resource_type, preloads_list_iterator);
     if (resource) {
       policy = RevalidationPolicy::kUse;
       prepare_helper.UpgradeForLoaderIfNecessary(pauser);
@@ -1593,7 +1625,16 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     ScheduleLoadingPotentiallyUnusedPreload(resource);
   }
 
-  if (policy != RevalidationPolicy::kUse) {
+  if (policy != RevalidationPolicy::kUse ||
+      (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() && is_data_url &&
+       defer_policy != DeferPolicy::kDefer && params.IsLinkPreload())) {
+    // If `resource` needs to be loaded, or is a data URL preloaded via a link
+    // element, and not a potentially unused preload, store it in the preloads
+    // list.
+    // Note: params.IsLinkPreload() indicates that this request was initiated
+    // from a `link rel=preload`, as opposed to resource->IsLinkPreload()
+    // which is also true if the resource was originally from a
+    // `link rel=preload` in a previous request.
     InsertAsPreloadIfNecessary(resource, params, resource_type);
   }
 
@@ -1824,13 +1865,17 @@ static bool IsDownloadOrStreamRequest(const ResourceRequest& request) {
   return request.DownloadToBlob() || request.UseStreamOnResponse();
 }
 
-Resource* ResourceFetcher::MatchPreload(const FetchParameters& params,
-                                        ResourceType type) {
+Resource* ResourceFetcher::MatchPreload(
+    const FetchParameters& params,
+    ResourceType type,
+    HeapHashMap<PreloadKey, Member<Resource>>::iterator it) {
   // TODO(crbug.com/1099975): PreloadKey should be modified to also take into
   // account the DOMWrapperWorld corresponding to the resource. This is because
   // we probably don't want to share preloaded resources across different
   // DOMWrapperWorlds to ensure predicatable behavior for preloads.
-  auto it = preloads_.find(PreloadKey(params.Url(), type));
+  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
+    it = preloads_.find(PreloadKey(params.Url(), type));
+  }
   if (it == preloads_.end()) {
     return nullptr;
   }
@@ -2776,18 +2821,18 @@ void ResourceFetcher::SetDefersLoading(LoaderFreezeMode mode) {
   }
 }
 
-void ResourceFetcher::UpdateAllImageResourcePriorities() {
-  TRACE_EVENT0(
-      "blink",
-      "ResourceLoadPriorityOptimizer::updateAllImageResourcePriorities");
+void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
+  TRACE_EVENT0("blink",
+               "ResourceLoadPriorityOptimizer::"
+               "UpdateImagePrioritiesAndSpeculativeDecodes");
 
-  // Force all images to update their LastComputedPriority.
+  // Update ResourcePriority for all resources.
   for (Resource* resource : speculative_decode_candidate_images_) {
-    resource->PriorityFromObservers();
+    resource->UpdateResourceInfoFromObservers();
   }
   speculative_decode_candidate_images_.erase_if(
       [](const WeakMember<Resource>& resource) -> bool {
-        return resource->LastComputedPriority().visibility ==
+        return resource->PriorityFromObservers().first.visibility ==
                ResourcePriority::kNotVisible;
       });
   MaybeStartSpeculativeImageDecode();
@@ -2803,6 +2848,7 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
       continue;
     }
 
+    resource->UpdateResourceInfoFromObservers();
     auto priorities = resource->PriorityFromObservers();
     ResourcePriority resource_priority = priorities.first;
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(
@@ -3185,8 +3231,8 @@ void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
   }
   // Find the highest priority image to decode.
   while (true) {
-    Resource* image_to_decode =
-        PopHighestPriorityVisibleResource(speculative_decode_candidate_images_);
+    Resource* image_to_decode = PopHighestPriorityDecodableResource(
+        speculative_decode_candidate_images_);
     if (!image_to_decode) {
       break;
     }
@@ -3535,8 +3581,11 @@ ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
     return fetcher_.UpdateRequestForTransparentPlaceholderImage(params_);
   }
   ResourceRequest& resource_request = params_.MutableResourceRequest();
-  bundle_url_for_uuid_resources_ =
-      fetcher_.PrepareRequestForWebBundle(resource_request);
+  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
+      !params_.HasPreloadedResponseCandidate()) {
+    bundle_url_for_uuid_resources_ =
+        fetcher_.PrepareRequestForWebBundle(resource_request);
+  }
 
   ResourceType resource_type = factory_.GetType();
   const ResourceLoaderOptions& options = params_.Options();
@@ -3544,15 +3593,6 @@ ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
   DCHECK(options.synchronous_policy == kRequestAsynchronously ||
          resource_type == ResourceType::kRaw ||
          resource_type == ResourceType::kXSLStyleSheet);
-
-  if (!RuntimeEnabledFeatures::
-          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
-    params_.OverrideContentType(factory_.ContentType());
-    return PrepareResourceRequest(
-        resource_type, fetcher_.properties_->GetFetchClientSettingsObject(),
-        params_, fetcher_.Context(), pauser, *this,
-        bundle_url_for_uuid_resources_);
-  }
 
   std::optional<ResourceRequestBlockedReason> blocked_reason =
       PrepareResourceRequestForCacheAccess(
@@ -3578,8 +3618,8 @@ void ResourceFetcher::ResourcePrepareHelper::UpgradeForLoaderIfNecessary(
   }
   was_upgrade_for_loader_called_ = true;
   params_.OverrideContentType(factory_.ContentType());
-  UpgradeResourceRequestForLoaderNew(factory_.GetType(), params_,
-                                     fetcher_.Context(), *this, pauser);
+  UpgradeResourceRequestForLoader(factory_.GetType(), params_,
+                                  fetcher_.Context(), *this, pauser);
 }
 
 ResourceLoadPriority

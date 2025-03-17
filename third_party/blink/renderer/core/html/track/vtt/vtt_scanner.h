@@ -164,7 +164,7 @@ class CORE_EXPORT VTTScanner {
 template <bool predicate(UChar)>
 inline size_t VTTScanner::CountWhile() const {
   return Invoke([](const auto& buf) {
-    auto it = base::ranges::find_if_not(buf, predicate);
+    auto it = std::ranges::find_if_not(buf, predicate);
     return std::distance(buf.begin(), it);
   });
 }
@@ -172,7 +172,7 @@ inline size_t VTTScanner::CountWhile() const {
 template <bool predicate(UChar)>
 inline size_t VTTScanner::CountUntil() const {
   return Invoke([](const auto& buf) {
-    auto it = base::ranges::find_if(buf, predicate);
+    auto it = std::ranges::find_if(buf, predicate);
     return std::distance(buf.begin(), it);
   });
 }

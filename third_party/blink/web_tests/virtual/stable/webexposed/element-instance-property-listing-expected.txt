@@ -29,6 +29,7 @@ namespace http://www.w3.org/1999/xhtml
     property animate
     property append
     property appendChild
+    property ariaActiveDescendantElement
     property ariaAtomic
     property ariaAutoComplete
     property ariaBrailleLabel
@@ -39,15 +40,21 @@ namespace http://www.w3.org/1999/xhtml
     property ariaColIndex
     property ariaColIndexText
     property ariaColSpan
+    property ariaControlsElements
     property ariaCurrent
+    property ariaDescribedByElements
     property ariaDescription
+    property ariaDetailsElements
     property ariaDisabled
+    property ariaErrorMessageElements
     property ariaExpanded
+    property ariaFlowToElements
     property ariaHasPopup
     property ariaHidden
     property ariaInvalid
     property ariaKeyShortcuts
     property ariaLabel
+    property ariaLabelledByElements
     property ariaLevel
     property ariaLive
     property ariaModal
@@ -151,6 +158,7 @@ namespace http://www.w3.org/1999/xhtml
     property lookupNamespaceURI
     property lookupPrefix
     property matches
+    property moveBefore
     property namespaceURI
     property nextElementSibling
     property nextSibling
@@ -183,6 +191,7 @@ namespace http://www.w3.org/1999/xhtml
     property onchange
     property onclick
     property onclose
+    property oncommand
     property oncontentvisibilityautostatechange
     property oncontextlost
     property oncontextmenu
@@ -334,6 +343,7 @@ namespace http://www.w3.org/1999/xhtml
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
+    property when
     property writingSuggestions
 html element a
     property attributionSrc
@@ -481,6 +491,8 @@ html element br
     property clear
 html element button
     property checkValidity
+    property command
+    property commandForElement
     property disabled
     property form
     property formAction
@@ -540,7 +552,9 @@ html element details
 html element dfn
 html element dialog
     property close
+    property closedBy
     property open
+    property requestClose
     property returnValue
     property show
     property showModal
@@ -691,6 +705,7 @@ html element img
     property alt
     property attributionSrc
     property border
+    property browsingTopics
     property complete
     property crossOrigin
     property currentSrc
@@ -981,6 +996,7 @@ html element select
     property validity
     property value
     property willValidate
+html element selectedcontent
 html element slot
     property assign
     property assignedElements
@@ -1254,6 +1270,7 @@ namespace http://www.w3.org/2000/svg
     property animate
     property append
     property appendChild
+    property ariaActiveDescendantElement
     property ariaAtomic
     property ariaAutoComplete
     property ariaBrailleLabel
@@ -1264,15 +1281,21 @@ namespace http://www.w3.org/2000/svg
     property ariaColIndex
     property ariaColIndexText
     property ariaColSpan
+    property ariaControlsElements
     property ariaCurrent
+    property ariaDescribedByElements
     property ariaDescription
+    property ariaDetailsElements
     property ariaDisabled
+    property ariaErrorMessageElements
     property ariaExpanded
+    property ariaFlowToElements
     property ariaHasPopup
     property ariaHidden
     property ariaInvalid
     property ariaKeyShortcuts
     property ariaLabel
+    property ariaLabelledByElements
     property ariaLevel
     property ariaLive
     property ariaModal
@@ -1361,6 +1384,7 @@ namespace http://www.w3.org/2000/svg
     property lookupNamespaceURI
     property lookupPrefix
     property matches
+    property moveBefore
     property namespaceURI
     property nextElementSibling
     property nextSibling
@@ -1388,6 +1412,7 @@ namespace http://www.w3.org/2000/svg
     property onchange
     property onclick
     property onclose
+    property oncommand
     property oncontentvisibilityautostatechange
     property oncontextlost
     property oncontextmenu
@@ -1532,6 +1557,7 @@ namespace http://www.w3.org/2000/svg
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
+    property when
 svg element a
     property farthestViewportElement
     property getBBox
@@ -1539,6 +1565,8 @@ svg element a
     property getScreenCTM
     property href
     property nearestViewportElement
+    property rel
+    property relList
     property requiredExtensions
     property systemLanguage
     property target

@@ -13,7 +13,6 @@
 #include "base/containers/adapters.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -23,7 +22,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/view.h"
@@ -51,25 +50,18 @@ AXVirtualView* AXVirtualView::GetFromId(int32_t id) {
   return it != id_map.end() ? it->second : nullptr;
 }
 
-AXVirtualView::AXVirtualView() {
-  GetIdMap()[unique_id_.Get()] = this;
+AXVirtualView::AXVirtualView() : ViewAccessibility(nullptr) {
+  GetIdMap()[ViewAccessibility::GetUniqueId()] = this;
   ax_platform_node_ = ui::AXPlatformNode::Create(this);
   DCHECK(ax_platform_node_);
-  custom_data_.AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                  GetViewClassName());
+  SetClassName(GetViewClassName());
 }
 
 AXVirtualView::~AXVirtualView() {
-  GetIdMap().erase(unique_id_.Get());
+  GetIdMap().erase(ViewAccessibility::GetUniqueId());
   DCHECK(!parent_view_ || !virtual_parent_view_)
       << "Either |parent_view_| or |virtual_parent_view_| could be set but "
          "not both.";
-
-  if (ax_platform_node_) {
-    // Clear ax_platform_node_ and return another raw_ptr instance that is
-    // allowed to dangle.
-    ax_platform_node_.ExtractAsDangling()->Destroy();
-  }
 
 #if defined(USE_AURA)
   if (ax_aura_obj_cache_) {
@@ -101,9 +93,16 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   view->virtual_parent_view_ = this;
   children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
                    std::move(view));
-  if (GetOwnerView()) {
-    GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                             true);
+  views::View* owner_view = GetOwnerView();
+
+  AXVirtualView* added_view = children_[index].get();
+  added_view->OnViewHasNewAncestor(
+      /* ancestor_focusable */ data().HasState(ax::mojom::State::kFocusable) ||
+      has_focusable_ancestor());
+
+  if (owner_view) {
+    owner_view->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kChildrenChanged, true);
   }
 }
 
@@ -128,8 +127,8 @@ void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
   children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
                    std::move(child));
 
-  GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                           true);
+  GetOwnerView()->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged, true);
 }
 
 std::unique_ptr<AXVirtualView> AXVirtualView::RemoveFromParentView() {
@@ -166,14 +165,13 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
   children_.erase(children_.begin() +
                   static_cast<ptrdiff_t>(cur_index.value()));
   child->virtual_parent_view_ = nullptr;
-  child->populate_data_callback_.Reset();
 
   if (GetOwnerView()) {
     if (focus_changed) {
       GetOwnerView()->GetViewAccessibility().OverrideFocus(nullptr);
     }
-    GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                             true);
+    GetOwnerView()->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kChildrenChanged, true);
   }
 
   return child;
@@ -199,7 +197,7 @@ std::optional<size_t> AXVirtualView::GetIndexOf(
     const AXVirtualView* view) const {
   DCHECK(view);
   const auto iter =
-      base::ranges::find(children_, view, &std::unique_ptr<AXVirtualView>::get);
+      std::ranges::find(children_, view, &std::unique_ptr<AXVirtualView>::get);
   return iter != children_.end()
              ? std::make_optional(static_cast<size_t>(iter - children_.begin()))
              : std::nullopt;
@@ -214,7 +212,15 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeObject() const {
   return ax_platform_node_->GetNativeViewAccessible();
 }
 
-void AXVirtualView::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
+void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
+                                bool send_native_event) {
+  // If `ready_to_notify_events_` is false, it means we are initializing
+  // property values. In this specific case, we do not want to notify platform
+  // assistive technologies that a property has changed.
+  if (!ready_to_notify_events_) {
+    return;
+  }
+
   DCHECK(ax_platform_node_);
   if (event_type == ax::mojom::Event::kAlert) {
     CHECK(ui::IsAlert(GetRole()))
@@ -234,61 +240,17 @@ void AXVirtualView::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   ax_platform_node_->NotifyAccessibilityEvent(event_type);
 
   // This is used on platforms that don't have a native accessibility API.
-  AXEventManager::Get()->NotifyVirtualViewEvent(this, event_type);
+  AXUpdateNotifier::Get()->NotifyVirtualViewEvent(this, event_type);
 }
 
-ui::AXNodeData& AXVirtualView::GetCustomData() {
-  return custom_data_;
-}
-
-void AXVirtualView::SetPopulateDataCallback(
-    base::RepeatingCallback<void(ui::AXNodeData*)> callback) {
-  populate_data_callback_ = std::move(callback);
-}
-
-void AXVirtualView::UnsetPopulateDataCallback() {
-  populate_data_callback_.Reset();
+void AXVirtualView::NotifyDataChanged() {
+  AXUpdateNotifier::Get()->NotifyVirtualViewDataChanged(this);
 }
 
 // ui::AXPlatformNodeDelegate
 
 const ui::AXNodeData& AXVirtualView::GetData() const {
-  // Make a copy of our |custom_data_| so that any modifications will not be
-  // made to the data that users of this class will be manipulating.
-  static ui::AXNodeData node_data;
-  node_data = custom_data_;
-
-  node_data.id = GetUniqueId();
-
-  if (!GetOwnerView() || !GetOwnerView()->GetEnabled()) {
-    node_data.SetRestriction(ax::mojom::Restriction::kDisabled);
-  }
-
-  if (!GetOwnerView() || !GetOwnerView()->IsDrawn()) {
-    node_data.AddState(ax::mojom::State::kInvisible);
-  }
-
-  if (GetOwnerView() && GetOwnerView()->context_menu_controller()) {
-    node_data.AddAction(ax::mojom::Action::kShowContextMenu);
-  }
-
-  if (populate_data_callback_ && GetOwnerView()) {
-    populate_data_callback_.Run(&node_data);
-  }
-
-  if (pruned_) {
-    node_data.AddState(ax::mojom::State::kIgnored);
-  }
-
-  // According to the ARIA spec, the node should not be ignored if it is
-  // focusable. This is to ensure that the focusable node is both understandable
-  // and operable.
-  if (node_data.HasState(ax::mojom::State::kIgnored) &&
-      node_data.HasState(ax::mojom::State::kFocusable)) {
-    node_data.RemoveState(ax::mojom::State::kIgnored);
-  }
-
-  return node_data;
+  return data();
 }
 
 size_t AXVirtualView::GetChildCount() const {
@@ -443,7 +405,7 @@ ui::AXPlatformNode* AXVirtualView::GetFromNodeID(int32_t id) {
 
 bool AXVirtualView::AccessibilityPerformAction(const ui::AXActionData& data) {
   bool result = false;
-  if (custom_data_.HasAction(data.action)) {
+  if (ViewAccessibility::data().HasAction(data.action)) {
     result = HandleAccessibleAction(data);
   }
   if (!result && GetOwnerView()) {
@@ -460,10 +422,6 @@ bool AXVirtualView::ShouldIgnoreHoveredStateForTesting() {
 bool AXVirtualView::IsOffscreen() const {
   // TODO(nektar): Implement.
   return false;
-}
-
-ui::AXPlatformNodeId AXVirtualView::GetUniqueId() const {
-  return unique_id_;
 }
 
 // Virtual views need to implement this function in order for accessibility
@@ -570,6 +528,7 @@ AXVirtualViewWrapper* AXVirtualView::GetOrCreateWrapper(
 
 void AXVirtualView::PruneVirtualSubtree() {
   pruned_ = true;
+  UpdateIgnoredState();
   for (auto& child : children()) {
     child->PruneVirtualSubtree();
   }
@@ -577,8 +536,214 @@ void AXVirtualView::PruneVirtualSubtree() {
 
 void AXVirtualView::UnpruneVirtualSubtree() {
   pruned_ = false;
+  UpdateIgnoredState();
   for (auto& child : children()) {
     child->UnpruneVirtualSubtree();
+  }
+}
+
+void AXVirtualView::ForceSetIsFocusable(bool focusable) {
+  should_be_focusable_ = focusable;
+
+  // To align with previous behavior, if a virtual view is set to explicitly
+  // focusable, we must make sure it is not ignored.
+  if (focusable) {
+    data_.RemoveState(ax::mojom::State::kIgnored);
+  } else {
+    if (should_be_ignored_) {
+      data_.AddState(ax::mojom::State::kIgnored);
+    }
+  }
+
+  UpdateFocusableState();
+}
+
+void AXVirtualView::ResetIsFocusable() {
+  should_be_focusable_ = std::nullopt;
+  UpdateFocusableState();
+}
+
+void AXVirtualView::OnViewHasNewAncestor(bool ancestor_focusable) {
+  // We need to make sure that we are propagating the right values down the
+  // recursive calls. For the invisible state, this means we look at the direct
+  // parent, rather than the new ancestor, which in subsequent recursive calls
+  // could be a root of an entire tree that is getting reparented. This is
+  // because if at some point during the recursion, the parent is invisible, it
+  // should affect its descendants, even if the new ancestor is not. For
+  // example, if we have a tree like this: A (visible)
+  //   B (invisible)
+  // and then a separate tree:
+  // C (invisible)
+  //   D (invisible by inheritance of C)
+  // and then we reparent C to be a child of A:
+  // A (visible)
+  //   B (invisible)
+  //   C (invisible)
+  //     D (invisible by inheritance of C)
+  // Even though `A` is visible ( A would be the new ancestor), we need to make
+  // sure that during the recursion, we don't mark `D` as visible, since it's
+  // parent is invisible.
+  bool parent_invisible = false;
+  if (parent_view()) {
+    CHECK(parent_view()->view());
+    parent_invisible = parent_view()->is_invisible_by_inheritance() ||
+                       !parent_view()->view()->GetVisible();
+  } else {
+    CHECK(virtual_parent_view());
+    // We only need to check if the parent view is drawn, because the accessible
+    // invisible state does not get propagated down the hierarchy.
+    parent_invisible = !virtual_parent_view()->parent_view_is_drawn();
+  }
+
+  parent_view_is_drawn_ = !parent_invisible;
+
+  UpdateInvisibleState();
+
+  // We only want to propagate the `ancestor_focusable` value if it's true. This
+  // is because if this view is unfocusable, and it gets added to a tree with a
+  // focusable ancestor, it should now be marked as ignored. However, being
+  // added to a tree with an unfocusable ancestor doesn't affect the ignored
+  // state of this view or its descendants.
+  if (ancestor_focusable) {
+    SetHasFocusableAncestor(ancestor_focusable);
+  }
+
+  UpdateReadyToNotifyEvents();
+  for (auto& child : children_) {
+    child->OnViewHasNewAncestor(ancestor_focusable);
+  }
+}
+
+void AXVirtualView::UpdateFocusableState() {
+  bool is_focusable =
+      (GetIsEnabled() && !data().HasState(ax::mojom::State::kInvisible) &&
+       !ViewAccessibility::GetIsIgnored());
+
+  if (should_be_focusable_.has_value()) {
+    is_focusable = should_be_focusable_.value();
+  }
+
+  SetState(ax::mojom::State::kFocusable, is_focusable);
+}
+
+void AXVirtualView::UpdateInvisibleState() {
+  bool is_invisible = !parent_view_is_drawn_ || should_be_invisible_;
+  SetState(ax::mojom::State::kInvisible, is_invisible);
+  UpdateFocusableState();
+}
+
+void AXVirtualView::OnWidgetClosing(Widget* widget) {
+  // The RootView's ViewAccessibility should be the only registered
+  // WidgetObserver.
+  CHECK_EQ(GetOwnerView(), widget->GetRootView());
+  SetWidgetClosedRecursive(widget, true);
+}
+
+void AXVirtualView::OnWidgetDestroyed(Widget* widget) {
+  // The RootView's ViewAccessibility should be the only registered
+  // WidgetObserver.
+  CHECK(widget->GetRootView());
+  CHECK_EQ(GetOwnerView(), widget->GetRootView());
+  SetWidgetClosedRecursive(widget, true);
+}
+
+void AXVirtualView::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
+  CHECK(widget);
+  DCHECK_EQ(widget, GetOwnerView()->GetWidget());
+  if (widget == old_widget) {
+    return;
+  }
+
+  // There's a chance we are reparenting a view that was previously a root
+  // view in another widget, if so we need to remove it as an observer of the
+  // old widget.
+  if (old_widget && old_widget != widget) {
+    old_widget->RemoveObserver(this);
+  }
+
+  // If we have already marked `is_widget_closed_` as true, then there's a
+  // chance that the view was reparented to a non-closed widget. If so, we must
+  // update `is_widget_closed_` in case the new widget is not closed.
+  SetWidgetClosedRecursive(widget, widget->IsClosed());
+}
+
+void AXVirtualView::UpdateIgnoredState() {
+// TODO(crbug.com/371237539): In ChromeOS, its not an expectation that being
+// a view unfocusable descendant of a focusable ancestor will make the view
+// ignored.
+#if !BUILDFLAG(IS_CHROMEOS)
+  bool is_ignored =
+      should_be_ignored_ || pruned_ ||
+      GetCachedRole() == ax::mojom::Role::kNone ||
+      (has_focusable_ancestor_ &&
+       (should_be_focusable_.has_value() && !should_be_focusable_.value()));
+
+  if (should_be_focusable_.has_value()) {
+    is_ignored = is_ignored && !should_be_focusable_.value();
+  }
+#else
+  bool is_ignored =
+      should_be_ignored_ || pruned_ || data().role == ax::mojom::Role::kNone;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  SetState(ax::mojom::State::kIgnored, is_ignored);
+  UpdateFocusableState();
+}
+
+void AXVirtualView::UpdateReadyToNotifyEvents() {
+  auto* parent = parent_view() ? parent_view() : virtual_parent_view();
+  if (parent && parent->IsReadyToNotifyEvents()) {
+    SetReadyToNotifyEvents();
+  }
+}
+
+void AXVirtualView::UpdateParentViewIsDrawnRecursive(
+    const views::View* initial_view,
+    bool parent_view_is_drawn) {
+  parent_view_is_drawn_ = parent_view_is_drawn;
+  UpdateInvisibleState();
+
+  // Now we do the same for any virtual children.
+  for (auto& child : children_) {
+    child->UpdateParentViewIsDrawnRecursive(initial_view, parent_view_is_drawn);
+  }
+}
+
+void AXVirtualView::SetIsEnabled(bool enabled) {
+  if (enabled == GetIsEnabled()) {
+    return;
+  }
+
+  if (!enabled) {
+    data_.SetRestriction(ax::mojom::Restriction::kDisabled);
+  } else if (data_.GetRestriction() == ax::mojom::Restriction::kDisabled) {
+    // Take into account the possibility that the View is marked as readonly
+    // but enabled. In other words, we can't just remove all restrictions,
+    // unless the View is explicitly marked as disabled. Note that readonly is
+    // another restriction state in addition to enabled and disabled, (see
+    // `ax::mojom::Restriction`).
+    data_.SetRestriction(ax::mojom::Restriction::kNone);
+  }
+}
+
+void AXVirtualView::SetShowContextMenu(bool show_context_menu) {
+  if (show_context_menu) {
+    data_.AddAction(ax::mojom::Action::kShowContextMenu);
+  } else {
+    data_.RemoveAction(ax::mojom::Action::kShowContextMenu);
+  }
+}
+
+void AXVirtualView::SetIsEnabledRecursive(bool enabled) {
+  SetIsEnabled(enabled);
+  for (auto& child : children_) {
+    child->SetIsEnabledRecursive(enabled);
+  }
+}
+
+void AXVirtualView::SetShowContextMenuRecursive(bool show_context_menu) {
+  SetShowContextMenu(show_context_menu);
+  for (auto& child : children_) {
+    child->SetShowContextMenuRecursive(show_context_menu);
   }
 }
 }  // namespace views

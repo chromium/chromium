@@ -27,11 +27,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
 #include "base/auto_reset.h"
@@ -128,12 +123,10 @@ static bool MatchesMultiSelectFocusPseudoClass(const Element& element) {
 
 static bool MatchesTagName(const Element& element,
                            const QualifiedName& tag_q_name) {
-  if (tag_q_name == AnyQName()) {
-    return true;
-  }
+  DCHECK_NE(tag_q_name, AnyQName());
   const AtomicString& local_name = tag_q_name.LocalName();
-  if (local_name != CSSSelector::UniversalSelectorAtom() &&
-      local_name != element.localName()) {
+  DCHECK_NE(local_name, CSSSelector::UniversalSelectorAtom());
+  if (local_name != element.localName()) {
     if (element.IsHTMLElement() || !IsA<HTMLDocument>(element.GetDocument())) {
       return false;
     }
@@ -144,6 +137,16 @@ static bool MatchesTagName(const Element& element,
     if (element.TagQName().LocalNameUpper() != tag_q_name.LocalNameUpper()) {
       return false;
     }
+  }
+  const AtomicString& namespace_uri = tag_q_name.NamespaceURI();
+  return namespace_uri == g_star_atom ||
+         namespace_uri == element.namespaceURI();
+}
+
+static bool MatchesUniversalTagName(const Element& element,
+                                    const QualifiedName& tag_q_name) {
+  if (tag_q_name == AnyQName()) {
+    return true;
   }
   const AtomicString& namespace_uri = tag_q_name.NamespaceURI();
   return namespace_uri == g_star_atom ||
@@ -174,10 +177,19 @@ bool IsAtShadowHost(const SelectorChecker::SelectorCheckingContext& context) {
 // of that tree. (Keeping in mind that the host is effectively the root of that
 // tree for selector matching purposes.)
 //
+// Note that even when we are *not* matching in the context of a shadow tree
+// (context.tree_scope=nullptr), context.element may still be an element
+// in a shadow tree (specifically, a UA shadow tree). For those cases we must
+// not escape the tree, since we have UA rules that rely on this behavior.
+// TODO(crbug.com/396459461): Find a better solution for styling UA shadows.
+//
 // [1] https://drafts.csswg.org/css-scoping-1/#in-the-context-of-a-shadow-tree
 
 static Element* ParentElement(
     const SelectorChecker::SelectorCheckingContext& context) {
+  if (!context.tree_scope) {
+    return context.element->parentElement();
+  }
   if (IsAtShadowHost(context)) {
     return nullptr;
   }
@@ -322,17 +334,20 @@ namespace {
 
 PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
                                           const ComputedStyle& style) {
+  if (argument == AtomicString("*")) {
+    return kPseudoIdScrollButton;
+  }
   if (argument == AtomicString("block-start")) {
     return kPseudoIdScrollButtonBlockStart;
-  }
-  if (argument == AtomicString("block-end")) {
-    return kPseudoIdScrollButtonBlockEnd;
   }
   if (argument == AtomicString("inline-start")) {
     return kPseudoIdScrollButtonInlineStart;
   }
   if (argument == AtomicString("inline-end")) {
     return kPseudoIdScrollButtonInlineEnd;
+  }
+  if (argument == AtomicString("block-end")) {
+    return kPseudoIdScrollButtonBlockEnd;
   }
   PhysicalToLogical<bool> mapping(
       style.GetWritingDirection(), argument == AtomicString("up"),
@@ -341,14 +356,14 @@ PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
   if (mapping.BlockStart()) {
     return kPseudoIdScrollButtonBlockStart;
   }
-  if (mapping.BlockEnd()) {
-    return kPseudoIdScrollButtonBlockEnd;
-  }
   if (mapping.InlineStart()) {
     return kPseudoIdScrollButtonInlineStart;
   }
-  CHECK(mapping.InlineEnd());
-  return kPseudoIdScrollButtonInlineEnd;
+  if (mapping.InlineEnd()) {
+    return kPseudoIdScrollButtonInlineEnd;
+  }
+  CHECK(mapping.BlockEnd());
+  return kPseudoIdScrollButtonBlockEnd;
 }
 
 bool MatchScrollButton(const Element& element,
@@ -361,6 +376,9 @@ bool MatchScrollButton(const Element& element,
     result.dynamic_pseudo = kPseudoIdScrollButton;
     return true;
   }
+  if (!element.IsScrollButtonPseudoElement()) {
+    return false;
+  }
   const ComputedStyle* style = element.ParentComputedStyle();
   CHECK(style);
   PseudoId pseudo_id =
@@ -368,7 +386,8 @@ bool MatchScrollButton(const Element& element,
   // Check that pseudo ids match when checking for pseudo element,
   // but always match if checking for regular element to set the style
   // flag.
-  return element.GetPseudoId() == pseudo_id;
+  return pseudo_id == kPseudoIdScrollButton ||
+         element.GetPseudoId() == pseudo_id;
 }
 
 bool NeedsScopeActivation(
@@ -828,6 +847,16 @@ static bool AnyAttributeMatches(Element& element,
   // localName().
   element.SynchronizeAttribute(selector_attr.LocalName());
 
+#if !DCHECK_IS_ON()
+  // In non-debug builds, we test the Bloom filter here and exit early
+  // if the attribute could not exist on the element. For non-debug builds,
+  // we go through the entire normal operation but verify that the Bloom
+  // filter would not erroneously reject a match.
+  if (!element.CouldHaveAttribute(selector_attr)) {
+    return false;
+  }
+#endif
+
   // NOTE: For kAttributeSet, this is a bogus pointer but never used.
   const AtomicString& selector_value = selector.Value();
 
@@ -860,6 +889,15 @@ static bool AnyAttributeMatches(Element& element,
         continue;
       }
     }
+
+#if DCHECK_IS_ON()
+    // NOTE: Even if the value doesn't match, we want to check that the
+    // attribute name was properly found.
+    DCHECK(element.CouldHaveAttribute(selector_attr))
+        << element << " should have contained attribute " << selector_attr
+        << ", Bloom bits on element are "
+        << element.AttributeBloomFilterForDebug();
+#endif
 
     if (AttributeValueMatches(attribute_item, match, selector_value,
                               case_insensitive)) {
@@ -909,6 +947,8 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   switch (selector.Match()) {
     case CSSSelector::kTag:
       return MatchesTagName(element, selector.TagQName());
+    case CSSSelector::kUniversalTag:
+      return MatchesUniversalTagName(element, selector.TagQName());
     case CSSSelector::kClass:
       return element.HasClass() &&
              element.ClassNames().Contains(selector.Value());
@@ -1678,8 +1718,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           return false;
         }
       }
-      return selector.MatchNth(NthIndexCache::NthChildIndex(
-          element, selector.SelectorList(), this, &context));
+      return selector.MatchNth(
+          NthIndexCache::NthChildIndex(element, selector.SelectorList(), this,
+                                       &context, NthIndexData::kLightTree));
     case CSSSelector::kPseudoNthOfType:
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent = element.ParentElementOrDocumentFragment()) {
@@ -1704,7 +1745,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         }
       }
       return selector.MatchNth(NthIndexCache::NthLastChildIndex(
-          element, selector.SelectorList(), this, &context));
+          element, selector.SelectorList(), this, &context,
+          NthIndexData::kLightTree));
     }
     case CSSSelector::kPseudoNthLastOfType: {
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
@@ -1802,6 +1844,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return true;
       }
       return element.HasFocusWithin();
+    case CSSSelector::kPseudoHasInterest:
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          element.GetDocument().GetExecutionContext()));
+      return element.HasInterest();
     case CSSSelector::kPseudoHasSlotted:
       DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());
       if (auto* slot = DynamicTo<HTMLSlotElement>(element)) {
@@ -2125,6 +2171,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoOpen:
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoOpen,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return true;
+      }
       if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
         return dialog->FastHasAttribute(html_names::kOpenAttr);
       } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
@@ -2362,13 +2413,13 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
 }
 
 static bool MatchesUAShadowElement(Element& element, const AtomicString& id) {
-  Element* originating_element =
+  Element& originating_element =
       element.IsPseudoElement()
           ? To<PseudoElement>(element).UltimateOriginatingElement()
-          : &element;
-  ShadowRoot* root = originating_element->ContainingShadowRoot();
+          : element;
+  ShadowRoot* root = originating_element.ContainingShadowRoot();
   return root && root->IsUserAgent() &&
-         originating_element->ShadowPseudoId() == id;
+         originating_element.ShadowPseudoId() == id;
 }
 
 bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
@@ -2539,11 +2590,11 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       // <pt-name-selector><pt-class-selector>, as in [name, class, class, ...]
       // so we check that all of its items excluding the first one are
       // contained in the pseudo element's classes (pseudo_ident_list_).
-      return base::ranges::all_of(
-          selector.IdentList().begin() + 1, selector.IdentList().end(),
-          [&](const AtomicString& class_from_selector) {
-            return base::Contains(pseudo_ident_list_, class_from_selector);
-          });
+      return std::ranges::all_of(base::span(selector.IdentList()).subspan(1ul),
+                                 [&](const AtomicString& class_from_selector) {
+                                   return base::Contains(pseudo_ident_list_,
+                                                         class_from_selector);
+                                 });
     }
     case CSSSelector::kPseudoScrollbarButton:
     case CSSSelector::kPseudoScrollbarCorner:

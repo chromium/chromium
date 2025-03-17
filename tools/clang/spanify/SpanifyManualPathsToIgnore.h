@@ -83,6 +83,60 @@ inline constexpr std::array kSpanifyManualPathsToIgnore = {
     // cannot
     // catch it even though glslang_tab.cpp.h is in third_party/
     "MachineIndependent/",
+
+    // Exclusion for potential performance reasons with the std::array rewrite.
+    // Please run additional performance benchmarks before rewriting these
+    // files. In particular the changes to WTF's vector.h
+    "skia/ext/",
+    "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.cc",
+    "third_party/blink/renderer/core/layout/inline/line_breaker.cc",
+    "third_party/blink/renderer/core/paint/box_border_painter.cc",
+    "third_party/blink/renderer/platform/image-decoders/",
+    "third_party/blink/renderer/platform/text/",
+    "third_party/blink/renderer/platform/wtf/",
+    "url/url_canon_host.cc",
+    "url/url_canon_path.cc",
+
+    // Exclude auto generated files. These are files that contain the string
+    // "This file is auto-generated from".
+    "gpu/GLES2/gl2chromium_autogen.h",
+    "gpu/command_buffer/client/gles2_implementation_impl_autogen.h",
+    "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h",
+    "gpu/command_buffer/client/raster_implementation_impl_autogen.h",
+    "gpu/command_buffer/client/raster_implementation_unittest_autogen.h",
+    "gpu/command_buffer/common/gles2_cmd_format_autogen.h",
+    "gpu/command_buffer/service/context_state_impl_autogen.h",
+    "gpu/command_buffer/service/gles2_cmd_decoder_autogen.h",
+    "gpu/command_buffer/service/gles2_cmd_decoder_unittest_2_autogen.h",
+    "gpu/command_buffer/service/raster_decoder_autogen.h",
+    "gpu/config/gpu_control_list_testing_autogen.cc",
+    "gpu/config/gpu_control_list_testing_autogen.h",
+    "gpu/config/gpu_control_list_testing_entry_enums_autogen.h",
+    "gpu/config/gpu_control_list_testing_exceptions_autogen.h",
+    "gpu/ipc/common/vulkan_types.mojom",
+    "gpu/ipc/common/vulkan_types_mojom_traits.cc",
+    "gpu/ipc/common/vulkan_types_mojom_traits.h",
+    "gpu/vulkan/vulkan_function_pointers.cc",
+    "gpu/vulkan/vulkan_function_pointers.h",
+    "ppapi/c/dev/ppb_opengles2ext_dev.h",
+    "ppapi/c/ppb_opengles2.h",
+    "ppapi/lib/gl/gles2/gles2.c",
+    "ppapi/shared_impl/ppb_opengles2_shared.cc",
+    "ui/gl/egl_bindings_autogen_mock.cc",
+    "ui/gl/egl_bindings_autogen_mock.h",
+    "ui/gl/gl_bindings_api_autogen_egl.h",
+    "ui/gl/gl_bindings_api_autogen_gl.h",
+    "ui/gl/gl_bindings_autogen_egl.cc",
+    "ui/gl/gl_bindings_autogen_egl.h",
+    "ui/gl/gl_bindings_autogen_gl.cc",
+    "ui/gl/gl_bindings_autogen_gl.h",
+    "ui/gl/gl_bindings_autogen_mock.cc",
+    "ui/gl/gl_bindings_autogen_mock.h",
+    "ui/gl/gl_enums_implementation_autogen.h",
+    "ui/gl/gl_mock_autogen_egl.h",
+    "ui/gl/gl_mock_autogen_gl.h",
+    "ui/gl/gl_stub_autogen_gl.cc",
+    "ui/gl/gl_stub_autogen_gl.h",
 };
 
 #endif  // TOOLS_CLANG_SPANIFY_SPANIFYMANUALPATHSTOIGNORE_H_

@@ -70,7 +70,7 @@ def GetSharedLibraryDependenciesLinux(binary):
 
   This implementation assumes that we're running on a Linux system."""
   ldd = subprocess.check_output(['ldd', binary]).decode('utf-8')
-  lib_re = re.compile('\t.* => (.+) \(.*\)$')
+  lib_re = re.compile(r'\t.* => (.+) \(.*\)$')
   result = []
   for line in ldd.splitlines():
     m = lib_re.match(line)
@@ -88,7 +88,7 @@ def _GetSharedLibraryDependenciesAndroidOrChromeOS(binary):
   arm64 device), so use that.
   """
   readelf = subprocess.check_output(['readelf', '-d', binary]).decode('utf-8')
-  lib_re = re.compile('Shared library: \[(.+)\]$')
+  lib_re = re.compile(r'Shared library: \[(.+)\]$')
   result = []
   binary_path = os.path.dirname(os.path.abspath(binary))
   for line in readelf.splitlines():
@@ -187,7 +187,7 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
 
   otool = subprocess.check_output([otool_path, '-Lm', binary],
                                   env=env).decode('utf-8').splitlines()
-  lib_re = re.compile('\t(.*) \(compatibility .*\)$')
+  lib_re = re.compile(r'\t(.*) \(compatibility .*\)$')
   deps = []
   for line in otool:
     m = lib_re.match(line)

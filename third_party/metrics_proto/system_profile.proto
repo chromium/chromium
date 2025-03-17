@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 49
+// Next tag: 50
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -635,21 +635,9 @@ message SystemProfileProto {
   // values were reported.
   // Next tag: 32
   message Stability {
-    // Total amount of time that the program was running, in seconds,
-    // since the last time a log was recorded, as measured using a client-side
-    // clock implemented via TimeTicks, which guarantees that it is monotonic
-    // and does not jump if the user changes their clock.  The TimeTicks
-    // implementation also makes the clock not count time the computer is
-    // suspended.
-    optional int64 incremental_uptime_sec = 1;
-
-    // Total amount of time that the program was running, in seconds,
-    // since startup, as measured using a client-side clock implemented
-    // via TimeTicks, which guarantees that it is monotonic and does not
-    // jump if the user changes their clock.  The TimeTicks implementation
-    // also makes the clock not count time the computer is suspended.
-    // This field was added for M-35.
-    optional int64 uptime_sec = 23;
+    // Deprecated Jan 2025.
+    reserved 1, 23;
+    reserved "incremental_uptime_sec", "uptime_sec";
 
     // Logged on Android only as of late Q2 2022. Used by only Android WebView.
     // Other platforms should use Stability.Counts2.
@@ -730,10 +718,10 @@ message SystemProfileProto {
   // is normally equal to the MetricsStateManager's initial_client_id_.
   optional string client_uuid = 34;
 
-  // The session's hash. At the beginning of a Chrome session (i.e. process
-  // startup), a random number will be generated, and all logs from that session
-  // (i.e. process) will have this field set to that number. This is kept track
-  // of properly even when creating logs from previous sessions (e.g. stability
+  // The session's hash. At the beginning of a session (i.e. process startup), a
+  // random number will be generated, and all logs from that session (i.e.
+  // process) will have this field set to that number. This is kept track of
+  // properly even when creating logs from previous sessions (e.g. stability
   // logs, and independent logs from PMA files), which is not the case for the
   // `session_id` field in ChromeUserMetricsExtension. A benefit of generating
   // a session hash this way (rather than an incremental counter) is that it can
@@ -743,19 +731,41 @@ message SystemProfileProto {
   // read it will return the default value of 0.
   optional fixed64 session_hash = 46;
 
-  // An ID/counter that is incremented every time Chrome is foregrounded or
-  // backgrounded.
-  // In combination with the `session_hash` field above, this field can be used
-  // to identify continuous foreground/background "periods". For example, if
-  // two records have the same `session_hash` and `fg_bg_id` values, then all
-  // the metrics contained within them are from the same foreground (or
-  // background) "period" -- i.e., there was no background (or foreground)
-  // action at any point during the two records.
-  // Note: This field is only set on mobile platforms (Android, WebView, iOS),
-  // and even then may be unset in certain edge cases where the continuity of a
-  // foreground/background "session" could not be properly determined.
-  // TODO: b/383881315 - Clarify some common questions/situations once the
-  // implementation is complete. See comments in cl/705639538 for examples.
+  // An ID/counter that is incremented every time the app is foregrounded or
+  // backgrounded. Note that this value is process-bound and resets each time
+  // the app is started. However, in combination with the `session_hash` field
+  // above, this field can be used to identify continuous foreground/background
+  // "periods". For example, if two records have the same `session_hash` and
+  // `fg_bg_id` values, then all the metrics contained within them are from the
+  // same foreground (or background) "period" -- i.e., there was no background
+  // (or foreground) action at any point during the two records.
+  //
+  // Note: This field is only set on mobile platforms (Android, WebView, iOS).
+  // Some caveats:
+  //  - Backgrounding/foregrounding also includes hiding/displaying an embedded
+  //    WebView within a hosting app.
+  //  - On Android, it's possible for Chrome to be launched and warmed up in the
+  //    background, e.g. by CCT. Metrics accumulated while in this state may
+  //    possibly be included in the same `fg_bg_id` as the first foreground
+  //    "period" from when the user eventually launches a CCT (or Chrome). This
+  //    is the only case where a given `fg_bg_id` will contain both foreground
+  //    and background metrics.
+  //
+  // WARNING: This field may be unset in certain edge cases where the continuity
+  // of a foreground/background "period" could not be properly determined. I.e.
+  // it is possible for a log to contain metrics from both a foreground and
+  // background period -- the `fg_bg_id` field will be unset in this case (the
+  // only exception being CCT warm-ups described above). These edge cases can
+  // happen quite easily, so please contact chrome-metrics-team@ before using
+  // this field for analysis. Some known edge cases include:
+  //  - The user backgrounding/foregrounding the app during the first log (first
+  //    ~15 seconds of the process), because it cannot be closed early.
+  //  - Going from background to foreground on WebView or iOS.
+  //  - Initial stability logs.
+  //  - Independent logs from PMA files.
+  //
+  // TODO: crbug.com/383881315 - Clarify some common questions/situations once
+  // the implementation is complete. See comments in cl/705639538 for examples.
   optional int32 fg_bg_id = 48;
 
   // Information about the A/V output device(s) (typically just a TV).
@@ -1403,4 +1413,74 @@ message SystemProfileProto {
   // Identifying information of Trusted Platform Module on the device. This
   // field is only filled in on Windows devices.
   optional TpmIdentifier tpm_identifier = 47;
+
+  message AccessibilityState {
+    enum AXMode {
+      // Native accessibility APIs, specific to each platform, are enabled.
+      // When this mode is set that indicates the presence of a third-party
+      // client accessing Chrome via accessibility APIs. However, unless one
+      // of the modes below is set, the contents of web pages will not be
+      // accessible.
+      NATIVE_APIS = 0;
+
+      // The renderer process will generate an accessibility tree containing
+      // basic information about all nodes, including role, name, value,
+      // state, and location. This is the minimum mode required in order for
+      // web contents to be accessible, and the remaining modes are meaningless
+      // unless this one is set.
+      //
+      // Note that sometimes this mode will be set when kNativeAPI is not, when
+      // the content layer embedder is providing accessibility support via some
+      // other mechanism other than what's implemented in content/browser.
+      WEB_CONTENTS = 1;
+
+      // The accessibility tree will contain inline text boxes, which are
+      // necessary to expose information about line breaks and word boundaries.
+      // Without this mode, you can retrieve the plaintext value of a text field
+      // but not the information about how it's broken down into lines.
+      //
+      // Note that when this mode is off it's still possible to request inline
+      // text boxes for a specific node on-demand, asynchronously.
+      INLINE_TEXT_BOXES = 2;
+
+      // The accessibility tree will contain extra accessibility
+      // attributes typically only needed by screen readers and other
+      // assistive technology for blind users. Examples include text style
+      // attributes, table cell information, live region properties, range
+      // values, and relationship attributes. Note that the HTML tag, ID, class,
+      // and display attributes will also be included.
+      SCREEN_READER = 3;
+
+      // The accessibility tree will contain all the HTML attributes for all
+      // accessibility nodes that come from web content. This effectively dumps
+      // all the HTML attributes as found in the HTML source, or as created by
+      // Javascript, in the accessibility tree, potentially taking up a lot of
+      // memory.
+      HTML = 4;
+
+      // The accessibility tree will contain some metadata from the
+      // HTML HEAD, such as <meta> tags, in AXTreeData. Only supported
+      // when doing a tree snapshot, there's no support for keeping these
+      // in sync if a page changes them dynamically.
+      HTML_METADATA = 5;
+
+      // The accessibility tree will contain automatic image annotations.
+      LABEL_IMAGES = 6;
+
+      // The accessibility tree will contain enough information to export
+      // an accessible PDF when printing to PDF.
+      PDF_PRINTING = 7;
+
+      // The PDF renderer process will run OCR to extract text from an
+      // inaccessible PDF and add it to the accessibility tree.
+      PDF_OCR = 8;
+
+      // The accessibility tree will have the main node annotated.
+      ANNOTATE_MAIN_NODE = 9;
+    }
+    // Indicates which accessibility mode flags are set.
+    repeated AXMode enabled_modes = 1 [packed = true];
+  }
+  // The current state of accessibility features on the client.
+  optional AccessibilityState accessibility_state = 49;
 }

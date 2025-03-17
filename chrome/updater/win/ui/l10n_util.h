@@ -38,11 +38,10 @@ std::wstring GetLocalizedStringF(
 
 // Returns a localized version of the error message associated with a
 // metainstaller `exit_code`/`windows_error`.
-std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
-                                                  DWORD windows_error);
-
-// Returns a localized string to show in the metainstaller splash screen.
-std::wstring GetLocalizedSplashScreenString();
+std::wstring GetLocalizedMetainstallerErrorString(
+    DWORD exit_code,
+    DWORD windows_error,
+    const std::wstring& lang = GetPreferredLanguage());
 
 }  // namespace updater
 

@@ -9,7 +9,6 @@
 
 #include "base/files/file.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/services/file_util/buildflags.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "components/safe_browsing/buildflags.h"
@@ -18,11 +17,11 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 // An implementation of the SafeArchiveAnalyzer interface that delegates all the
 // Mojo methods to mocks.
 class MockSafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
@@ -84,18 +83,18 @@ class FakeFileUtilService : public chrome::mojom::FileUtilService {
 
   ~FakeFileUtilService() override;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   MockSafeArchiveAnalyzer& GetSafeArchiveAnalyzer();
 #endif
 
  private:
   // chrome::mojom::FileUtilService implementation
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void BindZipFileCreator(
       mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) override;
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   void BindSafeArchiveAnalyzer(
       mojo::PendingReceiver<chrome::mojom::SafeArchiveAnalyzer> receiver)
       override;
@@ -112,7 +111,7 @@ class FakeFileUtilService : public chrome::mojom::FileUtilService {
 
   mojo::Receiver<chrome::mojom::FileUtilService> receiver_;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   MockSafeArchiveAnalyzer safe_archive_analyzer_;
 #endif
 };

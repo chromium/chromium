@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -60,11 +59,7 @@ FastInkHost::ScopedPaint::~ScopedPaint() {
 
 FastInkHost::FastInkHost() = default;
 FastInkHost::~FastInkHost() {
-  if (client_shared_image_) {
-    CHECK(context_provider_);
-    context_provider_->SharedImageInterface()->DestroySharedImage(
-        sync_token_, std::move(client_shared_image_));
-  }
+  ResetGpuBuffer();
 }
 
 void FastInkHost::Init(aura::Window* host_window) {
@@ -105,7 +100,19 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
 }
 
 void FastInkHost::OnFirstFrameRequested() {
+  // Only create a buffer if not initialized as `OnFirstFrameRequested()` is
+  // called for every first begin frame for a FrameSink.
+  if (!client_shared_image_) {
+    InitializeFastInkBuffer(host_window());
+  }
+}
+
+void FastInkHost::OnFrameSinkLost() {
+  // The fast ink buffer becomes unusable and a new buffer must be created when
+  // the GPU crashes, which is one of the most common causes of FrameSink loss.
+  ResetGpuBuffer();
   InitializeFastInkBuffer(host_window());
+  FrameSinkHost::OnFrameSinkLost();
 }
 
 void FastInkHost::InitBufferMetadata(aura::Window* host_window) {
@@ -140,22 +147,11 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
-  bool add_scanout_usage = true;
-
-  // Scanout usage should be added only if scanout of SharedImages is supported.
-  // However, historically this was not checked.
-  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-  if (base::FeatureList::IsEnabled(
-          ::features::
-              kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    add_scanout_usage &= sii->GetCapabilities().supports_scanout_shared_images;
-  }
-
-  if (add_scanout_usage) {
+  if (sii->GetCapabilities().supports_scanout_shared_images) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  CHECK(!client_shared_image_);
+  CHECK(!client_shared_image_) << "GPU buffer is already initialized";
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
       buffer_size_, usage, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
@@ -184,6 +180,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
   for (auto pending_bitmap : pending_bitmaps_) {
     DrawBitmap(pending_bitmap.bitmap, pending_bitmap.damage_rect);
   }
+
   pending_bitmaps_.clear();
 }
 
@@ -195,7 +192,6 @@ gfx::Rect FastInkHost::BufferRectFromWindowRect(
 
 void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
   const bool initialized = client_shared_image_ != nullptr;
-
   if (!initialized) {
     // GPU process should be ready soon after start and `pending_bitmaps_`
     // should be drawn promptly. 60 is an arbitrary cap that should never
@@ -204,6 +200,7 @@ void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
     pending_bitmaps_.push_back(PendingBitmap(bitmap, damage_rect));
     return;
   }
+
   DrawBitmap(bitmap, damage_rect);
 }
 
@@ -238,6 +235,16 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
 
   {
     TRACE_EVENT0("ui", "FastInkHost::UpdateBuffer::Unmap");
+  }
+}
+
+void FastInkHost::ResetGpuBuffer() {
+  if (client_shared_image_) {
+    CHECK(context_provider_);
+    context_provider_->SharedImageInterface()->DestroySharedImage(
+        sync_token_, std::move(client_shared_image_));
+    client_shared_image_.reset();
+    sync_token_.Clear();
   }
 }
 

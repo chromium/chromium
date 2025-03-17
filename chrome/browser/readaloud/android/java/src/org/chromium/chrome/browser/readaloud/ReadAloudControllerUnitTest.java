@@ -50,9 +50,6 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -121,7 +118,7 @@ import java.util.Locale;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowDeviceConditions.class, ShadowPostTask.class})
+        shadows = {ShadowDeviceConditions.class})
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 @DisableFeatures({
     ChromeFeatureList.READALOUD_IN_MULTI_WINDOW,
@@ -213,14 +210,6 @@ public class ReadAloudControllerUnitTest {
         mDefaultLocale = Locale.getDefault();
 
         MockitoAnnotations.initMocks(this);
-        ShadowPostTask.setTestImpl(
-                new TestImpl() {
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        task.run();
-                    }
-                });
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
@@ -299,6 +288,7 @@ public class ReadAloudControllerUnitTest {
         mExtractorPromise = new Promise<Long>();
         when(mExtractor.getDateModified(any())).thenReturn(mExtractorPromise);
         mExtractorPromise.fulfill(1234567123456L);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
     void initPlaybackHooks() {
@@ -1244,7 +1234,7 @@ public class ReadAloudControllerUnitTest {
                 .onFailure(
                         new ReadAloudUnsupportedException(
                                 "message",
-                                /* throwable= */ null,
+                                /* cause= */ null,
                                 ReadAloudUnsupportedException.RejectionReason
                                         .UNKNOWN_REJECTION_REASON));
         resolvePromises();
@@ -2761,7 +2751,8 @@ public class ReadAloudControllerUnitTest {
         // Check readability.
         mController.maybeCheckReadability(mTab);
         // No readability request should be made.
-        verify(mHooksImpl, never()).isPageReadable(any(), any());
+        verify(mHooksImpl, never())
+                .isPageReadable(any(), any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
 
         // Try playing the tab.
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -2959,7 +2950,11 @@ public class ReadAloudControllerUnitTest {
         GURL gurl = new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc.");
         when(mTab.getUrl()).thenReturn(gurl);
         mController.getTabModelTabObserverforTests().didFirstVisuallyNonEmptyPaint(mTab);
-        verify(mHooksImpl).isPageReadable(eq(gurl.getPossiblyInvalidSpec()), any());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mHooksImpl)
+                .isPageReadable(
+                        eq(gurl.getPossiblyInvalidSpec()),
+                        any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
     @Test

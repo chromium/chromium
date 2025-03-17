@@ -46,6 +46,16 @@
   [self updateTabGroupHeader];
 }
 
+- (void)setActivitySummaryCellText:(NSString*)text {
+  _activitySummaryCellText = [text copy];
+
+  if (text) {
+    [self addOrUpdateActivitySummaryCell];
+  } else {
+    [self removeActivitySummaryCell];
+  }
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
@@ -110,7 +120,9 @@
 
 - (void)addAdditionalItemsToSnapshot:(GridSnapshot*)snapshot {
   [self addTabGroupHeaderSectionInSnapshot:snapshot];
-  [self addActivitySummaryCellInSnapshot:snapshot];
+  if (self.activitySummaryCellText != nil) {
+    [self addActivitySummaryCellInSnapshot:snapshot];
+  }
 }
 
 #pragma mark - Private
@@ -123,8 +135,7 @@
 
 // Configures the activity summary cell for a shared tab group.
 - (void)configureActivitySummaryCell:(TabGroupActivitySummaryCell*)cell {
-  // TODO(crbug.com/375594684): Connect with the backend and update the text.
-  cell.text = @"3 new tabs, 2 closed";
+  cell.text = self.activitySummaryCellText;
   cell.delegate = self;
 }
 
@@ -165,32 +176,61 @@
     return;
   }
 
-  // TODO(crbug.com/370898260): Add more condition to display the summary. Now,
-  // the summary card is always displayed when the group is shared.
-
   GridItemIdentifier* item = [GridItemIdentifier activitySummaryIdentifier];
 
-  if ([snapshot indexOfItemIdentifier:item] != NSNotFound) {
-    [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
-    return;
-  }
-
+  CHECK([snapshot indexOfItemIdentifier:item] == NSNotFound);
   CHECK([snapshot indexOfSectionIdentifier:kTabGroupHeaderSectionIdentifier] !=
         NSNotFound);
   [snapshot appendItemsWithIdentifiers:@[ item ]
              intoSectionWithIdentifier:kTabGroupHeaderSectionIdentifier];
 }
 
-#pragma mark - TabGroupActivitySummaryCellDelegate
+// Updates the activity summary cell in the current snapshot if it exists. Adds
+// the summary cell if it doesn't exist yet.
+- (void)addOrUpdateActivitySummaryCell {
+  if (!_shared) {
+    return;
+  }
 
-- (void)closeButtonForActivitySummaryTapped {
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
+  if (!self.diffableDataSource || !snapshot) {
+    return;
+  }
+
+  GridItemIdentifier* item = [GridItemIdentifier activitySummaryIdentifier];
+
+  if ([snapshot indexOfItemIdentifier:item] == NSNotFound) {
+    [self addActivitySummaryCellInSnapshot:snapshot];
+  } else {
+    [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
+  }
+
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Removes the activity summary cell from the current snapshot.
+- (void)removeActivitySummaryCell {
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   GridItemIdentifier* item = [GridItemIdentifier activitySummaryIdentifier];
+  if ([snapshot indexOfItemIdentifier:item] == NSNotFound) {
+    // Do nothing because the activity summary item doesn't exist.
+    return;
+  }
+
   [snapshot deleteItemsWithIdentifiers:@[ item ]];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+#pragma mark - TabGroupActivitySummaryCellDelegate
+
+- (void)closeButtonForActivitySummaryTapped {
+  [self.delegate didTapButtonInActivitySummary:self];
+  [self removeActivitySummaryCell];
+}
+
 - (void)activityButtonForActivitySummaryTapped {
+  [self.delegate didTapButtonInActivitySummary:self];
+  [self removeActivitySummaryCell];
   [self.viewDelegate showRecentActivity];
 }
 

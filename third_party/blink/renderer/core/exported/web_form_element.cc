@@ -58,10 +58,10 @@ WebString WebFormElement::Method() const {
   return ConstUnwrap<HTMLFormElement>()->method();
 }
 
-WebVector<WebFormControlElement> WebFormElement::GetFormControlElements()
+std::vector<WebFormControlElement> WebFormElement::GetFormControlElements()
     const {
   const HTMLFormElement* form = ConstUnwrap<HTMLFormElement>();
-  Vector<WebFormControlElement> form_control_elements;
+  std::vector<WebFormControlElement> form_control_elements;
   for (const auto& element : form->AllContainedFormElementsForAutofill()) {
     if (auto* form_control =
             blink::DynamicTo<HTMLFormControlElement>(element.Get())) {

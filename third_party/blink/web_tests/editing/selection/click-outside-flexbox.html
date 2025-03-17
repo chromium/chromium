@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#outer {
+  display: flex;
+  flex: auto;
+}
+</style>
+<body></body>
+<script>
+function click(x, y) {
+  return new Promise((resolve, reject) => {
+    assert_own_property(window, 'chrome');
+    assert_own_property(window.chrome, 'gpuBenchmarking');
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'mouse',
+      actions: [
+        { name: 'pointerMove', x, y },
+        { name: "pointerDown", x, y },
+        { name: 'pointerUp' },
+      ],
+    }], resolve);
+  });
+}
+// https://issues.chromium.org/issues/40889098
+promise_test(async () => {
+  const kHtml = `<div id="outer">
+    <div contenteditable id="inner">Hello World</div>
+  </div>`;
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  document.body.innerHTML = kHtml;
+  const selection = window.getSelection();
+  selection.collapse(inner.firstChild, 5);
+  assert_equals(selection.getRangeAt(0).startOffset, 5);
+  assert_equals(selection.getRangeAt(0).endOffset, 5);
+
+  await click(window.innerWidth / 2, window.innerHeight / 2);
+
+  assert_equals(document.activeElement, document.body);
+  assert_equals(selection.rangeCount, 0);
+}, 'Click on the non-editable area outside flexbox');
+
+// https://issues.chromium.org/issues/40781128
+promise_test(async () => {
+  const kHtml = `<div contenteditable>
+    <div style="width: 300px;" id="outer">
+      <div style="user-select: none;" contenteditable="false">1.</div>
+      <span id="inner">hello world</span>
+    </div>
+  </div>`;
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
+  document.body.innerHTML = kHtml;
+  const selection = window.getSelection();
+  assert_equals(selection.rangeCount, 0);
+
+  await click(outer.offsetWidth / 2, outer.offsetHeight / 2);
+
+  assert_equals(selection.rangeCount, 1);
+  const range = selection.getRangeAt(0);
+  // The caret should at the end of inner.
+  assert_equals(range.startContainer.parentElement, inner);
+  assert_equals(range.startOffset, 11);
+  assert_equals(range.endOffset, 11);
+}, 'Click at the end of the editable flexbox');
+</script>

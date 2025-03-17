@@ -80,11 +80,6 @@ class MODULES_EXPORT IDBCursor : public ScriptWrappable {
   void Trace(Visitor*) const override;
   void ContextWillBeDestroyed();
 
-  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
-      v8::Isolate*,
-      const WrapperTypeInfo*,
-      v8::Local<v8::Object> wrapper) override;
-
   // Implement the IDL
   V8IDBCursorDirection direction() const;
   ScriptValue key(ScriptState*);

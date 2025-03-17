@@ -10,14 +10,12 @@
 source_set("media") {
   sources = [
     "key_system_config_selector.h",
-    "video_frame_compositor.h",
     "web_encrypted_media_client_impl.h",
     "web_media_player_builder.h",
   ]
   public_deps = [
     "//base",
     "//cc",
-    "//components/viz/common",
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",

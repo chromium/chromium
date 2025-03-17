@@ -111,9 +111,12 @@ class URLPattern {
   URLPattern& operator=(const URLPattern& other);
   URLPattern& operator=(URLPattern&& other);
 
-  bool operator<(const URLPattern& other) const;
-  bool operator>(const URLPattern& other) const;
-  bool operator==(const URLPattern& other) const;
+  friend auto operator<=>(const URLPattern& a, const URLPattern& b) {
+    return a.GetAsString() <=> b.GetAsString();
+  }
+  friend bool operator==(const URLPattern& a, const URLPattern& b) {
+    return a.GetAsString() == b.GetAsString();
+  }
 
   // Initializes this instance by parsing the provided string. Returns
   // URLPattern::ParseResult::kSuccess on success, or an error code otherwise.

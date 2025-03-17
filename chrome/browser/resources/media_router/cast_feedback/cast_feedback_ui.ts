@@ -168,7 +168,7 @@ export class CastFeedbackUiElement extends CrLitElement {
   }
 
   override firstUpdated() {
-    this.shadowRoot!.querySelector('#send-logs a')!.addEventListener(
+    this.shadowRoot.querySelector('#send-logs a')!.addEventListener(
         'click', event => {
           event.preventDefault();
           this.$.logsDialog.showModal();

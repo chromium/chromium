@@ -15,13 +15,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_macros.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
 #endif
 
@@ -29,14 +22,12 @@ namespace performance_manager::policies {
 
 namespace {
 
+bool g_disabled_for_testing = false;
+
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
   std::optional<memory_pressure::ReclaimTarget> reclaim_target = std::nullopt;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* evaluator = LacrosMemoryPressureEvaluator::Get();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
   auto* evaluator = ash::memory::SystemMemoryPressureEvaluator::Get();
-#endif
   if (evaluator) {
     reclaim_target = evaluator->GetCachedReclaimTarget();
   }
@@ -73,36 +64,37 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
     discard_protected_pages = reclaim_target->discard_protected;
     origin_time = reclaim_target->origin_time;
   }
-  PageDiscardingHelper::GetFromGraph(GetOwningGraph())
-      ->DiscardMultiplePages(
-          reclaim_target, discard_protected_pages,
-          base::BindOnce(
-              [](UrgentPageDiscardingPolicy* policy,
-                 std::optional<base::TimeTicks> origin_time,
-                 base::TimeTicks on_memory_pressure_at,
-                 std::optional<base::TimeTicks> first_discarded_at) {
-                DCHECK(policy->handling_memory_pressure_notification_);
-                policy->handling_memory_pressure_notification_ = false;
-                if (origin_time && first_discarded_at) {
-                  base::TimeDelta reclaim_arrival_duration =
-                      on_memory_pressure_at - *origin_time;
-                  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-                      "Discarding.ReclaimArrivalLatency",
-                      reclaim_arrival_duration);
-                  base::TimeDelta discard_duration =
-                      *first_discarded_at - on_memory_pressure_at;
-                  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-                      "Discarding.DiscardLatency", discard_duration);
-                }
-              },
-              base::Unretained(this), origin_time, on_memory_pressure_at),
-          PageDiscardingHelper::DiscardReason::URGENT);
+  std::optional<base::TimeTicks> first_discarded_at =
+      PageDiscardingHelper::GetFromGraph(GetOwningGraph())
+          ->DiscardMultiplePages(reclaim_target, discard_protected_pages,
+                                 PageDiscardingHelper::DiscardReason::URGENT);
+
+  DCHECK(handling_memory_pressure_notification_);
+  handling_memory_pressure_notification_ = false;
+  if (origin_time && first_discarded_at) {
+    base::TimeDelta reclaim_arrival_duration =
+        on_memory_pressure_at - *origin_time;
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Discarding.ReclaimArrivalLatency",
+                                          reclaim_arrival_duration);
+    base::TimeDelta discard_duration =
+        *first_discarded_at - on_memory_pressure_at;
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Discarding.DiscardLatency",
+                                          discard_duration);
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void UrgentPageDiscardingPolicy::DisableForTesting() {
+  g_disabled_for_testing = true;
+}
 
 void UrgentPageDiscardingPolicy::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel new_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (g_disabled_for_testing) {
+    return;
+  }
 
   // The Memory Pressure Monitor will send notifications at regular interval,
   // |handling_memory_pressure_notification_| prevents this class from trying to
@@ -134,21 +126,9 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
                      base::Unretained(this), on_memory_pressure_at));
 #else
   PageDiscardingHelper::GetFromGraph(GetOwningGraph())
-      ->DiscardAPage(
-          base::BindOnce(
-              [](UrgentPageDiscardingPolicy* policy,
-                 std::optional<base::TimeTicks> first_discarded_at_unused) {
-                DCHECK(policy->handling_memory_pressure_notification_);
-                policy->handling_memory_pressure_notification_ = false;
-              },
-              // |PageDiscardingHelper| and this class are both GraphOwned
-              // objects, their lifetime is tied to the Graph's lifetime and
-              // both objects will be released sequentially while it's being
-              // torn down. This ensures that the reply callback passed to
-              // |DiscardAPage| won't ever run after the destruction of this
-              // class and so it's safe to use Unretained.
-              base::Unretained(this)),
-          PageDiscardingHelper::DiscardReason::URGENT);
+      ->DiscardAPage(PageDiscardingHelper::DiscardReason::URGENT);
+  DCHECK(handling_memory_pressure_notification_);
+  handling_memory_pressure_notification_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

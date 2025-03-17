@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
@@ -26,7 +25,7 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -69,13 +68,14 @@ class FakeReceiverDelegate final : public PresentationReceiverWindowDelegate {
 };
 
 class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
- protected:
-  PresentationReceiverWindowViewBrowserTest() = default;
-
+ public:
   PresentationReceiverWindowViewBrowserTest(
       const PresentationReceiverWindowViewBrowserTest&) = delete;
   PresentationReceiverWindowViewBrowserTest& operator=(
       const PresentationReceiverWindowViewBrowserTest&) = delete;
+
+ protected:
+  PresentationReceiverWindowViewBrowserTest() = default;
 
   PresentationReceiverWindowView* CreateReceiverWindowView(
       PresentationReceiverWindowDelegate* delegate,
@@ -115,7 +115,7 @@ class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
       receiver_view_ = nullptr;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
                        ChromeOSHardwareFullscreenButton) {
   // Bypass ExclusiveAccessContext and default accelerator to simulate hardware

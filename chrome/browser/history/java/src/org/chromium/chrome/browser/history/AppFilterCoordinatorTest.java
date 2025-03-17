@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.history.AppFilterCoordinator.MAX_SHEET
 import static org.chromium.chrome.browser.history.AppFilterCoordinator.MAX_VISIBLE_ITEM_COUNT;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
@@ -35,7 +34,7 @@ import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -96,20 +95,9 @@ public class AppFilterCoordinatorTest {
 
     private BottomSheetController createBottomSheetController() {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
-        ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(
-                        getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        activityContentView,
-                        Color.WHITE);
+        ScrimManager scrimManager = new ScrimManager(getActivity(), activityContentView);
         return BottomSheetControllerFactory.createBottomSheetController(
-                () -> scrimCoordinator,
+                () -> scrimManager,
                 (unused) -> {},
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),

@@ -7,6 +7,8 @@ package org.chromium.components.autofill.payments;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -14,17 +16,18 @@ import java.util.Objects;
 
 /** Base data model for any form of payment (FOP) synced via Google Payments. */
 @JNINamespace("autofill")
+@NullMarked
 public class PaymentInstrument {
     private final long mInstrumentId;
-    private final String mNickname;
-    private final GURL mDisplayIconUrl;
+    private final @Nullable String mNickname;
+    private final @Nullable GURL mDisplayIconUrl;
     private final @PaymentRail int[] mSupportedPaymentRails;
     private final boolean mIsFidoEnrolled;
 
     protected PaymentInstrument(
             long instrumentId,
-            String nickname,
-            GURL displayIconUrl,
+            @Nullable String nickname,
+            @Nullable GURL displayIconUrl,
             @PaymentRail int[] supportedPaymentRails,
             boolean isFidoEnrolled) {
         mInstrumentId = instrumentId;
@@ -42,7 +45,7 @@ public class PaymentInstrument {
 
     /** Returns the user-assigned nickname for the payment instrument, if one exists. */
     @CalledByNative
-    public String getNickname() {
+    public @Nullable String getNickname() {
         return mNickname;
     }
 
@@ -51,7 +54,7 @@ public class PaymentInstrument {
      * exists.
      */
     @CalledByNative
-    public GURL getDisplayIconUrl() {
+    public @Nullable GURL getDisplayIconUrl() {
         return mDisplayIconUrl;
     }
 
@@ -100,9 +103,9 @@ public class PaymentInstrument {
     /** Builder for {@link PaymentInstrument}. */
     public static class Builder {
         private long mInstrumentId;
-        private String mNickname;
-        private GURL mDisplayIconUrl;
-        private @PaymentRail int[] mSupportedPaymentRails;
+        private @Nullable String mNickname;
+        private @Nullable GURL mDisplayIconUrl;
+        private @PaymentRail int @Nullable [] mSupportedPaymentRails;
         private boolean mIsFidoEnrolled;
 
         /** Set the instrument id on the PaymentInstrument. */

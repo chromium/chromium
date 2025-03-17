@@ -149,7 +149,9 @@ public final class MultiprocessTestClientLauncher {
                             "org.chromium.native_test.NUM_TEST_CLIENT_SERVICES",
                             /* bindToCaller= */ false,
                             /* bindAsExternalService= */ false,
-                            /* useStrongBinding= */ false);
+                            /* useStrongBinding= */ false,
+                            /* fallbackToNextSlot= */ false,
+                            /* isSandboxedForHistograms= */ false);
         }
 
         mLauncher =

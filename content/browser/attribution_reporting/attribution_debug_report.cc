@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
@@ -302,7 +302,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
 
 void SetAdditionalFields(base::Value::Dict& data_body,
                          base::Value::Dict additional_fields) {
-  CHECK(base::ranges::none_of(additional_fields, [&](const auto& e) {
+  CHECK(std::ranges::none_of(additional_fields, [&](const auto& e) {
     return data_body.contains(e.first);
   }));
   data_body.Merge(std::move(additional_fields));

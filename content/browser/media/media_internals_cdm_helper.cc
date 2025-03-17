@@ -115,7 +115,13 @@ base::Value::Dict CdmInfoToDict(const CdmInfo& cdm_info) {
   dict.Set("status", GetCdmInfoCapabilityStatusName(cdm_info.status));
 
   if (cdm_info.capability) {
-    dict.Set("capability", CdmCapabilityToDict(cdm_info.capability.value()));
+    auto capability = cdm_info.capability.value();
+    dict.Set("capability", CdmCapabilityToDict(capability));
+    if (capability.version.IsValid()) {
+      // If version is specified, it overrides what may have been set in
+      // `cdm_info.version`.
+      dict.Set("version", capability.version.GetString());
+    }
   } else {
     // This could happen if hardware secure capabilities are overridden or
     // hardware video decode is disabled from command line.

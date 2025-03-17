@@ -5,8 +5,10 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {NavigationView, RoutineProperties} from './diagnostics_types.js';
-import {LockType, Network, NetworkState, NetworkType} from './network_health_provider.mojom-webui.js';
+import type {RoutineProperties} from './diagnostics_types.js';
+import {NavigationView} from './diagnostics_types.js';
+import type {Network} from './network_health_provider.mojom-webui.js';
+import {LockType, NetworkState, NetworkType} from './network_health_provider.mojom-webui.js';
 import {RoutineGroup} from './routine_group.js';
 import {RoutineType} from './system_routine_controller.mojom-webui.js';
 

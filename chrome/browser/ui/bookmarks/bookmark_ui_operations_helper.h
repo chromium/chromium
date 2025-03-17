@@ -15,10 +15,7 @@
 class BookmarkMergedSurfaceService;
 struct BookmarkParentFolder;
 class Profile;
-
-namespace base {
-class FilePath;
-}
+class Browser;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -40,13 +37,16 @@ class BookmarkUIOperationsHelper {
   // `copy` indicates the source operation: if true then the bookmarks in
   // `data` are copied, otherwise they are moved if they belong to the same
   // profile.
-  // Returns the drop type used.
+  // `browser` is needed if the user should be asked to confirm whether they
+  // want to move a bookmark between local and account storage. Returns the drop
+  // type used.
   ui::mojom::DragOperation DropBookmarks(
       Profile* profile,
       const bookmarks::BookmarkNodeData& data,
       size_t index,
       bool copy,
-      chrome::BookmarkReorderDropTarget target);
+      chrome::BookmarkReorderDropTarget target,
+      Browser* browser = nullptr);
 
   // Copies nodes onto the clipboard. The nodes are copied in such a way that if
   // pasted again new nodes can be created. Pass the calling context through as
@@ -86,16 +86,19 @@ class BookmarkUIOperationsHelper {
     virtual bool IsPermanentNode() const = 0;
     virtual bool IsDirectChild(const bookmarks::BookmarkNode* node) const = 0;
     virtual bookmarks::BookmarkNode::Type GetType() const = 0;
-    virtual const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
-    children() const = 0;
+    virtual const bookmarks::BookmarkNode* GetNodeAtIndex(
+        size_t index) const = 0;
+    virtual size_t GetChildrenCount() const = 0;
   };
 
   virtual bookmarks::BookmarkModel* model() = 0;
-  virtual void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                                    size_t index_to_add_at) = 0;
+  virtual void AddNodesAsCopiesOfNodeData(
+      const bookmarks::BookmarkNodeData& data,
+      size_t index_to_add_at) = 0;
   virtual void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                                     const base::FilePath& profile_path,
-                                    size_t index_to_add_at) = 0;
+                                    size_t index_to_add_at,
+                                    Browser* browser) = 0;
   virtual const TargetParent* target_parent() const = 0;
 
  private:
@@ -106,6 +109,10 @@ class BookmarkUIOperationsHelper {
       bool remove_nodes,
       bookmarks::metrics::BookmarkEditSource source,
       bool is_off_the_record);
+
+  // Updates `title` such that `url` and `title` pair are unique among the
+  // children of `target_parent()`.
+  void MakeTitleUnique(const GURL& url, std::u16string* title) const;
 };
 
 }  // namespace internal
@@ -133,11 +140,12 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
 
  protected:
   bookmarks::BookmarkModel* model() override;
-  void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                            size_t index_to_add_at) override;
+  void AddNodesAsCopiesOfNodeData(const bookmarks::BookmarkNodeData& data,
+                                  size_t index_to_add_at) override;
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,
-                            size_t index_to_add_at) override;
+                            size_t index_to_add_at,
+                            Browser* browser) override;
   const internal::BookmarkUIOperationsHelper::TargetParent* target_parent()
       const override;
 
@@ -159,8 +167,8 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
     bool IsPermanentNode() const override;
     bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
     bookmarks::BookmarkNode::Type GetType() const override;
-    const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& children()
-        const override;
+    const bookmarks::BookmarkNode* GetNodeAtIndex(size_t index) const override;
+    size_t GetChildrenCount() const override;
 
    private:
     const raw_ptr<const bookmarks::BookmarkNode> parent_;
@@ -199,11 +207,12 @@ class BookmarkUIOperationsHelperMergedSurfaces
 
  protected:
   bookmarks::BookmarkModel* model() override;
-  void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                            size_t index_to_add_at) override;
+  void AddNodesAsCopiesOfNodeData(const bookmarks::BookmarkNodeData& data,
+                                  size_t index_to_add_at) override;
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,
-                            size_t index_to_add_at) override;
+                            size_t index_to_add_at,
+                            Browser* browser) override;
   const internal::BookmarkUIOperationsHelper::TargetParent* target_parent()
       const override;
 
@@ -226,8 +235,8 @@ class BookmarkUIOperationsHelperMergedSurfaces
     bool IsPermanentNode() const override;
     bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
     bookmarks::BookmarkNode::Type GetType() const override;
-    const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& children()
-        const override;
+    const bookmarks::BookmarkNode* GetNodeAtIndex(size_t index) const override;
+    size_t GetChildrenCount() const override;
 
    private:
     const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;

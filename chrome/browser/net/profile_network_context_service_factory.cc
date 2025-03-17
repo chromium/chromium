@@ -15,7 +15,8 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #endif
 
@@ -60,7 +61,8 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
   // requested.
   DependsOn(NssServiceFactory::GetInstance());
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  DependsOn(policy::PolicyCertServiceFactory::GetInstance());
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

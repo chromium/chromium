@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_STATUS_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/management/management_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #endif
 
@@ -96,10 +96,8 @@ class LocalTestPolicyBrowserManagementProvider final
   raw_ptr<Profile> profile_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the platform managment status of ChromeOS Ash devices. For LaCros,
-// see DeviceEnterpriseManagedStatusProvider which needs to be defined under
-// c/policy/core/common/management/platform_management_status_provider_lacros.
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns the platform management status of ChromeOS devices.
 class DeviceManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:

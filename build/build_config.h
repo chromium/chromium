@@ -16,10 +16,10 @@
 //
 //  Operating System:
 //    IS_AIX / IS_ANDROID / IS_ASMJS / IS_CHROMEOS / IS_FREEBSD / IS_FUCHSIA /
-//    IS_IOS / IS_IOS_MACCATALYST / IS_LINUX / IS_MAC / IS_NACL / IS_NETBSD /
-//    IS_OPENBSD / IS_QNX / IS_SOLARIS / IS_WATCHOS / IS_WIN
+//    IS_IOS / IS_IOS_MACCATALYST / IS_IOS_TVOS / IS_LINUX / IS_MAC / IS_NACL /
+//    IS_NETBSD / IS_OPENBSD / IS_QNX / IS_SOLARIS / IS_WATCHOS / IS_WIN
 //  Operating System family:
-//    IS_APPLE: IOS or MAC or IOS_MACCATALYST or WATCHOS
+//    IS_APPLE: IOS or MAC or IOS_MACCATALYST or IOS_TVOS or WATCHOS
 //    IS_BSD: FREEBSD or NETBSD or OPENBSD
 //    IS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
 //              or MAC or NACL or NETBSD or OPENBSD or QNX or SOLARIS
@@ -77,6 +77,9 @@
 #if defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST
 #define OS_IOS_MACCATALYST
 #endif  // defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST
+#if defined(TARGET_OS_TV) && TARGET_OS_TV
+#define OS_IOS_TVOS 1
+#endif  // defined(TARGET_OS_TV) && TARGET_OS_TV
 #if defined(TARGET_OS_WATCH) && TARGET_OS_WATCH
 #define OS_WATCHOS 1
 #endif  // defined(TARGET_OS_WATCH) && TARGET_OS_WATCH
@@ -200,6 +203,12 @@
 #define BUILDFLAG_INTERNAL_IS_IOS_MACCATALYST() (1)
 #else
 #define BUILDFLAG_INTERNAL_IS_IOS_MACCATALYST() (0)
+#endif
+
+#if defined(OS_IOS_TVOS)
+#define BUILDFLAG_INTERNAL_IS_IOS_TVOS() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_IOS_TVOS() (0)
 #endif
 
 #if defined(OS_LINUX)
@@ -399,16 +408,16 @@
 // Architecture-specific feature detection.
 
 #if !defined(CPU_ARM_NEON)
-#if defined(__arm__)
-#if !defined(__ARMEB__) && !defined(__ARM_EABI__) && !defined(__EABI__) && \
-    !defined(__VFP_FP__) && !defined(_WIN32_WCE) && !defined(ANDROID)
-#error Chromium does not support middle endian architecture
-#endif
-#if defined(__ARM_NEON__)
+#if defined(ARCH_CPU_ARM_FAMILY) && \
+    (defined(__ARM_NEON__) || defined(__ARM_NEON))
 #define CPU_ARM_NEON 1
 #endif
-#endif  // defined(__arm__)
 #endif  // !defined(CPU_ARM_NEON)
+
+// Sanity check.
+#if defined(ARCH_CPU_ARM64) && !defined(CPU_ARM_NEON)
+#error "AArch64 mandates NEON, should be detected"
+#endif
 
 #if !defined(HAVE_MIPS_MSA_INTRINSICS)
 #if defined(__mips_msa) && defined(__mips_isa_rev) && (__mips_isa_rev >= 5)

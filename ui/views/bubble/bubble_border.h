@@ -15,6 +15,8 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -111,9 +113,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // arrow if one is present.
   static constexpr int kVisibleArrowBuffer = 12;
 
-  BubbleBorder(Arrow arrow,
-               Shadow shadow,
-               ui::ColorId color_id = ui::kColorDialogBackground);
+  BubbleBorder(Arrow arrow, Shadow shadow);
 
   BubbleBorder(const BubbleBorder&) = delete;
   BubbleBorder& operator=(const BubbleBorder&) = delete;
@@ -190,10 +190,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   // Get the shadow type.
   Shadow shadow() const { return shadow_; }
-
-  // Get or set the color for the bubble and arrow body.
-  void SetColor(SkColor color);
-  SkColor color() const { return color_; }
 
   // Sets a desired pixel distance between the arrow tip and the outside edge of
   // the neighboring border image. For example:        |----offset----|
@@ -299,10 +295,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // iff there is a visible shadow and it does not have a custom elevation.
   bool ShouldDrawStroke() const;
 
-  // Sets `color_` appropriately, using `view` to obtain a ColorProvider.
-  // `view` may be null if `requested_color_` is set.
-  void UpdateColor(View* view);
-
   // Paint for the NO_SHADOW shadow type. This just paints transparent pixels
   // to make the window shape based on insets and GetBorderCornerRadius().
   void PaintNoShadow(const View& view, gfx::Canvas* canvas);
@@ -329,9 +321,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   std::optional<bool> draw_border_stroke_;
   Shadow shadow_;
   std::optional<int> md_shadow_elevation_;
-  ui::ColorId color_id_;
-  std::optional<SkColor> requested_color_;
-  SkColor color_ = gfx::kPlaceholderColor;
   bool avoid_shadow_overlap_ = false;
   std::optional<gfx::Insets> insets_;
 };

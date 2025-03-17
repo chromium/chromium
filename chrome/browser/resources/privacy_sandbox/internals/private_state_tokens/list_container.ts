@@ -53,7 +53,7 @@ export class PrivateStateTokensListContainerElement extends CrLitElement {
 
   protected onClick_() {
     const rows =
-        this.shadowRoot!.querySelectorAll('private-state-tokens-list-item');
+        this.shadowRoot.querySelectorAll('private-state-tokens-list-item');
     for (const row of rows) {
       (row).expanded =
           this.isAnyRowCollapsed;

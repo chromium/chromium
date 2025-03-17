@@ -5,12 +5,18 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
+#include "base/version_info/channel.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 
 namespace ash::boca {
 
 namespace {
 
 inline constexpr char kDummyDeviceId[] = "kDummyDeviceId";
+inline constexpr char kSchoolToolsApiBaseProdUrl[] =
+    "https://schooltools-pa.googleapis.com";
+inline constexpr char kSchoolToolsServerSwitch[] = "st-server";
 
 // Non thread safe, life cycle is managed by owner.
 BocaAppClient* g_instance = nullptr;
@@ -59,6 +65,19 @@ BocaSessionManager* BocaAppClient::GetSessionManager() {
 std::string BocaAppClient::GetDeviceId() {
   return kDummyDeviceId;
 }
+
+std::string BocaAppClient::GetSchoolToolsServerBaseUrl() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (ash::GetChannel() != version_info::Channel::STABLE &&
+      ash::GetChannel() != version_info::Channel::BETA &&
+      command_line->HasSwitch(kSchoolToolsServerSwitch)) {
+    return command_line->GetSwitchValueASCII(kSchoolToolsServerSwitch);
+  }
+  return kSchoolToolsApiBaseProdUrl;
+}
+
+// Implemented in boca_app_client_impl.cc
+void BocaAppClient::OpenFeedbackDialog() {}
 
 void BocaAppClient::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {

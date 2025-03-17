@@ -1702,22 +1702,18 @@ class PersonalizedHintsFetcherBrowserTest : public HintsFetcherBrowserTest {
 
   ~PersonalizedHintsFetcherBrowserTest() override = default;
 
-  void SetUp() override { HintsFetcherBrowserTest::SetUp(); }
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    HintsFetcherBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
 
   void SetUpOnMainThread() override {
     HintsFetcherBrowserTest::SetUpOnMainThread();
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             browser()->profile());
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&PersonalizedHintsFetcherBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
   }
 
   void PopulateEnabledFeatures(
@@ -1768,15 +1764,9 @@ class PersonalizedHintsFetcherBrowserTest : public HintsFetcherBrowserTest {
   }
 
  private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, NoUserSignIn) {

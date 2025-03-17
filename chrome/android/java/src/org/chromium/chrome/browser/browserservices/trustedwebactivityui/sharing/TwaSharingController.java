@@ -17,8 +17,6 @@ import org.chromium.base.Promise;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.ShareRequestMethod;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -73,12 +71,7 @@ public class TwaSharingController {
                                         return false;
                                     }
                                     if (shareTarget.isShareMethodPost()) {
-                                        boolean success = sendPost(shareData, shareTarget);
-                                        if (success) {
-                                            TrustedWebActivityUmaRecorder.recordShareTargetRequest(
-                                                    ShareRequestMethod.POST);
-                                        }
-                                        return success;
+                                        return sendPost(shareData, shareTarget);
                                     }
 
                                     mNavigationController.navigate(
@@ -86,8 +79,6 @@ public class TwaSharingController {
                                                     computeStartUrlForGETShareTarget(
                                                             shareData, shareTarget)),
                                             intent);
-                                    TrustedWebActivityUmaRecorder.recordShareTargetRequest(
-                                            ShareRequestMethod.GET);
                                     return true;
                                 });
     }

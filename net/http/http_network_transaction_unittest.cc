@@ -464,7 +464,7 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
             /*ssl_client_context=*/nullptr,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
-            /*net_log=*/nullptr,
+            /*net_log=*/NetLog::Get(),
             /*websocket_endpoint_lock_manager=*/nullptr,
             /*http_server_properties=*/nullptr,
             /*alpn_protos=*/nullptr,
@@ -696,6 +696,15 @@ class HttpNetworkTransactionTest
 
   base::HistogramTester histogram_tester_;
 
+  const ProxyServer proxy_server_1_{ProxyServer::SCHEME_HTTPS,
+                                    HostPortPair("proxy1.test", 70)};
+  const ProxyServer proxy_server_2_{ProxyServer::SCHEME_HTTPS,
+                                    HostPortPair("proxy2.test", 71)};
+  const ProxyChain nested_proxy_chain_{
+      ProxyChain::ForIpProtection({{proxy_server_1_, proxy_server_2_}})};
+  const ProxyChain example_proxy_server_chain_{ProxyServer{
+      ProxyServer::SCHEME_HTTPS, HostPortPair("www.example.org", 443)}};
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -768,6 +777,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) override {
     last_group_id_ = group_id;
     socket_requested_ = true;
@@ -6820,16 +6830,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7010,16 +7012,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7033,7 +7027,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       /*extra_headers=*/nullptr, 0, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -7135,9 +7129,9 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/0),
-            kProxyServer1);
+            proxy_server_1_);
   EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/1),
-            kProxyServer2);
+            proxy_server_2_);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
 
@@ -7169,13 +7163,11 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
-  const ProxyServer kProxyServer{ProxyServer::SCHEME_HTTPS,
-                                 HostPortPair("proxy.test", 70)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer, kProxyServer}});
+  const ProxyChain kSameServerNestedProxyChain =
+      ProxyChain::ForIpProtection({{proxy_server_1_, proxy_server_1_}});
 
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(kSameServerNestedProxyChain);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7190,7 +7182,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   spdy::SpdySerializedFrame proxy_connect(spdy_util_.ConstructSpdyConnect(
       /*extra_headers=*/nullptr, 0, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer.host_port_pair()));
+      proxy_server_1_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -7292,9 +7284,9 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/0),
-            kProxyServer);
+            proxy_server_1_);
   EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/1),
-            kProxyServer);
+            proxy_server_1_);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
 
@@ -7319,15 +7311,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
 // Test that a SPDY protocol error encountered when attempting to perform an
 // HTTP request over a multi-proxy chain is handled correctly.
 TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7341,7 +7326,7 @@ TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       /*extra_headers=*/nullptr, 0, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -7486,15 +7471,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsClientAuthCertNeededNoCrash) {
 // chain).
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyClientAuthCertNeededFirstProxyNoCrash) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7508,7 +7486,7 @@ TEST_P(HttpNetworkTransactionTest,
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       /*extra_headers=*/nullptr, 0, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame spdy_response_go_away(
       spdy_util_.ConstructSpdyGoAway(0, spdy::ERROR_CODE_PROTOCOL_ERROR,
@@ -7562,15 +7540,8 @@ TEST_P(HttpNetworkTransactionTest,
 // chain).
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyClientAuthCertNeededFirstProxyNoCrash2) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7585,7 +7556,7 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
 
   auto cert_request_info_proxy = base::MakeRefCounted<SSLCertRequestInfo>();
-  cert_request_info_proxy->host_and_port = kProxyServer1.host_port_pair();
+  cert_request_info_proxy->host_and_port = proxy_server_1_.host_port_pair();
 
   SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   ssl.cert_request_info = cert_request_info_proxy;
@@ -7613,7 +7584,7 @@ TEST_P(HttpNetworkTransactionTest,
       trans.GetResponseInfo()->cert_request_info.get();
   ASSERT_TRUE(cert_request_info);
   EXPECT_TRUE(cert_request_info->is_proxy);
-  EXPECT_EQ(cert_request_info->host_and_port, kProxyServer1.host_port_pair());
+  EXPECT_EQ(cert_request_info->host_and_port, proxy_server_1_.host_port_pair());
 }
 
 // Test that a read returning ERR_SSL_CLIENT_AUTH_CERT_NEEDED after the first
@@ -7624,15 +7595,8 @@ TEST_P(HttpNetworkTransactionTest,
 // chain).
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyClientAuthCertNeededAfterFirstConnectNoCrash2) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7646,7 +7610,7 @@ TEST_P(HttpNetworkTransactionTest,
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       /*extra_headers=*/nullptr, 0, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -7725,15 +7689,8 @@ TEST_P(HttpNetworkTransactionTest,
 // chain).
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyClientAuthCertNeededSecondProxyNoCrash) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7747,7 +7704,7 @@ TEST_P(HttpNetworkTransactionTest,
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       /*extra_headers=*/nullptr, 0, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -7773,7 +7730,7 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
 
   auto cert_request_info_proxy = base::MakeRefCounted<SSLCertRequestInfo>();
-  cert_request_info_proxy->host_and_port = kProxyServer2.host_port_pair();
+  cert_request_info_proxy->host_and_port = proxy_server_2_.host_port_pair();
 
   SSLSocketDataProvider ssl2(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   ssl2.cert_request_info = cert_request_info_proxy;
@@ -7801,7 +7758,7 @@ TEST_P(HttpNetworkTransactionTest,
       trans.GetResponseInfo()->cert_request_info.get();
   ASSERT_TRUE(cert_request_info);
   EXPECT_TRUE(cert_request_info->is_proxy);
-  EXPECT_EQ(cert_request_info->host_and_port, kProxyServer2.host_port_pair());
+  EXPECT_EQ(cert_request_info->host_and_port, proxy_server_2_.host_port_pair());
 }
 
 // Test that the endpoint requesting a client auth cert over a multi-proxy chain
@@ -7812,15 +7769,8 @@ TEST_P(HttpNetworkTransactionTest,
 // chain).
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyClientAuthCertNeededEndpointNoCrash) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -7833,7 +7783,7 @@ TEST_P(HttpNetworkTransactionTest,
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -8196,16 +8146,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -8221,7 +8163,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -8433,16 +8375,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectSpdy) {
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -8550,16 +8484,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectHttps) {
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -8574,7 +8500,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectHttps) {
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -8734,16 +8660,8 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -8758,7 +8676,7 @@ TEST_P(HttpNetworkTransactionTest,
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
   spdy::SpdySerializedFrame proxy2_connect_error_resp(
       spdy_util_.ConstructSpdyReplyError(1));
 
@@ -8805,16 +8723,8 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -8831,7 +8741,7 @@ TEST_P(HttpNetworkTransactionTest,
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -9088,48 +8998,27 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
 // establish a tunnel through only the first hop, ensure that socket re-use does
 // not occur (HTTPS A -> HTTPS B != HTTPS A).
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseFirstHop) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
-  const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
-  HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kFirstHopOnlyChain);
+  const ProxyChain kFirstHopOnlyChain{{proxy_server_1_}};
+  HttpsNestedProxyNoSocketReuseHelper(nested_proxy_chain_, kFirstHopOnlyChain);
 }
 
 // If we have established a proxy tunnel through a two hop proxy and then
 // establish a tunnel through only the second hop, ensure that socket re-use
 // does not occur (HTTPS A -> HTTPS B != HTTPS B).
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseSecondHop) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
+  const ProxyChain kSecondHopOnlyChain{{proxy_server_2_}};
 
-  const ProxyChain kSecondHopOnlyChain{{kProxyServer2}};
-
-  HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kSecondHopOnlyChain);
+  HttpsNestedProxyNoSocketReuseHelper(nested_proxy_chain_, kSecondHopOnlyChain);
 }
 
 // If we have established a proxy tunnel through a two hop proxy and then
 // establish a tunnel through the same proxies with the order reversed, ensure
 // that socket re-use does not occur (HTTPS A -> HTTPS B != HTTPS B -> HTTPS A).
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseReversedChain) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   const ProxyChain kReversedChain =
-      ProxyChain::ForIpProtection({{kProxyServer2, kProxyServer1}});
+      ProxyChain::ForIpProtection({{proxy_server_2_, proxy_server_1_}});
 
-  HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kReversedChain);
+  HttpsNestedProxyNoSocketReuseHelper(nested_proxy_chain_, kReversedChain);
 }
 
 // If we have established a proxy tunnel through a two hop proxy using SPDY,
@@ -9146,20 +9035,13 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-  const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
-  const ProxyChain kSecondHopOnlyChain{{kProxyServer1}};
+  const ProxyChain kFirstHopOnlyChain{{proxy_server_1_}};
+  const ProxyChain kSecondHopOnlyChain{{proxy_server_1_}};
 
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
       static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  proxy_delegate->set_proxy_chain(nested_proxy_chain_);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -9172,7 +9054,7 @@ TEST_P(HttpNetworkTransactionTest,
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -9292,7 +9174,7 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
-  EXPECT_EQ(kNestedProxyChain, response->proxy_chain);
+  EXPECT_EQ(nested_proxy_chain_, response->proxy_chain);
 
   std::string response_data;
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
@@ -9412,17 +9294,10 @@ TEST_P(HttpNetworkTransactionTest,
   request1.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
       static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  proxy_delegate->set_proxy_chain(nested_proxy_chain_);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -9435,7 +9310,7 @@ TEST_P(HttpNetworkTransactionTest,
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -9582,7 +9457,7 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
-  EXPECT_EQ(kNestedProxyChain, response->proxy_chain);
+  EXPECT_EQ(nested_proxy_chain_, response->proxy_chain);
 
   std::string response_data;
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
@@ -9615,7 +9490,7 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
-  EXPECT_EQ(kNestedProxyChain, response->proxy_chain);
+  EXPECT_EQ(nested_proxy_chain_, response->proxy_chain);
 
   ASSERT_THAT(ReadTransaction(&trans2, &response_data), IsOk());
   EXPECT_EQ(kTrans2RespData, response_data);
@@ -9624,15 +9499,8 @@ TEST_P(HttpNetworkTransactionTest,
 // Ensure that socket reuse occurs after an error from a SPDY connection through
 // the nested proxy.
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
-
   ProxyList proxy_list;
-  proxy_list.AddProxyChain(kNestedProxyChain);
+  proxy_list.AddProxyChain(nested_proxy_chain_);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   session_deps_.proxy_resolution_service =
@@ -9645,7 +9513,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
   // CONNECT to proxy2.test:71 via SPDY.
   spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer2.host_port_pair()));
+      proxy_server_2_.host_port_pair()));
 
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
@@ -9749,7 +9617,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
 
   auto cert_request_info_proxy = base::MakeRefCounted<SSLCertRequestInfo>();
-  cert_request_info_proxy->host_and_port = kProxyServer1.host_port_pair();
+  cert_request_info_proxy->host_and_port = proxy_server_1_.host_port_pair();
 
   SSLSocketDataProvider ssl3(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   ssl3.cert_request_info = cert_request_info_proxy;
@@ -20426,16 +20294,10 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
   session_deps_.host_resolver->rules()->AddRule("www.example.org", "1.2.3.4");
   session_deps_.host_resolver->rules()->AddRule("mail.example.com", "1.2.3.4");
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("www.example.org", 443)};
-  const ProxyChain kProxyServer1Chain{{
-      kProxyServer1,
-  }};
-
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
       static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
+  proxy_delegate->set_proxy_chain(example_proxy_server_chain_);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -20579,16 +20441,10 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostHttp) {
   session_deps_.host_resolver->rules()->AddRule("www.example.org", "1.2.3.4");
   session_deps_.host_resolver->rules()->AddRule("mail.example.com", "1.2.3.4");
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("www.example.org", 443)};
-  const ProxyChain kProxyServer1Chain{{
-      kProxyServer1,
-  }};
-
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
       static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
+  proxy_delegate->set_proxy_chain(example_proxy_server_chain_);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -20702,22 +20558,16 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
   session_deps_.host_resolver->rules()->AddRule("www.example.org", "1.2.3.4");
   session_deps_.host_resolver->rules()->AddRule("mail.example.com", "1.2.3.4");
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("www.example.org", 443)};
-  const ProxyChain kProxyServer1Chain{{
-      kProxyServer1,
-  }};
-
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("mail.example.com", 443)};
-  const ProxyChain kProxyServer2Chain{{
-      kProxyServer2,
+  const ProxyServer kExampleProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                         HostPortPair("mail.example.com", 443)};
+  const ProxyChain kExampleProxyServer2Chain{{
+      kExampleProxyServer2,
   }};
 
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
       static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
+  proxy_delegate->set_proxy_chain(example_proxy_server_chain_);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -20805,7 +20655,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
   EXPECT_EQ(kUploadData, response_data);
 
-  proxy_delegate->set_proxy_chain(kProxyServer2Chain);
+  proxy_delegate->set_proxy_chain(kExampleProxyServer2Chain);
 
   // CONNECT to request2.test:443 via SPDY.
   SpdyTestUtil req2_spdy_util(/*use_priority_header=*/true);
@@ -20891,22 +20741,16 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesHttp) {
   session_deps_.host_resolver->rules()->AddRule("www.example.org", "1.2.3.4");
   session_deps_.host_resolver->rules()->AddRule("mail.example.com", "1.2.3.4");
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("www.example.org", 443)};
-  const ProxyChain kProxyServer1Chain{{
-      kProxyServer1,
-  }};
-
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("mail.example.com", 443)};
-  const ProxyChain kProxyServer2Chain{{
-      kProxyServer2,
+  const ProxyServer kExampleProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                         HostPortPair("mail.example.com", 443)};
+  const ProxyChain kExampleProxyServer2Chain{{
+      kExampleProxyServer2,
   }};
 
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
       static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
+  proxy_delegate->set_proxy_chain(example_proxy_server_chain_);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -20962,7 +20806,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesHttp) {
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
   EXPECT_EQ(kUploadData, response_data);
 
-  proxy_delegate->set_proxy_chain(kProxyServer2Chain);
+  proxy_delegate->set_proxy_chain(kExampleProxyServer2Chain);
 
   SpdyTestUtil req2_spdy_util(/*use_priority_header=*/true);
   spdy::SpdySerializedFrame req2(
@@ -21026,7 +20870,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
-  // Two requests on the first connection.
+  // Two requests on the first H2 connection.
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyGet("https://www.example.org", 1, LOWEST));
   spdy_util_.UpdateWithStreamDestruction(1);
@@ -21040,7 +20884,8 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
       CreateMockWrite(rst, 6),
   };
 
-  // The first one succeeds, the second gets error 421 Misdirected Request.
+  // The first request succeeds, the second request gets error 421 Misdirected
+  // Request. The first H2 connection remains available after getting 421.
   spdy::SpdySerializedFrame resp1(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
   spdy::SpdySerializedFrame body1(spdy_util_.ConstructSpdyDataFrame(1, true));
@@ -21048,8 +20893,10 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   response_headers[spdy::kHttp2StatusHeader] = "421";
   spdy::SpdySerializedFrame resp2(
       spdy_util_.ConstructSpdyReply(3, std::move(response_headers)));
-  MockRead reads1[] = {CreateMockRead(resp1, 1), CreateMockRead(body1, 2),
-                       CreateMockRead(resp2, 4), MockRead(ASYNC, 0, 5)};
+  MockRead reads1[] = {
+      CreateMockRead(resp1, 1), CreateMockRead(body1, 2),
+      CreateMockRead(resp2, 4),
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 5) /* stalls forever */};
 
   MockConnect connect1(ASYNC, OK, peer_addr);
   SequencedSocketData data1(connect1, reads1, writes1);
@@ -21057,7 +20904,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   AddSSLSocketData();
 
-  // Retry the second request on a second connection.
+  // Retry the second request on the second H2 connection.
   SpdyTestUtil spdy_util2(/*use_priority_header=*/true);
   spdy::SpdySerializedFrame req3(
       spdy_util2.ConstructSpdyGet("https://mail.example.org", 1, LOWEST));
@@ -21092,7 +20939,8 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
 
   TestCompletionCallback callback;
-  rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
+  rv = trans1.Start(&request1, callback.callback(),
+                    NetLogWithSource::Make(NetLogSourceType::URL_REQUEST));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
@@ -21117,7 +20965,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   RecordingNetLogObserver net_log_observer;
   rv = trans2.Start(&request2, callback.callback(),
-                    NetLogWithSource::Make(NetLogSourceType::NONE));
+                    NetLogWithSource::Make(NetLogSourceType::URL_REQUEST));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
@@ -27880,28 +27728,21 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({kProxyServer1, kProxyServer2});
-
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
   auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
       session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  proxy_delegate->set_proxy_chain(nested_proxy_chain_);
   session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   const std::string kProxyServer1AuthHeaderValue =
-      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer1);
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(proxy_server_1_);
   const std::string kProxyServer2AuthHeaderValue =
-      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer2);
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(proxy_server_2_);
 
   const std::string kProxyServer2Connect = base::StringPrintf(
       "CONNECT proxy2.test:71 HTTP/1.1\r\n"
@@ -27944,7 +27785,7 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
 
   SSLSocketDataProvider ssl3(ASYNC, OK);
-  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
 
   TestCompletionCallback callback;
 
@@ -28043,28 +27884,21 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({kProxyServer1, kProxyServer2});
-
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
   auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
       session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  proxy_delegate->set_proxy_chain(nested_proxy_chain_);
   session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   const std::string kProxyServer1AuthHeaderValue =
-      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer1);
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(proxy_server_1_);
   const std::string kProxyServer2AuthHeaderValue =
-      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer2);
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(proxy_server_2_);
 
   const std::string kProxyServer2Connect = base::StringPrintf(
       "CONNECT proxy2.test:71 HTTP/1.1\r\n"
@@ -28106,7 +27940,7 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
 
   SSLSocketDataProvider ssl3(ASYNC, OK);
-  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
 
   TestCompletionCallback callback;
 
@@ -28140,26 +27974,19 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy2.test", 71)};
-  ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({kProxyServer1, kProxyServer2});
-
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
   auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
       session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  proxy_delegate->set_proxy_chain(nested_proxy_chain_);
   session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   const std::string kProxyServer1AuthHeaderValue =
-      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer1);
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(proxy_server_1_);
 
   const std::string kProxyServer2Connect = base::StringPrintf(
       "CONNECT proxy2.test:71 HTTP/1.1\r\n"
@@ -28253,6 +28080,103 @@ TEST_P(HttpNetworkTransactionPoolTest, SwitchToHttpStreamPool) {
   EXPECT_EQ(0u, out.connection_attempts.size());
 
   EXPECT_FALSE(out.remote_endpoint_after_start.address().empty());
+}
+
+TEST_P(HttpNetworkTransactionTest, EarlyHintsWithAltSvcHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // enabled features
+      {features::kEnableEarlyHintsOnHttp11},  // Enable Early Hints on HTTP/1.1
+      // disabled features
+      {});
+
+  // Enable QUIC
+  session_deps_.enable_quic = true;
+  session_deps_.enable_http2_alternative_service = true;
+
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 103 Early Hints\r\n"
+               "alt-svc: h3=\":443\"; ma=86400\r\n"
+               "\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Content-Type: text/html\r\n"
+               "Content-Length: 5\r\n"
+               "\r\n"
+               "Hello"),
+  };
+
+  StaticSocketDataProvider reads(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&reads);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  // Add certificate to make SSL info valid
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(cert);
+  ssl.ssl_info.cert = cert;
+  ssl.ssl_info.cert_status = 0;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  std::unique_ptr<HttpNetworkTransaction> trans(
+      new HttpNetworkTransaction(DEFAULT_PRIORITY, session.get()));
+
+  // Add early response headers callback to ensure 103 response is processed
+  bool early_hints_received = false;
+  trans->SetEarlyResponseHeadersCallback(base::BindLambdaForTesting(
+      [&early_hints_received](
+          scoped_refptr<const HttpResponseHeaders> headers) {
+        EXPECT_EQ(103, headers->response_code());
+        early_hints_received = true;
+      }));
+
+  TestCompletionCallback callback;
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  // Verify early hints were received
+  EXPECT_TRUE(early_hints_received);
+
+  // Verify final response
+  const HttpResponseInfo* response = trans->GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(200, response->headers->response_code());
+  ASSERT_TRUE(response->ssl_info.is_valid());  // Verify SSL info is valid
+
+  std::string response_data;
+  rv = ReadTransaction(trans.get(), &response_data);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_EQ("Hello", response_data);
+
+  // Verify Alt-Svc was processed
+  HttpServerProperties* http_server_properties =
+      session->http_server_properties();
+  url::SchemeHostPort server(request.url);
+  const AlternativeServiceInfoVector alternative_service_info_vector =
+      http_server_properties->GetAlternativeServiceInfos(
+          server, NetworkAnonymizationKey());
+
+  ASSERT_EQ(1u, alternative_service_info_vector.size());
+  EXPECT_EQ(NextProto::kProtoQUIC,
+            alternative_service_info_vector[0].protocol());
+  EXPECT_EQ(443, alternative_service_info_vector[0].alternative_service().port);
+  EXPECT_EQ("www.example.org",
+            alternative_service_info_vector[0].alternative_service().host);
 }
 
 }  // namespace net

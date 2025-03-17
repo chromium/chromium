@@ -54,6 +54,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier,
+            boolean activityTopResumedSupported,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull InsetObserver insetObserver) {
         this(
@@ -62,6 +63,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
                 modalDialogManagerSupplier,
                 sKeyboardVisibilityDelegateFactory.create(
                         new WeakReference<Activity>(activity), manualFillingComponentSupplier),
+                activityTopResumedSupported,
                 intentRequestTracker,
                 insetObserver);
     }
@@ -80,12 +82,14 @@ public class ChromeWindow extends ActivityWindowAndroid {
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
+            boolean activityTopResumedSupported,
             IntentRequestTracker intentRequestTracker,
             @NonNull InsetObserver insetObserver) {
         super(
                 activity,
                 /* listenToActivityState= */ true,
                 activityKeyboardVisibilityDelegate,
+                activityTopResumedSupported,
                 intentRequestTracker,
                 insetObserver,
                 /* trackOcclusion= */ true);

@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -35,8 +34,8 @@ namespace gpu {
 
 namespace {
 
-BASE_FEATURE(kAlwaysUsePrivateFormatForImageReader,
-             "AlwaysUsePrivateFormatForImageReader",
+BASE_FEATURE(kDiscardDroppedEarlyRenderedFrames,
+             "DiscardDroppedEarlyRenderedFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSurfaceControl(TextureOwner::Mode mode) {
@@ -147,13 +146,6 @@ ImageReaderGLOwner::ImageReaderGLOwner(
   // Surface.
   int32_t width = 1, height = 1;
   max_images_ = NumRequiredMaxImages(mode);
-  AIMAGE_FORMATS format = mode == Mode::kAImageReaderSecureSurfaceControl
-                              ? AIMAGE_FORMAT_PRIVATE
-                              : AIMAGE_FORMAT_YUV_420_888;
-
-  if (base::FeatureList::IsEnabled(kAlwaysUsePrivateFormatForImageReader)) {
-    format = AIMAGE_FORMAT_PRIVATE;
-  }
 
   AImageReader* reader = nullptr;
 
@@ -167,7 +159,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
 
   // Create a new reader for images of the desired size and format.
   media_status_t return_code = AImageReader_newWithUsage(
-      width, height, format, usage, max_images_, &reader);
+      width, height, AIMAGE_FORMAT_PRIVATE, usage, max_images_, &reader);
   if (return_code != AMEDIA_OK) {
     LOG(ERROR) << " Image reader creation failed on device model : "
                << base::android::BuildInfo::GetInstance()->model()
@@ -267,12 +259,12 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
   return gl::ScopedJavaSurface(j_surface, /*auto_release=*/true);
 }
 
-void ImageReaderGLOwner::UpdateTexImage() {
+bool ImageReaderGLOwner::UpdateTexImage(bool discard) {
   base::AutoLock auto_lock(lock_);
 
   // If we've lost the texture, then do nothing.
   if (!texture())
-    return;
+    return false;
 
   DCHECK(image_reader_);
 
@@ -310,17 +302,17 @@ void ImageReaderGLOwner::UpdateTexImage() {
   switch (return_code) {
     case AMEDIA_ERROR_INVALID_PARAMETER:
       LOG(ERROR) << "AImageReader: Invalid parameter";
-      return;
+      return false;
     case AMEDIA_IMGREADER_MAX_IMAGES_ACQUIRED:
       LOG(ERROR)
           << "number of concurrently acquired images has reached the limit";
-      return;
+      return false;
     case AMEDIA_IMGREADER_NO_BUFFER_AVAILABLE:
       LOG(ERROR) << "no buffers currently available in the reader queue";
-      return;
+      return false;
     case AMEDIA_ERROR_UNKNOWN:
       LOG(ERROR) << "method fails for some other reasons";
-      return;
+      return false;
     case AMEDIA_OK:
       // Method call succeeded.
       break;
@@ -335,14 +327,25 @@ void ImageReaderGLOwner::UpdateTexImage() {
   // still be bound to the texture.
   if (!image) {
     LOG(ERROR) << "AImageReader: image is nullptr: " << return_code;
-    return;
+    return false;
   }
 
   UMA_HISTOGRAM_BOOLEAN("Media.AImageReaderGLOwner.HasFence",
                         scoped_acquire_fence_fd.is_valid());
 
+  if (discard && current_image_ref_ &&
+      base::FeatureList::IsEnabled(kDiscardDroppedEarlyRenderedFrames)) {
+    if (scoped_acquire_fence_fd.is_valid()) {
+      AImage_deleteAsync(image, scoped_acquire_fence_fd.release());
+    } else {
+      AImage_delete(image);
+    }
+    return true;
+  }
+
   // Make the newly acquired image as current image.
   current_image_ref_.emplace(this, image, std::move(scoped_acquire_fence_fd));
+  return true;
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>

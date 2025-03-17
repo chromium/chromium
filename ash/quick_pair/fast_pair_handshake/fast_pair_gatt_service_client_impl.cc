@@ -9,12 +9,13 @@
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -168,9 +169,8 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
   // Copy provider address bytes.
   std::array<uint8_t, 6> provider_address_bytes;
   device::ParseBluetoothAddress(provider_address, provider_address_bytes);
-  base::ranges::copy(
-      provider_address_bytes,
-      std::next(std::begin(request), kProviderAddressStartIndex));
+  std::ranges::copy(provider_address_bytes,
+                    std::next(std::begin(request), kProviderAddressStartIndex));
 
   // Construct `request` based on `flags`. Optional values CHECKed for are
   // required based on the flag case.
@@ -188,13 +188,13 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
       if (additional_data.has_value()) {
         CHECK(additional_data.value().size() <= kAdditionalDataMaxSizeBytes);
         CHECK(data_id_or_size.value() == additional_data.value().size());
-        base::ranges::copy(
+        std::ranges::copy(
             additional_data.value(),
             std::next(std::begin(request), kAdditionalDataStartIndex));
       } else {
         CHECK(data_id_or_size.value() == 0);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case kActionRequestAdditionalDataFlags:
       CHECK(data_id_or_size.has_value());
 
@@ -714,16 +714,16 @@ FastPairGattServiceClientImpl::CreateRequest(
 
   std::array<uint8_t, 6> provider_address_bytes;
   device::ParseBluetoothAddress(provider_address, provider_address_bytes);
-  base::ranges::copy(provider_address_bytes,
-                     std::begin(data_to_write) + kProviderAddressStartIndex);
+  std::ranges::copy(provider_address_bytes,
+                    std::begin(data_to_write) + kProviderAddressStartIndex);
 
   // Seekers address can be empty, in which we would just have the bytes be
   // the salt.
   if (!seekers_address.empty()) {
     std::array<uint8_t, 6> seeker_address_bytes;
     device::ParseBluetoothAddress(seekers_address, seeker_address_bytes);
-    base::ranges::copy(seeker_address_bytes,
-                       std::begin(data_to_write) + kSeekerAddressStartIndex);
+    std::ranges::copy(seeker_address_bytes,
+                      std::begin(data_to_write) + kSeekerAddressStartIndex);
   }
 
   return data_to_write;

@@ -8,12 +8,14 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.cached_flags.CachedFlag;
 
 import java.util.List;
 
 /** Java accessor for base::Features listed in {@link ModalDialogFeatureList}. */
 @JNINamespace("browser_ui")
+@NullMarked
 public final class ModalDialogFeatureMap extends FeatureMap {
     private static final ModalDialogFeatureMap sInstance = new ModalDialogFeatureMap();
 

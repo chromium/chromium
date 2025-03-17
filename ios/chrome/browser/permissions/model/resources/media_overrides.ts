@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Ensure that the API is not added if it does not already exist.
 if (typeof navigator === 'object' && 'mediaDevices' in navigator &&
@@ -15,11 +15,11 @@ if (typeof navigator === 'object' && 'mediaDevices' in navigator &&
     try {
       if (args.length > 0) {
         const constraints = args[0];
-        if (constraints && typeof constraints == 'object') {
+        if (constraints && typeof constraints === 'object') {
           // `constraints` may contain objects, so convert to a boolean in
           // `details` to ensure it can be sent using sendWebKitMessage.
-          details['audio'] = constraints['audio'] == true;
-          details['video'] = constraints['video'] == true;
+          details['audio'] = !!constraints['audio'];
+          details['video'] = !!constraints['video'];
         }
       }
     } catch (error) {
@@ -27,6 +27,6 @@ if (typeof navigator === 'object' && 'mediaDevices' in navigator &&
       // logged on native side.
     }
     sendWebKitMessage('MediaAPIAccessedHandler', details);
-    return originalFunc.apply(this, args)
-  }
+    return originalFunc.apply(this, args);
+  };
 }

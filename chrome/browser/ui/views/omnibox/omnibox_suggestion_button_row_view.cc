@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
@@ -367,7 +368,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
 
   const bool is_any_child_visible =
       embeddings_chip_->GetVisible() || keyword_button_->GetVisible() ||
-      base::ranges::any_of(action_buttons_, [](const auto& action_button) {
+      std::ranges::any_of(action_buttons_, [](const auto& action_button) {
         return action_button->GetVisible();
       });
   SetVisible(is_any_child_visible);
@@ -412,8 +413,8 @@ views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
 
   // Find the button that matches model selection.
   auto selected_button =
-      base::ranges::find(buttons, popup_view_->GetSelection(),
-                         &OmniboxSuggestionRowButton::selection);
+      std::ranges::find(buttons, popup_view_->GetSelection(),
+                        &OmniboxSuggestionRowButton::selection);
   return selected_button == buttons.end() ? nullptr : *selected_button;
 }
 

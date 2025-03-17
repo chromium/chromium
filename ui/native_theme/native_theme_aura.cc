@@ -5,6 +5,7 @@
 #include "ui/native_theme/native_theme_aura.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -28,7 +29,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/common_theme.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_fluent.h"
 #include "ui/native_theme/native_theme_utils.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
@@ -119,7 +120,7 @@ NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
   }
 }
 
-NativeThemeAura::~NativeThemeAura() {}
+NativeThemeAura::~NativeThemeAura() = default;
 
 // static
 NativeThemeAura* NativeThemeAura::web_instance() {
@@ -232,15 +233,18 @@ void NativeThemeAura::PaintArrowButton(
     // placeholderColor.
     DLOG(ERROR) << "thumb_color with a placeholderColor value encountered";
   }
-  if (extra_params.thumb_color.has_value() &&
-      extra_params.thumb_color.value() != gfx::kPlaceholderColor) {
-    // TODO(crbug.com/40596569): Adjust thumb_color based on `state`.
-    arrow_color = extra_params.thumb_color.value();
-  }
   if (extra_params.track_color.has_value() &&
       extra_params.track_color.value() != gfx::kPlaceholderColor) {
-    // TODO(crbug.com/40596569): Adjust track_color based on `state`.
-    bg_color = extra_params.track_color.value();
+    bg_color = GetContrastingPressedOrHoveredColor(extra_params.track_color,
+                                                   /*bg_color=*/std::nullopt,
+                                                   state, direction)
+                   .value();
+  }
+  if (extra_params.thumb_color.has_value() &&
+      extra_params.thumb_color.value() != gfx::kPlaceholderColor) {
+    arrow_color = GetContrastingPressedOrHoveredColor(
+                      extra_params.thumb_color, bg_color, state, direction)
+                      .value();
   }
   DCHECK_NE(arrow_color, gfx::kPlaceholderColor);
 
@@ -386,10 +390,12 @@ SkColor4f NativeThemeAura::GetScrollbarThumbColor(
     const ScrollbarThumbExtraParams& extra_params) const {
   // Only non-overlay aura scrollbars use solid color thumb.
   CHECK(!use_overlay_scrollbar());
-  // TODO(crbug.com/40596569): Adjust extra param `thumb_color` based on
-  // `state`.
   if (extra_params.thumb_color.has_value()) {
-    return SkColor4f::FromColor(extra_params.thumb_color.value());
+    return SkColor4f::FromColor(GetContrastingPressedOrHoveredColor(
+                                    extra_params.thumb_color,
+                                    extra_params.track_color, state,
+                                    /*part=*/Part::kScrollbarVerticalThumb)
+                                    .value());
   }
   ColorId color_id = kColorWebNativeControlScrollbarThumb;
   if (state == NativeTheme::kHovered) {
@@ -440,6 +446,15 @@ gfx::Size NativeThemeAura::GetPartSize(Part part,
   }
 
   return NativeThemeBase::GetPartSize(part, state, extra);
+}
+
+float NativeThemeAura::GetContrastRatioForState(State state, Part part) const {
+  CHECK(SupportedPartsForContrastingColor(part));
+  // Calculated by taking the contrast ratio for the base colors of the thumb.
+  static constexpr float kScrollbarThumbHoveredContrastRatio = 1.3f;
+  static constexpr float kScrollbarThumbPressedContrastRatio = 1.8f;
+  return state == kPressed ? kScrollbarThumbPressedContrastRatio
+                           : kScrollbarThumbHoveredContrastRatio;
 }
 
 void NativeThemeAura::DrawPartiallyRoundRect(cc::PaintCanvas* canvas,

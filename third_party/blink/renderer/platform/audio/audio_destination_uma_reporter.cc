@@ -6,12 +6,13 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 
 namespace blink {
 
 namespace {
 
-const char* LatencyToString(WebAudioLatencyHint& latency_hint) {
+const char* LatencyToString(const WebAudioLatencyHint& latency_hint) {
   switch (latency_hint.Category()) {
     case WebAudioLatencyHint::kCategoryInteractive:
       return "LatencyInteractive";
@@ -26,30 +27,79 @@ const char* LatencyToString(WebAudioLatencyHint& latency_hint) {
   }
 }
 
+const std::string GetExpectedHistogramName(
+    const std::string_view& name_base,
+    bool use_audio_worklet,
+    std::optional<std::string> duration) {
+  std::string_view thread_mode =
+      use_audio_worklet ? "DualThread." : "SingleThread.";
+  std::string sampling_period =
+      duration.has_value() ? base::StrCat({".", *duration}) : "";
+  return base::StrCat(
+      {"WebAudio.AudioDestination.", thread_mode, name_base, sampling_period});
+}
+
 }  // namespace
 
 AudioDestinationUmaReporter::AudioDestinationUmaReporter(
-    const WebAudioLatencyHint& latency_hint)
-    : fifo_delay_uma_callback_(CreateRealtimeUmaCallback(
-        "FIFODelay",
-        latency_hint,
-        /*max_value = */ 1000,
-        /*bucket_count = */ 50)),
-      total_playout_delay_uma_callback_(CreateRealtimeUmaCallback(
-        "TotalPlayoutDelay",
-        latency_hint,
-        /*max_value = */ 1000,
-        /*bucket_count = */ 50)),
-      fifo_underrun_count_uma_callback_(CreateAggregateUmaCallback(
-        "FIFOUnderrunCount",
-        latency_hint,
-        /*max_value = */ 1000,
-        /*bucket_count = */ 50)) {}
+    const WebAudioLatencyHint& latency_hint,
+    int callback_buffer_size,
+    float sample_rate)
+    : latency_hint_(latency_hint) {
+  expected_callback_interval_ =
+      base::Seconds(static_cast<float>(callback_buffer_size) / sample_rate);
+
+  fifo_delay_histogram_name_ =
+      GetExpectedHistogramName(kFifoDelayHistogramNameBase, use_audio_worklet_,
+                               /*duration=*/std::nullopt);
+  fifo_delay_histogram_name_with_latency_tag_ = base::StrCat(
+      {fifo_delay_histogram_name_, ".", LatencyToString(latency_hint_)});
+
+  fifo_underrun_histogram_name_ = GetExpectedHistogramName(
+      kFifoUnderrunHistogramNameBase, use_audio_worklet_,
+      /*duration=*/"Intervals");
+  fifo_underrun_histogram_name_with_latency_tag_ = base::StrCat(
+      {fifo_underrun_histogram_name_, ".", LatencyToString(latency_hint_)});
+
+  total_playout_delay_histogram_name_ = GetExpectedHistogramName(
+      kTotalPlayoutDelayHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  total_playout_delay_histogram_name_with_latency_tag_ =
+      base::StrCat({total_playout_delay_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+
+  render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  render_time_ratio_histogram_name_with_latency_tag_ = base::StrCat(
+      {render_time_ratio_histogram_name_, ".", LatencyToString(latency_hint_)});
+  request_render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_time_ratio_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+  request_render_gap_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderGapTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_gap_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_gap_time_ratio_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+}
 
 AudioDestinationUmaReporter::~AudioDestinationUmaReporter() {
   if (is_stream_short_ && callback_count_ > 0) {
-    fifo_underrun_count_uma_callback_.Run(fifo_underrun_count_,
-                                          SamplingPeriod::kShort);
+    fifo_underrun_histogram_name_ = GetExpectedHistogramName(
+        kFifoUnderrunHistogramNameBase, use_audio_worklet_,
+        /*duration=*/"Short");
+    fifo_underrun_histogram_name_with_latency_tag_ = base::StrCat(
+        {fifo_underrun_histogram_name_, ".", LatencyToString(latency_hint_)});
+
+    base::UmaHistogramCustomCounts(fifo_underrun_histogram_name_,
+                                   fifo_underrun_count_, 1, 1000, 50);
+    base::UmaHistogramCustomCounts(
+        fifo_underrun_histogram_name_with_latency_tag_, fifo_underrun_count_, 1,
+        1000, 50);
   }
 }
 
@@ -67,83 +117,100 @@ void AudioDestinationUmaReporter::IncreaseFifoUnderrunCount() {
 }
 
 void AudioDestinationUmaReporter::Report() {
-  fifo_delay_uma_callback_.Run(fifo_delay_.InMilliseconds());
-  total_playout_delay_uma_callback_.Run(total_playout_delay_.InMilliseconds());
+  base::UmaHistogramCustomCounts(fifo_delay_histogram_name_,
+                                 fifo_delay_.InMilliseconds(), 1, 1000, 50);
+  base::UmaHistogramCustomCounts(fifo_delay_histogram_name_with_latency_tag_,
+                                 fifo_delay_.InMilliseconds(), 1, 1000, 50);
 
-  if (++callback_count_ >= 1000) {
-    fifo_underrun_count_uma_callback_.Run(fifo_underrun_count_,
-                                          SamplingPeriod::kIntervals);
+  base::UmaHistogramCustomCounts(total_playout_delay_histogram_name_,
+                                 total_playout_delay_.InMilliseconds(), 1, 1000,
+                                 50);
+  base::UmaHistogramCustomCounts(
+      total_playout_delay_histogram_name_with_latency_tag_,
+      total_playout_delay_.InMilliseconds(), 1, 1000, 50);
+  if (++callback_count_ >= kMetricsReportCycle) {
+    base::UmaHistogramCustomCounts(fifo_underrun_histogram_name_,
+                                   fifo_underrun_count_, 1, 1000, 50);
+    base::UmaHistogramCustomCounts(
+        fifo_underrun_histogram_name_with_latency_tag_, fifo_underrun_count_, 1,
+        1000, 50);
+
+    int render_time_percentage =
+        PercentOfCallbackInterval(render_total_duration_);
+    int request_render_time_percentage =
+        PercentOfCallbackInterval(request_render_total_duration_);
+    int request_render_gap_time_percentage =
+        PercentOfCallbackInterval(request_render_gap_total_duration_);
+
+    base::UmaHistogramExactLinear(render_time_ratio_histogram_name_,
+                                  render_time_percentage, 101);
+    base::UmaHistogramExactLinear(
+        render_time_ratio_histogram_name_with_latency_tag_,
+        render_time_percentage, 101);
+    base::UmaHistogramExactLinear(request_render_time_ratio_histogram_name_,
+                                  request_render_time_percentage, 101);
+    base::UmaHistogramExactLinear(
+        request_render_time_ratio_histogram_name_with_latency_tag_,
+        request_render_time_percentage, 101);
+    base::UmaHistogramExactLinear(request_render_gap_time_ratio_histogram_name_,
+                                  request_render_gap_time_percentage, 101);
+    base::UmaHistogramExactLinear(
+        request_render_gap_time_ratio_histogram_name_with_latency_tag_,
+        request_render_gap_time_percentage, 101);
+
     callback_count_ = 0;
     fifo_underrun_count_ = 0;
+    render_total_duration_ = base::TimeDelta();
+    request_render_total_duration_ = base::TimeDelta();
+    request_render_gap_total_duration_ = base::TimeDelta();
     is_stream_short_ = false;
   }
 }
 
-AudioDestinationUmaReporter::RealtimeUmaCallback
-AudioDestinationUmaReporter::CreateRealtimeUmaCallback(
-    const std::string& stat_name,
-    WebAudioLatencyHint latency_hint,
-    int max_value,
-    size_t bucket_count) {
-  std::string base_name(
-      base::StrCat({"WebAudio.AudioDestination.", stat_name}));
-  std::string base_with_latency_name(
-      base::StrCat({base_name, ".", LatencyToString(latency_hint)}));
+void AudioDestinationUmaReporter::UpdateMetricNameForDualThreadMode() {
+  use_audio_worklet_ = true;
+  fifo_delay_histogram_name_ =
+      GetExpectedHistogramName(kFifoDelayHistogramNameBase, use_audio_worklet_,
+                               /*duration=*/std::nullopt);
+  fifo_delay_histogram_name_with_latency_tag_ = base::StrCat(
+      {fifo_delay_histogram_name_, ".", LatencyToString(latency_hint_)});
 
-  base::HistogramBase* histogram = base::Histogram::FactoryGet(
-      std::move(base_name), 1, max_value, bucket_count,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  base::HistogramBase* histogram_with_latency = base::Histogram::FactoryGet(
-      std::move(base_with_latency_name), 1, max_value, bucket_count,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
+  fifo_underrun_histogram_name_ = GetExpectedHistogramName(
+      kFifoUnderrunHistogramNameBase, use_audio_worklet_,
+      /*duration=*/"Intervals");
+  fifo_underrun_histogram_name_with_latency_tag_ = base::StrCat(
+      {fifo_underrun_histogram_name_, ".", LatencyToString(latency_hint_)});
 
-  // Histogram pointers from FactoryGet are not owned by the caller. They are
-  // never deleted, see crbug.com/79322
-  return base::BindRepeating(
-      [](base::HistogramBase* histogram,
-         base::HistogramBase* histogram_with_latency, int value) {
-        histogram->Add(value);
-        histogram_with_latency->Add(value);
-      },
-      base::Unretained(histogram), base::Unretained(histogram_with_latency));
+  total_playout_delay_histogram_name_ = GetExpectedHistogramName(
+      kTotalPlayoutDelayHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  total_playout_delay_histogram_name_with_latency_tag_ =
+      base::StrCat({total_playout_delay_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+
+  render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  render_time_ratio_histogram_name_with_latency_tag_ = base::StrCat(
+      {render_time_ratio_histogram_name_, ".", LatencyToString(latency_hint_)});
+  request_render_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_time_ratio_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
+  request_render_gap_time_ratio_histogram_name_ = GetExpectedHistogramName(
+      kRequestRenderGapTimeRatioHistogramNameBase, use_audio_worklet_,
+      /*duration=*/std::nullopt);
+  request_render_gap_time_ratio_histogram_name_with_latency_tag_ =
+      base::StrCat({request_render_gap_time_ratio_histogram_name_, ".",
+                    LatencyToString(latency_hint_)});
 }
 
-AudioDestinationUmaReporter::AggregateUmaCallback
-AudioDestinationUmaReporter::CreateAggregateUmaCallback(
-    const std::string& stat_name,
-    WebAudioLatencyHint latency_hint,
-    int max_value,
-    size_t bucket_count) {
-  std::string base_name(
-      base::StrCat({"WebAudio.AudioDestination.", stat_name}));
-  std::string short_name(base::StrCat({base_name, ".Short"}));
-  std::string intervals_name(base::StrCat({base_name, ".Intervals"}));
-  std::string short_with_latency_name(
-      base::StrCat({short_name, ".", LatencyToString(latency_hint)}));
-  std::string intervals_with_latency_name(
-      base::StrCat({intervals_name, ".", LatencyToString(latency_hint)}));
-
-  return base::BindRepeating(
-      [](int max_value, size_t bucket_count, const std::string& short_name,
-         const std::string& intervals_name,
-         const std::string& short_with_latency_name,
-         const std::string& intervals_with_latency_name, int value,
-         SamplingPeriod sampling_period) {
-        if (sampling_period == SamplingPeriod::kShort) {
-          base::UmaHistogramCustomCounts(short_name, value, 1, max_value,
-                                         bucket_count);
-          base::UmaHistogramCustomCounts(short_with_latency_name, value, 1,
-                                         max_value, bucket_count);
-        } else {
-          base::UmaHistogramCustomCounts(intervals_name, value, 1, max_value,
-                                         bucket_count);
-          base::UmaHistogramCustomCounts(intervals_with_latency_name, value, 1,
-                                         max_value, bucket_count);
-        }
-      },
-      max_value, bucket_count, std::move(short_name), std::move(intervals_name),
-      std::move(short_with_latency_name),
-      std::move(intervals_with_latency_name));
+int AudioDestinationUmaReporter::PercentOfCallbackInterval(
+    base::TimeDelta duration) {
+  return static_cast<int>(100 * (duration / expected_callback_interval_) /
+                          kMetricsReportCycle);
 }
 
 }  // namespace blink

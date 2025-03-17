@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -32,6 +33,7 @@ public class HubManagerFactory {
      * @param snackbarManager The primary {@link SnackbarManager} for the activity.
      * @param tabSupplier The supplier of the current tab in the current tab model.
      * @param menuButtonCoordinator Root component for the app menu.
+     * @param edgeToEdgeSupplier A supplier to the {@link EdgeToEdgeController}.
      * @param searchActivityClient A client for the search activity, used to launch search.
      * @return an instance of {@link HubManagerImpl}.
      */
@@ -45,6 +47,7 @@ public class HubManagerFactory {
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
             @NonNull HubShowPaneHelper hubShowPaneHelper,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @NonNull SearchActivityClient searchActivityClient) {
         return new HubManagerImpl(
                 activity,
@@ -56,6 +59,7 @@ public class HubManagerFactory {
                 tabSupplier,
                 menuButtonCoordinator,
                 hubShowPaneHelper,
+                edgeToEdgeSupplier,
                 searchActivityClient);
     }
 }

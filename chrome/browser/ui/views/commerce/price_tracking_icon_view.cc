@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
+#include <string_view>
+
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -201,7 +203,7 @@ void PriceTrackingIconView::ForceVisibleForTesting(bool is_tracking_price) {
   SetVisualState(is_tracking_price);
 }
 
-const std::u16string& PriceTrackingIconView::GetIconLabelForTesting() {
+std::u16string_view PriceTrackingIconView::GetIconLabelForTesting() const {
   return label()->GetText();
 }
 

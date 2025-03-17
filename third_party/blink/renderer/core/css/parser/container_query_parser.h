@@ -5,16 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CONTAINER_QUERY_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CONTAINER_QUERY_PARSER_H_
 
-#include <optional>
-
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 
 namespace blink {
 
 class CSSParserContext;
+class CSSIfParser;
 
 class CORE_EXPORT ContainerQueryParser {
   STACK_ALLOCATED();
@@ -26,8 +26,30 @@ class CORE_EXPORT ContainerQueryParser {
   const MediaQueryExpNode* ParseCondition(String);
   const MediaQueryExpNode* ParseCondition(CSSParserTokenStream&);
 
+  class StyleFeatureSet : public MediaQueryParser::FeatureSet {
+    STACK_ALLOCATED();
+
+   public:
+    bool IsAllowed(const AtomicString& feature) const override {
+      // TODO(crbug.com/40217044): Only support querying custom properties for
+      // now.
+      return CSSVariableParser::IsValidVariableName(feature);
+    }
+    bool IsAllowedWithoutValue(const AtomicString& feature,
+                               const ExecutionContext*) const override {
+      return true;
+    }
+    bool IsCaseSensitive(const AtomicString& feature) const override {
+      // TODO(crbug.com/40217044): non-custom properties are case-insensitive.
+      return true;
+    }
+    bool SupportsRange() const override { return false; }
+    bool SupportsElementDependent() const override { return true; }
+  };
+
  private:
   friend class ContainerQueryParserTest;
+  friend class CSSIfParser;
 
   using FeatureSet = MediaQueryParser::FeatureSet;
 

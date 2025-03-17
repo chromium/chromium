@@ -15,7 +15,9 @@ interface BackgroundTracingAgentClient {
   OnInitialized();
   // Called when a monitored histogram trigger is hit. Histograms are monitored
   // by calling BackgroundTracingAgent::SetUMACallback().
-  OnTriggerBackgroundTrace(BackgroundTracingRule rule, int32? histogram_value);
+  OnTriggerBackgroundTrace(BackgroundTracingRule rule,
+                           int32? histogram_value,
+                           uint64 flow_id);
 };
 
 // This interface is used to allow clients (the browser process) to monitor for

@@ -222,7 +222,7 @@ public class BottomBarConfigCreatorTest {
         Integer spotlight = buttonConfig.getSpotlightId();
 
         assertNotNull(spotlight);
-        assertEquals(spotlight.intValue(), PIH_BASIC);
+        assertEquals(PIH_BASIC, spotlight.intValue());
         assertEquals(3, buttonConfig.getButtonList().size());
     }
 

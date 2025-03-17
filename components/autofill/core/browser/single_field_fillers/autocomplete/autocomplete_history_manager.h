@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -20,15 +21,13 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
-#include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
 
 // Per-profile Autocomplete history manager. Handles receiving form data
 // from the renderers and the storing and retrieving of form data
 // through WebDataServiceBase.
-class AutocompleteHistoryManager : public KeyedService,
-                                   public WebDataServiceConsumer {
+class AutocompleteHistoryManager : public KeyedService {
  public:
   AutocompleteHistoryManager();
 
@@ -70,10 +69,8 @@ class AutocompleteHistoryManager : public KeyedService,
             PrefService* pref_service,
             bool is_off_the_record);
 
-  // WebDataServiceConsumer implementation.
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle h,
+                                   std::unique_ptr<WDTypedResult> result);
 
  private:
   friend class AutocompleteHistoryManagerTest;
@@ -148,6 +145,8 @@ class AutocompleteHistoryManager : public KeyedService,
 
   // Whether the service is associated with an off-the-record browser context.
   bool is_off_the_record_ = false;
+
+  base::WeakPtrFactory<AutocompleteHistoryManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

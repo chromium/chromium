@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "cc/scheduler/scheduler.h"
 
 #include <stddef.h>
@@ -195,7 +200,6 @@ class FakeSchedulerClient : public SchedulerClient,
     last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
     return DrawResult::kSuccess;
   }
-  void ScheduledActionUpdateDisplayTree() override { NOTIMPLEMENTED(); }
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
@@ -576,6 +580,19 @@ class SchedulerTest : public testing::Test {
     fake_compositor_timing_history_
         ->SetBeginMainFrameQueueDurationNotCriticalEstimate(delta);
     fake_compositor_timing_history_->SetDrawDurationEstimate(base::TimeDelta());
+  }
+
+  void SendTestBeginFrameAfterInterval(base::TimeDelta interval,
+                                       uint64_t source_id,
+                                       uint64_t sequence_number) {
+    scheduler_->SetNeedsRedraw();
+    task_runner_->AdvanceMockTickClock(interval);
+    viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, source_id, sequence_number,
+        task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+        viz::BeginFrameArgs::NORMAL);
+    fake_external_begin_frame_source_->TestOnBeginFrame(args);
+    EXPECT_EQ(client_->frame_interval(), interval);
   }
 
   void AdvanceAndMissOneFrame();
@@ -1580,7 +1597,7 @@ TEST_F(SchedulerTest, BeginMainFrameThrottling) {
   fake_external_begin_frame_source_->TestOnBeginFrame(args);
   EXPECT_EQ(client_->frame_interval(), interval);
   EXPECT_TRUE(
-      scheduler_->state_machine().main_frame_throttled_interval().is_zero());
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
 
   {
     base::test::ScopedFeatureList feature_list;
@@ -1597,7 +1614,7 @@ TEST_F(SchedulerTest, BeginMainFrameThrottling) {
     fake_external_begin_frame_source_->TestOnBeginFrame(args);
     EXPECT_EQ(client_->frame_interval(), interval);
     EXPECT_TRUE(
-        scheduler_->state_machine().main_frame_throttled_interval().is_zero());
+        scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
   }
 
   // Enable the feature for the rest of the test.
@@ -1615,8 +1632,10 @@ TEST_F(SchedulerTest, BeginMainFrameThrottling) {
   fake_external_begin_frame_source_->TestOnBeginFrame(args);
   EXPECT_EQ(client_->frame_interval(), interval);
   constexpr float kSlackFactor = .9;
-  EXPECT_EQ(scheduler_->state_machine().main_frame_throttled_interval(),
-            base::Hertz(60) * kSlackFactor);
+  EXPECT_NEAR(scheduler_->state_machine()
+                  .MainFrameThrottledInterval()
+                  .InMillisecondsF(),
+              (base::Hertz(60) * kSlackFactor).InMillisecondsF(), 1e-2);
 
   // Not at 90Hz.
   interval = base::Hertz(90);
@@ -1629,7 +1648,7 @@ TEST_F(SchedulerTest, BeginMainFrameThrottling) {
   fake_external_begin_frame_source_->TestOnBeginFrame(args);
   EXPECT_EQ(client_->frame_interval(), interval);
   EXPECT_TRUE(
-      scheduler_->state_machine().main_frame_throttled_interval().is_zero());
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
 }
 
 TEST_F(SchedulerTest, MainFrameNotSkippedAfterLateCommit) {
@@ -4100,6 +4119,51 @@ TEST_F(SchedulerTest,
   // No invalidation should be performed since we are waiting for the main
   // thread to respond and merge with the commit.
   EXPECT_ACTIONS("WillBeginImplFrame");
+}
+
+TEST_F(SchedulerTest, ProactiveThrottling) {
+  // Verify that the SchedulerClient gets updates when the begin frame interval
+  // changes.
+  SetUpScheduler(EXTERNAL_BFS);
+  constexpr uint64_t kSourceId = viz::BeginFrameArgs::kStartingSourceId;
+  uint64_t sequence_number = viz::BeginFrameArgs::kStartingFrameNumber;
+
+  // Enable the proactive throttling feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRenderThrottleFrameRate,
+      {{"render-throttled-frame-interval-hz", "30"}});
+  base::TimeDelta throttled_interval =
+      base::Hertz(features::kRenderThrottledFrameIntervalHz.Get());
+
+  // No throttling by default.
+  base::TimeDelta interval = base::Hertz(120);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+
+  scheduler_->SetShouldThrottleFrameRate(true);
+
+  // Throttling at 60fps.
+  interval = base::Hertz(60);
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_EQ(scheduler_->state_machine().MainFrameThrottledInterval(),
+            throttled_interval);
+
+  // Not at 10fps.
+  interval = base::Hertz(10);
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+
+  // Not throttling after stopping the throttle.
+  scheduler_->SetShouldThrottleFrameRate(false);
+  interval = base::Hertz(60);
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
 }
 
 class WarmUpCompositorSchedulerTest : public SchedulerTest {

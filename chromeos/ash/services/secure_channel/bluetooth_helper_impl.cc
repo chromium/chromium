@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/services/secure_channel/bluetooth_helper_impl.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/beacon_seed.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_cache.h"
@@ -201,7 +202,7 @@ BluetoothHelperImpl::PerformIdentifyRemoteDevice(
       service_data.size() >= kMinNumBytesInServiceData &&
       service_data.size() <= kMaxNumBytesInBackgroundServiceData) {
     multidevice::RemoteDeviceRefList remote_devices;
-    base::ranges::transform(
+    std::ranges::transform(
         remote_device_ids, std::back_inserter(remote_devices),
         [this](auto device_id) {
           return *remote_device_cache_->GetRemoteDevice(

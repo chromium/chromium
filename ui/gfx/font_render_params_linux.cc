@@ -74,8 +74,11 @@ int FontWeightToFCWeight(Font::Weight weight) {
 // should be used.
 float device_scale_factor_ = 1.0f;
 
+// If true, disables the subpixel rendering even if it is enabled in config.
+bool force_disable_subpixel_font_rendering = false;
+
 // Number of recent GetFontRenderParams() results to cache.
-const size_t kCacheSize = 256;
+constexpr size_t kCacheSize = 256;
 
 // Cached result from a call to GetFontRenderParams().
 struct QueryResult {
@@ -181,6 +184,14 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   return true;
 }
 
+void SetForceDisableSubpixelFontRendering(bool disable) {
+  force_disable_subpixel_font_rendering = disable;
+}
+
+bool GetFontRenderParamsSubpixelRenderingEnabledForTesting() {
+  return force_disable_subpixel_font_rendering;
+}
+
 FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
                                      std::string* family_out) {
   TRACE_EVENT0("fonts", "gfx::GetFontRenderParams");
@@ -217,6 +228,11 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   }
 #endif
   QueryFontconfig(actual_query, &params, family_out);
+
+  if (force_disable_subpixel_font_rendering) {
+    params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_NONE;
+  }
+
   if (!params.antialiasing) {
     // Cairo forces full hinting when antialiasing is disabled, since anything
     // less than that looks awful; do the same here. Requesting subpixel

@@ -8,9 +8,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/prefs.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+
 namespace client_certificates {
 
 ProfileContextDelegate::ProfileContextDelegate(Profile* profile)
@@ -27,6 +30,18 @@ void ProfileContextDelegate::OnClientCertificateDeleted(
         storage_partition->GetNetworkContext()->FlushMatchingCachedClientCert(
             certificate);
       });
-    }
+}
+
+std::string ProfileContextDelegate::GetIdentityName() {
+  return kManagedProfileIdentityName;
+}
+
+std::string ProfileContextDelegate::GetTemporaryIdentityName() {
+  return kTemporaryManagedProfileIdentityName;
+}
+
+std::string ProfileContextDelegate::GetPolicyPref() {
+  return prefs::kProvisionManagedClientCertificateForUserPrefs;
+}
 
 }  // namespace client_certificates

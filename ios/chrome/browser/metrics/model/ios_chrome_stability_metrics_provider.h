@@ -7,18 +7,17 @@
 
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
-#include "ios/web/public/deprecated/global_web_state_observer.h"
 
 class PrefService;
 
 namespace web {
 class NavigationContext;
+class WebState;
 }  // namespace web
 
 // IOSChromeStabilityMetricsProvider gathers and logs Chrome-specific stability-
 // related metrics.
-class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
-                                          public web::GlobalWebStateObserver {
+class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider {
  public:
   // Buckets for the histogram that counts events relevant for counting page
   // loads. These events are mutually exclusive.
@@ -53,12 +52,15 @@ class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
 
-  // web::GlobalWebStateObserver:
-  void WebStateDidStartLoading(web::WebState* web_state) override;
-  void WebStateDidStartNavigation(
-      web::WebState* web_state,
-      web::NavigationContext* navigation_context) override;
-  void RenderProcessGone(web::WebState* web_state) override;
+  // Called when any WebState starts loading.
+  void WebStateDidStartLoading(web::WebState* web_state);
+
+  // Called when any WebState starts a navigation.
+  void WebStateDidStartNavigation(web::WebState* web_state,
+                                  web::NavigationContext* navigation_context);
+
+  // Called when the render process for a WebState is lost.
+  void RenderProcessGone(web::WebState* web_state);
 
   // Records a renderer process crash.
   void LogRendererCrash();

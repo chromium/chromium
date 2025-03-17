@@ -17,9 +17,6 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 @protocol ManageAccountsConsumer;
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 // Mediator for the Accounts TableView Controller.
 @interface ManageAccountsMediator
@@ -32,11 +29,11 @@ class SyncService;
 @property(nonatomic, weak) id<ManageAccountsMediatorDelegate> delegate;
 
 // Designated initializer.
-- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
-                        authService:(AuthenticationService*)authService
-                    identityManager:(signin::IdentityManager*)identityManager
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                  identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

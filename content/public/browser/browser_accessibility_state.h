@@ -84,12 +84,44 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Win7.
   virtual void ResetAccessibilityMode() = 0;
 
-  // Called when screen reader client is detected.
+  // Called when an accessibility client is detected, using a heuristic.
+  // These methods indicate the presence of AXMode::kExtendedProperties, which
+  // is a misnomer because it is used by many clients, and not just screen
+  // readers. Methods with "KnownScreenReader" or KnownAssistiveTech" in the
+  // name deal with actual screen reader or assistive tech usage.
   virtual void OnScreenReaderDetected() = 0;
 
-  // Called when screen reader client that had been detected is no longer
-  // running.
+  // Called when kExtendedProperties mode should be turned off.
   virtual void OnScreenReaderStopped() = 0;
+
+  // Some platforms have a strong signal indicating the presence of a
+  // screen reader and can call in to let us know when one has
+  // been enabled/disabled. This should be called for screen readers only.
+  virtual void SetKnownScreenReaderAppActive(bool is_active) = 0;
+
+  enum AssistiveTech {
+    // Use kUnknown if dependent on an expensive computation in
+    // UpdateKnownAssistiveTechSlow() that hasn't yet run.
+    kNone = 0,
+    kUnknown = 1,
+    kChromeVox = 2,
+    kJaws = 3,
+    kNarrator = 4,
+    kNvda = 5,
+    kOrca = 6,
+    kSupernova = 7,
+    kTalkback = 8,
+    kVoiceOver = 9,
+    kZoomText = 10,
+    kZdsr = 11,
+    kMaxValue = 11
+  };
+
+  virtual AssistiveTech ActiveKnownAssistiveTech() = 0;
+
+  // Returns true if there is an ActiveKnownAssistiveTech() matching a
+  // screen reader. Note, on some platforms this is slow to compute.
+  virtual bool IsKnownScreenReaderActiveSlow() = 0;
 
   // Returns true if the browser should be customized for accessibility.
   virtual bool IsAccessibleBrowser() = 0;

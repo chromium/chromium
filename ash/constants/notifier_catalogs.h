@@ -210,7 +210,10 @@ enum class NotificationCatalogName {
   kOnTaskAddContentToBundle = 191,
   kOnTaskRemoveContentFromBundle = 192,
   kScannerAction = 193,
-  kMaxValue = kScannerAction
+  kChromeAppDeprecation = 194,
+  kDownloadImageFromLobster = 195,
+  kBocaSpotlightStarted = 196,
+  kMaxValue = kBocaSpotlightStarted
 };
 
 // A living catalog that registers system nudges.
@@ -330,7 +333,10 @@ enum class ToastCatalogName {
   kCoralSavedGroupLimitMax = 58,
   kScannerActionSuccess = 59,
   kScannerActionFailure = 60,
-  kMaxValue = kScannerActionFailure
+  kCameraNowAllowed = 61,
+  kCameraNowDisallowed = 62,
+  kCameraForceDisabled = 63,
+  kMaxValue = kCameraForceDisabled
 };
 
 }  // namespace ash

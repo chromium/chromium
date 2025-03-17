@@ -19,6 +19,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -55,11 +57,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         int MAX_COUNT = 3;
     }
 
-    private final Map<Integer, Bitmap> mTabIdToFaviconMap = new HashMap<>();
-
-    @NonNull private Context mContext;
+    private @NonNull Context mContext;
     private int mTaskFinishedCount;
-    @NonNull private AuxiliarySearchController mAuxiliarySearchController;
+    private AuxiliarySearchController mAuxiliarySearchController;
+    private FaviconHelper mFaviconHelper;
 
     @Override
     protected int onStartTaskBeforeNativeLoaded(
@@ -77,6 +78,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
         mTaskFinishedCount = 0;
         Profile profile = ProfileManager.getLastUsedRegularProfile();
+        // The AuxiliarySearchControllerFactory#setIsTablet() must be called before creating the
+        // controller which checks AuxiliarySearchControllerFactory#isEnabled(). This task won't be
+        // scheduled if the device isn't a tablet.
+        AuxiliarySearchControllerFactory.getInstance().setIsTablet(true);
         mAuxiliarySearchController =
                 AuxiliarySearchControllerFactory.getInstance()
                         .createAuxiliarySearchController(
@@ -98,14 +103,16 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                         : resources.getDimensionPixelSize(
                                 R.dimen.auxiliary_search_favicon_size_small);
 
-        readTabDonateMetadataAsync(
+        mFaviconHelper = new FaviconHelper();
+        readDonationMetadataAsync(
+                mContext,
                 (tabs) ->
-                        onTabDonateMetadataRead(
+                        onDonationMetadataRead(
                                 profile,
                                 faviconSize,
                                 startTimeMs,
                                 taskFinishedCallback,
-                                new FaviconHelper(),
+                                mFaviconHelper,
                                 mAuxiliarySearchController,
                                 tabs));
     }
@@ -130,16 +137,18 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
     }
 
     /**
-     * Reads the saved metadata file to get tabs.
+     * Reads the saved metadata file.
      *
-     * @param callback The callback to notify when the list of tabs is available.
+     * @param context The application context.
+     * @param callback The callback to notify when the list of data is available.
+     * @param <T> The type of the entry data for donation.
      */
     @VisibleForTesting
-    void readTabDonateMetadataAsync(@NonNull Callback<List<AuxiliarySearchEntry>> callback) {
+    static <T> void readDonationMetadataAsync(Context context, Callback<List<T>> callback) {
         new AsyncTask<>() {
             @Override
             protected Object doInBackground() {
-                File tabDonateFile = AuxiliarySearchUtils.getTabDonateFile(mContext);
+                File tabDonateFile = AuxiliarySearchUtils.getTabDonateFile(context);
                 if (!tabDonateFile.exists()) {
                     return null;
                 }
@@ -171,44 +180,54 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
     }
 
     /**
-     * Called when the metadata file is read. This functions will fetch the favicons for all tabs in
-     * the list.
+     * Called when the metadata file is read. This functions will fetch the favicons for all entries
+     * in the list.
+     *
+     * @param <T> The type of the entry data for donation.
      */
-    void onTabDonateMetadataRead(
+    @VisibleForTesting
+    <T> void onDonationMetadataRead(
             @NonNull Profile profile,
             int faviconSize,
             long startTimeMs,
             @NonNull TaskFinishedCallback taskFinishedCallback,
             @NonNull FaviconHelper faviconHelper,
             @NonNull AuxiliarySearchController auxiliarySearchController,
-            @Nullable List<AuxiliarySearchEntry> tabs) {
-        if (tabs == null || tabs.isEmpty()) {
+            @Nullable List<T> entries) {
+        if (entries == null || entries.isEmpty()) {
             onTaskFinished(taskFinishedCallback);
             return;
         }
 
-        for (AuxiliarySearchEntry tab : tabs) {
+        Map<T, Bitmap> entriesToFaviconMap = new HashMap<>();
+        for (T entry : entries) {
+            GURL entryUrl;
+            if (entry instanceof AuxiliarySearchEntry tab) {
+                entryUrl = new GURL(tab.getUrl());
+            } else {
+                entryUrl = ((AuxiliarySearchDataEntry) entry).url;
+            }
             faviconHelper.getLocalFaviconImageForURL(
                     profile,
-                    new GURL(tab.getUrl()),
+                    entryUrl,
                     faviconSize,
                     (bitmap, url) -> {
                         if (bitmap != null) {
-                            mTabIdToFaviconMap.put(tab.getId(), bitmap);
+                            entriesToFaviconMap.put(entry, bitmap);
                         }
                         mTaskFinishedCount++;
                         // Notifies the taskFinishedCallback after all favicon fetching are
                         // responded.
-                        if (mTaskFinishedCount == tabs.size()) {
+                        if (mTaskFinishedCount == entries.size()) {
                             long currentTimeMs = TimeUtils.uptimeMillis();
                             AuxiliarySearchMetrics.recordScheduledFaviconFetchDuration(
                                     currentTimeMs - startTimeMs);
 
-                            if (!mTabIdToFaviconMap.isEmpty()) {
-                                int size = mTabIdToFaviconMap.size();
+                            if (!entriesToFaviconMap.isEmpty()) {
+                                int size = entriesToFaviconMap.size();
                                 auxiliarySearchController.onBackgroundTaskStart(
-                                        tabs,
-                                        mTabIdToFaviconMap,
+                                        entries,
+                                        entriesToFaviconMap,
                                         (success) -> {
                                             onTaskFinished(taskFinishedCallback);
                                             AuxiliarySearchMetrics.recordScheduledDonationResult(
@@ -232,10 +251,17 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
     @VisibleForTesting
     public void onTaskFinished(TaskFinishedCallback taskFinishedCallback) {
+        PostTask.runOrPostTask(TaskTraits.UI_TRAITS_START, () -> destroy());
+        taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
+    }
+
+    private void destroy() {
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.destroy();
             mAuxiliarySearchController = null;
         }
-        taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
+        if (mFaviconHelper != null) {
+            mFaviconHelper.destroy();
+        }
     }
 }

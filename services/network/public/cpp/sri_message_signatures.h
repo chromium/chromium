@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -28,7 +29,7 @@ namespace network {
 // the tight constraints described in
 // https://wicg.github.io/signature-based-sri/#verification-requirements-for-sri
 COMPONENT_EXPORT(NETWORK_CPP)
-std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
+mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     const net::HttpResponseHeaders& headers);
 
 // Given an SRI Message Signature, and a set of response headers, construct
@@ -49,20 +50,28 @@ std::optional<std::string> ConstructSignatureBase(
 // that work, returning `true` if validation succeeds.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool ValidateSRIMessageSignaturesOverHeaders(
-    const std::vector<mojom::SRIMessageSignaturePtr>& signatures,
+    mojom::SRIMessageSignaturesPtr& signatures,
     const GURL& request_url,
     const net::HttpResponseHeaders& headers);
 
 // Returns `BlockedByResponseReason::kSRIMessageSignatureMismatch` if a response
 // fails validation. If validation is successful, returns `std::nullopt`.
 //
-// Validation always succeeds if the `features::kSRIMessageSignatureEnforcement`
-// flag is disabled.
+// Validation will be skipped in most cases if the
+// `features::kSRIMessageSignatureEnforcement` flag is disabled. This flag can
+// be overridden by setting the |checks_forced_by_initiator| parameter in order
+// to support experiments and trials that might be enabled by specific origins.
+//
+// TODO(393924693): Remove this parameter once we no longer need the origin
+// trial infrastructure.
 COMPONENT_EXPORT(NETWORK_CPP)
 std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const GURL& request_url,
-    const network::mojom::URLResponseHead& response);
+    const network::mojom::URLResponseHead& response,
+    bool checks_forced_by_initiator,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer = nullptr,
+    const std::string& devtools_request_id = std::string());
 
 // Adds an `Accept-Signature` header to outgoing requests if the request's
 // initiator asserted signature-based integrity expectations.

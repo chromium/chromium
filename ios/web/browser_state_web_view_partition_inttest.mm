@@ -23,9 +23,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 // A WKNavigationDelegate that is used to check if a WKWebView has finished
 // a navigation. Used for testing purposes.
-@interface FakeNavigationDelegate : NSObject<WKNavigationDelegate>
+@interface FakeNavigationDelegate : NSObject <WKNavigationDelegate>
 // YES if a navigation has finished.
-@property (nonatomic, assign) BOOL didFinishNavigation;
+@property(nonatomic, assign) BOOL didFinishNavigation;
 @end
 
 @implementation FakeNavigationDelegate

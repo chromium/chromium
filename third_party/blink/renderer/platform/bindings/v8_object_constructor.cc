@@ -78,34 +78,21 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
   v8::Local<v8::FunctionTemplate> interface_template =
       type->GetV8ClassTemplate(isolate, world).As<v8::FunctionTemplate>();
   // Getting the function might fail if we're running out of stack or memory.
-  v8::Local<v8::Function> interface_object;
-  bool get_interface_object =
-      interface_template->GetFunction(context).ToLocal(&interface_object);
-  if (!get_interface_object) [[unlikely]] {
-    // For investigation of crbug.com/1247628
-    static crash_reporter::CrashKeyString<64> crash_key(
-        "blink__create_interface_object");
-    crash_key.Set(type->interface_name);
-    CHECK(get_interface_object);
-  }
+  v8::Local<v8::Function> interface_object =
+      interface_template->GetFunction(context).ToLocalChecked();
 
   if (type->parent_class) {
     DCHECK(!parent_interface.IsEmpty());
-    bool set_parent_interface =
-        interface_object->SetPrototype(context, parent_interface).ToChecked();
-    CHECK(set_parent_interface);
+    interface_object->SetPrototype(context, parent_interface).Check();
   }
 
   v8::Local<v8::Object> prototype_object;
   if (type->wrapper_type_prototype ==
       WrapperTypeInfo::kWrapperTypeObjectPrototype) {
-    v8::Local<v8::Value> prototype_value;
-    bool get_prototype_value =
+    v8::Local<v8::Value> prototype_value =
         interface_object->Get(context, V8AtomicString(isolate, "prototype"))
-            .ToLocal(&prototype_value);
-    CHECK(get_prototype_value);
+            .ToLocalChecked();
     CHECK(prototype_value->IsObject());
-
     prototype_object = prototype_value.As<v8::Object>();
   }
 

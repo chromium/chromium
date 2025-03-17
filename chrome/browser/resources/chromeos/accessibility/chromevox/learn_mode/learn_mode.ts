@@ -12,7 +12,7 @@ import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {Command} from '../common/command.js';
+import type {Command} from '../common/command.js';
 import {CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyUtil} from '../common/key_util.js';

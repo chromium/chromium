@@ -193,17 +193,28 @@ class CORE_EXPORT ImageResourceContent final
 
   void SetImageResourceInfo(ImageResourceInfo*);
 
+  void UpdateResourceInfoFromObservers();
+  gfx::Size MaxSize() const { return cached_info_.max_size_; }
+  InterpolationQuality MaxInterpolationQuality() const {
+    return cached_info_.max_interpolation_quality_;
+  }
+
   // Returns priority information to be used for setting the Resource's
   // priority. This is NOT the current Resource's priority.
   std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() const;
-  // Returns the current Resource's priroity used by MediaTiming.
+  // Returns the current Resource's priority used by MediaTiming.
   std::optional<WebURLRequest::Priority> RequestPriority() const override;
   scoped_refptr<const SharedBuffer> ResourceBuffer() const;
   bool ShouldUpdateImageImmediately() const;
   bool HasObservers() const {
     return !observers_.empty() || !finished_observers_.empty();
   }
-
+  bool CanBeSpeculativelyDecoded() const;
+  bool HasNonDegenerateSizeForDecode() const {
+    // If an observer has 0x0 size, we will not consider it for speculative
+    // decode.
+    return !cached_info_.max_size_.IsZero();
+  }
   ImageDecoder::CompressionFormat GetCompressionFormat() const;
 
   // Returns the number of bytes of image data which should be used for entropy
@@ -257,6 +268,15 @@ class CORE_EXPORT ImageResourceContent final
 
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;
+
+  // This is updated during ResourceFetcher::UpdateResourceInfoFromObservers
+  // when layout is clean and cached for use when layout may not be clean.
+  struct {
+    ResourcePriority priority_;
+    ResourcePriority priority_excluding_image_loader_;
+    gfx::Size max_size_;
+    InterpolationQuality max_interpolation_quality_ = kInterpolationNone;
+  } cached_info_;
 
   // Keep one-byte members together to avoid wasting space on padding.
 

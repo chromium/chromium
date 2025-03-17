@@ -15,8 +15,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/system_info/system_info_provider.h"
+#include "extensions/browser/display_info_provider_base.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/mock_extension_system.h"
@@ -96,7 +96,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
       event_name_to_broadcasts_map_;
 };
 
-class FakeDisplayInfoProvider : public DisplayInfoProvider {
+class FakeDisplayInfoProvider : public DisplayInfoProviderBase {
  public:
   FakeDisplayInfoProvider() = default;
   ~FakeDisplayInfoProvider() override = default;

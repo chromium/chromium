@@ -4,6 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
@@ -137,12 +139,13 @@ public class SimpleRecyclerViewAdapter
      * @return Created view.
      */
     protected View createView(ViewGroup parent, int typeId) {
-        return mViewBuilderMap.get(typeId).first.buildView(parent);
+        return assumeNonNull(mViewBuilderMap.get(typeId)).first.buildView(parent);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(createView(parent, viewType), mViewBuilderMap.get(viewType).second);
+        return new ViewHolder(
+                createView(parent, viewType), assumeNonNull(mViewBuilderMap.get(viewType)).second);
     }
 
     @Override

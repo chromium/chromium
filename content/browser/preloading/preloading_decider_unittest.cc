@@ -7,10 +7,11 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
@@ -45,27 +46,6 @@ class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
 
  private:
   std::optional<GURL> target_;
-};
-
-class TestPrefetchService : public PrefetchService {
- public:
-  explicit TestPrefetchService(BrowserContext* browser_context)
-      : PrefetchService(browser_context) {}
-
-  void PrefetchUrl(
-      base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    prefetches_.push_back(prefetch_container);
-  }
-
-  void EvictPrefetch(size_t index) {
-    ASSERT_LT(index, prefetches_.size());
-    ASSERT_TRUE(prefetches_[index]);
-    base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
-    prefetches_.erase(prefetches_.begin() + index);
-    ResetPrefetch(prefetch_container);
-  }
-
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
 };
 
 class MockPrerenderer : public Prerenderer {
@@ -589,27 +569,17 @@ TEST_F(PreloadingDeciderTest, UmaRecallStats) {
 
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  PreloadingPredictor pointer_down_predictor{
-      preloading_predictor::kUrlPointerDownOnAnchor};
-  // PreloadingPredictor on_hover_predictor{
-  //     preloading_predictor::kUrlPointerHoverOnAnchor};
-  // Check recall UKM records.
-  auto uma_predictor_recall = [](const PreloadingPredictor& predictor) {
-    return base::StrCat({"Preloading.Predictor.", predictor.name(), ".Recall"});
-  };
+  NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://www.google.com"), &GetPrimaryMainFrame());
 
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&GetPrimaryMainFrame());
-  web_contents->GetController().LoadURL(
-      GURL("https://www.google.com"), {},
-      ui::PageTransition::PAGE_TRANSITION_LINK, {});
-
+  // Check recall.
+  const std::string kUmaName = base::StrCat(
+      {"Preloading.Predictor.",
+       preloading_predictor::kUrlPointerDownOnAnchor.name(), ".Recall"});
   histogram_tester.ExpectBucketCount(
-      uma_predictor_recall(pointer_down_predictor),
-      PredictorConfusionMatrix::kTruePositive, 0);
+      kUmaName, PredictorConfusionMatrix::kTruePositive, 0);
   histogram_tester.ExpectBucketCount(
-      uma_predictor_recall(pointer_down_predictor),
-      PredictorConfusionMatrix::kFalseNegative, 0);
+      kUmaName, PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
 class PreloadingDeciderWithParameterizedSpeculationActionTest
@@ -1074,7 +1044,7 @@ class PreloadingDeciderMLModelTest
   PreloadingDeciderMLModelTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPreloadingHeuristicsMLModel,
-          {{"enact_candidates", GetParam() ? "true" : "false"}}}},
+          {{"enact_candidates", base::ToString(GetParam())}}}},
         {});
   }
 

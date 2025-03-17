@@ -78,8 +78,7 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
             CustomTabColorSchemeParams schemeParams,
             Context context,
             boolean hasCustomToolbarColor) {
-        int defaultColor =
-                ChromeColors.getDefaultThemeColor(context, /* forceDarkBgColor= */ false);
+        int defaultColor = ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ false);
         int color = hasCustomToolbarColor ? schemeParams.toolbarColor : defaultColor;
         return ColorUtils.getOpaqueColor(color);
     }

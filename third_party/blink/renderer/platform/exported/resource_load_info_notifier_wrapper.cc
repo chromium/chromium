@@ -125,6 +125,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
       network_utils::AlwaysAccessNetwork(response_head->headers);
   resource_load_info_->network_info->remote_endpoint =
       response_head->remote_endpoint;
+  // TODO: crbug.com/398226457 - Investigate request failure scenarios.
+  resource_load_info_->proxy_chain = response_head->proxy_chain;
   if (response_head->headers) {
     resource_load_info_->http_status_code =
         response_head->headers->response_code();

@@ -212,7 +212,7 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
 
   void RecordUseCounters(
       const std::vector<mojom::WebFeature>& features) override {
-    base::ranges::for_each(features, [&](mojom::WebFeature feature) {
+    std::ranges::for_each(features, [&](mojom::WebFeature feature) {
       observed_use_counters_.push_back(feature);
     });
   }
@@ -286,6 +286,12 @@ class MockMojomPrivateAggregationHost
       void,
       ContributeToHistogram,
       (Vector<blink::mojom::blink::AggregatableReportHistogramContributionPtr>),
+      (override));
+  MOCK_METHOD(
+      void,
+      ContributeToHistogramOnEvent,
+      (blink::mojom::PrivateAggregationErrorEvent,
+       Vector<blink::mojom::blink::AggregatableReportHistogramContributionPtr>),
       (override));
   MOCK_METHOD(void,
               EnableDebugMode,
@@ -830,7 +836,8 @@ TEST_F(SharedStorageWorkletTest,
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
     var expectedObjects = [
       "console",
-      "crypto"
+      "crypto",
+      "navigator"
     ];
 
     var expectedFunctions = [
@@ -880,9 +887,10 @@ TEST_F(SharedStorageWorkletTest,
       console.log("Expected error:", e.message);
     }
 
-    // Verify that trying to access `navigator` would throw a custom error.
+    // Verify that trying to access `navigator.locks` would throw a custom
+    // error.
     try {
-      navigator;
+      navigator.locks;
     } catch (e) {
       console.log("Expected error:", e.message);
     }
@@ -904,9 +912,9 @@ TEST_F(SharedStorageWorkletTest,
             "'SharedStorageWorkletGlobalScope': sharedStorage cannot be "
             "accessed during addModule().");
   EXPECT_EQ(test_client_->observed_console_log_messages_[1],
-            "Expected error: Failed to read the 'navigator' property from "
-            "'SharedStorageWorkletGlobalScope': navigator cannot be accessed "
-            "during addModule().");
+            "Expected error: Failed to read the 'locks' property from "
+            "'SharedStorageWorkletNavigator': navigator.locks cannot be "
+            "accessed during addModule().");
   EXPECT_EQ(test_client_->observed_console_log_messages_[2],
             "Expected async error: Failed to execute 'interestGroups' on "
             "'SharedStorageWorkletGlobalScope': interestGroups() cannot be "
@@ -1913,7 +1921,11 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
       blink::mojom::BiddingBrowserSignals::New(
           /*join_count=*/1,
           /*bid_count=*/2, std::move(prev_wins),
-          /*for_debugging_only_in_cooldown_or_lockout=*/false);
+          /*for_debugging_only_in_cooldown_or_lockout=*/false,
+          /*click_and_view_counts=*/
+          blink::mojom::ViewAndClickCounts::New(
+              /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+              /*click_counts=*/blink::mojom::ViewOrClickCounts::New()));
 
   blink::InterestGroup ig;
   ig.expiry = now + base::Seconds(3000);
@@ -1940,6 +1952,8 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
   ig.max_trusted_bidding_signals_url_length = 100;
   ig.trusted_bidding_signals_coordinator =
       url::Origin::Create(GURL("https://example.test"));
+  ig.view_and_click_counts_providers = {
+      {url::Origin::Create(GURL("https://example.test"))}};
   ig.user_bidding_signals = "\"hello\"";
   ig.ads = {
       {blink::InterestGroup::Ad(
@@ -1950,6 +1964,8 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
            {{url::Origin::Create(GURL("https://reporting.example.org"))}}),
        blink::InterestGroup::Ad(GURL("https://example.com/plane"),
                                 "\"meta2\"")}};
+  ig.ads.value()[0].creative_scanning_metadata = "scan";
+  ig.ads.value()[1].creative_scanning_metadata = "me please";
   ig.ad_components = {{
       {GURL("https://example.com/locomotive"), "\"meta3\""},
       {GURL("https://example.com/turbojet"), "\"meta4\""},
@@ -2102,6 +2118,7 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
                   ],
                   "buyerAndSellerReportingId": "bsid",
                   "buyerReportingId": "bid",
+                  "creativeScanningMetadata": "scan",
                   "metadata": "metadata",
                   "renderURL": "https://example.com/train",
                   "renderUrl": "https://example.com/train",
@@ -2112,9 +2129,10 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
                   "sizeGroup": "sizegroup"
                 },
                 {
+                  "creativeScanningMetadata": "me please",
                   "metadata": "meta2",
                   "renderURL": "https://example.com/plane",
-                  "renderUrl": "https://example.com/plane"
+                  "renderUrl": "https://example.com/plane",
                 }
               ],
               "auctionServerRequestFlags": [
@@ -2187,7 +2205,8 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
               "trustedBiddingSignalsUrl": "https://example.org/trust.json",
               "updateURL": "https://example.org/ig_update.json",
               "updateUrl": "https://example.org/ig_update.json",
-              "userBiddingSignals": "hello"
+              "userBiddingSignals": "hello",
+              "viewAndClickCountsProviders": ["https://example.test"]
             }
           ];
 
@@ -2321,6 +2340,28 @@ TEST_F(SharedStorageWorkletTest, BatchUpdate_InvalidMethodsArgument) {
   EXPECT_EQ(test_client_->observed_batch_update_params_.size(), 0u);
 }
 
+TEST_F(SharedStorageWorkletTest, BatchUpdate_ReservedLockName) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          await sharedStorage.batchUpdate([], {withLock: '-lock1'});
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_FALSE(run_result.success);
+  EXPECT_THAT(run_result.error_message,
+              testing::HasSubstr("Lock name cannot start with '-'"));
+
+  EXPECT_EQ(test_client_->observed_batch_update_params_.size(), 0u);
+}
+
 TEST_F(SharedStorageWorkletTest, BatchUpdate_ClientError) {
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
       class TestClass {
@@ -2432,6 +2473,28 @@ TEST_F(SharedStorageWorkletTest, Set_WithLock) {
   EXPECT_FALSE(test_client_->observed_update_params_[0]->with_lock);
   EXPECT_EQ(test_client_->observed_update_params_[1]->with_lock, "lock1");
   EXPECT_EQ(test_client_->observed_update_params_[2]->with_lock, "");
+}
+
+TEST_F(SharedStorageWorkletTest, Set_WithLock_ReservedLockName) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          await sharedStorage.set("key", "value", {withLock: "-lock1"});
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_FALSE(run_result.success);
+  EXPECT_THAT(run_result.error_message,
+              testing::HasSubstr("Lock name cannot start with '-'"));
+
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_False) {

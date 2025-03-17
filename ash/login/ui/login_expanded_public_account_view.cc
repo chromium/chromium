@@ -102,7 +102,7 @@ views::Label* CreateLabel(const std::u16string& text, ui::ColorId color_id) {
   label->SetFontList(views::Label::GetDefaultFontList().Derive(
       0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColorId(color_id);
+  label->SetEnabledColor(color_id);
   return label;
 }
 
@@ -219,7 +219,7 @@ class SelectionButtonView : public LoginButton {
     label_ = CreateLabel(
         text, static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
     left_margin_view_ = add_horizontal_margin(left_margin_, label_container);
-    label_container->AddChildView(label_.get());
+    label_container->AddChildViewRaw(label_.get());
 
     auto* icon_container = new NonAccessibleView();
     icon_container->SetCanProcessEventsWithinSubtree(false);
@@ -235,7 +235,7 @@ class SelectionButtonView : public LoginButton {
     const int icon_size = kJellyDropDownIconSizeDp;
     icon_->SetPreferredSize(gfx::Size(icon_size, icon_size));
 
-    icon_container->AddChildView(icon_.get());
+    icon_container->AddChildViewRaw(icon_.get());
     right_margin_view_ = add_horizontal_margin(right_margin_, icon_container);
   }
 
@@ -263,7 +263,7 @@ class SelectionButtonView : public LoginButton {
   }
 
   void SetTextColorId(ui::ColorId color_id) {
-    label_->SetEnabledColorId(color_id);
+    label_->SetEnabledColor(color_id);
   }
   void SetText(const std::u16string& text) {
     GetViewAccessibility().SetName(text);
@@ -463,7 +463,7 @@ class RightPaneView : public NonAccessibleView {
 
     advanced_view_button_->SetPreferredSize(
         gfx::Size(kAdvancedViewButtonWidthDp, advanced_view_button_icon_size));
-    AddChildView(advanced_view_button_.get());
+    AddChildViewRaw(advanced_view_button_.get());
 
     advanced_view_button_->SetProperty(
         views::kMarginsKey, gfx::Insets().set_bottom(
@@ -475,12 +475,12 @@ class RightPaneView : public NonAccessibleView {
     advanced_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
     advanced_view_->SetVisible(false);
-    AddChildView(advanced_view_.get());
+    AddChildViewRaw(advanced_view_.get());
 
     language_title_ = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_LANGUAGE_SELECTION_SELECT),
         kColorAshTextColorSecondary);
-    advanced_view_->AddChildView(language_title_.get());
+    advanced_view_->AddChildViewRaw(language_title_.get());
     language_title_->SetProperty(
         views::kMarginsKey,
         gfx::Insets().set_bottom(kSpacingBetweenSelectionTitleAndButtonDp));
@@ -488,7 +488,7 @@ class RightPaneView : public NonAccessibleView {
     keyboard_title_ = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_KEYBOARD_SELECTION_SELECT),
         kColorAshTextColorSecondary);
-    advanced_view_->AddChildView(keyboard_title_.get());
+    advanced_view_->AddChildViewRaw(keyboard_title_.get());
     keyboard_title_->SetProperty(
         views::kMarginsKey,
         gfx::Insets()
@@ -797,7 +797,7 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
       on_dismissed_(on_dismissed),
       event_handler_(
           std::make_unique<LoginExpandedPublicAccountEventHandler>(this)) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kJellyRoundRectCornerRadiusDp));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kJellyRoundRectCornerRadiusDp,
@@ -817,7 +817,7 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   user_view_->SetTapEnabled(false);
 
   left_pane_ = box_layout_view_->AddChildView(std::make_unique<LeftPaneView>());
-  left_pane_->AddChildView(user_view_.get());
+  left_pane_->AddChildViewRaw(user_view_.get());
 
   const bool enable_warning = Shell::Get()->local_state()->GetBoolean(
       prefs::kManagedGuestSessionPrivacyWarningsEnabled);
@@ -829,13 +829,12 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   separator_ = box_layout_view_->AddChildView(std::make_unique<views::View>());
   const ui::ColorId separator_color_id =
       static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator);
-  separator_->SetBackground(
-      views::CreateThemedSolidBackground(separator_color_id));
+  separator_->SetBackground(views::CreateSolidBackground(separator_color_id));
 
   right_pane_ = new RightPaneView(
       base::BindRepeating(&LoginExpandedPublicAccountView::ShowWarningDialog,
                           base::Unretained(this)));
-  box_layout_view_->AddChildView(right_pane_.get());
+  box_layout_view_->AddChildViewRaw(right_pane_.get());
 
   auto* const submit_button_container =
       AddChildView(std::make_unique<SubmitButtonContainer>());

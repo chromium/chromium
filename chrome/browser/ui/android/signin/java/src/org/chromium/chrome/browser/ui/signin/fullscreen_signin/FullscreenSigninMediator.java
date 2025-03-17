@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -254,11 +253,8 @@ public class FullscreenSigninMediator
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            if (isSigninSupported) {
-                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
-            }
+        if (isSigninSupported) {
+            mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
             SyncService syncService = SyncServiceFactory.getForProfile(profile);
             boolean isSyncDataManaged =
                     IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
@@ -268,6 +264,8 @@ public class FullscreenSigninMediator
                     isSyncDataManaged
                             ? R.string.signin_fre_subtitle_without_sync
                             : mConfig.subtitleId);
+        } else {
+            mModel.set(FullscreenSigninProperties.SUBTITLE_STRING_ID, 0);
         }
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
@@ -437,7 +435,7 @@ public class FullscreenSigninMediator
                                 mContext,
                                 mModalDialogManager);
         signinManager.signOut(
-                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeData= */ false);
+                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeUserData= */ false);
     }
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {
@@ -541,7 +539,11 @@ public class FullscreenSigninMediator
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         mModel.set(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
         // Selected account data will be updated in {@link #onProfileDataUpdated}
-        mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
+        mProfileDataCache.setBadge(
+                isChild
+                        ? ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
+                                mContext, R.drawable.ic_account_child_20dp)
+                        : null);
     }
 
     /**

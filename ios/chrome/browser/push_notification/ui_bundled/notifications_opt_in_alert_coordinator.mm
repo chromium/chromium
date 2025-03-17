@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -39,6 +41,13 @@ namespace {
 // Impression limit for the ProminenceNotificationSettingAlert.
 const int kProminenceAlertImpressionLimit = 2;
 
+const char kEnabledPermissionsHistogram[] =
+    "IOS.PushNotification.EnabledPermisisons.Enabled";
+const char kDeniedPermissionsHistogram[] =
+    "IOS.PushNotification.EnabledPermisisons.Denied";
+const char kErrorPermissionsHistogram[] =
+    "IOS.PushNotification.EnabledPermisisons.Error";
+
 // Returns the gaia id used for `profile`.
 NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
   const ProfileAttributesIOS attributes =
@@ -47,7 +56,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
           ->GetProfileAttributesStorage()
           ->GetAttributesForProfileWithName(profile->GetProfileName());
 
-  return base::SysUTF8ToNSString(attributes.GetGaiaId());
+  return attributes.GetGaiaId().ToNSString();
 }
 
 }  // namespace
@@ -114,14 +123,19 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
                             error:(NSError*)error {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
+    base::UmaHistogramEnumeration(kErrorPermissionsHistogram, self.accessPoint);
     [self setResult:NotificationsOptInAlertResult::kError];
   } else if (!granted) {
     if (!promptShown) {
       [self presentNotificationPermissionAlert];
     } else {
+      base::UmaHistogramEnumeration(kDeniedPermissionsHistogram,
+                                    self.accessPoint);
       [self setResult:NotificationsOptInAlertResult::kPermissionDenied];
     }
   } else {
+    base::UmaHistogramEnumeration(kEnabledPermissionsHistogram,
+                                  self.accessPoint);
     // Permission has been granted!
     [self enableNotifications];
     if (self.confirmationMessage) {
@@ -188,7 +202,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator addItemWithTitle:settingsTitle
                                action:^{
-                                 [weakSelf openSettings];
+                                 [weakSelf openIOSNotificationSettings];
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
@@ -234,7 +248,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 }
 
 // Opens the iOS settings app to the app's Notification permissions.
-- (void)openSettings {
+- (void)openIOSNotificationSettings {
   __weak __typeof(self) weakSelf = self;
 
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];

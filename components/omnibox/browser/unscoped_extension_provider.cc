@@ -8,15 +8,12 @@
 
 #include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/unscoped_extension_provider_delegate.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/page_transition_types.h"
 
 UnscopedExtensionProvider::UnscopedExtensionProvider(
     AutocompleteProviderClient* client,
@@ -32,49 +29,94 @@ UnscopedExtensionProvider::~UnscopedExtensionProvider() = default;
 
 void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
                                       bool minimal_changes) {
-  // No need to do other checks if there are no unscoped extensions.
-  std::set<std::string> unscoped_extensions = GetUnscopedModeExtensionIds();
-  if (unscoped_extensions.empty()) {
+  // If the changes to the input are not minimal, clear the current list of
+  // matches and suggestion group information and increment the current request
+  // ID to discard any suggestions that may be incoming later with a stale
+  // request ID.
+  Stop(/*clear_cached_results=*/!minimal_changes,
+       /*due_to_user_inactivity=*/false);
+
+  // Unscoped mode input should not be redirected to an extension in incognito.
+  if (client_->IsOffTheRecord()) {
     return;
   }
 
-  // TODO(378538411): investigate enabling zero-suggest to the extensions.
-  if (input.IsZeroSuggest()) {
-    return;
-  }
-
-  // Return early if only synchronous matches are needed and the changes are not
-  // minimal. Minimal changes will not need an async call.
-  if (input.omit_asynchronous_matches() && !minimal_changes) {
-    return;
-  }
-
-  // Do not send anything in keyword mode.
-  // TODO(378538411): Figure out if `done_` needs to be reset.
+  // Extension suggestions are not allowed in keyword mode.
   if (input.InKeywordMode()) {
     return;
   }
 
-  if (!minimal_changes) {
-    // Reset done and increment the input ID to discard any stale extension
-    // suggestions that may be incoming later if the current request id and
-    // incoming request ids do not match.
-    done_ = true;
-    delegate_->IncrementRequestId();
+  // See if zero suggest provider is eligible for zero suggest suggestions.
+  // This prevents only unscoped extension suggestions from appearing when
+  // other zps suggestions are not available.
+  auto [_, eligible] =
+      ZeroSuggestProvider::GetResultTypeAndEligibility(client_, input);
+
+  if ((input.IsZeroSuggest() ||
+       input.type() == metrics::OmniboxInputType::EMPTY) &&
+      !eligible) {
+    return;
   }
+
+  // Extension suggestions are always provided asynchronously.
+  if (input.omit_asynchronous_matches()) {
+    return;
+  }
+
+  // Do not forward the input to the extensions delegate if the changes to the
+  // input are minimal. If eligible for zero suggest (checked above), ignore
+  // the minimal changes check.
+  if (minimal_changes && !input.IsZeroSuggest()) {
+    return;
+  }
+
+  // Do not forward the input to the extensions delegate if there are no
+  // unscoped extensions.
+  std::set<std::string> unscoped_extensions =
+      GetTemplateURLService()->GetUnscopedModeExtensionIds();
+  if (unscoped_extensions.empty()) {
+    return;
+  }
+
+  // Forward the input to the extensions delegate.
   delegate_->Start(input, minimal_changes, unscoped_extensions);
 }
 
 void UnscopedExtensionProvider::Stop(bool clear_cached_results,
                                      bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-  delegate_->IncrementRequestId();
+  // Ignore the stop timer since extension suggestions might take longer than
+  // 1500ms to generate (the stop timer gets triggered due to user inactivity).
+  if (!due_to_user_inactivity) {
+    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+    delegate_->Stop(clear_cached_results);
+  }
 }
 
-std::set<std::string> UnscopedExtensionProvider::GetUnscopedModeExtensionIds()
-    const {
+void UnscopedExtensionProvider::DeleteMatch(const AutocompleteMatch& match) {
+  const std::u16string& suggestion_text = match.contents;
+  std::erase_if(matches_, [&match](const AutocompleteMatch& i) {
+    return i.keyword == match.keyword &&
+           i.fill_into_edit == match.fill_into_edit;
+  });
+
+  const TemplateURL* const template_url =
+      GetTemplateURLService()->GetTemplateURLForKeyword(match.keyword);
+
+  if ((template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) &&
+      delegate_) {
+    delegate_->DeleteSuggestion(template_url, suggestion_text);
+  }
+}
+
+TemplateURLService* UnscopedExtensionProvider::GetTemplateURLService() const {
   // Make sure the model is loaded. This is cheap and quickly bails out if
   // the model is already loaded.
   template_url_service_->Load();
-  return template_url_service_->GetUnscopedModeExtensionIds();
+  return template_url_service_;
+}
+
+void UnscopedExtensionProvider::AddToSuggestionGroupsMap(
+    omnibox::GroupId group_id,
+    omnibox::GroupConfig group_config) {
+  suggestion_groups_map_[group_id].MergeFrom(group_config);
 }

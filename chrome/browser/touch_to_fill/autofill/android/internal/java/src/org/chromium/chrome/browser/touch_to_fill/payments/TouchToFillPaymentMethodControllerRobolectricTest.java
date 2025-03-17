@@ -98,10 +98,7 @@ import java.util.stream.StreamSupport;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({
-    AutofillFeatures.AUTOFILL_ENABLE_CARD_ART_IMAGE,
-    AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID
-})
+@DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
 public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final CreditCard VISA =
             createCreditCard(
@@ -436,7 +433,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         List<PropertyModel> termsLabelModelList = getModelsOfType(itemList, TERMS_LABEL);
-        assertEquals(termsLabelModelList.size(), 1);
+        assertEquals(1, termsLabelModelList.size());
         assertTrue(termsLabelModelList.get(0).get(CARD_BENEFITS_TERMS_AVAILABLE));
     }
 
@@ -446,7 +443,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 List.of(VISA), List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ true);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertEquals(getModelsOfType(itemList, TERMS_LABEL).size(), 0);
+        assertEquals(0, getModelsOfType(itemList, TERMS_LABEL).size());
     }
 
     @Test
@@ -574,7 +571,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 List.of(VISA), List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ true);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 1);
+        assertEquals(1, getModelsOfType(itemList, FILL_BUTTON).size());
     }
 
     @Test
@@ -585,7 +582,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 /* shouldShowScanCreditCard= */ true);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 0);
+        assertEquals(0, getModelsOfType(itemList, FILL_BUTTON).size());
     }
 
     @Test
@@ -779,7 +776,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showSheet(List.of(LOCAL_IBAN));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 1);
+        assertEquals(1, getModelsOfType(itemList, FILL_BUTTON).size());
     }
 
     @Test
@@ -787,7 +784,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 0);
+        assertEquals(0, getModelsOfType(itemList, FILL_BUTTON).size());
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

@@ -149,6 +149,7 @@ source_set("tests") {
     ":test_support",
     ":trust_tokens",
     "//base",
+    "//base/test:fuzztest_support",
     "//base/test:test_support",
     "//components/cbor",
     "//components/sqlite_proto",
@@ -158,6 +159,7 @@ source_set("tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//url",
   ]
 }
@@ -178,16 +180,4 @@ proto_library("storage_proto") {
   deps = [ ":public_proto" ]
 
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-fuzzer_test("trust_token_key_commitment_parser_fuzzer") {
-  sources = [ "test/trust_token_key_commitment_parser_fuzzer.cc" ]
-  deps = [
-    ":trust_tokens",
-    "//base",
-    "//net:net_fuzzer_test_support",
-    "//services/network/public/mojom",
-  ]
-  dict = "test/trust_token_key_commitment_parser_fuzzer.dict"
-  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
 }

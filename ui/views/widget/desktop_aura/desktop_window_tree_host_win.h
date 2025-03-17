@@ -15,6 +15,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 #include "ui/wm/public/animation_host.h"
 
@@ -44,11 +45,11 @@ namespace test {
 class DesktopWindowTreeHostWinTestApi;
 }
 
-class VIEWS_EXPORT DesktopWindowTreeHostWin
-    : public DesktopWindowTreeHost,
-      public wm::AnimationHost,
-      public aura::WindowTreeHost,
-      public HWNDMessageHandlerDelegate {
+class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
+                                              public wm::AnimationHost,
+                                              public aura::WindowTreeHost,
+                                              public HWNDMessageHandlerDelegate,
+                                              public WidgetObserver {
  public:
   DesktopWindowTreeHostWin(
       internal::NativeWidgetDelegate* native_widget_delegate,
@@ -213,7 +214,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   bool IsModal() const override;
   int GetInitialShowState() const override;
   int GetNonClientComponent(const gfx::Point& point) const override;
-  void GetWindowMask(const gfx::Size& size, SkPath* path) override;
+  void GetWindowMask(const gfx::Size& size_px, SkPath* path) override;
   bool GetClientAreaInsets(gfx::Insets* insets,
                            HMONITOR monitor) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
@@ -267,6 +268,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleWindowScaleFactorChanged(float window_scale_factor) override;
   void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override;
 
+  // Overridden from WidgetObserver.
+  void OnWidgetThemeChanged(Widget* widget) override;
+
   Widget* GetWidget();
   const Widget* GetWidget() const;
   HWND GetHWND() const;
@@ -312,6 +316,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // Windows are enlarged to be at least 64x64 pixels, so keep track of the
   // extra added here.
+  // TODO(crbug.com/401996981): This is likely no longer necessary and should be
+  // removed.
   gfx::Vector2d window_enlargement_;
 
   // Whether the window close should be converted to a hide, and then actually
@@ -335,6 +341,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // True if the window is allow to take screenshots, by default is true.
   bool allow_screenshots_ = true;
+
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

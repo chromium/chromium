@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
+#include "components/facilitated_payments/core/browser/model/secure_payload.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,7 +33,7 @@ class MockFacilitatedPaymentsApiClient : public FacilitatedPaymentsApiClient {
   MOCK_METHOD(void,
               InvokePurchaseAction,
               (CoreAccountInfo,
-               base::span<const uint8_t>,
+               const SecurePayload&,
                base::OnceCallback<void(PurchaseActionResult)>),
               (override));
 };

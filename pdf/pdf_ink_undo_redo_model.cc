@@ -8,13 +8,13 @@
 
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace chrome_pdf {
 
@@ -22,12 +22,12 @@ namespace {
 
 PdfInkUndoRedoModel::DrawCommands& GetModifiableDrawCommands(
     PdfInkUndoRedoModel::Commands& commands) {
-  return absl::get<PdfInkUndoRedoModel::DrawCommands>(commands);
+  return std::get<PdfInkUndoRedoModel::DrawCommands>(commands);
 }
 
 PdfInkUndoRedoModel::EraseCommands& GetModifiableEraseCommands(
     PdfInkUndoRedoModel::Commands& commands) {
-  return absl::get<PdfInkUndoRedoModel::EraseCommands>(commands);
+  return std::get<PdfInkUndoRedoModel::EraseCommands>(commands);
 }
 
 }  // namespace
@@ -70,11 +70,11 @@ bool PdfInkUndoRedoModel::FinishDraw() {
 
   auto& commands = commands_stack_.back();
   if (GetDrawCommands(commands)->empty()) {
-    commands = absl::monostate();  // Reuse top of stack if empty.
+    commands = std::monostate();  // Reuse top of stack if empty.
   } else {
     // Otherwise push new item onto the stack.
     ++stack_position_;
-    commands_stack_.push_back(absl::monostate());
+    commands_stack_.push_back(std::monostate());
   }
   return true;
 }
@@ -130,11 +130,11 @@ bool PdfInkUndoRedoModel::FinishErase() {
 
   auto& commands = commands_stack_.back();
   if (GetEraseCommands(commands)->empty()) {
-    commands = absl::monostate();  // Reuse top of stack if empty.
+    commands = std::monostate();  // Reuse top of stack if empty.
   } else {
     // Otherwise push new item onto the stack.
     ++stack_position_;
-    commands_stack_.push_back(absl::monostate());
+    commands_stack_.push_back(std::monostate());
   }
   return true;
 }
@@ -144,7 +144,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
   CHECK_LT(stack_position_, commands_stack_.size());
 
   if (stack_position_ == 0) {
-    return absl::monostate();  // Already at bottom of stack.
+    return std::monostate();  // Already at bottom of stack.
   }
 
   // Result is reverse of the recorded commands.
@@ -177,7 +177,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
   CHECK_LT(stack_position_, commands_stack_.size());
 
   if (stack_position_ == commands_stack_.size() - 1) {
-    return absl::monostate();  // Already at top of stack.
+    return std::monostate();  // Already at top of stack.
   }
 
   // Result is the recorded commands as-is.
@@ -200,26 +200,26 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
 // static
 PdfInkUndoRedoModel::CommandsType PdfInkUndoRedoModel::GetCommandsType(
     const Commands& commands) {
-  if (absl::holds_alternative<absl::monostate>(commands)) {
+  if (std::holds_alternative<std::monostate>(commands)) {
     return CommandsType::kNone;
   }
-  if (absl::holds_alternative<DrawCommands>(commands)) {
+  if (std::holds_alternative<DrawCommands>(commands)) {
     return CommandsType::kDraw;
   }
-  CHECK(absl::holds_alternative<EraseCommands>(commands));
+  CHECK(std::holds_alternative<EraseCommands>(commands));
   return CommandsType::kErase;
 }
 
 // static
 const PdfInkUndoRedoModel::DrawCommands& PdfInkUndoRedoModel::GetDrawCommands(
     const Commands& commands) {
-  return absl::get<DrawCommands>(commands);
+  return std::get<DrawCommands>(commands);
 }
 
 // static
 const PdfInkUndoRedoModel::EraseCommands& PdfInkUndoRedoModel::GetEraseCommands(
     const Commands& commands) {
-  return absl::get<EraseCommands>(commands);
+  return std::get<EraseCommands>(commands);
 }
 
 template <typename T>
@@ -244,7 +244,7 @@ PdfInkUndoRedoModel::StartImpl() {
       if (GetCommandsType(commands_stack_[i]) == CommandsType::kDraw) {
         for (IdType id : GetDrawCommands(commands_stack_[i]).value()) {
           bool inserted =
-              discarded_commands.insert(absl::get<InkStrokeId>(id)).second;
+              discarded_commands.insert(std::get<InkStrokeId>(id)).second;
           CHECK(inserted);
         }
       }

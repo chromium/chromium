@@ -289,7 +289,7 @@ public class AppBannerManagerTest {
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
         waitUntilAppDetailsRetrieved(rule, 1);
-        Assert.assertEquals(mDetailsDelegate.mReferrer, expectedReferrer);
+        Assert.assertEquals(expectedReferrer, mDetailsDelegate.mReferrer);
 
         final ChromeActivity activity = rule.getActivity();
         tapAndWaitForModalBanner(activity.getActivityTab());
@@ -395,7 +395,7 @@ public class AppBannerManagerTest {
                     Assert.assertEquals(
                             1,
                             RecordHistogram.getHistogramValueCountForTesting(
-                                    INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInstall= */ 3));
+                                    INSTALL_PATH_HISTOGRAM_NAME, /* sample= */ 3));
                 });
     }
 
@@ -429,7 +429,7 @@ public class AppBannerManagerTest {
                     Assert.assertEquals(
                             1,
                             RecordHistogram.getHistogramValueCountForTesting(
-                                    INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInstall= */ 3));
+                                    INSTALL_PATH_HISTOGRAM_NAME, /* sample= */ 3));
                 });
     }
 
@@ -735,7 +735,7 @@ public class AppBannerManagerTest {
                     Assert.assertEquals(
                             1,
                             RecordHistogram.getHistogramValueCountForTesting(
-                                    INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateBottomSheet= */ 6));
+                                    INSTALL_PATH_HISTOGRAM_NAME, /* sample= */ 6));
                 });
     }
 
@@ -824,7 +824,7 @@ public class AppBannerManagerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(),
                 mTabbedActivityTestRule.getActivity(),
-                /* isIncognito= */ false,
+                /* incognito= */ false,
                 /* waitForNtpLoad= */ true);
 
         Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -14,14 +15,16 @@
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
@@ -29,8 +32,11 @@
 #include "components/webdata/common/webdata_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
+
+using regional_capabilities::CountryIdHolder;
 
 std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
     int prepopulate_id,
@@ -41,7 +47,6 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
       "" /* new_tab_url */, "" /* contextual_search_url */, "" /* logo_url */,
       "" /* doodle_url */, "" /* search_url_post_params */,
       "" /* suggest_url_post_params */, "" /* image_url_post_params */,
-      "" /* side_search_param */, "" /* side_image_search_param */,
       "" /* image_translate_source_language_param_key */,
       "" /* image_translate_target_language_param_key */,
       std::vector<std::string>() /* search_intent_params */,
@@ -60,11 +65,11 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
     int prepopulate_id,
     const std::string& keyword,
     TemplateURLID id,
-    bool is_play_api_turl = false) {
+    RegulatoryExtensionType reg_ext_type = RegulatoryExtensionType::kDefault) {
   std::unique_ptr<TemplateURLData> data =
       CreatePrepopulateTemplateURLData(prepopulate_id, keyword);
   data->id = id;
-  data->created_from_play_api = is_play_api_turl;
+  data->regulatory_origin = reg_ext_type;
   return std::make_unique<TemplateURL>(*data);
 }
 
@@ -74,8 +79,8 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
 // will be set to the version number for the loaded data or to 0 if no
 // prepopulated engines were loaded.
 void CallGetSearchProvidersUsingLoadedEngines(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    search_engines::SearchEnginesTestEnvironment&
+        search_engines_test_environment,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     WDKeywordsResult::Metadata& inout_resource_metadata,
     os_crypt_async::OSCryptAsync* os_crypt) {
@@ -104,7 +109,8 @@ void CallGetSearchProvidersUsingLoadedEngines(
     std::set<std::string> removed_keyword_guids;
 
     GetSearchProvidersUsingLoadedEngines(
-        keyword_web_data.get(), prefs, search_engine_choice_service,
+        keyword_web_data.get(), &search_engines_test_environment.pref_service(),
+        search_engines_test_environment.prepopulate_data_resolver(),
         template_urls,
         /*default_search_provider=*/nullptr, search_terms_data,
         inout_resource_metadata, &removed_keyword_guids);
@@ -174,7 +180,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   TemplateURLService::OwnedTemplateURLVector local_turls;
 
   // Start with single search engine created from Play API data.
-  local_turls.push_back(CreatePrepopulateTemplateURL(0, "play", 1, true));
+  local_turls.push_back(CreatePrepopulateTemplateURL(
+      0, "play", 1, RegulatoryExtensionType::kAndroidEEA));
 
   // Test that prepopulated search engine with matching keyword is merged with
   // Play API search engine. Search URL should come from Play API search engine.
@@ -186,7 +193,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   ASSERT_EQ(local_turls.size(), 1U);
   // Merged search engine should have both Play API flag and valid
   // prepopulate_id.
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(1, local_turls[0]->prepopulate_id());
   EXPECT_NE(prepopulated_search_url, local_turls[0]->url());
 
@@ -197,7 +205,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->keyword(), u"play");
 
   // Test that removing search engine from prepopulated list doesn't delete Play
@@ -206,7 +215,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->prepopulate_id(), 0);
 }
 
@@ -263,35 +273,27 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     // Country stored in the database. As such, when passed as input, it will
     // be used to update only the database. To change the profile's country,
     // write directly to prefs.
-    int country = 0;
+    std::optional<CountryIdHolder> country = std::nullopt;
 
     // Number of keywords search engines available. Ignored when passing the
     // struct as input to set the database's initial state.
     size_t keyword_engines_count = 0;
 
-    // Whether the database is expected to be configured to show the extended
-    // list with more than 5 keywords search engines. Gets set in prefs, not
-    // in the database metadata.
-    std::optional<bool> use_extended_list = std::nullopt;
-
     // Formatter method for Google Test.
     friend std::ostream& operator<<(std::ostream& out,
                                     const KeywordTestMetadata& m) {
-      return out << "{data_version=" << m.data_version
-                 << ", country=" << m.country
+      return out << "{data_version=" << m.data_version << ", country="
+                 << (m.country.has_value()
+                         ? base::NumberToString(m.country->GetForTesting())
+                         : "<null>")
                  << ", keyword_engines_count=" << m.keyword_engines_count
-                 << ", use_extended_list="
-                 << (m.use_extended_list.has_value()
-                         ? (*m.use_extended_list ? "yes" : "no")
-                         : "unset")
                  << "}";
     }
 
     // Needed to be able to use EXPECT_EQ with this struct.
     bool operator==(const KeywordTestMetadata& rhs) const {
       return data_version == rhs.data_version && country == rhs.country &&
-             keyword_engines_count == rhs.keyword_engines_count &&
-             use_extended_list == rhs.use_extended_list;
+             keyword_engines_count == rhs.keyword_engines_count;
     }
   };
 
@@ -300,9 +302,12 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 
   // For country samples, using Belgium and France for EEA, and the United
   // States for non-EEA.
-  const int kEeaCountryId = country_codes::CountryStringToCountryID("BE");
-  const int kOtherEeaCountryId = country_codes::CountryStringToCountryID("FR");
-  const int kNonEeaCountryId = country_codes::CountryStringToCountryID("US");
+  const CountryIdHolder kEeaCountryId =
+      CountryIdHolder(country_codes::CountryStringToCountryID("BE"));
+  const CountryIdHolder kOtherEeaCountryId =
+      CountryIdHolder(country_codes::CountryStringToCountryID("FR"));
+  const CountryIdHolder kNonEeaCountryId =
+      CountryIdHolder(country_codes::CountryStringToCountryID("US"));
 
   // Simulates how the search providers are loaded during Chrome init by
   // calling `GetSearchProvidersUsingLoadedEngines()`.
@@ -313,36 +318,22 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
   // providers are loaded.
   KeywordTestMetadata SimulateFromDatabaseState(
       KeywordTestMetadata initial_state) {
-    if (initial_state.use_extended_list.has_value()) {
-      prefs().SetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList,
-                         *initial_state.use_extended_list);
-    } else {
-      prefs().ClearPref(prefs::kDefaultSearchProviderKeywordsUseExtendedList);
-    }
-
     TemplateURLService::OwnedTemplateURLVector template_urls;
     WDKeywordsResult::Metadata resource_metadata;
     resource_metadata.builtin_keyword_data_version = initial_state.data_version;
     resource_metadata.builtin_keyword_country = initial_state.country;
-    CallGetSearchProvidersUsingLoadedEngines(
-        &prefs(),
-        &search_engines_test_environment_.search_engine_choice_service(),
-        &template_urls, resource_metadata, os_crypt_.get());
-
-    std::optional<bool> use_extended_list_output =
-        prefs().HasPrefPath(
-            prefs::kDefaultSearchProviderKeywordsUseExtendedList)
-            ? std::optional<bool>(prefs().GetBoolean(
-                  prefs::kDefaultSearchProviderKeywordsUseExtendedList))
-            : std::nullopt;
+    CallGetSearchProvidersUsingLoadedEngines(search_engines_test_environment_,
+                                             &template_urls, resource_metadata,
+                                             os_crypt_.get());
     size_t keyword_engines_count =
         template_urls.size() -
         TemplateURLStarterPackData::GetStarterPackEngines().size();
 
-    return {.data_version = resource_metadata.builtin_keyword_data_version,
-            .country = resource_metadata.builtin_keyword_country,
-            .keyword_engines_count = keyword_engines_count,
-            .use_extended_list = use_extended_list_output};
+    return {
+        .data_version = resource_metadata.builtin_keyword_data_version,
+        .country = resource_metadata.builtin_keyword_country,
+        .keyword_engines_count = keyword_engines_count,
+    };
   }
 
   PrefService& prefs() {
@@ -361,15 +352,14 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_OutOfEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
-  prefs().SetInteger(country_codes::kCountryIDAtInstall, kNonEeaCountryId);
+  prefs().SetInteger(country_codes::kCountryIDAtInstall,
+                     kNonEeaCountryId.GetForTesting());
 
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,
       .country = kNonEeaCountryId,
       .keyword_engines_count = 5u};
-  const KeywordTestMetadata kNoUpdate = {.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u};
+  const KeywordTestMetadata kNoUpdate = {};
 
   // Initial state: nothing. Simulates a fresh install.
   // The function should populate the profile with 5 engines and current
@@ -381,9 +371,7 @@ TEST_F(TemplateURLServiceUtilLoadTest,
   // update anything.
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
                                       .country = kNonEeaCountryId});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u}));
+  EXPECT_EQ(output, kNoUpdate);
 
   // Missing country ID doesn't trigger an update either.
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion});
@@ -398,41 +386,28 @@ TEST_F(TemplateURLServiceUtilLoadTest,
       {.data_version = kCurrentDataVersion, .country = kOtherEeaCountryId});
   EXPECT_EQ(output, kDefaultUpdatedState);
 
-  // If the extended list was previously used, the function will re-run to
-  // shorten it.
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .use_extended_list = true});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
   // If database's data version is more recent than the one built-in to the
-  // client, the updates are suppressed, including shortening the list.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion + 1,
-                                      .country = kOtherEeaCountryId,
-                                      .use_extended_list = true});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u,
-                                         .use_extended_list = true}));
+  // client, the updates are suppressed.
+  output = SimulateFromDatabaseState(
+      {.data_version = kCurrentDataVersion + 1, .country = kOtherEeaCountryId});
+  EXPECT_EQ(output, kNoUpdate);
 }
 
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_InEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
-  prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
+  prefs().SetInteger(country_codes::kCountryIDAtInstall,
+                     kEeaCountryId.GetForTesting());
   const size_t kEeaKeywordEnginesCount =
       TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-          kEeaCountryId)
+          kEeaCountryId.GetForTesting())
           .size();
 
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,
       .country = kEeaCountryId,
-      .keyword_engines_count = kEeaKeywordEnginesCount,
-      .use_extended_list = true};
-  const KeywordTestMetadata kNoUpdate = {.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u,
-                                         .use_extended_list = true};
+      .keyword_engines_count = kEeaKeywordEnginesCount};
+  const KeywordTestMetadata kNoUpdate = {};
 
   // Initial state: nothing. Simulates a fresh install.
   // The function should populate the profile with 8 engines and current
@@ -442,40 +417,26 @@ TEST_F(TemplateURLServiceUtilLoadTest,
 
   // When using the latest metadata from the binary, the function should not
   // update anything.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
-                                      .country = kEeaCountryId,
-                                      .use_extended_list = true});
+  output = SimulateFromDatabaseState(
+      {.data_version = kCurrentDataVersion, .country = kEeaCountryId});
   EXPECT_EQ(output, kNoUpdate);
 
   // Missing country ID doesn't trigger an update either.
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .use_extended_list = true});
+  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion});
   EXPECT_EQ(output, kNoUpdate);
 
   // Out of date keyword data versions trigger updates
-  output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion - 1, .use_extended_list = true});
+  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion - 1});
   EXPECT_EQ(output, kDefaultUpdatedState);
 
   // Country changes trigger updates
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
-                                      .country = kOtherEeaCountryId,
-                                      .use_extended_list = true});
-  EXPECT_EQ(output, kDefaultUpdatedState);
-
-  // If the short list was previously used, the function will re-run to
-  // extend it.
   output = SimulateFromDatabaseState(
-      {.data_version = kCurrentDataVersion, .use_extended_list = std::nullopt});
+      {.data_version = kCurrentDataVersion, .country = kOtherEeaCountryId});
   EXPECT_EQ(output, kDefaultUpdatedState);
 
   // If database's data version is more recent than the one built-in to the
-  // client, the updates are suppressed, including extending the list.
-  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion + 1,
-                                      .country = kOtherEeaCountryId,
-                                      .use_extended_list = std::nullopt});
-  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u,
-                                         .use_extended_list = std::nullopt}));
+  // client, the updates are suppressed.
+  output = SimulateFromDatabaseState(
+      {.data_version = kCurrentDataVersion + 1, .country = kOtherEeaCountryId});
+  EXPECT_EQ(output, kNoUpdate);
 }

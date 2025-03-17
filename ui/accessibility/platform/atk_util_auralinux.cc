@@ -8,6 +8,8 @@
 #endif
 
 #include <atk/atk.h>
+
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -28,11 +30,11 @@
 
 namespace {
 
-const char* kAccessibilityEnabledVariables[] = {
+auto kAccessibilityEnabledVariables = std::to_array<const char*>({
     "ACCESSIBILITY_ENABLED",
     "GNOME_ACCESSIBILITY",
     "QT_ACCESSIBILITY",
-};
+});
 
 //
 // AtkUtilAuraLinux definition and implementation.

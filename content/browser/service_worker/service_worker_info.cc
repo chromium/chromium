@@ -35,7 +35,8 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     ukm::SourceId ukm_source_id,
     blink::mojom::AncestorFrameType ancestor_frame_type,
     std::optional<std::string> router_rules)
-    : ServiceWorkerVersionBaseInfo(scope,
+    : ServiceWorkerVersionBaseInfo(script_url,
+                                   scope,
                                    storage_key,
                                    registration_id,
                                    version_id,
@@ -44,7 +45,6 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
       running_status(running_status),
       status(status),
       fetch_handler_type(fetch_handler_type),
-      script_url(script_url),
       thread_id(thread_id),
       devtools_agent_route_id(devtools_agent_route_id),
       ukm_source_id(ukm_source_id),

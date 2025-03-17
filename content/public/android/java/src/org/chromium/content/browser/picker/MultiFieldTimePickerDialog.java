@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.R;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.Locale;
  * The milli picker is not displayed if step >= SECOND_IN_MILLIS
  * The second picker is not displayed if step >= MINUTE_IN_MILLIS.
  */
+@NullMarked
 public class MultiFieldTimePickerDialog extends AlertDialog implements OnClickListener {
 
     private final NumberPicker mHourSpinner;

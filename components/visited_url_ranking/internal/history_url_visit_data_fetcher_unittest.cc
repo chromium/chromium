@@ -17,6 +17,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -26,6 +27,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
@@ -364,6 +366,12 @@ TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
 
 TEST_F(HistoryURLVisitDataFetcherTest,
        FetchURLVisitData_SomeDefaultVisibilyScores) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kVisitedURLRankingService,
+      {{features::kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits
+            .name,
+        "true"}});
   base::HistogramTester histogram_tester;
 
   const float kSampleVisibilityScore = 0.75f;
@@ -395,6 +403,12 @@ TEST_F(HistoryURLVisitDataFetcherTest,
 
 TEST_F(HistoryURLVisitDataFetcherTest,
        FetchURLVisitData_RemoveZeroDurationVisitURLs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kVisitedURLRankingService,
+      {{features::kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits
+            .name,
+        "true"}});
   base::HistogramTester histogram_tester;
 
   std::vector<history::AnnotatedVisit> annotated_visits;

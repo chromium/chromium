@@ -68,9 +68,9 @@ RenderInputRouterDelegateImpl::GetInputEventRouter() {
 
 bool RenderInputRouterDelegateImpl::IsIgnoringWebInputEvents(
     const blink::WebInputEvent& event) const {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTIMPLEMENTED();
-  return false;
+  // TODO(377625588): Implement notifying Viz of WebContentsImpl's ignoring
+  // input events.
+  return is_blocked_;
 }
 
 bool RenderInputRouterDelegateImpl::PreHandleGestureEvent(
@@ -79,7 +79,8 @@ bool RenderInputRouterDelegateImpl::PreHandleGestureEvent(
 }
 
 void RenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
-    const blink::WebInputEvent& event) {
+    const blink::WebInputEvent& event,
+    bool dispatched_to_renderer) {
   if (IsInputEventContinuous(event)) {
     return;
   }
@@ -87,7 +88,8 @@ void RenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
       std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
 
   delegate_->NotifyObserversOfInputEvent(frame_sink_id_, grouping_id_,
-                                         std::move(web_coalesced_event));
+                                         std::move(web_coalesced_event),
+                                         dispatched_to_renderer);
 }
 
 void RenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(
@@ -127,6 +129,22 @@ RenderInputRouterDelegateImpl::MakePeakGpuMemoryTracker(
     PeakGpuMemoryTracker::Usage usage) {
   return std::make_unique<PeakGpuMemoryTrackerImpl>(usage,
                                                     delegate_->GetGpuService());
+}
+
+input::StylusInterface* RenderInputRouterDelegateImpl::GetStylusInterface() {
+  // Stylus input is not being handled by InputVizard currently.
+  return nullptr;
+}
+
+bool RenderInputRouterDelegateImpl::IsHidden() const {
+  // TODO(391135801): Implement hang renderer detection with InputVizard.
+  // Currently, this returns a default value to stop the input event ack timers
+  // from firing unnecessarily.
+  return true;
+}
+
+bool RenderInputRouterDelegateImpl::IsRendererProcessBlocked() {
+  return is_blocked_;
 }
 
 }  // namespace viz

@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_REQUEST_QUEUE_GENERATOR_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_REQUEST_QUEUE_GENERATOR_H_
 
+#include <memory>
+
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/enterprise/browser/reporting/report_request.h"
@@ -35,19 +39,35 @@ class ReportRequestQueueGenerator {
   void SetMaximumReportSizeForTesting(size_t maximum_report_size);
 
   // Generate a queue of requests including full profile info based on given
-  // basic request.
-  ReportRequestQueue Generate(const ReportRequest& basic_request);
+  // basic request. Will invoke `callback` with the queue when done.
+  void Generate(std::unique_ptr<ReportRequest> basic_request,
+                base::OnceCallback<void(ReportRequestQueue)> callback);
 
  private:
-  // Generate request with full profile info at |profile_index| according to
-  // |basic_request|, then store it into |requests|.
-  void GenerateProfileReportWithIndex(int profile_index,
-                                      const ReportRequest& basic_request,
-                                      ReportRequestQueue* requests);
+  using IndexedProfileReport =
+      std::pair<int,
+                std::unique_ptr<enterprise_management::ChromeUserProfileInfo>>;
+
+  // Generate request with full profile info at `profile_index` according to
+  // `basic_request`. Will invoke `callback` when done.
+  void GenerateProfileReportWithIndex(
+      int profile_index,
+      const ReportRequest* basic_request,
+      base::OnceCallback<void(IndexedProfileReport)> callback);
+
+  // Called when all Profile reports were generated. `basic_request` is carried
+  // over to ensure it remains alive while individual reports are being
+  // generated.
+  void OnAllProfileReportsGenerated(
+      std::unique_ptr<ReportRequest> basic_request,
+      base::OnceCallback<void(ReportRequestQueue)> callback,
+      std::vector<IndexedProfileReport> indexed_reports);
 
  private:
   size_t maximum_report_size_;
   ProfileReportGenerator profile_report_generator_;
+
+  base::WeakPtrFactory<ReportRequestQueueGenerator> weak_factory_{this};
 };
 
 }  // namespace enterprise_reporting

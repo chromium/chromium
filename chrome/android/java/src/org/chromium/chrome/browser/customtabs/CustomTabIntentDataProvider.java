@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -268,12 +269,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     /**
      * Extra that specifies the {@link Network} to be bound when launching a custom tab or tabs that
-     * have been pre-created.
+     * have been pre-created. TODO(xiaom): Remove this once the public extra constant defined in
+     * CustomTabsIntent lands.
      */
     public static final String EXTRA_NETWORK = "androidx.browser.customtabs.extra.NETWORK";
 
+    /**
+     * Extra to enable the close button and show it in the toolbar. The close button is enabled by
+     * default, this extra provides a way to disable the close button in the toolbar. TODO(xiaom):
+     * Remove this once the public extra constant defined in CustomTabsIntent lands.
+     */
+    public static final String EXTRA_CLOSE_BUTTON_ENABLED =
+            "androidx.browser.customtabs.extra.CLOSE_BUTTON_ENABLED";
+
     private final Intent mIntent;
-    private final CustomTabsSessionToken mSession;
+    private final SessionHolder<CustomTabsSessionToken> mSession;
     private final boolean mIsTrustedIntent;
     private final Intent mKeepAliveServiceIntent;
     private Bundle mAnimationBundle;
@@ -295,6 +305,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private boolean mInteractWithBackground;
     private List<CustomButtonParams> mCustomButtonParams;
     private Drawable mCloseButtonIcon;
+    private boolean mIsCloseButtonEnabled;
     private List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
     private boolean mShowShareItemInMenu;
     private List<CustomButtonParams> mToolbarButtons = new ArrayList<>(1);
@@ -343,22 +354,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Evaluates whether the passed Intent and/or CustomTabsSessionToken are
-     * from a trusted source. Trusted in this case means from the app itself or
-     * via a first-party application.
+     * Evaluates whether the passed Intent and/or CustomTabsSessionToken are from a trusted source.
+     * Trusted in this case means from the app itself or via a first-party application.
      *
      * @param intent The Intent used to start the custom tabs activity, or null.
      * @param session The connected session for the custom tabs activity, or null.
      * @return True if the intent or session are trusted.
      */
-    public static boolean isTrustedCustomTab(Intent intent, CustomTabsSessionToken session) {
+    public static boolean isTrustedCustomTab(Intent intent, SessionHolder<?> session) {
         if (IntentHandler.wasIntentSenderChrome(intent)) return true;
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         return CustomTabsConnection.getInstance().isFirstParty(packageName);
     }
 
     static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
-            Intent intent, CustomTabsSessionToken session) {
+            Intent intent, SessionHolder<?> session) {
         String packageNameFromSession =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (!TextUtils.isEmpty(packageNameFromSession)) return packageNameFromSession;
@@ -372,7 +382,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
-        CustomTabsSessionToken session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
         boolean isTrustedCustomTab = isTrustedCustomTab(intent, session);
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         @Px
@@ -489,7 +499,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (intent == null) assert false;
         mIntent = intent;
 
-        mSession = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        mSession = token != null ? new SessionHolder<>(token) : null;
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
 
         mAnimationBundle =
@@ -517,19 +528,24 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetBooleanExtra(
                         intent, EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, false);
 
-        Bitmap bitmap =
-                IntentUtils.safeGetParcelableExtra(
-                        intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
-        if (bitmap != null && !checkCloseButtonSize(context, bitmap)) {
-            IntentUtils.safeRemoveExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
-            bitmap.recycle();
-            bitmap = null;
-        }
-        if (bitmap == null) {
-            mCloseButtonIcon =
-                    TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
-        } else {
-            mCloseButtonIcon = new TintedDrawable(context, bitmap);
+        mIsCloseButtonEnabled =
+                IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLOSE_BUTTON_ENABLED, true);
+        if (mIsCloseButtonEnabled) {
+            // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
+            Bitmap bitmap =
+                    IntentUtils.safeGetParcelableExtra(
+                            intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
+            if (bitmap != null && !checkCloseButtonSize(context, bitmap)) {
+                IntentUtils.safeRemoveExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
+                bitmap.recycle();
+                bitmap = null;
+            }
+            if (bitmap == null) {
+                mCloseButtonIcon =
+                        TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
+            } else {
+                mCloseButtonIcon = new TintedDrawable(context, bitmap);
+            }
         }
 
         List<Bundle> menuItems =
@@ -712,7 +728,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             String menuTitle = mMenuEntries.get(menuIndex).first;
             PendingIntent pendingIntent = mMenuEntries.get(menuIndex).second;
             ActivityOptions options = ActivityOptions.makeBasic();
-            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
             pendingIntent.send(
                     activity,
                     0,
@@ -1021,7 +1037,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (mInteractWithBackground) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_BACKGROUND_INTERACTION);
         }
-        if (mCloseButtonIcon != null) featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON);
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON);
+        }
         if (getCloseButtonPosition() != CLOSE_BUTTON_POSITION_DEFAULT) {
             featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_POSITION);
         }
@@ -1158,7 +1176,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public @Nullable CustomTabsSessionToken getSession() {
+    public @Nullable SessionHolder<CustomTabsSessionToken> getSession() {
         return mSession;
     }
 
@@ -1525,6 +1543,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @CloseButtonPosition int getCloseButtonPosition() {
+        if (!mIsCloseButtonEnabled) return CLOSE_BUTTON_POSITION_DEFAULT;
         return IntentUtils.safeGetIntExtra(
                 mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
     }
@@ -1588,10 +1607,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public boolean isAuthTab() {
-        // TODO(crbug.com/345627627): Remove this and set this to return true in a new
-        //     intent data provider.
-        boolean isAuthTab = false;
-        return ChromeFeatureList.sCctAuthTab.isEnabled() && isAuthTab;
+    public boolean isCloseButtonEnabled() {
+        return mIsCloseButtonEnabled;
     }
 }

@@ -823,8 +823,8 @@ class CloudPolicyInvalidatorWithListenerUserTypedTest
  protected:
   CloudPolicyInvalidatorWithListenerUserTypedTest() = default;
 
-  base::HistogramBase::Count GetCount(MetricPolicyRefresh metric);
-  base::HistogramBase::Count GetInvalidationCount(PolicyInvalidationType type);
+  base::HistogramBase::Count32 GetCount(MetricPolicyRefresh metric);
+  base::HistogramBase::Count32 GetInvalidationCount(PolicyInvalidationType type);
 
  private:
   // CloudPolicyInvalidatorWithListenerTest:
@@ -833,7 +833,7 @@ class CloudPolicyInvalidatorWithListenerUserTypedTest
   base::HistogramTester histogram_tester_;
 };
 
-base::HistogramBase::Count
+base::HistogramBase::Count32
 CloudPolicyInvalidatorWithListenerUserTypedTest::GetCount(
     MetricPolicyRefresh metric) {
   const char* metric_name = CloudPolicyInvalidator::GetPolicyRefreshMetricName(
@@ -842,7 +842,7 @@ CloudPolicyInvalidatorWithListenerUserTypedTest::GetCount(
       ->GetCount(metric);
 }
 
-base::HistogramBase::Count
+base::HistogramBase::Count32
 CloudPolicyInvalidatorWithListenerUserTypedTest::GetInvalidationCount(
     PolicyInvalidationType type) {
   const char* metric_name =

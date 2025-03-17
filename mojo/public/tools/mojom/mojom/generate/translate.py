@@ -799,10 +799,22 @@ def _Method(module, parsed_method, interface):
   method.parameters = list(
       map(lambda parameter: _Parameter(module, parameter, interface),
           parsed_method.parameter_list))
+  # Method can only have one of result response or response parameter list.
+  assert not (parsed_method.response_parameter_list
+              and parsed_method.result_response)
   if parsed_method.response_parameter_list is not None:
     method.response_parameters = list(
         map(lambda parameter: _Parameter(module, parameter, interface),
             parsed_method.response_parameter_list))
+  if parsed_method.result_response is not None:
+    result_type = parsed_method.result_response
+    success_kind = _Kind(module, module.kinds,
+                         _MapKind(result_type.success_type),
+                         (module.mojom_namespace, interface.mojom_name))
+    failure_kind = _Kind(module, module.kinds,
+                         _MapKind(result_type.failure_type),
+                         (module.mojom_namespace, interface.mojom_name))
+    method.result_response = mojom.Result(success_kind, failure_kind)
   method.attributes = _AttributeListToDict(module, method,
                                            parsed_method.attribute_list)
 

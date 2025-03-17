@@ -467,10 +467,8 @@ TEST_F(WebGPUTest, CompatibilityMode) {
   // Compatibility adapter should be available.
   EXPECT_NE(adapter_, nullptr);
 
-  wgpu::AdapterInfo info;
-  adapter_.GetInfo(&info);
-
-  EXPECT_TRUE(info.compatibilityMode);
+  // A compat defaulting adapter could optionally have the CoreFeaturesAndLimits
+  // feature.
 }
 
 TEST_F(WebGPUTest, NonCompatibilityMode) {
@@ -483,10 +481,8 @@ TEST_F(WebGPUTest, NonCompatibilityMode) {
   // Non-compatibility adapter should be available.
   EXPECT_NE(adapter_, nullptr);
 
-  wgpu::AdapterInfo info;
-  adapter_.GetInfo(&info);
-
-  EXPECT_FALSE(info.compatibilityMode);
+  // A core defaulting adapter must have the CoreFeaturesAndLimits feature.
+  EXPECT_TRUE(adapter_.HasFeature(wgpu::FeatureName::CoreFeaturesAndLimits));
 }
 
 }  // namespace gpu

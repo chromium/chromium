@@ -21,6 +21,7 @@ build_webui("build") {
     "focus_grid.ts",
     "focus_outline_manager.ts",
     "focus_row.ts",
+    "focus_without_ink.ts",
     "icon.ts",
     "keyboard_shortcut_list.ts",
     "load_time_data.ts",
@@ -54,10 +55,7 @@ build_webui("build") {
   }
 
   if (include_polymer) {
-    non_web_component_files += [
-      "browser_command/browser_command_proxy.ts",
-      "focus_without_ink.ts",
-    ]
+    non_web_component_files += [ "browser_command/browser_command_proxy.ts" ]
   }
 
   mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]

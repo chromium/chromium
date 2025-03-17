@@ -4,32 +4,34 @@
 
 package org.chromium.components.signin.base;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 
-/**
- * Represents the id of an account, which can be either a Gaia ID or email. This class has a native
- * counterpart called CoreAccountId.
- */
-public class CoreAccountId {
-    private final String mId;
+import org.chromium.build.annotations.NullMarked;
 
-    /** Constructs a new CoreAccountId from a String representation of the account ID. */
+/**
+ * Represents the id of an account, which on Android is always a Gaia ID. This class has a native
+ * counterpart called CoreAccountId, which on platforms other than Android (namely ChromeOS) may
+ * also be an e-mail.
+ */
+@NullMarked
+public class CoreAccountId {
+    private final GaiaId mId;
+
+    /** Constructs a new CoreAccountId from a Gaia ID. */
     @CalledByNative
-    public CoreAccountId(@NonNull String id) {
+    public CoreAccountId(GaiaId id) {
         assert id != null;
         mId = id;
     }
 
-    @CalledByNative
-    public String getId() {
+    public GaiaId getId() {
         return mId;
     }
 
     @Override
+    @CalledByNative
     public String toString() {
-        return mId;
+        return mId.toString();
     }
 
     @Override

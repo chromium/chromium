@@ -49,8 +49,7 @@ CanvasFontCache::CanvasFontCache(Document& document)
       default_font_style_(CreateDefaultFontStyle(document)),
       pruning_scheduled_(false) {}
 
-CanvasFontCache::~CanvasFontCache() {
-}
+CanvasFontCache::~CanvasFontCache() {}
 
 unsigned CanvasFontCache::MaxFonts() {
   return MemoryPressureListenerRegistry::
@@ -68,28 +67,25 @@ unsigned CanvasFontCache::HardMaxFonts() {
                     : CanvasFontCacheHardMaxFonts);
 }
 
-bool CanvasFontCache::GetFontUsingDefaultStyle(HTMLCanvasElement& element,
-                                               const String& font_string,
-                                               Font& resolved_font) {
+const Font* CanvasFontCache::GetFontUsingDefaultStyle(
+    HTMLCanvasElement& element,
+    const String& font_string) {
   auto it = fonts_resolved_using_default_style_.find(font_string);
   if (it != fonts_resolved_using_default_style_.end()) {
     auto list_add_result = font_lru_list_.PrependOrMoveToFirst(font_string);
     DCHECK(!list_add_result.is_new_entry);
-    resolved_font = it->value->font;
-    return true;
+    return it->value;
   }
 
   // Addition to LRU list taken care of inside ParseFont.
   MutableCSSPropertyValueSet* parsed_style = ParseFont(font_string);
   if (!parsed_style)
-    return false;
+    return nullptr;
 
   auto add_result = fonts_resolved_using_default_style_.insert(
-      font_string,
-      MakeGarbageCollected<FontWrapper>(document_->GetStyleEngine().ComputeFont(
-          element, *default_font_style_, *parsed_style)));
-  resolved_font = add_result.stored_value->value->font;
-  return true;
+      font_string, document_->GetStyleEngine().ComputeFont(
+                       element, *default_font_style_, *parsed_style));
+  return add_result.stored_value->value;
 }
 
 MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(

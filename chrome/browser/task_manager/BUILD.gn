@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/nacl/features.gni")
 
 if (is_android) {
@@ -57,7 +56,6 @@ source_set("task_manager") {
   ]
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//components/favicon/core",
@@ -75,11 +73,10 @@ source_set("task_manager") {
     sources += [ "sampling/shared_sampler_win_defines.h" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "providers/arc/arc_process_task.h",
       "providers/arc/arc_process_task_provider.h",
-      "providers/crosapi/crosapi_task.h",
       "providers/vm/crostini_process_task.h",
       "providers/vm/plugin_vm_process_task.h",
       "providers/vm/vm_process_task.h",
@@ -87,18 +84,14 @@ source_set("task_manager") {
       "sampling/arc_shared_sampler.h",
     ]
     public_deps += [
-      "//ash/components/arc/intent_helper",
-      "//ash/components/arc/mojom",
-      "//ash/components/arc/session:connection_holder",
-      "//chrome/browser/ash/arc/process",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/dbus/concierge:concierge_proto",
       "//chromeos/ash/components/process_snapshot",
-      "//chromeos/crosapi/mojom",
+      "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/mojom",
+      "//chromeos/ash/experiences/arc/process",
+      "//chromeos/ash/experiences/arc/session:connection_holder",
     ]
-  }
-  if (is_chromeos_lacros) {
-    sources += [ "providers/crosapi/task_manager_controller_lacros.h" ]
-    public_deps += [ "//chromeos/crosapi/mojom" ]
   }
   if (!is_android) {
     sources += [
@@ -172,7 +165,6 @@ source_set("impl") {
     "//base",
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/theme:theme_resources",
@@ -214,13 +206,10 @@ source_set("impl") {
   if (enable_nacl) {
     deps += [ "//components/nacl/browser" ]
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "providers/arc/arc_process_task.cc",
       "providers/arc/arc_process_task_provider.cc",
-      "providers/crosapi/crosapi_task.cc",
-      "providers/crosapi/crosapi_task_provider_ash.cc",
-      "providers/crosapi/crosapi_task_provider_ash.h",
       "providers/vm/crostini_process_task.cc",
       "providers/vm/plugin_vm_process_task.cc",
       "providers/vm/vm_process_task.cc",
@@ -228,22 +217,19 @@ source_set("impl") {
       "sampling/arc_shared_sampler.cc",
     ]
     deps += [
-      "//ash/components/arc:arc_base_utils",
-      "//ash/components/arc/intent_helper",
-      "//ash/components/arc/session",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/browser/ash/arc/process",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/plugin_vm",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/experiences/arc:arc_base_utils",
+      "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/process",
+      "//chromeos/ash/experiences/arc/session",
     ]
-  }
-  if (is_chromeos_lacros) {
-    sources += [ "providers/crosapi/task_manager_controller_lacros.cc" ]
   }
   if (!is_android) {
     deps += [
+      "//chrome/browser/background:background",
       "//chrome/browser/extensions",
       "//components/guest_view/browser",
       "//extensions:extensions_browser_resources",

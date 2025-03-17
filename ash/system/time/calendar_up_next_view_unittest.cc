@@ -559,8 +559,8 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   auto* first_item = GetContentsView()->children()[0].get();
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemView",
-               focus_manager->GetFocusedView()->GetClassName());
+  EXPECT_EQ("CalendarEventListItemView",
+            focus_manager->GetFocusedView()->GetClassName());
 
   // Next, the "Join" button should be focused.
   PressTab();
@@ -572,8 +572,8 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   auto* second_item = GetContentsView()->children()[1].get();
   ASSERT_TRUE(second_item);
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemView",
-               focus_manager->GetFocusedView()->GetClassName());
+  EXPECT_EQ("CalendarEventListItemView",
+            focus_manager->GetFocusedView()->GetClassName());
 
   // Next, the second event list item view "Join" button should be focused.
   PressTab();
@@ -593,8 +593,8 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   // Going back again, the second event list item view should be focused.
   PressShiftTab();
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemView",
-               focus_manager->GetFocusedView()->GetClassName());
+  EXPECT_EQ("CalendarEventListItemView",
+            focus_manager->GetFocusedView()->GetClassName());
 }
 
 // Add unittest for the fix of this bug: b/286596205.
@@ -615,16 +615,16 @@ TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
   auto* first_item = GetContentsView()->children()[0].get();
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemView",
-               focus_manager->GetFocusedView()->GetClassName());
+  EXPECT_EQ("CalendarEventListItemView",
+            focus_manager->GetFocusedView()->GetClassName());
 
   up_next_view()->RefreshEvents();
 
   // After refresh the events, the first event list item view should still be
   // focused.
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemView",
-               focus_manager->GetFocusedView()->GetClassName());
+  EXPECT_EQ("CalendarEventListItemView",
+            focus_manager->GetFocusedView()->GetClassName());
 }
 
 class CalendarUpNextViewAnimationTest : public CalendarUpNextViewTest {

@@ -28,7 +28,7 @@ message ListOfSpanEntry {
   repeated SpanEntry values = 1;
 }
 
-// Rect from ash/components/arc/mojom/gfx.mojom
+// Rect from chromeos/ash/experiences/arc/mojom/gfx.mojom
 // Next ID: 5
 message Rect {
   int32 left = 1;

@@ -5,11 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_METRICS_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_METRICS_H_
 
+#include <string_view>
+
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
-namespace ash {
-namespace cert_provisioning {
+namespace ash::cert_provisioning {
+
+inline constexpr std::string_view kDmStatusHistogramName =
+    "ChromeOS.CertProvisioning.DmStatus.Dynamic";
+inline constexpr std::string_view kCertProvBackendErrorHistogramName =
+    "ChromeOS.CertProvisioning.CertProvBackendError.Dynamic";
 
 // The enum is used for UMA, the values should not be renumerated.
 enum class CertProvisioningEvent {
@@ -62,7 +69,13 @@ void RecordDataSignTime(ProtocolVersion protocol_version,
                         CertScope scope,
                         base::TimeDelta sample);
 
-}  // namespace cert_provisioning
-}  // namespace ash
+// Records received DeviceManagementStatus-es by the dynamic workers.
+void RecordDmStatusForDynamic(policy::DeviceManagementStatus status);
+
+// Records received CertProvBackendError-s by the dynamic workers.
+void RecordCertProvBackendErrorForDynamic(
+    enterprise_management::CertProvBackendError::Error error);
+
+}  // namespace ash::cert_provisioning
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_METRICS_H_

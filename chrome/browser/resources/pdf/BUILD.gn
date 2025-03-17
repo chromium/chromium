@@ -166,6 +166,9 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   # TypeScript Compiler parameters
+  if (enable_ink) {
+    ts_tsconfig_base = "tsconfig_base.json"
+  }
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",

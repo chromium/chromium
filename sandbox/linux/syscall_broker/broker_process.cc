@@ -95,7 +95,6 @@ bool BrokerProcess::ForkSignalBasedBroker(
                                       parent_pid);
   broker_host_signal_based.LoopAndHandleRequests();
   _exit(1);
-  NOTREACHED();
 }
 
 bool BrokerProcess::Fork(BrokerSideCallback broker_process_init_callback) {

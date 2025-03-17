@@ -5,6 +5,7 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_EDITOR_BOOKMARKS_FOLDER_EDITOR_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
+
 #import <set>
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"

@@ -49,9 +49,6 @@ BASE_DECLARE_FEATURE(kUserVisibleDebug);
 // Enables the history clusters internals page.
 BASE_DECLARE_FEATURE(kHistoryClustersInternalsPage);
 
-// Enables use of task runner with trait CONTINUE_ON_SHUTDOWN.
-BASE_DECLARE_FEATURE(kHistoryClustersUseContinueOnShutdown);
-
 // Enables use of additional keyword filtering operations on clusters.
 BASE_DECLARE_FEATURE(kHistoryClustersKeywordFiltering);
 

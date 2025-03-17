@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/desktop_capture/share_audio_view.h"
 
+#include <string_view>
+
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "components/vector_icons/vector_icons.h"
@@ -62,9 +64,9 @@ void ShareAudioView::SetAudioSharingApprovedByUser(bool is_on) {
   audio_toggle_button_->SetIsOn(is_on);
 }
 
-std::u16string ShareAudioView::GetAudioLabelText() const {
+std::u16string_view ShareAudioView::GetAudioLabelText() const {
   return audio_toggle_label_ ? audio_toggle_label_->GetText()
-                             : std::u16string();
+                             : std::u16string_view();
 }
 
 BEGIN_METADATA(ShareAudioView)

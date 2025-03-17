@@ -266,6 +266,38 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiInRecorderApp) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiPhotoEditing) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_generative_ai_photo_editing(true);
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_generative_ai_photo_editing(false);
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kFalse);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AccountCapabilitiesTest, CanUseGenerativeAi) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_chromeos_generative_ai(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_chromeos_generative_ai(true);
+  EXPECT_EQ(capabilities.can_use_chromeos_generative_ai(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_chromeos_generative_ai(false);
+  EXPECT_EQ(capabilities.can_use_chromeos_generative_ai(),
+            signin::Tribool::kFalse);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(AccountCapabilitiesTest,
        IsSubjectToPrivacySandboxRestrictedMeasurementApiNotice) {
   AccountCapabilities capabilities;

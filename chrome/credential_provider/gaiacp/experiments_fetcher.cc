@@ -181,7 +181,7 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
   }
 
   // Make the fetch experiments HTTP request.
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       GetExperimentsUrl(), access_token, {}, *request_dict,
       kDefaultFetchExperimentsRequestTimeout, kMaxNumHttpRetries,
@@ -194,7 +194,7 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
   }
 
   std::string experiments_data;
-  if (request_result && request_result->is_dict()) {
+  if (request_result) {
     if (!base::JSONWriter::Write(*request_result, &experiments_data)) {
       LOGFN(ERROR) << "base::JSONWriter::Write failed";
       return E_FAIL;

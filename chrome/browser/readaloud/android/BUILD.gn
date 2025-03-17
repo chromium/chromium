@@ -20,6 +20,7 @@ android_library("java") {
   ]
   deps = [
     ":exceptions_java",
+    ":features_java",
     ":hooks_java",
     ":metrics_java",
     "//base:base_java",
@@ -119,7 +120,6 @@ generate_jni("features_jni_headers") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/baseline_close_24.xml",
     "java/res/drawable/baseline_more_horiz_24.xml",
     "java/res/drawable/error_24.xml",
     "java/res/drawable/format_ink_highlighter_24.xml",
@@ -167,6 +167,7 @@ android_library("hooks_java") {
   ]
   deps = [
     "//base:base_java",
+    "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//third_party/android_deps:guava_android_java",
@@ -198,10 +199,12 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/readaloud/TapToSeekSelectionManagerUnitTest.java",
   ]
   deps = [
+    ":exceptions_java",
     ":features_java",
     ":hooks_java",
     ":java",
     ":java_resources",
+    ":metrics_java",
     ":player_java",
     ":player_junit_java",
     ":test_support_java",
@@ -214,7 +217,7 @@ robolectric_library("junit") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/device:java",
-    "//chrome/browser/device:junit",
+    "//chrome/browser/device:junit_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/language/android:base_module_java",
@@ -222,7 +225,6 @@ robolectric_library("junit") {
     "//chrome/browser/language/android:junit",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/readaloud/android:exceptions_java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
@@ -342,7 +344,7 @@ robolectric_library("player_junit_java") {
     "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/device:java",
-    "//chrome/browser/device:junit",
+    "//chrome/browser/device:junit_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/readaloud/android:java",

@@ -42,7 +42,7 @@ bool operator==(const PrivateAggregationBudgetKey& a,
                 const PrivateAggregationBudgetKey& b) {
   const auto tie = [](const PrivateAggregationBudgetKey& budget_key) {
     return std::make_tuple(budget_key.origin(), budget_key.time_window(),
-                           budget_key.api());
+                           budget_key.caller_api());
   };
   return tie(a) == tie(b);
 }

@@ -9,9 +9,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.ui.UiUtils;
 
 /**
@@ -19,30 +21,26 @@ import org.chromium.ui.UiUtils;
  * or the omnibox suggestions).
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public class ScrimView extends View {
     /** The view that the scrim should exist in. */
     private final ViewGroup mParent;
 
-    /** The default background color. */
-    private final int mDefaultBackgroundColor;
-
     /** A means of passing all touch events to an external handler. */
-    private ScrimCoordinator.TouchEventDelegate mEventDelegate;
+    private @Nullable TouchEventDelegate mEventDelegate;
 
     /**
      * @param context An Android {@link Context} for creating the view.
      * @param parent The {@link ViewGroup} the scrim should exist in.
      */
-    public ScrimView(Context context, ViewGroup parent, @ColorInt int defaultColor) {
+    public ScrimView(Context context, ViewGroup parent) {
         super(context);
         mParent = parent;
         setFocusable(false);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        mDefaultBackgroundColor = defaultColor;
 
         setAlpha(0.0f);
         setVisibility(View.GONE);
-        setBackgroundColor(mDefaultBackgroundColor);
         setLayoutParams(
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -52,7 +50,7 @@ public class ScrimView extends View {
      * @param touchEventDelegate A means of passing motion events back to the mediator for
      *     processing.
      */
-    void setTouchEventDelegate(ScrimCoordinator.TouchEventDelegate touchEventDelegate) {
+    void setTouchEventDelegate(TouchEventDelegate touchEventDelegate) {
         mEventDelegate = touchEventDelegate;
     }
 
@@ -72,16 +70,11 @@ public class ScrimView extends View {
             assert anchorView instanceof ViewGroup : "Focused view must be part of the hierarchy!";
         }
         if (inFrontOf) {
+            // TODO(skym): This un-intuitively inserts before (underneath) other previous scrims.
             UiUtils.insertAfter(mParent, this, anchorView);
         } else {
             UiUtils.insertBefore(mParent, this, anchorView);
         }
-    }
-
-    @Override
-    public void setBackgroundColor(@ColorInt int color) {
-        super.setBackgroundColor(
-                color == ScrimProperties.INVALID_COLOR ? mDefaultBackgroundColor : color);
     }
 
     @Override

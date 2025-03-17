@@ -6,6 +6,8 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -16,8 +18,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
-
-namespace {
+#include "content/public/test/test_navigation_observer.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 class SyncSettingsInteractiveTest
     : public SigninBrowserTestBaseT<
@@ -25,9 +29,7 @@ class SyncSettingsInteractiveTest
  public:
   SyncSettingsInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {switches::kImprovedSettingsUIOnDesktop,
-         switches::kExplicitBrowserSigninUIOnDesktop},
+        /*enabled_features=*/{switches::kImprovedSettingsUIOnDesktop},
         /*disabled_features=*/{});
   }
 
@@ -53,21 +55,36 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                                      "settings-sync-account-control",
                                      "cr-icon-button#dropdown-arrow"};
 
+  std::unique_ptr<content::TestNavigationObserver> observer;
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
+    observer = std::make_unique<content::TestNavigationObserver>(url);
+    observer->StartWatchingNewWebContents();
+  }
+
   RunTestSequence(
       Do([&]() {
         identity_test_env()->MakePrimaryAccountAvailable(
             "kTestEmail@email.com", signin::ConsentLevel::kSignin);
       }),
-
       InstrumentTab(kFirstTabContents),
       NavigateWebContents(kFirstTabContents, GURL(chrome::GetSettingsUrl(
                                                  chrome::kSyncSetupSubPage))),
       ExecuteJsAt(kFirstTabContents, drop_down_query,
                   "e => e.visibility === \"hidden\""),
-      ExecuteJsAt(kFirstTabContents, turn_off_button_query, "e => e.click()"),
-      Do([&]() {
-        ASSERT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
-            signin::ConsentLevel::kSignin));
-      }), );
+      ExecuteJsAt(kFirstTabContents, turn_off_button_query, "e => e.click()"));
+
+  if (observer.get()) {
+    observer->Wait();
+    auto* signin_view_controller = browser()->signin_view_controller();
+    CHECK(signin_view_controller->ShowsModalDialog());
+
+    auto* signout_ui = SignoutConfirmationUI::GetForTesting(
+        signin_view_controller->GetModalDialogWebContentsForTesting());
+    ASSERT_TRUE(signout_ui);
+    signout_ui->AcceptDialogForTesting();
+  }
+
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSignin));
 }
-}  // namespace

@@ -9,7 +9,7 @@
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     height: 32px;
-    padding: 16px 16px 0px 16px;
+    padding: 16px 20px 0px 16px;
   }
 
   #dialog:focus-visible {
@@ -95,20 +95,14 @@
     font-family: var(--cros-button-1-font-family);
     font-size: var(--cros-button-1-font-size);
     font-weight: var(--cros-button-1-font-weight);
-    height: 32px;
     line-height: var(--cros-button-1-line-height);
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-top: 16px;
-  }
-
-  .list-container:not(:last-child) {
-    padding-bottom: 16px;
+    padding: 16px;
   }
 
   .sanitize-done-info {
     background-color: var(--cros-sys-secondary_container);
     border-radius: 16px;
+    margin-top: 40px;
   }
 
   .sanitize-done-rollback {
@@ -124,6 +118,15 @@
   .secondary-button-container {
     margin-left: auto;
   }
+
+  .subsection {
+    margin-inline-end: 24px;
+    max-width: 400px;
+  }
+
+  .unbold {
+    font-weight: var(--cros-body-2-font-weight);
+  }
 </style>
 
 <div slot="body" role="dialog" id="dialog" autofocus tabindex="-1"
@@ -135,9 +138,6 @@
     </svg>
   </div>
   <h2><div id="title" class="title">$i18n{sanitizeDoneTitle}</div></h2>
-  <div class="sanitize-description">
-    $i18n{sanitizeDoneExplanation}
-  </div>
   <div class="sanitize-done-info">
     <div class="sanitize-done-rollback">
       $i18n{sanitizeDoneRollback}
@@ -162,8 +162,13 @@
         <div class="expand-title-ending"></div>
         <div role="region" aria-labelledby="accordionExtensionsTitle">
           <div class="list-container">
-            <div id="accordionExtensionsTitle">
-              $i18n{sanitizeDoneAccordionExtensionsReenable}
+            <div id="accordionExtensionsTitle" class="subsection">
+              <div>
+                $i18n{sanitizeDoneAccordionExtensionsReenableSubheader}
+              </div>
+              <span class="unbold">
+                $i18n{sanitizeDoneAccordionExtensionsReenable}
+              </span>
             </div>
             <span class="secondary-button-container">
               <cros-button role="button" button-style="secondary"
@@ -198,8 +203,13 @@
         <div class="expand-title-ending"></div>
         <div role="region" aria-labelledby="accordionChromeOsTitle">
           <div class="list-container">
-            <div id="accordionChromeOsInputTitle">
-              $i18n{sanitizeDoneAccordionChromeOsInput}
+            <div id="accordionChromeOsInputTitle" class="subsection">
+              <div>
+                $i18n{sanitizeDoneAccordionChromeOsInputSubheader}
+              </div>
+              <span class="unbold">
+                $i18n{sanitizeDoneAccordionChromeOsInput}
+              </span>
             </div>
             <span class="secondary-button-container">
               <cros-button role="button" button-style="secondary"
@@ -211,8 +221,13 @@
             </span>
           </div>
           <div class="list-container">
-            <div id="accordionChromeOsNetworkTitle">
-              $i18n{sanitizeDoneAccordionChromeOsNetwork}
+            <div id="accordionChromeOsNetworkTitle" class="subsection">
+              <div>
+                $i18n{sanitizeDoneAccordionChromeOsNetworkSubheader}
+              </div>
+              <span class="unbold">
+                $i18n{sanitizeDoneAccordionChromeOsNetwork}
+              </span>
             </div>
             <span class="secondary-button-container">
               <cros-button role="button" button-style="secondary"
@@ -248,8 +263,13 @@
         <div class="expand-title-ending"></div>
         <div role="region" aria-labelledby="accordionChromeTitle">
           <div class="list-container">
-            <div id="accordionChromeSiteContentTitle">
-              $i18n{sanitizeDoneAccordionChromeSiteContent}
+            <div id="accordionChromeSiteContentTitle" class="subsection">
+              <div>
+                $i18n{sanitizeDoneAccordionChromeSiteContentSubheader}
+              </div>
+              <span class="unbold">
+                $i18n{sanitizeDoneAccordionChromeSiteContent}
+              </span>
             </div>
             <span class="secondary-button-container">
               <cros-button role="button" button-style="secondary"
@@ -261,8 +281,13 @@
             </span>
           </div>
           <div class="list-container">
-            <div id="accordionChromeStartupTitle">
-              $i18n{sanitizeDoneAccordionChromeStartup}
+            <div id="accordionChromeStartupTitle" class="subsection">
+              <div>
+                $i18n{sanitizeDoneAccordionChromeStartupSubheader}
+              </div>
+              <span class="unbold">
+                $i18n{sanitizeDoneAccordionChromeStartup}
+              </span>
             </div>
             <span class="secondary-button-container">
               <cros-button role="button" button-style="secondary"
@@ -274,8 +299,13 @@
             </span>
           </div>
           <div class="list-container">
-            <div id="accordionChromeHomepageTitle">
-              $i18n{sanitizeDoneAccordionChromeHomepage}
+            <div id="accordionChromeHomepageTitle" class="subsection">
+              <div>
+                $i18n{sanitizeDoneAccordionChromeHomepageSubheader}
+              </div>
+              <span class="unbold">
+                $i18n{sanitizeDoneAccordionChromeHomepage}
+              </span>
             </div>
             <span class="secondary-button-container">
               <cros-button role="button" button-style="secondary"
@@ -287,8 +317,13 @@
             </span>
           </div>
           <div class="list-container">
-            <div id="accordionChromeLanguagesTitle">
-              $i18n{sanitizeDoneAccordionChromeLanguages}
+            <div id="accordionChromeLanguagesTitle" class="subsection">
+              <div>
+                $i18n{sanitizeDoneAccordionChromeLanguagesSubheader}
+              </div>
+              <span class="unbold">
+                $i18n{sanitizeDoneAccordionChromeLanguages}
+              </span>
             </div>
             <span class="secondary-button-container">
               <cros-button role="button" button-style="secondary"

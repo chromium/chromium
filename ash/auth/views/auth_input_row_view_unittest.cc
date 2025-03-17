@@ -13,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -30,8 +31,8 @@ namespace ash {
 
 namespace {
 
-constexpr std::u16string kPassword = u"password";
-constexpr std::u16string kPIN = u"123456";
+constexpr std::u16string_view kPassword = u"password";
+constexpr std::u16string_view kPin = u"123456";
 
 }  // namespace
 
@@ -105,8 +106,10 @@ TEST_F(InputRowWithPasswordUnitTest, OnFocusObserverWithClickTest) {
 
 // Testing textfield OnContentsChanged observer.
 TEST_F(InputRowWithPasswordUnitTest, OnContentsChangedTest) {
-  const std::u16string modifiedString = kPassword + u"s";
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedString)).Times(1);
+  const std::u16string modified_string = base::StrCat({kPassword, u"s"});
+  EXPECT_CALL(*mock_observer_,
+              OnContentsChanged(std::u16string_view(modified_string)))
+      .Times(1);
   PressAndReleaseKey(ui::VKEY_S);
 }
 
@@ -178,7 +181,8 @@ TEST_F(InputRowWithPasswordUnitTest, SubmitButtonOnEscapeTest) {
 TEST_F(InputRowWithPasswordUnitTest, RemoveTextTest) {
   LeftClickOn(test_api_->GetDisplayTextButton());
   // Select all and delete.
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string())).Times(1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string_view()))
+      .Times(1);
   EXPECT_CALL(*mock_observer_, OnTextVisibleChanged(false)).Times(1);
   PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   PressAndReleaseKey(ui::VKEY_BACK);
@@ -190,7 +194,8 @@ TEST_F(InputRowWithPasswordUnitTest, RemoveTextTest) {
 
 // Testing ResetState functionality.
 TEST_F(InputRowWithPasswordUnitTest, ResetStateTest) {
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string())).Times(1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string_view()))
+      .Times(1);
   auth_input_->ResetState();
 
   // The textfield should be empty.
@@ -231,12 +236,12 @@ class InputRowWithPinUnitTest : public AshTestBase {
     // Initialize the textfield with some text.
     auth_input_->RequestFocus();
 
-    for (const char16_t c : kPIN) {
+    for (const char16_t c : kPin) {
       PressAndReleaseKey(ui::DomCodeToUsLayoutNonLocatedKeyboardCode(
           ui::UsLayoutDomKeyToDomCode(ui::DomKey::FromCharacter(c))));
     }
     CHECK(test_api_->GetTextfield()->HasFocus());
-    CHECK_EQ(test_api_->GetTextfield()->GetText(), kPIN);
+    CHECK_EQ(test_api_->GetTextfield()->GetText(), kPin);
     CHECK(test_api_->GetSubmitButton()->GetEnabled());
     CHECK(test_api_->GetDisplayTextButton()->GetEnabled());
     CHECK_EQ(test_api_->GetDisplayTextButton()->GetToggled(), false);
@@ -263,40 +268,44 @@ class InputRowWithPinUnitTest : public AshTestBase {
 
 // Testing PIN OnContentsChanged observer.
 TEST_F(InputRowWithPinUnitTest, OnContentsChangedTest) {
-  const std::u16string modifiedPIN = kPIN + u"5";
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  const std::u16string modified_pin = base::StrCat({kPin, u"5"});
+  EXPECT_CALL(*mock_observer_,
+              OnContentsChanged(std::u16string_view(modified_pin)))
+      .Times(1);
   PressAndReleaseKey(ui::VKEY_5);
 }
 
 // Testing PIN OnContentsChanged observer with disabled input area.
 TEST_F(InputRowWithPinUnitTest, DisabledDigitPressTest) {
   auth_input_->SetInputEnabled(false);
-  const std::u16string modifiedPIN = kPIN + u"5";
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(0);
+  const std::u16string modified_pin = base::StrCat({kPin, u"5"});
+  EXPECT_CALL(*mock_observer_,
+              OnContentsChanged(std::u16string_view(modified_pin)))
+      .Times(0);
   PressAndReleaseKey(ui::VKEY_5);
 }
 
 // Testing PIN OnContentsChanged observer with letter.
 TEST_F(InputRowWithPinUnitTest, OnContentsChangedWithLetterTest) {
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(kPIN)).Times(0);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kPin)).Times(0);
   PressAndReleaseKey(ui::VKEY_E);
-  CHECK_EQ(test_api_->GetTextfield()->GetText(), kPIN);
+  CHECK_EQ(test_api_->GetTextfield()->GetText(), kPin);
 }
 
 // Testing PIN backspace press.
 TEST_F(InputRowWithPinUnitTest, BackspacePressTest) {
-  std::u16string modifiedPIN = kPIN;
-  modifiedPIN.pop_back();
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  static constexpr std::u16string_view kModifiedPin =
+      kPin.substr(0, kPin.size() - 1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kModifiedPin)).Times(1);
   PressAndReleaseKey(ui::VKEY_BACK);
 }
 
 // Testing PIN backspace press with disabled input area.
 TEST_F(InputRowWithPinUnitTest, DisabledBackspacePressTest) {
   auth_input_->SetInputEnabled(false);
-  std::u16string modifiedPIN = kPIN;
-  modifiedPIN.pop_back();
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(0);
+  static constexpr std::u16string_view kModifiedPin =
+      kPin.substr(0, kPin.size() - 1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kModifiedPin)).Times(0);
   PressAndReleaseKey(ui::VKEY_BACK);
 }
 
@@ -307,9 +316,9 @@ TEST_F(InputRowWithPinUnitTest, ReenabledBackspacePressTest) {
   auth_input_->SetInputEnabled(true);
   auth_input_->RequestFocus();
 
-  std::u16string modifiedPIN = kPIN;
-  modifiedPIN.pop_back();
-  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  static constexpr std::u16string_view kModifiedPin =
+      kPin.substr(0, kPin.size() - 1);
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(kModifiedPin)).Times(1);
   PressAndReleaseKey(ui::VKEY_BACK);
 }
 
@@ -317,10 +326,12 @@ TEST_F(InputRowWithPinUnitTest, ReenabledBackspacePressTest) {
 TEST_F(InputRowWithPinUnitTest, ClearingInputDisabledButtonsTest) {
   auth_input_->SetInputEnabled(true);
   auth_input_->RequestFocus();
-  std::u16string modifiedPIN = kPIN;
-  while (!modifiedPIN.empty()) {
-    modifiedPIN.pop_back();
-    EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  std::u16string modified_pin(kPin);
+  while (!modified_pin.empty()) {
+    modified_pin.pop_back();
+    EXPECT_CALL(*mock_observer_,
+                OnContentsChanged(std::u16string_view(modified_pin)))
+        .Times(1);
     PressAndReleaseKey(ui::VKEY_BACK);
   }
   CHECK_EQ(test_api_->GetSubmitButton()->GetEnabled(), false);
@@ -335,7 +346,7 @@ TEST_F(InputRowWithPinUnitTest, ClearingInputDisabledButtonsTest) {
 
 // Testing PIN OnSubmit observer.
 TEST_F(InputRowWithPinUnitTest, OnSubmitTest) {
-  EXPECT_CALL(*mock_observer_, OnSubmit(kPIN)).Times(1);
+  EXPECT_CALL(*mock_observer_, OnSubmit(kPin)).Times(1);
   PressAndReleaseKey(ui::VKEY_RETURN);
 }
 

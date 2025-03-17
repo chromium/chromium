@@ -21,6 +21,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/tracing_policy.h"
 
 namespace base {
+class Thread;
 namespace trace_event {
 class TraceConfig;
 }  // namespace trace_event
@@ -98,7 +99,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     // allows overriding that task runner.
     virtual base::SequencedTaskRunner* GetTaskRunner();
 
-    static void ResetTaskRunnerForTesting(
+    static void ResetTaskRunner(
         scoped_refptr<base::SequencedTaskRunner> task_runner);
 
    protected:
@@ -138,8 +139,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
     void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
     void WillClearIncrementalState(
-        const base::perfetto_track_event::TrackEvent::
-            ClearIncrementalStateArgs&) override;
+        const perfetto::DataSourceBase::ClearIncrementalStateArgs&) override;
     bool CanAdoptStartupSession(const perfetto::DataSourceConfig&,
                                 const perfetto::DataSourceConfig&) override;
 
@@ -152,8 +152,16 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     perfetto::DataSourceConfig data_source_config_;
   };
 
+  // Restart the trace thread and replace the task_runner for tracing.
+  static void RestartThreadInSandbox();
+
+  // Returns the process-wide ptr to the trace thread, returns nullptr if the
+  // task_runner for tracing is from the thread-pool.
+  static base::Thread* GetTraceThread();
+
   // Creates the process-wide instance of the PerfettoTracedProcess.
   static PerfettoTracedProcess& MaybeCreateInstance();
+  static PerfettoTracedProcess& MaybeCreateInstanceWithThread();
   static PerfettoTracedProcess& MaybeCreateInstanceForTesting();
 
   // Returns the process-wide instance of the PerfettoTracedProcess.
@@ -223,8 +231,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
  private:
   friend class base::NoDestructor<PerfettoTracedProcess>;
 
-  PerfettoTracedProcess(
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+  // Default constructor would create a dedicated thread for tracing
+  PerfettoTracedProcess();
+  explicit PerfettoTracedProcess(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
   // process.
@@ -248,6 +258,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   bool system_consumer_enabled_for_testing_
       GUARDED_BY(allow_system_consumer_lock_) = false;
 
+  std::unique_ptr<base::Thread> trace_process_thread_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Platform implementation for the Perfetto client library.
@@ -309,8 +320,7 @@ void PerfettoTracedProcess::DataSourceProxy<T>::OnStop(
 
 template <typename T>
 void PerfettoTracedProcess::DataSourceProxy<T>::WillClearIncrementalState(
-    const base::perfetto_track_event::TrackEvent::ClearIncrementalStateArgs&
-        args) {
+    const perfetto::DataSourceBase::ClearIncrementalStateArgs& args) {
   (*data_source_ptr_)->ClearIncrementalState();
 }
 
@@ -318,18 +328,23 @@ template <typename T>
 bool PerfettoTracedProcess::DataSourceProxy<T>::CanAdoptStartupSession(
     const perfetto::DataSourceConfig& startup_config,
     const perfetto::DataSourceConfig& service_config) {
-  if (!startup_config.has_chrome_config() ||
-      !service_config.has_chrome_config()) {
-    return perfetto::DataSourceBase::CanAdoptStartupSession(startup_config,
-                                                            service_config);
+  perfetto::DataSourceConfig startup_config_stripped = startup_config;
+  perfetto::DataSourceConfig service_config_stripped = service_config;
+  if (startup_config.has_chrome_config() &&
+      service_config.has_chrome_config()) {
+    base::trace_event::TraceConfig startup_trace_config(
+        startup_config.chrome_config().trace_config());
+    base::trace_event::TraceConfig service_trace_config(
+        service_config.chrome_config().trace_config());
+    if (!startup_trace_config.IsEquivalentTo(service_trace_config)) {
+      return false;
+    }
+    *startup_config_stripped.mutable_chrome_config() = {};
+    *service_config_stripped.mutable_chrome_config() = {};
   }
 
-  base::trace_event::TraceConfig startup_trace_config(
-      startup_config.chrome_config().trace_config());
-  base::trace_event::TraceConfig service_trace_config(
-      service_config.chrome_config().trace_config());
-
-  return startup_trace_config.IsEquivalentTo(service_trace_config);
+  return perfetto::DataSourceBase::CanAdoptStartupSession(
+      startup_config_stripped, service_config_stripped);
 }
 
 }  // namespace tracing

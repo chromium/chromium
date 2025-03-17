@@ -65,4 +65,4 @@ AlertResponse::AlertResponse(size_t tapped_button_row_index,
 
 AlertResponse::~AlertResponse() = default;
 
-}  // alert_overlays
+}  // namespace alert_overlays

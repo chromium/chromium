@@ -46,7 +46,7 @@ class FakeRmadClientTest : public testing::Test {
   void TearDown() override { RmadClient::Shutdown(); }
 
   FakeRmadClient* fake_client_() {
-    return google::protobuf::down_cast<FakeRmadClient*>(client_.get());
+    return static_cast<FakeRmadClient*>(client_.get());
   }
 
   raw_ptr<RmadClient, DanglingUntriaged> client_ =

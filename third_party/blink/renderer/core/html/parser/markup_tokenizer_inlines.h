@@ -25,11 +25,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_MARKUP_TOKENIZER_INLINES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_MARKUP_TOKENIZER_INLINES_H_
 
@@ -48,13 +43,13 @@ inline void AdvanceStringAndASSERTIgnoringCase(
     SegmentedString& source,
     const char* expected_characters) {
   while (*expected_characters)
-    source.AdvanceAndASSERTIgnoringCase(*expected_characters++);
+    source.AdvanceAndASSERTIgnoringCase(UNSAFE_TODO(*expected_characters++));
 }
 
 inline void AdvanceStringAndASSERT(SegmentedString& source,
                                    const char* expected_characters) {
   while (*expected_characters)
-    source.AdvanceAndASSERT(*expected_characters++);
+    source.AdvanceAndASSERT(UNSAFE_TODO(*expected_characters++));
 }
 
 #if defined(COMPILER_MSVC)

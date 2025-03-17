@@ -24,6 +24,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,11 +40,11 @@
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_provider.h"
@@ -140,7 +141,7 @@ class ScopedCreateDCWithBitmap {
   base::win::ScopedCreateDC::Handle Get() const { return dc_.Get(); }
 
   // Selects |handle| to bitmap into DC. Returns false if handle is not valid.
-  bool SelectBitmap(base::win::ScopedBitmap::element_type handle) {
+  bool SelectBitmap(base::win::ScopedGDIObject<HBITMAP>::element_type handle) {
     bitmap_.reset(handle);
     if (!bitmap_.is_valid()) {
       return false;
@@ -152,7 +153,7 @@ class ScopedCreateDCWithBitmap {
 
  private:
   base::win::ScopedCreateDC dc_;
-  base::win::ScopedBitmap bitmap_;
+  base::win::ScopedGDIObject<HBITMAP> bitmap_;
 };
 
 base::win::RegKey OpenThemeRegKey(REGSAM access) {
@@ -352,6 +353,12 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
   if (configure_web_instance) {
     ConfigureWebInstance();
   }
+
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramEnumeration("Accessibility.WinHighContrastTheme",
+                                GetPlatformHighContrastColorScheme(),
+                                PlatformHighContrastColorScheme::kMaxValue);
+#endif
 }
 
 void NativeThemeWin::ConfigureWebInstance() {
@@ -787,7 +794,7 @@ void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
     return;
   }
 
-  base::win::ScopedBitmap hbitmap = skia::CreateHBitmapXRGB8888(
+  base::win::ScopedGDIObject<HBITMAP> hbitmap = skia::CreateHBitmapXRGB8888(
       rect.width(), rect.height(), nullptr, nullptr);
   if (!offscreen_hdc.SelectBitmap(hbitmap.release())) {
     return;
@@ -849,12 +856,12 @@ void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
   for (int i = 0; i < pixel_count; i++) {
     if (pixels[i] == placeholder_value) {
       // Pixel wasn't touched - make it fully transparent.
-      pixels[i] = SkPackARGB32(0, 0, 0, 0);
-    } else if (SkGetPackedA32(pixels[i]) == 0) {
+      pixels[i] = SkPMColorSetARGB(0, 0, 0, 0);
+    } else if (SkPMColorGetA(pixels[i]) == 0) {
       // Pixel was touched but has incorrect alpha of 0, make it fully opaque.
       pixels[i] =
-          SkPackARGB32(0xFF, SkGetPackedR32(pixels[i]),
-                       SkGetPackedG32(pixels[i]), SkGetPackedB32(pixels[i]));
+          SkPMColorSetARGB(0xFF, SkPMColorGetR(pixels[i]),
+                           SkPMColorGetG(pixels[i]), SkPMColorGetB(pixels[i]));
     }
   }
 
@@ -933,7 +940,7 @@ void NativeThemeWin::PaintLeftMenuArrowThemed(HDC hdc,
   // for RTL locales on Vista.  So use a memory DC and mirror the region with
   // GDI's StretchBlt.
   base::win::ScopedCreateDC mem_dc(CreateCompatibleDC(hdc));
-  base::win::ScopedBitmap mem_bitmap(
+  base::win::ScopedGDIObject<HBITMAP> mem_bitmap(
       CreateCompatibleBitmap(hdc, rect.width(), rect.height()));
   base::win::ScopedSelectObject select_bitmap(mem_dc.Get(), mem_bitmap.get());
   // Copy and horizontally mirror the background from hdc into mem_dc. Use a
@@ -1550,7 +1557,8 @@ HRESULT NativeThemeWin::PaintFrameControl(HDC hdc,
   const int height = rect.height();
 
   // DrawFrameControl for menu arrow/check wants a monochrome bitmap.
-  base::win::ScopedBitmap mask_bitmap(CreateBitmap(width, height, 1, 1, NULL));
+  base::win::ScopedGDIObject<HBITMAP> mask_bitmap(
+      CreateBitmap(width, height, 1, 1, NULL));
 
   if (mask_bitmap == NULL) {
     return E_OUTOFMEMORY;
@@ -1679,13 +1687,20 @@ void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
 
 void NativeThemeWin::UpdateDarkModeStatus() {
   bool dark_mode_enabled = false;
+  bool system_dark_mode_enabled = false;
   if (hkcu_themes_regkey_.Valid()) {
     DWORD apps_use_light_theme = 1;
     hkcu_themes_regkey_.ReadValueDW(L"AppsUseLightTheme",
                                     &apps_use_light_theme);
     dark_mode_enabled = (apps_use_light_theme == 0);
+
+    DWORD system_uses_light_theme = 1;
+    hkcu_themes_regkey_.ReadValueDW(L"SystemUsesLightTheme",
+                                    &system_uses_light_theme);
+    system_dark_mode_enabled = (system_uses_light_theme == 0);
   }
   set_use_dark_colors(dark_mode_enabled);
+  set_use_dark_colors_for_system_integrated_ui(system_dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();

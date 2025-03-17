@@ -39,7 +39,7 @@ namespace blink {
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".  An AudioBus with
 // one channel is mono, an AudioBus with two channels is stereo, etc.
-class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
+class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
  public:
   enum {
     kChannelLeft = 0,

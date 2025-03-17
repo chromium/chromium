@@ -53,7 +53,7 @@ enum class CanvasOps {
   kRect,
   // Path2D operations.
   kAddPath,
-  // BaseRenderingContext2D methods.
+  // Canvas2DRecorderContext methods.
   kSetStrokeStyle,
   kSetFillStyle,
   kSetLineWidth,

@@ -336,18 +336,19 @@ using SaveSessionCallback =
 // Delete files/folders of the given `paths`.
 - (void)deletePaths:(NSArray<NSString*>*)paths
          completion:(base::OnceClosure)callback {
-  _taskRunner->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(^{
-        base::ScopedBlockingCall scoped_blocking_call(
-            FROM_HERE, base::BlockingType::MAY_BLOCK);
-        NSFileManager* fileManager = [NSFileManager defaultManager];
-        for (NSString* path : paths) {
-          if (![fileManager fileExistsAtPath:path])
-            continue;
-          [self deleteSessionPaths:path];
-        }
-      }),
-      std::move(callback));
+  _taskRunner->PostTaskAndReply(FROM_HERE, base::BindOnce(^{
+                                  base::ScopedBlockingCall scoped_blocking_call(
+                                      FROM_HERE, base::BlockingType::MAY_BLOCK);
+                                  NSFileManager* fileManager =
+                                      [NSFileManager defaultManager];
+                                  for (NSString* path : paths) {
+                                    if (![fileManager fileExistsAtPath:path]) {
+                                      continue;
+                                    }
+                                    [self deleteSessionPaths:path];
+                                  }
+                                }),
+                                std::move(callback));
 }
 
 - (void)deleteSessionPaths:(NSString*)sessionPath {
@@ -441,8 +442,8 @@ using SaveSessionCallback =
 
 - (void)performSaveSessionData:(NSData*)sessionData
                    sessionPath:(NSString*)sessionPath {
-  base::ScopedBlockingCall scoped_blocking_call(
-            FROM_HERE, base::BlockingType::MAY_BLOCK);
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* directory = [sessionPath stringByDeletingLastPathComponent];

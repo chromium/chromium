@@ -20,27 +20,31 @@ found in the LICENSE file.
             style="@style/LocationBarActionButton"
             android:src="@drawable/btn_delete_24dp"
             android:visibility="invisible"
-            android:contentDescription="@string/accessibility_toolbar_btn_delete_url" />
+            android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
+            android:tooltipText="@string/accessibility_toolbar_btn_delete_url" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/mic_button"
             style="@style/LocationBarActionButton"
             android:src="@drawable/ic_mic_white_24dp"
             android:visibility="invisible"
-            android:contentDescription="@string/accessibility_toolbar_btn_mic" />
+            android:contentDescription="@string/accessibility_toolbar_btn_mic"
+            android:tooltipText="@string/accessibility_toolbar_btn_mic" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/lens_camera_button"
             style="@style/LocationBarActionButton"
             android:src="@drawable/lens_camera_icon"
             android:visibility="gone"
-            android:contentDescription="@string/accessibility_btn_lens_camera" />
+            android:contentDescription="@string/accessibility_btn_lens_camera"
+            android:tooltipText="@string/accessibility_btn_lens_camera" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/bookmark_button"
             style="@style/LocationBarActionButton"
             android:visibility="gone"
-            android:contentDescription="@string/accessibility_menu_bookmark" />
+            android:contentDescription="@string/accessibility_menu_bookmark"
+            android:tooltipText="@string/accessibility_menu_bookmark" />
 
        <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/save_offline_button"
@@ -48,7 +52,8 @@ found in the LICENSE file.
             android:nextFocusForward="@+id/menu_button"
             android:src="@drawable/ic_file_download_white_24dp"
             android:visibility="gone"
-            android:contentDescription="@string/download_page" />
+            android:contentDescription="@string/download_page"
+            android:tooltipText="@string/download_page" />
 
     </LinearLayout>
 </merge>

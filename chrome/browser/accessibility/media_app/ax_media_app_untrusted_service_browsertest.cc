@@ -180,36 +180,36 @@ AXMediaAppUntrustedServiceTest::ClonePageMetadataPtrs(
 
 void AXMediaAppUntrustedServiceTest::EnableScreenReaderForTesting() {
   accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::DisableScreenReaderForTesting() {
   accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->EnableSpokenFeedback(false);
 #else
   content::ScopedAccessibilityModeOverride scoped_mode(ui::kNone);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::EnableSelectToSpeakForTesting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
 #else
   content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::DisableSelectToSpeakForTesting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
 #else
   content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::WaitForOcringPages(

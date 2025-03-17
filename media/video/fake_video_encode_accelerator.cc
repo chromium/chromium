@@ -143,6 +143,11 @@ void FakeVideoEncodeAccelerator::SetSupportFrameSizeChange(
   NotifyEncoderInfoChange(encoder_info_);
 }
 
+void FakeVideoEncodeAccelerator::SetFrameDelay(int frame_delay) {
+  encoder_info_.frame_delay = frame_delay;
+  NotifyEncoderInfoChange(encoder_info_);
+}
+
 void FakeVideoEncodeAccelerator::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   task_runner_->PostTask(

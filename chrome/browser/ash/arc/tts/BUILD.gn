@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("tts") {
   sources = [
@@ -15,9 +15,9 @@ static_library("tts") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//content/public/browser",
   ]
@@ -30,11 +30,11 @@ source_set("unit_tests") {
 
   deps = [
     ":tts",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/keyed_service/core",
     "//content/public/browser",
     "//content/test:test_support",

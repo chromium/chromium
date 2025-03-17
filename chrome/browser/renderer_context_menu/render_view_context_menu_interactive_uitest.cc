@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -208,11 +209,21 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
         "content/test/data");
     embedded_https_test_server().SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
   }
 
   void RunTest(FencedFrameContextMenuTestCase& test_case) {
     ASSERT_TRUE(embedded_https_test_server().Start());
 
+    TestCommandsDisabled(test_case);
+    TestCommandsBlockedFromExecuting(test_case);
+  }
+
+  // Test that commands are disabled in context menu when fenced frame untrusted
+  // network is revoked.
+  void TestCommandsDisabled(FencedFrameContextMenuTestCase& test_case) {
     // Set up the frames.
     GURL url(
         embedded_https_test_server().GetURL("a.test", test_case.relative_url));
@@ -306,6 +317,99 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
     }
   }
 
+  // Test that commands are blocked from executing when fenced frame untrusted
+  // network is revoked.
+  // TODO(crbug.com/394523687): Verify no navigation takes place if navigation
+  // commands are blocked.
+  void TestCommandsBlockedFromExecuting(
+      FencedFrameContextMenuTestCase& test_case) {
+    for (int command_id : test_case.command_ids) {
+      // Set up the frames.
+      GURL url(embedded_https_test_server().GetURL("a.test",
+                                                   test_case.relative_url));
+      content::RenderFrameHost* fenced_frame_rfh =
+          test_case.is_in_nested_iframe ? CreateFencedFrameWithNestedIframe(url)
+                                        : CreateFencedFrame(url);
+
+      // To avoid flakiness and ensure fenced_frame_rfh is ready for hit
+      // testing.
+      content::WaitForHitTestData(fenced_frame_rfh);
+
+      // Get the nested iframe if there is one, else it is a nullptr.
+      content::RenderFrameHost* nested_iframe_rfh =
+          content::ChildFrameAt(fenced_frame_rfh, 0);
+      if (test_case.is_in_nested_iframe) {
+        ASSERT_TRUE(nested_iframe_rfh);
+        ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), url);
+        content::WaitForHitTestData(nested_iframe_rfh);
+      }
+
+      content::RenderFrameHost* target_frame =
+          test_case.is_in_nested_iframe ? nested_iframe_rfh : fenced_frame_rfh;
+
+      // Get the coordinate of the click target with respect to the target
+      // frame.
+      gfx::PointF target = absl::visit(
+          base::Overloaded(
+              [&target_frame =
+                   std::as_const(target_frame)](std::string target_id) {
+                return GetCenterCoordinatesOfElementWithId(target_frame,
+                                                           target_id);
+              },
+              [](gfx::PointF target_point) { return target_point; }),
+          test_case.click_target);
+
+      if (test_case.is_in_nested_iframe) {
+        // Because the mouse event is forwarded to the `RenderWidgetHost` of the
+        // fenced frame, when the element is inside the nested iframe, it needs
+        // to be offset by the top left coordinates of the nested iframe
+        // relative to the fenced frame.
+        const gfx::PointF iframe_offset =
+            content::test::GetTopLeftCoordinatesOfElementWithId(
+                fenced_frame_rfh, "child-0");
+        target.Offset(iframe_offset.x(), iframe_offset.y());
+      }
+
+      // Create a callback that will be invoked before command execution.
+      auto before_execute = base::BindLambdaForTesting([&fenced_frame_rfh]() {
+        // Disable fenced frame untrusted network access.
+        ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+          (async () => {
+            return window.fence.disableUntrustedNetwork();
+          })();
+        )"));
+      });
+
+      // Set up the observer for the console warning.
+      content::WebContentsConsoleObserver console_observer(
+          browser()->tab_strip_model()->GetActiveWebContents());
+      console_observer.SetPattern("*Context menu command is not executed*");
+
+      // Open a context menu by right clicking on the target.
+      ContextMenuWaiter menu_observer(command_id, before_execute);
+      content::test::SimulateClickInFencedFrameTree(
+          target_frame, blink::WebMouseEvent::Button::kRight, target);
+
+      // Wait for context menu and the command to start execution.
+      menu_observer.WaitForMenuOpenAndClose();
+
+      // The command should still be enabled.
+      EXPECT_THAT(menu_observer.GetCapturedCommandIds(), Contains(command_id));
+      EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+                  Contains(command_id));
+
+      // The command should not be executed because the fenced frame untrusted
+      // network has been revoked.
+      EXPECT_EQ(menu_observer.IsCommandExecuted(), false)
+          << "Command " << command_id
+          << " is executed, however it should be blocked since fenced frame "
+             "untrusted network is revoked.";
+
+      ASSERT_TRUE(console_observer.Wait());
+      EXPECT_EQ(console_observer.messages().size(), 1u);
+    }
+  }
+
   // Create a fenced frame which is navigated to `url`.
   content::RenderFrameHost* CreateFencedFrame(const GURL& url) {
     // Navigate fenced frame to a page with an anchor element.
@@ -366,12 +470,21 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
     web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info));
   }
 
+  void CleanupWebApps() {
+    web_app::test::UninstallAllWebApps(browser()->profile());
+    override_registration_.reset();
+  }
+
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 // Check which commands are present after opening the context menu for a
@@ -423,6 +536,139 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
                             IDC_SAVE_PAGE, IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE,
                             IDC_CONTENT_CONTEXT_RELOADFRAME,
                             IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
+}
+
+// Check that all fenced frame untrusted network status gated commands are
+// disabled if the context menu is inside a fenced frame that has revoked
+// untrusted network.
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    FencedFrameNetworkStatusGatedCommandsDisabledAfterNetworkCutoff) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Set up the fenced frame.
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(embedded_https_test_server().GetURL(
+          "a.test", "/fenced_frames/title1.html"));
+
+  // Create a context menu for the fenced frame.
+  TestRenderViewContextMenu menu(*fenced_frame_rfh,
+                                 content::ContextMenuParams());
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+      (async () => {
+        return window.fence.disableUntrustedNetwork();
+      })();
+    )"));
+
+  auto is_command_id_enabled = [&menu](int command_id) {
+    return menu.IsCommandIdEnabled(command_id);
+  };
+
+  // Check that the commands that are gated on fenced frame untrusted
+  // network status should all be disabled.
+  //
+  // NOTE: This only checks that the command is disabled. It does not check
+  // whether the command is in the context menu. For example, when the context
+  // menu opens upon an anchor element, commands that operate on images are not
+  // in the menu. However, the `RenderViewContextMenu::IsCommandIdEnabled()`
+  // check is independent of whether the command exists in the menu. So it is
+  // fine to check it without checking the existence of the command.
+  ASSERT_THAT(TestRenderViewContextMenu::
+                  GetFencedFrameUntrustedNetworkStatusGatedCommands(),
+              testing::Each(testing::ResultOf(is_command_id_enabled,
+                                              testing::IsFalse())));
+}
+
+// Check that all fenced frame untrusted network status gated commands are
+// not allowed to execute if the context menu is inside a fenced frame that has
+// revoked untrusted network.
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    FencedFrameNetworkStatusGatedCommandsBlockedAfterNetworkCutoff) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Set up the fenced frame.
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(embedded_https_test_server().GetURL(
+          "a.test", "/fenced_frames/title1.html"));
+
+  // Create a context menu for the fenced frame.
+  TestRenderViewContextMenu menu(*fenced_frame_rfh,
+                                 content::ContextMenuParams());
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+      (async () => {
+        return window.fence.disableUntrustedNetwork();
+      })();
+    )"));
+
+  auto is_command_executed = [&menu](int command_id) {
+    CommandExecutionObserver observer(&menu, command_id);
+    menu.ExecuteCommand(command_id, 0);
+    return observer.IsCommandExecuted();
+  };
+
+  // Check that the commands that are gated on fenced frame untrusted network
+  // status should not be allowed to execute.
+  ASSERT_THAT(TestRenderViewContextMenu::
+                  GetFencedFrameUntrustedNetworkStatusGatedCommands(),
+              testing::Each(testing::ResultOf(is_command_executed,
+                                              testing::Optional(false))));
+}
+
+// Demonstrate the URL can be changed by context menu event listener. Note this
+// test does not revoke fenced frame untrusted network. So the command proceeds
+// to execute. `TestCommandsBlockedFromExecuting()` covers the case where
+// untrusted network is revoked and the command is blocked from executing.
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       OnContextMenuListenerAttack) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Set up the fenced frame.
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(embedded_https_test_server().GetURL(
+          "a.test", "/fenced_frames/context_menu_listener.html"));
+
+  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit
+  // testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+
+  // Get the coordinate of the anchor element.
+  const gfx::PointF target =
+      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
+
+  // Verify the URL before the listener is invoked.
+  ASSERT_EQ(content::EvalJs(fenced_frame_rfh,
+                            "document.getElementById('anchor').href")
+                .ExtractString(),
+            "https://example.com/");
+
+  // Open a context menu by right clicking on the target. The anchor element
+  // has a context menu listener which appends the cross-site data to the
+  // anchor element's href URL.
+  ContextMenuWaiter menu_observer(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, target);
+
+  // Wait for context menu and the command to start execution.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // The command should be enabled since the untrusted network is not disabled.
+  ASSERT_FALSE(fenced_frame_rfh->IsUntrustedNetworkDisabled());
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              Contains(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              Contains(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+
+  // The URL has been changed.
+  GURL altered_url("https://example.com#cross-site-data");
+  ASSERT_EQ(menu_observer.params().link_url, altered_url);
+
+  // With the untrusted network enabled, the command proceeds to execute.
+  EXPECT_EQ(menu_observer.IsCommandExecuted(), true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -556,6 +802,7 @@ IN_PROC_BROWSER_TEST_F(
       .is_in_nested_iframe = false};
 
   RunTest(test_case);
+  CleanupWebApps();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -571,11 +818,84 @@ IN_PROC_BROWSER_TEST_F(
       .is_in_nested_iframe = true};
 
   RunTest(test_case);
+  CleanupWebApps();
 }
 
-// "Open Link in Profile" functionality is not available on ChromeOS Ash where
-// there is only one profile.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenImageInNewTabDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB},
+      .relative_url = "/test_visual.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenImageInNewTabDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB},
+      .relative_url = "/test_visual.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenAudioInNewTabDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/accessibility/html/audio.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenAudioInNewTabDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/accessibility/html/audio.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenVideoInNewTabDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/media/video-player-autoplay.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenVideoInNewTabDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/media/video-player-autoplay.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
+}
+
+// "Open Link in Profile" functionality is not available on ChromeOS where there
+// is only one profile.
+#if !BUILDFLAG(IS_CHROMEOS)
 class ContextMenuFencedFrameMutilpleProfilesTest
     : public ContextMenuFencedFrameTest {
  public:
@@ -653,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(
 
   RunTest(test_case);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class ContextMenuFencedFrameProtocolHandlerTest
     : public ContextMenuFencedFrameTest {

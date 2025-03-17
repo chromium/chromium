@@ -140,8 +140,8 @@ void CheckSelectionIsValid(
         selection) {
   CHECK(!selection.empty());
   // Nodes must be not null.
-  CHECK(base::ranges::all_of(selection,
-                             [](const BookmarkNode* node) { return node; }));
+  CHECK(std::ranges::all_of(selection,
+                            [](const BookmarkNode* node) { return node; }));
 
   // Check not repeated nodes.
   std::set<const BookmarkNode*> nodes_set(selection.begin(), selection.end());
@@ -280,8 +280,7 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
-  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_) &&
-      tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_)) {
     AddCheckboxItem(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
                     IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
   }
@@ -360,7 +359,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       for (const bookmarks::BookmarkNode* node : selection_) {
         bookmark_service_->Move(node, BookmarkParentFolder::BookmarkBarFolder(),
                                 bookmark_service_->GetChildrenCount(
-                                    BookmarkParentFolder::BookmarkBarFolder()));
+                                    BookmarkParentFolder::BookmarkBarFolder()),
+                                browser_);
       }
       break;
     }
@@ -371,7 +371,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       for (const bookmarks::BookmarkNode* node : selection_) {
         bookmark_service_->Move(node, BookmarkParentFolder::OtherFolder(),
                                 bookmark_service_->GetChildrenCount(
-                                    BookmarkParentFolder::OtherFolder()));
+                                    BookmarkParentFolder::OtherFolder()),
+                                browser_);
       }
       break;
     }
@@ -569,12 +570,12 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
 
-  bool is_any_node_permanent = base::ranges::any_of(
+  bool is_any_node_permanent = std::ranges::any_of(
       selection_,
       [](const BookmarkNode* node) { return node->is_permanent_node(); });
   bool can_edit =
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) &&
-      base::ranges::all_of(selection_, [&](const BookmarkNode* node) {
+      std::ranges::all_of(selection_, [&](const BookmarkNode* node) {
         return !bookmark_service_->IsNodeManaged(node);
       });
 

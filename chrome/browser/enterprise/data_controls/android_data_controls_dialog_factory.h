@@ -16,6 +16,14 @@ class AndroidDataControlsDialogFactory : public DataControlsDialogFactory {
   AndroidDataControlsDialogFactory() = default;
   virtual ~AndroidDataControlsDialogFactory() = default;
 
+  void ShowDialogIfNeeded(content::WebContents* web_contents,
+                          DataControlsDialog::Type type) override;
+
+  void ShowDialogIfNeeded(
+      content::WebContents* web_contents,
+      DataControlsDialog::Type type,
+      base::OnceCallback<void(bool bypassed)> callback) override;
+
  private:
   DataControlsDialog* CreateDialog(
       DataControlsDialog::Type type,

@@ -300,8 +300,9 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::AddAllCookiesInCookieManager(
 
   run_loop.Run();
 
-  if (!result_out.status.IsInclude())
+  if (!result_out.status.IsInclude()) {
     LOG(ERROR) << "Failed to set cookie in cookie jar: " << result_out.status;
+  }
 
   return result_out.status.IsInclude();
 }
@@ -312,11 +313,13 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetCookiesInCookieManager(
   for (NSHTTPCookie* cookie in cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now());
-    if (!canonical_cookie)
+    if (!canonical_cookie) {
       continue;
+    }
     if (!AddAllCookiesInCookieManager(cookie_manager,
-                                      *std::move(canonical_cookie)))
+                                      *std::move(canonical_cookie))) {
       return false;
+    }
   }
   return true;
 }
@@ -362,8 +365,9 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetHeaderFieldsWithCookies(
     NSArray<NSHTTPCookie*>* cookies) {
   NSMutableString* cookie_string = [NSMutableString string];
   for (NSHTTPCookie* cookie in cookies) {
-    if (cookie_string.length != 0)
+    if (cookie_string.length != 0) {
       [cookie_string appendString:@", "];
+    }
     [cookie_string appendString:GetStringWithNSHTTPCookie(cookie)];
   }
   return @{@"Set-Cookie" : cookie_string};

@@ -39,7 +39,8 @@ BASE_FEATURE(kUseNewEncryptionKeyForWebData,
 class WebDatabaseService::BackendDelegate
     : public WebDatabaseBackend::Delegate {
  public:
-  BackendDelegate(const base::WeakPtr<WebDatabaseService>& web_database_service)
+  explicit BackendDelegate(
+      const base::WeakPtr<WebDatabaseService>& web_database_service)
       : web_database_service_(web_database_service),
         callback_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -135,7 +136,7 @@ void WebDatabaseService::ScheduleDBTask(const base::Location& from_here,
                                         WriteTask task) {
   DCHECK(web_db_backend_);
   std::unique_ptr<WebDataRequest> request =
-      web_db_backend_->request_manager()->NewRequest(nullptr);
+      web_db_backend_->request_manager()->NewRequest({});
   pending_task_queue_->PostTask(
       from_here,
       BindOnce(&WebDatabaseBackend::DBWriteTaskWrapper, web_db_backend_,
@@ -146,10 +147,20 @@ WebDataServiceBase::Handle WebDatabaseService::ScheduleDBTaskWithResult(
     const base::Location& from_here,
     ReadTask task,
     WebDataServiceConsumer* consumer) {
+  return ScheduleDBTaskWithResult(
+      from_here, std::move(task),
+      base::BindOnce(&WebDataServiceConsumer::OnWebDataServiceRequestDone,
+                     consumer->GetWebDataServiceConsumerWeakPtr()));
+}
+
+WebDataServiceBase::Handle WebDatabaseService::ScheduleDBTaskWithResult(
+    const base::Location& from_here,
+    ReadTask task,
+    WebDataServiceRequestCallback consumer) {
   DCHECK(consumer);
   DCHECK(web_db_backend_);
   std::unique_ptr<WebDataRequest> request =
-      web_db_backend_->request_manager()->NewRequest(consumer);
+      web_db_backend_->request_manager()->NewRequest(std::move(consumer));
   WebDataServiceBase::Handle handle = request->GetHandle();
   pending_task_queue_->PostTask(
       from_here,

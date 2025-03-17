@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">citação</translation>
 <translation id="1681022320378710418">horário atual</translation>
 <translation id="1727839386348365796">Conta-gotas</translation>
+<translation id="1771761307086386028">Rolar para a direita</translation>
 <translation id="1787192514241997742">tempo total: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">grade de árvore</translation>
 <translation id="1822429046913737220">AM/PM</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">seletor de semana</translation>
 <translation id="3706100364254443312">alternar</translation>
 <translation id="3808586225841795776">termo</translation>
-<translation id="3914173277599553213">Obrigatória</translation>
 <translation id="3920932319529768807">conclusão</translation>
 <translation id="3924558731517983934">app</translation>
 <translation id="3944740393230681990">prólogo</translation>
 <translation id="3960700977367013758">barra de rolagem</translation>
+<translation id="4021716437419160885">Rolar para baixo</translation>
 <translation id="4103419683916926126">Milésimos de segundo</translation>
 <translation id="4151657705144244502">gráfico</translation>
 <translation id="4160057747563657758">telefone</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668956016107839909">apêndice</translation>
 <translation id="4698212723196775569">código</translation>
+<translation id="4710792130811321440">mostrar menu de seleção de faixa de áudio</translation>
 <translation id="4742539557769756338">capa</translation>
 <translation id="4748357248530471599">ativa tela cheia com corte de tela</translation>
 <translation id="4757246831282535685">painel da guia</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">comentário</translation>
 <translation id="4924138096460353083">indeterminado</translation>
 <translation id="4950364064308314478">Mostrar seletor de horário e data local</translation>
+<translation id="495046168593986294">Rolar para cima</translation>
 <translation id="4971739861736909480">Item <ph name="ACCNAME" /> selecionado</translation>
 <translation id="5022314756875057021">grupo de linhas</translation>
 <translation id="5034860022980953847">indicador de progresso</translation>
@@ -128,11 +131,12 @@
 <translation id="5787939484346677755">expandido, opções de preenchimento automático disponíveis.</translation>
 <translation id="5860033963881614850">Desativada</translation>
 <translation id="591047860372322273">caixa de pesquisa</translation>
-<translation id="5916664084637901428">Ativada</translation>
+<translation id="5916664084637901428">Ativado</translation>
 <translation id="5966707198760109579">Semana</translation>
 <translation id="5987525920412732405">botão de rotação</translation>
 <translation id="6011459053400940133">controle deslizante de volume</translation>
 <translation id="6015796118275082299">Ano</translation>
+<translation id="602001110135236999">Rolar para a esquerda</translation>
 <translation id="6023896073578205740">caixa de listagem</translation>
 <translation id="6119846243427417423">ativar</translation>
 <translation id="6150588977291308318">bibliografia</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">pressione</translation>
 <translation id="6885760532393684712">diretório</translation>
 <translation id="689129560213475294">colofão</translation>
+<translation id="6919089238568236262">mostrar menu de seleção de faixa de vídeo</translation>
 <translation id="6934078000481955284">bloco de texto</translation>
 <translation id="693476918119313863">cabeçalho</translation>
 <translation id="6941933287844615239">fazer o download da mídia</translation>

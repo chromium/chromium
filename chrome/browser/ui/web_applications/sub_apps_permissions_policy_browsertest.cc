@@ -10,6 +10,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -45,7 +46,7 @@ class SubAppsPermissionsPolicyBrowserTest
                                             .SetName("Parent apps test app")
                                             .SetVersion("1.0.0"))
              .BuildBundle()
-             ->TrustBundleAndInstall(profile());
+             ->Install(profile());
 
     parent_app_id_ = url_info.app_id();
 
@@ -57,7 +58,7 @@ class SubAppsPermissionsPolicyBrowserTest
                                   .SetVersion(installed_version.GetString()))
             .BuildBundle();
 
-    *bundle->TrustBundleAndInstall(profile());
+    *bundle->Install(profile());
 
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(parent_app_id_);

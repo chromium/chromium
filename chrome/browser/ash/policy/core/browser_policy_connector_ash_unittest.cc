@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 
+#include "base/check_deref.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -33,6 +34,7 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
 
   TestWallpaperController test_wallpaper_controller;
   WallpaperControllerClientImpl wallpaper_controller_client{
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
       std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>()};
   wallpaper_controller_client.InitForTesting(&test_wallpaper_controller);
 
@@ -43,18 +45,20 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
   ash::UserImageManagerRegistry user_image_manager_registry(
       fake_user_manager.Get());
 
-  fake_user_manager->AddUser(AccountId::FromUserEmail("owner@example/com"));
-  fake_user_manager->AddUser(kAccountId);
+  fake_user_manager->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("owner@example/com", GaiaId("ownergaia")),
+      user_manager::UserType::kRegular);
+  fake_user_manager->AddGaiaUser(kAccountId, user_manager::UserType::kRegular);
 
   browser_policy_connector.OnUserManagerCreated(fake_user_manager.Get());
 
-  EXPECT_EQ(2u, fake_user_manager->GetUsers().size());
+  EXPECT_EQ(2u, fake_user_manager->GetPersistedUsers().size());
   EXPECT_EQ(0, test_wallpaper_controller.remove_user_wallpaper_count());
 
   fake_user_manager->RemoveUser(kAccountId,
                                 user_manager::UserRemovalReason::UNKNOWN);
 
-  EXPECT_EQ(1u, fake_user_manager->GetUsers().size());
+  EXPECT_EQ(1u, fake_user_manager->GetPersistedUsers().size());
   EXPECT_EQ(1, test_wallpaper_controller.remove_user_wallpaper_count());
 
   browser_policy_connector.OnUserManagerShutdown();

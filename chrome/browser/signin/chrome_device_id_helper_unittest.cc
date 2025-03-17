@@ -8,14 +8,13 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
 #include "components/signin/public/base/signin_switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using testing::Eq;
 using testing::IsEmpty;
@@ -23,7 +22,7 @@ using testing::Ne;
 using testing::Not;
 using testing::StartsWith;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kEpehemeralPrefix[] = "t_";
 
 TEST(DeviceIdHelper, NonEphemeralDeviceIdsAreNotEmpty) {

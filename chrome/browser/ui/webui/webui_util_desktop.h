@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "ui/base/webui/resource_path.h"
+
 namespace content {
 class WebContents;
 }
@@ -39,6 +42,17 @@ void SetThemeProviderForTestingDeprecated(
 // Gets the metrics appropriate hostname for a given WebUI URL for code cache
 // metrics. Returns an empty string if no relevant mapping has been defined.
 std::string GetWebUIHostnameForCodeCacheMetrics(const GURL& webui_url);
+
+// Appends WebUI resource URLs to code cache resource ID pairs from the given
+// `code_cache_resources` into `resource_code_cache_pairs`.
+void AppendWebUIResourceURLToCodeCachePairs(
+    std::string_view scheme,
+    std::string_view host,
+    base::span<const ResourcePath> code_cache_resources,
+    std::vector<std::pair<GURL, int>>& resource_code_cache_pairs);
+
+// Gets the WebUI URL to code cache resource ID map.
+base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap();
 
 }  // namespace webui
 

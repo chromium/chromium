@@ -29,8 +29,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/grit/components_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/grit/safe_browsing_resources.h"
+#include "components/grit/safe_browsing_resources_map.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -38,27 +39,23 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "content/public/browser/global_routing_id.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "components/enterprise/common/proto/connectors.pb.h"
-#endif
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
 #include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-using TriggeredRule =
-    enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule;
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/common/proto/connectors.pb.h"
 #endif
 
 using base::Time;
@@ -429,7 +426,7 @@ void WebUIInfoSingleton::ClearReportingEvents() {
   std::vector<base::Value::Dict>().swap(reporting_events_);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 void WebUIInfoSingleton::AddToDeepScanRequests(
     bool per_profile_request,
     const std::string& access_token,
@@ -518,7 +515,8 @@ void WebUIInfoSingleton::ClearTailoredVerdictOverride() {
     }
   }
 }
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        // !BUILDFLAG(IS_ANDROID)
 
 void WebUIInfoSingleton::RegisterWebUIInstance(SafeBrowsingUIHandler* webui) {
   webui_instances_.push_back(webui);
@@ -527,7 +525,7 @@ void WebUIInfoSingleton::RegisterWebUIInstance(SafeBrowsingUIHandler* webui) {
 void WebUIInfoSingleton::UnregisterWebUIInstance(SafeBrowsingUIHandler* webui) {
   std::erase(webui_instances_, webui);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   // Notify other WebUIs that the source of the tailored verdict override is
   // going away.
   if (tailored_verdict_override_.IsFromSource(webui)) {
@@ -592,14 +590,14 @@ void WebUIInfoSingleton::MaybeClearData() {
     ClearLogMessages();
     ClearReportingEvents();
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
     ClearDeepScans();
     ClearTailoredVerdictOverride();
 #endif
   }
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 DeepScanDebugData::DeepScanDebugData() = default;
 DeepScanDebugData::DeepScanDebugData(const DeepScanDebugData&) = default;
 DeepScanDebugData::~DeepScanDebugData() = default;
@@ -825,6 +823,8 @@ base::Value::Dict SerializeIntelligentScanInfo(
   base::Value::Dict dict;
   dict.Set("brand", intelligent_scan_info.brand());
   dict.Set("intent", intelligent_scan_info.intent());
+  dict.Set("no_info_reason", IntelligentScanInfo_NoInfoReason_Name(
+                                 intelligent_scan_info.no_info_reason()));
   return dict;
 }
 
@@ -847,6 +847,8 @@ base::Value::Dict SerializeClientReportingMetadata(
     device_dict.Set("os_version", client_metadata.device().os_version());
     device_dict.Set("os_platform", client_metadata.device().os_platform());
     device_dict.Set("name", client_metadata.device().name());
+    device_dict.Set("device_fqdn", client_metadata.device().device_fqdn());
+    device_dict.Set("network_name", client_metadata.device().network_name());
     client_metadata_dict.Set("device", std::move(device_dict));
   }
   if (client_metadata.has_profile()) {
@@ -1095,13 +1097,6 @@ base::Value::Dict SerializeTailoredVerdict(
       "tailored_verdict_type",
       ClientDownloadResponse_TailoredVerdict_TailoredVerdictType_Name(
           tv.tailored_verdict_type()));
-  base::Value::List adjustments;
-  for (const auto& adjustment : tv.adjustments()) {
-    adjustments.Append(
-        ClientDownloadResponse_TailoredVerdict_ExperimentalWarningAdjustment_Name(
-            adjustment));
-  }
-  dict_tailored_verdict.Set("adjustments", std::move(adjustments));
   return dict_tailored_verdict;
 }
 
@@ -1683,11 +1678,6 @@ base::Value::Dict SerializePasswordReuseEvent(
   event_dict.Set("frame_id", event.frame_id());
 
   event_dict.Set(
-      "sync_account_type",
-      LoginReputationClientRequest_PasswordReuseEvent_SyncAccountType_Name(
-          event.sync_account_type()));
-
-  event_dict.Set(
       "reused_password_type",
       LoginReputationClientRequest_PasswordReuseEvent_ReusedPasswordType_Name(
           event.reused_password_type()));
@@ -1800,15 +1790,30 @@ base::Value::Dict SerializeReferringAppInfo(
            ReferringAppInfo_ReferringAppSource_Name(info.referring_app_source));
   dict.Set("referring_app_info", info.referring_app_name);
   dict.Set("target_url", info.target_url.spec());
+  // Do not bother serializing referring_webapk_* here, because they are only
+  // populated for a WebAPK, and it is not possible to launch
+  // chrome://safe-browsing in a WebAPK, so they will never show up here.
   return dict;
 }
 #endif
+
+base::Value::Dict SerializeSafeBrowsingWebAppKey(
+    const SafeBrowsingWebAppKey& key) {
+  base::Value::Dict dict;
+  dict.Set("start_url_origin", key.start_url_origin());
+  dict.Set("id_or_start_path", key.id_or_start_path());
+  return dict;
+}
 
 base::Value::Dict SerializeReferringAppInfo(const ReferringAppInfo& info) {
   base::Value::Dict dict;
   dict.Set("referring_app_source", ReferringAppInfo_ReferringAppSource_Name(
                                        info.referring_app_source()));
   dict.Set("referring_app_info", info.referring_app_name());
+  if (info.has_referring_webapk()) {
+    dict.Set("referring_webapk",
+             SerializeSafeBrowsingWebAppKey(info.referring_webapk()));
+  }
   return dict;
 }
 
@@ -1961,6 +1966,12 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
 
   request_dict.Set("os", RTLookupRequest_OSType_Name(request.os_type()));
 
+  base::Value::List local_ips;
+  for (const std::string& local_ip : request.local_ips()) {
+    local_ips.Append(local_ip);
+  }
+  request_dict.Set("local_ips", std::move(local_ips));
+
   base::Value::List referrer_chain;
   for (const auto& referrer_chain_entry : request.referrer_chain()) {
     referrer_chain.Append(SerializeReferrer(referrer_chain_entry));
@@ -2110,7 +2121,7 @@ base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
   return result;
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
     const std::string& access_token_truncated,
@@ -2129,6 +2140,11 @@ std::string SerializeContentAnalysisRequest(
   request_dict.Set("reason",
                    enterprise_connectors::ContentAnalysisRequest_Reason_Name(
                        request.reason()));
+  base::Value::List local_ips;
+  for (const std::string& local_ip : request.local_ips()) {
+    local_ips.Append(local_ip);
+  }
+  request_dict.Set("local_ips", std::move(local_ips));
 
   if (request.has_request_data()) {
     base::Value::Dict request_data;
@@ -2196,6 +2212,8 @@ std::string SerializeContentAnalysisRequest(
       device_metadata.Set("os_version", device.os_version());
       device_metadata.Set("os_platform", device.os_platform());
       device_metadata.Set("name", device.name());
+      device_metadata.Set("device_fqdn", device.device_fqdn());
+      device_metadata.Set("network_name", device.network_name());
       metadata.Set("device", std::move(device_metadata));
     }
 
@@ -2323,8 +2341,9 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
 
   return value;
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        // !BUILDFLAG(IS_ANDROID)
 
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }  // namespace
 
 SafeBrowsingUI::SafeBrowsingUI(
@@ -2344,9 +2363,8 @@ SafeBrowsingUI::SafeBrowsingUI(
       browser_context, std::move(delegate)));
 
   // Add required resources.
-  html_source->AddResourcePath("safe_browsing.css", IDR_SAFE_BROWSING_CSS);
-  html_source->AddResourcePath("safe_browsing.js", IDR_SAFE_BROWSING_JS);
-  html_source->SetDefaultResource(IDR_SAFE_BROWSING_HTML);
+  html_source->AddResourcePaths(kSafeBrowsingResources);
+  html_source->AddResourcePath("", IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
 
   // Static types
   html_source->OverrideContentSecurityPolicy(
@@ -2858,13 +2876,14 @@ void SafeBrowsingUIHandler::GetLogMessages(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetDeepScans(const base::Value::List& args) {
   base::Value::List pings_sent;
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   for (const auto& token_and_data :
        WebUIInfoSingleton::GetInstance()->deep_scan_requests()) {
     pings_sent.Append(SerializeDeepScanDebugData(token_and_data.first,
                                                  token_and_data.second));
   }
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        // !BUILDFLAG(IS_ANDROID)
 
   AllowJavascript();
   DCHECK(!args.empty());
@@ -2874,7 +2893,7 @@ void SafeBrowsingUIHandler::GetDeepScans(const base::Value::List& args) {
 
 base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
   base::Value::Dict override_dict;
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   const char kStatusKey[] = "status";
   const char kOverrideValueKey[] = "override_value";
   const TailoredVerdictOverrideData& override_data =
@@ -2891,14 +2910,15 @@ base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
     override_dict.Set(kOverrideValueKey,
                       SerializeTailoredVerdict(*override_data.override_value));
   }
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        // !BUILDFLAG(IS_ANDROID)
   return override_dict;
 }
 
 void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
     const base::Value::List& args) {
   DCHECK_GE(args.size(), 2U);
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   ClientDownloadResponse::TailoredVerdict tv;
   const base::Value::Dict& input = args[1].GetDict();
 
@@ -2916,21 +2936,10 @@ void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
         ClientDownloadResponse::TailoredVerdict::SUSPICIOUS_ARCHIVE);
   }
 
-  const base::Value::List* adjustments = input.FindList("adjustments");
-  CHECK(adjustments);
-  for (const base::Value& adjustment : *adjustments) {
-    if (adjustment.GetString() == "ADJUSTMENT_UNSPECIFIED") {
-      tv.add_adjustments(
-          ClientDownloadResponse::TailoredVerdict::ADJUSTMENT_UNSPECIFIED);
-    } else if (adjustment.GetString() == "ACCOUNT_INFO_STRING") {
-      tv.add_adjustments(
-          ClientDownloadResponse::TailoredVerdict::ACCOUNT_INFO_STRING);
-    }
-  }
-
   WebUIInfoSingleton::GetInstance()->SetTailoredVerdictOverride(std::move(tv),
                                                                 this);
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        // !BUILDFLAG(IS_ANDROID)
 
   ResolveTailoredVerdictOverrideCallback(args[0].GetString());
 }
@@ -2942,7 +2951,7 @@ void SafeBrowsingUIHandler::GetTailoredVerdictOverride(
 
 void SafeBrowsingUIHandler::ClearTailoredVerdictOverride(
     const base::Value::List& args) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   WebUIInfoSingleton::GetInstance()->ClearTailoredVerdictOverride();
 #endif
 
@@ -3106,7 +3115,7 @@ void SafeBrowsingUIHandler::NotifyReportingEventJsListener(
   FireWebUIListener("reporting-events-update", SerializeReportingEvent(event));
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 void SafeBrowsingUIHandler::NotifyDeepScanJsListener(
     const std::string& token,
     const DeepScanDebugData& deep_scan_data) {

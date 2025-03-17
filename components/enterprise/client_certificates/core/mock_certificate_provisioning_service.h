@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_MOCK_CERTIFICATE_PROVISIONING_SERVICE_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_MOCK_CERTIFICATE_PROVISIONING_SERVICE_H_
 
+#include "base/functional/callback.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/key_upload_client.h"

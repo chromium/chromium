@@ -36,6 +36,7 @@ class FakeBoundSessionRefreshCookieFetcher
       std::optional<std::string> sec_session_challenge_response) override;
   bool IsChallengeReceived() const override;
   std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override;
+  base::flat_set<std::string> GetNonRefreshedCookieNames() override;
 
   const std::optional<std::string>& sec_session_challenge_response() {
     return sec_session_challenge_response_;
@@ -63,6 +64,7 @@ class FakeBoundSessionRefreshCookieFetcher
   const raw_ptr<network::mojom::CookieManager> cookie_manager_;
   const GURL url_;
   const base::flat_set<std::string> cookie_names_;
+  base::flat_set<std::string> non_refreshed_cookie_names_;
   RefreshCookieCompleteCallback callback_;
   size_t callback_counter_ = 0;
   std::optional<std::string> sec_session_challenge_response_;

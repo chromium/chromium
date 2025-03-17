@@ -22,7 +22,6 @@ import '../os_settings_page/os_settings_subpage.js';
 import './input_device_settings_shared.css.js';
 import './per_device_app_installed_row.js';
 import './per_device_install_row.js';
-import './per_device_keyboard_remap_keys.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
@@ -44,7 +43,7 @@ import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import type {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, SixPackKeyInfo} from './input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings} from './input_device_settings_types.js';
 import {CompanionAppState, MetaKey, ModifierKey, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
@@ -264,11 +263,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
               ?.hasAmbientLightSensor;
 
-      if (this.hasKeyboardBacklight) {
-        const crSlider = this.shadowRoot!
-                             .querySelector<SettingsSliderElement>(
-                                 '#keyboardBrightnessSlider')!.shadowRoot!
-                             .querySelector('cr-slider');
+      if (this.hasKeyboardBacklight && this.isChromeOsKeyboard()) {
+        const crSlider =
+            this.shadowRoot!.querySelector('#keyboardBrightnessSlider')
+                ?.shadowRoot!.querySelector('cr-slider');
         if (crSlider) {
           // Set key press increment value to be 10.
           crSlider.setAttribute('key-press-slider-increment', '10');
@@ -394,8 +392,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       return 0;
     }
 
-    return Object
-        .values(this.keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo)
+    return Object.values(this.keyboard.settings.sixPackKeyRemappings)
         .filter(
             (modifier: SixPackShortcutModifier) =>
                 modifier !== SixPackShortcutModifier.kSearch)

@@ -5,7 +5,7 @@
 import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("smart_dim") {
   friend = [ ":unit_tests" ]
@@ -36,7 +36,6 @@ static_library("smart_dim") {
     "//chrome/browser/ash/power/ml:user_activity_event_proto",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/common:constants",
-    "//chromeos",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
     "//components/assist_ranker",
@@ -59,7 +58,7 @@ source_set("unit_tests") {
     ":smart_dim",
     "//ash/constants",
     "//base",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/cpp:stub",
@@ -85,7 +84,6 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/power/ml",
       "//chrome/common",
       "//chrome/test:ash_integration_test_support",
-      "//chromeos/ash/components/standalone_browser",
       "//components/component_updater",
       "//net:test_support",
       "//testing/gtest",

@@ -32,6 +32,7 @@
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -237,8 +238,8 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   keyword_input_ = input;
   const TemplateURL* keyword_provider =
-      KeywordProvider::GetSubstitutingTemplateURLForInput(model,
-                                                          &keyword_input_);
+      AutocompleteInput::GetSubstitutingTemplateURLForInput(model,
+                                                            &keyword_input_);
   if (keyword_provider == nullptr)
     keyword_input_.Clear();
   else if (keyword_input_.text().empty())
@@ -1110,7 +1111,7 @@ void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
 }
 
 void SearchProvider::DuplicateCardAnswer(ACMatches* matches) {
-  auto iter = base::ranges::find_if(*matches, [](const auto& match) {
+  auto iter = std::ranges::find_if(*matches, [](const auto& match) {
     return match.answer_template.has_value();
   });
 

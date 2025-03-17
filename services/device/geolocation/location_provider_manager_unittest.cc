@@ -9,6 +9,7 @@
 
 #include "services/device/geolocation/location_provider_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

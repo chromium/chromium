@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string_view>
+#include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -978,21 +979,22 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, UpdateCheckboxes) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Extension context menu tests in locked fullscreen when locked and not locked
-// for OnTask. Only relevant for non-web browser scenarios.
+// Extension context menu tests with and without locked fullscreen when locked
+// and not locked for OnTask. Only relevant for non-web browser scenarios.
 class ExtensionContextMenuLockedFullscreenTest
     : public ExtensionContextMenuBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
-  bool IsLockedForOnTask() { return GetParam(); }
+  bool IsLockedFullscreen() { return std::get<0>(GetParam()); }
+  bool IsLockedForOnTask() { return std::get<1>(GetParam()); }
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
-                       VerifyItemStateInLockedFullscreenForOnTask) {
+                       VerifyItemStateForOnTask) {
   browser()->SetLockedForOnTask(IsLockedForOnTask());
-
-  // Enter locked fullscreen.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  if (IsLockedFullscreen()) {
+    PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  }
 
   // Load test extension and wait for js test code to create context menu with
   // one item.
@@ -1003,17 +1005,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   // Create / build the context menu and verify item state is enabled if the
-  // instance is locked for OnTask. False otherwise.
+  // instance is locked for OnTask or if the instance is not in locked
+  // fullscreen mode.
   const GURL page_url("http://www.google.com");
   const std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(GetWebContents(), page_url));
   int command_id = ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
-  ASSERT_EQ(IsLockedForOnTask(), menu->IsCommandIdEnabled(command_id));
+  bool expect_command_enabled = IsLockedForOnTask() || !IsLockedFullscreen();
+  ASSERT_EQ(expect_command_enabled, menu->IsCommandIdEnabled(command_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(ExtensionContextMenuLockedFullscreenTests,
                          ExtensionContextMenuLockedFullscreenTest,
-                         ::testing::Bool());
+                         ::testing::Combine(
+                             /*IsLockedFullscreen=*/::testing::Bool(),
+                             /*IsLockedForOnTask=*/::testing::Bool()));
 #endif
 
 INSTANTIATE_TEST_SUITE_P(EventPage,

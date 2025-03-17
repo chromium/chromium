@@ -85,7 +85,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
       this.renderActionMenu_ = true;
       await this.updateComplete;
     }
-    const menu = this.shadowRoot!.querySelector('cr-action-menu');
+    const menu = this.shadowRoot.querySelector('cr-action-menu');
     assert(menu);
     menu.showAt(this.$.actionMenuButton);
   }
@@ -119,7 +119,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   //============================================================================
 
   private closeActionMenu_() {
-    const menu = this.shadowRoot!.querySelector('cr-action-menu');
+    const menu = this.shadowRoot.querySelector('cr-action-menu');
     assert(menu);
     menu.close();
   }

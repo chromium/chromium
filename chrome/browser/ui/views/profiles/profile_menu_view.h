@@ -61,6 +61,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   std::u16string GetAccessibleWindowTitle() const override;
 
   // Button/link actions.
+  void OnProfileManagementButtonClicked();
   void OnManageGoogleAccountButtonClicked();
   void OnPasswordsButtonClicked();
   void OnCreditCardsButtonClicked();
@@ -86,6 +87,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   static bool close_on_deactivate_for_testing_;
 
   // Helper methods for building the menu.
+  void SetMenuTitleForAccessibility();
   void BuildGuestIdentity();
   void BuildAutofillSettingsButton();
   void BuildCustomizeProfileButton();

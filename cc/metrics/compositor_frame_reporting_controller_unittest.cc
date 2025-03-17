@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -55,15 +50,16 @@ class TestCompositorFrameReportingController
   int ActiveReporters() {
     int count = 0;
     for (int i = 0; i < PipelineStage::kNumPipelineStages; ++i) {
-      if (reporters()[i])
+      if (ReportersForTesting()[i]) {
         ++count;
+      }
     }
     return count;
   }
 
   void ResetReporters() {
     for (int i = 0; i < PipelineStage::kNumPipelineStages; ++i) {
-      reporters()[i] = nullptr;
+      ReportersForTesting()[i] = nullptr;
     }
   }
 
@@ -76,7 +72,7 @@ class TestCompositorFrameReportingController
         PipelineStage::kActivate,
     };
     for (auto stage : kStages) {
-      auto& reporter = reporters()[stage];
+      auto& reporter = ReportersForTesting()[stage];
       if (reporter &&
           reporter->partial_update_dependents_size_for_testing() > 0) {
         ++count;
@@ -94,7 +90,7 @@ class TestCompositorFrameReportingController
         PipelineStage::kActivate,
     };
     for (auto stage : kStages) {
-      auto& reporter = reporters()[stage];
+      auto& reporter = ReportersForTesting()[stage];
       if (reporter)
         count += reporter->partial_update_dependents_size_for_testing();
     }
@@ -110,7 +106,7 @@ class TestCompositorFrameReportingController
         PipelineStage::kActivate,
     };
     for (auto stage : kStages) {
-      auto& reporter = reporters()[stage];
+      auto& reporter = ReportersForTesting()[stage];
       if (reporter)
         count += reporter->owned_partial_update_dependents_size_for_testing();
     }
@@ -137,12 +133,14 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   }
 
   void SimulateBeginMainFrame() {
-    if (!reporting_controller_.reporters()[CompositorFrameReportingController::
-                                               PipelineStage::kBeginImplFrame])
+    if (!reporting_controller_
+             .ReportersForTesting()[CompositorFrameReportingController::
+                                        PipelineStage::kBeginImplFrame]) {
       SimulateBeginImplFrame();
-    CHECK(
-        reporting_controller_.reporters()[CompositorFrameReportingController::
-                                              PipelineStage::kBeginImplFrame]);
+    }
+    CHECK(reporting_controller_
+              .ReportersForTesting()[CompositorFrameReportingController::
+                                         PipelineStage::kBeginImplFrame]);
     begin_main_time_ = AdvanceNowByMs(10);
     reporting_controller_.WillBeginMainFrame(args_);
     begin_main_start_time_ = AdvanceNowByMs(10);
@@ -150,13 +148,13 @@ class CompositorFrameReportingControllerTest : public testing::Test {
 
   void SimulateCommit(std::unique_ptr<BeginMainFrameMetrics> blink_breakdown) {
     if (!reporting_controller_
-             .reporters()[CompositorFrameReportingController::PipelineStage::
-                              kBeginMainFrame]) {
+             .ReportersForTesting()[CompositorFrameReportingController::
+                                        PipelineStage::kBeginMainFrame]) {
       SimulateBeginMainFrame();
     }
-    CHECK(
-        reporting_controller_.reporters()[CompositorFrameReportingController::
-                                              PipelineStage::kBeginMainFrame]);
+    CHECK(reporting_controller_
+              .ReportersForTesting()[CompositorFrameReportingController::
+                                         PipelineStage::kBeginMainFrame]);
     reporting_controller_.BeginMainFrameStarted(begin_main_start_time_);
     reporting_controller_.NotifyReadyToCommit(std::move(blink_breakdown));
     begin_commit_time_ = AdvanceNowByMs(10);
@@ -166,10 +164,11 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   }
 
   void SimulateActivate() {
-    if (!reporting_controller_.reporters()
-             [CompositorFrameReportingController::PipelineStage::kCommit])
+    if (!reporting_controller_.ReportersForTesting()
+             [CompositorFrameReportingController::PipelineStage::kCommit]) {
       SimulateCommit(nullptr);
-    CHECK(reporting_controller_.reporters()
+    }
+    CHECK(reporting_controller_.ReportersForTesting()
               [CompositorFrameReportingController::PipelineStage::kCommit]);
     begin_activation_time_ = AdvanceNowByMs(10);
     reporting_controller_.WillActivate();
@@ -179,10 +178,11 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   }
 
   void SimulateSubmitCompositorFrame(EventMetricsSet events_metrics) {
-    if (!reporting_controller_.reporters()
-             [CompositorFrameReportingController::PipelineStage::kActivate])
+    if (!reporting_controller_.ReportersForTesting()
+             [CompositorFrameReportingController::PipelineStage::kActivate]) {
       SimulateActivate();
-    CHECK(reporting_controller_.reporters()
+    }
+    CHECK(reporting_controller_.ReportersForTesting()
               [CompositorFrameReportingController::PipelineStage::kActivate]);
     submit_time_ = AdvanceNowByMs(10);
     ++current_token_;
@@ -308,11 +308,11 @@ class CompositorFrameReportingControllerTest : public testing::Test {
       const EventMetrics::List& events_metrics) {
     std::vector<base::TimeTicks> event_times;
     event_times.reserve(events_metrics.size());
-    base::ranges::transform(events_metrics, std::back_inserter(event_times),
-                            [](const auto& event_metrics) {
-                              return event_metrics->GetDispatchStageTimestamp(
-                                  EventMetrics::DispatchStage::kGenerated);
-                            });
+    std::ranges::transform(events_metrics, std::back_inserter(event_times),
+                           [](const auto& event_metrics) {
+                             return event_metrics->GetDispatchStageTimestamp(
+                                 EventMetrics::DispatchStage::kGenerated);
+                           });
     return event_times;
   }
 
@@ -1247,7 +1247,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Verify that EventLatency histograms are recorded.
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.TouchPressed.TotalLatency", 1},
       {"EventLatency.TouchMoved.TotalLatency", 2},
@@ -1260,25 +1260,25 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   struct {
     const char* name;
-    const base::HistogramBase::Sample latency_ms;
+    const base::HistogramBase::Sample32 latency_ms;
   } expected_latencies[] = {
       {"EventLatency.TouchPressed.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
@@ -1339,7 +1339,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Verify that EventLatency histograms are recorded.
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency2", 1},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2", 1},
@@ -1369,34 +1369,34 @@ TEST_F(CompositorFrameReportingControllerTest,
       details.presentation_feedback.timestamp;
   struct {
     const char* name;
-    const base::HistogramBase::Sample latency_ms;
+    const base::HistogramBase::Sample32 latency_ms;
   } expected_latencies[] = {
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[3]).InMicroseconds())},
       {"EventLatency.GestureScrollBegin.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[4]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[5]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[6]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[6]).InMicroseconds())},
       {"EventLatency.InertialGestureScrollUpdate.Touchscreen.TotalLatency2",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[7]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
@@ -1513,7 +1513,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Verify that EventLatency histograms are recorded.
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.GesturePinchBegin.Touchpad.TotalLatency", 1},
       {"EventLatency.GesturePinchUpdate.Touchpad.TotalLatency", 1},
@@ -1530,19 +1530,19 @@ TEST_F(CompositorFrameReportingControllerTest,
       details.presentation_feedback.timestamp;
   struct {
     const char* name;
-    const base::HistogramBase::Sample latency_ms;
+    const base::HistogramBase::Sample32 latency_ms;
   } expected_latencies[] = {
       {"EventLatency.GesturePinchBegin.Touchpad.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.GesturePinchUpdate.Touchpad.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.GesturePinchBegin.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.GesturePinchUpdate.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[3]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
@@ -1586,7 +1586,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   // recorded using the presentation time of the second frame (presented).
   struct {
     const char* name;
-    const base::HistogramBase::Count count;
+    const base::HistogramBase::Count32 count;
   } expected_counts[] = {
       {"EventLatency.TouchPressed.TotalLatency", 1},
       {"EventLatency.TouchMoved.TotalLatency", 2},
@@ -1599,25 +1599,25 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   struct {
     const char* name;
-    const base::HistogramBase::Sample latency_ms;
+    const base::HistogramBase::Sample32 latency_ms;
   } expected_latencies[] = {
       {"EventLatency.TouchPressed.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TouchMoved.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
+       static_cast<base::HistogramBase::Sample32>(
            (presentation_time - event_times[2]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
@@ -2773,7 +2773,6 @@ TEST_F(CompositorFrameReportingControllerTest, VsyncIntervalArg) {
                                   std::vector<std::string>{"8", "1"},
                                   std::vector<std::string>{"32", "1"}));
 }
-
 
 }  // namespace
 }  // namespace cc

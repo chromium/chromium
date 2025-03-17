@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
+#import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/language/core/browser/url_language_histogram.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/language/core/browser/url_language_histogram.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 

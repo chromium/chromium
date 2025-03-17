@@ -190,6 +190,13 @@ public class UrlBarCoordinator
         mMediator.setUrlDirectionListener(listener);
     }
 
+    /**
+     * @see UrlBarMediator#setIsInCct(boolean)
+     */
+    public void setIsInCct(boolean isInCct) {
+        mMediator.setIsInCct(isInCct);
+    }
+
     /** Selects all of the text of the UrlBar. */
     public void selectAll() {
         mUrlBar.selectAll();

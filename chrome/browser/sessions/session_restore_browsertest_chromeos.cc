@@ -7,10 +7,10 @@
 #include <list>
 #include <vector>
 
+#include "ash/public/cpp/autotest_desks_api.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
@@ -29,27 +29,19 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/wm_core_switches.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/autotest_desks_api.h"
-#include "chromeos/ui/wm/desks/desks_helper.h"
-#endif
-
-#if defined(USE_AURA)
-#include "ui/aura/client/aura_constants.h"
-#endif
 
 namespace {
 const char* test_app_name1 = "TestApp1";
 const char* test_app_name2 = "TestApp2";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Activates the desk at |index| and waits for its async operations to complete.
 void SwitchToDesk(int index) {
   base::RunLoop run_loop;
@@ -71,7 +63,6 @@ void RemoveInactiveDesks() {
   // This should not be reached.
   ADD_FAILURE();
 }
-#endif
 
 }  // namespace
 
@@ -148,8 +139,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreBrowserWindows) {
   EXPECT_EQ(2u, total_count);
   EXPECT_EQ(0u, incognito_count);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Assigns three browser windows to three different desks.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
@@ -273,7 +262,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 
   RemoveInactiveDesks();
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreAppsV1) {
   // Create a trusted app.

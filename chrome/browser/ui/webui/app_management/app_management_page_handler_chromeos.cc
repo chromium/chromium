@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -17,9 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
@@ -28,7 +24,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
@@ -40,7 +36,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/text/bytes_formatting.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 namespace {
@@ -119,26 +114,6 @@ CreateExtensionAppPermissionMessage(
       base::UTF16ToUTF8(message.message()), std::move(submessages));
 }
 
-std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
-  if (bytes.has_value()) {
-    // ui::FormatBytes requires a non-negative signed integer. In general, we
-    // expect that converting from unsigned to signed int here should always
-    // yield a positive value, since overflowing into negative would require an
-    // implausibly large app (2^63 bytes ~= 9 exabytes).
-    int64_t signed_bytes = static_cast<int64_t>(bytes.value());
-    if (signed_bytes < 0) {
-      // TODO(crbug.com/40063212): Investigate ARC apps which have negative data
-      // sizes.
-      LOG(ERROR) << "Invalid app size: " << signed_bytes;
-      base::debug::DumpWithoutCrashing();
-      return std::nullopt;
-    }
-    return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
-  }
-
-  return std::nullopt;
-}
-
 }  // namespace
 
 AppManagementPageHandlerChromeOs::AppManagementPageHandlerChromeOs(
@@ -168,34 +143,19 @@ void AppManagementPageHandlerChromeOs::GetSubAppToParentMap(
     GetSubAppToParentMapCallback callback) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
   if (provider) {
-    // Web apps are managed in the current process (Ash or Lacros).
     provider->scheduler().ScheduleCallbackWithResult(
         "AppManagementPageHandlerBase::GetSubAppToParentMap",
         web_app::AllAppsLockDescription(),
         base::BindOnce(
-            [](web_app::AllAppsLock& lock, base::Value::Dict& debug_value) {
+            [](web_app::AllAppsLock& lock, base::Value::Dict& /*debug_value*/) {
               return lock.registrar().GetSubAppToParentMap();
             }),
         /*on_complete=*/std::move(callback),
         /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
-    return;
+  } else {
+    LOG(ERROR) << "Could not find WebAppProvider.";
+    std::move(callback).Run(base::flat_map<std::string, std::string>());
   }
-
-  // Web app data needs to be fetched from the Lacros process.
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-  if (web_app_provider_bridge) {
-    web_app_provider_bridge->GetSubAppToParentMap(std::move(callback));
-    return;
-  }
-  LOG(ERROR) << "Could not find WebAppProviderBridge.";
-
-  // Reaching here means that WebAppProviderBridge and WebAppProvider were both
-  // not found.
-  std::move(callback).Run(base::flat_map<std::string, std::string>());
 }
 
 void AppManagementPageHandlerChromeOs::GetExtensionAppPermissionMessages(
@@ -281,12 +241,6 @@ void AppManagementPageHandlerChromeOs::GetOverlappingPreferredApps(
   std::move(callback).Run(std::move(app_ids).extract());
 }
 
-void AppManagementPageHandlerChromeOs::UpdateAppSize(
-    const std::string& app_id) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-  proxy->UpdateAppSize(app_id);
-}
-
 void AppManagementPageHandlerChromeOs::SetWindowMode(
     const std::string& app_id,
     apps::WindowMode window_mode) {
@@ -366,9 +320,6 @@ app_management::mojom::AppPtr AppManagementPageHandlerChromeOs::CreateApp(
 
   proxy->AppRegistryCache().ForOneApp(
       app_id, [this, &app](const apps::AppUpdate& update) {
-        app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
-        app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
-
         app->resize_locked = update.ResizeLocked().value_or(false);
         app->hide_resize_locked = !update.ResizeLocked().has_value();
 

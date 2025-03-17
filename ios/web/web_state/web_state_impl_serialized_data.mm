@@ -39,12 +39,15 @@ WebStateImpl::SerializedData::SerializedData(
 WebStateImpl::SerializedData::~SerializedData() = default;
 
 void WebStateImpl::SerializedData::TearDown() {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.WebStateDestroyed(owner_);
-  for (auto& observer : policy_deciders())
+  }
+  for (auto& observer : policy_deciders()) {
     observer.WebStateDestroyed();
-  for (auto& observer : policy_deciders())
+  }
+  for (auto& observer : policy_deciders()) {
     observer.ResetWebState();
+  }
 }
 
 CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {

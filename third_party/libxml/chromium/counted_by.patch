@@ -1,0 +1,50 @@
+From 32b70e255e10067bb9666129973d5c067eacd290 Mon Sep 17 00:00:00 2001
+From: Daniel Cheng <dcheng@chromium.org>
+Date: Wed, 5 Feb 2025 15:06:34 -0800
+Subject: [PATCH] Use __has_attribute to check for __counted_by__ support
+
+The initial clang patch to support __counted_by__ was landed and
+reverted several times. There are some clang toolchains (e.g. the
+Android toolchain) that report themselves as version 18 but do not
+support __counted_by__. While it is debatable if Android should be
+shipping a pre-release clang, using __has_attribute should be a bit
+simpler overall.
+
+Note that this doesn't migrate everything else to use __has_attribute:
+while clang has always supported __has_attribute, gcc didn't support
+it until a bit later.
+
+Change-Id: I4a612f6373ec298c4bf9793a74e4c3a9e9a30591
+---
+ third_party/libxml/src/libxml.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/libxml/src/libxml.h b/third_party/libxml/src/libxml.h
+index 1fe3825f4d3f8..dde9a9c92f014 100644
+--- a/third_party/libxml/src/libxml.h
++++ b/third_party/libxml/src/libxml.h
+@@ -29,6 +29,12 @@
+ #include "config.h"
+ #include <libxml/xmlversion.h>
+
++#if defined(__has_attribute)
++#define XML_HAS_ATTRIBUTE(x) __has_attribute(x)
++#else
++#define XML_HAS_ATTRIBUTE(x) 0
++#endif
++
+ #if !defined(_WIN32) && \
+     !defined(__CYGWIN__) && \
+     (defined(__clang__) || \
+@@ -48,8 +54,8 @@
+   #define ATTRIBUTE_DESTRUCTOR __attribute__((destructor))
+ #endif
+
+-#if (defined(__clang__) && __clang_major__ >= 18) || \
+-    (defined(__GNUC__) && __GNUC__ >= 15)
++#if XML_HAS_ATTRIBUTE(__counted_by__)
+   #define ATTRIBUTE_COUNTED_BY(c) __attribute__((__counted_by__(c)))
+ #else
+   #define ATTRIBUTE_COUNTED_BY(c)
+--
+2.48.1.502.g6dc24dfdaf-goog

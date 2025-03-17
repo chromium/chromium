@@ -379,7 +379,9 @@ class FakeControllerServiceWorker
   void Clone(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       const network::CrossOriginEmbedderPolicy&,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>)
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
+      const network::DocumentIsolationPolicy&,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>)
       override {
     receivers_.Add(this, std::move(receiver));
   }
@@ -487,9 +489,10 @@ class FakeServiceWorkerContainerHost
     get_controller_service_worker_count_++;
     if (!fake_controller_)
       return;
-    fake_controller_->Clone(std::move(receiver),
-                            network::CrossOriginEmbedderPolicy(),
-                            mojo::NullRemote());
+    fake_controller_->Clone(
+        std::move(receiver), network::CrossOriginEmbedderPolicy(),
+        mojo::NullRemote(), network::DocumentIsolationPolicy(),
+        mojo::NullRemote());
   }
   void CloneContainerHost(
       mojo::PendingReceiver<blink::mojom::ServiceWorkerContainerHost> receiver)

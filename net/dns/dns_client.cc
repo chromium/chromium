@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_client.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -184,7 +184,7 @@ class DnsClientImpl : public DnsClient {
     if (!session_)
       return std::nullopt;
     const auto& servers = session_->config().doh_config.servers();
-    auto it = base::ranges::find_if(servers, [&](const auto& server) {
+    auto it = std::ranges::find_if(servers, [&](const auto& server) {
       std::string uri;
       bool valid = uri_template::Expand(server.server_template(), {}, &uri);
       // Server templates are validated before being allowed into the config.

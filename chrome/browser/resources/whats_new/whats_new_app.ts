@@ -11,7 +11,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ModulePosition, ScrollDepth} from './whats_new.mojom-webui.js';
@@ -59,13 +59,7 @@ const kModulePositionsMap: Record<SectionType, ModulePosition[]> = {
   ],
 };
 
-// TODO(crbug.com/342172972): Remove legacy browser command format.
-interface LegacyBrowserCommandData {
-  commandId: number;
-  clickInfo: ClickInfo;
-}
-
-interface BrowserCommandData {
+interface BrowserCommand {
   event: EventType.BROWSER_COMMAND;
   commandId: number;
   clickInfo: ClickInfo;
@@ -162,7 +156,6 @@ interface RestartClickedMetric {
 }
 
 type PageLoadedMetric = VersionPageLoadedMetric|EditionPageLoadedMetric;
-type BrowserCommand = LegacyBrowserCommandData|BrowserCommandData;
 type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     ExploreMoreCloseMetric|ScrollDepthMetric|TimeOnPageMetric|
     GeneralLinkClickMetric|ModulesRenderedMetric|VideoStartedMetric|
@@ -170,19 +163,6 @@ type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
 
 interface EventData {
   data: BrowserCommand|MetricData;
-}
-
-// Narrow the type of the message data. This is necessary for the
-// legacy message format that does not supply an event name.
-function isBrowserCommand(messageData: BrowserCommand|
-                          MetricData): messageData is BrowserCommand {
-  // TODO(crbug.com/342172972): Remove legacy browser command format checks.
-  if (Object.hasOwn(messageData, 'event')) {
-    return (messageData as BrowserCommandData | MetricData).event ===
-        EventType.BROWSER_COMMAND;
-  } else {
-    return Object.hasOwn(messageData, 'commandId');
-  }
 }
 
 function handleBrowserCommand(messageData: BrowserCommand) {
@@ -204,7 +184,7 @@ function handleBrowserCommand(messageData: BrowserCommand) {
 
 function handlePageLoadMetric(data: PageLoadedMetric, isAutoOpen: boolean) {
   const {handler} = WhatsNewProxyImpl.getInstance();
-  const now: JSTime = {msec: Date.now()};
+  const now = new Date();
   handler.recordTimeToLoadContent(now);
 
   // Record initial scroll depth as 0%.
@@ -429,14 +409,9 @@ export class WhatsNewAppElement extends CrLitElement {
 
     const latest = this.isAutoOpen_ && !isChromeOS ? 'true' : 'false';
     url += url.includes('?') ? '&' : '?';
-    if (loadTimeData.getBoolean('isWhatsNewV2')) {
-      // The browser has auto-opened the page due to an upgrade.
-      // Let the embedded page know to display the "up to date" banner.
-      this.url_ = url.concat(`updated=${latest}`);
-    } else {
-      // The latest version of the page is being shown. Do not redirect.
-      this.url_ = url.concat(`latest=${latest}`);
-    }
+    // The browser has auto-opened the page due to an upgrade.
+    // Let the embedded page know to display the "up to date" banner.
+    this.url_ = url.concat(`updated=${latest}`);
 
     this.eventTracker_.add(
         window, 'message',
@@ -458,13 +433,10 @@ export class WhatsNewAppElement extends CrLitElement {
       return;
     }
 
-    if (isBrowserCommand(data)) {
-      handleBrowserCommand(data);
-      return;
-    }
-
-    const {handler} = WhatsNewProxyImpl.getInstance();
     switch (data.event) {
+      case EventType.BROWSER_COMMAND:
+        handleBrowserCommand(data);
+        break;
       case EventType.PAGE_LOADED:
         handlePageLoadMetric(data, this.isAutoOpen_);
         break;
@@ -472,10 +444,10 @@ export class WhatsNewAppElement extends CrLitElement {
         // Ignored.
         break;
       case EventType.EXPLORE_MORE_OPEN:
-        handler.recordExploreMoreToggled(true);
+        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(true);
         break;
       case EventType.EXPLORE_MORE_CLOSE:
-        handler.recordExploreMoreToggled(false);
+        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(false);
         break;
       case EventType.SCROLL:
         handleScrollDepthMetric(data);

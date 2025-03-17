@@ -115,8 +115,7 @@ void GetStorageKeysTask::Run() {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &QuotaManager::GetStorageKeysForType, quota_manager_,
-          blink::mojom::StorageType::kTemporary,
+          &QuotaManager::GetAllStorageKeys, quota_manager_,
           base::BindOnce(&GetStorageKeysTask::OnStorageKeysObtained, this,
                          blink::mojom::StorageType::kTemporary)));
 }

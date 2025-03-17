@@ -5,6 +5,7 @@
 #include "ash/system/unified/date_tray.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "ash/api/tasks/fake_tasks_client.h"
@@ -243,7 +244,7 @@ class DateTrayTest
 
   void LeftClickOnOpenBubble() { LeftClickOn(GetBubbleView()); }
 
-  std::u16string GetTimeViewText() {
+  std::u16string_view GetTimeViewText() {
     return GetTimeTrayItemView()
         ->time_view()
         ->GetHorizontalDateLabelForTesting()
@@ -442,7 +443,7 @@ TEST_P(DateTrayTest, DontActivateBubbleIfShownByTap) {
     EXPECT_TRUE(
         GetGlanceableTrayBubble()->GetCalendarView()->Contains(focused_view));
   }
-  EXPECT_STREQ("CalendarDateCellView", focused_view->GetClassName());
+  EXPECT_EQ("CalendarDateCellView", focused_view->GetClassName());
 }
 
 TEST_P(DateTrayTest, ActivateBubbleIfShownByKeyboard) {
@@ -477,7 +478,7 @@ TEST_P(DateTrayTest, ActivateBubbleIfShownByKeyboard) {
     EXPECT_TRUE(
         GetGlanceableTrayBubble()->GetCalendarView()->Contains(focused_view));
   }
-  EXPECT_STREQ("CalendarDateCellView", focused_view->GetClassName());
+  EXPECT_EQ("CalendarDateCellView", focused_view->GetClassName());
 }
 
 // Tests the behavior when clicking on different areas.
@@ -632,11 +633,11 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
   // Both calendar and the `TimeManagementContainer` should be rendered in
   // `GlanceableTrayBubbleView`.
   EXPECT_EQ(GetGlanceableTrayBubble()->GetBubbleView()->children().size(), 2u);
-  EXPECT_STREQ("TimeManagementContainer", GetGlanceableTrayBubble()
-                                              ->GetBubbleView()
-                                              ->children()
-                                              .at(0)
-                                              ->GetClassName());
+  EXPECT_EQ("TimeManagementContainer", GetGlanceableTrayBubble()
+                                           ->GetBubbleView()
+                                           ->children()
+                                           .at(0)
+                                           ->GetClassName());
 }
 
 TEST_P(DateTrayTest, AccessibleName) {
@@ -660,7 +661,7 @@ TEST_P(DateTrayTest, AccessibleName) {
                 base::kKeepAmPm)));
   }
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   // Mock changing the current time, in order to test that the tray's accessible
   // name will be updated.

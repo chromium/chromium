@@ -4,8 +4,11 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@macro/default_bg_color">
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -91,4 +94,4 @@
         android:layout_marginTop="@dimen/toolbar_height_no_shadow"
         android:background="@drawable/bookmark_title_bar_shadow"
         android:visibility="gone" />
-</merge>
+</FrameLayout>

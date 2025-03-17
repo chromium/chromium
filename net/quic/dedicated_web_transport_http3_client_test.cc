@@ -172,7 +172,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
         quic::QuicCryptoServerConfig::ConfigOptions(),
         AllSupportedQuicVersions(), &backend_);
     ASSERT_TRUE(server_->CreateUDPSocketAndListen(
-        quic::QuicSocketAddress(quic::QuicIpAddress::Any6(), /*port=*/0)));
+        quic::QuicSocketAddress(quiche::QuicheIpAddress::Any6(), /*port=*/0)));
     port_ = server_->server_address().port();
   }
 

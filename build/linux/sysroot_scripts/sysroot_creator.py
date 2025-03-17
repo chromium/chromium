@@ -7,6 +7,7 @@ This script is used to build Debian sysroot images for building Chromium.
 """
 
 import argparse
+import collections
 import hashlib
 import lzma
 import os
@@ -17,6 +18,7 @@ import tempfile
 import time
 
 import requests
+import reversion_glibc
 
 DISTRO = "debian"
 RELEASE = "bullseye"
@@ -24,7 +26,7 @@ RELEASE = "bullseye"
 # This number is appended to the sysroot key to cause full rebuilds.  It
 # should be incremented when removing packages or patching existing packages.
 # It should not be incremented when adding packages.
-SYSROOT_RELEASE = 2
+SYSROOT_RELEASE = 1
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -34,7 +36,7 @@ BUILD_DIR = os.path.join(CHROME_DIR, "out", "sysroot-build", RELEASE)
 # gpg keyring file generated using generate_keyring.sh
 KEYRING_FILE = os.path.join(SCRIPT_DIR, "keyring.gpg")
 
-ARCHIVE_TIMESTAMP = "20230611T210420Z"
+ARCHIVE_TIMESTAMP = "20250129T203412Z"
 
 ARCHIVE_URL = f"https://snapshot.debian.org/archive/debian/{ARCHIVE_TIMESTAMP}/"
 APT_SOURCES_LIST = [
@@ -55,6 +57,7 @@ TRIPLES = {
     "arm64": "aarch64-linux-gnu",
     "mipsel": "mipsel-linux-gnu",
     "mips64el": "mips64el-linux-gnuabi64",
+    "ppc64el": "powerpc64le-linux-gnu",
 }
 
 REQUIRED_TOOLS = [
@@ -71,523 +74,71 @@ PACKAGES_EXT = "xz"
 RELEASE_FILE = "Release"
 RELEASE_FILE_GPG = "Release.gpg"
 
-# Packages common to all architectures.
+# List of development packages. Dependencies are automatically included.
 DEBIAN_PACKAGES = [
-    "comerr-dev",
-    "krb5-multidev",
-    "libaom0",
-    "libaom3",
-    "libasound2",
     "libasound2-dev",
-    "libasyncns0",
-    "libatk-bridge2.0-0",
-    "libatk-bridge2.0-dev",
-    "libatk1.0-0",
-    "libatk1.0-dev",
-    "libatomic1",
-    "libatspi2.0-0",
-    "libatspi2.0-dev",
-    "libattr1",
-    "libaudit1",
-    "libavahi-client3",
-    "libavahi-common3",
-    "libavcodec-dev",
-    "libavcodec58",
-    "libavcodec59",
     "libavformat-dev",
-    "libavformat59",
-    "libavutil-dev",
-    "libavutil56",
-    "libavutil57",
-    "libb2-1",
-    "libblkid-dev",
-    "libblkid1",
     "libbluetooth-dev",
-    "libbluetooth3",
-    "libbluray2",
-    "libbrotli-dev",
-    "libbrotli1",
-    "libbsd0",
-    "libbz2-1.0",
-    "libc6",
     "libc6-dev",
-    "libcairo-gobject2",
-    "libcairo-script-interpreter2",
-    "libcairo2",
-    "libcairo2-dev",
     "libcap-dev",
-    "libcap-ng0",
-    "libcap2",
-    "libchromaprint1",
-    "libcjson1",
-    "libcloudproviders0",
-    "libcodec2-0.9",
-    "libcodec2-1.0",
-    "libcolord2",
-    "libcom-err2",
-    "libcrypt-dev",
-    "libcrypt1",
-    "libcups2",
+    "libcolord-dev",
     "libcups2-dev",
-    "libcupsimage2",
     "libcupsimage2-dev",
-    "libcurl3-gnutls",
     "libcurl4-gnutls-dev",
-    "libdatrie-dev",
-    "libdatrie1",
-    "libdav1d4",
-    "libdav1d6",
-    "libdb5.3",
-    "libdbus-1-3",
-    "libdbus-1-dev",
-    "libdbus-glib-1-2",
     "libdbusmenu-glib-dev",
-    "libdbusmenu-glib4",
-    "libdbusmenu-gtk3-4",
-    "libdbusmenu-gtk4",
     "libdeflate-dev",
-    "libdeflate0",
-    "libdouble-conversion3",
-    "libdrm-amdgpu1",
-    "libdrm-dev",
-    "libdrm-nouveau2",
-    "libdrm-radeon1",
-    "libdrm2",
-    "libegl-dev",
-    "libegl1",
-    "libegl1-mesa",
-    "libegl1-mesa-dev",
     "libelf-dev",
-    "libelf1",
-    "libepoxy-dev",
-    "libepoxy0",
-    "libevdev-dev",
-    "libevdev2",
-    "libevent-2.1-7",
-    "libexpat1",
-    "libexpat1-dev",
-    "libffi-dev",
-    "libffi7",
     "libflac-dev",
-    "libflac8",
-    "libfontconfig-dev",
-    "libfontconfig1",
-    "libfreetype-dev",
-    "libfreetype6",
-    "libfribidi-dev",
-    "libfribidi0",
     "libgbm-dev",
-    "libgbm1",
-    "libgcc-10-dev",
-    "libgcc-s1",
-    "libgcrypt20",
     "libgcrypt20-dev",
-    "libgdk-pixbuf-2.0-0",
-    "libgdk-pixbuf-2.0-dev",
-    "libgl-dev",
-    "libgl1",
-    "libgl1-mesa-dev",
-    "libgl1-mesa-glx",
-    "libglapi-mesa",
-    "libgles-dev",
-    "libgles1",
-    "libgles2",
-    "libglib2.0-0",
-    "libglib2.0-dev",
-    "libglvnd-dev",
-    "libglvnd0",
-    "libglx-dev",
-    "libglx0",
-    "libgme0",
-    "libgmp10",
-    "libgnutls-dane0",
-    "libgnutls-openssl27",
     "libgnutls28-dev",
-    "libgnutls30",
-    "libgnutlsxx28",
-    "libgomp1",
-    "libgpg-error-dev",
-    "libgpg-error0",
-    "libgraphene-1.0-0",
-    "libgraphene-1.0-dev",
-    "libgraphite2-3",
-    "libgraphite2-dev",
-    "libgsm1",
-    "libgssapi-krb5-2",
-    "libgssrpc4",
-    "libgtk-3-0",
     "libgtk-3-dev",
-    "libgtk-4-1",
     "libgtk-4-dev",
-    "libgtk2.0-0",
-    "libgudev-1.0-0",
-    "libharfbuzz-dev",
-    "libharfbuzz-gobject0",
-    "libharfbuzz-icu0",
-    "libharfbuzz0b",
-    "libhogweed6",
-    "libhwy1",
-    "libice6",
-    "libicu-le-hb0",
-    "libicu67",
-    "libidl-2-0",
-    "libidn11",
-    "libidn2-0",
     "libinput-dev",
-    "libinput10",
     "libjbig-dev",
-    "libjbig0",
-    "libjpeg62-turbo",
-    "libjpeg62-turbo-dev",
-    "libjson-glib-1.0-0",
+    "libjpeg-dev",
     "libjsoncpp-dev",
-    "libjsoncpp24",
-    "libjxl0.7",
-    "libjxl0.7",
-    "libk5crypto3",
-    "libkadm5clnt-mit12",
-    "libkadm5srv-mit12",
-    "libkdb5-10",
-    "libkeyutils1",
-    "libkrb5-3",
     "libkrb5-dev",
-    "libkrb5support0",
-    "liblcms2-2",
-    "libldap-2.4-2",
-    "liblerc4",
-    "libltdl7",
-    "liblz4-1",
-    "liblzma5",
-    "liblzo2-2",
-    "libmbedcrypto7",
-    "libmd0",
-    "libmd4c0",
+    "liblcms2-dev",
+    "liblzma-dev",
     "libminizip-dev",
-    "libminizip1",
-    "libmount-dev",
-    "libmount1",
-    "libmp3lame0",
-    "libmpg123-0",
-    "libmtdev1",
+    "libmtdev-dev",
     "libncurses-dev",
-    "libncurses6",
-    "libncursesw6",
-    "libnettle8",
-    "libnghttp2-14",
-    "libnorm1",
-    "libnsl2",
-    "libnspr4",
-    "libnspr4-dev",
-    "libnss-db",
-    "libnss3",
     "libnss3-dev",
-    "libnuma1",
-    "libogg-dev",
-    "libogg0",
-    "libopengl0",
-    "libopenjp2-7",
-    "libopenmpt0",
     "libopus-dev",
-    "libopus-dev",
-    "libopus0",
-    "libp11-kit0",
-    "libpam0g",
     "libpam0g-dev",
-    "libpango-1.0-0",
-    "libpango1.0-dev",
-    "libpangocairo-1.0-0",
-    "libpangoft2-1.0-0",
-    "libpangox-1.0-0",
-    "libpangoxft-1.0-0",
     "libpci-dev",
-    "libpci3",
-    "libpciaccess0",
-    "libpcre16-3",
-    "libpcre2-16-0",
-    "libpcre2-32-0",
-    "libpcre2-8-0",
-    "libpcre2-dev",
-    "libpcre2-posix2",
-    "libpcre3",
-    "libpcre3-dev",
-    "libpcre32-3",
-    "libpcrecpp0v5",
-    "libpgm-5.3-0",
-    "libpipewire-0.3-0",
     "libpipewire-0.3-dev",
-    "libpixman-1-0",
-    "libpixman-1-dev",
-    "libpng-dev",
-    "libpng16-16",
-    "libproxy1v5",
-    "libpsl5",
-    "libpthread-stubs0-dev",
     "libpulse-dev",
-    "libpulse-mainloop-glib0",
-    "libpulse0",
-    "libqt5concurrent5",
-    "libqt5core5a",
-    "libqt5dbus5",
-    "libqt5gui5",
-    "libqt5network5",
-    "libqt5printsupport5",
-    "libqt5sql5",
-    "libqt5test5",
-    "libqt5widgets5",
-    "libqt5xml5",
-    "libqt6concurrent6",
-    "libqt6core6",
-    "libqt6dbus6",
-    "libqt6gui6",
-    "libqt6network6",
-    "libqt6opengl6",
-    "libqt6openglwidgets6",
-    "libqt6printsupport6",
-    "libqt6sql6",
-    "libqt6test6",
-    "libqt6widgets6",
-    "libqt6xml6",
-    "librabbitmq4",
-    "librav1e0",
-    "libre2-9",
     "libre2-dev",
-    "librest-0.7-0",
-    "librist4",
-    "librsvg2-2",
-    "librtmp1",
-    "libsasl2-2",
-    "libselinux1",
-    "libselinux1-dev",
-    "libsepol1",
-    "libsepol1-dev",
-    "libshine3",
-    "libsm6",
     "libsnappy-dev",
-    "libsnappy1v5",
-    "libsndfile1",
-    "libsodium23",
-    "libsoup-gnome2.4-1",
-    "libsoup2.4-1",
-    "libsoxr0",
-    "libspa-0.2-dev",
     "libspeechd-dev",
-    "libspeechd2",
-    "libspeex1",
-    "libsqlite3-0",
-    "libsrt1.5-gnutls",
-    "libssh-gcrypt-4",
-    "libssh2-1",
     "libssl-dev",
-    "libssl1.1",
-    "libstdc++-10-dev",
-    "libstdc++6",
-    "libsvtav1enc1",
-    "libswresample-dev",
-    "libswresample3",
-    "libswresample4",
     "libsystemd-dev",
-    "libsystemd0",
-    "libtasn1-6",
-    "libthai-dev",
-    "libthai0",
-    "libtheora0",
-    "libtheora0",
     "libtiff-dev",
-    "libtiff5",
-    "libtiff6",
-    "libtiffxx5",
-    "libtinfo6",
-    "libtirpc3",
-    "libts0",
-    "libtwolame0",
-    "libudev-dev",
-    "libudev1",
-    "libudfread0",
-    "libunbound8",
-    "libunistring2",
     "libutempter-dev",
-    "libutempter0",
-    "libuuid1",
     "libva-dev",
-    "libva-drm2",
-    "libva-glx2",
-    "libva-wayland2",
-    "libva-x11-2",
-    "libva2",
-    "libvdpau1",
-    "libvorbis0a",
-    "libvorbisenc2",
-    "libvorbisfile3",
     "libvpx-dev",
-    "libvpx6",
-    "libvpx7",
-    "libvulkan-dev",
-    "libvulkan1",
-    "libwacom2",
-    "libwavpack1",
-    "libwayland-bin",
-    "libwayland-client0",
-    "libwayland-cursor0",
-    "libwayland-dev",
     "libwayland-egl-backend-dev",
-    "libwayland-egl1",
-    "libwayland-egl1-mesa",
-    "libwayland-server0",
     "libwebp-dev",
-    "libwebp6",
-    "libwebp7",
-    "libwebpdemux2",
-    "libwebpmux3",
-    "libwrap0",
-    "libx11-6",
-    "libx11-dev",
     "libx11-xcb-dev",
-    "libx11-xcb1",
-    "libx264-160",
-    "libx264-164",
-    "libx265-192",
-    "libx265-199",
-    "libxau-dev",
-    "libxau6",
-    "libxcb-dri2-0",
     "libxcb-dri2-0-dev",
-    "libxcb-dri3-0",
     "libxcb-dri3-dev",
-    "libxcb-glx0",
     "libxcb-glx0-dev",
-    "libxcb-icccm4",
-    "libxcb-image0",
     "libxcb-image0-dev",
-    "libxcb-keysyms1",
     "libxcb-present-dev",
-    "libxcb-present0",
-    "libxcb-randr0",
-    "libxcb-randr0-dev",
-    "libxcb-render-util0",
     "libxcb-render-util0-dev",
-    "libxcb-render0",
-    "libxcb-render0-dev",
-    "libxcb-shape0",
-    "libxcb-shape0-dev",
-    "libxcb-shm0",
-    "libxcb-shm0-dev",
-    "libxcb-sync-dev",
-    "libxcb-sync1",
     "libxcb-util-dev",
-    "libxcb-util1",
-    "libxcb-xfixes0",
-    "libxcb-xfixes0-dev",
-    "libxcb-xinerama0",
-    "libxcb-xinput0",
-    "libxcb-xkb1",
-    "libxcb1",
-    "libxcb1-dev",
-    "libxcomposite-dev",
-    "libxcomposite1",
-    "libxcursor-dev",
-    "libxcursor1",
-    "libxdamage-dev",
-    "libxdamage1",
-    "libxdmcp-dev",
-    "libxdmcp6",
-    "libxext-dev",
-    "libxext6",
-    "libxfixes-dev",
-    "libxfixes3",
-    "libxft-dev",
-    "libxft2",
-    "libxi-dev",
-    "libxi6",
-    "libxinerama-dev",
-    "libxinerama1",
-    "libxkbcommon-dev",
-    "libxkbcommon-x11-0",
-    "libxkbcommon0",
-    "libxml2",
-    "libxml2-dev",
-    "libxrandr-dev",
-    "libxrandr2",
-    "libxrender-dev",
-    "libxrender1",
     "libxshmfence-dev",
-    "libxshmfence1",
     "libxslt1-dev",
-    "libxslt1.1",
     "libxss-dev",
-    "libxss1",
     "libxt-dev",
-    "libxt6",
-    "libxtst-dev",
-    "libxtst6",
-    "libxvidcore4",
     "libxxf86vm-dev",
-    "libxxf86vm1",
-    "libzmq5",
-    "libzstd1",
-    "libzvbi0",
-    "linux-libc-dev",
     "mesa-common-dev",
-    "ocl-icd-libopencl1",
     "qt6-base-dev",
-    "qt6-base-dev-tools",
     "qtbase5-dev",
-    "qtbase5-dev-tools",
-    "shared-mime-info",
-    "uuid-dev",
-    "wayland-protocols",
-    "x11proto-dev",
-    "zlib1g",
-    "zlib1g-dev",
+    "valgrind",
 ]
-
-DEBIAN_PACKAGES_ARCH = {
-    "amd64": [
-        "libasan6",
-        "libdrm-intel1",
-        "libitm1",
-        "liblsan0",
-        "libmfx1",
-        "libquadmath0",
-        "libtsan0",
-        "libubsan1",
-        "valgrind",
-    ],
-    "i386": [
-        "libasan6",
-        "libdrm-intel1",
-        "libitm1",
-        "libquadmath0",
-        "libubsan1",
-        "valgrind",
-    ],
-    "armhf": [
-        "libasan6",
-        "libdrm-etnaviv1",
-        "libdrm-exynos1",
-        "libdrm-freedreno1",
-        "libdrm-omap1",
-        "libdrm-tegra0",
-        "libubsan1",
-        "valgrind",
-    ],
-    "arm64": [
-        "libasan6",
-        "libdrm-etnaviv1",
-        "libdrm-freedreno1",
-        "libdrm-tegra0",
-        "libgmp10",
-        "libitm1",
-        "liblsan0",
-        "libthai0",
-        "libtsan0",
-        "libubsan1",
-        "valgrind",
-    ],
-    "mipsel": [],
-    "mips64el": [
-        "valgrind",
-    ],
-}
 
 
 def banner(message: str) -> None:
@@ -706,6 +257,11 @@ def create_tarball(install_root: str, arch: str) -> None:
     banner("Creating tarball " + tarball_path)
     command = [
         "tar",
+        "--owner=0",
+        "--group=0",
+        "--numeric-owner",
+        "--sort=name",
+        "--no-xattrs",
         "-I",
         "xz -z9 -T0 --lzma2='dict=256MiB'",
         "-cf",
@@ -738,22 +294,45 @@ def generate_package_list_dist_repo(arch: str, dist: str,
 
 
 def generate_package_list(arch: str) -> dict[str, str]:
+    # Workaround for some misconfigured package dependencies.
+    BROKEN_DEPS = {
+        "libgcc1",
+        "qt6-base-abi",
+    }
+
     package_meta = {}
     for dist, repos in APT_SOURCES_LIST:
         for repo_name in repos:
             for meta in generate_package_list_dist_repo(arch, dist, repo_name):
                 package_meta[meta["Package"]] = meta
+                if "Provides" not in meta:
+                    continue
+                for provides in meta["Provides"].split(", "):
+                    if provides in package_meta:
+                        continue
+                    package_meta[provides] = meta
+
+    def add_package_dependencies(package: str) -> None:
+        if package in BROKEN_DEPS:
+            return
+        meta = package_meta[package]
+        url = ARCHIVE_URL + meta["Filename"]
+        if url in package_dict:
+            return
+        package_dict[url] = meta["SHA256"]
+        if "Depends" in meta:
+            for dep in meta["Depends"].split(", "):
+                add_package_dependencies(dep.split()[0].split(":")[0])
 
     # Read the input file and create a dictionary mapping package names to URLs
     # and checksums.
-    missing = set(DEBIAN_PACKAGES + DEBIAN_PACKAGES_ARCH[arch])
+    missing = set(DEBIAN_PACKAGES)
     package_dict: dict[str, str] = {}
     for meta in package_meta.values():
         package = meta["Package"]
         if package in missing:
             missing.remove(package)
-            url = ARCHIVE_URL + meta["Filename"]
-            package_dict[url] = meta["SHA256"]
+            add_package_dependencies(package)
     if missing:
         raise Exception(f"Missing packages: {', '.join(missing)}")
 
@@ -768,6 +347,11 @@ def generate_package_list(arch: str) -> dict[str, str]:
 def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     banner("Misc Hacks & Patches")
 
+    debian_dir = os.path.join(install_root, "debian")
+    control_file = os.path.join(debian_dir, "control")
+    # Create an empty control file
+    open(control_file, "a").close()
+
     # Remove an unnecessary dependency on qtchooser.
     qtchooser_conf = os.path.join(install_root, "usr", "lib", TRIPLES[arch],
                                   "qt-default/qtchooser/default.conf")
@@ -780,6 +364,34 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
         os.path.join(install_root, "debian", "libxcomposite1", "DEBIAN",
                      "symbols"),
     )
+
+    # __GLIBC_MINOR__ is used as a feature test macro. Replace it with the
+    # earliest supported version of glibc (2.26).
+    features_h = os.path.join(install_root, "usr", "include", "features.h")
+    replace_in_file(features_h, r"(#define\s+__GLIBC_MINOR__)", r"\1 26 //")
+
+    # fcntl64() was introduced in glibc 2.28. Make sure to use fcntl() instead.
+    fcntl_h = os.path.join(install_root, "usr", "include", "fcntl.h")
+    replace_in_file(
+        fcntl_h,
+        r"#ifndef __USE_FILE_OFFSET64(\nextern int fcntl)",
+        r"#if 1\1",
+    )
+
+    # Do not use pthread_cond_clockwait as it was introduced in glibc 2.30.
+    cppconfig_h = os.path.join(
+        install_root,
+        "usr",
+        "include",
+        TRIPLES[arch],
+        "c++",
+        "10",
+        "bits",
+        "c++config.h",
+    )
+    replace_in_file(cppconfig_h,
+                    r"(#define\s+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT)",
+                    r"// \1")
 
     # Include limits.h in stdlib.h to fix an ODR issue.
     stdlib_h = os.path.join(install_root, "usr", "include", "stdlib.h")
@@ -796,12 +408,20 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
             shutil.move(os.path.join(triple_pkgconfig_dir, file),
                         pkgconfig_dir)
 
+    # Avoid requiring unsupported glibc versions.
+    for lib in ["libc.so.6", "libm.so.6", "libcrypt.so.1"]:
+        lib_path = os.path.join(install_root, "lib", TRIPLES[arch], lib)
+        reversion_glibc.reversion_glibc(lib_path)
+
     # GTK4 is provided by bookworm (12), but pango is provided by bullseye
     # (11).  Fix the GTK4 pkgconfig file to relax the pango version
     # requirement.
     gtk4_pc = os.path.join(pkgconfig_dir, "gtk4.pc")
     replace_in_file(gtk4_pc, r"pango [>=0-9. ]*", "pango")
     replace_in_file(gtk4_pc, r"pangocairo [>=0-9. ]*", "pangocairo")
+
+    # Remove a cyclic symlink: /usr/bin/X11 -> /usr/bin
+    os.remove(os.path.join(install_root, "usr/bin/X11"))
 
 
 def replace_in_file(file_path: str, search_pattern: str,
@@ -824,10 +444,6 @@ def install_into_sysroot(build_dir: str, install_root: str,
 
     debian_dir = os.path.join(install_root, "debian")
     os.makedirs(debian_dir, exist_ok=True)
-    control_file = os.path.join(debian_dir, "control")
-    # Create an empty control file
-    open(control_file, "a").close()
-
     for package, sha256sum in packages.items():
         package_name = os.path.basename(package)
         package_path = os.path.join(debian_packages_dir, package_name)
@@ -857,15 +473,17 @@ def install_into_sysroot(build_dir: str, install_root: str,
                 raise Exception(
                     f"{message} {package_path}: {err.decode('utf-8')}")
 
-    # Prune /usr/share, leaving only pkgconfig, wayland, and wayland-protocols
+    # Prune /usr/share, leaving only allowlisted directories.
+    USR_SHARE_ALLOWLIST = {
+        "fontconfig",
+        "pkgconfig",
+        "wayland",
+        "wayland-protocols",
+    }
     usr_share = os.path.join(install_root, "usr", "share")
     for item in os.listdir(usr_share):
         full_path = os.path.join(usr_share, item)
-        if os.path.isdir(full_path) and item not in [
-                "pkgconfig",
-                "wayland",
-                "wayland-protocols",
-        ]:
+        if os.path.isdir(full_path) and item not in USR_SHARE_ALLOWLIST:
             shutil.rmtree(full_path)
 
 
@@ -892,9 +510,23 @@ def cleanup_jail_symlinks(install_root: str) -> None:
             full_path = os.path.join(root, name)
             if os.path.islink(full_path):
                 target_path = os.readlink(full_path)
+                if target_path == "/dev/null":
+                    # Some systemd services get masked by symlinking them to
+                    # /dev/null. It's safe to remove these.
+                    os.remove(full_path)
+                    continue
 
-                # Check if the symlink is absolute and points inside the
-                # install_root.
+                # If the link's target does not exist, remove this broken link.
+                if os.path.isabs(target_path):
+                    absolute_target = os.path.join(install_root,
+                                                   target_path.strip("/"))
+                else:
+                    absolute_target = os.path.join(os.path.dirname(full_path),
+                                                   target_path)
+                if not os.path.exists(absolute_target):
+                    os.remove(full_path)
+                    continue
+
                 if os.path.isabs(target_path):
                     # Compute the relative path from the symlink to the target.
                     relative_path = os.path.relpath(
@@ -911,37 +543,161 @@ def cleanup_jail_symlinks(install_root: str) -> None:
                     os.symlink(relative_path, full_path)
 
 
-def verify_library_deps(install_root: str) -> None:
+def removing_unnecessary_files(install_root, arch):
     """
-    Verifies if all required libraries are present in the sysroot environment.
+    Minimizes the sysroot by removing unnecessary files.
     """
-    # Get all shared libraries and their dependencies.
-    shared_libs = set()
-    needed_libs = set()
+    # Preserve these files.
+    gcc_triple = "i686-linux-gnu" if arch == "i386" else TRIPLES[arch]
+    ALLOWLIST = {
+        "usr/bin/cups-config",
+        f"usr/lib/gcc/{gcc_triple}/10/libgcc.a",
+        f"usr/lib/{TRIPLES[arch]}/libc_nonshared.a",
+        f"usr/lib/{TRIPLES[arch]}/libffi_pic.a",
+    }
+
+    for file in ALLOWLIST:
+        assert os.path.exists(os.path.join(install_root, file))
+
+    # Remove all executables and static libraries, and any symlinks that
+    # were pointing to them.
+    reverse_links = collections.defaultdict(list)
+    remove = []
+    for root, _, files in os.walk(install_root):
+        for filename in files:
+            filepath = os.path.join(root, filename)
+            if os.path.relpath(filepath, install_root) in ALLOWLIST:
+                continue
+            if os.path.islink(filepath):
+                target_path = os.readlink(filepath)
+                if not os.path.isabs(target_path):
+                    target_path = os.path.join(root, target_path)
+                reverse_links[os.path.realpath(target_path)].append(filepath)
+            elif "so" in filepath.split(".")[-3:]:
+                continue
+            elif os.access(filepath, os.X_OK) or filepath.endswith(".a"):
+                remove.append(filepath)
+    for filepath in remove:
+        os.remove(filepath)
+        for link in reverse_links[filepath]:
+            os.remove(link)
+
+
+def strip_sections(install_root: str, arch: str):
+    """
+    Strips all sections from ELF files except for dynamic linking and
+    essential sections. Skips static libraries (.a), object files (.o), and a
+    few files used by other Chromium-related projects.
+    """
+    PRESERVED_FILES = (
+        'libc-2.31.so',
+        'libm-2.31.so',
+        'ld-2.31.so',
+    )
+
+    PRESERVED_SECTIONS = {
+        ".dynamic",
+        ".dynstr",
+        ".dynsym",
+        ".gnu.version",
+        ".gnu.version_d",
+        ".gnu.version_r",
+        ".hash",
+        ".note.ABI-tag",
+        ".note.gnu.build-id",
+    }
+
+    preserved_files_count = 0
+    lib_arch_path = os.path.join(install_root, "lib", TRIPLES[arch])
     for root, _, files in os.walk(install_root):
         for file in files:
-            if ".so" not in file:
+            file_path = os.path.join(root, file)
+            if file_path.startswith(lib_arch_path) and file in PRESERVED_FILES:
+                preserved_files_count += 1
                 continue
-            path = os.path.join(root, file)
-            islink = os.path.islink(path)
-            if islink:
-                path = os.path.join(root, os.readlink(path))
-            cmd_file = ["file", path]
-            output = subprocess.check_output(cmd_file).decode()
-            if ": ELF" not in output or "shared object" not in output:
-                continue
-            shared_libs.add(file)
-            if islink:
-                continue
-            cmd_readelf = ["readelf", "-d", path]
-            output = subprocess.check_output(cmd_readelf).decode()
-            for line in output.split("\n"):
-                if "NEEDED" in line:
-                    needed_libs.add(line.split("[")[1].split("]")[0])
 
-    missing_libs = needed_libs - shared_libs
-    if missing_libs:
-        raise Exception(f"Missing libraries: {missing_libs}")
+            if (os.access(file, os.X_OK) or file.endswith((".a", ".o"))
+                    or os.path.islink(file_path)):
+                continue
+
+            # Verify this is an ELF file
+            with open(file_path, "rb") as f:
+                magic = f.read(4)
+                if magic != b"\x7fELF":
+                    continue
+
+            # Get section headers
+            objdump_cmd = ["objdump", "-h", file_path]
+            result = subprocess.run(objdump_cmd,
+                                    check=True,
+                                    text=True,
+                                    capture_output=True)
+            section_lines = result.stdout.splitlines()
+
+            # Parse section names
+            sections = set()
+            for line in section_lines:
+                parts = line.split()
+                if len(parts) > 1 and parts[0].isdigit():
+                    sections.add(parts[1])
+
+            sections_to_remove = sections - PRESERVED_SECTIONS
+            if sections_to_remove:
+                objcopy_arch = "amd64" if arch == "i386" else arch
+                objcopy_bin = TRIPLES[objcopy_arch] + "-objcopy"
+                objcopy_cmd = ([objcopy_bin] + [
+                    f"--remove-section={section}"
+                    for section in sections_to_remove
+                ] + [file_path])
+                subprocess.run(objcopy_cmd, check=True, stderr=subprocess.PIPE)
+    if preserved_files_count != len(PRESERVED_FILES):
+        raise Exception("Expected file to preserve missing")
+
+
+def record_metadata(install_root: str) -> dict[str, tuple[float, float]]:
+    """
+    Recursively walk the install_root directory and record the metadata of all
+    files. Symlinks are not followed. Returns a dictionary mapping each path
+    (relative to install_root) to its original metadata.
+    """
+    metadata = {}
+    for root, dirs, files in os.walk(install_root):
+        for name in dirs + files:
+            full_path = os.path.join(root, name)
+            rel_path = os.path.relpath(full_path, install_root)
+            st = os.lstat(full_path)
+            metadata[rel_path] = (st.st_atime, st.st_mtime)
+    return metadata
+
+
+def restore_metadata(install_root: str,
+                     old_meta: dict[str, tuple[float, float]]) -> None:
+    """
+    1. Restore the metadata of any file that exists in old_meta.
+    2. For all other files, set their timestamp to ARCHIVE_TIMESTAMP.
+    3. For all directories (including install_root), set the timestamp
+       to ARCHIVE_TIMESTAMP.
+    """
+    # Convert the timestamp to a UNIX epoch time.
+    archive_time = time.mktime(
+        time.strptime(ARCHIVE_TIMESTAMP, "%Y%m%dT%H%M%SZ"))
+
+    # Walk through the install_root, applying old_meta where available;
+    # otherwise set times to archive_time.
+    for root, dirs, files in os.walk(install_root):
+        # Directories get archive_time.
+        os.utime(root, (archive_time, archive_time))
+
+        # Files: old_meta if available, else archive_time.
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            if os.path.lexists(file_path):
+                rel_path = os.path.relpath(file_path, install_root)
+                if rel_path in old_meta:
+                    restore_time = old_meta[rel_path]
+                else:
+                    restore_time = (archive_time, archive_time)
+                os.utime(file_path, restore_time, follow_symlinks=False)
 
 
 def build_sysroot(arch: str) -> None:
@@ -949,9 +705,12 @@ def build_sysroot(arch: str) -> None:
     clear_install_dir(install_root)
     packages = generate_package_list(arch)
     install_into_sysroot(BUILD_DIR, install_root, packages)
+    old_metadata = record_metadata(install_root)
     hacks_and_patches(install_root, SCRIPT_DIR, arch)
     cleanup_jail_symlinks(install_root)
-    verify_library_deps(install_root)
+    removing_unnecessary_files(install_root, arch)
+    strip_sections(install_root, arch)
+    restore_metadata(install_root, old_metadata)
     create_tarball(install_root, arch)
 
 

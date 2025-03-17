@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
-    enum="Boolean" expires_after="2025-04-13">
+    enum="Boolean" expires_after="2025-08-24">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2025-06-15">
+    expires_after="2025-08-17">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.BrowserFullscreen.DurationUpTo24H" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>bur@chromium.org</owner>
   <owner>chrome-mac-dev@google.com</owner>
   <summary>
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.ID.RestoredDifference" units="Session IDs"
-    expires_after="2025-02-28">
+    expires_after="2026-02-28">
   <owner>gambard@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive" enum="BooleanActive"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{HistorySyncState}" units="ms"
-    expires_after="2025-04-27">
+    expires_after="2025-09-07">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -918,13 +918,18 @@ chromium-metrics-reviews@google.com.
     moment.
   </summary>
   <token key="HistorySyncState">
-    <variant name="WithHistorySync" summary="enabled"/>
+    <variant name="WithHistorySync"
+        summary="enabled (with or without persistent auth error)"/>
+    <variant name="WithHistorySyncAndAuthError"
+        summary="enabled but with persistent auth error"/>
+    <variant name="WithHistorySyncWithoutAuthError"
+        summary="enabled and without persistent auth error"/>
     <variant name="WithoutHistorySync" summary="NOT enabled"/>
   </token>
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"
-    expires_after="2025-04-27">
+    expires_after="2025-09-07">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -969,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.LoadingTimeOnMainThread" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>fedegermi@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -985,7 +990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreHasFetchers"
-    enum="BooleanHasFetchers" expires_after="2025-04-13">
+    enum="BooleanHasFetchers" expires_after="2025-08-24">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -995,7 +1000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
-    expires_after="2025-06-15">
+    expires_after="2025-08-17">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1006,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCache"
-    enum="BooleanSuccess" expires_after="2025-06-15">
+    enum="BooleanSuccess" expires_after="2025-08-17">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1017,7 +1022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCacheHasData"
-    enum="BooleanHasData" expires_after="2025-06-15">
+    enum="BooleanHasData" expires_after="2025-08-17">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1028,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionHasData"
-    enum="BooleanHasData" expires_after="2025-04-13">
+    enum="BooleanHasData" expires_after="2025-08-24">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1077,7 +1082,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.StorageFormat" enum="SessionStorageFormat"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>fedegermi@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -1105,7 +1110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.StorageMigrationStatus"
-    enum="SessionStorageMigrationStatus" expires_after="2025-05-25">
+    enum="SessionStorageMigrationStatus" expires_after="2025-07-27">
   <owner>fedegermi@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -1131,8 +1136,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SessionRestore.ForegroundTabFirstPaint4" units="ms"
-    expires_after="2025-06-08">
+<histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
+    enum="SessionRestoreFinishReason" expires_after="2025-08-10">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The reason for which attempt to record
+    SessionRestore.ForegroundTabFirstPaint4 was deemed complete. Logged once per
+    session restore.
+
+    Warning: this histogram was expired from 2022-10-23 to 2024-02-15; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram
+    name="SessionRestore.ForegroundTabFirstPaint4{SessionRestoreTabCounts}"
+    units="ms" expires_after="2025-08-10">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1144,22 +1164,31 @@ chromium-metrics-reviews@google.com.
     this is not recorded.
 
     Warning: this histogram was expired from 2022-10-23 to 2023-02-22; data may
-    be missing.
+    be missing. {SessionRestoreTabCounts}
   </summary>
-</histogram>
-
-<histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
-    enum="SessionRestoreFinishReason" expires_after="2025-06-08">
-  <owner>joenotcharles@google.com</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The reason for which attempt to record
-    SessionRestore.ForegroundTabFirstPaint4 was deemed complete. Logged once per
-    session restore.
-
-    Warning: this histogram was expired from 2022-10-23 to 2024-02-15; data may
-    be missing.
-  </summary>
+  <token key="SessionRestoreTabCounts">
+    <variant name=""/>
+    <variant name="_1" summary="1 tab present"/>
+    <variant name="_2" summary="2 tabs present"/>
+    <variant name="_3" summary="3 tabs present"/>
+    <variant name="_4" summary="4 tabs present"/>
+    <variant name="_5" summary="5 tabs present"/>
+    <variant name="_6" summary="6 tabs present"/>
+    <variant name="_7" summary="7 tabs present"/>
+    <variant name="_8" summary="8 tabs present"/>
+    <variant name="_9" summary="9 tabs present"/>
+    <variant name="_10" summary="10 tabs present"/>
+    <variant name="_11" summary="11 tab present"/>
+    <variant name="_12" summary="12 tabs present"/>
+    <variant name="_13" summary="13 tabs present"/>
+    <variant name="_14" summary="14 tabs present"/>
+    <variant name="_15" summary="15 tabs present"/>
+    <variant name="_16" summary="16 tabs present"/>
+    <variant name="_17" summary="17 tabs present"/>
+    <variant name="_18" summary="18 tabs present"/>
+    <variant name="_19" summary="19 tabs present"/>
+    <variant name="_20" summary="20 tabs present"/>
+  </token>
 </histogram>
 
 <histogram name="SessionRestore.PageStateOldVersions" units="version"
@@ -1176,7 +1205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.TabCount{TabType}" units="tabs"
-    expires_after="2025-03-30">
+    expires_after="2025-08-24">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1219,8 +1248,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SessionStorageContext.CachePurgedInKB" units="KB"
-    expires_after="2024-12-01">
+<histogram
+    name="SessionStorageContext.CachePurgedInKB{DOMStorageCachePurgeReason}"
+    units="KB" expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1229,7 +1259,20 @@ chromium-metrics-reviews@google.com.
     limits.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
+    {DOMStorageCachePurgeReason}
   </summary>
+  <token key="DOMStorageCachePurgeReason">
+    <variant name=""/>
+    <variant name=".AggressivePurgeTriggered"
+        summary="Aggressive purge was triggered on memory pressure."/>
+    <variant name=".AreaCountLimitExceeded"
+        summary="Storage areas count exceeded limit."/>
+    <variant name=".InactiveOnLowEndDevice"
+        summary="Inactive areas found in low end device."/>
+    <variant name=".ModeratePurgeTriggered"
+        summary="Moderate purge was triggered on memory pressure."/>
+    <variant name=".SizeLimitExceeded" summary="Cache size exceeded limit."/>
+  </token>
 </histogram>
 
 <histogram name="SessionStorageContext.CacheSizeInKB" units="KB"
@@ -1316,10 +1359,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SessionStorageContext.OpenResultAfter"
+<histogram
+    name="SessionStorageContext.OpenResultAfter{SessionStorageContextOpenReasons}"
     enum="LocalStorageOpenError" expires_after="2024-12-01">
-<!-- Name completed by histogram_suffixes name="SessionStorageContextOpenReasons" -->
-
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1327,7 +1369,20 @@ chromium-metrics-reviews@google.com.
     Recorded after an open operation attempt returns an error.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
+    {SessionStorageContextOpenReasons}
   </summary>
+  <token key="SessionStorageContextOpenReasons">
+    <variant name="CommitErrors" summary="After too many commit errors."/>
+    <variant name="InvalidVersion"
+        summary="After an invalid version was read."/>
+    <variant name="OpenFailed" summary="After opening the DB failed."/>
+    <variant name="ReadNamespacesError"
+        summary="After reading the namespaces failed."/>
+    <variant name="ReadNextMapIdError"
+        summary="After reading the map id failed."/>
+    <variant name="ReadVersionError"
+        summary="After reading the schema version failed."/>
+  </token>
 </histogram>
 
 <histogram name="SessionStorageContext.ReadNamespacesError"

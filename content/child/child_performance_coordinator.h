@@ -11,10 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
 namespace content {
 
@@ -50,10 +50,10 @@ class CONTENT_EXPORT ChildPerformanceCoordinator {
 
   // Scopers to manage the lifetime of shared memory regions for performance
   // scenarios. These regions are read by functions in
-  // //third_party/blink/public/common/performance/performance_scenarios.h.
-  std::optional<blink::performance_scenarios::ScopedReadOnlyScenarioMemory>
+  // //components/performance_manager/scenario_api/performance_scenarios.h.
+  std::optional<performance_scenarios::ScopedReadOnlyScenarioMemory>
       process_scenario_memory_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::optional<blink::performance_scenarios::ScopedReadOnlyScenarioMemory>
+  std::optional<performance_scenarios::ScopedReadOnlyScenarioMemory>
       global_scenario_memory_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<ChildPerformanceCoordinator> weak_factory_{this};

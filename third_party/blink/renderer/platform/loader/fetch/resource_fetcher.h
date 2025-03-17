@@ -300,7 +300,7 @@ class PLATFORM_EXPORT ResourceFetcher
   static network::mojom::RequestDestination DetermineRequestDestination(
       ResourceType);
 
-  void UpdateAllImageResourcePriorities();
+  void UpdateImagePrioritiesAndSpeculativeDecodes();
 
   // Returns whether the given resource is contained as a preloaded resource.
   bool ContainsAsPreload(Resource*) const;
@@ -321,7 +321,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // counting.
   void PrepareForLeakDetection();
 
-  using ResourceFetcherSet = HeapHashSet<WeakMember<ResourceFetcher>>;
+  using ResourceFetcherSet = GCedHeapHashSet<WeakMember<ResourceFetcher>>;
   static const ResourceFetcherSet& MainThreadFetchers();
 
   mojom::blink::BlobRegistry* GetBlobRegistry();
@@ -467,7 +467,10 @@ class PLATFORM_EXPORT ResourceFetcher
                                       ResourceRequestBlockedReason,
                                       ResourceClient*);
 
-  Resource* MatchPreload(const FetchParameters& params, ResourceType);
+  Resource* MatchPreload(
+      const FetchParameters& params,
+      ResourceType,
+      HeapHashMap<PreloadKey, Member<Resource>>::iterator it);
   void PrintPreloadMismatch(Resource*, Resource::MatchStatus);
   void InsertAsPreloadIfNecessary(Resource*,
                                   const FetchParameters& params,

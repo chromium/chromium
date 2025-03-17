@@ -6,14 +6,17 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,9 +69,11 @@ constexpr char kExpectActiveJs[] = R"(
 using ShowPromoInPageBrowserTest = InteractiveBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, FocusesBrowserTabAndAnchor) {
+  g_browser_process->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
   auto params = GetDefaultParams();
   params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
-  params.overwrite_active_tab = true;
+  params.page_open_mode = user_education::PageOpenMode::kOverwriteActiveTab;
   // Set the alt text here and then check that aria-label matches.
   params.close_button_alt_text_id = IDS_CLOSE_PROMO;
 
@@ -89,6 +94,47 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, FocusesBrowserTabAndAnchor) {
   bubble_is_visible.type = StateChange::Type::kExists;
   RunTestSequence(
       InstrumentTab(kTabId),
+      Do([this]() { browser()->window()->SetFocusToLocationBar(true); }),
+      Do(std::move(help_bubble_start_callback)),
+      WaitForWebContentsNavigation(
+          kTabId, GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      WaitForStateChange(kTabId, bubble_is_visible),
+      Log("If the CheckViewProperty() step below fails intermittently, then  "
+          "there is a race condition and we should change it to a "
+          "StateObserver."),
+
+      CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                        &views::View::HasFocus, true),
+      CheckJsResultAt(kTabId, kPathToAnchor, kExpectActiveJs, ""));
+}
+
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
+                       FocusesBrowserTabAndAnchorInSingletonTab) {
+  g_browser_process->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
+  auto params = GetDefaultParams();
+  params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
+  params.page_open_mode = user_education::PageOpenMode::kSingletonTab;
+  // Set the alt text here and then check that aria-label matches.
+  params.close_button_alt_text_id = IDS_CLOSE_PROMO;
+
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kBubbleIsVisible);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  auto help_bubble_start_callback =
+      base::BindOnce(base::IgnoreResult(&ShowPromoInPage::Start), browser(),
+                     std::move(params));
+  static const DeepQuery kPathToAnchor = {"user-education-internals",
+                                          "#IPH_WebUiHelpBubbleTest"};
+  static const DeepQuery kPathToHelpBubbleCloseButton = {
+      "user-education-internals", "#IPH_WebUiHelpBubbleTest", "help-bubble",
+      "#close"};
+  StateChange bubble_is_visible;
+  bubble_is_visible.event = kBubbleIsVisible;
+  bubble_is_visible.where = kPathToHelpBubbleCloseButton;
+  bubble_is_visible.type = StateChange::Type::kExists;
+  RunTestSequence(
+      InstrumentNextTab(kTabId),
       Do([this]() { browser()->window()->SetFocusToLocationBar(true); }),
       Do(std::move(help_bubble_start_callback)),
       WaitForWebContentsNavigation(

@@ -83,6 +83,10 @@ void ChooserController::OpenPermissionPreferences() const {
   NOTREACHED();
 }
 
+void ChooserController::OpenBluetoothPermissionHelpUrl() const {
+  NOTREACHED();
+}
+
 bool ChooserController::ShouldShowAdapterOffView() const {
   return false;
 }

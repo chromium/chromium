@@ -60,10 +60,10 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
                              CSSValuePhase value_phase) const override;
 
   bool IsAccessAllowed(String&) const override { return true; }
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override {
-    return IntrinsicSizingInfo();
+    return NaturalSizingInfo();
   }
   gfx::SizeF ImageSize(float,
                        const gfx::SizeF&,

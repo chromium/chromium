@@ -16,6 +16,12 @@ void NearbyShareControllerImpl::HighVisibilityEnabledChanged(bool enabled) {
   }
 }
 
+void NearbyShareControllerImpl::NearbyShareEnabledChanged(bool enabled) {
+  for (auto& observer : observers_) {
+    observer.OnNearbyShareEnabledChanged(enabled);
+  }
+}
+
 void NearbyShareControllerImpl::VisibilityChanged(
     ::nearby_share::mojom::Visibility visibility) const {
   for (auto& observer : observers_) {

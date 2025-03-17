@@ -3,11 +3,52 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web app scope_a test page for link capturing tests</title>
+  <style>
+    /* Reducing the size of everything so all controls are 'visible' for test
+     * clicks. This is a workaround so the tests work. */
+    body, h1, h2, a, button, form, input, td {
+      font-size: 0.8em;  /* Reduce by 20% - adjust as needed */
+    }
+    h1 {
+      font-size: 1.2em; /* Was relatively large, so a smaller multiplier */
+    }
+    h2 {
+      font-size: 1em;
+    }
+
+    /* Table Layout Adjustments */
+    table {
+      width: 100%; /* Ensure table uses full width */
+      table-layout: fixed; /* Important for consistent column widths */
+    }
+
+    td {
+      padding: 2px; /* Reduce padding */
+      word-wrap: break-word; /*  Wrap long words */
+      vertical-align: top; /* Align content to the top of cells */
+    }
+
+    /*  Further reduce spacing */
+    br {
+      display: none; /* Remove most line breaks, may need fine-tuning */
+    }
+    a, button{
+      margin-bottom: 1px;
+      margin-top: 1px;
+      display: block; /* Make links and buttons block-level, each on a new line, with spacing controlled by margin */
+      white-space: normal; /* Allow text wrapping in links and buttons */
+    }
+
+    button{
+        padding: 1px 1px;
+    }
+  </style>
   <script src="../launch_detector.js"></script>
   <script>
     let serviceWorkerRegistration = undefined;
     let aDestinationUrl = new URL("destination.html", window.location.href).href;
     let bDestinationUrl = new URL("../scope_b/destination.html", window.location.href).href;
+    let b2DestinationUrl = new URL("../scope_b/destination2.html", window.location.href).href;
     let xDestinationUrl = new URL("../scope_x/destination.html", window.location.href).href;
 
     function triggerNotificationForUrlOpen(url) {
@@ -26,6 +67,14 @@
       // Launches can simply focus this window without navigating, so this
       // intentionally starts listening too.
       _signalNavigationCompleteAndListenForNextLaunch(delay);
+    }
+
+    async function waitForNextAnimationFrame() {
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          resolve(true);
+        });
+      });
     }
 
     function getModifierString(event) {
@@ -56,18 +105,21 @@
 
   // An event handler that modifies the target.href of a clicked element
   // to add debug information shown on the target page.
-  function addModifierToTargetElementHref(event) {
+  function addModifierToTargetElementHref(linkElement, event) {
     // Pass the ID as a query param, so we can show it on the destination
     // page.
-    let id = event.target.id;
+    let id = linkElement.id;
     let param = '?' + id + '&' + getModifierString(event);
-    event.target.href += param;
-    console.log('link ' + id + ' clicked, dest ' + event.target.href);
+    linkElement.href += param;
+    console.log('link ' + id + ' clicked, dest ' + linkElement.href);
   }
 
   function getDestinationForElementClass(element) {
     if (element.classList.contains('destinationA')) {
       return aDestinationUrl;
+    }
+    if (element.classList.contains('destinationB2')) {
+      return b2DestinationUrl;
     }
     if (element.classList.contains('destinationB')) {
       return bDestinationUrl;
@@ -85,24 +137,23 @@
     // listeners for the buttons.
 
     var links = document.querySelectorAll(
-          'a.destinationA, a.destinationB, a.destinationX');
+          'a.destinationA, a.destinationB, a.destinationX, a.destinationB2');
     for (let link of links) {
-      // TODO: (crbug.com/371019414) Remove redundant <a href> for links below.
       link.setAttribute('href', getDestinationForElementClass(link));
-      link.addEventListener("click", addModifierToTargetElementHref);
-      link.addEventListener("contextmenu", addModifierToTargetElementHref);
+      link.addEventListener("click", addModifierToTargetElementHref.bind(this, link));
+      link.addEventListener("contextmenu", addModifierToTargetElementHref.bind(this, link));
       // Note: Middle clicks are simulated via a Ctrl+Left or Meta+Left click
       // for testing purposes, so the auxclick event is not implemented.
     }
 
     var forms = document.querySelectorAll(
-        'form.destinationA, form.destinationB, form.destinationX');
+        'form.destinationA, form.destinationB, form.destinationX, form.destinationB2');
     for(let form of forms) {
       form.setAttribute("action", getDestinationForElementClass(form));
     }
 
     var buttons = document.querySelectorAll(
-        'button.destinationA, button.destinationB, button.destinationX');
+        'button.destinationA, button.destinationB, button.destinationX, button.destinationB2');
     for (let button of buttons) {
       button.addEventListener("click", (event) => {
         // Pass the ID as a query param, so we can show it on the destination
@@ -133,9 +184,9 @@
 <h1>Start page scope A</h1>
 
 <table>
-<tr><td width="250px"><h2>Same scope (A)</h2></td><td width="250px"><h2>Scope B</h2></td><td width="250px"><h2>Scope X</h2></td></tr>
+<tr><td width="25%"><h2>Same scope (A)</h2></td><td width="25%"><h2>Scope B</h2></td></td><td width="25%"><h2>Scope B,2</h2></td><td width="25%"><h2>Scope X</h2></td></tr>
 <tr>
-<td>
+<td id="a-to-a">
 <!-- Links to same scope-->
 <a target="_self"   rel="opener"   id="id-LINK-A_TO_A-SELF-OPENER" class="destinationA">target="_self" rel=opener</a><br>
 <a target="_self"   rel="noopener" id="id-LINK-A_TO_A-SELF-NO_OPENER" class="destinationA">target="_self" rel=noopener</a><br>
@@ -163,7 +214,7 @@
 <button  id="id-BTN-A_TO_A-NO_FRAME-NO_OPENER" class="destinationA" data-target="noframe" data-rel="noopener">window.open(url, 'noframe', 'noopener')</button><br>
 </td>
 
-<td>
+<td id="a-to-b">
 <!-- Links to scope B (href is updated programmatically for all clicks, see load event above)-->
 <a target="_self"   rel="opener"   id="id-LINK-A_TO_B-SELF-OPENER" class="destinationB">target="_self" rel=opener</a><br>
 <a target="_self"   rel="noopener" id="id-LINK-A_TO_B-SELF-NO_OPENER" class="destinationB">target="_self" rel=noopener</a><br>
@@ -199,7 +250,43 @@ window.open(url, 'iframe' ,' 'noopener' )</button><br>
 'noframe', 'noopener')</button><br>
 </td>
 
-<td>
+<td id="a-to-b2">
+  <!-- Links to scope B (href is updated programmatically for all clicks, see load event above)-->
+<a target="_self"   rel="opener"   id="id-LINK-A_TO_B2-SELF-OPENER" class="destinationB2">target="_self" rel=opener</a><br>
+<a target="_self"   rel="noopener" id="id-LINK-A_TO_B2-SELF-NO_OPENER" class="destinationB2">target="_self" rel=noopener</a><br>
+<a target="iframe"  rel="opener"   id="id-LINK-A_TO_B2-FRAME-OPENER" class="destinationB2">target="iframe" rel=opener</a><br>
+<a target="iframe"  rel="noopener" id="id-LINK-A_TO_B2-FRAME-NO_OPENER" class="destinationB2">target="iframe" rel=noopener</a><br>
+<a target="_blank"  rel="opener"   id="id-LINK-A_TO_B2-BLANK-OPENER" class="destinationB2">target="_blank" rel=opener</a><br>
+<a target="_blank"  rel="noopener" id="id-LINK-A_TO_B2-BLANK-NO_OPENER" class="destinationB2">target="_blank" rel=noopener</a><br>
+<a target="noframe" rel="opener"   id="id-LINK-A_TO_B2-NO_FRAME-OPENER" class="destinationB2">target="noframe" rel=opener</a><br>
+<a target="noframe" rel="noopener" id="id-LINK-A_TO_B2-NO_FRAME-NO_OPENER" class="destinationB2">target="noframe" rel=noopener</a><br>
+
+<!-- Form POST submissions. `action` is populated programmatically. -->
+<form method="post" class="destinationB2" target="_blank" rel="opener"><input type="text" id="test" name="test_key"
+  value="test_value" /><button type="submit" id="id-FORM_BTN-A_TO_B2-BLANK-OPENER">Submit POST, rel=opener</button></form>
+<form method="post" class="destinationB2" target="_blank"><input type="text" id="test" name="test_key"
+value="test_value" /><button type="submit" id="id-FORM_BTN-A_TO_B2-BLANK-NO_OPENER">Submit POST, rel=noopener</button></form>
+
+<!-- Buttons to scope B2 (Note: onclick handlers are provided programmatically, see load event above). -->
+<button id="id-BTN-A_TO_B2-SELF-OPENER" class="destinationB2" data-target="_self" data-rel="opener">window.open(url,
+'_self')</button><br>
+<button id="id-BTN-A_TO_B2-SELF-NO_OPENER" class="destinationB2" data-target="_self" data-rel="noopener">window.open(url,
+'_self',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B2-FRAME-OPENER" class="destinationB2" data-target="iframe" data-rel="opener">window.open(url,
+'iframe')</button><br>
+<button id="id-BTN-A_TO_B2-FRAME-NO_OPENER" class="destinationB2" data-target="iframe" data-rel="noopener">
+window.open(url, 'iframe' ,' 'noopener' )</button><br>
+<button id="id-BTN-A_TO_B2-BLANK-OPENER" class="destinationB2" data-target="_blank" data-rel="opener">window.open(url,
+'_blank')</button><br>
+<button id="id-BTN-A_TO_B2-BLANK-NO_OPENER" class="destinationB2" data-target="_blank" data-rel="noopener">window.open(url,
+'_blank',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B2-NO_FRAME-OPENER" class="destinationB2" data-target="no_frame" data-rel="opener">window.open(url,
+'noframe')</button><br>
+<button id="id-BTN-A_TO_B2-NO_FRAME-NO_OPENER" class="destinationB2" data-target="no_frame" data-rel="noopener">window.open(url,
+'noframe', 'noopener')</button><br>
+</td>
+
+<td id="a-to-x">
 <!-- Links to scope X (href is updated programmatically, see load event above). -->
 <a target="_self"   rel="opener"   id="id-LINK-A_TO_X-SELF-OPENER" class="destinationX">target="_self" rel=opener</a><br>
 <a target="_self"   rel="noopener" id="id-LINK-A_TO_X-SELF-NO_OPENER" class="destinationX">target="_self" rel=noopener</a><br>
@@ -244,6 +331,11 @@ value="test_value" /><button type="submit" id="id-FORM_BTN-A_TO_X-BLANK-NO_OPENE
   <td>
     <button id="id-BTN_SW-A_TO_B-BLANK-NO_OPENER" onclick="triggerNotificationForUrlOpen(bDestinationUrl);">
       Open Scope B from Service Worker
+    </button>
+  </td>
+  <td>
+    <button id="id-BTN_SW-A_TO_B2-BLANK-NO_OPENER" onclick="triggerNotificationForUrlOpen(b2DestinationUrl);">
+      Open Scope B2 from Service Worker
     </button>
   </td>
   <td>

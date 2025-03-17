@@ -83,7 +83,7 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
-  GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
+  GetBubbleFrameView()->SetBackgroundColor(background_color());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   GetViewAccessibility().SetName(

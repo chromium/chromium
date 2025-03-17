@@ -9,8 +9,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -24,16 +23,13 @@ uint64_t HashString(const std::string& str) {
 MemoryAllocatorDumpGuid::MemoryAllocatorDumpGuid(uint64_t guid) : guid_(guid) {}
 
 MemoryAllocatorDumpGuid::MemoryAllocatorDumpGuid()
-    : MemoryAllocatorDumpGuid(0u) {
-}
+    : MemoryAllocatorDumpGuid(0u) {}
 
 MemoryAllocatorDumpGuid::MemoryAllocatorDumpGuid(const std::string& guid_str)
-    : MemoryAllocatorDumpGuid(HashString(guid_str)) {
-}
+    : MemoryAllocatorDumpGuid(HashString(guid_str)) {}
 
 std::string MemoryAllocatorDumpGuid::ToString() const {
   return StringPrintf("%" PRIx64, guid_);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

@@ -40,7 +40,7 @@ public class StandaloneAwQuotaManagerBridgeTest extends AwParameterizedTest {
         AwQuotaManagerBridge.Origins origins =
                 AwQuotaManagerBridgeTestUtil.getOrigins(
                         mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge());
-        Assert.assertEquals(origins.mOrigins.length, 0);
-        Assert.assertEquals(AwContents.getNativeInstanceCount(), 0);
+        Assert.assertEquals(0, origins.mOrigins.length);
+        Assert.assertEquals(0, AwContents.getNativeInstanceCount());
     }
 }

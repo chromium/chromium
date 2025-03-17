@@ -35,7 +35,7 @@
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_builder.h"
 #include "net/test/embedded_test_server/http_connection.h"
-#include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
+#include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "url/gurl.h"
 #include "url/origin.h"

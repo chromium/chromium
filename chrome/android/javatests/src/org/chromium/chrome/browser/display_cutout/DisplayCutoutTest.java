@@ -133,6 +133,8 @@ public class DisplayCutoutTest {
     /** Test that no safe area is applied when we have no viewport fit. */
     @Test
     @LargeTest
+    @DisableIf.Build(supported_abis_includes = "armeabi-v7a", message = "https://crbug.com/402051996")
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "https://crbug.com/402051996")
     public void testViewportFitDefault() throws TimeoutException {
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
@@ -150,6 +152,7 @@ public class DisplayCutoutTest {
     /** Test that the safe area is calculated correctly using the device's dip scale. */
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = 34, message = "crbug.com/403286999")
     public void testViewportFitDipScale() throws TimeoutException {
         mTestRule.enterFullscreen();
         mTestRule.setDipScale(DisplayCutoutTestRule.TEST_HIGH_DIP_SCALE);

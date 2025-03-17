@@ -136,12 +136,12 @@ void MojoCdmHelper::ReportFileReadSize(int file_size_bytes) {
 }
 
 void MojoCdmHelper::RecordUkm(const CdmMetricsData& cdm_metrics_data) {
-  if (ukm_source_id_ == ukm::kInvalidSourceId) {
-    DLOG(ERROR) << "Invalid UKM source ID";
-    return;
-  }
+  ukm::SourceId source_id = ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
+                                                   ukm::SourceIdType::CDM_ID);
+  ukm_recorder_->UpdateSourceURL(source_id,
+                                 cdm_metrics_data.cdm_origin.GetURL());
 
-  auto ukm_builder = ukm::builders::Media_EME_CdmMetrics(ukm_source_id_);
+  auto ukm_builder = ukm::builders::Media_EME_CdmMetrics(source_id);
 
   if (cdm_metrics_data.license_sdk_version.has_value()) {
     ukm_builder.SetLicenseSdkVersion(
@@ -163,6 +163,8 @@ void MojoCdmHelper::RecordUkm(const CdmMetricsData& cdm_metrics_data) {
         cdm_metrics_data.decoder_bypass_block_count.value());
   }
 
+  ukm_builder.SetNumberOfVideoFrames(cdm_metrics_data.video_frames_processed);
+
   ukm_builder.Record(ukm_recorder_.get());
 }
 
@@ -170,9 +172,6 @@ void MojoCdmHelper::RetrieveUkmRecordingObjects() {
   ConnectToUkmRecorderFactory();
 
   ukm_recorder_ = ukm::MojoUkmRecorder::Create(*ukm_recorder_factory_);
-
-  // TODO(crbug.com/382073085): Find a better way of updating the Ukm Source ID.
-  frame_interfaces_->GetPageUkmSourceId(&ukm_source_id_);
 }
 
 void MojoCdmHelper::ConnectToOutputProtection() {

@@ -8,8 +8,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/sync/service/sync_service.h"
-#import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mediator.h"
@@ -27,7 +25,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -35,15 +32,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-namespace {
-
-std::unique_ptr<KeyedService> CreateTestSyncService(
-    web::BrowserState* context) {
-  return std::make_unique<syncer::TestSyncService>();
-}
-
-}  // namespace
 
 class ManageAccountsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
@@ -54,18 +42,15 @@ class ManageAccountsTableViewControllerTest
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
     ManageAccountsMediator* mediator = [[ManageAccountsMediator alloc]
-          initWithSyncService:test_sync_service()
-        accountManagerService:account_manager_service()
-                  authService:authentication_service()
-              identityManager:identity_manager()];
+        initWithAccountManagerService:account_manager_service()
+                          authService:authentication_service()
+                      identityManager:identity_manager()];
 
     ManageAccountsTableViewController* controller =
         [[ManageAccountsTableViewController alloc]
@@ -98,11 +83,6 @@ class ManageAccountsTableViewControllerTest
         GetApplicationContext()->GetSystemIdentityManager());
   }
 
-  syncer::TestSyncService* test_sync_service() {
-    return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(profile_.get()));
-  }
-
   ChromeAccountManagerService* account_manager_service() {
     return ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
@@ -128,8 +108,8 @@ TEST_F(ManageAccountsTableViewControllerTest, OfferSignOut) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
 
   CreateController();
@@ -144,8 +124,8 @@ TEST_F(ManageAccountsTableViewControllerTest, ShouldNotOfferSignOut) {
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  authentication_service()->SignIn(fake_identity,
+                                   signin_metrics::AccessPoint::kSettings);
   fake_system_identity_manager()->FireSystemIdentityReloaded();
 
   CreateController();

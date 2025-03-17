@@ -33,7 +33,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
@@ -1590,10 +1589,6 @@ class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
 
   // ScrollableShelfViewTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDeskButton},
-        /*disabled_features=*/{});
-
     // Shelf overflow can be influenced by system time (i.e. if the date is
     // slightly longer or the clock has four digits instead of three, this can
     // cause overflow). We set the timer to be a consistent time so that the
@@ -1605,9 +1600,6 @@ class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
     SetShowDeskButtonInShelfPref(
         Shell::Get()->session_controller()->GetPrimaryUserPrefService(), true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

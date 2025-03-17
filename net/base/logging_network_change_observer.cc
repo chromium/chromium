@@ -14,26 +14,16 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
 namespace net {
 
 namespace {
 
 // Returns a human readable integer from a handles::NetworkHandle.
 int HumanReadableNetworkHandle(handles::NetworkHandle network) {
-#if BUILDFLAG(IS_ANDROID)
   // On Marshmallow, demunge the NetID to undo munging done in java
   // Network.getNetworkHandle() by shifting away 0xfacade from
   // http://androidxref.com/6.0.1_r10/xref/frameworks/base/core/java/android/net/Network.java#385
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    return network >> 32;
-  }
-#endif
-  return network;
+  return network >> 32;
 }
 
 // Return a dictionary of values that provide information about a

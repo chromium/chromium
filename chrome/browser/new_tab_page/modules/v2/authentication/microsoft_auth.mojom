@@ -11,4 +11,6 @@ interface MicrosoftAuthPageHandler {
   DismissModule();
   // Restores the module immediately.
   RestoreModule();
+  // Determines if the module should show.
+  ShouldShowModule() => (bool show);
 };

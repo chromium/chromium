@@ -445,16 +445,4 @@ function trackFormMutations(delay: number): void {
   formMutationObserver.observe(document, {childList: true, subtree: true});
 }
 
-
-/**
- * Enables or disables the tracking of input event sources.
- */
-function toggleTrackingUserEditedFields(track: boolean): void {
-  if (track) {
-    gCrWeb.form.wasEditedByUser = gCrWeb.form.wasEditedByUser || new WeakMap();
-  } else {
-    gCrWeb.form.wasEditedByUser = null;
-  }
-}
-
-gCrWeb.formHandlers = {trackFormMutations, toggleTrackingUserEditedFields};
+gCrWeb.formHandlers = {trackFormMutations};

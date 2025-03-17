@@ -102,7 +102,8 @@ UnsyncedCredentialsDeletionNotifier CreateUnsyncedCredentialsDeletionNotifier(
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (!password_manager_android_util::IsInternalBackendPresent()) {
+  password_manager_android_util::PasswordManagerUtilBridge util_bridge;
+  if (!util_bridge.IsInternalBackendPresent()) {
     LOG(ERROR)
         << "Password store is not supported: use_login_database_as_backend is "
            "false when Chrome's internal backend is not present. Please, set "

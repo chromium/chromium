@@ -4,8 +4,9 @@
 
 #include "chromecast/cast_core/grpc/server_reactor_tracker.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 
 namespace cast {
 namespace utils {
@@ -21,7 +22,7 @@ ServerReactorTracker::~ServerReactorTracker() {
     }
     // Need to copy all active reactors to allow for Reactor::dtor() ->
     // RemoveReactor flow to happen without deadlocking.
-    base::ranges::for_each(active_reactors_, [&](const auto& pair) {
+    std::ranges::for_each(active_reactors_, [&](const auto& pair) {
       reactors_to_destroy.push_back(pair.first);
     });
   }

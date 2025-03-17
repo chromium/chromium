@@ -9,6 +9,8 @@ ci/Android x86 Builder (dbg)
 ci/Deterministic Android
 ci/Deterministic Android (dbg)
 ci/android-10-arm64-rel
+ci/android-10-x86-rel
+ci/android-11-x86-rel
 ci/android-12-x64-rel
 ci/android-12l-landscape-x64-dbg-tests
 ci/android-12l-x64-dbg-tests
@@ -25,6 +27,7 @@ ci/android-cast-arm-rel
 ci/android-cast-arm64-dbg
 ci/android-cast-arm64-rel
 ci/android-desktop-x64-compile-rel
+ci/android-desktop-x64-rel-15-tests
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel

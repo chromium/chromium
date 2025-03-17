@@ -25,9 +25,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SessionType) -->
 
 <variants name="SessionType">
+  <variant name="LanguageDetector" summary="AI language detector session"/>
   <variant name="LanguageModel" summary="AI language model session"/>
   <variant name="Rewriter" summary="AI rewriter session"/>
   <variant name="Summarizer" summary="AI summarizer session"/>
+  <variant name="Translator" summary="AI translator session"/>
   <variant name="Writer" summary="AI writer session"/>
 </variants>
 
@@ -37,6 +39,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Measures the size of the prompt request in bytes. This is recorded each time
     when the model is executed.
@@ -48,6 +51,7 @@ chromium-metrics-reviews@google.com.
     units="times" expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Measures the number of times that the callback is triggered in one prompt
     request. This is recorded each time when the model execution completes.
@@ -59,6 +63,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Measures the size of the prompt response in bytes. This is recorded each
     time when the model execution completes.
@@ -70,6 +75,7 @@ chromium-metrics-reviews@google.com.
     enum="AIModelStreamingResponseStatus" expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the final response status for each prompt request. This is recorded
     each time when the stream completes or encounters errors.
@@ -81,6 +87,7 @@ chromium-metrics-reviews@google.com.
     enum="WinGetLastError" expires_after="2025-10-27">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the error code of a failed attempt to load the TranslateKit binary
     for on-device translation. It may happen when browser tries to initialize
@@ -93,6 +100,7 @@ chromium-metrics-reviews@google.com.
     enum="LoadTranslateKitResult" expires_after="2025-10-27">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the result of an attempt to load the TranslateKit binary for
     on-device translation. It is logged when browser tries to initialize the
@@ -105,6 +113,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     This is recorded each time when the prompt JavaScript API is invoked. This
     can be used to measure the number of calls of each API within a particular
@@ -113,13 +122,14 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="AI.{SessionType}.Availability" enum="AICapabilityAvailability"
+<histogram name="AI.{SessionType}.AvailabilityV2" enum="AIAvailability"
     expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the availability of model execution as returned in methods like
-    `ai.canCreateTextSession()`.
+    `ai.*.availability()`.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>

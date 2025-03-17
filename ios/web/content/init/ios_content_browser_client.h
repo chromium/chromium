@@ -45,6 +45,8 @@ class IOSContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* context) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
+  void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
+                                      int child_process_id) override;
 };
 
 }  // namespace web

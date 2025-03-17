@@ -7,7 +7,6 @@
  * Settings subpage for managing and configuring Hotspot.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 

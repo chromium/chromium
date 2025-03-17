@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -14,13 +13,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A processor of omnibox suggestions. Implementers are provided the opportunity to analyze a
  * suggestion and create a custom model.
  */
+@NullMarked
 public interface SuggestionProcessor extends DropdownItemProcessor {
     /**
      * @param suggestion The suggestion to process.
      * @param position The position of the suggestion in the list.
      * @return Whether this suggestion processor handles this type of suggestion at this position.
      */
-    boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position);
+    boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position);
 
     /**
      * Populate a model for the given suggestion.
@@ -31,8 +31,8 @@ public interface SuggestionProcessor extends DropdownItemProcessor {
      * @param position The position of the suggestion in the list.
      */
     void populateModel(
-            @NonNull AutocompleteInput input,
-            @NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model,
+            AutocompleteInput input,
+            AutocompleteMatch suggestion,
+            PropertyModel model,
             int position);
 }

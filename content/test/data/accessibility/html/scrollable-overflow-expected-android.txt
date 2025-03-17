@@ -1,25 +1,25 @@
 android.webkit.WebView focusable focused
-++android.widget.TextView name='no overflow'
-++android.widget.TextView name='clipped large lots of text more text'
-++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='ab cd' text_change_added_count=5
-++android.widget.TextView name='tiny'
+++android.widget.TextView interesting name='no overflow'
+++android.widget.TextView interesting name='clipped large lots of text more text'
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline interesting name='ab cd' text_change_added_count=5
+++android.widget.TextView interesting name='tiny'
 ++android.view.View
 ++++android.view.View
-++++++android.widget.TextView name='x=hidden'
-++++android.view.View focusable
-++++++android.widget.TextView name='x=hidden'
-++++android.view.View focusable
-++++++android.widget.TextView name='x=auto'
-++++android.view.View focusable
-++++++android.widget.TextView name='x=scroll'
-++++android.widget.TextView name='x=visible'
+++++++android.widget.TextView interesting name='x=hidden'
+++++android.view.View focusable interesting
+++++++android.widget.TextView interesting name='x=hidden'
+++++android.view.View focusable interesting
+++++++android.widget.TextView interesting name='x=auto'
+++++android.view.View focusable interesting
+++++++android.widget.TextView interesting name='x=scroll'
+++++android.widget.TextView interesting name='x=visible'
 ++android.view.View
 ++++android.view.View
-++++++android.widget.TextView name='y=hidden'
-++++android.view.View focusable
-++++++android.widget.TextView name='y=hidden'
-++++android.view.View focusable
-++++++android.widget.TextView name='y=auto'
-++++android.view.View focusable
-++++++android.widget.TextView name='y=scroll'
-++++android.widget.TextView name='y=visible'
+++++++android.widget.TextView interesting name='y=hidden'
+++++android.view.View focusable interesting
+++++++android.widget.TextView interesting name='y=hidden'
+++++android.view.View focusable interesting
+++++++android.widget.TextView interesting name='y=auto'
+++++android.view.View focusable interesting
+++++++android.widget.TextView interesting name='y=scroll'
+++++android.widget.TextView interesting name='y=visible'

@@ -1,0 +1,70 @@
+<style include="print-preview-shared cr-hidden-style">
+  #dialog::part(dialog) {
+    height: -webkit-fit-content;
+    max-height: calc(100vh - 2 * var(--print-preview-dialog-margin));
+    max-width:  calc(100vw - 2 * var(--print-preview-dialog-margin));
+  }
+
+  #dialog::part(wrapper) {
+    height: calc(100vh - 2 * var(--print-preview-dialog-margin));
+  }
+
+  #dialog::part(body-container) {
+    flex: 1;
+  }
+
+  print-preview-search-box {
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+
+  cr-dialog [slot=body] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  #itemList {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: overlay;
+  }
+
+  #itemList.searching {
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+</style>
+<cr-dialog id="dialog" on-close="onCloseOrCancel_">
+  <div slot="title">
+    [[i18n('advancedSettingsDialogTitle', destination.displayName)]]
+  </div>
+  <div slot="body">
+    <print-preview-search-box id="searchBox"
+        hidden$="[[!hasMultipleItems_(
+            destination.capabilities.printer.vendor_capability)]]"
+        label="$i18n{advancedSettingsSearchBoxPlaceholder}"
+        search-query="{{searchQuery_}}" autofocus>
+    </print-preview-search-box>
+    <div id="itemList" class$="[[isSearching_(searchQuery_)]]">
+      <template is="dom-repeat"
+          items="[[destination.capabilities.printer.vendor_capability]]">
+        <print-preview-advanced-settings-item capability="[[item]]"
+            settings="[[settings]]">
+        </print-preview-advanced-settings-item>
+      </template>
+    </div>
+    <div class="no-settings-match-hint"
+        hidden$="[[!shouldShowHint_(hasMatching_)]]">
+      $i18n{noAdvancedSettingsMatchSearchHint}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onApplyButtonClick_">
+      $i18n{advancedSettingsDialogConfirm}
+    </cr-button>
+  </div>
+</cr-dialog>

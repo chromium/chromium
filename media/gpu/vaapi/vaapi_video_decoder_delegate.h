@@ -17,17 +17,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "media/base/decryptor.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/subsample_entry.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace chromeos {
 class ChromeOsCdmContext;
 }  // namespace chromeos
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
@@ -93,14 +93,14 @@ class VaapiVideoDecoderDelegate {
   // |subsamples| is for the current slice. |size| is the size of the slice
   // data. This should be called if IsEncrypted() is true even if the current
   // data is not encrypted (i.e. |subsamples| is empty).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ProtectedSessionState SetupDecryptDecode(
       bool full_sample,
       size_t size,
       VAEncryptionParameters* crypto_params,
       std::vector<VAEncryptionSegmentInfo>* segments,
       const std::vector<SubsampleEntry>& subsamples);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns true if we are handling encrypted content, in which case
   // SetupDecryptDecode() should be called for every slice. This is specifically
@@ -147,11 +147,11 @@ class VaapiVideoDecoderDelegate {
   // All members below pertain to protected content playback.
   ProtectedSessionUpdateCB on_protected_session_update_cb_;
   EncryptionScheme encryption_scheme_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Not owned.
   raw_ptr<chromeos::ChromeOsCdmContext> chromeos_cdm_context_ = nullptr;
   EncryptionScheme last_used_encryption_scheme_{EncryptionScheme::kUnencrypted};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   std::vector<uint8_t> hw_identifier_;

@@ -199,7 +199,6 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 return true;
             }
 
-            // TODO(crbug.com/350699437): Use a different SignoutReason.
             SignOutCoordinator.startSignOutFlow(
                     requireContext(),
                     getProfile(),

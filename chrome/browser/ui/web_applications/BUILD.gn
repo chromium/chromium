@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 source_set("unit_tests") {
   testonly = true
 
@@ -72,6 +70,7 @@ source_set("browser_tests") {
 
   deps = [
     "//chrome/app:command_ids",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
@@ -84,6 +83,7 @@ source_set("browser_tests") {
     "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
+    "//chrome/browser/policy:policy_util",
     "//chrome/browser/shortcuts",
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
@@ -91,7 +91,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/window_sizer",
     "//chrome/browser/web_applications:prevent_close_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/browser/web_applications/app_service:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/embedder_support",

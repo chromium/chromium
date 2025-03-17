@@ -1,0 +1,10 @@
+CONSOLE WARNING: Listener added for a 'DOMNodeRemoved' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+Ensures that replaceChild() throws an exception if mutation even handler does something wrong
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS target.replaceChild(newChild, oldChild); threw exception NotFoundError: Failed to execute 'replaceChild' on 'Node': The node to be removed is no longer a child of this node. Perhaps it was moved in response to a mutation?.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -5,17 +5,23 @@
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_service.mojom.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
@@ -51,7 +57,9 @@ class InitializeProgressObserver : public PlatformModelProgressObserver {
 
 }  // namespace
 
-MantisUntrustedServiceManager::MantisUntrustedServiceManager() {
+MantisUntrustedServiceManager::MantisUntrustedServiceManager(
+    std::unique_ptr<specialized_features::FeatureAccessChecker> access_checker)
+    : access_checker_(std::move(access_checker)) {
   ash::mojo_service_manager::GetServiceManagerProxy()->Request(
       chromeos::mojo_services::kCrosMantisService, std::nullopt,
       cros_service_.BindNewPipeAndPassReceiver().PassPipe());
@@ -59,6 +67,18 @@ MantisUntrustedServiceManager::MantisUntrustedServiceManager() {
 }
 
 MantisUntrustedServiceManager::~MantisUntrustedServiceManager() = default;
+
+// static
+specialized_features::FeatureAccessConfig
+MantisUntrustedServiceManager::GetFeatureAccessConfig() {
+  specialized_features::FeatureAccessConfig access_config;
+  access_config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_generative_ai_photo_editing();
+      });
+  access_config.country_codes = ash::GetGenerativeAiCountryAllowlist();
+  return access_config;
+}
 
 void MantisUntrustedServiceManager::OnQueryDone(
     base::OnceCallback<void(bool)> callback,
@@ -83,8 +103,18 @@ void MantisUntrustedServiceManager::IsAvailable(
     std::move(callback).Run(true);
     return;
   }
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantisModel)) {
+    std::move(callback).Run(false);
+    return;
+  }
 
-  // TODO(crbug.com/362993438): Check age restriction and region restriction.
+  specialized_features::FeatureAccessFailureSet failure_set =
+      access_checker_->Check();
+  if (!failure_set.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   if (pref_service->GetInteger(ash::prefs::kGenAIPhotoEditingSettings) ==
       static_cast<int>(GenAIPhotoEditingSettings::kDisabled)) {
     std::move(callback).Run(false);
@@ -111,6 +141,7 @@ MantisUntrustedServiceManager::CreateProgressObserver(
 
 void MantisUntrustedServiceManager::Create(
     mojo::PendingRemote<MantisUntrustedPage> page,
+    const std::optional<base::Uuid>& dlc_uuid,
     CreateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -118,10 +149,14 @@ void MantisUntrustedServiceManager::Create(
   // This API is designed by CrOS service to handle multiple calls safely.
   cros_service_->Initialize(
       CreateProgressObserver(std::move(page)),
-      processor.InitWithNewPipeAndPassReceiver(),
+      processor.InitWithNewPipeAndPassReceiver(), dlc_uuid,
       base::BindOnce(&MantisUntrustedServiceManager::OnInitializeDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(processor)));
+}
+
+void MantisUntrustedServiceManager::ResetService() {
+  mantis_untrusted_service_.reset();
 }
 
 void MantisUntrustedServiceManager::OnInitializeDone(
@@ -135,7 +170,9 @@ void MantisUntrustedServiceManager::OnInitializeDone(
   mantis_untrusted_service_ =
       std::make_unique<MantisUntrustedService>(std::move(processor));
   std::move(callback).Run(CreateResult::NewService(
-      mantis_untrusted_service_->BindNewPipeAndPassRemote()));
+      mantis_untrusted_service_->BindNewPipeAndPassRemote(
+          base::BindOnce(&MantisUntrustedServiceManager::ResetService,
+                         weak_ptr_factory_.GetWeakPtr()))));
 }
 
 }  // namespace ash

@@ -24,13 +24,12 @@ namespace test {
 std::string EncodeAsPng(const SkBitmap& bitmap);
 
 // Pieces related to Ed25519 keys:
-web_package::test::Ed25519KeyPair GetDefaultEd25519KeyPair();
-web_package::SignedWebBundleId GetDefaultEd25519WebBundleId();
+using web_package::test::GetDefaultEd25519KeyPair;
+using web_package::test::GetDefaultEd25519WebBundleId;
 
 // Pieces related to EcdsaP256 keys:
-web_package::test::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair();
-web_package::SignedWebBundleId GetDefaultEcdsaP256WebBundleId();
-
+using web_package::test::GetDefaultEcdsaP256KeyPair;
+using web_package::test::GetDefaultEcdsaP256WebBundleId;
 }  // namespace test
 
 struct TestSignedWebBundle {

@@ -9,9 +9,6 @@
 
 namespace ash::boca {
 
-inline constexpr char kSchoolToolsApiBaseUrl[] =
-    "https://schooltools-pa.googleapis.com";
-
 inline constexpr char kCreateSessionUrlTemplate[] = "v1/teachers/$1/sessions";
 
 inline constexpr char kContentTypeApplicationJson[] = "application/json";
@@ -23,7 +20,7 @@ inline constexpr char kSchoolToolsAuthScope[] =
     "https://www.googleapis.com/auth/chromeosschooltools";
 
 inline constexpr char kGetSessionUrlTemplate[] =
-    "v1/users/$1/sessions:getActive";
+    "v1/users/$1/sessions:getActive?device.device_id=$2";
 
 inline constexpr char kUploadFCMTokenTemplate[] = "v1/users/$1";
 
@@ -46,6 +43,12 @@ inline constexpr char kViewScreenUrlTemplate[] =
 
 inline constexpr char kRegisterScreenUrlTemplate[] =
     "v1/sessions/$1/viewScreen:register";
+
+inline constexpr char kUpdateViewScreenStateUrlTemplate[] =
+    "v1/sessions/$1/viewScreen:updateState";
+
+inline constexpr char kStudentHeartbeatUrlTemplate[] =
+    "v1/sessions/$1/students/$2/devices/$3:heartbeat?studentGroupId=$4";
 
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
@@ -96,11 +99,14 @@ inline constexpr char kStudent[] = "student";
 inline constexpr char kGroupSource[] = "groupSource";
 inline constexpr char kTeacherClientDevice[] = "teacherClientDevice";
 inline constexpr char kHostDevice[] = "hostDevice";
-inline constexpr char kSpotlightConnectionCode[] = "spotlightConnectionCode";
-inline constexpr char kSpotlightConnectionParam[] = "spotlightConnectionParam";
+inline constexpr char kSpotlightConnectionCode[] = "connectionCode";
+inline constexpr char kSpotlightConnectionParam[] = "connectionParam";
+inline constexpr char kStudentGroupId[] = "studentGroupId";
+inline constexpr char kViewScreenConfig[] = "viewScreenConfig";
+inline constexpr char kViewScreenState[] = "viewScreenState";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(
+    net::DefineNetworkTrafficAnnotation("boca_server_integration", R"(
           semantics: {
             sender: "Boca"
             description: "Provide ChromeOS access to school tools server"

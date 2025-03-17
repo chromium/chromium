@@ -326,20 +326,20 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideAdTopicsShownTest,
                          testing::Values(std::pair(true, true),
                                          std::pair(false, false)));
 
-class PrivacySandboxPrivacyGuideAdTopicsEnabledTest
+class PrivacySandboxAdTopicsContentParityEnabledTest
     : public PrivacySandboxMessageHandlerTest {
  public:
   void SetUp() override {
     PrivacySandboxMessageHandlerTest::SetUp();
     feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+        privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PrivacySandboxPrivacyGuideAdTopicsEnabledTest, TopicsToggleChanged) {
+TEST_F(PrivacySandboxAdTopicsContentParityEnabledTest, TopicsToggleChanged) {
   std::vector<bool> states = {true, false};
   for (bool state : states) {
     EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsToggleChanged(state));
@@ -352,14 +352,12 @@ TEST_F(PrivacySandboxPrivacyGuideAdTopicsEnabledTest, TopicsToggleChanged) {
   }
 }
 
-TEST_F(PrivacySandboxPrivacyGuideAdTopicsEnabledTest,
-       CompletetionCardAdTopicsSubLabelShown) {
+TEST_F(PrivacySandboxAdTopicsContentParityEnabledTest,
+       shouldShowAdTopicsContentParity) {
   base::Value::List args;
   args.Append(kCallbackId1);
   web_ui()->ProcessWebUIMessage(
-      GURL(),
-      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
-      std::move(args));
+      GURL(), "shouldShowPrivacySandboxAdTopicsContentParity", std::move(args));
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
@@ -370,27 +368,25 @@ TEST_F(PrivacySandboxPrivacyGuideAdTopicsEnabledTest,
   EXPECT_TRUE(data.arg3()->GetBool());
 }
 
-class PrivacySandboxPrivacyGuideAdTopicsDisabledTest
+class PrivacySandboxAdTopicsContentParityDisabledTest
     : public PrivacySandboxMessageHandlerTest {
  public:
   void SetUp() override {
     PrivacySandboxMessageHandlerTest::SetUp();
     feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+        privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PrivacySandboxPrivacyGuideAdTopicsDisabledTest,
-       CompletetionCardAdTopicsSubLabelNotShown) {
+TEST_F(PrivacySandboxAdTopicsContentParityDisabledTest,
+       shouldNotShowAdTopicsContentParity) {
   base::Value::List args;
   args.Append(kCallbackId1);
   web_ui()->ProcessWebUIMessage(
-      GURL(),
-      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
-      std::move(args));
+      GURL(), "shouldShowPrivacySandboxAdTopicsContentParity", std::move(args));
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);

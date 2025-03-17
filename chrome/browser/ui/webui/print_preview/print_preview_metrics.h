@@ -8,7 +8,6 @@
 #include <cstddef>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom-forward.h"
 
 namespace base {

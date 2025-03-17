@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/share_action/example_action.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/sharesheet/copy_to_clipboard_share_action.h"
 #include "chrome/browser/ash/sharesheet/drive_share_action.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -23,7 +23,7 @@ namespace sharesheet {
 
 ShareActionCache::ShareActionCache(Profile* profile) {
   // ShareActions will be initialised here by calling AddShareAction.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile)) {
     AddShareAction(std::make_unique<NearbyShareAction>(profile));
@@ -31,7 +31,7 @@ ShareActionCache::ShareActionCache(Profile* profile) {
   AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>());
   AddShareAction(
       std::make_unique<ash::sharesheet::CopyToClipboardShareAction>(profile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ShareActionCache::~ShareActionCache() = default;

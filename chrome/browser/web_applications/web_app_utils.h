@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
@@ -64,11 +64,14 @@ bool AreWebAppsEnabled(Profile* profile);
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
 
-// Get BrowserContext to use for a WebApp KeyedService creation. If disabled for
-// the profile of the `context`, then will consider the profile's original
-// profile.
-// TODO(https://crbug.com/384063076): Stop returning for profiles where
-// `AreWebAppsEnabled` returns `false`.
+// Get BrowserContext to use for a WebApp KeyedService creation. This will
+// return a `nullptr` if `AreWebAppsEnabled` returns false for the given
+// profile of `context`.
+// Note: On ChromeOS only, if web apps are disabled for the profile of the
+// `context`, then this will consider the profile's original profile to support
+// the system web app implementation.
+// TODO(https://crbug.com/384063076): Stop returning for profiles on ChromeOS
+// where `AreWebAppsEnabled` returns `false`.
 content::BrowserContext* GetBrowserContextForWebApps(
     content::BrowserContext* context);
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
@@ -149,13 +152,7 @@ bool IsInScope(const GURL& url, const GURL& scope);
 // Returns whether the `login_mode` should force a start at OS login.
 bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Web apps crosapi (used for Lacros web app management) will be enabled if
-// Lacros is the primary browser.
-bool IsWebAppsCrosapiEnabled();
-#endif
-
-constexpr char kAppSettingsPageEntryPointsHistogramName[] =
+inline constexpr char kAppSettingsPageEntryPointsHistogramName[] =
     "WebApp.AppSettingsPage.EntryPoints";
 
 // These are used in histograms, do not remove/renumber entries. If you're

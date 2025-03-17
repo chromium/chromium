@@ -6,12 +6,11 @@
 #define IOS_WEB_VIEW_SHELL_SHELL_AUTOFILL_DELEGATE_H_
 
 #import <ChromeWebView/ChromeWebView.h>
-
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ShellAutofillDelegate : NSObject<CWVAutofillControllerDelegate>
+@interface ShellAutofillDelegate : NSObject <CWVAutofillControllerDelegate>
 @end
 
 NS_ASSUME_NONNULL_END

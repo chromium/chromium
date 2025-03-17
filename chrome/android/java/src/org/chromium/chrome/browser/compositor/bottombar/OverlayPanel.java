@@ -22,6 +22,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.PanelPriority;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -217,6 +218,8 @@ public class OverlayPanel extends OverlayPanelAnimation
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param currentTabSupplier Supplies the current {@link Tab}.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
      */
     public OverlayPanel(
             @NonNull Context context,
@@ -228,13 +231,15 @@ public class OverlayPanel extends OverlayPanelAnimation
             @NonNull ViewGroup compositorViewHolder,
             float toolbarHeightDp,
             @NonNull Supplier<Tab> currentTabSupplier,
-            DesktopWindowStateManager desktopWindowStateManager) {
+            DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull BottomControlsStacker bottomControlsStacker) {
         super(
                 context,
                 layoutManager,
                 toolbarHeightDp,
                 desktopWindowStateManager,
-                browserControlsStateProvider);
+                browserControlsStateProvider,
+                bottomControlsStacker);
         mLayoutManager = layoutManager;
         mContentFactory = this;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -973,6 +978,9 @@ public class OverlayPanel extends OverlayPanelAnimation
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         return null;
     }
+
+    @Override
+    public void removeFromParent() {}
 
     @Override
     public boolean isSceneOverlayTreeShowing() {

@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/args.gni")
+import("//build/config/ui.gni")
 import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(!is_android && !is_fuchsia)
 
@@ -17,7 +20,6 @@ source_set("signin") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ui/webui/signin",
     "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common",
@@ -36,16 +38,12 @@ source_set("signin") {
     sources += [
       "chrome_signout_confirmation_prompt.h",
       "dice_web_signin_interceptor_delegate.h",
+      "promos/bubble_signin_promo_delegate.h",
+      "promos/bubble_signin_promo_signin_button_view.h",
+      "promos/bubble_signin_promo_view.h",
+      "promos/signin_promo_tab_helper.h",
     ]
     public_deps += [ "//chrome/browser/signin" ]
-  }
-
-  if (!is_chromeos_ash) {
-    sources += [ "signin_reauth_view_controller.h" ]
-    public_deps += [
-      "//components/sync/protocol",
-      "//google_apis",
-    ]
   }
 }
 
@@ -62,7 +60,6 @@ source_set("impl") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
@@ -90,43 +87,49 @@ source_set("impl") {
     sources += [
       "chrome_signout_confirmation_prompt.cc",
       "dice_web_signin_interceptor_delegate.cc",
+      "promos/bubble_signin_promo_delegate.cc",
+      "promos/bubble_signin_promo_signin_button_view.cc",
+      "promos/bubble_signin_promo_view.cc",
+      "promos/signin_promo_tab_helper.cc",
     ]
+
+    deps += [ "//chrome/browser/profiles:profile_util" ]
   }
 
-  if (!is_chromeos_ash) {
-    sources += [ "signin_reauth_view_controller.cc" ]
-    deps += [ "//components/consent_auditor" ]
-  }
-}
-
-if (enable_dice_support) {
-  # Extracted to a separate target to avoid circular deps in //c/b/ui/bookmarks.
-  source_set("bubble_signin_promo_delegate") {
-    sources = [ "bubble_signin_promo_delegate.h" ]
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 
 if (!is_android) {
-  # This is not applicable to ChromeOS, but to lacros + other desktop platforms.
-  if (!is_chromeos_device && !is_chromeos_ash) {
+  # This is not applicable to ChromeOS, but to desktop platforms.
+  if (!is_chromeos_device && !is_chromeos) {
     source_set("interactive_ui_tests") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-      sources = [ "signin_view_controller_interactive_uitest.cc" ]
+      sources = [
+        "promos/bubble_signin_promo_interactive_uitest.cc",
+        "signin_view_controller_interactive_uitest.cc",
+      ]
       deps = [
         ":signin",
         "//base",
         "//base/test:test_support",
-        "//build:chromeos_buildflags",
         "//chrome/browser",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/webui/signin:test_support_ui",
+        "//chrome/test:test_support",
         "//chrome/test:test_support_ui",
+        "//components/autofill/content/browser",
+        "//components/autofill/core/browser:test_support",
+        "//components/password_manager/core/browser:test_support",
         "//components/signin/public/base",
         "//components/signin/public/identity_manager",
         "//components/signin/public/identity_manager:test_support",
+        "//components/sync:test_support",
+        "//components/sync_bookmarks",
         "//content/public/browser",
         "//content/test:test_support",
         "//google_apis",
@@ -166,16 +169,16 @@ if (!is_android) {
     ]
 
     if (enable_dice_support) {
-      sources += [ "signin_view_controller_browsertest.cc" ]
+      sources += [
+        "promos/bubble_sign_in_promo_delegate_browsertest.cc",
+        "promos/signin_promo_tab_helper_browsertest.cc",
+        "signin_view_controller_browsertest.cc",
+      ]
       deps += [
+        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation",
         "//chrome/test:test_support",
         "//components/sync:test_support",
       ]
-    }
-
-    # Tests for non mobile and non CrOS (includes Linux, Win, Mac, Lacros).
-    if (!is_chromeos_ash) {
-      sources += [ "signin_reauth_view_controller_browsertest.cc" ]
     }
 
     if (!is_chromeos) {

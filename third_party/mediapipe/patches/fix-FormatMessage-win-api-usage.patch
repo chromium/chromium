@@ -1,0 +1,71 @@
+From 37bca891a95dc041035f9b30e6a178a2a65653e6 Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Thu, 23 Jan 2025 00:03:31 +0000
+Subject: [PATCH] Fix FormatMessage() Windows API usage
+
+The type passed to FormatMessage() depends on the UNICODE build flag.
+
+Unrelated to that, also move the `#include <Windows.h>` outside of the
+mediapipe namespace. This was causing weird ODR issues in win arm64.
+
+---
+From 37bca891a95dc041035f9b30e6a178a2a65653e6 Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Thu, 23 Jan 2025 00:03:31 +0000
+Subject: [PATCH] commit
+
+---
+ .../framework/deps/platform_strings.cc         | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc b/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc
+index fa8f3c791f21c..be0b3979e86f9 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc
++++ b/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc
+@@ -16,31 +16,39 @@
+
+ #include <string>
+
+-namespace mediapipe {
+ #ifdef _WIN32
+ #include <Windows.h>
++#endif
+
++namespace mediapipe {
++#ifdef _WIN32
+ std::string FormatLastError() {
+   DWORD message_id = GetLastError();
+   if (message_id == 0) {
+     return std::string("(no error reported)");
+   }
+
+-  LPSTR message_buffer = nullptr;
++  using WinStringType =
++#ifdef UNICODE
++      LPWSTR;
++#else
++      LPSTR;
++#endif
++  WinStringType message_buffer = nullptr;
+   DWORD size = FormatMessage(
+       /*dwFlags=*/(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                    FORMAT_MESSAGE_IGNORE_INSERTS),
+       /*lpSource=*/NULL,
+       /*dwMessageId=*/message_id,
+       /*dwLanguageId=*/MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+-      /*lpBuffer=*/(LPSTR)&message_buffer,
++      /*lpBuffer=*/(WinStringType)&message_buffer,
+       /*nSize=*/0,
+       /*Arguments=*/NULL);
+   if (size == 0) {
+     return "(error while trying to format the error message)";
+   }
+
+-  std::string message(message_buffer, size);
++  PlatformString message(message_buffer, size);
+   LocalFree(message_buffer);
+   return NativeToUtf8(message);
+ }
+--
+2.48.1.262.g85cc9f2d1e-goog
+

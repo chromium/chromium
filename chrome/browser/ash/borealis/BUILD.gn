@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("borealis_installer_types_mojom") {
   webui_module_path = "/"
@@ -94,7 +94,6 @@ static_library("borealis") {
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/guest_os/infra",
-    "//chrome/browser/ash/guest_os/virtual_machines",
     "//chrome/browser/ash/profiles",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/borealis",
@@ -107,6 +106,7 @@ static_library("borealis") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/guest_os/virtual_machines",
     "//chromeos/ui/base",
     "//components/crx_file",
     "//components/exo",

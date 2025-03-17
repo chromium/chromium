@@ -2,18 +2,71 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("contextual_cueing") {
-  defines = [ "IS_CONTEXTUAL_CUEING_IMPL" ]
+import("//chrome/common/features.gni")
+import("//pdf/features.gni")
 
+source_set("contextual_cueing") {
   sources = [
-    "contextual_cueing_features.cc",
+    "contextual_cueing_enums.h",
     "contextual_cueing_features.h",
-    "contextual_cueing_helper.cc",
     "contextual_cueing_helper.h",
+    "contextual_cueing_service_factory.h",
+    "nudge_cap_tracker.h",
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/optimization_guide/core",
     "//content/public/browser",
   ]
-  deps = [ "//url" ]
+}
+
+source_set("impl") {
+  sources = [
+    "contextual_cueing_features.cc",
+    "contextual_cueing_page_data.cc",
+    "contextual_cueing_page_data.h",
+    "nudge_cap_tracker.cc",
+  ]
+  deps = [
+    "//chrome/browser/contextual_cueing",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/pdf/common:constants",
+    "//pdf:buildflags",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//url",
+  ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "contextual_cueing_helper_unittest.cc",
+    "contextual_cueing_page_data_unittest.cc",
+    "contextual_cueing_service_unittest.cc",
+    "nudge_cap_tracker_unittest.cc",
+  ]
+  deps = [
+    ":contextual_cueing",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/test:test_support",
+    "//pdf:buildflags",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

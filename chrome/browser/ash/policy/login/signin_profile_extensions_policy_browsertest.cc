@@ -116,8 +116,9 @@ class ExtensionInstallErrorObserver : public extensions::InstallObserver {
 
   // extensions::InstallObserver:
   void OnFinishCrxInstall(content::BrowserContext* context,
-                          const extensions::CrxInstaller& installer,
+                          const base::FilePath& source_file,
                           const std::string& extension_id,
+                          const extensions::Extension* extension,
                           bool success) override {
     if (extension_id == extension_id_) {
       run_loop_.Quit();
@@ -275,8 +276,7 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
 // Tests that the extension system enables non-standard extensions in the
 // sign-in profile.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest, ExtensionsEnabled) {
-  EXPECT_TRUE(extensions::ExtensionSystem::Get(GetInitialProfile())
-                  ->extension_service()
+  EXPECT_TRUE(extensions::ExtensionRegistrar::Get(GetInitialProfile())
                   ->extensions_enabled());
 }
 

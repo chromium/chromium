@@ -4,7 +4,6 @@
 
 package org.chromium.components.sync;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -16,6 +15,8 @@ import org.json.JSONException;
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -36,6 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * components/sync/service/sync_service_impl.h for more details.
  */
 @JNINamespace("syncer")
+@NullMarked
 public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     // Pointer to the C++ counterpart object. Set on construction and reset on destroy() to avoid
     // a dangling pointer.
@@ -461,7 +463,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         int size = accounts.size();
         String[] gaiaIds = new String[size];
         for (int i = 0; i < size; ++i) {
-            gaiaIds[i] = accounts.get(i).getGaiaId();
+            gaiaIds[i] = accounts.get(i).getGaiaId().toString();
         }
         SyncServiceImplJni.get()
                 .keepAccountSettingsPrefsOnlyForUsers(mSyncServiceAndroidBridge, gaiaIds);
@@ -614,8 +616,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         boolean requiresClientUpgrade(long nativeSyncServiceAndroidBridge);
 
-        @Nullable
-        CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
+        @Nullable CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
 
         boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);
 

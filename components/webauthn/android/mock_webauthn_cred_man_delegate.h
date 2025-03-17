@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_ANDROID_MOCK_WEBAUTHN_CRED_MAN_DELEGATE_H_
 #define COMPONENTS_WEBAUTHN_ANDROID_MOCK_WEBAUTHN_CRED_MAN_DELEGATE_H_
 
+#include "base/functional/callback.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

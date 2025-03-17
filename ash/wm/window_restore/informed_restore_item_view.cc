@@ -92,7 +92,7 @@ InformedRestoreItemView::InformedRestoreItemView(
             .AddChildren(
                 views::Builder<views::Label>()
                     .CopyAddressTo(&title_label_view_)
-                    .SetEnabledColorId(informed_restore::kItemTextColorId)
+                    .SetEnabledColor(informed_restore::kItemTextColorId)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .CustomConfigure(base::BindOnce(
                         [](const base::WeakPtr<InformedRestoreItemView>
@@ -156,10 +156,10 @@ void InformedRestoreItemView::OnOneFaviconLoaded(IndexedImageCallback callback,
 
 void InformedRestoreItemView::OnAllFaviconsLoaded(
     std::vector<IndexedImagePair> indexed_favicons) {
-  base::ranges::sort(indexed_favicons,
-                     [](const auto& element_a, const auto& element_b) {
-                       return element_a.first < element_b.first;
-                     });
+  std::ranges::sort(indexed_favicons,
+                    [](const auto& element_a, const auto& element_b) {
+                      return element_a.first < element_b.first;
+                    });
 
   bool needs_layout = false;
   const size_t elements = indexed_favicons.size();
@@ -192,11 +192,13 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
       builder
           .SetImage(ui::ImageModel::FromVectorIcon(
               kDefaultAppIcon, cros_tokens::kCrosSysOnPrimary))
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               cros_tokens::kCrosSysPrimary, kFaviconPreferredSize.width()));
     } else {
-      builder.SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-          favicon, skia::ImageOperations::RESIZE_BEST, kFaviconPreferredSize));
+      builder.SetImage(ui::ImageModel::FromImageSkia(
+          gfx::ImageSkiaOperations::CreateResizedImage(
+              favicon, skia::ImageOperations::RESIZE_BEST,
+              kFaviconPreferredSize)));
     }
 
     favicon_container_view_->AddChildView(std::move(builder).Build());
@@ -218,8 +220,8 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
                 inside_screenshot_
                     ? informed_restore::kScreenshotIconRowImageViewSize
                     : kTabCountPreferredSize)
-            .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
-            .SetBackground(views::CreateThemedRoundedRectBackground(
+            .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
+            .SetBackground(views::CreateRoundedRectBackground(
                 cros_tokens::kCrosSysPrimaryContainer,
                 inside_screenshot_
                     ? informed_restore::kScreenshotIconRowIconSize / 2

@@ -4,12 +4,13 @@
 
 #include "ash/display/display_alignment_controller.h"
 
+#include <algorithm>
+
 #include "ash/display/display_alignment_indicator.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
@@ -283,7 +284,7 @@ void DisplayAlignmentController::ComputePreviewIndicators() {
     const bool are_neighbors = display::ComputeBoundary(
         bounds, peer.bounds(), &source_edge, &peer_edge);
 
-    const auto& existing_indicator_it = base::ranges::find(
+    const auto& existing_indicator_it = std::ranges::find(
         active_indicators_, peer.id(), &DisplayAlignmentIndicator::display_id);
 
     const bool indicator_exists =

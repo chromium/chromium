@@ -4,18 +4,18 @@
 
 #include "third_party/blink/renderer/platform/media/url_index.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -182,6 +182,11 @@ bool UrlData::ValidateDataOrigin(const KURL& origin) {
     return true;
   }
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
+    // If both origins are null return true, otherwise
+    // SecurityOrigin::AreSameOrigin will create a unique nonce for each.
+    if (data_origin_.IsNull() && origin.IsNull()) {
+      return true;
+    }
     return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_, origin);
   }
   // The actual cors checks is done in the net layer.
@@ -251,18 +256,18 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
       lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
       memory_pressure_listener_(FROM_HERE,
-                                base::BindRepeating(&UrlIndex::OnMemoryPressure,
-                                                    base::Unretained(this))),
+                                WTF::BindRepeating(&UrlIndex::OnMemoryPressure,
+                                                   WTF::Unretained(this))),
       task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() {
-#if DCHECK_IS_ON()
-  // Verify that only |this| holds reference to UrlData instances.
-  auto dcheck_has_one_ref = [](const UrlDataMap::value_type& entry) {
+  auto stop_url_data = [](const UrlDataMap::value_type& entry) {
+    // Verify that only |this| holds reference to UrlData instances.
     DCHECK(entry.value->HasOneRef());
+
+    entry.value->StopWriters();
   };
-  base::ranges::for_each(indexed_data_, dcheck_has_one_ref);
-#endif
+  std::ranges::for_each(indexed_data_, stop_url_data);
 }
 
 void UrlIndex::RemoveUrlData(const scoped_refptr<UrlData>& url_data) {

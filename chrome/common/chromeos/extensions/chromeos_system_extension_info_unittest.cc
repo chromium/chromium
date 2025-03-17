@@ -4,15 +4,12 @@
 
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
   const auto& google_extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
@@ -22,7 +19,10 @@ TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
       chromeos::GetChromeOSExtensionInfoById(google_extension_id);
   EXPECT_THAT(extension_info.manufacturers,
               testing::UnorderedElementsAre("ASUS", "HP", "Acer", "Lenovo"));
-  EXPECT_EQ("*://googlechromelabs.github.io/*", extension_info.pwa_origin);
+  EXPECT_EQ(
+      "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+      "test-page/*",
+      extension_info.pwa_origin);
   EXPECT_FALSE(extension_info.iwa_id);
 }
 
@@ -110,8 +110,10 @@ TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {
 
   const auto& google_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
-  EXPECT_EQ("*://googlechromelabs.github.io/*",
-            google_extension_info.pwa_origin);
+  EXPECT_EQ(
+      "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+      "test-page/*",
+      google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
               testing::UnorderedElementsAre(kManufacturerOverride));
   EXPECT_FALSE(google_extension_info.iwa_id);
@@ -163,8 +165,10 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
 
   const auto& google_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
-  EXPECT_EQ("*://googlechromelabs.github.io/*",
-            google_extension_info.pwa_origin);
+  EXPECT_EQ(
+      "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+      "test-page/*",
+      google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
               testing::UnorderedElementsAre("HP", "ASUS", "Acer", "Lenovo"));
   EXPECT_EQ(kIwaIdOverride, google_extension_info.iwa_id->id());

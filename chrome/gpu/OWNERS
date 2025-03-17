@@ -1,7 +1,7 @@
-file://ash/components/arc/video_accelerator/OWNERS
+file://chromeos/ash/experiences/arc/video_accelerator/OWNERS
 file://media/OWNERS
 
-per-file chrome_content_gpu_client*=file://ash/components/arc/video_accelerator/OWNERS
+per-file chrome_content_gpu_client*=file://chromeos/ash/experiences/arc/video_accelerator/OWNERS
 
 # For security review
 per-file browser_exposed_gpu_interfaces.cc=set noparent

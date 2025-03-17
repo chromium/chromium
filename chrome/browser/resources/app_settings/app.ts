@@ -89,6 +89,15 @@ export class AppElement extends AppElementBase {
       assert(result.app);
       this.app_ = result.app;
       this.hidden = false;
+
+      if (this.isIsolatedWebApp_()) {
+        // Launches an on-demand calculation of app size and data size; if one
+        // of these two values ends up being different from the last known
+        // value, informs this page via `onAppChanged`. This way we can quickly
+        // render the cached data first without waiting for disk operations to
+        // finish and then update the DOM later if necessary.
+        BrowserProxy.getInstance().handler.updateAppSize(appId);
+      }
     });
 
     BrowserProxy.getInstance().handler.getApps().then((result) => {
@@ -129,6 +138,10 @@ export class AppElement extends AppElementBase {
 
   protected shouldShowSystemNotificationsSettingsLink_(): boolean {
     return this.app_.showSystemNotificationsSettingsLink;
+  }
+
+  protected isIsolatedWebApp_(): boolean {
+    return this.app_.publisherId.startsWith('isolated-app://');
   }
 
   protected openNotificationsSystemSettings_(e: CustomEvent<{event: Event}>):

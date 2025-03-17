@@ -23,12 +23,12 @@ include_rules = [
   "+ios/chrome/browser/open_from_clipboard/model",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/overlays/model/public",
-  "+ios/chrome/browser/parcel_tracking",
   "+ios/chrome/browser/permissions/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/profile/model",
   "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/search_engines/model",
@@ -43,6 +43,7 @@ include_rules = [
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web_selection/model",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
 ]
 
 specific_include_rules = {
@@ -128,8 +129,8 @@ specific_include_rules = {
     "+ios/chrome/browser/shared/ui/elements/windowed_container_view.h",
   ],
   "^sad_tab_tab_helper.mm": [
-    "+ios/chrome/browser/ui/fullscreen/fullscreen_controller.h",
-    "+ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h",
+    "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
+    "+ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h",
   ],
   "^web_state_delegate_browser_agent.h": [
     "+ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h",

@@ -15,7 +15,7 @@ class AudioBus;
 // Implement the equal-power panning algorithm for mono or stereo input. See:
 // https://webaudio.github.io/web-audio-api/#Spatialzation-equal-power-panning
 
-class PLATFORM_EXPORT StereoPanner {
+class PLATFORM_EXPORT StereoPanner final {
   USING_FAST_MALLOC(StereoPanner);
 
  public:

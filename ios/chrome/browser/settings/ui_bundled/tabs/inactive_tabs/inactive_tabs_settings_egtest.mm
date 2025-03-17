@@ -5,7 +5,6 @@
 #import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -20,27 +19,20 @@
 
 @implementation InactiveTabsSettingsTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Ensure that inactive tabs preference settings is set to its default state.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   GREYAssertEqual(
-      0,
-      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      0, [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
       @"Inactive tabs preference is not set to default value.");
 }
 
 - (void)tearDownHelper {
   // Reset preferences back to default values.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   [super tearDownHelper];
 }
 
@@ -84,8 +76,7 @@
         selectElementWithMatcher:grey_text(inactiveTabsThresholdOptions[i])]
         performAction:grey_tap()];
     GREYAssertEqual(
-        [ChromeEarlGrey
-            localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+        [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
         expectedPreference[i],
         @"The inactive tabs settings selected option did not change the "
         @"preference as expected.");

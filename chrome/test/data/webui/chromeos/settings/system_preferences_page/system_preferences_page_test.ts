@@ -9,7 +9,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRouterForTesting, ensureLazyLoaded, OneDriveBrowserProxy, OsSettingsRoutes, OsSettingsSubpageElement, Route, Router, routes, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsRoutes, Route, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, ensureLazyLoaded, OneDriveBrowserProxy, OsSettingsSubpageElement, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

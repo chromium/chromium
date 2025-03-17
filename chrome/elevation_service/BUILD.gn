@@ -32,7 +32,7 @@ executable("elevation_service") {
     ":service_lib",
     ":version_resources",
     "//build/win:default_exe_manifest",
-    "//chrome/windows_services/service_program",
+    "//chrome/windows_services/service_program:service_program_without_crashpad",
   ]
 }
 
@@ -134,7 +134,6 @@ test("elevation_service_unittests") {
     "//chrome/elevation_service:elevation_service_idl",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
-    "//chrome/windows_services/service_program",
     "//chrome/windows_services/service_program:lib",
     "//chrome/windows_services/service_program/test_support",
     "//components/crx_file",

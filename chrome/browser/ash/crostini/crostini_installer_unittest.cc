@@ -225,7 +225,7 @@ TEST_F(CrostiniInstallerTest, InstallFlow) {
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kSuccess),
       1);
   histogram_tester_.ExpectTotalCount("Crostini.Setup.Started", 1);
@@ -240,7 +240,7 @@ TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
       AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
           profile_.get());
   AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsibleInfra();
+  test_helper.SetUpAnsiblePlaybookPreference();
 
   EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
   ON_CALL(*mock_ansible_management_service, ConfigureContainer)
@@ -268,7 +268,7 @@ TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kSuccess),
       1);
 
@@ -281,7 +281,7 @@ TEST_F(CrostiniInstallerTest, CancelBeforeStart) {
 
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kNotStarted),
       1);
 }
@@ -314,7 +314,7 @@ TEST_F(CrostiniInstallerTest, CancelAfterStart) {
 
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kUserCancelledStartTerminaVm),
       1);
   EXPECT_TRUE(crostini_installer_->CanInstall())
@@ -334,7 +334,7 @@ TEST_F(CrostiniInstallerTest, CancelAfterStartBeforeCheckDisk) {
 
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kNotStarted),
       1);
   EXPECT_TRUE(crostini_installer_->CanInstall())
@@ -359,7 +359,7 @@ TEST_F(CrostiniInstallerTest, InstallerError) {
 
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kErrorStartingTermina),
       1);
   histogram_tester_.ExpectTotalCount("Crostini.Setup.Started", 1);
@@ -374,7 +374,7 @@ TEST_F(CrostiniInstallerTest, InstallerErrorWhileConfiguring) {
       AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
           profile_.get());
   AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsibleInfra();
+  test_helper.SetUpAnsiblePlaybookPreference();
 
   EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
   ON_CALL(*mock_ansible_management_service, ConfigureContainer)
@@ -395,7 +395,7 @@ TEST_F(CrostiniInstallerTest, InstallerErrorWhileConfiguring) {
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kErrorConfiguringContainer),
       1);
 

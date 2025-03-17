@@ -19,13 +19,6 @@ namespace content {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiDebugModeRequires3pcEligibility);
 
-// Controls whether Protected Audience callers can make up to 100 contributions
-// per report instead of 20. When enabled, reports for Protected Audience
-// callers will be padded up to 100 contributions. This feature has no effect on
-// Shared Storage callers.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kPrivateAggregationApi100ContributionsForProtectedAudience);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_FEATURES_H_

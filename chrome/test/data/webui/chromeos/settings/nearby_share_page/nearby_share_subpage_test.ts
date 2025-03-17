@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsNearbyShareSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrToggleElement, NearbyAccountManagerBrowserProxyImpl, nearbyShareMojom, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsNearbyShareSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrToggleElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {NearbyAccountManagerBrowserProxyImpl, nearbyShareMojom, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {DeviceNameValidationResult, FastInitiationNotificationState} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -268,7 +269,7 @@ suite('<settings-nearby-share-subpage>', () => {
     const dialog =
         subpage.shadowRoot!.querySelector('nearby-share-device-name-dialog');
     assertTrue(!!dialog);
-    const input = dialog.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     const doneButton =
         dialog.shadowRoot!.querySelector<HTMLButtonElement>('#doneButton');

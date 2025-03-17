@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/threading/simple_thread.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
@@ -158,7 +158,7 @@ bool SingleThreadTaskGraphRunner::RunTaskWithLockAcquired() {
   // Find the first category with any tasks to run. This task graph runner
   // treats categories as an additional priority.
   const auto& ready_to_run_namespaces = work_queue_.ready_to_run_namespaces();
-  auto found = base::ranges::find_if_not(
+  auto found = std::ranges::find_if_not(
       ready_to_run_namespaces,
       &TaskGraphWorkQueue::TaskNamespace::Vector::empty,
       &TaskGraphWorkQueue::ReadyNamespaces::value_type::second);

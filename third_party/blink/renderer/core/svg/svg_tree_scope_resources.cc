@@ -49,7 +49,6 @@ void SVGTreeScopeResources::Trace(Visitor* visitor) const {
   visitor->template RegisterWeakCallbackMethod<
       SVGTreeScopeResources, &SVGTreeScopeResources::ProcessCustomWeakness>(
       this);
-  visitor->Trace(resources_);
   visitor->Trace(tree_scope_);
 }
 

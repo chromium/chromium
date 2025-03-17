@@ -16,7 +16,6 @@ source_set("ui_bundled") {
     "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",

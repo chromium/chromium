@@ -72,7 +72,6 @@ source_set("unit_tests") {
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/client:test_support",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/common:test_support",
     "//chrome/browser/nearby_sharing/local_device_data:test_support",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/scheduling",

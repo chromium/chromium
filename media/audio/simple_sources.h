@@ -70,8 +70,8 @@ class MEDIA_EXPORT SineWaveAudioSource
   base::RepeatingClosure on_more_data_callback_;
 
   base::Lock lock_;
-  int pos_samples_ GUARDED_BY(lock_) = 0;
-  int cap_ GUARDED_BY(lock_) = 0;
+  size_t pos_samples_ GUARDED_BY(lock_) = 0;
+  size_t cap_ GUARDED_BY(lock_) = 0;
   int callbacks_ GUARDED_BY(lock_) = 0;
   int errors_ = 0;
 };

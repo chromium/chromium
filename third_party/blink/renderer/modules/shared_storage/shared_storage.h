@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_H_
 
+#include "services/network/public/mojom/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/async_iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -34,6 +35,8 @@ class MODULES_EXPORT SharedStorage final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class SharedStorageSetterMethod : uint8_t;
+
   SharedStorage();
   ~SharedStorage() override;
 
@@ -110,6 +113,20 @@ class MODULES_EXPORT SharedStorage final
 
  private:
   class IterationSource;
+
+  void UpdateDocumentSharedStorage(
+      ExecutionContext* execution_context,
+      network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr method,
+      ScriptPromiseResolver<IDLAny>* resolver,
+      SharedStorageSetterMethod setter_method,
+      base::TimeTicks start_time);
+  void BatchUpdateDocumentSharedStorage(
+      ExecutionContext* execution_context,
+      std::optional<String> optional_with_lock,
+      Vector<network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>
+          methods,
+      ScriptPromiseResolver<IDLAny>* resolver,
+      base::TimeTicks start_time);
 
   // PairAsyncIterable<SharedStorage> overrides:
   PairAsyncIterable<SharedStorage>::IterationSource* CreateIterationSource(

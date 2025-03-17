@@ -14,12 +14,21 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace content {
 
-EchoAILanguageModel::EchoAILanguageModel() = default;
+namespace {
+constexpr char kResponsePrefix[] =
+    "On-device model is not available in Chromium, this API is just echoing "
+    "back the input:\n";
+}
+
+EchoAILanguageModel::EchoAILanguageModel(
+    blink::mojom::AILanguageModelSamplingParamsPtr sampling_params)
+    : sampling_params_(std::move(sampling_params)) {}
 
 EchoAILanguageModel::~EchoAILanguageModel() = default;
 
@@ -32,26 +41,27 @@ void EchoAILanguageModel::DoMockExecution(
     return;
   }
 
-  const std::string response =
-      "On-device model is not available in Chromium, this API is just echoing "
-      "back the input:\n" +
-      input;
-  // To make EchoAILanguageModel simple, we will use the string length as the
-  // size in tokens, and the `current_tokens_` will only keep track of the
-  // response size. Once overflow, it will be cleared.
-  current_tokens_ += response.size();
-  bool did_overflow = false;
-  if (current_tokens_ > EchoAIManagerImpl::kMaxContextSizeInTokens) {
-    current_tokens_ = 0;
-    did_overflow = true;
+  if (input.size() > EchoAIManagerImpl::kMaxContextSizeInTokens) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+    return;
   }
-  responder->OnStreaming(response);
-  responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
-      current_tokens_, did_overflow));
+  if (current_tokens_ >
+      EchoAIManagerImpl::kMaxContextSizeInTokens - input.size()) {
+    current_tokens_ = input.size();
+    responder->OnContextOverflow();
+  }
+  current_tokens_ += input.size();
+  responder->OnStreaming(kResponsePrefix,
+                         blink::mojom::ModelStreamingResponderAction::kAppend);
+  responder->OnStreaming(input,
+                         blink::mojom::ModelStreamingResponderAction::kAppend);
+  responder->OnCompletion(
+      blink::mojom::ModelExecutionContextInfo::New(current_tokens_));
 }
 
 void EchoAILanguageModel::Prompt(
-    const std::string& input,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (is_destroyed_) {
@@ -62,13 +72,25 @@ void EchoAILanguageModel::Prompt(
     return;
   }
 
+  std::string response = "";
+  for (const auto& prompt : prompts) {
+    if (prompt->content->is_text()) {
+      response += prompt->content->get_text();
+    } else if (prompt->content->is_bitmap()) {
+      response += "<image>";
+    } else if (prompt->content->is_audio()) {
+      response += "<audio>";
+    } else {
+      NOTIMPLEMENTED_LOG_ONCE();
+    }
+  }
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   // Simulate the time taken by model execution.
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&EchoAILanguageModel::DoMockExecution,
-                     weak_ptr_factory_.GetWeakPtr(), input, responder_id),
+                     weak_ptr_factory_.GetWeakPtr(), response, responder_id),
       base::Seconds(1));
 }
 
@@ -79,16 +101,14 @@ void EchoAILanguageModel::Fork(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
 
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAILanguageModel>(),
-                              language_model.InitWithNewPipeAndPassReceiver());
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<EchoAILanguageModel>(sampling_params_.Clone()),
+      language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
-      blink::mojom::AILanguageModelInfo::New(
+      blink::mojom::AILanguageModelInstanceInfo::New(
           EchoAIManagerImpl::kMaxContextSizeInTokens, current_tokens_,
-          blink::mojom::AILanguageModelSamplingParams::New(
-              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-              optimization_guide::features::
-                  GetOnDeviceModelDefaultTemperature())));
+          sampling_params_->Clone(), std::nullopt));
 }
 
 void EchoAILanguageModel::Destroy() {

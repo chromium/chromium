@@ -51,18 +51,18 @@ TEST(RuleTest, ConcatenationIterator) {
   metadata.set_session_model(mojom::SessionModel::USER_SESSION);
   rules1.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("b"),
-      ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
+      ContentSettingsPattern::Wildcard(), base::Value(0), metadata.Clone()));
   std::list<std::unique_ptr<Rule>> rules2;
   metadata.SetExpirationAndLifetime(validTime, base::Seconds(60));
   metadata.set_session_model(mojom::SessionModel::DURABLE);
   rules2.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("c"),
-      ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
+      ContentSettingsPattern::Wildcard(), base::Value(0), metadata.Clone()));
   metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
   metadata.set_session_model(mojom::SessionModel::USER_SESSION);
   rules2.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("d"),
-      ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
+      ContentSettingsPattern::Wildcard(), base::Value(0), metadata.Clone()));
 
   std::vector<std::unique_ptr<RuleIterator>> iterators;
   iterators.push_back(std::make_unique<ListIterator>(std::move(rules1)));

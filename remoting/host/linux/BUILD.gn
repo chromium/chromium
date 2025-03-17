@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 group("all_tests") {
@@ -61,10 +60,12 @@ if (enable_me2me_host) {
     }
   }
 
-  copy("remoting_me2me_host_copy_crash_uploader") {
-    sources = [ "$root_build_dir/remoting_crash_uploader" ]
-    outputs = [ "$root_build_dir/remoting/crash-uploader" ]
-    deps = [ "//remoting/host/crash:remoting_crash_uploader" ]
+  if (!is_linux || !enable_chromoting_crashpad) {
+    copy("remoting_me2me_host_copy_crash_uploader") {
+      sources = [ "$root_build_dir/remoting_crash_uploader" ]
+      outputs = [ "$root_build_dir/remoting/crash-uploader" ]
+      deps = [ "//remoting/host/crash:remoting_crash_uploader" ]
+    }
   }
 
   copy("remoting_me2me_host_copy_libremoting_core") {
@@ -143,57 +144,22 @@ source_set("platform_impls") {
     "audio_capturer_linux.h",
     "audio_pipe_reader.cc",
     "audio_pipe_reader.h",
-    "clipboard_portal.cc",
-    "clipboard_portal.h",
-    "clipboard_portal_injector.cc",
-    "clipboard_portal_injector.h",
-    "clipboard_wayland.cc",
-    "clipboard_wayland.h",
     "curtain_mode_linux.cc",
     "desktop_display_info_loader_linux.cc",
-    "desktop_display_info_loader_wayland.cc",
-    "desktop_display_info_loader_wayland.h",
     "desktop_display_info_loader_x11.cc",
     "desktop_display_info_loader_x11.h",
     "desktop_resizer_linux.cc",
-    "desktop_resizer_wayland.cc",
-    "desktop_resizer_wayland.h",
     "desktop_resizer_x11.cc",
     "desktop_resizer_x11.h",
-    "ei_event_watcher_glib.cc",
-    "ei_event_watcher_glib.h",
     "input_injector_constants_linux.h",
     "input_injector_linux.cc",
-    "input_injector_wayland.cc",
-    "input_injector_wayland.h",
     "input_injector_x11.cc",
     "input_injector_x11.h",
     "keyboard_layout_monitor_linux.cc",
     "keyboard_layout_monitor_utils.cc",
     "keyboard_layout_monitor_utils.h",
-    "keyboard_layout_monitor_wayland.cc",
-    "keyboard_layout_monitor_wayland.h",
-    "remote_desktop_portal.cc",
-    "remote_desktop_portal.h",
-    "remote_desktop_portal_injector.cc",
-    "remote_desktop_portal_injector.h",
-    "wayland_connection.cc",
-    "wayland_connection.h",
-    "wayland_desktop_capturer.cc",
-    "wayland_desktop_capturer.h",
-    "wayland_display.cc",
-    "wayland_display.h",
-    "wayland_display_info.cc",
-    "wayland_display_info.h",
-    "wayland_keyboard.cc",
-    "wayland_keyboard.h",
-    "wayland_manager.cc",
-    "wayland_manager.h",
-    "wayland_seat.cc",
-    "wayland_seat.h",
   ]
   deps = [
-    ":wayland",
     ":x11",
     ":x11_display_utils",
     "//base",
@@ -209,13 +175,10 @@ source_set("platform_impls") {
     "//remoting/host/input_monitor",
     "//remoting/proto",
     "//remoting/protocol",
-    "//third_party/wayland:wayland_client",
-    "//third_party/wayland-protocols:xdg_output_protocol",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base",
     "//ui/base/x",
     "//ui/events:dom_keycode_converter",
-    "//ui/events/platform/wayland:wayland_event_watcher",
     "//ui/gfx/x",
   ]
 }
@@ -243,14 +206,6 @@ source_set("x11_display_utils") {
     "//ui/gfx/geometry",
     "//ui/gfx/x",
   ]
-}
-
-source_set("wayland") {
-  sources = [
-    "wayland_utils.cc",
-    "wayland_utils.h",
-  ]
-  deps = [ "//base" ]
 }
 
 if (remoting_use_x11) {

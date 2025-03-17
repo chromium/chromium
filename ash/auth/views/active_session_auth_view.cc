@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/auth_input_row_view.h"
 #include "ash/auth/views/auth_view_utils.h"
@@ -116,7 +117,7 @@ ActiveSessionAuthView::ActiveSessionAuthView(const AccountId& account_id,
   AddVerticalSpace(this, kAuthContainerBottomDistanceDp);
 
   // Set the background.
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysBaseElevated, kActiveSessionAuthViewCornerRadiusDp));
 
   // Set the view as a dialog for a11y purposes.
@@ -165,7 +166,7 @@ void ActiveSessionAuthView::AddHeaderAndCloseButton(
       std::make_unique<AuthHeaderView>(account_id_, title, description));
   header_observation_.Observe(auth_header_);
 
-  header->AddChildView(auth_header_container);
+  header->AddChildViewRaw(auth_header_container);
 
   // Close button position and creation.
   views::View* close_button_view =
@@ -179,7 +180,7 @@ void ActiveSessionAuthView::AddHeaderAndCloseButton(
   close_button_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
   close_button_view->SetLayoutManager(std::move(close_button_layout));
-  header->AddChildView(close_button_view);
+  header->AddChildViewRaw(close_button_view);
 
   IconButton::Builder builder;
   builder.SetType(IconButton::Type::kXSmall)
@@ -249,7 +250,7 @@ void ActiveSessionAuthView::SetPinStatus(
   auth_container_->SetPinStatus(std::move(pin_status));
 }
 
-const std::u16string& ActiveSessionAuthView::GetPinStatusMessage() const {
+std::u16string_view ActiveSessionAuthView::GetPinStatusMessage() const {
   return auth_container_->GetPinStatusMessage();
 }
 
@@ -260,13 +261,13 @@ void ActiveSessionAuthView::SetInputEnabled(bool enabled) {
   }
 }
 
-void ActiveSessionAuthView::OnPinSubmit(const std::u16string& pin) {
+void ActiveSessionAuthView::OnPinSubmit(std::u16string_view pin) {
   for (auto& observer : observers_) {
     observer.OnPinSubmit(pin);
   }
 }
 
-void ActiveSessionAuthView::OnPasswordSubmit(const std::u16string& password) {
+void ActiveSessionAuthView::OnPasswordSubmit(std::u16string_view password) {
   for (auto& observer : observers_) {
     observer.OnPasswordSubmit(password);
   }

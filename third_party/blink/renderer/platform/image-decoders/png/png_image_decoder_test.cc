@@ -22,11 +22,11 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
 // is modified in multiple tests to simulate erroneous PNGs. As a reference,
@@ -1300,6 +1300,24 @@ TEST_P(StaticPNGTests, MetaDataTest) {
   EXPECT_EQ(kExpectedDuration, decoder->FrameDurationAtIndex(0));
 }
 
+TEST_P(StaticPNGTests, RepetitionCountForPartialNonanimatedInput) {
+  // IDAT begins at offset 85 and ends at offset 1295.
+  const size_t kOffsetInMiddleOfIDAT = 200u;
+  const bool kAllDataReceived = false;
+  const char kTestFile[] = "/images/resources/png-simple.png";
+
+  Vector<char> full_data = ReadFile(kTestFile);
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(base::span(full_data).first(kOffsetInMiddleOfIDAT));
+
+  std::unique_ptr<ImageDecoder> decoder = CreatePNGDecoder();
+  decoder->SetData(partial_data.get(), kAllDataReceived);
+
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(kAnimationNone, decoder->RepetitionCount());
+  EXPECT_EQ(1u, decoder->FrameCount());
+}
+
 // circle-trns-before-plte.png is of color type 2 (PNG_COLOR_TYPE_RGB) and has
 // a tRNS chunk before a PLTE chunk. The image has an opaque blue circle on a
 // transparent green background.
@@ -1334,7 +1352,7 @@ TEST_P(StaticPNGTests, ColorType2TrnsBeforePlte) {
   // have alpha.
   EXPECT_FALSE(frame->HasAlpha());
   // The background is opaque green.
-  EXPECT_EQ(*frame->GetAddr(1, 1), SkPackARGB32(0xFF, 0, 0xFF, 0));
+  EXPECT_EQ(*frame->GetAddr(1, 1), SkPMColorSetARGB(0xFF, 0, 0xFF, 0));
 #else
   // If PNG_READ_OPT_PLTE_SUPPORTED is not defined, libpng performs only minimum
   // processing of an optional PLTE chunk. In particular, it doesn't check if
@@ -1343,7 +1361,7 @@ TEST_P(StaticPNGTests, ColorType2TrnsBeforePlte) {
   // and the frame should have alpha.
   EXPECT_TRUE(frame->HasAlpha());
   // The background is transparent green.
-  EXPECT_EQ(*frame->GetAddr(1, 1), SkPackARGB32(0, 0, 0xFF, 0));
+  EXPECT_EQ(*frame->GetAddr(1, 1), SkPMColorSetARGB(0, 0, 0xFF, 0));
 #endif
 }
 
@@ -1769,11 +1787,11 @@ TEST_P(PNGTests, HDRMetadata) {
   const std::optional<gfx::HDRMetadata> hdr_metadata =
       decoder->GetHDRMetadata();
 
-  // TODO(https://crbug.com/376550658): Add support for `cLLi` and `mDCv` chunks
+  // TODO(https://crbug.com/376550658): Add support for `cLLI` and `mDCV` chunks
   // to Rust png.
   if (skia::IsRustyPngEnabled()) {
     ASSERT_FALSE(hdr_metadata);
-    GTEST_SKIP() << "SkPngRustCodec doesn't yet support cLLI nor mDCv chunks";
+    GTEST_SKIP() << "SkPngRustCodec doesn't yet support cLLI nor mDCV chunks";
   }
   ASSERT_TRUE(hdr_metadata);
 

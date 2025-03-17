@@ -39,7 +39,7 @@ function getAriaValue(tick: SliderTick|number): number {
   }
 
   const sliderTick = tick as SliderTick;
-  return sliderTick.ariaValue !== undefined ? sliderTick.ariaValue! :
+  return sliderTick.ariaValue !== undefined ? sliderTick.ariaValue :
                                               sliderTick.value;
 }
 

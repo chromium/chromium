@@ -125,7 +125,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
           views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
           views::kWindowControlMaximizeIcon);
 
-      AddChildView(caption_button_container_.get());
+      AddChildViewRaw(caption_button_container_.get());
     }
   }
 

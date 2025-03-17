@@ -2,19 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/explainers-by-googlers/prompt-api
+// https://github.com/webmachinelearning/prompt-api
 
-dictionary AILanguageModelInitialPrompt {
-  required AILanguageModelInitialPromptRole role;
-  required DOMString content;
+// The argument to the prompt() method and others like it
+typedef (AILanguageModelPrompt or sequence<AILanguageModelPrompt>) AILanguageModelPromptInput;
+
+// Prompt lines
+typedef (
+  DOMString                     // interpreted as { role: "user", type: "text", content: providedValue }
+  or AILanguageModelPromptDict  // canonical form
+) AILanguageModelPrompt;
+
+// Prompt content inside the lines
+dictionary AILanguageModelPromptDict {
+  AILanguageModelPromptRole role = "user";
+  AILanguageModelPromptType type = "text";
+  required AILanguageModelPromptContent content;
 };
 
-dictionary AILanguageModelCreateOptions {
+enum AILanguageModelPromptRole { "system", "user", "assistant" };
+
+enum AILanguageModelPromptType { "text", "image", "audio" };
+
+typedef (
+  ImageBitmapSource
+  or AudioBuffer
+  or HTMLAudioElement
+  or BufferSource
+  or DOMString
+) AILanguageModelPromptContent;
+
+dictionary AILanguageModelCreateCoreOptions {
+  // Note: these two have custom out-of-range handling behavior, not in the IDL layer.
+  // They are unrestricted double so as to allow +Infinity without failing.
+  unrestricted double topK;
+  unrestricted double temperature;
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<AILanguageModelPromptType> expectedInputTypes;
+};
+
+dictionary AILanguageModelCreateOptions : AILanguageModelCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
-
-  [EnforceRange] unsigned long topK;
-  float temperature;
   DOMString systemPrompt;
-  sequence<AILanguageModelInitialPrompt> initialPrompts;
+  sequence<AILanguageModelPrompt> initialPrompts;
 };

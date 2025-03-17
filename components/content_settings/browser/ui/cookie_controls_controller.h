@@ -20,6 +20,8 @@
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/ip_protection/common/ip_protection_status.h"
+#include "components/ip_protection/common/ip_protection_status_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -41,8 +43,8 @@ class CookieControlsController final
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<content_settings::CookieSettings> original_cookie_settings,
       HostContentSettingsMap* settings_map,
-      privacy_sandbox::TrackingProtectionSettings*
-          tracking_protection_settings);
+      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      bool is_incognito_profile);
   CookieControlsController(const CookieControlsController& other) = delete;
   CookieControlsController& operator=(const CookieControlsController& other) =
       delete;
@@ -53,6 +55,10 @@ class CookieControlsController final
 
   // Called when the fingerprinting protection filter has blocked a subresource.
   void OnSubresourceBlocked();
+
+  // Called when IP Protection has proxied a subresource for the first time on
+  // the current primary page.
+  void OnFirstSubresourceProxiedOnCurrentPrimaryPage();
 
   // Called when the UI is closing.
   void OnUiClosing();
@@ -105,7 +111,8 @@ class CookieControlsController final
       : public content_settings::PageSpecificContentSettings::SiteDataObserver,
         public content::WebContentsObserver,
         public fingerprinting_protection_filter::
-            FingerprintingProtectionObserver {
+            FingerprintingProtectionObserver,
+        public ip_protection::IpProtectionStatusObserver {
    public:
     TabObserver(CookieControlsController* cookie_controls,
                 content::WebContents* web_contents);
@@ -126,6 +133,9 @@ class CookieControlsController final
 
     // fingerprinting_protection_filter::FingerprintingProtectionObserver:
     void OnSubresourceBlocked() override;
+
+    // ip_protection::IpProtectionStatusObserver:
+    void OnFirstSubresourceProxiedOnCurrentPrimaryPage() const override;
 
    private:
     raw_ptr<CookieControlsController> cookie_controls_;
@@ -149,7 +159,14 @@ class CookieControlsController final
             FingerprintingProtectionWebContentsHelper,
         fingerprinting_protection_filter::FingerprintingProtectionObserver>
         fpf_observation_{this};
+
+    base::ScopedObservation<ip_protection::IpProtectionStatus,
+                            ip_protection::IpProtectionStatusObserver>
+        ip_protection_observation_{this};
   };
+
+  // Returns whether to update the TRACKING_PROTECTION content setting.
+  bool ShouldUpdateTpContentSetting();
 
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;
@@ -165,7 +182,7 @@ class CookieControlsController final
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       CookieBlocking3pcdStatus status,
       const GURL url,
-      SettingInfo info,
+      const SettingInfo& info,
       bool cookies_allowed);
 
   bool ShowIpProtection() const;
@@ -187,6 +204,9 @@ class CookieControlsController final
 
   // Returns whether at least one subresource has been blocked on this page.
   bool GetIsSubresourceBlocked() const;
+
+  // Returns whether at least one subresource has been proxied on this page.
+  bool GetIsSubresourceProxied() const;
 
   // Returns the number of allowed third-party sites with cookies.
   int GetAllowedThirdPartyCookiesSitesCount() const;
@@ -221,6 +241,8 @@ class CookieControlsController final
   // the regular profile if in incognito, since TP settings should still apply.
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+  // Whether the current profile is incognito.
+  bool is_incognito_profile_ = false;
 
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>

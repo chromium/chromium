@@ -167,6 +167,6 @@ class AlertResponse : public OverlayResponseInfo<AlertResponse> {
   NSArray<NSString*>* text_field_values_ = nil;
 };
 
-}  // alert_overlays
+}  // namespace alert_overlays
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_WEB_CONTENT_AREA_ALERT_OVERLAY_H_

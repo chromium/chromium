@@ -18,6 +18,7 @@
 #include "base/hash/sha1.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -176,9 +177,9 @@ constexpr std::string_view kSkeletonsOfPopularKeywordsForCSQ[] = {
 const size_t kMinBrandNameLengthForComboSquatting = 4;
 
 ComboSquattingParams* GetComboSquattingParams() {
-  static ComboSquattingParams params{kBrandNamesForCSQ,
-                                     kSkeletonsOfPopularKeywordsForCSQ};
-  return &params;
+  static base::NoDestructor<ComboSquattingParams> params(
+      {kBrandNamesForCSQ, kSkeletonsOfPopularKeywordsForCSQ});
+  return params.get();
 }
 
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
@@ -739,6 +740,27 @@ bool IsComboSquatting(
   return false;
 }
 
+// Hostnames containing these strings are considered unsafe due to ligature
+// rendering in some fonts.
+const char* kUnsafeLigatures[] = {
+    "g_logo", "o_logo", "l_logo", "e_logo",
+    // google_logo is also unsafe, but e_logo is its substring.
+    // super_g_logo is also unsafe, but g_logo is its substring.
+    "google_g", "glogoligature", "ologoligature", "llogoligature",
+    "elogoligature",
+    // googlelogoligature is also unsafe, but elogoligature is its
+    // substring
+};
+
+bool IsUnsafeLigature(const DomainInfo& domain) {
+  for (const char* unsafe_ligature : kUnsafeLigatures) {
+    if (domain.hostname.find(unsafe_ligature) != std::string::npos) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 namespace lookalikes {
@@ -1269,6 +1291,10 @@ bool IsPunycodeInterstitialCandidate(const DomainInfo& domain) {
 }
 
 bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
+  if (IsUnsafeLigature(navigated_domain)) {
+    return true;
+  }
+
   // Here, only a subset of spoof checks that cause an IDN to fallback to
   // punycode are configured to show an interstitial.
   switch (navigated_domain.idn_result.spoof_check_result) {

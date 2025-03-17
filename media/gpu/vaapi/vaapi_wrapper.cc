@@ -21,12 +21,14 @@
 #include <va/va_version.h>
 #include <xf86drm.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/cpu.h"
@@ -36,11 +38,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -48,9 +50,9 @@
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/platform_features.h"
@@ -72,8 +74,9 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/ozone/public/ozone_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <va/va_prot.h>
 using media_gpu_vaapi::kModuleVa_prot;
 #endif
@@ -91,6 +94,42 @@ using media_gpu_vaapi::kModuleVa_drm;
 using media_gpu_vaapi::StubPathMap;
 
 namespace media {
+
+namespace {
+// Returns a DRM FD and whether this FD should be skipped.
+std::pair<base::ScopedFD, bool> LoadDrmFD(const base::FilePath& dev_path) {
+  base::File drm_file =
+      base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WRITE);
+  if (!drm_file.IsValid()) {
+    return std::make_pair(base::ScopedFD{}, /*should_skip=*/false);
+  }
+  drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
+  if (!version) {
+    return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                          /*should_skip=*/true);
+  }
+  std::string version_name(
+      version->name,
+      base::checked_cast<std::string::size_type>(version->name_len));
+  drmFreeVersion(version);
+  // Skip the virtual graphics memory manager device.
+  if (base::EqualsCaseInsensitiveASCII(version_name, "vgem")) {
+    return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                          /*should_skip=*/true);
+  }
+  // Skip NVIDIA device because their VA-API drivers do not support
+  // Chromium and can sometimes cause crashes (see crbug.com/1492880).
+  if (base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm") &&
+      !base::FeatureList::IsEnabled(kVaapiOnNvidiaGPUs)) {
+    LOG(WARNING) << "Should skip nVidia device named: " << version_name;
+    return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                          /*should_skip=*/true);
+  }
+  return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                        /*should_skip=*/false);
+}
+}  // namespace
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
@@ -639,7 +678,7 @@ bool IsLowPowerIntelProcessor() {
 
 bool IsModeDecoding(VaapiWrapper::CodecMode mode) {
   return mode == VaapiWrapper::CodecMode::kDecode
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
          || VaapiWrapper::CodecMode::kDecodeProtected
 #endif
       ;
@@ -750,7 +789,7 @@ bool IsVAProfileSupported(VAProfile va_profile, bool is_encoding) {
   if (va_profile == VAProfileJPEGBaseline) {
     return true;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (va_profile == VAProfileProtected) {
     return true;
   }
@@ -863,26 +902,27 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
   va_entrypoints.resize(num_va_entrypoints);
 
   const std::vector<VAEntrypoint> kAllowedEntryPoints[] = {
-    {VAEntrypointVLD},  // kDecode.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {VAEntrypointVLD, VAEntrypointProtectedContent},  // kDecodeProtected.
+      {VAEntrypointVLD},  // kDecode.
+#if BUILDFLAG(IS_CHROMEOS)
+      {VAEntrypointVLD, VAEntrypointProtectedContent},  // kDecodeProtected.
 #endif
-    {VAEntrypointEncSlice, VAEntrypointEncPicture,
-     VAEntrypointEncSliceLP},  // kEncodeConstantBitrate.
-    {VAEntrypointEncSlice,
-     VAEntrypointEncSliceLP},  // kEncodeConstantQuantizationParameter.
-    {VAEntrypointEncSlice, VAEntrypointEncSliceLP},  // kEncodeVariableBitrate.
-    {VAEntrypointVideoProc}                          // kVideoProcess.
+      {VAEntrypointEncSlice, VAEntrypointEncPicture,
+       VAEntrypointEncSliceLP},  // kEncodeConstantBitrate.
+      {VAEntrypointEncSlice,
+       VAEntrypointEncSliceLP},  // kEncodeConstantQuantizationParameter.
+      {VAEntrypointEncSlice,
+       VAEntrypointEncSliceLP},  // kEncodeVariableBitrate.
+      {VAEntrypointVideoProc}    // kVideoProcess.
   };
   static_assert(std::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
                 "");
 
   std::vector<VAEntrypoint> entrypoints;
-  base::ranges::copy_if(va_entrypoints, std::back_inserter(entrypoints),
-                        [&kAllowedEntryPoints, mode](VAEntrypoint entry_point) {
-                          return base::Contains(kAllowedEntryPoints[mode],
-                                                entry_point);
-                        });
+  std::ranges::copy_if(va_entrypoints, std::back_inserter(entrypoints),
+                       [&kAllowedEntryPoints, mode](VAEntrypoint entry_point) {
+                         return base::Contains(kAllowedEntryPoints[mode],
+                                               entry_point);
+                       });
   return entrypoints;
 }
 
@@ -900,7 +940,7 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
   if (profile == VAProfileVP9Profile2 || profile == VAProfileVP9Profile3) {
     required_attribs->push_back(
         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420_10BPP});
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (profile == VAProfileProtected) {
     DCHECK_EQ(mode, VaapiWrapper::kDecodeProtected);
     constexpr int kWidevineUsage = 0x1;
@@ -917,7 +957,7 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
     required_attribs->push_back({VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420});
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
     required_attribs->push_back(
         {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR});
@@ -1069,7 +1109,7 @@ const VASupportedProfiles::ProfileInfo* VASupportedProfiles::IsProfileSupported(
     VaapiWrapper::CodecMode mode,
     VAProfile va_profile,
     VAEntrypoint va_entrypoint) const {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       supported_profiles_[mode],
       [va_profile, va_entrypoint](const ProfileInfo& profile) {
         return profile.va_profile == va_profile &&
@@ -1111,15 +1151,14 @@ void VASupportedProfiles::FillSupportedProfileInfos(
       GetSupportedVAProfiles(va_lock, va_display);
 
   constexpr VaapiWrapper::CodecMode kWrapperModes[] = {
-    VaapiWrapper::kDecode,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    VaapiWrapper::kDecodeProtected,
+      VaapiWrapper::kDecode,
+#if BUILDFLAG(IS_CHROMEOS)
+      VaapiWrapper::kDecodeProtected,
 #endif
-    VaapiWrapper::kEncodeConstantBitrate,
-    VaapiWrapper::kEncodeConstantQuantizationParameter,
-    VaapiWrapper::kEncodeVariableBitrate,
-    VaapiWrapper::kVideoProcess
-  };
+      VaapiWrapper::kEncodeConstantBitrate,
+      VaapiWrapper::kEncodeConstantQuantizationParameter,
+      VaapiWrapper::kEncodeVariableBitrate,
+      VaapiWrapper::kVideoProcess};
   static_assert(std::size(kWrapperModes) == VaapiWrapper::kCodecModeMax, "");
 
   for (VaapiWrapper::CodecMode mode : kWrapperModes) {
@@ -1186,7 +1225,7 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
     }
   };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Nothing further to query for protected profile.
   if (va_profile == VAProfileProtected) {
     profile_info->va_profile = va_profile;
@@ -1503,39 +1542,31 @@ void VADisplayStateSingleton::PreSandboxInitialization() {
   VADisplayStateSingleton& va_display_state = GetInstance();
   base::AutoLock lock(va_display_state.lock_);
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kRenderNodeOverride)) {
+    auto [drm_fd, should_skip] =
+        LoadDrmFD(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kRenderNodeOverride));
+    va_display_state.drm_fd_ = std::move(drm_fd);
+    LOG_IF(WARNING, should_skip)
+        << "Forcibly using value of --render-node-override";
+    return;
+  }
+
   constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
   // This loop ends on either the first card that does not exist or the first
   // render node that is not vgem.
   for (int i = 128;; i++) {
     base::FilePath dev_path(FILE_PATH_LITERAL(
         base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
-    base::File drm_file =
-        base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_WRITE);
-    if (!drm_file.IsValid()) {
+    auto [drm_fd, should_skip] = LoadDrmFD(dev_path);
+    if (!drm_fd.is_valid()) {
       return;
     }
-    drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
-    if (!version) {
-      continue;
+    if (!should_skip) {
+      va_display_state.drm_fd_ = std::move(drm_fd);
+      return;
     }
-    std::string version_name(
-        version->name,
-        base::checked_cast<std::string::size_type>(version->name_len));
-    drmFreeVersion(version);
-    // Skip the virtual graphics memory manager device.
-    if (base::EqualsCaseInsensitiveASCII(version_name, "vgem")) {
-      continue;
-    }
-    // Skip NVIDIA device because their VA-API drivers do not support
-    // Chromium and can sometimes cause crashes (see crbug.com/1492880).
-    if (base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm") &&
-        !base::FeatureList::IsEnabled(kVaapiOnNvidiaGPUs)) {
-      LOG(WARNING) << "Skipping nVidia device named: " << version_name;
-      continue;
-    }
-    va_display_state.drm_fd_ = base::ScopedFD(drm_file.TakePlatformFile());
-    return;
   }
 }
 
@@ -1620,22 +1651,6 @@ bool VADisplayStateSingleton::Initialize() {
   CHECK(runtime_version.IsValid());
   const base::Version build_time_version({VA_MAJOR_VERSION, VA_MINOR_VERSION});
   CHECK(build_time_version.IsValid());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsGen11Gpu()) {
-    // Jasperlake devices run with pinned libva driver (VA-API version 1.15)
-    // due to b/303841978.
-    // Relax the VA-API version check so Lacros does not fall back to
-    // software encoding on these devices by hardcoding the minor version number
-    // to be 15 instead of the actual (higher) one.
-    // TODO(b/303841978): go back to using the actual minor version number
-    // when libva is upreved in Jasperlake devices.
-    const base::Version jsl_build_version({VA_MAJOR_VERSION, 15});
-    CHECK(jsl_build_version.IsValid());
-    if (!IsLibVACompatible(runtime_version, jsl_build_version)) {
-      return false;
-    }
-  } else
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!IsLibVACompatible(runtime_version, build_time_version)) {
     return false;
   }
@@ -1714,7 +1729,7 @@ base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus> VaapiWrapper::Create(
     DVLOG(1) << "Unsupported va_profile: " << vaProfileStr(va_profile);
     return base::unexpected(DecoderStatus::Codes::kUnsupportedProfile);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In protected decode |mode| we need to ensure that |va_profile| is supported
   // (which we verified above) and that VAProfileProtected is supported, which
   // we check here.
@@ -1743,8 +1758,8 @@ base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus> VaapiWrapper::Create(
     }
   }
 
-  scoped_refptr<VaapiWrapper> vaapi_wrapper(
-      new VaapiWrapper(std::move(va_display_state_handle), mode));
+  auto vaapi_wrapper = base::MakeRefCounted<VaapiWrapper>(
+      base::PassKey<VaapiWrapper>(), std::move(va_display_state_handle), mode);
   vaapi_wrapper->VaInitialize(report_error_to_uma_cb);
   if (vaapi_wrapper->Initialize(va_profile, encryption_scheme))
     return vaapi_wrapper;
@@ -2088,7 +2103,7 @@ VAEntrypoint VaapiWrapper::GetDefaultVaEntryPoint(CodecMode mode,
   switch (mode) {
     case VaapiWrapper::kDecode:
       return VAEntrypointVLD;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case VaapiWrapper::kDecodeProtected:
       if (profile == VAProfileProtected)
         return VAEntrypointProtectedContent;
@@ -2187,7 +2202,7 @@ bool VaapiWrapper::CreateProtectedSession(
     const std::vector<uint8_t>& hw_config,
     std::vector<uint8_t>* hw_identifier_out) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(va_protected_config_id_, VA_INVALID_ID);
   DCHECK_EQ(va_protected_session_id_, VA_INVALID_ID);
   DCHECK(hw_identifier_out);
@@ -2290,14 +2305,14 @@ bool VaapiWrapper::CreateProtectedSession(
 
 bool VaapiWrapper::IsProtectedSessionDead() {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return IsProtectedSessionDead(va_protected_session_id_);
 #else
   return false;
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool VaapiWrapper::IsProtectedSessionDead(
     VAProtectedSessionID va_protected_session_id) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2331,7 +2346,7 @@ bool VaapiWrapper::IsProtectedSessionDead(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 VAProtectedSessionID VaapiWrapper::GetProtectedSessionID() const {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return va_protected_session_id_;
@@ -2340,7 +2355,7 @@ VAProtectedSessionID VaapiWrapper::GetProtectedSessionID() const {
 
 void VaapiWrapper::DestroyProtectedSession() {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (va_protected_session_id_ == VA_INVALID_ID)
     return;
   base::AutoLockMaybe auto_lock(va_lock_.get());
@@ -2911,7 +2926,7 @@ std::unique_ptr<ScopedVABuffer> VaapiWrapper::CreateVABuffer(VABufferType type,
   base::AutoLockMaybe auto_lock(va_lock_.get());
   TRACE_EVENT2("media,gpu", "VaapiWrapper::CreateVABufferLocked", "type", type,
                "size", size);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   VAContextID context_id = type == VAProtectedSessionExecuteBufferType
                                ? va_protected_session_id_
                                : va_context_id_;
@@ -3078,7 +3093,7 @@ bool VaapiWrapper::BlitSurface(VASurfaceID va_surface_src_id,
                                const gfx::Size& va_surface_dst_size,
                                std::optional<gfx::Rect> src_rect,
                                std::optional<gfx::Rect> dest_rect
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                                ,
                                VAProtectedSessionID va_protected_session_id
 #endif
@@ -3147,7 +3162,7 @@ bool VaapiWrapper::BlitSurface(VASurfaceID va_surface_src_id,
     pipeline_param->rotation_state = VA_ROTATION_NONE;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (va_protected_session_id != VA_INVALID_ID) {
     const VAStatus va_res = vaAttachProtectedSession(
         va_display_, va_context_id_, va_protected_session_id);
@@ -3164,7 +3179,7 @@ bool VaapiWrapper::BlitSurface(VASurfaceID va_surface_src_id,
             VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
             vaDetachProtectedSession(va_display_, va_context_id_);
           };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   TRACE_EVENT2("media,gpu", "VaapiWrapper::BlitSurface", "src_rect",
                src_rect->ToString(), "dest_rect", dest_rect->ToString());
@@ -3196,7 +3211,7 @@ void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
 
   paths[kModuleVa].push_back(std::string("libva.so.") + va_suffix);
   paths[kModuleVa_drm].push_back(std::string("libva-drm.so.") + va_suffix);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   paths[kModuleVa_prot].push_back(std::string("libva.so.") + va_suffix);
 #endif
 
@@ -3220,6 +3235,11 @@ void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
   // libcmrt.so (platforms that support it)
   VASupportedProfiles::Get();
 }
+
+VaapiWrapper::VaapiWrapper(base::PassKey<VaapiWrapper>,
+                           VADisplayStateHandle va_display_state_handle,
+                           CodecMode mode)
+    : VaapiWrapper(std::move(va_display_state_handle), mode) {}
 
 VaapiWrapper::VaapiWrapper(VADisplayStateHandle va_display_state_handle,
                            CodecMode mode)
@@ -3260,7 +3280,7 @@ bool VaapiWrapper::Initialize(VAProfile va_profile,
   }
 #endif  // DCHECK_IS_ON()
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (encryption_scheme != EncryptionScheme::kUnencrypted &&
       mode_ != kDecodeProtected) {
     return false;
@@ -3276,7 +3296,7 @@ bool VaapiWrapper::Initialize(VAProfile va_profile,
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (encryption_scheme != EncryptionScheme::kUnencrypted) {
     DCHECK(!required_attribs.empty());
     // We need to adjust the attribute for encryption scheme.
@@ -3288,7 +3308,7 @@ bool VaapiWrapper::Initialize(VAProfile va_profile,
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const VAStatus va_res =
       vaCreateConfig(va_display_, va_profile, entrypoint,
@@ -3305,7 +3325,7 @@ void VaapiWrapper::Deinitialize() {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   {
     base::AutoLockMaybe auto_lock(va_lock_.get());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (va_protected_session_id_ != VA_INVALID_ID) {
       VAStatus va_res =
           vaDestroyProtectedSession(va_display_, va_protected_session_id_);
@@ -3318,7 +3338,7 @@ void VaapiWrapper::Deinitialize() {
       const VAStatus va_res = vaDestroyConfig(va_display_, va_config_id_);
       VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyConfig);
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     va_protected_session_id_ = VA_INVALID_ID;
     va_protected_config_id_ = VA_INVALID_ID;
 #endif
@@ -3349,7 +3369,7 @@ void VaapiWrapper::DestroyContext() {
   DVLOG(2) << "Destroying context";
 
   if (va_context_id_ != VA_INVALID_ID) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (va_protected_session_id_ != VA_INVALID_ID) {
       const VAStatus va_res =
           vaDetachProtectedSession(va_display_, va_context_id_);
@@ -3625,7 +3645,7 @@ bool VaapiWrapper::MaybeAttachProtectedSession_Locked() {
   MAYBE_ASSERT_ACQUIRED(va_lock_);
   if (va_context_id_ == VA_INVALID_ID)
     return true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (va_protected_session_id_ == VA_INVALID_ID)
     return true;
 

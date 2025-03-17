@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -37,9 +38,16 @@ class CollaborationController {
     // initialized and authentication status to be verified.
     kPending,
 
+    // Waiting on more information about a potentially managed account.
+    kWaitingForPolicyUpdate,
+
     // UI is showing authentication screens (sign-in/sync/access token). Waiting
     // for result.
     kAuthenticating,
+
+    // Waiting for tab group sync service and data sharing service to be ready
+    // to use.
+    kWaitingForServicesToInitialize,
 
     // Authentication is completed. Controller will check requirements for each
     // specific flows.
@@ -58,6 +66,12 @@ class CollaborationController {
     // Delegate is showing the share sheet.
     kShowingShareScreen,
 
+    // Delegate requested creating a shared tab group.
+    kMakingTabGroupShared,
+
+    // Delegate is sharing the tab group's url.
+    kSharingTabGroupUrl,
+
     // Delegate is showing the manage people screen.
     kShowingManageScreen,
 
@@ -70,31 +84,36 @@ class CollaborationController {
 
   class Flow {
    public:
-    enum class Type {
-      kJoin,
-      kShareOrManage,
-    };
-
     // Join flow constructor.
-    Flow(Type type, const data_sharing::GroupToken& token);
+    Flow(FlowType type, const data_sharing::GroupToken& token);
 
     // Share flow constructor.
-    Flow(Type type, const tab_groups::EitherGroupID& either_id);
+    Flow(FlowType type, const tab_groups::EitherGroupID& either_id);
 
     ~Flow();
 
     Flow(const Flow&);
 
-    const Type type;
+    const FlowType type;
 
     const data_sharing::GroupToken& join_token() const {
-      DCHECK_EQ(type, Type::kJoin);
+      DCHECK_EQ(type, FlowType::kJoin);
       return join_token_;
     }
 
     const tab_groups::EitherGroupID& either_id() const {
-      DCHECK_EQ(type, Type::kShareOrManage);
+      DCHECK_EQ(type, FlowType::kShareOrManage);
       return either_id_;
+    }
+
+    const data_sharing::GroupToken& share_token() const {
+      DCHECK_EQ(type, FlowType::kShareOrManage);
+      CHECK(share_token_.IsValid());
+      return share_token_;
+    }
+
+    void set_share_token(const data_sharing::GroupToken& token) {
+      share_token_ = token;
     }
 
    private:
@@ -103,6 +122,7 @@ class CollaborationController {
 
     // ID for share flow.
     const tab_groups::EitherGroupID either_id_;
+    data_sharing::GroupToken share_token_;
   };
 
   using FinishCallback = base::OnceCallback<void()>;
@@ -133,7 +153,7 @@ class CollaborationController {
   CollaborationService* collaboration_service() {
     return collaboration_service_.get();
   }
-  const Flow& flow() { return flow_; }
+  Flow& flow() { return flow_; }
 
   // Called to transition to another state.
   void TransitionTo(
@@ -154,28 +174,53 @@ class CollaborationController {
   StateId GetStateForTesting();
 
  private:
-  static constexpr std::array<std::pair<StateId, StateId>, 22>
+  static constexpr std::array<std::pair<StateId, StateId>, 34>
       kValidTransitions = {{
           // kPending transitions to:
           //
           //   kAuthenticating: After all initialization steps complete
           //   successfully and authentication status is not valid.
+          //   kWaitingForPolicyUpdate: Current account info are not ready.
           //   kCheckingFlowRequirements: After all initialization steps
           //   complete successfully and authentication status is valid.
           //   kError: An error occurred during initialization.
           {StateId::kPending, StateId::kAuthenticating},
-          {StateId::kPending, StateId::kCheckingFlowRequirements},
+          {StateId::kPending, StateId::kWaitingForPolicyUpdate},
+          {StateId::kPending, StateId::kWaitingForServicesToInitialize},
           {StateId::kPending, StateId::kError},
+
+          // kWaitingForPolicyUpdate transitions to:
+          //
+          //   kAuthenticating: Current account is not managed and sync consent
+          //   is needed.
+          //   kCheckingFlowRequirements: Current account is not managed.
+          //   kError: Current account is managed.
+          {StateId::kWaitingForPolicyUpdate, StateId::kAuthenticating},
+          {StateId::kWaitingForPolicyUpdate,
+           StateId::kCheckingFlowRequirements},
+          {StateId::kWaitingForPolicyUpdate, StateId::kError},
 
           // kAuthenticating transitions to:
           //
+          //   kWaitingForPolicyUpdate: Current account info are not ready.
           //   kCheckingFlowRequirements: After all authentication steps are
           //   completed and verified.
           //   kCancel: After the user cancels the process.
           //   kError: An error occurred during authentication.
-          {StateId::kAuthenticating, StateId::kCheckingFlowRequirements},
+          {StateId::kAuthenticating, StateId::kWaitingForPolicyUpdate},
+          {StateId::kAuthenticating, StateId::kWaitingForServicesToInitialize},
           {StateId::kAuthenticating, StateId::kCancel},
           {StateId::kAuthenticating, StateId::kError},
+
+          // kWaitingForServicesToInitialize transition to:
+          //
+          //   kCheckingFlowRequirements: After all services finish
+          //   initializing.
+          //   kError: An error occurred while waiting for service
+          //   initialization.
+          {StateId::kWaitingForServicesToInitialize,
+           StateId::kCheckingFlowRequirements},
+          {StateId::kWaitingForServicesToInitialize, StateId::kError},
 
           // kCheckingFlowRequirements transition to:
           //
@@ -224,16 +269,34 @@ class CollaborationController {
 
           // kOpeningLocalTabGroup transition to:
           //
-          //   kError: An error occurred while opening local tab group.
           //   kCancel: After the promote is done successfully, cancel the flow
           //   to clean up.
-          {StateId::kOpeningLocalTabGroup, StateId::kError},
+          //   kError: An error occurred while opening local tab group.
           {StateId::kOpeningLocalTabGroup, StateId::kCancel},
+          {StateId::kOpeningLocalTabGroup, StateId::kError},
 
           // kShowingShareScreen transition to:
           //
+          //   kSharingTabGroupUrl: After share screen request creating a shared
+          //   tab group.
+          //   kCancel: After the user exit the share screen without sharing.
           //   kError: An error occurred while showing the share screen.
+          {StateId::kShowingShareScreen, StateId::kMakingTabGroupShared},
+          {StateId::kShowingShareScreen, StateId::kCancel},
           {StateId::kShowingShareScreen, StateId::kError},
+
+          // kMakingTabGroupShared transition to:
+          //
+          //   kSharingTabGroupUrl: After shared tab group is successfully
+          //   created.
+          //   kError: An error occurred while creating the shared tab group.
+          {StateId::kMakingTabGroupShared, StateId::kSharingTabGroupUrl},
+          {StateId::kMakingTabGroupShared, StateId::kError},
+
+          // kSharingTabGroupUrl transition to:
+          //
+          //   kError: An error occurred while sharing the url.
+          {StateId::kSharingTabGroupUrl, StateId::kError},
 
           // kShowingManageScreen transition to:
           //
@@ -246,7 +309,8 @@ class CollaborationController {
 
   std::unique_ptr<ControllerState> current_state_;
 
-  const Flow flow_;
+  Flow flow_;
+  bool is_deleting_{false};
   const raw_ptr<CollaborationService> collaboration_service_;
   const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;

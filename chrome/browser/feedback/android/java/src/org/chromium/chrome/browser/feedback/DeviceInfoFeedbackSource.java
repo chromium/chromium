@@ -8,11 +8,13 @@ import android.os.Build;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Map;
 
 /** Grabs feedback about the device information - name and type. */
+@NullMarked
 class DeviceInfoFeedbackSource implements FeedbackSource {
     private static final String DEVICE_NAME_KEY = "device_name";
     private static final String DEVICE_TYPE_KEY = "device_type";

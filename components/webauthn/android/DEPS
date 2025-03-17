@@ -15,3 +15,9 @@ include_rules = [
   "+third_party/blink/public/mojom",
   "+ui/android/java",
 ]
+
+specific_include_rules = {
+  "CredManHelperRobolectricTest.java": [
+    "+components/payments/content/android/junit",
+  ],
+}

@@ -27,14 +27,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
 #include "base/memory/values_equivalent.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -90,8 +86,6 @@ FontDescription::FontDescription()
       font_selection_request_(kNormalWeightValue,
                               kNormalWidthValue,
                               kNormalSlopeValue) {
-  fields_as_unsigned_.parts[0] = 0;
-  fields_as_unsigned_.parts[1] = 0;
   fields_.orientation_ = static_cast<unsigned>(FontOrientation::kHorizontal);
   fields_.width_variant_ = kRegularWidth;
   fields_.variant_caps_ = kCapsNormal;
@@ -107,18 +101,21 @@ FontDescription::FontDescription()
   fields_.text_rendering_ = kAutoTextRendering;
   fields_.synthetic_bold_ = false;
   fields_.synthetic_italic_ = false;
+  fields_.synthetic_oblique_ = false;
   fields_.subpixel_text_position_ = use_subpixel_text_positioning_;
   fields_.typesetting_features_ = 0;
   fields_.variant_numeric_ = FontVariantNumeric().fields_as_unsigned_;
+  fields_.variant_east_asian_ = 0;
   fields_.subpixel_ascent_descent_ = false;
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
+  fields_.has_size_adjust_descriptor_ = false;
   fields_.hash_category_ = kHashRegularValue;
   fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
   fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
   fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
   fields_.variant_position_ = kNormalVariantPosition;
   fields_.variant_emoji_ = kNormalVariantEmoji;
-  static_assert(static_cast<unsigned>(TextSpacingTrim::kInitial) == 0);
+  fields_.text_spacing_trim_ = static_cast<unsigned>(TextSpacingTrim::kInitial);
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -522,6 +519,13 @@ int FontDescription::MinimumPrefixWidthToHyphenate() const {
          kMinimumPrefixWidthDenominator;
 }
 
+ResolvedFontFeatures FontDescription::ResolveFontFeatures() const {
+  if (const FontVariantAlternates* alternates = GetFontVariantAlternates()) {
+    return alternates->GetResolvedFontFeatures();
+  }
+  return ResolvedFontFeatures();
+}
+
 String FontDescription::ToString(GenericFamilyType familyType) {
   switch (familyType) {
     case GenericFamilyType::kNoFamily:
@@ -683,7 +687,7 @@ String FontDescription::VariantLigatures::ToString() const {
 String FontDescription::Size::ToString() const {
   return String::Format(
       "keyword_size=%u, specified_size=%f, is_absolute_size=%s", keyword, value,
-      is_absolute ? "true" : "false");
+      base::ToString(is_absolute).c_str());
 }
 
 String FontDescription::FamilyDescription::ToString() const {
@@ -703,10 +707,6 @@ String FontDescription::ToString(FontVariantPosition variant_position) {
       return "Super";
   }
   return "Unknown";
-}
-
-static const char* ToBooleanString(bool value) {
-  return value ? "true" : "false";
 }
 
 String FontDescription::ToString() const {
@@ -745,15 +745,16 @@ String FontDescription::ToString() const {
       blink::ToString(Orientation()).Ascii().c_str(),
       blink::ToString(WidthVariant()).Ascii().c_str(),
       FontDescription::ToString(VariantCaps()).Ascii().c_str(),
-      ToBooleanString(IsAbsoluteSize()),
+      base::ToString(IsAbsoluteSize()).c_str(),
       FontDescription::ToString(GenericFamily()).Ascii().c_str(),
       FontDescription::ToString(Kerning()).Ascii().c_str(),
       GetVariantLigatures().ToString().Ascii().c_str(), KeywordSize(),
       blink::ToString(FontSmoothing()).Ascii().c_str(),
       blink::ToString(TextRendering()).Ascii().c_str(),
-      ToBooleanString(IsSyntheticBold()), ToBooleanString(IsSyntheticItalic()),
-      ToBooleanString(UseSubpixelPositioning()),
-      ToBooleanString(SubpixelAscentDescent()),
+      base::ToString(IsSyntheticBold()).c_str(),
+      base::ToString(IsSyntheticItalic()).c_str(),
+      base::ToString(UseSubpixelPositioning()).c_str(),
+      base::ToString(SubpixelAscentDescent()).c_str(),
       VariantNumeric().ToString().Ascii().c_str(),
       VariantEastAsian().ToString().Ascii().c_str(),
       blink::ToString(FontOpticalSizing()).Ascii().c_str(),

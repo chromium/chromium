@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -110,9 +110,12 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   void SetBackgroundVisibility(BackgroundVisibility background_visibility);
 
-  void SetLabel(const std::u16string& label);
-  void SetLabel(const std::u16string& label,
-                const std::u16string& accessible_name);
+  // Sets whether tonal colors are used for the background of the view when
+  // expanded to show the label.
+  void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
+
+  void SetLabel(std::u16string_view label);
+  void SetLabel(std::u16string_view label, std::u16string_view accessible_name);
   void SetFontList(const gfx::FontList& font_list);
 
   gfx::RoundedCornersF GetCornerRadii() const;
@@ -136,14 +139,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void set_grow_animation_starting_width_for_testing(int width) {
     grow_animation_starting_width_ = width;
   }
-
-  // Reduces the slide duration to 1ms such that animation still follows
-  // through in the code but is short enough that it is essentially skipped.
-  void ReduceAnimationTimeForTesting();
-
-  // Enables tests to reset slide animation to a state where the label is not
-  // showing.
-  void ResetSlideAnimationForTesting() { ResetSlideAnimation(false); }
 
  protected:
   static constexpr int kOpenTimeMS = 150;
@@ -210,7 +205,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Set up for icons that animate their labels in. Animating out is initiated
   // manually.
-  void SetUpForAnimation();
+  void SetUpForAnimation(base::TimeDelta duration = base::Milliseconds(150));
 
   // Set up for icons that animate their labels in and then automatically out
   // after a period of time. The duration of the slide includes the just the
@@ -242,9 +237,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Spacing between the image and the label.
   int GetInternalSpacing() const;
 
-  // Sets whether tonal colors are used for the background of the view when
+  // Gets whether tonal colors are used for the background of the view when
   // expanded to show the label.
-  void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
+  bool GetUseTonalColorsWhenExpanded() const {
+    return use_tonal_color_when_expanded_;
+  }
 
   // Subclasses that want extra spacing added to the internal spacing can
   // override this method. This may be used when we want to align the label text

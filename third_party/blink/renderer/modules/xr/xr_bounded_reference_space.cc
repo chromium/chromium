@@ -66,7 +66,7 @@ void XRBoundedReferenceSpace::EnsureUpdated() const {
   if (stage_parameters) {
     // Use the transform given by stage_parameters if available.
     mojo_from_bounded_native_ =
-        std::make_unique<gfx::Transform>(stage_parameters->mojo_from_floor);
+        std::make_unique<gfx::Transform>(stage_parameters->mojo_from_stage);
 
     // In order to ensure that the bounds continue to line up with the user's
     // physical environment we need to transform them from native to offset.

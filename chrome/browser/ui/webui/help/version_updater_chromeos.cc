@@ -301,17 +301,26 @@ VersionUpdaterCros::~VersionUpdaterCros() {
 
 void VersionUpdaterCros::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
+  // If the status change is for an installation (e.g. DLCs), then this status
+  // has nothing to with an OS update.
+  if (status.is_install()) {
+    // Invoke the callback to signal a terminal state when the update engine is
+    // handling non-OS update operations (e.g. installations) in flight. In this
+    // case, the device can be considered up-to-date.
+    // Note: It is safe to set the last operation to IDLE provided that the
+    // update engine actually returns to an idle state, allowing the user to
+    // check for updates again.
+    // TODO(crbug.com/393412165) Consider more robust approaches in this case.
+    last_operation_ = update_engine::Operation::IDLE;
+    callback_.Run(UPDATED, 0, false, false, std::string(), 0, std::u16string());
+    return;
+  }
+
   Status my_status = UPDATED;
   int progress = 0;
   std::string version = status.new_version();
   int64_t size = status.new_size();
   std::u16string message;
-
-  // If the status change is for an installation, this means that DLCs are being
-  // installed and has nothing to with the OS. Ignore this status change.
-  if (status.is_install()) {
-    return;
-  }
 
   // If the updater is currently idle, just show the last operation (unless it
   // was previously checking for an update -- in that case, the system is

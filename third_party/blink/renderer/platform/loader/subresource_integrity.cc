@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace blink {
 
@@ -56,6 +57,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const Resource& resource,
+    const FeatureContext* feature_context,
     IntegrityReport& integrity_report,
     HashMap<HashAlgorithm, String>* computed_hashes) {
   // FetchResponseType::kError never arrives because it is a loading error.
@@ -77,8 +79,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   String raw_headers = response.HttpHeaderFields().GetAsRawString(
       response.HttpStatusCode(), response.HttpStatusText());
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       raw_headers, integrity_report,
-                                       computed_hashes);
+                                       raw_headers, feature_context,
+                                       integrity_report, computed_hashes);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
@@ -87,6 +89,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const KURL& resource_url,
     FetchResponseType response_type,
     const String& raw_headers,
+    const FeatureContext* feature_context,
     IntegrityReport& integrity_report) {
   // We're only going to check the integrity of non-errors, and
   // non-opaque responses.
@@ -101,10 +104,12 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   }
 
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       raw_headers, integrity_report, nullptr);
+                                       raw_headers, feature_context,
+                                       integrity_report, nullptr);
 }
 
-String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
+String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm,
+                                  const FeatureContext* feature_context) {
   switch (algorithm) {
     case IntegrityAlgorithm::kSha256:
       return "SHA-256";
@@ -113,13 +118,14 @@ String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
     case IntegrityAlgorithm::kSha512:
       return "SHA-512";
     case IntegrityAlgorithm::kEd25519:
-      DCHECK(RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled());
+      DCHECK(RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(
+          feature_context));
       return "Ed25519";
   }
 }
 
-String IntegrityAlgorithmsForConsole() {
-  return RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled()
+String IntegrityAlgorithmsForConsole(const FeatureContext* feature_context) {
+  return RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(feature_context)
              ? "'sha256', 'sha384', 'sha512', or 'ed21159'"
              : "'sha256', 'sha384', or 'sha512'";
 }
@@ -162,12 +168,12 @@ String GetIntegrityStringFromDigest(const DigestValue& digest,
   return reported_hash.ReleaseString();
 }
 
-std::optional<String> SubresourceIntegrity::GetSubresourceIntegrityHash(
+String SubresourceIntegrity::GetSubresourceIntegrityHash(
     const SegmentedBuffer* buffer,
     HashAlgorithm algorithm) {
   DigestValue digest;
   if (!ComputeDigest(algorithm, buffer, digest)) {
-    return std::nullopt;
+    return String();
   }
   return GetIntegrityStringFromDigest(digest, algorithm);
 }
@@ -177,6 +183,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const String& raw_headers,
+    const FeatureContext* feature_context,
     IntegrityReport& integrity_report,
     HashMap<HashAlgorithm, String>* computed_hashes) {
   // Implements https://wicg.github.io/signature-based-sri/#matching.
@@ -205,7 +212,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   // Verify the hash-based integrity constraints:
   //
   if (!CheckHashesImpl(parsed_metadata.hashes, buffer, resource_url,
-                       integrity_report, computed_hashes)) {
+                       feature_context, integrity_report, computed_hashes)) {
     return false;
   }
 
@@ -213,7 +220,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   // And the signature-based constraints (iff the relevant runtime-enabled
   // feature is enabled).
   //
-  if (RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled() &&
+  if (RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(feature_context) &&
       !CheckSignaturesImpl(parsed_metadata.signatures, resource_url,
                            raw_headers, integrity_report)) {
     return false;
@@ -225,6 +232,7 @@ bool SubresourceIntegrity::CheckHashesImpl(
     const WTF::HashSet<IntegrityMetadataPair>& hashes,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
+    const FeatureContext* feature_context,
     IntegrityReport& integrity_report,
     HashMap<HashAlgorithm, String>* computed_hashes) {
   // This implements steps 3, 5, and 7 of
@@ -293,8 +301,9 @@ bool SubresourceIntegrity::CheckHashesImpl(
       "Failed to find a valid digest in the 'integrity' attribute for "
       "resource '" +
       resource_url.ElidedString() + "' with computed " +
-      IntegrityAlgorithmToString(strongest_algorithm) + " integrity '" +
-      Base64Encode(actual_value) + "'. The resource has been blocked.");
+      IntegrityAlgorithmToString(strongest_algorithm, feature_context) +
+      " integrity '" + Base64Encode(actual_value) +
+      "'. The resource has been blocked.");
   integrity_report.AddUseCount(
       WebFeature::kSRIElementWithNonMatchingIntegrityAttribute);
   return false;
@@ -333,7 +342,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
   //       one of the key digests in `parsed_metadata.signatures` matches at
   //       least one of the signatures we parsed from |raw_headers|.)
   Vector<network::mojom::blink::SRIMessageSignaturePtr> signatures =
-      ParseSRIMessageSignaturesFromHeaders(raw_headers);
+      std::move(ParseSRIMessageSignaturesFromHeaders(raw_headers)->signatures);
 
   // This would be caught below, but we'll exit early for unsigned resources
   // so we can provide a better error message in the console.
@@ -385,8 +394,10 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
 }
 
 SubresourceIntegrity::AlgorithmParseResult
-SubresourceIntegrity::ParseAttributeAlgorithm(std::string_view token,
-                                              IntegrityAlgorithm& algorithm) {
+SubresourceIntegrity::ParseAttributeAlgorithm(
+    std::string_view token,
+    const FeatureContext* feature_context,
+    IntegrityAlgorithm& algorithm) {
   static const AlgorithmPrefixPair kPrefixes[] = {
       {"sha256", IntegrityAlgorithm::kSha256},
       {"sha-256", IntegrityAlgorithm::kSha256},
@@ -400,7 +411,9 @@ SubresourceIntegrity::ParseAttributeAlgorithm(std::string_view token,
     const std::string_view prefix(prefix_cstr);
     // Parse signature-based algorithm prefixes iff the runtime feature is
     // enabled.
-    if (!RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled() &&
+    if (!(RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(
+              feature_context) ||
+          RuntimeEnabledFeatures::SignatureBasedInlineIntegrityEnabled()) &&
         prefix == "ed25519") {
       continue;
     }
@@ -431,13 +444,16 @@ bool SubresourceIntegrity::ParseDigest(std::string_view maybe_digest,
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
-    IntegrityMetadataSet& metadata_set) {
-  return ParseIntegrityAttribute(attribute, metadata_set, nullptr);
+    IntegrityMetadataSet& metadata_set,
+    const FeatureContext* feature_context) {
+  return ParseIntegrityAttribute(attribute, metadata_set, feature_context,
+                                 nullptr);
 }
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
     IntegrityMetadataSet& metadata_set,
+    const FeatureContext* feature_context,
     IntegrityReport* integrity_report) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
   // once.
@@ -460,7 +476,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     // them.
     IntegrityAlgorithm algorithm;
     AlgorithmParseResult parse_result =
-        ParseAttributeAlgorithm(token, algorithm);
+        ParseAttributeAlgorithm(token, feature_context, algorithm);
     if (!parse_result.has_value()) {
       // Unknown hash algorithms are treated as if they're not present, and
       // thus are not marked as an error, they're just skipped.
@@ -470,7 +486,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
             integrity_report->AddConsoleErrorMessage(
                 "Error parsing 'integrity' attribute ('" + attribute +
                 "'). The specified hash algorithm must be one of " +
-                IntegrityAlgorithmsForConsole() + ".");
+                IntegrityAlgorithmsForConsole(feature_context) + ".");
             integrity_report->AddUseCount(
                 WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
             break;
@@ -478,7 +494,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
             integrity_report->AddConsoleErrorMessage(
                 "Error parsing 'integrity' attribute ('" + attribute +
                 "'). The hash algorithm must be one of " +
-                IntegrityAlgorithmsForConsole() +
+                IntegrityAlgorithmsForConsole(feature_context) +
                 ", followed by a '-' character.");
             integrity_report->AddUseCount(
                 WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
@@ -520,11 +536,86 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
 
     IntegrityMetadata integrity_metadata(digest, algorithm);
     if (IsHashingAlgorithm(algorithm)) {
+      if (integrity_report) {
+        integrity_report->AddUseCount(WebFeature::kSRIHashAssertion);
+      }
       metadata_set.hashes.insert(integrity_metadata.ToPair());
     } else {
+      if (integrity_report) {
+        integrity_report->AddUseCount(WebFeature::kSRIPublicKeyAssertion);
+      }
       metadata_set.signatures.insert(integrity_metadata.ToPair());
     }
   }
+}
+
+bool SubresourceIntegrity::VerifyInlineIntegrity(
+    const String& integrity_attr,
+    const String& signature_attr,
+    const String& source_code,
+    const FeatureContext* feature_context) {
+  if (!RuntimeEnabledFeatures::SignatureBasedInlineIntegrityEnabled()) {
+    return true;
+  }
+
+  // Parse `integrity`:
+  IntegrityMetadataSet integrity_metadata;
+  if (!integrity_attr.empty()) {
+    IntegrityReport integrity_report;
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attr, integrity_metadata, feature_context, &integrity_report);
+    // TODO(391907163): Log errors from |integrity_report|.
+  }
+
+  // Loop through asserted signatures, attempting to verify any of them using
+  // any of the known keys. If any key can verify any signature, return true.
+  int semantically_valid_signatures = 0;
+
+  StringUTF8Adaptor sig_adaptor(signature_attr);
+  StringUTF8Adaptor source_adaptor(source_code);
+  for (std::string_view piece : base::SplitStringPiece(
+           sig_adaptor.AsStringView(), base::kWhitespaceASCII,
+           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    auto [algorithm, base64_signature] =
+        base::SplitStringOnce(piece, '-')
+            .value_or(std::make_pair(std::string_view(), std::string_view()));
+    if (algorithm != "ed25519") {
+      // TODO(391907163): Log a warning for unknown (and therefore ignored)
+      // signature algorithms.
+      continue;
+    }
+
+    Vector<char> decoded_signature;
+    if (!Base64Decode(StringView(base::as_byte_span(base64_signature)),
+                      decoded_signature) ||
+        decoded_signature.size() != 64u) {
+      // TODO(391907163): Log an error for invalid signature digests.
+      continue;
+    }
+    semantically_valid_signatures++;
+
+    for (const auto& key : integrity_metadata.signatures) {
+      Vector<char> decoded_key;
+      if (!Base64Decode(key.first, decoded_key) || decoded_key.size() != 32u) {
+        // TODO(391907163): Log an error for invalid public key digests.
+        continue;
+      }
+      if (ED25519_verify(
+              reinterpret_cast<const uint8_t*>(source_adaptor.data()),
+              source_adaptor.size(),
+              reinterpret_cast<const uint8_t*>(decoded_signature.data()),
+              reinterpret_cast<const uint8_t*>(decoded_key.data()))) {
+        return true;
+      }
+    }
+  }
+
+  // If there were no signatures matching the grammar, then return true (as
+  // we treat that case as not having any meaningful assertion). Otherwise,
+  // no asserted signature could be validated above, so fail verification.
+  //
+  // TODO(391907163): Log an error for non-verifiable signatures.
+  return semantically_valid_signatures == 0;
 }
 
 }  // namespace blink

@@ -4,7 +4,8 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {DeviceRequest, DeviceRequestId, DeviceRequestKind, FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
+import type {DeviceRequest, FirmwareUpdate, InstallationProgress} from './firmware_update.mojom-webui.js';
+import {DeviceRequestId, DeviceRequestKind, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
 
 export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {

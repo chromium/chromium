@@ -9,9 +9,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/trace_event/named_trigger.h"
+#include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -170,27 +172,30 @@ void Calculator::OnFirstIdle() {
 
 void Calculator::EmitResponsiveness(CongestionType congestion_type,
                                     size_t num_congested_slices,
-                                    StartupStage startup_stage) {
+                                    StartupStage startup_stage,
+                                    uint64_t event_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   static constexpr size_t kMaxCongestedSlices =
       kMeasurementPeriod / kCongestionThreshold;
   static constexpr size_t kBucketCount = 50;
   DCHECK_LE(num_congested_slices, kMaxCongestedSlices);
+  base::trace_event::HistogramScope scoped_event(event_id);
   switch (congestion_type) {
     case CongestionType::kExecutionOnly: {
-      UMA_HISTOGRAM_COUNTS_1000("Browser.MainThreadsCongestion.RunningOnly",
-                                num_congested_slices);
+      base::UmaHistogramCustomCounts(
+          "Browser.MainThreadsCongestion.RunningOnly", num_congested_slices, 1,
+          1000, kBucketCount);
       // Only kFirstInterval and kPeriodic are reported with a suffix, stages
       // in between are only part of the unsuffixed histogram.
       if (startup_stage_ == StartupStage::kFirstInterval) {
-        UMA_HISTOGRAM_COUNTS_1000(
+        base::UmaHistogramCustomCounts(
             "Browser.MainThreadsCongestion.RunningOnly.Initial",
-            num_congested_slices);
+            num_congested_slices, 1, 1000, kBucketCount);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
-        UMA_HISTOGRAM_COUNTS_1000(
+        base::UmaHistogramCustomCounts(
             "Browser.MainThreadsCongestion.RunningOnly.Periodic",
-            num_congested_slices);
+            num_congested_slices, 1, 1000, kBucketCount);
       }
       break;
     }
@@ -200,21 +205,21 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
           startup_stage_ == StartupStage::kFirstIntervalDoneWithoutFirstIdle) {
         break;
       }
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion",
-                                  num_congested_slices, 1, kMaxCongestedSlices,
-                                  kBucketCount);
+      base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion",
+                                     num_congested_slices, 1,
+                                     kMaxCongestedSlices, kBucketCount);
       if (delegate_) {
         delegate_->OnResponsivenessEmitted(num_congested_slices, 1,
                                            kMaxCongestedSlices, kBucketCount);
       }
       if (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Initial",
-                                    num_congested_slices, 1,
-                                    kMaxCongestedSlices, kBucketCount);
+        base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion.Initial",
+                                       num_congested_slices, 1,
+                                       kMaxCongestedSlices, kBucketCount);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Periodic",
-                                    num_congested_slices, 1,
-                                    kMaxCongestedSlices, kBucketCount);
+        base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion.Periodic",
+                                       num_congested_slices, 1,
+                                       kMaxCongestedSlices, kBucketCount);
       }
       break;
     }
@@ -226,7 +231,8 @@ void Calculator::EmitResponsivenessTraceEvents(
     StartupStage startup_stage,
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    const std::set<int>& congested_slices) {
+    const std::set<int>& congested_slices,
+    uint64_t event_id) {
   // Only output kCongestedIntervalsMeasurementEvent event when there are
   // congested slices during the measurement.
   if (congested_slices.empty()) {
@@ -237,7 +243,7 @@ void Calculator::EmitResponsivenessTraceEvents(
   // measurement.
   if (congestion_type == CongestionType::kQueueAndExecution) {
     EmitCongestedIntervalsMeasurementTraceEvent(
-        startup_stage, start_time, end_time, congested_slices.size());
+        startup_stage, start_time, end_time, congested_slices.size(), event_id);
     // Since a lot of startup tasks are queue and then released, queuing
     // congestion is very noisy and thus ignored before OnFirstIdle().
     if (startup_stage == StartupStage::kFirstInterval ||
@@ -276,16 +282,13 @@ void Calculator::EmitCongestedIntervalsMeasurementTraceEvent(
     StartupStage startup_stage,
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    size_t num_congested_slices) {
+    size_t num_congested_slices,
+    uint64_t event_id) {
   TRACE_EVENT_BEGIN(kLatencyEventCategory,
                     GetCongestedIntervalsMeasurementEvent(startup_stage),
                     congestion_track_, start_time);
-  TRACE_EVENT_END(
-      kLatencyEventCategory, congestion_track_, end_time,
-      base::trace_event::TriggerFlow("Browser.MainThreadsCongestion",
-                                     num_congested_slices),
-      base::trace_event::TriggerFlow(
-          "Browser.MainThreadsCongestion.RunningOnly", num_congested_slices));
+  TRACE_EVENT_END(kLatencyEventCategory, congestion_track_, end_time,
+                  perfetto::Flow::Global(event_id));
 }
 
 void Calculator::EmitCongestedIntervalTraceEvent(CongestionType congestion_type,
@@ -418,8 +421,9 @@ void Calculator::CalculateResponsiveness(
       }
     }
 
-    EmitResponsiveness(congestion_type, congested_slices.size(),
-                       startup_stage_);
+    uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
+    EmitResponsiveness(congestion_type, congested_slices.size(), startup_stage_,
+                       event_id);
 
     // If the 'latency' tracing category is enabled and we are ready to observe
     // queuing times (past first idle), emit trace events for the measurement
@@ -429,8 +433,8 @@ void Calculator::CalculateResponsiveness(
                                        &latency_category_enabled);
     if (latency_category_enabled) {
       EmitResponsivenessTraceEvents(congestion_type, startup_stage_, start_time,
-                                    current_interval_end_time,
-                                    congested_slices);
+                                    current_interval_end_time, congested_slices,
+                                    event_id);
     }
 
     start_time = current_interval_end_time;

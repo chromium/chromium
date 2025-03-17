@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
@@ -35,6 +36,8 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -49,6 +52,7 @@ public class ChildProcessConnection {
     private static final int FALLBACK_TIMEOUT_IN_SECONDS = 10;
     private static final boolean SUPPORT_NOT_PERCEPTIBLE_BINDING =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+    private static final String HISTOGRAM_NAME = "Android.ChildProcessConectionEventCounts";
 
     /**
      * Used to notify the consumer about the process start. These callbacks will be invoked before
@@ -103,6 +107,24 @@ public class ChildProcessConnection {
          *                    library.
          */
         void onReceivedZygoteInfo(ChildProcessConnection connection, Bundle relroBundle);
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({
+        EventsEnum.SCHEDULE_TIMEOUT_SANDBOXED,
+        EventsEnum.SCHEDULE_TIMEOUT_UNSANDBOXED,
+        EventsEnum.FALLBACK_ON_TIMEOUT_SANDBOXED,
+        EventsEnum.FALLBACK_ON_TIMEOUT_UNSANDBOXED,
+        EventsEnum.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface EventsEnum {
+        int SCHEDULE_TIMEOUT_SANDBOXED = 0;
+        int SCHEDULE_TIMEOUT_UNSANDBOXED = 1;
+        int FALLBACK_ON_TIMEOUT_SANDBOXED = 2;
+        int FALLBACK_ON_TIMEOUT_UNSANDBOXED = 3;
+        int COUNT = 4;
     }
 
     private static class ChildProcessMismatchException extends RuntimeException {
@@ -227,6 +249,15 @@ public class ChildProcessConnection {
     // <service> manifest declaration.
     private final @Nullable String mInstanceName;
 
+    // If true, then this connection fallbacking back does not cause other connections to fallback,
+    // and vice version; essentially ignore `sAlwaysFallback`.
+    private final boolean mIndependentFallback;
+
+    // Should not be used for any functional changes as this class should be oblivious to whether
+    // this child process is sandboxed or not. Only added here for histogram purposes since it's
+    // inconvenient to log some histogram where this information is available.
+    private final boolean mIsSandboxedForHistograms;
+
     // Use Context.BIND_EXTERNAL_SERVICE flag for this service.
     private final boolean mBindAsExternalService;
 
@@ -288,7 +319,9 @@ public class ChildProcessConnection {
             boolean bindToCaller,
             boolean bindAsExternalService,
             Bundle serviceBundle,
-            @Nullable String instanceName) {
+            @Nullable String instanceName,
+            boolean independentFallback,
+            boolean isSandboxedForHistograms) {
         this(
                 context,
                 serviceName,
@@ -297,7 +330,9 @@ public class ChildProcessConnection {
                 bindAsExternalService,
                 serviceBundle,
                 /* connectionFactory= */ null,
-                instanceName);
+                instanceName,
+                independentFallback,
+                isSandboxedForHistograms);
     }
 
     @VisibleForTesting
@@ -309,7 +344,9 @@ public class ChildProcessConnection {
             boolean bindAsExternalService,
             Bundle serviceBundle,
             @Nullable ChildServiceConnectionFactory connectionFactory,
-            @Nullable String instanceName) {
+            @Nullable String instanceName,
+            boolean independentFallback,
+            boolean isSandboxedForHistograms) {
         mLauncherHandler = new Handler();
         mLauncherExecutor =
                 (Runnable runnable) -> {
@@ -325,6 +362,8 @@ public class ChildProcessConnection {
                 BuildInfo.getInstance().packageName);
         mBindToCaller = bindToCaller;
         mInstanceName = instanceName;
+        mIndependentFallback = independentFallback;
+        mIsSandboxedForHistograms = isSandboxedForHistograms;
         // Incremental install does not work with isolatedProcess, and externalService requires
         // isolatedProcess, so both need to be turned off for incremental install.
         mBindAsExternalService = bindAsExternalService && !BuildConfig.IS_INCREMENTAL_INSTALL;
@@ -375,7 +414,7 @@ public class ChildProcessConnection {
                 };
 
         createBindings(
-                sAlwaysFallback && mFallbackServiceName != null
+                getAlwaysFallback() && mFallbackServiceName != null
                         ? mFallbackServiceName
                         : mServiceName);
     }
@@ -837,8 +876,8 @@ public class ChildProcessConnection {
         assert !mUnbound;
 
         boolean success = bindUsingExistingBindings(useStrongBinding);
-        boolean usedFallback = sAlwaysFallback && mFallbackServiceName != null;
-        boolean canFallback = !sAlwaysFallback && mFallbackServiceName != null;
+        boolean usedFallback = getAlwaysFallback() && mFallbackServiceName != null;
+        boolean canFallback = !getAlwaysFallback() && mFallbackServiceName != null;
         if (!success && !usedFallback && canFallback) {
             // Note this error condition is generally transient so `sAlwaysFallback` is
             // not set in this code path.
@@ -851,6 +890,14 @@ public class ChildProcessConnection {
         if (success && !usedFallback && canFallback) {
             mLauncherHandler.postDelayed(
                     this::checkBindTimeOut, FALLBACK_TIMEOUT_IN_SECONDS * 1000);
+
+            if (mIsSandboxedForHistograms) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        HISTOGRAM_NAME, EventsEnum.SCHEDULE_TIMEOUT_SANDBOXED, EventsEnum.COUNT);
+            } else {
+                RecordHistogram.recordEnumeratedHistogram(
+                        HISTOGRAM_NAME, EventsEnum.SCHEDULE_TIMEOUT_UNSANDBOXED, EventsEnum.COUNT);
+            }
         }
 
         return success;
@@ -890,8 +937,17 @@ public class ChildProcessConnection {
         if (mUnbound) {
             return;
         }
-        sAlwaysFallback = true;
+        if (!mIndependentFallback) {
+            sAlwaysFallback = true;
+        }
         retireBindingsAndBindFallback();
+        if (mIsSandboxedForHistograms) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    HISTOGRAM_NAME, EventsEnum.FALLBACK_ON_TIMEOUT_SANDBOXED, EventsEnum.COUNT);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    HISTOGRAM_NAME, EventsEnum.FALLBACK_ON_TIMEOUT_UNSANDBOXED, EventsEnum.COUNT);
+        }
     }
 
     private boolean retireBindingsAndBindFallback() {
@@ -1201,6 +1257,10 @@ public class ChildProcessConnection {
     @VisibleForTesting
     protected Handler getLauncherHandler() {
         return mLauncherHandler;
+    }
+
+    private boolean getAlwaysFallback() {
+        return sAlwaysFallback && !mIndependentFallback;
     }
 
     private void onMemoryPressure(@MemoryPressureLevel int pressure) {

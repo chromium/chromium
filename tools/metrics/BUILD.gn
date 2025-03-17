@@ -131,6 +131,7 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/merge_xml.py",
     "//tools/metrics/histograms/merge_xml_test.py",
     "//tools/metrics/histograms/populate_enums.py",
+    "//tools/metrics/histograms/PRESUBMIT_test.py",
     "//tools/metrics/histograms/pretty_print.py",
     "//tools/metrics/histograms/pretty_print_test.py",
     "//tools/metrics/histograms/validate_token.py",

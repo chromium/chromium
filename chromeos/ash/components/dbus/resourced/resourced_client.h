@@ -117,11 +117,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   // margins.
   virtual void SetMemoryMargins(MemoryMargins margins) = 0;
 
-  enum class Component {
-    kAsh = 0,
-    kLacros = 1,
-  };
-
   struct Process {
     Process(base::ProcessHandle pid,
             bool is_protected,
@@ -141,7 +136,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   };
 
   virtual void ReportBrowserProcesses(
-      Component component,
       const std::vector<Process>& processes) = 0;
 
   using SetQoSStateCallback = base::OnceCallback<void(dbus::DBusResult)>;

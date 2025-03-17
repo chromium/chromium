@@ -4,12 +4,12 @@
 
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -117,8 +117,9 @@ inline const typename Map::mapped_type* FindValue(
     const Map& map,
     const typename Map::key_type& key) {
   auto it = map.find(key);
-  if (it == map.end())
+  if (it == map.end()) {
     return nullptr;
+  }
   return &it->second;
 }
 
@@ -127,8 +128,9 @@ template <typename Map, typename Key>
 auto FindValue(const Map& map, const Key& key) -> const
     decltype(begin(map)->second)* {
   for (const auto& item : map) {
-    if (item.first == key)
+    if (item.first == key) {
       return &item.second;
+    }
   }
   return nullptr;
 }
@@ -231,8 +233,9 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
     const std::vector<ReceiverAppType>& supported_app_types,
     const std::string& app_params,
     const std::string& invisible_sender) {
-  if (app_infos.empty())
+  if (app_infos.empty()) {
     return nullptr;
+  }
 
   auto cast_source = std::make_unique<CastMediaSource>(
       source_id, app_infos,
@@ -256,11 +259,13 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
         base::Milliseconds(target_playout_delay_millis));
   }
 
-  if (audio_capture_str == "0")
+  if (audio_capture_str == "0") {
     cast_source->set_site_requested_audio_capture(false);
+  }
 
-  if (!supported_app_types.empty())
+  if (!supported_app_types.empty()) {
     cast_source->set_supported_app_types(supported_app_types);
+  }
   cast_source->set_app_params(app_params);
 
   if (invisible_sender == "true") {
@@ -275,8 +280,9 @@ std::unique_ptr<CastMediaSource> ParseCastUrl(const MediaSource::Id& source_id,
                                               const GURL& url) {
   std::string app_id = url.path();
   // App ID must be non-empty.
-  if (app_id.empty())
+  if (app_id.empty()) {
     return nullptr;
+  }
 
   auto params{MakeQueryMap(url)};
   return CreateFromURLParams(
@@ -310,8 +316,9 @@ std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
   // Legacy URLs can specify multiple apps.
   std::vector<std::string> app_id_params;
   for (const auto& param : params) {
-    if (param.first == "__castAppId__")
+    if (param.first == "__castAppId__") {
       app_id_params.push_back(param.second);
+    }
   }
 
   std::vector<CastAppInfo> app_infos;
@@ -330,8 +337,9 @@ std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
       }
     }
 
-    if (app_id.empty())
+    if (app_id.empty()) {
       continue;
+    }
 
     CastAppInfo app_info(app_id,
                          CastDeviceCapabilitiesFromString(capabilities));
@@ -339,8 +347,9 @@ std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
     app_infos.push_back(app_info);
   }
 
-  if (app_infos.empty())
+  if (app_infos.empty()) {
     return nullptr;
+  }
 
   return CreateFromURLParams(
       source_id, app_infos, FindValueOr(params, "__castAutoJoinPolicy__", ""),
@@ -405,19 +414,23 @@ CastAppInfo CastAppInfo::ForCastStreamingAudio() {
 // static
 std::unique_ptr<CastMediaSource> CastMediaSource::FromMediaSource(
     const MediaSource& source) {
-  if (source.IsTabMirroringSource())
+  if (source.IsTabMirroringSource()) {
     return CastMediaSourceForTabMirroring(source.id());
+  }
 
-  if (source.IsDesktopMirroringSource())
+  if (source.IsDesktopMirroringSource()) {
     return CastMediaSourceForDesktopMirroring(source);
+  }
 
-  if (source.IsRemotePlaybackSource())
+  if (source.IsRemotePlaybackSource()) {
     return CastMediaSourceForRemotePlayback(source);
+  }
 
   const GURL& url = source.url();
 
-  if (!url.is_valid() || url.spec().length() > kMaxCastPresentationUrlLength)
+  if (!url.is_valid() || url.spec().length() > kMaxCastPresentationUrlLength) {
     return nullptr;
+  }
   if (url.SchemeIs(kCastPresentationUrlScheme)) {
     return ParseCastUrl(source.id(), url);
   } else if (IsLegacyCastPresentationUrl(url)) {
@@ -461,15 +474,16 @@ CastMediaSource::~CastMediaSource() = default;
 
 bool CastMediaSource::ContainsApp(const std::string& app_id) const {
   for (const auto& info : app_infos_) {
-    if (info.app_id == app_id)
+    if (info.app_id == app_id) {
       return true;
+    }
   }
   return false;
 }
 
 bool CastMediaSource::ContainsAnyAppFrom(
     const std::vector<std::string>& app_ids) const {
-  return base::ranges::any_of(app_ids, [this](const std::string& app_id) {
+  return std::ranges::any_of(app_ids, [this](const std::string& app_id) {
     return ContainsApp(app_id);
   });
 }
@@ -480,8 +494,9 @@ bool CastMediaSource::ContainsStreamingApp() const {
 
 std::vector<std::string> CastMediaSource::GetAppIds() const {
   std::vector<std::string> app_ids;
-  for (const auto& info : app_infos_)
+  for (const auto& info : app_infos_) {
     app_ids.push_back(info.app_id);
+  }
 
   return app_ids;
 }

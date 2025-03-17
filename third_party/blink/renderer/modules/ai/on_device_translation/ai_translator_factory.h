@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_translator_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_translator.h"
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_translator_capabilities.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -26,20 +26,21 @@ class AITranslatorFactory final : public ScriptWrappable,
  public:
   explicit AITranslatorFactory(ExecutionContext* execution_context);
 
+  ScriptPromise<V8AIAvailability> availability(
+      ScriptState* script_state,
+      AITranslatorCreateCoreOptions* options,
+      ExceptionState& exception_state);
+
   ScriptPromise<AITranslator> create(ScriptState* script_state,
                                      AITranslatorCreateOptions* options,
                                      ExceptionState& exception_state);
 
-  ScriptPromise<AITranslatorCapabilities> capabilities(
-      ScriptState* script_state,
-      ExceptionState& exception_state);
+  HeapMojoRemote<mojom::blink::TranslationManager>&
+  GetTranslationManagerRemote();
 
   void Trace(Visitor* visitor) const override;
 
  private:
-  HeapMojoRemote<mojom::blink::TranslationManager>&
-  GetTranslationManagerRemote();
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::TranslationManager> translation_manager_remote_{
       nullptr};

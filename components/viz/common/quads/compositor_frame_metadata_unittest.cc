@@ -62,6 +62,7 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.content_color_usage = gfx::ContentColorUsage::kHDR;
   metadata.may_contain_video = true;
   metadata.is_handling_interaction = true;
+  metadata.is_handling_animation = true;
   metadata.root_background_color = SkColors::kBlue;
   metadata.latency_info.emplace_back();
   metadata.referenced_surfaces.emplace_back(
@@ -94,6 +95,7 @@ TEST(CompositorFrameMetadata, Clone) {
   EXPECT_EQ(clone.content_color_usage, metadata.content_color_usage);
   EXPECT_EQ(clone.may_contain_video, metadata.may_contain_video);
   EXPECT_EQ(clone.is_handling_interaction, metadata.is_handling_interaction);
+  EXPECT_EQ(clone.is_handling_animation, metadata.is_handling_animation);
   EXPECT_EQ(clone.root_background_color, metadata.root_background_color);
 
   EXPECT_EQ(clone.latency_info.size(), metadata.latency_info.size());

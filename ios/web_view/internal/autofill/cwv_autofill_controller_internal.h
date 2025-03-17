@@ -13,6 +13,7 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
+#import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "ios/web_view/public/cwv_autofill_controller.h"
 
@@ -49,6 +50,9 @@ class WebState;
                (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
                    passwordManagerClient
               passwordController:(SharedPasswordController*)passwordController;
+
+@property(nonatomic, readonly)
+    autofill::WebViewAutofillClientIOS* autofillClient;
 
 @end
 

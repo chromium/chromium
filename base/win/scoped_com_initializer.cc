@@ -39,8 +39,9 @@ bool ScopedCOMInitializer::Succeeded() const {
 }
 
 DWORD ScopedCOMInitializer::GetCOMBalancerReferenceCountForTesting() const {
-  if (com_balancer_)
+  if (com_balancer_) {
     return com_balancer_->GetReferenceCountForTesting();
+  }
   return 0;
 }
 

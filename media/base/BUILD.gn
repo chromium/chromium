@@ -44,6 +44,8 @@ source_set("base") {
   }
 
   sources = [
+    "agtm.cc",
+    "agtm.h",
     "amplitude_peak_detector.cc",
     "amplitude_peak_detector.h",
     "android_overlay_config.cc",
@@ -272,6 +274,8 @@ source_set("base") {
     "output_device_info.h",
     "overlay_info.cc",
     "overlay_info.h",
+    "picture_in_picture_events_info.cc",
+    "picture_in_picture_events_info.h",
     "pipeline.h",
     "pipeline_impl.cc",
     "pipeline_impl.h",
@@ -396,7 +400,6 @@ source_set("base") {
   deps = [
     "//base",
     "//base/allocator:buildflags",
-    "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/client:client",
     "//gpu/command_buffer/client:interface_base",
@@ -429,7 +432,7 @@ source_set("base") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
 
@@ -564,7 +567,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//third_party/libyuv",
     "//ui/gfx:test_support",
@@ -579,6 +581,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "agtm_unittest.cc",
     "amplitude_peak_detector_unittest.cc",
     "audio_block_fifo_unittest.cc",
     "audio_buffer_converter_unittest.cc",
@@ -666,8 +669,8 @@ source_set("unit_tests") {
   configs += [ "//media:media_config" ]
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/viz/common",
+    "//gpu:test_support",
     "//gpu/command_buffer/common",
     "//media:test_support",
     "//net",

@@ -44,6 +44,14 @@ gfx::Rect GetPopupSizeForVcn3ds() {
   return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/640);
 }
 
+gfx::Rect GetPopupSizeForBnpl() {
+  // The first two arguments do not matter as position gets overridden by
+  // the tab modal pop-up code. The 600x640 size of the pop-up was decided as
+  // the ideal size for user experience. This decision largely factored in how
+  // to minimize scrolling while maintaining a presentable pop-up.
+  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/640);
+}
+
 }  // namespace
 
 DesktopPaymentsWindowManager::DesktopPaymentsWindowManager(
@@ -96,16 +104,41 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
   }
 }
 
+void DesktopPaymentsWindowManager::InitBnplFlow(BnplContext context) {
+  CHECK_EQ(flow_type_, FlowType::kNoFlow);
+
+  flow_type_ = FlowType::kBnpl;
+  bnpl_context_ = std::move(context);
+  CreatePopup(bnpl_context_->initial_url, GetPopupSizeForBnpl());
+}
+
 void DesktopPaymentsWindowManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  most_recent_url_navigation_ = navigation_handle->GetURL();
   if (flow_type_ == FlowType::kVcn3ds) {
     OnDidFinishNavigationForVcn3ds();
+  } else if (flow_type_ == FlowType::kBnpl) {
+    OnDidFinishNavigationForBnpl();
   }
 }
 
 void DesktopPaymentsWindowManager::WebContentsDestroyed() {
+  // Accessing the observed web contents should be avoided at this point,
+  // because it is unsafe to access during its destruction. Instead, set class
+  // variables earlier for context that needs to be known upon web contents
+  // destruction. `most_recent_url_navigation_` is an example that can be
+  // followed.
+  // TODO(crbug.com/388088113): Refactor the VCN 3DS flow to not access the
+  // observed web contents.
   if (flow_type_ == FlowType::kVcn3ds) {
     OnWebContentsDestroyedForVcn3ds();
+  } else if (flow_type_ == FlowType::kBnpl) {
+    OnWebContentsDestroyedForBnpl();
+  }
+
+  if (popup_closed_closure_for_testing_) {
+    popup_closed_closure_for_testing_.Run();
+    popup_closed_closure_for_testing_.Reset();
   }
 }
 
@@ -149,13 +182,18 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
     }
     content::WebContentsObserver::Observe(navigation_handle->GetWebContents());
   } else {
-    autofill_metrics::LogVcn3dsFlowEvent(
-        Vcn3dsFlowEvent::kPopupNotShown,
-        /*user_consent_already_given=*/vcn_3ds_context_
-            ->user_consent_already_given);
-    client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
-        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-            /*is_permanent_error=*/false));
+    if (vcn_3ds_context_.has_value()) {
+      autofill_metrics::LogVcn3dsFlowEvent(
+          Vcn3dsFlowEvent::kPopupNotShown,
+          /*user_consent_already_given=*/vcn_3ds_context_
+              ->user_consent_already_given);
+      client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+              /*is_permanent_error=*/false));
+    } else {
+      // TODO(crbug.com/356443046): Add handling for BNPL pop-up window not
+      // being shown.
+    }
   }
 }
 
@@ -170,6 +208,16 @@ void DesktopPaymentsWindowManager::OnDidFinishNavigationForVcn3ds() {
     // posted to the current base::SequencedTaskRunner, as the web contents must
     // complete notifying all of its observers of the navigation event before
     // closing. Closing before this has finished can result in a use-after-free.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&content::WebContents::Close,
+                                  web_contents()->GetWeakPtr()));
+  }
+}
+
+void DesktopPaymentsWindowManager::OnDidFinishNavigationForBnpl() {
+  BnplPopupStatus status =
+      ParseUrlForBnpl(most_recent_url_navigation_, bnpl_context_.value());
+  if (status != BnplPopupStatus::kNotFinished) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&content::WebContents::Close,
                                   web_contents()->GetWeakPtr()));
@@ -234,6 +282,25 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
   Vcn3dsAuthenticationResponse response;
   response.result = result.error();
   std::move(vcn_3ds_context_->completion_callback).Run(std::move(response));
+  Reset();
+}
+
+void DesktopPaymentsWindowManager::OnWebContentsDestroyedForBnpl() {
+  BnplPopupStatus status =
+      ParseUrlForBnpl(most_recent_url_navigation_, bnpl_context_.value());
+  BnplFlowResult result;
+  switch (status) {
+    case BnplPopupStatus::kSuccess:
+      result = BnplFlowResult::kSuccess;
+      break;
+    case BnplPopupStatus::kFailure:
+      result = BnplFlowResult::kFailure;
+      break;
+    case BnplPopupStatus::kNotFinished:
+      result = BnplFlowResult::kUserClosed;
+      break;
+  }
+  std::move(bnpl_context_->completion_callback).Run(result);
   Reset();
 }
 
@@ -336,6 +403,8 @@ void DesktopPaymentsWindowManager::Reset() {
   vcn_3ds_context_.reset();
   flow_type_ = FlowType::kNoFlow;
   vcn_3ds_popup_shown_timestamp_.reset();
+  bnpl_context_.reset();
+  most_recent_url_navigation_ = GURL();
 }
 
 }  // namespace autofill::payments

@@ -30,7 +30,7 @@ import {MetaKey, StaticShortcutAction} from './input_device_settings_types.js';
 export interface CustomizeButtonSelectElement {
   $: {
     selectDropdown: HTMLButtonElement,
-    menuContainer: HTMLDivElement,
+    menuContainer: HTMLElement,
   };
 }
 
@@ -546,7 +546,7 @@ export class CustomizeButtonSelectElement extends
     dropdownMenuOptions[indexOfNewRow]?.scrollIntoViewIfNeeded();
 
     // Update the highlighted value.
-    this.highlightedValue_ = this.menu[indexOfNewRow]!.value as string;
+    this.highlightedValue_ = this.menu[indexOfNewRow].value as string;
   }
 
   private updateDropdownSelection_(): void {

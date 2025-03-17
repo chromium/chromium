@@ -114,6 +114,17 @@ class AccountCapabilities {
   // The user account is able to use generative AI in recorder app.
   signin::Tribool can_use_generative_ai_in_recorder_app() const;
 
+  // The user account is able to use generative AI photo editing.
+  signin::Tribool can_use_generative_ai_photo_editing() const;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The user account is able to use generative AI features. Since many
+  // generative AI features inherit the same capability (minor restrictions),
+  // this one should be used for future generative AI features, instead of using
+  // a separate one for each of them.
+  signin::Tribool can_use_chromeos_generative_ai() const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Whether at least one of the capabilities is not
   // `signin::Tribool::kUnknown`.
   bool AreAnyCapabilitiesKnown() const;

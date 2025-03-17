@@ -4,6 +4,7 @@
 
 #include "media/base/frame_buffer_pool.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check_op.h"
@@ -13,7 +14,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -81,8 +81,8 @@ base::span<uint8_t> FrameBufferPool::GetFrameBuffer(size_t min_size,
   }
 
   // Check if a free frame buffer exists.
-  auto it = base::ranges::find_if_not(frame_buffers_, &IsUsedLocked,
-                                      &std::unique_ptr<FrameBuffer>::get);
+  auto it = std::ranges::find_if_not(frame_buffers_, &IsUsedLocked,
+                                     &std::unique_ptr<FrameBuffer>::get);
 
   // If not, create one.
   if (it == frame_buffers_.end())

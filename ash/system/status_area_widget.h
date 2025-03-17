@@ -180,6 +180,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // of tray bubble of type `TrayBubbleType::kTrayBubble`.
   void SetOpenShelfPodBubble(TrayBubbleView* open_tray_bubble);
 
+  void InitializeAccessibleProperties();
+
   // TODO(jamescook): Introduce a test API instead of these methods.
   LogoutButtonTray* logout_button_tray_for_testing() {
     return logout_button_tray_;

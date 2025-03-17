@@ -44,9 +44,9 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) = 0;
   virtual void DispatchLoad() = 0;
 
-  // The intrinsic dimensions of the embedded object changed. This is only
+  // The natural dimensions of the embedded object changed. This is only
   // relevant for SVG documents that are embedded via <object> or <embed>.
-  virtual void IntrinsicSizingInfoChanged() = 0;
+  virtual void NaturalSizingInfoChanged() = 0;
 
   // Indicates that a child frame requires its parent frame to track whether the
   // child frame is occluded or has visual effects applied.

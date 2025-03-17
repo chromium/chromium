@@ -15,6 +15,7 @@ enum ThreadType {
 };
 
 struct Thread {
-    int32 id;
+    [EnableIf=thread_id_is_64_bit] uint64 id;
+    [EnableIf=thread_id_is_32_bit] uint32 id;
     ThreadType type;
 };

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -82,7 +82,7 @@ message_center::Notification CreateNotification(
           "NUM_ROOL_APPS", 1, "APP_NAME", truncated_app_name);
     }
   } else {
-    if (base::ranges::any_of(apps, [](const auto& app) {
+    if (std::ranges::any_of(apps, [](const auto& app) {
           return app.second.is_prevent_close_enabled;
         })) {
       message = base::i18n::MessageFormatter::FormatWithNamedArgs(

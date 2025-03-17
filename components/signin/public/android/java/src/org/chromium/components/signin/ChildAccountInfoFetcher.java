@@ -4,13 +4,13 @@
 
 package org.chromium.components.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.accounts.Account;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
@@ -18,6 +18,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -25,6 +27,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
  * ChildAccountInfoFetcher for the Android platform.
  * Checks whether an account is a child account from the AccountManager.
  */
+@NullMarked
 final class ChildAccountInfoFetcher {
     private static final String TAG = "signin";
 
@@ -52,6 +55,7 @@ final class ChildAccountInfoFetcher {
                     public void onReceive(Context context, Intent intent) {
                         ThreadUtils.assertOnUiThread();
                         Account changedAccount = intent.getParcelableExtra(ACCOUNT_KEY);
+                        assumeNonNull(changedAccount);
                         Log.d(
                                 TAG,
                                 "Received account flag change broadcast for %s",

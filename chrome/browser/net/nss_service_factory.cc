@@ -8,10 +8,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 NssService* NssServiceFactory::GetForContext(
     content::BrowserContext* browser_context) {
   return static_cast<NssService*>(
@@ -31,9 +27,6 @@ NssServiceFactory::NssServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DependsOn(CertDbInitializerFactory::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 NssServiceFactory::~NssServiceFactory() = default;

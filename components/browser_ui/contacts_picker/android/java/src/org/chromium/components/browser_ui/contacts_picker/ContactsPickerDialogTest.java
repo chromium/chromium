@@ -30,13 +30,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.ContactIconBlob;
 import org.chromium.components.browser_ui.contacts_picker.test.R;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -59,12 +59,12 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** Tests for the ContactsPickerDialog class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)
 public class ContactsPickerDialogTest
         implements ContactsPickerListener, SelectionObserver<ContactDetails> {
     @ClassRule
@@ -153,9 +153,6 @@ public class ContactsPickerDialogTest
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
 
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL, true));
         mIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(mIcon);
         canvas.drawColor(Color.BLUE);
@@ -523,8 +520,8 @@ public class ContactsPickerDialogTest
         TextView explanation = (TextView) topView.findViewById(R.id.explanation);
         Assert.assertNotNull(explanation);
         Assert.assertEquals(
-                explanation.getText().toString(),
-                "The contacts you select will be shared with example.com.");
+                "The contacts you select will be shared with example.com.",
+                explanation.getText().toString());
 
         dismissDialog();
     }
@@ -558,11 +555,11 @@ public class ContactsPickerDialogTest
 
         // Per configuration given in the createDialog() call, the names and telephone filters
         // should be visible, but the e-mail and address filter should be gone.
-        Assert.assertEquals(namesFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(emailFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(telFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(addrFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(iconFilter.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(View.VISIBLE, namesFilter.getVisibility());
+        Assert.assertEquals(View.GONE, emailFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, telFilter.getVisibility());
+        Assert.assertEquals(View.GONE, addrFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, iconFilter.getVisibility());
     }
 
     @Test
@@ -594,11 +591,11 @@ public class ContactsPickerDialogTest
 
         // Per configuration given in the createDialog() call, the names and telephone filters
         // should be hidden, but the e-mail and address filter should be visible.
-        Assert.assertEquals(namesFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(emailFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(telFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(addrFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(iconFilter.getVisibility(), View.GONE);
+        Assert.assertEquals(View.GONE, namesFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, emailFilter.getVisibility());
+        Assert.assertEquals(View.GONE, telFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, addrFilter.getVisibility());
+        Assert.assertEquals(View.GONE, iconFilter.getVisibility());
     }
 
     @Test

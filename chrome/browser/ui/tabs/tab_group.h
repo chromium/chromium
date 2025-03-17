@@ -14,14 +14,15 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"
 
 class TabGroupController;
-using TabGroupVisualsChangedCallback = base::RepeatingCallback<void()>;
+class TabGroupModel;
+
 // The metadata and state of a tab group. This handles state changes that are
 // specific to tab groups and not grouped tabs. The latter (i.e. the groupness
 // state of a tab) is handled by TabStripModel, which also notifies TabStrip of
@@ -101,13 +102,14 @@ class TabGroup {
   // steps.
   gfx::Range ListTabs() const;
 
-  void SetTabGroupVisualsChangedCallback(
-      TabGroupVisualsChangedCallback callback);
-  void RunTabGroupVisualsChangedCallback();
+  void set_controller(TabGroupController* controller,
+                      base::PassKey<TabGroupModel>) {
+    controller_ = controller;
+  }
 
  private:
   raw_ptr<TabGroupController> controller_;
-  TabGroupVisualsChangedCallback tab_group_visuals_changed_;
+
   tab_groups::TabGroupId id_;
   std::unique_ptr<tab_groups::TabGroupVisualData> visual_data_;
 

@@ -7,9 +7,12 @@ package org.chromium.support_lib_boundary;
 import android.net.Uri;
 import android.webkit.WebView;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for org.chromium.android_webview.WebMessageListener. */
+@NullMarked
 public interface WebMessageListenerBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
     void onPostMessage(
             WebView view,

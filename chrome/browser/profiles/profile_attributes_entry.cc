@@ -131,12 +131,14 @@ const char ProfileAttributesEntry::kGAIAIdKey[] = "gaia_id";
 const char ProfileAttributesEntry::kIsConsentedPrimaryAccountKey[] =
     "is_consented_primary_account";
 const char ProfileAttributesEntry::kNameKey[] = "name";
+const char ProfileAttributesEntry::kEnterpriseLabelKey[] = "enterprise_label";
 const char ProfileAttributesEntry::kIsUsingDefaultNameKey[] =
     "is_using_default_name";
 const char ProfileAttributesEntry::kIsUsingDefaultAvatarKey[] =
     "is_using_default_avatar";
 const char ProfileAttributesEntry::kUseGAIAPictureKey[] = "use_gaia_picture";
 const char ProfileAttributesEntry::kAccountIdKey[] = "account_id_key";
+const char ProfileAttributesEntry::kIsGlicEligible[] = "is_glic_eligible";
 
 // static
 void ProfileAttributesEntry::RegisterLocalStatePrefs(
@@ -224,7 +226,14 @@ void ProfileAttributesEntry::InitializeLastNameToDisplay() {
 }
 
 std::u16string ProfileAttributesEntry::GetLocalProfileName() const {
+  if (!GetEnterpriseProfileLabel().empty()) {
+    return GetEnterpriseProfileLabel();
+  }
   return GetString16(kNameKey);
+}
+
+std::u16string ProfileAttributesEntry::GetEnterpriseProfileLabel() const {
+  return GetString16(kEnterpriseLabelKey);
 }
 
 std::u16string ProfileAttributesEntry::GetGAIANameToDisplay() const {
@@ -242,8 +251,9 @@ bool ProfileAttributesEntry::ShouldShowProfileLocalName(
   }
 
   // Customized profile name that is not equal to Gaia name, e.g. Matt (Work).
-  if (!IsUsingDefaultName())
+  if (!IsUsingDefaultName() || !GetEnterpriseProfileLabel().empty()) {
     return true;
+  }
 
   // The profile local name is a default profile name : Person n.
   std::vector<ProfileAttributesEntry*> entries =
@@ -603,22 +613,31 @@ std::string ProfileAttributesEntry::GetAccountIdKey() const {
   return GetString(kAccountIdKey);
 }
 
-base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
-  const base::Value* accounts = GetValue(kAllAccountsKey);
-  if (!accounts || !accounts->is_dict())
-    return base::flat_set<std::string>();
+bool ProfileAttributesEntry::IsGlicEligible() const {
+  return GetBool(kIsGlicEligible);
+}
 
-  return base::MakeFlatSet<std::string>(
-      accounts->GetDict(), {}, [](const auto& it) { return it.first; });
+void ProfileAttributesEntry::SetIsGlicEligible(bool value) {
+  SetBool(kIsGlicEligible, value);
+}
+
+base::flat_set<GaiaId> ProfileAttributesEntry::GetGaiaIds() const {
+  const base::Value* accounts = GetValue(kAllAccountsKey);
+  if (!accounts || !accounts->is_dict()) {
+    return base::flat_set<GaiaId>();
+  }
+
+  return base::MakeFlatSet<GaiaId>(
+      accounts->GetDict(), {}, [](const auto& it) { return GaiaId(it.first); });
 }
 
 void ProfileAttributesEntry::SetGaiaIds(
-    const base::flat_set<std::string>& gaia_ids) {
+    const base::flat_set<GaiaId>& gaia_ids) {
   base::Value::Dict accounts;
   for (const auto& gaia_id : gaia_ids) {
     // The dictionary is empty for now, but can hold account-specific info in
     // the future.
-    accounts.Set(gaia_id, base::Value::Dict());
+    accounts.Set(gaia_id.ToString(), base::Value::Dict());
   }
   SetValue(kAllAccountsKey, base::Value(std::move(accounts)));
 }
@@ -629,6 +648,11 @@ void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,
   changed |= SetBool(kIsUsingDefaultNameKey, is_default_name);
   if (changed)
     profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
+}
+
+void ProfileAttributesEntry::SetEnterpriseProfileLabel(
+    const std::u16string& label) {
+  SetString16(kEnterpriseLabelKey, label);
 }
 
 void ProfileAttributesEntry::SetShortcutName(const std::u16string& name) {

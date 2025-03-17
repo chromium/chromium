@@ -23,7 +23,7 @@ fi
 source "${ABSEIL_ROOT}/ci/cmake_common.sh"
 
 if [[ -z ${ABSL_CMAKE_CXX_STANDARDS:-} ]]; then
-  ABSL_CMAKE_CXX_STANDARDS="14 17"
+  ABSL_CMAKE_CXX_STANDARDS="17"
 fi
 
 if [[ -z ${ABSL_CMAKE_BUILD_TYPES:-} ]]; then

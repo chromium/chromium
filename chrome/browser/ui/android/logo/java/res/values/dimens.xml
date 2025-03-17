@@ -8,8 +8,8 @@ found in the LICENSE file.
   <dimen name="ntp_logo_height">48dp</dimen>
   <dimen name="ntp_logo_margin_top">12dp</dimen>
   <dimen name="ntp_logo_margin_bottom">24dp</dimen>
-  <dimen name="logo_height_logo_polish_large">84dp</dimen>
-  <dimen name="logo_height_logo_polish_medium">76dp</dimen>
-  <dimen name="logo_height_logo_polish_small">68dp</dimen>
-  <dimen name="logo_margin_top_logo_polish">8dp</dimen>
+  <dimen name="doodle_height">76dp</dimen>
+  <!-- This value is only used in split screens on tablet. -->
+  <dimen name="doodle_height_tablet_split_screen">84dp</dimen>
+  <dimen name="doodle_margin_top">8dp</dimen>
 </resources>

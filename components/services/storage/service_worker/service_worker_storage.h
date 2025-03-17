@@ -30,10 +30,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace storage {
 
 class ServiceWorkerStorageControlImplTest;
@@ -117,8 +113,7 @@ class ServiceWorkerStorage {
   ~ServiceWorkerStorage();
 
   static std::unique_ptr<ServiceWorkerStorage> Create(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
+      const base::FilePath& user_data_directory);
 
   // Returns all StorageKeys which have service worker registrations.
   void GetRegisteredStorageKeys(GetRegisteredStorageKeysCallback callback);
@@ -356,33 +351,7 @@ class ServiceWorkerStorage {
     ~DidDeleteRegistrationParams();
   };
 
-  using InitializeCallback =
-      base::OnceCallback<void(std::unique_ptr<InitialData> data,
-                              ServiceWorkerDatabase::Status status)>;
-  using WriteRegistrationCallback = base::OnceCallback<void(
-      const blink::StorageKey& key,
-      const ServiceWorkerDatabase::DeletedVersion& deleted_version_data,
-      ServiceWorkerDatabase::Status status)>;
-  using DeleteRegistrationInDBCallback = base::OnceCallback<void(
-      StorageKeyState storage_key_state,
-      const ServiceWorkerDatabase::DeletedVersion& deleted_version_data,
-      ServiceWorkerDatabase::Status status)>;
-  using FindForClientUrlInDBCallback =
-      base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
-                              std::unique_ptr<ResourceList> resources,
-                              const std::optional<std::vector<GURL>>& scopes,
-                              ServiceWorkerDatabase::Status status)>;
-  using FindInDBCallback =
-      base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
-                              std::unique_ptr<ResourceList> resources,
-                              ServiceWorkerDatabase::Status status)>;
-  using GetResourcesCallback =
-      base::OnceCallback<void(const std::vector<int64_t>& resource_ids,
-                              ServiceWorkerDatabase::Status status)>;
-
-  ServiceWorkerStorage(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
+  explicit ServiceWorkerStorage(const base::FilePath& user_data_directory);
 
   base::FilePath GetDatabasePath();
   base::FilePath GetDiskCachePath();
@@ -390,18 +359,8 @@ class ServiceWorkerStorage {
   void LazyInitialize(base::OnceClosure callback);
   void DidReadInitialData(std::unique_ptr<InitialData> data,
                           ServiceWorkerDatabase::Status status);
-  void DidGetRegistrationsForStorageKey(
-      GetRegistrationsDataCallback callback,
-      std::unique_ptr<RegistrationList> registrations,
-      std::unique_ptr<std::vector<ResourceList>> resource_lists,
-      ServiceWorkerDatabase::Status status);
-  void DidGetAllRegistrations(
-      GetAllRegistrationsCallback callback,
-      std::unique_ptr<RegistrationList> registration_data_list,
-      ServiceWorkerDatabase::Status status);
   void DidStoreRegistrationData(
       StoreRegistrationDataCallback callback,
-      uint64_t new_resources_total_size_bytes,
       const blink::StorageKey& key,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version,
       ServiceWorkerDatabase::Status status);
@@ -410,9 +369,6 @@ class ServiceWorkerStorage {
       StorageKeyState storage_key_state,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version,
       ServiceWorkerDatabase::Status status);
-  void DidDoomUncommittedResourceIds(const std::vector<int64_t>& resource_ids,
-                                     DatabaseStatusCallback callback,
-                                     ServiceWorkerDatabase::Status status);
 
   // Lazy disk_cache getter.
   ServiceWorkerDiskCache* disk_cache();
@@ -443,95 +399,18 @@ class ServiceWorkerStorage {
   void OnResourceWriterDisconnected(uint64_t resource_operation_id);
   void OnResourceMetadataWriterDisconnected(uint64_t resource_operation_id);
 
-  // Static cross-thread helpers.
-  static void CollectStaleResourcesFromDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      GetResourcesCallback callback);
-  static void ReadInitialDataFromDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      InitializeCallback callback);
-  static void DeleteRegistrationFromDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
+  void CollectStaleResourcesFromDB();
+  void ReadInitialDataFromDB();
+  void DeleteRegistrationFromDB(
       int64_t registration_id,
       const blink::StorageKey& key,
-      DeleteRegistrationInDBCallback callback);
-  static void WriteRegistrationInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      mojom::ServiceWorkerRegistrationDataPtr registration,
-      ResourceList resources,
-      WriteRegistrationCallback callback);
-  static void FindForClientUrlInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      const GURL& client_url,
-      const blink::StorageKey& key,
-      FindForClientUrlInDBCallback callback);
-  static void FindForScopeInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      const GURL& scope,
-      const blink::StorageKey& key,
-      FindInDBCallback callback);
-  static void FindForIdInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      int64_t registration_id,
-      const blink::StorageKey& key,
-      FindInDBCallback callback);
-  static void FindForIdOnlyInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      int64_t registration_id,
-      FindInDBCallback callback);
-  static void GetUsageForStorageKeyInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      const blink::StorageKey& key,
-      GetUsageForStorageKeyCallback callback);
-  static void GetUserDataInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      int64_t registration_id,
-      const std::vector<std::string>& keys,
-      GetUserDataInDBCallback callback);
-  static void GetUserDataByKeyPrefixInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      int64_t registration_id,
-      const std::string& key_prefix,
-      GetUserDataInDBCallback callback);
-  static void GetUserKeysAndDataByKeyPrefixInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      int64_t registration_id,
-      const std::string& key_prefix,
-      GetUserKeysAndDataInDBCallback callback);
-  static void GetUserDataForAllRegistrationsInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      const std::string& key,
-      GetUserDataForAllRegistrationsInDBCallback callback);
-  static void GetUserDataForAllRegistrationsByKeyPrefixInDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      const std::string& key_prefix,
-      GetUserDataForAllRegistrationsInDBCallback callback);
-  static void DeleteAllDataForOriginsFromDB(
-      ServiceWorkerDatabase* database,
-      const std::set<url::Origin>& origins);
-  static void PerformStorageCleanupInDB(ServiceWorkerDatabase* database);
-  static void GetPurgeableResourceIdsFromDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      ServiceWorkerStorage::ResourceIdsCallback callback);
-  static void GetUncommittedResourceIdsFromDB(
-      ServiceWorkerDatabase* database,
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      ServiceWorkerStorage::ResourceIdsCallback callback);
+      std::unique_ptr<DidDeleteRegistrationParams> params);
+  void FindForClientUrlInDB(const GURL& client_url,
+                            const blink::StorageKey& key,
+                            FindRegistrationForClientUrlDataCallback callback);
+  void FindForScopeInDB(const GURL& scope,
+                        const blink::StorageKey& key,
+                        FindRegistrationDataCallback callback);
 
   // Posted by the underlying cache implementation after it finishes making
   // disk changes upon its destruction.
@@ -576,9 +455,7 @@ class ServiceWorkerStorage {
 
   base::FilePath user_data_directory_;
 
-  // |database_| is only accessed using |database_task_runner_|.
   std::unique_ptr<ServiceWorkerDatabase> database_;
-  scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
 
   std::unique_ptr<ServiceWorkerDiskCache> disk_cache_;
 

@@ -14,7 +14,6 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
@@ -65,7 +64,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -434,9 +432,7 @@ DesksController::DesksController()
       FROM_HERE, base::Days(7), this,
       &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
 
-  if (ash::features::IsDeskButtonEnabled()) {
-    desk_bar_controller_ = std::make_unique<DeskBarController>();
-  }
+  desk_bar_controller_ = std::make_unique<DeskBarController>();
 }
 
 DesksController::~DesksController() {
@@ -559,7 +555,7 @@ Desk* DesksController::GetPreviousDesk(bool use_target_active_desk) const {
 }
 
 Desk* DesksController::GetDeskByUuid(const base::Uuid& desk_uuid) const {
-  auto it = base::ranges::find(desks_, desk_uuid, &Desk::uuid);
+  auto it = std::ranges::find(desks_, desk_uuid, &Desk::uuid);
   return it != desks_.end() ? it->get() : nullptr;
 }
 
@@ -643,14 +639,12 @@ void DesksController::NewDesk(DesksCreationRemovalSource source,
   }
 
   if (!is_first_ever_desk) {
-    if (features::IsDeskButtonEnabled()) {
-      PrefService* prefs =
-          Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-      // Record that virtual desks have been used on this device so we can show
-      // the desk button from now on, if the user doesn't and hasn't elected to
-      // hide it from the shelf context menu.
-      SetDeviceUsesDesksPref(prefs, true);
-    }
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    // Record that virtual desks have been used on this device so we can show
+    // the desk button from now on, if the user doesn't and hasn't elected to
+    // hide it from the shelf context menu.
+    SetDeviceUsesDesksPref(prefs, true);
     desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
     desks_restore_util::UpdatePrimaryUserDeskLacrosProfileIdPrefs();
@@ -1545,8 +1539,7 @@ bool DesksController::CanEndOverview() const {
   // be jarring if the screenshot is different from the appearance of the new
   // desk), so we don't want to allow overview to be exited before the animation
   // ends.
-  return !features::IsOverviewDeskNavigationEnabled() || !animation_ ||
-         animation_->CanEndOverview();
+  return !animation_ || animation_->CanEndOverview();
 }
 
 void DesksController::OnWindowActivating(ActivationReason reason,
@@ -1733,8 +1726,7 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   DCHECK(old_active);
   old_active->Deactivate(update_window_activation);
   active_desk_->Activate(update_window_activation);
-  if (features::IsOverviewDeskNavigationEnabled() && animation_ &&
-      was_in_overview) {
+  if (animation_ && was_in_overview) {
     overview_controller->StartOverview(OverviewStartAction::kOverviewDeskSwitch,
                                        OverviewEnterExitType::kImmediateEnter);
   }
@@ -1775,18 +1767,13 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
                                          DesksCreationRemovalSource source,
                                          DeskCloseType close_type,
                                          bool desk_switched) {
-  // Removing a desk can cause transient raster scale updates during overview
-  // mode, if desks are combined. Pause raster scale updates until windows are
-  // in their final state.
-  ScopedPauseRasterScaleUpdates scoped_pause;
-
   MaybeCommitPendingDeskRemoval();
 
   DCHECK(CanRemoveDesks());
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
 
-  auto iter = base::ranges::find(desks_, desk, &std::unique_ptr<Desk>::get);
+  auto iter = std::ranges::find(desks_, desk, &std::unique_ptr<Desk>::get);
   DCHECK(iter != desks_.end());
 
   const int removed_desk_index = std::distance(desks_.begin(), iter);
@@ -2367,7 +2354,7 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
 
 void DesksController::ReportCustomDeskNames() const {
   int custom_names_count =
-      base::ranges::count(desks_, true, &Desk::is_name_set_by_user);
+      std::ranges::count(desks_, true, &Desk::is_name_set_by_user);
 
   base::UmaHistogramCounts100(kNumberOfCustomNamesHistogramName,
                               custom_names_count);

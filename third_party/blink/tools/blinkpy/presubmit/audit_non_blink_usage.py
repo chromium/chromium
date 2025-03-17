@@ -24,8 +24,11 @@ _DISALLOW_NON_BLINK_MOJOM = (
     # network::mojom::Foo is allowed to use as non-blink mojom type.
     # mojom::RendererContentSettingsPtr is allowed.
     '(?!network::)(\w+::)?mojom::(?!RendererContentSettingsPtr)(?!blink).+',
-    'Using non-blink mojom types, consider using "::mojom::blink::Foo" instead '
-    'of "::mojom::Foo" unless you have clear reasons not to do so.',
+    'Consider using "ns::mojom::blink::Foo" instead of "[[::]ns::]mojom::Foo" '
+    'for non-blink mojom types, or "mojom::blink::Foo" instead of '
+    '"[[::]blink::]mojom::Foo" for blink mojom types, unless you have clear '
+    'reasons not to do so. Make sure to include '
+    '".../foo.mojom-blink[-forward].h".',
     'Warning')
 
 _DISALLOW_CONTINUATION_DATA_ = (
@@ -91,6 +94,7 @@ _CONFIG = [
             'base::FindOrNull',
             'base::FunctionRef',
             'base::GetUniqueIdForProcess',
+            'base::GetSystemMemoryInfo',
             'base::HashingLRUCache',
             'base::HashInts',
             'base::HeapArray',
@@ -102,6 +106,7 @@ _CONFIG = [
             'base::i18n::ToUCharPtr',
             'base::JobDelegate',
             'base::JobHandle',
+            'base::kInvalidThreadId',
             'base::Location',
             'base::MakeRefCounted',
             'base::MatcherStringPattern',
@@ -125,7 +130,7 @@ _CONFIG = [
             'base::PowerMonitor',
             'base::Process',
             'base::RadToDeg',
-            'base::ranges::.+',
+            'base::RangeAsRvalues',
             'base::raw_span',
             'base::RefCountedData',
             'base::RemoveChars',
@@ -145,6 +150,7 @@ _CONFIG = [
             'base::StringPiece',
             'base::SubstringSetMatcher',
             'base::SysInfo',
+            'base::SystemMemoryInfoKB',
             'base::ThreadChecker',
             'base::ThreadTicks',
             'base::ThreadType',
@@ -152,8 +158,11 @@ _CONFIG = [
             'base::Time',
             'base::TimeDelta',
             'base::TimeTicks',
+            'base::to_address',
             'base::to_underlying',
             'base::Token',
+            'base::ToVector',
+            'base::ToString',
             'base::trace_event::.*',
             'base::unexpected',
             'base::UnguessableToken',
@@ -174,6 +183,9 @@ _CONFIG = [
             'base::expected',
             'base::ok',
             'base::unexpected',
+
+            # //base/types/zip.h
+            'base::zip',
 
             # //base/functional/bind.h
             'base::IgnoreResult',
@@ -369,16 +381,20 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/common/interest_group/interest_group.cc',
-            'third_party/blink/public/common/interest_group/interest_group.h'
+            'third_party/blink/common/interest_group/',
+            'third_party/blink/public/common/interest_group/',
         ],
         'allowed': [
             # For hashing of k-anonymity keys
             'crypto::SHA256HashString',
 
-            # Types used to compute k-anonymity keys.
+            # Types used to compute k-anonymity keys, also many IG fields are
+            # origins and URLs.
             "url::Origin",
             "GURL",
+
+            # For checking if origins in interest group are https.
+            "url::kHttpsScheme",
         ],
     },
     {
@@ -410,18 +426,17 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/common/performance/performance_scenarios.cc',
-            'third_party/blink/common/performance/performance_scenario_observer.cc',
-            'third_party/blink/public/common/performance/performance_scenario_observer.h',
+            'third_party/blink/common/shared_storage/module_script_downloader.cc',
         ],
         'allowed': [
-            # Used in both browser and renderer process so can't use Oilpan.
-            'base::NoDestructor',
-            'base::RefCountedThreadSafe',
-            # ObserverListThreadSafe isn't generally allowed because it doesn't
-            # work with WTF::ThreadSafeRefCounted, so must be allowed here.
-            'base::ObserverListThreadSafe',
-            'base::RemoveObserverPolicy',
+            'net::SiteForCookies',
+        ],
+    },
+    {
+        'paths': ['third_party/blink/public/platform/web_url.h'],
+        'allowed': [
+            # Conversion functions from/to WebURL for non-blink code.
+            'GURL',
         ],
     },
     {
@@ -452,6 +467,7 @@ _CONFIG = [
             'cc::AuxImage',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
+            'cc::DrawImage',
             'cc::DrawLooper',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
@@ -625,7 +641,7 @@ _CONFIG = [
             'cc::PaintHoldingReason',
 
             # Scrolling
-            'cc::BrowserControlsOffsetTagsInfo',
+            'cc::BrowserControlsOffsetTagModifications',
             'cc::kManipulationInfoNone',
             'cc::kManipulationInfoPinchZoom',
             'cc::kManipulationInfoPrecisionTouchPad',
@@ -938,6 +954,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.cc'
+        ],
+        'allowed': [
+            'base::subtle::RelaxedAtomicWriteMemcpy',
+        ],
+    },
+    {
         'paths':
         ['third_party/blink/renderer/controller/oom_intervention_impl.cc'],
         'allowed': [
@@ -1084,7 +1108,13 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/renderer/core/editing/ime'],
+        'paths': [
+            'third_party/blink/public/platform/web_text_input_info.h',
+            'third_party/blink/public/web/web_input_method_controller.h',
+            'third_party/blink/public/web/web_local_frame.h',
+            'third_party/blink/public/web/web_plugin.h',
+            'third_party/blink/renderer/core/editing/ime'
+        ],
         'allowed': [
             'ui::ImeTextSpan',
             'ui::TextInputAction',
@@ -1114,6 +1144,12 @@ _CONFIG = [
         'allowed': [
             'base::CommandLine',
         ]
+    },
+    {
+        'paths': ['third_party/blink/renderer/core/frame/dom_window.cc'],
+        'allowed': [
+            'base::MakeFixedFlatMap',
+        ],
     },
     {
         'paths': [
@@ -1238,15 +1274,19 @@ _CONFIG = [
         ],
         'allowed': [
             'gfx::Insets',
+            'gfx::InsetsF',
             'gfx::Point',
             'gfx::PointF',
             'gfx::Rect',
             'gfx::RectF',
+            'gfx::Size',
+            'gfx::SizeF',
             'gfx::Vector2dF',
 
             # The Blink public API is shared between non-Blink and Blink code
             # and must use the regular variants.
             'mojom::.+',
+            'network::mojom::.+',
             'ui::mojom::WindowShowState',
             'ui::mojom::WindowShowState::.+',
 
@@ -1257,6 +1297,14 @@ _CONFIG = [
             # types are generally allowed for interop with non-Blink code, as
             # containers like WTF::Vector are not exposed outside Blink.
             'std::.+',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/web/web_navigation_params.h',
+        ],
+        'allowed': [
+            'network::mojom::WebClientHintsType',
         ],
     },
     {
@@ -1283,6 +1331,14 @@ _CONFIG = [
         ],
         'allowed': [
             'network::mojom::IntegrityAlgorithm',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/platform/web_media_key_system_configuration.h',
+        ],
+        'allowed': [
+            'media::EmeInitDataType',
         ],
     },
     {
@@ -1430,7 +1486,7 @@ _CONFIG = [
             'base::HexEncode',
             'net::ct::.+',
             'net::IPAddress',
-            'net::SourceStream',
+            'net::SourceStreamType',
             'net::SSL.+',
         ],
     },
@@ -1558,16 +1614,6 @@ _CONFIG = [
             # Required to initialize WebGraphicsContext3DVideoFramePool.
             'gpu::GpuMemoryBufferManager',
             'media::.+',
-        ]
-    },
-    {
-        'paths': [
-            'third_party/blink/renderer/modules/mediasource/',
-        ],
-        'allowed': [
-            'base::CommandLine',
-            'media::.+',
-            'switches::kLacrosEnablePlatformEncryptedHevc',
         ]
     },
     {
@@ -1756,6 +1802,7 @@ _CONFIG = [
             'media::.+',
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
         ]
     },
     {
@@ -1835,6 +1882,14 @@ _CONFIG = [
         # platform/ as defined above, but wtf/ needs them to define their WTF
         # subclasses and CrossThreadCopier.
         'allowed': ['base::RefCounted', 'base::RefCountedThreadSafe'],
+    },
+    {
+        'paths': [
+            'third_party/blink/common/loader/url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/child_url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/tracked_child_url_loader_factory_bundle.cc',
+        ],
+        'allowed': ['mojom::LocalResourceLoaderConfigPtr'],
     },
     {
         'paths': [
@@ -1923,9 +1978,13 @@ _CONFIG = [
         'paths': [
             'third_party/blink/public/platform/web_theme_engine.h',
             'third_party/blink/renderer/core/css/resolver/style_builder_converter.h',
+            'third_party/blink/renderer/core/animation/css_color_interpolation_type.cc',
+            'third_party/blink/renderer/core/animation/interpolable_shadow.cc',
             'third_party/blink/renderer/core/layout/layout_theme.cc',
             'third_party/blink/renderer/core/layout/layout_theme.h',
             'third_party/blink/renderer/core/scroll/',
+            'third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.cc',
+            'third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h',
         ],
         'allowed': ['ui::ColorProvider'],
     },
@@ -2111,6 +2170,21 @@ _CONFIG = [
             'third_party/blink/renderer/core/html/canvas/html_canvas_element.h',
         ],
         'allowed': ['viz::ResourceId'],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/html/canvas',
+            'third_party/blink/renderer/core/offscreencanvas',
+            'third_party/blink/renderer/modules/canvas',
+            'third_party/blink/renderer/modules/webgl',
+            'third_party/blink/renderer/modules/webgpu',
+        ],
+        'allowed': [
+            'viz::SharedImageFormat',
+            'viz::SinglePlaneFormat',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
+            'viz::ToClosestSkColorType',
+        ],
     },
     {
         'paths': [
@@ -2311,14 +2385,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/public/common/permissions_policy/permissions_policy.h',
-        ],
-        'allowed': [
-            'url::Origin',
-        ]
-    },
-    {
-        'paths': [
             'third_party/blink/public/common/privacy_budget/identifiable_token.h',
         ],
         'allowed': [
@@ -2347,6 +2413,71 @@ _CONFIG = [
         ],
         'allowed': [
             'media::.+',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/common/client_hints/',
+            'third_party/blink/common/fenced_frame/',
+            'third_party/blink/common/frame/',
+            'third_party/blink/common/permissions/',
+            'third_party/blink/common/permissions_policy/',
+            'third_party/blink/common/use_counter/',
+            'third_party/blink/public/common/client_hints/',
+            'third_party/blink/public/common/fenced_frame/',
+            'third_party/blink/public/common/frame/',
+            'third_party/blink/public/common/permissions/',
+            'third_party/blink/public/common/permissions_policy/',
+            'third_party/blink/public/common/use_counter/',
+            'third_party/blink/public/web/',
+        ],
+        'allowed': [
+            'network::GetPermissionsPolicyFeatureList',
+            'network::mojom::PermissionsPolicyFeature',
+            'network::OriginWithPossibleWildcards',
+            'network::ParsedPermissionsPolicy',
+            'network::ParsedPermissionsPolicyDeclaration',
+            'network::PermissionsPolicyFeatureDefault',
+            'network::PermissionsPolicyFeatureList',
+            'network::PermissionsPolicyFeatureState',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/public/common/client_hints/client_hints.h',
+            'third_party/blink/public/common/permissions_policy/policy_helper_public.h',
+        ],
+        'allowed': [
+            'base::flat_map',
+            'network::PermissionsPolicy',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/canvas_interventions/',
+        ],
+        'allowed': [
+            'gfx::SkPixmapToWritableSpan',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/common/features.cc',
+        ],
+        'allowed': [
+            'network::features::kBrowsingTopics',
+            'network::features::kInterestGroupStorage',
+            'network::features::kSharedStorageAPI',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/common/client_hints/client_hints.cc',
+        ],
+        'allowed': [
+            'GURL',
+            'network::GetClientHintToPolicyFeatureMap',
+            'network::PermissionsPolicy',
         ]
     },
 ]
@@ -2531,7 +2662,8 @@ def check(path, contents):
             or basename.endswith('_test') or basename.endswith('_test_helpers')
             or basename.endswith('_test_utils')
             or basename.endswith('_unittest') or basename.endswith('_fuzzer')
-            or basename.endswith('_perftest')):
+            or basename.endswith('_perftest')
+            or basename.endswith('_fuzztest')):
         return results
     entries = _find_matching_entries(path)
     if not entries:
@@ -2571,6 +2703,13 @@ def main():
                     print('%s uses disallowed identifiers:' % path)
                     for i in disallowed_identifiers:
                         print(i.line, i.identifier, i.advice)
+                    print('')
+                    print(
+                        'This check originates in third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py.'
+                    )
+                    print(
+                        'If you think this should be allowed, send a CL with an edit to that file.'
+                    )
         except (IOError, UnicodeDecodeError) as e:
             print('could not open %s: %s' % (path, e))
 

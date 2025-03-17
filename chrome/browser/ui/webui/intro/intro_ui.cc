@@ -32,10 +32,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   webui::SetupWebUIDataSource(source, kIntroResources, IDR_INTRO_INTRO_HTML);
 
   int title_id = IDS_FRE_SIGN_IN_TITLE_0;
-  int backupCardDescription =
-      base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
-          ? IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION
-          : IDS_FRE_BACKUP_CARD_DESCRIPTION;
+  int backupCardDescription = IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION;
 
   // Setting the title here instead of relying on the one provided from the
   // page itself makes it available much earlier, and avoids having to fallback

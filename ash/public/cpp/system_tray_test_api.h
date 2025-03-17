@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 
@@ -89,7 +90,7 @@ class ASH_EXPORT SystemTrayTestApi {
   // Returns the text for a sub-view `view_id` of `GetMainBubbleView()`, or the
   // empty string if the view does not exist. This method only works if the
   // bubble view is a label.
-  std::u16string GetBubbleViewText(int view_id);
+  std::u16string_view GetBubbleViewText(int view_id);
 
   // Get the notification pop up view based on the notification id.
   message_center::MessagePopupView* GetPopupViewForNotificationID(

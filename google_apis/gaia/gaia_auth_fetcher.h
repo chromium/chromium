@@ -52,7 +52,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaSource {
     kChromeOS,
     kAccountReconcilorDice,
     kAccountReconcilorMirror,
-    kPrimaryAccountManager
+    kPrimaryAccountManager,
+    kChromeGlic,  // chrome/browser/glic
   };
 
   // Implicit conversion is necessary to avoid boilerplate code.
@@ -151,7 +152,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   // Virtual so it can be overridden by fake implementations.
   virtual void StartCreateReAuthProofTokenForParent(
       const std::string& child_oauth_access_token,
-      const std::string& parent_obfuscated_gaia_id,
+      const GaiaId& parent_obfuscated_gaia_id,
       const std::string& parent_credential);
 
   // Starts a request to get the list of URLs to check for connection info.

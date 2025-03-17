@@ -4,17 +4,16 @@
 
 #include "media/filters/source_buffer_state.h"
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
 #include "media/base/media_tracks.h"
@@ -129,13 +128,14 @@ SourceBufferState::SourceBufferState(
     MediaLog* media_log)
     : timestamp_offset_during_append_(nullptr),
       parsing_media_segment_(false),
-      stream_parser_(stream_parser.release()),
-      frame_processor_(frame_processor.release()),
+      stream_parser_(std::move(stream_parser)),
+      frame_processor_(std::move(frame_processor)),
       create_demuxer_stream_cb_(std::move(create_demuxer_stream_cb)),
       media_log_(media_log),
       state_(UNINITIALIZED) {
   DCHECK(create_demuxer_stream_cb_);
   DCHECK(frame_processor_);
+  DCHECK(stream_parser_);
 }
 
 SourceBufferState::~SourceBufferState() {
@@ -604,7 +604,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
 
       if (strict_codec_expectations_) {
         const auto& it =
-            base::ranges::find(expected_acodecs, audio_config.codec());
+            std::ranges::find(expected_acodecs, audio_config.codec());
         if (it == expected_acodecs.end()) {
           MEDIA_LOG(ERROR, media_log_)
               << "Audio stream codec " << GetCodecName(audio_config.codec())
@@ -688,7 +688,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
 
       if (strict_codec_expectations_) {
         const auto& it =
-            base::ranges::find(expected_vcodecs, video_config.codec());
+            std::ranges::find(expected_vcodecs, video_config.codec());
         if (it == expected_vcodecs.end()) {
           MEDIA_LOG(ERROR, media_log_)
               << "Video stream codec " << GetCodecName(video_config.codec())

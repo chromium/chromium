@@ -148,7 +148,7 @@ void TestMediaSource::AppendData(size_t size) {
   // expectations verified later in this method after RunSegmentParserLoop()
   // call(s) are completed.
   ASSERT_TRUE(chunk_demuxer_->AppendToParseBuffer(
-      kSourceId, file_data_->AsSpan().subspan(current_position_, size)));
+      kSourceId, (*file_data_).subspan(current_position_, size)));
 
   // Note that large StreamParser::kMaxPendingBytesPerParse makes these just 1
   // iteration frequently.

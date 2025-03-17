@@ -62,6 +62,7 @@
 //components/test/data/viz/blur_filter_with_clip_sw.png
 //components/test/data/viz/bypass_render_pass.png
 //components/test/data/viz/bypass_texture.png
+//components/test/data/viz/bypass_texture_backdrop_extent.png
 //components/test/data/viz/bypass_texture_rotated.png
 //components/test/data/viz/bypass_texture_rotated_graphite.png
 //components/test/data/viz/dark_grey.png
@@ -159,6 +160,7 @@
 //components/test/data/viz/offset_backdrop_filter_2x_sw.png
 //components/test/data/viz/offset_inset_top_left.png
 //components/test/data/viz/one_of_16_color_rects.png
+//components/test/data/viz/oop_alpha_premul_unpremul.png
 //components/test/data/viz/oop_draw_image.png
 //components/test/data/viz/oop_draw_image_both_color_space.png
 //components/test/data/viz/oop_draw_image_matrix.png

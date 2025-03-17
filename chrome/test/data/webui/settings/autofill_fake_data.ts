@@ -128,6 +128,19 @@ export function createIbanEntry(
 }
 
 /**
+ * Creates a new valid Pay Over Time entry for testing.
+ */
+export function createPayOverTimeIssuerEntry():
+    chrome.autofillPrivate.PayOverTimeIssuerEntry {
+  return {
+    issuerId: 'issuer1',
+    instrumentId: '123456',
+    displayName: 'Issuer1',
+    imageSrc: 'chrome://theme/IDR_AUTOFILL_METADATA_BNPL_GENERIC',
+  };
+}
+
+/**
  * Creates a new random GUID for testing.
  */
 export function makeGuid(): string {
@@ -295,6 +308,7 @@ export class PaymentsManagerExpectations {
   requestedIbans: number = 0;
   removedIbans: number = 0;
   isValidIban: number = 0;
+  requestedPayOverTimeIssuers: number = 0;
   authenticateUserAndFlipMandatoryAuthToggle: number = 0;
   getLocalCard: number = 0;
   bulkDeleteAllCvcs: number = 0;
@@ -314,6 +328,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   data: {
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
+    payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
   };
 
   lastCallback:
@@ -330,6 +345,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'isValidIban',
       'removeCreditCard',
       'removeIban',
+      'getPayOverTimeIssuerList',
       'removePersonalDataManagerListener',
       'setPersonalDataManagerListener',
     ]);
@@ -338,6 +354,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     this.data = {
       creditCards: [],
       ibans: [],
+      payOverTimeIssuers: [],
     };
 
     // Holds the last callbacks so they can be called when needed.
@@ -396,6 +413,11 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   isValidIban(_ibanValue: string) {
     this.methodCalled('isValidIban');
     return Promise.resolve(this.isValidIbanResult_);
+  }
+
+  getPayOverTimeIssuerList() {
+    this.methodCalled('getPayOverTimeIssuerList');
+    return Promise.resolve(structuredClone(this.data.payOverTimeIssuers));
   }
 
   setIsUserVerifyingPlatformAuthenticatorAvailable(available: boolean|null) {
@@ -458,6 +480,10 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     assertEquals(
         expected.removedIbans, this.getCallCount('removeIban'),
         'removedIbans mismatch');
+    assertEquals(
+        expected.requestedPayOverTimeIssuers,
+        this.getCallCount('getPayOverTimeIssuerList'),
+        'requestedPayOverTimeIssuers mismatch');
     assertEquals(
         expected.authenticateUserAndFlipMandatoryAuthToggle,
         this.getCallCount('authenticateUserAndFlipMandatoryAuthToggle'),

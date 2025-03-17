@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "media/base/media_switches.h"
@@ -19,7 +20,7 @@ namespace media {
 // only in one spot.
 const char MediaLog::kEventKey[] = "event";
 
-MediaLog::MediaLog() : MediaLog(new ParentLogRecord(this)) {}
+MediaLog::MediaLog() : MediaLog(base::MakeRefCounted<ParentLogRecord>(this)) {}
 
 MediaLog::MediaLog(scoped_refptr<ParentLogRecord> parent_log_record)
     : parent_log_record_(std::move(parent_log_record)) {}

@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::Return;
+namespace metrics_util = password_manager::metrics_util;
 
 class PasswordChangeBubbleControllerTest : public ::testing::Test {
  public:
@@ -28,38 +31,53 @@ class PasswordChangeBubbleControllerTest : public ::testing::Test {
   }
 
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
-  PasswordChangeInfoBubbleController* controller() { return controller_.get(); }
   PasswordChangeDelegateMock* password_change_delegate() {
     return password_change_delegate_.get();
   }
 
+ protected:
+  std::unique_ptr<PasswordChangeInfoBubbleController> controller_;
+
  private:
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
-  std::unique_ptr<PasswordChangeInfoBubbleController> controller_;
   std::unique_ptr<PasswordChangeDelegateMock> password_change_delegate_;
 };
 
 TEST_F(PasswordChangeBubbleControllerTest, ControllerDestroyed) {
+  base::HistogramTester histogram_tester;
   CreateController();
 
   EXPECT_CALL(*delegate(), OnBubbleHidden());
-  controller()->OnBubbleClosing();
+  controller_->OnBubbleClosing();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.InformationBubble",
+      metrics_util::NO_DIRECT_INTERACTION, 1);
 }
 
 TEST_F(PasswordChangeBubbleControllerTest, CancelsFlow) {
+  base::HistogramTester histogram_tester;
   CreateController();
   ON_CALL(*password_change_delegate(), GetCurrentState)
       .WillByDefault(
           Return(PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
 
   EXPECT_CALL(*password_change_delegate(), Stop);
-  controller()->CancelPasswordChange();
+  controller_->CancelPasswordChange();
+  controller_.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.InformationBubble",
+      metrics_util::CLICKED_CANCEL, 1);
 }
 
 TEST_F(PasswordChangeBubbleControllerTest, OpensPasswordManagerPage) {
+  base::HistogramTester histogram_tester;
   CreateController();
   EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage(
                                password_manager::ManagePasswordsReferrer::
                                    kPasswordChangeInfoBubble));
-  controller()->OnGooglePasswordManagerLinkClicked();
+  controller_->OnGooglePasswordManagerLinkClicked();
+  controller_.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.InformationBubble",
+      metrics_util::CLICKED_MANAGE_PASSWORD, 1);
 }

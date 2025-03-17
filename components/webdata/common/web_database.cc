@@ -19,6 +19,18 @@ const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
 
 namespace {
 
+// Limits the duration of transaction to the scope of their modifications. Avoid
+// keeping pending transactions and pending modifications outside of their
+// scope.
+//
+// TODO(6175955): When this is launched, replace
+// `WebDatabase::AcquireTransaction()` with the typical pattern:
+//     sql::Transaction transaction(db());
+//     if (!transaction.Begin()) {...}
+BASE_FEATURE(kSqlScopedTransactionWebDatabase,
+             "SqlScopedTransactionWebDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSqlWALModeOnWebDatabase,
              "SqlWALModeOnWebDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -73,15 +85,19 @@ sql::InitStatus FailedMigrationTo(int version_num) {
 }  // namespace
 
 WebDatabase::WebDatabase()
-    : db_({.wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase),
-           // We don't store that much data in the tables so use a small page
-           // size. This provides a large benefit for empty tables (which is
-           // very likely with the tables we create).
-           .page_size = 2048,
-           // We shouldn't have much data and what access we currently have is
-           // quite infrequent. So we go with a small cache size.
-           .cache_size = 32},
-          /*tag=*/"Web") {}
+    : db_(sql::DatabaseOptions()
+              .set_wal_mode(
+                  base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase))
+              // We don't store that much data in the tables so use a small page
+              // size. This provides a large benefit for empty tables (which is
+              // very likely with the tables we create).
+              .set_page_size(2048)
+              // We shouldn't have much data and what access we currently have
+              // is quite infrequent. So we go with a small cache size.
+              .set_cache_size(32),
+          /*tag=*/"Web"),
+      use_scoped_transaction_(
+          base::FeatureList::IsEnabled(kSqlScopedTransactionWebDatabase)) {}
 
 WebDatabase::~WebDatabase() {
   for (auto& [key, table] : tables_) {
@@ -94,15 +110,34 @@ void WebDatabase::AddTable(WebDatabaseTable* table) {
 }
 
 WebDatabaseTable* WebDatabase::GetTable(WebDatabaseTable::TypeKey key) {
-  return tables_[key];
+  WebDatabaseTable* table = tables_[key];
+  CHECK(table);
+  return table;
 }
 
 void WebDatabase::BeginTransaction() {
-  db_.BeginTransactionDeprecated();
+  if (!use_scoped_transaction_) {
+    db_.BeginTransactionDeprecated();
+  }
 }
 
 void WebDatabase::CommitTransaction() {
-  db_.CommitTransactionDeprecated();
+  if (!use_scoped_transaction_) {
+    db_.CommitTransactionDeprecated();
+  }
+}
+
+std::unique_ptr<sql::Transaction> WebDatabase::AcquireTransaction() {
+  if (use_scoped_transaction_) {
+    // Only one active transaction at the time is allowed.
+    DCHECK(!db_.HasActiveTransactions());
+    auto transaction = std::make_unique<sql::Transaction>(&db_);
+    if (transaction->Begin()) {
+      return transaction;
+    }
+  }
+
+  return nullptr;
 }
 
 std::string WebDatabase::GetDiagnosticInfo(int extended_error,

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -107,10 +107,20 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
     return status;
   for (int i = views_info.GetSize() - 1; i >= 0; --i) {
     const WebViewInfo& view = views_info.Get(i);
-    if (view.type == WebViewInfo::kTab) {
-      *web_view_id = view.id;
-      return Status(kOk);
+    if (view.type != WebViewInfo::kTab) {
+      continue;
     }
+
+    // Extension tab targets can initialize earlier than actual start pages.
+    // Skip chrome extension pages from being start pages unless extension
+    // target capability is enabled.
+    if (view.url.starts_with("chrome-extension://") &&
+        !enable_extension_targets_) {
+      continue;
+    }
+
+    *web_view_id = view.id;
+    return Status(kOk);
   }
   return Status(kUnknownError, "unable to discover open window in chrome");
 }
@@ -171,7 +181,7 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
     }
 
     // Check if we already attached to this target.
-    auto found = base::ranges::find(web_views_, view.id, &WebViewImpl::GetId);
+    auto found = std::ranges::find(web_views_, view.id, &WebViewImpl::GetId);
     if (found != web_views_.end()) {
       continue;
     }
@@ -230,6 +240,9 @@ Status ChromeImpl::GetWebViewById(const std::string& id, WebView** web_view) {
     if (view->GetId() == id) {
       *web_view = view.get();
       return Status(kOk);
+    }
+    if (!view->IsTab()) {
+      continue;
     }
     WebView* active_page = nullptr;
     if (!view->GetActivePage(&active_page).IsError()) {
@@ -704,7 +717,7 @@ Status ChromeImpl::CloseWebView(const std::string& id) {
     return status;
   }
 
-  auto it = base::ranges::find(web_views_, id, &WebViewImpl::GetId);
+  auto it = std::ranges::find(web_views_, id, &WebViewImpl::GetId);
   if (it != web_views_.end()) {
     web_views_.erase(it);
   }

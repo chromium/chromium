@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {appNotificationHandlerMojom} from 'chrome://os-settings/os_settings.js';
-import {Permission, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 

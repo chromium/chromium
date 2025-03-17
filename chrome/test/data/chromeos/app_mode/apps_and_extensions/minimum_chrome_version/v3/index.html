@@ -1,0 +1,27 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<html>
+<script src="index.js"></script>
+
+<body style="background: rebeccapurple; color:#dddddd">
+  <h1>App to Test minimum_chrome_version</h1>
+
+  <h3>This app has three versions:</h3>
+  <h3>Version 1.0.0 is a regular app and should always work.</h3>
+  <h3>
+    Version 2.0.0 sets the `minimum_chrome_version` field in the manifest to an old Chrome version, so it
+    should be installable in current Chrome versions.
+  </h3>
+  <h3>
+    Version 3.0.0 sets the `minimum_chrome_version` field in the manifest to a
+    Chrome version M999, so it shouldn't be installable in Chrome versions for
+    the foreseeable future.
+  </h3>
+
+  <h2 style="color:palegreen">This is version 3.0.0</h2>
+</body>
+<hmtl>

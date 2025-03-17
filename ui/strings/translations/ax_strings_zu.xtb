@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">i-pullquote</translation>
 <translation id="1681022320378710418">isikhathi samanje</translation>
 <translation id="1727839386348365796">I-Eyedropper</translation>
+<translation id="1771761307086386028">Skrolela ngakwesokudla</translation>
 <translation id="1787192514241997742">isikhathi esiphelele: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">igridi yesihlahla</translation>
 <translation id="1822429046913737220">AM/PM</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">isikhethi seviki</translation>
 <translation id="3706100364254443312">shintsha</translation>
 <translation id="3808586225841795776">itemu</translation>
-<translation id="3914173277599553213">Kuyadingeka</translation>
 <translation id="3920932319529768807">isiphetho</translation>
 <translation id="3924558731517983934">uhlelo lokusebenza</translation>
 <translation id="3944740393230681990">isandulela</translation>
 <translation id="3960700977367013758">ibha yokuskrola</translation>
+<translation id="4021716437419160885">Skrolela phansi</translation>
 <translation id="4103419683916926126">Ama-millisecond</translation>
 <translation id="4151657705144244502">okubonakalayo</translation>
 <translation id="4160057747563657758">ifoni</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">isihlahla</translation>
 <translation id="4668956016107839909">isithasiselo</translation>
 <translation id="4698212723196775569">ikhodi</translation>
+<translation id="4710792130811321440">bonisa imenyu yokukhetha ithrekhi yomsindo</translation>
 <translation id="4742539557769756338">ikhava</translation>
 <translation id="4748357248530471599">shintsha isibonisi sesikrini esiphelele</translation>
 <translation id="4757246831282535685">iphaneli yethebhu</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">amazwana</translation>
 <translation id="4924138096460353083">okunganqunyelwe</translation>
 <translation id="4950364064308314478">Bonisa idatha yasendaweni nesikhi sesikhathi</translation>
+<translation id="495046168593986294">Skrolela phezulu</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />okukhethiwe</translation>
 <translation id="5022314756875057021">iqembu lomugqa</translation>
 <translation id="5034860022980953847">isikhombi sokuqhubeka</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">inkinobho yokujikelezisa</translation>
 <translation id="6011459053400940133">isilayida sevolumu</translation>
 <translation id="6015796118275082299">Unyaka</translation>
+<translation id="602001110135236999">Skrolela ngakwesokunxele</translation>
 <translation id="6023896073578205740">ibhokisi lohlu</translation>
 <translation id="6119846243427417423">yenza kusebenze</translation>
 <translation id="6150588977291308318">i-bibliography</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">cindezela</translation>
 <translation id="6885760532393684712">uhla lwemibhalo</translation>
 <translation id="689129560213475294">i-colophon</translation>
+<translation id="6919089238568236262">bonisa imenyu yokukhetha ithrekhi yevidiyo</translation>
 <translation id="6934078000481955284">i-blockquote</translation>
 <translation id="693476918119313863">isihloko</translation>
 <translation id="6941933287844615239">landa imidiya</translation>

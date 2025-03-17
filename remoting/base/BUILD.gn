@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_logging.gni")
@@ -23,6 +22,18 @@ process_version("remoting_base_version") {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "REMOTING_INTERNAL=$remoting_internal" ]
+}
+
+source_set("http_status") {
+  sources = [
+    "http_status.cc",
+    "http_status.h",
+  ]
+  deps = [
+    ":protobuf_http_client_messages_proto",
+    "//base",
+    "//net",
+  ]
 }
 
 source_set("base") {
@@ -47,6 +58,8 @@ source_set("base") {
     "cloud_session_authz_service_client_factory.h",
     "compound_buffer.cc",
     "compound_buffer.h",
+    "compute_engine_service_client.cc",
+    "compute_engine_service_client.h",
     "constants.cc",
     "constants.h",
     "corp_auth_util.cc",
@@ -65,6 +78,10 @@ source_set("base") {
     "directory_service_client.h",
     "fqdn.cc",
     "fqdn.h",
+    "instance_identity_token.cc",
+    "instance_identity_token.h",
+    "instance_identity_token_getter.cc",
+    "instance_identity_token_getter.h",
     "internal_headers.h",
     "is_google_email.cc",
     "is_google_email.h",
@@ -81,8 +98,6 @@ source_set("base") {
     "protobuf_http_request_base.h",
     "protobuf_http_request_config.cc",
     "protobuf_http_request_config.h",
-    "protobuf_http_status.cc",
-    "protobuf_http_status.h",
     "protobuf_http_stream_parser.cc",
     "protobuf_http_stream_parser.h",
     "protobuf_http_stream_request.cc",
@@ -128,6 +143,7 @@ source_set("base") {
   ]
 
   public_deps = [
+    ":http_status",
     "//base",
     "//net",
     "//remoting/proto",
@@ -142,13 +158,11 @@ source_set("base") {
     ":protobuf_http_client_messages_proto",
     ":remoting_base_version",
     ":session_policies",
-    "//build:chromeos_buildflags",
     "//google_apis",
     "//google_apis/common:request_util",
     "//remoting/proto:internal_structs",
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/google/remoting/cloud/v1:messages",
-    "//remoting/proto/remoting/v1:cloud_proto",
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
     "//services/network/public/cpp",
@@ -314,6 +328,8 @@ static_library("test_support") {
     "fake_oauth_token_getter.h",
     "mock_oauth_client.cc",
     "mock_oauth_client.h",
+    "mock_oauth_token_getter.cc",
+    "mock_oauth_token_getter.h",
     "mock_session_authz_service_client.cc",
     "mock_session_authz_service_client.h",
     "protobuf_http_test_responder.cc",
@@ -360,7 +376,7 @@ source_set("run_all_unittests") {
   testonly = true
 
   sources = [ "run_all_unittests.cc" ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "chromeos_remoting_test_suite.cc",
       "chromeos_remoting_test_suite.h",
@@ -372,11 +388,8 @@ source_set("run_all_unittests") {
     "//mojo/core/embedder",
     "//testing/gtest",
   ]
-  if (is_chromeos_ash) {
-    deps += [
-      "//ui/aura:test_support",
-      "//ui/gl:test_support",
-    ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components:test_support" ]
     data = [ "$root_out_dir/locales/en-US.pak" ]
     data_deps = [ "//ui/resources:ui_test_pak_data" ]
   }
@@ -391,6 +404,7 @@ source_set("unit_tests") {
     "buffered_socket_writer_unittest.cc",
     "capabilities_unittest.cc",
     "compound_buffer_unittest.cc",
+    "instance_identity_token_getter_unittest.cc",
     "leaky_bucket_unittest.cc",
     "local_session_policies_provider_unittest.cc",
     "oauth_token_getter_proxy_unittest.cc",
@@ -426,7 +440,7 @@ source_set("unit_tests") {
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
-  if (is_win || is_chromeos_ash) {
+  if (is_win || is_chromeos) {
     deps += [ "//third_party/breakpad:client" ]
   }
 }

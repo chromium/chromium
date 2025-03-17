@@ -32,12 +32,7 @@ message AutofillPageQueryRequest {
     message Field {
       // Signature made of the field |name| and |control_type|.
       optional fixed32 signature = 1;
-      // Name of the field (e.g., "First Name").
-      optional string name = 2;
-      // Type of the control (e.g., "email").
-      optional string control_type = 3;
-      // Metadata around the field.
-      optional AutofillRandomizedFieldMetadata metadata = 4;
+      reserved 2, 3, 4;
     };
     // Signature of the form that is made of:
     //  - URL scheme (e.g., "http")
@@ -47,8 +42,7 @@ message AutofillPageQueryRequest {
     optional fixed64 signature = 1;
     // Fields of the form for which we want suggestions.
     repeated Field fields = 2;
-    // Metadata around the form.
-    optional AutofillRandomizedFormMetadata metadata = 3;
+    reserved 3;
     // Alternative signature of the form that is made of:
     //  - URL scheme (e.g., "http")
     //  - URL domain page (e.g., "google.com")
@@ -98,6 +92,11 @@ message AutofillQueryResponse {
           // The prediction was specified as a command line override (used for
           // testing purposes only).
           SOURCE_MANUAL_OVERRIDE = 6;
+          // The autofill prediction came from the experiment which considers
+          // combined types of addresses.
+          SOURCE_AUTOFILL_COMBINED_TYPES = 7 [deprecated = true];
+          // The prediction is a (cached) Autofill AI model prediction.
+          SOURCE_AUTOFILL_AI = 8;
         }
 
         // The predicted field type.
@@ -124,10 +123,13 @@ message AutofillQueryResponse {
       // specify requirements for the generation of passwords.
       optional .autofill.PasswordRequirementsSpec password_requirements = 5;
       reserved 6;  // optional bool primary_type_prediction_is_override
+      optional string format_string = 7;
     };
     // Suggestions on the fields in the same form.
     repeated FieldSuggestion field_suggestions = 1;
-    reserved 2;  // repeated .autofill.Context contexts
+
+    // Indicates whether the client may run the AutofillAI model on this form.
+    optional bool run_autofill_ai_model = 2;
   };
   // Suggestions for forms in the same page.
   repeated FormSuggestion form_suggestions = 1;

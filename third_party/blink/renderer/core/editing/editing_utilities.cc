@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
 #include <array>
+#include <string_view>
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
@@ -105,12 +106,12 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-std::ostream& operator<<(std::ostream& os, PositionMoveType type) {
-  static const std::array<const char*, 3> kTexts = {
+std::string_view ToString(PositionMoveType type) {
+  static const std::array<std::string_view, 3> kTexts = {
       "CodeUnit", "BackwardDeletion", "GraphemeCluster"};
   DCHECK_LT(static_cast<size_t>(type), kTexts.size())
       << "Unknown PositionMoveType value";
-  return os << kTexts[static_cast<size_t>(type)];
+  return kTexts[static_cast<size_t>(type)];
 }
 
 UChar WhitespaceRebalancingCharToAppend(const String& string,
@@ -211,21 +212,16 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
   // would fire in the middle of Document::setFocusedNode().
 
   for (const Node& ancestor : NodeTraversal::InclusiveAncestorsOf(node)) {
-    if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode()))
+    if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode())) {
       continue;
-    // An inert subtree should not contain any content or controls which are
-    // critical to understanding or using aspects of the page which are not in
-    // the inert state. Content in an inert subtree will not be perceivable by
-    // all users, or interactive. See
-    // https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute.
-    // To prevent the invisible inert element being overlooked, the
-    // inert attribute of the element is initially assessed. See
-    // https://issues.chromium.org/issues/41490809.
-    if (RuntimeEnabledFeatures::InertElementNonEditableEnabled()) {
-      const Element* element = DynamicTo<Element>(ancestor);
-      if (element && element->IsInertRoot()) {
-        return false;
-      }
+    }
+    // If the `ancestor` is a child of the shadow host and does not have a slot
+    // assigned, it should use the style of the shadow host and therefore be
+    // skipped.
+    // See https://issues.chromium.org/issues/392725745 for more details.
+    if (RuntimeEnabledFeatures::UseShadowHostStyleCheckEditableEnabled() &&
+        ancestor.IsChildOfShadowHost() && !ancestor.AssignedSlot()) {
+      continue;
     }
     if (const ComputedStyle* style =
             GetComputedStyleForElementOrLayoutObject(ancestor)) {
@@ -236,6 +232,20 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
           return true;
         case EUserModify::kReadWritePlaintextOnly:
           return editable_level != kRichlyEditable;
+      }
+    }
+    // An inert subtree should not contain any content or controls which are
+    // critical to understanding or using aspects of the page which are not in
+    // the inert state. Content in an inert subtree will not be perceivable by
+    // all users, or interactive. See
+    // https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute.
+    // To prevent the invisible inert element being overlooked, the
+    // inert attribute of the element is considered when style is not present.
+    // See https://issues.chromium.org/issues/41490809.
+    if (RuntimeEnabledFeatures::InertElementNonEditableEnabled()) {
+      const Element* element = DynamicTo<Element>(ancestor);
+      if (element && element->IsInertRoot()) {
+        return false;
       }
     }
   }
@@ -734,7 +744,7 @@ PositionTemplate<Strategy> PreviousPositionOfAlgorithm(
         return PositionTemplate<Strategy>(
             node, PreviousGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << ToString(move_type);
     }
   }
 
@@ -796,7 +806,7 @@ PositionTemplate<Strategy> NextPositionOfAlgorithm(
         return PositionTemplate<Strategy>::EditingPositionOf(
             node, NextGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << ToString(move_type);
     }
   }
 

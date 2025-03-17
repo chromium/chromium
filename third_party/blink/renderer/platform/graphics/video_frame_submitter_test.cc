@@ -116,10 +116,6 @@ class VideoMockCompositorFrameSink
   }
 
   MOCK_METHOD1(DidNotProduceFrame, void(const viz::BeginFrameAck&));
-  MOCK_METHOD2(DidAllocateSharedBitmap,
-               void(base::ReadOnlySharedMemoryRegion region,
-                    const viz::SharedBitmapId& id));
-  MOCK_METHOD1(DidDeleteSharedBitmap, void(const viz::SharedBitmapId& id));
   MOCK_METHOD1(InitializeCompositorFrameSinkType,
                void(viz::mojom::CompositorFrameSinkType));
   MOCK_METHOD1(BindLayerContext,
@@ -157,9 +153,9 @@ class MockVideoFrameResourceProvider
                     media::VideoTransformation,
                     bool));
   MOCK_METHOD0(ReleaseFrameResources, void());
-  MOCK_METHOD2(PrepareSendToParent,
-               void(const WebVector<viz::ResourceId>&,
-                    WebVector<viz::TransferableResource>*));
+  MOCK_METHOD1(PrepareSendToParent,
+               std::vector<viz::TransferableResource>(
+                   const std::vector<viz::ResourceId>&));
   MOCK_METHOD1(ReceiveReturnsFromParent,
                void(Vector<viz::ReturnedResource> transferable_resources));
   MOCK_METHOD0(ObtainContextProvider, void());
@@ -343,7 +339,7 @@ enum class SubmissionType {
     EXPECT_GET_PUT_FRAME();                                         \
     EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _));             \
     EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _));      \
-    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));    \
+    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));       \
     EXPECT_CALL(*resource_provider_, ReleaseFrameResources());      \
   } while (0)
 
@@ -528,7 +524,7 @@ TEST_P(VideoFrameSubmitterTest, RotationInformationPassedToResourceProvider) {
                           media::VideoTransformation(
                               media::VideoRotation::VIDEO_ROTATION_90),
                           _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
   submitter_->DidReceiveFrame();
@@ -556,7 +552,7 @@ TEST_P(VideoFrameSubmitterTest, RotationInformationPassedToResourceProvider) {
                           media::VideoTransformation(
                               media::VideoRotation::VIDEO_ROTATION_180),
                           _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
   viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
@@ -581,7 +577,7 @@ TEST_P(VideoFrameSubmitterTest, RotationInformationPassedToResourceProvider) {
                           media::VideoTransformation(
                               media::VideoRotation::VIDEO_ROTATION_270),
                           _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
   args = begin_frame_source_->CreateBeginFrameArgs(BEGINFRAME_FROM_HERE,
@@ -606,7 +602,7 @@ TEST_P(VideoFrameSubmitterTest, FrameTransformTakesPrecedent) {
                           media::VideoTransformation(
                               media::VideoRotation::VIDEO_ROTATION_90),
                           _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
   submitter_->DidReceiveFrame();
@@ -631,7 +627,7 @@ TEST_P(VideoFrameSubmitterTest, FrameTransformTakesPrecedent) {
   EXPECT_CALL(*video_frame_provider_, PutCurrentFrame());
   EXPECT_CALL(*resource_provider_,
               AppendQuads(_, _, frame->metadata().transformation.value(), _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
   viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
@@ -886,7 +882,7 @@ TEST_P(VideoFrameSubmitterTest, FrameSizeChangeUpdatesLocalSurfaceId) {
   EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _));
   EXPECT_CALL(*video_frame_provider_, PutCurrentFrame());
   EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
   SubmitSingleFrame();
@@ -929,7 +925,7 @@ TEST_P(VideoFrameSubmitterTest, VideoRotationOutputRect) {
                             media::VideoTransformation(
                                 media::VideoRotation::VIDEO_ROTATION_90),
                             _));
-    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
     EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
     viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
@@ -959,7 +955,7 @@ TEST_P(VideoFrameSubmitterTest, VideoRotationOutputRect) {
                             media::VideoTransformation(
                                 media::VideoRotation::VIDEO_ROTATION_180),
                             _));
-    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
     EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
     viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
@@ -990,7 +986,7 @@ TEST_P(VideoFrameSubmitterTest, VideoRotationOutputRect) {
                             media::VideoTransformation(
                                 media::VideoRotation::VIDEO_ROTATION_270),
                             _));
-    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+    EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
     EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
 
     viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
@@ -1076,7 +1072,7 @@ TEST_P(VideoFrameSubmitterTest, NoDuplicateFramesOnBeginFrame) {
   EXPECT_CALL(*video_frame_provider_, PutCurrentFrame());
   EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _));
   EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
   viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
       BEGINFRAME_FROM_HERE, now_src_.get());
@@ -1105,7 +1101,7 @@ TEST_P(VideoFrameSubmitterTest, NoDuplicateFramesDidReceiveFrame) {
   EXPECT_CALL(*video_frame_provider_, PutCurrentFrame());
   EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _));
   EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _));
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
   submitter_->DidReceiveFrame();
   task_environment_.RunUntilIdle();
@@ -1197,8 +1193,7 @@ TEST_P(VideoFrameSubmitterTest, OpaqueFramesNotifyEmbedder) {
   EXPECT_CALL(*video_frame_provider_, PutCurrentFrame()).Times(AnyNumber());
   EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _)).Times(AnyNumber());
   EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _)).Times(AnyNumber());
-  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_, _))
-      .Times(AnyNumber());
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_)).Times(AnyNumber());
   EXPECT_CALL(*resource_provider_, ReleaseFrameResources()).Times(AnyNumber());
 
   // Send an opaque frame, and expect a callback immediately.

@@ -25,12 +25,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
+namespace webid {
 namespace {
 class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
  public:
@@ -204,8 +206,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_TRUE(spinner->GetVisible());
 
     // Check spinner is of the correct size.
-    EXPECT_EQ(spinner->size(), gfx::Size(fedcm::kModalIconSpinnerSize,
-                                         fedcm::kModalIconSpinnerSize));
+    EXPECT_EQ(spinner->size(),
+              gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
 
     // Check IDP icon container contains the IDP icon image. The IDP icon
     // container is always present. Its visibility is updated when we want to
@@ -227,7 +229,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
       // Check icon image is of the correct size.
       EXPECT_EQ(idp_icon_image->size(),
-                gfx::Size(fedcm::kModalIdpIconSize, fedcm::kModalIdpIconSize));
+                gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
     }
 
     // The combined icons container is present only when we expect it to be
@@ -250,8 +252,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       // icons.
       for (const auto& icon : combined_icons_container_children) {
         EXPECT_TRUE(icon->GetVisible());
-        EXPECT_EQ(icon->size(), gfx::Size(fedcm::kModalCombinedIconSize,
-                                          fedcm::kModalCombinedIconSize));
+        EXPECT_EQ(icon->size(),
+                  gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
       }
     }
 
@@ -321,7 +323,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     bool has_spinner = false;
     for (const auto& child : button->children()) {
       // Spinner is placed in a BoxLayoutView.
-      if (std::string(child->GetClassName()) == "BoxLayoutView") {
+      if (child->GetClassName() == "BoxLayoutView") {
         views::Throbber* spinner =
             static_cast<views::Throbber*>(child->children()[0]);
         EXPECT_TRUE(spinner);
@@ -334,9 +336,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   void CheckDisabledButtonRow(views::View* button_row) {
     for (const auto& button : button_row->children()) {
       auto* text_button = static_cast<views::MdTextButton*>(
-          std::string(button->GetClassName()) == "FlexLayoutView"
-              ? button->children()[0]
-              : button);
+          (button->GetClassName() == "FlexLayoutView") ? button->children()[0]
+                                                       : button);
 
       if (text_button->GetText() == l10n_util::GetStringUTF16(IDS_CANCEL)) {
         ASSERT_TRUE(text_button->GetEnabled());
@@ -415,7 +416,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       const std::string& rp_brand_icon_url = kRpBrandIconUrl) {
     const std::string kAccountSuffix = "suffix";
     idp_data_->idp_metadata.brand_icon_url = GURL(idp_brand_icon_url);
+    if (idp_data_->idp_metadata.brand_icon_url.is_valid()) {
+      idp_data_->idp_metadata.brand_decoded_icon =
+          gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
+    }
     idp_data_->client_metadata.brand_icon_url = GURL(rp_brand_icon_url);
+    if (idp_data_->client_metadata.brand_icon_url.is_valid()) {
+      idp_data_->client_metadata.brand_decoded_icon =
+          gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
+    }
     IdentityRequestAccountPtr account(CreateTestIdentityRequestAccount(
         kAccountSuffix, idp_data_, login_state));
     CreateAndShowRequestPermissionDialog(*account);
@@ -494,7 +503,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // account_chooser section. e.g. accounts, disclosure text, scroll view etc.
     // and all of them should be disabled.
     for (const auto& item : account_chooser) {
-      if (std::string(item->GetClassName()) == "HoverButton") {
+      if (item->GetClassName() == "HoverButton") {
         AccountHoverButton* button = static_cast<AccountHoverButton*>(item);
         ASSERT_FALSE(item->GetEnabled());
         ASSERT_TRUE(button->HasDisabledOpacity());
@@ -603,8 +612,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
     size_t accounts_index = 0;
     for (const auto& account_suffix : account_suffixes) {
-      if (std::string(accounts[accounts_index]->GetClassName()) ==
-          "Separator") {
+      if (accounts[accounts_index]->GetClassName() == "Separator") {
         ++accounts_index;
       }
       CheckHoverableAccountRow(accounts[accounts_index++], account_suffix,
@@ -638,11 +646,11 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
         TestStructureAndGetAccounts(children[1]);
 
-    ASSERT_EQ(std::string(accounts[0]->GetClassName()), "Separator");
+    ASSERT_EQ(accounts[0]->GetClassName(), "Separator");
     CheckHoverableAccountRow(accounts[1], "enabled",
                              /*expect_idp=*/false, /*is_modal_dialog=*/true,
                              /*is_disabled=*/false);
-    ASSERT_EQ(std::string(accounts[2]->GetClassName()), "Separator");
+    ASSERT_EQ(accounts[2]->GetClassName(), "Separator");
     CheckHoverableAccountRow(accounts[3], "disabled",
                              /*expect_idp=*/false, /*is_modal_dialog=*/true,
                              /*is_disabled=*/true);
@@ -663,6 +671,9 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void SetIdpBrandIcon(const std::string& url) {
     idp_data_->idp_metadata.brand_icon_url = GURL(url);
+    if (!idp_data_->idp_metadata.brand_icon_url.is_valid()) {
+      idp_data_->idp_metadata.brand_decoded_icon = gfx::Image();
+    }
   }
 
  private:
@@ -986,3 +997,5 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        OneDisabledAccountAndOneEnabledAccount) {
   TestEnabledAndDisabled();
 }
+
+}  //  namespace webid

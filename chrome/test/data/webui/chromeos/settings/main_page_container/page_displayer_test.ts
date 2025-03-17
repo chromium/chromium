@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {PageDisplayerElement, routesMojom} from 'chrome://os-settings/os_settings.js';
+import type {PageDisplayerElement} from 'chrome://os-settings/os_settings.js';
+import {routesMojom} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 

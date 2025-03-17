@@ -4,10 +4,10 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {DataPoint, DataSeries} from '../model/data_series.js';
+import type {DataSeries} from '../model/data_series.js';
 import {LINE_CHART_COLOR_SET, MIN_TIME_SCALE, SAMPLE_RATE} from '../utils/line_chart_configs.js';
-import type {DisplayedLineInfo} from '../view/line_chart/chart_summary_table.js'
-import type {HealthdInternalsLineChartElement} from '../view/line_chart/line_chart.js'
+import type {DisplayedLineInfo} from '../view/line_chart/chart_summary_table.js';
+import type {HealthdInternalsLineChartElement} from '../view/line_chart/line_chart.js';
 
 import {CanvasDrawer} from './canvas_drawer.js';
 import type {DataSeriesList} from './system_trend_controller.js';
@@ -213,7 +213,7 @@ export class LineChartController {
       visibleEndTime: number, stepSize: number, timeScale: number) {
     assert(this.displayedDataSeriesLists.length >= 1);
 
-    const normalizedUpperBound = 1
+    const normalizedUpperBound = 1;
     const pixelScale =
         normalizedUpperBound / this.canvasDrawer.getUnitLabelHeight();
 
@@ -266,7 +266,7 @@ export class LineChartController {
   private updateSummaryTable(
       visibleStartTime: number, visibleEndTime: number, stepSize: number) {
     const output: DisplayedLineInfo[] = [];
-    let colorIndex = 0
+    let colorIndex = 0;
     for (const data of this.displayedDataSeriesLists) {
       const unitScale = data.unitLabel.getUnitScale();
       const unitString = data.unitLabel.getUnitString();
@@ -291,7 +291,7 @@ export class LineChartController {
           info.normalizationWeight = unitScale / normalizationScale;
           info.normalizedValue = statistics.latest / normalizationScale;
         }
-        output.push(info)
+        output.push(info);
         colorIndex += 1;
       }
     }

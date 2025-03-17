@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 
+#include "base/strings/string_util.h"
+
 namespace optimization_guide {
 
 OnDeviceModelValidator::OnDeviceModelValidator(
@@ -29,14 +31,25 @@ void OnDeviceModelValidator::ValidateNextPrompt() {
   }
 
   receiver_.reset();
+  active_session_.reset();
+  session_->Clone(active_session_.BindNewPipeAndPassReceiver());
+  // base::Unretained is safe since `this` owns the session.
+  active_session_.set_disconnect_handler(base::BindOnce(
+      &OnDeviceModelValidator::FinishValidation, base::Unretained(this),
+      OnDeviceModelValidationResult::kInterrupted));
+
   current_response_ = "";
-  auto options = on_device_model::mojom::InputOptions::New();
-  options->input = on_device_model::mojom::Input::New();
-  options->input->pieces.push_back(
+  auto append_options = on_device_model::mojom::AppendOptions::New();
+  append_options->input = on_device_model::mojom::Input::New();
+  append_options->input->pieces.push_back(
       validation_config_.validation_prompts(index_).prompt());
+  active_session_->Append(std::move(append_options), {});
+
+  auto generate_options = on_device_model::mojom::GenerateOptions::New();
   // Avoid bad responses spamming output and taking too long.
-  options->max_output_tokens = 64;
-  session_->Execute(std::move(options), receiver_.BindNewPipeAndPassRemote());
+  generate_options->max_output_tokens = 64;
+  active_session_->Generate(std::move(generate_options),
+                            receiver_.BindNewPipeAndPassRemote());
 }
 
 void OnDeviceModelValidator::OnResponse(

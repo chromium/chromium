@@ -112,6 +112,12 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(Role)
+//
 // Next version: 8
 // Next value: 213
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
@@ -356,6 +362,7 @@ enum Role {
   kWebView = 183,
   kWindow = 184,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilitySetValueRole)
 
 // Bitfield value. Each state can either be true or false.
 //
@@ -404,8 +411,9 @@ enum Action {
   kBlur = 2,
 
   // Notifies a node that it no longer has accessibility focus.
-  // Currently used only on Android and only internally, it's not
-  // exposed to the open web. See kSetAccessibilityFocus, below.
+  // On Android, this comes from an official Android accessibility api.
+  // On other platforms, we derive this from other actions such as
+  // kScrollToMakeVisible.
   kClearAccessibilityFocus = 3,
 
   // Collapse the collapsible node.
@@ -478,8 +486,9 @@ enum Action {
   [MinVersion=3] kScrollToPositionAtRowColumn = 39,
 
   // Notifies a node that it has accessibility focus.
-  // Currently used only on Android and only internally, it's not
-  // exposed to the open web. See kClearAccessibilityFocus, above.
+  // On Android, this comes from an official Android accessibility api.
+  // On other platforms, we derive this from other actions  such as
+  // kScrollToMakeVisible.
   kSetAccessibilityFocus = 26,
 
   kSetScrollOffset = 27,
@@ -1423,6 +1432,9 @@ enum DetailsFrom {
   // The details comes from a popover that will show when the user shows
   // interest in the current element, e.g. hovers.
   kInterestTarget,
+
+  // The details comes from a commandFor attribute.
+  kCommandfor,
 };
 
 // Next value: 4
@@ -1537,6 +1549,6 @@ enum AriaNotificationInterrupt {
 };
 
 enum AriaNotificationPriority {
-  kNone,
-  kImportant,
+  kNormal,
+  kHigh,
 };

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_FEEDBACK_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_FEEDBACK_H_
 
-#include "chrome/browser/profiles/profile.h"
-#include "components/feedback/feedback_uploader.h"
+#include <string_view>
+
+class Profile;
 
 namespace ash::input_method {
 

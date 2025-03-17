@@ -8,7 +8,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -43,10 +45,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
@@ -57,6 +59,7 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItem
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.chrome.browser.ui.suggestion.Icon;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -66,11 +69,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Simple unit tests for the detail screen view. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
+@EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)
 public class FastCheckoutDetailScreenViewTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -92,7 +95,8 @@ public class FastCheckoutDetailScreenViewTest {
                     /* city= */ "New York",
                     /* postalCode= */ "12345",
                     /* email= */ "john.moe@gmail.com",
-                    /* phoneNumber= */ "+1-345-543-645");
+                    /* phoneNumber= */ "+1-345-543-645",
+                    /* recordType= */ RecordType.ACCOUNT);
     private static final FastCheckoutAutofillProfile sSampleProfile2 =
             FastCheckoutTestUtils.createDetailedProfile(
                     /* guid= */ "555",
@@ -101,7 +105,8 @@ public class FastCheckoutDetailScreenViewTest {
                     /* city= */ "Los Angeles",
                     /* postalCode= */ "99999",
                     /* email= */ "doe.jane@gmail.com",
-                    /* phoneNumber= */ "+1-345-333-319");
+                    /* phoneNumber= */ "+1-345-333-319",
+                    /* recordType= */ RecordType.ACCOUNT);
 
     private static final FastCheckoutCreditCard sSampleCard1 =
             FastCheckoutTestUtils.createDetailedLocalCreditCard(
@@ -125,13 +130,41 @@ public class FastCheckoutDetailScreenViewTest {
                     /* year= */ "2025",
                     /* issuerIcon= */ Icon.CARD_DINERS);
 
+    private static final FastCheckoutAutofillProfile sSampleAccountAddressProfile =
+            FastCheckoutTestUtils.createDetailedProfile(
+                    /* guid= */ "222",
+                    /* name= */ "",
+                    /* streetAddress= */ "",
+                    /* city= */ "",
+                    /* postalCode= */ "",
+                    /* email= */ "",
+                    /* phoneNumber= */ "",
+                    /* recordType= */ RecordType.ACCOUNT);
+
+    private static final FastCheckoutAutofillProfile sSampleHomeAddressProfile =
+            FastCheckoutTestUtils.createDetailedProfile(
+                    /* guid= */ "222",
+                    /* name= */ "",
+                    /* streetAddress= */ "",
+                    /* city= */ "",
+                    /* postalCode= */ "",
+                    /* email= */ "",
+                    /* phoneNumber= */ "",
+                    /* recordType= */ RecordType.ACCOUNT_HOME);
+
+    private static final FastCheckoutAutofillProfile sSampleWorkAddressProfile =
+            FastCheckoutTestUtils.createDetailedProfile(
+                    /* guid= */ "222",
+                    /* name= */ "",
+                    /* streetAddress= */ "",
+                    /* city= */ "",
+                    /* postalCode= */ "",
+                    /* email= */ "",
+                    /* phoneNumber= */ "",
+                    /* recordType= */ RecordType.ACCOUNT_WORK);
+
     @Before
     public void setUp() {
-        FeatureList.TestValues featureTestValues = new FeatureList.TestValues();
-        featureTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
-        FeatureList.setTestValues(featureTestValues);
-
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -228,7 +261,8 @@ public class FastCheckoutDetailScreenViewTest {
                         /* city= */ "",
                         /* postalCode= */ "",
                         /* email= */ "",
-                        /* phoneNumber= */ "");
+                        /* phoneNumber= */ "",
+                        /* recordType= */ RecordType.ACCOUNT);
 
         ModelList models = mModel.get(PROFILE_MODEL_LIST);
         models.add(
@@ -377,6 +411,107 @@ public class FastCheckoutDetailScreenViewTest {
         getListItemAt(1).performClick();
         ShadowLooper.shadowMainLooper().idle();
         verify(callback, times(1)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testIconsAndSubtitlesForHomeAndWorkAreCorrectlyDisplayed() {
+
+        ModelList models = mModel.get(PROFILE_MODEL_LIST);
+        models.add(
+                new ListItem(
+                        DetailItemType.PROFILE,
+                        AutofillProfileItemProperties.create(
+                                sSampleAccountAddressProfile,
+                                /* isSelected= */ true,
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
+
+        models.add(
+                new ListItem(
+                        DetailItemType.PROFILE,
+                        AutofillProfileItemProperties.create(
+                                sSampleHomeAddressProfile,
+                                /* isSelected= */ false,
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
+
+        models.add(
+                new ListItem(
+                        DetailItemType.PROFILE,
+                        AutofillProfileItemProperties.create(
+                                sSampleWorkAddressProfile,
+                                /* isSelected= */ false,
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
+
+        mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
+
+        ShadowLooper.shadowMainLooper().idle();
+
+        // Default location icon should be shown.
+        ImageView addressImageView = getListItemAt(0).findViewById(R.id.fast_checkout_address_icon);
+        assertTrue(addressImageView.isShown());
+        assertThat(
+                shadowOf(addressImageView.getDrawable()).getCreatedFromResId(),
+                equalTo(R.drawable.location_on_logo));
+
+        // Icon subtitle should be hidden.
+        assertFalse(getTextViewFromListItemWithId(0, R.id.fast_checkout_record_type).isShown());
+
+        // Home icon should be shown.
+        ImageView homeImageView = getListItemAt(1).findViewById(R.id.fast_checkout_address_icon);
+        assertTrue(homeImageView.isShown());
+        assertThat(
+                shadowOf(homeImageView.getDrawable()).getCreatedFromResId(),
+                equalTo(R.drawable.home_logo));
+
+        // Icon subtitle for Home address should be shown.
+        TextView homeTextView = getTextViewFromListItemWithId(1, R.id.fast_checkout_record_type);
+        assertTrue(homeTextView.isShown());
+        assertThat(
+                homeTextView.getText().toString(),
+                equalTo(mView.getContext().getString(R.string.fast_checkout_record_type_home)));
+
+        // Work icon should be shown.
+        ImageView workImageView = getListItemAt(2).findViewById(R.id.fast_checkout_address_icon);
+        assertTrue(workImageView.isShown());
+        assertThat(
+                shadowOf(workImageView.getDrawable()).getCreatedFromResId(),
+                equalTo(R.drawable.work_logo));
+
+        // Icon subtitle for Work address should be shown.
+        TextView workTextView = getTextViewFromListItemWithId(2, R.id.fast_checkout_record_type);
+        assertTrue(workTextView.isShown());
+        assertThat(
+                workTextView.getText().toString(),
+                equalTo(mView.getContext().getString(R.string.fast_checkout_record_type_work)));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)
+    public void testViewDisplaysDefaultRecordTypeIconWhenHomeAddressUsedAndFeatureIsDisabled() {
+
+        ModelList models = mModel.get(PROFILE_MODEL_LIST);
+        models.add(
+                new ListItem(
+                        DetailItemType.PROFILE,
+                        AutofillProfileItemProperties.create(
+                                sSampleHomeAddressProfile,
+                                /* isSelected= */ true,
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
+
+        mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
+
+        ShadowLooper.shadowMainLooper().idle();
+
+        // Default location icon should be shown.
+        ImageView addressImageView = getListItemAt(0).findViewById(R.id.fast_checkout_address_icon);
+        assertTrue(addressImageView.isShown());
+        assertThat(
+                shadowOf(addressImageView.getDrawable()).getCreatedFromResId(),
+                equalTo(R.drawable.location_on_logo));
+
+        // Icon subtitle should be hidden.
+        assertFalse(getTextViewFromListItemWithId(0, R.id.fast_checkout_record_type).isShown());
     }
 
     private RecyclerView getListItems() {

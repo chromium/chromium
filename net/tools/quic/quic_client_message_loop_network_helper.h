@@ -53,7 +53,7 @@ class QuicClientMessageLooplNetworkHelper
   // From NetworkHelper.
   void RunEventLoop() override;
   bool CreateUDPSocketAndBind(quic::QuicSocketAddress server_address,
-                              quic::QuicIpAddress bind_to_address,
+                              quiche::QuicheIpAddress bind_to_address,
                               int bind_to_port) override;
   void CleanUpAllUDPSockets() override;
   quic::QuicSocketAddress GetLatestClientAddress() const override;

@@ -85,6 +85,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       // Main UI strings:
       {"addNewColumn", IDS_COMPARE_ADD_NEW_COLUMN},
       {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
+      {"cancelA11yLabel", IDS_CANCEL},
       {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
       {"compareErrorDescription", IDS_COMPARE_ERROR_DESCRIPTION},
       {"compareErrorMessage", IDS_COMPARE_ERROR_TITLE},
@@ -101,6 +102,16 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"experimentalFeatureDisclaimer", IDS_COMPARE_DISCLAIMER},
       {"learnMore", IDS_COMPARE_LEARN_MORE},
       {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
+      {"menuDelete", IDS_COMPARE_CONTEXT_MENU_DELETE},
+      {"menuOpenAll", IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_WITH_COUNT},
+      {"menuOpenAllInNewWindow",
+       IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_IN_NEW_WINDOW_WITH_COUNT},
+      {"menuOpenInNewTab", IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB},
+      {"menuOpenInNewWindow", IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_WINDOW},
+      {"menuRename", IDS_COMPARE_CONTEXT_MENU_RENAME},
+      {"menuTooltipMore", IDS_COMPARE_EDIT_MORE},
+      {"notAvailableTooltip", IDS_COMPARE_DESCRIPTION_NOT_AVAILABLE},
+      {"numSelected", IDS_COMPARE_NUM_ITEMS_SELECTED},
       {"offlineMessage", IDS_COMPARE_OFFLINE_TOAST_MESSAGE},
       {"openProductPage", IDS_COMPARE_OPEN_PRODUCT_PAGE_IN_NEW_TAB},
       {"pageTitle", IDS_COMPARE_DEFAULT_PAGE_TITLE},
@@ -117,6 +128,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
+      {"undoTableDeletion", IDS_COMPARE_UNDO_TABLE_DELETION},
       {"yourComparisonTables", IDS_COMPARE_YOUR_COMPARISON_TABLES},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
@@ -143,6 +155,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString("numItems", IDS_COMPARE_NUM_ITEMS);
+  plural_string_handler->AddLocalizedString(
+      "deletionToastMessage", IDS_COMPARE_TABLE_DELETION_TOAST_MESSAGE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -42,6 +43,8 @@ struct CreditCardSuggestionSummary {
   bool with_offer = false;
   // True if any card has a saved CVC.
   bool with_cvc = false;
+  // True if any card is card info retrieval enrolled.
+  bool with_card_info_retrieval_enrolled = false;
   // Contains card metadata related information used for metrics logging.
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   // Contains information regarding the ranking of suggestions and is used for
@@ -49,9 +52,34 @@ struct CreditCardSuggestionSummary {
   autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
+// Holds the result of `MaybeUpdateSuggestionsWithBnpl`.
+struct BnplSuggestionUpdateResult {
+  BnplSuggestionUpdateResult();
+
+  BnplSuggestionUpdateResult(const BnplSuggestionUpdateResult&);
+  BnplSuggestionUpdateResult& operator=(const BnplSuggestionUpdateResult&);
+  BnplSuggestionUpdateResult(BnplSuggestionUpdateResult&&);
+  BnplSuggestionUpdateResult& operator=(BnplSuggestionUpdateResult&&);
+
+  ~BnplSuggestionUpdateResult();
+
+  std::vector<Suggestion> suggestions;
+  bool is_bnpl_suggestion_added = false;
+};
+
+// Returns the credit cards to suggest to the user. Those have been deduped
+// and ordered by frecency with the expired cards put at the end of the
+// vector. `should_use_legacy_algorithm` indicates if we should rank credit
+// cards using the legacy ranking algorithm.
+std::vector<const CreditCard*> GetCreditCardsToSuggest(
+    const PaymentsDataManager& payments_data_manager,
+    bool should_use_legacy_algorithm = false);
+
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
 // `summary` contains metadata about the returned suggestions.
+// `is_complete_form` indicates whether a credit card form is considered
+// complete for the purposes of "Save and Fill".
 // `autofilled_last_four_digits_in_form_for_filtering` are the last four digits
 // of a card number that will be used for suggestion filtering. This is used to
 // avoid showing suggestions that is unrelated to the cards that have already
@@ -61,6 +89,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
+    bool is_complete_form,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     const std::vector<std::string>& four_digit_combinations_in_dom,
@@ -99,11 +128,15 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type);
 
-// Returns a suggestion list with a BNPL suggestion added at the end (but
-// before footer items) of the given suggestion list `current_suggestions`.
-// If no BNPL chip can be added, an empty list will be returned.
-std::vector<Suggestion> MaybeCreateNewSuggestionsWithBnpl(
-    const base::span<const Suggestion>& current_suggestions);
+// Returns a suggestion list with a BNPL suggestion, initialized with
+// `bnpl_issuers` and the BNPL amount `extracted_amount_in_micros`, added at the
+// end (but before footer items) of the given suggestion list
+// `current_suggestions`. `BnplSuggestionUpdateResult::is_bnpl_suggestion_added`
+// is true if a BNPL suggestion is inserted successfully.
+BnplSuggestionUpdateResult MaybeUpdateSuggestionsWithBnpl(
+    const base::span<const Suggestion>& current_suggestions,
+    const std::vector<BnplIssuer>& bnpl_issuers,
+    uint64_t extracted_amount_in_micros);
 
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and
@@ -131,6 +164,14 @@ Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo);
 // `SuggestionType`. This distinction is needed for metrics recording.
 Suggestion CreateManageIbansSuggestion();
 
+// Generates a "Save and Fill" suggestion for users who don't have any cards
+// saved in Autofill. This suggestion is shown above the footer.
+// `display_gpay_logo` is an  output parameter that is set to true if credit
+// card upload is enabled, indicating that the GPay logo should be displayed
+// with the suggestion.
+Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
+                                       bool& display_gpay_logo);
+
 // Generates suggestions for all available IBANs.
 std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans);
 
@@ -138,6 +179,10 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans);
 // suggestions that can be displayed to the user for a promo code field.
 std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     const std::vector<const AutofillOfferData*>& promo_code_offers);
+
+//  Returns true if all the conditions for enabling the upload of credit card
+//  are satisfied.
+bool IsCreditCardUploadEnabled(const AutofillClient& client);
 
 // Returns true if the suggestion created from the card can be accepted by the
 // user. Returns false when merchant does not accept the given card for example
@@ -178,6 +223,12 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_cards_from_account,
     bool is_autofilled,
     bool with_gpay_logo);
+
+// Exposes `GetBnplPriceLowerBound` in tests.
+std::u16string GetBnplPriceLowerBoundForTest(
+    const std::vector<BnplIssuer>& bnpl_issuers);
+
+void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled);
 
 // Exposes `ShouldShowVirtualCardOption` in tests.
 bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,

@@ -488,7 +488,10 @@ message ClientToServerResponse {
 }
 
 // A message to notify the server of certain sync events. Idempotent. Send these
-// to the /event endpoint.
+// to the /event endpoint. Note that this message is handled even when coming
+// from the legacy client (i.e. for which the server would reject
+// GetUpdates/Commit messages), that means breaking server-side changes need to
+// be handled carefully.
 message EventRequest {
   optional SyncDisabledEvent sync_disabled = 1;
 }

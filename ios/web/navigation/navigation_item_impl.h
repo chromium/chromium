@@ -64,6 +64,8 @@ class NavigationItemImpl : public web::NavigationItem {
   base::Time GetTimestamp() const override;
   void SetUserAgentType(UserAgentType type) override;
   UserAgentType GetUserAgentType() const override;
+  void SetSecurityScopedFileResource(NSData* data) override;
+  NSData* GetSecurityScopedFileResource() override;
   bool HasPostData() const override;
   HttpRequestHeaders* GetHttpRequestHeaders() const override;
   void AddHttpRequestHeaders(HttpRequestHeaders* additional_headers) override;
@@ -144,6 +146,7 @@ class NavigationItemImpl : public web::NavigationItem {
   SSLStatus ssl_;
   base::Time timestamp_;
   UserAgentType user_agent_type_ = UserAgentType::NONE;
+  NSData* security_scoped_file_resource_ = nil;
   NSMutableDictionary* http_request_headers_ = nil;
 
   NSString* serialized_state_object_ = nil;

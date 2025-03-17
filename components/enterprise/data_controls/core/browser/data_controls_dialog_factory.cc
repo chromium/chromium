@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 
 namespace data_controls {
 
@@ -19,10 +20,10 @@ namespace {
 // pointer.
 std::map<std::pair<void*, DataControlsDialog::Type>, DataControlsDialog*>&
 CurrentDialogsStorage() {
-  static std::map<std::pair<void*, DataControlsDialog::Type>,
-                  DataControlsDialog*>
+  static base::NoDestructor<
+      std::map<std::pair<void*, DataControlsDialog::Type>, DataControlsDialog*>>
       dialogs;
-  return dialogs;
+  return *dialogs;
 }
 
 // Returns null if no dialog is currently shown on `web_contents` for `type`.
@@ -35,6 +36,13 @@ DataControlsDialog* GetCurrentDialog(content::WebContents* web_contents,
 }
 
 }  // namespace
+
+void DataControlsDialogFactory::ShowDialogIfNeeded(
+    content::WebContents* web_contents,
+    DataControlsDialog::Type type) {
+  ShowDialogIfNeeded(web_contents, type,
+                     base::OnceCallback<void(bool bypassed)>());
+}
 
 void DataControlsDialogFactory::ShowDialogIfNeeded(
     content::WebContents* web_contents,

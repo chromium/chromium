@@ -12,8 +12,7 @@
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 ExecutionEnvironment::~ExecutionEnvironment() = default;
 
@@ -117,8 +116,9 @@ scoped_refptr<TaskSource> RegisteredTaskSource::Unregister() {
 #if DCHECK_IS_ON()
   DCHECK_EQ(run_step_, State::kInitial);
 #endif  // DCHECK_IS_ON()
-  if (task_source_ && task_tracker_)
+  if (task_source_ && task_tracker_) {
     return task_tracker_->UnregisterTaskSource(std::move(task_source_));
+  }
   return std::move(task_source_);
 }
 
@@ -137,8 +137,9 @@ TaskSource::RunStatus RegisteredTaskSource::WillRunTask() {
   TaskSource::RunStatus run_status = task_source_->WillRunTask();
 #if DCHECK_IS_ON()
   DCHECK_EQ(run_step_, State::kInitial);
-  if (run_status != TaskSource::RunStatus::kDisallowed)
+  if (run_status != TaskSource::RunStatus::kDisallowed) {
     run_step_ = State::kReady;
+  }
 #endif  // DCHECK_IS_ON()
   return run_status;
 }
@@ -219,5 +220,4 @@ TaskSourceAndTransaction TaskSourceAndTransaction::FromTaskSource(
                                   std::move(transaction));
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -15,6 +15,7 @@
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
+#include "sql/transaction.h"
 
 namespace os_crypt_async {
 class Encryptor;
@@ -93,6 +94,16 @@ class WEBDATA_EXPORT WebDatabase {
   void BeginTransaction();
   void CommitTransaction();
 
+  // Acquire a scoped transaction. The `AcquireTransaction` is meant to replace
+  // the `BeginTransaction` / `CommitTransaction` transaction management and
+  // both are exclusive.
+  //
+  // Returns an sql::Transaction which automatically rolls back uncommitted
+  // transactions when going out of scope. If this method fails, no transaction
+  // is returned but the database will still execute statements, but they will
+  // be enclosed in their own implicit transaction.
+  std::unique_ptr<sql::Transaction> AcquireTransaction();
+
   std::string GetDiagnosticInfo(int extended_error, sql::Statement* statement);
 
   // Exposed for testing only.
@@ -117,6 +128,11 @@ class WEBDATA_EXPORT WebDatabase {
 
   sql::Database db_;
   sql::MetaTable meta_table_;
+
+  // Sets when the scoped transaction should be used instead of the
+  // BeginTransaction/CommitTransaction transaction APIs. Sets to true when
+  // part of the 'SqlScopedTransactionWebDatabase' Finch experiment.
+  const bool use_scoped_transaction_;
 
   // Map of all the different tables that have been added to this
   // object. Non-owning.

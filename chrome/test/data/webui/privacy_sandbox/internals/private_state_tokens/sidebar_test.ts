@@ -19,7 +19,7 @@ suite('SidebarTest', () => {
 
   test('check layout', () => {
     assertTrue(isVisible(sidebar));
-    const renderedLinks = sidebar.shadowRoot!.querySelectorAll('a');
+    const renderedLinks = sidebar.shadowRoot.querySelectorAll('a');
     assertEquals(1, renderedLinks.length);
     assertEquals('chrome://settings/', renderedLinks[0]!.href);
     assertEquals('Settings', renderedLinks[0]!.textContent!.trim());

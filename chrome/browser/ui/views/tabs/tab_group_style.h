@@ -48,7 +48,7 @@ class TabGroupStyle {
       const views::View* title) const;
 
   // Returns the insets for a header chip that has text.
-  virtual gfx::Insets GetInsetsForHeaderChip(bool should_show_sync_icon) const;
+  virtual gfx::Insets GetInsetsForHeaderChip() const;
 
   // While calculating desired width of a tab group an adjustment value is added
   // for the distance between the tab group header and the right tab.
@@ -62,7 +62,7 @@ class TabGroupStyle {
   virtual float GetSyncIconWidth() const;
 
   // Returns the attention indicator icon width.
-  virtual float GetAttentionIndicatorWidth(bool needs_attention) const;
+  virtual float GetAttentionIndicatorWidth() const;
 
   // The radius of the tab group header chip
   virtual int GetChipCornerRadius() const;

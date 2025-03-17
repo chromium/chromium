@@ -33,6 +33,12 @@ BASE_FEATURE(kWebUsbBlocklist,
              "WebUSBBlocklist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, accessing the navigator.hid attribute does not prevent the
+// frame from entering the back forward cache.
+BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,
+             "WebHidAttributeAllowsBackForwardCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Enable integration with the Windows system-level location permission.
 BASE_FEATURE(kWinSystemLocationPermission,
@@ -111,5 +117,13 @@ bool IsOsLevelGeolocationPermissionSupportEnabled() {
   return false;
 #endif  // BUILDFLAG(IS_WIN)
 }
+
+// Controls whether Chrome will try to automatically detach kernel drivers when
+// a USB interface is busy.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kAutomaticUsbDetach,
+             "AutomaticUsbDetach",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 }  // namespace features

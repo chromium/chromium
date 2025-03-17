@@ -18,7 +18,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.DefaultBrowserInfo;
+import org.chromium.chrome.browser.DefaultBrowserInfoUmaRecorder;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -155,7 +155,7 @@ public class UmaSessionStats {
         UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats, UmaSessionStats.this);
         updatePreferences();
         updateMetricsServiceState();
-        DefaultBrowserInfo.logDefaultBrowserStats();
+        DefaultBrowserInfoUmaRecorder.logDefaultBrowserStats();
     }
 
     private static void ensureNativeInitialized() {

@@ -271,6 +271,13 @@ enum class MouseKeysDominantHand {
   kMaxValue = kLeftHandDominant,
 };
 
+// The icon shown in the MouseKeys bubble UI.
+enum class MouseKeysBubbleIconType {
+  kHidden,
+  kButtonChanged,
+  kMouseDrag,
+};
+
 // The four directions for scrolling.
 enum class AccessibilityScrollDirection {
   kUp,

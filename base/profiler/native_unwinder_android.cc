@@ -99,10 +99,12 @@ UnwindStackMemoryAndroid::UnwindStackMemoryAndroid(uintptr_t stack_ptr,
 UnwindStackMemoryAndroid::~UnwindStackMemoryAndroid() = default;
 
 size_t UnwindStackMemoryAndroid::Read(uint64_t addr, void* dst, size_t size) {
-  if (addr < stack_ptr_)
+  if (addr < stack_ptr_) {
     return 0;
-  if (size >= stack_top_ || addr > stack_top_ - size)
+  }
+  if (size >= stack_top_ || addr > stack_top_ - size) {
     return 0;
+  }
   memcpy(dst, reinterpret_cast<void*>(addr), size);
   return size;
 }
@@ -136,8 +138,9 @@ NativeUnwinderAndroid::NativeUnwinderAndroid(
 }
 
 NativeUnwinderAndroid::~NativeUnwinderAndroid() {
-  if (module_cache())
+  if (module_cache()) {
     module_cache()->UnregisterAuxiliaryModuleProvider(this);
+  }
 
   map_delegate_->ReleaseMapReference();
 }
@@ -173,8 +176,9 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
 
     unwindstack::Elf* elf =
         map_info->GetElf(memory_regions_map_->memory(), arch);
-    if (!elf->valid())
+    if (!elf->valid()) {
       break;
+    }
 
     UnwindStackMemoryAndroid stack_memory(static_cast<uintptr_t>(cur_sp),
                                           stack_top);
@@ -190,22 +194,25 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
         (elf->StepIfSignalHandler(rel_pc, regs.get(), &stack_memory) ||
          elf->Step(rel_pc, regs.get(), &stack_memory, &finished,
                    &is_signal_frame));
-    if (stepped && finished)
+    if (stepped && finished) {
       return UnwindResult::kCompleted;
+    }
 
     if (!stepped) {
       // Stepping failed. Try unwinding using return address.
       if (stack->size() == 1) {
-        if (!regs->SetPcFromReturnAddress(&stack_memory))
+        if (!regs->SetPcFromReturnAddress(&stack_memory)) {
           return UnwindResult::kAborted;
+        }
       } else {
         break;
       }
     }
 
     // If the pc and sp didn't change, then consider everything stopped.
-    if (cur_pc == regs->pc() && cur_sp == regs->sp())
+    if (cur_pc == regs->pc() && cur_sp == regs->sp()) {
       return UnwindResult::kAborted;
+    }
 
     // Exclusive range of expected stack pointer values after the unwind.
     struct {
@@ -278,7 +285,7 @@ void NativeUnwinderAndroid::EmitDexFrame(uintptr_t dex_pc,
     }
   }
 
-    stack->emplace_back(dex_pc, module);
+  stack->emplace_back(dex_pc, module);
 }
 
 }  // namespace base

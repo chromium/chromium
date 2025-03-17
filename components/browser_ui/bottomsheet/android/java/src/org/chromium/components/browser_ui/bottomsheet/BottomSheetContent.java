@@ -9,10 +9,11 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.lang.annotation.Retention;
@@ -22,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * An interface defining content that can be displayed inside of the bottom sheet for Chrome
  * Home.
  */
+@NullMarked
 public interface BottomSheetContent {
     /** The different possible height modes for a given state. */
     @IntDef({HeightMode.DEFAULT, HeightMode.WRAP_CONTENT, HeightMode.DISABLED})
@@ -53,12 +55,6 @@ public interface BottomSheetContent {
     @interface ContentPriority {
         int HIGH = 0;
         int LOW = 1;
-    }
-
-    /** Interface to listen when the size of a BottomSheetContent changes. */
-    interface ContentSizeListener {
-        /** Called when the size of the view has changed. */
-        void onSizeChanged(int width, int height, int oldWidth, int oldHeight);
     }
 
     /**
@@ -212,25 +208,27 @@ public interface BottomSheetContent {
      * feature/content that is showing. It can be a dynamic string. 'Swipe down to close.' will be
      * automatically appended after the content description.
      */
-    @NonNull
     String getSheetContentDescription(Context context);
 
     /**
      * @return The resource id of the string announced when the sheet is opened at half height. This
      *     is typically the name of your feature followed by 'opened at half height'.
      */
+    @StringRes
     int getSheetHalfHeightAccessibilityStringId();
 
     /**
-     * @return The resource id of the string announced when the sheet is opened at full height.
-     *         This is typically the name of your feature followed by 'opened at full height'.
+     * @return The resource id of the string announced when the sheet is opened at full height. This
+     *     is typically the name of your feature followed by 'opened at full height'.
      */
+    @StringRes
     int getSheetFullHeightAccessibilityStringId();
 
     /**
-     * @return The resource id of the string announced when the sheet is closed. This is
-     *         typically the name of your feature followed by 'closed'.
+     * @return The resource id of the string announced when the sheet is closed. This is typically
+     *     the name of your feature followed by 'closed'.
      */
+    @StringRes
     int getSheetClosedAccessibilityStringId();
 
     /**

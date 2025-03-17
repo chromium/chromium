@@ -22,6 +22,9 @@ class CORE_EXPORT CSSSyntaxDefinition {
  public:
   // https://drafts.csswg.org/css-values-5/#css-syntax
   static std::optional<CSSSyntaxDefinition> Consume(CSSParserTokenStream&);
+  // https://drafts.csswg.org/css-values-5/#typedef-syntax-component
+  static std::optional<CSSSyntaxDefinition> ConsumeComponent(
+      CSSParserTokenStream&);
   const CSSValue* Parse(StringView,
                         const CSSParserContext&,
                         bool is_animation_tainted,
@@ -51,15 +54,15 @@ class CORE_EXPORT CSSSyntaxDefinition {
   CSSSyntaxDefinition IsolatedCopy() const;
   String ToString() const;
 
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-descriptor
+  static CSSSyntaxDefinition CreateUniversal();
+
  private:
   friend class CSSSyntaxStringParser;
   friend class CSSSyntaxStringParserTest;
   friend class CSSSyntaxDefinitionTest;
 
   explicit CSSSyntaxDefinition(Vector<CSSSyntaxComponent>);
-
-  // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-descriptor
-  static CSSSyntaxDefinition CreateUniversal();
 
   Vector<CSSSyntaxComponent> syntax_components_;
 };

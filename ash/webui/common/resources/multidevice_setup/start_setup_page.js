@@ -16,12 +16,13 @@ import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_beha
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {ConnectivityStatus} from 'chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js';
-import {HostDevice} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_api.js';
 import {MultiDeviceSetupDelegate} from './multidevice_setup_delegate.js';
 import {getTemplate} from './start_setup_page.html.js';
 import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
+
+/** @typedef {*} HostDevice */
 
 /**
  * The multidevice setup animation for dynamic colors.

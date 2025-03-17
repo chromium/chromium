@@ -15,6 +15,10 @@ specific_include_rules = {
   "agent_interference_recorder.h": [
     "+base/task/sequence_manager/enqueue_order.h"
   ],
+  "main_thread_scheduler_impl.cc": [
+    "+base/android/pre_freeze_background_memory_trimmer.h",
+    "+components/performance_manager/scenario_api/performance_scenarios.h"
+  ],
   "memory_purge_manager.cc": [
     "+base/android/pre_freeze_background_memory_trimmer.h"
   ],
@@ -23,5 +27,8 @@ specific_include_rules = {
   ],
   "main_thread_unittest.cc": [
     "+base/message_loop/message_pump_type.h",
+  ],
+  "main_thread_scheduler_impl.h": [
+    "+base/threading/scoped_thread_priority.h",
   ],
 }

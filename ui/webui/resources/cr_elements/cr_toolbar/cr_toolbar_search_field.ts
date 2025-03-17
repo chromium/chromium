@@ -159,7 +159,7 @@ export class CrToolbarSearchFieldElement extends
   }
 
   private async showSearch_(e: Event) {
-    if (e.target !== this.shadowRoot!.querySelector('#clearSearch')) {
+    if (e.target !== this.shadowRoot.querySelector('#clearSearch')) {
       this.showingSearch = true;
     }
     if (this.narrow) {

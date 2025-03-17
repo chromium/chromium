@@ -137,7 +137,7 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   if (image_is_high_bit_depth_)
     info = info.makeColorType(kRGBA_F16_SkColorType);
 
-  WebVector<FrameMetadata> frames(frame_data_.size());
+  std::vector<FrameMetadata> frames(frame_data_.size());
   for (wtf_size_t i = 0; i < frame_data_.size(); ++i) {
     frames[i].complete = frame_data_[i].is_received_;
     frames[i].duration = FrameDurationAtIndex(i);
@@ -178,7 +178,7 @@ bool DeferredImageDecoder::CreateGainmapGenerator(
   if (!gainmap_) {
     return false;
   }
-  WebVector<FrameMetadata> frames;
+  std::vector<FrameMetadata> frames;
 
   SkImageInfo gainmap_image_info =
       SkImageInfo::Make(gainmap_->frame_generator->GetFullSize(),

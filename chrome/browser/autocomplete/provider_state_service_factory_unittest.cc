@@ -25,14 +25,14 @@ TEST_F(ProviderStateServiceFactoryTest, PrefEnabledReturnsValidService) {
   EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
       profile_testing_helper_.guest_profile_otr()));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
       profile_testing_helper_.system_profile()));
   EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
       profile_testing_helper_.system_profile_otr()));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
       profile_testing_helper_.signin_profile()));
   EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
@@ -42,5 +42,5 @@ TEST_F(ProviderStateServiceFactoryTest, PrefEnabledReturnsValidService) {
       profile_testing_helper_.lockscreen_profile()));
   EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
       profile_testing_helper_.lockscreen_profile_otr()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }

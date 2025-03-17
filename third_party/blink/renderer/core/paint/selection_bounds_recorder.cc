@@ -197,6 +197,11 @@ bool SelectionBoundsRecorder::ShouldRecordSelection(
 bool SelectionBoundsRecorder::IsVisible(const LayoutObject& rect_layout_object,
                                         const PhysicalOffset& edge_start,
                                         const PhysicalOffset& edge_end) {
+  if (RuntimeEnabledFeatures::SelectionVisibilityAfterPaintEnabled()) {
+    // Will calculate visibility after paint based on paint properties.
+    return true;
+  }
+
   Node* const node = rect_layout_object.GetNode();
   if (!node)
     return true;

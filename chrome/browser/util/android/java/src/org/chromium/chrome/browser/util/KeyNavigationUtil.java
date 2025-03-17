@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.util;
 
 import android.view.KeyEvent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This is a helper class to handle navigation related checks for key events. */
+@NullMarked
 public class KeyNavigationUtil {
     /** This is a helper class with no instance. */
     private KeyNavigationUtil() {}

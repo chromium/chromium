@@ -47,8 +47,7 @@ public class ReadingListSectionHeaderTest {
                         read,
                         0,
                         false);
-        return BookmarkListEntry.createBookmarkEntry(
-                bookmarkItem, /* powerBookmarkMeta= */ null, 0);
+        return BookmarkListEntry.createBookmarkEntry(bookmarkItem, /* meta= */ null, 0);
     }
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read) {
@@ -115,7 +114,7 @@ public class ReadingListSectionHeaderTest {
     @Test
     public void testListWithReadUnreadAndPromoItems() {
         List<BookmarkListEntry> listItems = new ArrayList<>();
-        listItems.add(BookmarkListEntry.createSyncPromoHeader(ViewType.PERSONALIZED_SIGNIN_PROMO));
+        listItems.add(BookmarkListEntry.createSyncPromoHeader(ViewType.SIGNIN_PROMO));
         listItems.add(createReadingListEntry(1, true));
         listItems.add(createReadingListEntry(2, true));
         ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems);
@@ -123,7 +122,7 @@ public class ReadingListSectionHeaderTest {
         assertEquals("Incorrect number of items in the adapter", 5, listItems.size());
         assertEquals(
                 "Expected promo section header",
-                ViewType.PERSONALIZED_SIGNIN_PROMO,
+                ViewType.SIGNIN_PROMO,
                 listItems.get(0).getViewType());
         assertSectionHeader(listItems.get(1), R.string.reading_list_unread, 0);
         assertSectionHeader(
@@ -146,13 +145,13 @@ public class ReadingListSectionHeaderTest {
     @Test
     public void testNoReadUnreadItems() {
         List<BookmarkListEntry> listItems = new ArrayList<>();
-        listItems.add(BookmarkListEntry.createSyncPromoHeader(ViewType.PERSONALIZED_SIGNIN_PROMO));
+        listItems.add(BookmarkListEntry.createSyncPromoHeader(ViewType.SIGNIN_PROMO));
         ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems);
 
         assertEquals("Incorrect number of items in the adapter", 1, listItems.size());
         assertEquals(
                 "Expected promo section header",
-                ViewType.PERSONALIZED_SIGNIN_PROMO,
+                ViewType.SIGNIN_PROMO,
                 listItems.get(0).getViewType());
     }
 

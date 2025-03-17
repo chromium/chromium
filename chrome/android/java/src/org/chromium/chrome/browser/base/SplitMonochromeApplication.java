@@ -35,10 +35,18 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
 
     public SplitMonochromeApplication() {
         super(sImplClassName);
+        // Ensure that we don't try to load the native library until after attachBaseContext, since
+        // Monochrome attempts to call loadWebViewNativeLibraryFromPackage, which will fail until
+        // ActivityThread has an application set on it, which happens after attachBaseContext
+        // finishes. See crbug.com/390730928.
+        mPreloadLibraryAttachBaseContext = false;
     }
 
     @Override
     public void attachBaseContext(Context context) {
+        // Preloader has to happen first since we may load the native library in the super's
+        // attachBaseContext.
+        WebViewApkApplication.maybeSetPreloader();
         super.attachBaseContext(context);
         initializeMonochromeProcessCommon(getPackageName());
     }
@@ -62,7 +70,7 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
                 /* privilegedServicesName= */ null,
                 packageName,
                 /* sandboxedServicesName= */ null,
-                /* isExternalService= */ true,
+                /* isExternalSandboxedService= */ true,
                 LibraryProcessType.PROCESS_CHILD,
                 bindToCaller,
                 ignoreVisibilityForImportance);

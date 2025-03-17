@@ -6,7 +6,7 @@ import './info_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HealthdApiMemoryResult, HealthdApiTelemetryResult, SystemZramInfo} from '../../utils/externs.js';
+import type {HealthdApiMemoryResult, HealthdApiTelemetryResult, SystemZramInfo} from '../../utils/externs.js';
 import {getFormattedMemory, getFormattedMemoryFromRaw, getFormattedMemoryWithPercentage, MemoryUnitEnum} from '../../utils/memory_utils.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
 
@@ -80,7 +80,7 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
       this.updateDetailsRow(memory);
     }
     if (this.latestZramInfo !== undefined) {
-      this.updateZramRow(this.latestZramInfo)
+      this.updateZramRow(this.latestZramInfo);
     }
   }
 

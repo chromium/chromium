@@ -113,4 +113,3 @@ enum SelectionMode { "select", "start", "end", "preserve" };
 };
 
 HTMLInputElement includes PopoverInvokerElement;
-HTMLInputElement includes InterestInvokerElement;

@@ -31,17 +31,6 @@ content::WebContents* MessagingDelegate::GetWebContentsByTabId(
   return nullptr;
 }
 
-std::unique_ptr<MessagePort> MessagingDelegate::CreateReceiverForTab(
-    base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
-    const ExtensionId& extension_id,
-    const PortId& receiver_port_id,
-    content::WebContents* receiver_contents,
-    int receiver_frame_id,
-    const std::string& receiver_document_id) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 std::unique_ptr<MessagePort> MessagingDelegate::CreateReceiverForNativeApp(
     content::BrowserContext* browser_context,
     base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,

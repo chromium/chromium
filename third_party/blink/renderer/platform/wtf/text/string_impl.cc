@@ -248,8 +248,8 @@ void StringImpl::FreezeStaticStrings() {
 
 wtf_size_t StringImpl::highest_static_string_length_ = 0;
 
-DEFINE_GLOBAL(StringImpl, g_global_empty);
-DEFINE_GLOBAL(StringImpl, g_global_empty16_bit);
+DEFINE_GLOBAL(, StringImpl, g_global_empty);
+DEFINE_GLOBAL(, StringImpl, g_global_empty16_bit);
 // Callers need the global empty strings to be non-const.
 StringImpl* StringImpl::empty_ = const_cast<StringImpl*>(&g_global_empty);
 StringImpl* StringImpl::empty16_bit_ =
@@ -457,12 +457,12 @@ scoped_refptr<StringImpl> StringImpl::Fill(UChar character) {
   if (!(character & ~0x7F)) {
     base::span<LChar> data;
     scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
-    base::ranges::fill(data, static_cast<LChar>(character));
+    std::ranges::fill(data, static_cast<LChar>(character));
     return new_impl;
   }
   base::span<UChar> data;
   scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
-  base::ranges::fill(data, character);
+  std::ranges::fill(data, character);
   return new_impl;
 }
 

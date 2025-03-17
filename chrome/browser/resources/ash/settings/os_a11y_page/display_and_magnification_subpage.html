@@ -307,10 +307,10 @@
     deep-link-focus-id$="[[Setting.kReducedAnimationsEnabled]]">
   </settings-toggle-button>
 </template>
-<template is="dom-if" if="[[isAccessibilityOverlayScrollbarEnabled_]]">
-  <settings-toggle-button class="hr" id="enableOverlayScrollbar"
-    pref="{{prefs.settings.a11y.overlay_scrollbar.enabled}}" label="$i18n{overlayScrollbarLabel}"
-    deep-link-focus-id$="[[Setting.kOverlayScrollbarEnabled]]">
+<template is="dom-if" if="[[isAccessibilityAlwaysShowScrollbarsEnabled_]]">
+  <settings-toggle-button class="hr" id="enableAlwaysShowScrollbars"
+    pref="{{prefs.settings.a11y.overlay_scrollbar.enabled}}" label="$i18n{alwaysShowScrollbarsLabel}"
+    deep-link-focus-id$="[[Setting.kAlwaysShowScrollbarsEnabled]]">
   </settings-toggle-button>
 </template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">

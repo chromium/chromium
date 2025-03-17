@@ -53,6 +53,23 @@ std::vector<GURL> GURLVectorFromStringList(
   return ret;
 }
 
+// The test binary only ever needs to contact localhost during integration
+// tests. To reduce the program's utility as a mule, crash if there is a
+// non-localhost override.
+GURL CheckURL(const GURL& url) {
+  CHECK(url.is_empty() || url.host() == "localhost" ||
+        url.host() == "127.0.0.1" || url.host() == "not_exist")
+      << "Illegal URL override: " << url;
+  return url;
+}
+
+std::vector<GURL> CheckURLs(const std::vector<GURL>& urls) {
+  for (const auto& url : urls) {
+    CheckURL(url);
+  }
+  return urls;
+}
+
 }  // anonymous namespace
 
 namespace updater {
@@ -62,7 +79,7 @@ std::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope) {
   if (!base) {
     return std::nullopt;
   }
-  return base->DirName().AppendASCII(kDevOverrideFileName);
+  return base->DirName().AppendUTF8(kDevOverrideFileName);
 }
 
 ExternalConstantsOverrider::ExternalConstantsOverrider(
@@ -81,13 +98,12 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
       override_values_.Find(kDevOverrideKeyUrl);
   switch (update_url_value->type()) {
     case base::Value::Type::STRING:
-      return {GURL(update_url_value->GetString())};
+      return CheckURLs({GURL(update_url_value->GetString())});
     case base::Value::Type::LIST:
-      return GURLVectorFromStringList(update_url_value->GetList());
+      return CheckURLs(GURLVectorFromStringList(update_url_value->GetList()));
     default:
       LOG(FATAL) << "Unexpected type of override[" << kDevOverrideKeyUrl
                  << "]: " << base::Value::GetTypeName(update_url_value->type());
-      NOTREACHED();
   }
 }
 
@@ -100,7 +116,7 @@ GURL ExternalConstantsOverrider::CrashUploadURL() const {
   CHECK(crash_upload_url_value->is_string())
       << "Unexpected type of override[" << kDevOverrideKeyCrashUploadUrl
       << "]: " << base::Value::GetTypeName(crash_upload_url_value->type());
-  return {GURL(crash_upload_url_value->GetString())};
+  return CheckURL({GURL(crash_upload_url_value->GetString())});
 }
 
 GURL ExternalConstantsOverrider::DeviceManagementURL() const {
@@ -112,7 +128,7 @@ GURL ExternalConstantsOverrider::DeviceManagementURL() const {
   CHECK(device_management_url_value->is_string())
       << "Unexpected type of override[" << kDevOverrideKeyDeviceManagementUrl
       << "]: " << base::Value::GetTypeName(device_management_url_value->type());
-  return {GURL(device_management_url_value->GetString())};
+  return CheckURL({GURL(device_management_url_value->GetString())});
 }
 
 GURL ExternalConstantsOverrider::AppLogoURL() const {
@@ -124,7 +140,7 @@ GURL ExternalConstantsOverrider::AppLogoURL() const {
   CHECK(app_logo_url_value->is_string())
       << "Unexpected type of override[" << kDevOverrideKeyAppLogoUrl
       << "]: " << base::Value::GetTypeName(app_logo_url_value->type());
-  return {GURL(app_logo_url_value->GetString())};
+  return CheckURL({GURL(app_logo_url_value->GetString())});
 }
 
 bool ExternalConstantsOverrider::UseCUP() const {
@@ -181,17 +197,17 @@ crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
       crx_format_verifier_value->GetInt());
 }
 
-base::Value::Dict ExternalConstantsOverrider::GroupPolicies() const {
-  if (!override_values_.contains(kDevOverrideKeyGroupPolicies)) {
-    return next_provider_->GroupPolicies();
+base::Value::Dict ExternalConstantsOverrider::DictPolicies() const {
+  if (!override_values_.contains(kDevOverrideKeyDictPolicies)) {
+    return next_provider_->DictPolicies();
   }
 
-  const base::Value* group_policies_value =
-      override_values_.Find(kDevOverrideKeyGroupPolicies);
-  CHECK(group_policies_value->is_dict())
-      << "Unexpected type of override[" << kDevOverrideKeyGroupPolicies
-      << "]: " << base::Value::GetTypeName(group_policies_value->type());
-  return group_policies_value->GetDict().Clone();
+  const base::Value* dict_policies_value =
+      override_values_.Find(kDevOverrideKeyDictPolicies);
+  CHECK(dict_policies_value->is_dict())
+      << "Unexpected type of override[" << kDevOverrideKeyDictPolicies
+      << "]: " << base::Value::GetTypeName(dict_policies_value->type());
+  return dict_policies_value->GetDict().Clone();
 }
 
 base::TimeDelta ExternalConstantsOverrider::OverinstallTimeout() const {
@@ -231,18 +247,6 @@ std::optional<bool> ExternalConstantsOverrider::IsMachineManaged() const {
       << "]: " << base::Value::GetTypeName(is_managed->type());
 
   return std::make_optional(is_managed->GetBool());
-}
-
-bool ExternalConstantsOverrider::EnableDiffUpdates() const {
-  if (!override_values_.contains(kDevOverrideKeyEnableDiffUpdates)) {
-    return next_provider_->EnableDiffUpdates();
-  }
-  const base::Value* value =
-      override_values_.Find(kDevOverrideKeyEnableDiffUpdates);
-  CHECK(value->is_bool()) << "Unexpected type of override["
-                          << kDevOverrideKeyEnableDiffUpdates
-                          << "]: " << base::Value::GetTypeName(value->type());
-  return value->GetBool();
 }
 
 base::TimeDelta ExternalConstantsOverrider::CecaConnectionTimeout() const {

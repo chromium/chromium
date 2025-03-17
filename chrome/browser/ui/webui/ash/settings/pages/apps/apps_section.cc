@@ -6,9 +6,6 @@
 
 #include <array>
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -30,6 +27,9 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
@@ -636,9 +636,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "isolatedWebAppsDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,
                                  chrome::kIsolatedWebAppsLearnMoreUrl));
-
-  html_source->AddBoolean("privacyHubAppPermissionsV2Enabled",
-                          features::IsCrosPrivacyHubAppPermissionsV2Enabled());
 
   html_source->AddBoolean("privacyHubLocationAccessControlEnabled",
                           ash::features::IsCrosPrivacyHubLocationEnabled());

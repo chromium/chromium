@@ -10,7 +10,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/uuid.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -19,13 +18,12 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/favicon_size.h"
-#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/widget/widget.h"
 
@@ -49,13 +47,57 @@ namespace tab_groups {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGEverythingMenu, kCreateNewTabGroup);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGEverythingMenu, kTabGroup);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGEverythingMenu, kOpenGroup);
 
-STGEverythingMenu::Action::Action(Type type,
-                                  std::variant<base::Uuid, GURL> element)
-    : type(type), element(element) {}
-STGEverythingMenu::Action::Action(const Action& action) = default;
-STGEverythingMenu::Action::~Action() = default;
+// Provides the ui::MenuModelDelegate implementation for the sub menu
+class STGEverythingMenu::AppMenuSubMenuModelDelegate
+    : public ui::MenuModelDelegate,
+      public views::ViewObserver {
+ public:
+  AppMenuSubMenuModelDelegate(ui::MenuModel* model,
+                              views::MenuItemView* menu_item)
+      : model_(model), menu_item_(menu_item) {
+    model_->SetMenuModelDelegate(this);
+    menu_item_->GetSubmenu()->AddObserver(this);
+  }
+
+  AppMenuSubMenuModelDelegate(const AppMenuSubMenuModelDelegate&) = delete;
+  AppMenuSubMenuModelDelegate& operator=(const AppMenuSubMenuModelDelegate&) =
+      delete;
+
+  ~AppMenuSubMenuModelDelegate() override {
+    if (menu_item_) {
+      menu_item_->GetSubmenu()->RemoveObserver(this);
+    }
+    if (model_) {
+      model_->SetMenuModelDelegate(nullptr);
+    }
+  }
+
+  // ui::MenuModelDelegate implementation:
+  void OnIconChanged(int command_id) override {
+    ui::MenuModel* model = model_;
+    size_t index;
+    model_->GetModelAndIndexForCommandId(command_id, &model, &index);
+    views::MenuItemView* item = menu_item_->GetMenuItemByID(command_id);
+    CHECK(item);
+    item->SetIcon(model->GetIconAt(index));
+  }
+
+  void OnMenuClearingDelegate() override { model_ = nullptr; }
+
+  // views::ViewObserver implementation:
+  void OnViewIsDeleting(views::View* observed_view) override {
+    if (model_) {
+      model_->SetMenuModelDelegate(nullptr);
+    }
+    menu_item_->GetSubmenu()->RemoveObserver(this);
+    menu_item_ = nullptr;
+  }
+
+ private:
+  raw_ptr<ui::MenuModel> model_;
+  raw_ptr<views::MenuItemView> menu_item_;
+};
 
 STGEverythingMenu::STGEverythingMenu(views::MenuButtonController* controller,
                                      Browser* browser)
@@ -189,10 +231,8 @@ int STGEverythingMenu::GetAndIncrementLatestCommandId() {
 }
 
 bool STGEverythingMenu::ShouldEnableCommand(int command_id) {
-  auto it = command_id_to_action_.find(command_id);
-  if (it != command_id_to_action_.end() &&
-      it->second.type == Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW) {
-    return should_enable_move_menu_item_;
+  if (tabs_model_ && tabs_model_->HasCommandId(command_id)) {
+    return tabs_model_->IsCommandIdEnabled(command_id);
   }
   return true;
 }
@@ -206,9 +246,12 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
     parent->GetSubmenu()->RemoveAllChildViews();
   }
 
-  submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  tabs_model_ = std::make_unique<STGTabsMenuModel>(this, browser_);
+  submenu_delegate_ =
+      std::make_unique<AppMenuSubMenuModelDelegate>(tabs_model_.get(), parent);
+
   int parent_command_id = parent->GetCommand();
-  auto group_id = GetTabGroupIdFromCommandId(parent_command_id);
+  base::Uuid group_id = GetTabGroupIdFromCommandId(parent_command_id);
   TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
@@ -218,113 +261,13 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
   if (!saved_group.has_value()) {
     return;
   }
-  const auto& local_group_id = saved_group->local_group_id();
 
-  // Clear map.
-  command_id_to_action_.clear();
+  tabs_model_->Build(
+      saved_group.value(),
+      base::BindRepeating(&STGEverythingMenu::GetAndIncrementLatestCommandId,
+                          base::Unretained(this)));
 
-  // Add item: open in browser.
-  int latest_command_id = GetAndIncrementLatestCommandId();
-  submenu_model_->AddItemWithStringIdAndIcon(
-      latest_command_id, IDS_OPEN_GROUP_IN_BROWSER_MENU,
-      ui::ImageModel::FromVectorIcon(kOpenInBrowserIcon, ui::kColorMenuIcon,
-                                     kUIUpdateIconSize));
-  submenu_model_->SetElementIdentifierAt(
-      submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
-      kOpenGroup);
-  command_id_to_action_.emplace(
-      latest_command_id, Action{Action::Type::OPEN_IN_BROWSER, group_id});
-
-  // Add item: open or move to new window.
-  const std::u16string move_or_open_group_text =
-      local_group_id.has_value()
-          ? l10n_util::GetStringUTF16(
-                IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW)
-          : l10n_util::GetStringUTF16(
-                IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW);
-  if (local_group_id.has_value()) {
-    const Browser* const browser_with_local_group_id =
-        SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id.value());
-    const TabStripModel* const tab_strip_model =
-        browser_with_local_group_id->tab_strip_model();
-
-    // Show the menu item if there are tabs outside of the saved group.
-    should_enable_move_menu_item_ =
-        tab_strip_model->count() != tab_strip_model->group_model()
-                                        ->GetTabGroup(local_group_id.value())
-                                        ->tab_count();
-  }
-  latest_command_id = GetAndIncrementLatestCommandId();
-  submenu_model_->AddItemWithIcon(
-      latest_command_id, move_or_open_group_text,
-      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshIcon,
-                                     ui::kColorMenuIcon, kUIUpdateIconSize));
-  submenu_model_->SetElementIdentifierAt(
-      submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
-      SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem);
-  command_id_to_action_.emplace(
-      latest_command_id,
-      Action{Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW, group_id});
-
-  // Add item: pin or unpin.
-  latest_command_id = GetAndIncrementLatestCommandId();
-  bool group_pinned = saved_group->is_pinned();
-  submenu_model_->AddItemWithStringIdAndIcon(
-      latest_command_id,
-      group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
-                   : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-      ui::ImageModel::FromVectorIcon(group_pinned ? kKeepFilledIcon : kKeepIcon,
-                                     ui::kColorMenuIcon, kUIUpdateIconSize));
-  submenu_model_->SetElementIdentifierAt(
-      submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
-      SavedTabGroupUtils::kToggleGroupPinStateMenuItem);
-  command_id_to_action_.emplace(
-      latest_command_id, Action{Action::Type::PIN_OR_UNPIN_GROUP, group_id});
-
-  // Add item: delete group.
-  latest_command_id = GetAndIncrementLatestCommandId();
-  submenu_model_->AddItemWithStringIdAndIcon(
-      latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
-      ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon, ui::kColorMenuIcon,
-                                     kUIUpdateIconSize));
-  submenu_model_->SetElementIdentifierAt(
-      submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
-      SavedTabGroupUtils::kDeleteGroupMenuItem);
-  command_id_to_action_.emplace(latest_command_id,
-                                Action{Action::Type::DELETE_GROUP, group_id});
-
-  // Add a separator and title.
-  submenu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  submenu_model_->AddTitleWithStringId(IDS_TABS_TITLE_CXMENU);
-  submenu_model_->SetElementIdentifierAt(
-      submenu_model_->GetIndexOfCommandId(ui::MenuModel::kTitleId).value(),
-      SavedTabGroupUtils::kTabsTitleItem);
-
-  // Append open urls.
-  const auto& tabs = saved_group->saved_tabs();
-  for (size_t i = 0; i < tabs.size(); ++i) {
-    const auto& tab = tabs.at(i);
-    const ui::ImageModel& image =
-        tab.favicon().has_value()
-            ? ui::ImageModel::FromImage(tab.favicon().value())
-            : favicon::GetDefaultFaviconModel(
-                  GetTabGroupBookmarkColorId(saved_group->color()));
-    const std::u16string title =
-        tab.title().empty() ? base::UTF8ToUTF16(tab.url().spec()) : tab.title();
-
-    latest_command_id = GetAndIncrementLatestCommandId();
-    submenu_model_->AddItemWithIcon(latest_command_id, title, image);
-    command_id_to_action_.emplace(latest_command_id,
-                                  Action{Action::Type::OPEN_URL, tab.url()});
-    // Assign an element identifier to the first tab.
-    if (i == 0) {
-      submenu_model_->SetElementIdentifierAt(
-          submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
-          SavedTabGroupUtils::kTab);
-    }
-  }
-
-  AddModelToParent(submenu_model_.get(), parent);
+  AddModelToParent(tabs_model_.get(), parent);
   parent->GetSubmenu()->InvalidateLayout();
 }
 
@@ -332,8 +275,8 @@ void STGEverythingMenu::PopulateMenu(views::MenuItemView* parent) {
   if (parent->HasSubmenu()) {
     parent->GetSubmenu()->RemoveAllChildViews();
   }
-  model_ = CreateMenuModel();
-  AddModelToParent(model_.get(), parent);
+  groups_model_ = CreateMenuModel();
+  AddModelToParent(groups_model_.get(), parent);
   parent->GetSubmenu()->InvalidateLayout();
 }
 
@@ -349,61 +292,23 @@ void STGEverythingMenu::RunMenu() {
 }
 
 void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
-  auto it = command_id_to_action_.find(command_id);
-  if (it != command_id_to_action_.end()) {
-    auto type = it->second.type;
-    if (type == Action::Type::OPEN_URL) {
-      SavedTabGroupUtils::OpenUrlInNewUngroupedTab(
-          browser_, std::get<GURL>(it->second.element));
-      return;
-    }
-
-    auto uuid = std::get<base::Uuid>(it->second.element);
-    switch (type) {
-      case Action::Type::OPEN_IN_BROWSER: {
-        base::RecordAction(base::UserMetricsAction(
-            "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
-        TabGroupSyncService* tab_group_service =
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-                browser_->profile());
-
-        bool will_open_shared_group = false;
-        if (std::optional<tab_groups::SavedTabGroup> saved_group =
-                tab_group_service->GetGroup(uuid)) {
-          will_open_shared_group = !saved_group->local_group_id().has_value() &&
-                                   saved_group->is_shared_tab_group();
-        }
-
-        tab_group_service->OpenTabGroup(
-            uuid, std::make_unique<TabGroupActionContextDesktop>(
-                      browser_, OpeningSource::kOpenedFromRevisitUi));
-
-        if (will_open_shared_group) {
-          saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
-              saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-                  kOpenedFromSubmenu);
-        }
-        break;
-      }
-      case Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
-        SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(browser_, uuid);
-        break;
-      case Action::Type::PIN_OR_UNPIN_GROUP:
-        SavedTabGroupUtils::ToggleGroupPinState(browser_, uuid);
-        break;
-      case Action::Type::DELETE_GROUP:
-        SavedTabGroupUtils::DeleteSavedGroup(browser_, uuid);
-        break;
-      default:
-        break;
-    }
+  if (tabs_model_ && tabs_model_->HasCommandId(command_id)) {
+    tabs_model_->ExecuteCommand(command_id, event_flags);
   } else if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
-    base::RecordAction(base::UserMetricsAction(
-        "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu"));
+    if (show_submenu_) {
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_"
+          "CreateNewGroupTriggeredFromTabGroupsAppMenu"));
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_"
+          "2"));
+    }
+
     browser_->command_controller()->ExecuteCommand(command_id);
   } else {
     base::RecordAction(base::UserMetricsAction(
-        "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
+        "TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2"));
     const auto group_id = GetTabGroupIdFromCommandId(command_id);
     TabGroupSyncService* tab_group_service =
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(
@@ -438,15 +343,31 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
   base::RecordAction(base::UserMetricsAction(
       "TabGroups_SavedTabGroups_ContextMenuTriggeredFromEverythingMenu"));
   const auto group_id = GetTabGroupIdFromCommandId(command_id);
-  context_menu_controller_ =
-      std::make_unique<views::DialogModelContextMenuController>(
-          widget_->GetRootView(),
-          base::BindRepeating(
-              &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
-              browser_, group_id),
-          views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
-  context_menu_controller_->ShowContextMenuForViewImpl(widget_->GetRootView(),
-                                                       p, source_type);
+
+  TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+
+  const std::optional<SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(group_id);
+  // If the group has been deleted remotely.
+  if (!saved_group.has_value()) {
+    return false;
+  }
+
+  tabs_model_ = std::make_unique<STGTabsMenuModel>(browser_);
+
+  tabs_model_->Build(
+      saved_group.value(),
+      base::BindRepeating(&STGEverythingMenu::GetAndIncrementLatestCommandId,
+                          base::Unretained(this)));
+
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      tabs_model_.get(),
+      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
+
+  context_menu_runner_->RunMenuAt(
+      widget_, /*button_controller=*/nullptr, gfx::Rect(p, gfx::Size()),
+      views::MenuAnchorPosition::kTopLeft, source_type);
   return true;
 }
 

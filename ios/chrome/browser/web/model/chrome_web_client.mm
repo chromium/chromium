@@ -46,6 +46,8 @@
 #import "ios/chrome/browser/permissions/model/media_api_usage_java_script_feature.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/safe_browsing/model/password_protection_java_script_feature.h"
@@ -254,8 +256,21 @@ ChromeWebClient::ChromeWebClient() {}
 ChromeWebClient::~ChromeWebClient() {}
 
 std::unique_ptr<web::WebMainParts> ChromeWebClient::CreateWebMainParts() {
+#if BUILDFLAG(USE_BLINK)
+  CHECK(main_parts_);
+  return std::move(main_parts_);
+#else
   return std::make_unique<IOSChromeMainParts>(
       *base::CommandLine::ForCurrentProcess());
+#endif
+}
+
+void ChromeWebClient::InitializeFieldTrialAndFeatureList() {
+#if BUILDFLAG(USE_BLINK)
+  main_parts_ = std::make_unique<IOSChromeMainParts>(
+      *base::CommandLine::ForCurrentProcess());
+  main_parts_->InitializeFieldTrialAndFeatureList();
+#endif
 }
 
 void ChromeWebClient::PreWebViewCreation() const {}
@@ -285,13 +300,15 @@ std::string ChromeWebClient::GetUserAgent(web::UserAgentType type) const {
       command_line->HasSwitch(switches::kUserAgent)) {
     std::string user_agent =
         command_line->GetSwitchValueASCII(switches::kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(user_agent))
+    if (net::HttpUtil::IsValidHeaderValue(user_agent)) {
       return user_agent;
+    }
     LOG(WARNING) << "Ignored invalid value for flag --" << switches::kUserAgent;
   }
 
-  if (type == web::UserAgentType::DESKTOP)
+  if (type == web::UserAgentType::DESKTOP) {
     return web::BuildDesktopUserAgent(GetDesktopProduct());
+  }
   return web::BuildMobileUserAgent(GetMobileProduct());
 }
 
@@ -374,6 +391,10 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());
+
+  if (base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
+    features.push_back(ReaderModeJavaScriptFeature::GetInstance());
+  }
 
   if (base::FeatureList::IsEnabled(
           kJavaScriptPermissionBasedAPIMetricsEnabled)) {

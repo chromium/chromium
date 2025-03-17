@@ -11,7 +11,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,7 +80,7 @@ TEST(MimeUtilTest, ExtensionTest) {
     {FILE_PATH_LITERAL("webm"), {"video/webm"}},
     {FILE_PATH_LITERAL("weba"), {"audio/webm"}},
     {FILE_PATH_LITERAL("avif"), {"image/avif"}},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // These are test cases for testing platform mime types on ChromeOS.
     {FILE_PATH_LITERAL("epub"), {"application/epub+zip"}},
     {FILE_PATH_LITERAL("apk"), {"application/vnd.android.package-archive"}},

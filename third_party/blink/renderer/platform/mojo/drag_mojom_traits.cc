@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -283,7 +283,7 @@ UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item>::GetTag(
 }
 
 // static
-const blink::WebVector<blink::WebDragData::Item>&
+const std::vector<blink::WebDragData::Item>&
 StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::items(
     const blink::WebDragData& drag_data) {
   return drag_data.Items();
@@ -314,7 +314,7 @@ network::mojom::ReferrerPolicy StructTraits<
 bool StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::Read(
     blink::mojom::DragDataDataView data,
     blink::WebDragData* out) {
-  blink::WebVector<blink::WebDragData::Item> items;
+  std::vector<blink::WebDragData::Item> items;
   WTF::String file_system_id;
   network::mojom::ReferrerPolicy referrer_policy;
   if (!data.ReadItems(&items) || !data.ReadFileSystemId(&file_system_id) ||

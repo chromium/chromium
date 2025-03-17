@@ -15,6 +15,7 @@ enum MemberRole {
   kOwner,
   kMember,
   kInvitee,
+  kFormerMember,
 };
 
 // Data representing a member in a group.
@@ -46,8 +47,11 @@ struct GroupData {
   // Name of the group.
   string display_name;
 
-   // A list of members in this group.
+  // A list of members in this group.
   array<GroupMember> members;
+
+  // A list of former members in this group.
+  array<GroupMember> former_members;
 
   // Access token to join the group. It could be empty if the token is expired
   // and not regenerated.

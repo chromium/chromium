@@ -33,7 +33,7 @@ IceTransportAdapterImpl::~IceTransportAdapterImpl() {
 void IceTransportAdapterImpl::StartGathering(
     const cricket::IceParameters& local_parameters,
     const cricket::ServerAddresses& stun_servers,
-    const WebVector<cricket::RelayServerConfig>& turn_servers,
+    const std::vector<cricket::RelayServerConfig>& turn_servers,
     IceTransportPolicy policy) {
   if (!ice_transport_channel()) {
     LOG(ERROR) << "StartGathering called, but ICE transport released";

@@ -58,28 +58,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dialog dismissed"/>
 </enum>
 
-<!-- LINT.IfChange(DangerousDownloadInterstitialAction) -->
-
-<enum name="DangerousDownloadInterstitialAction">
-  <int value="0" label="OpenInterstitial"/>
-  <int value="1" label="CancelInterstitial"/>
-  <int value="2" label="OpenSurvey"/>
-  <int value="3" label="SaveDangerous"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads_dom_handler.h:DangerousDownloadInterstitialAction)-->
-
-<!-- LINT.IfChange(DangerousDownloadInterstitialSurveyOptions) -->
-
-<enum name="DangerousDownloadInterstitialSurveyOptions">
-  <int value="0" label="User did not respond to survey"/>
-  <int value="1" label="User created file"/>
-  <int value="2" label="User trust site"/>
-  <int value="3" label="User accepts risk"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads.mojom:DangerousDownloadInterstitialSurveyOptions)-->
-
 <enum name="Download.DragInfo">
   <int value="0" label="DRAG_STARTED"/>
   <int value="1" label="DOWNLOAD_COMPLETE"/>
@@ -149,6 +127,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ADDED_WARNING_FIRST_SHOWN"/>
   <int value="5" label="ADDED_WARNING_ACTION"/>
   <int value="6" label="NOT_ADDED_DOWNLOAD_NOT_DANGEROUS"/>
+</enum>
+
+<enum name="DownloadAppleWalletOrderFileUI">
+  <int value="0" label="Warning alert is presented"/>
+  <int value="1"
+      label="Warning alert is dismissed without presenting a SFSafariView"/>
+  <int value="2"
+      label="Warning alert is dismissed with presenting a SFSafariView"/>
 </enum>
 
 <enum name="DownloadARModelState">
@@ -722,6 +708,18 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed to parse media file"/>
   <int value="8" label="Successfully parsed media file"/>
   <int value="9" label="Timeout and failed"/>
+</enum>
+
+<enum name="NotificationAttachEvent">
+  <int value="0" label="Attached on job start"/>
+  <int value="1" label="Attached after job start"/>
+  <int value="2" label="Never attached before job complete"/>
+</enum>
+
+<enum name="OpenDownloadWithExternalAppsSource">
+  <int value="0" label="Open file"/>
+  <int value="1" label="Download progress message"/>
+  <int value="2" label="App menu"/>
 </enum>
 
 <enum name="PresentAddPassesDialogResult">

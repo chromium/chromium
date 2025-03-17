@@ -29,8 +29,9 @@ NSError* CreateTestNetError(NSError* error) {
 
 NSError* CreateErrorWithUnderlyingErrorChain(
     const std::vector<std::pair<NSErrorDomain, NSInteger>>& domain_code_pairs) {
-  if (domain_code_pairs.empty())
+  if (domain_code_pairs.empty()) {
     return nil;
+  }
 
   NSError* error = nil;
   for (int i = domain_code_pairs.size() - 1; i >= 0; --i) {
@@ -54,8 +55,9 @@ std::string GetErrorText(WebState* web_state,
     error_text += base::StringPrintf(
         "{%s, %ld}", base::SysNSStringToUTF8(error.domain).c_str(), error.code);
     error = error.userInfo[NSUnderlyingErrorKey];
-    if (error)
+    if (error) {
       error_text += " => ";
+    }
   }
   error_text += "}";
 

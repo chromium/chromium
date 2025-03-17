@@ -92,6 +92,13 @@ CONTENT_EXPORT bool IsPathRestrictionSatisfiedWithoutHeader(
 // Returns the set of hash strings of fetch handlers which can be bypassed.
 const base::flat_set<std::string> FetchHandlerBypassedHashStrings();
 
+// Check if `client_url` is eligible for Synsthtic Response.
+// Exposes one method which accepts `allowed_urls` for testing.
+bool IsEligibleForSyntheticResponse(const GURL& client_url);
+CONTENT_EXPORT bool IsEligibleForSyntheticResponseForTesting(
+    const GURL& client_url,
+    const std::string& allowed_urls);
+
 }  // namespace service_worker_loader_helpers
 
 }  // namespace content

@@ -14,6 +14,7 @@
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -65,16 +66,17 @@ class EmptyCollaborationFinder : public CollaborationFinder {
 
   // tab_groups::CollaborationFinder overrides.
   void SetClient(Client* client) override {}
-  bool IsCollaborationAvailable(const std::string& collaboration_id) override {
+  bool IsCollaborationAvailable(
+      const syncer::CollaborationId& collaboration_id) override {
     return collaborations_available_.contains(collaboration_id);
   }
   void SetCollaborationAvailableForTesting(
-      const std::string& collaboration_id) override {
+      const syncer::CollaborationId& collaboration_id) override {
     collaborations_available_.insert(collaboration_id);
   }
 
  private:
-  std::set<std::string> collaborations_available_;
+  std::set<syncer::CollaborationId> collaborations_available_;
 };
 
 }  // namespace
@@ -98,7 +100,7 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
   return std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
       pref_service, std::move(metrics_logger), optimization_guide,
-      identity_manager, std::move(collaboration_finder));
+      identity_manager, std::move(collaboration_finder), /*logger=*/nullptr);
 }
 
 }  // namespace tab_groups::test

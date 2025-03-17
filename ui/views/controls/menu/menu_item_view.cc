@@ -16,7 +16,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
@@ -43,6 +42,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -175,21 +175,21 @@ void MenuItemView::ViewHierarchyChanged(
 void MenuItemView::UpdateTooltipText(std::optional<std::u16string> new_text) {
   if (new_text.has_value()) {
     custom_tooltip_ = new_text.value();
-    SetCachedTooltipText(custom_tooltip_);
+    SetTooltipText(custom_tooltip_);
     return;
   }
 
   if (!custom_tooltip_.empty()) {
-    SetCachedTooltipText(custom_tooltip_);
+    SetTooltipText(custom_tooltip_);
     return;
   }
 
-  SetCachedTooltipText(std::u16string());
+  SetTooltipText(std::u16string());
 }
 
-std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
-  if (!GetCachedTooltipText().empty()) {
-    return GetCachedTooltipText();
+std::u16string MenuItemView::GetRenderedTooltipText(const gfx::Point& p) const {
+  if (!GetTooltipText().empty()) {
+    return GetTooltipText();
   }
 
   const MenuDelegate* delegate = GetDelegate();
@@ -340,7 +340,7 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     submenu_->SetBorderColorId(submenu_background_color);
     if (submenu_background_color.has_value()) {
       submenu_->SetBackground(
-          views::CreateThemedSolidBackground(submenu_background_color.value()));
+          views::CreateSolidBackground(submenu_background_color.value()));
     }
   }
   DCHECK_LE(index, submenu_->children().size());
@@ -368,9 +368,18 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   if (GetDelegate() && !GetDelegate()->IsCommandVisible(item_id)) {
     item->SetVisible(false);
   }
+
   auto* added_item = submenu_->AddChildViewAt(item, index);
 
   added_item->UpdateTooltipText();
+
+  // Some of the lines above can change the focus behavior of the item. This is
+  // because `MenuItemView` is a special case where the focus behavior can be
+  // dictated inside `MenuItemView::GetFocusBehavior` without actually calling
+  // `SetFocusBehavior`. This is why we must special case this call and update
+  // the a11y ignored state of the item, since it depends on the focus behavior.
+  added_item->GetViewAccessibility().SetHasFocusableAncestorRecursive(
+      added_item->GetFocusBehavior() != FocusBehavior::NEVER);
 
   return added_item;
 }
@@ -457,7 +466,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
   // submenu items, we create a virtual child of type Menu.
   std::unique_ptr<AXVirtualView> virtual_child =
       std::make_unique<AXVirtualView>();
-  virtual_child->GetCustomData().role = ax::mojom::Role::kMenu;
+  virtual_child->SetRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
 #endif  //  BUILDFLAG(IS_MAC)
 
@@ -999,14 +1008,25 @@ void MenuItemView::UpdateEmptyMenusAndMetrics() {
   const Views children = submenu_->children();
   bool has_visible_menu_items = false;
   for (View* child : children) {
+    MenuItemView* const child_menu = AsViewClass<MenuItemView>(child);
+    if (!child_menu) {
+      continue;
+    }
     if (IsViewClass<EmptyMenuMenuItem>(child)) {
-      submenu_->RemoveChildViewT(child);
+      // Prevent view destruction until selection is updated.
+      // We remove the child before updating selection in case of re-entrancy.
+      std::unique_ptr<View> removed_child = submenu_->RemoveChildViewT(child);
+      if (child_menu->IsSelected()) {
+        // Update selection to this menu before deleting the currently
+        // selected child.
+        GetMenuController()->SetSelection(
+            this, MenuController::SELECTION_UPDATE_IMMEDIATELY);
+      }
       submenu_
           ->InvalidateLayout();  // Ideally the submenu would have a layout
                                  // manager that would do this automatically.
     } else {
-      has_visible_menu_items |=
-          IsViewClass<MenuItemView>(child) && child->GetVisible();
+      has_visible_menu_items |= child->GetVisible();
     }
   }
 

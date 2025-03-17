@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_client_impl.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -30,8 +32,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -51,7 +51,9 @@
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_thumbnail_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -63,6 +65,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/window.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
@@ -171,10 +174,10 @@ std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
     CHECK(result);
   }
 
-  base::ranges::sort(results, base::ranges::greater(),
-                     [](const std::unique_ptr<ChromeSearchResult>& result) {
-                       return result->relevance();
-                     });
+  std::ranges::sort(results, std::ranges::greater(),
+                    [](const std::unique_ptr<ChromeSearchResult>& result) {
+                      return result->relevance();
+                    });
 
   for (const std::unique_ptr<ChromeSearchResult>& result : results) {
     switch (result->result_type()) {
@@ -224,40 +227,14 @@ ash::input_method::EditorMediator* GetEditorMediator(Profile* profile) {
       profile);
 }
 
-// TODO: b/326847990 - Remove this once it's moved to mojom traits.
-chromeos::editor_menu::PresetQueryCategory FromMojoPresetQueryCategory(
-    const crosapi::mojom::EditorPanelPresetQueryCategory category) {
-  using EditorPanelPresetQueryCategory =
-      crosapi::mojom::EditorPanelPresetQueryCategory;
-  using PresetQueryCategory = chromeos::editor_menu::PresetQueryCategory;
-
-  switch (category) {
-    case EditorPanelPresetQueryCategory::kUnknown:
-      return PresetQueryCategory::kUnknown;
-    case EditorPanelPresetQueryCategory::kShorten:
-      return PresetQueryCategory::kShorten;
-    case EditorPanelPresetQueryCategory::kElaborate:
-      return PresetQueryCategory::kElaborate;
-    case EditorPanelPresetQueryCategory::kRephrase:
-      return PresetQueryCategory::kRephrase;
-    case EditorPanelPresetQueryCategory::kFormalize:
-      return PresetQueryCategory::kFormalize;
-    case EditorPanelPresetQueryCategory::kEmojify:
-      return PresetQueryCategory::kEmojify;
-    case EditorPanelPresetQueryCategory::kProofread:
-      return PresetQueryCategory::kProofread;
-  }
-}
-
-std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromPanelContext(
-    crosapi::mojom::EditorPanelContextPtr panel_context) {
+std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromEditorContext(
+    const chromeos::editor_menu::EditorContext& editor_context) {
   std::vector<ash::QuickInsertSearchResult> results;
-  for (const crosapi::mojom::EditorPanelPresetTextQueryPtr& query :
-       panel_context->preset_text_queries) {
+  for (const chromeos::editor_menu::PresetTextQuery& query :
+       editor_context.preset_queries) {
     results.push_back(ash::QuickInsertEditorResult(
-        ash::QuickInsertEditorResult::Mode::kRewrite,
-        base::UTF8ToUTF16(query->name),
-        FromMojoPresetQueryCategory(query->category), query->text_query_id));
+        ash::QuickInsertEditorResult::Mode::kRewrite, query.name,
+        query.category, query.text_query_id));
   }
   return results;
 }
@@ -366,7 +343,7 @@ bool QuickInsertClientImpl::IsEligibleForEditor() {
   }
 
   return editor_mediator->GetEditorMode() !=
-         ash::input_method::EditorMode::kHardBlocked;
+         chromeos::editor_menu::EditorMode::kHardBlocked;
 }
 
 QuickInsertClientImpl::ShowEditorCallback
@@ -379,9 +356,10 @@ QuickInsertClientImpl::CacheEditorContext() {
 
   editor_mediator->CacheContext();
 
-  ash::input_method::EditorMode editor_mode = editor_mediator->GetEditorMode();
-  if (editor_mode == ash::input_method::EditorMode::kSoftBlocked ||
-      editor_mode == ash::input_method::EditorMode::kHardBlocked) {
+  chromeos::editor_menu::EditorMode editor_mode =
+      editor_mediator->GetEditorMode();
+  if (editor_mode == chromeos::editor_menu::EditorMode::kSoftBlocked ||
+      editor_mode == chromeos::editor_menu::EditorMode::kHardBlocked) {
     return {};
   }
 
@@ -390,7 +368,8 @@ QuickInsertClientImpl::CacheEditorContext() {
 }
 
 QuickInsertClientImpl::ShowLobsterCallback
-QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
+QuickInsertClientImpl::CacheLobsterContext(
+    ui::TextInputClient* text_input_client) {
   if (!ash::features::IsLobsterEnabled()) {
     return base::NullCallback();
   }
@@ -405,7 +384,7 @@ QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
   }
 
   lobster_trigger_ = lobster_controller->CreateTrigger(
-      ash::LobsterEntryPoint::kQuickInsert, support_image_insertion);
+      ash::LobsterEntryPoint::kQuickInsert, text_input_client);
 
   if (!lobster_trigger_) {
     return base::NullCallback();
@@ -425,15 +404,16 @@ void QuickInsertClientImpl::GetSuggestedEditorResults(
     return;
   }
 
-  ash::input_method::EditorMode editor_mode = editor_mediator->GetEditorMode();
-  if (editor_mode == ash::input_method::EditorMode::kHardBlocked ||
-      editor_mode == ash::input_method::EditorMode::kSoftBlocked) {
+  chromeos::editor_menu::EditorMode editor_mode =
+      editor_mediator->GetEditorMode();
+  if (editor_mode == chromeos::editor_menu::EditorMode::kHardBlocked ||
+      editor_mode == chromeos::editor_menu::EditorMode::kSoftBlocked) {
     std::move(callback).Run({});
     return;
   }
 
   editor_mediator->panel_manager()->GetEditorPanelContext(
-      base::BindOnce(GetEditorResultsFromPanelContext)
+      base::BindOnce(GetEditorResultsFromEditorContext)
           .Then(std::move(callback)));
 }
 

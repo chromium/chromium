@@ -10,11 +10,11 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/user_education_types.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -52,10 +52,8 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
                                      ui::PAGE_TRANSITION_LINK);
       // This does not work
       // Try the handle stuff from show_promo_in_page?
-      navigate_params.disposition =
-          params.overwrite_active_tab
-              ? WindowOpenDisposition::CURRENT_TAB
-              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      navigate_params.disposition = user_education::GetWindowOpenDisposition(
+              params.page_open_mode);
       Navigate(&navigate_params);
     }
   }

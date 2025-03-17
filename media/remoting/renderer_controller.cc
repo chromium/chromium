@@ -412,6 +412,9 @@ RemotingCompatibility RendererController::GetVideoCompatibility() const {
     case VideoCodec::kHEVC:
       compatible = HasVideoCapability(RemotingSinkVideoCapability::CODEC_HEVC);
       break;
+    case VideoCodec::kAV1:
+      compatible = HasVideoCapability(RemotingSinkVideoCapability::CODEC_AV1);
+      break;
     default:
       VLOG(2) << "Remoting does not support video codec: "
               << pipeline_metadata_.video_decoder_config.codec();

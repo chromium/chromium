@@ -136,7 +136,7 @@ class TestRegistrationCallback {
   }
 
   void WaitForCall() {
-    if (called_) {
+    if (outcome_.has_value()) {
       return;
     }
 
@@ -147,17 +147,16 @@ class TestRegistrationCallback {
     run_loop.Run();
   }
 
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> outcome() {
-    EXPECT_TRUE(called_);
-    return std::move(outcome_);
+  const base::expected<SessionParams, SessionError>& outcome() {
+    EXPECT_TRUE(outcome_.has_value());
+    return *outcome_;
   }
 
  private:
   void OnRegistrationComplete(
-      std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
-    EXPECT_FALSE(called_);
+      base::expected<SessionParams, SessionError> params) {
+    EXPECT_FALSE(outcome_.has_value());
 
-    called_ = true;
     outcome_ = std::move(params);
 
     if (waiting_) {
@@ -166,8 +165,7 @@ class TestRegistrationCallback {
     }
   }
 
-  bool called_ = false;
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> outcome_ =
+  std::optional<base::expected<SessionParams, SessionError>> outcome_ =
       std::nullopt;
 
   bool waiting_ = false;
@@ -210,7 +208,8 @@ std::unique_ptr<test_server::HttpResponse> ReturnInvalidResponse(
 
 class UnauthorizedThenSuccessResponseContainer {
  public:
-  UnauthorizedThenSuccessResponseContainer(int unauthorize_response_times)
+  explicit UnauthorizedThenSuccessResponseContainer(
+      int unauthorize_response_times)
       : run_times(0), error_respose_times(unauthorize_response_times) {}
 
   std::unique_ptr<test_server::HttpResponse> Return(
@@ -227,7 +226,7 @@ class UnauthorizedThenSuccessResponseContainer {
 };
 
 TEST_F(RegistrationTest, BasicSuccess) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating([](const test_server::HttpRequest& request) {
         auto resp_iter = request.headers.find("Sec-Session-Response");
@@ -242,22 +241,21 @@ TEST_F(RegistrationTest, BasicSuccess) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-  EXPECT_THAT(session_params->scope.specifications,
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_THAT(session_params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kInclude,
                   "trusted.example.com", "/only_trusted_path")));
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -272,7 +270,7 @@ TEST_F(RegistrationTest, NoScopeJson) {
     "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
   }]
 })";
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -280,19 +278,18 @@ TEST_F(RegistrationTest, NoScopeJson) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_FALSE(session_params->scope.include_site);
-  EXPECT_TRUE(session_params->scope.specifications.empty());
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_FALSE(session_params.scope.include_site);
+  EXPECT_TRUE(session_params.scope.specifications.empty());
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -306,7 +303,7 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
     "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
   }]
 })";
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -314,12 +311,13 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_FALSE(out_params);
+  ASSERT_FALSE(out_params.has_value());
 }
 
 TEST_F(RegistrationTest, SpecificationNotDictJson) {
@@ -339,7 +337,7 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
   }]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -347,19 +345,18 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-  EXPECT_TRUE(session_params->scope.specifications.empty());
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_TRUE(session_params.scope.specifications.empty());
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -389,7 +386,7 @@ TEST_F(RegistrationTest, OneMissingPath) {
   }]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -397,23 +394,22 @@ TEST_F(RegistrationTest, OneMissingPath) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
 
-  EXPECT_THAT(session_params->scope.specifications,
+  EXPECT_THAT(session_params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kExclude,
                   "new.example.com", "/only_trusted_path")));
 
-  EXPECT_THAT(session_params->credentials,
+  EXPECT_THAT(session_params.credentials,
               ElementsAre(SessionParams::Credential(
                   "other_cookie",
                   "Domain=example.com; Path=/; Secure; SameSite=None")));
@@ -445,7 +441,7 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
   }]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -453,24 +449,21 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-
-  EXPECT_THAT(session_params->scope.specifications,
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_THAT(session_params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kExclude,
                   "new.example.com", "/only_trusted_path")));
-
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -490,7 +483,7 @@ TEST_F(RegistrationTest, InvalidTypeSpecList) {
   }]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -498,17 +491,16 @@ TEST_F(RegistrationTest, InvalidTypeSpecList) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-  EXPECT_TRUE(session_params->scope.specifications.empty());
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_TRUE(session_params.scope.specifications.empty());
 }
 
 TEST_F(RegistrationTest, TypeIsNotCookie) {
@@ -522,7 +514,7 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
   }]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -530,12 +522,15 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  ASSERT_FALSE(out_params.has_value());
+  EXPECT_EQ(out_params.error().type,
+            SessionError::ErrorType::kInvalidCredentials);
 }
 
 TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
@@ -556,7 +551,7 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
   ]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -564,17 +559,16 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -597,7 +591,7 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
   ]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -605,17 +599,16 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -632,7 +625,7 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
   "test"]
 })";
 
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -640,23 +633,22 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
 
 TEST_F(RegistrationTest, ReturnTextFile) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnTextResponse));
   ASSERT_TRUE(server_.Start());
 
@@ -664,15 +656,18 @@ TEST_F(RegistrationTest, ReturnTextFile) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  ASSERT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kInvalidConfigJson);
 }
 
 TEST_F(RegistrationTest, ReturnInvalidJson) {
   std::string invalid_json = "*{}";
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, invalid_json));
   ASSERT_TRUE(server_.Start());
@@ -681,15 +676,18 @@ TEST_F(RegistrationTest, ReturnInvalidJson) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kInvalidConfigJson);
 }
 
 TEST_F(RegistrationTest, ReturnEmptyJson) {
   std::string empty_json = "{}";
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, empty_json));
   ASSERT_TRUE(server_.Start());
@@ -698,14 +696,17 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kInvalidSessionId);
 }
 
 TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   ASSERT_TRUE(server_.Start());
   GURL url = server_.GetURL("/");
   ASSERT_TRUE(server_.ShutdownAndWaitUntilComplete());
@@ -714,15 +715,18 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
   RegistrationFetcherParam params = GetBasicParam(url);
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kNetError);
 }
 
 TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnInvalidResponse));
   ASSERT_TRUE(server_.Start());
 
@@ -730,15 +734,58 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kNetError);
+}
+
+TEST_F(RegistrationTest, ServerError407) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponse, HTTP_PROXY_AUTHENTICATION_REQUIRED, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kNetError);
+}
+
+TEST_F(RegistrationTest, ServerError400) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_BAD_REQUEST, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kPersistentHttpError);
 }
 
 TEST_F(RegistrationTest, ServerError500) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(
       &ReturnResponse, HTTP_INTERNAL_SERVER_ERROR, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -747,15 +794,18 @@ TEST_F(RegistrationTest, ServerError500) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kTransientHttpError);
 }
 
 TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
 
   auto* container = new UnauthorizedThenSuccessResponseContainer(1);
   server_.RegisterRequestHandler(
@@ -767,23 +817,21 @@ TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-  EXPECT_THAT(session_params->scope.specifications,
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_THAT(session_params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kInclude,
                   "trusted.example.com", "/only_trusted_path")));
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
@@ -814,54 +862,114 @@ std::unique_ptr<test_server::HttpResponse> CheckRedirect(
   return ReturnResponse(HTTP_OK, kBasicValidJson, request);
 }
 
-TEST_F(RegistrationTest, FollowHttpsRedirect) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+// Should be allowed: https://a.test -> https://a.test/redirect.
+TEST_F(RegistrationTest, FollowHttpsToHttpsRedirect) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   bool followed = false;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnRedirect, kRedirectPath));
   server_.RegisterRequestHandler(
       base::BindRepeating(&CheckRedirect, &followed));
+  // Required to add a certificate for a.test, which is used below.
+  server_.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  RegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcherParam params =
+      GetBasicParam(server_.GetURL("a.test", "/"));
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   EXPECT_TRUE(followed);
-  EXPECT_NE(callback.outcome(), std::nullopt);
+  EXPECT_TRUE(callback.outcome().has_value());
 }
 
-TEST_F(RegistrationTest, DontFollowHttpRedirect) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+// Should not be allowed: https://a.test -> http://a.test/redirect.
+TEST_F(RegistrationTest, DontFollowHttpsToHttpRedirect) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   bool followed = false;
-  test_server::EmbeddedTestServer http_server_;
-  ASSERT_TRUE(http_server_.Start());
-  const GURL target = http_server_.GetURL(kRedirectPath);
-
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnRedirect, target.spec()));
-  server_.RegisterRequestHandler(
+  test_server::EmbeddedTestServer http_server;
+  http_server.RegisterRequestHandler(
       base::BindRepeating(&CheckRedirect, &followed));
+  ASSERT_TRUE(http_server.Start());
+  // Required to add a certificate for a.test, which is used below.
+  server_.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnRedirect, http_server.GetURL("a.test", kRedirectPath).spec()));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcherParam params =
+      GetBasicParam(server_.GetURL("a.test", "/"));
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_FALSE(followed);
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kPersistentHttpError);
+}
+
+// Should be allowed: http://localhost -> http://localhost/redirect.
+TEST_F(RegistrationTest, FollowLocalhostHttpToHttpRedirect) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  bool followed = false;
+  test_server::EmbeddedTestServer http_server;
+  http_server.RegisterRequestHandler(
+      base::BindRepeating(&CheckRedirect, &followed));
+  http_server.RegisterRequestHandler(
+      base::BindRepeating(&ReturnRedirect, kRedirectPath));
+  ASSERT_TRUE(http_server.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcherParam params = GetBasicParam(http_server.GetURL("/"));
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_TRUE(followed);
+  EXPECT_TRUE(callback.outcome().has_value());
+}
+
+// Should be allowed: https://localhost -> http://localhost/redirect.
+TEST_F(RegistrationTest, FollowLocalhostHttpsToHttpRedirect) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  bool followed = false;
+  test_server::EmbeddedTestServer http_server;
+  http_server.RegisterRequestHandler(
+      base::BindRepeating(&CheckRedirect, &followed));
+  ASSERT_TRUE(http_server.Start());
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnRedirect, http_server.GetURL(kRedirectPath).spec()));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
-  EXPECT_FALSE(followed);
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  EXPECT_TRUE(followed);
+  EXPECT_TRUE(callback.outcome().has_value());
 }
 
 TEST_F(RegistrationTest, FailOnSslErrorExpired) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   server_.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -871,11 +979,14 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
 
   callback.WaitForCall();
-  EXPECT_EQ(callback.outcome(), std::nullopt);
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kNetError);
 }
 
 std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(
@@ -902,42 +1013,48 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(
   return response;
 }
 
+std::unique_ptr<test_server::HttpResponse>
+Return401ResponseWithInvalidChallenge(const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_code(HTTP_UNAUTHORIZED);
+  response->AddCustomHeader("Sec-Session-Challenge", "");
+  return response;
+}
+
 TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(unexportable_key_service()), context_.get(),
       std::ref(isolation_info), /*net_log_source=*/std::nullopt,
-      callback.callback()));
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
 
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-  EXPECT_THAT(session_params->scope.specifications,
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_THAT(session_params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kInclude,
                   "trusted.example.com", "/only_trusted_path")));
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
 
 TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponseForRefreshRequest));
   ASSERT_TRUE(server_.Start());
@@ -945,33 +1062,31 @@ TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
   TestRegistrationCallback callback;
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(unexportable_key_service()), context_.get(),
       std::ref(isolation_info), /*net_log_source=*/std::nullopt,
-      callback.callback()));
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
 
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-  EXPECT_THAT(session_params->scope.specifications,
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_THAT(session_params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kInclude,
                   "trusted.example.com", "/only_trusted_path")));
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
 
 TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponseForRefreshRequest));
   ASSERT_TRUE(server_.Start());
@@ -979,29 +1094,52 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
   TestRegistrationCallback callback;
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, std::nullopt);
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(unexportable_key_service()), context_.get(),
       std::ref(isolation_info), /*net_log_source=*/std::nullopt,
-      callback.callback()));
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
 
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_TRUE(session_params->scope.include_site);
-  EXPECT_THAT(session_params->scope.specifications,
+  ASSERT_TRUE(out_params.has_value());
+  const SessionParams& session_params = *out_params;
+  EXPECT_TRUE(session_params.scope.include_site);
+  EXPECT_THAT(session_params.scope.specifications,
               ElementsAre(SessionParams::Scope::Specification(
                   SessionParams::Scope::Specification::Type::kInclude,
                   "trusted.example.com", "/only_trusted_path")));
   EXPECT_THAT(
-      session_params->credentials,
+      session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest,
+       FetchRegistrationAndChallengeRequired_InvalidChallengeParams) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&Return401ResponseWithInvalidChallenge));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), /*session_identifier=*/std::nullopt, kChallenge);
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(unexportable_key_service()), context_.get(),
+      std::ref(isolation_info), /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
+
+  callback.WaitForCall();
+  const base::expected<SessionParams, SessionError>& out_params =
+      callback.outcome();
+  ASSERT_FALSE(out_params.has_value());
+  EXPECT_EQ(out_params.error().type,
+            SessionError::ErrorType::kInvalidChallenge);
 }
 
 TEST_F(RegistrationTest, ContinueFalse) {
@@ -1010,7 +1148,7 @@ TEST_F(RegistrationTest, ContinueFalse) {
   "session_identifier": "session_id",
   "continue": false
 })";
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
@@ -1018,20 +1156,20 @@ TEST_F(RegistrationTest, ContinueFalse) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionTerminationParams* session_params =
-      std::get_if<SessionTerminationParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_EQ(session_params->session_id, "session_id");
+  ASSERT_FALSE(out_params.has_value());
+  const SessionError& error = out_params.error();
+  EXPECT_EQ(error.session_id, "session_id");
+  EXPECT_EQ(error.site, net::SchemefulSite(server_.base_url()));
 }
 
 TEST_F(RegistrationTest, RetriesOnKeyFailure) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -1056,24 +1194,22 @@ TEST_F(RegistrationTest, RetriesOnKeyFailure) {
                  &unexportable_keys::UnexportableKeyService::SignSlowlyAsync));
 
   TestRegistrationCallback callback;
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(mock_service), context_.get(), std::ref(isolation_info),
-      /*net_log_source=*/std::nullopt, callback.callback()));
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
   callback.WaitForCall();
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionParams* session_params =
-      std::get_if<SessionParams>(&out_params->params);
-  EXPECT_TRUE(session_params);
+  ASSERT_TRUE(out_params.has_value());
 }
 
-TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -1097,20 +1233,57 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure) {
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
-      std::ref(mock_service), context_.get(), IsolationInfo::CreateTransient(),
-      /*net_log_source=*/std::nullopt, callback.callback()));
+      std::ref(mock_service), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
   callback.WaitForCall();
 
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionTerminationParams* session_params =
-      std::get_if<SessionTerminationParams>(&out_params->params);
-  EXPECT_TRUE(session_params);
+  ASSERT_FALSE(out_params.has_value());
+  EXPECT_EQ(out_params.error().type, SessionError::ErrorType::kSigningError);
 }
 
-TEST_F(RegistrationTest, NetLogResultLogged) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  unexportable_keys::MockUnexportableKeyService mock_service;
+
+  EXPECT_CALL(mock_service, GetAlgorithm(_))
+      .WillRepeatedly(
+          Invoke(&unexportable_key_service(),
+                 &unexportable_keys::UnexportableKeyService::GetAlgorithm));
+  EXPECT_CALL(mock_service, GetSubjectPublicKeyInfo(_))
+      .WillRepeatedly(Invoke(
+          &unexportable_key_service(),
+          &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
+  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _))
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  TestRegistrationCallback callback;
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), /*session_identifier=*/std::nullopt, kChallenge);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(mock_service), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
+  callback.WaitForCall();
+
+  const base::expected<SessionParams, SessionError>& out_params =
+      callback.outcome();
+  ASSERT_FALSE(out_params.has_value());
+  EXPECT_EQ(out_params.error().type, SessionError::ErrorType::kSigningError);
+}
+
+TEST_F(RegistrationTest, NetLogRegistrationResultLogged) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -1119,8 +1292,33 @@ TEST_F(RegistrationTest, NetLogResultLogged) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(net_log_observer
+                .GetEntriesWithType(NetLogEventType::DBSC_REGISTRATION_RESULT)
+                .size(),
+            1u);
+}
+
+TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), kSessionIdentifier, kChallenge);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(unexportable_key_service()), context_.get(),
+      std::ref(isolation_info), /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
   callback.WaitForCall();
 
   EXPECT_EQ(
@@ -1130,7 +1328,7 @@ TEST_F(RegistrationTest, NetLogResultLogged) {
 }
 
 TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
 
   auto* container = new UnauthorizedThenSuccessResponseContainer(100);
   server_.RegisterRequestHandler(
@@ -1139,23 +1337,23 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(unexportable_key_service()), context_.get(),
       std::ref(isolation_info), /*net_log_source=*/std::nullopt,
-      callback.callback()));
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
   callback.WaitForCall();
 
-  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+  const base::expected<SessionParams, SessionError>& out_params =
       callback.outcome();
-  ASSERT_TRUE(out_params);
-  const SessionTerminationParams* session_params =
-      std::get_if<SessionTerminationParams>(&out_params->params);
-  ASSERT_TRUE(session_params);
-  EXPECT_EQ(session_params->session_id, kSessionIdentifier);
+  ASSERT_FALSE(out_params.has_value());
+  const SessionError& session_error = out_params.error();
+  EXPECT_EQ(session_error.type, SessionError::ErrorType::kTooManyChallenges);
+  EXPECT_EQ(session_error.site, net::SchemefulSite(server_.base_url()));
+  EXPECT_EQ(session_error.session_id, kSessionIdentifier);
 }
 
 class RegistrationTokenHelperTest : public testing::Test {
@@ -1179,7 +1377,7 @@ class RegistrationTokenHelperTest : public testing::Test {
 };
 
 TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   base::test::TestFuture<
       std::optional<RegistrationFetcher::RegistrationTokenResult>>
       future;
@@ -1192,7 +1390,7 @@ TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
 }
 
 TEST_F(RegistrationTokenHelperTest, CreateFail) {
-  crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider_;
+  crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider;
   base::test::TestFuture<
       std::optional<RegistrationFetcher::RegistrationTokenResult>>
       future;

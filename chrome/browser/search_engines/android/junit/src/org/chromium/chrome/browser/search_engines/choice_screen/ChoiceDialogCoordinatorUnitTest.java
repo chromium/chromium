@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -48,7 +49,6 @@ import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMedi
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.LaunchChoiceScreenTapHandlingStatus;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
-import org.chromium.components.search_engines.test.util.SearchEnginesFeaturesTestUtil;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -58,7 +58,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.Duration;
-import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
@@ -83,8 +82,10 @@ public class ChoiceDialogCoordinatorUnitTest {
     @Test
     public void testMaybeShow() {
         // For code coverage.
-        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
-                Map.of("enable_verbose_logging", "true"));
+        FeatureOverrides.newBuilder()
+                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                .param("enable_verbose_logging", true)
+                .apply();
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -154,8 +155,10 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_doesNotShowInDarkLaunchMode() {
-        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
-                Map.of("is_dark_launch", "true"));
+        FeatureOverrides.newBuilder()
+                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                .param("is_dark_launch", true)
+                .apply();
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -185,8 +188,10 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_doesNotShowEscapeHatch() {
-        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
-                Map.of("escape_hatch_block_limit", "1"));
+        FeatureOverrides.newBuilder()
+                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                .param("escape_hatch_block_limit", 1)
+                .apply();
         var shouldShowSupplier = new ObservableSupplierImpl<>(true);
         doReturn(shouldShowSupplier)
                 .when(mSearchEngineChoiceService)
@@ -254,8 +259,10 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_showsAndBlocksAfterDelayedApproval() {
-        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
-                Map.of("silent_pending_duration_millis", "24"));
+        FeatureOverrides.newBuilder()
+                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                .param("silent_pending_duration_millis", 24)
+                .apply();
 
         var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
         doReturn(pendingSupplier)
@@ -309,8 +316,10 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_showsAndUnblocksAfterDelayedDisapproval() {
-        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
-                Map.of("silent_pending_duration_millis", "24"));
+        FeatureOverrides.newBuilder()
+                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                .param("silent_pending_duration_millis", 24)
+                .apply();
 
         var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
         doReturn(pendingSupplier)
@@ -410,12 +419,11 @@ public class ChoiceDialogCoordinatorUnitTest {
     public void testMaybeShow_dismissesDialogAfterTimeout() {
         int timeoutDuration = 24_000;
         int silentPendingDuration = 1_000;
-        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
-                Map.ofEntries(
-                        Map.entry("dialog_timeout_millis", Long.toString(timeoutDuration)),
-                        Map.entry(
-                                "silent_pending_duration_millis",
-                                Long.toString(silentPendingDuration))));
+        FeatureOverrides.newBuilder()
+                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                .param("dialog_timeout_millis", timeoutDuration)
+                .param("silent_pending_duration_millis", silentPendingDuration)
+                .apply();
 
         var pendingSupplier = new ObservableSupplierImpl<>();
         doReturn(pendingSupplier)

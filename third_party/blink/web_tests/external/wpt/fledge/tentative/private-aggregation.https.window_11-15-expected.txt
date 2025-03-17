@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] cumulative-buyer-time when not configured
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] cumulative-buyer-time when configured
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] percent-regular-ig-count-quota-used
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] percent-negative-ig-count-quota-used
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+[FAIL] percent-ig-storage-quota-used
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'runAdAuction' on 'Navigator': aggregationCoordinatorOrigin 'https://web-platform.test:8444' is not a recognized coordinator origin."
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] <selectedcontent> should be up to date after form restoration.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'innerHTML')"
+Harness: the test ran to completion.
+

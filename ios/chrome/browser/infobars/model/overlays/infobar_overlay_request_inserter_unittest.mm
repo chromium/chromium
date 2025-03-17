@@ -22,7 +22,7 @@ namespace {
 // The two infobar message text used in tests.  Both support badges.
 std::u16string kFirstInfobarMessageText = u"FakeInfobarDelegate1";
 std::u16string kSecondInfobarMessageText = u"FakeInfobarDelegate2";
-}
+}  // namespace
 
 using infobars::InfoBar;
 using infobars::InfoBarManager;

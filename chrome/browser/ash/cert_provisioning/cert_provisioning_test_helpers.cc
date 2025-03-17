@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,7 +132,7 @@ const net::CertificateList& CertificateHelperForTesting::GetCerts() const {
 
 namespace {
 const char kTestUserEmail[] = "user@gmail.com";
-const char kTestUserGaiaId[] = "test_gaia_id";
+const GaiaId::Literal kTestUserGaiaId("test_gaia_id");
 }  // namespace
 
 ProfileHelperForTesting::ProfileHelperForTesting()

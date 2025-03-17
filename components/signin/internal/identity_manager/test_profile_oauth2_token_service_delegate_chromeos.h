@@ -72,8 +72,8 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
 
  private:
   // ProfileOAuth2TokenServiceDelegate implementation:
-  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
-                               bool is_syncing) override;
+  void LoadCredentialsInternal(
+      const CoreAccountId& primary_account_id) override;
   void UpdateCredentialsInternal(const CoreAccountId& account_id,
                                  const std::string& refresh_token) override;
   void RevokeCredentialsInternal(const CoreAccountId& account_id) override;

@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_install_ui.h"
+#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -1404,7 +1404,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarContainerFeatureRolloutInteractiveTest,
       // Trigger post-install dialog. We do manually since loading an
       // extension in the test doesn't go through the full install flow.
       Do([&]() {
-        ExtensionInstallUI::ShowBubble(extension, browser(), SkBitmap());
+        ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
       }),
       WaitForShow(kToolbarActionViewElementId));
 }

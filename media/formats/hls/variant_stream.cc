@@ -4,6 +4,7 @@
 
 #include "media/formats/hls/variant_stream.h"
 
+#include <sstream>
 #include <string>
 #include <vector>
 

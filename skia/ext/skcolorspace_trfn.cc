@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/ext/skcolorspace_trfn.h"
 
+#include <array>
 #include <cmath>
 
 namespace skia {
@@ -69,7 +65,7 @@ bool IsScaledTransferFunction(const skcms_TransferFunction& x,
 
   // Compute alpha for all all variables. If alpha is 0 then the unscaled
   // parameter was 0 (and so alpha cannot be computed from it).
-  float alphas[5] = {0.f, 0.f, 0.f, 0.f, 0.f};
+  std::array<float, 5> alphas = {0.f, 0.f, 0.f, 0.f, 0.f};
   if (!GetLinearScale(x.c, y.c, alphas[0])) {
     return false;
   }

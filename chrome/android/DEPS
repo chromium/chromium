@@ -32,6 +32,7 @@ include_rules = [
   "+components/browsing_data/content/android/java",
   "+components/cached_flags/android",
   "+components/commerce/core",
+  "+components/input",
   "+components/content_capture",
   "+components/content_settings",
   "+components/browser_ui/desktop_windowing/android",
@@ -76,6 +77,7 @@ include_rules = [
   "+media/base/android/java",
   "+services/device/public",
   "+services/media_session/public",
+  "+ui/android",
 ]
 
 specific_include_rules = {

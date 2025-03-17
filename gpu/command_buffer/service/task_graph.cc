@@ -136,14 +136,12 @@ TaskGraph::Sequence::WaitFence& TaskGraph::Sequence::WaitFence::operator=(
 
 TaskGraph::Sequence::Sequence(
     TaskGraph* task_graph,
-    base::RepeatingClosure front_task_unblocked_callback,
     scoped_refptr<base::SingleThreadTaskRunner> validation_runner,
     CommandBufferNamespace namespace_id,
     CommandBufferId command_buffer_id)
     : task_graph_(task_graph),
       order_data_(task_graph_->sync_point_manager_->CreateSyncPointOrderData()),
       sequence_id_(order_data_->sequence_id()),
-      front_task_unblocked_callback_(std::move(front_task_unblocked_callback)),
       release_delegate_(task_graph->sync_point_manager()) {
   if (task_graph_->graph_validation_enabled() && validation_runner) {
     validation_timer_ = base::MakeRefCounted<RetainingOneShotTimerHolder>(
@@ -185,7 +183,7 @@ uint32_t TaskGraph::Sequence::AddTask(base::OnceClosure task_closure,
                                       std::vector<SyncToken> wait_fences,
                                       const SyncToken& release,
                                       ReportingCallback report_callback) {
-  uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
+  const uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
   tasks_.push_back({std::move(task_closure), order_num, release,
                     std::move(report_callback)});
 
@@ -196,16 +194,17 @@ uint32_t TaskGraph::Sequence::AddTask(base::OnceClosure task_closure,
     // base::Unretained is safe here since all sequences and corresponding sync
     // point callbacks will be released before the task graph is destroyed (even
     // though sync point manager itself outlives the task graph briefly).
-    if (task_graph_->sync_point_manager_->Wait(
-            sync_token, sequence_id_, order_num,
-            base::BindOnce(&TaskGraph::SyncTokenFenceReleased,
-                           base::Unretained(task_graph_), sync_token, order_num,
-                           release_sequence_id, sequence_id_))) {
-      auto it = wait_fences_.find(
-          WaitFence{sync_token, order_num, release_sequence_id});
-      if (it == wait_fences_.end()) {
-        wait_fences_.emplace(sync_token, order_num, release_sequence_id);
-      }
+    auto release_callback = base::BindOnce(
+        &TaskGraph::SyncTokenFenceReleased, base::Unretained(task_graph_),
+        sync_token, order_num, release_sequence_id, sequence_id_);
+    // Only wait if we're not already waiting on the same sync token for the
+    // same order number.
+    auto it = wait_fences_.find(
+        WaitFence{sync_token, order_num, release_sequence_id});
+    if (it == wait_fences_.end() &&
+        task_graph_->sync_point_manager_->Wait(
+            sync_token, sequence_id_, order_num, std::move(release_callback))) {
+      wait_fences_.emplace(sync_token, order_num, release_sequence_id);
       SetLastTaskFirstDependencyTimeIfNeeded();
     }
   }
@@ -248,8 +247,7 @@ void TaskGraph::Sequence::ContinueTask(TaskCallback task_callback) {
 }
 
 void TaskGraph::Sequence::ContinueTask(base::OnceClosure task_closure) {
-  uint32_t order_num = order_data_->current_order_num();
-
+  const uint32_t order_num = order_data_->current_order_num();
   tasks_.push_front({std::move(task_closure), order_num, current_task_release_,
                      ReportingCallback()});
   current_task_release_.Clear();
@@ -304,7 +302,7 @@ void TaskGraph::Sequence::RemoveWaitFence(const SyncToken& sync_token,
 
   DCHECK(!tasks_.empty());
   if (order_num == tasks_.front().order_num && IsFrontTaskUnblocked()) {
-    front_task_unblocked_callback_.Run();
+    OnFrontTaskUnblocked(order_num);
   }
 }
 
@@ -399,28 +397,6 @@ TaskGraph::~TaskGraph() {
   DCHECK(sequence_map_.empty());
 }
 
-SequenceId TaskGraph::CreateSequence(
-    base::RepeatingClosure front_task_unblocked_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> validation_runner) {
-  return CreateSequence(
-      std::move(front_task_unblocked_callback), std::move(validation_runner),
-      CommandBufferNamespace::INVALID, /*command_buffer_id=*/{});
-}
-
-SequenceId TaskGraph::CreateSequence(
-    base::RepeatingClosure front_task_unblocked_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> validation_runner,
-    CommandBufferNamespace namespace_id,
-    CommandBufferId command_buffer_id) {
-  base::AutoLock auto_lock(lock_);
-  auto sequence = std::make_unique<Sequence>(
-      this, std::move(front_task_unblocked_callback),
-      std::move(validation_runner), namespace_id, command_buffer_id);
-  SequenceId id = sequence->sequence_id();
-  sequence_map_.emplace(id, std::move(sequence));
-  return id;
-}
-
 void TaskGraph::AddSequence(std::unique_ptr<Sequence> sequence) {
   base::AutoLock auto_lock(lock_);
   SequenceId id = sequence->sequence_id();
@@ -469,9 +445,7 @@ void TaskGraph::SyncTokenFenceReleased(const SyncToken& sync_token,
                                        SequenceId release_sequence_id,
                                        SequenceId waiting_sequence_id) {
   base::AutoLock auto_lock(lock_);
-  Sequence* sequence = GetSequence(waiting_sequence_id);
-
-  if (sequence) {
+  if (auto* sequence = GetSequence(waiting_sequence_id)) {
     sequence->RemoveWaitFence(sync_token, order_num, release_sequence_id);
   }
 }

@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/utils.h"
 
 namespace tab_groups {
 
@@ -22,7 +23,7 @@ SavedTabGroupTab::SavedTabGroupTab(
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros,
     std::optional<gfx::Image> favicon,
-    bool is_pending_sanitization)
+    bool is_pending_ntp)
     : saved_tab_guid_(saved_tab_guid.has_value()
                           ? saved_tab_guid.value()
                           : base::Uuid::GenerateRandomV4()),
@@ -42,7 +43,7 @@ SavedTabGroupTab::SavedTabGroupTab(
               ? update_time_windows_epoch_micros.value()
               : base::Time::Now()),
       favicon_(favicon),
-      is_pending_sanitization_(is_pending_sanitization) {}
+      is_pending_ntp_(is_pending_ntp) {}
 
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroupTab& SavedTabGroupTab::operator=(const SavedTabGroupTab& other) =
@@ -67,8 +68,14 @@ SavedTabGroupTab& SavedTabGroupTab::SetCreatedByAttribution(GaiaId created_by) {
 }
 
 void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
-  SetURL(remote_tab.url());
-  SetTitle(remote_tab.title());
+  // If a remote tab's URL is not supported, don't change the URL and title
+  // for the existing tab as it will allow user to continue navigating the
+  // current page. Only keep other information such as position, cache guid
+  // and attribution up-to-date from the remote tab.
+  if (IsURLValidForSavedTabGroups(remote_tab.url())) {
+    SetURL(remote_tab.url());
+    SetTitle(remote_tab.title());
+  }
   // TODO(crbug.com/370714643): check that remote tab always contains position.
   SetPosition(remote_tab.position().value_or(0));
   SetCreatorCacheGuid(remote_tab.creator_cache_guid());

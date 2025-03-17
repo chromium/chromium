@@ -46,7 +46,7 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
         chromeos::features::IsSystemBlurEnabled()
             ? cros_tokens::kCrosSysSystemBaseElevated
             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-    SetBackground(views::CreateThemedSolidBackground(background_color_id));
+    SetBackground(views::CreateSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kBubbleCornerRadius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));

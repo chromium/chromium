@@ -122,7 +122,11 @@ enum class LensOverlayDismissalSource {
   // Only used on Desktop.
   kPreselectionToastEscapeKeyPress = 30,
 
-  kMaxValue = kPreselectionToastEscapeKeyPress
+  // The user chose to switch the mode to "Search with camera", causing the
+  // overlay to close.
+  kSearchWithCameraRequested = 31,
+
+  kMaxValue = kSearchWithCameraRequested
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 

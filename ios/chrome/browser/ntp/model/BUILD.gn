@@ -46,6 +46,7 @@ source_set("util") {
   ]
   deps = [
     ":model",
+    "//components/regional_capabilities",
     "//components/search",
     "//components/search_engines",
     "//ios/chrome/browser/shared/model/url:constants",

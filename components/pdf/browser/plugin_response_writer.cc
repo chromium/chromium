@@ -95,7 +95,7 @@ PluginResponseWriter::PluginResponseWriter(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client)
     : body_(GenerateResponse(stream_info)),
       client_(std::move(client)),
-      require_corp_(stream_info.require_corp) {}
+      coep_header_(stream_info.coep_header) {}
 
 PluginResponseWriter::~PluginResponseWriter() = default;
 
@@ -104,10 +104,10 @@ void PluginResponseWriter::Start(base::OnceClosure done_callback) {
   response->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   // Allow the PDF plugin to be embedded in cross-origin sites if the original
-  // PDF has a COEP: require-corp header.
-  if (chrome_pdf::features::IsOopifPdfEnabled() && require_corp_) {
-    response->headers->AddHeader("Cross-Origin-Embedder-Policy",
-                                 "require-corp");
+  // PDF has a COEP: require-corp or COEP: credentialless header.
+  if (chrome_pdf::features::IsOopifPdfEnabled() &&
+      (coep_header_ == "require-corp" || coep_header_ == "credentialless")) {
+    response->headers->AddHeader("Cross-Origin-Embedder-Policy", coep_header_);
     response->headers->AddHeader("Cross-Origin-Resource-Policy",
                                  "cross-origin");
   }

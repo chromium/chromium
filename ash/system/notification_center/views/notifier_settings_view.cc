@@ -180,7 +180,7 @@ END_METADATA
 NotifierButtonWrapperView::NotifierButtonWrapperView(views::View* contents)
     : focus_painter_(TrayPopupUtils::CreateFocusPainter()),
       contents_(contents) {
-  AddChildView(contents);
+  AddChildViewRaw(contents);
 
   // We add callbacks so that whenever the a11y attributes of `contents_`
   // change, we update the a11y attributes for `this`.
@@ -417,12 +417,12 @@ class EmptyNotifierView : public views::View {
     SetLayoutManager(std::move(layout));
 
     views::ImageView* icon = new views::ImageView();
-    icon->SetImage(gfx::CreateVectorIcon(kNotificationCenterEmptyIcon,
-                                         message_center_style::kEmptyIconSize,
-                                         text_color));
+    icon->SetImage(
+        ui::ImageModel::FromVectorIcon(kNotificationCenterEmptyIcon, text_color,
+                                       message_center_style::kEmptyIconSize));
     icon->SetBorder(
         views::CreateEmptyBorder(message_center_style::kEmptyIconPadding));
-    AddChildView(icon);
+    AddChildViewRaw(icon);
 
     views::Label* label = new views::Label(
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_NO_NOTIFIERS));
@@ -432,7 +432,7 @@ class EmptyNotifierView : public views::View {
     // "Roboto-Medium, 12sp" is specified in the mock.
     label->SetFontList(
         gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
-    label_ = AddChildView(label);
+    label_ = AddChildViewRaw(label);
   }
 
   EmptyNotifierView(const EmptyNotifierView&) = delete;
@@ -540,10 +540,11 @@ class AdaptiveBadgingIcon : public ::views::ImageView {
  private:
   void OnThemeChanged() override {
     views::ImageView::OnThemeChanged();
-    SetImage(
-        gfx::CreateVectorIcon(kSystemTrayAppBadgingIcon, kMenuIconSize,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
+    SetImage(ui::ImageModel::FromVectorIcon(
+        kSystemTrayAppBadgingIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            ContentLayerType::kIconColorPrimary),
+        kMenuIconSize));
   }
 };
 
@@ -630,12 +631,13 @@ NotifierSettingsView::NotifierButton::~NotifierButton() = default;
 void NotifierSettingsView::NotifierButton::UpdateIconImage(
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
-    icon_view_->SetImage(
-        gfx::CreateVectorIcon(message_center::kProductIcon, kEntryIconSize,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
+    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        message_center::kProductIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            ContentLayerType::kIconColorPrimary),
+        kEntryIconSize));
   } else {
-    icon_view_->SetImage(icon);
+    icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
     icon_view_->SetImageSize(gfx::Size(kEntryIconSize, kEntryIconSize));
   }
   GridChanged();
@@ -796,10 +798,11 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
 
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
-    policy_enforced_icon->SetImage(
-        gfx::CreateVectorIcon(kSystemMenuBusinessIcon, kEntryIconSize,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
+    policy_enforced_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kSystemMenuBusinessIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            ContentLayerType::kIconColorPrimary),
+        kEntryIconSize));
     layout->AddColumn(
         views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
         views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
@@ -837,8 +840,8 @@ NotifierSettingsView::NotifierSettingsView() {
 
   // Row for the app badging toggle button.
   auto app_badging_icon = std::make_unique<AdaptiveBadgingIcon>();
-  app_badging_icon->SetImage(gfx::CreateVectorIcon(kSystemTrayAppBadgingIcon,
-                                                   kMenuIconSize, icon_color));
+  app_badging_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kSystemTrayAppBadgingIcon, icon_color, kMenuIconSize));
   auto app_badging_label =
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP));
@@ -958,11 +961,11 @@ void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kIconColorPrimary);
   if (is_quiet_mode) {
-    quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
-        kSystemTrayDoNotDisturbIcon, kMenuIconSize, icon_color));
+    quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kSystemTrayDoNotDisturbIcon, icon_color, kMenuIconSize));
   } else {
-    quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
-        kDoNotDisturbDisabledIcon, kMenuIconSize, icon_color));
+    quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kDoNotDisturbDisabledIcon, icon_color, kMenuIconSize));
   }
 }
 
@@ -992,7 +995,7 @@ void NotifierSettingsView::OnNotifiersUpdated(
     NotifierButtonWrapperView* wrapper = new NotifierButtonWrapperView(button);
 
     wrapper->SetFocusBehavior(FocusBehavior::ALWAYS);
-    contents_view->AddChildView(wrapper);
+    contents_view->AddChildViewRaw(wrapper);
     buttons_.insert(button);
   }
 

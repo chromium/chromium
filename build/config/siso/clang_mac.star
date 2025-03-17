@@ -5,12 +5,9 @@
 """Siso configuration for clang/mac."""
 
 load("@builtin//lib/gn.star", "gn")
-load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_unix.star", "clang_unix")
-load("./config.star", "config")
-load("./gn_logs.star", "gn_logs")
 load("./mac_sdk.star", "mac_sdk")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
@@ -22,6 +19,7 @@ def __filegroups(ctx):
 
 __handlers = {}
 __handlers.update(clang_unix.handlers)
+__handlers.update(clang_all.handlers)
 
 def __step_config(ctx, step_config):
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_mac.cfg"

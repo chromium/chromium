@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_ADDRESS_AUTOFILLPROFILE_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_ADDRESS_AUTOFILLPROFILE_H_
 
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address.h"
-
 #include <vector>
+
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address.h"
 
 namespace autofill {
 class AutofillProfile;

@@ -16,7 +16,6 @@ include_rules = [
   "+components/viz/service/display/render_pass_alpha_type.h",
   "+components/viz/service/display/renderer_utils.h",
   "+components/viz/service/display/resource_metadata.h",
-  "+components/viz/service/display/shared_bitmap_manager.h",
   "+components/viz/service/display/skia_output_surface.h",
   "+components/viz/service/display/software_output_device.h",
   "+components/viz/service/gl/gpu_service_impl.h",

@@ -13,11 +13,11 @@
 
 #include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -165,8 +165,8 @@ void MultiBufferReader::CheckWait() {
     // there are no callbacks from us after we've been destroyed.
     current_wait_size_ = 0;
     task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MultiBufferReader::Call,
-                                  weak_factory_.GetWeakPtr(), std::move(cb_)));
+        FROM_HERE, WTF::BindOnce(&MultiBufferReader::Call,
+                                 weak_factory_.GetWeakPtr(), std::move(cb_)));
   }
 }
 
@@ -195,12 +195,12 @@ void MultiBufferReader::NotifyAvailableRange(
   if (!progress_callback_.is_null()) {
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(progress_callback_,
-                       static_cast<int64_t>(range.begin)
-                           << multibuffer_->block_size_shift(),
-                       (static_cast<int64_t>(range.end)
-                        << multibuffer_->block_size_shift()) +
-                           multibuffer_->UncommittedBytesAt(range.end)));
+        WTF::BindOnce(progress_callback_,
+                      static_cast<int64_t>(range.begin)
+                          << multibuffer_->block_size_shift(),
+                      (static_cast<int64_t>(range.end)
+                       << multibuffer_->block_size_shift()) +
+                          multibuffer_->UncommittedBytesAt(range.end)));
   }
 }
 

@@ -4,9 +4,11 @@
 
 #include "extensions/renderer/feature_cache.h"
 
+#include <algorithm>
+#include <functional>
+
 #include "base/command_line.h"
 #include "base/containers/map_util.h"
-#include "base/ranges/algorithm.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
@@ -174,14 +176,12 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
     features.available_features.push_back(feature.get());
   }
 
-  base::ranges::sort(features.dev_mode_restricted_features,
-                     base::ranges::less{}, &Feature::name);
-  base::ranges::sort(features.available_features, base::ranges::less{},
-                     &Feature::name);
-  DCHECK(base::ranges::unique(features.dev_mode_restricted_features) ==
-         features.dev_mode_restricted_features.end());
-  DCHECK(base::ranges::unique(features.available_features) ==
-         features.available_features.end());
+  std::ranges::sort(features.dev_mode_restricted_features, std::ranges::less{},
+                    &Feature::name);
+  std::ranges::sort(features.available_features, std::ranges::less{},
+                    &Feature::name);
+  DCHECK(std::ranges::unique(features.dev_mode_restricted_features).empty());
+  DCHECK(std::ranges::unique(features.available_features).empty());
 
   return features;
 }

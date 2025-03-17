@@ -32,7 +32,6 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_element_identifiers.h",
   "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/mojom",
   "+chrome/browser/web_applications/test",

@@ -93,7 +93,6 @@ export class CrInputElement extends CrLitElement {
 
       errorMessage: {type: String},
       errorRole_: {type: String},
-      displayErrorMessage_: {type: String},
 
       /**
        * This is strictly used internally for styling, do not attempt to use
@@ -250,7 +249,7 @@ export class CrInputElement extends CrLitElement {
    * @return Whether the <input> element was focused.
    */
   focusInput(): boolean {
-    if (this.shadowRoot!.activeElement === this.inputElement) {
+    if (this.shadowRoot.activeElement === this.inputElement) {
       return false;
     }
     this.inputElement.focus();

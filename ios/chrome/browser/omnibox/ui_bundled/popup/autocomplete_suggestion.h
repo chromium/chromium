@@ -86,6 +86,15 @@ typedef NS_ENUM(NSUInteger, SuggestionGroupDisplayStyle) {
   SuggestionGroupDisplayStyleCarousel,  // Horizontal scrolling icons.
 };
 
+enum class SuggestionGroupType {
+  // Unspecified suggestion group type.
+  kUnspecifiedSuggestionGroup,
+  // The Pedal suggestion group.
+  kPedalSuggestionGroup,
+  // The MVTiles suggestion group.
+  kMVTilesSuggestionGroup,
+};
+
 /// A group of AutocompleteSuggestions with an optional section header.
 @protocol AutocompleteSuggestionGroup
 
@@ -98,6 +107,9 @@ typedef NS_ENUM(NSUInteger, SuggestionGroupDisplayStyle) {
 
 /// How suggestion are displayed.
 @property(nonatomic, readonly) SuggestionGroupDisplayStyle displayStyle;
+
+// The suggestion group type.
+@property(nonatomic, readonly) SuggestionGroupType type;
 
 @end
 

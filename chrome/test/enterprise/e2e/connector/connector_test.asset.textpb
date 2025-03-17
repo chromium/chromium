@@ -1,4 +1,4 @@
-# The test configuration used by most policy tests.
+# The test configuration used by most connector tests.
 # It consists of one domain controller and one client.
 network {
   name: 'primary'

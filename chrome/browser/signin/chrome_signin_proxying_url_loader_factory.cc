@@ -144,14 +144,6 @@ class ProxyingURLLoaderFactory::InProgressRequest
     target_loader_->SetPriority(priority, intra_priority_value);
   }
 
-  void PauseReadingBodyFromNet() override {
-    target_loader_->PauseReadingBodyFromNet();
-  }
-
-  void ResumeReadingBodyFromNet() override {
-    target_loader_->ResumeReadingBodyFromNet();
-  }
-
   // network::mojom::URLLoaderClient:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     target_client_->OnReceiveEarlyHints(std::move(early_hints));

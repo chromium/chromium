@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("policy") {
   output_name = "chromeos_ash_components_policy"
@@ -14,7 +12,10 @@ component("policy") {
 
   sources = []
 
-  public_deps = [ "restriction_schedule" ]
+  public_deps = [
+    "external_storage",
+    "restriction_schedule",
+  ]
 
   deps = []
 }
@@ -23,6 +24,7 @@ source_set("unit_tests") {
   testonly = true
 
   deps = [
+    "external_storage:unit_tests",
     "restriction_schedule:unit_tests",
     "weekly_time:unit_tests",
     "weekly_time:unit_tests_checked",

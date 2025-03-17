@@ -163,26 +163,4 @@ public class BaseSuggestionViewUnitTest {
         assertEquals(1, mView.getActionButtons().size());
         assertEquals(btn0, mView.getActionButtons().get(0));
     }
-
-    @Test
-    public void isFocused_replicatesSuperFocus() {
-        mView.setSelected(false);
-
-        doReturn(false).when(mView).super_isFocused();
-        assertFalse(mView.isFocused());
-
-        doReturn(true).when(mView).super_isFocused();
-        assertTrue(mView.isFocused());
-    }
-
-    @Test
-    public void isFocused_selectionHintsFocusExceptTouchMode() {
-        doReturn(false).when(mView).super_isFocused();
-
-        mView.setSelected(true);
-        assertTrue(mView.isFocused());
-
-        mView.setSelected(false);
-        assertFalse(mView.isFocused());
-    }
 }

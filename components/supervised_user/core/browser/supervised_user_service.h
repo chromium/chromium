@@ -6,8 +6,11 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_
 
 #include <stddef.h>
+
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -19,7 +22,9 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_users.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
@@ -36,6 +41,33 @@ class SyncService;
 
 namespace supervised_user {
 class SupervisedUserSettingsService;
+
+// Represents custodian data - who is responsible for managing the supervised
+// user's settings.
+class Custodian {
+ public:
+  Custodian();
+  Custodian(std::string_view name,
+            std::string_view email_address,
+            std::string_view profile_image_url);
+  Custodian(std::string_view name,
+            std::string_view email_address,
+            GaiaId obfuscated_gaia_id,
+            std::string_view profile_image_url);
+  Custodian(const Custodian& other);
+  ~Custodian();
+
+  std::string GetName() const { return name_; }
+  std::string GetEmailAddress() const { return email_address_; }
+  GaiaId GetObfuscatedGaiaId() const { return obfuscated_gaia_id_; }
+  std::string GetProfileImageUrl() const { return profile_image_url_; }
+
+ private:
+  std::string name_;
+  std::string email_address_;
+  GaiaId obfuscated_gaia_id_;
+  std::string profile_image_url_;
+};
 
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
@@ -77,31 +109,8 @@ class SupervisedUserService : public KeyedService {
   // on the UI thread.
   supervised_user::SupervisedUserURLFilter* GetURLFilter() const;
 
-  // Returns the email address of the custodian.
-  std::string GetCustodianEmailAddress() const;
-
-  // Returns the obfuscated GAIA id of the custodian.
-  std::string GetCustodianObfuscatedGaiaId() const;
-
-  // Returns the name of the custodian, or the email address if the name is
-  // empty.
-  std::string GetCustodianName() const;
-
-  // Returns the email address of the second custodian, or the empty string
-  // if there is no second custodian.
-  std::string GetSecondCustodianEmailAddress() const;
-
-  // Returns the obfuscated GAIA id of the second custodian or the empty
-  // string if there is no second custodian.
-  std::string GetSecondCustodianObfuscatedGaiaId() const;
-
-  // Returns the name of the second custodian, or the email address if the name
-  // is empty, or the empty string if there is no second custodian.
-  std::string GetSecondCustodianName() const;
-
-  // Returns true if there is a custodian for the child.  A child can have
-  // up to 2 custodians, and this returns true if they have at least 1.
-  bool HasACustodian() const;
+  std::optional<Custodian> GetCustodian() const;
+  std::optional<Custodian> GetSecondCustodian() const;
 
   // Returns true if the url is blocked due to supervision restrictions on the
   // primary account user.
@@ -139,6 +148,7 @@ class SupervisedUserService : public KeyedService {
  private:
   friend class SupervisedUserServiceExtensionTestBase;
   friend class ::SupervisedUserServiceFactory;
+  friend class ClassifyUrlNavigationThrottleTest;
   FRIEND_TEST_ALL_PREFIXES(
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls);

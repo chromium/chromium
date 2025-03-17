@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -474,7 +474,7 @@ void NavigationEntryImpl::SetURL(const GURL& url) {
   cached_display_title_.clear();
 }
 
-const GURL& NavigationEntryImpl::GetURL() {
+const GURL& NavigationEntryImpl::GetURL() const {
   return frame_tree_->frame_entry->url();
 }
 
@@ -516,7 +516,7 @@ void NavigationEntryImpl::SetVirtualURL(const GURL& url) {
   cached_display_title_.clear();
 }
 
-const GURL& NavigationEntryImpl::GetVirtualURL() {
+const GURL& NavigationEntryImpl::GetVirtualURL() const {
   return virtual_url_.is_empty() ? GetURL() : virtual_url_;
 }
 
@@ -529,12 +529,14 @@ const std::u16string& NavigationEntryImpl::GetTitle() {
   return title_;
 }
 
-void NavigationEntryImpl::SetAppTitle(const std::u16string& app_title) {
-  app_title_ = app_title;
+void NavigationEntryImpl::SetApplicationTitle(
+    const std::u16string& application_title) {
+  application_title_ = application_title;
 }
 
-const std::optional<std::u16string>& NavigationEntryImpl::GetAppTitle() {
-  return app_title_;
+const std::optional<std::u16string>&
+NavigationEntryImpl::GetApplicationTitle() {
+  return application_title_;
 }
 
 void NavigationEntryImpl::SetPageState(const blink::PageState& state,
@@ -919,8 +921,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     const std::string& original_method,
     const base::flat_map<std::string, bool>& subframe_unique_names,
     bool intended_as_new_entry,
-    int pending_history_list_offset,
-    int current_history_list_offset,
+    int pending_history_list_index,
+    int current_history_list_index,
     int current_history_list_length,
     const blink::FramePolicy& frame_policy,
     bool ancestor_or_self_has_cspee,
@@ -939,15 +941,15 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     redirects = frame_entry.redirect_chain();
   }
 
-  int pending_offset_to_send = pending_history_list_offset;
-  int current_offset_to_send = current_history_list_offset;
+  int pending_index_to_send = pending_history_list_index;
+  int current_index_to_send = current_history_list_index;
   int current_length_to_send = current_history_list_length;
   if (should_clear_history_list()) {
     // Set the history list related parameters to the same values a
     // NavigationController would return before its first navigation. This will
     // fully clear the RenderView's view of the session history.
-    pending_offset_to_send = -1;
-    current_offset_to_send = -1;
+    pending_index_to_send = -1;
+    current_index_to_send = -1;
     current_length_to_send = 0;
   }
 
@@ -961,8 +963,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::vector<net::RedirectInfo>(), std::string(), original_url,
           original_method, GetCanLoadLocalResources(),
           frame_entry.page_state().ToEncodedData(), GetUniqueID(),
-          subframe_unique_names, intended_as_new_entry, pending_offset_to_send,
-          current_offset_to_send, current_length_to_send, false,
+          subframe_unique_names, intended_as_new_entry, pending_index_to_send,
+          current_index_to_send, current_length_to_send, false,
           IsViewSourceMode(), should_clear_history_list(),
           blink::mojom::NavigationTiming::New(),
           blink::mojom::WasActivatedOption::kUnknown,
@@ -1002,7 +1004,9 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
-          /*initial_permission_statuses=*/std::nullopt);
+          /*initial_permission_statuses=*/std::nullopt,
+          /*should_skip_screenshot*/ false,
+          /*force_new_document_sequence_number=*/false);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main
@@ -1256,9 +1260,9 @@ void NavigationEntryImpl::RemoveEntryForFrame(FrameTreeNode* frame_tree_node,
               true /* global_ walk_or_frame_removal */);
     }
     NavigationEntryImpl::TreeNode* parent_node = node->parent;
-    auto it = base::ranges::find(
-        parent_node->children, node,
-        &std::unique_ptr<NavigationEntryImpl::TreeNode>::get);
+    auto it =
+        std::ranges::find(parent_node->children, node,
+                          &std::unique_ptr<NavigationEntryImpl::TreeNode>::get);
     CHECK(it != parent_node->children.end());
     parent_node->children.erase(it);
   }

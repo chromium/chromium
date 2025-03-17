@@ -65,7 +65,7 @@ def main():
 
     command_line = []
     if os.name == 'posix':
-        command_line = ['sudo', '--non-interactive']
+        command_line = ['sudo', '--non-interactive', '-E']
     command_line += [command] + remaining_args
     logging.error('Full command line: %s',
                   subprocess.list2cmdline(command_line))

@@ -18,15 +18,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/cert_database.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // IS_CHROMEOS_LACROS
 
 namespace chromeos {
 
@@ -241,17 +235,6 @@ void CertificateProviderService::SetCertificatesProvidedByExtension(
     const std::string& extension_id,
     const CertificateInfoList& certificate_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Synchronize with Ash-Chrome
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (service && service->IsAvailable<crosapi::mojom::CertDatabase>() &&
-      service->GetInterfaceVersion<crosapi::mojom::CertDatabase>() >=
-          static_cast<int>(crosapi::mojom::CertDatabase::MethodMinVersions::
-                               kSetCertsProvidedByExtensionMinVersion)) {
-    service->GetRemote<crosapi::mojom::CertDatabase>()
-        ->SetCertsProvidedByExtension(extension_id, certificate_infos);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   certificate_map_.UpdateCertificatesForExtension(extension_id,
                                                   certificate_infos);
   for (auto& observer : observers_)

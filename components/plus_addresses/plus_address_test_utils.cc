@@ -11,11 +11,22 @@
 #include "base/json/values_util.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses::test {
+namespace {
+using autofill::EqualsSuggestion;
+using autofill::Suggestion;
+using autofill::SuggestionType;
+using ::testing::Field;
+using ::testing::Matcher;
+}  // namespace
 
 PlusProfile CreatePlusProfile(std::string plus_address, bool is_confirmed) {
   affiliations::FacetURI facet =
@@ -116,11 +127,12 @@ HandleRequestToPlusAddressWithSuccess(
   }
 
   bool is_refresh = [&]() {
-    std::optional<base::Value> body = base::JSONReader::Read(request.content);
-    if (!body || !body->is_dict() || !body->GetIfDict()) {
+    std::optional<base::Value::Dict> body =
+        base::JSONReader::ReadDict(request.content);
+    if (!body) {
       return false;
     }
-    return body->GetIfDict()->FindBool("refresh_email_address").value_or(false);
+    return body->FindBool("refresh_email_address").value_or(false);
   }();
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -140,6 +152,44 @@ base::Value CreatePreallocatedPlusAddress(base::Time end_of_life,
           .Set(PlusAddressPreallocator::kEndOfLifeKey,
                base::TimeToValue(end_of_life))
           .Set(PlusAddressPreallocator::kPlusAddressKey, std::move(address)));
+}
+
+Matcher<Suggestion> EqualsFillPlusAddressSuggestion(std::string_view address) {
+  std::vector<std::vector<Suggestion::Text>> labels;
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
+    labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
+  }
+  return AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
+                                /*main_text=*/base::UTF8ToUTF16(address)),
+               Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
+               Field(&Suggestion::labels, labels));
+}
+
+Matcher<std::vector<Suggestion>> IsSingleCreatePlusAddressSuggestion() {
+  std::vector<std::vector<Suggestion::Text>> labels;
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
+    labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+  }
+  return ElementsAre(AllOf(
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      EqualsSuggestion(SuggestionType::kCreateNewPlusAddressInline),
+#else
+      EqualsSuggestion(SuggestionType::kCreateNewPlusAddress,
+                       /*main_text=*/l10n_util::GetStringUTF16(
+                           IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT)),
+      Field(&Suggestion::iph_metadata,
+            Suggestion::IPHMetadata(
+                &feature_engagement::kIPHPlusAddressCreateSuggestionFeature)),
+#endif
+      Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
+      Field(&Suggestion::labels, labels)));
+}
+
+Matcher<std::vector<Suggestion>> IsSingleFillPlusAddressSuggestion(
+    std::string_view address) {
+  return ElementsAre(EqualsFillPlusAddressSuggestion(address));
 }
 
 }  // namespace plus_addresses::test

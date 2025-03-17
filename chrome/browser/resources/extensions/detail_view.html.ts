@@ -193,11 +193,9 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </div>
         <div class="cr-row continuation warning"
             id="unsupported-developer-extension-warning"
-            ?hidden="${!this.data.disableReasons.
-              unsupportedDeveloperExtension}">
+            ?hidden="${!this.shouldShowUnsupportedDeveloperExtensionText_()}">
           <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
-          <!-- TODO(crbug.com/362756477) Replace after string is finalized. -->
-          <span>This extension is only supported in developer mode.</span>
+          <span>$i18n{itemUnsupportedDeveloperModeDetails}</span>
         </div>
       </div>` : ''}
     ${this.showAllowlistWarning_() ? html`
@@ -326,6 +324,15 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             </extensions-toggle-row>` : ''}
         </div>
       </div>` : ''}
+      ${this.showUserScriptSectionToggle_() ? html`
+        <extensions-toggle-row id="allow-user-scripts"
+        ?checked="${this.data.userScriptsAccess.isActive}" class="hr"
+              @change="${this.onAllowUserScriptsChange_}">
+          <div>
+            <div>$i18n{itemAllowUserScripts}</div>
+            <div class="section-content">$i18n{userScriptInfoWarning}</div>
+          </div>
+        </extensions-toggle-row>` : ''}
     ${this.hasDependentExtensions_() ? html`
       <div class="section hr">
         <div class="section-title" role="heading" aria-level="2">
@@ -355,13 +362,23 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             <div>
               <div>$i18n{itemAllowIncognito}</div>
               <div class="section-content">$i18n{incognitoInfoWarning}</div>
+              <div class="section-content" id="allow-incognito-warning"
+                  ?hidden="${!this.data.incognitoAccessPendingChange}">
+                $i18n{pendingChangeWarning}
+              </div>
             </div>
           </extensions-toggle-row>` : ''}
         ${this.data.fileAccess.isEnabled ? html`
           <extensions-toggle-row id="allow-on-file-urls"
               ?checked="${this.data.fileAccess.isActive}" class="hr"
               @change="${this.onAllowOnFileUrlsChange_}">
-            <span>$i18n{itemAllowOnFileUrls}</span>
+            <div>
+              <div>$i18n{itemAllowOnFileUrls}</div>
+              <div class="section-content" id="allow-on-file-urls-warning"
+                  ?hidden="${!this.data.fileAccessPendingChange}">
+                $i18n{pendingChangeWarning}</div>
+              </div>
+            </div>
           </extensions-toggle-row>` : ''}
         ${this.data.errorCollection.isEnabled ? html`
           <extensions-toggle-row id="collect-errors"

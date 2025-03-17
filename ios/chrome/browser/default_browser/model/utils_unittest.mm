@@ -53,16 +53,6 @@ constexpr base::TimeDelta k5Years = base::Days(5 * 365);
 // was opened via Chrome, which indicates that it's set as default browser.
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
 
-// Test key for a generic timestamp in NSUserDefaults.
-NSString* const kTestTimestampKey = @"testTimestampKeyDefaultBrowserUtils";
-
-// Test key in storage for timestamp of last first party intent launch.
-NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
-    @"TimestampAppLastOpenedViaFirstPartyIntent";
-
-// Test key in storage for timestamp of last valid URL pasted.
-NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
-
 // Test key in storage for flagging default browser promo interaction.
 NSString* const kUserHasInteractedWithFullscreenPromo =
     @"userHasInteractedWithFullscreenPromo";

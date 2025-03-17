@@ -78,6 +78,9 @@ std::optional<ViewID> GetViewID(
     case ImageType::SENSORS:
     case ImageType::NOTIFICATIONS:
     case ImageType::STORAGE_ACCESS:
+#if BUILDFLAG(IS_CHROMEOS)
+    case ImageType::SMART_CARD:
+#endif
       return std::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:
@@ -288,7 +291,7 @@ bool ContentSettingImageView::ShowBubbleImpl() {
             bubble_view_->GetBubbleFrameView()) {
       if (views::Label* title_label = frame_view->default_title()) {
         title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
-        title_label->SetEnabledColorId(kColorActivityIndicatorForeground);
+        title_label->SetEnabledColor(kColorActivityIndicatorForeground);
       }
     }
 

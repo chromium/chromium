@@ -118,13 +118,13 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    EXPECT_EQ(
-        IsOsUninstallationSupported(),
-        os_integration_state.uninstall_registration().registered_with_os());
-    base::expected<bool, std::string> result =
-        fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
-                                                          profile());
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  EXPECT_EQ(IsOsUninstallationSupported(),
+            os_integration_state.uninstall_registration().registered_with_os());
+  base::expected<bool, std::string> result =
+      fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
+                                                        profile());
 #if BUILDFLAG(IS_WIN)
     EXPECT_THAT(result, base::test::ValueIs(true));
 #else
@@ -139,9 +139,10 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    EXPECT_FALSE(
-        os_integration_state.uninstall_registration().registered_with_os());
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  EXPECT_FALSE(
+      os_integration_state.uninstall_registration().registered_with_os());
   if (IsOsUninstallationSupported()) {
     ASSERT_FALSE(
         os_integration_state.uninstall_registration().registered_with_os());
@@ -198,7 +199,8 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   EXPECT_EQ(IsOsUninstallationSupported(),
             os_integration_state.uninstall_registration().registered_with_os());
   base::expected<bool, std::string> install_result =

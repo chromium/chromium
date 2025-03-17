@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -69,7 +70,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
       return;
     }
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
-        .WillByDefault(testing::ReturnRef(passkeys_));
+        .WillByDefault(testing::Return(base::ok(&passkeys_)));
     ON_CALL(webauthn_credentials_delegate_, IsSecurityKeyOrHybridFlowAvailable)
         .WillByDefault(testing::Return(true));
 
@@ -121,7 +122,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   scoped_refptr<testing::NiceMock<MockPasswordStoreInterface>> password_store_ =
       new testing::NiceMock<MockPasswordStoreInterface>;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
-  std::optional<std::vector<PasskeyCredential>> passkeys_;
+  std::vector<PasskeyCredential> passkeys_;
   bool is_incognito_ = false;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<const syncer::SyncService> sync_service_;

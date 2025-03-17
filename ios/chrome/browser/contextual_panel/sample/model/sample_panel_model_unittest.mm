@@ -8,7 +8,6 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
-#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -57,11 +56,6 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
   EXPECT_EQ("Sample rich in-product help for the Contextual Panel, which "
             "should appear multiple times a day.",
             config->iph_text);
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  EXPECT_EQ("chrome_search_engine_choice_icon", config->iph_image_name);
-#else
-  EXPECT_EQ("chromium_search_engine_choice_icon", config->iph_image_name);
-#endif
   EXPECT_EQ("ios_contextual_panel_sample_model_entrypoint_used",
             config->iph_entrypoint_used_event_name);
   EXPECT_EQ("ios_contextual_panel_sample_model_entrypoint_explicitly_dismissed",

@@ -21,7 +21,7 @@ source_set("policy") {
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/version_info",
-    "//components/version_ui",
+    "//components/webui/version",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",

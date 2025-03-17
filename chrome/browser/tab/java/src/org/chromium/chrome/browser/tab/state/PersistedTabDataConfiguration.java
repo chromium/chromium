@@ -4,7 +4,13 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +19,7 @@ import java.util.Map;
  * Contains configuration values such as data storage methods and unique identifiers for {@link
  * PersistedTabData}
  */
+@NullMarked
 public enum PersistedTabDataConfiguration {
     // TODO(crbug.com/40678592) investigate should this go in the app code?
     // Also investigate if the storage instance should be shared.
@@ -30,9 +37,10 @@ public enum PersistedTabDataConfiguration {
             sEncryptedLookup = new HashMap<>();
 
     /** Ensure lazy initialization of singleton storage */
-    private static MockPersistedTabDataStorage sMockPersistedTabDataStorage;
+    private static @Nullable MockPersistedTabDataStorage sMockPersistedTabDataStorage;
 
-    private static EmptyByteBufferPersistedTabDataStorage sEmptyByteBufferPersistedTabDataStorage;
+    private static @Nullable EmptyByteBufferPersistedTabDataStorage
+            sEmptyByteBufferPersistedTabDataStorage;
     private static boolean sUseEmptyByteBufferTestConfig;
 
     private static EmptyByteBufferPersistedTabDataStorage
@@ -89,7 +97,7 @@ public enum PersistedTabDataConfiguration {
                 return getEmptyByteBufferPersistedTabDataStorage();
         }
         assert false;
-        return null;
+        return assumeNonNull(null);
     }
 
     /**
@@ -109,9 +117,9 @@ public enum PersistedTabDataConfiguration {
             return TEST_CONFIG;
         }
         if (isEncrypted) {
-            return sEncryptedLookup.get(clazz);
+            return assertNonNull(sEncryptedLookup.get(clazz));
         }
-        return sLookup.get(clazz);
+        return assertNonNull(sLookup.get(clazz));
     }
 
     // TODO(crbug.com/40212560) merge test config options into an enum so there can be just one

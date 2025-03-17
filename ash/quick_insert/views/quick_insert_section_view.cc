@@ -4,6 +4,7 @@
 
 #include "ash/quick_insert/views/quick_insert_section_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -30,10 +31,9 @@
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/components/editor_menu/public/cpp/icon.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/url_formatter/url_formatter.h"
@@ -182,7 +182,7 @@ const gfx::VectorIcon& GetIconForClipboardData(
 
 template <typename Range>
 auto FindContainerForItem(Range&& containers, views::View* item) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       containers, [item](QuickInsertTraversableItemContainer* container) {
         return container->ContainsItem(item);
       });
@@ -268,10 +268,11 @@ QuickInsertSectionView::CreateItemFromResult(
             auto gif_view = std::make_unique<QuickInsertGifView>(
                 base::BindRepeating(&QuickInsertAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher),
-                                    data.preview_url),
+                                    data.preview_url, data.rank),
                 base::BindRepeating(
                     &QuickInsertAssetFetcher::FetchGifPreviewImageFromUrl,
-                    base::Unretained(asset_fetcher), data.preview_image_url),
+                    base::Unretained(asset_fetcher), data.preview_image_url,
+                    data.rank),
                 data.preview_dimensions);
             return std::make_unique<QuickInsertImageItemView>(
                 std::move(gif_view), data.content_description,
@@ -444,7 +445,7 @@ void QuickInsertSectionView::AddTitleTrailingLink(
           .SetCallback(link_callback)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosAnnotation2))
-          .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
+          .SetEnabledColor(cros_tokens::kCrosSysPrimary)
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
           .Build());

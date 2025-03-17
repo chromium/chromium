@@ -31,13 +31,16 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
     size_t& count_hints_requests_received,
     const net::test_server::HttpRequest& request) {
   // Fail the response if it does not have the expected attributes.
-  if (request.method != net::test_server::METHOD_POST)
+  if (request.method != net::test_server::METHOD_POST) {
     return nullptr;
+  }
   optimization_guide::proto::GetHintsRequest hints_request;
-  if (!hints_request.ParseFromString(request.content))
+  if (!hints_request.ParseFromString(request.content)) {
     return nullptr;
-  if (hints_request.hosts().empty() && hints_request.urls().empty())
+  }
+  if (hints_request.hosts().empty() && hints_request.urls().empty()) {
     return nullptr;
+  }
   // TODO(crbug.com/40103566): Verify that hosts count in the hint does not
   // exceed MaxHostsForOptimizationGuideServiceHintsFetch()
 
@@ -142,8 +145,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
       std::cref(_response_type), std::ref(_count_hints_requests_received)));
   GREYAssertTrue(self.testServer->Start(), @"Hints server failed to start.");
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 
   NSString* hints_server_host =
@@ -160,8 +163,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 
 - (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 

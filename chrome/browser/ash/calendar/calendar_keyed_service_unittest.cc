@@ -32,12 +32,13 @@
 namespace ash {
 namespace {
 
-const char kPrimaryProfileName[] = "primary_profile";
-const char kSecondaryProfileName[] = "secondary_profile";
-const char kTestGroupCalendarId[] =
+constexpr char kPrimaryProfileName[] = "primary_profile";
+constexpr char kSecondaryProfileName[] = "secondary_profile";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
+constexpr char kTestGroupCalendarId[] =
     "oz2iwbysdg20tn8zdjvtqnkj12test@group.calendar.google.com";
-const char kTestGroupCalendarColorId[] = "3";
-const char kTestUserAgent[] = "test-user-agent";
+constexpr char kTestGroupCalendarColorId[] = "3";
+constexpr char kTestUserAgent[] = "test-user-agent";
 
 }  // namespace
 
@@ -64,7 +65,7 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile* CreateSecondaryProfile() {
-    LogIn(kSecondaryProfileName);
+    LogIn(kSecondaryProfileName, kFakeGaia2);
     return CreateProfile(kSecondaryProfileName);
   }
 };

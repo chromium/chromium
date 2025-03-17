@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -55,7 +57,7 @@ const base::FeatureParam<bool> kPrerenderBookmarkBarOnMouseHoverTrigger{
 // Base class for non-menu hosting buttons used on the bookmark bar.
 
 BookmarkButtonBase::BookmarkButtonBase(PressedCallback callback,
-                                       const std::u16string& title)
+                                       std::u16string_view title)
     : LabelButton(std::move(callback), title) {
   ConfigureInkDropForToolbar(this);
 
@@ -106,7 +108,7 @@ END_METADATA
 // Buttons used for the bookmarks on the bookmark bar.
 BookmarkButton::BookmarkButton(PressedCallback callback,
                                const GURL& url,
-                               const std::u16string& title,
+                               std::u16string_view title,
                                const raw_ptr<Browser> browser)
     : BookmarkButtonBase(base::BindRepeating(&BookmarkButton::OnButtonPressed,
                                              base::Unretained(this)),
@@ -118,12 +120,16 @@ BookmarkButton::BookmarkButton(PressedCallback callback,
 BookmarkButton::~BookmarkButton() = default;
 
 void BookmarkButton::AddedToWidget() {
+  BookmarkButtonBase::AddedToWidget();
+
   widget_observation_.Observe(GetWidget());
 
   UpdateMaxTooltipWidth();
 }
 
 void BookmarkButton::RemovedFromWidget() {
+  BookmarkButtonBase::RemovedFromWidget();
+
   widget_observation_.Reset();
 }
 
@@ -140,7 +146,7 @@ void BookmarkButton::UpdateTooltipText() {
   const views::TooltipManager* tooltip_manager =
       GetWidget()->GetTooltipManager();
   if (tooltip_manager) {
-    SetCachedTooltipText(BookmarkBarView::CreateToolTipForURLAndTitle(
+    SetTooltipText(BookmarkBarView::CreateToolTipForURLAndTitle(
         max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText()));
   }
 }
@@ -157,7 +163,7 @@ void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,
   }
 }
 
-void BookmarkButton::SetText(const std::u16string& text) {
+void BookmarkButton::SetText(std::u16string_view text) {
   BookmarkButtonBase::SetText(text);
   UpdateTooltipText();
 }

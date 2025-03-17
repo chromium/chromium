@@ -12,7 +12,6 @@
 #include "base/memory/singleton.h"
 #include "base/task/bind_post_task.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "components/reporting/storage/storage_module_interface.h"

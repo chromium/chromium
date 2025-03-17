@@ -9,7 +9,7 @@
 import {BridgeHelper} from '/common/bridge_helper.js';
 
 import {BridgeConstants} from './bridge_constants.js';
-import {PanelNodeMenuItemData} from './panel_menu_data.js';
+import type {PanelNodeMenuItemData} from './panel_menu_data.js';
 
 export class PanelBridge {
   static addMenuItem(itemData: PanelNodeMenuItemData): Promise<void> {

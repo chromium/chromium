@@ -485,8 +485,9 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
 
   wtf_size_t begin_index = 0;
   wtf_size_t end_index = display_item_list.size();
-  while (begin_index < end_index && display_item_list[begin_index].ClientId() !=
-                                        start_after_display_item_client_id) {
+  while (begin_index < end_index &&
+         UNSAFE_TODO(display_item_list[begin_index]).ClientId() !=
+             start_after_display_item_client_id) {
     begin_index++;
   }
 
@@ -509,8 +510,9 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
   // still appear in other locations within the list, however for most cases,
   // these `DisplayItem` types are painted last.
   int not_content_type_count = 0;
-  while (end_index > begin_index &&
-         !IsContentType(display_item_list[end_index - 1].GetType())) {
+  while (
+      end_index > begin_index &&
+      !IsContentType(UNSAFE_TODO(display_item_list[end_index - 1]).GetType())) {
     not_content_type_count++;
     end_index--;
   }
@@ -525,7 +527,7 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
 
   MediaVideoVisibilityTracker::ClientIdsSet set;
   for (const auto& display_item :
-       display_item_list.ItemsInRange(begin_index, end_index)) {
+       UNSAFE_TODO(display_item_list.ItemsInRange(begin_index, end_index))) {
     if (display_item.ClientId() != kInvalidDisplayItemClientId) {
       set.insert(display_item.ClientId());
     }
@@ -627,9 +629,7 @@ bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
 
   return HasEnoughVisibleAreaRemaining(occlusion_state_.occluded_area,
                                        occlusion_state_.video_element_rect,
-                                       visibility_threshold_)
-             ? true
-             : false;
+                                       visibility_threshold_);
 }
 
 bool MediaVideoVisibilityTracker::ComputeVisibility() {

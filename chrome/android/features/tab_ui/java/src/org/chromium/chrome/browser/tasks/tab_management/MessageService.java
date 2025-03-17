@@ -168,6 +168,6 @@ public class MessageService {
         RecordHistogram.recordEnumeratedHistogram(
                 String.format("GridTabSwitcher.%s.DisableReason", messageType),
                 reason,
-                MessageDisableReason.MAX_VALUE + 1);
+                MessageDisableReason.MAX_VALUE);
     }
 }

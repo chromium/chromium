@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import './activity_log_stream.js';
@@ -150,7 +149,7 @@ export class ExtensionsActivityLogElement extends
     this.selectedSubpage_ = NONE_SELECTED;
     // clear the stream if the user is exiting the activity log page.
     const activityLogStream =
-        this.shadowRoot!.querySelector('activity-log-stream');
+        this.shadowRoot.querySelector('activity-log-stream');
     if (activityLogStream) {
       activityLogStream.clearStream();
     }
@@ -180,7 +179,7 @@ export class ExtensionsActivityLogElement extends
   protected onSelectedSubpageChanged_(
       newTab: MaybeActivityLogSubpage, oldTab: MaybeActivityLogSubpage) {
     const activityLogStream =
-        this.shadowRoot!.querySelector('activity-log-stream');
+        this.shadowRoot.querySelector('activity-log-stream');
     if (activityLogStream) {
       if (newTab === ActivityLogSubpage.STREAM) {
         // Start the stream if the user is switching to the real-time tab.

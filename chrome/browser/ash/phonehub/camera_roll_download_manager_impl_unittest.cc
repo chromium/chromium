@@ -30,6 +30,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
@@ -60,12 +61,16 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
  public:
   CameraRollDownloadManagerImplTest()
       : profile_manager_(CreateTestingProfileManager()),
-        profile_(profile_manager_->CreateTestingProfile(kUserEmail)),
         user_manager_(new ash::FakeChromeUserManager),
         user_manager_owner_(base::WrapUnique(user_manager_.get())) {
     AccountId account_id(AccountId::FromUserEmail(kUserEmail));
     user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
+    user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
+
+    profile_ = profile_manager_->CreateTestingProfile(kUserEmail);
+    ash::AnnotatedAccountId::Set(profile_, account_id);
+    user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
+
     holding_space_keyed_service_ =
         HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile_);
 
@@ -141,7 +146,7 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  const raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager user_manager_owner_;
   raw_ptr<HoldingSpaceKeyedService> holding_space_keyed_service_;

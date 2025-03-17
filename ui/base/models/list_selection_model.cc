@@ -273,7 +273,7 @@ std::string ListSelectionModel::ToString() const {
                            : std::string("<none>");
   };
   std::vector<std::string> index_strings;
-  base::ranges::transform(
+  std::ranges::transform(
       selected_indices_, std::back_inserter(index_strings),
       [](const auto& index) { return base::NumberToString(index); });
   return "active=" + optional_to_string(active_) +

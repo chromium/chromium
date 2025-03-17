@@ -117,19 +117,7 @@ TEST_F(BrowserTaskExecutorTest, GetTaskRunnerWithBrowserTaskTraits) {
   BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
 }
 
-// Helper to perform the same tets for all BrowserThread::ID values.
-class BrowserTaskTraitsMappingTest : public BrowserTaskExecutorTest {
- protected:
-  class TestExecutor : public BaseBrowserTaskExecutor {
-   public:
-    ~TestExecutor() override = default;
-  };
-
- private:
-  TestExecutor test_executor_;
-};
-
-TEST_F(BrowserTaskTraitsMappingTest, BrowserTaskTraitsMapToProperPriorities) {
+TEST_F(BrowserTaskExecutorTest, BrowserTaskTraitsMapToProperPriorities) {
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({TaskPriority::BEST_EFFORT}),
             QueueType::kBestEffort);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({TaskPriority::USER_VISIBLE}),
@@ -146,8 +134,7 @@ TEST_F(BrowserTaskTraitsMappingTest, BrowserTaskTraitsMapToProperPriorities) {
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({}), QueueType::kUserBlocking);
 }
 
-TEST_F(BrowserTaskTraitsMappingTest,
-       UIThreadTaskRunnerHasSamePriorityAsUIBlocking) {
+TEST_F(BrowserTaskExecutorTest, UIThreadTaskRunnerHasSamePriorityAsUIBlocking) {
   auto ui_blocking = GetUIThreadTaskRunner({TaskPriority::USER_BLOCKING});
   auto thread_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 
@@ -181,7 +168,7 @@ class BrowserTaskExecutorWithCustomSchedulerTest : public testing::Test {
           BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
       DeferredInitFromSubclass(
           browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
-              QueueType::kUserBlocking));
+              QueueType::kDefault));
       BrowserTaskExecutor::CreateForTesting(
           std::move(browser_ui_thread_scheduler),
           BrowserIOThreadDelegate::CreateForTesting(sequence_manager()));

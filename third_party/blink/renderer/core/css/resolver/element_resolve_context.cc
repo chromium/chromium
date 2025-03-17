@@ -90,7 +90,7 @@ ElementResolveContext::ElementResolveContext(Element& element)
     : element_(&element),
       ultimate_originating_element_(
           element_->IsPseudoElement()
-              ? To<PseudoElement>(element_)->UltimateOriginatingElement()
+              ? &To<PseudoElement>(element_)->UltimateOriginatingElement()
               : element_),
       pseudo_element_(element_->IsPseudoElement() ? element_ : nullptr),
       element_link_state_(GetLinkStateForElement(element)),

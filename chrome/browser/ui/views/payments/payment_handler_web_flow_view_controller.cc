@@ -343,9 +343,16 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
   origin_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
   origin_label->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  // Turn off autoreadability because the computed foreground color takes
+
+  // Turn off auto-readability because the computed foreground color takes
   // contrast into account.
-  SkColor background_color = container->background()->get_color();
+  SkColor background_color = gfx::kPlaceholderColor;
+  if (container->GetWidget()) {
+    const auto* background = container->background();
+    background_color =
+        background->color().ConvertToSkColor(container->GetColorProvider());
+  }
+
   // Get the closest label color to kColorPrimaryForeground, with a minimum
   // readable contrast ratio.
   SkColor foreground = GetContrastingGoogleColor(
@@ -522,13 +529,12 @@ PaymentHandlerWebFlowViewController::GetHeaderBackground(
     views::View* header_view) {
   DCHECK(header_view);
   auto default_header_background =
-      views::CreateThemedSolidBackground(ui::kColorDialogBackground);
+      views::CreateSolidBackground(ui::kColorDialogBackground);
   if (web_contents() && header_view->GetWidget()) {
-    // Make sure the color is actually set before using it.
-    default_header_background->OnViewThemeChanged(header_view);
+    auto* color_provider = header_view->GetColorProvider();
     return views::CreateSolidBackground(color_utils::GetResultingPaintColor(
         web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
-        default_header_background->get_color()));
+        color_provider->GetColor(ui::kColorDialogBackground)));
   }
   return default_header_background;
 }

@@ -50,7 +50,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/media/cdm_storage_manager.h"
-#include "content/browser/media/media_license_manager.h"
 #include "media/base/key_system_names.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -205,10 +204,6 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
   void GetCdmOrigin(GetCdmOriginCallback callback) override {
     return std::move(callback).Run(
         render_frame_host_->GetLastCommittedOrigin());
-  }
-
-  void GetPageUkmSourceId(GetPageUkmSourceIdCallback callback) override {
-    return std::move(callback).Run(render_frame_host_->GetPageUkmSourceId());
   }
 
   void BindEmbedderReceiver(mojo::GenericPendingReceiver receiver) override {
@@ -544,8 +539,9 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
   DVLOG(1) << __func__ << ": this=" << this << ", cdm_path=" << cdm_path;
   DCHECK(!mf_interface_factory_remote_);
 
+  // Passing an empty CdmType since it is not needed in this scenario.
   auto& mf_service = GetMediaFoundationService(
-      render_frame_host().GetBrowserContext(),
+      media::CdmType(), render_frame_host().GetBrowserContext(),
       render_frame_host().GetSiteInstance()->GetSiteURL(), cdm_path);
 
   // Passing an empty CdmType as MediaFoundation-based CDMs don't use CdmStorage
@@ -583,8 +579,10 @@ media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kSoftwareSecure);
   if (!cdm_info) {
-    NOTREACHED() << "No valid CdmInfo for " << key_system;
+    DLOG(ERROR) << "No valid CdmInfo for " << key_system;
+    return nullptr;
   }
+
   if (cdm_info->path.empty()) {
     NOTREACHED() << "CDM path for " << key_system << " is empty";
   }

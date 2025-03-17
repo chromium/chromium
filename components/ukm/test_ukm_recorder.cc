@@ -4,13 +4,13 @@
 
 #include "components/ukm/test_ukm_recorder.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -201,7 +201,7 @@ TestUkmRecorder::FilteredHumanReadableMetricForEntry(
   std::vector<std::string> metric_name_vector(1, metric_name);
   std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
       filtered_result;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       GetMetrics(entry_name, metric_name_vector),
       std::back_inserter(filtered_result),
       [&metric_name](

@@ -190,7 +190,8 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
               Optional(HasStringSetting("name2", "string")));
 
   syncer::EntityChangeList change_list;
-  change_list.push_back(syncer::EntityChange::CreateDelete("name1"));
+  change_list.push_back(
+      syncer::EntityChange::CreateDelete("name1", syncer::EntityData()));
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
       bridge().CreateMetadataChangeList(), std::move(change_list)));
   // Expect that the change was applied immediately.

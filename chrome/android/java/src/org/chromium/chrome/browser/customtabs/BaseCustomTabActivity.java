@@ -253,6 +253,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
+        // TODO(crbug.com/392774038): Enable for e2e everywhere for PCCT.
+        return super.wrapContentWithEdgeToEdgeLayout() && !mIntentDataProvider.isPartialCustomTab();
+    }
+
+    @Override
     public void onNewIntent(Intent intent) {
         // Drop the cleaner intent since it's created in order to clear up the OS share sheet.
         if (ShareHelper.isCleanerIntent(intent)) {
@@ -310,7 +316,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         () -> getCustomTabActivityTabController(),
                         () -> getCustomTabMinimizationManagerHolder().getMinimizationManager(),
                         () -> getCustomTabFeatureOverridesManager(),
-                        getBaseChromeLayout(),
+                        () -> getCustomTabActivityNavigationController().openCurrentUrlInBrowser(),
                         getEdgeToEdgeManager());
         return mBaseCustomTabRootUiCoordinator;
     }
@@ -1334,7 +1340,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private DisclosureInfobar createDisclosureInfobar() {
         return new DisclosureInfobar(
                 getResources(),
-                getSnackbarManager(),
+                this::getSnackbarManager,
                 getTrustedWebActivityModel(),
                 getLifecycleDispatcher());
     }
@@ -1342,7 +1348,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private DisclosureSnackbar createDisclosureSnackbar() {
         return new DisclosureSnackbar(
                 getResources(),
-                getSnackbarManager(),
+                this::getSnackbarManager,
                 getTrustedWebActivityModel(),
                 getLifecycleDispatcher());
     }

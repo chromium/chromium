@@ -67,11 +67,8 @@ void DesktopBrowserFrameAura::OnOcclusionStateChanged(
     aura::Window::OcclusionState new_state,
     const SkRegion& occluded_region) {
   if (browser_view_) {
-    if (base::FeatureList::IsEnabled(
-            features::kStopLoadingAnimationForHiddenWindow)) {
-      browser_view_->UpdateLoadingAnimations(
-          new_state == aura::Window::OcclusionState::VISIBLE);
-    }
+    browser_view_->UpdateLoadingAnimations(
+        new_state == aura::Window::OcclusionState::VISIBLE);
   }
 }
 

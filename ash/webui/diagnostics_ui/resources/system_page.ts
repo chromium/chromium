@@ -13,18 +13,18 @@ import './icons.html.js';
 import './memory_card.js';
 import './overview_card.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
-import {OverviewCardElement} from './overview_card.js';
+import type {OverviewCardElement} from './overview_card.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
-import {SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
+import type {SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
 import {getTemplate} from './system_page.html.js';
 
 export interface SystemPageElement {

@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
@@ -32,12 +32,17 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
               (const std::string&,
                WebAuthnCredentialsDelegate::OnPasskeySelectedCallback),
               (override));
-  MOCK_METHOD(const std::optional<std::vector<PasskeyCredential>>&,
+  MOCK_METHOD((base::expected<const std::vector<PasskeyCredential>*,
+                              PasskeysUnavailableReason>),
               GetPasskeys,
               (),
               (const override));
+  MOCK_METHOD(void, NotifyForPasskeysDisplay, (), (override));
   MOCK_METHOD(bool, IsSecurityKeyOrHybridFlowAvailable, (), (const override));
-  MOCK_METHOD(void, RetrievePasskeys, (base::OnceClosure), (override));
+  MOCK_METHOD(void,
+              RequestNotificationWhenPasskeysReady,
+              (base::OnceClosure),
+              (override));
   MOCK_METHOD(bool, HasPendingPasskeySelection, (), (override));
   base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
 

@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 
+@class BannerPromoView;
 @class TabGroupIndicatorView;
 @class ToolbarButtonFactory;
 
@@ -68,6 +69,9 @@
 // View that contains tab group information.
 @property(nonatomic, weak) TabGroupIndicatorView* tabGroupIndicatorView;
 
+// View that shows a banner promo.
+@property(nonatomic, strong) BannerPromoView* bannerPromo;
+
 // Sets all the subviews and constraints of the view. The `topSafeAnchor` needs
 // to be set before calling this.
 - (void)setUp;
@@ -81,6 +85,18 @@
 
 // Updates the `tabGroupIndicatorView` availability.
 - (void)updateTabGroupIndicatorAvailability;
+
+// Prepares to animate showing the banner promo.
+- (void)prepareToShowBannerPromo;
+
+// Shows the banner promo, possibly inside an animation block.
+- (void)showBannerPromo;
+
+// Hides the banner promo, possibly inside an animation block.
+- (void)hideBannerPromo;
+
+// Cleans up after hiding the banner promo, possibly after an animation.
+- (void)cleanupAfterHideBannerPromo;
 
 @end
 

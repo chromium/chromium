@@ -117,8 +117,9 @@ TEST_F(RemoveStudentRequestTest, RemoveMultipleStudentAndSucceed) {
       future;
 
   std::unique_ptr<RemoveStudentRequest> request =
-      std::make_unique<RemoveStudentRequest>(request_sender(), gaia_id,
-                                             session_id, future.GetCallback());
+      std::make_unique<RemoveStudentRequest>(request_sender(), "https://test",
+                                             gaia_id, session_id,
+                                             future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   std::vector<std::string> ids;
@@ -152,8 +153,9 @@ TEST_F(RemoveStudentRequestTest, RemoveEmptyStudentListAndSucceed) {
       future;
 
   std::unique_ptr<RemoveStudentRequest> request =
-      std::make_unique<RemoveStudentRequest>(request_sender(), gaia_id,
-                                             session_id, future.GetCallback());
+      std::make_unique<RemoveStudentRequest>(request_sender(), "https://test",
+                                             gaia_id, session_id,
+                                             future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
@@ -184,8 +186,9 @@ TEST_F(RemoveStudentRequestTest, RemoveStudentAndFail) {
       future;
 
   std::unique_ptr<RemoveStudentRequest> request =
-      std::make_unique<RemoveStudentRequest>(request_sender(), gaia_id,
-                                             session_id, future.GetCallback());
+      std::make_unique<RemoveStudentRequest>(request_sender(), "https://test",
+                                             gaia_id, session_id,
+                                             future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 

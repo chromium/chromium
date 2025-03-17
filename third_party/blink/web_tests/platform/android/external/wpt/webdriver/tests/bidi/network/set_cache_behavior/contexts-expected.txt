@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_new_context[window]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_disable_globally_after_disable_for_context
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_enable_globally_after_disable_for_context
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_setting_cache_to_contexts_after_global_update
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+Harness: the test ran to completion.
+

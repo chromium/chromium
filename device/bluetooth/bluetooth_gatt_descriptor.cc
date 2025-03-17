@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/bluetooth_gatt_descriptor.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
 #include "base/lazy_instance.h"
@@ -26,9 +22,14 @@ struct UUIDs {
  private:
   static std::vector<BluetoothUUID> MakeUUIDVector() {
     std::vector<BluetoothUUID> uuids;
-    static const char* const strings[] = {
-        "0x2900", "0x2901", "0x2902", "0x2903", "0x2904", "0x2905"
-    };
+    static const auto strings = std::to_array<const char*>({
+        "0x2900",
+        "0x2901",
+        "0x2902",
+        "0x2903",
+        "0x2904",
+        "0x2905",
+    });
 
     for (size_t i = 0; i < std::size(strings); ++i)
       uuids.push_back(BluetoothUUID(strings[i]));

@@ -54,7 +54,7 @@ const char kChromeOpened[] = "chrome_opened";
 const char kIncognitoTabOpened[] = "incognito_tab_opened";
 const char kClearedBrowsingData[] = "cleared_browsing_data";
 const char kViewedReadingList[] = "viewed_reading_list";
-const char kViewedWhatsNew[] = "viewed_whats_new_m132";
+const char kViewedWhatsNew[] = "viewed_whats_new_m134";
 const char kTriggeredTranslateInfobar[] = "triggered_translate_infobar";
 const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
@@ -66,6 +66,12 @@ const char kPriceNotificationsUsed[] = "price_notifications_used";
 const char kDefaultBrowserPromoShown[] = "default_browser_promo_shown";
 const char kDefaultBrowserPromoRemindMeLater[] =
     "default_browser_promo_remind_me_later";
+const char kNonModalDefaultBrowserPromoUrlPasteTrigger[] =
+    "non_modal_default_browser_promo_url_paste_trigger";
+const char kNonModalDefaultBrowserPromoAppSwitcherTrigger[] =
+    "non_modal_default_browser_promo_app_switcher_trigger";
+const char kNonModalDefaultBrowserPromoShareTrigger[] =
+    "non_modal_default_browser_promo_share_trigger";
 const char kPasswordManagerWidgetPromoTriggered[] =
     "password_manager_widget_promo_trigger";
 const char kPasswordManagerWidgetPromoUsed[] =
@@ -92,13 +98,13 @@ const char kDockingPromoRemindMeLater[] = "docking_promo_remind_me_later";
 const char kOpenUrlFromOmnibox[] = "open_url_from_omnibox";
 const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
-const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
-const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 const char kIOSPullToRefreshIPHDismissButtonTapped[] =
     "pull_to_refresh_feature_iph_dismiss_button_tapped";
 const char kIOSIncognitoPageControlTapped[] = "incognito_page_control_tapped";
+const char kIOSSigninFullscreenPromoTrigger[] =
+    "signin_fullscreen_promo_trigger";
 const char kIOSSwipeRightForIncognitoUsed[] = "swipe_right_for_incognito_used";
 const char kIOSSwipeRightForIncognitoIPHDismissButtonTapped[] =
     "swipe_right_for_incognito_iph_dismiss_button_tapped";
@@ -143,6 +149,15 @@ const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
     "ios_contextual_panel_price_insights_entrypoint_explicitly_dismissed";
 const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
 const char kLensOverlayEntrypointUsed[] = "lens_overlay_entrypoint_used";
+const char kIOSTabReminderScheduled[] = "tab_reminder_scheduled";
+const char kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger[] =
+    "ios_reminder_notifications_overflow_menu_bubble_iph_trigger";
+const char kIOSOverflowMenuSetTabReminderTapped[] =
+    "ios_overflow_menu_set_tab_reminder_tapped";
+const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[] =
+    "ios_reminder_notifications_overflow_menu_new_badge_iph_trigger";
+const char kIOSDownloadAutoDeletionIPHCriterionMet[] =
+    "ios_download_auto_deletion_iph_criterion_met";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

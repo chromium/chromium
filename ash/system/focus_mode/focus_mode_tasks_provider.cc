@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 #include <vector>
 
 #include "ash/api/tasks/tasks_controller.h"
@@ -16,8 +17,6 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -221,8 +220,8 @@ class TaskFetcher {
     for (const auto& list : *api_task_lists) {
       task_lists_.emplace_back(list->id, list->updated);
     }
-    base::ranges::sort(task_lists_, std::greater{},
-                       &std::pair<std::string, base::Time>::second);
+    std::ranges::sort(task_lists_, std::greater{},
+                      &std::pair<std::string, base::Time>::second);
 
     MaybeFetchMoreTasks();
   }
@@ -524,7 +523,7 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
 
   TaskId fetched_task_id = {.list_id = task_list_id, .id = task_id};
   auto iter =
-      base::ranges::find(tasks_, fetched_task_id, &FocusModeTask::task_id);
+      std::ranges::find(tasks_, fetched_task_id, &FocusModeTask::task_id);
   bool task_exists = iter != tasks_.end();
 
   FocusModeTask temp_local_task;
@@ -718,7 +717,7 @@ void FocusModeTasksProvider::UpdateOrInsertTask(const std::string& task_list_id,
   created_task_ids_.insert(created_id);
 
   // Try to find the task in the cache or insert it.
-  auto iter = base::ranges::find(tasks_, created_id, &FocusModeTask::task_id);
+  auto iter = std::ranges::find(tasks_, created_id, &FocusModeTask::task_id);
 
   FocusModeTask& task = (iter != tasks_.end()) ? *iter : tasks_.emplace_back();
   task.task_id = created_id;
@@ -736,7 +735,7 @@ std::vector<FocusModeTask> FocusModeTasksProvider::GetSortedTasksImpl() {
     }
   }
 
-  base::ranges::sort(
+  std::ranges::sort(
       result, TaskComparator{base::Time::Now(), raw_ref<base::flat_set<TaskId>>(
                                                     created_task_ids_)});
 

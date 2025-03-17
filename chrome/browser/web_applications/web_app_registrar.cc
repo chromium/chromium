@@ -24,25 +24,26 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/proto_helpers.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
+#include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
@@ -52,6 +53,7 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "url/gurl.h"
@@ -67,17 +69,22 @@ using InstallStateSet = base::EnumSet<proto::InstallState,
                                       proto::InstallState_MIN,
                                       proto::InstallState_MAX>;
 
+// ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not here.
+#if !BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
              "capture_forced_off_diy_apps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#endif
+
 struct AppStateForNavigationCapturing {
   bool is_diy_app = false;
   bool is_preinstalled_browser_tab_app = false;
-  blink::Manifest::LaunchHandler::ClientMode client_mode =
-      blink::Manifest::LaunchHandler::ClientMode::kAuto;
+  bool client_mode_valid_and_specified = false;
 };
 
+// ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not here.
+#if !BUILDFLAG(IS_CHROMEOS)
 bool IsNavigationCapturingSettingOffByDefault(
     AppStateForNavigationCapturing app_state) {
   // If the app is a DIY app, capture navigations by default unless enforced via
@@ -106,10 +113,12 @@ bool IsNavigationCapturingSettingOffByDefault(
     case features::CapturingState::kReimplDefaultOn:
       return false;
     case features::CapturingState::kReimplOnViaClientMode:
-      return app_state.client_mode ==
-             blink::Manifest::LaunchHandler::ClientMode::kAuto;
+      // Disallow navigation capturing if the client mode is invalid or not
+      // specified in the manifest.
+      return !app_state.client_mode_valid_and_specified;
   }
 }
+#endif
 
 bool IsAppCapturingSettingForcedOff(const webapps::AppId& app_id) {
   if (!features::kForcedOffCapturingAppsUserSetting.Get().empty()) {
@@ -144,7 +153,6 @@ bool WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
   // supported.
   switch (display_mode) {
     case blink::mojom::DisplayMode::kUndefined:
-    case blink::mojom::DisplayMode::kTabbed:
     case blink::mojom::DisplayMode::kPictureInPicture:
       return false;
     case blink::mojom::DisplayMode::kBrowser:
@@ -153,6 +161,7 @@ bool WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
     case blink::mojom::DisplayMode::kBorderless:
     case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kTabbed:
       return true;
   }
 }
@@ -165,11 +174,11 @@ WebAppRegistrar::~WebAppRegistrar() {
   }
 }
 
-blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
+network::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->permissions_policy()
-                 : blink::ParsedPermissionsPolicy();
+                 : network::ParsedPermissionsPolicy();
 }
 
 bool WebAppRegistrar::IsPlaceholderApp(
@@ -422,8 +431,10 @@ int WebAppRegistrar::GetAppExtendedScopeScore(
 
   std::optional<std::string> origin_str;
 
-  for (const auto& scope_extension : GetValidatedScopeExtensions(app_id)) {
-    if (origin.IsSameOriginWith(scope_extension.origin)) {
+  for (const ScopeExtensionInfo& scope_extension :
+       GetValidatedScopeExtensions(app_id)) {
+    if (base::StartsWith(url.spec(), scope_extension.scope.spec(),
+                         base::CompareCase::SENSITIVE) > 0) {
       return origin.host().size();
     }
 
@@ -488,10 +499,11 @@ bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
 DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     const webapps::AppId& app_id) const {
   if (!IsInstallState(app_id,
-                      {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+                      {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return DisplayMode::kBrowser;
   }
+
+  bool is_isolated = IsIsolated(app_id);
 
   auto app_display_mode = GetAppDisplayMode(app_id);
   std::optional<mojom::UserDisplayMode> user_display_mode =
@@ -500,11 +512,16 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
       !user_display_mode.has_value()) {
     return DisplayMode::kUndefined;
   }
+  // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
+  // are added to the WebAppProvider system.
+  if (is_isolated) {
+    user_display_mode = mojom::UserDisplayMode::kStandalone;
+  }
 
   std::vector<DisplayMode> display_mode_overrides =
       GetAppDisplayModeOverride(app_id);
   return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
-                                     *user_display_mode, IsIsolated(app_id));
+                                     *user_display_mode, is_isolated);
 }
 
 DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
@@ -566,7 +583,41 @@ std::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
   return std::nullopt;
 }
 
-std::optional<proto::WebAppOsIntegrationState>
+bool WebAppRegistrar::IsUrlInHomeTabScope(const GURL& url,
+                                          const webapps::AppId& app_id) const {
+  if (!IsTabbedWindowModeEnabled(app_id)) {
+    return false;
+  }
+
+  if (!IsUrlInAppScope(url, app_id)) {
+    return false;
+  }
+
+  // Retrieve the start URL for the app. Start URL is always in home tab scope.
+  // TODO(b/330640982): rename GetAppPinnedHomeTabUrl() to something more
+  // sensible.
+  std::optional<GURL> pinned_home_url = GetAppPinnedHomeTabUrl(app_id);
+  if (!pinned_home_url) {
+    return false;
+  }
+
+  // We ignore hash ref when deciding what should be opened as the home tab.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  if (url.ReplaceComponents(replacements) ==
+      pinned_home_url.value().ReplaceComponents(replacements)) {
+    return true;
+  }
+
+  for (auto& matcher : GetAppById(app_id)->GetTabbedModeHomeScope()) {
+    if (matcher.Match(url)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::optional<proto::os_state::WebAppOsIntegration>
 WebAppRegistrar::GetAppCurrentOsIntegrationState(
     const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
@@ -607,7 +658,7 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
 
 std::vector<webapps::AppId>
 WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
-  AppSet apps_in_sync_install = AppSet(this, [](const WebApp& web_app) {
+  AppSet apps_in_sync_install(this, [](const WebApp& web_app) {
     return web_app.is_from_sync_and_pending_installation();
   });
 
@@ -619,7 +670,7 @@ WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
 }
 
 std::vector<webapps::AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
-  AppSet apps_in_sync_uninstall = AppSet(this, [](const WebApp& web_app) {
+  AppSet apps_in_sync_uninstall(this, [](const WebApp& web_app) {
     return !web_app.is_from_sync_and_pending_installation() &&
            web_app.is_uninstalling();
   });
@@ -720,10 +771,10 @@ const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
   return nullptr;
 }
 
-bool WebAppRegistrar::IsNotInRegistrar(const webapps::AppId& app_id) const {
+bool WebAppRegistrar::IsInRegistrar(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app || web_app->is_uninstalling()) {
-    return true;
+    return false;
   }
 
   // `is_from_sync_and_pending_installation()` should be treated as 'not
@@ -733,14 +784,14 @@ bool WebAppRegistrar::IsNotInRegistrar(const webapps::AppId& app_id) const {
   sources_except_sync.Remove(WebAppManagement::kSync);
   if (web_app->is_from_sync_and_pending_installation() &&
       sources_except_sync.empty()) {
-    return true;
+    return false;
   }
-  return false;
+  return true;
 }
 
 std::optional<proto::InstallState> WebAppRegistrar::GetInstallState(
     const webapps::AppId& app_id) const {
-  if (IsNotInRegistrar(app_id)) {
+  if (!IsInRegistrar(app_id)) {
     return std::nullopt;
   }
   const WebApp* web_app = GetAppById(app_id);
@@ -760,97 +811,94 @@ bool WebAppRegistrar::IsInstallState(
   return state_set.Has(install_state.value());
 }
 
-std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
-    const GURL& url,
-    std::initializer_list<proto::InstallState> states) const {
-  return FindBestAppWithUrlInScope(url, states, AppFilterOptions());
+bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
+                                 const WebAppFilter& filter) const {
+  std::optional<proto::InstallState> install_state = GetInstallState(app_id);
+  if (install_state == std::nullopt) {
+    return false;
+  }
+
+  if (install_state == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
+    return filter.is_suggested_app_;
+  }
+
+  if (filter.opens_in_browser_tab_) {
+    return GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser;
+  }
+
+  if (filter.opens_in_dedicated_window_) {
+    return GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (filter.captures_links_in_scope_) {
+    return CapturesLinksInScope(app_id);
+  }
+#endif
+
+  if (filter.is_isolated_app_) {
+    return IsIsolated(app_id);
+  }
+
+  if (filter.is_crafted_app_) {
+    return !IsDiyApp(app_id);
+  }
+
+  if (filter.displays_badge_on_os_ || filter.supports_os_notifications_) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
+  }
+
+  if (filter.installed_in_chrome_) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION ||
+           install_state == proto::INSTALLED_WITHOUT_OS_INTEGRATION;
+  }
+
+  if (filter.installed_in_os_) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
+  }
+
+  return false;
 }
 
 std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     const GURL& url,
-    std::initializer_list<proto::InstallState> states,
-    AppFilterOptions options) const {
-  CHECK_NE(states.size(), 0ul);
+    const WebAppFilter& filter) const {
   if (!url.is_valid()) {
     return std::nullopt;
   }
-
-  const std::string url_spec = url.spec();
 
   std::optional<webapps::AppId> best_app_id;
   int best_score = 0;
 
   for (const webapps::AppId& app_id :
        GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!IsInstallState(app_id, states)) {
-      continue;
-    }
-    if (!options.include_open_in_browser_tab &&
-        GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
-      continue;
-    }
-
-    if (!options.include_diy && IsDiyApp(app_id)) {
-      continue;
-    }
-
     if (!GetAppScope(app_id).is_valid()) {
       continue;
     }
 
-    int score;
-    // TODO(crbug.com/341337420): Audit call sites and ideally have scope
-    // extensions be considered by default.
-    if (options.include_extended_scope) {
-      score = GetAppExtendedScopeScore(url, app_id);
-    } else {
-      score = GetUrlInAppScopeScore(url_spec, app_id);
+    if (GetInstallState(app_id) == proto::SUGGESTED_FROM_ANOTHER_DEVICE &&
+        !filter.is_suggested_app_) {
+      continue;
     }
 
+    int score = GetAppExtendedScopeScore(url, app_id);
     if (score > 0 && score > best_score) {
       best_app_id = app_id;
       best_score = score;
     }
   }
-  return best_app_id;
-}
 
-// Returns all apps that have the given `url` in scope and are in one of the
-// given `states`.
-std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsWithUrlInScope(
-    const GURL& url,
-    std::initializer_list<proto::InstallState> states) const {
-  CHECK_NE(states.size(), 0ul);
-  if (!url.is_valid()) {
-    return {};
-  }
-  std::string url_spec = url.spec();
-
-  std::vector<webapps::AppId> apps_with_url_in_scope;
-  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!IsInstallState(app_id, states)) {
-      continue;
-    }
-
-    std::string app_scope = GetAppScope(app_id).spec();
-    DCHECK(!app_scope.empty());
-
-    if (!base::StartsWith(app_scope, url_spec, base::CompareCase::SENSITIVE)) {
-      continue;
-    }
-
-    apps_with_url_in_scope.push_back(app_id);
+  if (best_app_id.has_value() && AppMatches(best_app_id.value(), filter)) {
+    return best_app_id;
   }
 
-  return apps_with_url_in_scope;
+  return std::nullopt;
 }
 
-// Returns all apps that have the given `url` in scope and are in one of the
-// given `states`.
+// Returns all apps that have the given `url` in scope and match the filter.
 std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
     const GURL& outer_scope,
-    std::initializer_list<proto::InstallState> states) const {
-  CHECK_NE(states.size(), 0ul);
+    const WebAppFilter& filter) const {
   if (!outer_scope.is_valid()) {
     return {};
   }
@@ -858,7 +906,7 @@ std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
 
   std::vector<webapps::AppId> apps_in_outer_scope;
   for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!IsInstallState(app_id, states)) {
+    if (!AppMatches(app_id, filter)) {
       continue;
     }
 
@@ -1022,7 +1070,7 @@ int WebAppRegistrar::CountUserInstalledDiyApps() const {
 std::vector<content::StoragePartitionConfig>
 WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
     const webapps::AppId& isolated_web_app_id) const {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+  if (!content::AreIsolatedWebAppsEnabled(profile_)) {
     return {};
   }
   const WebApp* isolated_web_app = GetAppById(isolated_web_app_id);
@@ -1117,6 +1165,7 @@ bool WebAppRegistrar::CanCaptureLinksInScope(
   return true;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
   if (!CanCaptureLinksInScope(app_id)) {
     return false;
@@ -1130,20 +1179,21 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
        web_app->user_display_mode() == mojom::UserDisplayMode::kBrowser);
 
   switch (web_app->user_link_capturing_preference()) {
-    case proto::LinkCapturingUserPreference::LINK_CAPTURING_PREFERENCE_DEFAULT:
+    case proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT:
       if (IsNavigationCapturingSettingOffByDefault(
               {.is_diy_app = web_app->is_diy_app(),
                .is_preinstalled_browser_tab_app =
                    is_preinstalled_browser_tab_app,
-               .client_mode = web_app->launch_handler()
-                                  .value_or(LaunchHandler())
-                                  .client_mode})) {
+               .client_mode_valid_and_specified =
+                   web_app->launch_handler()
+                       .value_or(LaunchHandler())
+                       .client_mode_valid_and_specified()})) {
         return false;
       }
       break;
-    case proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS:
+    case proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE:
       return true;
-    case proto::LinkCapturingUserPreference::DO_NOT_CAPTURE_SUPPORTED_LINKS:
+    case proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE:
       return false;
   }
 
@@ -1176,14 +1226,13 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
     }
     const WebApp* other_app = GetAppById(other_app_id);
     switch (other_app->user_link_capturing_preference()) {
-      case proto::LinkCapturingUserPreference::
-          LINK_CAPTURING_PREFERENCE_DEFAULT:
+      case proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT:
         app_and_install_time.emplace_back(other_app_id,
                                           other_app->first_install_time());
         break;
-      case proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS:
+      case proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE:
         return false;
-      case proto::LinkCapturingUserPreference::DO_NOT_CAPTURE_SUPPORTED_LINKS:
+      case proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE:
         continue;
     }
   }
@@ -1248,7 +1297,7 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
   if (app_score == 0) {
     return false;
   }
-  return base::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
+  return std::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
     int other_score;
     if (base::FeatureList::IsEnabled(
             features::kPwaNavigationCapturingWithScopeExtensions)) {
@@ -1310,6 +1359,16 @@ bool WebAppRegistrar::AppScopesMatchForUserLinkCapturing(
   return app_scope1 == app_scope2;
 }
 
+bool WebAppRegistrar::IsPreferredAppForCapturingUrl(
+    const GURL& url,
+    const webapps::AppId& app_id) {
+  const GURL app_scope = GetAppScope(app_id);
+  return base::StartsWith(url.spec(), app_scope.spec(),
+                          base::CompareCase::SENSITIVE) &&
+         CapturesLinksInScope(app_id);
+}
+#endif
+
 base::flat_map<webapps::AppId, std::string>
 WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
   base::flat_map<webapps::AppId, std::string> all_controlling_apps;
@@ -1333,15 +1392,6 @@ WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
   return all_controlling_apps;
 }
 
-bool WebAppRegistrar::IsPreferredAppForCapturingUrl(
-    const GURL& url,
-    const webapps::AppId& app_id) {
-  const GURL app_scope = GetAppScope(app_id);
-  return base::StartsWith(url.spec(), app_scope.spec(),
-                          base::CompareCase::SENSITIVE) &&
-         CapturesLinksInScope(app_id);
-}
-
 bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {
   if (!IsInstallState(app_id,
                       {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
@@ -1351,6 +1401,13 @@ bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {
   }
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->is_diy_app();
+}
+
+std::vector<blink::Manifest::RelatedApplication>
+WebAppRegistrar::GetRelatedApplications(const webapps::AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app ? web_app->related_applications()
+                 : std::vector<blink::Manifest::RelatedApplication>();
 }
 
 std::string WebAppRegistrar::GetAppShortName(
@@ -1477,8 +1534,9 @@ std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
   if (!web_app)
     return std::nullopt;
 
-  if (web_app->scope().is_empty())
+  if (!web_app->scope().is_valid()) {
     return std::nullopt;
+  }
 
   return web_app->scope();
 }
@@ -1494,6 +1552,10 @@ std::optional<mojom::UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
   auto* web_app = GetAppById(app_id);
   if (web_app == nullptr) {
     return std::nullopt;
+  }
+
+  if (GetInstallState(app_id) != proto::INSTALLED_WITH_OS_INTEGRATION) {
+    return mojom::UserDisplayMode::kBrowser;
   }
 
   return web_app->user_display_mode();
@@ -1684,7 +1746,7 @@ base::Value WebAppRegistrar::AsDebugValue() const {
   for (const web_app::WebApp& web_app : GetAppsIncludingStubs()) {
     web_apps.push_back(&web_app);
   }
-  base::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
+  std::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
 
   // Prefix with a ! so this appears at the top when serialized.
   base::Value::Dict& index = *root.EnsureDict("!Index");
@@ -1795,8 +1857,10 @@ bool IsRegistryEqual(const Registry& registry,
     }
     WebApp web_app2 = WebApp(*registry2.at(web_app.app_id()));
     if (exclude_current_os_integration) {
-      web_app.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
-      web_app2.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
+      web_app.SetCurrentOsIntegrationStates(
+          proto::os_state::WebAppOsIntegration());
+      web_app2.SetCurrentOsIntegrationStates(
+          proto::os_state::WebAppOsIntegration());
       // Tests that want to ignore current os integration state usually also
       // want to ignore the presence/absece of the "user installed" source, as
       // that is something else that is not synced across.

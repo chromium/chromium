@@ -28,13 +28,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
@@ -42,7 +42,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
-#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -1048,7 +1049,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowScriptsTab) {
 }
 
 // Tests recorder panel showing.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowRecorderTab) {
+// TODO(crbug.com/331650494): Test is flaky on Linux debug build.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_TestShowRecorderTab DISABLED_TestShowRecorderTab
+#else
+#define MAYBE_TestShowRecorderTab TestShowRecorderTab
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestShowRecorderTab) {
   RunTest("testShowRecorderTab", kDebuggerTestPage);
 }
 
@@ -2269,8 +2276,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestNetworkPushTime) {
   CloseDevToolsWindow();
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Flaky on Windows: https://crbug.com/1087320
+// Flaky on Linux: http://crbug.com/331650494
 #define MAYBE_TestDOMWarnings DISABLED_TestDOMWarnings
 #else
 #define MAYBE_TestDOMWarnings TestDOMWarnings
@@ -2341,7 +2349,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
 
 // Disabled. Failing on MacOS MSAN. See https://crbug.com/849129.
 // Also failing on Linux. See https://crbug.com/1187693.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestDispatchKeyEventShowsAutoFill \
   DISABLED_TestDispatchKeyEventShowsAutoFill
 #else
@@ -2656,7 +2664,7 @@ class RemoteDebuggingTest : public extensions::ExtensionApiTest {
 };
 
 // Fails on CrOS. crbug.com/431399
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RemoteDebugger DISABLED_RemoteDebugger
 #else
 // TODO(crbug.com/41478279): Flaky on all platforms.
@@ -2669,6 +2677,59 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, MAYBE_RemoteDebugger) {
 IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
   ASSERT_TRUE(RunExtensionTest("discovery_page")) << message_;
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class RemoteDebuggingUserDataDirTest
+    : public RemoteDebuggingTest,
+      public ::testing::WithParamInterface<
+          std::tuple</*default_user_dir*/ bool, /*enable_the_feature*/ bool>> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kDevToolsDebuggingRestrictions, IsFeatureEnabled());
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(
+        IsUsingStandardUserDataDir());
+    RemoteDebuggingTest::SetUp();
+  }
+
+ protected:
+  static bool IsUsingStandardUserDataDir() { return std::get<0>(GetParam()); }
+
+  static bool IsFeatureEnabled() { return std::get<1>(GetParam()); }
+
+  base::HistogramTester histograms_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(RemoteDebuggingUserDataDirTest, AttemptDebugging) {
+  histograms_.ExpectUniqueSample(
+      "DevTools.DevToolsDebuggingUserDataDirStatus",
+      IsUsingStandardUserDataDir()
+          ? /*kDebuggingRequestedWithDefaultUserDataDir*/ 2
+          : /*kDebuggingRequestedWithNonDefaultUserDataDir*/ 1,
+      1);
+
+  if (IsUsingStandardUserDataDir() && IsFeatureEnabled()) {
+    EXPECT_FALSE(RunExtensionTest("discovery_page"));
+  } else {
+    EXPECT_TRUE(RunExtensionTest("discovery_page"));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    RemoteDebuggingUserDataDirTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const auto& info) {
+      return base::StrCat({std::get<0>(info.param) ? "DefaultUserDataDir"
+                                                   : "NonDefaultUserDataDir",
+                           "AndFeature",
+                           std::get<1>(info.param) ? "Enabled" : "Disabled"});
+    });
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
   DisallowDevTools(browser());
@@ -3020,7 +3081,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
+// TODO(crbug.com/392058349): Re-enable the test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  DISABLED_TestRawHeadersWithRedirectAndHSTS
+#else
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  TestRawHeadersWithRedirectAndHSTS
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestRawHeadersWithRedirectAndHSTS) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -3200,7 +3269,13 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, InspectElement) {
+// TODO(crbug.com/331650494): Test is flaky on Linux debug build.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_InspectElement DISABLED_InspectElement
+#else
+#define MAYBE_InspectElement InspectElement
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_InspectElement) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/devtools/oopif_frame.html"));
 
@@ -3510,8 +3585,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, SourceMapsFromDevtools) {
   CloseDevToolsWindow();
 }
 
+// TODO(crbug.com/331650494): Test is flaky on Linux debug build.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_DoesNotCrashOnSourceMapsFromUnknownScheme \
+  DISABLED_DoesNotCrashOnSourceMapsFromUnknownScheme
+#else
+#define MAYBE_DoesNotCrashOnSourceMapsFromUnknownScheme \
+  DoesNotCrashOnSourceMapsFromUnknownScheme
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       DoesNotCrashOnSourceMapsFromUnknownScheme) {
+                       MAYBE_DoesNotCrashOnSourceMapsFromUnknownScheme) {
   OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
   DispatchOnTestSuite(window_, "testDoesNotCrashOnSourceMapsFromUnknownScheme");
   CloseDevToolsWindow();

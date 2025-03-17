@@ -29,10 +29,12 @@ build_webui("build") {
   non_web_component_files = [
     "app_style_updater.ts",
     "common.ts",
+    "keyboard_util.ts",
     "menus/menu_util.ts",
     "metrics_browser_proxy.ts",
     "read_anything.ts",
     "read_anything_logger.ts",
+    "speech_browser_proxy.ts",
     "voice_language_util.ts",
     "voice_notification_manager.ts",
   ]
@@ -41,6 +43,8 @@ build_webui("build") {
     "language_menu.css",
     "language_toast.css",
     "read_anything_toolbar.css",
+    "menus/simple_action_menu.css",
+    "toolbar_styles_shared_lit.css",
     "voice_selection_menu.css",
   ]
   icons_html_files = [ "icons.html" ]
@@ -50,7 +54,6 @@ build_webui("build") {
   ts_deps = [
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

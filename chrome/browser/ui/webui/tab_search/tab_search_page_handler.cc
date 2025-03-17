@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -17,13 +18,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -427,7 +426,8 @@ void TabSearchPageHandler::ExcludeFromDuplicateTabs(const GURL& url) {
 
   tab_declutter_controller_->ExcludeFromDuplicateTabs(url.GetWithoutRef());
 
-  auto tabs = duplicate_tabs_[url.GetWithoutRef()];
+  std::vector<tabs::TabInterface*> tabs = duplicate_tabs_[url.GetWithoutRef()];
+
   for (tabs::TabInterface* tab : tabs) {
     RemoveDuplicateTab(tab);
   }
@@ -439,7 +439,7 @@ void TabSearchPageHandler::RegisterInactiveTabDeclutterCallbacks(
     tabs::TabInterface* tab) {
   std::vector<base::CallbackListSubscription> subscriptions;
 
-  subscriptions.push_back(tab->RegisterDidEnterForeground(
+  subscriptions.push_back(tab->RegisterDidActivate(
       base::BindRepeating(&TabSearchPageHandler::OnStaleTabDidEnterForeground,
                           base::Unretained(this))));
 
@@ -506,7 +506,7 @@ void TabSearchPageHandler::RegisterDuplicateTabDeclutterCallbacks(
         web_contents,
         base::BindRepeating(
             [](TabSearchPageHandler* handler, tabs::TabInterface* tab) {
-              handler->RemoveDuplicateTab(tab, true);
+              handler->RemoveDuplicateTab(tab);
               handler->page_->UnusedTabsChanged(handler->GetMojoUnusedTabs());
             },
             base::Unretained(this), tab));
@@ -538,41 +538,34 @@ void TabSearchPageHandler::RemoveStaleTab(tabs::TabInterface* tab) {
   inactive_tab_subscriptions_map_.erase(tab);
 }
 
-void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab,
-                                              bool url_changed) {
+void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab) {
   CHECK(tab);
-  CHECK(duplicate_tab_subscriptions_map_.find(tab) !=
-        duplicate_tab_subscriptions_map_.end());
 
-  GURL tab_url;
+  for (auto& [duplicate_url, duplicate_tab_list] : duplicate_tabs_) {
+    auto found_it = std::ranges::find(duplicate_tab_list, tab);
+    if (found_it != duplicate_tab_list.end()) {
+      // Remove the specific tab from `duplicate_tabs_` and subscription maps.
+      duplicate_tab_list.erase(found_it);
+      duplicate_tab_subscriptions_map_.erase(tab);
+      duplicate_tab_webcontents_observers_.erase(tab);
 
-  if (url_changed) {
-    for (const auto& [url, tabs] : duplicate_tabs_) {
-      if (std::find(tabs.begin(), tabs.end(), tab) != tabs.end()) {
-        tab_url = url;
-        break;
+      // If there is only one more element remove it as having one entry is
+      // equivalent to having no duplicate items.
+      if (duplicate_tab_list.size() == 1) {
+        tabs::TabInterface* last_tab = duplicate_tab_list.front();
+        duplicate_tab_subscriptions_map_.erase(last_tab);
+        duplicate_tab_webcontents_observers_.erase(last_tab);
+        duplicate_tab_list.clear();
       }
+
+      // If the list is now empty, remove it from `duplicate_tabs_`.
+      if (duplicate_tab_list.empty()) {
+        duplicate_tabs_.erase(duplicate_url);
+      }
+
+      return;
     }
-  } else {
-    tab_url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
-    CHECK(duplicate_tabs_.find(tab_url) != duplicate_tabs_.end());
   }
-
-  CHECK(tab_url.is_valid());
-
-  auto& tabs = duplicate_tabs_[tab_url];
-  auto tab_iter = std::find(tabs.begin(), tabs.end(), tab);
-
-  CHECK(tab_iter != tabs.end());
-  tabs.erase(tab_iter);
-
-  if (tabs.empty()) {
-    duplicate_tabs_.erase(tab_url);
-  }
-
-  // Unregister the subscriptions for this TabInterface
-  duplicate_tab_subscriptions_map_.erase(tab);
-  duplicate_tab_webcontents_observers_.erase(tab);
 }
 
 void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
@@ -993,10 +986,10 @@ void TabSearchPageHandler::TriggerSignIn() {
   if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id)) {
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+        profile, signin_metrics::AccessPoint::kTabOrganization);
   } else {
     signin_ui_util::ShowSigninPromptFromPromo(
-        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+        profile, signin_metrics::AccessPoint::kTabOrganization);
   }
 }
 
@@ -1036,7 +1029,6 @@ void TabSearchPageHandler::SetTabOrganizationUserInstruction(
 
 void TabSearchPageHandler::SetUserFeedback(
     int32_t session_id,
-    int32_t organization_id,
     tab_search::mojom::UserFeedback feedback) {
   optimization_guide::proto::UserFeedback user_feedback;
   switch (feedback) {
@@ -1053,27 +1045,16 @@ void TabSearchPageHandler::SetUserFeedback(
           optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       break;
   }
-  if (base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
-    CHECK(organization_id == -1);
-    Browser* browser = chrome::FindLastActive();
-    if (!browser) {
-      return;
-    }
-    TabOrganizationSession* session =
-        organization_service_->GetSessionForBrowser(browser);
-    if (!session) {
-      return;
-    }
-    session->SetFeedback(user_feedback);
-  } else {
-    CHECK(organization_id >= 0);
-    TabOrganization* organization =
-        GetTabOrganization(organization_service_, session_id, organization_id);
-    if (!organization) {
-      return;
-    }
-    organization->SetFeedback(user_feedback);
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
   }
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(browser);
+  if (!session) {
+    return;
+  }
+  session->SetFeedback(user_feedback);
 }
 
 void TabSearchPageHandler::NotifyOrganizationUIReadyToShow() {
@@ -1425,7 +1406,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   auto tab_data = tab_search::mojom::Tab::New();
   const tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
-  tab_data->active = tab->IsInForeground();
+  tab_data->active = tab->IsActivated();
   tab_data->tab_id = tab->GetHandle().raw_value();
   tab_data->index = index;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
@@ -1484,16 +1465,16 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   std::vector<TabAlertState> alert_states =
       GetTabAlertStatesForContents(contents);
   // Currently, we only report media alert states.
-  base::ranges::copy_if(alert_states.begin(), alert_states.end(),
-                        std::back_inserter(tab_data->alert_states),
-                        [](TabAlertState alert) {
-                          return alert == TabAlertState::MEDIA_RECORDING ||
-                                 alert == TabAlertState::AUDIO_RECORDING ||
-                                 alert == TabAlertState::VIDEO_RECORDING ||
-                                 alert == TabAlertState::AUDIO_PLAYING ||
-                                 alert == TabAlertState::AUDIO_MUTING ||
-                                 alert == TabAlertState::GLIC_ACCESSING;
-                        });
+  std::ranges::copy_if(alert_states.begin(), alert_states.end(),
+                       std::back_inserter(tab_data->alert_states),
+                       [](TabAlertState alert) {
+                         return alert == TabAlertState::MEDIA_RECORDING ||
+                                alert == TabAlertState::AUDIO_RECORDING ||
+                                alert == TabAlertState::VIDEO_RECORDING ||
+                                alert == TabAlertState::AUDIO_PLAYING ||
+                                alert == TabAlertState::AUDIO_MUTING ||
+                                alert == TabAlertState::GLIC_ACCESSING;
+                       });
 
   return tab_data;
 }

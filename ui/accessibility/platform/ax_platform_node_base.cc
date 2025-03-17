@@ -4,20 +4,20 @@
 
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <limits>
 #include <set>
 #include <sstream>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -25,6 +25,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared-internal.h"
@@ -80,7 +81,7 @@ bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
 
 // Map from each AXPlatformNode's unique id to its instance.
 using UniqueIdMap =
-    std::unordered_map<int32_t, raw_ptr<AXPlatformNode, CtnExperimental>>;
+    absl::flat_hash_map<int32_t, raw_ptr<AXPlatformNode, CtnExperimental>>;
 base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -136,10 +137,11 @@ const std::string AXPlatformNodeBase::kAriaActionsPrefix = "custom";
 // fuchsia has native accessibility.
 #if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY) && !BUILDFLAG(IS_FUCHSIA)
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate* delegate) {
   AXPlatformNodeBase* node = new AXPlatformNodeBase();
   node->Init(delegate);
-  return node;
+  return Pointer(node);
 }
 #endif
 
@@ -316,8 +318,13 @@ base::stack<gfx::NativeViewAccessible> AXPlatformNodeBase::GetAncestors() {
   base::stack<gfx::NativeViewAccessible> ancestors;
   gfx::NativeViewAccessible current_node = GetNativeViewAccessible();
   while (current_node) {
+    AXPlatformNodeBase* current_platform_node =
+        FromNativeViewAccessible(current_node);
+    if (!current_platform_node) {
+      break;
+    }
     ancestors.push(current_node);
-    current_node = FromNativeViewAccessible(current_node)->GetParent();
+    current_node = current_platform_node->GetParent();
   }
 
   return ancestors;
@@ -482,6 +489,10 @@ void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
 void AXPlatformNodeBase::AnnounceTextAs(const std::u16string& text,
                                         AnnouncementType announcement_type) {}
 #endif
+
+std::string AXPlatformNodeBase::GetRootURL() const {
+  return delegate_ ? delegate_->GetRootURL() : std::string();
+}
 
 AXPlatformNodeDelegate* AXPlatformNodeBase::GetDelegate() const {
   return delegate_;
@@ -1609,6 +1620,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DetailsFrom::kInterestTarget:
         AddAttributeToList("details-from", "interest-target", attributes);
         break;
+      case ax::mojom::DetailsFrom::kCommandfor:
+        AddAttributeToList("details-from", "command-for", attributes);
+        break;
     }
   }
 
@@ -1651,7 +1665,7 @@ void AXPlatformNodeBase::AddAttributeToList(
   DCHECK(attributes);
   bool value;
   if (GetBoolAttribute(attribute, &value)) {
-    AddAttributeToList(name, value ? "true" : "false", attributes);
+    AddAttributeToList(name, base::ToString(value), attributes);
   }
 }
 
@@ -1811,7 +1825,7 @@ int32_t AXPlatformNodeBase::GetHyperlinkIndexFromChild(
     return -1;
 
   auto iterator =
-      base::ranges::find(hypertext_.hyperlinks, child->GetUniqueId());
+      std::ranges::find(hypertext_.hyperlinks, child->GetUniqueId());
   if (iterator == hypertext_.hyperlinks.end())
     return -1;
 
@@ -2026,7 +2040,8 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
 AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
     int hypertext_offset) const {
   DCHECK_GE(hypertext_offset, 0);
-  DCHECK_LT(hypertext_offset, static_cast<int>(GetHypertext().size()));
+  // The offset can be equal to the length when it is past the end.
+  DCHECK_LE(hypertext_offset, static_cast<int>(GetHypertext().size()));
 
   if (IsLeaf()) {
     if (IsText()) {
@@ -2045,7 +2060,7 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
       child_text_len =
           base::checked_cast<int>(child_iter->GetHypertext().size());
 
-    if (current_hypertext_offset < child_text_len) {
+    if (current_hypertext_offset <= child_text_len) {
       int endpoint_offset = current_hypertext_offset;
       if (child_iter->IsText())
         return child_iter->GetDelegate()->CreateTextPositionAt(endpoint_offset);

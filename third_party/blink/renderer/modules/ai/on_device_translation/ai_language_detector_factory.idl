@@ -4,15 +4,18 @@
     SecureContext
 ]
 interface AILanguageDetectorFactory {
+    [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIAvailability> availability();
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AILanguageDetector> create(optional AILanguageDetectorCreateOptions options = {});
-  [
-    CallWith=ScriptState
-  ]
-  Promise<AILanguageDetectorCapabilities> capabilities();
 };
 
 dictionary AILanguageDetectorCreateOptions {

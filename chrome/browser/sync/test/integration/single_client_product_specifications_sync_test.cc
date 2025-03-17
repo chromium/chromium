@@ -61,7 +61,7 @@ std::vector<sync_pb::EntitySpecifics> GetItemEntities(
       base::Base64Encode(base::SHA1HashString(top_level_uuid));
   syncer::UniquePosition::Suffix suffix;
   CHECK_EQ(suffix.size(), suffix_str.size());
-  base::ranges::copy(suffix_str, suffix.begin());
+  std::ranges::copy(suffix_str, suffix.begin());
   syncer::UniquePosition position =
       syncer::UniquePosition::InitialPosition(suffix);
   for (const std::string& url : urls) {
@@ -111,10 +111,7 @@ MATCHER_P2(HasUnknownFields, uuid, unknown_fields, "") {
 class SingleClientProductSpecificationsSyncTest : public SyncTest {
  public:
   SingleClientProductSpecificationsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitWithFeatures(
-        {commerce::kProductSpecifications,
-         commerce::kProductSpecificationsMultiSpecifics},
-        {});
+    features_override_.InitWithFeatures({commerce::kProductSpecifications}, {});
   }
 
   SingleClientProductSpecificationsSyncTest(

@@ -41,14 +41,15 @@ const char kSignoutObfuscatedIDAttrName[] = "obfuscatedid";
 
 // Determines the Dice action that has been passed from Gaia in the header.
 DiceAction GetDiceActionFromHeader(const std::string& value) {
-  if (value == "SIGNIN")
+  if (value == "SIGNIN") {
     return DiceAction::SIGNIN;
-  else if (value == "SIGNOUT")
+  } else if (value == "SIGNOUT") {
     return DiceAction::SIGNOUT;
-  else if (value == "ENABLE_SYNC")
+  } else if (value == "ENABLE_SYNC") {
     return DiceAction::ENABLE_SYNC;
-  else
+  } else {
     return DiceAction::NONE;
+  }
 }
 
 }  // namespace
@@ -63,8 +64,9 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
   DiceResponseParams params;
   ResponseHeaderDictionary header_dictionary =
       ParseAccountConsistencyResponseHeader(header_value);
-  if (header_dictionary.count(kSigninActionAttrName) != 1u)
+  if (header_dictionary.count(kSigninActionAttrName) != 1u) {
     return params;
+  }
 
   DiceResponseParams::AccountInfo* info = nullptr;
   switch (GetDiceActionFromHeader(
@@ -99,13 +101,15 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
       info->email = value;
     } else if (key_name == kSigninAuthUserAttrName) {
       bool parse_success = base::StringToInt(value, &info->session_index);
-      if (!parse_success)
+      if (!parse_success) {
         info->session_index = -1;
+      }
     } else if (key_name == kSigninAuthorizationCodeAttrName) {
-      if (params.signin_info)
+      if (params.signin_info) {
         params.signin_info->authorization_code = value;
-      else
+      } else {
         DLOG(WARNING) << "Authorization code expected only with SIGNIN action";
+      }
     } else if (key_name == kSigninNoAuthorizationCodeAttrName) {
       if (params.signin_info) {
         params.signin_info->no_authorization_code = true;
@@ -177,8 +181,9 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
     } else if (key_name == kSignoutSessionIndexAttrName) {
       int session_index = -1;
       bool parse_success = base::StringToInt(value, &session_index);
-      if (parse_success)
+      if (parse_success) {
         session_indices.push_back(session_index);
+      }
     } else {
       DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
     }
@@ -212,8 +217,9 @@ bool DiceHeaderHelper::ShouldBuildRequestHeader(
 }
 
 bool DiceHeaderHelper::IsUrlEligibleForRequestHeader(const GURL& url) {
-  if (account_consistency_ != AccountConsistencyMethod::kDice)
+  if (account_consistency_ != AccountConsistencyMethod::kDice) {
     return false;
+  }
 
   return gaia::HasGaiaSchemeHostPort(url);
 }
@@ -224,10 +230,12 @@ std::string DiceHeaderHelper::BuildRequestHeader(const GaiaId& sync_gaia_id,
   parts.push_back(base::StringPrintf("version=%s", kDiceProtocolVersion));
   parts.push_back("client_id=" +
                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  if (!device_id.empty())
+  if (!device_id.empty()) {
     parts.push_back("device_id=" + device_id);
-  if (!sync_gaia_id.empty())
+  }
+  if (!sync_gaia_id.empty()) {
     parts.push_back("sync_account_id=" + sync_gaia_id.ToString());
+  }
 
   // Restrict Signin to Sync account only when fixing auth errors.
   std::string signin_mode = kRequestSigninAll;

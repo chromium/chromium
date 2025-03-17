@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -43,6 +44,11 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
   EXPECT_EQ(proto_key.source(),
             client_certificates_pb::PrivateKey::PRIVATE_UNEXPORTABLE_KEY);
   EXPECT_GT(proto_key.wrapped_key().size(), 0U);
+
+  auto dict_key = private_key->ToDict();
+  EXPECT_EQ(*dict_key.FindInt(kKeySource),
+            static_cast<int>(PrivateKeySource::kUnexportableKey));
+  EXPECT_GT(dict_key.FindString(kKey)->size(), 0U);
 }
 
 }  // namespace client_certificates

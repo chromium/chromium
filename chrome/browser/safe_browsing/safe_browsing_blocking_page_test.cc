@@ -142,7 +142,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/styled_label.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #endif
 
@@ -2324,14 +2324,14 @@ class TrustSafetySentimentSurveyV2BrowserTest
   ~TrustSafetySentimentSurveyV2BrowserTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     metrics::DesktopSessionDurationTracker::Initialize();
 #endif
     SafeBrowsingBlockingPageBrowserTest::SetUp();
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
 #endif
   }
@@ -3345,31 +3345,10 @@ class SafeBrowsingBlockingPageAsyncChecksTestBase
   TestSafeBrowsingServiceFactory factory_;
 };
 
-class SafeBrowsingBlockingPageAsyncChecksTest
-    : public SafeBrowsingBlockingPageAsyncChecksTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  SafeBrowsingBlockingPageAsyncChecksTest() = default;
+using SafeBrowsingBlockingPageAsyncChecksTest =
+    SafeBrowsingBlockingPageAsyncChecksTestBase;
 
-  void SetUp() override {
-    bool is_async_check_enabled = GetParam();
-    if (is_async_check_enabled) {
-      feature_list_.InitAndEnableFeature(kSafeBrowsingAsyncRealTimeCheck);
-    } else {
-      feature_list_.InitAndDisableFeature(kSafeBrowsingAsyncRealTimeCheck);
-    }
-    SafeBrowsingBlockingPageAsyncChecksTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(AsyncCheckEnabled,
-                         SafeBrowsingBlockingPageAsyncChecksTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTest,
                        EnterpriseRealTimeUrlCheck) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
@@ -3391,7 +3370,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTest,
                        ConsumerRealTimeUrlCheck) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
@@ -3407,19 +3386,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
   ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
-  bool is_async_check_enabled = GetParam();
-  if (is_async_check_enabled) {
-    // When async checks are enabled, the sync check is an HPD check.
-    histogram_tester.ExpectTotalCount(
-        "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
-        /*expected_count=*/1);
-  } else {
-    // When async checks are disabled, only a sync check is performed, which is
-    // a consumer URT check.
-    histogram_tester.ExpectTotalCount(
-        "SafeBrowsing.BrowserThrottle.TotalDelay2.ConsumerFullUrlLookup",
-        /*expected_count=*/1);
-  }
+  // When async checks are enabled, the sync check is an HPD check.
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
+      /*expected_count=*/1);
 }
 
 class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
@@ -3429,9 +3399,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {kSafeBrowsingAsyncRealTimeCheck,
-         kCreateWarningShownClientSafeBrowsingReports},
-        {kRedWarningSurvey});
+        {kCreateWarningShownClientSafeBrowsingReports}, {kRedWarningSurvey});
     SafeBrowsingBlockingPageAsyncChecksTestBase::SetUp();
   }
 
@@ -4184,8 +4152,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests for real time URL check. To test it without making network requests to
 // Safe Browsing servers, store an unsafe verdict in cache for the URL.
 class SafeBrowsingBlockingPageRealTimeUrlCheckTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public InProcessBrowserTest {
  public:
   SafeBrowsingBlockingPageRealTimeUrlCheckTest() = default;
 
@@ -4195,14 +4162,7 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
       const SafeBrowsingBlockingPageRealTimeUrlCheckTest&) = delete;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {kDelayedWarnings};
-    if (GetParam()) {
-      enabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
-    } else {
-      disabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitAndDisableFeature(kDelayedWarnings);
     InProcessBrowserTest::SetUp();
   }
 
@@ -4258,11 +4218,7 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AsyncCheckEnabled,
-                         SafeBrowsingBlockingPageRealTimeUrlCheckTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningShown_EnhancedProtectionEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
@@ -4277,7 +4233,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningShown_MbbEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
@@ -4292,7 +4248,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningNotShown_MbbDisabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
@@ -4307,7 +4263,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        EnterpriseRealTimeUrlCheck_HistogramHasDmToken) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
@@ -4334,7 +4290,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        EnterpriseRealTimeUrlCheck_HistogramHasNoDmToken) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
@@ -4360,7 +4316,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SafeBrowsingBlockingPageRealTimeUrlCheckTest,
     EnterpriseRealTimeUrlCheck_NoHistogramBecausePolicyDisabled) {
   base::HistogramTester histogram_tester;
@@ -4391,8 +4347,7 @@ IN_PROC_BROWSER_TEST_P(
 // HashRealTimeService, this populates the local cache instead of mocking
 // network requests.
 class SafeBrowsingBlockingPageHashRealTimeCheckTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public InProcessBrowserTest {
  public:
   SafeBrowsingBlockingPageHashRealTimeCheckTest() = default;
   SafeBrowsingBlockingPageHashRealTimeCheckTest(
@@ -4426,11 +4381,6 @@ class SafeBrowsingBlockingPageHashRealTimeCheckTest
     std::vector<base::test::FeatureRef> enabled_features = {
         kHashPrefixRealTimeLookups};
     std::vector<base::test::FeatureRef> disabled_features = {};
-    if (GetParam()) {
-      enabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
-    } else {
-      disabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   void SetUpVerdict(GURL url, Profile* profile, bool is_unsafe) {
@@ -4479,37 +4429,24 @@ class SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {
         kHashPrefixRealTimeLookups};
-    if (GetParam()) {
-      enabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
-    } else {
-      disabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 };
-INSTANTIATE_TEST_SUITE_P(AsyncCheckEnabled,
-                         SafeBrowsingBlockingPageHashRealTimeCheckTest,
-                         testing::Bool());
-INSTANTIATE_TEST_SUITE_P(
-    AsyncCheckEnabled,
-    SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
-    testing::Bool());
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
+
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
                        ShowWarning) {
   base::HistogramTester histogram_tester;
   SetUpAndNavigateToUrl(/*is_unsafe=*/true);
   ASSERT_TRUE(IsShowingInterstitial());
   // The TotalDelay2 metric is logged for whichever check is run sync. When
-  // async checks are disabled, that's the hash-prefix real-time check. When
-  // they are enabled, it's the hash-prefix database check, since the
+  // async checks are enabled, it's the hash-prefix database check, since the
   // hash-prefix real-time check is run async.
-  bool is_using_async_checks = GetParam();
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixRealTimeCheck",
-      /*expected_count=*/is_using_async_checks ? 0 : 1);
+      /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
-      /*expected_count=*/is_using_async_checks ? 1 : 0);
+      /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
       /*sample=*/false,
@@ -4518,22 +4455,20 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
       "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
       /*expected_count=*/1);
 }
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
                        DontShowWarning_PageIsSafe) {
   base::HistogramTester histogram_tester;
   SetUpAndNavigateToUrl(/*is_unsafe=*/false);
   ASSERT_FALSE(IsShowingInterstitial());
   // The TotalDelay2 metric is logged for whichever check is run sync. When
-  // async checks are disabled, that's the hash-prefix real-time check. When
-  // they are enabled, it's the hash-prefix database check, since the
+  // async checks are enabled, it's the hash-prefix database check, since the
   // hash-prefix real-time check is run async.
-  bool is_using_async_checks = GetParam();
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixRealTimeCheck",
-      /*expected_count=*/is_using_async_checks ? 0 : 1);
+      /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
-      /*expected_count=*/is_using_async_checks ? 1 : 0);
+      /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
       /*sample=*/false,
@@ -4542,7 +4477,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
       "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
       /*expected_count=*/0);
 }
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
                        DontShowWarning_FeatureIsOff) {
   base::HistogramTester histogram_tester;
   SetUpAndNavigateToUrl(/*is_unsafe=*/true);
@@ -4561,7 +4496,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
       "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
       /*expected_count=*/0);
 }
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
                        TriggerHitReportAndClientSafeBrowsingReportRequest) {
   if (base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)) {
     // If the extended reporting pref dependency is removed, this test will not
@@ -4592,8 +4527,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
   EXPECT_EQ(
       report.client_properties().url_api_type(),
       ClientSafeBrowsingReportRequest_SafeBrowsingUrlApiType_PVER5_NATIVE_REAL_TIME);
-  bool is_using_async_checks = GetParam();
-  EXPECT_EQ(report.client_properties().is_async_check(), is_using_async_checks);
+  EXPECT_EQ(report.client_properties().is_async_check(), true);
 }
 
 class SafeBrowsingPrerenderBrowserTest

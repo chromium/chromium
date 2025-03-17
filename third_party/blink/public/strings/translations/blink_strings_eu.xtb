@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Idatzi balio egoki bat. <ph name="VALID_VALUE_LOW" /> eta <ph name="VALID_VALUE_HIGHER" /> dira gertuen dauden bi balio egokiak.</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4664250907885839816">"<ph name="ATSIGN" />" ikurraren ondoren ezin da "<ph name="INVALIDCHARACTER" />" ikurra ezarri.</translation>
+<translation id="4703271465972936359">Audio-pistak</translation>
 <translation id="4718048029184481307">Pantaila txiki gainjarrian erreproduzitzen</translation>
 <translation id="4812940957355064477">Idatzi zenbaki bat.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> hautatuta</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="5630795885300617244">Sakatu birritan ezkerreko edo eskuineko aldea 10 s saltatzeko</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
+<translation id="5868587040512539609">Bideo-pistak</translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> gailura igortzen</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Eman formatua</translation>
 <translation id="6550675742724504774">Aukerak</translation>
 <translation id="6643016212128521049">Garbitu</translation>
+<translation id="6661136971638885481"><ph name="TRACK_NUMBER" />. pista</translation>
 <translation id="668171684555832681">Beste bat…</translation>
 <translation id="6709093583001123835">Balioak <ph name="VALUE" /> izan behar du.</translation>
 <translation id="6709570249143506788">Erreprodukzio-kalitate txarra</translation>

@@ -242,8 +242,8 @@ void CustomElement::EnqueueConnectedMoveCallback(Element& element) {
   if (definition->HasConnectedMoveCallback()) {
     definition->EnqueueConnectedMoveCallback(element);
   } else {
-    definition->EnqueueDisconnectedCallback(element);
-    definition->EnqueueConnectedCallback(element);
+    EnqueueDisconnectedCallback(element);
+    EnqueueConnectedCallback(element);
   }
 }
 

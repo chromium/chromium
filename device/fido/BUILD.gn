@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -85,7 +84,6 @@ component("fido") {
     ]
 
     deps += [
-      "//build:chromeos_buildflags",
       "//components/apdu",
       "//components/trusted_vault",
       "//device/base",
@@ -159,6 +157,9 @@ component("fido") {
         "device_operation.h",
         "device_response_converter.cc",
         "device_response_converter.h",
+        "enclave/attestation.cc",
+        "enclave/attestation.h",
+        "enclave/attestation_report.h",
         "enclave/constants.cc",
         "enclave/constants.h",
         "enclave/enclave_authenticator.cc",
@@ -175,20 +176,6 @@ component("fido") {
         "enclave/transact.h",
         "enclave/types.cc",
         "enclave/types.h",
-        "enclave/verify/amd.cc",
-        "enclave/verify/amd.h",
-        "enclave/verify/attestation_report.cc",
-        "enclave/verify/attestation_report.h",
-        "enclave/verify/claim.cc",
-        "enclave/verify/claim.h",
-        "enclave/verify/endorsement.cc",
-        "enclave/verify/endorsement.h",
-        "enclave/verify/rekor.cc",
-        "enclave/verify/rekor.h",
-        "enclave/verify/utils.cc",
-        "enclave/verify/utils.h",
-        "enclave/verify/verifier.cc",
-        "enclave/verify/verifier.h",
         "fido_authenticator.cc",
         "fido_authenticator.h",
         "fido_device.cc",
@@ -254,7 +241,7 @@ component("fido") {
 
       deps += [
         "//components/sync/protocol:protocol",
-        "//device/fido/enclave/verify/proto:proto",
+        "//device/fido/enclave/proto:proto",
         "//services/device/public/cpp/hid",
         "//services/device/public/cpp/usb",
         "//services/device/public/mojom",
@@ -493,8 +480,6 @@ if (use_blink) {
 
     if (!is_android) {
       sources += [
-        "enclave/verify/test_utils.cc",
-        "enclave/verify/test_utils.h",
         "multiple_virtual_fido_device_factory.cc",
         "multiple_virtual_fido_device_factory.h",
         "virtual_fido_device_discovery.cc",

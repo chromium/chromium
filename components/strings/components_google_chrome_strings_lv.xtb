@@ -9,7 +9,9 @@
 <translation id="2447485272386224171">Pārlūku Chrome nodrošina <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> atklātā pirmkoda projekts un cita <ph name="BEGIN_LINK_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome logotips</translation>
 <translation id="3444832043240812445">Šajā lapā tiek parādīta tikai informācija par pēdējā laika avārijām, ja <ph name="BEGIN_LINK" />iespējojat avāriju pārskatu izveidi<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Šīs lapas ir paredzētas Chrome izstrādātājiem, un tās var nebūt aktīvi uzturētas vai testētas. Lai tās iespējotu, pārejiet uz lapu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, noklikšķiniet uz pogas, lai iespējotu atkļūdošanas lapas, un pēc tam atkal pārejiet uz šo lapu.</translation>
 <translation id="3875312571075912821">Ugunsmūra vai antivīrusu programmas iestatījumu maiņa, lai atļautu pārlūkam Chrome piekļūt tīklam.</translation>
+<translation id="4949828774841497663">Pārejiet uz sadaļu Applications (Lietojumprogrammas) &gt; System Settings (Sistēmas iestatījumi) &gt; Network (Tīkls), atlasiet aktīvo tīklu, noklikšķiniet uz pogas “Details...” (Detalizēta informācija) un noņemiet atlasi visiem starpniekserveriem, kas, iespējams, ir atlasīti.</translation>
 <translation id="5005121315113832363">Šī lapa ir bloķēta pārlūkā Chrome.</translation>
 <translation id="6011049234605203654">Atveriet
           Chrome izvēlni &gt;
@@ -38,9 +40,6 @@
           LAN iestatījumi
           un noņemiet atzīmi no izvēles rūtiņas “Use a proxy server for your LAN” (Izmantot starpniekserveri savam LAN).</translation>
 <translation id="7230956101631259640">Jūs skatāt drošu Chrome lapu.</translation>
-<translation id="8187289872471304532">Atveriet izvēlni
-          Applications (Lietojumprogrammas) &gt; System Preferences (Sistēmas preferences) &gt; Network (Tīkls) &gt; Advanced (Papildu) &gt; (Proxies) Starpniekserveri
-          un noņemiet atzīmes no visiem atzīmētajiem starpniekserveriem.</translation>
 <translation id="8232971017369963250">Pārlūku Chrome nodrošina <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> atklātā pirmkoda projekts.</translation>
 <translation id="8279509328145658601">Pārlūku Chrome nodrošina arī cita <ph name="BEGIN_LINK_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Pārlūkā Google Chrome tiek mēģināts mainīt maksājuma veidu aizpildes iestatījumus.</translation>

@@ -62,7 +62,7 @@
     }
   }
 
-  :host([dropdown-is-visible]) {
+  :host([dropdown-is-visible]:not([is-lens-searchbox_])) {
     box-shadow: none;
   }
 
@@ -99,6 +99,12 @@
     padding-inline-start: calc(52px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
     position: relative;
     width: 100%;
+  }
+
+  :host-context([dir='rtl']) input[dir='ltr'],
+  :host-context([dir='ltr']) input[dir='rtl'] {
+    padding-inline-end: calc(52px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
+    padding-inline-start: calc(var(--cr-searchbox-voice-icon-offset) + var(--cr-searchbox-voice-search-button-width) + var(--cr-searchbox-inner-icon-margin));
   }
 
   :host-context([is-back-arrow-visible]) input {
@@ -323,6 +329,7 @@
   <input id="input" class="truncate" type="search" autocomplete="off"
       spellcheck="false" aria-live="[[inputAriaLive_]]" role="combobox"
       aria-expanded="[[dropdownIsVisible]]" aria-controls="matches"
+      aria-description="[[searchboxAriaDescription]]"
       placeholder="[[computePlaceholderText_(placeholderText, showThumbnail)]]"
       on-copy="onInputCutCopy_"
       on-cut="onInputCutCopy_" on-focus="onInputFocus_"

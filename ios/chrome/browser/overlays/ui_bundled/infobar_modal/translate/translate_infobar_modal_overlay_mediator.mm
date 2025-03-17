@@ -14,10 +14,10 @@
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/translate/model/translate_infobar_metrics_recorder.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 
 namespace {
 const int kInvalidLanguageIndex = -1;

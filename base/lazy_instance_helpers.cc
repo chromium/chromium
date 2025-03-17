@@ -9,8 +9,7 @@
 #include "base/at_exit.h"
 #include "base/threading/platform_thread.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
   // Try to create the instance, if we're the first, will go from 0 to
@@ -39,10 +38,11 @@ bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
       // maximum responsiveness. After that spin with Sleep(1ms) so that we
       // don't burn excessive CPU time - this also avoids infinite loops due
       // to priority inversions (https://crbug.com/797129).
-      if (elapsed < Milliseconds(1))
+      if (elapsed < Milliseconds(1)) {
         PlatformThread::YieldCurrentThread();
-      else
+      } else {
         PlatformThread::Sleep(Milliseconds(1));
+      }
     } while (state.load(std::memory_order_acquire) ==
              kLazyInstanceStateCreating);
   }
@@ -60,9 +60,9 @@ void CompleteLazyInstance(std::atomic<uintptr_t>& state,
   state.store(new_instance, std::memory_order_release);
 
   // Make sure that the lazily instantiated object will get destroyed at exit.
-  if (new_instance && destructor)
+  if (new_instance && destructor) {
     AtExitManager::RegisterCallback(destructor, destructor_arg);
+  }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

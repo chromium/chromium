@@ -15,12 +15,15 @@ namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 
+// Provides access (not a copy) to the child nodes of a `BookmarkParentFolder`.
 class BookmarkParentFolderChildren {
  public:
   class Iterator {
    public:
     Iterator(const BookmarkParentFolderChildren* parent, size_t index);
     Iterator& operator++();
+    Iterator operator+(int offset) const;
+
     friend bool operator==(const Iterator&, const Iterator&) = default;
     friend auto operator<=>(const Iterator&, const Iterator&) = default;
     const bookmarks::BookmarkNode* operator*() const;

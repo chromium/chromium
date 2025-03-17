@@ -179,6 +179,10 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(Capability::DYNAMIC_COLORS);
   }
 
+  if (base::FeatureList::IsEnabled(kFeedStreaming)) {
+    feed_request.add_client_capability(Capability::STREAMING_FULL);
+  }
+
   switch (request_metadata.tab_group_enabled_state) {
     case TabGroupEnabledState::kNone:
       feed_request.add_client_capability(Capability::OPEN_IN_TAB);

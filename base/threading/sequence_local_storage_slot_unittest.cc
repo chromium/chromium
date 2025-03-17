@@ -192,10 +192,9 @@ TEST(SequenceLocalStorageComPtrTest,
   class TestNoAddressOfOperator {
    public:
     TestNoAddressOfOperator() = default;
-    ~TestNoAddressOfOperator() {
-      // Define a non-trivial destructor so that SequenceLocalStorageSlot
-      // will use the external value path.
-    }
+    // Define a non-trivial destructor so that SequenceLocalStorageSlot will use
+    // the external value path.
+    ~TestNoAddressOfOperator() {}  // NOLINT(modernize-use-equals-default)
     // See note above class definition for the reason this operator is deleted.
     TestNoAddressOfOperator* operator&() = delete;
   };

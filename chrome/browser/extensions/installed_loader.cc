@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/allowlist_state.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -165,17 +166,15 @@ void RecordDisbleReasonHistogram(int reason) {
 
 // Records the disable reasons for a single extension grouped by
 // disable_reason::DisableReason.
-void RecordDisableReasons(int reasons) {
+void RecordDisableReasons(const DisableReasonSet& reasons) {
   // |reasons| is a bitmask with values from ExtensionDisabledReason
   // which are increasing powers of 2.
-  if (reasons == disable_reason::DISABLE_NONE) {
+  if (reasons.empty()) {
     RecordDisbleReasonHistogram(disable_reason::DISABLE_NONE);
     return;
   }
-  for (int reason = 1; reason < disable_reason::DISABLE_REASON_LAST;
-       reason <<= 1) {
-    if (reasons & reason)
-      RecordDisbleReasonHistogram(reason);
+  for (int reason : reasons) {
+    RecordDisbleReasonHistogram(reason);
   }
 }
 
@@ -326,19 +325,19 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
       ExtensionSystem::Get(extension_service_->profile())->management_policy();
 
   if (extension_prefs_->IsExtensionDisabled(extension->id())) {
-    int disable_reasons = extension_prefs_->GetDisableReasons(extension->id());
+    DisableReasonSet disable_reasons =
+        extension_prefs_->GetDisableReasons(extension->id());
 
     // Update the extension prefs to reflect if the extension is no longer
     // blocked due to admin policy.
-    if ((disable_reasons & disable_reason::DISABLE_BLOCKED_BY_POLICY) &&
+    if (disable_reasons.contains(disable_reason::DISABLE_BLOCKED_BY_POLICY) &&
         !policy->MustRemainDisabled(extension.get(), nullptr)) {
-      disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
-      extension_prefs_->ReplaceDisableReasons(extension->id(), disable_reasons);
-      if (disable_reasons == disable_reason::DISABLE_NONE)
-        extension_prefs_->SetExtensionEnabled(extension->id());
+      disable_reasons.erase(disable_reason::DISABLE_BLOCKED_BY_POLICY);
+      extension_prefs_->RemoveDisableReason(
+          extension->id(), disable_reason::DISABLE_BLOCKED_BY_POLICY);
     }
 
-    if ((disable_reasons & disable_reason::DISABLE_CORRUPTED)) {
+    if ((disable_reasons.contains(disable_reason::DISABLE_CORRUPTED))) {
       CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
           extension_service_->corrupted_extension_reinstaller();
       if (policy->MustRemainEnabled(extension.get(), nullptr)) {
@@ -367,7 +366,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     // remain so.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
     if (policy->MustRemainDisabled(extension.get(), &disable_reason)) {
-      extension_prefs_->SetExtensionDisabled(extension->id(), disable_reason);
+      DCHECK_NE(disable_reason, disable_reason::DISABLE_NONE);
+      extension_prefs_->AddDisableReason(extension->id(), disable_reason);
     }
   }
 

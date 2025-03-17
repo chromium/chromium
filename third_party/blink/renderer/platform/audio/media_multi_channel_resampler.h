@@ -22,7 +22,7 @@ class AudioBus;
 
 // This is a simple wrapper around the MultiChannelResampler provided by the
 // media layer.
-class PLATFORM_EXPORT MediaMultiChannelResampler {
+class PLATFORM_EXPORT MediaMultiChannelResampler final {
   USING_FAST_MALLOC(MediaMultiChannelResampler);
 
   // Callback type for providing more data into the resampler.  Expects AudioBus

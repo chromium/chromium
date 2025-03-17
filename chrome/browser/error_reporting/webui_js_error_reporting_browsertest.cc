@@ -24,6 +24,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -139,6 +140,8 @@ class WebUIJSErrorReportingTest : public InProcessBrowserTest {
     error_page_test_server_.RegisterRequestHandler(
         base::BindRepeating(&ReturnErrorPage));
     EXPECT_TRUE(error_page_test_server_.Start());
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
 
     InProcessBrowserTest::SetUpOnMainThread();
   }

@@ -1,33 +1,10 @@
 #region Copyright notice and license
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 #endregion
 
 using NUnit.Framework;
@@ -67,7 +44,10 @@ namespace Google.Protobuf
             // We build the code with GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE to avoid the use of ref struct in the generated code.
             var compatibilityFlag = "-define:GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE";
             var sources = "*.cs";  // the generated sources from the TestProtos project
-            var args = $"-langversion:3 -target:library {compatibilityFlag} -reference:{testProtosOutputDir}\\Google.Protobuf.dll -out:{testProtosOutputDir}\\TestProtos.RefStructCompatibilityTest.OldCompiler.dll {sources}";
+            // We suppress CS1691, which flags a warning for the generated line of
+            // #pragma warning disable 1591, 0612, 3021, 8981
+            // because CS8981 is unknown to this version of the compiler.
+            var args = $"-langversion:3 -nologo -nowarn:1691 -target:library {compatibilityFlag} -reference:{testProtosOutputDir}\\Google.Protobuf.dll -out:{testProtosOutputDir}\\TestProtos.RefStructCompatibilityTest.OldCompiler.dll {sources}";
             RunOldCsharpCompilerAndCheckSuccess(args, testProtosProjectDir);
         }
 
@@ -77,43 +57,42 @@ namespace Google.Protobuf
         /// <param name="args"></param>
         /// <param name="workingDirectory"></param>
         private void RunOldCsharpCompilerAndCheckSuccess(string args, string workingDirectory)
-        {  
-            using (var process = new Process())
+        {
+            using var process = new Process();
+
+            // Get the path to the old C# 5 compiler from .NET framework. This approach is not 100% reliable, but works on most machines.
+            // Alternative way of getting the framework path is System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
+            // but it only works with the net45 target.
+            var oldCsharpCompilerPath = Path.Combine(Environment.GetEnvironmentVariable("WINDIR"), "Microsoft.NET", "Framework", "v4.0.30319", "csc.exe");
+            process.StartInfo.FileName = oldCsharpCompilerPath;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.Arguments = args;
+            process.StartInfo.WorkingDirectory = workingDirectory;
+
+            process.OutputDataReceived += (sender, e) =>
             {
-                // Get the path to the old C# 5 compiler from .NET framework. This approach is not 100% reliable, but works on most machines.
-                // Alternative way of getting the framework path is System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
-                // but it only works with the net45 target.
-                var oldCsharpCompilerPath = Path.Combine(Environment.GetEnvironmentVariable("WINDIR"), "Microsoft.NET", "Framework", "v4.0.30319", "csc.exe");
-                process.StartInfo.FileName = oldCsharpCompilerPath;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.Arguments = args;
-                process.StartInfo.WorkingDirectory = workingDirectory;
-
-                process.OutputDataReceived += (sender, e) =>
+                if (e.Data != null)
                 {
-                    if (e.Data != null)
-                    {
-                        Console.WriteLine(e.Data);
-                    }
-                };
-                process.ErrorDataReceived += (sender, e) =>
+                    Console.WriteLine(e.Data);
+                }
+            };
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (e.Data != null)
                 {
-                    if (e.Data != null)
-                    {
-                        Console.WriteLine(e.Data);
-                    }
-                };
+                    Console.WriteLine(e.Data);
+                }
+            };
 
-                process.Start();
+            process.Start();
 
-                process.BeginErrorReadLine();
-                process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
 
-                process.WaitForExit();
-                Assert.AreEqual(0, process.ExitCode);
-            }
+            process.WaitForExit();
+            Assert.AreEqual(0, process.ExitCode);
         }
     }
 }

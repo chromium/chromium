@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("util") {
+  sources = [
+    "histogram_util.cc",
+    "histogram_util.h",
+  ]
+  public_deps = [ "//chromeos/ash/services/nearby/public/mojom" ]
+  deps = [ "//base" ]
+}

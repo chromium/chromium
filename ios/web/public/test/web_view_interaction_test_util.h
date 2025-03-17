@@ -12,7 +12,6 @@
 
 #import "base/ios/block_types.h"
 #include "base/values.h"
-
 #include "ios/web/public/test/element_selector.h"
 
 namespace web {

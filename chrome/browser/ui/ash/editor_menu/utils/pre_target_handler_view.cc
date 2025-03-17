@@ -58,6 +58,13 @@ PreTargetHandlerView::GetTraversableViewsByUpDownKeys() {
   return {this};
 }
 
+void PreTargetHandlerView::OnAnchorMenuDismissed() {
+  // Avoid closing the anchor menu again if it has been closed.
+  if (pre_target_handler_) {
+    pre_target_handler_->set_dismiss_anchor_menu_on_view_closed(false);
+  }
+}
+
 void PreTargetHandlerView::ResetPreTargetHandler() {
   pre_target_handler_.reset();
 }

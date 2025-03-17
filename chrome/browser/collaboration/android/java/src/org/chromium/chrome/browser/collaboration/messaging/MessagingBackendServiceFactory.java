@@ -4,21 +4,21 @@
 
 package org.chromium.chrome.browser.collaboration.messaging;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 
 /** This factory class creates a MessagingBackendService for a give {@link Profile}. */
 @JNINamespace("collaboration::messaging::android")
+@NullMarked
 public final class MessagingBackendServiceFactory {
-    private static MessagingBackendService sMessagingBackendServiceForTesting;
+    private static @Nullable MessagingBackendService sMessagingBackendServiceForTesting;
 
     /**
      * A factory method to create or retrieve a {@link MessagingBackendService} object for a given
@@ -26,7 +26,7 @@ public final class MessagingBackendServiceFactory {
      *
      * @return The {@link MessageBackendService} for the given profile.
      */
-    public static @NonNull MessagingBackendService getForProfile(Profile profile) {
+    public static MessagingBackendService getForProfile(Profile profile) {
         if (sMessagingBackendServiceForTesting != null) {
             return sMessagingBackendServiceForTesting;
         }

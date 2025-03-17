@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapps.WebApkDistributor;
 
 import java.util.ArrayList;
@@ -15,12 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 /** Stores WebAPK specific information on behalf of {@link BrowserServicesIntentDataProvider}. */
+@NullMarked
 public class WebApkExtras {
     /** The package of the WebAPK. */
-    public final String webApkPackageName;
+    public final @Nullable String webApkPackageName;
 
     /** Icon to use for the splash screen. */
-    @NonNull public final WebappIcon splashIcon;
+    public final WebappIcon splashIcon;
 
     /** Whether the WebAPK's splash icon should be masked. */
     public final boolean isSplashIconMaskable;
@@ -29,36 +29,36 @@ public class WebApkExtras {
     public final int shellApkVersion;
 
     /** URL of the Web Manifest. */
-    public final String manifestUrl;
+    public final @Nullable String manifestUrl;
 
     /** URL that the WebAPK should navigate to when launched from the homescreen. */
-    public final String manifestStartUrl;
+    public final @Nullable String manifestStartUrl;
 
     /**
      * Id field of the Web Manifest. Empty or null means this is from an older version of
      * shell(<155) that did not set this value.
      */
-    @Nullable public final String manifestId;
+    public final @Nullable String manifestId;
 
     /**
      * Key of the WebAPK. The value should either be the same as the Manifest URL or the Manifest
      * Unique ID, or empty depending on the situation. Empty or null means this is from an older
      * version of shell (<155) that did not set this value.
      */
-    @Nullable public final String appKey;
+    public final @Nullable String appKey;
 
     /** The source from where the WebAPK is installed. */
     public final @WebApkDistributor int distributor;
 
     /** Map of the WebAPK's icon URLs to Murmur2 hashes of the icon untransformed bytes. */
-    @NonNull public final Map<String, String> iconUrlToMurmur2HashMap;
+    public final Map<String, String> iconUrlToMurmur2HashMap;
 
     /**
      * ShareTarget data
      * TODO(pkotwicz): Remove this property in favor of
      * {@link BrowserServicesIntentDataProvider#shareTarget()}
      */
-    @Nullable public final WebApkShareTarget shareTarget;
+    public final @Nullable WebApkShareTarget shareTarget;
 
     /**
      * Whether the WebAPK
@@ -69,7 +69,7 @@ public class WebApkExtras {
     public final boolean isSplashProvidedByWebApk;
 
     /** The list of the WebAPK's shortcuts. */
-    @NonNull public final List<ShortcutItem> shortcutItems;
+    public final List<ShortcutItem> shortcutItems;
 
     /** WebAPK's version code. */
     public final int webApkVersionCode;
@@ -86,7 +86,7 @@ public class WebApkExtras {
         public String launchUrl;
         public String iconUrl;
         public String iconHash;
-        public @NonNull WebappIcon icon;
+        public WebappIcon icon;
 
         public ShortcutItem(
                 String name,
@@ -94,7 +94,7 @@ public class WebApkExtras {
                 String launchUrl,
                 String iconUrl,
                 String iconHash,
-                @NonNull WebappIcon icon) {
+                WebappIcon icon) {
             this.name = name;
             this.shortName = shortName;
             this.launchUrl = launchUrl;
@@ -127,19 +127,19 @@ public class WebApkExtras {
     }
 
     public WebApkExtras(
-            String webApkPackageName,
-            @NonNull WebappIcon splashIcon,
+            @Nullable String webApkPackageName,
+            WebappIcon splashIcon,
             boolean isSplashIconMaskable,
             int shellApkVersion,
-            String manifestUrl,
-            String manifestStartUrl,
-            String manifestId,
-            String appKey,
+            @Nullable String manifestUrl,
+            @Nullable String manifestStartUrl,
+            @Nullable String manifestId,
+            @Nullable String appKey,
             @WebApkDistributor int distributor,
-            @NonNull Map<String, String> iconUrlToMurmur2HashMap,
+            Map<String, String> iconUrlToMurmur2HashMap,
             @Nullable WebApkShareTarget shareTarget,
             boolean isSplashProvidedByWebApk,
-            @NonNull List<ShortcutItem> shortcutItems,
+            List<ShortcutItem> shortcutItems,
             int webApkVersionCode,
             long lastUpdateTime,
             boolean hasCustomName) {

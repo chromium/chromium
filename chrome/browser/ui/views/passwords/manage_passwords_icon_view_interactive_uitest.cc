@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
@@ -50,7 +49,7 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest {
   }
 
   std::u16string GetTooltipText() {
-    return GetView()->GetTooltipText(gfx::Point());
+    return GetView()->GetRenderedTooltipText(gfx::Point());
   }
 };
 
@@ -66,9 +65,6 @@ class ManagePasswordsIconViewTestToolbarPinningOnly
                ->GetWidget()
                ->IsVisible();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kToolbarPinning};
 };
 
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, DefaultStateIsInactive) {
@@ -101,6 +97,12 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
   GetView()->OnMousePressed(mouse_down);
   // Wait for the command execution to close the bubble.
   content::RunAllPendingInMessageLoop();
+}
+
+IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, PasswordChangeState) {
+  SetupPasswordChange();
+  EXPECT_EQ(password_manager::ui::PASSWORD_CHANGE_STATE, ViewState());
+  EXPECT_FALSE(GetView()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTestToolbarPinningOnly,

@@ -19,14 +19,14 @@ class PhysicalBoxFragment;
 class CORE_EXPORT AbstractInlineTextBox final
     : public GarbageCollected<AbstractInlineTextBox> {
  private:
-  // Returns existing or newly created |AbstractInlineTextBox|.
-  // * |cursor| should be attached to a text item.
-  static AbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor);
   static void WillDestroy(const InlineCursor& cursor);
 
   friend class LayoutText;
 
  public:
+  // Returns existing or newly created |AbstractInlineTextBox|.
+  // * |cursor| should be attached to a text item.
+  static AbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor);
   explicit AbstractInlineTextBox(const InlineCursor& cursor);
   ~AbstractInlineTextBox();
   void Trace(Visitor* visitor) const;
@@ -54,20 +54,23 @@ class CORE_EXPORT AbstractInlineTextBox final
   Node* GetNode() const;
   LayoutText* GetLayoutText() const { return layout_text_.Get(); }
   AXObjectCache* ExistingAXObjectCache() const;
-  void CharacterWidths(Vector<float>&) const;
+  void GetCharacterLayoutPixelOffsets(Vector<int>&) const;
   void GetWordBoundaries(Vector<WordBoundaries>&) const;
   String GetText() const;
-  bool IsFirst() const;
-  bool IsLast() const;
-  AbstractInlineTextBox* NextOnLine() const;
-  AbstractInlineTextBox* PreviousOnLine() const;
+
+  // Returns true if the AbstractInlineTextBox is the first/last in the
+  // LayoutObject. Note that this **is different** from
+  // NextOnLine/PreviousOnLine, where they are allowed to cross boundaries
+  // between layoutObjects.
+  bool IsFirstForLayoutObject() const;
+
   bool IsLineBreak() const;
   bool NeedsTrailingSpace() const;
   InlineCursor GetCursor() const;
+  InlineCursor GetCursorOnLine() const;
 
  private:
   LayoutText* GetFirstLetterPseudoLayoutText() const;
-  InlineCursor GetCursorOnLine() const;
   String GetTextContent() const;
 
   // FragmentItem index in root_box_fragment_'s FragmentItems.

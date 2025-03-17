@@ -46,7 +46,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(reference_time, metadata_source);
   MERGE_VALUE_FIELD(read_lock_fences_enabled, metadata_source);
   MERGE_OPTIONAL_FIELD(transformation, metadata_source);
-  MERGE_VALUE_FIELD(texture_owner, metadata_source);
+  MERGE_VALUE_FIELD(in_surface_view, metadata_source);
   MERGE_VALUE_FIELD(wants_promotion_hint, metadata_source);
   MERGE_VALUE_FIELD(dcomp_surface, metadata_source);
   MERGE_VALUE_FIELD(protected_video, metadata_source);
@@ -71,6 +71,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(wallclock_frame_duration, metadata_source);
   MERGE_OPTIONAL_FIELD(maximum_composition_delay_in_frames, metadata_source);
   MERGE_OPTIONAL_FIELD(frame_sequence, metadata_source);
+  MERGE_OPTIONAL_FIELD(source_id, metadata_source);
   MERGE_OPTIONAL_FIELD(background_blur, metadata_source);
 
 #undef MERGE_VALUE_FIELD

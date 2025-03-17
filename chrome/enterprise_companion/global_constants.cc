@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -167,7 +168,7 @@ class GlobalConstantsImpl : public GlobalConstants {
     const std::string* str = overrides.FindString(key);
     if (str) {
       VLOG(2) << __func__ << ": " << key << " = " << *str;
-      value = base::ASCIIToWide(*str);
+      value = base::UTF8ToWide(*str);
     }
   }
 #endif
@@ -182,7 +183,7 @@ std::optional<base::FilePath> GetOverridesFilePath() {
     VLOG(1) << "Can't get overrides file path: can't get install dir.";
     return std::nullopt;
   }
-  return install_dir->AppendASCII("overrides.json");
+  return install_dir->Append(FILE_PATH_LITERAL("overrides.json"));
 }
 
 const GlobalConstants* GetGlobalConstants() {

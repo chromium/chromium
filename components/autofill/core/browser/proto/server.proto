@@ -174,6 +174,26 @@ message AutofillRandomizedFieldMetadata {
 
   // Value of the autocomplete attribute. Example: <input autocomplete="XXX">
   optional AutofillRandomizedValue autocomplete = 10;
+
+  // Value of the pattern attribute. Example: <input pattern="XXXXX">
+  optional AutofillRandomizedValue pattern = 11;
+
+  // Value of the maxlength attribute. Example: <input maxlength=4>
+  optional AutofillRandomizedValue max_length = 12;
+
+  // Corresponds to a `autofill::SelectOption`.
+  message AutofillRandomizedSelectOption {
+    // The option's "value" attribute, or, if not present, its text content.
+    optional AutofillRandomizedValue value = 1;
+    // The option's "label" attribute, or, if not present, its text content.
+    // Emitted only if it is not the same as the "value" field above.
+    optional AutofillRandomizedValue text = 2;
+  }
+
+  // The <option>s if the field is a <select>. Note that if the <select>
+  // has more than 3 options, this only includes the first, the second, and the
+  // last option.
+  repeated AutofillRandomizedSelectOption select_option = 13;
 }
 
 // This message contains information about the field types in a single form.
@@ -450,25 +470,4 @@ message AutofillUploadContents {
 
   reserved 5;
   reserved "Field";
-}
-
-// This proto contains information about the validity of each field in an
-// autofill profile. It is used to transfer the results of running the profile
-// validation pipeline on the server side to the client via ChromeSync
-// PriorityPreferences. An identical copy of this proto is maintained in
-// the server code base.
-message ProfileValidityMap {
-  // Map from autofill type to the validity of its value in the profile.
-  //
-  // Key should be one of the enum values from FieldType. Values should be
-  // from the AutofillProfile::ValidityState. Plain integers are used
-  // instead of enums because proto2 treats unknown enum values as unknown
-  // fields, which is confusing when the enums are in maps.
-  map<int32, int32> field_validity_states = 1;
-}
-
-// Map from profile GUIDs to profile validity maps for that profile. Each
-// message should contain entries for all profiles from a single user.
-message UserProfileValidityMap {
-  map<string, ProfileValidityMap> profile_validity = 1;
 }

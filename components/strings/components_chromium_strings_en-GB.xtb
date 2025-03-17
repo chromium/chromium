@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">This page has been blocked by Chromium</translation>
 <translation id="48558539577516920">Allow Chromium to access the network in your firewall or antivirus
           settings.</translation>
+<translation id="4949828774841497663">Go to Applications &gt; System Settings &gt; Network, select the
+          active network, click the Details... button and deselect any proxies
+          that may have been selected.</translation>
 <translation id="580822234363523061">Go to
           the Chromium menu &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           and make sure your configuration is set to "no proxy" or "direct."</translation>
+<translation id="648062525172759633">These pages are intended for use by Chromium developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
 <translation id="6549378540556750549">Chromium is also made possible by other <ph name="BEGIN_LINK_OSS" />open-source software<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Your changes will take effect the next time you relaunch Chromium.</translation>
 <translation id="691026815377248078">Chromium needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -41,9 +45,6 @@
           and deselect "<ph name="NO_PREFETCH_DESCRIPTION" />".
           If this does not resolve the issue, we recommend selecting this option
           again for improved performance.</translation>
-<translation id="8187289872471304532">Go to
-          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
-          and deselect any proxies that have been selected.</translation>
 <translation id="8597726643333341451">You're viewing a secure Chrome for testing page</translation>
 <translation id="8684913864886094367">Chromium didn't shut down correctly.</translation>
 </translationbundle>

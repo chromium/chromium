@@ -265,54 +265,54 @@ suite('cr-radio-group', () => {
   test('radios with links', async () => {
     const a = radioGroup.querySelector('a');
     assertTrue(!!a);
-    assertEquals(-1, a!.tabIndex);
+    assertEquals(-1, a.tabIndex);
     verifyNoneSelectedOneFocusable('1');
-    press('Enter', a!);
+    press('Enter', a);
     await radioGroup.updateComplete;
-    press(' ', a!);
+    press(' ', a);
     await radioGroup.updateComplete;
-    a!.click();
+    a.click();
     await radioGroup.updateComplete;
     verifyNoneSelectedOneFocusable('1');
 
     radioGroup.querySelector<CrRadioButtonElement>('[name="1"]')!.click();
     await microtasksFinished();
     checkSelected('1');
-    press('Enter', a!);
+    press('Enter', a);
     await radioGroup.updateComplete;
-    press(' ', a!);
+    press(' ', a);
     await radioGroup.updateComplete;
-    a!.click();
+    a.click();
     await microtasksFinished();
     checkSelected('1');
 
     radioGroup.querySelector<CrRadioButtonElement>('[name="3"]')!.click();
     await microtasksFinished();
     checkSelected('3');
-    assertEquals(0, a!.tabIndex);
+    assertEquals(0, a.tabIndex);
   });
 
   test('radios with input', async () => {
     const input = radioGroup.querySelector('input');
     assertTrue(!!input);
     verifyNoneSelectedOneFocusable('1');
-    press('Enter', input!);
-    press(' ', input!);
+    press('Enter', input);
+    press(' ', input);
     await radioGroup.updateComplete;
     verifyNoneSelectedOneFocusable('1');
 
-    input!.click();
+    input.click();
     await microtasksFinished();
     checkSelected('2');
 
     radioGroup.querySelector<CrRadioButtonElement>('[name="1"]')!.click();
     await microtasksFinished();
-    press('Enter', input!);
-    press(' ', input!);
+    press('Enter', input);
+    press(' ', input);
     await microtasksFinished();
     checkSelected('1');
 
-    input!.click();
+    input.click();
     await microtasksFinished();
     checkSelected('2');
   });

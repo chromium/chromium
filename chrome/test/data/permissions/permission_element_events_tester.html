@@ -26,6 +26,19 @@
       logEventToConsole("grandparent-", event);
     });
 
+    document.getElementById('parent').addEventListener('promptaction', (event) => {
+      logEventToConsole("parent-", event);
+    });
+    document.getElementById('parent').addEventListener('promptdismiss', (event) => {
+      logEventToConsole("parent-", event);
+    });
+    document.getElementById('grandparent').addEventListener('promptaction', (event) => {
+      logEventToConsole("grandparent-", event);
+    });
+    document.getElementById('grandparent').addEventListener('promptdismiss', (event) => {
+      logEventToConsole("grandparent-", event);
+    });
+
     function clickById(element_id) {
       click(document.getElementById(element_id));
     }

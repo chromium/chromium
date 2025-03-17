@@ -9,13 +9,21 @@ option optimize_for = LITE_RUNTIME;
 package content.proto;
 
 message CacheStorageIndex {
+  // The Cache message represents stored caches, where cache names are
+  // preserved as UTF16 strings to align with WebIDL DOMStrings. This ensures
+  // compatibility with names that may contain invalid characters. While the
+  // `name` field remains for backward compatibility, all new caches will use
+  // `u16string_name` going forward. Older clients that read index files written
+  // with UTF8 cache names will not break due to this approach.
   message Cache {
+    // Maintained for backward compatibility, but no longer used for new caches.
     required string name = 1;
     optional string cache_dir = 2;
     optional int64 size = 3;
     optional string padding_key = 4 [deprecated = true];
     optional int64 padding = 5;
     optional int32 padding_version = 6;
+    optional bytes u16string_name = 7;
   }
   repeated Cache cache = 1;
   optional string origin = 2 [deprecated = true];

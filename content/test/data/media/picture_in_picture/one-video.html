@@ -134,6 +134,16 @@
       });
     }
 
+    // Sets the title to represent current video time, and keeps it updated as
+    // the time changes.
+    function setTitleToVideoCurrentTime() {
+      const setTitle = function() {
+        document.title = 'currentTime ' + video.currentTime;
+      };
+      setTitle();
+      video.addEventListener('timeupdate', setTitle);
+    }
+
     function updateFaviconSrc(url) {
       document.getElementById('favicon').setAttribute('href', url);
     }

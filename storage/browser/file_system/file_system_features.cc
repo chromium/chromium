@@ -12,11 +12,4 @@ BASE_FEATURE(kIncognitoFileSystemContextForTesting,
              "IncognitoFileSystemContextForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, files of FileSystemType::kSyncable will map to
-// StorageType::kTemporary instead of StorageType::kSyncable, making them
-// eligible for storage eviction during storage pressure.
-BASE_FEATURE(kDisableSyncableQuota,
-             "DisableSyncableQuota",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace storage::features

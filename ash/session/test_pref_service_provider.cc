@@ -13,6 +13,15 @@
 
 namespace ash {
 
+// static
+std::unique_ptr<TestingPrefServiceSimple>
+TestPrefServiceProvider::CreateUserPrefServiceSimple() {
+  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                           /*for_test=*/true);
+  return pref_service;
+}
+
 TestPrefServiceProvider::TestPrefServiceProvider() = default;
 TestPrefServiceProvider::~TestPrefServiceProvider() = default;
 
@@ -34,13 +43,6 @@ void TestPrefServiceProvider::SetSigninPrefs(
 
 PrefService* TestPrefServiceProvider::GetSigninPrefs() {
   return signin_prefs_.get();
-}
-
-void TestPrefServiceProvider::CreateUserPrefs(const AccountId& account_id) {
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                           /*for_test=*/true);
-  SetUserPrefs(account_id, std::move(pref_service));
 }
 
 void TestPrefServiceProvider::SetUserPrefs(

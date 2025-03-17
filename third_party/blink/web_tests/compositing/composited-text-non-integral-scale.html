@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<style>
+div div {
+  width: 100px;
+  height: 100px;
+  background: black;
+  color: white;
+}
+</style>
+All of the following texts should not be blurry, and there should not be any
+seam between the layers.
+<div style="scale: 0.95; transform-origin: 0 0">
+  <div style="will-change: opacity">SHARP TEXT SHARP TEXT SHARP TEXT</div>
+  <div style="backface-visibility: hidden">SHARP TEXT SHARP TEXT SHARP TEXT</div>
+</div>

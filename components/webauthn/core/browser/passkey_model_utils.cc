@@ -63,6 +63,8 @@ constexpr uint8_t kSignatureCounter[4] = {0};
 
 constexpr size_t kEncryptionSecretSize = 32;
 
+constexpr size_t kHmacSecretSize = 32;
+
 struct PasskeyComparator {
   bool operator()(const sync_pb::WebauthnCredentialSpecifics& a,
                   const sync_pb::WebauthnCredentialSpecifics& b) const {
@@ -100,7 +102,82 @@ std::array<uint8_t, kEncryptionSecretSize> DerivePasskeyEncryptionSecret(
       base::as_bytes(base::span(kHkdfInfo)));
 }
 
+std::array<uint8_t, kHmacSecretSize> DeriveHmacSecretFromPrivateKey(
+    base::span<const uint8_t> private_key) {
+  CHECK(!private_key.empty());
+  constexpr std::string_view kHkdfInfo = "derived PRF HMAC secret";
+  return crypto::HkdfSha256<kEncryptionSecretSize>(
+      private_key,
+      /*salt=*/base::span<const uint8_t>(),
+      base::as_bytes(base::span(kHkdfInfo)));
+}
+
 }  // namespace
+
+ExtensionOutputData::ExtensionOutputData() = default;
+ExtensionOutputData::ExtensionOutputData(const ExtensionOutputData&) = default;
+ExtensionOutputData::~ExtensionOutputData() = default;
+
+ExtensionInputData::ExtensionInputData(base::span<const uint8_t> prf_input1,
+                                       base::span<const uint8_t> prf_input2) {
+  // prf_input must be created even if prf_input1 is empty, as it is an
+  // indication the the PRF extension is requested.
+  prf_input = device::PRFInput();
+  if (!prf_input1.empty()) {
+    prf_input->input1.insert(prf_input->input1.end(), prf_input1.begin(),
+                             prf_input1.end());
+    if (!prf_input2.empty()) {
+      std::vector<uint8_t> input2;
+      input2.insert(input2.end(), prf_input2.begin(), prf_input2.end());
+      prf_input->input2 = input2;
+    }
+  }
+  prf_input->HashInputsIntoSalts();
+}
+
+ExtensionInputData::ExtensionInputData() = default;
+ExtensionInputData::ExtensionInputData(const ExtensionInputData&) = default;
+ExtensionInputData::~ExtensionInputData() = default;
+
+bool ExtensionInputData::hasPRF() const {
+  return prf_input.has_value();
+}
+
+std::optional<cbor::Value> ExtensionInputData::ToCBOR() const {
+  if (!hasPRF()) {
+    return std::nullopt;
+  }
+
+  cbor::Value::MapValue prf_ext;
+  prf_ext.emplace(device::kExtensionPRFEnabled, true);
+  if (!prf_input->input1.empty()) {
+    prf_ext.emplace(device::kExtensionPRFEval, prf_input->ToCBOR());
+  }
+
+  cbor::Value::MapValue extensions;
+  extensions.emplace(device::kExtensionPRF, std::move(prf_ext));
+  return cbor::Value(std::move(extensions));
+}
+
+ExtensionOutputData ExtensionInputData::ToOutputData(
+    const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
+  if (!hasPRF() || prf_input->input1.empty()) {
+    return {};
+  }
+
+  ExtensionOutputData extension_output_data;
+  extension_output_data.prf_result = EvaluateHMAC(encrypted);
+  return extension_output_data;
+}
+
+std::vector<uint8_t> ExtensionInputData::EvaluateHMAC(
+    const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
+  const std::string& hmac_secret = encrypted.hmac_secret();
+  return prf_input->EvaluateHMAC(
+      hmac_secret.empty() ? DeriveHmacSecretFromPrivateKey(
+                                base::as_byte_span(encrypted.private_key()))
+                          : base::as_byte_span(hmac_secret));
+}
 
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys) {
@@ -143,7 +220,9 @@ std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
 GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
                                  const PasskeyModel::UserEntity& user_entity,
                                  base::span<const uint8_t> trusted_vault_key,
-                                 int32_t trusted_vault_key_version) {
+                                 int32_t trusted_vault_key_version,
+                                 const ExtensionInputData& extension_input_data,
+                                 ExtensionOutputData* extension_output_data) {
   sync_pb::WebauthnCredentialSpecifics specifics;
   specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
   specifics.set_credential_id(base::RandBytesAsString(kCredentialIdLength));
@@ -159,10 +238,17 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   CHECK(ec_key->ExportPrivateKey(&private_key_pkcs8));
   encrypted.set_private_key(
       {private_key_pkcs8.begin(), private_key_pkcs8.end()});
+  if (extension_input_data.hasPRF()) {
+    encrypted.set_hmac_secret(base::RandBytesAsString(kHmacSecretSize));
+  }
   CHECK(EncryptWebauthnCredentialSpecificsData(trusted_vault_key, encrypted,
                                                &specifics));
   CHECK(specifics.has_encrypted());
   specifics.set_key_version(trusted_vault_key_version);
+
+  if (extension_output_data) {
+    *extension_output_data = extension_input_data.ToOutputData(encrypted);
+  }
 
   std::vector<uint8_t> public_key_spki;
   CHECK(ec_key->ExportPublicKey(&public_key_spki));
@@ -253,23 +339,29 @@ bool EncryptWebauthnCredentialSpecificsData(
   return true;
 }
 
-std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
+std::vector<uint8_t> MakeAuthenticatorDataForAssertion(
+    std::string_view rp_id,
+    const ExtensionInputData& extension_input_data) {
   using Flag = device::AuthenticatorData::Flag;
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
                   base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState);
+  std::optional<cbor::Value> extensions = extension_input_data.ToCBOR();
+  if (extensions.has_value()) {
+    flags |= base::strict_cast<uint8_t>(Flag::kExtensionDataIncluded);
+  }
   return device::AuthenticatorData(
              crypto::SHA256Hash(base::as_byte_span(rp_id)), flags,
-             kSignatureCounter, /*data=*/std::nullopt,
-             /*extensions=*/std::nullopt)
+             kSignatureCounter, /*data=*/std::nullopt, std::move(extensions))
       .SerializeToByteArray();
 }
 
 std::vector<uint8_t> MakeAttestationObjectForCreation(
     std::string_view rp_id,
     base::span<const uint8_t> credential_id,
-    base::span<const uint8_t> public_key_spki_der) {
+    base::span<const uint8_t> public_key_spki_der,
+    const ExtensionInputData& extension_input_data) {
   static constexpr std::array<const uint8_t, 16> kGpmAaguid{
       0xea, 0x9b, 0x8d, 0x66, 0x4d, 0x01, 0x1d, 0x21,
       0x3c, 0xe4, 0xb6, 0xb4, 0x8c, 0xb5, 0x75, 0xd4};
@@ -281,14 +373,18 @@ std::vector<uint8_t> MakeAttestationObjectForCreation(
           public_key_spki_der);
   device::AttestedCredentialData attested_credential_data(
       kGpmAaguid, credential_id, std::move(public_key));
+  std::optional<cbor::Value> extensions = extension_input_data.ToCBOR();
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
                   base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState) |
                   base::strict_cast<uint8_t>(Flag::kAttestation);
+  if (extensions.has_value()) {
+    flags |= base::strict_cast<uint8_t>(Flag::kExtensionDataIncluded);
+  }
   device::AuthenticatorData authenticator_data(
       crypto::SHA256Hash(base::as_byte_span(rp_id)), flags, kSignatureCounter,
-      std::move(attested_credential_data), /*extensions=*/std::nullopt);
+      std::move(attested_credential_data), std::move(extensions));
   device::AttestationObject attestationObject(
       std::move(authenticator_data),
       std::make_unique<device::NoneAttestationStatement>());

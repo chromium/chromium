@@ -16,7 +16,7 @@ function createPdfCanvas(
     thumbnail: ViewerThumbnailElement, imageSize: number[]) {
   thumbnail.image = new ImageData(imageSize[0]!, imageSize[1]!);
   const divId = '#pdf-canvas';
-  return thumbnail.shadowRoot!.querySelector<HTMLCanvasElement>(divId)!;
+  return thumbnail.shadowRoot.querySelector<HTMLCanvasElement>(divId)!;
 }
 
 // <if expr="enable_pdf_ink2">
@@ -24,7 +24,7 @@ function createInk2Canvas(
     thumbnail: ViewerThumbnailElement, imageSize: number[]) {
   thumbnail.ink2Image = new ImageData(imageSize[0]!, imageSize[1]!);
   const divId = '#ink2-canvas';
-  return thumbnail.shadowRoot!.querySelector<HTMLCanvasElement>(divId)!;
+  return thumbnail.shadowRoot.querySelector<HTMLCanvasElement>(divId)!;
 }
 // </if>
 

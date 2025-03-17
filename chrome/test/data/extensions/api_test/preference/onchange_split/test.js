@@ -8,7 +8,7 @@
 var inIncognitoContext = chrome.extension.inIncognitoContext;
 var pass = chrome.test.callbackPass;
 var sendMessage = chrome.test.sendMessage;
-var allowCookies = chrome.privacy.websites.thirdPartyCookiesAllowed;
+var hyperlinkAuditing = chrome.privacy.websites.hyperlinkAuditingEnabled;
 
 // Listen until |event| has fired with all of the values in |expected|.
 function listenUntil(event, expected) {
@@ -62,13 +62,11 @@ chrome.test.runTests([
       });
     }
 
-    listenUntil(allowCookies.onChange, expected);
+    listenUntil(hyperlinkAuditing.onChange, expected);
 
     sendMessage(constructMessage("ready"), pass(function() {
       if (!inIncognitoContext) {
-        allowCookies.set({
-          'value': false
-        }, pass());
+        hyperlinkAuditing.set({'value': false}, pass());
       }
     }));
   },
@@ -77,10 +75,10 @@ chrome.test.runTests([
   // incognito window.
   function changeIncognitoOnly() {
     if (!inIncognitoContext) {
-      var done = listenAndFailWhen(allowCookies.onChange);
+      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
       sendMessage(constructMessage("listening"), done);
     } else {
-      listenUntil(allowCookies.onChange, [{
+      listenUntil(hyperlinkAuditing.onChange, [{
         'value': true,
         'incognitoSpecific': true,
         'levelOfControl': 'controlled_by_this_extension'
@@ -89,7 +87,7 @@ chrome.test.runTests([
 
     sendMessage(constructMessage("ready"), pass(function() {
       if (inIncognitoContext) {
-        allowCookies.set({
+        hyperlinkAuditing.set({
           'value': true,
           'scope': 'incognito_session_only'
         }, pass(function() {
@@ -104,18 +102,18 @@ chrome.test.runTests([
   // defined should only be visible to the regular window.
   function changeDefaultOnly() {
     if (!inIncognitoContext) {
-      listenUntil(allowCookies.onChange, [{
+      listenUntil(hyperlinkAuditing.onChange, [{
         'value': true,
         'levelOfControl': 'controlled_by_this_extension'
       }]);
     } else {
-      var done = listenAndFailWhen(allowCookies.onChange);
+      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
       sendMessage(constructMessage("listening"), done);
     }
 
     sendMessage(constructMessage("ready"), pass(function() {
       if (!inIncognitoContext) {
-        allowCookies.set({
+        hyperlinkAuditing.set({
           'value': true
         }, pass(function() {
           sendMessage(constructMessage("pref set", "changeDefaultOnly"),
@@ -129,10 +127,10 @@ chrome.test.runTests([
   // clearing the value. Should not be visible to regular window.
   function changeIncognitoOnlyBack() {
     if (!inIncognitoContext) {
-      var done = listenAndFailWhen(allowCookies.onChange);
+      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
       sendMessage(constructMessage("listening"), done);
     } else {
-      listenUntil(allowCookies.onChange, [{
+      listenUntil(hyperlinkAuditing.onChange, [{
         'value': false,
         'incognitoSpecific': true,
         'levelOfControl': 'controlled_by_this_extension'
@@ -141,7 +139,7 @@ chrome.test.runTests([
 
     sendMessage(constructMessage("ready"), pass(function() {
       if (inIncognitoContext) {
-        allowCookies.set({
+        hyperlinkAuditing.set({
           'value': false,
           'scope': 'incognito_session_only'
         }, pass(function() {
@@ -154,10 +152,10 @@ chrome.test.runTests([
 
   function clearIncognito() {
     if (!inIncognitoContext) {
-      var done = listenAndFailWhen(allowCookies.onChange);
+      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
       sendMessage(constructMessage("listening"), done);
     } else {
-      listenUntil(allowCookies.onChange, [{
+      listenUntil(hyperlinkAuditing.onChange, [{
         'value': true,
         'incognitoSpecific': false,
         'levelOfControl': 'controlled_by_this_extension'
@@ -166,7 +164,7 @@ chrome.test.runTests([
 
     sendMessage(constructMessage("ready"), pass(function() {
       if (inIncognitoContext) {
-        allowCookies.clear({
+        hyperlinkAuditing.clear({
           'scope': 'incognito_session_only'
         }, pass(function() {
           sendMessage(constructMessage("pref cleared", "clearIncognito"),
@@ -184,17 +182,17 @@ chrome.test.runTests([
 
     if (inIncognitoContext) {
       expected[1] = {
-        'value': false,
+        'value': true,
         'incognitoSpecific': false,
         'levelOfControl': 'controllable_by_this_extension'
       };
     }
 
-    listenUntil(allowCookies.onChange, expected);
+    listenUntil(hyperlinkAuditing.onChange, expected);
 
     sendMessage(constructMessage("ready"), pass(function() {
       if (!inIncognitoContext)
-        allowCookies.clear({}, pass());
+        hyperlinkAuditing.clear({}, pass());
     }));
   }
 ]);

@@ -18,6 +18,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
@@ -50,8 +51,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::FormRendererId;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -106,7 +107,8 @@ class CWVAutofillControllerTest : public web::WebTest {
         &web_state_, password_controller_, password_manager.get());
     password_manager_client_ = password_manager_client.get();
 
-    auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(
+    auto autofill_client = std::make_unique<
+        autofill::WithFakedFromWebState<autofill::WebViewAutofillClientIOS>>(
         &pref_service_, &personal_data_manager_, &autocomplete_history_manager_,
         &web_state_, /*bridge=*/nil, /*identity_manager=*/nullptr,
         &strike_database_, &sync_service_, /*log_router=*/nullptr);
@@ -281,54 +283,54 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
 
 // Tests CWVAutofillController delegate focus callback is invoked.
 TEST_F(CWVAutofillControllerTest, FocusCallback) {
-    id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
-    autofill_controller_.delegate = delegate;
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
 
-    [[delegate expect] autofillController:autofill_controller_
-            didFocusOnFieldWithIdentifier:kTestFieldIdentifier
-                                fieldType:@""
-                                 formName:kTestFormName
-                                  frameID:frame_id_
-                                    value:kTestFieldValue
-                            userInitiated:YES];
+  [[delegate expect] autofillController:autofill_controller_
+          didFocusOnFieldWithIdentifier:kTestFieldIdentifier
+                              fieldType:@""
+                               formName:kTestFormName
+                                frameID:frame_id_
+                                  value:kTestFieldValue
+                          userInitiated:YES];
 
-    autofill::FormActivityParams params;
-    params.form_name = base::SysNSStringToUTF8(kTestFormName);
-    params.form_renderer_id = kTestFormRendererID;
-    params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
-    params.field_renderer_id = kTestFieldRendererID;
-    params.value = base::SysNSStringToUTF8(kTestFieldValue);
-    params.frame_id = web::kMainFakeFrameId;
-    params.has_user_gesture = true;
-    params.type = "focus";
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-    form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
-    [delegate verify];
+  autofill::FormActivityParams params;
+  params.form_name = base::SysNSStringToUTF8(kTestFormName);
+  params.form_renderer_id = kTestFormRendererID;
+  params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
+  params.field_renderer_id = kTestFieldRendererID;
+  params.value = base::SysNSStringToUTF8(kTestFieldValue);
+  params.frame_id = web::kMainFakeFrameId;
+  params.has_user_gesture = true;
+  params.type = "focus";
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  [delegate verify];
 }
 
 // Tests CWVAutofillController delegate input callback is invoked.
 TEST_F(CWVAutofillControllerTest, InputCallback) {
-    id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
-    autofill_controller_.delegate = delegate;
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
 
-    [[delegate expect] autofillController:autofill_controller_
-            didInputInFieldWithIdentifier:kTestFieldIdentifier
-                                fieldType:@""
-                                 formName:kTestFormName
-                                  frameID:frame_id_
-                                    value:kTestFieldValue
-                            userInitiated:YES];
+  [[delegate expect] autofillController:autofill_controller_
+          didInputInFieldWithIdentifier:kTestFieldIdentifier
+                              fieldType:@""
+                               formName:kTestFormName
+                                frameID:frame_id_
+                                  value:kTestFieldValue
+                          userInitiated:YES];
 
-    autofill::FormActivityParams params;
-    params.form_name = base::SysNSStringToUTF8(kTestFormName);
-    params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
-    params.value = base::SysNSStringToUTF8(kTestFieldValue);
-    params.frame_id = web::kMainFakeFrameId;
-    params.type = "input";
-    params.has_user_gesture = true;
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-    form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
-    [delegate verify];
+  autofill::FormActivityParams params;
+  params.form_name = base::SysNSStringToUTF8(kTestFormName);
+  params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
+  params.value = base::SysNSStringToUTF8(kTestFieldValue);
+  params.frame_id = web::kMainFakeFrameId;
+  params.type = "input";
+  params.has_user_gesture = true;
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  [delegate verify];
 }
 
 // Tests CWVAutofillController delegate input callback is invoked by keyup

@@ -19,9 +19,13 @@ CorpHeartbeatServiceClient::CorpHeartbeatServiceClient(
     const std::string& directory_id,
     const std::string& refresh_token,
     const std::string& service_account_email,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store)
     : directory_id_(directory_id),
-      client_(refresh_token, service_account_email, url_loader_factory) {}
+      client_(refresh_token,
+              service_account_email,
+              url_loader_factory,
+              std::move(client_cert_store)) {}
 
 CorpHeartbeatServiceClient::~CorpHeartbeatServiceClient() = default;
 
@@ -67,7 +71,7 @@ void CorpHeartbeatServiceClient::CancelPendingRequests() {
 
 void CorpHeartbeatServiceClient::OnSendHeartbeatResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<Empty>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RunHeartbeatResponseCallback(std::move(callback), status);
@@ -75,7 +79,7 @@ void CorpHeartbeatServiceClient::OnSendHeartbeatResponse(
 
 void CorpHeartbeatServiceClient::OnUpdateRemoteAccessHostResponse(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::RemoteAccessHostV1Proto>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status.ok()) {
@@ -87,7 +91,7 @@ void CorpHeartbeatServiceClient::OnUpdateRemoteAccessHostResponse(
 
 void CorpHeartbeatServiceClient::OnReportHostOffline(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::RemoteAccessHostV1Proto>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RunHeartbeatResponseCallback(std::move(callback), status);
@@ -106,7 +110,7 @@ void CorpHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
 
 void CorpHeartbeatServiceClient::RunHeartbeatResponseCallback(
     HeartbeatResponseCallback callback,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.ok()) {

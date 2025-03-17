@@ -4,13 +4,16 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertGT, assertLT, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES, SpeechBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {createAndSetVoices, createApp} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechUsesMaxTextLength', () => {
   let app: AppElement;
   let maxSpeechLength: number;
+  let speech: TestSpeechBrowserProxy;
 
   const shortSentence =
       'The snow glows white on the mountain tonight, not a footprint to be ' +
@@ -44,6 +47,52 @@ suite('SpeechUsesMaxTextLength', () => {
       'girl is gone- here I stand in the light of day, let the storm rage ' +
       'on- the cold never bothered me anyway';
 
+  const longSentenceWithOpeningParenthesis = 'Okay can I just say something ' +
+      'crazy (I love crazy) All my life has been a series of doors in my ' +
+      'face And then suddenly I bump into you (I was thinking the same ' +
+      'thing cause like I\'ve been searching my whole life to find my own ' +
+      'place and maybe it\'s the party talking or the chocoalte fondue) ' +
+      'but with you I see your face and it\'s nothing like I\'ve ever ' +
+      'known before';
+  const longSentenceWithClosingParenthesis = '(You\'re not a voice ' +
+      'you\'re just a ringing in my ear and if I heard you which I don\'t ' +
+      'I\'m spoken for I fear everyone I\'ve ever loved is here within ' +
+      'these walls ) I\'m sorry secret siren but I\'m blocking out your ' +
+      'calls I\'ve had my adventure I don\'t need something new I\'m ' +
+      'afraid of what I\'m risking if I follow you';
+
+  const longSentenceWithHyphen = 'I have waited five years And today is the ' +
+      'day- I have spared no expense all that stands in my way is a tiny ' +
+      'little cottage with a tiny little table filled with tiny finger ' +
+      'sandwiches I am not okay- Only four hours left and there\'s too ' +
+      'much to do';
+
+  const longSentenceWithOpeningBracket = 'I don\'t know what to wear what to ' +
+      'say how to stand when she\'s standing inside the foyer of a tiny ' +
+      'little cottage at a tiny little table filled with tiny finger ' +
+      'sandwiches [Haha drown me in the bay]';
+
+  const longSentenceWithClosingBracket = '[It is tea it\s only tea ' +
+      'No need for such commotion Soon you\'ll be laughing reminiscing ' +
+      'you will see It\s only tea ] I\m going to walk into the ocean';
+
+  const longSentenceWithOpeningBrace = 'You\re going to go and put your feet ' +
+      'up And leave it all to me {Of course you\'re right I\'ll just go get ' +
+      'changed and well I didn\'t want to be a bother So I picked up a few ' +
+      'tea things';
+
+  const longSentenceWithClosingBrace = '{It\'s a simple chance encounter at ' +
+      'a simple little table filled with simple little sandwiches ' +
+      'This is a mistake Is it pinstripe or plaid Is it two piece or three} ' +
+      'Pinstripe plaid what does he need';
+
+  // Sentence longer than MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES but shorter than
+  // MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES.
+  const midLengthSentence =
+      'She is late so I\'m off to go scream in a jar She\'s not late ' +
+      'Gatsby Stay where you are In a tiny little cabin This is not the time ' +
+      'to panic A tiny little cabin in the hull of the Titanic';
+
   // The page needs some text to start speaking
   const axTree = {
     rootId: 1,
@@ -67,17 +116,18 @@ suite('SpeechUsesMaxTextLength', () => {
     ],
   };
 
-  setup(() => {
-    suppressInnocuousErrors();
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    maxSpeechLength = app.maxSpeechLength;
+    app = await createApp();
+    maxSpeechLength = MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;
   });
   // These checks ensure the text used in this test stays up to date
   // in case the maximum speech length changes.
@@ -114,6 +164,75 @@ suite('SpeechUsesMaxTextLength', () => {
     });
   });
 
+  test('on long sentences with different punctuation', () => {
+    const chars = [',', '(', ')', '-', '[', ']', '{', '}'];
+    const stringsWithSplicingOnChar = [
+      longSentence,
+      longSentenceWithOpeningParenthesis,
+      longSentenceWithClosingParenthesis,
+      longSentenceWithHyphen,
+      longSentenceWithOpeningBracket,
+      longSentenceWithClosingBracket,
+      longSentenceWithOpeningBrace,
+      longSentenceWithClosingBrace,
+    ];
+
+    assertEquals(chars.length, stringsWithSplicingOnChar.length);
+
+    for (let i = 0; i < stringsWithSplicingOnChar.length; i++) {
+      const firstBoundary =
+          app.getAccessibleTextLength(stringsWithSplicingOnChar[i]!);
+      assertLT(firstBoundary, maxSpeechLength);
+      assertEquals(
+          chars[i], stringsWithSplicingOnChar[i]!.charAt(firstBoundary));
+    }
+  });
+
+  test('correct max length used with natural voices', () => {
+    assertGT(midLengthSentence.length, MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES);
+    assertLT(midLengthSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);
+
+    // With the remote voices, midSentenceLength is too long and
+    // getAccessibleTextLength shortens the text.
+    assertTrue(app.isTextTooLong(midLengthSentence.length));
+    assertLT(
+        app.getAccessibleTextLength(midLengthSentence),
+        MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES);
+
+
+    createAndSetVoices(app, speech, [
+      {lang: 'en-us', name: 'Google Elsa (Natural)', localService: true},
+    ]);
+    // On ChromeOS we don't care about the length of local voices because
+    // the word boundary timepoints aren't delayed.
+    // <if expr="not is_chromeos">
+    assertFalse(app.isTextTooLong(midLengthSentence.length));
+    const boundary = app.getAccessibleTextLength(midLengthSentence);
+    assertGT(boundary, MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES);
+    assertEquals(boundary, midLengthSentence.length);
+    // </if>
+
+    // <if expr="is_chromeos">
+    assertFalse(app.isTextTooLong(midLengthSentence.length));
+    // </if>
+  });
+
+  test('correct max length used with ChromeOS', () => {
+    createAndSetVoices(app, speech, [
+      {lang: 'en-us', name: 'Google Kristoff (Natural)', localService: true},
+    ]);
+    assertGT(longSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);
+
+    // On ChromeOS, we don't care about the length of text if we're using
+    // local voices.
+    // <if expr="not is_chromeos">
+    assertTrue(app.isTextTooLong(longSentence.length));
+    // </if>
+    // <if expr="is_chromeos">
+    assertFalse(app.isTextTooLong(longSentence.length));
+    // </if>
+  });
+
   suite('on long sentence with few commas', () => {
     let firstBoundary: number;
 
@@ -138,6 +257,82 @@ suite('SpeechUsesMaxTextLength', () => {
       assertLT(secondBoundary, afterFirstBoundary.length);
       assertNotEquals(afterSecondBoundary, afterFirstBoundary);
     });
+  });
+
+  test('commas in numbers ignored', () => {
+    const invalidCommaSplices = '525,600 minutes 525,000 moments so dear';
+    const validCommaSplice = '525,600 minutes, 525,000 moments so dear';
+
+    // When there are no other commas in a phrase, we don't splice on the
+    // commas within numbers.
+    let boundary = app.getAccessibleTextLength(invalidCommaSplices);
+    assertEquals(
+        invalidCommaSplices, invalidCommaSplices.substring(0, boundary));
+
+    // When there is a valid comma in a string, we splice on that instead of
+    // on the commas within numbers
+    boundary = app.getAccessibleTextLength(validCommaSplice);
+    assertEquals('525,600 minutes', validCommaSplice.substring(0, boundary));
+  });
+
+  test('hyphens in numbers ignored', () => {
+    const invalidHyphenSplices =
+        '10-4 is not a valid place to splice nor is 6-2=4';
+    const validHyphenSplice =
+        'This is okay- but five hundred twenty-five thousand and ' +
+        '10-4 are not okay';
+
+    // When there are no other hyphens in a phrase, we don't splice on the
+    // hyphens within numbers.
+    let boundary = app.getAccessibleTextLength(invalidHyphenSplices);
+    assertEquals(
+        invalidHyphenSplices, invalidHyphenSplices.substring(0, boundary));
+
+    // When there is a valid hyphen in a string, we splice on that instead of
+    // on the hyphens within numbers
+    boundary = app.getAccessibleTextLength(validHyphenSplice);
+    assertEquals('This is okay', validHyphenSplice.substring(0, boundary));
+  });
+
+  test('non-surrounding numbers used', () => {
+    const numberBeforeComma = 'If we end on a 2, we should splice';
+    const numberAfterComma = 'But if after the comma,40 appears we also splice';
+    const numberBeforeHyphen = 'I want 2- no 3';
+    const numberAfterHyphen = 'Should I splice -4 sure';
+
+    let boundary = app.getAccessibleTextLength(numberBeforeComma);
+    assertEquals('If we end on a 2', numberBeforeComma.substring(0, boundary));
+
+    boundary = app.getAccessibleTextLength(numberAfterComma);
+    assertEquals(
+        'But if after the comma', numberAfterComma.substring(0, boundary));
+
+    boundary = app.getAccessibleTextLength(numberBeforeHyphen);
+    assertEquals('I want 2', numberBeforeHyphen.substring(0, boundary));
+
+    boundary = app.getAccessibleTextLength(numberAfterHyphen);
+    assertEquals('Should I splice ', numberAfterHyphen.substring(0, boundary));
+  });
+
+  test('splices allowed on non-comma and hyphens ', () => {
+    let nonCommaHyphenSplice =
+        'One 1(7)1 and Two 2[300]2 and Three 3{12}3 should all splice';
+    const expectedSplices = [
+      'One 1',
+      '(7',
+      ')1 and Two 2',
+      '[300',
+      ']2 and Three 3',
+      '{12',
+      '}3 should all splice',
+    ];
+
+    for (let i = 0; i < expectedSplices.length; i++) {
+      const expectedSplice = expectedSplices[i];
+      const boundary = app.getAccessibleTextLength(nonCommaHyphenSplice);
+      assertEquals(expectedSplice, nonCommaHyphenSplice.substring(0, boundary));
+      nonCommaHyphenSplice = nonCommaHyphenSplice.substring(boundary);
+    }
   });
 
   suite('on long sentence with commas after max speech length', () => {

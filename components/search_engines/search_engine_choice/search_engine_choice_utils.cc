@@ -23,8 +23,8 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/choice_made_location.h"
-#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -140,11 +140,7 @@ ChoiceScreenData::ChoiceScreenData(
 ChoiceScreenData::~ChoiceScreenData() = default;
 
 bool IsEeaChoiceCountry(int country_id) {
-  // Consider the search engine list command line country override as an EEA
-  // region country to display the search engine choice screen.
-  return HasSearchEngineCountryListOverride()
-             ? true
-             : kEeaChoiceCountriesIds.contains(country_id);
+  return regional_capabilities::IsEeaCountry(country_id);
 }
 
 void RecordChoiceScreenProfileInitCondition(
@@ -211,11 +207,6 @@ void RecordChoiceScreenPositions(
   }
 }
 
-void RecordUnexpectedSearchProvider(const TemplateURLData& data) {
-  base::UmaHistogramSparse(kSearchEngineChoiceUnexpectedIdHistogram,
-                           data.prepopulate_id);
-}
-
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
                                  WipeSearchEngineChoiceReason reason) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram, reason);
@@ -230,36 +221,6 @@ void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
     profile_prefs.ClearPref(
         prefs::kDefaultSearchProviderChoiceScreenSkippedCount);
 #endif
-}
-
-std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kSearchEngineChoiceCountry)) {
-    return std::nullopt;
-  }
-
-  std::string country_id =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kSearchEngineChoiceCountry);
-
-  if (country_id == switches::kDefaultListCountryOverride) {
-    return SearchEngineCountryListOverride::kEeaDefault;
-  }
-  if (country_id == switches::kEeaListCountryOverride) {
-    return SearchEngineCountryListOverride::kEeaAll;
-  }
-  return country_codes::CountryStringToCountryID(country_id);
-}
-
-bool HasSearchEngineCountryListOverride() {
-  std::optional<SearchEngineCountryOverride> country_override =
-      GetSearchEngineCountryOverride();
-  if (!country_override.has_value()) {
-    return false;
-  }
-
-  return absl::holds_alternative<SearchEngineCountryListOverride>(
-      country_override.value());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

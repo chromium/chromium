@@ -19,8 +19,8 @@ namespace {
 class MojoSingleSampleMetric : public mojom::SingleSampleMetric {
  public:
   MojoSingleSampleMetric(const std::string& histogram_name,
-                         base::HistogramBase::Sample min,
-                         base::HistogramBase::Sample max,
+                         base::HistogramBase::Sample32 min,
+                         base::HistogramBase::Sample32 max,
                          uint32_t bucket_count,
                          int32_t flags)
       : metric_(histogram_name, min, max, bucket_count, flags) {}
@@ -32,7 +32,7 @@ class MojoSingleSampleMetric : public mojom::SingleSampleMetric {
 
  private:
   // mojom::SingleSampleMetric:
-  void SetSample(base::HistogramBase::Sample sample) override {
+  void SetSample(base::HistogramBase::Sample32 sample) override {
     metric_.SetSample(sample);
   }
 
@@ -57,8 +57,8 @@ class MojoSingleSampleMetricsProvider
   // mojom::SingleSampleMetricsProvider:
   void AcquireSingleSampleMetric(
       const std::string& histogram_name,
-      base::HistogramBase::Sample min,
-      base::HistogramBase::Sample max,
+      base::HistogramBase::Sample32 min,
+      base::HistogramBase::Sample32 max,
       uint32_t bucket_count,
       int32_t flags,
       mojo::PendingReceiver<mojom::SingleSampleMetric> receiver) override {

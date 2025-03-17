@@ -52,6 +52,9 @@ class EmbeddedTestServerAndroid {
   std::vector<std::string> GetRequestHeadersForUrl(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jrelative_url);
+  int GetRequestCountForUrl(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& jrelative_url);
 
   void AddDefaultHandlers(
       JNIEnv* jenv,
@@ -93,13 +96,27 @@ class EmbeddedTestServerAndroid {
   EmbeddedTestServer test_server_;
   ConnectionListener connection_listener_;
 
-  // Headers of requests sent to the server. Keyed by path (not by full URL)
-  // because the host part of the requests is translated ("a.test" to
+  // Headers and counts of requests sent to the server. Keyed by path (not by
+  // full URL) because the host part of the requests is translated ("a.test" to
   // "127.0.0.1") before the server handles them.
   // This is accessed from the UI thread and `EmbeddedTestServer::io_thread_`,
   // so it's guarded by the lock.
-  std::map<std::string, net::test_server::HttpRequest::HeaderMap>
-      request_headers_by_path_ GUARDED_BY(lock_);
+  struct RequestInfoByPath {
+    RequestInfoByPath();
+    ~RequestInfoByPath();
+
+    // Movable and copyable.
+    RequestInfoByPath(RequestInfoByPath&& other);
+    RequestInfoByPath& operator=(RequestInfoByPath&& other);
+    RequestInfoByPath(const RequestInfoByPath& other);
+    RequestInfoByPath& operator=(const RequestInfoByPath& other);
+
+    // Headers of requests sent for the path.
+    net::test_server::HttpRequest::HeaderMap headers;
+    // Counts of requests.
+    size_t count = 0;
+  };
+  std::map<std::string, RequestInfoByPath> requests_by_path_ GUARDED_BY(lock_);
   base::Lock lock_;
 };
 

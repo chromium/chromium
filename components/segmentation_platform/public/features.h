@@ -156,6 +156,21 @@ extern const base::FeatureParam<int> kMaxDefaultBrowserCardImpressions;
 // The maximum number of times the tab group promo card can be visible to the
 // user.
 extern const base::FeatureParam<int> kMaxTabGroupCardImpressions;
+// The maximum number of times the tab group sync promo card can be visible to
+// the user.
+extern const base::FeatureParam<int> kMaxTabGroupSyncCardImpressions;
+// The maximum number of times the quick delete promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxQuickDeleteCardImpressions;
+// The maximum number of times the auxiliary search promo card can be visible to
+// the user.
+
+BASE_DECLARE_FEATURE(kAndroidAppIntegrationModule);
+extern const base::FeatureParam<bool> kMaxAuxiliarySearchForceShow;
+extern const base::FeatureParam<int> kMaxAuxiliarySearchCardImpressions;
+
+// Feature flag for enabling FedCM user segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
 
 }  // namespace segmentation_platform::features
 

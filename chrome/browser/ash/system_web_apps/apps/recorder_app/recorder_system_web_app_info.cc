@@ -20,13 +20,18 @@ namespace {
 constexpr int kChromeRecorderAppTitlebarHeight = 32;
 }  // namespace
 
+RecorderSystemAppDelegate::RecorderSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::RECORDER,
+                                "Recorder",
+                                GURL(ash::kChromeUIRecorderAppURL),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForRecorderSystemWebApp() {
+RecorderSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url(ash::kChromeUIRecorderAppURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIRecorderAppURL);
-
   info->title = l10n_util::GetStringUTF16(IDS_RECORDER_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url(),
@@ -37,17 +42,6 @@ CreateWebAppInfoForRecorderSystemWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   return info;
-}
-
-RecorderSystemAppDelegate::RecorderSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::RECORDER,
-                                "Recorder",
-                                GURL(ash::kChromeUIRecorderAppURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-RecorderSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForRecorderSystemWebApp();
 }
 
 bool RecorderSystemAppDelegate::ShouldCaptureNavigations() const {

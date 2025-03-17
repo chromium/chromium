@@ -66,11 +66,10 @@ TEST_F(NoStatePrefetchURLLoaderThrottleTest,
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
   no_state_prefetch_throttle->set_destruction_closure(
-      base::BindLambdaForTesting(
-        [&]() {
-          EXPECT_TRUE(current_task_runner->RunsTasksInCurrentSequence());
-          run_loop.Quit();
-        }));
+      base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(current_task_runner->RunsTasksInCurrentSequence());
+        run_loop.Quit();
+      }));
 
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
       std::move(no_state_prefetch_throttle);

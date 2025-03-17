@@ -1,0 +1,12 @@
+[document web]
+++[section]
+++++[combo box] name='Animal collapsed'
+++++++[menu]
+++++++++[menu item] name='Eggplant' selectable selected
+++++++++[menu item] name='Broccolini' selectable
+++++++++[menu item] name='Rutabaga' selectable
+++++[combo box] name='Fruit expanded'
+++++++[menu]
+++++++++[menu item] name='Orange' selectable
+++++++++[menu item] name='Mango' selectable selected
+++++++++[menu item] name='Star fruit' selectable

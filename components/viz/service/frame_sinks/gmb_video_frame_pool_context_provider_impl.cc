@@ -71,21 +71,6 @@ class GmbVideoFramePoolContext
     sequence_ = nullptr;
   }
 
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      const SharedImageFormat& si_format,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet usage,
-      gpu::SyncToken& sync_token) override {
-    auto client_shared_image = sii_in_process_->CreateSharedImage(
-        {si_format, gpu_memory_buffer->GetSize(), color_space, usage,
-         "VizGmbVideoFramePool"},
-        gpu_memory_buffer->CloneHandle());
-    CHECK(client_shared_image);
-    sync_token = sii_in_process_->GenVerifiedSyncToken();
-    return client_shared_image;
-  }
-
   // Note that currently SharedImageInterface provides 2 different ways to
   // clients to create a MappableSI, one without using existing GMB handle and
   // other using existing GMB handle. The difference being that when a
@@ -140,6 +125,10 @@ class GmbVideoFramePoolContext
       scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     CHECK(shared_image);
     shared_image->UpdateDestructionSyncToken(sync_token);
+  }
+
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return sii_in_process_->GetCapabilities();
   }
 
  private:

@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">पुलकोट</translation>
 <translation id="1681022320378710418">मौजूदा समय</translation>
 <translation id="1727839386348365796">Eyedropper</translation>
+<translation id="1771761307086386028">दाईं तरफ़ स्क्रोल करें</translation>
 <translation id="1787192514241997742">कुल समय: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">ट्री ग्रिड</translation>
 <translation id="1822429046913737220">पूर्वाह्न/अपराह्न</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">हफ़्ता पिकर (हफ़्ता चुनने की सुविधा)</translation>
 <translation id="3706100364254443312">स्विच करें</translation>
 <translation id="3808586225841795776">शब्द</translation>
-<translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3920932319529768807">निष्कर्ष</translation>
 <translation id="3924558731517983934">ऐप्लिकेशन</translation>
 <translation id="3944740393230681990">प्रस्तावना</translation>
 <translation id="3960700977367013758">स्क्रोल बार</translation>
+<translation id="4021716437419160885">नीचे स्क्रोल करें</translation>
 <translation id="4103419683916926126">मिलीसेकंड</translation>
 <translation id="4151657705144244502">ग्राफ़‍िक</translation>
 <translation id="4160057747563657758">टेलीफ़ोन</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">ट्री</translation>
 <translation id="4668956016107839909">परिशिष्ट</translation>
 <translation id="4698212723196775569">कोड</translation>
+<translation id="4710792130811321440">ऑडियो ट्रैक दिखाने का विकल्प चुनने का मेन्यू</translation>
 <translation id="4742539557769756338">कवर</translation>
 <translation id="4748357248530471599">डिसप्ले कटआउट फ़ुलस्क्रीन टॉगल करें</translation>
 <translation id="4757246831282535685">टैब पैनल</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">टिप्पणी</translation>
 <translation id="4924138096460353083">कोई वैल्यू नहीं है</translation>
 <translation id="4950364064308314478">स्थानीय तारीख और समय चुनने वाला टूल दिखाएं</translation>
+<translation id="495046168593986294">ऊपर स्क्रोल करें</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> चुना गया</translation>
 <translation id="5022314756875057021">लाइन ग्रुप</translation>
 <translation id="5034860022980953847">प्रगति संकेतक</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">स्पिन बटन</translation>
 <translation id="6011459053400940133">वॉल्यूम स्लाइडर</translation>
 <translation id="6015796118275082299">वर्ष</translation>
+<translation id="602001110135236999">बाईं ओर स्क्रोल करें</translation>
 <translation id="6023896073578205740">सूची बॉक्स</translation>
 <translation id="6119846243427417423">सक्रिय करें</translation>
 <translation id="6150588977291308318">संदर्भ सूची</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">दबाएं</translation>
 <translation id="6885760532393684712">डायरेक्ट्री</translation>
 <translation id="689129560213475294">कॉलफ़न</translation>
+<translation id="6919089238568236262">वीडियो ट्रैक दिखाने का विकल्प चुनने का मेन्यू</translation>
 <translation id="6934078000481955284">ब्लॉककोट</translation>
 <translation id="693476918119313863">हेडर</translation>
 <translation id="6941933287844615239">मीडिया डाउनलोड करें</translation>

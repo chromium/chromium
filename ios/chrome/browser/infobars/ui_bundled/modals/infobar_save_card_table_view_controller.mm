@@ -8,15 +8,16 @@
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/target_account_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/save_card_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_delegate.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
@@ -31,6 +32,12 @@
 namespace {
 // Number of Months in a year.
 const int kNumberOfMonthsInYear = 12;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Height of the Google pay logo.
+CGFloat const kGooglePayLogoHeight = 26;
+#endif
+
 }  // namespace
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -44,7 +51,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCardExpireYear,
   ItemTypeCardLegalMessage,
   ItemTypeCardSave,
-  ItemTypeTargetAccount,
 };
 
 @interface InfobarSaveCardTableViewController () <TableViewTextLinkCellDelegate,
@@ -79,9 +85,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The email to identify the account where the card will be saved. Empty if none
 // should be shown, e.g. if the card won't be saved to any account.
 @property(nonatomic, copy) NSString* displayedTargetAccountEmail;
-// The avatar to identify the account where the card will be saved. Null if none
-// should be shown, e.g. if the card won't be saved to any account.
-@property(nonatomic, strong) UIImage* displayedTargetAccountAvatar;
+// Logo icon image to be displayed below the legal message.
+@property(nonatomic, strong) UIImage* logoIcon;
+// Accessibility description of the `logoIcon`
+@property(nonatomic, copy) NSString* logoIconDescription;
 
 // Item for displaying the last digits of the card to be saved.
 @property(nonatomic, strong) TableViewTextEditItem* cardLastDigitsItem;
@@ -93,7 +100,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong) TableViewTextEditItem* expirationYearItem;
 // Item for displaying the save card button .
 @property(nonatomic, strong) TableViewTextButtonItem* saveCardButtonItem;
-
 @end
 
 @implementation InfobarSaveCardTableViewController
@@ -196,36 +202,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
-  // The extra legal line and account info should only be shown together.
-  bool shouldShowExtraLegalLineAndAccountInfo =
-      [self.displayedTargetAccountEmail length] > 0 &&
-      self.displayedTargetAccountAvatar != nil;
-
-  // Concatenate legal lines and maybe add the extra one.
-  for (SaveCardMessageWithLinks* message in self.legalMessages) {
+  // Add a `TableViewTextLinkItem` for each legal message and add logo to the
+  // last item.
+  for (size_t index = 0; index < self.legalMessages.count; index++) {
+    SaveCardMessageWithLinks* message = self.legalMessages[index];
     TableViewTextLinkItem* legalMessageItem =
         [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
+    // Logo needs to be added once, at the end of all legal messages, within the
+    // last `legalMessageItem`.
+    if (index == (self.legalMessages.count - 1)) {
+      legalMessageItem.logoImage = [self logoIconImage];
+      legalMessageItem.logoImageDescription = self.logoIconDescription;
+    }
     legalMessageItem.text = message.messageText;
     legalMessageItem.linkURLs = message.linkURLs;
     legalMessageItem.linkRanges = message.linkRanges;
     [model addItem:legalMessageItem
-        toSectionWithIdentifier:SectionIdentifierContent];
-  }
-  if (shouldShowExtraLegalLineAndAccountInfo) {
-    TableViewTextLinkItem* extraLegalMessageItem =
-        [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-    extraLegalMessageItem.text =
-        l10n_util::GetNSString(IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT);
-    [model addItem:extraLegalMessageItem
-        toSectionWithIdentifier:SectionIdentifierContent];
-  }
-
-  if (shouldShowExtraLegalLineAndAccountInfo) {
-    TargetAccountItem* targetTargetAccountItem =
-        [[TargetAccountItem alloc] initWithType:ItemTypeTargetAccount];
-    targetTargetAccountItem.email = self.displayedTargetAccountEmail;
-    targetTargetAccountItem.avatar = self.displayedTargetAccountAvatar;
-    [model addItem:targetTargetAccountItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
@@ -265,10 +257,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [prefs[kCurrentCardSaveAcceptedPrefKey] boolValue];
   self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
   self.displayedTargetAccountEmail = prefs[kDisplayedTargetAccountEmailPrefKey];
-  self.displayedTargetAccountAvatar =
-      prefs[kDisplayedTargetAccountAvatarPrefKey] == [NSNull null]
-          ? nil
-          : prefs[kDisplayedTargetAccountAvatarPrefKey];
+  self.logoIcon = prefs[kLogoIconPrefKey];
   [self.tableView reloadData];
 }
 
@@ -345,10 +334,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
           forControlEvents:UIControlEventTouchUpInside];
       break;
     }
-    case ItemTypeTargetAccount:
-      cell.separatorInset =
-          UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
-      break;
   }
 
   return cell;
@@ -520,6 +505,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Helpers
+
+- (UIImage*)logoIconImage {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayLogoHeight));
+#else
+  return self.logoIcon;
+#endif
+}
 
 - (TableViewTextEditItem*)textEditItemWithType:(ItemType)type
                             fieldNameLabelText:(NSString*)name

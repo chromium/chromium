@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices_factory.h"
@@ -29,13 +28,14 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/containers/fixed_flat_set.h"
@@ -466,11 +466,17 @@ bool HidChooserContext::HasDevicePermission(
     const device::mojom::HidDeviceInfo& device,
     const std::optional<url::Origin>& embedding_origin_of_web_view) {
   if (device.is_excluded_by_blocklist) {
-    const bool has_fido_collection =
+    bool is_device_protected_due_to_fido =
         base::Contains(device.collections, device::mojom::kPageFido,
                        [](const auto& c) { return c->usage->usage_page; });
-    if (!has_fido_collection || !IsFidoAllowedForOrigin(origin))
+    if (base::FeatureList::IsEnabled(
+            features::kSecurityKeyHidInterfacesAreFido) &&
+        IsKnownSecurityKey(device)) {
+      is_device_protected_due_to_fido = true;
+    }
+    if (!is_device_protected_due_to_fido || !IsFidoAllowedForOrigin(origin)) {
       return false;
+    }
   }
 
   if (CanApplyPolicy() &&
@@ -739,7 +745,7 @@ void HidChooserContext::OnHidManagerConnectionError() {
 }
 
 bool HidChooserContext::CanApplyPolicy() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* profile_helper = ash::ProfileHelper::Get();
   DCHECK(profile_helper);
   user_manager::User* user = profile_helper->GetUserByProfile(profile_);

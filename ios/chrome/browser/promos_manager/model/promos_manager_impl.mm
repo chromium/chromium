@@ -231,8 +231,9 @@ std::set<promos_manager::Promo> PromosManagerImpl::ActivePromos(
         promos_manager::PromoForName(stored_active_promos[i].GetString());
 
     // Skip malformed active promos data. (This should almost never happen.)
-    if (!promo.has_value())
+    if (!promo.has_value()) {
       continue;
+    }
 
     active_promos.insert(promo.value());
   }

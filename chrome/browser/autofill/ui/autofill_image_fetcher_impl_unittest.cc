@@ -34,16 +34,8 @@ class AutofillImageFetcherImplTest : public testing::Test {
  private:
   std::unique_ptr<AutofillImageFetcherImpl> autofill_image_fetcher_;
 };
-// TODO(crbug.com/40221039): Write tests for
-// kAutofillEnableNewCardArtAndNetworkImages code paths
-class AutofillImageFetcherImplNewCardArtTest
-    : public AutofillImageFetcherImplTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableNewCardArtAndNetworkImages};
-};
 
-TEST_F(AutofillImageFetcherImplNewCardArtTest, ResolveCardArtURL) {
+TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
   // With kAutofillEnableNewCardArtAndNetworkImages enabled, we fetch the image
   // at height of 48.
   EXPECT_EQ(GURL("https://www.example.com/fake_image1=h48-pa"),

@@ -4,8 +4,8 @@
 
 package org.chromium.components.collaboration.messaging;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 import java.util.Optional;
@@ -14,12 +14,16 @@ import java.util.Optional;
  * Metadata about a tab within {@link MessageAttribution}. This is a shim layer for the native
  * representation of the object. See //components/collaboration/public/messaging/message.h for
  * specific details.
+ * TODO: Add a proper constructor to avoid @SuppressWarnings("NullAway.Init")
  */
+@NullMarked
 public class TabGroupMessageMetadata {
-    @Nullable public LocalTabGroupId localTabGroupId;
-    @Nullable public String syncTabGroupId;
-    @Nullable public String lastKnownTitle;
+    public @Nullable LocalTabGroupId localTabGroupId;
+    public @Nullable String syncTabGroupId;
+    public @Nullable String lastKnownTitle;
+
     // Use {@link #hasColor()} to inspect if this field has a value.
     // The Integer should be assumed to be of type {@link TabGroupColorId}.
+    @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
     public Optional<Integer> lastKnownColor;
 }

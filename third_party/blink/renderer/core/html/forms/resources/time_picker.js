@@ -261,7 +261,8 @@ class TimePicker extends HTMLElement {
   onKeyDown_ = (event) => {
     switch (event.key) {
       case 'Enter':
-        window.pagePopupController.setValueAndClosePopup(0, this.selectedValue);
+        window.pagePopupController.setValueAndClosePopup(
+            0, this.selectedValue, /* is_keyboard_event= */ true);
         break;
       case 'Escape':
         if (this.selectedValue ===

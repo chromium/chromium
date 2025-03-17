@@ -313,6 +313,9 @@ void CSSPropertyValueSet::FinalizeGarbageCollectedObject() {
 
 bool MutableCSSPropertyValueSet::RemoveShorthandProperty(
     CSSPropertyID property_id) {
+  if (property_id == CSSPropertyID::kAll) {
+    return RemovePropertiesAffectedByAll();
+  }
   StylePropertyShorthand shorthand = shorthandForProperty(property_id);
   if (!shorthand.length()) {
     return false;
@@ -661,6 +664,29 @@ bool MutableCSSPropertyValueSet::RemovePropertiesInSet(
     }
     // Modify property_vector_ in-place since this method is
     // performance-sensitive.
+    properties[new_index++] = properties[old_index];
+  }
+  if (new_index != old_size) {
+    property_vector_.Shrink(new_index);
+    InvalidateHashIfComputed();
+    return true;
+  }
+  return false;
+}
+
+bool MutableCSSPropertyValueSet::RemovePropertiesAffectedByAll() {
+  if (property_vector_.empty()) {
+    return false;
+  }
+
+  base::span<CSSPropertyValue> properties(property_vector_);
+  unsigned old_size = property_vector_.size();
+  unsigned new_index = 0;
+  for (unsigned old_index = 0; old_index < old_size; ++old_index) {
+    const CSSPropertyValue& property = properties[old_index];
+    if (CSSProperty::Get(property.PropertyID()).IsAffectedByAll()) {
+      continue;
+    }
     properties[new_index++] = properties[old_index];
   }
   if (new_index != old_size) {

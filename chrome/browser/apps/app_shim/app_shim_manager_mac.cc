@@ -1908,7 +1908,7 @@ std::map<base::FilePath, int> AppShimManager::GetProfilesWithMatchingHandlers(
   std::map<base::FilePath, AppShimRegistry::HandlerInfo> handlers =
       AppShimRegistry::Get()->GetHandlersForApp(params.app_id);
   for (const auto& [profile, handler_info] : handlers) {
-    int count = base::ranges::count_if(
+    int count = std::ranges::count_if(
         files, [&handler_info](const base::FilePath& file_path) {
           std::string file_extension =
               base::FilePath(file_path.Extension()).AsUTF8Unsafe();

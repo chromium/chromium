@@ -57,12 +57,6 @@ class BrowserFeaturePromoController20
   ~BrowserFeaturePromoController20() override;
 
  protected:
-  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoController20Test,
-                           GetAnchorContext);
-  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoController20Test,
-                           GetAcceleratorProvider);
-  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoController20Test,
-                           GetFocusHelpBubbleScreenReaderHint);
   FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoController20ActivationUiTest,
                            CanShowPromoForElement);
 

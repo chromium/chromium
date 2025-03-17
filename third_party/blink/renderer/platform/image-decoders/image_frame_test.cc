@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
@@ -28,8 +29,8 @@ class ImageFrameTest : public testing::Test {
     src_8888_r = 0x40;
     src_8888_g = 0x50;
     src_8888_b = 0x60;
-    src_8888 = SkPackARGB32(src_8888_a, src_8888_r, src_8888_g, src_8888_b);
-    dst_8888 = SkPackARGB32(0xA0, 0x60, 0x70, 0x80);
+    src_8888 = SkPMColorSetARGB(src_8888_a, src_8888_r, src_8888_g, src_8888_b);
+    dst_8888 = SkPMColorSetARGB(0xA0, 0x60, 0x70, 0x80);
 
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
     pixel_format_n32 = skcms_PixelFormat_BGRA_8888;

@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/cc_export.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
@@ -172,36 +172,6 @@ class CC_EXPORT InputHandlerClient {
 
  protected:
   InputHandlerClient() = default;
-};
-
-// Data passed from the input handler to the main thread.  Used to notify the
-// main thread about changes that have occurred as a result of input since the
-// last commit.
-struct InputHandlerCommitData {
-  // Defined in input_handler.cc to avoid inlining since flat_set has
-  // non-trivial size destructor.
-  InputHandlerCommitData();
-  ~InputHandlerCommitData();
-
-  // Unconsumed scroll delta since the last commit.
-  gfx::Vector2dF overscroll_delta;
-
-  // Elements that have scroll snapped to a new target since the last commit.
-  base::flat_set<ElementId> updated_snapped_elements;
-
-  // If a scroll was active at any point since the last commit, this will
-  // identify the scroller (even if it has since ended).
-  ElementId last_latched_scroller;
-
-  // True if a scroll gesture has ended since the last commit.
-  bool scroll_gesture_did_end = false;
-
-  // The following bits are set if a gesture of any type was started since
-  // the last commit.
-  bool has_pinch_zoomed = false;
-  bool has_scrolled_by_wheel = false;
-  bool has_scrolled_by_touch = false;
-  bool has_scrolled_by_precisiontouchpad = false;
 };
 
 // The InputHandler is a way for the embedders to interact with the input system
@@ -485,7 +455,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
 
   virtual void SetIsHandlingTouchSequence(bool is_handling_touch_sequence);
 

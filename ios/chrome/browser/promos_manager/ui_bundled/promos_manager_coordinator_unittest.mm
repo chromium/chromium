@@ -187,7 +187,7 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackTest) {
 
   [mockCoordinator displayPromoCallback:true];
 
-  [mockCoordinator verify];
+  EXPECT_OCMOCK_VERIFY(mockCoordinator);
 }
 
 // Tests that promo will not be displayed if UI is not available.
@@ -211,7 +211,7 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
   scene_state_.activationLevel = SceneActivationLevelBackground;
   [mockCoordinator displayPromoCallback:true];
 
-  [mockCoordinator verify];
+  EXPECT_OCMOCK_VERIFY(mockCoordinator);
 }
 
 // TODO(crbug.com/40241101): Add unit tests for promoWasDisplayed being

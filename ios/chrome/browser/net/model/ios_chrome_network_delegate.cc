@@ -31,8 +31,9 @@ void ReportInvalidReferrerSend(const GURL& target_url,
   LOG(ERROR) << "Cancelling request to " << target_url
              << " with invalid referrer " << referrer_url;
   // Record information to help debug http://crbug.com/422871
-  if (!target_url.SchemeIsHTTPOrHTTPS())
+  if (!target_url.SchemeIsHTTPOrHTTPS()) {
     return;
+  }
   DUMP_WILL_BE_NOTREACHED();
 }
 

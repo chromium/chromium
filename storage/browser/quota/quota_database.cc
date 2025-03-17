@@ -67,6 +67,10 @@ const char kBucketTable[] = "buckets";
 // registered into the buckets table. Introduced 2022-05 (crrev.com/c/3594211).
 const char kBucketsTableBootstrapped[] = "IsBucketsBootstrapped";
 
+// Flag to not repeat MediaLicenseDatabase cleanup in all the bucket
+// directories. Introduced 2025-01 (crrev.com/c/6088694).
+const char kMediaLicenseDatabaseRemoved[] = "IsMediaLicenseDatabaseRemoved";
+
 const int kCommitIntervalMs = 30000;
 
 const base::Clock* g_clock_for_testing = nullptr;
@@ -811,51 +815,56 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
     return base::unexpected(open_error);
   }
 
-  // clang-format off
-  static constexpr char kSqlExpired[] =
-      "SELECT " BUCKET_INFO_FIELDS_SELECTOR
-        "FROM buckets "
-        "WHERE expiration > 0 AND expiration < ?";
-  // clang-format on
-  last_operation_ = "GetExpired";
-
-  sql::Statement statement_expired(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSqlExpired));
-  statement_expired.BindTime(0, GetNow());
-  std::set<BucketInfo> expired_buckets =
-      BucketInfosFromSqlStatement(statement_expired);
-
-  // Return early if we don't need to gather stale buckets as well.
+  // We only clear stale/orphan buckets once after a delay since startup. If we
+  // have already done so, or should not do so yet, then we just want to clear
+  // expired buckets here and not do the full query.
   if (already_evicted_stale_storage_ ||
-      !base::FeatureList::IsEnabled(features::kEvictStaleQuotaStorage) ||
       GetNow() < evict_stale_buckets_after_) {
-    return expired_buckets;
-  }
-  already_evicted_stale_storage_ = true;
+    // clang-format off
+    static constexpr char kSqlExpired[] =
+        "SELECT " BUCKET_INFO_FIELDS_SELECTOR
+          "FROM buckets "
+          "WHERE expiration > 0 AND expiration < ?";
+    // clang-format on
+    last_operation_ = "GetExpired";
 
-  // We gather stale buckets in a different fetch round so that we can count
-  // the amount found for metrics and filter out persistent buckets. After
-  // launch it may be worth merging these queries.
+    sql::Statement statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kSqlExpired));
+    statement.BindTime(0, GetNow());
+    return BucketInfosFromSqlStatement(statement);
+  }
+
+  already_evicted_stale_storage_ = true;
   // clang-format off
-  static constexpr char kSqlStale[] =
+  static constexpr char kSqlExpiredAndStaleAndOrphan[] =
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
-        "WHERE type = ? AND persistent = 0 AND "
-          "last_accessed < ? AND last_modified < ?";
+        "WHERE (expiration > 0 AND expiration < ?) OR "
+        "      (type = ? AND persistent = 0 AND "
+        "       last_accessed < ? AND last_modified < ?) OR "
+        "      (storage_key REGEXP '.*\\^(1|4).*' AND "
+        "       last_accessed < ? AND last_modified < ?)";
   // clang-format on
-  last_operation_ = "GetStale";
+  last_operation_ = "GetExpiredAndOrphanAndStale";
 
-  sql::Statement statement_stale(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSqlStale));
-  statement_stale.BindInt(
-      0, static_cast<int>(blink::mojom::StorageType::kTemporary));
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSqlExpiredAndStaleAndOrphan));
+  base::Time expiration_cutoff = GetNow();
+  statement.BindTime(0, expiration_cutoff);
+  statement.BindInt(1, static_cast<int>(blink::mojom::StorageType::kTemporary));
   base::Time stale_cutoff = GetNow() - base::Days(400);
-  statement_stale.BindTime(1, stale_cutoff);
-  statement_stale.BindTime(2, stale_cutoff);
+  statement.BindTime(2, stale_cutoff);
+  statement.BindTime(3, stale_cutoff);
+  base::Time orphan_cutoff = GetNow() - base::Days(1);
+  statement.BindTime(4, orphan_cutoff);
+  statement.BindTime(5, orphan_cutoff);
 
+  // Filter and count returned buckets.
   QuotaErrorOr<BucketInfo> bucket;
-  uint64_t buckets_found = 0;
-  while ((bucket = BucketInfoFromSqlStatement(statement_stale)).has_value()) {
+  std::set<BucketInfo> expired_buckets;
+  uint64_t stale_buckets_found = 0;
+  uint64_t orphan_buckets_found = 0;
+  while ((bucket = BucketInfoFromSqlStatement(statement)).has_value()) {
     // Only the default bucket is persisted by `navigator.storage.persist()`.
     const GURL read_gurl = bucket->storage_key.origin().GetURL();
     if (bucket->is_default() && special_storage_policy &&
@@ -863,43 +872,18 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
+    if (bucket->storage_key.nonce() ||
+        bucket->storage_key.top_level_site().opaque()) {
+      orphan_buckets_found++;
+    } else if (bucket->expiration.is_null() ||
+               bucket->expiration > expiration_cutoff) {
+      stale_buckets_found++;
+    }
     expired_buckets.insert(*bucket);
-    buckets_found++;
   }
-  base::UmaHistogramCounts100000("Quota.StaleBucketCount", buckets_found);
-
-  // Return early if we don't need to gather orphan buckets as well.
-  if (!base::FeatureList::IsEnabled(features::kEvictOrphanQuotaStorage)) {
-    return expired_buckets;
-  }
-
-  // We gather orphan buckets in a different fetch round so that we can count
-  // the amount found. After launch it may be worth merging these queries.
-  // We only need to check for ^1 and ^4 are these are indicators for the
-  // presence of a nonce in the storage key.
-  // For more on StorageKey encoding see EncodedAttribute in
-  // third_party/blink/common/storage_key/storage_key.cc
-  // clang-format off
-  static constexpr char kSqlOrphan[] =
-      "SELECT " BUCKET_INFO_FIELDS_SELECTOR
-        "FROM buckets "
-        "WHERE storage_key REGEXP '.*\\^(1|4).*' AND "
-              "last_accessed < ? AND last_modified < ?";
-  // clang-format on
-  last_operation_ = "GetOrphan";
-  sql::Statement statement_orphan(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSqlOrphan));
-  base::Time orphan_cutoff = GetNow() - base::Days(1);
-  statement_orphan.BindTime(0, orphan_cutoff);
-  statement_orphan.BindTime(1, orphan_cutoff);
-
-  buckets_found = 0;
-  while ((bucket = BucketInfoFromSqlStatement(statement_orphan)).has_value()) {
-    expired_buckets.insert(*bucket);
-    buckets_found++;
-  }
-  base::UmaHistogramCounts100000("Quota.OrphanBucketCount", buckets_found);
-
+  base::UmaHistogramCounts100000("Quota.StaleBucketCount", stale_buckets_found);
+  base::UmaHistogramCounts100000("Quota.OrphanBucketCount",
+                                 orphan_buckets_found);
   return expired_buckets;
 }
 
@@ -921,6 +905,28 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
   }
 
   return meta_table_->SetValue(kBucketsTableBootstrapped, bootstrap_flag)
+             ? QuotaError::kNone
+             : QuotaError::kDatabaseError;
+}
+
+bool QuotaDatabase::IsMediaLicenseDatabaseRemoved() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (EnsureOpened() != QuotaError::kNone) {
+    return false;
+  }
+
+  int flag = 0;
+  return meta_table_->GetValue(kMediaLicenseDatabaseRemoved, &flag) && flag;
+}
+
+QuotaError QuotaDatabase::SetIsMediaLicenseDatabaseRemoved(bool removed_flag) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  QuotaError open_error = EnsureOpened();
+  if (open_error != QuotaError::kNone) {
+    return open_error;
+  }
+
+  return meta_table_->SetValue(kMediaLicenseDatabaseRemoved, removed_flag)
              ? QuotaError::kNone
              : QuotaError::kDatabaseError;
 }
@@ -1026,17 +1032,15 @@ QuotaError QuotaDatabase::EnsureOpened() {
     return QuotaError::kDatabaseError;
   }
 
-  sql::DatabaseOptions options{
-      // The quota database is a critical storage component. If it's corrupted,
-      // all client-side storage APIs fail, because they don't know where their
-      // data is stored.
-      .flush_to_media = true,
-      .page_size = 4096,
-      .cache_size = 500,
-  };
-
-  db_ = std::make_unique<sql::Database>(std::move(options),
-                                        sql::Database::Tag("Quota"));
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions()
+          .set_preload(base::FeatureList::IsEnabled(
+              sql::features::kPreOpenPreloadDatabase))
+          // The quota database is a critical storage component. If it's
+          // corrupted, all client-side storage APIs fail, because they don't
+          // know where their data is stored.
+          .set_flush_to_media(true),
+      sql::Database::Tag("Quota"));
   meta_table_ = std::make_unique<sql::MetaTable>();
 
   db_->set_error_callback(base::BindRepeating(&QuotaDatabase::OnSqliteError,
@@ -1145,7 +1149,9 @@ bool QuotaDatabase::OpenDatabase() {
     return false;
   }
 
-  db_->Preload();
+  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
+    db_->Preload();
+  }
   return true;
 }
 

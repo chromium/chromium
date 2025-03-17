@@ -1,0 +1,19 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed value='option without img'
+++++++++genericContainer ignored invisible
+++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++menuListPopup invisible ispopup=auto
+++++++++++genericContainer invisible
+++++++++++++menuListOption name='option without img' selected=true
+++++++++++++menuListOption invisible name=' option with img with alt img alt text' selected=false
+++++++++++++++genericContainer invisible
+++++++++++++++++staticText invisible name='<newline>    option with img with alt<newline>    '
+++++++++++++++++image invisible name='img alt text'
+++++++++++++menuListOption invisible name=' option with img without alt ' selected=false
+++++++++++++++genericContainer invisible
+++++++++++++++++staticText invisible name='<newline>    option with img without alt<newline>    '
+++++++++++++++++image invisible

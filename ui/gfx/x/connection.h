@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #ifndef UI_GFX_X_CONNECTION_H_
 #define UI_GFX_X_CONNECTION_H_
 
@@ -250,9 +255,10 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   WindowEventManager& window_event_manager() { return window_event_manager_; }
 
-  // Indicates if the connection was able to successfully sync with the
-  // window manager.
-  bool synced_with_wm() const { return synced_with_wm_; }
+  // Indicates if the connection is able to sync with the WM, either because the
+  // WM is on an allowlist or the connection successfully synced with the WM to
+  // test support experimentally.
+  bool CanSyncWithWm() const;
 
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.
@@ -343,7 +349,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
     SendEventRequest send_event{false, target, mask};
     base::span(send_event.event).copy_from(event_bytes);
-    base::ranges::copy(event_bytes, send_event.event.begin());
+    std::ranges::copy(event_bytes, send_event.event.begin());
     return XProto::SendEvent(send_event);
   }
 

@@ -22,11 +22,11 @@ package sync_pb;
 
 // Properties of history delete directive sync objects.
 message HistoryDeleteDirectiveSpecifics {
-  // Exactly one of the fields below must be filled in.  Otherwise, this
-  // delete directive must be ignored.
-  optional GlobalIdDirective global_id_directive = 1;
-  optional TimeRangeDirective time_range_directive = 2;
-  optional UrlDirective url_directive = 3;
+  oneof directive_type {
+    GlobalIdDirective global_id_directive = 1;
+    TimeRangeDirective time_range_directive = 2;
+    UrlDirective url_directive = 3;
+  }
 }
 
 message GlobalIdDirective {

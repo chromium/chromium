@@ -241,6 +241,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
                                     ComMFSample sample,
                                     HRESULT hr);
 
+  bool InitMFVideoProcessor();
+
   // Used to post tasks from the IMFMediaEvent::Invoke() method.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

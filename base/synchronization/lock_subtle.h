@@ -5,7 +5,6 @@
 #ifndef BASE_SYNCHRONIZATION_LOCK_SUBTLE_H_
 #define BASE_SYNCHRONIZATION_LOCK_SUBTLE_H_
 
-#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"

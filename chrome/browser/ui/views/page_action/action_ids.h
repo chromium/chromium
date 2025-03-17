@@ -6,14 +6,22 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ACTION_IDS_H_
 
 #include <array>
+#include <map>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 
 namespace page_actions {
 
 // All ActionIds associated with a page action.
-static constexpr std::array<actions::ActionId, 1> kActionIds = {
-    kActionSidePanelShowLensOverlayResults};
+// For now, the order of the page actions will be based on their position in
+// the array.
+inline constexpr std::array<actions::ActionId, 5> kActionIds = {
+    kActionSidePanelShowLensOverlayResults,
+    kActionShowTranslate,
+    kActionShowMemorySaverChip,
+    kActionShowIntentPicker,
+    kActionZoomNormal,
+};
 
 }  // namespace page_actions
 

@@ -41,7 +41,7 @@ PopupWarningView::PopupWarningView(const Suggestion& suggestion) {
                    .SetTextStyle(ChromeTextStyle::STYLE_RED)
                    .SetMultiLine(true)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                   .SetEnabledColorId(ui::kColorAlertHighSeverity)
+                   .SetEnabledColor(ui::kColorAlertHighSeverity)
                    .Build());
 }
 

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 static_library("echo_private") {
@@ -16,16 +14,15 @@ static_library("echo_private") {
     ":echo_private_api_util",
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/chromeos/echo",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common/extensions/api:api",
+    "//chromeos/ash/components/report:utils",
     "//chromeos/crosapi/mojom",
     "//components/prefs",
     "//content/public/browser",
@@ -36,32 +33,30 @@ static_library("echo_private") {
   ]
 }
 
-if (is_chromeos_ash) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "echo_private_apitest.cc" ]
+  sources = [ "echo_private_apitest.cc" ]
 
-    deps = [
-      ":echo_private",
-      ":echo_private_api_util",
-      "//base",
-      "//chrome/browser/ash/notifications",
-      "//chrome/browser/ash/settings",
-      "//chrome/browser/ash/settings:test_support",
-      "//chrome/browser/extensions",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support",
-      "//chromeos/ash/components/settings",
-      "//chromeos/ash/components/system",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    ":echo_private",
+    ":echo_private_api_util",
+    "//base",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//testing/gtest",
+  ]
 }
 
 source_set("echo_private_api_util") {

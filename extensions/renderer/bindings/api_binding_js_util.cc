@@ -232,7 +232,7 @@ void APIBindingJSUtil::RunCallbackWithLastError(
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
 
   request_handler_->last_error()->SetError(context, error);
-  JSRunner::Get(context)->RunJSFunction(callback, context, 0, nullptr);
+  JSRunner::Get(context)->RunJSFunction(callback, context, {});
 
   bool report_if_unchecked = true;
   request_handler_->last_error()->ClearError(context, report_if_unchecked);

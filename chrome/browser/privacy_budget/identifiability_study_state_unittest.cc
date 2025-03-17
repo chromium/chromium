@@ -53,7 +53,7 @@ using ::testing::UnorderedElementsAre;
 constexpr int kTestingStudyGeneration = 58;
 
 constexpr auto kRegularTypeId =
-    blink::IdentifiableSurface::Type::kGenericFontLookup;
+    blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType;
 constexpr auto kBlockedSurface1 =
     blink::IdentifiableSurface::FromTypeAndToken(kRegularTypeId, 1);
 constexpr auto kBlockedType1 =
@@ -353,7 +353,7 @@ TEST_F(IdentifiabilityStudyStateTest, UpdatesSeenSurfaces) {
   EXPECT_THAT(settings->seen_surfaces().AsList(),
               ElementsAre(kRegularSurface1));
   EXPECT_EQ(pref_service()->GetString(prefs::kPrivacyBudgetSeenSurfaces),
-            std::string("772"));
+            std::string("779"));
 }
 
 // If there are duplicate `seen` surfaces, then IdentifiabilityStudyState
@@ -880,7 +880,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, OnlyAllowedTypes) {
   parameters.active_surface_budget = kTestingActiveSurfaceBudget;
   parameters.expected_surface_count = kExpectedSurfaceCount;
   parameters.allowed_random_types = {
-      blink::IdentifiableSurface::Type::kGenericFontLookup,
+      blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType,
       blink::IdentifiableSurface::Type::kWebFeature};
   test::ScopedPrivacyBudgetConfig config(parameters);
 

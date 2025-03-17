@@ -8,20 +8,20 @@
 #include "third_party/openscreen/src/platform/api/time.h"
 
 namespace base {
-class SimpleTestTickClock;
+class TickClock;
 }
 
 namespace media::cast {
 
-// Provides an openscreen::ClockNowFunctionPtr backed by a
-// base::SimpleTickClock. Usage:
-//  FakeOpenscreenClock::SetTickClock(&simple_tick_clock);
+// Provides an openscreen::ClockNowFunctionPtr backed by a base::TickClock.
+// Usage:
+//  FakeOpenscreenClock::SetTickClock(&tick_clock);
 //  auto openscreen_object = OpenscreenObject(..., &FakeOpenscreenClock::now,
 //  ...);
 //  FakeOpenscreenClock::ClearTickClock();
 class FakeOpenscreenClock {
  public:
-  static void SetTickClock(base::SimpleTestTickClock* clock);
+  static void SetTickClock(const base::TickClock* clock);
   static void ClearTickClock();
   static openscreen::Clock::time_point now();
 };

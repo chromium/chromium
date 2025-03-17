@@ -67,6 +67,8 @@ source_set("permissions") {
     "contexts/webxr_permission_context.h",
     "contexts/window_management_permission_context.cc",
     "contexts/window_management_permission_context.h",
+    "embedded_permission_prompt_flow_model.cc",
+    "embedded_permission_prompt_flow_model.h",
     "notifications_engagement_service.cc",
     "notifications_engagement_service.h",
     "object_permission_context_base.cc",
@@ -112,6 +114,10 @@ source_set("permissions") {
     "pref_names.h",
     "request_type.cc",
     "request_type.h",
+    "resolvers/content_setting_permission_resolver.cc",
+    "resolvers/content_setting_permission_resolver.h",
+    "resolvers/permission_resolver.cc",
+    "resolvers/permission_resolver.h",
     "switches.cc",
     "switches.h",
   ]
@@ -169,6 +175,10 @@ source_set("permissions") {
       "android/bluetooth_scanning_prompt_android.cc",
       "android/bluetooth_scanning_prompt_android.h",
       "android/bluetooth_scanning_prompt_android_delegate.h",
+      "android/os_additional_security_permission_util_android.cc",
+      "android/os_additional_security_permission_util_android.h",
+      "android/permission_prompt/embedded_permission_prompt_android.cc",
+      "android/permission_prompt/embedded_permission_prompt_android.h",
       "android/permission_prompt/permission_dialog.cc",
       "android/permission_prompt/permission_dialog.h",
       "android/permission_prompt/permission_dialog_delegate.cc",
@@ -231,12 +241,16 @@ source_set("permissions") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_chooser_controller_view.cc",
+    "mock_chooser_controller_view.h",
     "test/mock_permission_prompt.cc",
     "test/mock_permission_prompt.h",
     "test/mock_permission_prompt_factory.cc",
     "test/mock_permission_prompt_factory.h",
     "test/mock_permission_request.cc",
     "test/mock_permission_request.h",
+    "test/mock_permission_ui_selector.cc",
+    "test/mock_permission_ui_selector.h",
     "test/object_permission_context_base_mock_permission_observer.cc",
     "test/object_permission_context_base_mock_permission_observer.h",
     "test/permission_request_observer.cc",
@@ -252,8 +266,6 @@ source_set("test_support") {
       "fake_bluetooth_chooser_controller.h",
       "fake_usb_chooser_controller.cc",
       "fake_usb_chooser_controller.h",
-      "mock_chooser_controller_view.cc",
-      "mock_chooser_controller_view.h",
     ]
   }
 
@@ -285,7 +297,7 @@ source_set("unit_tests") {
   sources = [
     "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
-    "contexts/keyboard_and_pointer_lock_prompt_unittest.cc",
+    "contexts/keyboard_lock_prompt_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",
     "contexts/midi_sysex_permission_context_unittest.cc",
     "contexts/nfc_permission_context_unittest.cc",
@@ -300,6 +312,7 @@ source_set("unit_tests") {
     "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",
     "permission_uma_util_unittest.cc",
+    "resolvers/content_setting_permission_resolver_unittest.cc",
   ]
   if (!is_android) {
     sources += [

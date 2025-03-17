@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/accelerator_configuration.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace ash {
 
@@ -26,7 +26,7 @@ void AcceleratorConfiguration::AddAcceleratorsUpdatedCallback(
 
 void AcceleratorConfiguration::RemoveAcceleratorsUpdatedCallback(
     AcceleratorsUpdatedCallback callback) {
-  const auto it = base::ranges::find(callbacks_, callback);
+  const auto it = std::ranges::find(callbacks_, callback);
   if (it == callbacks_.end())
     return;
 

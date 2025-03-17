@@ -201,6 +201,7 @@ class MessageCenterController;
 class MouseCursorEventFilter;
 class MouseKeysController;
 class MruWindowTracker;
+class MultiCaptureService;
 class MultiDeviceNotificationPresenter;
 class MultiDisplayMetricsController;
 class NearbyShareControllerImpl;
@@ -226,7 +227,6 @@ class ProjectingObserver;
 class ProjectorControllerImpl;
 class QuickInsertController;
 class RapidKeySequenceRecorder;
-class RasterScaleController;
 class RefreshRateController;
 class ResizeShadowController;
 class ResolutionNotificationController;
@@ -257,6 +257,7 @@ class SmsObserver;
 class SnapGroupController;
 class SnoopingProtectionController;
 class StickyKeysController;
+class SunfishScannerFeatureWatcher;
 class SystemGestureEventFilter;
 class SystemModalContainerEventFilter;
 class SystemNotificationController;
@@ -280,7 +281,6 @@ class WindowTilingController;
 class WindowTreeHostManager;
 class WmModeController;
 class ArcInputMethodBoundsTracker;
-class MultiCaptureServiceClient;
 
 enum class LoginStatus;
 
@@ -376,6 +376,10 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // Returns true if a system-modal dialog window is currently open.
   static bool IsSystemModalWindowOpen();
+
+  // Updates next focus of status area widget delegate when lock screen or login
+  // screen is visible.
+  static void UpdateAccessibilityForStatusAreaWidget();
 
   // Track/Untrack InputMethod bounds.
   void TrackInputMethodBounds(ArcInputMethodBoundsTracker* tracker);
@@ -722,11 +726,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   quick_pair::Mediator* quick_pair_mediator() {
     return quick_pair_mediator_.get();
   }
-  MultiCaptureServiceClient* multi_capture_service_client() {
-    return multi_capture_service_client_.get();
-  }
-  RasterScaleController* raster_scale_controller() {
-    return raster_scale_controller_.get();
+  MultiCaptureService* multi_capture_service() {
+    return multi_capture_service_.get();
   }
   ResizeShadowController* resize_shadow_controller() {
     return resize_shadow_controller_.get();
@@ -736,6 +737,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   RgbKeyboardManager* rgb_keyboard_manager() {
     return rgb_keyboard_manager_.get();
+  }
+  SunfishScannerFeatureWatcher* sunfish_scanner_feature_watcher() {
+    return sunfish_scanner_feature_watcher_.get();
   }
   ScannerController* scanner_controller() { return scanner_controller_.get(); }
   ScreenLayoutObserver* screen_layout_observer() {
@@ -1125,9 +1129,11 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<UsbPeripheralNotificationController>
       usb_peripheral_notification_controller_;
   std::unique_ptr<RgbKeyboardManager> rgb_keyboard_manager_;
-  std::unique_ptr<RasterScaleController> raster_scale_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
+  // Must be after `session_controller_`.
+  std::unique_ptr<SunfishScannerFeatureWatcher>
+      sunfish_scanner_feature_watcher_;
   std::unique_ptr<FeatureDiscoveryDurationReporterImpl>
       feature_discover_reporter_;
   std::unique_ptr<AshColorProvider> ash_color_provider_;
@@ -1136,6 +1142,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PipController> pip_controller_;
   std::unique_ptr<PrivacyScreenController> privacy_screen_controller_;
   std::unique_ptr<PolicyRecommendationRestorer> policy_recommendation_restorer_;
+  // Must be after `session_controller_`.
   std::unique_ptr<ScannerController> scanner_controller_;
   std::unique_ptr<ScreenSwitchCheckController> screen_switch_check_controller_;
   std::unique_ptr<ShelfConfig> shelf_config_;
@@ -1298,7 +1305,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   std::unique_ptr<OcclusionTrackerPauser> occlusion_tracker_pauser_;
 
-  std::unique_ptr<MultiCaptureServiceClient> multi_capture_service_client_;
+  std::unique_ptr<MultiCaptureService> multi_capture_service_;
 
   std::unique_ptr<federated::FederatedServiceControllerImpl>
       federated_service_controller_;

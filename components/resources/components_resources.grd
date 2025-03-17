@@ -4,7 +4,7 @@ This file aggregates resource GRDPs for user-facing features under /components.
 Resources for developer-facing chrome:// pages should be aggregated in
 dev_ui_components_resources.grd.
 -->
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/components_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -16,13 +16,13 @@ dev_ui_components_resources.grd.
       <part file="about_ui_resources.grdp" />
       <part file="commerce_resources.grdp" />
       <part file="dom_distiller_resources.grdp" />
-      <part file="management_resources.grdp" />
       <part file="neterror_resources.grdp" />
       <part file="ntp_tiles_resources.grdp" />
       <part file="pdf_resources.grdp" />
       <part file="printing_resources.grdp" />
       <part file="safe_browsing_resources.grdp" />
       <part file="security_interstitials_resources.grdp" />
+      <part file="site_isolation.grdp" />
       <part file="translate_resources.grdp" />
       <part file="web_app_error_page.grdp" />
 

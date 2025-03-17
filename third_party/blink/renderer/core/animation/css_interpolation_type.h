@@ -100,6 +100,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
 
   InterpolationValue MaybeConvertCustomPropertyDeclaration(
       const CSSValue&,
+      const TreeScope* keyframe_tree_scope,
       const InterpolationEnvironment&,
       ConversionCheckers&) const;
 

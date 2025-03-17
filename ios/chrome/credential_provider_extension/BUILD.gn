@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/apple/swift_source_set.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/extension_repack.gni")
@@ -115,6 +116,7 @@ source_set("passkey_util") {
   ]
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common/app_group",
@@ -135,6 +137,7 @@ source_set("passkey_keychain_provider_bridge") {
     ":passkey_keychain_provider",
     ":passkey_util",
     "//base",
+    "//components/sync/protocol",
     "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -173,11 +176,23 @@ source_set("passkey_request_details") {
   ]
   deps = [
     ":passkey_util",
+    ":passkey_util_swift",
     "//base",
     "//components/webauthn/core/browser:passkey_model",
+    "//ios/chrome/common/credential_provider:ui",
+    "//ios/chrome/credential_provider_extension/ui:feature_flags",
   ]
   frameworks = [
     "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
+}
+
+swift_source_set("passkey_util_swift") {
+  sources = [ "passkey_util.swift" ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "CryptoKit.framework",
     "Foundation.framework",
   ]
 }

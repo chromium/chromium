@@ -9,6 +9,7 @@
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_prefs.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -32,8 +33,9 @@ void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
 void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     JNIEnv* env,
     PrefService* pref_service,
-    std::string& gaia_id) {
+    const base::android::JavaParamRef<jobject>& j_gaia_id) {
   syncer::SyncPrefs sync_prefs(pref_service);
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(
-      pref_service, signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id)));
+      pref_service,
+      signin::GaiaIdHash::FromGaiaId(ConvertFromJavaGaiaId(env, j_gaia_id)));
 }

@@ -12,14 +12,16 @@ struct ContextualPanelItemConfiguration;
 // Commands for the Contextual Panel Entrypoint's IPH.
 @protocol ContextualPanelEntrypointIPHCommands
 
-// Tries to show the Contextual Panel entrypoint's IPH, and returns the result.
-- (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
+// Shows the Contextual Panel entrypoint's IPH, and returns YES if the IPH was
+// actually shown.
+- (BOOL)showContextualPanelEntrypointIPHWithConfig:
             (ContextualPanelItemConfiguration*)config
-                                            anchorPoint:(CGPoint)anchorPoint
-                                        isBottomOmnibox:(BOOL)isBottomOmnibox;
+                                       anchorPoint:(CGPoint)anchorPoint
+                                   isBottomOmnibox:(BOOL)isBottomOmnibox;
 
-// Dismisses the Contextual Panel entrypoint's IPH.
-- (void)dismissContextualPanelEntrypointIPHAnimated:(BOOL)animated;
+// Dismisses the Contextual Panel entrypoint's IPH. (`animated` is YES to
+// animate the dismissal, NO to dismiss immediately.)
+- (void)dismissContextualPanelEntrypointIPH:(BOOL)animated;
 
 @end
 

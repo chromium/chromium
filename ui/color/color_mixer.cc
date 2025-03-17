@@ -4,10 +4,10 @@
 
 #include "ui/color/color_mixer.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
@@ -66,8 +66,8 @@ SkColor ColorMixer::GetResultColor(ColorId id) const {
 
 std::set<ColorId> ColorMixer::GetDefinedColorIds() const {
   std::set<ColorId> color_ids;
-  base::ranges::transform(recipes_, std::inserter(color_ids, color_ids.end()),
-                          &std::pair<const ColorId, ColorRecipe>::first);
+  std::ranges::transform(recipes_, std::inserter(color_ids, color_ids.end()),
+                         &std::pair<const ColorId, ColorRecipe>::first);
 
   return color_ids;
 }

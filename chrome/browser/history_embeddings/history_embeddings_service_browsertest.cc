@@ -26,13 +26,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/mock_answerer.h"
-#include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/browser_test.h"
 
@@ -59,10 +59,12 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
 
     HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
-        base::BindLambdaForTesting([](content::BrowserContext* context) {
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
-                  context, std::make_unique<MockEmbedder>(),
+                  context,
+                  passage_embeddings_test_env_.embedder_metadata_provider(),
+                  passage_embeddings_test_env_.embedder(),
                   std::make_unique<MockAnswerer>(),
                   std::make_unique<MockIntentClassifier>());
         }));
@@ -137,6 +139,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
 
  private:
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
+  passage_embeddings::TestEnvironment passage_embeddings_test_env_;
 };
 
 class HistoryEmbeddingsRestrictedSigninBrowserTest

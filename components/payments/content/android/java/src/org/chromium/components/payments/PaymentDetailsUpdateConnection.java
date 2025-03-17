@@ -10,17 +10,18 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A helper to connect to the payment app's service that dynamically updates payment details (e.g.,
  * total price) based on user's payment method, shipping address, or shipping options. The
  * connection stays open until terminated.
  */
+@NullMarked
 public class PaymentDetailsUpdateConnection implements ServiceConnection {
-    @NonNull private final Context mContext;
-    @NonNull private final Intent mPaymentAppServiceIntent;
-    @NonNull private final IPaymentDetailsUpdateService.Stub mChromiumService;
+    private final Context mContext;
+    private final Intent mPaymentAppServiceIntent;
+    private final IPaymentDetailsUpdateService.Stub mChromiumService;
     private boolean mIsBindingInitiated;
 
     /**
@@ -34,9 +35,9 @@ public class PaymentDetailsUpdateConnection implements ServiceConnection {
      *     method, shipping address, and shipping option. Should not be null.
      */
     public PaymentDetailsUpdateConnection(
-            @NonNull Context context,
-            @NonNull Intent paymentAppServiceIntent,
-            @NonNull IPaymentDetailsUpdateService.Stub chromiumService) {
+            Context context,
+            Intent paymentAppServiceIntent,
+            IPaymentDetailsUpdateService.Stub chromiumService) {
         assert context != null;
         assert paymentAppServiceIntent != null;
         assert chromiumService != null;

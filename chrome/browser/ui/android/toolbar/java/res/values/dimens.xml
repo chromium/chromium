@@ -54,6 +54,19 @@ found in the LICENSE file.
     <!-- Padding between rightmost button and strip end -->
     <dimen name="button_end_padding">8dp</dimen>
 
+    <!-- Toolbar long-press menu -->
     <!-- Defines how much the omnibox and the long-press menu should overlap.-->
     <dimen name="omnibox_longpress_menu_overlap">2dp</dimen>
+    <!-- The total desired padding is 16dp. Since list_menu_item_horizontal_padding is 12dp,
+     we add an extra 4dp (16dp - 12dp) to achieve the target padding. -->
+    <dimen name="omnibox_longpress_menu_addtional_horizontal_padding">4dp</dimen>
+
+    <!-- Padding of optional phone button, used to adjust button's icon within its clickable area. -->
+    <dimen name="optional_toolbar_phone_button_with_error_badge_padding_bottom">12dp</dimen>
+
+    <!-- Padding of optional tablet button, used to adjust button's icon within its clickable area. -->
+    <dimen name="optional_toolbar_tablet_button_padding_start">0dp</dimen>
+    <dimen name="optional_toolbar_tablet_button_padding_top">0dp</dimen>
+    <dimen name="optional_toolbar_tablet_button_with_error_badge_padding_start">4dp</dimen>
+    <dimen name="optional_toolbar_tablet_button_with_error_badge_padding_top">4dp</dimen>
 </resources>

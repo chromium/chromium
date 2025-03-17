@@ -3,9 +3,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--no-wpt-internal",
           "--xcode-build-version",
-          "16b40"
+          "16c5032a"
         ],
         "merge": {
           "args": [
@@ -36,7 +35,7 @@
           "hard_timeout": 14400,
           "named_caches": [
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],

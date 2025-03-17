@@ -7,6 +7,8 @@
 #include <array>
 #include <ostream>
 
+#include "third_party/blink/renderer/platform/geometry/logical_direction.h"
+
 namespace blink {
 
 namespace {
@@ -14,7 +16,7 @@ namespace {
 using PhysicalDirectionMap =
     std::array<PhysicalDirection,
                static_cast<size_t>(WritingMode::kMaxWritingMode) + 1>;
-// Following six arrays contain values for horizontal-tb, vertical-rl,
+// Following ten arrays contain values for horizontal-tb, vertical-rl,
 // vertical-lr, sideways-rl, and sideways-lr in this order.
 constexpr PhysicalDirectionMap kInlineStartMap = {
     PhysicalDirection::kLeft, PhysicalDirection::kUp, PhysicalDirection::kUp,
@@ -37,6 +39,32 @@ constexpr PhysicalDirectionMap kLineUnderMap = {
     PhysicalDirection::kDown, PhysicalDirection::kLeft,
     PhysicalDirection::kLeft, PhysicalDirection::kLeft,
     PhysicalDirection::kRight};
+
+using LogicalDirectionMap =
+    std::array<LogicalDirection,
+               static_cast<size_t>(WritingMode::kMaxWritingMode) + 1>;
+// Following ten arrays contain values for horizontal-tb, vertical-rl,
+// vertical-lr, sideways-rl, and sideways-lr in this order.
+constexpr LogicalDirectionMap kTopMap = {
+    LogicalDirection::kBlockStart,  LogicalDirection::kInlineStart,
+    LogicalDirection::kInlineStart, LogicalDirection::kInlineStart,
+    LogicalDirection::kInlineEnd,
+};
+constexpr LogicalDirectionMap kRightMap = {
+    LogicalDirection::kInlineEnd, LogicalDirection::kBlockStart,
+    LogicalDirection::kBlockEnd,  LogicalDirection::kBlockStart,
+    LogicalDirection::kBlockEnd,
+};
+constexpr LogicalDirectionMap kBottomMap = {
+    LogicalDirection::kBlockEnd,    LogicalDirection::kInlineEnd,
+    LogicalDirection::kInlineEnd,   LogicalDirection::kInlineEnd,
+    LogicalDirection::kInlineStart,
+};
+constexpr LogicalDirectionMap kLeftMap = {
+    LogicalDirection::kInlineStart, LogicalDirection::kBlockEnd,
+    LogicalDirection::kBlockStart,  LogicalDirection::kBlockEnd,
+    LogicalDirection::kBlockStart,
+};
 
 }  // namespace
 
@@ -68,6 +96,34 @@ PhysicalDirection WritingDirectionMode::LineOver() const {
 
 PhysicalDirection WritingDirectionMode::LineUnder() const {
   return kLineUnderMap[static_cast<int>(writing_mode_)];
+}
+
+LogicalDirection WritingDirectionMode::Top() const {
+  if (IsLtr() || IsHorizontalWritingMode(writing_mode_)) {
+    return kTopMap[static_cast<int>(writing_mode_)];
+  }
+  return kBottomMap[static_cast<int>(writing_mode_)];
+}
+
+LogicalDirection WritingDirectionMode::Right() const {
+  if (IsLtr() || !IsHorizontalWritingMode(writing_mode_)) {
+    return kRightMap[static_cast<int>(writing_mode_)];
+  }
+  return kLeftMap[static_cast<int>(writing_mode_)];
+}
+
+LogicalDirection WritingDirectionMode::Bottom() const {
+  if (IsLtr() || IsHorizontalWritingMode(writing_mode_)) {
+    return kBottomMap[static_cast<int>(writing_mode_)];
+  }
+  return kTopMap[static_cast<int>(writing_mode_)];
+}
+
+LogicalDirection WritingDirectionMode::Left() const {
+  if (IsLtr() || !IsHorizontalWritingMode(writing_mode_)) {
+    return kLeftMap[static_cast<int>(writing_mode_)];
+  }
+  return kRightMap[static_cast<int>(writing_mode_)];
 }
 
 std::ostream& operator<<(std::ostream& ostream,

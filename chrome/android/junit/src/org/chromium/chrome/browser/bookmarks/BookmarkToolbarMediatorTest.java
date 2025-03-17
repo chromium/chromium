@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
@@ -89,15 +91,17 @@ public class BookmarkToolbarMediatorTest {
     @Mock private Runnable mEndSearchRunnable;
     @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     @Mock private Profile mProfile;
+    @Mock private ProfileResolver.Natives mProfileResolverNatives;
 
     @Spy private Context mContext;
 
-    FakeBookmarkModel mBookmarkModel;
-    BookmarkToolbarMediator mMediator;
-    PropertyModel mModel;
-    OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier;
-    BooleanSupplier mIncognitoEnabledSupplier;
-    boolean mIncognitoEnabled = true;
+    private BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
+    private FakeBookmarkModel mBookmarkModel;
+    private BookmarkToolbarMediator mMediator;
+    private PropertyModel mModel;
+    private OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier;
+    private BooleanSupplier mIncognitoEnabledSupplier;
+    private boolean mIncognitoEnabled = true;
 
     @Before
     public void setUp() {
@@ -113,6 +117,8 @@ public class BookmarkToolbarMediatorTest {
         mBookmarkModel = FakeBookmarkModel.createModel();
 
         mIncognitoEnabledSupplier = () -> mIncognitoEnabled;
+
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
 
         initModelAndMediator();
     }
@@ -132,6 +138,7 @@ public class BookmarkToolbarMediatorTest {
         mMediator =
                 new BookmarkToolbarMediator(
                         mContext,
+                        mProfile,
                         mModel,
                         mDragReorderableRecyclerViewAdapter,
                         mBookmarkDelegateSupplier,
@@ -142,7 +149,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
                         mBookmarkMoveSnackbarManager,
-                        mIncognitoEnabledSupplier);
+                        mIncognitoEnabledSupplier,
+                        mBookmarkManagerOpener);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -166,6 +174,7 @@ public class BookmarkToolbarMediatorTest {
         mMediator =
                 new BookmarkToolbarMediator(
                         mContext,
+                        mProfile,
                         mModel,
                         mDragReorderableRecyclerViewAdapter,
                         mBookmarkDelegateSupplier,
@@ -176,7 +185,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
                         mBookmarkMoveSnackbarManager,
-                        mIncognitoEnabledSupplier);
+                        mIncognitoEnabledSupplier,
+                        mBookmarkManagerOpener);
     }
 
     @Test
@@ -308,7 +318,8 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.selection_mode_move_menu_id));
-        verify(mBookmarkMoveSnackbarManager).startFolderPickerAndObserveResult(bookmarkId);
+        verify(mBookmarkMoveSnackbarManager)
+                .startFolderPickerAndObserveResult(mBookmarkManagerOpener, bookmarkId);
     }
 
     @Test

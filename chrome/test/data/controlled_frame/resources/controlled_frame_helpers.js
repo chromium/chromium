@@ -6,7 +6,7 @@
 // added to the document and navigated to the specified url. If `url` isn't
 // absolute, it will be resolved relative to the `https_origin` parameter given
 // to the test.
-async function createControlledFrame(url) {
+async function createControlledFrame(url, partition='') {
   const params = new URLSearchParams(location.search);
   if (!params.has('https_origin')) {
     throw new Exception('No https_origin query parameter provided');
@@ -14,13 +14,22 @@ async function createControlledFrame(url) {
   const resolvedUrl = new URL(url, params.get('https_origin')).toString();
 
   const cf = document.createElement('controlledframe');
-  await new Promise((resolve, reject) => {
-    cf.addEventListener('loadstop', resolve);
-    cf.addEventListener('loadabort', reject);
-    cf.setAttribute('src', resolvedUrl);
-    document.body.appendChild(cf);
-  });
+  cf.setAttribute('partition', partition);
+  document.body.appendChild(cf);
+  await navigateControlledFrame(cf, resolvedUrl);
   return cf;
+}
+
+// Navigates `controlledframe` to `url`.
+function navigateControlledFrame(controlledframe, url, expectFailure=false) {
+  return new Promise((resolve, reject) => {
+    if (expectFailure) {
+      [reject, resolve] = [resolve, reject];
+    }
+    controlledframe.addEventListener('loadstop', resolve);
+    controlledframe.addEventListener('loadabort', reject);
+    controlledframe.setAttribute('src', url);
+  });
 }
 
 // Executes `script` in `controlledframe`, and returns a Promise

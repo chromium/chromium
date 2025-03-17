@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 component("file_manager") {
   output_name = "file_manager"
@@ -74,6 +72,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_context_helper:test_support",
     "//components/account_id",
+    "//components/prefs:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
     "//sql",

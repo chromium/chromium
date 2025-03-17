@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -58,11 +57,6 @@ const net::SchemefulSite kSet3AssociatedSite1(
     GURL("https://set3associatedSite1.test"));
 const int64_t kClearAtRunId(2);
 const int64_t kBrowserRunId(3);
-
-const char kDelayedQueriesCountHistogram[] =
-    "Cookie.FirstPartySets.ContextDelayedQueriesCount";
-const char kMostDelayedQuerDeltaHistogram[] =
-    "Cookie.FirstPartySets.ContextMostDelayedQueryDelta";
 
 mojom::FirstPartySetsAccessDelegateParamsPtr
 CreateFirstPartySetsAccessDelegateParams(bool enabled) {
@@ -305,14 +299,16 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, QueryBeforeReady_FindEntries) {
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kAssociated, 0))},
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet1AssociatedSite1,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kAssociated, 0))},
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
 
   EXPECT_EQ(ComputeMetadataAndWait(kSet3Primary, &kSet1AssociatedSite1),
@@ -327,11 +323,13 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindEntries) {
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
 
   EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
@@ -343,14 +341,16 @@ class SyncFirstPartySetsAccessDelegateTest
  public:
   SyncFirstPartySetsAccessDelegateTest() {
     delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-        net::FirstPartySetsContextConfig({
-            {kSet3AssociatedSite1,
-             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                 kSet3Primary, net::SiteType::kAssociated, 0))},
-            {kSet3Primary,
-             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                 kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-        }),
+        net::FirstPartySetsContextConfig::Create(
+            {
+                {kSet3AssociatedSite1,
+                 net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                     kSet3Primary, net::SiteType::kAssociated, 0))},
+                {kSet3Primary,
+                 net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                     kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+            })
+            .value(),
         net::FirstPartySetsCacheFilter({{kSet1Primary, kClearAtRunId}},
                                        kBrowserRunId)));
   }
@@ -527,10 +527,11 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   EXPECT_FALSE(delegate().ComputeMetadata(kSet2Primary, &kSet1AssociatedSite1,
                                           future.GetCallback()));
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig(
+      net::FirstPartySetsContextConfig::Create(
           {{kSet1AssociatedSite1,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                kSet2Primary, net::SiteType::kAssociated, 0))}}),
+                kSet2Primary, net::SiteType::kAssociated, 0))}})
+          .value(),
       /*cache_filter=*/std::nullopt));
   EXPECT_EQ(future.Get(),
             std::make_tuple(
@@ -554,10 +555,11 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   EXPECT_FALSE(
       delegate().FindEntries({kSet1AssociatedSite1}, future.GetCallback()));
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig(
+      net::FirstPartySetsContextConfig::Create(
           {{kSet1AssociatedSite1,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                kSet2Primary, net::SiteType::kAssociated, 0))}}),
+                kSet2Primary, net::SiteType::kAssociated, 0))}})
+          .value(),
       /*cache_filter=*/std::nullopt));
   EXPECT_EQ(future.Get(),
             FirstPartySetsAccessDelegate::EntriesResult(
@@ -603,7 +605,6 @@ class AsyncNonwaitingFirstPartySetsAccessDelegateTest
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        QueryBeforeReady_ComputeMetadata) {
-  base::HistogramTester histogram_tester;
   EXPECT_EQ(
       std::make_optional(
           std::make_pair(net::FirstPartySetMetadata(),
@@ -621,17 +622,10 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
                          net::FirstPartySetsCacheFilter::MatchInfo())),
       delegate().ComputeMetadata(kSet1AssociatedSite1, &kSet1AssociatedSite1,
                                  base::NullCallback()));
-
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        QueryBeforeReady_FindEntries) {
-  base::HistogramTester histogram_tester;
   EXPECT_THAT(
       delegate().FindEntries({kSet1AssociatedSite1, kSet2AssociatedSite1},
                              base::NullCallback()),
@@ -651,25 +645,21 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
            net::FirstPartySetEntry(kSet2Primary, net::SiteType::kAssociated,
                                    0)},
       }));
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        OverrideSets_ComputeMetadata) {
-  base::HistogramTester histogram_tester;
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kAssociated, 0))},
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet1AssociatedSite1,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kAssociated, 0))},
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
   base::RunLoop().RunUntilIdle();
 
@@ -681,32 +671,23 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
                     net::FirstPartySetEntry(kSet3Primary,
                                             net::SiteType::kAssociated, 0)),
                 net::FirstPartySetsCacheFilter::MatchInfo()));
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        OverrideSets_FindEntries) {
-  base::HistogramTester histogram_tester;
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
               UnorderedElementsAre(Pair(kSet3Primary, _)));
-  histogram_tester.ExpectUniqueSample(
-      kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kMostDelayedQuerDeltaHistogram,
-                                      /*sample=*/0,
-                                      /*expected_bucket_count=*/1);
 }
 
 }  // namespace network

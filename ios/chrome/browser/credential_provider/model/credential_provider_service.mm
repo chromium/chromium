@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
@@ -112,7 +113,9 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
         [ASCredentialIdentityStore.sharedStore
             replaceCredentialIdentityEntries:storeIdentities
                                   completion:replaceCompletion];
-      } else {
+      }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+      else {
         NSMutableArray<ASPasswordCredentialIdentity*>* storeIdentities =
             [NSMutableArray arrayWithCapacity:credentials.count];
         for (id<Credential> credential in credentials) {
@@ -123,6 +126,7 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
             replaceCredentialIdentitiesWithIdentities:storeIdentities
                                            completion:replaceCompletion];
       }
+#endif
     }
   };
   [ASCredentialIdentityStore.sharedStore
@@ -203,12 +207,27 @@ CredentialProviderService::CredentialProviderService(
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, prefs,
       base::BindRepeating(
-          &CredentialProviderService::OnSavingPasswordsEnabledChanged,
+          &CredentialProviderService::OnPrefOrPolicyStatusChanged,
+          base::Unretained(this)));
+
+  saving_passkeys_enabled_.Init(
+      password_manager::prefs::kCredentialsEnablePasskeys, prefs,
+      base::BindRepeating(
+          &CredentialProviderService::OnPrefOrPolicyStatusChanged,
+          base::Unretained(this)));
+
+  automatic_passkey_upgrades_enabled_.Init(
+      password_manager::prefs::kAutomaticPasskeyUpgrades, prefs,
+      base::BindRepeating(
+          &CredentialProviderService::OnPrefOrPolicyStatusChanged,
           base::Unretained(this)));
 
   // Make sure the initial value of the pref is stored.
-  OnSavingPasswordsEnabledChanged();
+  OnPrefOrPolicyStatusChanged();
   UpdatePasswordSyncSetting();
+  UpdateAutomaticPasskeyUpgradeSetting();
+  UpdatePasskeyPRFSetting();
+  UpdatePasskeysM2Availability();
 }
 
 CredentialProviderService::~CredentialProviderService() {}
@@ -314,14 +333,6 @@ void CredentialProviderService::SyncAllCredentials(
   SyncStore();
 }
 
-bool CredentialProviderService::SaveAccountInfo() {
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  return credential_provider_extension::StoreAccountInfoInKeychain(
-      base::SysUTF8ToNSString(account.gaia),
-      base::SysUTF8ToNSString(account.email));
-}
-
 void CredentialProviderService::SyncStore() {
   base::UmaHistogramBoolean(kSyncStoreHistogramName, true);
 
@@ -340,7 +351,6 @@ void CredentialProviderService::SyncStore() {
     }
     if (weak_credential_store) {
       SyncASIdentityStore(weak_credential_store);
-      SaveAccountInfo();
     }
   }];
 }
@@ -355,6 +365,12 @@ void CredentialProviderService::AddCredentials(
   }
 }
 
+NSString* CredentialProviderService::PrimaryAccountId() const {
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return account.gaia.ToNSString();
+}
+
 void CredentialProviderService::AddCredentialsLegacy(
     MemoryCredentialStore* store,
     std::vector<PasswordForm> forms) {
@@ -362,9 +378,7 @@ void CredentialProviderService::AddCredentialsLegacy(
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server_allowed =
       CanSendHistoryData(sync_service_);
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
+  NSString* gaia = PrimaryAccountId();
 
   int fetched_favicon_count = 0;
 
@@ -404,9 +418,7 @@ void CredentialProviderService::AddCredentialsRefactored(
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server_allowed =
       CanSendHistoryData(sync_service_);
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
+  NSString* gaia = PrimaryAccountId();
 
   // Get the list of existing favicon files, along with their creation date.
   NSDictionary<NSString*, NSDate*>* favicon_dict =
@@ -449,9 +461,7 @@ void CredentialProviderService::AddCredentials(
   // User is adding a passkey (not batch add from user login).
   const bool should_skip_max_verification = passkeys.size() == 1;
   const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
+  NSString* gaia = PrimaryAccountId();
 
   for (const auto& passkey : passkeys) {
     if (passkey.hidden()) {
@@ -503,13 +513,17 @@ void CredentialProviderService::RemoveCredentials(
 void CredentialProviderService::UpdateAccountId() {
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* account_id = nil;
-  if (!account.IsEmpty() &&
-      identity_manager_->FindExtendedAccountInfo(account).IsManaged()) {
-    account_id = base::SysUTF8ToNSString(account.gaia);
-  }
+  NSString* account_id = account.gaia.ToNSString();
+  BOOL is_valid_account = !account.IsEmpty();
+  BOOL is_managed_account =
+      is_valid_account &&
+      identity_manager_->FindExtendedAccountInfo(account).IsManaged();
   [app_group::GetGroupUserDefaults()
-      setObject:account_id
+      setObject:is_managed_account ? account_id : nil
+         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+
+  [app_group::GetGroupUserDefaults()
+      setObject:is_valid_account ? account_id : nil
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
 }
 
@@ -528,6 +542,31 @@ void CredentialProviderService::UpdatePasswordSyncSetting() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_syncing]
          forKey:AppGroupUserDefaultsCredentialProviderPasswordSyncSetting()];
+}
+
+void CredentialProviderService::UpdateAutomaticPasskeyUpgradeSetting() {
+  BOOL is_enabled = base::FeatureList::IsEnabled(
+                        kCredentialProviderAutomaticPasskeyUpgrade) &&
+                    saving_passwords_enabled_.GetValue() &&
+                    saving_passkeys_enabled_.GetValue() &&
+                    automatic_passkey_upgrades_enabled_.GetValue();
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:is_enabled]
+         forKey:
+             AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()];
+}
+
+void CredentialProviderService::UpdatePasskeyPRFSetting() {
+  BOOL is_enabled = base::FeatureList::IsEnabled(kCredentialProviderPasskeyPRF);
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:is_enabled]
+         forKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()];
+}
+
+void CredentialProviderService::UpdatePasskeysM2Availability() {
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:IOSPasskeysM2Enabled()]
+         forKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()];
 }
 
 void CredentialProviderService::OnGetPasswordStoreResultsOrErrorFrom(
@@ -571,6 +610,7 @@ void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
 void CredentialProviderService::OnStateChanged(syncer::SyncService* sync) {
   // When the state changes, it's possible that password syncing has
   // started/stopped, so the user's email must be updated.
+  UpdateAccountId();
   UpdateUserEmail();
   UpdatePasswordSyncSetting();
 }
@@ -628,13 +668,17 @@ void CredentialProviderService::OnPasskeyModelShuttingDown() {
 
 void CredentialProviderService::OnPasskeyModelIsReady(bool is_ready) {}
 
-void CredentialProviderService::OnSavingPasswordsEnabledChanged() {
+void CredentialProviderService::OnPrefOrPolicyStatusChanged() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.GetValue()]
-         forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()];
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()];
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.IsManaged()]
-         forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged()];
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged()];
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:saving_passkeys_enabled_.GetValue()]
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()];
+  UpdateAutomaticPasskeyUpgradeSetting();
 }
 
 MemoryCredentialStore* CredentialProviderService::GetCredentialStore(

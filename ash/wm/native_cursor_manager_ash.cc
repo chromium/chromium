@@ -8,6 +8,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -85,6 +86,9 @@ void NativeCursorManagerAsh::SetDisplay(
       ->window_tree_host_manager()
       ->cursor_window_controller()
       ->SetDisplay(display);
+
+  // Update cursor compositing based on the current display.
+  Shell::Get()->UpdateCursorCompositingEnabled();
 }
 
 void NativeCursorManagerAsh::SetCursor(
@@ -120,6 +124,22 @@ void NativeCursorManagerAsh::SetCursorSize(
       ->SetCursorSize(cursor_size);
 }
 
+void NativeCursorManagerAsh::SetLargeCursorSizeInDip(
+    int large_cursor_size_in_dip,
+    ::wm::NativeCursorManagerDelegate* delegate) {
+  cursor_loader_.SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+  delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
+
+  // Sets the cursor to reflect the large cursor size change immediately.
+  if (delegate->IsCursorVisible()) {
+    SetCursor(delegate->GetCursor(), delegate);
+  }
+
+  Shell::Get()
+      ->window_tree_host_manager()
+      ->cursor_window_controller()
+      ->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+}
 void NativeCursorManagerAsh::SetVisibility(
     bool visible,
     ::wm::NativeCursorManagerDelegate* delegate) {
@@ -148,6 +168,23 @@ void NativeCursorManagerAsh::SetMouseEventsEnabled(
 
   SetVisibility(delegate->IsCursorVisible(), delegate);
   NotifyMouseEventsEnableStateChange(enabled);
+}
+
+void NativeCursorManagerAsh::SetCursorColor(
+    SkColor color,
+    ::wm::NativeCursorManagerDelegate* delegate) {
+  cursor_loader_.SetColor(color);
+  delegate->CommitCursorColor(color);
+
+  // Sets the cursor to reflect the color change immediately.
+  if (delegate->IsCursorVisible()) {
+    SetCursor(delegate->GetCursor(), delegate);
+  }
+
+  Shell::Get()
+      ->window_tree_host_manager()
+      ->cursor_window_controller()
+      ->SetCursorColor(color);
 }
 
 }  // namespace ash

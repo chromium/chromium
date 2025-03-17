@@ -13,6 +13,8 @@
 #include "ash/quick_insert/quick_insert_asset_fetcher_impl_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/rand_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
@@ -34,11 +36,10 @@ bool IsValidGifMediaUrl(const GURL& url) {
   return url.DomainIs("media.tenor.com") && url.SchemeIs(url::kHttpsScheme);
 }
 
-void OnGifMediaDownloaded(
-    DownloadGifMediaToStringCallback callback,
-    std::unique_ptr<network::SimpleURLLoader> simple_loader,
-    std::unique_ptr<std::string> response_body) {
-  if (simple_loader->NetError() == net::OK && response_body) {
+void OnGifMediaDownloaded(base::WeakPtr<const network::SimpleURLLoader> loader,
+                          DownloadGifMediaToStringCallback callback,
+                          std::unique_ptr<std::string> response_body) {
+  if (loader && loader->NetError() == net::OK && response_body) {
     std::move(callback).Run(*response_body);
     return;
   }
@@ -46,17 +47,11 @@ void OnGifMediaDownloaded(
   std::move(callback).Run(std::string());
 }
 
-// Downloads a gif or gif preview from `url`. If the download is successful,
-// the gif is passed to `callback` as a string of encoded bytes in gif or png
-// format. Otherwise, `callback` is run with an empty string.
-void DownloadGifMediaToString(
-    const GURL& url,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    DownloadGifMediaToStringCallback callback) {
+// Creates a network request for GIF without starting the request.
+std::unique_ptr<network::SimpleURLLoader> CreateGifMediaRequest(
+    const GURL& url) {
   if (!IsValidGifMediaUrl(url)) {
-    // TODO: b/325368650 - Determine how invalid urls should be handled.
-    std::move(callback).Run(std::string());
-    return;
+    return nullptr;
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -99,14 +94,52 @@ void DownloadGifMediaToString(
           "flow which is user-initiated."
       }
   )");
-  auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 kTrafficAnnotation);
-  auto* loader_ptr = loader.get();
-  loader_ptr->DownloadToString(
-      shared_url_loader_factory.get(),
-      base::BindOnce(&OnGifMediaDownloaded, std::move(callback),
-                     std::move(loader)),
-      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+  return network::SimpleURLLoader::Create(std::move(resource_request),
+                                          kTrafficAnnotation);
+}
+
+// Downloads a gif or gif preview using `loader`. If the download is successful,
+// the gif is passed to `callback` as a string of encoded bytes in gif or png
+// format. Otherwise, `callback` is run with an empty string.
+void DownloadGifMediaToString(
+    base::WeakPtr<const network::SimpleURLLoader> loader,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    DownloadGifMediaToStringCallback callback) {
+  if (!loader) {
+    return;
+  }
+
+  // This is safe because `loader` is a WeakPtr to the non-const SimpleURLLoader
+  // created by `CreateGifMediaRequest`.
+  const_cast<network::SimpleURLLoader*>(loader.get())
+      ->DownloadToString(
+          shared_url_loader_factory.get(),
+          base::BindOnce(&OnGifMediaDownloaded, loader, std::move(callback)),
+          network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void RunImmediatelyOrWithDelay(base::OnceClosure closure,
+                               base::TimeDelta delay) {
+  if (delay.is_zero()) {
+    std::move(closure).Run();
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(closure), delay);
+  }
+}
+
+// Returns the delay for the request with `rank`.
+// The delay should increase with `rank` to encourage lower rank requests to
+// finish first and avoid congestion.
+base::TimeDelta GetRequestDelay(size_t rank) {
+  // The top 4 results should be fetched instantly, since they are likely to be
+  // visible above the fold.
+  if (rank < 4) {
+    return base::Seconds(0);
+  }
+  // The remaining results can be fetched later since they are likely to be
+  // below the fold.
+  return base::Milliseconds(200) + rank * base::Milliseconds(100);
 }
 
 }  // namespace
@@ -117,21 +150,43 @@ QuickInsertAssetFetcherImpl::QuickInsertAssetFetcherImpl(
 
 QuickInsertAssetFetcherImpl::~QuickInsertAssetFetcherImpl() = default;
 
-void QuickInsertAssetFetcherImpl::FetchGifFromUrl(
+std::unique_ptr<network::SimpleURLLoader>
+QuickInsertAssetFetcherImpl::FetchGifFromUrl(
     const GURL& url,
+    size_t rank,
     QuickInsertGifFetchedCallback callback) {
-  DownloadGifMediaToString(
-      url, delegate_->GetSharedURLLoaderFactory(),
-      base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
+  std::unique_ptr<network::SimpleURLLoader> loader = CreateGifMediaRequest(url);
+  if (loader == nullptr) {
+    std::move(callback).Run({});
+    return nullptr;
+  }
+  RunImmediatelyOrWithDelay(
+      base::BindOnce(&DownloadGifMediaToString, loader->GetWeakPtr(),
+                     delegate_->GetSharedURLLoaderFactory(),
+                     base::BindOnce(&image_util::DecodeAnimationData,
+                                    std::move(callback))),
+      GetRequestDelay(rank) + base::Milliseconds(200));
+  return loader;
 }
 
-void QuickInsertAssetFetcherImpl::FetchGifPreviewImageFromUrl(
+std::unique_ptr<network::SimpleURLLoader>
+QuickInsertAssetFetcherImpl::FetchGifPreviewImageFromUrl(
     const GURL& url,
+    size_t rank,
     QuickInsertImageFetchedCallback callback) {
-  DownloadGifMediaToString(
-      url, delegate_->GetSharedURLLoaderFactory(),
-      base::BindOnce(&image_util::DecodeImageData, std::move(callback),
-                     data_decoder::mojom::ImageCodec::kDefault));
+  std::unique_ptr<network::SimpleURLLoader> loader = CreateGifMediaRequest(url);
+  if (loader == nullptr) {
+    std::move(callback).Run({});
+    return nullptr;
+  }
+  RunImmediatelyOrWithDelay(
+      base::BindOnce(
+          &DownloadGifMediaToString, loader->GetWeakPtr(),
+          delegate_->GetSharedURLLoaderFactory(),
+          base::BindOnce(&image_util::DecodeImageData, std::move(callback),
+                         data_decoder::mojom::ImageCodec::kDefault)),
+      GetRequestDelay(rank));
+  return loader;
 }
 
 void QuickInsertAssetFetcherImpl::FetchFileThumbnail(

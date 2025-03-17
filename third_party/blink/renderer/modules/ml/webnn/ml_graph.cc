@@ -153,7 +153,7 @@ const MLGraph::NamedOperandDescriptors& MLGraph::GetOutputConstraints() const {
   return output_constraints_;
 }
 
-void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
+void MLGraph::Dispatch(webnn::ScopedTrace scoped_trace,
                        const MLNamedTensors& inputs,
                        const MLNamedTensors& outputs,
                        ExceptionState& exception_state) {

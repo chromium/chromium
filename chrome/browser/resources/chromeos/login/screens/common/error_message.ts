@@ -14,9 +14,9 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/network_select_login.js';
 
-import {SanitizeInnerHtmlOpts} from '//resources/ash/common/parse_html_subset.js';
+import type {SanitizeInnerHtmlOpts} from '//resources/ash/common/parse_html_subset.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';

@@ -9,7 +9,6 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/performance_manager_observer.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_browser_child_process.h"
 #include "content/public/common/process_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,9 +66,7 @@ TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserProcessNode) {
 
   const ProcessNodeImpl* browser_node = registry->GetBrowserProcessNode();
   ASSERT_TRUE(browser_node);
-  RunInGraph([&] {
-    EXPECT_EQ(browser_node->GetProcessType(), content::PROCESS_TYPE_BROWSER);
-  });
+  EXPECT_EQ(browser_node->GetProcessType(), content::PROCESS_TYPE_BROWSER);
 
   DeleteBrowserProcessNodeForTesting();
   EXPECT_FALSE(registry->GetBrowserProcessNode());
@@ -100,10 +97,8 @@ TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserChildProcessNodes) {
   ASSERT_TRUE(gpu_node);
   EXPECT_NE(utility_node, gpu_node);
 
-  RunInGraph([&] {
-    EXPECT_EQ(utility_node->GetProcessType(), content::PROCESS_TYPE_UTILITY);
-    EXPECT_EQ(gpu_node->GetProcessType(), content::PROCESS_TYPE_GPU);
-  });
+  EXPECT_EQ(utility_node->GetProcessType(), content::PROCESS_TYPE_UTILITY);
+  EXPECT_EQ(gpu_node->GetProcessType(), content::PROCESS_TYPE_GPU);
 
   utility_process.SimulateDisconnect();
   utility_node = nullptr;  // No longer safe.
@@ -118,7 +113,7 @@ TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserChildProcessNodes) {
   // create two simultaneous copies.
   utility_process.SimulateLaunch();
   EXPECT_TRUE(registry->GetBrowserChildProcessNode(utility_process.GetId()));
-  EXPECT_DCHECK_DEATH(utility_process.SimulateLaunch());
+  EXPECT_CHECK_DEATH(utility_process.SimulateLaunch());
 
   // `gpu_node` still exists. It should be safely deleted during teardown.
 }

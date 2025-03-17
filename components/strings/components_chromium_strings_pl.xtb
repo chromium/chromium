@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">Ta strona została zablokowana przez Chromium</translation>
 <translation id="48558539577516920">Zezwalaj Chromium na korzystanie z sieci w ustawieniach zapory sieciowej
         lub oprogramowania antywirusowego.</translation>
+<translation id="4949828774841497663">Otwórz kolejno Aplikacje &gt; Ustawienia systemu &gt; Sieć, wybierz aktywną sieć, kliknij przycisk Szczegóły… i usuń zaznaczenie wszystkich zaznaczonych serwerów proxy.</translation>
 <translation id="580822234363523061">Wybierz
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i upewnij się, że w konfiguracji wybrano połączenie bez serwera proxy lub bezpośrednie.</translation>
+<translation id="648062525172759633">Te strony są przeznaczone dla programistów Chromium i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="6549378540556750549">Stworzenie przeglądarki Chromium było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>
 <translation id="691026815377248078">Aby kontynuować parowanie, Chromium potrzebuje dostępu do Bluetootha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -41,9 +43,6 @@
         i odznacz „<ph name="NO_PREFETCH_DESCRIPTION" />”.
         Jeśli nie rozwiąże to problemu, zalecamy ponowne wybranie tej opcji,
         by poprawić wydajność.</translation>
-<translation id="8187289872471304532">Wybierz
-          Aplikacje &gt; Ustawienia systemowe &gt; Sieć &gt; Zaawansowane &gt; Serwery proxy
-          i usuń zaznaczenie wszelkich wybranych serwerów proxy.</translation>
 <translation id="8597726643333341451">Oglądasz bezpieczną stronę Chrome for Testing.</translation>
 <translation id="8684913864886094367">Chromium nie został poprawnie zamknięty.</translation>
 </translationbundle>

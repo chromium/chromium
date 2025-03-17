@@ -147,6 +147,15 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   WebString NameForAutofill() const;
 
   WebFormElement Form() const;
+  // Returns the form that owns this element according to Autofill's definition
+  // of ownership, or a null WebFormElement if no form owns it. The form that
+  // owns this element is:
+  // - if this element is associated to a form, the furthest shadow-including
+  //   form ancestor of that form,
+  // - otherwise, the furthest shadow-including form ancestor of this element.
+  // For the definition of ownership in Autofill, see
+  // //components/autofill/content/renderer/README.md.
+  WebFormElement GetOwningFormForAutofill() const;
 
   // Returns the ax node id of the form control element in the accessibility
   // tree. The ax node id is consistent across renderer and browser processes.

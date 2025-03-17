@@ -8,7 +8,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("unit_tests") {
   testonly = true
@@ -31,7 +31,6 @@ source_set("unit_tests") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/attestation:test_support",
@@ -62,6 +61,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/ash/services/multidevice_setup/public/cpp",
@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/bluetooth:unit_tests",
     "//chrome/browser/ash/boca:unit_tests",
     "//chrome/browser/ash/boca/on_task:unit_tests",
+    "//chrome/browser/ash/boca/spotlight:unit_tests",
     "//chrome/browser/ash/borealis:unit_tests",
     "//chrome/browser/ash/bruschetta:unit_tests",
     "//chrome/browser/ash/calendar:unit_tests",
@@ -152,7 +153,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/mahi:unit_tests",
     "//chrome/browser/ash/mahi/web_contents:unit_tests",
     "//chrome/browser/ash/mall:unit_tests",
-    "//chrome/browser/ash/mobile:unit_tests",
     "//chrome/browser/ash/nearby:unit_tests",
     "//chrome/browser/ash/net:unit_tests",
     "//chrome/browser/ash/network_change_manager:unit_tests",
@@ -215,7 +215,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/sanitize:unit_tests",
     "//chrome/browser/ash/scanning:unit_tests",
     "//chrome/browser/ash/schedqos:unit_tests",
-    "//chrome/browser/ash/scheduler_config:unit_tests",
     "//chrome/browser/ash/secure_channel:unit_tests",
     "//chrome/browser/ash/settings:unit_tests",
     "//chrome/browser/ash/sharesheet:unit_tests",
@@ -330,6 +329,7 @@ group("browser_tests") {
     "//chrome/browser/ash/policy/status_collector:browser_tests",
     "//chrome/browser/ash/preferences:browser_tests",
     "//chrome/browser/ash/printing/print_management:browser_tests",
+    "//chrome/browser/ash/privacy_hub:browser_tests",
     "//chrome/browser/ash/remote_apps:browser_tests",
     "//chrome/browser/ash/scalable_iph:browser_tests",
     "//chrome/browser/ash/smb_client:browser_tests",

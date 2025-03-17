@@ -257,3 +257,60 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShowTabGroupsInTheOrderTheyWereAdded) {
 
   ASSERT_EQ(model->group_model()->ListTabGroups(), group_ids);
 }
+// Verify that pinned tabs added to a group in another window maintain
+// their selection state and are inserted in the correct position.
+TEST_F(ExistingTabGroupSubMenuModelTest, AddPinnedTabsToTabGroup) {
+  // Window 1: 3 tabs, the first two in a group.
+  std::unique_ptr<BrowserWindow> window_1 = CreateBrowserWindow();
+  std::unique_ptr<Browser> browser_1 = CreateBrowser(
+      browser()->profile(), browser()->type(), false, window_1.get());
+  AddTab(browser_1.get(), GURL("chrome://newtab/"));
+  AddTab(browser_1.get(), GURL("chrome://newtab/"));
+  AddTab(browser_1.get(), GURL("chrome://newtab/"));
+  TabStripModel* model_1 = browser_1->tab_strip_model();
+  model_1->AddToNewGroup({0, 1});
+  EXPECT_EQ(model_1->count(), 3);
+
+  // Window 2: 5 tabs, 3 pinned; tabs 0, 2, and 4 are selected.
+  std::unique_ptr<BrowserWindow> window_2 = CreateBrowserWindow();
+  std::unique_ptr<Browser> browser_2 = CreateBrowser(
+      browser()->profile(), browser()->type(), false, window_2.get());
+  AddTab(browser_2.get(), GURL("chrome://newtab/"));
+  AddTab(browser_2.get(), GURL("chrome://newtab/"));
+  AddTab(browser_2.get(), GURL("chrome://newtab/"));
+  AddTab(browser_2.get(), GURL("chrome://newtab/"));
+  AddTab(browser_2.get(), GURL("chrome://newtab/"));
+  TabStripModel* model_2 = browser_2->tab_strip_model();
+  // Pin all tabs
+  model_2->SetTabPinned(0, true);
+  model_2->SetTabPinned(1, true);
+  model_2->SetTabPinned(2, true);
+  model_2->SetTabPinned(3, true);
+  model_2->SetTabPinned(4, true);
+  // Select the tabs 0, 2, 4
+  model_2->ToggleSelectionAt(0);
+  model_2->ToggleSelectionAt(2);
+  model_2->ToggleSelectionAt(4);
+  EXPECT_EQ(model_2->count(), 5);
+
+  std::unique_ptr<TabMenuModelDelegate> delegate_1 =
+      std::make_unique<chrome::BrowserTabMenuModelDelegate>(browser_2.get());
+  ExistingTabGroupSubMenuModel menu_1(nullptr, delegate_1.get(), model_2, 0);
+
+  // Move the selected tabs from Window 2 to the group in Window 1.
+  menu_1.ExecuteExistingCommandForTesting(0);
+
+  // Window 1 should now have 6 tabs.
+  EXPECT_EQ(6, model_1->count());
+  // Window 2 should now have 2 tabs.
+  EXPECT_EQ(2, model_2->count());
+  // Verify the selection state of the moved tabs.
+  EXPECT_TRUE(model_1->IsTabSelected(2));
+  EXPECT_TRUE(model_1->IsTabSelected(3));
+  EXPECT_TRUE(model_1->IsTabSelected(4));
+
+  browser_1.get()->tab_strip_model()->CloseAllTabs();
+  browser_1.reset();
+  browser_2.get()->tab_strip_model()->CloseAllTabs();
+  browser_2.reset();
+}

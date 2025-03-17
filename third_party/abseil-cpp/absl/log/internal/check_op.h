@@ -65,7 +65,7 @@
 
 #define ABSL_LOG_INTERNAL_CHECK_OP(name, op, val1, val1_text, val2, val2_text) \
   while (absl::Nullable<const char*> absl_log_internal_check_op_result         \
-             ABSL_LOG_INTERNAL_ATTRIBUTE_UNUSED_IF_STRIP_LOG =                 \
+             [[maybe_unused]] =                 \
                  ::absl::log_internal::name##Impl(                             \
                      ::absl::log_internal::GetReferenceableValue(val1),        \
                      ::absl::log_internal::GetReferenceableValue(val2),        \

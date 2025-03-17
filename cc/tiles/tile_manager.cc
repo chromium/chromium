@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,10 +38,15 @@
 #include "cc/raster/paint_worklet_image_provider.h"
 #include "cc/raster/playback_image_provider.h"
 #include "cc/raster/raster_buffer.h"
+#include "cc/raster/raster_buffer_provider.h"
+#include "cc/raster/raster_query_queue.h"
 #include "cc/raster/task_category.h"
+#include "cc/tiles/eviction_tile_priority_queue.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
 #include "cc/tiles/tile.h"
+#include "cc/tiles/tile_manager_client.h"
 #include "cc/tiles/tile_priority.h"
+#include "cc/tiles/tile_task_manager.h"
 #include "cc/tiles/tiles_with_resource_iterator.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -244,6 +249,8 @@ void InsertNodeForTask(TaskGraph* graph,
                        uint16_t priority,
                        size_t dependencies,
                        bool has_external_dependency = false) {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__, "category", category, "deps",
+              dependencies);
   DCHECK(!base::Contains(graph->nodes, task, &TaskGraph::Node::task));
   graph->nodes.emplace_back(task, category, priority, dependencies,
                             has_external_dependency);
@@ -402,17 +409,9 @@ void TileManager::FinishTasksAndCleanUp() {
 
   global_state_ = GlobalStateThatImpactsTilePriority();
 
-  // This must be signalled before the Shutdown call below so that if there are
-  // any pending tasks on the worker thread that might be waiting on tasks
-  // posted to this thread they are cancelled.
-  shutdown_event_.Signal();
-
   // This cancels tasks if possible, finishes pending tasks, and release any
   // uninitialized resources.
   tile_task_manager_->Shutdown();
-
-  // Reset the signal since SetResources() might be called later.
-  shutdown_event_.Reset();
 
   raster_buffer_provider_->Shutdown();
 
@@ -572,8 +571,6 @@ void TileManager::SetResources(ResourcePool* resource_pool,
           &TileManager::ExternalDependencyCompletedForNonRasterTask,
           base::Unretained(this)));
   raster_buffer_provider_ = raster_buffer_provider;
-
-  raster_buffer_provider_->SetShutdownEvent(&shutdown_event_);
 }
 
 void TileManager::Release(Tile* tile) {
@@ -608,11 +605,19 @@ void TileManager::DidFinishRunningTileTasksRequiredForDraw() {
   signals_check_notifier_.Schedule();
 }
 
-void TileManager::DidFinishRunningAllTileTasks(bool has_pending_queries) {
+void TileManager::DidFinishRunningAllTileTasks(base::TimeTicks start_time,
+                                               bool has_pending_queries) {
   TRACE_EVENT0("cc", "TileManager::DidFinishRunningAllTileTasks");
   TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "ScheduledTasks", TRACE_ID_LOCAL(this));
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
+
+  if (!start_time.is_null()) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.TileManager.RasterTasksDuration",
+        base::TimeTicks::Now() - start_time, base::Microseconds(10),
+        base::Milliseconds(200), 50);
+  }
 
   has_scheduled_tile_tasks_ = false;
   has_pending_queries_ = has_pending_queries;
@@ -639,7 +644,14 @@ void TileManager::ExternalDependencyCompletedForNonRasterTask(
 
 void TileManager::ExternalDependencyCompletedForRasterTask(
     scoped_refptr<TileTask> dependent) {
-  tile_task_manager_->ExternalDependencyCompletedForTask(std::move(dependent));
+  // We may get here during the scope of FinishTasksAndCleanUp(), in which case
+  // tile_task_manager_ will already have been reset to null. If that is the
+  // case, we expect any outstanding raster tasks to have been canceled.
+  CHECK(tile_task_manager_ || dependent->state().IsCanceled());
+  if (tile_task_manager_) {
+    tile_task_manager_->ExternalDependencyCompletedForTask(
+        std::move(dependent));
+  }
 }
 
 bool TileManager::PrepareTiles(
@@ -738,6 +750,56 @@ void TileManager::BasicStateAsValueInto(
   state->BeginDictionary("global_state");
   global_state_.AsValueInto(state);
   state->EndDictionary();
+}
+
+void TileManager::InitializeTilesWithResourcesForTesting(
+    const std::vector<Tile*>& tiles) {
+  for (size_t i = 0; i < tiles.size(); ++i) {
+    TileDrawInfo& draw_info = tiles[i]->draw_info();
+    ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
+        tiles[i]->desired_texture_size(), raster_buffer_provider_->GetFormat(),
+        client_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB)
+            .color_space);
+    raster_buffer_provider_->AcquireBufferForRaster(
+        resource, 0, 0,
+        /*depends_on_at_raster_decodes=*/false,
+        /*depends_on_hardware_accelerated_jpeg_candidates=*/false,
+        /*depends_on_hardware_accelerated_webp_candidates=*/false);
+    // The raster here never really happened, cuz tests. So just add an
+    // arbitrary sync token.
+    if (resource.backing()) {
+      resource.backing()->SetSharedImageForTesting(  // IN-TEST
+          gpu::ClientSharedImage::CreateForTesting());
+      resource.backing()->mailbox_sync_token.Set(
+          gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
+    }
+    bool exported = resource_pool_->PrepareForExport(
+        resource, viz::TransferableResource::ResourceSource::kTest);
+    DCHECK(exported);
+    draw_info.SetResource(std::move(resource), false, false);
+    draw_info.set_resource_ready_for_draw();
+  }
+}
+
+void TileManager::ReleaseTileResourcesForTesting(
+    const std::vector<Tile*>& tiles) {
+  for (size_t i = 0; i < tiles.size(); ++i) {
+    Tile* tile = tiles[i];
+    FreeResourcesForTile(tile);
+  }
+}
+
+void TileManager::SetTileTaskManagerForTesting(
+    std::unique_ptr<TileTaskManager> tile_task_manager) {
+  tile_task_manager_ = std::move(tile_task_manager);
+}
+
+std::vector<Tile*> TileManager::AllTilesForTesting() const {
+  std::vector<Tile*> tiles;
+  for (auto& tile_pair : tiles_) {
+    tiles.push_back(tile_pair.second);
+  }
+  return tiles;
 }
 
 std::unique_ptr<EvictionTilePriorityQueue>
@@ -1016,7 +1078,7 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
 
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
   // Since this is recorded once per frame, subsample these metrics.
-  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+  if (metrics_sub_sampler_.ShouldSample(metrics_sampling_rate_)) {
     if (running_on_renderer_process_) {
       UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory.Renderer",
                             had_enough_memory_to_schedule_tiles_needed_now);
@@ -1140,6 +1202,10 @@ void TileManager::AddCheckeredImagesToDecodeQueue(
 }
 
 void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
+  auto start_time = metrics_sub_sampler_.ShouldSample(metrics_sampling_rate_)
+                        ? base::TimeTicks::Now()
+                        : base::TimeTicks();
+
   const std::vector<PrioritizedTile>& tiles_that_need_to_be_rasterized =
       work_to_schedule.tiles_to_raster;
   TRACE_EVENT1("cc", "TileManager::ScheduleTasks", "count",
@@ -1176,9 +1242,9 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
       CreateTaskSetFinishedTask(
           &TileManager::DidFinishRunningTileTasksRequiredForDraw);
 
-  auto all_done_cb =
-      base::BindOnce(&TileManager::DidFinishRunningAllTileTasks,
-                     task_set_finished_weak_ptr_factory_.GetWeakPtr());
+  auto all_done_cb = base::BindOnce(
+      &TileManager::DidFinishRunningAllTileTasks,
+      task_set_finished_weak_ptr_factory_.GetWeakPtr(), start_time);
   scoped_refptr<TileTask> all_done_task =
       base::MakeRefCounted<DidFinishRunningAllTilesTask>(
           task_runner_, pending_raster_queries_, std::move(all_done_cb));
@@ -1264,7 +1330,7 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
 
   for (auto& task : new_locked_image_tasks) {
     auto decode_it =
-        base::ranges::find(graph_.nodes, task.get(), &TaskGraph::Node::task);
+        std::ranges::find(graph_.nodes, task.get(), &TaskGraph::Node::task);
     // If this task is already in the graph, then we don't have to insert it.
     if (decode_it != graph_.nodes.end())
       continue;
@@ -1286,6 +1352,7 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   resource_pool_->ReduceResourceUsage();
   image_controller_.ReduceMemoryUsage();
 
+  bool only_completion_tasks = graph_.nodes.empty();
   // Insert nodes for our task completion tasks. We enqueue these using
   // NONCONCURRENT_FOREGROUND category this is the highest priority category and
   // we'd like to run these tasks as soon as possible.
@@ -1299,6 +1366,33 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   InsertNodeForTask(&graph_, all_done_task.get(),
                     TASK_CATEGORY_NONCONCURRENT_FOREGROUND,
                     kAllDoneTaskPriority, all_count);
+
+  // Don't go through the graph machinery if we have nothing to do.  This is a
+  // common case when e.g. scrolling, where we get a compositor frame, but do
+  // not need to raster anything (if the page is not running any rAF for
+  // instance).
+  if (only_completion_tasks &&
+      base::FeatureList::IsEnabled(features::kFastPathNoRaster)) {
+    DCHECK_EQ(required_for_activate_count, 0u);
+    DCHECK_EQ(required_for_draw_count, 0u);
+    DCHECK_EQ(all_count, 0u);
+    for (const auto& task : graph_.nodes) {
+      DCHECK_EQ(0u, task.dependencies);
+      DCHECK(!task.has_external_dependency);
+      DCHECK(task.task == required_for_activation_done_task.get() ||
+             task.task == required_for_draw_done_task.get() ||
+             task.task == all_done_task.get());
+      // Downcast is safe since this is one of the tasks from above.
+      auto* tile_task = static_cast<TileTask*>(task.task.get());
+      tile_task->state().DidSchedule();
+      tile_task->state().DidStart();
+      tile_task->RunOnWorkerThread();
+      tile_task->state().DidFinish();
+      tile_task->OnTaskCompleted();
+      tile_task->DidComplete();
+    }
+    graph_.Reset();
+  }
 
   // Schedule running of |raster_queue_|. This replaces any previously
   // scheduled tasks and effectively cancels all tasks not present
@@ -1538,7 +1632,7 @@ void TileManager::InsertNodesForRasterTask(TileTask* raster_task,
 
     // Add decode task if it doesn't already exist in graph_.
     auto decode_it =
-        base::ranges::find(graph_.nodes, decode_task, &TaskGraph::Node::task);
+        std::ranges::find(graph_.nodes, decode_task, &TaskGraph::Node::task);
 
     // In rare circumstances, a background category task may come in before a
     // foreground category task. In these cases, upgrade any background category

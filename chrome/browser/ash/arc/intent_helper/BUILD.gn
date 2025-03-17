@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("intent_helper") {
   sources = [
@@ -25,9 +25,6 @@ static_library("intent_helper") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/intent_helper:arc_intent_helper_constants",
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
@@ -40,6 +37,9 @@ static_library("intent_helper") {
     "//chrome/common",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
     "//components/language/core/browser",
     "//components/live_caption",
     "//components/live_caption:constants",
@@ -63,8 +63,6 @@ source_set("unit_tests") {
 
   deps = [
     ":intent_helper",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/arc",
@@ -78,6 +76,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/language/core/browser",
     "//components/live_caption",
     "//components/live_caption:constants",
@@ -99,7 +99,6 @@ source_set("browser_tests") {
 
   deps = [
     ":intent_helper",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
@@ -110,6 +109,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/exo",
     "//components/exo:test_support",
     "//components/policy:generated",

@@ -20,7 +20,8 @@ enum class CalendarType {
 using GetResponseCallback = base::OnceCallback<void(std::string)>;
 
 std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents(
-    CalendarType calendar_type);
+    CalendarType calendar_type,
+    bool has_attachments_enabled);
 
 // Should only be called for CalendarType::OUTLOOK_CALENDAR.
 std::unique_ptr<std::string> GetFakeJsonResponse();

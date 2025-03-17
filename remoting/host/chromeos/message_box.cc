@@ -4,14 +4,19 @@
 
 #include "remoting/host/chromeos/message_box.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -35,14 +40,16 @@ class MessageBox::Core : public views::DialogDelegateView {
        const std::u16string& message_label,
        const std::u16string& ok_label,
        const std::u16string& cancel_label,
+       const std::optional<ui::ImageModel> icon,
        ResultCallback result_callback,
        MessageBox* message_box);
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
 
-  // Mirrors the public MessageBox interface.
-  void Show();
+  void Show(gfx::NativeView parent);
   void Hide();
+
+  void ChangeParentContainer(gfx::NativeView container);
 
   // views::DialogDelegateView:
   ui::mojom::ModalType GetModalType() const override;
@@ -59,6 +66,8 @@ class MessageBox::Core : public views::DialogDelegateView {
   ResultCallback result_callback_;
   raw_ptr<MessageBox> message_box_;
 
+  bool is_shown_ = false;
+
   // Owned by the native widget hierarchy.
   raw_ptr<views::MessageBoxView> message_box_view_;
 };
@@ -67,6 +76,7 @@ MessageBox::Core::Core(const std::u16string& title_label,
                        const std::u16string& message_label,
                        const std::u16string& ok_label,
                        const std::u16string& cancel_label,
+                       const std::optional<ui::ImageModel> icon,
                        ResultCallback result_callback,
                        MessageBox* message_box)
     : title_label_(title_label),
@@ -76,6 +86,11 @@ MessageBox::Core::Core(const std::u16string& title_label,
   DCHECK(message_box_);
   SetButtonLabel(ui::mojom::DialogButton::kOk, ok_label);
   SetButtonLabel(ui::mojom::DialogButton::kCancel, cancel_label);
+
+  if (icon.has_value()) {
+    SetIcon(*icon);
+    SetShowIcon(true);
+  }
 
   auto run_callback = [](MessageBox::Core* core, Result result) {
     if (core->result_callback_) {
@@ -94,16 +109,30 @@ MessageBox::Core::Core(const std::u16string& title_label,
         }
       },
       this));
+
+  // This should be set as the `message_box_view_` is assumed to be owned by the
+  // widget created.
+  SetOwnedByWidget(true);
 }
 
-void MessageBox::Core::Show() {
+void MessageBox::Core::Show(gfx::NativeView parent) {
+  CHECK(!is_shown_) << "Show() should only be called once.";
+  is_shown_ = true;
+
   // The widget is owned by the NativeWidget.  See  comments in widget.h.
   views::Widget* widget =
-      CreateDialogWidget(this, /* delegate */
-                         nullptr /* parent window*/, nullptr /* parent view */);
+      CreateDialogWidget(/* delegate=*/this,
+                         /*context=*/nullptr, /*parent=*/parent);
 
   if (widget) {
     widget->Show();
+  }
+}
+
+void MessageBox::Core::ChangeParentContainer(gfx::NativeView parent) {
+  if (GetWidget()) {
+    views::Widget::ReparentNativeView(GetWidget()->GetNativeView(),
+                                      /*new_parent=*/parent);
   }
 }
 
@@ -147,16 +176,30 @@ MessageBox::MessageBox(const std::u16string& title_label,
                        const std::u16string& message_label,
                        const std::u16string& ok_label,
                        const std::u16string& cancel_label,
+                       const std::optional<ui::ImageModel> icon,
                        ResultCallback result_callback)
     : core_(new Core(title_label,
                      message_label,
                      ok_label,
                      cancel_label,
+                     std::move(icon),
                      std::move(result_callback),
                      this)) {}
 
 void MessageBox::Show() {
-  core_->Show();
+  core_->Show(nullptr);
+}
+
+void MessageBox::ShowInParentContainer(gfx::NativeView parent) {
+  core_->Show(parent);
+}
+
+void MessageBox::ChangeParentContainer(gfx::NativeView parent) {
+  core_->ChangeParentContainer(parent);
+}
+
+views::DialogDelegate& MessageBox::GetDialogDelegate() {
+  return CHECK_DEREF(core_->AsDialogDelegate());
 }
 
 MessageBox::~MessageBox() {

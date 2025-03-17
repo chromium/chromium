@@ -134,14 +134,17 @@ class BackgroundTracingManager {
   // landed.
   virtual void DeleteTracesInDateRange(base::Time start, base::Time end) = 0;
 
-  // Loads the content of the next trace saved for uploading and returns
-  // it through |callback| in a gzip of a serialized proto of message
-  // type perfetto::Trace. |callback| may be invoked either synchronously or
-  // on a thread pool task runner.
+  // Loads the content of the next trace saved for uploading and returns it
+  // through `callback` in a gzip of a serialized proto of message type
+  // perfetto::Trace. `callback` may be invoked either synchronously or on a
+  // thread pool task runner. Iff `compressed_trace_content` is valid,
+  // `upload_complete_closure` should be invoked on any task runner once the
+  // trace is uploaded successfully.
   virtual void GetTraceToUpload(
-      base::OnceCallback<void(std::optional<std::string> /*trace_content*/,
-                              std::optional<std::string> /*system_profile*/)>
-          callback) = 0;
+      base::OnceCallback<
+          void(std::optional<std::string> /*compressed_trace_content*/,
+               std::optional<std::string> /*serialized_system_profile*/,
+               base::OnceClosure /*upload_complete_closure*/)> callback) = 0;
 
   // Sets a callback that records `SystemProfileProto` when a trace is
   // collected.

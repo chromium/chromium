@@ -15,7 +15,7 @@ import {Output} from '../output/output.js';
 import {OutputRoleInfo} from '../output/output_role_info.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
-import {EditableLine} from './editable_line.js';
+import type {EditableLine} from './editable_line.js';
 
 type AutomationIntent = chrome.automation.AutomationIntent;
 const IntentCommandType = chrome.automation.IntentCommandType;

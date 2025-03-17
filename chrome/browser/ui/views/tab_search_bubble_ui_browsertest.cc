@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/compositor/compositor.h"
 #include "ui/views/widget/widget_observer.h"
@@ -105,12 +104,6 @@ class TabSearchBubbleUIBrowserTest : public DialogBrowserTest {
       webui_change_observer.Wait();
     }
   }
-
- private:
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kFontDataService};
-#endif
 };
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleUIBrowserTest, InvokeUi_default) {

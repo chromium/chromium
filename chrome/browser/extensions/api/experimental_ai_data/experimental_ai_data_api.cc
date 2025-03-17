@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/check.h"
 #include "base/strings/string_split.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
@@ -22,19 +23,18 @@
 
 namespace extensions {
 
-ExperimentalAiDataGetAiDataFunction::ExperimentalAiDataGetAiDataFunction() =
-    default;
+ExperimentalAiDataApiFunction::ExperimentalAiDataApiFunction() = default;
 
-ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
-    default;
+ExperimentalAiDataApiFunction::~ExperimentalAiDataApiFunction() = default;
 
-ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
+bool ExperimentalAiDataApiFunction::PreRunValidation(std::string* error) {
   // Check the allowlist and return an error if extension is not allow listed.
   std::vector<std::string> allowlisted_extensions =
       AiDataKeyedService::GetAllowlistedExtensions();
   if (std::find(allowlisted_extensions.begin(), allowlisted_extensions.end(),
                 extension_id()) == allowlisted_extensions.end()) {
-    return RespondNow(Error("API access restricted for this extension."));
+    *error = "API access restricted for this extension.";
+    return false;
   }
 
   // In addition to the extension framework channel restriction, we make sure
@@ -42,35 +42,22 @@ ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
   // extension::switches::kEnableExperimentalExtensionApis allows ignoring those
   // channel restrictions.
   if (chrome::GetChannel() == version_info::Channel::STABLE) {
-    return RespondNow(Error("API access restricted to non-Stable channels."));
-  }
-
-  auto params = api::experimental_ai_data::GetAiData::Params::Create(args());
-
-  content::WebContents* web_contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
-                                    &web_contents)) {
-    return RespondNow(Error("Invalid target tab passed in."));
+    *error = "API access restricted to non-Stable channels.";
+    return false;
   }
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
   if (!ai_data_service) {
-    return RespondNow(Error("Incognito profile not supported."));
+    *error = "Incognito profile not supported.";
+    return false;
   }
+  DCHECK(ai_data_service);
 
-  const std::string& user_input = params->user_input;
-  int dom_node_id = params->dom_node_id;
-
-  ai_data_service->GetAiData(
-      dom_node_id, web_contents, user_input,
-      base::BindOnce(&ExperimentalAiDataGetAiDataFunction::OnDataCollected,
-                     this));
-
-  return RespondLater();
+  return true;
 }
 
-void ExperimentalAiDataGetAiDataFunction::OnDataCollected(
+void ExperimentalAiDataApiFunction::OnDataCollected(
     AiDataKeyedService::AiData browser_collected_data) {
   if (!browser_collected_data) {
     return Respond(
@@ -83,6 +70,71 @@ void ExperimentalAiDataGetAiDataFunction::OnDataCollected(
   browser_collected_data->SerializeToArray(&data_buffer[0], size);
   Respond(ArgumentList(api::experimental_ai_data::GetAiData::Results::Create(
       std::move(data_buffer))));
+}
+
+ExperimentalAiDataGetAiDataFunction::ExperimentalAiDataGetAiDataFunction() =
+    default;
+
+ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
+    default;
+
+ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
+  auto params = api::experimental_ai_data::GetAiData::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
+                                    &web_contents)) {
+    return RespondNow(Error("Invalid target tab passed in."));
+  }
+  DCHECK(web_contents);
+
+  auto* ai_data_service =
+      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
+  DCHECK(ai_data_service);
+
+  ai_data_service->GetAiData(
+      params->dom_node_id, web_contents, params->user_input,
+      base::BindOnce(&ExperimentalAiDataGetAiDataFunction::OnDataCollected,
+                     this));
+  return RespondLater();
+}
+
+ExperimentalAiDataGetAiDataWithSpecifierFunction::
+    ExperimentalAiDataGetAiDataWithSpecifierFunction() = default;
+
+ExperimentalAiDataGetAiDataWithSpecifierFunction::
+    ~ExperimentalAiDataGetAiDataWithSpecifierFunction() = default;
+
+ExtensionFunction::ResponseAction
+ExperimentalAiDataGetAiDataWithSpecifierFunction::Run() {
+  auto params =
+      api::experimental_ai_data::GetAiDataWithSpecifier::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
+                                    &web_contents)) {
+    return RespondNow(Error("Invalid target tab passed in."));
+  }
+  DCHECK(web_contents);
+
+  auto* ai_data_service =
+      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
+  DCHECK(ai_data_service);
+
+  // De-serailizing protos is safe per
+  // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/rule-of-2.md
+  optimization_guide::proto::ModelPrototypingCollectionSpecifier specifier;
+  if (!specifier.ParseFromArray(params->ai_data_specifier.data(),
+                                params->ai_data_specifier.size())) {
+    return RespondNow(Error("Parsing ai data specifier failed."));
+  }
+
+  ai_data_service->GetAiDataWithSpecifier(
+      web_contents, specifier,
+      base::BindOnce(
+          &ExperimentalAiDataGetAiDataWithSpecifierFunction::OnDataCollected,
+          this));
+  return RespondLater();
 }
 
 }  // namespace extensions

@@ -91,7 +91,6 @@ message AutofillFieldClassificationPostprocessingParameters {
 
   // If true, the model is not allowed to return the same prediction for
   // multiple fields in the form.
-  // TODO(crbug.com/371933424): Implement handling this.
   optional bool disallow_same_type_predictions = 3;
 }
 

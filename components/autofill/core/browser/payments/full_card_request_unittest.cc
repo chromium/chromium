@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
@@ -771,14 +771,12 @@ TEST_P(FullCardRequestCardMetadataTest, MetadataSignal) {
   CreditCard card = test::GetMaskedServerCard();
   if (MetadataEnabled()) {
     metadata_feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardProductName,
-                              features::kAutofillEnableCardArtImage},
+        /*enabled_features=*/{features::kAutofillEnableCardProductName},
         /*disabled_features=*/{});
   } else {
     metadata_feature_list.InitWithFeaturesAndParameters(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillEnableCardProductName,
-                               features::kAutofillEnableCardArtImage});
+        /*disabled_features=*/{features::kAutofillEnableCardProductName});
   }
   if (CardNameAvailable()) {
     card.set_product_description(u"fake product description");
@@ -795,7 +793,7 @@ TEST_P(FullCardRequestCardMetadataTest, MetadataSignal) {
   if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
     EXPECT_NE(
         signals.end(),
-        base::ranges::find(
+        std::ranges::find(
             signals,
             ClientBehaviorConstants::kShowingCardArtImageAndCardProductName));
   } else {
@@ -819,7 +817,7 @@ class FullCardRequestCardBenefitsTest
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kAutofillEnableCardBenefitsForAmericanExpress,
           IsCreditCardBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsForCapitalOne,
+         {features::kAutofillEnableCardBenefitsForBmo,
           IsCreditCardBenefitsEnabled()}});
 
     card_ = test::GetMaskedServerCard();
@@ -851,7 +849,7 @@ INSTANTIATE_TEST_SUITE_P(
                           &test::GetActiveCreditCardCategoryBenefit,
                           &test::GetActiveCreditCardMerchantBenefit),
         ::testing::Bool(),
-        ::testing::Values("amex", "capitalone")));
+        ::testing::Values("amex", "bmo")));
 
 // Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
 // signal if a card benefit was shown when unmasking a credit card suggestion
@@ -861,8 +859,8 @@ TEST_P(FullCardRequestCardBenefitsTest, Benefits_ClientBehaviorConstants) {
   ASSERT_TRUE(request().GetShouldUnmaskCardForTesting());
   std::vector<ClientBehaviorConstants> signals =
       request().GetUnmaskRequestDetailsForTesting()->client_behavior_signals;
-  EXPECT_EQ(base::ranges::find(signals,
-                               ClientBehaviorConstants::kShowingCardBenefits) !=
+  EXPECT_EQ(std::ranges::find(signals,
+                              ClientBehaviorConstants::kShowingCardBenefits) !=
                 signals.end(),
             IsCreditCardBenefitsEnabled());
 }

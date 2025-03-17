@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -101,6 +102,7 @@ XMLDocument* DOMImplementation::createDocument(
 }
 
 Document* DOMImplementation::createHTMLDocument(const String& title) {
+  TRACE_EVENT("blink", "DOMImplementation::createHTMLDocument");
   DocumentInit init =
       DocumentInit::Create()
           .WithExecutionContext(document_->GetExecutionContext())

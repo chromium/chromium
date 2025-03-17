@@ -4,32 +4,33 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Size;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Given a viewport {@link Rect} and a matrix of {@link Bitmap} tiles, this class draws the bitmaps
  * on a {@link Canvas}.
  */
+@NullMarked
 class PlayerFrameBitmapPainter {
-    private Size mTileSize;
-    private Bitmap[][] mBitmapMatrix;
+    private @Nullable Size mTileSize;
+    private Bitmap @Nullable [][] mBitmapMatrix;
     private Rect mViewPort = new Rect();
     private Rect mDrawBitmapSrc = new Rect();
     private Rect mDrawBitmapDst = new Rect();
     private Runnable mInvalidateCallback;
-    private Runnable mFirstPaintListener;
+    private @Nullable Runnable mFirstPaintListener;
     private boolean mDestroyed;
 
-    PlayerFrameBitmapPainter(
-            @NonNull Runnable invalidateCallback, @Nullable Runnable firstPaintListener) {
+    PlayerFrameBitmapPainter(Runnable invalidateCallback, @Nullable Runnable firstPaintListener) {
         mInvalidateCallback = invalidateCallback;
         mFirstPaintListener = firstPaintListener;
     }
@@ -60,6 +61,7 @@ class PlayerFrameBitmapPainter {
 
         if (mViewPort.isEmpty()) return;
 
+        assumeNonNull(mTileSize);
         if (mTileSize.getWidth() <= 0 || mTileSize.getHeight() <= 0) return;
         TraceEvent.begin("PlayerFrameBitmapPainter.onDraw");
 

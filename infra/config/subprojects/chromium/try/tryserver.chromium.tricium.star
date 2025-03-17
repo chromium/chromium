@@ -46,6 +46,14 @@ try_.builder(
     os = os.LINUX_DEFAULT,
     # src checkouts are only required by bots spawned by this builder.
     caches = [SOURCELESS_BUILDER_CACHE],
+    tryjob = try_.job(
+        custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],
+        disable_reuse = True,
+        experiment_percentage = 100,
+        location_filters = [
+            cq.location_filter(path_regexp = r".*\.(c|cc|cpp|h)"),
+        ],
+    ),
 )
 
 # Clang-tidy builders potentially spawned by the `tricium-clang-tidy`
@@ -129,7 +137,7 @@ try_.builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # TODO(gbiv): Determine why this needs a system xcode and things like `Mac
     # Builder` don't.
-    xcode = xcode.x13main,
+    xcode = xcode.xcode_default,
 )
 
 try_.builder(

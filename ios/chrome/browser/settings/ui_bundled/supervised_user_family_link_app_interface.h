@@ -26,6 +26,10 @@
 + (void)seedAllowSite:(NSString*)url;
 + (void)seedBlockSite:(NSString*)url;
 
+// Manually triggers sync service refresh as a fallback to ensure that
+// Family Link settings updates are applied.
++ (void)triggerSyncServiceRefresh;
+
 // Tears down the TestFamilyLinkSettingsStateHelper singleton.
 + (void)tearDownTestFamilyLinkSettingsStateHelper;
 

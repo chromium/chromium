@@ -41,7 +41,8 @@ class PageHandler : public protocol::Page::Backend {
   void ToggleAdBlocking(bool enabled);
 
   // Page::Backend:
-  protocol::Response Enable() override;
+  protocol::Response Enable(
+      std::optional<bool> enable_file_chooser_opened_event) override;
   protocol::Response Disable() override;
   protocol::Response SetAdBlockingEnabled(bool enabled) override;
   protocol::Response SetSPCTransactionMode(

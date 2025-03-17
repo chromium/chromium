@@ -10,7 +10,7 @@ import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
-// Typemapped to //net/device_bound_sessions/session.h:SessionKey
+// LINT.IfChange
 struct DeviceBoundSessionKey {
   // The site the session is scoped to.
   SchemefulSite site;
@@ -18,6 +18,25 @@ struct DeviceBoundSessionKey {
   // The site-scoped identifier for the session.
   string id;
 };
+
+// LINT.ThenChange(//net/device_bound_sessions/session_key.h)
+
+// LINT.IfChange
+enum DeviceBoundSessionAccessType {
+  kCreation = 0,
+  kUpdate = 1,
+  kTermination = 2,
+};
+
+struct DeviceBoundSessionAccess {
+  // Type of access
+  DeviceBoundSessionAccessType access_type;
+
+  // Key of accessed session
+  DeviceBoundSessionKey session_key;
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_access.h)
 
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
@@ -37,6 +56,10 @@ interface DeviceBoundSessionManager {
   DeleteAllSessions(mojo_base.mojom.Time? created_after_time,
                     mojo_base.mojom.Time? created_before_time,
                     ClearDataFilter? filter) => ();
+
+  // Add an observer for accesses to sessions including `url`.
+  AddObserver(url.mojom.Url url,
+              pending_remote<DeviceBoundSessionAccessObserver> observer);
 };
 
 // Observer that is notified on use of a device bound session.
@@ -45,7 +68,7 @@ interface DeviceBoundSessionAccessObserver {
   // - Newly registered sessions
   // - Sessions deferring requests
   // - Session deletion
-  OnDeviceBoundSessionAccessed(DeviceBoundSessionKey session);
+  OnDeviceBoundSessionAccessed(DeviceBoundSessionAccess access);
 
   // Called to create a copy of this observer. (e.g. when cloning observers
   // from ResourceRequest).

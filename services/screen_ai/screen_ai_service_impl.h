@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -77,6 +76,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
                           ExtractMainContentCallback callback) override;
   void ExtractMainNode(const ui::AXTreeUpdate& snapshot,
                        ExtractMainNodeCallback callback) override;
+  void IdentifyMainNode(const ui::AXTreeUpdate& snapshot,
+                        IdentifyMainNodeCallback callback) override;
 
   // mojom::ScreenAIServiceFactory:
   void InitializeMainContentExtraction(
@@ -95,6 +96,11 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // mojom::ScreenAIServiceFactory:
   void ShutDownIfNoClients() override;
+
+  // mojom::ScreenAIServiceFactory:
+  void BindShutdownHandler(
+      mojo::PendingRemote<mojom::ScreenAIServiceShutdownHandler>
+          shutdown_handler) override;
 
   // mojom::OCRService:
   void BindAnnotator(
@@ -140,6 +146,10 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // Client type for each OCR receiver.
   std::map<mojo::ReceiverId, mojom::OcrClientType> ocr_client_types_;
+
+  // Browser side shutdown handler.
+  mojo::Remote<mojom::ScreenAIServiceShutdownHandler>
+      screen_ai_shutdown_handler_;
 
   // The set of receivers used to receive messages from annotators.
   mojo::ReceiverSet<mojom::ScreenAIAnnotator> screen_ai_annotators_;

@@ -6,4 +6,5 @@ include_rules = [
   "+components/embedder_support",
   "+components/performance_manager/embedder",
   "+components/version_info",
+  "+third_party/blink/public/common/switches.h",
 ]

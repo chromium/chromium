@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -87,7 +88,11 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
             bookmarkModel.finishLoadingBookmarkModel(
                     () -> {
                         BookmarkUtils.addBookmarksOnMultiSelect(
-                                activity, bookmarkModel, tabs, snackbarManager);
+                                activity,
+                                bookmarkModel,
+                                tabs,
+                                snackbarManager,
+                                new BookmarkManagerOpenerImpl());
                     });
         }
     }

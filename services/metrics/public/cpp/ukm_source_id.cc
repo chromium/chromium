@@ -115,6 +115,8 @@ std::string GetSourceIdTypeDebugString(SourceId source_id) {
       return "EXTENSION_ID";
     case SourceIdObj::Type::NOTIFICATION_ID:
       return "NOTIFICATION_ID";
+    case SourceIdObj::Type::CDM_ID:
+      return "CDM_ID";
   }
 }
 

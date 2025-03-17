@@ -13,7 +13,8 @@ As always, consider the following resources as of primary importance:
 -   [Callback<> and Bind()](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/callback.md)
 -   [Threading and Tasks in Chrome](https://chromium.googlesource.com/chromium/src/+/main/docs/threading_and_tasks.md)
 -   [Intro to Mojo & Services](https://chromium.googlesource.com/chromium/src.git/+/main/docs/mojo_and_services.md)
--   [Important Abstractions and Data Structures](https://sites.google.com/a/chromium.org/dev/developers/coding-style/important-abstractions-and-data-structures) (badly needs updating)
+-   [Important Abstractions and Data Structures](https://chromium.org/developers/coding-style/important-abstractions-and-data-structures)
+    (badly needs updating)
 
 This tutorial does not assume you have read any of the above,
 though you should feel free to peruse them when necessary.
@@ -28,7 +29,8 @@ exercises yourself in the `codelabs/cpp101` directory.
 ### Prerequisite: Getting the Code
 
 Before you can do the exercises you need to set up a system to checkout, build,
-and run the code. Instructions can be found [here](https://sites.google.com/a/chromium.org/dev/developers/how-tos/get-the-code/).
+and run the code. Instructions can be found
+[here](https://chromium.org/developers/how-tos/get-the-code/).
 
 ### Exercise 0: "Hello World!"
 

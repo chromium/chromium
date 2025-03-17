@@ -9,6 +9,7 @@ import android.os.Handler;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
@@ -41,7 +42,7 @@ public class Promise<T extends @Nullable Object> {
     private final List<Callback<T>> mFulfillCallbacks = new LinkedList<>();
 
     private @Nullable Exception mRejectReason;
-    private final List<Callback<Exception>> mRejectCallbacks = new LinkedList<>();
+    private final List<Callback<@Nullable Exception>> mRejectCallbacks = new LinkedList<>();
 
     private final Thread mThread = Thread.currentThread();
     private final Handler mHandler = new Handler();
@@ -84,7 +85,7 @@ public class Promise<T extends @Nullable Object> {
                 : "Do not call the single argument Promise.then(Callback) on a Promise that already"
                         + " has a rejection handler.";
 
-        Callback<Exception> onReject =
+        Callback<@Nullable Exception> onReject =
                 reason -> {
                     throw new UnhandledRejectionException(
                             "Promise was rejected without a rejection handler.", reason);
@@ -100,10 +101,10 @@ public class Promise<T extends @Nullable Object> {
      * iteration of the message loop.
      *
      * @param onFulfill The Callback to be called on fulfillment.
-     * @param onReject The Callback to be called on rejection. The argument to onReject will
-     *         may be null if the Promise was rejected manually.
+     * @param onReject The Callback to be called on rejection. The argument to onReject will may be
+     *     null if the Promise was rejected manually.
      */
-    public void then(Callback<T> onFulfill, Callback<Exception> onReject) {
+    public void then(Callback<T> onFulfill, Callback<@Nullable Exception> onReject) {
         checkThread();
         thenInner(onFulfill);
         exceptInner(onReject);
@@ -111,15 +112,16 @@ public class Promise<T extends @Nullable Object> {
 
     /**
      * Adds a rejection handler to the Promise. This handler will be called if this Promise or any
-     * Promises this Promise depends on is rejected or fails. The {@link Callback} will be given
-     * the exception that caused the rejection, or null if the rejection was manual (caused by a
-     * call to {@link #reject()}.
+     * Promises this Promise depends on is rejected or fails. The {@link Callback} will be given the
+     * exception that caused the rejection, or null if the rejection was manual (caused by a call to
+     * {@link #reject()}.
      */
-    public void except(Callback<Exception> onReject) {
+    public void except(Callback<@Nullable Exception> onReject) {
         checkThread();
         exceptInner(onReject);
     }
 
+    @SuppressWarnings("NullAway") // Cannot specify that mResult is non-null when T is @NonNull.
     private void thenInner(Callback<T> onFulfill) {
         if (mState == PromiseState.FULFILLED) {
             postCallbackToLooper(onFulfill, mResult);
@@ -128,7 +130,7 @@ public class Promise<T extends @Nullable Object> {
         }
     }
 
-    private void exceptInner(Callback<Exception> onReject) {
+    private void exceptInner(Callback<@Nullable Exception> onReject) {
         assert !mThrowingRejectionHandler
                 : "Do not add an exception handler to a Promise you have "
                         + "called the single argument Promise.then(Callback) on.";
@@ -211,7 +213,7 @@ public class Promise<T extends @Nullable Object> {
     public Promise<T> andFinally(Runnable runnable) {
         Callback<?> asCallback = unused -> runnable.run();
         thenInner((Callback<T>) asCallback);
-        exceptInner((Callback<Exception>) asCallback);
+        exceptInner((Callback<@Nullable Exception>) asCallback);
         return this;
     }
 
@@ -247,7 +249,7 @@ public class Promise<T extends @Nullable Object> {
         mState = PromiseState.REJECTED;
         mRejectReason = reason;
 
-        for (final Callback<Exception> callback : mRejectCallbacks) {
+        for (final Callback<@Nullable Exception> callback : mRejectCallbacks) {
             postCallbackToLooper(callback, reason);
         }
         mRejectCallbacks.clear();
@@ -290,14 +292,14 @@ public class Promise<T extends @Nullable Object> {
     }
 
     /** Convenience method to return a Promise fulfilled with the given result. */
-    public static <T> Promise<T> fulfilled(T result) {
+    public static <T extends @Nullable Object> Promise<T> fulfilled(T result) {
         Promise<T> promise = new Promise<>();
         promise.fulfill(result);
         return promise;
     }
 
     /** Convenience method to return a rejected Promise. */
-    public static <T> Promise<T> rejected() {
+    public static <T extends @Nullable Object> Promise<T> rejected() {
         Promise<T> promise = new Promise<>();
         promise.reject();
         return promise;
@@ -308,8 +310,9 @@ public class Promise<T extends @Nullable Object> {
     }
 
     // We use a different template parameter here so this can be used for both T and Throwables.
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     private <S extends @Nullable Object> void postCallbackToLooper(
-            final Callback<@Nullable S> callback, @Nullable S result) {
+            final Callback<S> callback, S result) {
         // Post the callbacks to the Thread looper so we don't get a long chain of callbacks
         // holding up the thread.
         mHandler.post(callback.bind(result));

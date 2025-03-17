@@ -57,7 +57,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
-#include "third_party/blink/renderer/platform/loader/identity_digest.h"
+#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -73,7 +73,7 @@ namespace blink {
 namespace {
 
 void NotifyFinishObservers(
-    HeapHashSet<WeakMember<ResourceFinishObserver>>* observers) {
+    GCedHeapHashSet<WeakMember<ResourceFinishObserver>>* observers) {
   for (const auto& observer : *observers)
     observer->NotifyFinished();
 }
@@ -95,7 +95,7 @@ void GetSharedBufferMemoryDump(SharedBuffer* buffer,
 // These response headers are not copied from a revalidated response to the
 // cached response headers. For compatibility, this list is based on Chromium's
 // net/http/http_response_headers.cc.
-const auto kHeadersToIgnoreAfterRevalidation = std::to_array<const char*>({
+constexpr auto kHeadersToIgnoreAfterRevalidation = std::to_array<const char*>({
     "allow",
     "connection",
     "etag",
@@ -201,13 +201,19 @@ void Resource::CheckResourceIntegrity() {
     return;
   }
 
-  // Check `Identity-Digest` headers. If the digest doesn't match, fail.
+  // Check `Unencoded-Digest` headers. If the digest doesn't match, fail.
   // Otherwise, fall through to validating SRI.
-  auto identity_digest = GetResponse().IdentityDigest();
-  if (identity_digest.has_value() && !identity_digest->DoesMatch(Data())) {
-    DCHECK(RuntimeEnabledFeatures::IdentityDigestEnabled());
+  const FeatureContext* feature_context =
+      loader_ ? loader_->GetFeatureContext() : nullptr;
+  auto unencoded_digest = GetResponse().UnencodedDigest(feature_context);
+  if (unencoded_digest.has_value() && !unencoded_digest->DoesMatch(Data())) {
+    DCHECK(RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context));
     integrity_disposition_ =
-        ResourceIntegrityDisposition::kFailedIdentityDigest;
+        ResourceIntegrityDisposition::kFailedUnencodedDigest;
+    integrity_report_.AddConsoleErrorMessage(
+        "The resource '" + Url().ElidedString() +
+        "' has an `unencoded-digest` header which asserts a digest which does "
+        "not match the resource's body.");
     return;
   }
 
@@ -222,8 +228,8 @@ void Resource::CheckResourceIntegrity() {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     if (SubresourceIntegrity::CheckSubresourceIntegrity(
-            IntegrityMetadata(), Data(), Url(), *this, integrity_report_,
-            &integrity_hashes)) {
+            IntegrityMetadata(), Data(), Url(), *this, feature_context,
+            integrity_report_, &integrity_hashes)) {
       integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
     } else {
       integrity_disposition_ =
@@ -242,7 +248,7 @@ void Resource::CheckResourceIntegrity() {
         if (auto calculated_integrity_hash =
                 SubresourceIntegrity::GetSubresourceIntegrityHash(Data(),
                                                                   algorithm)) {
-          integrity_hashes.insert(algorithm, calculated_integrity_hash.value());
+          integrity_hashes.insert(algorithm, calculated_integrity_hash);
         }
       }
     }
@@ -332,7 +338,7 @@ void Resource::TriggerNotificationForFinishObservers(
     return;
 
   auto* new_collections =
-      MakeGarbageCollected<HeapHashSet<WeakMember<ResourceFinishObserver>>>(
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<ResourceFinishObserver>>>(
           std::move(finish_observers_));
   finish_observers_.clear();
 
@@ -426,7 +432,10 @@ AtomicString Resource::HttpContentType() const {
 }
 
 bool Resource::ForceIntegrityChecks() const {
-  return IsLinkPreload() || GetResponse().IdentityDigest().has_value();
+  const FeatureContext* feature_context =
+      loader_ ? loader_->GetFeatureContext() : nullptr;
+  return IsLinkPreload() ||
+         GetResponse().UnencodedDigest(feature_context).has_value();
 }
 
 bool Resource::MustRefetchDueToIntegrityMetadata(
@@ -764,8 +773,8 @@ void Resource::FinishPendingClients() {
   //
   // Handle case (1) by saving a list of clients to notify. A separate list also
   // ensure a client is either in cliens_ or clients_awaiting_callback_.
-  HeapVector<Member<ResourceClient>> clients_to_notify;
-  CopyToVector(clients_awaiting_callback_, clients_to_notify);
+  HeapVector<Member<ResourceClient>> clients_to_notify(
+      clients_awaiting_callback_.Values());
 
   for (const auto& client : clients_to_notify) {
     // Handle case (2) to skip removed clients.

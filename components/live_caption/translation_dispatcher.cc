@@ -12,17 +12,23 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "components/live_caption/translation_util.h"
 #include "components/soda/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace captions {
@@ -39,6 +45,8 @@ constexpr char kTranslateBodyRequestTemplate[] =
 constexpr char kTranslateUrl[] =
     "https://translation.googleapis.com/language/translate/v2?key=%s";
 constexpr char kUploadContentType[] = "application/json";
+constexpr char kHttpErrorMessageTemplate[] =
+    "Failed to recieve response, got errror: %s";
 
 // Response constants.
 constexpr char kDataKey[] = "data";
@@ -55,7 +63,7 @@ TranslationDispatcher::~TranslationDispatcher() = default;
 void TranslationDispatcher::GetTranslation(const std::string& result,
                                            std::string source_language,
                                            std::string target_language,
-                                           OnTranslateEventCallback callback) {
+                                           TranslateEventCallback callback) {
   if (!url_loader_factory_.is_bound() || !url_loader_factory_.is_connected()) {
     ResetURLLoaderFactory();
   }
@@ -110,7 +118,6 @@ void TranslationDispatcher::GetTranslation(const std::string& result,
       base::StringPrintf(kTranslateBodyRequestTemplate, result.c_str(),
                          source_language.c_str(), target_language.c_str()),
       kUploadContentType);
-  url_loader_->SetAllowHttpErrorResults(true);
 
   // Unretained is safe because |this| owns |url_loader_|.
   url_loader_->DownloadToString(
@@ -138,10 +145,34 @@ void TranslationDispatcher::ResetURLLoaderFactory() {
 }
 
 void TranslationDispatcher::OnURLLoadComplete(
-    OnTranslateEventCallback callback,
-    std::unique_ptr<std::string> response_body) {
-  if (!response_body) {
-    LOG(ERROR) << "Error parsing response: reponse body null";
+    TranslateEventCallback callback,
+    std::optional<std::string> response_body) {
+  // Check that the request succeeded. First with Network Errors...
+  if (static_cast<net::Error>(url_loader_->NetError()) != net::Error::OK) {
+    EmitError(
+        std::move(callback),
+        base::StringPrintf(kHttpErrorMessageTemplate,
+                           net::ErrorToShortString(url_loader_->NetError())));
+    return;
+  }
+
+  // and then check HTTP errors.
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers &&
+      !network::IsSuccessfulStatus(
+          url_loader_->ResponseInfo()->headers->response_code())) {
+    EmitError(std::move(callback),
+              base::StringPrintf(
+                  kHttpErrorMessageTemplate,
+                  base::NumberToString(
+                      url_loader_->ResponseInfo()->headers->response_code())));
+    return;
+  }
+
+  // Somehow the request succeeded but the body is empty.
+  if (!response_body.has_value()) {
+    EmitError(std::move(callback),
+              "Error parsing response: Translation dispatcher recieved a 2XX "
+              "response, but the body was empty");
     return;
   }
 
@@ -152,45 +183,57 @@ void TranslationDispatcher::OnURLLoadComplete(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void TranslationDispatcher::EmitError(TranslateEventCallback callback,
+                                      const std::string& message) const {
+  std::move(callback).Run(base::unexpected<std::string>(message));
+}
+
 void TranslationDispatcher::OnResponseJsonParsed(
-    OnTranslateEventCallback callback,
+    TranslateEventCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  std::string error = [&]() -> std::string {
-    if (!result.has_value()) {
-      return "Error parsing response: value null";
-    }
-
-    if (!result.value().is_dict()) {
-      return "Error parsing response: result value is not a dictionary";
-    }
-
-    const base::Value::Dict* data_dict =
-        result.value().GetDict().FindDict(kDataKey);
-    if (!data_dict) {
-      return "Error parsing response: dictionary not found";
-    }
-
-    const base::Value::List* translations_list =
-        data_dict->FindList(kTranslationsKey);
-    if (!translations_list || translations_list->empty()) {
-      return "Error parsing response: translations not found";
-    }
-
-    const base::Value::Dict* translated_text =
-        (*translations_list)[0].GetIfDict();
-    if (!translated_text) {
-      return "Error parsing response: translated text not found";
-    }
-
-    if (const std::string* value =
-            translated_text->FindString(kTranslatedTextKey)) {
-      std::move(callback).Run(*value);
-    }
-    return std::string();
-  }();
-  if (!error.empty()) {
-    LOG(ERROR) << std::move(error);
+  if (!result.has_value()) {
+    EmitError(std::move(callback), "Error parsing response: value null");
+    return;
   }
+
+  if (!result.value().is_dict()) {
+    EmitError(std::move(callback),
+              "Error parsing response: result value is not a dictionary");
+    return;
+  }
+
+  const base::Value::Dict* data_dict =
+      result.value().GetDict().FindDict(kDataKey);
+  if (!data_dict) {
+    EmitError(std::move(callback),
+              "Error parsing response: dictionary not found");
+    return;
+  }
+
+  const base::Value::List* translations_list =
+      data_dict->FindList(kTranslationsKey);
+  if (!translations_list || translations_list->empty()) {
+    EmitError(std::move(callback),
+              "Error parsing response: translations not found");
+    return;
+  }
+
+  const base::Value::Dict* translated_text =
+      (*translations_list)[0].GetIfDict();
+  if (!translated_text) {
+    EmitError(std::move(callback),
+              "Error parsing response: translated list entry not found");
+    return;
+  }
+
+  const std::string* value = translated_text->FindString(kTranslatedTextKey);
+  if (!value) {
+    EmitError(std::move(callback),
+              "Error parsing response: translated text not found");
+    return;
+  }
+
+  std::move(callback).Run(TranslateEvent(*value));
 }
 
 }  // namespace captions

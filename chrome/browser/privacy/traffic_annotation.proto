@@ -197,6 +197,10 @@ message NetworkTrafficAnnotation {
         // Hardware or OS information like Manufacturer, Model, etc.
         HW_OS_INFO = 29;
 
+        // Any data related to usage and performance metrics like UMA, UKM, DWA,
+        // and Structured Metrics.
+        USAGE_AND_PERFORMANCE_METRICS = 30;
+
         // If a request sends sensitive data/PII that doesn't fall in the
         // categories above, use `OTHER` and provide more details in the `data`
         // field.

@@ -79,10 +79,7 @@ crashpad_static_library("client") {
     "../util",
   ]
 
-  deps = [
-    ":common",
-    "$mini_chromium_source_parent:chromeos_buildflags",
-  ]
+  deps = [ ":common" ]
 
   if (crashpad_is_win) {
     libs = [ "rpcrt4.lib" ]
@@ -228,6 +225,10 @@ source_set("client_test") {
       "../handler:crashpad_handler_console",
       "../handler/win/wer:crashpad_wer_handler",
     ]
+  }
+
+  if (crashpad_is_ios) {
+    deps += [ "../minidump" ]
   }
 }
 

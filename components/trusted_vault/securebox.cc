@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "crypto/hkdf.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
@@ -59,7 +58,7 @@ std::vector<uint8_t> ConcatBytes(
   std::vector<uint8_t> result(total_size);
   auto output_it = result.begin();
   for (const base::span<const uint8_t>& span : bytes_spans) {
-    output_it = base::ranges::copy(span, output_it);
+    output_it = std::ranges::copy(span, output_it).out;
   }
   return result;
 }

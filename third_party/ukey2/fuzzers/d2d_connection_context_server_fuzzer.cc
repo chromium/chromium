@@ -11,11 +11,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "third_party/protobuf/src/google/protobuf/stubs/logging.h"
 #include "third_party/ukey2/fuzzers/d2d_connection_context_factory.h"
-
-// Disable noisy logging in protobuf.
-google::protobuf::LogSilencer log_silencer;
 
 struct Environment {
   Environment() {

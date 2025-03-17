@@ -4,7 +4,13 @@
 
 #include "remoting/base/cloud_service_client.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringize_macros.h"
 #include "google_apis/google_api_keys.h"
@@ -19,7 +25,6 @@
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/session_authz_service.pb.h"
 #include "remoting/proto/google/remoting/cloud/v1/provisioning_service.pb.h"
-#include "remoting/proto/remoting/v1/cloud_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -267,10 +272,6 @@ constexpr net::NetworkTrafficAnnotationTag kGenerateIceConfigTrafficAnnotation =
             "Not implemented."
         })");
 
-// Legacy using statements.
-using LegacyProvisionGceInstanceRequest =
-    remoting::apis::v1::ProvisionGceInstanceRequest;
-
 // Remoting Cloud API using statements.
 using ProvisionGceInstanceRequest =
     google::remoting::cloud::v1::ProvisionGceInstanceRequest;
@@ -297,59 +298,21 @@ constexpr char kFtlResourceSeparator[] = "/chromoting_ftl_";
 namespace remoting {
 
 CloudServiceClient::CloudServiceClient(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
-                   /*oauth_token_getter=*/nullptr,
-                   url_loader_factory) {
-  LOG(WARNING) << "CloudServiceClient configured to call legacy service API.";
-}
-
-CloudServiceClient::CloudServiceClient(
     const std::string& api_key,
+    OAuthTokenGetter* oauth_token_getter,
+    const std::string& base_service_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : api_key_(api_key),
-      http_client_(ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
-                   /*oauth_token_getter=*/nullptr,
-                   url_loader_factory) {}
-
-CloudServiceClient::CloudServiceClient(
-    OAuthTokenGetter* oauth_token_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : http_client_(
-          ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
-          oauth_token_getter,
-          url_loader_factory) {}
+      http_client_(base_service_url, oauth_token_getter, url_loader_factory) {}
 
 CloudServiceClient::~CloudServiceClient() = default;
-
-void CloudServiceClient::LegacyProvisionGceInstance(
-    const std::string& owner_email,
-    const std::string& display_name,
-    const std::string& public_key,
-    const std::optional<std::string>& existing_directory_id,
-    LegacyProvisionGceInstanceCallback callback) {
-  constexpr char path[] = "/v1/cloud:provisionGceInstance";
-
-  auto request = std::make_unique<LegacyProvisionGceInstanceRequest>();
-  request->set_owner_email(owner_email);
-  request->set_display_name(display_name);
-  request->set_public_key(public_key);
-  request->set_version(STRINGIZE(VERSION));
-  if (existing_directory_id.has_value() && !existing_directory_id->empty()) {
-    request->set_existing_directory_id(*existing_directory_id);
-  }
-
-  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path,
-                 google_apis::GetRemotingAPIKey(),
-                 net::HttpRequestHeaders::kPostMethod, std::move(request),
-                 std::move(callback));
-}
 
 void CloudServiceClient::ProvisionGceInstance(
     const std::string& owner_email,
     const std::string& display_name,
     const std::string& public_key,
     const std::optional<std::string>& existing_directory_id,
+    const std::optional<std::string>& instance_identity_token,
     ProvisionGceInstanceCallback callback) {
   constexpr char path[] = "/v1/provisioning:provisionGceInstance";
 
@@ -361,6 +324,10 @@ void CloudServiceClient::ProvisionGceInstance(
   if (existing_directory_id.has_value() && !existing_directory_id->empty()) {
     request->set_existing_directory_id(*existing_directory_id);
   }
+  if (instance_identity_token.has_value() &&
+      !instance_identity_token->empty()) {
+    request->set_instance_identity_token(*instance_identity_token);
+  }
 
   ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
@@ -368,11 +335,13 @@ void CloudServiceClient::ProvisionGceInstance(
 }
 
 void CloudServiceClient::SendHeartbeat(const std::string& directory_id,
+                                       std::string_view instance_identity_token,
                                        SendHeartbeatCallback callback) {
   constexpr char path[] = "/v1alpha/access:sendHeartbeat";
 
   auto request = std::make_unique<SendHeartbeatRequest>();
   request->set_directory_id(directory_id);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
@@ -386,6 +355,7 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     std::optional<std::string> offline_reason,
     std::optional<std::string> os_name,
     std::optional<std::string> os_version,
+    std::string_view instance_identity_token,
     UpdateRemoteAccessHostCallback callback) {
   constexpr char path[] = "/v1alpha/access:updateRemoteAccessHost";
 
@@ -414,37 +384,48 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     host->mutable_operating_system_info()->set_name(*os_name);
     host->mutable_operating_system_info()->set_version(*os_version);
   }
+  host->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPatchMethod, std::move(host),
                  std::move(callback));
 }
 
-void CloudServiceClient::GenerateHostToken(GenerateHostTokenCallback callback) {
+void CloudServiceClient::GenerateHostToken(
+    std::string_view instance_identity_token,
+    GenerateHostTokenCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:generateHostToken";
 
+  auto request = std::make_unique<GenerateHostTokenRequest>();
+  request->set_instance_identity_token(instance_identity_token);
+
   ExecuteRequest(kGenerateHostTokenTrafficAnnotation, path, /*api_key=*/"",
-                 net::HttpRequestHeaders::kPostMethod,
-                 std::make_unique<GenerateHostTokenRequest>(),
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
 }
 
-void CloudServiceClient::GenerateIceConfig(GenerateIceConfigCallback callback) {
+void CloudServiceClient::GenerateIceConfig(
+    std::string_view instance_identity_token,
+    GenerateIceConfigCallback callback) {
   constexpr char path[] = "/v1alpha/networkTraversal:generateIceConfig";
 
+  auto request = std::make_unique<GenerateIceConfigRequest>();
+  request->set_instance_identity_token(instance_identity_token);
+
   ExecuteRequest(kGenerateIceConfigTrafficAnnotation, path, /*api_key=*/"",
-                 net::HttpRequestHeaders::kPostMethod,
-                 std::make_unique<GenerateIceConfigRequest>(),
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
 }
 
 void CloudServiceClient::VerifySessionToken(
     const std::string& session_token,
+    std::string_view instance_identity_token,
     VerifySessionTokenCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:verifySessionToken";
 
   auto request = std::make_unique<VerifySessionTokenRequest>();
   request->set_session_token(session_token);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kVerifySessionTokenTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
@@ -454,12 +435,14 @@ void CloudServiceClient::VerifySessionToken(
 void CloudServiceClient::ReauthorizeHost(
     const std::string& session_reauth_token,
     const std::string& session_id,
+    std::string_view instance_identity_token,
     ReauthorizeHostCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:reauthorizeHost";
 
   auto request = std::make_unique<ReauthorizeHostRequest>();
   request->set_session_reauth_token(session_reauth_token);
   request->set_session_id(session_id);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kReauthorizeHostTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
@@ -493,6 +476,39 @@ void CloudServiceClient::ExecuteRequest(
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(std::move(callback));
   http_client_.ExecuteRequest(std::move(request));
+}
+
+// static
+std::unique_ptr<CloudServiceClient>
+CloudServiceClient::CreateForChromotingRobotAccount(
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      /*api_key=*/std::string(), oauth_token_getter,
+      ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
+      url_loader_factory));
+}
+
+// static
+std::unique_ptr<CloudServiceClient> CloudServiceClient::CreateForGcpProject(
+    const std::string& api_key,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      api_key,
+      /*oauth_token_getter=*/nullptr,
+      ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      url_loader_factory));
+}
+
+// static
+std::unique_ptr<CloudServiceClient>
+CloudServiceClient::CreateForGceDefaultServiceAccount(
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      /*api_key=*/std::string(), oauth_token_getter,
+      ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      url_loader_factory));
 }
 
 }  // namespace remoting

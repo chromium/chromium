@@ -99,6 +99,8 @@ class ClusterManagerTest : public testing::Test {
         product_specification_service_.get(), std::move(proxy),
         base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                             base::Unretained(this)),
+        base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
+                            base::Unretained(this)),
         base::BindRepeating(&ClusterManagerTest::url_infos,
                             base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
@@ -109,6 +111,17 @@ class ClusterManagerTest : public testing::Test {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(product_info_cb), url, product_infos_[url]));
+  }
+
+  void GetProductInfoBatch(const std::vector<GURL>& urls,
+                           ProductInfoBatchCallback product_info_batch_cb) {
+    std::map<GURL, std::optional<ProductInfo>> info_map;
+    for (const GURL& url : urls) {
+      info_map[url] = product_infos_[url];
+    }
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(product_info_batch_cb), std::move(info_map)));
   }
 
   const std::vector<UrlInfo> url_infos() { return url_infos_; }
@@ -301,6 +314,8 @@ TEST_F(ClusterManagerTest,
       std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                           base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
+                          base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -358,6 +373,8 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
       std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                           base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
+                          base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -387,6 +404,8 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
       product_specification_service_.get(),
       std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));

@@ -177,9 +177,12 @@ HRESULT TSFTextStore::GetACPFromPoint(TsViewCookie view_cookie,
     if (flags & GXFPF_ROUND_NEAREST) {
       index_flags |= IndexFromPointFlags::kNearestToContainedPoint;
     }
+    const gfx::Point screen_point_in_dips =
+        gfx::ToFlooredPoint(display::win::ScreenWin::ScreenToDIPPoint(
+            gfx::PointF(gfx::Point(*point))));
     const std::optional<size_t> index =
         text_input_client_->GetProximateCharacterIndexFromPoint(
-            gfx::Point(*point), index_flags);
+            screen_point_in_dips, index_flags);
     if (!index.has_value()) {
       return TS_E_INVALIDPOINT;
     }

@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/common/chrome_switches.h"
@@ -20,13 +19,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_dialogs.h"  // nogncheck
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/task_manager_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace task_manager {
 
@@ -117,6 +109,10 @@ void TaskManagerInterface::RecalculateRefreshFlags() {
   SetEnabledResourceFlags(flags);
 }
 
+bool TaskManagerInterface::IsTaskValid(TaskId task_id) const {
+  return true;
+}
+
 bool TaskManagerInterface::IsResourceRefreshEnabled(RefreshType type) const {
   return (enabled_resources_flags_ & type) != 0;
 }
@@ -153,12 +149,6 @@ void TaskManagerInterface::NotifyObserversOnTaskUnresponsive(TaskId id) {
     observer.OnTaskUnresponsive(id);
 }
 
-void TaskManagerInterface::NotifyObserversOnActiveTaskFetched(TaskId id) {
-  for (TaskManagerObserver& observer : observers_) {
-    observer.OnActiveTaskFetched(id);
-  }
-}
-
 base::TimeDelta TaskManagerInterface::GetCurrentRefreshTime() const {
   return refresh_timer_->IsRunning() ? refresh_timer_->GetCurrentDelay()
                                      : base::TimeDelta::Max();
@@ -170,17 +160,6 @@ void TaskManagerInterface::ResourceFlagsAdded(int64_t flags) {
 
 void TaskManagerInterface::SetEnabledResourceFlags(int64_t flags) {
   enabled_resources_flags_ = flags;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set refresh flags of the remote task manager if lacros is enabled.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->task_manager_ash()
-        ->SetRefreshFlags(enabled_resources_flags_);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void TaskManagerInterface::ScheduleRefresh(base::TimeDelta refresh_time) {

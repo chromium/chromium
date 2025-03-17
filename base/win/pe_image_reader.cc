@@ -265,8 +265,9 @@ bool PeImageReader::ValidateOptionalHeader() {
   }
 
   // Is the claimed optional header big enough for everything but the dir?
-  if (optional_header->GetDataDirectoryOffset() > optional_header_size)
+  if (optional_header->GetDataDirectoryOffset() > optional_header_size) {
     return false;
+  }
 
   // Is there enough room for all of the claimed directory entries?
   if (optional_header->GetDataDirectorySize() >
@@ -312,8 +313,9 @@ size_t PeImageReader::GetOptionalHeaderSize() {
 const IMAGE_DATA_DIRECTORY* PeImageReader::GetDataDirectoryEntryAt(
     size_t index) {
   DCHECK_NE((validation_state_ & VALID_OPTIONAL_HEADER), 0U);
-  if (index >= optional_header_->GetDataDirectorySize())
+  if (index >= optional_header_->GetDataDirectorySize()) {
     return nullptr;
+  }
   return &optional_header_->GetDataDirectoryEntries()[index];
 }
 
@@ -330,12 +332,14 @@ const IMAGE_SECTION_HEADER* PeImageReader::FindSectionFromRva(
     }
     // Does the RVA lie on or after this section's start when mapped? If no,
     // bail.
-    if (section_header->VirtualAddress > relative_address)
+    if (section_header->VirtualAddress > relative_address) {
       break;
+    }
     // Does the RVA lie within the section when mapped? If no, keep looking.
     size_t address_offset = relative_address - section_header->VirtualAddress;
-    if (address_offset > section_header->Misc.VirtualSize)
+    if (address_offset > section_header->Misc.VirtualSize) {
       continue;
+    }
     // We have a winner.
     return section_header;
   }
@@ -345,8 +349,9 @@ const IMAGE_SECTION_HEADER* PeImageReader::FindSectionFromRva(
 span<const uint8_t> PeImageReader::GetImageData(size_t index) {
   // Get the requested directory entry.
   const IMAGE_DATA_DIRECTORY* entry = GetDataDirectoryEntryAt(index);
-  if (!entry)
+  if (!entry) {
     return span<const uint8_t>();
+  }
 
   // The entry for the certificate table is special in that its address is a
   // file pointer rather than an RVA.
@@ -362,13 +367,15 @@ span<const uint8_t> PeImageReader::GetImageData(size_t index) {
   // Find the section containing the data.
   const IMAGE_SECTION_HEADER* header =
       FindSectionFromRva(entry->VirtualAddress);
-  if (!header)
+  if (!header) {
     return span<const uint8_t>();
+  }
 
   // Does the data fit within the section when mapped?
   size_t data_offset = entry->VirtualAddress - header->VirtualAddress;
-  if (entry->Size > (header->Misc.VirtualSize - data_offset))
+  if (entry->Size > (header->Misc.VirtualSize - data_offset)) {
     return span<const uint8_t>();
+  }
 
   // Is the data entirely present on disk (if not it's zeroed out when loaded)?
   if (data_offset >= header->SizeOfRawData ||

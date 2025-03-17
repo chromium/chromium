@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // `file_task_runner` handles IO-related tasks. Must not be null.
   SeedReaderWriter(PrefService* local_state,
                    const base::FilePath& seed_file_dir,
-                   base::FilePath::StringPieceType seed_filename,
+                   base::FilePath::StringViewType seed_filename,
                    std::string_view seed_pref,
                    version_info::Channel channel,
                    const EntropyProviders* entropy_providers,

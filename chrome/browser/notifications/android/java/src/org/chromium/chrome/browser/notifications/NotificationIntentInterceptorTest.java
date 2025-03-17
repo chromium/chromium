@@ -154,8 +154,8 @@ public class NotificationIntentInterceptorTest {
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();
         Assert.assertEquals(
-                receivedIntent.getExtras().getInt(EXTRA_INTENT_TYPE),
-                NotificationIntentInterceptor.IntentType.CONTENT_INTENT);
+                NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                receivedIntent.getExtras().getInt(EXTRA_INTENT_TYPE));
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(

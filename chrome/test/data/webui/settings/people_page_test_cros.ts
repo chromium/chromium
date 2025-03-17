@@ -92,7 +92,7 @@ suite('Chrome OS', function() {
     peoplePage.remove();
   });
 
-  test('GAIA name and picture', async () => {
+  test('GAIA name and picture', () => {
     assertTrue(
         peoplePage.shadowRoot!.querySelector<HTMLElement>('#profile-icon')!
             .style.backgroundImage.includes(
@@ -113,11 +113,11 @@ suite('Chrome OS', function() {
     // Profile row opens account manager, so the row is actionable.
     const profileRow = peoplePage.shadowRoot!.querySelector('#profile-row');
     assertTrue(!!profileRow);
-    assertTrue(profileRow!.hasAttribute('actionable'));
+    assertTrue(profileRow.hasAttribute('actionable'));
     const subpageArrow = peoplePage.shadowRoot!.querySelector<HTMLElement>(
         '#profile-subpage-arrow');
     assertTrue(!!subpageArrow);
-    assertFalse(subpageArrow!.hidden);
+    assertFalse(subpageArrow.hidden);
   });
 });
 
@@ -161,18 +161,18 @@ suite('Chrome OS with account manager disabled', function() {
     const profileIcon =
         peoplePage.shadowRoot!.querySelector<HTMLElement>('#profile-icon');
     assertTrue(!!profileIcon);
-    assertFalse(profileIcon!.hasAttribute('actionable'));
+    assertFalse(profileIcon.hasAttribute('actionable'));
     const profileRow = peoplePage.shadowRoot!.querySelector('#profile-row');
     assertTrue(!!profileRow);
-    assertFalse(profileRow!.hasAttribute('actionable'));
+    assertFalse(profileRow.hasAttribute('actionable'));
     const subpageArrow = peoplePage.shadowRoot!.querySelector<HTMLElement>(
         '#profile-subpage-arrow');
     assertTrue(!!subpageArrow!);
-    assertTrue(subpageArrow!.hidden);
+    assertTrue(subpageArrow.hidden);
 
     // Clicking on profile icon doesn't navigate to a new route.
     const oldRoute = Router.getInstance().getCurrentRoute();
-    profileIcon!.click();
+    profileIcon.click();
     assertEquals(oldRoute, Router.getInstance().getCurrentRoute());
   });
 });

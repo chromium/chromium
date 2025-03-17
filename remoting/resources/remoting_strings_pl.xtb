@@ -28,6 +28,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="2329392777730037872">Nie udało się otworzyć <ph name="URL" /> na kliencie.</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2366718077645204424">Nie można połączyć się z hostem. Problem prawdopodobnie wynika z konfiguracji Twojej sieci.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="2504109125669302160">Przyznaj uprawnienie „Ułatwienia dostępu” usłudze <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Połączono z: <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Chcesz udostępnić ten komputer innemu użytkownikowi, by mógł przeglądać jego zawartość i sterować nim?</translation>
@@ -133,6 +134,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="7067321367069083429">Ekran działa jak ekran dotykowy</translation>
 <translation id="7116737094673640201">Witamy w Pulpicie zdalnym Chrome</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
+<translation id="7298392173540380852">Copyright 2025 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="7312846573060934304">Host jest offline.</translation>
 <translation id="7319983568955948908">Zatrzymaj udostępnianie</translation>
 <translation id="7359298090707901886">W wybranej przeglądarce nie można otwierać adresów URL na komputerze lokalnym.</translation>
@@ -149,7 +151,6 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="7693372326588366043">Odśwież listę hostów</translation>
 <translation id="7714222945760997814">Zgłoś to</translation>
 <translation id="7868137160098754906">Wpisz kod PIN komputera zdalnego.</translation>
-<translation id="7881455334687220899">Copyright 2024 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="7895403300744144251">Zasady bezpieczeństwa obowiązujące na komputerze zdalnym nie zezwalają na nawiązywanie połączeń z Twojego konta.</translation>
 <translation id="7936528439960309876">Zadokuj do prawej</translation>
 <translation id="7970576581263377361">Uwierzytelnianie nie powiodło się. Zaloguj się ponownie do Chromium.</translation>
@@ -181,7 +182,6 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="8747048596626351634">Sesja została zerwana lub nie udało się jej rozpocząć. Jeśli sesja ~/.chrome-remote-desktop-session istnieje na komputerze zdalnym, upewnij się, że spowodowała ona uruchomienie długotrwałego procesu na pierwszym planie, takiego jak środowisko pulpitu lub menedżer okien.</translation>
 <translation id="8804164990146287819">Polityka prywatności</translation>
 <translation id="8906511416443321782">Aby przechwytywać dźwięk i przesyłać go do klienta Pulpitu zdalnego Chrome, wymagany jest dostęp do mikrofonu.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="9111855907838866522">Masz połączenie z urządzeniem zdalnym. Aby otworzyć menu, kliknij ekran czterema palcami.</translation>
 <translation id="9126115402994542723">Nie pytaj ponownie o kod PIN, gdy bieżące urządzenie będzie łączyć się z tym hostem.</translation>
 <translation id="916856682307586697">Uruchom domyślną sesję X</translation>

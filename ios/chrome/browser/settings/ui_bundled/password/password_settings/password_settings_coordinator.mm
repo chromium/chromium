@@ -8,6 +8,7 @@
 
 #import "base/debug/dump_without_crashing.h"
 #import "base/i18n/message_formatter.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_metrics_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
@@ -69,6 +71,10 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogCancelled =
 // dialog's accept button is clicked.
 constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
     "Mobile.PasswordsSettings.BulkSavePasswordsToAccountDialog.Accepted";
+
+// The user action for when the delete all saved data button is clicked.
+constexpr const char* kDeleteAllSavedDataButtonClicked =
+    "IOS.PasswordManager.Settings.DeleteAllSavedData.Clicked";
 
 // Represents the code of an error returned when the user dismisses the update
 // GPM Pin flow by clicking the "Cancel" button. This should not be treated as
@@ -123,7 +129,6 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
     ExportActivityViewControllerDelegate,
     BulkMoveLocalPasswordsToAccountHandler,
     PasswordExportHandler,
-    PasswordSettingsPresentationDelegate,
     PasswordsInOtherAppsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     ReauthenticationCoordinatorDelegate,
@@ -277,6 +282,79 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 }
 
 #pragma mark - PasswordSettingsPresentationDelegate
+
+- (void)startDeletionFlow {
+  base::RecordAction(base::UserMetricsAction(kDeleteAllSavedDataButtonClicked));
+  CredentialCounts counts = [_mediator passwordAndPasskeyCounts];
+
+  NSString* alertDescription;
+  if (counts.passwordCounts == 0 && counts.passkeyCounts == 0) {
+    alertDescription = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_BLOCK_SITES_ONLY);
+  } else if (counts.passwordCounts == 0) {
+    alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_NO_PASSWORDS),
+            "passkey_count", counts.passkeyCounts));
+  } else if (counts.passkeyCounts == 0) {
+    alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_NO_PASSKEYS),
+            "password_count", counts.passwordCounts));
+  } else {
+    alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION),
+            "password_count", counts.passwordCounts, "passkey_count",
+            counts.passkeyCounts));
+  }
+
+  UIAlertController* deletionConfirmation = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_TITLE)
+                       message:alertDescription
+                preferredStyle:UIAlertControllerStyleActionSheet];
+
+  UIAlertAction* cancelAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_DELETION)
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action) {
+                base::UmaHistogramEnumeration(
+                    "IOS.PasswordManager.Settings."
+                    "DeleteAllSavedCredentialsActions",
+                    password_manager::IOSDeleteAllSavedCredentialsActions::
+                        kDeleteAllSavedCredentialsCancelled);
+              }];
+  [deletionConfirmation addAction:cancelAction];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* deleteAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
+                style:UIAlertActionStyleDestructive
+              handler:^(UIAlertAction* action) {
+                base::UmaHistogramEnumeration(
+                    "IOS.PasswordManager.Settings."
+                    "DeleteAllSavedCredentialsActions",
+                    password_manager::IOSDeleteAllSavedCredentialsActions::
+                        kDeleteAllSavedCredentialsConfirmed);
+                [weakSelf showReauthDialogForDeletion];
+              }];
+
+  [deletionConfirmation addAction:deleteAction];
+
+  deletionConfirmation.popoverPresentationController.sourceView =
+      [_passwordSettingsViewController sourceViewForAlerts];
+  deletionConfirmation.popoverPresentationController.sourceRect =
+      [_passwordSettingsViewController sourceRectForCredentialDeletionAlerts];
+
+  [_passwordSettingsViewController presentViewController:deletionConfirmation
+                                                animated:YES
+                                              completion:nil];
+}
 
 - (void)startExportFlow {
   UIAlertController* exportConfirmation = [UIAlertController
@@ -760,6 +838,12 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
                          completion:nil];
 }
 
+// Starts the deletion all credentials flow after the user confirmed the
+// corresponding alerts.
+- (void)onStartDeletionFlowConfirmed {
+  [_mediator userDidStartDeleteFlow];
+}
+
 // Starts the export passwords flow after the user confirmed the corresponding
 // alert.
 - (void)onStartExportFlowConfirmed {
@@ -794,6 +878,36 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
           base::BindOnce(^(NSError* error) {
             [weakSelf updateGPMPinFinishedWithError:error];
           }));
+}
+
+- (void)showReauthDialogForDeletion {
+  if (![_reauthModule canAttemptReauth]) {
+    [self
+        showSetPasscodeDialogWithContent:
+            l10n_util::GetNSString(
+                IDS_IOS_SETTINGS_DELETE_ALL_CREDENTIALS_SET_UP_PASSCODE_CONTENT)];
+  } else {
+    [self startAuthentication];
+  }
+}
+
+- (void)startAuthentication {
+  __weak __typeof(self) weakSelf = self;
+  void (^onReauthFinished)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        // Reauth can't be skipped for this flow.
+        CHECK_NE(result, ReauthenticationResult::kSkipped);
+
+        if (result == ReauthenticationResult::kSuccess) {
+          [weakSelf onStartDeletionFlowConfirmed];
+        }
+      };
+
+  [_reauthModule
+      attemptReauthWithLocalizedReason:
+          l10n_util::GetNSString(IDS_IOS_SETTINGS_DELETE_ALL_CREDENTIALS)
+                  canReusePreviousAuth:NO
+                               handler:onReauthFinished];
 }
 
 @end

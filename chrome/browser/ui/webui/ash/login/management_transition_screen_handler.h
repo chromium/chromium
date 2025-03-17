@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_MANAGEMENT_TRANSITION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_MANAGEMENT_TRANSITION_SCREEN_HANDLER_H_
 
-#include "ash/components/arc/session/arc_management_transition.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 
 namespace ash {
 

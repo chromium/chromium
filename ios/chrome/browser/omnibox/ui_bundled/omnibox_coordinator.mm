@@ -20,6 +20,9 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -92,6 +95,13 @@
   // OmniboxView.
   std::unique_ptr<OmniboxClient> _client;
 
+  /// Controller for the omnibox autocomplete.
+  OmniboxAutocompleteController* _omniboxAutocompleteController;
+  /// Controller for the omnibox popup.
+  OmniboxPopupController* _omniboxPopupController;
+  /// Controller for the omnibox text.
+  OmniboxTextController* _omniboxTextController;
+
   /// Object handling interactions in the keyboard accessory view.
   OmniboxAssistiveKeyboardMediator* _keyboardMediator;
 
@@ -157,6 +167,7 @@
   self.mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.viewController.pasteDelegate = self.mediator;
+  self.viewController.mutator = self.mediator;
 
   DCHECK(_client.get());
 
@@ -164,8 +175,7 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
       self.textField, std::move(_client), self.browser->GetProfile(),
-      omniboxHandler, self.focusDelegate, _toolbarHandler, self.viewController,
-      _isLensOverlay);
+      omniboxHandler, self.focusDelegate, _toolbarHandler, _isLensOverlay);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -194,11 +204,38 @@
                   controller:_editView->controller()];
   }
 
+  _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
+      initWithOmniboxController:_editView->controller()
+                 omniboxViewIOS:_editView.get()];
+  _omniboxPopupController = [[OmniboxPopupController alloc] init];
+  _omniboxPopupController.omniboxAutocompleteController =
+      _omniboxAutocompleteController;
+  _omniboxAutocompleteController.omniboxPopupController =
+      _omniboxPopupController;
+
+  _omniboxTextController = [[OmniboxTextController alloc]
+      initWithOmniboxController:_editView->controller()
+                 omniboxViewIOS:_editView.get()];
+  _omniboxTextController.delegate = self.mediator;
+  _omniboxTextController.omniboxAutocompleteController =
+      _omniboxAutocompleteController;
+  _omniboxTextController.textField = self.textField;
+  _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
+
+  self.mediator.omniboxTextController = _omniboxTextController;
+  _editView->SetOmniboxTextController(_omniboxTextController);
+
   self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];
   [self.popupCoordinator start];
 }
 
 - (void)stop {
+  [_omniboxAutocompleteController disconnect];
+  _omniboxAutocompleteController = nil;
+  [_omniboxTextController disconnect];
+  _omniboxTextController = nil;
+  _omniboxPopupController = nil;
+
   [self.popupCoordinator stop];
   self.popupCoordinator = nil;
 
@@ -288,7 +325,7 @@
   DCHECK(!_popupCoordinator);
   std::unique_ptr<OmniboxPopupViewIOS> popupView =
       std::make_unique<OmniboxPopupViewIOS>(_editView->controller(),
-                                            _editView.get());
+                                            _omniboxAutocompleteController);
 
   _editView->SetPopupProvider(popupView.get());
 
@@ -297,7 +334,8 @@
                          browser:self.browser
           autocompleteController:_editView->controller()
                                      ->autocomplete_controller()
-                       popupView:std::move(popupView)];
+                       popupView:std::move(popupView)
+                 popupController:_omniboxPopupController];
   coordinator.presenterDelegate = presenterDelegate;
 
   self.returnDelegate = [[ForwardingReturnDelegate alloc] init];
@@ -333,9 +371,7 @@
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
-  if (_editView) {
-    _editView->SetThumbnailImage(image);
-  }
+  [self.mediator setThumbnailImage:image];
 }
 
 #pragma mark Scribble

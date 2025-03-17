@@ -10,8 +10,7 @@
 #include "base/check_op.h"
 #include "base/sequence_token.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -62,10 +61,11 @@ SequenceLocalStorageMap::Value* SequenceLocalStorageMap::Set(
     SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair) {
   auto it = sls_map_.find(slot_id);
 
-  if (it == sls_map_.end())
+  if (it == sls_map_.end()) {
     it = sls_map_.emplace(slot_id, std::move(value_destructor_pair)).first;
-  else
+  } else {
     it->second = std::move(value_destructor_pair);
+  }
 
   // The maximum number of entries in the map is 256. This can be adjusted, but
   // will require reviewing the choice of data structure for the map.
@@ -129,5 +129,4 @@ ScopedSetSequenceLocalStorageMapForCurrentThread::
 ScopedSetSequenceLocalStorageMapForCurrentThread::
     ~ScopedSetSequenceLocalStorageMapForCurrentThread() = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

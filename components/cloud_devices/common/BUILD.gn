@@ -16,7 +16,6 @@ static_library("common") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//ui/gfx/geometry",
   ]
 }
@@ -29,7 +28,6 @@ source_set("unit_tests") {
     ":common",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/geometry",

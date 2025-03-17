@@ -370,12 +370,7 @@ template("proto_library") {
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     args = protos
 
-    sources =
-        proto_sources + [
-          # Add this here as there are some protos which import descriptor.proto
-          # directly or indirectly.
-          "//third_party/protobuf/src/google/protobuf/descriptor.proto",
-        ]
+    sources = proto_sources
 
     outputs =
         get_path_info(protogens + protogens_cc + protogens_js + protogens_py,
@@ -471,9 +466,36 @@ template("proto_library") {
       }
     }
 
-    # System protoc is not used so it's necessary to build a chromium one.
-    inputs = [ _protoc_path ]
+    inputs = [
+      # System protoc is not used so it's necessary to build a chromium one.
+      _protoc_path,
+
+      # Add this here as there are some protos which import descriptor.proto
+      # directly or indirectly.
+      "//third_party/protobuf/src/google/protobuf/descriptor.proto",
+    ]
     deps = [ _protoc_label ]
+    if (host_toolchain_is_msan) {
+      # When prebuilt instrumneted libraries are used, we need to tell that
+      # protoc needs to load the following libraries via BUILD configs so that
+      # siso uploads these files to remote workers.
+      if (host_toolchain_msan_track_origins == 0) {
+        archive = "msan-no-origins-noble-lib"
+      } else {
+        archive = "msan-chained-origins-noble-lib"
+      }
+      inputs += [
+        "//third_party/instrumented_libs/binaries/$archive/lib/libdl.so.2",
+        "//third_party/instrumented_libs/binaries/$archive/lib/libpthread.so.0",
+        "//third_party/instrumented_libs/binaries/$archive/lib/librt.so.1",
+        "//third_party/instrumented_libs/binaries/$archive/lib/libm.so.6",
+        "//third_party/instrumented_libs/binaries/$archive/lib/libresolv.so.2",
+        "//third_party/instrumented_libs/binaries/$archive/lib/libgcc_s.so.1",
+        "//third_party/instrumented_libs/binaries/$archive/lib/libc.so.6",
+        "//$root_build_dir/third_party/instrumented_libs/binaries/$archive/lib/ld-linux-x86-64.so.2",
+      ]
+      deps += [ "//third_party/instrumented_libs:ld-linux($host_toolchain)" ]
+    }
 
     if (enable_js_protobuf) {
       inputs += [ _protoc_gen_js_path ]
@@ -583,10 +605,7 @@ template("proto_library") {
       configs += [ "//build/config/sanitizers:not_fuzzed" ]
     }
 
-    public_configs = [
-      "$_this_dir:using_proto",
-      "$_this_dir:allow_deprecated_proto_fields",
-    ]
+    public_configs = [ "$_this_dir:using_proto" ]
     public_deps = []
 
     if (generate_cc || generate_with_plugin) {
@@ -693,7 +712,7 @@ template("proto_library") {
 #     args = [
 #       "--encode=foo.FooMessage",
 #       "-I",
-#       rebase_path("//"),
+#       rebase_path("//", root_build_dir),
 #       "component/core/foo.proto",
 #     ]
 #   }

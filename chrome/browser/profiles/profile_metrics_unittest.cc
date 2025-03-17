@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -143,7 +144,7 @@ TEST_P(ProfileMetricsTest, LogNumberOfProfiles) {
       entry->SetSupervisedUserId("supervised id");
     }
     if (profile_config.sync_consent) {
-      entry->SetAuthInfo("gaia", u"email", true);
+      entry->SetAuthInfo(GaiaId("gaia"), u"email", true);
     }
     entry->SetUserAcceptedAccountManagement(profile_config.managed);
     ++i;

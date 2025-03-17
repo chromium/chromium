@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -49,7 +50,10 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull ObservableSupplier<Tab> mTabSupplier;
     private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
     private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @NonNull SearchActivityClient mSearchActivityClient;
+    private final @NonNull ObservableSupplierImpl<Integer> mHubToolbarOverviewColorSupplier =
+            new ObservableSupplierImpl<>(null);
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
@@ -69,6 +73,7 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
             @NonNull HubShowPaneHelper hubShowPaneHelper,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @NonNull SearchActivityClient searchActivityClient) {
         mActivity = activity;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -79,6 +84,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mTabSupplier = tabSupplier;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mHubShowPaneHelper = hubShowPaneHelper;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mSearchActivityClient = searchActivityClient;
 
         // TODO(crbug.com/40283238): Consider making this a xml file so the entire core UI is
@@ -136,6 +142,11 @@ public class HubManagerImpl implements HubManager, HubController {
         mAppHeaderHeight = height;
         params.topMargin = mStatusIndicatorHeight + mAppHeaderHeight;
         mHubContainerView.setLayoutParams(params);
+    }
+
+    @Override
+    public ObservableSupplier<Integer> getHubToolbarOverviewColorSupplier() {
+        return mHubToolbarOverviewColorSupplier;
     }
 
     @Override
@@ -206,7 +217,9 @@ public class HubManagerImpl implements HubManager, HubController {
                         mHubLayoutController,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        mEdgeToEdgeSupplier,
+                        mHubToolbarOverviewColorSupplier);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         attachPaneDependencies(pane);
@@ -220,6 +233,8 @@ public class HubManagerImpl implements HubManager, HubController {
             mBackPressManager.removeHandler(mHubCoordinator);
             mHubCoordinator.destroy();
             mHubCoordinator = null;
+
+            mHubToolbarOverviewColorSupplier.set(null);
         }
     }
 

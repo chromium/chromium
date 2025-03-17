@@ -235,8 +235,7 @@ bool VerifyNestedDeclarations(Document* document, const String& rule_text) {
   auto is_valid = [](const CSSPropertySourceData& data) {
     return data.parsed_ok && !data.disabled;
   };
-  if (!base::ranges::any_of(rule_data.child_rules[1]->property_data,
-                            is_valid)) {
+  if (!std::ranges::any_of(rule_data.child_rules[1]->property_data, is_valid)) {
     return false;
   }
   return true;
@@ -1956,9 +1955,9 @@ InspectorStyleSheet::BuildObjectForSelectorList(CSSStyleRule* rule) {
       .build();
 }
 
-static bool CanBind(const String& origin) {
-  return origin != protocol::CSS::StyleSheetOriginEnum::UserAgent &&
-         origin != protocol::CSS::StyleSheetOriginEnum::Injected;
+bool InspectorStyleSheet::CanBindOrigin() {
+  return origin_ != protocol::CSS::StyleSheetOriginEnum::UserAgent &&
+         origin_ != protocol::CSS::StyleSheetOriginEnum::Injected;
 }
 
 std::unique_ptr<protocol::CSS::CSSRule>
@@ -1975,7 +1974,7 @@ InspectorStyleSheet::BuildObjectForRuleWithoutAncestorData(
                                         pseudo_argument))
           .build();
 
-  if (CanBind(origin_)) {
+  if (CanBindOrigin()) {
     if (!Id().empty())
       result->setStyleSheetId(Id());
   }
@@ -2026,7 +2025,7 @@ InspectorStyleSheet::BuildObjectForPositionTryRule(
           .setStyle(BuildObjectForStyle(position_try_rule->style(), nullptr))
           .setActive(active)
           .build();
-  if (CanBind(origin_) && !Id().empty()) {
+  if (CanBindOrigin() && !Id().empty()) {
     result->setStyleSheetId(Id());
   }
   return result;
@@ -2046,8 +2045,9 @@ InspectorStyleSheet::BuildObjectForFontPaletteValuesRule(
           .setOrigin(origin_)
           .setStyle(BuildObjectForStyle(values_rule->Style(), nullptr))
           .build();
-  if (CanBind(origin_) && !Id().empty())
+  if (CanBindOrigin() && !Id().empty()) {
     result->setStyleSheetId(Id());
+  }
   return result;
 }
 
@@ -2065,8 +2065,9 @@ InspectorStyleSheet::BuildObjectForPropertyRule(
           .setOrigin(origin_)
           .setStyle(BuildObjectForStyle(property_rule->Style(), nullptr))
           .build();
-  if (CanBind(origin_) && !Id().empty())
+  if (CanBindOrigin() && !Id().empty()) {
     result->setStyleSheetId(Id());
+  }
   return result;
 }
 
@@ -2085,8 +2086,9 @@ InspectorStyleSheet::BuildObjectForKeyframeRule(CSSKeyframeRule* keyframe_rule,
           .setOrigin(origin_)
           .setStyle(BuildObjectForStyle(keyframe_rule->style(), element))
           .build();
-  if (CanBind(origin_) && !Id().empty())
+  if (CanBindOrigin() && !Id().empty()) {
     result->setStyleSheetId(Id());
+  }
   return result;
 }
 

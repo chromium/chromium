@@ -242,8 +242,6 @@ TEST_F(PDFiumEngineExportsTest, Searchify) {
         CHECK(!bitmap.empty());
         auto annotation = screen_ai::mojom::VisualAnnotation::New();
         auto line_box = screen_ai::mojom::LineBox::New();
-        line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
-        line_box->baseline_box_angle = 0;
         line_box->bounding_box = gfx::Rect(0, 0, 100, 100);
         line_box->bounding_box_angle = 0;
         auto word_box = screen_ai::mojom::WordBox::New();
@@ -306,8 +304,6 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
 
     constexpr gfx::Rect kRect1(0, 30, 10, 5);
     auto line_box1 = screen_ai::mojom::LineBox::New();
-    line_box1->baseline_box = kRect1;
-    line_box1->baseline_box_angle = 0;
     line_box1->bounding_box = kRect1;
     line_box1->bounding_box_angle = 0;
     auto word_box1 = screen_ai::mojom::WordBox::New();
@@ -319,8 +315,6 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
 
     constexpr gfx::Rect kRect2(200, 210, 67, 57);
     auto line_box2 = screen_ai::mojom::LineBox::New();
-    line_box2->baseline_box = kRect2;
-    line_box2->baseline_box_angle = 0;
     line_box2->bounding_box = kRect2;
     line_box2->bounding_box_angle = 0;
     auto word_box2 = screen_ai::mojom::WordBox::New();
@@ -425,8 +419,6 @@ TEST_F(PDFiumEngineExportsTest, PdfProgressiveSearchifierText) {
   bitmap.allocN32Pixels(100, 100);
   auto annotation = screen_ai::mojom::VisualAnnotation::New();
   auto line_box = screen_ai::mojom::LineBox::New();
-  line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
-  line_box->baseline_box_angle = 0;
   line_box->bounding_box = gfx::Rect(0, 0, 100, 100);
   line_box->bounding_box_angle = 0;
   auto word_box = screen_ai::mojom::WordBox::New();

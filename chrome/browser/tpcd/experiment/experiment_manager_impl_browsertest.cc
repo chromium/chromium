@@ -10,6 +10,7 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -63,11 +64,11 @@ class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
         features::kCookieDeprecationFacilitatedTesting,
         {{"label", kEligibleGroupName},
          {"synthetic_trial_group_override", group_name_override},
-         {kDisable3PCookiesName, disable_3pcs ? "true" : "false"},
+         {kDisable3PCookiesName, base::ToString(disable_3pcs)},
          {kNeedOnboardingForSyntheticTrialName,
-          need_onboarding ? "true" : "false"},
+          base::ToString(need_onboarding)},
          {kEnableSilentOnboardingName,
-          enable_silent_onboarding ? "true" : "false"}});
+          base::ToString(enable_silent_onboarding)}});
   }
 
   void Wait() {

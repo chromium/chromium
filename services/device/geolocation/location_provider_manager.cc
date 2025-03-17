@@ -267,6 +267,9 @@ void LocationProviderManager::OnLocationUpdate(
               NewNetworkLocationProvider(url_loader_factory_, api_key_);
           RegisterProvider(*network_location_provider_.get());
           network_location_provider_->StartProvider(enable_high_accuracy_);
+          // Notify GeolocationProviderImpl of the location provider manager
+          // mode change.
+          internals_updated_closure_.Run();
           // Skip location update and wait for the network location provider to
           // provide an update.
           return;
@@ -327,6 +330,9 @@ void LocationProviderManager::FillDiagnostics(
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
     return;
   }
+
+  diagnostics.location_provider_manager_mode = provider_manager_mode_;
+
   switch (provider_manager_mode_) {
     case kHybridPlatform:
     case kHybridPlatform2:

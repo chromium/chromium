@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -148,10 +149,6 @@ class PasswordsModelDelegate {
   // used credential to their account store.
   virtual void BlockMovingPasswordToAccountStore() = 0;
 
-  // Called from the dialog controller when the user acknowledges that their
-  // default password store setting changed.
-  virtual void PromptSaveBubbleAfterDefaultStoreChanged() = 0;
-
   // Called from the dialog controller when the user chooses a credential.
   // Controller can be destroyed inside the method.
   virtual void ChooseCredential(
@@ -166,10 +163,6 @@ class PasswordsModelDelegate {
   // credential details for the `password_domain_name`.
   virtual void NavigateToPasswordDetailsPageInPasswordManager(
       const std::string& password_domain_name,
-      password_manager::ManagePasswordsReferrer referrer) = 0;
-
-  // Opens password manager settings page and focuses account store toggle.
-  virtual void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) = 0;
 
   // Open a new tab, pointing to the password check in the settings page.
@@ -187,21 +180,6 @@ class PasswordsModelDelegate {
   // prefix "Chromium is trying to".
   virtual void AuthenticateUserWithMessage(const std::u16string& message,
                                            AvailabilityCallback callback) = 0;
-
-  // Called from the Save/Update bubble controller when gaia re-auth is needed
-  // to save passwords. This method triggers the reauth flow. Upon successful
-  // reauth, it saves the password if it's still relevant. Otherwise, it changes
-  // the default destination to local and reopens the save bubble.
-  virtual void AuthenticateUserForAccountStoreOptInAndSavePassword(
-      const std::u16string& username,
-      const std::u16string& password) = 0;
-
-  // Called from the Save/Update bubble controller when a "new" user (i.e. who
-  // hasn't chosen whether to use the account-scoped storage yet) saves a
-  // password (locally). If the reauth is successful, this moves the just-saved
-  // password into the account store.
-  virtual void
-  AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() = 0;
 
   // Called from Biometric Authentication promo dialog when the feature is
   // enabled.
@@ -230,6 +208,11 @@ class PasswordsModelDelegate {
 
   // Returns the delegate for the password change flow.
   virtual PasswordChangeDelegate* GetPasswordChangeDelegate() const = 0;
+
+  virtual PasswordsLeakDialogDelegate* GetPasswordsLeakDialogDelegate() = 0;
+
+  // Opens the password change settings page as a separate tab.
+  virtual void NavigateToPasswordChangeSettings() = 0;
 
  protected:
   virtual ~PasswordsModelDelegate() = default;

@@ -10,14 +10,12 @@
 namespace blink {
 
 class GPUPipelineLayoutDescriptor;
-class ScriptState;
 
 class GPUPipelineLayout : public DawnObject<wgpu::PipelineLayout> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static GPUPipelineLayout* Create(
-      ScriptState* script_state,
       GPUDevice* device,
       const GPUPipelineLayoutDescriptor* webgpu_desc);
   explicit GPUPipelineLayout(GPUDevice* device,

@@ -266,8 +266,6 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsConfigToFlags) {
        CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS},
       {&CertVerifier::Config::enable_sha1_local_anchors,
        CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS},
-      {&CertVerifier::Config::disable_symantec_enforcement,
-       CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT},
   };
   for (const auto& test_config : kTestConfig) {
     CertVerifier::Config config;

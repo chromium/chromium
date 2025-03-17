@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_PROMPT_CONTROLLER_H_
 
 #include <string>
+#include <string_view>
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -20,7 +21,7 @@ class CardUnmaskPromptController {
  public:
   // Interaction.
   virtual void OnUnmaskDialogClosed() = 0;
-  virtual void OnUnmaskPromptAccepted(const std::u16string& cvc,
+  virtual void OnUnmaskPromptAccepted(std::u16string_view cvc,
                                       const std::u16string& exp_month,
                                       const std::u16string& exp_year,
                                       bool enable_fido_auth,
@@ -63,7 +64,7 @@ class CardUnmaskPromptController {
 #endif
 
   // Utilities.
-  virtual bool InputCvcIsValid(const std::u16string& input_text) const = 0;
+  virtual bool InputCvcIsValid(std::u16string_view input_text) const = 0;
   virtual bool InputExpirationIsValid(const std::u16string& month,
                                       const std::u16string& year) const = 0;
   virtual int GetExpectedCvcLength() const = 0;

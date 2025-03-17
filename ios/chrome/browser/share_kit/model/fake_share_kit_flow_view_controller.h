@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+enum class ShareKitFlowOutcome;
+
 using ShareGroupCompletionBlock = void (^)(NSString* collabID);
-using CompletionBlock = void (^)(BOOL result);
+using CompletionBlock = void (^)(ShareKitFlowOutcome result);
 
 // Different types of fake share kit flows.
 enum class FakeShareKitFlowType {
@@ -24,8 +26,8 @@ enum class FakeShareKitFlowType {
 // It features a Cancel and a Save bar button items.
 @interface FakeShareKitFlowViewController : UIViewController
 
-// Executed when the group is actually shared, after tapping the Save button.
-// The collab ID that is returned is a new UUID.
+// Executed when the group is actually shared or joined, after tapping the Save
+// button. The collab ID that is returned is a new UUID.
 @property(nonatomic, copy) ShareGroupCompletionBlock sharedGroupCompletionBlock;
 
 // Executed when Cancel or Save are tapped. The `result` is then respectively
@@ -40,6 +42,11 @@ enum class FakeShareKitFlowType {
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+// Simulates the user tapping on "save", to be used in unit tests.
+- (void)accept;
+// Simulates the user tapping on "cancel", to be used in unit tests.
+- (void)cancel;
 
 @end
 

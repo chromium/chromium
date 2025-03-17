@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -25,12 +25,15 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -158,17 +161,16 @@ class DialogWaiter : public aura::EnvObserver, public views::WidgetObserver {
 // Waits for a dialog to terminate.
 class DialogCloseWaiter : public views::WidgetObserver {
  public:
-  explicit DialogCloseWaiter(views::Widget* dialog) : dialog_closed_(false) {
+  explicit DialogCloseWaiter(views::Widget* dialog) {
     dialog->AddObserver(this);
   }
 
   DialogCloseWaiter(const DialogCloseWaiter&) = delete;
   DialogCloseWaiter& operator=(const DialogCloseWaiter&) = delete;
 
-  ~DialogCloseWaiter() override {
-    // It is not necessary to remove |this| from the dialog's observer, since
-    // the dialog is destroyed before this waiter.
-  }
+  // It is not necessary to remove |this| from the dialog's observer, since the
+  // dialog is destroyed before this waiter.
+  ~DialogCloseWaiter() override = default;
 
   void WaitForDialogClose() {
     if (dialog_closed_) {
@@ -188,15 +190,14 @@ class DialogCloseWaiter : public views::WidgetObserver {
     }
   }
 
-  bool dialog_closed_;
+  bool dialog_closed_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
 // Waits for a views::Widget to receive a Tab key.
 class TabKeyWaiter : public ui::EventHandler {
  public:
-  explicit TabKeyWaiter(views::Widget* widget)
-      : widget_(widget), received_tab_(false) {
+  explicit TabKeyWaiter(views::Widget* widget) : widget_(widget) {
     widget_->GetNativeWindow()->AddPreTargetHandler(this);
   }
 
@@ -229,7 +230,7 @@ class TabKeyWaiter : public ui::EventHandler {
   }
 
   raw_ptr<views::Widget> widget_;
-  bool received_tab_;
+  bool received_tab_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
@@ -341,7 +342,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
         BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
-    bookmarks::test::WaitForBookmarkModelToLoad(model_);
+    WaitForBookmarkMergedSurfaceServiceToLoad(
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get()));
     profile_->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar, true);
 
     Browser::CreateParams native_params(profile_.get(), true);
@@ -423,12 +425,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
       size.set_width(size.width() - 25);
       bb_view_->SetBounds(0, 0, size.width(), size.height());
       bb_view_->DeprecatedLayoutImmediately();
-    } while (bb_view_->bookmark_buttons_[6]->GetVisible());
+    } while (bb_view_->bookmark_buttons_[6].first->GetVisible());
     return size;
   }
 
   const views::LabelButton* GetBookmarkButton(size_t view_index) const {
-    return bb_view_->bookmark_buttons_[view_index];
+    return bb_view_->bookmark_buttons_[view_index].first;
   }
   views::LabelButton* GetBookmarkButton(size_t view_index) {
     return const_cast<views::LabelButton*>(
@@ -879,6 +881,12 @@ VIEW_TEST(BookmarkBarViewTest4, MAYBE_ContextMenus)
 
 // Tests drag and drop within the same menu.
 class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
+ public:
+  void OnWidgetDragComplete(views::Widget* widget) override {
+    BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+    // TODO(crbug.com/393126961): Check that the menu is still showing.
+  }
+
  protected:
   // BookmarkBarViewDragTestBase:
   void OnMenuOpened() override {
@@ -985,6 +993,7 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
               bb_view_->all_bookmarks_button()->GetState());
 
     BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+    EXPECT_FALSE(MenuIsShowing(bb_view_->GetMenu()));
   }
 
  protected:
@@ -1021,7 +1030,8 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
     const views::View* target_view;
     const auto* controller =
         static_cast<const BookmarkMenuController*>(drop_menu->GetDelegate());
-    if (controller->node() == model_->other_node()) {
+    if (controller->folder().as_permanent_folder() ==
+        BookmarkParentFolder::PermanentFolderType::kOtherNode) {
       // Now drag back over first menu.
       target_view = GetBookmarkButton(0);
     } else {
@@ -1037,6 +1047,11 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
                        target.x(), target.y(), ui_controls::kNoWindowHint));
+  }
+
+  void OnWidgetDragComplete(views::Widget* widget) override {
+    BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+    EXPECT_FALSE(MenuIsShowing(bb_view_->GetMenu()));
   }
 
  protected:
@@ -1445,7 +1460,7 @@ class BookmarkBarViewTest13 : public BookmarkBarViewEventTestBase {
 
     // Find the first separator.
     views::SubmenuView* submenu = context_menu->GetSubmenu();
-    const auto i = base::ranges::find_if_not(
+    const auto i = std::ranges::find_if_not(
         submenu->children(), views::IsViewClass<views::MenuItemView>);
     ASSERT_FALSE(i == submenu->children().end());
 
@@ -1522,8 +1537,7 @@ VIEW_TEST(BookmarkBarViewTest14, MAYBE_ContextMenus2)
 class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
  public:
   BookmarkBarViewTest15()
-      : deleted_menu_id_(0),
-        observer_(CreateEventTask(this, &BookmarkBarViewTest15::Step3)) {}
+      : observer_(CreateEventTask(this, &BookmarkBarViewTest15::Step3)) {}
 
  protected:
   void DoTestOnMessageLoop() override {
@@ -1574,7 +1588,7 @@ class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
     Done();
   }
 
-  int deleted_menu_id_;
+  int deleted_menu_id_ = 0;
   BookmarkContextMenuNotificationObserver observer_;
 };
 
@@ -1826,7 +1840,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
     layout->SetIgnoreDefaultMainAxisMargins(true)
         .SetCollapseMargins(true)
         .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 2));
-    container_view->AddChildView(bb_view_.get());
+    container_view->AddChildViewRaw(bb_view_.get());
     bb_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,

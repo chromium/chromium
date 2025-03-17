@@ -362,6 +362,19 @@ after discussions on the right group.
       <annotation id="webauthn_challenge_fetch"/>
       <annotation id="chromeos_capture_mode"/>
       <annotation id="outlook_calendar_page_handler"/>
+      <annotation id="omnibox_search_aggregator_suggest"/>
+      <annotation id="microsoft_files_page_handler"/>
+      <annotation id="outlook_calendar_event_attachment"/>
+      <annotation id="ip_protection_service_get_probabilistic_reveal_token"/>
+      <annotation id="remoting_compute_engine_instance_identity_token"/>
+      <annotation id="remoting_compute_engine_instance_access_token"/>
+      <annotation id="remoting_compute_engine_instance_access_token_scopes"/>
+      <annotation id="metrics_report_dwa"/>
+      <annotation id="version_history"/>
+      <annotation id="chromeos_scanner_provider"/>
+      <annotation id="glic_fre_preconnect"/>
+      <annotation id="chromeos_lens_web_image_search"/>
+      <annotation id="chromeos_inline_image_request"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -431,12 +444,6 @@ after discussions on the right group.
       <annotation id="chrome_commerce_comparable_products"/>
       <annotation id="product_specifications_fetcher"/>
     </sender>
-    <sender name="Parcel Tracking">
-      <annotation id="chrome_commerce_parcels_status"/>
-      <annotation id="chrome_commerce_start_tracking_parcel"/>
-      <annotation id="chrome_commerce_stop_tracking_parcel"/>
-      <annotation id="chrome_commerce_stop_tracking_all_parcel"/>
-    </sender>
     <sender name="Subscription">
       <annotation id="chrome_commerce_subscriptions_create"/>
       <annotation id="chrome_commerce_subscriptions_delete"/>
@@ -457,7 +464,6 @@ after discussions on the right group.
       <annotation id="bidding_and_auction_server_key_fetch"/>
       <annotation id="interest_group_update_fetcher"/>
       <annotation id="interest_group_well_known_fetcher"/>
-      <annotation id="trusted_signals_fetcher"/>
     </sender>
   </group>
   <group name="Identity and Security" hidden="true">
@@ -470,7 +476,6 @@ after discussions on the right group.
     </sender>
     <sender name="OAuth 2.0 and FedCM">
       <annotation id="fedcm"/>
-      <annotation id="fedcm_account_profile_image_fetcher"/>
       <annotation id="gaia_auth_check_connection_info"/>
       <annotation id="gaia_auth_exchange_device_id"/>
       <annotation id="gaia_auth_list_accounts"/>
@@ -491,6 +496,7 @@ after discussions on the right group.
     </sender>
     <sender name="Payments">
       <annotation id="payments_sync_cards"/>
+      <annotation id="payments_autofill"/>
     </sender>
   </group>
   <group name="K-Anonymity Service" hidden="true">

@@ -53,10 +53,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
  public:
   // Indicates whether or not scroll view is initialized with layer-scrolling.
-  enum class ScrollWithLayers { kDisabled, kEnabled };
+  enum class ScrollWithLayers : bool { kDisabled, kEnabled };
 
   // Controls how a scroll bar appears and functions.
-  enum class ScrollBarMode {
+  enum class ScrollBarMode : uint8_t {
     // The scrollbar is hidden, and the pane will not respond to e.g. mousewheel
     // events even if the contents are larger than the viewport.
     kDisabled,
@@ -148,6 +148,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Scrolls the `contents_` to an offset.
   void ScrollToOffset(const gfx::PointF& offset);
+
+  // Get the current scroll offset either from the ui::Layer or from the
+  // |contents_| origin offset.
+  gfx::PointF CurrentOffset() const;
 
   bool GetUseColorId() const { return !!background_color_id_; }
 
@@ -296,10 +300,6 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Update the scrollbars positions given viewport and content sizes.
   void UpdateScrollBarPositions();
-
-  // Get the current scroll offset either from the ui::Layer or from the
-  // |contents_| origin offset.
-  gfx::PointF CurrentOffset() const;
 
   // Whether the ScrollView scrolls using ui::Layer APIs.
   bool ScrollsWithLayers() const;

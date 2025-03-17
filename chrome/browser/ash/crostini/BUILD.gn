@@ -5,14 +5,17 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("crostini_installer_types_mojom") {
   sources = [ "crostini_types.mojom" ]
+  webui_module_path = "/"
 }
 
 static_library("crostini") {
   sources = [
+    "baguette_installer.cc",
+    "baguette_installer.h",
     "crostini_disk.cc",
     "crostini_disk.h",
     "crostini_export_import.cc",
@@ -119,10 +122,9 @@ static_library("crostini") {
     "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/crostini/throttle",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/ash/guest_os/virtual_machines",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/ash/scheduler_config",
+    "//chrome/browser/extensions/api/terminal:startup_status",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
@@ -141,7 +143,9 @@ static_library("crostini") {
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/scheduler_config",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/guest_os/virtual_machines",
     "//chromeos/constants",
     "//chromeos/dbus/permission_broker",
     "//chromeos/ui/base",

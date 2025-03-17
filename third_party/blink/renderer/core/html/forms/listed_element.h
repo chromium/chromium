@@ -118,6 +118,7 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
                                                 String& sub_message,
                                                 TextDirection& sub_message_dir);
   virtual Element& ValidationAnchor() const;
+  Element& GetHostOrFocusDelegate() const;
   bool ValidationAnchorOrHostIsFocusable() const;
 
   // For Element::IsValidElement(), which is for :valid :invalid selectors.
@@ -170,6 +171,15 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   void NotifyFormStateChanged();
   // This should be called in Element::FinishParsingChildren() override.
   void TakeStateAndRestore();
+  // Returns the form that owns this element according to Autofill's definition
+  // of ownership, or nullptr if no form owns it. The form that owns this
+  // element is:
+  // - if this element is associated to a form, the furthest shadow-including
+  //   form ancestor of that form,
+  // - otherwise, the furthest shadow-including form ancestor of this element.
+  // For the definition of ownership in Autofill, see
+  // //components/autofill/content/renderer/README.md.
+  HTMLFormElement* GetOwningFormForAutofill() const;
 
   void Trace(Visitor*) const override;
 

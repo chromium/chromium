@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <numeric>
 
-#include "base/ranges/algorithm.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -47,7 +46,7 @@ int StackLayout::GetPreferredHeightForWidth(const views::View* host,
   if (children.empty())
     return 0;
   std::vector<int> heights(children.size());
-  base::ranges::transform(
+  std::ranges::transform(
       children, heights.begin(),
       [width](const views::View* v) { return v->GetHeightForWidth(width); });
   return *std::max_element(heights.cbegin(), heights.cend());

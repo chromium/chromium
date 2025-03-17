@@ -8,10 +8,15 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
+#include "components/collaboration/internal/messaging/storage/messaging_backend_database.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 
 namespace collaboration::messaging {
 
+// TODO(crbug.com/379870772): store message uuid instead of message to avoid
+// data duplication. Query database with message uuid.
 struct MessagesPerGroup {
   MessagesPerGroup();
   ~MessagesPerGroup();
@@ -29,7 +34,9 @@ struct MessagesPerGroup {
 
 class MessagingBackendStoreImpl : public MessagingBackendStore {
  public:
-  MessagingBackendStoreImpl();
+  using OnLoadCallback = base::OnceCallback<void(bool)>;
+
+  MessagingBackendStoreImpl(std::unique_ptr<MessagingBackendDatabase> database);
   ~MessagingBackendStoreImpl() override;
 
   // MessagingBackendStore:
@@ -39,6 +46,8 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
   void ClearDirtyMessageForTab(const data_sharing::GroupId& collaboration_id,
                                const base::Uuid& tab_id,
                                DirtyType dirty_type) override;
+  std::vector<collaboration_pb::Message> ClearDirtyTabMessagesForGroup(
+      const data_sharing::GroupId& collaboration_id) override;
   void ClearDirtyMessage(const base::Uuid uuid, DirtyType dirty_type) override;
   std::vector<collaboration_pb::Message> GetDirtyMessages(
       DirtyType dirty_type) override;
@@ -55,9 +64,13 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
   std::vector<collaboration_pb::Message> GetRecentMessagesForGroup(
       const data_sharing::GroupId& collaboration_id) override;
   void AddMessage(const collaboration_pb::Message& message) override;
+  void RemoveMessages(const std::set<std::string>& message_ids) override;
+  void RemoveAllMessages() override;
 
   std::optional<MessagesPerGroup*> GetMessagesPerGroupForTesting(
       const data_sharing::GroupId& collaboration_id);
+
+  std::optional<collaboration_pb::Message> GetLastMessageForTesting();
 
  private:
   std::optional<MessagesPerGroup*> GetMessagesPerGroup(
@@ -77,11 +90,27 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
       base::RepeatingCallback<bool(collaboration_pb::Message& message)>
           message_callback);
 
+  void OnDatabaseLoaded(
+      OnLoadCallback on_load_callback,
+      bool success,
+      const std::map<std::string, collaboration_pb::Message>& data);
+
+  void DeleteExpiredMessages();
+
   // Store all the messages group by collaboration group.
   std::map<data_sharing::GroupId, std::unique_ptr<MessagesPerGroup>> messages_;
 
+  std::unique_ptr<MessagingBackendDatabase> database_;
+
+  std::unique_ptr<base::RepeatingTimer> delete_expired_messages_timer_;
+
   // Max age of GetRecentMessages should return.
   base::TimeDelta recent_message_cutoff_duration_ = base::Days(31);
+
+  // Return the last message from AddMessage() for testing purpose.
+  std::optional<collaboration_pb::Message> last_added_message_for_testing_;
+
+  base::WeakPtrFactory<MessagingBackendStoreImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace collaboration::messaging

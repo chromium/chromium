@@ -16,9 +16,19 @@ mojom("mojom") {
   ]
   webui_module_path = "/"
 
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+  generate_legacy_js_bindings = true
+  generate_java = true
+
   cpp_typemaps = [
     {
       types = [
+        {
+          mojom = "on_device_model.mojom.Capabilities"
+          cpp = "::on_device_model::Capabilities"
+        },
         {
           mojom = "on_device_model.mojom.ModelAssets"
           cpp = "::on_device_model::ModelAssets"
@@ -47,15 +57,16 @@ mojom("mojom") {
         },
       ]
       traits_headers = [
-        "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
-        "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
         "//services/on_device_model/ml/chrome_ml_types_traits.h",
+        "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
+        "//services/on_device_model/public/cpp/capabilities_mojom_traits.h",
+        "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
       ]
       traits_sources =
           [ "//services/on_device_model/ml/chrome_ml_types_traits.cc" ]
       traits_public_deps = [
         "//services/on_device_model/ml:api",
-        "//services/on_device_model/public/cpp:model_assets",
+        "//services/on_device_model/public/cpp:types",
       ]
     },
   ]

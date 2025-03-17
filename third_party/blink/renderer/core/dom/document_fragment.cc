@@ -103,6 +103,26 @@ bool DocumentFragment::ParseXML(const String& source,
       source, this, context_element, parser_content_policy, exception_state);
 }
 
+void DocumentFragment::ForgetChildren() {
+  DCHECK(HoldsUnnotifiedChildren());
+
+  if (!hasChildren()) {
+    return;
+  }
+
+  Node* next_child = firstChild();
+  do {
+    Node* child = next_child;
+    child->SetParentOrShadowHostNode(nullptr);
+    child->SetPreviousSibling(nullptr);
+    next_child = child->nextSibling();
+    child->SetNextSibling(nullptr);
+  } while (next_child);
+
+  SetFirstChild(nullptr);
+  SetLastChild(nullptr);
+}
+
 void DocumentFragment::Trace(Visitor* visitor) const {
   visitor->Trace(document_part_root_);
   ContainerNode::Trace(visitor);

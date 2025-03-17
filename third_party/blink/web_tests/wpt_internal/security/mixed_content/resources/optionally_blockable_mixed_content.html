@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import {WebFeature} from "/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js";
+async_test(function (t) {
+    // This code is just test support code, but needs to be wrapped in a test
+    // so that it has access to `internals`.
+    var searchParams = new URLSearchParams(window.location.search);
+    var i = document.createElement("img");
+    i.onerror = t.step_func_done(function () {
+        window.opener.postMessage({useCounted: internals.useCounter(document, WebFeature.kMixedContentOnLocalhost)}, "*");
+    });
+    i.src = searchParams.get("url");
+    document.body.appendChild(i);
+});
+</script>
+</body>
+</html>

@@ -11,7 +11,7 @@ import {getHtml} from './hover_button.html.js';
 
 export interface HoverButtonElement {
   $: {
-    hoverButton: HTMLDivElement,
+    hoverButton: HTMLElement,
   };
 }
 

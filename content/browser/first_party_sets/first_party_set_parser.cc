@@ -4,6 +4,7 @@
 
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <iterator>
 #include <optional>
@@ -19,7 +20,6 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -30,6 +30,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_validator.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
 #include "net/first_party_sets/sets_mutation.h"
@@ -341,70 +342,46 @@ class ParseContext {
       return;
     }
 
-    base::flat_set<net::SchemefulSite> possible_singletons;
+    std::erase_if(sets, [&](const auto& pair) { return IsInvalidEntry(pair); });
+    std::erase_if(aliases,
+                  [&](const auto& pair) { return IsInvalidAlias(pair); });
 
-    // Erase invalid members/primaries, and collect primary sites that might
-    // become singletons.
-    std::erase_if(
-        sets,
-        [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair)
-            -> bool { return IsInvalidEntry(pair, &possible_singletons); });
-
-    // Erase invalid aliases, and collect canonical sites that are primaries and
-    // might become singletons.
-    std::erase_if(
-        aliases,
-        [&](const std::pair<net::SchemefulSite, net::SchemefulSite>& pair)
-            -> bool {
-          return IsInvalidAlias(pair, possible_singletons, sets);
-        });
-
-    if (possible_singletons.empty()) {
-      return;
+    net::FirstPartySetsValidator validator;
+    for (const auto& site_entry : sets) {
+      validator.Update(site_entry.first, site_entry.second.primary());
     }
-
-    // Since we just removed some keys, we have to double-check that there are
-    // no singleton sets.
-    for (const auto& [site, entry] : sets) {
-      if (site == entry.primary()) {
-        // Skip primaries, they don't count as their own members.
+    for (const auto& alias_canonical : aliases) {
+      const auto it = std::ranges::find_if(sets, [&](const auto& site_entry) {
+        return site_entry.first == alias_canonical.second;
+      });
+      if (it == sets.end()) {
+        // The canonical site doesn't exist, so this alias is invalid. It'll be
+        // removed below.
         continue;
       }
-      // Found at least one member for this primary, so it isn't a
-      // singleton.
-      possible_singletons.erase(entry.primary());
-    }
-    // Any canonical site that has at least one alias is not a singleton.
-    for (const auto& [unused_alias, canonical] : aliases) {
-      possible_singletons.erase(canonical);
+
+      validator.Update(alias_canonical.first, it->second.primary());
     }
 
-    if (possible_singletons.empty()) {
-      return;
-    }
-
-    std::erase_if(
-        sets,
-        [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair)
-            -> bool { return possible_singletons.contains(pair.first); });
+    std::erase_if(sets, [&](const auto& site_entry) -> bool {
+      return !validator.IsSiteValid(site_entry.first);
+    });
+    std::erase_if(aliases, [&](const auto& alias_canonical) -> bool {
+      return !validator.IsSiteValid(alias_canonical.first) ||
+             !validator.IsSiteValid(alias_canonical.second);
+    });
   }
 
   // Removes invalid site entries and fixes up any lingering singletons.
   // Modifies the lists in-place.
-  void PostProcessSetLists(
-      base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>&
-          lists_or_error) {
-    if (!lists_or_error.has_value() || invalid_keys_.empty()) {
+  void PostProcessSetLists(ParsedPolicySetLists& lists) {
+    if (invalid_keys_.empty()) {
       return;
     }
 
-    ParsedPolicySetLists& lists = lists_or_error.value();
-
     // Erase invalid members/primaries.
-    const auto is_invalid_entry =
-        [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair)
-        -> bool {
-      return IsInvalidEntry(pair, /*possible_singletons=*/nullptr);
+    const auto is_invalid_entry = [&](const auto& pair) -> bool {
+      return IsInvalidEntry(pair);
     };
     for (auto& set : lists.additions) {
       base::EraseIf(set, is_invalid_entry);
@@ -413,13 +390,29 @@ class ParseContext {
       base::EraseIf(set, is_invalid_entry);
     }
 
+    net::FirstPartySetsValidator validator;
+    for (const auto& set : lists.additions) {
+      for (const auto& site_entry : set) {
+        validator.Update(site_entry.first, site_entry.second.primary());
+      }
+    }
+    for (const auto& set : lists.replacements) {
+      for (const auto& site_entry : set) {
+        validator.Update(site_entry.first, site_entry.second.primary());
+      }
+    }
+
     // Since we just removed some keys, we have to double-check that there are
-    // no singleton sets.
-    const auto is_singleton = [](const SingleSet& set) {
-      return set.size() <= 1;
-    };
-    std::erase_if(lists.additions, is_singleton);
-    std::erase_if(lists.replacements, is_singleton);
+    // no invalid sets (e.g. singletons).
+    if (!validator.IsValid()) {
+      const auto is_invalid = [&](const auto& set) -> bool {
+        return std::ranges::any_of(set, [&](const auto& site_entry) {
+          return !validator.IsSiteValid(site_entry.first);
+        });
+      };
+      std::erase_if(lists.additions, is_invalid);
+      std::erase_if(lists.replacements, is_invalid);
+    }
   }
 
   std::vector<ParseWarning>& warnings() { return warnings_; }
@@ -592,15 +585,12 @@ class ParseContext {
   }
 
   // Returns true iff the key or value of `pair` corresponds to a domain that
-  // is considered invalid. Inserts into `possible_singletons` if it is
-  // non-nullptr and `pair` is invalid in a way that might create a singleton
-  // set.
+  // is considered invalid.
   bool IsInvalidEntry(
-      const std::pair<net::SchemefulSite, net::FirstPartySetEntry> pair,
-      base::flat_set<net::SchemefulSite>* possible_singletons) {
+      const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair) {
     const net::SchemefulSite& key = pair.first;
     const net::FirstPartySetEntry& entry = pair.second;
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         invalid_keys_, [&](const net::SchemefulSite& invalid_key) -> bool {
           if (invalid_key == entry.primary()) {
             // The primary is invalid, so we have to kill the whole set. So this
@@ -608,45 +598,20 @@ class ParseContext {
             invalid_keys_.insert(pair.first);
             return true;
           }
-          if (invalid_key == key) {
-            // This is a member whose primary might end up being a
-            // singleton, since it's losing at least one member (and it
-            // itself isn't invalid).
-            if (possible_singletons) {
-              possible_singletons->insert(entry.primary());
-            }
-            return true;
-          }
-          return false;
+          return invalid_key == key;
         });
   }
 
   // Returns true iff the key or value of `pair` is a domain that is considered
-  // invalid. Inserts into `possible_singletons` if `pair` is invalid in a way
-  // that might create a singleton set.
+  // invalid.
   bool IsInvalidAlias(
-      const std::pair<net::SchemefulSite, net::SchemefulSite> pair,
-      base::flat_set<net::SchemefulSite>& possible_singletons,
-      const std::vector<SetsMap::value_type>& sets) const {
+      const std::pair<net::SchemefulSite, net::SchemefulSite>& pair) const {
     const net::SchemefulSite& alias = pair.first;
     const net::SchemefulSite& canonical = pair.second;
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         invalid_keys_, [&](const net::SchemefulSite& invalid_key) -> bool {
           const bool alias_matches = invalid_key == alias;
           const bool canonical_matches = invalid_key == canonical;
-          if (alias_matches && !canonical_matches) {
-            const bool is_primary = base::Contains(
-                sets, canonical,
-                [](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
-                       set_entry) { return set_entry.second.primary(); });
-            if (is_primary) {
-              // If we're erasing the alias but not the canonical site, and the
-              // canonical site is a primary, it might end up becoming a
-              // singleton, since it's losing at least one member (and it itself
-              // isn't invalid).
-              possible_singletons.insert(canonical);
-            }
-          }
           return alias_matches || canonical_matches;
         });
   }
@@ -705,8 +670,8 @@ SetsAndAliases ParseSetsFromStreamInternal(std::istream& input,
 
     context.AddSet(parsed.value());
 
-    base::ranges::move(parsed.value().first, std::back_inserter(sets));
-    base::ranges::move(parsed.value().second, std::back_inserter(aliases));
+    std::ranges::move(parsed.value().first, std::back_inserter(sets));
+    std::ranges::move(parsed.value().second, std::back_inserter(aliases));
     successfully_parsed_sets++;
   }
 
@@ -769,7 +734,9 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
     return ParsedPolicySetLists(std::move(replacements), std::move(additions));
   }();
 
-  context.PostProcessSetLists(set_lists);
+  if (set_lists.has_value()) {
+    context.PostProcessSetLists(set_lists.value());
+  }
 
   return FirstPartySetParser::PolicyParseResult(
       std::move(set_lists).transform([](ParsedPolicySetLists lists) {
@@ -791,23 +758,9 @@ net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
   SetsMap entries = std::move(parsed.first);
   Aliases aliases = std::move(parsed.second);
 
-  if (entries.empty()) {
-    return net::LocalSetDeclaration();
-  }
-
-  const net::SchemefulSite& primary = entries.begin()->second.primary();
-
-  if (base::ranges::any_of(entries,
-                           [&primary](const SetsMap::value_type& pair) {
-                             return pair.second.primary() != primary;
-                           })) {
-    // More than one set was provided. That is (currently) unsupported.
-    LOG(ERROR) << "Ignoring use-related-website-set switch due to multiple set "
-                  "declarations.";
-    return net::LocalSetDeclaration();
-  }
-
-  return net::LocalSetDeclaration(std::move(entries), std::move(aliases));
+  return net::LocalSetDeclaration::Create(
+             std::move(entries), std::move(aliases), /*emit_errors=*/true)
+      .value_or(net::LocalSetDeclaration());
 }
 
 }  // namespace content

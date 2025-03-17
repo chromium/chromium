@@ -7,6 +7,8 @@ syntax = "proto3";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/string_value.proto";
+import "components/optimization_guide/proto/on_device_model_execution_config.proto";
+import "components/optimization_guide/proto/features/media.proto";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
@@ -27,7 +29,10 @@ enum PromptApiRole {
 
 message PromptApiPrompt {
   PromptApiRole role = 1;
-  string content = 2;
+  oneof kind {
+    string text = 2;
+    Media media = 3;
+  }
 }
 
 // A request from PromptApi for prompt execution call.
@@ -50,4 +55,7 @@ message PromptApiMetadata {
   // A boolean flag telling if the prompt API model execution config sets
   // the streaming behavior to chunk-by-chunk.
   bool is_streaming_chunk_by_chunk = 2;
+  // The maximum value of top k and temperature that this feature can support.
+  // If the provided value is largest than the max value, they will be clamped.
+  SamplingParams max_sampling_params = 3;
 }

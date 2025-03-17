@@ -124,7 +124,7 @@ public class CafRemotingMediaRouteProviderTest {
         verify(mSessionController).updateMediaSource(eq(mockSource2));
 
         mProvider.updateRouteMediaSource(route.id, sourceId2);
-        assertEquals(mProvider.getActiveRoutesForTesting().size(), 1);
+        assertEquals(1, mProvider.getActiveRoutesForTesting().size());
         assertEquals(mProvider.getActiveRoutesForTesting().get(route.id).getSourceId(), sourceId2);
         verify(mManager).onRouteMediaSourceUpdated(route.id, sourceId2);
     }

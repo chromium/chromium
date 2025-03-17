@@ -54,7 +54,7 @@ MouseKeysTray::MouseKeysTray(Shelf* shelf,
       views::Builder<views::ImageView>()
           .SetID(kMouseKeysTrayIconID)
           .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS))
+              IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE))
           .SetImage(image)
           .SetBorder(views::CreateEmptyBorder(
               gfx::Insets::VH(vertical_padding, horizontal_padding)))
@@ -64,8 +64,8 @@ MouseKeysTray::MouseKeysTray(Shelf* shelf,
   // state is updated or when it is disabled/enabled.
   Shell::Get()->accessibility_controller()->AddObserver(this);
 
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE));
 }
 
 MouseKeysTray::~MouseKeysTray() {
@@ -92,8 +92,7 @@ void MouseKeysTray::Initialize() {
 }
 
 void MouseKeysTray::HandleLocaleChange() {
-  GetIcon()->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS));
+  UpdateStatus();
 }
 
 void MouseKeysTray::UpdateTrayItemColor(bool is_active) {
@@ -101,18 +100,37 @@ void MouseKeysTray::UpdateTrayItemColor(bool is_active) {
 }
 
 void MouseKeysTray::OnAccessibilityStatusChanged() {
-  auto* shell = Shell::Get();
+  UpdateStatus();
+}
+
+void MouseKeysTray::UpdateStatus() {
+  auto* mouse_keys_controller = Shell::Get()->mouse_keys_controller();
 
   // Early exit if mouse_keys_controller is not available
-  if (!shell->mouse_keys_controller()) {
+  if (!mouse_keys_controller) {
     return;
   }
 
-  auto* accessibility_controller = shell->accessibility_controller();
-  SetVisiblePreferred(::features::IsAccessibilityMouseKeysEnabled() &&
-                      accessibility_controller->mouse_keys().enabled());
-  UpdateTrayItemColor(shell->mouse_keys_controller()->enabled() &&
-                      !shell->mouse_keys_controller()->paused());
+  bool is_mouse_keys_enabled = ::features::IsAccessibilityMouseKeysEnabled() &&
+                               mouse_keys_controller->enabled();
+
+  SetVisiblePreferred(is_mouse_keys_enabled);
+
+  bool is_mouse_keys_active =
+      is_mouse_keys_enabled && !mouse_keys_controller->paused();
+  UpdateTrayItemColor(is_mouse_keys_active);
+  SetMouseKeysStatusText(is_mouse_keys_active);
+}
+
+void MouseKeysTray::SetMouseKeysStatusText(bool is_active) {
+  auto tooltip_string =
+      is_active ? l10n_util::GetStringUTF16(
+                      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE)
+                : l10n_util::GetStringUTF16(
+                      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME);
+
+  GetViewAccessibility().SetName(tooltip_string);
+  GetIcon()->SetTooltipText(tooltip_string);
 }
 
 void MouseKeysTray::OnSessionStateChanged(session_manager::SessionState state) {

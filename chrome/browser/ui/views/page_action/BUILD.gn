@@ -5,31 +5,83 @@
 assert(!is_android, "Page actions are for desktop platforms only")
 
 source_set("page_action") {
+  friend = [
+    ":unit_tests",
+    ":interactive_ui_tests",
+  ]
+
   public = [
     "action_ids.h",
-    "page_action_constants.h",
     "page_action_container_view.h",
     "page_action_controller.h",
-    "page_action_model.h",
-    "page_action_model_observer.h",
+    "page_action_observer.h",
+    "page_action_triggers.h",
     "page_action_view.h",
+    "page_action_view_params.h",
   ]
 
   sources = [
     "page_action_container_view.cc",
     "page_action_controller.cc",
     "page_action_model.cc",
+    "page_action_model.h",
+    "page_action_model_observer.h",
+    "page_action_observer.cc",
+    "page_action_triggers.cc",
     "page_action_view.cc",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/actions:actions_headers",
+    "//components/metrics/structured:structured_events",
     "//ui/actions:actions_headers",
     "//ui/base/metadata",
-    "//ui/gfx",
     "//ui/views",
   ]
 
-  deps = []
+  deps = [ "//ui/gfx" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "mock_page_action_model.cc",
+    "mock_page_action_model.h",
+    "page_action_container_view_unittest.cc",
+    "page_action_controller_unittest.cc",
+    "page_action_icon_view_unittest.cc",
+    "page_action_model_unittest.cc",
+    "page_action_observer_unittest.cc",
+    "page_action_view_unittest.cc",
+  ]
+
+  deps = [
+    ":page_action",
+    "//chrome/test:test_support",
+    "//ui/events:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "page_action_interactive_uitest.cc" ]
+
+  deps = [
+    ":page_action",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/base:test_support",
+    "//ui/views:test_support",
+  ]
 }

@@ -90,9 +90,8 @@ void FakeGCMStatsRecorder::RecordNotifySendStatus(
     const std::string& receiver_id,
     const std::string& message_id,
     gcm::MCSClient::MessageSendStatus status,
-    int byte_size,
-    int ttl) {
-}
+    size_t byte_size,
+    int ttl) {}
 
 void FakeGCMStatsRecorder::RecordIncomingSendError(
     const std::string& app_id,

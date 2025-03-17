@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+#include <iterator>
+#include <memory>
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -55,22 +56,23 @@ const char kTestConfig[] = "testconfig";
 const char kPacket[] = "feebdaed";
 
 const char kNetworkProfilePath[] = "/network/test";
-const char* kParameterValues[] = {"10.10.10.10",
-                                  "24",
-                                  "63.145.213.129/32 63.145.212.0/24",
-                                  "0.0.0.0/0 63.145.212.128/25",
-                                  "8.8.8.8",
-                                  "1600",
-                                  "10.10.10.255",
-                                  "foo:bar"};
-const char* kParameterKeys[] = {shill::kAddressParameterThirdPartyVpn,
-                                shill::kSubnetPrefixParameterThirdPartyVpn,
-                                shill::kExclusionListParameterThirdPartyVpn,
-                                shill::kInclusionListParameterThirdPartyVpn,
-                                shill::kDnsServersParameterThirdPartyVpn,
-                                shill::kMtuParameterThirdPartyVpn,
-                                shill::kBroadcastAddressParameterThirdPartyVpn,
-                                shill::kDomainSearchParameterThirdPartyVpn};
+constexpr std::array kParameterValues = {"10.10.10.10",
+                                         "24",
+                                         "63.145.213.129/32 63.145.212.0/24",
+                                         "0.0.0.0/0 63.145.212.128/25",
+                                         "8.8.8.8",
+                                         "1600",
+                                         "10.10.10.255",
+                                         "foo:bar"};
+constexpr std::array kParameterKeys = {
+    shill::kAddressParameterThirdPartyVpn,
+    shill::kSubnetPrefixParameterThirdPartyVpn,
+    shill::kExclusionListParameterThirdPartyVpn,
+    shill::kInclusionListParameterThirdPartyVpn,
+    shill::kDnsServersParameterThirdPartyVpn,
+    shill::kMtuParameterThirdPartyVpn,
+    shill::kBroadcastAddressParameterThirdPartyVpn,
+    shill::kDomainSearchParameterThirdPartyVpn};
 
 void DoNothingFailureCallback(const std::string& error_name) {
   FAIL();

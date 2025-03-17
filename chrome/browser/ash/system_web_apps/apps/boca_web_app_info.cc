@@ -25,26 +25,6 @@
 
 namespace {
 
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
-  GURL start_url = GURL(ash::boca::kChromeBocaAppUntrustedIndexURL);
-  auto info =
-      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(ash::boca::kChromeBocaAppUntrustedURL);
-  info->title = l10n_util::GetStringUTF16(IDS_SCHOOL_TOOLS_TITLE);
-  web_app::CreateIconInfoForSystemWebApp(
-      info->start_url(), {{"icon_256.png", 256, IDR_ASH_BOCA_UI_ICON_256_PNG}},
-      *info);
-  info->theme_color =
-      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
-  info->dark_mode_theme_color =
-      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
-  info->background_color = info->theme_color;
-  info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
-  return info;
-}
-
 bool IsConsumerProfile(Profile* profile) {
   return ash::boca_util::IsConsumer(
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
@@ -65,7 +45,22 @@ BocaSystemAppDelegate::BocaSystemAppDelegate(Profile* profile)
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 BocaSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForBocaApp();
+  GURL start_url = GURL(ash::boca::kChromeBocaAppUntrustedIndexURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
+  info->scope = GURL(ash::boca::kChromeBocaAppUntrustedURL);
+  info->title = l10n_util::GetStringUTF16(IDS_SCHOOL_TOOLS_TITLE);
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url(), {{"icon_256.png", 256, IDR_ASH_BOCA_UI_ICON_256_PNG}},
+      *info);
+  info->theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+  return info;
 }
 
 bool BocaSystemAppDelegate::ShouldCaptureNavigations() const {
@@ -85,6 +80,10 @@ bool BocaSystemAppDelegate::ShouldHaveTabStrip() const {
 }
 
 bool BocaSystemAppDelegate::ShouldHideNewTabButton() const {
+  return IsConsumerProfile(profile());
+}
+
+bool BocaSystemAppDelegate::ShouldHaveExtensionsContainerInToolbar() const {
   return IsConsumerProfile(profile());
 }
 

@@ -78,9 +78,8 @@ void TextDecorationPainter::UpdateDecorationInfo(
     // Need to recompute a scaled font and a scaling factor because they
     // depend on the scaling factor of an element referring to the text.
     float scaling_factor = 1;
-    Font scaled_font;
-    LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-        *text_item.GetLayoutObject(), scaling_factor, scaled_font);
+    const Font* scaled_font = LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+        *text_item.GetLayoutObject(), scaling_factor);
     DCHECK(scaling_factor);
     // Adjust the origin of the decoration because
     // TextPainter::PaintDecorationsExceptLineThrough() will change the
@@ -91,12 +90,12 @@ void TextDecorationPainter::UpdateDecorationInfo(
     // adjust the baseline position, then shift it for scaled_font.
     top += text_item.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent();
     top *= scaling_factor / text_item.SvgScalingFactor();
-    top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
+    top -= scaled_font->PrimaryFont()->GetFontMetrics().FixedAscent();
     result.emplace(LineRelativeOffset{decoration_rect_.offset.line_left, top},
                    decoration_rect_.InlineSize(), style, inline_context_,
                    effective_selection_decoration_lines,
                    effective_selection_decoration_color, decoration_override,
-                   &scaled_font, MinimumThickness1(false),
+                   scaled_font, MinimumThickness1(false),
                    text_item.SvgScalingFactor() / scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
@@ -189,7 +188,7 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
           }
         }
       },
-      paint_info_.context, text_style, style_.IsHorizontalWritingMode());
+      paint_info_.context, text_style);
 }
 
 void TextDecorationPainter::PaintLineThroughDecorations(
@@ -221,7 +220,7 @@ void TextDecorationPainter::PaintLineThroughDecorations(
           }
         }
       },
-      paint_info_.context, text_style, style_.IsHorizontalWritingMode());
+      paint_info_.context, text_style);
 }
 
 void TextDecorationPainter::PaintExceptLineThrough(
@@ -286,11 +285,10 @@ void TextDecorationPainter::ClipIfNeeded(
 
   if (clip_rect_) {
     state_saver.SaveIfNeeded();
-    if (phase_ == kSelection) {
+    if (phase_ == kSelection)
       paint_info_.context.Clip(*clip_rect_);
-    } else {
+    else
       paint_info_.context.ClipOut(*clip_rect_);
-    }
   }
 }
 

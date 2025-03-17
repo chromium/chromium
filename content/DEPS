@@ -27,11 +27,15 @@ include_rules = [
   "+components/app_launch_prefetch",
   "+components/attribution_reporting",
   "+components/browsing_topics/common",
+  "+components/content_settings/core/common",
   "+components/input",
   "+components/memory_pressure",
   # components/performance_manager sits between chrome/ and content/, except for
   # the mojo interfaces it exposes to content/ and third_party/blink/.
   "+components/performance_manager/public/mojom",
+  # components/performance_manager/scenario_api is a subcomponent that can
+  # query performance_manager scenarios from content/ and third_party/blink/.
+  "+components/performance_manager/scenario_api",
   "+components/services/filesystem",
   "+components/services/font/public",
   "+components/services/font_data/public",
@@ -141,6 +145,11 @@ specific_include_rules = {
   "content_(features|switches).h": [
     # content -> tools dependency is disallowed, except buildflags for switches.
     "+tools/v8_context_snapshot/buildflags.h",
+  ],
+  ".*_unittest\.(cc|h|m)": [
+    # unittests can now embed fuzzing tests, and this dependency is needed to
+    # access FUZZ_TEST macro and various domain generators.
+    "+third_party/fuzztest",
   ],
 }
 

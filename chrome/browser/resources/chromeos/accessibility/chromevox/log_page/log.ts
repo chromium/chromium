@@ -6,7 +6,8 @@
  * @fileoverview ChromeVox log page.
  */
 import {BackgroundBridge} from '../common/background_bridge.js';
-import {LogType, SerializableLog} from '../common/log_types.js';
+import type {SerializableLog} from '../common/log_types.js';
+import {LogType} from '../common/log_types.js';
 
 /** Class to manage the log page. */
 export class LogPage {

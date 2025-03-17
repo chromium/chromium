@@ -351,13 +351,11 @@ class LocalPrinterAshTestBase : public testing::Test {
   void AddPrinter(const std::string& id,
                   const std::string& display_name,
                   const std::string& description,
-                  bool is_default,
                   bool requires_elevated_permissions) {
     auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     caps->papers = kPapers;
     auto basic_info = std::make_unique<PrinterBasicInfo>(
-        id, display_name, description, /*printer_status=*/0, is_default,
-        PrinterBasicInfoOptions{});
+        id, display_name, description, PrinterBasicInfoOptions{});
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (SupportFallback()) {
@@ -378,6 +376,7 @@ class LocalPrinterAshTestBase : public testing::Test {
       sandboxed_print_backend()->AddValidPrinter(id, std::move(caps),
                                                  std::move(basic_info));
     }
+    sandboxed_print_backend()->SetDefaultPrinterName(id);
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -577,10 +576,8 @@ TEST_F(LocalPrinterAshTest, GetCapabilityForNonInstalledPrinters) {
 
   // Add printer capabilities to `test_backend_`.
   AddPrinter(autoconf_printer_id, "discovered", "description1",
-             /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
   AddPrinter(non_autoconf_printer_id, "discovered", "description2",
-             /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
 
   // Try to fetch capabilities for both printers but only the autoconf printer
@@ -609,7 +606,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/false);
 
   crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
@@ -641,7 +638,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityPrinterNotInstalled) {
   printers_manager().AddPrinter(discovered_printer, PrinterClass::kDiscovered);
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "discovered", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "discovered", "description1",
              /*requires_elevated_permissions=*/false);
 
   crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
@@ -708,7 +705,7 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityTerminatedService) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/false);
 
   // Set up for service to terminate on next use.
@@ -739,7 +736,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityAccessDenied) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/true);
 
   crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
@@ -763,7 +760,7 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityElevatedPermissionsSucceeds) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/true);
 
   // Note that printer does not initially show as requiring elevated privileges.

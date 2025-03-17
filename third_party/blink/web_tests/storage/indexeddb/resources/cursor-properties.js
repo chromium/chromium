@@ -34,7 +34,7 @@ function onOpenSuccess(evt)
 {
     preamble(evt);
     evalAndLog("db = event.target.result");
-    evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    evalAndLog("trans = db.transaction('store', 'readonly')");
     trans.onabort = unexpectedAbortCallback;
     evalAndLog("store = trans.objectStore('store')");
     evalAndLog("index = store.index('index')");

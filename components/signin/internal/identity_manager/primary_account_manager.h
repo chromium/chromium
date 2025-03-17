@@ -28,7 +28,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/consent_level.h"
@@ -128,7 +127,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   // Signout API surfaces (not supported on ChromeOS, where signout is not
   // permitted).
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Clears the primary account, erasing all keys associated with the primary
   // account (also cancels all auth in progress).
   // It removes all accounts from the identity manager by revoking all refresh
@@ -141,7 +140,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void RemovePrimaryAccountButKeepTokens(
       signin_metrics::ProfileSignout signout_source_metric);
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Rovokes the sync consent but leaves the primary account and the rest of
   // the accounts untouched.
@@ -185,11 +184,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void SetPrimaryAccountInternal(const CoreAccountInfo& account_info,
                                  bool consented_to_sync,
                                  ScopedPrefCommit& scoped_pref_commit);
-
-  // Invoked during initialization, it logs metrics to understand what fraction
-  // of users have a sync-enabled primary account in the past, on the same
-  // profile.
-  void RecordHadPreviousSyncAccount() const;
 
   // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,

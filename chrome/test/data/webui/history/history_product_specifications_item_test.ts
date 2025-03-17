@@ -38,7 +38,7 @@ suite('ProductSpecificationsItemTest', () => {
     return flushTasks();
   });
 
-  test('render labels', async () => {
+  test('render labels', () => {
     const label = productSpecificationsItem.$.link.textContent!;
     assertEquals('Compare example1 · 1 items', label.trim());
     const url = productSpecificationsItem.$.url.textContent!;
@@ -70,7 +70,7 @@ suite('ProductSpecificationsItemTest', () => {
     assertEquals(0, index);
   });
 
-  test('menu click fires event', async () => {
+  test('menu click fires event', () => {
     let uuid = '';
     let clicked = false;
     let target = null;
@@ -87,7 +87,7 @@ suite('ProductSpecificationsItemTest', () => {
     assertEquals('ex1', uuid);
   });
 
-  test('focus elements', async () => {
+  test('focus elements', () => {
     const focusRow = productSpecificationsItem.createFocusRow();
     const elements = focusRow.getElements();
     assertEquals(3, elements.length);
@@ -103,7 +103,7 @@ suite('ProductSpecificationsItemTest', () => {
           productSpecificationsProxy);
     });
 
-    test('link click shows product specs table', async () => {
+    test('link click shows product specs table', () => {
       productSpecificationsItem.$.link.click();
 
       assertEquals(
@@ -116,7 +116,7 @@ suite('ProductSpecificationsItemTest', () => {
               'showProductSpecificationsSetForUuid')[0]);
     });
 
-    test('link enter key shows product specs table', async () => {
+    test('link enter key shows product specs table', () => {
       productSpecificationsProxy.reset();
       pressAndReleaseKeyOn(productSpecificationsItem.$.link, 13, [], 'Enter');
       assertEquals(

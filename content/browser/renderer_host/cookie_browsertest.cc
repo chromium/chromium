@@ -7,11 +7,14 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -33,6 +36,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "ipc/ipc_security_test_util.h"
 #include "net/base/features.h"
+#include "net/base/filename_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
@@ -146,17 +150,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
       static_cast<WebContentsImpl*>(shell2->web_contents());
   WebContentsImpl* web_contents_http =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  if (AreDefaultSiteInstancesEnabled()) {
-    // Note: Both use the default SiteInstance because the URLs don't require
-    // a dedicated process, but these default SiteInstances are not the same
-    // object because they come from different BrowsingInstances.
-    EXPECT_TRUE(web_contents_http->GetSiteInstance()->IsDefaultSiteInstance());
-    EXPECT_TRUE(web_contents_https->GetSiteInstance()->IsDefaultSiteInstance());
-    EXPECT_NE(web_contents_http->GetSiteInstance(),
-              web_contents_https->GetSiteInstance());
-    EXPECT_FALSE(web_contents_http->GetSiteInstance()->IsRelatedSiteInstance(
-        web_contents_https->GetSiteInstance()));
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ("http://a.test/",
               web_contents_http->GetSiteInstance()->GetSiteURL().spec());
     // Create expected site url, including port if origin isolation is enabled.
@@ -166,6 +160,16 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
             : std::string("https://a.test/");
     EXPECT_EQ(expected_site_url,
               web_contents_https->GetSiteInstance()->GetSiteURL().spec());
+  } else {
+    // Note: Both use the default SiteInstance because the URLs don't require
+    // a dedicated process, but these default SiteInstances are not the same
+    // object because they come from different BrowsingInstances.
+    EXPECT_TRUE(web_contents_http->GetSiteInstance()->IsDefaultSiteInstance());
+    EXPECT_TRUE(web_contents_https->GetSiteInstance()->IsDefaultSiteInstance());
+    EXPECT_NE(web_contents_http->GetSiteInstance(),
+              web_contents_https->GetSiteInstance());
+    EXPECT_FALSE(web_contents_http->GetSiteInstance()->IsRelatedSiteInstance(
+        web_contents_https->GetSiteInstance()));
   }
 
   EXPECT_NE(web_contents_http->GetSiteInstance()->GetProcess(),
@@ -381,11 +385,13 @@ class RestrictedCookieManagerInterceptor
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
+      bool apply_devtools_overrides,
       const std::string& cookie,
       SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin,
-        storage_access_api_status, std::move(cookie), std::move(callback));
+        storage_access_api_status, apply_devtools_overrides, std::move(cookie),
+        std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
@@ -395,11 +401,13 @@ class RestrictedCookieManagerInterceptor
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
                         bool force_disable_third_party_cookies,
+                        bool apply_devtools_overrides,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
         URLToUse(url), site_for_cookies, top_frame_origin,
         storage_access_api_status, get_version_shared_memory, is_ad_tagged,
-        force_disable_third_party_cookies, std::move(callback));
+        force_disable_third_party_cookies, apply_devtools_overrides,
+        std::move(callback));
   }
 
  private:
@@ -527,6 +535,30 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 }
 
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieNotReadableAfterExpiry) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL http_url = embedded_test_server()->GetURL("example.test", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  WebContentsImpl* web_contents_http =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHost* frame = web_contents_http->GetPrimaryMainFrame();
+
+  SetCookieFromJS(frame, "c=1;Max-Age=1");
+  SetCookieFromJS(frame, "d=1;Max-Age=7200");
+  EXPECT_EQ("c=1; d=1", GetCookieFromJS(frame));
+
+  // If cookies properly expire and become unavailable this test will terminate.
+  // If they do not the test will time out. The earliest expiry from the cookies
+  // is used so the short expiry from c is expected to be used.
+  std::string cookie;
+  do {
+    cookie = GetCookieFromJS(frame);
+    base::PlatformThread::Sleep(base::Milliseconds(100));
+  } while (cookie != "d=1");
+}
+
 // Cookies for an eTLD should be stored (via JS) if they match the URL host,
 // even if they begin with `.` or have non-canonical capitalization.
 IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookies) {
@@ -612,6 +644,87 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookiesHeader) {
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
     EXPECT_EQ("", got_cookie_on_request);
   }
+}
+
+enum class CookieFileMode { kDefault, kEnabled, kDisabled };
+
+class CookieFileBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<CookieFileMode> {
+ protected:
+  void SetUpOnMainThread() override {
+    // Setup file url.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(file_directory_.CreateUniqueTempDir());
+    base::FilePath file_path =
+        file_directory_.GetPath().AppendASCII("index.html");
+    EXPECT_TRUE(base::WriteFile(file_path, ""));
+    file_url_ = net::FilePathToFileURL(file_path);
+
+    // Setup cookie manager.
+    bool file_cookie_enabled;
+    switch (GetParam()) {
+      case CookieFileMode::kDefault:
+        // Nothing to do.
+        return;
+      case CookieFileMode::kEnabled:
+        file_cookie_enabled = true;
+        break;
+      case CookieFileMode::kDisabled:
+        file_cookie_enabled = false;
+        break;
+    }
+    base::RunLoop run_loop;
+    shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->AllowFileSchemeCookies(file_cookie_enabled,
+                                 base::BindLambdaForTesting([&](bool success) {
+                                   EXPECT_TRUE(success);
+                                   run_loop.Quit();
+                                 }));
+    run_loop.Run();
+  }
+
+  GURL file_url_;
+
+ private:
+  base::ScopedTempDir file_directory_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CookieFileBrowserTest,
+                         ::testing::Values(CookieFileMode::kDefault,
+                                           CookieFileMode::kEnabled,
+                                           CookieFileMode::kDisabled));
+
+// Try to set and get cookies on a file URL.
+IN_PROC_BROWSER_TEST_P(CookieFileBrowserTest, SetAndGetCookie) {
+  // Navigate to file.
+  EXPECT_TRUE(NavigateToURL(shell(), file_url_));
+  RenderFrameHost* frame = shell()->web_contents()->GetPrimaryMainFrame();
+
+  // File cookies always appear to be writable.
+  EXPECT_TRUE(EvalJs(frame, "navigator.cookieEnabled").ExtractBool());
+
+  // File cookies can only be set if they are enabled.
+  bool can_set_cookies;
+  switch (GetParam()) {
+    case CookieFileMode::kDefault:
+      // TODO(crbug.com/378604901): Perhapse this should be allowed by default.
+      can_set_cookies = false;
+      return;
+    case CookieFileMode::kEnabled:
+      can_set_cookies = true;
+      break;
+    case CookieFileMode::kDisabled:
+      can_set_cookies = false;
+      break;
+  }
+  SetCookieFromJS(frame, "test=1");
+  EXPECT_EQ(can_set_cookies ? "test=1" : "", GetCookieFromJS(frame));
 }
 
 }  // namespace content

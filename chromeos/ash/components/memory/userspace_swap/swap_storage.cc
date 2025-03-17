@@ -342,7 +342,7 @@ inline ssize_t CompressedSwapFile::Decompress(const Region& src,
       compression::GetUncompressedSize(src.AsStringPiece());
   CHECK_EQ(dest.length, uncompressed_size);
 
-  if (!compression::GzipUncompress(src.AsStringPiece(), dest.AsStringPiece())) {
+  if (!compression::GzipUncompress(src.AsStringPiece(), dest.AsSpan<char>())) {
     errno = EIO;
     return -1;
   }

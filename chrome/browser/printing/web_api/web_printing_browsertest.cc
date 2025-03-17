@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -154,10 +155,13 @@ class WebPrintingBrowserTestBase
  public:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    iwa_dev_server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info =
-        InstallDevModeProxyIsolatedWebApp(iwa_dev_server_->GetOrigin());
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                network::mojom::PermissionsPolicyFeature::kWebPrinting))
+            .BuildBundle();
+    app->TrustSigningKey();
+    web_app::IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
     app_frame_ = OpenApp(url_info.app_id());
 
     chromeos::CupsWrapper::SetCupsWrapperFactoryForTesting(
@@ -191,7 +195,6 @@ class WebPrintingBrowserTestBase
 
   void TearDownOnMainThread() override {
     app_frame_ = nullptr;
-    iwa_dev_server_.reset();
     chromeos::CupsWrapper::SetCupsWrapperFactoryForTesting(
         base::NullCallback());
   }
@@ -203,7 +206,6 @@ class WebPrintingBrowserTestBase
   base::test::ScopedFeatureList feature_list_{blink::features::kWebPrinting};
 
   raw_ptr<content::RenderFrameHost> app_frame_ = nullptr;
-  std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)

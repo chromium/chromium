@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -22,7 +23,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -33,9 +33,9 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
@@ -148,10 +148,19 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
 
 namespace {
 
+constexpr net::BackoffEntry::Policy kUpdateRetryBackoffPolicy = {
+    .num_errors_to_ignore = 0,
+    .initial_delay_ms = base::Minutes(1).InMilliseconds(),
+    .multiply_factor = 2.0,
+    .jitter_factor = 0.0,
+    .maximum_backoff_ms = base::Hours(5).InMilliseconds(),
+    .entry_lifetime_ms = -1,
+    .always_use_initial_delay = false,
+};
+
 using IwaBundleIdToUpdateOptionsMap =
     base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>;
 
-#if BUILDFLAG(IS_CHROMEOS)
 IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
     Profile* profile) {
   IwaBundleIdToUpdateOptionsMap result;
@@ -177,6 +186,7 @@ IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
   return result;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
   IwaBundleIdToUpdateOptionsMap result;
   std::optional<ash::KioskIwaPolicyData> kiosk_iwa_policy_data =
@@ -195,17 +205,14 @@ IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
 
 IwaBundleIdToUpdateOptionsMap GetBundleIdToIsolatedWebAppsUpdateOptionsMap(
     Profile* profile) {
-// TODO(crbug.com/40274058): Enable automatic updates on other platforms.
 #if BUILDFLAG(IS_CHROMEOS)
   // DeviceLocalAccounts policy defines an IWA used in kiosk mode.
   // IsolatedWebAppInstallForceList is used in other session types.
   if (chromeos::IsKioskSession()) {
     return GetKioskPolicyIsolatedWebApps();
   }
-  return GetForceInstalledPolicyIsolatedWebApps(profile);
-#else
-  return {};
 #endif
+  return GetForceInstalledPolicyIsolatedWebApps(profile);
 }
 
 bool ShouldProceedWithVersionChange(
@@ -236,6 +243,37 @@ bool ShouldProceedWithVersionChange(
   return false;
 }
 
+std::vector<webapps::AppId> GetIwasAffectedByKeyRotation(
+    WebAppProvider& provider) {
+  std::vector<webapps::AppId> iwa_ids;
+
+  base::flat_map<web_package::SignedWebBundleId,
+                 std::reference_wrapper<const WebApp>>
+      installed_iwas = GetInstalledIwas(provider.registrar_unsafe());
+
+  // Queue updates for all apps affected by key rotation.
+  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
+    auto result = LookupRotatedKey(web_bundle_id);
+    // If the rotated key is null, there's no point in updating the
+    // app (as the update won't succeed anyway).
+    if (result != KeyRotationLookupResult::kKeyFound) {
+      continue;
+    }
+
+    KeyRotationData data =
+        GetKeyRotationData(web_bundle_id, *iwa.get().isolation_data());
+    // If either the bundle or the pending update already includes the rotated
+    // key, there's no need to rush with updates.
+    if (data.current_installation_has_rk || data.pending_update_has_rk) {
+      continue;
+    }
+
+    iwa_ids.push_back(iwa.get().app_id());
+  }
+
+  return iwa_ids;
+}
+
 }  // namespace
 
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
@@ -243,24 +281,17 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     base::TimeDelta update_discovery_frequency)
     : profile_(profile),
       automatic_updates_enabled_(
-          content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(&profile) &&
+          content::AreIsolatedWebAppsEnabled(&profile) &&
           // Similar to extensions, we don't do any automatic updates in guest
           // sessions.
           !profile.IsGuestSession() &&
           // Web Apps are not a thing in off the record profiles, but have
           // here just in case - we also wouldn't want to automatically update
           // IWAs in incognito windows.
-          !profile.IsOffTheRecord() &&
-#if BUILDFLAG(IS_CHROMEOS)
-          base::FeatureList::IsEnabled(
-              features::kIsolatedWebAppAutomaticUpdates)
-#else
-          false
-#endif
-              ),
+          !profile.IsOffTheRecord()),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
-      task_queue_{*this} {
-}
+      task_queue_{*this},
+      key_rotation_backoff_retry_entry_(&kUpdateRetryBackoffPolicy) {}
 
 IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 
@@ -454,12 +485,22 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     bool allow_downgrades,
     const std::optional<base::Version>& pinned_version,
     bool dev_mode) {
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
+      KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive =
+      profile_->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ScopedProfileKeepAlive>(
+                &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
       IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
                                    allow_downgrades, pinned_version, url_info,
                                    dev_mode),
       provider_->scheduler(), provider_->registrar_unsafe(),
-      profile_->GetURLLoaderFactory()));
+      profile_->GetURLLoaderFactory(), std::move(keep_alive),
+      std::move(profile_keep_alive)));
 
   task_queue_.MaybeStartNextTask();
 }
@@ -498,29 +539,29 @@ void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
     return;
   }
 
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
-      installed_iwas = GetInstalledIwas(provider_->registrar_unsafe());
+  key_rotation_backoff_retry_entry_.Reset();
+  QueueUpdatesForIwasAffectedByKeyRotation();
+}
 
-  // Queue updates for all apps affected by key rotation.
-  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
-    auto result = LookupRotatedKey(web_bundle_id);
-    // If the rotated key is null, there's no point in updating the
-    // app (as the update won't succeed anyway).
-    if (result != KeyRotationLookupResult::kKeyFound) {
-      continue;
-    }
-
-    KeyRotationData data =
-        GetKeyRotationData(web_bundle_id, *iwa.get().isolation_data());
-    // If either the bundle or the pending update already includes the rotated
-    // key, there's no need to rush with updates.
-    if (data.current_installation_has_rk || data.pending_update_has_rk) {
-      continue;
-    }
-
-    MaybeDiscoverUpdatesForApp(iwa.get().app_id());
+void IsolatedWebAppUpdateManager::QueueUpdatesForIwasAffectedByKeyRotation() {
+  std::vector<webapps::AppId> iwa_ids =
+      GetIwasAffectedByKeyRotation(*provider_);
+  if (iwa_ids.empty()) {
+    key_rotation_backoff_retry_entry_.Reset();
+    return;
   }
+  key_rotation_backoff_retry_entry_.InformOfRequest(/*succeeded=*/false);
+
+  for (const auto& iwa_id : iwa_ids) {
+    MaybeDiscoverUpdatesForApp(iwa_id);
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&IsolatedWebAppUpdateManager::
+                         QueueUpdatesForIwasAffectedByKeyRotation,
+                     weak_factory_.GetWeakPtr()),
+      key_rotation_backoff_retry_entry_.GetTimeUntilRelease());
 }
 
 bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
@@ -876,7 +917,7 @@ void IsolatedWebAppUpdateManager::TaskQueue::Clear() {
 bool IsolatedWebAppUpdateManager::TaskQueue::
     EnsureQueuedUpdateApplyTaskHasStarted(const webapps::AppId& app_id) {
   auto task_it =
-      base::ranges::find_if(update_apply_tasks_, [&app_id](const auto& task) {
+      std::ranges::find_if(update_apply_tasks_, [&app_id](const auto& task) {
         return task->url_info().app_id() == app_id;
       });
   if (task_it == update_apply_tasks_.end()) {
@@ -919,7 +960,7 @@ void IsolatedWebAppUpdateManager::TaskQueue::MaybeStartNextTask() {
 
 bool IsolatedWebAppUpdateManager::TaskQueue::IsUpdateApplyTaskQueued(
     const webapps::AppId& app_id) const {
-  return base::ranges::any_of(update_apply_tasks_, [&app_id](const auto& task) {
+  return std::ranges::any_of(update_apply_tasks_, [&app_id](const auto& task) {
     return task->url_info().app_id() == app_id;
   });
 }
@@ -941,10 +982,10 @@ void IsolatedWebAppUpdateManager::TaskQueue::StartUpdateApplyTask(
 }
 
 bool IsolatedWebAppUpdateManager::TaskQueue::IsAnyTaskRunning() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
              update_discovery_tasks_,
              [](const auto& task) { return task->has_started(); }) ||
-         base::ranges::any_of(update_apply_tasks_, [](const auto& task) {
+         std::ranges::any_of(update_apply_tasks_, [](const auto& task) {
            return task->has_started();
          });
 }
@@ -952,8 +993,8 @@ bool IsolatedWebAppUpdateManager::TaskQueue::IsAnyTaskRunning() const {
 void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateDiscoveryTaskCompleted(
     IsolatedWebAppUpdateDiscoveryTask* task_ptr,
     IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
-  auto task_it = base::ranges::find_if(update_discovery_tasks_,
-                                       base::MatchesUniquePtr(task_ptr));
+  auto task_it = std::ranges::find_if(update_discovery_tasks_,
+                                      base::MatchesUniquePtr(task_ptr));
   CHECK(task_it != update_discovery_tasks_.end());
   std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task = std::move(*task_it);
   update_discovery_tasks_.erase(task_it);
@@ -976,8 +1017,8 @@ void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateDiscoveryTaskCompleted(
 void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
     IsolatedWebAppUpdateApplyTask* task_ptr,
     IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
-  auto task_it = base::ranges::find_if(update_apply_tasks_,
-                                       base::MatchesUniquePtr(task_ptr));
+  auto task_it = std::ranges::find_if(update_apply_tasks_,
+                                      base::MatchesUniquePtr(task_ptr));
   CHECK(task_it != update_apply_tasks_.end());
   std::unique_ptr<IsolatedWebAppUpdateApplyTask> task = std::move(*task_it);
   update_apply_tasks_.erase(task_it);

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file is used to define IPC::ParamTraits<> specializations for a number
 // of types so that they can be serialized over IPC.  IPC::ParamTraits<>
 // specializations for basic types (like int and std::string) and types in the

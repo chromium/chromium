@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/bubble/bubble_utils.h"
@@ -145,8 +146,7 @@ void QuickInsertItemWithSubmenuView::OnMouseEntered(
   ShowSubmenu();
 }
 
-const std::u16string& QuickInsertItemWithSubmenuView::GetTextForTesting()
-    const {
+std::u16string_view QuickInsertItemWithSubmenuView::GetTextForTesting() const {
   return label_->GetText();
 }
 

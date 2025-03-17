@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
@@ -44,7 +43,7 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
 #endif
 
@@ -62,7 +61,7 @@ PrintPreviewUI* GetPrintPreviewUIForDialog(WebContents* dialog) {
   return web_ui ? web_ui->GetController()->GetAs<PrintPreviewUI>() : nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void CloseArcPrintSession(WebContents* initiator) {
   WebContents* outermost_web_contents =
       guest_view::GuestViewBase::GetTopLevelWebContents(initiator);
@@ -488,7 +487,7 @@ void PrintPreviewDialogController::RemoveInitiator(
 
   PrintViewManager::FromWebContents(initiator)->PrintPreviewDone();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CloseArcPrintSession(initiator);
 #endif
 
@@ -506,7 +505,7 @@ void PrintPreviewDialogController::RemovePreviewDialog(
     web_contents_collection_.StopObserving(initiator);
     PrintViewManager::FromWebContents(initiator)->PrintPreviewDone();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     CloseArcPrintSession(initiator);
 #endif
   }

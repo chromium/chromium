@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
 #include <algorithm>
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -23,11 +19,13 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -678,16 +676,52 @@ static CSSNestingType GetNestingTypeForSelectorList(
   CSSNestingType nesting_type = CSSNestingType::kNone;
   for (;;) {  // Termination condition within loop.
     nesting_type = std::max(nesting_type, selector->GetNestingType());
-    if (selector->SelectorList() != nullptr) {
-      nesting_type = std::max(
-          nesting_type,
-          GetNestingTypeForSelectorList(selector->SelectorList()->First()));
+
+    auto* list = selector->SelectorList();
+    if (list != nullptr) {
+      nesting_type =
+          std::max(nesting_type, GetNestingTypeForSelectorList(list->First()));
     }
     if (selector->IsLastInSelectorList() ||
         nesting_type == CSSNestingType::kNesting) {
       break;
     }
-    ++selector;
+
+    // SAFETY: SelectorList uses iterator pattern,
+    // so it is safe to increment the pointer as long
+    // as we check the item is not nullptr before dereferencing.
+    UNSAFE_BUFFERS(++selector);
+  }
+  return nesting_type;
+}
+
+// This acts like CSSSelector::GetNestingType, except across a whole
+// selector list.
+//
+// A return value of CSSNestingType::kNesting means that the list
+// "contains the nesting selector".
+// https://drafts.csswg.org/css-nesting-1/#contain-the-nesting-selector
+//
+// A return value of CSSNestingType::kScope means that the list
+// contains the :scope selector.
+static CSSNestingType GetNestingTypeForSelectorList(
+    base::span<const CSSSelector> selector) {
+  if (selector.empty()) {
+    return CSSNestingType::kNone;
+  }
+  CSSNestingType nesting_type = CSSNestingType::kNone;
+  for (const CSSSelector& curr : selector) {
+    nesting_type = std::max(nesting_type, curr.GetNestingType());
+
+    auto* list = curr.SelectorList();
+    if (list != nullptr) {
+      nesting_type =
+          std::max(nesting_type, GetNestingTypeForSelectorList(list->First()));
+    }
+    if (curr.IsLastInSelectorList() ||
+        nesting_type == CSSNestingType::kNesting) {
+      break;
+    }
   }
   return nesting_type;
 }
@@ -709,7 +743,7 @@ static CSSSelector CreateImplicitAnchor(
 static std::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
-    const CSSSelector* selector) {
+    base::span<const CSSSelector> selector) {
   switch (nesting_type) {
     case CSSNestingType::kNone:
       break;
@@ -728,6 +762,8 @@ static std::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
         return CreateImplicitAnchor(nesting_type, parent_rule_for_nesting);
       }
       break;
+    case CSSNestingType::kFunction:
+      NOTREACHED();
   }
   return std::nullopt;
 }
@@ -832,7 +868,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     output_[last_index].SetLastInSelectorList(true);
     if (std::optional<CSSSelector> anchor = MaybeCreateImplicitDescendantAnchor(
             nesting_type, parent_rule_for_nesting_,
-            reset_vector.AddedElements().data())) {
+            reset_vector.AddedElements())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
       output_.push_back(anchor.value());
       result_flags |= kContainsScopeOrParent;
@@ -896,23 +932,6 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
   }
   if (name.StartsWith("-internal-")) {
     return CSSSelector::PseudoType::kPseudoBlinkInternalElement;
-  }
-  if (name.StartsWith("--")) {
-    String custom_name = name.GetString().Substring(2);
-    if (ExecutionContext* context =
-            document ? document->GetExecutionContext() : nullptr) {
-      Deprecation::CountDeprecation(
-          context, WebFeature::kCSSCustomStateDeprecatedSyntax);
-    }
-    if (document) {
-      document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kDeprecation,
-          mojom::ConsoleMessageLevel::kError,
-          "Custom state pseudo classes have been changed from \":--" +
-              custom_name + "\" to \":state(" + custom_name +
-              ")\". See more here: "
-              "https://github.com/w3c/csswg-drafts/issues/4805"));
-    }
   }
 
   return CSSSelector::PseudoType::kPseudoUnknown;
@@ -1171,9 +1190,30 @@ bool IsUserActionPseudoClass(CSSSelector::PseudoType pseudo) {
   }
 }
 
+bool IsUserActionPseudoClassAllowedAfterPseudoElement(
+    CSSSelector::PseudoType pseudo_class,
+    CSSSelector::PseudoType compound_pseudo_element) {
+  if (!IsUserActionPseudoClass(pseudo_class)) {
+    return false;
+  }
+  switch (compound_pseudo_element) {
+    case CSSSelector::kPseudoScrollButton:
+    case CSSSelector::kPseudoScrollMarker:
+      return true;
+    default:
+      // TODO(crbug.com/40824273): User action pseudos should be allowed more
+      // generally after pseudo elements.
+      return false;
+  }
+}
+
 bool IsPseudoClassValidAfterPseudoElement(
     CSSSelector::PseudoType pseudo_class,
     CSSSelector::PseudoType compound_pseudo_element) {
+  if (IsUserActionPseudoClassAllowedAfterPseudoElement(
+          pseudo_class, compound_pseudo_element)) {
+    return true;
+  }
   // NOTE: pseudo-class rules for ::part() and element-backed pseudo-elements
   // do not need to be handled here; they should be handled in
   // CSSSelector::IsAllowedAfterPart() instead.
@@ -1199,16 +1239,12 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoOnlyChild;
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
+    case CSSSelector::kPseudoScrollMarkerGroup:
+      return pseudo_class == CSSSelector::kPseudoFocusWithin;
     case CSSSelector::kPseudoScrollMarker:
-      // TODO(crbug.com/40824273): User action pseudos should be allowed more
-      // generally after pseudo elements.
-      return pseudo_class == CSSSelector::kPseudoFocus ||
-             pseudo_class == CSSSelector::kPseudoTargetCurrent;
+      return pseudo_class == CSSSelector::kPseudoTargetCurrent;
     case CSSSelector::kPseudoScrollButton:
-      // TODO(crbug.com/40824273): User action pseudos should be allowed more
-      // generally after pseudo elements.
-      return pseudo_class == CSSSelector::kPseudoFocus ||
-             pseudo_class == CSSSelector::kPseudoDisabled ||
+      return pseudo_class == CSSSelector::kPseudoDisabled ||
              pseudo_class == CSSSelector::kPseudoEnabled;
     default:
       return false;
@@ -1731,7 +1767,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoPicker:
-      if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      /* This can't check for origin trials, unfortunately. */
+      if (!HTMLSelectElement::CustomizableSelectEnabledNoDocument()) {
         return false;
       }
       [[fallthrough]];
@@ -1804,13 +1841,12 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
 
       if (name_and_classes->empty()) {
         const CSSParserToken& ident = stream.Peek();
-        if (ident.GetType() == kIdentToken) {
-          name_and_classes->push_back(ident.Value().ToAtomicString());
-          stream.Consume();
-        } else if (ident.GetType() == kDelimiterToken &&
-                   ident.Delimiter() == '*') {
+        if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*') {
           name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
           stream.Consume();
+        } else if (auto* custom_ident = css_parsing_utils::ConsumeCustomIdent(
+                       stream, *context_)) {
+          name_and_classes->push_back(custom_ident->Value());
         } else {
           return false;
         }
@@ -1825,10 +1861,12 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
           return false;
         }
 
-        if (stream.Peek().GetType() != kIdentToken) {
+        CSSCustomIdentValue* custom_ident =
+            css_parsing_utils::ConsumeCustomIdent(stream, *context_);
+        if (!custom_ident) {
           return false;
         }
-        name_and_classes->push_back(stream.Consume().Value().ToAtomicString());
+        name_and_classes->push_back(custom_ident->Value());
       }
 
       stream.ConsumeWhitespace();
@@ -1910,13 +1948,17 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
     }
     case CSSSelector::kPseudoScrollButton: {
       const CSSParserToken& ident = stream.Peek();
-      if (ident.GetType() != kIdentToken) {
+      if (ident.GetType() == kIdentToken) {
+        if (!IsScrollButtonDirectionKeyword(ident)) {
+          return false;
+        }
+        selector.SetArgument(ident.Value().ToAtomicString());
+      } else if (ident.GetType() == kDelimiterToken &&
+                 ident.Delimiter() == '*') {
+        selector.SetArgument(AtomicString("*"));
+      } else {
         return false;
       }
-      if (!IsScrollButtonDirectionKeyword(ident)) {
-        return false;
-      }
-      selector.SetArgument(ident.Value().ToAtomicString());
       stream.ConsumeIncludingWhitespace();
       if (!stream.AtEnd()) {
         return false;
@@ -2144,7 +2186,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
     return true;
   }
 
-  const CSSParserToken& b = stream.Consume();
+  CSSParserToken b = stream.Peek();
   if (b.GetType() != kNumberToken ||
       b.GetNumericValueType() != kIntegerValueType) {
     return false;
@@ -2153,6 +2195,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
     return false;
   }
   result.second = ClampTo<int>(b.NumericValue());
+  stream.Consume();
   if (sign == kMinusSign) {
     // Negating minimum integer returns itself, instead return max integer.
     if (result.second == std::numeric_limits<int>::min()) [[unlikely]] {

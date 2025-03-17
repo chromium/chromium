@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/strings/strcat.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -298,8 +298,8 @@ FileSystemURL ExternalMountPoints::CrackFileSystemURL(
 
   base::FilePath virtual_path = url.path();
   if (url.type() == kFileSystemTypeLocalForPlatformApp) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // On Chrome OS, find a mount point and virtual path for the external fs.
+#if BUILDFLAG(IS_CHROMEOS)
+    // On ChromeOS, find a mount point and virtual path for the external fs.
     if (!GetVirtualPath(url.path(), &virtual_path))
       return FileSystemURL();
 #else

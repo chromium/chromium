@@ -131,7 +131,7 @@ class WebUIMochaSuccessFailureWithoutTestLoaderTest
   WebUIMochaSuccessFailureWithoutTestLoaderTest() {
     // Pick a random WebUI host (but with the proper CSP headers) to run the
     // test from.
-    set_test_loader_host(chrome::kChromeUIWebuiGalleryHost);
+    set_test_loader_host(chrome::kChromeUIChromeURLsHost);
   }
 };
 

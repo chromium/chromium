@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -253,7 +254,7 @@ template <typename List>
 static std::string Join(const List& list);
 
 static std::string ToString(bool b) {
-  return b ? "true" : "false";
+  return base::ToString(b);
 }
 
 static std::string ToString(int i) {

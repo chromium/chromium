@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -669,7 +669,8 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
     OnAutoconfQueried(callback_id, PrinterQueryResult::kUnknownFailure,
                       ::printing::PrinterStatus(), /*make_and_model=*/"",
                       /*document_formats=*/{}, /*ipp_everywhere=*/false,
-                      chromeos::PrinterAuthenticationInfo{});
+                      chromeos::PrinterAuthenticationInfo{},
+                      chromeos::IppPrinterInfo{});
     return;
   }
 
@@ -686,7 +687,8 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere,
-    const chromeos::PrinterAuthenticationInfo& /*auth_info*/) {
+    const chromeos::PrinterAuthenticationInfo& /*auth_info*/,
+    const chromeos::IppPrinterInfo& /*ipp_printer_info*/) {
   RecordIppQueryResult(result);
 
   const bool success = result == PrinterQueryResult::kSuccess;
@@ -739,7 +741,8 @@ void CupsPrintersHandler::OnAutoconfQueried(
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere,
-    const chromeos::PrinterAuthenticationInfo& /*auth_info*/) {
+    const chromeos::PrinterAuthenticationInfo& /*auth_info*/,
+    const chromeos::IppPrinterInfo& /*ipp_printer_info*/) {
   RecordIppQueryResult(result);
   const bool success = result == PrinterQueryResult::kSuccess;
 
@@ -1400,9 +1403,8 @@ void CupsPrintersHandler::HandleGetEulaUrl(const base::Value::List& args) {
   const PpdProvider::ResolvedPrintersList& printers_for_manufacturer =
       resolved_printers_it->second;
 
-  auto printer_it =
-      base::ranges::find(printers_for_manufacturer, ppd_model,
-                         &PpdProvider::ResolvedPpdReference::name);
+  auto printer_it = std::ranges::find(printers_for_manufacturer, ppd_model,
+                                      &PpdProvider::ResolvedPpdReference::name);
 
   if (printer_it == printers_for_manufacturer.end()) {
     // Unable to find the PpdReference, resolve promise with empty string.

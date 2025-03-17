@@ -97,6 +97,7 @@ class HeightTransitionHandler {
     private @Nullable BrowserControlsStateProvider.Observer mTransitionFinishedObserver;
 
     private boolean mForceUpdateHeight;
+    private boolean mUpdateStripVisibility;
 
     /**
      * Create the manager for transitions to show / hide the tab strip by updating the strip height.
@@ -242,15 +243,10 @@ class HeightTransitionHandler {
         // Do not allow callback to pass through when object is destroyed.
         if (mIsDestroyed) return;
 
-        // Invalid width / height will be ignored. This can happen when the mControlContainer is
-        // created hidden after theme changes. See crbug.com/1511599.
-        if (mTabStripWidth <= 0 || controlContainerView().getHeight() == 0) return;
-
         boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold;
         if (showTabStrip == mTabStripVisible && !mForceUpdateHeight) {
-            // Do not transition if visibility does not change, unless we are changing the desktop
-            // windowing mode, when we want to continue the transition to update the tab strip top
-            // padding.
+            // Do not transition if visibility does not change, unless we want to continue the
+            // transition to update the tab strip top padding.
             return;
         }
 
@@ -269,7 +265,7 @@ class HeightTransitionHandler {
         // make sure the it's up-to-date with the latest Android view.
         var resourceAdapter = mControlContainer.getToolbarResourceAdapter();
         DynamicResourceReadyOnceCallback.onNext(
-                resourceAdapter, (resource) -> setTabStripVisibility(showTabStrip));
+                resourceAdapter, (resource) -> updateTabStrip(showTabStrip));
 
         // Post the invalidate to make sure another layout pass is done. This is to make sure the
         // omnibox has the URL text updated to the final width of location bar after the toolbar
@@ -285,19 +281,28 @@ class HeightTransitionHandler {
                         }));
     }
 
-    void setForceUpdateHeight(boolean forceUpdateHeight) {
-        mForceUpdateHeight = forceUpdateHeight;
-    }
-
-    void onTabStripSizeChanged(int width, int topPadding) {
+    void onTabStripSizeChanged(
+            int width, int topPadding, boolean isInDesktopWindow, boolean forceUpdateHeight) {
         if (width == mTabStripWidth && topPadding == mTopPadding) return;
         mTabStripWidth = width;
         mTopPadding = topPadding;
 
-        int oldToken = mOnLayoutToken;
-        mOnLayoutToken = mDeferTransitionTokenHolder.acquireToken();
-        mDeferTransitionTokenHolder.releaseToken(oldToken);
-        mDeferTransitionTokenHolder.releaseToken(mOnLayoutToken);
+        // Height transition should update the strip visibility only when not in a desktop window.
+        // Visibility is dictated by a fade transition in a desktop window.
+        mUpdateStripVisibility = !isInDesktopWindow;
+        mForceUpdateHeight = forceUpdateHeight;
+
+        if (isInDesktopWindow) {
+            // In a desktop window, do not block the height transition when transition token is in
+            // use and instead trigger the transition immediately so that the strip top padding is
+            // updated as needed.
+            requestTransition();
+        } else {
+            int oldToken = mOnLayoutToken;
+            mOnLayoutToken = mDeferTransitionTokenHolder.acquireToken();
+            mDeferTransitionTokenHolder.releaseToken(oldToken);
+            mDeferTransitionTokenHolder.releaseToken(mOnLayoutToken);
+        }
     }
 
     private void onTokenUpdate() {
@@ -316,7 +321,7 @@ class HeightTransitionHandler {
     }
 
     /**
-     * Set the new height for the tab strip. This on high level consists with 3 steps:
+     * Set the new height for the tab strip. This on high level consists of 3 steps:
      *
      * <ul>
      *   <li>1. Use BrowserControlsSizer to change the browser control height. This will kick off
@@ -324,19 +329,24 @@ class HeightTransitionHandler {
      *   <li>2. Add / remove margins from the toolbar and toolbar hairline based on tab strip's new
      *       height.
      *   <li>3. Notify the tab strip scene layer for the new height. This will in turn notify
-     *       StripLayoutHelperManager to mark a yOffset that tabStrip will render off-screen. Note
-     *       that we cannot simply mark the tab strip scene layer hidden, since it's still required
-     *       to be visible during the transition.
+     *       StripLayoutHelperManager that will: 1) Update the strip visibility by marking a yOffset
+     *       for the strip to render off-screen. We cannot simply mark the tab strip scene layer
+     *       hidden, since it's still required to be visible during the transition. and/or 2) Update
+     *       the strip's top padding, relevant when the app header is used.
      * </ul>
      *
-     * @param show Whether the tab strip should be shown.
+     * @param showTabStrip Whether the tab strip should be shown, based on the window width. Note
+     *     that this will be used and applied only when the app is not in a desktop window.
      */
-    private void setTabStripVisibility(boolean show) {
+    private void updateTabStrip(boolean showTabStrip) {
         if (mIsDestroyed) return;
 
-        mTabStripVisible = show;
-        // Use a non-zero height when |mForceUpdateHeight| is set.
-        int newHeight = show || mForceUpdateHeight ? calculateTabStripHeight() : 0;
+        mTabStripVisible = showTabStrip;
+        int newHeight =
+                (mUpdateStripVisibility && showTabStrip)
+                                || (!mUpdateStripVisibility && mForceUpdateHeight)
+                        ? calculateTabStripHeight()
+                        : 0;
 
         // TODO(crbug.com/41484284): Maybe handle mid-progress pivots for browser controls.
         if (mTransitionFinishedObserver != null) {
@@ -366,7 +376,7 @@ class HeightTransitionHandler {
                         != BrowserControlsState.BOTH;
 
         if (javaAnimationInProgress || browserControlsHasConstraint) {
-            updateTabStripHeightImpl();
+            updateTabStripHeightImpl(newHeight);
             return;
         }
 
@@ -387,21 +397,21 @@ class HeightTransitionHandler {
                             boolean bottomControlsMinHeightChanged,
                             boolean requestNewFrame,
                             boolean isVisibilityForced) {
-                        updateTabStripHeightImpl();
+                        updateTabStripHeightImpl(newHeight);
                     }
 
                     @Override
                     public void onAndroidControlsVisibilityChanged(int visibility) {
                         // Update the margin when browser control turns into invisible. This can
                         // happen before onControlsOffsetChanged.
-                        updateTabStripHeightImpl();
+                        updateTabStripHeightImpl(newHeight);
                     }
                 };
         mBrowserControlsVisibilityManager.addObserver(mTransitionKickoffObserver);
     }
 
     // TODO(crbug.com/40939440): Find a better place to set these top margins.
-    private void updateTabStripHeightImpl() {
+    private void updateTabStripHeightImpl(int height) {
         // Remove the mBrowserControlsObserver, to make sure this method is called only once.
         if (mTransitionKickoffObserver != null) {
             mBrowserControlsVisibilityManager.removeObserver(mTransitionKickoffObserver);
@@ -410,8 +420,6 @@ class HeightTransitionHandler {
 
         // Change the height when we change the margin, to reflect the actual
         // tab strip height. Check the height to make sure this is only called once.
-        // Use a non-zero height when |mForceUpdateHeight| is set.
-        int height = mTabStripVisible || mForceUpdateHeight ? calculateTabStripHeight() : 0;
         if (mTabStripHeight == height) return;
         mTabStripHeight = height;
 
@@ -430,7 +438,13 @@ class HeightTransitionHandler {
 
         assert mTabStripTransitionDelegateSupplier.get() != null
                 : "TabStripTransitionDelegate should be available.";
-        mTabStripTransitionDelegateSupplier.get().onHeightChanged(mTabStripHeight);
+        // The height transition should apply the strip scrim overlay only when its goal is to
+        // update the strip visibility. In a desktop window, the height transition runs solely
+        // to update the strip top padding and it is expected of the fade transition to
+        // control the strip visibility by updating the scrim in this case when applicable.
+        mTabStripTransitionDelegateSupplier
+                .get()
+                .onHeightChanged(mTabStripHeight, mUpdateStripVisibility);
 
         // If top control is already at steady state, notify right away.
         if (isTopControlAtSteadyState()) {
@@ -500,8 +514,6 @@ class HeightTransitionHandler {
 
     private void notifyTransitionFinished(boolean measureControlContainer) {
         mBrowserControlsVisibilityManager.removeObserver(mTransitionFinishedObserver);
-        // Reset internal state after transition ends.
-        mForceUpdateHeight = false;
         mTransitionFinishedObserver = null;
 
         assert mTabStripTransitionDelegateSupplier.get() != null

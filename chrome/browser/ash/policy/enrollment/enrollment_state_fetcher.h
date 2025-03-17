@@ -41,9 +41,8 @@ class ServerBackedStateKeysBroker;
 // state from the DMServer.
 //
 // The operation is aborted with state kNoEnrollment:
-//   * we are running on a ChromeOS Flex device, or
-//   * when RLZ brand code or serial number are missing, or
-//   * when the embargo date is present and has not yet passed.
+//   * when device ownership is taken or unknown,
+//   * when RLZ brand code or serial number are missing
 // All these values are retrieved using StatisticsProvider, which can be faked
 // using `FakeStatisticsProvider` in tests.
 //

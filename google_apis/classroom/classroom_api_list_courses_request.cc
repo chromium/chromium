@@ -29,7 +29,7 @@ constexpr char kListCoursesUrlPath[] = "v1/courses";
 
 constexpr char kFieldsParameterName[] = "fields";
 constexpr char kRequestedFields[] =
-    "courses(id,name,courseState),nextPageToken";
+    "courses(id,name,section,courseState),nextPageToken";
 
 constexpr char kCourseStatesParameterName[] = "courseStates";
 constexpr char kPageTokenParameterName[] = "pageToken";

@@ -34,10 +34,10 @@ suite('cr-toolbar', function() {
     toolbar.showMenu = true;
     await toolbar.updateComplete;
     toolbar.focusMenuButton();
-    const menuButton = toolbar.shadowRoot!.querySelector('#menuButton');
+    const menuButton = toolbar.shadowRoot.querySelector('#menuButton');
     assertTrue(!!menuButton);
     await eventToPromise('focus', menuButton);
-    assertEquals(menuButton, toolbar.shadowRoot!.activeElement);
+    assertEquals(menuButton, toolbar.shadowRoot.activeElement);
     assertTrue(toolbar.isMenuFocused());
   });
 });

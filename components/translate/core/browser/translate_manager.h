@@ -16,9 +16,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/language_detection/core/constants.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace language {
@@ -106,7 +106,8 @@ class TranslateManager {
   static std::string GetTargetLanguage(
       TranslatePrefs* prefs,
       language::LanguageModel* language_model,
-      const std::string source_lang_code = translate::kUnknownLanguageCode);
+      const std::string source_lang_code =
+          language_detection::kUnknownLanguageCode);
 
   // Returns the language to automatically translate to. |source_language| is
   // the webpage's source language.

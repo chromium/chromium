@@ -1,0 +1,453 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of GLIC histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Glic.Action.ActInFocusedTabErrorReason"
+    enum="ActInFocusedTabErrorReason" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>chasej@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client receives an error reason from the
+    browser when attempting to act.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client returns from being notified that the
+    panel will open. Records the active web client mode.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Api.RequestCounts.{ApiRequestType}"
+    enum="GlicRequestEvent" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded whenever a glic API request event has occurred. See
+    GlicRequestEvent.
+  </summary>
+<!-- LINT.IfChange(ApiRequestType) -->
+
+  <token key="ApiRequestType">
+    <variant name="ActInFocusedTab"/>
+    <variant name="AttachPanel"/>
+    <variant name="CaptureScreenshot"/>
+    <variant name="ClosePanel"/>
+    <variant name="CreateTab"/>
+    <variant name="DetachPanel"/>
+    <variant name="GetContextFromFocusedTab"/>
+    <variant name="GetUserProfileInfo"/>
+    <variant name="OnResponseRated"/>
+    <variant name="OnResponseStarted"/>
+    <variant name="OnResponseStopped"/>
+    <variant name="OnSessionTerminated"/>
+    <variant name="OnUserInputSubmitted"/>
+    <variant name="OpenGlicSettingsPage"/>
+    <variant name="OpenOsPermissionSettingsMenu"/>
+    <variant name="RefreshSignInCookies"/>
+    <variant name="ResizeWindow"/>
+    <variant name="ScrollTo"/>
+    <variant name="SetAudioDucking"/>
+    <variant name="SetContextAccessIndicator"/>
+    <variant name="SetLocationPermissionState"/>
+    <variant name="SetMicrophonePermissionState"/>
+    <variant name="SetMinimumWidgetSize"/>
+    <variant name="SetSyntheticExperimentState"/>
+    <variant name="SetTabContextPermissionState"/>
+    <variant name="SetWindowDraggableAreas"/>
+    <variant name="ShowProfilePicker"/>
+    <variant name="WebClientCreated"/>
+    <variant name="WebClientInitialized"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
+
+</histogram>
+
+<histogram name="Glic.ChromeClient.MultiProfileSyntheticTrialConflictDetected"
+    enum="BooleanEnabled" expires_after="2026-01-15">
+  <owner>birnie@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Recorded when different Chrome profiles using glic attempt to register
+    conflicting synthetic field trial groups in the same log file. This should
+    only happen on multi profile installs that use glic on different profiles in
+    quick succession. When analyzing metrics from a synthetic field trial this
+    histogram will allow us to create custom queries to filter out users who may
+    have contaminated logs from multiple profiles.
+  </summary>
+</histogram>
+
+<histogram name="Glic.EntryPoint.Impression" enum="GlicEntryPointImpression"
+    expires_after="2026-01-15">
+  <owner>erikchen@chromium.org</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Recorded every 15 minutes, but only if the glic feature flag is enabled.
+    This is a rough estimate of whether a user is seeing an impression of glic
+    entry points. The entry point is shown if fre has not been completed, or if
+    fre has been completed and glic is enabled and pinned to the tabstrip. The
+    entry point is not shown if fre is completed and glic is either disabled or
+    unpinned from the tabstrip.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
+    expires_after="2026-01-15">
+  <owner>dewittj@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when an unusual sequence of events is seen by glic metrics
+    recorder. Usually replaces a real histogram event.
+  </summary>
+</histogram>
+
+<histogram name="Glic.OsEntrypoint.Settings.Shortcut" enum="BooleanEnabled"
+    expires_after="2026-01-15">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    After the user modifies the glic launcher shortcut, logs a boolean that
+    reflects whether a shortcut is set.
+
+    Note: When setting a shortcut, 'disabled' will always be logged, then
+    'enabled'. This is because the edit process first clears the existing value.
+    If the shortcut is cleared, only a single 'disabled' log entry is generated.
+  </summary>
+</histogram>
+
+<histogram name="Glic.OsEntrypoint.Settings.ShortcutStatus"
+    enum="BooleanEnabled" expires_after="2026-01-15">
+  <owner>erikchen@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
+  <summary>
+    Rough estimate of whether a user has a shortcut set. Recorded every 15
+    minutes, but only if the glic feature flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Glic.OsEntrypoint.Settings.Toggle" enum="BooleanEnabled"
+    expires_after="2026-01-15">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    After the user interacts with the toggle to turn on/off the OS launcher
+    entrypoint, logs a boolean that reflects whether the entrypoint is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.GetAnnotatedPageContent" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a page context gets annotated page content. Measure the time
+    from start.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.GetEncodedScreenshot" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a page context gets screenshot (post-encoding and scaling).
+    Measure the time from start.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.GetInnerText" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a page context gets inner text. Measure the time from start.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.GetScreenshot" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a page context gets screenshot (pre-encoding and scaling).
+    Measure the time from start.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.Total" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a page context fetcher finishes. Measure the time from start
+    to finish.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PanelPresentationTime.{InputMode}" units="ms"
+    expires_after="2026-01-15">
+  <owner>dewittj@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    After glic is triggered, measure how long it takes to show the glic panel
+    using the {InputMode} mode. Desktop Chrome only (Windows and Mac).
+  </summary>
+  <token key="InputMode">
+    <variant name="All"/>
+    <variant name="Audio"/>
+    <variant name="Text"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.PanelWebUiState" enum="WebUiState"
+    expires_after="2026-01-15">
+  <owner>erikchen@chromium.org</owner>
+  <owner>iwells@google.com</owner>
+  <summary>Record the panel webui state any time it changes.</summary>
+</histogram>
+
+<histogram name="Glic.PanelWebUiState.FinishState" enum="WebUiState"
+    expires_after="2025-01-15">
+  <owner>dewittj@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Obsolete metric, replaced by FinishState2. Record the state when the panel
+    display is finished.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PanelWebUiState.FinishState2" enum="WebUiState"
+    expires_after="2026-01-15">
+  <owner>dewittj@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>Record the current state when the the panel is closed.</summary>
+</histogram>
+
+<histogram name="Glic.Response.Attached" enum="Boolean"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    When glic returns a response to user input, whether glic was attached or
+    detached at the time the response started. Only emitted if glic was visible
+    when the response started.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.InputMode" enum="GlicWebClientMode"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded after a turn. Records the input mode of the original user input.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded after a turn. Records the source of the invocation of the glic
+    window.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.Rated" enum="BooleanPositive"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded anytime a response is rated. There is no guarantee of correlation
+    with any other Response.* metrics. This exists for diagnostic purposes only.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.Segmentation" enum="GlicResponseSegmentation"
+    expires_after="2026-01-15">
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded after a turn. Records the invocation source, attachment, and input
+    mode.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime" units="ms" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible. Measures the time from a
+    user's submitted input until a response starts and was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.InputMode.Audio" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and the input mode was
+    audio. Measures the time from a user's submitted input until a response
+    starts and was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.InputMode.Text" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and the input mode was text.
+    Measures the time from a user's submitted input until a response starts and
+    was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.InputMode.Unknown" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and the input mode was
+    unknown. Measures the time from a user's submitted input until a response
+    starts and was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.WithContext" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and context was attached.
+    Measures the time from a user's submitted input until a response starts and
+    was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.WithoutContext" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and context was attached.
+    Measures the time from a user's submitted input until a response starts and
+    was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StopTime" units="ms" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Measures the time from a user's submitted input until a response stops.
+    There is no guarantee of correlation with Response.StartTime. This exists
+    for diagnostic purposes only.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.Duration" units="ms" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>Recorded when a session ends. The duration of the session.</summary>
+</histogram>
+
+<histogram name="Glic.Session.InputModesUsed" enum="GlicInputModesUsed"
+    expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session ends. The input modes that were used during the
+    session.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.Open.Attached" enum="Boolean"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session starts. Records whether the window is attached.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.Open.InvocationSource"
+    enum="GlicInvocationSource" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session starts. Records the source of the invocation.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.ResponseCount" units="count"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session ends. The number of responses during that session.
+  </summary>
+</histogram>
+
+<histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client requests to obtain PDF contents from
+    the focused tab. Records an enum sample that answers a) is the main document
+    a PDF (based on its MIME type) and b) were PDF contents actually found
+    within the web page (only if Chrome's PDF plugin is actually active).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

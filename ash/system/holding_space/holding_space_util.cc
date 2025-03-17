@@ -50,13 +50,18 @@ class CallbackPathGenerator : public views::HighlightPathGenerator {
 class CircleBackground : public views::Background {
  public:
   CircleBackground(ui::ColorId color_id, size_t fixed_size)
-      : color_id_(color_id), fixed_size_(fixed_size) {}
+      : fixed_size_(fixed_size) {
+    SetColor(color_id);
+  }
 
   CircleBackground(ui::ColorId color_id, const gfx::InsetsF& insets)
-      : color_id_(color_id), insets_(insets) {}
+      : insets_(insets) {
+    SetColor(color_id);
+  }
 
   CircleBackground(const CircleBackground&) = delete;
   CircleBackground& operator=(const CircleBackground&) = delete;
+
   ~CircleBackground() override = default;
 
   // views::Background:
@@ -73,18 +78,16 @@ class CircleBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
 
     canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
   }
 
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
 
  private:
-  const ui::ColorId color_id_;
   const std::optional<size_t> fixed_size_;
   const std::optional<gfx::InsetsF> insets_;
 };

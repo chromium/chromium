@@ -18,11 +18,6 @@
 
 namespace blink {
 
-namespace {
-// Long enough to ensure scroll animation should be complete.
-const double kScrollAnimationDuration = 100.0;
-}  // namespace
-
 class MouseEventManagerTest : public SimTest {
  protected:
   EventHandler& GetEventHandler() {
@@ -50,57 +45,6 @@ class MouseEventManagerTest : public SimTest {
         event);
   }
 };
-
-// TODO(crbug.com/1325058): Re-enable this test
-TEST_F(MouseEventManagerTest, DISABLED_MousePressNodeRemoved) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-      <!DOCTYPE html>
-      <style>
-        #scroller {
-          overflow: auto;
-          height: 100px;
-        }
-        #target {
-          width: 100px;
-          height: 100px;
-          background: green;
-        }
-        .spacer, body {
-          height: 200vh;
-        }
-      </style>
-      <body>
-        <div id="scroller">
-          <div id="target"></div>
-          <div class="spacer"></div>
-        </div>
-      </body>
-      )HTML");
-  Compositor().BeginFrame();
-  EXPECT_FLOAT_EQ(
-      GetDocument().getElementById(AtomicString("scroller"))->scrollTop(), 0.0);
-
-  // Click on the target node to set the mouse_press_node_.
-  GetEventHandler().HandleMousePressEvent(CreateTestMouseEvent(
-      WebInputEvent::Type::kMouseDown, gfx::PointF(50, 50)));
-
-  // Now remove this node.
-  GetDocument().getElementById(AtomicString("target"))->remove();
-  Compositor().BeginFrame();
-
-  // Now press the down key. This should still scroll the nested scroller as it
-  // was still the scroller that was clicked in.
-  SendKeyDown(VKEY_DOWN);
-  Compositor().ResetLastFrameTime();
-  // Start scroll animation.
-  Compositor().BeginFrame();
-  // Jump to end of scroll animation.
-  Compositor().BeginFrame(kScrollAnimationDuration);
-  EXPECT_GT(GetDocument().getElementById(AtomicString("scroller"))->scrollTop(),
-            0.0);
-}
 
 TEST_F(MouseEventManagerTest, HoverEffectAfterNav) {
   LocalFrame* frame = MainFrame().GetFrame();

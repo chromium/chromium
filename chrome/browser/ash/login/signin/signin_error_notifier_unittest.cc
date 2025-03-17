@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/token_handle_store.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -64,6 +66,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
 
   void TearDown() override {
@@ -94,6 +97,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
+  raw_ptr<TokenHandleStore> token_handle_store_;
 };
 
 TEST_F(SigninErrorNotifierTest, NoNotification) {
@@ -237,7 +241,14 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
           .account_id;
 
   for (size_t i = 0; i < std::size(table); ++i) {
-    GoogleServiceAuthError error(table[i]);
+    GoogleServiceAuthError error;
+    if (table[i] == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidGrantRaptError);
+    } else {
+      error = GoogleServiceAuthError(table[i]);
+    }
     SetAuthError(account_id, error);
     std::optional<message_center::Notification> notification =
         display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
@@ -310,8 +321,8 @@ TEST_F(SigninErrorNotifierTest, TokenHandleTest) {
           .gaia;
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       /*user_email=*/kTestEmail, gaia_id);
-  TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
-  TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
+  token_handle_store_->StoreTokenHandle(account_id, kTokenHandle);
+  token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
   SigninErrorNotifier* signin_error_notifier =
       SigninErrorNotifierFactory::GetForProfile(GetProfile());
   signin_error_notifier->OnTokenHandleCheck(account_id, kTokenHandle,
@@ -342,8 +353,8 @@ TEST_F(SigninErrorNotifierTest,
           .gaia;
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       /*user_email=*/kTestEmail, gaia_id);
-  TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
-  TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
+  token_handle_store_->StoreTokenHandle(account_id, kTokenHandle);
+  token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
   SigninErrorNotifier* signin_error_notifier =
       SigninErrorNotifierFactory::GetForProfile(GetProfile());
   signin_error_notifier->OnTokenHandleCheck(account_id, kTokenHandle,

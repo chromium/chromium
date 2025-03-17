@@ -3,31 +3,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os.path
+from pathlib import Path
 import subprocess
 import sys
 
+# Get the absolute path of `chromium/src/`, deduced from the absolute
+# path of this file.
+CHROMIUM_SRC = Path(__file__).resolve().parents[4]
+assert CHROMIUM_SRC.name == "src"
+
+TEST_TOOL = CHROMIUM_SRC / "tools/clang/scripts/test_tool.py"
+assert TEST_TOOL.is_file()
+
+SPANIFY_PATH = CHROMIUM_SRC / "third_party/llvm-build/Release+Asserts/bin/spanify"
+
 
 def RunRewritingTests():
-  subprocess.run([
-      "tools/clang/scripts/test_tool.py", "--extract-edits-path", "..",
-      "--apply-edits", "spanify"
-  ])
+    return subprocess.run(
+        [TEST_TOOL, "--extract-edits-path", "..", "--apply-edits",
+         "spanify"]).returncode
 
 
 def main():
-  if not os.path.exists("ATL_OWNERS"):
-    sys.stderr.write(
-        "Please run run_all_tests.py from the root dir of Chromium")
-    return -1
+    if not SPANIFY_PATH.is_file():
+        print("Please build spanify first", file=sys.stderr)
+        return 1
 
-  if not os.path.exists("third_party/llvm-build/Release+Asserts/bin/"
-                        "spanify"):
-    sys.stderr.write("Please build spanify first")
-    return -1
-
-  RunRewritingTests()
+    return RunRewritingTests()
 
 
 if __name__ == "__main__":
-  main()
+    sys.exit(main())

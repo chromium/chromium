@@ -14,6 +14,8 @@
   BOOL _started;
 }
 
+@synthesize visibleAreaLayoutGuide = _visibleAreaLayoutGuide;
+
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -78,6 +80,10 @@
   // NO-OP
 }
 
+- (CGRect)selectionRect {
+  return CGRectZero;
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {
@@ -90,7 +96,7 @@
 
   mutableResult.suggestSignals = signals;
   [self.lensOverlayDelegate lensOverlay:self
-        suggestSignalsAvailableOnResult:self.lastResult];
+      hasSuggestSignalsAvailableOnResult:self.lastResult];
 }
 
 #pragma mark - Private

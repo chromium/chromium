@@ -126,6 +126,12 @@ class TabModel {
     FROM_RECENT_TABS_FOREGROUND,
     // Open a new tab to prevent collaborations from having 0 tabs.
     FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+    // Opened from the bookmark bar. Will not be brought to the foreground.
+    FROM_BOOKMARK_BAR_BACKGROUND,
+    // Changed windows by moving from one activity to another. Will be opened
+    // in the background. Use FROM_REPARENTING above to open the re-parented tab
+    // in the foreground.
+    FROM_REPARENTING_BACKGROUND,
     // Must be last.
     SIZE
   };
@@ -200,7 +206,8 @@ class TabModel {
 
   // Used by Developer Tools to create a new tab with a given URL.
   // Replaces CreateTabForTesting.
-  virtual content::WebContents* CreateNewTabForDevTools(const GURL& url) = 0;
+  virtual content::WebContents* CreateNewTabForDevTools(const GURL& url,
+                                                        bool new_window) = 0;
 
   // Return true if we are currently restoring sessions asynchronously.
   virtual bool IsSessionRestoreInProgress() const = 0;

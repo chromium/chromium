@@ -8,22 +8,23 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
 #include "chrome/browser/apps/app_service/publishers/bruschetta_apps.h"
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool g_omit_borealis_apps_for_testing_ = false;
 bool g_omit_plugin_vm_apps_for_testing_ = false;
 
@@ -32,7 +33,7 @@ bool IsKioskSessionProfile(Profile* profile) {
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   return user != nullptr && user->IsKioskType();
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // anonymous namespace
 
@@ -43,7 +44,7 @@ PublisherHost::PublisherHost(AppServiceProxy* proxy) : proxy_(proxy) {
 
 PublisherHost::~PublisherHost() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PublisherHost::SetArcIsRegistered() {
   chrome_apps_->ObserveArc();
 }
@@ -85,10 +86,10 @@ void PublisherHost::Shutdown() {
   }
   borealis_apps_.reset();
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void PublisherHost::Initialize() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* profile = proxy_->profile();
   // GuestOS and PluginVm apps are not available in kiosk mode.
   if (!IsKioskSessionProfile(profile)) {
@@ -127,10 +128,10 @@ void PublisherHost::Initialize() {
 
   chrome_apps_ = std::make_unique<ExtensionApps>(proxy_);
   chrome_apps_->Initialize();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 ScopedOmitBorealisAppsForTesting::ScopedOmitBorealisAppsForTesting()
     : previous_omit_borealis_apps_for_testing_(
           g_omit_borealis_apps_for_testing_) {
@@ -151,6 +152,6 @@ ScopedOmitPluginVmAppsForTesting::~ScopedOmitPluginVmAppsForTesting() {
   g_omit_plugin_vm_apps_for_testing_ =
       previous_omit_plugin_vm_apps_for_testing_;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

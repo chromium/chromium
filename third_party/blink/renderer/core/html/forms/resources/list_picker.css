@@ -18,3 +18,9 @@ option, optgroup {
 .wrap option {
     white-space: pre-wrap;
 }
+
+option:checked,
+option:checked:hover {
+    background-color: SelectedItem !important;
+    color: SelectedItemText !important;
+}

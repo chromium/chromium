@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++labelText
+++++++++staticText name='labeltext '
+++++++++++inlineTextBox name='labeltext '
+++++++comboBoxSelect collapsed name='labeltext' value='one'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++genericContainer invisible
+++++++++++++menuListOption name='one' selected=true
+++++++++++++menuListOption invisible name='two' selected=false

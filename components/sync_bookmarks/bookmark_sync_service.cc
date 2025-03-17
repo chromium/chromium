@@ -7,16 +7,13 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "components/undo/bookmark_undo_service.h"
 
 namespace sync_bookmarks {
 
 BookmarkSyncService::BookmarkSyncService(
-    BookmarkUndoService* bookmark_undo_service,
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior)
-    : bookmark_data_type_processor_(bookmark_undo_service,
-                                    wipe_model_upon_sync_disabled_behavior) {}
+    : bookmark_data_type_processor_(wipe_model_upon_sync_disabled_behavior) {}
 
 BookmarkSyncService::~BookmarkSyncService() = default;
 

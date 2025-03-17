@@ -51,6 +51,11 @@ bool CreateWebAppFromManifest(
     WebAppInstalledCallback installed_callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
+// Shows the PWA Install dialog for the active tab in the provided browser.
+// Records PWAInstallIcon user metric and closes the PWA install IPH
+// if it is showing.
+void ShowPwaInstallDialog(Browser* browser);
+
 void SetInstalledCallbackForTesting(WebAppInstalledCallback callback);
 
 }  // namespace web_app

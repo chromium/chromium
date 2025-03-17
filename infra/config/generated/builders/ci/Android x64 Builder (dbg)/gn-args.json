@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "debuggable_apks": false,
+    "enable_android_secondary_abi": true,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": true,
@@ -10,6 +11,7 @@
     "system_webview_shell_package_name": "org.chromium.my_webview_shell",
     "target_cpu": "x64",
     "target_os": "android",
+    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }

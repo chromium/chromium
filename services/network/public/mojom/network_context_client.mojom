@@ -46,10 +46,6 @@ interface NetworkContextClient {
                                    string spn)
       => (int32 result, string auth_token);
 
-  // Notification that a trust anchor was used for the given user.
-  [EnableIf=is_chromeos]
-  OnTrustAnchorUsed();
-
   // Checks if a new SCT Auditing report can be sent. The browser maintains a
   // maximum report count cap for Hashdance clients -- this returns whether the
   // cap has been exceeded or not (i.e., whether another report can be sent from

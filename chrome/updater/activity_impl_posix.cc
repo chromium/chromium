@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/updater/activity_impl_util_posix.h"
 
 namespace updater {
@@ -47,7 +47,7 @@ void ClearActiveBit(const base::FilePath& home_dir, const std::string& id) {
 }
 
 bool GetActiveBit(UpdaterScope scope, const std::string& id) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       GetHomeDirPaths(scope), [&id](const base::FilePath& path) {
         const base::FilePath& active_file = GetActiveFile(path, id);
         return base::PathExists(active_file) &&

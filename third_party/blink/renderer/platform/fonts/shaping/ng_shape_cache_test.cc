@@ -8,13 +8,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
 
 class NGShapeCacheTest : public FontTestBase {
  protected:
-  void SetUp() override { cache = MakeGarbageCollected<NGShapeCache>(); }
+  void SetUp() override {
+    Font* font = test::CreateAhemFont(100);
+    cache = MakeGarbageCollected<NGShapeCache>(font->PrimaryFont());
+  }
   Persistent<NGShapeCache> cache;
 };
 

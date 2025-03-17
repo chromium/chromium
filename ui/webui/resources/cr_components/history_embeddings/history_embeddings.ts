@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import './icons.html.js';
 import './result_image.js';
@@ -17,18 +15,19 @@ import {HistoryResultType, QUERY_RESULT_MINIMUM_AGE} from '//resources/cr_compon
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HistoryEmbeddingsBrowserProxyImpl} from './browser_proxy.js';
-import {getTemplate} from './history_embeddings.html.js';
+import {getCss} from './history_embeddings.css.js';
+import {getHtml} from './history_embeddings.html.js';
 import type {SearchQuery, SearchResult, SearchResultItem} from './history_embeddings.mojom-webui.js';
 import {AnswerStatus, UserFeedback} from './history_embeddings.mojom-webui.js';
 
@@ -46,7 +45,7 @@ export const LOADING_STATE_MINIMUM_MS = 300;
 
 export interface HistoryEmbeddingsElement {
   $: {
-    sharedMenu: CrLazyRenderElement<CrActionMenuElement>,
+    sharedMenu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
@@ -75,81 +74,74 @@ declare global {
   }
 }
 
-const HistoryEmbeddingsElementBase = I18nMixin(PolymerElement);
+const HistoryEmbeddingsElementBase = I18nMixinLit(CrLitElement);
 
 export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   static get is() {
     return 'cr-history-embeddings';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      clickedIndices_: Array,
-      forceSuppressLogging: Boolean,
-      numCharsForQuery: Number,
-      feedbackState_: {
-        type: String,
-        value: CrFeedbackOption.UNSPECIFIED,
-      },
-      loadingAnswer_: Boolean,
-      loadingResults_: Boolean,
-      searchResult_: Object,
-      searchQuery: String,
-      timeRangeStart: Object,
+      clickedIndices_: {type: Array},
+      forceSuppressLogging: {type: Boolean},
+      numCharsForQuery: {type: Number},
+      feedbackState_: {type: String},
+      loadingAnswer_: {type: Boolean},
+      loadingResults_: {type: Boolean},
+      searchResult_: {type: Object},
+      searchResultDirty_: {type: Boolean},
+      searchQuery: {type: String},
+      timeRangeStart: {type: Object},
+
       isEmpty: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: true,
-        computed:
-            'computeIsEmpty_(loadingResults_, searchResult_.items.length)',
+        reflect: true,
         notify: true,
       },
+
       enableAnswers_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers'),
+        reflect: true,
       },
-      enableImages_: {
+
+      enableImages_: {type: Boolean},
+      answerSource_: {type: Object},
+      showMoreFromSiteMenuOption: {type: Boolean},
+      showRelativeTimes: {type: Boolean},
+      otherHistoryResultClicked: {type: Boolean},
+
+      inSidePanel: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsImages'),
+        reflect: true,
       },
-      answerSource_: {
-        type: Object,
-        computed: 'computeAnswerSource_(loadingAnswer_, searchResult_.items)',
-        value: null,
-      },
-      showMoreFromSiteMenuOption: {
-        type: Boolean,
-        value: false,
-      },
-      showRelativeTimes: {type: Boolean, value: false},
-      otherHistoryResultClicked: {type: Boolean, value: false},
-      inSidePanel: {type: Boolean, value: false},
     };
   }
 
-  static get observers() {
-    return [
-      'onSearchQueryChanged_(searchQuery, timeRangeStart)',
-    ];
-  }
-
   private actionMenuItem_: SearchResultItem|null = null;
-  private answerSource_: SearchResultItem|null = null;
+  protected answerSource_: SearchResultItem|null = null;
   private answerLinkClicked_: boolean = false;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private clickedIndices_: Set<number> = new Set();
-  private enableAnswers_: boolean;
-  private feedbackState_: CrFeedbackOption;
-  private loadingAnswer_ = false;
-  private loadingResults_ = false;
+  protected enableAnswers_: boolean =
+      loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers');
+  protected enableImages_: boolean =
+      loadTimeData.getBoolean('enableHistoryEmbeddingsImages');
+  protected feedbackState_: CrFeedbackOption = CrFeedbackOption.UNSPECIFIED;
+  protected loadingAnswer_ = false;
+  protected loadingResults_ = false;
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
-  private searchResult_: SearchResult|null = null;
+  protected searchResult_: SearchResult|null = null;
+  protected searchResultDirty_: boolean = false;
   private searchTimestamp_: number = 0;
   /**
    * When this is non-null, that means there's a SearchResult that's pending
@@ -159,11 +151,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    */
   private resultPendingMetricsTimestamp_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  forceSuppressLogging: boolean;
-  isEmpty: boolean;
+  forceSuppressLogging: boolean = false;
+  isEmpty: boolean = true;
   numCharsForQuery: number = 0;
   private numCharsForLastResultQuery_: number = 0;
-  searchQuery: string;
+  searchQuery: string = '';
   timeRangeStart?: Date;
   private searchResultChangedId_: number|null = null;
   /**
@@ -213,6 +205,41 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('loadingResults_') ||
+        changedPrivateProperties.has('searchResult_') ||
+        (changedPrivateProperties.has('searchResultDirty_') &&
+         this.searchResultDirty_)) {
+      this.isEmpty = this.computeIsEmpty_();
+    }
+
+    if (changedPrivateProperties.has('loadingAnswer_') ||
+        changedPrivateProperties.has('searchResult_') ||
+        (changedPrivateProperties.has('searchResultDirty_') &&
+         this.searchResultDirty_)) {
+      this.answerSource_ = this.computeAnswerSource_();
+    }
+
+    const isSearchQueryInitialization =
+        changedProperties.get('searchQuery') === undefined &&
+        this.searchQuery === '';
+    if ((changedProperties.has('searchQuery') &&
+         !isSearchQueryInitialization) ||
+        changedProperties.has('timeRangeStart')) {
+      this.onSearchQueryChanged_();
+    }
+
+    if (changedPrivateProperties.has('searchResultDirty_') &&
+        this.searchResultDirty_) {
+      this.searchResultDirty_ = false;
+    }
+  }
+
   private computeAnswerSource_(): SearchResultItem|null {
     if (!this.enableAnswers_ || this.loadingAnswer_) {
       return null;
@@ -224,7 +251,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return !this.loadingResults_ && this.searchResult_?.items.length === 0;
   }
 
-  private getAnswerOrError_(): string|undefined {
+  protected getAnswerOrError_(): string|undefined {
     if (!this.searchResult_) {
       return undefined;
     }
@@ -247,7 +274,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
-  private getAnswerSourceUrl_(): string|undefined {
+  protected getAnswerSourceUrl_(): string|undefined {
     if (!this.answerSource_) {
       return undefined;
     }
@@ -258,17 +285,17 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       // multiple links in the UI. If the directive contains a comma, it is
       // intended to be part of the start,end syntax and should not be encoded.
       sourceUrl.hash = `:~:text=${
-          textDirectives[0].split(',').map(encodeURIComponent).join(',')}`;
+          textDirectives[0]!.split(',').map(encodeURIComponent).join(',')}`;
     }
     return sourceUrl.toString();
   }
 
-  private getFavicon_(item: SearchResultItem|undefined): string {
+  protected getFavicon_(item: SearchResultItem|undefined): string {
     return getFaviconForPageURL(
         item?.url.url || '', /*isSyncedUrlForHistoryUi=*/ true);
   }
 
-  private getHeadingText_(): string {
+  protected getHeadingText_(): string {
     if (this.loadingResults_) {
       return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
     }
@@ -280,7 +307,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
   }
 
-  private getHeadingTextForAnswerSection_(): string {
+  protected getHeadingTextForAnswerSection_(): string {
     if (this.loadingAnswer_) {
       return this.i18n('historyEmbeddingsAnswerLoadingHeading');
     }
@@ -288,7 +315,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return this.i18n('historyEmbeddingsAnswerHeading');
   }
 
-  private getAnswerDateTime_(): string {
+  protected getAnswerDateTime_(): string {
     if (!this.answerSource_) {
       return '';
     }
@@ -296,11 +323,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return this.i18n('historyEmbeddingsAnswerSourceDate', dateTime);
   }
 
-  private getDateTime_(item: SearchResultItem|undefined): string {
-    if (!item) {
-      return '';
-    }
-
+  protected getDateTime_(item: SearchResultItem): string {
     if (this.showRelativeTimes) {
       return item.relativeTime;
     }
@@ -314,7 +337,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return this.searchResult_?.answer !== '';
   }
 
-  private isAnswerErrorState_(): boolean {
+  protected isAnswerErrorState_(): boolean {
     if (!this.searchResult_) {
       return false;
     }
@@ -322,7 +345,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return this.searchResult_.answerStatus === AnswerStatus.kExecutionFailure;
   }
 
-  private onFeedbackSelectedOptionChanged_(
+  protected onFeedbackSelectedOptionChanged_(
       e: CustomEvent<{value: CrFeedbackOption}>) {
     this.feedbackState_ = e.detail.value;
     switch (e.detail.value) {
@@ -339,93 +362,85 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
-  private onAnswerLinkContextMenu_(e: MouseEvent) {
-    this.dispatchEvent(new CustomEvent('answer-context-menu', {
-      detail: {
-        item: this.answerSource_,
-        x: e.clientX,
-        y: e.clientY,
-      },
-    }));
+  protected onAnswerLinkContextMenu_(e: MouseEvent) {
+    this.fire('answer-context-menu', {
+      item: this.answerSource_,
+      x: e.clientX,
+      y: e.clientY,
+    });
   }
 
-  private onAnswerLinkClick_(e: MouseEvent) {
+  protected onAnswerLinkClick_(e: MouseEvent) {
     this.answerLinkClicked_ = true;
-    this.dispatchEvent(new CustomEvent('answer-click', {
-      detail: {
-        item: this.answerSource_,
-        middleButton: e.button === 1,
-        altKey: e.altKey,
-        ctrlKey: e.ctrlKey,
-        metaKey: e.metaKey,
-        shiftKey: e.shiftKey,
-      },
-    }));
+    this.fire('answer-click', {
+      item: this.answerSource_,
+      middleButton: e.button === 1,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    });
   }
 
-  private onMoreActionsClick_(e: DomRepeatEvent<SearchResultItem>) {
+  protected onMoreActionsClick_(e: Event) {
     e.preventDefault();
     e.stopPropagation();
 
+    assert(this.searchResult_);
     const target = e.target as HTMLElement;
-    const item = e.model.item;
+    const index = Number(target.dataset['index']);
+    const item = this.searchResult_.items[index];
+    assert(item);
     this.actionMenuItem_ = item;
     this.$.sharedMenu.get().showAt(target);
   }
 
-  private onMoreFromSiteClick_() {
+  protected onMoreFromSiteClick_() {
     assert(this.actionMenuItem_);
-    this.dispatchEvent(new CustomEvent(
-        'more-from-site-click',
-        {detail: this.actionMenuItem_, bubbles: true, composed: true}));
+    this.fire('more-from-site-click', this.actionMenuItem_);
     this.$.sharedMenu.get().close();
   }
 
-  private onRemoveFromHistoryClick_() {
+  protected async onRemoveFromHistoryClick_() {
     assert(this.searchResult_);
     assert(this.actionMenuItem_);
-    this.splice(
-        'searchResult_.items',
+
+    this.searchResult_.items.splice(
         this.searchResult_.items.indexOf(this.actionMenuItem_), 1);
-    this.dispatchEvent(new CustomEvent(
-        'remove-item-click',
-        {detail: this.actionMenuItem_, bubbles: true, composed: true}));
+    this.searchResultDirty_ = true;
+    await this.updateComplete;
+    this.fire('remove-item-click', this.actionMenuItem_);
     this.$.sharedMenu.get().close();
   }
 
-  private onResultContextMenu_(
-      e: DomRepeatEvent<SearchResultItem, MouseEvent>) {
-    this.dispatchEvent(new CustomEvent('result-context-menu', {
-      detail: {
-        item: e.model.item,
-        x: e.clientX,
-        y: e.clientY,
-      },
-    }));
+  protected onResultContextMenu_(e: MouseEvent) {
+    assert(this.searchResult_);
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    this.fire('result-context-menu', {
+      item: this.searchResult_.items[index],
+      x: e.clientX,
+      y: e.clientY,
+    });
   }
 
-  private onResultClick_(e: DomRepeatEvent<SearchResultItem, MouseEvent>) {
-    this.dispatchEvent(new CustomEvent('result-click', {
-      detail: {
-        item: e.model.item,
-        middleButton: e.button === 1,
-        altKey: e.altKey,
-        ctrlKey: e.ctrlKey,
-        metaKey: e.metaKey,
-        shiftKey: e.shiftKey,
-      },
-    }));
+  protected onResultClick_(e: MouseEvent) {
+    assert(this.searchResult_);
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    this.fire('result-click', {
+      item: this.searchResult_.items[index],
+      middleButton: e.button === 1,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    });
 
-    this.dispatchEvent(new CustomEvent('record-history-link-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        resultType: HistoryResultType.EMBEDDINGS,
-        index: e.model.index,
-      },
-    }));
+    this.fire('record-history-link-click', {
+      resultType: HistoryResultType.EMBEDDINGS,
+      index,
+    });
 
-    this.clickedIndices_.add(e.model.index);
+    this.clickedIndices_.add(index);
     this.browserProxy_.recordSearchResultsMetrics(
         /* nonEmptyResults= */ true, /* userClickedResult= */ true,
         /* answerShown= */ this.hasAnswer_(),
@@ -513,7 +528,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
-  private showAnswerSection_(): boolean {
+  protected showAnswerSection_(): boolean {
     if (!this.searchResult_) {
       // If there is no search result yet, the search has just started and it
       // is not yet known if an answer is being attempted.

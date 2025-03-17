@@ -129,6 +129,12 @@ declare global {
         ACCOUNT = 'ACCOUNT',
       }
 
+      export enum AttributeTypeDataType {
+        COUNTRY = 'COUNTRY',
+        DATE = 'DATE',
+        STRING = 'STRING',
+      }
+
       export interface AutofillMetadata {
         summaryLabel: string;
         summarySublabel?: string;
@@ -198,30 +204,55 @@ declare global {
         metadata?: AutofillMetadata;
       }
 
-      export interface ValidatePhoneParams {
-        phoneNumbers: string[];
-        indexOfNewNumber: number;
-        countryCode: string;
+      export interface AttributeType {
+        typeName: number;
+        typeNameAsString: string;
+        dataType: AttributeTypeDataType;
       }
 
-      export interface UserAnnotationsEntry {
-        entryId: number;
-        key: string;
+      export interface EntityType {
+        typeName: number;
+        typeNameAsString: string;
+        addEntityTypeString: string;
+        editEntityTypeString: string;
+      }
+
+      export interface AttributeInstance {
+        type: AttributeType;
         value: string;
+      }
+
+      export interface EntityInstance {
+        type: EntityType;
+        attributeInstances: AttributeInstance[];
+        guid: string;
+        nickname: string;
+      }
+
+      export interface EntityInstanceWithLabels {
+        guid: string;
+        entityInstanceLabel: string;
+        entityInstanceSubLabel: string;
+      }
+
+      export interface PayOverTimeIssuerEntry {
+        issuerId?: string;
+        instrumentId?: string;
+        displayName?: string;
+        imageSrc?: string;
       }
 
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
       export function saveAddress(address: AddressEntry): void;
-      export function getCountryList(forAccountAddressProfile: boolean):
+      export function removeAddress(guid: string): void;
+      export function getCountryList(forAccountStorage: boolean):
           Promise<CountryEntry[]>;
       export function getAddressComponents(
           countryCode: string): Promise<AddressComponents>;
       export function getAddressList(): Promise<AddressEntry[]>;
       export function saveCreditCard(card: CreditCardEntry): void;
       export function saveIban(iban: IbanEntry): void;
-      export function removeEntry(guid: string): void;
-      export function validatePhoneNumbers(
-          params: ValidatePhoneParams): Promise<string[]>;
+      export function removePaymentsEntity(guid: string): void;
       export function getCreditCardList(): Promise<CreditCardEntry[]>;
       export function getIbanList(): Promise<IbanEntry[]>;
       export function isValidIban(ibanValue: string): Promise<boolean>;
@@ -230,22 +261,31 @@ declare global {
       export function logServerIbanLinkClicked(): void;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
+      export function getPayOverTimeIssuerList():
+          Promise<PayOverTimeIssuerEntry[]>;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
-      export function hasUserAnnotationsEntries(): Promise<boolean>;
-      export function triggerAnnotationsBootstrapping(): Promise<boolean>;
       export function isUserEligibleForAutofillImprovements(): Promise<boolean>;
-      export function getUserAnnotationsEntries():
-          Promise<UserAnnotationsEntry[]>;
-      export function deleteUserAnnotationsEntry(entryId: number): void;
-      export function deleteAllUserAnnotationsEntries(): void;
       export function predictionImprovementsIphFeatureUsed(): void;
+      export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
+          void;
+      export function removeEntityInstance(guid: string): void;
+      export function loadEntityInstances():
+          Promise<EntityInstanceWithLabels[]>;
+      export function getEntityInstanceByGuid(guid: string):
+          Promise<EntityInstance>;
+      export function getAllEntityTypes(): Promise<EntityType[]>;
+      export function getAllAttributeTypesForEntityTypeName(
+          entityTypeName: number): Promise<AttributeType[]>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
-           ibans: IbanEntry[], accountInfo?: AccountInfo) => void>;
+           ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
+           accountInfo?: AccountInfo) => void>;
+      export const onEntityInstancesChanged: ChromeEvent<
+          (entityInstancesWithLabels: EntityInstanceWithLabels[]) => void>;
     }
   }
 }

@@ -50,10 +50,9 @@ class MEDIA_EXPORT ClocklessAudioSink : public AudioRendererSink {
 
   void SetIsOptimizedForHardwareParametersForTesting(bool value);
 
- protected:
+ private:
   ~ClocklessAudioSink() override;
 
- private:
   const OutputDeviceInfo device_info_;
   std::unique_ptr<ClocklessAudioSinkThread> thread_;
   bool initialized_;

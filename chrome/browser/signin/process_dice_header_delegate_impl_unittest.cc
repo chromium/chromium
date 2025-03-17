@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +35,7 @@ using signin_metrics::Reason;
 namespace {
 
 signin_metrics::AccessPoint kTestAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE;
+    signin_metrics::AccessPoint::kBookmarkBubble;
 
 signin_metrics::PromoAction kTestPromoAction =
     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
@@ -113,9 +114,8 @@ class ProcessDiceHeaderDelegateImplTest
         show_error_called_(false),
         email_("foo@bar.com"),
         auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
-    std::string kGaiaId = "12345";
-    account_info_.account_id = CoreAccountId::FromGaiaId(kGaiaId);
-    account_info_.gaia = kGaiaId;
+    account_info_.gaia = GaiaId("12345");
+    account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
     account_info_.email = "email@gmail.com";
   }
 
@@ -183,8 +183,7 @@ class ProcessDiceHeaderDelegateImplTest
       // error callback.
       return std::make_unique<ProcessDiceHeaderDelegateImpl>(
           web_contents(), /*is_sync_signin_tab=*/false,
-          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-          kTestPromoAction, GURL(),
+          signin_metrics::AccessPoint::kWebSignin, kTestPromoAction, GURL(),
           ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
@@ -459,7 +458,7 @@ struct TokenExchangeSuccessConfiguration {
   // Expected value for the MaybeInterceptWebSigin call.
   bool sync_signin = false;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::kUnknown;
 };
 
 TokenExchangeSuccessConfiguration kHandleTokenExchangeSuccessTestCases[] = {
@@ -467,15 +466,15 @@ TokenExchangeSuccessConfiguration kHandleTokenExchangeSuccessTestCases[] = {
     // is_reauth | signin_tab |       reason               |
     //      sync_signin  | access_point
     {  false,      false,     Reason::kSigninPrimaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN },
+            false, signin_metrics::AccessPoint::kWebSignin },
     {  false,      true,      Reason::kSigninPrimaryAccount,
-            true, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
+            true, signin_metrics::AccessPoint::kBookmarkBubble },
     {  false,      true,      Reason::kAddSecondaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
+            false, signin_metrics::AccessPoint::kBookmarkBubble },
     {  true,       false,     Reason::kSigninPrimaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN },
+            false, signin_metrics::AccessPoint::kWebSignin },
     {  true,       true,      Reason::kSigninPrimaryAccount,
-            true, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
+            true, signin_metrics::AccessPoint::kBookmarkBubble },
 
     // clang-format on
 };

@@ -18,8 +18,7 @@
 
 typedef testing::Test MessageFormatterTest;
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 class MessageFormatterTest : public testing::Test {
  protected:
@@ -27,9 +26,7 @@ class MessageFormatterTest : public testing::Test {
     original_locale_ = GetConfiguredLocale();
     SetICUDefaultLocale("en-US");
   }
-  ~MessageFormatterTest() override {
-    SetICUDefaultLocale(original_locale_);
-  }
+  ~MessageFormatterTest() override { SetICUDefaultLocale(original_locale_); }
 
  private:
   std::string original_locale_;
@@ -178,5 +175,4 @@ TEST_F(MessageFormatterTest, SelectorSingleOrMultiple) {
   EXPECT_EQ(u"UNUSED", result);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

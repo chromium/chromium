@@ -119,24 +119,11 @@ class AndroidMetricsServiceClient
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
 
-  // Updates the state of whether UKM is enabled or not by calling back into
-  // IsUkmAllowedForAllProfiles(). If |must_purge| is true then currently
-  // collected data will be purged.
-  void UpdateUkm(bool must_purge);
-
-  // Updates the state of the UKM service if it's running. This should be called
-  // when a BrowserContext is created or destroyed which would change the value
-  // of IsOffTheRecordSessionActive().
-  void UpdateUkmService();
-
-  // Updates the state of the DWA service if it's running.
-  void UpdateDwaService();
-
   // Whether or not consent state has been determined, regardless of whether
   // it is positive or negative.
   bool IsConsentDetermined() const;
 
-  // EnabledStateProvider
+  // EnabledStateProvider:
   bool IsConsentGiven() const override;
   bool IsReportingEnabled() const override;
 
@@ -144,10 +131,9 @@ class AndroidMetricsServiceClient
   // was given).
   MetricsService* GetMetricsServiceIfStarted();
 
-  // MetricsServiceClient
+  // MetricsServiceClient:
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   MetricsService* GetMetricsService() override;
-  ukm::UkmService* GetUkmService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   std::string GetApplicationLocale() override;
   const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
@@ -165,9 +151,7 @@ class AndroidMetricsServiceClient
       MetricsLogUploader::MetricServiceType service_type,
       const MetricsLogUploader::UploadCallback& on_upload_complete) override;
   base::TimeDelta GetStandardUploadInterval() override;
-  bool IsUkmAllowedForAllProfiles() override;
-  bool IsDwaAllowedForAllProfiles() override;
-  bool ShouldStartUpFastForTesting() const override;
+  bool ShouldStartUpFast() const override;
 
   // Gets the embedding app's package name if it's OK to log. Otherwise, this
   // returns the empty string.
@@ -175,7 +159,7 @@ class AndroidMetricsServiceClient
 
   void OnWebContentsCreated(content::WebContents* web_contents);
 
-  // content::RenderProcessHostCreationObserver
+  // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // RenderProcessHostObserver:
@@ -278,8 +262,6 @@ class AndroidMetricsServiceClient
   void RegisterForNotifications();
 
   void RegisterMetricsProvidersAndInitState();
-  void CreateUkmService();
-  void CreateDwaService();
 
   void OnApplicationNotIdle();
   void OnDidStartLoading();
@@ -292,8 +274,6 @@ class AndroidMetricsServiceClient
                           variations::SyntheticTrialObserver>
       synthetic_trial_observation_{&synthetic_trial_observer_};
   std::unique_ptr<MetricsService> metrics_service_;
-  std::unique_ptr<ukm::UkmService> ukm_service_;
-  std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       host_observation_{this};

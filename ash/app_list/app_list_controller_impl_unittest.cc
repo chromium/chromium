@@ -24,6 +24,8 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -41,6 +43,7 @@
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
@@ -510,34 +513,89 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
   // Test that there is no crash on ~AppListModel() when the test finishes.
 }
 
-TEST_F(AppListControllerImplTest,
-       SunfishButtonHiddenWhenPreferenceChangedToFalse) {
-  base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
+// Test with Scanner feature flags enabled, as `ScannerController` is only
+// instantiated when the feature flags are enabled when `Shell` is initialised.
+class AppListControllerImplScannerEnabledTest
+    : public AppListControllerImplTest {
+ public:
+  AppListControllerImplScannerEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kSunfishFeature,
+            features::kScannerUpdate,
+            features::kScannerDogfood,
+        },
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AppListControllerImplScannerEnabledTest,
+       SunfishButtonVisibilityUpdatedOnAppListVisibilityChange) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  prefs->SetBoolean(prefs::kSunfishEnabled, true);
+  prefs->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+  auto* test_capture_mode_delegate = static_cast<TestCaptureModeDelegate*>(
+      CaptureModeController::Get()->delegate_for_testing());
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
   SearchBoxModel* search_box_model =
       AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(true);
 
-  prefs->SetBoolean(prefs::kSunfishEnabled, false);
-
-  EXPECT_FALSE(search_box_model->show_sunfish_button());
-}
-
-TEST_F(AppListControllerImplTest,
-       SunfishButtonHiddenWhenPreferenceChangedToTrue) {
-  base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  prefs->SetBoolean(prefs::kSunfishEnabled, false);
-  SearchBoxModel* search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(false);
-
-  prefs->SetBoolean(prefs::kSunfishEnabled, true);
-
-  EXPECT_TRUE(search_box_model->show_sunfish_button());
+  // Start with Scanner icon.
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
+  // Scanner icon -> hidden.
+  prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                    static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kHidden);
+  // Hidden -> Scanner icon.
+  prefs->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
+  // Scanner icon -> Sunfish icon (with Scanner enabled).
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(true);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
+  // Sunfish icon -> hidden.
+  prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                    static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kHidden);
+  // Hidden -> Sunfish icon (with Scanner disabled).
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(true);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
+  // Sunfish icon -> Scanner icon.
+  prefs->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
 }
 
 class AppListControllerImplTestWithNotificationBadging

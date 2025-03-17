@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//components/signin/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
@@ -34,15 +33,12 @@ build_webui("build") {
     "sync_confirmation/sync_disabled_confirmation.html",
     "sync_confirmation/sync_loading_confirmation.html",
   ]
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     static_files += [
       "managed_user_profile_notice/managed_user_profile_notice.html",
       "profile_customization/profile_customization.html",
       "signin_email_confirmation/signin_email_confirmation.html",
       "signin_error/signin_error.html",
-      "signin_reauth/images/account_passwords_reauth_illustration.svg",
-      "signin_reauth/images/account_passwords_reauth_illustration_dark.svg",
-      "signin_reauth/signin_reauth.html",
     ]
   }
   if (enable_dice_support) {
@@ -62,7 +58,7 @@ build_webui("build") {
     "sync_confirmation/sync_disabled_confirmation_app.ts",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     non_web_component_files += [
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.html.ts",
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.ts",
@@ -85,9 +81,6 @@ build_webui("build") {
       "signin_error/signin_error.ts",
       "signin_error/signin_error_app.html.ts",
       "signin_error/signin_error_app.ts",
-      "signin_reauth/signin_reauth_app.html.ts",
-      "signin_reauth/signin_reauth_app.ts",
-      "signin_reauth/signin_reauth_browser_proxy.ts",
     ]
   }
   if (enable_dice_support) {
@@ -110,7 +103,7 @@ build_webui("build") {
     "tangible_sync_style_shared.css",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     css_files += [
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.css",
       "managed_user_profile_notice/managed_user_profile_notice_app.css",
@@ -121,7 +114,6 @@ build_webui("build") {
       "profile_customization/profile_customization_app.css",
       "signin_email_confirmation/signin_email_confirmation_app.css",
       "signin_error/signin_error_app.css",
-      "signin_reauth/signin_reauth_app.css",
     ]
   }
   if (enable_dice_support) {

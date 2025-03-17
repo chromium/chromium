@@ -33,6 +33,11 @@
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(IS_IOS)
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#endif
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -72,6 +77,13 @@ class ProfileOAuth2TokenServiceDelegate {
       OAuth2AccessTokenConsumer* consumer,
       const std::string& token_binding_challenge) = 0;
 
+#if BUILDFLAG(IS_IOS)
+  virtual void GetRefreshTokenFromDevice(
+      const CoreAccountId& account_id,
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
+      signin::AccessTokenFetcher::TokenCallback callback) = 0;
+#endif
+
   // Returns |true| if a refresh token is available for |account_id|, and
   // |false| otherwise.
   // Note: Implementations must make sure that |RefreshTokenIsAvailable| returns
@@ -79,6 +91,15 @@ class ProfileOAuth2TokenServiceDelegate {
   // returned by |GetAccounts|.
   virtual bool RefreshTokenIsAvailable(
       const CoreAccountId& account_id) const = 0;
+
+#if BUILDFLAG(IS_IOS)
+  // Returns |true| if a refresh token is available for |account_id| on the
+  // device, and |false| otherwise. Note: Implementations must make sure that
+  // |RefreshTokenIsAvailable| returns |true| if and only if |account_id| is
+  // contained in the list of accounts returned by |GetAccountsOnDevice|.
+  virtual bool RefreshTokenIsAvailableOnDevice(
+      const CoreAccountId& account_id) const = 0;
+#endif  // BUILDFLAG(IS_IOS)
 
   virtual GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const;
@@ -198,8 +219,7 @@ class ProfileOAuth2TokenServiceDelegate {
   // for this method.
   // Redirects to `LoadCredentialsInternal()` which can be overridden by
   // subclasses. Sets the source for the refresh token operation.
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing);
+  void LoadCredentials(const CoreAccountId& primary_account_id);
 
   // Returns the state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state() const {
@@ -235,7 +255,7 @@ class ProfileOAuth2TokenServiceDelegate {
 #if BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
   virtual void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      const std::vector<CoreAccountInfo>& core_account_infos,
+      const std::vector<AccountInfo>& accounts,
       const std::optional<CoreAccountId>& primary_account_id) {}
 
   // Returns a reference to the corresponding Java object.
@@ -284,6 +304,7 @@ class ProfileOAuth2TokenServiceDelegate {
                             const GoogleServiceAuthError& error);
 #if BUILDFLAG(IS_IOS)
   void FireAccountsOnDeviceChanged();
+  void FireAccountOnDeviceUpdated(const AccountInfo& account_info);
 #endif
 
   // Helper class to scope batch changes.
@@ -313,8 +334,8 @@ class ProfileOAuth2TokenServiceDelegate {
   // Internal implementations of the methods that can be overridden by
   // subclasses.
 
-  virtual void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
-                                       bool is_syncing) = 0;
+  virtual void LoadCredentialsInternal(
+      const CoreAccountId& primary_account_id) = 0;
 
   virtual void UpdateCredentialsInternal(
       const CoreAccountId& account_id,

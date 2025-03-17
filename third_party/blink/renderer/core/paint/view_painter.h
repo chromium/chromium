@@ -35,6 +35,8 @@ class ViewPainter {
 
   void PaintBoxDecorationBackground(const PaintInfo&);
 
+  static bool ShouldApplyRootBackgroundBehavior(const Document&);
+
  private:
   void PaintRootElementGroup(
       const PaintInfo&,

@@ -63,12 +63,8 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
     CHECK(reference_data_);
     EXPECT_EQ(reference_data_->channels(), data.channels());
     EXPECT_EQ(reference_data_->frames(), data.frames());
-    for (int i = 0; i < data.channels(); ++i) {
-      const float* data_ptr = data.channel(i);
-      float* ref_data_ptr = reference_data_->channel(i);
-      for (int j = 0; j < data.frames(); ++j, ++data_ptr, ++ref_data_ptr) {
-        EXPECT_EQ(*ref_data_ptr, *data_ptr);
-      }
+    for (int ch = 0; ch < data.channels(); ++ch) {
+      EXPECT_EQ(data.channel_span(ch), reference_data_->channel_span(ch));
     }
     DoWrite(data);
   }

@@ -30,11 +30,8 @@ RenderProcessHostTaskProvider::~RenderProcessHostTaskProvider() = default;
 Task* RenderProcessHostTaskProvider::GetTaskOfUrlRequest(int child_id,
                                                          int route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto itr = tasks_by_rph_id_.find(child_id);
-  if (itr == tasks_by_rph_id_.end())
-    return nullptr;
-
-  return itr->second.get();
+  auto itr = tasks_by_rph_id_.find(content::ChildProcessId(child_id));
+  return itr != tasks_by_rph_id_.end() ? itr->second.get() : nullptr;
 }
 
 void RenderProcessHostTaskProvider::StartUpdating() {
@@ -45,7 +42,7 @@ void RenderProcessHostTaskProvider::StartUpdating() {
     RenderProcessHost* host = it.GetCurrentValue();
     host_observation_.AddObservation(host);
     if (host->GetProcess().IsValid()) {
-      CreateTask(host->GetDeprecatedID());
+      CreateTask(host);
     } else {
       // If the host isn't ready, do nothing and wait for the
       // OnRenderProcessHostCreated() notification.
@@ -66,29 +63,28 @@ void RenderProcessHostTaskProvider::StopUpdating() {
 }
 
 void RenderProcessHostTaskProvider::CreateTask(
-    const int render_process_host_id) {
+    content::RenderProcessHost* host) {
   // Checks that the task by RenderProcessHost ID isn't already a task in the
   // map and deletes it if it is so they new task can be cleanly added.
+  const content::ChildProcessId render_process_host_id = host->GetID();
   DeleteTask(render_process_host_id);
-  std::unique_ptr<ChildProcessTask>& task =
-      tasks_by_rph_id_[render_process_host_id];
-
-  RenderProcessHost* host = RenderProcessHost::FromID(render_process_host_id);
 
   // TODO(cburn): plumb out something from RPH so the title can be set here.
   // Create the task and notify the observer.
   ChildProcessData data(content::PROCESS_TYPE_RENDERER, host->GetID());
   data.SetProcess(host->GetProcess().Duplicate());
 
+  std::unique_ptr<ChildProcessTask>& task =
+      tasks_by_rph_id_[render_process_host_id];
   task = std::make_unique<ChildProcessTask>(
       data, ChildProcessTask::ProcessSubtype::kUnknownRenderProcess);
   NotifyObserverTaskAdded(task.get());
 }
 
 void RenderProcessHostTaskProvider::DeleteTask(
-    const int render_process_host_id) {
+    const content::ChildProcessId render_process_host_id) {
   auto itr = tasks_by_rph_id_.find(render_process_host_id);
-  // If the render process host id isn't being tracked in |tasks_by_rph_id| do
+  // If the render process host id isn't being tracked in `tasks_by_rph_id` do
   // nothing.
   if (itr == tasks_by_rph_id_.end())
     return;
@@ -102,7 +98,7 @@ void RenderProcessHostTaskProvider::DeleteTask(
 void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   if (is_updating_) {
-    CreateTask(host->GetDeprecatedID());
+    CreateTask(host);
     // If the host is reused after the process exited, it is possible to get a
     // second created notification for the same host.
     if (!host_observation_.IsObservingSource(host)) {
@@ -114,13 +110,13 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
 void RenderProcessHostTaskProvider::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  DeleteTask(host->GetDeprecatedID());
+  DeleteTask(host->GetID());
   host_observation_.RemoveObservation(host);
 }
 
 void RenderProcessHostTaskProvider::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  DeleteTask(host->GetDeprecatedID());
+  DeleteTask(host->GetID());
   host_observation_.RemoveObservation(host);
 }
 

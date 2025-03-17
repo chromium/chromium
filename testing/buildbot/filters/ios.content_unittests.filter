@@ -5,3 +5,11 @@
 -IndexedDBQuotaClientTest.DeleteBucketCustom/1
 -IndexedDBQuotaClientTest.DeleteBucketThirdParty/0
 -IndexedDBQuotaClientTest.DeleteBucketThirdParty/1
+
+# TODO(crbug.com/393408576): These tests have been failing since
+# https://crrev.com/c/5581575.
+-TracingScenarioSystemBackendTest.FeatureNotEnabled_1
+-TracingScenarioSystemBackendTest.FeatureNotEnabled_2
+-TracingScenarioSystemBackendTest.ScenarioConfigWithoutSystemBackend
+-TracingScenarioSystemBackendTest.StartStop
+-TracingScenarioSystemBackendTest.SystemConsumerNotAllowedByCallback

@@ -62,6 +62,9 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Ends the session and saves session information into histograms.
+  void EndSessionForTesting();
+
   // Cleans up any global state for testing.
   static void CleanupForTesting();
 

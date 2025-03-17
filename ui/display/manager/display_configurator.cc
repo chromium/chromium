@@ -724,12 +724,19 @@ void DisplayConfigurator::RelinquishControl(DisplayControlCallback callback) {
 
   display_control_changing_ = true;
 
-  // Turn off the displays before releasing control since we're no longer using
-  // them for output.
-  SetDisplayPowerInternal(
-      chromeos::DISPLAY_POWER_ALL_OFF, kSetDisplayPowerNoFlags,
-      base::BindOnce(&DisplayConfigurator::SendRelinquishDisplayControl,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (display::features::IsFastDrmMasterDropEnabled()) {
+    // Fast DRM drop forgoes turning off displays in favor of detaching all the
+    // planes and turning the screen black as part of the relinquish display
+    // process.
+    SendRelinquishDisplayControl(std::move(callback), /*success=*/true);
+  } else {
+    // Turn off the displays before releasing control since we're no longer
+    // using them for output.
+    SetDisplayPowerInternal(
+        chromeos::DISPLAY_POWER_ALL_OFF, kSetDisplayPowerNoFlags,
+        base::BindOnce(&DisplayConfigurator::SendRelinquishDisplayControl,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 void DisplayConfigurator::GetSeamlessRefreshRates(
@@ -768,7 +775,17 @@ void DisplayConfigurator::OnDisplayControlRelinquished(
 
   display_control_changing_ = false;
   display_externally_controlled_ = success;
-  if (!success) {
+  if (success) {
+    if (display::features::IsFastDrmMasterDropEnabled()) {
+      // Emit a fake power-off signal call to Ash so it treats all displays as
+      // disconnected.
+      OnConfigured(/*success=*/true,
+                   /*displays=*/cached_displays_,
+                   /*unassociated_displays=*/{},
+                   /*new_display_state=*/current_display_state_,
+                   /*new_power_state=*/chromeos::DISPLAY_POWER_ALL_OFF);
+    }
+  } else {
     force_configure_ = true;
     RunPendingConfiguration();
   }

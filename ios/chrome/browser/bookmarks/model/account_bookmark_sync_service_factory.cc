@@ -7,7 +7,6 @@
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
@@ -29,9 +28,7 @@ AccountBookmarkSyncServiceFactory::GetInstance() {
 
 AccountBookmarkSyncServiceFactory::AccountBookmarkSyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("AccountBookmarkSyncService",
-                                    ProfileSelection::kRedirectedInIncognito) {
-  DependsOn(BookmarkUndoServiceFactory::GetInstance());
-}
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
 AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
     default;
@@ -39,10 +36,8 @@ AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
 std::unique_ptr<KeyedService>
 AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service(
       new sync_bookmarks::BookmarkSyncService(
-          BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways));
   return bookmark_sync_service;
 }

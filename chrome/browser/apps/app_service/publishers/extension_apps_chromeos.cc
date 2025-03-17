@@ -4,13 +4,13 @@
 
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -33,6 +33,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
@@ -40,14 +41,12 @@
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/chromeos/extensions/web_file_handlers/intent_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -70,6 +69,8 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -83,10 +84,12 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/launch_util.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
@@ -190,6 +193,32 @@ void MaybeAssociateWebContentsWithArcContext(
         std::make_unique<arc::ArcWebContentsData>(web_contents));
   }
 }
+
+// Get all names that were selected when the intent to open was initiated.
+std::vector<base::SafeBaseName> GetBaseNamesForIntent(
+    const apps::Intent& intent) {
+  std::vector<base::SafeBaseName> base_names;
+  for (const auto& file : intent.files) {
+    std::optional<base::SafeBaseName> optional_base_name =
+        base::SafeBaseName::Create(file->url.path());
+
+    // Launch requires that every file have a base name.
+    if (!optional_base_name.has_value() ||
+        optional_base_name.value().path().empty()) {
+      return {};
+    }
+
+    base_names.emplace_back(std::move(optional_base_name.value()));
+  }
+  return base_names;
+}
+
+// Legacy versions of the QuickOffice extension are not compatible with web file
+// handlers.
+bool IsLegacyQuickOfficeExtension(const extensions::Extension& extension) {
+  return extension_misc::IsQuickOfficeExtension(extension.id()) &&
+         !extensions::WebFileHandlers::SupportsWebFileHandlers(extension);
+}
 }  // namespace
 
 namespace apps {
@@ -275,7 +304,6 @@ void ExtensionAppsChromeOs::Initialize() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 void ExtensionAppsChromeOs::GetCompressedIconData(
     const std::string& app_id,
     int32_t size_in_dip,
@@ -284,7 +312,6 @@ void ExtensionAppsChromeOs::GetCompressedIconData(
   apps::GetChromeAppCompressedIconData(profile(), app_id, size_in_dip,
                                        scale_factor, std::move(callback));
 }
-#endif
 
 void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                                     LaunchCallback callback) {
@@ -347,8 +374,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
 
   // Launch Web File Handlers if they're supported by the extension.
   if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
-    std::vector<base::SafeBaseName> base_names =
-        extensions::GetBaseNamesForIntent(*intent);
+    std::vector<base::SafeBaseName> base_names = GetBaseNamesForIntent(*intent);
 
     // This vector cannot be empty because this is reached after explicitly
     // opening one or more files.
@@ -831,6 +857,10 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
   UpdateAppDisabledState(disabled_system_features_pref,
                          static_cast<int>(policy::SystemFeature::kWebStore),
                          extensions::kWebStoreAppId, is_disabled_mode_changed);
+  UpdateAppDisabledState(disabled_system_features_pref,
+                         static_cast<int>(policy::SystemFeature::kTextEditor),
+                         extension_misc::kTextEditorAppId,
+                         is_disabled_mode_changed);
 }
 
 bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
@@ -929,8 +959,7 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   app->has_badge = app_notifications_.HasNotification(extension->id());
   app->paused = paused;
 
-  if (extension->is_app() ||
-      extensions::IsLegacyQuickOfficeExtension(*extension)) {
+  if (extension->is_app() || IsLegacyQuickOfficeExtension(*extension)) {
     app->intent_filters = apps_util::CreateIntentFiltersForChromeApp(extension);
   } else if (extension->is_extension()) {
     app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);
@@ -1041,6 +1070,11 @@ void ExtensionAppsChromeOs::RegisterInstance(extensions::AppWindow* app_window,
 
 content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
     AppLaunchParams&& params) {
+  if (chrome_app_deprecation::HandleDeprecation(params.app_id, profile()) ==
+      chrome_app_deprecation::DeprecationStatus::kLaunchBlocked) {
+    return nullptr;
+  }
+
   AppLaunchParams params_for_restore(
       params.app_id, params.container, params.disposition, params.launch_source,
       params.display_id, params.launch_files, params.intent);

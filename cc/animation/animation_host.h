@@ -18,7 +18,6 @@
 #include "cc/base/protected_sequence_synchronizer.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/mutator_host_client.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 

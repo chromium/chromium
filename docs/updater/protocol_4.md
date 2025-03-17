@@ -40,6 +40,34 @@ The ping-back is an HTTP POST with a JSON data body. The response may contain a
 JSON data body acknowledging the received data, but should be ignored by the
 client unless CUP is in use on this request.
 
+In order to maintain consistency with prior protocols, all objects are designed
+to be serializable in both XML and JSON. Type names defined in this document are
+organizational only, and are not actually serialized as a part of any response
+or request.
+
+For example, we define a `hash` object named `in` represented as:
+> JSON:
+> "in": { "sha256": "hashvalue" }
+> XML:
+> <in sha256="hashvalue" />
+
+There are multiple ways to serialize lists of objects. JSON style suggests that
+lists should have plural property names. In XML, we opted for repeated fields
+with the same pluralized node name. This allows the JSON to be represented as a
+list with the same node name represented only once. This decision also has the
+added benefit that even in cases where only one element is provided in the XML,
+the name indicates that this type should be interpreted as a list of size 1.
+
+For example, we define a list of `hash` objects, named `cached_items`, which is
+represented as:
+> JSON:
+> "cached_items": [
+>   { "sha256": "hashvalue" },
+>   { "sha256": "otherhashvalue" }
+> ]
+> XML:
+> <cached_items sha256="hashvalue" />
+> <cached_items sha256="otherhashvalue" />
 
 ## Concepts
 
@@ -132,16 +160,8 @@ A differential update achieves better compression by relying on information
 
 A version number is usually insufficient to identify the binaries the client
 already has, since they may vary by architecture, platform, or other variables
-while retaining the same official version number. Therefore, the server sends a
-more precise label with each package. Once an update payload is installed, the
-"package fingerprint" that is associated with this payload is then sent back in
-subsequent update checks.
-
-The package fingerprint sent by the server must identify the payload that will
-eventually be installed by the client as a result of processing the server's
-response. This will usually be derived from a checksum of the package payload,
-which will be different from the payload the client initially downloads if the
-downloaded payload is compressed, differential, or otherwise transformed.
+while retaining the same official version number. Therefore, the client sends
+hashes of the binaries it has cached.
 
 ### Pipelines
 A pipeline represents a series of operations to obtain and process a payload in
@@ -158,6 +178,15 @@ client will attempt the next pipeline available, proceeding until either a
 pipeline is successful, or all pipelines have failed. This increases the
 probability that a pipeline will be applied, even if all differential pipelines
 fail.
+
+Some pipeline operations have an `in` member, describing the hash of the
+file that the operation will operate on. If a file with a matching hash is
+already cached, clients may skip the preceding operations. Similarly, clients
+may skip operations preceding and including any operation that has an
+`out` member if they already have a file matching `out` cached.
+Since the contents of the cache may change as a client attempts and falls back
+between pipelines, the server cannot always predict what operations a client
+may skip.
 
 ### Extensions & Forward Compatibility
 The protocol is extensible via the addition of new object members. Clients must
@@ -268,7 +297,7 @@ A request object has the following members:
      Default: "".
      The valid operations are any of the types supported by the
      [Operation Object](#operation-objects-update-check-response)
- *   `app`: A list of `app` objects.
+ *   `apps`: A list of `app` objects.
  *   `dedup`: A string, must be "cr". This indicates to servers that the client
      intends to use client-regulated counting algorithms rather than any sort of
      unique identifier. Version 3.0 of the protocol also supported "uid".
@@ -297,7 +326,7 @@ A request object has the following members:
      probers to distinguish this request from real user traffic. Any value
      other than the empty string indicates that the request should not be
      counted toward official metrics. Default: "" (empty string).
- *   `updater`: A list of `updater` objects.
+ *   `updaters`: A list of `updater` objects.
  *   `updaterchannel`: If present, identifies the distribution channel of the
      client (e.g. "stable", "beta", "dev", "canary", "extended"). Default: "".
  *   `updaterversion`: The version of the client that is sending this request.
@@ -388,12 +417,10 @@ following members:
      unknown, or that the concept of enabling/disabling does not exist. "0"
      indicates that the application is disabled. "1" indicates that the app is
      enabled.  Default: "-1".
- *   `fp`: A `fingerprint` object representing the currently installed
-     [package fingerprint](#differential-updates) of the application.
- *   `cached_fingerprints`: A list of `fingerprint` objects, one for each
-     currently cached [package fingerprint](#differential-updates)
-     of the application. This list may be empty if the local cache is empty or
-     does not exist.
+ *   `cached_items`: A list of `hash` objects, identifying files that the
+     client has available to use for the purposes of differential updates. This
+     list may be empty, for example if the local cache is empty or does not
+     exist.
  *   `iid`: Installation ID is an opaque token that identifies an installation
      flow. The installation ID is a unique identifier embedded into a
      metainstaller for the application. It can be used to correlate the first
@@ -438,11 +465,8 @@ following members:
  *   `updatecheck`: An `updatecheck` object. This member may be omitted if the
      client will not honor an update response.
 
-#### `fingerprint` Objects (Update Check Request)
-A `fingerprint` object contains a string representing the
-[package fingerprint](#differential-updates) for this update.
- *   `fingerprint`: The package fingerprint for this package given as a string,
-     or "" if the fingerprint is unknown. Default: "".
+#### `hash` Objects (Update Check Request and Update Check Response)
+ *   `sha256`: A SHA-256 hash, rendered in lowercase base16.
 
 #### `ping` Objects (Update Check Request)
  *   `ad`: The date that the previous active report took place on, or "-1" if
@@ -573,11 +597,9 @@ newline character, followed by a JSON object with the following members:
 #### `response` Objects (Update Check Response)
 A response object contains the server's response to a corresponding `request`
 object in the update check request.
- *   `app`: A list of `app` objects. There is one object for each `app` in the
+ *   `apps`: A list of `app` objects. There is one object for each `app` in the
      request body.
  *   `daystart`: A `daystart` object.
- *   `systemrequirements`: A `systemrequirements` object. The server will not
-     send this element, but it may be present in offline installer manifests.
  *   `protocol`: The version of the Omaha protocol. Servers responding with this
      protocol must send a value of "4.0".
  *   `server`: A string identifying the server or server family for diagnostic
@@ -591,47 +613,6 @@ server's locale. It has the following members:
      request was received. The client should generally save this value for use
      in future update checks (for examples, see `request.app.ping.rd` and
      `request.app.installdate`).
-
-#### `systemrequirements` Objects (Update Check Response)
-A `systemrequirements` object contains information about the operating system
-that the application requires to install. It has the following members:
- *   `platform`: The operating system family that the application requires
-     (e.g. "win", "mac", "linux", "ios", "android"), or "" if not applicable.
- *   `arch`: Expected host processor architecture that the app is compatible
-     with, or "" if not applicable.
-
-     `arch` can be a single entry, or multiple entries separated with `,`.
-     Entries prefixed with a `-` (negative entries) indicate non-compatible
-     hosts. Non-prefixed entries indicate compatible guests.
-
-     An application is compatible with the current architecture if:
-     * `arch` is empty, or
-     * none of the negative entries within `arch` match the current host
-       architecture exactly, and there are no non-negative entries, or
-     * one of the non-negative entries within `arch` matches the current
-       architecture, or is compatible with the current architecture (i.e., it is
-       a compatible guest for the current host). The latter is determined by
-       `::IsWow64GuestMachineSupported()` on Windows.
-       * If `::IsWow64GuestMachineSupported()` is not available, returns `true`
-         if `arch` is x86.
-
-     Examples:
-     * `arch` == "x86".
-     * `arch` == "x64".
-     * `arch` == "x86,x64,-arm64": installation will fail if the underlying host
-       is arm64.
- *   `min_os_version`: The minimum required version of the operating system, or
-     "" if not applicable.
-
-     The `min_os_version` is in the format `major.minor.build.patch` for
-     Windows. The `major`, `minor` and `build` are the values returned by the
-     `::GetVersionEx` API. The `patch` is the `UBR` value under the registry
-     path `HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion`.
-
-     The `build` and the `patch` components may be omitted if all that is needed
-     is a minimum `major.minor` version. For example, `6.0` will match all OS
-     versions that are at or above that version, regardless of `build` and
-     `patch` numbers.
 
 #### `app` Objects (Update Check Response)
 An app object represents a per-application acknowledgement of the request. If an
@@ -708,17 +689,23 @@ the following members:
      *   "error-inexpressible": The server finds that it is unable to produce a
          list of pipelines for the given product using the set of operations
          provided in `acceptformat`.
+
+The following members are only present if the `status` is "ok":
+ *   `nextversion`: The expected version of the product, if any pipeline is
+     able to complete all operations successfully.
  *   `pipelines`: A list of `pipeline` objects.
 
 #### `pipeline` Objects (Update Check Response)
 A pipeline object describes a pipeline process that may be applied in order to
 update the current binary. A pipeline is represented as a series of operations.
 A pipeline object has the following members:
+ *  `pipeline_id`: A string describing the pipeline strategy. This string is
+    echoed back to the server in `event` objects to help the server attribute
+    events to a particular pipeline. Pipeline IDs are not necessarily globally
+    unique; for example, a server might use an ID of "h1 -> h2 via zucchini" to
+    identify a pipeline that updates an application from h1 to h2, using a
+    zucchini patch, and reuse that ID across many update check responses.
  *  `operations`: A list of `operation` objects.
- *  `nextversion`: The expected version of the product, if this pipeline is
-    able to complete all operations successfully.
- *  `nextfp`: A `fingerprint` object representing the package fingerprint
-    associated with the package file that this pipeline installs.
 
 #### `operation` Objects (Update Check Response)
 A operation object describes one of many operations to be performed in order to
@@ -732,9 +719,9 @@ the following members:
 
 For `type == "download"`: Download a payload.
  *  `size`: The size in bytes of the payload requested for download.
- *  `outhash_sha256`: The SHA256 hash of the payload downloaded, encoded as a
-    lowercase hexadecimal string.
- *  `urls`: The ordered list of url objects from which this payload may be
+ *  `out`: A `hash` object containing the expected hash of the downloaded
+    bytes.
+ *  `urls`: The ordered list of `url` objects from which this payload may be
     obtained. Clients must attempt to download from each URL of the appropriate
     type in the specified order, falling back to the next URL if a TCP or HTTP
     error is encountered. A 4xx or 5xx HTTP response qualifies as an error that
@@ -749,19 +736,17 @@ For `type == "decompress_lzma"`: Decompress a file produced by the previous
 For `type == "zucc"`: Apply a differential Zucchini patch produced by a
     previous operation to a cached payload. The patch is generated using
     [Zucchini](https://chromium.googlesource.com/chromium/src.git/+/main/components/zucchini/README.md).
- *  `previousfp`: A `fingerprint` object representing the package fingerprint of
-    the package that must be used as the input for this patch operation.
+ *  `previous`: A `hash` object representing the file to apply this patch to.
 
 For `type == "puff"`: Apply a differential Puffin patch produced by a previous
     operation to a payload stored in the cache. The patch is generated using
     [Puffin](https://chromium.googlesource.com/chromium/src.git/+/main/third_party/puffin/README.md).
- *  `previousfp`: A `fingerprint` object representing the package fingerprint of
-    the package that must be used as the input for this patch operation.
+ *  `previous`: A `hash` object representing the file to apply this patch to.
 
 For `type == "crx3"`: Decompress a CRX3 package produced by the previous
     operation and install it.
- *  `inhash_sha256`: The SHA256 hash of the payload produced by the previous
-    operation, encoded as a lowercase hexadecimal string.
+ *  `in`: A `hash` object containing the expected hash of the CRX3 to be
+    installed.
  *  `path`: The path to a payload or directory, relative to the root of the CRX
     archive. This may be left blank in cases where execution after install is
     not necessary.
@@ -769,10 +754,9 @@ For `type == "crx3"`: Decompress a CRX3 package produced by the previous
     passed to the identified binary to execute.
 
 For `type == "run"`: Execute a binary located at a given path.
- *  `path`: The path to the executable relative to the install directory
-    (or in an update with the associated `nextfp`, provided by the parent object
-    `pipeline`, if this response does not contain an update for this
-    application) given as a string.
+ *  `path`: The path to the executable relative to the directory that the
+    application is currently installed into. If the application was updated
+    earlier in this pipeline, this path is relative to the new installation.
  *  `arguments`: The command line arguments to be passed to the executable,
     formatted as a single string.
 
@@ -784,8 +768,8 @@ A url object describes a fully-qualified URL. It has the following members:
 
 ## Downloads
 Download requests occur when an application update is needed, as a result of a
-`response.app.updatecheck.pipelines.operations.urls` member.  Download requests
-are HTTP GET requests and can use any HTTP implementation.
+`response.app.updatecheck.pipeline.operation.url` list element. Download
+requests are HTTP GET requests and can use any HTTP implementation.
 
 ### Request Headers
 In addition to the regular HTTP headers, this protocol defines the following
@@ -836,7 +820,7 @@ A ping-back `app` object cannot contain any of the following members:
  *   `updatecheck`
 
 A ping-back `app` additionally contains the following members:
- *   `event`: a list of `event` objects.
+ *   `events`: a list of `event` objects.
 
 #### `event` Objects (Ping-Back Request)
 An event object represents a specific report about an operation the client
@@ -847,13 +831,13 @@ attmpted as part of this update session. All events have the following members:
      *   2: An install session.
      *   3: An update session.
      *   4: An uninstall session.
-     *   14: A download operation.
-     *   60: A decompress_lzma operation.
-     *   61: A zucchini patch application operation.
-     *   62: A puffin patch application operation.
-     *   63: A crx3 package installation operation.
+     *   14: A `download` operation.
+     *   60: A `decompress_lzma` operation.
+     *   61: A `zucchini` patch application operation.
+     *   62: A `puffin` patch application operation.
+     *   63: A `crx3` package installation operation.
      *   41: An app command completion event.
-     *   42: A run operation.
+     *   42: A `run` operation.
  *   `eventresult`: The outcome of the operation. Default: 0. Known values:
      *   0: error
      *   1: success
@@ -881,17 +865,11 @@ attmpted as part of this update session. All events have the following members:
 Depending on the event type, additional members may be present:
 
 For `eventtype == 2` events:
- *   `nextfp`: A `fingerprint` object representing the
-     [package fingerprint](#differential-updates) that the client was attempting
-     to update to, regardless of whether that update was successful.
  *   `nextversion`: The application version that the client was attempting to
      update to, regardless of whether the update was successful.
 
 For `eventtype == 3` events:
  *   All the members of `eventtype == 2` events.
- *   `previousfp`: A `fingerprint` object representing the
-     [package fingerprint](#differential-updates) of the application, prior to
-     the update, regardless of whether that update was successful.
  *   `previousversion`: The application version the client had prior to the
      update, regardless of whether that update was successful.
 
@@ -909,23 +887,14 @@ For `eventtype == 14` events:
      *   "direct": The Chromium network stack.
  *   `expected_bytes`: The number of bytes expected to be downloaded. Default:
      0.
+ *   `pipeline_id`: The `pipeline_id` set in the request for this operation's
+     pipeline.
  *   `url`: The URL from which the download was attempted.
 
-For `eventtype == 60` events:
- *   All the members of `eventtype == 3` events, including those inherited from
-     `eventtype == 2` events.
-
-For `eventtype == 61` events:
- *   All the members of `eventtype == 3` events, including those inherited from
-     `eventtype == 2` events.
-
-For `eventtype == 62` events:
- *   All the members of `eventtype == 3` events, including those inherited from
-     `eventtype == 2` events.
-
-For `eventtype == 63` events:
- *   All the members of `eventtype == 3` events, including those inherited from
-     `eventtype == 2` events.
+For `eventtype` == 60, 61, 62, or 63 events:
+ *   All the members of `eventtype == 3` events.
+ *   `pipeline_id`: The `pipeline_id` set in the request for this operation's
+     pipeline.
 
 For `eventtype == 41` events:
  *   `appcommandid`: The id of the app command for which the ping is being sent.
@@ -956,7 +925,7 @@ A ping-back `app` object cannot contain any of the following members:
  *   `updatecheck`
 
 A ping-back `app` additionally contains the following members:
- *   `event`: a list of `event` objects.
+ *   `events`: a list of `event` objects.
 
 #### `event` Objects (Ping-Back Response)
 A ping-back response `event` object indicates the server's acknowledgement of

@@ -2,24 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {isGlicVersion} from './profile_picker_flags.js';
 import type {ProfilePickerMainViewElement} from './profile_picker_main_view.js';
 
 export function getHtml(this: ProfilePickerMainViewElement) {
   return html`<!--_html_template_start_-->
+<!-- Using a function vs ternary here to avoid unusual git cl formatting. -->
+${function() {
+    if (isGlicVersion()) {
+      return html`<link href="glic_profile_branding.css" rel="stylesheet" />`;
+    } else {
+      return nothing;
+    }
+  }()}
 <div class="flex-container">
   <div class="title-container">
-    <img id="product-logo" @click="${this.onProductLogoClick_}"
-        srcset="chrome://theme/current-channel-logo@1x 1x,
-                chrome://theme/current-channel-logo@2x 2x"
-        role="presentation">
-    <h1 class="title">$i18n{mainViewTitle}</h1>
-    <div class="subtitle">$i18n{mainViewSubtitle}</div>
+    <div id="images-container">
+      <img id="product-logo" @click="${this.onProductLogoClick_}"
+          src="product_logo.svg" role="presentation">
+      <img id="glic-logo" ?hidden="${!isGlicVersion()}" role="presentation">
+    </div>
+    <h1 class="title" .innerHTML="${this.getTitle_()}"></h1>
+    <div class="subtitle" .innerHTML="${this.getSubtitle_()}"></div>
   </div>
-  <div id="wrapper">
-    <div id="profilesContainer" class="custom-scrollbar"
-        ?hidden="${!this.profilesListLoaded_}">
+  <div id="profilesWrapper" ?hidden="${(this.shouldHideProfilesWrapper_())}">
+    <div id="profilesContainer" class="custom-scrollbar">
       ${this.profilesList_.map((item, index) => html`
         <profile-card class="profile-item" .profileState="${item}"
             data-index="${index}">
@@ -27,6 +36,7 @@ export function getHtml(this: ProfilePickerMainViewElement) {
       `)}
       <cr-button id="addProfile" class="profile-item"
           @click="${this.onAddProfileClick_}"
+          ?hidden="${!this.profileCreationAllowed_}"
           aria-labelledby="addProfileButtonLabel">
         <div id="addProfileButtonLabel"
             class="profile-card-info prominent-text">
@@ -36,10 +46,15 @@ export function getHtml(this: ProfilePickerMainViewElement) {
       </cr-button>
     </div>
   </div>
+  <div id="footer-text" class="subtitle"
+      ?hidden="${this.shouldHideFooterText_()}">
+    $i18nRaw{glicAddProfileHelper}
+  </div>
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton"
-      @click="${this.onLaunchGuestProfileClick_}">
+      @click="${this.onLaunchGuestProfileClick_}"
+      ?hidden="${!this.guestModeEnabled_}">
     <cr-icon icon="profiles:account-circle" slot="prefix-icon"></cr-icon>
     $i18n{browseAsGuestButton}
   </cr-button>

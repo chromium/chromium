@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+
 #import <functional>
 
 #import "base/test/scoped_feature_list.h"
@@ -18,8 +19,9 @@ namespace {
 // Overrides GetWindowedContainer.
 class FakeWebClient : public WebClient {
   UIView* GetWindowedContainer() override {
-    if (!windowed_container)
+    if (!windowed_container) {
       windowed_container = [[UIView alloc] init];
+    }
     return windowed_container;
   }
 

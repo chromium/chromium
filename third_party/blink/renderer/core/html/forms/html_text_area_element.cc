@@ -192,7 +192,7 @@ bool HTMLTextAreaElement::IsPresentationAttribute(
 void HTMLTextAreaElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWrapAttr) {
     if (ShouldWrapText()) {
       // Longhands of `white-space: pre-wrap`.
@@ -568,17 +568,12 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
       break;
   }
 
-  if (!RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled()) {
-    // We set the Autofilled state again because setting the autofill value
-    // triggers JavaScript events and the site may override the autofilled
-    // value, which resets the autofill state. Even if the website modifies the
-    // form control element's content during the autofill operation, we want the
-    // state to show as autofilled.
-    // If AllowJavaScriptToResetAutofillState is enabled, the WebAutofillClient
-    // will monitor JavaScript induced changes and take care of resetting the
-    // autofill state when appropriate.
-    SetAutofillState(autofill_state);
-  }
+  // We set the Autofilled state again because setting the autofill value
+  // triggers JavaScript events and the site may override the autofilled
+  // value, which resets the autofill state. Even if the website modifies the
+  // form control element's content during the autofill operation, we want the
+  // state to show as autofilled.
+  SetAutofillState(autofill_state);
 }
 
 String HTMLTextAreaElement::defaultValue() const {

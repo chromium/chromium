@@ -9,6 +9,8 @@
 
 namespace permissions {
 
+// TODO(crbug.com/391651884): Remove this class since Pointer Lock Permission is
+// not needed.
 class PointerLockPermissionContext : public permissions::PermissionContextBase {
  public:
   explicit PointerLockPermissionContext(

@@ -21,7 +21,7 @@ class GetDetailsForCreateBnplPaymentInstrumentRequest : public PaymentsRequest {
       GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details,
       bool full_sync_enabled,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                              std::u16string context_token,
+                              std::string context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
   GetDetailsForCreateBnplPaymentInstrumentRequest(
       const GetDetailsForCreateBnplPaymentInstrumentRequest&) = delete;
@@ -43,10 +43,10 @@ class GetDetailsForCreateBnplPaymentInstrumentRequest : public PaymentsRequest {
 
   GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details_;
   bool full_sync_enabled_;
-  std::u16string context_token_;
+  std::string context_token_;
   std::unique_ptr<base::Value::Dict> legal_message_;
   base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                          std::u16string context_token,
+                          std::string,
                           std::unique_ptr<base::Value::Dict>)>
       callback_;
 };

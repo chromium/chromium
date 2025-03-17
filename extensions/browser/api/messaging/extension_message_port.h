@@ -48,11 +48,12 @@ struct PortContext;
 class ExtensionMessagePort : public MessagePort {
  public:
   // Create a port that is tied to frame(s) in a single tab.
-  ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
-                       const PortId& port_id,
-                       const ExtensionId& extension_id,
-                       content::RenderFrameHost* render_frame_host,
-                       bool include_child_frames);
+  static std::unique_ptr<ExtensionMessagePort> CreateForTab(
+      base::WeakPtr<ChannelDelegate> channel_delegate,
+      const PortId& port_id,
+      const ExtensionId& extension_id,
+      content::RenderFrameHost* render_frame_host,
+      bool include_child_frames);
 
   // Create a port that is tied to all frames and service workers of an
   // extension. Should only be used for a receiver port.
@@ -111,7 +112,7 @@ class ExtensionMessagePort : public MessagePort {
   void NotifyResponsePending() override;
 
  private:
-  class FrameTracker;
+  class ContextTracker;
   struct IPCTarget;
 
   // Registers a frame as a receiver / sender.
@@ -206,7 +207,7 @@ class ExtensionMessagePort : public MessagePort {
 
   // Used in IncrementLazyKeepaliveCount
   raw_ptr<ExtensionHost, DanglingUntriaged> background_host_ptr_ = nullptr;
-  std::unique_ptr<FrameTracker> frame_tracker_;
+  std::unique_ptr<ContextTracker> context_tracker_;
 
   // The set of PortContexts for which we're waiting on a response to
   // OnConnectResponse().

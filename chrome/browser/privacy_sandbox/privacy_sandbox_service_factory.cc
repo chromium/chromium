@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -22,14 +23,14 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/storage_partition.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
 namespace {
 
 profile_metrics::BrowserProfileType GetProfileType(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Alias the "system" profiles which present as regular profiles for metrics
   // purposes (e.g. signin screen), to system metrics profiles. This is done
   // here as, due to dependency injection, the service itself does not hold a

@@ -735,8 +735,9 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
   UnregisterExtensionWithExtensionService(kExtensionId[1]);
 
   auto add_extension = [this](const Extension* extension) {
-    extension_prefs_->OnExtensionInstalled(
-        extension, Extension::ENABLED, syncer::StringOrdinal(), std::string());
+    extension_prefs_->OnExtensionInstalled(extension, /*disable_reasons=*/{},
+                                           syncer::StringOrdinal(),
+                                           std::string());
   };
 
   // Test basic prototype construction. All fields should be present, except
@@ -810,6 +811,16 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
     EXPECT_EQ(extension_pb->install_location(), ExtensionInfo::UNPACKED);
   }
 
+  auto validate_disable_reasons_list =
+      [](const ExtensionInfo& extension_pb,
+         const base::flat_set<int>& expected_reasons) {
+        base::flat_set<int> actual_reasons;
+        for (int i = 0; i < extension_pb.disable_reasons_list_size(); ++i) {
+          actual_reasons.insert(extension_pb.disable_reasons_list(i));
+        }
+        EXPECT_EQ(actual_reasons, expected_reasons);
+      };
+
   {
     // Test the disable reasons field.
     scoped_refptr<const Extension> extension =
@@ -817,7 +828,7 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
             .SetLocation(ManifestLocation::kInternal)
             .Build();
     add_extension(extension.get());
-    extension_prefs_->SetExtensionDisabled(
+    extension_prefs_->AddDisableReason(
         extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
     {
       std::unique_ptr<ExtensionInfo> extension_pb =
@@ -826,6 +837,8 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
       EXPECT_EQ(extension_pb->disable_reasons(),
                 static_cast<uint32_t>(
                     extensions::disable_reason::DISABLE_USER_ACTION));
+      validate_disable_reasons_list(
+          *extension_pb, {extensions::disable_reason::DISABLE_USER_ACTION});
     }
     // Adding additional disable reasons should result in all reasons being
     // reported.
@@ -839,6 +852,31 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
                 static_cast<uint32_t>(
                     extensions::disable_reason::DISABLE_USER_ACTION |
                     extensions::disable_reason::DISABLE_CORRUPTED));
+      validate_disable_reasons_list(
+          *extension_pb, {extensions::disable_reason::DISABLE_USER_ACTION,
+                          extensions::disable_reason::DISABLE_CORRUPTED});
+    }
+    // Unknown disable reasons should also be reported.
+    constexpr int kUnknownDisableReason =
+        extensions::disable_reason::DISABLE_REASON_LAST << 1;
+    ASSERT_FALSE(extensions::IsValidDisableReason(kUnknownDisableReason));
+
+    extensions::ExtensionPrefs::DisableReasonRawManipulationPasskey passkey;
+    extension_prefs_->AddRawDisableReasons(passkey, extension->id(),
+                                           {kUnknownDisableReason});
+    {
+      std::unique_ptr<ExtensionInfo> extension_pb =
+          GetExtensionInfo(*extension);
+      EXPECT_TRUE(extension_pb->has_disable_reasons());
+      EXPECT_EQ(extension_pb->disable_reasons(),
+                static_cast<uint32_t>(
+                    extensions::disable_reason::DISABLE_USER_ACTION |
+                    extensions::disable_reason::DISABLE_CORRUPTED |
+                    kUnknownDisableReason));
+      validate_disable_reasons_list(
+          *extension_pb, {extensions::disable_reason::DISABLE_USER_ACTION,
+                          extensions::disable_reason::DISABLE_CORRUPTED,
+                          kUnknownDisableReason});
     }
   }
 

@@ -42,7 +42,7 @@ namespace gpu {
 
 namespace {
 const char* kDXGISwapChainImageBackingLabel = "DXGISwapChainImageBacking";
-}  // namespace
+}  // anonymous namespace
 
 // static
 std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
@@ -103,9 +103,6 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateSwapChainForComposition failed: "
                 << logging::SystemErrorCodeToString(hr);
-    // Disable direct composition because SwapChain creation might fail again
-    // next time.
-    gl::SetDirectCompositionSwapChainFailed();
     return nullptr;
   }
 
@@ -273,7 +270,7 @@ bool DXGISwapChainImageBacking::Present(
                       : 1;
   UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
-  TRACE_EVENT2("gpu", "IDXGISwapChain1::Present1", "has_alpha",
+  TRACE_EVENT2("gpu", "DXGISwapChainImageBacking::Present", "has_alpha",
                !SkAlphaTypeIsOpaque(alpha_type()), "dirty_rect",
                pending_swap_rect_->ToString());
   DXGI_PRESENT_PARAMETERS params = {};
@@ -342,8 +339,8 @@ DXGISwapChainImageBacking::ProduceSkiaGanesh(
     auto gl_format_desc = context_state->GetGLFormatCaps().ToGLFormatDesc(
         format(), /*plane_index=*/0);
     gl_texture_holder_ = D3DImageBacking::CreateGLTexture(
-        gl_format_desc, size(), color_space(), backbuffer_texture,
-        GL_TEXTURE_2D, /*array_slice=*/0, /*plane_index=*/0, dxgi_swap_chain_);
+        gl_format_desc, backbuffer_texture, GL_TEXTURE_2D, /*array_slice=*/0,
+        /*plane_index=*/0);
     if (!gl_texture_holder_) {
       LOG(ERROR) << "Failed to create GL texture.";
       return nullptr;
@@ -386,7 +383,7 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
   auto dawn_representation = std::make_unique<DawnRepresentationDXGISwapChain>(
       manager, this, tracker, device, wgpu::BackendType::D3D11);
 
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else

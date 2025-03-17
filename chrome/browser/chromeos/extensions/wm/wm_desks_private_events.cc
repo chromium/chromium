@@ -109,18 +109,6 @@ void WMDesksPrivateEventsAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   if (!desk_events_router_ && HasDeskEventsListener()) {
     desk_events_router_ = std::make_unique<WMDesksEventsRouter>(profile_);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Only register once
-    chromeos::LacrosService* service = chromeos::LacrosService::Get();
-    if (!service->IsAvailable<crosapi::mojom::Desk>() ||
-        service->GetInterfaceVersion<crosapi::mojom::Desk>() <
-            static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
-                                 kAddDeskEventObserverMinVersion)) {
-      return;
-    }
-    service->GetRemote<crosapi::mojom::Desk>()->AddDeskEventObserver(
-        desk_events_router_->BindDeskClient());
-#endif
   }
 }
 

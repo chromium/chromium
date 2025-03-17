@@ -55,8 +55,6 @@ class SupervisedUserVerificationPageForYouTube
 
  private:
   void RecordReauthStatusMetrics(Status status) override;
-  void RecordSignInTabUmaMetrics(int closed_tab_count,
-                                 int skipped_tab_count) override {}
 
   ukm::SourceId source_id_;
   bool is_main_frame_;

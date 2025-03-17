@@ -9,6 +9,7 @@ import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
+import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
@@ -73,7 +74,15 @@ interface DedicatedWorkerHostFactoryClient {
       // Used to notify feature usages that might affect back-forward cache
       // usages.
       pending_remote<BackForwardCacheControllerHost>
-      back_forward_cache_controller_host);
+      back_forward_cache_controller_host,
+
+      // Used by a CrossOriginEmbedderPolicyReporter to send reports to the
+      // ReportingObservers.
+      pending_receiver<ReportingObserver>? coep_reporting_observer_receiver,
+
+      // Used by a DocumentIsolationPolicyReporter to send reports to the
+      // ReportingObservers.
+      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver);
 
   // Called when the worker host fails to start loading the main worker script.
   // This is called after OnWorkerHostCreated(). This is never called when

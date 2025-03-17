@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -33,18 +34,13 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/browser.h"
@@ -109,8 +105,8 @@ bool SetGaiaCookieForProfile(Profile* profile) {
           set_cookie_future.GetCallback(),
           net::CookieAccessResult(
               net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                  /*exclusions=*/{
-                      net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
+                  /*exclusions=*/{net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_UNKNOWN_ERROR}))));
   return set_cookie_future.Get().status.IsInclude();
 }
 #endif
@@ -157,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
       secondary_account_info.account_id));
 }
 
-// Test that Sync is paused when browsing data is cleared if Sync was in
+// Test that Sync remained in error when browsing data is cleared if Sync was in
 // authentication error.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   Profile* profile = browser()->profile();
@@ -181,11 +177,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, browser()->profile()));
-  // Check that the account was not removed and Sync was paused.
+  // Check that the account was not removed and Sync remains in auth error.
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_CLIENT,
+                CREDENTIALS_REJECTED_BY_SERVER,
             identity_manager
                 ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
                 .GetInvalidGaiaCredentialsReason());
@@ -239,7 +235,7 @@ std::vector<storage::mojom::StorageUsageInfoPtr> GetLocalStorage(
 bool UsageInfosHasStorageKey(
     const std::vector<storage::mojom::StorageUsageInfoPtr>& usage_infos,
     const blink::StorageKey& key) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       usage_infos, [&key](const storage::mojom::StorageUsageInfoPtr& info) {
         return info->storage_key == key;
       });
@@ -406,12 +402,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
   EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key8));
 }
 
-// TODO(crbug.com/371426261): Enable this test on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 using BrowsingDataApiTest = extensions::ExtensionApiTest;
-#else
-using BrowsingDataApiTest = extensions::ExtensionPlatformApiTest;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, ValidateFilters) {
   static constexpr char kManifest[] =

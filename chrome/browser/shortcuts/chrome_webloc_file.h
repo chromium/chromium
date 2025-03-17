@@ -28,7 +28,7 @@ namespace shortcuts {
 // This file format is only used (and supported) on macOS.
 class ChromeWeblocFile {
  public:
-  static constexpr base::FilePath::StringPieceType kFileExtension = ".crwebloc";
+  static constexpr base::FilePath::StringViewType kFileExtension = ".crwebloc";
 
   ChromeWeblocFile(GURL target_url, base::SafeBaseName profile_path_name);
   ~ChromeWeblocFile();

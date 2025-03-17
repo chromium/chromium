@@ -4,6 +4,7 @@
 
 #include "components/media_effects/media_device_info.h"
 
+#include "base/auto_reset.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/video_capture_service.h"
@@ -112,8 +113,8 @@ MediaDeviceInfo::GetAudioDeviceInfoForId(const std::string& device_id) const {
   }
 
   auto device_iter =
-      base::ranges::find(audio_device_infos_.value(), device_id,
-                         &media::AudioDeviceDescription::unique_id);
+      std::ranges::find(audio_device_infos_.value(), device_id,
+                        &media::AudioDeviceDescription::unique_id);
   if (device_iter != audio_device_infos_->end()) {
     return *device_iter;
   }
@@ -128,10 +129,10 @@ MediaDeviceInfo::GetVideoDeviceInfoForId(const std::string& device_id) const {
   }
 
   auto device_iter =
-      base::ranges::find(video_device_infos_.value(), device_id,
-                         [](const media::VideoCaptureDeviceInfo& device) {
-                           return device.descriptor.device_id;
-                         });
+      std::ranges::find(video_device_infos_.value(), device_id,
+                        [](const media::VideoCaptureDeviceInfo& device) {
+                          return device.descriptor.device_id;
+                        });
   if (device_iter != video_device_infos_->end()) {
     return *device_iter;
   }

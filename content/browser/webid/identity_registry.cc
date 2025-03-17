@@ -4,7 +4,7 @@
 
 #include "content/browser/webid/identity_registry.h"
 
-#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
+#include "content/browser/webid/identity_registry_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
@@ -13,7 +13,7 @@ namespace content {
 
 IdentityRegistry::IdentityRegistry(
     content::WebContents* web_contents,
-    base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
+    base::WeakPtr<IdentityRegistryDelegate> delegate,
     const GURL& idp_config_url)
     : content::WebContentsUserData<IdentityRegistry>(*web_contents),
       delegate_(delegate),

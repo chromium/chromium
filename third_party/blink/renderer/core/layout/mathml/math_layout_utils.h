@@ -47,7 +47,7 @@ bool IsValidMathMLRadical(const BlockNode&);
 
 // https://w3c.github.io/mathml-core/#dfn-default-rule-thickness
 inline float RuleThicknessFallback(const ComputedStyle& style) {
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   if (!font_data)
     return 0;
   return font_data->GetFontMetrics().UnderlineThickness().value_or(0);
@@ -58,7 +58,7 @@ LayoutUnit MathAxisHeight(const ComputedStyle& style);
 inline std::optional<float> MathConstant(
     const ComputedStyle& style,
     OpenTypeMathSupport::MathConstants constant) {
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   return font_data ? OpenTypeMathSupport::MathConstant(
                          font_data->PlatformData().GetHarfBuzzFace(), constant)
                    : std::nullopt;

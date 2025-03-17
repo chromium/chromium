@@ -12,17 +12,27 @@
 
 namespace content {
 
+struct CONTENT_EXPORT DebugReportLockout {
+  base::Time starting_time;
+  base::TimeDelta duration;
+
+  bool operator==(const DebugReportLockout& other) const = default;
+};
+
+// Should forDebuggingOnly reports be sampled or not.
+CONTENT_EXPORT bool ShouldSampleDebugReport();
+
 // Ceil kFledgeEnableFilteringDebugReportStartingFrom to its nearest
 // next hour, in the same way as lockout and cooldown start time are ceiled.
 CONTENT_EXPORT std::optional<base::Time> GetSampleDebugReportStartingFrom();
 
-// Returns true if the client is under forDebuggingOnly API's lockout period.
-CONTENT_EXPORT bool IsInDebugReportLockout(
-    const std::optional<base::Time>& last_report_sent_time,
-    const base::Time now);
-
 // Ceil `detla` to its nearest next hour.
 CONTENT_EXPORT base::Time CeilToNearestNextHour(base::TimeDelta delta);
+
+// Returns true if the client is under forDebuggingOnly API's lockout period.
+CONTENT_EXPORT bool IsInDebugReportLockout(
+    const std::optional<DebugReportLockout>& lockout,
+    const base::Time now);
 
 }  // namespace content
 

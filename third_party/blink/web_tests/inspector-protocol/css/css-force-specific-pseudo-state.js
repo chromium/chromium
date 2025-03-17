@@ -21,11 +21,10 @@
     }, id, property);
   }
 
-  // TODO(crbug.com/332914922): Also add :link and tests for :visited when the bug is fixed.
   const pseudoClasses = ['enabled', 'disabled',
     'valid', 'invalid', 'user-valid', 'user-invalid', 'required', 'optional', 'read-only',
     'read-write', 'in-range', 'out-of-range', 'checked', 'indeterminate',
-    'placeholder-shown', 'autofill'];
+    'placeholder-shown', 'autofill', 'open'];
   const pseudoClassProps = pseudoClasses.map(x => `--${x}-applied`);
 
   const logAllPseudoClassPropsForDiv = async () => {

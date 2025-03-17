@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics_action.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -514,7 +513,7 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
     // If none of the children (except the empty state label) are visible, show
     // a label to explain the empty state.
     bool none_children_visible =
-        base::ranges::none_of(children(), [=, this](views::View* v) {
+        std::ranges::none_of(children(), [=, this](views::View* v) {
           return v != empty_state_label_ && v->GetVisible();
         });
     empty_state_label_->SetVisible(none_children_visible);

@@ -10,6 +10,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
@@ -20,11 +21,11 @@
 namespace net {
 
 // A NetworkChangeNotifier that needs to be told about network changes by some
-// other object. This is useful on platforms like ChromeOS, Lacros, and Android
-// where only objects running in the browser process can listen for network
-// state changes, but other processes want to add observers for network state.
-// It's also useful on Linux where listening for network state changes in a
-// sandboxed process requires loosening the sandbox policy too much.
+// other object. This is useful on platforms like ChromeOS and Android where
+// only objects running in the browser process can listen for network state
+// changes, but other processes want to add observers for network state. It's
+// also useful on Linux where listening for network state changes in a sandboxed
+// process requires loosening the sandbox policy too much.
 class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
  public:
   NetworkChangeNotifierPassive(

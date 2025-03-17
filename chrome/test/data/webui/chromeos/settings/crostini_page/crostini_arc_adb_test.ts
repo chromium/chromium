@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrostiniPortSetting, SettingsCrostiniArcAdbElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrostiniPortSetting, SettingsCrostiniArcAdbElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';

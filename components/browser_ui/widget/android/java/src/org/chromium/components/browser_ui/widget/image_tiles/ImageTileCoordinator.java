@@ -8,10 +8,12 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 
 /** The top level coordinator for the image tiles UI. */
+@NullMarked
 public interface ImageTileCoordinator {
     /** @return A {@link View} representing this coordinator. */
     View getView();

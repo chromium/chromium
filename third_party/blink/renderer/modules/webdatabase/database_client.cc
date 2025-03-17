@@ -35,14 +35,12 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
-#include "third_party/blink/renderer/modules/webdatabase/inspector_database_agent.h"
 
 namespace blink {
 
 DatabaseClient::DatabaseClient(Page& page) : Supplement(page) {}
 
 void DatabaseClient::Trace(Visitor* visitor) const {
-  visitor->Trace(inspector_agent_);
   Supplement<Page>::Trace(visitor);
 }
 
@@ -62,20 +60,6 @@ bool DatabaseClient::AllowDatabase(ExecutionContext* context) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
   return window->GetFrame()->AllowStorageAccessSyncAndNotify(
       WebContentSettingsClient::StorageType::kDatabase);
-}
-
-void DatabaseClient::DidOpenDatabase(blink::Database* database,
-                                     const String& domain,
-                                     const String& name,
-                                     const String& version) {
-  if (inspector_agent_)
-    inspector_agent_->DidOpenDatabase(database, domain, name, version);
-}
-
-void DatabaseClient::SetInspectorAgent(InspectorDatabaseAgent* agent) {
-  // TODO(dgozman): we should not set agent twice, but it's happening in OOPIF
-  // case.
-  inspector_agent_ = agent;
 }
 
 }  // namespace blink

@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 import groovy.transform.AutoClone
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Project
-import org.gradle.api.artifacts.repositories.ArtifactRepository
-import org.gradle.api.artifacts.ResolvedArtifact
-import org.gradle.api.artifacts.ResolvedConfiguration
-import org.gradle.api.artifacts.ResolvedDependency
-import org.gradle.api.artifacts.ResolvedModuleVersion
+import org.gradle.api.artifacts.*
 import org.gradle.api.artifacts.component.ComponentIdentifier
+import org.gradle.api.artifacts.repositories.ArtifactRepository
+import org.gradle.api.artifacts.result.*
+import java.util.concurrent.*
+import java.time.*
 import org.gradle.api.logging.Logger
 
 /**
@@ -24,400 +25,438 @@ class ChromiumDepGraph {
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
-        androidx_multidex_multidex: new PropertyOverride(
-            url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
-        com_google_android_datatransport_transport_api: new PropertyOverride(
-            description: 'Interfaces for data logging in GmsCore SDKs.'),
-        com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
-            exclude: true),  // We're not using datatransport functionality.
-        com_google_android_datatransport_transport_runtime: new PropertyOverride(
-            exclude: true),  // We're not using datatransport functionality.
-        com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
-            description: 'Firebase Cloud Messaging library that interfaces with GmsCore.'),
-        com_google_android_gms_play_services_location: new PropertyOverride(
-            description: 'Provides data about the device\'s physical location via gmscore.'),
-        com_google_auto_service_auto_service_annotations: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_google_auto_value_auto_value_annotations: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_google_code_gson_gson: new PropertyOverride(
-            url: 'https://github.com/google/gson',
-            description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
-            licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        com_google_errorprone_error_prone_annotation: new PropertyOverride(
-            // Robolectric has a (seemingly unnecessary) dep on this. It's meant to be needed
-            // only for writing custom Error Prone checks. Chrome's copy is within the
-            // Error Prone fat jar: //third_party/android_build_tools/error_prone
-            // Depending on this fat jar pulls in a conflicting copy of protobuf library.
-            exclude: true),
-        com_google_errorprone_error_prone_annotations: new PropertyOverride(
-            url: 'https://github.com/google/error-prone/tree/master/annotations',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            description: 'ErrorProne Annotations.',),
-        com_google_firebase_firebase_annotations: new PropertyOverride(
-            description: 'Common annotations for Firebase SKDs.'),
-        com_google_firebase_firebase_common: new PropertyOverride(
-            description: 'Common classes for Firebase SDKs.'),
-        com_google_firebase_firebase_components: new PropertyOverride(
-            description: 'Provides dependency management for Firebase SDKs.'),
-        com_google_firebase_firebase_datatransport: new PropertyOverride(
-            exclude: true),  // We're not using datatransport functionality.
-        com_google_firebase_firebase_encoders_json: new PropertyOverride(
-            description: 'JSON encoders used in Firebase SDKs.'),
-        com_google_firebase_firebase_encoders: new PropertyOverride(
-            description: 'Commonly used encoders for Firebase SKDs.'),
-        com_google_firebase_firebase_iid_interop: new PropertyOverride(
-            description: 'Interface library for Firebase IID SDK.'),
-        com_google_firebase_firebase_iid: new PropertyOverride(
-            description: 'Firebase IID SDK to get access to Instance IDs.'),
-        com_google_firebase_firebase_installations_interop: new PropertyOverride(
-            description: 'Interface library for Firebase Installations SDK.'),
-        com_google_firebase_firebase_installations: new PropertyOverride(
-            description: 'Firebase Installations SDK containing the client libraries to manage FIS.'),
-        com_google_firebase_firebase_measurement_connector: new PropertyOverride(
-            description: 'Bridge interfaces for Firebase analytics into GmsCore.'),
-        com_google_firebase_firebase_messaging: new PropertyOverride(
-            description: 'Firebase Cloud Messaging SDK to send and receive push messages via FCM.'),
-        com_google_guava_failureaccess: new PropertyOverride(
-            url: 'https://github.com/google/guava',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_google_guava_guava: new PropertyOverride(
-            url: 'https://github.com/google/guava',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            // Both -jre and -android versions are listed. Filter to only the -jre ones.
-            versionFilter: '-jre'),
-        com_google_guava_guava_android: new PropertyOverride(
-            url: 'https://github.com/google/guava',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            // Both -jre and -android versions are listed. Filter to only the -android ones.
-            versionFilter: '-android'),
-        com_google_testparameterinjector_test_parameter_injector: new PropertyOverride(
-        url: 'https://github.com/google/TestParameterInjector',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_bouncycastle_bcprov_jdk18on: new PropertyOverride(
-            cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72',
-            url: 'https://github.com/bcgit/bc-java',
-            licensePath: 'licenses/Bouncy_Castle-2015.txt',
-            licenseName: 'MIT'),
-        org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
-            url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
-            description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
-                         'signature violations of.',
-            /* groovylint-disable-next-line LineLength */
-            licenseUrl: 'https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml',
-            licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT'),
-        com_google_protobuf_protobuf_lite: new PropertyOverride(
-            exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
-            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
-            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
-            licenseName: 'BSD'),
-        com_google_protobuf_protobuf_javalite: new PropertyOverride(
-            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
-            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
-            licenseName: 'BSD'),
-        jakarta_inject_jakarta_inject_api: new PropertyOverride(
-            // Help gradle resolve the same version that our 3pp script does.
-            versionFilter: '\\d+\\.\\d+\\.\\d+$'),
-        javax_annotation_javax_annotation_api: new PropertyOverride(
-            isShipped: false,  // Annotations are stripped by R8.
-            licenseName: 'CDDLv1.1',
-            licensePath: 'licenses/CDDLv1.1.txt'),
-        javax_annotation_jsr250_api: new PropertyOverride(
-            isShipped: false,  // Annotations are stripped by R8.
-            licenseName: 'CDDLv1.0',
-            licensePath: 'licenses/CDDLv1.0.txt'),
-        net_bytebuddy_byte_buddy: new PropertyOverride(
-            url: 'https://github.com/raphw/byte-buddy',
-            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        net_bytebuddy_byte_buddy_agent: new PropertyOverride(
-            url: 'https://github.com/raphw/byte-buddy',
-            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        net_bytebuddy_byte_buddy_android: new PropertyOverride(
-            url: 'https://github.com/raphw/byte-buddy',
-            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        org_checkerframework_checker_compat_qual: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'GPL-2.0-with-classpath-exception'),
-        org_checkerframework_checker_qual: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'GPL-2.0-with-classpath-exception'),
-        org_checkerframework_checker_util: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/checker-util/LICENSE.txt',
-            licenseName: 'MIT'),
-        org_conscrypt_conscrypt_openjdk_uber: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/google/conscrypt/master/LICENSE',
-            licenseName: 'Apache 2.0'),
-        org_hamcrest_hamcrest: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE',
-            licenseName: 'BSD'),
-        org_jsoup_jsoup: new PropertyOverride(
-            cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
-            licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
-            licenseName: 'The MIT License'),
-        org_mockito_mockito_android: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License'),
-        org_mockito_mockito_core: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License'),
-        org_mockito_mockito_subclass: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License'),
-        org_objenesis_objenesis: new PropertyOverride(
-            url: 'http://objenesis.org/index.html',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_ow2_asm_asm: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_analysis: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_commons: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_tree: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_ow2_asm_asm_util: new PropertyOverride(
-            licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD'),
-        org_robolectric_annotations: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_junit: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_nativeruntime: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_nativeruntime_dist_compat: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_pluginapi: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_plugins_maven_dependency_resolver: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_resources: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_robolectric: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_sandbox: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_shadowapi: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_shadows_framework: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_shadows_versioning: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_utils: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_utils_reflector: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        // Prevent version changing ~weekly. https://crbug.com/1257197
-        org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm: new PropertyOverride(
-            resolveVersion: '1.8.1'),
-        org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
-            resolveVersion: '1.8.1'),
-        org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
-            resolveVersion: '1.8.1'),
-        org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
-            resolveVersion: '1.7.2'),
-        org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
-            resolveVersion: '1.7.3'),
-        io_grpc_grpc_binder: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_core: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_api: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_context: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_protobuf_lite: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_grpc_grpc_stub: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        io_perfmark_perfmark_api: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-    ]
+            androidx_multidex_multidex: new PropertyOverride(
+                    url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
+            com_google_android_datatransport_transport_api: new PropertyOverride(
+                    description: 'Interfaces for data logging in gmscore SDKs.'),
+            com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
+                    description: 'Firebase Cloud Messaging library that interfaces with gmscore.'),
+            com_google_android_gms_play_services_location: new PropertyOverride(
+                    description: 'Provides data about the device\'s physical location via gmscore.'),
+            com_google_ar_impress: new PropertyOverride(
+                    url: 'https://maven.google.com/web/index.html?q=impress#com.google.ar:impress',
+                    description: 'Impress shows GLTF models on XR devices, and provides advanced materials and rendering.\n'
+                               + 'A dependency of https://developer.android.com/jetpack/androidx/releases/xr-scenecore.\n',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache-2.0'),
+            com_google_auto_service_auto_service_annotations: new PropertyOverride(
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_google_auto_value_auto_value_annotations: new PropertyOverride(
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_google_code_gson_gson: new PropertyOverride(
+                    url: 'https://github.com/google/gson',
+                    description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
+                    licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            com_google_errorprone_error_prone_annotation: new PropertyOverride(
+                    // Robolectric has a (seemingly unnecessary) dep on this. It's meant to be needed
+                    // only for writing custom Error Prone checks. Chrome's copy is within the
+                    // Error Prone fat jar: //third_party/android_build_tools/error_prone
+                    // Depending on this fat jar pulls in a conflicting copy of protobuf library.
+                    exclude: true),
+            com_google_errorprone_error_prone_annotations: new PropertyOverride(
+                    url: 'https://github.com/google/error-prone/tree/master/annotations',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0',
+                    description: 'ErrorProne Annotations.',),
+            com_google_firebase_firebase_annotations: new PropertyOverride(
+                    description: 'Common annotations for Firebase SKDs.'),
+            com_google_firebase_firebase_common: new PropertyOverride(
+                    description: 'Common classes for Firebase SDKs.'),
+            com_google_firebase_firebase_components: new PropertyOverride(
+                    description: 'Provides dependency management for Firebase SDKs.'),
+            com_google_firebase_firebase_encoders_json: new PropertyOverride(
+                    description: 'JSON encoders used in Firebase SDKs.'),
+            com_google_firebase_firebase_encoders: new PropertyOverride(
+                    description: 'Commonly used encoders for Firebase SKDs.'),
+            com_google_firebase_firebase_iid_interop: new PropertyOverride(
+                    description: 'Interface library for Firebase IID SDK.'),
+            com_google_firebase_firebase_iid: new PropertyOverride(
+                    description: 'Firebase IID SDK to get access to Instance IDs.'),
+            com_google_firebase_firebase_installations_interop: new PropertyOverride(
+                    description: 'Interface library for Firebase Installations SDK.'),
+            com_google_firebase_firebase_installations: new PropertyOverride(
+                    description: 'Firebase Installations SDK containing the client libraries to manage FIS.'),
+            com_google_firebase_firebase_measurement_connector: new PropertyOverride(
+                    description: 'Bridge interfaces for Firebase analytics into gmscore.'),
+            com_google_firebase_firebase_messaging: new PropertyOverride(
+                    description: 'Firebase Cloud Messaging SDK to send and receive push messages via FCM.'),
+            com_google_guava_failureaccess: new PropertyOverride(
+                    url: 'https://github.com/google/guava',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_google_guava_guava: new PropertyOverride(
+                    url: 'https://github.com/google/guava',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0',
+                    supportsAndroid: false,
+                    // Both -jre and -android versions are listed. Filter to only the -jre ones.
+                    versionFilter: '-jre'),
+            com_google_guava_guava_android: new PropertyOverride(
+                    url: 'https://github.com/google/guava',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0',
+                    // Both -jre and -android versions are listed. Filter to only the -android ones.
+                    versionFilter: '-android'),
+            com_google_testparameterinjector_test_parameter_injector: new PropertyOverride(
+                    url: 'https://github.com/google/TestParameterInjector',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            org_bouncycastle_bcprov_jdk18on: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72',
+                    url: 'https://github.com/bcgit/bc-java',
+                    licensePath: 'licenses/Bouncy_Castle-2015.txt',
+                    licenseName: 'MIT'),
+            org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
+                    url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
+                    description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
+                            'signature violations of.',
+                    licenseUrl: 'https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml',
+                    licensePath: 'licenses/Codehaus_License-2009.txt',
+                    licenseName: 'MIT'),
+            com_google_protobuf_protobuf_lite: new PropertyOverride(
+                    exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
+                    url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
+                    licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
+                    licenseName: 'BSD'),
+            com_google_protobuf_protobuf_javalite: new PropertyOverride(
+                    url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
+                    licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
+                    licenseName: 'BSD'),
+            jakarta_inject_jakarta_inject_api: new PropertyOverride(
+                    // Help gradle resolve the same version that our 3pp script does.
+                    versionFilter: '\\d+\\.\\d+\\.\\d+$'),
+            javax_annotation_javax_annotation_api: new PropertyOverride(
+                    isShipped: false,  // Annotations are stripped by R8.
+                    licenseName: 'CDDL-1.1, GPL-2.0-with-classpath-exception',
+                    licenseUrl: 'https://raw.githubusercontent.com/javaee/javax.annotation/refs/heads/master/LICENSE'),
+            javax_annotation_jsr250_api: new PropertyOverride(
+                    isShipped: false,  // Annotations are stripped by R8.
+                    licenseName: 'CDDL-1.0',
+                    licensePath: 'licenses/CDDL-1.0.txt'),
+            net_bytebuddy_byte_buddy: new PropertyOverride(
+                    url: 'https://github.com/raphw/byte-buddy',
+                    licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            net_bytebuddy_byte_buddy_agent: new PropertyOverride(
+                    url: 'https://github.com/raphw/byte-buddy',
+                    licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            net_bytebuddy_byte_buddy_android: new PropertyOverride(
+                    url: 'https://github.com/raphw/byte-buddy',
+                    licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            org_checkerframework_checker_compat_qual: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
+                    licenseName: 'Apache-2.0, MIT, GPL-2.0-with-classpath-exception'),
+            org_checkerframework_checker_qual: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
+                    licenseName: 'Apache-2.0, MIT, GPL-2.0-with-classpath-exception'),
+            org_checkerframework_checker_util: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/checker-util/LICENSE.txt',
+                    licenseName: 'MIT'),
+            org_conscrypt_conscrypt_openjdk_uber: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/google/conscrypt/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            org_hamcrest_hamcrest: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE',
+                    licenseName: 'BSD'),
+            org_jsoup_jsoup: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
+                    licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_mockito_mockito_android: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_mockito_mockito_core: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_mockito_mockito_subclass: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
+                    licenseName: 'The MIT License'),
+            org_objenesis_objenesis: new PropertyOverride(
+                    url: 'http://objenesis.org/index.html',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache 2.0'),
+            org_ow2_asm_asm: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_analysis: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_commons: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_tree: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_ow2_asm_asm_util: new PropertyOverride(
+                    licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
+                    licenseName: 'BSD'),
+            org_robolectric_annotations: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_junit: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_nativeruntime: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_nativeruntime_dist_compat: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_pluginapi: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_plugins_maven_dependency_resolver: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_resources: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_robolectric: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_sandbox: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_shadowapi: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_shadows_framework: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_utils: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            org_robolectric_utils_reflector: new PropertyOverride(
+                    licenseName: 'Apache-2.0, MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            // Prevent version changing ~weekly. https://crbug.com/1257197
+            org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm: new PropertyOverride(
+                    resolveVersion: '1.8.1'),
+            org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
+                    resolveVersion: '1.8.1'),
+            org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
+                    resolveVersion: '1.8.1'),
+            org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
+                    resolveVersion: '1.7.2'),
+            org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
+                    resolveVersion: '1.7.3'),
+            io_reactivex_rxjava3_rxjava: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+            org_jetbrains_kotlinx_kotlinx_coroutines_reactive: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+            org_jetbrains_kotlinx_kotlinx_coroutines_rx3: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+            org_reactivestreams_reactive_streams: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
 
-    // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
-    // artifacts of their own. Add other such empty deps here when we encounter them.
-    private static final Set<String> ALLOWED_EMPTY_DEPS = [] as Set
+    ]
 
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some libraries refer to
     // license templates such as https://opensource.org/licenses/MIT.
     // Keys should be 'https', since customizeLicenses() will normalize URLs to https.
     static final Map<String, String> LICENSE_OVERRIDES = [
-      'https://developer.android.com/studio/terms.html': 'licenses/Android_SDK_License-December_9_2016.txt',
-      'https://openjdk.java.net/legal/gplv2+ce.html': 'licenses/GNU_v2_with_Classpath_Exception_1991.txt',
-      'https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web': 'licenses/SIL_Open_Font.txt',
-      'https://www.unicode.org/copyright.html#License': 'licenses/Unicode.txt',
-      'https://www.unicode.org/license.html': 'licenses/Unicode.txt',
+            'https://developer.android.com/studio/terms.html': 'licenses/Android_SDK_License-December_9_2016.txt',
+            'https://openjdk.java.net/legal/gplv2+ce.html': 'licenses/GNU_v2_with_Classpath_Exception_1991.txt',
+            'https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web': 'licenses/SIL_Open_Font.txt',
+            'https://www.unicode.org/copyright.html#License': 'licenses/Unicode.txt',
+            'https://www.unicode.org/license.html': 'licenses/Unicode.txt',
     ]
 
-    final Map<String, DependencyDescription> dependencies = [:]
+    final Map<String, DependencyDescription> dependencies = [:] as ConcurrentHashMap<String, DependencyDescription>
     Project[] projects
     Logger logger
     boolean skipLicenses
 
-    static String makeModuleId(ResolvedModuleVersion module) {
+    private static String makeModuleIdInner(String group, String module, String version) {
         // Does not include version because by default the resolution strategy for gradle is to use the newest version
         // among the required ones. We want to be able to match it in the BUILD.gn file.
-        String moduleId = sanitize("${module.id.group}_${module.id.name}")
+        String moduleId = sanitize("${group}_${module}")
 
         // Add 'android' suffix for guava-android so that its module name is distinct from the module for guava.
-        if (module.id.name == 'guava' && module.id.version.contains('android')) {
+        if (module == 'guava' && version.contains('android')) {
             moduleId += '_android'
         }
         return moduleId
+    }
+
+    static String makeModuleId(ResolvedModuleVersion module) {
+        return makeModuleIdInner(module.id.group, module.id.name, module.id.version)
     }
 
     static String makeModuleId(ResolvedArtifact artifact) {
-        // Does not include version because by default the resolution strategy for gradle is to use the newest version
-        // among the required ones. We want to be able to match it in the BUILD.gn file.
         ComponentIdentifier componentId = artifact.id.componentIdentifier
-        String moduleId = sanitize("${componentId.group}_${componentId.module}")
+        return makeModuleIdInner(componentId.group, componentId.module, componentId.version)
+    }
 
-        // Add 'android' suffix for guava-android so that its module name is distinct from the module for guava.
-        if (componentId.module == 'guava' && componentId.version.contains('android')) {
-            moduleId += '_android'
+    static String makeModuleId(ResolvedDependencyResult dependency) {
+        ComponentIdentifier componentId = dependency.selected.id
+        return makeModuleIdInner(componentId.group, componentId.module, componentId.version)
+    }
+
+    static boolean anyContains(String value, Set<String>... sets) {
+        for (Set<String> curSet : sets) {
+            if (curSet.contains(value)) {
+                return true;
+            }
         }
-        return moduleId
+        return false;
     }
 
     void collectDependencies() {
-        Set<ResolvedConfiguration> deps = [] as Set
-        Map<String, List<ResolvedArtifact>> resolvedArtifacts = [:]
+        Set<ResolvedDependency> deps = [] as Set
+        Map<String, SortedSet<String>> resolvedDeps = [:]
+        ExecutorService downloadExecutor = Executors.newCachedThreadPool()
+        List<Future> futures = []
         String[] configNames = [
-            'compile',
-            'buildCompile',
-            'testCompile',
-            'androidTestCompile',
-            'buildCompileNoDeps'
+                'compile',
+                'compileLatest',
+                'buildCompile',
+                'buildCompileLatest',
+                'testCompile',
+                'testCompileLatest',
+                'androidTestCompile',
+                'androidTestCompileLatest',
+                'buildCompileNoDeps'
         ]
-        for (Project project : projects) {
-            for (String configName : configNames) {
-                ResolvedConfiguration resolvedConfig = project.configurations.getByName(configName).resolvedConfiguration
-                deps += resolvedConfig.firstLevelModuleDependencies
-                if (!resolvedArtifacts.containsKey(configName)) {
-                    resolvedArtifacts[configName] = []
+        timeIt('** Resolving all deps') {
+            for (Project project : projects) {
+                for (String configName : configNames) {
+                    Configuration configuration = project.configurations.getByName(configName)
+                    deps += configuration.resolvedConfiguration.firstLevelModuleDependencies
+                    if (!resolvedDeps.containsKey(configName)) {
+                        resolvedDeps[configName] = [] as SortedSet
+                    }
+                    configuration.incoming.resolutionResult.allDependencies { DependencyResult dr ->
+                        if (dr instanceof ResolvedDependencyResult) {
+                            resolvedDeps[configName] += makeModuleId(dr)
+                        } else {
+                            // We don't currently have any unresolved deps, though it is a potential return type of
+                            // ResolutionResult#allDependencies, see:
+                            // https://docs.gradle.org/current/javadoc/org/gradle/api/artifacts/result/ResolutionResult.html#getAllDependencies()
+                            logger.warn("Unresolved ${dr.from} -> ${dr.requested}")
+                        }
+                    }
                 }
-                resolvedArtifacts[configName].addAll(resolvedConfig.resolvedArtifacts)
             }
         }
 
         List<String> topLevelIds = []
+        Map<String, ResolvedDependency> resolvedVersions = [:]
         deps.each { dependency ->
             topLevelIds.add(makeModuleId(dependency.module))
-            collectDependenciesInternal(dependency)
+            resolveVersionRecursive(dependency, resolvedVersions)
+        }
+        ExecutorService taskExecutor = Executors.newCachedThreadPool()
+        List<Future> taskList = []
+        timeIt("** Parse all pom files") {
+            buildDepDescriptionsAsync(resolvedVersions, taskExecutor, taskList)
+            taskExecutor.shutdown()
+            taskList.each { task -> task.get() }
         }
 
-        topLevelIds.each { id -> dependencies.get(id).visible = true }
-
-        resolvedArtifacts['testCompile'].each { artifact ->
-            String id = makeModuleId(artifact)
-            DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name}"
-            dep.testOnly = true
-        }
-
-        resolvedArtifacts['androidTestCompile'].each { artifact ->
-            DependencyDescription dep = dependencies.get(makeModuleId(artifact))
-            assert dep : "No dependency collected for artifact ${artifact.name} (${makeModuleId(artifact)})"
-            dep.supportsAndroid = true
-            dep.testOnly = true
-        }
-
-        resolvedArtifacts['buildCompile'].each { artifact ->
-            String id = makeModuleId(artifact)
-            DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name}"
-            dep.usedInBuild = true
-            dep.testOnly = false
-        }
-
-        resolvedArtifacts['buildCompileNoDeps'].each { artifact ->
-            String id = makeModuleId(artifact)
-            DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name}"
-            dep.usedInBuild = true
-            dep.testOnly = false
-        }
-
-        List<ResolvedArtifact> compileResolvedArtifacts = resolvedArtifacts['compile']
-        compileResolvedArtifacts.each { artifact ->
-            String id = makeModuleId(artifact)
-            DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name}"
-            dep.supportsAndroid = true
-            dep.testOnly = false
-            dep.isShipped = true
-        }
-
-        // We only add testOnly after constructing the dependencies map, so now go through and see
-        // if we need to add testOnly to anything which depends on testOnly. In theory, this may
-        // need some recursion or looping to deal with multiple levels of unmarked targets, but I
-        // think in practice the only things getting annotated here will be a single level of
-        // synthetic groups which depend on testOnly targets.
-        dependencies.each { _, dep ->
-            dep.testOnly = dep.children.any { id ->
-                dependencies.get(id).testOnly
+        // Collect these using prefix match to allow variants "Latest", "NoDeps", "Autorolled".
+        Set<String> compileIds = [] as Set
+        Set<String> testIds = [] as Set
+        Set<String> androidTestIds = [] as Set
+        Set<String> buildIds = [] as Set
+        Set<String> autorolledIds = [] as Set
+        resolvedDeps.each { key, values ->
+            if (key.startsWith('compile')) {
+                compileIds.addAll(values);
+            } else if (key.startsWith('testCompile')) {
+                testIds.addAll(values);
+            } else if (key.startsWith('androidTest')) {
+                androidTestIds.addAll(values);
+            } else if (key.startsWith('build')) {
+                buildIds.addAll(values);
+            } else {
+                assert false : 'Unknown config ' + key
             }
+            if (key.endsWith("Latest")) {
+                autorolledIds.addAll(values)
+            }
+        }
+
+        dependencies.each { id, dep ->
+            dep.visible = topLevelIds.contains(id)
+            dep.isRobolectric = !anyContains(id, compileIds, androidTestIds, buildIds)
+            dep.testOnly = !anyContains(id, compileIds, buildIds)
+            dep.supportsAndroid = anyContains(id, compileIds, androidTestIds)
+            dep.requiresAndroid = dep.supportsAndroid && !anyContains(id, buildIds)
+            dep.usedInBuild = anyContains(id, buildIds)
+            dep.isShipped = anyContains(id, compileIds)
+            dep.isAutorolled = anyContains(id, autorolledIds)
+        }
+
+        // Find all reachable deps and mark unreachable ones as excluded.
+        // Required to prune deps of excluded deps.
+        Set<String> seen = new HashSet<>(topLevelIds);
+        seen.addAll(BuildConfigGenerator.EXISTING_LIBS.keySet());
+        ArrayList<String> workList = new ArrayList<>(topLevelIds);
+        while (!workList.isEmpty()) {
+          String id = workList.remove(workList.size() - 1);
+          DependencyDescription dep = dependencies.get(id)
+          dep.children.each { childId ->
+            DependencyDescription childDep = dependencies.get(childId)
+            if (!childDep.exclude && seen.add(childId)) {
+              workList.add(childId);
+            }
+          }
+        }
+
+        dependencies.each { id, dep ->
+          if (!seen.contains(id)) {
+            dep.exclude = true
+          }
         }
 
         PROPERTY_OVERRIDES.each { id, overrides ->
             DependencyDescription dep = dependencies.get(id)
             if (dep) {
-                // Null-check is required since isShipped is a boolean. This
-                // check must come after all the deps are resolved instead of in
-                // customizeDep, since otherwise it gets overwritten.
-                if (overrides?.isShipped != null) {
+                // Null-check is required since isShipped is a boolean. This check must come after all the deps are
+                // resolved instead of in customizeDep, since otherwise it gets overwritten.
+                if (overrides.isShipped != null) {
                     dep.isShipped = overrides.isShipped
                 }
-                // if overrideLatest is true, set it recursively on the dep and
-                // all its children. This makes it easier to manage since you do
-                // not have to set it on a whole set of old deps.
-                if (overrides?.overrideLatest) {
+                if (overrides.supportsAndroid != null) {
+                    dep.supportsAndroid = overrides.supportsAndroid
+                }
+                // If overrideLatest is true, set it recursively on the dep and all its children. This is convenient
+                // since you do not have to set it on a whole set of old deps.
+                if (overrides.overrideLatest) {
                     recursivelyOverrideLatestVersion(dep)
                 }
                 dep.versionFilter = overrides.versionFilter
             } else {
+                // TODO: only output this warning if we are in the main project,
+                // since it is expected that subprojects do not have all the
+                // deps.
                 logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
             }
         }
+    }
+
+    <T> T timeIt(boolean enable, String actionName, Closure<T> closure) {
+        if (enable) {
+            return timeIt(actionName, closure)
+        }
+        return closure()
+    }
+
+    <T> T timeIt(String actionName, Closure<T> closure) {
+        def start = Instant.now()
+        def ret = closure()
+        def elapsed = Duration.between(start, Instant.now()).toMillis()
+        logger.warn "${actionName} took ${elapsed} ms"
+        return ret
     }
 
     private static String sanitize(String input) {
@@ -435,11 +474,22 @@ class ChromiumDepGraph {
         }
     }
 
-    private void collectDependenciesInternal(ResolvedDependency dependency) {
+    private static boolean areAllModuleArtifactsSameFile(Set<ResolvedArtifact> artifacts) {
+        if (artifacts.size() == 1) return true
+        String expectedPath = artifacts[0].file.absolutePath
+        for (ResolvedArtifact artifact : artifacts) {
+            if (expectedPath != artifact.file.absolutePath) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private void resolveVersionRecursive(ResolvedDependency dependency, Map<String, ResolvedDependency> resolvedVersions) {
         String id = makeModuleId(dependency.module)
-        if (dependencies.containsKey(id)) {
+        if (resolvedVersions.containsKey(id)) {
             String gotVersion = dependency.module.id.version
-            if (dependencies.get(id).version == gotVersion) {
+            if (resolvedVersions.get(id).module.id.version == gotVersion) {
                 return
             }
             PropertyOverride overrides = PROPERTY_OVERRIDES.get(id)
@@ -447,78 +497,43 @@ class ChromiumDepGraph {
                 if (overrides.resolveVersion != gotVersion) {
                     return
                 }
-            } else if (isVersionLower(gotVersion, dependencies.get(id).version)) {
+            } else if (isVersionLower(gotVersion, resolvedVersions.get(id).module.id.version)) {
                 // Default to using largest version for version conflict resolution. See http://crbug.com/1040958.
                 // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
                 return
             }
         }
 
-        List<ResolvedDependency> childDependenciesWithArtifacts = []
-        List<String> childModules = []
-        dependency.children.each { childDependency ->
-            // Replace dependency which acts as a redirect (ex: org.jetbrains.kotlinx:kotlinx-coroutines-core) with
-            // dependencies it redirects to.
-            if (childDependency.moduleArtifacts) {
-                childDependenciesWithArtifacts += childDependency
-            } else {
-                if (childDependency.children) {
-                    childDependenciesWithArtifacts += childDependency.children
-                } else {
-                    String childDepId = makeModuleId(childDependency.module)
-                    if (!childDepId.endsWith("_bom") && childDepId !in ALLOWED_EMPTY_DEPS) {
-                        // BOM dependencies are deps that only specify other deps as dependencies but have no
-                        // artifact of their own. These typically have _bom at the end of their names but may also
-                        // be identified by looking at their pom.xml file. For more context see maven's doc:
-                        /* groovylint-disable-next-line LineLength */
-                        // https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#bill-of-materials-bom-poms
-                        throw new IllegalStateException(
-                                "The dependency ${childDepId} has no children and no artifacts. If this is " +
-                                'expected (e.g. for BOM dependencies), then please add it to the ' +
-                                '|ALLOWED_EMPTY_DEPS| set.')
-                    }
-                }
-            }
-        }
+        resolvedVersions.put(id, dependency)
 
-        childDependenciesWithArtifacts.each { childDependency ->
-            childModules += makeModuleId(childDependency.module)
-        }
-
-        if (dependency.moduleArtifacts.empty) {
-            assert childModules : "${id} has no children and no artifacts."
-            dependencies.put(id, buildDepDescriptionNoArtifact(id, dependency, childModules))
-            childDependenciesWithArtifacts.each {
-                childDependency -> collectDependenciesInternal(childDependency)
-            }
-        } else if (!areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
-            throw new IllegalStateException("The dependency ${id} has multiple different artifacts: " +
-                                            "${dependency.moduleArtifacts}")
-        } else {
-            ResolvedArtifact artifact = dependency.moduleArtifacts[0]
-            if (artifact.extension != 'jar' && artifact.extension != 'aar') {
-                throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
-            }
-            dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
-            childDependenciesWithArtifacts.each {
-                childDependency -> collectDependenciesInternal(childDependency)
-            }
-        }
+        dependency.children.each { it -> resolveVersionRecursive(it, resolvedVersions) }
     }
 
-    private boolean areAllModuleArtifactsSameFile(Set<ResolvedArtifact> artifacts) {
-        String expectedPath
-        for (ResolvedArtifact artifact : artifacts) {
-            String path = artifact.file.absolutePath
-            if (expectedPath == null) {
-                expectedPath = path
-                continue
+    private void buildDepDescriptionsAsync(Map<String, ResolvedDependency> resolvedDeps, ExecutorService taskExecutor, List<Future> taskList) {
+        resolvedDeps.each { String id, ResolvedDependency dependency ->
+            List<String> childModules = []
+
+            dependency.children.each { it ->
+                childModules += makeModuleId(it.module)
             }
-            if (expectedPath != path) {
-                return false
+
+            if (dependency.moduleArtifacts.empty) {
+                taskList.add(taskExecutor.submit {
+                    dependencies.put(id, buildDepDescriptionNoArtifact(id, dependency, childModules))
+                })
+            } else if (!areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
+                throw new IllegalStateException("The dependency ${id} has multiple different artifacts: " +
+                        "${dependency.moduleArtifacts}")
+            } else {
+                ResolvedArtifact artifact = dependency.moduleArtifacts[0]
+                if (artifact.extension != 'jar' && artifact.extension != 'aar') {
+                    throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
+                }
+                taskList.add(taskExecutor.submit {
+                    dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
+                })
             }
         }
-        return true
     }
 
     private DependencyDescription buildDepDescriptionNoArtifact(
@@ -533,31 +548,31 @@ class ChromiumDepGraph {
                 children: Collections.unmodifiableList(new ArrayList<>(childModules)),
                 directoryName: id.toLowerCase(),
                 displayName: dependency.module.id.name,
-                exclude: false,
+                exclude: childModules.isEmpty(),
                 cipdSuffix: DEFAULT_CIPD_SUFFIX,
         ))
     }
 
     private DependencyDescription buildDepDescription(
             String id, ResolvedDependency dependency, ResolvedArtifact artifact, List<String> childModules) {
-        String pomUrl, repoUrl
+        String pomUrl, repoUrl, fileUrl, description, displayName
         GPathResult pomContent
+        List<LicenseSpec> licenses = []
         (repoUrl, pomUrl, pomContent) = computePomFromArtifact(artifact)
 
-        List<LicenseSpec> licenses = []
         if (!skipLicenses) {
             licenses = resolveLicenseInformation(pomContent)
         }
 
         // Build |fileUrl| by swapping '.pom' file extension with artifact file extension.
-        String fileUrl = pomUrl[0..-4] + artifact.extension
+        fileUrl = pomUrl[0..-4] + artifact.extension
         // Check that the URL is correct explicitly here. Otherwise, we won't
         // find out until 3pp bot runs.
         checkDownloadable(fileUrl)
 
         // Get rid of irrelevant indent that might be present in the XML file.
-        String description = pomContent.description?.text()?.trim()?.replaceAll(/\s+/, ' ')
-        String displayName = pomContent.name?.text()
+        description = pomContent.description?.text()?.trim()?.replaceAll(/\s+/, ' ')
+        displayName = pomContent.name?.text()
         displayName = displayName ?: dependency.module.id.name
 
         return customizeDep(new DependencyDescription(
@@ -599,23 +614,23 @@ class ChromiumDepGraph {
             logger.debug("Using Android license for $dep.id")
             dep.licenses.clear()
             dep.licenses.add(new LicenseSpec(
-                name: 'Android Software Development Kit License',
-                path: 'licenses/Android_SDK_License-December_9_2016.txt'))
+                    name: 'Android Software Development Kit License',
+                    path: 'licenses/Android_SDK_License-December_9_2016.txt'))
         }
 
         if (overrides) {
             if (overrides.licenseName) {
                 dep.licenses.clear()
                 LicenseSpec license = new LicenseSpec(
-                    name : overrides.licenseName,
-                    path: overrides.licensePath,
-                    url: overrides.licenseUrl,
+                        name: overrides.licenseName,
+                        path: overrides.licensePath,
+                        url: overrides.licenseUrl,
                 )
                 dep.licenses.add(license)
             } else {
                 if (overrides.licensePath || overrides.licenseUrl) {
                     throw new IllegalStateException('PropertyOverride must specify "licenseName" if either ' +
-                                                    '"licensePath" or "licenseUrl" is specified.')
+                            '"licensePath" or "licenseUrl" is specified.')
                 }
             }
         }
@@ -631,6 +646,8 @@ class ChromiumDepGraph {
         } else if (dep.id?.startsWith('androidx_')) {
             // Some androidx dependencies don't set their URL, here is a good default.
             dep.url = dep.url ?: 'https://developer.android.com/jetpack/androidx'
+            // By default androidx dependencies' licenses are compatible with android.
+            dep.licenseAndroidCompatible = true
         }
 
         if (!dep.description && dep.id) {
@@ -664,10 +681,6 @@ class ChromiumDepGraph {
                 url = overrides.url ?: url
                 cipdSuffix = overrides.cipdSuffix ?: cipdSuffix
                 cpePrefix = overrides.cpePrefix ?: cpePrefix
-                // Boolean properties require explicit null checks instead of only when truish.
-                if (overrides.generateTarget != null) {
-                    generateTarget = overrides.generateTarget
-                }
                 if (overrides.exclude != null) {
                     exclude = overrides.exclude
                 }
@@ -686,7 +699,7 @@ class ChromiumDepGraph {
         return dep
     }
 
-    private List<LicenseSpec> resolveLicenseInformation(GPathResult pomContent) {
+    private static List<LicenseSpec> resolveLicenseInformation(GPathResult pomContent) {
         GPathResult licenses = pomContent?.licenses?.license
         if (!licenses) {
             return []
@@ -695,16 +708,16 @@ class ChromiumDepGraph {
         List<LicenseSpec> out = []
         for (GPathResult license : licenses) {
             out.add(new LicenseSpec(
-              name: license.name.text(),
-              url: license.url.text()
-          ))
+                    name: license.name.text(),
+                    url: license.url.text()
+            ))
         }
         return out
     }
 
     private List computePomFromArtifact(ResolvedArtifact artifact) {
         ComponentIdentifier component = artifact.id.componentIdentifier
-        String componentPomSubpath = String.format('%s/%s/%s/%s-%s.pom',
+        String componentPomSubPath = String.format('%s/%s/%s/%s-%s.pom',
                 component.group.replace('.', '/'),
                 component.module,
                 component.version,
@@ -745,20 +758,20 @@ class ChromiumDepGraph {
             //   * component.version as "1.1.1"
             //
             // The file url will be: https://maven.google.com/android/arch/core/common/1.1.1/common-1.1.1.pom
-            String fileUrl = String.format('%s/%s', repoUrl, componentPomSubpath)
+            String fileUrl = String.format('%s/%s', repoUrl, componentPomSubPath)
             try {
                 GPathResult content = new XmlSlurper(
                         false /* validating */, false /* namespaceAware */).parse(fileUrl)
                 logger.debug("Succeeded in resolving url $fileUrl")
                 return [repoUrl, fileUrl, content]
-            } catch (any) {
+            } catch (ignored) {
                 logger.debug("Failed in resolving url $fileUrl")
             }
         }
-        throw new RuntimeException("Could not find pom from artifact $componentPomSubpath in $repoUrls")
+        throw new RuntimeException("Could not find pom from artifact $componentPomSubPath in $repoUrls")
     }
 
-    private void checkDownloadable(String url) {
+    private static void checkDownloadable(String url) {
         // file: URLs happen when using fetch_all_androidx.py --local-repo.
         if (url.startsWith('file:')) {
             if (!new File(new URI(url).getPath()).exists()) {
@@ -772,20 +785,18 @@ class ChromiumDepGraph {
             HttpURLConnection http = new URL(url).openConnection()
             http.requestMethod = 'HEAD'
             if (http.responseCode != 200) {
-                /* groovylint-disable-next-line PrintStackTrace */
                 new RuntimeException("Resolved POM but could not resolve $url").printStackTrace()
                 // Exception is logged and ignored if thrown, so explicitly exit.
-                /* groovylint-disable-next-line SystemExit */
                 System.exit(1)
             }
             http.disconnect()
-        });
+        })
     }
 
     // Checks if currentVersion is lower than versionInQuestion.
     private boolean isVersionLower(String currentVersion, String versionInQuestion) {
-        List verA = currentVersion.tokenize('.')
-        List verB = versionInQuestion.tokenize('.')
+        List verA = currentVersion.tokenize('.-')
+        List verB = versionInQuestion.tokenize('.-')
         int commonIndices = Math.min(verA.size(), verB.size())
         for (int i = 0; i < commonIndices; ++i) {
             // toInteger could fail as some versions are 2.11.alpha-06.
@@ -797,7 +808,7 @@ class ChromiumDepGraph {
                     continue
                 }
                 return numA < numB
-            } catch (any) {
+            } catch (ignored) {
                 logger.debug('Using String comparison for a version check.')
                 // This could lead to issues where a version such as 2.11.alpha11
                 // is registered as less than 2.11.alpha9.
@@ -818,28 +829,30 @@ class ChromiumDepGraph {
         String group, name, version, extension, displayName, description, url
         List<LicenseSpec> licenses
         String fileName, fileUrl
-        // |repoUrl| is the url to the repo that hosts this dep's artifact
-        // (|fileUrl|). Basically |fileurl|.startswith(|repoUrl|). |url| is the
-        // project homepage as supplied by the developer.
+        // |repoUrl| is the url to the repo that hosts this dep's artifact (|fileUrl|). Basically
+        // |fileUrl|.startsWith(|repoUrl|). |url| is the project homepage as supplied by the developer.
         String repoUrl
         // The local directory name to store the files like artifact, license file, 3pp subdirectory, and etc. Must be
         // lowercase since 3pp uses the directory name as part of the CIPD names. However CIPD does not allow uppercase
         // in names.
         String directoryName
-        boolean supportsAndroid, visible, exclude, testOnly, isShipped, usedInBuild
-        boolean generateTarget = true
+        boolean visible, exclude, testOnly, isShipped, usedInBuild
+        boolean supportsAndroid
+        boolean requiresAndroid
+        boolean isRobolectric
+        boolean isAutorolled = false
         boolean licenseAndroidCompatible
         ComponentIdentifier componentId
         List<String> children
         String cipdSuffix
         String cpePrefix
-        // When set overrides the version downloaded by the 3pp fetch script to
-        // be, instead of the latest available, the resolved version by gradle
-        // in this run.
+        // The fetch_all.py normally fetches the latest version instead of the declared version in build.gradle. When
+        // overrideLatest is set to true, the actual version resolved by gradle (based on what is declared in
+        // build.gradle as well as the version other dependencies need) will be used.
         Boolean overrideLatest
-        // When set, consider only versions that contain this string.
+        // When set, //third_party/android_deps/fetch_common.py will only versions that contain this string to be valid.
+        // This variable is not used in groovy code.
         String versionFilter
-
     }
 
     static class LicenseSpec {
@@ -857,10 +870,9 @@ class ChromiumDepGraph {
         String cpePrefix
         String resolveVersion
         Boolean isShipped
+        Boolean supportsAndroid
         // Set to true if this dependency is not needed.
         Boolean exclude
-        // Set to false to skip creation of BUILD.gn target.
-        Boolean generateTarget
         Boolean overrideLatest
         String versionFilter
 

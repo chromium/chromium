@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/safe_browsing/tailored_security/message_retry_handler.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -126,11 +127,12 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
 #endif
 
   void MaybeRetryForSyncUsers();
-  void SaveRetryState(TailoredSecurityRetryState result);
   bool ShouldRetryForSyncUsers();
 
   raw_ptr<Profile> profile_;
   base::OneShotTimer retry_timer_;
+  // The retry handler used to manage retry logic.
+  std::unique_ptr<MessageRetryHandler> retry_handler_;
 };
 
 }  // namespace safe_browsing

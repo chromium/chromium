@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {CrosNetworkConfig, CrosNetworkConfigInterface as NetworkConfigServiceInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface as NetworkConfigServiceInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkuDescriptions, fakeDeviceSkus, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
-import {FakeShimlessRmaService, FakeShimlessRmaServiceInterface} from './fake_shimless_rma_service.js';
-import {CalibrationSetupInstruction, FeatureLevel, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
+import type {FakeShimlessRmaServiceInterface} from './fake_shimless_rma_service.js';
+import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
+import type {ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {CalibrationSetupInstruction, FeatureLevel, RmadErrorCode, ShimlessRmaService, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 
 /**
  * @fileoverview

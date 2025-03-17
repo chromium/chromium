@@ -176,7 +176,7 @@ void StreamTexture::OnFrameAvailable() {
   if (rotated_visible_size_.IsEmpty())
     return;
 
-  texture_owner_->UpdateTexImage();
+  texture_owner_->UpdateTexImage(/*discard=*/false);
   has_pending_frame_ = false;
 
   gfx::Rect visible_rect;

@@ -22,10 +22,12 @@ enum class TabGroupActionType;
 // Shows the recent activity for the shared group.
 - (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
 
-// Displays a confirmation dialog to confirm that the current group is going to
-// take an `actionType`.
-- (void)showTabGroupIndicatorConfirmationForAction:
-    (TabGroupActionType)actionType;
+// Displays a confirmation dialog to confirm that the current `tabGroup` is
+// going to take an `actionType`.
+- (void)
+    showTabGroupIndicatorConfirmationForAction:(TabGroupActionType)actionType
+                                         group:(base::WeakPtr<const TabGroup>)
+                                                   tabGroup;
 
 // Displays a snackbar after closing a tab group locally.
 - (void)showTabGroupIndicatorSnackbarAfterClosingGroup;

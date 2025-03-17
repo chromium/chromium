@@ -10,10 +10,14 @@ import android.os.Bundle;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * GcmListenerService base class which will call through to the given {@link Impl}. This class must
  * be present in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatGcmListenerService extends FirebaseMessagingService {
     private String mServiceClassName;
     private Impl mImpl;
@@ -70,19 +74,19 @@ public class SplitCompatGcmListenerService extends FirebaseMessagingService {
      * SplitCompatGcmListenerService}.
      */
     public abstract static class Impl {
-        private SplitCompatGcmListenerService mService;
+        private @Nullable SplitCompatGcmListenerService mService;
 
         protected final void setService(SplitCompatGcmListenerService service) {
             mService = service;
         }
 
-        protected final SplitCompatGcmListenerService getService() {
+        protected final @Nullable SplitCompatGcmListenerService getService() {
             return mService;
         }
 
         public void onCreate() {}
 
-        public void onMessageReceived(String from, Bundle data) {}
+        public void onMessageReceived(@Nullable String from, @Nullable Bundle data) {}
 
         public void onMessageSent(String msgId) {}
 

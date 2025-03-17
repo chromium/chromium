@@ -107,6 +107,8 @@ Object: {
 	tid: number
 	ts: number
 }
+Number of StyleResolver::ResolveStyle events:
+11
 Style recalc initiator:
 forceLayout
 Layout initiator:

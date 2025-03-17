@@ -58,8 +58,6 @@ class LockScreenStartReauthDialog
   void DismissLockScreenCaptivePortalDialog();
   void ShowLockScreenNetworkDialog();
   void ShowLockScreenCaptivePortalDialog();
-  static gfx::Size CalculateLockScreenReauthDialogSize(
-      bool is_new_layout_enabled);
 
   // Forces network state update because webview reported frame loading error.
   void OnWebviewLoadAborted();
@@ -87,6 +85,8 @@ class LockScreenStartReauthDialog
 
   // Notify test that the dialog is ready for testing.
   void OnReadyForTesting();
+
+  void ForceUpdateStateForTesting(NetworkError::ErrorReason reason);
 
   LockScreenNetworkDialog* get_network_dialog_for_testing() {
     return lock_screen_network_dialog_.get();
@@ -139,6 +139,8 @@ class LockScreenStartReauthDialog
   void ReenableNetworkUpdates();
 
   void OnCaptivePortalDialogReadyForTesting();
+
+  bool IsAutoReloadActive();
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
   bool is_network_dialog_visible_ = false;

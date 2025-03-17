@@ -11,6 +11,7 @@
 #include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 

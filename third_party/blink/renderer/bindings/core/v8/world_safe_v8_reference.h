@@ -36,8 +36,11 @@ class CORE_EXPORT WorldSafeV8ReferenceInternal final {
   // TODO(yukishiino): Find the best place to put this function.  We might want
   // to share this function among other clients, e.g. access to wrapper objects
   // across worlds.
-  static void MaybeCheckCreationContextWorld(const DOMWrapperWorld& world,
-                                             v8::Local<v8::Value> value);
+  static void MaybeCheckCreationContext(
+      v8::Isolate*,
+      const v8::Local<v8::Context> current_context,
+      const DOMWrapperWorld& current_world,
+      const v8::Local<v8::Value> value);
 
   template <typename V8Type>
   friend class WorldSafeV8Reference;
@@ -57,24 +60,30 @@ class WorldSafeV8Reference final {
  public:
   WorldSafeV8Reference() = default;
 
-  WorldSafeV8Reference(v8::Isolate* isolate, v8::Local<V8Type> value) {
-    if (value.IsEmpty())
+  WorldSafeV8Reference(v8::Isolate* isolate, v8::Local<V8Type> value)
+      : v8_reference_(isolate, value) {
+    if (value.IsEmpty()) {
       return;
+    }
 
-    v8_reference_.Reset(isolate, value);
+    DCHECK(isolate);
     // Basically, |world_| is a world when this V8 reference is created.
     // However, when this V8 reference isn't created in context and value is
-    // object, we set |world_| to a value's creation cotext's world.
-    if (isolate->InContext()) {
-      world_ = &DOMWrapperWorld::Current(isolate);
-      WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
-          *world_.Get(), value);
+    // object, we set |world_| to a value's creation context's world.
+    v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    if (!current_context.IsEmpty()) [[likely]] {
+      const auto& current_world =
+          DOMWrapperWorld::World(isolate, current_context);
+      world_ = &current_world;
+      WorldSafeV8ReferenceInternal::MaybeCheckCreationContext(
+          isolate, current_context, current_world, value);
     } else if (value->IsObject()) {
       ScriptState* script_state = ScriptState::ForRelevantRealm(
           isolate, value.template As<v8::Object>());
       world_ = &script_state->World();
     }
   }
+
   ~WorldSafeV8Reference() = default;
 
   // Returns the V8 reference.  Crashes if |world_| is set and it is
@@ -101,12 +110,13 @@ class WorldSafeV8Reference final {
   void Set(v8::Isolate* isolate, v8::Local<V8Type> new_value) {
     DCHECK(!new_value.IsEmpty());
     CHECK(isolate->InContext());
-    const DOMWrapperWorld& new_world = DOMWrapperWorld::Current(isolate);
-    WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(new_world,
-                                                                 new_value);
+    v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    const auto& new_world = DOMWrapperWorld::World(isolate, current_context);
+    WorldSafeV8ReferenceInternal::MaybeCheckCreationContext(
+        isolate, current_context, new_world, new_value);
     CHECK(v8_reference_.IsEmpty() || world_.Get() == &new_world);
     v8_reference_.Reset(isolate, new_value);
-    world_ = &new_world;
+    world_ = new_world;
   }
 
   // Forcibly sets a new V8 reference even when the worlds are different.  The
@@ -125,6 +135,11 @@ class WorldSafeV8Reference final {
   }
 
   bool IsEmpty() const { return v8_reference_.IsEmpty(); }
+
+  v8::Isolate* GetIsolate() const {
+    DCHECK(!IsEmpty());
+    return world_->GetIsolate();
+  }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(v8_reference_);

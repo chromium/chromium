@@ -6,6 +6,8 @@ package org.chromium.components.module_installer.util;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.module_installer.engine.EngineFactory;
 import org.chromium.components.module_installer.observer.ActivityObserver;
 import org.chromium.components.module_installer.observer.InstallerObserver;
@@ -14,8 +16,9 @@ import org.chromium.components.module_installer.observer.InstallerObserver;
  * Initializes an activity observer responsible to listen to state changes in activities
  * and split compat them when appropriate.
  */
+@NullMarked
 class ActivityObserverUtil {
-    private static volatile InstallerObserver sObserver;
+    private static volatile @Nullable InstallerObserver sObserver;
 
     public static void registerDefaultObserver() {
         ThreadUtils.assertOnUiThread();

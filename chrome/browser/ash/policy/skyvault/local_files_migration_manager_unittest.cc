@@ -276,7 +276,7 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
   MockMigrationCoordinator* coordinator_ptr = coordinator.get();
   EXPECT_CALL(*coordinator_ptr, Run)
       .WillOnce([&test_file_path, &run_future](
-                    CloudProvider cloud_provider,
+                    MigrationDestination destination,
                     std::vector<base::FilePath> file_paths,
                     const std::string& upload_root,
                     MigrationDoneCallback callback) {
@@ -316,7 +316,7 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
   MockMigrationCoordinator* coordinator_ptr = coordinator.get();
   EXPECT_CALL(*coordinator_ptr, Run)
       .WillOnce(
-          [&test_file_path, &run_future](CloudProvider cloud_provider,
+          [&test_file_path, &run_future](MigrationDestination destination,
                                          std::vector<base::FilePath> file_paths,
                                          const std::string& upload_root,
                                          MigrationDoneCallback callback) {
@@ -327,7 +327,7 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
                 base::FilePath(), base::FilePath());
             run_future.SetValue();
           })
-      .WillOnce([&run_future](CloudProvider cloud_provider,
+      .WillOnce([&run_future](MigrationDestination destination,
                               std::vector<base::FilePath> file_paths,
                               const std::string& upload_root,
                               MigrationDoneCallback callback) {
@@ -362,7 +362,7 @@ TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryWhenFatal) {
   MockMigrationCoordinator* coordinator_ptr = coordinator.get();
   EXPECT_CALL(*coordinator_ptr, Run)
       .WillOnce([&test_file_path, &run_future](
-                    CloudProvider cloud_provider,
+                    MigrationDestination destination,
                     std::vector<base::FilePath> file_paths,
                     const std::string& upload_root,
                     MigrationDoneCallback callback) {

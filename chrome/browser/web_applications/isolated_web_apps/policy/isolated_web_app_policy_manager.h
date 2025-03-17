@@ -18,6 +18,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
 
@@ -79,6 +81,8 @@ class IsolatedWebAppPolicyManager
   void MaybeStartNextInstallTask();
 
   void CleanupOrphanedBundles(base::OnceClosure finished_closure);
+
+  void OnPolicyChanged();
 
   // IwaKeyDistributionInfoProvider::Observer:
   void OnComponentUpdateSuccess(const base::Version& version,

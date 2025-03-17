@@ -1,6 +1,10 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
 
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 
@@ -349,13 +353,19 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
                    static_cast<double>(region_rect.width());
     mutable_zoomed_crop->set_zoom(scale);
     mutable_zoomed_crop->mutable_crop()->set_center_x(
-        region_rect.CenterPoint().x());
+        static_cast<double>(region_rect.CenterPoint().x()) /
+        static_cast<double>(image.width()));
     mutable_zoomed_crop->mutable_crop()->set_center_y(
-        region_rect.CenterPoint().y());
-    mutable_zoomed_crop->mutable_crop()->set_width(region_rect.width());
-    mutable_zoomed_crop->mutable_crop()->set_height(region_rect.height());
+        static_cast<double>(region_rect.CenterPoint().y()) /
+        static_cast<double>(image.height()));
+    mutable_zoomed_crop->mutable_crop()->set_width(
+        static_cast<double>(region_rect.width()) /
+        static_cast<double>(image.width()));
+    mutable_zoomed_crop->mutable_crop()->set_height(
+        static_cast<double>(region_rect.height()) /
+        static_cast<double>(image.height()));
     mutable_zoomed_crop->mutable_crop()->set_coordinate_type(
-        lens::CoordinateType::IMAGE);
+        lens::CoordinateType::NORMALIZED);
 
     image_crop.mutable_image()->mutable_image_content()->assign(data->begin(),
                                                                 data->end());
@@ -513,5 +523,18 @@ SkColor FindBestMatchedColorOrTransparent(
     return SK_ColorTRANSPARENT;
   }
   return *closest_color;
+}
+
+bool AreBitmapsEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
+  // Verify the dimensions are the same.
+  if (bitmap1.width() != bitmap2.width() ||
+      bitmap1.height() != bitmap2.height()) {
+    return false;
+  }
+
+  // Compare pixel data
+  SkPixmap pixmap1 = bitmap1.pixmap();
+  SkPixmap pixmap2 = bitmap2.pixmap();
+  return memcmp(pixmap1.addr(), pixmap2.addr(), pixmap1.computeByteSize()) == 0;
 }
 }  // namespace lens

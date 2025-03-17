@@ -36,6 +36,7 @@ class AbortSignalTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp();
+    NavigateTo(KURL("https://example.com/"));
 
     ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
     controller_ = AbortController::Create(script_state);
@@ -141,6 +142,20 @@ TEST_F(AbortSignalTest, CanAbortAfterGC) {
   controller_.Clear();
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(signal_->CanAbort());
+}
+
+TEST_F(AbortSignalTest, TimeoutTaskCanceledOnDetach) {
+  WeakPersistent<AbortSignal> timeout_signal =
+      AbortSignal::timeout(ToScriptStateForMainWorld(&GetFrame()), 10000);
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  // The signal should be kept alive by the pending timeout task.
+  EXPECT_TRUE(timeout_signal);
+
+  NavigateTo(KURL("https://example2.com/"));
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  // Navigating should cause the signal's context to detach, which should cancel
+  // the pending timeout task, removing the last strong reference to the signal.
+  EXPECT_FALSE(timeout_signal);
 }
 
 }  // namespace blink

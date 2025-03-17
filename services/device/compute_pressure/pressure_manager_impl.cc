@@ -37,12 +37,13 @@ void PressureManagerImpl::Bind(
     mojo::PendingReceiver<mojom::PressureManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  receivers_.Add(this, std::move(receiver));
+  manager_receivers_.Add(this, std::move(receiver));
 }
 
 void PressureManagerImpl::AddClient(
     mojom::PressureSource source,
     const std::optional<base::UnguessableToken>& token,
+    mojo::PendingAssociatedRemote<mojom::PressureClient> client,
     AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -53,26 +54,22 @@ void PressureManagerImpl::AddClient(
     if (it == virtual_probes_managers_.end()) {
       // For now, treat a non-existent token just like a non-existent pressure
       // source.
-      std::move(callback).Run(mojom::PressureManagerAddClientResult::NewError(
-          mojom::PressureManagerAddClientError::kNotSupported));
+      std::move(callback).Run(
+          mojom::PressureManagerAddClientResult::kNotSupported);
       return;
     }
     manager = it->second.get();
   }
 
   if (!manager->is_supported(source)) {
-    std::move(callback).Run(mojom::PressureManagerAddClientResult::NewError(
-        mojom::PressureManagerAddClientError::kNotSupported));
+    std::move(callback).Run(
+        mojom::PressureManagerAddClientResult::kNotSupported);
     return;
   }
 
-  mojo::Remote<mojom::PressureClient> pressure_client;
-  auto pending_receiver = pressure_client.BindNewPipeAndPassReceiver();
-  manager->RegisterClientRemote(std::move(pressure_client), source);
+  manager->RegisterClientRemote(std::move(client), source);
 
-  std::move(callback).Run(
-      mojom::PressureManagerAddClientResult::NewPressureClient(
-          std::move(pending_receiver)));
+  std::move(callback).Run(mojom::PressureManagerAddClientResult::kOk);
 }
 
 ProbesManager* PressureManagerImpl::GetProbesManagerForTesting() const {
@@ -95,7 +92,7 @@ void PressureManagerImpl::AddVirtualPressureSource(
 
   if (!virtual_probes_manager->AddOverrideForSource(source,
                                                     std::move(metadata))) {
-    receivers_.ReportBadMessage(
+    manager_receivers_.ReportBadMessage(
         "The provided pressure source is already being overridden");
     return;
   }

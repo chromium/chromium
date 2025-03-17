@@ -5,16 +5,23 @@
 #ifndef REMOTING_HOST_CHROMEOS_MESSAGE_BOX_H_
 #define REMOTING_HOST_CHROMEOS_MESSAGE_BOX_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
+
+namespace views {
+class DialogDelegate;
+}  // namespace views
 
 namespace remoting {
 
@@ -34,6 +41,7 @@ class MessageBox {
              const std::u16string& message_label,
              const std::u16string& ok_label,
              const std::u16string& cancel_label,
+             const std::optional<ui::ImageModel> icon,
              ResultCallback result_callback);
 
   MessageBox(const MessageBox&) = delete;
@@ -41,7 +49,19 @@ class MessageBox {
 
   ~MessageBox();
 
+  // Shows the message box widget in `ash::kShellWindowId_SystemModalContainer`
+  // container. The message box is only visible when an active user session is
+  // present.
   void Show();
+
+  // Shows the message box in a suggested parent view. The message box's
+  // visibility is tied to the parent's visibility. A suitable parent can be
+  // chosen from the containers in `ash::ShellWindowIds`.
+  void ShowInParentContainer(gfx::NativeView parent);
+
+  void ChangeParentContainer(gfx::NativeView parent);
+
+  views::DialogDelegate& GetDialogDelegate();
 
  private:
   class Core;

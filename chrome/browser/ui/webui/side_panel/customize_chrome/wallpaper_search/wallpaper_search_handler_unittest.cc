@@ -39,7 +39,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -1591,9 +1590,8 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
                base::ok(result1), nullptr),
            ModelQuality());
 #if BUILDFLAG(IS_CHROMEOS)
-  // The feedback dialog on CrOS & LaCrOS happens at the system level.
-  // This can cause the unittest to crash. LaCrOS has a separate feedback
-  // browser test which gives us some coverage.
+  // The feedback dialog on CrOS happens at the system level. This can cause the
+  // unittest to crash.
   handler->SkipShowFeedbackPageForTesting(true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   handler->SetUserFeedback(

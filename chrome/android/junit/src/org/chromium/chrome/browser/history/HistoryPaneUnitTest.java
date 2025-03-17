@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -38,6 +38,9 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
@@ -46,7 +49,10 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link HistoryPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.HISTORY_PANE_ANDROID})
+@EnableFeatures({
+    ChromeFeatureList.HISTORY_PANE_ANDROID,
+    SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS
+})
 public class HistoryPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -65,6 +71,9 @@ public class HistoryPaneUnitTest {
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
     @Mock private SigninManager mSigninManager;
     @Mock private IdentityServicesProvider.Natives mIdentityServicesProvider;
+    @Mock private IdentityServicesProvider mIdentityService;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private SyncService mSyncService;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarNatives;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsNatives;
 
@@ -78,8 +87,10 @@ public class HistoryPaneUnitTest {
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
-        doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(any());
-        IdentityServicesProviderJni.setInstanceForTesting(mIdentityServicesProvider);
+        IdentityServicesProvider.setInstanceForTests(mIdentityService);
+        doReturn(mSigninManager).when(mIdentityService).getSigninManager(mProfile);
+        doReturn(mIdentityManager).when(mIdentityService).getIdentityManager(mProfile);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarNatives);
         IncognitoUtilsJni.setInstanceForTesting(mIncognitoUtilsNatives);
         mHistoryPane =

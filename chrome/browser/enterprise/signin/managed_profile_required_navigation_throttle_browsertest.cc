@@ -92,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileRequiredNavigationThrottleTest,
   ASSERT_FALSE(throttle);
 
   auto enable_navigations = ManagedProfileRequiredNavigationThrottle::
-      BlockNavigationUntilEnterpriseActionTaken(
-          browser()->profile(), web_contents, nullptr, kEmail, );
+      BlockNavigationUntilEnterpriseActionTaken(browser()->profile(),
+                                                web_contents, nullptr, kEmail);
   throttle = ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
       &mock_nav_handle);
   ASSERT_TRUE(throttle);

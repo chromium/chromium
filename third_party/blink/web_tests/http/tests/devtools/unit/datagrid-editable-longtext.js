@@ -10,7 +10,8 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     {id: "key", title: "Key column", editable: true, longText: false},
     {id: "value", title: "Value column", editable: true, longText: true}
   ];
-  var dataGrid = new DataGrid.DataGrid.DataGridImpl({displayName: 'Test', columns, editCallback: onEdit});
+  var dataGrid = new DataGrid.DataGrid.DataGridImpl({displayName: 'Test', columns});
+  dataGrid.setEditCallback(onEdit);
   UI.InspectorView.InspectorView.instance().element.appendChild(dataGrid.element);
 
   var rootNode = dataGrid.rootNode();

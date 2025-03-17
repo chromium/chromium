@@ -36,7 +36,7 @@ ScriptPromiseResolverBase::ScriptPromiseResolverBase(
         CapturePartialSourceLocationFromStack(script_state->GetIsolate());
   } else {
     source_location_ = std::make_unique<SourceLocation>(
-        GetCurrentScriptUrl(script_state->GetIsolate()), -1);
+        CaptureCurrentScriptUrl(script_state->GetIsolate()), -1);
   }
 }
 

@@ -7,13 +7,11 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace web_app {
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kUserDisplayModeSyncBrowserMitigation);
-
 BASE_DECLARE_FEATURE(kUserDisplayModeSyncStandaloneMitigation);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

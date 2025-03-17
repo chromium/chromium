@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
@@ -20,6 +21,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.nio.ByteBuffer;
@@ -38,6 +41,7 @@ import java.util.Set;
  * in storage) is required as reflection is used to build
  * the object after acquiring the serialized object from storage.
  */
+@NullMarked
 public abstract class PersistedTabData implements UserData {
     private static final String TAG = "PTD";
     private static final Map<String, List<Callback>> sCachedCallbacks = new HashMap<>();
@@ -51,9 +55,9 @@ public abstract class PersistedTabData implements UserData {
     private long mLastUpdatedMs = LAST_UPDATE_UNKNOWN;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
+    public @Nullable ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
 
-    private Callback<Boolean> mTabSaveEnabledToggleCallback;
+    private @Nullable Callback<Boolean> mTabSaveEnabledToggleCallback;
     private boolean mFirstSaveDone;
 
     /**
@@ -78,10 +82,10 @@ public abstract class PersistedTabData implements UserData {
      */
     protected static <T extends PersistedTabData> void build(
             Tab tab,
-            PersistedTabDataFactory<T> factory,
+            PersistedTabDataFactory<@Nullable T> factory,
             ByteBuffer data,
             Class<T> clazz,
-            Callback<T> callback) {
+            Callback<@Nullable T> callback) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
         factory.create(
@@ -108,12 +112,12 @@ public abstract class PersistedTabData implements UserData {
      * @param clazz class of the {@link PersistedTabData}
      * @param callback callback to pass the {@link PersistedTabData} in
      */
-    protected static <T extends PersistedTabData> void from(
+    protected static <T extends @Nullable PersistedTabData> void from(
             Tab tab,
-            PersistedTabDataFactory<T> factory,
-            Callback<Callback<T>> tabDataCreator,
+            PersistedTabDataFactory<@Nullable T> factory,
+            Callback<Callback<@Nullable T>> tabDataCreator,
             Class<T> clazz,
-            Callback<T> callback) {
+            Callback<@Nullable T> callback) {
         ThreadUtils.assertOnUiThread();
         // TODO(crbug.com/40121680) cache callbacks
         T persistedTabDataFromTab = getUserData(tab, clazz);
@@ -151,7 +155,7 @@ public abstract class PersistedTabData implements UserData {
         String key = String.format(Locale.ENGLISH, "%d-%s", tab.getId(), clazz.toString());
         addCallback(key, callback);
         // Only load data for the same key once
-        if (sCachedCallbacks.get(key).size() > 1) return;
+        if (assumeNonNull(sCachedCallbacks.get(key)).size() > 1) return;
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
         config.getStorage()
@@ -183,7 +187,7 @@ public abstract class PersistedTabData implements UserData {
      * @param <T> {@link PersistedTabData} client
      */
     protected static <T extends PersistedTabData> void from(
-            Tab tab, Supplier<T> supplier, Class<T> clazz, Callback<T> callback) {
+            Tab tab, Supplier<T> supplier, Class<T> clazz, Callback<@Nullable T> callback) {
         ThreadUtils.assertOnUiThread();
         if (!tab.isInitialized() || tab.isDestroyed() || tab.isCustomTab()) {
             onInvalidTab(callback);
@@ -202,7 +206,7 @@ public abstract class PersistedTabData implements UserData {
         String key = String.format(Locale.ENGLISH, "%d-%s", tab.getId(), clazz);
         addCallback(key, callback);
         // Only load data for the same key once
-        if (sCachedCallbacks.get(key).size() > 1) return;
+        if (assumeNonNull(sCachedCallbacks.get(key)).size() > 1) return;
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
         T persistedTabData = supplier.get();
@@ -247,7 +251,7 @@ public abstract class PersistedTabData implements UserData {
                         });
     }
 
-    private static <T extends PersistedTabData> void onInvalidTab(Callback<T> callback) {
+    private static <T extends PersistedTabData> void onInvalidTab(Callback<@Nullable T> callback) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -258,8 +262,8 @@ public abstract class PersistedTabData implements UserData {
     private static <T extends PersistedTabData> void onPersistedTabDataRetrieved(
             ByteBuffer data,
             PersistedTabDataConfiguration config,
-            PersistedTabDataFactory<T> factory,
-            Callback<Callback<T>> tabDataCreator,
+            PersistedTabDataFactory<@Nullable T> factory,
+            Callback<Callback<@Nullable T>> tabDataCreator,
             Tab tab,
             Class<T> clazz,
             String key) {
@@ -281,7 +285,7 @@ public abstract class PersistedTabData implements UserData {
                 });
     }
 
-    private static void updateLastUpdatedMs(PersistedTabData persistedTabData) {
+    private static void updateLastUpdatedMs(@Nullable PersistedTabData persistedTabData) {
         if (persistedTabData != null) {
             persistedTabData.setLastUpdatedMs(System.currentTimeMillis());
         }
@@ -301,12 +305,12 @@ public abstract class PersistedTabData implements UserData {
     }
 
     private static <T extends PersistedTabData> void onPersistedTabDataResult(
-            T pPersistedTabData, Tab tab, Class<T> clazz, String key) {
+            @Nullable T pPersistedTabData, Tab tab, Class<T> clazz, String key) {
         final T persistedTabData = tab.isDestroyed() ? null : pPersistedTabData;
         if (persistedTabData != null) {
             setUserData(tab, clazz, persistedTabData);
         }
-        for (Callback cachedCallback : sCachedCallbacks.get(key)) {
+        for (Callback<@Nullable T> cachedCallback : assumeNonNull(sCachedCallbacks.get(key))) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT, () -> cachedCallback.onResult(persistedTabData));
         }
@@ -337,11 +341,12 @@ public abstract class PersistedTabData implements UserData {
      * @param tab the {@link PersistedTabData} will be acquired from
      * @param userDataKey the {@link UserData} object to be acquired from the {@link Tab}
      */
-    protected static <T extends PersistedTabData> T from(Tab tab, Class<T> userDataKey) {
+    protected static <T extends PersistedTabData> @Nullable T from(Tab tab, Class<T> userDataKey) {
         return tab.getUserDataHost().getUserData(userDataKey);
     }
 
-    private static <T extends PersistedTabData> void addCallback(String key, Callback<T> callback) {
+    private static <T extends PersistedTabData> void addCallback(
+            String key, Callback<@Nullable T> callback) {
         if (!sCachedCallbacks.containsKey(key)) {
             sCachedCallbacks.put(key, new LinkedList<>());
         }
@@ -353,7 +358,7 @@ public abstract class PersistedTabData implements UserData {
      * @param tab the {@link Tab}
      * @param clazz {@link PersistedTabData} class
      */
-    private static <T extends PersistedTabData> T getUserData(Tab tab, Class<T> clazz) {
+    private static <T extends PersistedTabData> @Nullable T getUserData(Tab tab, Class<T> clazz) {
         return clazz.cast(tab.getUserDataHost().getUserData(clazz));
     }
 
@@ -372,7 +377,9 @@ public abstract class PersistedTabData implements UserData {
     /** Save {@link PersistedTabData} to storage */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void save() {
-        if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
+        if (mIsTabSaveEnabledSupplier != null
+                && mIsTabSaveEnabledSupplier.get() != null
+                && mIsTabSaveEnabledSupplier.get()) {
             mPersistedTabDataStorage.save(
                     mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper());
         }
@@ -384,7 +391,9 @@ public abstract class PersistedTabData implements UserData {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void save(Callback<Integer> onComplete) {
-        if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
+        if (mIsTabSaveEnabledSupplier != null
+                && mIsTabSaveEnabledSupplier.get() != null
+                && mIsTabSaveEnabledSupplier.get()) {
             mPersistedTabDataStorage.save(
                     mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper(), onComplete);
         }
@@ -400,7 +409,7 @@ public abstract class PersistedTabData implements UserData {
         final Serializer<ByteBuffer> serializer = getSerializerWithOomSoftFallback();
         return new Serializer<ByteBuffer>() {
             @Override
-            public ByteBuffer get() {
+            public @Nullable ByteBuffer get() {
                 if (serializer == null) return null;
                 ByteBuffer res;
                 try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
@@ -422,12 +431,14 @@ public abstract class PersistedTabData implements UserData {
 
             @Override
             public void preSerialize() {
-                serializer.preSerialize();
+                if (serializer != null) {
+                    serializer.preSerialize();
+                }
             }
         };
     }
 
-    private Serializer<ByteBuffer> getSerializerWithOomSoftFallback() {
+    private @Nullable Serializer<ByteBuffer> getSerializerWithOomSoftFallback() {
         try {
             return getSerializer();
         } catch (OutOfMemoryError oe) {
@@ -471,7 +482,7 @@ public abstract class PersistedTabData implements UserData {
      */
     @Override
     public void destroy() {
-        if (mIsTabSaveEnabledSupplier != null) {
+        if (mIsTabSaveEnabledSupplier != null && mTabSaveEnabledToggleCallback != null) {
             mIsTabSaveEnabledSupplier.removeObserver(mTabSaveEnabledToggleCallback);
             mTabSaveEnabledToggleCallback = null;
         }

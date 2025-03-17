@@ -62,6 +62,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    @DisableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
     public void testCacheGridTabSwitcher_LowEnd() {
         assertTrue(TabUiFeatureUtilities.shouldUseListMode());
 
@@ -72,29 +73,26 @@ public class TabUiFeatureUtilitiesUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    public void testIsTabDragAsWindowEnabled() {
-        assertTrue(TabUiFeatureUtilities.isTabDragAsWindowEnabled());
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    @EnableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
+    public void testCacheGridTabSwitcher_LowEnd_ListDisabled() {
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode());
+
+        setAccessibilityEnabledForTesting(true);
+        DeviceClassManager.resetForTesting();
+
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withAllowlistedOEM_FFDisabled() {
+    public void testTabDragToCreateInstance_withAllowlistedOEM() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFEnabled() {
+    public void testTabDragToCreateInstance_withNonAllowlistedOEM() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
         assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFDisabled() {
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
-        assertFalse(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 }

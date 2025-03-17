@@ -30,9 +30,9 @@
 
 #include "third_party/blink/public/platform/web_data.h"
 
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-
 #include <vector>
+
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -73,10 +73,9 @@ base::span<const uint8_t> WebData::GetSomeData(size_t position) const {
   return base::as_bytes(*it);
 }
 
-WebVector<uint8_t> WebData::Copy() const {
-  return private_.IsNull()
-             ? WebVector<uint8_t>()
-             : WebVector<uint8_t>(private_->CopyAs<std::vector<uint8_t>>());
+std::vector<uint8_t> WebData::Copy() const {
+  return private_.IsNull() ? std::vector<uint8_t>()
+                           : private_->CopyAs<std::vector<uint8_t>>();
 }
 
 WebData::WebData(scoped_refptr<SharedBuffer> buffer)

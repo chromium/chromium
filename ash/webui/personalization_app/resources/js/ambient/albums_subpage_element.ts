@@ -17,13 +17,14 @@ import './art_album_dialog_element.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
+import type {AmbientModeAlbum} from '../../personalization_app.mojom-webui.js';
+import {TopicSource} from '../../personalization_app.mojom-webui.js';
 import {logAmbientModeLinkToGooglePhotosClick} from '../personalization_metrics_logger.js';
 import {PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getNumberOfGridItemsPerRow} from '../utils.js';
 
-import {AlbumSelectedChangedEvent} from './album_list_element.js';
+import type {AlbumSelectedChangedEvent} from './album_list_element.js';
 import {getTemplate} from './albums_subpage_element.html.js';
 import {setAlbumSelected} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';

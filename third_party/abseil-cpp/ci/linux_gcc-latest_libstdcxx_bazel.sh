@@ -25,7 +25,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 if [[ -z ${STD:-} ]]; then
-  STD="c++14 c++17 c++20"
+  STD="c++17 c++20 c++23"
 fi
 
 if [[ -z ${COMPILATION_MODE:-} ]]; then
@@ -69,8 +69,6 @@ for std in ${STD}; do
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
         --rm \
-        -e CC="/usr/local/bin/gcc" \
-        -e BAZEL_CXXOPTS="-std=${std}" \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
         /bin/sh -c "
@@ -79,6 +77,8 @@ for std in ${STD}; do
             cp ${ALTERNATE_OPTIONS:-} absl/base/options.h || exit 1
           fi
           /usr/local/bin/bazel test ... \
+            --action_env=CC=/usr/local/bin/gcc \
+            --action_env=BAZEL_CXXOPTS=-std=${std} \
             --compilation_mode=\"${compilation_mode}\" \
             --copt=\"${exceptions_mode}\" \
             --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \

@@ -20,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -29,6 +28,8 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
+#include "chrome/browser/signin/signin_ui_delegate.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -39,7 +40,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -65,15 +65,17 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -99,6 +101,36 @@ constexpr char kChromeSigninUserChoiceInfoChangeEventName[] =
 
 // Event fired when calling `PeopleHandler::UpdateSyncStatus()`.
 constexpr char kSyncStatusChangeEventName[] = "sync-status-changed";
+
+class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
+ public:
+  MOCK_METHOD(void,
+              ShowTurnSyncOnUI,
+              (Profile*,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction,
+               const CoreAccountId&,
+               TurnSyncOnHelper::SigninAbortedMode,
+               bool,
+               bool),
+              (override));
+
+  MOCK_METHOD(void,
+              ShowSigninUI,
+              (Profile*,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+  MOCK_METHOD(void,
+              ShowReauthUI,
+              (Profile*,
+               const std::string&,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+};
 #endif
 
 // Returns a UserSelectableTypeSet with all types set.
@@ -212,15 +244,16 @@ class TestingPeopleHandler : public PeopleHandler {
   TestingPeopleHandler& operator=(const TestingPeopleHandler&) = delete;
 
   using PeopleHandler::is_configuring_sync;
-
- private:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void DisplayGaiaLoginInNewTabOrWindow(
-      signin_metrics::AccessPoint access_point) override {}
-#endif
 };
 
-class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
+class PeopleHandlerTest
+#if BUILDFLAG(IS_CHROMEOS)
+    // ChromeRenderViewHostTestHarness is flaky, but is required on ChromeOS
+    // because `TestWebContentsFactory` does not work out of the box.
+    : public ChromeRenderViewHostTestHarness {
+#else
+    : public testing::Test {
+#endif
  public:
   PeopleHandlerTest() = default;
 
@@ -230,8 +263,12 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
   ~PeopleHandlerTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS)
     ChromeRenderViewHostTestHarness::SetUp();
-
+#else
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment();
+#endif
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
 
@@ -246,13 +283,17 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
     sync_service_ = nullptr;
     DestroyPeopleHandler();
     identity_test_env_adaptor_.reset();
+#if BUILDFLAG(IS_CHROMEOS)
     ChromeRenderViewHostTestHarness::TearDown();
+#endif
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return IdentityTestEnvironmentProfileAdaptor::
         GetIdentityTestEnvironmentFactories();
   }
+#endif
 
   void SigninUserWithoutSyncFeature() {
     const CoreAccountInfo account_info = identity_test_env()->SetPrimaryAccount(
@@ -269,7 +310,11 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
   void CreatePeopleHandler() {
     handler_ = std::make_unique<TestingPeopleHandler>(&web_ui_, profile());
     handler_->AllowJavascript();
+#if !BUILDFLAG(IS_CHROMEOS)
+    web_contents_ = web_contents_factory_.CreateWebContents(profile());
+#endif
     web_ui_.set_web_contents(web_contents());
+    handler_->RegisterMessages();
   }
 
   void DestroyPeopleHandler() {
@@ -277,6 +322,9 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
       handler_->set_web_ui(nullptr);
       handler_->DisallowJavascript();
       handler_ = nullptr;
+#if !BUILDFLAG(IS_CHROMEOS)
+      web_contents_ = nullptr;
+#endif
     }
   }
 
@@ -359,22 +407,157 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
     return sync_service_->GetUserSettings();
   }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Checks values returned as a response of WebUI called.
+  void ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
+      bool should_show_settings,
+      ChromeSigninUserChoice expected_choice,
+      const std::string& expected_signed_in_email) {
+    auto& data = *web_ui_.call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kTestCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_TRUE(data.arg2()->GetBool())
+        << "Callback should be resolved with a boolean indicating the success, "
+           "never rejected.";
+    ASSERT_TRUE(data.arg3()->is_dict());
+
+    const base::Value::Dict& dict = data.arg3()->GetDict();
+    ExpectChromeSigninUserChoiceInfoDict(
+        dict, should_show_settings, expected_choice, expected_signed_in_email);
+  }
+
+  // Checks values returned from firing the change event.
+  // Reads the last event. Expecting at least one event.
+  void ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(
+      bool should_show_settings,
+      ChromeSigninUserChoice expected_choice,
+      const std::string& expected_signed_in_email) {
+    auto values_list = GetAllFiredValuesForEventName(
+        kChromeSigninUserChoiceInfoChangeEventName);
+    ASSERT_GT(values_list.size(), 0U);
+    size_t last_index = values_list.size() - 1;
+    ASSERT_TRUE(values_list[last_index]);
+    ASSERT_TRUE(values_list[last_index]->is_dict());
+
+    const base::Value::Dict& values_dict = values_list[last_index]->GetDict();
+    ExpectChromeSigninUserChoiceInfoDict(values_dict, should_show_settings,
+                                         expected_choice,
+                                         expected_signed_in_email);
+  }
+
+  // Tests the Dict content returned for the WebUI for
+  // ChromeSigninUserChoiceInfo.
+  static void ExpectChromeSigninUserChoiceInfoDict(
+      const base::Value::Dict& values_dict,
+      bool expected_should_show_settings,
+      ChromeSigninUserChoice expected_choice,
+      const std::string& expected_signed_in_email) {
+    std::optional<bool> should_show_settings =
+        values_dict.FindBool("shouldShowSettings");
+    ASSERT_TRUE(should_show_settings.has_value());
+    EXPECT_EQ(should_show_settings.value(), expected_should_show_settings);
+
+    std::optional<int> choice_int = values_dict.FindInt("choice");
+    ASSERT_TRUE(choice_int.has_value());
+    EXPECT_EQ(static_cast<ChromeSigninUserChoice>(choice_int.value()),
+              expected_choice);
+
+    const std::string* signed_in_email =
+        values_dict.FindString("signedInEmail");
+    ASSERT_TRUE(signed_in_email);
+    EXPECT_EQ(*signed_in_email, expected_signed_in_email);
+  }
+
+  bool HasChromeSigninUserChoiceInfoChangeEvent() {
+    return !GetAllFiredValuesForEventName(
+                kChromeSigninUserChoiceInfoChangeEventName)
+                .empty();
+  }
+
+  void SetExplicitSignin(bool value) {
+    profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, value);
+  }
+
+  void TriggerPrimaryAccountInPersistentError() {
+    ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+
+    // Inject the error.
+    identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  }
+
+  bool HasSyncStatusUpdateChangedEvent() {
+    return !GetAllFiredValuesForEventName(kSyncStatusChangeEventName).empty();
+  }
+
+  void SimluateReauth() {
+    ASSERT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+    // Clear the error.
+    identity_test_env()->SetRefreshTokenForPrimaryAccount();
+  }
+
+  void SimulateSignout() {
+    ASSERT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+    identity_test_env()->ClearPrimaryAccount();
+  }
+
+  void SimulateHandleGetChromeSigninUserChoiceInfo() const {
+    base::Value::List args_get;
+    args_get.Append(kTestCallbackId);
+    handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
+  }
+
+  void SimulateHandleSetChromeSigninUserChoiceInfo(
+      std::string_view email,
+      ChromeSigninUserChoice user_choice) {
+    base::Value::List args_set;
+    args_set.Append(static_cast<int>(user_choice));
+    args_set.Append(email);
+    handler_->HandleSetChromeSigninUserChoice(args_set);
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  Profile* profile() { return profile_.get(); }
+  content::WebContents* web_contents() { return web_contents_; }
+
+  content::BrowserTaskEnvironment task_environment_;
+#endif
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+#endif
   raw_ptr<syncer::TestSyncService> sync_service_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestingPeopleHandler> handler_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
+  testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
+
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       ConsentLevel::kSignin));
   CreatePeopleHandler();
   // Test that the HandleStartSignin call enables JavaScript.
   handler_->DisallowJavascript();
 
+  EXPECT_CALL(mock_signin_ui_delegate,
+              ShowSigninUI(profile(), /*enable_sync=*/true,
+                           signin_metrics::AccessPoint::kSettings,
+                           signin_metrics::PromoAction::
+                               PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT));
   handler_->HandleStartSignin(base::Value::List());
 
   // Sync setup hands off control to the gaia login tab.
@@ -390,7 +573,7 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
       LoginUIServiceFactory::GetForProfile(profile())->current_login_ui());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PeopleHandlerTest, DisplayConfigureWithEngineDisabledAndCancel) {
   SigninUserAndTurnSyncFeatureOn();
@@ -453,8 +636,9 @@ TEST_F(PeopleHandlerTest,
       syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
-  // Updates for the sync status, sync prefs and trusted vault opt-in are sent.
-  EXPECT_EQ(3U, web_ui_.call_data().size());
+  // Updates for the sync status, sync prefs, trusted vault opt-in and stored
+  // accounts are sent.
+  EXPECT_EQ(4U, web_ui_.call_data().size());
 
   base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", true);
@@ -467,7 +651,7 @@ TEST_F(PeopleHandlerTest,
 // Verifies the case where the user cancels after the sync engine has
 // initialized. This isn't reachable on Ash because
 // IsInitialSyncFeatureSetupComplete() always returns true.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest,
        DisplayConfigureWithEngineDisabledAndCancelAfterSigninSuccess) {
   SigninUserAndTurnSyncFeatureOn();
@@ -490,7 +674,7 @@ TEST_F(PeopleHandlerTest,
 
   EXPECT_FALSE(sync_service_->IsSetupInProgress());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
   SigninUserAndTurnSyncFeatureOn();
@@ -505,17 +689,17 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
 
   ASSERT_EQ(sync_service_->GetTransportState(),
             syncer::SyncService::TransportState::INITIALIZING);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_user_settings()->IsInitialSyncFeatureSetupComplete());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Since the engine is not initialized yet, no prefs should be sent.
   EXPECT_EQ(0U, GetFiredSyncPrefsChanged().size());
@@ -849,7 +1033,7 @@ TEST_F(PeopleHandlerTest, ShowSetupCustomPassphraseRequired) {
 // Verifies that the user is not prompted to enter the custom passphrase while
 // sync setup is ongoing. This isn't reachable on Ash because
 // IsInitialSyncFeatureSetupComplete() always returns true.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest, OngoingSetupCustomPassphraseRequired) {
   SigninUserWithoutSyncFeature();
   CreatePeopleHandler();
@@ -867,7 +1051,7 @@ TEST_F(PeopleHandlerTest, OngoingSetupCustomPassphraseRequired) {
   base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", false);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PeopleHandlerTest, ShowSetupTrustedVaultKeysRequired) {
   SigninUserAndTurnSyncFeatureOn();
@@ -961,11 +1145,11 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
   sync_service_->MimicDashboardClear();
   sync_service_->FireStateChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_user_settings()->IsInitialSyncFeatureSetupComplete());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Now the user confirms sync again. This should set both the sync-requested
   // and the first-setup-complete bits.
@@ -987,11 +1171,11 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   sync_service_->MimicDashboardClear();
   sync_service_->FireStateChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_user_settings()->IsInitialSyncFeatureSetupComplete());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Sync starts up in transport mode.
   ASSERT_EQ(sync_service_->GetTransportState(),
@@ -1053,7 +1237,7 @@ TEST(PeopleHandlerDiceTest, StoredAccountsList) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Regression test for crash in guest mode. https://crbug.com/1040476
 TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   content::BrowserTaskEnvironment task_environment;
@@ -1065,21 +1249,6 @@ TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   base::Value::List accounts = handler.GetStoredAccountsList();
   EXPECT_TRUE(accounts.empty());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PeopleHandlerTest, TurnOffSync) {
-  // Simulate a user who previously turned on sync.
-  identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com",
-                                                   ConsentLevel::kSync);
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-
-  CreatePeopleHandler();
-  handler_->HandleTurnOffSync(base::Value::List());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  base::Value::Dict status = ExpectSyncStatusChanged();
-  ExpectHasBoolKey(status, "signedIn", false);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   // Chrome OS sets an unconsented primary account on login.
@@ -1109,130 +1278,10 @@ TEST_F(PeopleHandlerTest, SyncCookiesDisabled) {
       sync_status_values.FindBool("syncCookiesSupported");
   EXPECT_FALSE(sync_cookies_supported.has_value());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class PeopleHandlerWithExplicitBrowserSigninTest : public PeopleHandlerTest {
- public:
-  // Checks values returned as a response of WebUI called.
-  void ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
-      bool should_show_settings,
-      ChromeSigninUserChoice expected_choice,
-      const std::string& expected_signed_in_email) {
-    auto& data = *web_ui_.call_data().back();
-    EXPECT_EQ("cr.webUIResponse", data.function_name());
-    ASSERT_TRUE(data.arg1()->is_string());
-    EXPECT_EQ(kTestCallbackId, data.arg1()->GetString());
-    ASSERT_TRUE(data.arg2()->is_bool());
-    EXPECT_TRUE(data.arg2()->GetBool())
-        << "Callback should be resolved with a boolean indicating the success, "
-           "never rejected.";
-    ASSERT_TRUE(data.arg3()->is_dict());
-
-    const base::Value::Dict& dict = data.arg3()->GetDict();
-    ExpectChromeSigninUserChoiceInfoDict(
-        dict, should_show_settings, expected_choice, expected_signed_in_email);
-  }
-
-  // Checks values returned from firing the change event.
-  // Reads the last event. Expecting at least one event.
-  void ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(
-      bool should_show_settings,
-      ChromeSigninUserChoice expected_choice,
-      const std::string& expected_signed_in_email) {
-    auto values_list = GetAllFiredValuesForEventName(
-        kChromeSigninUserChoiceInfoChangeEventName);
-    ASSERT_GT(values_list.size(), 0U);
-    size_t last_index = values_list.size() - 1;
-    ASSERT_TRUE(values_list[last_index]);
-    ASSERT_TRUE(values_list[last_index]->is_dict());
-
-    const base::Value::Dict& values_dict = values_list[last_index]->GetDict();
-    ExpectChromeSigninUserChoiceInfoDict(values_dict, should_show_settings,
-                                         expected_choice,
-                                         expected_signed_in_email);
-  }
-
-  // Tests the Dict content returned for the WebUI for
-  // ChromeSigninUserChoiceInfo.
-  static void ExpectChromeSigninUserChoiceInfoDict(
-      const base::Value::Dict& values_dict,
-      bool expected_should_show_settings,
-      ChromeSigninUserChoice expected_choice,
-      const std::string& expected_signed_in_email) {
-    std::optional<bool> should_show_settings =
-        values_dict.FindBool("shouldShowSettings");
-    ASSERT_TRUE(should_show_settings.has_value());
-    EXPECT_EQ(should_show_settings.value(), expected_should_show_settings);
-
-    std::optional<int> choice_int = values_dict.FindInt("choice");
-    ASSERT_TRUE(choice_int.has_value());
-    EXPECT_EQ(static_cast<ChromeSigninUserChoice>(choice_int.value()),
-              expected_choice);
-
-    const std::string* signed_in_email =
-        values_dict.FindString("signedInEmail");
-    ASSERT_TRUE(signed_in_email);
-    EXPECT_EQ(*signed_in_email, expected_signed_in_email);
-  }
-
-  bool HasChromeSigninUserChoiceInfoChangeEvent() {
-    return !GetAllFiredValuesForEventName(
-                kChromeSigninUserChoiceInfoChangeEventName)
-                .empty();
-  }
-
-  void SetExplicitSignin(bool value) {
-    profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, value);
-  }
-
-  void TriggerPrimaryAccountInPersistentError() {
-    ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-
-    // Inject the error.
-    identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
-  }
-
-  bool HasSyncStatusUpdateChangedEvent() {
-    return !GetAllFiredValuesForEventName(kSyncStatusChangeEventName).empty();
-  }
-
-  void SimluateReauth() {
-    ASSERT_TRUE(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-    // Clear the error.
-    identity_test_env()->SetRefreshTokenForPrimaryAccount();
-  }
-
-  void SimulateSignout() {
-    ASSERT_TRUE(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-    identity_test_env()->ClearPrimaryAccount();
-  }
-
-  void SimulateHandleGetChromeSigninUserChoiceInfo() const {
-    base::Value::List args_get;
-    args_get.Append(kTestCallbackId);
-    handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
-  }
-
-  void SimulateHandleSetChromeSigninUserChoiceInfo(
-      std::string_view email,
-      ChromeSigninUserChoice user_choice) {
-    base::Value::List args_set;
-    args_set.Append(static_cast<int>(user_choice));
-    args_set.Append(email);
-    handler_->HandleSetChromeSigninUserChoice(args_set);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, ChromeSigninUserChoice) {
+TEST_F(PeopleHandlerTest, ChromeSigninUserChoice) {
   base::HistogramTester histogram_tester;
 
   CreatePeopleHandler();
@@ -1264,7 +1313,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, ChromeSigninUserChoice) {
       /*`ChromeSigninSettingModification::kToSignin`*/ 2, 1);
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+TEST_F(PeopleHandlerTest,
        ChromeSigninUserAvailableOnExplicitChromeSigninSignout) {
   const std::string email("user@gmail.com");
   identity_test_env()->MakePrimaryAccountAvailable(email,
@@ -1288,8 +1337,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
       false, ChromeSigninUserChoice::kNoChoice, "");
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
-       ChromeSigninUserAvailableOnDiceSignin) {
+TEST_F(PeopleHandlerTest, ChromeSigninUserAvailableOnDiceSignin) {
   const std::string email("user@gmail.com");
   identity_test_env()->MakePrimaryAccountAvailable(email,
                                                    ConsentLevel::kSignin);
@@ -1303,8 +1351,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
       false, ChromeSigninUserChoice::kNoChoice, email);
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
-       ChromeSigninUserInfoUpdateOnPrefValueChange) {
+TEST_F(PeopleHandlerTest, ChromeSigninUserInfoUpdateOnPrefValueChange) {
   const std::string email("user@gmail.com");
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       email, ConsentLevel::kSignin);
@@ -1325,8 +1372,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
                                                       email);
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
-       ChromeSigninUserInfoUpdateOnSignin) {
+TEST_F(PeopleHandlerTest, ChromeSigninUserInfoUpdateOnSignin) {
   CreatePeopleHandler();
 
   ASSERT_FALSE(HasChromeSigninUserChoiceInfoChangeEvent());
@@ -1341,8 +1387,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
       true, ChromeSigninUserChoice::kNoChoice, email);
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
-       ChromeSigninUserInfoUpdateOnSync) {
+TEST_F(PeopleHandlerTest, ChromeSigninUserInfoUpdateOnSync) {
   CreatePeopleHandler();
 
   ASSERT_FALSE(HasChromeSigninUserChoiceInfoChangeEvent());
@@ -1356,14 +1401,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
       true, ChromeSigninUserChoice::kNoChoice, email);
 }
 
-// This test does not use `PeopleHandlerWithExplicitBrowserSigninTest` test
-// suite and needs it's own test setup because in order to get the proper web
-// signin, we need to set a cookie while signing in, which requires setting up a
-// `TestURLLoaderFactory` with the `ChromeSigninClient`.
+// This test does not use `PeopleHandlerTest` test suite and needs it's own test
+// setup because in order to get the proper web signin, we need to set a cookie
+// while signing in, which requires setting up a `TestURLLoaderFactory` with the
+// `ChromeSigninClient`.
 TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-
   // -- Test Setup start
 
   // Needed to enable setting a proper account signed in on the web.
@@ -1378,9 +1420,12 @@ TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
       IdentityTestEnvironmentProfileAdaptor::
           GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
               {TestingProfile::TestingFactory{
-                  ChromeSigninClientFactory::GetInstance(),
-                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                      &url_loader_factory)}}));
+                   ChromeSigninClientFactory::GetInstance(),
+                   base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                       &url_loader_factory)},
+               TestingProfile::TestingFactory{
+                   SyncServiceFactory::GetInstance(),
+                   base::BindRepeating(&BuildTestSyncService)}}));
 
   std::unique_ptr<TestingProfile> profile = builder.Build();
   auto identity_test_env_adaptor =
@@ -1413,11 +1458,10 @@ TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
   {
     base::Value::Dict chrome_signin_user_choice_info_dict =
         handler.GetChromeSigninUserChoiceInfo();
-    PeopleHandlerWithExplicitBrowserSigninTest::
-        ExpectChromeSigninUserChoiceInfoDict(
-            chrome_signin_user_choice_info_dict,
-            /*expected_should_show_settings=*/true,
-            ChromeSigninUserChoice::kNoChoice, email);
+    PeopleHandlerTest::ExpectChromeSigninUserChoiceInfoDict(
+        chrome_signin_user_choice_info_dict,
+        /*expected_should_show_settings=*/true,
+        ChromeSigninUserChoice::kNoChoice, email);
   }
 
   // Check that `SignedInState` is properly computed
@@ -1432,7 +1476,7 @@ TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
   }
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingThenSignout) {
+TEST_F(PeopleHandlerTest, SigninPendingThenSignout) {
   identity_test_env()->MakePrimaryAccountAvailable(kTestUser,
                                                    ConsentLevel::kSignin);
   SetExplicitSignin(true);
@@ -1478,7 +1522,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingThenSignout) {
   }
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingThenReauth) {
+TEST_F(PeopleHandlerTest, SigninPendingThenReauth) {
   identity_test_env()->MakePrimaryAccountAvailable(kTestUser,
                                                    ConsentLevel::kSignin);
   SetExplicitSignin(true);
@@ -1524,7 +1568,36 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingThenReauth) {
   }
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingValueWithSync) {
+// Regression test for https://crbug.com/389031469
+TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
+  testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
+
+  const char kManagedEmail[] = "user@managedchrome.com";
+  AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
+      kManagedEmail, ConsentLevel::kSignin);
+  SetExplicitSignin(true);
+  // Make the account managed and disallow signout.
+  account.hosted_domain = "managedchrome.com";
+  identity_test_env()->UpdateAccountInfoForAccount(account);
+  SigninClient* client = ChromeSigninClientFactory::GetForProfile(profile());
+  client->set_is_clear_primary_account_allowed_for_testing(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+  ASSERT_FALSE(
+      client->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+  TriggerPrimaryAccountInPersistentError();
+  CreatePeopleHandler();
+  // This should not crash.
+  EXPECT_CALL(
+      mock_signin_ui_delegate,
+      ShowReauthUI(profile(), kManagedEmail, /*enable_sync=*/false,
+                   signin_metrics::AccessPoint::kSettings,
+                   signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
+  web_ui_.HandleReceivedMessage("SyncSetupStartSignIn", base::Value::List());
+}
+
+TEST_F(PeopleHandlerTest, SigninPendingValueWithSync) {
   CreatePeopleHandler();
 
   ASSERT_FALSE(HasSyncStatusUpdateChangedEvent());
@@ -1568,8 +1641,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingValueWithSync) {
   }
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
-       ChromeSigninUserChoiceHistogramsWhenSignedOut) {
+TEST_F(PeopleHandlerTest, ChromeSigninUserChoiceHistogramsWhenSignedOut) {
   base::HistogramTester histogram_tester;
   CreatePeopleHandler();
 
@@ -1585,7 +1657,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
       "Signin.Settings.ChromeSigninSettingModification", 0);
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+TEST_F(PeopleHandlerTest,
        ChromeSigninUserChoiceHistogramsWhenSignedInWithoutChangingSetting) {
   base::HistogramTester histogram_tester;
   // Signed in user can see the setting.
@@ -1607,7 +1679,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
       /*`ChromeSigninSettingModification::kNoModification`*/ 0, 1);
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+TEST_F(PeopleHandlerTest,
        ChromeSigninUserChoiceHistogramsWhenSignedInWithChangingSetting) {
   base::HistogramTester histogram_tester;
   // Signed in user can see the setting.
@@ -1664,7 +1736,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
 }
 
 TEST_F(
-    PeopleHandlerWithExplicitBrowserSigninTest,
+    PeopleHandlerTest,
     ChromeSigninUserChoiceHistogramsWhenSignedInWithChangingSettingThenSignout) {
   base::HistogramTester histogram_tester;
   // Signed in user can see the setting.
@@ -1782,7 +1854,7 @@ TEST_F(PeopleHandlerSignoutTest, RevokeSyncNotAllowed) {
 
   CreatePeopleHandler();
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   EXPECT_DEATH(SimulateSignout(args), ".*");
 }
 
@@ -1796,7 +1868,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
   CreatePeopleHandler();
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   EXPECT_DEATH(SimulateSignout(args), ".*");
 }
 #endif  // DCHECK_IS_ON()
@@ -1815,7 +1887,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
   CreatePeopleHandler();
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   SimulateSignout(args);
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
@@ -1826,29 +1898,6 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
   EXPECT_EQ(web_contents()->GetVisibleURL().spec(), chrome::kChromeUINewTabURL);
   EXPECT_NE(web_contents()->GetVisibleURL(),
             GaiaUrls::GetInstance()->service_logout_url());
-}
-
-TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOff) {
-  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
-      "a@gmail.com", ConsentLevel::kSignin);
-  auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
-
-  CreatePeopleHandler();
-
-  base::Value::List args;
-  args.Append(/*delete_profile=*/false);
-  SimulateSignout(args);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(web_contents()->GetVisibleURL(),
-            switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-                ? GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL())
-                : GaiaUrls::GetInstance()->service_logout_url());
-#else
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
@@ -1866,31 +1915,15 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
   EXPECT_TRUE(chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   SimulateSignout(args);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_EQ(web_contents()->GetVisibleURL(),
-            switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-                ? GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL())
-                : GaiaUrls::GetInstance()->service_logout_url());
-#else
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+            GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL()));
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class ExplicitBrowserSigninPeopleHandlerSignoutTest
-    : public PeopleHandlerSignoutTest {
- private:
-  base::test::ScopedFeatureList features_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
-TEST_F(ExplicitBrowserSigninPeopleHandlerSignoutTest, Signout) {
+TEST_F(PeopleHandlerSignoutTest, Signout) {
   auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
       "a@gmail.com", ConsentLevel::kSignin);
   auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
@@ -1899,16 +1932,26 @@ TEST_F(ExplicitBrowserSigninPeopleHandlerSignoutTest, Signout) {
 
   CreatePeopleHandler();
 
+  if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+  }
+
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   SimulateSignout(args);
-  EXPECT_EQ(web_contents()->GetVisibleURL(),
-            GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL()));
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    // The signout confirmation dialog is shown.
+    EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+    EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+  } else {
+    EXPECT_EQ(web_contents()->GetVisibleURL(),
+              GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL()));
+    EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PeopleHandlerWithCookiesSyncTest : public PeopleHandlerTest {
  private:
   // Enable Floating SSO feature flag.
@@ -1953,5 +1996,5 @@ TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
     EXPECT_TRUE(sync_cookies_supported.value());
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace settings

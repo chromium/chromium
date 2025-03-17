@@ -12,7 +12,7 @@ typedef NS_ENUM(NSInteger, ScreenType) {
   kDefaultBrowserPromo,
   kChoice,
   kDockingPromo,
-
+  kBestFeatures,
   // It isn't a screen, but a signal that no more screen should be
   // presented.
   kStepsCompleted,

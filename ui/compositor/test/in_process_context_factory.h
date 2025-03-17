@@ -16,7 +16,6 @@
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -96,7 +95,6 @@ class InProcessContextFactory : public ContextFactory {
   scoped_refptr<viz::TestInProcessContextProvider> shared_main_thread_contexts_;
   scoped_refptr<cc::RasterContextProviderWrapper>
       shared_worker_context_provider_wrapper_;
-  viz::TestSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
   gpu::Scheduler gpu_scheduler_{&sync_point_manager_};

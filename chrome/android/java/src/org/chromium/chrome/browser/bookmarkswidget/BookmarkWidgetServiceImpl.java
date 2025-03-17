@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -29,7 +30,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -182,8 +183,6 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mRemainingTaskCount = 1;
             mBookmarkModel =
                     BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
-            mBookmarkModel.setPartnerBookmarkIteratorSupplier(
-                    () -> AppHooks.get().getPartnerBookmarkIterator());
             mBookmarkModel.finishLoadingBookmarkModel(
                     new Runnable() {
                         @Override
@@ -283,6 +282,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         private final Context mContext;
         private final int mWidgetId;
         private final SharedPreferences mPreferences;
+        private final RemoteViews mBookmarkWidgeRemoteView;
         private int mIconColor;
 
         // Accessed only on the UI thread
@@ -296,8 +296,10 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mContext = context;
             mWidgetId = widgetId;
             mPreferences = getWidgetState(mWidgetId);
-            mIconColor = mContext.getColor(R.color.default_icon_color_baseline);
+            mIconColor = getIconColor(mContext);
             SystemNightModeMonitor.getInstance().addObserver(this);
+            mBookmarkWidgeRemoteView =
+                    new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget);
         }
 
         @UiThread
@@ -377,11 +379,38 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             BookmarkId folderId =
                     BookmarkId.getBookmarkIdFromString(
                             mPreferences.getString(PREF_CURRENT_FOLDER, null));
+
+            // Blocks until bookmarks are loaded from the UI thread.
             mCurrentFolder = loadBookmarks(folderId);
+
+            // Update empty message visibility right after mCurrentFolder is updated.
+            updateFolderEmptyMessageVisibility();
+
             mPreferences
                     .edit()
                     .putString(PREF_CURRENT_FOLDER, mCurrentFolder.folder.id.toString())
                     .apply();
+        }
+
+        @BinderThread
+        private void updateFolderEmptyMessageVisibility() {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+            if (!BookmarkWidgetProvider.shouldShowIconsOnly(appWidgetManager, mWidgetId)) {
+                boolean folderIsEmpty = mCurrentFolder != null && mCurrentFolder.children.isEmpty();
+                mBookmarkWidgeRemoteView.setViewVisibility(
+                        R.id.empty_message, folderIsEmpty ? View.VISIBLE : View.GONE);
+
+                // Directly update the widget on the UI thread.
+                PostTask.runOrPostTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            // Use AppWidgetManager#partiallyUpdateAppWidget to update only the
+                            // empty_message visibility, avoiding full widget redraws and redundant
+                            // intent setup from BookmarkWidgetProvider#performUpdate.
+                            appWidgetManager.partiallyUpdateAppWidget(
+                                    mWidgetId, mBookmarkWidgeRemoteView);
+                        });
+            }
         }
 
         @BinderThread
@@ -535,13 +564,20 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
         @Override
         public void onSystemNightModeChanged() {
-            mIconColor = mContext.getColor(R.color.default_icon_color_baseline);
+            mIconColor = getIconColor(mContext);
             redrawWidget(mWidgetId);
         }
 
         private void setWidgetItemBackButtonVisible(boolean visible, RemoteViews views) {
             views.setViewVisibility(R.id.favicon, visible ? View.GONE : View.VISIBLE);
             views.setViewVisibility(R.id.back_button, visible ? View.VISIBLE : View.GONE);
+        }
+
+        private int getIconColor(Context context) {
+            ContextThemeWrapper wrapper =
+                    new ContextThemeWrapper(context, R.style.Theme_Chromium_Widget);
+
+            return SemanticColorUtils.getDefaultIconColorSecondary(wrapper);
         }
     }
 }

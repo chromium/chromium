@@ -53,7 +53,9 @@ ModalDialogWrapper::ModalDialogWrapper(
       env, reinterpret_cast<uintptr_t>(this), window_android_->GetJavaObject());
 }
 
-ModalDialogWrapper::~ModalDialogWrapper() = default;
+ModalDialogWrapper::~ModalDialogWrapper() {
+  dialog_model_->OnDialogDestroying(DialogModelHost::GetPassKey());
+}
 
 void ModalDialogWrapper::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -61,23 +63,46 @@ void ModalDialogWrapper::BuildPropertyModel() {
       env, dialog_model_->title(DialogModelHost::GetPassKey()));
   auto* ok_button = dialog_model_->ok_button(DialogModelHost::GetPassKey());
   ScopedJavaLocalRef<jstring> ok_button_label;
+  ButtonStyle ok_button_style;
   if (ok_button) {
     ok_button_label = ConvertUTF16ToJavaString(
         env, ok_button->label().empty() ? l10n_util::GetStringUTF16(IDS_APP_OK)
                                         : ok_button->label());
+    ok_button_style = ok_button->style().has_value()
+                          ? ok_button->style().value()
+                          : ui::ButtonStyle::kDefault;
   }
   auto* cancel_button =
       dialog_model_->cancel_button(DialogModelHost::GetPassKey());
   ScopedJavaLocalRef<jstring> cancel_button_label;
+  ButtonStyle cancel_button_style;
   if (cancel_button) {
     cancel_button_label = ConvertUTF16ToJavaString(
         env, cancel_button->label().empty()
                  ? l10n_util::GetStringUTF16(IDS_APP_CANCEL)
                  : cancel_button->label());
+    cancel_button_style = cancel_button->style().has_value()
+                              ? cancel_button->style().value()
+                              : ui::ButtonStyle::kDefault;
+  }
+
+  ModalDialogButtonStyles buttonStyles =
+      ModalDialogButtonStyles::kPrimaryOutlineNegativeOutline;
+  if (ok_button && ok_button_style == ui::ButtonStyle::kProminent) {
+    if (cancel_button && cancel_button_style != ui::ButtonStyle::kProminent) {
+      buttonStyles = ModalDialogButtonStyles::kPrimaryFilledNegativeOutline;
+    } else if (!cancel_button) {
+      buttonStyles = ModalDialogButtonStyles::kPrimaryFilledNoNegative;
+    }
+  } else if (ok_button && cancel_button &&
+             ok_button_style != ui::ButtonStyle::kProminent &&
+             cancel_button_style == ui::ButtonStyle::kProminent) {
+    buttonStyles = ModalDialogButtonStyles::kPrimaryOutlineNegativeFilled;
   }
 
   Java_ModalDialogWrapper_withTitleAndButtons(
-      env, java_obj_, title, ok_button_label, cancel_button_label);
+      env, java_obj_, title, ok_button_label, cancel_button_label,
+      (int)buttonStyles);
 
   int paragraph_count = 0;
   for (const auto& field :

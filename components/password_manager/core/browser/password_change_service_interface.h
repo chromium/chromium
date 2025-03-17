@@ -14,7 +14,10 @@ namespace password_manager {
 // Abstract interface for high level interaction related to password change.
 class PasswordChangeServiceInterface {
  public:
-  // Checks for password change eligibility.
+  // Checks whether current user is eligible to use password change.
+  virtual bool IsPasswordChangeAvailable() = 0;
+
+  // Checks whether password change is eligible for a given `url`.
   virtual bool IsPasswordChangeSupported(const GURL& url) = 0;
 };
 

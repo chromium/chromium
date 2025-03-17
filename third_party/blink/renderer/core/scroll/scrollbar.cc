@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -911,9 +912,28 @@ EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   return EScrollbarWidth::kAuto;
 }
 
+std::optional<blink::Color> Scrollbar::RootScrollbarThemeColor() const {
+  if (RuntimeEnabledFeatures::RootScrollbarFollowsBrowserThemeEnabled() &&
+      scrollable_area_ && scrollable_area_->IsGlobalRootNonOverlayScroller()) {
+    if (const auto* layout_box = GetLayoutBox()) {
+      if (const auto theme_color = layout_box->GetDocument()
+                                       .GetSettings()
+                                       ->GetRootScrollbarThemeColor()) {
+        return blink::Color::FromRGBA32(theme_color.value());
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 std::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
-  if (style_source_) {
+  if (style_source_ &&
+      style_source_->StyleRef().ScrollbarThumbColorResolved()) {
     return style_source_->StyleRef().ScrollbarThumbColorResolved();
+  }
+  if (theme_.UsesFluentScrollbars() && !InForcedColorsMode() &&
+      !ScrollbarTrackColor().has_value()) {
+    return RootScrollbarThemeColor();
   }
   return std::nullopt;
 }

@@ -2412,6 +2412,11 @@ EGL_FUNCTIONS = [
                  'client_extensions': ['EGL_KHR_debug'], }],
   'arguments': 'EGLDisplay display, EGLenum objectType, EGLObjectKHR object, '
     'EGLLabelKHR label', },
+{ 'return_type': 'void',
+    'versions': [{'name': 'eglLockVulkanQueueANGLE',
+                  'extensions':
+                      ['EGL_ANGLE_device_vulkan']}],
+  'arguments': 'EGLDisplay dpy', },
 { 'return_type': 'EGLBoolean',
   'names': ['eglMakeCurrent'],
   'arguments':
@@ -2577,6 +2582,11 @@ EGL_FUNCTIONS = [
   'arguments': 'EGLDisplay dpy, EGLint interval', },
 { 'return_type': 'EGLBoolean',
   'names': ['eglTerminate'],
+  'arguments': 'EGLDisplay dpy', },
+{ 'return_type': 'void',
+    'versions': [{'name': 'eglUnlockVulkanQueueANGLE',
+                  'extensions':
+                      ['EGL_ANGLE_device_vulkan']}],
   'arguments': 'EGLDisplay dpy', },
 { 'return_type': 'EGLBoolean',
   'names': ['eglWaitClient'],

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/files/file_util.h"
 
 #include <dirent.h>
@@ -427,6 +432,18 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+// Checks if the given path is under ~/MyFiles.
+bool IsUnderMyFiles(const FilePath& path) {
+  const std::vector parts = path.GetComponents();
+  return parts.size() > 5 && parts[0] == "/" && parts[1] == "home" &&
+         parts[2] == "chronos" && parts[3].starts_with("u-") &&
+         parts[4] == "MyFiles" && !parts[5].empty();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
@@ -827,7 +844,7 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   return fd.is_valid();
 }
 
-FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
+FilePath FormatTemporaryFileName(FilePath::StringViewType identifier) {
 #if BUILDFLAG(IS_APPLE)
   std::string_view prefix = base::apple::BaseBundleID();
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -876,7 +893,7 @@ static bool CreateTemporaryDirInDirImpl(const FilePath& base_dir,
 }
 
 bool CreateTemporaryDirInDir(const FilePath& base_dir,
-                             FilePath::StringPieceType prefix,
+                             FilePath::StringViewType prefix,
                              FilePath* new_dir) {
   FilePath::StringType mkdtemp_template(prefix);
   mkdtemp_template.append("XXXXXX");
@@ -897,23 +914,35 @@ bool CreateNewTempDirectory(const FilePath::StringType& prefix,
 bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);  // For call to mkdir().
-  std::vector<FilePath> subpaths;
 
-  // Collect a list of all parent directories.
+  // Avoid checking subdirs if directory already exists.
+  if (DirectoryExists(full_path)) {
+    return true;
+  }
+
+  // Collect a list of all missing directories.
+  std::vector<FilePath> missing_subpaths({full_path});
   FilePath last_path = full_path;
-  subpaths.push_back(full_path);
   for (FilePath path = full_path.DirName(); path.value() != last_path.value();
        path = path.DirName()) {
-    subpaths.push_back(path);
+    if (DirectoryExists(path)) {
+      break;
+    }
+    missing_subpaths.push_back(path);
     last_path = path;
   }
 
-  // Iterate through the parents and create the missing ones.
-  for (const FilePath& subpath : base::Reversed(subpaths)) {
-    if (DirectoryExists(subpath)) {
-      continue;
+  // Iterate through the missing directories and create.
+  for (const FilePath& subpath : base::Reversed(missing_subpaths)) {
+    mode_t mode = S_IRWXU;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (IsUnderMyFiles(subpath)) {
+      mode |= S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     }
-    if (mkdir(subpath.value().c_str(), 0700) == 0) {
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    if (mkdir(subpath.value().c_str(), mode) == 0) {
       continue;
     }
     // Mkdir failed, but it might have failed with EEXIST, or some other error

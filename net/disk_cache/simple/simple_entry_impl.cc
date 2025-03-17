@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/simple/simple_entry_impl.h"
 
 #include <algorithm>
@@ -154,14 +149,14 @@ SimpleEntryImpl::SimpleEntryImpl(
                                       net::NetLogSourceType::DISK_CACHE_ENTRY)),
       stream_0_data_(base::MakeRefCounted<net::GrowableIOBuffer>()),
       entry_priority_(entry_priority) {
-  static_assert(std::extent<decltype(data_size_)>() ==
-                    std::extent<decltype(crc32s_end_offset_)>(),
+  static_assert(std::tuple_size<decltype(data_size_)>() ==
+                    std::tuple_size<decltype(crc32s_end_offset_)>(),
                 "arrays should be the same size");
-  static_assert(
-      std::extent<decltype(data_size_)>() == std::extent<decltype(crc32s_)>(),
-      "arrays should be the same size");
-  static_assert(std::extent<decltype(data_size_)>() ==
-                    std::extent<decltype(have_written_)>(),
+  static_assert(std::tuple_size<decltype(data_size_)>() ==
+                    std::tuple_size<decltype(crc32s_)>(),
+                "arrays should be the same size");
+  static_assert(std::tuple_size<decltype(data_size_)>() ==
+                    std::tuple_size<decltype(have_written_)>(),
                 "arrays should be the same size");
   ResetEntry();
   NetLogSimpleEntryConstruction(net_log_,
@@ -445,6 +440,7 @@ int SimpleEntryImpl::WriteData(int stream_index,
     }
     return net::ERR_INVALID_ARGUMENT;
   }
+
   int end_offset;
   if (!base::CheckAdd(offset, buf_len).AssignIfValid(&end_offset) ||
       (backend_.get() && end_offset > backend_->MaxFileSize())) {
@@ -490,7 +486,8 @@ int SimpleEntryImpl::WriteData(int stream_index,
     // operations.
     if (buf) {
       op_buf = base::MakeRefCounted<net::IOBufferWithSize>(buf_len);
-      std::copy(buf->data(), buf->data() + buf_len, op_buf->data());
+      // Note: buf_len >= 0 per check at function entry.
+      op_buf->span().copy_from(buf->first(static_cast<unsigned>(buf_len)));
     }
     op_callback = CompletionOnceCallback();
     ret_value = buf_len;
@@ -658,10 +655,10 @@ void SimpleEntryImpl::ResetEntry() {
   // we no longer own the name and are disconnected from the active entry table.
   // We preserve doom_state_ accross this entry for this same reason.
   state_ = doom_state_ == DOOM_COMPLETED ? STATE_FAILURE : STATE_UNINITIALIZED;
-  std::memset(crc32s_end_offset_, 0, sizeof(crc32s_end_offset_));
-  std::memset(crc32s_, 0, sizeof(crc32s_));
-  std::memset(have_written_, 0, sizeof(have_written_));
-  std::memset(data_size_, 0, sizeof(data_size_));
+  std::ranges::fill(crc32s_end_offset_, 0);
+  std::ranges::fill(crc32s_, 0);
+  std::ranges::fill(have_written_, 0);
+  std::ranges::fill(data_size_, 0);
 }
 
 void SimpleEntryImpl::ReturnEntryToCaller() {
@@ -1687,8 +1684,8 @@ void SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
                                      net::IOBuffer* out_buf) {
   DCHECK_GE(buf_len, 0);
 
-  std::copy(in_buf->data() + offset, in_buf->data() + offset + buf_len,
-            out_buf->data());
+  out_buf->span().copy_prefix_from(in_buf->span().subspan(
+      base::checked_cast<size_t>(offset), base::checked_cast<size_t>(buf_len)));
   UpdateDataFromEntryStat(SimpleEntryStat(base::Time::Now(), last_modified_,
                                           data_size_, sparse_data_size_));
 }
@@ -1706,7 +1703,8 @@ void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   int data_size = GetDataSize(0);
   if (offset == 0 && truncate) {
     stream_0_data_->SetCapacity(buf_len);
-    std::copy(buf->data(), buf->data() + buf_len, stream_0_data_->data());
+    stream_0_data_->span().copy_from(
+        buf->first(base::checked_cast<size_t>(buf_len)));
     data_size_[0] = buf_len;
   } else {
     const int buffer_size =
@@ -1716,12 +1714,15 @@ void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
     // zero-filled.
     const int fill_size = offset <= data_size ? 0 : offset - data_size;
     if (fill_size > 0) {
-      std::fill(stream_0_data_->data() + data_size,
-                stream_0_data_->data() + data_size + fill_size, 0);
+      std::ranges::fill(
+          stream_0_data_->span().subspan(base::checked_cast<size_t>(data_size),
+                                         base::checked_cast<size_t>(fill_size)),
+          0);
     }
     if (buf) {
-      std::copy(buf->data(), buf->data() + buf_len,
-                stream_0_data_->data() + offset);
+      stream_0_data_->span()
+          .subspan(base::checked_cast<size_t>(offset))
+          .copy_prefix_from(buf->first(base::checked_cast<size_t>(buf_len)));
     }
     data_size_[0] = buffer_size;
   }

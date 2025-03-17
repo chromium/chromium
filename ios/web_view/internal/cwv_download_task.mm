@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_download_task_internal.h"
-
 #import "base/apple/foundation_util.h"
-#include "base/functional/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "ios/web/public/download/download_task.h"
-#include "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/download/download_task_observer_bridge.h"
-#include "ios/web_view/internal/cwv_web_view_internal.h"
+#import "ios/web_view/internal/cwv_download_task_internal.h"
+#import "ios/web_view/internal/cwv_web_view_internal.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/base/net_errors.h"
+#import "net/base/net_errors.h"
 
 int64_t const CWVDownloadSizeUnknown = -1;
 
@@ -133,8 +132,8 @@ NSInteger const CWVDownloadErrorAborted = -101;
                    code:cwvErrorCode
                userInfo:@{NSLocalizedDescriptionKey : errorDescription}];
   }
-  if ([_delegate
-          respondsToSelector:@selector(downloadTask:didFinishWithError:)]) {
+  if ([_delegate respondsToSelector:@selector(downloadTask:
+                                        didFinishWithError:)]) {
     [_delegate downloadTask:self didFinishWithError:error];
   }
 }

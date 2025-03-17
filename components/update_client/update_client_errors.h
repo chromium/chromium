@@ -85,6 +85,8 @@ enum class UnpackerError {
   kFailedToAddToCache = 19,
   kFailedToCreateCacheDir = 20,
   kCrxCacheNotProvided = 21,
+  kCrxCacheMetadataCorrupted = 22,
+  kCrxCacheFileNotCached = 23,
 };
 
 // These errors are returned with the |kInstall| error category and
@@ -142,6 +144,9 @@ enum class ProtocolError : int {
   NO_HASH = -10011,
   UNSUPPORTED_PROTOCOL = -10012,
   INTERNAL = -10013,
+  UNSUPPORTED_OPERATION = -10014,
+  INEXPRESSIBLE = -10015,
+  UNKNOWN_ERROR = -10016,
 };
 
 struct CategorizedError {

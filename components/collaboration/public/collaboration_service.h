@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/service_status.h"
+#include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -70,9 +71,9 @@ class CollaborationService : public KeyedService,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const GURL& url) = 0;
 
-  // Starts a new share flow. This will cancel all existing ongoing join and
-  // share flows in the same browser instance.
-  // Note: EitherGroupID is either a local tab group id or a sync id.
+  // Starts a new share or manage flow. This will cancel all existing ongoing
+  // flows in the same browser instance. Note: EitherGroupID is either a local
+  // tab group id or a sync id.
   virtual void StartShareOrManageFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id) = 0;
@@ -89,6 +90,17 @@ class CollaborationService : public KeyedService,
   // the model is not loaded yet.
   virtual std::optional<data_sharing::GroupData> GetGroupData(
       const data_sharing::GroupId& group_id) = 0;
+
+  // Attempts to delete a group. `callback` will be invoked on completion with
+  // param indicating whether group is successfully deleted.
+  virtual void DeleteGroup(const data_sharing::GroupId& group_id,
+                           base::OnceCallback<void(bool success)> callback) = 0;
+
+  // Attempts to leave a group the current user has joined before. `callback`
+  // will be invoked on completion with param indicating whether group is
+  // successfully deleted.
+  virtual void LeaveGroup(const data_sharing::GroupId& group_id,
+                          base::OnceCallback<void(bool success)> callback) = 0;
 };
 
 }  // namespace collaboration

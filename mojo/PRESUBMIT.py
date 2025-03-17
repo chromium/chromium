@@ -8,7 +8,10 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+from filecmp import dircmp
 import os.path
+import subprocess
+import tempfile
 
 PRESUBMIT_VERSION = '2.0.0'
 
@@ -45,3 +48,20 @@ def CheckChange(input_api, output_api):
       input_api, output_api, extra_paths_list=pylint_extra_paths,
       files_to_skip=files_to_skip)
   return results
+
+def CheckGoldenFilesUpToDate(input_api, output_api):
+  generate_script = os.path.join(input_api.PresubmitLocalPath(),
+                                 'golden/generate.py')
+  generated_dir = os.path.join(input_api.PresubmitLocalPath(),
+                               'golden/generated')
+  with tempfile.TemporaryDirectory() as tmp_dir:
+    subprocess.run(['python3', generate_script, '--output-dir', tmp_dir],
+                   check=True)
+    dcmp = dircmp(tmp_dir, generated_dir)
+    if len(dcmp.diff_files) == 0:
+      return []
+    return [output_api.PresubmitError(
+      'Bindings generated from mojo/golden/corpus differ from '
+      'golden files in mojo/golden/generated. Please regenerate '
+      'golden files by running: mojo/golden/generate.py',
+      items=dcmp.diff_files)]

@@ -551,5 +551,91 @@ TEST_F(SOCKSConnectJobTest, CancelDuringHandshake) {
   EXPECT_TRUE(sequenced_socket_data.AllWriteDataConsumed());
 }
 
+TEST_F(SOCKSConnectJobTest,
+       SOCKS5_OnDestinationDnsAliasesResolved_ShouldNotBeInvoked) {
+  host_resolver_.set_synchronous_mode(true);
+
+  MockWrite writes[] = {
+      MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength, 0),
+      MockWrite(SYNCHRONOUS, kSOCKS5OkRequest, kSOCKS5OkRequestLength, 2),
+  };
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength,
+               1),
+      MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength, 3),
+  };
+
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  sequenced_socket_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
+
+  TestConnectJobDelegate test_delegate;
+
+  std::vector<std::string> aliases({"alias1", "alias2", kProxyHostName});
+  std::vector<std::string> dest_aliases(
+      {"dest-alias1", "dest-alias2", kSOCKS5TestHost});
+
+  // Add IP literal rule for proxy.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kProxyHostName, "2.2.2.2", std::move(aliases));
+  // Add IP literal rule for destination.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kSOCKS5TestHost, "3.3.3.3", std::move(dest_aliases));
+
+  std::unique_ptr<SOCKSConnectJob> socks_connect_job =
+      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
+                                        CreateSOCKSParams(SOCKSVersion::V5),
+                                        &test_delegate, nullptr /* net_log */);
+  test_delegate.StartJobExpectingResult(socks_connect_job.get(), OK,
+                                        /*expect_sync_result=*/true);
+
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+  EXPECT_TRUE(test_delegate.dns_aliases().empty());
+}
+
+TEST_F(SOCKSConnectJobTest,
+       SOCKS4_OnDestinationDnsAliasesResolved_ShouldNotBeInvoked) {
+  host_resolver_.set_synchronous_mode(true);
+
+  MockWrite writes[] = {
+      MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
+                kSOCKS4OkRequestLocalHostPort80Length, 0),
+  };
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, kSOCKS4OkReply, kSOCKS4OkReplyLength, 1),
+  };
+
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  sequenced_socket_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
+
+  TestConnectJobDelegate test_delegate;
+
+  std::vector<std::string> aliases({"alias1", "alias2", kProxyHostName});
+  std::vector<std::string> dest_aliases(
+      {"dest-alias1", "dest-alias2", kSOCKS5TestHost});
+
+  // Add IP literal rule for proxy.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kProxyHostName, "2.2.2.2", std::move(aliases));
+  // Add IP literal rule for destination.
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      kSOCKS5TestHost, "3.3.3.3", std::move(dest_aliases));
+
+  std::unique_ptr<SOCKSConnectJob> socks_connect_job =
+      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
+                                        CreateSOCKSParams(SOCKSVersion::V4),
+                                        &test_delegate, nullptr /* net_log */);
+  test_delegate.StartJobExpectingResult(socks_connect_job.get(), OK,
+                                        /*expect_sync_result=*/true);
+
+  EXPECT_FALSE(test_delegate.on_dns_aliases_resolved_called());
+  EXPECT_TRUE(test_delegate.dns_aliases().empty());
+}
+
 }  // namespace
 }  // namespace net

@@ -17,15 +17,14 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
@@ -122,23 +121,22 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
   base::RunLoop run_loop_;
 };
 
-class DiscardWaiter : public TabLifecycleObserver {
+class DiscardWaiter : public LifecycleUnitObserver {
  public:
-  DiscardWaiter() { TabLifecycleUnitExternal::AddTabLifecycleObserver(this); }
+  DiscardWaiter() { GetTabLifecycleUnitSource()->AddLifecycleObserver(this); }
 
   ~DiscardWaiter() override {
-    TabLifecycleUnitExternal::RemoveTabLifecycleObserver(this);
+    GetTabLifecycleUnitSource()->RemoveLifecycleObserver(this);
   }
 
   void Wait() { run_loop_.Run(); }
 
  private:
-  void OnTabLifecycleStateChange(
-      content::WebContents* contents,
-      mojom::LifecycleUnitState previous_state,
-      mojom::LifecycleUnitState new_state,
-      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
-    if (new_state == mojom::LifecycleUnitState::DISCARDED) {
+  void OnLifecycleUnitStateChanged(
+      LifecycleUnit* lifecycle_unit,
+      LifecycleUnitState last_state,
+      LifecycleUnitStateChangeReason reason) override {
+    if (lifecycle_unit->GetState() == mojom::LifecycleUnitState::DISCARDED) {
       run_loop_.Quit();
     }
   }
@@ -202,6 +200,12 @@ class TabManagerTest : public InProcessBrowserTest,
     // To avoid flakes when focus changes, set the active tab strip model
     // explicitly.
     GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(tsm());
+  }
+
+  void TearDownOnMainThread() override {
+    // Clear the fakely-focused model before browsers are destroyed.
+    GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(nullptr);
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void OpenTwoTabs(const GURL& first_url, const GURL& second_url) {
@@ -400,13 +404,17 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, DiscardedTabIsUnloaded) {
 
   // Discard the background tab.
   auto* lifecycle_unit_to_discard = GetLifecycleUnitAt(0);
-  ASSERT_EQ(lifecycle_unit_to_discard->GetVisibility(),
-            content::Visibility::HIDDEN);
+  auto* web_contents = GetWebContentsAt(0);
+  ASSERT_EQ(web_contents->GetVisibility(), content::Visibility::HIDDEN);
   lifecycle_unit_to_discard->Discard(LifecycleUnitDiscardReason::URGENT,
                                      /* resident_set_size_estimate=*/0);
 
-  // Verify that it is considered unloaded by `TabLoadTracker`.
+  // Get the WebContents at index 0 again. This is necessary because discarding
+  // the tab via LifecycleUnit might replace the original WebContents object at
+  // that index with a new, empty WebContents. We need to obtain a reference to
+  // this newly created WebContents to correctly verify its unloaded state.
   auto* discarded_contents = GetWebContentsAt(0);
+  // Verify that it is considered unloaded by `TabLoadTracker`.
   ASSERT_TRUE(discarded_contents->WasDiscarded());
   EXPECT_EQ(TabLoadTracker::Get()->GetLoadingState(discarded_contents),
             TabLoadTracker::LoadingState::UNLOADED);
@@ -484,7 +492,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectPDFPages) {
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Makes sure that recently opened or used tabs are protected.
 // These protections only apply on non-Ash desktop platforms. Check
 // TabLifecycleUnit::CanDiscard for more details.
@@ -535,7 +543,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
   // WebContentsData::WebContentsDestroyed.
   tsm->CloseAllTabs();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Makes sure that tabs using media devices are protected.
 IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectVideoTabs) {
@@ -624,13 +632,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 }
 
-// TODO(crbug.com/336450782): Flaky on Lacros ASAN.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AutoDiscardable DISABLED_AutoDiscardable
-#else
-#define MAYBE_AutoDiscardable AutoDiscardable
-#endif
-IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_AutoDiscardable) {
+IN_PROC_BROWSER_TEST_P(TabManagerTest, AutoDiscardable) {
   // Get two tabs open.
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
                                WindowOpenDisposition::CURRENT_TAB,
@@ -1020,7 +1022,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
 
 // On ChromeOS, active tabs are discarded if their window is non-visible. On
 // other platforms, they are never discarded.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
 #else

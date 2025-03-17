@@ -22,7 +22,7 @@
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/browser/supported_delegations.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace payments {
 
@@ -173,8 +173,10 @@ void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
   // Exit if frame or page is being unloaded or payments are otherwise
   // disallowed.
   if (!rfh || !rfh->IsActive() || !delegate->GetWebContents() ||
-      !rfh->IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kPayment))
+      !rfh->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kPayment)) {
     return;
+  }
 
   creator_ = std::make_unique<ServiceWorkerPaymentAppCreator>(delegate);
 

@@ -508,10 +508,10 @@ export class Viewport {
     this.resetTracker();
     this.zoomManager_ = manager;
     this.tracker_.add(
-        this.zoomManager_!.getEventTarget(), 'set-zoom',
+        this.zoomManager_.getEventTarget(), 'set-zoom',
         (e: CustomEvent<number>) => this.setZoom(e.detail));
     this.tracker_.add(
-        this.zoomManager_!.getEventTarget(), 'update-zoom-from-browser',
+        this.zoomManager_.getEventTarget(), 'update-zoom-from-browser',
         this.updateZoomFromBrowserChange_.bind(this));
   }
 

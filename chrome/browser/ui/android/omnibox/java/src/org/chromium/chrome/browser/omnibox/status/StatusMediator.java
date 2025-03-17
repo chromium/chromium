@@ -847,9 +847,14 @@ public class StatusMediator
                         profile.isOffTheRecord() ? profile.getOriginalProfile() : null;
                 if (mCookieControlsBridge == null) {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(this, webContents, originalBrowserContext);
+                            new CookieControlsBridge(
+                                    this,
+                                    webContents,
+                                    originalBrowserContext,
+                                    profile.isIncognitoBranded());
                 } else if (mLastTabId != currentTab.getId() || mCurrentTabCrashed) {
-                    mCookieControlsBridge.updateWebContents(webContents, originalBrowserContext);
+                    mCookieControlsBridge.updateWebContents(
+                            webContents, originalBrowserContext, profile.isIncognitoBranded());
                     mCurrentTabCrashed = false;
                 }
             }
@@ -892,11 +897,17 @@ public class StatusMediator
                         == PageClassification.ANDROID_HUB_VALUE;
         mModel.set(StatusProperties.SHOW_STATUS_ICON, showIcon);
         if (showIcon && !isHubSearch) {
+            var rippleId =
+                    mLocationBarDataProvider.isIncognitoBranded()
+                            ? R.drawable.status_view_ripple_incognito
+                            : R.drawable.status_view_ripple;
+            var verboseRippleId =
+                    mLocationBarDataProvider.isIncognitoBranded()
+                            ? R.drawable.status_view_verbose_ripple_incognito
+                            : R.drawable.status_view_verbose_ripple;
             mModel.set(
                     StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
-                    verboseStatusTextVisible
-                            ? R.drawable.status_view_verbose_ripple
-                            : R.drawable.status_view_ripple);
+                    verboseStatusTextVisible ? verboseRippleId : rippleId);
             mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, R.string.accessibility_menu_info);
         } else {
             mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, Resources.ID_NULL);

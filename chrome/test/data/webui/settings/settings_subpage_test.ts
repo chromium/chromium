@@ -82,7 +82,7 @@ suite('SettingsSubpage', function() {
         '[cr-icon="cr:help-outline"]');
     assertTrue(!!icon);
     // Check that the icon is forced to always use 'ltr' mode.
-    assertEquals('ltr', icon!.getAttribute('dir'));
+    assertEquals('ltr', icon.getAttribute('dir'));
     // Check that the icon has proper a11y label.
     subpage.pageTitle = 'Title';
     flush();
@@ -118,11 +118,11 @@ suite('SettingsSubpage', function() {
     flush();
     const search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    search!.setValue('Hello');
+    search.setValue('Hello');
     subpage.dispatchEvent(new CustomEvent(
         'clear-subpage-search', {bubbles: true, composed: true}));
     flush();
-    assertEquals('', search!.getValue());
+    assertEquals('', search.getValue());
   });
 
   test('clear search (click)', async () => {
@@ -133,12 +133,12 @@ suite('SettingsSubpage', function() {
     flush();
     const search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    search!.setValue('Hello');
-    assertEquals(null, search!.shadowRoot!.activeElement);
-    search!.$.clearSearch.click();
+    search.setValue('Hello');
+    assertEquals(null, search.shadowRoot.activeElement);
+    search.$.clearSearch.click();
     await flushTasks();
-    assertEquals('', search!.getValue());
-    assertEquals(search!.$.searchInput, search!.shadowRoot!.activeElement);
+    assertEquals('', search.getValue());
+    assertEquals(search.$.searchInput, search.shadowRoot.activeElement);
   });
 
   test('preserve search result when back button is clicked', async () => {
@@ -150,8 +150,8 @@ suite('SettingsSubpage', function() {
     // Set search field.
     let search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    search!.setValue('test');
-    assertEquals('test', search!.getValue());
+    search.setValue('test');
+    assertEquals('test', search.getValue());
 
     // Navigate to another subpage.
     Router.getInstance().navigateTo(testRoutes.COOKIE_DETAILS);
@@ -163,7 +163,7 @@ suite('SettingsSubpage', function() {
     await eventToPromise('popstate', window);
     search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    assertEquals('test', search!.getValue());
+    assertEquals('test', search.getValue());
 
     // Go back to settings subpage, verify search field is empty
     Router.getInstance().navigateToPreviousRoute();
@@ -171,7 +171,7 @@ suite('SettingsSubpage', function() {
     await eventToPromise('popstate', window);
     search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    assertEquals('', search!.getValue());
+    assertEquals('', search.getValue());
   });
 
   test('preserve search result from URL input', async function() {
@@ -182,7 +182,7 @@ suite('SettingsSubpage', function() {
     await flushTasks();
     const search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    assertEquals('test', search!.getValue());
+    assertEquals('test', search.getValue());
   });
 
   test('navigates to parent when there is no history', function() {
@@ -235,11 +235,11 @@ suite('SettingsSubpageSearch', function() {
     element.toggleAttribute('autofocus', true);
     document.body.appendChild(element);
 
-    assertTrue(element.shadowRoot!.querySelector('cr-input')!.hasAttribute(
+    assertTrue(element.shadowRoot.querySelector('cr-input')!.hasAttribute(
         'autofocus'));
 
     element.removeAttribute('autofocus');
-    assertFalse(element.shadowRoot!.querySelector('cr-input')!.hasAttribute(
+    assertFalse(element.shadowRoot.querySelector('cr-input')!.hasAttribute(
         'autofocus'));
   });
 });

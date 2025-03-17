@@ -300,6 +300,13 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  // Force VoiceOver to focus the heading of the view.
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.navigationItem.titleView);
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
   if ([self isMovingFromParentViewController]) {
@@ -563,6 +570,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 - (void)initBackgroundViews {
   _backgroundViewWrapper = [[UIView alloc] init];
   _backgroundViewWrapper.translatesAutoresizingMaskIntoConstraints = NO;
+  _backgroundViewWrapper.isAccessibilityElement = YES;
   // Initialize background loading indicator view.
   _backgroundLoadingIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
@@ -769,12 +777,30 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setBackground:(DriveFilePickerBackground)background {
-  _backgroundLoadingIndicator.hidden =
-      background != DriveFilePickerBackground::kLoadingIndicator;
-  _backgroundEmptyFolderView.hidden =
-      background != DriveFilePickerBackground::kEmptyFolder;
-  _backgroundNoMatchingResultView.hidden =
-      background != DriveFilePickerBackground::kNoMatchingResults;
+  // Reset the background views.
+  _backgroundLoadingIndicator.hidden = YES;
+  _backgroundEmptyFolderView.hidden = YES;
+  _backgroundNoMatchingResultView.hidden = YES;
+  // Show the current background view or hide wrapper if no background.
+  UIView* backgroundView = nil;
+  switch (background) {
+    case DriveFilePickerBackground::kNoBackground:
+      backgroundView = nil;
+      break;
+    case DriveFilePickerBackground::kLoadingIndicator:
+      backgroundView = _backgroundLoadingIndicator;
+      break;
+    case DriveFilePickerBackground::kEmptyFolder:
+      backgroundView = _backgroundEmptyFolderView;
+      break;
+    case DriveFilePickerBackground::kNoMatchingResults:
+      backgroundView = _backgroundNoMatchingResultView;
+      break;
+  }
+  backgroundView.hidden = NO;
+  _backgroundViewWrapper.hidden = (backgroundView == nil);
+  // Update background wrapper accessibility label.
+  _backgroundViewWrapper.accessibilityLabel = backgroundView.accessibilityLabel;
 }
 
 - (void)populatePrimaryItems:(NSArray<DriveFilePickerItem*>*)primaryItems

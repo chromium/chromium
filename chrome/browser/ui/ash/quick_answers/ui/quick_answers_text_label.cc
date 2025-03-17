@@ -16,7 +16,7 @@ QuickAnswersTextLabel::QuickAnswersTextLabel(
     const QuickAnswerText& quick_answers_text)
     : views::Label(quick_answers_text.text) {
   SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  SetEnabledColorId(quick_answers_text.color_id);
+  SetEnabledColor(quick_answers_text.color_id);
 }
 
 std::unique_ptr<QuickAnswersTextLabel>

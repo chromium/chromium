@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 
-@interface LensOverlayConsentPresenter () <LensOverlayDetentsChangeObserver>
+@interface LensOverlayConsentPresenter () <LensOverlayDetentsManagerDelegate>
 @end
 
 @implementation LensOverlayConsentPresenter {
@@ -42,9 +42,12 @@
   UISheetPresentationController* sheet =
       _presentedConsentViewController.sheetPresentationController;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
+
+  UIWindow* window = _presentingViewController.view.window;
   _detentsManager =
-      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
-  _detentsManager.observer = self;
+      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet
+                                                      window:window];
+  _detentsManager.delegate = self;
   [_detentsManager adjustDetentsForState:SheetDetentStateConsentDialog];
   [_presentingViewController
       presentViewController:_presentedConsentViewController
@@ -66,16 +69,18 @@
                                                 completion:completion];
 }
 
-#pragma mark - LensOverlayDetentsChangeObserver
+#pragma mark - LensOverlayDetentsManagerDelegate
 
-- (void)onBottomSheetDimensionStateChanged:(SheetDimensionState)state {
-  if (state == SheetDimensionStateHidden) {
+- (void)lensOverlayDetentsManagerDidChangeDimensionState:
+    (LensOverlayDetentsManager*)detentsManager {
+  if (detentsManager.sheetDimension == SheetDimensionStateHidden) {
     [self.delegate requestDismissalOfConsentDialog:self];
   }
 }
 
-- (BOOL)bottomSheetShouldDismissFromState:(SheetDimensionState)state {
-  DCHECK(state == SheetDimensionStateConsent);
+- (BOOL)lensOverlayDetentsManagerShouldDismissBottomSheet:
+    (LensOverlayDetentsManager*)detentsManager {
+  DCHECK(detentsManager.sheetDimension == SheetDimensionStateConsent);
   return YES;
 }
 

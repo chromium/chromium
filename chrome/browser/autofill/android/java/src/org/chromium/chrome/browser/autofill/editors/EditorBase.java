@@ -46,8 +46,8 @@ public abstract class EditorBase<T extends EditableOption> {
      * @param doneCallback The callback to invoke when confirming the edit dialog, with the complete
      *     and valid information.
      * @param cancelCallback The callback to invoke when cancelling the edit dialog. Can be called
-     *     with null (|toEdit| was null), incomplete information (|toEdit| was incomplete), invalid
-     *     information (|toEdit| was invalid), or even with complete and valid information (|toEdit|
+     *     with null (`toEdit` was null), incomplete information (`toEdit` was incomplete), invalid
+     *     information (`toEdit` was invalid), or even with complete and valid information (`toEdit`
      *     was both complete and valid to begin with).
      *     <p>TODO(crbug.com/40259080) Rename this method to showEditPrompt.
      */

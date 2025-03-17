@@ -1,7 +1,7 @@
 edcourtney@chromium.org
 oshima@chromium.org
 
-per-file *x11.cc=thomasanderson@chromium.org
-per-file *x11.h=thomasanderson@chromium.org
+per-file *x11.cc=file://ui/ozone/platform/x11/OWNERS
+per-file *x11.h=file://ui/ozone/platform/x11/OWNERS
 per-file *occlusion*=fdoray@chromium.org
 per-file native_window_occlusion_tracker_win*=davidbienvenu@chromium.org

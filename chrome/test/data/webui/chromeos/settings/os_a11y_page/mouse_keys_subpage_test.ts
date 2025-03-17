@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsMouseKeysSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsMouseKeysSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -118,5 +119,44 @@ suite('<settings-mouse-keys-subpage>', () => {
     assertFalse(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
 
     assertFalse(isVisible(dominantHandControl));
+  });
+
+  test('Primary key toggle hides/shows primary keyboard preview', async () => {
+    await initPage();
+
+    loadTimeData.overrideValues({
+      isAccessibilityMouseKeysEnabled: true,
+    });
+
+    const primaryKeysKeyboardPreview =
+        page.shadowRoot!.querySelector<HTMLElement>(`#primaryKeysPreview`);
+
+    assert(primaryKeysKeyboardPreview);
+    assertTrue(isVisible(primaryKeysKeyboardPreview));
+
+    const usePrimaryKeysToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#mouseKeysUsePrimaryKeys');
+
+    assert(usePrimaryKeysToggle);
+    assertTrue(isVisible(usePrimaryKeysToggle));
+    // Primary keys should be default enabled.
+    assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+
+    // Turn primary key toggle off.
+    usePrimaryKeysToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertFalse(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertFalse(isVisible(primaryKeysKeyboardPreview));
+
+    // Turn primary key toggle on.
+    usePrimaryKeysToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertTrue(isVisible(primaryKeysKeyboardPreview));
   });
 });

@@ -107,8 +107,10 @@ class CORE_EXPORT InspectorDOMAgent final
   InspectorDOMAgent(const InspectorDOMAgent&) = delete;
   InspectorDOMAgent& operator=(const InspectorDOMAgent&) = delete;
   ~InspectorDOMAgent() override;
-  void Trace(Visitor*) const override;
 
+  // InspectorBaseAgent overrides.
+  void Trace(Visitor*) const override;
+  void Dispose() override;
   void Restore() override;
 
   HeapVector<Member<Document>> Documents();
@@ -368,7 +370,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void NotifyDidModifyDOMAttr(Element*);
 
   // Node-related methods.
-  typedef HeapHashMap<Member<Node>, int> NodeToIdMap;
+  using NodeToIdMap = GCedHeapHashMap<Member<Node>, int>;
   int Bind(Node*, NodeToIdMap*);
   void Unbind(Node*);
 
@@ -417,9 +419,9 @@ class CORE_EXPORT InspectorDOMAgent final
 
   bool isNodeScrollable(Node*);
 
-  v8::Isolate* isolate_;
+  v8::Isolate* isolate_;  // null after Dispose().
   Member<InspectedFrames> inspected_frames_;
-  v8_inspector::V8InspectorSession* v8_session_;
+  v8_inspector::V8InspectorSession* v8_session_;  // null after Dispose().
   HeapHashSet<Member<DOMListener>> dom_listeners_;
   Member<NodeToIdMap> document_node_to_id_map_;
   // Owns node mappings for dangling nodes.

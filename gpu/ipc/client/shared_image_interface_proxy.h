@@ -108,7 +108,6 @@ class SharedImageInterfaceProxy {
   SyncToken GenUnverifiedSyncToken();
   void VerifySyncToken(SyncToken& sync_token);
   void WaitSyncToken(const SyncToken& sync_token);
-  void Flush();
 
   SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                      const gfx::Size& size,
@@ -126,14 +125,17 @@ class SharedImageInterfaceProxy {
                                       bool register_with_image_pipe);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
-
   void NotifyMailboxAdded(const Mailbox& mailbox,
                           gpu::SharedImageUsageSet usage);
 
   const gpu::SharedImageCapabilities& GetCapabilities() {
     return capabilities_;
   }
+
+  void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote);
+  void DestroySharedImagePool(const SharedImagePoolId& pool_id);
 
  private:
   bool GetSHMForPixelData(base::span<const uint8_t> pixel_data,

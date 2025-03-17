@@ -10,6 +10,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -40,7 +41,14 @@ void AutofillTabHelper::SetAutofillHandler(
 
 void AutofillTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
-  autofill_agent_.snackbarHandler = snackbar_handler;
+  if (snackbar_handler) {
+    autofill_agent_delegate_ =
+        [[AutofillAgentDelegate alloc] initWithCommandHandler:snackbar_handler];
+    autofill_agent_.delegate = autofill_agent_delegate_;
+  } else {
+    autofill_agent_delegate_ = nil;
+    autofill_agent_.delegate = nil;
+  }
 }
 
 id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {
@@ -58,8 +66,16 @@ AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infobar_manager);
+  auto from_web_state_impl =
+      [](web::WebState* web_state) -> autofill::AutofillClientIOS* {
+    if (auto* ath = AutofillTabHelper::FromWebState(web_state)) {
+      return ath->autofill_client();
+    }
+    return nullptr;
+  };
   autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
-      profile_, web_state, infobar_manager, autofill_agent_);
+      from_web_state_impl, profile_, web_state, infobar_manager,
+      autofill_agent_);
 
   if (IsAutofillAcrossIframesEnabled()) {
     autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state)

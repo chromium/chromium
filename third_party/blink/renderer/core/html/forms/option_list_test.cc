@@ -16,8 +16,8 @@ namespace blink {
 
 namespace {
 
-AtomicString Id(const HTMLOptionElement* option) {
-  return option->FastGetAttribute(html_names::kIdAttr);
+AtomicString Id(const HTMLOptionElement& option) {
+  return option.FastGetAttribute(html_names::kIdAttr);
 }
 
 }  // namespace
@@ -90,9 +90,19 @@ TEST_F(OptionListTest, Optgroup) {
       ->setInnerHTML(
           "<optgroup><option id=gg11></option></optgroup>"
           "<option id=g11></option>");
-  list = Select().GetOptionList();
-  iter = list.begin();
-  EXPECT_EQ("gg11", Id(*iter)) << "Nested OPTGROUP should be included.";
+  OptionList list2 = Select().GetOptionList();
+  OptionList::Iterator iter2 = list2.begin();
+  EXPECT_EQ("g11", Id(*iter2)) << "Nested OPTGROUP should not be included.";
+}
+
+TEST_F(OptionListTest, RetreatBeforeBeginning) {
+  Select().setInnerHTML("<button>button</button><option id=o1>option</option>");
+  OptionList list = Select().GetOptionList();
+  OptionList::Iterator it = list.begin();
+  EXPECT_EQ("o1", Id(*it));
+  --it;
+  bool is_null = it;
+  EXPECT_FALSE(is_null);
 }
 
 }  // naemespace blink

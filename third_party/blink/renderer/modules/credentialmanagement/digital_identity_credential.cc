@@ -4,14 +4,14 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_identity_credential.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_creation_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
@@ -116,9 +117,9 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       }
       return;
     }
-    case RequestDigitalIdentityStatus::kErrorNoProviders:
+    case RequestDigitalIdentityStatus::kErrorNoRequests:
       resolver->RejectWithTypeError(
-          "Digital identity API needs at least one provider.");
+          "Digital identity API needs at least one request.");
       return;
     case RequestDigitalIdentityStatus::kErrorInvalidJson:
       resolver->RejectWithTypeError(
@@ -173,7 +174,7 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   }
 
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kDigitalCredentialsGet)) {
+          network::mojom::PermissionsPolicyFeature::kDigitalCredentialsGet)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The 'digital-credentials-get' feature is not enabled in this "
@@ -182,27 +183,54 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     return;
   }
 
-  Vector<blink::mojom::blink::DigitalCredentialProviderPtr> providers;
-  for (const auto& provider : options.digital()->providers()) {
-    V8UnionObjectOrString* request_object_or_string = provider->request();
+  auto process_request =
+      [resolver](
+          V8UnionObjectOrString* request_object_or_string,
+          const String& protocol,
+          Vector<blink::mojom::blink::DigitalCredentialRequestPtr>& requests) {
+        String stringified_request;
+        if (request_object_or_string->IsString()) {
+          stringified_request = request_object_or_string->GetAsString();
+        } else {
+          stringified_request = ValidateAndStringifyObject(
+              resolver, request_object_or_string->GetAsObject());
+          if (stringified_request.IsNull()) {
+            return;
+          }
+        }
 
-    String stringified_request;
-    if (request_object_or_string->IsString()) {
-      stringified_request = request_object_or_string->GetAsString();
-    } else {
-      stringified_request = ValidateAndStringifyObject(
-          resolver, request_object_or_string->GetAsObject());
-      if (stringified_request.IsNull()) {
-        continue;
-      }
+        blink::mojom::blink::DigitalCredentialRequestPtr
+            digital_credential_request =
+                blink::mojom::blink::DigitalCredentialRequest::New();
+        digital_credential_request->protocol = protocol;
+        digital_credential_request->data = stringified_request;
+        requests.push_back(std::move(digital_credential_request));
+      };
+
+  mojom::blink::GetRequestFormat format =
+      mojom::blink::GetRequestFormat::kModern;
+  // When the new format is available (i.e. contains requests()), consider it,
+  // otherwise use the old format (i.e. contains providers).
+  Vector<blink::mojom::blink::DigitalCredentialRequestPtr> requests;
+  if (options.digital()->hasRequests()) {
+    format = mojom::blink::GetRequestFormat::kModern;
+    for (const auto& request : options.digital()->requests()) {
+      process_request(request->data(), request->protocol(), requests);
     }
+  } else if (
+      options.digital()->hasProviders() &&
+      !RuntimeEnabledFeatures::
+          WebIdentityDigitalCredentialsStopSupportingLegacyRequestFormatEnabled()) {
+    format = mojom::blink::GetRequestFormat::kLegacy;
+    for (const auto& provider : options.digital()->providers()) {
+      process_request(provider->request(), provider->protocol(), requests);
+    }
+  }
 
-    blink::mojom::blink::DigitalCredentialProviderPtr
-        digital_credential_provider =
-            blink::mojom::blink::DigitalCredentialProvider::New();
-    digital_credential_provider->protocol = provider->protocol();
-    digital_credential_provider->request = stringified_request;
-    providers.push_back(std::move(digital_credential_provider));
+  if (requests.empty()) {
+    resolver->RejectWithTypeError(
+        "Digital identity API needs at least one request.");
+    return;
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),
@@ -216,10 +244,9 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
-  request->Get(std::move(providers),
+  request->Get(std::move(requests), format,
                WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
                              std::move(scoped_abort_state)));
 }

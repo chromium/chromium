@@ -67,13 +67,14 @@ class PortTest(LoggingTestCase):
         return port
 
     def test_validate_wpt_dirs(self):
+        port = self.make_port()
         # Keys should not have trailing slashes.
-        for wpt_path in Port.WPT_DIRS.keys():
+        for wpt_path in port.wpt_dirs().keys():
             self.assertFalse(wpt_path.endswith('/'))
         # Values should not be empty (except the last one).
-        for url_prefix in list(Port.WPT_DIRS.values())[:-1]:
+        for url_prefix in list(port.wpt_dirs().values())[:-1]:
             self.assertNotEqual(url_prefix, '/')
-        self.assertEqual(list(Port.WPT_DIRS.values())[-1], '/')
+        self.assertEqual(list(port.wpt_dirs().values())[-1], '/')
 
     def test_validate_wpt_regex(self):
         self.assertEquals(
@@ -2057,18 +2058,65 @@ class PortTest(LoggingTestCase):
 
     def test_virtual_exclusive_tests_with_generated_tests(self):
         port = self.make_port()
+        port.set_option_default('manifest_update', False)
         fs = port.host.filesystem
         web_tests_dir = port.web_tests_dir()
         fs.write_text_file(
-            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
-            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["external/wpt/console/b1.any.js"],'
-            ' "exclusive_tests": "ALL", '
-            '"args": ["-a"], "expires": "never"},'
-            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["external/wpt/console/b1.any.js",'
-            '                                                   "external/wpt/console/b2.any.js"],'
-            ' "exclusive_tests": ["external/wpt/console/b2.any.js"], '
-            '"args": ["-b"], "expires": "never"}'
-            ']')
+            fs.join(web_tests_dir, 'external', 'wpt', 'MANIFEST.json'),
+            json.dumps({
+                'items': {
+                    'testharness': {
+                        'console': {
+                            'b1.any.js': [
+                                'abcdef0',
+                                ['console/b1.any.html', {}],
+                                ['console/b1.any.worker.html', {}],
+                                ['console/b1.any.sharedworker.html', {}],
+                                [
+                                    'console/b1.https.any.shadowrealm-in-serviceworker.html',
+                                    {}
+                                ],
+                            ],
+                            'b2.any.js': [
+                                '0123457',
+                                ['console/b2.any.html', {}],
+                                ['console/b2.any.worker.html', {}],
+                                ['console/b2.any.sharedworker.html', {}],
+                            ],
+                        },
+                    },
+                },
+            }))
+        virtual_suites = [
+            {
+                'prefix': 'v1',
+                'platforms': ['Linux'],
+                'bases': ['external/wpt/console/b1.any.js'],
+                'exclusive_tests': 'ALL',
+                'args': ['-a'],
+                'expires': 'never',
+            },
+            {
+                'prefix':
+                'v2',
+                'platforms': ['Linux'],
+                'bases': [
+                    'external/wpt/console/b1.any.js',
+                    'external/wpt/console/b2.any.js',
+                ],
+                'exclusive_tests': [
+                    # Ensure `exclusive_tests` work with the generated URLs
+                    # themselves too.
+                    'external/wpt/console/b1.any.html',
+                    'external/wpt/console/b2.any.js',
+                ],
+                'args': ['-b'],
+                'expires':
+                'never',
+            },
+        ]
+        fs.write_text_file(fs.join(web_tests_dir, 'VirtualTestSuites'),
+                           json.dumps(virtual_suites))
         fs.write_text_file(
             fs.join(web_tests_dir, 'external/wpt/console', 'b1.any.js'), '')
         fs.write_text_file(
@@ -2083,6 +2131,10 @@ class PortTest(LoggingTestCase):
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
                 'external/wpt/console/b1.any.worker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/'
+                'b1.https.any.shadowrealm-in-serviceworker.html'))
         self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v1/external/wpt/console/b1.any.html'))
@@ -2092,6 +2144,10 @@ class PortTest(LoggingTestCase):
         self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v1/external/wpt/console/b1.any.worker.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/external/wpt/console/'
+                'b1.https.any.shadowrealm-in-serviceworker.html'))
 
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
@@ -2102,7 +2158,7 @@ class PortTest(LoggingTestCase):
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
                 'external/wpt/console/b2.any.worker.html'))
-        self.assertTrue(
+        self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/external/wpt/console/b1.any.html'))
         self.assertTrue(
@@ -2111,6 +2167,10 @@ class PortTest(LoggingTestCase):
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/external/wpt/console/b1.any.worker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/'
+                'b1.https.any.shadowrealm-in-serviceworker.html'))
         self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/external/wpt/console/b2.any.html'))
@@ -2276,6 +2336,25 @@ class PortTest(LoggingTestCase):
         port.host.filesystem.write_text_file(port.path_to_smoke_tests_file(),
                                              'passes/text.html\n')
         self.assertTrue(port.skips_test('failures/expected/image.html'))
+
+    def test_skips_test_expands_smoke_tests_file(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        port.default_smoke_test_only = lambda: True
+        port.host.filesystem.write_text_file(
+            port.path_to_smoke_tests_file(),
+            'virtual/virtual_failures/failures/expected/\n'
+            'external/wpt/console/console-is-a-namespace.any.js\n')
+        self.assertTrue(port.skips_test('failures/expected/image.html'))
+        self.assertFalse(
+            port.skips_test(
+                'virtual/virtual_failures/failures/expected/image.html'))
+        self.assertFalse(
+            port.skips_test(
+                'external/wpt/console/console-is-a-namespace.any.html'))
+        self.assertFalse(
+            port.skips_test(
+                'external/wpt/console/console-is-a-namespace.any.worker.html'))
 
     def test_skips_test_no_skip_smoke_tests_file(self):
         port = self.make_port(with_tests=True)

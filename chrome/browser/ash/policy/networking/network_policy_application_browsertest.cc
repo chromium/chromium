@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -21,7 +22,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -362,8 +362,8 @@ class CrosNetworkConfigGuidsAvailableWaiter
       const std::vector<network_mojom::NetworkStatePropertiesPtr>&
           network_states) {
     std::set<std::string> guids;
-    base::ranges::transform(network_states, std::inserter(guids, guids.begin()),
-                            &network_mojom::NetworkStateProperties::guid);
+    std::ranges::transform(network_states, std::inserter(guids, guids.begin()),
+                           &network_mojom::NetworkStateProperties::guid);
     return guids;
   }
 
@@ -790,11 +790,12 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
         properties->FindString(shill::kUIDataProperty);
     if (!ui_data_json)
       return {};
-    std::optional<base::Value> ui_data_value =
-        base::JSONReader::Read(*ui_data_json);
-    if (!ui_data_value || !ui_data_value->is_dict())
+    std::optional<base::Value::Dict> ui_data_value =
+        base::JSONReader::ReadDict(*ui_data_json);
+    if (!ui_data_value) {
       return {};
-    return std::move(*ui_data_value).TakeDict();
+    }
+    return std::move(*ui_data_value);
   }
 
   // Sets the shill UIData property of the service `service_path` to the

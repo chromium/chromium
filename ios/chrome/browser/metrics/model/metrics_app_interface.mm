@@ -11,6 +11,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
+#import "components/metrics/dwa/dwa_entry_builder.h"
+#import "components/metrics/dwa/dwa_recorder.h"
+#import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
@@ -36,6 +39,10 @@ PrefService* GetLocalState() {
 
 ukm::UkmService* GetUkmService() {
   return GetApplicationContext()->GetMetricsServicesManager()->GetUkmService();
+}
+
+metrics::dwa::DwaService* GetDwaService() {
+  return GetApplicationContext()->GetMetricsServicesManager()->GetDwaService();
 }
 
 metrics::MetricsService* GetMetricsService() {
@@ -162,6 +169,68 @@ metrics::MetricsService* GetMetricsService() {
   std::unique_ptr<metrics::ChromeUserMetricsExtension> log =
       metrics::test::GetLastUmaLog(GetMetricsService());
   return log && log->has_user_demographics();
+}
+
++ (BOOL)checkDWARecordingEnabled:(BOOL)enabled {
+  ConditionBlock condition = ^{
+    return metrics::dwa::DwaRecorder::Get()->IsEnabled() == enabled;
+  };
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      syncher::kSyncDWAOperationsTimeout, condition);
+}
+
++ (BOOL)DWARecorderAllowedForAllProfiles:(BOOL)state {
+  ConditionBlock condition = ^{
+    return GetApplicationContext()
+               ->GetMetricsServicesManager()
+               ->IsDwaAllowedForAllProfiles() == state;
+  };
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      syncher::kSyncDWAOperationsTimeout, condition);
+}
+
++ (BOOL)DWARecorderHasEntries:(BOOL)state {
+  ConditionBlock condition = ^{
+    return metrics::dwa::DwaRecorder::Get()->HasEntries() == state;
+  };
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      syncher::kSyncDWAOperationsTimeout, condition);
+}
+
++ (BOOL)DWARecorderHasPageLoadEvents:(BOOL)state {
+  ConditionBlock condition = ^{
+    return metrics::dwa::DwaRecorder::Get()->HasPageLoadEvents() == state;
+  };
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      syncher::kSyncDWAOperationsTimeout, condition);
+}
+
++ (BOOL)hasUnsentDWALogs:(BOOL)state {
+  ConditionBlock condition = ^{
+    return GetDwaService()->unsent_log_store()->has_unsent_logs() == state;
+  };
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      syncher::kSyncDWAOperationsTimeout, condition);
+}
+
++ (void)recordTestDWAEntryMetric {
+  dwa::DwaEntryBuilder builder("Kangaroo.Jumped");
+  builder.SetContent("https://adtech.com");
+  builder.SetMetric("Length", 5);
+  builder.Record(metrics::dwa::DwaRecorder::Get());
+}
+
++ (void)DWARecorderOnPageLoadCall {
+  metrics::dwa::DwaRecorder::Get()->OnPageLoad();
+}
+
++ (void)DWAServiceFlushCall {
+  GetDwaService()->Flush(
+      metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+}
+
++ (void)clearDWARecorder {
+  metrics::dwa::DwaRecorder::Get()->Purge();
 }
 
 + (NSError*)setupHistogramTester {

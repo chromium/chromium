@@ -12,7 +12,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
-#include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/test_harness_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -119,7 +119,13 @@ TEST_F(GraphRegisteredTest, GraphRegistrationWorks) {
 
   // At this point if the graph is torn down it should explode because foo
   // hasn't been unregistered.
-  EXPECT_CHECK_DEATH(TearDownAndDestroyGraph());
+  // TODO(pbos): Figure out why the DCHECK build dies in a different place (a
+  // DCHECK) and see if these can be consolidated into one EXPECT_DCHECK_DEATH.
+  if (DCHECK_IS_ON()) {
+    EXPECT_DCHECK_DEATH(TearDownAndDestroyGraph());
+  } else {
+    EXPECT_CHECK_DEATH(TearDownAndDestroyGraph());
+  }
 
   graph()->UnregisterObject(&foo);
 }
@@ -170,6 +176,73 @@ TEST_F(GraphRegisteredTest, GraphOwnedAndRegistered) {
   // At this point the graph can be safely torn down because
   // GraphOwnedAndRegistered objects will be deleted and unregistered.
   TearDownAndDestroyGraph();
+}
+
+TEST_F(GraphRegisteredTest, GetFromGraph_Default) {
+  PerformanceManagerTestHarnessHelper pm_helper;
+
+  // Before PerformanceManager is available, GetFromGraph() should safely return
+  // nullptr.
+  EXPECT_FALSE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
+
+  pm_helper.SetUp();
+
+  // Objects not registered.
+  EXPECT_TRUE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
+
+  // Register objects.
+  Graph* graph = PerformanceManager::GetGraph();
+  ASSERT_TRUE(graph);
+  Foo foo;
+  graph->RegisterObject(&foo);
+  OwnedFoo* owned_foo = graph->PassToGraph(std::make_unique<OwnedFoo>());
+  EXPECT_EQ(Foo::GetFromGraph(), &foo);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), owned_foo);
+
+  // Remove objects.
+  graph->UnregisterObject(&foo);
+  graph->TakeFromGraph(owned_foo);
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
+
+  pm_helper.TearDown();
+
+  // After PerformanceManager is gone, GetFromGraph() should safely return
+  // nullptr again.
+  EXPECT_FALSE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
+}
+
+TEST_F(GraphRegisteredTest, GetFromGraph_WithParam) {
+  PerformanceManagerTestHarnessHelper pm_helper;
+  pm_helper.SetUp();
+
+  Graph* graph = PerformanceManager::GetGraph();
+  TestGraphImpl graph2;
+  graph2.SetUp();
+
+  OwnedFoo* foo = graph->PassToGraph(std::make_unique<OwnedFoo>());
+  OwnedBar* bar = graph2.PassToGraph(std::make_unique<OwnedBar>());
+
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), foo);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(graph), foo);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(&graph2), nullptr);
+
+  EXPECT_EQ(OwnedBar::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedBar::GetFromGraph(graph), nullptr);
+  EXPECT_EQ(OwnedBar::GetFromGraph(&graph2), bar);
+
+  // Passing a parameter should still work when PM is not available.
+  pm_helper.TearDown();
+  EXPECT_FALSE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(OwnedBar::GetFromGraph(&graph2), bar);
+
+  graph2.TearDown();
 }
 
 }  // namespace performance_manager

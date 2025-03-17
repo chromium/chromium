@@ -4,6 +4,8 @@
 
 #include "ash/shelf/desk_button_widget.h"
 
+#include <algorithm>
+
 #include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -18,7 +20,6 @@
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/i18n/rtl.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point.h"
@@ -344,12 +345,12 @@ void DeskButtonWidget::MaybeFocusOut(bool reverse) {
   // The desk button will still be drawn in LTR, with the previous desk button
   // on the left, when in RTL mode.
   if (base::i18n::IsRTL()) {
-    base::ranges::reverse(views);
+    std::ranges::reverse(views);
   }
 
   views::View* focused_view = GetFocusManager()->GetFocusedView();
   const int count = views.size();
-  int focused = base::ranges::find(views, focused_view) - std::begin(views);
+  int focused = std::ranges::find(views, focused_view) - std::begin(views);
   if (focused == count) {
     GetFocusManager()
         ->GetNextFocusableView(nullptr, nullptr, !reverse, false)

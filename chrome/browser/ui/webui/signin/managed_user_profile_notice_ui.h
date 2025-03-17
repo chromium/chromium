@@ -9,16 +9,17 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
-#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  //  !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class Browser;
 class ManagedUserProfileNoticeHandler;
@@ -27,7 +28,7 @@ namespace content {
 class WebUI;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 class ManagedUserProfileNoticeUI;
 
 class ManagedUserProfileNoticeUIConfig
@@ -37,7 +38,7 @@ class ManagedUserProfileNoticeUIConfig
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIManagedUserProfileNoticeHost) {}
 };
-#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class ManagedUserProfileNoticeUI : public content::WebUIController {
  public:
@@ -77,8 +78,11 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   ManagedUserProfileNoticeHandler* GetHandlerForTesting();
 
  private:
+  void UpdateBrowsingDataStringWithCounts(profiles::ProfileCategoryStats stats);
+
   // Stored for tests.
   raw_ptr<ManagedUserProfileNoticeHandler> handler_ = nullptr;
+  base::WeakPtrFactory<ManagedUserProfileNoticeUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

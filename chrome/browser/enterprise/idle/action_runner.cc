@@ -4,10 +4,10 @@
 
 #include "chrome/browser/enterprise/idle/action_runner.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/idle/idle_pref_names.h"
 #include "components/enterprise/idle/metrics.h"

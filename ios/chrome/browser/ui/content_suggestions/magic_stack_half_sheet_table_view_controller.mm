@@ -35,6 +35,7 @@ enum ItemType : NSInteger {
   ItemTypeToggleSafetyCheck,
   ItemTypeToggleTabResumption,
   ItemTypeToggleParcelTracking,
+  ItemTypeToggleMostVisitedSites,
 };
 
 }  // namespace
@@ -43,12 +44,15 @@ enum ItemType : NSInteger {
 @end
 
 @implementation MagicStackHalfSheetTableViewController {
+  BOOL _showMostVisitedSitesToggle;
+  BOOL _mostVisitedSitesEnabled;
   BOOL _showSetUpList;
   BOOL _setUpListDisabled;
   BOOL _safetyCheckDisabled;
   BOOL _tabResumptionDisabled;
   BOOL _parcelTrackingDisabled;
 
+  TableViewSwitchItem* _mostVisitedSitesTileToggle;
   TableViewSwitchItem* _setUpListToggle;
   TableViewSwitchItem* _safetyCheckToggle;
   TableViewSwitchItem* _tabResumptionToggle;
@@ -75,6 +79,19 @@ enum ItemType : NSInteger {
 }
 
 #pragma mark - MagicStackHalfSheetConsumer
+
+- (void)showMostVisitedSitesToggle:(BOOL)show {
+  _showMostVisitedSitesToggle = show;
+}
+
+- (void)setMostVisitedSitesEnabled:(BOOL)mostVisitedSitesEnabled {
+  DCHECK(_showMostVisitedSitesToggle);
+  if (_mostVisitedSitesEnabled == mostVisitedSitesEnabled) {
+    return;
+  }
+  _mostVisitedSitesEnabled = mostVisitedSitesEnabled;
+  _mostVisitedSitesTileToggle.on = _mostVisitedSitesEnabled;
+}
 
 - (void)showSetUpList:(BOOL)showSetUpList {
   _showSetUpList = showSetUpList;
@@ -119,6 +136,19 @@ enum ItemType : NSInteger {
 
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOptions];
 
+  if (_showMostVisitedSitesToggle) {
+    NSString* listSymbolName = kHistorySymbol;
+    NSString* title = l10n_util::GetNSString(
+        IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
+    _mostVisitedSitesTileToggle =
+        [self switchItemWithType:ItemTypeToggleMostVisitedSites
+                           title:title
+                          symbol:DefaultSymbolWithPointSize(listSymbolName,
+                                                            kIconPointSize)];
+    _mostVisitedSitesTileToggle.on = _mostVisitedSitesEnabled;
+    [self.tableViewModel addItem:_mostVisitedSitesTileToggle
+         toSectionWithIdentifier:SectionIdentifierOptions];
+  }
   if (_showSetUpList) {
     NSString* listSymbolName = kListBulletClipboardSymbol;
     _setUpListToggle =
@@ -178,6 +208,12 @@ enum ItemType : NSInteger {
   TableViewSwitchCell* switchCell =
       base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
   switch (itemType) {
+    case ItemTypeToggleMostVisitedSites:
+      [switchCell.switchView
+                 addTarget:self
+                    action:@selector(mostVisitedSitesEnabledChanged:)
+          forControlEvents:UIControlEventValueChanged];
+      break;
     case ItemTypeToggleSetUpList:
       [switchCell.switchView addTarget:self
                                 action:@selector(setUpListEnabledChanged:)
@@ -214,6 +250,10 @@ enum ItemType : NSInteger {
   switchItem.iconTintColor = [UIColor colorNamed:kSolidBlackColor];
   switchItem.accessibilityIdentifier = title;
   return switchItem;
+}
+
+- (void)mostVisitedSitesEnabledChanged:(UISwitch*)switchView {
+  [self.modelDelegate mostVisitedSitesEnabledChanged:switchView.isOn];
 }
 
 - (void)setUpListEnabledChanged:(UISwitch*)switchView {

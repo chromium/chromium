@@ -10,8 +10,8 @@
 #import "base/notreached.h"
 
 using base::RecordAction;
-using base::UserMetricsAction;
 using base::UmaHistogramEnumeration;
+using base::UserMetricsAction;
 
 void LogNonModalPromoAction(NonModalPromoAction action,
                             NonModalPromoTriggerType type,

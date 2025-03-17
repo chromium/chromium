@@ -31,19 +31,19 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_CHECKING_COMPLETION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_CHECKING_COMPLETION_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 
 struct WebTextCheckingResult;
-template <typename T>
-class WebVector;
 
 // Gets called back when WebViewClient finished an asynchronous spell checking.
 class WebTextCheckingCompletion {
  public:
   virtual void DidFinishCheckingText(
-      const WebVector<WebTextCheckingResult>&) = 0;
+      const std::vector<WebTextCheckingResult>&) = 0;
   virtual void DidCancelCheckingText() {}
   virtual ~WebTextCheckingCompletion() = default;
 };

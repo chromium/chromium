@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 
+#include <algorithm>
 #include <tuple>
 
 #include "base/check.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -195,7 +195,7 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
           base::BindOnce(&GPMEnclaveTransaction::OnPasskeyCreated,
                          weak_ptr_factory_.GetWeakPtr());
       std::vector<std::vector<uint8_t>> existing_credential_ids;
-      base::ranges::transform(
+      std::ranges::transform(
           passkey_model_->GetPasskeysForRelyingPartyId(rp_id_),
           std::back_inserter(existing_credential_ids),
           [](const sync_pb::WebauthnCredentialSpecifics& cred) {
@@ -212,15 +212,22 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
       std::vector<sync_pb::WebauthnCredentialSpecifics> credentials =
           passkey_model_->GetPasskeysForRelyingPartyId(rp_id_);
       for (auto& cred : credentials) {
-        if (base::ranges::equal(base::as_byte_span(cred.credential_id()),
-                                base::span(*selected_credential_id_))) {
+        if (std::ranges::equal(base::as_byte_span(cred.credential_id()),
+                               base::span(*selected_credential_id_))) {
           selected_credential =
               std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
                   std::move(cred));
           break;
         }
       }
-      CHECK(selected_credential);
+      if (!selected_credential) {
+        // The credential may not be available if it was deleted during the
+        // WebAuthn request. This can be done by the user or the website. This
+        // should not be normal, jump immediately to an error state.
+        FIDO_LOG(ERROR) << "Could not find credential";
+        delegate_->HandleEnclaveTransactionError();
+        return;
+      }
       if (base::FeatureList::IsEnabled(device::kWebAuthnUpdateLastUsed)) {
         passkey_model_->UpdatePasskeyTimestamp(
             selected_credential->credential_id(), base::Time::Now());

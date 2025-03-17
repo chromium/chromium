@@ -4,9 +4,13 @@
 
 package org.chromium.components.browser_ui.widget.image_tiles;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Provides the configuration params required by the tiles UI. */
+@NullMarked
 public class TileConfig {
-    public final String umaPrefix;
+    public final @Nullable String umaPrefix;
 
     /** Constructor. */
     private TileConfig(Builder builder) {
@@ -15,7 +19,7 @@ public class TileConfig {
 
     /** Helper class for building a {@link TileConfig}. */
     public static class Builder {
-        private String mUmaPrefix;
+        private @Nullable String mUmaPrefix;
 
         /**
          * Sets the histogram prefix to be used while collecting metrics.

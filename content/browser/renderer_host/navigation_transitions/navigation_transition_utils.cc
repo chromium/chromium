@@ -141,6 +141,8 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
           is_copied_from_embedder
               ? CacheHitOrMissReason::kCapturedEmptyBitmapFromEmbedder
               : CacheHitOrMissReason::kCapturedEmptyBitmapFromWebPage);
+      entry->navigation_transition_data().set_is_copied_from_embedder(
+          is_copied_from_embedder);
     }
     return;
   }
@@ -237,6 +239,51 @@ void RemoveScreenshotFromDestination(
       .increment_copy_output_request_sequence();
 }
 
+bool ShouldSkipScreenshotWithMissReason(
+    const NavigationRequest& navigation_request,
+    std::optional<CacheHitOrMissReason>& reason) {
+  if (gfx::Animation::PrefersReducedMotion()) {
+    reason = CacheHitOrMissReason::kCacheMissPrefersReducedMotion;
+    return true;
+  }
+  if (navigation_request.frame_tree_node()
+          ->GetParentOrOuterDocumentOrEmbedder()) {
+    // No support for embedded pages (including GuestView or fenced frames).
+    reason = CacheHitOrMissReason::kCacheMissEmbeddedPages;
+    return true;
+  }
+  if (!navigation_request.IsInPrimaryMainFrame()) {
+    // See crbug.com/40896219: We will present the fallback UX for navigations
+    // in the subframes.
+    reason = CacheHitOrMissReason::kCacheMissNonPrimaryMainFrame;
+    return true;
+  }
+  if (navigation_request.IsHistory() &&
+      navigation_request.GetNavigationEntryOffset() < 0 &&
+      !navigation_request.GetDelegate()->SupportsForwardTransitionAnimation()) {
+    reason = CacheHitOrMissReason::kForwardTransitionAnimationNotSupported;
+    return true;
+  }
+  if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
+    // No reason because this entry will never be reachable.
+    return true;
+  }
+  return false;
+}
+
+void AddCacheHitOrMissReason(NavigationEntryImpl* entry,
+                             CacheHitOrMissReason reason) {
+  if (reason == CacheHitOrMissReason::kCacheMissNonPrimaryMainFrame &&
+      entry->navigation_transition_data().cache_hit_or_miss_reason()) {
+    // Navigating to an entry can involve multiple NavigationRequests, including
+    // a same-document main frame navigation paired with a cross-document
+    // subframe navigation. Don't reset the reason if it was previously set by a
+    // main frame NavigationRequest.
+    reason = *entry->navigation_transition_data().cache_hit_or_miss_reason();
+  }
+  entry->navigation_transition_data().set_cache_hit_or_miss_reason(reason);
+}
+
 }  // namespace
 
 void NavigationTransitionUtils::SetCapturedScreenshotSizeForTesting(
@@ -296,39 +343,11 @@ bool NavigationTransitionUtils::
 
   auto* last_committed_entry = navigation_controller.GetLastCommittedEntry();
 
-  if (gfx::Animation::PrefersReducedMotion()) {
-    last_committed_entry->navigation_transition_data()
-        .set_cache_hit_or_miss_reason(
-            CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
-    InvokeTestCallbackForNoScreenshot(navigation_request);
-    return false;
-  }
-
-  if (navigation_request.frame_tree_node()
-          ->GetParentOrOuterDocumentOrEmbedder()) {
-    // No support for embedded pages (including GuestView or fenced frames).
-    last_committed_entry->navigation_transition_data()
-        .set_cache_hit_or_miss_reason(
-            CacheHitOrMissReason::kCacheMissEmbeddedPages);
-    InvokeTestCallbackForNoScreenshot(navigation_request);
-    return false;
-  }
-
-  if (!navigation_request.IsInPrimaryMainFrame()) {
-    // See crbug.com/40896219: We will present the fallback UX for navigations
-    // in the subframes.
-    if (!last_committed_entry->navigation_transition_data()
-             .cache_hit_or_miss_reason()
-             .has_value()) {
-      last_committed_entry->navigation_transition_data()
-          .set_cache_hit_or_miss_reason(
-              CacheHitOrMissReason::kCacheMissNonPrimaryMainFrame);
+  std::optional<CacheHitOrMissReason> reason;
+  if (ShouldSkipScreenshotWithMissReason(navigation_request, reason)) {
+    if (reason) {
+      AddCacheHitOrMissReason(last_committed_entry, *reason);
     }
-    InvokeTestCallbackForNoScreenshot(navigation_request);
-    return false;
-  }
-
-  if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
     return false;
   }
@@ -426,6 +445,22 @@ bool NavigationTransitionUtils::
   // meaning we will capture at full-size, unless specified by tests.
   const gfx::Size output_size = g_output_size_for_test;
 
+#if BUILDFLAG(IS_ANDROID)
+  CopyOutputIpcPriority ipc_priority =
+      NavigationTransitionConfig::ShouldTransferScreenshotInBackgroundPriority()
+          ? CopyOutputIpcPriority::kBackground
+          : CopyOutputIpcPriority::kDefault;
+  static_cast<RenderWidgetHostViewBase*>(rwhv)
+      ->CopyFromExactSurfaceWithIpcPriority(
+          /*src_rect=*/gfx::Rect(), output_size,
+          base::BindOnce(
+              &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
+              navigation_request.GetWeakPtr(),
+              last_committed_entry->navigation_transition_data().unique_id(),
+              /*is_copied_from_embedder=*/false, request_sequence,
+              SupportsETC1NonPowerOfTwo(navigation_request)),
+          ipc_priority);
+#else
   static_cast<RenderWidgetHostViewBase*>(rwhv)->CopyFromExactSurface(
       /*src_rect=*/gfx::Rect(), output_size,
       base::BindOnce(
@@ -434,6 +469,7 @@ bool NavigationTransitionUtils::
           last_committed_entry->navigation_transition_data().unique_id(),
           /*is_copied_from_embedder=*/false, request_sequence,
           SupportsETC1NonPowerOfTwo(navigation_request)));
+#endif
 
   ++g_num_copy_requests_issued_for_testing;
 
@@ -472,15 +508,13 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
     ++g_num_copy_requests_issued_for_testing;
   }
 
-  if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
-    return;
-  }
-
   auto* last_committed_entry = nav_controller.GetLastCommittedEntry();
-  if (gfx::Animation::PrefersReducedMotion()) {
-    last_committed_entry->navigation_transition_data()
-        .set_cache_hit_or_miss_reason(
-            CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
+  std::optional<CacheHitOrMissReason> reason;
+  if (ShouldSkipScreenshotWithMissReason(navigation_request, reason)) {
+    if (reason) {
+      AddCacheHitOrMissReason(last_committed_entry, *reason);
+    }
+    InvokeTestCallbackForNoScreenshot(navigation_request);
     return;
   }
 
@@ -555,6 +589,16 @@ int NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
     }
   }
   return -1;
+}
+
+bool NavigationTransitionUtils::ShouldSkipScreenshot(
+    const NavigationRequest& navigation_request) {
+  if (!base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
+    // Preserve existing behavior, where the renderer decides.
+    return false;
+  }
+  std::optional<CacheHitOrMissReason> reason;
+  return ShouldSkipScreenshotWithMissReason(navigation_request, reason);
 }
 
 }  // namespace content

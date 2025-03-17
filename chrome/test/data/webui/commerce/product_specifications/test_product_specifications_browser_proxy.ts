@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter} from '//resources/cr_components/commerce/product_specifications.mojom-webui.js';
-import type {DisclosureVersion, PageRemote} from '//resources/cr_components/commerce/product_specifications.mojom-webui.js';
+import type {DisclosureVersion, PageRemote, ShowSetDisposition} from '//resources/cr_components/commerce/product_specifications.mojom-webui.js';
 import type {ProductSpecificationsBrowserProxy} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -17,6 +17,8 @@ export class TestProductSpecificationsBrowserProxy extends TestBrowserProxy
   constructor() {
     super([
       'showProductSpecificationsSetForUuid',
+      'showProductSpecificationsSetsForUuids',
+      'showComparePage',
       'setAcceptedDisclosureVersion',
       'maybeShowDisclosure',
       'declineDisclosure',
@@ -41,6 +43,16 @@ export class TestProductSpecificationsBrowserProxy extends TestBrowserProxy
 
   showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean): void {
     this.methodCalled('showProductSpecificationsSetForUuid', uuid, inNewTab);
+  }
+
+  showProductSpecificationsSetsForUuids(
+      uuids: Uuid[], disposition: ShowSetDisposition): void {
+    this.methodCalled(
+        'showProductSpecificationsSetsForUuids', uuids, disposition);
+  }
+
+  showComparePage(inNewTab: boolean): void {
+    this.methodCalled('showComparePage', inNewTab);
   }
 
   setAcceptedDisclosureVersion(version: DisclosureVersion): void {

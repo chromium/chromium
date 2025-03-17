@@ -27,6 +27,8 @@ source_set("headless") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
+    "//components/headless/display_util",
+    "//components/headless/screen_info",
     "//gpu/vulkan:buildflags",
     "//skia",
     "//ui/base",

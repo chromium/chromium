@@ -9,11 +9,11 @@
 #include <functional>
 #include <memory>
 #include <new>
+#include <utility>
 
 #include "base/check.h"
 #include "mojo/public/cpp/bindings/lib/hash_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {

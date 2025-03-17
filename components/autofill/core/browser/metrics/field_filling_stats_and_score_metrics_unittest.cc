@@ -83,18 +83,15 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
   void SimulationOfDefaultUserChangesOnAddedFormTextFields() {
     ASSERT_GT(form_data_.fields().size(), 6u);
     // Elvis is of type NAME_FIRST in the test profile.
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[1],
-                                   u"Elvis");
+    SimulateUserChangedFieldTo(form_data_, form_data_.fields()[1], u"Elvis");
     // Presley is of type NAME_LAST in the test profile
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[2],
-                                   u"Presley");
+    SimulateUserChangedFieldTo(form_data_, form_data_.fields()[2], u"Presley");
     // Presley is of type NAME_LAST in the test profile
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[3],
-                                   u"Presley");
+    SimulateUserChangedFieldTo(form_data_, form_data_.fields()[3], u"Presley");
     // This is a random string of UNKNOWN_TYPE.
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[4],
-                                   u"something random");
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[5], u"");
+    SimulateUserChangedFieldTo(form_data_, form_data_.fields()[4],
+                               u"something random");
+    SimulateUserChangedFieldTo(form_data_, form_data_.fields()[5], u"");
   }
 
   // Creates, adds and "sees" a form that contains `fields`.
@@ -115,7 +112,6 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
 };
 
 // Test the logging of the field-wise filling stats.
-// TODO(crbug.com/40274514): Delete this test once cleanup starts.
 TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest, FillingStats) {
   const FormData& form = GetAndAddSeenFormWithFields(GetTestFormDataFields());
   SimulationOfDefaultUserChangesOnAddedFormTextFields();
@@ -233,16 +229,11 @@ TEST_F(AutocompleteUnrecognizedFieldFillingStatsTest, FieldFillingStats) {
             .autocomplete_attribute = "unrecognized"},
            {.role = EMAIL_ADDRESS, .autocomplete_attribute = "unrecognized"}}});
 
-  SimulateUserChangedTextFieldTo(form, form.fields()[0],
-                                 u"Corrected First Name");
-  SimulateUserChangedTextFieldTo(form, form.fields()[1],
-                                 u"Corrected Middle Name");
-  SimulateUserChangedTextFieldTo(form, form.fields()[2],
-                                 u"Corrected Last Name");
-  SimulateUserChangedTextFieldTo(form, form.fields()[8],
-                                 u"Manually Filled Phone");
-  SimulateUserChangedTextFieldTo(form, form.fields()[9],
-                                 u"Manually Filled Email");
+  SimulateUserChangedFieldTo(form, form.fields()[0], u"Corrected First Name");
+  SimulateUserChangedFieldTo(form, form.fields()[1], u"Corrected Middle Name");
+  SimulateUserChangedFieldTo(form, form.fields()[2], u"Corrected Last Name");
+  SimulateUserChangedFieldTo(form, form.fields()[8], u"Manually Filled Phone");
+  SimulateUserChangedFieldTo(form, form.fields()[9], u"Manually Filled Email");
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);

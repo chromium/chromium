@@ -200,7 +200,7 @@ public class WebApkIntegrationTest {
                         try {
                             int actualSmallIconId =
                                     IWebApkApi.Stub.asInterface(api).getSmallIconId();
-                            assertEquals(actualSmallIconId, expectedSmallIconId);
+                            assertEquals(expectedSmallIconId, actualSmallIconId);
                             callbackHelper.notifyCalled();
                         } catch (Exception e) {
                             throw new AssertionError(

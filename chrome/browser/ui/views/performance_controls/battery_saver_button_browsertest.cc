@@ -23,14 +23,16 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 class BatterySaverHelpPromoTest
@@ -108,11 +110,12 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
 
   content::TestNavigationObserver navigation_observer(
       browser()->tab_strip_model()->GetWebContentsAt(0));
-  auto* promo_bubble = promo_controller->promo_bubble_for_testing()
-                           ->AsA<user_education::HelpBubbleViews>()
-                           ->bubble_view();
-  auto* custom_action_button = promo_bubble->GetNonDefaultButtonForTesting(0);
-  PressButton(custom_action_button);
+  auto* const button = views::ElementTrackerViews::GetInstance()
+                           ->GetFirstMatchingViewAs<views::Button>(
+                               user_education::HelpBubbleView::
+                                   kFirstNonDefaultButtonIdForTesting,
+                               browser()->window()->GetElementContext());
+  PressButton(button);
   navigation_observer.Wait();
 
   GURL expected_url(chrome::GetSettingsUrl(chrome::kPerformanceSubPage));

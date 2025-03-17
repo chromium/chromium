@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionProperties.DESTROYABLE;
+
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -14,6 +16,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.Token;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -115,6 +119,8 @@ public abstract class TabListEditorAction {
         BottomSheetController getBottomSheetController();
     }
 
+    private static final String EXPECTED_RESOURCE_TYPE_NAME = "plurals";
+
     private ObserverList<ActionObserver> mObsevers = new ObserverList<>();
     private PropertyModel mModel;
     private Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
@@ -133,13 +139,7 @@ public abstract class TabListEditorAction {
         assert showMode >= ShowMode.MENU_ONLY && showMode < ShowMode.NUM_ENTRIES;
         assert buttonType >= ButtonType.TEXT && buttonType < ButtonType.NUM_ENTRIES;
         assert iconPosition >= IconPosition.START && iconPosition < IconPosition.NUM_ENTRIES;
-
-        final String expectedResourceourceTypeName = "plurals";
-        boolean titleIsPlural =
-                expectedResourceourceTypeName.equals(
-                        ContextUtils.getApplicationContext()
-                                .getResources()
-                                .getResourceTypeName(titleResourceId));
+        boolean titleIsPlural = isTitlePlural(titleResourceId);
 
         mModel =
                 new PropertyModel.Builder(TabListEditorActionProperties.ACTION_KEYS)
@@ -169,10 +169,7 @@ public abstract class TabListEditorAction {
                     TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
                     contentDescriptionResourceId);
 
-            assert expectedResourceourceTypeName.equals(
-                            ContextUtils.getApplicationContext()
-                                    .getResources()
-                                    .getResourceTypeName(contentDescriptionResourceId))
+            assert isTitlePlural(contentDescriptionResourceId)
                     : "Quantity strings (plurals) with one integer format argument is needed";
         }
 
@@ -337,6 +334,24 @@ public abstract class TabListEditorAction {
                 : getTabsFromSelection();
     }
 
+    protected void setDestroyable(Destroyable destroyable) {
+        mModel.set(DESTROYABLE, destroyable);
+    }
+
+    protected void setActionText(int titleRes, int descRes) {
+        PropertyModel model = getPropertyModel();
+        model.set(TabListEditorActionProperties.TITLE_RESOURCE_ID, titleRes);
+        model.set(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID, descRes);
+        model.set(TabListEditorActionProperties.TITLE_IS_PLURAL, isTitlePlural(titleRes));
+    }
+
+    private static boolean isTitlePlural(int titleResourceId) {
+        return EXPECTED_RESOURCE_TYPE_NAME.equals(
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getResourceTypeName(titleResourceId));
+    }
+
     public static int getTabCountIncludingRelatedTabs(
             TabGroupModelFilter tabGroupModelFilter, List<Integer> tabIds) {
         int tabCount = 0;
@@ -345,7 +360,13 @@ public abstract class TabListEditorAction {
             // TODO(crbug.com/41495189): Find out how we can have a tab ID that is no longer
             // in the tab model here.
             if (tab == null) continue;
-            tabCount += tabGroupModelFilter.getRelatedTabCountForRootId(tab.getRootId());
+
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId != null) {
+                tabCount += tabGroupModelFilter.getTabCountForGroup(tabGroupId);
+            } else {
+                tabCount++;
+            }
         }
         return tabCount;
     }

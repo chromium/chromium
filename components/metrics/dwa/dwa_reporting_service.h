@@ -53,6 +53,13 @@ class DwaReportingService : public metrics::ReportingService {
   GURL GetInsecureUploadUrl() const override;
   std::string_view upload_mime_type() const override;
   metrics::MetricsLogUploader::MetricServiceType service_type() const override;
+  void LogCellularConstraint(bool upload_canceled) override;
+  void LogResponseOrErrorCode(int response_code,
+                              int error_code,
+                              bool was_https) override;
+  void LogSuccessLogSize(size_t log_size) override;
+  void LogSuccessMetadata(const std::string& staged_log) override;
+  void LogLargeRejection(size_t log_size) override;
 
   metrics::UnsentLogStore unsent_log_store_;
 };

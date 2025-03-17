@@ -12,6 +12,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -42,6 +43,10 @@ FORWARD_DECLARE_TEST(ChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
 FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
+
+namespace first_run {
+class FirstRunCoordinatorMetricsHelper;
+}
 
 namespace variations {
 class SyntheticTrialRegistry;
@@ -100,6 +105,29 @@ class MetricsService {
   void EnableReporting();
   void DisableReporting();
 
+  // A passkey for owner-approved classes to access
+  // StartOutOfBandUploadIfPossible() - see
+  // </docs/patterns/passkey.md>.
+  class OutOfBandUploadPasskey {
+   private:
+    OutOfBandUploadPasskey() = default;
+    ~OutOfBandUploadPasskey() = default;
+    friend class first_run::FirstRunCoordinatorMetricsHelper;
+
+    FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, OutOfBandLogUpload);
+  };
+
+  // Starts the process of uploading metrics data outside of the uploads
+  // scheduled by the MetricsRotationScheduler. Upload attempt is silently
+  // dropped (never retried) and function returns false if:
+  // 1) the MetricsService has not uploaded the first ongoing log OR
+  // 2) recording is disabled OR
+  // 3) reporting is off and the first ongoing log hasn't been created.
+  //
+  // This function is currently only used within the iOS FRE screens and should
+  // be used very sparingly.
+  bool StartOutOfBandUploadIfPossible(OutOfBandUploadPasskey passkey);
+
   // Returns the client ID for this client, or the empty string if metrics
   // recording is not currently running.
   std::string GetClientId() const;
@@ -124,6 +152,17 @@ class MetricsService {
   void OnApplicationNotIdle();
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Increments the global `fg_bg_id` for when OnAppEnterBackground() or
+  // OnAppEnterForeground() below has closed the current log. In some cases,
+  // this may be no-op; see implementation for details.
+  void IncrementFgBgIdIfNeeded(
+      std::optional<bool> previous_is_in_foreground) const;
+
+  // Clears `fg_bg_id` from the current log for when OnAppEnterBackground() or
+  // OnAppEnterForeground() below cannot close it. In some cases, this may be
+  // no-op; see implementation for details.
+  void ClearFgBgIdIfNeeded(std::optional<bool> previous_is_in_foreground) const;
+
   // Called when the application is going into background mode.
   // If |keep_recording_in_background| is true, UMA is still recorded and
   // reported while in the background.
@@ -260,10 +299,6 @@ class MetricsService {
   MetricsServiceObserver* logs_event_observer() {
     return logs_event_observer_.get();
   }
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  bool IsInForegroundForTesting() const { return is_in_foreground_; }
-#endif
 
   // Creates a new MetricsLog instance with the given |log_type|.
   std::unique_ptr<MetricsLog> CreateLogForTesting(
@@ -434,16 +469,6 @@ class MetricsService {
 
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
-  // Get the amount of uptime since this process started and since the last
-  // call to this function.  Also updates the cumulative uptime metric (stored
-  // as a pref) for uninstall.  Uptimes are measured using TimeTicks, which
-  // guarantees that it is monotonic and does not jump if the user changes
-  // their clock.  The TimeTicks implementation also makes the clock not
-  // count time the computer is suspended.
-  void GetUptimes(PrefService* pref,
-                  base::TimeDelta* incremental_uptime,
-                  base::TimeDelta* uptime);
-
   // Turns recording on or off.
   // DisableRecording() also forces a persistent save of logging state (if
   // anything has been recorded, or transmitted).
@@ -601,12 +626,6 @@ class MetricsService {
   // The scheduler for determining when log rotations should happen.
   std::unique_ptr<MetricsRotationScheduler> rotation_scheduler_;
 
-  // Stores the time of the first call to |GetUptimes()|.
-  base::TimeTicks first_updated_time_;
-
-  // Stores the time of the last call to |GetUptimes()|.
-  base::TimeTicks last_updated_time_;
-
   // Indicates if loading of independent metrics is currently active.
   bool independent_loader_active_ = false;
 
@@ -633,7 +652,7 @@ class MetricsService {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Indicates whether OnAppEnterForeground() (true) or OnAppEnterBackground
   // (false) was called.
-  bool is_in_foreground_ = false;
+  std::optional<bool> is_in_foreground_ = std::nullopt;
 #endif
 
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, ActiveFieldTrialsReported);

@@ -144,8 +144,9 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
                               extensions::UninstallReason reason) override;
 
   // extensions::ExtensionPrefsObserver implementation.
-  void OnExtensionDisableReasonsChanged(const std::string& extension_id,
-                                        int disabled_reasons) override;
+  void OnExtensionDisableReasonsChanged(
+      const std::string& extension_id,
+      extensions::DisableReasonSet disabled_reasons) override;
   void OnExtensionRegistered(const std::string& extension_id,
                              const base::Time& install_time,
                              bool is_enabled) override;

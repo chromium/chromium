@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_transform_value.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_component.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
@@ -52,7 +53,7 @@ CSSTransformValue* CSSTransformValue::FromCSSValue(const CSSValue& css_value) {
 }
 
 bool CSSTransformValue::is2D() const {
-  return base::ranges::all_of(transform_components_, [](const auto& component) {
+  return std::ranges::all_of(transform_components_, [](const auto& component) {
     return component->is2D();
   });
 }

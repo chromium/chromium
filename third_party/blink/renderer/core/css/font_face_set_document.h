@@ -80,7 +80,7 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
   bool InActiveContext() const override;
   FontSelector* GetFontSelector() const override;
 
-  bool ResolveFontStyle(const String&, Font&) override;
+  const Font* ResolveFontStyle(const String&) override;
 
  private:
   Document* GetDocument() const;

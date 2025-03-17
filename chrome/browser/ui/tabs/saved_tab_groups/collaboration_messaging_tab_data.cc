@@ -4,38 +4,28 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/signin/public/base/avatar_icon_util.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/compositor/compositor.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/widget/widget.h"
 
 using collaboration::messaging::PersistentMessage;
 
 namespace tab_groups {
-namespace {
-
-int GetHoverCardImageSize() {
-  return GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
-}
-
-int GetPageActionImageSize() {
-  return GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
-}
-
-gfx::Image ResizeForHoverCard(const gfx::Image& image) {
-  auto image_size = GetHoverCardImageSize();
-  auto size = gfx::Size(image_size, image_size);
-  return gfx::ResizedImage(image, size);
-}
-
-}  // namespace
 
 CollaborationMessagingTabData::CollaborationMessagingTabData(Profile* profile)
     : profile_(profile) {}
@@ -53,7 +43,9 @@ void CollaborationMessagingTabData::SetMessage(PersistentMessage message) {
         message.collaboration_event == CollaborationEvent::TAB_UPDATED);
 
   // Chip messages must contain a triggering user.
-  CHECK(message.attribution.triggering_user.has_value());
+  if (!message.attribution.triggering_user.has_value()) {
+    return;
+  }
 
   // Cache this message to prevent committing stale data when the
   // image request resolves.
@@ -77,8 +69,7 @@ void CollaborationMessagingTabData::ClearMessage(PersistentMessage message) {
 
   // Clear out all data, i.e. set HasMessage() to return false.
   given_name_ = std::u16string();
-  page_action_avatar_ = ui::ImageModel();
-  hover_card_avatar_ = ui::ImageModel();
+  avatar_ = gfx::Image();
   collaboration_event_ = CollaborationEvent::UNDEFINED;
 
   NotifyMessageChanged();
@@ -95,8 +86,12 @@ void CollaborationMessagingTabData::NotifyMessageChanged() {
 }
 
 void CollaborationMessagingTabData::FetchAvatar(PersistentMessage message) {
-  // Safe to unwrap member because it was previously CHECKed.
-  auto avatar_url = message.attribution.triggering_user->avatar_url;
+  // Safe to unwrap member because it was previously verified.
+  GURL avatar_url = message.attribution.triggering_user->avatar_url;
+  if (!avatar_url.is_valid()) {
+    // Commit message immediately without an image.
+    return CommitMessage(message, gfx::Image());
+  }
 
   image_fetcher::ImageFetcherService* image_fetcher_service =
       ImageFetcherServiceFactory::GetForKey(profile_->GetProfileKey());
@@ -112,14 +107,12 @@ void CollaborationMessagingTabData::FetchAvatar(PersistentMessage message) {
     return CommitMessage(message, gfx::Image());
   }
 
-  // Perform the request using disk caching. The page action icon size
-  // is used to request the larger of the 2 images needed. The sizes are
-  // similar enough that the larger image is resized to accommodate the
-  // smaller hover card image.
+  // Request the avatar image using the standard size. This will be
+  // resized to accommodate the UI surfaces that use it.
   data_sharing_service->GetAvatarImageForURL(
-      avatar_url, GetPageActionImageSize(),
+      avatar_url, signin::kAccountInfoImageSize,
       base::BindOnce(&CollaborationMessagingTabData::CommitMessage,
-                     base::Unretained(this), message),
+                     GetWeakPtr(), message),
       image_fetcher_service->GetImageFetcher(
           image_fetcher::ImageFetcherConfig::kDiskCacheOnly));
 }
@@ -146,21 +139,103 @@ void CollaborationMessagingTabData::CommitMessage(
   given_name_ = base::UTF8ToUTF16(
       message_to_commit_->attribution.triggering_user->given_name);
   collaboration_event_ = message_to_commit_->collaboration_event;
-
-  // In rare cases such as null services or no response data, there
-  // may not be an avatar to display. Downstream UIs will be responsible
-  // for deciding what to show instead.
-  if (avatar.IsEmpty()) {
-    page_action_avatar_ = ui::ImageModel();
-    hover_card_avatar_ = ui::ImageModel();
-  } else {
-    page_action_avatar_ = ui::ImageModel::FromImage(avatar);
-    hover_card_avatar_ = ui::ImageModel::FromImage(ResizeForHoverCard(avatar));
-  }
+  avatar_ = avatar;
 
   // Message has been committed.
   message_to_commit_ = std::nullopt;
   NotifyMessageChanged();
+}
+
+ui::ImageModel CollaborationMessagingTabData::GetPageActionImage(
+    const views::Widget* widget) const {
+  if (!HasMessage()) {
+    return ui::ImageModel();
+  }
+
+  const int icon_width = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  if (!avatar_.IsEmpty()) {
+    return ui::ImageModel::FromImage(
+        gfx::ResizedImage(avatar_, gfx::Size(icon_width, icon_width)));
+  }
+
+  return CreateSizedFallback(widget, icon_width, /*add_border=*/true);
+}
+
+ui::ImageModel CollaborationMessagingTabData::GetHoverCardImage(
+    const views::Widget* widget) const {
+  if (!HasMessage()) {
+    return ui::ImageModel();
+  }
+
+  const int icon_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
+  if (!avatar_.IsEmpty()) {
+    return ui::ImageModel::FromImage(
+        gfx::ResizedImage(avatar_, gfx::Size(icon_width, icon_width)));
+  }
+
+  return CreateSizedFallback(widget, icon_width, /*add_border=*/false);
+}
+
+ui::ImageModel CollaborationMessagingTabData::CreateSizedFallback(
+    const views::Widget* widget,
+    int icon_width,
+    bool add_border) const {
+  CHECK(widget);
+
+  // Get devices scale factor for scaling the bitmaps.
+  float scale_factor = 1.0f;
+  if (widget->GetCompositor()) {
+    scale_factor = widget->GetCompositor()->device_scale_factor();
+  }
+
+  const ui::ColorProvider* color_provider = widget->GetColorProvider();
+  const int icon_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_PADDING);
+
+  // Icon bounds represents the entire available area to draw the image.
+  const gfx::Rect icon_bounds = gfx::Rect(icon_width, icon_width);
+
+  gfx::Canvas canvas(icon_bounds.size(), scale_factor, /*is_opaque=*/false);
+  canvas.SaveLayerAlpha(0xff);
+
+  int border_width = 0;
+  cc::PaintFlags background_flags;
+  if (add_border) {
+    border_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_BORDER_SIZE);
+
+    // The border will contain a color, but the background will be
+    // transparent.
+    background_flags.setAntiAlias(true);
+    background_flags.setBlendMode(SkBlendMode::kClear);
+
+    // Paint circle border, taking up the entire |icon_width|.
+    cc::PaintFlags border_flags;
+    border_flags.setColor(color_provider->GetColor(ui::kColorSysTonalOutline));
+    canvas.DrawCircle(icon_bounds.CenterPoint(), icon_width / 2.0,
+                      border_flags);
+  } else {
+    // The background will have a color.
+    background_flags.setColor(
+        color_provider->GetColor(ui::kColorSysTonalContainer));
+  }
+
+  // Paint circle background. This will be be the width of the icon
+  // container minus the border width from both sides, if any.
+  const int background_radius = (icon_width / 2.0) - border_width;
+  canvas.DrawCircle(icon_bounds.CenterPoint(), background_radius,
+                    background_flags);
+  canvas.Restore();
+
+  // Paint fallback icon. This will be the width of the icon container
+  // minus the padding from both sides.
+  canvas.Translate({icon_padding, icon_padding});
+  gfx::PaintVectorIcon(&canvas, kPersonFilledPaddedSmallIcon,
+                       icon_width - (icon_padding * 2),
+                       color_provider->GetColor(ui::kColorSysOnTonalContainer));
+
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFromBitmap(canvas.GetBitmap(), scale_factor));
 }
 
 }  // namespace tab_groups

@@ -4,6 +4,7 @@ include_rules = [
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
   "+services/network/public/cpp",
+  "+services/network/public/mojom/permissions_policy",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
 ]
@@ -11,6 +12,7 @@ include_rules = [
 specific_include_rules = {
    "content_facilitated_payments_driver_unittest.cc": [
       "+components/optimization_guide/core",
+      "+components/ukm/test_ukm_recorder.h",
       "+content/public/test",
    ],
 }

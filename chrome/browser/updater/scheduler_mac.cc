@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/check_updater_health_task.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
@@ -26,7 +27,7 @@ void DoPeriodicTasks(base::OnceClosure callback) {
                 FROM_HERE,
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                base::BindOnce(&GetUpdaterScope),
+                base::BindOnce(&::GetUpdaterScope),
                 base::BindOnce(
                     [](base::OnceClosure callback, UpdaterScope scope) {
                       BrowserUpdaterClient::Create(scope)->RunPeriodicTasks(
@@ -34,7 +35,10 @@ void DoPeriodicTasks(base::OnceClosure callback) {
                     },
                     std::move(callback)));
           },
-          std::move(callback)));
+          base::BindOnce(
+              &CheckUpdaterHealthTask::Run,
+              base::MakeRefCounted<CheckUpdaterHealthTask>(::GetUpdaterScope()),
+              std::move(callback))));
 }
 
 }  // namespace updater

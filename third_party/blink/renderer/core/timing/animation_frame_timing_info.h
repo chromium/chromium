@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_ANIMATION_FRAME_TIMING_INFO_H_
 
 #include "base/time/time.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -16,6 +16,7 @@ namespace blink {
 
 class ExecutionContext;
 class SourceLocation;
+class LocalDOMWindow;
 
 class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
  public:
@@ -36,6 +37,8 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
     WTF::String url;
     WTF::String function_name;
     int char_position = -1;
+    int line_number = -1;
+    int column_number = -1;
   };
 
   ScriptTimingInfo(ExecutionContext* context,
@@ -60,13 +63,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   const ScriptSourceLocation& GetSourceLocation() const {
     return source_location_;
   }
-  void SetSourceLocation(const ScriptSourceLocation& location) {
-    source_location_ = location;
-    if (KURL(location.url).ProtocolIsData()) {
-      source_location_.url = "data:";
-    }
-  }
-
+  void SetSourceLocation(const ScriptSourceLocation& location);
   const AtomicString& ClassLikeName() const { return class_like_name_; }
   void SetClassLikeName(const AtomicString& name) { class_like_name_ = name; }
   const AtomicString& PropertyLikeName() const { return property_like_name_; }
@@ -106,7 +103,6 @@ class AnimationFrameTimingInfo
   }
 
   void SetRenderEndTime(base::TimeTicks time) { render_end_time = time; }
-  void SetPresentationTime(base::TimeTicks time) { presentation_time = time; }
   void SetFirstUIEventTime(base::TimeTicks time) { first_ui_event_time = time; }
 
   base::TimeTicks FrameStartTime() const { return frame_start_time; }
@@ -115,7 +111,6 @@ class AnimationFrameTimingInfo
     return style_and_layout_start_time;
   }
   base::TimeTicks RenderEndTime() const { return render_end_time; }
-  base::TimeTicks PresentationTime() const { return presentation_time; }
   base::TimeTicks FirstUIEventTime() const { return first_ui_event_time; }
   base::TimeDelta Duration() const {
     return RenderEndTime() - FrameStartTime();
@@ -163,9 +158,6 @@ class AnimationFrameTimingInfo
   // Measured after BeginMainFrame, or at the end of a task that did not trigger
   // a main frame update
   base::TimeTicks render_end_time;
-
-  // Measured when the frame is presented to the user.
-  base::TimeTicks presentation_time;
 
   // The event timestamp of the first UI event that coincided with the frame.
   base::TimeTicks first_ui_event_time;

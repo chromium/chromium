@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/atomicops.h"
 
 #include <stdint.h>
@@ -81,9 +86,7 @@ static void TestAtomicIncrement() {
   EXPECT_EQ(s.next_word, next_word_value);
 }
 
-
 #define NUM_BITS(T) (sizeof(T) * 8)
-
 
 template <class AtomicType>
 static void TestCompareAndSwap() {
@@ -101,8 +104,8 @@ static void TestCompareAndSwap() {
 
   // Use test value that has non-zero bits in both halves, more for testing
   // 64-bit implementation on 32-bit platforms.
-  const AtomicType k_test_val = (static_cast<uint64_t>(1) <<
-                                 (NUM_BITS(AtomicType) - 2)) + 11;
+  const AtomicType k_test_val =
+      (static_cast<uint64_t>(1) << (NUM_BITS(AtomicType) - 2)) + 11;
   value = k_test_val;
   prev = base::subtle::NoBarrier_CompareAndSwap(&value, 0, 5);
   EXPECT_EQ(k_test_val, value);
@@ -114,7 +117,6 @@ static void TestCompareAndSwap() {
   EXPECT_EQ(k_test_val, prev);
 }
 
-
 template <class AtomicType>
 static void TestAtomicExchange() {
   AtomicType value = 0;
@@ -124,8 +126,8 @@ static void TestAtomicExchange() {
 
   // Use test value that has non-zero bits in both halves, more for testing
   // 64-bit implementation on 32-bit platforms.
-  const AtomicType k_test_val = (static_cast<uint64_t>(1) <<
-                                 (NUM_BITS(AtomicType) - 2)) + 11;
+  const AtomicType k_test_val =
+      (static_cast<uint64_t>(1) << (NUM_BITS(AtomicType) - 2)) + 11;
   value = k_test_val;
   new_value = base::subtle::NoBarrier_AtomicExchange(&value, k_test_val);
   EXPECT_EQ(k_test_val, value);
@@ -137,12 +139,11 @@ static void TestAtomicExchange() {
   EXPECT_EQ(k_test_val, new_value);
 }
 
-
 template <class AtomicType>
 static void TestAtomicIncrementBounds() {
   // Test at rollover boundary between int_max and int_min
-  AtomicType test_val = (static_cast<uint64_t>(1) <<
-                         (NUM_BITS(AtomicType) - 1));
+  AtomicType test_val =
+      (static_cast<uint64_t>(1) << (NUM_BITS(AtomicType) - 1));
   AtomicType value = -1 ^ test_val;
   AtomicType new_value = base::subtle::NoBarrier_AtomicIncrement(&value, 1);
   EXPECT_EQ(test_val, value);

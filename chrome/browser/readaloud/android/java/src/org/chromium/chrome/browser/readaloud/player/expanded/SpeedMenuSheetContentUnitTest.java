@@ -57,11 +57,11 @@ public class SpeedMenuSheetContentUnitTest {
     @Test
     public void testSetup() {
         assertEquals(
-                ((TextView) mMenu.getItem(0).findViewById(R.id.item_label)).getText().toString(),
-                "0.5x");
+                "0.5x",
+                ((TextView) mMenu.getItem(0).findViewById(R.id.item_label)).getText().toString());
         assertEquals(
-                ((TextView) mMenu.getItem(7).findViewById(R.id.item_label)).getText().toString(),
-                "4x");
+                "4x",
+                ((TextView) mMenu.getItem(7).findViewById(R.id.item_label)).getText().toString());
     }
 
     @Test

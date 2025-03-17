@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 source_set("setup") {
@@ -140,9 +139,7 @@ source_set("start_host_main") {
     "//remoting/host:common",
     "//remoting/host/setup",
     "//remoting/host/setup:start_host_main_headers",
-    "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/google/remoting/cloud/v1:messages",
-    "//remoting/proto/remoting/v1:cloud_proto",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
     "//third_party/libjingle_xmpp:rtc_xmllite",
@@ -179,7 +176,6 @@ source_set("native_messaging_host_main") {
   deps = [
     ":native_messaging_host_main_headers",
     "//base",
-    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
@@ -195,7 +191,7 @@ source_set("native_messaging_host_main") {
     "//services/network/public/mojom",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//remoting/host/chromeos:browser_interop" ]
   }
 }

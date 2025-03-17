@@ -9,7 +9,7 @@
  * chrome/common/extensions/api/input_ime.json -g ts_definitions` to regenerate.
  */
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
+import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
 declare global {
   export namespace chrome {
@@ -246,7 +246,7 @@ declare global {
 
       export const onKeyEvent: ChromeEvent<
           (engineID: string, keyData: KeyboardEvent, requestId: string) =>
-              boolean>;
+              boolean | undefined>;
 
       export const onCandidateClicked: ChromeEvent<
           (engineID: string, candidateID: number, button: MouseButton) => void>;

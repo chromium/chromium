@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface for injecting SettingsNavigation to a fragment. It is useful for fragments in
  * components that need access to SettingsNavigation. See: go/clank-modularize-settings-launcher.
  */
+@NullMarked
 public interface FragmentSettingsNavigation {
     /**
      * Sets an instance of SettingsNavigation in a fragment.

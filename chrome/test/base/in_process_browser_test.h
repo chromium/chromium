@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/test/browser_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,11 +56,11 @@ namespace display {
 class Screen;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash::full_restore {
 class ScopedLaunchBrowserForTesting;
 }  // namespace ash::full_restore
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;
 class PrefService;
@@ -245,6 +244,13 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // successful. To set initial prefs, see SetUpLocalStatePrefService.
   [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
+  // Called just before BrowserContextKeyedService creation is started
+  // for each Profile creation.
+  // Test fixtures inheriting InProcessBrowserTest can inject some fake/test
+  // BrowserContextKeyedService as necessary for testing.
+  virtual void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) {}
+
   // Initializes the display::Screen instance.
   virtual void SetScreenInstance();
 
@@ -270,7 +276,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // is omitted, the currently active profile will be used.
   Browser* CreateIncognitoBrowser(Profile* profile = nullptr);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // Similar to |CreateBrowser|, but creates a Guest browser.
   // To create a ChromeOS Guest user session, you need to add proper switches to
   // commandline while setting up the test. For an example see
@@ -310,48 +316,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Returns the test data path used by the embedded test server.
   base::FilePath GetChromeTestDataDir() const;
 
-  // Returns the HTTPS embedded test server.
-  // By default, the HTTPS test server is configured to have a valid
-  // certificate for the set of hostnames:
-  //   - [*.]example.com
-  //   - [*.]foo.com
-  //   - [*.]bar.com
-  //   - [*.]a.com
-  //   - [*.]b.com
-  //   - [*.]c.com
-  //
-  // After starting the server, you can get a working HTTPS URL for any of
-  // those hostnames. For example:
-  //
-  // ```
-  //   void SetUpOnMainThread() override {
-  //     host_resolver()->AddRule("*", "127.0.0.1");
-  //     ASSERT_TRUE(embedded_https_test_server().Start());
-  //     InProcessBrowserTest::SetUpOnMainThread();
-  //   }
-  //   ...
-  //   (later in the test logic):
-  //   embedded_https_test_server().GetURL("foo.com", "/simple.html");
-  // ```
-  //
-  // Tests can override the set of valid hostnames by calling
-  // `net::EmbeddedTestServer::SetCertHostnames()` before starting the test
-  // server, and a valid test certificate will be automatically generated for
-  // the hostnames passed in. For example:
-  //
-  //   ```
-  //   embedded_https_test_server().SetCertHostnames(
-  //       {"example.com", "example.org"});
-  //   ASSERT_TRUE(embedded_https_test_server().Start());
-  //   embedded_https_test_server().GetURL("example.org", "/simple.html");
-  //   ```
-  const net::EmbeddedTestServer& embedded_https_test_server() const {
-    return *embedded_https_test_server_;
-  }
-  net::EmbeddedTestServer& embedded_https_test_server() {
-    return *embedded_https_test_server_;
-  }
-
   void set_exit_when_last_browser_closes(bool value) {
     exit_when_last_browser_closes_ = value;
   }
@@ -360,7 +324,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
     open_about_blank_on_browser_launch_ = value;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void set_launch_browser_for_testing(
       std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
           launch_browser_for_testing);
@@ -380,11 +344,16 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Quits all open browsers and waits until there are no more browsers.
   void QuitBrowsers();
 
+  // Called on BrowserContextKeyedServices are being created for each
+  // Profile.
+  void OnWillCreateBrowserContextKeyedServices(
+      content::BrowserContext* context);
+
   // This is called to set up the test factories for each browser context.
   // It ensures that ProtocolHandlerRegistry instances use
   // TestProtocolHandlerRegistryDelegate, which prevents browser tests
   // from changing the OS integration of protocols.
-  void SetupProtocolHandlerTestFactories(content::BrowserContext* context);
+  void SetUpProtocolHandlerTestFactories(content::BrowserContext* context);
 
   static SetUpBrowserFunction* global_browser_set_up_function_;
 
@@ -446,10 +415,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
 
-  // Embedded HTTPS test server, cheap to create, started on demand.
-  std::unique_ptr<net::EmbeddedTestServer> embedded_https_test_server_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS does not create a browser by default when the full restore feature
   // is enabled. However almost all existing browser tests assume a browser is
   // created. Add ScopedLaunchBrowserForTesting to force creating a browser for

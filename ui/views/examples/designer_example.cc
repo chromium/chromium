@@ -4,10 +4,10 @@
 
 #include "ui/views/examples/designer_example.h"
 
+#include <ranges>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -146,7 +146,7 @@ class ClassRegistration : public BaseClassRegistration {
   ~ClassRegistration() override = default;
   std::unique_ptr<View> CreateView() override { return std::make_unique<C>(); }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(C::MetaData()->type_name());
+    return base::ASCIIToUTF16(C::kViewClassName);
   }
 };
 
@@ -164,7 +164,7 @@ class ClassRegistration<Combobox> : public BaseClassRegistration,
         .Build();
   }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(Combobox::MetaData()->type_name());
+    return base::ASCIIToUTF16(Combobox::kViewClassName);
   }
 
   // ui::ComboboxModel
@@ -182,7 +182,7 @@ class ClassRegistration<MdTextButton> : public BaseClassRegistration {
     return Builder<MdTextButton>().SetText(u"Button").Build();
   }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(MdTextButton::MetaData()->type_name());
+    return base::ASCIIToUTF16(MdTextButton::kViewClassName);
   }
 };
 
@@ -201,7 +201,7 @@ class ClassRegistration<Textfield> : public BaseClassRegistration {
         .Build();
   }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(Textfield::MetaData()->type_name());
+    return base::ASCIIToUTF16(Textfield::kViewClassName);
   }
 };
 
@@ -214,7 +214,7 @@ class ClassRegistration<Checkbox> : public BaseClassRegistration {
     return std::make_unique<Checkbox>(u"<Checkbox>");
   }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(Checkbox::MetaData()->type_name());
+    return base::ASCIIToUTF16(Checkbox::kViewClassName);
   }
 };
 
@@ -227,7 +227,7 @@ class ClassRegistration<RadioButton> : public BaseClassRegistration {
     return std::make_unique<RadioButton>(u"<RadioButton>", 0);
   }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(RadioButton::MetaData()->type_name());
+    return base::ASCIIToUTF16(RadioButton::kViewClassName);
   }
 };
 
@@ -243,7 +243,7 @@ class ClassRegistration<ToggleButton> : public BaseClassRegistration {
         .Build();
   }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(ToggleButton::MetaData()->type_name());
+    return base::ASCIIToUTF16(ToggleButton::kViewClassName);
   }
 };
 
@@ -261,7 +261,7 @@ class ClassRegistration<ImageButton> : public BaseClassRegistration {
         .Build();
   }
   std::u16string GetViewClassName() override {
-    return base::ASCIIToUTF16(ImageButton::MetaData()->type_name());
+    return base::ASCIIToUTF16(ImageButton::kViewClassName);
   }
 };
 
@@ -477,7 +477,7 @@ void DesignerExample::GrabHandles::SetAttachedView(View* view) {
 }
 
 bool DesignerExample::GrabHandles::IsGrabHandle(View* view) {
-  return base::ranges::find(grab_handles_, view) != grab_handles_.end();
+  return std::ranges::find(grab_handles_, view) != grab_handles_.end();
 }
 
 DesignerExample::DesignerExample() : ExampleBase("Designer") {}

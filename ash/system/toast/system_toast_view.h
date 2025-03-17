@@ -5,11 +5,13 @@
 #ifndef ASH_SYSTEM_TOAST_SYSTEM_TOAST_VIEW_H_
 #define ASH_SYSTEM_TOAST_SYSTEM_TOAST_VIEW_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
@@ -38,12 +40,13 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
     kIconButton,
   };
 
-  SystemToastView(const std::u16string& text,
-                  ButtonType button_type = ButtonType::kNone,
-                  const std::u16string& button_text = std::u16string(),
-                  const gfx::VectorIcon* button_icon = &gfx::kNoneIcon,
-                  base::RepeatingClosure button_callback = base::DoNothing(),
-                  const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon);
+  SystemToastView(
+      const std::u16string& text,
+      ButtonType button_type = ButtonType::kNone,
+      const std::u16string& button_text = std::u16string(),
+      const gfx::VectorIcon* button_icon = &gfx::VectorIcon::EmptyIcon(),
+      base::RepeatingClosure button_callback = base::DoNothing(),
+      const gfx::VectorIcon* leading_icon = &gfx::VectorIcon::EmptyIcon());
   SystemToastView(const SystemToastView&) = delete;
   SystemToastView& operator=(const SystemToastView&) = delete;
   ~SystemToastView() override;
@@ -51,8 +54,8 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   views::Button* button() { return button_; }
 
   // Updates the toast label text.
-  void SetText(const std::u16string& text);
-  const std::u16string& GetText() const;
+  void SetText(std::u16string_view text);
+  std::u16string_view GetText() const;
 
  private:
   // views::View:

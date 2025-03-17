@@ -41,19 +41,6 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 
   ~ImageView() override;
 
-  // Set the image that should be displayed.
-  // TODO(pkasting): Change callers to pass an ImageModel and eliminate this.
-  void SetImage(const gfx::ImageSkia& image) {
-    SetImage(ui::ImageModel::FromImageSkia(image));
-  }
-
-  // Set the image that should be displayed from a pointer. Reset the image
-  // if the pointer is NULL.
-  // TODO(pkasting): Change callers to pass an ImageModel and eliminate this.
-  void SetImage(const gfx::ImageSkia* image_skia) {
-    SetImage(image_skia ? *image_skia : gfx::ImageSkia());
-  }
-
   // Sets the image that should be displayed.
   void SetImage(const ui::ImageModel& image_model);
 
@@ -95,8 +82,6 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, ImageViewBase)
-VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const gfx::ImageSkia&)
-VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const gfx::ImageSkia*)
 VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const ui::ImageModel&)
 END_VIEW_BUILDER
 

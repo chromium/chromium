@@ -22,7 +22,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_result.h"
@@ -58,14 +57,14 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #endif
 
 namespace gpu {
 class Buffer;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 struct CleanUpContext {
@@ -250,7 +249,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
 
   std::vector<sk_sp<SkImage>> plane_sk_images;
   std::optional<base::ScopedClosureRunner> notify_gl_state_changed;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(
       gfx::NumberOfPlanesForLinearBufferFormat(completed_decode->buffer_format),
       completed_decode->handle.native_pixmap_handle.planes.size());

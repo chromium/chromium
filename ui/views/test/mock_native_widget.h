@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
@@ -108,6 +109,9 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(bool, IsActive, (), (const override));
   MOCK_METHOD(void, SetZOrderLevel, (ui::ZOrderLevel order), (override));
   MOCK_METHOD(ui::ZOrderLevel, GetZOrderLevel, (), (const override));
+#if BUILDFLAG(IS_MAC)
+  MOCK_METHOD(void, SetActivationIndependence, (bool independence), (override));
+#endif
   MOCK_METHOD(void,
               SetVisibleOnAllWorkspaces,
               (bool always_visible),

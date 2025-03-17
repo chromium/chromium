@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controller to manage when and how we show multi-instance in-product help messages to users. */
+@NullMarked
 public class MultiInstanceIphController {
     /**
      * Attempts to show an IPH text bubble about the instance swicher in app menu.

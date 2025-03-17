@@ -684,6 +684,9 @@ static const ClientErrorTestParam kClientErrorTestCases[] = {
     {DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE, kUnspecified,
      -1, 1},
     {DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK, kUnspecified, -1, 1},
+    {DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK, kUnspecified,
+     /*expected_delay_ms=*/-1, /*backoff_factor=*/1},
+
 };
 
 class CloudPolicyRefreshSchedulerClientErrorTest

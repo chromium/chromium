@@ -4,6 +4,7 @@
 
 #include "services/video_effects/video_effects_processor_webgpu.h"
 
+#include <cstdint>
 #include <memory>
 #include <numbers>
 #include <string_view>
@@ -15,7 +16,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -27,23 +32,27 @@
 #include "gpu/webgpu/callback.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
+#include "services/video_effects/calculators/video_effects_graph_config.h"
+#include "services/video_effects/calculators/video_effects_graph_webgpu.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-shared.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
+#include "third_party/mediapipe/buildflags.h"
 
 namespace {
 
-scoped_refptr<gpu::ClientSharedImage> CreateSharedImageRGBA(
+// Creates a shared image using `frame_info.coded_size`.
+[[maybe_unused]] scoped_refptr<gpu::ClientSharedImage> CreateSharedImageRGBA(
     gpu::SharedImageInterface* sii,
     const media::mojom::VideoFrameInfo& frame_info,
-    gpu::SharedImageUsageSet gpu_usage) {
+    gpu::SharedImageUsageSet gpu_usage,
+    std::string_view debug_label) {
   scoped_refptr<gpu::ClientSharedImage> destination = sii->CreateSharedImage(
       {viz::SinglePlaneFormat::kRGBA_8888, frame_info.coded_size,
-       frame_info.color_space, gpu_usage,
-       "VideoEffectsProcessorIntermediateSharedImage"},
+       frame_info.color_space, gpu_usage, debug_label},
       gpu::kNullSurfaceHandle);
   CHECK(destination);
   CHECK(!destination->mailbox().IsZero());
@@ -93,9 +102,26 @@ VideoEffectsProcessorWebGpu::VideoEffectsProcessorWebGpu(
 VideoEffectsProcessorWebGpu::~VideoEffectsProcessorWebGpu() = default;
 
 bool VideoEffectsProcessorWebGpu::Initialize() {
-  CreateComputePipeline();
   EnsureFlush();
   return true;
+}
+
+void VideoEffectsProcessorWebGpu::SetBackgroundSegmentationModel(
+    base::span<const uint8_t> model_blob) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  background_segmentation_model_.resize(model_blob.size());
+  base::span(background_segmentation_model_).copy_from(model_blob);
+
+  MaybeInitializeInferenceEngine();
+}
+
+void VideoEffectsProcessorWebGpu::OnFrameProcessed(wgpu::Texture texture) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Currently no-op. This is because we wait until our graph is idle when
+  // feeding packets into it, and if the graph is idle, we know that all WebGPU
+  // commands were scheduled. We wait for them to be executed by generating sync
+  // tokens and calling `gpu::GpuSupport::SignalQuery()`.
 }
 
 // `VideoEffectsProcessorWebGpu::PostProcess()` runs the simple shader on top of
@@ -174,6 +200,7 @@ bool VideoEffectsProcessorWebGpu::Initialize() {
 // to make it more clear which part of the code corresponds to which step from
 // the diagram.
 void VideoEffectsProcessorWebGpu::PostProcess(
+    const RuntimeConfig& runtime_config,
     media::mojom::VideoBufferHandlePtr input_frame_data,
     media::mojom::VideoFrameInfoPtr input_frame_info,
     media::mojom::VideoBufferHandlePtr result_frame_data,
@@ -181,6 +208,7 @@ void VideoEffectsProcessorWebGpu::PostProcess(
     mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if BUILDFLAG(MEDIAPIPE_BUILD_WITH_GPU_SUPPORT)
   if (!device_) {
     std::move(post_process_cb)
         .Run(mojom::PostProcessResult::NewError(
@@ -215,11 +243,28 @@ void VideoEffectsProcessorWebGpu::PostProcess(
     return;
   }
 
+  if (!graph_) {
+    std::move(post_process_cb)
+        .Run(mojom::PostProcessResult::NewError(
+            mojom::PostProcessError::kNotReady));
+    return;
+  }
+
+  if (runtime_config.blur_state != BlurState::kEnabled) {
+    std::move(post_process_cb)
+        .Run(mojom::PostProcessResult::NewError(
+            mojom::PostProcessError::kUnknown));
+    return;
+  }
+
   const uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
       "VideoEffectsProcessorWebGpu::PostProcess", trace_id);
 
+  // Note: this CHECK is not strictly required, but the code below assumes it
+  // holds. In order to relax this requirement, we'd need to audit the code
+  // below for usages of `coded_size` and `visible_rect` on `input_frame_info`.
   CHECK_EQ(input_frame_info->coded_size, input_frame_info->visible_rect.size());
 
   gpu::raster::RasterInterface* raster_interface =
@@ -238,13 +283,14 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   // ImportSI(s1)
   scoped_refptr<gpu::ClientSharedImage> in_plane =
       shared_image_interface_->ImportSharedImage(
-          input_frame_data->get_shared_image_handle()->shared_image);
+          std::move(input_frame_data->get_shared_image_handle()->shared_image));
   CHECK(in_plane);
   // s3=CreateSI()
   auto in_image =
       CreateSharedImageRGBA(shared_image_interface_.get(), *input_frame_info,
                             gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE);
+                                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
+                            "VideoEffectsProcessorInImage");
   // t3=GenSyncToken()
   // Waiting on this sync token should ensure that the `in_image` shared image
   // is ready to be used.
@@ -255,14 +301,15 @@ void VideoEffectsProcessorWebGpu::PostProcess(
       result_frame_data->get_shared_image_handle()->sync_token);
   // ImportSI(s2)
   auto out_plane = shared_image_interface_->ImportSharedImage(
-      result_frame_data->get_shared_image_handle()->shared_image);
+      std::move(result_frame_data->get_shared_image_handle()->shared_image));
   CHECK(out_plane);
   // s4=CreateSI()
   auto out_image =
       CreateSharedImageRGBA(shared_image_interface_.get(), *input_frame_info,
                             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE);
+                                gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE,
+                            "VideoEffectsProcessorOutImage");
   // t4=GenSyncToken()
   // Waiting on this sync token should ensure that the `out_image` shared image
   // is ready to be used.
@@ -283,11 +330,12 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   // raster interface. Proceed with pixel format conversion.
 
   // s3<-CopySI(s1)
+  const int input_frame_width = input_frame_info->visible_rect.width();
+  const int input_frame_height = input_frame_info->visible_rect.height();
   raster_interface->CopySharedImage(in_plane->mailbox(), in_image->mailbox(), 0,
                                     0, input_frame_info->visible_rect.x(),
                                     input_frame_info->visible_rect.y(),
-                                    input_frame_info->visible_rect.width(),
-                                    input_frame_info->visible_rect.height());
+                                    input_frame_width, input_frame_height);
 
   // Let's insert a sync token generated by raster interface after pixel
   // format conversion so that WebGPU interface could wait for it to complete.
@@ -309,10 +357,27 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   // the (intermediate) destination.
   webgpu_interface->WaitSyncTokenCHROMIUM(post_yuv_to_rgba.GetConstData());
 
-  // w1=ImportImage(s3)
   // Now we can import the converted input image into WebGPU.
+  // w1=ImportImage(s3)
+
+  // Note: this descriptor does not actually influence the resulting WebGPU
+  // texture in any way. This just allows us to use `wgpu::Texture` reflection
+  // APIs to query texture properties (i.e. calling `wgpu::Texture::GetWidth()`,
+  // `wgpu::Texture::GetHeight()`, and `wgpu::Texture::GetFormat()` will now
+  // work).
+  CHECK_EQ(in_image->format(), viz::SinglePlaneFormat::kRGBA_8888);
+  WGPUTextureDescriptor in_texture_desc = {
+      .dimension = WGPUTextureDimension_2D,
+      .size =
+          {
+              .width = static_cast<uint32_t>(input_frame_width),
+              .height = static_cast<uint32_t>(input_frame_height),
+              .depthOrArrayLayers = 1,
+          },
+      .format = WGPUTextureFormat_RGBA8Unorm,
+  };
   gpu::webgpu::ReservedTexture in_reservation =
-      webgpu_interface->ReserveTexture(device_.Get());
+      webgpu_interface->ReserveTexture(device_.Get(), &in_texture_desc);
   // CopySrc because initial prototype will just do texture-to-texture copy,
   // TextureBinding because we want to also bind it as a regular texture & use
   // in compute shader.
@@ -329,82 +394,50 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   webgpu_interface->WaitSyncTokenCHROMIUM(out_image_token.GetConstData());
 
   // w2=ImportImage(s4)
+
+  // Note: see comment on `in_texture_desc`.
+  CHECK_EQ(out_image->format(), viz::SinglePlaneFormat::kRGBA_8888);
+  WGPUTextureDescriptor out_texture_desc = {
+      .dimension = WGPUTextureDimension_2D,
+      .size =
+          {
+              .width = static_cast<uint32_t>(input_frame_width),
+              .height = static_cast<uint32_t>(input_frame_height),
+              .depthOrArrayLayers = 1,
+          },
+      .format = WGPUTextureFormat_RGBA8Unorm,
+  };
   gpu::webgpu::ReservedTexture out_reservation =
-      webgpu_interface->ReserveTexture(device_.Get());
+      webgpu_interface->ReserveTexture(device_.Get(), &out_texture_desc);
   // CopyDst because initial prototype will just do texture-to-texture copy,
   // StorageBinding because we want to also bind it as storage texture & use
   // in compute shader.
   webgpu_interface->AssociateMailbox(
       out_reservation.deviceId, out_reservation.deviceGeneration,
       out_reservation.id, out_reservation.generation,
-      WGPUTextureUsage_CopyDst | WGPUTextureUsage_StorageBinding,
+      WGPUTextureUsage_CopyDst | WGPUTextureUsage_StorageBinding |
+          WGPUTextureUsage_RenderAttachment,
       out_image->mailbox());
 
+  // The `in_texture` and `out_texture` format is `TextureFormat::RGBA8Unorm`.
+  // This is because of how the shared image format
+  // (`viz::SinglePlaneFormat::kRGBA_8888`) maps to WebGPU format.
   wgpu::Texture in_texture = in_reservation.texture;
+  in_texture.SetLabel("VideoEffectsProcessorInTexture");
+
   wgpu::Texture out_texture = out_reservation.texture;
+  out_texture.SetLabel("VideoEffectsProcessorOutTexture");
 
-  std::vector<wgpu::BindGroupEntry> entries;
-  entries.push_back(wgpu::BindGroupEntry{
-      .binding = 0, .textureView = in_texture.CreateView()});
-  entries.push_back(wgpu::BindGroupEntry{
-      .binding = 1, .textureView = out_texture.CreateView()});
-  entries.push_back(
-      wgpu::BindGroupEntry{.binding = 2, .buffer = uniforms_buffer_});
-
-  wgpu::BindGroupDescriptor bind_group_descriptor = {
-      .label = "VideoEffectsProcessorBindGroup",
-      .layout = compute_pipeline_.GetBindGroupLayout(0),
-      .entryCount = entries.size(),
-      .entries = entries.data(),
-  };
-  wgpu::BindGroup bind_group = device_.CreateBindGroup(&bind_group_descriptor);
-
-  // Now we need to dispatch the shader:
-  wgpu::CommandEncoderDescriptor command_encoder_descriptor = {
-      .label = "VideoEffectsProcessorCommandEncoder"};
-  wgpu::CommandEncoder command_encoder =
-      device_.CreateCommandEncoder(&command_encoder_descriptor);
-
-  const base::TimeDelta input_frame_timestamp = input_frame_info->timestamp;
-  const base::TimeDelta effects_period = base::Seconds(10);
-
-  const auto rads = (static_cast<float>(input_frame_timestamp.InMilliseconds() %
-                                        effects_period.InMilliseconds()) /
-                     effects_period.InMilliseconds()) *
-                    2 * std::numbers::pi;
-  const float brightness = std::sin(rads);
-  const float contrast = 0.0f;
-  const float saturation = 0.0f;
-
-  const Uniforms uniforms = {
-      .brightness = brightness,
-      .contrast = contrast,
-      .saturation = saturation,
-  };
-  auto uniforms_bytes =
-      base::bit_cast<std::array<const uint8_t, sizeof(uniforms)>>(uniforms);
-  command_encoder.WriteBuffer(uniforms_buffer_, 0, uniforms_bytes.data(),
-                              uniforms_bytes.size());
-
-  wgpu::ComputePassDescriptor compute_pass_descriptor = {
-      .label = "VideoEffectsProcessorComputePassEncoder"};
-  wgpu::ComputePassEncoder compute_pass_encoder =
-      command_encoder.BeginComputePass(&compute_pass_descriptor);
-
-  compute_pass_encoder.SetPipeline(compute_pipeline_);
-  compute_pass_encoder.SetBindGroup(0, bind_group);
-  compute_pass_encoder.DispatchWorkgroups(
-      base::ClampCeil(input_frame_info->coded_size.width() / 16.0f),
-      base::ClampCeil(input_frame_info->coded_size.height() / 16.0f), 1);
-  compute_pass_encoder.End();
-
-  wgpu::CommandBufferDescriptor command_buffer_descriptor = {
-      .label = "VideoEffectsProcessorCommandBuffer"};
-  wgpu::CommandBuffer commandBuffer =
-      command_encoder.Finish(&command_buffer_descriptor);
-
-  // w2<-RunPipeline(w1)
-  device_.GetQueue().Submit(1, &commandBuffer);
+  // w2<-RunPipeline(w1):
+  // Note: this only submits the WebGPU commands to the device queue. The fact
+  // that `ProcessFrame()` returned does not mean that the frame was already
+  // processed - just that the appropriate commands have been scheduled to run
+  // on the GPU. Same for `WaitUntilIdle()`.
+  CHECK(graph_->ProcessFrame(input_frame_info->timestamp, in_texture,
+                             out_texture, runtime_config));
+  // We can block since all the graph does is it schedules more work on the GPU.
+  // This itself should be near-instant, so the call won't block for long.
+  CHECK(graph_->WaitUntilIdle());
 
   webgpu_interface->DissociateMailbox(in_reservation.id,
                                       in_reservation.generation);
@@ -449,8 +482,7 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   raster_interface->CopySharedImage(out_image->mailbox(), out_plane->mailbox(),
                                     0, 0, input_frame_info->visible_rect.x(),
                                     input_frame_info->visible_rect.y(),
-                                    input_frame_info->visible_rect.width(),
-                                    input_frame_info->visible_rect.height());
+                                    input_frame_width, input_frame_height);
   raster_interface->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
   // ScheduleCallback()
@@ -461,6 +493,11 @@ void VideoEffectsProcessorWebGpu::PostProcess(
                      std::move(input_frame_data), std::move(input_frame_info),
                      std::move(result_frame_data), result_pixel_format,
                      std::move(post_process_cb)));
+#else
+  std::move(post_process_cb)
+      .Run(mojom::PostProcessResult::NewError(
+          mojom::PostProcessError::kUnusable));
+#endif
 }
 
 void VideoEffectsProcessorWebGpu::QueryDone(
@@ -490,116 +527,27 @@ void VideoEffectsProcessorWebGpu::QueryDone(
           mojom::PostProcessSuccess::New(std::move(input_frame_info))));
 }
 
-wgpu::ComputePipeline VideoEffectsProcessorWebGpu::CreateComputePipeline() {
-  wgpu::BufferDescriptor uniforms_descriptor = {
-      .label = "VideoEffectsProcessorUniformBuffer",
-      .usage = wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst,
-      .size = sizeof(Uniforms),
-      .mappedAtCreation = false,
-  };
+void VideoEffectsProcessorWebGpu::MaybeInitializeInferenceEngine() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  uniforms_buffer_ = device_.CreateBuffer(&uniforms_descriptor);
-
-  std::vector<wgpu::BindGroupLayoutEntry> bindings;
-  bindings.push_back({
-      .binding = 0,
-      .visibility = wgpu::ShaderStage::Compute,
-      .texture =
-          {
-              .sampleType = wgpu::TextureSampleType::Float,
-              .viewDimension = wgpu::TextureViewDimension::e2D,
-              .multisampled = false,
-          },
-  });
-
-  bindings.push_back({
-      .binding = 1,
-      .visibility = wgpu::ShaderStage::Compute,
-      .storageTexture =
-          {
-              .access = wgpu::StorageTextureAccess::WriteOnly,
-              .format = wgpu::TextureFormat::RGBA8Unorm,
-              .viewDimension = wgpu::TextureViewDimension::e2D,
-          },
-  });
-
-  bindings.push_back({.binding = 2,
-                      .visibility = wgpu::ShaderStage::Compute,
-                      .buffer = {
-                          .type = wgpu::BufferBindingType::Uniform,
-                      }});
-
-  wgpu::BindGroupLayoutDescriptor bind_group_layout_descriptor = {
-      .label = "VideoEffectsProcessorBindGroupLayout",
-      .entryCount = bindings.size(),
-      .entries = bindings.data(),
-  };
-  wgpu::BindGroupLayout bind_group_layout =
-      device_.CreateBindGroupLayout(&bind_group_layout_descriptor);
-
-  wgpu::PipelineLayoutDescriptor pipeline_layout_descriptor = {
-      .label = "VideoEffectsProcessorPipelineLayout",
-      .bindGroupLayoutCount = 1,
-      .bindGroupLayouts = &bind_group_layout,
-  };
-  wgpu::PipelineLayout pipeline_layout =
-      device_.CreatePipelineLayout(&pipeline_layout_descriptor);
-
-  wgpu::ShaderSourceWGSL compute_shader_wgsl_descriptor;
-  compute_shader_wgsl_descriptor.code = R"(
-struct Uniforms {
-    // Valid range: [-1; -1].
-    brightness: f32,
-    // Valid range: [-1; -1].
-    contrast: f32,
-    // Valid range: [-1; -1].
-    saturation: f32,
-}
-
-@group(0) @binding(0) var inputBuffer: texture_2d<f32>;
-@group(0) @binding(1) var outputBuffer: texture_storage_2d<rgba8unorm, write>;
-@group(0) @binding(2) var<uniform> uniforms: Uniforms;
-
-// TODO(bialpio): We may want to have multiple shader versions depending on the
-// maximum supported workgroup size. WebGPU guarantees that the maximum is not
-// going to be lower than 256 invocations, so let's start with that.
-// Note: `workgroup_size()` MUST be updated at the same time that the call to
-// `wgpu::ComputePassEncoder::DispatchWorkgroups()` that dispatches this shader
-// is updated.
-@compute @workgroup_size(16, 16, 1)
-fn postProcess(@builtin(global_invocation_id) id: vec3<u32>) {
-  let size = textureDimensions(inputBuffer);
-  let position = id.xy;
-  if (all(position < size)) {
-    var color: vec4<f32> = textureLoad(inputBuffer, position, 0);
-
-    color = (color - 0.5) * (uniforms.contrast + 1) + 0.5;
-    color = color + uniforms.brightness;
-    // TODO(bialpio): apply saturation here.
-
-    textureStore(outputBuffer, position, color);
+  // TODO(b/382718268): handle model updates.
+  if (background_segmentation_model_.empty() || !device_) {
+    return;
   }
-}
-    )";
 
-  wgpu::ShaderModuleDescriptor compute_shader_descriptor = {
-      .nextInChain = &compute_shader_wgsl_descriptor,
-      .label = "VideoEffectsProcessorComputeShader",
-  };
-  wgpu::ShaderModule compute_shader =
-      device_.CreateShaderModule(&compute_shader_descriptor);
+#if BUILDFLAG(MEDIAPIPE_BUILD_WITH_GPU_SUPPORT)
+  if (!graph_) {
+    graph_ = VideoEffectsGraphWebGpu::Create();
+    CHECK(graph_);
 
-  wgpu::ComputePipelineDescriptor compute_pipeline_descriptor = {
-      .label = "VideoEffectsProcessorComputePipeline",
-      .layout = pipeline_layout,
-      .compute =
-          {
-              .module = compute_shader,
-              .entryPoint = "postProcess",
-          },
-  };
-
-  return device_.CreateComputePipeline(&compute_pipeline_descriptor);
+    CHECK(graph_->Start(
+        StaticConfig{
+            background_segmentation_model_,
+        },
+        base::BindRepeating(&VideoEffectsProcessorWebGpu::OnFrameProcessed,
+                            weak_ptr_factory_.GetWeakPtr())));
+  }
+#endif
 }
 
 void VideoEffectsProcessorWebGpu::EnsureFlush() {

@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +22,7 @@
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
@@ -50,8 +52,27 @@ void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
 
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
   base::Value::List reports_value;
+  const bool can_exclude_report_with_large_body =
+      base::FeatureList::IsEnabled(features::kExcludeLargeBodyReports);
+  const size_t max_body_size_bytes =
+      features::kMaxReportBodySizeKB.Get() * 1024;  // Convert KB to bytes
+  base::UmaHistogramCounts100("Net.Reporting.ReportsCount", reports.size());
 
   for (const ReportingReport* report : reports) {
+    // If the size of report->body is less than max_body_size_bytes, include it
+    // in the JSON. The body can be of media type, which may result in a large
+    // size. Therefore, excluding the body part can help reduce the JSON size
+    // without affecting eviction.
+
+    // Calculate memory usage and conditionally include the body.
+    const size_t body_size = report->body.EstimateMemoryUsage();
+    base::UmaHistogramMemoryKB("Net.Reporting.ReportBodySize",
+                               body_size / 1024);
+    // If the body size is greater than the max allowed size, skip object.
+    if (can_exclude_report_with_large_body && body_size > max_body_size_bytes) {
+      continue;
+    }
+
     base::Value::Dict report_value;
 
     report_value.Set("age", base::saturated_cast<int>(
@@ -63,10 +84,16 @@ std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
 
     reports_value.Append(std::move(report_value));
   }
-
+  base::UmaHistogramCounts100("Net.Reporting.FilteredReportsCount",
+                              reports_value.size());
+  base::UmaHistogramMemoryKB("Net.Reporting.ReportTotalSize",
+                             reports_value.EstimateMemoryUsage() / 1024);
+  if (reports_value.empty()) {
+    return std::string();
+  }
   std::string json_out;
   bool json_written = base::JSONWriter::Write(reports_value, &json_out);
-  DCHECK(json_written);
+  CHECK(json_written);
   return json_out;
 }
 
@@ -409,6 +436,20 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
 
       std::string upload_data =
           SerializeReports(delivery->reports(), tick_clock().NowTicks());
+
+      // The uploader_data received from the SerializedReports method can result
+      // in an empty string if the body of all reports exceeds the allowed size.
+      // To handle this scenario, we are marking those deliverables as completed
+      // since they are meant to be skipped. Consequently, the subsequent steps
+      // in the execution process will also be skipped.
+      if (upload_data.empty()) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ReportingDeliveryAgentImpl::OnUploadComplete,
+                           weak_factory_.GetWeakPtr(), std::move(delivery),
+                           ReportingUploader::Outcome::SUCCESS));
+        continue;
+      }
 
       // TODO: Calculate actual max depth.
       uploader()->StartUpload(

@@ -24,8 +24,6 @@ class PDFDocumentHelperClient {
       content::RenderFrameHost* render_frame_host,
       int content_restrictions) = 0;
 
-  virtual void OnPDFHasUnsupportedFeature(content::WebContents* contents) = 0;
-
   virtual void OnSaveURL(content::WebContents* contents) = 0;
 
   // Sets whether the PDF plugin can handle file saving internally.

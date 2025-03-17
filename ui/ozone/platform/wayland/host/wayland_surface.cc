@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
@@ -13,6 +18,7 @@
 #include <overlay-prioritizer-client-protocol.h>
 #include <viewporter-client-protocol.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -21,7 +27,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -50,6 +55,19 @@
 namespace ui {
 
 namespace {
+
+// Floating points may have a precision error as they may not correctly be
+// represented in binary, but approximately. In order to mitigate that, round
+// the value to a specified precision to ensure consistency when working with
+// floating-point values. This avoids potential inaccuracies in calculations
+// that could arise from small rounding errors. This function rounds the input
+// value to the nearest multiple of the specified precision (0.001f in this
+// case, which is a default precision in cc/viz).
+double RoundToNearestThousandth(float value) {
+  // This is a default precision that cc/viz uses.
+  static constexpr float kPrecision = 0.001f;
+  return std::round(value / kPrecision) * kPrecision;
+}
 
 uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
   uint32_t priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE;
@@ -755,9 +773,6 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   if (crop.IsEmpty()) {
     viewport_src_dip = gfx::RectF(bounds);
   } else {
-    // TODO(crbug.com/359904707) Fix rounding errors which can lead to imprecise
-    // values below.
-
     // viewport_src_dip needs to be in post-transform coordinates.
     gfx::RectF crop_transformed = wl::ApplyWaylandTransform(
         crop, gfx::SizeF(1, 1),
@@ -779,14 +794,16 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
         viewport_src_dip.set_width(kViewPortSizeMinFloat);
         src_to_set[2] = kViewportSizeMin;
       } else {
-        src_to_set[2] = wl_fixed_from_double(viewport_src_dip.width());
+        src_to_set[2] = wl_fixed_from_double(
+            RoundToNearestThousandth(viewport_src_dip.width()));
       }
 
       if (wl_fixed_from_double(viewport_src_dip.height()) <= 0) {
         viewport_src_dip.set_height(kViewPortSizeMinFloat);
         src_to_set[3] = kViewportSizeMin;
       } else {
-        src_to_set[3] = wl_fixed_from_double(viewport_src_dip.height());
+        src_to_set[3] = wl_fixed_from_double(
+            RoundToNearestThousandth(viewport_src_dip.height()));
       }
     }
 
@@ -806,11 +823,13 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
       viewport_src_dip.set_y(std::max(viewport_src_dip.y(), 0.f));
     }
 
-    src_to_set[0] = wl_fixed_from_double(viewport_src_dip.x()),
-    src_to_set[1] = wl_fixed_from_double(viewport_src_dip.y());
+    src_to_set[0] =
+        wl_fixed_from_double(RoundToNearestThousandth(viewport_src_dip.x()));
+    src_to_set[1] =
+        wl_fixed_from_double(RoundToNearestThousandth(viewport_src_dip.y()));
   }
   // Apply crop (wp_viewport.set_source).
-  if (viewport() && !base::ranges::equal(src_to_set, src_set_)) {
+  if (viewport() && !std::ranges::equal(src_to_set, src_set_)) {
     wp_viewport_set_source(viewport(), src_to_set[0], src_to_set[1],
                            src_to_set[2], src_to_set[3]);
     memcpy(src_set_, src_to_set, 4 * sizeof(*src_to_set));
@@ -827,7 +846,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     dst_to_set[1] = viewport_dst_dip.height();
   }
   // Apply viewport scale (wp_viewport.set_destination).
-  if (!base::ranges::equal(dst_to_set, dst_set_)) {
+  if (!std::ranges::equal(dst_to_set, dst_set_)) {
     if (viewport()) {
       wp_viewport_set_destination(
           viewport(),
@@ -925,8 +944,8 @@ void WaylandSurface::OnEnter(void* data,
                 wayland_output->output_id()),
             nullptr);
 
-  if (auto it = base::ranges::find(self->entered_outputs_,
-                                   wayland_output->output_id());
+  if (auto it = std::ranges::find(self->entered_outputs_,
+                                  wayland_output->output_id());
       it == self->entered_outputs_.end()) {
     self->entered_outputs_.emplace_back(wayland_output->output_id());
   }
@@ -978,7 +997,7 @@ void WaylandSurface::OnPreferredScale(void* data,
 }
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
-  auto it = base::ranges::find(entered_outputs_, output_id);
+  auto it = std::ranges::find(entered_outputs_, output_id);
   if (it == entered_outputs_.end())
     return;
 

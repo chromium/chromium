@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -71,7 +72,7 @@ bool JSONWriter::BuildJSONString(absl::monostate node, size_t depth) {
 }
 
 bool JSONWriter::BuildJSONString(bool node, size_t depth) {
-  json_string_->append(node ? "true" : "false");
+  json_string_->append(base::ToString(node));
   return true;
 }
 

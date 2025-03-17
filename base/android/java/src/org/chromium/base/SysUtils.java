@@ -27,7 +27,10 @@ import java.util.regex.Pattern;
 @JNINamespace("base::android")
 public class SysUtils {
     // A device reporting strictly more total memory in megabytes cannot be considered 'low-end'.
+    // Keep in sync with LOW_MEMORY_DEVICE_THRESHOLD_MB in C++.
+    // LINT.IfChange
     private static final int LOW_MEMORY_DEVICE_THRESHOLD_MB = 1024;
+    // LINT.ThenChange(//base/features.cc)
     private static final String TAG = "SysUtils";
 
     private static @Nullable Boolean sLowEndDevice;
@@ -85,7 +88,6 @@ public class SysUtils {
     /**
      * @return Whether or not this device should be considered a low end device.
      */
-    @CalledByNative
     public static boolean isLowEndDevice() {
         // Do not cache in tests since command-line flags can change.
         if (sLowEndDevice == null || BuildConfig.IS_FOR_TEST) {
@@ -97,7 +99,6 @@ public class SysUtils {
     /**
      * @return amount of physical ram detected in KB, or 0 if detection failed.
      */
-    @CalledByNative
     public static int amountOfPhysicalMemoryKB() {
         if (sAmountOfPhysicalMemoryKB == null) {
             sAmountOfPhysicalMemoryKB = detectAmountOfPhysicalMemoryKB();
@@ -132,6 +133,8 @@ public class SysUtils {
     }
 
     private static boolean detectLowEndDevice() {
+        // Keep in sync with the native implementation of this function.
+        // LINT.IfChange
         assert CommandLine.isInitialized();
         if (CommandLine.getInstance().hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)) {
             return true;
@@ -150,6 +153,7 @@ public class SysUtils {
         }
 
         return isLowEnd;
+        // LINT.ThenChange(//base/system/sys_info.cc)
     }
 
     /**

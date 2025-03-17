@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class PrimaryToolbarViewController;
+
 // Protocol implemented by the delegate of the PrimaryToolbarViewController.
 @protocol PrimaryToolbarViewControllerDelegate
 
@@ -17,6 +19,14 @@
 // Called when the user requires to close the toolbar (typically with the ESC/⎋
 // keyboard shortcut).
 - (void)close;
+
+// Called when the location bar is expanded.
+- (void)locationBarExpandedInViewController:
+    (PrimaryToolbarViewController*)viewController;
+
+// Called when the location bar is contracted.
+- (void)locationBarContractedInViewController:
+    (PrimaryToolbarViewController*)viewController;
 
 @end
 

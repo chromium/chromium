@@ -6,9 +6,12 @@ package org.chromium.components.signin.identitymanager;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountInfo;
 
 /** This class handles the {@link AccountInfo} fetch on Java side. */
+@NullMarked
 final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountInfoService {
     private final IdentityManager mIdentityManager;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -20,10 +23,10 @@ final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountI
 
     /** Gets the {@link AccountInfo} of the given account email. */
     @Override
-    public Promise<AccountInfo> getAccountInfoByEmail(String email) {
-        final Promise<AccountInfo> accountInfoPromise = new Promise<>();
-        accountInfoPromise.fulfill(mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
-        return accountInfoPromise;
+    public Promise<@Nullable AccountInfo> getAccountInfoByEmail(String email) {
+        // https://github.com/uber/NullAway/issues/1075#issuecomment-2698009946
+        return Promise.<@Nullable AccountInfo>fulfilled(
+                mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
     }
 
     /** Adds an observer which will be invoked when an {@link AccountInfo} is updated. */

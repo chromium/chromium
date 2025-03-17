@@ -213,6 +213,10 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnAckFrequencyFrame: " << frame;
     return true;
   }
+  bool OnImmediateAckFrame(const QuicImmediateAckFrame& frame) override {
+    *output_ << "OnImmediateAckFrame: " << frame;
+    return true;
+  }
   bool OnResetStreamAtFrame(const QuicResetStreamAtFrame& frame) override {
     *output_ << "OnResetStreamAtFrame: " << frame;
     return true;
@@ -239,13 +243,13 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
 
 namespace net {
 
-std::string QuicPacketPrinter::PrintWrite(const std::string& data) {
+std::string QuicPacketPrinter::PrintWrite(std::string_view data) {
   std::ostringstream output;
   return PrintWithQuicSession(data, output, nullptr);
 }
 
 std::string QuicPacketPrinter::PrintWithQuicSession(
-    const std::string& data,
+    std::string_view data,
     std::ostringstream& stream,
     quic::QuicSimpleServerSession* session) {
   quic::ParsedQuicVersionVector versions = {version_};
@@ -269,7 +273,7 @@ std::string QuicPacketPrinter::PrintWithQuicSession(
         std::make_unique<quic::test::TaggingDecrypter>());  // IN-TEST
   }
 
-  quic::QuicEncryptedPacket encrypted(data.c_str(), data.length());
+  quic::QuicEncryptedPacket encrypted(data);
   framer.ProcessPacket(encrypted);
   return stream.str() + "\n\n";
 }

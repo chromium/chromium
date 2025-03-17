@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.feedback;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** Provides information about whether the interest feed is enabled for use in feedback reports. */
+@NullMarked
 public class InterestFeedFeedbackSource implements FeedbackSource {
     private static final String KEY = "Interest Feed";
     private static final String ENABLED_VALUE = "Enabled";

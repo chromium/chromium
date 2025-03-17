@@ -13,6 +13,8 @@ message IsolationInfo {
   optional string top_frame_origin = 2;
   optional string frame_origin = 3;
   optional string site_for_cookies = 4;
+  optional int32 network_isolation_partition =
+      6;  // net::NetworkIsolationPartition. Defaults to kGeneral.
 
   reserved 5;
   reserved "party_context";

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_LOADING_PAGE_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_LOADING_PAGE_VOTER_H_
 
-#include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
@@ -16,20 +16,20 @@ namespace performance_manager::execution_context_priority {
 // part of a loading page. This makes switching to a loading tab faster.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
-class LoadingPageVoter : public VoterBase,
+class LoadingPageVoter : public PriorityVoter,
                          public PageNodeObserver,
                          public FrameNodeObserver {
  public:
   static const char kPageIsLoadingReason[];
 
-  explicit LoadingPageVoter(VotingChannel voting_channel);
+  explicit LoadingPageVoter();
   ~LoadingPageVoter() override;
 
   LoadingPageVoter(const LoadingPageVoter&) = delete;
   LoadingPageVoter& operator=(const LoadingPageVoter&) = delete;
 
-  // VoterBase:
-  void InitializeOnGraph(Graph* graph) override;
+  // PriorityVoter:
+  void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
   void TearDownOnGraph(Graph* graph) override;
 
   // PageNodeObserver:

@@ -63,4 +63,26 @@ interface FontDataService {
   MatchFamilyName(string family_name, TypefaceStyle style) =>
      (MatchFamilyNameResult? result);
 
+  // Returns the best match for |family_name| and |style| for a given
+  // |character| in the languages described by |bcp47s|.
+  // On error, returns null.
+  [Sync]
+  MatchFamilyNameCharacter(
+    string family_name,
+    TypefaceStyle style,
+    array<string> bcp47s,
+    int32 character) =>
+     (MatchFamilyNameResult? result);
+
+  // Returns all the available font families on the system. Usage of this
+  // function is strongly discouraged as it iterates over all installed fonts.
+  [Sync]
+  GetAllFamilyNames() => (array<string> result);
+
+  // Returns a typeface matching |family_name| and |style|, or the default
+  // typeface if |family_name| is null. Use of this function is discouraged,
+  // prefer |MatchFamilyName*|.
+  [Sync]
+  LegacyMakeTypeface(string? family_name, TypefaceStyle style) =>
+      (MatchFamilyNameResult? result);
 };

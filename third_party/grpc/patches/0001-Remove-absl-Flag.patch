@@ -1,0 +1,217 @@
+From 042ae2dd3af073a26bbca88e747a741a4d160bc3 Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Mon, 17 Feb 2025 13:40:47 +0000
+Subject: [PATCH] Replace absl::Flag with default flag value
+
+Chromium cannot use absl::Flag as it has impact on binary size.
+Wherever it is used, replace with the default flag value.
+
+---
+ .../source/src/core/config/config_vars.cc     | 72 ++++---------------
+ .../source/src/core/config/load_config.cc     | 15 +---
+ .../grpc/source/src/core/config/load_config.h | 10 ++-
+ 3 files changed, 21 insertions(+), 76 deletions(-)
+
+diff --git a/third_party/grpc/source/src/core/config/config_vars.cc b/third_party/grpc/source/src/core/config/config_vars.cc
+index a163b919859f7..963b4030df4d2 100644
+--- a/third_party/grpc/source/src/core/config/config_vars.cc
++++ b/third_party/grpc/source/src/core/config/config_vars.cc
+@@ -20,9 +20,9 @@
+
+ #include <grpc/support/port_platform.h>
+
+-#include "absl/flags/flag.h"
++#include <optional>
++
+ #include "absl/strings/escaping.h"
+-#include "absl/types/optional.h"
+ #include "src/core/config/load_config.h"
+
+ #ifndef GPR_DEFAULT_LOG_VERBOSITY_STRING
+@@ -35,96 +35,54 @@
+ #define GRPC_ENABLE_FORK_SUPPORT_DEFAULT false
+ #endif  // GRPC_ENABLE_FORK_SUPPORT
+
+-ABSL_FLAG(std::vector<std::string>, grpc_experiments, {},
+-          "A comma separated list of currently active experiments. Experiments "
+-          "may be prefixed with a '-' to disable them.");
+-ABSL_FLAG(absl::optional<int32_t>, grpc_client_channel_backup_poll_interval_ms,
+-          {},
+-          "Declares the interval in ms between two backup polls on client "
+-          "channels. These polls are run in the timer thread so that gRPC can "
+-          "process connection failures while there is no active polling "
+-          "thread. They help reconnect disconnected client channels (mostly "
+-          "due to idleness), so that the next RPC on this channel won't fail. "
+-          "Set to 0 to turn off the backup polls.");
+-ABSL_FLAG(absl::optional<std::string>, grpc_dns_resolver, {},
+-          "Declares which DNS resolver to use. The default is ares if gRPC is "
+-          "built with c-ares support. Otherwise, the value of this environment "
+-          "variable is ignored.");
+-ABSL_FLAG(std::vector<std::string>, grpc_trace, {},
+-          "A comma separated list of tracers that provide additional insight "
+-          "into how gRPC C core is processing requests via debug logs.");
+-ABSL_FLAG(absl::optional<std::string>, grpc_verbosity, {},
+-          "Logging verbosity.");
+-ABSL_FLAG(absl::optional<bool>, grpc_enable_fork_support, {},
+-          "Enable fork support");
+-ABSL_FLAG(absl::optional<std::string>, grpc_poll_strategy, {},
+-          "Declares which polling engines to try when starting gRPC. This is a "
+-          "comma-separated list of engines, which are tried in priority order "
+-          "first -> last.");
+-ABSL_FLAG(absl::optional<bool>, grpc_abort_on_leaks, {},
+-          "A debugging aid to cause a call to abort() when gRPC objects are "
+-          "leaked past grpc_shutdown()");
+-ABSL_FLAG(absl::optional<std::string>, grpc_system_ssl_roots_dir, {},
+-          "Custom directory to SSL Roots");
+-ABSL_FLAG(absl::optional<std::string>, grpc_default_ssl_roots_file_path, {},
+-          "Path to the default SSL roots file.");
+-ABSL_FLAG(absl::optional<bool>, grpc_not_use_system_ssl_roots, {},
+-          "Disable loading system root certificates.");
+-ABSL_FLAG(absl::optional<std::string>, grpc_ssl_cipher_suites, {},
+-          "A colon separated list of cipher suites to use with OpenSSL");
+-ABSL_FLAG(absl::optional<bool>, grpc_cpp_experimental_disable_reflection, {},
+-          "EXPERIMENTAL. Only respected when there is a dependency on "
+-          ":grpc++_reflection. If true, no reflection server will be "
+-          "automatically added.");
+-
+ namespace grpc_core {
+
+ ConfigVars::ConfigVars(const Overrides& overrides)
+     : client_channel_backup_poll_interval_ms_(
+-          LoadConfig(FLAGS_grpc_client_channel_backup_poll_interval_ms,
++          LoadConfig(std::optional<int32_t>{},
+                      "GRPC_CLIENT_CHANNEL_BACKUP_POLL_INTERVAL_MS",
+                      overrides.client_channel_backup_poll_interval_ms, 5000)),
+       enable_fork_support_(LoadConfig(
+-          FLAGS_grpc_enable_fork_support, "GRPC_ENABLE_FORK_SUPPORT",
++          std::optional<bool>{}, "GRPC_ENABLE_FORK_SUPPORT",
+           overrides.enable_fork_support, GRPC_ENABLE_FORK_SUPPORT_DEFAULT)),
+-      abort_on_leaks_(LoadConfig(FLAGS_grpc_abort_on_leaks,
++      abort_on_leaks_(LoadConfig(std::optional<bool>{},
+                                  "GRPC_ABORT_ON_LEAKS",
+                                  overrides.abort_on_leaks, false)),
+       not_use_system_ssl_roots_(LoadConfig(
+-          FLAGS_grpc_not_use_system_ssl_roots, "GRPC_NOT_USE_SYSTEM_SSL_ROOTS",
++          std::optional<bool>{}, "GRPC_NOT_USE_SYSTEM_SSL_ROOTS",
+           overrides.not_use_system_ssl_roots, false)),
+       cpp_experimental_disable_reflection_(
+-          LoadConfig(FLAGS_grpc_cpp_experimental_disable_reflection,
++          LoadConfig(std::optional<bool>{},
+                      "GRPC_CPP_EXPERIMENTAL_DISABLE_REFLECTION",
+                      overrides.cpp_experimental_disable_reflection, false)),
+-      dns_resolver_(LoadConfig(FLAGS_grpc_dns_resolver, "GRPC_DNS_RESOLVER",
++      dns_resolver_(LoadConfig(std::optional<std::string>{}, "GRPC_DNS_RESOLVER",
+                                overrides.dns_resolver, "")),
+-      verbosity_(LoadConfig(FLAGS_grpc_verbosity, "GRPC_VERBOSITY",
++      verbosity_(LoadConfig(std::optional<std::string>{}, "GRPC_VERBOSITY",
+                             overrides.verbosity,
+                             GPR_DEFAULT_LOG_VERBOSITY_STRING)),
+-      poll_strategy_(LoadConfig(FLAGS_grpc_poll_strategy, "GRPC_POLL_STRATEGY",
++      poll_strategy_(LoadConfig(std::optional<std::string>{}, "GRPC_POLL_STRATEGY",
+                                 overrides.poll_strategy, "all")),
+       ssl_cipher_suites_(LoadConfig(
+-          FLAGS_grpc_ssl_cipher_suites, "GRPC_SSL_CIPHER_SUITES",
++          std::optional<std::string>{}, "GRPC_SSL_CIPHER_SUITES",
+           overrides.ssl_cipher_suites,
+           "TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_"
+           "SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:"
+           "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384")),
+-      experiments_(LoadConfig(FLAGS_grpc_experiments, "GRPC_EXPERIMENTS",
++      experiments_(LoadConfig(std::vector<std::string>{}, "GRPC_EXPERIMENTS",
+                               overrides.experiments, "")),
+-      trace_(LoadConfig(FLAGS_grpc_trace, "GRPC_TRACE", overrides.trace, "")),
++      trace_(LoadConfig(std::vector<std::string>{}, "GRPC_TRACE", overrides.trace, "")),
+       override_system_ssl_roots_dir_(overrides.system_ssl_roots_dir),
+       override_default_ssl_roots_file_path_(
+           overrides.default_ssl_roots_file_path) {}
+
+ std::string ConfigVars::SystemSslRootsDir() const {
+-  return LoadConfig(FLAGS_grpc_system_ssl_roots_dir,
++  return LoadConfig(std::optional<std::string>{},
+                     "GRPC_SYSTEM_SSL_ROOTS_DIR", override_system_ssl_roots_dir_,
+                     "");
+ }
+
+ std::string ConfigVars::DefaultSslRootsFilePath() const {
+-  return LoadConfig(FLAGS_grpc_default_ssl_roots_file_path,
++  return LoadConfig(std::optional<std::string>{},
+                     "GRPC_DEFAULT_SSL_ROOTS_FILE_PATH",
+                     override_default_ssl_roots_file_path_, "");
+ }
+diff --git a/third_party/grpc/source/src/core/config/load_config.cc b/third_party/grpc/source/src/core/config/load_config.cc
+index f78c0ccdc212b..e1ddf301d8f76 100644
+--- a/third_party/grpc/source/src/core/config/load_config.cc
++++ b/third_party/grpc/source/src/core/config/load_config.cc
+@@ -19,7 +19,6 @@
+
+ #include <optional>
+
+-#include "absl/flags/marshalling.h"
+ #include "absl/log/check.h"
+ #include "absl/strings/numbers.h"
+ #include "absl/strings/str_join.h"
+@@ -53,24 +52,14 @@ int32_t LoadConfigFromEnv(absl::string_view environment_variable,
+
+ bool LoadConfigFromEnv(absl::string_view environment_variable,
+                        bool default_value) {
+-  auto env = LoadEnv(environment_variable);
+-  if (env.has_value()) {
+-    bool out;
+-    std::string error;
+-    if (absl::ParseFlag(env->c_str(), &out, &error)) return out;
+-    fprintf(stderr, "Error reading bool from %s: '%s' is not a bool: %s",
+-            std::string(environment_variable).c_str(), env->c_str(),
+-            error.c_str());
+-  }
+   return default_value;
+ }
+
+-std::string LoadConfig(const absl::Flag<std::vector<std::string>>& flag,
++std::string LoadConfig(const std::vector<std::string>& from_flag,
+                        absl::string_view environment_variable,
+-                       const absl::optional<std::string>& override,
++                       const std::optional<std::string>& override,
+                        const char* default_value) {
+   if (override.has_value()) return *override;
+-  auto from_flag = absl::GetFlag(flag);
+   if (!from_flag.empty()) return absl::StrJoin(from_flag, ",");
+   return LoadConfigFromEnv(environment_variable, default_value);
+ }
+diff --git a/third_party/grpc/source/src/core/config/load_config.h b/third_party/grpc/source/src/core/config/load_config.h
+index 03a9e4bc283e4..e0ee9dd154909 100644
+--- a/third_party/grpc/source/src/core/config/load_config.h
++++ b/third_party/grpc/source/src/core/config/load_config.h
+@@ -22,7 +22,6 @@
+ #include <string>
+ #include <vector>
+
+-#include "absl/flags/flag.h"
+ #include "absl/strings/string_view.h"
+
+ namespace grpc_core {
+@@ -35,18 +34,17 @@ bool LoadConfigFromEnv(absl::string_view environment_variable,
+                        bool default_value);
+
+ template <typename T, typename D>
+-T LoadConfig(const absl::Flag<absl::optional<T>>& flag,
++T LoadConfig(const std::optional<T>& from_flag,
+              absl::string_view environment_variable,
+-             const absl::optional<T>& override, D default_value) {
++             const std::optional<T>& override, D default_value) {
+   if (override.has_value()) return *override;
+-  auto from_flag = absl::GetFlag(flag);
+   if (from_flag.has_value()) return std::move(*from_flag);
+   return LoadConfigFromEnv(environment_variable, default_value);
+ }
+
+-std::string LoadConfig(const absl::Flag<std::vector<std::string>>& flag,
++std::string LoadConfig(const std::vector<std::string>& from_flag,
+                        absl::string_view environment_variable,
+-                       const absl::optional<std::string>& override,
++                       const std::optional<std::string>& override,
+                        const char* default_value);
+
+ }  // namespace grpc_core
+--
+2.48.1.601.g30ceb7b040-goog
+

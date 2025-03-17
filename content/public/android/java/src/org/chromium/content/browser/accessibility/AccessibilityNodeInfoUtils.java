@@ -55,11 +55,14 @@ import android.text.TextUtils;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /** Utility class for common actions involving AccessibilityNodeInfo objects. */
+@NullMarked
 public class AccessibilityNodeInfoUtils {
     /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
@@ -68,7 +71,8 @@ public class AccessibilityNodeInfoUtils {
      * @return String Custom toString result for the given object
      */
     public static String toString(
-            AccessibilityNodeInfoCompat node, boolean includeScreenSizeDependentAttributes) {
+            @Nullable AccessibilityNodeInfoCompat node,
+            boolean includeScreenSizeDependentAttributes) {
         if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
@@ -158,6 +162,12 @@ public class AccessibilityNodeInfoUtils {
         }
         if (!node.isVisibleToUser()) {
             builder.append(" notVisibleToUser");
+        }
+
+        if (node.isFieldRequired()) {
+            // Use "required" rather than "fieldRequired" to match the chromium side naming:
+            // ax::mojom::State::kRequired.
+            builder.append(" required");
         }
 
         // Integer properties - Only print when not default values.
@@ -266,7 +276,7 @@ public class AccessibilityNodeInfoUtils {
             List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList,
             boolean includeScreenSizeDependentAttributes) {
         // Sort actions list to ensure consistent output of tests.
-        Collections.sort(actionList, (a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
+        actionList.sort((a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
 
         List<String> actionStrings = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
@@ -381,8 +391,7 @@ public class AccessibilityNodeInfoUtils {
     private static String toString(Bundle extras, boolean includeScreenSizeDependentAttributes) {
         // Sort keys to ensure consistent output of tests.
         List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
-        Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
-
+        sortedKeySet.sort(CASE_INSENSITIVE_ORDER);
         List<String> bundleStrings = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
@@ -402,7 +411,8 @@ public class AccessibilityNodeInfoUtils {
 
             // Since every node has a few Bundle extras, and some are often empty, we will only
             // print non-null and not empty values.
-            if (extras.get(key) == null || extras.get(key).toString().isEmpty()) {
+            Object value = extras.get(key);
+            if (value == null || value.toString().isEmpty()) {
                 continue;
             }
 
@@ -431,11 +441,7 @@ public class AccessibilityNodeInfoUtils {
             }
 
             // Simplify the key String before printing to make test outputs easier to read.
-            bundleStrings.add(
-                    key.replace("AccessibilityNodeInfo.", "")
-                            + "=\""
-                            + extras.get(key).toString()
-                            + "\"");
+            bundleStrings.add(key.replace("AccessibilityNodeInfo.", "") + "=\"" + value + "\"");
         }
         builder.append(TextUtils.join(", ", bundleStrings)).append("]");
 

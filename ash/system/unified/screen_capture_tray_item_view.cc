@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/screen_capture_tray_item_view.h"
 
-#include "ash/multi_capture/multi_capture_service_client.h"
+#include "ash/multi_capture/multi_capture_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -48,10 +48,9 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
   CreateImageView();
   UpdateLabelOrImageViewColor(/*active=*/false);
 
-  SetCachedTooltipText(l10n_util::GetStringUTF16(IDS_ASH_ADMIN_SCREEN_CAPTURE));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_ADMIN_SCREEN_CAPTURE));
 
-  multi_capture_service_client_observation_.Observe(
-      Shell::Get()->multi_capture_service_client());
+  multi_capture_observation_.Observe(Shell::Get()->multi_capture_service());
   Refresh();
 }
 
@@ -91,7 +90,9 @@ void ScreenCaptureTrayItemView::MultiCaptureStartedFromApp(
 
 void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
   const auto request = requests_.find(label);
-  DCHECK(request != requests_.end());
+  if (request == requests_.end()) {
+    return;
+  }
 
   ScreenCaptureTrayItemMetadata& metadata = request->second;
   const base::TimeDelta time_already_shown =
@@ -108,8 +109,8 @@ void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
   }
 }
 
-void ScreenCaptureTrayItemView::MultiCaptureServiceClientDestroyed() {
-  multi_capture_service_client_observation_.Reset();
+void ScreenCaptureTrayItemView::MultiCaptureServiceDestroyed() {
+  multi_capture_observation_.Reset();
 }
 
 BEGIN_METADATA(ScreenCaptureTrayItemView)

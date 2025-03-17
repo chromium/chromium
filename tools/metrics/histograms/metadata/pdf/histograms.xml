@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PDF.Actions" enum="ChromePDFViewerActions"
-    expires_after="2025-06-15">
+    expires_after="2025-08-17">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2025-04-28">
+<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2025-08-31">
   <owner>dhoss@chromium.org</owner>
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-05-25">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-07-27">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -102,6 +102,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.Ink2StrokeInputDeviceType"
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the input device type used for an Ink2 stroke modification in the PDF
+    viewer. This includes new drawing strokes as well as erasing strokes. Erase
+    strokes that erase pre-existing strokes in a PDF are also included. This is
+    only recorded when drawing or erasing actions are performed by the user, but
+    not if they occur as part of undo or redo operations. Eraser strokes that do
+    not erase any other strokes are ignored.
+  </summary>
+</histogram>
+
 <histogram name="PDF.Ink2StrokePenColor" enum="PDFInk2StrokePenColor"
     expires_after="2025-12-01">
   <owner>andyphan@chromium.org</owner>
@@ -119,21 +133,30 @@ chromium-metrics-reviews@google.com.
   <owner>thestig@chromium.org</owner>
   <summary>
     Tracks the brush size used for an Ink2 {Brush} stroke modification in the
-    PDF viewer. This includes new drawing strokes as well as erasing strokes.
-    Erase strokes that erase pre-existing strokes in a PDF are also included.
-    This is only recorded when drawing or erasing actions are performed by the
-    user, but not if they occur as part of undo or redo operations. Eraser
-    strokes that do not erase any other strokes are ignored.
+    PDF viewer. This includes new drawing strokes, but not erasing strokes, as
+    the eraser does not have a size. This is only recorded when drawing actions
+    are performed by the user, but not if they occur as part of undo or redo
+    operations.
   </summary>
   <token key="Brush">
-    <variant name="Eraser"/>
     <variant name="Highlighter"/>
     <variant name="Pen"/>
   </token>
 </histogram>
 
+<histogram name="PDF.LoadedWithV2InkAnnotations2"
+    enum="PDFLoadedWithV2InkAnnotations" expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the number of PDF documents loaded with existing V2 ink annotations
+    in the PDF viewer. Records &quot;Unknown&quot; if there is a timeout failure
+    when scanning the PDF for existing V2 ink annotations.
+  </summary>
+</histogram>
+
 <histogram name="PDF.LoadStatus2" enum="ChromePDFViewerLoadStatus"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -143,7 +166,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageCount" units="pages" expires_after="2025-06-15">
+<histogram name="PDF.PageCount" units="pages" expires_after="2025-08-17">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -161,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.PostMessageDataType" enum="PDFPostMessageDataType"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -170,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -200,7 +223,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.Version" enum="PDFVersion" expires_after="2025-05-11">
+<histogram name="PDF.Version" enum="PDFVersion" expires_after="2025-07-13">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Tracks versions of documents opened in the PDF viewer.</summary>

@@ -113,6 +113,8 @@ message ClientMetadata {
     optional string os_version = 3;
     optional string os_platform = 4;
     optional string name = 5;
+    optional string device_fqdn = 6;
+    optional string network_name = 7;
   };
   optional Device device = 2;
 
@@ -143,7 +145,7 @@ message ContentAnalysisRequest {
 
   // Firebase Cloud Messaging token used to notify this client of the verdict.
   // This identifies a specific chrome instance.
-  optional string fcm_notification_token = 2;
+  optional string fcm_notification_token = 2 [deprecated = true];
 
   // Token used to correlate requests and responses. This is different than the
   // FCM token in that it is unique for each request.
@@ -216,6 +218,9 @@ message ContentAnalysisRequest {
   // than 50MB or encrypted, because it expects a block or allow verdict from
   // WebProtect right away, and cannot upload full content.
   optional bool require_metadata_verdict = 21;
+
+  // Local IP addresses of the device.
+  repeated string local_ips = 22;
 
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;

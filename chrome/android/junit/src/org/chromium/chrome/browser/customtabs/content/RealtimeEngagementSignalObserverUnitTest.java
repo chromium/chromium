@@ -41,7 +41,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
@@ -56,8 +55,8 @@ import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
@@ -98,7 +97,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     @After
     public void tearDown() {
         RealtimeEngagementSignalObserver.ScrollState.setInstanceForTesting(null);
-        FeatureList.setTestValues(null);
     }
 
     @Test
@@ -138,7 +136,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
             observer.onActivityAttachmentChanged(env.tabProvider.getTab(), null);
         }
 
-        verify(env.tabProvider.getTab().getWebContents()).removeObserver(webContentsObserver);
+        verify((MockWebContents) env.tabProvider.getTab().getWebContents())
+                .removeObserver(webContentsObserver);
         verify(mGestureListenerManagerImpl).removeListener(listener);
     }
 
@@ -149,10 +148,11 @@ public class RealtimeEngagementSignalObserverUnitTest {
         WebContentsObserver webContentsObserver = captureWebContentsObserver();
         List<TabObserver> tabObservers = captureTabObservers();
         for (TabObserver observer : tabObservers) {
-            observer.onClosingStateChanged(env.tabProvider.getTab(), /* isClosing= */ true);
+            observer.onClosingStateChanged(env.tabProvider.getTab(), /* closing= */ true);
         }
 
-        verify(env.tabProvider.getTab().getWebContents()).removeObserver(webContentsObserver);
+        verify((MockWebContents) env.tabProvider.getTab().getWebContents())
+                .removeObserver(webContentsObserver);
         verify(mGestureListenerManagerImpl).removeListener(listener);
     }
 
@@ -604,7 +604,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
         mEngagementSignalObserver.webContentsWillSwap(tab);
@@ -622,7 +622,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         // Turn on Incognito.
         doReturn(true).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
@@ -646,7 +646,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         Tab tab = mock(Tab.class);
         // Disable UMA upload.
         doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -666,7 +666,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
@@ -683,7 +683,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.suppressNextSessionEndedCall();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
@@ -702,7 +702,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -718,7 +718,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         // Turn on Incognito.
         doReturn(true).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
@@ -736,7 +736,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         // Disable UMA upload.
         doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
@@ -756,7 +756,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.suppressNextSessionEndedCall();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // Tab destroyed.
         mEngagementSignalObserver.onDestroyed(tab);
@@ -887,7 +887,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void collectUserInteraction_hasInteraction() {
         initializeTabForTest();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(true);
 
         assertFalse(mEngagementSignalObserver.getDidGetUserInteractionForTesting());
@@ -901,7 +901,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void collectUserInteraction_hasNoInteraction() {
         initializeTabForTest();
         Tab tab = mock(Tab.class);
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(false);
 
         mEngagementSignalObserver.collectUserInteraction(tab);
@@ -928,7 +928,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver =
                 new RealtimeEngagementSignalObserver(
                         env.tabObserverRegistrar,
-                        env.session,
+                        env.session.getSessionAsCustomTab(),
                         mEngagementSignalsCallback,
                         hadScrollDown);
         verify(env.tabObserverRegistrar).registerActivityTabObserver(mEngagementSignalObserver);
@@ -956,7 +956,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     private WebContentsObserver captureWebContentsObserver() {
         ArgumentCaptor<WebContentsObserver> webContentsObserverArgumentCaptor =
                 ArgumentCaptor.forClass(WebContentsObserver.class);
-        WebContents webContents = env.tabProvider.getTab().getWebContents();
+        MockWebContents webContents = (MockWebContents) env.tabProvider.getTab().getWebContents();
         verify(webContents).addObserver(webContentsObserverArgumentCaptor.capture());
         return webContentsObserverArgumentCaptor.getValue();
     }

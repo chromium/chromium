@@ -61,9 +61,6 @@
   <message name="IDS_PAGE_INFO_SECURE_DETAILS" desc="A short paragraph explaining a secure site to the user.">
     Your information (for example, passwords or credit card numbers) is private when it is sent to this site.
   </message>
-  <message name="IDS_PAGE_INFO_ADMIN_PROVIDED_CERT_DETAILS" desc="A short paragraph explaining a site using an administrator-provided certificate to the user.">
-    You have accessed content using an administrator-provided certificate. Data you provide to <ph name="DOMAIN">$1<ex>www.google.com</ex></ph> can be intercepted by your administrator.
-  </message>
   <message name="IDS_PAGE_INFO_MIXED_CONTENT_DETAILS" desc="A short paragraph explaining a partially insecure site to the user.">
     Attackers might be able to see the images you’re looking at on this site and trick you by modifying them.
   </message>
@@ -439,6 +436,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_PRINTING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth devices permission is in the ask state and the site can prompt the user to ask if they allow the site to use advanced printer features.">
       Can ask to use advanced printer features
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the local network access permission is in the ask state and the site can prompt the user to ask if they allow the site to make local network requests.">
+      Can ask to connect to any device on your local network
+    </message>
 
     <!-- UI for device access granted to the site using the device chooser (e.g. USB, Bluetooth) -->
     <message name="IDS_PAGE_INFO_USB_DEVICE_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the item refers to a USB device.">
@@ -473,6 +473,9 @@
     </message>
     <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
       Revoke access for <ph name="DEVICE_NAME">$1<ex>Stadia Controller</ex></ph>
+    </message>
+    <message name="IDS_PAGE_INFO_SMART_CARD_READER_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a Smart card reader device explicitly allowed by the user's enterprise policy.">
+      Smart card reader allowed by your administrator
     </message>
     <message name="IDS_PAGE_INFO_SMART_CARD_READER_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the item refers to a smart card reader.">
       Smart card reader
@@ -825,27 +828,41 @@
   </message>
 
   <!-- Merchant trust strings -->
-  <!-- TODO(crbug.com/378671877): Finalize string and remove translateable="false". -->
-  <message name="IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE" desc="The title of the merchant trust side panel." translateable="false">
+  <message name="IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE" desc="The title of the merchant trust side panel.">
     What people are saying
   </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HEADER" desc="The title of the merchant trust subpage in the page info." translateable="false">
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HEADER" desc="The title of the merchant trust subpage in the page info.">
     Store reviews
   </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_DESCRIPTION" desc="The description of the merchant trust feature in the page info. It has a placeholder for learn more link" translateable="false">
-    AI-generated summary of reviews from independent review websites like Trust Pilot, ScamAdvisor, Google and more. <ph name="SETTINGS">$1<ex>Learn more</ex></ph>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_DESCRIPTION" desc="The description of the merchant trust feature in the page info.">
+    This info comes from independent review websites like Trustpilot, ScamAdviser, Google, and more. Summaries are created with AI.
   </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_LEARN_MORE_LINK" desc="The link in the description of the merchant trust feature in the page info that opens help center article" translateable="false">
-    Learn more
-  </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_VIEW_ALL_REVIEWS" desc="The title of the button to view all reviews of a store, located in the page info merchant trust subpage. It has a placeholder for the number of reviews" translateable="false">
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_VIEW_ALL_REVIEWS" desc="The title of the button to view all reviews of a store, located in the page info merchant trust subpage. It has a placeholder for the number of reviews">
     {NUM_REVIEWS, plural,
                     =0 {View 0 reviews}
                     =1 {View 1 review}
                     other {View all # reviews}}
   </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_REVIEWS_SUMMARY_TITLE" desc="The title of the reviews summary section of the merchant trust feature in the page info" translateable="false">
-    What customers say
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_AND_COUNT_A11Y_DESCRIPTION" desc="The accessibility description of the button to view all reviews of a store, located in the page info merchant trust subpage. It has a placeholder for the number of reviews and the star rating." is_accessibility_with_no_ui="true">
+    {NUM_REVIEWS, plural,
+                    =0 {View 0 reviews. Average rating is <ph name="STARS">{1,number,0.0}<ex>4.2</ex></ph> stars.}
+                    =1 {View 1 review. Average rating is <ph name="STARS">{1,number,0.0}<ex>4.2</ex></ph> stars.}
+                    other {View all # reviews. Average rating is <ph name="STARS">{1,number,0.0}<ex>4.2</ex></ph> stars.}}
+  </message>
+    <message name="IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_A11Y_DESCRIPTION"  desc="The accessibility description of the button to open the merchant trust subpage" is_accessibility_with_no_ui="true">
+      Store reviews. Average rating is <ph name="STARS">{0, number, 0.0}<ex>4.2</ex></ph> stars.
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_REVIEWS_SUMMARY_TITLE" desc="The title of the reviews summary section of the merchant trust feature in the page info">
+    What people are saying
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON" desc="The button in merchant trust page info subpage that open HaTS dialog which allows users to submit a survey about the feature.">
+    Is this helpful?
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_LOADING_BUTTON" desc="The loading state of the button in merchant trust page info subpage. It is shown after user has clicked it but before survey dialog is opened.">
+    Opening survey...
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_FAILED_BUTTON" desc="The failed state of the button in merchant trust page info subpage. It is shown after user has clicked it and the survey failed to load.">
+    An error occurred with the survey.
   </message>
 
   <!-- History strings -->

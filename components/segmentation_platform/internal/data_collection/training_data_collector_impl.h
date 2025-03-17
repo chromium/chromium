@@ -69,8 +69,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                            SuccessCallback callback) override;
 
   // HistogramSignalHandler::Observer implementation.
-  void OnHistogramSignalUpdated(const std::string& histogram_name,
-                                base::HistogramBase::Sample sample) override;
+  void OnHistogramSignalUpdated(std::string_view histogram_name,
+                                base::HistogramBase::Sample32 sample) override;
 
   // UserActionSignalHandler::Observer implementation.
   void OnUserAction(const std::string& user_action,

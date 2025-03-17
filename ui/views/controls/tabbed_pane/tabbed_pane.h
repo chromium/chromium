@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -169,6 +170,8 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
  public:
   static constexpr int kDefaultIconSize = 16;
   static constexpr int kDefaultTitleLeftMargin = kDefaultIconSize / 2;
+  static constexpr int kDefaultHorizontalTabHeight = 32;
+  static constexpr int kMinimumVerticalTabWidth = 192;
 
   TabbedPaneTab(TabbedPaneTabStrip* tab_strip,
                 const std::u16string& title,
@@ -182,11 +185,13 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   bool selected() const { return selected_; }
   void SetSelected(bool selected);
 
-  const std::u16string& GetTitleText() const;
-  void SetTitleText(const std::u16string& text);
+  std::u16string_view GetTitleText() const;
+  void SetTitleText(std::u16string_view text);
 
   void SetTitleMargin(const gfx::Insets& margin);
   void SetIconMargin(const gfx::Insets& margin);
+  void SetTabOutsets(const gfx::Outsets& outsets);
+  void SetHeight(int height);
 
   // Overridden from View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -233,9 +238,11 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   raw_ptr<const gfx::VectorIcon> icon_for_tab_;
   raw_ptr<ImageView> icon_view_ = nullptr;
   raw_ptr<Label> title_ = nullptr;
+  gfx::Outsets tab_outsets_ = gfx::Outsets::VH(0, 0);
   // The preferred title width is the maximum width between inactive and active
   // states (font changes). See UpdatePreferredTitleWidth() for more details.
   int preferred_title_width_;
+  int height_ = kDefaultHorizontalTabHeight;
   State state_ = State::kActive;
   bool selected_ = false;
 
@@ -275,7 +282,8 @@ class VIEWS_EXPORT TabbedPaneTabStrip : public View,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
-  void SetEnabled(bool enabled);
+  // Called by TabbedPaneTabStrip when its enable status changes.
+  void OnEnableChanged();
 
   // Called by TabbedPaneTabStrip when the selected tab changes. This function
   // is only called if |from_tab| is not null, i.e., there was a previously
@@ -380,6 +388,9 @@ class VIEWS_EXPORT TabbedPaneTabStrip : public View,
   // Whether to draw the unselected divider below the tabs. Useful for when
   // the caller wants to use a custom divider instead.
   bool draw_tab_divider_ = true;
+
+  // Listener to monitor `SetEnabled` and propagate the state changes.
+  base::CallbackListSubscription enabled_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TabbedPane, FlexLayoutView)

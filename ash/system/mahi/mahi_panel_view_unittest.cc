@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -165,7 +166,7 @@ void ReturnLongSummary(chromeos::MahiManager::MahiSummaryCallback callback) {
       MahiResponseStatus::kSuccess);
 }
 
-const std::u16string& GetContentSourceTitle(views::View* mahi_view) {
+std::u16string_view GetContentSourceTitle(views::View* mahi_view) {
   return views::AsViewClass<MahiContentSourceButton>(
              mahi_view->GetViewByID(
                  mahi_constants::ViewId::kContentSourceButton))
@@ -2030,7 +2031,10 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
 
-  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, false);
+  prefs->SetInteger(
+      prefs::kHmrManagedSettings,
+      static_cast<int>(
+          mahi_utils::HmrEnterprisePolicy::kAllowedWithoutModelImprovement));
   CreatePanelWidget();
   EXPECT_FALSE(
       panel_view()
@@ -2044,7 +2048,10 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
           panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
           ->GetText());
 
-  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, true);
+  prefs->SetInteger(
+      prefs::kHmrManagedSettings,
+      static_cast<int>(
+          mahi_utils::HmrEnterprisePolicy::kAllowedWithModelImprovement));
   CreatePanelWidget();
   EXPECT_TRUE(
       panel_view()

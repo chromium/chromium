@@ -79,14 +79,24 @@ class FormCache {
       const FieldDataManager& field_data_manager,
       const CallTimerState& timer_state);
 
+  const std::map<FormRendererId, std::unique_ptr<FormData>>& extracted_forms()
+      const {
+    return extracted_forms_;
+  }
+
  private:
   friend class FormCacheTestApi;
 
   // The owning AutofillAgent.
   const raw_ref<AutofillAgent> agent_;
 
-  // The cached forms. Used to prevent re-extraction of forms.
-  std::map<FormRendererId, FormData> extracted_forms_;
+  // The cached forms. This is used to figure out which forms changed between
+  // two parsing operations so that only the changed forms are potentially
+  // reparsed later and not all forms. A null form means that for a given web
+  // form (either a WebFormElement or the form of unowned elements), extraction
+  // failed (see `form_util::ExtractFormData()` for reasons of failing
+  // extractions).
+  std::map<FormRendererId, std::unique_ptr<FormData>> extracted_forms_;
 };
 
 }  // namespace autofill

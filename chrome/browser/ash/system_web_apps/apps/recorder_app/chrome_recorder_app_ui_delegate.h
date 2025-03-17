@@ -27,6 +27,8 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
   std::u16string GetLanguageDisplayName(
       speech::LanguageCode language_code) override;
 
+  std::string GetDefaultTranscriptionLanguage() override;
+
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
   bool CanUseGenerativeAiForCurrentProfile() override;

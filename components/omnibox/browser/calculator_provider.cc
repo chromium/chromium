@@ -4,11 +4,11 @@
 
 #include "calculator_provider.h"
 
+#include <algorithm>
 #include <limits>
 #include <vector>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -70,7 +70,7 @@ void CalculatorProvider::Stop(bool clear_cached_results,
 }
 
 void CalculatorProvider::DeleteMatch(const AutocompleteMatch& match) {
-  auto it = base::ranges::find_if(Cache(), [&](const auto& cached) {
+  auto it = std::ranges::find_if(Cache(), [&](const auto& cached) {
     return cached.match.destination_url == match.destination_url;
   });
   if (it != Cache().end()) {
@@ -120,7 +120,7 @@ void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
     Cache().pop_back();
 
   // Remove duplicates to avoid a repeated match reducing cache capacity.
-  auto duplicate = base::ranges::find_if(Cache(), [&](const auto& cached) {
+  auto duplicate = std::ranges::find_if(Cache(), [&](const auto& cached) {
     return cached.match.contents == match.contents;
   });
   if (duplicate != Cache().end())

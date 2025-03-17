@@ -102,7 +102,7 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): boolean {
     }
 
     if (node instanceof HTMLElement) {
-      const element = node as HTMLElement;
+      const element = node;
       if (element.hasAttribute(SKIP_SEARCH_CSS_ATTRIBUTE) ||
           element.hasAttribute('hidden') || element.style.display === 'none') {
         return;

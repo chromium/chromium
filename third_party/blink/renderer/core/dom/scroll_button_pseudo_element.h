@@ -36,9 +36,6 @@ class ScrollButtonPseudoElement : public PseudoElement,
   bool UpdateSnapshotInternal();
 
   bool enabled_ = true;
-  // As per https://drafts.csswg.org/css-overflow-5/#scroll-buttons
-  // defines a "page" size to be 85% of the scrollport size.
-  static constexpr double PageSizePercent = 0.85;
 };
 
 template <>

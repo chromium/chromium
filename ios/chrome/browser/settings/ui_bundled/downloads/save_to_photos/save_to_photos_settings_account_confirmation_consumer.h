@@ -18,6 +18,12 @@
                          gaiaID:(NSString*)gaiaID
            askEveryTimeSwitchOn:(BOOL)on;
 
+// Displays the Save to Photos UI in the Downloads settings menu.
+- (void)displaySaveToPhotosSettingsUI;
+
+// Hides the Save to Photos UI in the Downloads settings menu.
+- (void)hideSaveToPhotosSettingsUI;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_DOWNLOADS_SAVE_TO_PHOTOS_SAVE_TO_PHOTOS_SETTINGS_ACCOUNT_CONFIRMATION_CONSUMER_H_

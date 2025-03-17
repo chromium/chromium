@@ -15,6 +15,7 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/service_worker/service_worker_cache_storage_matcher.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
@@ -77,7 +78,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
       std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      FrameTreeNodeId frame_tree_node_id,
       base::TimeTicks find_registration_start_time);
 
   ServiceWorkerMainResourceLoader(const ServiceWorkerMainResourceLoader&) =
@@ -90,9 +90,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Passed as the RequestHandler for
   // NavigationLoaderInterceptor::MaybeCreateLoader.
   void StartRequest(
-      const network::ResourceRequest& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   // The navigation request that was holding this job is
   // going away. Calling this internally calls |DeleteIfNeeded()|
@@ -104,8 +107,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   base::WeakPtr<ServiceWorkerMainResourceLoader> AsWeakPtr();
 
  private:
-  class StreamWaiter;
   class RaceNetworkRequestURLLoaderClient;
+  class StreamWaiter;
+
   enum class Status {
     kNotStarted,
     // |receiver_| is bound and the fetch event is being dispatched to the
@@ -172,8 +176,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   void OnBlobReadingComplete(int net_error);
 
@@ -257,12 +259,36 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   bool MaybeStartNavigationPreload(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper);
 
+  // If the request URL is eligible, and it's an outermost main frame,
+  // SyntheticResponse is triggered.
+  //
+  // This initiates a network request, and stores its response header to
+  // `ServiceWorkerVersion` so that it can be used for the next navigation with
+  // SyntheticResponse. The stored header is always refreshed with the new one.
+  //
+  // If the header already exists at the time of navigation, this method
+  // immediately return the response with the stored header and empty body. The
+  // remaining body is appended after receiving the actual response from the
+  // network.
+  bool MaybeStartSyntheticNetworkRequest(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  void OnReceiveResponseFromSyntheticNetworkRequest(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body);
+
+  void OnCompleteSyntheticNetworkRequest(
+      const network::URLLoaderCompletionStatus& status);
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
+  int32_t request_id_ = 0;
+  uint32_t options_ = 0;
   network::ResourceRequest resource_request_;
+  net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-  const FrameTreeNodeId frame_tree_node_id_;
 
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   std::unique_ptr<ServiceWorkerCacheStorageMatcher> cache_matcher_;
@@ -299,6 +325,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   std::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
       forwarded_race_network_request_url_loader_factory_;
 
+  std::optional<ServiceWorkerSyntheticResponseManager>
+      synthetic_response_manager_;
+
   base::TimeTicks find_registration_start_time_;
 
   // FetchEvent.clientId
@@ -306,6 +335,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   const std::string fetch_event_client_id_;
 
   bool has_fetch_event_finished_ = false;
+
+  bool is_synthetic_response_used_ = false;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };

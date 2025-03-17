@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 
 #include <windows.h>
-
 #include <winternl.h>
 
 #include <algorithm>
 
 #include "base/bit_cast.h"
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,10 +44,10 @@ namespace {
 // QuerySystemProcessInformation.
 class ByteBuffer {
  public:
-  explicit ByteBuffer(size_t capacity)
-      : size_(0), capacity_(0) {
-    if (capacity > 0)
+  explicit ByteBuffer(size_t capacity) {
+    if (capacity > 0) {
       grow(capacity);
+    }
   }
 
   ByteBuffer(const ByteBuffer&) = delete;
@@ -60,27 +55,25 @@ class ByteBuffer {
 
   ~ByteBuffer() = default;
 
-  BYTE* data() { return data_.get(); }
+  base::span<BYTE> span() { return data_.as_span(); }
 
-  size_t size() { return size_; }
+  base::span<const BYTE> data_span() const { return data_.first(size_); }
 
   void set_size(size_t new_size) {
-    DCHECK_LE(new_size, capacity_);
+    DCHECK_LE(new_size, data_.size());
     size_ = new_size;
   }
 
-  size_t capacity() { return capacity_; }
-
   void grow(size_t new_capacity) {
-    DCHECK_GT(new_capacity, capacity_);
-    capacity_ = new_capacity;
-    data_.reset(new BYTE[new_capacity]);
+    DCHECK_GT(new_capacity, data_.size());
+    auto new_data = base::HeapArray<BYTE>::Uninit(new_capacity);
+    new_data.copy_prefix_from(span());
+    data_ = std::move(new_data);
   }
 
  private:
-  std::unique_ptr<BYTE[]> data_;
-  size_t size_;
-  size_t capacity_;
+  base::HeapArray<BYTE> data_;
+  size_t size_ = 0;
 };
 
 // Wrapper for NtQuerySystemProcessInformation with buffer reallocation logic.
@@ -103,16 +96,16 @@ bool QuerySystemProcessInformation(ByteBuffer* buffer) {
   // processes being created. Try a few times before giving up.
   for (int i = 0; i < 10; i++) {
     ULONG data_size = 0;
-    ULONG buffer_size = static_cast<ULONG>(buffer->capacity());
+    base::span<BYTE> span = buffer->span();
+    const ULONG buffer_size = static_cast<ULONG>(span.size());
 
     if (g_query_system_information_for_test) {
-      data_size = g_query_system_information_for_test(  // IN-TEST
-          base::span(buffer->data(), buffer_size));
+      data_size = g_query_system_information_for_test(span);  // IN-TEST
       result =
           (data_size > buffer_size) ? STATUS_BUFFER_TOO_SMALL : STATUS_SUCCESS;
     } else {
       result = nt_query_system_information_ptr(
-          SystemProcessInformation, buffer->data(), buffer_size, &data_size);
+          SystemProcessInformation, span.data(), buffer_size, &data_size);
     }
 
     if (result == STATUS_SUCCESS) {
@@ -138,7 +131,9 @@ bool QuerySystemProcessInformation(ByteBuffer* buffer) {
 // Per-thread data extracted from SYSTEM_THREAD_INFORMATION and stored in a
 // snapshot. This structure is accessed only on the worker thread.
 struct ThreadData {
-  base::PlatformThreadId thread_id;
+  // Don't use base::PlatformThreadId for thread id, because
+  // SYSTEM_THREAD_INFORMATION uses a HANDLE for the utid.
+  HANDLE thread_id;
   ULONG context_switches;
 };
 
@@ -356,7 +351,7 @@ std::vector<base::FilePath> SharedSampler::GetSupportedImageNames() {
 }
 
 bool SharedSampler::IsSupportedImageName(
-    base::FilePath::StringPieceType image_name) const {
+    base::FilePath::StringViewType image_name) const {
   for (const base::FilePath& supported_name : supported_image_names_) {
     if (base::FilePath::CompareEqualIgnoreCase(image_name,
                                                supported_name.value()))
@@ -374,26 +369,29 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
   // QuerySystemProcessInformation will grow the buffer if necessary.
   ByteBuffer data_buffer(previous_buffer_size_);
 
-  if (!QuerySystemProcessInformation(&data_buffer))
+  if (!QuerySystemProcessInformation(&data_buffer)) {
     return nullptr;
+  }
 
-  previous_buffer_size_ = data_buffer.capacity();
+  previous_buffer_size_ = data_buffer.span().size();
 
   std::unique_ptr<ProcessDataSnapshot> snapshot(new ProcessDataSnapshot);
   snapshot->timestamp = base::TimeTicks::Now();
 
-  for (size_t offset = 0; offset < data_buffer.size(); ) {
-    const auto* pi = reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*>(
-        data_buffer.data() + offset);
-
-    // Validate that the offset is valid and all needed data is within
-    // the buffer boundary.
-    if (offset + sizeof(SYSTEM_PROCESS_INFORMATION) > data_buffer.size())
+  base::span<const BYTE> data_span = data_buffer.data_span();
+  for (size_t offset = 0; offset < data_span.size();) {
+    // Validate the offset is valid.
+    if (offset + sizeof(SYSTEM_PROCESS_INFORMATION) > data_span.size()) {
       break;
+    }
+
+    // Validate all needed data is within the buffer boundary.
+    const auto* pi = reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*>(
+        data_span.subspan(offset).data());
     if (pi->NumberOfThreads > 0 &&
         (offset + sizeof(SYSTEM_PROCESS_INFORMATION) +
              (pi->NumberOfThreads - 1) * sizeof(SYSTEM_THREAD_INFORMATION) >
-         data_buffer.size())) {
+         data_span.size())) {
       break;
     }
 
@@ -401,9 +399,10 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
       // Validate that the image name is within the buffer boundary.
       // ImageName.Length seems to be in bytes rather than characters.
       ULONG image_name_offset =
-          reinterpret_cast<BYTE*>(pi->ImageName.Buffer) - data_buffer.data();
-      if (image_name_offset + pi->ImageName.Length > data_buffer.size())
+          reinterpret_cast<BYTE*>(pi->ImageName.Buffer) - data_span.data();
+      if (image_name_offset + pi->ImageName.Length > data_span.size()) {
         break;
+      }
 
       // Check if this is a chrome process. Ignore all other processes.
       if (IsSupportedImageName(pi->ImageName.Buffer)) {
@@ -423,16 +422,18 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
 
         // Iterate over threads and store each thread's ID and number of context
         // switches.
-        for (ULONG thread_index = 0; thread_index < pi->NumberOfThreads;
-             ++thread_index) {
-          const SYSTEM_THREAD_INFORMATION* ti = &pi->Threads[thread_index];
-          if (ti->ClientId.UniqueProcess != pi->ProcessId)
+        // SAFETY: Already validated `data_span` has room for this many threads
+        // above.
+        auto threads_span =
+            UNSAFE_BUFFERS(base::span(pi->Threads, pi->NumberOfThreads));
+        for (const SYSTEM_THREAD_INFORMATION& thread : threads_span) {
+          if (thread.ClientId.UniqueProcess != pi->ProcessId) {
             continue;
+          }
 
           ThreadData thread_data;
-          thread_data.thread_id = static_cast<base::PlatformThreadId>(
-              reinterpret_cast<uintptr_t>(ti->ClientId.UniqueThread));
-          thread_data.context_switches = ti->ContextSwitchCount;
+          thread_data.thread_id = thread.ClientId.UniqueThread;
+          thread_data.context_switches = thread.ContextSwitchCount;
           process_data.threads.push_back(thread_data);
         }
 
@@ -451,8 +452,9 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
     }
 
     // Check for end of the list.
-    if (!pi->NextEntryOffset)
+    if (!pi->NextEntryOffset) {
       break;
+    }
 
     // Jump to the next entry.
     offset += pi->NextEntryOffset;

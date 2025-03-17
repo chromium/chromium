@@ -30,12 +30,31 @@ mojom("mojom") {
           mojom = "ip_protection.mojom.GeoHint"
           cpp = "::ip_protection::GeoHint"
         },
+        {
+          mojom = "ip_protection.mojom.TryGetProbabilisticRevealTokensStatus"
+          cpp = "::ip_protection::TryGetProbabilisticRevealTokensStatus"
+        },
+        {
+          mojom = "ip_protection.mojom.TryGetProbabilisticRevealTokensResult"
+          cpp = "::ip_protection::TryGetProbabilisticRevealTokensResult"
+        },
+        {
+          mojom = "ip_protection.mojom.ProbabilisticRevealToken"
+          cpp = "::ip_protection::ProbabilisticRevealToken"
+        },
+        {
+          mojom = "ip_protection.mojom.TryGetProbabilisticRevealTokensOutcome"
+          cpp = "::ip_protection::TryGetProbabilisticRevealTokensOutcome"
+        },
       ]
       traits_headers =
           [ "//components/ip_protection/mojom/data_types_mojom_traits.h" ]
       traits_sources =
           [ "//components/ip_protection/mojom/data_types_mojom_traits.cc" ]
-      traits_public_deps = [ "//mojo/public/cpp/base" ]
+      traits_public_deps = [
+        "//components/ip_protection/common:ip_protection_data_types",
+        "//mojo/public/cpp/base",
+      ]
     },
   ]
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "extensions/browser/extension_user_script_loader.h"
 
 #include <stddef.h>
@@ -16,6 +21,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -128,9 +134,9 @@ void VerifyContent(ContentVerifier* verifier,
       extension_id, extension_root, relative_path, verifier));
   CHECK(job);
   if (content) {
-    job->BytesRead(content->data(), content->size(), MOJO_RESULT_OK);
+    job->BytesRead(*content, MOJO_RESULT_OK);
   } else {
-    job->BytesRead("", 0u, MOJO_RESULT_NOT_FOUND);
+    job->BytesRead({}, MOJO_RESULT_NOT_FOUND);
   }
   job->DoneReading();
 }
@@ -195,16 +201,18 @@ void LoadScriptContent(const mojom::HostID& host_id,
                   script_file->relative_path(), content);
   }
 
-  if (!content)
+  if (!content) {
     return;
+  }
 
   // Localize the content.
   if (localization_messages) {
     std::string error;
     MessageBundle::ReplaceMessagesWithExternalDictionary(*localization_messages,
                                                          &*content, &error);
-    if (!error.empty())
+    if (!error.empty()) {
       LOG(WARNING) << "Failed to replace messages in script: " << error;
+    }
   }
 
   // Remove BOM from the content.
@@ -220,12 +228,14 @@ void FillScriptFileResourceIds(const UserScript::ContentList& script_files,
                                ScriptResourceIds& script_resource_ids) {
   const ComponentExtensionResourceManager* extension_resource_manager =
       ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
-  if (!extension_resource_manager)
+  if (!extension_resource_manager) {
     return;
+  }
 
   for (const std::unique_ptr<UserScript::Content>& script_file : script_files) {
-    if (!script_file->GetContent().empty())
+    if (!script_file->GetContent().empty()) {
       continue;
+    }
     int resource_id = 0;
     if (extension_resource_manager->IsComponentExtensionResource(
             script_file->extension_root(), script_file->relative_path(),
@@ -278,8 +288,9 @@ void LoadUserScripts(
   for (const std::unique_ptr<UserScript>& script : *user_scripts) {
     size_t script_files_length = 0u;
 
-    if (added_script_ids.count(script->id()) == 0)
+    if (added_script_ids.count(script->id()) == 0) {
       continue;
+    }
     for (const std::unique_ptr<UserScript::Content>& script_file :
          script->js_scripts()) {
       if (script_file->GetContent().empty()) {
@@ -802,14 +813,16 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::GetDynamicScripts(
 void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
     const UserScriptList& scripts,
     const std::set<std::string>& persistent_dynamic_script_ids) {
-  if (!state_store_)
+  if (!state_store_) {
     return;
+  }
 
   base::Value::List scripts_value;
   URLPatternSet persistent_patterns;
   for (const std::unique_ptr<UserScript>& script : scripts) {
-    if (!base::Contains(persistent_dynamic_script_ids, script->id()))
+    if (!base::Contains(persistent_dynamic_script_ids, script->id())) {
       continue;
+    }
 
     base::Value::Dict value =
         script_serialization::SerializeUserScript(*script).ToValue();
@@ -860,8 +873,9 @@ void ExtensionUserScriptLoader::LoadScripts(
 
   ScriptResourceIds script_resource_ids;
   for (const std::unique_ptr<UserScript>& script : user_scripts) {
-    if (!base::Contains(added_script_ids, script->id()))
+    if (!base::Contains(added_script_ids, script->id())) {
       continue;
+    }
     FillScriptFileResourceIds(script->js_scripts(), script_resource_ids);
     FillScriptFileResourceIds(script->css_scripts(), script_resource_ids);
   }

@@ -11,6 +11,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -38,12 +39,19 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.MotionEvents;
+import androidx.test.espresso.action.Press;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -78,7 +86,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtilsJni;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
-import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -534,7 +541,7 @@ public class SigninFirstRunFragmentTest {
                                 R.string.sync_promo_continue_as,
                                 TestAccounts.ACCOUNT1.getGivenName());
 
-        onView(withText(continueAsText)).perform(click());
+        onView(withText(continueAsText)).perform(new SimpleTap());
         // ToS should be accepted right away, without waiting for the sign-in to complete.
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
 
@@ -662,7 +669,7 @@ public class SigninFirstRunFragmentTest {
                                 R.string.sync_promo_continue_as,
                                 TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail());
 
-        ViewUtils.onViewWaiting(withText(continueAsText)).perform(click());
+        ViewUtils.onViewWaiting(withText(continueAsText)).perform(new SimpleTap());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -702,7 +709,7 @@ public class SigninFirstRunFragmentTest {
                         .getString(
                                 R.string.sync_promo_continue_as,
                                 targetPrimaryAccount.getGivenName());
-        onView(withText(continueAsText)).perform(click());
+        onView(withText(continueAsText)).perform(new SimpleTap());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         CriteriaHelper.pollUiThread(
@@ -764,7 +771,7 @@ public class SigninFirstRunFragmentTest {
                 primaryAccount.getEmail());
         launchActivityWithFragment();
 
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        onView(withText(R.string.signin_fre_dismiss_button)).perform(new SimpleTap());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -799,7 +806,7 @@ public class SigninFirstRunFragmentTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "Flaky, crbug.com/358148764")
-    public void testContinueButtonWithChildAccount_replaceSyncWithSigninPromosEnabled() {
+    public void testContinueButtonWithChildAccount() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -825,12 +832,18 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void testSignInDisabledOnAutomotive() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
 
         ViewUtils.waitForVisibleView(withText(R.string.continue_button));
         onView(withId(R.id.signin_fre_continue_button))
                 .check(matches(withText(R.string.continue_button)));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+
+        onView(allOf(withId(R.id.title), withText(R.string.fre_welcome)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle))).check(matches(not(isDisplayed())));
+        onView(withText(TestAccounts.ACCOUNT1.getEmail())).check(doesNotExist());
     }
 
     @Test
@@ -839,8 +852,7 @@ public class SigninFirstRunFragmentTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "Flaky, crbug.com/358148764")
-    public void
-            testContinueButtonWithChildAccountWithNonDisplayableAccountEmail_replaceSyncWithSigninPromosEnabled() {
+    public void testContinueButtonWithChildAccountWithNonDisplayableAccountEmail() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -869,7 +881,7 @@ public class SigninFirstRunFragmentTest {
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "Flaky, crbug.com/358148764")
     public void
-            testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName_replaceSyncPromosWithSigninPromosEnabled() {
+            testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1300,7 +1312,8 @@ public class SigninFirstRunFragmentTest {
         when(mFirstRunUtils.getCctTosDialogEnabled()).thenReturn(false);
         launchActivityWithFragment();
 
-        // Detach the current fragment. Needs to be done before the PolicyLoadListener callback
+        // Detach the current fragment. Needs to be done before the PolicyLoadListener
+        // callback
         // otherwise this test is racy.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1564,7 +1577,37 @@ public class SigninFirstRunFragmentTest {
     }
 
     private void clickContinueButton(String continueAsText) {
-        onView(withText(continueAsText)).perform(click());
+        onView(withText(continueAsText)).perform(new SimpleTap());
         SigninTestUtil.completeAutoDeviceLockForFirstRunIfNeeded(mFragment);
+    }
+
+    // A tap is the combination of two motions: pressing down and moving up. Espresso starts a timer
+    // and waits for the app to idle to determine if a tap is a short or long press.
+    // Sometimes the wait hangs and causes an AppNotIdleException to be thrown, even if the tap was
+    // performed correctly (see http://crbug.com/358148764). We get around this by implementing a
+    // simple tap action without the timer and wait.
+    private static final class SimpleTap implements ViewAction {
+
+        @Override
+        public String getDescription() {
+            return "A simple tap comprised of a down motion followed by an up motion.";
+        }
+
+        @Override
+        public Matcher<View> getConstraints() {
+            // This is the visibility percentage used in GeneralClickAction.
+            return isDisplayingAtLeast(90);
+        }
+
+        @Override
+        public void perform(UiController uiController, View view) {
+            MotionEvent downEvent =
+                    MotionEvents.sendDown(
+                                    uiController,
+                                    GeneralLocation.CENTER.calculateCoordinates(view),
+                                    Press.FINGER.describePrecision())
+                            .down;
+            MotionEvents.sendUp(uiController, downEvent);
+        }
     }
 }

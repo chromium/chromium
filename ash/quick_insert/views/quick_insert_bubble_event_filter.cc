@@ -38,8 +38,8 @@ bool QuickInsertBubbleEventFilter::ShouldRunOnClickOutsideCallback(
 
   // Perform a hit-test for every child widget of `widget_` (which includes
   // itself).
-  views::Widget::Widgets widgets;
-  views::Widget::GetAllChildWidgets(widget_->GetNativeView(), &widgets);
+  views::Widget::Widgets widgets =
+      views::Widget::GetAllChildWidgets(widget_->GetNativeView());
   for (views::Widget* child : widgets) {
     // Ignore clicks inside the bubble widget.
     if (child->GetWindowBoundsInScreen().Contains(event_location)) {

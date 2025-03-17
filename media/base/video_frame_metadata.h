@@ -134,11 +134,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // Indicates that the frame has a rotation and/or flip.
   std::optional<VideoTransformation> transformation;
 
-  // Android only: if set, then this frame is not suitable for overlay, even
-  // if ALLOW_OVERLAY is set.  However, it allows us to process the overlay
-  // to see if it would have been promoted, if it were backed by a SurfaceView
-  // instead.  This lets us figure out when SurfaceViews are appropriate.
-  bool texture_owner = false;
+  // Android only: For legacy overlays (SurfaceView/Dialog based) this is
+  // required for the frame to be suitable for overlays, even if `allow_overlay`
+  // is set. if `allow_overlay` is set, but `in_surface_view` is not Display
+  // Compositor will process frame and generate appropriate overlay promotion
+  // hints, but will still composite video.
+  bool in_surface_view = false;
 
   // Android & Windows only: if set, then this frame's resource would like to
   // be notified about its promotability to an overlay.
@@ -228,11 +229,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // information.
   std::optional<int> maximum_composition_delay_in_frames;
 
-  // Identifies a BeginFrameArgs (along with the source_id).
+  // Identifies a BeginFrameArgs
   // See comments in components/viz/common/frame_sinks/begin_frame_args.h.
   //
   // Only set for video frames produced by the frame sink video capturer.
   std::optional<uint64_t> frame_sequence;
+  std::optional<uint64_t> source_id;
 
   // Information about any background blur effect applied to the frame.
   std::optional<EffectInfo> background_blur;

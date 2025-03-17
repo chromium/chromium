@@ -156,7 +156,7 @@ class UrlHidingInterstitialPage
 class UrlHidingWebContentsObserver : public content::WebContentsObserver {
  public:
   explicit UrlHidingWebContentsObserver(content::WebContents* contents)
-      : content::WebContentsObserver(contents), install_interstitial_(true) {}
+      : content::WebContentsObserver(contents) {}
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
     if (!install_interstitial_) {
@@ -172,7 +172,7 @@ class UrlHidingWebContentsObserver : public content::WebContentsObserver {
   void StopBlocking() { install_interstitial_ = false; }
 
  private:
-  bool install_interstitial_;
+  bool install_interstitial_ = true;
 };
 
 }  // namespace
@@ -709,8 +709,9 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
 
-  content::TestNavigationObserver nav_observer(web_contents,
-                                               /*number_of_navigations=*/1);
+  content::TestNavigationObserver nav_observer(
+      web_contents,
+      /*expected_number_of_navigations=*/1);
   std::string script =
       "window.open("
       "    URL.createObjectURL("

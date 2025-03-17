@@ -6,6 +6,7 @@
 
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/playlist_common.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -80,7 +81,10 @@ ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
           break;
         case TagKind::kMediaPlaylistTag:
           if (playlist_kind == Kind::kMultivariantPlaylist) {
-            return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+            if (!HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
+              return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+            }
+            break;
           }
           playlist_kind = Kind::kMediaPlaylist;
           break;

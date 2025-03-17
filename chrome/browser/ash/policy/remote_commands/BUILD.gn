@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("remote_commands") {
   sources = [
@@ -52,7 +52,6 @@ static_library("remote_commands") {
 
   deps = [
     "//ash",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/strings",
@@ -75,6 +74,7 @@ static_library("remote_commands") {
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/components/kiosk",
@@ -154,9 +154,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -193,6 +190,9 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/ash/services/network_config:in_process_instance",
@@ -240,6 +240,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/login/test:test_support",

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property hyphenate-limit-chars value 'auto 2 2'
+  assert_equals: expected "auto 2" but got "auto 2 2"
+[FAIL] Property hyphenate-limit-chars value 'auto 2 auto'
+  assert_equals: expected "auto 2 auto" but got "auto 2"
+Harness: the test ran to completion.
+

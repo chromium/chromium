@@ -34,7 +34,6 @@ class PaintPropertyTreeBuilderTest : public PaintControllerPaintTest {
       const Document* = nullptr);
   const ClipPaintPropertyNode* DocContentClip(const Document* = nullptr);
   const ScrollPaintPropertyNode* DocScroll(const Document* = nullptr);
-  const EffectPaintPropertyNode* DocEffect(const Document* = nullptr);
 
   // Return the local border box's paint offset. For more details, see
   // ObjectPaintProperties::localBorderBoxProperties().

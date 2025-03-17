@@ -4,17 +4,14 @@
 
 #include "chrome/browser/ui/webauthn/passkey_updated_confirmation_controller.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
-#include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 

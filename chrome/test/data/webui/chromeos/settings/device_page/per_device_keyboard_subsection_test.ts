@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CrLinkRowElement, FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, Keyboard, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -84,7 +86,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#externalTopRowAreFunctionKeysButton');
     assert(externalTopRowAreFunctionKeysButton);
-    externalTopRowAreFunctionKeysButton!.click();
+    externalTopRowAreFunctionKeysButton.click();
     await flushTasks();
     let updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
@@ -471,18 +473,18 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     const secondAdjustedBrightness = 20.5;
 
     // Verify initial brightness is set correctly when observer is registered.
-    assertEquals(initialBrightness, slider.pref!.value);
+    assertEquals(initialBrightness, slider.pref.value);
 
     // Simulate a keyboard brightness change and verify the slider updates
     // accordingly.
     provider.sendKeyboardBrightnessChange(firstAdjustedBrightness);
     await flushTasks();
-    assertEquals(firstAdjustedBrightness, slider.pref!.value);
+    assertEquals(firstAdjustedBrightness, slider.pref.value);
 
     // Simulate another keyboard brightness change.
     provider.sendKeyboardBrightnessChange(secondAdjustedBrightness);
     await flushTasks();
-    assertEquals(secondAdjustedBrightness, slider.pref!.value);
+    assertEquals(secondAdjustedBrightness, slider.pref.value);
   });
 
   test('observe keyboard ambient light sensor enabled change', async () => {

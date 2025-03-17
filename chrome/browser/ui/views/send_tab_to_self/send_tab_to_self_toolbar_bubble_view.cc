@@ -8,14 +8,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,7 +57,6 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback)
     : views::BubbleDialogDelegateView(parent, views::BubbleBorder::TOP_RIGHT),
-      toolbar_button_(parent),
       navigate_callback_(std::move(navigate_callback)),
       browser_(browser),
       title_(entry.GetTitle()),
@@ -155,14 +153,10 @@ void SendTabToSelfToolbarBubbleView::Hide() {
   send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
       ->GetToolbarButtonControllerForProfile(browser_->profile())
       ->DismissEntries(std::vector<std::string>({guid_}));
-  if (features::IsToolbarPinningEnabled()) {
-    auto* container = BrowserView::GetBrowserViewForBrowser(browser_)
-                          ->toolbar()
-                          ->pinned_toolbar_actions_container();
-    container->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, false);
-  } else {
-    toolbar_button_->SetVisible(false);
-  }
+  auto* container = BrowserView::GetBrowserViewForBrowser(browser_)
+                        ->toolbar()
+                        ->pinned_toolbar_actions_container();
+  container->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, false);
 }
 
 void SendTabToSelfToolbarBubbleView::ReplaceEntry(

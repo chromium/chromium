@@ -81,7 +81,8 @@ TEST_F(InlineTextAutoSpaceTest, InsertSpacing) {
   inline_node.PrepareLayoutIfNeeded();
 
   Vector<CharacterRange> final_ranges;
-  for (const InlineItem& item : node_data->items) {
+  for (const Member<InlineItem>& item_ptr : node_data->items) {
+    const InlineItem& item = *item_ptr;
     const auto* shape_result = item.TextShapeResult();
     Vector<CharacterRange> ranges;
     shape_result->IndividualCharacterRanges(&ranges);

@@ -491,7 +491,7 @@ TEST(TaskSchedulerTest, NoSubfolders) {
   ASSERT_TRUE(task_scheduler);
 
   constexpr int kNumTasks = 6;
-  const std::wstring kTaskNamePrefix(base::ASCIIToWide(test::GetTestName()));
+  const std::wstring kTaskNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumTasks; ++count) {
     std::wstring task_name(kTaskNamePrefix);
@@ -513,7 +513,7 @@ TEST(TaskSchedulerTest, ForEachTaskWithPrefix) {
     ASSERT_TRUE(task_scheduler);
 
     constexpr int kNumTasks = 6;
-    const std::wstring kTaskNamePrefix(base::ASCIIToWide(test::GetTestName()));
+    const std::wstring kTaskNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
     for (int count = 0; count < kNumTasks; ++count) {
       std::wstring task_name(kTaskNamePrefix);

@@ -5,10 +5,9 @@
 import("//ash/webui/help_app_ui/help_app_ui.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Help App is ash-chrome only")
+assert(is_chromeos, "Help App is ChromeOS only")
 
 static_library("help_app_ui") {
   sources = [

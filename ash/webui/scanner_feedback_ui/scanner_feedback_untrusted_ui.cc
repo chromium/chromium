@@ -26,6 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -93,7 +94,12 @@ bool ShouldHandleRequest(base::WeakPtr<content::BrowserContext> browser_context,
   ScannerFeedbackInfo* feedback_info =
       GetScannerFeedbackInfoForBrowserContext(*browser_context, *id);
 
-  return feedback_info != nullptr;
+  if (feedback_info == nullptr) {
+    return false;
+  }
+
+  // Do not handle requests for feedback info without a screenshot.
+  return feedback_info->screenshot != nullptr;
 }
 
 // Handles the given request and returns the screenshot to the
@@ -131,7 +137,7 @@ ScannerFeedbackUntrustedUIConfig::~ScannerFeedbackUntrustedUIConfig() = default;
 
 bool ScannerFeedbackUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::IsScannerEnabled();
+  return features::IsScannerEnabled() || features::IsCoralFeatureEnabled();
 }
 
 ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
@@ -178,6 +184,21 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src-elem 'self' theme;");
+  untrusted_source->AddLocalizedStrings(
+      {{"linkAriaLabel", IDS_MAKO_FEEDBACK_LINK_ARIA_LABEL},
+       {"title", IDS_MAKO_FEEDBACK_TITLE},
+       {"subtitle", IDS_MAKO_FEEDBACK_SUBTITLE},
+       {"question", IDS_MAKO_FEEDBACK_QUESTION},
+       {"questionPlaceholder", IDS_MAKO_FEEDBACK_QUESTION_PLACEHOLDER},
+       {"offensiveOrUnsafe", IDS_MAKO_FEEDBACK_OFFENSIVE_OR_UNSAFE},
+       {"factuallyIncorrect", IDS_MAKO_FEEDBACK_FACTUALLY_INCORRECT},
+       {"legalIssue", IDS_MAKO_FEEDBACK_LEGAL_ISSUE},
+       {"feedbackDisclaimer", IDS_MAKO_FEEDBACK_FEEDBACK_DISCLAIMER},
+       {"privacyPolicy", IDS_MAKO_FEEDBACK_PRIVACY_POLICY},
+       {"termsOfService", IDS_MAKO_FEEDBACK_TERMS_OF_SERVICE},
+       {"cancel", IDS_MAKO_FEEDBACK_CANCEL},
+       {"send", IDS_MAKO_FEEDBACK_SEND}});
+  untrusted_source->UseStringsJs();
 
   untrusted_source->SetRequestFilter(
       base::BindRepeating(&ShouldHandleRequest, browser_context->GetWeakPtr()),

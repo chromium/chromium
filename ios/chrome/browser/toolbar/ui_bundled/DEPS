@@ -1,5 +1,9 @@
 include_rules = [
+  "+components/collaboration/public",
+  "+ios/chrome/browser/banner_promo/model",
+  "+ios/chrome/browser/collaboration/model/messaging",
   "+ios/chrome/browser/contextual_panel/model",
+  "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/first_run/model/first_run.h",
   "+ios/chrome/browser/infobars/model/infobar_manager_impl.h",
@@ -11,8 +15,9 @@ include_rules = [
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled",
-  "+ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h",
+  "+ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h",
   "+ios/chrome/browser/omnibox/ui_bundled",
+  "+ios/chrome/browser/omnibox/public",
   "+ios/chrome/browser/orchestrator/ui_bundled",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/policy/model/policy_util.h",
@@ -23,9 +28,16 @@ include_rules = [
   "+ios/chrome/browser/share_kit/model",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h",
-  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/ui/popup_menu/public",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
 ];
+
+specific_include_rules = {
+  ".*_unittest.mm" : [
+    "+components/collaboration/test_support",
+    "+components/data_sharing/public",
+  ]
+}

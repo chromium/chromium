@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
 
@@ -17,6 +18,7 @@ import java.util.Set;
 
 /** Checks whether hasEnrolledInstrument() can be queried. */
 @JNINamespace("payments")
+@NullMarked
 public class HasEnrolledInstrumentQuery {
     /**
      * Checks whether the given hasEnrolledInstrument() query is allowed.

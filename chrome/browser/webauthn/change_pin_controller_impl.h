@@ -107,7 +107,6 @@ class ChangePinControllerImpl
   void Reset(bool success);
   void NotifyPinAvailability(PinAvailableCallback callback);
 
-  const bool enclave_enabled_;
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   SuccessCallback notify_pin_change_callback_;
   // EnclaveManager is a KeyedService.

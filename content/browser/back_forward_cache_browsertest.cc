@@ -72,6 +72,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
@@ -183,10 +184,10 @@ BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
     // As above but `LocalMainFrameHost::DidFirstVisuallyNonEmptyPaint()`.
     std::erase_if(samples, [](base::Bucket bucket) {
       return bucket.min ==
-                 static_cast<base::HistogramBase::Sample>(base::HashMetricName(
+                 static_cast<base::HistogramBase::Sample32>(base::HashMetricName(
                      blink::mojom::LocalFrameHost::Name_)) ||
              bucket.min ==
-                 static_cast<base::HistogramBase::Sample>(base::HashMetricName(
+                 static_cast<base::HistogramBase::Sample32>(base::HashMetricName(
                      blink::mojom::LocalMainFrameHost::Name_));
     });
 
@@ -319,7 +320,7 @@ std::string BackForwardCacheBrowserTest::DepictFrameTree(FrameTreeNode* node) {
 }
 
 bool BackForwardCacheBrowserTest::HistogramContainsIntValue(
-    base::HistogramBase::Sample sample,
+    base::HistogramBase::Sample32 sample,
     std::vector<base::Bucket> histogram_values) {
   return base::Contains(histogram_values, static_cast<int>(sample),
                         &base::Bucket::min);
@@ -893,8 +894,9 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        root->navigator().BeforeUnloadCompleted(root, true /* proceed */,
-                                                base::TimeTicks::Now());
+        root->navigator().BeforeUnloadCompleted(
+            root, /*proceed=*/true, base::TimeTicks::Now(),
+            /*for_legacy=*/false, /*showed_dialog=*/false);
       }));
 
   // 7) Evict entry B. This will post a task (task #3) to restart the navigation
@@ -2808,12 +2810,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
-  std::vector<BackForwardCacheMetrics::NotRestoredReason>
+  BackForwardCacheCanStoreDocumentResult::NotRestoredReasons
       expected_blocking_reasons;
   std::vector<blink::scheduler::WebSchedulerTrackedFeature>
       expected_blocklisted_reason;
   if (IsUnloadBlocklisted()) {
-    expected_blocking_reasons.push_back(
+    expected_blocking_reasons.Put(
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
     expected_blocklisted_reason.push_back(
         blink::scheduler::WebSchedulerTrackedFeature::kUnloadHandler);
@@ -2821,15 +2823,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   switch (GetTestFrameType()) {
     case content::TestFrameType::kMainFrame:
       InstallUnloadHandlerOnMainFrame();
-      expected_blocking_reasons.push_back(
-          BackForwardCacheMetrics::NotRestoredReason::
-              kUnloadHandlerExistsInMainFrame);
+      expected_blocking_reasons.Put(BackForwardCacheMetrics::NotRestoredReason::
+                                        kUnloadHandlerExistsInMainFrame);
       break;
     case content::TestFrameType::kSubFrame:
       InstallUnloadHandlerOnSubFrame();
-      expected_blocking_reasons.push_back(
-          BackForwardCacheMetrics::NotRestoredReason::
-              kUnloadHandlerExistsInSubFrame);
+      expected_blocking_reasons.Put(BackForwardCacheMetrics::NotRestoredReason::
+                                        kUnloadHandlerExistsInSubFrame);
       break;
     default:
       NOTREACHED();
@@ -2843,7 +2843,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
 
   bool unload_never_blocks = IsUnloadAllowed();
   bool unload_deprecated_and_not_opted_out =
-      (base::FeatureList::IsEnabled(blink::features::kDeprecateUnload) &&
+      (base::FeatureList::IsEnabled(network::features::kDeprecateUnload) &&
        !IsUnloadDeprecationOptedOut());
   if (unload_never_blocks || unload_deprecated_and_not_opted_out) {
     // Pages with unload handlers are eligible for bfcache only if it is

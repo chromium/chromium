@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
+
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -14,6 +15,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -57,32 +59,37 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
   AssistantOnboardingSuggestionView* suggestion_view_5 =
       CreateSuggestionViewAt(5, widget.get());
 
+  auto get_background_color([](const views::View* view) {
+    return view->GetBackground()->color().ConvertToSkColor(
+        view->GetColorProvider());
+  });
+
   // 0x19 is for 10% alpha. 255*0.1=25.5. -> 25 in hex is 0x19.
-  EXPECT_EQ(suggestion_view_0->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_0),
             SkColorSetA(gfx::kGoogleBlue600, 0x19));
   EXPECT_EQ(GetLabel(suggestion_view_0)->GetEnabledColor(),
             gfx::kGoogleBlue800);
 
-  EXPECT_EQ(suggestion_view_1->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_1),
             SkColorSetA(gfx::kGoogleRed600, 0x19));
   EXPECT_EQ(GetLabel(suggestion_view_1)->GetEnabledColor(), gfx::kGoogleRed800);
 
-  EXPECT_EQ(suggestion_view_2->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_2),
             SkColorSetA(gfx::kGoogleYellow600, 0x19));
   EXPECT_EQ(GetLabel(suggestion_view_2)->GetEnabledColor(),
             SkColorSetRGB(0xBF, 0x50, 0x00));
 
-  EXPECT_EQ(suggestion_view_3->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_3),
             SkColorSetA(gfx::kGoogleGreen600, 0x19));
   EXPECT_EQ(GetLabel(suggestion_view_3)->GetEnabledColor(),
             gfx::kGoogleGreen800);
 
-  EXPECT_EQ(suggestion_view_4->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_4),
             SkColorSetARGB(0x19, 0xc6, 0x1a, 0xd9));
   EXPECT_EQ(GetLabel(suggestion_view_4)->GetEnabledColor(),
             SkColorSetRGB(0xaa, 0x00, 0xb8));
 
-  EXPECT_EQ(suggestion_view_5->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_5),
             SkColorSetA(gfx::kGoogleBlue600, 0x19));
   EXPECT_EQ(GetLabel(suggestion_view_5)->GetEnabledColor(),
             gfx::kGoogleBlue800);
@@ -91,31 +98,31 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
   ASSERT_TRUE(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   // 0x4c is for 30% alpha. 255*0.3=76.5. 0x4c is 76 in hex.
-  EXPECT_EQ(suggestion_view_0->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_0),
             SkColorSetA(gfx::kGoogleBlue300, 0x4c));
   EXPECT_EQ(GetLabel(suggestion_view_0)->GetEnabledColor(),
             gfx::kGoogleBlue200);
 
-  EXPECT_EQ(suggestion_view_1->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_1),
             SkColorSetA(gfx::kGoogleRed300, 0x4c));
   EXPECT_EQ(GetLabel(suggestion_view_1)->GetEnabledColor(), gfx::kGoogleRed200);
 
-  EXPECT_EQ(suggestion_view_2->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_2),
             SkColorSetA(gfx::kGoogleYellow300, 0x4c));
   EXPECT_EQ(GetLabel(suggestion_view_2)->GetEnabledColor(),
             gfx::kGoogleYellow200);
 
-  EXPECT_EQ(suggestion_view_3->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_3),
             SkColorSetA(gfx::kGoogleGreen300, 0x4c));
   EXPECT_EQ(GetLabel(suggestion_view_3)->GetEnabledColor(),
             gfx::kGoogleGreen200);
 
-  EXPECT_EQ(suggestion_view_4->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_4),
             SkColorSetARGB(0x4c, 0xf8, 0x82, 0xff));
   EXPECT_EQ(GetLabel(suggestion_view_4)->GetEnabledColor(),
             SkColorSetRGB(0xf8, 0x82, 0xff));
 
-  EXPECT_EQ(suggestion_view_5->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(suggestion_view_5),
             SkColorSetA(gfx::kGoogleBlue300, 0x4c));
   EXPECT_EQ(GetLabel(suggestion_view_5)->GetEnabledColor(),
             gfx::kGoogleBlue200);

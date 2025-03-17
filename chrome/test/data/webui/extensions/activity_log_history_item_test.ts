@@ -66,7 +66,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     boundTestVisible('#activity-item-main-row', true);
     boundTestVisible('#page-url-list', false);
 
-    activityLogHistoryItem.shadowRoot!
+    activityLogHistoryItem.shadowRoot
         .querySelector<HTMLElement>('#activity-item-main-row')!.click();
     await microtasksFinished();
     boundTestVisible('#page-url-list', true);
@@ -87,7 +87,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
 
     activityLogHistoryItem.data = testActivityGroup;
     await microtasksFinished();
-    activityLogHistoryItem.shadowRoot!
+    activityLogHistoryItem.shadowRoot
         .querySelector<HTMLElement>('#activity-item-main-row')!.click();
 
     await microtasksFinished();
@@ -112,7 +112,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     };
     activityLogHistoryItem.data = testActivityGroup;
     await microtasksFinished();
-    activityLogHistoryItem.shadowRoot!
+    activityLogHistoryItem.shadowRoot
         .querySelector<HTMLElement>('#activity-item-main-row')!.click();
 
     await microtasksFinished();
@@ -122,23 +122,24 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     boundTestVisible('.page-url-count', true);
 
     const pageUrls =
-        activityLogHistoryItem.shadowRoot!.querySelectorAll('.page-url');
+        activityLogHistoryItem.shadowRoot.querySelectorAll('.page-url');
     assertEquals(pageUrls.length, 2);
 
     // Test the order of the page URLs and activity count for the activity
     // log item here. Apparently a space is added at the end of the innerText,
     // hence the use of .includes.
-    assertTrue(pageUrls[0]!.querySelector<HTMLElement>('.page-url-link')!
-                   .innerText!.includes('chrome://extensions'));
+    assertTrue(
+        pageUrls[0]!.querySelector<HTMLElement>('.page-url-link')!.innerText
+            .includes('chrome://extensions'));
     assertEquals(
-        pageUrls[0]!.querySelector<HTMLElement>('.page-url-count')!.innerText!,
+        pageUrls[0]!.querySelector<HTMLElement>('.page-url-count')!.innerText,
         '10');
 
     assertTrue(
         pageUrls[1]!.querySelector<HTMLElement>(
-                        '.page-url-link')!.innerText!.includes('google.com'));
+                        '.page-url-link')!.innerText.includes('google.com'));
     assertEquals(
-        pageUrls[1]!.querySelector<HTMLElement>('.page-url-count')!.innerText!,
+        pageUrls[1]!.querySelector<HTMLElement>('.page-url-count')!.innerText,
         '5');
   });
 });

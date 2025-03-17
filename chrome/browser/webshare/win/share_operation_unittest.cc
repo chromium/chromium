@@ -152,7 +152,7 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   blink::mojom::SharedFilePtr CreateSharedFile(
-      base::FilePath::StringPieceType name,
+      base::FilePath::StringViewType name,
       const std::string& content_type,
       const std::string& contents) {
     auto blob = blink::mojom::SerializedBlob::New();

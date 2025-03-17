@@ -34,10 +34,6 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
   SaveCardBubbleControllerImplTest& operator=(
       const SaveCardBubbleControllerImplTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DialogBrowserTest::SetUpCommandLine(command_line);
-  }
-
   LegalMessageLines GetTestLegalMessage() {
     std::optional<base::Value> value(base::JSONReader::Read(
         "{"

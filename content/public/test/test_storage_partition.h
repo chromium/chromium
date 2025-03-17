@@ -170,7 +170,7 @@ class TestStoragePartition : public StoragePartition {
   network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
       override;
 
-  void DeleteStaleSessionOnlyCookiesAfterDelay() override {}
+  void DeleteStaleSessionData() override {}
 
   void set_browsing_topics_site_data_manager(
       BrowsingTopicsSiteDataManager* manager) {

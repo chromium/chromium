@@ -4,8 +4,6 @@
 
 import("../build_webui_tests.gni")
 
-assert(!is_chromeos_lacros)
-
 build_webui_tests("build") {
   files = [
     "bluetooth_internals_test.js",

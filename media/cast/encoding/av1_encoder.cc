@@ -93,8 +93,9 @@ Av1Encoder::Av1Encoder(
 
 Av1Encoder::~Av1Encoder() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_initialized())
+  if (is_initialized()) {
     aom_codec_destroy(&encoder_);
+  }
 }
 
 void Av1Encoder::Initialize() {
@@ -118,8 +119,9 @@ void Av1Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
       config_.g_w = frame_size.width();
       config_.g_h = frame_size.height();
       config_.rc_min_quantizer = codec_params_->min_qp;
-      if (aom_codec_enc_config_set(&encoder_, &config_) == AOM_CODEC_OK)
+      if (aom_codec_enc_config_set(&encoder_, &config_) == AOM_CODEC_OK) {
         return;
+      }
       DVLOG(1) << "libaom rejected the attempt to use a smaller frame size in "
                   "the current instance.";
     }
@@ -208,8 +210,9 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // Initialize on-demand.  Later, if the video frame size has changed, update
   // the encoder configuration.
   const gfx::Size frame_size = video_frame->visible_rect().size();
-  if (!is_initialized() || gfx::Size(config_.g_w, config_.g_h) != frame_size)
+  if (!is_initialized() || gfx::Size(config_.g_w, config_.g_h) != frame_size) {
     ConfigureForNewFrameSize(frame_size);
+  }
 
   // Wrapper for aom_codec_encode() to access the YUV data in the |video_frame|.
   // Only the VISIBLE rectangle within |video_frame| is exposed to the codec.
@@ -383,12 +386,14 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
 void Av1Encoder::UpdateRates(uint32_t new_bitrate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!is_initialized())
+  if (!is_initialized()) {
     return;
+  }
 
   uint32_t new_bitrate_kbit = new_bitrate / 1000;
-  if (config_.rc_target_bitrate == new_bitrate_kbit)
+  if (config_.rc_target_bitrate == new_bitrate_kbit) {
     return;
+  }
 
   config_.rc_target_bitrate = bitrate_kbit_ = new_bitrate_kbit;
 

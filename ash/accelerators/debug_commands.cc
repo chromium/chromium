@@ -20,6 +20,7 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
@@ -337,8 +338,10 @@ void HandleShowSystemNudge() {
 }
 
 void HandleStartSunfishSession() {
-  if (IsSunfishAllowedAndEnabled() &&
+  if (CanShowSunfishOrScannerUi() &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut);
     CaptureModeController::Get()->StartSunfishSession();
   }
 }

@@ -6,7 +6,6 @@ package org.chromium.ui.modaldialog;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -39,10 +38,10 @@ public class SimpleModalDialogController implements ModalDialogProperties.Contro
         }
     }
 
-    @NullUnmarked
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
         Callback<Integer> action = mActionCallback;
+        assert action != null;
         mActionCallback = null;
         action.onResult(dismissalCause);
     }

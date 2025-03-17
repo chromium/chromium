@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -47,24 +49,14 @@ sync_pb::SavedTabGroupSpecifics CreateSavedTabGroupSpecific(base::Uuid guid,
   return pb_specific;
 }
 
-class SingleClientSavedTabGroupsSyncTest
-    : public SyncTest,
-      public ::testing::WithParamInterface<bool> {
+class SingleClientSavedTabGroupsSyncTest : public SyncTest {
  public:
-  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (IsV2UIEnabled()) {
-      features_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
-    } else {
-      features_.InitWithFeatures({}, {tab_groups::kTabGroupsSaveUIUpdate});
-    }
-  }
+  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientSavedTabGroupsSyncTest() override = default;
   SingleClientSavedTabGroupsSyncTest(
       const SingleClientSavedTabGroupsSyncTest&) = delete;
   SingleClientSavedTabGroupsSyncTest& operator=(
       const SingleClientSavedTabGroupsSyncTest&) = delete;
-
-  bool IsV2UIEnabled() const { return GetParam(); }
 
   void AddDataToFakeServer(const sync_pb::SavedTabGroupSpecifics& specifics) {
     sync_pb::EntitySpecifics group_entity_specifics;
@@ -119,7 +111,7 @@ class SingleClientSavedTabGroupsSyncTest
 
     const std::string& uuid_string = uuid.AsLowercaseString();
 
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         server_tabs_and_groups,
         [uuid_string](const sync_pb::SyncEntity entity) {
           return entity.specifics().saved_tab_group().guid() == uuid_string;
@@ -137,7 +129,7 @@ class SingleClientSavedTabGroupsSyncTest
 };
 
 // Save a group with two tabs and validate they are added to the model.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
                        DownloadsGroupAndTabs) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
@@ -172,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
 }
 
 // Save a group with no tabs and validate it is added to the model.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
                        DownloadsGroupWithNoTabs) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
@@ -204,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
 }
 
 // Save a tab with no group and validate it is added to the model.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
                        DownloadsTabWithNoGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
@@ -235,7 +227,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
 }
 
 // Add a tab to an existing group.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
@@ -277,7 +269,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
 }
 
 // Remove one tab from a group with two tabs.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
@@ -319,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
 }
 
 // Remove a saved group from the model.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
@@ -371,7 +363,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
 }
 
 // Update the metadata of a saved group already in the model.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
                        UpdateGroupMetadata) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                        /*urls=*/{},
@@ -406,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
 }
 
 // Update the URL and title of a saved tab already in the model.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                        /*urls=*/{},
                        /*position=*/0);
@@ -441,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
 }
 
 // Reorder groups already saved in the model.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                        /*urls=*/{},
                        /*position=*/0);
@@ -486,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
 }
 
 // Reorder tabs in a group.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {}, 0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
                         group1.saved_guid(), /*position=*/0);
@@ -528,48 +520,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
-                       V1BrowserWithV2Proto) {
-  if (IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V2";
-  }
-
-  auto guid1 = base::Uuid::GenerateRandomV4();
-  AddDataToFakeServer(CreateSavedTabGroupSpecific(guid1, /*ui_v2=*/true, 0));
-  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank", guid1,
-                        /*position=*/0);
-  AddTabToFakeServer(tab1);
-
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  TabGroupSyncService* service = GetService();
-
-  // Verify guid1 is added to the model.
-  ASSERT_TRUE(tab_groups::SavedTabOrGroupExistsChecker(service, guid1).Wait());
-
-  // Verify guid1 has position even the position in the proto is
-  // not set.
-  EXPECT_EQ(0, service->GetGroup(guid1)->position());
-
-  auto guid2 = base::Uuid::GenerateRandomV4();
-  AddDataToFakeServer(CreateSavedTabGroupSpecific(guid2, /*ui_v2=*/true, 1));
-  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank", guid2,
-                        /*position=*/0);
-  AddTabToFakeServer(tab2);
-
-  // Verify guid2 is added to the model.
-  ASSERT_TRUE(tab_groups::SavedTabOrGroupExistsChecker(service, guid2).Wait());
-
-  // Verify guid2 has position even the position in the proto is
-  // not set.
-  EXPECT_EQ(0, service->GetGroup(guid2)->position());
-}
-
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
                        V2BrowserWithV1Proto) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
   auto guid1 = base::Uuid::GenerateRandomV4();
   AddDataToFakeServer(CreateSavedTabGroupSpecific(guid1, /*ui_v2=*/false, 0));
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank", guid1,
@@ -598,13 +550,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
   EXPECT_EQ(std::nullopt, service->GetGroup(guid2)->position());
 }
 
-INSTANTIATE_TEST_SUITE_P(SavedTabGroup,
-                         SingleClientSavedTabGroupsSyncTest,
-                         testing::Bool());
-
 // On ChromeOS, Sync-the-feature gets started automatically once a primary
 // account is signed in and the transport mode is not a thing.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Subclass that enables an additional feature, namely
 // `syncer::kReplaceSyncPromosWithSignInPromos`.
@@ -622,7 +570,7 @@ class SingleClientSavedTabGroupsSyncTestWithTransportMode
 // Save a group with two tabs and validate they are added to the model for a
 // user that signs in without turning sync-the-feature on. It also verifies that
 // the downloaded data goes away upon signout.
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTestWithTransportMode,
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTestWithTransportMode,
                        DownloadsGroupAndTabsInTransportMode) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
@@ -690,11 +638,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTestWithTransportMode,
                   .Wait());
 }
 
-INSTANTIATE_TEST_SUITE_P(SavedTabGroup,
-                         SingleClientSavedTabGroupsSyncTestWithTransportMode,
-                         testing::Bool());
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace tab_groups

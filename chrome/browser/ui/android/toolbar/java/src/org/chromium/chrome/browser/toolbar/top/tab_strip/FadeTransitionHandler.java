@@ -27,7 +27,6 @@ class FadeTransitionHandler {
 
     private int mTabStripTransitionThreshold;
     private int mTabStripWidth;
-    private boolean mForceFadeInStrip;
 
     FadeTransitionHandler(
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
@@ -40,36 +39,32 @@ class FadeTransitionHandler {
         mTabStripTransitionThreshold = ViewUtils.dpToPx(displayMetrics, TRANSITION_THRESHOLD_DP);
     }
 
-    void onTabStripSizeChanged(int width) {
-        if (width == mTabStripWidth) return;
+    void onTabStripSizeChanged(
+            int width, boolean forceFadeInStrip, boolean desktopWindowingModeChanged) {
+        if (width == mTabStripWidth && !desktopWindowingModeChanged) return;
         mTabStripWidth = width;
-        requestTransition();
+        requestTransition(forceFadeInStrip);
     }
 
-    void setForceFadeInStrip(boolean forceFadeInStrip) {
-        mForceFadeInStrip = forceFadeInStrip;
-    }
-
-    private void requestTransition() {
+    private void requestTransition(boolean forceFadeInStrip) {
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)) {
             return;
         }
         mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
-                mCallbackController.makeCancelable(delegate -> maybeUpdateTabStripVisibility()));
+                mCallbackController.makeCancelable(
+                        delegate -> maybeUpdateTabStripVisibility(forceFadeInStrip)));
     }
 
-    private void maybeUpdateTabStripVisibility() {
+    private void maybeUpdateTabStripVisibility(boolean forceFadeInStrip) {
         if (mTabStripWidth <= 0) return;
 
-        boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold || mForceFadeInStrip;
+        boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold || forceFadeInStrip;
         var newOpacity = showTabStrip ? 0f : 1f;
 
         var delegate = mTabStripTransitionDelegateSupplier.get();
         assert delegate != null : "TabStripTransitionDelegate should be available.";
 
         delegate.onFadeTransitionRequested(newOpacity, FADE_TRANSITION_DURATION_MS);
-        // Reset internal state after use.
-        mForceFadeInStrip = false;
     }
 }

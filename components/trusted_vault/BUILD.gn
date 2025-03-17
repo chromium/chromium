@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 static_library("trusted_vault") {
   sources = [
     "trusted_vault_client.h",
@@ -39,6 +37,9 @@ static_library("trusted_vault") {
       "standalone_trusted_vault_backend.h",
       "standalone_trusted_vault_client.cc",
       "standalone_trusted_vault_client.h",
+      "standalone_trusted_vault_storage.h",
+      "standalone_trusted_vault_storage_impl.cc",
+      "standalone_trusted_vault_storage_impl.h",
       "trusted_vault_access_token_fetcher.h",
       "trusted_vault_access_token_fetcher_frontend.cc",
       "trusted_vault_access_token_fetcher_frontend.h",

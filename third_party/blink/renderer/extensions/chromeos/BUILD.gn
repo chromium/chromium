@@ -48,7 +48,6 @@ component("chromeos") {
   deps = [
     ":chromeos_generated",
     "//third_party/blink/renderer/core",
-    "//third_party/blink/renderer/extensions/chromeos/diagnostics",
     "//third_party/blink/renderer/extensions/chromeos/kiosk",
     "//third_party/blink/renderer/modules",
   ]

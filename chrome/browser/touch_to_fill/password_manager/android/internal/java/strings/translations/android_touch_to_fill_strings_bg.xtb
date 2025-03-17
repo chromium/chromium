@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Списъкът с идентификационни данни, които да бъдат попълнени при докосване, е отворен на пълната височина.</translation>
 <translation id="5591247451101092906">Искате ли да използвате запазена парола или код за достъп?</translation>
 <translation id="5624120631404540903">Управление на паролите</translation>
+<translation id="592182999816790476">Паролата за <ph name="USERNAME" /> е запазена за <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Ключ за достъп за <ph name="USERNAME" />. Използване на опцията ви за заключване на екрана</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Нова парола за този сайт}other{Нови пароли за този сайт}}</translation>
 <translation id="7286867818472074330">Избиране на ключ за достъп</translation>

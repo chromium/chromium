@@ -18,11 +18,17 @@ extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 // the Google logo. `doodle_is_showing` is YES if the doodle is showing. The
 // SizeClass of the `trait_collection` of the view displaying the doodle is used
 // in the computation.
+// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
+// into an enum.
 CGFloat DoodleHeight(BOOL logo_is_showing,
                      BOOL doodle_is_showing,
                      UITraitCollection* trait_collection);
 // Returns the proper margin to the top of the header for the doodle.
-CGFloat DoodleTopMargin(CGFloat top_inset, UITraitCollection* trait_collection);
+// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
+// into an enum.
+CGFloat DoodleTopMargin(BOOL logo_is_showing,
+                        BOOL doodle_is_showing,
+                        UITraitCollection* trait_collection);
 // Returns the height of the separator line below the omnibox.
 CGFloat HeaderSeparatorHeight();
 // Returns the proper margin to the bottom of the doodle for the search field.
@@ -40,12 +46,14 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection);
 // Returns the expected height of the header. `logo_is_showing` is YES if
 // showing the Google logo. `doodle_is_showing` is YES if the doodle is being
 // shown.
+// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
+// into an enum.
 CGFloat HeightForLogoHeader(BOOL logo_is_showing,
                             BOOL doodle_is_showing,
                             UITraitCollection* trait_collection);
 // Returns the bottom padding for the header. This represents the spacing
 // between the fake omnibox and the content suggestions tiles.
-CGFloat HeaderBottomPadding();
+CGFloat HeaderBottomPadding(UITraitCollection* trait_collection);
 // Configure the `search_hint_label` for the fake omnibox.  `hintLabelContainer`
 // is added to the `search_tab_target` with autolayout and `search_hint_label`
 // is added to `hintLabelContainer` with autoresizing.  This is done due to the

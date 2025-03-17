@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "ash/components/arc/intent_helper/adaptive_icon_delegate.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/intent_helper/adaptive_icon_delegate.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 
 namespace arc {
 class AdaptiveIconDelegate;

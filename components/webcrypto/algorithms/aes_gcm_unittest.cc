@@ -116,7 +116,7 @@ struct AesGcmKnownAnswer {
 
 // NIST GCM test vectors:
 // http://csrc.nist.gov/groups/STM/cavp/documents/mac/gcmtestvectors.zip
-const auto kAesGcmKnownAnswers = std::to_array<AesGcmKnownAnswer>({
+constexpr auto kAesGcmKnownAnswers = std::to_array<AesGcmKnownAnswer>({
     {"cf063a34d4a9a76c2c86787d3f96db71", "113b9785971864c83b01c787", "", "",
      "72ac8493e3a5228b5d130a69d2510e42", 128},
     {"6dfa1a07c14f978020ace450ad663d18", "34edfa462a14c6969a680ec1", "",

@@ -4,14 +4,15 @@
 
 #include "chrome/browser/apps/app_service/policy_util.h"
 
+#include <algorithm>
 #include <array>
+#include <functional>
 #include <string_view>
 #include <utility>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -21,19 +22,19 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/containers/map_util.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/id_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps_util {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace fm_tasks = file_manager::file_tasks;
 
@@ -73,9 +74,10 @@ constexpr auto kSystemWebAppsMapping =
          {"graduation", ash::SystemWebAppType::GRADUATION}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
-  return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},
-                           &decltype(kSystemWebAppsMapping)::value_type::second)
-      .second;
+  return std::ranges::max_element(
+             kSystemWebAppsMapping, std::ranges::less{},
+             &decltype(kSystemWebAppsMapping)::value_type::second)
+      ->second;
 }
 
 static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,
@@ -91,7 +93,7 @@ constexpr auto kVirtualFileTasksMapping =
          {"google-spreadsheets", fm_tasks::kActionIdWebDriveOfficeExcel},
          {"google-slides", fm_tasks::kActionIdWebDriveOfficePowerPoint}});
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Note that this mapping lists only selected Preinstalled Web Apps
 // actively used in policies and is not meant to be exhaustive.
@@ -115,21 +117,21 @@ bool IsChromeAppPolicyId(std::string_view policy_id) {
   return crx_file::id_util::IdIsValid(policy_id);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsArcAppPolicyId(std::string_view policy_id) {
   return base::Contains(policy_id, '.') && !IsWebAppPolicyId(policy_id);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsWebAppPolicyId(std::string_view policy_id) {
   return GURL{policy_id}.is_valid();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsSystemWebAppPolicyId(std::string_view policy_id) {
   return base::Contains(kSystemWebAppsMapping, policy_id);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsPreinstalledWebAppPolicyId(std::string_view policy_id) {
   if (auto& mapping = GetPreinstalledWebAppsMappingForTesting()) {  // IN-TEST
@@ -142,7 +144,7 @@ bool IsIsolatedWebAppPolicyId(std::string_view policy_id) {
   return web_package::SignedWebBundleId::Create(policy_id).has_value();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsFileManagerVirtualTaskPolicyId(std::string_view policy_id) {
   return GetVirtualTaskIdFromPolicyId(policy_id).has_value();
 }
@@ -157,7 +159,7 @@ std::optional<std::string_view> GetVirtualTaskIdFromPolicyId(
   return base::OptionalFromPtr(
       base::FindOrNull(kVirtualFileTasksMapping, policy_id.substr(kOffset)));
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string TransformRawPolicyId(const std::string& raw_policy_id) {
   if (const GURL raw_policy_id_gurl{raw_policy_id};
@@ -200,7 +202,7 @@ std::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
   return policy_ids;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<std::string_view> GetPolicyIdForSystemWebAppType(
     ash::SystemWebAppType swa_type) {
   for (const auto& [policy_id, mapped_swa_type] : kSystemWebAppsMapping) {
@@ -210,7 +212,7 @@ std::optional<std::string_view> GetPolicyIdForSystemWebAppType(
   }
   return {};
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::optional<std::string_view> GetPolicyIdForPreinstalledWebApp(
     std::string_view app_id) {

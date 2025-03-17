@@ -130,6 +130,8 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
                  int net_error,
                  std::optional<int> response_code);
 
+  void OnHandshakeConfirmed(CompletionOnceCallback callback, int rv);
+
   HandshakeResult result_ = HandshakeResult::HTTP2_INCOMPLETE;
 
   // The connection to open the Websocket stream on.

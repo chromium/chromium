@@ -27,10 +27,12 @@
 #include "base/types/expected.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -126,49 +128,13 @@ constexpr std::string_view kServiceWorkerScript = R"(
 const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 const UpdateChannel kRandomChannel = UpdateChannel::Create("random").value();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void CheckBundleExists(Profile* profile, const base::FilePath& directory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::DirectoryExists(
       CHECK_DEREF(profile).GetPath().Append(kIwaDirName).Append(directory)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-class UpdateDiscoveryTaskResultWaiter
-    : public IsolatedWebAppUpdateManager::Observer {
-  using TaskResultCallback = base::OnceCallback<void(
-      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status)>;
-
- public:
-  UpdateDiscoveryTaskResultWaiter(WebAppProvider& provider,
-                                  const webapps::AppId expected_app_id,
-                                  TaskResultCallback callback)
-      : expected_app_id_(expected_app_id),
-        callback_(std::move(callback)),
-        provider_(provider) {
-    observation_.Observe(&provider.iwa_update_manager());
-  }
-
-  // IsolatedWebAppUpdateManager::Observer:
-  void OnUpdateDiscoveryTaskCompleted(
-      const webapps::AppId& app_id,
-      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) override {
-    if (app_id != expected_app_id_) {
-      return;
-    }
-    std::move(callback_).Run(status);
-    observation_.Reset();
-  }
-
- private:
-  const webapps::AppId expected_app_id_;
-  TaskResultCallback callback_;
-  const raw_ref<WebAppProvider> provider_;
-
-  base::ScopedObservation<IsolatedWebAppUpdateManager,
-                          IsolatedWebAppUpdateManager::Observer>
-      observation_{this};
-};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ServiceWorkerVersionStartedRunningWaiter
     : public content::ServiceWorkerContextObserver {
@@ -207,10 +173,6 @@ class ServiceWorkerVersionStartedRunningWaiter
 class IsolatedWebAppUpdateManagerBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppUpdateManagerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kIsolatedWebAppAutomaticUpdates);
-  }
   void AddNewBundleToUpdateServer(std::string_view app_name,
                                   std::string_view app_version,
                                   std::optional<std::vector<UpdateChannel>>
@@ -253,7 +215,6 @@ class IsolatedWebAppUpdateManagerBrowserTest
             .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
 };
 
@@ -1031,8 +992,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                                     /*expected_count=*/0);
 }
 
+// TODO(b/402650079) flaky on mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SucceedsWithServiceWorkerWithFetchHandler \
+  DISABLED_SucceedsWithServiceWorkerWithFetchHandler
+#else
+#define MAYBE_SucceedsWithServiceWorkerWithFetchHandler \
+  SucceedsWithServiceWorkerWithFetchHandler
+#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
-                       SucceedsWithServiceWorkerWithFetchHandler) {
+                       MAYBE_SucceedsWithServiceWorkerWithFetchHandler) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(
@@ -1082,11 +1051,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               /*integrity_block_data=*/_)));
 }
 
-// TODO(crbug.com/40929933): Session restore does not restore app windows on
-// Lacros. Forcing the IWA to open via the `--app-id` command line switch is
-// also not viable, because `WebAppBrowserTestBase` expects a `browser()`
-// to open before the `WebAppProvider` is ready.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Session restore related tests that can only be run in ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        PRE_AppliesUpdateOnStartupIfAppWindowNeverCloses) {
@@ -1212,18 +1178,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   CheckBundleExists(profile(), app_update_location);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebAppAutomaticUpdates,
-         component_updater::kIwaKeyDistributionComponent},
-        {});
-  }
-
   const WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
     return provider().registrar_unsafe().GetAppById(app_id);
   }
@@ -1247,7 +1206,10 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
   IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  base::test::ScopedFeatureList features_{
+      component_updater::kIwaKeyDistributionComponent};
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   web_package::SignedWebBundleId web_bundle_id_ =
       test::GetDefaultEd25519WebBundleId();

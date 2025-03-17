@@ -49,8 +49,8 @@ constexpr int kFirstChipOffsetX =
 void SetupChip(views::LabelButton* chip, bool first) {
   chip->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   chip->SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedRoundedRectBorder(1, kChipHeight,
-                                           cros_tokens::kCrosSysSeparator),
+      views::CreateRoundedRectBorder(1, kChipHeight,
+                                     cros_tokens::kCrosSysSeparator),
       kChipInsets));
   // Add a border to space out chips on all chips but the first.
   chip->SetProperty(views::kMarginsKey,
@@ -63,10 +63,10 @@ void SetupChip(views::LabelButton* chip, bool first) {
   views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(4),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
-  chip->SetTooltipText(chip->GetText());
+  chip->SetTooltipText(std::u16string(chip->GetText()));
 
   views::ViewAccessibility& view_accessibility = chip->GetViewAccessibility();
-  view_accessibility.SetName(chip->GetText());
+  view_accessibility.SetName(std::u16string(chip->GetText()));
   // Set the list item role with a description to let the users know that they
   // can press this item as a button.
   view_accessibility.SetRole(

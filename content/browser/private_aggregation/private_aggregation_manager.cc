@@ -24,11 +24,26 @@ PrivateAggregationManager* PrivateAggregationManager::GetManager(
 }
 
 bool PrivateAggregationManager::ShouldSendReportDeterministically(
+    PrivateAggregationCallerApi caller_api,
     const std::optional<std::string>& context_id,
-    base::StrictNumeric<size_t> filtering_id_max_bytes) {
-  return context_id.has_value() ||
-         filtering_id_max_bytes !=
-             PrivateAggregationHost::kDefaultFilteringIdMaxBytes;
+    base::StrictNumeric<size_t> filtering_id_max_bytes,
+    std::optional<size_t> requested_max_contributions) {
+  if (context_id.has_value() ||
+      filtering_id_max_bytes !=
+          PrivateAggregationHost::kDefaultFilteringIdMaxBytes) {
+    return true;
+  }
+  if (requested_max_contributions.has_value()) {
+    const size_t default_max_contributions =
+        PrivateAggregationHost::GetEffectiveMaxContributions(
+            caller_api, /*requested_max_contributions=*/std::nullopt);
+    // We deviate from the spec by using `requested_max_contributions` directly,
+    // rather than first computing the effective max contributions. This is fine
+    // because we know that `GetEffectiveMaxContributions()` preserves equality
+    // to each of the API-specific default values.
+    return *requested_max_contributions != default_max_contributions;
+  }
+  return false;
 }
 
 }  // namespace content

@@ -5,12 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_PREFERENCES_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_PREFERENCES_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace mojo {
 
@@ -711,6 +714,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
   static bool is_forced_colors_disabled(
       const blink::web_pref::WebPreferences& r) {
     return r.is_forced_colors_disabled;
+  }
+
+  static std::optional<SkColor> root_scrollbar_theme_color(
+      const blink::web_pref::WebPreferences& r) {
+    return r.root_scrollbar_theme_color;
   }
 
   static blink::mojom::PreferredColorScheme

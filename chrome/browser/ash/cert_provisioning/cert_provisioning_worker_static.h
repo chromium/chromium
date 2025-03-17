@@ -53,6 +53,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   void MarkWorkerForReset() override;
   bool IsWaiting() const override;
   bool IsWorkerMarkedForReset() const override;
+  const std::string& GetProcessId() const override;
   const CertProfile& GetCertProfile() const override;
   const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;
@@ -60,7 +61,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   base::Time GetLastUpdateTime() const override;
   const std::optional<BackendServerError>& GetLastBackendServerError()
       const override;
-  std::string GetFailureMessage() const override;
+  std::string GetFailureMessageWithPii() const override;
 
  private:
   friend class CertProvisioningSerializer;

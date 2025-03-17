@@ -10,7 +10,7 @@
 
 :host {
   --container-padding: 8px;
-  --scrollbar-width: 6px;
+  --scrollbar-width: 5px;
   background-color: var(
       --color-product-specifications-comparison-table-list-background);
   border-radius: 12px;
@@ -19,32 +19,103 @@
   flex-direction: column;
   max-height: 100%;
   padding: var(--container-padding);
-  /* Display the scrollbar in the margins of the container. */
-  padding-inline-end: calc(var(--container-padding) - var(--scrollbar-width));
   width: var(--comparison-table-list-width);
 }
 
-#listContainer {
-  max-height: 100%;
-  overflow: scroll;
-  scrollbar-gutter: stable;
+:host:has(#footer:not([hidden])) {
+  padding-bottom: 0px;
 }
 
-#listContainer::-webkit-scrollbar {
+cr-icon-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 20px;
+}
+
+cr-toolbar-selection-overlay {
   background: transparent;
-  width: var(--scrollbar-width);
-  height: 0;
+  border: 0;
 }
 
-#listContainer::-webkit-scrollbar-thumb {
-  background:
-    var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
-  border-radius: 8px;
+cr-toast {
+  height: var(--footer-height);
+  justify-content: space-between;
+  margin: 0;
+  margin-top: var(--container-padding);
+  position: sticky;
+  width: 100%;
+}
+
+cr-toast:not([open]) {
+  /* Prevent toast from occupying space when closed. */
+  display: none;
+}
+
+cr-toolbar-selection-overlay::part(clearIcon) {
+  --cr-icon-button-icon-size: 16px;
+  height: 20px;
+  margin-inline-end: 4px;
+  margin-inline-start: -12px;
+  width: 20px;
+}
+
+#edit {
+  float: inline-end;
+  margin-inline-end: 0;
+}
+
+#footer {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+  font-weight: 500;
+  height: 48px;
+  line-height: 16px;
+  padding: var(--container-padding);
+  position: sticky;
+}
+
+#footer[hidden] {
+  display: none;
 }
 
 #header {
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
-  padding: 8px;
+  padding: var(--container-padding);
+}
+
+hr {
+  border: none;
+  border-top: var(--cr-hairline);
+}
+
+#listContainer {
+  max-height: 100%;
+  overflow: scroll;
+  /* Display the scrollbar in the margins of the container. */
+  margin-inline-end: calc(-1 * var(--scrollbar-width) - 1px);
+  margin-top: 4px;
+  padding-inline-end: 1px;
+  scrollbar-gutter: stable;
+}
+
+#listContainer::-webkit-scrollbar {
+  background: transparent;
+  height: 0;
+  width: var(--scrollbar-width);
+}
+
+#listContainer::-webkit-scrollbar-thumb {
+  background:
+    var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
+  border-radius: var(--scrollbar-width);
+}
+
+#numSelected {
+  margin-inline-start: 4px;
+}
+
+.sp-icon-buttons-row {
+  margin-inline-end: -4px;
 }

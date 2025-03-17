@@ -90,10 +90,10 @@ class SigninPrepareUserListTest : public testing::Test {
 };
 
 TEST_F(SigninPrepareUserListTest, AlwaysKeepOwnerInList) {
-  EXPECT_LT(kMaxUsers, user_manager()->GetUsers().size());
+  EXPECT_LT(kMaxUsers, user_manager()->GetPersistedUsers().size());
   user_manager::UserList users_to_send =
       UserSelectionScreen::PrepareUserListForSending(
-          user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+          user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
           true /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());
@@ -102,7 +102,7 @@ TEST_F(SigninPrepareUserListTest, AlwaysKeepOwnerInList) {
   user_manager()->RemoveUserFromList(AccountId::FromUserEmail("a16@gmail.com"));
   user_manager()->RemoveUserFromList(AccountId::FromUserEmail("a17@gmail.com"));
   users_to_send = UserSelectionScreen::PrepareUserListForSending(
-      user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+      user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
       true /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());
@@ -115,7 +115,7 @@ TEST_F(SigninPrepareUserListTest, AlwaysKeepOwnerInList) {
 TEST_F(SigninPrepareUserListTest, PublicAccounts) {
   user_manager::UserList users_to_send =
       UserSelectionScreen::PrepareUserListForSending(
-          user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+          user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
           true /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());
@@ -123,7 +123,7 @@ TEST_F(SigninPrepareUserListTest, PublicAccounts) {
             users_to_send.front()->GetAccountId().GetUserEmail());
 
   users_to_send = UserSelectionScreen::PrepareUserListForSending(
-      user_manager()->GetUsers(), AccountId::FromUserEmail(kOwner),
+      user_manager()->GetPersistedUsers(), AccountId::FromUserEmail(kOwner),
       false /* is_signin_to_add */);
 
   EXPECT_EQ(kMaxUsers, users_to_send.size());

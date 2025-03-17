@@ -72,8 +72,8 @@ class SystemUIComponentsStyleViewerClientView : public views::ClientView {
     // client-view is responsible for rounding the bottom corners.
 
     const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
-    contents_view()->SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorDialogBackground, radii));
+    contents_view()->SetBackground(
+        views::CreateRoundedRectBackground(ui::kColorDialogBackground, radii));
   }
 };
 
@@ -95,49 +95,34 @@ class SystemUIComponentsStyleViewerView::ComponentButton
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetBorder(std::make_unique<views::HighlightBorder>(
         0, views::HighlightBorder::Type::kHighlightBorderNoShadow));
+    SetBackground(
+        views::CreateSolidBackground(kInactiveButtonBackgroundColorId));
+    SetEnabledTextColors(kInactiveButtonTextColorId);
+
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+
     SetFocusBehavior(views::View::FocusBehavior::NEVER);
   }
+
   ComponentButton(const ComponentButton&) = delete;
   ComponentButton& operator=(const ComponentButton&) = delete;
+
   ~ComponentButton() override = default;
 
   void SetActive(bool active) {
-    background_color_id_ = active ? kActiveButtonBackgroundColorId
-                                  : kInactiveButtonBackgroundColorId;
-    text_color_id_ =
-        active ? kActiveButtonTextColorId : kInactiveButtonTextColorId;
-    OnThemeChanged();
+    SetEnabledTextColors(active ? kActiveButtonTextColorId
+                                : kInactiveButtonTextColorId);
+    background()->SetColor(active ? kActiveButtonBackgroundColorId
+                                  : kInactiveButtonBackgroundColorId);
   }
 
   // views::LabelButton:
-  void AddedToWidget() override {
-    SetBackground(views::CreateSolidBackground(
-        GetColorProvider()->GetColor(background_color_id_)));
-  }
-
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
     return gfx::Size(kMenuWidth, kDefaultButtonHeight);
   }
-
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-
-    if (!GetWidget())
-      return;
-
-    ui::ColorProvider* color_provider = GetColorProvider();
-    SetEnabledTextColors(color_provider->GetColor(text_color_id_));
-    if (auto* bg = background())
-      bg->SetNativeControlColor(color_provider->GetColor(background_color_id_));
-  }
-
- private:
-  ui::ColorId background_color_id_ = kInactiveButtonBackgroundColorId;
-  ui::ColorId text_color_id_ = kInactiveButtonTextColorId;
 };
 
 BEGIN_METADATA(SystemUIComponentsStyleViewerView, ComponentButton)
@@ -152,7 +137,7 @@ SystemUIComponentsStyleViewerView::SystemUIComponentsStyleViewerView()
           AddChildView(std::make_unique<views::ScrollView>())) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
   SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBottomSpacing, 0)));
 

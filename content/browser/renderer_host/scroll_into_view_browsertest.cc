@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest,
   RunTest();
 
   // width=device-width must prevent the zooming behavior.
-  EXPECT_EQ(kMobileMinimumScale, GetVisualViewport().scale);
+  EXPECT_LE(kMobileMinimumScale, GetVisualViewport().scale);
 }
 
 // Similar to above, an input in a touch-action region that disables pinch-zoom

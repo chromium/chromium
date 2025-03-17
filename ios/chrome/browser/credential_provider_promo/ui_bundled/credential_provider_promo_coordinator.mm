@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
+
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_mediator.h"
@@ -12,6 +14,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
+#import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -19,9 +22,9 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
 @interface CredentialProviderPromoCoordinator () <
     ConfirmationAlertActionHandler,
@@ -118,11 +121,30 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 - (void)confirmationAlertPrimaryAction {
   [self hidePromo];
   if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
+    if (@available(iOS 18.0, *)) {
+      if (IOSPasskeysM2Enabled()) {
+        // Show the prompt to allow the app to be turned on as a credential
+        // provider.
+        [ASSettingsHelper
+            requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
+                BOOL appWasEnabledForAutoFill) {
+              // Record the user's decision.
+              RecordTurnOnCredentialProviderExtensionPromptOutcome(
+                  TurnOnCredentialProviderExtensionPromptSource::
+                      kCredentialProviderExtensionPromo,
+                  appWasEnabledForAutoFill);
+            }];
+        [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
+        return;
+      }
+    }
+
+    // Show the screen informing the user on how they can set the app as a
+    // credential provider.
     [self presentLearnMore];
     [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
-    // Open iOS settings.
-    ios::provider::PasswordsInOtherAppsOpensSettings();
+    OpenIOSCredentialProviderSettings();
     [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
     [self promoWasDismissed];
   }
@@ -156,6 +178,12 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 
 // Presents the 'learn more' step of the feature.
 - (void)presentLearnMore {
+  // The 'learn more' step shouldn't be presented on iOS 18+ when the Passkeys
+  // M2 feature is enabled.
+  if (@available(iOS 18.0, *)) {
+    CHECK(!IOSPasskeysM2Enabled());
+  }
+
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;

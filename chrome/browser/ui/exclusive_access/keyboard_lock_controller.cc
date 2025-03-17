@@ -108,7 +108,7 @@ void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
   DCHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents);
   if (!base::FeatureList::IsEnabled(
-          permissions::features::kKeyboardAndPointerLockPrompt)) {
+          permissions::features::kKeyboardLockPrompt)) {
     LockKeyboard(web_contents->GetWeakPtr(), esc_key_locked);
     return;
   }

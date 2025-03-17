@@ -8,4 +8,5 @@
     unsigned long audioHandlerCount();
     unsigned long audioWorkletProcessorCount();
     void emulateDeviceFailureOnAudioContext(AudioContext context);
+    boolean isSilenceDetectionActive(AudioContext context);
 };

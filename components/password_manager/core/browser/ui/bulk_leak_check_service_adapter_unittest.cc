@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <tuple>
@@ -12,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
@@ -53,15 +53,15 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 MATCHER_P(CredentialsAre, credentials, "") {
-  return base::ranges::equal(arg, credentials.get(),
-                             [](const auto& lhs, const auto& rhs) {
-                               return lhs.username() == rhs.username() &&
-                                      lhs.password() == rhs.password();
-                             });
+  return std::ranges::equal(arg, credentials.get(),
+                            [](const auto& lhs, const auto& rhs) {
+                              return lhs.username() == rhs.username() &&
+                                     lhs.password() == rhs.password();
+                            });
 }
 
 MATCHER_P(SavedPasswordsAre, passwords, "") {
-  return base::ranges::equal(
+  return std::ranges::equal(
       arg, passwords, [](const auto& lhs, const auto& rhs) {
         return lhs.signon_realm == rhs.signon_realm &&
                lhs.username_value == rhs.username_value &&

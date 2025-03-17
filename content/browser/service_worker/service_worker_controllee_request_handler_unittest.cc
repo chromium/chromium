@@ -87,7 +87,6 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               /*fetch_event_client_id=*/"",
               test->service_worker_client_,
               /*skip_service_worker=*/false,
-              FrameTreeNodeId(),
               base::DoNothing())),
           service_worker_client_(test->service_worker_client_) {}
 
@@ -102,14 +101,15 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
           blink::StorageKey::CreateFirstParty(
               url::Origin::Create(resource_request.url)));
       handler_->MaybeCreateLoader(
-          resource_request,
-          nullptr,
+          resource_request, nullptr,
           base::BindOnce(
               [](base::OnceClosure closure,
                  std::optional<NavigationLoaderInterceptor::Result>
                      interceptor_result) { std::move(closure).Run(); },
               loader_loop_.QuitClosure()),
-          base::DoNothing());
+          base::BindOnce([](ResponseHeadUpdateParams) {
+            return static_cast<network::mojom::URLLoaderFactory*>(nullptr);
+          }));
     }
 
     void WaitLoader() { loader_loop_.Run(); }
@@ -495,7 +495,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(),
           /*fetch_event_client_id=*/"", service_worker_client_,
-          /*skip_service_worker=*/true, FrameTreeNodeId(), base::DoNothing()));
+          /*skip_service_worker=*/true, base::DoNothing()));
 
   // Conduct a main resource load.
   test_resources.MaybeCreateLoader();
@@ -536,7 +536,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(), /*fetch_event_client_id=*/"",
           service_worker_client_, /*skip_service_worker=*/false,
-          FrameTreeNodeId(), base::DoNothing()));
+          base::DoNothing()));
 
   // Destroy the context and make a new one.
   DeleteAndStartOverWaiter delete_and_start_over_waiter(

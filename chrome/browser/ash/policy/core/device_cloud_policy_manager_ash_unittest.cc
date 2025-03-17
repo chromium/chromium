@@ -302,6 +302,10 @@ class DeviceCloudPolicyManagerAshTest
     session_manager_client_.set_server_backed_state_keys(state_keys);
   }
 
+  void RemoveStateKeys() {
+    session_manager_client_.set_server_backed_state_keys(/*state_keys=*/{});
+  }
+
   void ConnectManager(bool expectExternalDataManagerConnectCall = true) {
     if (expectExternalDataManagerConnectCall) {
       EXPECT_CALL(*external_data_manager_, Connect(_));
@@ -556,10 +560,8 @@ TEST_F(DeviceCloudPolicyManagerAshTest, ConsumerDevice) {
 }
 
 TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableForcedReEnrollment,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+  RemoveStateKeys();  // This is the crucial part of this test: no state keys.
+  EXPECT_FALSE(state_keys_broker_.available());
 
   LockDevice();
   device_settings_service_->LoadImmediately();
@@ -568,18 +570,33 @@ TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   VerifyPolicyPopulated();
 
-  EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
   AllowUninterestingRemoteCommandFetches();
 
   EXPECT_FALSE(manager_->GetManagedSessionService());
   EXPECT_FALSE(manager_->GetLoginLogoutReporter());
   EXPECT_FALSE(manager_->GetUserAddedRemovedReporter());
 
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
+    EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
+  } else {
+    // If state keys aren't supported (as in ChromeOS Flex),
+    // `DeviceCloudPolicyInitializer` will start the connection to DMServer even
+    // when state keys are missing, see
+    // `DeviceCloudPolicyInitializer::TryToStartConnection`.
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .Times(testing::AtLeast(1));
+  }
+
   InitDeviceCloudPolicyInitializer();
 
   // Status uploader for reporting on enrolled devices is only created on
   // connect call.
-  EXPECT_FALSE(manager_->GetStatusUploader());
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
+    EXPECT_FALSE(manager_->GetStatusUploader());
+  } else {
+    EXPECT_TRUE(manager_->GetStatusUploader());
+  }
+
   // Managed session service and reporters are created when notified by
   // |DeviceCloudPolicyInitializer| that the policy store is ready.
   EXPECT_TRUE(manager_->GetManagedSessionService());

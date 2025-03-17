@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/enterprise/enterprise_printers_provider.h"
 
+#include <algorithm>
 #include <iterator>
 #include <unordered_map>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/printing/enterprise/calculators_policies_binder.h"
@@ -222,8 +222,8 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
     // Update `printers_` with the recalculated result.
     printers_.clear();
     printers_.reserve(all_printers.size());
-    base::ranges::transform(all_printers, std::back_inserter(printers_),
-                            [](const auto& p) { return p.second; });
+    std::ranges::transform(all_printers, std::back_inserter(printers_),
+                           [](const auto& p) { return p.second; });
 
     for (auto& observer : observers_) {
       observer.OnPrintersChanged(complete_, printers_);

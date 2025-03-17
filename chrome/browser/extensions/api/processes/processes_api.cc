@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -110,9 +110,6 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::PLUGIN_VM:
     case task_manager::Task::SANDBOX_HELPER:
     case task_manager::Task::ZYGOTE:
-    // TODO(crbug.com/40172498): Do not expose lacros tasks for now. Defer
-    // the decision until further discussion is made.
-    case task_manager::Task::LACROS:
       return api::processes::ProcessType::kOther;
   }
 
@@ -643,7 +640,7 @@ void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
     if (specific_processes_requested) {
       // Note: we can't use |!process_host_ids_.empty()| directly in the above
       // condition as we will erase from |process_host_ids_| below.
-      auto itr = base::ranges::find(process_host_ids_, child_process_host_id);
+      auto itr = std::ranges::find(process_host_ids_, child_process_host_id);
       if (itr == process_host_ids_.end())
         continue;
 

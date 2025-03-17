@@ -8,10 +8,10 @@
 #include <optional>
 #include <string>
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace blink {
 
@@ -64,6 +64,7 @@ enum class PermissionType {
   AUTOMATIC_FULLSCREEN = 40,
   HAND_TRACKING = 41,
   WEB_APP_INSTALLATION = 42,
+  LOCAL_NETWORK_ACCESS = 43,
 
   // Always keep this at the end.
   NUM,
@@ -104,7 +105,7 @@ PermissionDescriptorInfoToPermissionType(
 
 // Converts `permission` type into the corresponding permission policy feature.
 // If there is no, returns nullopt.
-BLINK_COMMON_EXPORT std::optional<mojom::PermissionsPolicyFeature>
+BLINK_COMMON_EXPORT std::optional<network::mojom::PermissionsPolicyFeature>
 PermissionTypeToPermissionsPolicyFeature(PermissionType permission);
 
 }  // namespace blink

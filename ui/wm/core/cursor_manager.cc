@@ -9,9 +9,12 @@
 #include "base/check_op.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client_observer.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/wm/core/cursor_util.h"
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
@@ -24,11 +27,7 @@ namespace internal {
 // always invisible.
 class CursorState {
  public:
-  CursorState()
-      : visible_(true),
-        cursor_size_(ui::CursorSize::kNormal),
-        mouse_events_enabled_(true),
-        visible_on_mouse_events_enabled_(true) {}
+  CursorState() = default;
 
   CursorState(const CursorState&) = delete;
   CursorState& operator=(const CursorState&) = delete;
@@ -47,6 +46,14 @@ class CursorState {
   void set_cursor_size(ui::CursorSize cursor_size) {
     cursor_size_ = cursor_size;
   }
+
+  int large_cursor_size_in_dip() const { return large_cursor_size_in_dip_; }
+  void set_large_cursor_size_in_dip(int large_cursor_size_in_dip) {
+    large_cursor_size_in_dip_ = large_cursor_size_in_dip;
+  }
+
+  SkColor cursor_color() const { return cursor_color_; }
+  void set_cursor_color(SkColor cursor_color) { cursor_color_ = cursor_color; }
 
   const gfx::Size& system_cursor_size() const { return system_cursor_size_; }
   void set_system_cursor_size(const gfx::Size& system_cursor_size) {
@@ -70,12 +77,14 @@ class CursorState {
 
  private:
   gfx::NativeCursor cursor_;
-  bool visible_;
-  ui::CursorSize cursor_size_;
-  bool mouse_events_enabled_;
+  bool visible_ = true;
+  ui::CursorSize cursor_size_ = ui::CursorSize::kNormal;
+  int large_cursor_size_in_dip_ = ui::kDefaultLargeCursorSize;
+  SkColor cursor_color_ = ui::kDefaultCursorColor;
+  bool mouse_events_enabled_ = true;
 
   // The visibility to set when mouse events are enabled.
-  bool visible_on_mouse_events_enabled_;
+  bool visible_on_mouse_events_enabled_ = true;
 
   gfx::Size system_cursor_size_;
 };
@@ -153,6 +162,34 @@ void CursorManager::SetCursorSize(ui::CursorSize cursor_size) {
 
 ui::CursorSize CursorManager::GetCursorSize() const {
   return current_state_->cursor_size();
+}
+
+void CursorManager::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
+  large_cursor_size_in_dip =
+      std::clamp(large_cursor_size_in_dip, ui::kMinLargeCursorSize,
+                 ui::kMaxLargeCursorSize);
+
+  state_on_unlock_->set_large_cursor_size_in_dip(large_cursor_size_in_dip);
+  if (GetLargeCursorSizeInDip() !=
+      state_on_unlock_->large_cursor_size_in_dip()) {
+    delegate_->SetLargeCursorSizeInDip(
+        state_on_unlock_->large_cursor_size_in_dip(), this);
+  }
+}
+
+int CursorManager::GetLargeCursorSizeInDip() const {
+  return current_state_->large_cursor_size_in_dip();
+}
+
+void CursorManager::SetCursorColor(SkColor color) {
+  state_on_unlock_->set_cursor_color(color);
+  if (GetCursorColor() != state_on_unlock_->cursor_color()) {
+    delegate_->SetCursorColor(state_on_unlock_->cursor_color(), this);
+  }
+}
+
+SkColor CursorManager::GetCursorColor() const {
+  return current_state_->cursor_color();
 }
 
 void CursorManager::EnableMouseEvents() {
@@ -262,33 +299,20 @@ void CursorManager::CommitCursorSize(ui::CursorSize cursor_size) {
   current_state_->set_cursor_size(cursor_size);
 }
 
+void CursorManager::CommitLargeCursorSizeInDip(int large_cursor_size_in_dip) {
+  current_state_->set_large_cursor_size_in_dip(large_cursor_size_in_dip);
+}
+
+void CursorManager::CommitCursorColor(SkColor color) {
+  current_state_->set_cursor_color(color);
+}
+
 void CursorManager::CommitMouseEventsEnabled(bool enabled) {
   current_state_->SetMouseEventsEnabled(enabled);
 }
 
 gfx::Size CursorManager::GetSystemCursorSize() const {
   return current_state_->system_cursor_size();
-}
-
-#if BUILDFLAG(IS_WIN)
-void CursorManager::UpdateSystemCursorVisibilityForTest(bool visible) {
-  CommitSystemCursorVisibility(visible);
-}
-#endif
-
-void CursorManager::CommitSystemCursorVisibility(bool visible) {
-  if (visible == current_state_->visible()) {
-    return;
-  }
-
-  // Use lock to prevent ShowCursor/HideCursor when system cursor is invisible.
-  if (!visible) {
-    scoped_cursor_lock_.emplace(this);
-  } else {
-    scoped_cursor_lock_.reset();
-  }
-
-  CommitVisibility(visible);
 }
 
 void CursorManager::CommitSystemCursorSize(

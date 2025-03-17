@@ -13,9 +13,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
@@ -56,6 +53,9 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
@@ -66,7 +66,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/user_agent.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -288,6 +287,13 @@ ArcStatus GetArcStatusForProfile(const Profile* profile,
 
   if (ash::switches::IsRevenBranding()) {
     CHECK(g_is_arcvm_dlc_image_available.has_value());
+
+    if (ash::features::ShouldIgnoreDeviceFlexArcEnabledPolicy()) {
+      VLOG_IF(1, should_report_reason)
+          << "ARC unavailable on reven board due to the VPN app enabling "
+             "policy was ignored.";
+      return ArcStatus::kNotAvailable;
+    }
 
     if (!g_is_arcvm_dlc_image_available.value()) {
       VLOG_IF(1, should_report_reason)
@@ -810,11 +816,7 @@ bool IsPlayStoreAvailable() {
   }
 
   // Demo Mode is the only public session scenario that can launch Play.
-  if (!ash::DemoSession::IsDeviceInDemoMode()) {
-    return false;
-  }
-
-  return ash::features::ShouldShowPlayStoreInDemoMode();
+  return ash::DemoSession::IsDeviceInDemoMode();
 }
 
 bool ShouldStartArcSilentlyForManagedProfile(const Profile* profile) {
@@ -851,8 +853,9 @@ std::unique_ptr<content::WebContents> CreateArcCustomTabWebContents(
   // Override the user agent to request mobile version web sites.
   const std::string product = embedder_support::GetProductAndVersion();
   blink::UserAgentOverride ua_override;
-  ua_override.ua_string_override = content::BuildUserAgentFromOSAndProduct(
-      kOsOverrideForTabletSite, product);
+  ua_override.ua_string_override =
+      embedder_support::BuildUserAgentFromOSAndProduct(kOsOverrideForTabletSite,
+                                                       product);
 
   ua_override.ua_metadata_override =
       embedder_support::GetUserAgentMetadata(g_browser_process->local_state());

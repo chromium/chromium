@@ -36,8 +36,14 @@ constexpr gfx::Rect TERMINAL_DEFAULT_BOUNDS(gfx::Point(64, 64),
 constexpr gfx::Size TERMINAL_SETTINGS_DEFAULT_SIZE(768, 512);
 }  // namespace
 
+TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::TERMINAL,
+                                "Terminal",
+                                GURL(chrome::kChromeUIUntrustedTerminalURL),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForTerminalSystemWebApp() {
+TerminalSystemAppDelegate::GetWebAppInfo() const {
   // URL used for crostini::kCrostiniTerminalSystemAppId.
   GURL start_url("chrome-untrusted://terminal/html/terminal.html");
   auto info =
@@ -53,27 +59,6 @@ CreateWebAppInfoForTerminalSystemWebApp() {
       "linux", "terminal", "crostini", "ssh",
       l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_SEARCH_TERMS)};
   return info;
-}
-
-gfx::Rect GetDefaultBoundsForTerminal(Browser* browser) {
-  if (browser->is_type_app_popup()) {
-    gfx::Rect bounds =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-    bounds.ClampToCenteredSize(TERMINAL_SETTINGS_DEFAULT_SIZE);
-    return bounds;
-  }
-  return TERMINAL_DEFAULT_BOUNDS;
-}
-
-TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::TERMINAL,
-                                "Terminal",
-                                GURL(chrome::kChromeUIUntrustedTerminalURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-TerminalSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForTerminalSystemWebApp();
 }
 
 Browser* TerminalSystemAppDelegate::GetWindowForLaunch(Profile* profile,
@@ -106,7 +91,13 @@ bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {
 }
 
 gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
-  return GetDefaultBoundsForTerminal(browser);
+  if (browser->is_type_app_popup()) {
+    gfx::Rect bounds =
+        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+    bounds.ClampToCenteredSize(TERMINAL_SETTINGS_DEFAULT_SIZE);
+    return bounds;
+  }
+  return TERMINAL_DEFAULT_BOUNDS;
 }
 
 bool TerminalSystemAppDelegate::HasCustomTabMenuModel() const {

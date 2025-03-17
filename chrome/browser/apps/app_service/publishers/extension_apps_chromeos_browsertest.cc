@@ -60,12 +60,6 @@ base::FilePath WriteFile(const base::FilePath& directory,
 
 class ExtensionAppsChromeOsBrowserTest
     : public extensions::ExtensionBrowserTest {
- public:
-  ExtensionAppsChromeOsBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
  protected:
   // Launch the extension from an intent and wait for a result from chrome.test.
   void LaunchExtensionAndCatchResult(const extensions::Extension& extension) {
@@ -135,8 +129,6 @@ class ExtensionAppsChromeOsBrowserTest
     intent->files.push_back(std::move(file));
     return intent;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Open the extension action url when opening a matching file type.

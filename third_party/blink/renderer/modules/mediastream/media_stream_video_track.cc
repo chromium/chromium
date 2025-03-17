@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -755,10 +755,13 @@ scoped_refptr<media::VideoFrame>
 MediaStreamVideoTrack::FrameDeliverer::GetBlackFrame(
     const media::VideoFrame& reference_frame) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  if (!black_frame_.get() ||
+  if (!black_frame_ ||
       black_frame_->natural_size() != reference_frame.natural_size()) {
     black_frame_ =
         media::VideoFrame::CreateBlackFrame(reference_frame.natural_size());
+    if (!black_frame_) {
+      return nullptr;
+    }
   }
 
   // Wrap |black_frame_| so we get a fresh timestamp we can modify. Frames
@@ -849,9 +852,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
           &MediaStreamVideoTrack::FrameDeliverer::
               NewSubCaptureTargetVersionOnVideoTaskRunner,
           frame_deliverer_)),
-      base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
-          &MediaStreamVideoTrack::SetSizeAndComputedFrameRate,
-          weak_factory_.GetWeakPtr())),
+      base::BindPostTaskToCurrentDefault(
+          WTF::BindRepeating(&MediaStreamVideoTrack::SetVideoFrameSettings,
+                             weak_factory_.GetWeakPtr())),
       base::BindPostTaskToCurrentDefault(
           WTF::BindRepeating(&MediaStreamVideoTrack::set_computed_source_format,
                              weak_factory_.GetWeakPtr())),
@@ -901,9 +904,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
           &MediaStreamVideoTrack::FrameDeliverer::
               NewSubCaptureTargetVersionOnVideoTaskRunner,
           frame_deliverer_)),
-      base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
-          &MediaStreamVideoTrack::SetSizeAndComputedFrameRate,
-          weak_factory_.GetWeakPtr())),
+      base::BindPostTaskToCurrentDefault(
+          WTF::BindRepeating(&MediaStreamVideoTrack::SetVideoFrameSettings,
+                             weak_factory_.GetWeakPtr())),
       base::BindPostTaskToCurrentDefault(
           WTF::BindRepeating(&MediaStreamVideoTrack::set_computed_source_format,
                              weak_factory_.GetWeakPtr())),
@@ -949,7 +952,7 @@ static void AddSinkInternal(Vector<WebMediaStreamSink*>* sinks,
 
 static void RemoveSinkInternal(Vector<WebMediaStreamSink*>* sinks,
                                WebMediaStreamSink* sink) {
-  auto it = base::ranges::find(*sinks, sink);
+  auto it = std::ranges::find(*sinks, sink);
   CHECK(it != sinks->end(), base::NotFatalUntil::M130);
   sinks->erase(it);
 }
@@ -1133,7 +1136,7 @@ void MediaStreamVideoTrack::GetSettings(
             : *adapter_frame_rate;
   } else {
     // For other tracks, use the computed frame rate reported via
-    // SetSizeAndComputedFrameRate().
+    // SetVideoFrameSettings().
     if (computed_frame_rate_)
       settings.frame_rate = *computed_frame_rate_;
   }
@@ -1149,6 +1152,9 @@ void MediaStreamVideoTrack::GetSettings(
     settings.logical_surface = info->logical_surface;
     settings.cursor = info->cursor;
   }
+
+  settings.physical_frame_size = captured_frame_physical_size_;
+  settings.device_scale_factor = device_scale_factor_;
 }
 
 MediaStreamTrackPlatform::VideoFrameStats

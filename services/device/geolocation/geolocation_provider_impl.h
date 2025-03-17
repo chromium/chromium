@@ -80,7 +80,6 @@ class GeolocationProviderImpl
   base::CallbackListSubscription AddLocationUpdateCallback(
       const LocationUpdateCallback& callback,
       bool enable_high_accuracy) override;
-  bool HighAccuracyLocationInUse() override;
   void OverrideLocationForTesting(mojom::GeopositionResultPtr result) override;
 
   // Callback from the LocationProviderManager. Public for testing.
@@ -155,7 +154,9 @@ class GeolocationProviderImpl
 #endif
 
   static constexpr char kSystemPermissionDeniedErrorMessage[] =
-      "User has not allowed access to system location.";
+      "User denied Geolocation";
+  static constexpr char kSystemPermissionDeniedErrorTechnical[] =
+      "User has not allowed access to system location";
 
  private:
   friend struct base::DefaultSingletonTraits<GeolocationProviderImpl>;

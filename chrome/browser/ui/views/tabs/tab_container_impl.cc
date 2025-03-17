@@ -4,19 +4,19 @@
 
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_context.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "chrome/grit/theme_resources.h"
@@ -103,10 +104,6 @@ TabContainerImpl::TabContainerImpl(
                               base::Unretained(this)))) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  if (!gfx::Animation::ShouldRenderRichAnimation()) {
-    bounds_animator_.SetAnimationDuration(base::TimeDelta());
-  }
-
   bounds_animator_.AddObserver(this);
 
   overall_bounds_view_->SetVisible(false);
@@ -127,7 +124,7 @@ TabContainerImpl::~TabContainerImpl() {
   CancelAnimation();
 
   // Since TabGroupViews expects be able to remove the views it creates, clear
-  // |group_views_| before removing the remaining children below.
+  // `group_views_` before removing the remaining children below.
   group_views_.clear();
 
   // Make sure we unhook ourselves as a message loop observer so that we don't
@@ -143,25 +140,34 @@ void TabContainerImpl::SetAvailableWidthCallback(
   available_width_callback_ = available_width_callback;
 }
 
-Tab* TabContainerImpl::AddTab(std::unique_ptr<Tab> tab,
-                              int model_index,
-                              TabPinned pinned) {
+std::vector<Tab*> TabContainerImpl::AddTabs(
+    std::vector<TabInsertionParams> tabs_params) {
+  std::vector<Tab*> added_tabs;
+
   // First add the tab to the view model, this is done because AddChildView sets
   // some tooltip information which tries to calculate the hit test, which needs
   // information about its adjacent tabs which it gets from the view model.
-  AddTabToViewModel(tab.get(), model_index, pinned);
-  Tab* tab_ptr = AddChildView(std::move(tab));
-  OrderTabSlotView(tab_ptr);
+  for (auto& param : tabs_params) {
+    AddTabToViewModel(param.tab.get(), param.model_index, param.pinned);
+  }
+
+  for (auto& param : tabs_params) {
+    Tab* tab_ptr = AddChildView(std::move(param.tab));
+    OrderTabSlotView(tab_ptr);
+    added_tabs.push_back(tab_ptr);
+  }
 
   // Don't animate the first tab, it looks weird, and don't animate anything
   // if the containing window isn't visible yet.
   if (GetTabCount() > 1 && GetWidget() && GetWidget()->IsVisible()) {
-    StartInsertTabAnimation(model_index);
+    for (auto& param : tabs_params) {
+      StartInsertTabAnimation(param.model_index);
+    }
   } else {
     CompleteAnimationAndLayout();
   }
 
-  return tab_ptr;
+  return added_tabs;
 }
 
 void TabContainerImpl::MoveTab(int from_model_index, int to_model_index) {
@@ -173,6 +179,12 @@ void TabContainerImpl::MoveTab(int from_model_index, int to_model_index) {
   layout_helper_->SetTabPinned(to_model_index, tab->data().pinned
                                                    ? TabPinned::kPinned
                                                    : TabPinned::kUnpinned);
+  // TODO(shibalik): Replace by a content changed observer method after
+  // group features is enabled. This handles the case where a tab is moved
+  // within a group.
+  if (tab->group().has_value()) {
+    group_views_[tab->group().value()]->header()->OnGroupContentsChanged();
+  }
 
   AnimateToIdealBounds();
 
@@ -285,7 +297,7 @@ void TabContainerImpl::ReturnTabSlotView(TabSlotView* view) {
 
   const gfx::Rect bounds_in_tab_container_coords = gfx::ToEnclosingRect(
       ConvertRectToTarget(view->parent(), this, gfx::RectF(view->bounds())));
-  AddChildView(view);
+  AddChildViewRaw(view);
   view->SetBoundsRect(bounds_in_tab_container_coords);
 
   Tab* tab = views::AsViewClass<Tab>(view);
@@ -328,16 +340,16 @@ void TabContainerImpl::ScrollTabToVisible(int model_index) {
 
   bool scroll_left = active_tab_ideal_bounds.x() < visible_content_rect->x();
   if (scroll_left) {
-    // Scroll the left edge of |visible_content_rect| to show the left edge of
-    // the tab at |model_index|. We can leave the width entirely up to the
+    // Scroll the left edge of `visible_content_rect` to show the left edge of
+    // the tab at `model_index`. We can leave the width entirely up to the
     // ScrollView.
     int start_left_edge(visible_content_rect->x());
     int target_left_edge(active_tab_ideal_bounds.x());
 
     AnimateScrollToShowXCoordinate(start_left_edge, target_left_edge);
   } else {
-    // Scroll the right edge of |visible_content_rect| to show the right edge
-    // of the tab at |model_index|. We can leave the width entirely up to the
+    // Scroll the right edge of `visible_content_rect` to show the right edge
+    // of the tab at `model_index`. We can leave the width entirely up to the
     // ScrollView.
     int start_right_edge(visible_content_rect->right());
     int target_right_edge(active_tab_ideal_bounds.right());
@@ -381,7 +393,7 @@ void TabContainerImpl::OnGroupContentsChanged(
     const tab_groups::TabGroupId& group) {
   // If a tab was removed, the underline bounds might be stale.
   group_views_[group]->UpdateBounds();
-
+  group_views_[group]->header()->OnGroupContentsChanged();
   // The group header may be in the wrong place if the tab didn't actually
   // move in terms of model indices.
   OnGroupMoved(group);
@@ -435,8 +447,8 @@ void TabContainerImpl::ToggleTabGroup(
         GetGroupViews(group)->header()->GetCollapsedHeaderWidth();
     const CloseTabSource source =
         origin == ToggleTabGroupCollapsedStateOrigin::kMouse
-            ? CloseTabSource::CLOSE_TAB_FROM_MOUSE
-            : CloseTabSource::CLOSE_TAB_FROM_TOUCH;
+            ? CloseTabSource::kFromMouse
+            : CloseTabSource::kFromTouch;
 
     EnterTabClosingMode(
         tabs_view_model_.ideal_bounds(GetTabCount() - 1).right() -
@@ -496,7 +508,7 @@ std::optional<int> TabContainerImpl::GetModelIndexOfFirstNonClosingTab(
     // user can rapidly close tabs by clicking the close button and not have
     // the animations interfere with that.
     std::vector<Tab*> all_tabs = layout_helper_->GetTabs();
-    auto it = base::ranges::find(all_tabs, tab);
+    auto it = std::ranges::find(all_tabs, tab);
     while (it < all_tabs.end() && (*it)->closing()) {
       it++;
     }
@@ -566,7 +578,7 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
     }
   }
 
-  // |v| is some other view (e.g. a close button in a tab) and therefore |rect|
+  // `v` is some other view (e.g. a close button in a tab) and therefore `rect`
   // is in client area.
   return true;
 }
@@ -639,9 +651,7 @@ void TabContainerImpl::AnimateToIdealBounds() {
     AnimateTabSlotViewTo(header, target_bounds);
   }
 
-  const gfx::Rect overall_target_bounds = gfx::Rect(GetIdealTrailingX(), 0);
-  bounds_animator_.AnimateViewTo(base::to_address(overall_bounds_view_),
-                                 overall_target_bounds);
+  AnimateViewTo(&*overall_bounds_view_, gfx::Rect(GetIdealTrailingX(), 0));
 
   // Because the preferred size of the tabstrip depends on the IsAnimating()
   // condition, but starting an animation doesn't necessarily invalidate the
@@ -671,7 +681,7 @@ void TabContainerImpl::CompleteAnimationAndLayout() {
 
 int TabContainerImpl::GetAvailableWidthForTabContainer() const {
   // Falls back to views::View::GetAvailableSize() when
-  // |available_width_callback_| is not defined, e.g. when tab scrolling is
+  // `available_width_callback_` is not defined, e.g. when tab scrolling is
   // disabled.
   return available_width_callback_
              ? available_width_callback_.Run()
@@ -680,6 +690,12 @@ int TabContainerImpl::GetAvailableWidthForTabContainer() const {
 
 void TabContainerImpl::EnterTabClosingMode(std::optional<int> override_width,
                                            CloseTabSource source) {
+  // Tab closing mode only makes sense if the tab was closed as a direct result
+  // of a mouse or touch event on the tab.
+  if (source == CloseTabSource::kFromNonUIEvent) {
+    return;
+  }
+
   in_tab_close_ = true;
   if (override_width.has_value()) {
     override_available_width_for_tabs_ = override_width;
@@ -692,7 +708,7 @@ void TabContainerImpl::EnterTabClosingMode(std::optional<int> override_width,
   }
 
   resize_layout_timer_.Stop();
-  if (source == CLOSE_TAB_FROM_TOUCH) {
+  if (source == CloseTabSource::kFromTouch) {
     StartResizeLayoutTabsFromTouchTimer();
   } else {
     AddMessageLoopObserver();
@@ -897,7 +913,7 @@ std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
   using BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
   using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
 
-  // Loop until we find a tab or group header that intersects |event|'s
+  // Loop until we find a tab or group header that intersects `event`'s
   // location.
   for (TabSlotView* view : views) {
     const int max_x = view->x() + view->width();
@@ -1133,6 +1149,15 @@ std::optional<gfx::Rect> TabContainerImpl::GetVisibleContentRect() {
   return scroll_container->GetVisibleRect();
 }
 
+void TabContainerImpl::AnimateViewTo(
+    View* view,
+    const gfx::Rect& target,
+    std::unique_ptr<gfx::AnimationDelegate> delegate) {
+  bounds_animator_.SetAnimationDuration(
+      gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
+  bounds_animator_.AnimateViewTo(view, target, std::move(delegate));
+}
+
 void TabContainerImpl::AnimateScrollToShowXCoordinate(const int start_edge,
                                                       const int target_edge) {
   if (tab_scrolling_animation_) {
@@ -1143,8 +1168,8 @@ void TabContainerImpl::AnimateScrollToShowXCoordinate(const int start_edge,
   gfx::Rect target_rect(target_edge, 0, 0, 0);
 
   tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-      scroll_contents_view_, bounds_animator_.container(),
-      bounds_animator_.GetAnimationDuration(), start_rect, target_rect);
+      scroll_contents_view_, bounds_animator_.container(), start_rect,
+      target_rect);
   tab_scrolling_animation_->Start();
 }
 
@@ -1163,7 +1188,7 @@ void TabContainerImpl::AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
     return;
   }
 
-  bounds_animator_.AnimateViewTo(
+  AnimateViewTo(
       tab_slot_view, target_bounds,
       std::make_unique<TabSlotAnimationDelegate>(this, tab_slot_view));
 }
@@ -1286,8 +1311,8 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
   // currently being closed to reflect the new ideal bounds, or else change from
   // removing one tab at a time to animating the removal of all tabs at once.
 
-  bounds_animator_.AnimateViewTo(
-      tab, target_bounds, std::make_unique<RemoveTabDelegate>(this, tab));
+  AnimateViewTo(tab, target_bounds,
+                std::make_unique<RemoveTabDelegate>(this, tab));
 }
 
 gfx::Rect TabContainerImpl::GetTargetBoundsForClosingTab(
@@ -1368,8 +1393,8 @@ void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
 
 void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
                                                      bool was_active) {
-  // The tab at |model_index| has already been removed from the model, but is
-  // still in |tabs_view_model_|.  Index math with care!
+  // The tab at `model_index` has already been removed from the model, but is
+  // still in `tabs_view_model_`.  Index math with care!
   const int model_count = GetTabCount() - 1;
 
   // If we're closing the last tab, tab closing mode is no longer meaningful.
@@ -1505,11 +1530,11 @@ void TabContainerImpl::OrderTabSlotView(TabSlotView* slot_view) {
     return;
   }
 
-  // |slot_view| is in the wrong place in children(). Fix it.
+  // `slot_view` is in the wrong place in children(). Fix it.
   std::vector<TabSlotView*> slots = layout_helper_->GetTabSlotViews();
   size_t target_slot_index =
-      base::ranges::find(slots, slot_view) - slots.begin();
-  // Find the index in children() that corresponds to |target_slot_index|.
+      std::ranges::find(slots, slot_view) - slots.begin();
+  // Find the index in children() that corresponds to `target_slot_index`.
   size_t view_index = 0;
   for (size_t slot_index = 0; slot_index < target_slot_index; ++slot_index) {
     // If we don't own this view, skip it *without* advancing in children().
@@ -1550,14 +1575,14 @@ Tab* TabContainerImpl::FindTabHitByPoint(const gfx::Point& point) {
   for (size_t i = 0; i < all_tabs.size(); ++i) {
     // If we don't first exclude points outside the current tab, the code below
     // will return the wrong tab if the next tab is selected, the following tab
-    // is active, and |point| is in the overlap region between the two.
+    // is active, and `point` is in the overlap region between the two.
     Tab* tab = all_tabs[i];
     if (!IsPointInTab(tab, point)) {
       continue;
     }
 
     // Selected tabs render atop unselected ones, and active tabs render atop
-    // everything.  Check whether the next tab renders atop this one and |point|
+    // everything.  Check whether the next tab renders atop this one and `point`
     // is in the overlap region.
     Tab* next_tab = i < (all_tabs.size() - 1) ? all_tabs[i + 1] : nullptr;
     if (next_tab &&

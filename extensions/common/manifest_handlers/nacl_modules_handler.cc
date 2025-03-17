@@ -37,11 +37,8 @@ const NaClModuleInfo::List* NaClModuleInfo::GetNaClModules(
   return data ? &data->nacl_modules_ : NULL;
 }
 
-NaClModulesHandler::NaClModulesHandler() {
-}
-
-NaClModulesHandler::~NaClModulesHandler() {
-}
+NaClModulesHandler::NaClModulesHandler() = default;
+NaClModulesHandler::~NaClModulesHandler() = default;
 
 bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value* list_value = nullptr;

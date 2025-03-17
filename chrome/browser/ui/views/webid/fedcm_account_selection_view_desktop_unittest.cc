@@ -16,6 +16,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -24,10 +27,13 @@
 #include "ui/views/test/mock_input_event_activation_protector.h"
 #include "url/gurl.h"
 
+namespace webid {
+
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using TokenError = content::IdentityCredentialTokenError;
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
+using testing::_;
 class FedCmAccountSelectionViewDesktopTest;
 
 namespace {
@@ -45,13 +51,12 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
                                  public views::WidgetDelegate {
  public:
   explicit TestAccountSelectionView(FedCmAccountSelectionView* owner)
-      : AccountSelectionViewBase(/*web_contents=*/nullptr,
-                                 owner,
+      : AccountSelectionViewBase(owner,
                                  /*url_loader_factory=*/nullptr,
                                  /*rp_for_display=*/std::u16string()) {
     // This matches behavior of the production code, which implicitly passes
     // ownership of the view to the widget via DialogDelegate superclass.
-    SetOwnedByWidget(/*owned=*/true);
+    SetOwnedByWidget(/*delete_self=*/true);
   }
   enum class SheetType {
     kAccountPicker,
@@ -186,22 +191,27 @@ class FakeTabInterface : public tabs::MockTabInterface {
   explicit FakeTabInterface(content::WebContents* contents)
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }
-  void SetIsInForeground(bool foreground) { is_in_foreground_ = foreground; }
-  bool IsInForeground() const override { return is_in_foreground_; }
+
+  void SetIsActivated(bool active) { is_activated = active; }
+  bool IsActivated() const override { return is_activated; }
   bool CanShowModalUI() const override { return true; }
 
  private:
   raw_ptr<content::WebContents> contents_;
-  bool is_in_foreground_ = true;
+  bool is_activated = true;
 };
 
 // Test FedCmAccountSelectionView which uses TestAccountSelectionView.
 class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
  public:
-  TestFedCmAccountSelectionView(Delegate* delegate,
-                                tabs::TabInterface* tab,
-                                FedCmAccountSelectionViewDesktopTest* test)
-      : FedCmAccountSelectionView(delegate, tab), test_(test) {
+  TestFedCmAccountSelectionView(
+      Delegate* delegate,
+      tabs::TabInterface* tab,
+      FedCmAccountSelectionViewDesktopTest* test,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service = nullptr)
+      : FedCmAccountSelectionView(delegate, tab, segmentation_platform_service),
+        test_(test) {
     auto input_protector =
         std::make_unique<views::MockInputEventActivationProtector>();
     ON_CALL(*input_protector, IsPossiblyUnintendedInteraction)
@@ -265,8 +275,10 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   StubAccountSelectionViewDelegate& operator=(
       const StubAccountSelectionViewDelegate&) = delete;
 
-  void OnAccountSelected(const GURL&,
-                         const content::IdentityRequestAccount&) override {}
+  void OnAccountSelected(
+      const GURL&,
+      const std::string&,
+      const content::IdentityRequestAccount::LoginState&) override {}
   void OnDismiss(DismissReason dismiss_reason) override {
     dismiss_reason_ = dismiss_reason;
     if (on_dismiss_) {
@@ -319,7 +331,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
           disclosure_fields = kDefaultDisclosureFields) {
     return base::MakeRefCounted<content::IdentityProviderData>(
         /*idp_for_display=*/"", content::IdentityProviderMetadata(),
-        content::ClientMetadata(GURL(), GURL(), GURL()),
+        content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
         blink::mojom::RpContext::kSignIn, disclosure_fields,
         has_login_status_mismatch);
   }
@@ -330,7 +342,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       LoginState browser_trusted_login_state = LoginState::kSignUp,
       std::string account_id = kAccountId1) {
     IdentityRequestAccountPtr account = base::MakeRefCounted<Account>(
-        account_id, "", "", "", GURL(),
+        account_id, "", "", "", "", "", GURL(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),
@@ -346,7 +358,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     std::vector<IdentityRequestAccountPtr> accounts;
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(base::MakeRefCounted<Account>(
-          account_info.first, "", "", "", GURL(),
+          account_info.first, "", "", "", "", "", GURL(),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>(),
@@ -438,6 +450,39 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return controller;
   }
 
+  std::unique_ptr<TestFedCmAccountSelectionView>
+  CreateAndShowWithSegmentationPlatformService(
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      SignInMode sign_in_mode,
+      std::string result_label,
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kPassive) {
+    base::RunLoop run_loop;
+    segmentation_platform_service_ = std::make_unique<
+        segmentation_platform::MockSegmentationPlatformService>();
+    ON_CALL(*segmentation_platform_service_,
+            GetClassificationResult(_, _, _, _))
+        .WillByDefault(testing::WithArg<3>(testing::Invoke(
+            [&run_loop, &result_label](
+                segmentation_platform::ClassificationResultCallback callback) {
+              auto result = segmentation_platform::ClassificationResult(
+                  segmentation_platform::PredictionStatus::kSucceeded);
+              result.request_id = segmentation_platform::TrainingRequestId(1);
+              result.ordered_labels = {result_label};
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(callback), result)
+                                 .Then(run_loop.QuitClosure()));
+            })));
+    EXPECT_CALL(*segmentation_platform_service_,
+                CollectTrainingData(_, _, _, _, _))
+        .Times(1);
+    auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+        delegate_.get(), tab_interface_.get(), this,
+        segmentation_platform_service_.get());
+    Show(*controller, accounts, sign_in_mode, rp_mode);
+    run_loop.Run();
+    return controller;
+  }
+
   void OpenLoginToIdpPopup(TestFedCmAccountSelectionView* controller) {
     controller->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
                              CreateMouseEvent());
@@ -511,11 +556,11 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
   void TabWillEnterBackground(TestFedCmAccountSelectionView* view) {
     view->TabWillEnterBackground(tab_interface_.get());
-    tab_interface_->SetIsInForeground(false);
+    tab_interface_->SetIsActivated(false);
   }
 
   void TabForegrounded(TestFedCmAccountSelectionView* view) {
-    tab_interface_->SetIsInForeground(true);
+    tab_interface_->SetIsActivated(true);
     view->TabForegrounded(tab_interface_.get());
   }
 
@@ -532,6 +577,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> dialog_widget_;
   std::unique_ptr<StubAccountSelectionViewDelegate> delegate_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<segmentation_platform::MockSegmentationPlatformService>
+      segmentation_platform_service_;
 
   IdentityProviderDataPtr idp_data_;
   std::vector<IdentityRequestAccountPtr> accounts_;
@@ -721,8 +768,10 @@ class ViewDeletingAccountSelectionViewDelegate
     view_ = std::move(view);
   }
 
-  void OnAccountSelected(const GURL&,
-                         const content::IdentityRequestAccount&) override {
+  void OnAccountSelected(
+      const GURL&,
+      const std::string&,
+      const content::IdentityRequestAccount::LoginState&) override {
     view_.reset();
   }
 
@@ -2614,3 +2663,69 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
   CheckForSampleAndReset(
       FedCmAccountSelectionView::DisclosureDialogResult::kDestroy);
 }
+
+TEST_F(FedCmAccountSelectionViewDesktopTest, SegmentationPlatformShowUi) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      segmentation_platform::features::kSegmentationPlatformFedCmUser);
+
+  auto controller = CreateAndShowWithSegmentationPlatformService(
+      accounts_, SignInMode::kExplicit, "FedCmUserLoud");
+  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+}
+
+TEST_F(FedCmAccountSelectionViewDesktopTest, SegmentationPlatformDontShowUi) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      segmentation_platform::features::kSegmentationPlatformFedCmUser);
+
+  auto controller = CreateAndShowWithSegmentationPlatformService(
+      accounts_, SignInMode::kExplicit, "FedCmUserQuiet");
+  EXPECT_FALSE(controller->GetDialogWidget());
+}
+
+// Tests that the correct segmentation platform user action metrics are
+// recorded.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       SegmentationPlatformUserActionMetric) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      segmentation_platform::features::kSegmentationPlatformFedCmUser);
+
+  auto CheckForSampleAndReset(
+      [&](FedCmAccountSelectionView::UserAction action) {
+        histogram_tester_->ExpectUniqueSample(
+            "Blink.FedCm.SegmentationPlatform.UserAction",
+            static_cast<int>(action), 1);
+        histogram_tester_ = std::make_unique<base::HistogramTester>();
+      });
+
+  {
+    // User proceeds with an account.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowWithSegmentationPlatformService(
+            accounts_, SignInMode::kExplicit, "FedCmUserLoud");
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
+  }
+  CheckForSampleAndReset(FedCmAccountSelectionView::UserAction::kSuccess);
+
+  {
+    // User clicks on cancel button.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowWithSegmentationPlatformService(
+            accounts_, SignInMode::kExplicit, "FedCmUserLoud");
+    controller->OnCloseButtonClicked(CreateMouseEvent());
+  }
+  CheckForSampleAndReset(FedCmAccountSelectionView::UserAction::kClosed);
+
+  {
+    // User ignores the UI.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowWithSegmentationPlatformService(
+            accounts_, SignInMode::kExplicit, "FedCmUserLoud");
+  }
+  CheckForSampleAndReset(FedCmAccountSelectionView::UserAction::kIgnored);
+}
+
+}  // namespace webid

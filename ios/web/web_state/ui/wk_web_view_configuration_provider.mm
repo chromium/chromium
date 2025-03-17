@@ -10,11 +10,15 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/uuid.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_features/window_error/catch_gcrweb_script_errors_java_script_feature.h"
@@ -60,6 +64,36 @@ WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
       browser_state->GetUserData(kWKWebViewConfigProviderKeyName)));
 }
 
+// static
+void WKWebViewConfigurationProvider::DeleteDataStorageForIdentifier(
+    const base::Uuid& uuid,
+    base::OnceCallback<void(NSError*)> callback) {
+  if (@available(iOS 17.0, *)) {
+    // Calling either +removeDataStoreForIdentifier:completionHandler: or
+    // +fetchAllDataStoreIdentifiers: crashes if no WKWebsiteDataStore
+    // instance have been created in the app before.
+    //
+    // To prevent a crash, access the default data store. This prevents the
+    // crash. This is fine since the default data store cannot be deleted,
+    // so there is no risk of preventing the deletion that could happen if
+    // the code were trying to load the store that it is supposed to delete.
+    @autoreleasepool {
+      std::ignore = [WKWebsiteDataStore defaultDataStore];
+    }
+
+    // The WebKit documentation does not specify on which queue the block
+    // is run, so use base::BindPostTask(...) to ensure the callback will
+    // be run on the calling sequence.
+    auto completion = base::CallbackToBlock(base::BindPostTask(
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback)));
+
+    [WKWebsiteDataStore removeDataStoreForIdentifier:ToNSUUID(uuid)
+                                   completionHandler:completion];
+  } else {
+    NOTREACHED();
+  }
+}
+
 base::WeakPtr<WKWebViewConfigurationProvider>
 WKWebViewConfigurationProvider::AsWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
@@ -89,33 +123,19 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     configuration_ = [configuration copy];
   }
 
-  // Set the data store only when configuration is nil because the data
-  // store in the configuration should be used.
-  if (configuration == nil) {
-    if (browser_state_->IsOffTheRecord()) {
-      // The data is stored in memory. A new non-persistent data store is
-      // created for each incognito browser state.
-      [configuration_
-          setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
-    } else {
-      const base::Uuid& storage_id = browser_state_->GetWebKitStorageID();
-      if (storage_id.is_valid()) {
-        if (@available(iOS 17.0, *)) {
-          // Set the data store to configuration when the browser state is not
-          // incognito and the storage ID exists. `dataStoreForIdentifier:` is
-          // available after iOS 17. Otherwise, use the default data store.
-          NSUUID* uuid = ToNSUUID(storage_id);
-          [configuration_ setWebsiteDataStore:[WKWebsiteDataStore
-                                                  dataStoreForIdentifier:uuid]];
-        }
-      }
+  // Update the configuration's website data store.
+  if (!configuration) {
+    // Purge `website_data_store_` if current website data store is set from
+    // configuration originated from somewhere outside //ios/web, so that the
+    // next call to `GetWebsiteDataStore` will create a new data store for
+    // //ios/web managed WKWebview.
+    if (website_data_store_ && !is_data_store_originated_from_ios_web_) {
+      website_data_store_ = nil;
     }
-  }
-
-  // Explicitly set the default data store to the configuration. The data store
-  // always can be obtained from the configuration.
-  if (configuration_.websiteDataStore == nil) {
-    [configuration_ setWebsiteDataStore:[WKWebsiteDataStore defaultDataStore]];
+    [configuration_ setWebsiteDataStore:GetWebsiteDataStore()];
+  } else {
+    website_data_store_ = configuration.websiteDataStore;
+    is_data_store_originated_from_ios_web_ = false;
   }
 
   [configuration_ setIgnoresViewportScaleLimits:YES];
@@ -166,15 +186,6 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
       configuration_.userContentController);
 
   configuration_created_callbacks_.Notify(configuration_);
-
-  // Workaround to force the creation of the WKWebsiteDataStore. This
-  // workaround need to be done here, because this method returns a copy of
-  // the already created configuration.
-  NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
-  [configuration_.websiteDataStore
-      fetchDataRecordsOfTypes:data_types
-            completionHandler:^(NSArray<WKWebsiteDataRecord*>* records){
-            }];
 }
 
 WKWebViewConfiguration*
@@ -187,6 +198,46 @@ WKWebViewConfigurationProvider::GetWebViewConfiguration() {
   // This is a shallow copy to prevent callers from changing the internals of
   // configuration.
   return [configuration_ copy];
+}
+
+WKWebsiteDataStore* WKWebViewConfigurationProvider::GetWebsiteDataStore() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
+  if (!website_data_store_) {
+    if (browser_state_->IsOffTheRecord()) {
+      // The data is stored in memory. A new non-persistent data store is
+      // created for each incognito browser state.
+      website_data_store_ = [WKWebsiteDataStore nonPersistentDataStore];
+    } else {
+      const base::Uuid& storage_id = browser_state_->GetWebKitStorageID();
+      if (storage_id.is_valid()) {
+        if (@available(iOS 17.0, *)) {
+          // Set the data store to configuration when the browser state is not
+          // incognito and the storage ID exists. `dataStoreForIdentifier:` is
+          // available after iOS 17. Otherwise, use the default data store.
+          NSUUID* uuid = ToNSUUID(storage_id);
+          website_data_store_ =
+              [WKWebsiteDataStore dataStoreForIdentifier:uuid];
+        }
+      }
+    }
+
+    // Explicitly use the default data store.
+    if (website_data_store_ == nil) {
+      website_data_store_ = [WKWebsiteDataStore defaultDataStore];
+    }
+
+    // Mark the data store is originated from //ios/web.
+    is_data_store_originated_from_ios_web_ = true;
+
+    // Workaround to force the creation of the WKWebsiteDataStore.
+    NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
+    [website_data_store_
+        fetchDataRecordsOfTypes:data_types
+              completionHandler:^(NSArray<WKWebsiteDataRecord*>* records){
+              }];
+  }
+  DCHECK(website_data_store_);
+  return website_data_store_;
 }
 
 void WKWebViewConfigurationProvider::UpdateScripts() {

@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.SparseArray;
@@ -15,6 +17,8 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -32,6 +36,7 @@ import java.util.function.Consumer;
  * Methods to handle requesting native permissions from Android when the user grants a website a
  * permission.
  */
+@NullMarked
 public class AndroidPermissionRequester {
     /**
      * An interface for classes which need to be informed of the outcome of asking a user to grant
@@ -101,16 +106,23 @@ public class AndroidPermissionRequester {
     }
 
     /**
-     * Returns true if any of the permissions in contentSettingsTypes must be requested from the
-     * system. Otherwise returns false.
+     * Request android permissions for the given content setting types.
      *
-     * If true is returned, this method will asynchronously request the necessary permissions using
-     * a dialog, running methods on the RequestDelegate when the user has made a decision.
+     * @param windowAndroid Current WindowAndroid.
+     * @param contentSettingsTypes content settings types of the permission requests.
+     * @param delegate delegate callback triggered when the permissions are accepted or canceled
+     * @param onMissingPermission Runnable that is executed when we want to inform the user about a
+     *     missing Android permission.
+     * @return true if any of the permissions in contentSettingsTypes must be requested from the
+     *     system. Otherwise returns false. If true is returned, this method will asynchronously
+     *     request the necessary permissions using a dialog, running methods on the RequestDelegate
+     *     when the user has made a decision.
      */
     public static boolean requestAndroidPermissions(
             final WindowAndroid windowAndroid,
             final int[] contentSettingsTypes,
-            final RequestDelegate delegate) {
+            final RequestDelegate delegate,
+            @Nullable Runnable onMissingPermission) {
         if (windowAndroid == null) return false;
 
         SparseArray<Set<String>> contentSettingsTypesToRequiredPermissionsMap = new SparseArray<>();
@@ -236,19 +248,24 @@ public class AndroidPermissionRequester {
                                             + deniedContentSettings;
 
                             String appName = BuildInfo.getInstance().hostPackageLabel;
-                            showMissingPermissionDialog(
-                                    windowAndroid,
-                                    context.getString(deniedStringId, appName),
-                                    (model) -> {
-                                        final ModalDialogManager modalDialogManager =
-                                                windowAndroid.getModalDialogManager();
-                                        modalDialogManager.dismissDialog(
-                                                model,
-                                                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                                        requestAndroidPermissions(
-                                                windowAndroid, contentSettingsTypes, delegate);
-                                    },
-                                    delegate::onAndroidPermissionCanceled);
+                            if (onMissingPermission == null) {
+                                showMissingPermissionDialog(
+                                        windowAndroid,
+                                        context.getString(deniedStringId, appName),
+                                        (model) -> {
+                                            final ModalDialogManager modalDialogManager =
+                                                    assumeNonNull(
+                                                            windowAndroid.getModalDialogManager());
+                                            modalDialogManager.dismissDialog(
+                                                    model,
+                                                    DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                            requestAndroidPermissions(
+                                                    windowAndroid, contentSettingsTypes, delegate);
+                                        },
+                                        delegate::onAndroidPermissionCanceled);
+                            } else {
+                                onMissingPermission.run();
+                            }
                         } else if (deniedContentSettings.isEmpty()) {
                             delegate.onAndroidPermissionAccepted();
                         } else {
@@ -266,13 +283,26 @@ public class AndroidPermissionRequester {
     }
 
     /**
-     * Shows a dialog that informs the user about a missing Android permission. Note that
-     * the dialog is not dismissed when the positive button is clicked, rather it will be
-     * dismissed after the Android permissions dialog is dismissed.
+     * Request android permissions, similar to above method, but using default `onMissingPermission`
+     * callback showing a missing permission dialog.
+     */
+    public static boolean requestAndroidPermissions(
+            final WindowAndroid windowAndroid,
+            final int[] contentSettingsTypes,
+            final RequestDelegate delegate) {
+        return requestAndroidPermissions(
+                windowAndroid, contentSettingsTypes, delegate, /* onMissingPermission= */ null);
+    }
+
+    /**
+     * Shows a dialog that informs the user about a missing Android permission. Note that the dialog
+     * is not dismissed when the positive button is clicked, rather it will be dismissed after the
+     * Android permissions dialog is dismissed.
+     *
      * @param windowAndroid Current WindowAndroid.
      * @param messageId The message that is shown on the dialog.
-     * @param onPositiveButtonClicked Consumer that is executed on positive button click.
-     *         It takes a PropertyModel.
+     * @param onPositiveButtonClicked Consumer that is executed on positive button click. It takes a
+     *     PropertyModel.
      * @param onCancelled Runnable that is executed on cancellation.
      */
     public static void showMissingPermissionDialog(
@@ -299,7 +329,7 @@ public class AndroidPermissionRequester {
                         }
                     }
                 };
-        Context context = windowAndroid.getContext().get();
+        Context context = assumeNonNull(windowAndroid.getContext().get());
         View view = LayoutInflater.from(context).inflate(R.layout.update_permissions_dialog, null);
         TextView dialogText = view.findViewById(R.id.text);
         dialogText.setText(message);

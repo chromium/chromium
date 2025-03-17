@@ -36,7 +36,8 @@ class SigninViewControllerDelegateViewsBrowserTest : public DialogBrowserTest {
             browser(), SyncConfirmationStyle::kDefaultModal,
             /*is_sync_promo=*/false),
         browser(), ui::mojom::ModalType::kWindow,
-        /*wait_for_size=*/!show_immediately, false);
+        /*wait_for_size=*/!show_immediately, /*should_show_close_button=*/false,
+        /*animate_on_resize=*/true);
   }
 
   // Closes the dialog and checks that the web contents were not leaked.

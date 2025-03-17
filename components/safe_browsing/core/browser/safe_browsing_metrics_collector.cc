@@ -4,10 +4,11 @@
 
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 
+#include <algorithm>
+
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -464,7 +465,7 @@ int SafeBrowsingMetricsCollector::GetEventCountSince(UserState user_state,
     return 0;
   }
 
-  return base::ranges::count_if(*timestamps, [&](const base::Value& timestamp) {
+  return std::ranges::count_if(*timestamps, [&](const base::Value& timestamp) {
     return PrefValueToTime(timestamp) > since_time;
   });
 }

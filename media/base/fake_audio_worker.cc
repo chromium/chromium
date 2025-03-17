@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,6 +27,8 @@ namespace media {
 class FakeAudioWorker::Worker
     : public base::RefCountedThreadSafe<FakeAudioWorker::Worker> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   Worker(const scoped_refptr<base::SequencedTaskRunner>& worker_task_runner,
          const AudioParameters& params);
 
@@ -69,7 +72,7 @@ class FakeAudioWorker::Worker
 FakeAudioWorker::FakeAudioWorker(
     const scoped_refptr<base::SequencedTaskRunner>& worker_task_runner,
     const AudioParameters& params)
-    : worker_(new Worker(worker_task_runner, params)) {}
+    : worker_(base::MakeRefCounted<Worker>(worker_task_runner, params)) {}
 
 FakeAudioWorker::~FakeAudioWorker() {
   DCHECK(worker_->IsStopped());
@@ -195,9 +198,7 @@ void FakeAudioWorker::Worker::DoRead() {
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       worker_task_cb_.callback(), next_read_time,
       base::subtle::DelayPolicy::kPrecise);
-  // TODO(crbug.com/366102594): Revert this once we have data on when
-  // FakeAudioWorker fails.
-  CHECK(posted, base::NotFatalUntil::M134);
+  CHECK(posted);
   TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker::DoRead",
                    "read_time",
                    (read_time - base::TimeTicks()).InMilliseconds(), "now",

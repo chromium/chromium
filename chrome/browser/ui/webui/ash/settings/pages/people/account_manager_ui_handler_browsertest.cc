@@ -14,7 +14,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -22,16 +21,20 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,13 +71,14 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
-  return {signin::GetTestGaiaIdForEmail("primary@example.com") /*id*/,
-          "primary@example.com" /*email*/,
-          "primary" /*fullName*/,
-          "" /*organization*/,
-          user_manager::UserType::kRegular /*user_type*/,
-          account_manager::AccountType::kGaia /*account_type*/,
-          "device-account-token" /*token*/};
+  return {
+      signin::GetTestGaiaIdForEmail("primary@example.com").ToString() /*id*/,
+      "primary@example.com" /*email*/,
+      "primary" /*fullName*/,
+      "" /*organization*/,
+      user_manager::UserType::kRegular /*user_type*/,
+      account_manager::AccountType::kGaia /*account_type*/,
+      "device-account-token" /*token*/};
 }
 
 DeviceAccountInfo GetChildDeviceAccountInfo() {
@@ -141,6 +145,7 @@ class AccountManagerUIHandlerTest
       delete;
 
   void SetUpOnMainThread() override {
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
     // Split the setup so it can be called from the inherited classes.
     SetUpEnvironment();
 
@@ -161,15 +166,32 @@ class AccountManagerUIHandlerTest
   void TearDownOnMainThread() override {
     account_apps_availability_ = nullptr;
     handler_.reset();
-    GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
     profile_.reset();
     base::RunLoop().RunUntilIdle();
-    user_manager_enabler_.reset();
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
   // Sets up profile and user manager. Should be called only once on test setup.
   void SetUpEnvironment() {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id));
+    const user_manager::User* user;
+    {
+      user_manager::TestHelper test_helper(*user_manager::UserManager::Get());
+      if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
+        user = test_helper.AddChildUser(account_id);
+      } else {
+        user = test_helper.AddRegularUser(account_id);
+      }
+    }
+    ASSERT_TRUE(user);
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false,
+        /*has_active_session*/ false);
+
     TestingProfile::Builder profile_builder;
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
     profile_builder.SetProfileName(GetDeviceAccountInfo().email);
@@ -177,24 +199,9 @@ class AccountManagerUIHandlerTest
       profile_builder.SetIsSupervisedProfile();
     }
     profile_ = profile_builder.Build();
-
-    auto user_manager = std::make_unique<FakeChromeUserManager>();
-    const user_manager::User* user;
-    if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
-      user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
-    } else {
-      user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-          AccountId::FromUserEmailGaiaId(GetDeviceAccountInfo().email,
-                                         GetDeviceAccountInfo().id),
-          true, GetDeviceAccountInfo().user_type, profile_.get());
-    }
-    primary_account_id_ = user->GetAccountId();
-    user_manager->LoginUser(primary_account_id_);
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                             profile_.get());
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
 
     auto* factory =
         g_browser_process->platform_part()->GetAccountManagerFactory();
@@ -209,16 +216,10 @@ class AccountManagerUIHandlerTest
     signin::WaitForRefreshTokensLoaded(identity_manager_);
   }
 
-  FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   void UpsertAccount(std::string email) {
-    account_manager_->UpsertAccount(
-        ::account_manager::AccountKey{signin::GetTestGaiaIdForEmail(email),
-                                      account_manager::AccountType::kGaia},
-        email, AccountManager::kInvalidToken);
+    account_manager_->UpsertAccount(::account_manager::AccountKey::FromGaiaId(
+                                        signin::GetTestGaiaIdForEmail(email)),
+                                    email, AccountManager::kInvalidToken);
   }
 
   std::vector<::account_manager::Account> GetAccountsFromAccountManager()
@@ -243,14 +244,12 @@ class AccountManagerUIHandlerTest
   AccountManager* account_manager() { return account_manager_; }
 
  private:
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<AccountManager, DanglingUntriaged> account_manager_ = nullptr;
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
       nullptr;
   content::TestWebUI web_ui_;
-  AccountId primary_account_id_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
   raw_ptr<AccountAppsAvailability> account_apps_availability_;
 };
@@ -376,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 
     AccountInfo expected_account_info =
         identity_manager()->FindExtendedAccountInfoByGaiaId(
-            expected_account.key.id());
+            GaiaId(expected_account.key.id()));
     EXPECT_FALSE(expected_account_info.IsEmpty());
     EXPECT_EQ(expected_account_info.full_name,
               ValueOrEmpty(account.FindString("fullName")));

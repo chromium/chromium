@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Списокот со акредитиви што се пополнуваат со допир е отворен на цел екран.</translation>
 <translation id="5591247451101092906">Да се користи зачуваната лозинка или криптографски клуч?</translation>
 <translation id="5624120631404540903">Управувај со лозинки</translation>
+<translation id="592182999816790476">Лозинката за <ph name="USERNAME" /> е зачувана за <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Криптографски клуч за <ph name="USERNAME" />, користете го заклучувањето екран</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Нова лозинка за сајтов}one{Нови лозинки за сајтов}other{Нови лозинки за сајтов}}</translation>
 <translation id="7286867818472074330">Изберете криптографски клуч</translation>

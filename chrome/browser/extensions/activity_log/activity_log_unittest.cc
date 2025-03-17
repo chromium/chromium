@@ -43,7 +43,7 @@ namespace {
 
 const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
-const auto kUrlApiCalls = std::to_array<const char*>({
+constexpr auto kUrlApiCalls = std::to_array<const char*>({
     "HTMLButtonElement.formAction", "HTMLEmbedElement.src",
     "HTMLFormElement.action",       "HTMLFrameElement.src",
     "HTMLHtmlElement.manifest",     "HTMLIFrameElement.src",
@@ -93,6 +93,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   }
   void CancelSuspendExtension(const std::string& extension_id) override {}
   void SetDeveloperMode(bool current_developer_mode) override {}
+  void SetUserScriptsAllowed(const std::string& extension_id,
+                             bool allowed) override {}
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session) override {}
   void SetSystemFont(const std::string& font_family,

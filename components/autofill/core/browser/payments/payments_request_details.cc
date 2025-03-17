@@ -16,7 +16,8 @@ UnmaskDetails::UnmaskDetails(UnmaskDetails&&) = default;
 
 UnmaskDetails& UnmaskDetails::operator=(const UnmaskDetails& other) {
   unmask_auth_method = other.unmask_auth_method;
-  offer_fido_opt_in = other.offer_fido_opt_in;
+  server_denotes_fido_eligible_but_not_opted_in =
+      other.server_denotes_fido_eligible_but_not_opted_in;
   if (other.fido_request_options.empty()) {
     fido_request_options.clear();
   } else {
@@ -212,6 +213,23 @@ GetDetailsForCreateBnplPaymentInstrumentRequestDetails::operator=(
 GetDetailsForCreateBnplPaymentInstrumentRequestDetails::
     ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails() = default;
 
+CreateBnplPaymentInstrumentRequestDetails::
+    CreateBnplPaymentInstrumentRequestDetails() = default;
+CreateBnplPaymentInstrumentRequestDetails::
+    CreateBnplPaymentInstrumentRequestDetails(
+        const CreateBnplPaymentInstrumentRequestDetails&) = default;
+CreateBnplPaymentInstrumentRequestDetails&
+CreateBnplPaymentInstrumentRequestDetails::operator=(
+    const CreateBnplPaymentInstrumentRequestDetails& other) = default;
+CreateBnplPaymentInstrumentRequestDetails::
+    CreateBnplPaymentInstrumentRequestDetails(
+        CreateBnplPaymentInstrumentRequestDetails&&) = default;
+CreateBnplPaymentInstrumentRequestDetails&
+CreateBnplPaymentInstrumentRequestDetails::operator=(
+    CreateBnplPaymentInstrumentRequestDetails&&) = default;
+CreateBnplPaymentInstrumentRequestDetails::
+    ~CreateBnplPaymentInstrumentRequestDetails() = default;
+
 GetBnplPaymentInstrumentForFetchingVcnRequestDetails::
     GetBnplPaymentInstrumentForFetchingVcnRequestDetails() = default;
 GetBnplPaymentInstrumentForFetchingVcnRequestDetails::
@@ -240,5 +258,34 @@ BnplFetchVcnResponseDetails& BnplFetchVcnResponseDetails::operator=(
 BnplFetchVcnResponseDetails& BnplFetchVcnResponseDetails::operator=(
     BnplFetchVcnResponseDetails&&) = default;
 BnplFetchVcnResponseDetails::~BnplFetchVcnResponseDetails() = default;
+
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails::
+    GetBnplPaymentInstrumentForFetchingUrlRequestDetails() = default;
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails::
+    GetBnplPaymentInstrumentForFetchingUrlRequestDetails(
+        const GetBnplPaymentInstrumentForFetchingUrlRequestDetails&) = default;
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails&
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails::operator=(
+    const GetBnplPaymentInstrumentForFetchingUrlRequestDetails& other) =
+    default;
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails::
+    GetBnplPaymentInstrumentForFetchingUrlRequestDetails(
+        GetBnplPaymentInstrumentForFetchingUrlRequestDetails&&) = default;
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails&
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails::operator=(
+    GetBnplPaymentInstrumentForFetchingUrlRequestDetails&&) = default;
+GetBnplPaymentInstrumentForFetchingUrlRequestDetails::
+    ~GetBnplPaymentInstrumentForFetchingUrlRequestDetails() = default;
+
+BnplFetchUrlResponseDetails::BnplFetchUrlResponseDetails() = default;
+BnplFetchUrlResponseDetails::BnplFetchUrlResponseDetails(
+    const BnplFetchUrlResponseDetails& other) = default;
+BnplFetchUrlResponseDetails::BnplFetchUrlResponseDetails(
+    BnplFetchUrlResponseDetails&&) = default;
+BnplFetchUrlResponseDetails& BnplFetchUrlResponseDetails::operator=(
+    const BnplFetchUrlResponseDetails& other) = default;
+BnplFetchUrlResponseDetails& BnplFetchUrlResponseDetails::operator=(
+    BnplFetchUrlResponseDetails&&) = default;
+BnplFetchUrlResponseDetails::~BnplFetchUrlResponseDetails() = default;
 
 }  // namespace autofill::payments

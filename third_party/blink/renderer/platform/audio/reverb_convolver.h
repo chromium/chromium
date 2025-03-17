@@ -45,7 +45,7 @@ namespace blink {
 
 class AudioChannel;
 
-class PLATFORM_EXPORT ReverbConvolver {
+class PLATFORM_EXPORT ReverbConvolver final {
   USING_FAST_MALLOC(ReverbConvolver);
 
  public:

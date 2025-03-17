@@ -9,11 +9,11 @@
 
 #include "media/formats/mp4/avc.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/decrypt_config.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
@@ -40,7 +40,7 @@ bool AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
       return false;
     }
 
-    base::ranges::copy(kAnnexBStartCode, buf->begin() + pos);
+    std::ranges::copy(kAnnexBStartCode, buf->begin() + pos);
     pos += kLengthSize + nal_length;
   }
   return pos == buf->size();
@@ -193,7 +193,6 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
   DVLOG(3) << __func__;
-  DCHECK(buffer);
 
   BitstreamConverter::AnalysisResult result;
   result.is_conformant = false;  // Will change if needed before return.

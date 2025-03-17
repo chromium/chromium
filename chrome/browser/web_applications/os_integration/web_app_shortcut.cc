@@ -158,8 +158,8 @@ void UpdatePlatformShortcutsAndPostCallback(
 
 std::vector<WebAppShortcutsMenuItemInfo::Icon>
 ConvertIconProtoDataToShortcutsMenuIcon(
-    const ::google::protobuf::RepeatedPtrField<proto::ShortcutIconData>&
-        shortcut_icon_data) {
+    const ::google::protobuf::RepeatedPtrField<
+        proto::os_state::ShortcutIconData>& shortcut_icon_data) {
   std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_menu_item_icons;
   for (const auto& icon_data : shortcut_icon_data) {
     WebAppShortcutsMenuItemInfo::Icon icon;
@@ -219,13 +219,13 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const GURL& start_url,
     const base::FilePath& profile_path,
     const std::string& profile_name,
-    const proto::WebAppOsIntegrationState& state) {
+    const proto::os_state::WebAppOsIntegration& state) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
 
   shortcut_info->app_id = app_id;
   shortcut_info->url = start_url;
   DCHECK(state.has_shortcut());
-  const proto::ShortcutDescription& shortcut_state = state.shortcut();
+  const proto::os_state::ShortcutDescription& shortcut_state = state.shortcut();
   DCHECK(shortcut_state.has_title());
   shortcut_info->title = base::UTF8ToUTF16(shortcut_state.title());
   DCHECK(shortcut_state.has_description());
@@ -332,7 +332,7 @@ void PopulateFaviconForShortcutInfo(
 }
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
-    const proto::ShortcutMenus& shortcut_menus) {
+    const proto::os_state::ShortcutMenus& shortcut_menus) {
   std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_infos;
   for (const auto& shortcut_menu_info : shortcut_menus.shortcut_menu_info()) {
     WebAppShortcutsMenuItemInfo item_info;

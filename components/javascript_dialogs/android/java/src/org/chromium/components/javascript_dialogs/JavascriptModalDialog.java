@@ -10,6 +10,8 @@ import android.content.res.Resources;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -17,6 +19,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A base class for creating, showing and dismissing a modal dialog for a JavaScript popup. */
+@NullMarked
 public abstract class JavascriptModalDialog implements ModalDialogProperties.Controller {
     private static final String TAG = "JSModalDialog";
 
@@ -24,17 +27,17 @@ public abstract class JavascriptModalDialog implements ModalDialogProperties.Con
     private final String mMessage;
     private final int mPositiveButtonTextId;
     private final int mNegativeButtonTextId;
-    private final String mDefaultPromptText;
+    private final @Nullable String mDefaultPromptText;
     private final boolean mShouldShowSuppressCheckBox;
 
-    private ModalDialogManager mModalDialogManager;
-    private PropertyModel mDialogModel;
-    protected JavascriptDialogCustomView mDialogCustomView;
+    private @Nullable ModalDialogManager mModalDialogManager;
+    private @Nullable PropertyModel mDialogModel;
+    protected @Nullable JavascriptDialogCustomView mDialogCustomView;
 
     protected JavascriptModalDialog(
             String title,
             String message,
-            String promptText,
+            @Nullable String promptText,
             boolean shouldShowSuppressCheckBox,
             @StringRes int positiveButtonTextId,
             @StringRes int negativeButtonTextId) {

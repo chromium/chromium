@@ -187,10 +187,9 @@ class RecordReplayContext : public GpuControl {
 
     scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
     scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
-        gpu_preferences_, true, nullptr /* memory_tracker */,
-        &translator_cache_, &completeness_cache_, feature_info,
-        bind_generates_resource, nullptr /* progress_reporter */,
-        GpuFeatureInfo(), &discardable_manager_,
+        gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
+        &completeness_cache_, feature_info, bind_generates_resource,
+        /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
         &passthrough_discardable_manager_, &shared_image_manager_);
     command_buffer_ = std::make_unique<RecordReplayCommandBuffer>();
 
@@ -248,6 +247,8 @@ class RecordReplayContext : public GpuControl {
     gles2_helper_->FreeRingBuffer();
     command_buffer_->AdvanceMode();
   }
+
+  void WaitExec() { gles2_helper_->Finish(); }
 
   void StartReplay() {
     DCHECK_EQ(command_buffer_->mode(), RecordReplayCommandBuffer::kRecord);
@@ -428,6 +429,8 @@ class DecoderPerfTest : public testing::Test {
   void StartRecord() { context_->StartRecord(); }
 
   void StartReplay() { context_->StartReplay(); }
+
+  void WaitExec() { context_->WaitExec(); }
 
   void Replay() { context_->Replay(); }
 
@@ -685,6 +688,7 @@ TEST_F(DecoderPerfTest, ProgramDraw) {
       program = 1 - program;
     }
   }
+  WaitExec();
 
   StartReplay();
   PerfIterator iterator("program_draw_100", kDefaultRuns, kDefaultIterations);

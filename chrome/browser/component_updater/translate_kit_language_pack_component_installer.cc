@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/on_device_translation/constants.h"
@@ -48,7 +47,7 @@ bool TranslateKitLanguagePackComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // Check that the sub-directories of the package install directory exist.
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       GetPackageInstallSubDirNamesForVerification(language_pack_key_),
       [&install_dir](const std::string& sub_dir_name) {
         return base::PathExists(install_dir.AppendASCII(sub_dir_name));
@@ -147,11 +146,12 @@ void RegisterTranslateKitLanguagePackComponent(
 
   // If the component is already installed, do nothing.
   const std::vector<std::string> component_ids = cus->GetComponentIDs();
-  if (std::find(component_ids.begin(), component_ids.end(),
-                crx_file::id_util::GenerateIdFromHash(
-                    on_device_translation::GetLanguagePackComponentConfig(
-                        language_pack_key)
-                        .public_key_sha)) != component_ids.end()) {
+  if (std::ranges::find(
+          component_ids,
+          crx_file::id_util::GenerateIdFromHash(
+              on_device_translation::GetLanguagePackComponentConfig(
+                  language_pack_key)
+                  .public_key_sha)) != component_ids.end()) {
     return;
   }
 
@@ -169,12 +169,12 @@ void RegisterTranslateKitLanguagePackComponent(
 void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,
     PrefService* pref_service) {
-  for (const auto& it :
+  for (const auto& [language_pack_key, config] :
        on_device_translation::kLanguagePackComponentConfigMap) {
     if (pref_service->GetBoolean(
-            on_device_translation::GetRegisteredFlagPrefName(*it.second))) {
-      RegisterTranslateKitLanguagePackComponent(cus, pref_service, it.first,
-                                                base::OnceClosure());
+            on_device_translation::GetRegisteredFlagPrefName(*config))) {
+      RegisterTranslateKitLanguagePackComponent(
+          cus, pref_service, language_pack_key, base::OnceClosure());
     }
   }
 }

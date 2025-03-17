@@ -154,7 +154,7 @@ suite('ExtensionItemTest', function() {
     await mockDelegate.testClickingCalls(
         item.$.enableToggle, 'setItemEnabled', [item.data.id, false]);
     await mockDelegate.testClickingCalls(
-        item.shadowRoot!.querySelector<HTMLElement>(
+        item.shadowRoot.querySelector<HTMLElement>(
             '#inspect-views a[is="action-link"]')!,
         'inspectItemView', [item.data.id, item.data.views[0]]);
 
@@ -172,7 +172,7 @@ suite('ExtensionItemTest', function() {
     // Reset current page and test inspect-view navigation.
     navigation.navigateTo({page: Page.LIST});
     currentPage = null;
-    item.shadowRoot!
+    item.shadowRoot
         .querySelector<HTMLElement>(
             '#inspect-views a[is="action-link"]:nth-of-type(2)')!.click();
     await microtasksFinished();
@@ -184,7 +184,7 @@ suite('ExtensionItemTest', function() {
     item.data = data;
     await microtasksFinished();
     await mockDelegate.testClickingCalls(
-        item.shadowRoot!.querySelector<HTMLElement>('#repair-button')!,
+        item.shadowRoot.querySelector<HTMLElement>('#repair-button')!,
         'repairItem', [item.data.id]);
     testVisible(item, '#enableToggle', false);
 
@@ -195,8 +195,8 @@ suite('ExtensionItemTest', function() {
     await microtasksFinished();
 
     await mockDelegate.testClickingCalls(
-        item.shadowRoot!.querySelector<HTMLElement>(
-            '#terminated-reload-button')!,
+        item.shadowRoot.querySelector<HTMLElement>('#terminated-reload-button')!
+        ,
         'reloadItem', [item.data.id], Promise.resolve());
 
     data = createExtensionInfo(item.data);
@@ -237,13 +237,13 @@ suite('ExtensionItemTest', function() {
       });
     }
 
-    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    item.shadowRoot.querySelector<HTMLElement>('#dev-reload-button')!.click();
     let id = await proxyDelegate.whenCalled('reloadItem');
     assertEquals(item.data.id, id);
     await verifyEventPromise(false);
     proxyDelegate.resetResolver('reloadItem');
     proxyDelegate.setForceReloadItemError(true);
-    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    item.shadowRoot.querySelector<HTMLElement>('#dev-reload-button')!.click();
     id = await proxyDelegate.whenCalled('reloadItem');
     assertEquals(item.data.id, id);
     return verifyEventPromise(true);
@@ -410,7 +410,7 @@ suite('ExtensionItemTest', function() {
     item.data = data;
     await microtasksFinished();
     assertTrue(isChildVisible(item, '#source-indicator'));
-    let icon = item.shadowRoot!.querySelector<CrIconElement>(
+    let icon = item.shadowRoot.querySelector<CrIconElement>(
         '#source-indicator cr-icon');
     assertTrue(!!icon);
     assertEquals('extensions-icons:unpacked', icon.icon);
@@ -443,7 +443,7 @@ suite('ExtensionItemTest', function() {
     assertTrue(isChildVisible(item, '#source-indicator'));
     // Re-query the icon, since it was removed from the DOM when the source
     // indicator was behind an if()
-    icon = item.shadowRoot!.querySelector<CrIconElement>(
+    icon = item.shadowRoot.querySelector<CrIconElement>(
         '#source-indicator cr-icon');
     assertTrue(!!icon);
     assertEquals('extensions-icons:business', icon.icon);
@@ -642,7 +642,7 @@ suite('ExtensionItemTest', function() {
     // sorted first.
     assertEquals(
         'service worker,',
-        item.shadowRoot!
+        item.shadowRoot
             .querySelector<HTMLElement>(
                 '#inspect-views a:first-of-type')!.textContent!.trim());
   });
@@ -650,9 +650,9 @@ suite('ExtensionItemTest', function() {
   // Test that the correct tooltip text is shown when the enable toggle is
   // hovered over, depending on if the extension is enabled/disabled and its
   // permissions.
-  test('EnableExtensionToggleTooltips', async() => {
+  test('EnableExtensionToggleTooltips', async () => {
     const crTooltip =
-        item.shadowRoot!.querySelector<HTMLElement>('#enable-toggle-tooltip')!;
+        item.shadowRoot.querySelector<HTMLElement>('#enable-toggle-tooltip')!;
     testVisible(item, '#enable-toggle-tooltip', false);
 
     item.$.enableToggle.dispatchEvent(
@@ -693,7 +693,7 @@ suite('ExtensionItemTest', function() {
     testVisible(item, '#account-upload-button', true);
 
     await mockDelegate.testClickingCalls(
-        item.shadowRoot!.querySelector<HTMLElement>('#account-upload-button')!,
+        item.shadowRoot.querySelector<HTMLElement>('#account-upload-button')!,
         'uploadItemToAccount', [item.data.id]);
   });
 });

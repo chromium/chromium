@@ -4,6 +4,9 @@
 
 #include "services/viz/public/cpp/compositing/thread_mojom_traits.h"
 
+#include "base/bit_cast.h"
+#include "base/threading/platform_thread.h"
+
 namespace mojo {
 
 // static
@@ -56,7 +59,19 @@ bool StructTraits<viz::mojom::ThreadDataView, viz::Thread>::Read(
   if (!data.ReadType(&out->type)) {
     return false;
   }
-  out->id = data.id();
+  // Bit cast the data to base::PlatformThreadId::UnderlyingType. We do a
+  // bitcast instead of trying to match the exact type in mojo because:
+  //
+  //   1. We'd have to define the mojo type to match the sign, which is possible
+  //   but unnecessary,
+  //   2. We bit_cast instead of static_cast to explicitly consider only the
+  //   size of the transfer medium as semantically important (and get a size
+  //   check for free),
+  //   3. Even if we did all the above, it's awkward on Windows, because the
+  //   base::PlatformThreadId::UnderlyingType is `unsigned long`, which is a
+  //   type of the same size but distinct identity to `unsigned int`.
+  out->id = base::PlatformThreadId(
+      base::bit_cast<base::PlatformThreadId::UnderlyingType>(data.id()));
   return true;
 }
 

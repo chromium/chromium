@@ -38,7 +38,7 @@ class TestItem extends CrLitElement {
   }
 
   override focus() {
-    this.shadowRoot!.querySelector('button')!.focus();
+    this.shadowRoot.querySelector('button')!.focus();
   }
 
   name: string = '';
@@ -75,7 +75,7 @@ class TestApp extends CrLitElement {
   }
 
   private onRenderedItemsChanged_() {
-    this.restoreFocusElement_ = this.shadowRoot!.querySelector('[name="Two"]');
+    this.restoreFocusElement_ = this.shadowRoot.querySelector('[name="Two"]');
   }
 }
 
@@ -96,7 +96,7 @@ suite('LazyListTest', () => {
     document.body.appendChild(testApp);
     testApp.listItems = sampleData;
 
-    lazyList = testApp.shadowRoot!.querySelector('lazy-list')!;
+    lazyList = testApp.shadowRoot.querySelector('lazy-list')!;
     assertTrue(!!lazyList);
     await eventToPromise('viewport-filled', lazyList);
     await microtasksFinished();
@@ -186,7 +186,7 @@ suite('LazyListTest', () => {
     await setupTest(getTestItems(numItems));
     const items = queryItems();
     assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, items.length);
-    const button = items[1]!.shadowRoot!.querySelector('button');
+    const button = items[1]!.shadowRoot.querySelector('button');
     assertTrue(!!button);
     button.focus();
     assertEquals(getDeepActiveElement(), button);
@@ -195,7 +195,7 @@ suite('LazyListTest', () => {
     testApp.listItems = getTestItems(numItems + 1).slice(1);
     await eventToPromise('focus-restored-for-test', lazyList);
     const newItems = queryItems();
-    const newButton = newItems[0]!.shadowRoot!.querySelector('button');
+    const newButton = newItems[0]!.shadowRoot.querySelector('button');
     const active = getDeepActiveElement();
     assertEquals(active, newButton);
   });

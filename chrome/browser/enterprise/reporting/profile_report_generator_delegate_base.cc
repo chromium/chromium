@@ -7,14 +7,19 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
@@ -53,8 +58,9 @@ void ProfileReportGeneratorDelegateBase::GetSigninUserInfo(
   auto account_info =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
           consent_level);
-  if (account_info.IsEmpty())
+  if (account_info.IsEmpty()) {
     return;
+  }
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
   signed_in_user_info->set_email(account_info.email);
   signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia.ToString());
@@ -106,10 +112,37 @@ void ProfileReportGeneratorDelegateBase::GetAffiliationInfo(
   return;
 }
 
+void ProfileReportGeneratorDelegateBase::GetProfileId(
+    em::ChromeUserProfileInfo* report) {
+  auto profile_id = enterprise::ProfileIdServiceFactory::GetForProfile(profile_)
+                        ->GetProfileId();
+  if (profile_id) {
+    report->set_profile_id(*profile_id);
+  }
+}
+
+void ProfileReportGeneratorDelegateBase::GetProfileName(
+    em::ChromeUserProfileInfo* report) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // profile manager may not be available in test.
+  if (!profile_manager) {
+    report->set_name(std::string());
+    return;
+  }
+
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_->GetPath());
+  std::string name =
+      entry ? base::UTF16ToUTF8(entry->GetName()) : std::string();
+  report->set_name(name);
+}
+
 policy::CloudPolicyManager*
 ProfileReportGeneratorDelegateBase::GetCloudPolicyManager(
     bool is_machine_scope) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
   // CBCM report will include CBCM policy fetch information.
@@ -121,7 +154,7 @@ ProfileReportGeneratorDelegateBase::GetCloudPolicyManager(
   // Profile report will include user cloud policy information by default.
   // Or ProfileCloudPolicyManager when it's not managed by gaia account.
   return profile_->GetCloudPolicyManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace enterprise_reporting

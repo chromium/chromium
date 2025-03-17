@@ -4,6 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
@@ -135,7 +137,7 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
      * @return Created view.
      */
     protected View createView(ViewGroup parent, int typeId) {
-        return mViewBuilderMap.get(typeId).first.buildView(parent);
+        return assumeNonNull(mViewBuilderMap.get(typeId)).first.buildView(parent);
     }
 
     @SuppressWarnings("unchecked")
@@ -163,9 +165,10 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
             oldModel = (PropertyModel) convertView.getTag(R.id.view_model);
         }
 
-        PropertyModel model = mModelList.get(position).model;
+        var listItem = mModelList.get(position);
+        PropertyModel model = listItem.model;
         PropertyModelChangeProcessor.ViewBinder binder =
-                mViewBuilderMap.get(mModelList.get(position).type).second;
+                assumeNonNull(mViewBuilderMap.get(listItem.type)).second;
 
         // 3. Attach a PropertyModelChangeProcessor and PropertyModel to the view (for #1/2 above
         //    when re-using a view).

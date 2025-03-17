@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
 
   // Number of video-sized updates that we must see within a second in a client
   // before we assume that a video is playing.
-  static constexpr int kMinFramesPerSecond = 15;
+  static constexpr int kMinFramesPerSecond = 5;
 
   // A video will no longer be consider playing at some interval between
   // 'kMinVideoTimeout' to 'kMaxVideoTimeout'.

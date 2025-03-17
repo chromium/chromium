@@ -69,7 +69,7 @@ constexpr size_t kMaxInfoPlistDataSize = 18 * 1024;
 #endif
 
 // This limit is arbitrary and can be safely increased in the future.
-constexpr size_t kMaximumRendezvousPorts = 5;
+constexpr size_t kMaximumRendezvousPorts = 6;
 
 enum MachRendezvousMsgId : mach_msg_id_t {
   kMachRendezvousMsgIdRequest = 'mrzv',
@@ -295,7 +295,7 @@ MachPortRendezvousServerIOS::MachPortRendezvousServerIOS(
   DCHECK_LT(ports_.size(), kMaximumRendezvousPorts);
   bool res = apple::CreateMachPort(&server_port_, &send_right_);
   CHECK(res) << "Failed to create mach server port";
-  dispatch_source_ = std::make_unique<apple::DispatchSourceMach>(
+  dispatch_source_ = std::make_unique<apple::DispatchSource>(
       "MachPortRendezvousServer", server_port_.get(), ^{
         HandleRequest();
       });
@@ -409,7 +409,7 @@ MachPortRendezvousServerMac::MachPortRendezvousServerMac() {
       apple::ScopedMachReceiveRight::Receiver(server_port_).get());
   BOOTSTRAP_CHECK(kr == KERN_SUCCESS, kr)
       << "bootstrap_check_in " << bootstrap_name;
-  dispatch_source_ = std::make_unique<apple::DispatchSourceMach>(
+  dispatch_source_ = std::make_unique<apple::DispatchSource>(
       bootstrap_name.c_str(), server_port_.get(), ^{
         HandleRequest();
       });

@@ -12,8 +12,8 @@ struct File {
   string id;
   // Information on why the File Item was returned.
   string justification_text;
-  // The mime type of the File Item.
-  string mime_type;
+  // The URL to the file icon.
+  url.mojom.Url icon_url;
   // The name of the File Item.
   string title;
   // The URL to navigate to the File Item.

@@ -217,4 +217,9 @@ bool DwaRecorder::HasPageLoadEvents() {
   return !page_load_events_.empty();
 }
 
+const std::vector<metrics::dwa::mojom::DwaEntryPtr>&
+DwaRecorder::GetEntriesForTesting() const {
+  return entries_;
+}
+
 }  // namespace metrics::dwa

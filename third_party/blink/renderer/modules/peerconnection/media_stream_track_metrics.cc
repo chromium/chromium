@@ -6,12 +6,12 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
 #include <string>
 
 #include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -136,7 +136,7 @@ void MediaStreamTrackMetrics::RemoveTrack(Direction direction,
                                           Kind kind,
                                           const std::string& track_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       observers_,
       [&](const std::unique_ptr<MediaStreamTrackMetricsObserver>& observer) {
         return direction == observer->direction() && kind == observer->kind() &&

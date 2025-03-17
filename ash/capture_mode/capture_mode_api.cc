@@ -9,8 +9,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "base/feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -21,22 +23,42 @@ void CaptureScreenshotsOfAllDisplays() {
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
-bool IsSunfishOrScannerEnabled() {
-  // Returns true if sunfish session can be started, which is true if either the
-  // Sunfish or Scanner feature flag is enabled. Note Scanner operations will
-  // only be available if the secret key is matched.
-  return features::IsSunfishFeatureEnabled() || features::IsScannerEnabled();
+bool CanShowSunfishUi() {
+  if (!features::IsSunfishFeatureEnabled()) {
+    return false;
+  }
+
+  Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
+  if (!shell) {
+    return false;
+  }
+
+  // Do not allow showing sunfish UI in pinned mode.
+  auto* screen_pinning_controller = shell->screen_pinning_controller();
+  if (!screen_pinning_controller || screen_pinning_controller->IsPinned()) {
+    return false;
+  }
+
+  // Order here matters: When `AppListControllerImpl` is initialised and
+  // indirectly calls this function, the active user session has not been
+  // started yet. Gracefully handle this case.
+  auto* session_controller = shell->session_controller();
+  if (!session_controller ||
+      !session_controller->IsActiveUserSessionStarted()) {
+    return false;
+  }
+
+  auto* pref_service = capture_mode_util::GetActiveUserPrefService();
+  if (!pref_service || !pref_service->GetBoolean(prefs::kSunfishEnabled)) {
+    return false;
+  }
+
+  auto* controller = CaptureModeController::Get();
+  return controller && controller->IsSearchAllowedByPolicy();
 }
 
-bool IsSunfishAllowedAndEnabled() {
-  Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
-  return IsSunfishOrScannerEnabled() &&
-         // When `AppListControllerImpl` is initialised and indirectly calls
-         // this function, the active user session has not been started yet.
-         // Gracefully handle this case.
-         shell && shell->session_controller()->IsActiveUserSessionStarted() &&
-         capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-             prefs::kSunfishEnabled);
+bool CanShowSunfishOrScannerUi() {
+  return CanShowSunfishUi() || ScannerController::CanShowUiForShell();
 }
 
 }  // namespace ash

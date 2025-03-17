@@ -31,6 +31,7 @@ found in the LICENSE file.
             android:importantForAccessibility="no" />
 
         <TextView
+            android:id="@+id/cookies_step_header"
             android:drawablePadding="16dp"
             android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
             android:layout_marginVertical="8dp"

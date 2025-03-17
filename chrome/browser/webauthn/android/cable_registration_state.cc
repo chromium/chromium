@@ -43,33 +43,12 @@ void RegistrationState::Register() {
       &RegistrationState::OnDeviceSupportResult, base::Unretained(this)));
   interface_->AmInWorkProfile(base::BindOnce(
       &RegistrationState::OnWorkProfileResult, base::Unretained(this)));
-
-  std::string secret_base64 = interface_->GetRootSecret();
-
-  if (!secret_base64.empty()) {
-    std::string secret_str;
-    if (base::Base64Decode(secret_base64, &secret_str) &&
-        secret_str.size() == secret_.size()) {
-      memcpy(secret_.data(), secret_str.data(), secret_.size());
-    } else {
-      secret_base64.clear();
-    }
-  }
-
-  if (secret_base64.empty()) {
-    crypto::RandBytes(secret_);
-    interface_->SetRootSecret(base::Base64Encode(secret_));
-  }
-
-  interface_->CalculateIdentityKey(
-      secret_, base::BindOnce(&RegistrationState::OnIdentityKeyReady,
-                              base::Unretained(this)));
 }
 
 // have_data_for_sync returns true if this object has loaded enough state to
 // put information into sync's DeviceInfo.
 bool RegistrationState::have_data_for_sync() const {
-  return device_supports_cable_.has_value() && identity_key_ &&
+  return device_supports_cable_.has_value() &&
          am_in_work_profile_.has_value() && sync_registration_ != nullptr &&
          sync_registration_->contact_id() && have_play_services_data();
 }
@@ -172,15 +151,6 @@ void RegistrationState::MaybeFlushPendingEvent() {
       return;
     }
   }
-
-  const std::optional<std::vector<uint8_t>> serialized(event->Serialize());
-  if (!serialized) {
-    return;
-  }
-
-  interface_->OnCloudMessage(
-      std::move(*serialized),
-      event->request_type == device::FidoRequestType::kMakeCredential);
 }
 
 void RegistrationState::MaybeSignalSync() {
@@ -199,12 +169,6 @@ void RegistrationState::OnDeviceSupportResult(bool result) {
 
 void RegistrationState::OnWorkProfileResult(bool result) {
   am_in_work_profile_ = result;
-  MaybeSignalSync();
-}
-
-void RegistrationState::OnIdentityKeyReady(
-    bssl::UniquePtr<EC_KEY> identity_key) {
-  identity_key_ = std::move(identity_key);
   MaybeSignalSync();
 }
 

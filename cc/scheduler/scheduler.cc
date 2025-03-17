@@ -164,8 +164,8 @@ void Scheduler::NotifyPaintWorkletStateChange(PaintWorkletState state) {
   ProcessScheduledActions();
 }
 
-void Scheduler::SetNeedsBeginMainFrame() {
-  state_machine_.SetNeedsBeginMainFrame();
+void Scheduler::SetNeedsBeginMainFrame(bool now) {
+  state_machine_.SetNeedsBeginMainFrame(now);
   ProcessScheduledActions();
 }
 
@@ -176,11 +176,6 @@ void Scheduler::SetNeedsOneBeginImplFrame() {
 
 void Scheduler::SetNeedsRedraw() {
   state_machine_.SetNeedsRedraw();
-  ProcessScheduledActions();
-}
-
-void Scheduler::SetNeedsUpdateDisplayTree() {
-  state_machine_.SetNeedsUpdateDisplayTree();
   ProcessScheduledActions();
 }
 
@@ -398,27 +393,11 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   if (args.interval != last_frame_interval_ && args.interval.is_positive()) {
     last_frame_interval_ = args.interval;
     client_->FrameIntervalUpdated(last_frame_interval_);
-
-    // Only query the feature (and thus enter the experiment group) if we see a
-    // short interval. This ignores 90Hz displays, on purpose, and adds some
-    // leeway.
-    //
-    // Apply some slack, so that if for some reason the interval is a bit larger
-    // than 8.33333333333333ms, then we catch it still.
-    constexpr float kSlackFactor = .9;
-    if (args.interval < base::Hertz(120) * (1 / kSlackFactor) &&
-        base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
-      TRACE_EVENT0("cc", "ThrottleMainFrameTo60Hz");
-      // Note that we don't change args.interval, so the next main frame will
-      // see e.g. 8ms, even though the next one will come in 16ms. This is not
-      // necessarily bad, as it is mostly used for idle period timing.
-      //
-      // Here as well, use a slack factor, to make sure that small timing
-      // variations don't result in uneven pacing.
-      state_machine_.SetThrottleMainFrames(base::Hertz(60.) * kSlackFactor);
-    } else {
-      state_machine_.SetThrottleMainFrames(base::TimeDelta());
-    }
+    // Note that even if the call below ends up throttling BeginMainFrame()
+    // calls, args.interval stays at the lower interval. This is done on
+    // purpose, as "urgent" updates can happen sooner than the throttled
+    // interval.
+    state_machine_.FrameIntervalUpdated(last_frame_interval_);
   }
 
   // Drop the BeginFrame if we don't need one.
@@ -728,7 +707,7 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
     base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
 
     begin_impl_frame_tracker_.Start(args);
-    state_machine_.OnBeginImplFrame(args.frame_id, args.animate_only);
+    state_machine_.OnBeginImplFrame(args);
     compositor_frame_reporting_controller_->WillBeginImplFrame(args);
     bool has_damage =
         client_->WillBeginImplFrame(begin_impl_frame_tracker_.Current());
@@ -891,15 +870,6 @@ void Scheduler::DrawForced() {
   compositor_timing_history_->DidDraw();
 }
 
-void Scheduler::UpdateDisplayTree() {
-  DCHECK(!inside_scheduled_action_);
-  base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
-
-  // TODO(rockot): Update CompositorTimingHistory.
-  state_machine_.WillUpdateDisplayTree();
-  client_->ScheduledActionUpdateDisplayTree();
-}
-
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {
   {
     TRACE_EVENT1("cc", "Scheduler::SetDeferBeginMainFrame",
@@ -1009,9 +979,6 @@ void Scheduler::ProcessScheduledActions() {
         // drain the pipeline without actually drawing.
         state_machine_.AbortDraw();
         break;
-      case SchedulerStateMachine::Action::UPDATE_DISPLAY_TREE:
-        UpdateDisplayTree();
-        break;
       case SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
         state_machine_.WillBeginLayerTreeFrameSinkCreation();
         client_->ScheduledActionBeginLayerTreeFrameSinkCreation();
@@ -1093,6 +1060,10 @@ void Scheduler::ClearHistory() {
   // Ensure we reset decisions based on history from the previous navigation.
   compositor_timing_history_->ClearHistory();
   ProcessScheduledActions();
+}
+
+void Scheduler::SetShouldThrottleFrameRate(bool flag) {
+  state_machine_.SetShouldThrottleFrameRate(flag);
 }
 
 }  // namespace cc

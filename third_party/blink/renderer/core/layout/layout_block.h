@@ -37,10 +37,10 @@ namespace blink {
 class BlockNode;
 struct PaintInfo;
 
-typedef HeapLinkedHashSet<Member<LayoutBox>> TrackedLayoutBoxLinkedHashSet;
-typedef HeapHashMap<WeakMember<const LayoutBlock>,
-                    Member<TrackedLayoutBoxLinkedHashSet>>
-    TrackedDescendantsMap;
+using TrackedLayoutBoxLinkedHashSet = GCedHeapLinkedHashSet<Member<LayoutBox>>;
+using TrackedDescendantsMap =
+    GCedHeapHashMap<WeakMember<const LayoutBlock>,
+                    Member<TrackedLayoutBoxLinkedHashSet>>;
 
 // LayoutBlock is the class that is used by any LayoutObject
 // that is a containing block.

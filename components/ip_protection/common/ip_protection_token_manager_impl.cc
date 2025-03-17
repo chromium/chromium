@@ -4,10 +4,23 @@
 
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <deque>
+#include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -33,9 +46,6 @@ constexpr base::TimeDelta kImmediateTokenRefillDelay = base::Minutes(1);
 // Time delay used for when a token limit has been exceeded.
 constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 
-// Default Geo used until caching by geo is enabled.
-constexpr char kDefaultGeo[] = "EARTH";
-
 }  // namespace
 
 IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
@@ -46,19 +56,11 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
           net::features::kIpPrivacyAuthTokenCacheLowWaterMark.Get()),
-      enable_token_caching_by_geo_(
-          net::features::kIpPrivacyCacheTokensByGeo.Get()),
       fetcher_(std::move(fetcher)),
       proxy_layer_(proxy_layer),
       ip_protection_core_(core),
       disable_cache_management_for_testing_(
           disable_cache_management_for_testing) {
-  // If caching by geo is disabled, the current geo will be resolved to
-  // `kDefaultGeo` and should not be modified.
-  if (!enable_token_caching_by_geo_) {
-    current_geo_id_ = kDefaultGeo;
-  }
-
   last_token_rate_measurement_ = base::TimeTicks::Now();
   // Start the timer. The timer is owned by `this` and thus cannot outlive it.
   measurement_timer_.Start(FROM_HERE, kTokenRateMeasurementInterval, this,
@@ -89,8 +91,7 @@ bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable(
 
   // After `RemoveExpiredTokens()`, any keys for an empty token deque will be
   // removed. Thus, we do not need to check if the deque is empty or not here.
-  return cache_by_geo_.contains(enable_token_caching_by_geo_ ? geo_id
-                                                             : kDefaultGeo);
+  return cache_by_geo_.contains(geo_id);
 }
 
 bool IpProtectionTokenManagerImpl::WasTokenCacheEverFilled() {
@@ -140,11 +141,6 @@ std::string IpProtectionTokenManagerImpl::CurrentGeo() const {
 }
 
 void IpProtectionTokenManagerImpl::SetCurrentGeo(const std::string& geo_id) {
-  // If caching by geo is disabled, no further action is needed.
-  if (!enable_token_caching_by_geo_) {
-    return;
-  }
-
   // Ensuring that a geo change has occurred.
   if (emitted_geo_presence_histogram_before_refill_ && current_geo_id_ != "" &&
       current_geo_id_ != geo_id) {
@@ -288,18 +284,13 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
 
   // TODO(crbug.com/357439021): Refactor so that each TryAuthTokensCallback
   // contains a single `geo_hint`.
-  std::string geo_id_from_token =
-      enable_token_caching_by_geo_
-          ? GetGeoIdFromGeoHint(tokens->front().geo_hint)
-          : kDefaultGeo;
+  std::string geo_id_from_token = GetGeoIdFromGeoHint(tokens->front().geo_hint);
 
   // Metric should only be recorded under the following conditions:
-  // 1. Token caching by geo is enabled.
-  // 2. The geo from the token is different from the current geo of the cache.
+  // 1. The geo from the token is different from the current geo of the cache.
   // 2. Current geo is not empty which signifies the initial fill of the cache.
   bool has_geo_id_changed = geo_id_from_token != current_geo_id_;
-  if (enable_token_caching_by_geo_ && has_geo_id_changed &&
-      current_geo_id_ != "") {
+  if (has_geo_id_changed && current_geo_id_ != "") {
     Telemetry().GeoChangeTokenPresence(
         cache_by_geo_.contains(geo_id_from_token));
     emitted_geo_presence_histogram_before_refill_ = false;
@@ -340,7 +331,7 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
 
   // TODO(abhipatel): Change logic so that external code is not being relied on
   // to update our internal state.
-  if (enable_token_caching_by_geo_ && has_geo_id_changed) {
+  if (has_geo_id_changed) {
     ip_protection_core_->GeoObserved(geo_id_from_token);
   }
 
@@ -369,8 +360,7 @@ std::optional<BlindSignedAuthToken> IpProtectionTokenManagerImpl::GetAuthToken(
   size_t tokens_in_cache = 0;
   // Checks to see if the geo is available in the map and then checks if the
   // cache itself is not empty.
-  if (auto it = cache_by_geo_.find(enable_token_caching_by_geo_ ? geo_id
-                                                                : kDefaultGeo);
+  if (auto it = cache_by_geo_.find(geo_id);
       it != cache_by_geo_.end() && !it->second.empty()) {
     tokens_in_cache = it->second.size();
     result.emplace(std::move(it->second.front()));
@@ -379,8 +369,7 @@ std::optional<BlindSignedAuthToken> IpProtectionTokenManagerImpl::GetAuthToken(
   }
 
   Telemetry().GetAuthTokenResultForGeo(
-      result.has_value(), enable_token_caching_by_geo_, cache_by_geo_.empty(),
-      geo_id == current_geo_id_);
+      result.has_value(), cache_by_geo_.empty(), geo_id == current_geo_id_);
   VLOG(2) << "IPPATC::GetAuthToken with " << tokens_in_cache
           << " tokens available";
   MaybeRefillCache();

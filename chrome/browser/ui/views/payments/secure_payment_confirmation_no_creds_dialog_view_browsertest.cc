@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -64,7 +65,7 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
                              base::DoNothing(), base::DoNothing());
   }
 
-  const std::u16string& GetLabelText(
+  std::u16string_view GetLabelText(
       SecurePaymentConfirmationNoCredsDialogView::DialogViewID view_id) {
     return static_cast<views::Label*>(
                dialog_view_->GetViewByID(static_cast<int>(view_id)))

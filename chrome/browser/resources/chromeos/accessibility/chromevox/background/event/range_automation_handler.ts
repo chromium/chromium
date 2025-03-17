@@ -9,10 +9,12 @@ import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {CursorRange} from '/common/cursors/range.js';
 
-import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
+import type {ChromeVoxEvent} from '../../common/custom_automation_event.js';
+import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
 import {ChromeVox} from '../chromevox.js';
-import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
+import type {ChromeVoxRangeObserver} from '../chromevox_range.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 import {FocusBounds} from '../focus_bounds.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';

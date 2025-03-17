@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.test.transit.page;
 
+import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 
 /** The app menu shown when pressing ("...") in a regular Tab showing a web page. */
 public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageStation> {
-    public Item<Void> mQuickDelete;
+    public Item<QuickDeleteDialogFacility> mQuickDelete;
 
     @Override
     protected void declareItems(ItemsBuilder items) {
@@ -17,7 +18,9 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
 
         declareStubMenuItem(items, HISTORY_ID);
-        mQuickDelete = declareStubMenuItem(items, DELETE_BROWSING_DATA_ID);
+        mQuickDelete =
+                declareMenuItemToFacility(
+                        items, DELETE_BROWSING_DATA_ID, this::createQuickDeleteDialogFacility);
         declareStubMenuItem(items, DOWNLOADS_ID);
         declareStubMenuItem(items, BOOKMARKS_ID);
         declareStubMenuItem(items, RECENT_TABS_ID);
@@ -34,5 +37,10 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
 
         mSettings = declareMenuItemToStation(items, SETTINGS_ID, this::createSettingsStation);
         declareStubMenuItem(items, HELP_AND_FEEDBACK_ID);
+    }
+
+    /** Select "Clear browsing data" from the app menu. */
+    public QuickDeleteDialogFacility clearBrowsingData() {
+        return mQuickDelete.scrollToAndSelect();
     }
 }

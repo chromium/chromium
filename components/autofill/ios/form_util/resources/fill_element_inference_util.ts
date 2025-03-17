@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Returns is the tag of an `element` is tag.
@@ -261,22 +262,6 @@ function ancestorTagNames(element: any): string[] {
 }
 
 /**
- * Returns true if `element` is a text input element.
- *
- * It is based on the logic in IsTextInput() in
- * chromium/src/components/autofill/content/renderer/form_autofill_util.h.
- *
- * @param element An element to examine.
- * @return Whether element is a text input field.
- */
-gCrWeb.fill.isTextInput = function(element: Element): boolean {
-  if (!element) {
-    return false;
-  }
-  return gCrWeb.common.isTextField(element);
-};
-
-/**
  * Returns true if `element` is a 'select' element.
  *
  * It is based on the logic in IsSelectElement() in
@@ -339,8 +324,7 @@ gCrWeb.fill.isCheckableElement = function(element: any): boolean {
  *     can be autofilled.
  */
 gCrWeb.fill.isAutofillableInputElement = function(element: Element): boolean {
-  return gCrWeb.fill.isTextInput(element) ||
-      gCrWeb.fill.isCheckableElement(element);
+  return isTextField(element) || gCrWeb.fill.isCheckableElement(element);
 };
 
 /**

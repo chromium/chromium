@@ -57,6 +57,7 @@ constexpr char kRpId2[] = "meteora.example.com";
 const std::vector<uint8_t> kUserId = {5, 6, 7, 8};
 constexpr char kUserName[] = "unit-aarc-noa";
 constexpr char kUserDisplayName[] = "Noa";
+constexpr char kProviderName[] = "Windows Provider";
 const std::vector<uint8_t> kLargeBlob = {'b', 'l', 'o', 'b'};
 const std::vector<uint8_t> kUserId2 = {1, 1, 1, 1};
 constexpr char kUserName2[] = "chloe";
@@ -119,7 +120,8 @@ TEST_F(WinAuthenticatorTest,
        GetCredentialInformationForRequest_HasCredentials) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user,
+                                                   kProviderName);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialFuture future;
@@ -128,7 +130,8 @@ TEST_F(WinAuthenticatorTest,
   EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
-      AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user,
+      /*provider_name=*/std::nullopt);
   EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{expected});
   EXPECT_EQ(
@@ -192,7 +195,8 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_UnknownError) {
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user,
+                                                   kProviderName);
   fake_webauthn_api_->set_supports_silent_discovery(false);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
@@ -202,7 +206,8 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
   EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
-      AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user,
+      /*provider_name=*/std::nullopt);
   EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_EQ(std::get<1>(future.Get()),
@@ -216,11 +221,12 @@ TEST_F(WinAuthenticatorTest,
        GetCredentialInformationForRequest_NonEmptyAllowList_Found) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user1(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user1);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user1,
+                                                   kProviderName);
 
   PublicKeyCredentialUserEntity user2(kUserId2, kUserName2, kUserDisplayName2);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId2, rp,
-                                                   std::move(user2));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId2, rp, std::move(user2), kProviderName);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   request.allow_list.emplace_back(CredentialType::kPublicKey, kCredentialId);
@@ -230,7 +236,8 @@ TEST_F(WinAuthenticatorTest,
   EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
-      AuthenticatorType::kWinNative, kRpId, kCredentialId, user1);
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user1,
+      /*provider_name=*/std::nullopt);
   EXPECT_THAT(std::get<0>(future.Get()), testing::ElementsAre(expected));
   EXPECT_EQ(
       std::get<1>(future.Get()),
@@ -244,8 +251,8 @@ TEST_F(WinAuthenticatorTest,
        GetCredentialInformationForRequest_NonEmptyAllowList_NotMatching) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp,
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, rp, std::move(user), kProviderName);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   request.allow_list.emplace_back(CredentialType::kPublicKey, kCredentialId2);
@@ -319,7 +326,8 @@ TEST_F(WinAuthenticatorTest,
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user,
+                                                   kProviderName);
   fake_webauthn_api_->set_supports_silent_discovery(false);
 
   base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>> future;
@@ -336,7 +344,8 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user,
+                                                   kProviderName);
   fake_webauthn_api_->set_supports_silent_discovery(true);
 
   base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>> future;
@@ -355,6 +364,7 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   EXPECT_EQ(cred.cred_id, kCredentialId);
   EXPECT_EQ(cred.user.name, kUserName);
   EXPECT_EQ(cred.user.display_name, kUserDisplayName);
+  EXPECT_EQ(cred.provider_name, kProviderName);
 }
 
 TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
@@ -442,8 +452,8 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobNotSupported) {
   SetVersion(WEBAUTHN_API_VERSION_2);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   {
     // Read large blob.
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
@@ -474,8 +484,8 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobError) {
   SetVersion(WEBAUTHN_API_VERSION_3);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   fake_webauthn_api_->set_large_blob_result(
       WEBAUTHN_CRED_LARGE_BLOB_STATUS_NOT_SUPPORTED);
   {
@@ -508,8 +518,8 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobSuccess) {
   SetVersion(WEBAUTHN_API_VERSION_3);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   {
     // Read large blob.
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
@@ -558,8 +568,8 @@ TEST_F(WinAuthenticatorTest, SignalUnknownCredential_NotFound) {
   SetVersion(WEBAUTHN_API_VERSION_4);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
@@ -574,8 +584,8 @@ TEST_F(WinAuthenticatorTest, SignalUnknownCredential_WrongRpId) {
   SetVersion(WEBAUTHN_API_VERSION_4);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
@@ -591,8 +601,8 @@ TEST_F(WinAuthenticatorTest, SignalUnknownCredential_NotSupported) {
   fake_webauthn_api_->set_supports_silent_discovery(false);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
@@ -607,8 +617,8 @@ TEST_F(WinAuthenticatorTest, SignalUnknownCredential) {
   SetVersion(WEBAUTHN_API_VERSION_4);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
@@ -623,8 +633,8 @@ TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_Found) {
   SetVersion(WEBAUTHN_API_VERSION_4);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
@@ -639,8 +649,8 @@ TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NoMatchingUserId) {
   SetVersion(WEBAUTHN_API_VERSION_4);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
@@ -655,8 +665,8 @@ TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NoMatchingRpId) {
   SetVersion(WEBAUTHN_API_VERSION_4);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
@@ -672,8 +682,8 @@ TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NotSupported) {
   fake_webauthn_api_->set_supports_silent_discovery(false);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
@@ -689,8 +699,8 @@ TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NotFound) {
   SetVersion(WEBAUTHN_API_VERSION_4);
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
-  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
-                                                   std::move(user));
+  fake_webauthn_api_->InjectDiscoverableCredential(
+      kCredentialId, std::move(rp), std::move(user), kProviderName);
   ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
 
   WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(

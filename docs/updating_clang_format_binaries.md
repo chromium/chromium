@@ -31,15 +31,15 @@ GS_PATH=gs://chromium-browser-clang-staging
 CLANG_REV=llvmorg-15-init-234-g567890abc-2
 
 echo Linux
-gsutil cp $GS_PATH/Linux_x64/clang-format-$CLANG_REV.tgz /tmp
+gsutil cp $GS_PATH/Linux_x64/clang-format-$CLANG_REV.tar.xz /tmp
 tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/linux64 --strip-component=1 bin/clang-format
 
 echo Win
-gsutil cp $GS_PATH/Win/clang-format-$CLANG_REV.tgz /tmp
+gsutil cp $GS_PATH/Win/clang-format-$CLANG_REV.tar.xz /tmp
 tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/win --strip-component=1 bin/clang-format.exe
 
 echo 'Mac x64'
-gsutil cp $GS_PATH/Mac/clang-format-$CLANG_REV.tgz /tmp
+gsutil cp $GS_PATH/Mac/clang-format-$CLANG_REV.tar.xz /tmp
 tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/mac --strip-component=1 bin/clang-format
 mv buildtools/mac/clang-format buildtools/mac/clang-format.x64
 
@@ -99,13 +99,18 @@ clang-format differences by choosing patchset 1 as the base for the gerrit diff.
 
 ```shell
 ## New gerrit CL with results of old clang-format.
+
+# For mac, use:
+# export NPROC=$(sysctl -n hw.logicalcpu)
+export NPROC=$(nproc --all)
+
 # use old clang-format
-find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64-format/clang-format -i
+find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs -P $NPROC -n1 ./buildtools/linux64-format/clang-format -i
 git commit -a
 git cl upload --bypass-hooks
 ## New patchset on gerrit CL with results of new clang-format.
 # update to new clang-format
-find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/clang-format -i
+find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs -P $NPROC -n1 ./buildtools/linux64/clang-format -i
 git commit -a --amend --no-edit
 git cl upload --bypass-hooks
 ```

@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
@@ -78,27 +77,8 @@ class ViewTransitionStyleTracker
     // details of the snapshot viewport, see README.md.
     gfx::Transform snapshot_matrix;
 
-    // Box geometry is present in layered capture mode. It is necessary for
-    // positioning the layer's content and nested descendants correctly given
-    // that the padding, borders and box sizing are captured as style.
-    struct BoxGeometry {
-      PhysicalRect content_box;
-      PhysicalRect padding_box;
-      EBoxSizing box_sizing;
-      bool operator==(const BoxGeometry& other) const = default;
-    };
-
-    std::optional<BoxGeometry> box_geometry;
-
     PhysicalSize GroupSize() const {
-      return box_geometry && box_geometry->box_sizing == EBoxSizing::kContentBox
-                 ? box_geometry->content_box.size
-                 : border_box_rect_in_enclosing_layer_css_space.size;
-    }
-
-    gfx::Vector2dF BorderOffset() const {
-      return box_geometry ? gfx::Vector2dF(box_geometry->padding_box.offset)
-                          : gfx::Vector2dF();
+      return border_box_rect_in_enclosing_layer_css_space.size;
     }
   };
 
@@ -326,9 +306,10 @@ class ViewTransitionStyleTracker
 
     AtomicString containing_group_name;
 
-    // Whether effects and box decorations are captured as style or as part of
-    // the snapshot. See https://github.com/w3c/csswg-drafts/issues/10585
-    bool use_layered_capture;
+    // Whether this name was auto-generated via auto/match-element.
+    // Auto-generated names do not appear in reflection methods such as
+    // getAnimations.
+    bool is_generated_name;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the
@@ -371,7 +352,8 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
-  viz::ViewTransitionElementResourceId GenerateResourceId() const;
+  viz::ViewTransitionElementResourceId GenerateResourceId(
+      bool for_subframe_snapshot = false) const;
 
   void SnapBrowserControlsToFullyShown();
 

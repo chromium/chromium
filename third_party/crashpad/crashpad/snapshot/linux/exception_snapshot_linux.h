@@ -53,6 +53,9 @@ class ExceptionSnapshotLinux final : public ExceptionSnapshot {
   //! \param[in] context_address The address in the target process' address
   //!     space of the ucontext_t passed to the signal handler.
   //! \param[in] thread_id The thread ID of the thread that received the signal.
+  //! \param[inout] gather_indirectly_referenced_memory_cap The remaining budget
+  //!     for indirectly referenced memory, honored on entry and updated on
+  //!     return.
   //!
   //! \return `true` if the snapshot could be created, `false` otherwise with
   //!     an appropriate message logged.

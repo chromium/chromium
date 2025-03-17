@@ -200,7 +200,7 @@ SystemNudgeView::SystemNudgeView(
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedSolidBackground(
+  SetBackground(views::CreateSolidBackground(
       nudge_data.background_color_id.value_or(default_background_color_id)));
   SetNotifyEnterExitOnChild(true);
   SetProperty(views::kElementIdentifierKey, kBubbleIdForTesting);
@@ -299,8 +299,8 @@ SystemNudgeView::SystemNudgeView(
         gfx::RoundedCornersF(kImageViewCornerRadius));
 
     if (nudge_data.image_background_color_id) {
-      image_view->SetBackground(views::CreateThemedSolidBackground(
-          *nudge_data.image_background_color_id));
+      image_view->SetBackground(
+          views::CreateSolidBackground(*nudge_data.image_background_color_id));
     }
 
     AddPaddingView(image_and_text_container, kImageViewTrailingPadding,
@@ -333,7 +333,7 @@ SystemNudgeView::SystemNudgeView(
             .SetText(nudge_data.title_text)
             .SetTooltipText(nudge_data.title_text)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-            .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+            .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
             .SetAutoColorReadabilityEnabled(false)
             .SetSubpixelRenderingEnabled(false)
             .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
@@ -350,7 +350,7 @@ SystemNudgeView::SystemNudgeView(
           .SetText(nudge_data.body_text)
           .SetTooltipText(nudge_data.body_text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
           .SetSubpixelRenderingEnabled(false)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

@@ -21,7 +21,6 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
     private final ActivityTabProvider mTabProvider;
 
     private long mOnResumeTimestampMs;
-    private long mLastStateChangeTimestampMs;
 
     private boolean mInVerifiedOrigin;
     private boolean mTwaOpenedRecorded;
@@ -46,7 +45,6 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
         assert mOnResumeTimestampMs != 0;
         TrustedWebActivityUmaRecorder.recordTwaOpenTime(
                 SystemClock.elapsedRealtime() - mOnResumeTimestampMs);
-        recordTimeCurrentState();
         mOnResumeTimestampMs = 0;
     }
 
@@ -59,9 +57,7 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
         if (inVerifiedOrigin == mInVerifiedOrigin) {
             return;
         }
-        recordTimeCurrentState();
         mInVerifiedOrigin = inVerifiedOrigin;
-        mLastStateChangeTimestampMs = SystemClock.elapsedRealtime();
 
         if (mInVerifiedOrigin && !mTwaOpenedRecorded) {
             Tab tab = mTabProvider.get();
@@ -69,20 +65,6 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
                 TrustedWebActivityUmaRecorder.recordTwaOpened(tab.getWebContents());
             }
             mTwaOpenedRecorded = true;
-        }
-    }
-
-    private void recordTimeCurrentState() {
-        if (mLastStateChangeTimestampMs == 0) {
-            return;
-        }
-        long timeInCurrentState =
-                SystemClock.elapsedRealtime()
-                        - Math.max(mLastStateChangeTimestampMs, mOnResumeTimestampMs);
-        if (mInVerifiedOrigin) {
-            TrustedWebActivityUmaRecorder.recordTimeInVerifiedOrigin(timeInCurrentState);
-        } else {
-            TrustedWebActivityUmaRecorder.recordTimeOutOfVerifiedOrigin(timeInCurrentState);
         }
     }
 }

@@ -30,9 +30,7 @@ UserEducationService::UserEducationService(
     : tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_),
       user_education_storage_service_(std::move(storage_service)),
       feature_promo_session_policy_(
-          user_education::features::IsUserEducationV2()
-              ? std::make_unique<user_education::FeaturePromoSessionPolicyV2>()
-              : std::make_unique<user_education::FeaturePromoSessionPolicy>()) {
+          std::make_unique<user_education::FeaturePromoSessionPolicyV2>()) {
   feature_promo_session_policy_->Init(&user_education_session_manager_,
                                       user_education_storage_service_.get());
   product_messaging_controller_.Init(user_education_session_manager_,

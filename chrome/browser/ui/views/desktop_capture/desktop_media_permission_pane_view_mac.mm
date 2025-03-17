@@ -97,7 +97,8 @@ std::unique_ptr<views::View> MakeToggleAnimation() {
 
   views::ImageView* logo_image_view =
       animation_container->AddChildView(std::make_unique<views::ImageView>());
-  logo_image_view->SetImage(gfx::ImageSkiaFromNSImage(app_icon));
+  logo_image_view->SetImage(
+      ui::ImageModel::FromImageSkia(gfx::ImageSkiaFromNSImage(app_icon)));
   logo_image_view->SetImageSize(gfx::Size(55, 55));
   // Adds a margin on the left side of the logo to balance the right margin that
   // is included in the toggle animation. This visually centers the content of
@@ -130,10 +131,9 @@ DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
                                     base::mac::SystemSettingsPane::
                                         kPrivacySecurity_ScreenRecording,
                                     /*id_param=*/"")) {
-  SetBackground(
-      views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
-                                               /*top_radius=*/0.0f,
-                                               /*bottom_radius=*/8.0f));
+  SetBackground(views::CreateRoundedRectBackground(ui::kColorSysSurface4,
+                                                   /*top_radius=*/0.0f,
+                                                   /*bottom_radius=*/8.0f));
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(

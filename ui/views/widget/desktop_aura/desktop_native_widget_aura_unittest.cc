@@ -163,14 +163,6 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_GlobalCursorState) {
   aura::client::CursorClient* cursor_client_b = aura::client::GetCursorClient(
       widget_b.GetNativeView()->GetHost()->window());
 
-#if BUILDFLAG(IS_WIN)
-  // The cursor might be considered invisible after initialization on some
-  // machines (e.g. mouse-less) as |CursorClient|s read the cursor visibility
-  // from OS info. So force the cursor to be visible here.
-  cursor_client_a->UpdateSystemCursorVisibilityForTest(true);
-  cursor_client_b->UpdateSystemCursorVisibilityForTest(true);
-#endif
-
   // Verify the cursor can be locked using one client and unlocked using
   // another.
   EXPECT_FALSE(cursor_client_a->IsCursorLocked());
@@ -312,15 +304,15 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_ReorderDoesntRecomputeOcclusion) {
   // Create child views.
   View* host_view1 = new View();
   w1->GetNativeView()->SetProperty(kHostViewKey, host_view1);
-  contents_view->AddChildView(host_view1);
+  contents_view->AddChildViewRaw(host_view1);
 
   View* host_view2 = new View();
   w2->GetNativeView()->SetProperty(kHostViewKey, host_view2);
-  contents_view->AddChildView(host_view2);
+  contents_view->AddChildViewRaw(host_view2);
 
   View* host_view3 = new View();
   w3->GetNativeView()->SetProperty(kHostViewKey, host_view3);
-  contents_view->AddChildView(host_view3);
+  contents_view->AddChildViewRaw(host_view3);
 
   // Reorder child views. Expect occlusion to only be recomputed once.
   aura::test::WindowOcclusionTrackerTestApi window_occlusion_tracker_test_api(

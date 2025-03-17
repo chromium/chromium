@@ -43,7 +43,7 @@ GURL AffiliatedGroup::GetFallbackIconURL() const {
 }
 
 bool operator==(const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
-  if (!base::ranges::equal(lhs.GetCredentials(), rhs.GetCredentials())) {
+  if (!std::ranges::equal(lhs.GetCredentials(), rhs.GetCredentials())) {
     return false;
   }
   return lhs.GetDisplayName() == rhs.GetDisplayName() &&

@@ -32,7 +32,7 @@ class FontDisplayAutoLCPAlignTest : public SimTest {
   }
 
   const Font& GetFont(const Element* element) {
-    return element->GetLayoutObject()->Style()->GetFont();
+    return *element->GetLayoutObject()->Style()->GetFont();
   }
 
   const Font& GetTargetFont() { return GetFont(GetTarget()); }

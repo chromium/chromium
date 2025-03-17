@@ -16,3 +16,17 @@ feature kExperimentalWebMachineLearningNeuralNetwork {
   const string name = "ExperimentalWebMachineLearningNeuralNetwork";
   const bool default_state = false;
 };
+
+// Enables the Core ML backend for WebNN.
+[EnableIf=is_mac]
+feature kWebNNCoreML {
+  const string name = "WebNNCoreML";
+  const bool default_state = true;
+};
+
+// Enables the DirectML backend for WebNN.
+[EnableIf=is_win]
+feature kWebNNDirectML {
+  const string name = "WebNNDirectML";
+  const bool default_state = true;
+};

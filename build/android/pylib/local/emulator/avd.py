@@ -632,9 +632,11 @@ class AvdConfig:
         instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
                                         as_root=True,
                                         check_return=True)
+        # Certain system image like tablet does not have data service
+        # So don't check return status here.
         instance.device.RunShellCommand(['svc', 'data', 'disable'],
                                         as_root=True,
-                                        check_return=True)
+                                        check_return=False)
 
       if snapshot:
         logging.info('Wait additional 60 secs before saving snapshot for AVD')

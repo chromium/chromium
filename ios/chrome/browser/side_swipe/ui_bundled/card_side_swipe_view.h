@@ -7,29 +7,37 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
-
 using TabSwipeHandler = void (^)(int destinationWebStateIndex);
 
+@protocol CardSwipeViewDelegate;
 @class SideSwipeGestureRecognizer;
 @protocol SideSwipeToolbarSnapshotProviding;
 class WebStateList;
 
 @interface CardSideSwipeView : UIView
 
-@property(nonatomic, weak) id<SideSwipeMediatorDelegate> delegate;
+@property(nonatomic, weak) id<CardSwipeViewDelegate> delegate;
 // Snapshot provider for top and bottom toolbars.
 @property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
     toolbarSnapshotProvider;
 // Space reserved at the top for the toolbar.
 @property(nonatomic, assign) CGFloat topMargin;
 
+// Inits with the view `frame`, top `margin` and `webStateList`.
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)margin
                  webStateList:(WebStateList*)webStateList;
+
+// Sets up left and right card views depending on current WebState and swipe
+// direction.
 - (void)updateViewsForDirection:(UISwipeGestureRecognizerDirection)direction;
+
+// Update layout with new touch event.
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
       actionBeforeTabSwitch:(TabSwipeHandler)completionHandler;
+
+// Disconnects this view.
+- (void)disconnect;
 
 @end
 

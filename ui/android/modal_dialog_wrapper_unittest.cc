@@ -20,6 +20,7 @@ namespace ui {
 
 TEST(ModalDialogWrapperTest, ShowTabModal) {
   bool ok_called = false;
+  bool dialog_destroyed = false;
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(u"title")
       .AddParagraph(ui::DialogModelLabel(u"paragraph"))
@@ -28,7 +29,10 @@ TEST(ModalDialogWrapperTest, ShowTabModal) {
           ui::DialogModel::Button::Params().SetLabel(u"ok"))
       .AddCancelButton(base::DoNothing(),
                        ui::DialogModel::Button::Params().SetLabel(u"cancel"))
-      .SetCloseActionCallback(base::DoNothing());
+      .SetCloseActionCallback(base::DoNothing())
+      .SetDialogDestroyingCallback(base::BindLambdaForTesting(
+          [&dialog_destroyed]() { dialog_destroyed = true; }));
+  ;
 
   auto window = ui::WindowAndroid::CreateForTesting();
   auto fake_dialog_manager = FakeModalDialogManagerBridge::CreateForTab(
@@ -37,10 +41,12 @@ TEST(ModalDialogWrapperTest, ShowTabModal) {
   ModalDialogWrapper::ShowTabModal(dialog_builder.Build(), window->get());
   fake_dialog_manager->ClickPositiveButton();
   EXPECT_TRUE(ok_called);
+  EXPECT_TRUE(dialog_destroyed);
 }
 
 TEST(ModalDialogWrapperTest, CloseDialogFromNative) {
   bool closed = false;
+  bool dialog_destroyed = false;
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(u"title")
       .AddParagraph(ui::DialogModelLabel(u"paragraph"))
@@ -49,7 +55,10 @@ TEST(ModalDialogWrapperTest, CloseDialogFromNative) {
       .AddCancelButton(base::DoNothing(),
                        ui::DialogModel::Button::Params().SetLabel(u"cancel"))
       .SetCloseActionCallback(
-          base::BindLambdaForTesting([&closed]() { closed = true; }));
+          base::BindLambdaForTesting([&closed]() { closed = true; }))
+      .SetDialogDestroyingCallback(base::BindLambdaForTesting(
+          [&dialog_destroyed]() { dialog_destroyed = true; }));
+  ;
 
   auto window = ui::WindowAndroid::CreateForTesting();
   auto fake_dialog_manager = FakeModalDialogManagerBridge::CreateForTab(
@@ -58,6 +67,7 @@ TEST(ModalDialogWrapperTest, CloseDialogFromNative) {
   ModalDialogWrapper::ShowTabModal(dialog_builder.Build(), window->get());
   ModalDialogWrapper::GetDialogForTesting()->Close();
   EXPECT_TRUE(closed);
+  EXPECT_TRUE(dialog_destroyed);
 }
 
 }  // namespace ui

@@ -27,9 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/weak_cell.h"
@@ -64,7 +65,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
           direction_(static_cast<unsigned>(direction)) {
       DCHECK(characters.size() <= kCapacity);
       // Up-convert from LChar to UChar.
-      base::ranges::copy(characters, characters_);
+      std::ranges::copy(characters, characters_);
       hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 
@@ -116,11 +117,11 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
     visitor->Trace(short_string_map_);
   }
 
-  ShapeCacheEntry* Add(const TextRun& run, ShapeCacheEntry entry) {
+  ShapeCacheEntry* Add(const TextRun& run) {
     if (run.length() > SmallStringKey::Capacity())
       return nullptr;
 
-    return AddSlowCase(run, std::move(entry));
+    return AddSlowCase(run);
   }
 
   void ClearIfVersionChanged(unsigned version) {
@@ -151,7 +152,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
   }
 
  private:
-  ShapeCacheEntry* AddSlowCase(const TextRun& run, ShapeCacheEntry entry) {
+  ShapeCacheEntry* AddSlowCase(const TextRun& run) {
     bool is_new_entry;
     ShapeCacheEntry* value;
     if (run.length() == 1) {
@@ -161,7 +162,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
       if (run.Direction() == TextDirection::kRtl)
         key |= (1u << 31);
       SingleCharMap::AddResult add_result =
-          single_char_map_.insert(key, std::move(entry));
+          single_char_map_.insert(key, ShapeCacheEntry());
       is_new_entry = add_result.is_new_entry;
       value = &add_result.stored_value->value;
     } else {
@@ -172,7 +173,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
         small_string_key = SmallStringKey(run.Span16(), run.Direction());
       }
       SmallStringMap::AddResult add_result =
-          short_string_map_.insert(small_string_key, std::move(entry));
+          short_string_map_.insert(small_string_key, ShapeCacheEntry());
       is_new_entry = add_result.is_new_entry;
       value = &add_result.stored_value->value;
     }

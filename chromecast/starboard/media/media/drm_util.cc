@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 
 namespace chromecast {
@@ -21,73 +22,45 @@ constexpr int kMaxIdLength = std::size(StarboardDrmSampleInfo{}.identifier);
 DrmInfoWrapper::DrmInfoWrapper() = default;
 
 DrmInfoWrapper::DrmInfoWrapper(
-    StarboardDrmSampleInfo drm_sample_info,
-    std::vector<StarboardDrmSubSampleMapping> mappings) {
-  drm_sample_info_ = std::move(drm_sample_info);
-  subsample_mappings_ = std::move(mappings);
+    std::unique_ptr<StarboardDrmSampleInfo> drm_sample_info,
+    std::unique_ptr<std::vector<StarboardDrmSubSampleMapping>> mappings)
+    : drm_sample_info_(std::move(drm_sample_info)),
+      subsample_mappings_(std::move(mappings)) {}
 
-  UpdateSubsampleInfo();
-}
+DrmInfoWrapper::DrmInfoWrapper(DrmInfoWrapper&& other) = default;
 
-DrmInfoWrapper::DrmInfoWrapper(DrmInfoWrapper&& other) {
-  drm_sample_info_ = std::move(other.drm_sample_info_);
-  subsample_mappings_ = std::move(other.subsample_mappings_);
-
-  UpdateSubsampleInfo();
-  other.drm_sample_info_ = std::nullopt;
-}
-
-DrmInfoWrapper& DrmInfoWrapper::operator=(DrmInfoWrapper&& other) {
-  drm_sample_info_ = std::move(other.drm_sample_info_);
-  subsample_mappings_ = std::move(other.subsample_mappings_);
-
-  UpdateSubsampleInfo();
-  other.drm_sample_info_ = std::nullopt;
-  return *this;
-}
+DrmInfoWrapper& DrmInfoWrapper::operator=(DrmInfoWrapper&& other) = default;
 
 DrmInfoWrapper::~DrmInfoWrapper() = default;
 
 StarboardDrmSampleInfo* DrmInfoWrapper::GetDrmSampleInfo() {
-  return drm_sample_info_ ? &*drm_sample_info_ : nullptr;
+  return drm_sample_info_.get();
 }
 
-void DrmInfoWrapper::UpdateSubsampleInfo() {
-  if (!drm_sample_info_) {
-    return;
-  }
-
-  drm_sample_info_->subsample_count = subsample_mappings_.size();
-  drm_sample_info_->subsample_mapping =
-      subsample_mappings_.empty() ? nullptr : subsample_mappings_.data();
-}
-
-DrmInfoWrapper GetDrmInfo(const CastDecoderBuffer& buffer) {
+DrmInfoWrapper DrmInfoWrapper::Create(const CastDecoderBuffer& buffer) {
   const CastDecryptConfig* decrypt_config = buffer.decrypt_config();
   if (!decrypt_config) {
     return DrmInfoWrapper();
   }
 
-  // Populate drm_sample_info.
-  StarboardDrmSampleInfo drm_info;
-
+  auto drm_info = std::make_unique<StarboardDrmSampleInfo>();
   switch (decrypt_config->encryption_scheme()) {
     case EncryptionScheme::kUnencrypted:
       return DrmInfoWrapper();
     case EncryptionScheme::kAesCtr:
-      drm_info.encryption_scheme = kStarboardDrmEncryptionSchemeAesCtr;
+      drm_info->encryption_scheme = kStarboardDrmEncryptionSchemeAesCtr;
       break;
     case EncryptionScheme::kAesCbc:
-      drm_info.encryption_scheme = kStarboardDrmEncryptionSchemeAesCbc;
+      drm_info->encryption_scheme = kStarboardDrmEncryptionSchemeAesCbc;
       break;
   }
 
-  drm_info.encryption_pattern.crypt_byte_block =
+  drm_info->encryption_pattern.crypt_byte_block =
       decrypt_config->pattern().encrypt_blocks;
-  drm_info.encryption_pattern.skip_byte_block =
+  drm_info->encryption_pattern.skip_byte_block =
       decrypt_config->pattern().skip_blocks;
 
-  int iv_size = decrypt_config->iv().size();
+  size_t iv_size = decrypt_config->iv().size();
   if (iv_size > kMaxIvLength) {
     LOG(ERROR)
         << "Encrypted buffer contained too many initialization vector values "
@@ -95,34 +68,46 @@ DrmInfoWrapper GetDrmInfo(const CastDecoderBuffer& buffer) {
         << kMaxIvLength << "): " << iv_size;
     iv_size = kMaxIvLength;
   }
-  for (int i = 0; i < iv_size; ++i) {
-    drm_info.initialization_vector[i] =
-        static_cast<uint8_t>(decrypt_config->iv().at(i));
-  }
-  drm_info.initialization_vector_size = iv_size;
 
-  int id_size = decrypt_config->key_id().size();
+  // Populate drm_info->initialization_vector.
+  base::span<uint8_t>(drm_info->initialization_vector)
+      .first(iv_size)
+      .copy_from(base::as_byte_span(decrypt_config->iv()).first(iv_size));
+  drm_info->initialization_vector_size = iv_size;
+
+  size_t id_size = decrypt_config->key_id().size();
   if (id_size > kMaxIdLength) {
     LOG(ERROR) << "Encrypted buffer contained too many key ID vector values "
                   "(max supported by Starboard is "
                << kMaxIdLength << "): " << id_size;
     id_size = kMaxIdLength;
   }
-  for (int i = 0; i < id_size; ++i) {
-    drm_info.identifier[i] =
-        static_cast<uint8_t>(decrypt_config->key_id().at(i));
-  }
-  drm_info.identifier_size = id_size;
+
+  // Populate drm_info->identifier.
+  base::span<uint8_t>(drm_info->identifier)
+      .first(id_size)
+      .copy_from(base::as_byte_span(decrypt_config->key_id()).first(id_size));
+  drm_info->identifier_size = id_size;
 
   // Populate subsample_mappings.
-  std::vector<StarboardDrmSubSampleMapping> subsample_mappings;
-  subsample_mappings.reserve(decrypt_config->subsamples().size());
+  auto subsample_mappings =
+      std::make_unique<std::vector<StarboardDrmSubSampleMapping>>();
+  subsample_mappings->reserve(decrypt_config->subsamples().size());
   for (const SubsampleEntry& subsample : decrypt_config->subsamples()) {
     StarboardDrmSubSampleMapping mapping;
     mapping.clear_byte_count = subsample.clear_bytes;
     mapping.encrypted_byte_count = subsample.cypher_bytes;
-    subsample_mappings.push_back(std::move(mapping));
+    subsample_mappings->push_back(std::move(mapping));
   }
+
+  if (subsample_mappings->empty()) {
+    LOG(ERROR) << "At least one subsample must be present for DRM info. DRM "
+                  "playback will likely not work";
+    return DrmInfoWrapper();
+  }
+
+  drm_info->subsample_mapping =
+      base::span<const StarboardDrmSubSampleMapping>(*subsample_mappings);
 
   return DrmInfoWrapper(std::move(drm_info), std::move(subsample_mappings));
 }

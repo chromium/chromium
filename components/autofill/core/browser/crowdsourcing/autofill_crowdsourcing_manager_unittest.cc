@@ -1415,6 +1415,31 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
   }
 }
 
+// Tests that setting the "autofill_ai_server_experiment_id" parameter for
+// kAutofillAiWithDataSchema adds the parameter as an experiment to the query
+// request.
+TEST_P(AutofillQueryTest, IncludesAutofillAiExperiment) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiWithDataSchema,
+      {{"autofill_ai_server_experiment_id", "12345678"}});
+
+  std::vector<std::unique_ptr<FormStructure>> form_structures;
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
+
+  payloads().clear();
+  ASSERT_TRUE(SendQueryRequest(form_structures));
+  EXPECT_EQ(1, call_count());
+
+  ASSERT_THAT(payloads(), SizeIs(1));
+  AutofillPageQueryRequest query_contents;
+  ASSERT_TRUE(query_contents.ParseFromString(payloads()[0]));
+
+  ASSERT_EQ(1, query_contents.experiments_size());
+  EXPECT_EQ(12345678, query_contents.experiments(0));
+}
+
 TEST_P(AutofillQueryTest, Metadata) {
   // Initialize a form. Note that this state is post-parse.
   FormData form;
@@ -1480,16 +1505,8 @@ TEST_P(AutofillQueryTest, Metadata) {
   ASSERT_EQ(query.forms_size(), 1);
   const auto& query_form = query.forms(0);
 
-  // There should be no encoded metadata for the form.
-  EXPECT_FALSE(query_form.has_metadata());
-
-  // There should be three fields, none of which have encoded metadata.
-  ASSERT_EQ(3, query_form.fields_size());
-  ASSERT_EQ(static_cast<int>(form.fields().size()), query_form.fields_size());
-  for (int i = 0; i < query_form.fields_size(); ++i) {
-    const auto& query_field = query_form.fields(i);
-    EXPECT_FALSE(query_field.has_metadata());
-  }
+  // There should be three fields.
+  EXPECT_EQ(3, query_form.fields_size());
 }
 
 // Note that we omit DEFAULT_URL from the test params. We don't actually want

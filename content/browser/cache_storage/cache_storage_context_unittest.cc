@@ -66,7 +66,7 @@ class CacheStorageContextTest : public testing::Test {
     network::DocumentIsolationPolicy document_isolation_policy;
     cache_storage_context_->AddReceiver(
         cross_origin_embedder_policy, mojo::NullRemote(),
-        document_isolation_policy,
+        document_isolation_policy, mojo::NullRemote(),
         storage::BucketLocator::ForDefaultBucket(storage_key),
         storage::mojom::CacheStorageOwner::kCacheAPI,
         std::move(cache_storage_receiver));
@@ -122,7 +122,7 @@ TEST_F(CacheStorageContextTest, DefaultBucketCreatedOnAddReceiver) {
       storage::BucketInfo result,
       quota_manager_proxy_sync.GetBucket(
           blink::StorageKey::CreateFromStringForTesting(kExampleStorageKey),
-          storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary));
+          storage::kDefaultBucketName));
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
   EXPECT_EQ(result.storage_key,
             blink::StorageKey::CreateFromStringForTesting(kExampleStorageKey));
@@ -133,7 +133,7 @@ TEST_F(CacheStorageContextTest, DefaultBucketCreatedOnAddReceiver) {
       result,
       quota_manager_proxy_sync.GetBucket(
           blink::StorageKey::CreateFromStringForTesting(kGoogleStorageKey),
-          storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary));
+          storage::kDefaultBucketName));
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
   EXPECT_EQ(result.storage_key,
             blink::StorageKey::CreateFromStringForTesting(kGoogleStorageKey));

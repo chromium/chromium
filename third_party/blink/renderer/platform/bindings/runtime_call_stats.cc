@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 
 #include <inttypes.h>
 
 #include <algorithm>
+#include <array>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/web/blink.h"
@@ -62,7 +59,7 @@ RuntimeCallTimer* RuntimeCallTimer::Stop() {
 
 RuntimeCallStats::RuntimeCallStats(const base::TickClock* clock)
     : clock_(clock) {
-  static const char* const names[] = {
+  static const auto names = std::to_array<const char*>({
 #define BINDINGS_COUNTER_NAME(name) "Blink_Bindings_" #name,
       BINDINGS_COUNTERS(BINDINGS_COUNTER_NAME)  //
 #undef BINDINGS_COUNTER_NAME
@@ -82,10 +79,10 @@ RuntimeCallStats::RuntimeCallStats(const base::TickClock* clock)
       CALLBACK_COUNTERS(COUNTER_NAME)  //
       EXTRA_COUNTERS(COUNTER_NAME)
 #undef COUNTER_NAME
-  };
+  });
 
   for (int i = 0; i < number_of_counters_; i++) {
-    counters_[i] = RuntimeCallCounter(names[i]);
+    UNSAFE_TODO(counters_[i] = RuntimeCallCounter(names[i]));
   }
 }
 
@@ -98,7 +95,7 @@ RuntimeCallStats* RuntimeCallStats::From(v8::Isolate* isolate) {
 
 void RuntimeCallStats::Reset() {
   for (int i = 0; i < number_of_counters_; i++) {
-    counters_[i].Reset();
+    UNSAFE_TODO(counters_[i].Reset());
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -110,8 +107,11 @@ void RuntimeCallStats::Reset() {
 
 void RuntimeCallStats::Dump(TracedValue& value) const {
   for (int i = 0; i < number_of_counters_; i++) {
-    if (counters_[i].GetCount() > 0)
-      counters_[i].Dump(value);
+    UNSAFE_TODO({
+      if (counters_[i].GetCount() > 0) {
+        counters_[i].Dump(value);
+      }
+    });
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -133,7 +133,7 @@ String RuntimeCallStats::ToString() const {
       "Name                                                    Count     Time "
       "(ms)\n\n");
   for (int i = 0; i < number_of_counters_; i++) {
-    const RuntimeCallCounter* counter = &counters_[i];
+    const RuntimeCallCounter* counter = UNSAFE_TODO(&counters_[i]);
     builder.AppendFormat(row_format, counter->GetName(), counter->GetCount(),
                          counter->GetTime().InMillisecondsF());
   }

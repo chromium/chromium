@@ -51,7 +51,7 @@ export class CrChipElement extends CrChipElementBase {
 
   // Overridden from CrRippleMixin
   override createRipple() {
-    this.rippleContainer = this.shadowRoot!.querySelector('button');
+    this.rippleContainer = this.shadowRoot.querySelector('button');
     return super.createRipple();
   }
 }

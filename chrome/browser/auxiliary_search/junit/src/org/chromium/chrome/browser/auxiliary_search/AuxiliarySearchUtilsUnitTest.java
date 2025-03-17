@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconUseLargeFavicon;
@@ -25,14 +26,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.MetaDataVersion;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
 
@@ -230,5 +236,27 @@ public class AuxiliarySearchUtilsUnitTest {
         // Verifies that isShareTabsWithOsDefaultEnabled() returns false if skipping device check is
         // enabled on third party devices.
         assertFalse(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetMetadataVersion() {
+        Tab tab = mock(Tab.class);
+        assertEquals(MetaDataVersion.V1, AuxiliarySearchUtils.getMetadataVersion(tab));
+
+        AuxiliarySearchEntry entry = AuxiliarySearchEntry.newBuilder().build();
+        assertEquals(MetaDataVersion.V1, AuxiliarySearchUtils.getMetadataVersion(entry));
+
+        AuxiliarySearchDataEntry dataEntry =
+                new AuxiliarySearchDataEntry(
+                        /* type= */ AuxiliarySearchEntryType.TAB,
+                        /* url= */ JUnitTestGURLs.URL_1,
+                        /* title= */ "Title 1",
+                        /* lastActiveTime= */ TimeUtils.uptimeMillis(),
+                        /* tabId= */ 10,
+                        /* appId= */ null,
+                        /* visitId= */ -1);
+        assertEquals(
+                MetaDataVersion.MULTI_TYPE_V2, AuxiliarySearchUtils.getMetadataVersion(dataEntry));
     }
 }

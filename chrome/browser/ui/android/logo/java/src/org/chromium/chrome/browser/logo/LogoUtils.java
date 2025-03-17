@@ -10,150 +10,67 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Utility classes for {@link LogoView} */
 public class LogoUtils {
-    /** Used to specify the logo size when Logo Polish is enabled. */
-    @IntDef({
-        LogoSizeForLogoPolish.SMALL,
-        LogoSizeForLogoPolish.MEDIUM,
-        LogoSizeForLogoPolish.LARGE
-    })
+    /**
+     * Used to specify the logo size when the current logo is a google doodle. REGULAR size is used
+     * in most cases while the TABLET_SPLIT_SCREEN size is used only in split screens on tablets.
+     */
+    @IntDef({DoodleSize.TABLET_SPLIT_SCREEN, DoodleSize.REGULAR})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface LogoSizeForLogoPolish {
-        int SMALL = 0;
-        int MEDIUM = 1;
-        int LARGE = 2;
+    public @interface DoodleSize {
+        int TABLET_SPLIT_SCREEN = 0;
+        int REGULAR = 1;
     }
 
-    /** Returns whether logo polish flag is enabled in the given context. */
-    public static boolean isLogoPolishEnabled() {
-        return ChromeFeatureList.sLogoPolish.isEnabled();
+    /** Returns the top margin of the LogoView when the current logo is a google doodle. */
+    public static int getTopMarginForDoodle(Resources resources) {
+        return resources.getDimensionPixelSize(R.dimen.doodle_margin_top);
+    }
+
+    /** Returns the height of the LogoView when the current logo is a google doodle. */
+    @VisibleForTesting
+    public static int getDoodleHeight(Resources resources) {
+        return resources.getDimensionPixelSize(R.dimen.doodle_height);
     }
 
     /**
-     * Returns whether logo is Google doodle and logo polish is enabled in the given context.
-     *
-     * @param isLogoDoodle True if the current logo is Google doodle.
+     * Returns the height of the LogoView when the current logo is a google doodle and in split
+     * screens on tablets.
      */
-    public static boolean isLogoPolishEnabledWithGoogleDoodle(boolean isLogoDoodle) {
-        return isLogoDoodle && isLogoPolishEnabled();
-    }
-
-    /**
-     * Returns the logo size to use when logo polish is enabled. When logo polish is disabled, the
-     * return value should be invalid.
-     */
-    public static @LogoSizeForLogoPolish int getLogoSizeForLogoPolish() {
-        if (ChromeFeatureList.sLogoPolishLargeSize.getValue()) {
-            return LogoSizeForLogoPolish.LARGE;
-        }
-
-        if (ChromeFeatureList.sLogoPolishMediumSize.getValue()) {
-            return LogoSizeForLogoPolish.MEDIUM;
-        }
-
-        return LogoSizeForLogoPolish.SMALL;
-    }
-
-    /** Returns the top margin of the LogoView if Logo Polish is enabled. */
-    public static int getTopMarginForLogoPolish(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_margin_top_logo_polish);
-    }
-
-    /** Returns the height of the LogoView if Logo Polish is enabled with large height. */
     @VisibleForTesting
-    public static int getLogoHeightForLogoPolishWithLargeSize(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_large);
+    public static int getDoodleHeightInTabletSplitScreen(Resources resources) {
+        return resources.getDimensionPixelSize(R.dimen.doodle_height_tablet_split_screen);
     }
 
-    /** Returns the height of the LogoView if Logo Polish is enabled with medium height. */
+    /** Sets the layout params for the LogoView when the current logo is a google doodle. */
     @VisibleForTesting
-    public static int getLogoHeightForLogoPolishWithMediumSize(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_medium);
-    }
-
-    /** Returns the height of the LogoView if Logo Polish is enabled. */
-    @VisibleForTesting
-    public static int getLogoHeightForLogoPolishWithSmallSize(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_small);
-    }
-
-    /** Returns the sum of the height, the top margin and the bottom margin of the LogoView. */
-    public static int getLogoTotalHeight(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.ntp_logo_height)
-                + resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top)
-                + resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
-    }
-
-    /**
-     * Returns the sum of the height, the top margin and the bottom margin of the LogoView if Logo
-     * Polish is enabled.
-     *
-     * @param resources The current Android's resources.
-     * @param logoSize The type of the logo size to be used for the logo.
-     */
-    public static int getLogoTotalHeightForLogoPolish(
-            Resources resources, final @LogoSizeForLogoPolish int logoSize) {
-        int bottomMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
-        switch (logoSize) {
-            case LogoSizeForLogoPolish.LARGE:
-                return getLogoHeightForLogoPolishWithLargeSize(resources)
-                        + getTopMarginForLogoPolish(resources)
-                        + bottomMargin;
-            case LogoSizeForLogoPolish.MEDIUM:
-                return getLogoHeightForLogoPolishWithMediumSize(resources)
-                        + getTopMarginForLogoPolish(resources)
-                        + bottomMargin;
-            case LogoSizeForLogoPolish.SMALL:
-                return getLogoHeightForLogoPolishWithSmallSize(resources)
-                        + getTopMarginForLogoPolish(resources)
-                        + bottomMargin;
-            default:
-                assert false;
-                return getLogoTotalHeight(resources);
-        }
-    }
-
-    /** Sets the layout params for the LogoView when Logo Polished is enabled. */
-    @VisibleForTesting
-    public static void setLogoViewLayoutParams(
-            LogoView logoView,
-            Resources resources,
-            boolean isLogoPolishEnabled,
-            final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
+    public static void setLogoViewLayoutParamsForDoodle(
+            LogoView logoView, Resources resources, final @DoodleSize int doodleSize) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
         if (layoutParams == null) return;
 
         int[] logoViewLayoutParams =
-                getLogoViewLayoutParams(resources, isLogoPolishEnabled, logoSizeForLogoPolish);
-        setLogoViewLayoutParams(logoView, logoViewLayoutParams[0], logoViewLayoutParams[1]);
+                getLogoViewLayoutParams(resources, /* isLogoDoodle= */ true, doodleSize);
+        setLogoViewLayoutParamsForDoodle(
+                logoView, logoViewLayoutParams[0], logoViewLayoutParams[1]);
     }
 
     public static int[] getLogoViewLayoutParams(
-            Resources resources,
-            boolean isLogoPolishEnabled,
-            final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
-        if (isLogoPolishEnabled) {
-            switch (logoSizeForLogoPolish) {
-                case LogoSizeForLogoPolish.LARGE:
+            Resources resources, boolean isLogoDoodle, final @DoodleSize int doodleSize) {
+        if (isLogoDoodle) {
+            switch (doodleSize) {
+                case DoodleSize.REGULAR:
                     return new int[] {
-                        getLogoHeightForLogoPolishWithLargeSize(resources),
-                        getTopMarginForLogoPolish(resources),
+                        getDoodleHeight(resources), getTopMarginForDoodle(resources),
                     };
-                case LogoSizeForLogoPolish.MEDIUM:
+                case DoodleSize.TABLET_SPLIT_SCREEN:
                     return new int[] {
-                        getLogoHeightForLogoPolishWithMediumSize(resources),
-                        getTopMarginForLogoPolish(resources),
-                    };
-                case LogoSizeForLogoPolish.SMALL:
-                    return new int[] {
-                        getLogoHeightForLogoPolishWithSmallSize(resources),
-                        getTopMarginForLogoPolish(resources),
+                        getDoodleHeightInTabletSplitScreen(resources),
+                        getTopMarginForDoodle(resources),
                     };
                 default:
                     assert false;
@@ -167,7 +84,7 @@ public class LogoUtils {
         return new int[] {0, 0};
     }
 
-    public static void setLogoViewLayoutParams(
+    public static void setLogoViewLayoutParamsForDoodle(
             LogoView logoView, int logoHeight, int logoTopMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
 

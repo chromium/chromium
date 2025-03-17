@@ -40,7 +40,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/version_ui/version_ui_constants.h"
+#include "components/webui/version/version_ui_constants.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -186,9 +186,9 @@ base::span<const SearchConcept> GetAboutReportIssueSearchConcepts() {
 
 // Returns the link to the safety info for the device (if it exists).
 std::string GetSafetyInfoLink() {
-  const std::vector<std::string_view> board =
-      base::SplitStringPiece(base::SysInfo::GetLsbReleaseBoard(), "-",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const std::string release_board = base::SysInfo::GetLsbReleaseBoard();
+  const std::vector<std::string_view> board = base::SplitStringPiece(
+      release_board, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (board[0] == "nocturne") {
     return chrome::kChromeUISafetyPixelSlateURL;
   }

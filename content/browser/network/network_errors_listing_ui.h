@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_NETWORK_NETWORK_ERRORS_LISTING_UI_H_
 #define CONTENT_BROWSER_NETWORK_NETWORK_ERRORS_LISTING_UI_H_
 
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace content {
@@ -15,11 +15,10 @@ namespace content {
 class NetworkErrorsListingUI;
 
 class NetworkErrorsListingUIConfig
-    : public DefaultWebUIConfig<NetworkErrorsListingUI> {
+    : public DefaultInternalWebUIConfig<NetworkErrorsListingUI> {
  public:
   NetworkErrorsListingUIConfig()
-      : DefaultWebUIConfig(kChromeUIScheme, kChromeUINetworkErrorsListingHost) {
-  }
+      : DefaultInternalWebUIConfig(kChromeUINetworkErrorsListingHost) {}
 };
 
 class NetworkErrorsListingUI : public WebUIController {

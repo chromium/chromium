@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/video_codecs.h"
@@ -196,6 +197,12 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
 class MEDIA_GPU_EXPORT V4L2ReadableBuffer
     : public base::RefCountedThreadSafe<V4L2ReadableBuffer> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
+  V4L2ReadableBuffer(base::PassKey<V4L2BufferRefFactory>,
+                     const struct v4l2_buffer& v4l2_buffer,
+                     base::WeakPtr<V4L2Queue> queue,
+                     scoped_refptr<FrameResource> frame);
   V4L2ReadableBuffer(const V4L2ReadableBuffer&) = delete;
   V4L2ReadableBuffer& operator=(const V4L2ReadableBuffer&) = delete;
 
@@ -238,10 +245,6 @@ class MEDIA_GPU_EXPORT V4L2ReadableBuffer
   friend class base::RefCountedThreadSafe<V4L2ReadableBuffer>;
 
   ~V4L2ReadableBuffer();
-
-  V4L2ReadableBuffer(const struct v4l2_buffer& v4l2_buffer,
-                     base::WeakPtr<V4L2Queue> queue,
-                     scoped_refptr<FrameResource> frame);
 
   std::unique_ptr<V4L2BufferRefBase> buffer_data_;
   // If this buffer was a DMABUF buffer queued with
@@ -392,6 +395,23 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
 class MEDIA_GPU_EXPORT V4L2Queue
     : public base::RefCountedThreadSafe<V4L2Queue> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
+  class PassKey {
+   private:
+    static base::PassKey<PassKey> Get() { return base::PassKey<PassKey>(); }
+
+    friend class V4L2QueueFactory;
+    friend class V4L2StatefulVideoDecoder;
+  };
+
+  V4L2Queue(base::PassKey<PassKey>,
+            const IoctlAsCallback& ioctl_cb,
+            const base::RepeatingClosure& schedule_poll_cb,
+            const MmapAsCallback& mmap_cb,
+            const AllocateSecureBufferAsCallback& allocate_secure_cb,
+            enum v4l2_buf_type type,
+            base::OnceClosure destroy_cb);
   V4L2Queue(const V4L2Queue&) = delete;
   V4L2Queue& operator=(const V4L2Queue&) = delete;
 
@@ -559,6 +579,8 @@ class MEDIA_GPU_EXPORT V4L2Queue
                                   struct v4l2_buffer* v4l2_buffer);
 
  private:
+  friend class V4L2BufferRefBase;
+  friend class base::RefCountedThreadSafe<V4L2Queue>;
   ~V4L2Queue();
 
   // Called when clients request a buffer to be queued.
@@ -609,17 +631,6 @@ class MEDIA_GPU_EXPORT V4L2Queue
 
   // Callback to call in this queue's destructor.
   base::OnceClosure destroy_cb_;
-
-  V4L2Queue(const IoctlAsCallback& ioctl_cb,
-            const base::RepeatingClosure& schedule_poll_cb,
-            const MmapAsCallback& mmap_cb,
-            const AllocateSecureBufferAsCallback& allocate_secure_cb,
-            enum v4l2_buf_type type,
-            base::OnceClosure destroy_cb);
-  friend class V4L2QueueFactory;
-  friend class V4L2BufferRefBase;
-  friend class base::RefCountedThreadSafe<V4L2Queue>;
-  friend class V4L2StatefulVideoDecoder;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

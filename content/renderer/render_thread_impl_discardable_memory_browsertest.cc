@@ -155,8 +155,16 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 }
 #endif
 
+// TODO(crbug.com/378037524): This test was flaky on Windows ASan bots.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ReleaseFreeDiscardableMemory_Explicitly \
+  DISABLED_ReleaseFreeDiscardableMemory_Explicitly
+#else
+#define MAYBE_ReleaseFreeDiscardableMemory_Explicitly \
+  ReleaseFreeDiscardableMemory_Explicitly
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       ReleaseFreeDiscardableMemory_Explicitly) {
+                       MAYBE_ReleaseFreeDiscardableMemory_Explicitly) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   base::DiscardableMemoryBacking impl = base::GetDiscardableMemoryBacking();
@@ -191,8 +199,16 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   }));
 }
 
+// TODO(crbug.com/362120461): This test was flaky on Windows ASan bots.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure \
+  DISABLED_ReleaseFreeDiscardableMemory_ByCriticalPressure
+#else
+#define MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure \
+  ReleaseFreeDiscardableMemory_ByCriticalPressure
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       ReleaseFreeDiscardableMemory_ByCriticalPressure) {
+                       MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   base::DiscardableMemoryBacking impl = base::GetDiscardableMemoryBacking();
@@ -227,8 +243,14 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                     ->GetBytesAllocated());
 }
 
+// TODO(crbug.com/364379688): This test is flaky on Windows ASan bots.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_CheckReleaseMemory DISABLED_CheckReleaseMemory
+#else
+#define MAYBE_CheckReleaseMemory CheckReleaseMemory
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       CheckReleaseMemory) {
+                       MAYBE_CheckReleaseMemory) {
   std::vector<std::unique_ptr<base::DiscardableMemory>> all_memory;
   auto* allocator =
       static_cast<discardable_memory::ClientDiscardableSharedMemoryManager*>(

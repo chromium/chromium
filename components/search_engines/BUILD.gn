@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//tools/json_to_struct/json_to_struct.gni")
 if (is_android) {
@@ -15,7 +14,6 @@ static_library("search_engines") {
     "choice_made_location.h",
     "default_search_manager.cc",
     "default_search_manager.h",
-    "eea_countries_ids.h",
     "enterprise/default_search_policy_handler.cc",
     "enterprise/default_search_policy_handler.h",
     "enterprise/enterprise_search_manager.cc",
@@ -49,6 +47,8 @@ static_library("search_engines") {
     "template_url_parser.h",
     "template_url_prepopulate_data.cc",
     "template_url_prepopulate_data.h",
+    "template_url_prepopulate_data_resolver.cc",
+    "template_url_prepopulate_data_resolver.h",
     "template_url_service.cc",
     "template_url_service.h",
     "template_url_service_client.h",
@@ -60,7 +60,6 @@ static_library("search_engines") {
   ]
 
   public_deps = [
-    ":prepopulated_engines",
     ":search_engine_type",
     ":search_engine_utils",
     ":search_engines_switches",
@@ -72,6 +71,7 @@ static_library("search_engines") {
     "//components/webdata/common",
     "//third_party/metrics_proto",
     "//third_party/omnibox_proto",
+    "//third_party/search_engines_data:prepopulated_engines",
   ]
 
   deps = [
@@ -87,6 +87,8 @@ static_library("search_engines") {
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:country_access_reason",
     "//components/search_provider_logos:switches",
     "//components/signin/public/base",
     "//components/strings",
@@ -153,9 +155,9 @@ source_set("search_engine_utils") {
   ]
 
   public_deps = [
-    ":prepopulated_engines",
     ":search_engine_type",
     "//components/google/core/common",
+    "//third_party/search_engines_data:prepopulated_engines",
   ]
 
   deps = [ "//url" ]
@@ -186,6 +188,8 @@ static_library("test_support") {
     "//components/metrics:metrics_pref_names",
     "//components/os_crypt/async/browser:test_support",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
@@ -209,7 +213,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":prepopulated_engines",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -222,6 +225,7 @@ source_set("unit_tests") {
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/variations:test_support",
@@ -233,6 +237,7 @@ source_set("unit_tests") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/search_engines_data:prepopulated_engines",
     "//ui/base",
     "//url",
   ]
@@ -257,23 +262,8 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "android/template_url_service_android_unittest.cc" ]
-    deps += [
-      "//components/search_engines/android:jni_headers",
-      "//components/search_engines/android:test_utils_jni_headers",
-    ]
+    deps += [ "//components/search_engines/android:jni_headers" ]
   }
-}
-
-json_to_struct("prepopulated_engines") {
-  visibility = [ ":*" ]
-
-  source = "prepopulated_engines.json"
-  schema_file = "prepopulated_engines_schema.json"
-  namespace = "TemplateURLPrepopulateData"
-  deps = [
-    ":search_engine_type",
-    "//base",
-  ]
 }
 
 if (is_android) {
@@ -304,11 +294,11 @@ if (!is_android) {
 
     inputs = [
       "//tools/search_engine_choice/generate_search_engine_icons_config.json",
-      "//components/search_engines/prepopulated_engines.json",
       "//components/search_engines/search_engine_countries-inc.cc",
       "//tools/json_comment_eater/json_comment_eater.py",
       "//tools/search_engine_choice/generate_search_engine_icons.py",
       "//tools/search_engine_choice/search_engine_icons_utils.py",
+      "//third_party/search_engines_data/resources/definitions/prepopulated_engines.json",
     ]
 
     outputs = [

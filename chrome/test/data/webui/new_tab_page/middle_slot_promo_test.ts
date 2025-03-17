@@ -316,7 +316,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
       // Assert that only the default promo is visible.
       assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertFalse(!!middleSlotPromo.shadowRoot!.querySelector('#mobilePromo'));
+      assertFalse(!!middleSlotPromo.shadowRoot.querySelector('#mobilePromo'));
 
       // Remove data for the default promo to make it disappear.
       callbackRouterRemote.setPromo(null);
@@ -325,7 +325,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       // Assert that the mobile promo remains hidden even when the
       // default promo is gone.
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertFalse(!!middleSlotPromo.shadowRoot!.querySelector('#mobilePromo'));
+      assertFalse(!!middleSlotPromo.shadowRoot.querySelector('#mobilePromo'));
       assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
 

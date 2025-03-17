@@ -37,7 +37,7 @@ LoginTooltipView::LoginTooltipView(const std::u16string& message,
       kInfoIconSizeDp));
 
   label_ = AddChildView(login_views_utils::CreateBubbleLabel(message, this));
-  label_->SetEnabledColorId(
+  label_->SetEnabledColor(
       static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);

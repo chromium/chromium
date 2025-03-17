@@ -102,15 +102,12 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   const bool has_controller_failed =
       auto_enrollment_controller_->state().has_value() &&
       !auto_enrollment_controller_->state().value().has_value();
-  if (has_controller_failed) {
-    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
-    // preserved in the logs.
-    LOG(WARNING) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
-                 << " check due to failure.";
-    auto_enrollment_controller_->Retry();
-  } else {
-    auto_enrollment_controller_->Start();
-  }
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
+  // preserved in the logs.
+  LOG_IF(WARNING, has_controller_failed)
+      << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
+      << " check due to failure.";
+  auto_enrollment_controller_->Start();
 }
 
 void AutoEnrollmentCheckScreen::HideImpl() {
@@ -175,7 +172,7 @@ void AutoEnrollmentCheckScreen::UpdateState(
   // Retry if applicable. This is last so eventual callbacks find consistent
   // state.
   if (retry) {
-    auto_enrollment_controller_->Retry();
+    auto_enrollment_controller_->Start();
   }
 }
 
@@ -205,11 +202,6 @@ bool AutoEnrollmentCheckScreen::ShowAutoEnrollmentState(
     return false;
   }
 
-  // Do not  show connection error screen if the error is not blocking.
-  if (!IsBlockingError(new_auto_enrollment_state.error())) {
-    return false;
-  }
-
   ShowErrorScreen(NetworkError::ERROR_STATE_OFFLINE);
   return true;
 }
@@ -220,9 +212,7 @@ void AutoEnrollmentCheckScreen::ShowErrorScreen(
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
   error_screen_->SetUIState(NetworkError::UI_STATE_AUTO_ENROLLMENT_ERROR);
   error_screen_->AllowGuestSignin(
-      auto_enrollment_controller_->auto_enrollment_check_type() !=
-      policy::AutoEnrollmentTypeChecker::CheckType::
-          kForcedReEnrollmentExplicitlyRequired);
+      auto_enrollment_controller_->IsGuestSigninAllowed());
 
   error_screen_->SetErrorState(error_state,
                                network ? network->name() : std::string());
@@ -260,66 +250,16 @@ void AutoEnrollmentCheckScreen::SignalCompletion() {
 }
 
 bool AutoEnrollmentCheckScreen::IsCompleted() const {
-  if (!auto_enrollment_controller_->state().has_value()) {
-    return false;
-  }
+  //  `state` is an optional<expected>>.
+  //  The auto enrollment check is complete once there's non-error value.
+  const std::optional<policy::AutoEnrollmentState>& state =
+      auto_enrollment_controller_->state();
 
-  const policy::AutoEnrollmentState state =
-      auto_enrollment_controller_->state().value();
-  if (state.has_value()) {
-    // Decision made, ready to proceed.
-    return true;
-  }
-
-  // Error is considered compliting if it is not blocking.
-  return !IsBlockingError(state.error());
+  return state.has_value() and state.value().has_value();
 }
 
 void AutoEnrollmentCheckScreen::OnConnectRequested() {
-  auto_enrollment_controller_->Retry();
-}
-
-bool AutoEnrollmentCheckScreen::IsBlockingError(
-    const policy::AutoEnrollmentError& error) const {
-  // Connection errors are always blocking. Server errors are blocking for FRE
-  // devices.
-  return absl::visit(
-      base::Overloaded{
-          [](policy::AutoEnrollmentSafeguardTimeoutError) { return true; },
-          [](policy::AutoEnrollmentSystemClockSyncError) { return true; },
-          [](policy::AutoEnrollmentStateKeysRetrievalError) { return true; },
-          [this](const policy::AutoEnrollmentDMServerError& error) {
-            return error.network_error.has_value() ? true
-                                                   : ShouldBlockOnServerError();
-          },
-          [this](policy::AutoEnrollmentStateAvailabilityResponseError error) {
-            return ShouldBlockOnServerError();
-          },
-          [this](policy::AutoEnrollmentPsmError) {
-            return ShouldBlockOnServerError();
-          },
-          [this](policy::AutoEnrollmentStateRetrievalResponseError) {
-            return ShouldBlockOnServerError();
-          },
-      },
-      error);
-}
-
-bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {
-  using CheckType = policy::AutoEnrollmentTypeChecker::CheckType;
-  switch (auto_enrollment_controller_->auto_enrollment_check_type()) {
-    case CheckType::kForcedReEnrollmentImplicitlyRequired:
-      // Auto-enrollment is implicitly required so we don't block in server
-      // errors.
-      return false;
-    case CheckType::kForcedReEnrollmentExplicitlyRequired:
-    case CheckType::kInitialStateDetermination:
-      // Auto-enrollment is explicitly required so we block on server errors.
-      return true;
-    case CheckType::kUnknownDueToMissingSystemClockSync:
-    case CheckType::kNone:
-      NOTREACHED();
-  }
+  auto_enrollment_controller_->Start();
 }
 
 }  // namespace ash

@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">A lista de credenciais que se completarán ao tocar está aberta a pantalla completa.</translation>
 <translation id="5591247451101092906">Queres usar a clave de acceso ou o contrasinal gardado?</translation>
 <translation id="5624120631404540903">Xestionar contrasinais</translation>
+<translation id="592182999816790476">O contrasinal de <ph name="USERNAME" /> gardouse en <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Clave de acceso de <ph name="USERNAME" />; usar o bloqueo de pantalla</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Novo contrasinal para este sitio}other{Novos contrasinais para este sitio}}</translation>
 <translation id="7286867818472074330">Seleccionar clave de acceso</translation>

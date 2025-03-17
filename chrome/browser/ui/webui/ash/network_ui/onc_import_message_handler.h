@@ -9,8 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/net/server_certificate_database.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
+#include "components/server_certificate_database/server_certificate_database.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace net {

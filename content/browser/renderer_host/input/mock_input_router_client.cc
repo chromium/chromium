@@ -39,9 +39,6 @@ void MockInputRouterClient::DecrementInFlightEventCount(
   --in_flight_event_count_;
 }
 
-void MockInputRouterClient::NotifyUISchedulerOfGestureEventUpdate(
-    blink::WebInputEvent::Type gesture_event) {}
-
 void MockInputRouterClient::DidOverscroll(
     const ui::DidOverscrollParams& params) {
   overscroll_ = params;
@@ -57,9 +54,13 @@ void MockInputRouterClient::DidStartScrollingViewport() {}
 void MockInputRouterClient::ForwardGestureEventWithLatencyInfo(
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency_info) {
-  if (input_router_)
+  if (input_router_) {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        GetDispatchToRendererCallback());
     input_router_->SendGestureEvent(
-        input::GestureEventWithLatencyInfo(gesture_event, latency_info));
+        input::GestureEventWithLatencyInfo(gesture_event, latency_info),
+        dispatch_callback.callback);
+  }
 
   if (gesture_event.SourceDevice() != blink::WebGestureDevice::kTouchpad)
     return;
@@ -76,8 +77,11 @@ void MockInputRouterClient::ForwardWheelEventWithLatencyInfo(
     const blink::WebMouseWheelEvent& wheel_event,
     const ui::LatencyInfo& latency_info) {
   if (input_router_) {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        GetDispatchToRendererCallback());
     input_router_->SendWheelEvent(
-        input::MouseWheelEventWithLatencyInfo(wheel_event, latency_info));
+        input::MouseWheelEventWithLatencyInfo(wheel_event, latency_info),
+        dispatch_callback.callback);
   }
 }
 
@@ -141,6 +145,11 @@ input::StylusInterface* MockInputRouterClient::GetStylusInterface() {
 
 void MockInputRouterClient::OnStartStylusWriting() {
   on_start_stylus_writing_called_ = true;
+}
+
+input::DispatchToRendererCallback
+MockInputRouterClient::GetDispatchToRendererCallback() {
+  return base::DoNothing();
 }
 
 }  // namespace content

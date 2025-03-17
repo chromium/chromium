@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -142,7 +142,13 @@ void MockWidgetInputHandler::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {}
+    const std::optional<cc::BrowserControlsOffsetTagModifications>&
+        offset_tag_modifications) {}
+
+void MockWidgetInputHandler::FlushReceiverForTesting() {
+  DCHECK(receiver_.is_bound());
+  receiver_.FlushForTesting();
+}
 
 MockWidgetInputHandler::DispatchedMessage::DispatchedMessage(
     const std::string& name)

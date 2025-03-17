@@ -45,4 +45,10 @@ public interface EducationTipModuleActionDelegate {
 
     /** Opens the app menu and highlights the quick delete menu item. */
     void openAndHighlightQuickDeleteMenuItem();
+
+    /**
+     * Returns the total number of tabs for relaunch across both regular and incognito browsing
+     * modes through shared preference key.
+     */
+    int getTabCountForRelaunchFromSharedPrefs();
 }

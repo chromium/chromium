@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {FilesSettingsCardElement, OneDriveConnectionState, SmbBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, CrLinkRowElement, CrSettingsPrefs, OneDriveBrowserProxy, Route, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {FilesSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import {OneDriveConnectionState, SmbBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, Route, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, OneDriveBrowserProxy, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,7 +16,8 @@ import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js'
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
+import type {ProxyOptions} from './one_drive_test_browser_proxy.js';
+import {OneDriveTestBrowserProxy} from './one_drive_test_browser_proxy.js';
 import {TestSmbBrowserProxy} from './test_smb_browser_proxy.js';
 
 suite('<files-settings-card>', () => {
@@ -319,7 +322,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('with enableDriveFsBulkPinning set to true', () => {
-    setup(async () => {
+    setup(() => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: true,
       });
@@ -374,7 +377,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('with enableDriveFsMirrorSync set to true', () => {
-    setup(async () => {
+    setup(() => {
       loadTimeData.overrideValues({
         enableDriveFsMirrorSync: true,
       });
@@ -430,7 +433,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('when no share has been setup before', () => {
-    setup(async () => {
+    setup(() => {
       smbBrowserProxy.anySmbMounted = false;
     });
 
@@ -454,7 +457,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('when file shares have been setup before', () => {
-    setup(async () => {
+    setup(() => {
       smbBrowserProxy.anySmbMounted = true;
     });
 

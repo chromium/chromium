@@ -12,7 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace payments::facilitated {
@@ -60,15 +60,15 @@ security_state::SecurityLevel SecurityChecker::GetSecurityLevel(
 
   CHECK(state) << "security_state::VisibleSecurityState was a nullpt.";
 
-  return security_state::GetSecurityLevel(
-      *state, /*used_policy_installed_certificate=*/false);
+  return security_state::GetSecurityLevel(*state);
 }
 
 bool SecurityChecker::IsPaymentPermissionsPolicyEnabled(
     content::RenderFrameHost& rfh) {
   // The payment PermissionsPolicy is enabled by default on the top-level
   // context, unless explicitly disabled by websites.
-  return rfh.IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kPayment);
+  return rfh.IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 }  // namespace payments::facilitated

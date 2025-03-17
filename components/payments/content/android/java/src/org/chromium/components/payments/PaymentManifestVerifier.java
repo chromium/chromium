@@ -4,13 +4,15 @@
 
 package org.chromium.components.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
 import org.chromium.components.payments.PaymentManifestParser.ManifestParseCallback;
 import org.chromium.url.GURL;
@@ -35,6 +37,7 @@ import java.util.Set;
  * Spec:
  * https://docs.google.com/document/d/1izV4uC-tiRJG3JLooqY3YRLU22tYOsLTNq0P_InPJeE/edit#heading=h.cjp3jlnl47h5
  */
+@NullMarked
 public class PaymentManifestVerifier
         implements ManifestDownloadCallback,
                 ManifestParseCallback,
@@ -84,6 +87,7 @@ public class PaymentManifestVerifier
     /** Identifying information about an installed native Android payment app. */
     private static class AppInfo {
         /** Identifies a native Android payment app. */
+        @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
         public ResolveInfo resolveInfo;
 
         /** The version code for the native Android payment app, e.g., 123. */
@@ -93,7 +97,7 @@ public class PaymentManifestVerifier
          * The SHA256 certificate fingerprints for the native Android payment app, .e.g,
          * ["308201dd30820146020101300d06092a864886f70d010105050030"].
          */
-        public Set<String> sha256CertFingerprints;
+        public @Nullable Set<String> sha256CertFingerprints;
     }
 
     private static final String TAG = "PaymentManifest";
@@ -130,10 +134,10 @@ public class PaymentManifestVerifier
     private final PaymentManifestParser mParser;
     private final PackageManagerDelegate mPackageManagerDelegate;
     private final ManifestVerifyCallback mCallback;
-    private final MessageDigest mMessageDigest;
+    private final @Nullable MessageDigest mMessageDigest;
 
     /** The origin of the payment method manifest after all redirects have been followed. */
-    private Origin mPaymentMethodManifestOrigin;
+    private @Nullable Origin mPaymentMethodManifestOrigin;
 
     /**
      * The number of web app manifests that have not yet been retrieved from cache or downloaded
@@ -237,6 +241,8 @@ public class PaymentManifestVerifier
             appInfo.version = packageInfo.versionCode;
             appInfo.sha256CertFingerprints = new HashSet<>();
             Signature[] signatures = packageInfo.signatures;
+            assumeNonNull(signatures);
+            assumeNonNull(mMessageDigest);
             for (int i = 0; i < signatures.length; i++) {
                 mMessageDigest.update(signatures[i].toByteArray());
 
@@ -263,8 +269,6 @@ public class PaymentManifestVerifier
      * @return A string representation of the input bytes, e.g., "0123456789abcdef".
      */
     private static String byteArrayToString(byte[] input) {
-        if (input == null) return null;
-
         StringBuilder builder = new StringBuilder(input.length * 2);
         Formatter formatter = new Formatter(builder);
         for (byte b : input) {
@@ -344,7 +348,8 @@ public class PaymentManifestVerifier
         Set<String> validAppPackageNames = verifyAppWithWebAppManifest(manifest);
         for (String validAppPackageName : validAppPackageNames) {
             mCallback.onValidDefaultPaymentApp(
-                    mMethodName, mDefaultApplications.get(validAppPackageName).resolveInfo);
+                    mMethodName,
+                    assumeNonNull(mDefaultApplications.get(validAppPackageName)).resolveInfo);
         }
 
         mPendingWebAppManifestsCount--;
@@ -400,6 +405,7 @@ public class PaymentManifestVerifier
         for (int i = 0; i < webAppManifestUris.length; i++) {
             if (mAtLeastOneManifestFailedToDownloadOrParse) return;
             assert webAppManifestUris[i] != null;
+            assumeNonNull(mPaymentMethodManifestOrigin);
             mDownloader.downloadWebAppManifest(
                     mPaymentMethodManifestOrigin, webAppManifestUris[i], this);
         }
@@ -428,7 +434,8 @@ public class PaymentManifestVerifier
             Set<String> validAppPackageNames = verifyAppWithWebAppManifest(manifest);
             for (String validAppPackageName : validAppPackageNames) {
                 mCallback.onValidDefaultPaymentApp(
-                        mMethodName, mDefaultApplications.get(validAppPackageName).resolveInfo);
+                        mMethodName,
+                        assumeNonNull(mDefaultApplications.get(validAppPackageName)).resolveInfo);
             }
         }
 

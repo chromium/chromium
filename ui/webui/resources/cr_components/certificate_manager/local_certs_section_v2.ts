@@ -35,14 +35,16 @@ const LocalCertsSectionV2ElementBase = I18nMixin(PolymerElement);
 
 export interface LocalCertsSectionV2Element {
   $: {
-    importOsCerts: CrToggleElement,
-    importOsCertsManagedIcon: HTMLElement,
-    viewOsImportedCerts: HTMLElement,
     // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
     // </if>
 
+    // <if expr="not is_chromeos">
+    importOsCerts: CrToggleElement,
+    importOsCertsManagedIcon: HTMLElement,
+    viewOsImportedCerts: HTMLElement,
     numSystemCerts: HTMLElement,
+    // </if>
   };
 }
 
@@ -57,28 +59,27 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
 
   static get properties() {
     return {
-      // <if expr="not is_chromeos">
-      numSystemCertsString_: String,
-      // </if>
       numPolicyCertsString_: String,
       numUserCertsString_: String,
+
+      // <if expr="not is_chromeos">
+      numSystemCertsString_: String,
 
       importOsCertsEnabled_: {
         type: Boolean,
         computed: 'computeImportOsCertsEnabled_(certManagementMetadata_)',
       },
 
-      // <if expr="not is_chromeos">
       importOsCertsEnabledManaged_: {
         type: Boolean,
         computed: 'computeImportOsCertsManaged_(certManagementMetadata_)',
       },
-      // </if>
 
       showViewOsCertsLinkRow_: {
         type: Boolean,
         computed: 'computeShowViewOsCertsLinkRow_(certManagementMetadata_)',
       },
+      // </if>
 
       certificateSourceEnum_: {
         type: Object,
@@ -93,18 +94,23 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   }
 
   private numPolicyCertsString_: string;
-  // <if expr="not is_chromeos">
-  private numSystemCertsString_: string;
-  // </if>
   private numUserCertsString_: string;
   private certManagementMetadata_: CertManagementMetadata;
-  private importOsCertsEnabled_: boolean;
   // <if expr="not is_chromeos">
+  private numSystemCertsString_: string;
+  private importOsCertsEnabled_: boolean;
   private importOsCertsEnabledManaged_: boolean;
   // </if>
 
   override ready() {
     super.ready();
+    this.onMetadataRefresh_();
+    const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.callbackRouter.triggerMetadataUpdate.addListener(
+        this.onMetadataRefresh_.bind(this));
+  }
+
+  private onMetadataRefresh_() {
     const proxy = CertificatesV2BrowserProxy.getInstance();
     proxy.handler.getCertManagementMetadata().then(
         (results: {metadata: CertManagementMetadata}) => {
@@ -121,9 +127,11 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
         assert(adminLinkRow);
         focusWithoutInk(adminLinkRow);
         break;
+      // <if expr="not is_chromeos">
       case Page.PLATFORM_CERTS:
         focusWithoutInk(this.$.viewOsImportedCerts);
         break;
+      // </if>
       case Page.USER_CERTS:
         const userLinkRow = this.shadowRoot!.querySelector<HTMLElement>(
             '#userCertsInstalledLinkRow');
@@ -169,10 +177,12 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
     }
   }
 
+  // <if expr="not is_chromeos">
   private onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CERTS);
   }
+  // </if>
 
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
@@ -184,20 +194,20 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
     Router.getInstance().navigateTo(Page.USER_CERTS);
   }
 
+  // <if expr="not is_chromeos">
   private computeImportOsCertsEnabled_(): boolean {
     return this.certManagementMetadata_.includeSystemTrustStore;
   }
 
-  // <if expr="not is_chromeos">
   private computeImportOsCertsManaged_(): boolean {
     return this.certManagementMetadata_.isIncludeSystemTrustStoreManaged;
   }
-  // </if>
 
   private computeShowViewOsCertsLinkRow_(): boolean {
     return this.certManagementMetadata_ !== undefined &&
         this.certManagementMetadata_.numUserAddedSystemCerts > 0;
   }
+  // </if>
 
   // If true, show the Custom Certs section.
   private showCustomSection_(): boolean {

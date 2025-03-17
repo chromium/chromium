@@ -39,9 +39,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -57,7 +58,6 @@ import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
@@ -68,8 +68,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
-    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
-    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES
+    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS
 })
 @Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {
@@ -124,21 +123,21 @@ public class FinancialAccountsManagementFragmentTest {
         mAutofillTestHelper = new AutofillTestHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PersonalDataManager personalDataManager =
-                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
-                    personalDataManager.setImageFetcherForTesting(
-                            new TestImageFetcher(FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP));
+                    AutofillImageFetcher imageFetcher =
+                            AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile();
                     // Cache the test image in AutofillImageFetcher. Only cached images are returned
                     // immediately by the AutofillImageFetcher. If the image is not cached, it'll
                     // trigger an async fetch from the above TestImageFetcher and cache it for the
                     // next time.
-                    personalDataManager
-                            .getImageFetcherForTesting()
-                            .addImageToCacheForTesting(
-                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
-                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
-                                    CardIconSpecs.create(
-                                            ContextUtils.getApplicationContext(), ImageSize.LARGE));
+                    imageFetcher.addImageToCacheForTesting(
+                            FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
+                            FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
+                            CardIconSpecs.create(
+                                    ContextUtils.getApplicationContext(), ImageSize.LARGE));
+                    imageFetcher.addImageToCacheForTesting(
+                            AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL),
+                            FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
                     // Set the eWallet and Pix pref to true.
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, true);
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, true);
@@ -148,12 +147,6 @@ public class FinancialAccountsManagementFragmentTest {
     @After
     public void tearDown() throws TimeoutException {
         mAutofillTestHelper.clearAllDataForTesting();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
-                            .getImageFetcherForTesting()
-                            .clearCachedImagesForTesting();
-                });
     }
 
     // Test that when both eWallet and Pix are available the eWallet and Pix
@@ -434,8 +427,7 @@ public class FinancialAccountsManagementFragmentTest {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
-                            .getImageFetcherForTesting()
+                    AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile()
                             .clearCachedImagesForTesting();
                 });
         String bankAccountPrefKey =

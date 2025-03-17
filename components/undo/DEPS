@@ -5,10 +5,8 @@ include_rules = [
   "-ios",
 
   "+components/bookmarks",
+  "+components/signin/public/base",
   "+components/keyed_service/core",
   "+components/strings/grit/components_strings.h",
-  # TODO(crbug.com/40943550): Remove this dependency once the feature toggle is
-  # cleaned up.
-  "+components/sync/base/features.h",
   "+ui/base",
 ]

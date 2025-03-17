@@ -58,6 +58,8 @@ extern NSString* const kToolsMenuReadLater;
 extern NSString* const kToolsMenuAddToBookmarks;
 // Open lens overlay item accessibility Identifier.
 extern NSString* const kToolsMenuOpenLensOverlay;
+// Open ai prototype item accessibility Identifier.
+extern NSString* const kToolsMenuOpenAIPrototype;
 // EditBookmark item accessibility Identifier.
 extern NSString* const kToolsMenuEditBookmark;
 // SiteInformation item accessibility Identifier.
@@ -76,6 +78,8 @@ extern NSString* const kToolsMenuFollow;
 extern NSString* const kToolsMenuUnfollow;
 // Clear Browsing Data item accessibility identifier.
 extern NSString* const kToolsMenuClearBrowsingData;
+// Set Tab Reminder item accessibility Identifier.
+extern NSString* const kToolsMenuSetTabReminder;
 // Share Chrome accessibility Identifier.
 extern NSString* const kToolsMenuShareChromeId;
 // WhatsNew item accessibility Identifier.

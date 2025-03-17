@@ -25,8 +25,8 @@ message NewTabButtonParams {
 // third_party/blink/public/mojom/manifest/manifest.mojom
 message TabStrip {
   enum Visibility {
-    AUTO = 0;
-    ABSENT = 1;
+    VISIBILITY_AUTO = 0;
+    VISIBILITY_ABSENT = 1;
   }
 
   reserved 1;

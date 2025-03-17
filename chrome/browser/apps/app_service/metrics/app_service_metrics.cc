@@ -10,14 +10,12 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/app/arc_app_constants.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/user_education/user_education_util.h"
@@ -26,7 +24,8 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -190,7 +189,7 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name,
                                   apps::LaunchSource launch_source) {
   // This metric is intended to capture actual user actions after the user
@@ -220,7 +219,7 @@ void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name,
       break;
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -232,12 +231,12 @@ std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id) {
     return app_name;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (const std::optional<DefaultAppName> app_name =
           SystemWebAppIdToName(app_id)) {
     return app_name;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (app_id == extension_misc::kCalculatorAppId) {
     // The legacy calculator chrome app.
@@ -250,7 +249,7 @@ std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id) {
     return DefaultAppName::kDocs;
   } else if (app_id == extension_misc::kGoogleDriveAppId) {
     return DefaultAppName::kDrive;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (app_id == arc::kGoogleDuoAppId) {
     return DefaultAppName::kDuo;
   } else if (app_id == extension_misc::kFilesManagerAppId) {
@@ -258,10 +257,10 @@ std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id) {
   } else if (app_id == extension_misc::kGmailAppId ||
              app_id == arc::kGmailAppId) {
     return DefaultAppName::kGmail;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (app_id == extension_misc::kGoogleKeepAppId) {
     return DefaultAppName::kKeep;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (app_id == extension_misc::kGooglePhotosAppId ||
              app_id == arc::kGooglePhotosAppId) {
     return DefaultAppName::kPhotos;
@@ -277,20 +276,20 @@ std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id) {
     return DefaultAppName::kPlayMusic;
   } else if (app_id == arc::kPlayStoreAppId) {
     return DefaultAppName::kPlayStore;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (app_id == extension_misc::kGoogleSheetsAppId) {
     return DefaultAppName::kSheets;
   } else if (app_id == extension_misc::kGoogleSlidesAppId) {
     return DefaultAppName::kSlides;
   } else if (app_id == extensions::kWebStoreAppId) {
     return DefaultAppName::kWebStore;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (app_id == extension_misc::kYoutubeAppId ||
              app_id == arc::kYoutubeAppId) {
     return DefaultAppName::kYouTube;
   } else if (app_id == arc::kGoogleTVAppId) {
     return DefaultAppName::kGoogleTv;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   return std::nullopt;
@@ -300,11 +299,11 @@ void RecordAppLaunch(const std::string& app_id,
                      apps::LaunchSource launch_source) {
   if (const std::optional<DefaultAppName> app_name = AppIdToName(app_id)) {
     RecordDefaultAppLaunch(app_name.value(), launch_source);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (ash::features::IsWelcomeTourEnabled()) {
       RecordWelcomeTourInteraction(app_name.value(), launch_source);
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 }
 
@@ -355,7 +354,7 @@ const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     const std::string& app_id) {
   // These apps should all have chrome:// URLs.
@@ -398,6 +397,6 @@ const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     return std::nullopt;
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

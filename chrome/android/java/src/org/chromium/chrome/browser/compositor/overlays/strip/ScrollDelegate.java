@@ -57,7 +57,7 @@ public class ScrollDelegate {
     /**
      * @return The current scroll offset.
      */
-    float getScrollOffset() {
+    public float getScrollOffset() {
         return mScrollOffset;
     }
 
@@ -67,7 +67,7 @@ public class ScrollDelegate {
      * @param scrollOffset The new scroll offset.
      * @return The difference between the new and old scroll offsets, accounting for RTL.
      */
-    float setScrollOffset(float scrollOffset) {
+    public float setScrollOffset(float scrollOffset) {
         float oldScrollOffset = mScrollOffset;
         mScrollOffset = MathUtils.clamp(scrollOffset, mMinScrollOffset, 0);
 
@@ -117,13 +117,15 @@ public class ScrollDelegate {
         float totalViewWidth = 0.f;
         for (int i = 0; i < stripViews.length; i++) {
             final StripLayoutView view = stripViews[i];
+            if (view.isDraggedOffStrip()) continue;
+
             if (view instanceof final StripLayoutTab tab) {
                 if (tab.isCollapsed()) {
                     // Need to use real width here (which gets animated to effectively 0), so we
                     // don't "jump", but instead smoothly scroll when collapsing near the end of a
                     // full tab strip.
                     totalViewWidth += tab.getWidth() - tabOverlapWidth;
-                } else if (!tab.isClosed() && !tab.isDraggedOffStrip()) {
+                } else if (!tab.isClosed()) {
                     totalViewWidth += cachedTabWidth - tabOverlapWidth;
                 }
             } else if (view instanceof StripLayoutGroupTitle groupTitle) {
@@ -160,7 +162,7 @@ public class ScrollDelegate {
      *
      * @param newStartMargin The new reorder start margin.
      */
-    void setReorderStartMargin(float newStartMargin) {
+    public void setReorderStartMargin(float newStartMargin) {
         float delta = newStartMargin - mReorderStartMargin;
         mReorderStartMargin = newStartMargin;
 
@@ -173,7 +175,7 @@ public class ScrollDelegate {
         setScrollOffset(mScrollOffset - delta);
     }
 
-    float getReorderStartMargin() {
+    public float getReorderStartMargin() {
         return mReorderStartMargin;
     }
 
@@ -181,7 +183,7 @@ public class ScrollDelegate {
      * Returns whether we are still visually scrolling the tab strip or not. This does not account
      * for the reorder auto-scroll.
      */
-    boolean isFinished() {
+    public boolean isFinished() {
         return mScroller.isFinished();
     }
 

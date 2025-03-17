@@ -18,19 +18,21 @@ import android.hardware.biometrics.BiometricPrompt.AuthenticationCallback;
 import android.os.Build;
 import android.os.CancellationSignal;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 
+@NullMarked
 class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController {
     private final Context mContext;
     private final Delegate mDelegate;
-    private BiometricPrompt mBiometricPrompt;
-    protected CancellationSignal mCancellationSignal;
+    private @Nullable BiometricPrompt mBiometricPrompt;
+    protected @Nullable CancellationSignal mCancellationSignal;
 
     public DeviceAuthenticatorControllerImpl(Context context, Delegate delegate) {
         mContext = context;
@@ -102,15 +104,14 @@ class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController
                 callbackExecutor,
                 new AuthenticationCallback() {
                     @Override
-                    public void onAuthenticationError(
-                            int errorCode, @NonNull CharSequence errString) {
+                    public void onAuthenticationError(int errorCode, CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
                         DeviceAuthenticatorControllerImpl.this.onAuthenticationError(errorCode);
                     }
 
                     @Override
                     public void onAuthenticationSucceeded(
-                            @NonNull BiometricPrompt.AuthenticationResult result) {
+                            BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
                         DeviceAuthenticatorControllerImpl.this.onAuthenticationSucceeded(result);
                     }
@@ -125,7 +126,7 @@ class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController
         onAuthenticationCompleted(DeviceAuthUIResult.FAILED);
     }
 
-    protected void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+    protected void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
             onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_UNKNOWN_METHOD);
             return;

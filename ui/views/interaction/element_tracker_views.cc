@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/element_tracker_views.h"
 
+#include <algorithm>
 #include <list>
 #include <map>
 #include <memory>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -140,8 +140,8 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
 
   ViewList GetAllViews() {
     ViewList result;
-    base::ranges::transform(view_data_lookup_, std::back_inserter(result),
-                            &ViewDataMap::value_type::first);
+    std::ranges::transform(view_data_lookup_, std::back_inserter(result),
+                           &ViewDataMap::value_type::first);
     return result;
   }
 

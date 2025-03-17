@@ -12,8 +12,12 @@ Are you a Google employee? See
 
 ## System requirements
 
+<!-- LINT.IfChange -->
+
 * A 64-bit Mac capable of running the required version of Xcode.
 * [Xcode](https://developer.apple.com/xcode) 16.0 or higher.
+
+<!-- LINT.ThenChange(//ios/build/chrome_build.gni) -->
 
 Note: after installing Xcode, you need to launch it and to let it install
 the iOS simulator. This is required as part of the build, see [this discussion](
@@ -28,13 +32,26 @@ Clone the `depot_tools` repository:
 $ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ```
 
-Add `depot_tools` to the end of your PATH (you will probably want to put this
-in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
-`/path/to/depot_tools`:
+You need to add the directory where you checked out `depot_tools` to your
+`PATH` to make the `gclient` commands available. It is also recommended to
+add the `depot_tools/python-bin` directory to your `PATH` to get access to
+a recent version of python3 (the version shipped by default on macOS tends
+to be quite old which can lead to build failure).
+
+To do that, edit your shell login script (e.g. `~/.bash_profile`, `~/.zprofile`)
+and add the following line at the end (assuming you've checked out `depot_tools`
+in your `HOME` directory):
 
 ```shell
-$ export PATH="$PATH:/path/to/depot_tools"
+export PATH="$HOME/depot_tools:$HOME/depot_tools/python-bin:$PATH"
 ```
+
+You may need to run `gclient status` to force an update of `depot_tools`
+before the `python3` command work once you've updated your `PATH`.
+
+You can omit `$HOME/depot_tools/python-bin` if you already have a recent
+version of python installed and you manually manage it (but this may lead
+to unexpected build failures).
 
 ## Get the code
 
@@ -282,11 +299,16 @@ entitlements").
 
 The iOS build supports compiling the blink web platform. To compile blink
 set a gn arg in your `.setup-gn` file. Note the blink web platform is
-experimental code and should only be used for analysis.
+experimental code and should only be used for analysis. We currently
+disable V8 pointer compression and the caged heap because of virtual
+memory allocation issues experienced on physical iOS devices.
 
 ```
 [gn_args]
 use_blink = true
+ios_content_shell_bundle_identifier="REPLACE_YOUR_BUNDLE_IDENTIFIER_HERE"
+cppgc_enable_caged_heap = false
+v8_enable_pointer_compression = false
 ```
 Note that only certain targets support blink. `content_shell` being the
 most useful.

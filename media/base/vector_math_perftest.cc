@@ -7,13 +7,16 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "media/base/vector_math.h"
+
+#include <algorithm>
 #include <memory>
 
+#include "base/containers/span_writer.h"
 #include "base/cpu.h"
 #include "base/memory/aligned_memory.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "media/base/vector_math.h"
 #include "media/base/vector_math_testing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -27,6 +30,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
   perf_test::PerfResultReporter reporter("vector_math", story_name);
   reporter.RegisterImportantMetric("_fmac", "runs/s");
   reporter.RegisterImportantMetric("_fmul", "runs/s");
+  reporter.RegisterImportantMetric("_clamp", "runs/s");
   reporter.RegisterImportantMetric("_ewma_and_max_power", "runs/s");
   return reporter;
 }
@@ -44,12 +48,12 @@ class VectorMathPerfTest : public testing::Test {
  public:
   VectorMathPerfTest() {
     // Initialize input and output vectors.
-    input_vector_.reset(static_cast<float*>(base::AlignedAlloc(
-        sizeof(float) * kVectorSize, vector_math::kRequiredAlignment)));
-    output_vector_.reset(static_cast<float*>(base::AlignedAlloc(
-        sizeof(float) * kVectorSize, vector_math::kRequiredAlignment)));
-    fill(input_vector_.get(), input_vector_.get() + kVectorSize, 1.0f);
-    fill(output_vector_.get(), output_vector_.get() + kVectorSize, 0.0f);
+    input_vector_ = base::AlignedUninit<float>(kVectorSize,
+                                               vector_math::kRequiredAlignment);
+    output_vector_ = base::AlignedUninit<float>(
+        kVectorSize, vector_math::kRequiredAlignment);
+    std::ranges::fill(input_vector_, 1.0f);
+    std::ranges::fill(output_vector_, 0.0f);
   }
 
   VectorMathPerfTest(const VectorMathPerfTest&) = delete;
@@ -61,10 +65,25 @@ class VectorMathPerfTest : public testing::Test {
                     const std::string& trace_name) {
     TimeTicks start = TimeTicks::Now();
     for (int i = 0; i < kBenchmarkIterations; ++i) {
-      fn(input_vector_.get(),
-         kScale,
-         kVectorSize - (aligned ? 0 : 1),
-         output_vector_.get());
+      fn(input_vector_.data(), kScale, kVectorSize - (aligned ? 0 : 1),
+         output_vector_.data());
+    }
+    double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
+    perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);
+    reporter.AddResult(metric_suffix,
+                       kBenchmarkIterations / total_time_seconds);
+  }
+
+  void RunClampingBenchmark(void (*fn)(const float[], int, float[]),
+                            bool aligned,
+                            const std::string& metric_suffix,
+                            const std::string& trace_name) {
+    FillInputWithUnclampedData();
+
+    TimeTicks start = TimeTicks::Now();
+    for (int i = 0; i < kBenchmarkIterations; ++i) {
+      fn(input_vector_.data(), kVectorSize - (aligned ? 0 : 1),
+         output_vector_.data());
     }
     double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
     perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);
@@ -79,7 +98,7 @@ class VectorMathPerfTest : public testing::Test {
       const std::string& trace_name) {
     TimeTicks start = TimeTicks::Now();
     for (int i = 0; i < kEWMABenchmarkIterations; ++i) {
-      fn(0.5f, input_vector_.get(), len, 0.1f);
+      fn(0.5f, input_vector_.data(), len, 0.1f);
     }
     double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
     perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);
@@ -88,8 +107,25 @@ class VectorMathPerfTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<float, base::AlignedFreeDeleter> input_vector_;
-  std::unique_ptr<float, base::AlignedFreeDeleter> output_vector_;
+  base::AlignedHeapArray<float> input_vector_;
+  base::AlignedHeapArray<float> output_vector_;
+
+ private:
+  // Fills `input_vector_` with repeating values, some of which are unclamped.
+  void FillInputWithUnclampedData() {
+    static const float kUnclampedInput[] = {-2.0, -1.0, -0.5, 0.0,
+                                            0.5,  1.0,  2.0};
+    auto input_span = base::span(kUnclampedInput);
+    auto writer = base::SpanWriter(base::span(input_vector_));
+
+    while (writer.remaining() > input_span.size()) {
+      writer.Write(input_span);
+    }
+
+    if (writer.remaining()) {
+      writer.Write(input_span.first(writer.remaining()));
+    }
+  }
 };
 
 // Benchmarks for each optimized vector_math::FMAC() method.
@@ -165,6 +201,49 @@ TEST_F(VectorMathPerfTest, FMUL_optimized_aligned) {
   }
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
   RunBenchmark(vector_math::FMUL_NEON, true, "_fmul", "optimized_aligned");
+#endif
+}
+
+// Benchmarks for each optimized vector_math::FCLAMP() method.
+// Benchmark FCLAMP_C().
+TEST_F(VectorMathPerfTest, FCLAMP_unoptimized) {
+  RunClampingBenchmark(vector_math::FCLAMP_C, true, "_fclamp", "unoptimized");
+}
+
+// Benchmark FCLAMP_FUNC() with aligned size.
+TEST_F(VectorMathPerfTest, FCLAMP_optimized_aligned) {
+  ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
+            0U);
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx()) {
+    RunClampingBenchmark(vector_math::FCLAMP_AVX, true, "_fclamp",
+                         "optimized_aligned");
+  } else {
+    RunClampingBenchmark(vector_math::FCLAMP_SSE, true, "_fclamp",
+                         "optimized_aligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, true, "_fclamp", "optimized_aligned");
+#endif
+}
+
+// Benchmark FCLAMP_FUNC() with unaligned size.
+TEST_F(VectorMathPerfTest, FCLAMP_optimized_unaligned) {
+  ASSERT_NE(
+      (kVectorSize - 1) % (vector_math::kRequiredAlignment / sizeof(float)),
+      0U);
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx()) {
+    RunClampingBenchmark(vector_math::FCLAMP_AVX, false, "_fclamp",
+                         "optimized_unaligned");
+  } else {
+    RunClampingBenchmark(vector_math::FCLAMP_SSE, false, "_fclamp",
+                         "optimized_unaligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, false, "_fclamp", "optimized_unaligned");
 #endif
 }
 

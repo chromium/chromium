@@ -50,7 +50,6 @@ using blink::WebPluginContainer;
 using blink::WebString;
 using blink::WebURLError;
 using blink::WebURLResponse;
-using blink::WebVector;
 using blink::WebView;
 using blink::web_pref::WebPreferences;
 

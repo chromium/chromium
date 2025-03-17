@@ -25,6 +25,7 @@ chrome-ipc-reviews@google.com
 # Please keep this list alphabetized and in sync with the gwsq config (see
 # go/chrome-ipc-review).
 ajgo@chromium.org            #{LAST_RESORT_SUGGESTION}
+antoniosartori@chromium.org  #{LAST_RESORT_SUGGESTION}
 arthursonzogni@chromium.org  #{LAST_RESORT_SUGGESTION}
 bookholt@chromium.org        #{LAST_RESORT_SUGGESTION}
 clamy@chromium.org           #{LAST_RESORT_SUGGESTION}
@@ -32,6 +33,7 @@ dcheng@chromium.org          #{LAST_RESORT_SUGGESTION}
 dom@chromium.org             #{LAST_RESORT_SUGGESTION}
 ellyjones@chromium.org       #{LAST_RESORT_SUGGESTION}
 estark@chromium.org          #{LAST_RESORT_SUGGESTION}
+hidehiko@chromium.org        #{LAST_RESORT_SUGGESTION}
 joenotcharles@google.com     #{LAST_RESORT_SUGGESTION}
 kenrb@chromium.org           #{LAST_RESORT_SUGGESTION}
 kinuko@chromium.org          #{LAST_RESORT_SUGGESTION}

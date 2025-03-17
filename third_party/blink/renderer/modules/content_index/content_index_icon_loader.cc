@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/content_index/content_index_icon_loader.h"
 
+#include <vector>
+
 #include "base/barrier_closure.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -11,7 +13,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/threaded_icon_loader.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -39,10 +40,10 @@ void FetchIcon(ExecutionContext* execution_context,
                               std::move(callback));
 }
 
-WebVector<Manifest::ImageResource> ToImageResource(
+std::vector<Manifest::ImageResource> ToImageResource(
     ExecutionContext* execution_context,
     const Vector<mojom::blink::ContentIconDefinitionPtr>& icon_definitions) {
-  WebVector<Manifest::ImageResource> image_resources;
+  std::vector<Manifest::ImageResource> image_resources;
   for (const auto& icon_definition : icon_definitions) {
     Manifest::ImageResource image_resource;
     image_resource.src =
@@ -60,10 +61,10 @@ WebVector<Manifest::ImageResource> ToImageResource(
   return image_resources;
 }
 
-KURL FindBestIcon(WebVector<Manifest::ImageResource> image_resources,
+KURL FindBestIcon(std::vector<Manifest::ImageResource> image_resources,
                   const gfx::Size& icon_size) {
   return KURL(ManifestIconSelector::FindBestMatchingIcon(
-      image_resources.ReleaseVector(),
+      image_resources,
       /* ideal_icon_height_in_px= */ icon_size.height(),
       /* minimum_icon_size_in_px= */ 0,
       /* max_width_to_height_ratio= */ icon_size.width() * 1.0f /

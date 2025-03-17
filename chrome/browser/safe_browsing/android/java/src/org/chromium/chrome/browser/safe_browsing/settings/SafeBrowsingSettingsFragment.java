@@ -155,6 +155,19 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         } else {
             getSafeBrowsingBridge().setSafeBrowsingState(newState);
         }
+        // This function is called when the user manually modifies their safe browsing settings via
+        // the security settings page. This action indicates that the user has seen and interacted
+        // with the notification that informed them of the synced settings.
+        //
+        // The notification is displayed when safe browsing settings are synced across devices.
+        // This function prevents the notification from being shown again for settings explicitly
+        // configured locally, ensuring that users are not repeatedly notified about settings
+        // they've deliberately chosen on this device.
+        //
+        // By marking the notification as "shown" locally, we differentiate between settings applied
+        // via sync and those directly configured by the user on this device, thus avoiding
+        // redundant or misleading notifications.
+        getSafeBrowsingBridge().enableSafeBrowsingSettingSetLocallyPref();
         return true;
     }
 
@@ -229,7 +242,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         RecordHistogram.recordEnumeratedHistogram(
                 "SafeBrowsing.Settings.UserAction." + metricsSuffix,
                 userAction,
-                UserAction.MAX_VALUE + 1);
+                UserAction.MAX_VALUE);
 
         String userActionSuffix;
         switch (userAction) {

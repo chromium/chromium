@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.share;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -14,9 +16,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 
 /** Adapter that provides the list of activities via which a web page can be shared. */
+@NullMarked
 class ShareDialogAdapter extends ArrayAdapter<ResolveInfo> {
     private final LayoutInflater mInflater;
     private final PackageManager mManager;
@@ -33,7 +39,7 @@ class ShareDialogAdapter extends ArrayAdapter<ResolveInfo> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         View view;
         if (convertView == null) {
             view = mInflater.inflate(R.layout.share_dialog_item, parent, false);
@@ -43,8 +49,9 @@ class ShareDialogAdapter extends ArrayAdapter<ResolveInfo> {
         TextView text = (TextView) view.findViewById(R.id.text);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
 
-        text.setText(getItem(position).loadLabel(mManager));
-        icon.setImageDrawable(ShareHelper.loadIconForResolveInfo(getItem(position), mManager));
+        ResolveInfo info = assumeNonNull(getItem(position));
+        text.setText(info.loadLabel(mManager));
+        icon.setImageDrawable(ShareHelper.loadIconForResolveInfo(info, mManager));
         return view;
     }
 }

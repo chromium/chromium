@@ -16,7 +16,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/i18n/rtl.h"
-#include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -24,7 +23,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -50,10 +48,10 @@ class RenderFrame;
 
 namespace autofill {
 
+class FieldDataManager;
 class FormData;
 class FormFieldData;
-
-class FieldDataManager;
+class SynchronousFormCache;
 
 namespace form_util {
 
@@ -105,17 +103,16 @@ bool IsTextAreaElementOrTextInput(const blink::WebFormControlElement& element);
 // inconsistently. Investigate where these checks are necessary.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
-FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type);
-bool IsCheckable(FormControlType form_control_type);
+// Returns the current FormControlType of `element` or kInputPassword if
+// `element` ever was an <input type=password>.
+std::optional<FormControlType> GetAutofillFormControlType(
+    const blink::WebFormControlElement& element);
 
 // Returns true iff `element` has a "webauthn" autocomplete attribute.
 bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| can be edited (enabled and not read only).
 bool IsElementEditable(const blink::WebInputElement& element);
-
-// True if this element can take focus.
-bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
 
 // Returns the FormRendererId of a given WebFormElement or contenteditable. If
 // WebFormElement::IsNull(), returns a null form renderer id, which is the
@@ -137,26 +134,18 @@ std::vector<blink::WebFormControlElement> GetOwnedAutofillableFormControls(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element);
 
-// Returns the form that owns the `form_control`, or a null `WebFormElement` if
-// no form owns the `form_control`.
-//
-// The form that owns `form_control` is
-// - if `form_control` is associated to a form, the furthest shadow-including
-//   form ancestor of that form,
-// - otherwise, the furthest shadow-including form ancestor of `form_control`.
-blink::WebFormElement GetOwningForm(
-    const blink::WebFormControlElement& form_control);
-
 // Extracts the FormData that represents the form of `element`. If that form
 // cannot be extracted (e.g., because it is too large), falls back to a
 // single-field form that contains `element`. If however `element` is not
-// autofillable, returns nullopt.
+// autofillable, returns nullopt. `form_cache` can be used to optimize form
+// extractions occurring synchronously after this function call.
 std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
-    DenseSet<ExtractOption> extract_options);
+    DenseSet<ExtractOption> extract_options,
+    const SynchronousFormCache& form_cache);
 
 // Creates a FormData containing a single field out of a contenteditable
 // non-form element. The FormData is synthetic in the sense that it does not
@@ -184,12 +173,12 @@ std::optional<FormData> FindFormForContentEditable(
 // `initiating_element` is the element that initiated the autofill process.
 // Returns a list of pairs of the filled elements and their autofill state
 // prior to the filling.
-std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFieldsAction(
-    const blink::WebDocument& document,
-    base::span<const FormFieldData::FillData> fields,
-    mojom::FormActionType action_type,
-    mojom::ActionPersistence action_persistence,
-    FieldDataManager& field_data_manager);
+std::vector<std::pair<FieldRendererId, blink::WebAutofillState>>
+ApplyFieldsAction(const blink::WebDocument& document,
+                  base::span<const FormFieldData::FillData> fields,
+                  mojom::FormActionType action_type,
+                  mojom::ActionPersistence action_persistence,
+                  FieldDataManager& field_data_manager);
 
 // Clears the suggested values in `previewed_elements`.
 // `initiating_element` is the element that initiated the preview operation.

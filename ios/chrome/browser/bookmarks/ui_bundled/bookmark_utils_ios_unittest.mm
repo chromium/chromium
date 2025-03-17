@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 
+#import <algorithm>
 #import <iterator>
 #import <memory>
 #import <string>
 #import <vector>
 
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
@@ -29,8 +29,8 @@ using bookmarks::BookmarkNode;
 std::vector<std::u16string> GetBookmarkTitles(
     const std::vector<std::unique_ptr<BookmarkNode>>& nodes) {
   std::vector<std::u16string> result;
-  base::ranges::transform(nodes, std::back_inserter(result),
-                          [](const auto& node) { return node->GetTitle(); });
+  std::ranges::transform(nodes, std::back_inserter(result),
+                         [](const auto& node) { return node->GetTitle(); });
   return result;
 }
 

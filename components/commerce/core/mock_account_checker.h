@@ -32,6 +32,8 @@ class MockAccountChecker : public AccountChecker {
               (syncer::UserSelectableType type),
               (override));
 
+  MOCK_METHOD(bool, IsSyncAvailable, (), (override));
+
   MOCK_METHOD(bool, IsAnonymizedUrlDataCollectionEnabled, (), (override));
 
   MOCK_METHOD(bool, IsSubjectToParentalControls, (), (override));
@@ -47,6 +49,8 @@ class MockAccountChecker : public AccountChecker {
   void SetSignedIn(bool signed_in);
 
   void SetAllSyncTypesEnabled(bool enabled);
+
+  void SetSyncAvailable(bool available);
 
   void SetAnonymizedUrlDataCollectionEnabled(bool enabled);
 

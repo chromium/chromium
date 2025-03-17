@@ -29,6 +29,7 @@ include_rules = [
     "+build/build_config.h",
     "+cc",
     "+components/viz/common",
+    "+media/audio/audio_device_description.h",
     "+media/base/audio_capturer_source.h",
     "+media/base/audio_latency.h",
     "+media/base/audio_renderer_sink.h",

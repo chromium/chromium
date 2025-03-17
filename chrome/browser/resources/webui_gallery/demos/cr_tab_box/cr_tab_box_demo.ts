@@ -21,7 +21,7 @@ class CrTabBoxDemoElement extends CustomElement {
 
   private tabBox_: CrTabBoxElement|null = null;
 
-  async connectedCallback() {
+  connectedCallback() {
     this.tabBox_ = this.shadowRoot!.querySelector('cr-tab-box');
     assert(this.tabBox_);
     this.tabBox_.addEventListener(
@@ -56,8 +56,7 @@ class CrTabBoxDemoElement extends CustomElement {
     const template =
         this.shadowRoot!.querySelector<HTMLTemplateElement>('#template');
     assert(template);
-    const clone =
-        document.importNode(template.content, true) as DocumentFragment;
+    const clone = document.importNode(template.content, true);
 
     const tab = clone.querySelector<HTMLElement>('div[slot=\'tab\']');
     assert(tab);

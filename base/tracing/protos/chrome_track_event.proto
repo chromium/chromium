@@ -700,6 +700,8 @@ message BackForwardCacheCanStoreDocumentResult {
     WEBVIEW_MESSAGE_LISTENER_INJECTED = 62;
     WEBVIEW_SAFE_BROWSING_ALLOWLIST_CHANGED = 63;
     WEBVIEW_DOCUMENT_START_JAVASCRIPT_CHANGED = 64;
+    CACHE_CONTROL_NO_STORE_DEVICE_BOUND_SESSION_TERMINATED = 65;
+    CACHE_LIMIT_PRUNED = 66;
   }
 
   optional BackForwardCacheNotRestoredReason
@@ -795,6 +797,7 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_CLIPBOARD = 85;
     TASK_TYPE_MACHINE_LEARNING = 86;
     TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_BEST_EFFORT = 87;
+    TASK_TYPE_INTERNAL_AUTOFILL = 88;
   }
 
   enum FrameType {
@@ -857,6 +860,14 @@ message EventLatency {
   // The interval that this frame was produced for according to the
   // BeginFrameArgs.
   optional double vsync_interval_ms = 6;
+  // viz::BeginFrameArgs.trace_id of the frame (before surface aggregation) in
+  // which the input was first presented. See also
+  // ChromeGraphicsPipeline.surface_frame_trace_id.
+  optional int64 surface_frame_trace_id = 7;
+  // gfx::PresentationFeedback.display_trace_id of the frame (after surface
+  // aggregation) in which the input was first presented. See also
+  // ChromeGraphicsPipeline.display_trace_id.
+  optional int64 display_trace_id = 8;
 }
 
 message ProcessSingleton {
@@ -996,8 +1007,8 @@ message SequenceManagerTask {
     WORKER_UNPAUSABLE_TQ = 50;
     WORKER_WEB_SCHEDULING_TQ = 51;
 
-    UI_USER_BLOCKING_DEFERRABLE_TQ = 52;
-    IO_USER_BLOCKING_DEFERRABLE_TQ = 53;
+    UI_USER_BLOCKING_DEFERRABLE_TQ = 52 [deprecated = true];
+    IO_USER_BLOCKING_DEFERRABLE_TQ = 53 [deprecated = true];
 
     UI_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 54;
     IO_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 55;
@@ -1272,6 +1283,13 @@ message ScrollDeltas {
   // The array of predicted deltas of inputs which were shown together in one
   // GPU frame.
   repeated float segregated_predicted_deltas_in_gpu_frame_y = 14;
+
+  // Data for overscrolls.
+  // Whether any of the scroll delta was unused.
+  optional bool did_overscroll_root = 15;
+  // The amount of the scroll delta that was not used for scrolling.
+  optional float unused_delta_x = 16;
+  optional float unused_delta_y = 17;
 }
 
 // Debug information for system layer of audio rendering on Windows.
@@ -1446,16 +1464,11 @@ message ChromeGraphicsPipeline {
     // "augmented_surface.set_frame_trace_id" to pass that value. As a result,
     // any of the Wayland clients that use EXO will be able to have a nice trace
     // connection and see their buffer submissions' flows.
-    //
-    // Speaking about the example, Lacros combines both STEP_BACKEND* and
-    // STEP_EXO* so that developers are able to trace the frame submission from
-    // Lacros (cc/viz/gpu) to Ozone/Wayland backend, then to EXO and to Ash
-    // (viz/gpu).
 
     // Frame submission stages when Exo (Wayland server implementation in Ash
-    // browser process) is involved. Wayland clients (such as Lacros or ARC++)
-    // submit visual contents via Wayland surface commits, with which Exo
-    // constructs compositor frames and forwards to Ash Viz.
+    // browser process) is involved. Wayland clients (such as ARC++) submit
+    // visual contents via Wayland surface commits, with which Exo constructs
+    // compositor frames and forwards to Ash Viz.
     STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME = 15;
     STEP_EXO_SUBMIT_COMPOSITOR_FRAME = 16;
     STEP_EXO_DISCARD_COMPOSITOR_FRAME = 17;
@@ -1529,6 +1542,10 @@ message ChromeGraphicsPipeline {
   // List of LatencyInfo.trace_ids associated with this frame, which
   // should allow us to match input to frame production.
   repeated int64 latency_ids = 9;
+
+  // Optional frame data containing of possible latch and present
+  // frame deadlines. Only set on Android devices.
+  optional AndroidChoreographerFrameCallbackData possible_deadlines = 11;
 };
 
 message LibunwindstackUnwinder {

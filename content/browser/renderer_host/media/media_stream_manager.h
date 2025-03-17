@@ -397,6 +397,8 @@ class CONTENT_EXPORT MediaStreamManager
                           MediaRequestState new_state);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SetConditionalFocusWindowForTesting(base::TimeDelta window);
+
   void SetCapturedSurfaceControllerFactoryForTesting(
       CapturedSurfaceControllerFactoryCallback factory);
 #endif
@@ -445,10 +447,10 @@ class CONTENT_EXPORT MediaStreamManager
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
 
-  void SetZoomLevel(
+  void UpdateZoomLevel(
       GlobalRenderFrameHostId capturer_rfh_id,
       const base::UnguessableToken& session_id,
-      int zoom_level,
+      blink::mojom::ZoomLevelAction action,
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
 
@@ -806,7 +808,7 @@ class CONTENT_EXPORT MediaStreamManager
   // the browser makes its own decision and ignores further instructions
   // from Web-applications, thereby preventing applications from changing
   // focus at an arbitrary time.
-  const base::TimeDelta conditional_focus_window_;
+  base::TimeDelta conditional_focus_window_ = base::Seconds(1);
 
   CapturedSurfaceControllerFactoryCallback captured_surface_controller_factory_;
 #endif

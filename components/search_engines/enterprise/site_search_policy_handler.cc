@@ -4,9 +4,10 @@
 
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 
+#include <algorithm>
+
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -150,7 +151,7 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
   }
 
-  int num_featured = base::ranges::count_if(
+  int num_featured = std::ranges::count_if(
       site_search_providers, [](const base::Value& provider) {
         return provider.GetDict().FindBool(kFeatured).value_or(false);
       });
@@ -226,16 +227,16 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   base::Value::List providers;
   for (const base::Value& item : policy_value->GetList()) {
-      const base::Value::Dict& policy_dict = item.GetDict();
-      const std::string& shortcut = *policy_dict.FindString(kShortcut);
-      if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
-        providers.Append(
-            SiteSearchDictFromPolicyValue(policy_dict, /*featured=*/false));
-        if (policy_dict.FindBool(kFeatured).value_or(false)) {
-          providers.Append(SiteSearchDictFromPolicyValue(policy_dict,
-                                                         /*featured=*/true));
-        }
+    const base::Value::Dict& policy_dict = item.GetDict();
+    const std::string& shortcut = *policy_dict.FindString(kShortcut);
+    if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
+      providers.Append(
+          SiteSearchDictFromPolicyValue(policy_dict, /*featured=*/false));
+      if (policy_dict.FindBool(kFeatured).value_or(false)) {
+        providers.Append(SiteSearchDictFromPolicyValue(policy_dict,
+                                                       /*featured=*/true));
       }
+    }
   }
 
   prefs->SetValue(EnterpriseSearchManager::kSiteSearchSettingsPrefName,

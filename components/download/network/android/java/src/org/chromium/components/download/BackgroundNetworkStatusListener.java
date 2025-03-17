@@ -9,6 +9,7 @@ import android.os.Handler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
@@ -18,6 +19,7 @@ import org.chromium.net.RegistrationPolicyAlwaysRegister;
  *
  * This object lives and must be used on background threads.
  */
+@NullMarked
 class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect.Observer {
     private final NetworkChangeNotifierAutoDetect mNotifier;
     private static AutoDetectFactory sAutoDetectFactory = new AutoDetectFactory();

@@ -83,21 +83,21 @@ class WebAppFrameToolbarInteractiveUITest
   }
 
   auto CheckViewFocused(ElementSpecifier view) {
-    return std::move(
-        CheckView(
-            view,
-            [](views::View* view) {
-              if (view->HasFocus()) {
-                return true;
-              }
-              auto* const focused = view->GetFocusManager()->GetFocusedView();
-              LOG(ERROR) << "Expected " << view->GetClassName()
-                         << " to be focused, but focused view is "
-                         << (focused ? focused->GetClassName() : "(none)");
-              return false;
-            },
-            true)
-            .SetDescription("CheckViewFocused()"));
+    return CheckView(
+               view,
+               [](views::View* view) {
+                 if (view->HasFocus()) {
+                   return true;
+                 }
+                 auto* const focused =
+                     view->GetFocusManager()->GetFocusedView();
+                 LOG(ERROR) << "Expected " << view->GetClassName()
+                            << " to be focused, but focused view is "
+                            << (focused ? focused->GetClassName() : "(none)");
+                 return false;
+               },
+               true)
+        .SetDescription("CheckViewFocused()");
   }
 
   auto VerifyExtensionsMenuButtonIfNeeded(bool go_forward) {
@@ -170,8 +170,14 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
       CycleFocusBackward(), CheckViewFocused(kReloadButtonElementId));
 }
 
+// TODO(crbug.com/394398127): Test failing on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigationShowsBackButton DISABLED_NavigationShowsBackButton
+#else
+#define MAYBE_NavigationShowsBackButton NavigationShowsBackButton
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
-                       NavigationShowsBackButton) {
+                       MAYBE_NavigationShowsBackButton) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppWindowId);
   LoadAndLaunchExtension();
 

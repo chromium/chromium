@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>ApplyStyleCommand on the child of shadow host not crash</title>
+<link rel="author" title="Peng Zhou" href="mailto:zhoupeng.1996@bytedance.com">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<!-- This test passes if it does not crash. -->
+
+<body>
+  <div id="start">1</div>
+  <canvas>
+    <meter></meter>
+  </canvas>
+  <div id="end">2</div>
+</body>
+<script>
+setup({ single_test: true });
+
+document.designMode = 'on';
+const selection = window.getSelection();
+const meter = document.querySelector('meter');
+
+function runTest(type) {
+  selection.removeAllRanges();
+  meter.innerHTML = '';
+  document.body.offsetHeight;
+
+  const input = document.createElement('input');
+  input.type = type;
+  const span = document.createElement('span');
+  input.appendChild(span);
+  meter.appendChild(input);
+  window.getSelection().setBaseAndExtent(start, 0, end, 1);
+  document.body.offsetHeight;
+  document.execCommand('FontSizeDelta', false, '-1px');
+  window.getSelection().setBaseAndExtent(span, 0, end, 1);
+}
+
+['button', 'checkbox', 'radio'].forEach(type => runTest(type));
+
+done();
+</script>

@@ -60,7 +60,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
         @click="${this.onTrailingIconClicked_}"
         .title="${this.trailingIconTooltip}"
-        .ariaLabel="${this.getBookmarkMenuA11yLabel_(url, title!)}">
+        .ariaLabel="${this.getBookmarkMenuA11yLabel_(url, title)}">
     </cr-icon-button>
   ` : ''}
 
@@ -92,10 +92,14 @@ if (this.shouldExpand_()) {
           .depth="${this.depth + 1}"
           trailingIconTooltip="$i18n{tooltipMore}"
           .hasCheckbox="${this.hasCheckbox}"
+          .selectedBookmarks="${this.selectedBookmarks}"
           .renamingId="${this.renamingId}"
           .imageUrls="${this.imageUrls}"
           .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
           .bookmarksService="${this.bookmarksService}"
+          .draggable="${this.canDrag}"
+          .can-drag="${this.canDrag}"
+          .keyArrowNavigationService="${this.keyArrowNavigationService}"
           .contextMenuBookmark="${this.contextMenuBookmark}">
       </power-bookmark-row>
     `)}`: ''

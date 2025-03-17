@@ -270,6 +270,7 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
                             AtRuleDescriptorID id,
+                            const AtomicString& variable_name,
                             CSSParserTokenStream& stream,
                             const CSSParserContext& context) {
   using Parser = AtRuleDescriptorParser;
@@ -285,6 +286,8 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
       return Parser::ParseAtCounterStyleDescriptor(id, stream, context);
     case StyleRule::kViewTransition:
       return Parser::ParseAtViewTransitionDescriptor(id, stream, context);
+    case StyleRule::kFunction:
+      return Parser::ParseAtFunctionDescriptor(id, stream, context);
     case StyleRule::kCharset:
     case StyleRule::kContainer:
     case StyleRule::kStyle:
@@ -299,11 +302,11 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kLayerBlock:
     case StyleRule::kLayerStatement:
     case StyleRule::kNestedDeclarations:
+    case StyleRule::kFunctionDeclarations:
     case StyleRule::kNamespace:
     case StyleRule::kScope:
     case StyleRule::kSupports:
     case StyleRule::kStartingStyle:
-    case StyleRule::kFunction:
     case StyleRule::kMixin:
     case StyleRule::kApplyMixin:
     case StyleRule::kPositionTry:
@@ -515,13 +518,37 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
   return parsed_value;
 }
 
+CSSValue* AtRuleDescriptorParser::ParseAtFunctionDescriptor(
+    AtRuleDescriptorID id,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  if (id != AtRuleDescriptorID::Result && id != AtRuleDescriptorID::Variable) {
+    return nullptr;
+  }
+
+  bool important_ignored;
+  CSSVariableData* variable_data =
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
+          /*comma_ends_declaration=*/false, important_ignored, context);
+  if (!variable_data) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
+                                                           &context);
+}
+
 bool AtRuleDescriptorParser::ParseDescriptorValue(
     StyleRule::RuleType rule_type,
     AtRuleDescriptorID id,
+    const AtomicString& variable_name,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     HeapVector<CSSPropertyValue, 64>& parsed_descriptors) {
-  CSSValue* result = ConsumeDescriptor(rule_type, id, stream, context);
+  CSSValue* result =
+      ConsumeDescriptor(rule_type, id, variable_name, stream, context);
 
   if (!result) {
     return false;
@@ -530,8 +557,10 @@ bool AtRuleDescriptorParser::ParseDescriptorValue(
   // TODO(crbug.com/752745): Refactor CSSParserImpl to avoid using
   // the CSSPropertyID.
   CSSPropertyID equivalent_property_id = AtRuleDescriptorIDAsCSSPropertyID(id);
-  parsed_descriptors.push_back(
-      CSSPropertyValue(CSSPropertyName(equivalent_property_id), *result));
+  CSSPropertyName name = equivalent_property_id == CSSPropertyID::kVariable
+                             ? CSSPropertyName(variable_name)
+                             : CSSPropertyName(equivalent_property_id);
+  parsed_descriptors.push_back(CSSPropertyValue(name, *result));
   context.Count(context.Mode(), equivalent_property_id);
   return true;
 }

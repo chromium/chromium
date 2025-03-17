@@ -8,10 +8,8 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "base/notreached.h"
-#include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"
-#include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -67,7 +65,6 @@ class RoundedDisplayPixelTest
             ToDisplaySpecDeviceScaleFactorString(device_scale_factor()) +
             ToDisplaySpecRotationString(rotation()) +
             ToDisplaySpecRadiiString(kRoundedDisplayRadii));
-    scoped_features_.InitAndEnableFeature(display::features::kRoundedDisplay);
     AshTestBase::SetUp();
   }
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -80,8 +77,6 @@ class RoundedDisplayPixelTest
   display::Display::Rotation rotation() const {
     return std::get<1>(GetParam());
   }
-
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Verifies that mask textures are correctly drawn on the display.
@@ -91,7 +86,7 @@ TEST_P(RoundedDisplayPixelTest, AlwaysOnTopMaskTextures) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "always_on_top_rounded_display_mask_textures",
-      /*revision_number=*/2, Shell::GetPrimaryRootWindow()));
+      /*revision_number=*/3, Shell::GetPrimaryRootWindow()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

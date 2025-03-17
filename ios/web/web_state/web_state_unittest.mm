@@ -36,9 +36,9 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/gfx/image/image_unittest_util.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 namespace {
@@ -145,9 +145,8 @@ TEST_F(WebStateTest, ReloadWithOriginalTypeWithEmptyNavigationManager) {
 
 // Tests that the snapshot method returns an image of a rendered html page.
 TEST_F(WebStateTest, Snapshot) {
-  ASSERT_TRUE(
-      LoadHtml("<html><div style='background-color:#FF0000; width:50%; "
-               "height:100%;'></div></html>"));
+  ASSERT_TRUE(LoadHtml("<html><div style='background-color:#FF0000; width:50%; "
+                       "height:100%;'></div></html>"));
   __block bool snapshot_complete = false;
   [GetAnyKeyWindow() addSubview:web_state()->GetView()];
   // The subview is added but not immediately painted, so a small delay is

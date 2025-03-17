@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 namespace blink {
 
@@ -64,8 +65,7 @@ class CORE_EXPORT CustomElement {
     } else {
       auto characters = name.Span16();
       for (size_t i = 1; i < characters.size();) {
-        UChar32 ch;
-        U16_NEXT(characters, i, characters.size(), ch);
+        UChar32 ch = CodePointAtAndNext(characters, i);
         if (!Character::IsPotentialCustomElementNameChar(ch))
           return false;
       }

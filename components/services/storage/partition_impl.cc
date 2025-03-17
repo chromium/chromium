@@ -109,9 +109,6 @@ void PartitionImpl::BindServiceWorkerStorageControl(
     mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver) {
   service_worker_storage_ = std::make_unique<ServiceWorkerStorageControlImpl>(
       path_.value_or(base::FilePath()),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::WithBaseSyncPrimitives(),
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       std::move(receiver));
 }
 

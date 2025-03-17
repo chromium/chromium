@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig_base_lit.json",
+  "compilerOptions": {
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "useDefineForClassFields": true
+  }
+}

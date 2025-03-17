@@ -4,13 +4,18 @@
 
 #include "components/sync_bookmarks/local_bookmark_to_account_merger.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <list>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -18,6 +23,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "components/sync_bookmarks/switches.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
@@ -99,11 +105,64 @@ GetLocalAndAccountPermanentNodePairs(const bookmarks::BookmarkModel* model) {
           {model->mobile_node(), model->account_mobile_node()}};
 }
 
+// Reorders children under `parent` such that the indices selected by
+// `selected_indices` are listed last. `selected_indices` must be non-empty and
+// sorted in ascending order.
+void ReorderChildrenByMovingSubsetToLast(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    const base::flat_set<size_t>& selected_indices) {
+  CHECK(model);
+  CHECK(parent);
+  CHECK(!selected_indices.empty());
+
+  const size_t num_children = parent->children().size();
+  CHECK_LE(selected_indices.size(), num_children);
+
+  std::vector<const bookmarks::BookmarkNode*> ordered_children;
+  ordered_children.reserve(num_children);
+
+  // First, add all nodes to `ordered_children` except those selected by
+  // `selected_indices`.
+  size_t old_index = 0;
+  for (size_t selected_index : selected_indices) {
+    CHECK_LT(selected_index, num_children);
+    CHECK_LE(old_index, selected_index);
+    // Append all indices before `selected_index`.
+    while (old_index < selected_index) {
+      ordered_children.push_back(parent->children().at(old_index).get());
+      ++old_index;
+    }
+    // Skip `selected_index`.
+    CHECK_EQ(old_index, selected_index);
+    ++old_index;
+  }
+
+  // Append all indices after the maximum index in `selected_indices`.
+  while (old_index < num_children) {
+    ordered_children.push_back(parent->children().at(old_index).get());
+    ++old_index;
+  }
+
+  // At this point all indices that must NOT be deleted have been added to
+  // `ordered_children`.
+  CHECK_EQ(ordered_children.size() + selected_indices.size(), num_children);
+
+  // Append last nodes selected by `selected_indices`.
+  for (size_t selected_index : selected_indices) {
+    ordered_children.push_back(parent->children().at(selected_index).get());
+  }
+
+  // Trigger the reordering such that the selected nodes are listed last.
+  CHECK_EQ(ordered_children.size(), num_children);
+  model->ReorderChildren(parent, ordered_children);
+}
+
 }  // namespace
 
 LocalBookmarkToAccountMerger::LocalBookmarkToAccountMerger(
     bookmarks::BookmarkModel* model)
-    : model_(model), uuid_to_match_map_(FindGuidMatches(model)) {
+    : model_(model) {
   CHECK(model_);
   CHECK(model_->loaded());
   for (const auto& [local_permanent_node, account_permanent_node] :
@@ -115,7 +174,17 @@ LocalBookmarkToAccountMerger::LocalBookmarkToAccountMerger(
 
 LocalBookmarkToAccountMerger::~LocalBookmarkToAccountMerger() = default;
 
-void LocalBookmarkToAccountMerger::MoveAndMerge() {
+void LocalBookmarkToAccountMerger::MoveAndMergeAllNodes() {
+  MoveAndMergeInternal(/*child_ids_to_merge=*/std::nullopt);
+}
+
+void LocalBookmarkToAccountMerger::MoveAndMergeSpecificSubtrees(
+    std::set<int64_t> permanent_folder_child_ids_to_merge) {
+  MoveAndMergeInternal(std::move(permanent_folder_child_ids_to_merge));
+}
+
+void LocalBookmarkToAccountMerger::MoveAndMergeInternal(
+    std::optional<std::set<int64_t>> permanent_folder_child_ids_to_merge) {
   // Notify UI intensive observers of BookmarkModel that we are about to make
   // potentially significant changes to it, so the updates may be batched. For
   // example, on Mac, the bookmarks bar displays animations when bookmark items
@@ -144,84 +213,85 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
     CHECK(account_permanent_node);
     MoveOrMergeDescendants(
         /*local_subtree_root=*/local_permanent_node,
-        /*account_subtree_root=*/account_permanent_node);
+        /*account_subtree_root=*/account_permanent_node,
+        permanent_folder_child_ids_to_merge);
   }
 
-  // Clear the UUID match map to avoid dangling pointers.
-  uuid_to_match_map_.clear();
-
-  // All local nodes have been copied to account storage and can be safely
-  // removed.
+  // Any remaining local node may only be explained because
+  // `permanent_folder_child_ids_to_merge` is non-empty and excluded such node.
   for (const auto& [local_permanent_node, unused] :
        GetLocalAndAccountPermanentNodePairs(model_)) {
-    CHECK(local_permanent_node->children().empty());
+    CHECK(std::ranges::all_of(
+        local_permanent_node->children(),
+        [&permanent_folder_child_ids_to_merge](const auto& child) {
+          return permanent_folder_child_ids_to_merge.has_value() &&
+                 !permanent_folder_child_ids_to_merge->contains(child->id());
+        }));
   }
 
   model_->EndExtensiveChanges();
 }
 
-// static
-std::unordered_map<base::Uuid,
-                   LocalBookmarkToAccountMerger::GuidMatch,
-                   base::UuidHash>
-LocalBookmarkToAccountMerger::FindGuidMatches(
-    const bookmarks::BookmarkModel* model) {
-  CHECK(model);
-  CHECK(model->loaded());
-
-  std::unordered_map<base::Uuid, LocalBookmarkToAccountMerger::GuidMatch,
-                     base::UuidHash>
-      uuid_to_match_map;
-
-  // Iterate through all local bookmarks to find matches by UUID.
-  for (const auto& [local_permanent_node, unused] :
-       GetLocalAndAccountPermanentNodePairs(model)) {
-    CHECK(local_permanent_node);
-    ui::TreeNodeIterator<const bookmarks::BookmarkNode> local_iterator(
-        local_permanent_node);
-    while (local_iterator.has_next()) {
-      const bookmarks::BookmarkNode* const local_node = local_iterator.Next();
-      CHECK(local_node->uuid().is_valid());
-
-      const bookmarks::BookmarkNode* const account_node = model->GetNodeByUuid(
-          local_node->uuid(),
-          bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
-      if (!account_node) {
-        // No match found by UUID.
-        continue;
-      }
-
-      if (NodesCompatibleForMatchByUuid(account_node, local_node)) {
-        const bool success = uuid_to_match_map
-                                 .emplace(account_node->uuid(),
-                                          GuidMatch{local_node, account_node})
-                                 .second;
-        CHECK(success);
-      }
-    }
-  }
-
-  return uuid_to_match_map;
+void LocalBookmarkToAccountMerger::RemoveChildrenAtForTesting(
+    const bookmarks::BookmarkNode* parent,
+    const std::vector<size_t>& indices_to_remove,
+    const base::Location& location) {
+  RemoveChildrenAt(parent, indices_to_remove, location);
 }
 
 void LocalBookmarkToAccountMerger::RemoveChildrenAt(
     const bookmarks::BookmarkNode* parent,
-    const std::vector<size_t>& indices_to_remove,
+    const base::flat_set<size_t>& indices_to_remove,
     const base::Location& location) {
   CHECK(parent);
-  // TODO(crbug.com/332532186): This has quadratic runtime complexity and should
-  // be improved.
-  for (size_t index : base::Reversed(indices_to_remove)) {
+
+  if (indices_to_remove.empty()) {
+    // Nothing to do.
+    return;
+  }
+
+  const size_t num_children = parent->children().size();
+  CHECK_LT(*indices_to_remove.rbegin(), num_children);
+
+  // The single-removal case is trivial and needs no sophisticated optimization.
+  if (indices_to_remove.size() == 1u) {
+    const size_t index = *indices_to_remove.begin();
     const bookmarks::BookmarkNode* child = parent->children().at(index).get();
-    // Remove the UUID from the map to avoid dangling pointers.
-    uuid_to_match_map_.erase(child->uuid());
     model_->Remove(child, kEditSourceForMetrics, location);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          switches::kSyncFastDeletionsDuringBookmarkBatchUpload)) {
+    for (size_t index : base::Reversed(indices_to_remove)) {
+      const bookmarks::BookmarkNode* child = parent->children().at(index).get();
+      model_->Remove(child, kEditSourceForMetrics, location);
+    }
+    return;
+  }
+
+  // For the complex case of an arbitrary number of deletions, the efficient
+  // approach that avoids quadratic runtime complexity requires reordering
+  // children first, in a way that all children to-be-deleted are placed last.
+  // However, this reordering is pointless if `indices_to_remove` selects all
+  // children.
+  if (indices_to_remove.size() != num_children) {
+    ReorderChildrenByMovingSubsetToLast(model_, parent, indices_to_remove);
+  }
+
+  // Remove all selected nodes, each time starting with the last one, which can
+  // be done in near-constant time (log of tree depth), excluding updates to the
+  // internal indices in BookmarkModel, which can exhibit slower characteristics
+  // depending on the actual content of the nodes, such as the title or the URL.
+  for (size_t i = 0; i < indices_to_remove.size(); ++i) {
+    model_->RemoveLastChild(parent, kEditSourceForMetrics, FROM_HERE);
   }
 }
 
 void LocalBookmarkToAccountMerger::MoveOrMergeDescendants(
     const bookmarks::BookmarkNode* local_subtree_root,
-    const bookmarks::BookmarkNode* account_subtree_root) {
+    const bookmarks::BookmarkNode* account_subtree_root,
+    std::optional<std::set<int64_t>> local_child_ids_to_merge) {
   CHECK(local_subtree_root);
   CHECK(account_subtree_root);
   CHECK_EQ(account_subtree_root->is_folder(), local_subtree_root->is_folder());
@@ -252,12 +322,29 @@ void LocalBookmarkToAccountMerger::MoveOrMergeDescendants(
             .push_back(account_child);
   }
 
+  // A list of indices of local children that need to be deleted. These are
+  // populated in the loop below, and are correct for local_subtree_root
+  // *after* the `Move()` operations from that loop, that is.
+  std::vector<size_t> local_indices_to_remove;
+  local_indices_to_remove.reserve(local_subtree_root->children().size());
+
   // If there are local child nodes, try to match them with account nodes.
   size_t i = 0;
   while (i < local_subtree_root->children().size()) {
     const bookmarks::BookmarkNode* const local_child =
         local_subtree_root->children()[i].get();
     CHECK(!local_child->is_permanent_node());
+
+    if (local_child_ids_to_merge.has_value() &&
+        !local_child_ids_to_merge->contains(local_child->id())) {
+      // Skip this child if it's not in the list of IDs to merge.
+      //
+      // It's guaranteed that no ancestors of this node were selected as part of
+      // the move operation (if they were then the recursive call into this
+      // method would have `local_child_ids_to_merge` set to `nullopt`).
+      ++i;
+      continue;
+    }
 
     // Try to match by UUID first.
     const bookmarks::BookmarkNode* matching_account_node =
@@ -281,35 +368,45 @@ void LocalBookmarkToAccountMerger::MoveOrMergeDescendants(
       UpdateAccountNodeFromMatchingLocalNode(local_child,
                                              matching_account_node);
 
-      // Since nodes are matching, their subtrees should be merged as well.
-      MoveOrMergeDescendants(local_child, matching_account_node);
-      ++i;
+      // Since nodes are matching, their full subtrees should be merged as well.
+      //
+      // Select all descendants for merging, as we don't have any use cases for
+      // selecting the parent but only a subset of its descendants.
+      MoveOrMergeDescendants(local_child, matching_account_node,
+                             /*local_child_ids_to_merge=*/std::nullopt);
+
+      // The node has been merged to account storage, so remove it from the
+      // local parent.
+      //
+      // As a performance optimization, flag the node for removal at the end of
+      // the loop, so that the removal can be done in bulk.
+      local_indices_to_remove.push_back(i++);
     } else {
       // Before the entire local subtree is moved to account storage, iterate
       // descendants to find UUID matches. This is necessary because UUID-based
       // matches takes precedence over any ancestor having matched (by UUID or
       // otherwise).
+      //
+      // Similarly to the recursive call to `MoveOrMergeDescendants` above,
+      // select all descendents for UUID merging/deletion, as this API doesn't
+      // support selecting a parent and just a subset of its descendants.
       MergeAndDeleteDescendantsThatMatchByUuid(local_child);
 
       // Move the local node to account storage, along with all remaining
-      // descendants that didn't match by UUID.
-      // TODO(crbug.com/332532186): This has quadratic runtime complexity and
-      // should be improved.
+      // descendants that didn't match by UUID. Note that this can theoretically
+      // lead to quadratic runtime complexity, but measurements with a large
+      // number of bookmarks suggest the issue is not severe in practice and the
+      // complexity of the improved algorithm is not worth the maintenance cost.
       model_->Move(local_child, account_subtree_root,
                    account_subtree_root->children().size());
     }
   }
 
-  // All remaining local nodes must have found a matching account node and been
-  // merged into it, as nodes without a match have been moved. Therefore, the
-  // remaining local data can be safely deleted.
-  while (!local_subtree_root->children().empty()) {
-    // Update the UUID match map to avoid dangling pointers.
-    uuid_to_match_map_.erase(local_subtree_root->children().back()->uuid());
-
-    model_->RemoveLastChild(local_subtree_root, kEditSourceForMetrics,
-                            FROM_HERE);
-  }
+  // Remove the local nodes that were flagged for removal above.
+  RemoveChildrenAt(
+      local_subtree_root,
+      base::flat_set<size_t>(base::sorted_unique, local_indices_to_remove),
+      FROM_HERE);
 }
 
 void LocalBookmarkToAccountMerger::MergeAndDeleteDescendantsThatMatchByUuid(
@@ -332,14 +429,18 @@ void LocalBookmarkToAccountMerger::MergeAndDeleteDescendantsThatMatchByUuid(
 
       // Since nodes are matching, their subtrees should be merged as well. In
       // this case the matching isn't restricted to UUID-based matching.
-      MoveOrMergeDescendants(local_child, matching_account_node);
+      MoveOrMergeDescendants(local_child, matching_account_node,
+                             /*local_child_ids_to_merge=*/std::nullopt);
     } else {
       // Continue recursively to look for UUID-based matches.
       MergeAndDeleteDescendantsThatMatchByUuid(local_child);
     }
   }
 
-  RemoveChildrenAt(local_subtree_root, indices_to_remove, FROM_HERE);
+  RemoveChildrenAt(
+      local_subtree_root,
+      base::flat_set<size_t>(base::sorted_unique, indices_to_remove),
+      FROM_HERE);
 }
 
 void LocalBookmarkToAccountMerger::UpdateAccountNodeFromMatchingLocalNode(
@@ -367,17 +468,14 @@ LocalBookmarkToAccountMerger::FindMatchingLocalNodeByUuid(
     const bookmarks::BookmarkNode* account_node) const {
   CHECK(account_node);
 
-  const auto it = uuid_to_match_map_.find(account_node->uuid());
-  if (it == uuid_to_match_map_.end()) {
-    return nullptr;
+  const bookmarks::BookmarkNode* const local_node = model_->GetNodeByUuid(
+      account_node->uuid(),
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  if (local_node && NodesCompatibleForMatchByUuid(local_node, account_node) &&
+      !model_->client()->IsNodeManaged(local_node)) {
+    return local_node;
   }
-
-  const bookmarks::BookmarkNode* local_node = it->second.local_node;
-  CHECK(local_node);
-  CHECK_EQ(it->second.account_node, account_node);
-  CHECK(NodesCompatibleForMatchByUuid(local_node, account_node));
-
-  return local_node;
+  return nullptr;
 }
 
 const bookmarks::BookmarkNode*
@@ -385,17 +483,13 @@ LocalBookmarkToAccountMerger::FindMatchingAccountNodeByUuid(
     const bookmarks::BookmarkNode* local_node) const {
   CHECK(local_node);
 
-  const auto it = uuid_to_match_map_.find(local_node->uuid());
-  if (it == uuid_to_match_map_.end()) {
-    return nullptr;
+  const bookmarks::BookmarkNode* const account_node = model_->GetNodeByUuid(
+      local_node->uuid(),
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
+  if (account_node && NodesCompatibleForMatchByUuid(local_node, account_node)) {
+    return account_node;
   }
-
-  const bookmarks::BookmarkNode* account_node = it->second.account_node;
-  CHECK(account_node);
-  CHECK_EQ(it->second.local_node, local_node);
-  CHECK(NodesCompatibleForMatchByUuid(local_node, account_node));
-
-  return account_node;
+  return nullptr;
 }
 
 }  // namespace sync_bookmarks

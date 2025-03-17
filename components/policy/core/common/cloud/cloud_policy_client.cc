@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -21,6 +22,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
@@ -757,6 +759,10 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
 #endif
   }
 
+  void OnPromotionEligibilityDetermined(
+      CloudPolicyClient::PromotionEligibilityCallback callback,
+      DMServerJobResult result);
+
   // Add device state keys.
   if (!state_keys_to_upload_.empty()) {
     em::DeviceStateKeyUpdateRequest* key_update_request =
@@ -786,6 +792,31 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   }
 #endif  // BUILDFLAG(IS_WIN)
   unique_request_job_ = service_->CreateJob(std::move(config));
+}
+
+void CloudPolicyClient::DeterminePromotionEligibility(
+    CloudPolicyClient::PromotionEligibilityCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(service_);
+
+  // Create parameters for the job
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(
+      DeviceManagementService::JobConfiguration::
+          TYPE_DETERMINE_PROMOTION_ELIGIBILITY,
+      this);
+  params.oauth_token = oauth_token_;
+  params.profile_id = profile_id_;
+  params.callback =
+      base::BindOnce(&CloudPolicyClient::OnPromotionEligibilityDetermined,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  // Create the job config
+  std::unique_ptr<DMServerJobConfiguration> config =
+      std::make_unique<DMServerJobConfiguration>(std::move(params));
+
+  config->request()->mutable_determine_promotion_eligibility_request();
+
+  // Execute job
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1022,10 +1053,13 @@ void CloudPolicyClient::UploadChromeProfileReport(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::UploadSecurityEventReport(
+void CloudPolicyClient::UploadSecurityEvent(
     bool include_device_info,
-    base::Value::Dict report,
+    ::chrome::cros::reporting::proto::UploadEventsRequest request,
     ResultCallback callback) {
+  DCHECK(base::FeatureList::IsEnabled(
+      policy::kUploadRealtimeReportingEventsUsingProto));
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_registered()) {
@@ -1034,6 +1068,25 @@ void CloudPolicyClient::UploadSecurityEventReport(
   }
 
   CreateNewRealtimeReportingJob(
+      std::move(request),
+      service()->configuration()->GetRealtimeReportingServerUrl(),
+      include_device_info, std::move(callback));
+}
+
+void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
+                                                  base::Value::Dict report,
+                                                  ResultCallback callback) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      policy::kUploadRealtimeReportingEventsUsingProto));
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_registered()) {
+    std::move(callback).Run(CloudPolicyClient::Result(NotRegistered()));
+    return;
+  }
+
+  CreateNewRealtimeReportingJobDeprecated(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
       include_device_info, std::move(callback));
@@ -1049,7 +1102,7 @@ void CloudPolicyClient::UploadAppInstallReport(base::Value::Dict report,
   }
 
   CancelAppInstallReportUpload();
-  app_install_report_request_job_ = CreateNewRealtimeReportingJob(
+  app_install_report_request_job_ = CreateNewRealtimeReportingJobDeprecated(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
       /* include_device_info */ true, std::move(callback));
@@ -1112,6 +1165,23 @@ void CloudPolicyClient::FetchRemoteCommands(
 }
 
 DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
+    ::chrome::cros::reporting::proto::UploadEventsRequest request,
+    const std::string& server_url,
+    bool include_device_info,
+    ResultCallback callback) {
+  std::unique_ptr<RealtimeReportingJobConfiguration> config =
+      std::make_unique<RealtimeReportingJobConfiguration>(
+          this, server_url, include_device_info,
+          base::BindOnce(&CloudPolicyClient::OnRealtimeReportUploadCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  config->AddRequest(std::move(request));
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
+  return request_jobs_.back().get();
+}
+
+DeviceManagementService::Job*
+CloudPolicyClient::CreateNewRealtimeReportingJobDeprecated(
     base::Value::Dict report,
     const std::string& server_url,
     bool include_device_info,
@@ -1122,7 +1192,7 @@ DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
           base::BindOnce(&CloudPolicyClient::OnRealtimeReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  config->AddReport(std::move(report));
+  config->AddReportDeprecated(std::move(report));
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
   return request_jobs_.back().get();
 }
@@ -1290,7 +1360,7 @@ void CloudPolicyClient::UploadFmRegistrationToken(
   *config->request()->mutable_fm_registration_token_upload_request() =
       std::move(request);
 
-  unique_request_job_ = service_->CreateJob(std::move(config));
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
 void CloudPolicyClient::OnUploadFmRegistrationTokenResponse(
@@ -1306,6 +1376,7 @@ void CloudPolicyClient::OnUploadFmRegistrationTokenResponse(
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
   std::move(callback).Run(CloudPolicyClient::Result(result.dm_status));
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::UpdateServiceAccount(const std::string& account_email) {
@@ -1787,6 +1858,19 @@ void CloudPolicyClient::OnClientCertProvisioningRequestResponse(
   std::move(callback).Run(
       last_dm_status_,
       result.response.client_certificate_provisioning_response());
+}
+
+void CloudPolicyClient::OnPromotionEligibilityDetermined(
+    PromotionEligibilityCallback callback,
+    DMServerJobResult result) {
+  last_dm_status_ = result.dm_status;
+  if (result.dm_status != DM_STATUS_SUCCESS) {
+    NotifyClientError();
+  }
+
+  std::move(callback).Run(
+      result.response.get_user_eligible_promotions_response());
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::NotifyPolicyFetched() {

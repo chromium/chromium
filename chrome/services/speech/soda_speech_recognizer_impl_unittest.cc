@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
@@ -49,6 +50,8 @@ class SodaSpeechRecognizerImplTest
     EXPECT_TRUE(!sound_started_ || audio_started_);
     EXPECT_TRUE(!audio_ended_ || (sound_ended_ || !sound_started_));
     EXPECT_TRUE(!recognition_ended_ || (audio_ended_ || !audio_started_));
+    EXPECT_TRUE(!recognition_context_updated_ || recognition_started_);
+    EXPECT_TRUE(!recognition_context_updated_ || recognition_started_);
   }
 
   void CheckFinalEventsConsistency() {
@@ -64,6 +67,11 @@ class SodaSpeechRecognizerImplTest
   void OnLanguageChanged(const std::string& language) override {}
   void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
   void MarkDone() override {}
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override {
+    recognition_context_updated_ = true;
+  }
 
   // media::mojom::SpeechRecognitionSessionClient implementation.
   void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>
@@ -124,6 +132,10 @@ class SodaSpeechRecognizerImplTest
 
   void Abort() { recognizer_->Abort(); }
   void StopCapture() { recognizer_->StopCapture(); }
+  void RecognizerUpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context) {
+    recognizer_->UpdateRecognitionContext(recognition_context);
+  }
 
  protected:
   base::test::TaskEnvironment environment_;
@@ -141,6 +153,7 @@ class SodaSpeechRecognizerImplTest
   bool audio_ended_ = false;
   bool sound_started_ = false;
   bool sound_ended_ = false;
+  bool recognition_context_updated_ = false;
   media::mojom::SpeechRecognitionErrorCode error_ =
       media::mojom::SpeechRecognitionErrorCode::kNone;
 };
@@ -195,6 +208,18 @@ TEST_P(SodaSpeechRecognizerImplTest, EngineError) {
   EXPECT_TRUE(recognition_ended_);
   CheckEventsConsistency();
   CheckFinalEventsConsistency();
+}
+
+TEST_P(SodaSpeechRecognizerImplTest, UpdateRecognitionContext) {
+  // EVENT_START processing.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return recognition_started_; }));
+
+  // EVENT_UPDATE_RECOGNITION_CONTEXT processing.
+  RecognizerUpdateRecognitionContext(
+      media::SpeechRecognitionRecognitionContext());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return recognition_context_updated_; }));
+  CheckEventsConsistency();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SodaSpeechRecognizerImplTest, testing::Bool());

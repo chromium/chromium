@@ -193,7 +193,7 @@ void TriggerEditMenu() {
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
   [ChromeEarlGrey waitForWebStateContainingText:"text"];
-  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                   @"Search Should be in new tab");
 }
 
@@ -215,7 +215,7 @@ void TriggerEditMenu() {
   [ChromeEarlGrey waitForWebStateContainingText:"text"];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Incognito search should stay in incognito");
-  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey incognitoTabCount],
                   @"Search Should be in new tab");
 }
 

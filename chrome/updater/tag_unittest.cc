@@ -1476,9 +1476,8 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(MsiTagTestMsiReadTagTest, TestCases) {
-  const auto tag_args =
-      tagging::BinaryReadTag(test::GetTestFilePath("tagged_msi")
-                                 .AppendASCII(GetParam().msi_file_name));
+  const auto tag_args = tagging::BinaryReadTag(
+      test::GetTestFilePath("tagged_msi").AppendUTF8(GetParam().msi_file_name));
   EXPECT_EQ(tag_args.has_value(), GetParam().expected_tag_args.has_value());
   if (GetParam().expected_tag_args) {
     test::ExpectTagArgsEqual(*tag_args, *GetParam().expected_tag_args);
@@ -1532,9 +1531,9 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath out_file;
   ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
-  const base::FilePath in_out_file = out_file.AddExtensionASCII(".msi");
+  const base::FilePath in_out_file = out_file.AddExtensionUTF8(".msi");
   const base::FilePath msi_file_path =
-      test::GetTestFilePath("tagged_msi").AppendASCII(GetParam().msi_file_name);
+      test::GetTestFilePath("tagged_msi").AppendUTF8(GetParam().msi_file_name);
   ASSERT_TRUE(base::CopyFile(msi_file_path, in_out_file));
 
   for (const auto& [msi_file, out_msi_file] :

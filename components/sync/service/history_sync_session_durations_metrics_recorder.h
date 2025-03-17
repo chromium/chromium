@@ -32,17 +32,23 @@ class HistorySyncSessionDurationsMetricsRecorder
 
   ~HistorySyncSessionDurationsMetricsRecorder() override;
 
-  bool IsHistorySyncEnabled() const;
-
-  // Informs this service that a session started at `session_start` time.
-  void OnSessionStarted(base::TimeTicks session_start);
+  // Informs this service that a session started.
+  void OnSessionStarted();
   void OnSessionEnded(base::TimeDelta session_length);
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(SyncService* sync) override;
 
  private:
-  static void LogHistorySyncDuration(bool history_sync_enabled,
+  enum class HistorySyncStatus {
+    kDisabled,
+    kEnabledWithoutError,
+    kEnabledWithError,
+  };
+
+  HistorySyncStatus DetermineHistorySyncStatus() const;
+
+  static void LogHistorySyncDuration(HistorySyncStatus history_sync_status,
                                      base::TimeDelta session_length);
 
   const raw_ptr<SyncService> sync_service_;
@@ -50,7 +56,7 @@ class HistorySyncSessionDurationsMetricsRecorder
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
 
-  bool history_sync_enabled_ = false;
+  HistorySyncStatus history_sync_status_ = HistorySyncStatus::kDisabled;
 
   // Tracks the elapsed active session time while the browser is open. The timer
   // is absent if there's no active session.

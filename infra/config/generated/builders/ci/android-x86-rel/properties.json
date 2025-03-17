@@ -21,7 +21,7 @@
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder_mb",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -53,7 +53,7 @@
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder_mb",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -90,18 +90,15 @@
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-x86-rel/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },

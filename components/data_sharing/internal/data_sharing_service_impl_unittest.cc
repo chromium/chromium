@@ -150,6 +150,8 @@ TEST_P(DataSharingServiceImplTest, ShouldDeleteGroup) {
       not_owned_sdk_delegate_->GetGroup(group_id);
   ASSERT_TRUE(group_data_pb.has_value());
 
+  EXPECT_FALSE(data_sharing_service_->IsLeavingOrDeletingGroup(group_id));
+
   base::RunLoop run_loop;
   base::MockOnceCallback<void(DataSharingService::PeopleGroupActionOutcome)>
       callback;
@@ -175,6 +177,7 @@ TEST_P(DataSharingServiceImplTest, ShouldDeleteGroup) {
   EXPECT_EQ(retrieved_group_data->group_token.group_id,
             group_data->group_token.group_id);
   EXPECT_EQ(retrieved_group_data->display_name, group_data->display_name);
+  EXPECT_TRUE(data_sharing_service_->IsLeavingOrDeletingGroup(group_id));
 }
 
 TEST_P(DataSharingServiceImplTest, ShouldReadGroup) {
@@ -188,6 +191,29 @@ TEST_P(DataSharingServiceImplTest, ShouldReadGroup) {
   base::RunLoop run_loop;
   data_sharing_service_->ReadGroupDeprecated(
       group_id,
+      base::BindLambdaForTesting(
+          [&run_loop, &outcome](
+              const DataSharingService::GroupDataOrFailureOutcome& result) {
+            outcome = result;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  ASSERT_TRUE(outcome.has_value());
+  EXPECT_THAT(outcome->display_name, Eq(display_name));
+  EXPECT_THAT(outcome->group_token.group_id, Eq(group_id));
+}
+
+TEST_P(DataSharingServiceImplTest, ShouldReadNewGroup) {
+  const std::string display_name = "display_name";
+
+  const GroupId group_id =
+      not_owned_sdk_delegate_->AddGroupAndReturnId(display_name);
+  const GroupToken group_token = GroupToken(group_id, "access_token");
+  DataSharingService::GroupDataOrFailureOutcome outcome;
+  base::RunLoop run_loop;
+  data_sharing_service_->ReadNewGroup(
+      group_token,
       base::BindLambdaForTesting(
           [&run_loop, &outcome](
               const DataSharingService::GroupDataOrFailureOutcome& result) {
@@ -254,6 +280,7 @@ TEST_P(DataSharingServiceImplTest, ShouldRemoveMember) {
 TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
   const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
+  EXPECT_FALSE(data_sharing_service_->IsLeavingOrDeletingGroup(group_id));
 
   const std::string email = "user@gmail.com";
   const GaiaId gaia_id("123456789");
@@ -274,11 +301,17 @@ TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
   auto group = not_owned_sdk_delegate_->GetGroup(group_id);
   ASSERT_TRUE(group.has_value());
   EXPECT_TRUE(group->members().empty());
+  EXPECT_TRUE(data_sharing_service_->IsLeavingOrDeletingGroup(group_id));
+}
+
+TEST_P(DataSharingServiceImplTest, ShouldNotifyOnSyncBridgeUpdateTypeChanged) {
+  data_sharing_service_->OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType::kDisableSync);
 }
 
 TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
   GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
-                  "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
+                  "?g=" + kGroupId + "&t=" + kTokenBlob);
 
   DataSharingService::ParseUrlResult result =
       data_sharing_service_->ParseDataSharingUrl(url);
@@ -291,7 +324,7 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
 
   // Verify host/path error.
   std::string invalid = "https://www.test.com/";
-  url = GURL(invalid + "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
+  url = GURL(invalid + "?g=" + kGroupId + "&t=" + kTokenBlob);
   result = data_sharing_service_->ParseDataSharingUrl(url);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
@@ -309,8 +342,7 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
   EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 
   // Verify access token missing is ok.
-  url = GURL(data_sharing::features::kDataSharingURL.Get() +
-             "?group_id=" + kGroupId);
+  url = GURL(data_sharing::features::kDataSharingURL.Get() + "?g=" + kGroupId);
   result = data_sharing_service_->ParseDataSharingUrl(url);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(kGroupId, result.value().group_id.value());
@@ -322,8 +354,8 @@ TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {
   GroupData group_data = GroupData();
   group_data.group_token =
       GroupToken(data_sharing::GroupId(kGroupId), kTokenBlob);
-  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() + "?group_id=" +
-                  kEncodedGroupId + "&token_blob=" + kEncodedTokenBlob);
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
+                  "?g=" + kEncodedGroupId + "&t=" + kEncodedTokenBlob);
 
   std::unique_ptr<GURL> result_url =
       data_sharing_service_->GetDataSharingUrl(group_data);
@@ -340,7 +372,7 @@ TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {
 TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
   data_sharing::GroupId group_id = data_sharing::GroupId(kGroupId);
 
-  const GaiaId gaia_id = "gaia_id";
+  const GaiaId gaia_id("gaia_id");
   const std::string display_name = "Invitee Display Name";
   const std::string email = "invitee@mail.com";
   const MemberRole role = MemberRole::kInvitee;
@@ -348,10 +380,19 @@ TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
   const std::string given_name = "Invitee Given Name";
   const std::string access_token = "fake_access_token";
 
+  const GaiaId gaia_id2("gaia_id2");
+  const std::string display_name2 = "Former Member Display Name";
+  const std::string email2 = "former_member@mail.com";
+  const MemberRole role2 = MemberRole::kFormerMember;
+  const GURL avatar_url2 = GURL("chrome://newtab");
+  const std::string given_name2 = "Former Member Given Name";
+
   GroupMember group_member =
       GroupMember(gaia_id, display_name, email, role, avatar_url, given_name);
-  GroupData group_data =
-      GroupData(group_id, display_name, {group_member}, access_token);
+  GroupMember former_group_member = GroupMember(
+      gaia_id2, display_name2, email2, role2, avatar_url2, given_name2);
+  GroupData group_data = GroupData(group_id, display_name, {group_member},
+                                   {former_group_member}, access_token);
 
   data_sharing_service_->AddGroupDataForTesting(std::move(group_data));
 
@@ -368,6 +409,14 @@ TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
   EXPECT_EQ(returned_group_data->members[0].role, role);
   EXPECT_EQ(returned_group_data->members[0].avatar_url, avatar_url);
   EXPECT_EQ(returned_group_data->members[0].given_name, given_name);
+
+  EXPECT_EQ(returned_group_data->former_members.size(), 1u);
+  EXPECT_EQ(returned_group_data->former_members[0].gaia_id, gaia_id2);
+  EXPECT_EQ(returned_group_data->former_members[0].display_name, display_name2);
+  EXPECT_EQ(returned_group_data->former_members[0].email, email2);
+  EXPECT_EQ(returned_group_data->former_members[0].role, role2);
+  EXPECT_EQ(returned_group_data->former_members[0].avatar_url, avatar_url2);
+  EXPECT_EQ(returned_group_data->former_members[0].given_name, given_name2);
 }
 
 INSTANTIATE_TEST_SUITE_P(DataSharingServiceImplTestInstantiation,

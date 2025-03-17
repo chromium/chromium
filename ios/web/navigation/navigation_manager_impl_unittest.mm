@@ -162,8 +162,8 @@ class NavigationManagerTest : public PlatformTest {
   // Makes delegate to return navigation item, which is stored in navigation
   // context in the real app.
   void SimulateReturningPendingItemFromDelegate(web::NavigationItemImpl* item) {
-      ON_CALL(navigation_manager_delegate(), GetPendingItem())
-          .WillByDefault(testing::Return(item));
+    ON_CALL(navigation_manager_delegate(), GetPendingItem())
+        .WillByDefault(testing::Return(item));
   }
 
   CRWFakeBackForwardList* mock_wk_list_;
@@ -2852,7 +2852,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto) {
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
   for (const char* url : kTestURLs) {
-    storage.add_items()->set_virtual_url(url);
+    storage.add_items()->set_url(url);
   }
   storage.set_last_committed_item_index(storage.items_size() - 1);
 
@@ -2912,7 +2912,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
   for (const char* url : kTestURLs) {
-    storage.add_items()->set_virtual_url(url);
+    storage.add_items()->set_url(url);
   }
   storage.set_last_committed_item_index(0);
 
@@ -2952,7 +2952,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_IndexOutOfBound) {
     proto::WebStateStorage storage;
     proto::NavigationStorage* navigation_storage = storage.mutable_navigation();
     for (const char* url : kTestURLs) {
-      navigation_storage->add_items()->set_virtual_url(url);
+      navigation_storage->add_items()->set_url(url);
     }
     // Set an out-of-bound value for last committed item index.
     navigation_storage->set_last_committed_item_index(std::size(kTestURLs));
@@ -3002,6 +3002,55 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_IndexOutOfBound) {
   for (int index = 0; index < urls_count; ++index) {
     NavigationItem* item = navigation_manager.GetItemAtIndex(index);
     EXPECT_EQ(item->GetURL(), GURL(kTestURLs[index]));
+  }
+}
+
+// Tests that restoring a session with a specific virtual url which is different
+// with url works correctly.
+TEST_F(NavigationManagerSerialisationTest, RestoreVirtualURLFromProto) {
+  // Tests both HTTP url and non HTTP url.
+  const std::vector<std::pair<std::string, std::string>> urls_and_virtual_urls =
+      {
+          {"http://url.test", "http://virtual.test"},
+          {"file:///path/to/file.pdf", "http://virtual.test"},
+      };
+
+  proto::NavigationStorage storage;
+  storage.set_last_committed_item_index(0);
+
+  for (const auto& [url, virtual_url] : urls_and_virtual_urls) {
+    proto::NavigationItemStorage* item = storage.add_items();
+    item->set_url(url);
+    item->set_virtual_url(virtual_url);
+  }
+
+  // Create a WebState with a real navigation proxy as this is required to
+  // perform a session restore and access the view to force instantiation
+  // of the WKWebView.
+  std::unique_ptr<web::WebStateImpl> web_state =
+      std::make_unique<web::WebStateImpl>(
+          web::WebState::CreateParams(browser_state()));
+  std::ignore = web_state->GetView();
+
+  NavigationManagerImpl& navigation_manager =
+      web_state->GetNavigationManagerImpl();
+
+  navigation_manager.RestoreFromProto(storage);
+
+  const int urls_count = static_cast<int>(urls_and_virtual_urls.size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return navigation_manager.GetItemCount() == urls_count;
+  }));
+
+  EXPECT_EQ(0, navigation_manager.GetLastCommittedItemIndex());
+
+  for (int index = 0; index < urls_count; ++index) {
+    NavigationItem* item = navigation_manager.GetItemAtIndex(index);
+    GURL url = GURL(urls_and_virtual_urls[index].first);
+    GURL virtual_url = GURL(urls_and_virtual_urls[index].second);
+
+    EXPECT_EQ(item->GetURL(), url);
+    EXPECT_EQ(item->GetVirtualURL(), virtual_url);
   }
 }
 

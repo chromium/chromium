@@ -19,20 +19,25 @@ We use several tools for static analysis in chromium.
 [within `lint.py`]: https://source.chromium.org/chromium/chromium/src/+/main:build/android/gyp/lint.py;l=25
 [`lint-baseline.xml`]: https://source.chromium.org/search?q=f:lint-baseline.xml%20-f:third_party
 
-## [ErrorProne](https://errorprone.info/)
+## [ErrorProne]
 * Runs as part of normal compilation.
 * Controlled by GN arg: `use_errorprone_java_compiler` (or
   `android_static_analysis`).
-* [Useful checks include](https://errorprone.info/bugpatterns):
+* [Useful checks include]:
+  * Checking correctness of [nullable annotations] (via NullAway plugin).
   * Enforcement of `@GuardedBy`, `@CheckReturnValue`, and `@DoNotMock`.
   * Enforcement of `/* paramName= */` comments.
-* A list of enabled / disabled checks is found [within `compile_java.py`](https://cs.chromium.org/chromium/src/build/android/gyp/compile_java.py?l=30)
+* A list of enabled / disabled checks is found [within `compile_java.py`]
   * Many checks are currently disabled because there is work involved in fixing
     violations they introduce. Please help!
-* Chrome has [a few custom checks]:
+* Chrome has [a few custom checks].
 * Checks run on the entire codebase, not only on changed lines.
 * Does not run when `chromium_code = false` (e.g. for `//third_party`).
 
+[ErrorProne]: https://errorprone.info/
+[Useful checks include]: https://errorprone.info/bugpatterns
+[nullable annotations]: /styleguide/java/nullaway.md
+[within `compile_java.py`]: https://source.chromium.org/chromium/chromium/src/+/main:build/android/gyp/compile_java.py;l=46;drc=5dc479e73c3c9c03b59f324b2e349b8bd008401f
 [a few custom checks]: /tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/
 
 ## [Checkstyle](https://checkstyle.sourceforge.io/)

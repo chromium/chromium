@@ -67,7 +67,7 @@ bool CanImportURL(const GURL& url) {
       }
     }
 
-    if (base::Contains(chrome::ChromeDebugURLs(), fixed_url)) {
+    if (base::Contains(chrome::ChromeDebugURLs(), fixed_url.spec())) {
       return true;
     }
 

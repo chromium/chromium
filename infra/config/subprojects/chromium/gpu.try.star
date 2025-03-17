@@ -20,6 +20,7 @@ try_.defaults.set(
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
+    reclient_enabled = False,
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
@@ -113,6 +114,16 @@ gpu_android_builder(
     mirrors = [
         "ci/GPU FYI Android arm Builder",
         "ci/Android FYI Release (Samsung A13)",
+    ],
+    gn_args = "ci/GPU FYI Android arm Builder",
+)
+
+gpu_android_builder(
+    name = "gpu-fyi-try-android-a23-32",
+    description_html = "Runs GPU tests on Samsung A23 phones",
+    mirrors = [
+        "ci/GPU FYI Android arm Builder",
+        "ci/Android FYI Release (Samsung A23)",
     ],
     gn_args = "ci/GPU FYI Android arm Builder",
 )
@@ -226,6 +237,15 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-amd-rx-7600-rel",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (AMD RX 7600)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-exp",
     mirrors = [
         "ci/GPU FYI Linux Builder",
@@ -319,7 +339,10 @@ def gpu_mac_builder(*, name, **kwargs):
         builderless = True,
         cores = None,
         os = os.MAC_ANY,
+        pool = "luci.chromium.gpu.try",
+        max_concurrent_builds = 1,
         ssd = None,
+        siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         **kwargs
     )
 
@@ -330,7 +353,6 @@ gpu_mac_builder(
         "ci/Mac Pro FYI Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.pro.amd.try",
 )
 
 gpu_mac_builder(
@@ -340,7 +362,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina ASAN (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (asan)",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -350,7 +371,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Debug (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -360,7 +380,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Retina Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -370,7 +389,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -380,9 +398,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Release (Apple M1)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
-    cpu = cpu.ARM64,
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 gpu_mac_builder(
@@ -392,8 +407,6 @@ gpu_mac_builder(
         "ci/Mac FYI Release (Apple M1)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
-    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
@@ -404,8 +417,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Retina Release (Apple M2)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
-    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
@@ -415,8 +426,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Release (Apple M2)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
-    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
@@ -426,7 +435,6 @@ gpu_mac_builder(
         "ci/Mac FYI ASAN (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (asan)",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -436,7 +444,6 @@ gpu_mac_builder(
         "ci/Mac FYI Debug (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -446,7 +453,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -456,7 +462,6 @@ gpu_mac_builder(
         "ci/Mac FYI Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -466,7 +471,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Retina Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.nvidia.try",
     # This bot has one machine backing its tests at the moment.
     # If it gets more, the modified execution_timeout should be removed.
     execution_timeout = 12 * time.hour,
@@ -479,7 +483,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.nvidia.try",
 )
 
 gpu_mac_builder(
@@ -489,7 +492,6 @@ gpu_mac_builder(
         "ci/Mac Retina Debug (AMD)",
     ],
     gn_args = "ci/GPU Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -499,8 +501,6 @@ gpu_mac_builder(
         "ci/Mac Debug (Intel)",
     ],
     gn_args = "ci/GPU Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 def gpu_win_builder(*, name, **kwargs):
@@ -608,11 +608,20 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
-    name = "gpu-fyi-try-win10-nvidia-4070-rel-64",
+    name = "gpu-fyi-try-win11-amd-rel-64",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Release (AMD RX 7600)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+)
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win11-nvidia-4070-rel-64",
     description_html = "Runs GPU tests on NVIDIA RTX 4070 Super GPUs",
     mirrors = [
         "ci/GPU FYI Win x64 Builder",
-        "ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
+        "ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
 )

@@ -41,8 +41,8 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -165,7 +165,7 @@ class AutofillTest : public InProcessBrowserTest {
   }
 
   // Helper where the actual submit JS code can be specified, as well as whether
-  // the test should |simulate_click| on the document.
+  // the test should `simulate_click` on the document.
   void FillFormAndSubmitWithHandler(const std::string& filename,
                                     const FormMap& data,
                                     const std::string& submit_js,

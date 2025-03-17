@@ -4,12 +4,13 @@
 
 #include "extensions/renderer/script_context.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/dispatcher.h"
@@ -50,7 +52,7 @@ namespace {
 GURL GetEffectiveDocumentURL(
     blink::WebLocalFrame* frame,
     const GURL& document_url,
-    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback,
     bool allow_inaccessible_parents) {
   return ContentScriptInjectionUrlGetter::Get(
       RendererFrameContextData(frame), document_url, match_origin_as_fallback,
@@ -300,7 +302,7 @@ Feature::Availability ScriptContext::GetAvailability(
         "runtime.connect",
     };
 
-    if (base::ranges::find(kMessagingApis, api_name) !=
+    if (std::ranges::find(kMessagingApis, api_name) !=
         std::end(kMessagingApis)) {
       bool is_available =
           IsolatedWorldManager::GetInstance()
@@ -408,9 +410,9 @@ GURL ScriptContext::GetEffectiveDocumentURLForContext(
   // TODO(devlin): Determine if this could use kAlways instead of
   // kMatchForAboutSchemeAndClimbTree.
   auto match_origin_as_fallback =
-      match_about_blank
-          ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
-          : MatchOriginAsFallbackBehavior::kNever;
+      match_about_blank ? mojom::MatchOriginAsFallbackBehavior::
+                              kMatchForAboutSchemeAndClimbTree
+                        : mojom::MatchOriginAsFallbackBehavior::kNever;
   return GetEffectiveDocumentURL(frame, document_url, match_origin_as_fallback,
                                  allow_inaccessible_parents);
 }
@@ -419,7 +421,7 @@ GURL ScriptContext::GetEffectiveDocumentURLForContext(
 GURL ScriptContext::GetEffectiveDocumentURLForInjection(
     blink::WebLocalFrame* frame,
     const GURL& document_url,
-    MatchOriginAsFallbackBehavior match_origin_as_fallback) {
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback) {
   // We explicitly allow inaccessible parents here. Extensions should still be
   // able to inject into a sandboxed iframe if it has access to the embedding
   // origin.

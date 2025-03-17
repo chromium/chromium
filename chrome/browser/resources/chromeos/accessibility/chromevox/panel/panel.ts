@@ -15,8 +15,9 @@ import {BridgeConstants} from '../common/bridge_constants.js';
 import {Command} from '../common/command.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
-import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
+import type {PanelCommand} from '../common/panel_command.js';
+import {PanelCommandType} from '../common/panel_command.js';
+import type {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
 import {ISearchUI} from './i_search_ui.js';

@@ -160,6 +160,8 @@ void LockScreen::Show(ScreenType type) {
   if (Shell::Get()->ambient_controller()) {
     Shell::Get()->ambient_controller()->OnLoginOrLockScreenCreated();
   }
+
+  Shell::UpdateAccessibilityForStatusAreaWidget();
 }
 
 // static
@@ -178,6 +180,8 @@ void LockScreen::Destroy() {
 
   delete instance_;
   instance_ = nullptr;
+
+  Shell::UpdateAccessibilityForStatusAreaWidget();
 }
 
 void LockScreen::FocusNextUser() {

@@ -26,11 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TEXT_INPUT_INFO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TEXT_INPUT_INFO_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_mode.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-shared.h"
 #include "ui/base/ime/text_input_action.h"
@@ -76,7 +77,7 @@ struct BLINK_PLATFORM_EXPORT WebTextInputInfo {
       ui::mojom::VirtualKeyboardPolicy::AUTO;
 
   // The array of ime_text_spans at the current caret position.
-  WebVector<ui::ImeTextSpan> ime_text_spans;
+  std::vector<ui::ImeTextSpan> ime_text_spans;
 
   bool Equals(const WebTextInputInfo&) const;
 };

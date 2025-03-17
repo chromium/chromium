@@ -33,12 +33,15 @@ class XRGPUProjectionLayer final : public XRProjectionLayer {
     return depth_stencil_swap_chain_.Get();
   }
 
+  void MarkViewportUpdated() { viewport_updated_ = true; }
+
   void Trace(Visitor*) const override;
 
  private:
   Member<GPUDevice> device_;
   Member<XRGPUSwapChain> color_swap_chain_;
   Member<XRGPUSwapChain> depth_stencil_swap_chain_;
+  bool viewport_updated_ = true;
 };
 
 }  // namespace blink

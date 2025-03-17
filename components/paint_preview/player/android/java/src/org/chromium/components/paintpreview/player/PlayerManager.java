@@ -4,6 +4,9 @@
 
 package org.chromium.components.paintpreview.player;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -13,12 +16,13 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.accessibility.PlayerAccessibilityDelegate;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
@@ -33,6 +37,7 @@ import java.util.Map;
  * This is the only public class in this package and is hence the access point of this component for
  * the outer world. Users should call {@link #destroy()}  to ensure the native part is destroyed.
  */
+@NullMarked
 public class PlayerManager {
     /**
      * Users of the {@link PlayerManager} class have to implement and pass this interface in the
@@ -75,8 +80,11 @@ public class PlayerManager {
 
     private Context mContext;
     private PlayerCompositorDelegate mDelegate;
-    private PaintPreviewFrame mRootFrameData;
-    private PlayerFrameCoordinator mRootFrameCoordinator;
+
+    private @Nullable PaintPreviewFrame mRootFrameData;
+
+    private @Nullable PlayerFrameCoordinator mRootFrameCoordinator;
+
     private FrameLayout mHostView;
     private static final String sInitEvent = "paint_preview PlayerManager init";
     private PlayerSwipeRefreshHandler mPlayerSwipeRefreshHandler;
@@ -84,8 +92,8 @@ public class PlayerManager {
     private boolean mIgnoreInitialScrollOffset;
     private Listener mListener;
     private long mNativeAxTree;
-    private PlayerAccessibilityDelegate mAccessibilityDelegate;
-    private WebContentsAccessibilityImpl mWebContentsAccessibility;
+    private @Nullable PlayerAccessibilityDelegate mAccessibilityDelegate;
+    private @Nullable WebContentsAccessibilityImpl mWebContentsAccessibility;
 
     // The minimum ratio value of a sub-frame's area to its parent, for the sub-frame to be
     // considered 'large'.
@@ -111,7 +119,7 @@ public class PlayerManager {
             Context context,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
             String directoryKey,
-            @NonNull Listener listener,
+            Listener listener,
             int backgroundColor,
             boolean ignoreInitialScrollOffset) {
         TraceEvent.begin("PlayerManager");
@@ -161,7 +169,7 @@ public class PlayerManager {
     }
 
     /** @return Current scroll position of the main frame. null if the player is not initialized. */
-    public Point getScrollPosition() {
+    public @Nullable Point getScrollPosition() {
         if (mRootFrameCoordinator == null) return null;
 
         Point rootScrollPosition = mRootFrameCoordinator.getScrollPosition();
@@ -265,6 +273,7 @@ public class PlayerManager {
             return;
         }
 
+        assumeNonNull(mRootFrameData);
         if (mRootFrameData.hasScrollableDescendants(false)) {
             // If there are any scrollable sub-frames that are not direct children of root frame,
             // we can't add accessibility support regardless of root frame's scrollability.
@@ -331,9 +340,11 @@ public class PlayerManager {
      * scrollable direct sub-frame, and that sub-frame is sufficiently large (80% of main frame).
      */
     private int indexOfLargeScrollableSubFrame() {
+        assumeNonNull(mRootFrameCoordinator);
         Rect mainFrameViewPort = mRootFrameCoordinator.getViewportForAccessibility().asRect();
         int scrollableSubFrameIndex = -1;
         boolean hasLargeScrollableSubFrame = false;
+        assumeNonNull(mRootFrameData);
         for (int i = 0; i < mRootFrameData.getSubFrames().length; i++) {
             PaintPreviewFrame subFrame = mRootFrameData.getSubFrames()[i];
             Rect subFrameClip = mRootFrameData.getSubFrameClips()[i];
@@ -388,14 +399,15 @@ public class PlayerManager {
 
         int subFrameIdIndex = 0;
         for (int i = 0; i < frameGuids.length; i++) {
-            PaintPreviewFrame currentFrame = framesMap.get(frameGuids[i]);
+            PaintPreviewFrame currentFrame = assumeNonNull(framesMap.get(frameGuids[i]));
             int currentFrameSubFrameCount = subFramesCount[i];
             PaintPreviewFrame[] subFrames = new PaintPreviewFrame[currentFrameSubFrameCount];
             Rect[] subFrameClips = new Rect[currentFrameSubFrameCount];
             for (int subFrameIndex = 0;
                     subFrameIndex < currentFrameSubFrameCount;
                     subFrameIndex++, subFrameIdIndex++) {
-                subFrames[subFrameIndex] = framesMap.get(subFrameGuids[subFrameIdIndex]);
+                subFrames[subFrameIndex] =
+                        assertNonNull(framesMap.get(subFrameGuids[subFrameIdIndex]));
                 int x = subFrameClipRects[subFrameIdIndex * 4];
                 int y = subFrameClipRects[subFrameIdIndex * 4 + 1];
                 int width = subFrameClipRects[subFrameIdIndex * 4 + 2];
@@ -405,7 +417,7 @@ public class PlayerManager {
             currentFrame.setSubFrames(subFrames);
             currentFrame.setSubFrameClips(subFrameClips);
         }
-        return framesMap.get(rootFrameGuid);
+        return assertNonNull(framesMap.get(rootFrameGuid));
     }
 
     /**
@@ -451,8 +463,10 @@ public class PlayerManager {
         }
     }
 
+    @SuppressWarnings("NullAway") // mDelegate is only nullable after the call to destroy()
     public void destroy() {
         if (mWebContentsAccessibility != null) {
+            assumeNonNull(mRootFrameCoordinator);
             mRootFrameCoordinator.getView().setWebContentsAccessibility(null);
             mWebContentsAccessibility.destroy();
             mWebContentsAccessibility = null;
@@ -479,7 +493,7 @@ public class PlayerManager {
                 GURL url,
                 String directoryKey,
                 boolean mainFrameMode,
-                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             return new PlayerCompositorDelegateImpl(
                     service,
@@ -498,7 +512,7 @@ public class PlayerManager {
                 GURL url,
                 String directoryKey,
                 boolean mainFrameMode,
-                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             return new PlayerCompositorDelegateImpl(
                     service,
@@ -516,10 +530,11 @@ public class PlayerManager {
     }
 
     public boolean checkRequiredBitmapsLoadedForTest() {
+        assumeNonNull(mRootFrameCoordinator);
         return mRootFrameCoordinator.checkRequiredBitmapsLoadedForTest();
     }
 
-    public WebContentsAccessibility getWebContentsAccessibilityForTesting() {
+    public @Nullable WebContentsAccessibility getWebContentsAccessibilityForTesting() {
         return mWebContentsAccessibility;
     }
 

@@ -9,11 +9,11 @@
 
 #include "components/history/core/browser/history_types.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/history/core/browser/page_usage_data.h"
@@ -644,7 +644,7 @@ Cluster& Cluster::operator=(Cluster&&) = default;
 Cluster::~Cluster() = default;
 
 const ClusterVisit& Cluster::GetMostRecentVisit() const {
-  return *base::ranges::max_element(
+  return *std::ranges::max_element(
       visits, [](auto time1, auto time2) { return time1 < time2; },
       [](const auto& cluster_visit) {
         return cluster_visit.annotated_visit.visit_row.visit_time;

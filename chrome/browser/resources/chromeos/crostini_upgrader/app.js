@@ -15,6 +15,7 @@ import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
+import {UpgradePrecheckStatus} from './crostini_upgrader.mojom-webui.js';
 
 /**
  * Enum for the state of `crostini-upgrader-app`.
@@ -111,7 +112,7 @@ Polymer({
     /** @private */
     precheckStatus_: {
       type: Number,
-      value: ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK,
+      value: UpgradePrecheckStatus.OK,
     },
 
     /**
@@ -161,7 +162,7 @@ Polymer({
         this.state_ = State.BACKUP_ERROR;
       }),
       callbackRouter.precheckStatus.addListener((status) => {
-        if (status === ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK) {
+        if (status === UpgradePrecheckStatus.OK) {
           this.precheckSuccessCallback_();
           this.precheckStatus_ = status;
         } else {
@@ -495,10 +496,10 @@ Polymer({
         break;
       case State.PRECHECKS_FAILED:
         switch (precheckStatus) {
-          case ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.NETWORK_FAILURE:
+          case UpgradePrecheckStatus.NETWORK_FAILURE:
             messageId = 'precheckNoNetwork';
             break;
-          case ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER:
+          case UpgradePrecheckStatus.LOW_POWER:
             messageId = 'precheckNoPower';
             break;
           default:

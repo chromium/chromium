@@ -187,13 +187,14 @@ void QuirksClient::Retry() {
 }
 
 bool QuirksClient::ParseResult(const std::string& result, std::string* data) {
-  std::optional<base::Value> maybe_json = base::JSONReader::Read(result);
-  if (!maybe_json || !maybe_json->is_dict()) {
+  std::optional<base::Value::Dict> maybe_json =
+      base::JSONReader::ReadDict(result);
+  if (!maybe_json) {
     VLOG(1) << "Failed to parse JSON icc data";
     return false;
   }
 
-  std::string* data64 = maybe_json->GetDict().FindString("icc");
+  std::string* data64 = maybe_json->FindString("icc");
   if (!data64) {
     VLOG(1) << "Missing icc data";
     return false;

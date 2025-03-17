@@ -53,6 +53,7 @@ enum class RenderSurfaceReason : uint8_t {
   kSubtreeIsBeingCaptured,
   kViewTransitionParticipant,
   kGradientMask,
+  k2DScaleTransformWithCompositedDescendants,
   // This must be the last value because it's used in tracing code to know the
   // number of reasons.
   kTest,
@@ -144,12 +145,20 @@ struct CC_EXPORT EffectNode {
   // having a rounded corner.
   bool is_fast_rounded_corner : 1 = false;
   bool node_or_ancestor_has_fast_rounded_corner : 1 = false;
-  // If the node or it's parent has the filters, it sets to true.
-  bool node_or_ancestor_has_filters : 1 = false;
+  // This is set to true if the node or any ancestor has filters that don't
+  // allow LCD text.
+  bool lcd_text_disallowed_by_filter : 1 = false;
   // All node in the subtree starting from the containing render surface, and
-  // before the backdrop filter node in pre tree order.
+  // before the backdrop filter node in pre tree order, if the backdrop filter
+  // doesn't allow LCD text.
   // This is set and used for the impl-side effect tree only.
-  bool affected_by_backdrop_filter : 1 = false;
+  bool lcd_text_disallowed_by_backdrop_filter : 1 = false;
+  // True if a backdrop effect may be present on this effect (and therefore
+  // any side-effects on ancestors should be taken into account).
+  bool may_have_backdrop_effect : 1 = false;
+  // Whether this effect is related to a non-identity 2D scale transform (and no
+  // other transform).
+  bool has_2d_scale_transform : 1 = false;
   // RenderSurfaceReason::kNone if this effect node should not create a render
   // surface, or the reason that this effect node should create one.
   RenderSurfaceReason render_surface_reason = RenderSurfaceReason::kNone;

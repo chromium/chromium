@@ -32,6 +32,15 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
     this.forceContextualLastOutput();
   }
 
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'ash::features::kOnDeviceSpeechRecognition',
+      ],
+    };
+  }
+
   simulateHitTestResult(node) {
     return () => GestureCommandHandler.instance.pointerHandler_
                      .handleHitTestResult_(node);
@@ -3726,9 +3735,8 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// TODO(crbug.com/1427939): Flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_SelectWithOptGroup', async function() {
+    'ChromeVoxBackgroundTest', 'SelectWithOptGroup', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <select>
@@ -4165,3 +4173,16 @@ AX_TEST_F(
           .expectSpeech('Search shortcuts')
           .replay();
     });
+
+AX_TEST_F('ChromeVoxBackgroundTest', 'OpenCaptions', async function() {
+  const desktop = await new Promise(r => this.runWithLoadedDesktop(r));
+
+  // The bubble only appears if media is playing. Check that the pref was
+  // flipped instead.
+  chrome.accessibilityPrivate.enableLiveCaption(true);
+  const pref = await new Promise(
+      resolve => chrome.settingsPrivate.getPref(
+          'accessibility.captions.live_caption_enabled', resolve));
+  assertEquals(pref.type, chrome.settingsPrivate.PrefType.BOOLEAN);
+  assertTrue(pref.value);
+});

@@ -11,10 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 
 namespace content {
+
+class RenderFrameHostImpl;
 
 using AuctionNonce = base::StrongAlias<class AuctionNonceTag, base::Uuid>;
 

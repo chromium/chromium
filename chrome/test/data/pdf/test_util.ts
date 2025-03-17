@@ -174,7 +174,7 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
   private messages_: any[] = [];
   // <if expr="enable_pdf_ink2">
   private messageReply_: Object|null = null;
-  private replyType_: string;
+  private replyType_: string = '';
   // </if>
 
   get messages(): any[] {
@@ -425,7 +425,7 @@ export async function ensureFullscreen(): Promise<void> {
     return;
   }
 
-  const toolbar = viewer.shadowRoot!.querySelector('viewer-toolbar');
+  const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar');
   assert(toolbar);
   toolbar.dispatchEvent(new CustomEvent('present-click'));
   await eventToPromise('fullscreenchange', viewer.$.scroller);
@@ -494,7 +494,7 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
  * @param color The brush color in the reply message.
  */
 export function setGetAnnotationBrushReply(
-    mockPlugin: MockPdfPluginElement, type: AnnotationBrushType, size: number,
+    mockPlugin: MockPdfPluginElement, type: AnnotationBrushType, size?: number,
     color?: {r: number, g: number, b: number}) {
   mockPlugin.setMessageReply('getAnnotationBrush', {data: {type, size, color}});
 }
@@ -549,7 +549,7 @@ export function getBrushSelector(parentElement: HTMLElement):
 export function getSizeButtons(selector: InkSizeSelectorElement):
     NodeListOf<HTMLElement> {
   const sizeButtons =
-      selector.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
+      selector.shadowRoot.querySelectorAll<HTMLElement>('cr-icon-button');
   assert(sizeButtons);
   assert(sizeButtons.length === 5);
   return sizeButtons;
@@ -564,7 +564,7 @@ export function getSizeButtons(selector: InkSizeSelectorElement):
 export function assertSelectedSize(
     sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
   for (let i = 0; i < sizeButtons.length; ++i) {
-    const buttonSelected = sizeButtons[i].dataset['selected'];
+    const buttonSelected = sizeButtons[i]!.dataset['selected'];
     chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
   }
 }
@@ -576,7 +576,7 @@ export function assertSelectedSize(
  */
 export function getColorButtons(selector: InkColorSelectorElement):
     NodeListOf<HTMLElement> {
-  const colorButtons = selector.shadowRoot!.querySelectorAll('input');
+  const colorButtons = selector.shadowRoot.querySelectorAll('input');
   assert(colorButtons);
   return colorButtons;
 }
@@ -591,7 +591,7 @@ export function assertSelectedColor(
     colorButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
   for (let i = 0; i < colorButtons.length; ++i) {
     chrome.test.assertEq(
-        i === buttonIndex, colorButtons[i].hasAttribute('checked'));
+        i === buttonIndex, colorButtons[i]!.hasAttribute('checked'));
   }
 }
 

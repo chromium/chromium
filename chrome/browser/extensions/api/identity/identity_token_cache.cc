@@ -4,10 +4,10 @@
 
 #include "chrome/browser/extensions/api/identity/identity_token_cache.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
 namespace extensions {
@@ -225,10 +225,10 @@ const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
   if (find_tokens_it != access_tokens_cache_.end()) {
     const AccessTokensValue& cached_tokens = find_tokens_it->second;
     auto matched_token_it =
-        base::ranges::find_if(cached_tokens, [&key](const auto& cached_token) {
+        std::ranges::find_if(cached_tokens, [&key](const auto& cached_token) {
           return key.scopes.size() <= cached_token.granted_scopes().size() &&
-                 base::ranges::includes(cached_token.granted_scopes(),
-                                        key.scopes);
+                 std::ranges::includes(cached_token.granted_scopes(),
+                                       key.scopes);
         });
 
     if (matched_token_it != cached_tokens.end()) {

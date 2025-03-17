@@ -938,8 +938,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata<MetadataKind::kWritable>::Reset() {
 // Iterates over all slot spans in a super-page. |Callback| must return true if
 // early return is needed.
 template <typename Callback>
-void IterateSlotSpans(uintptr_t super_page,
-                      Callback callback) {
+void IterateSlotSpans(uintptr_t super_page, Callback callback) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   auto* extent_entry = PartitionSuperPageToExtent(super_page);

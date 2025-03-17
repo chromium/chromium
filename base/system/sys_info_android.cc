@@ -43,10 +43,12 @@ void GetOsVersionStringAndNumbers(std::string* version_string,
 
     if (num_read > 0) {
       // If we don't have a full set of version numbers, make the extras 0.
-      if (num_read < 2)
+      if (num_read < 2) {
         *minor_version = 0;
-      if (num_read < 3)
+      }
+      if (num_read < 3) {
         *bugfix_version = 0;
+      }
       *version_string = std::string(os_version_str);
       return;
     }
@@ -113,30 +115,16 @@ std::string SysInfo::GetAndroidBuildID() {
   return std::string(os_build_id_str);
 }
 
+std::string SysInfo::GetAndroidHardware() {
+  char os_hardware_str[PROP_VALUE_MAX];
+  __system_property_get("ro.hardware", os_hardware_str);
+  return std::string(os_hardware_str);
+}
+
 std::string SysInfo::GetAndroidHardwareEGL() {
   char os_hardware_egl_str[PROP_VALUE_MAX];
   __system_property_get("ro.hardware.egl", os_hardware_egl_str);
   return std::string(os_hardware_egl_str);
-}
-
-static base::LazyInstance<base::internal::LazySysInfoValue<
-    bool,
-    android::SysUtils::IsLowEndDeviceFromJni>>::Leaky g_lazy_low_end_device =
-    LAZY_INSTANCE_INITIALIZER;
-
-bool SysInfo::IsLowEndDeviceImpl() {
-  // This code might be used in some environments
-  // which might not have a Java environment.
-  // Note that we need to call the Java version here.
-  // There exists a complete native implementation in
-  // sys_info.cc but calling that here would mean that
-  // the Java code and the native code would call different
-  // implementations which could give different results.
-  // Also the Java code cannot depend on the native code
-  // since it might not be loaded yet.
-  if (!base::android::IsVMInitialized())
-    return false;
-  return g_lazy_low_end_device.Get().value();
 }
 
 // static

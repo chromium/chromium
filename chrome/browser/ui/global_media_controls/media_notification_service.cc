@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/callback_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -165,13 +165,13 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
   }
   // CastMediaNotificationProducer is owned by
   // CastMediaNotificationProducerKeyedService in Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // base::Unretained() is safe here because `cast_notification_producer_` is
   // deleted before `item_manager_`.
   cast_notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
       profile, item_manager_.get());
   item_manager_->AddItemProducer(cast_notification_producer_.get());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   presentation_request_notification_producer_ =
       std::make_unique<PresentationRequestNotificationProducer>(
@@ -585,7 +585,7 @@ bool MediaNotificationService::HasActiveControllableSessionForWebContents(
     content::WebContents* web_contents) const {
   DCHECK(web_contents);
   auto item_ids = media_session_item_producer_->GetActiveControllableItemIds();
-  return base::ranges::any_of(item_ids, [web_contents](const auto& item_id) {
+  return std::ranges::any_of(item_ids, [web_contents](const auto& item_id) {
     return web_contents ==
            content::MediaSession::GetWebContentsFromRequestId(item_id);
   });

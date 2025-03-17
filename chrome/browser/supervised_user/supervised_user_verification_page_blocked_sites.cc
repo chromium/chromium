@@ -19,8 +19,6 @@
 namespace {
 constexpr char kBlockedSiteVerifyItsYouInterstitialStateHistogramName[] =
     "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
-constexpr char kSignInTabHistogramPrefix[] =
-    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab.";
 }  // namespace
 
 // static
@@ -108,17 +106,6 @@ void SupervisedUserVerificationPageForBlockedSites::RecordReauthStatusMetrics(
   base::UmaHistogramEnumeration(
       kBlockedSiteVerifyItsYouInterstitialStateHistogramName,
       GetReauthenticationInterstitialStateFromStatus(status));
-}
-
-void SupervisedUserVerificationPageForBlockedSites::RecordSignInTabUmaMetrics(
-    int closed_tab_count,
-    int skipped_tab_count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      std::string(kSignInTabHistogramPrefix) + "ClosedCount", closed_tab_count,
-      /*minimum=*/1, /*maximum=*/20, /*bucket_count=*/20);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      std::string(kSignInTabHistogramPrefix) + "SkippedClosingCount",
-      skipped_tab_count, /*minimum=*/1, /*maximum=*/20, /*bucket_count=*/20);
 }
 
 int SupervisedUserVerificationPageForBlockedSites::GetBlockMessageReasonId() {

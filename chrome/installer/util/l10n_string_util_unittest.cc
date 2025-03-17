@@ -26,8 +26,8 @@ TEST(GetLocalizedStringTest, DistinctStrings) {
   for (int string_id : kStringIds) {
     SCOPED_TRACE(testing::Message() << "message id: " << string_id);
     std::set<std::wstring> the_strings;
-    for (int mode_index = 0; mode_index < install_static::NUM_INSTALL_MODES;
-         ++mode_index) {
+    for (size_t mode_index = 0;
+         mode_index < install_static::kInstallModes.size(); ++mode_index) {
       SCOPED_TRACE(testing::Message() << "install mode index: " << mode_index);
       install_static::ScopedInstallDetails install_details(false, mode_index);
       std::wstring the_string = GetLocalizedString(string_id);
@@ -88,9 +88,8 @@ TEST(GetBaseMessageIdForMode, GoogleStringIds) {
 
   // Run through all install modes, checking that the mode-specific strings are
   // mapped properly by GetBaseMessageIdForMode.
-  ASSERT_EQ(static_cast<size_t>(install_static::NUM_INSTALL_MODES),
-            mode_to_strings.size());
-  for (int mode_index = 0; mode_index < install_static::NUM_INSTALL_MODES;
+  ASSERT_EQ(install_static::kInstallModes.size(), mode_to_strings.size());
+  for (size_t mode_index = 0; mode_index < install_static::kInstallModes.size();
        ++mode_index) {
     SCOPED_TRACE(testing::Message() << "install mode index: " << mode_index);
     ASSERT_EQ(1U, mode_to_strings.count(mode_index));

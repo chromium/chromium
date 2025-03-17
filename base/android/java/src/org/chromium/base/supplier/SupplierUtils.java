@@ -19,7 +19,7 @@ public class SupplierUtils {
         private int mWaitingCount;
         private @Nullable Runnable mCallback;
 
-        void waitForAll(Runnable callback, Supplier... suppliers) {
+        void waitForAll(Runnable callback, Supplier<?>... suppliers) {
             mThreadChecker.assertOnValidThread();
             assert mCallback == null;
             mCallback = callback;
@@ -76,7 +76,7 @@ public class SupplierUtils {
      * @param callback The callback to be notified when all suppliers have values set.
      * @param suppliers The list of suppliers to check for values.
      */
-    public static void waitForAll(Runnable callback, Supplier... suppliers) {
+    public static void waitForAll(Runnable callback, Supplier<?>... suppliers) {
         assert callback != null;
         new Barrier().waitForAll(callback, suppliers);
     }

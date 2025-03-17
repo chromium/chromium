@@ -81,7 +81,7 @@ using base::UserMetricsAction;
       if (!currentWebState) {
         return;
       }
-      [self.bookmarksCommandsHandler bookmarkWithWebState:currentWebState];
+      [self.bookmarksCommandsHandler addBookmarkForWebState:currentWebState];
       break;
     }
     case PopupMenuActionTranslate:
@@ -171,7 +171,7 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionPriceNotifications:
       RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
-      [self.dispatcher showPriceNotifications];
+      [self.dispatcher showPriceNotificationsWithCurrentPage];
       break;
     default:
       NOTREACHED() << "Unexpected identifier";

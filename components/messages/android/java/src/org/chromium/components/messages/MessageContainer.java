@@ -11,14 +11,15 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Container holding messages. */
+@NullMarked
 public class MessageContainer extends FrameLayout {
     private static final String TAG = "MessageContainer";
 
@@ -34,20 +35,19 @@ public class MessageContainer extends FrameLayout {
         private int mFocusedView;
 
         @Override
-        public void onInitializeAccessibilityEvent(
-                @NonNull View host, @NonNull AccessibilityEvent event) {
+        public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             handleEvent(event);
             super.onInitializeAccessibilityEvent(host, event);
         }
 
         @Override
         public boolean onRequestSendAccessibilityEvent(
-                @NonNull ViewGroup host, @NonNull View child, @NonNull AccessibilityEvent event) {
+                ViewGroup host, View child, AccessibilityEvent event) {
             handleEvent(event);
             return super.onRequestSendAccessibilityEvent(host, child, event);
         }
 
-        private void handleEvent(@NonNull AccessibilityEvent event) {
+        private void handleEvent(AccessibilityEvent event) {
             if (mA11yDelegate == null) return;
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
                 assert mFocusedView == 0 : "No other view should be focused";
@@ -62,11 +62,11 @@ public class MessageContainer extends FrameLayout {
         }
     }
 
-    private MessageContainerA11yDelegate mA11yDelegate;
+    private @Nullable MessageContainerA11yDelegate mA11yDelegate;
     private boolean mIsInitializingLayout;
     private int mA11yDismissActionId = NO_ID;
 
-    public MessageContainer(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public MessageContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setAccessibilityDelegate(new MessageContainerA11yDelegateProxy());
     }

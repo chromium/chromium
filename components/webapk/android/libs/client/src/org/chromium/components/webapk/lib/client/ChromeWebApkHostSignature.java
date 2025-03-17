@@ -4,7 +4,10 @@
 
 package org.chromium.components.webapk.lib.client;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Public key and signature for WebAPKs */
+@NullMarked
 public class ChromeWebApkHostSignature {
     // The public key to verify whether a WebAPK is signed by WebAPK Server.
     public static final byte[] EXPECTED_SIGNATURE =

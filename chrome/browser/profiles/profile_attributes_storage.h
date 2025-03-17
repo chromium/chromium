@@ -112,7 +112,7 @@ class ProfileAttributesStorage {
   size_t GetNumberOfProfiles() const;
 
   // Returns a unique name that can be assigned to a newly created profile.
-  std::u16string ChooseNameForNewProfile(size_t icon_index) const;
+  std::u16string ChooseNameForNewProfile() const;
 
   // Determines whether |name| is one of the default assigned names.
   // On Desktop, if |include_check_for_legacy_profile_name| is false,

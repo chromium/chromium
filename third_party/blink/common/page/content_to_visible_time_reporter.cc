@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "base/trace_event/named_trigger.h"
+#include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -62,7 +62,8 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
                                base::TimeTicks end_time,
                                TabSwitchResult result,
                                bool has_saved_frames,
-                               bool destination_is_loaded) {
+                               bool destination_is_loaded,
+                               uint64_t flow_id) {
   if (!IsLatencyTraceCategoryEnabled()) {
     return;
   }
@@ -71,9 +72,7 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
   DCHECK_GE(end_time, start_time);
   const auto track =
       perfetto::Track::Global(base::trace_event::GetNextGlobalTraceId());
-  const auto duration = end_time - start_time;
-  const auto flow = base::trace_event::TriggerFlow(
-      "Browser.Tabs.TotalSwitchDuration3", duration.InMilliseconds());
+  const auto flow = perfetto::Flow::Global(flow_id);
   TRACE_EVENT_BEGIN(
       "latency", "TabSwitching::Latency", track, start_time,
       [&](perfetto::EventContext ctx) {
@@ -238,16 +237,18 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     return;
   }
 
-  RecordTabSwitchTraceEvent(tab_switch_start_state_->event_start_time,
-                            presentation_timestamp, tab_switch_result,
-                            has_saved_frames_,
-                            tab_switch_start_state_->destination_is_loaded);
+  uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
+  RecordTabSwitchTraceEvent(
+      tab_switch_start_state_->event_start_time, presentation_timestamp,
+      tab_switch_result, has_saved_frames_,
+      tab_switch_start_state_->destination_is_loaded, event_id);
 
   const auto tab_switch_duration =
       presentation_timestamp - tab_switch_start_state_->event_start_time;
 
   const char* suffix =
       GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_);
+  base::trace_event::HistogramScope scoped_event(event_id);
 
   // Record result histogram.
   base::UmaHistogramEnumeration("Browser.Tabs.TabSwitchResult3",

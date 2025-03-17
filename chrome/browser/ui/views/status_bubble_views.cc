@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
@@ -51,9 +51,8 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
-#include "ui/aura/window.h"
 #endif
 
 namespace {
@@ -156,8 +155,8 @@ class StatusBubbleViews::StatusView : public views::View {
   // views::View:
   gfx::Insets GetInsets() const override;
 
-  const std::u16string& GetText() const;
-  void SetText(const std::u16string& text);
+  std::u16string_view GetText() const;
+  void SetText(std::u16string_view text);
 
   BubbleState GetState() const { return state_; }
 
@@ -166,7 +165,7 @@ class StatusBubbleViews::StatusView : public views::View {
 
   // If |text| is empty, hides the bubble; otherwise, sets the bubble text to
   // |text| and shows the bubble.
-  void AnimateForText(const std::u16string& text);
+  void AnimateForText(std::u16string_view text);
 
   // Show the bubble instantly.
   void ShowInstantly();
@@ -263,11 +262,11 @@ gfx::Insets StatusView::GetInsets() const {
                          kShadowThickness + kTextHorizPadding);
 }
 
-const std::u16string& StatusView::GetText() const {
+std::u16string_view StatusView::GetText() const {
   return text_->GetText();
 }
 
-void StatusView::SetText(const std::u16string& text) {
+void StatusView::SetText(std::u16string_view text) {
   if (text == GetText()) {
     return;
   }
@@ -276,7 +275,7 @@ void StatusView::SetText(const std::u16string& text) {
   OnPropertyChanged(&text_, views::kPropertyEffectsNone);
 }
 
-void StatusView::AnimateForText(const std::u16string& text) {
+void StatusView::AnimateForText(std::u16string_view text) {
   if (text.empty()) {
     StartHiding();
   } else {
@@ -575,7 +574,7 @@ DEFINE_ENUM_CONVERTERS(StatusView::BubbleStyle,
                         u"kStandardRight"})
 
 BEGIN_METADATA(StatusView)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_READONLY_PROPERTY_METADATA(StatusView::BubbleState, State)
 ADD_PROPERTY_METADATA(StatusView::BubbleStyle, Style)
 END_METADATA
@@ -734,11 +733,11 @@ void StatusBubbleViews::InitPopup() {
     params.parent = frame->GetNativeView();
     params.context = frame->GetNativeWindow();
     params.name = "StatusBubble";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     params.init_properties_container.SetProperty(ash::kHideInOverviewKey, true);
     params.init_properties_container.SetProperty(ash::kHideInDeskMiniViewKey,
                                                  true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     popup_->Init(std::move(params));
     // We do our own animation and don't want any from the system.
     popup_->SetVisibilityChangedAnimationsEnabled(false);

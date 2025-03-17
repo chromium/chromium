@@ -17,7 +17,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   // The first card contains the general folder exclude pattern.
   // Starting from the second card, we list the specific folders to be excluded.
   const card = workspaceElement.querySelectorAll('devtools-card')[1];
-  const fsName = card?.shadowRoot.querySelector('.heading').textContent;
+  const fsName = card.heading;
 
   const mappingView = card.querySelector('.file-system-mapping-view');
   const fsPath = mappingView?.shadowRoot?.querySelector('.excluded-folder-url')?.textContent;

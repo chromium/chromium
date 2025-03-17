@@ -37,7 +37,7 @@ using testing::Lt;
 
 constexpr char kUser1[] = "user1@test.com";
 const AccountId account_id_1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("1234"));
 
 constexpr char kDummyUrl[] = "https://best_wallpaper/1";
 constexpr char kDummyUrl2[] = "https://best_wallpaper/2";

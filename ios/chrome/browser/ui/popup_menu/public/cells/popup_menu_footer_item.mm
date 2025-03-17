@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_footer_item.h"
 
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
 namespace {
 const CGFloat kSeparatorHeight = 1;
 const CGFloat kSeparatorMargin = 12;
@@ -38,8 +40,7 @@ const CGFloat kSeparatorMargin = 12;
   if (self) {
     UIView* separator = [[UIView alloc] init];
     separator.translatesAutoresizingMaskIntoConstraints = NO;
-    separator.backgroundColor =
-        [UIColor colorNamed:@"popup_menu_separator_color"];
+    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
     [self.contentView addSubview:separator];
     [NSLayoutConstraint activateConstraints:@[
       [separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],

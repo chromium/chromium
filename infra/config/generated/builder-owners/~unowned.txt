@@ -1,21 +1,15 @@
 ci/3pp-linux-amd64-packager
 ci/3pp-mac-amd64-packager
 ci/ASAN Release Media
-ci/Blink Unexpected Pass Finder
 ci/Comparison Android (reclient)
 ci/Comparison Android (reclient) (reproxy cache)
-ci/Comparison Android (reclient)(CQ)
 ci/Comparison Mac (reclient)
-ci/Comparison Mac (reclient)(CQ)
 ci/Comparison Mac arm64 (reclient)
 ci/Comparison Mac arm64 on arm64 (reclient)
 ci/Comparison Simple Chrome (reclient)
-ci/Comparison Simple Chrome (reclient)(CQ)
 ci/Comparison Windows (8 cores) (reclient)
 ci/Comparison Windows (reclient)
-ci/Comparison Windows (reclient)(CQ)
 ci/Comparison ios (reclient)
-ci/Comparison ios (reclient)(CQ)
 ci/Leak Detection Linux
 ci/Linux Viz
 ci/Mac ASAN Release Media
@@ -64,7 +58,6 @@ ci/ios-simulator-noncq
 ci/ios-webkit-tot
 ci/ios-wpt-fyi-rel
 ci/ios17-beta-simulator
-ci/ios17-sdk-device
 ci/ios17-sdk-simulator
 ci/ios18-beta-simulator
 ci/ios18-sdk-simulator
@@ -120,7 +113,6 @@ findit/test-single-revision
 flaky-reproducer/runner
 infra/autosharder
 reclient/Comparison Linux (reclient)
-reclient/Comparison Linux (reclient)(CQ)
 reclient/Linux Builder (canonical wd) (reclient compare)
 reclient/Linux Builder reclient staging
 reclient/Linux Builder reclient staging untrusted
@@ -194,7 +186,6 @@ try/android_blink_rel
 try/android_compile_dbg
 try/android_compile_x64_dbg
 try/android_compile_x86_dbg
-try/android_optional_gpu_tests_rel
 try/branch-config-verifier
 try/builder-config-verifier
 try/chromeos-amd64-generic-asan-rel
@@ -216,7 +207,6 @@ try/fuchsia-fyi-arm64-dbg
 try/fuchsia-x64-accessibility-rel
 try/fuchsia-x64-cast-receiver-rel
 try/fuchsia-x64-cast-receiver-rel-compilator
-try/gpu-fyi-cq-android-arm64
 try/ios-angle-try-intel
 try/ios-asan
 try/ios-blink-dbg-fyi
@@ -305,7 +295,6 @@ try/linux_chromium_dbg_ng
 try/linux_chromium_msan_rel_ng
 try/linux_chromium_tsan_rel_ng
 try/linux_chromium_tsan_rel_ng-compilator
-try/linux_optional_gpu_tests_rel
 try/linux_upload_clang
 try/linux_upload_rust
 try/mac-angle-chromium-try
@@ -345,7 +334,6 @@ try/mac_chromium_asan_rel_ng
 try/mac_chromium_compile_dbg_ng
 try/mac_chromium_compile_rel_ng
 try/mac_chromium_dbg_ng
-try/mac_optional_gpu_tests_rel
 try/mac_upload_clang
 try/mac_upload_clang_arm
 try/mac_upload_rust
@@ -357,7 +345,6 @@ try/targets-config-verifier
 try/tricium-clang-tidy
 try/tricium-metrics-analysis
 try/tricium-oilpan-analysis
-try/tricium-simple
 try/win-angle-chromium-x64-try
 try/win-angle-chromium-x86-try
 try/win-annotator-rel
@@ -389,7 +376,6 @@ try/win32-official
 try/win_chromium_compile_dbg_ng
 try/win_chromium_compile_rel_ng
 try/win_chromium_x64_rel_ng
-try/win_optional_gpu_tests_rel
 try/win_upload_clang
 try/win_upload_rust
 webrtc.fyi/WebRTC Chromium FYI Android Builder

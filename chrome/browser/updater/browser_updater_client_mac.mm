@@ -8,6 +8,7 @@
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
+#include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
@@ -16,6 +17,10 @@
 
 std::string BrowserUpdaterClient::GetAppId() {
   return base::apple::BaseBundleID();
+}
+
+base::FilePath BrowserUpdaterClient::GetExpectedEcp() {
+  return base::apple::OuterBundlePath();
 }
 
 updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
@@ -34,5 +39,5 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
 bool BrowserUpdaterClient::AppMatches(
     const updater::UpdateService::AppState& app) {
   return base::EqualsCaseInsensitiveASCII(app.app_id, GetAppId()) &&
-         app.ecp == base::apple::OuterBundlePath();
+         app.ecp == GetExpectedEcp();
 }

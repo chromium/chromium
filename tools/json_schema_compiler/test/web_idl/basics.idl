@@ -12,29 +12,51 @@
 // of the description, until a blank new line or non-comment is reached.
 interface TestWebIdl {
 
-  static void returnsVoid();
+  static undefined returnsUndefined();
   static boolean returnsBoolean();
   static double returnsDouble();
   static long returnsLong();
   static DOMString returnsDOMString();
 
-  static void takesNoArguments();
-  static void takesDOMString(DOMString stringArgument);
-  static void takesOptionalBoolean(optional boolean optionalBoolean);
-  static void takesMultipleArguments(
+  static undefined takesNoArguments();
+  static undefined takesDOMString(DOMString stringArgument);
+  static undefined takesOptionalBoolean(optional boolean optionalBoolean);
+  static undefined takesMultipleArguments(
       DOMString argument1, optional double argument2);
-  static void takesOptionalInnerArgument(
+  static undefined takesOptionalInnerArgument(
       DOMString first, optional DOMString optionalInner, DOMString last);
 
   static ExampleType returnsCustomType();
-  static void takesCustomType(ExampleType customTypeArgument);
-  static void takesOptionalCustomType(
+  static undefined takesCustomType(ExampleType customTypeArgument);
+  static undefined takesOptionalCustomType(
   optional ExampleType optionalCustomTypeArgument);
 
   static Promise<DOMString> stringPromiseReturn();
   static Promise<DOMString?> nullablePromiseReturn();
   static Promise<ExampleType> customTypePromiseReturn();
   static Promise<undefined> undefinedPromiseReturn();
+
+  // Test items for comment to description processing:
+
+  static undefined noDescription();
+  // One line description.
+  static undefined oneLineDescription();
+  // Multi line description.
+  // Split over.
+  // Multiple lines.
+  static undefined multiLineDescription();
+  // Paragraphed description.
+  //
+  // With blank comment line for paragraph tags.
+  static undefined paragraphedDescription();
+  // This function has parameter comments.
+  //
+  // |arg1|: This comment about the argument
+  // is split across multiple lines
+  // and contains <em>HTML tags</em>.
+  // |arg2|: This second argument uses a custom type.
+  static undefined parameterComments(boolean arg1, ExampleType arg2);
+
 };
 
 dictionary ExampleType {

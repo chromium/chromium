@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 class GURL;
 
 namespace url {
@@ -38,6 +40,9 @@ GURL GetManageAddressesUrl();
 // Returns the support URL for users to learn more about virtual cards during
 // the virtual card enrollment bubble.
 GURL GetVirtualCardEnrollmentSupportUrl();
+
+// Returns the support URL for the BNPL issuer terms for issuer_id.
+GURL GetBnplTermsUrl(std::string_view issuer_id);
 
 }  // namespace autofill::payments
 

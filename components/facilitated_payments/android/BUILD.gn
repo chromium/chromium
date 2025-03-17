@@ -8,6 +8,8 @@ static_library("android") {
   sources = [
     "facilitated_payments_api_client_android.cc",
     "facilitated_payments_api_client_android.h",
+    "secure_payload_android.cc",
+    "secure_payload_android.h",
   ]
 
   deps = [
@@ -22,7 +24,10 @@ static_library("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "facilitated_payments_api_client_android_unittest.cc" ]
+  sources = [
+    "facilitated_payments_api_client_android_unittest.cc",
+    "secure_payload_android_unittest.cc",
+  ]
   deps = [
     ":android",
     "//components/facilitated_payments/core/browser",

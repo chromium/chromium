@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/devtools/protocol/tracing_handler.h"
 
 #include <algorithm>
@@ -623,8 +618,7 @@ void TracingHandler::OnTraceDataCollected(
   const size_t messageSuffixSize = 10;
   message.reserve(message.size() + valid_trace_fragment.size() +
                   messageSuffixSize - trace_data_buffer_state_.offset);
-  message.append(valid_trace_fragment.c_str() +
-                 trace_data_buffer_state_.offset);
+  message.append(valid_trace_fragment, trace_data_buffer_state_.offset);
   message += "] } }";
 
   frontend_->sendRawNotification(
@@ -1046,17 +1040,19 @@ void TracingHandler::OnFrameFromVideoConsumer(
     return;
   }
   const SkBitmap skbitmap = DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
-  uint64_t frame_sequence = *frame->metadata().frame_sequence;
-
   // This reference_time is an ESTIMATE. It is set by the compositor frame sink
   // from the `expected_display_time`, which is based on a previously known
   // frame start PLUS the vsync interval (eg 16.6ms)
   base::TimeTicks expected_display_time = *frame->metadata().reference_time;
 
-  TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID_AND_TIMESTAMP(
-      TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), "Screenshot",
-      frame_sequence, expected_display_time,
-      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
+  uint64_t frame_sequence = *frame->metadata().frame_sequence;
+  uint64_t source_id = *frame->metadata().source_id;
+
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"),
+                      "Screenshot", "expected_display_time",
+                      expected_display_time, "frame_sequence", frame_sequence,
+                      "source_id", source_id, "snapshot",
+                      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
 
   ++number_of_screenshots_from_video_consumer_;
   DCHECK(video_consumer_);

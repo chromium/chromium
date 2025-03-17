@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/frame_sink/frame_sink_holder.h"
+#include "ash/frame_sink/frame_sink_holder_test_api.h"
 #include "ash/frame_sink/test/frame_sink_host_test_base.h"
 #include "ash/frame_sink/test/test_begin_frame_source.h"
 #include "ash/frame_sink/test/test_frame_factory.h"
@@ -69,12 +70,14 @@ TEST_F(FrameSinkHostTest, OnFirstFrameRequestedShouldOnlyBeCalledOnce) {
 }
 
 TEST_F(FrameSinkHostTest, OnFrameSinkLost) {
+  FrameSinkHolderTestApi frame_sink_holder_test(
+      frame_sink_host()->frame_sink_holder_for_testing());
   frame_sink_host()->frame_factory().SetFrameMetaData(
       /*frame_size=*/host_window()->bounds().size(), /*dsf=*/1.0f);
   EXPECT_EQ(frame_sinks_created_count(), 1);
 
   OnBeginFrame();
-  EXPECT_EQ(frame_sink_host()->on_first_frame_requested_counter(), 1);
+  EXPECT_TRUE(frame_sink_holder_test.IsFirstFrameRequested());
   EXPECT_EQ(layer_tree_frame_sink()->num_of_frames_received(), 0);
 
   frame_sink_host()->UpdateSurface(host_window()->bounds(),

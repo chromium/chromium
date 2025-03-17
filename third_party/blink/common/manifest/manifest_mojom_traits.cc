@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 #include "url/url_util.h"
@@ -188,8 +189,9 @@ bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
                   ::blink::Manifest::LaunchHandler>::
     Read(blink::mojom::ManifestLaunchHandlerDataView data,
          ::blink::Manifest::LaunchHandler* out) {
-  if (!data.ReadClientMode(&out->client_mode))
+  if (!data.ReadClientMode(&out->client_mode_)) {
     return false;
+  }
 
   return true;
 }

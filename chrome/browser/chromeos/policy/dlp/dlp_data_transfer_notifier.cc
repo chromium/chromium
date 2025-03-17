@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "ui/aura/window_tree_host.h"
@@ -17,14 +17,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/window_tree_host_lookup.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chromeos/policy/dlp/dlp_browser_helper_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 
@@ -50,12 +42,7 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
   display::Screen* screen = display::Screen::GetScreen();
   display::Display display = screen->GetPrimaryDisplay();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* host = dlp::GetActiveWindowTreeHost();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   DCHECK(host);
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();
@@ -108,16 +95,7 @@ views::Widget::InitParams GetWidgetInitParams(views::WidgetDelegate* delegate) {
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.delegate = delegate;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Explicitly setting the parent window is required in Lacros for popup
-  // dismissal to work correctly.
-  params.parent = dlp::GetActiveAuraWindow();
-  // WaylandPopups in Lacros need a context window to allow custom positioning.
-  // Here, we pass the active Lacros window as context for the bubble widget.
-  params.context = params.parent;
-#else
   params.parent = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return params;
 }
 

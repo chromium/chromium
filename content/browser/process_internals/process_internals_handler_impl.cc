@@ -62,6 +62,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->site_instance->is_pdf = site_instance->IsPdf();
   frame_info->site_instance->is_sandbox_for_iframes =
       site_instance->GetSiteInfo().is_sandboxed();
+  frame_info->site_instance->are_javascript_optimizers_enabled =
+      !site_instance->GetSiteInfo().are_v8_optimizations_disabled();
   frame_info->site_instance->site_instance_group_id =
       site_instance->group() ? site_instance->group()->GetId().value() : 0;
   frame_info->site_instance->browsing_instance_id =
@@ -129,7 +131,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
         ::mojom::FrameInfoPtr frame_info =
             RenderFrameHostToFrameInfoNoTraverse(rfh, type);
         all_frame_info[rfh] = frame_info.get();
-        RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocument();
+        RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocumentOrEmbedder();
         DCHECK(base::Contains(all_frame_info, parent));
         all_frame_info[parent]->subframes.push_back(std::move(frame_info));
         return RenderFrameHost::FrameIterationAction::kContinue;

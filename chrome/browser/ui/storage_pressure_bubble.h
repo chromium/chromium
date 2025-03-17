@@ -7,11 +7,7 @@
 
 #include "url/origin.h"
 
-namespace chrome {
-
 // Shows a BubbleView that alerts the user about storage pressure.
 void ShowStoragePressureBubble(const url::Origin& origin);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_STORAGE_PRESSURE_BUBBLE_H_

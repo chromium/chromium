@@ -5,17 +5,25 @@
 #ifndef CHROMECAST_CAST_CORE_CAST_CORE_SWITCHES_H_
 #define CHROMECAST_CAST_CORE_CAST_CORE_SWITCHES_H_
 
-namespace cast {
-namespace core {
+namespace cast::core::switches {
 
 // Specifies the Cast Core runtime ID, --cast-core-runtime-id=<runtime_id>.
-constexpr char kCastCoreRuntimeIdSwitch[] = "cast-core-runtime-id";
+inline constexpr char kCastCoreRuntimeId[] = "cast-core-runtime-id";
 
 // Specifies the Cast Core runtime gRPC endpoint,
 // --runtime-service-path=<endpoint>.
-constexpr char kRuntimeServicePathSwitch[] = "runtime-service-path";
+inline constexpr char kRuntimeServicePath[] = "runtime-service-path";
 
-}  // namespace core
-}  // namespace cast
+// Specifies the Cast Core service gRPC endpoint.
+inline constexpr char kCastCoreServiceEndpoint[] = "cast-core-service-endpoint";
+
+// Specifies that TCP/IP should be used as the gRPC transport typeby Cast Core;
+// otherwise UDS is used.
+inline constexpr char kEnableGrpcOverTcpIp[] = "enable-grpc-over-tcpip";
+
+// Authentication token securely sent to the runtime.
+inline constexpr char kRuntimeAuthToken[] = "runtime-auth-token";
+
+}  // namespace cast::core::switches
 
 #endif  // CHROMECAST_CAST_CORE_CAST_CORE_SWITCHES_H_

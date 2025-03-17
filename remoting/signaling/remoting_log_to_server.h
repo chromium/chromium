@@ -27,8 +27,8 @@ class CreateLogEntryResponse;
 }  // namespace v1
 }  // namespace apis
 
+class HttpStatus;
 class OAuthTokenGetter;
-class ProtobufHttpStatus;
 
 // RemotingLogToServer sends log entries to to the remoting telemetry server.
 class RemotingLogToServer : public LogToServer {
@@ -51,7 +51,7 @@ class RemotingLogToServer : public LogToServer {
   static constexpr int kMaxSendLogAttempts = 5;
 
   using CreateLogEntryResponseCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<apis::v1::CreateLogEntryResponse>)>;
   using CreateLogEntryCallback =
       base::RepeatingCallback<void(const apis::v1::CreateLogEntryRequest&,
@@ -66,7 +66,7 @@ class RemotingLogToServer : public LogToServer {
   void OnSendLogRequestResult(
       const apis::v1::CreateLogEntryRequest& request,
       int attempts_left,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<apis::v1::CreateLogEntryResponse> response);
 
   ServerLogEntry::Mode mode_;

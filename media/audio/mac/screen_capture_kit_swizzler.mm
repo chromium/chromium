@@ -22,6 +22,12 @@ namespace media {
 
 std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
 SwizzleScreenCaptureKit() {
+  // Private API +[SCStreamManager requestUserPermissionForScreenCapture] does
+  // not exist on macOS 15+.
+  if (@available(macOS 15.0, *)) {
+    return nullptr;
+  }
+
   if (@available(macOS 13.0, *)) {
     // ScreenCaptureKit internally performs a TCC permission check before
     // attempting any operations. This requires access to the TCC daemon,

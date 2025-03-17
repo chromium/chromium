@@ -8,10 +8,19 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
+#include "base/system/sys_info.h"
+#include "base/process/process_metrics.h"
 
 namespace performance_manager {
 
 namespace {
+
+uint64_t kBytesPerMb = 1024 * 1024;
+
+#if BUILDFLAG(IS_MAC)
+uint64_t kKilobytesPerMb = 1024;
+#endif
+
 ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
   switch (mode_flags) {
     case ui::AXMode::kNativeAPIs:
@@ -20,7 +29,7 @@ ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS;
     case ui::AXMode::kInlineTextBoxes:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES;
-    case ui::AXMode::kScreenReader:
+    case ui::AXMode::kExtendedProperties:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER;
     case ui::AXMode::kHTML:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML;
@@ -52,8 +61,39 @@ void MaybeRecordAccessibilityModeFlags(const ui::AXMode& mode,
 }
 }  // namespace
 
-MetricsProviderCommon::MetricsProviderCommon() = default;
+MetricsProviderCommon::MetricsProviderCommon() {
+  available_memory_metrics_timer_.Start(
+      FROM_HERE, base::Minutes(2),
+      base::BindRepeating(&MetricsProviderCommon::RecordAvailableMemoryMetrics,
+                          base::Unretained(this)));
+}
 MetricsProviderCommon::~MetricsProviderCommon() = default;
+
+void MetricsProviderCommon::RecordAvailableMemoryMetrics() {
+  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
+  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
+
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
+                                  available_bytes / kBytesPerMb);
+  base::UmaHistogramPercentage("Memory.Experimental.AvailableMemoryPercent",
+                               available_bytes * 100 / total_bytes);
+
+#if BUILDFLAG(IS_MAC)
+  base::SystemMemoryInfoKB info;
+  if (base::GetSystemMemoryInfo(&info)) {
+    base::UmaHistogramMemoryLargeMB(
+        "Memory.Experimental.MacFileBackedMemoryMB2",
+        info.file_backed / kKilobytesPerMb);
+    // `info.file_backed` is in kb, so multiply it by 1024 to get the amount of
+    // bytes
+    base::UmaHistogramPercentage(
+        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache2",
+        (available_bytes +
+         (base::checked_cast<uint64_t>(info.file_backed) * 1024u)) *
+            100u / total_bytes);
+  }
+#endif
+}
 
 void MetricsProviderCommon::RecordA11yFlags() {
   const ui::AXMode mode =
@@ -67,7 +107,7 @@ void MetricsProviderCommon::RecordA11yFlags() {
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kNativeAPIs);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kWebContents);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kInlineTextBoxes);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kScreenReader);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kExtendedProperties);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTML);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);

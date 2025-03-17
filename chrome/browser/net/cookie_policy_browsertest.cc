@@ -666,7 +666,8 @@ IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
-                       NestedThirdPartyIFrameStorage) {
+                       // TODO(crbug.com/390648566): Re-enable this test
+                       DISABLED_NestedThirdPartyIFrameStorage) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
@@ -835,9 +836,15 @@ IN_PROC_BROWSER_TEST_P(
                                             StoragePartitioningEnabled());
 }
 
+// TODO(crbug.com/394386466): Test failing on Windows-asan
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_UserSetting DISABLED_UserSetting
+#else
+#define MAYBE_UserSetting UserSetting
+#endif
 IN_PROC_BROWSER_TEST_P(
     ThirdPartyPartitionedStorageAccessibilitySharedWorkerTest,
-    UserSetting) {
+    MAYBE_UserSetting) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
 

@@ -209,7 +209,7 @@ std::unique_ptr<views::View> PaymentRequestItemList::CreateListView() {
       gfx::Insets::VH(kPaymentRequestRowVerticalInsets, 0), 0));
 
   for (auto& item : items_) {
-    content_view->AddChildView(item.release());
+    content_view->AddChildViewRaw(item.release());
   }
 
   return content_view;

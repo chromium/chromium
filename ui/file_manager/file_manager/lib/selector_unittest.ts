@@ -147,7 +147,7 @@ export async function testSelectorController(done: () => void) {
   document.body.appendChild(testEl);
   await waitForElementUpdate(testEl);
 
-  const testDiv = testEl.shadowRoot!.querySelector<HTMLDivElement>('#test')!;
+  const testDiv = testEl.shadowRoot!.querySelector<HTMLElement>('#test')!;
   assertEquals(testDiv.textContent, '0');
 
   // Update the store and verify that the component automatically re-renders.

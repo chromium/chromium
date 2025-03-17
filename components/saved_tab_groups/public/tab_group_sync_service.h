@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -19,7 +20,8 @@
 #include "components/saved_tab_groups/proto/url_restriction.pb.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/base/collaboration_id.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"
@@ -39,6 +41,31 @@ class ScopedLocalObservationPauser {
  public:
   ScopedLocalObservationPauser() = default;
   virtual ~ScopedLocalObservationPauser() = default;
+};
+
+// Contains information about the currently selected tab.
+struct SelectedTabInfo {
+  SelectedTabInfo();
+  SelectedTabInfo(const std::optional<base::Uuid>& tab_group_id,
+                  const std::optional<base::Uuid>& tab_id,
+                  const std::optional<std::u16string>& tab_title);
+  ~SelectedTabInfo();
+
+  // Copy / assign.
+  SelectedTabInfo(const SelectedTabInfo&);
+  SelectedTabInfo& operator=(const SelectedTabInfo&);
+
+  // Sync ID of the tab group that the tab belongs to, std::nullopt if the tab
+  // isn't part of any tab group.
+  std::optional<base::Uuid> tab_group_id;
+
+  // Sync ID of the tab.
+  std::optional<base::Uuid> tab_id;
+
+  // Title of the tab.
+  std::optional<std::u16string> tab_title;
+
+  bool operator==(const SelectedTabInfo& other) const;
 };
 
 // The core service class for handling tab group sync across devices. Provides
@@ -68,6 +95,22 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     virtual void OnTabGroupUpdated(const SavedTabGroup& group,
                                    TriggerSource source) {}
 
+    // Observer methods that notify before and after applying a sync change.
+    // After Android java-to-native migration is complete, we will merge
+    // OnTabGroupUpdated with AfterTabGroupUpdateFromRemote since they are
+    // essentially the same.
+
+    // Invoked before applying a remote update to the local tab model so that
+    // the observers have a chance to cache the previous state of the world.
+    // Only invoked for remote updates.
+    virtual void BeforeTabGroupUpdateFromRemote(
+        const base::Uuid& sync_group_id) {}
+
+    // Invoked after applying a remote update to the local tab model.
+    // Only invoked for remote updates.
+    virtual void AfterTabGroupUpdateFromRemote(
+        const base::Uuid& sync_group_id) {}
+
     // The local tab group corresponding to the |local_id| was removed.
     virtual void OnTabGroupRemoved(const LocalTabGroupID& local_id,
                                    TriggerSource source) {}
@@ -78,12 +121,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
                                    TriggerSource source) {}
 
-    // The tab corresponding to `tab_id` became the active tab. For tabs not in
-    // tab groups, both `sync_tab_group_id` and `sync_tab_id` will be passed as
-    // std::nullopt.
-    virtual void OnTabSelected(
-        const std::optional<base::Uuid>& sync_tab_group_id,
-        const std::optional<base::Uuid>& sync_tab_id) {}
+    // Invoked whenever there is a change in the set of active tabs across all
+    // browser windows. Can include the same set of tabs across two invocations.
+    // It's the responsibility of the observer to figure out the diff between
+    // two updates.
+    virtual void OnTabSelected(const std::set<LocalTabID>& selected_tabs) {}
 
     // The existing SavedTabGroup has been replaced by a new one. This happens
     // when the originating SavedTabGroup was transitioned to a shared one. The
@@ -106,7 +148,21 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     // (desktop only) The ordering of tab groups in the bookmarks bar UI has
     // changed. Update the UI to reflect the new ordering.
     virtual void OnTabGroupsReordered(TriggerSource source) {}
+
+    // Called to notify of the sync bridge state changes, e.g. whether initial
+    // merge or disable sync are in progress. Invoked only for shared tab group
+    // bridge.
+    virtual void OnSyncBridgeUpdateTypeChanged(
+        SyncBridgeUpdateType sync_bridge_update_type) {}
   };
+
+  enum class TabGroupSharingResult {
+    kSuccess,
+    kTimedOut,
+  };
+
+  using TabGroupSharingCallback =
+      base::OnceCallback<void(TabGroupSharingResult)>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type TabGroupSyncService for the given
@@ -176,13 +232,8 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // TODO(crbug.com/362092886): Currently this is not invoked on desktop and
   // also not invoked for non-grouped tabs. This needs to be fixed.
   virtual void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
-                             const LocalTabID& tab_id) = 0;
-
-  // Invoked to find the tab ID of the currently selected tab. Returns a pair of
-  // tab group ID and tab ID, both of which can be std::nullopt in case the
-  // currently selected tab is outside the tab group.
-  virtual std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
-  GetCurrentlySelectedTabID() = 0;
+                             const LocalTabID& tab_id,
+                             const std::u16string& title) = 0;
 
   // SaveGroup / UnsaveGroup are temporary solutions used during desktop's
   // migration. Other clients should use AddGroup / RemoveGroup.
@@ -194,9 +245,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Mutator methods for shared tab groups.
   // Converts the saved tab group to shared tab group and associates it with the
   // given `collaboration_id` (this is the same as data_sharing::GroupId). The
-  // tab group must not be shared.
+  // tab group must not be shared. `callback` will be called with the result if
+  // provided.
   virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                                  std::string_view collaboration_id) = 0;
+                                  std::string_view collaboration_id,
+                                  TabGroupSharingCallback callback) = 0;
 
   // Mutator methods for shared tab groups.
   // Starts the process of converting a shared tab group to saved tab group. Due
@@ -211,6 +264,14 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // or when unshare fails due to some errors.
   virtual void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
                                          bool success) = 0;
+
+  // Called when a collaboration group is removed. This call will mark the
+  // shared group associated with the collaboration as hidden. The actual group
+  // deletion happens in the server in response to the collaboration group
+  // deletion. This trickles back to the sync bridge thereby removing the tab
+  // group from the model.
+  virtual void OnCollaborationRemoved(
+      const syncer::CollaborationId& collaboration_id) = 0;
 
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;
@@ -268,6 +329,13 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // the group intentionally.
   virtual bool WasTabGroupClosedLocally(
       const base::Uuid& sync_tab_group_id) const = 0;
+
+  // Method to find out the currently selected tabs from the tab model.
+  // Result contains the set of selected tabs from all open browser windows.
+  virtual std::set<LocalTabID> GetSelectedTabs();
+
+  // Method to find out the current title of a live tab in the tab model.
+  virtual std::u16string GetTabTitle(const LocalTabID& local_tab_id);
 
   // Helper method to record metrics for certain tab group events.
   // While metrics are implicitly recorded in the native for most of the tab

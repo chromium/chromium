@@ -814,6 +814,8 @@ namespace autotestPrivate {
   // Response callback to report if a field trial exists and has been activated.
   callback IsFieldTrialActiveCallback = void(boolean active);
 
+  callback OverrideLobsterResponseForTestingCallback = void(boolean success);
+
   // Request data containing the mock responses from
   // overrideOrcaResponseForTesting.
   dictionary OrcaResponseArray {
@@ -821,6 +823,14 @@ namespace autotestPrivate {
   };
 
   callback OverrideOrcaResponseForTestingCallback = void(boolean success);
+
+  // Request data containing the mock responses from
+  // overrideScannerResponsesForTesting.
+  dictionary ScannerResponseArray {
+    DOMString[] responses;
+  };
+
+  callback OverrideScannerResponsesForTestingCallback = void(boolean success);
 
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
@@ -1615,11 +1625,22 @@ namespace autotestPrivate {
     static void getCurrentInputMethodDescriptor(
         GetCurrentInputMethodDescriptorCallback callback);
 
+    // Overrides the response from Lobster Fetcher and returns the boolean value
+    // that indicates if the overriding is successful or not.
+    static void overrideLobsterResponseForTesting(
+        OverrideLobsterResponseForTestingCallback callback);
+
     // Overrides the response from Orca Provider and returns the boolean value
     // that indicates if the overriding is successful or not.
     static void overrideOrcaResponseForTesting(
         OrcaResponseArray array,
         OverrideOrcaResponseForTestingCallback callback);
+
+    // Overrides the response from Scanner Provider and returns the boolean
+    // value that indicates if the overriding is successful or not.
+    static void overrideScannerResponsesForTesting(
+        ScannerResponseArray array,
+        OverrideScannerResponsesForTestingCallback callback);
 
     // ARC set interactive enable/disable state.
     // |enabled|: Enable ARC interactive.

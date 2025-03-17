@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <queue>
 #include <set>
 #include <utility>
@@ -18,11 +19,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/from_range.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/cxx23_from_range.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/batched_proxy_ipc_sender.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -160,7 +161,7 @@ FrameTree::NodeIterator::NodeIterator(
 FrameTree::NodeIterator FrameTree::NodeRange::begin() {
   // We shouldn't be attempting a frame tree traversal while the tree is
   // being constructed or destructed.
-  DCHECK(base::ranges::all_of(starting_nodes_, [](FrameTreeNode* ftn) {
+  DCHECK(std::ranges::all_of(starting_nodes_, [](FrameTreeNode* ftn) {
     return ftn->current_frame_host();
   }));
 
@@ -1098,20 +1099,24 @@ void FrameTree::FocusOuterFrameTrees() {
 }
 
 void FrameTree::Discard() {
-  // A speculative pending-commit rfh should not be cancelled or deleted. In
-  // this case ignore the discard request and allow the navigation to complete
-  // as normal.
-  if (const auto* speculative_rfh =
-          root()->render_manager()->speculative_frame_host();
-      speculative_rfh && speculative_rfh->HasPendingCommitNavigation()) {
-    return;
-  }
+  const auto attempt_discard = [this]() {
+    // A speculative pending-commit rfh should not be cancelled or deleted. In
+    // this case ignore the discard request and allow the navigation to complete
+    // as normal.
+    if (const auto* speculative_rfh =
+            root()->render_manager()->speculative_frame_host();
+        speculative_rfh && speculative_rfh->HasPendingCommitNavigation()) {
+      return false;
+    }
 
-  root()->set_was_discarded();
-  root()->current_frame_host()->DiscardFrame();
-  NavigationControllerImpl& navigation_controller = controller();
-  navigation_controller.SetNeedsReload();
-  navigation_controller.GetBackForwardCache().Flush();
+    root()->set_was_discarded();
+    root()->current_frame_host()->DiscardFrame();
+    NavigationControllerImpl& navigation_controller = controller();
+    navigation_controller.SetNeedsReload();
+    navigation_controller.GetBackForwardCache().Flush();
+    return true;
+  };
+  base::UmaHistogramBoolean("Discarding.DiscardFrameTree", attempt_discard());
 }
 
 }  // namespace content

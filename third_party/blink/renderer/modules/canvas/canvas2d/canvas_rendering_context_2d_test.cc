@@ -93,13 +93,12 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -199,8 +198,7 @@ class FakeImageSource : public CanvasImageSource {
 
   scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
                                                SourceImageStatus*,
-                                               const gfx::SizeF&,
-                                               const AlphaDisposition) override;
+                                               const gfx::SizeF&) override;
 
   bool WouldTaintOrigin() const override { return false; }
   gfx::SizeF ElementSize(const gfx::SizeF&,
@@ -230,11 +228,7 @@ FakeImageSource::FakeImageSource(gfx::Size size, BitmapOpacity opacity)
 scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
     FlushReason,
     SourceImageStatus* status,
-    const gfx::SizeF&,
-    const AlphaDisposition alpha_disposition = kPremultiplyAlpha) {
-  // Only cover premultiply alpha cases.
-  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
-
+    const gfx::SizeF&) {
   if (status)
     *status = kNormalSourceImageStatus;
   return image_;
@@ -373,6 +367,7 @@ void CanvasRenderingContext2DTest::CreateContext(
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = opacity_mode == kNonOpaque;
+  attributes.desynchronized_specified = kLowLatency;
   attributes.desynchronized = latency_mode == kLowLatency;
   attributes.will_read_frequently = will_read_frequently;
   if (!canvas) {
@@ -469,9 +464,9 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                              CompositingMode compositing_mode)
       : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
                                size,
-                               kN32_SkColorType,
+                               GetN32FormatForCanvas(),
                                kPremul_SkAlphaType,
-                               SkColorSpace::MakeSRGB(),
+                               gfx::ColorSpace::CreateSRGB(),
                                SharedGpuContext::ContextProviderWrapper(),
                                resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
@@ -486,15 +481,8 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   ~FakeCanvasResourceProvider() override = default;
   bool IsAccelerated() const override { return is_accelerated_; }
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
-    const SkImageInfo& info = GetSkImageInfo();
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(
-            info.colorInfo().colorType()),
-        info.colorInfo().alphaType(),
-        // NOTE: The SkImageInfo here is hardcoded to have a null colorspace,
-        // which corresponds to SRGB.
-        gfx::ColorSpace::CreateSRGB(),
+        Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
         IsAccelerated(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -503,6 +491,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   bool SupportsDirectCompositing() const override {
     return supports_direct_compositing_;
   }
+  bool IsSingleBuffered() const override { return false; }
   bool IsValid() const override { return true; }
   sk_sp<SkSurface> CreateSkSurface() const override {
     return SkSurfaces::Raster(GetSkImageInfo());
@@ -556,7 +545,7 @@ MATCHER_P(OverdrawOpAreMatcher, expected_overdraw_ops, "") {
     SCOPED_TRACE(Message() << "Checking overdraw bucket: " << bucket);
     arg.ExpectBucketCount(
         "Blink.Canvas.OverdrawOp", bucket,
-        static_cast<base::HistogramBase::Count>(expected_overdraw_ops.count(
+        static_cast<base::HistogramBase::Count32>(expected_overdraw_ops.count(
             static_cast<BaseRenderingContext2D::OverdrawOp>(bucket))));
   }
   return true;
@@ -1474,292 +1463,6 @@ TEST_P(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
   // Passes by not crashing later during teardown
 }
 
-static void TestDrawSingleHighBitDepthPNGOnCanvas(
-    String filepath,
-    CanvasRenderingContext2D* context,
-    PredefinedColorSpace context_color_space,
-    Document& document,
-    ImageDataSettings* color_setting,
-    ScriptState* script_state) {
-  std::optional<Vector<char>> pixel_buffer_data = test::ReadFromFile(filepath);
-  ASSERT_TRUE(pixel_buffer_data);
-  scoped_refptr<SharedBuffer> pixel_buffer =
-      SharedBuffer::Create(std::move(*pixel_buffer_data));
-
-  ImageResourceContent* resource_content =
-      ImageResourceContent::CreateNotStarted();
-  const bool all_data_received = true;
-  const bool is_multipart = false;
-  ImageResourceContent::UpdateImageResult update_result =
-      resource_content->UpdateImage(
-          pixel_buffer, ResourceStatus::kPending,
-          ImageResourceContent::UpdateImageOption::kUpdateImage,
-          all_data_received, is_multipart);
-  ASSERT_EQ(ImageResourceContent::UpdateImageResult::kNoDecodeError,
-            update_result);
-
-  auto* image_element = MakeGarbageCollected<HTMLImageElement>(document);
-  image_element->SetImageForTest(resource_content);
-
-  context->clearRect(0, 0, 2, 2);
-  NonThrowableExceptionState exception_state;
-  auto* image_union = MakeGarbageCollected<V8CanvasImageSource>(image_element);
-  context->drawImage(image_union, 0, 0, exception_state);
-
-  ImageData* image_data =
-      context->getImageData(0, 0, 2, 2, color_setting, exception_state);
-  const V8ImageDataArray* data_array = image_data->data();
-  ASSERT_TRUE(data_array->IsFloat32Array());
-  DOMArrayBufferView* buffer_view = data_array->GetAsFloat32Array().Get();
-  ASSERT_EQ(16u, buffer_view->byteLength() / buffer_view->TypeSize());
-  float* actual_pixels = static_cast<float*>(buffer_view->BaseAddress());
-
-  sk_sp<SkImage> decoded_image =
-      resource_content->GetImage()->PaintImageForCurrentFrame().GetSwSkImage();
-  ASSERT_EQ(kRGBA_F16_SkColorType, decoded_image->colorType());
-  sk_sp<SkImage> color_converted_image = decoded_image->makeColorSpace(
-      static_cast<GrDirectContext*>(nullptr),
-      PredefinedColorSpaceToSkColorSpace(context_color_space));
-  float expected_pixels[16];
-  SkImageInfo expected_info_no_color_space = SkImageInfo::Make(
-      2, 2, kRGBA_F32_SkColorType, kUnpremul_SkAlphaType, nullptr);
-  color_converted_image->readPixels(
-      expected_info_no_color_space, expected_pixels,
-      expected_info_no_color_space.minRowBytes(), 0, 0);
-  ColorCorrectionTestUtils::CompareColorCorrectedPixels(
-      actual_pixels, expected_pixels, 4, kPixelFormat_ffff);
-}
-
-static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-    PredefinedColorSpace color_space,
-    Document& document,
-    Persistent<HTMLCanvasElement> canvas,
-    ScriptState* script_state) {
-  // Prepare the wide gamut context with the given color space.
-  CanvasContextCreationAttributesCore attributes;
-  attributes.alpha = true;
-  attributes.color_space = color_space;
-  attributes.pixel_format = CanvasPixelFormat::kF16;
-  CanvasRenderingContext2D* context = static_cast<CanvasRenderingContext2D*>(
-      canvas->GetCanvasRenderingContext("2d", attributes));
-
-  // Prepare the png file path and call the test routine
-  Vector<String> interlace_status = {"", "_interlaced"};
-  Vector<String> color_profiles = {"_sRGB",      "_e-sRGB",   "_AdobeRGB",
-                                   "_DisplayP3", "_ProPhoto", "_Rec2020"};
-  Vector<String> alpha_status = {"_opaque", "_transparent"};
-
-  StringBuilder path;
-  path.Append(test::CoreTestDataPath());
-  path.Append("/png-16bit/");
-  ImageDataSettings* color_setting = ImageDataSettings::Create();
-  color_setting->setStorageFormat(
-      ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
-  color_setting->setColorSpace(PredefinedColorSpaceToV8(color_space));
-  for (auto interlace : interlace_status) {
-    for (auto color_profile : color_profiles) {
-      for (auto alpha : alpha_status) {
-        StringBuilder full_path;
-        full_path.Append(path);
-        full_path.Append("2x2_16bit");
-        full_path.Append(interlace);
-        full_path.Append(color_profile);
-        full_path.Append(alpha);
-        full_path.Append(".png");
-        TestDrawSingleHighBitDepthPNGOnCanvas(full_path.ToString(), context,
-                                              color_space, document,
-                                              color_setting, script_state);
-      }
-    }
-  }
-}
-
-TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnP3Canvas) {
-  TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-      PredefinedColorSpace::kP3, GetDocument(),
-      Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
-}
-
-TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnRec2020Canvas) {
-  TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-      PredefinedColorSpace::kRec2020, GetDocument(),
-      Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
-}
-
-// The color settings of the surface of the canvas always remaines loyal to the
-// first created context 2D. Therefore, we have to test different canvas color
-// space settings for CanvasRenderingContext2D::putImageData() in different
-// tests.
-enum class PredefinedColorSpaceSettings : uint8_t {
-  CANVAS_SRGB = 0,
-  CANVAS_REC2020 = 1,
-  CANVAS_P3 = 2,
-
-  LAST = CANVAS_P3
-};
-
-// This test verifies the correct behavior of putImageData member function in
-// color managed mode.
-void TestPutImageDataOnCanvasWithColorSpaceSettings(
-    HTMLCanvasElement& canvas_element,
-    PredefinedColorSpaceSettings canvas_colorspace_setting) {
-  static constexpr auto image_data_color_spaces =
-      std::to_array<PredefinedColorSpace>({
-          PredefinedColorSpace::kSRGB,
-          PredefinedColorSpace::kRec2020,
-          PredefinedColorSpace::kP3,
-      });
-
-  static constexpr auto image_data_storage_formats =
-      std::to_array<ImageDataStorageFormat>({
-          ImageDataStorageFormat::kUint8,
-          ImageDataStorageFormat::kUint16,
-          ImageDataStorageFormat::kFloat32,
-      });
-
-  static constexpr auto predefined_color_spaces =
-      std::to_array<PredefinedColorSpace>({
-          PredefinedColorSpace::kSRGB,
-          PredefinedColorSpace::kSRGB,
-          PredefinedColorSpace::kRec2020,
-          PredefinedColorSpace::kP3,
-      });
-
-  static constexpr auto canvas_pixel_formats =
-      std::to_array<CanvasPixelFormat>({
-          CanvasPixelFormat::kUint8,
-          CanvasPixelFormat::kF16,
-          CanvasPixelFormat::kF16,
-          CanvasPixelFormat::kF16,
-      });
-
-  // Source pixels in RGBA32
-  static constexpr auto u8_pixels =
-      std::to_array<uint8_t>({255, 0, 0, 255,      // Red
-                              0, 0, 0, 0,          // Transparent
-                              255, 192, 128, 64,   // Decreasing values
-                              93, 117, 205, 41});  // Random values
-  constexpr size_t data_length = u8_pixels.size();
-
-  std::array<uint16_t, data_length> u16_pixels;
-  for (size_t i = 0; i < data_length; i++)
-    u16_pixels[i] = u8_pixels[i] * 257;
-
-  std::array<float, data_length> f32_pixels;
-  for (size_t i = 0; i < data_length; i++)
-    f32_pixels[i] = u8_pixels[i] / 255.0;
-
-  NotShared<DOMUint8ClampedArray> data_u8(
-      DOMUint8ClampedArray::Create(u8_pixels));
-  DCHECK(data_u8);
-  EXPECT_EQ(data_length, data_u8->length());
-  NotShared<DOMUint16Array> data_u16(DOMUint16Array::Create(u16_pixels));
-  DCHECK(data_u16);
-  EXPECT_EQ(data_length, data_u16->length());
-  NotShared<DOMFloat32Array> data_f32(DOMFloat32Array::Create(f32_pixels));
-  DCHECK(data_f32);
-  EXPECT_EQ(data_length, data_f32->length());
-
-  ImageData* image_data = nullptr;
-  size_t num_pixels = data_length / 4;
-
-  // At most four bytes are needed for Float32 output per color component.
-  auto pixels_converted_manually =
-      base::HeapArray<uint8_t>::Uninit(data_length * 4);
-
-  // Loop through different possible combinations of image data color space and
-  // storage formats and create the respective test image data objects.
-  for (unsigned i = 0; i < image_data_color_spaces.size(); i++) {
-    for (unsigned j = 0; j < image_data_storage_formats.size(); j++) {
-      NotShared<DOMArrayBufferView> data_array;
-      switch (image_data_storage_formats[j]) {
-        case ImageDataStorageFormat::kUint8:
-          data_array = data_u8;
-          break;
-        case ImageDataStorageFormat::kUint16:
-          data_array = data_u16;
-          break;
-        case ImageDataStorageFormat::kFloat32:
-          data_array = data_f32;
-          break;
-        default:
-          NOTREACHED();
-      }
-
-      image_data = ImageData::CreateForTest(gfx::Size(2, 2), data_array,
-                                            image_data_color_spaces[i],
-                                            image_data_storage_formats[j]);
-      unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
-      ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
-      canvas_color_setting->setColorSpace(
-          PredefinedColorSpaceToV8(predefined_color_spaces[k]));
-      switch (canvas_pixel_formats[k]) {
-        case CanvasPixelFormat::kUint8:
-          canvas_color_setting->setStorageFormat(
-              ImageDataStorageFormatName(ImageDataStorageFormat::kUint8));
-          break;
-        case CanvasPixelFormat::kF16:
-          canvas_color_setting->setStorageFormat(
-              ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
-          break;
-        default:
-          NOTREACHED();
-      }
-
-      // Convert the original data used to create ImageData to the
-      // canvas color space and canvas pixel format.
-      EXPECT_TRUE(
-          ColorCorrectionTestUtils::
-              ConvertPixelsToColorSpaceAndPixelFormatForTest(
-                  data_array->BaseAddress(), data_length,
-                  image_data_color_spaces[i], image_data_storage_formats[j],
-                  predefined_color_spaces[k], canvas_pixel_formats[k],
-                  pixels_converted_manually, kPixelFormat_ffff));
-
-      // Create a canvas and call putImageData and getImageData to make sure
-      // the conversion is done correctly.
-      CanvasContextCreationAttributesCore attributes;
-      attributes.alpha = true;
-      attributes.color_space = predefined_color_spaces[k];
-      attributes.pixel_format = canvas_pixel_formats[k];
-      CanvasRenderingContext2D* context =
-          static_cast<CanvasRenderingContext2D*>(
-              canvas_element.GetCanvasRenderingContext("2d", attributes));
-      NonThrowableExceptionState exception_state;
-      context->putImageData(image_data, 0, 0, exception_state);
-
-      const void* pixels_from_get_image_data =
-          context
-              ->getImageData(0, 0, 2, 2, canvas_color_setting, exception_state)
-              ->GetSkPixmap()
-              .addr();
-      ColorCorrectionTestUtils::CompareColorCorrectedPixels(
-          pixels_from_get_image_data, pixels_converted_manually.data(),
-          num_pixels,
-          (canvas_pixel_formats[k] == CanvasPixelFormat::kUint8)
-              ? kPixelFormat_8888
-              : kPixelFormat_ffff,
-          kAlphaUnmultiplied, kUnpremulRoundTripTolerance);
-    }
-  }
-}
-
-// Test disabled due to crbug.com/780925
-TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnSRGBCanvas) {
-  TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_SRGB);
-}
-
-TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnRec2020Canvas) {
-  TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_REC2020);
-}
-
-TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnP3Canvas) {
-  TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_P3);
-}
-
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedLowLatencyIsNotSingleBuffered) {
   CreateContext(kNonOpaque, kLowLatency);
@@ -1770,7 +1473,7 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_FALSE(
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU)
-          ->SupportsSingleBuffering());
+          ->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -1779,8 +1482,7 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque, kNormalLatency,
                 CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   DrawSomething();
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kTrue);
+  EXPECT_TRUE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -1790,8 +1492,7 @@ TEST_P(CanvasRenderingContext2DTest,
                 CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kTrue);
+  EXPECT_TRUE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -2224,14 +1925,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   gfx::Size size(300, 300);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr, size);
+  CanvasElement().SetSize(size);
 
-  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  // Take a snapshot to trigger lazy resource provider creation
-  Context2D()->GetImage(FlushReason::kTesting);
+  // Trigger resource provider creation.
+  Context2D()->fillRect(3, 3, 1, 1);
   EXPECT_TRUE(!!CanvasElement().ResourceProvider());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
   auto* box = CanvasElement().GetLayoutBoxModelObject();
   EXPECT_TRUE(box);
   PaintLayer* painting_layer = box->PaintingLayer();
@@ -2246,6 +1946,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
+
+  // The above fillRect() call caused the CanvasPerformanceMonitor to start
+  // observing tasks. Reset this task observation before running pending tasks
+  // to avoid a CHECK that goes off in its WillProcessTask() method due to its
+  // not being expected to be called at this point in the flow.
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+
   blink::test::RunPendingTasks();
   // If enabled, hibernation should cause repaint of the painting layer.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
@@ -2509,6 +2216,103 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
             kHibernationAbortedDueToDestructionWhileHibernatePending,
         1);
   }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       DisablingAccelerationWhileHibernationIsPendingAbortsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  CanvasElement().GetHibernationHandler()->SetBeforeCompressionDelayForTesting(
+      base::Microseconds(10));
+
+  ASSERT_FALSE(CanvasElement().IsHibernating());
+
+  // Verify that going to the background triggers hibernation asynchronously.
+  {
+    base::HistogramTester histogram_tester;
+    GetDocument().GetPage()->SetVisibilityState(
+        mojom::blink::PageVisibilityState::kHidden,
+        /*is_initial_state=*/false);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
+    ASSERT_FALSE(CanvasElement().IsHibernating());
+  }
+
+  CanvasElement().DisableAcceleration();
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+
+  // Verify that running the hibernation task aborts hibernation due to the
+  // switch to software rendering.
+  {
+    base::HistogramTester histogram_tester;
+
+    // Run the task that initiates hibernation, which has been posted as an idle
+    // task.
+    ThreadScheduler::Current()
+        ->ToMainThreadScheduler()
+        ->StartIdlePeriodForTesting();
+    blink::test::RunPendingTasks();
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedDueToSwitchToUnacceleratedRendering,
+        1);
+    EXPECT_FALSE(CanvasElement().IsHibernating());
+  }
+}
+
+TEST_P(
+    CanvasRenderingContext2DTestAccelerated,
+    DisablingThenReenablingAccelerationWhileHibernationIsPendingDoesntAbortHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  CanvasElement().GetHibernationHandler()->SetBeforeCompressionDelayForTesting(
+      base::Microseconds(10));
+
+  ASSERT_FALSE(CanvasElement().IsHibernating());
+
+  // Verify that going to the background triggers hibernation asynchronously.
+  {
+    base::HistogramTester histogram_tester;
+    GetDocument().GetPage()->SetVisibilityState(
+        mojom::blink::PageVisibilityState::kHidden,
+        /*is_initial_state=*/false);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
+    ASSERT_FALSE(CanvasElement().IsHibernating());
+  }
+
+  CanvasElement().DisableAcceleration();
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+  CanvasElement().EnableAcceleration();
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  // The toggle from SW back to HW rendering should be a no-op from the POV of
+  // the pending hibernation, which should still occur when initiated.
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+  EXPECT_TRUE(CanvasElement().IsHibernating());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -3055,13 +2859,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kUndefined);
+  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_FALSE(
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->SupportsSingleBuffering());
+          ->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
@@ -3159,27 +2962,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
-       DisableAccelerationPreservesRasterAndRecording) {
+       DisableAccelerationPreservesRecording) {
   ScopedCanvas2dLayersForTest layer_feature{/*enabled=*/true};
   CreateContext(kNonOpaque);
 
-  gfx::Size size(100, 100);
-  auto gpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-  auto cpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferCPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-
-  // When disabling acceleration, the raster content is read from the
-  // accelerated provider and written to the unaccelerated provider.
-  InSequence s;
-  EXPECT_CALL(*gpu_provider, Snapshot(FlushReason::kReplaceLayerBridge, _))
-      .Times(1);
-  EXPECT_CALL(*cpu_provider, WritePixels).Times(1);
-
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(std::move(gpu_provider), size);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(10, 10, 20, 20);
@@ -3189,12 +2976,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->fillRect(10, 20, 30, 40);
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  CanvasElement().DisableAcceleration(std::move(cpu_provider));
+  CanvasElement().DisableAcceleration();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   Context2D()->endLayer(exception_state);
   Context2D()->restore(exception_state);
 
+  // Disabling acceleration caused pending paint ops to be rasterized. The
+  // resulting raster is drawn into the the new CPU surface. We are only left
+  // with the paint ops that could not be rasterized.
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
@@ -3304,13 +3094,12 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kUndefined);
+  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(CanvasElement()
                   .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                  ->SupportsSingleBuffering());
+                  ->IsSingleBuffered());
   auto frame1_resource =
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
@@ -3355,13 +3144,12 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kUndefined);
+  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(CanvasElement()
                   .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                  ->SupportsSingleBuffering());
+                  ->IsSingleBuffered());
   auto frame1_resource =
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)

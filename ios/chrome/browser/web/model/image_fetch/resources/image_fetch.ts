@@ -19,11 +19,11 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 function getImageData(id: number, url: string): void {
   // `from` indicates where the `data` is fetched from.
   const onData = function(data: string, from: string) {
-    sendWebKitMessage('ImageFetchMessageHandler',
-        {'id': id,
-         'data': data,
-         'from': from
-        });
+    sendWebKitMessage('ImageFetchMessageHandler', {
+      'id': id,
+      'data': data,
+      'from': from,
+    });
   };
   const onError = function() {
     sendWebKitMessage('ImageFetchMessageHandler', {'id': id});
@@ -38,7 +38,7 @@ function getImageData(id: number, url: string): void {
   }
 
   getImageDataByXMLHttpRequest(url, 100, onData, onError);
-};
+}
 
 /**
  * Returns image data directly from <img> by drawing it to <canvas> and export
@@ -51,11 +51,12 @@ function getImageData(id: number, url: string): void {
  */
 function getImageDataByCanvas(url: string): string | null {
   const extension = url.split('.').pop();
-  if (!extension || extension.toLowerCase() === 'gif')
+  if (!extension || extension.toLowerCase() === 'gif') {
     return null;
+  }
 
   for (const img of document.images) {
-    if (img && img.src == url) {
+    if (img && img.src === url) {
       const canvas = document.createElement('canvas');
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
@@ -75,7 +76,7 @@ function getImageDataByCanvas(url: string): string | null {
     }
   }
   return null;
-};
+}
 
 /**
  * Returns image data by downloading it using XMLHttpRequest.
@@ -94,7 +95,7 @@ function getImageDataByXMLHttpRequest(
   xhr.responseType = 'blob';
 
   xhr.onload = function() {
-    if (xhr.status != 200) {
+    if (xhr.status !== 200) {
       onError();
       return;
     }
@@ -113,6 +114,6 @@ function getImageDataByXMLHttpRequest(
   xhr.ontimeout = onError;
 
   xhr.send();
-};
+}
 
-gCrWeb.imageFetch = {getImageData}
+gCrWeb.imageFetch = {getImageData};

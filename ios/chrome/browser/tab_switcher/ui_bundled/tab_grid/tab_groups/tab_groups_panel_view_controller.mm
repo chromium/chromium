@@ -23,14 +23,18 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mutator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_notification_cell.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
+
+using tab_groups::SharingState;
 
 namespace {
 
 // Layout.
 const CGFloat kInterItemSpacing = 24;
 const CGFloat kInterGroupSpacing = 16;
-const CGFloat kEstimatedItemHeight = 96;
+const CGFloat kEstimatedNotificationHeight = 60;
+const CGFloat kEstimatedTabGroupHeight = 96;
 // The minimum width to display two columns. Under that value, display only one
 // column.
 const CGFloat kColumnCountWidthThreshold = 1000;
@@ -43,6 +47,7 @@ const CGFloat kHorizontalInsetPercentageWhenLargeAndOneItem = 0.3125;
 // Percentage of the width dedicated to an horizontal inset when there are two
 // elements.
 const CGFloat kHorizontalInsetPercentageWhenLargeAndTwoItems = 0.125;
+NSString* const kNotificationsSection = @"Notifications";
 NSString* const kTabGroupsSection = @"TabGroups";
 
 typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
@@ -50,20 +55,26 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 
 // Returns the accessibility identifier to set on a TabGroupsPanelCell when
 // positioned at the given index.
-NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
+NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   return [NSString
       stringWithFormat:@"%@%ld", kTabGroupsPanelCellIdentifierPrefix, index];
 }
 
 }  // namespace
 
-@interface TabGroupsPanelViewController () <UICollectionViewDelegate>
+@interface TabGroupsPanelViewController () <
+    TabGroupsPanelNotificationCellDelegate,
+    UICollectionViewDelegate>
 @end
 
 @implementation TabGroupsPanelViewController {
   UICollectionView* _collectionView;
   UICollectionViewDiffableDataSource<NSString*, TabGroupsPanelItem*>*
       _dataSource;
+  // The cell registration for notifications cells.
+  UICollectionViewCellRegistration* _notificationRegistration;
+  // The cell registration for tab groups cells.
+  UICollectionViewCellRegistration* _tabGroupRegistration;
   TabGridEmptyStateView* _emptyStateView;
   UIViewPropertyAnimator* _emptyStateAnimator;
 }
@@ -90,27 +101,15 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   [self.view addSubview:_collectionView];
 
-  __weak __typeof(self) weakSelf = self;
-  UICollectionViewCellRegistration* registration =
-      [UICollectionViewCellRegistration
-          registrationWithCellClass:[TabGroupsPanelCell class]
-               configurationHandler:^(TabGroupsPanelCell* cell,
-                                      NSIndexPath* indexPath,
-                                      TabGroupsPanelItem* item) {
-                 [weakSelf configureCell:cell
-                                withItem:item
-                                 atIndex:indexPath.item];
-               }];
+  [self createRegistrations];
 
+  __weak __typeof(self) weakSelf = self;
   _dataSource = [[UICollectionViewDiffableDataSource alloc]
       initWithCollectionView:_collectionView
                 cellProvider:^(UICollectionView* collectionView,
                                NSIndexPath* indexPath,
                                TabGroupsPanelItem* item) {
-                  return [collectionView
-                      dequeueConfiguredReusableCellWithRegistration:registration
-                                                       forIndexPath:indexPath
-                                                               item:item];
+                  return [weakSelf cellForItem:item atIndexPath:indexPath];
                 }];
 
   _emptyStateView =
@@ -166,21 +165,44 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
   [_collectionView reloadData];
 }
 
+#pragma mark TabGroupsPanelNotificationCellDelegate
+
+- (void)closeButtonTappedForNotificationItem:(TabGroupsPanelItem*)item {
+  [self.mutator deleteNotificationItem:item];
+}
+
 #pragma mark TabGroupsPanelConsumer
 
-- (void)populateItems:(NSArray<TabGroupsPanelItem*>*)items {
-  const BOOL hadOneItem = [self hasOnlyOneItem];
+- (void)populateNotificationItem:(TabGroupsPanelItem*)notificationItem
+                   tabGroupItems:(NSArray<TabGroupsPanelItem*>*)tabGroupItems {
+  // Sanity check.
+  CHECK_NE(tabGroupItems, nil);
+  if (notificationItem) {
+    CHECK_EQ(notificationItem.type, TabGroupsPanelItemType::kNotification);
+  }
+  for (TabGroupsPanelItem* tabGroupItem in tabGroupItems) {
+    CHECK_EQ(tabGroupItem.type, TabGroupsPanelItemType::kSavedTabGroup);
+  }
+
+  const BOOL hadOneTabGroup = [self hasOnlyOneTabGroup];
 
   // Update the data source.
   CHECK(_dataSource);
   TabGroupsPanelSnapshot* snapshot = [[TabGroupsPanelSnapshot alloc] init];
-  [snapshot appendSectionsWithIdentifiers:@[ kTabGroupsSection ]];
-  [snapshot appendItemsWithIdentifiers:items];
-  [snapshot reconfigureItemsWithIdentifiers:items];
+  if (notificationItem) {
+    [snapshot appendSectionsWithIdentifiers:@[ kNotificationsSection ]];
+    [snapshot appendItemsWithIdentifiers:@[ notificationItem ]];
+    [snapshot reconfigureItemsWithIdentifiers:@[ notificationItem ]];
+  }
+  if (tabGroupItems.count > 0) {
+    [snapshot appendSectionsWithIdentifiers:@[ kTabGroupsSection ]];
+    [snapshot appendItemsWithIdentifiers:tabGroupItems];
+    [snapshot reconfigureItemsWithIdentifiers:tabGroupItems];
+  }
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 
   // Invalidate the layout when getting to or coming from 1 item.
-  if (hadOneItem != [self hasOnlyOneItem]) {
+  if (hadOneTabGroup != [self hasOnlyOneTabGroup]) {
     [_collectionView.collectionViewLayout invalidateLayout];
   }
 
@@ -208,23 +230,38 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     performPrimaryActionForItemAtIndexPath:(NSIndexPath*)indexPath {
-  base::RecordAction(base::UserMetricsAction("MobileGroupPanelOpenGroup"));
   TabGroupsPanelItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
-  [self.mutator selectTabGroupsPanelItem:item];
+  switch (item.type) {
+    case TabGroupsPanelItemType::kNotification:
+      if (UIAccessibilityIsVoiceOverRunning() ||
+          UIAccessibilityIsSwitchControlRunning()) {
+        [self.mutator deleteNotificationItem:item];
+      }
+      break;
+    case TabGroupsPanelItemType::kSavedTabGroup:
+      base::RecordAction(base::UserMetricsAction("MobileGroupPanelOpenGroup"));
+      [self.mutator selectTabGroupsPanelItem:item];
+      break;
+  }
 }
 
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
-  UICollectionViewCell* collectionViewCell =
-      [_collectionView cellForItemAtIndexPath:indexPath];
-
-  TabGroupsPanelCell* cell =
-      base::apple::ObjCCastStrict<TabGroupsPanelCell>(collectionViewCell);
-  return
-      [self contextMenuConfigurationForCell:cell
-                               menuScenario:
-                                   kMenuScenarioHistogramTabGroupsPanelEntry];
+  TabGroupsPanelItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
+  switch (item.type) {
+    case TabGroupsPanelItemType::kNotification:
+      return nil;
+    case TabGroupsPanelItemType::kSavedTabGroup: {
+      TabGroupsPanelCell* cell =
+          base::apple::ObjCCastStrict<TabGroupsPanelCell>(
+              [_collectionView cellForItemAtIndexPath:indexPath]);
+      return [self
+          contextMenuConfigurationForCell:cell
+                             menuScenario:
+                                 kMenuScenarioHistogramTabGroupsPanelEntry];
+    }
+  }
 }
 
 #pragma mark UIScrollViewDelegate
@@ -239,10 +276,70 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark Private
 
+// Returns a configured cell for the given `item` and `indexPath`.
+- (UICollectionViewCell*)cellForItem:(TabGroupsPanelItem*)item
+                         atIndexPath:(NSIndexPath*)indexPath {
+  UICollectionViewCellRegistration* registration;
+  switch (item.type) {
+    case TabGroupsPanelItemType::kNotification:
+      registration = _notificationRegistration;
+      break;
+    case TabGroupsPanelItemType::kSavedTabGroup:
+      registration = _tabGroupRegistration;
+      break;
+  }
+  return [_collectionView
+      dequeueConfiguredReusableCellWithRegistration:registration
+                                       forIndexPath:indexPath
+                                               item:item];
+}
+
+// Creates the cell registrations and assigns them to the appropriate
+// properties.
+- (void)createRegistrations {
+  __weak __typeof(self) weakSelf = self;
+
+  // Register TabGroupsPanelNotificationCell.
+  _notificationRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:TabGroupsPanelNotificationCell.class
+           configurationHandler:^(TabGroupsPanelNotificationCell* cell,
+                                  NSIndexPath* indexPath,
+                                  TabGroupsPanelItem* item) {
+             [weakSelf configureNotificationCell:cell
+                                        withItem:item
+                                         atIndex:indexPath.item];
+           }];
+
+  // Register TabGroupsPanelCell.
+  _tabGroupRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:TabGroupsPanelCell.class
+           configurationHandler:^(TabGroupsPanelCell* cell,
+                                  NSIndexPath* indexPath,
+                                  TabGroupsPanelItem* item) {
+             [weakSelf configureTabGroupCell:cell
+                                    withItem:item
+                                     atIndex:indexPath.item];
+           }];
+}
+
+- (BOOL)hasNotifications {
+  return [_dataSource.snapshot
+             indexOfSectionIdentifier:kNotificationsSection] != NSNotFound;
+}
+
+- (BOOL)hasTabGroups {
+  return [_dataSource.snapshot indexOfSectionIdentifier:kTabGroupsSection] !=
+         NSNotFound;
+}
+
 // Returns whether the data source has only one item. It's used to configure the
 // layout.
-- (BOOL)hasOnlyOneItem {
-  return _dataSource.snapshot.numberOfItems == 1;
+- (BOOL)hasOnlyOneTabGroup {
+  if ([_dataSource.snapshot indexOfSectionIdentifier:kTabGroupsSection] ==
+      NSNotFound) {
+    return NO;
+  }
+  return [_dataSource.snapshot numberOfItemsInSection:kTabGroupsSection] == 1;
 }
 
 // Returns the compositional layout for the Tab Groups panel.
@@ -252,23 +349,96 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
       initWithSectionProvider:^(
           NSInteger sectionIndex,
           id<NSCollectionLayoutEnvironment> layoutEnvironment) {
-        return [weakSelf makeSectionWithLayoutEnvironment:layoutEnvironment];
+        return [weakSelf makeSectionAtIndex:sectionIndex
+                          layoutEnvironment:layoutEnvironment];
       }];
   return layout;
 }
 
-// Returns the layout section for the Tab Groups panel.
-- (NSCollectionLayoutSection*)makeSectionWithLayoutEnvironment:
+// Returns the appropriate layout section for the given index.
+- (NSCollectionLayoutSection*)
+    makeSectionAtIndex:(NSInteger)sectionIndex
+     layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
+  NSString* sectionIdentifier =
+      [_dataSource sectionIdentifierForIndex:sectionIndex];
+  if ([sectionIdentifier isEqualToString:kNotificationsSection]) {
+    return
+        [self makeNotificationsSectionWithLayoutEnvironment:layoutEnvironment];
+  }
+  if ([sectionIdentifier isEqualToString:kTabGroupsSection]) {
+    return [self makeTabGroupsSectionWithLayoutEnvironment:layoutEnvironment];
+  }
+  NOTREACHED();
+}
+
+// Returns the layout section for the notifications.
+- (NSCollectionLayoutSection*)makeNotificationsSectionWithLayoutEnvironment:
     (id<NSCollectionLayoutEnvironment>)layoutEnvironment {
-  const BOOL onlyOneItem = [self hasOnlyOneItem];
+  const BOOL onlyOneTabGroup = [self hasOnlyOneTabGroup];
   const CGFloat width = layoutEnvironment.container.effectiveContentSize.width;
   const BOOL hasLargeWidth = width > kColumnCountWidthThreshold;
-  const NSInteger columnCount = hasLargeWidth && !onlyOneItem ? 2 : 1;
+
+  NSCollectionLayoutDimension* itemWidth =
+      [NSCollectionLayoutDimension fractionalWidthDimension:1];
+  NSCollectionLayoutDimension* itemHeight = [NSCollectionLayoutDimension
+      estimatedDimension:kEstimatedNotificationHeight];
+  NSCollectionLayoutSize* itemSize =
+      [NSCollectionLayoutSize sizeWithWidthDimension:itemWidth
+                                     heightDimension:itemHeight];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
+
+  NSCollectionLayoutDimension* groupWidth =
+      [NSCollectionLayoutDimension fractionalWidthDimension:1];
+  NSCollectionLayoutSize* groupSize =
+      [NSCollectionLayoutSize sizeWithWidthDimension:groupWidth
+                                     heightDimension:itemHeight];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
+                                                    subitems:@[ item ]];
+  group.interItemSpacing =
+      [NSCollectionLayoutSpacing fixedSpacing:kInterItemSpacing];
+
+  CGFloat groupHorizontalInset = kHorizontalInset;
+  const BOOL hasLargeInset =
+      layoutEnvironment.traitCollection.horizontalSizeClass ==
+      UIUserInterfaceSizeClassRegular;
+  if (hasLargeInset) {
+    groupHorizontalInset =
+        width * kHorizontalInsetPercentageWhenLargeAndTwoItems;
+    if (hasLargeWidth && onlyOneTabGroup) {
+      groupHorizontalInset =
+          width * kHorizontalInsetPercentageWhenLargeAndOneItem;
+    }
+  }
+  group.contentInsets = NSDirectionalEdgeInsetsMake(0, groupHorizontalInset, 0,
+                                                    groupHorizontalInset);
+
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  section.interGroupSpacing = kInterGroupSpacing;
+  const CGFloat topInset = hasLargeInset ? kLargeVerticalInset : kVerticalInset;
+  const CGFloat bottomInset =
+      [self hasTabGroups] ? kVerticalInset : kLargeVerticalInset;
+  // Use the `_contentInsets` horizontal insets. See `setContentInsets:` for
+  // more details.
+  section.contentInsets = NSDirectionalEdgeInsetsMake(
+      topInset, self.contentInsets.left, bottomInset, self.contentInsets.right);
+  return section;
+}
+
+// Returns the layout section for the Tab Groups.
+- (NSCollectionLayoutSection*)makeTabGroupsSectionWithLayoutEnvironment:
+    (id<NSCollectionLayoutEnvironment>)layoutEnvironment {
+  const BOOL onlyOneTabGroup = [self hasOnlyOneTabGroup];
+  const CGFloat width = layoutEnvironment.container.effectiveContentSize.width;
+  const BOOL hasLargeWidth = width > kColumnCountWidthThreshold;
+  const NSInteger columnCount = hasLargeWidth && !onlyOneTabGroup ? 2 : 1;
 
   NSCollectionLayoutDimension* itemWidth =
       [NSCollectionLayoutDimension fractionalWidthDimension:1. / columnCount];
   NSCollectionLayoutDimension* itemHeight =
-      [NSCollectionLayoutDimension estimatedDimension:kEstimatedItemHeight];
+      [NSCollectionLayoutDimension estimatedDimension:kEstimatedTabGroupHeight];
   NSCollectionLayoutSize* itemSize =
       [NSCollectionLayoutSize sizeWithWidthDimension:itemWidth
                                      heightDimension:itemHeight];
@@ -294,7 +464,7 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
   if (hasLargeInset) {
     groupHorizontalInset =
         width * kHorizontalInsetPercentageWhenLargeAndTwoItems;
-    if (hasLargeWidth && onlyOneItem) {
+    if (hasLargeWidth && onlyOneTabGroup) {
       groupHorizontalInset =
           width * kHorizontalInsetPercentageWhenLargeAndOneItem;
     }
@@ -305,13 +475,14 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
   section.interGroupSpacing = kInterGroupSpacing;
-  const CGFloat sectionVerticalInset =
+  const CGFloat topInset =
+      [self hasNotifications] ? kVerticalInset : kLargeVerticalInset;
+  const CGFloat bottomInset =
       hasLargeInset ? kLargeVerticalInset : kVerticalInset;
   // Use the `_contentInsets` horizontal insets. See `setContentInsets:` for
   // more details.
   section.contentInsets = NSDirectionalEdgeInsetsMake(
-      sectionVerticalInset, self.contentInsets.left, sectionVerticalInset,
-      self.contentInsets.right);
+      topInset, self.contentInsets.left, bottomInset, self.contentInsets.right);
   return section;
 }
 
@@ -358,13 +529,26 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-- (void)configureCell:(TabGroupsPanelCell*)cell
-             withItem:(TabGroupsPanelItem*)item
-              atIndex:(NSUInteger)index {
+// Configures the notification cell.
+- (void)configureNotificationCell:(TabGroupsPanelNotificationCell*)cell
+                         withItem:(TabGroupsPanelItem*)item
+                          atIndex:(NSUInteger)index {
   CHECK(cell);
   CHECK(item);
+  CHECK_EQ(item.type, TabGroupsPanelItemType::kNotification);
+  cell.notificationItem = item;
+  cell.delegate = self;
+}
+
+// Configures the saved tab group cell.
+- (void)configureTabGroupCell:(TabGroupsPanelCell*)cell
+                     withItem:(TabGroupsPanelItem*)item
+                      atIndex:(NSUInteger)index {
+  CHECK(cell);
+  CHECK(item);
+  CHECK_EQ(item.type, TabGroupsPanelItemType::kSavedTabGroup);
   cell.item = item;
-  cell.accessibilityIdentifier = PanelCellAccessibilityIdentifier(index);
+  cell.accessibilityIdentifier = TabGroupCellAccessibilityIdentifier(index);
   TabGroupsPanelItemData* itemData = [_itemDataSource dataForItem:item];
   cell.titleLabel.text = itemData.title;
   cell.dot.backgroundColor = itemData.color;
@@ -372,9 +556,9 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
   NSUInteger numberOfTabs = itemData.numberOfTabs;
   cell.faviconsGrid.numberOfTabs = numberOfTabs;
 
-  cell.facePileParentViewController = self;
-  cell.facePileViewController =
+  UIViewController* facePile =
       [_itemDataSource facePileViewControllerForItem:item];
+  [cell setFacePileViewController:facePile parentViewController:self];
 
   [_itemDataSource fetchFaviconsForCell:cell];
 }
@@ -392,10 +576,32 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak TabGroupsPanelViewController* weakSelf = self;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                  [weakSelf.mutator deleteTabGroupsPanelItem:cell.item
+
+  switch (cell.item.sharingState) {
+    case SharingState::kNotShared: {
+      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                      [weakSelf.mutator deleteTabGroupsPanelItem:cell.item
+                                                      sourceView:cell];
+                    }]];
+      break;
+    }
+    case SharingState::kShared: {
+      [menuElements
+          addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+            [weakSelf.mutator leaveSharedTabGroupsPanelItem:cell.item
+                                                 sourceView:cell];
+          }]];
+      break;
+    }
+    case SharingState::kSharedAndOwned: {
+      [menuElements
+          addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+            [weakSelf.mutator deleteSharedTabGroupsPanelItem:cell.item
                                                   sourceView:cell];
-                }]];
+          }]];
+      break;
+    }
+  }
 
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {

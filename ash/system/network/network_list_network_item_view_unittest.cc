@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -236,14 +235,14 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
 
   // Simulate user logout and check label for pSIM networks that are
   // connected but not activated.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   UpdateViewForNetwork(cellular_network);
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_STATUS_ACTIVATE_AFTER_DEVICE_SETUP),
             network_list_network_item_view()->sub_text_label()->GetText());
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   base::RunLoop().RunUntilIdle();
 
   // Label for unactivated eSIM networks.
@@ -283,7 +282,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
             network_list_network_item_view()->sub_text_label()->GetText());
 
   // label for locked cellular network when user is not logged in.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   UpdateViewForNetwork(cellular_network);
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -447,7 +446,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
 
   // Simulate user logout and check label for pSIM networks that are
   // connected but not activated.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   UpdateViewForNetwork(cellular_network);
   EXPECT_EQ(
@@ -456,7 +455,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
           base::UTF8ToUTF16(kCellularName)),
       network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   base::RunLoop().RunUntilIdle();
 
   // Contact carrier A11Y label is shown when a eSIM network is connected but
@@ -586,14 +585,14 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE));
 
   // Cellular is not activate and user is not logged in.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   AssertA11yDescription(
       cellular_network,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_ACTIVATE_AFTER_DEVICE_SETUP));
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   base::RunLoop().RunUntilIdle();
 
   // Cellular is not activated and is an eSIM network.
@@ -614,7 +613,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK));
 
   // User is not signed in.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   AssertA11yDescription(
       cellular_network,
       l10n_util::GetStringUTF16(
@@ -797,7 +796,7 @@ TEST_F(NetworkListNetworkItemViewTest, NetworkIconAnimating) {
   // Override current icon with an empty icon, check it is updated when
   // animation starts.
   static_cast<views::ImageView*>(network_list_network_item_view()->left_view())
-      ->SetImage(gfx::ImageSkia());
+      ->SetImage(ui::ImageModel());
 
   EXPECT_TRUE(static_cast<views::ImageView*>(
                   network_list_network_item_view()->left_view())

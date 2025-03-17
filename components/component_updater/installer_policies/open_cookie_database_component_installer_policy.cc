@@ -28,8 +28,8 @@ constexpr uint8_t kOpenCookieDatabasePublicKeySha256[32] = {
 
 constexpr char kOpenCookieDatabaseManifestName[] = "Open Cookie Database";
 
-constexpr base::FilePath::CharType kOpenCookieDatabaseCsvFileName[] =
-    FILE_PATH_LITERAL("open-cookie-database.csv");
+constexpr base::FilePath::CharType kOpenCookieDatabaseFileName[] =
+    FILE_PATH_LITERAL("open_cookie_database.json");
 
 constexpr base::FilePath::CharType kOpenCookieDatabaseRelativeInstallDir[] =
     FILE_PATH_LITERAL("OpenCookieDatabase");
@@ -52,7 +52,7 @@ void LoadOpenCookieDatabaseFromDisk(const base::FilePath& csv_path) {
 }
 
 base::FilePath GetInstalledPath(const base::FilePath& path) {
-  return path.Append(kOpenCookieDatabaseCsvFileName);
+  return path.Append(kOpenCookieDatabaseFileName);
 }
 
 }  // namespace

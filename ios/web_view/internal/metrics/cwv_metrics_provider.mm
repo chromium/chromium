@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/metrics/library_support/histogram_manager.h"
 #import "ios/web_view/internal/metrics/cwv_metrics_provider_internal.h"
-
-#include "components/metrics/library_support/histogram_manager.h"
 
 @implementation CWVMetricsProvider {
   std::unique_ptr<metrics::HistogramManager> _histogramManager;

@@ -27,8 +27,7 @@ export type PasswordManagerAuthTimeoutListener = () => void;
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  *
- * Needs to stay in sync with PasswordCheckInteraction in enums.xml and
- * password_manager_metrics_util.h.
+ * Needs to stay in sync with PasswordCheckInteraction in enums.xml.
  */
 export enum PasswordCheckInteraction {
   START_CHECK_AUTOMATICALLY = 0,
@@ -46,8 +45,7 @@ export enum PasswordCheckInteraction {
 }
 
 /**
- * Should be kept in sync with
- * |password_manager::metrics_util::PasswordViewPageInteractions|.
+ * Should be kept in sync with PasswordViewPageInteractions in enums.xml.
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */
@@ -366,14 +364,6 @@ export interface PasswordManagerProxy {
   setAccountStorageEnabled(enabled: boolean): void;
 
   /**
-   * Requests whether the account store is a default location for saving
-   * passwords. False means the device store is a default one. Must be called
-   * when account storage is enabled.
-   * @return A promise that resolves to whether the account store is default.
-   */
-  isAccountStoreDefault(): Promise<boolean>;
-
-  /**
    * Moves a list of passwords from the device to the account
    * @param ids The ids for the password entries being moved.
    */
@@ -619,10 +609,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   setAccountStorageEnabled(enabled: boolean) {
     chrome.passwordsPrivate.setAccountStorageEnabled(enabled);
-  }
-
-  isAccountStoreDefault() {
-    return chrome.passwordsPrivate.isAccountStoreDefault();
   }
 
   movePasswordsToAccount(ids: number[]) {

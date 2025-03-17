@@ -35,15 +35,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
@@ -60,8 +59,8 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -70,7 +69,6 @@ import java.util.concurrent.ExecutionException;
 /** Tests for the bookmark save flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE})
 // TODO(crbug.com/40743432): Once SyncTestRule supports batching, investigate batching this suite.
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
 public class BookmarkSaveFlowTest {
@@ -80,7 +78,7 @@ public class BookmarkSaveFlowTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -89,6 +87,7 @@ public class BookmarkSaveFlowTest {
     @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     private ChromeTabbedActivity mActivity;
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
@@ -96,7 +95,7 @@ public class BookmarkSaveFlowTest {
     private BottomSheetTestSupport mBottomSheetTestSupport;
     private BookmarkModel mBookmarkModel;
     private CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
+            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", new GaiaId("testGaiaId"));
 
     @Before
     public void setUp() throws ExecutionException {
@@ -120,7 +119,9 @@ public class BookmarkSaveFlowTest {
                                     mShoppingService,
                                     mUserEducationHelper,
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    mIdentityManager);
+                                    mIdentityManager,
+                                    new BookmarkManagerOpenerImpl(),
+                                    mPriceDropNotificationManager);
                 });
 
         loadBookmarkModel();
@@ -165,10 +166,6 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE
-    })
     public void testBookmarkSaveFlow_improvedBookmarks_accountBookmarksEnabled()
             throws IOException {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
@@ -233,7 +230,7 @@ public class BookmarkSaveFlowTest {
                     mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ false,
+                            /* fromExplicitTrackUi= */ false,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ true,
                             meta.build());
@@ -270,7 +267,7 @@ public class BookmarkSaveFlowTest {
 
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ true,
+                            /* fromExplicitTrackUi= */ true,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ false,
                             meta.build());
@@ -294,6 +291,7 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/393436289")
     public void testBookmarkSaveFlow_WithShoppingListItem_fromHeuristicEntryPoint_saveFailed()
             throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
@@ -316,7 +314,7 @@ public class BookmarkSaveFlowTest {
 
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ false,
+                            /* fromExplicitTrackUi= */ false,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ false,
                             meta.build());
@@ -362,7 +360,7 @@ public class BookmarkSaveFlowTest {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
                     mBookmarkSaveFlowCoordinator.show(
                             id,
-                            /* fromHeuristicEntryPoint= */ false,
+                            /* fromExplicitTrackUi= */ false,
                             /* wasBookmarkMoved= */ false,
                             /* isNewBookmark= */ true);
                     return null;

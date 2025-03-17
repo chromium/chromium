@@ -26,11 +26,17 @@ template("system_webview_bundle") {
       min_sdk_version = 29
     }
     system_image_locale_allowlist = platform_pak_locales
-    is_multi_abi =
-        android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
-                                     invoker.include_64_bit_webview) &&
-        (!defined(invoker.include_32_bit_webview) ||
-         invoker.include_32_bit_webview)
+    if (android_64bit_target_cpu) {
+      _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                                invoker.include_32_bit_webview
+      _include_64_bit_webview = !defined(invoker.include_64_bit_webview) ||
+                                invoker.include_64_bit_webview
+      is_multi_abi = _include_32_bit_webview && _include_64_bit_webview
+      not_needed([ "_include_64_bit_webview" ])
+      if (!defined(android_app_secondary_abi)) {
+        assert(!is_multi_abi, "target should not be enabled: $target_name")
+      }
+    }
 
     if (!defined(proguard_android_sdk_dep)) {
       proguard_android_sdk_dep = webview_framework_dep

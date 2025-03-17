@@ -47,7 +47,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       base::BarrierCallback<bool>(
           /*num_callbacks=*/2,
           base::BindOnce([](const std::vector<bool>& results) {
-            return base::ranges::all_of(results, std::identity());
+            return std::ranges::all_of(results, std::identity());
           }).Then(std::move(completion)));
   auto remote_changes_callback = base::BindRepeating(
       &PasswordStoreBackendMigrationDecorator::OnRemoteFormChangesReceived,
@@ -118,12 +118,6 @@ void PasswordStoreBackendMigrationDecorator::
 void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   active_backend()->GetAutofillableLoginsAsync(std::move(callback));
-}
-
-void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
 }
 
 void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(

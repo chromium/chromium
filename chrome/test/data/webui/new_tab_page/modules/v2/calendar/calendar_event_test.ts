@@ -113,11 +113,11 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       assertTrue(isVisible(attachmentsElement));
       assertTrue(isVisible(conferenceElement));
 
-      const attachmentChips = element.shadowRoot!.querySelectorAll('cr-chip');
+      const attachmentChips = element.shadowRoot.querySelectorAll('cr-chip');
       assertEquals(attachmentChips.length, 3);
     });
 
-    test('Non-expanded event hides extra info', async () => {
+    test('Non-expanded event hides extra info', () => {
       // Assert.
       const locationElement = $$(element, '#location');
       const attachmentsElement = $$(element, '#attachments');
@@ -206,7 +206,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       element.moduleName = moduleName;
       await microtasksFinished();
 
-      const attachments = element.renderRoot!.querySelectorAll('.attachment');
+      const attachments = element.renderRoot.querySelectorAll('.attachment');
       assertEquals(attachments.length, 3);
 
       // Assert attachments are disabled.
@@ -225,7 +225,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       await microtasksFinished();
 
       // Assert.
-      const attachments = element.renderRoot!.querySelectorAll('.attachment');
+      const attachments = element.renderRoot.querySelectorAll('.attachment');
       assertEquals(attachments.length, 3);
 
       for (let i = 0; i < attachments.length; i++) {
@@ -346,7 +346,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       await microtasksFinished();
 
       // Act.
-      const attachments = element.renderRoot!.querySelectorAll('.attachment');
+      const attachments = element.renderRoot.querySelectorAll('.attachment');
       assertEquals(attachments.length, 3);
       (attachments[1]! as HTMLElement).click();
 
@@ -371,9 +371,9 @@ suite('NewTabPageModulesCalendarEventTest', () => {
 
       // Act.
       const conference =
-          element.renderRoot!.querySelector('#conference cr-button');
+          element.renderRoot.querySelector('#conference cr-button');
       assertTrue(!!conference);
-      (conference! as HTMLElement).click();
+      (conference as HTMLElement).click();
 
       // Assert.
       const usageEvent: Event = await usagePromise;

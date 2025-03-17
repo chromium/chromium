@@ -36,24 +36,10 @@ goog.require('i18n.input.common.dom');
  */
 i18n.input.hwt.util.listenPageEvent = function(eventHandler, topDocument,
     eventType, callback) {
-  // Ideally we'd just listen for MOUSEUP on the canvas, but that
-  // doesn't work if the mouseup event happens outside the canvas,
-  // and in particular if it happens in an iframe.  So we have to
-  // listen on the document and any embedded iframes.  We'll also
-  // use this handler to cancel auto-repeat when holding down
-  // the backspace button, in case the user releases the button
-  // elsewhere.
+  // We'll also use this handler to cancel auto-repeat when holding down
+  // the backspace button, in case the user releases the button elsewhere.
   eventHandler.listen(topDocument, goog.events.EventType.MOUSEUP,
       callback, true);
-  goog.array.forEach(i18n.input.common.dom.getSameDomainDocuments(topDocument),
-      function(frameDoc) {
-        try {
-          // In IE and FF3.5, some iframe is not allowed to access.
-          // It throws exception when access the iframe property.
-          eventHandler.listen(frameDoc, goog.events.EventType.MOUSEUP,
-              callback, true);
-        } catch (e) {}
-      });
 };
 
 

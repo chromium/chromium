@@ -338,10 +338,10 @@ DrmDisplayHostManager::DisplayEvent::~DisplayEvent() = default;
 
 DrmDisplayHost* DrmDisplayHostManager::GetDisplay(int64_t display_id) {
   auto it =
-      base::ranges::find(displays_, display_id,
-                         [](const std::unique_ptr<DrmDisplayHost>& display) {
-                           return display->snapshot()->display_id();
-                         });
+      std::ranges::find(displays_, display_id,
+                        [](const std::unique_ptr<DrmDisplayHost>& display) {
+                          return display->snapshot()->display_id();
+                        });
   if (it == displays_.end())
     return nullptr;
 
@@ -578,10 +578,10 @@ void DrmDisplayHostManager::GpuHasUpdatedNativeDisplays(
   displays_.swap(old_displays);
   for (auto& display : displays) {
     auto it =
-        base::ranges::find(old_displays, display->display_id(),
-                           [](const std::unique_ptr<DrmDisplayHost>& display) {
-                             return display->snapshot()->display_id();
-                           });
+        std::ranges::find(old_displays, display->display_id(),
+                          [](const std::unique_ptr<DrmDisplayHost>& display) {
+                            return display->snapshot()->display_id();
+                          });
     if (it == old_displays.end()) {
       displays_.push_back(std::make_unique<DrmDisplayHost>(
           proxy_, std::move(display), false /* is_dummy */));

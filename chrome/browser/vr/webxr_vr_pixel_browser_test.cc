@@ -15,7 +15,8 @@
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 
-
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 namespace vr {
 
 class MyXRMock : public MockXRDeviceHookBase {
@@ -106,3 +107,4 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPixels) {
 }
 
 }  // namespace vr
+#endif  // if !BUILDFLAG(IS_ANDROID)

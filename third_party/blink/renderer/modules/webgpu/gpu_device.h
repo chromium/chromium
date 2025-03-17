@@ -128,7 +128,6 @@ class GPUDevice final : public EventTarget,
       const GPUBindGroupLayoutDescriptor* descriptor,
       ExceptionState& exception_state);
   GPUPipelineLayout* createPipelineLayout(
-      ScriptState* script_state,
       const GPUPipelineLayoutDescriptor* descriptor);
 
   GPUShaderModule* createShaderModule(
@@ -204,11 +203,7 @@ class GPUDevice final : public EventTarget,
   void OnUncapturedError(const wgpu::Device& device,
                          wgpu::ErrorType errorType,
                          wgpu::StringView message);
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
   void OnLogging(wgpu::LoggingType loggingType, wgpu::StringView message);
-#else
-  void OnLogging(WGPULoggingType loggingType, WGPUStringView message);
-#endif
   void OnDeviceLost(
       std::unique_ptr<
           WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>,
@@ -246,13 +241,8 @@ class GPUDevice final : public EventTarget,
   Member<GPUAdapterInfo> adapter_info_;
   Member<GPUQueue> queue_;
   Member<LostProperty> lost_property_;
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
   std::unique_ptr<WGPURepeatingCallback<wgpu::LoggingCallback<void>>>
       logging_callback_;
-#else
-  std::unique_ptr<WGPURepeatingCallback<void(WGPULoggingType, WGPUStringView)>>
-      logging_callback_;
-#endif
 
   static constexpr int kMaxAllowedConsoleWarnings = 500;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;

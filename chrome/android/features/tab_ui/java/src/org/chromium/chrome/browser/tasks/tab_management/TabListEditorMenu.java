@@ -87,7 +87,7 @@ public class TabListEditorMenu
         mListView.setDivider(null);
         mListView.setOnItemClickListener(this);
 
-        mActionViewLayout.setListMenuButtonDelegate(() -> this);
+        mActionViewLayout.setListMenuDelegate(() -> this);
         mActionViewLayout.setActionViewLayoutDelegate(this);
     }
 

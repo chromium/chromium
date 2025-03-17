@@ -13,9 +13,9 @@
 #include "chrome/browser/autofill/test/jni_headers/AutofillTestHelper_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -82,8 +82,9 @@ void JNI_AutofillTestHelper_SetProfileUseStats(JNIEnv* env,
       GetPersonalDataManagerForLastUsedProfile();
   AutofillProfile profile =
       *personal_data_manager->address_data_manager().GetProfileByGUID(guid);
-  profile.set_use_count(static_cast<size_t>(count));
-  profile.set_use_date(AutofillClock::Now() - base::Days(days_since_last_used));
+  profile.usage_history().set_use_count(static_cast<size_t>(count));
+  profile.usage_history().set_use_date(AutofillClock::Now() -
+                                       base::Days(days_since_last_used));
   personal_data_manager->address_data_manager().UpdateProfile(profile);
 }
 
@@ -93,7 +94,7 @@ jint JNI_AutofillTestHelper_GetProfileUseCount(JNIEnv* env, std::string& guid) {
       GetPersonalDataManagerForLastUsedProfile();
   const AutofillProfile* profile =
       personal_data_manager->address_data_manager().GetProfileByGUID(guid);
-  return profile->use_count();
+  return profile->usage_history().use_count();
 }
 
 // static
@@ -102,7 +103,7 @@ jlong JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env, std::string& guid) {
       GetPersonalDataManagerForLastUsedProfile();
   const AutofillProfile* profile =
       personal_data_manager->address_data_manager().GetProfileByGUID(guid);
-  return profile->use_date().ToTimeT();
+  return profile->usage_history().use_date().ToTimeT();
 }
 
 // static
@@ -116,8 +117,9 @@ std::string JNI_AutofillTestHelper_AddCreditCardWithUseStats(
   CreditCard card;
   PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(jcard, env, &card);
 
-  card.set_use_count(static_cast<size_t>(count));
-  card.set_use_date(AutofillClock::Now() - base::Days(days_since_last_used));
+  card.usage_history().set_use_count(static_cast<size_t>(count));
+  card.usage_history().set_use_date(AutofillClock::Now() -
+                                    base::Days(days_since_last_used));
 
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
@@ -134,7 +136,7 @@ jint JNI_AutofillTestHelper_GetCreditCardUseCount(JNIEnv* env,
       GetPersonalDataManagerForLastUsedProfile();
   const CreditCard* card =
       personal_data_manager->payments_data_manager().GetCreditCardByGUID(guid);
-  return card->use_count();
+  return card->usage_history().use_count();
 }
 
 // static
@@ -144,7 +146,7 @@ jlong JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
       GetPersonalDataManagerForLastUsedProfile();
   const CreditCard* card =
       personal_data_manager->payments_data_manager().GetCreditCardByGUID(guid);
-  return card->use_date().ToTimeT();
+  return card->usage_history().use_date().ToTimeT();
 }
 
 // TODO(crbug.com/40477114): Use a mock clock for testing.

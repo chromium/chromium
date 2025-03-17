@@ -314,36 +314,23 @@ class JavaScriptStylizer(generator.Stylizer):
 
 
 class Generator(generator.Generator):
-  def _GetParameters(self, for_compile=False, for_webui_module=False):
+
+  def _GetParameters(self, for_compile=False):
     return {
-        "bindings_library_path":
-        self._GetBindingsLibraryPath(for_webui_module=for_webui_module),
-        "enums":
-        self.module.enums,
-        "for_bindings_internals":
-        self.disallow_native_types,
-        "imports":
-        self.module.imports,
-        "interfaces":
-        self.module.interfaces,
-        "js_module_imports":
-        self._GetJsModuleImports(for_webui_module=for_webui_module),
-        "kinds":
-        self.module.kinds,
-        "module":
-        self.module,
-        "mojom_namespace":
-        self.module.mojom_namespace,
-        "structs":
-        self.module.structs + self._GetStructsFromMethods(),
-        "unions":
-        self.module.unions,
-        "generate_fuzzing":
-        self.generate_fuzzing,
-        "generate_closure_exports":
-        for_compile,
-        "generate_struct_deserializers":
-        self.js_generate_struct_deserializers,
+        "bindings_library_path": self._GetBindingsLibraryPath(),
+        "enums": self.module.enums,
+        "for_bindings_internals": self.disallow_native_types,
+        "imports": self.module.imports,
+        "interfaces": self.module.interfaces,
+        "js_module_imports": self._GetJsModuleImports(),
+        "kinds": self.module.kinds,
+        "module": self.module,
+        "mojom_namespace": self.module.mojom_namespace,
+        "structs": self.module.structs + self._GetStructsFromMethods(),
+        "unions": self.module.unions,
+        "generate_fuzzing": self.generate_fuzzing,
+        "generate_closure_exports": for_compile,
+        "generate_struct_deserializers": self.js_generate_struct_deserializers,
     }
 
   @staticmethod
@@ -438,19 +425,15 @@ class Generator(generator.Generator):
   def _GenerateJsModule(self):
     return self._GetParameters()
 
-  @UseJinja("lite/mojom.m.js.tmpl")
-  def _GenerateWebUiModule(self):
-    return self._GetParameters(for_webui_module=True)
-
   def GenerateFiles(self, args):
     if self.variant:
       raise Exception("Variants not supported in JavaScript bindings.")
 
     self.module.Stylize(JavaScriptStylizer())
 
-    # TODO(crbug.com/41361453): Change the media router extension to not mess with
-    # the mojo namespace, so that namespaces such as "mojo.common.mojom" are not
-    # affected and we can remove this method.
+    # TODO(crbug.com/41361453): Change the media router extension to not mess
+    # with the mojo namespace, so that namespaces such as "mojo.common.mojom"
+    # are not affected and we can remove this method.
     self._SetUniqueNameForImports()
 
     self.WriteWithComment(self._GenerateAMDModule(), "%s.js" % self.module.path)
@@ -460,9 +443,6 @@ class Generator(generator.Generator):
                           "%s-lite-for-compile.js" % self.module.path)
     self.WriteWithComment(self._GenerateJsModule(),
                           "%s.m.js" % self.module.path)
-    if self.module.metadata.get("generate_webui_js") is not None:
-      self.WriteWithComment(self._GenerateWebUiModule(),
-                            "mojom-webui/%s-webui.js" % self.module.path)
 
   def _GetRelativePath(self, path):
     relpath = urllib.request.pathname2url(
@@ -471,9 +451,7 @@ class Generator(generator.Generator):
       return relpath
     return './' + relpath
 
-  def _GetBindingsLibraryPath(self, for_webui_module=False):
-    if for_webui_module:
-      return "//resources/mojo/mojo/public/js/bindings.js"
+  def _GetBindingsLibraryPath(self):
     return self._GetRelativePath('mojo/public/js/bindings.js')
 
   def _SetUniqueNameForImports(self):
@@ -1017,7 +995,7 @@ class Generator(generator.Generator):
   def _GetConstantValueInJsModule(self, constant):
     return self._GetConstantValue(constant, for_module=True)
 
-  def _GetJsModuleImports(self, for_webui_module=False):
+  def _GetJsModuleImports(self):
     this_module_path = _GetWebUiModulePath(self.module)
     this_module_is_shared = bool(this_module_path
                                  and _IsSharedModulePath(this_module_path))
@@ -1029,53 +1007,7 @@ class Generator(generator.Generator):
       return s
 
     for spec, kind in self.module.imported_kinds.items():
-      if for_webui_module:
-        assert this_module_path is not None
-        base_path = _GetWebUiModulePath(kind.module)
-        assert base_path is not None
-        import_path = '{}{}-webui.js'.format(base_path,
-                                             os.path.basename(kind.module.path))
-
-        import_module_is_shared = _IsSharedModulePath(import_path)
-        if this_module_is_shared:
-          assert import_module_is_shared, \
-              'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
-                  'module "{}"'.format(self.module.path, kind.module.path)
-
-        # Some Mojo JS files are served from //resources/, but not from
-        # //resources/mojo/, for example from
-        # //resources/cr_components/. Need to use absolute paths when
-        # referring to such files from other modules, so that TypeScript can
-        # correctly resolve them since they belong to a different ts_library()
-        # target compared to |this_module_path|.
-        import_module_is_in_chrome_resources = _IsAbsoluteChromeResourcesPath(
-            import_path)
-        use_absolute_path = import_module_is_in_chrome_resources and not \
-                import_module_is_shared
-
-        # Either we're a non-shared resource importing another non-shared
-        # resource, or we're a shared resource importing another shared
-        # resource. In both cases, we assume a relative import path will
-        # suffice.
-        use_relative_path = not use_absolute_path and \
-                import_module_is_shared == this_module_is_shared
-
-        if use_relative_path:
-          import_path = urllib.request.pathname2url(
-              os.path.relpath(
-                  strip_prefix(strip_prefix(import_path, _CHROME_SCHEME_PREFIX),
-                               _SHARED_MODULE_PREFIX),
-                  strip_prefix(
-                      strip_prefix(this_module_path, _CHROME_SCHEME_PREFIX),
-                      _SHARED_MODULE_PREFIX)))
-          if (not import_path.startswith('.')
-              and not import_path.startswith('/')):
-            import_path = './' + import_path
-        else:
-          # Import absolute imports from scheme-relative paths.
-          import_path = strip_prefix(import_path, _CHROME_SCHEME_PREFIX)
-      else:
-        import_path = self._GetRelativePath(kind.module.path) + '.m.js'
+      import_path = self._GetRelativePath(kind.module.path) + '.m.js'
 
       if import_path not in imports:
         imports[import_path] = []

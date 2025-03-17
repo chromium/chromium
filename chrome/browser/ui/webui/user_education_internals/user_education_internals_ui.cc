@@ -10,10 +10,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_page_handler_impl.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
 #include "chrome/grit/user_education_internals_resources.h"
 #include "chrome/grit/user_education_internals_resources_map.h"
-#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -22,8 +20,7 @@
 #include "ui/webui/webui_util.h"
 
 UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIUserEducationInternalsHost) {}
+    : DefaultInternalWebUIConfig(chrome::kChromeUIUserEducationInternalsHost) {}
 
 UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
@@ -34,8 +31,6 @@ UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source_, kUserEducationInternalsResources,
                               IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
-
-  source_->AddBoolean("isWhatsNewV2", user_education::features::IsWhatsNewV2());
 }
 
 UserEducationInternalsUI::~UserEducationInternalsUI() = default;

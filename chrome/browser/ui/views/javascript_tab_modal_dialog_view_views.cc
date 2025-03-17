@@ -32,7 +32,7 @@ void JavaScriptTabModalDialogViewViews::CloseDialogWithoutCallback() {
 }
 
 std::u16string JavaScriptTabModalDialogViewViews::GetUserInput() {
-  return message_box_view_->GetInputText();
+  return std::u16string(message_box_view_->GetInputText());
 }
 
 std::u16string JavaScriptTabModalDialogViewViews::GetWindowTitle() const {
@@ -101,7 +101,8 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
         dialog->dialog_force_closed_callback_ = base::OnceClosure();
         if (dialog->dialog_callback_) {
           std::move(dialog->dialog_callback_)
-              .Run(true, dialog->message_box_view_->GetInputText());
+              .Run(true,
+                   std::u16string(dialog->message_box_view_->GetInputText()));
         }
       },
       base::Unretained(this)));
@@ -135,7 +136,7 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   }
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(message_box_view_.get());
+  AddChildViewRaw(message_box_view_.get());
 
   constrained_window::ShowWebModalDialogViews(this, parent_web_contents);
 }

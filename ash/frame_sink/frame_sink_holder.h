@@ -54,7 +54,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
 
   // Refer to declaration of `FrameSinkHost::OnFirstFrameRequested` for a
   // detailed comment.
-  using OnFirstFrameRequestedCallback = base::RepeatingCallback<void()>;
+  using OnFirstFrameRequestedCallback = base::OnceCallback<void()>;
 
   // Refer to declaration of `FrameSinkHost::OnFrameSinkLost` for a detailed
   // comment.
@@ -158,9 +158,9 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // Extend the lifetime of `this` by adding it as a observer to `root_window`.
   void SetRootWindowForDeletion(aura::Window* root_window);
 
-  // True when the display compositor has already asked for a compositor
-  // frame. This signifies that the gpu process has been fully initialized.
-  bool first_frame_requested_ = false;
+  bool first_frame_requested() const {
+    return !on_first_frame_requested_callback_;
+  }
 
   // The layer tree frame sink created from `host_window_.
   std::unique_ptr<cc::LayerTreeFrameSink> frame_sink_;
@@ -205,7 +205,8 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   GetCompositorFrameCallback get_compositor_frame_callback_;
 
   // The callback invoked when the display compositor asks for a compositor
-  // frame for the first time.
+  // frame for the first time. This signifies that the gpu process has been
+  // fully initialized.
   OnFirstFrameRequestedCallback on_first_frame_requested_callback_;
 
   // The callback invoked when the connection to `frame_sink_` is lost.

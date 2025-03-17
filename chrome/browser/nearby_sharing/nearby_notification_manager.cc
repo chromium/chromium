@@ -1201,7 +1201,7 @@ void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
 
   notification.set_title(base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED),
-      {base::UTF8ToUTF16(share_target.device_name)}, /*offsets=*/nullptr));
+      base::UTF8ToUTF16(share_target.device_name), nullptr));
 
   delegate_map_.erase(notification_id);
 

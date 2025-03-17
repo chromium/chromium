@@ -7,13 +7,18 @@
 
 #include "media/base/video_frame.h"
 
+namespace gpu {
+class TestSharedImageInterface;
+}  // namespace gpu
+
 namespace blink {
 
 scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    media::VideoFrame::StorageType storage_type);
+    media::VideoFrame::StorageType storage_type,
+    gpu::TestSharedImageInterface* test_sii);
 
 scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Size& coded_size,
@@ -22,7 +27,16 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     media::VideoFrame::StorageType storage_type,
     media::VideoPixelFormat pixel_format,
     base::TimeDelta timestamp,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb = nullptr);
+    gpu::TestSharedImageInterface* test_sii);
+
+scoped_refptr<media::VideoFrame> CreateTestFrameWithGMB(
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    media::VideoFrame::StorageType storage_type,
+    media::VideoPixelFormat pixel_format,
+    base::TimeDelta timestamp,
+    std::unique_ptr<gfx::GpuMemoryBuffer> gmb);
 
 }  // namespace blink
 

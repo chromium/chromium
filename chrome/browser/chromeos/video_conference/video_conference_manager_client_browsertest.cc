@@ -7,12 +7,10 @@
 #include <string>
 #include <vector>
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
-#endif
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,14 +94,12 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
 
   ~VideoConferenceManagerClientTest() override = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }
-#endif
 
   // Creates and returns a new `WebContents` at the given tab `index`.
   content::WebContents* CreateWebContentsAt(int index) {
@@ -127,9 +123,7 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif
 };
 
 // Tests creating VcWebApps and removing them by closing tabs.
@@ -235,7 +229,6 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
       }));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests setting/clearing system statuses for camera and microphone.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        SetSystemMediaDeviceStatus) {
@@ -324,7 +317,6 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
             crosapi::mojom::VideoConferenceAppUpdate::kAppRemoved);
   EXPECT_FALSE(controller->last_client_update()->title_change_info);
 }
-#endif
 
 // Tests aggregated media usage status received on `HandleMediaUsageUpdate`.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {

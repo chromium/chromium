@@ -15,9 +15,6 @@ class OomInterventionConfig {
   // True when field trials enables intervention and config is valid.
   bool is_intervention_enabled() const { return is_intervention_enabled_; }
 
-  // True when browser swap monitor is enabled.
-  bool is_swap_monitor_enabled() const { return is_swap_monitor_enabled_; }
-
   // True if Android memory pressure signals should be monitored.
   bool use_components_callback() const { return use_components_callback_; }
 
@@ -37,9 +34,6 @@ class OomInterventionConfig {
   // True if detection should be enabled on renderers.
   bool should_detect_in_renderer() const { return should_detect_in_renderer_; }
 
-  // The threshold for swap size in the system to start monitoring.
-  uint64_t swapfree_threshold() const { return swapfree_threshold_; }
-
   // The arguments for detecting near OOM situation in renderer.
   blink::mojom::DetectionArgsPtr GetRendererOomDetectionArgs() const;
 
@@ -49,15 +43,12 @@ class OomInterventionConfig {
 
   bool is_intervention_enabled_ = false;
 
-  bool is_swap_monitor_enabled_ = false;
   bool use_components_callback_ = false;
 
   bool is_renderer_pause_enabled_ = false;
   bool is_navigate_ads_enabled_ = false;
   bool is_purge_v8_memory_enabled_ = false;
   bool should_detect_in_renderer_ = false;
-
-  uint64_t swapfree_threshold_ = 0;
 
   blink::mojom::DetectionArgsPtr renderer_detection_args_;
 };

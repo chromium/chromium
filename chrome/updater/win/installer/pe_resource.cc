@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/win/installer/pe_resource.h"
 
 #include <algorithm>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 namespace updater {
 
@@ -18,11 +16,11 @@ PEResource::PEResource(const wchar_t* name, const wchar_t* type, HMODULE module)
   resource_ = ::FindResource(module, name, type);
 }
 
-bool PEResource::IsValid() {
+bool PEResource::IsValid() const {
   return nullptr != resource_;
 }
 
-size_t PEResource::Size() {
+size_t PEResource::Size() const {
   return ::SizeofResource(module_, resource_);
 }
 
@@ -39,7 +37,8 @@ bool PEResource::WriteToDisk(const wchar_t* full_path) {
     return false;
   }
 
-  const size_t resource_size = Size();
+  base::span<const char> UNSAFE_BUFFERS(data_span(data, Size()));
+
   HANDLE out_file = ::CreateFile(full_path, GENERIC_WRITE, 0, nullptr,
                                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
   if (INVALID_HANDLE_VALUE == out_file) {
@@ -50,18 +49,22 @@ bool PEResource::WriteToDisk(const wchar_t* full_path) {
   // address-space exhaustion on 32-bit Windows (see https://crbug.com/1001022
   // for details).
   constexpr size_t kMaxWriteAmount = 8 * 1024 * 1024;
-  for (size_t total_written = 0; total_written < resource_size; /**/) {
+  for (size_t total_written = 0; total_written < data_span.size(); /**/) {
     const size_t write_amount =
-        std::min(kMaxWriteAmount, resource_size - total_written);
+        std::min(kMaxWriteAmount, data_span.size() - total_written);
+    base::span<const char> data_to_write =
+        data_span.subspan(total_written, write_amount);
     DWORD written = 0;
-    if (!::WriteFile(out_file, data + total_written,
-                     static_cast<DWORD>(write_amount), &written, nullptr)) {
+    if (!::WriteFile(out_file, data_to_write.data(),
+                     static_cast<DWORD>(data_to_write.size()), &written,
+                     nullptr)) {
       ::CloseHandle(out_file);
       return false;
     }
-    total_written += write_amount;
+    total_written += data_to_write.size();
   }
-  return !!::CloseHandle(out_file);
+
+  return ::CloseHandle(out_file);
 }
 
 }  // namespace updater

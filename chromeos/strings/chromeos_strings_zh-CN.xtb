@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 专有资源现已推出</translation>
 <translation id="1022628058306505708">地球的风景变化</translation>
+<translation id="102432830749687801">请务必在失去访问权限之前，使用 Google 的 Content Transfer 应用将学校账号数据转移到个人账号。</translation>
 <translation id="1026212596705997935">此快捷键已用于“<ph name="CONFLICT_ACCEL_NAME" />”。请按新的快捷键。如要替换现有的快捷键，请再次按这个快捷键。</translation>
 <translation id="1030856839388844477">重置流量使用情况</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
@@ -61,6 +62,7 @@
 <translation id="1223498995510244364">总结</translation>
 <translation id="123124571410524056">疑似存在门户</translation>
 <translation id="1232610416724362657">瀑布</translation>
+<translation id="1238163879850290856">重置可防止他人访问数据。请仅使用您信任的输入法。</translation>
 <translation id="1238612778414822719">HTTPS 延迟</translation>
 <translation id="1252766349417594414">操纵杆</translation>
 <translation id="1270369111467284986">疑似存在强制门户</translation>
@@ -79,6 +81,7 @@
 <translation id="131461803491198646">家庭网络，非漫游</translation>
 <translation id="1327977588028644528">网关</translation>
 <translation id="1328223165223065150">壁纸颜色</translation>
+<translation id="1329478709358066995">转写内容：</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1343442362630695901">咸水湖</translation>
@@ -93,6 +96,7 @@
 <translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
 <translation id="1398634363027580500">HTTPS 延迟非常高</translation>
+<translation id="1406389211945506521">感谢您分享自己的体验。您的反馈有助于我们创建更准确、更实用的内容。</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -123,7 +127,17 @@
 <translation id="1515129336378114413">浏览器主页</translation>
 <translation id="1526389707933164996">屏保动画</translation>
 <translation id="152892567002884378">调高音量</translation>
+<translation id="1531038290222364269">显示标签页</translation>
 <translation id="1539864135338521185">青金石</translation>
+<translation id="1548555207631326346">选择一个主题，然后选择带下划线的字词，打造个性化的 AI 图像。<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" /> 
+          当您利用 AI 创作内容时，系统会将提示发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《隐私权政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1561927818299383735">背光颜色</translation>
@@ -198,8 +212,11 @@
 <translation id="1808803439260407870">经典艺术</translation>
 <translation id="181434555916624618">目前，系统不会显示包含某个人的结果。请试试其他提示。</translation>
 <translation id="1815850098929213707">所选按键为 <ph name="KEYS" />。点按按钮即可修改控件</translation>
+<translation id="1818174214124933000">选择发送后，系统会将您的反馈和内容（如下所示）发送给 Google 供人工审核。我们会根据<ph name="LINK_POLICY_BEGIN" />《隐私权政策》<ph name="LINK_POLICY_END" />和<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />《Google 服务条款》<ph name="LINK_TERMS_OF_SERVICE_END" />使用这些信息训练或改进我们的产品和服务。</translation>
 <translation id="1823120442877418684">物体</translation>
 <translation id="1827738518074806965">画廊</translation>
+<translation id="183287940576828840">令人反感/不安全</translation>
+<translation id="1834032517784994783">选择转写语言</translation>
 <translation id="1836553715834333258">系统颜色</translation>
 <translation id="183675228220305365">现实主义</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
@@ -225,6 +242,7 @@
 <translation id="1908234395526491708">UDP 请求失败</translation>
 <translation id="1908394185991500139">向左箭头</translation>
 <translation id="1914144885717544695">在周五</translation>
+<translation id="1915960750806557358">分享您的反馈或描述您的问题。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="1923388006036088459">强调色</translation>
 <translation id="1945403655450283000">录音机</translation>
 <translation id="1947737735496445907">已打印</translation>
@@ -245,7 +263,6 @@
 <translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">选择一个主题，然后选择带下划线的字词，打造个性化的 AI 图像。</translation>
 <translation id="2045814230297767491">餐具</translation>
 <translation id="2047316797244836561">若要查看屏保，请连接到网络并重新加载此页面。</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -273,6 +290,7 @@
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
+<translation id="2164131940279488868">请确保已连接麦克风，以便开始录制音频</translation>
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
 <translation id="2189104374785738357">修改 APN 详细信息</translation>
@@ -297,6 +315,7 @@
 <translation id="2244834438220057800">绿色</translation>
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2267285889943769271">添加屏幕截图</translation>
+<translation id="2268044343513325586">优化</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2276999893457278469">热门帮助内容</translation>
 <translation id="2277631741861284101">轻松录制和分享音频</translation>
@@ -309,7 +328,6 @@
 <translation id="2308243864813041101">请拔下<ph name="DEVICE_NAME" /> USB 线，以继续更新流程</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
-<translation id="2323755382216917952">此更新需要您重启计算机，才能完成安装。此更新可能需要几分钟的时间才能完成。固件更新期间，请不要拔掉计算机的电源插头或关机。</translation>
 <translation id="2324354238778375592">悬浮</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">极佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -355,7 +373,6 @@
 <translation id="2561093647892030937">柠檬</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2573178735329662769">录制所有 Chromebook 音频</translation>
-<translation id="2575552334616524665">您可以在“设置”或 <ph name="THREE_DOTS_MENU_ICON" /> 菜单中开启此功能</translation>
 <translation id="2576253868710695442">将占用最多 2GB 存储空间</translation>
 <translation id="2584547424703650812">发光景观</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
@@ -389,6 +406,7 @@
 <translation id="2731700343119398978">请稍候...</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2744221223678373668">已共享</translation>
+<translation id="2749164457515831917">已随机显示建议</translation>
 <translation id="2751739896257479635">EAP 阶段 2 身份验证</translation>
 <translation id="2754757901767760034">灯</translation>
 <translation id="2780756493585863768">由 Google AI 赋能的近期背景</translation>
@@ -397,6 +415,7 @@
 <translation id="2787237339470862294">目前尚不支持此语言</translation>
 <translation id="2787435249130282949">调亮键盘</translation>
 <translation id="2805756323405976993">应用</translation>
+<translation id="2822702442014805146">正在下载摘要和名称创建模型</translation>
 <translation id="28232023175184696">无法连接到互联网。点击即可重试。</translation>
 <translation id="2855718259207180827">羊毛</translation>
 <translation id="2859243502336719778">重要更新</translation>
@@ -442,6 +461,7 @@
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3124039320086536031">设备已连接。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{移除页面？}=1{移除第 {PAGE_NUMBER} 页？}other{移除第 {PAGE_NUMBER} 页？}}</translation>
+<translation id="3134486240968249588">需要注意的事项</translation>
 <translation id="3140130301071865159">雪</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="315116470104423982">移动数据</translation>
@@ -455,7 +475,6 @@
 <translation id="3178532070248519384">前卫艺术</translation>
 <translation id="3182676044300231689">输入提示，例如“语气更自信”</translation>
 <translation id="3188257591659621405">我的文件</translation>
-<translation id="3188931456353313123">此更新由设备制造商提供，并且未经 Google 验证。</translation>
 <translation id="319101249942218879">头像图片变了</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
@@ -464,8 +483,8 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">重写</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
+<translation id="3248791727258378769">不会创建转写内容</translation>
 <translation id="324961752321393509">您的管理员不允许关闭此应用</translation>
 <translation id="3263941347294171263">请拔下并重新插入<ph name="DEVICE_NAME" />，以继续更新流程</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
@@ -494,8 +513,8 @@
 <translation id="3373141842870501561">“地球的风景变化”壁纸</translation>
 <translation id="33736539805963175">包含字母 <ph name="LETTERS_LETTER" /> 的<ph name="LETTERS_COLOR" />背景</translation>
 <translation id="3383623117265110236">专有</translation>
+<translation id="3395147534045164351">切换贴靠位置</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
-<translation id="3410165745972100556">转写功能已关闭</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3428551088151258685">室外</translation>
 <translation id="3428971106895559033">柔和</translation>
@@ -509,6 +528,7 @@
 <translation id="3462187165860821523">正在更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="346423161771747987">电流</translation>
 <translation id="346539236881580388">重拍</translation>
+<translation id="3479552764303398839">以后再说</translation>
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>
 <translation id="3487866404496702283">针对 Mahi 功能的反馈</translation>
@@ -546,11 +566,13 @@
 <translation id="3628462041319107639">正在下载转写模型…</translation>
 <translation id="3632040286124154621">建议不错</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
+<translation id="3634941468757842845">选择主题</translation>
 <translation id="3639873154908477486">名称（从 A 到 Z）</translation>
 <translation id="3644695927181369554">建议不合适</translation>
 <translation id="3651050199673793219">选择温度单位</translation>
 <translation id="3661106764436337772">写作更快更自信</translation>
 <translation id="3662461537616691585">酒红色和栗色</translation>
+<translation id="3664755900672940272">已随机显示示例提示</translation>
 <translation id="3668449597372804501">“云朵的动态变化”壁纸</translation>
 <translation id="3668570675727296296">语言设置</translation>
 <translation id="3675132884790542448">猪</translation>
@@ -564,8 +586,10 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
+<translation id="3763034084412196440">调整音量</translation>
 <translation id="3767737419527918477">搜索录音文件</translation>
 <translation id="3771294271822695279">视频文件</translation>
+<translation id="3771694256347217732">Google 服务条款</translation>
 <translation id="3780740315729837296">分配键盘按键</translation>
 <translation id="3784455785234192852">锁定</translation>
 <translation id="3785643128701396311">像素风</translation>
@@ -576,8 +600,6 @@
 <translation id="3820172043799983114">PIN 码无效。</translation>
 <translation id="382043424867370667">“日落”壁纸</translation>
 <translation id="3824259034819781947">附加文件</translation>
-<translation id="383586991013681190">请在“设置”中选择转写语言并下载</translation>
-<translation id="3836587210832263413">请仅开启您信任的扩展程序</translation>
 <translation id="3838338534323494292">新密码</translation>
 <translation id="3845880861638660475">按 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 即可关闭对话框。</translation>
 <translation id="3848280697030027394">降低键盘亮度</translation>
@@ -593,6 +615,7 @@
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
 <translation id="3877066159641251281">聆听译文</translation>
 <translation id="3880601782712134623">自动检测不同的语音，并为每位讲者添加一个宽泛的标签，例如讲者 1、讲者 2</translation>
+<translation id="38811596981744338">法律问题</translation>
 <translation id="3885327323343477505">更换屏保</translation>
 <translation id="3889914174935857450">重置日期</translation>
 <translation id="3897092660631435901">菜单</translation>
@@ -600,7 +623,6 @@
 <translation id="391412459402535266">无法测试设备。切换到笔记本电脑模式即可进行测试。</translation>
 <translation id="3916998944874125962">截取屏幕截图</translation>
 <translation id="3923184630988645767">流量使用</translation>
-<translation id="3924445055519423964">点击即可总结网页/PDF 文件</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3934185438132762746">未分配的<ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">未能解析主机</translation>
@@ -641,6 +663,7 @@
 <translation id="4113067922640381334">现在，您可以使用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />了</translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4126551873361000548">后退 10 秒</translation>
+<translation id="4128271910628504223">输入一条提示，例如“画一片雾气蒙蒙的森林”</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白色</translation>
@@ -663,6 +686,7 @@
 <translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4210636113897977670">保存并退出</translation>
 <translation id="4210659479607886331">冰川河</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" />转写模型下载完毕</translation>
 <translation id="42126664696688958">导出</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
@@ -691,6 +715,7 @@
 <translation id="4354430579665871434">键</translation>
 <translation id="4356100841225547054">关闭声音</translation>
 <translation id="4361257691546579041">APN 是 default 类型。</translation>
+<translation id="4368101969572512692">随机显示建议</translation>
 <translation id="437294888293595148">重置所有快捷键</translation>
 <translation id="437477383107495720">小兔子</translation>
 <translation id="4376423484621194274">您的管理员不允许关闭<ph name="APP_NAME" /></translation>
@@ -708,6 +733,7 @@
 <translation id="4428374560396076622">“<ph name="NETWORK_NAME" />”已关闭</translation>
 <translation id="4428840632568803690">讲者 <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
+<translation id="4430019312045809116">音量</translation>
 <translation id="4431821876790500265">查看报告</translation>
 <translation id="4443192710976771874">红色</translation>
 <translation id="4447592701292766824">无法为此内容创建摘要</translation>
@@ -729,7 +755,6 @@
 <translation id="4507392511610824664">调高亮度</translation>
 <translation id="4511264077854731334">门户网站</translation>
 <translation id="4513946894732546136">反馈</translation>
-<translation id="4516323842122524821">音量</translation>
 <translation id="4521826082652183069">主题备用名称匹配</translation>
 <translation id="4522570452068850558">详情</translation>
 <translation id="4536864596629708641">IP 配置</translation>
@@ -757,7 +782,9 @@
 <translation id="4650608062294027130">右 Shift</translation>
 <translation id="4654549501020883054">每日更换一次</translation>
 <translation id="4655868084888499342">已将图片设为壁纸</translation>
+<translation id="4660989616054030633">生成式 AI 的回答（包括与人有关的信息）未必正确无误，请务必核查</translation>
 <translation id="4661249927038176904">超现实</translation>
+<translation id="4661392828086261436">此更新由设备制造商提供，并且未经 Google 验证。</translation>
 <translation id="4664651912255946953">毛皮</translation>
 <translation id="4665014895760275686">制造商</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
@@ -771,6 +798,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">与您所选内容相关的信息</translation>
 <translation id="4750394297954878236">建议</translation>
+<translation id="4763771683769971829">支持的语言列表</translation>
 <translation id="4771607256327216405">提高键盘亮度</translation>
 <translation id="4771923071974529837">明天</translation>
 <translation id="4773299976671772492">已停止</translation>
@@ -809,6 +837,7 @@
 <translation id="4891842000192098784">压力</translation>
 <translation id="4897058166682006107">设备左侧耳机的剩余电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="4905998861748258752">开启此功能即可选择屏保选项</translation>
+<translation id="4910853326379896417">摘要和名称创建模型下载完毕</translation>
 <translation id="4910858703033903787">APN 类型</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
@@ -816,6 +845,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
 <translation id="4930320165497208503">若要设置或更新连接，请转到<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />，在新标签页中打开</translation>
 <translation id="4946927805998996217">正在生成摘要</translation>
 <translation id="4950314376641394653">固件“<ph name="DEVICE_NAME" />”已更新到版本 <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">树隧道</translation>
@@ -832,7 +862,6 @@
 <translation id="4988526792673242964">页面</translation>
 <translation id="4989542687859782284">不受支持的实验</translation>
 <translation id="4999333166442584738">隐藏报告</translation>
-<translation id="5005695757087124131">点击即可简化所选文字</translation>
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">主题颜色</translation>
@@ -843,8 +872,10 @@
 <translation id="5050042263972837708">群组名称</translation>
 <translation id="5051044138948155788">这是目前仅有的一个页面了。此操作会将您转到扫描开始屏幕。</translation>
 <translation id="5053233795640754917">暂停</translation>
+<translation id="5056587122125565772">创建图片</translation>
 <translation id="5078711626843651677">语音模型会暂存在设备上，直到讲者标签添加完毕。您随时可在“设置”中关闭此功能。</translation>
 <translation id="5078983345702708852">未来主义</translation>
+<translation id="5085224064082122501">无法下载摘要和名称创建模型。请重试，或重启 Chromebook。</translation>
 <translation id="5087864757604726239">后退</translation>
 <translation id="5088172560898466307">服务器主机名</translation>
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
@@ -852,10 +883,12 @@
 <translation id="5095761549884461003">请拔下<ph name="DEVICE_NAME" />的 USB 线，然后重新插入以继续更新流程</translation>
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">不含<ph name="META_KEY" />键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有<ph name="KEY" />键的新快捷键。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">无法下载<ph name="LANGUAGE_NAME" />转写模型。请重试，或重启 Chromebook</translation>
 <translation id="5108781503443873320">近义词：</translation>
 <translation id="5121677070210013200">无法下载转写模型。请重试，或重新启动 Chromebook。</translation>
 <translation id="5130848777448318809">小马</translation>
 <translation id="5137451382116112100">全屏</translation>
+<translation id="5139813694804168398">勿扰模式</translation>
 <translation id="5140788690559353412">失去对学校账号的访问权限后，您将无法再访问相关的电子邮件和 Google 云端硬盘文件，例如 Gmail、文档、幻灯片等。</translation>
 <translation id="5142961317498132443">身份验证</translation>
 <translation id="5144311987923128508">“确认”按钮现已停用</translation>
@@ -900,6 +933,7 @@
 <translation id="5302048478445481009">语言</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 专属壁纸</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">将<ph name="DEVICE_NAME" />更新至版本 <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">身份</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318310531701770497">无法创建名称，请尝试输入较长的转写内容。</translation>
@@ -926,6 +960,7 @@
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">受管理</translation>
+<translation id="5461608756903394951">正在下载<ph name="LANGUAGE_NAME" />转写模型</translation>
 <translation id="5470776029649730099">粗麻布</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩余尝试次数：{0}}other{剩余尝试次数：{0}}}</translation>
 <translation id="5488280942828718790">品红色</translation>
@@ -976,7 +1011,6 @@
 <translation id="5703716265115423771">调低音量</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">“<ph name="SHORTCUT_DESCRIPTION" />”的修改按钮。</translation>
-<translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="5736820754189340309">流量消耗已重置</translation>
 <translation id="574392208103952083">中等</translation>
 <translation id="5744175046705638478">翻译“<ph name="QUERY" />”</translation>
@@ -1013,6 +1047,8 @@
 <translation id="5904994456462260490">添加新的 APN</translation>
 <translation id="590746845088109442">猫</translation>
 <translation id="5907649332524363701">按键颜色</translation>
+<translation id="5908813850962688338">安装此更新需要几分钟时间。下载更新期间，请将设备接通电源并保持开机状态。在此过程中，设备可能会多次重启并显示黑屏。系统会提示您重启设备以完成安装。</translation>
+<translation id="5915794087373112615">老师将在 <ph name="NUM_SECONDS" /> 秒后查看您的屏幕</translation>
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>
@@ -1050,8 +1086,8 @@
 <translation id="6074752328838739425">隐藏摘要</translation>
 <translation id="6075872808778243331">(Android) HTTP 延迟时间</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
+<translation id="6079693086494835199">重置可确保默认主页不是钓鱼式攻击网站。请仅使用您信任的网站。</translation>
 <translation id="6091080061796993741">黄色</translation>
-<translation id="6093853427925392522">请务必在失去访问权限之前，使用 Google 的 Content Transfer 应用将学校账号数据转移到个人账号。</translation>
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
@@ -1074,6 +1110,7 @@
 <translation id="6156030503438652198">栗色和粉色</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">重置可阻止他人使用您的麦克风或摄像头。请仅向您信任的网站授予权限。</translation>
 <translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189418609903030344">电池容量会随使用时长的增加而减少</translation>
 <translation id="6189987971574353264">播放</translation>
@@ -1098,10 +1135,9 @@
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
 <translation id="6292095526077353682">充电时的屏保显示时长</translation>
 <translation id="629550705077076970">将键盘调暗</translation>
-<translation id="6301193653204230066">安全重置会关闭 Chrome 浏览器扩展程序，并将网络和其他设置重置为安全的默认设置。
-          标签页、文件、Cookie 和历史记录不会更改。</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="631063167932043783">“探索”应用</translation>
+<translation id="6314333689576767865">Chromebook 已重置为安全的默认设置。您随时可以在“设置”中进行更改。</translation>
 <translation id="6318437367327684789">不限时</translation>
 <translation id="6319207335391420837">更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="6321407676395378991">开启屏保功能</translation>
@@ -1109,14 +1145,12 @@
 <translation id="6325525973963619867">失败</translation>
 <translation id="6327262166342360252">此壁纸是通过 AI 使用以下文字制作的：“<ph name="PROMPT" />”。</translation>
 <translation id="6331191339300272798">自动深色主题</translation>
-<translation id="6335228876613776082">模型下载完毕</translation>
 <translation id="6340526405444716530">个性化</translation>
 <translation id="6348252528297699679">您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">用户名和密码</translation>
 <translation id="6352210854422428614">其他星球</translation>
 <translation id="6359706544163531585">停用浅色主题</translation>
 <translation id="6359919876285606596">此操作一旦执行便无法撤消</translation>
-<translation id="6368342879959028556">如果选择“利用 AI 创建”，请撰写自定义提示。或者，您也可以选择“AI 壁纸”，选择一个主题，然后选择带下划线的字词，打造个性化的 AI 壁纸。</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6369221585240879141">无法为此转写语言创建录制名称</translation>
 <translation id="6373461326814131011">池塘</translation>
@@ -1177,6 +1211,7 @@
 <translation id="6595046262780525922">要开启转写功能并下载转写模型吗？</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6599673642868607614">感谢您提供反馈。您的反馈有助于我们改进 Chromebook 使用体验，会被我们的团队审核。由于举报数量众多，我们无法发送回复。</translation>
+<translation id="6608043585557830684">转写功能已关闭，请在“设置”或“<ph name="THREE_DOTS_MENU_ICON" />”菜单中开启。</translation>
 <translation id="660846213831377756">鼠标按键</translation>
 <translation id="6618744767048954150">正在运行</translation>
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
@@ -1188,20 +1223,11 @@
 <translation id="6657240842932274095">允许系统服务使用您的位置信息？</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="66621959568103627">珊瑚粉</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          当您利用 AI 创作内容时，系统会将提示发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的隐私权政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="6673898378497337661">调高键盘亮度</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6694534975463174713">锁定</translation>
 <translation id="6700703207451721535">此链接无法访问。如需访问权限，请与您的老师联系。</translation>
+<translation id="6703179086771097594">哪些方面表现欠佳？</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6712933881624804031">山谷</translation>
 <translation id="6716013206176357696">草莓</translation>
@@ -1217,6 +1243,7 @@
 <translation id="6747035363363040417">中性色</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
 <translation id="6749473226660745022">照片</translation>
+<translation id="6752960629591143793">请在“设置”或“<ph name="THREE_DOTS_MENU_ICON" />”菜单中选择转写语言并下载</translation>
 <translation id="6753452347192452143">设备类型是计算机。</translation>
 <translation id="6756731097889387912">无法取消扫描</translation>
 <translation id="6760706756348334449">调低音量</translation>
@@ -1236,6 +1263,7 @@
 <translation id="6862416241246624313">已提交反馈</translation>
 <translation id="6866732840889595464">雏菊</translation>
 <translation id="6871256179359663621">浅紫色</translation>
+<translation id="6887967050249348172">已停用扩展程序，以防止更改设置。请只启用您信任的扩展程序。</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="6899460405678814458">显示摘要</translation>
 <translation id="6900701049656042631">此相册内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
@@ -1250,6 +1278,7 @@
 <translation id="6930597342185648547">关于背景</translation>
 <translation id="6939667434404433010">搜索录制内容名称</translation>
 <translation id="6939766318048400022">咖啡馆</translation>
+<translation id="6942253772720771875">分享您的反馈或描述您的问题</translation>
 <translation id="6943893908656559156">远程身份（可选）</translation>
 <translation id="6953137545147683679">金色</translation>
 <translation id="6957231940976260713">服务名称</translation>
@@ -1262,6 +1291,7 @@
 <translation id="6975620886940770104">带有发光<ph name="GLOWSCAPES_FEATURE" />的<ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">考拉</translation>
 <translation id="6977381486153291903">固件版本</translation>
+<translation id="6978396562261420054">已生成图片</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6982462588253070448">沙丘</translation>
 <translation id="7005833343836210400">设备处于离线状态</translation>
@@ -1270,10 +1300,13 @@
 <translation id="7040230719604914234">运营商</translation>
 <translation id="7040729769968826896">允许识别说话者</translation>
 <translation id="7041549558901442110">设备未连接。</translation>
+<translation id="704183341263526038">木星</translation>
 <translation id="7046522406494308071">将所有快捷键重置为默认设置？</translation>
 <translation id="7049916119678019302">请在“设置”中下载转写模型</translation>
 <translation id="7058278511608979688">结束并保存</translation>
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
+<translation id="7064209589142995848">Content Transfer</translation>
+<translation id="7065336548231472971">已选择<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 键</translation>
 <translation id="7068619307603204412">准备设备</translation>
 <translation id="7076851914315147928">选择一张壁纸</translation>
@@ -1297,7 +1330,6 @@
 <translation id="7135814714616751706">搜索快捷键</translation>
 <translation id="7138614237884624401">简化文本</translation>
 <translation id="7138668887584231801">字词太少，无法总结</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="7144954474087165241">佛塔</translation>
@@ -1315,6 +1347,7 @@
 <translation id="7182063559013288142">即时热点</translation>
 <translation id="7184043045742675738">点击任意键自定义您的按钮。使用鼠标或箭头键调整键的位置。</translation>
 <translation id="7187669805838282391">在周三</translation>
+<translation id="7205318498545665455">选择麦克风</translation>
 <translation id="7206979415662233817">服务条款</translation>
 <translation id="7210635925306941239">青色</translation>
 <translation id="7212547870105584639">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1324,6 +1357,7 @@
 <translation id="7233782086689993269">快捷键已恢复</translation>
 <translation id="725133483556299729">选择电子邮件地址</translation>
 <translation id="7255187042098209569">粉色和紫色</translation>
+<translation id="7267918995585557751">重置可确保默认启动页不是钓鱼式攻击网站。请仅使用您信任的网站。</translation>
 <translation id="7271000785316964275">古典主义</translation>
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
 <translation id="7271932918253517778">使用顶行按键的快捷键必须包含<ph name="META_KEY" />键。</translation>
@@ -1367,9 +1401,9 @@
 <translation id="7415801143053185905">HTTPS 延迟时间非常长</translation>
 <translation id="7418738250896500352">字词过多，无法简化</translation>
 <translation id="7425037327577270384">帮我写</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />转写模型已下载 <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">无法停用或移除此 APN。请务必先停用或移除已启用的<ph name="ATTACH" /> APN。</translation>
-<translation id="7453118953486228603">点击即可总结所选文字</translation>
 <translation id="7458970041932198923">若要查看和设置头像，请连接到网络并重新加载此页面。</translation>
 <translation id="7469648432129124067">检测到门户</translation>
 <translation id="7481312909269577407">前进</translation>
@@ -1399,13 +1433,15 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 触摸屏</translation>
 <translation id="757747079855995705">石头</translation>
+<translation id="7584853321964440104">无法下载。请重试，或重启 Chromebook。</translation>
 <translation id="7590883480672980941">输入设置</translation>
 <translation id="7595982850646262331">电池续航时间还剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> 管理员已设置此 <ph name="DEVICE_TYPE" /> 可供使用的时间。</translation>
 <translation id="7613724632293948900">使用鼠标或箭头键调整位置。</translation>
+<translation id="7618216277886673749">选择<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">中性</translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
-<translation id="7625095758347640998">AI 壁纸</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">上次重置时间</translation>
 <translation id="7633068090678117093">背景图片</translation>
 <translation id="763873111564339966">靛蓝色</translation>
@@ -1448,6 +1484,7 @@
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /><ph name="CAFE_TYPE" />咖啡馆</translation>
 <translation id="7841134249932030522">启用深色模式</translation>
 <translation id="7846634333498149051">键盘</translation>
+<translation id="7847923465436619066">转写语言选择器</translation>
 <translation id="7849030488395653706">北极光</translation>
 <translation id="7849737607196682401">蕾丝</translation>
 <translation id="7850320739366109486">请勿打扰</translation>
@@ -1468,6 +1505,7 @@
 <translation id="7903695460270716054">选择精选艺术作品和图片</translation>
 <translation id="7912005977894000746">返回主页面</translation>
 <translation id="7915220255123750251">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。</translation>
+<translation id="7915759923880480519">重置可保护通过您的网络发送的数据。请仅使用您信任的网络。</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7942349550061667556">红色</translation>
 <translation id="7943235353293548836">持久 keepalive 的时间间隔</translation>
@@ -1495,6 +1533,7 @@
 <translation id="8054112564438735763">米黄色</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /><ph name="CHARACTERS_SUBJECTS" />搭配<ph name="CHARACTERS_BACKGROUND" />背景</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">请连接麦克风，开始录制音频</translation>
 <translation id="8067126283828232460">已连接 APN。</translation>
 <translation id="8067208048261192356">棕色</translation>
 <translation id="8067224607978179455">删除<ph name="ACTION_NAME" /></translation>
@@ -1514,6 +1553,7 @@
 <translation id="8132480444149501833">请求流量计数器</translation>
 <translation id="8135609423982943441">Chromebook 已重置为安全的默认设置。您可以随时在“设置”中调整这些设置。</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">创建您自己的壁纸</translation>
 <translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">开发者工具</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />。</translation>
@@ -1524,6 +1564,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海滩</translation>
 <translation id="819278132617411009">使用 Google AI 提高工作效率</translation>
+<translation id="82003371436638355">如果选择“创建您自己的壁纸”，请撰写自定义提示。或者，您也可以选择“选择主题”，然后选择带下划线的字词，打造个性化的 AI 壁纸。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          当您创建自己的壁纸时，系统会将提示发送到 Google 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服务条款》和《隐私权政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。请勿包含任何个人、敏感或机密信息。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 的回答（包括与人有关的信息）未必正确无误，请务必核查。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />了解详情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
@@ -1537,7 +1587,6 @@
 <translation id="8261506727792406068">删除</translation>
 <translation id="8262870577632766028">1 小时</translation>
 <translation id="827422111966801947">靛青色</translation>
-<translation id="8281886186245836920">跳过</translation>
 <translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>
 <translation id="8291967909914612644">家用移动网络提供商所属国家/地区</translation>
 <translation id="8294431847097064396">来源</translation>
@@ -1546,6 +1595,7 @@
 <translation id="8312330582793120272">播放媒体内容</translation>
 <translation id="8318753676953949627">无图片</translation>
 <translation id="8320910311642849813">森林</translation>
+<translation id="8322464149031882595">点击此处继续</translation>
 <translation id="8329018942023753850">计算器应用</translation>
 <translation id="8336739000755212683">更改设备账号图片</translation>
 <translation id="8339024191194156249">详细了解自动启动功能</translation>
@@ -1566,6 +1616,7 @@
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企业管理</translation>
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />风格的<ph name="ART_FEATURE" />绘画</translation>
+<translation id="8409219750150841791">生成的摘要：</translation>
 <translation id="8410244574650205435">已自动检测</translation>
 <translation id="8420955526972171689">运行硬件测试以排查硬件问题</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1583,6 +1634,7 @@
 <translation id="8476942730579767658">窗口和桌面</translation>
 <translation id="8477536061607044749">平面设计</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
+<translation id="8481308460877552925">与事实不符</translation>
 <translation id="8482376765267780829">请选择一些文字进行简化</translation>
 <translation id="8483248364096924578">IP 地址</translation>
 <translation id="8491311378305535241">无法通过防火墙从 Android 应用连接到 HTTP 网站</translation>
@@ -1597,6 +1649,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶馆</translation>
 <translation id="8538236298648811558">Google AI 赋能</translation>
+<translation id="8543574988889671960">重新加载标签页</translation>
 <translation id="8550364285433943656">使用键盘按键控制游戏操作</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>
@@ -1608,6 +1661,7 @@
 <translation id="8626489604350149811">可对“<ph name="APN_NAME" />”执行的更多操作</translation>
 <translation id="86356131183441916">浅紫色</translation>
 <translation id="8647595191512746911">音频转写</translation>
+<translation id="8648578954147795914">生成的名称：</translation>
 <translation id="8650852232143958317">随时随地查看 Gmail 和 Google 云端硬盘文件</translation>
 <translation id="8651481478098336970">静音</translation>
 <translation id="8655295600908251630">版本</translation>
@@ -1631,17 +1685,17 @@
 <translation id="8747900814994928677">确认更改</translation>
 <translation id="8749478549112817787">相机背景</translation>
 <translation id="8755946156089753497">塔</translation>
-<translation id="8756235582947991808">如何利用 AI 创作内容以及一些注意事项</translation>
 <translation id="8760616037557661287">先前的提示</translation>
+<translation id="876280838467039397">下载并选择<ph name="LANGUAGE_NAME" />转写模型</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相册中的相册</translation>
 <translation id="8775713578693478175">调制解调器 APN</translation>
-<translation id="877735394245039557">正在下载模型</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">此网络可能有强制门户</translation>
 <translation id="8797082062139985406">使用 Google AI 创建名称</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8798441408945964110">提供商名称</translation>
+<translation id="8804164990146287819">隐私权政策</translation>
 <translation id="8808828119384186784">Chrome 设置</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">壁纸</translation>
@@ -1662,6 +1716,7 @@
 <translation id="8876270629542503161">设备类型是平板电脑。</translation>
 <translation id="8881098542468797602">测试成功</translation>
 <translation id="8882789155418924367">猫头鹰</translation>
+<translation id="8885038613856655272">连接麦克风</translation>
 <translation id="8892443466059986410">取消修改快捷方式</translation>
 <translation id="8897043028305808902">文件已重命名</translation>
 <translation id="8898840733695078011">信号强度</translation>
@@ -1687,11 +1742,13 @@
 <translation id="8961025972867871808">企鹅</translation>
 <translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
+<translation id="8972061581514441296">点击此处返回</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{扫描}=1{扫描 {NUMBER_OF_PAGES} 个页面}other{扫描 {NUMBER_OF_PAGES} 个页面}}</translation>
 <translation id="89945434909472341">村庄</translation>
 <translation id="8997710128084572139">设备电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
+<translation id="9000871120886759611">重置可确保您能够以首选语言访问信息。请确保仅使用首选语言。</translation>
 <translation id="9003499805101629690">披萨</translation>
 <translation id="9003704114456258138">频率</translation>
 <translation id="901834265349196618">电子邮件</translation>
@@ -1747,11 +1804,14 @@
 <translation id="9218016617214286986">显示已知的 APN</translation>
 <translation id="932327136139879170">首页</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">请确保麦克风已连接，或尝试重启 Chromebook</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="950520315903467048">缺少表示<ph name="DIRECTION" />的按键。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">对整个录音中的各种语音进行比较，以便在转写内容中体现出每位讲者的说话内容和说话时间</translation>
 <translation id="952992212772159698">未激活</translation>
 <translation id="95718197892796296">黏土</translation>
+<translation id="959792926760890141">安全重置会关闭 Chrome 浏览器扩展程序，并将网络和其他设置重置为安全的默认设置。
+          默认搜索引擎将会重置，但标签页、文件、Cookie 和历史记录不会更改。</translation>
 <translation id="960719561871045870">运营商代码</translation>
 <translation id="965918541715156800">黄色和蓝绿色</translation>
 <translation id="966787709310836684">菜单</translation>

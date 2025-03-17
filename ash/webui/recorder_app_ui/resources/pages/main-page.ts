@@ -7,6 +7,7 @@ import '../components/cra/cra-icon-button.js';
 import '../components/cra/cra-icon-dropdown.js';
 import '../components/cra/cra-icon.js';
 import '../components/delete-recording-dialog.js';
+import '../components/educational-nudge.js';
 import '../components/mic-selection-button.js';
 import '../components/onboarding-dialog.js';
 import '../components/recording-file-list.js';
@@ -14,6 +15,7 @@ import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
 import '../components/system-audio-consent-dialog.js';
+import '../components/error-dialog.js';
 import '../components/directives/with-tooltip.js';
 
 import {
@@ -57,10 +59,12 @@ import {setInitialAudio} from './playback-page.js';
 export class MainPage extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --actions-padding-horizontal: 44px;
       --actions-padding-vertical: 24px;
       --record-button-height: 96px;
 
       @container style(--small-viewport: 1) {
+        --actions-padding-horizontal: 36px;
         --record-button-height: 80px;
       }
 
@@ -80,6 +84,10 @@ export class MainPage extends ReactiveLitElement {
       position: absolute;
     }
 
+    mic-selection-button {
+      anchor-name: --mic-selection-button;
+    }
+
     #root {
       background-color: var(--cros-sys-header);
       height: 100%;
@@ -93,11 +101,13 @@ export class MainPage extends ReactiveLitElement {
       border-radius: var(--border-radius-rounded-with-short-side);
       display: flex;
       flex-flow: row;
-      gap: 24px;
+      gap: 28px;
       height: fit-content;
       inset: 0;
       margin: auto auto 32px;
-      padding: var(--actions-padding-vertical) 44px;
+      padding:
+        var(--actions-padding-vertical)
+        var(--actions-padding-horizontal);
       position: absolute;
       width: fit-content;
     }
@@ -117,30 +127,23 @@ export class MainPage extends ReactiveLitElement {
       margin: 0;
     }
 
+    #choose-mic-nudge {
+      flex-flow: row;
+      position: fixed;
+      position-anchor: --mic-selection-button;
+      position-area: left;
+
+      @container style(--small-viewport: 1) {
+        flex-flow: column-reverse;
+        position-area: bottom;
+      }
+    }
+
     #start-record-nudge {
-      align-items: center;
-      display: flex;
       flex-flow: column;
       position: absolute;
       position-anchor: --record-button;
       position-area: top span-all;
-
-      & > div {
-        background: var(--cros-sys-primary);
-        border-radius: var(--border-radius-rounded-with-short-side);
-        color: var(--cros-sys-on_primary);
-        font: var(--cros-body-1-font);
-      }
-
-      & > .dot {
-        height: 8px;
-        margin: 4px;
-        width: 8px;
-      }
-
-      & > .text {
-        padding: 8px 16px;
-      }
     }
   `;
 
@@ -163,6 +166,10 @@ export class MainPage extends ReactiveLitElement {
   private readonly recordingFileList = createRef<RecordingFileList>();
 
   private readonly currentPlayingId = signal<string|null>(null);
+
+  private readonly hasOpenedMicMenu = computed(
+    () => settings.value.hasOpenedMicMenu,
+  );
 
   private readonly actionsContainerRef = createRef<HTMLElement>();
 
@@ -200,6 +207,9 @@ export class MainPage extends ReactiveLitElement {
   });
 
   private lastDeleteId: string|null = null;
+
+  // Whether there's a mic-connection-error that is not consented.
+  private readonly micConnectionErrorOccurred = signal(false);
 
   private get settingsMenu(): SettingsMenu|null {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
@@ -284,10 +294,11 @@ export class MainPage extends ReactiveLitElement {
     // TODO(pihsun): The typed route accepts string only as parameters for now.
     // Have some way to integrate with schema.ts so this is not needed?
     const includeSystemAudio = settings.value.includeSystemAudio.toString();
-    const micId = assertExists(
-      this.microphoneManager.getSelectedMicId().value,
-      'There is no selected microphone.',
-    );
+    const micId = this.microphoneManager.getSelectedMicId().value;
+    if (micId === null) {
+      this.micConnectionErrorOccurred.value = true;
+      return;
+    }
     navigateTo('record', {
       includeSystemAudio,
       micId,
@@ -299,11 +310,37 @@ export class MainPage extends ReactiveLitElement {
       return nothing;
     }
     return html`
-      <div id="start-record-nudge">
-        <div class="text">${i18n.mainStartRecordNudge}</div>
-        <div class="dot"></div>
-      </div>
+      <educational-nudge id="start-record-nudge">
+        ${i18n.mainStartRecordNudge}
+      </educational-nudge>
     `;
+  }
+
+  private renderChooseMicNudge() {
+    if (this.hasOpenedMicMenu.value) {
+      return nothing;
+    }
+    return html`
+      <educational-nudge id="choose-mic-nudge">
+        ${i18n.mainChooseMicNudge}
+      </educational-nudge>
+    `;
+  }
+
+  private renderMicSelectionButton() {
+    function onClick() {
+      settings.mutate((s) => {
+        s.hasOpenedMicMenu = true;
+      });
+    }
+
+    return [
+      this.renderChooseMicNudge(),
+      html`<mic-selection-button
+        @click=${onClick}
+        @trigger-system-audio-consent=${this.showSystemAudioConsentDialog}
+      ></mic-selection-button>`,
+    ];
   }
 
   private renderRecordButton() {
@@ -361,6 +398,8 @@ export class MainPage extends ReactiveLitElement {
 
   override render(): RenderResult {
     const onboarding = settings.value.onboardingDone !== true;
+    const micConnectionError = this.micConnectionErrorOccurred.value;
+    const inertRoot = onboarding || micConnectionError;
 
     return html`
       <onboarding-dialog
@@ -381,7 +420,14 @@ export class MainPage extends ReactiveLitElement {
       <export-dialog ${ref(this.exportDialog)}></export-dialog>
       <recording-info-dialog ${ref(this.recordingInfoDialog)}>
       </recording-info-dialog>
-      <div id="root" ?inert=${onboarding}>
+      <error-dialog
+        header=${i18n.micConnectionErrorDialogHeader}
+        ?open=${micConnectionError}
+        @close=${() => this.micConnectionErrorOccurred.value = false}
+      >
+        ${i18n.micConnectionErrorDialogDescription}
+      </error-dialog>
+      <div id="root" ?inert=${inertRoot}>
         <recording-file-list
           .recordingMetadataMap=${this.recordingMetadataMap.value}
           .inlinePlayingItem=${this.inlinePlayingItemInfo.value}
@@ -400,9 +446,7 @@ export class MainPage extends ReactiveLitElement {
           part="actions"
           ${ref(this.actionsContainerRef)}
         >
-          <mic-selection-button
-            @trigger-system-audio-consent=${this.showSystemAudioConsentDialog}
-          ></mic-selection-button>
+          ${this.renderMicSelectionButton()}
           ${this.renderRecordButton()}${this.renderSettingsButton()}
         </div>
         <settings-menu></settings-menu>

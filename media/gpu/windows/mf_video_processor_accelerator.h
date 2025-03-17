@@ -54,11 +54,15 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoProcessorAccelerator {
                   std::unique_ptr<MediaLog> media_log);
 
   HRESULT Convert(scoped_refptr<VideoFrame> frame, IMFSample** sample_out);
-  HRESULT Convert(IMFSample* sample, IMFSample** sample_out);
+  HRESULT Convert(IMFSample* sample,
+                  VideoPixelFormat input_format,
+                  IMFSample** sample_out);
+  HRESULT UpdateOutputSize(gfx::Size output_visible_size);
 
  private:
   bool InitializeVideoProcessor(const Config& config);
-  HRESULT AdjustInputSizeIfNeeded(IMFSample* sample);
+  HRESULT AdjustInputTypeIfNeeded(IMFSample* sample,
+                                  VideoPixelFormat input_format);
 
   std::unique_ptr<MediaLog> media_log_;
 

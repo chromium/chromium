@@ -79,10 +79,8 @@ class DomKey {
                 "suspicious representation change");
 
  public:
-  // Following block is a technique to add inlined constant with C++14
-  // compatible way. These can be replaced with inline constexpr after
-  // C++17 support.
-  enum : Base { NONE = 0 };
+  static constexpr Base NONE = 0;
+
 // |dom_key_data.inc| describes the non-printable DomKey values, and is
 // included here to create constants for them in the DomKey:: scope.
 #define DOM_KEY_MAP_DECLARATION_START enum Key : Base {

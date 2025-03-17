@@ -19,10 +19,13 @@ static_library("core_public") {
   visibility = [ ":*" ]
   sources = [
     "collaboration_controller_delegate.h",
+    "collaboration_flow_type.h",
     "collaboration_service.h",
     "service_status.cc",
     "service_status.h",
   ]
+
+  deps = [ "//ui/base" ]
 
   public_deps = [
     ":features",
@@ -30,6 +33,7 @@ static_library("core_public") {
     "//components/data_sharing/public",
     "//components/keyed_service/core",
     "//components/saved_tab_groups/public",
+    "//components/strings:components_strings_grit",
     "//url",
   ]
 }
@@ -56,14 +60,38 @@ static_library("messaging_public") {
     "messaging/message.cc",
     "messaging/message.h",
     "messaging/messaging_backend_service.h",
+    "messaging/util.cc",
+    "messaging/util.h",
   ]
+
+  deps = [ "//ui/base" ]
 
   public_deps = [
     "//base",
     "//components/data_sharing/public",
     "//components/keyed_service/core",
     "//components/saved_tab_groups/public",
+    "//components/strings:components_strings_grit",
     "//components/tab_groups",
+  ]
+}
+
+group("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/collaboration:unit_tests" ]
+
+  deps = [ ":messaging_unit_tests" ]
+}
+
+source_set("messaging_unit_tests") {
+  testonly = true
+  sources = [ "messaging/util_unittest.cc" ]
+  deps = [
+    ":messaging_public",
+    "//base",
+    "//testing/gtest",
+    "//ui/base",
   ]
 }
 
@@ -95,6 +123,7 @@ if (is_android) {
       "//components/tab_groups:tab_groups_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
     ]
 
     srcjar_deps = [
@@ -106,6 +135,7 @@ if (is_android) {
   java_cpp_enum("core_enums_java") {
     sources = [
       "collaboration_controller_delegate.h",
+      "collaboration_flow_type.h",
       "service_status.h",
     ]
   }
@@ -123,7 +153,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/collaboration/messaging/ActivityLogItem.java",
       "android/java/src/org/chromium/components/collaboration/messaging/ActivityLogQueryParams.java",
-      "android/java/src/org/chromium/components/collaboration/messaging/EitherId.java",
       "android/java/src/org/chromium/components/collaboration/messaging/InstantMessage.java",
       "android/java/src/org/chromium/components/collaboration/messaging/MessageAttribution.java",
       "android/java/src/org/chromium/components/collaboration/messaging/MessageUtils.java",
@@ -163,11 +192,24 @@ if (is_android) {
       "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
       "//components/saved_tab_groups/public:java",
+      "//components/signin/public/android:java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
       "//url:gurl_junit_test_support",
       "//url:url_java",
+    ]
+  }
+
+  static_library("conversion_utils") {
+    sources = [
+      "android/conversion_utils.cc",
+      "android/conversion_utils.h",
+    ]
+
+    deps = [
+      ":public",
+      "//base",
     ]
   }
 }

@@ -166,17 +166,19 @@ enum class VariableRefreshRateState {
 };
 
 // Defines the float values closest to repeating decimal scale factors.
-constexpr float kDsf_1_777 = 1.77777779102325439453125f;
-constexpr float kDsf_2_252 = 2.2522523403167724609375f;
-constexpr float kDsf_2_666 = 2.6666667461395263671875f;
-constexpr float kDsf_1_8 = 1.80000007152557373046875f;
-constexpr char kDsfStr_1_777[] = "1.77777779102325439453125";
-constexpr char kDsfStr_2_252[] = "2.2522523403167724609375";
-constexpr char kDsfStr_2_666[] = "2.6666667461395263671875";
-constexpr char kDsfStr_1_8[] = "1.80000007152557373046875";
+inline constexpr float kDsf_1_333 = 1.33333337306976318359375f;
+inline constexpr float kDsf_1_777 = 1.77777779102325439453125f;
+inline constexpr float kDsf_2_252 = 2.2522523403167724609375f;
+inline constexpr float kDsf_2_666 = 2.6666667461395263671875f;
+inline constexpr float kDsf_1_8 = 1.80000007152557373046875f;
+inline constexpr char kDsfStr_1_333[] = "1.33333337306976318359375";
+inline constexpr char kDsfStr_1_777[] = "1.77777779102325439453125";
+inline constexpr char kDsfStr_2_252[] = "2.2522523403167724609375";
+inline constexpr char kDsfStr_2_666[] = "2.6666667461395263671875";
+inline constexpr char kDsfStr_1_8[] = "1.80000007152557373046875";
 
 // The total number of display zoom factors to enumerate.
-constexpr int kNumOfZoomFactors = 9;
+inline constexpr int kNumOfZoomFactors = 9;
 
 // A pair representing the list of zoom values for a given minimum display
 // resolution width.
@@ -191,7 +193,7 @@ using ZoomListBucketDsf =
 // find its associated list of zoom values by simply finding the last bucket
 // with a width less than the given resolution width.
 // Ex. A resolution width of 1024, we will use the bucket with the width of 960.
-constexpr std::array<ZoomListBucket, 8> kZoomListBuckets{{
+inline constexpr std::array<ZoomListBucket, 8> kZoomListBuckets{{
     {0, {0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f}},
     {720, {0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f}},
     {800, {0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f, 1.15f}},
@@ -206,9 +208,11 @@ constexpr std::array<ZoomListBucket, 8> kZoomListBuckets{{
 // zoom values that includes a zoom level to go to the native resolution of the
 // display. Ensure that the list of DSFs are in sync with the list of default
 // device scale factors in display_change_observer.cc.
-constexpr std::array<ZoomListBucketDsf, 9> kZoomListBucketsForDsf{{
+inline constexpr std::array<ZoomListBucketDsf, 10> kZoomListBucketsForDsf{{
     {1.2f, {0.7f, 0.8f, 1.0f / 1.2f, 0.9f, 0.95f, 1.0f, 1.1f, 1.2f, 1.3f}},
     {1.25f, {0.7f, 1.f / 1.25f, 0.85f, 0.9f, 0.95f, 1.f, 1.1f, 1.2f, 1.3f}},
+    {kDsf_1_333,
+     {0.7f, 1.f / kDsf_1_333, 0.85f, 0.9f, 0.95f, 1.f, 1.1f, 1.2f, 1.3f}},
     {1.6f, {1.f / 1.6f, 0.7f, 0.75f, 0.8f, 0.85f, 0.9f, 1.f, 1.15f, 1.3f}},
     {kDsf_1_777,
      {1.f / kDsf_1_777, 0.65f, 0.75f, 0.8f, 0.9f, 1.f, 1.1f, 1.2f, 1.3f}},
@@ -223,25 +227,31 @@ constexpr std::array<ZoomListBucketDsf, 9> kZoomListBucketsForDsf{{
 }};
 
 // Valid Displays
-constexpr gfx::Size kWXGA_768{1366, 768};
-constexpr gfx::Size kWXGA_800{1280, 800};
-constexpr gfx::Size kHD_PLUS{1600, 900};
-constexpr gfx::Size kFHD{1920, 1080};
-constexpr gfx::Size kSHD{1280, 720};
-constexpr gfx::Size kWUXGA{1920, 1200};
+inline constexpr gfx::Size kWXGA_768{1366, 768};
+inline constexpr gfx::Size kWXGA_800{1280, 800};
+inline constexpr gfx::Size kHD_PLUS{1600, 900};
+inline constexpr gfx::Size kFHD{1920, 1080};
+inline constexpr gfx::Size kSHD{1280, 720};
+inline constexpr gfx::Size kWUXGA{1920, 1200};
+inline constexpr gfx::Size kFHD_1280{1920, 1280};
+inline constexpr gfx::Size k2K{2256, 1504};
+inline constexpr gfx::Size k4K_UHD{3840, 2160};
+inline constexpr gfx::Size k4K_WUHD(5120, 2160);
+inline constexpr gfx::Size k8k_UHD(7680, 4320);
+inline constexpr gfx::Size kQHD{2560, 1440};
+inline constexpr gfx::Size kWQXGA{2560, 1600};
+
 // Dru
-constexpr gfx::Size kQXGA_P{1536, 2048};
-constexpr gfx::Size kQHD{2560, 1440};
+inline constexpr gfx::Size kQXGA_P{1536, 2048};
+
 // Chell
-constexpr gfx::Size kQHD_PLUS{3200, 1800};
-constexpr gfx::Size k4K_UHD{3840, 2160};
+inline constexpr gfx::Size kQHD_PLUS{3200, 1800};
 
 // Chromebook special panels
-constexpr gfx::Size kLux{2160, 1440};
-constexpr gfx::Size kAkaliQHD{2256, 1504};
-constexpr gfx::Size kLink{2560, 1700};
-constexpr gfx::Size kEveDisplay{2400, 1600};
-constexpr gfx::Size kNocturne{3000, 2000};
+inline constexpr gfx::Size kLux{2160, 1440};
+inline constexpr gfx::Size kLink{2560, 1700};
+inline constexpr gfx::Size kEveDisplay{2400, 1600};
+inline constexpr gfx::Size kNocturne{3000, 2000};
 
 enum SizeErrorCheckType {
   kExact,    // Exact match.
@@ -249,14 +259,20 @@ enum SizeErrorCheckType {
   kSkip,     // Skip testing the error.
 };
 
-constexpr struct Data {
+struct DisplayData {
   const float diagonal_size;
   const gfx::Size resolution;
   const float expected_dsf;
   const gfx::Size expected_dp_size;
   const bool bad_range;
   const SizeErrorCheckType screenshot_size_error;
-} display_configs[] = {
+};
+
+// List of known ChromeOS display. Any new [diagonal size, resolution] entries
+// should also be added to the display list used for the ui.DisplayValidation
+// tast test.
+// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/displayvalidation/utils.go
+inline constexpr DisplayData lcd_display_configs[] = {
     // clang-format off
     // inch, resolution, DSF,        size in DP,  Bad range, size error
     {9.7f,   kQXGA_P,    2.0f,       {768, 1024}, false,     kExact},
@@ -277,11 +293,16 @@ constexpr struct Data {
     {13.1f,  k4K_UHD,    kDsf_2_666, {1440, 810}, false,     kExact},
     {13.3f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
     {13.3f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
+    {13.3f,  k2K,        1.6f,       {1410, 940}, false,     kExact},
     {13.3f,  k4K_UHD,    kDsf_2_666, {1440, 810}, false,     kExact},
     {13.5f,  kFHD,       1.25f,      {1536, 864}, false,     kExact},
+    {13.5f,  kFHD_1280,  1.25f,      {1536, 1024},true,      kExact},
+    {13.5f,  k2K,        1.6f,       {1410, 940}, false,     kExact},
+    {13.6f,  k2K,        1.6f,       {1410, 940}, false,     kExact},
     {14.f,   kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
     {14.f,   kFHD,       1.25f,      {1536, 864}, false,     kExact},
     {14.f,   kWUXGA,     1.25f,      {1536, 960}, false,     kExact},
+    {14.f,   kWQXGA,     1.6f,       {1600, 1000},true,      kExact},
     {14.f,   k4K_UHD,    kDsf_2_666, {1440, 810}, false,     kExact},
     {15.6f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
     {15.6f,  kWUXGA,     1.f,        kWUXGA,      false,     kExact},
@@ -299,14 +320,16 @@ constexpr struct Data {
     {12.85f, kLink,      2.0f,       {1280, 850}, false,     kExact},
     {12.3f,  kNocturne,  kDsf_2_252, {1332, 888}, false,     kEpsilon},
     {13.3f,  kQHD_PLUS,  2.f,        {1600, 900}, false,     kExact},
-    {13.3f,  kAkaliQHD,  1.6f,       {1410, 940}, false,     kExact},
-    {13.6f,  kAkaliQHD,  1.6f,       {1410, 940}, false,     kExact},
 
     // Chromebase
     {19.5,   kHD_PLUS,   1.f,        kHD_PLUS,    true,      kExact},
     {21.5f,  kFHD,       1.f,        kFHD,        true,      kExact},
     {23.8f,  kFHD,       1.f,        kFHD,        true,      kExact},
-
+};
+inline constexpr DisplayData oled_display_configs[] = {
+    {13.3f, k4K_UHD,     kDsf_2_666, {1440, 810}, false,     kExact},
+    {14.f,   kWUXGA,     kDsf_1_333, {1440, 900}, false,     kExact},
+    {15.6f,  kFHD,       1.25,       {1536, 864}, false,     kExact},
     // clang-format on
 };
 

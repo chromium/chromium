@@ -35,6 +35,10 @@ struct UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece> {
     return std::get<SkBitmap>(input_piece);
   }
 
+  static const ml::AudioBuffer& audio(const ml::InputPiece& input_piece) {
+    return std::get<ml::AudioBuffer>(input_piece);
+  }
+
   static bool unknown_type(const ml::InputPiece& input_piece) {
     return std::get<bool>(input_piece);
   }
@@ -59,6 +63,27 @@ struct EnumTraits<on_device_model::mojom::ModelPerformanceHint,
       ml::ModelPerformanceHint input);
   static bool FromMojom(on_device_model::mojom::ModelPerformanceHint input,
                         ml::ModelPerformanceHint* output);
+};
+
+template <>
+struct StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer> {
+  static int32_t sample_rate(const ml::AudioBuffer& input) {
+    return input.sample_rate_hz;
+  }
+
+  static int32_t channel_count(const ml::AudioBuffer& input) {
+    return input.num_channels;
+  }
+
+  static int32_t frame_count(const ml::AudioBuffer& input) {
+    return input.num_frames;
+  }
+
+  static const std::vector<float>& data(const ml::AudioBuffer& input) {
+    return input.data;
+  }
+
+  static bool Read(on_device_model::mojom::AudioDataDataView in, ml::AudioBuffer* out);
 };
 
 }  // namespace mojo

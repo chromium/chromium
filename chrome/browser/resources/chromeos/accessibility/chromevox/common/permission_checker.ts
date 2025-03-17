@@ -6,7 +6,7 @@
  * @fileoverview Handles validation of current permissions before performing an
  * action.
  */
-import {Command} from './command.js';
+import type {Command} from './command.js';
 import {CommandStore} from './command_store.js';
 
 import SessionType = chrome.chromeosInfoPrivate.SessionType;

@@ -153,7 +153,7 @@ export class NamingController {
     if (!item) {
       return;
     }
-    const label = item.querySelector<HTMLDivElement>('.filename-label')!;
+    const label = item.querySelector<HTMLElement>('.filename-label')!;
     const input = this.listContainer_.renameInput;
     const dataModel = this.listContainer_.currentList.dataModel!;
     const currentEntry =

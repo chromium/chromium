@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "ui/wm/core/cursor_util.h"
 
+#include <algorithm>
+#include <array>
 #include <cfloat>
 #include <memory>
 #include <optional>
@@ -18,10 +20,10 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -253,7 +255,8 @@ struct CursorResourceData {
 
 // Cursor resource data indexed by CursorType. Make sure to respect the order
 // defined at ui/base/cursor/mojom/cursor_type.mojom.
-constexpr std::optional<CursorResourceData> kNormalCursorResourceData[] = {
+constexpr auto kNormalCursorResourceData = std::to_array<
+    std::optional<CursorResourceData>>({
     {{CursorType::kPointer, IDR_AURA_CURSOR_PTR, {4, 4}, {7, 7}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_CROSSHAIR, {12, 12}, {24, 24}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_HAND, {9, 4}, {19, 8}}},
@@ -370,12 +373,13 @@ constexpr std::optional<CursorResourceData> kNormalCursorResourceData[] = {
       IDR_AURA_CURSOR_NORTH_WEST_SOUTH_EAST_NO_RESIZE,
       {11, 11},
       {24, 23}}},
-};
+});
 
 static_assert(std::size(kNormalCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);
 
-constexpr std::optional<CursorResourceData> kLargeCursorResourceData[] = {
+constexpr auto kLargeCursorResourceData = std::to_array<
+    std::optional<CursorResourceData>>({
     {{CursorType::kPointer, IDR_AURA_CURSOR_BIG_PTR, {10, 10}, {20, 20}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_BIG_CROSSHAIR, {30, 32}, {60, 64}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_BIG_HAND, {25, 7}, {50, 14}}},
@@ -503,7 +507,7 @@ constexpr std::optional<CursorResourceData> kLargeCursorResourceData[] = {
       IDR_AURA_CURSOR_BIG_NORTH_WEST_SOUTH_EAST_NO_RESIZE,
       {32, 31},
       {64, 62}}},
-};
+});
 
 static_assert(std::size(kLargeCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);
@@ -515,7 +519,8 @@ std::optional<ui::CursorData> GetCursorData(
     ui::CursorSize size,
     float scale,
     std::optional<int> target_cursor_size_in_px,
-    display::Display::Rotation rotation) {
+    display::Display::Rotation rotation,
+    SkColor color) {
   DCHECK_NE(type, CursorType::kCustom);
 
   int resource_id;
@@ -567,6 +572,12 @@ std::optional<ui::CursorData> GetCursorData(
       CreateBitmapsFromAnimatedLottie(resource_id, scaled_size, scale,
                                       rotation_transform, type, &bitmaps);
     }
+  }
+
+  if (color != ui::kDefaultCursorColor) {
+    std::for_each(bitmaps.begin(), bitmaps.end(), [&](SkBitmap& bitmap) {
+      bitmap = GetColorAdjustedBitmap(bitmap, color);
+    });
   }
 
   return ui::CursorData(std::move(bitmaps), std::move(hotspot), scale);
@@ -651,6 +662,51 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
   }
   *is_animated = resource->is_animated;
   return true;
+}
+
+SkBitmap GetColorAdjustedBitmap(const SkBitmap& bitmap, SkColor cursor_color) {
+  // Recolor the black and greyscale parts of the image based on
+  // `cursor_color`. Do not recolor pure white or tinted portions of the image,
+  // this ensures we do not impact the colored portions of cursors or the
+  // transition between the colored portion and white outline.
+  // TODO(b:376929449): Programmatically find a way to recolor the white
+  // parts in order to draw a black outline, but without impacting cursors
+  // like noDrop which contained tinted portions. Or, add new assets with
+  // black and white inverted for easier re-coloring.
+  SkBitmap recolored;
+  recolored.allocN32Pixels(bitmap.width(), bitmap.height());
+  recolored.eraseARGB(0, 0, 0, 0);
+  SkCanvas canvas(recolored);
+  canvas.drawImage(bitmap.asImage(), 0, 0);
+  color_utils::HSL cursor_hsl;
+  color_utils::SkColorToHSL(cursor_color, &cursor_hsl);
+  for (int y = 0; y < bitmap.height(); ++y) {
+    for (int x = 0; x < bitmap.width(); ++x) {
+      const SkColor color = bitmap.getColor(x, y);
+      // If the alpha is lower than 1, it's transparent, skip it.
+      if (SkColorGetA(color) < 1) {
+        continue;
+      }
+      // Convert to HSL: We want to change the hue and saturation, and
+      // map the lightness from 0-100 to cursor_hsl.l-100. This means that
+      // things which were black (l=0) become the cursor color lightness, and
+      // things which were white (l=100) stay white.
+      color_utils::HSL hsl;
+      color_utils::SkColorToHSL(color, &hsl);
+      // If it has color, do not change it.
+      if (hsl.s > 0.01) {
+        continue;
+      }
+      color_utils::HSL result;
+      result.h = cursor_hsl.h;
+      result.s = cursor_hsl.s;
+      result.l = hsl.l * (1 - cursor_hsl.l) + cursor_hsl.l;
+      SkPaint paint;
+      paint.setColor(color_utils::HSLToSkColor(result, SkColorGetA(color)));
+      canvas.drawRect(SkRect::MakeXYWH(x, y, 1, 1), paint);
+    }
+  }
+  return recolored;
 }
 
 }  // namespace wm

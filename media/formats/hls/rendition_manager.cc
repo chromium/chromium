@@ -271,7 +271,7 @@ void RenditionManager::InitializeVariantMaps(
   };
 
   // All variants are now added, and should be sorted.
-  base::ranges::sort(variant_ordering, compare);
+  std::ranges::sort(variant_ordering, compare);
   for (const VariantMetadata& stats : std::move(variant_ordering)) {
     selectable_variants_.try_emplace(variant_id_gen_.GenerateNextId(), stats);
   }

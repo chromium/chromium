@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_variant.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -75,7 +76,7 @@ class ThemeTrackingAnimatedImageViewTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  SkColor GetSimulatedBackgroundColor() const {
+  ui::ColorVariant GetSimulatedBackgroundColor() const {
     return is_dark_ ? SK_ColorBLACK : SK_ColorWHITE;
   }
 

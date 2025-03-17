@@ -38,8 +38,14 @@ class MODULES_EXPORT NavigatorWebInstall final
   static ScriptPromise<WebInstallResult> install(
       ScriptState* script_state,
       Navigator& navigator,
-      const String& manifest_id,
       const String& install_url,
+      ExceptionState& exception_state);
+
+  static ScriptPromise<WebInstallResult> install(
+      ScriptState* script_state,
+      Navigator& navigator,
+      const String& install_url,
+      const String& manifest_id,
       ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
@@ -47,17 +53,18 @@ class MODULES_EXPORT NavigatorWebInstall final
  private:
   static NavigatorWebInstall& From(Navigator&);
 
-  ScriptPromise<WebInstallResult> InstallImpl(ScriptState* script_state,
-                                              ExceptionState& exception_state);
-  ScriptPromise<WebInstallResult> InstallImpl(ScriptState* script_state,
-                                              const String& manifest_id,
-                                              const String& install_url,
-                                              ExceptionState& exception_state);
+  // `install_url` and/or `manifest_id` may be empty depending on which of the 3
+  // versions of `install()` was called.
+  ScriptPromise<WebInstallResult> InstallImpl(
+      ScriptState* script_state,
+      const std::optional<String>& install_url,
+      const std::optional<String>& manifest_id,
+      ExceptionState& exception_state);
   HeapMojoRemote<mojom::blink::WebInstallService>& GetService();
   void OnConnectionError();
   bool CheckPreconditionsMaybeThrow(ScriptState*, ExceptionState&);
-  KURL ResolveManifestId(const String& manifest_id,
-                         ExceptionState& exception_state);
+  bool IsInstallUrlValid(const String& install_url);
+  KURL ValidateAndResolveManifestId(const String& manifest_id);
 
   HeapMojoRemote<mojom::blink::WebInstallService> service_;
 };

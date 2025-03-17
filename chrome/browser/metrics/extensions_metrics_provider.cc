@@ -194,12 +194,15 @@ ExtensionInstallProto::InstallLocation GetInstallLocation(
 
 ExtensionInstallProto::ActionType GetActionType(const Manifest& manifest) {
   // Arbitrary order; each of these is mutually exclusive.
-  if (manifest.FindKey(extensions::manifest_keys::kBrowserAction))
+  if (manifest.FindKey(extensions::manifest_keys::kBrowserAction)) {
     return ExtensionInstallProto::BROWSER_ACTION;
-  if (manifest.FindKey(extensions::manifest_keys::kPageAction))
+  }
+  if (manifest.FindKey(extensions::manifest_keys::kPageAction)) {
     return ExtensionInstallProto::PAGE_ACTION;
-  if (manifest.FindKey(extensions::manifest_keys::kSystemIndicator))
-    return ExtensionInstallProto::SYSTEM_INDICATOR;
+  }
+  if (manifest.FindKey(extensions::manifest_keys::kAction)) {
+    return ExtensionInstallProto::ACTION;
+  }
   return ExtensionInstallProto::NO_ACTION;
 }
 
@@ -220,7 +223,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 25),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 26),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -261,7 +264,7 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::REINSTALL},
       {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
        ExtensionInstallProto::NOT_ALLOWLISTED},
-      {extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED,
+      {extensions::disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED,
        ExtensionInstallProto::NOT_ASH_KEEPLISTED},
       {extensions::disable_reason::
            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
@@ -270,29 +273,22 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
       {extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
        ExtensionInstallProto::UNSUPPORTED_DEVELOPER_EXTENSION},
+      {extensions::disable_reason::DISABLE_UNKNOWN,
+       ExtensionInstallProto::UNKNOWN},
   };
 
-  int disable_reasons = prefs->GetDisableReasons(id);
-  DCHECK_EQ(
-      0, disable_reasons &
-             extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC)
-      << "Encountered bad disable reason: " << disable_reasons;
+  extensions::DisableReasonSet disable_reasons = prefs->GetDisableReasons(id);
+  DCHECK(!disable_reasons.contains(
+      extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC))
+      << "Encountered bad disable reason: DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC";
   std::vector<ExtensionInstallProto::DisableReason> reasons;
   for (const auto& entry : disable_reason_map) {
-    int mask = static_cast<int>(entry.disable_reason);
-    if ((disable_reasons & mask) != 0) {
+    extensions::disable_reason::DisableReason disable_reason =
+        entry.disable_reason;
+    if (disable_reasons.contains(disable_reason)) {
       reasons.push_back(entry.proto_disable_reason);
-      disable_reasons &= ~mask;
+      disable_reasons.erase(disable_reason);
     }
-  }
-  if (disable_reasons !=
-      extensions::disable_reason::DisableReason::DISABLE_NONE) {
-    // Record any unexpected disable reasons - these are likely deprecated
-    // reason(s) that have not been migrated over in a few clients. Use this
-    // histogram to determine how many clients are affected to decide what
-    // action to take (if any).
-    base::UmaHistogramSparse("Extensions.DeprecatedDisableReasonsObserved",
-                             disable_reasons);
   }
 
   return reasons;

@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /**
  * One of the concrete {@link MessageService} that only serves {@link MessageType#PRICE_MESSAGE}.
@@ -46,19 +47,15 @@ public class PriceMessageService extends MessageService {
         }
 
         @Override
-        public boolean equals(Object object) {
-            if (!(object instanceof PriceTabData)) return false;
-            PriceTabData priceTabData = (PriceTabData) object;
-            return this.bindingTabId == priceTabData.bindingTabId
-                    && this.priceDrop.equals(priceTabData.priceDrop);
+        public boolean equals(Object obj) {
+            return (obj instanceof PriceTabData other)
+                    && bindingTabId == other.bindingTabId
+                    && Objects.equals(priceDrop, other.priceDrop);
         }
 
         @Override
         public int hashCode() {
-            int result = 17;
-            result = 31 * result + bindingTabId;
-            result = 31 * result + (priceDrop == null ? 0 : priceDrop.hashCode());
-            return result;
+            return Objects.hash(bindingTabId, priceDrop);
         }
     }
 

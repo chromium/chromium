@@ -29,8 +29,6 @@
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
@@ -112,10 +110,6 @@ void ViewsScreenLocker::HandleAuthenticateUserWithPasswordOrPin(
   user_context->SetSyncPasswordData(password_manager::PasswordHashData(
       account_id.GetUserEmail(), base::UTF8ToUTF16(password),
       false /*force_update*/));
-  if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    LOG(FATAL) << "Incorrect Active Directory user type "
-               << user_context->GetUserType();
-  }
 
   auto on_authenticated = base::BindOnce(&ViewsScreenLocker::OnAuthenticated,
                                          weak_factory_.GetWeakPtr(), account_id,

@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -73,7 +74,7 @@ constexpr PushNotificationReportInfo kPushNotificationReportInfos[] = {
 // Records for histogram for `info` for an user signed-in with `gaia_id`.
 void RecordHistogramForPushNotificationReportInfo(
     const PushNotificationReportInfo& info,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   if (info.requires_signed_in_identity && gaia_id.empty()) {
     return;
   }
@@ -84,8 +85,8 @@ void RecordHistogramForPushNotificationReportInfo(
                                     info.client_id, gaia_id));
 }
 
-// Returns the signed-in `gaia_id` or an empty string if not signed-in.
-std::string GetSignedInGaiaId(ProfileIOS* profile) {
+// Returns the signed-in `gaia_id` or an empty value if not signed-in.
+GaiaId GetSignedInGaiaId(ProfileIOS* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -97,7 +98,7 @@ std::string GetSignedInGaiaId(ProfileIOS* profile) {
     return identity_manager->GetPrimaryAccountInfo(consent_level).gaia;
   }
 
-  return std::string();
+  return GaiaId();
 }
 
 }  // namespace
@@ -120,7 +121,7 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
   // Report the enabled client IDs for each loaded profile.
   for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    const std::string gaia_id = GetSignedInGaiaId(profile);
+    const GaiaId gaia_id = GetSignedInGaiaId(profile);
     for (const auto& info : kPushNotificationReportInfos) {
       RecordHistogramForPushNotificationReportInfo(info, gaia_id);
     }

@@ -103,6 +103,10 @@ class RecorderAppUI
 
   void UpdateModelState(const base::Uuid& model_id, ModelState state);
 
+  void LoadModelResultCallback(const base::Uuid& model_id,
+                               LoadModelCallback callback,
+                               on_device_model::mojom::LoadModelResult result);
+
   void GetMicrophoneInfoWithDeviceId(
       GetMicrophoneInfoCallback callback,
       const std::optional<std::string>& device_id);
@@ -110,6 +114,8 @@ class RecorderAppUI
   bool IsSodaAvailable(const speech::LanguageCode& language_code);
 
   ModelState GetSodaState(const speech::LanguageCode& language_code);
+
+  ModelState GetCachedSodaState(const speech::LanguageCode& language_code);
 
   // recorder_app::mojom::PageHandler:
   void GetModelInfo(on_device_model::mojom::FormatFeature feature,
@@ -150,6 +156,8 @@ class RecorderAppUI
       AddSodaMonitorCallback callback) override;
 
   void GetAvailableLangPacks(GetAvailableLangPacksCallback callback) override;
+
+  void GetDefaultLanguage(GetDefaultLanguageCallback callback) override;
 
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 

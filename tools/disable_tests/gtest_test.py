@@ -141,9 +141,9 @@ TEST(Suite, MAYBE_Test) {}
 
   def test_disable_test_via_build_flag(self):
     self.disabler_test(
-        'TEST(Suite, Test) {}', 'Suite.Test', ['lacros'], '''
-#include "build/chromeos_buildflags.h"
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        'TEST(Suite, Test) {}', 'Suite.Test', ['chromeos'], '''
+#include "build/build_config.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test

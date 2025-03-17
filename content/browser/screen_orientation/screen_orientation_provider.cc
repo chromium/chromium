@@ -32,6 +32,11 @@ void ScreenOrientationProvider::BindScreenOrientation(
   receivers_.Bind(rfh, std::move(receiver));
 }
 
+bool ScreenOrientationProvider::IsOrientationLockSupported() const {
+  return delegate_ &&
+         delegate_->ScreenOrientationProviderSupported(web_contents());
+}
+
 void ScreenOrientationProvider::LockOrientation(
     device::mojom::ScreenOrientationLockType orientation,
     LockOrientationCallback callback) {
@@ -41,8 +46,7 @@ void ScreenOrientationProvider::LockOrientation(
   // Record new pending lock request.
   pending_callback_ = std::move(callback);
 
-  if (!delegate_ ||
-      !delegate_->ScreenOrientationProviderSupported(web_contents())) {
+  if (!IsOrientationLockSupported()) {
     NotifyLockResult(ScreenOrientationLockResult::
                          SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE);
     return;

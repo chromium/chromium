@@ -8,6 +8,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -36,10 +37,10 @@ public class DisclosureSnackbar extends DisclosureInfobar {
 
     public DisclosureSnackbar(
             Resources resources,
-            SnackbarManager snackbarManager,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
-        super(resources, snackbarManager, model, lifecycleDispatcher);
+        super(resources, snackbarManagerSupplier, model, lifecycleDispatcher);
         mResources = resources;
     }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -161,7 +162,9 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
   if (params->installed_scripts_info) {
     installed_scripts_manager_params =
         std::make_unique<blink::WebServiceWorkerInstalledScriptsManagerParams>(
-            std::move(params->installed_scripts_info->installed_urls),
+            base::ToVector(
+                std::move(params->installed_scripts_info->installed_urls),
+                blink::ToWebURL),
             std::move(params->installed_scripts_info->manager_receiver),
             std::move(params->installed_scripts_info->manager_host_remote));
   }
@@ -172,7 +175,9 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
       std::move(worker), std::move(start_data),
       std::move(installed_scripts_manager_params),
       std::move(params->content_settings_proxy), std::move(cache_storage),
-      std::move(browser_interface_broker));
+      std::move(browser_interface_broker),
+      std::move(params->coep_reporting_observer),
+      std::move(params->dip_reporting_observer));
 }
 
 void EmbeddedWorkerInstanceClientImpl::StopWorker() {

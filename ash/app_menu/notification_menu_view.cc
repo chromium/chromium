@@ -4,11 +4,12 @@
 
 #include "ash/app_menu/notification_menu_view.h"
 
+#include <algorithm>
+
 #include "ash/app_menu/notification_item_view.h"
 #include "ash/app_menu/notification_menu_header_view.h"
 #include "ash/app_menu/notification_overflow_view.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/gfx/geometry/point.h"
@@ -177,8 +178,8 @@ const std::string& NotificationMenuView::GetDisplayedNotificationID() const {
 
 NotificationMenuView::NotificationItemViews::iterator
 NotificationMenuView::NotificationIterForId(const std::string& id) {
-  return base::ranges::find(notification_item_views_, id,
-                            &NotificationItemView::notification_id);
+  return std::ranges::find(notification_item_views_, id,
+                           &NotificationItemView::notification_id);
 }
 
 BEGIN_METADATA(NotificationMenuView)

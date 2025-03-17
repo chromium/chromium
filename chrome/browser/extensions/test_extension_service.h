@@ -26,7 +26,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   ~TestExtensionService() override;
 
   // ExtensionServiceInterface implementation.
-  extensions::PendingExtensionManager* pending_extension_manager() override;
   extensions::CorruptedExtensionReinstaller* corrupted_extension_reinstaller()
       override;
 
@@ -37,7 +36,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
       const std::string& extension_id) const override;
   bool FinishDelayedInstallationIfReady(const std::string& extension_id,
                                         bool install_immediately) override;
-  bool IsExtensionEnabled(const std::string& extension_id) const override;
 
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;

@@ -10,12 +10,11 @@ use crate::crates::{Epoch, NormalizedName, VendoredCrate, Visibility};
 use crate::deps::{self, DepOfDep};
 use crate::group::Group;
 use crate::paths;
-use crate::platforms;
 
 use std::collections::{HashMap, HashSet};
 use std::ops::Deref;
 
-use anyhow::{bail, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use itertools::Itertools;
 use serde::Serialize;
 
@@ -95,7 +94,7 @@ pub struct RuleDetail {
 #[derive(Clone, Debug, Serialize)]
 pub struct DepGroup {
     /// `if` condition for GN, or `None` for unconditional deps.
-    cond: Option<Condition>,
+    cond: Option<String>,
     /// Packages to depend on. The build file template determines the exact name
     /// based on the identified package and context.
     packages: Vec<PackageId>,
@@ -223,7 +222,7 @@ pub fn build_rule_from_dep(
             NameLibStyle::LibLiteral => Some(Epoch::from_version(&d.version).to_string()),
             NameLibStyle::PackageName => None,
         },
-    });
+    })?;
     detail_template.build_deps = group_deps(&build_deps, |d| PackageId {
         name: NormalizedName::from_crate_name(&d.package_name).to_string(),
         epoch: match name_lib_style {
@@ -231,7 +230,7 @@ pub fn build_rule_from_dep(
             NameLibStyle::LibLiteral => Some(Epoch::from_version(&d.version).to_string()),
             NameLibStyle::PackageName => None,
         },
-    });
+    })?;
     detail_template.aliased_deps = aliased_normal_deps;
 
     detail_template.sources =
@@ -268,11 +267,11 @@ pub fn build_rule_from_dep(
 
     let unexpected_features: Vec<&str> = {
         let banned_features =
-            extra_config.get_combined_set(&*dep.package_name, |cfg| &cfg.ban_features);
+            extra_config.get_combined_set(&dep.package_name, |cfg| &cfg.ban_features);
         let mut actual_features = HashSet::new();
         actual_features.extend(requested_features_for_normal.iter().map(Deref::deref));
         actual_features.extend(requested_features_for_build.iter().map(Deref::deref));
-        banned_features.intersection(&actual_features).map(|s| *s).sorted_unstable().collect()
+        banned_features.intersection(&actual_features).copied().sorted_unstable().collect()
     };
     if !unexpected_features.is_empty() {
         bail!(
@@ -348,7 +347,7 @@ pub fn build_rule_from_dep(
         // Generate the rules for each dependency kind. We use a stable
         // order instead of the hashmap iteration order.
         for dep_kind in [Normal, Build] {
-            if dep.dependency_kinds.get(&dep_kind).is_none() {
+            if !dep.dependency_kinds.contains_key(&dep_kind) {
                 continue;
             }
 
@@ -366,11 +365,7 @@ pub fn build_rule_from_dep(
                     (Some(normalized_crate_name.to_string()), Some(crate_epoch))
                 }
             };
-            let crate_type = {
-                // The stdlib is a "dylib" crate but we only want rlibs.
-                let t = lib_target.lib_type.to_string();
-                if t == "dylib" { "rlib".to_string() } else { t }
-            };
+            let crate_type = lib_target.lib_type.to_string();
 
             let mut lib_detail = detail_template.clone();
             lib_detail.crate_name = crate_name;
@@ -405,14 +400,18 @@ pub fn build_rule_from_dep(
 /// If the returned list is non-empty, it will always have a group without a
 /// condition, even if that group is empty. If there are no dependencies, then
 /// the returned list is empty.
-fn group_deps<F: Fn(&DepOfDep) -> PackageId>(deps: &[&DepOfDep], target_name: F) -> Vec<DepGroup>
-where
-    F: Fn(&DepOfDep) -> PackageId,
-{
-    let mut groups = HashMap::<Option<Condition>, Vec<_>>::new();
+fn group_deps(
+    deps: &[&DepOfDep],
+    target_name: impl Fn(&DepOfDep) -> PackageId,
+) -> Result<Vec<DepGroup>> {
+    let mut groups = HashMap::<Option<String>, Vec<_>>::new();
     for dep in deps {
-        let cond = dep.platform.as_ref().map(platform_to_condition);
-
+        let cond = dep.condition.to_handlebars_value().with_context(|| {
+            format!(
+                "Error processing condition of the following dependency: `{}`",
+                dep.package_name
+            )
+        })?;
         groups.entry(cond).or_default().push(target_name(dep));
     }
 
@@ -421,91 +420,190 @@ where
     }
 
     let mut groups: Vec<DepGroup> =
-        groups.into_iter().map(|(cond, rules)| DepGroup { cond, packages: rules }).collect();
+        groups.into_iter().map(|(cond, packages)| DepGroup { cond, packages }).collect();
 
     for group in groups.iter_mut() {
         group.packages.sort_unstable();
     }
     groups.sort_unstable_by(|l, r| l.cond.cmp(&r.cond));
-    groups
+    Ok(groups)
 }
 
 /// Describes a condition for some GN declaration.
 #[derive(Clone, Debug, Hash, Eq, Ord, PartialEq, PartialOrd, Serialize)]
-pub struct Condition(pub String);
+pub enum Condition {
+    /// The condition is always false.  In other words, supported Chromium
+    /// builds never meet this condition.
+    ///
+    /// Example: `#[cfg(target_arch = "powerpc")]`.
+    AlwaysFalse,
+    /// The condition is always true.
+    ///
+    /// Example: `#[cfg(not(target_arch = "powerpc"))]`.
+    AlwaysTrue,
+    /// Ignored terms.  For example we ignore `target_abi` and assume that
+    /// `target_env` is sufficient for picking the right dependencies.
+    Ignored,
+    /// The condition requires evaluating the nested GN expression.
+    /// The `String` payload is the condition expressed in GN syntax (e.g.
+    /// `is_win`).
+    ///
+    /// For example `#[cfg(target_os = "windows")]` translates into
+    /// `Condition::Expr("is_win".to_string())`.
+    Expr(String),
+    ///
+    /// Some of the [conditional
+    /// compilation](https://doc.rust-lang.org/reference/conditional-compilation.html) directives
+    /// weren't recognized by `gnrt`.
+    ///
+    /// The `String` is an error message.
+    ///
+    /// In some cases such terms will "disappear" - e.g. `unknown_cfg &&
+    /// always_false` is the same as `always_false`.  When these terms do
+    /// not disappear, then it may mean that supporting a new crate would
+    /// require teaching `gnrt` about the new kinds of configuration.
+    Unsupported(String),
+}
 
 impl Condition {
-    pub fn from_platform_set(platforms: platforms::PlatformSet) -> Option<Self> {
-        let platforms = match platforms {
-            platforms::PlatformSet::All => return None,
-            platforms::PlatformSet::Platforms(platforms) => platforms,
-        };
+    pub fn is_always_false(&self) -> bool {
+        *self == Condition::AlwaysFalse
+    }
 
-        Some(Condition(
-            platforms
-                .iter()
-                .map(|p| format!("({})", platform_to_condition(p).0))
-                .collect::<Vec<_>>()
-                .join(" || "),
-        ))
+    pub fn or(lhs: Condition, rhs: Condition) -> Self {
+        // Avoiding unnecessarily constructing `is_win || is_win`.
+        // This is mostly needed for `or`, because this is where
+        // different dependency edge kinds (e.g. `Build` vs `Normal`)
+        // result in `or`-ing of conditions as driven by `deps.rs`.
+        if lhs == rhs {
+            return lhs;
+        }
+
+        match (lhs, rhs) {
+            (Condition::AlwaysFalse, other) | (other, Condition::AlwaysFalse) => other.clone(),
+            (Condition::AlwaysTrue, _) | (_, Condition::AlwaysTrue) => Condition::AlwaysTrue,
+            (Condition::Ignored, other) | (other, Condition::Ignored) => other.clone(),
+            (Condition::Expr(lhs), Condition::Expr(rhs)) => {
+                Condition::Expr(format!("({lhs}) || ({rhs})"))
+            }
+            (err @ Condition::Unsupported(_), _) | (_, err @ Condition::Unsupported(_)) => {
+                err.clone()
+            }
+        }
+    }
+
+    fn and(lhs: Condition, rhs: Condition) -> Self {
+        match (lhs, rhs) {
+            (Condition::AlwaysFalse, _) | (_, Condition::AlwaysFalse) => Condition::AlwaysFalse,
+            (Condition::AlwaysTrue, other) | (other, Condition::AlwaysTrue) => other,
+            (Condition::Ignored, other) | (other, Condition::Ignored) => other,
+            (Condition::Expr(lhs), Condition::Expr(rhs)) => {
+                Condition::Expr(format!("({lhs}) && ({rhs})"))
+            }
+            (err @ Condition::Unsupported(_), _) | (_, err @ Condition::Unsupported(_)) => err,
+        }
+    }
+
+    fn not(other: Condition) -> Self {
+        match other {
+            Condition::AlwaysFalse => Condition::AlwaysTrue,
+            Condition::AlwaysTrue => Condition::AlwaysFalse,
+            Condition::Ignored => Condition::Ignored,
+            Condition::Expr(expr) => Condition::Expr(format!("!({expr})")),
+            err @ Condition::Unsupported(_) => err,
+        }
+    }
+
+    fn to_handlebars_value(&self) -> Result<Option<String>> {
+        match self {
+            Condition::AlwaysTrue | Condition::Ignored => Ok(None),
+            Condition::Expr(expr) => Ok(Some(expr.clone())),
+            Condition::AlwaysFalse => unreachable!(
+                "AlwaysFalse dependencies should be filtered out \
+                              by `fn collect_dependencies` from `deps.rs`"
+            ),
+            Condition::Unsupported(err) => {
+                Err(anyhow!("{err}")
+                    .context("Failed to translate `#[cfg(...)]` into a GN condition"))
+            }
+        }
     }
 }
 
-/// Map a cargo `Platform` constraint to a GN conditional expression.
-pub fn platform_to_condition(platform: &platforms::Platform) -> Condition {
-    Condition(match platform {
-        platforms::Platform::Name(triple) => triple_to_condition(triple).to_string(),
-        platforms::Platform::Cfg(cfg_expr) => cfg_expr_to_condition(cfg_expr),
-    })
+pub fn target_spec_to_condition(spec: &target_spec::TargetSpec) -> Condition {
+    use target_spec::TargetSpec::*;
+    match spec {
+        PlainString(triple) => triple_to_condition(triple.as_str()),
+        Expression(expr) => {
+            let cfg_expr = expr.expression_str().parse().unwrap();
+            cfg_expr_to_condition(&cfg_expr)
+        }
+    }
 }
 
-pub fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> String {
+fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> Condition {
     match cfg_expr {
-        cargo_platform::CfgExpr::Not(expr) => {
-            format!("!({})", cfg_expr_to_condition(expr))
-        }
+        cargo_platform::CfgExpr::Not(expr) => Condition::not(cfg_expr_to_condition(expr)),
         cargo_platform::CfgExpr::All(exprs) => {
-            let mut conds = exprs
-                .iter()
-                .map(|expr| format!("({})", cfg_expr_to_condition(expr)))
-                .collect::<Vec<String>>();
+            let mut conds = exprs.iter().map(cfg_expr_to_condition).collect::<Vec<_>>();
             conds.sort();
             conds.dedup();
-            conds.join(" && ")
+
+            // https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.predicate.all
+            // says that "It is true if "all of the given predicates are true, or if the
+            // list is empty."
+            conds.into_iter().fold(Condition::AlwaysTrue, |accumulated, condition| {
+                Condition::and(accumulated, condition)
+            })
         }
         cargo_platform::CfgExpr::Any(exprs) => {
-            let mut conds = exprs
-                .iter()
-                .map(|expr| format!("({})", cfg_expr_to_condition(expr)))
-                .collect::<Vec<String>>();
+            let mut conds = exprs.iter().map(cfg_expr_to_condition).collect::<Vec<_>>();
             conds.sort();
             conds.dedup();
-            conds.join(" || ")
+
+            // https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.predicate.any
+            // says that "It is true if at least one of the given predicates is true. If
+            // there are no predicates, it is false.".
+            conds.into_iter().fold(Condition::AlwaysFalse, |accumulated, condition| {
+                Condition::or(accumulated, condition)
+            })
         }
         cargo_platform::CfgExpr::Value(cfg) => cfg_to_condition(cfg),
     }
 }
 
-pub fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> String {
+fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> Condition {
     match cfg {
-        cargo_platform::Cfg::Name(name) => match name.as_str() {
-            // Note that while Fuchsia is not a unix, rustc sets the unix cfg
-            // anyway. We must be consistent with rustc. This may change with
-            // https://github.com/rust-lang/rust/issues/58590
-            "unix" => "!is_win",
-            "windows" => "is_win",
-            _ => unreachable!(),
-        },
+        cargo_platform::Cfg::Name(name) => cfg_name_to_condition(name),
         cargo_platform::Cfg::KeyPair(key, value) => match key.as_ref() {
-            "target_os" => target_os_to_condition(value),
+            "target_abi" => Condition::Ignored,
             "target_arch" => target_arch_to_condition(value),
-            _ => unreachable!("unknown key in cargo_platform::Cfg"),
+            "target_env" => target_env_to_condition(value),
+            "target_family" => target_family_to_condition(value),
+            "target_os" => target_os_to_condition(value),
+            "target_vendor" => target_vendor_to_condition(value),
+            _ => Condition::Unsupported(format!("Unknown key `{key}` in `{cfg}`")),
         },
     }
-    .to_string()
 }
 
-fn triple_to_condition(triple: &str) -> &'static str {
+/// `name` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.option-name
+fn cfg_name_to_condition(name: &str) -> Condition {
+    const FAMILY_NAMES: [&str; 2] = ["unix", "windows"];
+    if FAMILY_NAMES.contains(&name) {
+        return target_family_to_condition(name);
+    }
+
+    // We don't support `windows_raw_dylib` in Chromium.  See also
+    // https://github.com/rust-lang/rust/issues/58713
+    if ["windows_raw_dylib"].contains(&name) {
+        return Condition::AlwaysFalse;
+    }
+
+    Condition::Unsupported(format!("unknown option name: `#[cfg({name})]`"))
+}
+
+fn triple_to_condition(triple: &str) -> Condition {
     for (t, c) in &[
         ("i686-linux-android", "is_android && current_cpu == \"x86\""),
         ("x86_64-linux-android", "is_android && current_cpu == \"x64\""),
@@ -525,14 +623,84 @@ fn triple_to_condition(triple: &str) -> &'static str {
         ("aarch64-apple-darwin", "is_mac && current_cpu == \"arm64\""),
     ] {
         if *t == triple {
-            return c;
+            return Condition::Expr(c.to_string());
         }
     }
 
-    panic!("target triple {triple} not found")
+    // Other target triples are never used in Chromium builds.
+    Condition::AlwaysFalse
 }
 
-fn target_os_to_condition(target_os: &str) -> &'static str {
+/// `target_arch` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_arch
+fn target_arch_to_condition(target_arch: &str) -> Condition {
+    for (t, c) in &[
+        ("aarch64", "current_cpu == \"arm64\""),
+        ("arm", "current_cpu == \"arm\""),
+        ("x86", "current_cpu == \"x86\""),
+        ("x86_64", "current_cpu == \"x64\""),
+    ] {
+        if *t == target_arch {
+            return Condition::Expr(c.to_string());
+        }
+    }
+
+    // Other `target_arch` values are never used in Chromium builds.
+    // Examples: "mipc", "powerpc".
+    Condition::AlwaysFalse
+}
+
+/// `target_env` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_env
+fn target_env_to_condition(target_env: &str) -> Condition {
+    for (t, c) in &[
+        // Based on `triple_to_condition` `msvc` is the only supported environment
+        // on Windows.
+        //
+        // TODO(lukasza): Would returning `Condition::Expr("is_win")` be more correct?
+        ("msvc", Condition::AlwaysTrue),
+        // Treating `gnu` as `AlwaysFalse`, because:
+        //
+        // * This is how `gnrt` worked in the past
+        // * This helps to filter out packages like `windows_i686_gnu` (this is desirable, because
+        //   Chromium only supports `msvc` environment on Windows.
+        //
+        // OTOH, maybe this is not quite right, because Chromium also supports triples like
+        // "i686-unknown-linux-gnu".
+        //
+        // TODO(lukasza): Would returning `Condition::Expr("is_linux || is_chromeos")` be more
+        // correct?
+        ("gnu", Condition::AlwaysFalse),
+        // `sgx` is used as condition in `dlmalloc` package in `std` library.
+        ("sgx", Condition::AlwaysFalse),
+    ] {
+        if *t == target_env {
+            return c.clone();
+        }
+    }
+
+    Condition::Unsupported(format!("unknown `target_env` value: `{target_env}`"))
+}
+
+/// `target_family` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_family
+fn target_family_to_condition(target_family: &str) -> Condition {
+    for (t, c) in &[
+        // Note that while Fuchsia is not a unix, rustc sets the unix cfg
+        // anyway. We must be consistent with rustc. This may change with
+        // https://github.com/rust-lang/rust/issues/58590
+        ("unix", "!is_win"),
+        ("windows", "is_win"),
+    ] {
+        if *t == target_family {
+            return Condition::Expr(c.to_string());
+        }
+    }
+
+    // Other `target_family` values are never used in Chromium builds.
+    // Example: "wasm".
+    Condition::AlwaysFalse
+}
+
+/// `target_os` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_os
+fn target_os_to_condition(target_os: &str) -> Condition {
     for (t, c) in &[
         ("android", "is_android"),
         ("darwin", "is_mac"),
@@ -542,98 +710,110 @@ fn target_os_to_condition(target_os: &str) -> &'static str {
         ("windows", "is_win"),
     ] {
         if *t == target_os {
-            return c;
+            return Condition::Expr(c.to_string());
         }
     }
 
-    panic!("target os {target_os} not found")
+    // Other `target_os` values are never used in Chromium builds.
+    // Examples: "freebsd", "macos" (not sure why "darwin" is preferred...).
+    Condition::AlwaysFalse
 }
 
-fn target_arch_to_condition(target_arch: &str) -> &'static str {
-    for (t, c) in &[
-        ("aarch64", "current_cpu == \"arm64\""),
-        ("arm", "current_cpu == \"arm\""),
-        ("x86", "current_cpu == \"x86\""),
-        ("x86_64", "current_cpu == \"x64\""),
-    ] {
-        if *t == target_arch {
-            return c;
-        }
+/// `target_vendor` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_vendor
+fn target_vendor_to_condition(target_vendor: &str) -> Condition {
+    const UNSUPPORTED_VENDORS: [&str; 2] = [
+        "fortanix", // Used as condition in `dlmalloc` package used in `std` library.
+        "uwp",      // Used as condition in some `windows...` crates.
+    ];
+    if UNSUPPORTED_VENDORS.contains(&target_vendor) {
+        return Condition::AlwaysFalse;
     }
 
-    panic!("target arch {target_arch} not found")
+    if target_vendor == "apple" {
+        return Condition::Expr("is_apple".to_string());
+    }
+
+    Condition::Unsupported(format!("unknown `target_vendor` name: `{target_vendor}`"))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    fn condition_from_test_triple(triple: &str) -> Condition {
+        let spec = target_spec::TargetSpec::PlainString(
+            target_spec::TargetSpecPlainString::new(triple.to_string()).unwrap(),
+        );
+        target_spec_to_condition(&spec)
+    }
+
+    fn condition_from_test_expr(expr: &str) -> Condition {
+        let spec = target_spec::TargetSpec::Expression(
+            target_spec::TargetSpecExpression::new(expr).unwrap(),
+        );
+        target_spec_to_condition(&spec)
+    }
+
     #[test]
-    fn platform_to_condition() {
-        use crate::platforms::{Platform, PlatformSet};
-        use cargo_platform::CfgExpr;
-        use std::str::FromStr;
-
-        // Try an unconditional filter.
-        assert_eq!(Condition::from_platform_set(PlatformSet::one(None)), None);
-
+    fn test_target_spec_to_condition() {
         // Try a target triple.
         assert_eq!(
-            Condition::from_platform_set(PlatformSet::one(Some(Platform::Name(
-                "x86_64-pc-windows-msvc".to_string()
-            ))))
-            .unwrap()
-            .0,
-            "(is_win && current_cpu == \"x64\")"
+            condition_from_test_triple("x86_64-pc-windows-msvc"),
+            Condition::Expr("is_win && current_cpu == \"x64\"".to_string()),
         );
 
         // Try a cfg expression.
         assert_eq!(
-            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
-                CfgExpr::from_str("any(windows, target_os = \"android\")").unwrap()
-            ))))
-            .unwrap()
-            .0,
-            "((is_android) || (is_win))"
+            condition_from_test_expr("any(windows, target_os = \"android\")"),
+            Condition::Expr("(is_android) || (is_win)".to_string()),
         );
 
         // Redundant cfg expression.
         assert_eq!(
-            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
-                CfgExpr::from_str("any(windows, windows)").unwrap()
-            ))))
-            .unwrap()
-            .0,
-            "((is_win))"
+            condition_from_test_expr("any(windows, windows)"),
+            Condition::Expr("is_win".to_string()),
         );
 
         // Try a PlatformSet with multiple filters.
-        let mut platform_set = PlatformSet::empty();
-        platform_set.add(Some(Platform::Name("armv7-linux-android".to_string())));
-        platform_set.add(Some(Platform::Cfg(CfgExpr::from_str("windows").unwrap())));
+        let filter1 = condition_from_test_triple("armv7-linux-android");
+        let filter2 = condition_from_test_expr("windows");
         assert_eq!(
-            Condition::from_platform_set(platform_set).unwrap().0,
-            "(is_android && current_cpu == \"arm\") || (is_win)"
+            Condition::or(filter1, filter2),
+            Condition::Expr("(is_android && current_cpu == \"arm\") || (is_win)".to_string()),
         );
 
         // A cfg expression on arch only.
         assert_eq!(
-            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
-                CfgExpr::from_str("target_arch = \"aarch64\"").unwrap()
-            ))))
-            .unwrap()
-            .0,
-            "(current_cpu == \"arm64\")"
+            condition_from_test_expr("target_arch = \"aarch64\""),
+            Condition::Expr("current_cpu == \"arm64\"".to_string()),
         );
 
         // A cfg expression on arch and OS (but not via the target triple string).
         assert_eq!(
-            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
-                CfgExpr::from_str("all(target_arch = \"aarch64\", unix)").unwrap()
-            ))))
-            .unwrap()
-            .0,
-            "((!is_win) && (current_cpu == \"arm64\"))"
+            condition_from_test_expr("all(target_arch = \"aarch64\", unix)"),
+            Condition::Expr("(!is_win) && (current_cpu == \"arm64\")".to_string()),
+        );
+
+        // A cfg expression taken from `windows_aarch64_msvc` package.
+        assert_eq!(
+            condition_from_test_expr(
+                "all(any(target_arch = \"x86_64\", target_arch = \"arm64ec\"), \
+                     target_env = \"msvc\", \
+                     not(windows_raw_dylib))"
+            ),
+            Condition::Expr("current_cpu == \"x64\"".to_string()),
+        );
+
+        // A cfg expression taken from `windows-targets` => `windows_i686_gnu`
+        // dependency.
+        assert_eq!(
+            condition_from_test_expr(
+                "all(target_arch = \"x86\", \
+                     target_env = \"gnu\", \
+                     not(target_abi = \"llvm\"), \
+                     not(windows_raw_dylib))"
+            ),
+            Condition::AlwaysFalse,
         );
     }
 }

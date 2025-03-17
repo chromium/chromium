@@ -17,6 +17,9 @@
 
 #include "base/barrier_closure.h"
 #include "base/base_paths.h"
+#include "base/environment.h"
+#include "base/files/file_path_watcher.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -30,15 +33,21 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequence_bound.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
+#include "chrome/common/env_vars.h"
 #include "chrome/windows_services/service_program/test_service_idl.h"
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/crashpad/crashpad/client/crash_report_database.h"
+#include "third_party/crashpad/crashpad/client/prune_crash_reports.h"
 
 namespace {
 
@@ -222,6 +231,16 @@ TEST_F(ServiceTest, TwoRequests) {
   ASSERT_EQ(exit_code, 0);
 }
 
+TEST_F(ServiceTest, IsRunningUnattended) {
+  Microsoft::WRL::ComPtr<ITestService> test_service;
+  ASSERT_NO_FATAL_FAILURE(CreateService(test_service));
+  VARIANT_BOOL is_running_unattended = VARIANT_FALSE;
+  ASSERT_HRESULT_SUCCEEDED(
+      test_service->IsRunningUnattended(&is_running_unattended));
+  ASSERT_EQ(is_running_unattended != VARIANT_FALSE,
+            base::Environment::Create()->HasVar(env_vars::kHeadless));
+}
+
 // Tests that a service can handle rapid use that should result in some requests
 // happening in the same instance of the service as a previous request, while
 // some are handled in a separate instance of the service. This is a regression
@@ -272,7 +291,7 @@ TEST_F(ServiceTest, RapidReuse) {
         for (const auto& [process, xactions] : task_transactions) {
           auto& combined = transactions[process];
           combined.insert(combined.end(), xactions.begin(), xactions.end());
-          base::ranges::stable_sort(
+          std::ranges::stable_sort(
               combined, [](auto& a, auto& b) { return a.first < b.first; });
         }
         std::move(quit_closure).Run();
@@ -360,3 +379,174 @@ TEST_F(ServiceTest, RapidReuse) {
     LOG(ERROR) << "transactions: " << testing::PrintToString(transactions);
   }
 }
+
+// Crashpad delegates to ASAN's exception handler when `is_asan = true`, so no
+// dumps are generated in the crashpad database.
+#if !defined(ADDRESS_SANITIZER)
+
+// A test fixture for validating crashpad integration.
+class ServiceCrashTest : public ServiceTest {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(io_thread_.StartWithOptions({base::MessagePumpType::IO,
+                                             /*size=*/0}));
+  }
+
+  void TearDown() override {
+    database_watcher_.SynchronouslyResetForTest();
+    DeleteCrashDatabase();
+  }
+
+  void CreateServiceForCrashTest(
+      Microsoft::WRL::ComPtr<ITestService>& test_service) {
+    CreateService(test_service);
+    if (!test_service) {
+      return;
+    }
+    if (crashpad_database_path_.empty()) {
+      // This is the first connection to the service. Get the path to its
+      // crashpad database from the service.
+      base::win::ScopedBstr database_path;
+      ASSERT_HRESULT_SUCCEEDED(
+          test_service->GetCrashpadDatabasePath(database_path.Receive()));
+      crashpad_database_path_ = base::FilePath(
+          std::wstring_view(database_path.Get(), database_path.Length()));
+
+      // Delete all existing crash reports that may be left over from past
+      // executions.
+      PruneOldReports();
+
+      // Start watching the crash database for modifications.
+      WatchForNewReports();
+    }
+  }
+
+  // Waits for a new crash report to appear in the service's crash database.
+  void WaitForDump() {
+    base::RunLoop run_loop;
+    on_dump_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  class PruneAllCondition : public crashpad::PruneCondition {
+   public:
+    // crashpad::PruneCondition:
+    bool ShouldPruneReport(
+        const crashpad::CrashReportDatabase::Report&) override {
+      return true;
+    }
+    void ResetPruneConditionState() override {}
+  };
+
+  // Deletes all existing crash reports from the test service.
+  void PruneOldReports() {
+    if (auto database =
+            crashpad::CrashReportDatabase::InitializeWithoutCreating(
+                crashpad_database_path_);
+        database) {
+      PruneAllCondition all_condition;
+      crashpad::PruneCrashReportDatabase(database.get(), &all_condition);
+
+      // Make sure that the database is now empty of all reports.
+      std::vector<crashpad::CrashReportDatabase::Report> reports;
+      ASSERT_EQ(database->GetPendingReports(&reports),
+                crashpad::CrashReportDatabase::kNoError);
+      ASSERT_TRUE(reports.empty());
+      ASSERT_EQ(database->GetCompletedReports(&reports),
+                crashpad::CrashReportDatabase::kNoError);
+      ASSERT_TRUE(reports.empty());
+    }
+  }
+
+  // Starts monitoring for new crash reports to appear in the database.
+  void WatchForNewReports() {
+    base::RunLoop run_loop;
+    database_watcher_.emplace(io_thread_.task_runner());
+
+    // OnDatabaseChange will be called on the main test thread for any change to
+    // the crash database's "metadata" file. This file is written to after a
+    // dump is written to disk.
+    database_watcher_.AsyncCall(&base::FilePathWatcher::WatchWithChangeInfo)
+        .WithArgs(
+            crashpad_database_path_.Append(FILE_PATH_LITERAL("metadata")),
+            base::FilePathWatcher::WatchOptions{
+                .type = base::FilePathWatcher::Type::kNonRecursive},
+            base::BindPostTaskToCurrentDefault(base::BindRepeating(
+                &ServiceCrashTest::OnDatabaseChange, base::Unretained(this))))
+        .Then(base::BindOnce(
+            [](base::OnceClosure quit_loop, bool succeeded) {
+              std::move(quit_loop).Run();
+              ASSERT_TRUE(succeeded);
+            },
+            run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // Deletes the entire crash database from the test service.
+  void DeleteCrashDatabase() {
+    base::DeletePathRecursively(crashpad_database_path_);
+  }
+
+  // Processes a change to the crash database on the main thread.
+  void OnDatabaseChange(const base::FilePathWatcher::ChangeInfo& change_info,
+                        const base::FilePath& path,
+                        bool error) {
+    ASSERT_FALSE(error);
+    if (!on_dump_closure_) {
+      return;  // Not presently waiting for a dump to appear.
+    }
+    std::optional<crashpad::CrashReportDatabase::Report> report;
+    if (auto database =
+            crashpad::CrashReportDatabase::InitializeWithoutCreating(
+                crashpad_database_path_);
+        database) {
+      // Search the database for any report. The database is cleared during
+      // startup, so any report must be generated by the service under test.
+      std::vector<crashpad::CrashReportDatabase::Report> reports;
+      ASSERT_EQ(database->GetPendingReports(&reports),
+                crashpad::CrashReportDatabase::kNoError);
+      if (reports.empty()) {
+        ASSERT_EQ(database->GetCompletedReports(&reports),
+                  crashpad::CrashReportDatabase::kNoError);
+      }
+      if (!reports.empty()) {
+        report.emplace(std::move(reports.front()));
+      }
+    }
+    if (report.has_value()) {
+      std::move(on_dump_closure_).Run();
+    }
+  }
+
+  // The path to the service's crashpad database.
+  base::FilePath crashpad_database_path_;
+
+  // A thread with an IO message loop for using a FilePathWatcher.
+  base::Thread io_thread_{"IO Thread"};
+
+  // A watcher to be notified when the service's crashpad database is modified.
+  base::SequenceBound<base::FilePathWatcher> database_watcher_;
+
+  // A callback that is run when a dump has been added to the service's crashpad
+  // database.
+  base::OnceClosure on_dump_closure_;
+};
+
+// Tests that a dump is produced if a crash happens during a COM call.
+TEST_F(ServiceCrashTest, InduceCrash) {
+  Microsoft::WRL::ComPtr<ITestService> test_service;
+  ASSERT_NO_FATAL_FAILURE(CreateServiceForCrashTest(test_service));
+  ASSERT_EQ(test_service->InduceCrash(), HRESULT_FROM_WIN32(RPC_S_CALL_FAILED));
+  WaitForDump();
+}
+
+// Tests that a dump is produced if a crash happens in the background.
+TEST_F(ServiceCrashTest, InduceCrashSoon) {
+  Microsoft::WRL::ComPtr<ITestService> test_service;
+  ASSERT_NO_FATAL_FAILURE(CreateServiceForCrashTest(test_service));
+  ASSERT_HRESULT_SUCCEEDED(test_service->InduceCrashSoon());
+  WaitForDump();
+}
+
+#endif  // !defined(ADDRESS_SANITIZER)

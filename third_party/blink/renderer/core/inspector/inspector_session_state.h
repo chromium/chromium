@@ -7,8 +7,9 @@
 
 #include <memory>
 #include <type_traits>
+#include <vector>
+
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -31,7 +32,7 @@ class CORE_EXPORT InspectorSessionState {
   // that are sent back to the browser.
   // A null string for |value| indicates a deletion.
   // TODO(johannes): Lower cost of repeated updates.
-  void EnqueueUpdate(const WTF::String& key, const WebVector<uint8_t>* value);
+  void EnqueueUpdate(const WTF::String& key, const std::vector<uint8_t>* value);
 
   // Yields and consumes the field updates that have thus far accumulated.
   // These updates are sent back to DevToolsSession on the browser side.
@@ -51,15 +52,16 @@ class CORE_EXPORT InspectorAgentState {
   // these is to be able to call overloaded methods from the template
   // implementations below; they just delegate to protocol::Value parsing
   // and serialization.
-  static void Serialize(bool v, WebVector<uint8_t>* out);
+  static void Serialize(bool v, std::vector<uint8_t>* out);
   static bool Deserialize(crdtp::span<uint8_t> in, bool* v);
-  static void Serialize(int32_t v, WebVector<uint8_t>* out);
+  static void Serialize(int32_t v, std::vector<uint8_t>* out);
   static bool Deserialize(crdtp::span<uint8_t> in, int32_t* v);
-  static void Serialize(double v, WebVector<uint8_t>* out);
+  static void Serialize(double v, std::vector<uint8_t>* out);
   static bool Deserialize(crdtp::span<uint8_t> in, double* v);
-  static void Serialize(const WTF::String& v, WebVector<uint8_t>* out);
+  static void Serialize(const WTF::String& v, std::vector<uint8_t>* out);
   static bool Deserialize(crdtp::span<uint8_t> in, WTF::String* v);
-  static void Serialize(const std::vector<uint8_t>& v, WebVector<uint8_t>* out);
+  static void Serialize(const std::vector<uint8_t>& v,
+                        std::vector<uint8_t>* out);
   static bool Deserialize(crdtp::span<uint8_t> in, std::vector<uint8_t>* v);
 
  public:
@@ -123,7 +125,7 @@ class CORE_EXPORT InspectorAgentState {
         return;
       }
       value_ = value;
-      WebVector<uint8_t> encoded_value;
+      std::vector<uint8_t> encoded_value;
       Serialize(value, &encoded_value);
       session_state_->EnqueueUpdate(prefix_key_, &encoded_value);
     }
@@ -174,13 +176,7 @@ class CORE_EXPORT InspectorAgentState {
 
     // Enumerates the keys for which values are stored in this field.
     // The order of the keys is undefined.
-    Vector<WTF::String> Keys() const {
-      // TODO(johannes): It'd be nice to avoid copying; unfortunately
-      // it didn't seem easy to return map_.Keys().
-      Vector<WTF::String> keys;
-      WTF::CopyKeysToVector(map_, keys);
-      return keys;
-    }
+    const auto& Keys() const { return map_.Keys(); }
 
     // O(1) shortcut for Keys().empty().
     bool IsEmpty() const { return map_.empty(); }
@@ -203,7 +199,7 @@ class CORE_EXPORT InspectorAgentState {
       if (it != map_.end() && it->value == value)
         return;
       map_.Set(key, value);
-      WebVector<uint8_t> encoded_value;
+      std::vector<uint8_t> encoded_value;
       Serialize(value, &encoded_value);
       session_state_->EnqueueUpdate(prefix_key_ + key, &encoded_value);
     }

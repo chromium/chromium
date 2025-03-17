@@ -67,9 +67,16 @@ export class DescriptionSectionElement extends CrLitElement {
     // Citations should start from 1.
     let citationIndex = 1;
     for (let i = 0; i < summaryIndex; i++) {
-      citationIndex += this.description.summary[i].urls.length;
+      citationIndex += this.description.summary[i]?.urls.length || 0;
     }
     return citationIndex + urlIndex;
+  }
+
+  protected summaryIsEmpty_(summary: ProductSpecificationsDescriptionText[]):
+      boolean {
+    return summary.length === 0 || summary.every(summary => {
+      return summary.text.length === 0 || summary.text === 'N/A';
+    });
   }
 }
 

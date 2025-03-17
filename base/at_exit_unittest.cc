@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/at_exit.h"
-#include "base/functional/bind.h"
 
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

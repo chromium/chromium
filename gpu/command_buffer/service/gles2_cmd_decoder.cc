@@ -42,7 +42,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -268,8 +267,7 @@ static bool CharacterIsValidForGLES(unsigned char c) {
 }
 
 static bool StringIsValidForGLES(const std::string& str) {
-  return str.length() == 0 ||
-         base::ranges::all_of(str, CharacterIsValidForGLES);
+  return str.length() == 0 || std::ranges::all_of(str, CharacterIsValidForGLES);
 }
 
 DisallowedFeatures::DisallowedFeatures() = default;
@@ -3272,6 +3270,13 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
                     "glClearWorkaroundInit failed";
       return gpu::ContextResult::kFatalFailure;
     }
+  }
+
+  if (feature_info_->context_type() == CONTEXT_TYPE_WEBGL2) {
+    // If WebGL 2, the PRIMITIVE_RESTART_FIXED_INDEX should be always enabled.
+    // See the section <Primitive Restart is Always Enabled> in WebGL 2 spec:
+    // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1.4
+    DoEnable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
   }
 
   if (group_->gpu_preferences().enable_gpu_driver_debug_logging &&
@@ -17168,7 +17173,6 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
 // Include the auto-generated part of this file. We split this because it means
 // we can easily edit the non-auto generated parts right here in this file
 // instead of having to edit some template or the code generator.
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_autogen.h"
 
 }  // namespace gles2

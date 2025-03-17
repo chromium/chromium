@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "build/build_config.h"
@@ -53,22 +54,46 @@ TEST_F(UIDevToolsServerTest, ConnectionToViewsServer) {
   // As with the test server itself, TCPClientSocket can only be connected on an
   // IO thread, so have to do all the work here on the IO thread.
   base::RunLoop run_loop;
-  io_thread_.task_runner()->PostTaskAndReply(
+
+  // This socket is created and destroyed on the IO thread, but it's simplest to
+  // declare it here, since its deleted by a callback that may be invoked
+  // asynchronously by its connect method, or calls its Connect method,
+  // depending on whether the connection attempt completes synchronously. Having
+  // two deletion paths makes BindOnce() not work well with it.
+  std::unique_ptr<net::TCPClientSocket> client_socket;
+
+  // Called on the IO thread once connection has completed. Destroys the
+  // `client_socket`, which may or may not be the object invoking the callback.
+  auto on_connect_complete =
+      base::BindLambdaForTesting([&](int connect_result) {
+        ASSERT_EQ(connect_result, net::OK);
+        ASSERT_TRUE(client_socket->IsConnected());
+        client_socket.reset();
+        run_loop.Quit();
+      });
+
+  io_thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](int port) {
+          base::BindLambdaForTesting([&](int port) {
             net::AddressList addr(
                 net::IPEndPoint(net::IPAddress(127, 0, 0, 1), port));
-            auto client_socket = std::make_unique<net::TCPClientSocket>(
+            client_socket = std::make_unique<net::TCPClientSocket>(
                 addr, nullptr, nullptr, nullptr, net::NetLogSource());
-            net::TestCompletionCallback callback;
-            int connect_result =
-                callback.GetResult(client_socket->Connect(callback.callback()));
-            ASSERT_EQ(net::OK, connect_result);
-            ASSERT_TRUE(client_socket->IsConnected());
-          },
-          server_->port()),
-      run_loop.QuitClosure());
+            int connect_result = client_socket->Connect(on_connect_complete);
+            // On ERR_IO_PENDING, `on_connect_complete` will be invoked
+            // asynchronously, so need to let the message loop spin until that
+            // happens.
+            if (connect_result == net::ERR_IO_PENDING) {
+              return;
+            }
+            // Otherwise, run `on_connect_complete` immediately.
+            on_connect_complete.Run(connect_result);
+          }),
+          // EmbeddedTestServer isn't threadsafe, so have to get the port on the
+          // main thread, before posting the task.
+          server_->port()));
+  run_loop.Run();
 }
 
 // Ensure we don't crash from OOB vector access when passed an incorrect

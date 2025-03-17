@@ -3,17 +3,28 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItemWithEllipsizedAtEnd;
+
 import android.content.Context;
-import android.graphics.Point;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ResettersForTesting;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
+import org.chromium.ui.widget.RectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,18 +53,15 @@ public class HomeModulesContextMenuManager {
         int NUM_ENTRIES = 2;
     }
 
-    private final Point mContextMenuStartPosition;
-
     private ModuleDelegate mModuleDelegate;
+
+    @Nullable private AnchoredPopupWindow mPopupWindow;
 
     /**
      * @param moduleDelegate The instance of magic stack {@link ModuleDelegate}.
-     * @param startPosition The starting position to show the context menu.
      */
-    public HomeModulesContextMenuManager(
-            @NonNull ModuleDelegate moduleDelegate, @NonNull Point startPosition) {
+    public HomeModulesContextMenuManager(@NonNull ModuleDelegate moduleDelegate) {
         mModuleDelegate = moduleDelegate;
-        mContextMenuStartPosition = startPosition;
     }
 
     public void destroy() {
@@ -61,72 +69,142 @@ public class HomeModulesContextMenuManager {
     }
 
     /**
-     * Builds context menu items for a module.
+     * Builds and displays context menu items for a magic stack module.
      *
-     * @param contextMenu The provided instance of {@link ContextMenu}.
-     * @param associatedView The view to show the context menu.
-     * @param moduleProvider The given module.
+     * @param view The magic stack module view that is long clicked to show the context menu.
+     * @param moduleProvider The instance of magic stack {@link ModuleDelegate}.
      */
-    public void createContextMenu(
-            @NonNull ContextMenu contextMenu,
-            @NonNull View associatedView,
-            @NonNull ModuleProvider moduleProvider) {
+    public void displayMenu(@NonNull View view, @NonNull ModuleProvider moduleProvider) {
         if (mModuleDelegate == null) return;
 
-        OnMenuItemClickListener listener =
-                menuItem -> onMenuItemClickImpl(menuItem, moduleProvider);
+        ListMenu menu =
+                getListMenu(view, moduleProvider, mModuleDelegate, this::dismissPopupWindow);
+
+        // No item added. We won't show the menu, so we can skip the rest.
+        if (menu == null) return;
+
+        mPopupWindow =
+                new AnchoredPopupWindow(
+                        view.getContext(),
+                        view,
+                        new ColorDrawable(Color.TRANSPARENT),
+                        menu.getContentView(),
+                        new RectProvider(getAnchorRectangle(view)),
+                        null);
+
+        showContextMenu(menu, view);
+        notifyContextMenuShown(moduleProvider);
+    }
+
+    @VisibleForTesting
+    BasicListMenu getListMenu(
+            @NonNull View view,
+            @NonNull ModuleProvider moduleProvider,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull Runnable dismissPopupWindowRunnable) {
         boolean hasItems = false;
+
+        ModelList itemList = new ModelList();
+        Context context = view.getContext();
 
         for (@ContextMenuItemId int itemId = 0; itemId < ContextMenuItemId.NUM_ENTRIES; itemId++) {
             if (!shouldShowItem(itemId, moduleProvider)) continue;
 
             if (itemId != ContextMenuItemId.HIDE_MODULE) {
-                contextMenu
-                        .add(
-                                Menu.NONE,
-                                itemId,
-                                Menu.NONE,
-                                getResourceIdForMenuItem(itemId, moduleProvider))
-                        .setOnMenuItemClickListener(listener);
+                itemList.add(
+                        buildMenuListItemWithEllipsizedAtEnd(
+                                context.getString(getResourceIdForMenuItem(itemId, moduleProvider)),
+                                ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS,
+                                /* startIconId */ 0,
+                                /* enabled */ true,
+                                /* isTextEllipsizedAtEnd */ true));
             } else {
-                Context context = associatedView.getContext();
-                contextMenu
-                        .add(moduleProvider.getModuleContextMenuHideText(context))
-                        .setOnMenuItemClickListener(listener);
+                itemList.add(
+                        buildMenuListItemWithEllipsizedAtEnd(
+                                moduleProvider.getModuleContextMenuHideText(context),
+                                ContextMenuItemId.HIDE_MODULE,
+                                /* startIconId */ 0,
+                                /* enabled */ true,
+                                /* isTextEllipsizedAtEnd */ true));
             }
             hasItems = true;
         }
 
         // No item added. We won't show the menu, so we can skip the rest.
-        if (!hasItems) return;
+        if (!hasItems) return null;
 
-        notifyContextMenuShown(moduleProvider);
+        ListMenu.Delegate delegate =
+                (model) -> {
+                    switch (model.get(ListMenuItemProperties.MENU_ITEM_ID)) {
+                        case ContextMenuItemId.HIDE_MODULE:
+                            moduleDelegate.removeModuleAndDisable(moduleProvider.getModuleType());
+                            HomeModulesMetricsUtils.recordContextMenuRemoveModule(
+                                    moduleProvider.getModuleType());
+                            break;
+                        case ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS:
+                            moduleDelegate.customizeSettings();
+                            HomeModulesMetricsUtils.recordContextMenuCustomizeSettings(
+                                    moduleProvider.getModuleType());
+                            break;
+                        default:
+                            assert false : "Not reached.";
+                    }
+                    dismissPopupWindowRunnable.run();
+                };
+
+        return BrowserUiListMenuUtils.getBasicListMenu(context, itemList, delegate);
     }
 
     /**
-     * Called when a context menu item is clicked.
+     * Returns an anchor rectangle used by calculatePopupWindowSpec() in AnchoredPopupWindow class
+     * to calculate the the absolute coordinates of the popup window with respect to the screen. The
+     * horizontal position of the popup window should be anchorRect.left + (anchorRect.width() -
+     * menu's width) / 2 + marginPx and the vertical position of the pop up window should be
+     * anchorRect.y, when properties of the popup window are set as in showContextMenu().
      *
-     * @param menuItem The menu item which is clicked.
-     * @param moduleProvider The module which shows the context menu.
-     * @return Whether the click on the menu item is handled.
+     * @param view The magic stack module view that is long clicked to show the context menu.
      */
-    boolean onMenuItemClickImpl(
-            @NonNull MenuItem menuItem, @NonNull ModuleProvider moduleProvider) {
-        switch (menuItem.getItemId()) {
-            case ContextMenuItemId.HIDE_MODULE:
-                mModuleDelegate.removeModuleAndDisable(moduleProvider.getModuleType());
-                HomeModulesMetricsUtils.recordContextMenuRemoveModule(
-                        moduleProvider.getModuleType());
-                return true;
-            case ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS:
-                mModuleDelegate.customizeSettings();
-                HomeModulesMetricsUtils.recordContextMenuCustomizeSettings(
-                        moduleProvider.getModuleType());
-                return true;
-            default:
-                assert false : "Not reached.";
-                return false;
-        }
+    @VisibleForTesting
+    Rect getAnchorRectangle(@NonNull View view) {
+        int[] coordinates = new int[2];
+        view.getLocationOnScreen(coordinates);
+
+        // The values of x and y are defined to display the menu at the center of clicked magic
+        // stack module.
+        int x = coordinates[0];
+        int y = coordinates[1] + view.getHeight() / 4;
+
+        return new Rect(x, y, x + view.getWidth(), y + view.getHeight());
+    }
+
+    @VisibleForTesting
+    void showContextMenu(@NonNull ListMenu menu, @NonNull View view) {
+        final View contentView = menu.getContentView();
+        final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+
+        AnchoredPopupWindow.LayoutObserver layoutObserver =
+                (positionBelow, x, y, width, height, rect) ->
+                        mPopupWindow.setAnimationStyle(
+                                positionBelow
+                                        ? R.style.StartIconMenuAnim
+                                        : R.style.StartIconMenuAnimBottom);
+        mPopupWindow.setLayoutObserver(layoutObserver);
+        mPopupWindow.setVerticalOverlapAnchor(true);
+        // To fit the largest item of the menu in one line when it is possible,the width of the
+        // mPopupWindow is the sum of the padding round the item and the max width of the menu item
+        // or the width of the clicked magic stack module, if it is smaller.
+        mPopupWindow.setDesiredContentWidth(
+                Math.min(menu.getMaxItemWidth() + lateralPadding, view.getWidth()));
+        mPopupWindow.setFocusable(true);
+        mPopupWindow.setOutsideTouchable(true);
+
+        // To place the menu at the center of the magic stack module, HorizontalOrientation.CENTER
+        // and VerticalOrientation.BELOW are used.
+        mPopupWindow.setPreferredHorizontalOrientation(
+                AnchoredPopupWindow.HorizontalOrientation.CENTER);
+        mPopupWindow.setPreferredVerticalOrientation(VerticalOrientation.BELOW);
+
+        mPopupWindow.show();
     }
 
     /** Returns whether to show a context menu item. */
@@ -164,8 +242,17 @@ public class HomeModulesContextMenuManager {
         HomeModulesMetricsUtils.recordContextMenuShown(moduleProvider.getModuleType());
     }
 
-    /** Returns the starting position of the context menu. */
-    Point getContextMenuOffset() {
-        return mContextMenuStartPosition;
+    @VisibleForTesting
+    void dismissPopupWindow() {
+        if (mPopupWindow == null) return;
+
+        mPopupWindow.dismiss();
+        mPopupWindow = null;
+    }
+
+    public void setPopupWindowForTesting(@NonNull AnchoredPopupWindow window) {
+        AnchoredPopupWindow oldWindow = mPopupWindow;
+        mPopupWindow = window;
+        ResettersForTesting.register(() -> mPopupWindow = oldWindow);
     }
 }

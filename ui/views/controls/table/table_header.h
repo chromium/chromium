@@ -31,6 +31,8 @@ class VIEWS_EXPORT TableHeader : public View {
   void ResizeColumnViaKeyboard(size_t index,
                                TableView::AdvanceDirection direction);
 
+  void InstallFocusRing();
+
   // Call to update TableHeader objects that rely on the focus state of its
   // corresponding virtual accessibility views.
   void UpdateFocusState();
@@ -40,6 +42,9 @@ class VIEWS_EXPORT TableHeader : public View {
   int GetCellHorizontalPadding() const;
   int GetResizeBarVerticalPadding() const;
   int GetSeparatorHorizontalPadding() const;
+  ui::ColorId GetSeparatorHorizontalColorId() const;
+  ui::ColorId GetSeparatorVerticalColorId() const;
+  ui::ColorId GetBackgroundColorId() const;
   int GetSortIndicatorWidth() const;
   gfx::Font::Weight GetFontWeight() const;
 

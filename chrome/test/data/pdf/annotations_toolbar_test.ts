@@ -26,16 +26,16 @@ const tests = [
       chrome.test.assertFalse(e.detail);
       chrome.test.succeed();
     });
-    toolbar.shadowRoot!.querySelector<HTMLElement>(
-                           '#show-annotations-button')!.click();
+    toolbar.shadowRoot.querySelector<HTMLElement>(
+                          '#show-annotations-button')!.click();
   },
   function testEnteringAnnotationsModeShowsAnnotations() {
     const toolbar = createToolbar();
     chrome.test.assertFalse(toolbar.annotationMode);
 
     // Hide annotations.
-    toolbar.shadowRoot!.querySelector<HTMLElement>(
-                           '#show-annotations-button')!.click();
+    toolbar.shadowRoot.querySelector<HTMLElement>(
+                          '#show-annotations-button')!.click();
 
     toolbar.addEventListener('annotation-mode-toggled', e => {
       chrome.test.assertTrue(e.detail);
@@ -80,7 +80,7 @@ const tests = [
     // If rotation is enabled clicking the button shows the dialog.
     toolbar.rotated = true;
     const annotateButton =
-        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#annotate');
+        toolbar.shadowRoot.querySelector<CrIconButtonElement>('#annotate');
     chrome.test.assertTrue(!!annotateButton);
     chrome.test.assertFalse(annotateButton.disabled);
     // Listen for a 'cr-dialog-open' event on the toolbar itself, since the
@@ -89,7 +89,7 @@ const tests = [
     annotateButton.click();
     await whenOpen;
     let dialog =
-        toolbar.shadowRoot!.querySelector('viewer-annotations-mode-dialog');
+        toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
     chrome.test.assertTrue(!!dialog);
     chrome.test.assertTrue(dialog.isOpen());
 
@@ -106,8 +106,7 @@ const tests = [
     whenOpen = eventToPromise('cr-dialog-open', toolbar);
     annotateButton.click();
     await whenOpen;
-    dialog =
-        toolbar.shadowRoot!.querySelector('viewer-annotations-mode-dialog');
+    dialog = toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
     chrome.test.assertTrue(!!dialog);
     chrome.test.assertTrue(dialog.isOpen());
 
@@ -126,8 +125,7 @@ const tests = [
     whenOpen = eventToPromise('cr-dialog-open', toolbar);
     annotateButton.click();
     await whenOpen;
-    dialog =
-        toolbar.shadowRoot!.querySelector('viewer-annotations-mode-dialog');
+    dialog = toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
     chrome.test.assertTrue(!!dialog);
     chrome.test.assertTrue(dialog.isOpen());
     chrome.test.succeed();

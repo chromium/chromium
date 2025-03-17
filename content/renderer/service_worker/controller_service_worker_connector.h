@@ -83,7 +83,7 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
       blink::mojom::ServiceWorkerFetchHandlerBypassOption
           fetch_handler_bypass_option,
       std::optional<blink::ServiceWorkerRouterRules> router_rules,
-      blink::EmbeddedWorkerStatus initial_running_status,
+      std::optional<blink::EmbeddedWorkerStatus> initial_running_status,
       mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
           running_status_receiver);
 
@@ -133,14 +133,8 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
 
   // Returns recent ServiceWorker's running status.
   //
-  // This method returns a cached result. Please assume the value can be old.
-  // When this method is called, it may start updating the running status
-  // without blocking the call.
-  // The initial result will be set when instantiating this class.
-  //
-  // The cached result is returned to avoid a caller to pass a callback,
-  // or the method call would be blocked until it gets a result from the
-  // browser process.
+  // The ServiceWorkerVersion status change callback will send an IPC to update
+  // the recent running status here.
   blink::EmbeddedWorkerStatus GetRecentRunningStatus();
 
   // Calls the Cache Storage API match if the cache storage is accessible.
@@ -183,7 +177,7 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
       fetch_handler_bypass_option_ =
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
   std::unique_ptr<ServiceWorkerRouterEvaluator> router_evaluator_;
-  blink::EmbeddedWorkerStatus running_status_;
+  std::optional<blink::EmbeddedWorkerStatus> running_status_;
   mojo::Receiver<blink::mojom::ServiceWorkerRunningStatusCallback>
       running_status_receiver_;
 };

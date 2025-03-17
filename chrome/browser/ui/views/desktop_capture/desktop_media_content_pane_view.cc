@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_content_pane_view.h"
 
+#include <memory>
+#include <string_view>
+
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
@@ -16,9 +19,9 @@ DesktopMediaContentPaneView::DesktopMediaContentPaneView(
     std::unique_ptr<views::View> content_view,
     std::unique_ptr<ShareAudioView> share_audio_view) {
   float bottom_radius = 8;
-  SetBackground(views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
-                                                         /*top_radius=*/0,
-                                                         bottom_radius));
+  SetBackground(views::CreateRoundedRectBackground(ui::kColorSysSurface4,
+                                                   /*top_radius=*/0,
+                                                   bottom_radius));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));
@@ -53,9 +56,9 @@ void DesktopMediaContentPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   share_audio_view_->SetAudioSharingApprovedByUser(is_on);
 }
 
-std::u16string DesktopMediaContentPaneView::GetAudioLabelText() const {
+std::u16string_view DesktopMediaContentPaneView::GetAudioLabelText() const {
   return share_audio_view_ ? share_audio_view_->GetAudioLabelText()
-                           : std::u16string();
+                           : std::u16string_view();
 }
 
 BEGIN_METADATA(DesktopMediaContentPaneView)

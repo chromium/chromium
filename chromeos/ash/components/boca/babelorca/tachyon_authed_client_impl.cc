@@ -88,7 +88,7 @@ void TachyonAuthedClientImpl::StartAuthedRequestInternal(
     std::unique_ptr<RequestDataWrapper> request_data,
     bool has_oauth_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!has_oauth_token) {
+  if (!has_oauth_token || !oauth_token_manager_->GetTokenString()) {
     std::move(request_data->response_cb)
         .Run(TachyonResponse(TachyonResponse::Status::kAuthError));
     return;

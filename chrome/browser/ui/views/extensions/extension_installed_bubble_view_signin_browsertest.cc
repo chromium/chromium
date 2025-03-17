@@ -13,14 +13,17 @@
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/extensions/extension_install_ui.h"
+#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
+#include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +36,7 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
  public:
   ExtensionInstalledBubbleViewsSignInBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        syncer::kSyncEnableExtensionsInTransportMode);
+        switches::kEnableExtensionsExplicitBrowserSignin);
   }
 
   ~ExtensionInstalledBubbleViewsSignInBrowserTest() override = default;
@@ -44,7 +47,7 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
     views::Widget::Widgets old_widgets =
         views::test::WidgetTest::GetAllWidgets();
 
-    ExtensionInstallUI::ShowBubble(extension, browser(), SkBitmap());
+    ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
 
     views::Widget::Widgets new_widgets =
         views::test::WidgetTest::GetAllWidgets();
@@ -96,7 +99,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
   // Simulate a user signing in from the promo. This should open up a new tab
   // with the sign in page.
   int starting_tab_count = browser()->tab_strip_model()->count();
-  view_delegate->SignInForTesting(AccountInfo());
+  BubbleSignInPromoDelegate delegate(
+      *browser()->tab_strip_model()->GetActiveWebContents(),
+      signin_metrics::AccessPoint::kExtensionInstallBubble,
+      syncer::LocalDataItemModel::DataId(extension->id()));
+  delegate.OnSignIn(AccountInfo());
 
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
 }
@@ -108,9 +115,7 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
  public:
   ExtensionInstalledBubbleViewsExplicitSignInBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {switches::kExplicitBrowserSigninUIOnDesktop,
-         syncer::kSyncEnableExtensionsInTransportMode},
-        {});
+        {switches::kEnableExtensionsExplicitBrowserSignin}, {});
   }
 
  protected:
@@ -130,7 +135,8 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
   // Initiates a sign in flow from the bubble promo shown for the provided
   // `extension`.
   void InitiateSignInFromExtensionPromo(
-      scoped_refptr<const extensions::Extension> extension) {
+      scoped_refptr<const extensions::Extension> extension,
+      const AccountInfo& account_info = AccountInfo()) {
     views::Widget* bubble_view_widget = ShowBubble(extension);
     ASSERT_TRUE(bubble_view_widget);
 
@@ -142,7 +148,11 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
     EXPECT_TRUE(view_delegate->model()->show_sign_in_promo());
 
     // Initiate a sign in from the promo.
-    view_delegate->SignInForTesting(AccountInfo());
+    BubbleSignInPromoDelegate delegate(
+        *browser()->tab_strip_model()->GetActiveWebContents(),
+        signin_metrics::AccessPoint::kExtensionInstallBubble,
+        syncer::LocalDataItemModel::DataId(extension->id()));
+    delegate.OnSignIn(account_info);
   }
 
  private:
@@ -182,9 +192,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
   // After some time has passed, initiate a sign in for the `new_extension`.
   InitiateSignInFromExtensionPromo(new_extension);
 
-  // Simulate a sign in to the web to finish what was initiated above.
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager(), "test@gmail.com", signin::ConsentLevel::kSignin);
+  // Simulate a sign in from the extensions bubble to finish what was initiated
+  // above.
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::kExtensionInstallBubble)
+          .Build("testy@mctestface.com"));
+  ASSERT_TRUE(SigninPrefs(*profile()->GetPrefs())
+                  .GetExtensionsExplicitBrowserSignin(account_info.gaia));
 
   // Check that the user is now signed in for the browser in transport mode and
   // syncing for extensions is enabled.
@@ -208,4 +225,47 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
   EXPECT_EQ(extensions::AccountExtensionTracker::AccountExtensionType::
                 kAccountInstalledSignedIn,
             GetAccountExtensionType(new_extension->id()));
+}
+
+// Test that if the user is already signed in on the web, signing in via
+// extension installed promo should still promote the extension to an account
+// extension.
+// This tests the fix for crbug.com/400522723
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
+                       BubbleExplicitSigninWithAccount) {
+  auto extension = LoadPackedExtension("simple_with_file");
+  ASSERT_TRUE(extension);
+
+  // Simulate a sign in from the web.
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build("testy@mctestface.com"));
+
+  // The user should only be signed in the web but not the browser itself, and
+  // extensions should not be syncing.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
+
+  // Now simulate signing into chrome via the extension promo for the given
+  // `extension`.
+  InitiateSignInFromExtensionPromo(extension, account_info);
+
+  // The user should be signed in to the browser.
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The extension should immediately be promoted to an account extension.
+  EXPECT_EQ(extensions::AccountExtensionTracker::AccountExtensionType::
+                kAccountInstalledSignedIn,
+            GetAccountExtensionType(extension->id()));
+
+  // This should be recorded as an extension explicit sign in.
+  EXPECT_TRUE(SigninPrefs(*profile()->GetPrefs())
+                  .GetExtensionsExplicitBrowserSignin(account_info.gaia));
+  EXPECT_TRUE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
 }

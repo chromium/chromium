@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_COMMON_H_
 
 #include "components/metrics/metrics_provider.h"
+#include "base/timer/timer.h"
 
 namespace performance_manager {
 
@@ -22,7 +23,10 @@ class MetricsProviderCommon : public ::metrics::MetricsProvider {
       ::metrics::ChromeUserMetricsExtension* /*uma_proto*/) override;
 
  private:
+  void RecordAvailableMemoryMetrics();
   void RecordA11yFlags();
+
+  base::RepeatingTimer available_memory_metrics_timer_;
 };
 
 }  // namespace performance_manager

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
@@ -40,7 +41,6 @@ class OmniboxTextView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  bool GetCanProcessEventsWithinSubtree() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   // Applies given theme color to underlying render text. This is called Apply*
@@ -49,13 +49,13 @@ class OmniboxTextView : public views::View {
   void ApplyTextColor(ui::ColorId id);
 
   // Returns the render text, or an empty string if there is none.
-  const std::u16string& GetText() const;
+  std::u16string_view GetText() const;
 
   // Used for content/description separator & tail suggest ellipses.
-  void SetText(const std::u16string& new_text);
+  void SetText(std::u16string_view new_text);
 
   // Used for standard suggestions.
-  void SetTextWithStyling(const std::u16string& new_text,
+  void SetTextWithStyling(std::u16string_view new_text,
                           const ACMatchClassifications& classifications);
 
   // Used for search answers using `RichAnswerTemplate`.
@@ -83,7 +83,7 @@ class OmniboxTextView : public views::View {
   // Creates a platform-approriate RenderText, sets its format to that of
   // a suggestion and inserts (renders) the provided |text|.
   std::unique_ptr<gfx::RenderText> CreateRenderText(
-      const std::u16string& text) const;
+      std::u16string_view text) const;
 
  private:
   // Updates the cached maximum line height and recomputes the preferred size.

@@ -137,7 +137,6 @@ source_set("impl") {
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:browser_navigator_params_headers",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
@@ -194,6 +193,7 @@ if (!is_android) {
 
     sources = [
       "card_unmask_prompt_view_browsertest.cc",
+      "chrome_payments_autofill_client_browsertest.cc",
       "save_card_bubble_controller_impl_browsertest.cc",
     ]
 

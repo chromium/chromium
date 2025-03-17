@@ -50,6 +50,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
@@ -58,6 +59,7 @@ import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
 import java.util.ArrayList;
@@ -78,7 +80,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
     private static final AccountInfo TEST_ACCOUNT =
-            new AccountInfo.Builder("test@gmail.com", "testGaiaId").build();
+            new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId")).build();
 
     private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
         private final List<Runnable> mRunnables = new ArrayList<>();
@@ -212,7 +214,7 @@ public class AccountManagerFacadeImplTest {
 
         HistogramWatcher retriesHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.GetAccountsBackoffRetries", /* retries= */ 1)
+                        .expectIntRecord("Signin.GetAccountsBackoffRetries", /* value= */ 1)
                         .build();
         HistogramWatcher successHistogram =
                 HistogramWatcher.newBuilder()
@@ -326,7 +328,7 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testGetCoreAccountInfosWhenGaiaIdIsNull() throws Exception {
         final String accountEmail = "test@gmail.com";
-        final String accountGaiaId = FakeAccountManagerDelegate.toGaiaId(accountEmail);
+        final GaiaId accountGaiaId = FakeAccountManagerDelegate.toGaiaId(accountEmail);
         AtomicBoolean accountRemoved = new AtomicBoolean(false);
         doAnswer(
                         invocation -> {
@@ -475,6 +477,52 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void testCheckIsSubjectToParentalControls() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
+
+        doReturn(CapabilityResponse.YES)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
+
+        facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(true, accountInfo);
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void testCheckNotIsSubjectToParentalControls() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
+
+        doReturn(CapabilityResponse.NO)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
+
+        facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void testCheckIsSubjectToParentalControlsWithException() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
+
+        doReturn(CapabilityResponse.EXCEPTION)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
+
+        facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testCheckChildAccount() {
         final CoreAccountInfo coreAccountInfo =
                 setFeaturesForAccount(
@@ -487,6 +535,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testCheckChildAccountForAdult() {
         final CoreAccountInfo coreAccountInfo = setFeaturesForAccount("adult@gmail.com");
 
@@ -506,12 +555,14 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.TRUE);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.TRUE);
         Assert.assertEquals(
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
-                Tribool.TRUE);
+                Tribool.TRUE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
+        Assert.assertEquals(Tribool.TRUE, capabilities.isSubjectToParentalControls());
+        Assert.assertEquals(Tribool.TRUE, capabilities.canRunChromePrivacySandboxTrials());
+        Assert.assertEquals(
+                Tribool.TRUE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     @Test
@@ -524,12 +575,14 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.FALSE);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.FALSE);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.FALSE);
         Assert.assertEquals(
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
-                Tribool.FALSE);
+                Tribool.FALSE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
+        Assert.assertEquals(Tribool.FALSE, capabilities.isSubjectToParentalControls());
+        Assert.assertEquals(Tribool.FALSE, capabilities.canRunChromePrivacySandboxTrials());
+        Assert.assertEquals(
+                Tribool.FALSE,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     @Test
@@ -542,18 +595,20 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.UNKNOWN);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.UNKNOWN);
         Assert.assertEquals(
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(),
-                Tribool.UNKNOWN);
+                Tribool.UNKNOWN,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
+        Assert.assertEquals(Tribool.UNKNOWN, capabilities.isSubjectToParentalControls());
+        Assert.assertEquals(Tribool.UNKNOWN, capabilities.canRunChromePrivacySandboxTrials());
+        Assert.assertEquals(
+                Tribool.UNKNOWN,
+                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     private CoreAccountInfo setFeaturesForAccount(String email, String... features) {
         final Account account = AccountUtils.createAccountFromName(email);
         final CoreAccountInfo coreAccountInfo =
-                CoreAccountInfo.createFromEmailAndGaiaId(email, "notUsedGaiaId");
+                CoreAccountInfo.createFromEmailAndGaiaId(email, new GaiaId("notUsedGaiaId"));
         mShadowAccountManager.setFeatures(account, features);
         return coreAccountInfo;
     }

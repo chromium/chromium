@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/web_request/web_request_info.h"
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -135,13 +136,15 @@ std::optional<base::Value::Dict> CreateRequestBodyData(
   // Get the data presenters, ordered by how specific they are.
   ParsedDataPresenter parsed_data_presenter(request_headers);
   RawDataPresenter raw_data_presenter;
-  UploadDataPresenter* const presenters[] = {
+  const auto presenters = std::to_array<UploadDataPresenter*>({
       &parsed_data_presenter,  // 1: any parseable forms? (Specific to forms.)
       &raw_data_presenter      // 2: any data at all? (Non-specific.)
-  };
+  });
   // Keys for the results of the corresponding presenters.
-  static const char* const kKeys[] = {keys::kRequestBodyFormDataKey,
-                                      keys::kRequestBodyRawKey};
+  static const auto kKeys = std::to_array<const char*>({
+      keys::kRequestBodyFormDataKey,
+      keys::kRequestBodyRawKey,
+  });
   bool some_succeeded = false;
   if (!data_sources.empty()) {
     for (auto [presenter, key] : base::zip(presenters, kKeys)) {
@@ -217,6 +220,8 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
       web_view_instance_id = navigation_ui_data->web_view_instance_id();
       web_view_rules_registry_id =
           navigation_ui_data->web_view_rules_registry_id();
+      web_view_embedder_process_id =
+          navigation_ui_data->web_view_embedder_process_id();
     }
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
@@ -320,7 +325,7 @@ bool WebRequestInfo::ShouldRecordMatchedAllowRuleInOnHeadersReceived(
   // should match since said actions are no longer relevant in
   // onHeadersReceived.
   bool only_request_headers_modified =
-      base::ranges::all_of(*dnr_actions, [](const auto& action) {
+      std::ranges::all_of(*dnr_actions, [](const auto& action) {
         return action.type == declarative_net_request::RequestAction::Type::
                                   MODIFY_HEADERS &&
                action.response_headers_to_modify.empty();

@@ -41,7 +41,7 @@ namespace {
 
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUser));
+    AccountId::FromUserEmailGaiaId(kUser, GaiaId("1111"));
 const style::mojom::ColorScheme kLocalColorScheme =
     style::mojom::ColorScheme::kVibrant;
 const style::mojom::ColorScheme kDefaultColorScheme =
@@ -107,8 +107,8 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
  public:
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-    GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(kAccountId, kUser);
+    ClearLogin();
+    SimulateUserLogin(kAccountId);
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     color_palette_controller_ = Shell::Get()->color_palette_controller();
 
@@ -495,7 +495,7 @@ TEST_F(ColorPaletteControllerTest,
 
 TEST_F(ColorPaletteControllerTest, GuestLogin_UsesCelebiColor) {
   const SkColor celebi_color = SK_ColorBLUE;
-
+  ClearLogin();
   SimulateGuestLogin();
   base::RunLoop().RunUntilIdle();
   UpdateWallpaperColor(celebi_color);
@@ -631,7 +631,7 @@ class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
  public:
   void SetUp() override {
     ColorPaletteControllerTest::SetUp();
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
   }
 
   //  Sets the local ColorScheme to kVibrant. The synced color scheme remains

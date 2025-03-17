@@ -6,11 +6,11 @@ package org.chromium.components.omnibox.action;
 
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 
 /** An interface for handling interactions for Omnibox Action Chips. */
+@NullMarked
 public interface OmniboxActionDelegate {
     /** Returns whether the user is currently browsing incognito. */
     boolean isIncognito();
@@ -29,7 +29,7 @@ public interface OmniboxActionDelegate {
      * @param intent the intent describing the activity to be started
      * @return whether operation was successful
      */
-    boolean startActivity(@NonNull Intent intent);
+    boolean startActivity(Intent intent);
 
     /** Create a new incognito tab. */
     void openIncognitoTab();

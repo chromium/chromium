@@ -34,7 +34,8 @@ class SettingsSignalsCollector : public BaseSignalsCollector {
   // the required parameters for this signal. `response` will be passed along
   // and the signal values will be set on it when available. `done_closure` will
   // be invoked when signal collection is complete.
-  void GetSettingsSignal(const SignalsAggregationRequest& request,
+  void GetSettingsSignal(UserPermission permission,
+                         const SignalsAggregationRequest& request,
                          SignalsAggregationResponse& response,
                          base::OnceClosure done_closure);
 

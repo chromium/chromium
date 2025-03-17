@@ -33,6 +33,7 @@ namespace ash::boca {
 namespace {
 
 const std::string kTachyonToken = "tachyon-token";
+const std::string kSecondTachyonToken = "second-tachyon-token";
 const std::string kSessionId = "session-id";
 const std::string kSenderEmail = "user@email.com";
 const std::string kGroupId = "tachyon-group-id";
@@ -56,9 +57,10 @@ class BabelOrcaManagerTest : public testing::Test {
                                          signin::ConsentLevel::kSignin);
   }
 
-  void AddSuccessfulSigninGaiaResponse() {
+  void AddSuccessfulSigninGaiaResponse(
+      const std::string& tachyon_token = kTachyonToken) {
     babelorca::SignInGaiaResponse response;
-    response.mutable_auth_token()->set_payload(kTachyonToken);
+    response.mutable_auth_token()->set_payload(tachyon_token);
     url_loader_factory_.AddResponse(babelorca::kSigninGaiaUrl,
                                     response.SerializeAsString());
   }
@@ -100,6 +102,73 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithSuccess) {
   ASSERT_TRUE(manager.tachyon_token().has_value());
   EXPECT_EQ(request_data_provider, &manager);
   EXPECT_EQ(manager.tachyon_token().value(), kTachyonToken);
+}
+
+TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondSecondTime) {
+  base::test::TestFuture<bool> first_test_future;
+  base::test::TestFuture<bool> second_test_future;
+  auto controller_factory = base::BindLambdaForTesting(
+      [](babelorca::TokenManager*,
+         babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+      });
+  BabelOrcaManager manager(identity_test_env_.identity_manager(),
+                           url_loader_factory_.GetSafeWeakWrapper(),
+                           std::move(controller_factory));
+
+  AddSuccessfulSigninGaiaResponse();
+  manager.SigninToTachyonAndRespond(first_test_future.GetCallback());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "oauth_token", base::Time::Max());
+  bool first_success = first_test_future.Get();
+  std::optional<std::string> first_token = manager.tachyon_token();
+
+  AddSuccessfulSigninGaiaResponse(kSecondTachyonToken);
+  manager.SigninToTachyonAndRespond(second_test_future.GetCallback());
+  bool second_success = second_test_future.Get();
+  std::optional<std::string> second_token = manager.tachyon_token();
+
+  EXPECT_TRUE(first_success);
+  EXPECT_TRUE(second_success);
+  ASSERT_TRUE(first_token.has_value());
+  EXPECT_EQ(first_token.value(), kTachyonToken);
+  ASSERT_TRUE(second_token.has_value());
+  EXPECT_EQ(second_token.value(), kTachyonToken);
+}
+
+TEST_F(BabelOrcaManagerTest, SigninResetOnSessionEnd) {
+  base::test::TestFuture<bool> first_test_future;
+  base::test::TestFuture<bool> second_test_future;
+  auto controller_factory = base::BindLambdaForTesting(
+      [](babelorca::TokenManager*,
+         babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+      });
+  BabelOrcaManager manager(identity_test_env_.identity_manager(),
+                           url_loader_factory_.GetSafeWeakWrapper(),
+                           std::move(controller_factory));
+
+  AddSuccessfulSigninGaiaResponse();
+  manager.SigninToTachyonAndRespond(first_test_future.GetCallback());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "oauth_token", base::Time::Max());
+  bool first_success = first_test_future.Get();
+  std::optional<std::string> first_token = manager.tachyon_token();
+
+  AddSuccessfulSigninGaiaResponse(kSecondTachyonToken);
+  manager.OnSessionEnded(kSessionId);
+  manager.SigninToTachyonAndRespond(second_test_future.GetCallback());
+  bool second_success = second_test_future.Get();
+  std::optional<std::string> second_token = manager.tachyon_token();
+
+  EXPECT_TRUE(first_success);
+  EXPECT_TRUE(second_success);
+  ASSERT_TRUE(first_token.has_value());
+  EXPECT_EQ(first_token.value(), kTachyonToken);
+  ASSERT_TRUE(second_token.has_value());
+  EXPECT_EQ(second_token.value(), kSecondTachyonToken);
 }
 
 TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithFailure) {
@@ -247,6 +316,27 @@ TEST_F(BabelOrcaManagerTest, OnLocalCaptionConfigUpdated) {
   EXPECT_CALL(*controller_ptr, OnLocalCaptionConfigUpdated(false)).Times(1);
   manager.OnLocalCaptionConfigUpdated(captions_config);
 }
+
+TEST_F(BabelOrcaManagerTest, OnLocalCaptionClosed) {
+  base::test::TestFuture<bool> test_future;
+  MockBabelOrcaController* controller_ptr;
+  auto controller_factory = base::BindLambdaForTesting(
+      [&controller_ptr](babelorca::TokenManager*,
+                        babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        auto controller =
+            std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+        controller_ptr = controller.get();
+        return controller;
+      });
+  BabelOrcaManager manager(identity_test_env_.identity_manager(),
+                           url_loader_factory_.GetSafeWeakWrapper(),
+                           std::move(controller_factory));
+
+  EXPECT_CALL(*controller_ptr, OnLocalCaptionConfigUpdated(false)).Times(1);
+  manager.OnLocalCaptionClosed();
+}
+
 TEST_F(BabelOrcaManagerTest, RequestDataProviderIsTheManager) {
   base::test::TestFuture<bool> test_future;
   babelorca::TachyonRequestDataProvider* request_data_provider;

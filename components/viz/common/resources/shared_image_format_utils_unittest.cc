@@ -128,13 +128,12 @@ TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneAlpha) {
   TestToClosestSkColorType(expected_types, format);
 }
 
-TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSoftwareRGBX) {
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSoftwareBGRA) {
   // Software Compositing.
-  // Single planar RGBX_8888
-  SharedImageFormat format = SinglePlaneFormat::kRGBX_8888;
+  // Usually it is single planar BGRA_8888
+  SharedImageFormat format = SinglePlaneFormat::kBGRA_8888;
   ASSERT_EQ(format.NumberOfPlanes(), 1);
-  EXPECT_EQ(kN32_SkColorType,
-            ToClosestSkColorType(/*gpu_compositing=*/false, format));
+  EXPECT_EQ(kBGRA_8888_SkColorType, ToClosestSkColorType(format));
 }
 
 }  // namespace

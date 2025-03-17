@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -50,24 +51,6 @@ void BoxPainter::RecordScrollHitTestData(
   if (!layout_box_.GetScrollableArea())
     return;
 
-  // If an object does scroll overflow, but it is not itself visible to
-  // hit testing (e.g., because it has pointer-events: none), it may
-  // have descendants that *are* visible to hit testing.  In that case,
-  // we need to record hit test data with a null scroll_translation
-  // (which marks a region where composited scroll is not allowed) so
-  // that we fall back to main thread hit testing for the entire box.
-  //
-  // Note that if it is visibility: hidden, then the style.Visibility()
-  // check above will fail and we will already have returned.
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-      !style.VisibleToHitTesting()) {
-    auto& paint_controller = paint_info.context.GetPaintController();
-    paint_controller.RecordScrollHitTestData(
-        background_client, DisplayItem::kScrollHitTest, nullptr,
-        VisualRect(fragment->PaintOffset()), cc::HitTestOpaqueness::kMixed);
-    return;
-  }
-
   // If there is an associated scroll node, emit scroll hit test data.
   const auto* properties = fragment->PaintProperties();
   auto hit_test_opaqueness = ObjectPainter(layout_box_).GetHitTestOpaqueness();
@@ -96,6 +79,16 @@ void BoxPainter::RecordScrollHitTestData(
     gfx::Rect cull_rect = fragment->GetContentsCullRect().Rect();
     if (cull_rect.Contains(properties->Scroll()->ContentsRect())) {
       cull_rect = CullRect::Infinite().Rect();
+    } else {
+      // Don't pass the cull rect if it doesn't cover the container rect
+      // because cc can't distinguish the case from paint checkerboarding.
+      gfx::Rect cull_rect_in_container_space = gfx::ToEnclosingRect(
+          gfx::RectF(cull_rect) +
+          properties->ScrollTranslation()->Get2dTranslation());
+      if (!cull_rect_in_container_space.Contains(
+              properties->Scroll()->ContainerRect())) {
+        cull_rect = CullRect::Infinite().Rect();
+      }
     }
     paint_controller.RecordScrollHitTestData(
         background_client, DisplayItem::kScrollHitTest,

@@ -38,6 +38,5 @@ jint JNI_SecurityStateModel_GetSecurityLevelForWebContents(
   }
 
   return security_state::GetSecurityLevel(
-      *security_state::GetVisibleSecurityState(web_contents),
-      /* used_policy_installed_certificate= */ false);
+      *security_state::GetVisibleSecurityState(web_contents));
 }

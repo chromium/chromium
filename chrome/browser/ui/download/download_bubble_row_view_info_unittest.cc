@@ -43,7 +43,7 @@ using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 using ::testing::UnorderedElementsAre;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 #endif
 
@@ -413,56 +413,6 @@ TEST_F(DownloadBubbleRowViewInfoTest, InsecurePrimaryButtonCommand) {
     item().NotifyObserversDownloadUpdated();
     EXPECT_EQ(info().primary_button_command(), DownloadCommands::Command::KEEP);
   }
-}
-
-TEST_F(DownloadBubbleRowViewInfoTest,
-       ShouldShowNoticeForEnhancedProtectionScan) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kDeepScanningPromptRemoval);
-  EXPECT_CALL(item(), GetDangerType())
-      .WillRepeatedly(
-          Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
-  safe_browsing::SetSafeBrowsingState(
-      profile()->GetPrefs(),
-      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
-  EXPECT_TRUE(info().ShouldShowDeepScanNotice());
-}
-
-TEST_F(DownloadBubbleRowViewInfoTest,
-       ShouldNotShowNoticeForAdvancedProtectionScan) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kDeepScanningPromptRemoval);
-  EXPECT_CALL(item(), GetDangerType())
-      .WillRepeatedly(
-          Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
-  safe_browsing::SetSafeBrowsingState(
-      profile()->GetPrefs(),
-      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-  EXPECT_FALSE(info().ShouldShowDeepScanNotice());
-}
-
-TEST_F(DownloadBubbleRowViewInfoTest, ShouldNotShowNoticeWithoutFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(safe_browsing::kDeepScanningPromptRemoval);
-  EXPECT_CALL(item(), GetDangerType())
-      .WillRepeatedly(
-          Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
-  safe_browsing::SetSafeBrowsingState(
-      profile()->GetPrefs(),
-      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
-  EXPECT_FALSE(info().ShouldShowDeepScanNotice());
-}
-
-TEST_F(DownloadBubbleRowViewInfoTest, ShouldNotShowIfScanAlreadyPerformed) {
-  EXPECT_CALL(item(), GetDangerType())
-      .WillRepeatedly(
-          Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
-  safe_browsing::SetSafeBrowsingState(
-      profile()->GetPrefs(),
-      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
-  profile()->GetPrefs()->SetBoolean(
-      prefs::kSafeBrowsingAutomaticDeepScanPerformed, true);
-  EXPECT_FALSE(info().ShouldShowDeepScanNotice());
 }
 
 }  // namespace

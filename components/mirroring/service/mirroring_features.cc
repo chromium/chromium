@@ -6,14 +6,6 @@
 
 namespace mirroring {
 namespace features {
-// The mirroring service previously used a model name filter before even
-// attempting to query the receiver for media remoting support. This
-// flag disables this behavior and queries all devices for remoting support.
-// See https://crbug.com/1198616 and b/224993260 for background.
-BASE_FEATURE(kCastDisableModelNameCheck,
-             "CastDisableModelNameCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This flag enables HiDPI capture during Cast Streaming mirroring sessions.
 //
 // This feature is enabled by the Chrome command line flag

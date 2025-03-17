@@ -116,7 +116,7 @@ TEST_P(QuickInsertPixelTest, UnfocusedMode) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "quick_insert_unfocused",
-      /*revision_number=*/0, controller().widget_for_testing()));
+      /*revision_number=*/1, controller().widget_for_testing()));
 }
 
 TEST_P(QuickInsertPixelTest, FocusedModeNoSelection) {
@@ -128,7 +128,7 @@ TEST_P(QuickInsertPixelTest, FocusedModeNoSelection) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "quick_insert_focused_no_selection",
-      /*revision_number=*/0, controller().widget_for_testing()));
+      /*revision_number=*/1, controller().widget_for_testing()));
 }
 
 TEST_P(QuickInsertPixelTest, FocusedModeHasSelection) {
@@ -141,7 +141,7 @@ TEST_P(QuickInsertPixelTest, FocusedModeHasSelection) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "quick_insert_focused_no_selection",
-      /*revision_number=*/0, controller().widget_for_testing()));
+      /*revision_number=*/1, controller().widget_for_testing()));
 }
 
 }  // namespace

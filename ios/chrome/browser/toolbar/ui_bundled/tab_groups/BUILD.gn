@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features_utils") {
+  sources = [
+    "tab_group_indicator_features_utils.h",
+    "tab_group_indicator_features_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}

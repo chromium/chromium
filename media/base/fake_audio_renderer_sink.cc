@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/fake_audio_renderer_sink.h"
+
+#include <array>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -116,14 +113,14 @@ void FakeAudioRendererSink::SetIsOptimizedForHardwareParameters(bool value) {
 }
 
 void FakeAudioRendererSink::ChangeState(State new_state) {
-  static const char* kStateNames[] = {
-    "kUninitialized",
-    "kInitialized",
-    "kStarted",
-    "kPaused",
-    "kPlaying",
-    "kStopped"
-  };
+  static auto kStateNames = std::to_array<const char*>({
+      "kUninitialized",
+      "kInitialized",
+      "kStarted",
+      "kPaused",
+      "kPlaying",
+      "kStopped",
+  });
 
   DVLOG(1) << __func__ << " : " << kStateNames[state_] << " -> "
            << kStateNames[new_state];

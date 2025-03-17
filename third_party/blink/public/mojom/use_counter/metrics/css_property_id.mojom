@@ -866,10 +866,44 @@ enum CSSSampleId {
     kMasonryTrack = 807,
     kMasonrySlack = 808,
     kCaretAnimation = 809,
-    kViewTransitionCaptureMode = 810,
+    // kViewTransitionCaptureMode = 810,
     kInteractivity = 811,
     kMasonryFill = 812,
     kMasonryDirection = 813,
+    kMasonryFlow = 814,
+    kMasonryAutoTracks = 815,
+    kResult = 816,
+    kAnimationTriggerType = 817,
+    kAnimationTriggerTimeline = 818,
+    kAnimationTriggerRangeStart = 819,
+    kAnimationTriggerRangeEnd = 820,
+    kAnimationTriggerExitRangeStart = 821,
+    kAnimationTriggerExitRangeEnd = 822,
+    kInterestTargetShowDelay = 823,
+    kInterestTargetHideDelay = 824,
+    kAnimationTriggerRange = 825,
+    kAnimationTriggerExitRange = 826,
+    kInterestTargetDelay = 827,
+    kAnimationTrigger = 828,
+    kColumnRuleBreak = 829,
+    kRowRuleBreak = 830,
+    kCornerBottomLeftShape = 831,
+    kCornerBottomRightShape = 832,
+    kCornerTopLeftShape = 833,
+    kCornerTopRightShape = 834,
+    kCornerStartStartShape = 835,
+    kCornerStartEndShape = 836,
+    kCornerEndStartShape = 837,
+    kCornerEndEndShape = 838,
+    kReadingOrder = 839,
+    kColumnRuleOutset = 840,
+    kRowRuleOutset = 841,
+    kCornerShape = 842,
+    kScrollMarkerContain = 843,
+    kRowRuleStyle = 844,
+    kGapRulePaintOrder = 845,
+    kRowRuleWidth = 846,
+    kRowRuleColor = 847,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
@@ -877,4 +911,4 @@ enum CSSSampleId {
     //    to update the UMA histogram names.
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MappedCSSProperties)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:MappedCSSProperties)

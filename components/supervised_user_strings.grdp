@@ -13,6 +13,15 @@
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
         A parent or guardian has to say that it's OK for you to visit this website
       </message>
+      <message name="IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_BLOCK_ALL" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
+        A parent or guardian has to say that it's OK for you to visit this website
+      </message>
+      <message name="IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES" desc="Message to be shown when a site was blocked due to the SafeSites safety check.">
+        This site may have mature content. A parent or guardian has to say that it's OK for you to visit this website.
+      </message>
+      <message name="IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry.">
+        A parent or guardian said that this site isn’t OK for you to visit. You can ask them to unblock it.
+      </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent. Before they can ask their parent to allow the site, the child first needs to enter their Google Account password because their credentials expired.">
         A parent or guardian has to say that it's OK for you to visit this website. Before you ask them, we need to make sure it's you.
       </message>
@@ -87,5 +96,30 @@
       </message>
       <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING" desc="A message for the child user when they visit a permitted site, but then encounter embedded content from a second site that is not permitted by their parent. Before they can ask their parent to let them view the content, the child first needs to enter their Google Account password because their credentials expired.">
         To ask to see this content, continue with your Google Account
+      </message>
+      <!-- Supervised user PACP widget custom subtitles for local web approvals -->
+      <message name="IDS_PARENT_WEBSITE_APPROVAL_BLOCK_ALL_URL" desc="This text displayed as a subtitle in a bottom sheet asking a parent to allow or not allow a website. This informs the parent that this site has not been permitted by the parent.">
+      You haven't approved <ph name="BLOCKED_URL">$1<ex>example.com</ex></ph> before
+      </message>
+      <message name="IDS_PARENT_WEBSITE_APPROVAL_SAFE_SITES_URL" desc="This text displayed as a subtitle in a bottom sheet asking a parent to allow or not allow a website. This informs the parent that this site was blocked due to the SafeSites safety check.">
+      <ph name="BLOCKED_URL">$1<ex>example.com</ex></ph> may have mature content
+      </message>
+      <message name="IDS_PARENT_WEBSITE_APPROVAL_MANUAL_URL" desc="This text displayed as a subtitle in a bottom sheet asking a parent to allow or not allow a website. This informs the parent that this site was blocked due to a manual blocklist entry.">
+      You previously blocked <ph name="BLOCKED_URL">$1<ex>example.com</ex></ph>
+      </message>
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_TITLE" desc="Title of the error dialog that is shown when a supervised user asks for local parental approval, but during the request something went wrong.">
+      Something went wrong
+      </message>
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_DESCRIPTION" desc="Description of the error dialog that is shown when a supervised user asks for local parental approval, but the request failed. In this scenario, we don't know why the request didn't work, so they need to try again.">
+      Try again
+      </message>
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_BACK_BUTTON" desc="Button of the error dialog that is shown when a supervised user asks for local parental approval, but the request failed. In this scenario, we don't know why the request didn't work, so they need to go back to the previous screen and try again.">
+      Back
+      </message>
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_TITLE" desc="Description of the error snackbar that is shown when a supervised user asks for parental approval, but the request couldn’t be sent. In this scenario, we don’t know why the request didn’t work, so they need to try again.">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_BACK_BUTTON" desc="Button of the error snackbar that is shown when a supervised user asks for parental approval, but the request couldn’t be sent. In this scenario, we don’t know why the request didn’t work, so they need to go back to the previous screen and try again.">
+        Close
       </message>
 </grit-part>

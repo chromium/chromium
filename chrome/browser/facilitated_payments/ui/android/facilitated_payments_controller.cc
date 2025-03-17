@@ -10,16 +10,12 @@
 #include "base/android/jni_android.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
-
-namespace {
-const int64_t kFakeInstrumentId = -1L;
-}  // namespace
 
 FacilitatedPaymentsController::FacilitatedPaymentsController(
     content::WebContents* web_contents)
@@ -38,26 +34,26 @@ bool FacilitatedPaymentsController::IsInLandscapeMode() {
 
 void FacilitatedPaymentsController::Show(
     base::span<const autofill::BankAccount> bank_account_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+    base::OnceCallback<void(int64_t)> on_payment_account_selected) {
   // Abort if there are no bank accounts.
   if (bank_account_suggestions.empty()) {
     return;
   }
 
   view_->RequestShowContent(std::move(bank_account_suggestions));
-  on_user_decision_callback_ = std::move(on_user_decision_callback);
+  on_payment_account_selected_ = std::move(on_payment_account_selected);
 }
 
 void FacilitatedPaymentsController::ShowForEwallet(
     base::span<const autofill::Ewallet> ewallet_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+    base::OnceCallback<void(int64_t)> on_payment_account_selected) {
   // Abort if there are no eWallets.
   if (ewallet_suggestions.empty()) {
     return;
   }
 
   view_->RequestShowContentForEwallet(std::move(ewallet_suggestions));
-  on_user_decision_callback_ = std::move(on_user_decision_callback);
+  on_payment_account_selected_ = std::move(on_payment_account_selected);
 }
 
 void FacilitatedPaymentsController::ShowProgressScreen() {
@@ -100,29 +96,17 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
   }
 }
 
-// TODO: crbug.com/375089558 - Deprecate once Java side is able to call
-// OnUiEvent.
-void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
-  ClearJavaViewComponents();
-
-  if (on_user_decision_callback_) {
-    std::move(on_user_decision_callback_)
-        .Run(/*is_fop_selected=*/false, kFakeInstrumentId);
-  }
-}
-
 void FacilitatedPaymentsController::OnBankAccountSelected(JNIEnv* env,
                                                           jlong instrument_id) {
-  if (on_user_decision_callback_) {
-    std::move(on_user_decision_callback_).Run(true, instrument_id);
+  if (on_payment_account_selected_) {
+    std::move(on_payment_account_selected_).Run(instrument_id);
   }
 }
 
 void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
                                                       jlong instrument_id) {
-  if (on_user_decision_callback_) {
-    std::move(on_user_decision_callback_)
-        .Run(/*is_ewallet_selected=*/true, instrument_id);
+  if (on_payment_account_selected_) {
+    std::move(on_payment_account_selected_).Run(instrument_id);
   }
 }
 

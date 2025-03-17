@@ -61,6 +61,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
+#include "chrome/browser/ui/ash/login/login_display_host_common.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -182,7 +183,7 @@ bool HasManagedDeviceSettings() {
 bool IsOobeComplete() {
   // Oobe is completed and we have a user or we are enterprise enrolled.
   return StartupUtils::IsOobeCompleted() &&
-         ((!user_manager::UserManager::Get()->GetUsers().empty() &&
+         ((!user_manager::UserManager::Get()->GetPersistedUsers().empty() &&
            !HasManagedDeviceSettings()) ||
           ash::InstallAttributes::Get()->IsEnterpriseManaged());
 }
@@ -290,9 +291,13 @@ void ShowLoginWizardFinish(
     // Tests may have already allocated an instance for us to use.
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
+    display_host =
+        new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN,
+                                 /*update_geolocation_usage_allowed=*/true);
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
+    display_host =
+        new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN,
+                                 /*update_geolocation_usage_allowed=*/true);
     DCHECK(session_manager::SessionManager::Get());
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
@@ -487,7 +492,8 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 // LoginDisplayHostWebUI, public
 
 LoginDisplayHostWebUI::LoginDisplayHostWebUI()
-    : oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
+    : LoginDisplayHostCommon(/*update_geolocation_usage_allowed=*/true),
+      oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
   SessionManagerClient::Get()->AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
@@ -665,7 +671,8 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   DVLOG(1) << "Starting sign in screen";
   CreateExistingUserController();
 
-  existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
+  existing_user_controller_->Init(
+      user_manager::UserManager::Get()->GetPersistedUsers());
 
   ShowGaiaDialogCommon(EmptyAccountId());
 
@@ -970,6 +977,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
       &params, kShellWindowId_LockScreenContainer);
   login_window_ = new views::Widget;
   login_window_->Init(std::move(params));
+  Shell::UpdateAccessibilityForStatusAreaWidget();
 
   login_view_ = new WebUILoginView(weak_factory_.GetWeakPtr());
   login_view_->Init();
@@ -1012,6 +1020,7 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
     login_window_->RemoveRemovalsObserver(this);
     login_window_->RemoveObserver(this);
     login_window_ = nullptr;
+    Shell::UpdateAccessibilityForStatusAreaWidget();
   }
 
   // Release wizard controller with the webui and hosting window so that it

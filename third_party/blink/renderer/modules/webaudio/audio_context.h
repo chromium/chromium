@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 
+#include <atomic>
+
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom-blink.h"
@@ -24,6 +27,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -51,7 +56,8 @@ class MODULES_EXPORT AudioContext final
     : public BaseAudioContext,
       public mojom::blink::PermissionObserver,
       public mojom::blink::MediaDevicesListener,
-      public FrameVisibilityObserver {
+      public FrameVisibilityObserver,
+      public media::mojom::blink::MediaPlayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -105,6 +111,23 @@ class MODULES_EXPORT AudioContext final
   void FrameVisibilityChanged(
       mojom::blink::FrameVisibility frame_visibility) override;
 
+  // media::mojom::MediaPlayer  implementation.
+  void RequestPlay() override {}
+  void RequestPause(bool triggered_by_user) override {}
+  void RequestSeekForward(base::TimeDelta seek_time) override {}
+  void RequestSeekBackward(base::TimeDelta seek_time) override {}
+  void RequestSeekTo(base::TimeDelta seek_time) override {}
+  void RequestEnterPictureInPicture() override {}
+  void RequestMute(bool mute) override {}
+  void SetVolumeMultiplier(double multiplier) override;
+  void SetPersistentState(bool persistent) override {}
+  void SetPowerExperimentState(bool enabled) override {}
+  void SetAudioSinkId(const String&) override {}
+  void SuspendForFrameClosed() override {}
+  void RequestMediaRemoting() override {}
+  void RequestVisibility(
+      RequestVisibilityCallback request_visibility_cb) override {}
+
   // https://webaudio.github.io/web-audio-api/#AudioContext
   double baseLatency() const;
   double outputLatency() const;
@@ -132,6 +155,10 @@ class MODULES_EXPORT AudioContext final
   RealtimeAudioDestinationNode* GetRealtimeAudioDestinationNode() const;
 
   void HandleAudibility(AudioBus* destination_bus);
+
+  // Adjusts the output volume of the rendered audio in case we are being
+  // ducked.
+  void HandleVolumeMultiplier(AudioBus* destination_bus);
 
   AudioCallbackMetric GetCallbackMetric() const;
 
@@ -211,12 +238,14 @@ class MODULES_EXPORT AudioContext final
   // Returns whether the autoplay requirements are fulfilled.
   bool AreAutoplayRequirementsFulfilled() const;
 
-  // If possible, allows autoplay for the AudioContext and marke it as allowed
-  // by the given type.
+  // If possible, allows autoplay for the AudioContext and mark it as allowed by
+  // the given type.
   void MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType);
 
-  // Returns whether the AudioContext is allowed to start rendering.
-  bool IsAllowedToStart() const;
+  // Returns whether the AudioContext is allowed to start rendering. It takes in
+  // a boolean parameter to indicate whether it should suppress warnings or send
+  // warning messages to the console about the requirement of user gesture.
+  bool IsAllowedToStart(bool should_suppress_warning = false) const;
 
   // Record the current autoplay metrics.
   void RecordAutoplayMetrics();
@@ -230,8 +259,8 @@ class MODULES_EXPORT AudioContext final
   // available for the potential GC.
   void StopRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
-  // Called when suspending the context to stop reundering audio, but don't
-  // clean up handlers because we expect to be resuming where we left off.
+  // Called when suspending the context to stop rendering audio, but don't clean
+  // up handlers because we expect to be resuming where we left off.
   void SuspendRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   void DidClose();
@@ -283,6 +312,12 @@ class MODULES_EXPORT AudioContext final
   void SendLogMessage(const char* const function_name, const String& message);
 
   LocalFrame* GetLocalFrame() const;
+
+  // Connects to the MediaPlayerHost to register as a media player.
+  void EnsureMediaPlayerConnection();
+
+  // Handles a disconnection from the MediaPlayerHost.
+  void OnMediaPlayerDisconnect();
 
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;
@@ -340,8 +375,8 @@ class MODULES_EXPORT AudioContext final
 
   // Initially, we assume that the microphone permission is denied. But this
   // will be corrected after the actual construction.
-  mojom::blink::PermissionStatus
-      microphone_permission_status_ = mojom::blink::PermissionStatus::DENIED;
+  mojom::blink::PermissionStatus microphone_permission_status_ =
+      mojom::blink::PermissionStatus::DENIED;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
   HeapMojoReceiver<mojom::blink::PermissionObserver, AudioContext>
@@ -408,6 +443,21 @@ class MODULES_EXPORT AudioContext final
   // are pending.
   int pending_device_list_updates_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = 0;
+
+  // ID used for mojo communication with the MediaPlayerHost.
+  const int player_id_;
+
+  // Volume multiplier applied to audio output. Used to duck audio when the
+  // MediaPlayerHost requests ducking. Only written on the main thread and only
+  // read on the audio thread.
+  std::atomic<double> volume_multiplier_ = 1.0;
+
+  HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>
+      media_player_host_;
+  HeapMojoAssociatedReceiver<media::mojom::blink::MediaPlayer, AudioContext>
+      media_player_receiver_;
+  HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
+      media_player_observer_;
 
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };

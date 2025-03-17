@@ -4,12 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/mojom/ime_mojom_traits.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
@@ -20,11 +19,12 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/mojom/ime_mojom_traits.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -644,7 +644,7 @@ void ArcInputMethodManagerService::SyncEnabledImesInArc() {
 
   // Filter out non ARC IME ids.
   std::set<std::string> new_arc_enabled_ime_ids;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       new_enabled_ime_ids,
       std::inserter(new_arc_enabled_ime_ids, new_arc_enabled_ime_ids.end()),
       &ash::extension_ime_util::IsArcIME);

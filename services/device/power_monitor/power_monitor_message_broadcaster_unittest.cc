@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/power_monitor_test.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
@@ -77,17 +78,18 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
 };
 
 TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
 
   std::unique_ptr<PowerMonitorBroadcastSource> broadcast_source(
       new PowerMonitorBroadcastSource(
-          std::make_unique<MockClient>(run_loop.QuitClosure()),
+          std::make_unique<MockClient>(future.GetCallback()),
           base::SequencedTaskRunner::GetCurrentDefault()));
   mojo::PendingRemote<mojom::PowerMonitor> remote_monitor;
   device_service()->BindPowerMonitor(
       remote_monitor.InitWithNewPipeAndPassReceiver());
   broadcast_source->Init(std::move(remote_monitor));
-  run_loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(future.IsReady());
 
   MockClient* client =
       static_cast<MockClient*>(broadcast_source->client_for_testing());
@@ -154,20 +156,20 @@ TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
 // This test sets the device's is_on_battery state to true and confirms
 // that a new client receives an OnPowerStateChange() message.
 TEST_F(PowerMonitorMessageBroadcasterTest, PowerClientUpdateWhenOnBattery) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
 
   SetBatteryPowerStatus(
       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   std::unique_ptr<PowerMonitorBroadcastSource> broadcast_source(
       new PowerMonitorBroadcastSource(
-          std::make_unique<MockClient>(run_loop.QuitClosure()),
+          std::make_unique<MockClient>(future.GetCallback()),
           base::SequencedTaskRunner::GetCurrentDefault()));
   mojo::PendingRemote<mojom::PowerMonitor> remote_monitor;
   device_service()->BindPowerMonitor(
       remote_monitor.InitWithNewPipeAndPassReceiver());
   broadcast_source->Init(std::move(remote_monitor));
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 
   MockClient* client =
       static_cast<MockClient*>(broadcast_source->client_for_testing());

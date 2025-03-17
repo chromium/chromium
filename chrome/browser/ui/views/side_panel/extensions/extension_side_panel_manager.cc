@@ -115,7 +115,9 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
               browser_))
           .SetText(base::UTF8ToUTF16(extension->short_name()))
           .SetActionId(extension_action_id)
-          .SetProperty(actions::kActionItemPinnableKey, true)
+          .SetProperty(actions::kActionItemPinnableKey,
+                       std::underlying_type_t<actions::ActionPinnableState>(
+                           actions::ActionPinnableState::kPinnable))
           .Build());
 }
 

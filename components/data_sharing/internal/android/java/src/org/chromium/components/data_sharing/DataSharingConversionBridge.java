@@ -7,10 +7,13 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** Conversion utility for misc types needed in the JNI layer for the service. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingConversionBridge {
 
     @CalledByNative

@@ -165,6 +165,13 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   // Whether the web contents has communicated a loaded state.
   bool received_survey_loaded_ = false;
 
+  // Whether the request timed out. The async timeout callback loading_timer_
+  // may be run just before a navigation-triggered
+  // `OnSurveyStateUpdateReceived`. A no longer running timer can't be used for
+  // synchronization, because it can't differentiate between a stopped and a ran
+  // callback.
+  bool load_timed_out_ = false;
+
   // The maximum size of the dialog should never exceed the dummy window size
   // provided to the HaTS library by the wrapper website. This is defined
   // in the website source at google3/chrome/hats/website/www/index.html. The

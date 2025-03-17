@@ -265,7 +265,7 @@ public class AccountPickerBottomSheetTest {
                                     /* isWebSignin= */ mSigninAccessPoint
                                             == SigninAccessPoint.WEB_SIGNIN,
                                     mSigninAccessPoint,
-                                    /* selectedCoreAccountId= */ null);
+                                    /* selectedAccountId= */ null);
                 });
 
         checkZeroAccountBottomSheet();
@@ -291,7 +291,7 @@ public class AccountPickerBottomSheetTest {
                                     /* isWebSignin= */ mSigninAccessPoint
                                             == SigninAccessPoint.WEB_SIGNIN,
                                     mSigninAccessPoint,
-                                    /* selectedCoreAccountId= */ null);
+                                    /* selectedAccountId= */ null);
                 });
 
         checkZeroAccountBottomSheet();
@@ -520,7 +520,7 @@ public class AccountPickerBottomSheetTest {
                                     /* isWebSignin= */ mSigninAccessPoint
                                             == SigninAccessPoint.WEB_SIGNIN,
                                     mSigninAccessPoint,
-                                    /* selectedCoreAccountId= */ null);
+                                    /* selectedAccountId= */ null);
                 });
         checkZeroAccountBottomSheet();
 

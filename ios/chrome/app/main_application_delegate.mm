@@ -14,7 +14,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/download/public/background_service/background_download_service.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -46,6 +45,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 // The time delay after firstSceneWillEnterForeground: before checking for main
@@ -151,8 +151,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // If `self.didFinishLaunching` is NO, that indicates that the app was
   // terminated before startup could be run. In this situation, skip running
   // shutdown, since the app was never fully started.
-  if (!self.didFinishLaunching)
+  if (!self.didFinishLaunching) {
     return;
+  }
 
   if (_appState.initStage <= AppInitStage::kSafeMode) {
     return;
@@ -307,8 +308,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // Under some iOS 15 betas, Chrome gets scene connection events for some
   // system scene connections. To handle this, early return if the connecting
   // scene doesn't have a valid delegate. (See crbug.com/1217461)
-  if (!sceneDelegate)
+  if (!sceneDelegate) {
     return;
+  }
 
   // TODO(crbug.com/40679152): This should be called later, or this flow should
   // be changed completely.
@@ -339,10 +341,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
         [weakSelf firstSceneDidEnterForeground];
       });
 
-  // Register if it's a cold start or when bringing Chrome to foreground with
-  // Content Push Notifications available.
-  if (_mainController.isColdStart ||
-      [self provisionalNotificationTypesEnabled]) {
+  if (_mainController.isColdStart) {
     [PushNotificationUtil
         registerDeviceWithAPNSWithProvisionalNotificationsAvailable:
             [self provisionalNotificationTypesEnabled]];

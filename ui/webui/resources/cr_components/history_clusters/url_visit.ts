@@ -175,7 +175,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
       this.renderActionMenu_ = true;
       await this.updateComplete;
     }
-    const menu = this.shadowRoot!.querySelector('cr-action-menu');
+    const menu = this.shadowRoot.querySelector('cr-action-menu');
     assert(menu);
     menu.showAt(this.$.actionMenuButton);
   }
@@ -196,7 +196,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
     // This can also be triggered from the hide visit icon, in which case the
     // menu may not be rendered.
     if (this.renderActionMenu_) {
-      const menu = this.shadowRoot!.querySelector('cr-action-menu');
+      const menu = this.shadowRoot.querySelector('cr-action-menu');
       assert(menu);
       menu.close();
     }

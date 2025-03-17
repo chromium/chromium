@@ -215,7 +215,8 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
               adapter_resources_->GetFeedback().require_mapped_frame,
               "HasMappableGmb", current_frame->HasMappableGpuBuffer(),
               "AsyncMappingIsNonBlocking",
-              current_frame->AsyncMappingIsNonBlocking());
+              current_frame->HasMappableGpuBuffer() &&
+                  current_frame->AsyncMappingIsNonBlocking());
   // Map the GMB here if we know that the mapped image is required downstream.
   // If the feedback has reached the capturer, this is a no-op as the frame is
   // premapped. Otherwise it moves the mapping out of the encode operation,
@@ -316,17 +317,17 @@ void WebRtcVideoTrackSource::ComputeMetadataAndDeliverFrame(
     }
   }
 
-  std::optional<webrtc::Timestamp> capture_time_identifier;
-  // Set |capture_time_identifier| to capture_begin_time if available, else use
+  std::optional<webrtc::Timestamp> presentation_timestamp;
+  // Set |presentation_timestamp| to capture_begin_time if available, else use
   // frame->timestamp().
   if (base::FeatureList::IsEnabled(features::kWebRtcUseCaptureBeginTimestamp) &&
       frame->metadata().capture_begin_time) {
-    capture_time_identifier = webrtc::Timestamp::Micros(
+    presentation_timestamp = webrtc::Timestamp::Micros(
         frame->metadata().capture_begin_time->ToInternalValue());
   } else if (!frame->timestamp().is_inf()) {
     // Use only when frame->timestamp() is a valid value (infinite values are
     // invalid).
-    capture_time_identifier =
+    presentation_timestamp =
         webrtc::Timestamp::Micros(frame->timestamp().InMicroseconds());
   }
 
@@ -381,7 +382,7 @@ void WebRtcVideoTrackSource::ComputeMetadataAndDeliverFrame(
   // of the pipeline.
   if (video_frame->natural_size() == video_frame->visible_rect().size()) {
     DeliverFrame(std::move(video_frame), accumulated_update_rect_, timestamp_us,
-                 capture_time_identifier, reference_time);
+                 presentation_timestamp, reference_time);
     return;
   }
 
@@ -392,7 +393,7 @@ void WebRtcVideoTrackSource::ComputeMetadataAndDeliverFrame(
   }
 
   DeliverFrame(std::move(video_frame), accumulated_update_rect_, timestamp_us,
-               capture_time_identifier, reference_time);
+               presentation_timestamp, reference_time);
 }
 
 void WebRtcVideoTrackSource::OnNotifyFrameDropped() {
@@ -459,7 +460,7 @@ void WebRtcVideoTrackSource::DeliverFrame(
     scoped_refptr<media::VideoFrame> frame,
     std::optional<gfx::Rect> update_rect,
     int64_t timestamp_us,
-    std::optional<webrtc::Timestamp> capture_time_identifier,
+    std::optional<webrtc::Timestamp> presentation_timestamp,
     std::optional<webrtc::Timestamp> reference_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT("webrtc", "WebRtcVideoTrackSource::DeliverFrame");
@@ -481,15 +482,15 @@ void WebRtcVideoTrackSource::DeliverFrame(
   }
 
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame,
-                                                         adapter_resources_));
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          frame, adapter_resources_));
 
   webrtc::VideoFrame::Builder frame_builder =
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(frame_adapter)
           .set_rotation(GetFrameRotation(frame.get()))
           .set_timestamp_us(timestamp_us)
-          .set_capture_time_identifier(capture_time_identifier)
+          .set_presentation_timestamp(presentation_timestamp)
           .set_reference_time(reference_time);
   if (update_rect) {
     frame_builder.set_update_rect(webrtc::VideoFrame::UpdateRect{

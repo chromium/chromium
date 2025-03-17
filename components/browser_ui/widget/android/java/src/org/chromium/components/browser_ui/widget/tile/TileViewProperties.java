@@ -7,12 +7,14 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** TileView properties. */
+@NullMarked
 public final class TileViewProperties {
     /** The title of the tile. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();

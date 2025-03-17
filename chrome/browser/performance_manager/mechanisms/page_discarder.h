@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 
 namespace performance_manager {
@@ -32,13 +31,10 @@ class PageDiscarder {
     uint64_t estimated_memory_freed_kb = 0;
   };
 
-  // Discards |page_nodes| and runs |post_discard_cb| on the origin sequence
-  // once this is done.
-  virtual void DiscardPageNodes(
+  // Discards |page_nodes| and returns a DiscardEvent for each discarded page.
+  virtual std::vector<DiscardEvent> DiscardPageNodes(
       const std::vector<const PageNode*>& page_nodes,
-      ::mojom::LifecycleUnitDiscardReason discard_reason,
-      base::OnceCallback<void(const std::vector<DiscardEvent>&)>
-          post_discard_cb);
+      ::mojom::LifecycleUnitDiscardReason discard_reason);
 };
 
 }  // namespace mechanism

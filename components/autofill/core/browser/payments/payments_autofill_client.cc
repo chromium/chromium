@@ -9,13 +9,14 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
@@ -166,6 +167,10 @@ void PaymentsAutofillClient::ShowUnmaskPrompt(
 void PaymentsAutofillClient::OnUnmaskVerificationResult(
     PaymentsRpcResult result) {}
 
+void PaymentsAutofillClient::ShowBnplTos(BnplTosModel bnpl_tos_model,
+                                         base::OnceClosure accept_callback,
+                                         base::OnceClosure cancel_callback) {}
+
 VirtualCardEnrollmentManager*
 PaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   return nullptr;
@@ -232,6 +237,11 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
 
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
+const PaymentsDataManager& PaymentsAutofillClient::GetPaymentsDataManager()
+    const {
+  return const_cast<PaymentsAutofillClient*>(this)->GetPaymentsDataManager();
+}
+
 #if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 PaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
@@ -248,5 +258,7 @@ PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 payments::BnplManager* PaymentsAutofillClient::GetPaymentsBnplManager() {
   return nullptr;
 }
+
+void PaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {}
 
 }  // namespace autofill::payments

@@ -57,6 +57,8 @@ struct ModelInfo {
   mojo_base.mojom.Uuid model_id;
   // The maximum input token size.
   uint32 input_token_limit;
+  // Whether the model is a large model.
+  bool is_large_model;
 };
 
 // Retrieved information for a microphone.
@@ -134,6 +136,9 @@ interface PageHandler {
 
   // Returns available language information.
   GetAvailableLangPacks() => (array<LangPackInfo> lang_packs);
+
+  // Returns default transcription language based on system locale.
+  GetDefaultLanguage() => (string language_code);
 
   // Adds a new monitor for SODA state change. `language` is a localized
   // language in BCP-47 format e.g. "en-US".

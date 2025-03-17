@@ -18,6 +18,7 @@
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -252,8 +253,8 @@ class PerUserStateManagerChromeOSTest : public testing::Test {
 };
 
 TEST_F(PerUserStateManagerChromeOSTest, UserIdErasedWhenConsentTurnedOff) {
-  auto* test_user =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test@example.com", "1"));
+  auto* test_user = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("1")));
   InitializeProfileState(/*user_id=*/"user_id",
                          /*metrics_consent=*/true,
                          /*has_consented_to_metrics=*/true);
@@ -283,8 +284,8 @@ TEST_F(PerUserStateManagerChromeOSTest, UserIdErasedWhenConsentTurnedOff) {
 
 TEST_F(PerUserStateManagerChromeOSTest,
        ClientIdReset_WhenConsentTurnedOn_AndUserSentMetrics) {
-  auto* test_user =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test@example.com", "1"));
+  auto* test_user = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("1")));
   InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/false,
                          /*has_consented_to_metrics=*/true);
   GetPerUserStateManager()->SetIsManaged(false);
@@ -310,8 +311,8 @@ TEST_F(PerUserStateManagerChromeOSTest,
 
 TEST_F(PerUserStateManagerChromeOSTest,
        ClientIdNotResetForUserWhoNeverReportedMetrics) {
-  auto* test_user =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test@example.com", "1"));
+  auto* test_user = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("1")));
   InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/false,
                          /*has_consented_to_metrics=*/false);
   GetPerUserStateManager()->SetIsManaged(false);
@@ -376,7 +377,7 @@ TEST_F(PerUserStateManagerChromeOSTest,
        OwnerConsentDisabledChildConsentToggleEnabled) {
   // Create device owner.
   const AccountId owner_account_id =
-      AccountId::FromUserEmailGaiaId("owner@example.com", "1");
+      AccountId::FromUserEmailGaiaId("owner@example.com", GaiaId("1"));
   auto* owner_user = RegisterUser(owner_account_id);
   test_user_manager_->SetOwnerId(owner_account_id);
   InitializeProfileState(/*user_id=*/"owner@example.com",
@@ -389,7 +390,7 @@ TEST_F(PerUserStateManagerChromeOSTest,
   RunUntilIdle();
 
   auto* child_user = RegisterChildUser(
-      AccountId::FromUserEmailGaiaId("child@example.com", "2"));
+      AccountId::FromUserEmailGaiaId("child@example.com", GaiaId("2")));
   InitializeProfileState(/*user_id=*/"child@example.com",
                          /*metrics_consent=*/false,
                          /*has_consented_to_metrics=*/false);
@@ -411,7 +412,7 @@ TEST_F(PerUserStateManagerChromeOSTest,
        OwnerConsentEnabledChildConsentToggleEnabled) {
   // Create device owner.
   const AccountId owner_account_id =
-      AccountId::FromUserEmailGaiaId("owner@example.com", "1");
+      AccountId::FromUserEmailGaiaId("owner@example.com", GaiaId("1"));
   auto* owner_user = RegisterUser(owner_account_id);
   test_user_manager_->SetOwnerId(owner_account_id);
   InitializeProfileState(/*user_id=*/"owner@example.com",
@@ -424,7 +425,7 @@ TEST_F(PerUserStateManagerChromeOSTest,
   RunUntilIdle();
 
   auto* child_user = RegisterChildUser(
-      AccountId::FromUserEmailGaiaId("child@example.com", "2"));
+      AccountId::FromUserEmailGaiaId("child@example.com", GaiaId("2")));
   InitializeProfileState(/*user_id=*/"child@example.com",
                          /*metrics_consent=*/false,
                          /*has_consented_to_metrics=*/false);
@@ -446,7 +447,7 @@ TEST_F(PerUserStateManagerChromeOSTest,
        SecondaryUserCanEnableConsentWithOwnerConsentDisabled) {
   // Create device owner.
   const AccountId owner_account_id =
-      AccountId::FromUserEmailGaiaId("owner@example.com", "1");
+      AccountId::FromUserEmailGaiaId("owner@example.com", GaiaId("1"));
   auto* owner_user = RegisterUser(owner_account_id);
   test_user_manager_->SetOwnerId(owner_account_id);
   InitializeProfileState(/*user_id=*/"owner@example.com",
@@ -459,7 +460,7 @@ TEST_F(PerUserStateManagerChromeOSTest,
   RunUntilIdle();
 
   auto* secondary_user = RegisterUser(
-      AccountId::FromUserEmailGaiaId("secondary@example.com", "2"));
+      AccountId::FromUserEmailGaiaId("secondary@example.com", GaiaId("2")));
   InitializeProfileState(/*user_id=*/"secondary@example.com",
                          /*metrics_consent=*/true,
                          /*has_consented_to_metrics=*/false);
@@ -482,8 +483,8 @@ TEST_F(PerUserStateManagerChromeOSTest,
 // ensures that the primary user (user originally used to login) is used and all
 // other users are ignored.
 TEST_F(PerUserStateManagerChromeOSTest, MultiUserUsesPrimaryUser) {
-  auto* test_user1 =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test1@example.com", "1"));
+  auto* test_user1 = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test1@example.com", GaiaId("1")));
   InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/false,
                          /*has_consented_to_metrics=*/true);
   GetPerUserStateManager()->SetIsManaged(false);
@@ -506,8 +507,8 @@ TEST_F(PerUserStateManagerChromeOSTest, MultiUserUsesPrimaryUser) {
 
   // Create secondary user.
   ResetStateForTesting();
-  auto* test_user2 =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test2@example.com", "2"));
+  auto* test_user2 = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test2@example.com", GaiaId("2")));
   InitializeProfileState(/*user_id=*/"test2@example.com",
                          /*metrics_consent=*/false,
                          /*has_consented_to_metrics=*/false);
@@ -543,8 +544,8 @@ TEST_F(PerUserStateManagerChromeOSTest,
   GetPerUserStateManager()->SetIsDeviceStatusKnown(false);
 
   // Simulate user login.
-  auto* test_user =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test1@example.com", "1"));
+  auto* test_user = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test1@example.com", GaiaId("1")));
   LoginRegularUser(test_user);
 
   // User log store is created async. Ensure the log store loading finishes.
@@ -560,7 +561,7 @@ TEST_F(PerUserStateManagerChromeOSTest,
 TEST_F(PerUserStateManagerChromeOSTest, PerUserDisabledForDeviceOwner) {
   // Create device owner.
   const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@example.com", "1");
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("1"));
   auto* owner_user = RegisterUser(account_id);
   test_user_manager_->SetOwnerId(account_id);
 
@@ -586,8 +587,8 @@ TEST_F(PerUserStateManagerChromeOSTest, PerUserDisabledForDeviceOwner) {
 
 TEST_F(PerUserStateManagerChromeOSTest,
        PerUserDisabledWhenOwnershipStatusNone) {
-  auto* test_user =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test1@example.com", "1"));
+  auto* test_user = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test1@example.com", GaiaId("1")));
   InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/true,
                          /*has_consented_to_metrics=*/true);
 
@@ -638,8 +639,8 @@ TEST_F(PerUserStateManagerChromeOSTest, PerUserEnabledWhenGuestOnNewDevice) {
 }
 
 TEST_F(PerUserStateManagerChromeOSTest, PerUserDisabledWhenDeviceIsManaged) {
-  auto* test_user =
-      RegisterUser(AccountId::FromUserEmailGaiaId("test1@example.com", "1"));
+  auto* test_user = RegisterUser(
+      AccountId::FromUserEmailGaiaId("test1@example.com", GaiaId("1")));
   InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/true,
                          /*has_consented_to_metrics=*/true);
 

@@ -11,7 +11,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // </if>
 
@@ -720,7 +720,7 @@ suite('bluetooth_internals', function() {
     assertTrue(document.getElementById('can-not-request-permissions').open);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('Restart system Bluetooth', async function() {
     const getReStartBluetoothBtn = () => {
       return document.querySelector('#restart-bluetooth-btn');

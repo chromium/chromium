@@ -5,9 +5,11 @@
 #include "components/permissions/prediction_service/prediction_common.h"
 
 #include <cmath>
+
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/permissions/features.h"
 
 namespace permissions {
 
@@ -83,6 +85,26 @@ ClientFeatures_GestureEnum ConvertToProtoGestureEnum(
   NOTREACHED();
 }
 
+PermissionFeatures_Relevance ConvertToProtoRelevance(
+    const permissions::PermissionRequestRelevance relevance) {
+  switch (relevance) {
+    case permissions::PermissionRequestRelevance::kUnspecified:
+      return permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED;
+    case permissions::PermissionRequestRelevance::kVeryLow:
+      return permissions::PermissionFeatures_Relevance_RELEVANCE_VERY_LOW;
+    case permissions::PermissionRequestRelevance::kLow:
+      return permissions::PermissionFeatures_Relevance_RELEVANCE_LOW;
+    case permissions::PermissionRequestRelevance::kMedium:
+      return permissions::PermissionFeatures_Relevance_RELEVANCE_MEDIUM;
+    case permissions::PermissionRequestRelevance::kHigh:
+      return permissions::PermissionFeatures_Relevance_RELEVANCE_HIGH;
+    case permissions::PermissionRequestRelevance::kVeryHigh:
+      return permissions::PermissionFeatures_Relevance_RELEVANCE_VERY_HIGH;
+  }
+
+  NOTREACHED();
+}
+
 void FillInStatsFeatures(const PredictionRequestFeatures::ActionCounts& counts,
                          StatsFeatures* features) {
   int total_counts = counts.total();
@@ -112,7 +134,10 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
       proto_request->mutable_permission_features()->Add();
   FillInStatsFeatures(entity.requested_permission_counts,
                       permission_features->mutable_permission_stats());
-
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+    permission_features->set_permission_relevance(
+        ConvertToProtoRelevance(entity.permission_relevance));
+  }
   switch (entity.type) {
     case RequestType::kNotifications:
       permission_features->mutable_notification_permission()->Clear();

@@ -22,6 +22,7 @@ import com.android.webview.chromium.WebMessagePortAdapter;
 import com.android.webview.chromium.WebResourceErrorAdapter;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import org.chromium.base.Log;
 import org.chromium.support_lib_boundary.WebkitToCompatConverterBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_callback_glue.SupportLibSafeBrowsingResponse;
@@ -34,14 +35,36 @@ import java.lang.reflect.InvocationHandler;
  * webkit-object.
  */
 class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverterBoundaryInterface {
+
+    private static final String TAG = "SupportLibAdapter";
+
     SupportLibWebkitToCompatConverterAdapter() {}
 
     // WebSettingsBoundaryInterface
     @Override
     public InvocationHandler convertSettings(WebSettings webSettings) {
-        return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibWebSettingsAdapter(
-                        WebkitToSharedGlueConverter.getSettings(webSettings)));
+        try {
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibWebSettingsAdapter(
+                            WebkitToSharedGlueConverter.getSettings(webSettings)));
+        } catch (ClassCastException e) {
+            if (Build.VERSION.SDK_INT == 30
+                    && "android.webkit.WebSettingsWrapper"
+                            .equals(webSettings.getClass().getCanonicalName())) {
+                // This is a patch for a bug observed only on OnePlus devices running SDK version
+                // 30.
+                // See https://crbug.com/388824130
+                Log.e(
+                        TAG,
+                        "Error converting WebSettings to Chrome implementation. All AndroidX method"
+                                + " calls on this WebSettings instance will be no-op calls. See"
+                                + " https://crbug.com/388824130 for more info.",
+                        e);
+                return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibWebSettingsNoOpAdapter());
+            }
+            throw e;
+        }
     }
 
     // WebResourceRequestBoundaryInterface

@@ -4,9 +4,8 @@
 
 #include "gpu/command_buffer/common/sync_token.h"
 
+#include <algorithm>
 #include <sstream>
-
-#include "base/ranges/algorithm.h"
 
 namespace gpu {
 
@@ -49,7 +48,7 @@ std::vector<SyncToken> ReduceSyncTokens(base::span<const SyncToken> tokens) {
   std::vector<SyncToken> reduced;
   for (const SyncToken& next_token : tokens) {
     auto itr =
-        base::ranges::find_if(reduced, [&next_token](const SyncToken& token) {
+        std::ranges::find_if(reduced, [&next_token](const SyncToken& token) {
           return next_token.namespace_id() == token.namespace_id() &&
                  next_token.command_buffer_id() == token.command_buffer_id();
         });

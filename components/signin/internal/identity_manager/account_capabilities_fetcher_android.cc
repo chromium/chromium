@@ -37,7 +37,7 @@ AccountCapabilitiesFetcherAndroid::AccountCapabilitiesFetcherAndroid(
           weak_ptr_factory_.GetWeakPtr()));
   base::android::ScopedJavaLocalRef<jobject> local_java_ref =
       signin::Java_AccountCapabilitiesFetcher_Constructor(
-          env, ConvertToJavaCoreAccountInfo(env, account_info),
+          env, account_info,
           reinterpret_cast<intptr_t>(heap_callback.release()));
   java_ref_.Reset(env, local_java_ref.obj());
 }

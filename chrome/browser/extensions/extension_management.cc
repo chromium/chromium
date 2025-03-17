@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/extensions/extension_management.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -36,11 +42,13 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
@@ -417,6 +425,11 @@ bool ExtensionManagement::IsAllowedByUnpackedDeveloperModePolicy(
     return true;
   }
   if (extension.location() != mojom::ManifestLocation::kUnpacked) {
+    return true;
+  }
+  // Allow extensions loaded from DevTools' "Extensions.loadUnpacked" command.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeExtensionDebugging)) {
     return true;
   }
 
@@ -1046,11 +1059,6 @@ ExtensionManagementFactory::BuildServiceInstanceForBrowserContext(
                "ExtensionManagementFactory::BuildServiceInstanceFor");
   return std::make_unique<ExtensionManagement>(
       Profile::FromBrowserContext(context));
-}
-
-void ExtensionManagementFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* user_prefs) {
-  user_prefs->RegisterDictionaryPref(pref_names::kExtensionManagement);
 }
 
 }  // namespace extensions

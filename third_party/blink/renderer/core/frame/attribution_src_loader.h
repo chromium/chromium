@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "components/attribution_reporting/data_host.mojom-blink-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-blink-forward.h"
@@ -36,9 +37,6 @@ class LocalFrame;
 class ResourceRequest;
 class ResourceResponse;
 class WebString;
-
-template <typename T>
-class WebVector;
 
 struct Impression;
 
@@ -90,7 +88,7 @@ class CORE_EXPORT AttributionSrcLoader
   // with `window.open`.
   [[nodiscard]] std::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
-      const WebVector<WebString>& attribution_srcs,
+      const std::vector<WebString>& attribution_srcs,
       bool has_transient_user_activation,
       network::mojom::ReferrerPolicy);
 
@@ -107,11 +105,10 @@ class CORE_EXPORT AttributionSrcLoader
   // policy supports Attribution Reporting, the window's context is secure, and
   // the Attribution Reporting runtime-enabled feature is enabled.
   //
-  // Reports a DevTools issue using `element` and `request_id` otherwise, if
-  // `log_issues` is true.
+  // Reports a DevTools issue using `element` otherwise, if `log_issues` is
+  // true.
   [[nodiscard]] bool CanRegister(const KURL& url,
                                  HTMLElement* element,
-                                 std::optional<uint64_t> request_id,
                                  bool log_issues = true);
 
   void Trace(Visitor* visitor) const;
@@ -154,6 +151,7 @@ class CORE_EXPORT AttributionSrcLoader
   std::optional<attribution_reporting::SuitableOrigin>
   ReportingOriginForUrlIfValid(const KURL& url,
                                HTMLElement* element,
+                               const WTF::String& request_url,
                                std::optional<uint64_t> request_id,
                                bool log_issues = true);
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_INPUT_INPUT_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -21,9 +22,10 @@
 #include "gpu/ipc/common/surface_handle.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_receiver_data.h"
+#include "components/viz/service/input/android_state_transfer_handler.h"
 #include "components/viz/service/input/fling_scheduler_android.h"
+#include "components/viz/service/input/render_input_router_support_android.h"
 #endif
 
 namespace input {
@@ -55,8 +57,8 @@ class VIZ_SERVICE_EXPORT InputManager
     : public FrameSinkObserver,
       public input::RenderWidgetHostInputEventRouter::Delegate,
 #if BUILDFLAG(IS_ANDROID)
-      public input::AndroidInputCallbackClient,
       public FlingSchedulerAndroid::Delegate,
+      public AndroidStateTransferHandlerClient,
 #endif
       public RenderInputRouterSupportBase::Delegate,
       public RenderInputRouterDelegateImpl::Delegate,
@@ -98,13 +100,12 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  // AndroidInputCallbackClient implementation.
-  bool OnMotionEvent(base::android::ScopedInputEvent input_event,
-                     const FrameSinkId& root_frame_sink_id) override;
-
   // FlingSchedulerAndroid::Delegate implementation.
   BeginFrameSource* GetBeginFrameSourceForFrameSink(
       const FrameSinkId& id) override;
+
+  // AndroidStateTransferHandlerClient implementation.
+  bool TransferInputBackToBrowser() override;
 #endif
 
   // RenderInputRouterDelegateImpl::Delegate implementation.
@@ -113,7 +114,8 @@ class VIZ_SERVICE_EXPORT InputManager
   void NotifyObserversOfInputEvent(
       const FrameSinkId& frame_sink_id,
       const base::UnguessableToken& grouping_id,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      bool dispatched_to_renderer) override;
   void NotifyObserversOfInputEventAcks(
       const FrameSinkId& frame_sink_id,
       const base::UnguessableToken& grouping_id,
@@ -131,6 +133,9 @@ class VIZ_SERVICE_EXPORT InputManager
   void StateOnTouchTransfer(input::mojom::TouchTransferStatePtr state) override;
   void NotifySiteIsMobileOptimized(bool is_mobile_optimized,
                                    const FrameSinkId& frame_sink_id) override;
+  void ForceEnableZoomStateChanged(
+      bool force_enable_zoom,
+      const std::vector<FrameSinkId>& frame_sink_ids) override;
 
   void SetupRenderInputRouterDelegateConnection(
       const base::UnguessableToken& grouping_id,
@@ -139,8 +144,13 @@ class VIZ_SERVICE_EXPORT InputManager
       mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
           rir_delegate_receiver);
 
+  void NotifyRendererBlockStateChanged(bool blocked,
+                                       const std::vector<FrameSinkId>& rirs);
+
   input::RenderInputRouter* GetRenderInputRouterFromFrameSinkId(
       const FrameSinkId& id);
+
+  bool ReturnInputBackToBrowser();
 
  private:
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
@@ -150,8 +160,11 @@ class VIZ_SERVICE_EXPORT InputManager
   void OnRIRDelegateClientDisconnected(
       const base::UnguessableToken& grouping_id);
 
-  void SetupRenderInputRouter(input::RenderInputRouter* render_input_router,
-                              const FrameSinkId& frame_sink_id);
+  void SetupRenderInputRouter(
+      input::RenderInputRouter* render_input_router,
+      const FrameSinkId& frame_sink_id,
+      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client,
+      bool force_enable_zoom);
 
   std::unique_ptr<input::FlingSchedulerBase> MakeFlingScheduler(
       input::RenderInputRouter* rir,
@@ -166,6 +179,8 @@ class VIZ_SERVICE_EXPORT InputManager
   void CreateOrReuseAndroidInputReceiver(
       const FrameSinkId& frame_sink_id,
       const gpu::SurfaceHandle& surface_handle);
+
+  AndroidStateTransferHandler android_state_transfer_handler_;
 
   std::unique_ptr<input::InputReceiverData> receiver_data_;
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -34,9 +34,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
-import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 
@@ -53,7 +51,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final TabCreatorManager mTabCreatorManager;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-    private final ScrimCoordinator mScrimCoordinator;
+    private final ScrimManager mScrimManager;
     private final SnackbarManager mSnackbarManager;
     private final ModalDialogManager mModalDialogManager;
     private final @TabListMode int mMode;
@@ -73,8 +71,8 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param tabCreatorManager For creating new tabs.
      * @param browserControlsStateProvider For determining thumbnail size.
      * @param multiWindowModeStateDispatcher For managing behavior in multi-window.
-     * @param rootUiScrimCoordinator The root UI coordinator's scrim coordinator. On LFF this is
-     *     unused as the root UI's scrim coordinator is used for the show/hide animation.
+     * @param scrimManager The root UI coordinator's scrim component. On LFF this is unused as the
+     *     root UI's scrim component is used for the show/hide animation.
      * @param snackbarManager The activity level snackbar manager.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
@@ -93,7 +91,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator rootUiScrimCoordinator,
+            @NonNull ScrimManager scrimManager,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
@@ -109,10 +107,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mTabCreatorManager = tabCreatorManager;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
-        mScrimCoordinator =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
-                        ? createScrimCoordinatorForTablet(activity)
-                        : rootUiScrimCoordinator;
+        mScrimManager = scrimManager;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;
@@ -159,7 +154,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 createTabGroupModelFilterSupplier(isIncognito),
                 mTabContentManager,
                 mBrowserControlsStateProvider,
-                mScrimCoordinator,
+                mScrimManager,
                 mModalDialogManager,
                 mBottomSheetController,
                 mDataSharingTabManager,
@@ -185,29 +180,6 @@ public class TabSwitcherPaneCoordinatorFactory {
         // low-end and is not subject to change. Certain behaviors are limited to LIST vs GRID
         // mode and this information may be required even if a coordinator does not exist.
         return mMode;
-    }
-
-    /** Returns a scrim coordinator to use for tab grid dialog on LFF devices. */
-    @VisibleForTesting
-    static ScrimCoordinator createScrimCoordinatorForTablet(Activity activity) {
-        ViewGroup coordinator = activity.findViewById(R.id.coordinator);
-        // TODO(crbug.com/40067282): Because the show/hide animation already uses the
-        // RootUiCoordinator's
-        // ScrimCoordinator, a separate instance is needed. However, the way this is implemented the
-        // status bar color is not updated. This should be fixed.
-        SystemUiScrimDelegate delegate =
-                new SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {}
-                };
-        return new ScrimCoordinator(
-                activity,
-                delegate,
-                coordinator,
-                activity.getColor(R.color.omnibox_focused_fading_background_color));
     }
 
     @VisibleForTesting

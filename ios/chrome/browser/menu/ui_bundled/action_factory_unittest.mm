@@ -401,6 +401,10 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
 // a submenu.
 TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
   feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -422,6 +426,10 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
 // *not* in a submenu.
 TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
   feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -443,6 +451,10 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
 // different groups available.
 TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
   feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -495,6 +507,10 @@ TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
 // group available.
 TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
   feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -520,6 +536,10 @@ TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
 TEST_F(ActionFactoryTest, MoveTabFromGroup) {
   feature_list_.InitWithFeatures(
       {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -572,6 +592,10 @@ TEST_F(ActionFactoryTest, MoveTabFromGroup) {
 TEST_F(ActionFactoryTest, UngroupTabGroup) {
   feature_list_.InitWithFeatures(
       {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -591,6 +615,10 @@ TEST_F(ActionFactoryTest, UngroupTabGroup) {
 TEST_F(ActionFactoryTest, DeleteTabGroup) {
   feature_list_.InitWithFeatures(
       {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -611,6 +639,10 @@ TEST_F(ActionFactoryTest, DeleteTabGroup) {
 TEST_F(ActionFactoryTest, CloseTabGroup) {
   feature_list_.InitWithFeatures(
       {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -631,6 +663,10 @@ TEST_F(ActionFactoryTest, CloseTabGroup) {
 TEST_F(ActionFactoryTest, ManageTabGroup) {
   feature_list_.InitWithFeatures(
       {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -650,6 +686,10 @@ TEST_F(ActionFactoryTest, ManageTabGroup) {
 TEST_F(ActionFactoryTest, ShareTabGroup) {
   feature_list_.InitWithFeatures(
       {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -663,4 +703,52 @@ TEST_F(ActionFactoryTest, ShareTabGroup) {
 
   EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the leave shared tab group action has the right title and image.
+TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
+  feature_list_.InitWithFeatures(
+      {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kMinusInCircleSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP);
+
+  UIAction* action = [factory actionToLeaveSharedTabGroupWithBlock:^{
+  }];
+
+  EXPECT_NSEQ(expectedTitle, action.title);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
+}
+
+// Tests that the delete shared tab group action has the right title and image.
+TEST_F(ActionFactoryTest, DeleteSharedTabGroup) {
+  feature_list_.InitWithFeatures(
+      {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP);
+
+  UIAction* action = [factory actionToDeleteSharedTabGroupWithBlock:^{
+  }];
+
+  EXPECT_NSEQ(expectedTitle, action.title);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
 }

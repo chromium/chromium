@@ -18,15 +18,16 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/notification_center/test_notifier_settings_controller.h"
-#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
+#include "base/types/pass_key.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "ui/aura/test/aura_test_helper.h"
 
+class BrowserWithTestWindowTest;
 class PrefService;
 
 namespace aura {
@@ -53,13 +54,17 @@ namespace ash {
 
 class AppListTestHelper;
 class AmbientAshTestHelper;
-class AshPixelTestHelper;
 class FakeDlcserviceClient;
 class FakeFwupdDownloadClient;
 class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegate;
 class TestWallpaperControllerClient;
+class AshTestBase;
+
+namespace floating_workspace {
+class FloatingWorkspaceServiceTest;
+}  // namespace floating_workspace
 
 namespace hotspot_config {
 class CrosHotspotConfigTestHelper;
@@ -81,18 +86,25 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // True if the user should log in.
     bool start_session = true;
+
+    // True if the signin pref services should be created.
+    bool create_signin_pref_service = true;
+
     // If this is not set, a TestShellDelegate will be used automatically.
     std::unique_ptr<ShellDelegate> delegate;
     raw_ptr<PrefService> local_state = nullptr;
-
-    // Used only when setting up a pixel diff test.
-    std::optional<pixel_test::InitParams> pixel_test_init_params;
 
     // True if a fake global `CrasAudioHandler` should be created.
     bool create_global_cras_audio_handler = true;
 
     // True if a global `QuickPairMediator` should be created.
     bool create_quick_pair_mediator = true;
+
+    // True to auto create prefs services.
+    bool auto_create_prefs_services = true;
+
+    // Whether or not to destroy the screen in the destructor.
+    bool destroy_screen = true;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a
@@ -127,24 +139,20 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   display::Display GetSecondaryDisplay() const;
 
-  // Simulates a user sign-in. It creates a new user session, adds it to
-  // existing user sessions and makes it the active user session.
-  // `is_new_profile` indicates whether the logged-in account is new.
-  void SimulateUserLogin(
-      const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::UserType::kRegular,
-      bool is_new_profile = false);
+  // Simulates a user sign-in. It creates and adds a new session based on the
+  // information provided in `login_info`, `account_id` and `pref_service',
+  // switches the active user, then may enter to the active session state if
+  // `LoginInfo.activate_session` is true. It returns AccountId for the new
+  // session.  Please see `TestSessionControllerClient::AddUserSession` for more
+  // details.
+  AccountId SimulateUserLogin(
+      LoginInfo login_info,
+      std::optional<AccountId> account_id,
+      std::unique_ptr<PrefService> pref_service = nullptr);
 
   // Stabilizes the variable UI components (such as the battery view).
   void StabilizeUIForPixelTest();
 
-  TestSessionControllerClient* test_session_controller_client() {
-    return session_controller_client_.get();
-  }
-  void set_test_session_controller_client(
-      std::unique_ptr<TestSessionControllerClient> session_controller_client) {
-    session_controller_client_ = std::move(session_controller_client);
-  }
   TestNotifierSettingsController* notifier_settings_controller() {
     return notifier_settings_controller_.get();
   }
@@ -191,6 +199,15 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return dlc_service_client_.get();
   }
 
+  template <typename T>
+    requires std::same_as<T, ::BrowserWithTestWindowTest> ||
+             std::same_as<T, AshTestBase> ||
+             std::same_as<T, floating_workspace::FloatingWorkspaceServiceTest>
+  TestSessionControllerClient* test_session_controller_client(
+      base::PassKey<T>) {
+    return session_controller_client_.get();
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -205,8 +222,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       std::make_unique<base::test::ScopedCommandLine>();
   std::unique_ptr<system::ScopedFakeStatisticsProvider> statistics_provider_ =
       std::make_unique<system::ScopedFakeStatisticsProvider>();
-  std::unique_ptr<TestPrefServiceProvider> prefs_provider_ =
-      std::make_unique<TestPrefServiceProvider>();
+  std::unique_ptr<TestPrefServiceProvider> prefs_provider_;
   std::unique_ptr<TestNotifierSettingsController>
       notifier_settings_controller_ =
           std::make_unique<TestNotifierSettingsController>();
@@ -235,9 +251,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
       cros_hotspot_config_test_helper_;
 
-  // Used only for pixel tests.
-  std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;
-
   bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
 
@@ -254,6 +267,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   bool create_global_cras_audio_handler_ = true;
   // True if a fake `QuickPairMediator` should be created.
   bool create_quick_pair_mediator_ = true;
+  // True if a screen instance should be destroyed.
+  bool destroy_screen_ = true;
 };
 
 }  // namespace ash

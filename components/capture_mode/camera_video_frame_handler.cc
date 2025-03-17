@@ -272,7 +272,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   }
 
   base::UnsafeSharedMemoryRegion TakeGpuMemoryBufferHandleRegion() {
-    return std::move(gpu_memory_buffer_handle_.region);
+    return std::move(gpu_memory_buffer_handle_.region());
   }
 
  private:
@@ -311,19 +311,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    bool add_scanout_usage = true;
-
-    // Scanout usage should be added only if scanout of SharedImages is
-    // supported. However, historically this was not checked.
-    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-    if (base::FeatureList::IsEnabled(
-            features::
-                kCameraVideoFrameHandlerAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-      add_scanout_usage &= shared_image_interface->GetCapabilities()
-                               .supports_scanout_shared_images;
-    }
-
-    if (add_scanout_usage) {
+    if (shared_image_interface->GetCapabilities()
+            .supports_scanout_shared_images) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 
@@ -451,7 +440,8 @@ class MacGpuMemoryBufferHandleHolder : public BufferHandleHolder {
     }
     auto frame = media::VideoFrame::WrapUnacceleratedIOSurface(
         gmb_holder_.GetGpuMemoryBufferHandle().Clone(),
-        buffer->frame_info->visible_rect, buffer->frame_info->timestamp);
+        buffer->frame_info->visible_rect,
+        buffer->frame_info->visible_rect.size(), buffer->frame_info->timestamp);
 
     if (!frame) {
       VLOG(0) << "Failed to create a video frame.";

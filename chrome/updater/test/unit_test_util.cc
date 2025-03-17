@@ -160,7 +160,7 @@ void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
 
   if (should_create_updater_executable) {
     // Create a fake `updater.exe` inside the install folder.
-    ASSERT_TRUE(base::CopyFile(folder_path->DirName().AppendASCII("prefs.json"),
+    ASSERT_TRUE(base::CopyFile(folder_path->DirName().AppendUTF8("prefs.json"),
                                updater_executable_path));
   }
 }
@@ -218,10 +218,10 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 }
 
 scoped_refptr<PolicyService> CreateTestPolicyService() {
-  std::vector<scoped_refptr<PolicyManagerInterface>> managers{
-      GetDefaultValuesPolicyManager()};
-  return base::MakeRefCounted<PolicyService>(std::move(managers),
-                                             /*persisted_data=*/nullptr);
+  return base::MakeRefCounted<PolicyService>(
+      /*external_constants=*/nullptr,
+      /*persisted_data=*/nullptr,
+      /*is_ceca_experiment_enabled=*/false);
 }
 
 std::string GetTestName() {
@@ -291,47 +291,6 @@ namespace {
 const wchar_t kProcmonPath[] = L"C:\\tools\\Procmon.exe";
 }  // namespace
 
-void MaybeExcludePathsFromWindowsDefender() {
-  constexpr char kTestLauncherExcludePathsFromWindowDefender[] =
-      "exclude-paths-from-win-defender";
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kTestLauncherExcludePathsFromWindowDefender)) {
-    return;
-  }
-
-  if (!IsServiceRunning(L"WinDefend")) {
-    VLOG(1) << "WinDefend is not running, no need to add exclusion paths.";
-    return;
-  }
-
-  base::FilePath program_files;
-  base::FilePath program_files_x86;
-  base::FilePath local_app_data;
-  if (!base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files) ||
-      !base::PathService::Get(base::DIR_PROGRAM_FILESX86, &program_files_x86) ||
-      !base::PathService::Get(base::DIR_LOCAL_APP_DATA, &local_app_data)) {
-    return;
-  }
-
-  const auto quote_path_value = [](const base::FilePath& path) {
-    return base::StrCat({L"'", path.value(), L"'"});
-  };
-  const std::wstring cmdline =
-      base::StrCat({L"PowerShell.exe Add-MpPreference -ExclusionPath ",
-                    base::JoinString({quote_path_value(program_files),
-                                      quote_path_value(program_files_x86),
-                                      quote_path_value(local_app_data)},
-                                     L", ")});
-
-  base::LaunchOptions options;
-  options.start_hidden = true;
-  options.wait = true;
-  VLOG(1) << "Running: " << cmdline;
-  base::Process process = base::LaunchProcess(cmdline, options);
-  LOG_IF(ERROR, !process.IsValid())
-      << "Failed to disable Windows Defender: " << cmdline;
-}
-
 base::FilePath StartProcmonLogging() {
   if (!::IsUserAnAdmin()) {
     LOG(WARNING) << __func__
@@ -351,7 +310,7 @@ base::FilePath StartProcmonLogging() {
     return {};
   }
 
-  dest_dir = dest_dir.AppendASCII(GetTestName());
+  dest_dir = dest_dir.AppendUTF8(GetTestName());
   if (!base::CreateDirectory(dest_dir)) {
     LOG(ERROR) << __func__
                << ": failed to create log destination dir: " << dest_dir;
@@ -362,7 +321,7 @@ base::FilePath StartProcmonLogging() {
   CHECK(base::PathExists(pmc_path));
 
   const base::FilePath pml_file(
-      dest_dir.Append(base::ASCIIToWide(base::UnlocalizedTimeFormatWithPattern(
+      dest_dir.Append(base::UTF8ToWide(base::UnlocalizedTimeFormatWithPattern(
           base::Time::Now(), "yyMMdd-HHmmss.'PML'"))));
 
   const std::wstring& cmdline = base::StrCat(
@@ -478,11 +437,11 @@ bool WaitFor(base::FunctionRef<bool()> predicate,
 base::FilePath GetTestFilePath(const char* file_name) {
   base::FilePath test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root);
-  return test_data_root.AppendASCII("chrome")
-      .AppendASCII("updater")
-      .AppendASCII("test")
-      .AppendASCII("data")
-      .AppendASCII(file_name);
+  return test_data_root.AppendUTF8("chrome")
+      .AppendUTF8("updater")
+      .AppendUTF8("test")
+      .AppendUTF8("data")
+      .AppendUTF8(file_name);
 }
 
 void SetupFakeUpdaterVersion(UpdaterScope scope,

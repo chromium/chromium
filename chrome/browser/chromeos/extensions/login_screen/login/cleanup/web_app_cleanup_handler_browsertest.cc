@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -138,8 +139,8 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id2),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id3));
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id4));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id3));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id4));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
@@ -186,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id3),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id4));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id4));
 
   // Web App 3 is still installed but the user install source (kSync) is
   // removed.

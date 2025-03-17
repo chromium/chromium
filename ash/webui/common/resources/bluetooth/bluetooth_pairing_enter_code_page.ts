@@ -17,7 +17,8 @@ import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_enter_code_page.html.js';
-import {ButtonBarState, ButtonState} from './bluetooth_types.js';
+import type {ButtonBarState} from './bluetooth_types.js';
+import {ButtonState} from './bluetooth_types.js';
 
 // Pairing passkey can be a maximum of 16 characters while pairing code a max
 // of  6 digits. This is used to check that the passed code is less than or

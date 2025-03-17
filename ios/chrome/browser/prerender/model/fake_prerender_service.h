@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PRERENDER_MODEL_FAKE_PRERENDER_SERVICE_H_
 #define IOS_CHROME_BROWSER_PRERENDER_MODEL_FAKE_PRERENDER_SERVICE_H_
 
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
 
 // Fake implementation of PrerenderService. Treats a prerender as in-progress
 // after a call to StartPrerender(), but MaybeLoadPrerenderedURL() always

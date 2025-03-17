@@ -10,10 +10,12 @@ import android.os.Parcelable;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -58,6 +60,7 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
     }
 
     public final @NonNull AccountPickerBottomSheetStrings bottomSheetStrings;
+    public final @NonNull HistorySyncConfig historySyncConfig;
     public final @NoAccountSigninMode int noAccountSigninMode;
     public final @WithAccountSigninMode int withAccountSigninMode;
     public final @HistorySyncConfig.OptInMode int historyOptInMode;
@@ -66,6 +69,8 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
     /** Builder for {@link BottomSheetSigninAndHistorySyncConfig}. */
     public static class Builder {
         private @NonNull AccountPickerBottomSheetStrings mBottomSheetStrings;
+        private @StringRes int mHistorySyncTitleId;
+        private @StringRes int mHistorySyncSubtitleId;
         private @NoAccountSigninMode int mNoAccountSigninMode;
         private @WithAccountSigninMode int mWithAccountSigninMode;
         private @HistorySyncConfig.OptInMode int mHistoryOptInMode;
@@ -102,9 +107,36 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
             return this;
         }
 
+        /**
+         * Set the resource ID for the string to use as the history sync screen title.
+         *
+         * @param historySyncTitleId the resource ID of the history sync screen title.
+         */
+        public Builder historySyncTitleId(@StringRes int historySyncTitleId) {
+            assert historySyncTitleId != 0;
+            mHistorySyncTitleId = historySyncTitleId;
+            return this;
+        }
+
+        /**
+         * Set the resource ID for the string to use as the history sync screen subtitle.
+         *
+         * @param historySyncSubtitleId the resource ID of the history sync screen subtitle.
+         */
+        public Builder historySyncSubtitleId(@StringRes int historySyncSubtitleId) {
+            assert historySyncSubtitleId != 0;
+            mHistorySyncSubtitleId = historySyncSubtitleId;
+            return this;
+        }
+
         public BottomSheetSigninAndHistorySyncConfig build() {
+            final HistorySyncConfig historySyncConfig =
+                    new HistorySyncConfig(
+                            /* titleId= */ mHistorySyncTitleId,
+                            /* subtitleId= */ mHistorySyncSubtitleId);
             return new BottomSheetSigninAndHistorySyncConfig(
                     mBottomSheetStrings,
+                    historySyncConfig,
                     mNoAccountSigninMode,
                     mWithAccountSigninMode,
                     mHistoryOptInMode,
@@ -114,13 +146,16 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
 
     private BottomSheetSigninAndHistorySyncConfig(
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
+            @NonNull HistorySyncConfig historySyncConfig,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistorySyncConfig.OptInMode int historyOptInMode,
             @Nullable CoreAccountId selectedCoreAccountId) {
         assert bottomSheetStrings != null;
+        assert historySyncConfig != null;
 
         this.bottomSheetStrings = bottomSheetStrings;
+        this.historySyncConfig = historySyncConfig;
         this.noAccountSigninMode = noAccountSigninMode;
         this.withAccountSigninMode = withAccountSigninMode;
         this.historyOptInMode = historyOptInMode;
@@ -130,14 +165,15 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
     private BottomSheetSigninAndHistorySyncConfig(Parcel in) {
         this(
                 in.readParcelable(AccountPickerBottomSheetStrings.class.getClassLoader()),
+                in.readParcelable(HistorySyncConfig.class.getClassLoader()),
                 /* noAccountSigninMode= */ in.readInt(),
                 /* withAccountSigninMode= */ in.readInt(),
                 /* historyOptInMode= */ in.readInt(),
                 /* selectedCoreAccountId= */ getCoreAccountId(in.readString()));
     }
 
-    private static @Nullable CoreAccountId getCoreAccountId(@Nullable String id) {
-        return id == null ? null : new CoreAccountId(id);
+    private static @Nullable CoreAccountId getCoreAccountId(@Nullable String gaiaId) {
+        return gaiaId == null ? null : new CoreAccountId(new GaiaId(gaiaId));
     }
 
     @Override
@@ -149,6 +185,7 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
         BottomSheetSigninAndHistorySyncConfig other =
                 (BottomSheetSigninAndHistorySyncConfig) object;
         return bottomSheetStrings.equals(other.bottomSheetStrings)
+                && historySyncConfig.equals(other.historySyncConfig)
                 && noAccountSigninMode == other.noAccountSigninMode
                 && withAccountSigninMode == other.withAccountSigninMode
                 && historyOptInMode == other.historyOptInMode
@@ -159,6 +196,7 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
     public int hashCode() {
         return Objects.hash(
                 bottomSheetStrings,
+                historySyncConfig,
                 noAccountSigninMode,
                 withAccountSigninMode,
                 historyOptInMode,
@@ -175,10 +213,11 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeParcelable(bottomSheetStrings, 0);
+        out.writeParcelable(historySyncConfig, 0);
         out.writeInt(noAccountSigninMode);
         out.writeInt(withAccountSigninMode);
         out.writeInt(historyOptInMode);
-        String id = selectedCoreAccountId == null ? null : selectedCoreAccountId.getId();
+        String id = selectedCoreAccountId == null ? null : selectedCoreAccountId.getId().toString();
         out.writeString(id);
     }
 

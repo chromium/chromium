@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_TAB_GROUP_CHANGE_NOTIFIER_IMPL_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_TAB_GROUP_CHANGE_NOTIFIER_IMPL_H_
 
+#include <set>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace collaboration::messaging {
 
@@ -27,7 +29,8 @@ namespace collaboration::messaging {
 class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
  public:
   explicit TabGroupChangeNotifierImpl(
-      tab_groups::TabGroupSyncService* tab_group_sync_service);
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
+      signin::IdentityManager* identity_manager);
   ~TabGroupChangeNotifierImpl() override;
 
   // TabGroupChangeNotifier.
@@ -36,6 +39,10 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   void Initialize() override;
   bool IsInitialized() override;
 
+  void OnTabGroupOpenedOrClosed(
+      const base::Uuid& sync_id,
+      const std::optional<tab_groups::LocalTabGroupID>& local_id);
+
  private:
   // TabGroupSyncService::Observer.
   void OnInitialized() override;
@@ -43,10 +50,17 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
                        tab_groups::TriggerSource source) override;
   void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group,
                          tab_groups::TriggerSource source) override;
+  void BeforeTabGroupUpdateFromRemote(const base::Uuid& sync_group_id) override;
+  void AfterTabGroupUpdateFromRemote(const base::Uuid& sync_group_id) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          tab_groups::TriggerSource source) override;
-  void OnTabSelected(const std::optional<base::Uuid>& sync_tab_group_id,
-                     const std::optional<base::Uuid>& sync_tab_id) override;
+  void OnTabSelected(
+      const std::set<tab_groups::LocalTabID>& selected_tabs) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
+  void OnSyncBridgeUpdateTypeChanged(
+      tab_groups::SyncBridgeUpdateType sync_bridge_update_type) override;
 
   // Fetches the current state of the tab group model, and compares it to what
   // was previously known, publishing any changes that are found.
@@ -56,13 +70,15 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
 
   // Processes updates to group metadata and tabs within a group.
   void ProcessTabGroupUpdates(const tab_groups::SavedTabGroup& before,
-                              const tab_groups::SavedTabGroup& after);
+                              const tab_groups::SavedTabGroup& after,
+                              tab_groups::TriggerSource source);
 
-  // Looks for the selected tab within our last known shared tab groups and
-  // returns it if found, else returns std::nullopt.
-  std::optional<tab_groups::SavedTabGroupTab> GetSelectedSharedTabForPublishing(
-      const std::optional<base::Uuid>& sync_tab_group_id,
-      const std::optional<base::Uuid>& sync_tab_id);
+  // Common code for processing OnTabGroupUpdated event (for both remote and
+  // local events). For remote events, by this time the tab model UI already had
+  // a chance to apply the incoming sync update so that TabGroupSyncService has
+  // the most updated state (e.g. local tab IDs).
+  void OnTabGroupUpdatedInner(const base::Uuid& sync_tab_group_id,
+                              tab_groups::TriggerSource source);
 
   std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
   ConvertToMapOfSharedTabGroup(
@@ -81,9 +97,29 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   // The TabGroupSyncService that is the source of the updates.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
 
+  // Service providing information about sign in.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
   base::ScopedObservation<tab_groups::TabGroupSyncService,
                           tab_groups::TabGroupSyncService::Observer>
       tab_group_sync_observer_{this};
+
+  // Whether shared tab group sync bridge is undergoing initial merge or disable
+  // sync (which mostly happens during sign-in / sign-out). During this period,
+  // the incoming tab group changes should be ignored which would otherwise
+  // create an avalanche of false notifications.
+  tab_groups::SyncBridgeUpdateType sync_bridge_update_type_ =
+      tab_groups::SyncBridgeUpdateType::kDefaultState;
+
+  // The last selected tabs across all browser windows.
+  std::set<tab_groups::LocalTabID> last_selected_tabs_;
+
+  // Whether sync is currently in the middle of applying an update to the tab
+  // model during which we should ignore the tab selection events. We re-read
+  // the selected tabs from tab model and notify the observers (messaging
+  // backend) about any intermediate change in selection after the sync updated
+  // has been applied.
+  bool ignore_tab_selection_events_ = false;
 
   base::WeakPtrFactory<TabGroupChangeNotifierImpl> weak_ptr_factory_{this};
 };

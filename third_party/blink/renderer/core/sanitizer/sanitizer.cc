@@ -8,31 +8,65 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_element_namespace.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_element_namespace_with_attributes.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_presets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerattributenamespace_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespace_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespacewithattributes_string.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
+#include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
+Sanitizer* Sanitizer::Create(
+    const V8UnionSanitizerConfigOrSanitizerPresets* config_or_preset,
+    ExceptionState& exception_state) {
+  if (!config_or_preset) {
+    return Create(nullptr, /*safe*/ false, exception_state);
+  } else if (config_or_preset->IsSanitizerConfig()) {
+    return Create(config_or_preset->GetAsSanitizerConfig(), /*safe*/ false,
+                  exception_state);
+  } else if (config_or_preset->IsSanitizerPresets()) {
+    return Create(config_or_preset->GetAsSanitizerPresets().AsEnum(),
+                  exception_state);
+  } else {
+    NOTREACHED();
+  }
+}
+
 Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
+                             bool safe,
                              ExceptionState& exception_state) {
   Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
   if (!sanitizer_config) {
-    NOTREACHED();  // Default handling not yet implemented.
+    // Default case: Set from builtin Sanitizer.
+    sanitizer->setFrom(*(safe ? SanitizerBuiltins::GetDefaultSafe()
+                              : SanitizerBuiltins::GetDefaultUnsafe()));
+    return sanitizer;
   }
-  if (!sanitizer->setFrom(sanitizer_config)) {
-    // As currently implemented, all inputs will lead to successful creation
-    // of a Sanitizer instance. But the current spec discussion aims to
-    // introduce invalid configurations. Once we implement that, this will be
-    // replaced with `exception_state.ThrowTypeError(...); return nullptr;`.
-    NOTREACHED();
+
+  bool success = sanitizer->setFrom(sanitizer_config, safe);
+  if (!success) {
+    exception_state.ThrowTypeError("Invalid Sanitizer configuration.");
+    return nullptr;
   }
+  return sanitizer;
+}
+
+Sanitizer* Sanitizer::Create(const V8SanitizerPresets::Enum preset,
+                             ExceptionState&) {
+  CHECK_EQ(preset, V8SanitizerPresets::Enum::kDefault);
+  Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
+  sanitizer->setFrom(*SanitizerBuiltins::GetDefaultSafe());
   return sanitizer;
 }
 
@@ -75,6 +109,12 @@ void Sanitizer::allowElement(
       }
     }
   }
+  // Remove dupes, if both allow and remove attribute lists were given.
+  if (allow_attrs_per_element_.Contains(name) &&
+      remove_attrs_per_element_.Contains(name)) {
+    allow_attrs_per_element_.find(name)->value.RemoveAll(
+        remove_attrs_per_element_.at(name));
+  }
 }
 
 void Sanitizer::removeElement(
@@ -82,7 +122,7 @@ void Sanitizer::removeElement(
   RemoveElement(getFrom(element));
 }
 
-void Sanitizer::replaceWithChildrenElement(
+void Sanitizer::replaceElementWithChildren(
     const V8UnionSanitizerElementNamespaceOrString* element) {
   ReplaceElement(getFrom(element));
 }
@@ -288,16 +328,78 @@ void Sanitizer::SanitizeElement(Element* element) const {
       keep = true;
     } else if (remove_per_element && remove_per_element->Contains(name)) {
       keep = false;
+    } else if (name.NamespaceURI().IsNull() &&
+               name.LocalName().StartsWith("data-")) {
+      keep = allow_data_attrs_;
     } else {
       keep = allow_attrs_.empty() &&
              (!allow_per_element || allow_per_element->empty());
-      if (!keep && allow_data_attrs_ && name.NamespaceURI().IsNull() &&
-          name.LocalName().StartsWith("data-")) {
-        keep = true;
-      }
     }
     if (!keep) {
       element->removeAttribute(name);
+    }
+  }
+}
+
+void RemoveAttributeIfProtocolIsJavaScript(Element* element,
+                                           const QualifiedName& attribute) {
+  const AtomicString& value = element->getAttribute(attribute);
+  if (value && KURL(value.GetString()).ProtocolIsJavaScript()) {
+    element->removeAttribute(attribute);
+  }
+}
+
+void RemoveAttributeIfValueIsHref(Element* element,
+                                  const QualifiedName& attribute) {
+  const AtomicString& value = element->getAttribute(attribute);
+  if (value == "href" or value == "xlink:href") {
+    element->removeAttribute(attribute);
+  }
+}
+
+void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
+                                                       bool safe) const {
+  // Special treatment of javascript: URLs when used for navigation.
+  // https://wicg.github.io/sanitizer-api/#sanitize-core, Steps 2.4.6.*
+
+  if (!safe) {
+    return;
+  }
+
+  // Attributes that trigger navigation:
+  const QualifiedName& qname = element->TagQName();
+  if (qname == html_names::kATag || qname == html_names::kAreaTag ||
+      qname == html_names::kBaseTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kHrefAttr);
+  } else if (qname == svg_names::kATag ||
+             element->namespaceURI() == mathml_names::kNamespaceURI) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kHrefAttr);
+    RemoveAttributeIfProtocolIsJavaScript(element, xlink_names::kHrefAttr);
+  } else if (qname == html_names::kButtonTag ||
+             qname == html_names::kInputTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kFormactionAttr);
+  } else if (qname == html_names::kFormTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kActionAttr);
+  } else if (qname == html_names::kIFrameTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kSrcAttr);
+
+    // SVG animations of navigating attributes:
+  } else if (qname == svg_names::kAnimateTag ||
+             qname == svg_names::kAnimateMotionTag ||
+             qname == svg_names::kAnimateTransformTag ||
+             qname == svg_names::kSetTag) {
+    RemoveAttributeIfValueIsHref(element, svg_names::kAttributeNameAttr);
+  }
+}
+
+void Sanitizer::SanitizeTemplate(Node* node, bool safe) const {
+  // Recurse into template and (later) shadow root content.
+  // TODO(vogelheim): Also implement shadow root support, once that's settled
+  // down.
+  if (IsA<HTMLTemplateElement>(node)) {
+    Node* content = To<HTMLTemplateElement>(node)->content();
+    if (content) {
+      Sanitize(content, safe);
     }
   }
 }
@@ -309,12 +411,17 @@ void Sanitizer::SanitizeSafe(Node* root) const {
   Sanitizer* safe = MakeGarbageCollected<Sanitizer>();
   safe->setFrom(*this);
   safe->removeUnsafe();
-  safe->SanitizeUnsafe(root);
+  safe->Sanitize(root, /*safe*/ true);
 }
 
 void Sanitizer::SanitizeUnsafe(Node* root) const {
-  enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kKeep;
+  Sanitize(root, /*safe*/ false);
+}
 
+void Sanitizer::Sanitize(Node* root, bool safe) const {
+  SanitizeTemplate(root, safe);
+
+  enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kKeep;
   Node* node = NodeTraversal::Next(*root);
   while (node) {
     switch (node->getNodeType()) {
@@ -347,6 +454,8 @@ void Sanitizer::SanitizeUnsafe(Node* root) const {
       case kKeepElement: {
         CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
         SanitizeElement(To<Element>(node));
+        SanitizeJavascriptNavigationAttributes(To<Element>(node), safe);
+        SanitizeTemplate(node, safe);
         node = NodeTraversal::Next(*node);
         break;
       }
@@ -379,7 +488,7 @@ void Sanitizer::SanitizeUnsafe(Node* root) const {
   }
 }
 
-bool Sanitizer::setFrom(const SanitizerConfig* config) {
+bool Sanitizer::setFrom(const SanitizerConfig* config, bool safe) {
   // This method assumes a newly constructed instance.
   CHECK(allow_elements_.empty());
   CHECK(remove_elements_.empty());
@@ -401,7 +510,7 @@ bool Sanitizer::setFrom(const SanitizerConfig* config) {
   }
   if (config->hasReplaceWithChildrenElements()) {
     for (const auto& element : config->replaceWithChildrenElements()) {
-      replaceWithChildrenElement(element);
+      replaceElementWithChildren(element);
     }
   }
   if (config->hasAttributes()) {
@@ -414,13 +523,14 @@ bool Sanitizer::setFrom(const SanitizerConfig* config) {
       removeAttribute(attribute);
     }
   }
-  if (config->hasComments()) {
-    setComments(config->comments());
-  }
-  if (config->hasDataAttributes()) {
-    setDataAttributes(config->dataAttributes());
-  }
-  return true;
+  setComments(config->getCommentsOr(!safe));
+  setDataAttributes(config->getDataAttributesOr(!safe));
+
+  // Error checking: The setter methods may drop invalid items (per API
+  // contract), but they will not "invent" any. Thus, we can count whether the
+  // number of items in the incoming dictionary matches the number of items in
+  // our config, and if they mismatch then there was an error.
+  return countItemsInSanitizerConfig(config) == countItemsInConfig();
 }
 
 void Sanitizer::setFrom(const Sanitizer& other) {
@@ -478,6 +588,57 @@ QualifiedName Sanitizer::getFrom(
     return g_null_name;
   }
   return getFrom(attr_namespace->name(), attr_namespace->namespaceURI());
+}
+
+int Sanitizer::countItemsInSanitizerConfig(
+    const SanitizerConfig* config) const {
+  int size =
+      (config->hasElements() ? config->elements().size() : 0) +
+      (config->hasRemoveElements() ? config->removeElements().size() : 0) +
+      (config->hasReplaceWithChildrenElements()
+           ? config->replaceWithChildrenElements().size()
+           : 0) +
+      (config->hasAttributes() ? config->attributes().size() : 0) +
+      (config->hasRemoveAttributes() ? config->removeAttributes().size() : 0);
+  if (config->hasElements()) {
+    for (const auto& element : config->elements()) {
+      size += countItemsInSanitizerElement(element);
+    }
+  }
+  return size;
+}
+
+int Sanitizer::countItemsInSanitizerElement(
+    const V8UnionSanitizerElementNamespaceWithAttributesOrString* element)
+    const {
+  CHECK(element);
+  if (!element->IsSanitizerElementNamespaceWithAttributes()) {
+    return 0;
+  }
+
+  const SanitizerElementNamespaceWithAttributes* element_dictionary =
+      element->GetAsSanitizerElementNamespaceWithAttributes();
+  return (element_dictionary->hasAttributes()
+              ? element_dictionary->attributes().size()
+              : 0) +
+         (element_dictionary->hasRemoveAttributes()
+              ? element_dictionary->removeAttributes().size()
+              : 0);
+}
+
+int sanitizerNameMapSize(const SanitizerNameMap& name_map) {
+  int size = 0;
+  for (const auto& item : name_map) {
+    size += item.value.size();
+  }
+  return size;
+}
+
+int Sanitizer::countItemsInConfig() const {
+  return allow_elements_.size() + remove_elements_.size() +
+         replace_elements_.size() + allow_attrs_.size() + remove_attrs_.size() +
+         sanitizerNameMapSize(allow_attrs_per_element_) +
+         sanitizerNameMapSize(remove_attrs_per_element_);
 }
 
 }  // namespace blink

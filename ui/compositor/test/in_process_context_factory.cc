@@ -163,6 +163,12 @@ class InProcessContextFactory::PerCompositorData
 #if BUILDFLAG(IS_ANDROID)
   void SetVSyncPaused(bool paused) override {}
   void UpdateRefreshRate(float refresh_rate) override {}
+  void SetAdaptiveRefreshRateInfo(
+      bool has_support,
+      float suggested_normal,
+      float suggested_high,
+      const std::vector<float>& supported_refresh_rates,
+      float device_scale_factor) override {}
   void PreserveChildSurfaceControls() override {}
   void SetSwapCompletionCallbackEnabled(bool enabled) override {}
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -343,8 +349,8 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       /*hint_session_factory=*/nullptr);
 
   data->SetDisplay(std::make_unique<viz::Display>(
-      &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_,
-      renderer_settings_, &debug_settings_, compositor->frame_sink_id(),
+      &shared_image_manager_, &gpu_scheduler_, renderer_settings_,
+      &debug_settings_, compositor->frame_sink_id(),
       std::move(display_dependency), std::move(output_surface),
       std::move(overlay_processor), std::move(scheduler),
       compositor->task_runner()));
@@ -358,7 +364,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       compositor->frame_sink_id(), frame_sink_manager_, data->display(),
       SharedMainThreadRasterContextProvider(),
       shared_worker_context_provider_wrapper_, compositor->task_runner(),
-      &gpu_memory_buffer_manager_, compositor->widget());
+      compositor->widget());
   compositor->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink),
                                     std::move(display_private));
 

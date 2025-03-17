@@ -25,6 +25,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 class GoogleServiceAuthError;
@@ -161,7 +162,6 @@ class UserCloudPolicyManagerAsh
 
   // CloudPolicyService::Observer:
   void OnCloudPolicyServiceInitializationCompleted() override;
-  std::string_view name() const override;
 
   // CloudPolicyClient::Observer:
   void OnPolicyFetched(CloudPolicyClient* client) override;
@@ -324,6 +324,16 @@ class UserCloudPolicyManagerAsh
       signin_url_loader_factory_for_tests_;
 
   base::ScopedObservation<Profile, ProfileObserver> observed_profile_{this};
+
+  base::ScopedObservation<CloudPolicyClient, CloudPolicyClient::Observer>
+      observed_cloud_policy_client_{this};
+
+  base::ScopedObservation<CloudPolicyService, CloudPolicyService::Observer>
+      observed_cloud_policy_service_{this};
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      observed_session_manager_{this};
 
   // Refresh token used in tests instead of the user context refresh token to
   // fetch the policy OAuth token.

@@ -6,27 +6,24 @@
 
 namespace password_manager::features {
 
-// Kill switch for the logic that allows the user to open the native Password
-// Settings page. Used when the user wants to access the Password Manager UI
-// without a passcode set.
 BASE_FEATURE(kIOSEnablePasscodeSettings,
              "IOSEnablePasscodeSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature switch for the logic that allows the user to delete all saved
-// credentials in GPM.
 BASE_FEATURE(kIOSEnableDeleteAllSavedCredentials,
              "IOSEnableDeleteAllSavedCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables passkey syncing follow-up features.
-BASE_FEATURE(kIOSPasskeysM2,
-             "IOSPasskeysM2",
+BASE_FEATURE(kSuggestStrongPasswordInAddPassword,
+             "SuggestStrongPasswordInAddPassword",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled() {
   return base::FeatureList::IsEnabled(kIOSEnablePasscodeSettings);
+}
+
+bool IsSuggestStrongPasswordInAddPasswordEnabled() {
+  return base::FeatureList::IsEnabled(kSuggestStrongPasswordInAddPassword);
 }
 
 }  // namespace password_manager::features

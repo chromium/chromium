@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_PROGRESS_DIALOG_AUTOFILL_PROGRESS_DIALOG_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_PROGRESS_DIALOG_AUTOFILL_PROGRESS_DIALOG_MEDIATOR_H_
 
-#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
-
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
 
 @protocol AlertConsumer;
 @protocol AutofillProgressDialogMediatorDelegate;

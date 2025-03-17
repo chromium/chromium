@@ -297,12 +297,7 @@ void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
     bool restored) {
   DesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(restored);
 
-  // This is necessary since OnWidgetVisibilityChanged() doesn't get called on
-  // Windows when the window is minimized or restored.
-  if (base::FeatureList::IsEnabled(
-          features::kStopLoadingAnimationForHiddenWindow)) {
-    browser_view_->UpdateLoadingAnimations(restored);
-  }
+  browser_view_->UpdateLoadingAnimations(restored);
 }
 
 std::string BrowserDesktopWindowTreeHostWin::GetWorkspace() const {
@@ -606,7 +601,7 @@ SkBitmap GetBadgedIconBitmapForProfile(Profile* profile) {
 void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
   // Hold onto the previous icon so that the currently displayed
   // icon is valid until replaced with the new icon.
-  base::win::ScopedHICON previous_icon = std::move(icon_handle_);
+  base::win::ScopedGDIObject<HICON> previous_icon = std::move(icon_handle_);
   if (badged) {
     icon_handle_ = IconUtil::CreateHICONFromSkBitmap(
         GetBadgedIconBitmapForProfile(browser_view_->browser()->profile()));

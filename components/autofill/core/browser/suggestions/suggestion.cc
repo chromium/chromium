@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 
 namespace autofill {
@@ -46,8 +46,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kEdit";
     case Suggestion::Icon::kEmail:
       return "kEmail";
-    case Suggestion::Icon::kEmpty:
-      return "kEmpty";
     case Suggestion::Icon::kError:
       return "kError";
     case Suggestion::Icon::kGlobe:
@@ -60,16 +58,18 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kGooglePasswordManager";
     case Suggestion::Icon::kGooglePay:
       return "kGooglePay";
-    case Suggestion::Icon::kGooglePayDark:
-      return "kGooglePayDark";
     case Suggestion::Icon::kHttpWarning:
       return "kHttpWarning";
     case Suggestion::Icon::kHttpsInvalid:
       return "kHttpsInvalid";
+    case Suggestion::Icon::kIdCard:
+      return "kIdCard";
     case Suggestion::Icon::kKey:
       return "kKey";
     case Suggestion::Icon::kLocation:
       return "kLocation";
+    case Suggestion::Icon::kLoyalty:
+      return "kLoyalty";
     case Suggestion::Icon::kMagic:
       return "kMagic";
     case Suggestion::Icon::kOfferTag:
@@ -80,12 +80,12 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kScanCreditCard";
     case Suggestion::Icon::kSettings:
       return "kSettings";
-    case Suggestion::Icon::kAutofillAi:
-      return "kAutofillAi";
     case Suggestion::Icon::kSettingsAndroid:
       return "kSettingsAndroid";
     case Suggestion::Icon::kUndo:
       return "kUndo";
+    case Suggestion::Icon::kVehicle:
+      return "kVehicle";
     case Suggestion::Icon::kCardGeneric:
       return "kCardGeneric";
     case Suggestion::Icon::kCardAmericanExpress:
@@ -118,6 +118,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kNoIcon";
     case Suggestion::Icon::kBnpl:
       return "kBnpl";
+    case Suggestion::Icon::kSaveAndFill:
+      return "kSaveAndFill";
   }
   NOTREACHED();
 }
@@ -171,11 +173,8 @@ Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
 
 Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
-Suggestion::AutofillAiPayload::AutofillAiPayload(
-    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
-    const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons)
-    : values_to_fill(std::move(values_to_fill)),
-      ignorable_skip_reasons(std::move(ignorable_skip_reasons)) {}
+Suggestion::AutofillAiPayload::AutofillAiPayload(base::Uuid guid)
+    : guid(std::move(guid)) {}
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(const AutofillAiPayload&) =
     default;

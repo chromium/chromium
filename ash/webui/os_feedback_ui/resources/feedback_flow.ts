@@ -19,7 +19,8 @@ import {ConfirmationPageElement} from './confirmation_page.js';
 import {getTemplate} from './feedback_flow.html.js';
 import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
-import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
+import type {FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
+import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction} from './os_feedback_ui.mojom-webui.js';
 import {SearchPageElement} from './search_page.js';
 import {ShareDataPageElement} from './share_data_page.js';
 
@@ -368,10 +369,10 @@ export class FeedbackFlowElement extends PolymerElement {
       //   }
       // ].
       assert('EXTRA_DIAGNOSTICS' === feedbackInfo.systemInformation[0].key);
-      this.feedbackContext!.extraDiagnostics =
+      this.feedbackContext.extraDiagnostics =
           feedbackInfo.systemInformation[0].value;
     }
-    this.isUserLoggedIn = this.feedbackContext!.categoryTag !== 'Login';
+    this.isUserLoggedIn = this.feedbackContext.categoryTag !== 'Login';
     this.onFeedbackContextReceived();
   }
 

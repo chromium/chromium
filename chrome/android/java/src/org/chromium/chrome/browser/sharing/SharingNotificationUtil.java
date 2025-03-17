@@ -13,7 +13,6 @@ import android.os.Build;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
@@ -70,7 +69,6 @@ public final class SharingNotificationUtil {
                         .setBigTextStyle(contentText)
                         .setColor(context.getColor(color))
                         .setGroup(group)
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(smallIconId)
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL);
@@ -138,7 +136,6 @@ public final class SharingNotificationUtil {
                         .setContentTitle(contentTitle)
                         .setGroup(group)
                         .setColor(context.getColor(R.color.default_icon_color_accent1_baseline))
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_devices_16dp)
                         .setProgress(/* max= */ 0, /* percentage= */ 0, true)
                         .setOngoing(true)
@@ -176,7 +173,6 @@ public final class SharingNotificationUtil {
                         .setContentTitle(contentTitle)
                         .setGroup(group)
                         .setColor(context.getColor(R.color.google_red_600))
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_error_outline_red_24dp)
                         .setContentText(contentText)
                         .setDefaults(Notification.DEFAULT_ALL)

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -13,7 +14,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/views/background.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/view_class_properties.h"
 
 #if defined(USE_AURA)
@@ -21,47 +22,27 @@
 #include "ui/wm/core/window_util.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/ui/views/glic/border/border_view.h"
-#endif
-
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
                                       kContentsWebViewElementId);
 
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
-    : views::WebView(browser_context), status_bubble_(nullptr) {
+    : views::WebView(browser_context) {
+  // Draws the ContentsWebView background.
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
-#if BUILDFLAG(ENABLE_GLIC)
-  glic_border_ = AddChildView(std::make_unique<glic::BorderView>());
-  // Become the contents web view's observer immediately to make sure
-  // `glic_border_` is always the z-topmost child.
-  AddObserver(glic_border_);
-  // `glic_border_` should never receive input events.
-  glic_border_->SetCanProcessEventsWithinSubtree(false);
-#endif
+  status_bubble_ = std::make_unique<StatusBubbleViews>(this);
+  status_bubble_->Reposition();
+  web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(this);
 }
 
-ContentsWebView::~ContentsWebView() {
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::BorderView* glic_border = glic_border_;
-  glic_border_ = nullptr;
-  CHECK_EQ(glic_border->parent(), this);
-  CHECK(HasObserver(glic_border));
-  RemoveObserver(glic_border);
-#endif
-}
-
-void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {
-  status_bubble_ = status_bubble;
-  DCHECK(!status_bubble_ || status_bubble_->base_view() == this);
-  if (status_bubble_) {
-    status_bubble_->Reposition();
-  }
-  OnPropertyChanged(&status_bubble_, views::kPropertyEffectsNone);
-}
+ContentsWebView::~ContentsWebView() = default;
 
 StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
-  return status_bubble_;
+  return status_bubble_.get();
+}
+
+WebContentsCloseHandler* ContentsWebView::GetWebContentsCloseHandler() const {
+  return web_contents_close_handler_.get();
 }
 
 void ContentsWebView::SetBackgroundVisible(bool background_visible) {
@@ -71,15 +52,19 @@ void ContentsWebView::SetBackgroundVisible(bool background_visible) {
   }
 }
 
-void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
-  if (background_radii_ == radii) {
-    return;
-  }
+const gfx::RoundedCornersF& ContentsWebView::GetBackgroundRadii() const {
+  const ui::Layer* background_layer = layer();
 
-  background_radii_ = radii;
-  if (GetWidget()) {
-    UpdateBackgroundColor();
-  }
+  CHECK(background_layer);
+  return background_layer->rounded_corner_radii();
+}
+
+void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  ui::Layer* background_layer = layer();
+
+  CHECK(background_layer);
+  background_layer->SetRoundedCornerRadius(radii);
+  background_layer->SetIsFastRoundedCorner(true);
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -87,9 +72,7 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void ContentsWebView::OnVisibleBoundsChanged() {
-  if (status_bubble_) {
-    status_bubble_->Reposition();
-  }
+  status_bubble_->Reposition();
 }
 
 void ContentsWebView::OnThemeChanged() {
@@ -104,12 +87,12 @@ void ContentsWebView::OnLetterboxingChanged() {
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
-  SkColor color = GetColorProvider()->GetColor(
+  const SkColor color = GetColorProvider()->GetColor(
       is_letterboxing() ? kColorWebContentsBackgroundLetterboxing
                         : kColorWebContentsBackground);
-  SetBackground(background_visible_ ? views::CreateRoundedRectBackground(
-                                          color, background_radii_)
-                                    : nullptr);
+
+  ui::Layer* background_layer = layer();
+  background_layer->SetColor(background_visible_ ? color : SK_ColorTRANSPARENT);
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =
@@ -154,9 +137,7 @@ void ContentsWebView::CloneWebContentsLayer() {
     return;
   }
 
-  SetPaintToLayer();
-
-  // The cloned layer is in a different coordinate system them our layer (which
+  // The cloned layer is in a different coordinate system than our layer (which
   // is now the new parent of the cloned layer). Convert coordinates so that the
   // cloned layer appears at the right location.
   gfx::PointF origin;
@@ -170,7 +151,6 @@ void ContentsWebView::CloneWebContentsLayer() {
 
 void ContentsWebView::DestroyClonedLayer() {
   cloned_layer_tree_.reset();
-  DestroyLayer();
 }
 
 void ContentsWebView::RenderViewReady() {
@@ -182,5 +162,4 @@ void ContentsWebView::RenderViewReady() {
 }
 
 BEGIN_METADATA(ContentsWebView)
-ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
 END_METADATA

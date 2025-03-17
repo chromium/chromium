@@ -58,6 +58,10 @@ class TestBackgroundTracingHelper
     content::RemoveBackgroundTracingEnabledStateObserverForTesting(this);
   }
 
+  void OnScenarioActive(const std::string& scenario_name) override {
+    wait_for_scenario_active_.Quit();
+  }
+
   void OnScenarioIdle(const std::string& scenario_name) override {
     wait_for_scenario_idle_.Quit();
   }
@@ -66,10 +70,12 @@ class TestBackgroundTracingHelper
     wait_for_trace_received_.Quit();
   }
 
+  void WaitForScenarioActive() { wait_for_scenario_active_.Run(); }
   void WaitForScenarioIdle() { wait_for_scenario_idle_.Run(); }
   void WaitForTraceReceived() { wait_for_trace_received_.Run(); }
 
  private:
+  base::RunLoop wait_for_scenario_active_;
   base::RunLoop wait_for_scenario_idle_;
   base::RunLoop wait_for_trace_received_;
 };
@@ -184,12 +190,13 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 // block the finalization of the trace.
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        NewIncognitoSessionBlockingTraceFinalization) {
+  TestBackgroundTracingHelper background_tracing_helper;
   EXPECT_TRUE(StartScenario(content::BackgroundTracingManager::ANONYMIZE_DATA));
+  background_tracing_helper.WaitForScenarioActive();
 
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
   EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
 
-  TestBackgroundTracingHelper background_tracing_helper;
   TriggerPreemptiveScenario();
   background_tracing_helper.WaitForScenarioIdle();
 }

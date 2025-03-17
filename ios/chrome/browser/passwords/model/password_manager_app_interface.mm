@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 
-#import "base/ranges/algorithm.h"
+#import <algorithm>
+
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -16,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/nserror_util.h"
@@ -166,11 +168,15 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   std::u16string usernameStr = base::SysNSStringToUTF16(username);
   std::u16string passwordStr = base::SysNSStringToUTF16(password);
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       credentials, [&](const std::unique_ptr<PasswordForm>& credential) {
         return credential->username_value == usernameStr &&
                credential->password_value == passwordStr;
       });
+}
+
++ (bool)isPasskeysM2FeatureEnabled {
+  return IOSPasskeysM2Enabled();
 }
 
 @end

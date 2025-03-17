@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 
 namespace autofill {
 
@@ -18,7 +19,9 @@ TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale)
                           /*sync_service=*/nullptr,
                           /*identity_manager=*/nullptr,
                           /*variations_country_code=*/GeoIpCountryCode("US"),
-                          app_locale) {}
+                          app_locale) {
+  is_payments_data_loaded_ = true;
+}
 
 TestPaymentsDataManager::~TestPaymentsDataManager() = default;
 
@@ -79,19 +82,16 @@ void TestPaymentsDataManager::LoadIbans() {
   }
 }
 
-bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
+void TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
   if (const CreditCard* credit_card = GetCreditCardByGUID(guid)) {
-    local_credit_cards_.erase(base::ranges::find(
+    local_credit_cards_.erase(std::ranges::find(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
     NotifyObservers();
-    return true;
   } else if (const Iban* iban = GetIbanByGUID(guid)) {
     local_ibans_.erase(
-        base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
+        std::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
     NotifyObservers();
-    return true;
   }
-  return false;
 }
 
 void TestPaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
@@ -104,12 +104,11 @@ void TestPaymentsDataManager::RecordUseOfIban(Iban& iban) {
   std::unique_ptr<Iban> updated_iban = std::make_unique<Iban>(iban);
   std::vector<std::unique_ptr<Iban>>& container =
       iban.record_type() == Iban::kLocalIban ? local_ibans_ : server_ibans_;
-  auto it =
-      base::ranges::find(container,
-                         iban.record_type() == Iban::kLocalIban
-                             ? GetIbanByGUID(iban.guid())
-                             : GetIbanByInstrumentId(iban.instrument_id()),
-                         &std::unique_ptr<Iban>::get);
+  auto it = std::ranges::find(container,
+                              iban.record_type() == Iban::kLocalIban
+                                  ? GetIbanByGUID(iban.guid())
+                                  : GetIbanByInstrumentId(iban.instrument_id()),
+                              &std::unique_ptr<Iban>::get);
   if (it != container.end()) {
     it->get()->RecordAndLogUse();
   }
@@ -277,6 +276,30 @@ void TestPaymentsDataManager::AddServerCreditCard(
   NotifyObservers();
 }
 
+void TestPaymentsDataManager::AddBnplIssuer(const BnplIssuer& bnpl_issuer) {
+  // No duplicated issuer should be inserted into the BNPL issuer list.
+  CHECK(!std::ranges::any_of(
+      linked_bnpl_issuers_, [&](const BnplIssuer& saved_bnpl_issuer) {
+        return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
+      }));
+  CHECK(!std::ranges::any_of(
+      unlinked_bnpl_issuers_, [&](const BnplIssuer& saved_bnpl_issuer) {
+        return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
+      }));
+
+  if (bnpl_issuer.payment_instrument().has_value()) {
+    linked_bnpl_issuers_.push_back(bnpl_issuer);
+  } else {
+    unlinked_bnpl_issuers_.push_back(bnpl_issuer);
+  }
+  NotifyObservers();
+}
+
+void TestPaymentsDataManager::ClearBnplIssuers() {
+  linked_bnpl_issuers_.clear();
+  unlinked_bnpl_issuers_.clear();
+}
+
 void TestPaymentsDataManager::AddAutofillOfferData(
     const AutofillOfferData& offer_data) {
   std::unique_ptr<AutofillOfferData> data =
@@ -321,8 +344,8 @@ void TestPaymentsDataManager::SetNicknameForCardWithGUID(
 
 void TestPaymentsDataManager::RemoveCardWithoutNotification(
     const CreditCard& card) {
-  if (auto it = base::ranges::find(local_credit_cards_, card.guid(),
-                                   &CreditCard::guid);
+  if (auto it = std::ranges::find(local_credit_cards_, card.guid(),
+                                  &CreditCard::guid);
       it != local_credit_cards_.end()) {
     local_credit_cards_.erase(it);
   }

@@ -34,6 +34,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/location.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -114,13 +115,19 @@ class PLATFORM_EXPORT ExceptionState {
  protected:
   // Delegated constructor for NonThrowableExceptionState
   enum ForNonthrowable { kNonthrowable };
-  ExceptionState(const char* file, int line, ForNonthrowable)
-      : context_(kEmptyContext), isolate_(nullptr) {
 #if DCHECK_IS_ON()
-    file_ = file;
-    line_ = line;
-    assert_no_exceptions_ = true;
+  ExceptionState(const base::Location& location, ForNonthrowable)
+#else
+  explicit ExceptionState(ForNonthrowable)
 #endif
+      : context_(kEmptyContext),
+        isolate_(nullptr)
+#if DCHECK_IS_ON()
+        ,
+        location_(location),
+        assert_no_exceptions_(true)
+#endif
+  {
   }
 
   // Delegated constructor for DummyExceptionStateForTesting
@@ -146,8 +153,7 @@ class PLATFORM_EXPORT ExceptionState {
   bool swallow_all_exceptions_ = false;
 
 #if DCHECK_IS_ON()
-  const char* file_ = "";
-  int line_ = 0;
+  base::Location location_;
   bool assert_no_exceptions_ = false;
 #endif
 };
@@ -173,8 +179,13 @@ class PassThroughException {
 // Should be used if an exception must not be thrown.
 class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
  public:
-  NonThrowableExceptionState(const char* file = "", int line = 0)
-      : ExceptionState(file, line, kNonthrowable) {}
+#if DCHECK_IS_ON()
+  explicit NonThrowableExceptionState(
+      base::Location location = base::Location::Current())
+      : ExceptionState(location, kNonthrowable) {}
+#else
+  NonThrowableExceptionState() : ExceptionState(kNonthrowable) {}
+#endif
 };
 
 // DummyExceptionStateForTesting ignores all thrown exceptions. Syntactic sugar
@@ -229,8 +240,7 @@ class PLATFORM_EXPORT TryRethrowScope {
 //
 //     Node* removeChild(Node*, ExceptionState& = ASSERT_NO_EXCEPTION);
 #if DCHECK_IS_ON()
-#define ASSERT_NO_EXCEPTION \
-  (::blink::NonThrowableExceptionState(__FILE__, __LINE__).ReturnThis())
+#define ASSERT_NO_EXCEPTION (::blink::NonThrowableExceptionState().ReturnThis())
 #else
 #define ASSERT_NO_EXCEPTION IGNORE_EXCEPTION
 #endif

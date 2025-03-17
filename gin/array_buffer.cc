@@ -86,6 +86,15 @@ void ArrayBufferAllocator::InitializePartition() {
   opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
   opts.use_configurable_pool = partition_alloc::PartitionOptions::kAllowed;
 
+  // TODO(crbug.com/40274683): This will disappear when we reduce
+  // freelist impl selection to a compile-time seam.
+  opts.use_pool_offset_freelists = partition_alloc::PartitionOptions::kEnabled;
+
+  // TODO(crbug.com/333443437): Remove this user-configurable toggle and
+  // default all buckets to "small" single-slot spans.
+  opts.use_small_single_slot_spans =
+      partition_alloc::PartitionOptions::kEnabled;
+
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       partition_allocator(opts);
 

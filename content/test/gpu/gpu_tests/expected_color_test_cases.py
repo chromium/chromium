@@ -192,7 +192,7 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               # Samsung A13.
               'SM-A137F': 1.1025,
               # Samsung A23.
-              'SM-A235M': 1.1025,
+              'SM-A236B': 1.1025,
               # Samsung S23.
               'SM-S911U1': 1.1,
               # Motorola Moto G Power 5G.
@@ -267,11 +267,4 @@ def MediaRecorderTestCases() -> List[ExpectedColorTestCase]:
           video_expected_colors,
           crop_action=ca.NonWhiteContentCropAction(),
       ),
-      ExpectedColorTestCase(
-          'content/test/data/gpu/pixel_media_recorder_from_video_element.html',
-          'MediaRecorderFromVideoElementWithOoprCanvasDisabled',
-          60,
-          video_expected_colors,
-          crop_action=ca.NonWhiteContentCropAction(),
-          extra_browser_args=['--disable-features=CanvasOopRasterization']),
   ]

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/apple/dispatch_source_mach.h"
+#include "base/apple/dispatch_source.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -64,7 +64,7 @@ class MachBootstrapAcceptor {
   mojo::NamedPlatformChannel::ServerName server_name_;
   raw_ptr<Delegate, AcrossTasksDanglingUntriaged> delegate_;
   mojo::PlatformChannelServerEndpoint endpoint_;
-  std::unique_ptr<base::apple::DispatchSourceMach> dispatch_source_;
+  std::unique_ptr<base::apple::DispatchSource> dispatch_source_;
 };
 
 }  // namespace apps

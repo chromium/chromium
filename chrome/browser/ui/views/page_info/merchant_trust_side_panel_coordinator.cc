@@ -35,9 +35,9 @@ constexpr char kStaticLoadingScreenURL[] =
 namespace {
 content::OpenURLParams CreateOpenUrlParams(const GURL& url) {
   return content::OpenURLParams(
-      net::AppendOrReplaceQueryParameter(url,
-                                         kMerchantTrustContextParameterName,
-                                         kMerchantTrustContextParameterValue),
+          net::AppendOrReplaceQueryParameter(
+              url, kMerchantTrustContextParameterName,
+              kMerchantTrustContextParameterValue),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
 }
@@ -115,8 +115,6 @@ MerchantTrustSidePanelCoordinator::CreateMerchantTrustWebView(
   DCHECK(GetBrowserView());
   DCHECK(last_url_info_);
   if (registered_but_not_shown_) {
-    // TODO(crbug.com/378818867): Add metrics for when the view is opened
-    // directly from the side panel (the side panel is currently being shown)
     registered_but_not_shown_ = false;
   }
 
@@ -179,8 +177,6 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
   // correct reviews URL.
   if (web_view_side_panel_view_ && side_panel_ui->GetCurrentEntryId() ==
                                        SidePanelEntry::Id::kMerchantTrust) {
-    // TODO(crbug.com/378818867): TBD update the URL
-    // with query params if needed.
     GetMerchantTrustInfo(
         navigation_handle->GetURL(),
         base::BindOnce(
@@ -203,13 +199,20 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
 void MerchantTrustSidePanelCoordinator::OnMerchantTrustDataFetched(
     const GURL& url,
     std::optional<page_info::MerchantData> merchant_data) {
+  auto* service = MerchantTrustServiceFactory::GetForProfile(GetProfile());
   if (merchant_data.has_value()) {
+    service->RecordMerchantTrustInteraction(
+        url, page_info::MerchantTrustInteraction::
+                 kSidePanelOpenedOnSameTabNavigation);
     RegisterEntryAndShow(merchant_data->page_url);
   } else {
     SidePanelUI* side_panel_ui = GetSidePanelUI();
     if (!side_panel_ui) {
       return;
     }
+    service->RecordMerchantTrustInteraction(
+        url, page_info::MerchantTrustInteraction::
+                 kSidePanelClosedOnSameTabNavigation);
     side_panel_ui->Close();
   }
 }

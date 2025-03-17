@@ -30,7 +30,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/prefs_export.h"
@@ -61,15 +60,6 @@ namespace subtle {
 class PrefMemberBase;
 class ScopedUserPrefUpdateBase;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace pref_service_util {
-// Gets all the dotted paths from `dict`. For example if values stored are
-// `{"a" : { "b" : true, "c": false }}`, then `paths` gets ["a.b", "a.c"].
-void COMPONENTS_PREFS_EXPORT GetAllDottedPaths(const base::Value::Dict& dict,
-                                               std::vector<std::string>& paths);
-}  // namespace pref_service_util
-#endif
 
 // Base class for PrefServices. You can use the base class to read and
 // interact with preferences, but not to register new preferences; for

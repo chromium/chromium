@@ -365,9 +365,7 @@ TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator++() {
       break;
     case kBody:
       ++position_;
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      if (UNSAFE_TODO(body_vector_->begin() + position_) ==
-          grouped_children_.bodies.end()) {
+      if (position_ == grouped_children_.bodies.size()) {
         AdvanceForwardToNonEmptySection();
       }
       break;

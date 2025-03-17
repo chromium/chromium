@@ -18,6 +18,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION;
+
 import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
@@ -96,7 +98,7 @@ public class HomeModulesMediatorUnitTest {
             mModuleProviders[i] = Mockito.mock(ModuleProvider.class);
         }
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
-        assertEquals(mHomeModulesConfigManager.getEnabledModuleSet().size(), 0);
+        assertEquals(0, mHomeModulesConfigManager.getEnabledModuleSet().size());
         mMediator =
                 new HomeModulesMediator(
                         profileSupplier,
@@ -585,9 +587,9 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SAFETY_HUB,
                         ModuleType.AUXILIARY_SEARCH,
                         ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUPS,
-                        ModuleType.TAB_GROUP_SYNC,
-                        ModuleType.QUICK_DELETE);
+                        ModuleType.TAB_GROUP_PROMO,
+                        ModuleType.TAB_GROUP_SYNC_PROMO,
+                        ModuleType.QUICK_DELETE_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
 
         // Verifies that the single tab module isn't shown if it isn't the home surface even with
@@ -600,9 +602,9 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SAFETY_HUB,
                         ModuleType.AUXILIARY_SEARCH,
                         ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUPS,
-                        ModuleType.TAB_GROUP_SYNC,
-                        ModuleType.QUICK_DELETE);
+                        ModuleType.TAB_GROUP_PROMO,
+                        ModuleType.TAB_GROUP_SYNC_PROMO,
+                        ModuleType.QUICK_DELETE_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -627,9 +629,9 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SAFETY_HUB,
                         ModuleType.AUXILIARY_SEARCH,
                         ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUPS,
-                        ModuleType.TAB_GROUP_SYNC,
-                        ModuleType.QUICK_DELETE);
+                        ModuleType.TAB_GROUP_PROMO,
+                        ModuleType.TAB_GROUP_SYNC_PROMO,
+                        ModuleType.QUICK_DELETE_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -734,5 +736,24 @@ public class HomeModulesMediatorUnitTest {
         TextUtils.equals(
                 expectedFreshnessString,
                 HomeModulesUtils.getFreshnessInputContextString(moduleType));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnModuleViewCreated() {
+        @ModuleType int moduleType1 = ModuleType.TAB_GROUP_PROMO;
+        @ModuleType int moduleType2 = ModuleType.TAB_GROUP_SYNC_PROMO;
+
+        mMediator.onModuleViewCreated(moduleType1);
+        assertEquals(1, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType1));
+        assertEquals(
+                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
+                HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType2));
+
+        mMediator.onModuleViewCreated(moduleType1);
+        assertEquals(2, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType1));
+        assertEquals(
+                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
+                HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType2));
     }
 }

@@ -26,10 +26,27 @@ export class GenaiError extends ReactiveLitElement {
       align-items: center;
       display: flex;
       flex-flow: column;
-      font: var(--cros-button-1-font);
       gap: 16px;
       padding: 32px;
+    }
+
+    #description {
+      align-items: center;
+      display: flex;
+      flex-flow: column;
+      font: var(--cros-button-1-font);
+      gap: 8px;
       text-align: center;
+
+      & > button {
+        font: var(--cros-button-2-font);
+        background: none;
+        border: none;
+        color: var(--cros-sys-primary);
+        cursor: pointer;
+        margin: 0;
+        padding: 0;
+      }
     }
   `;
 
@@ -41,6 +58,10 @@ export class GenaiError extends ReactiveLitElement {
 
   resultType: GenaiResultType|null = null;
 
+  private onDownloadClick() {
+    this.dispatchEvent(new CustomEvent('download-clicked'));
+  }
+
   override render(): RenderResult {
     if (this.error === null) {
       return nothing;
@@ -48,10 +69,22 @@ export class GenaiError extends ReactiveLitElement {
 
     let imageName: string;
     let message: string;
+    let action: RenderResult = nothing;
     switch (this.error) {
       case ModelResponseError.GENERAL:
         imageName = 'genai_error_general';
         message = i18n.genAiErrorGeneralLabel;
+        break;
+      case ModelResponseError.LOAD_FAILURE:
+        imageName = 'genai_error_general';
+        message = i18n.genAiErrorModelLoadFailureLabel;
+        // Use native button element to make text clickable.
+        action = html`
+          <button
+            aria-label=${i18n.genAiErrorModelDownloadButtonAriaLabel}
+            @click=${this.onDownloadClick}
+          >${i18n.genAiErrorModelDownloadButton}</button>
+        `;
         break;
       case ModelResponseError.UNSUPPORTED_LANGUAGE: {
         imageName = 'genai_error_unsafe';
@@ -119,10 +152,12 @@ export class GenaiError extends ReactiveLitElement {
         assertExhaustive(this.error);
     }
 
-    // TODO(pihsun): Add a "try again" button.
     return html`
       <cra-image .name=${imageName}></cra-image>
-      <span>${message}</span>
+      <div id="description">
+        <span>${message}</span>
+        ${action}
+      </div>
     `;
   }
 }

@@ -115,6 +115,7 @@ blink_modules_sources("xr") {
     "xr_space.cc",
     "xr_space.h",
     "xr_sub_image.h",
+    "xr_swap_chain.h",
     "xr_system.cc",
     "xr_system.h",
     "xr_target_ray_space.cc",
@@ -134,9 +135,19 @@ blink_modules_sources("xr") {
     "xr_webgl_binding.h",
     "xr_webgl_depth_information.cc",
     "xr_webgl_depth_information.h",
+    "xr_webgl_drawing_buffer_swap_chain.cc",
+    "xr_webgl_drawing_buffer_swap_chain.h",
     "xr_webgl_layer.cc",
     "xr_webgl_layer.h",
+    "xr_webgl_layer_client.h",
+    "xr_webgl_projection_layer.cc",
+    "xr_webgl_projection_layer.h",
+    "xr_webgl_sub_image.cc",
     "xr_webgl_sub_image.h",
+    "xr_webgl_swap_chain.cc",
+    "xr_webgl_swap_chain.h",
+    "xr_webgl_texture_array_swap_chain.cc",
+    "xr_webgl_texture_array_swap_chain.h",
   ]
 
   deps = [

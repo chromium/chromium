@@ -4,9 +4,9 @@
 
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -83,7 +83,7 @@ OpenXrExtensionHandlerFactory::CreateUnboundedSpaceProvider(
 
 bool OpenXrExtensionHandlerFactory::AreAllRequestedExtensionsSupported(
     const OpenXrExtensionEnumeration* extension_enum) const {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       GetRequestedExtensions(),
       [&extension_enum](std::string_view extension_name) {
         return extension_enum->ExtensionSupported(extension_name.data());

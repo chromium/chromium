@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -127,14 +123,11 @@ void FrameTaskQueueController::RemoveTaskQueueAndVoter(
   DCHECK(task_queue_enabled_voters_.Contains(queue));
   task_queue_enabled_voters_.erase(queue);
 
-  bool found_task_queue = false;
-  for (auto it = all_task_queues_and_voters_.begin();
-       it != all_task_queues_and_voters_.end(); ++it) {
-    if (it->first == queue) {
-      found_task_queue = true;
-      all_task_queues_and_voters_.erase(it);
-      break;
-    }
+  auto it = std::ranges::find(all_task_queues_and_voters_, queue,
+                              &TaskQueueAndEnabledVoterPair::first);
+  bool found_task_queue = it != all_task_queues_and_voters_.end();
+  if (found_task_queue) {
+    all_task_queues_and_voters_.erase(it);
   }
   DCHECK(found_task_queue);
 }

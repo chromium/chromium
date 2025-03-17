@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -33,7 +34,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1808,7 +1808,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
   // Expect the version info to be reported by default.
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -1822,7 +1821,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ->set_status(::tpm_manager::STATUS_DBUS_ERROR);
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -1839,7 +1837,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ash::kReportDeviceVersionInfo, false);
   GetStatus();
   EXPECT_FALSE(device_status_.has_browser_version());
-  EXPECT_FALSE(device_status_.has_is_lacros_primary_browser());
   EXPECT_FALSE(device_status_.has_channel());
   EXPECT_FALSE(device_status_.has_os_version());
   EXPECT_FALSE(device_status_.has_firmware_version());
@@ -1850,7 +1847,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ash::kReportDeviceVersionInfo, true);
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -4153,11 +4149,11 @@ class DeviceStatusCollectorNetworkInterfacesTest
             iface->device_path() == dev.device_path &&
             iface->mdn() == dev.mdn && iface->iccid() == dev.iccid &&
             (iface->type() != em::NetworkInterface::TYPE_CELLULAR ||
-             base::ranges::equal(iface->eids().begin(), iface->eids().end(),
-                                 kFakeSimSlots,
-                                 kFakeSimSlots + std::size(kFakeSimSlots),
-                                 base::ranges::equal_to(), std::identity(),
-                                 &FakeSimSlotInfo::eid))) {
+             std::ranges::equal(iface->eids().begin(), iface->eids().end(),
+                                std::begin(kFakeSimSlots),
+                                std::end(kFakeSimSlots),
+                                std::ranges::equal_to(), std::identity(),
+                                &FakeSimSlotInfo::eid))) {
           found_match = true;
           break;
         }

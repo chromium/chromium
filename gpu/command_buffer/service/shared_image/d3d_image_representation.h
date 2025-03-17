@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/buildflags.h"
 
@@ -61,7 +62,6 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
                             wgpu::TextureUsage internal_usage) override;
   void EndAccess() override;
-  bool SupportsMultipleConcurrentReadAccess() override;
 
  private:
   const wgpu::Device device_;
@@ -126,6 +126,59 @@ class D3D11VideoImageRepresentation : public VideoImageRepresentation {
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+};
+
+class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
+ public:
+  // Creates a copy of a (D3D-backed) GL texture for use in video encode.
+  // This avoids expensive readback.
+  static std::unique_ptr<D3D11VideoImageCopyRepresentation> CreateFromGL(
+      GLuint gl_texture_id,
+      std::string_view debug_label,
+      ID3D11Device* d3d_device,
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker);
+  static std::unique_ptr<D3D11VideoImageCopyRepresentation> CreateFromD3D(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      ID3D11Device* d3d_device,
+      ID3D11Texture2D* texture,
+      std::string_view debug_label,
+      ID3D11Device* texture_device);
+
+  D3D11VideoImageCopyRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
+  ~D3D11VideoImageCopyRepresentation() override;
+
+ private:
+  bool BeginWriteAccess() override;
+  void EndWriteAccess() override;
+  bool BeginReadAccess() override;
+  void EndReadAccess() override;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const override;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+};
+
+class D3DSkiaGraphiteDawnImageRepresentation
+    : public SkiaGraphiteDawnImageRepresentation {
+ public:
+  using SkiaGraphiteDawnImageRepresentation::
+      SkiaGraphiteDawnImageRepresentation;
+  ~D3DSkiaGraphiteDawnImageRepresentation() override;
+
+  bool SupportsMultipleConcurrentReadAccess() override;
+  bool NeedGraphiteContextSubmitBeforeEndAccess() override;
+
+ private:
+  std::vector<scoped_refptr<GraphiteTextureHolder>> WrapBackendTextures(
+      wgpu::Texture texture,
+      std::vector<skgpu::graphite::BackendTexture> backend_textures) override;
 };
 
 }  // namespace gpu

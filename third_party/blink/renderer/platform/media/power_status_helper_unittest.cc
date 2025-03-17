@@ -18,6 +18,7 @@
 #include "services/device/public/mojom/battery_status.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -54,8 +55,8 @@ class PowerStatusHelperTest : public testing::Test {
         case RemoteType::kConnected:
         case RemoteType::kDisconnected: {
           auto pending = receiver_.BindNewPipeAndPassRemote();
-          receiver_.set_disconnect_handler(base::BindOnce(
-              &MockBatteryMonitor::DidDisconnect, base::Unretained(this)));
+          receiver_.set_disconnect_handler(WTF::BindOnce(
+              &MockBatteryMonitor::DidDisconnect, WTF::Unretained(this)));
           if (remote_type_ == RemoteType::kDisconnected)
             receiver_.reset();
           base::RunLoop().RunUntilIdle();
@@ -69,8 +70,8 @@ class PowerStatusHelperTest : public testing::Test {
     // Would be nice if this were base::MockCallback, but move-only types don't
     // seem to work.
     PowerStatusHelper::CreateBatteryMonitorCB cb() {
-      return base::BindRepeating(&MockBatteryMonitor::GetBatteryMonitor,
-                                 base::Unretained(this));
+      return WTF::BindRepeating(&MockBatteryMonitor::GetBatteryMonitor,
+                                WTF::Unretained(this));
     }
 
     // Provide a battery update via |callback_|.

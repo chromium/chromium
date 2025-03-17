@@ -216,8 +216,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionMenuPinButtonIconDisabled] = ui::SetAlpha(
       kColorExtensionMenuPinButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorExtensionsMenuContainerBackground] = {ui::kColorSysSurface3};
-  mixer[kColorExtensionsToolbarControlsBackground] = {
-      kColorToolbarBackgroundSubtleEmphasis};
   mixer[kColorFeaturePromoBubbleBackground] = {gfx::kGoogleBlue700};
   mixer[kColorFeaturePromoBubbleButtonBorder] = {gfx::kGoogleGrey300};
   mixer[kColorFeaturePromoBubbleCloseButtonInkDrop] = {gfx::kGoogleBlue300};
@@ -322,7 +320,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPaymentsFeedbackTipIcon] = {ui::kColorAlertMediumSeverityIcon};
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   mixer[kColorPaymentsGooglePayLogo] = {dark_mode ? SK_ColorWHITE
-                                                  : gfx::kGoogleGrey700};
+                                                  : gfx::kGoogleGrey800};
 #endif
   mixer[kColorPaymentsPromoCodeBackground] = {
       dark_mode ? SkColorSetA(gfx::kGoogleGreen300, 0x1F)
@@ -458,6 +456,11 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabFocusRingInactive] = ui::PickGoogleColorTwoBackgrounds(
       ui::kColorFocusableBorderFocused, kColorTabBackgroundInactiveFrameActive,
       ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
+
+  mixer[kColorSharingRecentActivityDialogActivityContainer] = {
+      ui::kColorSysSurface3};
+  mixer[kColorSharingRecentActivityDialogFaviconContainer] = {
+      ui::kColorSysSurface};
 
   mixer[kColorTabGroupTabStripFrameActiveBlue] =
       ui::SelectBasedOnDarkInput(kColorTabBackgroundInactiveFrameActive,
@@ -643,16 +646,28 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTaskManagerBackground] = {ui::kColorDialogBackground};
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface2};
-    mixer[kColorTaskManagerSearchBarBackground] = {
-        ui::kColorSysBaseContainerElevated};
-    mixer[kColorTaskManagerSearchBarHoverOn] = {
-        ui::kColorSysStateHoverOnSubtle};
+    mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface};
+
+    mixer[kColorTaskManagerTableBackground] = {ui::kColorSysSurface3};
+    mixer[kColorTaskManagerTableHeaderBackground] = {
+        kColorTaskManagerTableBackground};
+    mixer[kColorTaskManagerTableBackgroundAlternate] = {
+        kColorTaskManagerTableBackground};
+#if BUILDFLAG(IS_MAC)
+    // Only macOS has alternating row colors by default.
+    mixer[kColorTaskManagerTableBackgroundAlternate] = {ui::kColorSysSurface1};
+#endif
+    mixer[kColorTaskManagerTableBackgroundSelectedFocused] = {
+        ui::kColorSysTonalContainer};
+    mixer[kColorTaskManagerTableBackgroundSelectedUnfocused] = {
+        ui::kColorSysTonalContainer};
+
+    mixer[kColorTaskManagerSearchBarBackground] = {SK_ColorTRANSPARENT};
     mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
     mixer[kColorTaskManagerSearchBarPlaceholderText] = {
         ui::kColorTextfieldForeground};
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   mixer[kColorThumbnailTabBackground] =
       ui::PickGoogleColor(ui::kColorAccent, ui::kColorFrameActive,
                           color_utils::kMinimumVisibleContrastRatio);

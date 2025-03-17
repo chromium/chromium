@@ -1593,10 +1593,100 @@ class FetchLaterBrowserTestBase : public KeepAliveURLBrowserTestBase {
     // by `total`, not by states.
   }
 
+  GURL GetFetchLaterPageURL(const std::string& host,
+                            const std::string& method) const {
+    std::string url = base::StrCat(
+        {"/set-header-with-file/content/test/data/fetch_later.html?"
+         "method=",
+         method});
+    return server()->GetURL(host, url);
+  }
+
  private:
   std::unique_ptr<RenderFrameHostImplWrapper> current_document_ = nullptr;
   std::unique_ptr<RenderFrameHostImplWrapper> previous_document_ = nullptr;
 };
+
+class FetchLaterBasicBrowserTest : public FetchLaterBrowserTestBase {
+ protected:
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features = {
+        {blink::features::kFetchLaterAPI, {{}}}};
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FetchLaterBasicBrowserTest, CallInMainDocument) {
+  const std::string target_url = kFetchLaterEndpoint;
+  ASSERT_TRUE(server()->Start());
+
+  RunScript(JsReplace(R"(
+    fetchLater($1);
+  )",
+                      target_url));
+  ASSERT_FALSE(current_document().IsDestroyed());
+
+  // The loader should still be connected as the page exists.
+  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(FetchLaterBasicBrowserTest, CallInSameOriginChild) {
+  ASSERT_TRUE(server()->Start());
+
+  RunScript(JsReplace(
+      R"(
+    var childPromise = new Promise((resolve, reject) => {
+      window.addEventListener('message', e => {
+        if (e.data.type === 'fetchLater.done') {
+          resolve(e.data.type);
+        } else {
+          reject(e.data.type);
+        }
+      });
+    });
+
+    const iframe = document.createElement("iframe");
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+      GetFetchLaterPageURL(kPrimaryHost, net::HttpRequestHeaders::kGetMethod)));
+  ASSERT_FALSE(current_document().IsDestroyed());
+
+  EXPECT_EQ("fetchLater.done", EvalJs(web_contents(), "childPromise"));
+  // The loader should still be connected as the page exists.
+  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+}
+
+// By default of `deferred-fetch-minimal` policy, `fetchLater()` should be
+// allowed in first X cross-origin child iframes.
+IN_PROC_BROWSER_TEST_F(FetchLaterBasicBrowserTest, CallInCrossOriginChild) {
+  const std::string target_url = kFetchLaterEndpoint;
+  ASSERT_TRUE(server()->Start());
+
+  RunScript(JsReplace(
+      R"(
+    var childPromise = new Promise((resolve, reject) => {
+      window.addEventListener('message', e => {
+        if (e.data.type === 'fetchLater.done') {
+          resolve(e.data.type);
+        } else {
+          reject(e.data.type + ': ' + e.data.error);
+        }
+      });
+    });
+
+    const iframe = document.createElement("iframe");
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+      GetFetchLaterPageURL(kSecondaryHost,
+                           net::HttpRequestHeaders::kGetMethod)));
+  ASSERT_FALSE(current_document().IsDestroyed());
+
+  EXPECT_EQ("fetchLater.done", EvalJs(web_contents(), "childPromise"));
+  // The loader should still exist as the page exists.
+  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+}
 
 // A type to support parameterized testing for timeout-related tests.
 struct TestTimeoutType {
@@ -1831,6 +1921,27 @@ class FetchLaterActivationTimeoutBrowserTest
     return enabled_features;
   }
 };
+
+// When setting activateAfter=0, a pending FetchLater request should be sent
+// "roughly" immediately.
+IN_PROC_BROWSER_TEST_F(FetchLaterActivationTimeoutBrowserTest,
+                       SendOnZeroActivationTimeout) {
+  const std::string target_url = kFetchLaterEndpoint;
+  auto request_handlers = RegisterRequestHandlers({target_url});
+  ASSERT_TRUE(server()->Start());
+
+  // Creates a FetchLater request with activateAfter=0s.
+  RunScript(JsReplace(R"(
+    fetchLater($1, {activateAfter: 0});
+  )",
+                      target_url));
+  ASSERT_FALSE(current_document().IsDestroyed());
+
+  // The loader should still exist as the page exists.
+  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+  // The FetchLater request should be sent, triggered by its activateAfter.
+  ExpectFetchLaterRequests(1, request_handlers);
+}
 
 // When setting activateAfter>0, a pending FetchLater request should be sent
 // after around the specified time, if no navigation happens.

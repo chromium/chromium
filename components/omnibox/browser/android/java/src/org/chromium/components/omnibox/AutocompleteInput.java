@@ -6,22 +6,27 @@ package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 
-import java.util.OptionalInt;
-
 /** AutocompleteInput encompasses the input to autocomplete. */
+@NullMarked
 public class AutocompleteInput {
-    private OptionalInt mPageClassification = OptionalInt.empty();
+    private int mPageClassification;
     private String mUserText;
+
+    public AutocompleteInput() {
+        reset();
+    }
 
     /** Set the PageClassification for the input. */
     public void setPageClassification(int pageClassification) {
-        mPageClassification = OptionalInt.of(pageClassification);
+        mPageClassification = pageClassification;
     }
 
     /** Returns the current page classification. */
-    public OptionalInt getPageClassification() {
+    public int getPageClassification() {
         return mPageClassification;
     }
 
@@ -42,11 +47,9 @@ public class AutocompleteInput {
 
     /** Returns whether current context enables suggestions caching. */
     public boolean isInCacheableContext() {
-        if (getPageClassification().isEmpty()) return false;
         if (!isInZeroPrefixContext()) return false;
 
-        int pageClass = getPageClassification().getAsInt();
-        switch (pageClass) {
+        switch (mPageClassification) {
             case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
             case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
                 return true;
@@ -63,8 +66,8 @@ public class AutocompleteInput {
         }
     }
 
+    @Initializer
     public void reset() {
-        mPageClassification = OptionalInt.empty();
-        mUserText = null;
+        mUserText = "";
     }
 }

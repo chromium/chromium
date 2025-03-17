@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_options.h"
@@ -66,6 +67,53 @@ ToMojoInvalidGaiaCredentialsReason(
           kCredentialsMissing;
     case GoogleServiceAuthError::InvalidGaiaCredentialsReason::NUM_REASONS:
       NOTREACHED();
+  }
+}
+
+GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+FromMojoScopeLimitedUnrecoverableErrorReason(
+    crosapi::mojom::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+        mojo_reason) {
+  switch (mojo_reason) {
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidGrantRaptError:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidGrantRaptError;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidScope:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidScope;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kRestrictedClient:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kRestrictedClient;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kAdminPolicyEnforced:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAdminPolicyEnforced;
+  }
+}
+
+crosapi::mojom::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+ToMojoScopeLimitedUnrecoverableErrorReason(
+    GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason reason) {
+  switch (reason) {
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidGrantRaptError:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidGrantRaptError;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kInvalidScope:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidScope;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kRestrictedClient:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kRestrictedClient;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kAdminPolicyEnforced:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAdminPolicyEnforced;
   }
 }
 
@@ -210,12 +258,6 @@ std::optional<account_manager::AccountType> FromMojoAccountType(
                         static_cast<int>(account_manager::AccountType::kGaia),
                     "Underlying enum values must match");
       return account_manager::AccountType::kGaia;
-    case crosapi::mojom::AccountType::kActiveDirectory:
-      static_assert(
-          static_cast<int>(crosapi::mojom::AccountType::kActiveDirectory) ==
-              static_cast<int>(account_manager::AccountType::kActiveDirectory),
-          "Underlying enum values must match");
-      return account_manager::AccountType::kActiveDirectory;
     default:
       // Don't consider this as as error to preserve forwards compatibility with
       // lacros.
@@ -226,12 +268,12 @@ std::optional<account_manager::AccountType> FromMojoAccountType(
 
 crosapi::mojom::AccountType ToMojoAccountType(
     const account_manager::AccountType& account_type) {
-  switch (account_type) {
-    case account_manager::AccountType::kGaia:
-      return crosapi::mojom::AccountType::kGaia;
-    case account_manager::AccountType::kActiveDirectory:
-      return crosapi::mojom::AccountType::kActiveDirectory;
-  }
+  // Currently, we only support `kGaia` account type. Should a new type be added
+  // in the future, consider removing the `CHECK_EQ()` below and handling the
+  // new type accordingly.
+  CHECK_EQ(account_type, account_manager::AccountType::kGaia);
+
+  return crosapi::mojom::AccountType::kGaia;
 }
 
 std::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
@@ -266,8 +308,9 @@ std::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
       return GoogleServiceAuthError(
           GoogleServiceAuthError::State::REQUEST_CANCELED);
     case cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError:
-      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-          mojo_error->error_message);
+      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          FromMojoScopeLimitedUnrecoverableErrorReason(
+              mojo_error->scope_limited_unrecoverable_error_reason));
     case cm::GoogleServiceAuthError::State::kChallengeResponseRequired:
       return GoogleServiceAuthError::FromTokenBindingChallenge(
           mojo_error->token_binding_challenge.value_or(
@@ -292,6 +335,12 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
     mojo_result->invalid_gaia_credentials_reason =
         ToMojoInvalidGaiaCredentialsReason(
             error.GetInvalidGaiaCredentialsReason());
+  }
+  if (error.state() ==
+      GoogleServiceAuthError::State::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+    mojo_result->scope_limited_unrecoverable_error_reason =
+        ToMojoScopeLimitedUnrecoverableErrorReason(
+            error.GetScopeLimitedUnrecoverableErrorReason());
   }
   if (error.state() ==
       GoogleServiceAuthError::State::CHALLENGE_RESPONSE_REQUIRED) {

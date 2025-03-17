@@ -10,14 +10,11 @@
 #import "ios/web/public/web_state.h"
 #import "mojo/public/cpp/bindings/receiver.h"
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#endif
 
 namespace ai {
 
-//
 class AIPrototypingServiceImpl : public mojom::AIPrototypingService {
  public:
   explicit AIPrototypingServiceImpl(
@@ -36,9 +33,6 @@ class AIPrototypingServiceImpl : public mojom::AIPrototypingService {
 
  private:
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  // Handles the response from a server-hosted query execution.
-  std::string OnServerModelExecuteResponse(
-      optimization_guide::OptimizationGuideModelExecutionResult result);
 
   // Handles the response from an on-device query execution.
   std::string OnDeviceModelExecuteResponse(
@@ -51,14 +45,17 @@ class AIPrototypingServiceImpl : public mojom::AIPrototypingService {
   // will be able to be started successfully.
   void StartOnDeviceSession();
 
-  // Service used to execute LLM queries.
-  raw_ptr<OptimizationGuideService> service_;
-
   // Retains the on-device session in memory.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       on_device_session_;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
+  // Handles the response from a server-hosted query execution.
+  std::string OnServerModelExecuteResponse(
+      optimization_guide::OptimizationGuideModelExecutionResult result);
+
+  // Service used to execute LLM queries.
+  raw_ptr<OptimizationGuideService> service_;
   mojo::Receiver<mojom::AIPrototypingService> receiver_;
 
   base::WeakPtrFactory<AIPrototypingServiceImpl> weak_ptr_factory_{this};

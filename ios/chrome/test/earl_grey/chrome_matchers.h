@@ -305,6 +305,16 @@ id<GREYMatcher> IdentityChooserScrim();
 // Returns matcher for the cancel button in the fake add account flow.
 id<GREYMatcher> FakeAddAccountScreenCancelButton();
 
+// Returns matcher for the primary button (typically labeled somethings like
+// "Yes") in various promo screens, including sign-in, history sync, default
+// browser choice, and more.
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher();
+
+// Returns matcher for the secondary button (typically labeled somethings like
+// "No Thanks") in various promo screens, including sign-in, history sync,
+// default browser choice, and more.
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher();
+
 // Returns a matcher for the button for the currently signed in account in the
 // settings menu.
 id<GREYMatcher> SettingsAccountButton();
@@ -340,10 +350,6 @@ id<GREYMatcher> ContentSettingsButton();
 // Returns a matcher for the Google Services Settings button on the main
 // Settings screen.
 id<GREYMatcher> GoogleServicesSettingsButton();
-
-// Returns a matcher for the Manage Sync Settings button on the main Settings
-// screen.
-id<GREYMatcher> ManageSyncSettingsButton();
 
 // Returns a matcher for the Inactive Tabs Settings button on the Tabs Settings
 // screen.
@@ -623,6 +629,9 @@ id<GREYMatcher> RegularTabGrid();
 // Returns a matcher for the incognito tab grid.
 id<GREYMatcher> IncognitoTabGrid();
 
+// Returns a matcher for the Inactive Tabs tab grid.
+id<GREYMatcher> InactiveTabGrid();
+
 // Returns a matcher for the button to close the cell at `index` in the
 // tab grid.
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index);
@@ -666,6 +675,9 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title);
 // Returns a matcher to the add button in the toolbar in the settings view.
 id<GREYMatcher> SettingsToolbarAddButton();
 
+// Returns a matcher to the edit button in the toolbar in the settings view.
+id<GREYMatcher> SettingsToolbarEditButton();
+
 // Returns a matcher matching cells that can be swiped-to-dismiss.
 id<GREYMatcher> CellCanBeSwipedToDismissed();
 
@@ -690,10 +702,10 @@ id<GREYMatcher> UseSuggestedPasswordMatcher();
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.
-id<GREYMatcher> PromoStylePrimaryActionButtonMatcher();
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher();
 
 // Returns matcher for the secondary action button.
-id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher();
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher();
 
 #pragma mark - Incognito Interstitial
 
@@ -864,6 +876,35 @@ id<GREYMatcher> ShareGroupButton();
 // Returns the matcher for the manage group button in the context menu of a tab
 // group.
 id<GREYMatcher> ManageGroupButton();
+
+// Returns the matcher for `Leave Group` button in the context menu of a shared
+// tab group.
+id<GREYMatcher> LeaveSharedGroupButton();
+
+// Returns the matcher for `Leave Group` button in the confirmation dialog of a
+// shared tab group.
+id<GREYMatcher> LeaveSharedGroupConfirmationButton();
+
+// Returns the matcher for `Delete Group` button in the context menu of a shared
+// tab group.
+id<GREYMatcher> DeleteSharedGroupButton();
+
+// Returns the matcher for `Delete Group` button in the confirmation dialog of a
+// shared tab group.
+id<GREYMatcher> DeleteSharedConfirmationButton();
+
+// Returns the matcher for `Keep Group` button in the confirmation dialog of a
+// shared tab group.
+id<GREYMatcher> KeepSharedConfirmationButton();
+
+// Returns the matcher for the shared tab group Share flow view.
+id<GREYMatcher> FakeShareFlowView();
+
+// Returns the matcher for the shared tab group Manage flow view.
+id<GREYMatcher> FakeManageFlowView();
+
+// Returns the matcher for the shared tab group Join flow view.
+id<GREYMatcher> FakeJoinFlowView();
 
 #pragma mark - Tab Groups Panel
 

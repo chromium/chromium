@@ -7,10 +7,12 @@
 
 #include "base/feature_list.h"
 
-namespace collaboration::messaging {
+namespace collaboration::features {
 
 BASE_DECLARE_FEATURE(kCollaborationMessaging);
 
-}  // namespace collaboration::messaging
+BASE_DECLARE_FEATURE(kCollaborationMessagingDatabase);
+
+}  // namespace collaboration::features
 
 #endif  // COMPONENTS_COLLABORATION_PUBLIC_FEATURES_H_

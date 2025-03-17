@@ -33,7 +33,7 @@ suite('cr-radio-button', function() {
     assertTrue(radioButton.hasAttribute('checked'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-checked'));
     assertNotStyle(
-        radioButton.shadowRoot!.querySelector('.disc')!, 'background-color',
+        radioButton.shadowRoot.querySelector('.disc')!, 'background-color',
         'rgba(0, 0, 0, 0)');
   }
 
@@ -41,10 +41,10 @@ suite('cr-radio-button', function() {
     assertFalse(radioButton.hasAttribute('checked'));
     assertEquals('false', radioButton.$.button.getAttribute('aria-checked'));
     assertStyle(
-        radioButton.shadowRoot!.querySelector('.disc')!, 'background-color',
+        radioButton.shadowRoot.querySelector('.disc')!, 'background-color',
         'rgba(0, 0, 0, 0)');
     assertStyle(
-        radioButton.shadowRoot!.querySelector('.disc')!, 'background-color',
+        radioButton.shadowRoot.querySelector('.disc')!, 'background-color',
         'rgba(0, 0, 0, 0)');
   }
 
@@ -86,7 +86,7 @@ suite('cr-radio-button', function() {
 
   test('Ripple', function() {
     function getRipple() {
-      return radioButton.shadowRoot!.querySelector('cr-ripple');
+      return radioButton.shadowRoot.querySelector('cr-ripple');
     }
 
     assertFalse(!!getRipple());
@@ -100,37 +100,37 @@ suite('cr-radio-button', function() {
   test('Label Hidden', async () => {
     // Having no label set hides label.
     assertStyle(
-        radioButton.shadowRoot!.querySelector('#label')!, 'display', 'none');
+        radioButton.shadowRoot.querySelector('#label')!, 'display', 'none');
 
     // Setting label shows label.
     radioButton.label = 'foo';
     await microtasksFinished();
     assertNotStyle(
-        radioButton.shadowRoot!.querySelector('#label')!, 'display', 'none');
+        radioButton.shadowRoot.querySelector('#label')!, 'display', 'none');
     assertNotStyle(
-        radioButton.shadowRoot!.querySelector('#label')!, 'clip',
+        radioButton.shadowRoot.querySelector('#label')!, 'clip',
         'rect(0px, 0px, 0px, 0px)');
     assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
     assertEquals(
-        radioButton.shadowRoot!.querySelector('#label')!.textContent!.trim(),
+        radioButton.shadowRoot.querySelector('#label')!.textContent!.trim(),
         'foo');
 
     // Setting hideLabelText true clips label from screen reader.
     radioButton.hideLabelText = true;
     await microtasksFinished();
     assertStyle(
-        radioButton.shadowRoot!.querySelector('#label')!, 'clip',
+        radioButton.shadowRoot.querySelector('#label')!, 'clip',
         'rect(0px, 0px, 0px, 0px)');
     assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
     assertEquals(
-        radioButton.shadowRoot!.querySelector('#label')!.textContent!.trim(),
+        radioButton.shadowRoot.querySelector('#label')!.textContent!.trim(),
         'foo');
   });
 
   test('Label First', () => {
     const button = radioButton.$.button;
     let buttonRect = button.getBoundingClientRect();
-    const labelWrapper = radioButton.shadowRoot!.querySelector('#labelWrapper');
+    const labelWrapper = radioButton.shadowRoot.querySelector('#labelWrapper');
     assertTrue(!!labelWrapper);
 
     let labelWrapperRect = labelWrapper.getBoundingClientRect();

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/h264_decoder.h"
+
 #include <stdint.h>
 #include <string.h>
 
@@ -15,8 +17,8 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/test_data_util.h"
-#include "media/gpu/h264_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -185,7 +187,7 @@ class H264DecoderTest : public ::testing::Test {
   void ResetExpectations() {
     // Sets default behaviors for mock methods for convenience.
     ON_CALL(*accelerator_, CreateH264Picture()).WillByDefault([]() {
-      return new H264Picture();
+      return base::MakeRefCounted<H264Picture>();
     });
     ON_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _))
         .WillByDefault(Return(H264Decoder::H264Accelerator::Status::kOk));

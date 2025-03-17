@@ -1,6 +1,6 @@
 Document
 ++Group IsControlElement=false
-++++ComboBox Name='Currency for purchase' ExpandCollapse.ExpandCollapseState='Expanded' Value.Value='USD United States Dollar $'
+++++ComboBox Name='Currency for purchase' ExpandCollapse.ExpandCollapseState='Expanded' Value.Value='USD'
 ++++++List IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
 ++++++++ListItem Name='EUR Euro' SelectionItem.IsSelected=false
 ++++++++++Group IsControlElement=false

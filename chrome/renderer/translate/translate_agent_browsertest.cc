@@ -19,8 +19,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "components/language_detection/core/constants.h"
 #include "components/translate/content/common/translate.mojom.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -351,8 +351,8 @@ TEST_F(TranslateAgentBrowserTest, UndefinedSourceLang) {
   // V8 call for performance monitoring should be ignored.
   EXPECT_CALL(*translate_agent_, ExecuteScriptAndGetDoubleResult(_)).Times(3);
 
-  translate_agent_->TranslatePage(translate::kUnknownLanguageCode, "fr",
-                                  std::string());
+  translate_agent_->TranslatePage(language_detection::kUnknownLanguageCode,
+                                  "fr", std::string());
   base::RunLoop().RunUntilIdle();
 
   translate::TranslateErrors error;

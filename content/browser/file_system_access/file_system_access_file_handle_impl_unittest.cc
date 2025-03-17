@@ -114,7 +114,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
         FileSystemAccessManagerImpl::BindingContext(
             test_src_storage_key_, test_src_url_,
             web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
-        url,
+        url, path.BaseName().AsUTF8Unsafe(),
         FileSystemAccessManagerImpl::SharedHandleState(std::move(read_grant),
                                                        std::move(write_grant)));
     return handle;
@@ -142,7 +142,6 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
         bucket_future;
     quota_manager_proxy_->CreateBucketForTesting(
         test_src_storage_key_, "custom_bucket",
-        blink::mojom::StorageType::kTemporary,
         base::SequencedTaskRunner::GetCurrentDefault(),
         bucket_future.GetCallback());
     return bucket_future.Take().transform(
@@ -224,7 +223,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
         FileSystemAccessManagerImpl::BindingContext(
             test_src_storage_key_, test_src_url_,
             web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
-        test_file_url_,
+        test_file_url_, "test",
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
   }

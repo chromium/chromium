@@ -13,7 +13,8 @@ import './network_shared.css.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, ManagedApnProperties, ManagedProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ApnProperties, ManagedApnProperties, ManagedProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnSource, ApnState, ApnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OncMojo} from '../network/onc_mojo.js';
@@ -163,9 +164,9 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],
       source: ApnSource.kModem,
-      id: undefined,
-      language: undefined,
-      attach: undefined,
+      id: null,
+      language: null,
+      attach: null,
     };
   }
 
@@ -206,8 +207,7 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
     const newApnList = this.managedProperties.typeProperties.cellular!.apnList;
     const oldApnList = oldManagedProperties.typeProperties.cellular!.apnList;
     if (!OncMojo.apnListMatch(
-            oldApnList && oldApnList.activeValue,
-            newApnList && newApnList.activeValue)) {
+            oldApnList?.activeValue, newApnList?.activeValue)) {
       return true;
     }
 
@@ -316,7 +316,7 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
       return {
         accessPointName: apn.accessPointName,
         localizedName: apn.localizedName,
-        name: apn.name || apn.accessPointName || undefined,
+        name: apn.name || apn.accessPointName,
         username: apn.username,
         password: apn.password,
         id: apn.id,
@@ -392,11 +392,11 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
         password: this.otherApn_.password,
         attach: this.isAttachApnToggleEnabled_ ? OncMojo.USE_ATTACH_APN_NAME :
                                                  '',
-        id: undefined,
+        id: null,
         authentication: ApnAuthenticationType.kAutomatic,
-        language: undefined,
-        localizedName: undefined,
-        name: undefined,
+        language: null,
+        localizedName: null,
+        name: null,
         state: ApnState.kEnabled,
         ipType: ApnIpType.kAutomatic,
         apnTypes: [ApnType.kDefault],

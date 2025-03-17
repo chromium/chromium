@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/affiliations/core/browser/affiliation_api.pb.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/affiliations/core/browser/features.h"
 #include "components/affiliations/core/browser/lookup_affiliation_response_parser.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "crypto/sha2.h"
@@ -31,6 +30,15 @@ namespace affiliations {
 
 namespace {
 constexpr int kPrefixLength = 16;
+// The header key used to set the criticality of the request.
+// 174067345 represents the extension tag number of
+// `frameworks.client.data.QosExtension`
+constexpr char kQosExtensionHeader[] = "x-goog-ext-174067345-bin";
+// CgIIAQ== is the result of base64 encoding the SHEDDABLE_PLUS criticality
+// value by running: `echo "request_qos { criticality: SHEDDABLE_PLUS }" | \`
+// `printproto --proto2 --reverse --raw_protocol_buffer \`
+// `--message=frameworks.client.data.QosExtension | base64`
+constexpr char kSheddablePlusCriticalityHash[] = "CgIIAQ==";
 
 // Enumeration listing the possible outcomes of fetching affiliation information
 // from the Affiliation API. This is used in UMA histograms, so do not change
@@ -98,10 +106,8 @@ affiliation_pb::LookupAffiliationMask CreateLookupMask(
   affiliation_pb::LookupAffiliationMask mask;
 
   mask.set_branding_info(request_info.branding_info);
-  const bool grouping_info =
-      base::FeatureList::IsEnabled(features::kAffiliationsGroupInfoEnabled);
-  mask.set_grouping_info(grouping_info);
-  mask.set_group_branding_info(grouping_info);
+  mask.set_grouping_info(true);
+  mask.set_group_branding_info(true);
   mask.set_change_password_info(request_info.change_password_info);
   mask.set_psl_extension_list(request_info.psl_extension_list);
   return mask;
@@ -200,6 +206,8 @@ void HashAffiliationFetcher::FinalizeRequest(
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
+  resource_request->headers.SetHeader(kQosExtensionHeader,
+                                      kSheddablePlusCriticalityHash);
 
   variations::AppendVariationsHeaderUnknownSignedIn(
       query_url, variations::InIncognito::kNo, resource_request.get());

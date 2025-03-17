@@ -6,11 +6,13 @@ package org.chromium.components.component_updater;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
 /** Task for initiating a component update. */
+@NullMarked
 public class UpdateTask extends NativeBackgroundTask {
     @Override
     @StartBeforeNativeResult

@@ -52,13 +52,9 @@ class TestOSCryptAsync : public OSCryptAsync {
     Encryptor::Key key(
         crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize),
         mojom::Algorithm::kAES256GCM);
-    // This test keyring has a second key that is OS Crypt Sync compatible.
-    // When a test requests an Encryptor that is OS Crypt Sync compatible, the
-    // k2 key will be picked, instead of the default k1 key. This allows
-    // testing of key upgrade scenarios.
-    key.is_os_crypt_sync_compatible_ = true;
     keys.emplace(kOsCryptSyncCompatibleTestKeyPrefix, std::move(key));
-    TestEncryptor encryptor(std::move(keys), kDefaultTestKeyPrefix);
+    TestEncryptor encryptor(std::move(keys), kDefaultTestKeyPrefix,
+                            kOsCryptSyncCompatibleTestKeyPrefix);
     return encryptor;
   }
 

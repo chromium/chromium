@@ -159,7 +159,8 @@ inline constexpr char kSafeBrowsingSurveysEnabled[] =
     "safebrowsing.surveys_enabled";
 
 // A timestamp indicating the last time the account tailored security boolean
-// was updated.
+// was updated. The value is owned by the Account and is updated by the sync
+// system.
 inline constexpr char kAccountTailoredSecurityUpdateTimestamp[] =
     "safebrowsing.aesb_update_time_windows_epoch_micros";
 
@@ -203,6 +204,37 @@ inline constexpr char kAccountTailoredSecurityShownNotification[] =
 inline constexpr char kEnhancedProtectionEnabledViaTailoredSecurity[] =
     "safebrowsing.esb_enabled_via_tailored_security";
 
+// Safe Browsing Synced Enhanced Protection preferences
+// Indicates the last known state of the Safe Browsing Synced Enhanced
+// Protection retry mechanism. Integer that maps to
+// MessageRetryHandler::RetryState. This value is managed by the
+// SafeBrowsingPrefChangeHandler.
+inline constexpr char kSafeBrowsingSyncedEnhancedProtectionRetryState[] =
+    "safebrowsing.esb_as_a_synced_setting_retry_state";
+
+// Timestamp indicating when the next time the retry can happen is.
+// Value maps to MessageRetryHandler::next_retry_timestamp_pref.
+// This value is managed by the SafeBrowsingPrefChangeHandler.
+inline constexpr char
+    kSafeBrowsingSyncedEnhancedProtectionNextRetryTimestamp[] =
+        "safebrowsing.esb_as_a_synced_setting_next_retry_timestamp";
+
+// A boolean indicating if Enhanced Protection setting was changed on the
+// current device through the settings UI page.
+// This function distinguishes between the cases:
+//  * The user has changed the Enhanced Protection setting on this device, which
+//    implicitly dismisses the notification. We set the value to True.
+//  * The user's Enhanced Protection setting was synced automatically. We set
+//  this value to False.
+inline constexpr char kSafeBrowsingSyncedEnhancedProtectionSetLocally[] =
+    "safebrowsing.esb_as_a_synced_setting_enhanced_protection_set_locally";
+
+// A timestamp indicating the last time the safe browsing pref handler boolean
+// was updated.
+inline constexpr char kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp[] =
+    "safebrowsing.esb_as_a_synced_setting_enhanced_protection_update_epoch_"
+    "micros";
+
 // The last time the Extension Telemetry Service successfully
 // uploaded its data.
 inline constexpr char kExtensionTelemetryLastUploadTime[] =
@@ -224,19 +256,6 @@ inline constexpr char kExtensionTelemetryFileData[] =
 // occur for unrelated reasons.
 inline constexpr char kHashPrefixRealTimeChecksAllowedByPolicy[] =
     "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
-
-// A preference indicating that the user has seen the IPH telling them automatic
-// deep scans are coming. Since IPH may be delayed for a variety of reasons
-// (startup grace periods, other IPH in the session), we want to wait to enable
-// automatic deep scans until they've actually seen the IPH.
-inline constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
-    "safebrowsing.automatic_deep_scanning_iph_seen";
-
-// A preference indicating that the user has already done an automatic
-// deep scan. This addresses an edge case where deep scan notices remain
-// in the bubble after the user performs an automatic deep scan.
-inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
-    "safe_browsing.automatic_deep_scan_performed";
 
 // Records a mapping from app names to most recent redirect to that
 // app. This is used to avoid sending reports of external app redirects
@@ -331,11 +350,11 @@ enum class SafeBrowsingState {
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs);
 
-// Set the SafeBrowsing prefs. Also records if ESB was enabled in sync with
-// Account-ESB via Tailored Security.
+// Set the SafeBrowsing prefs.  Records whether ESB was enabled by Tailored
+// Security (through account integration).
 void SetSafeBrowsingState(PrefService* prefs,
                           SafeBrowsingState state,
-                          bool is_esb_enabled_in_sync = false);
+                          bool is_esb_enabled_by_account_integration = false);
 
 // Returns whether Safe Browsing is enabled for the user.
 bool IsSafeBrowsingEnabled(const PrefService& prefs);
@@ -396,6 +415,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Registers local state prefs related to Safe Browsing.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+// Records whether the user has changed the Safe Browsing setting on this
+// device.
+void EnableSafeBrowsingSettingSetLocallyPref(PrefService* prefs);
 
 // Sets the currently active Safe Browsing Extended Reporting preference to the
 // specified value. The |location| indicates the UI where the change was

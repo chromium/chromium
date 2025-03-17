@@ -302,8 +302,9 @@ class SequenceBound {
   // Resets `this` to null. If `this` is not currently null, posts destruction
   // of the managed `T` to `impl_task_runner_`.
   void Reset() {
-    if (is_null())
+    if (is_null()) {
       return;
+    }
 
     storage_.Destruct(*impl_task_runner_);
     impl_task_runner_ = nullptr;
@@ -313,8 +314,9 @@ class SequenceBound {
   // of the managed `T` to `impl_task_runner_`. Blocks until the destructor has
   // run.
   void SynchronouslyResetForTest() {
-    if (is_null())
+    if (is_null()) {
       return;
+    }
 
     scoped_refptr<SequencedTaskRunner> task_runner = impl_task_runner_;
     Reset();

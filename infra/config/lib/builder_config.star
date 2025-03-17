@@ -8,8 +8,10 @@ load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys", "kinds", "triggerer")
 load("//project.star", "settings")
 load("./args.star", "args")
+load("./branches.star", "branches")
 load(
     "./builder_exemptions.star",
+    "exempted_gardened_mirrors_in_cq_builders",
     "mega_cq_excluded_builders",
     "mega_cq_excluded_gardener_rotations",
     "standalone_trybot_excluded_builder_groups",
@@ -650,6 +652,14 @@ def _check_specs_for_consistency(bucket_name, builder_name, entries):
                 ),
             ))
 
+def _get_builder_owner_description(description, contact_email):
+    if not contact_email:
+        return description
+
+    if description:
+        description += "<br/>"
+    return "{}Builder owner: <a href=mailto:{}>{}</a>".format(description, contact_email, contact_email)
+
 def _get_builder_mirror_description(bucket_name, builder, bc_state):
     node = _BUILDER_CONFIG.get(bucket_name, builder.name)
     if not node:
@@ -719,6 +729,7 @@ def _set_builder_config_property(ctx):
 
     bc_state = _bc_state()
     needs_mega_cq_mode = set()
+    trybot_ungardened_mirrors = {}
 
     for bucket in cfg.buckets:
         if not proto.has(bucket, "swarming"):
@@ -726,6 +737,10 @@ def _set_builder_config_property(ctx):
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
+
+            mirror_description = _get_builder_mirror_description(bucket_name, builder, bc_state)
+            builder.description_html = _get_builder_owner_description(mirror_description, builder.contact_team_email)
+
             node = _BUILDER_CONFIG.get(bucket_name, builder_name)
             if not node:
                 continue
@@ -842,8 +857,6 @@ def _set_builder_config_property(ctx):
             )
             builder.properties = json.encode(builder_properties)
 
-            builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
-
             # Enforce that most gardened CI bots have a matching trybot.
             rotations = get_gardener_rotations(bucket_name, builder.name)
             is_excluded = (
@@ -853,6 +866,22 @@ def _set_builder_config_property(ctx):
             )
             if rotations and not mirroring_builders and not is_excluded:
                 fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
+
+            # If the builder is part of CQ it must have gardeners for the builders it mirrors
+            if branches.matches(branches.selector.MAIN) and bucket_name == "try":
+                for m in mirrors:
+                    mirror_id = _builder_id(m)
+                    mirror_rotations = get_gardener_rotations(mirror_id["bucket"], mirror_id["builder"])
+                    mirror = "{}/{}".format(mirror_id["bucket"], mirror_id["builder"])
+                    if len(mirror_rotations) == 0 and mirror not in exempted_gardened_mirrors_in_cq_builders:
+                        cq_identifier = "{}/{}/{}".format(
+                            settings.project,
+                            bucket_name,
+                            builder.name,
+                        )
+                        if cq_identifier not in trybot_ungardened_mirrors:
+                            trybot_ungardened_mirrors[cq_identifier] = set()
+                        trybot_ungardened_mirrors[cq_identifier] = trybot_ungardened_mirrors[cq_identifier].union([mirror])
 
             if (bucket_name == "try" and not mirrors and
                 builder_properties.get("builder_group") not in standalone_trybot_excluded_builder_groups and
@@ -907,6 +936,9 @@ def _set_builder_config_property(ctx):
     for cq_group in cq_config_groups:
         if cq_group.name != "cq":
             continue
+        for b in cq_group.verifiers.tryjob.builders:
+            if b.name in trybot_ungardened_mirrors and not b.includable_only and b.experiment_percentage == 0:
+                fail("{} is being added to the CQ but it is mirroring an ungardened and unexempted builder(s): {}".format(b.name, ", ".join(trybot_ungardened_mirrors[b.name])))
         for b in cq_group.verifiers.tryjob.builders:
             if b.name not in needs_mega_cq_mode:
                 continue

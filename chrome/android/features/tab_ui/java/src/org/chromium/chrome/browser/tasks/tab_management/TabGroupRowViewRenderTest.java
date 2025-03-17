@@ -9,7 +9,8 @@ import static org.mockito.Mockito.doAnswer;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CREATION_MILLIS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TIMESTAMP_EVENT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
 import android.app.Activity;
@@ -41,6 +42,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -141,8 +143,12 @@ public class TabGroupRowViewRenderTest {
                     PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
                     builder.with(CLUSTER_DATA, makeCornerData(urls));
                     builder.with(TabGroupRowProperties.COLOR_INDEX, TabGroupColorId.GREY);
+                    builder.with(OPEN_RUNNABLE, () -> {});
                     builder.with(TITLE_DATA, new Pair<>("Title", 1));
-                    builder.with(CREATION_MILLIS, Clock.systemUTC().millis());
+                    builder.with(
+                            TIMESTAMP_EVENT,
+                            new TabGroupTimeAgo(
+                                    Clock.systemUTC().millis(), TimestampEvent.CREATED));
                     mPropertyModel = builder.build();
                     PropertyModelChangeProcessor.create(
                             mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
@@ -162,7 +168,10 @@ public class TabGroupRowViewRenderTest {
                             TITLE_DATA,
                             new Pair<>(
                                     "VeryLongTitleThatGetsTruncatedOrSplitOverMultipleLines", 1));
-                    builder.with(CREATION_MILLIS, Clock.systemUTC().millis());
+                    builder.with(
+                            TIMESTAMP_EVENT,
+                            new TabGroupTimeAgo(
+                                    Clock.systemUTC().millis(), TimestampEvent.CREATED));
                     mPropertyModel = builder.build();
                     PropertyModelChangeProcessor.create(
                             mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
@@ -197,5 +206,27 @@ public class TabGroupRowViewRenderTest {
 
         remakeWithUrls(JUnitTestGURLs.RED_1);
         mRenderTestRule.render(mTabGroupRowView, "one");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderWithDisabledMenu() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
+                    builder.with(CLUSTER_DATA, makeCornerData(JUnitTestGURLs.RED_1));
+                    builder.with(TabGroupRowProperties.COLOR_INDEX, TabGroupColorId.GREY);
+                    builder.with(TITLE_DATA, new Pair<>("A generic title", 1));
+                    builder.with(
+                            TIMESTAMP_EVENT,
+                            new TabGroupTimeAgo(
+                                    Clock.systemUTC().millis(), TimestampEvent.CREATED));
+                    builder.with(OPEN_RUNNABLE, null);
+                    mPropertyModel = builder.build();
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
+                });
+        mRenderTestRule.render(mTabGroupRowView, "menu_disabled");
     }
 }

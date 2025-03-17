@@ -46,16 +46,6 @@ component("manta") {
       "scanner_provider.h",
       "snapper_provider.cc",
       "snapper_provider.h",
-      "sparky/sparky_context.cc",
-      "sparky/sparky_context.h",
-      "sparky/sparky_delegate.cc",
-      "sparky/sparky_delegate.h",
-      "sparky/sparky_provider.cc",
-      "sparky/sparky_provider.h",
-      "sparky/sparky_util.cc",
-      "sparky/sparky_util.h",
-      "sparky/system_info_delegate.cc",
-      "sparky/system_info_delegate.h",
       "walrus_provider.cc",
       "walrus_provider.h",
     ]
@@ -76,8 +66,6 @@ source_set("unit_tests") {
       "orca_provider_unittest.cc",
       "scanner_provider_unittest.cc",
       "snapper_provider_unittest.cc",
-      "sparky/sparky_provider_unittest.cc",
-      "sparky/sparky_util_unittest.cc",
       "walrus_provider_unittest.cc",
     ]
   }

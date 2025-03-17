@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -57,6 +57,13 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource,
  private:
   void FileRead(std::optional<std::vector<uint8_t>> file_bytes);
   void ImportCertificateResult(bool success);
+  void GotDeleteConfirmation(
+      const std::string& sha256hash_hex,
+      CertificateManagerPageHandler::DeleteCertificateCallback callback,
+      bool confirmed);
+  void DeleteCertificateResultAsync(
+      CertificateManagerPageHandler::DeleteCertificateCallback callback,
+      bool result);
 
   std::string export_file_name_;
   chrome_browser_server_certificate_database::CertificateTrust::

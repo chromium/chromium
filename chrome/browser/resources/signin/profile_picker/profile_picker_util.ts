@@ -15,6 +15,7 @@ export function createDummyProfileState(): ProfileState {
     avatarBadge: '',
     avatarIcon: '',
     profileCardButtonLabel: '',
+    hasEnterpriseLabel: false,
   };
 }
 

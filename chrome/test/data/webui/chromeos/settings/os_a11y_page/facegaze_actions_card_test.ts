@@ -5,8 +5,10 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {getDeepActiveElement} from '//resources/js/util.js';
-import {AddDialogPage, AssignedKeyCombo, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActionsCardElement, FaceGazeAddActionDialogElement, FaceGazeCommandPair, KeyCombination} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrIconButtonElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {FaceGazeAddActionDialogElement, KeyCombination} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, AssignedKeyCombo, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActionsCardElement, FaceGazeCommandPair} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrIconButtonElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -40,18 +42,18 @@ suite('<facegaze-actions-card>', () => {
   }
 
   function assertActionSettingsRow(commandPair: FaceGazeCommandPair):
-      HTMLDivElement {
+      HTMLElement {
     const domRepeat = faceGazeActionsCard.shadowRoot!.querySelector<DomRepeat>(
         '#faceGazeActionsCommandPairs');
     assertTrue(!!domRepeat);
     const settingsRows =
-        faceGazeActionsCard.shadowRoot!.querySelectorAll<HTMLDivElement>(
+        faceGazeActionsCard.shadowRoot!.querySelectorAll<HTMLElement>(
             '.command-pair');
     const row =
         Array.from(settingsRows.values())
             .find(
                 (row) => domRepeat.itemForElement(row)!.equals(commandPair)) as
-        HTMLDivElement;
+        HTMLElement;
     assertTrue(!!row);
     return row;
   }
@@ -321,7 +323,7 @@ suite('<facegaze-actions-card>', () => {
     alert = getAlert();
     assertTrue(!!alert);
     assertEquals(
-        alert!.innerText,
+        alert.innerText,
         'Assigned gesture Briefly close both eyes to Left-click the mouse');
 
     const addButton = getAddButton();
@@ -353,7 +355,7 @@ suite('<facegaze-actions-card>', () => {
 
     alert = getAlert();
     assertTrue(!!alert);
-    assertEquals(alert!.innerText, 'Removed action Left-click the mouse');
+    assertEquals(alert.innerText, 'Removed action Left-click the mouse');
 
     const addButton = getAddButton();
     assertFalse(addButton.disabled);
@@ -386,7 +388,7 @@ suite('<facegaze-actions-card>', () => {
     assertTrue(!!focusedElement);
     assertEquals(removeButton, focusedElement);
 
-    removeButton!.click();
+    removeButton.click();
     flush();
 
     const addButton = getAddButton();

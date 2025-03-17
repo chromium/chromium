@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,7 +20,7 @@ namespace ash {
 namespace test {
 namespace {
 
-constexpr int kPrintExpectationDelayMs = 3000;
+constexpr base::TimeDelta kPrintExpectationDelay = base::Seconds(3);
 
 }  // namespace
 
@@ -152,7 +153,7 @@ void SpeechMonitor::FinishSpeech() {
   utterance_id_ = -1;
   on_speak_finished_.Reset();
 
-  time_of_last_utterance_ = std::chrono::steady_clock::now();
+  time_of_last_utterance_ = base::TimeTicks::Now();
 }
 
 bool SpeechMonitor::StopSpeaking() {
@@ -183,7 +184,7 @@ void SpeechMonitor::WillSpeakUtteranceWithVoice(
   }
 
   utterance_queue_.emplace_back(utterance->GetText(), utterance->GetLang());
-  delay_for_last_utterance_ms_ = CalculateUtteranceDelayMS();
+  delay_for_last_utterance_ = base::TimeTicks::Now() - time_of_last_utterance_;
   MaybeContinueReplay();
 }
 
@@ -208,18 +209,6 @@ void SpeechMonitor::FinalizeVoiceOrdering(
     std::vector<content::VoiceData>& voices) {}
 
 void SpeechMonitor::RefreshVoices() {}
-
-double SpeechMonitor::CalculateUtteranceDelayMS() {
-  std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-  std::chrono::duration<double> time_span =
-      std::chrono::duration_cast<std::chrono::duration<double>>(
-          now - time_of_last_utterance_);
-  return time_span.count() * 1000;
-}
-
-double SpeechMonitor::GetDelayForLastUtteranceMS() {
-  return delay_for_last_utterance_ms_;
-}
 
 void SpeechMonitor::ExpectSpeech(const Expectation& expectation,
                                  const base::Location& location) {
@@ -327,7 +316,7 @@ void SpeechMonitor::MaybeContinueReplay() {
         FROM_HERE,
         base::BindOnce(&SpeechMonitor::MaybePrintExpectations,
                        weak_factory_.GetWeakPtr()),
-        base::Milliseconds(kPrintExpectationDelayMs));
+        kPrintExpectationDelay);
 
     if (!replay_loop_runner_.get()) {
       replay_loop_runner_ = new content::MessageLoopRunner();
@@ -339,9 +328,11 @@ void SpeechMonitor::MaybeContinueReplay() {
 }
 
 void SpeechMonitor::MaybePrintExpectations() {
-  if (CalculateUtteranceDelayMS() < kPrintExpectationDelayMs ||
-      replay_queue_.empty())
+  if ((base::TimeTicks::Now() - time_of_last_utterance_) <
+          kPrintExpectationDelay ||
+      replay_queue_.empty()) {
     return;
+  }
 
   if (last_replay_queue_size_ == replay_queue_.size())
     return;

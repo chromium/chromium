@@ -15,7 +15,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database_table.h"
@@ -362,6 +362,10 @@ struct ServerCvc {
 // -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
+  // Drops the tables created by PaymentsAutofillTable.
+  // TODO(crbug.com/390473673): Remove after M143.
+  class Dropper;
+
   PaymentsAutofillTable();
 
   PaymentsAutofillTable(const PaymentsAutofillTable&) = delete;
@@ -629,6 +633,18 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitBenefitMerchantDomainsTable();
   bool InitGenericPaymentInstrumentsTable();
   bool InitPaymentInstrumentCreationOptionsTable();
+};
+
+class PaymentsAutofillTable::Dropper : public WebDatabaseTable {
+ public:
+  Dropper();
+  Dropper(const Dropper&) = delete;
+  Dropper& operator=(const Dropper&) = delete;
+  ~Dropper() override;
+
+  TypeKey GetTypeKey() const override;
+  bool CreateTablesIfNecessary() override;
+  bool MigrateToVersion(int version, bool* update_compatible_version) override;
 };
 
 }  // namespace autofill

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package chrome.android.junit.src.org.chromium.chrome.browser.compositor.scene_layer;
+package org.chromium.chrome.browser.compositor.scene_layer;
 
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -36,8 +36,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
-import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
-import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -94,7 +92,8 @@ public class TabStripSceneLayerTest {
                         32.f,
                         32.f,
                         mOnClickHandler,
-                        R.drawable.ic_incognito);
+                        R.drawable.ic_incognito,
+                        12.f);
         mNewTabButton =
                 new TintedCompositorButton(
                         mContext,
@@ -103,7 +102,8 @@ public class TabStripSceneLayerTest {
                         32.f,
                         32.f,
                         mOnClickHandler,
-                        R.drawable.ic_new_tab_button);
+                        R.drawable.ic_new_tab_button,
+                        8.f);
         mStripLayoutTab =
                 new StripLayoutTab(
                         mContext,
@@ -168,14 +168,13 @@ public class TabStripSceneLayerTest {
                         /* backgroundResourceId= */ anyInt(),
                         /* x= */ eq(mNewTabButton.getDrawX() * mDpToPx),
                         /* y= */ eq(mNewTabButton.getDrawY() * mDpToPx),
-                        /* topPadding= */ eq(topPadding),
                         /* touchTargetOffset= */ anyFloat(),
                         /* visible= */ eq(mNewTabButton.isVisible()),
                         /* isHovered= */ eq(mNewTabButton.isHovered()),
                         /* tint= */ anyInt(),
                         /* backgroundTint= */ anyInt(),
                         /* buttonAlpha= */ anyFloat(),
-                        /* backgroundTint= */ eq(mResourceManager));
+                        /* resourceManager= */ eq(mResourceManager));
         verify(mTabStripSceneMock)
                 .updateTabStripLeftFade(
                         1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, leftPadding);

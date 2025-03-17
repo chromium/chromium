@@ -45,4 +45,14 @@ source_set("global_accelerator_listener") {
     ]
     deps += [ "//build/config/linux/dbus:buildflags" ]
   }
+
+  if (is_linux) {
+    if (use_dbus) {
+      sources += [
+        "global_accelerator_listener_linux.cc",
+        "global_accelerator_listener_linux.h",
+      ]
+      deps += [ "//components/dbus" ]
+    }
+  }
 }

@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login_status.h"
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -43,7 +44,8 @@ std::vector<int> GetLastWindowClosedContainerIds() {
 void SignOut(LogoutConfirmationController::Source source) {
   if (Shell::Get()->session_controller()->IsDemoSession() &&
       source == LogoutConfirmationController::Source::kShelfExitButton) {
-    base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromShelf"));
+    DemoSessionMetricsRecorder::RecordExitSessionAction(
+        DemoSessionMetricsRecorder::ExitSessionFrom::kShelf);
   }
   Shell::Get()->session_controller()->RequestSignOut();
 }

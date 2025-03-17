@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <tuple>
 
 #include "base/base64.h"
@@ -460,6 +461,357 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesContentSecurityPolicyBrowserTest,
                       "fetch('/csp_video.webm', {credentials: "
                       "'include'}).then(res => res.status == 200)")
                    .ExtractBool());
+}
+
+namespace {
+
+constexpr std::string_view kHostA = "a.test";
+constexpr std::string_view kHostB = "b.test";
+
+constexpr std::string_view kTopLevelPath = "/top-level.html";
+constexpr std::string_view kDefaultSandboxPath = "/sandbox.html";
+constexpr std::string_view kAllowSameSiteNoneCookiesSandboxPath =
+    "/allow-same-site-none-cookies.html";
+constexpr std::string_view kIframePath = "/iframe.html";
+constexpr std::string_view kCrossSiteIframePath = "/cross-site-iframe.html";
+constexpr std::string_view kHandledPaths[] = {
+    kTopLevelPath, kDefaultSandboxPath, kAllowSameSiteNoneCookiesSandboxPath,
+    kIframePath, kCrossSiteIframePath};
+
+std::unique_ptr<net::test_server::HttpResponse>
+ServeCSPSandboxedWithAllowSameSiteNoneCookies(
+    const net::test_server::HttpRequest& request) {
+  if (!base::Contains(kHandledPaths, request.relative_url)) {
+    return nullptr;
+  }
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
+
+  auto origin = request.headers.find(net::HttpRequestHeaders::kOrigin);
+  if (origin != request.headers.end()) {
+    http_response->AddCustomHeader("Access-Control-Allow-Origin",
+                                   origin->second);
+  }
+
+  // Decide whether to include a sandboxing header
+  if (request.relative_url == kDefaultSandboxPath) {
+    http_response->AddCustomHeader("Content-Security-Policy",
+                                   "sandbox allow-scripts");
+  } else if (request.relative_url == kAllowSameSiteNoneCookiesSandboxPath) {
+    http_response->AddCustomHeader(
+        "Content-Security-Policy",
+        "sandbox allow-scripts allow-same-site-none-cookies");
+  }
+
+  // Check if cookie was included
+  auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
+  if (it == request.headers.end()) {
+    CHECK_NE(request.relative_url, kIframePath);
+    return http_response;
+  }
+
+  http_response->AddCustomHeader("Content-Type", "text/plain");
+  http_response->set_content(it->second);
+
+  return http_response;
+}
+
+}  // namespace
+
+class AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest
+    : public ContentBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatures(
+        {net::features::kForceThirdPartyCookieBlocking,
+         net::features::kAllowSameSiteNoneCookiesInSandbox},
+        /*disabled_features=*/{});
+
+    if (include_allow_same_site_none_cookies()) {
+      sandbox_iframe_policy_ = "allow-scripts allow-same-site-none-cookies";
+      sandbox_csp_path_ = kAllowSameSiteNoneCookiesSandboxPath;
+    } else {
+      sandbox_iframe_policy_ = "allow-scripts";
+      sandbox_csp_path_ = kDefaultSandboxPath;
+    }
+  }
+
+  ~AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest() override =
+      default;
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->RegisterRequestHandler(
+        base::BindRepeating(&ServeCSPSandboxedWithAllowSameSiteNoneCookies));
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+  bool include_allow_same_site_none_cookies() const { return GetParam(); }
+  std::string_view sandbox_csp_path() const { return sandbox_csp_path_; }
+  std::string_view sandbox_iframe_policy() const {
+    return sandbox_iframe_policy_;
+  }
+
+  EvalJsResult FetchWithCredentials(RenderFrameHost* frame, const GURL& url) {
+    constexpr char script[] = R"JS(
+      fetch($1, {credentials: 'include'}).then(result => result.text());
+    )JS";
+    return EvalJs(frame, JsReplace(script, url));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::test_server::EmbeddedTestServer https_server_;
+  std::string sandbox_iframe_policy_;
+  std::string sandbox_csp_path_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return base::StringPrintf("_%s", (info.param)
+                                           ? "AllowsSameSiteNoneCookies"
+                                           : "BlocksCookiesWithDefaultSandbox");
+    });
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       FrameWithSandboxCspHeader) {
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), https_server()->GetURL(kHostA, sandbox_csp_path())));
+
+  // Validate that the frame attributes have been set accurately
+  EXPECT_NE(web_contents()->GetPrimaryMainFrame()->IsSandboxed(
+                network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies),
+            include_allow_same_site_none_cookies());
+  EXPECT_EQ(
+      web_contents()->GetPrimaryMainFrame()->GetCookieSettingOverrides().Has(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox),
+      include_allow_same_site_none_cookies());
+
+  // The cookie should be included in the fetch if and only if
+  // the `allow-same-site-none-cookies` sandbox value was provided.
+  EXPECT_EQ(FetchWithCredentials(web_contents()->GetPrimaryMainFrame(),
+                                 https_server()->GetURL(kHostA, kTopLevelPath)),
+            include_allow_same_site_none_cookies() ? "foo=bar" : "");
+}
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       CrossSiteCookiesNotAllowedBySandboxValue) {
+  GURL url =
+      https_server()->GetURL(kHostA, kAllowSameSiteNoneCookiesSandboxPath);
+  GURL cross_site_url = https_server()->GetURL(kHostB, kDefaultSandboxPath);
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostB, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetCookieSettingOverrides().Has(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
+
+  // Expect cross-site cookie to be blocked for cross-site url fetch.
+  EXPECT_EQ(FetchWithCredentials(web_contents()->GetPrimaryMainFrame(),
+                                 cross_site_url),
+            "");
+}
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       FrameWithReloadAllowsSameSiteNoneCookies) {
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), https_server()->GetURL(kHostA, sandbox_csp_path())));
+  // Initiate a frame reload, the origin for this reload is not opaque.
+  ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
+                              "window.location.reload();"));
+  WaitForLoadStop(web_contents());
+
+  // Validate that the frame attributes have been set accurately
+  EXPECT_NE(web_contents()->GetPrimaryMainFrame()->IsSandboxed(
+                network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies),
+            include_allow_same_site_none_cookies());
+  EXPECT_EQ(
+      web_contents()->GetPrimaryMainFrame()->GetCookieSettingOverrides().Has(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox),
+      include_allow_same_site_none_cookies());
+
+  // The override is used in future subresource requests from the frame if the
+  // `allow-same-site-none-cookies` sandbox value was provided.
+  EXPECT_EQ(FetchWithCredentials(web_contents()->GetPrimaryMainFrame(),
+                                 https_server()->GetURL(kHostA, kTopLevelPath)),
+            include_allow_same_site_none_cookies() ? "foo=bar" : "");
+}
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       IframeWithSandboxAttribute) {
+  GURL top_level = https_server()->GetURL(kHostA, kTopLevelPath);
+  GURL iframe_url = https_server()->GetURL(kHostA, kIframePath);
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), top_level));
+  std::string iframe_body = JsReplace(
+      R"(document.body.innerHTML =
+           '<iframe id="test" src=$1 sandbox=$2></iframe>';)",
+      iframe_url.spec(), sandbox_iframe_policy());
+  ASSERT_TRUE(
+      content::ExecJs(web_contents()->GetPrimaryMainFrame(), iframe_body));
+  WaitForLoadStop(web_contents());
+
+  // Validate the frame attributes were set accurately
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(shell(), 0);
+  EXPECT_NE(child_frame->IsSandboxed(
+                network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies),
+            include_allow_same_site_none_cookies());
+  EXPECT_EQ(child_frame->GetCookieSettingOverrides().Has(
+                net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox),
+            include_allow_same_site_none_cookies());
+
+  // The cookie should be included in the fetch if and only if
+  // the `allow-same-site-none-cookies` sandbox value was provided.
+  EXPECT_EQ(FetchWithCredentials(child_frame, top_level),
+            include_allow_same_site_none_cookies() ? "foo=bar" : "");
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+    CrossSiteIframeWithSandboxAttributeBlocksSameSiteNoneCookies) {
+  GURL top_level = https_server()->GetURL(kHostA, kTopLevelPath);
+  GURL iframe_url = https_server()->GetURL(kHostB, kCrossSiteIframePath);
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostB, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), top_level));
+  std::string iframe_body = base::StrCat(
+      {R"(document.body.innerHTML = '<iframe id="test" src=")",
+       iframe_url.spec(),
+       R"(" sandbox="allow-scripts allow-same-site-none-cookies ")",
+       R"("></iframe>';)"});
+  ASSERT_TRUE(
+      content::ExecJs(web_contents()->GetPrimaryMainFrame(), iframe_body));
+  WaitForLoadStop(web_contents());
+
+  // Verify override is not set on cross-site frame that inherits sandboxing
+  // policy and cross-site cookie is blocked
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(shell(), 0);
+  EXPECT_FALSE(child_frame->GetCookieSettingOverrides().Has(
+      net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
+  EXPECT_EQ(FetchWithCredentials(child_frame, iframe_url), "");
+}
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       IframeInheritsSandboxAllowsSameSiteNoneCookies) {
+  GURL top_level =
+      https_server()->GetURL(kHostA, kAllowSameSiteNoneCookiesSandboxPath);
+  GURL iframe_url = https_server()->GetURL(kHostA, kIframePath);
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), top_level));
+  std::string iframe_body =
+      base::StrCat({R"(document.body.innerHTML = '<iframe id="test" src=")",
+                    iframe_url.spec(), R"("></iframe>';)"});
+
+  ASSERT_TRUE(
+      content::ExecJs(web_contents()->GetPrimaryMainFrame(), iframe_body));
+  WaitForLoadStop(web_contents());
+
+  // Check the override is set by the inherited sandbox policy and the
+  // cookie is included
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(shell(), 0);
+  EXPECT_TRUE(child_frame->GetCookieSettingOverrides().Has(
+      net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
+  EXPECT_EQ(FetchWithCredentials(child_frame, iframe_url), "foo=bar");
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+    CrossSiteIframeInheritsSandboxBlocksSameSiteNoneCookies) {
+  GURL top_level =
+      https_server()->GetURL(kHostA, kAllowSameSiteNoneCookiesSandboxPath);
+  GURL iframe_url = https_server()->GetURL(kHostB, kCrossSiteIframePath);
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), top_level));
+  std::string iframe_body =
+      base::StrCat({R"(document.body.innerHTML = '<iframe id="test" src=")",
+                    iframe_url.spec(), R"("></iframe>';)"});
+  ASSERT_TRUE(
+      content::ExecJs(web_contents()->GetPrimaryMainFrame(), iframe_body));
+  WaitForLoadStop(web_contents());
+
+  // Verify override is not applied and cookie is blocked
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(shell(), 0);
+  EXPECT_FALSE(child_frame->GetCookieSettingOverrides().Has(
+      net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
+  EXPECT_EQ(FetchWithCredentials(child_frame, iframe_url), "");
+}
+
+IN_PROC_BROWSER_TEST_P(AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest,
+                       ABAIframeInheritsSandboxBlocksSameSiteNoneCookies) {
+  GURL top_level =
+      https_server()->GetURL(kHostA, kAllowSameSiteNoneCookiesSandboxPath);
+  GURL cross_site_iframe_url =
+      https_server()->GetURL(kHostB, kCrossSiteIframePath);
+  GURL grandchild_iframe_url = https_server()->GetURL(kHostA, kTopLevelPath);
+
+  ASSERT_TRUE(SetCookie(web_contents()->GetBrowserContext(),
+                        https_server()->GetURL(kHostA, kTopLevelPath),
+                        "foo=bar;SameSite=None;Secure;"));
+  ASSERT_TRUE(NavigateToURL(shell(), top_level));
+
+  std::string cross_site_iframe_body =
+      base::StrCat({R"(document.body.innerHTML = '<iframe id="test1" src=")",
+                    cross_site_iframe_url.spec(), R"("></iframe>';)"});
+  std::string grandchild_iframe_body =
+      base::StrCat({R"(document.body.innerHTML = '<iframe id="test2" src=")",
+                    grandchild_iframe_url.spec(), R"("></iframe>';)"});
+
+  // Cookie is not included for a cross-site iframe and override is not set
+  ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
+                              cross_site_iframe_body));
+  WaitForLoadStop(web_contents());
+  content::RenderFrameHost* cross_site_iframe =
+      content::ChildFrameAt(shell(), 0);
+  ASSERT_FALSE(cross_site_iframe->GetCookieSettingOverrides().Has(
+      net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
+  ASSERT_EQ(FetchWithCredentials(cross_site_iframe, cross_site_iframe_url), "");
+
+  // Grandchild frame is same-site with the top-level but override and
+  // cookie should not be included due to cross-site ancestor
+  ASSERT_TRUE(content::ExecJs(cross_site_iframe, grandchild_iframe_body));
+  WaitForLoadStop(web_contents());
+  content::RenderFrameHost* grandchild_iframe =
+      content::ChildFrameAt(cross_site_iframe, 0);
+  EXPECT_FALSE(grandchild_iframe->GetCookieSettingOverrides().Has(
+      net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox));
+  EXPECT_EQ(FetchWithCredentials(grandchild_iframe, grandchild_iframe_url), "");
 }
 
 }  // namespace content

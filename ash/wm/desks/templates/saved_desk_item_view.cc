@@ -129,7 +129,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
               .CopyAddressTo(&background_view)
               .SetPreferredSize(kPreferredSize)
               .SetUseDefaultFillLayout(true)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
+              .SetBackground(views::CreateRoundedRectBackground(
                   cros_tokens::kCrosSysSystemBaseElevated,
                   kSaveDeskCornerRadius)),
           views::Builder<views::FlexLayoutView>()
@@ -189,7 +189,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
                   views::Builder<views::Label>()
                       .CopyAddressTo(&time_view_)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                      .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+                      .SetEnabledColor(cros_tokens::kCrosSysSecondary)
                       .SetText(
                           is_admin_managed
                               ? l10n_util::GetStringUTF16(
@@ -507,7 +507,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
     return;
 
   auto* saved_desk_entry_to_replace = presenter->FindOtherEntryWithName(
-      name_view_->GetText(), saved_desk().type(), uuid());
+      std::u16string(name_view_->GetText()), saved_desk().type(), uuid());
   if (saved_desk_entry_to_replace) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
@@ -544,7 +544,7 @@ bool SavedDeskItemView::CanHandleAccelerators() const {
 }
 
 void SavedDeskItemView::UpdateSavedDeskName() {
-  saved_desk_->set_template_name(name_view_->GetText());
+  saved_desk_->set_template_name(std::u16string(name_view_->GetText()));
   OnSavedDeskNameChanged(saved_desk_->template_name());
 
   if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {
@@ -562,10 +562,6 @@ std::u16string SavedDeskItemView::ComputeAccessibleName() const {
 
   return l10n_util::GetStringFUTF16(accessible_text_id,
                                     saved_desk_->template_name());
-}
-
-void SavedDeskItemView::SetTooltipText(const std::u16string& tooltip_text) {
-  NOTREACHED();
 }
 
 void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,

@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "components/facilitated_payments/core/browser/model/secure_payload.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 
 struct CoreAccountInfo;
@@ -59,7 +60,7 @@ class FacilitatedPaymentsApiClient {
   // will be invoked.
   virtual void InvokePurchaseAction(
       CoreAccountInfo primary_account,
-      base::span<const uint8_t> action_token,
+      const SecurePayload& secure_payload,
       base::OnceCallback<void(PurchaseActionResult)> callback) = 0;
 };
 

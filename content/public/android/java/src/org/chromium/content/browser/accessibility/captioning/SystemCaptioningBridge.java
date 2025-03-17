@@ -4,7 +4,10 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for platform dependent captioning bridges. */
+@NullMarked
 public interface SystemCaptioningBridge {
     /** Interface for listening to changed from SystemCaptioningBridge. */
     public interface SystemCaptioningBridgeListener {

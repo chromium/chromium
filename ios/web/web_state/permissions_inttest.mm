@@ -127,7 +127,7 @@ class PermissionsInttest : public WebTestWithWebController {
 // not supported by gtest. Related logic and behaviors would be tested on real
 // devices in integration tests.
 #if TARGET_OS_SIMULATOR
-  
+
 namespace {
 
 // This is the timeout used to wait for the WKUIDelegate's decision handler
@@ -139,7 +139,7 @@ const base::TimeDelta kWebViewDecisionHandlingTimeout = base::Milliseconds(100);
 constexpr std::string_view kSecureUrl = "https://www.chromium.org";
 constexpr std::string_view kInsecureUrl = "http://www.chromium.org";
 
-} // namespace
+}  // namespace
 
 // Tests that web state observer gets invoked for camera only when the website
 // only requests for camera permissions and changed via web_state() setter

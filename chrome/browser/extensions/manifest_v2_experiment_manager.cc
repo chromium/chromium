@@ -4,14 +4,15 @@
 
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -120,7 +121,7 @@ ManifestV2ExperimentManagerFactory::ManifestV2ExperimentManagerFactory()
               .Build()) {
   DependsOn(ExtensionManagementFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
-  DependsOn(ExtensionSystemFactory::GetInstance());
+  DependsOn(ChromeExtensionSystemFactory::GetInstance());
   DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 

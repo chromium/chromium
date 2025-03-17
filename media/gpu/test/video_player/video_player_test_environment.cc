@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/system/sys_info.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"

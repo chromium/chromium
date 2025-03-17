@@ -29,7 +29,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/api/app_window.h"
-#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -268,7 +267,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
 
     if (options->alpha_enabled) {
-      const char* const kAllowlist[] = {
+      static constexpr const char* kAllowlist[] = {
 #if BUILDFLAG(IS_CHROMEOS)
           "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
           "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/425539
@@ -277,16 +276,11 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 #endif
           "0F42756099D914A026DADFA182871C015735DD95",  // http://crbug.com/323773
           "2D22CDB6583FD0A13758AEBE8B15E45208B4E9A7",
-          "E7E2461CE072DF036CF9592740196159E2D7C089",  // http://crbug.com/356200
-          "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",
-          "312745D9BF916161191143F6490085EEA0434997",
-          "53041A2FA309EECED01FFC751E7399186E860B2C",
           "A07A5B743CD82A1C2579DB77D353C98A23201EEF",  // http://crbug.com/413748
           "F16F23C83C5F6DAD9B65A120448B34056DD80691",
           "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"};
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
-          !SimpleFeature::IsIdInArray(extension_id(), kAllowlist,
-                                      std::size(kAllowlist))) {
+          !base::Contains(kAllowlist, extension()->hashed_id().value())) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }

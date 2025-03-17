@@ -4,10 +4,12 @@
 
 #include "services/webnn/public/cpp/webnn_errors.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
+#include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -16,9 +18,11 @@ namespace webnn {
 
 namespace {
 
+static constexpr char kInputParam[] = "input";
+
 std::string SupportedDataTypesString(SupportedDataTypes supported_types) {
   std::vector<std::string> type_strings;
-  base::ranges::transform(
+  std::ranges::transform(
       supported_types, std::back_inserter(type_strings),
       [](OperandDataType type) { return DataTypeToString(type); });
   return base::StrCat(
@@ -59,6 +63,31 @@ std::string NotSupportedArgumentTypeError(std::string_view argument_name,
                        SupportedDataTypesString(supported_types)});
 }
 
+std::string NotSupportedArgumentError(std::string_view argument_name,
+                                      const OperandDescriptor& descriptor,
+                                      SupportedTensors supported_tensors) {
+  if (!supported_tensors.data_types.Has(descriptor.data_type())) {
+    return NotSupportedArgumentTypeError(argument_name, descriptor.data_type(),
+                                         supported_tensors.data_types);
+  }
+
+  if (descriptor.Rank() < supported_tensors.ranks.min) {
+    return base::StrCat(
+        {"Unsupported rank ", base::NumberToString(descriptor.Rank()),
+         " for argument ", argument_name, " (must be at least ",
+         base::NumberToString(supported_tensors.ranks.min), ")."});
+  }
+
+  if (descriptor.Rank() > supported_tensors.ranks.max) {
+    return base::StrCat(
+        {"Unsupported rank ", base::NumberToString(descriptor.Rank()),
+         " for argument ", argument_name, " (must be at most ",
+         base::NumberToString(supported_tensors.ranks.max), ")."});
+  }
+
+  NOTREACHED();
+}
+
 std::string NotSupportedConstantTypeError(OperandDataType type,
                                           SupportedDataTypes supported_types) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
@@ -69,8 +98,12 @@ std::string NotSupportedConstantTypeError(OperandDataType type,
 std::string NotSupportedInputArgumentTypeError(
     OperandDataType type,
     SupportedDataTypes supported_types) {
-  static constexpr char kInputParam[] = "input";
   return NotSupportedArgumentTypeError(kInputParam, type, supported_types);
+}
+
+std::string NotSupportedInputArgumentError(const OperandDescriptor& descriptor,
+                                           SupportedTensors supported_tensors) {
+  return NotSupportedArgumentError(kInputParam, descriptor, supported_tensors);
 }
 
 std::string NotSupportedInputTypeError(std::string_view input_name,
@@ -103,11 +136,23 @@ std::string NotSupportedMLTensorTypeError(OperandDataType type,
                        SupportedDataTypesString(supported_types)});
 }
 
+std::string NotSupportedTensorSizeError(uint64_t byte_length,
+                                        uint64_t size_limit) {
+  return base::StrCat({"The tensor size ", base::NumberToString(byte_length),
+                       " exceeds the size limit ",
+                       base::NumberToString(size_limit)});
+}
+
 std::string GetErrorLabelPrefix(std::string_view label) {
   if (label.empty()) {
     return "";
   }
   return base::StrCat({"[", label, "] "});
+}
+
+std::string ErrorWithLabel(std::string_view label,
+                           std::string_view error_message) {
+  return base::StrCat({GetErrorLabelPrefix(label), error_message});
 }
 
 }  // namespace webnn

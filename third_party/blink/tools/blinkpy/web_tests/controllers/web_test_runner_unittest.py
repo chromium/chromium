@@ -214,7 +214,7 @@ class WebTestRunnerTests(unittest.TestCase):
                 retry_attempt=0,
             )
             rdb.sink.assert_called_with(
-                True, TestResult(test_name='skips/image.html'), expectations)
+                TestResult(test_name='skips/image.html'))
 
     def test_results_are_sinked(self):
         runner = self._runner()

@@ -182,8 +182,7 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
     backend_ = std::make_unique<PasswordStoreAndroidAccountBackend>(
         base::PassKey<class PasswordStoreAndroidAccountBackendTest>(),
         CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),
-        CreatePasswordSyncControllerDelegate(), &prefs_,
-        &password_affiliation_adapter_);
+        CreatePasswordSyncControllerDelegate(), &prefs_);
   }
 
   ~PasswordStoreAndroidAccountBackendTest() override {
@@ -452,24 +451,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAutofillableLogins).WillOnce(Return(kJobId));
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
-
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForLoginsForAccount) {
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  std::string account = "mytestemail@gmail.com";
-  backend().GetAllLoginsForAccountAsync(account, mock_reply.Get());
 
   EXPECT_CALL(
       mock_reply,
@@ -1668,26 +1649,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(mock_reply,
               Run(VariantWith<LoginsResult>(ElementsAre(android_form, form))));
   RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidAccountBackendTest,
-       DisablesAffiliationsPrefetching) {
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::RepeatingClosure(), base::DoNothing());
-  EnableSyncForTestAccount();
-
-  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
-      .WillOnce(Return(true));
-  backend().OnSyncServiceInitialized(sync_service());
-
-  // Test that the affiliation source got disabled and the data layer is never
-  // queried.
-  base::MockCallback<affiliations::AffiliationSource::ResultCallback> callback;
-  EXPECT_CALL(callback, Run(IsEmpty()));
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
-  affiliation_source_adapter()->GetFacets(callback.Get());
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,

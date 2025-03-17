@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MediaClientInterface, MediaClientReceiver, PlaybackState, TrackDefinition, TrackProvider, TrackProviderInterface} from './focus_mode.mojom-webui.js';
+import type {MediaClientInterface, TrackDefinition, TrackProviderInterface} from './focus_mode.mojom-webui.js';
+import {MediaClientReceiver, PlaybackState, TrackProvider} from './focus_mode.mojom-webui.js';
 
 const UNTRUSTED_ORIGIN = 'chrome-untrusted://focus-mode-player';
 
@@ -100,15 +101,13 @@ function onReceiveNewPlaybackStatus(newPlaybackStatus: PlaybackStatus) {
       state: getPlaybackState(newPlaybackStatus.state),
       title: currentTrack.title,
       url: currentTrack.mediaUrl,
-      clientCurrentTime: {msec: clientCurrentTime.getTime()},
+      clientCurrentTime: clientCurrentTime,
       playbackStartOffset: playbackStartOffset,
       mediaTimeCurrent: newPlaybackStatus.position,
       mediaStart: start,
       mediaEnd: end,
-      clientStartTime: {
-        msec: (initial ? newPlaybackStatus.loadTime : clientTimeLastReport)
-                  .getTime(),
-      },
+      clientStartTime: initial ? newPlaybackStatus.loadTime :
+                                 clientTimeLastReport,
       initialPlayback: initial,
     });
     playbackStatus = newPlaybackStatus;
@@ -124,7 +123,7 @@ function onReceiveNewPlaybackStatus(newPlaybackStatus: PlaybackStatus) {
 }
 
 function isEventData(data: any): boolean {
-  return data && typeof data == 'object' && typeof data.cmd == 'string';
+  return data && typeof data === 'object' && typeof data.cmd === 'string';
 }
 
 function isNextTrackEventData(data: any): boolean {
@@ -134,8 +133,8 @@ function isNextTrackEventData(data: any): boolean {
 function isPlaybackStatus(data: any): boolean {
   return (
       isEventData(data) && data.cmd == 'replyplaybackstatus' &&
-      typeof data.state == 'string' && typeof data.position == 'number' &&
-      typeof data.loadTime == 'object' && data.loadTime instanceof Date);
+      typeof data.state === 'string' && typeof data.position === 'number' &&
+      typeof data.loadTime === 'object' && data.loadTime instanceof Date);
 }
 
 function isMediaErrorEventData(data: any): boolean {
@@ -218,7 +217,7 @@ class MediaClientImpl implements MediaClientInterface {
   }
 }
 
-globalThis.addEventListener('load', async () => {
+globalThis.addEventListener('load', () => {
   MediaClientImpl.init();
 });
 

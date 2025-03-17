@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -38,14 +40,12 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     private FacilitatedPaymentsSequenceView mCurrentScreen;
     // The new screen to be shown replacing {@link #mCurrentScreen}.
     private FacilitatedPaymentsSequenceView mNextScreen;
-    private Callback<Integer> mDismissHandler;
     private Callback<Integer> mUiEventListener;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
-                    assert mDismissHandler != null;
                     assert mUiEventListener != null;
                     switch (reason) {
                         case StateChangeReason.BACK_PRESS: // Intentional fallthrough.
@@ -63,7 +63,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                             mUiEventListener.onResult(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
                             break;
                     }
-                    mDismissHandler.onResult(reason);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                 }
             };
@@ -125,15 +124,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
             mBottomSheetController.hideContent(this, true);
             mCurrentScreen = null;
         }
-    }
-
-    /**
-     * Sets a new listener that reacts to bottom sheet dismissal.
-     *
-     * @param dismissHandler A {@link Callback<Integer>}.
-     */
-    void setDismissHandler(Callback<Integer> dismissHandler) {
-        mDismissHandler = dismissHandler;
     }
 
     /**
@@ -212,19 +202,19 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
         assert false : "This method should not be called";
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.facilitated_payments_payment_methods_bottom_sheet_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.facilitated_payments_payment_methods_bottom_sheet_closed;
     }
 }

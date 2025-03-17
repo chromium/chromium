@@ -4,12 +4,13 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
@@ -75,7 +76,6 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     return {.status = Result::Status::kTrusted};
   }
 
-  // TODO(crbug.com/292227137): Migrate Shimless RMA app to LaCrOS.
   if (ash::IsShimlessRmaAppBrowserContext(&*profile_) &&
       chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
     return {.status = Result::Status::kTrusted};
@@ -103,7 +103,7 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
     NOTREACHED();
   }
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       pref->GetValue()->GetList(),
       [&web_bundle_id](const base::Value& force_install_entry) {
         auto options =
@@ -116,8 +116,8 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST
     base::flat_set<web_package::SignedWebBundleId> trusted_web_bundle_ids) {
   DCHECK(
-      base::ranges::none_of(trusted_web_bundle_ids,
-                            &web_package::SignedWebBundleId::is_for_proxy_mode))
+      std::ranges::none_of(trusted_web_bundle_ids,
+                           &web_package::SignedWebBundleId::is_for_proxy_mode))
       << "Cannot trust Web Bundle IDs of type ProxyMode";
 
   GetTrustedWebBundleIdsForTesting() =  // IN-TEST

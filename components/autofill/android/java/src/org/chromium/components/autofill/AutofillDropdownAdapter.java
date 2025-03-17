@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -18,10 +20,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.DropdownDividerDrawable;
 import org.chromium.ui.DropdownItem;
 
@@ -29,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Dropdown item adapter for the AutofillPopup. */
+@NullMarked
 public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     private final Context mContext;
     private final Set<Integer> mSeparators;
@@ -55,7 +59,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
     private boolean checkAreAllItemsEnabled() {
         for (int i = 0; i < getCount(); i++) {
-            DropdownItem item = getItem(i);
+            DropdownItem item = assumeNonNull(getItem(i));
             if (item.isEnabled() && !item.isGroupHeader()) {
                 return false;
             }
@@ -64,15 +68,16 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         View layout = convertView;
-        if (convertView == null) {
+        if (layout == null) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             layout = inflater.inflate(R.layout.autofill_dropdown_item, null);
             layout.setBackground(new DropdownDividerDrawable(/* backgroundColor= */ null));
         }
 
         DropdownItem item = getItem(position);
+        assert item != null;
 
         int height =
                 mContext.getResources()
@@ -121,7 +126,9 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         // Layout of the main label view.
         TextView labelView =
-                populateLabelView(layout, R.id.dropdown_label, item.getLabel(), item.isEnabled());
+                assumeNonNull(
+                        populateLabelView(
+                                layout, R.id.dropdown_label, item.getLabel(), item.isEnabled()));
         TextView secondaryLabelView =
                 populateLabelView(
                         layout,
@@ -212,12 +219,13 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     @Override
     public boolean isEnabled(int position) {
         if (position < 0 || position >= getCount()) return false;
-        DropdownItem item = getItem(position);
+        DropdownItem item = assumeNonNull(getItem(position));
         return item.isEnabled() && !item.isGroupHeader();
     }
 
     /**
      * Sets the text and the enabled state for the dropdown labels.
+     *
      * @param item the DropdownItem for this row.
      * @param layout the View in which the label can be found.
      * @param viewId the ID for the label's view.
@@ -225,8 +233,8 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
      * @param isEnabled the android:enabled state of the label.
      * @return the View.
      */
-    private TextView populateLabelView(
-            View layout, int viewId, CharSequence label, boolean isEnabled) {
+    private @Nullable TextView populateLabelView(
+            View layout, int viewId, @Nullable CharSequence label, boolean isEnabled) {
         TextView labelView = layout.findViewById(viewId);
         if (TextUtils.isEmpty(label)) {
             labelView.setVisibility(View.GONE);
@@ -241,12 +249,12 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     /**
      * Sets the drawable in the given ImageView to the resource identified in the item, or sets
      * iconView to visibility GONE if no icon is given.
+     *
      * @param iconView the ImageView which should be modified.
      * @param item the DropdownItem for this row.
      * @return |iconView| if it has been set to be visible; null otherwise.
      */
-    @Nullable
-    private ImageView populateIconView(ImageView iconView, DropdownItem item) {
+    private @Nullable ImageView populateIconView(ImageView iconView, DropdownItem item) {
         // If there is no icon, remove the icon view.
         if (item.getIconDrawable() == null) {
             iconView.setVisibility(View.GONE);

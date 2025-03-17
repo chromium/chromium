@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SYNC_SYNC_PASSPHRASE_DIALOG_H_
 #define CHROME_BROWSER_UI_SYNC_SYNC_PASSPHRASE_DIALOG_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -23,11 +23,11 @@ class Browser;
 // `decrypt_data_callback` should return whether the passphrease was correct.
 void ShowSyncPassphraseDialog(
     Browser& browser,
-    base::RepeatingCallback<bool(const std::u16string&)> decrypt_data_callback);
+    base::RepeatingCallback<bool(std::u16string_view)> decrypt_data_callback);
 
 // Decrypts sync data. Returns true in case of success.
 // When this returns false, the user will be prompted to try again.
 bool SyncPassphraseDialogDecryptData(syncer::SyncService* sync_service,
-                                     const std::u16string& passphrase);
+                                     std::u16string_view passphrase);
 
 #endif  // CHROME_BROWSER_UI_SYNC_SYNC_PASSPHRASE_DIALOG_H_

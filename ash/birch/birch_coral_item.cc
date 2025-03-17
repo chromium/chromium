@@ -119,10 +119,16 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
 
   auto* birch_coral_provider = BirchCoralProvider::Get();
 
+  std::vector<coral::mojom::EntityPtr> initial_entities;
+
   switch (source_) {
     case CoralSource::kPostLogin: {
       coral::mojom::GroupPtr group =
           birch_coral_provider->ExtractGroupById(group_id_);
+
+      // Cache the group entities.
+      initial_entities = mojo::Clone(group->entities);
+
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
       BirchCoralProvider::Get()->OnPostLoginClusterRestored();
       base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
@@ -156,6 +162,10 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
 
       coral::mojom::GroupPtr group =
           birch_coral_provider->ExtractGroupById(group_id_);
+
+      // Cache the group entities.
+      initial_entities = mojo::Clone(group->entities);
+
       Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group),
                                                              source_desk);
 
@@ -174,6 +184,11 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
     case CoralSource::kUnknown:
       NOTREACHED() << "Invalid response with unknown source.";
   }
+
+  // Assign the initial entities to the current active desk.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->GetDeskAtIndex(desks_controller->GetActiveDeskIndex())
+      ->set_tab_app_entities(std::move(initial_entities));
 }
 
 BirchItemType BirchCoralItem::GetType() const {

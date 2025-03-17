@@ -24,6 +24,7 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -33,9 +34,6 @@ namespace subresource_filter {
 namespace {
 
 using content_settings::CookieSettings;
-
-const char kChildFrameNavigationDeferredForAdTaggingHistogram[] =
-    "PageLoad.FrameCounts.AdFrames.PerFrame.DeferredForTagging";
 
 }  // namespace
 
@@ -134,9 +132,6 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
   EXPECT_FALSE(navigation_simulator()->IsDeferred());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_simulator()->GetLastThrottleCheckResult().action());
-
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, false, 1);
 }
 
 TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
@@ -153,9 +148,6 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
 
   // The navigation should be deferred, since a 3P cookie exception applies.
   EXPECT_TRUE(navigation_simulator()->IsDeferred());
-
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, true, 1);
 }
 
 TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
@@ -176,21 +168,12 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_simulator()->GetLastThrottleCheckResult().action());
 
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, false, 1);
-
   // Redirect the navigation to a URL that a 3P cookie exception applies to
   // (under the current top-level origin).
   navigation_simulator()->Redirect(GURL("https://excepted-child-frame.test"));
 
   // The navigation should be deferred.
   EXPECT_TRUE(navigation_simulator()->IsDeferred());
-
-  histogram_tester.ExpectTotalCount(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, 2);
-  histogram_tester.ExpectBucketCount(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, true,
-      1);  // from excepted-child-frame.test
 }
 
 class SafeBrowsingChildNavigationThrottleExceptionCheckDisabledTest
@@ -236,9 +219,6 @@ TEST_F(SafeBrowsingChildNavigationThrottleExceptionCheckDisabledTest,
   // The navigation should be deferred, even though no 3P cookie exception
   // applies, since exception checking is disabled.
   EXPECT_TRUE(navigation_simulator()->IsDeferred());
-
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, true, 1);
 }
 
 }  // namespace subresource_filter

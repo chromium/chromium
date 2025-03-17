@@ -36,10 +36,6 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/desk_ash.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
@@ -220,14 +216,6 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
     if (auto* desk_events_router = GetDeskEventsRouter()) {
       desk_events_router->OnDeskAdded(desk->uuid(), from_undo);
     }
-
-    // CrosapiManager is always constructed even if lacros flag is disabled but
-    // it's not constructed in unit test.
-    if (!crosapi::CrosapiManager::IsInitialized()) {
-      return;
-    }
-    crosapi::CrosapiManager::Get()->crosapi_ash()->desk_ash()->NotifyDeskAdded(
-        desk->uuid(), from_undo);
   }
 
   void OnDeskRemovalFinalized(const base::Uuid& uuid) override {
@@ -235,14 +223,6 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
     if (auto* desk_events_router = GetDeskEventsRouter()) {
       desk_events_router->OnDeskRemoved(uuid);
     }
-
-    if (!crosapi::CrosapiManager::IsInitialized()) {
-      return;
-    }
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->desk_ash()
-        ->NotifyDeskRemoved(uuid);
   }
 
   void OnDeskActivationChanged(const ash::Desk* activated,
@@ -251,14 +231,6 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
       desk_events_router->OnDeskSwitched(activated->uuid(),
                                          deactivated->uuid());
     }
-
-    if (!crosapi::CrosapiManager::IsInitialized()) {
-      return;
-    }
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->desk_ash()
-        ->NotifyDeskSwitched(activated->uuid(), deactivated->uuid());
   }
 
  private:

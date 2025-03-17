@@ -22,6 +22,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
 #include "base/auto_reset.h"
@@ -72,6 +77,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -86,10 +92,6 @@ SVGElement::SVGElement(const QualifiedName& tag_name,
           MakeGarbageCollected<SVGAnimatedString>(this,
                                                   html_names::kClassAttr)) {
   SetHasCustomStyleCallbacks();
-}
-
-SVGElement::~SVGElement() {
-  DCHECK(isConnected() || !HasRelativeLengths());
 }
 
 void SVGElement::DetachLayoutTree(bool performing_reattach) {
@@ -343,27 +345,31 @@ Node::InsertionNotificationRequest SVGElement::InsertedInto(
 
 void SVGElement::RemovedFrom(ContainerNode& root_parent) {
   bool was_in_document = root_parent.isConnected();
-  auto* root_parent_svg_element = DynamicTo<SVGElement>(
-      root_parent.IsShadowRoot() ? root_parent.ParentOrShadowHostElement()
-                                 : &root_parent);
 
-  if (was_in_document && HasRelativeLengths()) {
-    // The root of the subtree being removed should take itself out from its
-    // parent's relative length set. For the other nodes in the subtree we don't
-    // need to do anything: they will get their own removedFrom() notification
-    // and just clear their sets.
-    if (root_parent_svg_element && !ParentOrShadowHostElement()) {
-      DCHECK(root_parent_svg_element->elements_with_relative_lengths_.Contains(
-          this));
-      root_parent_svg_element->UpdateRelativeLengthsInformation(false, this);
+  if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    auto* root_parent_svg_element = DynamicTo<SVGElement>(
+        root_parent.IsShadowRoot() ? root_parent.ParentOrShadowHostElement()
+                                   : &root_parent);
+
+    if (was_in_document && HasRelativeLengths()) {
+      // The root of the subtree being removed should take itself out from its
+      // parent's relative length set. For the other nodes in the subtree we
+      // don't need to do anything: they will get their own removedFrom()
+      // notification and just clear their sets.
+      if (root_parent_svg_element && !ParentOrShadowHostElement()) {
+        DCHECK(
+            root_parent_svg_element->elements_with_relative_lengths_.Contains(
+                this));
+        root_parent_svg_element->UpdateRelativeLengthsInformation(false, this);
+      }
+
+      elements_with_relative_lengths_.clear();
     }
 
-    elements_with_relative_lengths_.clear();
+    DCHECK(!root_parent_svg_element ||
+           !root_parent_svg_element->elements_with_relative_lengths_.Contains(
+               this));
   }
-
-  DCHECK(
-      !root_parent_svg_element ||
-      !root_parent_svg_element->elements_with_relative_lengths_.Contains(this));
 
   Element::RemovedFrom(root_parent);
 
@@ -477,6 +483,10 @@ void SVGElement::UpdateRelativeLengthsInformation(
     SVGElement* client_element) {
   DCHECK(client_element);
 
+  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    return;
+  }
+
   // Through an unfortunate chain of events, we can end up calling this while a
   // subtree is being removed, and before the subtree has been properly
   // "disconnected". Hence check the entire ancestor chain to avoid propagating
@@ -530,6 +540,10 @@ void SVGElement::UpdateRelativeLengthsInformation(
 }
 
 void SVGElement::InvalidateRelativeLengthClients() {
+  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    return;
+  }
+
   if (!isConnected())
     return;
 
@@ -611,10 +625,11 @@ void SVGElement::RemoveInstance(SVGElement* instance) {
 }
 
 static HeapHashSet<WeakMember<SVGElement>>& EmptyInstances() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapHashSet<WeakMember<SVGElement>>>, empty_instances,
-      (MakeGarbageCollected<HeapHashSet<WeakMember<SVGElement>>>()));
-  return *empty_instances;
+  using EmptyInstanceHolder =
+      DisallowNewWrapper<HeapHashSet<WeakMember<SVGElement>>>;
+  DEFINE_STATIC_LOCAL(Persistent<EmptyInstanceHolder>, empty_instances,
+                      (MakeGarbageCollected<EmptyInstanceHolder>()));
+  return empty_instances->Value();
 }
 
 const HeapHashSet<WeakMember<SVGElement>>& SVGElement::InstancesForElement()
@@ -782,7 +797,7 @@ bool UseCSSURIValueCacheForProperty(CSSPropertyID property_id) {
 }  // namespace
 
 void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& style,
     CSSPropertyID property_id,
     const AtomicString& value) {
   if (UseCSSURIValueCacheForProperty(property_id) &&
@@ -799,9 +814,9 @@ void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
                                               *cached_value);
     } else {
       AddPropertyToPresentationAttributeStyle(style, property_id, value);
-      if (unsigned count = style->PropertyCount()) {
+      if (unsigned count = style.size()) {
         // Cache the value if it was added.
-        const CSSPropertyValue& last_decl = style->PropertyAt(--count);
+        const CSSPropertyValue& last_decl = style[--count];
         if (last_decl.PropertyID() == property_id) {
           engine.AddCachedFillOrClipPathURIValue(value, last_decl.Value());
         }
@@ -815,7 +830,7 @@ void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
 void SVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   CSSPropertyID property_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), name);
   if (property_id > CSSPropertyID::kInvalid) {
@@ -1061,19 +1076,27 @@ SVGElement::GetPresentationAttributeStyleForDirectUpdate() {
   if (!GetLayoutObject()) {
     return nullptr;
   }
-  auto& element_data = EnsureUniqueElementData();
+  auto* element_data = GetElementData();
+  if (!element_data) {
+    return nullptr;
+  }
   // If _something_ has already marked our presentation attribute style as
   // dirty, just roll with that and let the normal update via
   // CollectStyleForPresentationAttribute() handle it.
-  if (element_data.presentation_attribute_style_is_dirty()) {
+  if (element_data->presentation_attribute_style_is_dirty()) {
     return nullptr;
   }
   // Ditto if no property value set has been created yet.
-  if (!element_data.PresentationAttributeStyle()) {
+  if (!element_data->PresentationAttributeStyle()) {
     return nullptr;
   }
+  if (!element_data->presentation_attribute_style_->IsMutable()) {
+    element_data = &EnsureUniqueElementData();
+    element_data->presentation_attribute_style_ =
+        element_data->presentation_attribute_style_->MutableCopy();
+  }
   return To<MutableCSSPropertyValueSet>(
-      element_data.presentation_attribute_style_.Get());
+      element_data->presentation_attribute_style_.Get());
 }
 
 void SVGElement::UpdatePresentationAttributeStyle(
@@ -1128,7 +1151,7 @@ void SVGElement::UpdatePresentationAttributeStyle(
 
 void SVGElement::AddAnimatedPropertyToPresentationAttributeStyle(
     const SVGAnimatedPropertyBase& property,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   DCHECK(property.HasPresentationAttributeMapping());
   // Apply values from animating attributes that are also presentation
   // attributes, but do not have a corresponding content attribute.
@@ -1380,9 +1403,11 @@ void SVGElement::AddReferenceTo(SVGElement* target_element) {
 SVGElementSet& SVGElement::GetDependencyTraversalVisitedSet() {
   // This strong reference is safe, as it is guaranteed that this set will be
   // emptied at the end of recursion in NotifyIncomingReferences.
-  DEFINE_STATIC_LOCAL(Persistent<SVGElementSet>, invalidating_dependencies,
-                      (MakeGarbageCollected<SVGElementSet>()));
-  return *invalidating_dependencies;
+  using SVGElementSetHolder = DisallowNewWrapper<SVGElementSet>;
+  DEFINE_STATIC_LOCAL(Persistent<SVGElementSetHolder>,
+                      invalidating_dependencies,
+                      (MakeGarbageCollected<SVGElementSetHolder>()));
+  return invalidating_dependencies->Value();
 }
 
 void SVGElement::RemoveAllIncomingReferences() {
@@ -1441,7 +1466,7 @@ void SVGElement::SynchronizeListOfSVGAttributes(
 
 void SVGElement::AddAnimatedPropertiesToPresentationAttributeStyle(
     const base::span<const SVGAnimatedPropertyBase*> properties,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   for (const SVGAnimatedPropertyBase* property : properties) {
     AddAnimatedPropertyToPresentationAttributeStyle(*property, style);
   }

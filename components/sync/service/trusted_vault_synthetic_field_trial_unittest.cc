@@ -144,7 +144,7 @@ TEST(TrustedVaultSyntheticFieldTrialTest,
   // Expected values have been computed empirically. They are all between zero
   // and one as expected and appear to be uniformly distributed.
   struct {
-    GaiaId gaia_id;
+    std::string gaia_id_str;
     std::string salt;
     float expected_value;
   } test_cases[] = {
@@ -162,9 +162,9 @@ TEST(TrustedVaultSyntheticFieldTrialTest,
   for (const auto& test_case : test_cases) {
     EXPECT_THAT(TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
                     DeterministicFloatBetweenZeroAndOneFromGaiaIdForTest(
-                        test_case.gaia_id, test_case.salt),
+                        GaiaId(test_case.gaia_id_str), test_case.salt),
                 FloatNear(test_case.expected_value, kEpsilon))
-        << " for " << test_case.gaia_id << " and salt " << test_case.salt;
+        << " for " << test_case.gaia_id_str << " and salt " << test_case.salt;
   }
 }
 
@@ -176,7 +176,7 @@ TEST(TrustedVaultSyntheticFieldTrialTest,
   for (int i = 0; i < kNumGaiaIdsToTest; i++) {
     if (TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
             ShouldSampleGaiaIdWithTenPercentProbabilityForTest(
-                base::StringPrintf("gaia_id_%d", i))) {
+                GaiaId(base::StringPrintf("gaia_id_%d", i)))) {
       num_sampled_gaia_ids++;
     }
   }
@@ -201,7 +201,7 @@ TEST(TrustedVaultSyntheticFieldTrialTest,
 
   // String chosen from previous tests, given the convenient float value
   // computed from it.
-  const std::string kGaiaId = "gaia_id_49";
+  const GaiaId kGaiaId("gaia_id_49");
   ASSERT_TRUE(TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
                   ShouldSampleGaiaIdWithTenPercentProbabilityForTest(kGaiaId));
   ASSERT_THAT(TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
@@ -390,7 +390,7 @@ TEST(TrustedVaultSyntheticFieldTrialTest,
           kTypeIndex));
 
   // String chosen from previous tests.
-  const std::string kGaiaId = "gaia_id_1";
+  const GaiaId kGaiaId("gaia_id_1");
   ASSERT_FALSE(TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
                    ShouldSampleGaiaIdWithTenPercentProbabilityForTest(kGaiaId));
 

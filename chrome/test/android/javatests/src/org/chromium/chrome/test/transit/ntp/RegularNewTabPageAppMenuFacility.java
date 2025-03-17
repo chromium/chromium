@@ -5,11 +5,12 @@
 package org.chromium.chrome.test.transit.ntp;
 
 import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
+import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 
 /** The app menu shown when pressing ("...") in a regular NTP. */
 public class RegularNewTabPageAppMenuFacility
         extends PageAppMenuFacility<RegularNewTabPageStation> {
-    public Item<Void> mQuickDelete;
+    public Item<QuickDeleteDialogFacility> mQuickDelete;
 
     @Override
     protected void declareItems(ItemsBuilder items) {
@@ -19,7 +20,9 @@ public class RegularNewTabPageAppMenuFacility
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
 
         declareStubMenuItem(items, HISTORY_ID);
-        mQuickDelete = declareStubMenuItem(items, DELETE_BROWSING_DATA_ID);
+        mQuickDelete =
+                declareMenuItemToFacility(
+                        items, DELETE_BROWSING_DATA_ID, this::createQuickDeleteDialogFacility);
 
         declareStubMenuItem(items, DOWNLOADS_ID);
         declareStubMenuItem(items, BOOKMARKS_ID);
@@ -27,5 +30,10 @@ public class RegularNewTabPageAppMenuFacility
 
         mSettings = declareMenuItemToStation(items, SETTINGS_ID, this::createSettingsStation);
         declareStubMenuItem(items, HELP_AND_FEEDBACK_ID);
+    }
+
+    /** Select "Clear browsing data" from the app menu. */
+    public QuickDeleteDialogFacility clearBrowsingData() {
+        return mQuickDelete.scrollToAndSelect();
     }
 }

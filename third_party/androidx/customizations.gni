@@ -24,6 +24,8 @@ template("_androidx_prebuilt") {
                "androidx_coordinatorlayout_coordinatorlayout_java") {
       # Reduce binary size. https:crbug.com/954584
       ignore_proguard_configs = true
+    } else if (target_name == "androidx_appcompat_appcompat_java") {
+      deps += [ ":core_overrides_java" ]
     } else if (target_name == "androidx_core_core_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
@@ -36,7 +38,10 @@ template("_androidx_prebuilt") {
       ignore_proguard_configs = true
 
       # https://crbug.com/1414452
-      jar_excluded_patterns = [ "androidx/core/os/BuildCompat*" ]
+      jar_excluded_patterns = [
+        "androidx/core/os/BuildCompat*",
+        "androidx/core/content/res/TypedArrayUtils*",
+      ]
       public_deps = [ "//third_party/androidx/local_modifications/buildcompat:buildcompat_java" ]
 
       if (!enable_java_asserts) {
@@ -98,13 +103,30 @@ template("_androidx_prebuilt") {
         "//android_webview/tools/system_webview_shell:*",
         "//third_party/android_deps:*",
       ]
-    } else if (target_name == "androidx_room_room_guava_java") {
-      deps -= [ ":androidx_room_room_runtime_jvm_java" ]
-      deps += [ ":androidx_room_room_runtime_android_java" ]
-    } else if (target_name == "androidx_sqlite_sqlite_framework_android_java" ||
-               target_name == "androidx_room_room_runtime_android_java") {
-      deps -= [ ":androidx_sqlite_sqlite_jvm_java" ]
-      deps += [ ":androidx_sqlite_sqlite_android_java" ]
+    } else if (target_name == "androidx_datastore_datastore_core_android_java") {
+      ignore_native_libraries = true
+    } else if (target_name == "androidx_compose_ui_ui_android_java") {
+      jar_excluded_patterns = [
+        "androidx/compose/ui/graphics/vector/compat/AndroidVectorParser*",
+        "androidx/compose/ui/graphics/vector/compat/XmlVectorParser*",
+      ]
+    } else if (target_name == "androidx_compose_ui_ui_java") {
+      public_deps = [ ":compose_ui_overrides_java" ]
+    } else if (filter_include([ target_name ], [ "androidx_xr_*" ]) != []) {
+      # Configs are overly broad.
+      ignore_proguard_configs = true
+      proguard_configs = [ "androidx_xr.flags" ]
+
+      # We do not use the APIs that require the native code.
+      ignore_native_libraries = true
+
+      # It adds:
+      #   <uses-native-library android:name="libopenxr.google.so" android:required="false"/>
+      #   <uses-library android:name="com.android.extensions.xr" android:required="false"/>
+      # We do not need the uses-native-library, but do need the uses-library.
+      # However, we add it via the dep onto android_xr_extensions_java.
+      ignore_manifest = true
+      deps += [ "//third_party/android_sdk:android_xr_extensions_java" ]
     }
   }
 
@@ -141,6 +163,11 @@ template("androidx_android_aar_prebuilt") {
     if (target_name == "androidx_pdf_pdf_viewer_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
+    }
+
+    if (target_name == "androidx_pdf_pdf_viewer_fragment_java") {
+      jar_excluded_patterns =
+          [ "androidx/pdf/viewer/fragment/PdfViewerFragment*" ]
     }
   }
 }

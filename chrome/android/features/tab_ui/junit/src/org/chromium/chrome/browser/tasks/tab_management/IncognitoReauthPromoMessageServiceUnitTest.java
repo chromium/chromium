@@ -24,8 +24,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.INCOG
 import android.content.Context;
 import android.os.Build.VERSION_CODES;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,7 +55,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -120,7 +117,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissMessage_SendsInvalidNotification_AndDisablesPromo() {
         createIncognitoReauthPromoMessageService();
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
@@ -140,7 +136,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissMessageWhenGTSEnabled_RecordsCorrectImpressionMetric() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -156,7 +151,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPreparePromoMessage_Fails_WhenReauthIsAlreadyEnabled() {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
@@ -170,7 +164,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPreparePromoMessage_Fails_WhenReauthFeatureNotAvailable() {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
@@ -187,7 +180,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPreparePromoMessage_Fails_ScreenLockNotEnabled() {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
@@ -205,7 +197,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPreparePromoMessage_Succeeds() {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
@@ -220,7 +211,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddObserver_Succeeds_AndNotifiesObserverOfMessagePrepared() {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
@@ -242,7 +232,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIncreasePromoCount_IncreaseTheCountBy1() {
         createIncognitoReauthPromoMessageService();
 
@@ -253,7 +242,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIncreasePromoCount_DisablesCardIfCountExceeds() {
         createIncognitoReauthPromoMessageService();
         mSharedPreferenceManager.writeInt(
@@ -265,7 +253,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIncreasePromoCount_DoesNotDisablesCardIfCountBelowThreshold() {
         createIncognitoReauthPromoMessageService();
         int currentCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
@@ -276,7 +263,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPreparePromoMessage_Fails_AfterMaxShowCountReached() {
         createIncognitoReauthPromoMessageService();
         assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount == 10
@@ -309,7 +295,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPreparePromoMessage_DismissesCard_WhenShowCountExceeds() {
         createIncognitoReauthPromoMessageService();
         // Exceed the max count.
@@ -329,7 +314,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void
             testReviewActionProvider_triggersIncognitoReauth_Success_EnablesPref_And_Dismisses() {
         createIncognitoReauthPromoMessageService();
@@ -381,7 +365,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testReviewActionProvider_Dismisses_IfReauthIsEnabled() {
         createIncognitoReauthPromoMessageService();
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
@@ -406,7 +389,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void
             testReviewActionProvider_SendsInvalidNotification_ButDoNotDisable_IfAnyOtherIssue() {
         createIncognitoReauthPromoMessageService();
@@ -432,7 +414,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResumeAction_DismissesPromo_IfReauthIsEnabled() {
         createIncognitoReauthPromoMessageService();
 
@@ -461,7 +442,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResumeAction_SendsInvalidNotification_ButDoNotDisable_IfAnyOtherIssue() {
         createIncognitoReauthPromoMessageService();
 
@@ -487,7 +467,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResumeAction_FiresMessageReady_AfterEnablingPromoAgain_ForOnResume() {
         createIncognitoReauthPromoMessageService();
 

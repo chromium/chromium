@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Kosketuksella täytettävien kirjautumistietojen lista avattu koko näytön korkeudella.</translation>
 <translation id="5591247451101092906">Käytetäänkö tallennettua salasanaa vai avainkoodia?</translation>
 <translation id="5624120631404540903">Hallitse salasanoja</translation>
+<translation id="592182999816790476">Salasana (<ph name="USERNAME" />) tallennettu: <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Avainkoodi: <ph name="USERNAME" />, käytä näytön lukitusta</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Uusi salasana tälle sivustolle}other{Uusia salasanoja tälle sivustolle}}</translation>
 <translation id="7286867818472074330">Valitse avainkoodi</translation>

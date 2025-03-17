@@ -210,7 +210,6 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
           content::PreloadingType::kPrerender, std::move(same_url_matcher),
-          /*planned_max_preloading_type=*/std::nullopt,
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // BookmarkBar only allows https protocol.
@@ -251,7 +250,10 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       // Please see crbug and its doc for more details.
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
-      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
+      content::PreloadingHoldbackStatus::kUnspecified,
+      content::PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
+      preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
 
@@ -281,7 +283,6 @@ PrerenderManager::StartPrerenderNewTabPage(
       preloading_data->AddPreloadingAttempt(
           predictor, content::PreloadingType::kPrerender,
           std::move(same_url_matcher),
-          /*planned_max_preloading_type=*/std::nullopt,
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // New Tab Page only allow https protocol.
@@ -321,7 +322,10 @@ PrerenderManager::StartPrerenderNewTabPage(
       // Please see crbug and its doc for more details.
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
-      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
+      content::PreloadingHoldbackStatus::kUnspecified,
+      content::PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
+      preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
 
@@ -385,7 +389,10 @@ PrerenderManager::StartPrerenderDirectUrlInput(
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       /*should_warm_up_compositor=*/true,
       /*should_prepare_paint_tree=*/false,
-      content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt,
+      content::PreloadingHoldbackStatus::kUnspecified,
+      content::PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
+      &preloading_attempt,
       /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{});
 
   if (direct_url_input_prerender_handle_) {
@@ -426,6 +433,9 @@ void PrerenderManager::StartPrerenderSearchResult(
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/true,
           /*should_prepare_paint_tree=*/true, holdback_status_override,
+          content::PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/content::PreloadingType::
+                  kPrerender),
           preloading_attempt.get(), std::move(url_match_predicate),
           /*prerender_navigation_handle_callback=*/{});
 

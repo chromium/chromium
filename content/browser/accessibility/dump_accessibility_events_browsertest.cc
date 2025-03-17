@@ -255,9 +255,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-button-expand.html"));
 }
 
-// crbug.com/1142637: disabled due to missing invalidation causing flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaComboBoxCollapse) {
+                       AccessibilityEventsAriaComboBoxCollapse) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-collapse.html"));
 }
 
@@ -279,9 +278,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-controls-changed.html"));
 }
 
-// TODO(nektar): Re-enable this test after kValueChanged is removed from Blink.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaComboBoxUneditable) {
+                       AccessibilityEventsAriaComboBoxUneditable) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-uneditable.html"));
 }
 
@@ -395,30 +393,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus-reference-target.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win & mac
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityEventsAriaComboBoxFocus \
-  DISABLED_AccessibilityEventsAriaComboBoxFocus
-#else
-#define MAYBE_AccessibilityEventsAriaComboBoxFocus \
-  AccessibilityEventsAriaComboBoxFocus
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAriaComboBoxFocus) {
+                       AccessibilityEventsAriaComboBoxFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-focus.html"));
 }
 
-// TODO(crbug.com/41384724): Fails on Windows.
-// TODO(crbug.com/41448628): Flaky on Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityEventsAriaComboBoxDelayAddList \
-  DISABLED_AccessibilityEventsAriaComboBoxDelayAddList
-#else
-#define MAYBE_AccessibilityEventsAriaComboBoxDelayAddList \
-  AccessibilityEventsAriaComboBoxDelayAddList
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAriaComboBoxDelayAddList) {
+                       AccessibilityEventsAriaComboBoxDelayAddList) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-delay-add-list.html"));
 }
 
@@ -428,15 +409,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(crbug.com/40844027): Flaky on win
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAriaComboBoxNext \
-  DISABLED_AccessibilityEventsAriaComboBoxNext
-#else
-#define MAYBE_AccessibilityEventsAriaComboBoxNext \
-  AccessibilityEventsAriaComboBoxNext
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAriaComboBoxNext) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       AccessibilityEventsAriaComboBoxNext) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-next.html"));
 }
 
@@ -699,10 +673,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("expanded-changed.html"));
 }
 
-// TODO(crbug.com/40897549): disabled on UIA.
 // TODO(crbug.com/40897744): Failing on Mac.
 // TODO(crbug.com/40897744): Actually failing everywhere. Disabled.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        DISABLED_AccessibilityEventsPopoverExpandedChanged) {
   RunEventTest(FILE_PATH_LITERAL("popover-expanded-changed.html"));
 }
@@ -806,22 +779,14 @@ IN_PROC_BROWSER_TEST_P(
       FILE_PATH_LITERAL("live-region-change-on-freshly-unignored-node.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsMenuListCollapse \
-  DISABLED_AccessibilityEventsMenuListCollapse
-#else
-#define MAYBE_AccessibilityEventsMenuListCollapse \
-  AccessibilityEventsMenuListCollapse
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsMenuListCollapse) {
+                       AccessibilityEventsMenuListCollapse) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       // TODO(crbug.com/40924143): Re-enable this test
-                       DISABLED_AccessibilityEventsMenuListCollapseNext) {
+// TODO(crbug.com/40924143): Re-enable this test
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       AccessibilityEventsMenuListCollapseNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
 }
 
@@ -890,15 +855,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("multiple-aria-properties-changed.html"));
 }
 
-// Flaky on Windows: https://crbug.com/1078490.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsNameChange \
-  DISABLED_AccessibilityEventsNameChange
-#else
-#define MAYBE_AccessibilityEventsNameChange AccessibilityEventsNameChange
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsNameChange) {
+                       AccessibilityEventsNameChange) {
   RunEventTest(FILE_PATH_LITERAL("name-change.html"));
 }
 
@@ -915,19 +873,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
                        AccessibilityEventsNavigationApi) {
   RunEventTest(FILE_PATH_LITERAL("navigation-api.html"));
-}
-
-// TODO(crbug.com/40869309): Failing on linux/mac/win multiple builders.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsImmediateRefresh \
-  DISABLED_AccessibilityEventsImmediateRefresh
-#else
-#define MAYBE_AccessibilityEventsImmediateRefresh \
-  AccessibilityEventsImmediateRefresh
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
-                       MAYBE_AccessibilityEventsImmediateRefresh) {
-  RunEventTest(FILE_PATH_LITERAL("immediate-refresh.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
@@ -1183,14 +1128,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("select-selected-add-remove.html"));
 }
 
-// Test is flaky on Linux. See crbug.com/990847 for more details.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DeleteSubtree DISABLED_DeleteSubtree
-#else
-#define MAYBE_DeleteSubtree DeleteSubtree
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, MAYBE_DeleteSubtree) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, DeleteSubtree) {
   RunEventTest(FILE_PATH_LITERAL("delete-subtree.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
+                       CarouselWithTabs) {
+  RunEventTest(FILE_PATH_LITERAL("carousel-with-tabs.html"));
 }
 
 }  // namespace content

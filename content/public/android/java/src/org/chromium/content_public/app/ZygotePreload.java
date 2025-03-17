@@ -17,6 +17,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.process_launcher.ChildProcessService;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Class used in android:zygotePreloadName attribute of manifest.
@@ -26,6 +27,7 @@ import org.chromium.build.BuildConfig;
  * create any thread.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 public class ZygotePreload implements android.app.ZygotePreload {
     private static final String TAG = "ZygotePreload";
 

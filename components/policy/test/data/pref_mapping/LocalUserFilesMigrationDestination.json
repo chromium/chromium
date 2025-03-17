@@ -46,6 +46,17 @@
               "value": "read_only"
             }
           }
+      },
+      {
+          "policies": {
+              "LocalUserFilesMigrationDestination": "delete"
+          },
+          "prefs": {
+            "filebrowser.local_user_files_migration_destination": {
+              "location": "local_state",
+              "value": "delete"
+            }
+          }
       }
     ]
   }

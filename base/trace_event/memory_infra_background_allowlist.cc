@@ -37,6 +37,7 @@ constexpr auto kDumpProviderAllowlist =
 #endif
         "AutocompleteController",
         "AXPlatformNode",
+        "AXPlatformNodeWin",
         "BlinkGC",
         "BlinkObjectCounters",
         "BlobStorageContext",
@@ -51,6 +52,7 @@ constexpr auto kDumpProviderAllowlist =
         "DevTools",
         "DiscardableSharedMemoryManager",
         "DownloadService",
+        "DawnCache",
         "ExtensionFunctions",
         "FontCaches",
         "FrameEvictionManager",
@@ -107,6 +109,9 @@ constexpr auto kAllocatorDumpNameAllowlist =
 #if BUILDFLAG(IS_ANDROID)
         base::android::MeminfoDumpProvider::kDumpName,
 #endif
+        "accessibility/ax_platform_win_dormant_node",
+        "accessibility/ax_platform_win_ghost_node",
+        "accessibility/ax_platform_win_live_node",
         "accessibility/ax_platform_node",
         "blink_gc/main/allocated_objects",
         "blink_gc/main/heap",
@@ -157,6 +162,11 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "frame_evictor",
         "gpu/command_buffer_memory/buffer_0x?",
         "gpu/dawn",
+        "gpu/dawn/textures",
+        "gpu/dawn/textures/depth_stencil",
+        "gpu/dawn/textures/msaa",
+        "gpu/dawn/buffers",
+        "gpu/shader_cache/graphite_cache",
         "gpu/discardable_cache/cache_0x?",
         "gpu/discardable_cache/cache_0x?/avg_image_size",
         "gpu/gl/buffers/context_group_0x?",
@@ -350,16 +360,20 @@ bool IsMemoryDumpProviderInAllowlist(const char* mdp_name) {
 bool IsMemoryAllocatorDumpNameInAllowlist(const std::string& name) {
   // Global dumps that are of hex digits are all allowed for background use.
   if (base::StartsWith(name, "global/", CompareCase::SENSITIVE)) {
-    for (size_t i = strlen("global/"); i < name.size(); i++)
-      if (!base::IsHexDigit(name[i]))
+    for (size_t i = strlen("global/"); i < name.size(); i++) {
+      if (!base::IsHexDigit(name[i])) {
         return false;
+      }
+    }
     return true;
   }
 
   if (base::StartsWith(name, "shared_memory/", CompareCase::SENSITIVE)) {
-    for (size_t i = strlen("shared_memory/"); i < name.size(); i++)
-      if (!base::IsHexDigit(name[i]))
+    for (size_t i = strlen("shared_memory/"); i < name.size(); i++) {
+      if (!base::IsHexDigit(name[i])) {
         return false;
+      }
+    }
     return true;
   }
 

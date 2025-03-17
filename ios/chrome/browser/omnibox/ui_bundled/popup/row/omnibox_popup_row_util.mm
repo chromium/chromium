@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_util.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"

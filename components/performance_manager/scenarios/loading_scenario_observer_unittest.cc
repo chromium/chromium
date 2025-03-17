@@ -9,22 +9,23 @@
 #include <utility>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
 namespace performance_manager {
 
 namespace {
 
-using blink::performance_scenarios::GetLoadingScenario;
-using blink::performance_scenarios::ScenarioScope;
+using performance_scenarios::GetLoadingScenario;
+using performance_scenarios::ScenarioScope;
 
 class LoadingScenarioObserverTest : public GraphTestHarness {
  public:
@@ -47,7 +48,7 @@ LoadingScenario CurrentProcessLoadingScenario() {
 }
 
 TEST_F(LoadingScenarioObserverTest, LoadingStateOnePage) {
-  MockMultiplePagesInSingleProcessGraph mock_graph(graph());
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
   EXPECT_EQ(GlobalLoadingScenario(), LoadingScenario::kNoPageLoading);
 
   mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoading);
@@ -348,9 +349,8 @@ TEST_F(LoadingScenarioObserverTest, PerProcessState) {
   base::ReadOnlySharedMemoryRegion process_region =
       GetSharedScenarioRegionForProcessNode(process1.get());
   ASSERT_TRUE(process_region.IsValid());
-  blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_scenario_memory(ScenarioScope::kCurrentProcess,
-                              std::move(process_region));
+  performance_scenarios::ScopedReadOnlyScenarioMemory process_scenario_memory(
+      ScenarioScope::kCurrentProcess, std::move(process_region));
 
   // Create a page with a frame backed by the "current" mock process.
   auto page1 = CreateNode<PageNodeImpl>();

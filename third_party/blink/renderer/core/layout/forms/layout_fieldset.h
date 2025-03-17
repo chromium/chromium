@@ -27,6 +27,11 @@ class CORE_EXPORT LayoutFieldset final : public LayoutBlockFlow {
     return true;
   }
 
+  LayoutBox* ContentLayoutBox() final {
+    NOT_DESTROYED();
+    return FindAnonymousFieldsetContentBox();
+  }
+
   LayoutBlock* FindAnonymousFieldsetContentBox() const;
 
   static LayoutBox* FindInFlowLegend(const LayoutBlock& fieldset);

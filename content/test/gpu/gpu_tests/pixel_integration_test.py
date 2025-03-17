@@ -134,6 +134,17 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       action.Run(test_case, tab_data, loop_state, self)
     self._RunSkiaGoldBasedPixelTest(test_case)
 
+  def _OnAfterTest(self, args: ct.TestArgs) -> None:
+    """Conditionally restarts the browser after the test is finished.
+
+    This must be done as a post-test hook instead of at the end of the test
+    method because restarting wipes crash data, but expected crash checks are
+    performed after RunActualGpuTest finishes.
+
+    Args:
+      args: The same arguments that the test was run with.
+    """
+    test_case = args[0]
     if (test_case.used_custom_test_actions
         or test_case.restart_browser_after_test):
       self._RestartBrowser(
@@ -157,7 +168,14 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       process.
     """
     # args[0] is the PixelTestPage for the current test.
-    return args[0].expected_per_process_crashes
+    crashes_by_platform = args[0].expected_per_process_crashes
+    os_name = self.platform.GetOSName()
+    # Get any platform-specific crashes counts, falling back to the one for all
+    # platforms.
+    return crashes_by_platform.get(
+        os_name,
+        crashes_by_platform.get(
+            pixel_test_pages.EXPECTED_CRASHES_PLATFORM_DEFAULT, {}))
 
   def _RunSkiaGoldBasedPixelTest(
       self, test_case: pixel_test_pages.PixelTestPage) -> None:

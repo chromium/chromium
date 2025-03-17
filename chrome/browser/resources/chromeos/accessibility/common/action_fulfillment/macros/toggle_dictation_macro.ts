@@ -4,7 +4,8 @@
 
 import {TestImportManager} from '../../testing/test_import_manager.js';
 
-import {Macro, RunMacroResult, ToggleDirection} from './macro.js';
+import type {RunMacroResult} from './macro.js';
+import {Macro, ToggleDirection} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /**

@@ -14,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {
@@ -35,7 +37,7 @@ class ASH_EXPORT AuthTextfield : public SystemTextfield,
    public:
     virtual void OnTextfieldBlur() {}
     virtual void OnTextfieldFocus() {}
-    virtual void OnContentsChanged(const std::u16string& new_contents) {}
+    virtual void OnContentsChanged(std::u16string_view new_contents) {}
     virtual void OnTextVisibleChanged(bool visible) {}
     virtual void OnSubmit() {}
     virtual void OnEscape() {}
@@ -52,6 +54,10 @@ class ASH_EXPORT AuthTextfield : public SystemTextfield,
   void OnFocus() override;
   ui::TextInputMode GetTextInputMode() const override;
   bool ShouldDoLearning() override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // SystemTextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,

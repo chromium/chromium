@@ -162,7 +162,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
 
   if (!format_as_key) {
     DCHECK(!key_image);
-    AddChildView(label);
+    AddChildViewRaw(label);
     return;
   }
 
@@ -175,12 +175,12 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   key->SetLayoutManager(std::move(key_name_layout));
   if (key_image)
     key->AddChildView(std::move(key_image));
-  key->AddChildView(label);
+  key->AddChildViewRaw(label);
   // The key name has a border around it.
   std::unique_ptr<views::Border> border(views::CreateRoundedRectBorder(
       kKeyNameBorderPx, kKeyNameCornerRadius, kForegroundColor));
   key->SetBorder(std::move(border));
-  AddChildView(key);
+  AddChildViewRaw(key);
 }
 
 base::CallbackListSubscription
@@ -204,7 +204,7 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
 
   int outer_padding_horiz = kOuterPaddingHorizPx;
   int outer_padding_vert = kOuterPaddingVertPx;
-  AddChildView(instruction_view_.get());
+  AddChildViewRaw(instruction_view_.get());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,

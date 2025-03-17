@@ -144,7 +144,7 @@ TEST_F(CallbackTest, NullAfterMoveRun) {
   const RepeatingClosure cb2 = BindRepeating([] {});
   ASSERT_TRUE(cb2);
   std::move(cb2).Run();
-  EXPECT_TRUE(cb2);
+  EXPECT_TRUE(cb2);  // NOLINT(bugprone-use-after-move)
 
   OnceCallback<void(void*)> cb3 = BindOnce([](void* param) {
     EXPECT_TRUE(static_cast<OnceCallback<void(void*)>*>(param)->is_null());
@@ -169,7 +169,7 @@ TEST_F(CallbackTest, ThenResetsOriginalCallback) {
     EXPECT_TRUE(!!orig);
     OnceClosure joined = std::move(orig).Then(base::BindOnce([] {}));
     EXPECT_TRUE(!!joined);
-    EXPECT_FALSE(!!orig);
+    EXPECT_FALSE(!!orig);  // NOLINT(bugprone-use-after-move)
   }
   {
     // RepeatingCallback::Then() destroys the original callback if it's an
@@ -178,7 +178,7 @@ TEST_F(CallbackTest, ThenResetsOriginalCallback) {
     EXPECT_TRUE(!!orig);
     RepeatingClosure joined = std::move(orig).Then(base::BindRepeating([] {}));
     EXPECT_TRUE(!!joined);
-    EXPECT_FALSE(!!orig);
+    EXPECT_FALSE(!!orig);  // NOLINT(bugprone-use-after-move)
   }
   {
     // RepeatingCallback::Then() doesn't destroy the original callback if it's
@@ -705,8 +705,9 @@ TEST_F(CallbackTest, MaybeValidInvalidateWeakPtrsOnOtherSequence) {
             // Check that MaybeValid() _eventually_ returns false.
             const TimeDelta timeout = TestTimeouts::tiny_timeout();
             const TimeTicks begin = TimeTicks::Now();
-            while (cb.MaybeValid() && (TimeTicks::Now() - begin) < timeout)
+            while (cb.MaybeValid() && (TimeTicks::Now() - begin) < timeout) {
               PlatformThread::YieldCurrentThread();
+            }
             EXPECT_FALSE(cb.MaybeValid());
           },
           cb));

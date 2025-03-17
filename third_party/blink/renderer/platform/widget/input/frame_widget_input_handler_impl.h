@@ -101,6 +101,11 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
       WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point) override;
 
+#if BUILDFLAG(IS_IOS)
+  void StartAutoscrollForSelectionToPoint(const gfx::PointF& point) override;
+  void StopAutoscroll() override;
+#endif  // BUILDFLAG(IS_IOS)
+
  private:
   enum class UpdateState { kNone, kIsPasting, kIsSelectingRange };
 

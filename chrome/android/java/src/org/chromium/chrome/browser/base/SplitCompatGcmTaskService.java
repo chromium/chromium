@@ -9,10 +9,14 @@ import android.content.Context;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * GcmTaskService base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatGcmTaskService extends GcmTaskService {
     private String mServiceClassName;
     private Impl mImpl;
@@ -46,13 +50,13 @@ public class SplitCompatGcmTaskService extends GcmTaskService {
      * SplitCompatGcmTaskService}.
      */
     public abstract static class Impl {
-        private SplitCompatGcmTaskService mService;
+        private @Nullable SplitCompatGcmTaskService mService;
 
         protected final void setService(SplitCompatGcmTaskService service) {
             mService = service;
         }
 
-        protected final GcmTaskService getService() {
+        protected final @Nullable GcmTaskService getService() {
             return mService;
         }
 

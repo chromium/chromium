@@ -111,10 +111,6 @@ extern NSString* const kExpandedManualFillChromeLogoID;
 // cells of the expanded manual fill view.
 extern NSString* const kExpandedManualFillAutofillFormButtonID;
 
-// Accessibility identifier for the overflow menu shown in the entity cells of
-// the expanded manual fill view.
-extern NSString* const kExpandedManualFillOverflowMenuID;
-
 // Accessibility identifier of the keyboard button.
 extern NSString* const kAccessoryKeyboardAccessibilityIdentifier;
 
@@ -141,6 +137,10 @@ enum class PaymentFieldType {
 // Returns a ManualFillDataType based on the provided FillingProduct.
 + (manual_fill::ManualFillDataType)manualFillDataTypeFromFillingProduct:
     (autofill::FillingProduct)fillingProduct;
+
+// Accessibility identifier for the overflow menu shown in the entity cells of
+// the expanded manual fill view.
++ (NSString*)expandedManualFillOverflowMenuID:(NSInteger)cellIndex;
 
 @end
 

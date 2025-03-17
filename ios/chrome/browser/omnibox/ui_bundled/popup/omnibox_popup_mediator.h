@@ -11,6 +11,7 @@
 
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
@@ -25,7 +26,7 @@
 @class CarouselItem;
 @protocol CarouselItemConsumer;
 class FaviconLoader;
-@class OmniboxPedalAnnotator;
+@class OmniboxPopupController;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
 @class SceneState;
@@ -39,18 +40,6 @@ class ImageDataFetcher;
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
-
-class OmniboxPopupMediatorDelegate {
- public:
-  virtual bool IsStarredMatch(const AutocompleteMatch& match) const = 0;
-  virtual void OnMatchSelected(const AutocompleteMatch& match,
-                               size_t row,
-                               WindowOpenDisposition disposition) = 0;
-  virtual void OnMatchSelectedForAppending(const AutocompleteMatch& match) = 0;
-  virtual void OnMatchSelectedForDeletion(const AutocompleteMatch& match) = 0;
-  virtual void OnScroll() = 0;
-  virtual void OnCallActionTap() = 0;
-};
 
 /// Provider that returns protocols and services that are instantiated after
 /// OmniboxPopupCoordinator.
@@ -77,18 +66,15 @@ class OmniboxPopupMediatorDelegate {
 
 @interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
                                             AutocompleteResultDataSource,
+                                            OmniboxPopupControllerDelegate,
                                             CarouselItemMenuProvider,
                                             ImageRetriever,
                                             FaviconRetriever>
 
+/// Controller of the omnibox popup.
+@property(nonatomic, weak) OmniboxPopupController* popupController;
+
 @property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
-
-/// Whether the mediator has results to show.
-@property(nonatomic, assign) BOOL hasResults;
-
-/// Sets the semantic content attribute of the popup content.
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute;
 
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
 /// Consumer for debug info.
@@ -108,8 +94,6 @@ class OmniboxPopupMediatorDelegate {
 /// Whether the default search engine is Google impacts which icon is used in
 /// some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
-/// The annotator to create pedals for ths mediator.
-@property(nonatomic) OmniboxPedalAnnotator* pedalAnnotator;
 /// Flag that marks that incognito actions are available. Those can be disabled
 /// by an enterprise policy.
 @property(nonatomic, assign) BOOL allowIncognitoActions;
@@ -129,19 +113,7 @@ class OmniboxPopupMediatorDelegate {
                faviconLoader:(FaviconLoader*)faviconLoader
       autocompleteController:(AutocompleteController*)autocompleteController
     remoteSuggestionsService:(RemoteSuggestionsService*)remoteSuggestionsService
-                    delegate:(OmniboxPopupMediatorDelegate*)delegate
                      tracker:(feature_engagement::Tracker*)tracker;
-
-- (void)updateMatches:(const AutocompleteResult&)result;
-
-/// Sets the text alignment of the popup content.
-- (void)setTextAlignment:(NSTextAlignment)alignment;
-
-/// Sets whether the omnibox has a thumbnail.
-- (void)setHasThumbnail:(BOOL)hasThumbnail;
-
-/// Updates the popup with the `results`.
-- (void)updateWithResults:(const AutocompleteResult&)results;
 
 // Disconnects all observers set by the mediator.
 - (void)disconnect;

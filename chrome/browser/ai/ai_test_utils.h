@@ -9,6 +9,9 @@
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/summarize.pb.h"
+#include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,7 +35,11 @@ class AITestUtils {
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
     BindNewPipeAndPassRemote();
 
-    MOCK_METHOD(void, OnStreaming, (const std::string& text), (override));
+    MOCK_METHOD(void,
+                OnStreaming,
+                (const std::string& text,
+                 blink::mojom::ModelStreamingResponderAction action),
+                (override));
     MOCK_METHOD(void,
                 OnError,
                 (blink::mojom::ModelStreamingResponseStatus status),
@@ -41,6 +48,7 @@ class AITestUtils {
                 OnCompletion,
                 (blink::mojom::ModelExecutionContextInfoPtr context_info),
                 (override));
+    MOCK_METHOD(void, OnContextOverflow, (), (override));
 
    private:
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
@@ -86,12 +94,12 @@ class AITestUtils {
         void,
         OnResult,
         (mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
-         blink::mojom::AILanguageModelInfoPtr info),
+         blink::mojom::AILanguageModelInstanceInfoPtr info),
         (override));
 
     MOCK_METHOD(void,
                 OnError,
-                (blink::mojom::AIManagerCreateLanguageModelError error),
+                (blink::mojom::AIManagerCreateClientError error),
                 (override));
 
    private:
@@ -108,9 +116,14 @@ class AITestUtils {
     void TearDown() override;
 
    protected:
-    void SetupMockOptimizationGuideKeyedService();
-    void SetupNullOptimizationGuideKeyedService();
+    virtual void SetupMockOptimizationGuideKeyedService();
+    virtual void SetupNullOptimizationGuideKeyedService();
 
+    // Optimization guide keyed service should be set up before calling this
+    // method.
+    void SetupMockSession();
+
+    blink::mojom::AIManager* GetAIManagerInterface();
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
     size_t GetAIManagerContextBoundObjectSetSize();
     size_t GetAIManagerDownloadProgressObserversSize();
@@ -119,6 +132,7 @@ class AITestUtils {
 
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
+    testing::NiceMock<optimization_guide::MockSession> session_;
 
    private:
     std::unique_ptr<AIManager> ai_manager_;
@@ -126,6 +140,24 @@ class AITestUtils {
 
   static const optimization_guide::TokenLimits& GetFakeTokenLimits();
   static const optimization_guide::proto::Any& GetFakeFeatureMetadata();
+
+  static void CheckWritingAssistanceApiRequest(
+      const google::protobuf::MessageLite& request_metadata,
+      const std::string& expected_shared_context,
+      const std::string& expected_context,
+      const optimization_guide::proto::WritingAssistanceApiOptions&
+          expected_options,
+      const std::string& expected_input);
+  static void CheckSummarizeRequest(
+      const google::protobuf::MessageLite& request_metadata,
+      const std::string& expected_shared_context,
+      const std::string& expected_context,
+      const optimization_guide::proto::SummarizeOptions& expected_options,
+      const std::string& expected_input);
+
+  // Converts string language codes to AILanguageCode mojo struct.
+  static std::vector<blink::mojom::AILanguageCodePtr> ToMojoLanguageCodes(
+      const std::vector<std::string>& language_codes);
 };
 
 #endif  // CHROME_BROWSER_AI_AI_TEST_UTILS_H_

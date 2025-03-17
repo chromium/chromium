@@ -27,11 +27,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -90,11 +92,11 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -121,7 +123,11 @@ const int kTenFrames = 10;
 bool g_limit_max_frames_to_ten_for_testing = false;
 
 // static
-void SetSafeAreaEnvVariables(LocalFrame* frame, const gfx::InsetsF& safe_area) {
+void SetSafeAreaEnvVariables(LocalFrame* frame,
+                             const gfx::InsetsF& safe_area_in_physical_px) {
+  gfx::InsetsF safe_area =
+      ScaleInsets(safe_area_in_physical_px, 1.0f / frame->LayoutZoomFactor());
+
   DocumentStyleEnvironmentVariables& vars =
       frame->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
@@ -133,6 +139,29 @@ void SetSafeAreaEnvVariables(LocalFrame* frame, const gfx::InsetsF& safe_area) {
       StyleEnvironmentVariables::FormatFloatPx(safe_area.bottom()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
                    StyleEnvironmentVariables::FormatFloatPx(safe_area.right()));
+}
+
+// static
+void SetSafeAreaMaxEnvVariables(
+    LocalFrame* frame,
+    const gfx::InsetsF& safe_area_max_in_physical_px) {
+  gfx::InsetsF safe_area_max = ScaleInsets(safe_area_max_in_physical_px,
+                                           1.0f / frame->LayoutZoomFactor());
+
+  DocumentStyleEnvironmentVariables& vars =
+      frame->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetTop,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.top()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetLeft,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.left()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetBottom,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.bottom()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetRight,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.right()));
 }
 
 }  // namespace
@@ -148,15 +177,17 @@ void ResetPluginCache(bool reload_pages) {
 // Set of all live pages; includes internal Page objects that are
 // not observable from scripts.
 static Page::PageSet& AllPages() {
-  DEFINE_STATIC_LOCAL(Persistent<Page::PageSet>, pages,
-                      (MakeGarbageCollected<Page::PageSet>()));
-  return *pages;
+  using PageSetHolder = DisallowNewWrapper<Page::PageSet>;
+  DEFINE_STATIC_LOCAL(Persistent<PageSetHolder>, pages,
+                      (MakeGarbageCollected<PageSetHolder>()));
+  return pages->Value();
 }
 
 Page::PageSet& Page::OrdinaryPages() {
-  DEFINE_STATIC_LOCAL(Persistent<Page::PageSet>, pages,
-                      (MakeGarbageCollected<Page::PageSet>()));
-  return *pages;
+  using PageSetHolder = DisallowNewWrapper<Page::PageSet>;
+  DEFINE_STATIC_LOCAL(Persistent<PageSetHolder>, pages,
+                      (MakeGarbageCollected<PageSetHolder>()));
+  return pages->Value();
 }
 
 void Page::InsertOrdinaryPageForTesting(Page* page) {
@@ -960,28 +991,21 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
 
   if (new_scaled_safe_area != applied_safe_area_insets_ || force_update) {
     applied_safe_area_insets_ = new_scaled_safe_area;
-
-    float zoom_factor = DeprecatedLocalMainFrame()->LayoutZoomFactor();
-    gfx::InsetsF new_safe_area =
-        ScaleInsets(new_scaled_safe_area, 1.0f / zoom_factor);
-    SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
+    SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_scaled_safe_area);
   }
 }
 
 void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
   // Update |scaled_max_safe_area_insets_| first.
-  if (setter->IsMainFrame()) {
-    float dip_scale =
-        chrome_client_->GetScreenInfo(*setter).device_scale_factor;
-    gfx::InsetsF scaled_max_safe_area_insets =
-        ScaleInsets(gfx::InsetsF(max_safe_area), dip_scale);
+  float dsf = chrome_client_->GetScreenInfo(*setter).device_scale_factor;
+  gfx::InsetsF scaled_max_safe_area_insets =
+      ScaleInsets(gfx::InsetsF(max_safe_area), dsf);
 
-    if (scaled_max_safe_area_insets_ != scaled_max_safe_area_insets) {
-      scaled_max_safe_area_insets_ = scaled_max_safe_area_insets;
+  if (scaled_max_safe_area_insets_ != scaled_max_safe_area_insets) {
+    scaled_max_safe_area_insets_ = scaled_max_safe_area_insets;
 
-      // Update Chrome client CC for MaxSafeAreaInsets change.
-      GetChromeClient().DidUpdateMaxSafeAreaInsets(scaled_max_safe_area_insets);
-    }
+    // Update Chrome client CC for MaxSafeAreaInsets change.
+    GetChromeClient().DidUpdateMaxSafeAreaInsets(scaled_max_safe_area_insets);
   }
 
   // When the SAI is changed when DynamicSafeAreaInsetsEnabled, the SAI for the
@@ -992,7 +1016,11 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
     // UpdateSafeAreaInsetWithBrowserControls() is called.
     UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
   } else {
-    SetSafeAreaEnvVariables(setter, gfx::InsetsF(max_safe_area));
+    applied_safe_area_insets_ = scaled_max_safe_area_insets_;
+    SetSafeAreaEnvVariables(setter, scaled_max_safe_area_insets_);
+  }
+  if (RuntimeEnabledFeatures::CSSSafeAreaMaxInsetEnabled()) {
+    SetSafeAreaMaxEnvVariables(setter, scaled_max_safe_area_insets_);
   }
 }
 
@@ -1043,18 +1071,35 @@ void Page::SettingsChanged(ChangeType change_type) {
         }
       }
       break;
+    case ChangeType::kFontScaleFactor:
+      if (!RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
+        break;
+      }
+      for (Frame* frame = MainFrame(); frame;
+           frame = frame->Tree().TraverseNext()) {
+        LocalFrame* local_frame = DynamicTo<LocalFrame>(frame);
+        if (!local_frame) {
+          continue;
+        }
+        Document* document = local_frame->GetDocument();
+        if (!document || !document->IsActive()) {
+          continue;
+        }
+        document->GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
+            UADefinedVariable::kPreferredTextScale,
+            String::Number(
+                document->GetSettings()->GetAccessibilityFontScaleFactor()));
+      }
+      break;
     case ChangeType::kTextAutosizing:
       if (!MainFrame())
         break;
       // We need to update even for remote main frames since this setting
       // could be changed via InternalSettings.
       TextAutosizer::UpdatePageInfoInAllFrames(MainFrame());
-      // The new text-size-adjust implementation requires the text autosizing
-      // setting but applies the adjustment in style rather than via the text
-      // autosizer, so we need to invalidate style.
-      if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
-        InitialStyleChanged();
-      }
+      // The text-size-adjust adjustment in style depends on the text autosizing
+      // setting, so we need to invalidate style.
+      InitialStyleChanged();
       break;
     case ChangeType::kFontFamily:
       for (Frame* frame = MainFrame(); frame;
@@ -1520,6 +1565,11 @@ void Page::SetVisionDeficiency(VisionDeficiency new_vision_deficiency) {
     vision_deficiency_ = new_vision_deficiency;
     SettingsChanged(ChangeType::kVisionDeficiency);
   }
+}
+
+void Page::SetPageLifecycleState(
+    mojom::blink::PageLifecycleStatePtr lifecycle_state) {
+  lifecycle_state_ = std::move(lifecycle_state);
 }
 
 void Page::Animate(base::TimeTicks monotonic_frame_begin_time) {

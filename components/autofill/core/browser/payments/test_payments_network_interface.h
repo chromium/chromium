@@ -95,7 +95,8 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
   // useful to control whether or not GetUnmaskDetails() is responded to.
   void ShouldReturnUnmaskDetailsImmediately(bool should_return_unmask_details);
 
-  void AllowFidoRegistration(bool offer_fido_opt_in = true);
+  void AllowFidoRegistration(
+      bool server_denotes_fido_eligible_but_not_opted_in = true);
 
   void AddFidoEligibleCard(std::string server_id,
                            std::string credential_id,

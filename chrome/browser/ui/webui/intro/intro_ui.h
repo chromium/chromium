@@ -74,8 +74,6 @@ class IntroUI : public content::WebUIController {
   void SetDefaultBrowserCallback(DefaultBrowserCallback callback);
 
  private:
-  friend class ProfilePickerLacrosFirstRunBrowserTestBase;
-
   void HandleSigninChoice(IntroChoice choice);
   void HandleDefaultBrowserChoice(DefaultBrowserChoice choice);
 

@@ -27,16 +27,19 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
       const ChromeML& chrome_ml,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       ChromeMLModel model,
-      on_device_model::mojom::LoadAdaptationParamsPtr params = nullptr);
+      on_device_model::mojom::SessionParamsPtr params,
+      on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
+      std::optional<uint32_t> adaptation_id);
 
   ~SessionAccessor();
 
   // These methods forward to the relevant ChromeMLSession methods on the task
   // runner.
   Ptr Clone();
-  ChromeMLCancelFn Execute(on_device_model::mojom::InputOptionsPtr input,
-                           ChromeMLExecutionOutputFn output_fn,
-                           ChromeMLContextSavedFn context_saved_fn);
+  ChromeMLCancelFn Append(on_device_model::mojom::AppendOptionsPtr options,
+                          ChromeMLContextSavedFn context_saved_fn);
+  ChromeMLCancelFn Generate(on_device_model::mojom::GenerateOptionsPtr options,
+                            ChromeMLExecutionOutputFn output_fn);
   void Score(const std::string& text, ChromeMLScoreFn score_fn);
   void SizeInTokens(on_device_model::mojom::InputPtr input,
                     ChromeMLSizeInTokensFn size_in_tokens_fn);
@@ -49,11 +52,17 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
                   ChromeMLModel model);
 
   void CloneFrom(SessionAccessor* other);
-  void CreateInternal(on_device_model::mojom::LoadAdaptationParamsPtr params);
-  void ExecuteInternal(on_device_model::mojom::InputOptionsPtr input,
-                       ChromeMLExecutionOutputFn output_fn,
-                       ChromeMLContextSavedFn context_saved_fn,
-                       scoped_refptr<Canceler> canceler);
+  void CreateInternal(
+      on_device_model::mojom::SessionParamsPtr params,
+      on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
+      std::optional<uint32_t> adaptation_id);
+  void AppendInternal(on_device_model::mojom::AppendOptionsPtr append_options,
+                      ChromeMLContextSavedFn context_saved_fn,
+                      scoped_refptr<Canceler> canceler);
+  void GenerateInternal(
+      on_device_model::mojom::GenerateOptionsPtr generate_options,
+      ChromeMLExecutionOutputFn output_fn,
+      scoped_refptr<Canceler> canceler);
   void ScoreInternal(const std::string& text, ChromeMLScoreFn score_fn);
   void SizeInTokensInternal(on_device_model::mojom::InputPtr input,
                             ChromeMLSizeInTokensFn size_in_tokens_fn);

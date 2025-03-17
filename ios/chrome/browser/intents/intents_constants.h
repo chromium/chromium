@@ -21,6 +21,8 @@ extern NSString* const kShortcutQRScanner;
 extern NSString* const kShortcutLensFromAppIconLongPress;
 // NSUserActivity for Open Lens from spotlight intent.
 extern NSString* const kShortcutLensFromSpotlight;
+// NSUserActivity for changing a widget to an app icon.
+extern NSString* const kShortcutChangeWidgetToAppIcon;
 
 // Constants for Siri shortcuts.
 //

@@ -202,7 +202,6 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testRelatedSearchesItemNotSelected() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         createHistogramWatcherForPeekAndExpandForRSearches(/* isUKMEnabled= */ false);
@@ -225,7 +224,6 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testRelatedSearchesItemNotSelectedUKMEnabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

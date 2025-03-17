@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/components/multidevice/beacon_seed.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 
 namespace ash::multidevice {
 
@@ -66,18 +67,18 @@ cryptauthv2::BeaconSeed ToCryptAuthV2Seed(BeaconSeed multidevice_seed) {
 std::vector<cryptauth::BeaconSeed> ToCryptAuthSeedList(
     const std::vector<BeaconSeed>& multidevice_seed_list) {
   std::vector<cryptauth::BeaconSeed> cryptauth_beacon_seeds;
-  base::ranges::transform(multidevice_seed_list,
-                          std::back_inserter(cryptauth_beacon_seeds),
-                          &ToCryptAuthSeed);
+  std::ranges::transform(multidevice_seed_list,
+                         std::back_inserter(cryptauth_beacon_seeds),
+                         &ToCryptAuthSeed);
   return cryptauth_beacon_seeds;
 }
 
 std::vector<BeaconSeed> FromCryptAuthSeedList(
     const std::vector<cryptauth::BeaconSeed>& cryptauth_seed_list) {
   std::vector<BeaconSeed> multidevice_beacon_seeds;
-  base::ranges::transform(cryptauth_seed_list,
-                          std::back_inserter(multidevice_beacon_seeds),
-                          &FromCryptAuthSeed);
+  std::ranges::transform(cryptauth_seed_list,
+                         std::back_inserter(multidevice_beacon_seeds),
+                         &FromCryptAuthSeed);
   return multidevice_beacon_seeds;
 }
 
@@ -85,9 +86,9 @@ std::vector<BeaconSeed> FromCryptAuthV2SeedRepeatedPtrField(
     const google::protobuf::RepeatedPtrField<cryptauthv2::BeaconSeed>&
         cryptauth_seed_list) {
   std::vector<BeaconSeed> multidevice_beacon_seeds;
-  base::ranges::transform(cryptauth_seed_list,
-                          std::back_inserter(multidevice_beacon_seeds),
-                          &FromCryptAuthV2Seed);
+  std::ranges::transform(cryptauth_seed_list,
+                         std::back_inserter(multidevice_beacon_seeds),
+                         &FromCryptAuthV2Seed);
   return multidevice_beacon_seeds;
 }
 

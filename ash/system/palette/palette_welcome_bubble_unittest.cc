@@ -24,7 +24,6 @@ namespace {
 
 constexpr char kUser1Email[] = "user1@palettewelcome.com";
 constexpr char kUser2Email[] = "user2@palettewelcome.com";
-constexpr char kGuestEmail[] = "guest@palettewelcome.com";
 constexpr char kPublicAccountEmail[] = "public@palettewelcome.com";
 
 }  // namespace
@@ -57,8 +56,8 @@ class PaletteWelcomeBubbleTest : public AshTestBase {
 
     welcome_bubble_ = std::make_unique<PaletteWelcomeBubble>(
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->palette_tray());
-    GetSessionControllerClient()->AddUserSession(kUser1Email);
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    SimulateUserLogin({kUser1Email});
+    SimulateUserLogin({kUser2Email});
     GetSessionControllerClient()->SwitchActiveUser(
         AccountId::FromUserEmail(kUser1Email));
   }
@@ -161,10 +160,7 @@ using PaletteWelcomeBubbleEmphemeralAccountTest = AshTestBase;
 TEST_F(PaletteWelcomeBubbleEmphemeralAccountTest, BubbleNotShownForGuest) {
   auto welcome_bubble = std::make_unique<PaletteWelcomeBubble>(
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->palette_tray());
-  GetSessionControllerClient()->AddUserSession(kGuestEmail,
-                                               user_manager::UserType::kGuest);
-  GetSessionControllerClient()->SwitchActiveUser(
-      AccountId::FromUserEmail(kGuestEmail));
+  SimulateGuestLogin();
   welcome_bubble->ShowIfNeeded();
   EXPECT_FALSE(welcome_bubble->GetBubbleViewForTesting());
 }
@@ -173,10 +169,8 @@ TEST_F(PaletteWelcomeBubbleEmphemeralAccountTest,
        BubbleNotShownForPublicAccount) {
   auto welcome_bubble = std::make_unique<PaletteWelcomeBubble>(
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->palette_tray());
-  GetSessionControllerClient()->AddUserSession(
-      kPublicAccountEmail, user_manager::UserType::kPublicAccount);
-  GetSessionControllerClient()->SwitchActiveUser(
-      AccountId::FromUserEmail(kPublicAccountEmail));
+  SimulateUserLogin(
+      {kPublicAccountEmail, user_manager::UserType::kPublicAccount});
   welcome_bubble->ShowIfNeeded();
   EXPECT_FALSE(welcome_bubble->GetBubbleViewForTesting());
 }

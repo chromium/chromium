@@ -163,14 +163,6 @@ public class FeedReliabilityLoggerTest {
     }
 
     @Test
-    public void testOnBindStream_supervisedUserFeed() {
-        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
-        mFeedReliabilityLogger.onBindStream(StreamType.SUPERVISED_USER_FEED, 0);
-        verify(mLaunchLogger).logFeedReloading(anyLong());
-        verify(mUserInteractionLogger).onStreamOpened(eq(StreamType.SUPERVISED_USER_FEED));
-    }
-
-    @Test
     public void testOnUnbindStream() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
         mFeedReliabilityLogger.onUnbindStream(ClosedReason.LEAVE_FEED);

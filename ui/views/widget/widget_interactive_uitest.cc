@@ -410,7 +410,9 @@ void DeactivateSync(Widget* widget) {
   // activating (and closing) a temporary widget.
   widget->widget_delegate()->SetCanActivate(false);
   Widget* stealer = new Widget;
-  stealer->Init(Widget::InitParams(Widget::InitParams::TYPE_WINDOW));
+  stealer->Init(
+      Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                         Widget::InitParams::TYPE_WINDOW));
   ShowSync(stealer);
   stealer->CloseNow();
   widget->widget_delegate()->SetCanActivate(true);
@@ -474,7 +476,7 @@ TEST_F(DesktopWidgetTestInteractive,
   focusable_view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   std::unique_ptr<Widget> widget1 = base::WrapUnique(
       CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  widget1->GetContentsView()->AddChildView(focusable_view1);
+  widget1->GetContentsView()->AddChildViewRaw(focusable_view1);
   widget1->Show();
   aura::Window* root_window1 = GetRootWindow(widget1.get());
   focusable_view1->RequestFocus();
@@ -489,7 +491,7 @@ TEST_F(DesktopWidgetTestInteractive,
   View* focusable_view2 = new View;
   std::unique_ptr<Widget> widget2 = base::WrapUnique(
       CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  widget1->GetContentsView()->AddChildView(focusable_view2);
+  widget1->GetContentsView()->AddChildViewRaw(focusable_view2);
   widget2->Show();
   aura::Window* root_window2 = GetRootWindow(widget2.get());
   focusable_view2->RequestFocus();
@@ -524,8 +526,9 @@ TEST_F(DesktopWidgetTestInteractive, FocusChangesOnBubble) {
 
   // Show a bubble.
   auto owned_bubble_delegate_view =
-      std::make_unique<views::BubbleDialogDelegateView>(focusable_view,
-                                                        BubbleBorder::NONE);
+      std::make_unique<views::BubbleDialogDelegateView>(
+          BubbleDialogDelegateView::CreatePassKey(), focusable_view,
+          BubbleBorder::NONE);
   owned_bubble_delegate_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   BubbleDialogDelegateView* bubble_delegate_view =
       owned_bubble_delegate_view.get();
@@ -596,7 +599,7 @@ TEST_F(DesktopWidgetTestInteractive, DISABLED_TouchNoActivateWindow) {
   focusable_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  widget->GetContentsView()->AddChildView(focusable_view);
+  widget->GetContentsView()->AddChildViewRaw(focusable_view);
   widget->Show();
 
   {
@@ -672,8 +675,8 @@ TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
   View* view2b = new View;
   view2a->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   view2b->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  widget2->GetContentsView()->AddChildView(view2a);
-  widget2->GetContentsView()->AddChildView(view2b);
+  widget2->GetContentsView()->AddChildViewRaw(view2a);
+  widget2->GetContentsView()->AddChildViewRaw(view2b);
 
   ShowSync(widget1.get());
   EXPECT_TRUE(widget1->IsActive());
@@ -1396,7 +1399,7 @@ TEST_F(WidgetTestInteractive, InitialFocus) {
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   View* view = new View;
   view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  toplevel->GetContentsView()->AddChildView(view);
+  toplevel->GetContentsView()->AddChildViewRaw(view);
 
   ShowSync(toplevel.get());
   toplevel->Show();
@@ -1927,7 +1930,7 @@ TEST_F(WidgetCaptureTest, ResetCaptureOnGestureEnd) {
 
   View* gesture = new GestureCaptureView;
   gesture->SetBounds(0, 0, 30, 30);
-  container->AddChildView(gesture);
+  container->AddChildViewRaw(gesture);
 
   MouseView* mouse = new MouseView;
   mouse->SetBounds(30, 0, 30, 30);
@@ -2676,7 +2679,7 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
 #define MAYBE_CancelShellDrag CancelShellDrag
 #endif
 TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
-  WidgetAutoclosePtr widget(new Widget);
+  auto widget = std::make_unique<Widget>();
 
   auto cancel = [&]() {
     drag_entered_ = true;

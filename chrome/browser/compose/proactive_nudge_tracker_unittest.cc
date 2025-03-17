@@ -131,9 +131,7 @@ class ProactiveNudgeTrackerTestBase : public testing::Test {
     }
   }
 
-  void TearDown() override {
-    compose::ResetConfigForTesting();
-  }
+  void TearDown() override { compose::ResetConfigForTesting(); }
 
   segmentation_platform::MockSegmentationPlatformService&
   segmentation_service() {
@@ -789,7 +787,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, NoEngagement) {
 
   EXPECT_EQ(training_labels.Get().output_metric,
             std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
-                           static_cast<base::HistogramBase::Sample>(
+                           static_cast<base::HistogramBase::Sample32>(
                                ProactiveNudgeDerivedEngagement::kIgnored)));
 }
 
@@ -807,7 +805,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, MinimalUse) {
       training_labels.Get().output_metric,
       std::make_pair(
           "Compose.ProactiveNudge.DerivedEngagement",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               ProactiveNudgeDerivedEngagement::kOpenedComposeMinimalUse)));
 }
 
@@ -828,7 +826,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, SuggestionGenerated) {
       training_labels.Get().output_metric,
       std::make_pair(
           "Compose.ProactiveNudge.DerivedEngagement",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               ProactiveNudgeDerivedEngagement::kGeneratedComposeSuggestion)));
   histograms.ExpectUniqueSample(
       "Compose.ProactiveNudge.DerivedEngagement",
@@ -850,7 +848,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, AcceptedSuggestion) {
       training_labels.Get().output_metric,
       std::make_pair(
           "Compose.ProactiveNudge.DerivedEngagement",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               ProactiveNudgeDerivedEngagement::kAcceptedComposeSuggestion)));
 }
 
@@ -877,7 +875,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest,
       training_labels.Get().output_metric,
       std::make_pair(
           "Compose.ProactiveNudge.DerivedEngagement",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               ProactiveNudgeDerivedEngagement::kAcceptedComposeSuggestion)));
 }
 
@@ -899,11 +897,11 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, TwoSessions) {
       training_labels1.Get().output_metric,
       std::make_pair(
           "Compose.ProactiveNudge.DerivedEngagement",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               ProactiveNudgeDerivedEngagement::kAcceptedComposeSuggestion)));
   EXPECT_EQ(training_labels2.Get().output_metric,
             std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
-                           static_cast<base::HistogramBase::Sample>(
+                           static_cast<base::HistogramBase::Sample32>(
                                ProactiveNudgeDerivedEngagement::kIgnored)));
 }
 
@@ -917,7 +915,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, NudgeDisabledSingleSite) {
       training_labels.Get().output_metric,
       std::make_pair(
           "Compose.ProactiveNudge.DerivedEngagement",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               ProactiveNudgeDerivedEngagement::kNudgeDisabledOnSingleSite)));
 }
 
@@ -931,7 +929,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, NudgeDisabledAllSites) {
       training_labels.Get().output_metric,
       std::make_pair(
           "Compose.ProactiveNudge.DerivedEngagement",
-          static_cast<base::HistogramBase::Sample>(
+          static_cast<base::HistogramBase::Sample32>(
               ProactiveNudgeDerivedEngagement::kNudgeDisabledOnAllSites)));
 }
 

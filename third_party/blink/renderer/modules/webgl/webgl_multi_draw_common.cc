@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_common.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_int32arrayallowshared_longsequence.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_uint32arrayallowshared_unsignedlongsequence.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
@@ -17,6 +15,17 @@ bool WebGLMultiDrawCommon::ValidateDrawcount(
   if (drawcount < 0) {
     scoped->Context()->SynthesizeGLError(GL_INVALID_VALUE, function_name,
                                          "negative drawcount");
+    return false;
+  }
+
+  constexpr size_t kMaxIntsReadPerDrawCall =
+      WebGLRenderingContextBase::kMaximumSupportedArrayBufferSize /
+      sizeof(int32_t);
+
+  if (static_cast<size_t>(drawcount) > kMaxIntsReadPerDrawCall) {
+    scoped->Context()->SynthesizeGLError(
+        GL_INVALID_VALUE, function_name,
+        "data touched by drawcount exceeds maximum ArrayBuffer size");
     return false;
   }
   return true;
@@ -44,35 +53,6 @@ bool WebGLMultiDrawCommon::ValidateArray(WebGLExtensionScopedContext* scoped,
     return false;
   }
   return true;
-}
-
-// static
-base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
-    const V8UnionInt32ArrayAllowSharedOrLongSequence* array) {
-  DCHECK(array);
-  switch (array->GetContentType()) {
-    case V8UnionInt32ArrayAllowSharedOrLongSequence::ContentType::
-        kInt32ArrayAllowShared:
-      return array->GetAsInt32ArrayAllowShared()->AsSpanMaybeShared();
-    case V8UnionInt32ArrayAllowSharedOrLongSequence::ContentType::kLongSequence:
-      return array->GetAsLongSequence();
-  }
-  NOTREACHED();
-}
-
-// static
-base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
-    const V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence* array) {
-  DCHECK(array);
-  switch (array->GetContentType()) {
-    case V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence::ContentType::
-        kUint32ArrayAllowShared:
-      return array->GetAsUint32ArrayAllowShared()->AsSpanMaybeShared();
-    case V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence::ContentType::
-        kUnsignedLongSequence:
-      return array->GetAsUnsignedLongSequence();
-  }
-  NOTREACHED();
 }
 
 }  // namespace blink

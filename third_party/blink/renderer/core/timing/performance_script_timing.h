@@ -43,6 +43,8 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   WTF::String sourceURL() const;
   WTF::String sourceFunctionName() const;
   int32_t sourceCharPosition() const;
+  int32_t sourceLine() const;
+  int32_t sourceColumn() const;
   V8ScriptWindowAttribution windowAttribution() const;
   V8ScriptInvokerType invokerType() const;
   AtomicString invoker() const;

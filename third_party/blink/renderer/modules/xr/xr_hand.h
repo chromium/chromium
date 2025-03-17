@@ -44,7 +44,7 @@ class XRHand : public ScriptWrappable, public PairSyncIterable<XRHand> {
   IterationSource* CreateIterationSource(ScriptState*,
                                          ExceptionState&) override;
 
-  Member<HeapVector<Member<XRJointSpace>>> joints_;
+  Member<GCedHeapVector<Member<XRJointSpace>>> joints_;
   bool has_missing_poses_ = true;
 };
 

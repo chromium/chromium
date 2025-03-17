@@ -4,12 +4,13 @@
 
 #include "net/log/net_log.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "net/log/net_log_values.h"
@@ -106,7 +107,7 @@ void NetLog::RemoveObserver(NetLog::ThreadSafeObserver* observer) {
 
   DCHECK_EQ(this, observer->net_log_);
 
-  auto it = base::ranges::find(observers_, observer);
+  auto it = std::ranges::find(observers_, observer);
   CHECK(it != observers_.end(), base::NotFatalUntil::M130);
   observers_.erase(it);
 
@@ -134,7 +135,7 @@ void NetLog::RemoveCaptureModeObserver(
   DCHECK_EQ(this, observer->net_log_);
   DCHECK(HasCaptureModeObserver(observer));
 
-  auto it = base::ranges::find(capture_mode_observers_, observer);
+  auto it = std::ranges::find(capture_mode_observers_, observer);
   CHECK(it != capture_mode_observers_.end(), base::NotFatalUntil::M130);
   capture_mode_observers_.erase(it);
 

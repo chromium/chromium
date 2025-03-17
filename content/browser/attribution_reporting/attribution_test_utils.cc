@@ -51,6 +51,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/structured_headers.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -273,7 +274,8 @@ SourceBuilder& SourceBuilder::SetAggregatableNamedBudgetDefs(
 
 StorableSource SourceBuilder::Build() const {
   StorableSource source(reporting_origin_, registration_, source_origin_,
-                        source_type_, is_within_fenced_frame_);
+                        source_type_, is_within_fenced_frame_,
+                        ukm::kInvalidSourceId);
   source.set_cookie_based_debug_allowed(cookie_based_debug_allowed_);
   return source;
 }
@@ -467,7 +469,8 @@ AttributionTrigger TriggerBuilder::Build(
       aggregatable_named_budget_candidates_;
 
   return AttributionTrigger(reporting_origin_, std::move(reg),
-                            destination_origin_, is_within_fenced_frame_);
+                            destination_origin_, is_within_fenced_frame_,
+                            ukm::kInvalidSourceId);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(SuitableOrigin context_origin)

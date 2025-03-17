@@ -64,6 +64,9 @@ jclass GetSystemClassGlobalRef(JNIEnv* env, const char* class_name) {
 
 jclass g_object_class = nullptr;
 jclass g_string_class = nullptr;
+LeakedJavaGlobalRef<jstring> g_empty_string = nullptr;
+LeakedJavaGlobalRef<jobject> g_empty_list = nullptr;
+LeakedJavaGlobalRef<jobject> g_empty_map = nullptr;
 
 JNIEnv* AttachCurrentThread() {
   JNI_ZERO_DCHECK(g_jvm);
@@ -119,10 +122,16 @@ void DetachFromVM() {
 }
 
 void InitVM(JavaVM* vm) {
+  if (g_jvm) {
+    JNI_ZERO_CHECK(vm == g_jvm);
+    return;
+  }
   g_jvm = vm;
   JNIEnv* env = AttachCurrentThread();
   g_object_class = GetSystemClassGlobalRef(env, "java/lang/Object");
   g_string_class = GetSystemClassGlobalRef(env, "java/lang/String");
+  g_empty_string.Reset(
+      env, ScopedJavaLocalRef<jstring>(env, env->NewString(nullptr, 0)));
 #if defined(JNI_ZERO_MULTIPLEXING_ENABLED)
   Java_JniInit_crashIfMultiplexingMisaligned(env, kJniZeroHashWhole,
                                              kJniZeroHashPriority);
@@ -130,7 +139,13 @@ void InitVM(JavaVM* vm) {
   // Mark as used when multiplexing not enabled.
   (void)&Java_JniInit_crashIfMultiplexingMisaligned;
 #endif
-  CheckException(env);
+  ScopedJavaLocalRef<jobjectArray> globals = Java_JniInit_init(env);
+  g_empty_list.Reset(env,
+                     ScopedJavaLocalRef<jobject>(
+                         env, env->GetObjectArrayElement(globals.obj(), 0)));
+  g_empty_map.Reset(env,
+                    ScopedJavaLocalRef<jobject>(
+                        env, env->GetObjectArrayElement(globals.obj(), 1)));
 }
 
 void DisableJvmForTesting() {
@@ -170,6 +185,7 @@ void CheckException(JNIEnv* env) {
   if (g_exception_handler_callback) {
     return g_exception_handler_callback(env);
   }
+  env->ExceptionDescribe();
   JNI_ZERO_FLOG("jni_zero crashing due to uncaught Java exception");
 }
 

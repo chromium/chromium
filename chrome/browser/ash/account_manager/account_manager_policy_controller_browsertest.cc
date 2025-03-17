@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -17,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -31,9 +31,11 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/pref_names.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +46,7 @@ namespace {
 
 constexpr char kFakePrimaryUsername[] = "test-primary@example.com";
 constexpr char kFakeSecondaryUsername[] = "test-secondary@example.com";
-constexpr char kFakeSecondaryGaiaId[] = "fake-secondary-gaia-id";
+constexpr GaiaId::Literal kFakeSecondaryGaiaId("fake-secondary-gaia-id");
 
 }  // namespace
 
@@ -59,16 +61,29 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
 
   ~AccountManagerPolicyControllerTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Disable automatic login.
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+  }
+
   void SetUpOnMainThread() override {
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        kFakePrimaryUsername,
+        signin::GetTestGaiaIdForEmail(kFakePrimaryUsername));
+    ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+                    .AddRegularUser(account_id));
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
 
     // Prep private fields.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII(
         BrowserContextHelper::GetUserBrowserContextDirName(
-            user_manager::FakeUserManager::GetFakeUsernameHash(
-                AccountId::FromUserEmail(kFakePrimaryUsername)))));
+            user_manager::TestHelper::GetFakeUsernameHash(account_id))));
     profile_builder.SetProfileName(kFakePrimaryUsername);
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(profile_builder);
@@ -86,10 +101,9 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     const AccountInfo primary_account_info =
         identity_test_env->MakePrimaryAccountAvailable(
             kFakePrimaryUsername, signin::ConsentLevel::kSignin);
-    primary_account_id_ = AccountId::FromUserEmailGaiaId(
-        primary_account_info.email, primary_account_info.gaia);
-    fake_user_manager_->AddUser(primary_account_id_);
-    fake_user_manager_->LoginUser(primary_account_id_);
+    ASSERT_EQ(account_id,
+              AccountId::FromUserEmailGaiaId(primary_account_info.email,
+                                             primary_account_info.gaia));
 
     // Add accounts in Account Manager.
     account_manager_->UpsertAccount(
@@ -97,18 +111,16 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
         primary_account_info.email,
         account_manager::AccountManager::kInvalidToken);
     account_manager_->UpsertAccount(
-        ::account_manager::AccountKey::FromGaiaId(GaiaId(kFakeSecondaryGaiaId)),
+        ::account_manager::AccountKey::FromGaiaId(kFakeSecondaryGaiaId),
         kFakeSecondaryUsername, account_manager::AccountManager::kInvalidToken);
 
     AccountManagerPolicyControllerFactory::GetForBrowserContext(profile());
   }
 
   void TearDownOnMainThread() override {
-    fake_user_manager_->RemoveUserFromList(primary_account_id_);
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     base::RunLoop().RunUntilIdle();
-    fake_user_manager_.Reset();
   }
 
   std::vector<::account_manager::Account> GetAccountManagerAccounts() {
@@ -129,8 +141,6 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
 
  private:
   base::ScopedTempDir temp_dir_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
   raw_ptr<account_manager::AccountManager, DanglingUntriaged> account_manager_ =
       nullptr;
   raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =
@@ -138,7 +148,6 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
-  AccountId primary_account_id_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,

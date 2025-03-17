@@ -7,11 +7,13 @@ package org.chromium.components.payments;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** URL validity checker for web payment APIs. */
 @JNINamespace("payments::android")
+@NullMarked
 public class UrlUtil {
     /**
      * Returns false for invalid URL format or a relative URI.

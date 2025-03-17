@@ -40,7 +40,9 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
       Callbacks* callbacks,
       base::OnceClosure done_cb,
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor) override;
+          video_effects_processor,
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_video_effects_manager) override;
   void AbortLaunch() override;
 
  private:

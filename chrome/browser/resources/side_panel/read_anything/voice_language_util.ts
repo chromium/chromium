@@ -9,6 +9,10 @@ const STATUS_SUCCESS = 'Successful response';
 const STATUS_FAILURE = 'Unsuccessful response';
 const PARSING_ERROR = 'Cannot parse LanguagePackManager response';
 
+// Expect to hear responses from the extension within 6 seconds. Otherwise,
+// infer it probably wasn't installed.
+export const EXTENSION_RESPONSE_TIMEOUT_MS = 6000;
+
 // Representation of server-side LanguagePackManager state
 interface VoicePackServerResponseSuccess {
   id: 'Successful response';
@@ -75,9 +79,11 @@ export enum VoiceClientSideStatusCode {
 }
 
 export enum NotificationType {
-  NONE,         // No notification needed.
-  DOWNLOADING,  // Language is downloading.
-  DOWNLOADED,   // Language is downloaded.
+  NONE,                       // No notification needed.
+  DOWNLOADING,                // Language is downloading.
+  DOWNLOADED,                 // Language is downloaded.
+  GOOGLE_VOICES_UNAVAILABLE,  // Google voices are not available due to not
+                              // accessing the extension.
   NO_INTERNET,  // No available voices for this language due to no internet.
   NO_SPACE,     // No available voices for this language due to no space.
   NO_SPACE_HQ,  // No high-quality voices for this language due to no space.
@@ -121,7 +127,7 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
         availableVoices.filter(voice => !isGoogle(voice))
             .reduce((map, voice) => {
               map[voice.lang] = map[voice.lang] || [];
-              map[voice.lang].push(voice);
+              map[voice.lang]!.push(voice);
               return map;
             }, {} as {[language: string]: SpeechSynthesisVoice[]});
     // Only keep system voices that exactly match Google TTS supported locales,
@@ -134,9 +140,9 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
             })
             .filter(
                 systemVoice => AVAILABLE_GOOGLE_TTS_LOCALES.has(
-                                   systemVoice.lang.toLowerCase()) ||
+                                   systemVoice!.lang.toLowerCase()) ||
                     convertLangOrLocaleToExactVoicePackLocale(
-                        systemVoice.lang.toLowerCase()) === undefined);
+                        systemVoice!.lang.toLowerCase()) === undefined);
 
     // Keep all Google voices and one system voice per language.
     availableVoices = availableVoices.filter(
@@ -159,7 +165,11 @@ export function isGoogle(voice: SpeechSynthesisVoice|undefined) {
 }
 
 export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):
-    SpeechSynthesisVoice {
+    SpeechSynthesisVoice|undefined {
+  if (voices.length === 0) {
+    return undefined;
+  }
+
   const naturalVoice = voices.find(v => isNatural(v));
   if (naturalVoice) {
     return naturalVoice;
@@ -180,7 +190,7 @@ export function getNotification(
     return NotificationType.NONE;
   }
 
-  // TODO(b/300259625): Show more error messages.
+  // TODO: crbug.com/300259625 - Show more error messages.
   switch (status) {
     case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST:
     case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY:
@@ -349,8 +359,8 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
   }
 }
 
-// TODO: b/40927698: Make this private and use getVoicePackConvertedLangIfExists
-// instead.
+// TODO: crbug.com/40927698 - Make this private and use
+// getVoicePackConvertedLangIfExists instead.
 // The ChromeOS VoicePackManager labels some voices by locale, and some by
 // base-language. The request for each needs to be exact, so this function
 // converts a locale or language into the code the VoicePackManager expects.
@@ -419,7 +429,7 @@ function convertUnsupportedBaseLangToSupportedLocale(
     const enabledLocalesForLang =
         enabledLangs.filter(lang => lang.startsWith(baseLang));
     if (enabledLocalesForLang.length > 0) {
-      // TODO(crbug.com/335691447): If there is more than one enabled locale for
+      // TODO: crbug.com/335691447- If there is more than one enabled locale for
       // this lang, choose one based on browser prefs. For now, just default to
       // the first enabled locale.
       return enabledLocalesForLang[0];
@@ -433,14 +443,14 @@ function convertUnsupportedBaseLangToSupportedLocale(
     const availableLocalesForLang =
         availableLangs.filter(lang => lang.startsWith(baseLang));
     if (availableLocalesForLang.length > 0) {
-      // TODO(crbug.com/335691447): If there is more than one available locale
+      // TODO: crbug.com/335691447- If there is more than one available locale
       // for this lang, choose one based on browser prefs. For now, just default
       // to the first available locale.
       return availableLocalesForLang[0];
     }
   }
 
-  // TODO(crbug.com/335691447): Convert from base-lang to locale based on
+  // TODO: crbug.com/335691447- Convert from base-lang to locale based on
   // browser prefs.
 
   // Otherwise, just default to arbitrary locales.

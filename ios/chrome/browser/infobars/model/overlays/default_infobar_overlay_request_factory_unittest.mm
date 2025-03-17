@@ -6,9 +6,9 @@
 
 #import "base/feature_list.h"
 #import "base/uuid.h"
-#import "components/autofill/core/browser/data_model/autofill_i18n_api.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/infobars/core/infobar.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"

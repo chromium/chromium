@@ -25,7 +25,6 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_types.h"
 #include "media/video/video_encode_accelerator.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -33,11 +32,9 @@ class SequencedTaskRunner;
 
 namespace gfx {
 class ColorSpace;
-class Size;
 }  // namespace gfx
 
 namespace gpu {
-class GpuMemoryBufferManager;
 class SharedImageInterface;
 }  // namespace gpu
 
@@ -180,11 +177,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual std::unique_ptr<VideoEncodeAccelerator>
   CreateVideoEncodeAccelerator() = 0;
 
-  virtual std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) = 0;
-
   // |for_media_stream| specifies webrtc use case of media streams.
   virtual bool ShouldUseGpuMemoryBuffersForVideoFrames(
       bool for_media_stream) const = 0;
@@ -199,11 +191,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   // nullptr will be returned in cases where a context couldn't be created or
   // the context was lost.
   virtual gpu::SharedImageInterface* SharedImageInterface() = 0;
-
-  // Returns the GpuMemoryBufferManager that is used to allocate
-  // GpuMemoryBuffers. May return null if
-  // ShouldUseGpuMemoryBuffersForVideoFrames return false.
-  virtual gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() = 0;
 
   // Allocate & return an unsafe shared memory region
   virtual base::UnsafeSharedMemoryRegion CreateSharedMemoryRegion(

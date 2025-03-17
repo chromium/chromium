@@ -22,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "rlz/lib/lib_values.h"
 #include "rlz/lib/machine_id.h"
 #include "rlz/lib/rlz_lib.h"
@@ -38,7 +37,7 @@
 #include "base/time/time.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/i18n/time_formatting.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
@@ -46,7 +45,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void RemoveMachineIdFromUrl(std::string* url) {
   size_t id_offset = url->find("&id=");
   EXPECT_NE(std::string::npos, id_offset);
@@ -93,7 +92,7 @@ TEST_F(FinancialPingTest, FormRequest) {
   // Don't check the machine Id on Chrome OS since a random one is generated
   // each time.
   std::string machine_id;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool got_machine_id = false;
 #else
   bool got_machine_id = rlz_lib::GetMachineId(&machine_id);
@@ -103,7 +102,7 @@ TEST_F(FinancialPingTest, FormRequest) {
   EXPECT_TRUE(rlz_lib::FinancialPing::FormRequest(rlz_lib::TOOLBAR_NOTIFIER,
       points, "swg", brand, NULL, "en", false, &request));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Ignore the machine Id of the request URL.  On Chrome OS a random Id is
   // generated with each request.
   RemoveMachineIdFromUrl(&request);
@@ -123,7 +122,7 @@ TEST_F(FinancialPingTest, FormRequest) {
   EXPECT_TRUE(rlz_lib::FinancialPing::FormRequest(rlz_lib::TOOLBAR_NOTIFIER,
       points, "swg", brand, "IdOk2", NULL, false, &request));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Ignore the machine Id of the request URL.  On Chrome OS a random Id is
   // generated with each request.
   RemoveMachineIdFromUrl(&request);
@@ -317,7 +316,7 @@ TEST_F(FinancialPingTest, ClearLastPingTime) {
                                                  false));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FinancialPingTest, RlzEmbargoEndDate) {
   // Do not set last ping time, verify that |IsPingTime| returns true.
   EXPECT_TRUE(

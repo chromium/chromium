@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <sstream>
@@ -25,7 +26,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -332,8 +332,7 @@ void InputMethodManagerImpl::StateImpl::DisableNonLockScreenLayouts() {
     // Skip if it's not a keyboard layout. Drop input methods including
     // extension ones. We need to keep all IMEs to support inputting on inline
     // reply on a notification if notifications on lock screen is enabled.
-    if ((!ash::features::IsLockScreenInlineReplyEnabled() &&
-         !manager_->IsLoginKeyboard(input_method_id)) ||
+    if (!manager_->IsLoginKeyboard(input_method_id) ||
         added_ids.count(input_method_id)) {
       continue;
     }
@@ -672,7 +671,7 @@ void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
     }
 
     const auto currently_enabled_iter =
-        base::ranges::find(enabled_input_method_ids_, entry.first);
+        std::ranges::find(enabled_input_method_ids_, entry.first);
 
     bool currently_enabled =
         currently_enabled_iter != enabled_input_method_ids_.end();
@@ -788,8 +787,8 @@ void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethod() {
       GetEnabledInputMethodsSortedByLocalizedDisplayNames();
 
   auto iter =
-      base::ranges::find(sorted_enabled_input_methods, current_input_method_id,
-                         &InputMethodDescriptor::id);
+      std::ranges::find(sorted_enabled_input_methods, current_input_method_id,
+                        &InputMethodDescriptor::id);
 
   if (iter != sorted_enabled_input_methods.end()) {
     ++iter;
@@ -814,7 +813,7 @@ void InputMethodManagerImpl::StateImpl::SwitchToLastUsedInputMethod() {
   }
 
   const auto iter =
-      base::ranges::find(enabled_input_method_ids_, last_used_input_method_id_);
+      std::ranges::find(enabled_input_method_ids_, last_used_input_method_id_);
   if (iter == enabled_input_method_ids_.end()) {
     // last_used_input_method_id_ is not supported.
     SwitchToNextInputMethod();

@@ -156,8 +156,8 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         kBubbleBorderRadius));
+  SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                   kBubbleBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleBorderRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
@@ -197,8 +197,8 @@ void LoginBaseBubbleView::Show() {
 
   // Tell ChromeVox to read bubble contents.
   if (notify_a11y_alert_on_show_) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                             true /*send_native_event*/);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                       true /*send_native_event*/);
   }
 }
 

@@ -79,8 +79,7 @@ export interface TabSearchApiProxy {
 
   setTabOrganizationUserInstruction(user_instruction: string): void;
 
-  setUserFeedback(
-      sessionId: number, organizationId: number, feedback: UserFeedback): void;
+  setUserFeedback(sessionId: number, feedback: UserFeedback): void;
 
   notifyOrganizationUiReadyToShow(): void;
 
@@ -226,9 +225,8 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.setTabOrganizationUserInstruction(userInstruction);
   }
 
-  setUserFeedback(
-      sessionId: number, organizationId: number, feedback: UserFeedback) {
-    this.handler.setUserFeedback(sessionId, organizationId, feedback);
+  setUserFeedback(sessionId: number, feedback: UserFeedback) {
+    this.handler.setUserFeedback(sessionId, feedback);
   }
 
   notifyOrganizationUiReadyToShow() {

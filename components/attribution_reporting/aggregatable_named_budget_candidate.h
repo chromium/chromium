@@ -10,9 +10,12 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -39,7 +42,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableNamedBudgetCandidate {
   AggregatableNamedBudgetCandidate& operator=(
       AggregatableNamedBudgetCandidate&&);
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const AggregatableNamedBudgetCandidate&,
                          const AggregatableNamedBudgetCandidate&) = default;

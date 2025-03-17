@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -37,6 +38,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "media/base/media_content_type.h"
+#include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -77,6 +79,9 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
 
   AudioFocusDelegate::AudioFocusResult RequestAudioFocus(
       AudioFocusType audio_focus_type) override {
+    if (audio_focus_request_waiter_) {
+      audio_focus_request_waiter_->Quit();
+    }
     if (async_mode_) {
       requests_.push_back(audio_focus_type);
       return AudioFocusDelegate::AudioFocusResult::kDelayed;
@@ -115,12 +120,22 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
     sync_result_ = result;
   }
 
+  void WaitForAudioFocusRequested() {
+    if (audio_focus_type_.has_value() || !requests_.empty()) {
+      return;
+    }
+    audio_focus_request_waiter_ = std::make_unique<base::RunLoop>();
+    audio_focus_request_waiter_->Run();
+  }
+
  private:
   AudioFocusDelegate::AudioFocusResult sync_result_ =
       AudioFocusDelegate::AudioFocusResult::kSuccess;
 
   raw_ptr<content::MediaSessionImpl> media_session_ = nullptr;
   const bool async_mode_ = false;
+
+  std::unique_ptr<base::RunLoop> audio_focus_request_waiter_;
 
   std::list<AudioFocusType> requests_;
   std::optional<AudioFocusType> audio_focus_type_;
@@ -208,6 +223,12 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     media_session_->SetDelegateForTests(
         base::WrapUnique(mock_audio_focus_delegate_.get()));
     ASSERT_TRUE(media_session_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        switches::kAutoplayPolicy,
+        switches::autoplay::kNoUserGestureRequiredPolicy);
   }
 
   void TearDownOnMainThread() override {
@@ -524,12 +545,15 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   StartNewPlayer(player_observer.get());
   SystemStartDucking();
 
-  EXPECT_EQ(kDuckingVolumeMultiplier, player_observer->GetVolumeMultiplier(0));
-  EXPECT_EQ(kDuckingVolumeMultiplier, player_observer->GetVolumeMultiplier(1));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(0));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(1));
 
   StartNewPlayer(player_observer.get());
 
-  EXPECT_EQ(kDuckingVolumeMultiplier, player_observer->GetVolumeMultiplier(2));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(2));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
@@ -585,8 +609,8 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   EXPECT_FALSE(IsActive());
 
   SystemStartDucking();
-  EXPECT_EQ(kDuckingVolumeMultiplier,
-            player_observer->GetVolumeMultiplier(player_id));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(player_id));
 
   // On resume, ducking should stop.
   UIResume();
@@ -3285,6 +3309,22 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
   // Verify that the waiter does not meet visibility.
   EXPECT_FALSE(waiter.MeetsVisibility());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       WebAudioPlayersAreRegisteredAsAmbientPlayers) {
+  // Start WebAudio playback.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), content::GetTestUrl("media/webaudio/", "playback-test.html")));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1"));
+
+  // The WebAudio playback should request ambient audio focus.
+  mock_audio_focus_delegate()->WaitForAudioFocusRequested();
+  ResolveAudioFocusSuccess();
+  ASSERT_TRUE(GetSessionAudioFocusType().has_value());
+  EXPECT_EQ(AudioFocusType::kAmbient, *GetSessionAudioFocusType());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class MediaSessionImplPrerenderingBrowserTest
     : public MediaSessionImplBrowserTest {

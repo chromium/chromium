@@ -32,7 +32,9 @@ Status StubDevToolsClient::SetTunnelSessionId(std::string session_id) {
   return Status{kOk};
 }
 
-Status StubDevToolsClient::StartBidiServer(std::string bidi_mapper_script) {
+Status StubDevToolsClient::StartBidiServer(
+    std::string bidi_mapper_script,
+    bool enable_unsafe_extension_debugging) {
   return Status{kOk};
 }
 

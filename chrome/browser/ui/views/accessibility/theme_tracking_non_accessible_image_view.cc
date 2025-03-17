@@ -8,13 +8,15 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const ui::ImageModel& light_image_model,
     const ui::ImageModel& dark_image_model,
-    const base::RepeatingCallback<SkColor()>& get_background_color_callback)
+    const base::RepeatingCallback<ui::ColorVariant()>&
+        get_background_color_callback)
     : views::ThemeTrackingImageView(light_image_model,
                                     dark_image_model,
                                     get_background_color_callback) {
@@ -24,7 +26,8 @@ ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
 ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const gfx::ImageSkia& light_image,
     const gfx::ImageSkia& dark_image,
-    const base::RepeatingCallback<SkColor()>& get_background_color_callback)
+    const base::RepeatingCallback<ui::ColorVariant()>&
+        get_background_color_callback)
     : views::ThemeTrackingImageView(light_image,
                                     dark_image,
                                     get_background_color_callback) {

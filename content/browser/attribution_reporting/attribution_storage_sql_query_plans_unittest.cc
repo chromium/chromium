@@ -203,8 +203,7 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitAttributionAllowedSql) {
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceAllowedSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kRateLimitSourceAllowedSql),
-              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
-                                {"scope", "source_site"})));
+              ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest,
@@ -220,16 +219,14 @@ TEST_F(AttributionSqlQueryPlanTest,
        kRateLimitSourceAllowedDestinationPerDayRateLimitSql) {
   EXPECT_THAT(GetPlan(attribution_queries::
                           kRateLimitSourceAllowedDestinationPerDayRateLimitSql),
-              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
-                                {"scope", "source_site"})));
+              ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
   EXPECT_THAT(
       GetPlan(
           attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql),
-      ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
-                        {"scope", "source_site"})));
+      ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest,
@@ -240,6 +237,23 @@ TEST_F(AttributionSqlQueryPlanTest,
               kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql),
       ValueIs(
           UsesIndex("rate_limit_attribution_destination_reporting_site_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitCountUniqueReportingOriginsPerReportingSiteForSourceSql) {
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::
+              kRateLimitCountUniqueReportingOriginsPerReportingSiteForSourceSql),
+      ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::
+                  kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql),
+      ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectSourceReportingOriginsSql) {
@@ -323,6 +337,41 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteAggregatableDebugRateLimitRangeSql) {
   EXPECT_THAT(
       GetPlan(attribution_queries::kDeleteAggregatableDebugRateLimitRangeSql),
       ValueIs(UsesIndex("aggregatable_debug_rate_limits_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteExpiredOsRegistrationsSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteExpiredOsRegistrationsSql),
+              ValueIs(UsesCoveringIndex("os_registrations_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kSelectOsRegistrationsForDeletionSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kSelectOsRegistrationsForDeletionSql),
+      ValueIs(UsesCoveringIndex("os_registrations_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationsRangeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteOsRegistrationsRangeSql),
+              ValueIs(UsesCoveringIndex("os_registrations_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationAtTimeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteOsRegistrationAtTimeSql),
+              ValueIs(UsesPrimaryKey()));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteOsRegistrationSql),
+              ValueIs(UsesPrimaryKey()));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kGetOsRegistrationDataKeysSql) {
+  // Based on the output from EXPLAIN, while it is effectively a full scan, it
+  // is doing a streaming deduplication based on the fact that the rows are
+  // already primarily ordered by `registration_origin`.
+  EXPECT_THAT(GetPlan(attribution_queries::kGetOsRegistrationDataKeysSql),
+              base::test::ErrorIs(
+                  SqlQueryPlanExplainer::Error::kMissingFullScanAnnotation));
 }
 
 }  // namespace

@@ -6,14 +6,18 @@ package org.chromium.chrome.browser.profiles;
 
 import android.os.SystemClock;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** A utility class for applying operations on all loaded profiles. */
+@NullMarked
 public class ProfileManagerUtils {
     private static final long BOOT_TIMESTAMP_MARGIN_MS = 1000;
 
@@ -52,8 +56,9 @@ public class ProfileManagerUtils {
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void flushPersistentDataForAllProfiles();
 
         void removeSessionCookiesForAllProfiles();

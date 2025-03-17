@@ -285,7 +285,7 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
   }
 
   if (text_label()) {
-    text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *text_label());
   }
@@ -324,8 +324,8 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
 void NetworkListNetworkItemView::NetworkIconChanged() {
   DCHECK(views::IsViewClass<views::ImageView>(left_view()));
   static_cast<views::ImageView*>(left_view())
-      ->SetImage(
-          GetNetworkImageForNetwork(GetColorProvider(), network_properties_));
+      ->SetImage(ui::ImageModel::FromImageSkia(
+          GetNetworkImageForNetwork(GetColorProvider(), network_properties_)));
 }
 
 void NetworkListNetworkItemView::OnThemeChanged() {
@@ -345,7 +345,7 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
   }
 
   SetSubText(l10n_util::GetStringUTF16(cellular_subtext_message_id));
-  sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
+  sub_text_label()->SetEnabledColor(cros_tokens::kCrosSysWarning);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *sub_text_label());
 }
@@ -411,7 +411,7 @@ void NetworkListNetworkItemView::AddPolicyView() {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   controlled_icon->SetImage(
-      gfx::CreateVectorIcon(kSystemMenuBusinessIcon, icon_color));
+      ui::ImageModel::FromVectorIcon(kSystemMenuBusinessIcon, icon_color));
   AddRightView(controlled_icon.release());
 }
 

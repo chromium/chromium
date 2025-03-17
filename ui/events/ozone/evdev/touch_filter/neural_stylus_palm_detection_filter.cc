@@ -9,6 +9,7 @@
 
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -21,7 +22,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
@@ -568,7 +568,7 @@ bool NeuralStylusPalmDetectionFilter::
 
   static constexpr int kRequiredAbsMtCodes[] = {
       ABS_MT_POSITION_X, ABS_MT_POSITION_Y, ABS_MT_TOUCH_MAJOR};
-  if (!base::ranges::all_of(kRequiredAbsMtCodes, code_check)) {
+  if (!std::ranges::all_of(kRequiredAbsMtCodes, code_check)) {
     return false;
   }
 

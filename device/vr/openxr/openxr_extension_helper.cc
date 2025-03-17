@@ -4,11 +4,11 @@
 
 #include "device/vr/openxr/openxr_extension_helper.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_extension_handler_factories.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
@@ -85,7 +85,7 @@ OpenXrExtensionEnumeration::~OpenXrExtensionEnumeration() = default;
 
 bool OpenXrExtensionEnumeration::ExtensionSupported(
     const char* extension_name) const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       extension_properties_,
       [&extension_name](const XrExtensionProperties& properties) {
         return strcmp(properties.extensionName, extension_name) == 0;
@@ -158,7 +158,7 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
     case device::mojom::XRSessionFeature::HIT_TEST:
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
-      return base::ranges::any_of(
+      return std::ranges::any_of(
           GetExtensionHandlerFactories(),
           [feature, &extension_enum](const auto* extension_handler_factory) {
             return base::Contains(

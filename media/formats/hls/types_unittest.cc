@@ -896,8 +896,8 @@ TEST(HlsTypesTest, ParseAudioChannels) {
         ASSERT_TRUE(result.has_value()) << from.ToString();
         const auto value = std::move(result).value();
         EXPECT_EQ(value.GetMaxChannels(), max_channels) << from.ToString();
-        EXPECT_TRUE(base::ranges::equal(value.GetAudioCodingIdentifiers(),
-                                        audio_coding_identifiers))
+        EXPECT_TRUE(std::ranges::equal(value.GetAudioCodingIdentifiers(),
+                                       audio_coding_identifiers))
             << from.ToString();
       };
   constexpr auto error_test = [](std::string_view str,

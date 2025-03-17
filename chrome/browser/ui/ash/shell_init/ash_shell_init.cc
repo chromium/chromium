@@ -10,21 +10,21 @@
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui_factory.h"
 #include "chrome/browser/ui/ash/shell_delegate/chrome_shell_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/context_factory.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace {
 
-void CreateShell() {
+void CreateShell(PrefService& local_state) {
   ash::ShellInitParams shell_init_params;
   shell_init_params.delegate = std::make_unique<ChromeShellDelegate>();
   shell_init_params.context_factory = content::GetContextFactory();
-  shell_init_params.local_state = g_browser_process->local_state();
+  shell_init_params.local_state = &local_state;
   shell_init_params.keyboard_ui_factory =
       std::make_unique<ChromeKeyboardUIFactory>();
   shell_init_params.quick_pair_mediator_factory =
@@ -36,8 +36,8 @@ void CreateShell() {
 
 }  // namespace
 
-AshShellInit::AshShellInit() {
-  CreateShell();
+AshShellInit::AshShellInit(PrefService& local_state) {
+  CreateShell(local_state);
   ash::Shell::GetPrimaryRootWindow()->GetHost()->Show();
 }
 

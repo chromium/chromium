@@ -29,7 +29,7 @@ class TestShareKitService : public ShareKitService {
   TestShareKitService(
       data_sharing::DataSharingService* data_sharing_service,
       collaboration::CollaborationService* collaboration_service,
-      tab_groups::TabGroupSyncService* sync_service);
+      tab_groups::TabGroupSyncService* tab_group_sync_service);
   TestShareKitService(const TestShareKitService&) = delete;
   TestShareKitService& operator=(const TestShareKitService&) = delete;
   ~TestShareKitService() override;
@@ -49,16 +49,28 @@ class TestShareKitService : public ShareKitService {
   id<ShareKitAvatarPrimitive> AvatarImage(
       ShareKitAvatarConfiguration* config) override;
 
+  // Creates the shared tab group with the given `collab_id` and saves it to the
+  // fake server.
+  void CreateSharedTabGroupInFakeServer(NSString* collab_id);
+
   // KeyedService.
   void Shutdown() override;
 
  private:
   // Sets the `collab_id` for the given `tab_group_id`.
-  void SetTabGroupCollabID(tab_groups::LocalTabGroupID tab_group_id,
-                           NSString* collab_id);
+  void SetTabGroupCollabIdFromGroupId(tab_groups::LocalTabGroupID tab_group_id,
+                                      NSString* collab_id);
+
+  // Sets the `collab_id` for the given `group_guid`.
+  void SetTabGroupCollabIdFromGroupGuid(base::Uuid group_guid,
+                                        NSString* collab_id);
+
+  // Whether the user is the owner of the most-recently-updated group. This is
+  // a workaround to update the user's role based on the specific tested flow.
+  bool is_owner_ = false;
 
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
-  raw_ptr<tab_groups::TabGroupSyncService> sync_service_;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   base::WeakPtrFactory<TestShareKitService> weak_pointer_factory_{this};
 };
 

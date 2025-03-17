@@ -42,7 +42,7 @@ swift_source_set("widget_kit_extension_swift") {
     "search_widget.swift",
     "shortcuts_widget.swift",
     "timeline_provider_util.swift",
-    "widget_constants.swift",
+    "widget_urls.swift",
   ]
   bridge_header = "widget_kit_swift_bridge.h"
 

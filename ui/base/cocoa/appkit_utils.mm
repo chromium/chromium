@@ -4,19 +4,15 @@
 
 #import "ui/base/cocoa/appkit_utils.h"
 
+#import <Cocoa/Cocoa.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #include <cmath>
 
 #include "base/mac/mac_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace {
-
-// Double-click in window title bar actions.
-enum class DoubleClickAction {
-  NONE,
-  MINIMIZE,
-  MAXIMIZE,
-};
 
 // Values of com.apple.trackpad.forceClick corresponding to "Look up & data
 // detectors" in System Preferences -> Trackpad -> Point & Click.
@@ -37,6 +33,37 @@ bool ForceClickInvokesQuickLook() {
 
 bool IsCGFloatEqual(CGFloat a, CGFloat b) {
   return std::fabs(a - b) <= std::numeric_limits<CGFloat>::epsilon();
+}
+
+UTType* UTTypeForServicesType(NSString* type) {
+  if (!type) {
+    return nil;
+  }
+
+  // `type` is either a modern UTType identifier, or an obsolete Pboard type.
+  // Try one, then the other.
+  UTType* uttype = [UTType typeWithIdentifier:type];
+  if (uttype) {
+    return uttype;
+  }
+
+  // The UTType API provides two UTTagClass values: UTTagClassFilenameExtension
+  // and UTTagClassMIMEType, but there are other internal ones. This is one of
+  // the private internal tag classes, the tag class that corresponds to the
+  // deprecated kUTTagClassNSPboardType.
+  return [UTType typeWithTag:type
+                    tagClass:@"com.apple.nspboard-type"
+            conformingToType:nil];
+}
+
+NSSet<UTType*>* UTTypesForServicesTypeArray(NSArray* types) {
+  NSMutableSet* result = [NSMutableSet set];
+  for (NSString* type in types) {
+    if (UTType* uttype = UTTypeForServicesType(type)) {
+      [result addObject:uttype];
+    }
+  }
+  return result;
 }
 
 }  // namespace ui

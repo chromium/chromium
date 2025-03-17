@@ -100,6 +100,10 @@ const base::ProcessId& TestTaskManager::GetProcessId(TaskId task_id) const {
   return pid_;
 }
 
+TaskId TestTaskManager::GetRootTaskId(TaskId task_id) const {
+  return 0;
+}
+
 Task::Type TestTaskManager::GetType(TaskId task_id) const {
   return Task::UNKNOWN;
 }
@@ -185,6 +189,10 @@ bool TestTaskManager::IsRunningInVM(TaskId task_id) const {
 TaskId TestTaskManager::GetTaskIdForWebContents(
     content::WebContents* web_contents) const {
   return -1;
+}
+
+bool TestTaskManager::IsTaskValid(TaskId task_id) const {
+  return true;
 }
 
 base::TimeDelta TestTaskManager::GetRefreshTime() {

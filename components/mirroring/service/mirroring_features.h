@@ -11,11 +11,6 @@
 
 namespace mirroring {
 namespace features {
-// TODO(crbug.com/40177436): Remove model name checks for querying receiver
-// capabilities.
-COMPONENT_EXPORT(MIRRORING_SERVICE)
-BASE_DECLARE_FEATURE(kCastDisableModelNameCheck);
-
 // TODO(crbug.com/40255351): Should be removed once working properly.
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastEnableStreamingWithHiDPI);

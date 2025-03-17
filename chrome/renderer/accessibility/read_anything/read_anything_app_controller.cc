@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
 
 #include <climits>
@@ -16,13 +21,16 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
+#include "build/build_config.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -419,8 +427,9 @@ ReadAnythingAppController::ReadAnythingAppController(
       factory.BindNewPipeAndPassReceiver());
   ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    model_.SetDataCollectionForScreen2xCallback(base::BindRepeating(
-        &ReadAnythingAppController::Distill, weak_ptr_factory_.GetWeakPtr()));
+    model_.SetDataCollectionForScreen2xCallback(
+        base::BindOnce(&ReadAnythingAppController::DistillAndScreenshot,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   model_observer_.Observe(&model_);
@@ -495,7 +504,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   }
 
   if (model_.requires_distillation()) {
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 
   if (model_.redraw_required()) {
@@ -575,7 +584,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // case, do not distill.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown() &&
       model_.ContainsTree(model_.active_tree_id())) {
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 }
 
@@ -592,7 +601,25 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   model_.OnAXTreeDestroyed(tree_id);
 }
 
-void ReadAnythingAppController::Distill() {
+void ReadAnythingAppController::DistillAndScreenshot() {
+  // For screen2x data generation mode, chrome is opened from the CLI to a
+  // specific URL. The caller monitors for a dump of the distilled proto written
+  // to a local file. Distill should only be called once the page finished
+  // loading and is stable, so the proto represents the entire webpage.
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  CHECK(model_.PageFinishedLoadingForDataCollection());
+  CHECK(model_.ScreenAIServiceReadyForDataCollection());
+
+  Distill(/*for_training_data=*/true);
+  page_handler_->OnScreenshotRequested();
+}
+
+void ReadAnythingAppController::Distill(bool for_training_data) {
+  if (!for_training_data &&
+      features::IsDataCollectionModeForScreen2xEnabled()) {
+    return;
+  }
+
   if (model_.distillation_in_progress() || read_aloud_model_.speech_playing()) {
     // When distillation is in progress, the model may have queued up tree
     // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
@@ -601,22 +628,6 @@ void ReadAnythingAppController::Distill() {
     // re-request `Distill`.
     model_.set_requires_distillation(true);
     return;
-  }
-
-  // For screen2x data generation mode, chrome is open from the CLI to a
-  // specific URL. The caller monitors for a dump of the distilled proto written
-  // to a local file. Distill should only be called once the page is finished
-  // loading, so we have the proto representing the entire webpage.
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    if (!model_.PageFinishedLoadingForDataCollection() ||
-        !model_.ScreenAIServiceReadyForDataColletion()) {
-      return;
-    }
-    // Request a screenshot of the active page when no more distillations are
-    // required. Send a screenshot request to its browser controller using
-    // `PaintPreview` to take a whole-page screenshot of the active web
-    // contents.
-    page_handler_->OnScreenshotRequested();
   }
 
   model_.set_requires_distillation(false);
@@ -720,7 +731,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
       model_.GetTreeFromId(model_.active_tree_id())->root()->GetLanguage();
   if (!language.empty()) {
     base::UmaHistogramSparse(
-        string_constants::kLanguageHistogramName,
+        "Accessibility.ReadAnything.Language",
         base::HashMetricName(language::ExtractBaseLanguage(language)));
   }
 
@@ -729,7 +740,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // `requires_distillation()` state below).
   model_.UnserializePendingUpdates(tree_id);
   if (model_.requires_distillation()) {
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 }
 
@@ -778,8 +789,8 @@ void ReadAnythingAppController::DrawSelection() {
 
 void ReadAnythingAppController::DrawEmptyState() {
   ExecuteJavaScript("chrome.readingMode.showEmpty();");
-  base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
-                                ReadAnythingEmptyState::kEmptyStateShown);
+  base::UmaHistogramEnumeration(ReadAnythingAppModel::kEmptyStateHistogramName,
+                                ReadAnythingAppModel::EmptyState::kShown);
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
@@ -810,7 +821,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    model_.SetScreenAIServiceReadyForDataColletion(true);
+    model_.SetScreenAIServiceReadyForDataCollection();
   }
   distiller_->ScreenAIServiceReady();
 }
@@ -1034,12 +1045,9 @@ double ReadAnythingAppController::SpeechRate() const {
 }
 
 std::string ReadAnythingAppController::GetStoredVoice() const {
-  std::string lang = model_.base_language_code();
-  if (read_aloud_model_.voices().contains(lang)) {
-    return *read_aloud_model_.voices().FindString(lang);
-  }
-
-  return string_constants::kReadAnythingPlaceholderVoiceName;
+  const std::string* const voice =
+      read_aloud_model_.voices().FindString(model_.base_language_code());
+  return voice ? *voice : std::string();
 }
 
 std::vector<std::string> ReadAnythingAppController::GetLanguagesEnabledInPref()
@@ -1270,7 +1278,7 @@ bool ReadAnythingAppController::IsReadAloudEnabled() const {
 }
 
 bool ReadAnythingAppController::IsChromeOsAsh() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -1282,19 +1290,22 @@ bool ReadAnythingAppController::IsGoogleDocs() const {
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
-  return model_.GetSupportedFonts();
+  return model_.supported_fonts();
 }
 
 std::string ReadAnythingAppController::GetValidatedFontName(
     const std::string& font) const {
-  bool is_valid = base::Contains(fonts::kReadAnythingFonts, font);
-  return is_valid ? fonts::kFontInfos.at(font).css_name
-                  : string_constants::kReadAnythingDefaultFont;
+  if (!base::Contains(GetAllFonts(), font)) {
+    return GetAllFonts().front();
+  }
+  if (font == "Serif" || font == "Sans-serif") {
+    return base::ToLowerASCII(font);
+  }
+  return base::Contains(font, ' ') ? base::StrCat({"\"", font, "\""}) : font;
 }
 
-std::vector<std::string> ReadAnythingAppController::GetAllFonts() {
-  return std::vector<std::string>(std::begin(fonts::kReadAnythingFonts),
-                                  std::end(fonts::kReadAnythingFonts));
+std::vector<std::string> ReadAnythingAppController::GetAllFonts() const {
+  return ::GetSupportedFonts({});
 }
 
 void ReadAnythingAppController::RequestImageDataUrl(
@@ -1459,12 +1470,7 @@ void ReadAnythingAppController::OnCopy() const {
 }
 
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
-  if (increase) {
-    model_.IncreaseTextSize();
-  } else {
-    model_.DecreaseTextSize();
-  }
-
+  model_.AdjustTextSize(increase ? 1 : -1);
   page_handler_->OnFontSizeChange(model_.font_size());
 }
 
@@ -1700,7 +1706,7 @@ void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
   ExecuteJavaScript("chrome.readingMode.languageChanged();");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingAppController::OnDeviceLocked() {
   // Signal to the WebUI that the device has been locked. We'll only receive
   // this callback on ChromeOS.
@@ -1761,7 +1767,7 @@ void ReadAnythingAppController::OnSpeechPlayingStateChanged(
     // TODO: b/40927698 - Do something smarter than completely re-distilling
     // when the update is small. Right now this resets the speech position to
     // the beginning which is annoying if the page is mostly the same.
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 }
 
@@ -1861,10 +1867,10 @@ void ReadAnythingAppController::OnTreeAdded(ui::AXTree* tree) {
 }
 
 void ReadAnythingAppController::OnTreeRemoved(ui::AXTree* tree) {
-  auto it = base::ranges::find_if(tree_observers_,
-                                  [tree](const auto& observation) -> bool {
-                                    return observation->GetSource() == tree;
-                                  });
+  auto it = std::ranges::find_if(tree_observers_,
+                                 [tree](const auto& observation) -> bool {
+                                   return observation->GetSource() == tree;
+                                 });
   if (it != tree_observers_.end()) {
     tree_observers_.erase(it);
   }

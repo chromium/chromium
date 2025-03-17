@@ -7,10 +7,10 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
-
 #include "base/test/task_environment.h"
+#include "skia/ext/skia_utils_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 
@@ -129,7 +129,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   auto segment_reader = parkable_image->CreateSegmentReader();
   segment_reader->LockData();
   auto sk_data = segment_reader->GetAsSkData();
-  auto sk_data_span = base::span(sk_data->bytes(), sk_data->size());
+  auto sk_data_span = skia::as_byte_span(*sk_data);
 
   size_t position = 0;
   for (base::span<const uint8_t> segment =

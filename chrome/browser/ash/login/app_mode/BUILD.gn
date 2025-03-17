@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_mode") {
   sources = [
@@ -28,7 +26,6 @@ static_library("app_mode") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
@@ -36,7 +33,6 @@ static_library("app_mode") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//components/crash/core/common",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",
@@ -74,9 +70,6 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode:test_support",
     "//chrome/browser/ash/app_mode/web_app",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/browser/ash/crosapi:browser_util",
-    "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/login/screens:test_support",
     "//chrome/browser/ash/login/users:test_support",
@@ -89,7 +82,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network",
-    "//chromeos/ash/components/standalone_browser",
     "//components/account_id",
     "//components/crash/core/common",
     "//components/policy:generated",

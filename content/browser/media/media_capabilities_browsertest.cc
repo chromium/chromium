@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -109,7 +110,7 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
       base::StringAppendF(&command, "testAudioConfig(");
     } else if (stream_type == StreamType::kAudioWithSpatialRendering) {
       base::StringAppendF(&command, "testAudioConfigWithSpatialRendering(%s,",
-                          spatial_rendering ? "true" : "false");
+                          base::ToString(spatial_rendering));
     } else if (stream_type == StreamType::kVideoWithHdrMetadata) {
       command.append("testVideoConfigWithHdrMetadata(");
       for (auto x : {hdr_metadata_type, color_gamut, transfer_function}) {

@@ -244,6 +244,40 @@ TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
       0u);
 }
 
+// Tests that visible on all desk window overview items are parented to the
+// active desk container once a coral group is launched. Regression test for
+// crbug.com/383892354.
+TEST_F(CoralControllerTest, VisibleOnAllDeskWindows) {
+  // Create two apps with the same app id's as the test coral group. Set one to
+  // be visible on all desks.
+  auto window1 = CreateAppWindow();
+  window1->SetProperty(kAppIDKey,
+                       std::string("odknhmnlageboeamepcngndbggdpaobj"));
+  window1->SetProperty(aura::client::kWindowWorkspaceKey,
+                       aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+  auto window2 = CreateAppWindow();
+  window2->SetProperty(kAppIDKey,
+                       std::string("fkiggjmkendpmbegkagpmagjepfkpmeb"));
+  CreateTestGroup({{"Settings", "odknhmnlageboeamepcngndbggdpaobj"},
+                   {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
+                  "Coral Group");
+
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  ClickFirstCoralButton();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+  ASSERT_EQ(DesksController::Get()->GetNumberOfDesks(), 2);
+
+  // Both items should be parented to the active desk container.
+  OverviewItemBase* item1 = GetOverviewItemForWindow(window1.get());
+  OverviewItemBase* item2 = GetOverviewItemForWindow(window2.get());
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(
+      item1->item_widget()->GetNativeWindow()->parent()));
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(
+      item2->item_widget()->GetNativeWindow()->parent()));
+}
+
 // Tests that there is no crash when removing a coral chip by user.
 TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
   Shell::Get()->overview_controller()->StartOverview(
@@ -252,6 +286,69 @@ TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
   // Remove the first coral chip and there should be no crash.
   CoralChipButton* coral_chip = GetFirstCoralButton();
   BirchBarController::Get()->OnItemHiddenByUser(coral_chip->GetItem());
+}
+
+// Tests that the grouping request contains the initial tab and app entities
+// restored on the desk.
+TEST_F(CoralControllerTest, RestoreSuppressionContext) {
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")}},
+                      "Coral desk"));
+  OverrideTestResponse(std::move(test_groups), CoralSource::kPostLogin);
+
+  // Enter overview and click on the chip to restore the items to the active
+  // desk.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  ClickFirstCoralButton();
+
+  // Re-enter Overview, the request should contains the restored items.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Manually send an in-session request.
+  BirchCoralProvider::Get()->HandleInSessionDataRequest();
+
+  const auto& request = BirchCoralProvider::Get()->GetCoralRequestForTest();
+  EXPECT_EQ(request.suppression_context().size(), 2u);
+  EXPECT_EQ(request.suppression_context()[0]->get_tab()->url,
+            GURL("https://google.com/"));
+  EXPECT_EQ(request.suppression_context()[1]->get_tab()->url,
+            GURL("https://youtube.com/"));
+}
+
+// Tests that the grouping request contains the initial tab and app entities
+// used to create the desk.
+TEST_F(CoralControllerTest, InSessionSuppressionContext) {
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")}},
+                      "Coral desk"));
+  OverrideTestResponse(std::move(test_groups), CoralSource::kInSession);
+
+  // Enter overview and click on the chip to restore the items to the active
+  // desk.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  ClickFirstCoralButton();
+
+  // End and re-enter Overview, the request should contains the restored items.
+  Shell::Get()->overview_controller()->EndOverview(OverviewEndAction::kTests);
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Manually send an in-session request.
+  BirchCoralProvider::Get()->HandleInSessionDataRequest();
+
+  const auto& request = BirchCoralProvider::Get()->GetCoralRequestForTest();
+  EXPECT_EQ(request.suppression_context().size(), 2u);
+  EXPECT_EQ(request.suppression_context()[0]->get_tab()->url,
+            GURL("https://google.com/"));
+  EXPECT_EQ(request.suppression_context()[1]->get_tab()->url,
+            GURL("https://youtube.com/"));
 }
 
 class CoralSavedGroupTest : public CoralControllerTest {
@@ -481,6 +578,71 @@ TEST_F(CoralSavedGroupTest, CheckGridItems) {
   const SavedDeskGridView* coral_grid_view =
       SavedDeskLibraryViewTestApi(library_view).coral_grid_view();
   EXPECT_EQ(coral_grid_view->grid_items().size(), 2u);
+}
+
+// Tests that the suppression context will be saved in the desk template.
+TEST_F(CoralSavedGroupTest, SaveSuppressionContext) {
+  // Create some windows with app ids.
+  auto window1 = CreateAppWindow();
+  auto window2 = CreateAppWindow();
+  window1->SetProperty(kAppIDKey, std::string("window1_app_id"));
+  window2->SetProperty(kAppIDKey, std::string("window2_app_id"));
+
+  // Simulate having app launch info for these windows.
+  static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
+      ->set_app_ids_with_app_launch_info({"window1_app_id", "window2_app_id"});
+
+  // Prepare a coral response.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")},
+                       {"Window1", "window1_app_id"},
+                       {"Window2", "window2_app_id"}},
+                      "Coral desk"));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Enter overview and click on the save as group menu item.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+  LeftClickOn(save_as_group_item);
+
+  // Tests that the saved desk library is shown.
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    OverviewSession* session = OverviewController::Get()->overview_session();
+    return session && session->IsShowingSavedDeskLibrary();
+  }));
+
+  // Click on the only saved desk entry.
+  const views::Button* saved_group_launch_button =
+      GetSavedDeskItemButton(/*index=*/0);
+  LeftClickOn(saved_group_launch_button);
+
+  // We create a new desk of type coral.
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
+  ASSERT_EQ(desks_controller->desks().back()->type(), Desk::Type::kCoral);
+
+  // End and activate the coral desk.
+  Shell::Get()->overview_controller()->EndOverview(OverviewEndAction::kTests);
+  ActivateDesk(desks_controller->desks().back().get());
+
+  // Re-enter Overview, the request should contains the restored items.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Manually send an in-session request.
+  BirchCoralProvider::Get()->HandleInSessionDataRequest();
+
+  const auto& request = BirchCoralProvider::Get()->GetCoralRequestForTest();
+  ASSERT_EQ(request.suppression_context().size(), 4u);
+  EXPECT_EQ(request.suppression_context()[0]->get_tab()->url,
+            GURL("https://google.com/"));
+  EXPECT_EQ(request.suppression_context()[1]->get_tab()->url,
+            GURL("https://youtube.com/"));
+  EXPECT_EQ(request.suppression_context()[2]->get_app()->id, "window1_app_id");
+  EXPECT_EQ(request.suppression_context()[3]->get_app()->id, "window2_app_id");
 }
 
 }  // namespace ash

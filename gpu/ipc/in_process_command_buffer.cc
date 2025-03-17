@@ -249,8 +249,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
       workarounds, task_executor_->gpu_feature_info());
   context_group_ = base::MakeRefCounted<gles2::ContextGroup>(
-      task_executor_->gpu_preferences(),
-      gles2::PassthroughCommandDecoderSupported(), std::move(memory_tracker),
+      task_executor_->gpu_preferences(), std::move(memory_tracker),
       task_executor_->shader_translator_cache(),
       task_executor_->framebuffer_completeness_cache(), feature_info,
       params.attribs->bind_generates_resource, nullptr /* progress_reporter */,

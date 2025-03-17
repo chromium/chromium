@@ -1,6 +1,5 @@
 include_rules = [
   "+cc/base",
-  "+chromeos/lacros",
   "+components/discardable_memory/service",
   "+components/keyed_service/core",
   "+components/services/paint_preview_compositor/public/mojom",

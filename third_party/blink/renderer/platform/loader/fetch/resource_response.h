@@ -50,11 +50,13 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class IdentityDigest;
+class FeatureContext;
+class UnencodedDigest;
 class ResourceLoadTiming;
 class ServiceWorkerRouterInfo;
 class UseCounter;
@@ -158,6 +160,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   bool IsAttachment() const;
 
   AtomicString HttpContentType() const;
+  AtomicString GetFilteredHttpContentEncoding() const;
 
   // These functions return parsed values of the corresponding response headers.
   // NaN means that the header was not present or had invalid value.
@@ -172,7 +175,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   std::optional<base::Time> LastModified(UseCounter&) const;
   // Will always return values >= 0.
   base::TimeDelta CacheControlStaleWhileRevalidate() const;
-  std::optional<IdentityDigest> IdentityDigest() const;
+  std::optional<UnencodedDigest> UnencodedDigest(const FeatureContext*) const;
 
   unsigned ConnectionID() const;
   void SetConnectionID(unsigned);

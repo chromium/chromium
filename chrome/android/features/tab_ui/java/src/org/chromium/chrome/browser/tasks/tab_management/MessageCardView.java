@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -136,23 +137,24 @@ class MessageCardView extends LinearLayout {
     /**
      * Modify the view based on the visibility of the icon. For messages that doesn't have an icon,
      * remove the icon and update the margin of the description text field.
-     * @param visible  Whether icon is visible.
+     *
+     * @param visible Whether icon is visible.
      */
     void setIconVisibility(boolean visible) {
+        Resources resources = getResources();
+        int verticalMargin =
+                resources.getDimensionPixelOffset(R.dimen.message_card_description_vertical_margin);
         MarginLayoutParams params = (MarginLayoutParams) mDescription.getLayoutParams();
         if (visible) {
             if (indexOfChild(mIcon) == -1) {
                 addView(mIcon, 0);
-                params.setMargins(0, 0, 0, 0);
+                params.setMargins(0, verticalMargin, 0, verticalMargin);
             }
         } else {
-            int margin =
-                    (int)
-                            getContext()
-                                    .getResources()
-                                    .getDimension(R.dimen.tab_grid_iph_item_description_margin);
             removeView(mIcon);
-            params.setMargins(margin, 0, 0, 0);
+            int leftMargin =
+                    resources.getDimensionPixelSize(R.dimen.tab_grid_iph_item_description_margin);
+            params.setMargins(leftMargin, verticalMargin, 0, verticalMargin);
         }
     }
 
@@ -184,5 +186,49 @@ class MessageCardView extends LinearLayout {
         MessageCardViewUtils.setActionButtonTextAppearance(
                 mActionButton, isIncognito, /* isLargeMessageCard= */ false);
         MessageCardViewUtils.setCloseButtonTint(mCloseButton, isIncognito);
+    }
+
+    /**
+     * Set left margin of the message card.
+     *
+     * @param leftMarginPx Left margin of the card in px.
+     */
+    void setLeftMargin(int leftMarginPx) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.leftMargin = leftMarginPx;
+        setLayoutParams(params);
+    }
+
+    /**
+     * Set top margin of the message card.
+     *
+     * @param topMarginPx Top margin of the card in px.
+     */
+    void setTopMargin(int topMarginPx) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.topMargin = topMarginPx;
+        setLayoutParams(params);
+    }
+
+    /**
+     * Set right margin of the message card.
+     *
+     * @param rightMarginPx Right margin of the card in px.
+     */
+    void setRightMargin(int rightMarginPx) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.rightMargin = rightMarginPx;
+        setLayoutParams(params);
+    }
+
+    /**
+     * Set bottom margin of the message card.
+     *
+     * @param bottomMarginPx Bottom margin of the card in px.
+     */
+    void setBottomMargin(int bottomMarginPx) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.bottomMargin = bottomMarginPx;
+        setLayoutParams(params);
     }
 }

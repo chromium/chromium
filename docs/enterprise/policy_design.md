@@ -8,6 +8,8 @@ controls than the standard users. With different device management tools, an
 administrator can deliver these policies to many users. Here is the [help center article](https://support.google.com/chrome/a/?p=policy_order)
 that talks about Chrome policy and its deployment.
 
+This doc focus on how to design a new policy. More details about policy
+development can be found in the [Chromium doc](./add_new_policy.md).
 
 ## Do I need a policy
 
@@ -22,11 +24,6 @@ consider adding new policy if
 * Your feature has compliance requirements, e.g. upload data to Google owned
   servers.
 * You are removing an existing feature from Chrome.
-
-**To read more about best practices for shipping enterprise friendly features
-read [this article](https://www.chromium.org/developers/enterprise-changes/).**
-
-**To learn more about policy implementation details, please read [add_new_policy.md](./add_new_policy.md)**.
 
 And if you are not sure, don’t hesitate to contact the [Chrome enterprise team](mailto:chromium-enterprise@chromium.org)).
 
@@ -71,15 +68,22 @@ which contains all metadata of a policy.
 
 Policy name is a short phrase that briefly describes what the policy does.
 
-
+* Choose a name that is consistent with the existing naming scheme. Prefer
+  "XxxEnabled" over "EnableXxx" because the former is more glanceable and
+  sorts better.
 * Do **NOT** use negative words like _Disabled_ or _Disallowed_. It will lead to
   double negatives and confuse people. Instead, prefer a policy name like
   FooEnabled (which can be set to false in cases where a feature should be
   disabled).
 * Avoid long policy names. Policy names don't have to cover everything. There is
   a documentation section for all the details.
-* Avoid internal codewords. Policy names are public information. Make sure
-  keywords can be searched and understood by external people.
+* Avoid internal keywords and project names. Policy names are public
+  information. Make sure keywords can be searched and understood by external
+  people.
+* Consider the foreseeable future and try to avoid conflicts with possible
+  future extensions or use cases.
+* If the policy name has an acronym, only the first letter should be upper
+    camel case. For example, you should use "Api" and not "API".
 
 Searching for a similar pattern from existing [policies list](https://chromeenterprise.google/policies/)
 is always a good strategy to find a good name. However, be careful about some

@@ -4,6 +4,7 @@
 
 package org.chromium.components.webxr;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
@@ -11,6 +12,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
  * only available if |enable_arcore| or |enable_cardboard| are set to true at
  * build time.
  */
+@NullMarked
 public interface XrDelegate extends BackPressHandler {
     /**
      * Used to request the XrDelegate handle a BackPress event; note that this

@@ -14,18 +14,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/supports_user_data.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -42,7 +39,7 @@ namespace extensions {
 
 class CrxInstaller;
 class Extension;
-class Manifest;
+struct InstallApproval;
 
 // Downloads and installs extensions from the web store.
 class WebstoreInstaller : public ExtensionRegistryObserver,
@@ -69,103 +66,13 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
     FAILURE_REASON_OTHER
   };
 
-  enum ManifestCheckLevel {
-    // Do not check for any manifest equality.
-    MANIFEST_CHECK_LEVEL_NONE,
-
-    // Only check that the expected and actual permissions have the same
-    // effective permissions.
-    MANIFEST_CHECK_LEVEL_LOOSE,
-
-    // All data in the expected and actual manifests must match.
-    MANIFEST_CHECK_LEVEL_STRICT,
-  };
-
   using SuccessCallback = base::OnceCallback<void(const std::string&)>;
   using FailureCallback = base::OnceCallback<
       void(const std::string&, const std::string&, FailureReason)>;
 
-  // Contains information about what parts of the extension install process can
-  // be skipped or modified. If one of these is present, it means that a CRX
-  // download was initiated by WebstoreInstaller. The Approval instance should
-  // be checked further for additional details.
-  struct Approval : public base::SupportsUserData::Data {
-    static std::unique_ptr<Approval> CreateWithInstallPrompt(Profile* profile);
-
-    // Creates an Approval for installing a shared module.
-    static std::unique_ptr<Approval> CreateForSharedModule(Profile* profile);
-
-    // Creates an Approval that will skip putting up an install confirmation
-    // prompt if the actual manifest from the extension to be installed matches
-    // |parsed_manifest|. The |strict_manifest_check| controls whether we want
-    // to require an exact manifest match, or are willing to tolerate a looser
-    // check just that the effective permissions are the same.
-    static std::unique_ptr<Approval> CreateWithNoInstallPrompt(
-        Profile* profile,
-        const std::string& extension_id,
-        base::Value::Dict parsed_manifest,
-        bool strict_manifest_check);
-
-    ~Approval() override;
-
-    // The extension id that was approved for installation.
-    std::string extension_id;
-
-    // The profile the extension should be installed into.
-    raw_ptr<Profile> profile = nullptr;
-
-    // The expected manifest, before localization.
-    std::unique_ptr<Manifest> manifest;
-
-    // Whether to use a bubble notification when an app is installed, instead of
-    // the default behavior of transitioning to the new tab page.
-    bool use_app_installed_bubble = false;
-
-    // Whether to skip the post install UI like the extension installed bubble.
-    bool skip_post_install_ui = false;
-
-    // Whether to skip the install dialog once the extension has been downloaded
-    // and unpacked. One reason this can be true is that in the normal webstore
-    // installation, the dialog is shown earlier, before any download is done,
-    // so there's no need to show it again.
-    bool skip_install_dialog = false;
-
-    // Manifest check level for checking actual manifest against expected
-    // manifest.
-    ManifestCheckLevel manifest_check_level = MANIFEST_CHECK_LEVEL_STRICT;
-
-    // Used to show the install dialog.
-    ExtensionInstallPrompt::ShowDialogCallback show_dialog_callback;
-
-    // The icon to use to display the extension while it is installing.
-    gfx::ImageSkia installing_icon;
-
-    // A dummy extension created from |manifest|;
-    scoped_refptr<Extension> dummy_extension;
-
-    // Required minimum version.
-    std::unique_ptr<base::Version> minimum_version;
-
-    // The authuser index required to download the item being installed. May be
-    // the empty string, in which case no authuser parameter is used.
-    std::string authuser;
-
-    // Whether the user clicked through the install friction dialog when the
-    // extension is not included in the Enhanced Safe Browsing CRX allowlist and
-    // the user has enabled Enhanced Protection.
-    bool bypassed_safebrowsing_friction = false;
-
-    // Whether to withhold permissions at installation. By default, permissions
-    // are granted at installation.
-    bool withhold_permissions = false;
-
-   private:
-    Approval();
-  };
-
-  // Gets the Approval associated with the |download|, or nullptr if there's
-  // none. Note that the Approval is owned by |download|.
-  static const Approval* GetAssociatedApproval(
+  // Gets the InstallApproval associated with the `download`, or nullptr if
+  // there's none. Note that the InstallApproval is owned by `download`.
+  static const InstallApproval* GetAssociatedApproval(
       const download::DownloadItem& download);
 
   // Creates a WebstoreInstaller for downloading and installing the extension
@@ -177,7 +84,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
                     FailureCallback failure_callback,
                     content::WebContents* web_contents,
                     const std::string& id,
-                    std::unique_ptr<Approval> approval,
+                    std::unique_ptr<InstallApproval> approval,
                     InstallSource source);
 
   // Starts downloading and installing the extension.
@@ -259,7 +166,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   // trigger at least every second, though sometimes more frequently (depending
   // on number of modules, etc).
   base::OneShotTimer download_progress_timer_;
-  std::unique_ptr<Approval> approval_;
+  std::unique_ptr<InstallApproval> approval_;
   GURL download_url_;
   scoped_refptr<CrxInstaller> crx_installer_;
 

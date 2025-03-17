@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "chrome/browser/sessions/session_restore_delegate.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <utility>
 
 #include "base/metrics/field_trial.h"
@@ -29,12 +30,12 @@ namespace {
 bool IsInternalPage(const GURL& url) {
   // There are many chrome:// UI URLs, but only look for the ones that users
   // are likely to have open. Most of the benefit is from the NTP URL.
-  const char* const kReloadableUrlPrefixes[] = {
+  const auto kReloadableUrlPrefixes = std::to_array<const char*>({
       chrome::kChromeUIDownloadsURL,
       chrome::kChromeUIHistoryURL,
       chrome::kChromeUINewTabURL,
       chrome::kChromeUISettingsURL,
-  };
+  });
   // Prefix-match against the table above. Use strncmp to avoid allocating
   // memory to convert the URL prefix constants into std::strings.
   for (size_t i = 0; i < std::size(kReloadableUrlPrefixes); ++i) {

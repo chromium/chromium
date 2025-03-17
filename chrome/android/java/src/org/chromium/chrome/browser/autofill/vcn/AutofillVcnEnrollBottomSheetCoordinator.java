@@ -66,7 +66,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
                                                                 profile),
                                                         issuerIcon.mIconUrl,
                                                         issuerIcon.mIconResource,
-                                                        /* imageSize= */ ImageSize.LARGE,
+                                                        /* cardIconSize= */ ImageSize.LARGE,
                                                         /* showCustomIcon= */ true))
                         .build();
         mView = new AutofillVcnEnrollBottomSheetView(context);

@@ -75,6 +75,9 @@ class LogMessage;
 // Class used for raising a check error upon destruction.
 class BASE_EXPORT CheckError {
  public:
+  // Takes ownership of `log_message`.
+  explicit CheckError(LogMessage* log_message);
+
   // All instances that take a base::Location should use
   // base::Location::CurrentWithoutFunctionName() by default since we
   // immediately pass file_name() and line_number() to LogMessage's constructor
@@ -84,25 +87,27 @@ class BASE_EXPORT CheckError {
   // developer builds and official+DCHECK where all CHECK failures generate
   // logs.
 
+  // TODO(pbos): Make all static methods that currently return some version of
+  // CheckError return LogMessage*.
   static CheckError Check(const char* condition,
                           base::NotFatalUntil fatal_milestone,
                           const base::Location& location =
                               base::Location::CurrentWithoutFunctionName());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
-  static CheckError CheckOp(char* log_message_str,
-                            base::NotFatalUntil fatal_milestone,
-                            const base::Location& location =
-                                base::Location::CurrentWithoutFunctionName());
+  static LogMessage* CheckOp(char* log_message_str,
+                             base::NotFatalUntil fatal_milestone,
+                             const base::Location& location =
+                                 base::Location::CurrentWithoutFunctionName());
 
   static CheckError DCheck(const char* condition,
                            const base::Location& location =
                                base::Location::CurrentWithoutFunctionName());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // DCHECK_op macros.
-  static CheckError DCheckOp(char* log_message_str,
-                             const base::Location& location =
-                                 base::Location::CurrentWithoutFunctionName());
+  static LogMessage* DCheckOp(char* log_message_str,
+                              const base::Location& location =
+                                  base::Location::CurrentWithoutFunctionName());
 
   static CheckError DumpWillBeCheck(
       const char* condition,
@@ -110,7 +115,7 @@ class BASE_EXPORT CheckError {
           base::Location::CurrentWithoutFunctionName());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // DUMP_WILL_BE_CHECK_op macros.
-  static CheckError DumpWillBeCheckOp(
+  static LogMessage* DumpWillBeCheckOp(
       char* log_message_str,
       const base::Location& location =
           base::Location::CurrentWithoutFunctionName());
@@ -135,14 +140,12 @@ class BASE_EXPORT CheckError {
   CheckError& operator=(const CheckError&) = delete;
 
   template <typename T>
-  std::ostream& operator<<(T&& streamed_type) {
-    return stream() << streamed_type;
+  CheckError& operator<<(T&& streamed_type) {
+    stream() << streamed_type;
+    return *this;
   }
 
  protected:
-  // Takes ownership of `log_message`.
-  explicit CheckError(LogMessage* log_message);
-
   std::unique_ptr<LogMessage> log_message_;
 };
 
@@ -157,10 +160,9 @@ class BASE_EXPORT CheckNoreturnError : public CheckError {
           base::Location::CurrentWithoutFunctionName());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
-  static CheckNoreturnError CheckOp(
-      char* log_message_str,
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+  static LogMessage* CheckOp(char* log_message_str,
+                             const base::Location& location =
+                                 base::Location::CurrentWithoutFunctionName());
 
   static CheckNoreturnError PCheck(
       const char* condition,
@@ -216,6 +218,9 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // The weird ternary is to still generate an "is not contextually convertible to
 // 'bool' when provided weird parameters (regardless of ANALYZER_ASSUME_TRUE's
 // implementation). See base/check_nocompile.nc.
+//
+// The lambda is here to here permit the compiler to out-of-line much of the
+// CHECK-failure path and optimize better for the fast path.
 #define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition) \
   switch (0)                                                 \
   case 0:                                                    \
@@ -223,7 +228,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
     if (ANALYZER_ASSUME_TRUE((condition) ? true : false))    \
       [[likely]];                                            \
     else                                                     \
-      (check_stream)
+      [&]() { return (check_stream); }()
 
 // A helper macro like LOGGING_CHECK_FUNCTION_IMPL above but discarding any
 // log-stream parameters rather than evaluate them on failure.

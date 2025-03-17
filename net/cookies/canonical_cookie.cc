@@ -57,13 +57,14 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/features.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
@@ -82,32 +83,6 @@ namespace {
 
 static constexpr int kMinutesInTwelveHours = 12 * 60;
 static constexpr int kMinutesInTwentyFourHours = 24 * 60;
-
-// Determine the cookie domain to use for setting the specified cookie.
-bool GetCookieDomain(const GURL& url,
-                     const ParsedCookie& pc,
-                     CookieInclusionStatus& status,
-                     std::string* result) {
-  std::string domain_string;
-  if (pc.HasDomain())
-    domain_string = pc.Domain();
-  return cookie_util::GetCookieDomainWithString(url, domain_string, status,
-                                                result);
-}
-
-// Compares cookies using name, domain and path, so that "equivalent" cookies
-// (per RFC 2965) are equal to each other.
-int PartialCookieOrdering(const CanonicalCookie& a, const CanonicalCookie& b) {
-  int diff = a.Name().compare(b.Name());
-  if (diff != 0)
-    return diff;
-
-  diff = a.Domain().compare(b.Domain());
-  if (diff != 0)
-    return diff;
-
-  return a.Path().compare(b.Path());
-}
 
 void AppendCookieLineEntry(const CanonicalCookie& cookie,
                            std::string* cookie_line) {
@@ -223,52 +198,60 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
     }
   }
 
-  // Try the Expires attribute.
-  if (pc.HasExpires() && !pc.Expires().empty()) {
-    // Adjust for clock skew between server and host.
-    Time parsed_expiry = cookie_util::ParseCookieExpirationTime(pc.Expires());
-    if (!parsed_expiry.is_null()) {
-      // Record metrics related to prevalence of clock skew.
-      base::TimeDelta clock_skew = (current - server_time);
-      // Record the magnitude (absolute value) of the skew in minutes.
-      int clock_skew_magnitude = clock_skew.magnitude().InMinutes();
-      // Determine the new expiry with clock skew factored in.
-      Time adjusted_expiry = parsed_expiry + (current - server_time);
-      if (clock_skew.is_positive() || clock_skew.is_zero()) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes",
-                                    clock_skew_magnitude, 1,
-                                    kMinutesInTwelveHours, 100);
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes12To24Hours",
-                                    clock_skew_magnitude, kMinutesInTwelveHours,
-                                    kMinutesInTwentyFourHours, 100);
-        // Also record the range of minutes added that allowed the cookie to
-        // avoid expiring immediately.
-        if (parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now()) {
-          UMA_HISTOGRAM_CUSTOM_COUNTS(
-              "Cookie.ClockSkew.WithoutAddMinutesExpires", clock_skew_magnitude,
-              1, kMinutesInTwentyFourHours, 100);
-        }
-      } else if (clock_skew.is_negative()) {
-        // These histograms only support positive numbers, so negative skews
-        // will be converted to positive (via magnitude) before recording.
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.SubtractMinutes",
-                                    clock_skew_magnitude, 1,
-                                    kMinutesInTwelveHours, 100);
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Cookie.ClockSkew.SubtractMinutes12To24Hours", clock_skew_magnitude,
-            kMinutesInTwelveHours, kMinutesInTwentyFourHours, 100);
-      }
-      // Record if we were going to expire the cookie before we added the clock
-      // skew.
-      UMA_HISTOGRAM_BOOLEAN(
-          "Cookie.ClockSkew.ExpiredWithoutSkew",
-          parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now());
-      return adjusted_expiry;
-    }
+  if (!pc.HasExpires() || pc.Expires().empty()) {
+    // No expiration.
+    return Time();
   }
 
-  // Invalid or no expiration, session cookie.
-  return Time();
+  // Adjust for clock skew between server and host.
+  Time parsed_expiry = cookie_util::ParseCookieExpirationTime(pc.Expires());
+  if (parsed_expiry.is_null()) {
+    // Invalid expiration.
+    return Time();
+  }
+  Time adjusted_expiry = parsed_expiry + (current - server_time);
+
+  static base::MetricsSubSampler metrics_subsampler;
+  if (metrics_subsampler.ShouldSample(kHistogramSampleProbability)) {
+    // Record metrics related to prevalence of clock skew.
+    base::TimeDelta clock_skew = (current - server_time);
+    // Record the magnitude (absolute value) of the skew in minutes.
+    int clock_skew_magnitude = clock_skew.magnitude().InMinutes();
+    // Determine the new expiry with clock skew factored in.
+    if (clock_skew.is_positive() || clock_skew.is_zero()) {
+      base::UmaHistogramCustomCounts("Cookie.ClockSkew.AddMinutes.Subsampled",
+                                     clock_skew_magnitude, 1,
+                                     kMinutesInTwelveHours, 100);
+      base::UmaHistogramCustomCounts(
+          "Cookie.ClockSkew.AddMinutes12To24Hours.Subsampled",
+          clock_skew_magnitude, kMinutesInTwelveHours,
+          kMinutesInTwentyFourHours, 100);
+      // Also record the range of minutes added that allowed the cookie to
+      // avoid expiring immediately.
+      if (parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now()) {
+        base::UmaHistogramCustomCounts(
+            "Cookie.ClockSkew.WithoutAddMinutesExpires.Subsampled",
+            clock_skew_magnitude, 1, kMinutesInTwentyFourHours, 100);
+      }
+    } else if (clock_skew.is_negative()) {
+      // These histograms only support positive numbers, so negative skews
+      // will be converted to positive (via magnitude) before recording.
+      base::UmaHistogramCustomCounts(
+          "Cookie.ClockSkew.SubtractMinutes.Subsampled", clock_skew_magnitude,
+          1, kMinutesInTwelveHours, 100);
+      base::UmaHistogramCustomCounts(
+          "Cookie.ClockSkew.SubtractMinutes12To24Hours.Subsampled",
+          clock_skew_magnitude, kMinutesInTwelveHours,
+          kMinutesInTwentyFourHours, 100);
+    }
+    // Record if we were going to expire the cookie before we added the clock
+    // skew.
+    base::UmaHistogramBoolean(
+        "Cookie.ClockSkew.ExpiredWithoutSkew.Subsampled",
+        parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now());
+  }
+
+  return adjusted_expiry;
 }
 
 // static
@@ -323,16 +306,23 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   // Check the URL; it may be nonsense since some platform APIs may permit
   // it to be specified directly.
   if (!url.is_valid()) {
-    status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    status->AddExclusionReason(
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE);
     return nullptr;
   }
 
   ParsedCookie parsed_cookie(cookie_line, status);
 
-  // We record this metric before checking validity because the presence of an
-  // HTAB will invalidate the ParsedCookie.
-  UMA_HISTOGRAM_BOOLEAN("Cookie.NameOrValueHtab",
-                        parsed_cookie.HasInternalHtab());
+  static base::MetricsSubSampler metrics_subsampler;
+  bool collect_metrics =
+      metrics_subsampler.ShouldSample(kHistogramSampleProbability);
+
+  if (collect_metrics) {
+    // We record this metric before checking validity because the presence of an
+    // HTAB will invalidate the ParsedCookie.
+    base::UmaHistogramBoolean("Cookie.NameOrValueHtab.Subsampled",
+                              parsed_cookie.HasInternalHtab());
+  }
 
   if (!parsed_cookie.IsValid()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
@@ -344,17 +334,23 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
-  // Record warning for non-ASCII octecs in the Domain attribute.
-  // This should lead to rejection of the cookie in the future.
-  UMA_HISTOGRAM_BOOLEAN("Cookie.DomainHasNonASCII",
-                        parsed_cookie.HasDomain() &&
-                            !base::IsStringASCII(parsed_cookie.Domain()));
+  if (collect_metrics) {
+    // Record warning for non-ASCII octecs in the Domain attribute.
+    // This should lead to rejection of the cookie in the future.
+    base::UmaHistogramBoolean("Cookie.DomainHasNonASCII.Subsampled",
+                              parsed_cookie.HasDomain() &&
+                                  !base::IsStringASCII(parsed_cookie.Domain()));
+  }
 
-  std::string cookie_domain;
-  if (!GetCookieDomain(url, parsed_cookie, *status, &cookie_domain)) {
+  std::optional<std::string> cookie_domain =
+      cookie_util::GetCookieDomainWithString(
+          url, parsed_cookie.HasDomain() ? parsed_cookie.Domain() : "",
+          *status);
+  if (!cookie_domain) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "Create() failed to get a valid cookie domain";
-    status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+    status->AddExclusionReason(
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
   }
 
   std::string cookie_path = cookie_util::CanonPathWithString(
@@ -371,7 +367,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   bool is_cookie_prefix_valid =
       cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie);
 
-  RecordCookiePrefixMetrics(prefix);
+  if (collect_metrics) {
+    base::UmaHistogramEnumeration("Cookie.CookiePrefix.Subsampled", prefix,
+                                  COOKIE_PREFIX_LAST);
+  }
 
   if (parsed_cookie.Name() == "") {
     is_cookie_prefix_valid = !HasHiddenPrefixName(parsed_cookie.Value());
@@ -380,7 +379,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (!is_cookie_prefix_valid) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "Create() failed because the cookie violated prefix rules.";
-    status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_INVALID_PREFIX);
+    status->AddExclusionReason(
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
 
   bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
@@ -388,14 +388,16 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       url, parsed_cookie, partition_has_nonce);
   if (!is_partitioned_valid) {
     status->AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED);
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PARTITIONED);
   }
 
   // Collect metrics on whether usage of the Partitioned attribute is correct.
   // Do not include implicit nonce-based partitioned cookies in these metrics.
   if (parsed_cookie.IsPartitioned()) {
-    if (!partition_has_nonce)
-      UMA_HISTOGRAM_BOOLEAN("Cookie.IsPartitionedValid", is_partitioned_valid);
+    if (!partition_has_nonce && collect_metrics) {
+      base::UmaHistogramBoolean("Cookie.IsPartitionedValid",
+                                is_partitioned_valid);
+    }
   } else if (!partition_has_nonce) {
     cookie_partition_key = std::nullopt;
   }
@@ -431,7 +433,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
     if (!url.SchemeIsCryptographic()) {
       status->AddWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
     }
   } else {
@@ -453,34 +455,45 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   auto cc = std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), parsed_cookie.Name(),
-      parsed_cookie.Value(), std::move(cookie_domain), std::move(cookie_path),
-      creation_time, cookie_expires, creation_time,
+      parsed_cookie.Value(), std::move(cookie_domain).value_or(std::string()),
+      std::move(cookie_path), creation_time, cookie_expires, creation_time,
       /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
       cookie_partition_key, source_scheme, source_port, source_type);
 
+  // Check if name or value contains any non-ascii values, exclude if they do.
+  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
+    if (!base::IsStringASCII(cc->Name()) || !base::IsStringASCII(cc->Value())) {
+      status->AddExclusionReason(
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER);
+    }
+  }
+
   // TODO(chlily): Log metrics.
   if (!cc->IsCanonical()) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE);
     return nullptr;
   }
 
   RecordCookieSameSiteAttributeValueHistogram(samesite_string);
 
-  // These metrics capture whether or not a cookie has a Non-ASCII character in
-  // it.
-  UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Name",
-                        !base::IsStringASCII(cc->Name()));
-  UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Value",
-                        !base::IsStringASCII(cc->Value()));
+  if (collect_metrics) {
+    // These metrics capture whether or not a cookie has a Non-ASCII character
+    // in it, except if kDisallowNonAsciiCookies is enabled.
+    base::UmaHistogramBoolean("Cookie.HasNonASCII.Name.Subsampled",
+                              !base::IsStringASCII(cc->Name()));
+    base::UmaHistogramBoolean("Cookie.HasNonASCII.Value.Subsampled",
+                              !base::IsStringASCII(cc->Value()));
 
-  // Check for "__" prefixed names, excluding the cookie prefixes.
-  bool name_prefixed_with_underscores =
-      (prefix == COOKIE_PREFIX_NONE) && parsed_cookie.Name().starts_with("__");
+    // Check for "__" prefixed names, excluding the cookie prefixes.
+    bool name_prefixed_with_underscores =
+        (prefix == COOKIE_PREFIX_NONE) &&
+        parsed_cookie.Name().starts_with("__");
 
-  UMA_HISTOGRAM_BOOLEAN("Cookie.DoubleUnderscorePrefixedName",
-                        name_prefixed_with_underscores);
+    base::UmaHistogramBoolean("Cookie.DoubleUnderscorePrefixedName.Subsampled",
+                              name_prefixed_with_underscores);
+  }
 
   return cc;
 }
@@ -511,17 +524,25 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
 
   // Validate consistency of passed arguments.
   if (ParsedCookie::ParseTokenString(name) != name) {
-    status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+    status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_DISALLOWED_CHARACTER);
   } else if (ParsedCookie::ParseValueString(value) != value) {
-    status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+    status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_DISALLOWED_CHARACTER);
   } else if (ParsedCookie::ParseValueString(path) != path) {
     // NOTE: If `path` contains  "terminating characters" ('\r', '\n', and
     // '\0'), ';', or leading / trailing whitespace, path will be rejected,
     // but any other control characters will just get URL-encoded below.
-    status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+    status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_DISALLOWED_CHARACTER);
+  }
+
+  // Check if name or value contains any non-ascii values, exclude if they do.
+  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
+    if (!base::IsStringASCII(name) || !base::IsStringASCII(value)) {
+      status->AddExclusionReason(
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER);
+    }
   }
 
   // Validate name and value against character set and size limit constraints.
@@ -534,33 +555,34 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
 
   if ((ParsedCookie::ParseValueString(domain) != domain)) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
     domain_is_valid = false;
   }
 
   if (!ParsedCookie::CookieAttributeValueHasValidCharSet(domain)) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
     domain_is_valid = false;
   }
   if (!ParsedCookie::CookieAttributeValueHasValidSize(domain)) {
-    status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+    status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
     domain_is_valid = false;
   }
   const std::string& domain_attribute =
       domain_is_valid ? domain : std::string();
 
-  std::string cookie_domain;
+  std::optional<std::string> cookie_domain;
   // This validation step must happen before GetCookieDomainWithString, so it
   // doesn't fail DCHECKs.
   if (!cookie_util::DomainIsHostOnly(url.host())) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
-  } else if (!cookie_util::GetCookieDomainWithString(url, domain_attribute,
-                                                     *status, &cookie_domain)) {
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
+  } else if (cookie_domain = cookie_util::GetCookieDomainWithString(
+                 url, domain_attribute, *status);
+             !cookie_domain) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
   }
 
   // The next two sections set the source_scheme_ and source_port_. Normally
@@ -582,7 +604,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   // doesn't fail DCHECKs.
   if (!url.is_valid()) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
   } else {
     // It's possible that a trustworthy origin is setting this cookie with the
     // `Secure` attribute even if the url's scheme isn't secure. In that case
@@ -596,7 +618,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     if (source_scheme == CookieSourceScheme::kSecure &&
         !url.SchemeIsCryptographic()) {
       status->AddWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
     }
   }
@@ -624,14 +646,14 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     if (cookie_path != path) {
       // The path attribute was specified and found to be invalid, so record an
       // error.
-      status->AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+      status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_FAILURE_TO_STORE);
     } else if (!ParsedCookie::CookieAttributeValueHasValidSize(
                    encoded_cookie_path)) {
       // The path attribute was specified and encodes into a value that's longer
       // than the length limit, so record an error.
-      status->AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+      status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
     }
   }
 
@@ -639,12 +661,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   if (!cookie_util::IsCookiePrefixValid(prefix, url, secure, domain_attribute,
                                         cookie_path)) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
 
   if (name == "" && HasHiddenPrefixName(value)) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
 
   if (!cookie_util::IsCookiePartitionedValid(
@@ -652,13 +674,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
           /*is_partitioned=*/partition_key.has_value(),
           /*partition_has_nonce=*/
           CookiePartitionKey::HasNonce(partition_key))) {
-    status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED);
+    status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_INVALID_PARTITIONED);
   }
 
   if (!last_access_time.is_null() && creation_time.is_null()) {
     status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE);
   }
   expiration_time = ValidateAndAdjustExpiryDate(expiration_time, creation_time,
                                                 source_scheme);
@@ -667,7 +689,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     return nullptr;
 
   auto cc = std::make_unique<CanonicalCookie>(
-      base::PassKey<CanonicalCookie>(), name, value, std::move(cookie_domain),
+      base::PassKey<CanonicalCookie>(), name, value,
+      std::move(cookie_domain).value_or(std::string()),
       std::move(encoded_cookie_path), creation_time, expiration_time,
       last_access_time,
       /*last_update=*/base::Time::Now(), secure, http_only, same_site, priority,
@@ -714,8 +737,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     // not have a valid name+value size length
     bool valid_cookie_name_value_pair =
         ParsedCookie::IsValidCookieNameValuePair(cc->Name(), cc->Value());
-    UMA_HISTOGRAM_BOOLEAN("Cookie.FromStorageWithValidLength",
-                          valid_cookie_name_value_pair);
+    base::UmaHistogramBoolean("Cookie.FromStorageWithValidLength",
+                              valid_cookie_name_value_pair);
   } else {
     return nullptr;
   }
@@ -803,22 +826,18 @@ void CanonicalCookie::PostIncludeForRequestURL(
     const CookieOptions& options_used,
     CookieOptions::SameSiteCookieContext::ContextType
         cookie_inclusion_context_used) const {
-  UMA_HISTOGRAM_ENUMERATION(
+  if (!metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
       "Cookie.RequestSameSiteContext", cookie_inclusion_context_used,
       CookieOptions::SameSiteCookieContext::ContextType::COUNT);
 
-  // For the metric, we only want to consider first party partitioned cookies.
-  if (IsFirstPartyPartitioned()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Cookie.FirstPartyPartitioned.HasCrossSiteAncestor",
-        cookie_inclusion_context_used ==
-            CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE);
-  }
-
   if (access_result.status.IsInclude()) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedRequestEffectiveSameSite",
-                              access_result.effective_same_site,
-                              CookieEffectiveSameSite::COUNT);
+    base::UmaHistogramEnumeration(
+        "Cookie.IncludedRequestEffectiveSameSite.Subsampled",
+        access_result.effective_same_site, CookieEffectiveSameSite::COUNT);
   }
 
   using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
@@ -829,44 +848,31 @@ void CanonicalCookie::PostIncludeForRequestURL(
           .GetMetadataForCurrentSchemefulMode()
           .redirect_type_bug_1221316;
   if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Read",
-                              redirect_type_for_metrics);
+    base::UmaHistogramEnumeration(
+        "Cookie.CrossSiteRedirectType.Read.Subsampled",
+        redirect_type_for_metrics);
   }
 
   if (access_result.status.HasWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
-    UMA_HISTOGRAM_ENUMERATION(
+    base::UmaHistogramEnumeration(
         "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Read",
         CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
-
-    using HttpMethod =
-        CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod;
-
-    HttpMethod http_method_enum = options_used.same_site_cookie_context()
-                                      .GetMetadataForCurrentSchemefulMode()
-                                      .http_method_bug_1221316;
-
-    DCHECK(http_method_enum != HttpMethod::kUnset);
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusionHttpMethod",
-        http_method_enum);
-
-    base::TimeDelta cookie_age = base::Time::Now() - CreationDate();
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusionAge",
-        cookie_age.InMinutes(), 30);
   }
 }
 
 void CanonicalCookie::PostIsSetPermittedInContext(
     const CookieAccessResult& access_result,
     const CookieOptions& options_used) const {
+  if (!metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+    return;
+  }
+
   if (access_result.status.IsInclude()) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedResponseEffectiveSameSite",
-                              access_result.effective_same_site,
-                              CookieEffectiveSameSite::COUNT);
+    base::UmaHistogramEnumeration(
+        "Cookie.IncludedResponseEffectiveSameSite.Subsampled",
+        access_result.effective_same_site, CookieEffectiveSameSite::COUNT);
   }
 
   using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
@@ -877,15 +883,16 @@ void CanonicalCookie::PostIsSetPermittedInContext(
           .GetMetadataForCurrentSchemefulMode()
           .redirect_type_bug_1221316;
   if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Write",
-                              redirect_type_for_metrics);
+    base::UmaHistogramEnumeration(
+        "Cookie.CrossSiteRedirectType.Write.Subsampled",
+        redirect_type_for_metrics);
   }
 
   if (access_result.status.HasWarningReason(
-          CookieInclusionStatus::
+          CookieInclusionStatus::WarningReason::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Write",
+    base::UmaHistogramEnumeration(
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Write.Subsampled",
         CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
   }
 }
@@ -905,10 +912,6 @@ std::string CanonicalCookie::DebugString() const {
       "name: %s value: %s domain: %s path: %s creation: %" PRId64,
       Name().c_str(), Value().c_str(), Domain().c_str(), Path().c_str(),
       static_cast<int64_t>(CreationDate().ToTimeT()));
-}
-
-bool CanonicalCookie::PartialCompare(const CanonicalCookie& other) const {
-  return PartialCookieOrdering(*this, other) < 0;
 }
 
 bool CanonicalCookie::IsCanonical() const {
@@ -945,6 +948,13 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
 
   if (!last_access_date_.is_null() && CreationDate().is_null()) {
     return false;
+  }
+
+  // Check if name or value contains any non-ascii values, fail if they do.
+  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
+    if (!base::IsStringASCII(Name()) || !base::IsStringASCII(Value())) {
+      return false;
+    }
   }
 
   url::CanonHostInfo canon_host_info;
@@ -1070,12 +1080,6 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
       break;
   }
   return cookie_line;
-}
-
-// static
-void CanonicalCookie::RecordCookiePrefixMetrics(CookiePrefix prefix) {
-  const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
-  UMA_HISTOGRAM_ENUMERATION(kCookiePrefixHistogram, prefix, COOKIE_PREFIX_LAST);
 }
 
 // static

@@ -11,13 +11,13 @@ enum PredefinedColorSpace {
     "srgb-linear", // Enabled only in CanvasHDR
 };
 
-enum ImageDataStorageFormat {
-  "uint8", // default
-  "uint16",
-  "float32",
+enum ImageDataPixelFormat {
+  "rgba-unorm8", // default
+  "rgba-float16",
+  "rgba-float32",
 };
 
 dictionary ImageDataSettings {
   PredefinedColorSpace colorSpace;
-  [RuntimeEnabled=CanvasFloatingPoint] ImageDataStorageFormat storageFormat = "uint8";
+  [RuntimeEnabled=ImageDataPixelFormat] ImageDataPixelFormat pixelFormat = "rgba-unorm8";
 };

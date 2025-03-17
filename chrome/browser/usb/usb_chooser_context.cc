@@ -29,14 +29,9 @@
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace {
@@ -115,9 +110,6 @@ base::Value::Dict DeviceIdsToValue(int vendor_id, int product_id) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsDetachable(int vid, int pid) {
-  // TOOD(huangs): Figure out how to do the following in Lacros, which does not
-  // have access to ash::CrosSettings (https://crbug.com/1219329).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::Value::List* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
@@ -128,20 +120,6 @@ bool IsDetachable(int vid, int pid) {
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::DeviceSettings* device_settings =
-      chromeos::BrowserParamsProxy::Get()->DeviceSettings().get();
-  if (device_settings && device_settings->usb_detachable_allow_list) {
-    for (const auto& entry :
-         device_settings->usb_detachable_allow_list->usb_device_ids) {
-      if (entry->has_vendor_id && entry->vendor_id == vid &&
-          entry->has_product_id && entry->product_id == pid) {
-        return true;
-      }
-    }
-  }
-#endif
   return false;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

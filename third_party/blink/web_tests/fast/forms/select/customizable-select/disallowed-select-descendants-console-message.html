@@ -8,7 +8,7 @@
   }
 </style>
 
-<!-- Should print one console message. -->
+<!-- Should print two console messages. -->
 <select>
   <label>label</label>
 </select>
@@ -61,6 +61,23 @@
   <optgroup>
     <option>..</option>
     <legend>legend</legend>
+  </optgroup>
+</select>
+
+<!-- <legend> elements should not have interactive elements inside -->
+<select>
+  <optgroup>
+      <legend>
+        <button></button>
+      </legend>
+  </optgroup>
+</select>
+
+<!-- <optgroup> should not have interactive elements inside. -->
+<select>
+  <optgroup>
+    <option>..</option>
+    <input/>
   </optgroup>
 </select>
 

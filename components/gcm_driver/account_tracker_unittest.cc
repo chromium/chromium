@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -24,7 +25,7 @@ class TrackingEvent {
  public:
   TrackingEvent(TrackingEventType type,
                 const CoreAccountId& account_id,
-                const std::string& gaia_id)
+                const GaiaId& gaia_id)
       : type_(type), account_id_(account_id), gaia_id_(gaia_id) {}
 
   TrackingEvent(TrackingEventType type, const CoreAccountInfo& account_info)
@@ -48,7 +49,8 @@ class TrackingEvent {
         break;
     }
     return base::StringPrintf("{ type: %s, account_id: %s, gaia: %s }", typestr,
-                              account_id_.ToString().c_str(), gaia_id_.c_str());
+                              account_id_.ToString().c_str(),
+                              gaia_id_.ToString().c_str());
   }
 
  private:
@@ -56,7 +58,7 @@ class TrackingEvent {
 
   TrackingEventType type_;
   CoreAccountId account_id_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
 };
 
 bool CompareByUser(TrackingEvent a, TrackingEvent b) {

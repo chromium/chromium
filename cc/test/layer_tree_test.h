@@ -25,9 +25,9 @@
 #include "cc/trees/compositor_mode.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/property_tree_delegate.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/test_gpu_service_holder.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -128,6 +128,10 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   void SetUseLayerLists() { settings_.use_layer_lists = true; }
 
+  void SetPropertyTreeDelegate(PropertyTreeDelegate* delegate) {
+    property_tree_delegate_ = delegate;
+  }
+
  protected:
   explicit LayerTreeTest(
       viz::RendererType renderer_type = kDefaultRendererType);
@@ -179,9 +183,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   }
 
   LayerTreeHost* layer_tree_host() const;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager() {
-    return gpu_memory_buffer_manager_.get();
-  }
 
   void DestroyLayerTreeHost();
 
@@ -274,6 +275,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   std::unique_ptr<LayerTreeHostClientForTesting> client_;
   std::unique_ptr<LayerTreeHost> layer_tree_host_;
   std::unique_ptr<AnimationHost> animation_host_;
+  raw_ptr<PropertyTreeDelegate> property_tree_delegate_ = nullptr;
 
   bool beginning_ = false;
   bool end_when_begin_returns_ = false;
@@ -294,11 +296,10 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner_;
   std::unique_ptr<base::Thread> impl_thread_;
   std::unique_ptr<base::Thread> image_worker_;
-  std::unique_ptr<gpu::TestGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<TestTaskGraphRunner> task_graph_runner_;
   base::CancelableOnceClosure timeout_;
   base::OnceClosure quit_closure_;
-  scoped_refptr<viz::TestContextProvider> compositor_contexts_;
+  scoped_refptr<viz::TestContextProvider> context_provider_sw_;
   bool skip_allocate_initial_local_surface_id_ = false;
   viz::ParentLocalSurfaceIdAllocator allocator_;
   base::WeakPtr<LayerTreeTest> main_thread_weak_ptr_;

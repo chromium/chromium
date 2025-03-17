@@ -19,6 +19,7 @@ TestProfileManagerIOS::TestProfileManagerIOS()
     : profile_attributes_storage_(GetApplicationContext()->GetLocalState()),
       profile_data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
   CHECK_EQ(GetApplicationContext()->GetProfileManager(), nullptr);
+
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
@@ -82,15 +83,12 @@ bool TestProfileManagerIOS::CanCreateProfileWithName(
 }
 
 std::string TestProfileManagerIOS::ReserveNewProfileName() {
-  std::string name = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  CHECK(CanCreateProfileWithName(name));
-  profile_attributes_storage_.AddProfile(name);
-  return name;
+  return profile_attributes_storage_.ReserveNewProfileName();
 }
 
 bool TestProfileManagerIOS::CanDeleteProfileWithName(
     std::string_view name) const {
-  return false;
+  return profile_attributes_storage_.CanDeleteProfileWithName(name);
 }
 
 bool TestProfileManagerIOS::LoadProfileAsync(
@@ -155,7 +153,28 @@ void TestProfileManagerIOS::UnloadAllProfiles() {
 }
 
 void TestProfileManagerIOS::MarkProfileForDeletion(std::string_view name) {
-  // No-op
+  profile_attributes_storage_.MarkProfileForDeletion(name);
+
+  // If the profile is not loaded, return.
+  auto iter = profiles_map_.find(name);
+  if (iter == profiles_map_.end()) {
+    return;
+  }
+
+  TestProfileIOS* profile = iter->second.get();
+  for (auto& observer : observers_) {
+    observer.OnProfileMarkedForPermanentDeletion(this, profile);
+  }
+}
+
+bool TestProfileManagerIOS::IsProfileMarkedForDeletion(
+    std::string_view name) const {
+  return false;
+}
+
+void TestProfileManagerIOS::PurgeProfilesMarkedForDeletion(
+    base::OnceClosure callback) {
+  NOTREACHED();
 }
 
 ProfileAttributesStorageIOS*
@@ -198,9 +217,8 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   // Before notifying observers that the profile was loaded, mark it as
   // no-longer-new.
   profile_attributes_storage_.UpdateAttributesForProfileWithName(
-      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS& attrs) {
         attrs.ClearIsNewProfile();
-        return attrs;
       }));
 
   for (auto& observer : observers_) {

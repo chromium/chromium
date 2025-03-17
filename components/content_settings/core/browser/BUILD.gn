@@ -41,6 +41,8 @@ static_library("browser") {
     "host_content_settings_map.h",
     "private_network_settings.cc",
     "private_network_settings.h",
+    "single_value_wildcard_rule_iterator.cc",
+    "single_value_wildcard_rule_iterator.h",
     "user_modifiable_provider.cc",
     "user_modifiable_provider.h",
     "website_settings_info.cc",
@@ -52,7 +54,6 @@ static_library("browser") {
   public_deps = [ "//base" ]
   deps = [
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
@@ -104,7 +105,6 @@ source_set("cookie_settings") {
   deps = [
     ":browser",
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
@@ -140,7 +140,6 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/content_settings/core/test:test_support",
     "//components/pref_registry:pref_registry",

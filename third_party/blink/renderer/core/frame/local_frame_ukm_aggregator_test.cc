@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 
 #include "base/metrics/statistics_recorder.h"
@@ -918,8 +923,8 @@ TEST_F(LocalFrameUkmAggregatorSimTest, VisualUpdateDelay) {
   Compositor().BeginFrame();
   histogram_tester.ExpectTotalCount("Blink.VisualUpdateDelay.UpdateTime.PreFCP",
                                     1);
-  base::HistogramBase::Sample delay =
-      base::saturated_cast<base::HistogramBase::Sample>(
+  base::HistogramBase::Sample32 delay =
+      base::saturated_cast<base::HistogramBase::Sample32>(
           (Compositor().LastFrameTime() -
            local_root_aggregator().LastFrameRequestTimeForTest())
               .InMicroseconds());

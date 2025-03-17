@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "net/log/net_log_source.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
@@ -27,6 +28,7 @@ mojo::PendingRemote<mojom::CookieAccessObserver> Clone(
   if (!*observer) {
     return mojo::NullRemote();
   }
+  TRACE_EVENT("loading", "CookieAccessObserver.copy");
   mojo::Remote<mojom::CookieAccessObserver> remote(std::move(*observer));
   mojo::PendingRemote<mojom::CookieAccessObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
@@ -39,6 +41,7 @@ mojo::PendingRemote<mojom::TrustTokenAccessObserver> Clone(
   if (!*observer) {
     return mojo::NullRemote();
   }
+  TRACE_EVENT("loading", "TrustTokenAccessObserver.copy");
   mojo::Remote<mojom::TrustTokenAccessObserver> remote(std::move(*observer));
   mojo::PendingRemote<mojom::TrustTokenAccessObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
@@ -51,6 +54,7 @@ mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> Clone(
   if (!*observer) {
     return mojo::NullRemote();
   }
+  TRACE_EVENT("loading", "URLLoaderNetworkServiceObserver.copy");
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver> remote(
       std::move(*observer));
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> new_remote;
@@ -64,6 +68,7 @@ mojo::PendingRemote<mojom::DevToolsObserver> Clone(
   if (!*observer) {
     return mojo::NullRemote();
   }
+  TRACE_EVENT("loading", "DevToolsObserver.copy");
   mojo::Remote<mojom::DevToolsObserver> remote(std::move(*observer));
   mojo::PendingRemote<mojom::DevToolsObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
@@ -76,6 +81,7 @@ mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
   if (!*observer) {
     return mojo::NullRemote();
   }
+  TRACE_EVENT("loading", "DeviceBoundSessionAccessObserver.copy");
   mojo::Remote<mojom::DeviceBoundSessionAccessObserver> remote(
       std::move(*observer));
   mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> new_remote;
@@ -89,6 +95,7 @@ mojo::PendingRemote<mojom::AcceptCHFrameObserver> Clone(
   if (!observer) {
     return mojo::NullRemote();
   }
+  TRACE_EVENT("loading", "AcceptCHFrameObserver.copy");
   mojo::Remote<mojom::AcceptCHFrameObserver> remote(std::move(observer));
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
@@ -101,6 +108,7 @@ mojo::PendingRemote<mojom::SharedDictionaryAccessObserver> Clone(
   if (!observer) {
     return mojo::NullRemote();
   }
+  TRACE_EVENT("loading", "SharedDictionaryAccessObserver.copy");
   mojo::Remote<mojom::SharedDictionaryAccessObserver> remote(
       std::move(observer));
   mojo::PendingRemote<mojom::SharedDictionaryAccessObserver> new_remote;
@@ -342,7 +350,9 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          target_ip_address_space == request.target_ip_address_space &&
          shared_dictionary_writer_enabled ==
              request.shared_dictionary_writer_enabled &&
-         socket_tag == request.socket_tag;
+         socket_tag == request.socket_tag &&
+         allows_device_bound_sessions == request.allows_device_bound_sessions &&
+         permissions_policy == request.permissions_policy;
 }
 
 bool ResourceRequest::SendsCookies() const {

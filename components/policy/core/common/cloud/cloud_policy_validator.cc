@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -24,7 +20,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -34,9 +29,9 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace em = enterprise_management;
 
@@ -116,6 +111,11 @@ const char* CloudPolicyValidatorBase::StatusToString(Status status) {
 }
 
 CloudPolicyValidatorBase::ValidationResult::ValidationResult() = default;
+CloudPolicyValidatorBase::ValidationResult::ValidationResult(
+    const ValidationResult&) = default;
+CloudPolicyValidatorBase::ValidationResult&
+CloudPolicyValidatorBase::ValidationResult::operator=(const ValidationResult&) =
+    default;
 CloudPolicyValidatorBase::ValidationResult::~ValidationResult() = default;
 
 CloudPolicyValidatorBase::~CloudPolicyValidatorBase() = default;
@@ -309,7 +309,7 @@ CloudPolicyValidatorBase::CloudPolicyValidatorBase(
 std::optional<std::string>
 CloudPolicyValidatorBase::GetCurrentPolicyVerificationKey() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Empty `verification_key_` is only allowed on Chrome OS test image when
   // policy key verification is disabled via command line flag.
   if (command_line->HasSwitch(switches::kDisablePolicyKeyVerification)) {
@@ -317,7 +317,7 @@ CloudPolicyValidatorBase::GetCurrentPolicyVerificationKey() {
     // GetPolicyVerificationKey() returns a non-empty string.
     return std::nullopt;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (command_line->HasSwitch(switches::kPolicyVerificationKey)) {
     CHECK_IS_TEST();
     std::string decoded_key;
@@ -404,10 +404,11 @@ void CloudPolicyValidatorBase::RunChecks() {
 
   // Table of checks we run. These are sorted by descending severity of the
   // error, s.t. the most severe check will determine the validation status.
-  static const struct {
+  struct CheckFunctions {
     int flag;
     Status (CloudPolicyValidatorBase::*checkFunction)();
-  } kCheckFunctions[] = {
+  };
+  static const auto kCheckFunctions = std::to_array<CheckFunctions>({
       {VALIDATE_SIGNATURE, &CloudPolicyValidatorBase::CheckSignature},
       {VALIDATE_INITIAL_KEY, &CloudPolicyValidatorBase::CheckInitialKey},
       {VALIDATE_CACHED_KEY, &CloudPolicyValidatorBase::CheckCachedKey},
@@ -420,13 +421,14 @@ void CloudPolicyValidatorBase::RunChecks() {
       {VALIDATE_TIMESTAMP, &CloudPolicyValidatorBase::CheckTimestamp},
       {VALIDATE_PAYLOAD, &CloudPolicyValidatorBase::CheckPayload},
       {VALIDATE_VALUES, &CloudPolicyValidatorBase::CheckValues},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kCheckFunctions); ++i) {
     if (validation_flags_ & kCheckFunctions[i].flag) {
       status_ = (this->*(kCheckFunctions[i].checkFunction))();
-      if (status_ != VALIDATION_OK)
+      if (status_ != VALIDATION_OK) {
         break;
+      }
     }
   }
 }
@@ -434,12 +436,12 @@ void CloudPolicyValidatorBase::RunChecks() {
 // Verifies the |new_public_key_verification_signature_deprecated| for the
 // |new_public_key| in the policy blob.
 bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Skip verification if the key is empty (disabled via command line).
   if (!verification_key_) {
     return true;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (policy_->has_new_public_key_verification_data() &&
       policy_->has_new_public_key_verification_data_signature() &&
@@ -593,12 +595,12 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckInitialKey() {
 }
 
 CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckCachedKey() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Skip verification if the key is empty (disabled via command line).
   if (!verification_key_) {
     return VALIDATION_OK;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (VerifySignature(new_cached_key_, verification_key_.value(),
                       new_cached_key_signature_,
@@ -653,8 +655,9 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckEntityId() {
 }
 
 CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckTimestamp() {
-  if (timestamp_option_ == TIMESTAMP_NOT_VALIDATED)
+  if (timestamp_option_ == TIMESTAMP_NOT_VALIDATED) {
     return VALIDATION_OK;
+  }
 
   if (!policy_data_->has_timestamp()) {
     LOG_POLICY(ERROR, POLICY_FETCHING) << "Policy timestamp missing";

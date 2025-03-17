@@ -4,6 +4,8 @@
 
 #include "ash/system/phonehub/quick_action_item.h"
 
+#include <string_view>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -101,7 +103,7 @@ bool QuickActionItem::IsToggled() const {
   return icon_button_->toggled();
 }
 
-const std::u16string& QuickActionItem::GetItemLabel() const {
+std::u16string_view QuickActionItem::GetItemLabel() const {
   return label_->GetText();
 }
 
@@ -129,7 +131,7 @@ void QuickActionItem::SetEnabled(bool enabled) {
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE));
     icon_button_->SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE_TOOLTIP,
-        GetItemLabel()));
+        std::u16string(GetItemLabel())));
   } else {
     label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));

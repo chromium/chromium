@@ -44,7 +44,7 @@ QuickInsertAsyncPreviewImageView::QuickInsertAsyncPreviewImageView(
                            std::move(path),
                            std::move(async_bitmap_resolver),
                            CreateEmptyPlaceholderImageSkiaResolver()) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysAppBaseShaded, kCornerRadius));
 
   // base::Unretained is safe here since `async_preview_subscription_` is a

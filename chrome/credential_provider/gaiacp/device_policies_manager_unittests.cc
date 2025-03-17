@@ -14,6 +14,7 @@
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -52,7 +53,7 @@ TEST_F(GcpDevicePoliciesBaseTest, NewUserAssociationWithNoUserPoliciesPresent) {
     CComBSTR sid_str;
     const std::wstring i_str = base::NumberToWString(i);
     std::wstring username = L"new-user-" + i_str;
-    std::wstring gaia_id = L"gaia-id-" + i_str;
+    GaiaId gaia_id("gaia-id-" + base::NumberToString(i));
     std::wstring email = base::StrCat({L"user_", i_str, L"@company.com"});
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         username, L"password", L"Full Name", L"comment",
@@ -267,10 +268,9 @@ TEST_P(GcpDevicePoliciesAllowedDomainsTest, OmahaPolicyTest) {
 
   if (has_existing_user) {
     CComBSTR sid;
-    ASSERT_EQ(S_OK,
-              fake_os_user_manager()->CreateTestOSUser(
-                  kDefaultUsername, L"password", L"Full Name", L"comment",
-                  base::UTF8ToWide(kDefaultGaiaId), std::wstring(), &sid));
+    ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                        kDefaultUsername, L"password", L"Full Name", L"comment",
+                        kDefaultGaiaId, std::wstring(), &sid));
     // Add a random user policy.
     user_policy.enable_dm_enrollment = false;
     user_policy.enable_gcpw_auto_update = false;

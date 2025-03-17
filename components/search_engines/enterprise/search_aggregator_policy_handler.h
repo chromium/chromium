@@ -16,6 +16,7 @@ class SearchAggregatorPolicyHandler
   // Fields in a search aggregator entry.
   static const char kIconUrl[];
   static const char kName[];
+  static const char kRequireShortcut[];
   static const char kSearchUrl[];
   static const char kShortcut[];
   static const char kSuggestUrl[];

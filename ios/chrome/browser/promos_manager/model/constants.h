@@ -46,7 +46,8 @@ enum class Promo {
   MadeForIOSDefaultBrowser = 14,   // "Made For iOS" default browser promo.
   StaySafeDefaultBrowser = 15,     // "Stay Safe" default browser promo.
   PostDefaultAbandonment = 16,     // Post-default browser abandonment alert.
-  kMaxValue = PostDefaultAbandonment,
+  SigninFullscreen = 17,           // Sign-in fullscreen promo.
+  kMaxValue = SigninFullscreen,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)
 // Also update IOSPromosManagerPromo in

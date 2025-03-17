@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 component("media_app") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP_IMPL" ]
@@ -20,20 +18,32 @@ component("media_app") {
     "//base",
     "//chromeos/ash/components/mantis/mojom",
     "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/specialized_features",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//mojo/public/cpp/bindings",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "mantis_untrusted_service_unittest.cc" ]
+  sources = [
+    "mantis_untrusted_service_manager_unittest.cc",
+    "mantis_untrusted_service_unittest.cc",
+  ]
   deps = [
     ":media_app",
+    "//ash/constants",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/mantis/mojom",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/specialized_features",
+    "//components/prefs:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
   ]

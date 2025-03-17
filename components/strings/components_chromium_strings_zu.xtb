@@ -20,6 +20,9 @@
           uphinde uyekise ukukhetha ibhokisi lokuhlola le-"Sebenzisa iseva elibambayo nge-LAN yakho".</translation>
 <translation id="4622039161600275920">Leli khasi livinjwe yi-Chromium</translation>
 <translation id="48558539577516920">Vumela i-Chromium ukufinyelela inethiwekhi kuzilungiselelo zakho zohlelo lokuvikela noma isilwi magciwane.</translation>
+<translation id="4949828774841497663">Iya kuma-Application &gt; Amasethingi Ohlelo &gt; Inethiwekhi, khetha
+          inethiwekhi esebenzayo, chofoza inkinobho ethi Imininingwane..., bese uyeka ukukhetha noma yibaphi abameleli
+          okungenzeka ukuthi bakhethiwe.</translation>
 <translation id="580822234363523061">Hamba
           kumenyu ye-Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -28,6 +31,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           uphinde uqiniseke ukuthi ukulungiselelwa kwakho kusethelwe ku-"akukho ummeleli" noma "kuqondile."</translation>
+<translation id="648062525172759633">Lawa makhasi enzelwe ukusetshenziswa onjiniyela beChromium, futhi kungenzeka anganakekelwa noma ahlolwe. Ukuze uzinike amandla, funa kokuthi <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, chofoza inkinobho ukuze unike amandla amakhasi okususa iphutha, bese ufuna kuleli khasi futhi.</translation>
 <translation id="6549378540556750549">I-Chromium iphinda yenziwe enye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Izinguquko zakho zizosebenza ngesikhathi esilandelayo uma uqalisa kabusha i-Chromium.</translation>
 <translation id="691026815377248078">I-Chromium idinga ukufinyelela kwe-Bluetooth ukuze iqhubeke 
@@ -40,9 +44,6 @@
         <ph name="ADVANCED_TITLE" />
         uphinde uyekise ukukhetha i-"<ph name="NO_PREFETCH_DESCRIPTION" />."
         Uma ngabe lokhu kungaxazululi inkinga, sincoma ukuphinda ukhethe le nketho  ukuze uthole ukusebenza okuthuthukisiwe.</translation>
-<translation id="8187289872471304532">Hamba ku-
-          Izinhlelo zokusebenza &gt; Okuncamelayo kwesistimu &gt; Inethiwekhi &gt; Okuthuthukisiwe &gt; Ommeleli
-          uphinde uyekele ukukhetha noma yibaphi abammeleli abakhethiwe.</translation>
 <translation id="8597726643333341451">Ubuka ikhasi elivikelekile le-Chrome Yokuhlola</translation>
 <translation id="8684913864886094367">I-Chromium ayizange ivaleke ngokulungile.</translation>
 </translationbundle>

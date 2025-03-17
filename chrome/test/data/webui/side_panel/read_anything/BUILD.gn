@@ -16,7 +16,6 @@ build_webui_tests("build") {
     "common.ts",
     "common_test.ts",
     "fake_reading_mode.ts",
-    "fake_speech_synthesis.ts",
     "fake_tree_builder.ts",
     "fake_tree_builder_test.ts",
     "font_menu_test.ts",
@@ -24,12 +23,14 @@ build_webui_tests("build") {
     "highlight_menu_test.ts",
     "highlight_toggle_test.ts",
     "image_test.ts",
+    "keyboard_util_test.ts",
     "language_change_test.ts",
     "language_menu_test.ts",
     "language_toast_test.ts",
     "letter_spacing_test.ts",
     "line_spacing_test.ts",
     "links_toggle_button_test.ts",
+    "images_toggle_button_test.ts",
     "links_toggled_integration_test.ts",
     "loading_screen_test.ts",
     "next_previous_granularity_test.ts",
@@ -46,6 +47,7 @@ build_webui_tests("build") {
     "speech_uses_max_text_length_test.ts",
     "test_color_updater_browser_proxy.ts",
     "test_metrics_browser_proxy.ts",
+    "test_speech_browser_proxy.ts",
     "toolbar_overflow_test.ts",
     "toolbar_test.ts",
     "update_content_integration_test.ts",
@@ -70,7 +72,6 @@ build_webui_tests("build") {
                            target_gen_dir) ]
   ts_deps = [
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]

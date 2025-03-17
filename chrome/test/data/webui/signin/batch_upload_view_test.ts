@@ -43,6 +43,7 @@ suite('BatchUploadViewTest', function() {
       dataItems: [],
       // Keep empty not to request string of unavailable id.
       sectionTitle: '',
+      isTheme: false,
     };
     passwordSection.dataItems.push(password1);
     passwordSection.dataItems.push(password2);
@@ -58,6 +59,7 @@ suite('BatchUploadViewTest', function() {
       dataItems: [],
       // Keep empty not to request string of unavailable id.
       sectionTitle: '',
+      isTheme: false,
     };
     addressSection.dataItems.push(address);
 
@@ -82,7 +84,7 @@ suite('BatchUploadViewTest', function() {
 
   function getSectionElement(index: number): DataSectionElement {
     const dataSections =
-        batchUploadApp.shadowRoot!.querySelectorAll('data-section');
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
     assertEquals(TEST_DATA.dataContainers.length, dataSections.length);
     assertLT(index, TEST_DATA.dataContainers.length);
     return dataSections[index]!;
@@ -111,8 +113,8 @@ suite('BatchUploadViewTest', function() {
     assertGT(TEST_DATA.dataContainers.length, 1);
     assertEquals(
         TEST_DATA.dialogSubtitle,
-        batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                      '#subtitle')!.textContent!.trim());
+        batchUploadApp.shadowRoot.querySelector<CrButtonElement>(
+                                     '#subtitle')!.textContent!.trim());
 
     // Account info.
     assertTrue(isChildVisible(batchUploadApp, '#account-info-row'));
@@ -120,7 +122,7 @@ suite('BatchUploadViewTest', function() {
     assertTrue(isChildVisible(batchUploadApp, '#email'));
     assertEquals(
         TEST_DATA.accountInfo.email,
-        batchUploadApp.shadowRoot!
+        batchUploadApp.shadowRoot
             .querySelector<CrButtonElement>(
                 '#account-info-row')!.textContent!.trim());
   });
@@ -150,7 +152,7 @@ suite('BatchUploadViewTest', function() {
     assertTrue(isChildVisible(batchUploadApp, '#dataSections'));
 
     const dataSections =
-        batchUploadApp.shadowRoot!.querySelectorAll('data-section');
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
     assertEquals(TEST_DATA.dataContainers.length, dataSections.length);
   });
 
@@ -163,7 +165,7 @@ suite('BatchUploadViewTest', function() {
 
     // Get all checkboxes for each sections ordered.
     const firstSectionCheckboxes =
-        firstSection.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+        firstSection.shadowRoot.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(
         getTotalNumberOfItemsInSection(firstIndex),
@@ -195,7 +197,7 @@ suite('BatchUploadViewTest', function() {
 
     // Get the section checkboxes ordered.
     const firstSectionCheckboxes =
-        firstSection.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+        firstSection.shadowRoot.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(
         getTotalNumberOfItemsInSection(firstIndex),
@@ -265,7 +267,7 @@ suite('BatchUploadViewTest', function() {
     assertFalse(saveButton.disabled);
 
     const dataSections =
-        batchUploadApp.shadowRoot!.querySelectorAll('data-section');
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
     assertEquals(dataSections.length, TEST_DATA.dataContainers.length);
 
     // Disable all toggles.
@@ -288,7 +290,7 @@ suite('BatchUploadViewTest', function() {
     assertFalse(saveButton.disabled);
 
     const dataSections =
-        batchUploadApp.shadowRoot!.querySelectorAll('data-section');
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
     assertEquals(dataSections.length, TEST_DATA.dataContainers.length);
 
     // Unckeck all checkboxes of each section to toggle the sections off.
@@ -298,9 +300,8 @@ suite('BatchUploadViewTest', function() {
       const toggle = section.$.toggle;
       assertTrue(toggle.checked);
 
-      const checkboxes =
-          section.shadowRoot!.querySelectorAll<CrCheckboxElement>(
-              '.item-checkbox');
+      const checkboxes = section.shadowRoot.querySelectorAll<CrCheckboxElement>(
+          '.item-checkbox');
       for (let j = 0; j < checkboxes.length; ++j) {
         const checkbox = checkboxes[j]!;
         assertTrue(checkbox.checked);

@@ -62,13 +62,16 @@ class CHROME_DBUS_EXPORT ObjectProxy
   };
 
   // Special timeout constants.
-  //
-  // The constants correspond to DBUS_TIMEOUT_USE_DEFAULT and
-  // DBUS_TIMEOUT_INFINITE. Here we use literal numbers instead of these
-  // macros as these aren't defined with D-Bus earlier than 1.4.12.
   enum {
+    // The constant corresponds to DBUS_TIMEOUT_USE_DEFAULT. Here we use literal
+    // numbers instead of these macros as these aren't defined with D-Bus
+    // earlier than 1.4.12.
     TIMEOUT_USE_DEFAULT = -1,
-    TIMEOUT_INFINITE = 0x7fffffff,
+
+    // Max timeout for methods calls. Long method calls add to `pending_replies"
+    // in dbus_daemon and it has a limit. Once that limit is exceeded, no more
+    // calls could be made on the relevant DBusConnection.
+    TIMEOUT_MAX = base::Hours(1).InMilliseconds(),
   };
 
   // Called when an error response is returned or no response is returned.
@@ -127,7 +130,7 @@ class CHROME_DBUS_EXPORT ObjectProxy
   //
   // If the method call is successful, a pointer to Response object will
   // be passed to the callback. If unsuccessful, nullptr will be passed to
-  // the callback.
+  // the callback and ObjectProxy will emit a log message with the error.
   //
   // Must be called in the origin thread.
   virtual void CallMethod(MethodCall* method_call,
@@ -141,7 +144,8 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // In case of error, ErrorResponse object is passed to the |callback|
   // if the remote object returned an error, or nullptr if a response was not
   // received at all (e.g., D-Bus connection is not established). In either
-  // error case, Response* should be nullptr.
+  // error case, Response* should be nullptr. Unlike CallMethod() above,
+  // ObjectProxy will not emit a log message with the error.
   virtual void CallMethodWithErrorResponse(MethodCall* method_call,
                                            int timeout_ms,
                                            ResponseOrErrorCallback callback);

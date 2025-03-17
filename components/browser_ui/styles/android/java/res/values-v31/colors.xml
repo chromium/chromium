@@ -9,9 +9,11 @@ found in the LICENSE file.
   <!-- GM3 dynamic colors for Android S and above.-->
   <color name="material_primary_10">@color/material_dynamic_primary10</color>
   <color name="material_primary_20">@color/material_dynamic_primary20</color>
+  <color name="material_primary_30">@color/material_dynamic_primary30</color>
   <color name="material_primary_40">@color/material_dynamic_primary40</color>
   <color name="material_primary_50">@color/material_dynamic_primary50</color>
   <color name="material_primary_60">@color/material_dynamic_primary60</color>
+  <color name="material_primary_70">@color/material_dynamic_primary70</color>
   <color name="material_primary_80">@color/material_dynamic_primary80</color>
   <color name="material_primary_90">@color/material_dynamic_primary90</color>
   <color name="material_primary_95">@color/material_dynamic_primary95</color>

@@ -295,9 +295,6 @@ class TaskManagerMediator {
 
             @Override
             public void onTaskUnresponsive(long taskId) {}
-
-            @Override
-            public void onActiveTaskFetched(long taskId) {}
         };
     }
 

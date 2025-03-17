@@ -19,8 +19,6 @@ build_webui("build") {
     "browser_proxy.ts",
     "bypass_warning_confirmation_dialog.html.ts",
     "bypass_warning_confirmation_dialog.ts",
-    "dangerous_download_interstitial.html.ts",
-    "dangerous_download_interstitial.ts",
     "data.ts",
     "downloads.ts",
     "icon_loader.ts",
@@ -35,7 +33,6 @@ build_webui("build") {
 
   css_files = [
     "bypass_warning_confirmation_dialog.css",
-    "dangerous_download_interstitial.css",
     "item.css",
     "manager.css",
     "toolbar.css",

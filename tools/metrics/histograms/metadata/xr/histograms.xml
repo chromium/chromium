@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="VRSessionTime.WebVR" units="ms" expires_after="2025-03-09">
+<histogram name="VRSessionTime.WebVR" units="ms" expires_after="2026-02-10">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -32,30 +32,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="VRViewerType" enum="VRViewerType" expires_after="2025-03-30">
-  <owner>alcooper@chromium.org</owner>
-  <owner>xr-dev@chromium.org</owner>
-  <summary>The type of headset being used for VR.</summary>
-</histogram>
-
-<histogram name="XR.ARCore.DepthBufferSizeInPixels" units="pixels"
-    expires_after="2025-02-02">
-  <owner>bialpio@chromium.org</owner>
-  <owner>xr-dev@chromium.org</owner>
-  <summary>
-    Recorded on every frame for as long as depth data is requested in an XR
-    session backed by ARCore device. Measures the number of pixels (width *
-    height) in the depth buffer obtained from ARCore.
-  </summary>
-</histogram>
-
-<histogram name="XR.ARCore.ImageCopyFastPath" enum="Boolean"
-    expires_after="2024-12-22">
+<histogram name="XR.OpenXR.LocalFloorExtAvailable" enum="Boolean"
+    expires_after="2026-02-10">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
-    Recorded every time an image is copied out of ArCore. Measures if we take
-    the &quot;fast&quot; direct copy path or have to copy pixel-by-pixel.
+    Recorded when an OpenXR session is started, this records whether the
+    XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT extension is available. It is
+    required to be available on runtimes reporting OpenXR 1.1 or later.
   </summary>
 </histogram>
 

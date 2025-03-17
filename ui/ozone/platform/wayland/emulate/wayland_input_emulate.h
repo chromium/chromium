@@ -62,15 +62,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                     int touch_id,
                     uint32_t request_id);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // |display_specs| is the spec for the display(s).
-  void EmulateUpdateDisplay(const std::string& display_specs,
-                            uint32_t request_id);
-#endif
-
-#if BUILDFLAG(IS_LINUX)
   void ForceUseScreenCoordinatesOnce();
-#endif
 
  private:
   enum PendingRequestType {

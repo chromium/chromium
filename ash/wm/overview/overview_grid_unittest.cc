@@ -40,8 +40,7 @@ class OverviewGridTest : public AshTestBase {
  public:
   OverviewGridTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::
-                                  kOverviewSessionInitOptimizations},
+        /*enabled_features=*/{},
         /*disabled_features=*/{features::kForestFeature});
   }
 
@@ -439,10 +438,6 @@ class OverviewGridForestTest : public OverviewTestBase {
       }
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kOverviewSessionInitOptimizations};
 };
 
 // Tests that with only one window, we always animate.

@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -53,7 +52,7 @@ bool ScreenCaptureNotificationBlocker::ShouldBlockNotification(
     return false;
 
   // Otherwise block all notifications that belong to non-capturing origins.
-  return base::ranges::none_of(
+  return std::ranges::none_of(
       capturing_web_contents_,
       [&notification](content::WebContents* web_contents) {
         return url::IsSameOriginWith(notification.origin_url(),

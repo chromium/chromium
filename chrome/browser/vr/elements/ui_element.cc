@@ -11,7 +11,6 @@
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -449,8 +448,8 @@ std::unique_ptr<UiElement> UiElement::ReplaceChild(
   to_remove->parent_ = nullptr;
   size_t old_size = children_.size();
 
-  auto it = base::ranges::find(children_, to_remove,
-                               &std::unique_ptr<UiElement>::get);
+  auto it =
+      std::ranges::find(children_, to_remove, &std::unique_ptr<UiElement>::get);
   DCHECK(it != std::end(children_));
 
   std::unique_ptr<UiElement> removed(it->release());

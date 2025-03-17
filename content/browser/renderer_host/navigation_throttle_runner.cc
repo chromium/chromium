@@ -137,7 +137,7 @@ NavigationThrottleRunner::~NavigationThrottleRunner() {
 }
 
 void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
-  DCHECK_NE(Event::kNoEvent, event);
+  CHECK_NE(Event::kNoEvent, event);
   current_event_ = event;
   next_index_ = 0;
   ProcessInternal();
@@ -145,7 +145,7 @@ void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
 
 void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
     NavigationThrottle* deferring_throttle) {
-  DCHECK_EQ(GetDeferringThrottle(), deferring_throttle);
+  CHECK_EQ(GetDeferringThrottle(), deferring_throttle);
   base::TimeDelta defer_time =
       RecordDeferTimeHistogram(current_event_, defer_start_time_);
   total_defer_duration_time_ += defer_time;
@@ -335,7 +335,7 @@ void NavigationThrottleRunner::AddThrottle(
 
 void NavigationThrottleRunner::ProcessInternal() {
   TRACE_EVENT0("navigation", "NavigationThrottleRunner::ProcessInternal");
-  DCHECK_NE(Event::kNoEvent, current_event_);
+  CHECK_NE(Event::kNoEvent, current_event_);
   base::Time start_time = base::Time::Now();
   if (!event_process_start_time_.has_value()) {
     event_process_start_time_ = start_time;

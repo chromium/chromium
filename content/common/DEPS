@@ -43,5 +43,7 @@ include_rules = [
 specific_include_rules = {
   '.*_unittest.*': [
     "+services/network/test",
+      # Needed when writting fuzztest fuzzers.
+    "+third_party/fuzztest/src/fuzztest/fuzztest.h"
   ]
 }

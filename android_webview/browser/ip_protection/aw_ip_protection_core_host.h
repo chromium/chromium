@@ -68,6 +68,11 @@ class AwIpProtectionCoreHost
   // Get the list of IP Protection proxies.
   void GetProxyConfig(GetProxyConfigCallback callback) override;
 
+  // PRTs are not supported in WebView. This method is here to make
+  // build work.
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override;
+
   // KeyedService:
 
   // We do not currently support destroying WebView's browser context. No

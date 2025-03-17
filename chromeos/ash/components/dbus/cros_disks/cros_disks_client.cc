@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -889,12 +888,6 @@ std::vector<std::string> CrosDisksClient::ComposeMountOptions(
   if (!mount_label.empty()) {
     options.push_back(base::StrCat({"mountlabel=", mount_label}));
   }
-
-  // TODO(b/364409158) Remove with files-kernel-drivers feature flag.
-  options.push_back(base::StrCat(
-      {"prefer-driver=",
-       base::FeatureList::IsEnabled(features::kFilesKernelDrivers) ? "kernel"
-                                                                   : "fuse"}));
 
   return options;
 }

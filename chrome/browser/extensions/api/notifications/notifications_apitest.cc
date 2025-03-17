@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
@@ -45,13 +46,10 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -73,13 +71,7 @@ enum class WindowState {
   NORMAL
 };
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-using NotificationsApiTestBase = extensions::ExtensionPlatformApiTest;
-#else
-using NotificationsApiTestBase = extensions::ExtensionApiTest;
-#endif
-
-class NotificationsApiTest : public NotificationsApiTestBase {
+class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
   NotificationsApiTest() = default;
   ~NotificationsApiTest() override = default;
@@ -148,7 +140,7 @@ class NotificationsApiTest : public NotificationsApiTestBase {
 
  protected:
   void SetUpOnMainThread() override {
-    NotificationsApiTestBase::SetUpOnMainThread();
+    extensions::ExtensionApiTest::SetUpOnMainThread();
 
     DCHECK(profile());
     display_service_tester_ =
@@ -157,7 +149,7 @@ class NotificationsApiTest : public NotificationsApiTestBase {
 
   void TearDownOnMainThread() override {
     display_service_tester_.reset();
-    NotificationsApiTestBase::TearDownOnMainThread();
+    extensions::ExtensionApiTest::TearDownOnMainThread();
   }
 
   // Returns the notification that's being displayed for |extension|, or nullptr
@@ -241,11 +233,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
   EXPECT_EQ(kButtonTitle, notification->buttons()[0].title);
 }
 
-// TODO(crbug.com/371431032): Fix the tests below on Android.
-#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-
 // Native notifications don't support (or use) observers.
-#if !BUILDFLAG(IS_MAC)
+// TODO(crbug.com/371431032): Port to desktop Android. LoadExtensionAndWait()
+// times out. Also, the test extensions may need to move to manifest V3.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/by_user");
@@ -331,6 +322,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371431032): Port to desktop Android. LoadExtensionAndWait()
+// times out. Also, the test extensions may need to move to manifest V3.
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestOnPermissionLevelChanged) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/permission");
@@ -545,4 +539,4 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
   EXPECT_TRUE(notification->small_image_needs_additional_masking());
 }
 
-#endif  // !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)

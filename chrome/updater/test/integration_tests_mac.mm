@@ -77,10 +77,10 @@ std::optional<base::FilePath> GetActiveFile(UpdaterScope /*scope*/,
     return std::nullopt;
   }
 
-  return path->AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
-      .AppendASCII("Actives")
-      .AppendASCII(id);
+  return path->Append(COMPANY_SHORTNAME_STRING)
+      .Append(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
+      .Append("Actives")
+      .Append(id);
 }
 
 }  // namespace
@@ -116,11 +116,10 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
   }
 
-  std::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
-  EXPECT_TRUE(cache_path);
-  if (cache_path) {
-    EXPECT_TRUE(base::DeletePathRecursively(*cache_path));
-  }
+  // TODO(crbug.com/394302692): Delete after CIPD updater versions are M136+.
+  EXPECT_TRUE(base::DeletePathRecursively(
+      base::FilePath("/Library/Caches/").Append(MAC_BUNDLE_IDENTIFIER_STRING)));
+
   EXPECT_TRUE(RemoveWakeJobFromLaunchd(scope));
 
   // Also clean up any other versions of the updater that are around.
@@ -157,14 +156,6 @@ void ExpectClean(UpdaterScope scope) {
   // Files must not exist on the file system.
   EXPECT_FALSE(base::PathExists(*GetWakeTaskPlistPath(scope)));
 
-  // Caches must have been removed. On Mac, this is separate from other
-  // updater directories, so we can reliably remove it completely.
-  std::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
-  EXPECT_TRUE(cache_path);
-  if (cache_path) {
-    EXPECT_FALSE(base::PathExists(*cache_path));
-  }
-
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path && base::PathExists(*path)) {
@@ -172,7 +163,7 @@ void ExpectClean(UpdaterScope scope) {
     // present.
     int count = CountDirectoryFiles(*path);
     for (const auto& file_name : {"updater.log", "prefs.json"}) {
-      if (base::PathExists(path->AppendASCII(file_name))) {
+      if (base::PathExists(path->Append(file_name))) {
         count -= 1;
       }
     }
@@ -192,7 +183,7 @@ void ExpectClean(UpdaterScope scope) {
   EXPECT_TRUE(keystone_path);
   if (keystone_path) {
     EXPECT_FALSE(
-        base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
+        base::PathExists(keystone_path->Append(KEYSTONE_NAME ".bundle")));
   }
   ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
@@ -281,21 +272,26 @@ bool WaitForUpdaterExit() {
       [&] { VLOG(0) << "Still waiting for updater to exit: " << last_found; });
 }
 
-std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix) {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
       exe_path.Append(FILE_PATH_LITERAL("old_updater"));
 
+  std::string arch;
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
-  old_updater_path = old_updater_path.Append("chromium_mac_arm64");
+  arch = "chromium_mac_arm64";
 #elif defined(ARCH_CPU_X86_64)
-  old_updater_path = old_updater_path.Append("chromium_mac_amd64");
+  arch = "chromium_mac_amd64";
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path = old_updater_path.Append("chrome_mac_universal");
+  arch = "chrome_mac_universal";
 #endif
+
+  old_updater_path = old_updater_path.Append(base::StrCat({arch, arch_suffix}));
+
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif
@@ -323,11 +319,11 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
       keystone_path.Append(FILE_PATH_LITERAL("TicketStore"));
   ASSERT_TRUE(base::CreateDirectory(keystone_ticket_store_path));
   ASSERT_TRUE(base::CopyFile(
-      updater_test_data_path.AppendASCII("Keystone.legacy.ticketstore"),
-      keystone_ticket_store_path.AppendASCII("Keystone.ticketstore")));
-  ASSERT_TRUE(base::CopyFile(
-      updater_test_data_path.AppendASCII("CountingMetrics.plist"),
-      keystone_path.AppendASCII("CountingMetrics.plist")));
+      updater_test_data_path.Append("Keystone.legacy.ticketstore"),
+      keystone_ticket_store_path.Append("Keystone.ticketstore")));
+  ASSERT_TRUE(
+      base::CopyFile(updater_test_data_path.Append("CountingMetrics.plist"),
+                     keystone_path.Append("CountingMetrics.plist")));
 }
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
@@ -435,8 +431,8 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
 
     NSURL* const managed_preferences_url = base::apple::FilePathToNSURL(
         GetLibraryFolderPath(UpdaterScope::kSystem)
-            ->AppendASCII("Managed Preferences")
-            .AppendASCII(LEGACY_GOOGLE_UPDATE_APPID ".plist"));
+            ->Append("Managed Preferences")
+            .Append(LEGACY_GOOGLE_UPDATE_APPID ".plist"));
     ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
                                              forKey:@"updatePolicies"]
         writeToURL:managed_preferences_url
@@ -451,10 +447,10 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
   if (!process.IsValid()) {
     VLOG(2) << "Failed to launch the process to refresh preferences.";
   }
-  int exit_code = -1;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(0, exit_code);
+  // Exit code is not checked because it is not 0 when `cfprefsd` is not
+  // found.
+  EXPECT_TRUE(
+      process.WaitForExitWithTimeout(TestTimeouts::action_timeout(), nullptr));
 }
 
 void PrivilegedHelperInstall(UpdaterScope scope) {
@@ -524,7 +520,7 @@ void ExpectKSAdminResult(UpdaterScope scope,
 
   base::CommandLine command_line(*ksadmin_path);
   for (const auto& [key, value] : switches) {
-    command_line.AppendSwitchASCII(key, value);
+    command_line.AppendSwitchUTF8(key, value);
   }
 
   ExpectCliResult(command_line, elevate, std::move(want_stdout),
@@ -751,8 +747,8 @@ std::optional<base::FilePath> GetRegistrationTestAppPath() {
     return std::nullopt;
   }
   const base::FilePath test_app_path =
-      exe_path.AppendASCII("registration_test_app_bundle.app/Contents/MacOS/"
-                           "registration_test_app_bundle");
+      exe_path.Append("registration_test_app_bundle.app/Contents/MacOS/"
+                      "registration_test_app_bundle");
   if (test_app_path.empty() || !base::PathExists(test_app_path)) {
     return std::nullopt;
   }

@@ -58,34 +58,38 @@ suite('ProfilePickerAppTest', function() {
 
   test('ProfilePickerMainView', async function() {
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 1);
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
     const mainView =
-        testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
+        testElement.shadowRoot.querySelector('profile-picker-main-view')!;
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('initializeMainView');
-    const profilesContainer =
-        mainView.shadowRoot!.querySelector<HTMLElement>('#wrapper')!
-            .querySelector<HTMLElement>('#profilesContainer')!;
-    assertTrue(profilesContainer.hidden);
+
+    const profilesWrapper =
+        mainView.shadowRoot.querySelector<HTMLElement>('#profilesWrapper')!;
+    assertTrue(profilesWrapper.hidden);
 
     webUIListenerCallback(
         'profiles-list-changed', [browserProxy.profileSample]);
     await microtasksFinished();
+    assertFalse(profilesWrapper.hidden);
+
+    const profilesContainer =
+        profilesWrapper.querySelector<HTMLElement>('#profilesContainer')!;
     assertEquals(profilesContainer.querySelectorAll('profile-card').length, 1);
     mainView.$.addProfile.click();
     await waitForProfileCreationLoad();
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 2);
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 2);
+    const choice = testElement.shadowRoot.querySelector('profile-type-choice');
     assertTrue(!!choice);
-    await whenCheck(choice!, () => choice.classList.contains('active'));
-    verifyProfileCreationViewStyle(choice!);
+    await whenCheck(choice, () => choice.classList.contains('active'));
+    verifyProfileCreationViewStyle(choice);
   });
 
   test('SignInPromoSignIn', async function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+    const choice = testElement.shadowRoot.querySelector('profile-type-choice');
     assertTrue(!!choice);
     choice.$.signInButton.click();
     await microtasksFinished();
@@ -101,9 +105,9 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 1);
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
     const mainView =
-        testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
+        testElement.shadowRoot.querySelector('profile-picker-main-view')!;
     await whenCheck(mainView, () => mainView.classList.contains('active'));
   });
 
@@ -114,9 +118,9 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 1);
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
     const mainView =
-        testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
+        testElement.shadowRoot.querySelector('profile-picker-main-view')!;
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('selectNewAccount');
   });
@@ -129,9 +133,9 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+    const choice = testElement.shadowRoot.querySelector('profile-type-choice');
     assertTrue(!!choice);
-    await whenCheck(choice!, () => choice.classList.contains('active'));
+    await whenCheck(choice, () => choice.classList.contains('active'));
     verifyProfileCreationViewStyle(choice);
     choice.$.notNowButton.click();
     await microtasksFinished();

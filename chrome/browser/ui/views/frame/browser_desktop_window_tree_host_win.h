@@ -108,7 +108,7 @@ class BrowserDesktopWindowTreeHostWin
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
 
-  base::win::ScopedHICON icon_handle_;
+  base::win::ScopedGDIObject<HICON> icon_handle_;
 
   // This will be null pre Win10.
   scoped_refptr<VirtualDesktopHelper> virtual_desktop_helper_;

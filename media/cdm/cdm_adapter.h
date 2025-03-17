@@ -18,6 +18,7 @@
 #include "base/scoped_native_library.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/types/pass_key.h"
 #include "components/crash/core/common/crash_key.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/callback_registry.h"
@@ -66,6 +67,14 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb);
 
+  CdmAdapter(base::PassKey<CdmAdapter>,
+             const CdmConfig& cdm_config,
+             CreateCdmFunc create_cdm_func,
+             std::unique_ptr<CdmAuxiliaryHelper> helper,
+             const SessionMessageCB& session_message_cb,
+             const SessionClosedCB& session_closed_cb,
+             const SessionKeysChangeCB& session_keys_change_cb,
+             const SessionExpirationUpdateCB& session_expiration_update_cb);
   CdmAdapter(const CdmAdapter&) = delete;
   CdmAdapter& operator=(const CdmAdapter&) = delete;
 
@@ -162,13 +171,6 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
  private:
   FRIEND_TEST_ALL_PREFIXES(CdmAdapterTestWithMockCdm, RecordUMA);
 
-  CdmAdapter(const CdmConfig& cdm_config,
-             CreateCdmFunc create_cdm_func,
-             std::unique_ptr<CdmAuxiliaryHelper> helper,
-             const SessionMessageCB& session_message_cb,
-             const SessionClosedCB& session_closed_cb,
-             const SessionKeysChangeCB& session_keys_change_cb,
-             const SessionExpirationUpdateCB& session_expiration_update_cb);
   ~CdmAdapter() final;
 
   // Resolves the |promise| if the CDM is successfully initialized; rejects it
@@ -229,7 +231,7 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   SessionExpirationUpdateCB session_expiration_update_cb_;
 
   // CDM origin and crash key to be used in crash reporting.
-  const std::string cdm_origin_;
+  const url::Origin cdm_origin_;
   crash_reporter::ScopedCrashKeyString scoped_crash_key_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

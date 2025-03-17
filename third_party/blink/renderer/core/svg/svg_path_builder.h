@@ -38,6 +38,8 @@ class SVGPathBuilder final : public SVGPathConsumer {
 
   void EmitSegment(const PathSegmentData&) override;
 
+  const gfx::PointF& CurrentPoint() const { return current_point_; }
+
  private:
   void EmitClose();
   void EmitMoveTo(const gfx::PointF&);

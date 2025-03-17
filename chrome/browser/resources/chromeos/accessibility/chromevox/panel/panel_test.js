@@ -142,14 +142,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
 });
 
 
-// TODO(https://crbug.com/1333375): Flaky on MSAN and ASAN builders.
-GEN('#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)');
-GEN('#define MAYBE_SearchMenu DISABLED_SearchMenu');
-GEN('#else');
-GEN('#define MAYBE_SearchMenu SearchMenu');
-GEN('#endif');
-
-AX_TEST_F('ChromeVoxPanelTest', 'MAYBE_SearchMenu', async function() {
+AX_TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.linksDoc);
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();

@@ -13,14 +13,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "components/search_engines/template_url.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 class DocumentSuggestionsService;
+class EnterpriseSearchAggregatorSuggestionsService;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -31,6 +34,8 @@ struct ResourceRequest;
 // The types of requests for remote suggestions.
 // These values are written to logs. New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
+// Must be kept in sync with RemoteRequestType enum and variant.
+// LINT.IfChange(RemoteRequestType)
 enum class RemoteRequestType {
   // Search suggestion requests.
   kSearch = 0,
@@ -46,8 +51,14 @@ enum class RemoteRequestType {
   kDocumentSuggest = 5,
   // Suggestion deletion requests.
   kDeletion = 6,
-  kMaxValue = kDeletion,
+  // Enterprise Search Aggregator suggestion requests.
+  kEnterpriseSearchAggregatorSuggest = 7,
+  kMaxValue = kEnterpriseSearchAggregatorSuggest,
 };
+// LINT.ThenChange(
+//     //tools/metrics/histograms/metadata/omnibox/enums.xml:RemoteRequestType,
+//     //tools/metrics/histograms/metadata/omnibox/histograms.xml:RemoteRequestType
+// )
 
 // The event types recorded by the providers for remote suggestions. Each event
 // must be logged at most once from when the provider is started until it is
@@ -135,6 +146,8 @@ class RemoteSuggestionsService : public KeyedService {
 
   RemoteSuggestionsService(
       DocumentSuggestionsService* document_suggestions_service,
+      EnterpriseSearchAggregatorSuggestionsService*
+          enterprise_search_aggregator_suggestions_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~RemoteSuggestionsService() override;
   RemoteSuggestionsService(const RemoteSuggestionsService&) = delete;
@@ -192,6 +205,16 @@ class RemoteSuggestionsService : public KeyedService {
   // request.
   void StopCreatingDocumentSuggestionsRequest();
 
+  // Creates and starts an enterprise search aggregator suggestion request using
+  //  `suggest_url` and `response_body` asynchronously after obtaining an OAuth2
+  //  token for signed-in enterprise users.
+  void CreateEnterpriseSearchAggregatorSuggestionsRequest(
+      const std::u16string& query,
+      const GURL& suggest_url,
+      StartCallback start_callback,
+      CompletionCallback completion_callback,
+      bool in_keyword_mode);
+
   // Creates and returns a loader to delete personalized suggestions.
   //
   // `deletion_url` must be a valid URL.
@@ -231,6 +254,8 @@ class RemoteSuggestionsService : public KeyedService {
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback` passing the response to the caller.
   void OnRequestCompleted(const base::UnguessableToken& request_id,
+                          RemoteRequestType request_type,
+                          base::ElapsedTimer request_timer,
                           CompletionCallback completion_callback,
                           const network::SimpleURLLoader* source,
                           std::unique_ptr<std::string> response_body);
@@ -238,6 +263,10 @@ class RemoteSuggestionsService : public KeyedService {
   // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
   // the factories' dependency.
   raw_ptr<DocumentSuggestionsService> document_suggestions_service_;
+  // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
+  // the factories' dependency.
+  raw_ptr<EnterpriseSearchAggregatorSuggestionsService>
+      enterprise_search_aggregator_suggestions_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Observers being notified of request start and completion events.
   base::ObserverList<Observer> observers_;

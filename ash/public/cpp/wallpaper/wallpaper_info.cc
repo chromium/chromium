@@ -4,13 +4,13 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
@@ -132,7 +132,7 @@ bool WallpaperInfo::MatchesSelection(const WallpaperInfo& other) const {
     case WallpaperType::kDaily:
       return type == other.type && layout == other.layout &&
              collection_id == other.collection_id && unit_id == other.unit_id &&
-             base::ranges::equal(variants, other.variants);
+             std::ranges::equal(variants, other.variants);
     case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
       return location == other.location && layout == other.layout &&

@@ -4,6 +4,8 @@
 
 package org.chromium.components.subresource_filter;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
@@ -12,13 +14,14 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -32,29 +35,30 @@ import org.chromium.ui.text.ChromeClickableSpan;
  * Java part of AdsBlockedDialog pair providing communication between native ads blocked delegate
  * code and Java ads blocked dialog UI components.
  */
+@NullMarked
 public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     private long mNativeDialog;
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private PropertyModel mDialogModel;
-    private ClickableSpan mClickableSpan;
+    private @Nullable PropertyModel mDialogModel;
+    private @Nullable ClickableSpan mClickableSpan;
     private Handler mDialogHandler;
 
     @CalledByNative
-    static AdsBlockedDialog create(long nativeDialog, @NonNull WindowAndroid windowAndroid) {
+    static AdsBlockedDialog create(long nativeDialog, WindowAndroid windowAndroid) {
         return new AdsBlockedDialog(nativeDialog, windowAndroid);
     }
 
-    AdsBlockedDialog(long nativeDialog, @NonNull WindowAndroid windowAndroid) {
+    AdsBlockedDialog(long nativeDialog, WindowAndroid windowAndroid) {
         mNativeDialog = nativeDialog;
-        mContext = windowAndroid.getContext().get();
-        mModalDialogManager = windowAndroid.getModalDialogManager();
+        mContext = assumeNonNull(windowAndroid.getContext().get());
+        mModalDialogManager = assumeNonNull(windowAndroid.getModalDialogManager());
         mDialogHandler = new Handler(ThreadUtils.getUiThreadLooper());
     }
 
     /**
-     * Internal constructor for {@link AdsBlockedDialog}. Used by tests to inject
-     * parameters. External code should use AdsBlockedDialog#create.
+     * Internal constructor for {@link AdsBlockedDialog}. Used by tests to inject parameters.
+     * External code should use AdsBlockedDialog#create.
      *
      * @param nativeDialog The pointer to the dialog instance created by native code.
      * @param context The context for accessing resources.
@@ -64,8 +68,8 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     @VisibleForTesting
     AdsBlockedDialog(
             long nativeDialog,
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+            Context context,
+            ModalDialogManager modalDialogManager,
             Handler dialogHandler) {
         mNativeDialog = nativeDialog;
         mContext = context;
@@ -73,11 +77,11 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
         mDialogHandler = dialogHandler;
     }
 
-    PropertyModel getDialogModelForTesting() {
+    @Nullable PropertyModel getDialogModelForTesting() {
         return mDialogModel;
     }
 
-    ClickableSpan getMessageClickableSpanForTesting() {
+    @Nullable ClickableSpan getMessageClickableSpanForTesting() {
         return mClickableSpan;
     }
 
@@ -122,7 +126,9 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
         // suspension logic as a follow up.
         if (shouldPostDialog) {
             mDialogHandler.post(
-                    () -> mModalDialogManager.showDialog(mDialogModel, ModalDialogType.TAB));
+                    () ->
+                            mModalDialogManager.showDialog(
+                                    assumeNonNull(mDialogModel), ModalDialogType.TAB));
         } else {
             mModalDialogManager.showDialog(mDialogModel, ModalDialogType.TAB);
         }

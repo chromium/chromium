@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -13,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
@@ -32,7 +32,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"  // nogncheck
 #endif
@@ -197,7 +197,7 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
       title, message, type, yes_text, no_text, checkbox_text);
 
   // System modals have no parent and are only supported on ChromeOS Ash.
-  const bool is_modal = parent || BUILDFLAG(IS_CHROMEOS_ASH);
+  const bool is_modal = parent || BUILDFLAG(IS_CHROMEOS);
   views::Widget* widget = nullptr;
   if (is_modal) {
     dialog->SetModalType(parent ? ui::mojom::ModalType::kWindow
@@ -236,7 +236,7 @@ bool MessageBoxDialog::ShouldShowCloseButton() const {
 
 void MessageBoxDialog::OnWidgetActivationChanged(views::Widget* widget,
                                                  bool active) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (GetWidget()->GetNativeWindow()->GetProperty(
           chromeos::kIsShowingInOverviewKey)) {
     // Prevent this from closing while starting overview mode for better UX.

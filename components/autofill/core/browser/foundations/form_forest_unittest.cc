@@ -217,8 +217,8 @@ std::vector<std::vector<T>> Permutations(const std::vector<T>& xs) {
   std::vector<std::vector<T>> ps;
   ps.reserve(factorial(xs.size()));
   ps.push_back(xs);
-  base::ranges::sort(ps.front());
-  while (base::ranges::next_permutation(ps.front())) {
+  std::ranges::sort(ps.front());
+  while (std::ranges::next_permutation(ps.front()).found) {
     ps.push_back(ps.front());
   }
   CHECK_EQ(ps.size(), factorial(xs.size()));
@@ -492,11 +492,9 @@ class FormForestTestWithMockedTree : public FormForestTest {
       if (f.begin >= source.fields().size()) {
         continue;
       }
-      if (f.begin + f.count > source.fields().size()) {
-        f.count = base::dynamic_extent;
-      }
-      base::ranges::copy(base::span(source.fields()).subspan(f.begin, f.count),
-                         std::back_inserter(fields));
+      f.count = std::min(f.count, source.fields().size() - f.begin);
+      std::ranges::copy(base::span(source.fields()).subspan(f.begin, f.count),
+                        std::back_inserter(fields));
     }
 
     // Copy |mocked_forms_| into |flattened_forms_|, without fields.
@@ -520,7 +518,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
       FakeAutofillDriver& d = GetDriverOfForm(fs.form);
       return !d.GetParent() || d.is_sub_root();
     };
-    auto it = base::ranges::find_if(form_fields, IsRoot);
+    auto it = std::ranges::find_if(form_fields, IsRoot);
     CHECK(it != form_fields.end());
     CHECK(std::ranges::all_of(form_fields, [&](FormSpan fs) {
       return !IsRoot(fs) || fs.form == it->form;

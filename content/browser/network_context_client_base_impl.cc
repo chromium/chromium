@@ -127,10 +127,6 @@ void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-void NetworkContextClientBase::OnTrustAnchorUsed() {}
-#endif
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
 void NetworkContextClientBase::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {

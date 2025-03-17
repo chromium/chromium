@@ -280,34 +280,34 @@ TEST_F(FormDataAndroidTest, UpdateFieldTypesWithExplicitType) {
   MockFunction<void(int)> check;
   {
     InSequence s;
-    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(kUsername)));
-    EXPECT_CALL(*field_bridges()[1], UpdateFieldTypes(Eq(kPassword)));
+    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(USERNAME)));
+    EXPECT_CALL(*field_bridges()[1], UpdateFieldTypes(Eq(PASSWORD)));
     EXPECT_CALL(check, Call(1));
     EXPECT_CALL(check, Call(2));
-    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(kPassword)));
+    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(PASSWORD)));
     EXPECT_CALL(check, Call(3));
-    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(kUsername)));
+    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(USERNAME)));
   }
 
   // Update all the fields to new types.
-  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
-                                 {form.fields()[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), USERNAME},
+                                 {form.fields()[1].global_id(), PASSWORD}});
   check.Call(1);
 
   // Update to the same type - this should not trigger calls to JNI.
-  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
-                                 {form.fields()[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), USERNAME},
+                                 {form.fields()[1].global_id(), PASSWORD}});
   check.Call(2);
 
   // Update only one field.
   FieldGlobalId unknown_id = CreateTestField().global_id();
   form_android.UpdateFieldTypes(
-      {{form.fields()[0].global_id(), kPassword}, {unknown_id, kUsername}});
+      {{form.fields()[0].global_id(), PASSWORD}, {unknown_id, USERNAME}});
   check.Call(3);
 
   // Update both, but only the first one has changes.
-  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
-                                 {form.fields()[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), USERNAME},
+                                 {form.fields()[1].global_id(), PASSWORD}});
 }
 
 // Tests that the calls to update field types are propagated to the fields.

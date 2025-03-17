@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.lifetime;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 
 /** Watches for when Chrome is told to restart itself. */
+@NullMarked
 public class ApplicationLifetime {
     /** Interface to be implemented to be notified of application termination. */
     public interface Observer {

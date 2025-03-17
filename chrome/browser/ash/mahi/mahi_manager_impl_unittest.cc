@@ -149,7 +149,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 
-    SimulateUserLogin(kDefaultUserEmail);
+    SimulateUserLogin(kRegularUserLoginInfo);
   }
 
   void TearDown() override {
@@ -467,16 +467,16 @@ TEST_F(MahiManagerImplTest, SetMahiPrefOnLogin) {
         Shell::Get()->session_controller()->GetActiveAccountId();
 
     // Sets the pref for the second user.
-    SimulateUserLogin("other@user.test");
+    SimulateUserLogin({"other@user.test"});
     SetMahiEnabledByUserPref(!mahi_enabled);
     EXPECT_EQ(IsEnabled(), !mahi_enabled);
 
     // Switching back to the previous user will update to correct pref.
-    GetSessionControllerClient()->SwitchActiveUser(user1_account_id);
+    SwitchActiveUser(user1_account_id);
     EXPECT_EQ(IsEnabled(), mahi_enabled);
 
     // Clears all logins and re-logins the default user.
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
     SimulateUserLogin(user1_account_id);
   }
 }

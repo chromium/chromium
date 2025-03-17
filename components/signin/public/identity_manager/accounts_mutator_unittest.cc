@@ -7,7 +7,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/device_id_helper.h"
@@ -20,18 +19,19 @@
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-const char kTestEmail[] = "test_user@test.com";
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-const char kTestGaiaId[] = "gaia-id-test_user-test.com";
-const char kTestGaiaId2[] = "gaia-id-test_user-2-test.com";
-const char kTestEmail2[] = "test_user@test-2.com";
-const char kRefreshToken[] = "refresh_token";
-const char kRefreshToken2[] = "refresh_token_2";
+constexpr char kTestEmail[] = "test_user@test.com";
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr GaiaId::Literal kTestGaiaId("gaia-id-test_user-test.com");
+constexpr GaiaId::Literal kTestGaiaId2("gaia-id-test_user-2-test.com");
+constexpr char kTestEmail2[] = "test_user@test-2.com";
+constexpr char kRefreshToken[] = "refresh_token";
+constexpr char kRefreshToken2[] = "refresh_token_2";
 #endif
 
 // Class that observes diagnostics updates from signin::IdentityManager.
@@ -135,8 +135,9 @@ TEST_F(AccountsMutatorTest, Basic) {
 // Test that the information of an existing account for a given ID gets updated.
 TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all add the account to the account tracker service.
   base::RunLoop run_loop;
@@ -208,14 +209,15 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
   EXPECT_EQ(Tribool::kFalse, reset_account_info.is_child_account);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Test that a new account gets added to the AccountTrackerService when calling
 // AddOrUpdateAccount() and that a new refresh token becomes available for the
 // passed account_id when adding an account for the first time.
 TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   base::RunLoop run_loop;
   identity_manager_observer()->SetOnRefreshTokenUpdatedCallback(
@@ -224,7 +226,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+      signin_metrics::AccessPoint::kSettings,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -237,8 +239,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
   EXPECT_EQ(account_info.account_id, account_id);
   EXPECT_EQ(account_info.email, kTestEmail);
-  EXPECT_EQ(account_info.access_point,
-            signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  EXPECT_EQ(account_info.access_point, signin_metrics::AccessPoint::kSettings);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);
 }
 
@@ -247,8 +248,9 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
 // and that its refresh token gets updated if a different one is passed.
 TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all add the account to the account tracker service.
   base::RunLoop run_loop;
@@ -258,7 +260,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+      signin_metrics::AccessPoint::kSettings,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -282,7 +284,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   // as the account id. Detect whether the current plaform has completed
   // the migration.
   const bool use_gaia_as_account_id =
-      account_id.ToString() == account_info.gaia;
+      account_id.ToString() == account_info.gaia.ToString();
 
   // If the system uses gaia id as account_id, then change the email and
   // the |is_under_advanced_protection| field. Otherwise only change the
@@ -293,7 +295,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, maybe_updated_email, kRefreshToken,
       /*is_under_advanced_protection=*/true,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop2.Run();
 
@@ -309,9 +311,8 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   EXPECT_EQ(account_info.account_id, updated_account_info.account_id);
   EXPECT_EQ(account_info.gaia, updated_account_info.gaia);
   EXPECT_EQ(updated_account_info.email, maybe_updated_email);
-  // The access point was not updated to `ACCESS_POINT_UNKNOWN`.
-  EXPECT_EQ(account_info.access_point,
-            signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  // The access point was not updated to `kUnknown`.
+  EXPECT_EQ(account_info.access_point, signin_metrics::AccessPoint::kSettings);
   if (use_gaia_as_account_id) {
     EXPECT_NE(updated_account_info.email, account_info.email);
     EXPECT_EQ(updated_account_info.email, kTestEmail2);
@@ -323,8 +324,9 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
 TEST_F(AccountsMutatorTest,
        InvalidateRefreshTokenForPrimaryAccount_WithPrimaryAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
@@ -361,8 +363,9 @@ TEST_F(
     AccountsMutatorTest,
     InvalidateRefreshTokenForPrimaryAccount_WithPrimaryAndSecondaryAccounts) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
@@ -377,7 +380,7 @@ TEST_F(
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -425,8 +428,9 @@ TEST_F(
 TEST_F(AccountsMutatorTest,
        InvalidateRefreshTokenForPrimaryAccount_WithoutPrimaryAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -444,8 +448,9 @@ TEST_F(AccountsMutatorTest,
 // firing any callback from AccountTrackerService or ProfileOAuth2TokenService.
 TEST_F(AccountsMutatorTest, RemoveAccount_NonExistingAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   base::RunLoop run_loop;
   identity_manager_observer()->SetOnRefreshTokenUpdatedCallback(
@@ -471,8 +476,9 @@ TEST_F(AccountsMutatorTest, RemoveAccount_NonExistingAccount) {
 // the right callbacks from AccountTrackerService or ProfileOAuth2TokenService.
 TEST_F(AccountsMutatorTest, RemoveAccount_ExistingAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all add the account to the account tracker service.
   base::RunLoop run_loop;
@@ -482,7 +488,7 @@ TEST_F(AccountsMutatorTest, RemoveAccount_ExistingAccount) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -516,8 +522,9 @@ TEST_F(AccountsMutatorTest, RemoveAccount_ExistingAccount) {
 // PO2TS and every account from the AccountTrackerService.
 TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all the first account to the account tracker service.
   base::RunLoop run_loop;
@@ -527,7 +534,7 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -545,7 +552,7 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
   CoreAccountId account_id2 = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId2, kTestEmail2, kRefreshToken2,
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop2.Run();
 
@@ -569,13 +576,14 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
 
 TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   EXPECT_EQ(
       account_id,
@@ -588,7 +596,7 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
   // Update the default account with different source.
   accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, "refresh_token2", true,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
   EXPECT_EQ(
       account_id,
@@ -601,13 +609,14 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
 
 TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
 
   // Remove the default account.
@@ -617,7 +626,7 @@ TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
   EXPECT_EQ("Settings::Signout",
             identity_manager_diagnostics_observer()->token_remover_source());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(AccountsMutatorTest, MoveAccount) {
@@ -664,8 +673,6 @@ TEST_F(AccountsMutatorTest, MoveAccount) {
 
 TEST(ExplicitBrowserSigninAccountsMutatorTest, MoveAccount) {
   base::test::TaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kExplicitBrowserSigninUIOnDesktop};
   IdentityTestEnvironment identity_test_env;
   IdentityManager* identity_manager = identity_test_env.identity_manager();
   AccountsMutator* accounts_mutator = identity_manager->GetAccountsMutator();

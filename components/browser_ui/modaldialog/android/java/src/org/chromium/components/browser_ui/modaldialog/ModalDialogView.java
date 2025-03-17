@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -24,7 +27,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
@@ -39,6 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Generic dialog view for app modal or tab modal alert dialogs. */
+@NullMarked
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
     private static final String TAG_PREFIX = "ModalDialogViewButton";
     static final int NOT_SPECIFIED = -1;
@@ -59,12 +65,12 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private LinearLayout mButtonGroup;
     private Button mPositiveButton;
     private Button mNegativeButton;
-    private Callback<Integer> mOnButtonClickedCallback;
-    private Runnable mOnEscapeCallback;
+    private @Nullable Callback<Integer> mOnButtonClickedCallback;
+    private @Nullable Runnable mOnEscapeCallback;
     private boolean mTitleScrollable;
     private boolean mShouldWrapCustomViewScrollable;
     private boolean mFilterTouchForSecurity;
-    private Runnable mOnTouchFilteredCallback;
+    private @Nullable Runnable mOnTouchFilteredCallback;
     private final Set<View> mTouchFilterableViews = new HashSet<>();
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
@@ -73,6 +79,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     // displayed to prevent potentially unintentional user interactions. A value of zero turns off
     // this kind of tap-jacking protection.
     private long mButtonTapProtectionDurationMs;
+    private boolean mBlockTouchInput;
 
     private int mHorizontalMargin = NOT_SPECIFIED;
     private int mVerticalMargin = NOT_SPECIFIED;
@@ -141,7 +148,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mMessageParagraph1.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterMessageView.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterContainer.setBackgroundColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
+                SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
         updateContentVisibility();
         updateButtonVisibility();
 
@@ -178,7 +185,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     @Override
     public void onClick(View v) {
         if (isWithinButtonTapProtectionPeriod()) return;
-        mOnButtonClickedCallback.onResult(getButtonTypeForTag(v.getTag()));
+        assumeNonNull(mOnButtonClickedCallback).onResult(getButtonTypeForTag(v.getTag()));
     }
 
     // Dialog buttons will not react to any tap event for a short period after this view is
@@ -224,7 +231,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     /**
      * @param callback The {@link Runnable} to invoke when the keyboard escape key is pressed.
      */
-    void setOnEscapeCallback(Runnable callback) {
+    void setOnEscapeCallback(@Nullable Runnable callback) {
         mOnEscapeCallback = callback;
     }
 
@@ -366,11 +373,21 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     void setupButtonGroup(ModalDialogProperties.ModalDialogButtonSpec[] buttonSpecList) {
-        mButtonGroup.setVisibility(View.VISIBLE);
-        int numButtons = buttonSpecList.length;
+        // There are flows can dynamically change the button, so remove all the previous buttons
+        // before adding new ones.
+        if (mButtonGroup.getChildCount() > 0) {
+            mButtonGroup.removeAllViews();
+        }
+        int numButtons = buttonSpecList != null ? buttonSpecList.length : 0;
+        mButtonGroup.setVisibility(numButtons > 0 ? View.VISIBLE : View.GONE);
 
-        for (int i = 0; i < buttonSpecList.length; i++) {
+        for (int i = 0; i < numButtons; i++) {
             ModalDialogProperties.ModalDialogButtonSpec spec = buttonSpecList[i];
+            // We can get rid of the button by just leaving the text blank.
+            if (TextUtils.isEmpty(spec.getText())) {
+                continue;
+            }
+
             int style = 0;
             if (numButtons == 1) {
                 style = R.style.FilledButton_Tonal_ThemeOverlay_SingleButton;
@@ -504,6 +521,15 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     /**
+     * Set padding to the dialog view.
+     *
+     * @param padding The padding to be applied to the dialog view.
+     */
+    void setPadding(Rect padding) {
+        setPadding(padding.left, padding.top, padding.right, padding.bottom);
+    }
+
+    /**
      * Sets content description for the specified button.
      *
      * @param buttonType The {@link ButtonType} of the button.
@@ -525,6 +551,20 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     void setFooterMessage(CharSequence message) {
         mFooterMessageView.setText(message);
         updateContentVisibility();
+    }
+
+    /**
+     * @param shouldBlockInputs Whether all inputs on the modal dialog should be blocked.
+     */
+    void blockInputs(boolean shouldBlockInputs) {
+        mBlockTouchInput = shouldBlockInputs;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent e) {
+        if (mBlockTouchInput) return true;
+
+        return super.dispatchTouchEvent(e);
     }
 
     private void updateContentVisibility() {

@@ -23,6 +23,7 @@ static_library("common") {
   deps = [
     "//base",
     "//components/language/core/common",
+    "//components/language_detection/core:core",
     "//third_party/metrics_proto",
     "//url",
   ]

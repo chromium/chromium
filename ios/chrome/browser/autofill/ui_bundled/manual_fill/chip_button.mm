@@ -11,20 +11,20 @@
 
 namespace {
 
-// Padding for the button. Used when the kIOSKeyboardAccessoryUpgrade feature is
+// Padding for the button. Used when the Keyboard Accessory Upgrade feature is
 // disabled.
 constexpr CGFloat kChipPadding = 14;
 
 // Leading and trailing padding for the button. Used when the
-// kIOSKeyboardAccessoryUpgrade feature is enabled.
+// Keyboard Accessory Upgrade feature is enabled.
 constexpr CGFloat kChipHorizontalPadding = 12;
 
 // Top and bottom padding for the button. Used when the
-// kIOSKeyboardAccessoryUpgrade feature is enabled.
+// Keyboard Accessory Upgrade feature is enabled.
 constexpr CGFloat kChipVerticalPadding = 11.5;
 
 // Vertical margin for the button. How much bigger the tap target is. Used when
-// the kIOSKeyboardAccessoryUpgrade feature is disabled.
+// the Keyboard Accessory Upgrade feature is disabled.
 constexpr CGFloat kChipVerticalMargin = 4;
 
 // Minimal height and width for the button.

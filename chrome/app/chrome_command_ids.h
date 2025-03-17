@@ -7,7 +7,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/command_id_constants.h"
 
@@ -15,6 +14,11 @@
 // It is used by Windows RC files, Mac NIB files, and other platforms too.
 
 // clang-format off
+
+// Note: Add `NO_IFTTT=<reason>` in the CL description if the linter is not
+// applicable.
+//
+// LINT.IfChange(ChromeCommandIds)
 
 // Values below IDC_MinimumLabelValue are reserved for dynamic menu items.
 #define IDC_MinimumLabelValue           4000
@@ -72,8 +76,7 @@
 #define IDC_USE_SYSTEM_TITLE_BAR        34051
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #define IDC_RESTORE_WINDOW              34052
 #endif
 
@@ -86,7 +89,7 @@
 #define IDC_WEB_APP_SETTINGS            34062
 #define IDC_WEB_APP_MENU_APP_INFO    34063
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Move window to other user commands
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_2 34080
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_3 34081
@@ -136,6 +139,7 @@
 #define IDC_ORGANIZE_TABS               35044
 #define IDC_CREATE_NEW_TAB_GROUP        35045
 #define IDC_DECLUTTER_TABS              35046
+#define IDC_SEND_SHARED_TAB_GROUP_FEEDBACK 35047
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
@@ -274,6 +278,9 @@
 #define IDC_TASK_MANAGER_MAIN_MENU      40288
 #define IDC_COMPARE_MENU                40289
 #define IDC_SHOW_ALL_COMPARISON_TABLES  40290
+#define IDC_ADD_TO_COMPARISON_TABLE_MENU 40291
+#define IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB 40292
+#define IDC_SHOW_HISTORY_SIDE_PANEL     40293
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.
@@ -426,6 +433,9 @@
 // Context menu items that provide fast access to input methods.
 #define IDC_CONTENT_CONTEXT_EMOJI 50220
 #define IDC_CONTEXT_COMPOSE 50230
+// Context menu items to control glic
+#define IDC_CONTENT_CONTEXT_CLOSE_GLIC  50231
+#define IDC_CONTENT_CONTEXT_RELOAD_GLIC  50232
 // Context menu items in the bookmark bar
 #define IDC_BOOKMARK_BAR_OPEN_ALL 51000
 #define IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW 51001
@@ -463,6 +473,7 @@
 
 // Context menu items in the status tray
 #define IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND 51100
+#define IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND_SETTING 51101
 
 // Context menu items for media router
 #define IDC_MEDIA_ROUTER_ABOUT 51200
@@ -511,7 +522,7 @@
 #define IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS 52411
 #define IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE 52412
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Quick Answers context menu items.
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_ANSWER 52413
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY 52414
@@ -530,7 +541,6 @@
 // Autofill feedback.
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK 52990
 // Autofill context menu commands
-#define IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS 52993
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS 52994
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD 52998
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS 52999
@@ -547,13 +557,15 @@
 // Default browser prompt
 #define IDC_SET_BROWSER_AS_DEFAULT 53300
 
-// Enable / Disable compact mode for the browser
-#define IDC_COMPACT_MODE 53301
-
 // Glic status tray icon menu
 #define IDC_GLIC_STATUS_ICON_MENU_SHOW                        53310
 #define IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 53311
-#define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53312
+#define IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON                 53312
+#define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53313
+#define IDC_GLIC_STATUS_ICON_MENU_EXIT                        53314
+
+// Glic button context menu and tabstrip context menu
+#define IDC_GLIC_TOGGLE_PIN 53320
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
@@ -568,5 +580,7 @@
 // each other, by only using every Nth id (where N is the number of unbounded
 // menus).
 #define IDC_FIRST_UNBOUNDED_MENU COMMAND_ID_FIRST_UNBOUNDED
+
+// LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.h:CommandsGatedOnFencedFrameUntrustedNetworkStatus)
 
 #endif  // CHROME_APP_CHROME_COMMAND_IDS_H_

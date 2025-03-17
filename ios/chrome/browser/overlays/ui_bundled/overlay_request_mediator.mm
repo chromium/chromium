@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 
 #import <ostream>
 
@@ -12,6 +11,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 
 @interface OverlayRequestMediator ()
 // Redefine property as readwrite.
@@ -53,8 +53,9 @@
 @implementation OverlayRequestMediator (Subclassing)
 
 - (void)dispatchResponse:(std::unique_ptr<OverlayResponse>)response {
-  if (self.request)
+  if (self.request) {
     self.request->GetCallbackManager()->DispatchResponse(std::move(response));
+  }
 }
 
 - (void)dismissOverlay {

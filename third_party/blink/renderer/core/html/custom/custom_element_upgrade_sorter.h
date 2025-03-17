@@ -22,7 +22,7 @@ class CORE_EXPORT CustomElementUpgradeSorter {
   STACK_ALLOCATED();
 
  public:
-  CustomElementUpgradeSorter();
+  CustomElementUpgradeSorter() = default;
 
   // Record an element of interest. The DOM tree must not be
   // modified between calls to `Add` and the call(s) to `Sorted`.
@@ -36,7 +36,7 @@ class CORE_EXPORT CustomElementUpgradeSorter {
   void Sorted(HeapVector<Member<Element>>* result, Node* parent);
 
  private:
-  using ChildSet = HeapHashSet<Member<Node>>;
+  using ChildSet = GCedHeapHashSet<Member<Node>>;
   using ParentChildMap = HeapHashMap<Member<Node>, Member<ChildSet>>;
 
   enum AddResult { kParentAlreadyExistsInMap, kParentAddedToMap };
@@ -46,11 +46,11 @@ class CORE_EXPORT CustomElementUpgradeSorter {
              ChildSet&,
              const ChildSet::iterator&);
 
-  Member<HeapHashSet<Member<Element>>> elements_;
+  HeapHashSet<Member<Element>> elements_;
 
   // This is the subset of the tree, from root node (usually
   // document) through elements and shadow roots, to candidates.
-  Member<ParentChildMap> parent_child_map_;
+  ParentChildMap parent_child_map_;
 };
 
 }  // namespace blink

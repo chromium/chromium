@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/containers/span.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
@@ -269,7 +269,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bruschettaRemoveButton", IDS_SETTINGS_BRUSCHETTA_REMOVE_BUTTON},
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
-      {"crostiniEnable", IDS_OS_SETTINGS_REVAMP_CROSTINI_SET_UP},
+      {"crostiniEnable", IDS_OS_SETTINGS_CROSTINI_SET_UP},
       {"crostiniSharedPathsInstructionsAdd",
        IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_ADD},
       {"crostiniSharedPathsRemoveFailureDialogMessage",
@@ -508,7 +508,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "crostiniSubtext",
       l10n_util::GetStringFUTF16(
-          IDS_OS_SETTINGS_REVAMP_CROSTINI_SUBTEXT,
+          IDS_OS_SETTINGS_CROSTINI_SUBTEXT,
           GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL)));
   html_source->AddString(
       "crostiniSubtextNotSupported",

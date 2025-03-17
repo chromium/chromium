@@ -15,10 +15,12 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './confirmation_page.html.js';
-import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from './feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent} from './feedback_flow.js';
+import {FeedbackFlowState} from './feedback_flow.js';
 import {showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
-import {FeedbackAppPostSubmitAction, FeedbackServiceProviderInterface, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
+import type {FeedbackServiceProviderInterface} from './os_feedback_ui.mojom-webui.js';
+import {FeedbackAppPostSubmitAction, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * @fileoverview

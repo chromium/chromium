@@ -9,8 +9,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -20,6 +18,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.url.GURL;
 
@@ -31,6 +31,7 @@ import java.util.List;
  * Preview compositor.
  */
 @JNINamespace("paint_preview")
+@NullMarked
 public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     private static final int LOW_MEMORY_THRESHOLD_KB = 2048;
 
@@ -44,7 +45,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
             GURL url,
             String directoryKey,
             boolean mainFrameMode,
-            @NonNull CompositorListener compositorListener,
+            CompositorListener compositorListener,
             Callback<Integer> compositorErrorCallback) {
         mCompositorListener = compositorListener;
         if (service != null && service.getNativeBaseService() != 0) {
@@ -103,7 +104,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @Override
     public int requestBitmap(
-            UnguessableToken frameGuid,
+            @Nullable UnguessableToken frameGuid,
             Rect clipRect,
             float scaleFactor,
             Callback<Bitmap> bitmapCallback,
@@ -155,7 +156,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     }
 
     @Override
-    public GURL onClick(UnguessableToken frameGuid, int x, int y) {
+    public @Nullable GURL onClick(UnguessableToken frameGuid, int x, int y) {
         if (mNativePlayerCompositorDelegate == 0) {
             return null;
         }
@@ -216,7 +217,8 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
         int requestBitmap(
                 long nativePlayerCompositorDelegateAndroid,
-                @JniType("std::optional<base::UnguessableToken>") UnguessableToken frameGuid,
+                @JniType("std::optional<base::UnguessableToken>")
+                        @Nullable UnguessableToken frameGuid,
                 Callback<Bitmap> bitmapCallback,
                 Runnable errorCallback,
                 float scaleFactor,
@@ -231,7 +233,8 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
         String onClick(
                 long nativePlayerCompositorDelegateAndroid,
-                @JniType("std::optional<base::UnguessableToken>") UnguessableToken frameGuid,
+                @JniType("std::optional<base::UnguessableToken>")
+                        @Nullable UnguessableToken frameGuid,
                 int x,
                 int y);
 

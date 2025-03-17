@@ -23,7 +23,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -34,12 +33,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/test_external_cache.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
@@ -251,8 +245,8 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()->IsIdPending(
-            extension->id())) {
+    if (!extensions::PendingExtensionManager::Get(browser_context_)
+             ->IsIdPending(extension->id())) {
       return false;
     }
 
@@ -261,9 +255,9 @@ class TestKioskLoaderVisitor
     extension_service_->OnExtensionInstalled(
         extension, syncer::StringOrdinal::CreateInitialOrdinal(),
         extensions::kInstallFlagInstallImmediately);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnFinishCrxInstall(*installer, extension->id(), true);
+        ->OnFinishCrxInstall(base::FilePath(), extension->id(), extension,
+                             true);
     return true;
   }
 
@@ -273,17 +267,17 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()->IsIdPending(
-            extension_id)) {
+    extensions::PendingExtensionManager* pending_extension_manager =
+        extensions::PendingExtensionManager::Get(browser_context_);
+    if (!pending_extension_manager->IsIdPending(extension_id)) {
       return false;
     }
 
     pending_crx_files_.erase(extension_id);
     pending_update_urls_.erase(extension_id);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnFinishCrxInstall(*installer, extension_id, false);
-    extension_service_->pending_extension_manager()->Remove(extension_id);
+        ->OnFinishCrxInstall(base::FilePath(), extension_id, nullptr, false);
+    pending_extension_manager->Remove(extension_id);
     return true;
   }
 
@@ -298,16 +292,16 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()->AddFromExternalFile(
-            info.extension_id, info.crx_location, info.version,
-            info.creation_flags, info.mark_acknowledged)) {
+    if (!extensions::PendingExtensionManager::Get(browser_context_)
+             ->AddFromExternalFile(info.extension_id, info.crx_location,
+                                   info.version, info.creation_flags,
+                                   info.mark_acknowledged)) {
       return false;
     }
 
     pending_crx_files_.insert(info.extension_id);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnBeginCrxInstall(*installer, info.extension_id);
+        ->OnBeginCrxInstall(info.extension_id);
     return true;
   }
   bool OnExternalExtensionUpdateUrlFound(
@@ -318,7 +312,7 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()
+    if (!extensions::PendingExtensionManager::Get(browser_context_)
              ->AddFromExternalUpdateUrl(
                  info.extension_id, info.install_parameter, info.update_url,
                  info.download_location, info.creation_flags,
@@ -327,9 +321,8 @@ class TestKioskLoaderVisitor
     }
 
     pending_update_urls_.insert(info.extension_id);
-    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnBeginCrxInstall(*installer, info.extension_id);
+        ->OnBeginCrxInstall(info.extension_id);
     return true;
   }
   void OnExternalProviderReady(
@@ -981,9 +974,10 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kExtraSecondaryAppId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-            extensions::ExtensionPrefs::Get(browser_context())
-                ->GetDisableReasons(kExtraSecondaryAppId));
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(browser_context())
+                  ->GetDisableReasons(kExtraSecondaryAppId),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_USER_ACTION));
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
@@ -992,9 +986,10 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kExtraSecondaryAppId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-            extensions::ExtensionPrefs::Get(browser_context())
-                ->GetDisableReasons(kExtraSecondaryAppId));
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(browser_context())
+                  ->GetDisableReasons(kExtraSecondaryAppId),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_USER_ACTION));
 }
 
 TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
@@ -1365,9 +1360,8 @@ TEST_F(StartupAppLauncherTest,
   // Disable the secodnary app for a reason different than user action - that
   // disable reason should not be overriden during the kiosk launch.
   service()->DisableExtension(
-      kSecondaryAppId,
-      extensions::disable_reason::DISABLE_USER_ACTION |
-          extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+      kSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION,
+                        extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
 
   InitializeLauncherWithNetworkReady();
   ASSERT_TRUE(DownloadAndInstallPrimaryApp(*primary_app));
@@ -1384,9 +1378,10 @@ TEST_F(StartupAppLauncherTest,
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kSecondaryAppId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY,
-            extensions::ExtensionPrefs::Get(browser_context())
-                ->GetDisableReasons(kSecondaryAppId));
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(browser_context())
+                  ->GetDisableReasons(kSecondaryAppId),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY));
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToDisabledOnLaunch) {
@@ -1415,9 +1410,10 @@ TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToDisabledOnLaunch) {
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kSecondaryAppId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-            extensions::ExtensionPrefs::Get(browser_context())
-                ->GetDisableReasons(kSecondaryAppId));
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(browser_context())
+                  ->GetDisableReasons(kSecondaryAppId),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_USER_ACTION));
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToEnabledOnLaunch) {

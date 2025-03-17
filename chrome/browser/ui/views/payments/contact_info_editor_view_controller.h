@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -76,7 +77,7 @@ class ContactInfoEditorViewController : public EditorViewController {
 
     // ValidationDelegate:
     bool ShouldFormat() override;
-    std::u16string Format(const std::u16string& text) override;
+    std::u16string Format(std::u16string_view text) override;
     bool IsValidTextfield(views::Textfield* textfield,
                           std::u16string* error_message) override;
     bool IsValidCombobox(ValidatingCombobox* combobox,

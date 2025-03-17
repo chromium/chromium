@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "extensions/browser/api/socket/udp_socket.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/browser/api/api_resource.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -129,7 +134,7 @@ int UDPSocket::WriteImpl(net::IOBuffer* io_buffer,
     return net::ERR_SOCKET_NOT_CONNECTED;
   }
   base::span<const uint8_t> data =
-      io_buffer->span().subspan(0u, static_cast<size_t>(io_buffer_size));
+      io_buffer->first(static_cast<size_t>(io_buffer_size));
   socket_->Send(
       data,
       net::MutableNetworkTrafficAnnotationTag(
@@ -176,7 +181,7 @@ void UDPSocket::SendTo(scoped_refptr<net::IOBuffer> io_buffer,
   }
 
   base::span<const uint8_t> data =
-      io_buffer->span().subspan(0u, static_cast<size_t>(byte_count));
+      io_buffer->first(static_cast<size_t>(byte_count));
   socket_->SendTo(
       address, data,
       net::MutableNetworkTrafficAnnotationTag(

@@ -187,7 +187,7 @@ TEST_F(HomeToOverviewNudgeControllerWithNudgesDisabledTest,
                    ->shelf_layout_manager()
                    ->home_to_overview_nudge_controller_for_testing());
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   std::unique_ptr<aura::Window> window_1 =
       CreateTestWindow(gfx::Rect(0, 0, 400, 400));
@@ -206,7 +206,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, NoNudgeBeforeLogin) {
   TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_FALSE(GetNudgeController());
 
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   EXPECT_TRUE(GetNudgeController());
 }
 
@@ -215,7 +215,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, NoNudgeBeforeLogin) {
 // subsequent shows, the nudge should be hidden after a timeout.
 TEST_F(HomeToOverviewNudgeControllerTest, ShownOnHomeScreen) {
   base::HistogramTester histogram_tester;
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   // The nudge should not be shown in clamshell.
   EXPECT_FALSE(GetNudgeController());
@@ -287,7 +287,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShownOnHomeScreen) {
 // Tests that the nudge eventually stops showing.
 TEST_F(HomeToOverviewNudgeControllerTest, ShownLimitedNumberOfTimes) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
   ASSERT_TRUE(GetNudgeController());
 
@@ -318,7 +318,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShownLimitedNumberOfTimes) {
 TEST_F(HomeToOverviewNudgeControllerTest, HiddenOnTabletModeExit) {
   base::HistogramTester histogram_tester;
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -336,7 +336,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, HiddenOnTabletModeExit) {
 // Tests that the nudge show is canceled when tablet mode exits.
 TEST_F(HomeToOverviewNudgeControllerTest, ShowCanceledOnTabletModeExit) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -355,7 +355,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShowCanceledOnTabletModeExit) {
 TEST_F(HomeToOverviewNudgeControllerTest,
        ShowAnimationCanceledOnTabletModeExit) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -379,7 +379,7 @@ TEST_F(HomeToOverviewNudgeControllerTest,
 // Tests that the nudge is hidden when the screen is locked.
 TEST_F(HomeToOverviewNudgeControllerTest, HiddenOnScreenLock) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -405,7 +405,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, HiddenOnScreenLock) {
 // show timer runs.
 TEST_F(HomeToOverviewNudgeControllerTest, InAppShelfShownBeforeShowTimer) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -434,7 +434,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, InAppShelfShownBeforeShowTimer) {
 // animation to show the nudge.
 TEST_F(HomeToOverviewNudgeControllerTest, NudgeHiddenDuringShowAnimation) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -485,7 +485,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, NudgeHiddenDuringShowAnimation) {
 // Tests that there is no crash if the nudge widget gets closed unexpectedly.
 TEST_F(HomeToOverviewNudgeControllerTest, NoCrashIfNudgeWidgetGetsClosed) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -505,7 +505,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, NoCrashIfNudgeWidgetGetsClosed) {
 TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeClosesTheNudge) {
   base::HistogramTester histogram_tester;
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -530,7 +530,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeClosesTheNudge) {
 
 TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeDuringShowAnimation) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList extra_windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -584,7 +584,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeDuringShowAnimation) {
 // times.
 TEST_F(HomeToOverviewNudgeControllerTest, NoNudgeAfterSuccessfulGestures) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList windows = CreateAndMinimizeWindows(2);
 
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
@@ -649,7 +649,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, NoNudgeAfterSuccessfulGestures) {
 // widget works - i.e. that home still transitions to overview.
 TEST_F(HomeToOverviewNudgeControllerTest, HomeToOverviewGestureFromNudge) {
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList windows = CreateAndMinimizeWindows(2);
 
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
@@ -692,7 +692,7 @@ TEST_F(HomeToOverviewNudgeControllerTest,
        NudgeBoundsUpdatedOnDisplayBoundsChange) {
   UpdateDisplay("768x1200");
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList windows = CreateAndMinimizeWindows(2);
 
   ASSERT_TRUE(GetNudgeController());
@@ -720,7 +720,7 @@ TEST_P(HomeToOverviewNudgeControllerTestWithA11yPrefs,
   // Enters tablet mode and sets up two minimized windows. This will create the
   // show nudge timer.
   TabletModeControllerTestApi().EnterTabletMode();
-  SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kRegularUserLoginInfo);
   ScopedWindowList windows = CreateAndMinimizeWindows(2);
   ASSERT_TRUE(GetNudgeController());
   EXPECT_TRUE(GetNudgeController()->HasShowTimerForTesting());

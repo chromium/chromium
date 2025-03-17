@@ -63,9 +63,7 @@ public class TabBinningUtil {
                 binIndex++;
                 verifyNoDuplicateGroupIds(groupId, alreadySeenGroupIds);
 
-                // Add new Bin to list.
-                int rootId = tab.getRootId();
-                tabBins.add(new TabBin(groupId, rootId));
+                tabBins.add(new TabBin(groupId));
             }
             List<Tab> tabList = tabBins.get(binIndex).tabs;
             tabList.add(tab);

@@ -153,7 +153,8 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
       ntp_features::kNtpCalendarModuleDataParam);
   if (!fake_data_param.empty()) {
     std::move(callback).Run(calendar::calendar_fake_data_helper::GetFakeEvents(
-        calendar::calendar_fake_data_helper::CalendarType::GOOGLE_CALENDAR));
+        calendar::calendar_fake_data_helper::CalendarType::GOOGLE_CALENDAR,
+        /*has_attachments_enabled=*/true));
   } else {
     std::vector<google_apis::calendar::EventType> event_types = {
         google_apis::calendar::EventType::kDefault};

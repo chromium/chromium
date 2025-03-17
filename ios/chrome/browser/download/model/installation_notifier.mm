@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/model/installation_notifier.h"
-#import "ios/chrome/browser/download/model/installation_notifier+Testing.h"
 
 #import <UIKit/UIKit.h>
-
 #import <stdint.h>
+
 #import <memory>
 
 #import "base/check_op.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/download/model/installation_notifier+Testing.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/base/backoff_entry.h"
 #import "url/gurl.h"
@@ -89,8 +89,9 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
                                    forScheme:(NSString*)scheme
                                 startPolling:(BOOL)poll {
   // Workaround a crash caused by calls to this function with a nil `scheme`.
-  if (![scheme length])
+  if (![scheme length]) {
     return;
+  }
   DCHECK([observer respondsToSelector:notificationSelector]);
   DCHECK([scheme rangeOfString:@":"].location == NSNotFound);
   // A strong reference would prevent the observer from unregistering itself
@@ -98,10 +99,12 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
   NSValue* weakReferenceToObserver =
       [NSValue valueWithNonretainedObject:observer];
   NSMutableSet* observers = [_installedAppObservers objectForKey:scheme];
-  if (!observers)
+  if (!observers) {
     observers = [[NSMutableSet alloc] init];
-  if ([observers containsObject:weakReferenceToObserver])
+  }
+  if ([observers containsObject:weakReferenceToObserver]) {
     return;
+  }
   [observers addObject:weakReferenceToObserver];
   [_installedAppObservers setObject:observers forKey:scheme];
   [_notificationCenter addObserver:observer
@@ -109,8 +112,9 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
                               name:scheme
                             object:self];
   _backoffEntry->Reset();
-  if (poll)
+  if (poll) {
     [self dispatchInstallationNotifierBlock];
+  }
 }
 
 - (void)unregisterForNotifications:(id)observer {
@@ -184,8 +188,9 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
     }
   }];
   [_installedAppObservers removeObjectsForKeys:[keysToDelete allObjects]];
-  if (keepPolling)
+  if (keepPolling) {
     [self dispatchInstallationNotifierBlock];
+  }
 }
 
 - (net::BackoffEntry::Policy const*)backOffPolicy {

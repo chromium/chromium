@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
@@ -31,6 +30,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +44,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -86,12 +88,17 @@ std::string GetTosHost(ToS terms_type) {
         ash_switch);
   }
 
-  const char* url_path = kTermsTypeToUrlAndSwitch.at(terms_type).first;
-  if (terms_type == ToS::GOOGLE_EULA || terms_type == ToS::CROS_EULA) {
-    return base::StringPrintfNonConstexpr(
-        url_path, g_browser_process->GetApplicationLocale().c_str());
+  if (terms_type == ToS::GOOGLE_EULA) {
+    return base::StringPrintf(
+        chrome::kGoogleEulaOnlineURLPath,
+        g_browser_process->GetApplicationLocale().c_str());
   }
-  return url_path;
+  if (terms_type == ToS::CROS_EULA) {
+    return base::StringPrintf(
+        chrome::kCrosEulaOnlineURLPath,
+        g_browser_process->GetApplicationLocale().c_str());
+  }
+  return kTermsTypeToUrlAndSwitch.at(terms_type).first;
 }
 
 ConsolidatedConsentScreen::RecoveryOptInResult GetRecoveryOptInResult(
@@ -466,6 +473,11 @@ void ConsolidatedConsentScreen::RecordConsents(
 
 void ConsolidatedConsentScreen::ReportUsageOptIn(bool is_enabled) {
   DCHECK(is_owner_.has_value());
+  // Attempt to disable pre-consent metrics if present.
+  if (metrics::CrOSPreConsentMetricsManager::Get()) {
+    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  }
+
   if (is_owner_.value()) {
     StatsReportingController::Get()->SetEnabled(
         ProfileManager::GetActiveUserProfile(), is_enabled);

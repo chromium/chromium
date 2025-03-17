@@ -621,6 +621,27 @@ struct CreateNewWindowParams {
   // The navigation initiator's user activation and ad status.
   blink.mojom.NavigationInitiatorActivationAndAdStatus
       initiator_activation_and_ad_status;
+
+  // The pending mojo connection to the Frame implementation in the renderer.
+  pending_associated_remote<content.mojom.Frame> frame_remote;
+
+  // The communication interfaces for the PageBroadcast.
+  pending_associated_remote<blink.mojom.PageBroadcast> page_broadcast_remote;
+
+  pending_receiver<blink.mojom.BrowserInterfaceBroker>
+      main_frame_interface_broker;
+
+  // The `AssociatedInterfaceProvider` that the main `RenderFrameImpl` will use
+  // to request associated interfaces from its corresponding
+  // `RenderFrameHostImpl`.
+  pending_associated_receiver<blink.mojom.AssociatedInterfaceProvider>
+      associated_interface_provider;
+
+  // The communication interfaces for the WebFrameWidget in blink.
+  pending_associated_receiver<blink.mojom.WidgetHost> widget_host;
+  pending_associated_remote<blink.mojom.Widget> widget;
+  pending_associated_receiver<blink.mojom.FrameWidgetHost> frame_widget_host;
+  pending_associated_remote<blink.mojom.FrameWidget> frame_widget;
 };
 
 // Operation result when the renderer asks the browser to create a new window.
@@ -647,22 +668,10 @@ struct CreateNewWindowReply {
   // The ID of the main frame hosted in the view.
   int32 main_frame_route_id;
 
-  // The pending mojo connection to the Frame implementation in the renderer.
-  pending_associated_receiver<content.mojom.Frame> frame;
+  int32 widget_routing_id;
 
-  CreateFrameWidgetParams widget_params;
-
-  // The communication interfaces for the PageBroadcast.
-  pending_associated_receiver<blink.mojom.PageBroadcast> page_broadcast;
-
-  pending_remote<blink.mojom.BrowserInterfaceBroker>
-      main_frame_interface_broker;
-
-  // The `AssociatedInterfaceProvider` that the main `RenderFrameImpl` will use
-  // to request associated interfaces from its corresponding
-  // `RenderFrameHostImpl`.
-  pending_associated_remote<blink.mojom.AssociatedInterfaceProvider>
-      associated_interface_provider;
+  // The initial visual properties of the widget.
+  blink.mojom.VisualProperties visual_properties;
 
   // Duplicated from CreateNewWindowParams because legacy code.
   string cloned_session_storage_namespace_id;

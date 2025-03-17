@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -16,8 +18,8 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -221,8 +223,8 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
     // installation until the extension is idle.
     update_install_gate_ =
         std::make_unique<UpdateInstallGate>(service()->profile());
-    service()->RegisterInstallGate(ExtensionPrefs::DelayReason::kWaitForIdle,
-                                   update_install_gate_.get());
+    service()->delayed_install_manager()->RegisterInstallGate(
+        ExtensionPrefs::DelayReason::kWaitForIdle, update_install_gate_.get());
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(browser_context()))
         ->SetReady();
   }

@@ -30,6 +30,8 @@ namespace {
 
 PrintscanmgrClient* g_instance = nullptr;
 
+constexpr base::TimeDelta kAutoconfiguredTimeout = base::Seconds(30);
+
 printscanmgr::AddPrinterResult DBusErrorFromString(
     const std::string& dbus_error_string) {
   static const base::NoDestructor<
@@ -109,7 +111,7 @@ class PrintscanmgrClientImpl : public PrintscanmgrClient {
     }
 
     printscanmgr_proxy_->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, kAutoconfiguredTimeout.InMilliseconds(),
         base::BindOnce(&PrintscanmgrClientImpl::OnPrinterAdded<
                            printscanmgr::CupsAddAutoConfiguredPrinterResponse>,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

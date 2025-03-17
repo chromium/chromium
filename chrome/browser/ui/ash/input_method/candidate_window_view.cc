@@ -135,7 +135,7 @@ class InformationTextArea : public views::View {
     label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(2, 2, 2, 4)));
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(label_.get());
+    AddChildViewRaw(label_.get());
   }
 
   InformationTextArea(const InformationTextArea&) = delete;
@@ -220,16 +220,16 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   candidate_area_->SetVisible(false);
   preedit_->SetBorderFromPosition(InformationTextArea::BOTTOM);
   if (candidate_window_.orientation() == ui::CandidateWindow::VERTICAL) {
-    AddChildView(preedit_.get());
-    AddChildView(candidate_area_.get());
-    AddChildView(auxiliary_text_.get());
+    AddChildViewRaw(preedit_.get());
+    AddChildViewRaw(candidate_area_.get());
+    AddChildViewRaw(auxiliary_text_.get());
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::TOP);
     candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
   } else {
-    AddChildView(preedit_.get());
-    AddChildView(auxiliary_text_.get());
-    AddChildView(candidate_area_.get());
+    AddChildViewRaw(preedit_.get());
+    AddChildViewRaw(auxiliary_text_.get());
+    AddChildViewRaw(candidate_area_.get());
     auxiliary_text_->SetAlignment(gfx::ALIGN_LEFT);
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::BOTTOM);
     candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -381,8 +381,9 @@ void CandidateWindowView::UpdateCandidates(
     if (!candidate_window_.is_user_selecting() ||
         (selected_candidate_index_in_page_ != new_candidate_index_in_page &&
          new_candidate_index_in_page != -1)) {
-      candidate_views_[new_candidate_index_in_page]->NotifyAccessibilityEvent(
-          ax::mojom::Event::kSelection, false);
+      candidate_views_[new_candidate_index_in_page]
+          ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
+                                               false);
     }
   }
 

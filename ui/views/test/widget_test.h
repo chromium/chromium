@@ -310,6 +310,8 @@ class WidgetVisibleWaiter : public WidgetObserver {
 
   // Waits for the widget to become visible.
   void Wait();
+  // Waits for the widget to become invisible.
+  void WaitUntilInvisible();
 
  private:
   // WidgetObserver:
@@ -318,6 +320,8 @@ class WidgetVisibleWaiter : public WidgetObserver {
 
   base::RunLoop run_loop_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
+
+  bool expecting_visible_;
 };
 
 }  // namespace test

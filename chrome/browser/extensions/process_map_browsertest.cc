@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/strings/cstring_view.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -126,7 +125,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
             blink::mojom::UserActivationOption::kDoNotActivate,
             blink::mojom::PromiseResultOption::kAwait)),
         ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::MatchOriginAsFallbackBehavior::kNever,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
         GURL() /* webview_src */,
         base::IgnoreArgs<std::vector<ScriptExecutor::FrameResult>>(
@@ -154,7 +153,8 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // true if the `parent_script_template` is for a data url frame, so that this
   // function doesn't have to infer that from the template.
   void VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
-      base::cstring_view parent_script_template,
+      const Extension* extension,
+      std::string_view parent_script,
       const bool is_subframe_data_url,
       const bool expects_api_access);
 
@@ -1070,21 +1070,16 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 // Function implementation defined here to be close to the tests that use it.
 void ProcessMapBrowserTest::
     VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
-        base::cstring_view parent_script_template,
+        const Extension* extension,
+        std::string_view parent_script,
         const bool is_subframe_data_url,
         const bool expects_api_access) {
-  const Extension* extension = AddExtensionWithResource();
-  ASSERT_TRUE(extension);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("parent.html")));
 
   content::WebContents* web_contents = GetActiveTab();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   // Use JS to add content to the child frame.
-  const std::string parent_script = base::StringPrintfNonConstexpr(
-      parent_script_template.data(),
-      extension->origin().GetURL().spec().c_str());
   content::TestNavigationObserver observer(web_contents);
   EXPECT_TRUE(content::ExecJs(main_frame, parent_script));
   observer.Wait();
@@ -1115,14 +1110,17 @@ void ProcessMapBrowserTest::
 // to resources.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        SandboxedDataUrlStillHasAccessToExtensionResources) {
+  const Extension* extension = AddExtensionWithResource();
+  ASSERT_TRUE(extension);
+
   // The %s in the string below will be filled in with the extension's origin by
   // VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess.
-  std::string parent_script_template =
+  std::string parent_script = base::StrCat({
       R"(let test_frame = document.getElementById('test_frame');
-      test_frame.src =
-      'data:text/html, <script src="%sresource.js"></script>';)";
+test_frame.src = 'data:text/html, <script src=")",
+      extension->origin().GetURL().spec(), R"(resource.js"></script>';)"});
   VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
-      parent_script_template, /*is_subframe_data_url=*/true,
+      extension, parent_script, /*is_subframe_data_url=*/true,
       /*expects_api_access=*/false);
 }
 
@@ -1130,13 +1128,17 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 // resources.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        SandboxedSrcdocStillHasAccessToExtensionResources) {
+  const Extension* extension = AddExtensionWithResource();
+  ASSERT_TRUE(extension);
+
   // The %s in the string below will be filled in with the extension's origin by
   // VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess.
-  std::string parent_script_template =
+  std::string parent_script = base::StrCat({
       R"(let test_frame = document.getElementById('test_frame');
-      test_frame.srcdoc = '<script src="%sresource.js"></script>';)";
+test_frame.srcdoc = '<script src=")",
+      extension->origin().GetURL().spec(), R"(resource.js"></script>';)"});
   VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
-      parent_script_template, /*is_subframe_data_url=*/false,
+      extension, parent_script, /*is_subframe_data_url=*/false,
       /*expects_api_access=*/false);
 }
 
@@ -1145,11 +1147,13 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ProcessMapBrowserTest,
     SandboxedExtensionPageStillHasAccessToExtensionResources) {
-  std::string parent_script_template =
-      R"(let test_frame = document.getElementById('test_frame');
-      test_frame.src = 'page_requesting_resource.html';)";
+  const Extension* extension = AddExtensionWithResource();
+  ASSERT_TRUE(extension);
+
   VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
-      parent_script_template, /*is_subframe_data_url=*/false,
+      extension, R"(let test_frame = document.getElementById('test_frame');
+test_frame.src = 'page_requesting_resource.html';)",
+      /*is_subframe_data_url=*/false,
       /*expects_api_access=*/true);
 }
 

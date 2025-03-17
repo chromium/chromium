@@ -4,35 +4,35 @@
 
 #import <UIKit/UIKit.h>
 
-#include <string>
+#import <string>
 
-#include "base/base_paths.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
-#include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#import "base/base_paths.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
+#import "base/memory/weak_ptr.h"
+#import "base/path_service.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
 
 namespace ios_web_view {
@@ -161,14 +161,14 @@ TEST_F(CWVCreditCardVerifierTest, IsCVCValid) {
 
 // Tests CWVCreditCardVerifier's |isExpirationDateValidForMonth:year:| method.
 TEST_F(CWVCreditCardVerifierTest, IsExpirationDateValid) {
-  EXPECT_FALSE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"1" year:@"2"]);
-  EXPECT_FALSE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2"]);
-  EXPECT_TRUE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"1" year:@"26"]);
-  EXPECT_TRUE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2226"]);
+  EXPECT_FALSE([credit_card_verifier_ isExpirationDateValidForMonth:@"1"
+                                                               year:@"2"]);
+  EXPECT_FALSE([credit_card_verifier_ isExpirationDateValidForMonth:@"11"
+                                                               year:@"2"]);
+  EXPECT_TRUE([credit_card_verifier_ isExpirationDateValidForMonth:@"1"
+                                                              year:@"26"]);
+  EXPECT_TRUE([credit_card_verifier_ isExpirationDateValidForMonth:@"11"
+                                                              year:@"2226"]);
 }
 
 // Tests CWVCreditCardVerifier's verification method handles success case.

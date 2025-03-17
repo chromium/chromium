@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "v8-script.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-wasm.h"
@@ -111,7 +113,7 @@ WorkletLoaderBase::WorkletLoaderBase(
       url_loader_factory, source_url,
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
       /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
-      /*is_trusted_bidding_signals_kvv1_download=*/false,
+      /*num_igs_for_trusted_bidding_signals_kvv1=*/std::nullopt,
       std::move(response_started_callback),
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
                      base::Unretained(this)),
@@ -132,29 +134,39 @@ void WorkletLoaderBase::OnDownloadComplete(
         base::BindOnce(&WorkletLoaderBase::DeliverCallbackOnUserThread,
                        weak_ptr_factory_.GetWeakPtr(), /*success=*/false,
                        std::move(error_msg),
-                       /*download_success=*/false));
+                       /*download_success=*/false, std::nullopt));
     return;
   }
+
+  body_ = std::move(body);
+  error_msg_ = std::move(error_msg);
 
   base::TimeDelta time_elapsed_since_start =
       base::TimeTicks::Now() - start_time_;
 
   for (size_t i = 0; i < v8_helpers_.size(); ++i) {
-    pending_results_[i].DownloadReady(v8_helpers_[i], body->size(),
+    pending_results_[i].DownloadReady(v8_helpers_[i], body_->size(),
                                       time_elapsed_since_start);
   }
 
+  size_t threads_for_compilation = v8_helpers_.size();
+  if (mime_type_ == AuctionDownloader::MimeType::kJavascript) {
+    // We're going to compile JS on one thread & we will share the code
+    // cache with the other threads later.
+    threads_for_compilation = 1;
+  }
   // `pending_results_[i].state_` will be either passed to the user via
   // callback, which logically happens-after HandleDownloadResultOnV8Thread(),
   // or its destruction will be posted to V8 thread by ~WorkletLoaderBase, which
   // will queue it after HandleDownloadResultOnV8Thread, making its use of it
   // safe.
-  for (size_t i = 0; i < v8_helpers_.size(); ++i) {
+  for (size_t i = 0; i < threads_for_compilation; ++i) {
     v8_helpers_[i]->v8_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&WorkletLoaderBase::HandleDownloadResultOnV8Thread,
                        source_url_, mime_type_, v8_helpers_[i], debug_ids_[i],
-                       std::make_unique<std::string>(*body), error_msg,
+                       std::make_unique<std::string>(*body_), error_msg_,
+                       /*cached_data_to_use=*/std::nullopt,
                        pending_results_[i].state_.get(),
                        base::SequencedTaskRunner::GetCurrentDefault(),
                        weak_ptr_factory_.GetWeakPtr()));
@@ -169,6 +181,8 @@ void WorkletLoaderBase::HandleDownloadResultOnV8Thread(
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     std::unique_ptr<std::string> body,
     std::optional<std::string> error_msg,
+    const std::optional<scoped_refptr<base::RefCountedBytes>>
+        cached_data_to_use,
     WorkletLoaderBase::Result::V8Data* out_data,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
     base::WeakPtr<WorkletLoaderBase> weak_instance) {
@@ -177,34 +191,64 @@ void WorkletLoaderBase::HandleDownloadResultOnV8Thread(
   DCHECK(!error_msg.has_value());
   bool ok;
 
+  std::optional<scoped_refptr<base::RefCountedBytes>> cached_data_output;
+
   if (mime_type == AuctionDownloader::MimeType::kJavascript) {
     ok = CompileJs(*body, v8_helper, source_url, debug_id.get(), error_msg,
-                   out_data);
+                   cached_data_to_use, cached_data_output, out_data);
+    DCHECK(!ok || cached_data_output || cached_data_to_use);
   } else {
     ok = CompileWasm(*body, v8_helper, source_url, debug_id.get(), error_msg,
                      out_data);
   }
 
   user_thread_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&WorkletLoaderBase::DeliverCallbackOnUserThread,
-                                weak_instance, ok, std::move(error_msg),
-                                /*download_success=*/true));
+      FROM_HERE,
+      base::BindOnce(&WorkletLoaderBase::DeliverCallbackOnUserThread,
+                     weak_instance, ok, std::move(error_msg),
+                     /*download_success=*/true, std::move(cached_data_output)));
 }
 
 // static
-bool WorkletLoaderBase::CompileJs(const std::string& body,
-                                  scoped_refptr<AuctionV8Helper> v8_helper,
-                                  const GURL& source_url,
-                                  AuctionV8Helper::DebugId* debug_id,
-                                  std::optional<std::string>& error_msg,
-                                  WorkletLoaderBase::Result::V8Data* out_data) {
+bool WorkletLoaderBase::CompileJs(
+    const std::string& body,
+    scoped_refptr<AuctionV8Helper> v8_helper,
+    const GURL& source_url,
+    AuctionV8Helper::DebugId* debug_id,
+    std::optional<std::string>& error_msg,
+    const std::optional<scoped_refptr<base::RefCountedBytes>>
+        cached_data_to_use,
+    std::optional<scoped_refptr<base::RefCountedBytes>>& cached_data_output,
+    WorkletLoaderBase::Result::V8Data* out_data) {
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
   v8::Context::Scope context_scope(v8_helper->scratch_context());
 
   v8::Local<v8::UnboundScript> local_script;
-  if (!v8_helper->Compile(body, source_url, debug_id, error_msg)
+  if (!v8_helper
+           ->Compile(body, source_url, debug_id,
+                     cached_data_to_use
+                         ? new v8::ScriptCompiler::CachedData(
+                               cached_data_to_use.value()->as_vector().data(),
+                               cached_data_to_use.value()->as_vector().size())
+                         : nullptr,
+                     error_msg)
            .ToLocal(&local_script)) {
     return false;
+  }
+
+  if (!cached_data_to_use) {
+    v8::ScriptCompiler::CachedData* raw_cache =
+        v8::ScriptCompiler::CreateCodeCache(local_script);
+    // Copy the contents of a CacheData into RefCountedBytes so that
+    // each of the remaining threads that will compile from the cache
+    // can have its own reference.
+    // SAFETY: We trust the output of v8::ScriptCompiler::CreateCodeCache.
+    UNSAFE_BUFFERS(std::vector<uint8_t> cache_vector(
+        raw_cache->data, raw_cache->data + raw_cache->length));
+    cached_data_output =
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(cache_vector));
+    // CreateCodeCache passed us the ownership of CachedData.
+    delete raw_cache;
   }
 
   v8::Isolate* isolate = v8_helper->isolate();
@@ -236,7 +280,8 @@ bool WorkletLoaderBase::CompileWasm(
 void WorkletLoaderBase::DeliverCallbackOnUserThread(
     bool success,
     std::optional<std::string> error_msg,
-    bool download_success) {
+    bool download_success,
+    std::optional<scoped_refptr<base::RefCountedBytes>> cached_data) {
   DCHECK(load_worklet_callback_);
 
   if (!download_success) {
@@ -258,7 +303,9 @@ void WorkletLoaderBase::DeliverCallbackOnUserThread(
   // Invoke the callback after the compilation finished on all the v8 threads.
   // It's okay to use the last result's `success` status, as the setup in each
   // thread should incur the same result.
-  if (response_received_count_ == pending_results_.size()) {
+  if (response_received_count_ == pending_results_.size() ||
+      (mime_type_ == AuctionDownloader::MimeType::kJavascript &&
+       response_received_count_ == 1 && !success)) {
     for (auto& pending_result : pending_results_) {
       pending_result.set_success(success);
     }
@@ -267,6 +314,20 @@ void WorkletLoaderBase::DeliverCallbackOnUserThread(
     // clean cancellation.
     std::move(load_worklet_callback_)
         .Run(std::move(pending_results_), std::move(error_msg));
+  } else if (mime_type_ == AuctionDownloader::MimeType::kJavascript &&
+             response_received_count_ == 1) {
+    DCHECK(cached_data);
+    // Use the code cache on the other threads.
+    for (size_t i = 1; i < v8_helpers_.size(); ++i) {
+      v8_helpers_[i]->v8_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&WorkletLoaderBase::HandleDownloadResultOnV8Thread,
+                         source_url_, mime_type_, v8_helpers_[i], debug_ids_[i],
+                         std::make_unique<std::string>(*body_), error_msg_,
+                         cached_data, pending_results_[i].state_.get(),
+                         base::SequencedTaskRunner::GetCurrentDefault(),
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 }
 

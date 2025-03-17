@@ -62,7 +62,7 @@ TEST_F(WebImageTest, PNGImage) {
 
 TEST_F(WebImageTest, ICOImage) {
   scoped_refptr<SharedBuffer> data = ReadFile("black-and-white.ico");
-  WebVector<SkBitmap> images = WebImage::FramesFromData(WebData(data));
+  std::vector<SkBitmap> images = WebImage::FramesFromData(WebData(data));
   ASSERT_EQ(2u, images.size());
   EXPECT_EQ(images[0].width(), 2);
   EXPECT_EQ(images[0].height(), 2);
@@ -75,13 +75,13 @@ TEST_F(WebImageTest, ICOImage) {
 TEST_F(WebImageTest, ICOValidHeaderMissingBitmap) {
   scoped_refptr<SharedBuffer> data =
       ReadFile("valid_header_missing_bitmap.ico");
-  WebVector<SkBitmap> images = WebImage::FramesFromData(WebData(data));
+  std::vector<SkBitmap> images = WebImage::FramesFromData(WebData(data));
   ASSERT_TRUE(images.empty());
 }
 
 TEST_F(WebImageTest, BadImage) {
   const auto kBadImage = base::byte_span_from_cstring("hello world");
-  WebVector<SkBitmap> images = WebImage::FramesFromData(WebData(kBadImage));
+  std::vector<SkBitmap> images = WebImage::FramesFromData(WebData(kBadImage));
   ASSERT_EQ(0u, images.size());
 
   SkBitmap image = WebImage::FromData(WebData(kBadImage), gfx::Size());

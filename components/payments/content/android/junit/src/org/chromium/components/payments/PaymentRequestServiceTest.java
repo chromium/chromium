@@ -122,7 +122,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Mockito.doReturn(null)
                 .when(mBrowserPaymentRequest)
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
-        Mockito.doReturn(true).when(mBrowserPaymentRequest).onPaymentAppCreated(Mockito.any());
         Mockito.doReturn(true)
                 .when(mBrowserPaymentRequest)
                 .parseAndValidateDetailsFurtherIfNeeded(Mockito.any());

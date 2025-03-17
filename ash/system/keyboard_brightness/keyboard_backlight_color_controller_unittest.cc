@@ -24,13 +24,11 @@
 namespace ash {
 
 namespace {
-constexpr char kUser1[] = "user1@test.com";
-const AccountId account_id_1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
 
-constexpr char kUser2[] = "user2@test.com";
+const AccountId account_id_1 =
+    AccountId::FromUserEmailGaiaId("user1@test.com", GaiaId("1111"));
 const AccountId account_id_2 =
-    AccountId::FromUserEmailGaiaId(kUser2, GaiaId(kUser2));
+    AccountId::FromUserEmailGaiaId("user2@test.com", GaiaId("2222"));
 
 // Creates an image of size |size|.
 gfx::ImageSkia CreateImage(int width, int height, SkColor color) {

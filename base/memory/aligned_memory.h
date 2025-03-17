@@ -82,9 +82,7 @@ inline void AlignedFree(void* ptr) {
 // Deleter for use with unique_ptr. E.g., use as
 //   std::unique_ptr<Foo, base::AlignedFreeDeleter> foo;
 struct AlignedFreeDeleter {
-  inline void operator()(void* ptr) const {
-    AlignedFree(ptr);
-  }
+  inline void operator()(void* ptr) const { AlignedFree(ptr); }
 };
 
 template <class T>

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/modules/webgl/ext_clip_control.h"
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_float.h"
@@ -161,7 +162,7 @@ WebGL2RenderingContext::AsV8OffscreenRenderingContext() {
 ImageBitmap* WebGL2RenderingContext::TransferToImageBitmap(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return TransferToImageBitmapBase(script_state);
+  return TransferToImageBitmapBase(script_state, exception_state);
 }
 
 void WebGL2RenderingContext::RegisterContextExtensions() {

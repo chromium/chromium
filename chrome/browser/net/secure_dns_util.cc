@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/secure_dns_util.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/common/chrome_features.h"
@@ -36,7 +36,7 @@ bool EntryIsForCountry(const net::DohProviderEntry* entry, int country_id) {
     return true;
   }
   const auto& countries = entry->display_countries;
-  bool matches = base::ranges::any_of(
+  bool matches = std::ranges::any_of(
       countries, [country_id](const std::string& country_code) {
         return country_codes::CountryStringToCountryID(country_code) ==
                country_id;
@@ -79,17 +79,17 @@ net::DohProviderEntry::List ProvidersForCountry(
     const net::DohProviderEntry::List& providers,
     int country_id) {
   net::DohProviderEntry::List local_providers;
-  base::ranges::copy_if(providers, std::back_inserter(local_providers),
-                        [country_id](const net::DohProviderEntry* entry) {
-                          return EntryIsForCountry(entry, country_id);
-                        });
+  std::ranges::copy_if(providers, std::back_inserter(local_providers),
+                       [country_id](const net::DohProviderEntry* entry) {
+                         return EntryIsForCountry(entry, country_id);
+                       });
   return local_providers;
 }
 
 net::DohProviderEntry::List SelectEnabledProviders(
     const net::DohProviderEntry::List& providers) {
   net::DohProviderEntry::List enabled_providers;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       providers, std::back_inserter(enabled_providers),
       [](const net::DohProviderEntry* entry) {
         return base::FeatureList::IsEnabled(entry->feature.get());

@@ -26,7 +26,8 @@ void TestCookieManager::SetCanonicalCookie(
         net::CookieInclusionStatus::
             MakeFromReasonsForTesting(/*exclusions=*/
                                       {net::CookieInclusionStatus::
-                                           EXCLUDE_UNKNOWN_ERROR})));
+                                           ExclusionReason::
+                                               EXCLUDE_UNKNOWN_ERROR})));
   }
 }
 

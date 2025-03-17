@@ -113,11 +113,10 @@ ComponentManager& ComponentManager::GetInstance() {
 }
 
 // static
-void ComponentManager::SetForTesting(ComponentManager* manager) {
-  // There should not be any testing manager when setting a testing manager.
-  // Also there should be a testing manager when resetting it.
-  CHECK_EQ(!component_manager_for_test_, !!manager);
-  component_manager_for_test_ = manager;
+base::AutoReset<ComponentManager*> ComponentManager::SetForTesting(
+    ComponentManager* manager) {
+  return base::AutoReset<ComponentManager*>(&component_manager_for_test_,
+                                            manager);
 }
 
 ComponentManager::ComponentManager()

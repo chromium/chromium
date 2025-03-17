@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/public/cpp/session/scoped_screen_lock_blocker.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -29,6 +25,10 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"

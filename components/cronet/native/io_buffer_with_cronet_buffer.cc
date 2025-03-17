@@ -46,7 +46,7 @@ IOBufferWithCronet_Buffer::~IOBufferWithCronet_Buffer() {
 }
 
 Cronet_BufferPtr IOBufferWithCronet_Buffer::Release() {
-  data_ = nullptr;  // Avoid dangling pointer.
+  ClearSpan();  // Avoid dangling pointer.
   return cronet_buffer_.release();
 }
 

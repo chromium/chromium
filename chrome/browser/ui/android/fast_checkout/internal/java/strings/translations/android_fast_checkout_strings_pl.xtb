@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1122068467107743258">Służbowy</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="138513070655895675">Zmień formę płatności na inną z tej pozycji menu.</translation>
 <translation id="2129442648318919291">Zarządzaj adresami</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Adres wysyłki</translation>
 <translation id="8873105120914375071">Chcesz płacić szybciej?</translation>
 <translation id="9032876013752408138">Autouzupełniaj moje dane</translation>
+<translation id="932327136139879170">Strona główna</translation>
 <translation id="984275831282074731">Formy płatności</translation>
 </translationbundle>

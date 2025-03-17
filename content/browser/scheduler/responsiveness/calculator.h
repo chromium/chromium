@@ -98,7 +98,8 @@ class CONTENT_EXPORT Calculator {
   // Exposed for testing.
   virtual void EmitResponsiveness(CongestionType congestion_type,
                                   size_t num_congested_slices,
-                                  StartupStage startup_stage);
+                                  StartupStage startup_stage,
+                                  uint64_t event_id);
 
   // Emits trace events for responsiveness metric. A trace event is emitted for
   // the whole duration of the metric interval and sub events are emitted for
@@ -108,14 +109,16 @@ class CONTENT_EXPORT Calculator {
                                      StartupStage startup_stage,
                                      base::TimeTicks start_time,
                                      base::TimeTicks end_time,
-                                     const std::set<int>& congested_slices);
+                                     const std::set<int>& congested_slices,
+                                     uint64_t event_id);
 
   // Exposed for testing.
   virtual void EmitCongestedIntervalsMeasurementTraceEvent(
       StartupStage startup_stage,
       base::TimeTicks start_time,
       base::TimeTicks end_time,
-      size_t num_congested_slices);
+      size_t num_congested_slices,
+      uint64_t event_id);
 
   // Exposed for testing.
   virtual void EmitCongestedIntervalTraceEvent(CongestionType congestion_type,

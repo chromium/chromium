@@ -359,6 +359,13 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override {}
 
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
+    return false;
+  }
+
  private:
   ResolvedProxyInfo resolved_proxy_info_;
 };

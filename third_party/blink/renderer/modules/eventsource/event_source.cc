@@ -32,10 +32,10 @@
 
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -80,7 +80,7 @@ void ReportUMA(ExecutionContext& context,
                network::mojom::FetchResponseType response_type) {
   if (response_type == network::mojom::FetchResponseType::kCors &&
       (value.size() > 128 ||
-       base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))) {
+       std::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))) {
     UseCounter::Count(context,
                       WebFeature::kFetchEventSourceLastEventIdCorsUnSafe);
   }

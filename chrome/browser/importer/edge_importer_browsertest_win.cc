@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <string>
@@ -183,8 +178,8 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
       {false, 0, {}, L"SubFolder", "http://www.subfolder.com/"},
       {false, 0, {}, L"InvalidFavicon", "http://www.invalid-favicon.com/"},
   };
-  std::vector<BookmarkInfo> bookmark_entries(
-      kEdgeBookmarks, kEdgeBookmarks + std::size(kEdgeBookmarks));
+  std::vector<BookmarkInfo> bookmark_entries(std::begin(kEdgeBookmarks),
+                                             std::end(kEdgeBookmarks));
 
   const FaviconGroup kEdgeFaviconGroup[] = {
       {L"http://www.links-sublink.com/favicon.ico",
@@ -201,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
       {L"http://www.subfolder.com/favicon.ico", L"http://www.subfolder.com"},
   };
 
-  std::vector<FaviconGroup> favicon_groups(
-      kEdgeFaviconGroup, kEdgeFaviconGroup + std::size(kEdgeFaviconGroup));
+  std::vector<FaviconGroup> favicon_groups(std::begin(kEdgeFaviconGroup),
+                                           std::end(kEdgeFaviconGroup));
 
   base::FilePath data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &data_path));
@@ -246,12 +241,12 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
 
   const BookmarkInfo kEdgeBookmarks[] = {
       {false, 0, {}, L"Google", "http://www.google.com/"}};
-  std::vector<BookmarkInfo> bookmark_entries(
-      kEdgeBookmarks, kEdgeBookmarks + std::size(kEdgeBookmarks));
+  std::vector<BookmarkInfo> bookmark_entries(std::begin(kEdgeBookmarks),
+                                             std::end(kEdgeBookmarks));
   const FaviconGroup kEdgeFaviconGroup[] = {
       {L"http://www.google.com/favicon.ico", L"http://www.google.com/"}};
-  std::vector<FaviconGroup> favicon_groups(
-      kEdgeFaviconGroup, kEdgeFaviconGroup + std::size(kEdgeFaviconGroup));
+  std::vector<FaviconGroup> favicon_groups(std::begin(kEdgeFaviconGroup),
+                                           std::end(kEdgeFaviconGroup));
 
   base::FilePath data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &data_path));

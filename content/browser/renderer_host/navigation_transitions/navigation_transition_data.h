@@ -90,7 +90,11 @@ class NavigationTransitionData {
     // Received an empty bitmap from embedder when capturing the screenshot.
     kCapturedEmptyBitmapFromEmbedder = 18,
 
-    kMaxValue = kCapturedEmptyBitmapFromEmbedder
+    // Forward navigation transitions were not supported when doing a back
+    // history navigation out of this entry.
+    kForwardTransitionAnimationNotSupported = 19,
+
+    kMaxValue = kForwardTransitionAnimationNotSupported
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationTransitionCacheHitOrMissReason)
 

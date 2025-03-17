@@ -36,7 +36,7 @@ struct SupportedVersion {
 
 constexpr std::array<SupportedVersion, 3> kSupportedCdmInterfaceVersions = {{
     {10, true},
-    {11, false},
+    {11, true},
     {12, false},
 }};
 

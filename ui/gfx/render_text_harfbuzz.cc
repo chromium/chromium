@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -220,14 +221,13 @@ bool AreGraphemePropertiesCompatible(const GraphemeProperties& first,
 // (see: UNICODE TEXT SEGMENTATION (http://unicode.org/reports/tr29/).
 // Breaks between |run_start| and |run_end| and force break after the grapheme
 // starting at |run_break|.
-size_t FindRunBreakingCharacter(const std::u16string& text,
+size_t FindRunBreakingCharacter(std::u16string_view text,
                                 UScriptCode script,
                                 size_t run_start,
                                 size_t run_break,
                                 size_t run_end) {
   const size_t run_length = run_end - run_start;
-  const std::u16string_view text_view(text);
-  const std::u16string_view run_text(text_view.substr(run_start, run_length));
+  const std::u16string_view run_text(text.substr(run_start, run_length));
   const bool is_common_script = (script == USCRIPT_COMMON);
 
   DCHECK(!run_text.empty());
@@ -278,14 +278,13 @@ size_t FindRunBreakingCharacter(const std::u16string& text,
 // Consider 3 characters with the script values {Kana}, {Hira, Kana}, {Kana}.
 // Without script extensions only the first script in each set would be taken
 // into account, resulting in 3 runs where 1 would be enough.
-size_t ScriptInterval(const std::u16string& text,
+size_t ScriptInterval(std::u16string_view text,
                       size_t start,
                       size_t length,
                       UScriptCode* script) {
   DCHECK_GT(length, 0U);
 
-  base::i18n::UTF16CharIterator char_iterator(
-      std::u16string_view(text).substr(start, length));
+  base::i18n::UTF16CharIterator char_iterator(text.substr(start, length));
 
   std::vector<UScriptCode> scripts = GetScriptExtensions(char_iterator.get());
   *script = scripts[0];
@@ -320,7 +319,7 @@ void MarkFontAsTried(sk_sp<SkTypeface> typeface,
 }
 
 // Whether |segment| corresponds to the newline character.
-bool IsNewlineSegment(const std::u16string& text,
+bool IsNewlineSegment(std::u16string_view text,
                       const internal::LineSegment& segment) {
   const size_t offset = segment.char_range.start();
   const size_t length = segment.char_range.length();
@@ -333,7 +332,7 @@ bool IsNewlineSegment(const std::u16string& text,
 // incremented if the caret is right after the newline character, i.e, the
 // cursor affinity is |CURSOR_BACKWARD| while containing the newline character.
 size_t LineIndexForNewline(const size_t line_index,
-                           const std::u16string& text,
+                           std::u16string_view text,
                            const internal::LineSegment& segment,
                            const SelectionModel& caret) {
   bool at_newline = IsNewlineSegment(text, segment) &&
@@ -389,7 +388,7 @@ class HarfBuzzLineBreaker {
                       float min_height,
                       float glyph_height_for_test,
                       WordWrapBehavior word_wrap_behavior,
-                      const std::u16string& text,
+                      std::u16string_view text,
                       const internal::TextRunList& run_list)
       : max_width_((max_width == 0) ? SK_ScalarMax : SkIntToScalar(max_width)),
         min_baseline_(min_baseline),
@@ -425,7 +424,7 @@ class HarfBuzzLineBreaker {
   void ConstructMultiLines() {
     // Get an iterator that pass through valid line breaking positions.
     // See https://www.unicode.org/reports/tr14/tr14-11.html for lines breaking.
-    base::i18n::BreakIterator words(*text_,
+    base::i18n::BreakIterator words(text_,
                                     base::i18n::BreakIterator::BREAK_LINE);
     const bool success = words.Init();
     DCHECK(success);
@@ -441,7 +440,7 @@ class HarfBuzzLineBreaker {
       // the word to the current line.
       bool new_line = false;
       if (!word_segments.empty() &&
-          IsNewlineSegment(*text_, word_segments.back())) {
+          IsNewlineSegment(text_, word_segments.back())) {
         new_line = true;
 
         // Subtract the width of newline segments, they are not drawn.
@@ -470,7 +469,7 @@ class HarfBuzzLineBreaker {
     // the final line.
     internal::Line* line = &lines_.back();
     if (line->display_text_index == 0)
-      line->display_text_index = text_->size();
+      line->display_text_index = text_.size();
     // Add an empty line to finish the line size calculation and remove it.
     AdvanceLine();
     lines_.pop_back();
@@ -514,11 +513,11 @@ class HarfBuzzLineBreaker {
       // drawn.
       float line_width = line->size.width();
       if (!line->segments.empty() &&
-          IsNewlineSegment(*text_, line->segments.back())) {
+          IsNewlineSegment(text_, line->segments.back())) {
         line_width -= line->segments.back().width();
       }
       if (line->segments.size() > 1 &&
-          IsNewlineSegment(*text_, line->segments.front())) {
+          IsNewlineSegment(text_, line->segments.front())) {
         line_width -= line->segments.front().width();
       }
       total_size_.set_height(total_size_.height() + line->size.height());
@@ -542,7 +541,7 @@ class HarfBuzzLineBreaker {
       if (has_truncated)
         break;
 
-      if (IsNewlineSegment(*text_, segment) ||
+      if (IsNewlineSegment(text_, segment) ||
           segment.width() <= available_width_ ||
           word_wrap_behavior_ == IGNORE_LONG_WORDS) {
         AddLineSegment(segment, true);
@@ -611,7 +610,7 @@ class HarfBuzzLineBreaker {
     line->size.set_width(line->size.width() + segment.width());
 
     // Newline characters are not drawn for multi-line, ignore their metrics.
-    if (!multiline || !IsNewlineSegment(*text_, segment)) {
+    if (!multiline || !IsNewlineSegment(text_, segment)) {
       SkFont font(run.font_params.skia_face, run.font_params.font_size);
       font.setEdging(run.font_params.render_params.antialiasing
                          ? SkFont::Edging::kAntiAlias
@@ -657,7 +656,7 @@ class HarfBuzzLineBreaker {
     }
 
     const size_t valid_end_pos = std::max(
-        segment.char_range.start(), FindValidBoundaryBefore(*text_, end_pos));
+        segment.char_range.start(), FindValidBoundaryBefore(text_, end_pos));
     if (end_pos != valid_end_pos) {
       end_pos = valid_end_pos;
       width = run.GetGlyphWidthForCharRange(
@@ -671,7 +670,7 @@ class HarfBuzzLineBreaker {
     if (width == 0 && available_width_ == max_width_ &&
         end_pos < segment.char_range.end()) {
       end_pos = std::min(segment.char_range.end(),
-                         FindValidBoundaryAfter(*text_, end_pos + 1));
+                         FindValidBoundaryAfter(text_, end_pos + 1));
     }
 
     return end_pos;
@@ -725,7 +724,7 @@ class HarfBuzzLineBreaker {
   const float min_height_;
   const float glyph_height_for_test_;
   const WordWrapBehavior word_wrap_behavior_;
-  const raw_ref<const std::u16string> text_;
+  const std::u16string_view text_;
   const raw_ref<const internal::TextRunList> run_list_;
 
   // Stores the resulting lines.
@@ -809,18 +808,15 @@ bool IsEnableFallbackFontsCrashReporting() {
 // being shaped through the GetFallbackFonts path as we shouldn't need to
 // fallback to that call path. crbug.com/995789
 void AppendFontNameAndShapedTextToCrashDumpReport(
-    const std::u16string& text,
+    std::u16string_view text,
     const std::vector<internal::TextRunHarfBuzz*>& shaped_runs,
-    const std::string& font_name,
+    std::string_view font_name,
     std::u16string& report) {
-  const std::u16string font_name_seperator = u"[font name] ";
-  const std::u16string run_start = u"[run start] ";
-  const std::u16string run_end = u" [run end]";
-  report += font_name_seperator + base::ASCIIToUTF16(font_name.c_str());
+  report += u"[font name] " + base::ASCIIToUTF16(font_name);
   for (internal::TextRunHarfBuzz* run : shaped_runs) {
-    std::u16string text_substring =
-        text.substr(run->range.start(), run->range.end());
-    report += run_start + text_substring + run_end;
+    report += base::StrCat({u"[run start] ",
+                            text.substr(run->range.start(), run->range.end()),
+                            u" [run end]"});
   }
 }
 
@@ -1215,7 +1211,7 @@ namespace {
 
 // Input for the stateless implementation of ShapeRunWithFont.
 struct ShapeRunWithFontInput {
-  ShapeRunWithFontInput(const std::u16string& full_text,
+  ShapeRunWithFontInput(std::u16string_view full_text,
                         const TextRunHarfBuzz::FontParams& font_params,
                         Range full_range,
                         bool obscured,
@@ -1243,7 +1239,8 @@ struct ShapeRunWithFontInput {
         std::min(full_text.length(), full_range.end() + kContextSize);
     range = Range(full_range.start() - context_start,
                   full_range.end() - context_start);
-    text = full_text.substr(context_start, context_end - context_start);
+    text = std::u16string(
+        full_text.substr(context_start, context_end - context_start));
 
     // Pre-compute the hash to avoid having to re-hash at every comparison.
     // Attempt to minimize collisions by including the typeface, script, font
@@ -1430,7 +1427,7 @@ RenderTextHarfBuzz::RenderTextHarfBuzz()
 
 RenderTextHarfBuzz::~RenderTextHarfBuzz() {}
 
-const std::u16string& RenderTextHarfBuzz::GetDisplayText() {
+std::u16string_view RenderTextHarfBuzz::GetDisplayText() {
   // TODO(krb): Consider other elision modes for multiline.
   if ((multiline() && (max_lines() == 0 || elide_behavior() != ELIDE_TAIL)) ||
       elide_behavior() == NO_ELIDE || elide_behavior() == FADE_TAIL) {
@@ -1723,7 +1720,7 @@ void RenderTextHarfBuzz::EnsureLayout() {
 
   if (update_display_run_list_) {
     DCHECK(text_elided());
-    const std::u16string& display_text = GetDisplayText();
+    const std::u16string_view display_text = GetDisplayText();
     display_run_list_ = std::make_unique<internal::TextRunList>();
 
     if (!display_text.empty())
@@ -1788,7 +1785,7 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
   }
 
   internal::TextRunList* run_list = GetRunList();
-  const std::u16string& display_text = GetDisplayText();
+  const std::u16string_view display_text = GetDisplayText();
   for (size_t i = 0; i < shaped_text->lines().size(); ++i) {
     const internal::Line& line = shaped_text->lines()[i];
     const Vector2d origin = GetLineOffset(i) + Vector2d(0, line.baseline);
@@ -1799,9 +1796,9 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
         continue;
 
       const size_t crash_report_size = 256;
-      DEBUG_ALIAS_FOR_U16CSTR(alias_display_text, display_text.c_str(),
+      DEBUG_ALIAS_FOR_U16CSTR(alias_display_text, display_text.data(),
                               crash_report_size);
-      DEBUG_ALIAS_FOR_U16CSTR(alias_text, text().c_str(), crash_report_size);
+      DEBUG_ALIAS_FOR_U16CSTR(alias_text, text().data(), crash_report_size);
       const size_t run_list_size = run_list->runs().size();
       base::debug::Alias(&run_list_size);
       const size_t segment_run_size = segment.run;
@@ -1949,7 +1946,7 @@ bool RenderTextHarfBuzz::BuildResolvedTypefaceBreakList(
   return modified_breaklist;
 }
 
-void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
+void RenderTextHarfBuzz::ItemizeAndShapeText(std::u16string_view text,
                                              internal::TextRunList* run_list) {
   CommonizedRunsMap commonized_run_map;
   const bool successfully_shaped_runs =
@@ -1981,7 +1978,7 @@ void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
 
 bool RenderTextHarfBuzz::ItemizeAndShapeTextImpl(
     CommonizedRunsMap* commonized_run_map,
-    const std::u16string& text,
+    std::u16string_view text,
     internal::TextRunList* run_list) {
   run_list->Reset();
   commonized_run_map->clear();
@@ -1999,7 +1996,7 @@ bool RenderTextHarfBuzz::ItemizeAndShapeTextImpl(
 }
 
 void RenderTextHarfBuzz::ItemizeTextToRuns(
-    const std::u16string& text,
+    std::u16string_view text,
     internal::TextRunList* out_run_list,
     CommonizedRunsMap* out_commonized_run_map) {
   TRACE_EVENT1("ui", "RenderTextHarfBuzz::ItemizeTextToRuns", "text_length",
@@ -2096,7 +2093,7 @@ void RenderTextHarfBuzz::ItemizeTextToRuns(
 }
 
 bool RenderTextHarfBuzz::ShapeRuns(
-    const std::u16string& text,
+    std::u16string_view text,
     const internal::TextRunHarfBuzz::FontParams& font_params,
     std::vector<internal::TextRunHarfBuzz*> runs) {
   TRACE_EVENT1("ui", "RenderTextHarfBuzz::ShapeRuns", "run_count", runs.size());
@@ -2172,8 +2169,8 @@ bool RenderTextHarfBuzz::ShapeRuns(
       SCOPED_UMA_HISTOGRAM_LONG_TIMER("RenderTextHarfBuzz.GetFallbackFontTime");
       TRACE_EVENT1("ui", "RenderTextHarfBuzz::GetFallbackFont", "script",
                    TRACE_STR_COPY(uscript_getShortName(font_params.script)));
-      const std::u16string_view run_text(&text[current_run->range.start()],
-                                         current_run->range.length());
+      const std::u16string_view run_text =
+          text.substr(current_run->range.start(), current_run->range.length());
       fallback_found =
           GetFallbackFont(primary_font, locale_, run_text, &fallback_font);
     }
@@ -2289,7 +2286,7 @@ bool RenderTextHarfBuzz::ShapeRuns(
           DEBUG_ALIAS_FOR_U16CSTR(aliased_crash_report_string,
                                   crash_report_string.c_str(),
                                   crash_report_size);
-          DEBUG_ALIAS_FOR_U16CSTR(aliased_full_text, text.c_str(),
+          DEBUG_ALIAS_FOR_U16CSTR(aliased_full_text, text.data(),
                                   crash_report_size);
           SCOPED_CRASH_KEY_STRING32("RenderTextFallbacks", "primaryfont_name",
                                     primary_font.GetFontName());
@@ -2314,7 +2311,7 @@ bool RenderTextHarfBuzz::ShapeRuns(
 }
 
 void RenderTextHarfBuzz::ShapeRunsWithFont(
-    const std::u16string& text,
+    std::u16string_view text,
     const internal::TextRunHarfBuzz::FontParams& font_params,
     std::vector<internal::TextRunHarfBuzz*>* in_out_runs,
     std::vector<internal::TextRunHarfBuzz*>* successfully_shaped_runs) {
@@ -2373,7 +2370,7 @@ void RenderTextHarfBuzz::EnsureLayoutRunList() {
     device_scale_factor_ = device_scale_factor;
     layout_run_list_.Reset();
 
-    const std::u16string& text = GetLayoutText();
+    const std::u16string_view text = GetLayoutText();
     if (!text.empty()) {
       ItemizeAndShapeText(text, &layout_run_list_);
     }

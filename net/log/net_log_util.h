@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/trace_event/base_tracing.h"  // IWYU pragma: export
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
 
@@ -15,10 +16,19 @@ namespace net {
 
 class URLRequestContext;
 
+// Request mode for GetNetConstants.
+enum class NetConstantsRequestMode {
+  // Requests all constants including field trials. This is the default mode.
+  kDefault,
+  // Requests only minimum constants. Used for tracing metadata.
+  kTracing,
+};
+
 // Utility methods for creating NetLog dumps.
 
 // Creates a dictionary containing a legend for net/ constants.
-NET_EXPORT base::Value::Dict GetNetConstants();
+NET_EXPORT base::Value::Dict GetNetConstants(
+    NetConstantsRequestMode request_mode = NetConstantsRequestMode::kDefault);
 
 // Retrieves a dictionary containing information about the current state of
 // |context|.
@@ -45,6 +55,10 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context);
 NET_EXPORT void CreateNetLogEntriesForActiveObjects(
     const std::set<URLRequestContext*>& contexts,
     NetLog::ThreadSafeObserver* observer);
+
+// Creates a trace Flow from a NetLogWithSource.
+NET_EXPORT perfetto::Flow NetLogWithSourceToFlow(
+    const NetLogWithSource& net_log);
 
 }  // namespace net
 

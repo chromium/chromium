@@ -62,7 +62,7 @@ bool RemoveUsersIfNeeded() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   // Make a copy of the list since we'll be removing users (and the list would
   // change underneath us if we used a reference).
-  const user_manager::UserList user_list = user_manager->GetUsers();
+  const user_manager::UserList user_list = user_manager->GetPersistedUsers();
 
   for (user_manager::User* user : user_list) {
     user_manager->RemoveUser(

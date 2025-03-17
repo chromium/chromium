@@ -78,8 +78,9 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
   base::TimeTicks wakeup_time = base::TimeTicks::Now() + wait;
   while (ret_pid == 0) {
     base::TimeTicks now = base::TimeTicks::Now();
-    if (now > wakeup_time)
+    if (now > wakeup_time) {
       break;
+    }
 
     const uint32_t sleep_time_usecs = static_cast<uint32_t>(
         std::min(static_cast<uint64_t>((wakeup_time - now).InMicroseconds()),
@@ -175,13 +176,11 @@ bool WaitForSingleNonChildProcess(base::ProcessHandle handle,
 
   DCHECK_EQ(result, 1);
 
-  if (event.filter != EVFILT_PROC ||
-      (event.fflags & NOTE_EXIT) == 0 ||
+  if (event.filter != EVFILT_PROC || (event.fflags & NOTE_EXIT) == 0 ||
       event.ident != static_cast<uintptr_t>(handle)) {
     DLOG(ERROR) << "kevent (wait " << handle
                 << "): unexpected event: filter=" << event.filter
-                << ", fflags=" << event.fflags
-                << ", ident=" << event.ident;
+                << ", fflags=" << event.fflags << ", ident=" << event.ident;
     return false;
   }
 
@@ -227,8 +226,9 @@ Process Process::Current() {
 
 // static
 Process Process::Open(ProcessId pid) {
-  if (pid == GetCurrentProcId())
+  if (pid == GetCurrentProcId()) {
     return Current();
+  }
 
   // On POSIX process handles are the same as PIDs.
   return Process(pid);
@@ -257,8 +257,9 @@ ProcessHandle Process::Handle() const {
 }
 
 Process Process::Duplicate() const {
-  if (is_current())
+  if (is_current()) {
     return Current();
+  }
 
   Process duplicate = Process(process_);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -307,8 +308,9 @@ bool Process::TerminateInternal(int exit_code, bool wait) const {
     // Forcibly terminate the process immediately.
     const bool was_killed = kill(process_, SIGKILL) != 0;
 #if BUILDFLAG(IS_CHROMEOS)
-    if (was_killed)
+    if (was_killed) {
       CleanUpProcessAsync();
+    }
 #endif
     DPLOG_IF(ERROR, !was_killed) << "Unable to terminate process " << process_;
     return was_killed;
@@ -353,8 +355,9 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   bool exited = WaitForExitWithTimeoutImpl(Handle(), &local_exit_code, timeout);
   if (exited) {
     Exited(local_exit_code);
-    if (exit_code)
+    if (exit_code) {
       *exit_code = local_exit_code;
+    }
   }
   return exited;
 }

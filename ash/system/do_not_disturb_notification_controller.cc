@@ -35,10 +35,7 @@ const char kDoNotDisturbNotifierId[] =
 
 // Returns true if we need to show specific Focus Mode text in the notification.
 bool ShouldShowFocusModeText() {
-  auto* focus_mode_controller =
-      features::IsFocusModeEnabled() ? FocusModeController::Get() : nullptr;
-
-  return focus_mode_controller &&
+  return FocusModeController::Get() &&
          message_center::MessageCenter::Get()
                  ->GetLastQuietModeChangeSourceType() ==
              message_center::QuietModeSourceType::kFocusMode;

@@ -78,6 +78,7 @@ MockRenderProcessHost::MockRenderProcessHost(
       is_for_guests_only_(is_for_guests_only),
       priority_(base::Process::Priority::kUserBlocking),
       is_unused_(true),
+      pending_view_count_(0),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
       foreground_service_worker_count_(0) {
@@ -204,6 +205,10 @@ bool MockRenderProcessHost::AreV8OptimizationsDisabled() {
   return false;
 }
 
+bool MockRenderProcessHost::DisallowV8FeatureFlagOverrides() {
+  return false;
+}
+
 bool MockRenderProcessHost::IsPdf() {
   return false;
 }
@@ -224,6 +229,10 @@ void MockRenderProcessHost::OnForegroundServiceWorkerRemoved() {
 void MockRenderProcessHost::OnBoostForLoadingAdded() {}
 
 void MockRenderProcessHost::OnBoostForLoadingRemoved() {}
+
+void MockRenderProcessHost::OnImmersiveXrSessionStarted() {}
+
+void MockRenderProcessHost::OnImmersiveXrSessionStopped() {}
 
 StoragePartition* MockRenderProcessHost::GetStoragePartition() {
   return browser_context_->GetStoragePartition(storage_partition_config_);
@@ -316,7 +325,8 @@ void MockRenderProcessHost::Cleanup() {
   }
   delayed_cleanup_ = false;
 
-  if (listeners_.IsEmpty() && !deletion_callback_called_) {
+  if (listeners_.IsEmpty() && !deletion_callback_called_ &&
+      !pending_view_count_) {
     if (IsInitializedAndNotDead()) {
       ChildProcessTerminationInfo termination_info;
       termination_info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
@@ -336,9 +346,15 @@ void MockRenderProcessHost::Cleanup() {
   }
 }
 
-void MockRenderProcessHost::AddPendingView() {}
+void MockRenderProcessHost::AddPendingView() {
+  ++pending_view_count_;
+}
 
-void MockRenderProcessHost::RemovePendingView() {}
+void MockRenderProcessHost::RemovePendingView() {
+  CHECK(pending_view_count_);
+  --pending_view_count_;
+  Cleanup();
+}
 
 void MockRenderProcessHost::AddPriorityClient(
     RenderProcessHostPriorityClient* priority_client) {
@@ -489,6 +505,10 @@ void MockRenderProcessHost::DecrementPendingReuseRefCount() {
   --pending_reuse_ref_count_;
 }
 
+int MockRenderProcessHost::GetPendingReuseRefCountForTesting() const {
+  return pending_reuse_ref_count_;
+}
+
 size_t MockRenderProcessHost::GetWorkerRefCount() const {
   return worker_ref_count_;
 }
@@ -566,6 +586,7 @@ void MockRenderProcessHost::BindCacheStorage(
     const network::CrossOriginEmbedderPolicy&,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
     const network::DocumentIsolationPolicy&,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>,
     const storage::BucketLocator& bucket_locator,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   cache_storage_receiver_ = std::move(receiver);

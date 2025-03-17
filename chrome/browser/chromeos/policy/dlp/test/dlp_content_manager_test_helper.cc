@@ -6,29 +6,16 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_lacros.h"
-#endif
-
 namespace policy {
 
 DlpContentManagerTestHelper::DlpContentManagerTestHelper() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   manager_ = new DlpContentManagerAsh();
-#else
-  manager_ = new DlpContentManagerLacros();
-#endif
-  DCHECK(manager_);
   reporting_manager_ = new data_controls::DlpReportingManager();
-  DCHECK(reporting_manager_);
   manager_->SetReportingManagerForTesting(reporting_manager_);
   manager_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
   scoped_dlp_content_observer_ =
@@ -104,22 +91,18 @@ DlpContentManagerTestHelper::GetRunningScreenShares() const {
   return manager_->running_screen_shares_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::optional<DlpContentManagerAsh::VideoCaptureInfo>
 DlpContentManagerTestHelper::GetRunningVideoCaptureInfo() const {
   DCHECK(manager_);
   return static_cast<DlpContentManagerAsh*>(manager_)
       ->running_video_capture_info_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 base::TimeDelta DlpContentManagerTestHelper::GetPrivacyScreenOffDelay() const {
   DCHECK(manager_);
   return static_cast<DlpContentManagerAsh*>(manager_)
       ->GetPrivacyScreenOffDelayForTesting();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void DlpContentManagerTestHelper::SetScreenShareResumeDelay(
     base::TimeDelta delay) const {

@@ -150,8 +150,8 @@ void CalendarDateCellView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   // Gray-out the date that is not in the current month.
-  SetEnabledTextColorIds(grayed_out_ ? cros_tokens::kCrosSysOnSurfaceVariant
-                                     : cros_tokens::kCrosSysOnSurface);
+  SetEnabledTextColors(grayed_out_ ? cros_tokens::kCrosSysOnSurfaceVariant
+                                   : cros_tokens::kCrosSysOnSurface);
 }
 
 // Draws the background for this date. Note that this includes not only the
@@ -349,9 +349,8 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
     return;
   }
 
-  SetEnabledTextColorIds(is_today_
-                             ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                             : cros_tokens::kCrosSysOnSurface);
+  SetEnabledTextColors(is_today_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                                 : cros_tokens::kCrosSysOnSurface);
   MaybeDrawEventsIndicator(canvas);
 }
 

@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_TEST_TEST_PASSWORD_MANAGER_CLIENT_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_TEST_TEST_PASSWORD_MANAGER_CLIENT_H_
 
-#include "components/password_manager/core/browser/stub_password_manager_client.h"
-
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {

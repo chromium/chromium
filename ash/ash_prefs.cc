@@ -14,8 +14,10 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_util.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_education_controller.h"
@@ -37,9 +39,11 @@
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/quick_pair/feature_status_tracker/scanning_enabled_provider.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/session/fullscreen_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf_controller.h"
@@ -63,6 +67,7 @@
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/mahi/mahi_nudge_controller.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/network/cellular_setup_notifier.h"
 #include "ash/system/network/vpn_detailed_view.h"
@@ -99,6 +104,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -108,7 +114,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
-#include "components/user_manager/known_user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
@@ -128,6 +134,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   AutozoomNudgeController::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
   BirchBarController::RegisterProfilePrefs(registry);
+  BirchCoralProvider::RegisterProfilePrefs(registry);
   BirchItem::RegisterProfilePrefs(registry);
   BirchModel::RegisterProfilePrefs(registry);
   BirchPrivacyNudgeController::RegisterProfilePrefs(registry);
@@ -180,6 +187,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   QuickInsertController::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   RegisterSystemShortcutBehaviorProfilePrefs(registry);
+  ScannerController::RegisterProfilePrefs(registry);
   ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);
@@ -207,10 +215,21 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(prefs::kSuggestedContentEnabled, true);
     registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
     registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
-    registry->RegisterBooleanPref(prefs::kHmrFeedbackAllowed, true);
+    registry->RegisterIntegerPref(
+        prefs::kHmrManagedSettings,
+        static_cast<int>(
+            mahi_utils::HmrEnterprisePolicy::kAllowedWithModelImprovement));
+    registry->RegisterIntegerPref(
+        prefs::kHmwManagedSettings,
+        base::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
+                                kAllowedWithModelImprovement));
     registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
     registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
     registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);
+    registry->RegisterIntegerPref(
+        prefs::kLobsterEnterprisePolicySettings,
+        base::to_underlying(
+            ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
     registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
     registry->RegisterListPref(
         chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList);
@@ -236,6 +255,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
                                base::Time());
     registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
+    registry->RegisterIntegerPref(
+        prefs::kGenAISmartGroupingSettings,
+        base::to_underlying(coral_util::GenAISmartGroupingSettings::kAllowed));
   }
 }
 
@@ -264,7 +286,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);
-    user_manager::KnownUser::RegisterPrefs(registry);
+    user_manager::UserManager::RegisterPrefs(registry);
   }
 }
 

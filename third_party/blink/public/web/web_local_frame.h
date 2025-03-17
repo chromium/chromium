@@ -17,11 +17,11 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
@@ -35,8 +35,9 @@
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -243,7 +244,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   // Tests whether the policy-controlled feature is enabled in this frame.
   virtual bool IsFeatureEnabled(
-      const mojom::PermissionsPolicyFeature&) const = 0;
+      const network::mojom::PermissionsPolicyFeature&) const = 0;
 
   // Hierarchy ----------------------------------------------------------
 
@@ -585,7 +586,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   virtual bool SetEditableSelectionOffsets(int start, int end) = 0;
   virtual bool AddImeTextSpansToExistingText(
-      const WebVector<ui::ImeTextSpan>& ime_text_spans,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
       unsigned text_start,
       unsigned text_end) = 0;
   virtual bool ClearImeTextSpansByType(ui::ImeTextSpan::Type type,
@@ -594,7 +595,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual bool SetCompositionFromExistingText(
       int composition_start,
       int composition_end,
-      const WebVector<ui::ImeTextSpan>& ime_text_spans) = 0;
+      const std::vector<ui::ImeTextSpan>& ime_text_spans) = 0;
   virtual void ExtendSelectionAndDelete(int before, int after) = 0;
   virtual void ExtendSelectionAndReplace(int before,
                                          int after,
@@ -624,12 +625,15 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void ReplaceMisspelledRange(const WebString&) = 0;
   virtual void RemoveSpellingMarkers() = 0;
   virtual void RemoveSpellingMarkersUnderWords(
-      const WebVector<WebString>& words) = 0;
+      const std::vector<WebString>& words) = 0;
 
   // Content Settings -------------------------------------------------------
 
   virtual WebContentSettingsClient* GetContentSettingsClient() const = 0;
   virtual void SetContentSettingsClient(WebContentSettingsClient*) = 0;
+
+  virtual const mojom::RendererContentSettingsPtr& GetContentSettings()
+      const = 0;
 
   // Image reload -----------------------------------------------------------
 
@@ -674,7 +678,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // given layout object. If this is called with an empty array, the default
   // behavior will be restored.
   virtual void SetTickmarks(const WebElement& target,
-                            const WebVector<gfx::Rect>& tickmarks) = 0;
+                            const std::vector<gfx::Rect>& tickmarks) = 0;
 
   // Context menu -----------------------------------------------------------
 
@@ -832,12 +836,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                    bool include_linked_destinations,
                                    bool skip_accelerated_content) = 0;
 
-  // Focus --------------------------------------------------------------
-
-  // Returns whether the keyboard should be suppressed for the currently focused
-  // element.
-  virtual bool ShouldSuppressKeyboardForFocusedElement() = 0;
-
   // Performance --------------------------------------------------------
 
   virtual WebPerformanceMetricsForReporting PerformanceMetricsForReporting()
@@ -899,7 +897,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Get the total spool size (the bounding box of all the pages placed after
   // oneanother vertically), when printing for testing.
   virtual gfx::Size SpoolSizeInPixelsForTesting(
-      const WebVector<uint32_t>& pages) = 0;
+      const std::vector<uint32_t>& pages) = 0;
   virtual gfx::Size SpoolSizeInPixelsForTesting(uint32_t page_count) = 0;
 
   // Prints the given pages of the frame into the canvas, with page boundaries
@@ -908,7 +906,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void PrintPagesForTesting(
       cc::PaintCanvas*,
       const gfx::Size& spool_size_in_pixels,
-      const WebVector<uint32_t>* pages = nullptr) = 0;
+      const std::vector<uint32_t>* pages = nullptr) = 0;
 
   // Returns the bounds rect for current selection. If selection is performed
   // on transformed text, the rect will still bound the selection but will

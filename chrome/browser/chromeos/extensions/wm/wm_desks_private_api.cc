@@ -12,35 +12,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_lacros.h"
-#else
-#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
-#endif
 
 namespace extensions {
 
 namespace {
-
 constexpr char kApiLaunchDeskResult[] = "Ash.DeskApi.LaunchDesk.Result";
 constexpr char kApiRemoveDeskResult[] = "Ash.DeskApi.RemoveDesk.Result";
 constexpr char kApiSwitchDeskResult[] = "Ash.DeskApi.SwitchDesk.Result";
 constexpr char kApiAllDeskResult[] = "Ash.DeskApi.AllDesk.Result";
 constexpr char kInvalidIdError[] = "InvalidIdError";
 constexpr char kStorageError[] = "StorageError";
-
-std::unique_ptr<WMDesksPrivateFeature> GetDeskFeatureImpl() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<WMDesksPrivateFeatureLacros>();
-#else
-  return std::make_unique<WMDesksPrivateFeatureAsh>();
-#endif
-}
-
 }  // namespace
 
 WmDesksPrivateGetSavedDesksFunction::WmDesksPrivateGetSavedDesksFunction() =
@@ -49,8 +33,7 @@ WmDesksPrivateGetSavedDesksFunction::~WmDesksPrivateGetSavedDesksFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateGetSavedDesksFunction::Run() {
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->GetSavedDesks(base::BindOnce(
+  WMDesksPrivateFeatureAsh().GetSavedDesks(base::BindOnce(
       &WmDesksPrivateGetSavedDesksFunction::OnGetSavedDesks, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
@@ -83,8 +66,7 @@ WmDesksPrivateGetDeskTemplateJsonFunction::Run() {
     return RespondNow(Error(kInvalidIdError));
   }
 
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->GetDeskTemplateJson(
+  WMDesksPrivateFeatureAsh().GetDeskTemplateJson(
       uuid, Profile::FromBrowserContext(browser_context()),
       base::BindOnce(
           &WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson,
@@ -121,8 +103,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateLaunchDeskFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   auto& launch_options = params->launch_options;
   std::string desk_name = launch_options.desk_name.value_or("");
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->LaunchDesk(
+  WMDesksPrivateFeatureAsh().LaunchDesk(
       desk_name,
       base::BindOnce(&WmDesksPrivateLaunchDeskFunction::OnLaunchDesk, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -160,8 +141,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
     base::UmaHistogramBoolean(kApiRemoveDeskResult, false);
     return RespondNow(Error(kInvalidIdError));
   }
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->RemoveDesk(
+  WMDesksPrivateFeatureAsh().RemoveDesk(
       uuid, combine_desk, allow_undo,
       base::BindOnce(&WmDesksPrivateRemoveDeskFunction::OnRemoveDesk, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -185,8 +165,7 @@ WmDesksPrivateGetAllDesksFunction::~WmDesksPrivateGetAllDesksFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateGetAllDesksFunction::Run() {
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->GetAllDesks(
+  WMDesksPrivateFeatureAsh().GetAllDesks(
       base::BindOnce(&WmDesksPrivateGetAllDesksFunction::OnGetAllDesks, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
@@ -212,8 +191,7 @@ WmDesksPrivateSetWindowPropertiesFunction::Run() {
   std::optional<api::wm_desks_private::SetWindowProperties::Params> params =
       api::wm_desks_private::SetWindowProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->SetAllDeskProperty(
+  WMDesksPrivateFeatureAsh().SetAllDeskProperty(
       params->window_id, params->window_properties.all_desks,
       base::BindOnce(
           &WmDesksPrivateSetWindowPropertiesFunction::OnSetWindowProperties,
@@ -238,8 +216,7 @@ WmDesksPrivateSaveActiveDeskFunction::~WmDesksPrivateSaveActiveDeskFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateSaveActiveDeskFunction::Run() {
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->SaveActiveDesk(base::BindOnce(
+  WMDesksPrivateFeatureAsh().SaveActiveDesk(base::BindOnce(
       &WmDesksPrivateSaveActiveDeskFunction::OnSavedActiveDesk, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
@@ -268,9 +245,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateDeleteSavedDeskFunction::Run() {
   if (!uuid.is_valid()) {
     return RespondNow(Error(kInvalidIdError));
   }
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-
-  desk_impl->DeleteSavedDesk(
+  WMDesksPrivateFeatureAsh().DeleteSavedDesk(
       uuid,
       base::BindOnce(&WmDesksPrivateDeleteSavedDeskFunction::OnDeletedSavedDesk,
                      this));
@@ -300,8 +275,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRecallSavedDeskFunction::Run() {
   if (!uuid.is_valid()) {
     return RespondNow(Error(kInvalidIdError));
   }
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->RecallSavedDesk(
+  WMDesksPrivateFeatureAsh().RecallSavedDesk(
       uuid,
       base::BindOnce(
           &WmDesksPrivateRecallSavedDeskFunction::OnRecalledSavedDesk, this));
@@ -325,8 +299,7 @@ WmDesksPrivateGetActiveDeskFunction::~WmDesksPrivateGetActiveDeskFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateGetActiveDeskFunction::Run() {
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->GetActiveDesk(base::BindOnce(
+  WMDesksPrivateFeatureAsh().GetActiveDesk(base::BindOnce(
       &WmDesksPrivateGetActiveDeskFunction::OnGetActiveDesk, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
@@ -355,8 +328,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
     base::UmaHistogramBoolean(kApiSwitchDeskResult, false);
     return RespondNow(Error(kInvalidIdError));
   }
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->SwitchDesk(
+  WMDesksPrivateFeatureAsh().SwitchDesk(
       uuid,
       base::BindOnce(&WmDesksPrivateSwitchDeskFunction::OnSwitchDesk, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -384,8 +356,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateGetDeskByIDFunction::Run() {
   if (!uuid.is_valid()) {
     return RespondNow(Error(kInvalidIdError));
   }
-  std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
-  desk_impl->GetDeskByID(
+  WMDesksPrivateFeatureAsh().GetDeskByID(
       uuid,
       base::BindOnce(&WmDesksPrivateGetDeskByIDFunction::OnGetDeskByID, this));
   return did_respond() ? AlreadyResponded() : RespondLater();

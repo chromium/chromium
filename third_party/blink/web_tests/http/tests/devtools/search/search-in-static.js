@@ -7,7 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
-import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
@@ -21,7 +21,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   var staticContentProvider;
 
   function step2() {
-    resource = BindingsModule.ResourceUtils.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
+    resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
     resource.requestContent().then(step3);
   }
 

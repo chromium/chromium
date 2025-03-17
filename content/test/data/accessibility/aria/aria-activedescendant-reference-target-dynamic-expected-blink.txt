@@ -43,7 +43,7 @@ rootWebArea name='switch-active-descendant-back'
 rootWebArea name='switch-referenced-element-id-away'
 ++genericContainer ignored
 ++++genericContainer
-++++++menu name='parent node' activedescendantId=null
+++++++menu name='parent node'
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'

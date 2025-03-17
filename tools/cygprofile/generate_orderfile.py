@@ -52,20 +52,27 @@ def _AddDummyFunctions(options):
     f.write('dummy_function_end_of_ordered_text\n')
 
 
+def _GetOrderfilesDir(options) -> pathlib.Path:
+  if options.isolated_script_test_output:
+    orderfiles_dir = options.isolated_script_test_output.parent / 'orderfiles'
+  else:
+    orderfiles_dir = options.out_dir / 'orderfiles'
+  orderfiles_dir.mkdir(exist_ok=True)
+  return orderfiles_dir
+
+
 def _GetOrderfileFilename(options):
   """Gets the path to the architecture-specific orderfile."""
-  _orderfiles_dir = options.out_dir / 'orderfiles'
-  _orderfiles_dir.mkdir(exist_ok=True)
   arch = options.arch
-  return str(_orderfiles_dir / f'orderfile.{arch}.out')
+  orderfiles_dir = _GetOrderfilesDir(options)
+  return str(orderfiles_dir / f'orderfile.{arch}.out')
 
 
 def _GetUnpatchedOrderfileFilename(options):
   """Gets the path to the architecture-specific unpatched orderfile."""
-  _orderfiles_dir = options.out_dir / 'orderfiles'
-  _orderfiles_dir.mkdir(exist_ok=True)
   arch = options.arch
-  return str(_orderfiles_dir / f'unpatched_orderfile.{arch}')
+  orderfiles_dir = _GetOrderfilesDir(options)
+  return str(orderfiles_dir / f'unpatched_orderfile.{arch}')
 
 
 def GenerateAndProcessProfile(options):
@@ -96,9 +103,11 @@ def GenerateAndProcessProfile(options):
   lib_chrome_so = str(options.out_dir / f'lib.unstripped/{libchrome_target}.so')
 
   if options.arch == 'arm64':
-    files = profiler.CollectSpeedometerProfile(options.android_browser)
+    files = profiler.CollectSpeedometerProfile(options.android_browser,
+                                               str(options.out_dir))
   else:
-    files = profiler.CollectSystemHealthProfile(options.android_browser)
+    files = profiler.CollectSystemHealthProfile(options.android_browser,
+                                                str(options.out_dir))
 
   try:
     profiles = process_profiles.ProfileManager(files)
@@ -152,6 +161,12 @@ def CreateArgumentParser():
                       action='count',
                       default=0,
                       help='Increase verbosity for debugging.')
+  # The following two are bot-specific args.
+  parser.add_argument('--isolated-script-test-output',
+                      type=pathlib.Path,
+                      help='Output.json file that the script can write to.')
+  parser.add_argument('--isolated-script-test-perf-output',
+                      help='Deprecated and ignored, but bots pass it.')
 
   return parser
 

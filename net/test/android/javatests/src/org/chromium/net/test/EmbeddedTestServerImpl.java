@@ -278,6 +278,26 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
     }
 
     /**
+     * Get the count of the request observed on the server for the given relative URL.
+     *
+     * @param relativeUrl The relative URL for which request count should be returned.
+     * @return The request count.
+     */
+    @Override
+    public int getRequestCountForUrl(final String relativeUrl) {
+        return runOnHandlerThread(
+                        new Callable<Integer>() {
+                            @Override
+                            public Integer call() {
+                                return EmbeddedTestServerImplJni.get()
+                                        .getRequestCountForUrl(
+                                                mNativeEmbeddedTestServer, relativeUrl);
+                            }
+                        })
+                .intValue();
+    }
+
+    /**
      * Shut down the server.
      *
      * @return Whether the server was successfully shut down.
@@ -386,5 +406,7 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
 
         @JniType("std::vector<std::string>")
         String[] getRequestHeadersForUrl(long nativeEmbeddedTestServerAndroid, String relativeUrl);
+
+        int getRequestCountForUrl(long nativeEmbeddedTestServerAndroid, String relativeUrl);
     }
 }

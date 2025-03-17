@@ -284,7 +284,7 @@ SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
 void SurfaceTreeHost::OnDidProcessDisplayChanges(
     const DisplayConfigurationChange& configuration_change) {
   // The output of the surface may change when the primary display changes.
-  const bool primary_changed = base::ranges::any_of(
+  const bool primary_changed = std::ranges::any_of(
       configuration_change.display_metrics_changes,
       [](const DisplayManagerObserver::DisplayMetricsChange& change) {
         return change.changed_metrics &
@@ -379,9 +379,6 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
           ? std::nullopt
           : std::make_optional(GetScaleFactor()),
       &frame);
-
-  // Update after resource is updated.
-  UpdateHostLayerOpacity();
 
   std::vector<GLbyte*> sync_tokens;
   // We track previously verified tokens and set them to be verified to avoid
@@ -493,17 +490,8 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
     root_surface_->window()->SetBounds(updated_bounds);
   }
 
-  UpdateHostWindowOpaqueRegion();
-}
-
-void SurfaceTreeHost::UpdateHostLayerOpacity() {
-  ui::Layer* commit_target_layer = GetCommitTargetLayer();
-
   if (commit_target_layer == host_window_->layer()) {
     UpdateHostWindowOpaqueRegion();
-  } else if (commit_target_layer) {
-    commit_target_layer->SetFillsBoundsOpaquely(
-        ContentsFillsHostWindowOpaquely());
   }
 }
 
@@ -564,8 +552,6 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
       frame_sink_id_, std::move(sink_receiver), std::move(client_remote));
 
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
-  params.gpu_memory_buffer_manager =
-      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 

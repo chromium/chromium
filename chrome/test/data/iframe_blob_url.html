@@ -1,0 +1,8 @@
+<html><head><title>iframe test</title></head><body>
+  <script type="text/javascript">
+const frame = document.createElement('iframe');
+frame.src = URL.createObjectURL(new Blob(['<html><head></head><body>Hello world!</body>'], { type: 'text/html' }));
+document.body.appendChild(frame);
+</script>
+</body>
+</html>

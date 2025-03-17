@@ -90,8 +90,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painting_background_in_contents_space =
       paint_info.IsPaintingBackgroundInContentsSpace();
   bool paints_hit_test_data =
-      (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-       painting_background_in_contents_space) ||
+      painting_background_in_contents_space ||
       ObjectPainter(layout_view).ShouldRecordSpecialHitTestData(paint_info);
 
   Element* element = DynamicTo<Element>(layout_view.GetNode());
@@ -155,7 +154,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painted_separate_effect = false;
 
   bool should_apply_root_background_behavior =
-      document.IsHTMLDocument() || document.IsXHTMLDocument();
+      ShouldApplyRootBackgroundBehavior(document);
 
   bool should_paint_background = !paint_info.ShouldSkipBackground() &&
                                  (layout_view.HasBoxDecorationBackground() ||
@@ -452,6 +451,10 @@ PhysicalRect ViewPainter::BackgroundRect() const {
     return box_fragment_.LocalRect();
   }
   return GetLayoutView().BackgroundRect();
+}
+
+bool ViewPainter::ShouldApplyRootBackgroundBehavior(const Document& document) {
+  return document.IsHTMLDocument() || document.IsXHTMLDocument();
 }
 
 }  // namespace blink

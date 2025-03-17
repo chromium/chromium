@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 
 #include "base/location.h"
@@ -250,7 +245,7 @@ void CanvasAsyncBlobCreator::Dispose() {
 ImageEncodeOptions* CanvasAsyncBlobCreator::GetImageEncodeOptionsForMimeType(
     ImageEncodingMimeType mime_type) {
   ImageEncodeOptions* encode_options = ImageEncodeOptions::Create();
-  encode_options->setType(ImageEncodingMimeTypeName(mime_type));
+  encode_options->setType(ImageEncoderUtils::MimeTypeName(mime_type));
   return encode_options;
 }
 
@@ -454,7 +449,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
   RecordIdleTaskStatusHistogram(idle_task_status_);
 
   Blob* result_blob =
-      Blob::Create(encoded_image, ImageEncodingMimeTypeName(mime_type_));
+      Blob::Create(encoded_image, ImageEncoderUtils::MimeTypeName(mime_type_));
   if (function_type_ == kHTMLCanvasToBlobCallback) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,
@@ -505,8 +500,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
         .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
-             blink::IdentifiabilityDigestOfBytes(base::span(
-                 data_buffer->Pixels(), data_buffer->ComputeByteSize())))
+             blink::IdentifiabilityDigestOfBytes(data_buffer->PixelData()))
         .Record(context_->UkmRecorder());
   }
 
@@ -522,8 +516,8 @@ void CanvasAsyncBlobCreator::TraceCanvasContent(
       [&](perfetto::EventContext ctx) {
         String data = "data:";
         if (encoded_image) {
-          data = data + ImageEncodingMimeTypeName(mime_type_) + ";base64," +
-                 Base64Encode(*encoded_image);
+          data = data + ImageEncoderUtils::MimeTypeName(mime_type_) +
+                 ";base64," + Base64Encode(*encoded_image);
         }
         ctx.AddDebugAnnotation("data_url", data.Utf8());
       });

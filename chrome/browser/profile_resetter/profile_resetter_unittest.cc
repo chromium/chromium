@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 
 #include <stddef.h>
@@ -38,6 +33,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -76,7 +72,7 @@
 #include "base/win/shortcut.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/containers/to_vector.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -85,7 +81,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using extensions::mojom::ManifestLocation;
 
@@ -185,14 +181,17 @@ ProfileResetterTest::~ProfileResetterTest() = default;
 void ProfileResetterTest::SetUp() {
   extensions::ExtensionServiceTestBase::SetUp();
   ExtensionServiceInitParams params;
-  params.testing_factories = {TestingProfile::TestingFactory(
-      NtpCustomBackgroundServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateFakeNtpCustomBackgroundService))};
+  params.testing_factories = {
+      TestingProfile::TestingFactory(
+          NtpCustomBackgroundServiceFactory::GetInstance(),
+          base::BindRepeating(&CreateFakeNtpCustomBackgroundService)),
+      TestingProfile::TestingFactory(
+          TemplateURLServiceFactory::GetInstance(),
+          TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory()),
+  };
 
   InitializeExtensionService(std::move(params));
 
-  TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
   google_brand::BrandForTesting brand_for_testing("");
   resetter_ = std::make_unique<ProfileResetter>(profile());
 }
@@ -217,7 +216,7 @@ std::unique_ptr<content::WebContents> PinnedTabsResetTest::CreateWebContents() {
       content::WebContents::CreateParams(profile()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // DnsConfigResetTest --------------------------------------------------------
 
 class DnsConfigResetTest : public BrowserWithTestWindowTest,
@@ -250,7 +249,7 @@ class DnsConfigResetTest : public BrowserWithTestWindowTest,
     BrowserWithTestWindowTest::TearDown();
   }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // ConfigParserTest -----------------------------------------------------------
 
@@ -459,7 +458,7 @@ void ReplaceString(std::string* str,
   str->replace(placeholder_pos, placeholder.size(), substitution);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns the configured static name servers from `shill_properties`, or an
 // empty vector if no static name servers are configured.
 std::vector<std::string> GetStaticNameServersFromShillProperties(
@@ -478,7 +477,7 @@ std::vector<std::string> GetStaticNameServersFromShillProperties(
     return nameserver.GetString();
   });
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 /********************* Tests *********************/
 
@@ -753,7 +752,8 @@ TEST_F(ProfileResetterTest, ResetStartPageNonOrganic) {
   startup_pref = SessionStartupPref::GetStartupPref(prefs);
   EXPECT_EQ(SessionStartupPref::URLS, startup_pref.type);
   const GURL urls[] = {GURL("http://goo.gl"), GURL("http://foo.de")};
-  EXPECT_EQ(std::vector<GURL>(urls, urls + std::size(urls)), startup_pref.urls);
+  EXPECT_EQ(std::vector<GURL>(std::begin(urls), std::end(urls)),
+            startup_pref.urls);
 }
 
 
@@ -763,14 +763,15 @@ TEST_F(ProfileResetterTest, ResetStartPagePartially) {
 
   const GURL urls[] = {GURL("http://foo"), GURL("http://bar")};
   SessionStartupPref startup_pref(SessionStartupPref::URLS);
-  startup_pref.urls.assign(urls, urls + std::size(urls));
+  startup_pref.urls.assign(std::begin(urls), std::end(urls));
   SessionStartupPref::SetStartupPref(prefs, startup_pref);
 
   ResetAndWait(ProfileResetter::STARTUP_PAGES, std::string());
 
   startup_pref = SessionStartupPref::GetStartupPref(prefs);
   EXPECT_EQ(SessionStartupPref::GetDefaultStartupType(), startup_pref.type);
-  EXPECT_EQ(std::vector<GURL>(urls, urls + std::size(urls)), startup_pref.urls);
+  EXPECT_EQ(std::vector<GURL>(std::begin(urls), std::end(urls)),
+            startup_pref.urls);
 }
 
 TEST_F(PinnedTabsResetTest, ResetPinnedTabs) {
@@ -973,7 +974,7 @@ TEST_F(ProfileResetterTest, CheckSnapshots) {
   EXPECT_EQ(diff_fields, nonorganic_snap.FindDifferentFields(organic_snap));
   nonorganic_snap.Subtract(organic_snap);
   const GURL urls[] = {GURL("http://foo.de"), GURL("http://goo.gl")};
-  EXPECT_EQ(std::vector<GURL>(urls, urls + std::size(urls)),
+  EXPECT_EQ(std::vector<GURL>(std::begin(urls), std::end(urls)),
             nonorganic_snap.startup_urls());
   EXPECT_EQ(SessionStartupPref::URLS, nonorganic_snap.startup_type());
   EXPECT_EQ("http://www.foo.com", nonorganic_snap.homepage());
@@ -1146,7 +1147,7 @@ TEST_F(ProfileResetterTest, ResetNTPCustomizationsTest) {
       ntp_custom_background_service->GetCustomBackground().has_value());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DnsConfigResetTest, ResetDnsConfigurations) {
   ash::ShillServiceClient::TestInterface* shill_service_client =
       ash::ShillServiceClient::Get()->GetTestInterface();
@@ -1184,6 +1185,6 @@ TEST_F(DnsConfigResetTest, ResetDnsConfigurations) {
   EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
               testing::IsEmpty());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

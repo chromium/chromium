@@ -153,7 +153,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       });
     }
 
-    if (this.bookmarks_.length !== 1 || !this.bookmarks_[0]!.url) {
+    if (this.bookmarks_.length !== 1 || !this.bookmarks_[0].url) {
       menuItems.push({
         id: MenuItemId.OPEN_NEW_TAB_GROUP,
         label: bookmarkCount < 2 ?
@@ -179,37 +179,37 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       );
       return menuItems;
     } else if (
-        this.bookmarks_[0]!.id === loadTimeData.getString('bookmarksBarId')) {
+        this.bookmarks_[0].id === loadTimeData.getString('bookmarksBarId')) {
       return menuItems;
     }
 
-    if (this.bookmarks_[0]!.url ||
-        this.bookmarks_[0]!.parentId ===
+    if (this.bookmarks_[0].url ||
+        this.bookmarks_[0].parentId ===
             loadTimeData.getString('bookmarksBarId') ||
-        this.bookmarks_[0]!.parentId ===
+        this.bookmarks_[0].parentId ===
             loadTimeData.getString('otherBookmarksId') ||
-        this.bookmarks_[0]!.parentId ===
+        this.bookmarks_[0].parentId ===
             loadTimeData.getString('mobileBookmarksId')) {
       menuItems.push({id: MenuItemId.DIVIDER});
     }
 
-    if (this.bookmarks_[0]!.url) {
+    if (this.bookmarks_[0].url) {
       menuItems.push({
         id: MenuItemId.EDIT,
         label: loadTimeData.getString('menuEdit'),
       });
     }
 
-    if (this.bookmarks_[0]!.parentId ===
+    if (this.bookmarks_[0].parentId ===
         loadTimeData.getString('bookmarksBarId')) {
       menuItems.push({
         id: MenuItemId.REMOVE_FROM_BOOKMARKS_BAR,
         label: loadTimeData.getString('menuMoveToAllBookmarks'),
       });
     } else if (
-        this.bookmarks_[0]!.parentId ===
+        this.bookmarks_[0].parentId ===
             loadTimeData.getString('otherBookmarksId') ||
-        this.bookmarks_[0]!.parentId ===
+        this.bookmarks_[0].parentId ===
             loadTimeData.getString('mobileBookmarksId')) {
       menuItems.push({
         id: MenuItemId.ADD_TO_BOOKMARKS_BAR,
@@ -231,7 +231,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
     menuItems.push({id: MenuItemId.DIVIDER});
 
-    if (!this.bookmarks_[0]!.url) {
+    if (!this.bookmarks_[0].url) {
       menuItems.push(
           {
             id: MenuItemId.RENAME,
@@ -301,7 +301,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
           this.dispatchDisabledFeatureEvent_();
         } else {
           this.bookmarksApi_.contextMenuAddToBookmarksBar(
-              this.bookmarks_[0]!.id, ActionSource.kBookmark);
+              this.bookmarks_[0].id, ActionSource.kBookmark);
         }
         break;
       case MenuItemId.REMOVE_FROM_BOOKMARKS_BAR:
@@ -310,7 +310,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
           this.dispatchDisabledFeatureEvent_();
         } else {
           this.bookmarksApi_.contextMenuRemoveFromBookmarksBar(
-              this.bookmarks_[0]!.id, ActionSource.kBookmark);
+              this.bookmarks_[0].id, ActionSource.kBookmark);
         }
         break;
       case MenuItemId.TRACK_PRICE:
@@ -320,12 +320,12 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
         } else {
           if (this.priceTracked_) {
             this.priceTrackingProxy_.untrackPriceForBookmark(
-                BigInt(this.bookmarks_[0]!.id));
+                BigInt(this.bookmarks_[0].id));
             chrome.metricsPrivate.recordUserAction(
                 'Commerce.PriceTracking.SidePanel.Untrack.ContextMenu');
           } else {
             this.priceTrackingProxy_.trackPriceForBookmark(
-                BigInt(this.bookmarks_[0]!.id));
+                BigInt(this.bookmarks_[0].id));
             chrome.metricsPrivate.recordUserAction(
                 'Commerce.PriceTracking.SidePanel.Track.ContextMenu');
           }
@@ -349,7 +349,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
             bubbles: true,
             composed: true,
             detail: {
-              id: this.bookmarks_[0]!.id,
+              id: this.bookmarks_[0].id,
             },
           }));
         }

@@ -209,9 +209,9 @@ void WebUIContentsWrapper::DraggableRegionsChanged(
     content::WebContents* contents) {
   // Persist regions to allow support transfer between hosts.
   draggable_regions_.emplace();
-  base::ranges::transform(regions,
-                          std::back_inserter(draggable_regions_.value()),
-                          &blink::mojom::DraggableRegionPtr::Clone);
+  std::ranges::transform(regions,
+                         std::back_inserter(draggable_regions_.value()),
+                         &blink::mojom::DraggableRegionPtr::Clone);
   if (host_) {
     host_->DraggableRegionsChanged(regions, contents);
   }

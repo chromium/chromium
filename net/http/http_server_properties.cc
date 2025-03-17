@@ -24,6 +24,7 @@
 #include "net/http/http_server_properties_manager.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_config.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -214,8 +215,11 @@ bool HttpServerProperties::SupportsRequestPriority(
   if (server.host().empty())
     return false;
 
-  if (GetSupportsSpdy(server, network_anonymization_key))
+  if ((server.scheme() == url::kHttpScheme ||
+       server.scheme() == url::kHttpsScheme) &&
+      GetSupportsSpdy(server, network_anonymization_key)) {
     return true;
+  }
   const AlternativeServiceInfoVector alternative_service_info_vector =
       GetAlternativeServiceInfos(server, network_anonymization_key);
   for (const AlternativeServiceInfo& alternative_service_info :
@@ -232,8 +236,16 @@ bool HttpServerProperties::GetSupportsSpdy(
     const url::SchemeHostPort& server,
     const NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return GetSupportsSpdyInternal(NormalizeSchemeHostPort(server),
-                                 network_anonymization_key);
+  CHECK(server.scheme() == url::kHttpScheme ||
+        server.scheme() == url::kHttpsScheme);
+  if (server.host().empty()) {
+    return false;
+  }
+
+  auto server_info = server_info_map_.Get(
+      CreateServerInfoKey(server, network_anonymization_key));
+  return server_info != server_info_map_.end() &&
+         server_info->second.supports_spdy.value_or(false);
 }
 
 void HttpServerProperties::SetSupportsSpdy(
@@ -241,8 +253,23 @@ void HttpServerProperties::SetSupportsSpdy(
     const NetworkAnonymizationKey& network_anonymization_key,
     bool supports_spdy) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SetSupportsSpdyInternal(NormalizeSchemeHostPort(server),
-                          network_anonymization_key, supports_spdy);
+  CHECK(server.scheme() == url::kHttpScheme ||
+        server.scheme() == url::kHttpsScheme);
+  if (server.host().empty()) {
+    return;
+  }
+
+  auto server_info = server_info_map_.GetOrPut(
+      CreateServerInfoKey(server, network_anonymization_key));
+  // If value is already the same as `supports_spdy`, or value is unset and
+  // `supports_spdy` is false, don't queue a write.
+  bool queue_write =
+      server_info->second.supports_spdy.value_or(false) != supports_spdy;
+  server_info->second.supports_spdy = supports_spdy;
+
+  if (queue_write) {
+    MaybeQueueWriteProperties();
+  }
 }
 
 bool HttpServerProperties::RequiresHTTP11(
@@ -633,43 +660,6 @@ void HttpServerProperties::OnExpireBrokenAlternativeService(
 
 base::TimeDelta HttpServerProperties::GetUpdatePrefsDelayForTesting() {
   return kUpdatePrefsDelay;
-}
-
-bool HttpServerProperties::GetSupportsSpdyInternal(
-    url::SchemeHostPort server,
-    const NetworkAnonymizationKey& network_anonymization_key) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_NE(server.scheme(), url::kWsScheme);
-  DCHECK_NE(server.scheme(), url::kWssScheme);
-  if (server.host().empty())
-    return false;
-
-  auto server_info = server_info_map_.Get(
-      CreateServerInfoKey(std::move(server), network_anonymization_key));
-  return server_info != server_info_map_.end() &&
-         server_info->second.supports_spdy.value_or(false);
-}
-
-void HttpServerProperties::SetSupportsSpdyInternal(
-    url::SchemeHostPort server,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    bool supports_spdy) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_NE(server.scheme(), url::kWsScheme);
-  DCHECK_NE(server.scheme(), url::kWssScheme);
-  if (server.host().empty())
-    return;
-
-  auto server_info = server_info_map_.GetOrPut(
-      CreateServerInfoKey(std::move(server), network_anonymization_key));
-  // If value is already the same as |supports_spdy|, or value is unset and
-  // |supports_spdy| is false, don't queue a write.
-  bool queue_write =
-      server_info->second.supports_spdy.value_or(false) != supports_spdy;
-  server_info->second.supports_spdy = supports_spdy;
-
-  if (queue_write)
-    MaybeQueueWriteProperties();
 }
 
 bool HttpServerProperties::RequiresHTTP11Internal(

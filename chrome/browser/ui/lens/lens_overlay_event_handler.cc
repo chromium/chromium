@@ -44,8 +44,10 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
   // We only want to copy if the user is not currently making a native text
   // selection. If the user is currently making a native text selection, we
   // assume the CMD/CTRL + C event is to select that text.
-  if (IsCopyEvent(event) && !source->GetFocusedFrame()->HasSelection()) {
-    lens_overlay_controller_->TriggerCopyText();
+  const bool is_making_selection =
+      source->GetFocusedFrame() && source->GetFocusedFrame()->HasSelection();
+  if (IsCopyEvent(event) && !is_making_selection) {
+    lens_overlay_controller_->TriggerCopy();
     return true;
   }
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,

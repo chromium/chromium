@@ -111,6 +111,10 @@ bool Animation::ShouldRenderRichAnimation() {
          RichAnimationRenderMode::FORCE_ENABLED;
 }
 
+base::TimeDelta Animation::RichAnimationDuration(base::TimeDelta duration) {
+  return ShouldRenderRichAnimation() ? duration : base::TimeDelta();
+}
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 // static
 bool Animation::ShouldRenderRichAnimationImpl() {

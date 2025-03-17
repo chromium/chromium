@@ -1,0 +1,10 @@
+include_rules = [
+  "+ash/wm/window_state.h",
+  "+chromeos/ash/experiences/arc/arc_util.h",
+]
+
+specific_include_rules = {
+  ".*test.cc": [
+    "+ash/test/test_widget_builder.h",
+  ]
+}

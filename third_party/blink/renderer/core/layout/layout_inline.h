@@ -235,10 +235,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                                const LayoutBoxModelObject* ancestor,
                                MapCoordinatesFlags) const override;
 
-  PhysicalOffset OffsetFromContainerInternal(
-      const LayoutObject*,
-      MapCoordinatesFlags mode) const final;
-
  private:
   bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;
   void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
@@ -289,6 +285,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutBlockFlow* CreateAnonymousContainerForBlockChildren() const;
   LayoutBox* CreateAnonymousBoxToSplit(
       const LayoutBox* box_to_split) const final;
+
+  void MarkMayHaveAnchorQuery() final;
 
   void Paint(const PaintInfo&) const override;
 
@@ -343,6 +341,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 };
 
 inline wtf_size_t LayoutInline::FirstInlineFragmentItemIndex() const {
+  NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;

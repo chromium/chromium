@@ -42,7 +42,7 @@ bool HTMLBRElement::IsPresentationAttribute(const QualifiedName& name) const {
 void HTMLBRElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kClearAttr) {
     // If the string is empty, then don't add the clear property.
     // <br clear> and <br clear=""> are just treated like <br> by Gecko, Mac IE,
@@ -62,10 +62,10 @@ void HTMLBRElement::CollectStyleForPresentationAttribute(
 }
 
 LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style) {
-  if (style.ContentBehavesAsNormal())
-    return MakeGarbageCollected<LayoutBR>(*this);
-
-  return LayoutObject::CreateObject(this, style);
+  if (ShouldUseContentDataForElement(style.GetContentData())) {
+    return LayoutObject::CreateObject(this, style);
+  }
+  return MakeGarbageCollected<LayoutBR>(*this);
 }
 
 }  // namespace blink

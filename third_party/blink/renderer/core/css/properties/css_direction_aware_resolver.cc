@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -31,22 +29,41 @@ enum PhysicalBoxCorner {
   kBottomLeftCorner
 };
 
+enum LogicalAxis { kBlock, kInline };
+enum LogicalBoxCorner { kStartStart, kStartEnd, kEndStart, kEndEnd };
+
 constexpr size_t kWritingModeSize =
     static_cast<size_t>(WritingMode::kMaxWritingMode) + 1;
-// Following four arrays contain values for horizontal-tb, vertical-rl,
+// Following eight arrays contain values for horizontal-tb, vertical-rl,
 // vertical-lr, sideways-rl, and sideways-lr in this order.
-constexpr uint8_t kStartStartMap[kWritingModeSize] = {
-    kTopLeftCorner, kTopRightCorner, kTopLeftCorner, kTopRightCorner,
-    kBottomLeftCorner};
-constexpr uint8_t kStartEndMap[kWritingModeSize] = {
-    kTopRightCorner, kBottomRightCorner, kBottomLeftCorner, kBottomRightCorner,
-    kTopLeftCorner};
-constexpr uint8_t kEndStartMap[kWritingModeSize] = {
-    kBottomLeftCorner, kTopLeftCorner, kTopRightCorner, kTopLeftCorner,
-    kBottomRightCorner};
-constexpr uint8_t kEndEndMap[kWritingModeSize] = {
+constexpr std::array<uint8_t, kWritingModeSize> kStartStartMap = {
+    kTopLeftCorner,  kTopRightCorner,   kTopLeftCorner,
+    kTopRightCorner, kBottomLeftCorner,
+};
+constexpr std::array<uint8_t, kWritingModeSize> kStartEndMap = {
+    kTopRightCorner,    kBottomRightCorner, kBottomLeftCorner,
+    kBottomRightCorner, kTopLeftCorner,
+};
+constexpr std::array<uint8_t, kWritingModeSize> kEndStartMap = {
+    kBottomLeftCorner, kTopLeftCorner,     kTopRightCorner,
+    kTopLeftCorner,    kBottomRightCorner,
+};
+constexpr std::array<uint8_t, kWritingModeSize> kEndEndMap = {
     kBottomRightCorner, kBottomLeftCorner, kBottomRightCorner,
-    kBottomLeftCorner, kTopRightCorner};
+    kBottomLeftCorner,  kTopRightCorner,
+};
+constexpr std::array<uint8_t, kWritingModeSize> kTopLeftMap = {
+    kStartStart, kEndStart, kStartStart, kEndStart, kStartEnd,
+};
+constexpr std::array<uint8_t, kWritingModeSize> kTopRightMap = {
+    kStartEnd, kStartStart, kEndStart, kStartStart, kEndEnd,
+};
+constexpr std::array<uint8_t, kWritingModeSize> kBottomRightMap = {
+    kEndEnd, kStartEnd, kEndEnd, kStartEnd, kEndStart,
+};
+constexpr std::array<uint8_t, kWritingModeSize> kBottomLeftMap = {
+    kEndStart, kEndEnd, kStartEnd, kEndEnd, kStartStart,
+};
 
 // Prerequisites for Physical*Mapping().
 STATIC_ASSERT_ENUM(PhysicalDirection::kUp, 0);
@@ -72,13 +89,13 @@ template <size_t size>
 const CSSProperty& CSSDirectionAwareResolver::Group<size>::GetProperty(
     size_t index) const {
   DCHECK_LT(index, size);
-  return *properties_[index];
+  return UNSAFE_TODO(*properties_[index]);
 }
 
 template <size_t size>
 bool CSSDirectionAwareResolver::Group<size>::Contains(CSSPropertyID id) const {
   for (size_t i = 0; i < size; ++i) {
-    if (properties_[i]->IDEquals(id)) {
+    if (UNSAFE_TODO(properties_[i]->IDEquals(id))) {
       return true;
     }
   }
@@ -154,8 +171,24 @@ LogicalMapping<4> CSSDirectionAwareResolver::LogicalBorderRadiusMapping() {
   return LogicalMapping<4>(kProperties);
 }
 
+LogicalMapping<4> CSSDirectionAwareResolver::LogicalCornerShapeMapping() {
+  static const CSSProperty* kProperties[] = {
+      &GetCSSPropertyCornerStartStartShape(),
+      &GetCSSPropertyCornerStartEndShape(),
+      &GetCSSPropertyCornerEndStartShape(), &GetCSSPropertyCornerEndEndShape()};
+  return LogicalMapping<4>(kProperties);
+}
+
 PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalBorderRadiusMapping() {
   return PhysicalMapping<4>(borderRadiusShorthand());
+}
+
+PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalCornerShapeMapping() {
+  static const CSSProperty* kProperties[] = {
+      &GetCSSPropertyCornerTopLeftShape(), &GetCSSPropertyCornerTopRightShape(),
+      &GetCSSPropertyCornerBottomRightShape(),
+      &GetCSSPropertyCornerBottomLeftShape()};
+  return PhysicalMapping<4>(kProperties);
 }
 
 PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalBorderWidthMapping() {
@@ -337,6 +370,30 @@ const CSSProperty& CSSDirectionAwareResolver::ResolveBlockEnd(
   return group.GetProperty(static_cast<size_t>(writing_direction.BlockEnd()));
 }
 
+const CSSProperty& CSSDirectionAwareResolver::ResolveTop(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  return group.GetProperty(static_cast<size_t>(writing_direction.Top()));
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveRight(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  return group.GetProperty(static_cast<size_t>(writing_direction.Right()));
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveBottom(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  return group.GetProperty(static_cast<size_t>(writing_direction.Bottom()));
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveLeft(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  return group.GetProperty(static_cast<size_t>(writing_direction.Left()));
+}
+
 const CSSProperty& CSSDirectionAwareResolver::ResolveInline(
     WritingDirectionMode writing_direction,
     const PhysicalMapping<2>& group) {
@@ -353,6 +410,24 @@ const CSSProperty& CSSDirectionAwareResolver::ResolveBlock(
     return group.GetProperty(kPhysicalAxisY);
   }
   return group.GetProperty(kPhysicalAxisX);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveHorizontal(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<2>& group) {
+  if (writing_direction.IsHorizontal()) {
+    return group.GetProperty(kInline);
+  }
+  return group.GetProperty(kBlock);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveVertical(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<2>& group) {
+  if (writing_direction.IsHorizontal()) {
+    return group.GetProperty(kBlock);
+  }
+  return group.GetProperty(kInline);
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveStartStart(
@@ -393,6 +468,58 @@ const CSSProperty& CSSDirectionAwareResolver::ResolveEndEnd(
     return group.GetProperty(kEndEndMap[static_cast<int>(writing_mode)]);
   }
   return group.GetProperty(kEndStartMap[static_cast<int>(writing_mode)]);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveTopLeft(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
+    return group.GetProperty(kTopLeftMap[static_cast<int>(writing_mode)]);
+  }
+  if (writing_direction.IsHorizontal()) {
+    return group.GetProperty(kTopRightMap[static_cast<int>(writing_mode)]);
+  }
+  return group.GetProperty(kBottomLeftMap[static_cast<int>(writing_mode)]);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveTopRight(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
+    return group.GetProperty(kTopRightMap[static_cast<int>(writing_mode)]);
+  }
+  if (writing_direction.IsHorizontal()) {
+    return group.GetProperty(kTopLeftMap[static_cast<int>(writing_mode)]);
+  }
+  return group.GetProperty(kBottomRightMap[static_cast<int>(writing_mode)]);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveBottomRight(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
+    return group.GetProperty(kBottomRightMap[static_cast<int>(writing_mode)]);
+  }
+  if (writing_direction.IsHorizontal()) {
+    return group.GetProperty(kBottomLeftMap[static_cast<int>(writing_mode)]);
+  }
+  return group.GetProperty(kTopRightMap[static_cast<int>(writing_mode)]);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveBottomLeft(
+    WritingDirectionMode writing_direction,
+    const LogicalMapping<4>& group) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
+    return group.GetProperty(kBottomLeftMap[static_cast<int>(writing_mode)]);
+  }
+  if (writing_direction.IsHorizontal()) {
+    return group.GetProperty(kBottomRightMap[static_cast<int>(writing_mode)]);
+  }
+  return group.GetProperty(kTopLeftMap[static_cast<int>(writing_mode)]);
 }
 
 }  // namespace blink

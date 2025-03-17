@@ -15,6 +15,7 @@ found in the LICENSE file.
     <color name="baseline_primary_80_alpha_10" tools:ignore="UnusedResources">#19A8C7FA</color>
     <color name="baseline_primary_80_alpha_20">#33A8C7FA</color>
     <color name="baseline_primary_80_alpha_50">#80A8C7FA</color>
+    <color name="baseline_primary_70">#7CACF8</color>
     <color name="baseline_primary_60">#4C8DF6</color>
     <color name="baseline_primary_50">#1B6EF3</color>
     <color name="baseline_primary_40">#0B57D0</color>
@@ -95,7 +96,13 @@ found in the LICENSE file.
     <color name="gm3_baseline_surface_light">#FFFFFF</color>
     <color name="gm3_baseline_surface_dark">#131314</color>
     <color name="gm3_baseline_surface_container_low_light">#F8FAFD</color>
+    <color name="gm3_baseline_surface_container_low_dark">#1B1B1B</color>
+    <color name="gm3_baseline_surface_container_high_light">#E9EEF6</color>
+    <color name="gm3_baseline_surface_container_high_dark">#282A2C</color>
+    <color name="gm3_baseline_surface_container_highest_light">#DDE3EA</color>
     <color name="gm3_baseline_surface_container_highest_dark">#333537</color>
+    <color name="gm3_baseline_surface_bright_light">@color/gm3_baseline_surface_light</color>
+    <color name="gm3_baseline_surface_bright_dark">#37393B</color>
 
     <!-- System colors that point to the baseline palette for below Android S.-->
     <color name="system_neutral1_10">@color/baseline_neutral_99</color>
@@ -137,9 +144,11 @@ found in the LICENSE file.
     <color name="material_primary_95">@color/baseline_primary_95</color>
     <color name="material_primary_90">@color/baseline_primary_90</color>
     <color name="material_primary_80">@color/baseline_primary_80</color>
+    <color name="material_primary_70">@color/baseline_primary_70</color>
     <color name="material_primary_60">@color/baseline_primary_60</color>
     <color name="material_primary_50">@color/baseline_primary_50</color>
     <color name="material_primary_40">@color/baseline_primary_40</color>
+    <color name="material_primary_30">@color/baseline_primary_30</color>
     <color name="material_primary_20">@color/baseline_primary_20</color>
     <color name="material_primary_10">@color/baseline_primary_10</color>
 </resources>

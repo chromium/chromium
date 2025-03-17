@@ -59,8 +59,10 @@ class ChromeWebViewPermissionHelperDelegate
   void CanDownload(const GURL& url,
                    const std::string& request_method,
                    base::OnceCallback<void(bool)> callback) override;
-  void RequestPointerLockPermission(bool user_gesture,
-                                    bool last_unlocked_by_target) override;
+  void RequestPointerLockPermission(
+      bool user_gesture,
+      bool last_unlocked_by_target,
+      base::OnceCallback<void(bool)> callback) override;
   void RequestGeolocationPermission(
       const GURL& requesting_frame,
       bool user_gesture,
@@ -78,6 +80,9 @@ class ChromeWebViewPermissionHelperDelegate
 
   bool ForwardEmbeddedMediaPermissionChecksAsEmbedder(
       const url::Origin& embedder_origin) override;
+
+  std::optional<content::PermissionResult> OverridePermissionResult(
+      ContentSettingsType type) override;
 
  private:
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -118,8 +123,7 @@ class ChromeWebViewPermissionHelperDelegate
                                     bool allow,
                                     const std::string& user_input);
 
-  void OnPointerLockPermissionResponse(bool user_gesture,
-                                       bool last_unlocked_by_target,
+  void OnPointerLockPermissionResponse(base::OnceCallback<void(bool)> callback,
                                        bool allow,
                                        const std::string& user_input);
 

@@ -105,8 +105,7 @@ Widget* DialogDelegate::CreateDialogWidget(
 
 // static
 bool DialogDelegate::CanSupportCustomFrame(gfx::NativeView parent) {
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    BUILDFLAG(ENABLE_DESKTOP_AURA)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
   // The new style doesn't support unparented dialogs on Linux desktop.
   return parent != nullptr;
 #else
@@ -201,7 +200,7 @@ ui::ButtonStyle DialogDelegate::GetDialogButtonStyle(
   }
 
   return GetIsDefault(button) ? ui::ButtonStyle::kProminent
-                              : ui::ButtonStyle::kDefault;
+                              : ui::ButtonStyle::kTonal;
 }
 
 bool DialogDelegate::GetIsDefault(ui::mojom::DialogButton button) const {
@@ -326,7 +325,8 @@ bool DialogDelegate::EscShouldCancelDialog() const {
   // Use cancel as the Esc action if there's no defined "close" action. If the
   // delegate has either specified a closing action or a close-x they can expect
   // it to be called on Esc.
-  return !close_callback_ && !ShouldShowCloseButton();
+  return esc_should_cancel_dialog_override_.value_or(!close_callback_ &&
+                                                     !ShouldShowCloseButton());
 }
 
 // static
@@ -453,11 +453,11 @@ void DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton dialog_button,
 }
 
 void DialogDelegate::SetButtonLabel(ui::mojom::DialogButton button,
-                                    std::u16string label) {
+                                    std::u16string_view label) {
   if (params_.button_labels[static_cast<size_t>(button)] == label) {
     return;
   }
-  params_.button_labels[static_cast<size_t>(button)] = label;
+  params_.button_labels[static_cast<size_t>(button)] = std::u16string(label);
   DialogModelChanged();
 }
 

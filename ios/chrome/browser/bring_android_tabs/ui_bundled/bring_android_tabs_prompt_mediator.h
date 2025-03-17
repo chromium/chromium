@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_UI_BUNDLED_BRING_ANDROID_TABS_PROMPT_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_UI_BUNDLED_BRING_ANDROID_TABS_PROMPT_MEDIATOR_H_
 
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_prompt_view_controller_delegate.h"
-
 #import <Foundation/Foundation.h>
+
+#import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_prompt_view_controller_delegate.h"
 
 class BringAndroidTabsToIOSService;
 class UrlLoadingBrowserAgent;

@@ -441,7 +441,8 @@ TEST_F(PasskeysHandlerTest, TestHandleEdit) {
                 device::PublicKeyCredentialUserEntity(
                     {0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa,
                      0xa, 0xa, 0xa, 0xa},
-                    "new-username", "new-username")}};
+                    "new-username", "new-username"),
+                /*provider_name=*/std::nullopt}};
         std::move(callback).Run(std::move(credential_metadata));
         base::RunLoop().RunUntilIdle();
       });

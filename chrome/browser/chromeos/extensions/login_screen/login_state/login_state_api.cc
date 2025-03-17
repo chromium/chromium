@@ -5,48 +5,19 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"
 
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login_state.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "content/public/browser/browser_context.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
-
-#include "chromeos/lacros/lacros_service.h"
-#else
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/login_state_ash.h"
-#include "chrome/common/chrome_constants.h"
-#endif
-
 namespace {
-
 bool IsSigninProfile(const Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return profile && profile->GetBaseName().value() == chrome::kInitialProfile;
-#else
-  return false;
-#endif
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kUnsupportedByAsh[] = "Not implemented.";
-
-// Performs common crosapi validation. These errors are not caused by the
-// extension so they are considered recoverable. Returns an error message on
-// error, or nullopt on success.
-std::optional<std::string> ValidateCrosapi() {
-  if (!chromeos::LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::LoginState>()) {
-    return kUnsupportedByAsh;
-  }
-  return std::nullopt;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 namespace extensions {
@@ -70,13 +41,7 @@ api::login_state::SessionState ToApiEnum(crosapi::mojom::SessionState state) {
 }
 
 crosapi::mojom::LoginState* GetLoginStateApi() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::LoginState>()
-      .get();
-#else
   return crosapi::CrosapiManager::Get()->crosapi_ash()->login_state_ash();
-#endif
 }
 
 ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
@@ -89,13 +54,6 @@ ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<std::string> error = ValidateCrosapi();
-  if (error.has_value()) {
-    return RespondNow(Error(error.value()));
-  }
-#endif
-
   auto callback =
       base::BindOnce(&LoginStateGetSessionStateFunction::OnResult, this);
 

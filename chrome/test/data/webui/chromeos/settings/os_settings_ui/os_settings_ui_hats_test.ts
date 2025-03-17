@@ -7,7 +7,8 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, CrToolbarSearchFieldElement, OsSettingsHatsBrowserProxyImpl, OsSettingsSearchBoxElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import type {CrToolbarSearchFieldElement, OsSettingsSearchBoxElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, OsSettingsHatsBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

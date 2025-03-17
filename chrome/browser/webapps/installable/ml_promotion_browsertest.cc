@@ -172,11 +172,9 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {base::test::FeatureRefAndParams(
-             webapps::features::kWebAppsEnableMLModelForPromotion,
-             {{features::kWebAppsMLGuardrailResultReportProb.name, "1.0"},
-              {features::kWebAppsMLModelUserDeclineReportProb.name, "1.0"}}),
-         base::test::FeatureRefAndParams(
-             user_education::features::kUserEducationExperienceVersion2, {})},
+            webapps::features::kWebAppsEnableMLModelForPromotion,
+            {{features::kWebAppsMLGuardrailResultReportProb.name, "1.0"},
+             {features::kWebAppsMLModelUserDeclineReportProb.name, "1.0"}})},
         /*disabled_features=*/{});
   }
   ~MLPromotionBrowserTest() override = default;
@@ -343,7 +341,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
                     request,
                     HasTrainingLabel(
                         "WebApps.MlInstall.DialogResponse",
-                        static_cast<base::HistogramBase::Sample>(response)),
+                        static_cast<base::HistogramBase::Sample32>(response)),
                     _));
   }
 

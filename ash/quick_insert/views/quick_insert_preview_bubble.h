@@ -46,7 +46,6 @@ class ASH_EXPORT QuickInsertPreviewBubbleView
   void ClearText();
 
   // BubbleDialogDelegateView overrides
-  void OnThemeChanged() override;
   gfx::Rect GetAnchorRect() const override;
 
   void Close();

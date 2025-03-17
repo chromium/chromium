@@ -12,10 +12,9 @@ import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.TextAppearanceInfo;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.gfx.mojom.Rect;
 
@@ -24,6 +23,7 @@ import org.chromium.gfx.mojom.Rect;
  * {@link InputMethodManager#updateCursorAnchorInfo(View, CursorAnchorInfo)}. This interface is also
  * used in unit tests to mock out {@link CursorAnchorInfo}.
  */
+@NullMarked
 final class CursorAnchorInfoController {
     /** An interface to mock out {@link View#getLocationOnScreen(int[])} for testing. */
     public interface ViewDelegate {
@@ -32,6 +32,7 @@ final class CursorAnchorInfoController {
 
     /** An interface to mock out composing text retrieval from ImeAdapter. */
     public interface ComposingTextDelegate {
+        @Nullable
         CharSequence getText();
 
         int getSelectionStart();
@@ -59,22 +60,21 @@ final class CursorAnchorInfoController {
     private float mInsertionMarkerTop;
     private float mInsertionMarkerBottom;
 
-    @Nullable private CursorAnchorInfo mLastCursorAnchorInfo;
+    private @Nullable CursorAnchorInfo mLastCursorAnchorInfo;
 
     // Data which has come through the new code path from the renderer. Eventually, other data like
     // visible line bounds, composition bounds and editor bounds will be removed in favour of this.
-    @Nullable private InputCursorAnchorInfo mInputCursorAnchorInfo;
+    private @Nullable InputCursorAnchorInfo mInputCursorAnchorInfo;
 
-    @NonNull private final Matrix mMatrix = new Matrix();
-    @NonNull private final int[] mViewOrigin = new int[2];
+    private final Matrix mMatrix = new Matrix();
+    private final int[] mViewOrigin = new int[2];
 
-    @NonNull
     private final CursorAnchorInfo.Builder mCursorAnchorInfoBuilder =
             new CursorAnchorInfo.Builder();
 
-    @Nullable private InputMethodManagerWrapper mInputMethodManagerWrapper;
-    @Nullable private final ComposingTextDelegate mComposingTextDelegate;
-    @NonNull private final ViewDelegate mViewDelegate;
+    private @Nullable InputMethodManagerWrapper mInputMethodManagerWrapper;
+    private final ComposingTextDelegate mComposingTextDelegate;
+    private final ViewDelegate mViewDelegate;
 
     private CursorAnchorInfoController(
             InputMethodManagerWrapper inputMethodManagerWrapper,
@@ -119,66 +119,8 @@ final class CursorAnchorInfoController {
     }
 
     /**
-     * Sets positional information of composing text as an array of character bounds or line
-     * bounding boxes as an array of line bounds (or both).
-     *
-     * @param characterBounds Array of character bounds in local coordinates.
-     * @param lineBounds Array of line bounds in local coordinates.
-     * @param view The attached view.
-     */
-    // TODO(crbug.com/40940885): Remove this method once it is no longer used.
-    public void setBounds(
-            @Nullable float[] characterBounds, @Nullable float[] lineBounds, View view) {
-        if (!mIsEditable) return;
-        boolean shouldUpdate = false;
-        if (mInputCursorAnchorInfo == null) {
-            mInputCursorAnchorInfo = new InputCursorAnchorInfo();
-            mInputCursorAnchorInfo.editorBoundsInfo =
-                    new org.chromium.blink.mojom.EditorBoundsInfo();
-            mInputCursorAnchorInfo.textAppearanceInfo =
-                    new org.chromium.blink.mojom.TextAppearanceInfo();
-        }
-
-        if (characterBounds != null) {
-            Rect[] newCharacterBounds = createRectArrayFromFloats(characterBounds);
-            if (!mojoRectArraysEqual(mInputCursorAnchorInfo.characterBounds, newCharacterBounds)) {
-                shouldUpdate = true;
-                mInputCursorAnchorInfo.characterBounds = newCharacterBounds;
-            }
-        }
-        if (lineBounds != null) {
-            Rect[] newLineBounds = createRectArrayFromFloats(lineBounds);
-            if (!mojoRectArraysEqual(mInputCursorAnchorInfo.visibleLineBounds, newLineBounds)) {
-                shouldUpdate = true;
-                mInputCursorAnchorInfo.visibleLineBounds = newLineBounds;
-            }
-        }
-        if (shouldUpdate) {
-            mLastCursorAnchorInfo = null;
-            if (mHasCoordinateInfo) {
-                updateCursorAnchorInfo(view);
-            }
-        }
-    }
-
-    /**
-     * Sends one CursorAnchorInfo object with the EditorBoundsInfo field set. All subsequent
-     * CursorAnchorInfo updates will not have this field set unless they are sent through this
-     * method.
-     *
-     * @param editorBoundsInfo The EditorBoundsInfo sent with the CursorAnchorInfo. This is not
-     *     cached.
-     * @param view The attached view.
-     */
-    // TODO(crbug.com/40940885): Remove this method and call sites.
-    public void updateWithEditorBoundsInfo(EditorBoundsInfo editorBoundsInfo, View view) {
-        if (!mIsEditable) return;
-        mLastCursorAnchorInfo = null;
-        updateCursorAnchorInfo(view);
-    }
-
-    /**
      * Sets coordinates system parameters and selection marker information.
+     *
      * @param scale device scale factor.
      * @param contentOffsetYPix Y offset below the browser controls.
      * @param hasInsertionMarker {@code true} if the insertion marker exists.
@@ -196,7 +138,7 @@ final class CursorAnchorInfoController {
             float insertionMarkerHorizontal,
             float insertionMarkerTop,
             float insertionMarkerBottom,
-            @NonNull View view) {
+            View view) {
         if (!mIsEditable) return;
 
         // Reuse {@param #mViewOrigin} to avoid object creation, as this method is supposed to be
@@ -264,6 +206,11 @@ final class CursorAnchorInfoController {
     }
 
     public void updateCursorAnchorInfoData(InputCursorAnchorInfo cursorAnchorInfo, View view) {
+        if (mInputCursorAnchorInfo != null
+                && InputCursorAnchorInfoComparator.equals(
+                        mInputCursorAnchorInfo, cursorAnchorInfo)) {
+            return;
+        }
         mInputCursorAnchorInfo = cursorAnchorInfo;
         mLastCursorAnchorInfo = null;
         updateCursorAnchorInfo(view);
@@ -365,37 +312,5 @@ final class CursorAnchorInfoController {
             mInputMethodManagerWrapper.updateCursorAnchorInfo(view, mLastCursorAnchorInfo);
         }
         mHasPendingImmediateRequest = false;
-    }
-
-    private Rect[] createRectArrayFromFloats(float[] floatArray) {
-        int numRects = floatArray.length / 4;
-        Rect[] rectArray = new Rect[numRects];
-        for (int i = 0; i < numRects; ++i) {
-            rectArray[i] = new Rect();
-            rectArray[i].x = Math.round(floatArray[i * 4]);
-            rectArray[i].y = Math.round(floatArray[i * 4 + 1]);
-            rectArray[i].width = Math.round(floatArray[i * 4 + 2]) - rectArray[i].x;
-            rectArray[i].height = Math.round(floatArray[i * 4 + 3]) - rectArray[i].y;
-        }
-        return rectArray;
-    }
-
-    /**
-     * Mojo Rect objects don't implement equals() and don't work well with Arrays.equals(). This
-     * method provides utility for checking whether two Mojo Rect[] objects have equal elements.
-     */
-    private boolean mojoRectArraysEqual(Rect[] first, Rect[] second) {
-        if ((first == null && second != null) || (first != null && second == null)) return false;
-        if (first == null && second == null) return true;
-        if (first.length != second.length) return false;
-        for (int i = 0; i < first.length; i++) {
-            if (first[i].x != second[i].x
-                    || first[i].y != second[i].y
-                    || first[i].width != second[i].width
-                    || first[i].height != second[i].height) {
-                return false;
-            }
-        }
-        return true;
     }
 }

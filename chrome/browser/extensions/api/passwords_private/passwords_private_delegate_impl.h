@@ -73,7 +73,6 @@ class PasswordsPrivateDelegateImpl
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
   std::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;
-  bool IsAccountStoreDefault(content::WebContents* web_contents) override;
   bool AddPassword(const std::string& url,
                    const std::u16string& username,
                    const std::u16string& password,

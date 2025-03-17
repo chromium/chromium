@@ -134,23 +134,8 @@ void AssistantAshTestBase::TearDown() {
 void AssistantAshTestBase::CreateAndSwitchActiveUser(
     const std::string& display_email,
     const std::string& given_name) {
-  TestSessionControllerClient* session_controller_client =
-      ash_test_helper()->test_session_controller_client();
-
-  session_controller_client->Reset();
-
-  session_controller_client->AddUserSession(
-      display_email, user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true,
-      /*is_new_profile=*/false, given_name);
-
-  session_controller_client->SwitchActiveUser(Shell::Get()
-                                                  ->session_controller()
-                                                  ->GetUserSession(0)
-                                                  ->user_info.account_id);
-
-  session_controller_client->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+  ClearLogin();
+  SimulateUserLogin({.display_email = display_email, .given_name = given_name});
 
   SetUpActiveUser();
 }

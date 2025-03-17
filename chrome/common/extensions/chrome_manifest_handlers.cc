@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_handlers/minimum_chrome_version_checker.h"
@@ -21,7 +20,6 @@
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/api/storage/storage_schema_manifest_handler.h"
-#include "chrome/common/extensions/api/system_indicator/system_indicator_handler.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #endif
 
@@ -48,7 +46,6 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<OmniboxHandler>());
   registry->RegisterHandler(std::make_unique<SidePanelManifestHandler>());
   registry->RegisterHandler(std::make_unique<StorageSchemaManifestHandler>());
-  registry->RegisterHandler(std::make_unique<SystemIndicatorHandler>());
   registry->RegisterHandler(std::make_unique<TtsEngineManifestHandler>());
   registry->RegisterHandler(std::make_unique<UrlHandlersParser>());
 #endif

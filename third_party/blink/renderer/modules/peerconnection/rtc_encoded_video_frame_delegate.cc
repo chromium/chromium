@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/frame_transformer_factory.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
@@ -40,7 +43,7 @@ uint32_t RTCEncodedVideoFrameDelegate::RtpTimestamp() const {
 std::optional<webrtc::Timestamp>
 RTCEncodedVideoFrameDelegate::PresentationTimestamp() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ ? webrtc_frame_->GetCaptureTimeIdentifier()
+  return webrtc_frame_ ? webrtc_frame_->GetPresentationTimestamp()
                        : std::nullopt;
 }
 
@@ -98,6 +101,34 @@ RTCEncodedVideoFrameDelegate::GetMetadata() const {
   return webrtc_frame_ ? std::optional<webrtc::VideoFrameMetadata>(
                              webrtc_frame_->Metadata())
                        : std::nullopt;
+}
+
+std::optional<base::TimeTicks> RTCEncodedVideoFrameDelegate::ReceiveTime()
+    const {
+  base::AutoLock lock(lock_);
+  if (!webrtc_frame_) {
+    return std::nullopt;
+  }
+  return ConvertToOptionalTimeTicks(webrtc_frame_->ReceiveTime());
+}
+
+std::optional<base::TimeTicks> RTCEncodedVideoFrameDelegate::CaptureTime()
+    const {
+  base::AutoLock lock(lock_);
+  if (!webrtc_frame_) {
+    return std::nullopt;
+  }
+  return ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime(),
+                                    WebRTCFrameNtpEpoch());
+}
+
+std::optional<base::TimeDelta>
+RTCEncodedVideoFrameDelegate::SenderCaptureTimeOffset() const {
+  base::AutoLock lock(lock_);
+  if (!webrtc_frame_) {
+    return std::nullopt;
+  }
+  return ConvertToOptionalTimeDelta(webrtc_frame_->SenderCaptureTimeOffset());
 }
 
 base::expected<void, String> RTCEncodedVideoFrameDelegate::SetMetadata(

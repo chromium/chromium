@@ -29,8 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -215,9 +214,6 @@ public class ToolbarControlContainerTest {
 
         mAdapter.triggerBitmapCapture();
         verifyIsDirtyWasBlocked(TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY);
-
-        mAdapter.forceInvalidate();
-        verifyIsDirtyWasAllowed(TopToolbarAllowCaptureReason.UNKNOWN);
     }
 
     @Test
@@ -390,11 +386,10 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testIsDirty_Fullscreen() {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.sShouldBlockCapturesForFullscreenParam, "true");
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+                .param("block_for_fullscreen", true)
+                .apply();
 
         final @ToolbarSnapshotDifference int difference = ToolbarSnapshotDifference.URL_TEXT;
         when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);

@@ -23,16 +23,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PER_ISOLATE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PER_ISOLATE_DATA_H_
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
@@ -112,7 +108,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                                  scoped_refptr<base::SingleThreadTaskRunner>,
                                  V8ContextSnapshotMode,
                                  v8::CreateHistogramCallback,
-                                 v8::AddHistogramSampleCallback);
+                                 v8::AddHistogramSampleCallback,
+                                 std::unique_ptr<v8::CppHeap>);
 
   static V8PerIsolateData* From(v8::Isolate* isolate) {
     DCHECK(isolate);
@@ -245,11 +242,13 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   };
 
   UserData* GetUserData(UserData::Key key) const {
-    return user_data_[static_cast<size_t>(key)];
+    // SAFETY: user_data_ size based upon UserData::Key::kNumberOfKeys.
+    return UNSAFE_BUFFERS(user_data_[static_cast<size_t>(key)]);
   }
 
   void SetUserData(UserData::Key key, UserData* data) {
-    user_data_[static_cast<size_t>(key)] = data;
+    // SAFETY: user_data_ size based upon UserData::Key::kNumberOfKeys.
+    UNSAFE_BUFFERS(user_data_[static_cast<size_t>(key)]) = data;
   }
 
   void SetTopOfDictionaryStack(DictionaryConversionContext* top) {
@@ -259,13 +258,22 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     return top_of_dictionary_stack_;
   }
 
+  void SetOmitExceptionContextInformation(bool omit) {
+    CHECK_NE(omit_exception_context_information_, omit);
+    omit_exception_context_information_ = omit;
+  }
+  bool OmitExceptionContextInformation() const {
+    return omit_exception_context_information_;
+  }
+
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
                    V8ContextSnapshotMode,
                    v8::CreateHistogramCallback,
-                   v8::AddHistogramSampleCallback);
+                   v8::AddHistogramSampleCallback,
+                   std::unique_ptr<v8::CppHeap>);
   ~V8PerIsolateData();
 
   // A really simple hash function, which makes lookups faster. The set of
@@ -289,6 +297,14 @@ class PLATFORM_EXPORT V8PerIsolateData final {
       const V8TemplateMap& map);
 
   V8ContextSnapshotMode v8_context_snapshot_mode_;
+
+  // The thread_debugger_ has to be destructed after the IsolateHolder, and
+  // therefore has to be defined before the IsolateHolder. The reason is that
+  // when the IsolateHolder gets destructed, all objects allocated on the
+  // CppHeap get deallocated. AsyncTaskContext objects are allocated on the
+  // CppHeap, and these objects load the ThreadDebugger from the
+  // V8PerIsolateData in its destructor.
+  std::unique_ptr<ThreadDebugger> thread_debugger_;
 
   // This isolate_holder_ must be initialized before initializing some other
   // members below.
@@ -320,7 +336,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   bool is_handling_recursion_level_error_ = false;
 
-  std::unique_ptr<ThreadDebugger> thread_debugger_;
   Persistent<ScriptRegexp> password_regexp_;
   Persistent<UserData>
       user_data_[static_cast<size_t>(UserData::Key::kNumberOfKeys)];
@@ -338,6 +353,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   std::unique_ptr<scheduler::TaskAttributionTracker> task_attribution_tracker_;
 
   raw_ptr<DictionaryConversionContext> top_of_dictionary_stack_ = nullptr;
+  bool omit_exception_context_information_ = false;
 };
 
 // Creates a histogram for V8. The returned value is a base::Histogram, but

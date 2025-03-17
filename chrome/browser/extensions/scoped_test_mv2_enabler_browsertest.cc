@@ -65,8 +65,9 @@ IN_PROC_BROWSER_TEST_F(ScopedTestMV2EnablerBrowserTest,
 
   EXPECT_TRUE(
       extension_registry()->enabled_extensions().Contains(extension->id()));
-  EXPECT_EQ(0,
-            ExtensionPrefs::Get(profile())->GetDisableReasons(extension->id()));
+  EXPECT_TRUE(ExtensionPrefs::Get(profile())
+                  ->GetDisableReasons(extension->id())
+                  .empty());
 }
 
 }  // namespace extensions

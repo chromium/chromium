@@ -55,10 +55,18 @@ std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
   if (!spec.version().empty()) {
     client_state->version = base::Version(
         std::vector<uint32_t>(spec.version().begin(), spec.version().end()));
+  } else {
+    // Default constructed version is invalid as per base::Version so we use
+    // placeholder value instead.
+    client_state->version = base::Version({0, 0, 0, 0});
   }
   if (!spec.os_version().empty()) {
     client_state->os_version = base::Version(std::vector<uint32_t>(
         spec.os_version().begin(), spec.os_version().end()));
+  } else {
+    // Default constructed version is invalid as per base::Version so we use
+    // placeholder value instead.
+    client_state->os_version = base::Version(std::vector<uint32_t>{0, 0});
   }
   if (spec.has_channel()) {
     client_state->channel = spec.channel();

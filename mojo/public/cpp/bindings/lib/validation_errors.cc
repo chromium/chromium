@@ -181,9 +181,5 @@ SerializationWarningObserverForTesting::
   g_serialization_warning_observer = nullptr;
 }
 
-void RecordInvalidStringDeserialization() {
-  base::UmaHistogramBoolean("Mojo.InvalidUTF8String", false);
-}
-
 }  // namespace internal
 }  // namespace mojo

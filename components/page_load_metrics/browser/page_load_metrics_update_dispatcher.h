@@ -157,8 +157,9 @@ class PageLoadMetricsUpdateDispatcher {
         const gfx::Rect& main_frame_viewport_rect) = 0;
     virtual void OnMainFrameImageAdRectsChanged(
         const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) = 0;
-    virtual void SetUpSharedMemoryForSmoothness(
-        base::ReadOnlySharedMemoryRegion shared_memory) = 0;
+    virtual void SetUpSharedMemoryForUkms(
+        base::ReadOnlySharedMemoryRegion smoothness_memory,
+        base::ReadOnlySharedMemoryRegion dropped_frames_memory) = 0;
   };
 
   // The |client| instance must outlive this object.
@@ -187,9 +188,10 @@ class PageLoadMetricsUpdateDispatcher {
                      mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
                      internal::PageLoadTrackerPageType page_type);
 
-  void SetUpSharedMemoryForSmoothness(
+  void SetUpSharedMemoryForUkms(
       content::RenderFrameHost* render_frame_host,
-      base::ReadOnlySharedMemoryRegion shared_memory);
+      base::ReadOnlySharedMemoryRegion smoothness_memory,
+      base::ReadOnlySharedMemoryRegion dropped_frames_memory);
 
   // This method is only intended to be called for PageLoadFeatures being
   // recorded directly from the browser process. Features coming from the

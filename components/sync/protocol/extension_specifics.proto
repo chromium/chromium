@@ -31,6 +31,8 @@ message ExtensionSpecifics {
   // Extensions Gallery) is used.
   optional string update_url = 3;
   // Whether or not this extension is enabled.
+  // TODO(crbug.com/40554334): Deprecate this field. Enabled state can be
+  // determined from the disable reasons set.
   optional bool enabled = 4;
   // Whether or not this extension is enabled in incognito mode.
   optional bool incognito_enabled = 5;
@@ -51,6 +53,12 @@ message ExtensionSpecifics {
   // Bitmask of the set of reasons why the extension is disabled (see
   // extensions::disable_reason::DisableReason). Only relevant when enabled ==
   // false. Note that old clients (<M45) won't set this, even when enabled is
-  // false.
+  // false. This will be deprecated in favor of disable_reasons_list. See
+  // crbug.com/372186532.
   optional int32 disable_reasons = 10;
+
+  // List of reasons why the extension is disabled. Only relevant when enabled
+  // == false. The bitmask above will be deprecated in favor of this field. See
+  // crbug.com/372186532.
+  repeated int32 disable_reasons_list = 11;
 }

@@ -82,6 +82,17 @@ class NET_EXPORT ProxyDelegate {
   // `proxy_resolution_service` must outlive `this`.
   virtual void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) = 0;
+
+  // Checks DNS aliases returned during host resolution against the MDL
+  // (Masked Domain List) manager to determine if any alias points to a
+  // third-party resource. If method returns true and
+  // `fail_if_alias_requires_proxy_override_` is set for connection request, the
+  // stream creation will be canceled with `ERR_PROXY_REQUIRED`, prompting a
+  // subsequent call to `OnResolveProxy`.
+  virtual bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) = 0;
 };
 
 }  // namespace net

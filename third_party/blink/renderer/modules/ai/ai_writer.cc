@@ -42,7 +42,7 @@ void AIWriter::Trace(Visitor* visitor) const {
 }
 
 ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
-                                         const String& input,
+                                         const String& writing_task,
                                          const AIWriterWriteOptions* options,
                                          ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -54,7 +54,7 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
       AIMetrics::AIAPI::kWriterWrite);
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kWriter),
-                             int(input.CharactersSizeInBytes()));
+                             int(writing_task.CharactersSizeInBytes()));
 
   CHECK(options);
   auto* resolver =
@@ -66,7 +66,6 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
     resolver->Reject(signal->reason(script_state));
     return promise;
   }
-  const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -74,15 +73,26 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
     return promise;
   }
 
+  String trimmed_writing_task = writing_task.StripWhiteSpace();
+  if (trimmed_writing_task.empty()) {
+    resolver->Resolve(trimmed_writing_task);
+    return promise;
+  }
+
+  const String trimmed_context =
+      options->getContextOr(g_empty_string).StripWhiteSpace();
   auto pending_remote = CreateModelExecutionResponder(
       script_state, signal, resolver, task_runner_,
-      AIMetrics::AISessionType::kWriter, base::DoNothing());
-  remote_->Write(input, context_string, std::move(pending_remote));
+      AIMetrics::AISessionType::kWriter,
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
+  remote_->Write(trimmed_writing_task, trimmed_context,
+                 std::move(pending_remote));
   return promise;
 }
 
 ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
-                                         const String& input,
+                                         const String& writing_task,
                                          const AIWriterWriteOptions* options,
                                          ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -94,28 +104,91 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
       AIMetrics::AIAPI::kWriterWriteStreaming);
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kWriter),
-                             int(input.CharactersSizeInBytes()));
+                             int(writing_task.CharactersSizeInBytes()));
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
-    // the streaming API.
-    ThrowAbortedException(exception_state);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
     return nullptr;
   }
-  const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kExceptionMessageWriterDestroyed);
     return nullptr;
   }
+
+  String trimmed_writing_task = writing_task.StripWhiteSpace();
+  if (trimmed_writing_task.empty()) {
+    return CreateEmptyReadableStream(script_state,
+                                     AIMetrics::AISessionType::kWriter);
+  }
+
+  const String trimmed_context =
+      options->getContextOr(g_empty_string).StripWhiteSpace();
   auto [readable_stream, pending_remote] =
-      CreateModelExecutionStreamingResponder(script_state, signal, task_runner_,
-                                             AIMetrics::AISessionType::kWriter,
-                                             base::DoNothing());
-  remote_->Write(input, context_string, std::move(pending_remote));
+      CreateModelExecutionStreamingResponder(
+          script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter,
+          /*complete_callback=*/base::DoNothing(),
+          /*overflow_callback=*/base::DoNothing());
+  remote_->Write(trimmed_writing_task, trimmed_context,
+                 std::move(pending_remote));
   return readable_stream;
+}
+
+// TODO(crbug.com/402442890): Refactor Writing Assistance APIs to reduce
+// duplicated code.
+ScriptPromise<IDLDouble> AIWriter::measureInputUsage(
+    ScriptState* script_state,
+    const String& writing_task,
+    const AIWriterWriteOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  if (!remote_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kExceptionMessageWriterDestroyed);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
+  auto promise = resolver->Promise();
+  CHECK(options);
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
+
+  remote_->MeasureUsage(
+      writing_task, options->getContextOr(g_empty_string),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
+             std::optional<uint64_t> usage) {
+            ExecutionContext* context = resolver->GetExecutionContext();
+            if (!context) {
+              return;
+            }
+            if (signal && signal->aborted()) {
+              resolver->Reject(signal->reason(resolver->GetScriptState()));
+              return;
+            }
+            if (!usage.has_value()) {
+              resolver->Reject(
+                  DOMException::Create(kExceptionMessageUnableToCalculateUsage,
+                                       DOMException::GetErrorName(
+                                           DOMExceptionCode::kOperationError)));
+              return;
+            }
+            resolver->Resolve(static_cast<double>(usage.value()));
+          },
+          WrapPersistent(resolver),
+          WrapPersistent(options->getSignalOr(nullptr))));
+
+  return promise;
 }
 
 void AIWriter::destroy(ScriptState* script_state,

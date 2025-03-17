@@ -4,29 +4,29 @@
 
 #include "components/site_isolation/preloaded_isolated_origins.h"
 
-#include "components/site_isolation/buildflags.h"
+#include "base/strings/string_tokenizer.h"
+#include "components/grit/components_resources.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(USE_INTERNAL_ISOLATED_ORIGINS)
-#include "components/site_isolation/internal/google_chrome_isolated_origins.h"
-#endif
 
 namespace site_isolation {
 
 std::vector<url::Origin> GetBrowserSpecificBuiltInIsolatedOrigins() {
   std::vector<url::Origin> list;
 
-#if BUILDFLAG(USE_INTERNAL_ISOLATED_ORIGINS)
   // Only apply preloaded isolated origins when allowed by site isolation
   // policy (e.g., when memory requirements are satisfied, and when not using
   // full site isolation).
   if (content::SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled()) {
-    list.reserve(kNumberOfBuiltInIsolatedOrigins);
-    for (size_t i = 0; i < kNumberOfBuiltInIsolatedOrigins; i++)
-      list.push_back(url::Origin::Create(GURL(kBuiltInIsolatedOrigins[i])));
+    std::string newline_separted_origins =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_ISOLATED_ORIGINS);
+    base::StringTokenizer t(newline_separted_origins, "\n");
+    while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+      list.push_back(url::Origin::Create(GURL(*token)));
+    }
   }
-#endif
 
   return list;
 }

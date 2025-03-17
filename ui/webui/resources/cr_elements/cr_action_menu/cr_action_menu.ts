@@ -312,7 +312,7 @@ export class CrActionMenuElement extends CrLitElement {
     // accurate for where the menu should be shown.
     this.anchorElement_.scrollIntoViewIfNeeded();
 
-    const rect = this.anchorElement_!.getBoundingClientRect();
+    const rect = this.anchorElement_.getBoundingClientRect();
 
     let height = rect.height;
     if (config && !config.noOffset &&

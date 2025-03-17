@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -69,6 +69,10 @@ namespace autofill {
 // -----------------------------------------------------------------------------
 class AddressAutofillTable : public WebDatabaseTable {
  public:
+  // Drops the tables created by AddressAutofillTable.
+  // TODO(crbug.com/390473673): Remove after M143.
+  class Dropper;
+
   AddressAutofillTable();
 
   AddressAutofillTable(const AddressAutofillTable&) = delete;
@@ -139,6 +143,18 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool InitLegacyProfileAddressesTable();
   bool InitAddressesTable();
   bool InitAddressTypeTokensTable();
+};
+
+class AddressAutofillTable::Dropper : public WebDatabaseTable {
+ public:
+  Dropper();
+  Dropper(const Dropper&) = delete;
+  Dropper& operator=(const Dropper&) = delete;
+  ~Dropper() override;
+
+  TypeKey GetTypeKey() const override;
+  bool CreateTablesIfNecessary() override;
+  bool MigrateToVersion(int version, bool* update_compatible_version) override;
 };
 
 }  // namespace autofill

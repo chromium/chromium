@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/active_session_auth_view.h"
 #include "ash/login/ui/local_authentication_request_controller_impl.h"
@@ -66,7 +67,7 @@ class LocalAuthenticationWithPinTestApi : public LocalAuthenticationTestApi {
 
   void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
 
-  const std::u16string& GetPinStatusMessage() const;
+  std::u16string_view GetPinStatusMessage() const;
 
   void Close() override;
 

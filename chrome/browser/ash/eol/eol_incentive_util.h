@@ -55,7 +55,7 @@ enum class EolIncentiveShowSource {
 };
 
 // The UMA histogram name for the metric which records incentive show source.
-static constexpr char kEolIncentiveShowSourceHistogramName[] =
+inline constexpr char kEolIncentiveShowSourceHistogramName[] =
     "Ash.EndOfLife.IncentiveShowSource";
 
 // Record the UMA metric for where an end of life incentive was shown.
@@ -80,7 +80,7 @@ enum class EolIncentiveButtonType {
 };
 
 // The UMA histogram name for the metric which records incentive button clicks.
-static constexpr char kEolIncentiveURLButtonClicked[] =
+inline constexpr char kEolIncentiveURLButtonClicked[] =
     "Ash.EndOfLife.IncentiveButtonClicked";
 
 void RecordButtonClicked(EolIncentiveButtonType type);

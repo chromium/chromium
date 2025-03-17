@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("settings_manager") {
   sources = [
@@ -60,8 +58,6 @@ source_set("unit_tests") {
 
   deps = [
     ":settings_manager",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
@@ -86,6 +82,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
     "//components/user_manager",
     "//content/test:test_support",

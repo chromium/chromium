@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/base/address_tracker_linux.h"
 
 #include <linux/if.h>
@@ -372,9 +377,6 @@ TEST_F(AddressTrackerLinuxTest, IgnoredMessage) {
   // No address.
   MakeAddrMessage(RTM_NEWADDR, 0, AF_INET, kTestInterfaceEth, kEmpty, kEmpty,
                   &buffer);
-  // IPv6 random temporary address.
-  MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET6, kTestInterfaceEth,
-                  kAddr3, kEmpty, &buffer);
   // Ignored type.
   MakeAddrMessage(RTM_DELROUTE, 0, AF_INET6, kTestInterfaceEth, kAddr3, kEmpty,
                   &buffer);

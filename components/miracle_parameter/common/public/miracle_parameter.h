@@ -12,34 +12,6 @@
 
 namespace miracle_parameter {
 
-namespace {
-
-template <typename Enum>
-Enum GetFieldTrialParamByFeatureAsEnum(
-    const base::Feature& feature,
-    const std::string& param_name,
-    const Enum default_value,
-    const base::span<const typename base::FeatureParam<Enum>::Option>&
-        options) {
-  std::string string_value =
-      base::GetFieldTrialParamValueByFeature(feature, param_name);
-  if (string_value.empty()) {
-    return default_value;
-  }
-
-  for (const auto& option : options) {
-    if (string_value == option.name) {
-      return option.value;
-    }
-  }
-
-  base::LogInvalidEnumValue(feature, param_name, string_value,
-                            static_cast<int>(default_value));
-  return default_value;
-}
-
-}  // namespace
-
 constexpr int kMiracleParameterMemory512MB = 512;
 constexpr int kMiracleParameterMemory1GB = 1024;
 constexpr int kMiracleParameterMemory2GB = 2 * 1024;

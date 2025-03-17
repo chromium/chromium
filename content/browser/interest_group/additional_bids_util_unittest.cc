@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
 
 #include "content/browser/interest_group/additional_bids_util.h"
 
@@ -213,6 +217,9 @@ TEST_F(AdditionalBidsUtilTest, FailNotDict) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailNoNonce) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kFledgeSellerNonce);
+
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   base::Value input(std::move(additional_bid_dict));
@@ -229,6 +236,9 @@ TEST_F(AdditionalBidsUtilTest, FailNoNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kFledgeSellerNonce);
+
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", "not-a-nonce");
   base::Value input(std::move(additional_bid_dict));
@@ -244,17 +254,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
       result.error());
 }
 
-class AdditionalBidsUtilWithSellerNonceTest : public AdditionalBidsUtilTest {
- protected:
-  AdditionalBidsUtilWithSellerNonceTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeSellerNonce);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailNoNonce) {
+TEST_F(AdditionalBidsUtilTest, FailNoNonceWithSellerNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   base::Value input(std::move(additional_bid_dict));
@@ -270,7 +270,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailNoNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailInvalidNonceWithSellerNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", "not-a-nonce");
   base::Value input(std::move(additional_bid_dict));
@@ -289,7 +289,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBothAuctionNonceAndBidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailBothAuctionNonceAndBidNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
   additional_bid_dict.Set("bidNonce", kBidNonce);
@@ -307,8 +307,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBothAuctionNonceAndBidNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest,
-       FailBidNoSellerNonceButNoAuctionNonce) {
+TEST_F(AdditionalBidsUtilTest, FailBidNoSellerNonceButNoAuctionNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   additional_bid_dict.Set("bidNonce", kBidNonce);
@@ -325,7 +324,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest,
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBidSellerNonceButNoBidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailBidSellerNonceButNoBidNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
   base::Value input(std::move(additional_bid_dict));
@@ -342,7 +341,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBidSellerNonceButNoBidNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidBidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailInvalidBidNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   // Set bidNonce to base64(sha256("incorrect")).
@@ -667,7 +666,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   EXPECT_EQ(std::nullopt, bid->ad_cost);
   EXPECT_EQ(blink::AdDescriptor(GURL("https://en.wikipedia.test/wiki/Train")),
             bid->ad_descriptor);
-  EXPECT_EQ(0u, bid->ad_component_descriptors.size());
+  EXPECT_EQ(0u, bid->selected_ad_components.size());
   EXPECT_EQ(std::nullopt, bid->modeling_signals);
   EXPECT_EQ(std::nullopt, bid->aggregate_win_signals);
   EXPECT_EQ(&bid_state->bidder->interest_group, bid->interest_group);
@@ -675,7 +674,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   EXPECT_EQ(bid_state, bid->bid_state);
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, MinimalValid) {
+TEST_F(AdditionalBidsUtilTest, MinimalValidWithSellerNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   additional_bid_dict.Set("bidNonce", kBidNonce);
@@ -714,7 +713,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, MinimalValid) {
   EXPECT_EQ(std::nullopt, bid->ad_cost);
   EXPECT_EQ(blink::AdDescriptor(GURL("https://en.wikipedia.test/wiki/Train")),
             bid->ad_descriptor);
-  EXPECT_EQ(0u, bid->ad_component_descriptors.size());
+  EXPECT_EQ(0u, bid->selected_ad_components.size());
   EXPECT_EQ(std::nullopt, bid->modeling_signals);
   EXPECT_EQ(std::nullopt, bid->aggregate_win_signals);
   EXPECT_EQ(&bid_state->bidder->interest_group, bid->interest_group);
@@ -1025,13 +1024,13 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
   ASSERT_TRUE(result->bid_state);
 
   // Components should be both in the ad and the synthesized IG.
-  ASSERT_EQ(2u, result->bid->ad_component_descriptors.size());
+  ASSERT_EQ(2u, result->bid->selected_ad_components.size());
   EXPECT_EQ(
       blink::AdDescriptor(GURL("https://en.wikipedia.test/wiki/Locomotive")),
-      result->bid->ad_component_descriptors[0]);
+      result->bid->selected_ad_components[0].ad_descriptor);
   EXPECT_EQ(blink::AdDescriptor(
                 GURL("https://en.wikipedia.test/wiki/High-speed_rail")),
-            result->bid->ad_component_descriptors[1]);
+            result->bid->selected_ad_components[1].ad_descriptor);
 
   ASSERT_TRUE(
       result->bid_state->bidder->interest_group.ad_components.has_value());
@@ -1043,6 +1042,10 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
   EXPECT_EQ("https://en.wikipedia.test/wiki/High-speed_rail",
             result->bid_state->bidder->interest_group.ad_components.value()[1]
                 .render_url());
+  EXPECT_EQ(&result->bid_state->bidder->interest_group.ad_components.value()[0],
+            result->bid->selected_ad_components[0].ad);
+  EXPECT_EQ(&result->bid_state->bidder->interest_group.ad_components.value()[1],
+            result->bid->selected_ad_components[1].ad);
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {
@@ -1060,7 +1063,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {
   ASSERT_TRUE(result->bid);
   ASSERT_TRUE(result->bid_state);
 
-  EXPECT_EQ(0u, result->bid->ad_component_descriptors.size());
+  EXPECT_EQ(0u, result->bid->selected_ad_components.size());
   ASSERT_TRUE(
       result->bid_state->bidder->interest_group.ad_components.has_value());
   EXPECT_EQ(0u,

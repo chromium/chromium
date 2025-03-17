@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -38,7 +37,7 @@ namespace {
 
 void HashSpecifics(const sync_pb::EntitySpecifics& specifics,
                    std::string* hash) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   *hash =
       base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()));
 }
@@ -182,7 +181,7 @@ const SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::Add(
     int64_t server_version,
     base::Time creation_time,
     const sync_pb::EntitySpecifics& specifics) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   DCHECK(bookmark_node);
   DCHECK(specifics.has_bookmark());
   DCHECK(bookmark_node->is_permanent_node() ||
@@ -225,7 +224,7 @@ void SyncedBookmarkTracker::Update(const SyncedBookmarkTrackerEntity* entity,
                                    int64_t server_version,
                                    base::Time modification_time,
                                    const sync_pb::EntitySpecifics& specifics) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   DCHECK(entity);
   DCHECK(specifics.has_bookmark());
   DCHECK(specifics.bookmark().has_unique_position());
@@ -274,7 +273,7 @@ void SyncedBookmarkTracker::MarkDeleted(
   // Clear all references to the deleted bookmark node.
   bookmark_node_to_entities_map_.erase(mutable_entity->bookmark_node());
   mutable_entity->clear_bookmark_node();
-  DCHECK_EQ(0, base::ranges::count(ordered_local_tombstones_, entity));
+  DCHECK_EQ(0, std::ranges::count(ordered_local_tombstones_, entity));
   ordered_local_tombstones_.push_back(mutable_entity);
 }
 
@@ -287,7 +286,7 @@ void SyncedBookmarkTracker::Remove(const SyncedBookmarkTrackerEntity* entity) {
 
   if (entity->bookmark_node()) {
     DCHECK(!entity->metadata().is_deleted());
-    DCHECK_EQ(0, base::ranges::count(ordered_local_tombstones_, entity));
+    DCHECK_EQ(0, std::ranges::count(ordered_local_tombstones_, entity));
     bookmark_node_to_entities_map_.erase(entity->bookmark_node());
   } else {
     DCHECK(entity->metadata().is_deleted());
@@ -390,7 +389,7 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges() const {
       ReorderUnsyncedEntitiesExceptDeletions(entities_with_local_changes);
   for (const SyncedBookmarkTrackerEntity* tombstone_entity :
        ordered_local_tombstones_) {
-    DCHECK_EQ(0, base::ranges::count(ordered_local_changes, tombstone_entity));
+    DCHECK_EQ(0, std::ranges::count(ordered_local_changes, tombstone_entity));
     ordered_local_changes.push_back(tombstone_entity);
   }
   return ordered_local_changes;

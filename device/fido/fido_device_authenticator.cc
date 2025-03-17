@@ -13,10 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cbor/values.h"
 #include "device/fido/appid_exclude_probe_task.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -1261,7 +1259,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
     large_blob_array.emplace();
   }
 
-  auto existing_large_blob = base::ranges::find_if(
+  auto existing_large_blob = std::ranges::find_if(
       *large_blob_array, [&large_blob_key](const cbor::Value& blob_cbor) {
         std::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
         return blob && blob->Decrypt(large_blob_key).has_value();
@@ -1421,11 +1419,11 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
       *large_blob_array, [&large_blob_keys](const cbor::Value& blob_cbor) {
         std::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
         return blob &&
-               base::ranges::none_of(
+               std::ranges::none_of(
                    large_blob_keys,
                    [&blob](
                        const std::array<uint8_t, kLargeBlobKeyLength>& key) {
-                     return blob->Decrypt(key);
+                     return blob->Decrypt(key).has_value();
                    });
       });
 

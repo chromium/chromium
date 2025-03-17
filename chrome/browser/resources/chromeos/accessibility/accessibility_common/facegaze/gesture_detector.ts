@@ -121,14 +121,14 @@ const FacialGesturesToExcludedMediapipeGestures = new Map([
     [
       MediapipeFacialGesture.EYE_BLINK_RIGHT,
       MediapipeFacialGesture.EYE_SQUINT_RIGHT,
-    ]
+    ],
   ],
   [
     FacialGesture.EYE_SQUINT_RIGHT,
     [
       MediapipeFacialGesture.EYE_BLINK_LEFT,
       MediapipeFacialGesture.EYE_SQUINT_LEFT,
-    ]
+    ],
   ],
 ]);
 

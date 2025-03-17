@@ -10,11 +10,11 @@
 namespace profile_metrics {
 
 struct Counts {
-  base::HistogramBase::Sample total = 0;
-  base::HistogramBase::Sample signedin = 0;
-  base::HistogramBase::Sample supervised = 0;
-  base::HistogramBase::Sample active = 0;
-  base::HistogramBase::Sample unused = 0;
+  base::HistogramBase::Sample32 total = 0;
+  base::HistogramBase::Sample32 signedin = 0;
+  base::HistogramBase::Sample32 supervised = 0;
+  base::HistogramBase::Sample32 active = 0;
+  base::HistogramBase::Sample32 unused = 0;
 };
 
 // Logs metrics related to |counts|.

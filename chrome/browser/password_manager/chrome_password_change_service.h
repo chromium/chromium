@@ -20,8 +20,14 @@ namespace affiliations {
 class AffiliationService;
 }
 
+class OptimizationGuideKeyedService;
+
 namespace content {
 class WebContents;
+}
+
+namespace password_manager {
+class PasswordFeatureManager;
 }
 
 class ChromePasswordChangeService
@@ -34,17 +40,23 @@ class ChromePasswordChangeService
   using OpenNewTabCallback =
       base::RepeatingCallback<content::WebContents*(const GURL&,
                                                     content::WebContents*)>;
+  static constexpr char kHasPasswordChangeUrlHistogram[] =
+      "PasswordManager.HasPasswordChangeUrl";
 
-  explicit ChromePasswordChangeService(
-      affiliations::AffiliationService* affiliation_service);
+  ChromePasswordChangeService(
+      affiliations::AffiliationService* affiliation_service,
+      OptimizationGuideKeyedService* optimization_keyed_service,
+      std::unique_ptr<password_manager::PasswordFeatureManager>
+          feature_manager);
   ~ChromePasswordChangeService() override;
 
-  // Starts password change for a given `url`, `username` and `password`.
-  // `originator` belongs to a tab which initiated the process.
-  void StartPasswordChange(const GURL& url,
-                           const std::u16string& username,
-                           const std::u16string& password,
-                           content::WebContents* originator);
+  // Indicates that password change will be proposed to the user for a given
+  // `url`, `username` and `password`. `originator` belongs to a tab which
+  // initiated the process.
+  void OfferPasswordChangeUi(const GURL& url,
+                             const std::u16string& username,
+                             const std::u16string& password,
+                             content::WebContents* originator);
 
   // Responds with PasswordChangeDelegate for a given `web_contents`.
   // The same object is returned for a tab which initiated password change and a
@@ -54,21 +66,19 @@ class ChromePasswordChangeService
       content::WebContents* web_contents);
 
   // PasswordChangeServiceInterface implementation.
+  bool IsPasswordChangeAvailable() override;
   bool IsPasswordChangeSupported(const GURL& url) override;
-
-  // For testing only.
-  void SetCustomTabOpening(OpenNewTabCallback callback) {
-    new_tab_callback_ = std::move(callback);
-  }
 
  private:
   // PasswordChangeDelegate::Observer impl.
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
 
-  const raw_ptr<affiliations::AffiliationService> affiliation_service_;
+  // KeyedService impl.
+  void Shutdown() override;
 
-  // TODO(crbug.com/382652112): Remove once testing is simplified.
-  OpenNewTabCallback new_tab_callback_;
+  const raw_ptr<affiliations::AffiliationService> affiliation_service_;
+  const raw_ptr<OptimizationGuideKeyedService> optimization_keyed_service_;
+  std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager_;
 
   std::vector<std::unique_ptr<PasswordChangeDelegate>>
       password_change_delegates_;

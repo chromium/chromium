@@ -168,17 +168,6 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         mOnFocusViaSelectionListener = Optional.ofNullable(listener);
     }
 
-    @Override
-    public boolean isFocused() {
-        return super_isFocused() || isSelected();
-    }
-
-    @CheckDiscard("inlined")
-    @VisibleForTesting
-    /* package */ boolean super_isFocused() {
-        return super.isFocused();
-    }
-
     /** Set the lead-in spacing for the action chip carousel. */
     public void setActionChipLeadInSpacing(int spacing) {
         actionChipsView.setLeadInSpacing(spacing);

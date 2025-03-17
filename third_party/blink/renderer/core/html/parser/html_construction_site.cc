@@ -24,15 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/attribute_part.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
@@ -153,9 +149,9 @@ static inline WhitespaceMode RecomputeWhiteSpaceMode(
   auto check_whitespace = [](auto* buffer, size_t length) {
     WhitespaceMode result = WhitespaceMode::kNewlineThenWhitespace;
     for (size_t i = 1; i < length; ++i) {
-      if (buffer[i] == ' ') [[likely]] {
+      if (UNSAFE_TODO(buffer[i]) == ' ') [[likely]] {
         continue;
-      } else if (IsHTMLSpecialWhitespace(buffer[i])) {
+      } else if (IsHTMLSpecialWhitespace(UNSAFE_TODO(buffer[i]))) {
         result = WhitespaceMode::kAllWhitespace;
       } else {
         return WhitespaceMode::kNotAllWhitespace;

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -188,8 +190,8 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
   separator_view_->SetFlipCanvasOnPaintForRTLUI(true);
 
   auto alert_view = std::make_unique<views::AXVirtualView>();
-  alert_view->GetCustomData().role = ax::mojom::Role::kAlert;
-  alert_view->GetCustomData().AddState(ax::mojom::State::kInvisible);
+  alert_view->SetRole(ax::mojom::Role::kAlert);
+  alert_view->SetIsInvisible(true);
   alert_virtual_view_ = alert_view.get();
   GetViewAccessibility().AddVirtualChildView(std::move(alert_view));
 }
@@ -267,18 +269,18 @@ void IconLabelBubbleView::SetBackgroundVisibility(
   UpdateBackground();
 }
 
-void IconLabelBubbleView::SetLabel(const std::u16string& label_text) {
+void IconLabelBubbleView::SetLabel(std::u16string_view label_text) {
   SetLabel(label_text, label_text);
 }
 
-void IconLabelBubbleView::SetLabel(const std::u16string& label_text,
-                                   const std::u16string& accessible_name) {
+void IconLabelBubbleView::SetLabel(std::u16string_view label_text,
+                                   std::u16string_view accessible_name) {
   // TODO(crbug.com/40890218): Under what conditions, if any, will the text be
   // empty? Read the description of the bug and update accordingly.
   GetViewAccessibility().SetName(
-      accessible_name, accessible_name.empty()
-                           ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-                           : ax::mojom::NameFrom::kAttribute);
+      std::u16string(accessible_name),
+      accessible_name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                              : ax::mojom::NameFrom::kAttribute);
   label()->SetText(label_text);
   separator_view_->SetVisible(ShouldShowSeparator());
   separator_view_->UpdateOpacity();
@@ -396,7 +398,7 @@ int IconLabelBubbleView::GetWidthBetween(int min, int max) const {
                                          : slide_animation_.GetCurrentValue();
   // This tween matches the default for SlideAnimation.
   const gfx::Tween::Type kTween = gfx::Tween::EASE_OUT;
-  if (progress < open_state_fraction_) {
+  if (progress <= open_state_fraction_) {
     double state =
         gfx::Tween::CalculateValue(kTween, progress / open_state_fraction_);
     return gfx::Tween::IntValueBetween(state, min, max);
@@ -500,11 +502,17 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
   }
 
   if (!is_animation_paused_) {
+    // The label is shown at the start of animating in.
+    // This ensures the label is hidden at the end of animating out.
+    if (!slide_animation_.IsShowing()) {
+      label()->SetVisible(false);
+    }
+
     // In some cases we want the text to disappear even after animating.
     // Subclasses override `ShouldShowLabelAfterAnimation` for custom behavior.
     // Default behavior is when we do not show separator, the label should
     // collapse.
-    ResetSlideAnimation(/*show_label=*/ShouldShowLabelAfterAnimation());
+    ResetSlideAnimation(/*show=*/ShouldShowLabelAfterAnimation());
     PreferredSizeChanged();
   }
 
@@ -616,12 +624,12 @@ int IconLabelBubbleView::GetEndPaddingWithSeparator() const {
   return end_padding;
 }
 
-void IconLabelBubbleView::SetUpForAnimation() {
+void IconLabelBubbleView::SetUpForAnimation(base::TimeDelta duration) {
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetVisible(false);
-  slide_animation_.SetSlideDuration(base::Milliseconds(150));
+  slide_animation_.SetSlideDuration(duration);
   open_state_fraction_ = 1.0;
 }
 
@@ -640,10 +648,10 @@ void IconLabelBubbleView::SetUpForInOutAnimation(base::TimeDelta duration) {
 }
 
 void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
-  if (!label()->GetVisible()) {
+  if (!label()->GetVisible() || IsShrinking()) {
     // Start animation from the current width, otherwise the icon will also be
     // included if visible.
-    grow_animation_starting_width_ = GetVisible() ? width() : 0;
+    grow_animation_starting_width_ = GetVisibleBounds().width();
     if (string_id) {
       std::u16string label = l10n_util::GetStringUTF16(string_id.value());
       SetLabel(label);
@@ -653,15 +661,14 @@ void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
       // which serves to announce it. This is done unconditionally here if there
       // is text because the animation is intended to draw attention to the
       // instance anyway.
-      alert_virtual_view_->GetCustomData().RemoveState(
-          ax::mojom::State::kInvisible);
+      alert_virtual_view_->SetIsInvisible(false);
 
       // A valid role must be set prior to setting the name.
       // TODO(crbug.com/40863593): Consider using AnnounceText instead of a
       // virtual view.
-      alert_virtual_view_->GetCustomData().role = ax::mojom::Role::kAlert;
-      alert_virtual_view_->GetCustomData().SetNameChecked(label);
-      alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
+      alert_virtual_view_->SetRole(ax::mojom::Role::kAlert);
+      alert_virtual_view_->SetName(label);
+      alert_virtual_view_->NotifyEvent(ax::mojom::Event::kAlert, true);
     }
     label()->SetVisible(true);
     ShowAnimation();
@@ -670,9 +677,8 @@ void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
 
 void IconLabelBubbleView::AnimateOut() {
   if (label()->GetVisible()) {
-    label()->SetVisible(false);
-    alert_virtual_view_->GetCustomData().AddState(ax::mojom::State::kInvisible);
-    alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kHide);
+    alert_virtual_view_->SetIsInvisible(true);
+    alert_virtual_view_->NotifyEvent(ax::mojom::Event::kHide, true);
     HideAnimation();
   }
 }
@@ -680,10 +686,6 @@ void IconLabelBubbleView::AnimateOut() {
 void IconLabelBubbleView::ResetSlideAnimation(bool show_label) {
   label()->SetVisible(show_label);
   slide_animation_.Reset(show_label);
-}
-
-void IconLabelBubbleView::ReduceAnimationTimeForTesting() {
-  slide_animation_.SetSlideDuration(base::Milliseconds(1));
 }
 
 void IconLabelBubbleView::PauseAnimation() {

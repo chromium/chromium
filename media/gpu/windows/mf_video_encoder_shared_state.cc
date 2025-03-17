@@ -151,7 +151,7 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
         GetMaxTemporalLayer(codec, activates, workarounds_);
     auto bitrate_mode = VideoEncodeAccelerator::kConstantMode |
                         VideoEncodeAccelerator::kVariableMode;
-    if (codec == VideoCodec::kH264) {
+    if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) {
       bitrate_mode |= VideoEncodeAccelerator::kExternalMode;
     }
 
@@ -210,7 +210,7 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
       }
 
       if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
-        base::ranges::copy(
+        std::ranges::copy(
             kSupportedPixelFormatsD3DVideoProcessing,
             std::back_inserter(profile.gpu_supported_pixel_formats));
       }

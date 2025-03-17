@@ -2476,6 +2476,8 @@ const char* ToString(ax::mojom::DetailsFrom details_from) {
       return "popoverTarget";
     case ax::mojom::DetailsFrom::kInterestTarget:
       return "interestTarget";
+    case ax::mojom::DetailsFrom::kCommandfor:
+      return "commandforAttribute";
   }
 
   return "";
@@ -2603,10 +2605,10 @@ const char* ToString(ax::mojom::AriaNotificationInterrupt interrupt) {
 
 const char* ToString(ax::mojom::AriaNotificationPriority priority) {
   switch (priority) {
-    case ax::mojom::AriaNotificationPriority::kNone:
-      return "none";
-    case ax::mojom::AriaNotificationPriority::kImportant:
-      return "important";
+    case ax::mojom::AriaNotificationPriority::kNormal:
+      return "normal";
+    case ax::mojom::AriaNotificationPriority::kHigh:
+      return "high";
   }
   NOTREACHED();
 }

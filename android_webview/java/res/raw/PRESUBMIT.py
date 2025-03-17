@@ -15,16 +15,28 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def _CheckHistogramsAllowlist(input_api, output_api):
     """Checks that histograms_allowlist.txt contains valid histograms."""
-    sys.path.append(input_api.PresubmitLocalPath())
-    from histograms_allowlist_check import HISTOGRAMS_ALLOWLIST_FILENAME
-    from histograms_allowlist_check import CheckWebViewHistogramsAllowlist
+    src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..',
+                            '..')
+    histograms_path = os.path.join(src_path, 'tools', 'metrics', 'histograms')
+    sys.path.append(histograms_path)
+
+    import print_histogram_names
+    from histograms_allowlist_check import WellKnownAllowlistPath
+    from histograms_allowlist_check import check_histograms_allowlist
+    allowlist_path = os.path.join(
+        src_path, WellKnownAllowlistPath.ANDROID_WEBVIEW.relative_path())
 
     histograms_allowlist_filter = lambda f: f.LocalPath().endswith(
-        HISTOGRAMS_ALLOWLIST_FILENAME)
+        WellKnownAllowlistPath.ANDROID_WEBVIEW.filename())
     if not input_api.AffectedFiles(file_filter=histograms_allowlist_filter):
         return []
 
-    # src_path should point to chromium/src
-    src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..',
-                            '..')
-    return CheckWebViewHistogramsAllowlist(src_path, output_api)
+    xml_files = print_histogram_names.histogram_xml_files()
+    result = check_histograms_allowlist(output_api, allowlist_path, xml_files)
+
+    # TODO(crbug.com/391795980): Files should be scope managed, remove this
+    # quick fixed once the issue is done.
+    for f in xml_files:
+        f.close()
+
+    return result

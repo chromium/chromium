@@ -156,21 +156,66 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h) -->
 
-<enum name="JsonParserExtension">
-  <int value="0" label="C style comment (/**/)"/>
-  <int value="1" label="C++ style comment (//)"/>
-  <int value="2" label="UTF-8 \xNN string escape"/>
-  <int value="3" label="Vertical tab string escape (\\v)"/>
-  <int value="4" label="Unescaped ASCII control character [0x00,0x1F]"/>
-  <int value="5" label="Unescaped newline in string (\\r or \\n)"/>
-</enum>
-
 <enum name="LandlockState">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
   <int value="2" label="Not Supported"/>
   <int value="3" label="Unknown"/>
 </enum>
+
+<!-- LINT.IfChange -->
+
+<enum name="MerchantTrustInteraction">
+  <int value="0" label="kPageInfoRowShown">
+    Page info with merchant trust row was shown.
+  </int>
+  <int value="1" label="kBubbleOpenedFromPageInfo">
+    The merchant trust bubble was opened from the page info row.
+  </int>
+  <int value="2" label="kSidePanelOpened">
+    The merchant trust side panel was opened.
+  </int>
+  <int value="3" label="kBubbleClosed">
+    The merchant trust bubble was closed.
+  </int>
+  <int value="4" label="kSidePanelClosed">
+    The merchant trust side panel was closed.
+  </int>
+  <int value="5" label="kBubbleOpenedFromLocationBarChip">
+    The merchant trust bubble was opened from the location bar chip.
+  </int>
+  <int value="6" label="kSidePanelOpenedOnSameTabNavigation">
+    The merchant trust side panel remained open from a same tab navigation.
+  </int>
+  <int value="7" label="kSidePanelClosedOnSameTabNavigation">
+    The merchant trust bubble was closed on a same tab navigation.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_info/core/merchant_trust_service.h:MerchantTrustInteraction) -->
+
+<!-- LINT.IfChange(MerchantTrustStatus) -->
+
+<enum name="MerchantTrustStatus">
+  <int value="0" label="kValid">A valid response.</int>
+  <int value="1" label="kNoResult">No result received.</int>
+  <int value="2" label="kMissingRatingCount">Rating count is missing.</int>
+  <int value="3" label="kMissingRatingValue">Rating value is missing.</int>
+  <int value="4" label="DEPRECATED kMissingReviewsSummary">
+    Reviews summary is missing.
+  </int>
+  <int value="5" label="kMissingReviewsPageUrl">
+    Reviews page URL is missing.
+  </int>
+  <int value="6" label="kInvalidReviewsPageUrl">
+    Reviews page URL is invalid.
+  </int>
+  <int value="7" label="kValidWithMissingReviewsSummary">
+    A valid response with missing reviews summary.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_info/core/merchant_trust_validation.h:MerchantTrustStatus) -->
 
 <enum name="NavigationRequestSecurityLevel">
   <int value="0" label="Unknown; request was ignored"/>
@@ -251,6 +296,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="AllowedByPolicyPreflightWarn"/>
   <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
   <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
+  <int value="13" label="LNABlockedByMissingPermission"/>
+  <int value="14" label="LNAAllowedByPolicyWarn"/>
 </enum>
 
 <enum name="PrivateNetworkDeviceValidity">
@@ -330,7 +377,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HTTP with warning (deprecated)"/>
   <int value="2" label="Secure with EV certificate (deprecated)"/>
   <int value="3" label="Secure"/>
-  <int value="4" label="Secure with policy-installed certificate"/>
+  <int value="4" label="Secure with policy-installed certificate (deprecated)"/>
   <int value="5" label="Dangerous"/>
   <int value="6" label="Warning"/>
 </enum>

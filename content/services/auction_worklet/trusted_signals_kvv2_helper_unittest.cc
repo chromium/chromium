@@ -32,6 +32,7 @@
 #include "content/common/features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -206,7 +207,8 @@ std::string ExtractScoringSignals(
   v8::Local<v8::Context> context = v8::Context::New(isolate);
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Value> value = signals->GetScoringSignals(
-      v8_helper, context, render_url, ad_component_render_urls);
+      v8_helper, context, render_url,
+      CreateMojoCreativeInfoWithoutOwnerVector(ad_component_render_urls));
   std::string result;
 
   if (v8_helper->ExtractJson(context, value, /*script_timeout=*/nullptr,
@@ -781,7 +783,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
                       "https://foo.test/"
                     ],
                     "tags": [
-                      "renderUrls"
+                      "renderURLs"
                     ]
                   }
                 ]
@@ -846,7 +848,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   //             "https://foo.test/"
   //           ],
   //           "tags": [
-  //             "renderUrls"
+  //             "renderURLs"
   //           ]
   //         },
   //         {
@@ -854,7 +856,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   //             "https://foosub.test/"
   //           ],
   //           "tags": [
-  //             "adComponentRenderUrls"
+  //             "adComponentRenderURLs"
   //           ]
   //         }
   //       ],
@@ -871,7 +873,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   //             "https://bar.test/"
   //           ],
   //           "tags": [
-  //             "renderUrls"
+  //             "renderURLs"
   //           ]
   //         },
   //         {
@@ -879,7 +881,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   //             "https://barsub.test/"
   //           ],
   //           "tags": [
-  //             "adComponentRenderUrls"
+  //             "adComponentRenderURLs"
   //           ]
   //         }
   //       ],
@@ -896,7 +898,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   //             "https://foo.test/"
   //           ],
   //           "tags": [
-  //             "renderUrls"
+  //             "renderURLs"
   //           ]
   //         },
   //         {
@@ -904,7 +906,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   //             "https://foosub.test/"
   //           ],
   //           "tags": [
-  //             "adComponentRenderUrls"
+  //             "adComponentRenderURLs"
   //           ]
   //         }
   //       ],
@@ -921,18 +923,18 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
       "A3686D65746164617461A168686F73746E616D656E7075626C69736865722E746573746A"
       "706172746974696F6E7383A462696400686D65746164617461A1716578706572696D656E"
       "7447726F7570496465313233343569617267756D656E747382A264646174618171687474"
-      "70733A2F2F666F6F2E746573742F6474616773816A72656E64657255726C73A264646174"
+      "70733A2F2F666F6F2E746573742F6474616773816A72656E64657255524C73A264646174"
       "61817468747470733A2F2F666F6F7375622E746573742F647461677381756164436F6D70"
-      "6F6E656E7452656E64657255726C7372636F6D7072657373696F6E47726F7570496400A4"
+      "6F6E656E7452656E64657255524C7372636F6D7072657373696F6E47726F7570496400A4"
       "62696401686D65746164617461A1716578706572696D656E7447726F7570496465313233"
       "343569617267756D656E747382A26464617461817168747470733A2F2F6261722E746573"
-      "742F6474616773816A72656E64657255726C73A26464617461817468747470733A2F2F62"
+      "742F6474616773816A72656E64657255524C73A26464617461817468747470733A2F2F62"
       "61727375622E746573742F647461677381756164436F6D706F6E656E7452656E64657255"
-      "726C7372636F6D7072657373696F6E47726F7570496400A462696400686D657461646174"
+      "524C7372636F6D7072657373696F6E47726F7570496400A462696400686D657461646174"
       "61A1716578706572696D656E7447726F7570496465313233343569617267756D656E7473"
       "82A26464617461817168747470733A2F2F666F6F2E746573742F6474616773816A72656E"
-      "64657255726C73A26464617461817468747470733A2F2F666F6F7375622E746573742F64"
-      "7461677381756164436F6D706F6E656E7452656E64657255726C7372636F6D7072657373"
+      "64657255524C73A26464617461817468747470733A2F2F666F6F7375622E746573742F64"
+      "7461677381756164436F6D706F6E656E7452656E64657255524C7372636F6D7072657373"
       "696F6E47726F757049640171616363657074436F6D7072657373696F6E82646E6F6E6564"
       "677A6970";
   // Prefix hex for `kExpectedBodyHex` which includes the compression format
@@ -1310,7 +1312,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://bar.test/": {
@@ -1323,7 +1325,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //       },
   //       {
   //         "tags": [
-  //           "adComponentRenderUrls"
+  //           "adComponentRenderURLs"
   //         ],
   //         "keyValues": {
   //           "https://barsub.test/": {
@@ -1341,7 +1343,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://baz.test/": {
@@ -1351,7 +1353,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //       },
   //       {
   //         "tags": [
-  //           "adComponentRenderUrls"
+  //           "adComponentRenderURLs"
   //         ],
   //         "keyValues": {
   //           "https://bazsub.test/": {
@@ -1364,15 +1366,15 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   const std::string kCompressionGroup0Hex =
       "82A3626964006B6461746156657273696F6E18366F6B657947726F75704F757470757473"
-      "82A26474616773816A72656E64657255726C73696B657956616C756573A2716874747073"
+      "82A26474616773816A72656E64657255524C73696B657956616C756573A2716874747073"
       "3A2F2F6261722E746573742FA16576616C756561317168747470733A2F2F666F6F2E7465"
       "73742FA16576616C7565781D7B22666F6F223A205B3130305D2C2022626172223A202274"
-      "657374227DA2647461677381756164436F6D706F6E656E7452656E64657255726C73696B"
+      "657374227DA2647461677381756164436F6D706F6E656E7452656E64657255524C73696B"
       "657956616C756573A27468747470733A2F2F6261727375622E746573742FA16576616C75"
       "6561327468747470733A2F2F666F6F7375622E746573742FA16576616C7565635B335DA2"
       "626964016F6B657947726F75704F75747075747382A26474616773816A72656E64657255"
-      "726C73696B657956616C756573A17168747470733A2F2F62617A2E746573742FA1657661"
-      "6C7565646E756C6CA2647461677381756164436F6D706F6E656E7452656E64657255726C"
+      "524C73696B657956616C756573A17168747470733A2F2F62617A2E746573742FA1657661"
+      "6C7565646E756C6CA2647461677381756164436F6D706F6E656E7452656E64657255524C"
       "73696B657956616C756573A17468747470733A2F2F62617A7375622E746573742FA16576"
       "616C7565646E756C6C";
   std::vector<uint8_t> compression_group0_bytes;
@@ -1386,7 +1388,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://qux.test/": {
@@ -1396,7 +1398,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //       },
   //       {
   //         "tags": [
-  //           "adComponentRenderUrls"
+  //           "adComponentRenderURLs"
   //         ],
   //         "keyValues": {
   //           "https://quxsub.test/": {
@@ -1409,9 +1411,9 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   const std::string kCompressionGroup1Hex =
       "81A3626964026B6461746156657273696F6E116F6B657947726F75704F75747075747382"
-      "A26474616773816A72656E64657255726C73696B657956616C756573A17168747470733A"
+      "A26474616773816A72656E64657255524C73696B657956616C756573A17168747470733A"
       "2F2F7175782E746573742FA16576616C7565655B2233225DA2647461677381756164436F"
-      "6D706F6E656E7452656E64657255726C73696B657956616C756573A17468747470733A2F"
+      "6D706F6E656E7452656E64657255524C73696B657956616C756573A17468747470733A2F"
       "2F7175787375622E746573742FA16576616C7565655B2234225D";
   std::vector<uint8_t> compression_group1_bytes;
   base::HexStringToBytes(kCompressionGroup1Hex, &compression_group1_bytes);
@@ -2021,7 +2023,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://bar.test/": {
@@ -2036,7 +2038,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://foo.test/": {
@@ -2049,9 +2051,9 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string =
       "82A2626964006F6B657947726F75704F75747075747381A26474616773816A72656E6465"
-      "7255726C73696B657956616C756573A17168747470733A2F2F6261722E746573742FA165"
+      "7255524C73696B657956616C756573A17168747470733A2F2F6261722E746573742FA165"
       "76616C756563313030A2626964006F6B657947726F75704F75747075747381A264746167"
-      "73816A72656E64657255726C73696B657956616C756573A17168747470733A2F2F666F6F"
+      "73816A72656E64657255524C73696B657956616C756573A17168747470733A2F2F666F6F"
       "2E746573742FA16576616C756563313030";
   result_map[0].content.clear();
   base::HexStringToBytes(hex_string, &result_map[0].content);
@@ -2308,7 +2310,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://foo.test/": 100
@@ -2319,7 +2321,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string =
       "81A2626964006F6B657947726F75704F75747075747381A26474616773816A72656E6465"
-      "7255726C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742F186"
+      "7255524C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742F186"
       "4";
   result_map[0].content.clear();
   base::HexStringToBytes(hex_string, &result_map[0].content);
@@ -2362,7 +2364,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://foo.test/": {
@@ -2375,7 +2377,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string =
       "81A2626964006F6B657947726F75704F75747075747381A26474616773816A72656E6465"
-      "7255726C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA163"
+      "7255524C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA163"
       "76616C60";
   result_map[0].content.clear();
   base::HexStringToBytes(hex_string, &result_map[0].content);
@@ -2418,7 +2420,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://foo.test/": {
@@ -2431,7 +2433,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string =
       "81A2626964006F6B657947726F75704F75747075747381A26474616773816A72656E6465"
-      "7255726C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA165"
+      "7255524C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA165"
       "76616C75651864";
   result_map[0].content.clear();
   base::HexStringToBytes(hex_string, &result_map[0].content);
@@ -2501,7 +2503,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "renderUrls"
+  //           "renderURLs"
   //         ],
   //         "keyValues": {
   //           "https://foo.test/": {
@@ -2514,7 +2516,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string =
       "81A2626964006F6B657947726F75704F75747075747381A26474616773816A72656E6465"
-      "7255726C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA165"
+      "7255524C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA165"
       "76616C7565643130303A";
   result_map[0].content.clear();
   base::HexStringToBytes(hex_string, &result_map[0].content);
@@ -2530,7 +2532,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   //     "keyGroupOutputs": [
   //       {
   //         "tags": [
-  //           "adComponentRenderUrls"
+  //           "adComponentRenderURLs"
   //         ],
   //         "keyValues": {
   //           "https://foosub.test/": {
@@ -2543,7 +2545,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string =
       "81A2626964006F6B657947726F75704F75747075747381A2647461677381756164436F6D"
-      "706F6E656E7452656E64657255726C73696B657956616C756573A17468747470733A2F2F"
+      "706F6E656E7452656E64657255524C73696B657956616C756573A17468747470733A2F2F"
       "666F6F7375622E746573742FA16576616C7565643130303A";
   result_map[0].content.clear();
   base::HexStringToBytes(hex_string, &result_map[0].content);
@@ -2904,8 +2906,8 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, BiddingSignalsUnknownTags) {
                 "keyGroupOutputs": [
                   {"tags": ["foo"], "keyValues": {}},
                   {"tags": ["bar"], "keyValues": {"foo":"bar"}},
-                  {"tags": ["renderUrls"], "keyValues": {"foo":"bar"}},
-                  {"tags": ["adComponentRenderUrls"], "keyValues": {"foo":2}}
+                  {"tags": ["renderURLs"], "keyValues": {"foo":"bar"}},
+                  {"tags": ["adComponentRenderURLs"], "keyValues": {"foo":2}}
                 ]
               }])"));
   ASSERT_THAT(result_or_error, PartitionsAre(std::vector<int>{0}));
@@ -3556,8 +3558,8 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, ScoringSignalsInvalidRenderUrl) {
                       }
                     }]
                   }])",
-                  test_component_render_url ? "adComponentRenderUrls"
-                                            : "renderUrls",
+                  test_component_render_url ? "adComponentRenderURLs"
+                                            : "renderURLs",
                   test_case.key_values_json)));
       EXPECT_THAT(result_or_error, IsError(test_case.expected_error));
     }
@@ -3615,8 +3617,8 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, ScoringSignalsRenderUrl) {
                       "keyValues": %s
                     }]
                   }])",
-                  test_component_render_url ? "adComponentRenderUrls"
-                                            : "renderUrls",
+                  test_component_render_url ? "adComponentRenderURLs"
+                                            : "renderURLs",
                   test_case.key_values_json)));
       ASSERT_THAT(result_or_error, PartitionsAre(std::vector<int>{0}));
 
@@ -3662,7 +3664,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       R"([{
         "id": 0,
         "keyGroupOutputs": [{
-          "tags": ["adComponentRenderUrls"],
+          "tags": ["adComponentRenderURLs"],
           "keyValues": {"https://foo.test/":{"value":"{}"}}
         }]
       }])",
@@ -3721,7 +3723,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, ScoringSignalsComponentRenderUrl) {
                 R"([{
                   "id": 0,
                   "keyGroupOutputs": [{
-                    "tags": ["adComponentRenderUrls"],
+                    "tags": ["adComponentRenderURLs"],
                     "keyValues": %s
                   }]
                 }])",
@@ -3754,11 +3756,11 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, ScoringSignalsFullyPopulated) {
                 "dataVersion": 1,
                 "keyGroupOutputs": [
                   {
-                    "tags": ["renderUrls"],
+                    "tags": ["renderURLs"],
                     "keyValues": {"https://a.test/":{"value":"4"}}
                   },
                   {
-                    "tags": ["adComponentRenderUrls"],
+                    "tags": ["adComponentRenderURLs"],
                     "keyValues": {
                       "https://a.test/":{"value":"[5]"},
                       "https://b.test/":{"value":"\"6\""}
@@ -3794,11 +3796,11 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, ScoringSignalsMultiplePartitions) {
                   "dataVersion": 1,
                   "keyGroupOutputs": [
                     {
-                      "tags": ["renderUrls"],
+                      "tags": ["renderURLs"],
                       "keyValues": {"https://a.test/":{"value":"1"}}
                     },
                     {
-                      "tags": ["adComponentRenderUrls"],
+                      "tags": ["adComponentRenderURLs"],
                       "keyValues": {"https://a.test/":{"value":"2"}}
                     }
                   ]
@@ -3808,11 +3810,11 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, ScoringSignalsMultiplePartitions) {
                   "dataVersion": 8,
                   "keyGroupOutputs": [
                     {
-                      "tags": ["renderUrls"],
+                      "tags": ["renderURLs"],
                       "keyValues": {"https://a.test/":{"value":"3"}}
                     },
                     {
-                      "tags": ["adComponentRenderUrls"],
+                      "tags": ["adComponentRenderURLs"],
                       "keyValues": {"https://a.test/":{"value":"4"}}
                     }
                   ]

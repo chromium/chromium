@@ -43,7 +43,8 @@ public class TabClosureParams {
      */
     public static @Nullable TabClosureParams.CloseTabsBuilder forCloseTabGroup(
             TabGroupModelFilter filter, Token tabGroupId) {
-        return TabClosureParams.forCloseTabGroup(filter, filter.getRootIdFromStableId(tabGroupId));
+        return TabClosureParams.forCloseTabGroup(
+                filter, filter.getRootIdFromTabGroupId(tabGroupId));
     }
 
     /**

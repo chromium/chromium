@@ -17,6 +17,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -25,6 +26,15 @@
 #endif
 
 namespace fingerprinting_protection_filter {
+
+// ================= kMultiPlatformTestFrameSetPath Constants ==================
+
+// iframe names defined in `kMultiPlatformTestFrameSetPath`.
+const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+const std::vector<bool> kExpectAllSubframes{true, true, true};
+const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+
+// ================ FingerprintingProtectionFilterBrowserTest =================
 
 // Browser tests for the Fingerprinting Protection Filter component. Due to some
 // shared functionality with the Subresource Filter, these tests use a
@@ -41,10 +51,6 @@ class FingerprintingProtectionFilterBrowserTest
 
   ~FingerprintingProtectionFilterBrowserTest() override;
 
-  // The path to a multi-frame document used for desktop browser tests.
-  static constexpr const char kTestFrameSetPath[] =
-      "/subresource_filter/frame_set.html";
-
   // The path to a multi-frame document used for browser tests that run on
   // Android and Desktop.
   static constexpr const char kMultiPlatformTestFrameSetPath[] =
@@ -60,6 +66,19 @@ class FingerprintingProtectionFilterBrowserTest
   static constexpr const char kSubresourceLoadsDisallowedForPage[] =
       "FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed";
 
+  // Incognito PageLoad histogram names.
+  static constexpr const char kSubresourceLoadsTotalForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Total.Incognito";
+  static constexpr const char kSubresourceLoadsEvaluatedForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
+      "Evaluated.Incognito";
+  static constexpr const char kSubresourceLoadsMatchedRulesForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
+      "MatchedRules.Incognito";
+  static constexpr const char kSubresourceLoadsDisallowedForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
+      "Disallowed.Incognito";
+
   // Names of the performance measurement histograms.
   static constexpr const char kEvaluationTotalWallDurationForPage[] =
       "FingerprintingProtection.PageLoad.SubresourceEvaluation."
@@ -67,18 +86,66 @@ class FingerprintingProtectionFilterBrowserTest
   static constexpr const char kEvaluationTotalCPUDurationForPage[] =
       "FingerprintingProtection.PageLoad.SubresourceEvaluation."
       "TotalCPUDuration";
+  static constexpr const char kSubresourceLoadEvaluationWallDuration[] =
+      "FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration";
+  static constexpr const char kSubresourceLoadEvaluationCpuDuration[] =
+      "FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration";
+
+  // Names of the performance measurement histograms for Incognito.
+  static constexpr const char kEvaluationTotalWallDurationForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
+      "TotalWallDuration.Incognito";
+  static constexpr const char kEvaluationTotalCPUDurationForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
+      "TotalCPUDuration.Incognito";
 
  protected:
+  // Override to use a custom `embedder_base` url.
+  GURL GetTestUrl(const std::string& relative_url) const override;
+
+  // Same as GetTestUrl, but uses a cross-origin base url, `cross-origin.test`.
+  GURL GetCrossSiteTestUrl(const std::string& relative_url) const;
 
   void SetUpOnMainThread() override;
 
   void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix);
+
+  void SetRulesetToDisallowURLsWithSubstring(const std::string& substring);
 
   void SetRulesetWithRules(const std::vector<proto::UrlRule>& rules);
 
   void AssertUrlContained(const GURL& full_url, const GURL& sub_url);
 
   bool NavigateToDestination(const GURL& url);
+
+  // Check that UKM, logged only when a resource's load policy is either
+  // `DISALLOW` or `WOULD_DISALLOW`, contains `expected_count` log entries and
+  // `is_dry_run` metric value.
+  void ExpectFpfActivatedUkms(const ukm::TestAutoSetUkmRecorder& recorder,
+                              const unsigned long& expected_count,
+                              bool is_dry_run);
+
+  // Check that UKM, logged only when an exception to an activated filter is
+  // found, is not logged; i.e. an exception is not found.
+  void ExpectNoFpfExceptionUkms(const ukm::TestAutoSetUkmRecorder& recorder);
+
+  // Check that UKM, logged only when an exception to an activated filter is
+  // found, is logged `expected_count` number of times, with the source metric
+  // matching `expected_source`.
+  void ExpectFpfExceptionUkms(const ukm::TestAutoSetUkmRecorder& recorder,
+                              const unsigned long& expected_count,
+                              const int64_t& expected_source);
+
+  // Navigate all subframes of `kMultiPlatformTestFrameSetPath` to cross-origin
+  // sites, i.e. `cross-origin.test/`.
+  void NavigateSubframesToCrossOriginSite();
+
+  // Update the src of included_script.js with the input.
+  void UpdateIncludedScriptSource(const GURL& url);
+
+  // Navigate subframes in `kMultiPlatformTestFrameSetPath` and load scripts in
+  // 3p (cross-origin.test) contexts.
+  void NavigateMultiFrameSubframesAndLoad3pScripts();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -161,6 +228,28 @@ class FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest
       delete;
 
   ~FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest()
+      override;
+
+ protected:
+  void SetUpOnMainThread() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest();
+
+  FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest(
+      const FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest&) =
+      delete;
+  FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest& operator=(
+      const FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest&) =
+      delete;
+
+  ~FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest()
       override;
 
  protected:

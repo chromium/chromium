@@ -115,4 +115,7 @@ found in the LICENSE file.
 
     <!-- Automotive -->
     <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
+
+    <!-- Immersive Android XR -->
+    <item name="xr_ui_scale_factor" format="float" type="dimen">1.16</item>
 </resources>

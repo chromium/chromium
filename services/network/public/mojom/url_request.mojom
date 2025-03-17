@@ -24,10 +24,12 @@ import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/trust_token_access_observer.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
@@ -36,16 +38,6 @@ import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-
-// This enums corresponds to net::SourceStream::SourceType.
-enum SourceType {
-  kBrotli,
-  kDeflate,
-  kGzip,
-  kZstd,
-  kNone,
-  kUnknown,
-};
 
 // See documentation at `URLRequest.trusted_params`.
 struct TrustedUrlRequestParams {
@@ -511,11 +503,35 @@ struct URLRequest {
   NetLogSource? net_log_reference_info;
 
   // The IP address space to which the target endpoint of this request should
-  // belong, or `kUnknown` if there is no such requirement.
-  // If the target endpoint of the network socket does not belong to this
-  // address space, the request is failed with a CORS error.
+  // belong, or `kUnknown` if there is no such requirement. Used to implement
+  // the Private Network Access API. If the target endpoint of the network
+  // socket does not belong to this address space, the request is failed with
+  // a CORS error.
+  //
   // Clients outside the network service must not set this field to a value
   // other than `kUnknown`.
+  //
+  // If the ClientSecurityState::private_network_request_policy for the
+  // request is kPreflightBlock, then the behavior is as follows:
+  //
+  // CorsURLLoader will send requests (both preflights and non-preflights)
+  // with the default value of `kUnknown`. If URLLoader gets a connection to
+  // a private network, it will fail the request with
+  // `ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS` and populate
+  // `URLLoaderCompletionStatus::cors_error_status` with information about the
+  // address space that was returned.
+  //
+  // Then, regardless of whether that was a preflight request or not,
+  // CorsURLLoader will create a new preflight URLLoader with
+  // `target_ip_address_space` set to the value of the connection that was made,
+  // which will let the preflight request through the checks that blocked the
+  // original one (assume a connection on the same network was returned).
+  //
+  // Then CorsURLLoader will check the headers of the preflight, and if they
+  // allow access to the more private network (and, if other CORS permissions
+  // are needed, those pass as well), the actual request will be made, with the
+  // same `target_ip_address_space` value, which will again bypass the checks,
+  // if a connection on the same network is received.
   IPAddressSpace target_ip_address_space;
 
   // The target address space to which a given fetch operation is expected to
@@ -564,9 +580,26 @@ struct URLRequest {
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
 
+  // If true, disables content decoding (e.g., gzip, brotli) within the network
+  // service for this request. The client becomes responsible for decoding the
+  // response body and setting `decoded_body_length` of
+  // `URLLoaderCompletionStatus`.
+  bool client_side_content_decoding_enabled = false;
+
   // The socket tag to associate this request with. This is typically set by the
   // embedder.
   SocketTag socket_tag;
+
+  // Whether this request is allowed to register new device bound
+  // sessions or process challenges for existing device bound sessions
+  // (e.g. due to an Origin Trial).
+  bool allows_device_bound_sessions;
+
+  // Permissions Policy of the request.
+  // If it's nullopt then the request's initiator didn't set the permissions
+  // policy.
+  // TODO(crbug.com/382291442): Fill in this field and add here an example cl.
+  network.mojom.PermissionsPolicy? permissions_policy;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

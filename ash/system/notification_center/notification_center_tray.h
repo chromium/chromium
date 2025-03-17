@@ -90,6 +90,7 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
 
   // ash::TrayItemView::Observer:
   void OnTrayItemVisibilityAboutToChange(bool target_visibility) override;
+  void OnTrayItemChildViewChanged() override {}
 
   // Add a TooltipTextChanged callback on the ImageView associated with the
   // tray_item. This impacts the tray's accessible name.

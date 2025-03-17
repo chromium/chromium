@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -38,7 +39,9 @@
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
   // Put MVT as the top magic stack module for easier tapping.
+  [NewTabPageAppInterface disableSetUpList];
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back("--test-ios-module-ranker=mvt");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -90,6 +93,7 @@
                   kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                   faviconIndex])] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]];
+  [NewTabPageAppInterface resetSetUpListPrefs];
 }
 
 // Tests that evaluating JavaScript in the omnibox (e.g, a bookmarklet) works.
@@ -97,8 +101,9 @@
 - (void)DIABLED_testJavaScriptInOmnibox {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad running iOS 10.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom]) {
     return;
+  }
 
   // Preps the http server with two URLs serving content.
   std::map<GURL, std::string> responses;
@@ -219,8 +224,9 @@
 
 // TODO(crbug.com/40240588): Re-enable this test.
 - (void)DISABLED_testMultiWindowURLLoading {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // Preps the http server with two URLs serving content.
   std::map<GURL, std::string> responses;

@@ -412,6 +412,9 @@ class MetaBuildWrapper:
                       help=('extra args to pass to the isolate to run. Use '
                             '"--" as the first arg if you need to pass '
                             'switches'))
+    subp.add_argument('--force',
+                      action='store_true',
+                      help='Bypasses deprecation notice.')
     subp.set_defaults(func=self.CmdRun)
 
     subp = subps.add_parser('validate',
@@ -557,6 +560,15 @@ class MetaBuildWrapper:
     return 0
 
   def CmdRun(self):
+    # TODO(crbug.com/386167803): Remove this mode after this deprecation
+    # notice has been live for a few months.
+    if not self.args.force:
+      self.Print(
+          '`mb run` is deprecated in favor of the UTR. For more info, see '
+          'https://chromium.googlesource.com/chromium/src/+/main/tools/utr/README.md. '
+          'To skip this warning, re-run with "--force". Note that `mb run` '
+          'will be deleted sometime in 2025.')
+      return 1
     vals = self.GetConfig()
     if not vals:
       return 1
@@ -572,11 +584,11 @@ class MetaBuildWrapper:
       return ret
 
     self.Print('')
+    cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
     if self.args.swarmed:
-      cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
       return self._RunUnderSwarming(self.args.path, self.args.target, cmd,
                                     self.args.internal)
-    return self._RunLocallyIsolated(self.args.path, self.args.target)
+    return self._RunLocallyIsolated(self.args.path, self.args.target, cmd)
 
   def CmdZip(self):
     ret = self.CmdIsolate()
@@ -732,17 +744,17 @@ class MetaBuildWrapper:
         self.RemoveDirectory(json_dir)
     return ret
 
-  def _RunLocallyIsolated(self, build_dir, target):
-    cmd = [
+  def _RunLocallyIsolated(self, build_dir, target, cmd):
+    isolate_cmd = [
         self.PathJoin(self.chromium_src_dir, 'tools', 'luci-go',
-                      self.isolate_exe),
-        'run',
-        '-i',
-        self.ToSrcRelPath('%s/%s.isolate' % (build_dir, target)),
-    ]
+                      self.isolate_exe), 'run', '-i',
+        self.ToSrcRelPath('%s/%s.isolate' %
+                          (build_dir, target)), '--relative-cwd',
+        self.ToSrcRelPath(build_dir), '--'
+    ] + cmd
     if self.args.extra_args:
-      cmd += ['--'] + self.args.extra_args
-    ret, _, _ = self.Run(cmd, force_verbose=True, capture_output=False)
+      isolate_cmd += self.args.extra_args
+    ret, _, _ = self.Run(isolate_cmd, force_verbose=True, capture_output=False)
     return ret
 
   def _DefaultDimensions(self):

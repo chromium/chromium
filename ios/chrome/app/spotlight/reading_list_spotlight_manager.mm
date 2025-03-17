@@ -5,6 +5,7 @@
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 
 #import <CoreSpotlight/CoreSpotlight.h>
+
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -346,6 +347,5 @@
 
   _batch_update_log.clear();
 }
-
 
 @end

@@ -13,16 +13,12 @@
 
 namespace data_controls {
 
-class AndroidDataControlsDialogUiTest
-    : public AndroidBrowserTest,
-      public testing::WithParamInterface<DataControlsDialog::Type> {
+class AndroidDataControlsDialogUiTest : public AndroidBrowserTest {
  public:
   AndroidDataControlsDialogUiTest() = default;
   ~AndroidDataControlsDialogUiTest() override = default;
 
   void SetUp() override { AndroidBrowserTest::SetUp(); }
-
-  DataControlsDialog::Type type() const { return GetParam(); }
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -33,21 +29,40 @@ class AndroidDataControlsDialogUiTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AndroidDataControlsDialogUiTest,
-    testing::Values(
-        data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
-        data_controls::DataControlsDialog::Type::kClipboardCopyBlock,
-        data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
-        data_controls::DataControlsDialog::Type::kClipboardPasteBlock));
-
-IN_PROC_BROWSER_TEST_P(AndroidDataControlsDialogUiTest, SmokeTest) {
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardCopyWarn) {
   EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
-
   AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
-      web_contents(), type());
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
   EXPECT_NE(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardPasteWarn) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
+  EXPECT_NE(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardCopyBlock) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardPasteBlock) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
 }
 
 }  // namespace data_controls

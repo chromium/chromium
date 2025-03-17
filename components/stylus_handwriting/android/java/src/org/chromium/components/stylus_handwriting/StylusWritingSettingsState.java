@@ -11,11 +11,11 @@ import android.os.Build;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +25,15 @@ import java.util.List;
  * expected to be called on the UI thread only. If this changed in the future, we should make sure
  * that the class is thread-safe.
  */
+@NullMarked
 public class StylusWritingSettingsState {
     // System setting for direct writing service. This setting is currently found under
     // Settings->Advanced features->S Pen->"S Pen to text".
     private static final String URI_DIRECT_WRITING = "direct_writing";
     private static final String URI_STYLUS_HANDWRITING = "stylus_handwriting_enabled";
 
-    @Nullable private String mDefaultInputMethod;
-    @Nullable private Integer mDirectWritingSetting;
+    private @Nullable String mDefaultInputMethod;
+    private @Nullable Integer mDirectWritingSetting;
     private int mStylusHandWritingSetting;
     private final ObserverList<StylusWritingController> mObservers = new ObserverList<>();
 
@@ -110,14 +111,12 @@ public class StylusWritingSettingsState {
         return sInstance;
     }
 
-    @Nullable
-    public String getDefaultInputMethod() {
+    public @Nullable String getDefaultInputMethod() {
         ThreadUtils.assertOnUiThread();
         return mDefaultInputMethod;
     }
 
-    @Nullable
-    public Integer getDirectWritingSetting() {
+    public @Nullable Integer getDirectWritingSetting() {
         ThreadUtils.assertOnUiThread();
         return mDirectWritingSetting;
     }

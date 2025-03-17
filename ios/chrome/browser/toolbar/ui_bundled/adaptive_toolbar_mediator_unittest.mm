@@ -11,15 +11,21 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/collaboration/test_support/mock_messaging_backend_service.h"
+#import "components/data_sharing/public/features.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -29,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -46,8 +53,13 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using testing::_;
+using testing::Return;
+
 @interface TestAdaptiveToolbarMediator
-    : AdaptiveToolbarMediator <CRWWebStateObserver, WebStateListObserving>
+    : AdaptiveToolbarMediator <CRWWebStateObserver,
+                               MessagingBackendServiceObserving,
+                               WebStateListObserving>
 @end
 
 @implementation TestAdaptiveToolbarMediator
@@ -60,9 +72,32 @@ MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramHistoryEntry;
 static const int kNumberOfWebStates = 3;
 static const char kTestUrl[] = "http://www.chromium.org";
 
+// Returns a vector of messages containing an update for `tab_group`.
+std::vector<collaboration::messaging::PersistentMessage> UpdateForGroup(
+    const TabGroup* tab_group) {
+  collaboration::messaging::TabGroupMessageMetadata metadata;
+  metadata.local_tab_group_id = std::make_optional(tab_group->tab_group_id());
+  collaboration::messaging::PersistentMessage message;
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP;
+  message.attribution.tab_group_metadata = std::make_optional(metadata);
+  return std::vector{message};
+}
+
 class AdaptiveToolbarMediatorTest : public PlatformTest {
  public:
   AdaptiveToolbarMediatorTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            kTabGroupSync,
+            kTabGroupsIPad,
+            kModernTabStrip,
+            kTabGroupIndicator,
+            data_sharing::features::kDataSharingFeature,
+        },
+        /*disable_features=*/{});
+
     ios::provider::test::SetVoiceSearchEnabled(false);
 
     TestProfileIOS::Builder builder;
@@ -83,7 +118,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
     test_web_state_->SetNavigationManager(std::move(navigation_manager));
     test_web_state_->SetLoading(true);
     web_state_ = test_web_state_.get();
-    mediator_ = [[TestAdaptiveToolbarMediator alloc] init];
+    mediator_ = [[TestAdaptiveToolbarMediator alloc]
+        initWithMessagingService:&messaging_backend_];
     mediator_.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(test_browser_.get());
     mediator_.actionFactory =
@@ -165,6 +201,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
 
   void SetUpActiveWebState() { web_state_list_->ActivateWebStateAt(0); }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestAdaptiveToolbarMediator* mediator_;
   std::unique_ptr<TestBrowser> test_browser_;
   raw_ptr<web::FakeWebState> web_state_;
@@ -179,6 +216,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   id mock_qr_scanner_commands_handler_;
   id mock_load_query_commands_handler_;
   std::unique_ptr<TestProfileIOS> profile_;
+  collaboration::messaging::MockMessagingBackendService messaging_backend_;
 
  private:
   std::unique_ptr<web::FakeWebState> test_web_state_;
@@ -521,6 +559,149 @@ TEST_F(AdaptiveToolbarMediatorTest, MenuElementsBackForward) {
   EXPECT_NSEQ(@"chromium.org/4", forward_menu.children[0].title);
   EXPECT_NSEQ(@"chromium.org/5", forward_menu.children[1].title);
   EXPECT_NSEQ(@"chromium.org/6", forward_menu.children[2].title);
+}
+
+// Tests adding a message for a group update while not in a group.
+TEST_F(AdaptiveToolbarMediatorTest, MessageOnNonGroupAtStartup) {
+  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list_.get());
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription("| [0 a b] c* [1 d] e f"));
+  mediator_.webStateList = web_state_list_.get();
+
+  const TabGroup* tab_group = web_state_list_->GetGroupOfWebStateAt(0);
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      UpdateForGroup(tab_group);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+  ON_CALL(messaging_backend_, GetMessages(_)).WillByDefault(Return(messages));
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  OCMExpect([consumer_ setTabGridButtonBlueDot:YES]);
+
+  mediator_.consumer = consumer_;
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests adding a message for a group update while not in a group, the backend
+// not being initialized.
+TEST_F(AdaptiveToolbarMediatorTest, MessageOnNonGroupNotInitialized) {
+  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list_.get());
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription("| [0 a b] c* [1 d] e f"));
+  mediator_.webStateList = web_state_list_.get();
+
+  const TabGroup* tab_group = web_state_list_->GetGroupOfWebStateAt(0);
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      UpdateForGroup(tab_group);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(false));
+  ON_CALL(messaging_backend_, GetMessages(_)).WillByDefault(Return(messages));
+
+  mediator_.consumer = consumer_;
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+
+  OCMExpect([consumer_ setTabGridButtonBlueDot:YES]);
+
+  // Fake the initialization of the service.
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests adding a message for a group update while not in a group, receiving the
+// update after startup.
+TEST_F(AdaptiveToolbarMediatorTest, MessageOnNonGroupNotification) {
+  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list_.get());
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription("| [0 a b] c* [1 d] e f"));
+  mediator_.webStateList = web_state_list_.get();
+
+  const TabGroup* tab_group = web_state_list_->GetGroupOfWebStateAt(0);
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      UpdateForGroup(tab_group);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  mediator_.consumer = consumer_;
+
+  ON_CALL(messaging_backend_, GetMessages(_)).WillByDefault(Return(messages));
+
+  OCMExpect([consumer_ setTabGridButtonBlueDot:YES]);
+
+  // Fake the update of the backend.
+  [mediator_ displayPersistentMessage:messages[0]];
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests adding a message for a group update while in a group, receiving the
+// update for this group after startup.
+TEST_F(AdaptiveToolbarMediatorTest, MessageForGroupInGroupNotification) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list_.get());
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription("| [0 a b*] c [1 d] e f"));
+  mediator_.webStateList = web_state_list_.get();
+
+  const TabGroup* tab_group = web_state_list_->GetGroupOfWebStateAt(0);
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      UpdateForGroup(tab_group);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  mediator_.consumer = consumer_;
+
+  ON_CALL(messaging_backend_, GetMessages(_)).WillByDefault(Return(messages));
+
+  OCMExpect([consumer_ setTabGridButtonBlueDot:YES]);
+
+  // Fake the update of the backend.
+  [mediator_ displayPersistentMessage:messages[0]];
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests adding a message for a group update while in a group, receiving the
+// update for another group after startup.
+TEST_F(AdaptiveToolbarMediatorTest, MessageForOtherGroupInGroupNotification) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list_.get());
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription("| [0 a b] c [1 d*] e f"));
+  mediator_.webStateList = web_state_list_.get();
+
+  const TabGroup* tab_group = web_state_list_->GetGroupOfWebStateAt(0);
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      UpdateForGroup(tab_group);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  mediator_.consumer = consumer_;
+
+  ON_CALL(messaging_backend_, GetMessages(_)).WillByDefault(Return(messages));
+
+  OCMExpect([consumer_ setTabGridButtonBlueDot:NO]);
+
+  // Fake the update of the backend.
+  [mediator_ displayPersistentMessage:messages[0]];
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 }  // namespace

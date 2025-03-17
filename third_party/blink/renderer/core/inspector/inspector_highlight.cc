@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -386,11 +386,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
     } else if (pseudo_element->GetPseudoId() ==
                kPseudoIdScrollButtonInlineStart) {
       class_names.Append("::scroll-button(inline-start)");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollButtonBlockEnd) {
-      class_names.Append("::scroll-button(block-end)");
     } else if (pseudo_element->GetPseudoId() ==
                kPseudoIdScrollButtonInlineEnd) {
       class_names.Append("::scroll-button(inline-end)");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollButtonBlockEnd) {
+      class_names.Append("::scroll-button(block-end)");
     }
   }
   if (!class_names.empty())
@@ -1836,8 +1836,8 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
             kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
             kPseudoIdPickerIcon, kPseudoIdScrollMarkerGroupAfter,
             kPseudoIdScrollMarker, kPseudoIdScrollButtonBlockStart,
-            kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonBlockEnd,
-            kPseudoIdScrollButtonInlineEnd}) {
+            kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonInlineEnd,
+            kPseudoIdScrollButtonBlockEnd}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

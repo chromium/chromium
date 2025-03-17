@@ -8,10 +8,10 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
-#import "components/sync/base/passphrase_enums.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -237,24 +237,6 @@ struct PasswordManagerActiveWidgetPromoData
                                                 attributes:textAttributes];
 }
 
-// Returns the on-device encryption state according to the sync service.
-- (OnDeviceEncryptionState)onDeviceEncryptionState {
-  if (ShouldOfferTrustedVaultOptIn(_syncService)) {
-    return OnDeviceEncryptionStateOfferOptIn;
-  }
-  syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
-  if (syncUserSettings->GetPassphraseType() ==
-      syncer::PassphraseType::kTrustedVaultPassphrase) {
-    return OnDeviceEncryptionStateOptedIn;
-  }
-  return OnDeviceEncryptionStateNotShown;
-}
-
-- (BOOL)shouldShowLocalOnlyIconForCredential:
-    (const password_manager::CredentialUIEntry&)credential {
-  return password_manager::ShouldShowLocalOnlyIcon(credential, _syncService);
-}
-
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group {
   return password_manager::ShouldShowLocalOnlyIconForGroup(group, _syncService);
@@ -372,8 +354,8 @@ struct PasswordManagerActiveWidgetPromoData
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                          _syncService) &&
+  return password_manager::features_util::IsAccountStorageEnabled(
+             _prefService, _syncService) &&
          !_syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 

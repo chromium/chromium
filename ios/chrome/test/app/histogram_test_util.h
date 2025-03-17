@@ -31,7 +31,7 @@ struct Bucket;
 // data is getting logged as intended.
 class HistogramTester {
  public:
-  using CountsMap = std::map<std::string, base::HistogramBase::Count>;
+  using CountsMap = std::map<std::string, base::HistogramBase::Count32>;
 
   // Takes a snapshot of all current histograms counts.
   HistogramTester();
@@ -48,8 +48,8 @@ class HistogramTester {
   // buckets have samples. If not, call `failure_block` with a descriptive text
   // of the error.
   BOOL ExpectUniqueSample(const std::string& name,
-                          base::HistogramBase::Sample sample,
-                          base::HistogramBase::Count expected_count,
+                          base::HistogramBase::Sample32 sample,
+                          base::HistogramBase::Count32 expected_count,
                           FailureBlock failure_block) const;
 
   // We know the exact number of samples in a bucket, but other buckets may
@@ -58,8 +58,8 @@ class HistogramTester {
   // Returns true if the bucket contains `expected_count` samples. If not, call
   // `failure_block` with a descriptive text of the error.
   BOOL ExpectBucketCount(const std::string& name,
-                         base::HistogramBase::Sample sample,
-                         base::HistogramBase::Count expected_count,
+                         base::HistogramBase::Sample32 sample,
+                         base::HistogramBase::Count32 expected_count,
                          FailureBlock failure_block) const;
 
   // We don't know the values of the samples, but we know how many there are.
@@ -68,7 +68,7 @@ class HistogramTester {
   // Returns true if the histogram contains `count` samples. If not, call
   // `failure_block` with a descriptive text of the error.
   BOOL ExpectTotalCount(const std::string& name,
-                        base::HistogramBase::Count count,
+                        base::HistogramBase::Count32 count,
                         FailureBlock failure_block) const;
 
   // Returns a list of all of the buckets recorded since creation of this
@@ -88,8 +88,8 @@ class HistogramTester {
   // `expected_count`. The bucket's current value is determined from `samples`
   // and is modified based on the snapshot stored for histogram `name`.
   BOOL CheckBucketCount(const std::string& name,
-                        base::HistogramBase::Sample sample,
-                        base::Histogram::Count expected_count,
+                        base::HistogramBase::Sample32 sample,
+                        base::Histogram::Count32 expected_count,
                         const base::HistogramSamples& samples,
                         FailureBlock failure_block) const;
 
@@ -97,25 +97,25 @@ class HistogramTester {
   // is `expected_count`. This is checked against `samples` minus the snapshot
   // that was taken for `name`.
   BOOL CheckTotalCount(const std::string& name,
-                       base::Histogram::Count expected_count,
+                       base::Histogram::Count32 expected_count,
                        const base::HistogramSamples& samples,
                        FailureBlock failure_block) const;
 
   // Used to determine the histogram changes made during this instance's
   // lifecycle. This instance takes ownership of the samples, which are deleted
   // when the instance is destroyed.
-  std::map<std::string, std::unique_ptr<base::HistogramSamples>>
+  std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       histograms_snapshot_;
 };
 
 struct Bucket {
-  Bucket(base::HistogramBase::Sample min, base::HistogramBase::Count count)
+  Bucket(base::HistogramBase::Sample32 min, base::HistogramBase::Count32 count)
       : min(min), count(count) {}
 
   bool operator==(const Bucket& other) const;
 
-  base::HistogramBase::Sample min;
-  base::HistogramBase::Count count;
+  base::HistogramBase::Sample32 min;
+  base::HistogramBase::Count32 count;
 };
 
 }  // namespace chrome_test_util

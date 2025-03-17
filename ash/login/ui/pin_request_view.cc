@@ -195,7 +195,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       background_color_id, kPinRequestViewRoundedCornerRadiusDp));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
@@ -235,7 +235,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   const ui::ColorId icon_color_id = cros_tokens::kCrosSysOnSurface;
   icon->SetImage(ui::ImageModel::FromVectorIcon(
       kPinRequestLockIcon, icon_color_id, kLockIconSizeDp));
-  icon_view->AddChildView(icon);
+  icon_view->AddChildViewRaw(icon);
 
   // Back button. Note that it should be the last view added to |header| in
   // order to be clickable.
@@ -266,7 +266,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   back_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_BACK_BUTTON_ACCESSIBLE_NAME));
   back_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  back_button_view->AddChildView(back_button_.get());
+  back_button_view->AddChildViewRaw(back_button_.get());
 
   auto add_spacer = [&](int height) {
     auto* spacer = new NonAccessibleView();
@@ -280,7 +280,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
 
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -294,8 +294,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   title_label_->SetFontList(gfx::FontList().Derive(
       kTitleFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   decorate_label(title_label_);
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  AddChildView(title_label_.get());
+  title_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
+  AddChildViewRaw(title_label_.get());
 
   add_spacer(kTitleToDescriptionDistanceDp);
 
@@ -310,9 +310,9 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   description_label_->SetFontList(
       gfx::FontList().Derive(kDescriptionFontSizeDeltaDp, gfx::Font::NORMAL,
                              gfx::Font::Weight::NORMAL));
-  description_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  description_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   decorate_label(description_label_);
-  AddChildView(description_label_.get());
+  AddChildViewRaw(description_label_.get());
 
   add_spacer(kDescriptionToAccessCodeDistanceDp);
 
@@ -353,7 +353,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
                        /*on_submit=*/LoginPinView::OnPinSubmit());
   // Backspace key is always enabled and |access_code_| field handles it.
   pin_keyboard_view_->OnPasswordTextChanged(false);
-  AddChildView(pin_keyboard_view_.get());
+  AddChildViewRaw(pin_keyboard_view_.get());
 
   add_spacer(kPinKeyboardToFooterDistanceDp);
 
@@ -373,9 +373,9 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
-  help_button_->SetEnabledTextColorIds(cros_tokens::kCrosSysSecondary);
+  help_button_->SetEnabledTextColors(cros_tokens::kCrosSysSecondary);
   help_button_->SetVisible(request.help_button_enabled);
-  footer->AddChildView(help_button_.get());
+  footer->AddChildViewRaw(help_button_.get());
 
   auto* horizontal_spacer = new NonAccessibleView();
   footer->AddChildView(horizontal_spacer);
@@ -389,7 +389,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   static_cast<IconButton*>(submit_button_)->SetToggled(true);
   submit_button_->SetEnabled(false);
   submit_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  footer->AddChildView(submit_button_.get());
+  footer->AddChildViewRaw(submit_button_.get());
   add_spacer(kSubmitButtonBottomMarginDp);
 
   pin_keyboard_view_->SetVisible(PinKeyboardVisible());
@@ -475,15 +475,16 @@ void PinRequestView::UpdateState(PinRequestViewState state,
     case PinRequestViewState::kNormal: {
       const ui::ColorId normal_color_id = cros_tokens::kCrosSysOnSurface;
       access_code_view_->SetInputColorId(normal_color_id);
-      title_label_->SetEnabledColorId(normal_color_id);
+      title_label_->SetEnabledColor(normal_color_id);
       return;
     }
     case PinRequestViewState::kError: {
       const ui::ColorId error_color_id = cros_tokens::kCrosSysError;
       access_code_view_->SetInputColorId(error_color_id);
-      title_label_->SetEnabledColorId(error_color_id);
+      title_label_->SetEnabledColor(error_color_id);
       // Read out the error.
-      title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      title_label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                       true);
       return;
     }
   }

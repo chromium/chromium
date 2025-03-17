@@ -125,7 +125,7 @@ DISPLAY_MANAGER_EXPORT bool IsDisplayIdListSorted(const DisplayIdList& list);
 template <typename Range, typename UnaryOperation = std::identity>
 DisplayIdList GenerateDisplayIdList(Range&& range, UnaryOperation op = {}) {
   DisplayIdList list;
-  base::ranges::transform(range, std::back_inserter(list), op);
+  std::ranges::transform(range, std::back_inserter(list), op);
   SortDisplayIdList(&list);
   return list;
 }

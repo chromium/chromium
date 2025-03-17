@@ -28,7 +28,7 @@ class ScriptState;
 // Return the operators in topological order by searching from the named
 // output operands. It ensures operator 'j' appears before operator 'i' in the
 // result, if 'i' depends on 'j'.
-MODULES_EXPORT HeapVector<Member<const MLOperator>>*
+MODULES_EXPORT GCedHeapVector<Member<const MLOperator>>*
 GetOperatorsInTopologicalOrder(const MLNamedOperands& named_outputs);
 
 MODULES_EXPORT DOMArrayBufferView::ViewType GetArrayBufferViewType(

@@ -10,6 +10,7 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/content_notifications/content_notifications_view_controller_delegate.h"
 
+class GaiaId;
 class PrefService;
 enum class PushNotificationClientId;
 @class TableViewSwitchItem;
@@ -24,7 +25,7 @@ class ContentNotificationService;
 // Initializes the mediator with the user's pref service and gaia ID to
 // manipulate their push notification permissions.
 - (instancetype)initWithPrefService:(PrefService*)prefs
-                             gaiaID:(const std::string&)gaiaID
+                             gaiaID:(const GaiaId&)gaiaID
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

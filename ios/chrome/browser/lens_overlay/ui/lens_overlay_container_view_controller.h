@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
+
 @protocol LensOverlayCommands;
 
 /// The top level view controller for lens overlay.
@@ -24,7 +26,8 @@
 
 /// The selection view controller contained by this view controller.
 /// Currently should be set by `viewDidLoad` and only set once.
-@property(nonatomic, strong) UIViewController* selectionViewController;
+@property(nonatomic, strong)
+    UIViewController<ChromeLensOverlay>* selectionViewController;
 
 /// Disables the interaction with the presented overlay.
 @property(nonatomic, assign) BOOL selectionInteractionDisabled;

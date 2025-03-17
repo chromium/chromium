@@ -39,7 +39,7 @@ suite('PrivateStateTokensAppTest', () => {
 
     assertFalse(app.$.drawer.open);
     const menuButton =
-        app.$.toolbar.$.mainToolbar.shadowRoot!.querySelector<HTMLElement>(
+        app.$.toolbar.$.mainToolbar.shadowRoot.querySelector<HTMLElement>(
             '#menuButton');
     assertTrue(isVisible(menuButton));
     assertTrue(!!menuButton);
@@ -52,16 +52,17 @@ suite('PrivateStateTokensAppTest', () => {
     assertFalse(isVisible(app.$.drawer));
   });
 
-  test('check rendered item', async () => {
-    const container = app.shadowRoot!.querySelector<HTMLElement>('#container')!
-                          .querySelector<HTMLElement>('#content');
+  test('check rendered item', () => {
+    const container =
+        app.shadowRoot.querySelector<HTMLElement>(
+                          '#container')!.querySelector<HTMLElement>('#content');
     assertTrue(!!container);
     const contentContainer =
         container.querySelector<PrivateStateTokensNavigationElement>(
             'private-state-tokens-navigation');
     assertTrue(!!contentContainer);
     const contentContainerChild =
-        contentContainer.shadowRoot!.querySelector<HTMLElement>(
+        contentContainer.shadowRoot.querySelector<HTMLElement>(
             'private-state-tokens-list-container');
     assertEquals(
         app.itemToRender, ItemsToRender.ISSUER_LIST,

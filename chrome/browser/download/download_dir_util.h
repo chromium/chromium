@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -17,13 +16,10 @@ struct PolicyHandlerParameters;
 
 namespace download_dir_util {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kLocationGoogleDrive[];
-extern const char kLocationOneDrive[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kDriveNamePolicyVariableName[];
+extern const char kLocationGoogleDrive[];
+extern const char kLocationOneDrive[];
 extern const char kOneDriveNamePolicyVariableName[];
 
 // Returns whether |string_value| points to a directory in Drive or not.

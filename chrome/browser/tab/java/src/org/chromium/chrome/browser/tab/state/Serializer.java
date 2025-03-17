@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Used for serializing {@link PersistedTabData}.
  * @param <T> Return type of {@link Serializer}
  */
+@NullMarked
 public interface Serializer<T> {
     /**
      * Acquires serialized {@link PersistedTabData}. Not all
@@ -17,8 +19,7 @@ public interface Serializer<T> {
      * step but if they do, get() assumes preSerialize() has been called
      * Must be called from a background thread.
      */
-    @Nullable
-    T get();
+    @Nullable T get();
 
     /** Prepares data for serialization. Must be called from the UI thread. */
     default void preSerialize() {}

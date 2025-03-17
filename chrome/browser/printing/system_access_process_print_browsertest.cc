@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -646,10 +647,10 @@ class SystemAccessProcessPrintBrowserTestBase
       enabled_features.push_back(
           {features::kEnableOopPrintDrivers,
            {{features::kEnableOopPrintDriversEarlyStart.name,
-             EarlyStartService() ? "true" : "false"},
+             base::ToString(EarlyStartService())},
             {features::kEnableOopPrintDriversJobPrint.name, "true"},
             {features::kEnableOopPrintDriversSandbox.name,
-             SandboxService() ? "true" : "false"}}});
+             base::ToString(SandboxService())}}});
 #if BUILDFLAG(IS_WIN)
       if (UseXps()) {
         enabled_features.push_back({features::kUseXpsForPrinting, {}});

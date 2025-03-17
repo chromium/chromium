@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 
 #include <optional>
@@ -44,7 +49,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -184,9 +188,7 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
 
   if (!log_entries_.empty()) {
     auto& [log_entry, render_time] = log_entries_.back();
-    auto* quality =
-        log_entry
-            ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
+    auto* quality = log_entry->log_ai_data_request()->mutable_wallpaper_search()->mutable_quality();
     quality->set_final_request_in_session(true);
     if (render_time.has_value()) {
       quality->set_complete_latency_ms(
@@ -543,7 +545,9 @@ void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
     auto* quality =
         log_entries_.back()
             .first
-            ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
+            ->log_ai_data_request()
+            ->mutable_wallpaper_search()
+            ->mutable_quality();
     if (quality) {
       quality->set_user_feedback(user_feedback);
     }
@@ -959,7 +963,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     auto& [prev_log_entry, render_time] = log_entries_.back();
     if (render_time.has_value()) {
       prev_log_entry
-          ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>()
+          ->log_ai_data_request()->mutable_wallpaper_search()->mutable_quality()
           ->set_complete_latency_ms(
               (base::Time::Now() - *render_time).InMilliseconds());
     }
@@ -990,7 +994,9 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     auto* quality =
         log_entries_.back()
             .first
-            ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
+            ->log_ai_data_request()
+            ->mutable_wallpaper_search()
+            ->mutable_quality();
     quality->set_session_id(session_id_);
     quality->set_index(log_entries_.size() - 1);
     // We will set this to true for the respective log entry when the side panel
@@ -1030,8 +1036,9 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     if (!log_entries_.empty()) {
       auto* quality =
           log_entries_.back()
-              .first->quality_data<
-                  optimization_guide::WallpaperSearchFeatureTypeMap>();
+              .first->log_ai_data_request()
+              ->mutable_wallpaper_search()
+              ->mutable_quality();
       image_quality = quality->add_images_quality();
       image_quality->set_image_id(image.image_id());
       // We default to false and will flip if image was previewed or selected.

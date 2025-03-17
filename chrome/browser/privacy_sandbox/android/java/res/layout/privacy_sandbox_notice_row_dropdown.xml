@@ -23,6 +23,7 @@ found in the LICENSE file.
         style="@style/TextAppearance.TextMediumThick.Secondary" />
 
     <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_description_1"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,6 +57,7 @@ found in the LICENSE file.
         style="@style/TextAppearance.TextMedium.Secondary" />
 
     <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_description_3"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,6 +66,7 @@ found in the LICENSE file.
         style="@style/TextAppearance.TextMedium.Secondary" />
 
     <TextView
+        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_heading_2"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,6 +75,7 @@ found in the LICENSE file.
         style="@style/TextAppearance.TextMediumThick.Secondary" />
 
     <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_description_4"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

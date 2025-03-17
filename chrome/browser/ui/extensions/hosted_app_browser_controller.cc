@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -142,15 +141,7 @@ bool HostedAppBrowserController::IsUrlInAppScope(const GURL& url) const {
     return false;
   }
 
-  const std::vector<UrlHandlerInfo>* url_handlers =
-      UrlHandlers::GetUrlHandlers(extension);
-
-  // We don't have a scope, fall back to same origin check.
-  if (!url_handlers) {
-    return IsSameHostAndPort(GetAppStartUrl(), url);
-  }
-
-  return UrlHandlers::CanBookmarkAppHandleUrl(extension, url);
+  return IsSameHostAndPort(GetAppStartUrl(), url);
 }
 
 const Extension* HostedAppBrowserController::GetExtension() const {

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
@@ -64,6 +63,8 @@ component("network_service") {
     "is_browser_initiated.h",
     "keepalive_statistics_recorder.cc",
     "keepalive_statistics_recorder.h",
+    "known_legacy_scope_domains_delegate.cc",
+    "known_legacy_scope_domains_delegate.h",
     "mojo_host_resolver_impl.cc",
     "mojo_host_resolver_impl.h",
     "net_log_exporter.cc",
@@ -270,13 +271,6 @@ component("network_service") {
 
   if (is_chromeos) {
     sources += [
-      "cert_verifier_with_trust_anchors.cc",
-      "cert_verifier_with_trust_anchors.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
       "dhcp_pac_file_fetcher_mojo.cc",
       "dhcp_pac_file_fetcher_mojo.h",
     ]
@@ -309,7 +303,6 @@ component("network_service") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/cookie_config",
     "//components/domain_reliability",
@@ -319,6 +312,7 @@ component("network_service") {
     "//components/ip_protection/common:ip_protection_proxy_delegate",
     "//components/ip_protection/common:ip_protection_telemetry_uma",
     "//components/ip_protection/common:masked_domain_list_manager",
+    "//components/ip_protection/common:probabilistic_reveal_token_registry",
     "//components/miracle_parameter/common",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
@@ -437,6 +431,7 @@ source_set("tests") {
     "http_cache_data_remover_unittest.cc",
     "ignore_errors_cert_verifier_unittest.cc",
     "keepalive_statistics_recorder_unittest.cc",
+    "known_legacy_scope_domains_delegate_unittest.cc",
     "mojo_host_resolver_impl_unittest.cc",
     "net_log_proxy_sink_unittest.cc",
     "network_change_manager_unittest.cc",
@@ -523,11 +518,8 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    sources += [
-      "cert_verifier_with_trust_anchors_unittest.cc",
-      "dhcp_pac_file_fetcher_mojo_unittest.cc",
-    ]
+  if (is_chromeos) {
+    sources += [ "dhcp_pac_file_fetcher_mojo_unittest.cc" ]
   }
 
   if (is_win) {
@@ -539,13 +531,17 @@ source_set("tests") {
     ]
   }
 
+  if (enable_device_bound_sessions) {
+    sources += [ "device_bound_session_manager_unittest.cc" ]
+  }
+
   deps = [
     ":network_service",
     ":test_support",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/ip_protection/common:ip_protection_telemetry_uma",
     "//components/ip_protection/common:masked_domain_list_manager",
+    "//components/ip_protection/common:probabilistic_reveal_token_registry",
     "//components/network_session_configurator/browser",
     "//components/os_crypt/async/browser:test_support",
     "//components/os_crypt/sync:test_support",
@@ -598,7 +594,10 @@ source_set("tests") {
   }
 
   if (use_blink) {
-    deps += [ "//services/proxy_resolver:lib" ]
+    deps += [
+      "//services/proxy_resolver:lib",
+      "//third_party/blink/public/common:preloading_headers",
+    ]
   }
 }
 
@@ -663,7 +662,7 @@ source_set("test_support") {
     "test/url_loader_context_for_tests.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "mock_mojo_dhcp_wpad_url_client.cc",
       "mock_mojo_dhcp_wpad_url_client.h",
@@ -680,7 +679,6 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/cbor:cbor",
     "//mojo/public/cpp/bindings",
     "//net",

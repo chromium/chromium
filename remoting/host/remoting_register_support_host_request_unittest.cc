@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "remoting/base/fake_oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/test_rsa_key_pair.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
@@ -27,7 +27,7 @@ namespace {
 using testing::_;
 
 using RegisterSupportHostResponseCallback = base::OnceCallback<void(
-    const ProtobufHttpStatus&,
+    const HttpStatus&,
     std::unique_ptr<apis::v1::RegisterSupportHostResponse>)>;
 
 constexpr char kSupportId[] = "123321456654";
@@ -49,7 +49,7 @@ void RespondOk(RegisterSupportHostResponseCallback callback) {
   auto response = std::make_unique<apis::v1::RegisterSupportHostResponse>();
   response->set_support_id(kSupportId);
   response->set_support_id_lifetime_seconds(kSupportIdLifetime.InSeconds());
-  std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
+  std::move(callback).Run(HttpStatus::OK(), std::move(response));
 }
 
 decltype(auto) DoValidateRegisterHostAndRespondOk() {
@@ -72,6 +72,14 @@ decltype(auto) DoValidateEnterpriseOptionsAndRespondOk(
               params.show_troubleshooting_tools);
     ASSERT_EQ(options.allow_reconnections(), params.allow_reconnections);
     ASSERT_EQ(options.allow_file_transfer(), params.allow_file_transfer);
+    ASSERT_EQ(options.connection_dialog_required(),
+              params.connection_dialog_required);
+    if (params.connection_auto_accept_timeout.is_zero()) {
+      ASSERT_FALSE(options.has_connection_auto_accept_timeout());
+    } else {
+      ASSERT_EQ(options.connection_auto_accept_timeout().seconds(),
+                params.connection_auto_accept_timeout.InSeconds());
+    }
     ValidateRegisterHost(*request);
     RespondOk(std::move(callback));
   };
@@ -160,7 +168,14 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterFtl) {
 }
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsDisabled) {
-  ChromeOsEnterpriseParams params{false, false, false};
+  ChromeOsEnterpriseParams params;
+  params.show_troubleshooting_tools = false;
+  params.allow_troubleshooting_tools = false;
+  params.allow_reconnections = false;
+  params.allow_file_transfer = false;
+  params.connection_dialog_required = false;
+  params.connection_auto_accept_timeout = base::Seconds(0);
+
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
 
@@ -179,7 +194,14 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsDisabled) {
 }
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsEnabled) {
-  ChromeOsEnterpriseParams params{true, true, true};
+  ChromeOsEnterpriseParams params;
+  params.show_troubleshooting_tools = true;
+  params.allow_troubleshooting_tools = true;
+  params.allow_reconnections = true;
+  params.allow_file_transfer = true;
+  params.connection_dialog_required = true;
+  params.connection_auto_accept_timeout = base::Seconds(30);
+
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
 
@@ -224,8 +246,8 @@ TEST_F(RemotingRegisterSupportHostTest, FailedWithDeadlineExceeded) {
              RegisterSupportHostResponseCallback callback) {
             ValidateRegisterHost(*request);
             std::move(callback).Run(
-                ProtobufHttpStatus(ProtobufHttpStatus::Code::DEADLINE_EXCEEDED,
-                                   "deadline exceeded"),
+                HttpStatus(HttpStatus::Code::DEADLINE_EXCEEDED,
+                           "deadline exceeded"),
                 nullptr);
           });
   EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);

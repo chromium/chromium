@@ -47,7 +47,6 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
     icon_background_ = AddChildView(std::make_unique<views::View>());
     if (item_in_folder_icon_) {
       icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-      icon_background_->layer()->SetFillsBoundsOpaquely(false);
     } else {
       const int background_diameter =
           app_list_config->GetShortcutBackgroundContainerDimension();
@@ -55,7 +54,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
           background_diameter, background_diameter,
           app_list_config->GetShortcutHostBadgeIconContainerDimension() / 2,
           background_diameter);
-      icon_background_->SetBackground(views::CreateThemedRoundedRectBackground(
+      icon_background_->SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBaseOpaque, rounded_corners, 0));
     }
   }
@@ -65,7 +64,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_size_));
   auto icon_image = std::make_unique<views::ImageView>();
-  icon_image->SetImage(resized);
+  icon_image->SetImage(ui::ImageModel::FromImageSkia(resized));
   icon_ = AddChildView(std::move(icon_image));
   if (icon_background_ && icon_background_->layer()) {
     icon_->SetPaintToLayer();
@@ -79,7 +78,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets(
             app_list_config->shortcut_host_badge_icon_border_margin())));
-    badge_container_->SetBackground(views::CreateThemedRoundedRectBackground(
+    badge_container_->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBaseOpaque,
         app_list_config->GetShortcutHostBadgeIconContainerDimension() / 2));
     if (item_in_folder_icon_) {
@@ -91,8 +90,9 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
     const gfx::Size badge_icon_size =
         gfx::Size(app_list_config->shortcut_host_badge_icon_dimension(),
                   app_list_config->shortcut_host_badge_icon_dimension());
-    badge_icon_view->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        badge_icon, skia::ImageOperations::RESIZE_BEST, badge_icon_size));
+    badge_icon_view->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            badge_icon, skia::ImageOperations::RESIZE_BEST, badge_icon_size)));
   }
 
   auto title_label = std::make_unique<views::Label>();
@@ -106,7 +106,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
           ? TypographyToken::kCrosAnnotation1
           : TypographyToken::kCrosButton2,
       *title_label);
-  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   title_label->SetLineHeight(app_list_config->app_title_max_line_height());
   title_label->SetText(title);
   if (item_in_folder_icon_) {

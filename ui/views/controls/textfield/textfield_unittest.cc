@@ -1807,11 +1807,9 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
 
     ~TestDelegate() override = default;
 
-    bool GetTextEditCommandsForEvent(
-        const ui::Event& event,
-        int text_flags,
-        std::vector<ui::TextEditCommandAuraLinux>* commands) override {
-      return false;
+    ui::TextEditCommand GetTextEditCommandForEvent(const ui::Event& event,
+                                                   int text_flags) override {
+      return ui::TextEditCommand::INVALID_COMMAND;
     }
   };
 
@@ -2125,12 +2123,11 @@ TEST_F(TextfieldTest, DragToSelect) {
 
   // Check that dragging left selects the beginning of the string.
   DragMouseTo(gfx::Point(0, cursor_y));
-  std::u16string text_left = textfield_->GetSelectedText();
-  EXPECT_EQ(u"hello", text_left);
+  EXPECT_EQ(u"hello", textfield_->GetSelectedText());
 
   // Check that dragging right selects the rest of the string.
   DragMouseTo(end_point);
-  std::u16string text_right = textfield_->GetSelectedText();
+  std::u16string text_right(textfield_->GetSelectedText());
   EXPECT_EQ(u" world", text_right);
 
   // Check that releasing in the same location does not alter the selection.
@@ -4293,7 +4290,7 @@ TEST_F(TextfieldTest, InitialAccessibilityProperties) {
 TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   InitTextfield();
   std::u16string test_tooltip_text = u"Test Accessible Name";
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   textfield_->GetViewAccessibility().SetName(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
@@ -5309,10 +5306,9 @@ TEST_F(TextfieldTest, ChangeTextDirectionAndLayoutAlignmentTest) {
 
   textfield_->ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection::RIGHT_TO_LEFT);
-  const std::u16string& text =
-      GetTextfieldTestApi().GetRenderText()->GetDisplayText();
   base::i18n::TextDirection text_direction =
-      base::i18n::GetFirstStrongCharacterDirection(text);
+      base::i18n::GetFirstStrongCharacterDirection(
+          GetTextfieldTestApi().GetRenderText()->GetDisplayText());
   EXPECT_EQ(textfield_->GetTextDirection(), text_direction);
   EXPECT_EQ(textfield_->GetHorizontalAlignment(),
             gfx::HorizontalAlignment::ALIGN_RIGHT);

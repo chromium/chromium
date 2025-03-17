@@ -435,11 +435,17 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
       item1->GetDict().FindStringByDottedPath("args.params.foo");
   ASSERT_TRUE(item1_params);
   EXPECT_EQ("bar", *item1_params);
+  const std::string* item1_param_source_start_time =
+      item1->GetDict().FindStringByDottedPath("args.params.source_start_time");
+  EXPECT_NE(item1_param_source_start_time, nullptr);
 
-  // Perfetto tracing backend skips empty args.
+  // Events emitted by TraceNetLogObserver always have params.
   const base::Value::Dict* item2_args =
       item2->GetDict().FindDictByDottedPath("args");
-  EXPECT_FALSE(item2_args->contains("params"));
+  EXPECT_TRUE(item2_args->contains("params"));
+  const std::string* item2_param_source_start_time =
+      item2->GetDict().FindStringByDottedPath("args.params.source_start_time");
+  EXPECT_NE(item2_param_source_start_time, nullptr);
 }
 
 TEST(TraceNetLogObserverCategoryTest, DisabledCategory) {

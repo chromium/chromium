@@ -584,10 +584,12 @@ interface PageLoadMetrics {
                SoftNavigationMetrics soft_navigation_metrics);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
-  // to the browser. The structure is defined in
-  // //cc/metrics/ukm_smoothness_data.h
-  SetUpSharedMemoryForSmoothness(
-      mojo_base.mojom.ReadOnlySharedMemoryRegion shared_memory);
+  // to the browser. The structures are defined in
+  // //cc/metrics/ukm_smoothness_data.h and
+  // //cc/metrics/ukm_dropped_frames_data.h
+  SetUpSharedMemoryForUkms(
+    mojo_base.mojom.ReadOnlySharedMemoryRegion smoothness_memory,
+    mojo_base.mojom.ReadOnlySharedMemoryRegion dropped_frames_memory);
 
   // Called when performance entries are added via `performance.mark()` from the
   // outermost main frame in renderer, except for the case when standard

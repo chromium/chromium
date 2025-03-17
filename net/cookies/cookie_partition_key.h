@@ -5,13 +5,13 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEY_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEY_H_
 
+#include <compare>
 #include <optional>
 #include <string>
 
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "net/base/cronet_buildflags.h"
-#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
@@ -71,8 +71,7 @@ class NET_EXPORT CookiePartitionKey {
   ~CookiePartitionKey();
 
   bool operator==(const CookiePartitionKey& other) const;
-  bool operator!=(const CookiePartitionKey& other) const;
-  bool operator<(const CookiePartitionKey& other) const;
+  std::strong_ordering operator<=>(const CookiePartitionKey& other) const;
 
   // Methods for serializing and deserializing a partition key to/from a string.
   // This is currently used for:
@@ -207,15 +206,10 @@ class NET_EXPORT CookiePartitionKey {
       CookiePartitionKey::AncestorChainBit has_cross_site_ancestor,
       CookiePartitionKey::ParsingMode parsing_mode);
 
-  AncestorChainBit MaybeAncestorChainBit() const;
+  AncestorChainBit GetAncestorChainBit() const { return ancestor_chain_bit_; }
 
   SchemefulSite site_;
   bool from_script_ = false;
-  // crbug.com/328043119 remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies
-  //  when feature is no longer needed.
-  bool ancestor_chain_enabled_ = base::FeatureList::IsEnabled(
-      features::kAncestorChainBitEnabledInPartitionedCookies);
 
   // Having a nonce is a way to force a transient opaque `CookiePartitionKey`
   // for non-opaque origins.

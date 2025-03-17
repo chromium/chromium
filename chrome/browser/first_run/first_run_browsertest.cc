@@ -215,10 +215,6 @@ const char kWithTrackedPrefs[] =
 class FirstRunMasterPrefsWithTrackedPreferences
     : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs> {
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    FirstRunMasterPrefsBrowserTestT::SetUpCommandLine(command_line);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     FirstRunMasterPrefsBrowserTestT::SetUpInProcessBrowserTestFixture();
 

@@ -17,12 +17,10 @@ namespace ash {
 
 StubCrosSettingsProvider::StubCrosSettingsProvider(
     const NotifyObserversCallback& notify_cb)
-    : CrosSettingsProvider(notify_cb) {
-  SetDefaults();
-}
-
-StubCrosSettingsProvider::StubCrosSettingsProvider()
-  : CrosSettingsProvider(CrosSettingsProvider::NotifyObserversCallback()) {
+    : CrosSettingsProvider(notify_cb),
+      fake_provider_(
+          base::BindRepeating(&StubCrosSettingsProvider::OnValueChanged,
+                              base::Unretained(this))) {
   SetDefaults();
 }
 
@@ -30,17 +28,12 @@ StubCrosSettingsProvider::~StubCrosSettingsProvider() = default;
 
 const base::Value* StubCrosSettingsProvider::Get(std::string_view path) const {
   DCHECK(HandlesSetting(path));
-  const base::Value* value;
-  if (values_.GetValue(path, &value))
-    return value;
-  return nullptr;
+  return fake_provider_.Get(path);
 }
 
 CrosSettingsProvider::TrustedStatus
 StubCrosSettingsProvider::PrepareTrustedValues(base::OnceClosure* callback) {
-  if (trusted_status_ == TEMPORARILY_UNTRUSTED)
-    callbacks_.push_back(std::move(*callback));
-  return trusted_status_;
+  return fake_provider_.PrepareTrustedValues(callback);
 }
 
 bool StubCrosSettingsProvider::HandlesSetting(std::string_view path) const {
@@ -48,12 +41,7 @@ bool StubCrosSettingsProvider::HandlesSetting(std::string_view path) const {
 }
 
 void StubCrosSettingsProvider::SetTrustedStatus(TrustedStatus status) {
-  trusted_status_ = status;
-  if (trusted_status_ != TEMPORARILY_UNTRUSTED) {
-    std::vector<base::OnceClosure> callbacks_to_invoke = std::move(callbacks_);
-    for (base::OnceClosure& callback : callbacks_to_invoke)
-      std::move(callback).Run();
-  }
+  fake_provider_.SetTrustedStatus(status);
 }
 
 void StubCrosSettingsProvider::SetCurrentUserIsOwner(bool owner) {
@@ -62,14 +50,12 @@ void StubCrosSettingsProvider::SetCurrentUserIsOwner(bool owner) {
 
 void StubCrosSettingsProvider::Set(const std::string& path,
                                    const base::Value& value) {
-  bool is_value_changed = false;
-  if (current_user_is_owner_)
-    is_value_changed = values_.SetValue(path, value.Clone());
-  else
+  if (!current_user_is_owner_) {
     LOG(WARNING) << "Blocked changing setting from non-owner, setting=" << path;
-
-  if (is_value_changed || !current_user_is_owner_)
     NotifyObservers(path);
+    return;
+  }
+  fake_provider_.Set(path, value.Clone());
 }
 
 void StubCrosSettingsProvider::SetBoolean(const std::string& path,
@@ -93,20 +79,24 @@ void StubCrosSettingsProvider::SetString(const std::string& path,
 }
 
 void StubCrosSettingsProvider::SetDefaults() {
-  values_.SetBoolean(kAccountsPrefAllowGuest, true);
-  values_.SetBoolean(kAccountsPrefAllowNewUser, true);
-  values_.SetBoolean(kAccountsPrefFamilyLinkAccountsAllowed, false);
-  values_.SetBoolean(kAccountsPrefShowUserNamesOnSignIn, true);
-  values_.SetValue(kAccountsPrefUsers, base::Value(base::Value::Type::LIST));
-  values_.SetBoolean(kAllowBluetooth, true);
-  values_.SetBoolean(kDeviceWiFiAllowed, true);
-  values_.SetBoolean(kAttestationForContentProtectionEnabled, true);
-  values_.SetBoolean(kStatsReportingPref, true);
-  values_.SetValue(kAccountsPrefDeviceLocalAccounts,
-                   base::Value(base::Value::Type::LIST));
-  values_.SetBoolean(kDevicePeripheralDataAccessEnabled, true);
-  values_.SetBoolean(kRevenEnableDeviceHWDataUsage, false);
+  fake_provider_.Set(kAccountsPrefAllowGuest, true);
+  fake_provider_.Set(kAccountsPrefAllowNewUser, true);
+  fake_provider_.Set(kAccountsPrefFamilyLinkAccountsAllowed, false);
+  fake_provider_.Set(kAccountsPrefShowUserNamesOnSignIn, true);
+  fake_provider_.Set(kAccountsPrefUsers, base::Value(base::Value::Type::LIST));
+  fake_provider_.Set(kAllowBluetooth, true);
+  fake_provider_.Set(kDeviceWiFiAllowed, true);
+  fake_provider_.Set(kAttestationForContentProtectionEnabled, true);
+  fake_provider_.Set(kStatsReportingPref, true);
+  fake_provider_.Set(kAccountsPrefDeviceLocalAccounts,
+                     base::Value(base::Value::Type::LIST));
+  fake_provider_.Set(kDevicePeripheralDataAccessEnabled, true);
+  fake_provider_.Set(kRevenEnableDeviceHWDataUsage, false);
   // |kDeviceOwner| will be set to the logged-in user by |UserManager|.
+}
+
+void StubCrosSettingsProvider::OnValueChanged(const std::string& path) {
+  NotifyObservers(path);
 }
 
 }  // namespace ash

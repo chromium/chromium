@@ -43,7 +43,7 @@ bool HTMLUListElement::IsPresentationAttribute(
 void HTMLUListElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kTypeAttr) {
     if (EqualIgnoringASCIICase(value, keywords::kDisc)) {
       AddPropertyToPresentationAttributeStyle(

@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
@@ -84,10 +85,6 @@ class ChromeAuthenticatorRequestDelegate
     virtual void OnPreTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate) {}
 
-    // Called when ShowUI() is first invoked. The UI might not yet actually show
-    // at this point, depending on which step the model is at; see UIShown().
-    virtual void UIReady(ChromeAuthenticatorRequestDelegate* delegate) {}
-
     // Called when the UI dialog is shown.
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) {}
 
@@ -143,8 +140,10 @@ class ChromeAuthenticatorRequestDelegate
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override;
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
+      base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
+      PasswordSelectedCallback password_selected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback,
       base::RepeatingCallback<
@@ -170,11 +169,15 @@ class ChromeAuthenticatorRequestDelegate
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
-  void SetAmbientCredentialTypes(int credential_type_flags) override;
+  void SetCredentialTypes(int credential_type_flags) override;
   void SetCredentialIdFilter(std::vector<device::PublicKeyCredentialDescriptor>
                                  credential_list) override;
   void SetUserEntityForMakeCredentialRequest(
       const device::PublicKeyCredentialUserEntity& user_entity) override;
+  void ProvideChallengeUrl(
+      const GURL& url,
+      base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
+          callback) override;
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
@@ -213,6 +216,9 @@ class ChromeAuthenticatorRequestDelegate
       base::TickClock const* tick_clock,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  void SetPasswordControllerForTesting(
+      std::unique_ptr<PasswordCredentialController> controller);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            DaysSinceDate);
@@ -232,7 +238,22 @@ class ChromeAuthenticatorRequestDelegate
 
   bool webauthn_ui_enabled() const;
 
-  void ShowUI(device::FidoRequestHandlerBase::TransportAvailabilityInfo data);
+  // Returns `true` iff the handled request is an immediate `get()` request and
+  // no immediately available credentials found. This will trigger the
+  // `immediate_not_found_callback_` to notify the renderer.
+  bool MaybeHandleImmediateMediation(
+      const device::FidoRequestHandlerBase::TransportAvailabilityInfo& data,
+      const PasswordCredentialController::PasswordCredentials& passwords);
+
+  // Barriers showing the UI while waiting for
+  // - password credentials,
+  // - WebAuthn credentials,
+  // - enclave readiness.
+  void TryToShowUI();
+
+  void MaybeShowUI(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
+      PasswordCredentialController::PasswordCredentials passwords);
 
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
@@ -294,18 +315,22 @@ class ChromeAuthenticatorRequestDelegate
                                const std::string& rp_id);
 #endif
 
+  void OnPasswordCredentialsReceived(
+      PasswordCredentialController::PasswordCredentials credentials);
+
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const scoped_refptr<AuthenticatorRequestDialogModel> dialog_model_;
   const std::unique_ptr<AuthenticatorRequestDialogController>
       dialog_controller_;
   base::OnceClosure cancel_callback_;
+  base::OnceClosure immediate_not_found_callback_;
   base::RepeatingClosure start_over_callback_;
   AccountPreselectedCallback account_preselected_callback_;
+  PasswordSelectedCallback password_selected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
-  // The number of credential types that have been requested to be displayed
-  // in the Ambient credential UI.
-  int ambient_credential_types_ =
+  // The number of credential types that have been requested to be displayed.
+  int credential_types_ =
       static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
 
   // A list of credentials used to filter passkeys by ID. When non-empty,
@@ -322,18 +347,19 @@ class ChromeAuthenticatorRequestDelegate
   // available that can service requests for synced GPM passkeys.
   bool can_use_synced_phone_passkeys_ = false;
 
-  // TODO(crbug.com/40187814): Don't define this on ChromeOS.
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
+
+  std::unique_ptr<PasswordCredentialController> password_controller_;
 
   // Stores the TransportAvailabilityInfo while we're waiting for the enclave
   // state to load from the disk.
   std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
       pending_transport_availability_info_;
 
-  std::optional<device::FidoRequestType> request_type_;
-
-  std::optional<device::UserVerificationRequirement>
-      user_verification_requirement_;
+  // Stores the password credentials while waiting for enclave state, transport
+  // availability info to be ready.
+  std::unique_ptr<PasswordCredentialController::PasswordCredentials>
+      pending_password_credentials_;
 
   // This holds a `TrustedVaultConnection` which will be set on
   // `enclave_controller_` when it is created.

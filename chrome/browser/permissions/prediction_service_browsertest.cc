@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -29,7 +30,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
-#include "components/permissions/prediction_service/prediction_model_handler_provider.h"
+#include "components/permissions/prediction_service/prediction_model_handler.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -46,14 +47,11 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
  public:
   PredictionServiceBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPermissionOnDeviceNotificationPredictions,
-          {{feature_params::
-                kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
-            "0"}}},
+        {{features::kPermissionOnDeviceNotificationPredictions, {}},
          {optimization_guide::features::kOptimizationHints, {}},
          {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
          {features::kCpssUseTfliteSignatureRunner, {}}},
-        {});
+        {permissions::features::kPermissionsAIv1});
   }
 
   ~PredictionServiceBrowserTest() override = default;
@@ -145,12 +143,23 @@ IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest,
                        SignatureModelReturnsLikely) {
   ASSERT_TRUE(prediction_model_handler());
 
+  WebPermissionPredictionsModelMetadata metadata;
+  metadata.set_holdback_probability(0);
+  std::string serialized_metadata;
+  metadata.SerializeToString(&serialized_metadata);
+  auto any = std::make_optional<optimization_guide::proto::Any>();
+  any->set_value(serialized_metadata);
+  any->set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.protos.WebPermissionPredictionsModelMetadata");
+
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::
               OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
           optimization_guide::TestModelInfoBuilder()
               .SetModelFilePath(model_file_path())
+              .SetModelMetadata(any)
               .Build());
 
   prediction_model_handler()->WaitForModelLoadForTesting();

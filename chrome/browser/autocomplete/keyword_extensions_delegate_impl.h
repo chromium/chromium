@@ -59,7 +59,8 @@ class KeywordExtensionsDelegateImpl
   void OnOmniboxInputEntered() override;
   // OmniboxSuggestionsWatcher::Observer:
   void OnOmniboxSuggestionsReady(
-      extensions::api::omnibox::SendSuggestions::Params* suggestions) override;
+      extensions::api::omnibox::SendSuggestions::Params* suggestions,
+      const std::string& extension_id) override;
   void OnOmniboxDefaultSuggestionChanged() override;
 
   ACMatches* matches() { return &provider_->matches_; }

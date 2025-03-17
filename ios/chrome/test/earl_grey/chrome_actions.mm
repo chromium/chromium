@@ -69,4 +69,8 @@ id<GREYAction> AccessibilitySwipeRight() {
   return [ChromeActionsAppInterface accessibilitySwipeRight];
 }
 
+id<GREYAction> OverscrollSwipe(GREYDirection direction) {
+  return [ChromeActionsAppInterface overscrollSwipe:direction];
+}
+
 }  // namespace chrome_test_util

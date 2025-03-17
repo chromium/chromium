@@ -400,8 +400,9 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 // Hides the password and toggles the "Show/Hide" button.
 - (void)hidePassword {
-  if (!self.clearPassword)
+  if (!self.clearPassword) {
     return;
+  }
   self.clearPassword = nil;
   [self updatePasswordRow];
 }

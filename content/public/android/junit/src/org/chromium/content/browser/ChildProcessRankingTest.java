@@ -25,7 +25,7 @@ public class ChildProcessRankingTest {
         TestChildProcessConnection connection =
                 new TestChildProcessConnection(
                         new ComponentName("pkg", "cls"),
-                        /* bindToCallerCheck= */ false,
+                        /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
                         /* serviceBundle= */ null);
         connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
@@ -107,7 +107,7 @@ public class ChildProcessRankingTest {
         // Invisible frame.
         ranking.addConnection(
                 c1,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -115,13 +115,13 @@ public class ChildProcessRankingTest {
         // Visible subframe outside viewport.
         ranking.addConnection(
                 c2,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 2,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);
@@ -129,13 +129,13 @@ public class ChildProcessRankingTest {
         // Visible subframe inside viewport.
         ranking.addConnection(
                 c4,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 2,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c5,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -143,7 +143,7 @@ public class ChildProcessRankingTest {
         // Visible main frame.
         ranking.addConnection(
                 c6,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -172,25 +172,25 @@ public class ChildProcessRankingTest {
         // Insert in lowest ranked to highest ranked order.
         ranking.addConnection(
                 c1,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.MODERATE);
         ranking.addConnection(
                 c3,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.IMPORTANT);
         ranking.addConnection(
                 c4,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.IMPORTANT);
@@ -213,25 +213,25 @@ public class ChildProcessRankingTest {
         // c1,2 are in one tab, and c3,4 are in second tab.
         ranking.addConnection(
                 c1,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c4,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -240,25 +240,25 @@ public class ChildProcessRankingTest {
         // Switch from tab c1,2 to tab c3,c4.
         ranking.updateConnection(
                 c1,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.updateConnection(
                 c2,
-                /* foreground= */ false,
+                /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.updateConnection(
                 c3,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.updateConnection(
                 c4,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -280,19 +280,19 @@ public class ChildProcessRankingTest {
         // Insert in lowest ranked to highest ranked order.
         ranking.addConnection(
                 c1,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -313,19 +313,19 @@ public class ChildProcessRankingTest {
         long intOverflow = ((long) Integer.MAX_VALUE) * 2;
         ranking.addConnection(
                 c3,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ intOverflow - 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 10,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c1,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ intOverflow,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -343,13 +343,13 @@ public class ChildProcessRankingTest {
 
         ranking.addConnection(
                 c1,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
                 ChildProcessImportance.NORMAL);
@@ -357,7 +357,7 @@ public class ChildProcessRankingTest {
         try {
             ranking.addConnection(
                     c3,
-                    /* foreground= */ true,
+                    /* visible= */ true,
                     /* frameDepth= */ 1,
                     /* intersectsViewport= */ true,
                     ChildProcessImportance.NORMAL);
@@ -378,19 +378,19 @@ public class ChildProcessRankingTest {
 
         ranking.addConnection(
                 c1,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.IMPORTANT);
         ranking.addConnection(
                 c2,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 2,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 3,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);
@@ -401,7 +401,7 @@ public class ChildProcessRankingTest {
         c1.getAndResetRebindCalled();
         ranking.updateConnection(
                 c3,
-                /* foreground= */ true,
+                /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
                 ChildProcessImportance.NORMAL);

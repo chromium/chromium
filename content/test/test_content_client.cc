@@ -14,6 +14,10 @@ TestContentClient::TestContentClient() = default;
 
 TestContentClient::~TestContentClient() = default;
 
+bool TestContentClient::HasDataResource(int resource_id) const {
+  return ui::ResourceBundle::GetSharedInstance().HasDataResource(resource_id);
+}
+
 std::string_view TestContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {

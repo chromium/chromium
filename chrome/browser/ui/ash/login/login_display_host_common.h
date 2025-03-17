@@ -37,7 +37,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public BrowserListObserver,
                                public SigninUI {
  public:
-  LoginDisplayHostCommon();
+  explicit LoginDisplayHostCommon(bool update_geolocation_usage_allowed);
 
   LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
   LoginDisplayHostCommon& operator=(const LoginDisplayHostCommon&) = delete;

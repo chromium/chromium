@@ -11,8 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/infobars/core/infobar.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -36,7 +36,7 @@ std::unique_ptr<views::View> MakeRestartView() {
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  view->AddChildView(message_label);
+  view->AddChildViewRaw(message_label);
 
   return view;
 }
@@ -94,7 +94,7 @@ bool ProcessSharingInfobarDelegate::Accept() {
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   delegate->SetAcceptCallback(base::BindOnce(
       [](base::WeakPtr<content::WebContents> inspected_web_contents) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         PrefService* prefs = Profile::FromBrowserContext(
                                  inspected_web_contents->GetBrowserContext())
                                  ->GetPrefs();

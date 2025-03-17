@@ -260,6 +260,138 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   ASSERT_NO_FATAL_FAILURE(chrome::CloseAllBrowsers());
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
+                       ServiceWorkerIsCrossOriginIsolated) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", R"html(
+                  <html>
+                    <head>
+                      <script type="text/javascript" src="/script.js"></script>
+                    </head>
+                  </html>
+                  )html")
+          .AddJs("/script.js", R"js(
+            const policy = trustedTypes.createPolicy('default', {
+              createScriptURL(url) {
+                return new URL(url, document.baseURI);
+              },
+            });
+
+            const wait_for_coi = async (registration) => {
+              return new Promise((resolve, reject) => {
+                navigator.serviceWorker.addEventListener("message", (event) => {
+                  if (event.data && event.data.type === "coi-response") {
+                    if (event.data.coi) {
+                      resolve();
+                    }
+                  }
+                }, { once: true });
+                registration.active.postMessage({ type: "coi" });
+              });
+            };
+
+            window.addEventListener('load', (async () => {
+              navigator.serviceWorker.register(
+                policy.createScriptURL('service_worker.js'), {
+                  scope: '/',
+                }
+              );
+              await wait_for_coi(await navigator.serviceWorker.ready);
+              document.title = "The SW is cross-origin isolated!";
+            }));
+            )js")
+          .AddJs("/service_worker.js", R"js(
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(clients.claim());
+            });
+
+            self.addEventListener("message", async (event) => {
+              if (event.data && event.data.type === "coi") {
+                event.source.postMessage({
+                  type: "coi-response",
+                  coi: self.crossOriginIsolated,
+                });
+              }
+            });
+            )js")
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  auto [iwa_frame, url_info] = InstallAndOpenApp(app.get());
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateAndWaitForTitle(iwa_frame, url_info.origin().GetURL(),
+                              u"The SW is cross-origin isolated!"));
+}
+
+// This test validates that IWA shared workers are cross-origin isolated by
+// spawning a worker and asking it to respond with its own
+// `self.crossOriginIsolated` property; if that evaluates to `true`, the script
+// sets the document title accordingly.
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
+                       SharedWorkerIsCrossOriginIsolated) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", R"html(
+                  <html>
+                    <head>
+                      <script type="text/javascript" src="/script.js"></script>
+                    </head>
+                  </html>
+                  )html")
+          .AddJs("/script.js", R"js(
+            const policy = trustedTypes.createPolicy('default', {
+              createScriptURL(url) {
+                return new URL(url, document.baseURI);
+              },
+            });
+
+            const wait_for_coi = async (worker) => {
+              return new Promise(resolve => {
+                worker.port.onmessage = (event) => {
+                  if (event.data.type === "coi-response") {
+                    if (event.data.coi) {
+                      resolve();
+                    }
+                  }
+                };
+                worker.port.postMessage({ type: "coi-request" });
+              });
+            };
+
+            window.addEventListener('load', (async () => {
+              const worker = new SharedWorker(
+                policy.createScriptURL("/shared_worker.js")
+              );
+              worker.port.start();
+
+              await wait_for_coi(worker);
+              document.title = "The SW is cross-origin isolated!";
+            }));
+            )js")
+          .AddJs("/shared_worker.js", R"js(
+            self.addEventListener('connect', (event) => {
+              const port = event.ports[0];
+
+              port.onmessage = (e) => {
+                if (e.data.type === 'coi-request') {
+                  port.postMessage({
+                    type: "coi-response",
+                    coi: self.crossOriginIsolated,
+                  });
+                }
+              };
+
+              port.start();
+            });
+            )js")
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  auto [iwa_frame, url_info] = InstallAndOpenApp(app.get());
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateAndWaitForTitle(iwa_frame, url_info.origin().GetURL(),
+                              u"The SW is cross-origin isolated!"));
+}
+
 class IsolatedWebAppURLLoaderFactoryFrameBrowserTest
     : public IsolatedWebAppURLLoaderFactoryBrowserTest {
  protected:

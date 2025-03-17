@@ -192,9 +192,8 @@ class FormFieldParser {
   // Returns a MatchInfo if `field` matches one of the the passed `patterns`.
   static std::optional<MatchInfo> FieldMatchesMatchPatternRef(
       ParsingContext& context,
-      base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
-      const char* regex_name = "",
+      std::string_view regex_name,
       std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
           {});
 
@@ -204,7 +203,8 @@ class FormFieldParser {
   // Initial values assigned to FieldCandidates by their corresponding parsers.
   // There's an implicit precedence determined by the values assigned here.
   // Email is currently the most important followed by Phone, Travel, Address,
-  // Credit Card, IBAN, Price, Name, Merchant promo code, and Search.
+  // Credit Card, IBAN, Price, Loyalty Card, Name, Merchant promo code, and
+  // Search.
   static constexpr float kBaseEmailParserScore = 1.4f;
   static constexpr float kBasePhoneParserScore = 1.3f;
   static constexpr float kBaseTravelParserScore = 1.2f;
@@ -212,6 +212,7 @@ class FormFieldParser {
   static constexpr float kBaseCreditCardParserScore = 1.0f;
   static constexpr float kBaseIbanParserScore = 0.975f;
   static constexpr float kBasePriceParserScore = 0.95f;
+  static constexpr float kBaseLoyaltyCardParserScore = 0.95f;
   static constexpr float kBaseNameParserScore = 0.9f;
   static constexpr float kBaseMerchantPromoCodeParserScore = 0.85f;
   static constexpr float kBaseSearchParserScore = 0.8f;
@@ -229,16 +230,15 @@ class FormFieldParser {
       std::u16string_view pattern,
       std::vector<std::u16string>* groups = nullptr);
 
-  // Attempts to parse a form field with the given pattern.  Returns true on
-  // success and populates `match`.
+  // Looks up the patterns using `regex_name` and attempts to parse a form field
+  // with them.  Returns true on success and populates `match`.
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
   // MatchParams after dereferencing the `MatchPatternRef`s.
   static bool ParseField(
       ParsingContext& context,
       AutofillScanner* scanner,
-      base::span<const MatchPatternRef> patterns,
-      std::optional<FieldAndMatchInfo>* match,
-      const char* regex_name = "",
+      std::string_view regex_name,
+      std::optional<FieldAndMatchInfo>* match = nullptr,
       MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
 
   // Attempts to parse a field with an empty label. Returns true
@@ -316,17 +316,21 @@ class FormFieldParser {
       const AutofillField& field,
       std::u16string_view pattern,
       DenseSet<MatchAttribute> match_attributes,
-      const char* regex_name);
+      std::string_view regex_name,
+      bool is_negative_pattern = false);
 
   // Like `Match()`, but only for the label or name of the field.
-  static std::optional<MatchInfo> MatchInLabel(ParsingContext& context,
-                                               const AutofillField& field,
-                                               std::u16string_view pattern,
-                                               const char* regex_name);
+  static std::optional<MatchInfo> MatchInLabel(
+      ParsingContext& context,
+      const AutofillField& field,
+      std::u16string_view pattern,
+      std::string_view regex_name,
+      bool is_negative_pattern = false);
   static std::optional<MatchInfo> MatchInName(ParsingContext& context,
                                               const AutofillField& field,
                                               std::u16string_view pattern,
-                                              const char* regex_name);
+                                              std::string_view regex_name,
+                                              bool is_negative_pattern = false);
 
   // Perform a "pass" over the |fields| where each pass uses the supplied
   // |parse| method to match content to a given field type.

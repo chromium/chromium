@@ -91,13 +91,13 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : db_path_(profile->GetPath().Append(kPredictorDatabaseName)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{
-              .page_size = 4096,
-              .cache_size = 500,
+          sql::DatabaseOptions()
+              .set_preload(base::FeatureList::IsEnabled(
+                  sql::features::kPreOpenPreloadDatabase))
               // TODO(pwnall): Add a meta table and remove this option.
-              .mmap_alt_status_discouraged = true,
-              .enable_views_discouraged = true,  // Required by mmap_alt_status.
-          },
+              .set_mmap_alt_status_discouraged(true)
+              .set_enable_views_discouraged(
+                  true),  // Required by mmap_alt_status.
           sql::Database::Tag("Predictor"))),
       db_task_runner_(db_task_runner),
       autocomplete_table_(
@@ -134,7 +134,9 @@ void PredictorDatabaseInternal::Initialize() {
   }
 
   bool success = db_->Open(db_path_);
-  db_->Preload();
+  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
+    db_->Preload();
+  }
 
   if (!success) {
     return;

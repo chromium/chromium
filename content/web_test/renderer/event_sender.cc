@@ -15,6 +15,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -85,7 +85,6 @@ using blink::WebString;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 using blink::WebURL;
-using blink::WebVector;
 using blink::WebView;
 
 namespace content {
@@ -412,7 +411,7 @@ bool OutsideRadius(const gfx::PointF& a, const gfx::PointF& b, float radius) {
           (a.y() - b.y()) * (a.y() - b.y())) > radius * radius;
 }
 
-void PopulateCustomItems(const WebVector<MenuItemInfo>& customItems,
+void PopulateCustomItems(const std::vector<MenuItemInfo>& customItems,
                          const std::string& prefix,
                          std::vector<std::string>* strings) {
   for (size_t i = 0; i < customItems.size(); ++i) {
@@ -475,7 +474,7 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
     for (const char** item = kEditableMenuStrings; *item; ++item) {
       strings.push_back(*item);
     }
-    WebVector<WebString> suggestions;
+    std::vector<WebString> suggestions;
     WebTestSpellChecker::FillSuggestionList(
         WebString::FromUTF16(context_menu->misspelled_word), &suggestions);
     for (const WebString& suggestion : suggestions)
@@ -1875,7 +1874,7 @@ void EventSender::DumpFilenameBeingDragged(blink::WebLocalFrame* frame) {
 
   auto* frame_proxy =
       static_cast<WebFrameTestProxy*>(RenderFrame::FromWebFrame(frame));
-  WebVector<WebDragData::Item> items = current_drag_data_->Items();
+  std::vector<WebDragData::Item> items = current_drag_data_->Items();
   for (const auto& item : items) {
     if (const auto* binary_data_item =
             absl::get_if<WebDragData::BinaryDataItem>(&item)) {
@@ -1940,7 +1939,7 @@ void EventSender::LeapForward(int milliseconds) {
 
 void EventSender::BeginDragWithItems(
     blink::WebLocalFrame* frame,
-    const WebVector<WebDragData::Item>& items) {
+    const std::vector<WebDragData::Item>& items) {
   if (current_drag_data_) {
     // Nested dragging not supported, fuzzer code a likely culprit.
     // Cancel the current drag operation and throw an error.
@@ -1991,7 +1990,7 @@ void EventSender::BeginDragWithItems(
 
 void EventSender::BeginDragWithFiles(blink::WebLocalFrame* frame,
                                      const std::vector<std::string>& files) {
-  WebVector<WebDragData::Item> items;
+  std::vector<WebDragData::Item> items;
 
   for (const std::string& file_path : files) {
     WebDragData::FilenameItem item = {
@@ -2006,7 +2005,7 @@ void EventSender::BeginDragWithFiles(blink::WebLocalFrame* frame,
 void EventSender::BeginDragWithStringData(blink::WebLocalFrame* frame,
                                           const std::string& data,
                                           const std::string& mime_type) {
-  WebVector<WebDragData::Item> items;
+  std::vector<WebDragData::Item> items;
   WebDragData::StringItem item = {
       .type = WebString::FromUTF8(mime_type),
       .data = WebString::FromUTF8(data),

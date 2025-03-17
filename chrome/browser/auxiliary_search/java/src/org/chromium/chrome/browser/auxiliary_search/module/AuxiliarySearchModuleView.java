@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +19,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 /** The view for the auxiliary search module. */
 public class AuxiliarySearchModuleView extends LinearLayout {
     private TextViewWithLeading mContentView;
-    private TextView mFirstButtonView;
+    private Button mFirstButtonView;
     private Button mSecondButtonView;
 
     public AuxiliarySearchModuleView(Context context, @Nullable AttributeSet attrs) {

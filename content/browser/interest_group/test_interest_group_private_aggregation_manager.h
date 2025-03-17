@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_PRIVATE_AGGREGATION_MANAGER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <map>
 #include <optional>
@@ -43,11 +44,12 @@ class TestInterestGroupPrivateAggregationManager
   bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationCallerApi api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t filtering_id_max_bytes,
+      std::optional<size_t> max_contributions,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,
@@ -59,6 +61,10 @@ class TestInterestGroupPrivateAggregationManager
 
   // blink::mojom::PrivateAggregationHost implementation:
   void ContributeToHistogram(
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+          contribution_ptrs) override;
+  void ContributeToHistogramOnEvent(
+      blink::mojom::PrivateAggregationErrorEvent error_event,
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contribution_ptrs) override;
   void EnableDebugMode(blink::mojom::DebugKeyPtr debug_key) override;

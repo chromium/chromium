@@ -12,7 +12,7 @@ class PrefService;
 
 namespace safe_browsing {
 class HashRealTimeService;
-class RealTimeUrlLookupService;
+class RealTimeUrlLookupServiceBase;
 }  // namespace safe_browsing
 
 namespace security_interstitials {
@@ -40,7 +40,7 @@ class SafeBrowsingClient : public KeyedService {
   // Gets the safe browsing service for this client. Must not be nullptr.
   virtual SafeBrowsingService* GetSafeBrowsingService() = 0;
   // Gets the real time url look up service. Clients may return nullptr.
-  virtual safe_browsing::RealTimeUrlLookupService*
+  virtual safe_browsing::RealTimeUrlLookupServiceBase*
   GetRealTimeUrlLookupService() = 0;
   // Gets the hash-real-time service factory. Client may return nullptr.
   virtual safe_browsing::HashRealTimeService* GetHashRealTimeService() = 0;

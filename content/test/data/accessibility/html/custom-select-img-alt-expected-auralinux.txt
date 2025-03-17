@@ -1,0 +1,14 @@
+[document web]
+++[section]
+++++[combo box]
+++++++[menu]
+++++++++[section]
+++++++++++[menu item] name='option without img' selectable selected
+++++++++++[menu item] name=' option with img with alt img alt text' selectable
+++++++++++++[section]
+++++++++++++++[static] name='<newline>    option with img with alt<newline>    '
+++++++++++++++[image] name='img alt text'
+++++++++++[menu item] name=' option with img without alt ' selectable
+++++++++++++[section]
+++++++++++++++[static] name='<newline>    option with img without alt<newline>    '
+++++++++++++++[image]

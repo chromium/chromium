@@ -33,7 +33,7 @@ namespace {
 
 constexpr char kUser[] = "user1@test.com";
 const AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUser));
+    AccountId::FromUserEmailGaiaId(kUser, GaiaId("1111"));
 
 ash::personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
   return ash::personalization_app::mojom::SeaPenQuery::NewTemplateQuery(

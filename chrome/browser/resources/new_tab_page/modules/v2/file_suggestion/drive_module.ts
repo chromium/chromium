@@ -17,9 +17,6 @@ import {getHtml} from './drive_module.html.js';
 import {FileProxy} from './file_module_proxy.js';
 import type {FileSuggestionElement} from './file_suggestion.js';
 
-const DRIVE_ICON_BASE_URL: string =
-    'https://drive-thirdparty.googleusercontent.com/32/type/';
-
 export interface DriveModuleElement {
   $: {
     fileSuggestion: FileSuggestionElement,
@@ -45,13 +42,11 @@ export class DriveModuleElement extends DriveModuleElementBase {
   static override get properties() {
     return {
       files: {type: Array},
-      imageSourceBaseUrl_: {type: String},
       showInfoDialog_: {type: Boolean},
     };
   }
 
   files: File[] = [];
-  protected imageSourceBaseUrl_: string = DRIVE_ICON_BASE_URL;
   protected showInfoDialog_: boolean = false;
 
   protected getMenuItemGroups_(): MenuItem[][] {
@@ -60,7 +55,9 @@ export class DriveModuleElement extends DriveModuleElementBase {
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
-          text: this.i18n('modulesDriveDismissButtonText'),
+          text: this.i18nRecursive(
+              '', 'modulesDismissForHoursButtonText',
+              'fileSuggestionDismissHours'),
         },
         {
           action: 'disable',
@@ -103,7 +100,7 @@ export class DriveModuleElement extends DriveModuleElementBase {
       detail: {
         message: loadTimeData.getStringF(
             'dismissModuleToastMessage',
-            loadTimeData.getString('modulesDriveFilesSentence')),
+            loadTimeData.getString('modulesFilesSentence')),
         restoreCallback: () => FileProxy.getHandler().restoreModule(),
       },
     }));

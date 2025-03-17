@@ -33,8 +33,9 @@ std::map<int, int> TaskTracker::GetTaskRunCounts() const {
 
 void TaskTracker::WaitForCompletedTasks(int count) {
   AutoLock lock(lock_);
-  while (task_runs_ < count)
+  while (task_runs_ < count) {
     task_runs_cv_.Wait();
+  }
 }
 
 }  // namespace test

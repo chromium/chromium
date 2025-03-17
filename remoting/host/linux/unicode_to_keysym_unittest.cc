@@ -12,9 +12,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -47,7 +47,7 @@ TEST(GetKeySymsForUnicode, Map) {
 
     std::vector<uint32_t> expected(
         kTests[i].expected_keysyms,
-        base::ranges::find(kTests[i].expected_keysyms, 0u));
+        std::ranges::find(kTests[i].expected_keysyms, 0u));
     EXPECT_EQ(expected, keysyms);
   }
 }

@@ -12,6 +12,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Encapsulates a single gradient view of the HSV color display, including its label, gradient
@@ -19,13 +21,14 @@ import org.chromium.base.ApiCompatibilityUtils;
  *
  * Mirrors a "color_picker_advanced_component" layout.
  */
+@NullMarked
 public class ColorPickerAdvancedComponent {
     // The view that displays the gradient.
     private final View mGradientView;
     // The seek bar that allows the user to change the value of this component.
     private final SeekBar mSeekBar;
     // The set of colors to interpolate the gradient through.
-    private int[] mGradientColors;
+    private int @Nullable [] mGradientColors;
     // The Drawable that represents the gradient.
     private GradientDrawable mGradientDrawable;
     // The text label for the component.

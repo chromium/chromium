@@ -300,7 +300,19 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       WaitForShow(ash::kEmojiPickerElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchGifs) {
+class QuickInsertWithGifsDisabledInteractiveUiTest
+    : public QuickInsertInteractiveUiTest {
+ public:
+  QuickInsertWithGifsDisabledInteractiveUiTest() {
+    feature_list_.InitAndDisableFeature(ash::features::kPickerGifs);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsDisabledInteractiveUiTest,
+                       SearchGifs) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -395,17 +407,18 @@ class FakeTenorServer {
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-class QuickInsertWithGifsInteractiveUiTest
+class QuickInsertWithGifsEnabledInteractiveUiTest
     : public QuickInsertInteractiveUiTest {
  public:
-  QuickInsertWithGifsInteractiveUiTest()
+  QuickInsertWithGifsEnabledInteractiveUiTest()
       : feature_list_(ash::features::kPickerGifs) {}
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, SearchGifs) {
+IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
+                       SearchGifs) {
   FakeTenorServer fake_tenor_server;
   // TODO: b/360229206 - Use a contenteditable input field so the file can be
   // inserted.
@@ -442,7 +455,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, SearchGifs) {
       WaitForHide(ash::kQuickInsertElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, FeatureGifs) {
+IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
+                       FeatureGifs) {
   FakeTenorServer fake_tenor_server;
   // TODO: b/360229206 - Use a contenteditable input field so the file can be
   // inserted.
@@ -475,7 +489,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, FeatureGifs) {
       WaitForHide(ash::kQuickInsertElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, ToggleGifs) {
+IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
+                       ToggleGifs) {
   AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
   FakeTenorServer fake_tenor_server;
   // TODO: b/360229206 - Use a contenteditable input field so the file can be

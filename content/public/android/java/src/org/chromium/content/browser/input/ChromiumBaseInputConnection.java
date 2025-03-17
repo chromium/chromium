@@ -12,10 +12,15 @@ import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** An interface to help switch between AdapterInputConnection and ChromiumInputConnection. */
+@NullMarked
 public interface ChromiumBaseInputConnection extends InputConnection {
     /** A factory class to create or reuse ChromiumBaseInputConnection. */
     public interface Factory {
+        @Nullable
         ChromiumBaseInputConnection initializeAndGet(
                 View view,
                 ImeAdapterImpl imeAdapter,

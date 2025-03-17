@@ -4,33 +4,32 @@
 
 package org.chromium.components.collaboration.messaging;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Contains information needed to show one row in the activity log UI. This is a shim layer for the
  * native representation of the object. See
  * //components/collaboration/public/messaging/activity_log.h for specific details.
+ * TODO: Add a proper constructor to avoid @SuppressWarnings("NullAway.Init")
  */
+@NullMarked
 public class ActivityLogItem {
     // The type of collaboration event associated with the log item.
     public @CollaborationEvent int collaborationEvent;
 
-    // Display name of the user.
-    public String userDisplayName;
+    // Explicit display metadata to be shown in the UI.
+    // Text to be shown as title of the activity log item.
+    @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
+    public String titleText;
 
-    // Whether the user associated with the activity log item is the current signed in user
-    // themselves.
-    public boolean userIsSelf;
+    // Text to be shown as description of the activity log item.
+    @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
+    public String descriptionText;
 
-    // Description text to be shown on first half of the description line. Timestamp will be
-    // appended.
-    public @Nullable String description;
-
-    // The time duration in milliseconds that has passed since the action happened. Used for
-    // generating the relative duration text that will be appended to the description. If the
-    // description is empty, the entire description line will contain only the relative duration
-    // without the concatenation character.
-    public long timeDeltaMs;
+    // Text to be shown as relative time duration (e.g. 8 hours ago) of when
+    // the event happened.
+    @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
+    public String timeDeltaText;
 
     // Whether the favicon should be shown for this row. Only tab related updates show a favicon.
     public boolean showFavicon;
@@ -39,5 +38,6 @@ public class ActivityLogItem {
     public @RecentActivityAction int action;
 
     // Implicit metadata that will be used to invoke the delegate when the activity row is clicked.
+    @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
     public MessageAttribution activityMetadata;
 }

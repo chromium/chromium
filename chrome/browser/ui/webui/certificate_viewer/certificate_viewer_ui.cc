@@ -76,4 +76,4 @@ CertificateViewerUI::CertificateViewerUI(content::WebUI* web_ui)
                               chrome::kChromeUICertificateViewerHost);
 }
 
-CertificateViewerUI::~CertificateViewerUI() {}
+CertificateViewerUI::~CertificateViewerUI() = default;

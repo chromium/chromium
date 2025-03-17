@@ -218,7 +218,7 @@ bool AffiliationDatabase::GetAffiliationsAndBrandingForFacetURI(
         FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
         FacetBrandingInfo{
             statement.ColumnString(1),
-            GURL(statement.ColumnString(2)),
+            GURL(statement.ColumnStringView(2)),
         });
     result->last_update_time = statement.ColumnTime(3);
   }
@@ -250,7 +250,7 @@ void AffiliationDatabase::GetAllAffiliationsAndBranding(
         FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
         FacetBrandingInfo{
             statement.ColumnString(1),
-            GURL(statement.ColumnString(2)),
+            GURL(statement.ColumnStringView(2)),
         });
     results->back().last_update_time =
         base::Time::FromInternalValue(statement.ColumnInt64(3));
@@ -275,7 +275,7 @@ std::vector<GroupedFacets> AffiliationDatabase::GetAllGroups() const {
       GroupedFacets group;
       group.branding_info = FacetBrandingInfo{
           statement.ColumnString(3),
-          GURL(statement.ColumnString(4)),
+          GURL(statement.ColumnStringView(4)),
       };
       results.push_back(std::move(group));
       last_eq_class_id = eq_class_id;
@@ -309,7 +309,7 @@ GroupedFacets AffiliationDatabase::GetGroup(const FacetURI& facet_uri) const {
 
   // Add branding info for a group as it's the same for all steps.
   result.branding_info.name = statement.ColumnString(2);
-  result.branding_info.icon_url = GURL(statement.ColumnString(3));
+  result.branding_info.icon_url = GURL(statement.ColumnStringView(3));
 
   result.facets.emplace_back(
       FacetURI::FromCanonicalSpec(statement.ColumnString(0)),

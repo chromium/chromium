@@ -32,7 +32,7 @@ void ProfileUserManagerController::OnProfileCreationStarted(Profile* profile) {
   // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
   if (ash::IsUserBrowserContext(profile)) {
     auto logged_in_users = user_manager_->GetLoggedInUsers();
-    auto it = base::ranges::find(
+    auto it = std::ranges::find(
         logged_in_users,
         ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile),
         [](const user_manager::User* user) { return user->username_hash(); });
@@ -73,6 +73,14 @@ void ProfileUserManagerController::OnProfileAdded(Profile* profile) {
     profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
 
+  if (!profile->GetUserCloudPolicyManagerAsh() &&
+      !user->IsDeviceLocalAccount()) {
+    // If policy manager is not instantiated, the User is not a managed account
+    // and will not be updated. So set the policy values here forcibly.
+    user_manager_->SetUserPolicyStatus(user->GetAccountId(),
+                                       /*is_managed=*/false,
+                                       /*is_affiliated=*/false);
+  }
   if (user_manager_->OnUserProfileCreated(user->GetAccountId(),
                                           profile->GetPrefs())) {
     // Add observer for graceful shutdown of User on Profile destruction.

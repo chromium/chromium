@@ -22,7 +22,6 @@ android_library("helper_java") {
   resources_package = "org.chromium.chrome.browser.access_loss"
 
   sources = [
-    "java/src/org/chromium/chrome/browser/access_loss/HelpUrlLauncher.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossNotificationProperties.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningHelper.java",
     "java/src/org/chromium/chrome/browser/access_loss/PwdAccessLossNotificationCoordinator.java",
@@ -43,7 +42,6 @@ android_library("helper_java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/notifications/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
@@ -88,7 +86,6 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.access_loss"
 
   sources = [
-    "java/src/org/chromium/chrome/browser/access_loss/HelpUrlLauncherTest.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossPostExportDialogControllerTest.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningHelperTest.java",
@@ -96,9 +93,11 @@ robolectric_library("junit") {
   ]
 
   deps = [
+    ":enums_java",
     ":helper_java",
     ":settings_dialog_java",
     ":settings_dialog_java_resources",
+    ":utils_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -198,6 +197,7 @@ source_set("unit_tests") {
   deps = [
     ":public",
     "//base/test:test_support",
+    "//chrome/browser/password_manager/android:unit_tests",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",

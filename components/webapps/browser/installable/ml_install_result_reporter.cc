@@ -151,7 +151,7 @@ void MlInstallResultReporter::ReportResultInternal(
   segmentation_platform::TrainingLabels training_labels;
   training_labels.output_metric =
       std::make_pair("WebApps.MlInstall.DialogResponse",
-                     static_cast<base::HistogramBase::Sample>(response));
+                     static_cast<base::HistogramBase::Sample32>(response));
   segmentation->CollectTrainingData(
       segmentation_platform::proto::SegmentId::
           OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO,

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -32,6 +31,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -69,7 +69,8 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
   void AuthenticateWithCredentials(
       const std::string& username,
       const std::string& password,
-      LoginAuthRequiredCallback auth_required_callback) {
+      content::LoginDelegate::LoginAuthRequiredCallback
+          auth_required_callback) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SystemProxyLoginHandler::InvokeWithCredentials,
@@ -80,7 +81,8 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
  private:
   void InvokeWithCredentials(const std::string& username,
                              const std::string& password,
-                             LoginAuthRequiredCallback auth_required_callback) {
+                             content::LoginDelegate::LoginAuthRequiredCallback
+                                 auth_required_callback) {
     std::move(auth_required_callback)
         .Run(std::make_optional<net::AuthCredentials>(
             base::UTF8ToUTF16(username), base::UTF8ToUTF16(password)));
@@ -497,7 +499,7 @@ bool SystemProxyManager::CanUsePolicyCredentials(
 }
 
 std::unique_ptr<content::LoginDelegate> SystemProxyManager::CreateLoginDelegate(
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   auto login_delegate = std::make_unique<SystemProxyLoginHandler>();
   login_delegate->AuthenticateWithCredentials(
       system_services_username_, system_services_password_,

@@ -34,7 +34,6 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -155,7 +154,7 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
   // testing::Test
   void SetUp() override {
     manager_ = std::make_unique<FrameSinkManagerImpl>(
-        FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_));
+        FrameSinkManagerImpl::InitParams());
     surface_observer_ =
         std::make_unique<FakeSurfaceObserver>(manager_->surface_manager());
     manager_->SetLocalClient(&frame_sink_manager_client_);
@@ -316,7 +315,6 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
  protected:
   TestSharedImageInterfaceProvider shared_image_interface_provider_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   std::unique_ptr<FrameSinkManagerImpl> manager_;
   testing::NiceMock<MockFrameSinkManagerClient> frame_sink_manager_client_;
   FakeCompositorFrameSinkClient fake_support_client_;
@@ -1663,11 +1661,13 @@ TEST_P(CompositorFrameSinkSupportTest, OnFrameTokenUpdate) {
   LocalSurfaceId child_local_surface_id(1, kAnotherArbitraryToken);
   SurfaceId child_id(kAnotherArbitraryFrameSinkId, child_local_surface_id);
 
+  // TODO(crbug.com/358957649) audit these tests to ensure we have sufficient
+  // coverage of `SetIsHandlingInteraction` while maintaining coverage for
+  // `SetActivationDependencies` for non-interactions.
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
                    .SetSendFrameTokenToEmbedder(true)
                    .SetActivationDependencies({child_id})
-                   .SetIsHandlingInteraction(true)
                    .Build();
   uint32_t frame_token = frame.metadata.frame_token;
   ASSERT_NE(frame_token, 0u);
@@ -2199,8 +2199,7 @@ TEST_P(CompositorFrameSinkSupportTest,
           CompositorFrameTransitionDirective::CreateSave(
               transition_token, maybe_cross_frame_sink,
               /*sequence_id=*/1, {}, {}),
-          surface, &shared_bitmap_manager_, sii, &id_tracker,
-          base::DoNothing());
+          surface, sii, &id_tracker, base::DoNothing());
   ASSERT_TRUE(animation_manager);
 
   EXPECT_FALSE(HasAnimationManagerForToken(transition_token));
@@ -2227,7 +2226,7 @@ TEST_P(CompositorFrameSinkSupportTest, ViewTransitionBlitRequestTextureQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   blink::ViewTransitionToken transition_token;
-  ViewTransitionElementResourceId resource_id(transition_token, 1);
+  ViewTransitionElementResourceId resource_id(transition_token, 1, false);
 
   auto* vt_quad =
       root_render_pass->CreateAndAppendDrawQuad<SharedElementDrawQuad>();

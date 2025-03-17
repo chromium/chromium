@@ -82,13 +82,15 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -116,7 +118,6 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -145,10 +146,6 @@ import java.util.function.Consumer;
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-@EnableFeatures({
-    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-})
 // TODO(crbug.com/327387704): Add tests with this flag enabled.
 @DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerMediatorTest {
@@ -173,6 +170,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private BookmarkUiObserver mBookmarkUiObserver;
     @Mock private Profile mProfile;
+    @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SigninManager mSigninManager;
@@ -194,6 +192,8 @@ public class BookmarkManagerMediatorTest {
     @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     @Mock private BasicNativePage mNativePage;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<SelectionObserver> mSelectionObserver;
@@ -220,6 +220,7 @@ public class BookmarkManagerMediatorTest {
             new BookmarkId(mId++, BookmarkType.READING_LIST);
     private final BookmarkId mReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
     private final BookmarkId mPriceTrackedBookmarkId = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mPartnerBookmarkFolderId = new BookmarkId(mId++, BookmarkType.PARTNER);
 
     private final BookmarkItem mDesktopFolderItem =
             new BookmarkItem(
@@ -331,6 +332,19 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false);
+    private final BookmarkItem mPartnerBookmarkFolderItem =
+            new BookmarkItem(
+                    mPartnerBookmarkFolderId,
+                    "Partner bookmarks",
+                    null,
+                    true,
+                    mMobileFolderId,
+                    false,
+                    false,
+                    0,
+                    false,
+                    0,
+                    false);
 
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -364,6 +378,7 @@ public class BookmarkManagerMediatorTest {
 
         // Setup Profile
         doReturn(mProfile).when(mProfile).getOriginalProfile();
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
 
         // Setup ShoppingServiceFactory
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
@@ -381,6 +396,9 @@ public class BookmarkManagerMediatorTest {
         doReturn(mPriceTrackedBookmarkItem)
                 .when(mBookmarkModel)
                 .getBookmarkById(mPriceTrackedBookmarkId);
+        doReturn(mPartnerBookmarkFolderItem)
+                .when(mBookmarkModel)
+                .getBookmarkById(mPartnerBookmarkFolderId);
         doReturn(Arrays.asList(mPriceTrackedBookmarkId))
                 .when(mBookmarkModel)
                 .getChildIds(mMobileFolderId);
@@ -388,6 +406,7 @@ public class BookmarkManagerMediatorTest {
         doReturn(mOtherFolderItem).when(mBookmarkModel).getBookmarkById(mOtherFolderId);
         doReturn(mReadingListFolderId).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
         doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
+        doReturn(true).when(mBookmarkModel).isReadingListFolder(mReadingListFolderId);
         doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
         doReturn(Arrays.asList(mFolderId2, mFolderId3))
                 .when(mBookmarkModel)
@@ -517,7 +536,9 @@ public class BookmarkManagerMediatorTest {
                         mSnackbarManager,
                         mCanShowPromo,
                         mOnScrollListenerConsumer,
-                        mBookmarkMoveSnackbarManager);
+                        mBookmarkMoveSnackbarManager,
+                        mBookmarkManagerOpener,
+                        mPriceDropNotificationManager);
         mMediator.addUiObserver(mBookmarkUiObserver);
     }
 
@@ -722,6 +743,21 @@ public class BookmarkManagerMediatorTest {
         mMediator.moveUpOne(mFolderId2);
         verify(mBookmarkModel)
                 .reorderBookmarks(mFolderId1, new long[] {mFolderId2.getId(), mFolderId3.getId()});
+    }
+
+    @Test
+    public void testMoveDownUp_partnerBookmarksPresent() {
+        finishLoading();
+        doReturn(Arrays.asList(mPriceTrackedBookmarkId, mFolderId1, mPartnerBookmarkFolderId))
+                .when(mBookmarkModel)
+                .getChildIds(mMobileFolderId);
+        mMediator.openFolder(mMobileFolderId);
+        mMediator.moveDownOne(mPriceTrackedBookmarkId);
+
+        verify(mBookmarkModel)
+                .reorderBookmarks(
+                        mMobileFolderId,
+                        new long[] {mFolderId1.getId(), mPriceTrackedBookmarkId.getId()});
     }
 
     @Test
@@ -1354,18 +1390,18 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testPromoHeader() {
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(true);
         mMediator.getPromoHeaderManager().syncStateChanged();
         finishLoading();
         mMediator.openFolder(mFolderId1);
 
         verifyCurrentViewTypes(
                 ViewType.SEARCH_BOX,
-                ViewType.PERSONALIZED_SYNC_PROMO,
+                ViewType.SIGNIN_PROMO,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
 
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         mMediator.getPromoHeaderManager().syncStateChanged();
 
         verifyCurrentViewTypes(
@@ -1517,6 +1553,10 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testImprovedSpecialFolders() {
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mDesktopFolderItem);
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mMobileFolderItem);
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mOtherFolderItem);
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mReadingListFolderItem);
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
         final @ColorInt int specialBackgroundColor =
                 SemanticColorUtils.getColorPrimaryContainer(mActivity);

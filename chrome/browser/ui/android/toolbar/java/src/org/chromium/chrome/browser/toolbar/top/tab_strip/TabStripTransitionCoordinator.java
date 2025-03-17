@@ -55,8 +55,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          * toolbar reserved for the tab strip.
          *
          * @param newHeight The height same as {@link #getTabStripHeight()}.
+         * @param applyScrimOverlay Whether the strip scrim should be updated during the transition.
+         *     {@code true} when the transition expects to update the strip visibility, {@code
+         *     false} otherwise.
          */
-        default void onHeightChanged(int newHeight) {}
+        default void onHeightChanged(int newHeight, boolean applyScrimOverlay) {}
 
         /** Notify when the tab strip height transition is completed by the browser controls. */
         default void onHeightTransitionFinished() {}
@@ -71,16 +74,13 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         default void onFadeTransitionRequested(float newOpacity, int durationMs) {}
 
         /**
-         * Called to get the {@link StripVisibilityState} that is applied at the end of the most
-         * recent strip height and/or fade transition. This might not reflect an accurate value if
-         * the strip visibility is updated outside of such transitions.
+         * Called to get the current {@link StripVisibilityState} which may or may not be affected
+         * by strip transitions.
          *
          * @return The current {@link StripVisibilityState}.
          */
-        // TODO (crbug.com/375698491): Potentially remove this API when the bug is addressed.
-        default @StripVisibilityState int getStripVisibilityState() {
-            return StripVisibilityState.UNKNOWN;
-        }
+        @StripVisibilityState
+        int getStripVisibilityState();
     }
 
     private final CallbackController mCallbackController = new CallbackController();
@@ -97,6 +97,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
 
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable AppHeaderState mAppHeaderState;
+    private boolean mDesktopWindowingModeChanged;
     private boolean mForceUpdateHeight;
     private boolean mForceFadeInStrip;
 
@@ -129,7 +130,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
+            @NonNull
+                    OneshotSupplier<TabStripTransitionDelegate>
+                            tabStripTransitionDelegateSupplier) {
         mControlContainer = controlContainer;
         mTabStripHeightFromResource = tabStripHeightFromResource;
         mDesktopWindowStateManager = desktopWindowStateManager;
@@ -195,25 +198,26 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
 
         boolean wasInDesktopWindow = mAppHeaderState != null && mAppHeaderState.isInDesktopWindow();
         boolean isInDesktopWindow = newState.isInDesktopWindow();
-        boolean desktopWindowingModeChanged = wasInDesktopWindow != isInDesktopWindow;
+        mDesktopWindowingModeChanged = wasInDesktopWindow != isInDesktopWindow;
+        boolean headerHeightChanged =
+                mAppHeaderState != null
+                        && mAppHeaderState.getAppHeaderHeight() != newState.getAppHeaderHeight();
 
-        // Force trigger the strip height transition when the app is switching desktop windowing
-        // mode, to update the strip top padding.
-        mForceUpdateHeight = desktopWindowingModeChanged;
+        // Force trigger the strip height transition when:
+        // 1. The app is switching desktop windowing mode, to update the strip top padding.
+        // 2. The app header height changes.
+        mForceUpdateHeight = mDesktopWindowingModeChanged || headerHeightChanged;
 
         // Force fade in an invisible tab strip when the app is exiting desktop windowing mode, and
         // the height transition is blocked.
         mForceFadeInStrip =
-                desktopWindowingModeChanged
+                mDesktopWindowingModeChanged
                         && mHeightTransitionHandler.isHeightTransitionBlocked()
-                        && getStripVisibilityState() == StripVisibilityState.INVISIBLE;
+                        && (getStripVisibilityState() & StripVisibilityState.HIDDEN_BY_FADE) != 0;
 
         mAppHeaderState = newState;
         if (mAppHeaderState.isInDesktopWindow()) {
-            int height = mAppHeaderState.getAppHeaderHeight();
-            int topPadding =
-                    Math.max(mTabStripReservedTopPadding, height - mTabStripHeightFromResource);
-            onTabStripSizeChanged(mAppHeaderState.getUnoccludedRectWidth(), topPadding);
+            onTabStripSizeChanged(mAppHeaderState.getUnoccludedRectWidth(), calculateTopPadding());
         } else {
             onTabStripSizeChanged(controlContainerView().getWidth(), 0);
         }
@@ -297,7 +301,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             newWidth = Math.min(newWidth, mAppHeaderState.getUnoccludedRectWidth());
         }
 
-        onTabStripSizeChanged(newWidth, mTopPadding);
+        onTabStripSizeChanged(newWidth, calculateTopPadding());
     }
 
     /**
@@ -309,6 +313,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param topPadding The top padding to be added to the tab strip.
      */
     private void onTabStripSizeChanged(int width, int topPadding) {
+        // Avoid transitioning when strip width / control container height is invalid. This can
+        // happen when the control container is created hidden after theme changes.
+        if (width <= 0 || controlContainerView().getHeight() == 0) return;
+
         if (width == mTabStripWidth && topPadding == mTopPadding) return;
         mTabStripWidth = width;
         mTopPadding = topPadding;
@@ -320,36 +328,73 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             mHandler.removeCallbacks(mLayoutTransitionTask);
         }
 
-        mLayoutTransitionTask =
-                mCallbackController.makeCancelable(() -> initiateTransition(width, topPadding));
-        mHandler.postDelayed(mLayoutTransitionTask, TRANSITION_DELAY_MS);
+        boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
+        if (mDesktopWindowingModeChanged) {
+            // When desktop windowing mode is changing, avoid posting the transition and trigger
+            // it immediately because it has been observed in the past that the post task may be
+            // dropped during the switch, thereby not using and enforcing the desired state in a
+            // series of invocation of this method in this scenario.
+            initiateTransition(
+                    width,
+                    topPadding,
+                    isInDesktopWindow,
+                    mForceUpdateHeight,
+                    mForceFadeInStrip,
+                    mDesktopWindowingModeChanged,
+                    mHeightTransitionHandler,
+                    mFadeTransitionHandler);
+        } else {
+            mLayoutTransitionTask =
+                    mCallbackController.makeCancelable(
+                            () ->
+                                    initiateTransition(
+                                            width,
+                                            topPadding,
+                                            isInDesktopWindow,
+                                            mForceUpdateHeight,
+                                            mForceFadeInStrip,
+                                            mDesktopWindowingModeChanged,
+                                            mHeightTransitionHandler,
+                                            mFadeTransitionHandler));
+            mHandler.postDelayed(mLayoutTransitionTask, TRANSITION_DELAY_MS);
+        }
     }
 
-    private void initiateTransition(int width, int topPadding) {
-        // Notify the handlers of special scenarios to update strip height and visibility.
-        mHeightTransitionHandler.setForceUpdateHeight(mForceUpdateHeight);
-        mFadeTransitionHandler.setForceFadeInStrip(mForceFadeInStrip);
+    private static void initiateTransition(
+            int width,
+            int topPadding,
+            boolean isInDesktopWindow,
+            boolean forceUpdateHeight,
+            boolean forceFadeInStrip,
+            boolean desktopWindowingModeChanged,
+            HeightTransitionHandler heightTransitionHandler,
+            FadeTransitionHandler fadeTransitionHandler) {
+        boolean runHeightTransition = !isInDesktopWindow || forceUpdateHeight;
+        boolean runFadeTransition = isInDesktopWindow || forceFadeInStrip;
 
-        boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
-        if (!isInDesktopWindow || mForceUpdateHeight) {
-            mHeightTransitionHandler.onTabStripSizeChanged(width, topPadding);
+        if (runHeightTransition) {
+            heightTransitionHandler.onTabStripSizeChanged(
+                    width, topPadding, isInDesktopWindow, forceUpdateHeight);
         }
 
-        if (isInDesktopWindow || mForceFadeInStrip) {
-            mFadeTransitionHandler.onTabStripSizeChanged(width);
+        if (runFadeTransition) {
+            fadeTransitionHandler.onTabStripSizeChanged(
+                    width, forceFadeInStrip, desktopWindowingModeChanged);
         }
-
-        // Reset internal state after use.
-        mForceUpdateHeight = false;
-        mForceFadeInStrip = false;
     }
 
     private @StripVisibilityState int getStripVisibilityState() {
-        if (mTabStripTransitionDelegateSupplier == null
-                || mTabStripTransitionDelegateSupplier.get() == null) {
-            return StripVisibilityState.UNKNOWN;
-        }
+        assert mTabStripTransitionDelegateSupplier.get() != null
+                : "Expected a non-null strip transition delegate.";
         return mTabStripTransitionDelegateSupplier.get().getStripVisibilityState();
+    }
+
+    private int calculateTopPadding() {
+        if (mAppHeaderState == null) return 0;
+        int height = mAppHeaderState.getAppHeaderHeight();
+        return height == 0
+                ? 0
+                : Math.max(mTabStripReservedTopPadding, height - mTabStripHeightFromResource);
     }
 
     // Testing methods.

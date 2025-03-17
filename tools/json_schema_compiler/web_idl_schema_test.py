@@ -112,7 +112,7 @@ class WebIdlSchemaTest(unittest.TestCase):
     # Test basic types.
     self.assertEqual(
         None,
-        getFunctionReturn(schema, 'returnsVoid'),
+        getFunctionReturn(schema, 'returnsUndefined'),
     )
     self.assertEqual(
         {
@@ -224,6 +224,48 @@ class WebIdlSchemaTest(unittest.TestCase):
         '$ref': 'ExampleType'
     }], getFunctionParameters(schema, 'takesOptionalCustomType'))
 
+  # Tests function descriptions are processed as expected.
+  # TODO(crbug.com/379052294): Add testcases for function return descriptions
+  # once support for those are added to the processor.
+  def testFunctionDescriptions(self):
+    schema = self.idl_basics
+    # A function without a preceding comment has no 'description' key.
+    self.assertTrue('description' not in getFunction(schema, 'noDescription'))
+
+    self.assertEqual(
+        'One line description.',
+        getFunction(schema, 'oneLineDescription').get('description'))
+    self.assertEqual(
+        'Multi line description. Split over. Multiple lines.',
+        getFunction(schema, 'multiLineDescription').get('description'))
+    self.assertEqual(
+        '<p>Paragraphed description.</p><p>With blank comment line for'
+        ' paragraph tags.</p>',
+        getFunction(schema, 'paragraphedDescription').get('description'))
+
+    function = getFunction(schema, 'parameterComments')
+    self.assertEqual('This function has parameter comments.',
+                     function.get('description'))
+    function_parameters = getFunctionParameters(schema, 'parameterComments')
+    self.assertEqual(
+        {
+            'description':
+            ('This comment about the argument is split across multiple lines'
+             ' and contains <em>HTML tags</em>.'),
+            'name':
+            'arg1',
+            'type':
+            'boolean',
+        },
+        function_parameters[0],
+    )
+    self.assertEqual(
+        {
+            'description': 'This second argument uses a custom type.',
+            'name': 'arg2',
+            '$ref': 'ExampleType'
+        }, function_parameters[1])
+
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
   def testApiTypesOnNamespace(self):
@@ -289,7 +331,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # TODO(crbug.com/340297705): This will eventually be relaxed when adding
   # support for shared types to the new parser.
-  def testMissingBrowserInterface(self):
+  def testMissingBrowserInterfaceError(self):
     expected_error_regex = (
         '.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
         ' partial Browser interface not found in schema\.')
@@ -302,7 +344,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that having a Browser interface on an API definition with no attribute
   # throws an error.
-  def testMissingAttributeOnBrowser(self):
+  def testMissingAttributeOnBrowserError(self):
     expected_error_regex = (
         '.* Interface\(Browser\): The partial Browser interface should have'
         ' exactly one attribute for the name the API will be exposed under\.')
@@ -315,7 +357,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that using a valid basic WebIDL type with a "name" the schema compiler
   # doesn't support yet throws an error.
-  def testUnsupportedBasicType(self):
+  def testUnsupportedBasicTypeError(self):
     expected_error_regex = (
         '.* PrimitiveType\(float\): Unsupported basic type found when'
         ' processing type\.')
@@ -328,7 +370,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that using a valid WebIDL type with a node "class" the schema compiler
   # doesn't support yet throws an error.
-  def testUnsupportedTypeClass(self):
+  def testUnsupportedTypeClassError(self):
     expected_error_regex = (
         '.* Any\(\): Unsupported type class when processing type\.')
     self.assertRaisesRegex(
@@ -341,7 +383,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   # Tests that if description parsing from file comments reaches the top of the
   # file, a schema compiler error is thrown (as the top of the file should
   # always be copyright lines and not part of the description).
-  def testDocumentationCommentReachedTopOfFile(self):
+  def testDocumentationCommentReachedTopOfFileError(self):
     expected_error_regex = (
         '.* Reached top of file when trying to parse description from file'
         ' comment. Make sure there is a blank line before the comment.')
@@ -350,6 +392,32 @@ class WebIdlSchemaTest(unittest.TestCase):
         expected_error_regex,
         web_idl_schema.Load,
         'test/web_idl/documentation_comment_top_of_file.idl',
+    )
+
+  # Tests that usage of the 'void' type will result in a schema compiler error.
+  # 'void' has been deprecated and 'undefined' should be used instead.
+  def testVoidUsageTriggersError(self):
+    expected_error_regex = (
+        'Error processing node PrimitiveType\(void\): Usage of "void" in IDL is'
+        ' deprecated, use "Undefined" instead.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/void_unsupported.idl',
+    )
+
+  # Tests that a namespace with an extended attribute that we don't have
+  # processing for results in a schema compiler error.
+  def testUnknownNamespaceExtendedAttributeNameError(self):
+    expected_error_regex = (
+        '.* Interface\(TestWebIdl\): Unknown extended attribute with name'
+        ' "UnknownExtendedAttribute" when processing namespace.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/unknown_namespace_extended_attribute.idl',
     )
 
   # Tests that an API interface that uses the nodoc extended attribute has the
@@ -382,6 +450,34 @@ class WebIdlSchemaTest(unittest.TestCase):
         'Comment on a schema that has extended attributes on a previous line.',
         schema['description'],
     )
+
+  # Tests that an API interface with the platforms extended attribute has these
+  # values in a platforms attribute after processing.
+  def testAllPlatformsOnNamespace(self):
+    platforms_schema = web_idl_schema.Load(
+        'test/web_idl/all_platforms_on_namespace.idl')
+    self.assertEqual(1, len(platforms_schema))
+    self.assertEqual('allPlatformsAPI', platforms_schema[0]['namespace'])
+    expected = ['chromeos', 'fuchsia', 'linux', 'mac', 'win']
+    self.assertEqual(expected, platforms_schema[0]['platforms'])
+
+  # Tests that an API interface with just chromeos listed in the platforms
+  # extended attribute just has that after processing.
+  def testChromeOSPlatformsOnNamespace(self):
+    platforms_schema = web_idl_schema.Load(
+        'test/web_idl/chromeos_platforms_on_namespace.idl')
+    self.assertEqual(1, len(platforms_schema))
+    self.assertEqual('chromeOSPlatformsAPI', platforms_schema[0]['namespace'])
+    expected = ['chromeos']
+    self.assertEqual(expected, platforms_schema[0]['platforms'])
+
+  # Tests that the platforms attribute is None if not specified on in the
+  # extended attributes of a namespace.
+  def testNonSpecifiedPlatformsOnNamespace(self):
+    basic_schema = self.idl_basics
+    expected = None
+    self.assertEqual(expected, basic_schema['platforms'])
+
 
 if __name__ == '__main__':
   unittest.main()

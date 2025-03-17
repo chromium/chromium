@@ -7,8 +7,8 @@
  * text and converting it into a macro.
  */
 
-import {InputController} from '/common/action_fulfillment/input_controller.js';
-import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import type {InputController} from '/common/action_fulfillment/input_controller.js';
+import type {Macro} from '/common/action_fulfillment/macros/macro.js';
 
 /**
  * Represents a strategy for parsing speech input and converting it into a

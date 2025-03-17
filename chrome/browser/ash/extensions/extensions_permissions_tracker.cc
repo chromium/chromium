@@ -265,7 +265,7 @@ void ExtensionsPermissionsTracker::OnExtensionLoaded(
 }
 
 void ExtensionsPermissionsTracker::UpdateLocalState() {
-  bool any_unsafe = base::ranges::any_of(
+  bool any_unsafe = std::ranges::any_of(
       extension_safety_ratings_,
       [](const auto& key_value) { return !key_value.second; });
 

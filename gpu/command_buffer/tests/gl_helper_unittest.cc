@@ -14,6 +14,7 @@
 #include <GLES2/gl2extchromium.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -43,17 +44,17 @@ namespace gpu {
 
 namespace {
 
-GLHelper::ScalerQuality kQualities[] = {
+auto kQualities = std::to_array<GLHelper::ScalerQuality>({
     GLHelper::SCALER_QUALITY_BEST,
     GLHelper::SCALER_QUALITY_GOOD,
     GLHelper::SCALER_QUALITY_FAST,
-};
+});
 
-const char* kQualityNames[] = {
+auto kQualityNames = std::to_array<const char*>({
     "best",
     "good",
     "fast",
-};
+});
 
 }  // namespace
 
@@ -1360,7 +1361,20 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Validate that all scaling generates valid pipelines.
 TEST_F(GLHelperTest, ValidateScalerPipelines) {
-  int sizes[] = {7, 99, 128, 256, 512, 719, 720, 721, 1920, 2011, 3217, 4096};
+  auto sizes = std::to_array<int>({
+      7,
+      99,
+      128,
+      256,
+      512,
+      719,
+      720,
+      721,
+      1920,
+      2011,
+      3217,
+      4096,
+  });
   for (size_t q = 0; q < std::size(kQualities); q++) {
     for (size_t x = 0; x < std::size(sizes); x++) {
       for (size_t y = 0; y < std::size(sizes); y++) {

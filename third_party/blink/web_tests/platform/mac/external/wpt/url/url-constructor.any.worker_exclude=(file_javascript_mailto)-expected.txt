@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example.com/foo/%2e%2> without base
   assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
 [FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> without base
@@ -10,6 +10,16 @@ Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
+[FAIL] Parsing: <non-special:opaque  ?hi> without base
+  assert_equals: href expected "non-special:opaque %20?hi" but got "non-special:opaque  ?hi"
+[FAIL] Parsing: <non-special:opaque  #hi> without base
+  assert_equals: href expected "non-special:opaque %20#hi" but got "non-special:opaque  #hi"
+[FAIL] Parsing: <non-special:opaque 		  	#hi> without base
+  assert_equals: href expected "non-special:opaque  %20#hi" but got "non-special:opaque   #hi"
+[FAIL] Parsing: <non-special:opaque 		  #hi> without base
+  assert_equals: href expected "non-special:opaque  %20#hi" but got "non-special:opaque   #hi"
+[FAIL] Parsing: <non-special:opaque		  \r #hi> without base
+  assert_equals: href expected "non-special:opaque  %20#hi" but got "non-special:opaque   #hi"
 [FAIL] Parsing: <http://a.b.c.xn--pokxncvks> without base
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://10.0.0.xn--pokxncvks> without base
@@ -53,9 +63,9 @@ Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <wss://!"$&'()*+,-.;=_`{}~/> without base
   assert_equals: href expected "wss://!\\"$&'()*+,-.;=_`{}~/" but got "wss://!\\"$&'()%2A+,-.;=_`{}~/"
 [FAIL] Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> without base
-  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]^_%60%7B|%7D~" but got "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B%7C%7D~"
+  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B|%7D~" but got "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> without base
-  assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
+  assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> without base
   assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
 [FAIL] Parsing: <https://xn--/> without base

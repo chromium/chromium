@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/test_extension_service.h"
@@ -57,6 +58,7 @@ class MockExtensionService : public extensions::ExtensionService {
                        const base::FilePath& unpacked_install_directory,
                        extensions::ExtensionPrefs* extension_prefs,
                        extensions::Blocklist* blocklist,
+                       extensions::ExtensionErrorController* error_controller,
                        bool autoupdate_enabled,
                        bool extensions_enabled,
                        base::OneShotEvent* ready)
@@ -66,6 +68,7 @@ class MockExtensionService : public extensions::ExtensionService {
                                      unpacked_install_directory,
                                      extension_prefs,
                                      blocklist,
+                                     error_controller,
                                      autoupdate_enabled,
                                      extensions_enabled,
                                      ready) {}

@@ -14,7 +14,8 @@
 
 namespace remoting {
 
-const auto kTestValues = std::to_array<int64_t>({10, 20, 30, 10, 25, 16, 15});
+constexpr auto kTestValues =
+    std::to_array<int64_t>({10, 20, 30, 10, 25, 16, 15});
 
 // One second window and one sample per second, so rate equals each sample.
 TEST(RateCounterTest, OneSecondWindow) {

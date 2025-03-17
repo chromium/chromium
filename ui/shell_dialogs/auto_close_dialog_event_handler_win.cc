@@ -7,15 +7,14 @@
 #include <windows.h>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 
 namespace ui {
 namespace {
 
-// Used by the event hook to notify the handler when awindow is destroyed.
-raw_ptr<AutoCloseDialogEventHandler>& GetInstance() {
-  static raw_ptr<AutoCloseDialogEventHandler> instance = nullptr;
+// Used by the event hook to notify the handler when a window is destroyed.
+AutoCloseDialogEventHandler*& GetInstance() {
+  static AutoCloseDialogEventHandler* instance = nullptr;
   return instance;
 }
 

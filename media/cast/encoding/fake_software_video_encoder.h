@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/common/frame_id.h"
 #include "media/cast/encoding/software_video_encoder.h"
@@ -17,7 +18,9 @@ namespace cast {
 
 class FakeSoftwareVideoEncoder final : public SoftwareVideoEncoder {
  public:
-  explicit FakeSoftwareVideoEncoder(const FrameSenderConfig& video_config);
+  explicit FakeSoftwareVideoEncoder(
+      const FrameSenderConfig& video_config,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider);
   ~FakeSoftwareVideoEncoder() final;
 
   // SoftwareVideoEncoder implementations.
@@ -30,10 +33,12 @@ class FakeSoftwareVideoEncoder final : public SoftwareVideoEncoder {
 
  private:
   const FrameSenderConfig video_config_;
+  std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider_;
+
   gfx::Size last_frame_size_;
-  bool next_frame_is_key_;
-  FrameId frame_id_;
-  int frame_size_;
+  bool next_frame_is_key_ = true;
+  FrameId frame_id_ = FrameId::first();
+  int frame_size_ = 0u;
 };
 
 }  // namespace cast

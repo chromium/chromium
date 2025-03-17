@@ -37,6 +37,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
@@ -448,11 +449,10 @@ void NativeThemeBase::PaintArrowButton(
   flags.setColor(OutlineColor(track_hsv, thumb_hsv));
   canvas->drawPath(outline, flags);
 
-  // TODO(crbug.com/40596569): Adjust thumb_color based on `state`.
   const SkColor arrow_color =
-      extra_params.thumb_color.has_value()
-          ? extra_params.thumb_color.value()
-          : GetArrowColor(state, color_scheme, color_provider);
+      GetContrastingPressedOrHoveredColor(
+          extra_params.thumb_color, extra_params.track_color, state, direction)
+          .value_or(GetArrowColor(state, color_scheme, color_provider));
   PaintArrow(canvas, rect, direction, arrow_color);
 }
 
@@ -498,6 +498,56 @@ SkPath NativeThemeBase::PathForArrow(const gfx::Rect& bounding_rect,
   path.transform(transform);
 
   return path;
+}
+
+std::optional<SkColor> NativeThemeBase::GetContrastingPressedOrHoveredColor(
+    std::optional<SkColor> fg_color,
+    std::optional<SkColor> bg_color,
+    State state,
+    Part part) const {
+  CHECK(SupportedPartsForContrastingColor(part));
+  if (!IsModifyScrollbarCssColorOnHoverOrPressEnabled() ||
+      !fg_color.has_value() ||
+      (state != NativeTheme::kPressed && state != NativeTheme::kHovered) ||
+      SkColorGetA(fg_color.value()) == SK_AlphaTRANSPARENT) {
+    return fg_color;
+  }
+  const float contrast_ratio = GetContrastRatioForState(state, part);
+  SkColor resulting_color =
+      color_utils::BlendForMinContrast(
+          fg_color.value(), SkColorSetA(fg_color.value(), SK_AlphaOPAQUE),
+          /*high_contrast_foreground=*/std::nullopt, contrast_ratio)
+          .color;
+  if (bg_color.has_value()) {
+    // Guaranteeing contrast with the background is prioritized over having
+    // contrast with the original part color. Making a second pass with the
+    // transforming function might make the final color not contrast as much
+    // with the original color but the result is better than using a function
+    // like `PickGoogleColorTwoBackgrounds` which tries to guarantee contrast
+    // to both (original and background) colors simultaneously, and ends up
+    // creating contrast changes that are too harsh.
+    resulting_color =
+        color_utils::BlendForMinContrast(
+            resulting_color, SkColorSetA(bg_color.value(), SK_AlphaOPAQUE),
+            /*high_contrast_foreground=*/std::nullopt,
+            color_utils::kMinimumVisibleContrastRatio)
+            .color;
+  }
+  return resulting_color;
+}
+
+float NativeThemeBase::GetContrastRatioForState(State state, Part part) const {
+  CHECK(SupportedPartsForContrastingColor(part));
+  static constexpr float kArrowContrastRatio = 2.15f;
+  return kArrowContrastRatio;
+}
+
+bool NativeThemeBase::SupportedPartsForContrastingColor(Part part) const {
+  return part == Part::kScrollbarLeftArrow ||
+         part == Part::kScrollbarRightArrow ||
+         part == Part::kScrollbarUpArrow || part == Part::kScrollbarDownArrow ||
+         part == Part::kScrollbarVerticalThumb ||
+         part == Part::kScrollbarHorizontalThumb;
 }
 
 gfx::Rect NativeThemeBase::BoundingRectForArrow(const gfx::Rect& rect) const {

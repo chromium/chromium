@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -34,6 +33,7 @@
 #include "content/browser/devtools/protocol/devtools_mhtml_helper.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
+#include "content/browser/devtools/protocol/page.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
@@ -254,8 +254,8 @@ void GotManifest(std::optional<std::string> manifest_id,
       -> std::unique_ptr<Page::ImageResource> {
     auto icon = Page::ImageResource::Create();
     std::vector<std::string> size_strings;
-    base::ranges::transform(input_icon.sizes, std::back_inserter(size_strings),
-                            &gfx::Size::ToString);
+    std::ranges::transform(input_icon.sizes, std::back_inserter(size_strings),
+                           &gfx::Size::ToString);
     icon.SetSizes(base::JoinString(size_strings, " "));
     icon.SetType(base::UTF16ToUTF8(input_icon.type));
     return icon.SetUrl(input_icon.src.possibly_invalid_spec()).Build();
@@ -330,7 +330,7 @@ void GotManifest(std::optional<std::string> manifest_id,
     manifest.SetLaunchHandler(
         Page::LaunchHandler::Create()
             .SetClientMode(base::ToString(
-                input_manifest->launch_handler.value().client_mode))
+                input_manifest->launch_handler.value().parsed_client_mode()))
             .Build());
   }
   if (input_manifest->name) {
@@ -446,6 +446,33 @@ void GotManifest(std::optional<std::string> manifest_id,
       std::move(parsed), manifest.Build());
 }
 
+std::string GetFrameStartedNavigatingNavigationTypeString(
+    const blink::mojom::NavigationType& navigation_type) {
+  switch (navigation_type) {
+    case blink::mojom::NavigationType::RELOAD:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::Reload;
+    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          ReloadBypassingCache;
+    case blink::mojom::NavigationType::RESTORE:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::Restore;
+    case blink::mojom::NavigationType::RESTORE_WITH_POST:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::RestoreWithPost;
+    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          HistorySameDocument;
+    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          HistoryDifferentDocument;
+    case blink::mojom::NavigationType::SAME_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::SameDocument;
+    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          DifferentDocument;
+    default:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
 struct PageHandler::PendingScreenshotRequest {
@@ -465,12 +492,14 @@ struct PageHandler::PendingScreenshotRequest {
   gfx::Size requested_image_size;
 };
 
-PageHandler::PageHandler(EmulationHandler* emulation_handler,
-                         BrowserHandler* browser_handler,
-                         bool allow_unsafe_operations,
-                         bool is_trusted,
-                         std::optional<url::Origin> navigation_initiator_origin,
-                         bool may_read_local_files)
+PageHandler::PageHandler(
+    EmulationHandler* emulation_handler,
+    BrowserHandler* browser_handler,
+    bool allow_unsafe_operations,
+    bool is_trusted,
+    std::optional<url::Origin> navigation_initiator_origin,
+    bool may_read_local_files,
+    base::RepeatingCallback<void(std::string)> prepare_for_reload_callback)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
       is_trusted_(is_trusted),
@@ -485,7 +514,8 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
       frames_in_flight_(0),
       host_(nullptr),
       emulation_handler_(emulation_handler),
-      browser_handler_(browser_handler) {
+      browser_handler_(browser_handler),
+      prepare_for_reload_callback_(std::move(prepare_for_reload_callback)) {
 #if BUILDFLAG(IS_ANDROID)
   constexpr auto kScreencastPixelFormat = media::PIXEL_FORMAT_I420;
 #else
@@ -612,7 +642,26 @@ void PageHandler::DidCloseJavaScriptDialog(bool success,
   frontend_->JavascriptDialogClosed(success, base::UTF16ToUTF8(user_input));
 }
 
-Response PageHandler::Enable() {
+Response PageHandler::Enable(
+    std::optional<bool> enable_file_chooser_opened_event) {
+  if (!enabled_ && !host_->GetParentOrOuterDocument() &&
+      host_->frame_tree_node() &&
+      host_->frame_tree_node()->navigation_request()) {
+    // If the Page domain was not enabled, the page is the top level frame, and
+    // there is a penging navigation, emit `FrameStartedNavigating` event.
+    FrameTreeNode* frame_tree_node = host_->frame_tree_node();
+    NavigationRequest* navigation_request =
+        host_->frame_tree_node()->navigation_request();
+    frontend_->FrameStartedNavigating(
+        frame_tree_node->current_frame_host()
+            ->devtools_frame_token()
+            .ToString(),
+        navigation_request->common_params().url.spec(),
+        navigation_request->devtools_navigation_token().ToString(),
+        GetFrameStartedNavigatingNavigationTypeString(
+            navigation_request->common_params().navigation_type));
+  }
+
   enabled_ = true;
   return Response::FallThrough();
 }
@@ -696,13 +745,27 @@ void PageHandler::Reload(std::optional<bool> bypassCache,
     }
   }
 
-  // It is important to fallback before triggering reload, so that
-  // renderer could prepare beforehand.
-  callback->fallThrough();
-  outermost_main_frame->frame_tree()->controller().Reload(
-      bypassCache.value_or(false) ? ReloadType::BYPASSING_CACHE
-                                  : ReloadType::NORMAL,
-      false);
+  const auto reload_type = bypassCache.value_or(false)
+                               ? ReloadType::BYPASSING_CACHE
+                               : ReloadType::NORMAL;
+  NavigationController& navigation_controller =
+      outermost_main_frame->frame_tree()->controller();
+  // For RenderDocument, the path is different: we don't fall through to the
+  // renderer and process `scriptToEvaluateOnLoad` in the browser instead.
+  const bool handle_reload_on_browser_side =
+      outermost_main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation();
+  if (handle_reload_on_browser_side) {
+    have_pending_reload_ = true;
+    pending_script_to_evaluate_on_load_ =
+        script_to_evaluate_on_load.value_or("");
+    navigation_controller.Reload(reload_type, false);
+    callback->sendSuccess();
+  } else {
+    // It is important to fallback before triggering reload, so that
+    // renderer could prepare beforehand.
+    callback->fallThrough();
+    navigation_controller.Reload(reload_type, false);
+  }
 }
 
 static network::mojom::ReferrerPolicy ParsePolicyFromString(
@@ -908,6 +971,22 @@ void PageHandler::DownloadWillBegin(FrameTreeNode* ftn,
 
   item->AddObserver(this);
   pending_downloads_.insert(item);
+}
+
+void PageHandler::DidStartNavigating(
+    FrameTreeNode& ftn,
+    const GURL& url,
+    const base::UnguessableToken& loader_id,
+    const blink::mojom::NavigationType& navigation_type) {
+  if (!enabled_) {
+    return;
+  }
+
+  frontend_->FrameStartedNavigating(
+      ftn.current_frame_host()->devtools_frame_token().ToString(),
+      url.spec(),
+      loader_id.ToString(),
+      GetFrameStartedNavigatingNavigationTypeString(navigation_type));
 }
 
 void PageHandler::OnFrameDetached(const base::UnguessableToken& frame_id) {
@@ -1232,7 +1311,8 @@ void PageHandler::CaptureScreenshot(
 
   if (capture_beyond_viewport.value_or(false)) {
     pending_request->original_web_prefs =
-        host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences();
+        host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences(
+            host_->render_view_host());
     const blink::web_pref::WebPreferences& original_web_prefs =
         *pending_request->original_web_prefs;
     blink::web_pref::WebPreferences modified_web_prefs = original_web_prefs;
@@ -1756,12 +1836,17 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kWebViewDocumentStartJavascriptChanged:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           WebViewDocumentStartJavascriptChanged;
+    case Reason::kCacheLimitPruned:
+      return Page::BackForwardCacheNotRestoredReasonEnum::CacheLimitPruned;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
       NOTREACHED();
     case Reason::kUnknown:
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          CacheControlNoStoreDeviceBoundSessionTerminated;
   }
 }
 
@@ -1884,6 +1969,9 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::UnloadHandler;
     case WebSchedulerTrackedFeature::kParserAborted:
       return Page::BackForwardCacheNotRestoredReasonEnum::ParserAborted;
+    case WebSchedulerTrackedFeature::kWebAuthentication:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          ContentWebAuthenticationAPI;
   }
 }
 
@@ -1939,7 +2027,7 @@ DisableForRenderFrameHostReasonToProtocol(
         case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentMediaSessionService;
-        case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
+        case BackForwardCacheDisable::DisabledReasonId::kExtendedProperties:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentScreenReader;
         case BackForwardCacheDisable::DisabledReasonId::kDiscarded:
@@ -2049,12 +2137,14 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kWebViewMessageListenerInjected:
     case Reason::kWebViewSafeBrowsingAllowlistChanged:
     case Reason::kWebViewDocumentStartJavascriptChanged:
+    case Reason::kCacheLimitPruned:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
     case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
     case Reason::kUnknown:
@@ -2103,6 +2193,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kWebSocket:
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
+    case WebSchedulerTrackedFeature::kWebAuthentication:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
@@ -2233,6 +2324,20 @@ Response PageHandler::AddCompilationCache(const std::string& url,
 
 void PageHandler::IsPrerenderingAllowed(bool& is_allowed) {
   is_allowed &= is_prerendering_allowed_;
+}
+
+void PageHandler::ReadyToCommitNavigation(
+    NavigationRequest* navigation_request) {
+  if (navigation_request->GetReloadType() == ReloadType::NONE) {
+    // Disregard pending reload if the navigation being committed is not a
+    // reload.
+    have_pending_reload_ = false;
+    pending_script_to_evaluate_on_load_.clear();
+  } else if (have_pending_reload_) {
+    prepare_for_reload_callback_.Run(
+        std::move(pending_script_to_evaluate_on_load_));
+    have_pending_reload_ = false;
+  }
 }
 
 Response PageHandler::SetPrerenderingAllowed(bool is_allowed) {

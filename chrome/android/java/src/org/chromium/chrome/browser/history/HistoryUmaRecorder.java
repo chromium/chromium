@@ -125,7 +125,7 @@ public class HistoryUmaRecorder {
         RecordHistogram.recordEnumeratedHistogram(
                 getPrefix() + "ClearBrowsingData.PerProfileType",
                 type,
-                BrowserProfileType.MAX_VALUE + 1);
+                BrowserProfileType.MAX_VALUE);
     }
 
     /**

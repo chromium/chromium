@@ -12,27 +12,32 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.IsReadyToPayService;
 import org.chromium.IsReadyToPayServiceCallback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.PrePurchaseQuery;
 
 /** A helper to query the payment app's IsReadyToPay service. */
+@NullMarked
 public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
         implements ServiceConnection {
     /** The maximum number of milliseconds to wait for a response from a READY_TO_PAY service. */
-    private static final long READY_TO_PAY_TIMEOUT_MS = 400;
+    private long mReadyToPayTimeoutMs = 2000;
 
     /** The maximum number of milliseconds to wait for a connection to READY_TO_PAY service. */
-    private static final long SERVICE_CONNECTION_TIMEOUT_MS = 1000;
+    private long mServiceConnectionTimeoutMs = 5000;
 
     private final Context mContext;
 
     // This callback can be used only once, set to null after that.
-    private ResultHandler mResultHandler;
+    private @Nullable ResultHandler mResultHandler;
 
     private boolean mIsServiceBindingInitiated;
-    private boolean mIsReadyToPayQueried;
+    private boolean mIsServiceConnected;
     private Handler mHandler;
     private Intent mIsReadyToPayIntent;
 
@@ -94,9 +99,11 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
 
         mHandler.postDelayed(
                 () -> {
-                    if (!mIsReadyToPayQueried) reportError();
+                    if (!mIsServiceConnected) {
+                        reportError();
+                    }
                 },
-                SERVICE_CONNECTION_TIMEOUT_MS);
+                mServiceConnectionTimeoutMs);
     }
 
     // ServiceConnection:
@@ -104,6 +111,8 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
     public void onServiceConnected(ComponentName name, IBinder service) {
         // Timeout could cause the null.
         if (mResultHandler == null) return;
+
+        mIsServiceConnected = true;
 
         IsReadyToPayService isReadyToPayService = IsReadyToPayService.Stub.asInterface(service);
         if (isReadyToPayService == null) {
@@ -115,7 +124,6 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
                 "PaymentRequest.PrePurchaseQuery",
                 PrePurchaseQuery.ANDROID_INTENT,
                 PrePurchaseQuery.MAX_VALUE);
-        mIsReadyToPayQueried = true;
         try {
             isReadyToPayService.isReadyToPay(/* callback= */ this);
         } catch (Throwable e) {
@@ -124,7 +132,7 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
             reportError();
             return;
         }
-        mHandler.postDelayed(this::reportError, READY_TO_PAY_TIMEOUT_MS);
+        mHandler.postDelayed(this::reportError, mReadyToPayTimeoutMs);
     }
 
     // "Called when a connection to the Service has been lost. This typically happens
@@ -164,5 +172,15 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
             mIsServiceBindingInitiated = false;
         }
         mHandler.removeCallbacksAndMessages(null);
+    }
+
+
+    /**
+     * @param timeoutForTest The number of milliseconds to use for timeouts in tests.
+     */
+    @VisibleForTesting
+    public void setTimeoutsMsForTesting(long timeoutForTesting) {
+        mServiceConnectionTimeoutMs = timeoutForTesting;
+        mReadyToPayTimeoutMs = timeoutForTesting;
     }
 }

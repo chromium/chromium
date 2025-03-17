@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">‏تم حظر هذه الصفحة بواسطة متصفّح Chromium.</translation>
 <translation id="48558539577516920">‏اسمح لـ Chromium بالدخول إلى الشبكة من خلال إعدادات جدار الحماية أو
         برنامج مكافحة الفيروسات.</translation>
+<translation id="4949828774841497663">‏يُرجى الانتقال إلى "التطبيقات" (Applications) &gt; "إعدادات النظام" (System Settings) &gt; "الشبكة" (Network)، ثم اختيار
+          الشبكة النشطة، والنقر على زر "التفاصيل…" (Details…‎) وإلغاء اختيار أي خوادم وكيلة
+          سبق اختيارها.</translation>
 <translation id="580822234363523061">‏انتقل إلى
           قائمة Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           وتأكد من ضبط الإعداد على "بلا خادم وكيل" أو "مباشر."</translation>
+<translation id="648062525172759633">‏هذه الصفحات مخصّصة لمطوّري Chromium، وقد لا تتم صيانتها أو اختبارها بشكلٍ منتظم. لتفعيلها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> والنقر على زر تفعيل صفحات تصحيح الأخطاء، ثم الانتقال إلى هذه الصفحة مرة أخرى.</translation>
 <translation id="6549378540556750549">‏أصبح Chromium متاحًا من خلال <ph name="BEGIN_LINK_OSS" />برنامج آخر مفتوح المصدر<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">‏ستسري التغييرات في المرة التالية التي تعيد فيها تشغيل Chromium.</translation>
 <translation id="691026815377248078">‏يجب منح Chromium الإذن بالوصول إلى البلوتوث لمواصلة عملية 
@@ -42,7 +46,6 @@
         وألغ اختيار "<ph name="NO_PREFETCH_DESCRIPTION" />"
         في حالة ما إذا لم يؤد ذلك إلى حل المشكلة، نوصي بتحديد هذا الخيار
         مرة أخرى من أجل أداء أفضل.</translation>
-<translation id="8187289872471304532">‏انتقل إلى Applications (التطبيقات) &gt; System Preferences (الإعدادات المفضّلة للنظام) &gt; Network (الشبكة) &gt; Advanced (الخيارات المتقدمة) &gt; Proxies (الخوادم الوكيلة) وألغ اختيار أي خوادم وكيلة تم تحديدها.</translation>
 <translation id="8597726643333341451">‏أنت تعرض صفحة Chrome for Testing آمنة.</translation>
 <translation id="8684913864886094367">‏لم يغلق Chromium بشكل صحيح.</translation>
 </translationbundle>

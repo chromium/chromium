@@ -16,6 +16,12 @@
 
 set -euox pipefail
 
+# Use Xcode 16.0
+sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+
+export CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
+export CTEST_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
+
 if [[ -z ${ABSEIL_ROOT:-} ]]; then
   ABSEIL_ROOT="$(dirname ${0})/.."
 fi
@@ -53,7 +59,7 @@ for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
         -DBUILD_SHARED_LIBS=${build_shared} \
         -DABSL_BUILD_TESTING=ON \
         -DCMAKE_BUILD_TYPE=${compilation_mode} \
-        -DCMAKE_CXX_STANDARD=14 \
+        -DCMAKE_CXX_STANDARD=17 \
         -DCMAKE_MODULE_LINKER_FLAGS="-Wl,--no-undefined" \
         -DABSL_BUILD_MONOLITHIC_SHARED_LIBS=${monolithic_shared} \
         -DABSL_GOOGLETEST_DOWNLOAD_URL="${ABSL_GOOGLETEST_DOWNLOAD_URL}"

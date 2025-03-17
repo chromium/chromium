@@ -6,6 +6,8 @@
 
 namespace tabs {
 
+TabCollection::TabCollection(Type type) : type_(type) {}
+
 void TabCollection::OnCollectionAddedToTree(TabCollection* collection) {
   recursive_tab_count_ += collection->TabCountRecursive();
 

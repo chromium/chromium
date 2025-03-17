@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/decoder_buffer.h"
 #include "media/base/decoder_buffer_queue.h"
+
+#include "base/memory/scoped_refptr.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,14 +21,14 @@ static base::TimeDelta ToTimeDelta(int seconds) {
 //
 // Negative numbers will be converted to kNoTimestamp;
 static scoped_refptr<DecoderBuffer> CreateBuffer(int timestamp) {
-  scoped_refptr<DecoderBuffer> buffer = new DecoderBuffer(0);
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   buffer->set_timestamp(ToTimeDelta(timestamp));
   buffer->set_duration(ToTimeDelta(0));
   return buffer;
 }
 
 static scoped_refptr<DecoderBuffer> CreateBuffer(int timestamp, int size) {
-  scoped_refptr<DecoderBuffer> buffer = new DecoderBuffer(size);
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(size);
   buffer->set_timestamp(ToTimeDelta(timestamp));
   buffer->set_duration(ToTimeDelta(0));
   return buffer;

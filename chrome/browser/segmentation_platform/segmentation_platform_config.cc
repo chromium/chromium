@@ -18,6 +18,7 @@
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/segmentation_platform/embedder/default_model/fedcm_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
@@ -172,6 +173,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(DatabaseApiClients::GetConfig());
   configs.emplace_back(MetricsClustering::GetConfig());
+  configs.emplace_back(FedCmUserModel::GetConfig());
   if (home_modules_card_registry) {
     configs.emplace_back(home_modules::EphemeralHomeModuleBackend::GetConfig(
         home_modules_card_registry));

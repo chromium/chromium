@@ -8,12 +8,23 @@
 #import "base/metrics/field_trial_params.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 
 #pragma mark - Constants
+
+const char kDeprecateFeedHeaderParameterRemoveLabel[] = "remove-feed-label";
+const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[] =
+    "enlarge-logo-n-fakebox";
+const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
+const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[] =
+    "search-field-top-margin";
+const char kDeprecateFeedHeaderParameterSpaceBetweenModules[] =
+    "space-between-modules";
+const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
+    "header-bottom-padding";
 
 #pragma mark - Feature declarations
 
@@ -49,8 +60,8 @@ BASE_FEATURE(kIdentityDiscAccountMenu,
              "IdentityDiscAccountMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSNewFollowingFeedEntryPoints,
-             "IOSNewFollowingFeedEntryPoints",
+BASE_FEATURE(kFeedSwipeInProductHelp,
+             "FeedSwipeInProductHelp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
@@ -72,6 +83,14 @@ const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[] =
     "TimeoutThresholdAfterClearBrowsingData";
 const char kFeedSettingDiscoverReferrerParameter[] =
     "DiscoverReferrerParameter";
+
+// Feature parameters for `kIdentityDiscAccountMenu`.
+const char kDisableAccountMenuEllipsisParam[] =
+    "identity-disc-account-menu-without-ellipsis";
+const char kShowSettingsInAccountMenuParam[] =
+    "identity-disc-account-menu-with-settings-button";
+
+const char kFeedSwipeInProductHelpArmParam[] = "feed-swipe-in-product-help-arm";
 
 #pragma mark - Helpers
 
@@ -105,7 +124,61 @@ bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
 }
 
-bool IsNewFollowingFeedEntryPointsEnabled() {
-  return IsFollowUIUpdateEnabled() &&
-         base::FeatureList::IsEnabled(kIOSNewFollowingFeedEntryPoints);
+bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine) {
+  return is_google_default_search_engine && ShouldDeprecateFeedHeader() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kDeprecateFeedHeader, kDeprecateFeedHeaderParameterRemoveLabel,
+             false);
+}
+
+bool ShouldEnlargeLogoAndFakebox() {
+  return ShouldDeprecateFeedHeader() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kDeprecateFeedHeader,
+             kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, false);
+}
+
+double TopPaddingToNTP() {
+  return ShouldDeprecateFeedHeader()
+             ? base::GetFieldTrialParamByFeatureAsDouble(
+                   kDeprecateFeedHeader,
+                   kDeprecateFeedHeaderParameterTopPadding, 0)
+             : 0;
+}
+
+double GetDeprecateFeedHeaderParameterValueAsDouble(
+    const std::string& param_name,
+    double default_value) {
+  if (!ShouldDeprecateFeedHeader()) {
+    return default_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(kDeprecateFeedHeader,
+                                                   param_name, default_value);
+}
+
+bool IdentityDiscAccountMenuEnabledWithoutEllipsis() {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kIdentityDiscAccountMenu, kDisableAccountMenuEllipsisParam, false);
+  }
+  return false;
+}
+
+bool IdentityDiscAccountMenuEnabledWithSettings() {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kIdentityDiscAccountMenu, kShowSettingsInAccountMenuParam, false);
+  }
+  return false;
+}
+
+FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {
+  if (base::FeatureList::IsEnabled(kFeedSwipeInProductHelp)) {
+    return static_cast<FeedSwipeIPHVariation>(
+        base::GetFieldTrialParamByFeatureAsInt(
+            kFeedSwipeInProductHelp,
+            kFeedSwipeInProductHelpArmParam, /*default_value=*/
+            static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE)));
+  }
+  return FeedSwipeIPHVariation::kDisabled;
 }

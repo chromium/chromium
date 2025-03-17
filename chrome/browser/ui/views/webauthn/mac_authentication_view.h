@@ -5,14 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_MAC_AUTHENTICATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_MAC_AUTHENTICATION_VIEW_H_
 
-#include <memory>
+#include <os/availability.h>
 
-#include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
+#include <memory>
+#include <optional>
+#include <string>
+
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "crypto/scoped_lacontext.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
 // MacAuthenticationView wraps an `LAAuthenticationView` such that it can be
@@ -22,8 +27,8 @@ class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
   METADATA_HEADER(MacAuthenticationView, views::View)
 
  public:
-  using Callback =
-      base::OnceCallback<void(std::optional<crypto::ScopedLAContext>)>;
+  using Callback = base::OnceCallback<void(
+      std::optional<webauthn::LocalAuthenticationToken>)>;
 
   // The callback is called when Touch ID is complete with a boolean that
   // indicates whether the operation was successful and if successful, the

@@ -485,7 +485,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
   gfx::Size button_size = button->GetPreferredSize();
   if (delegate_->GetFrameButtonStyle() ==
       OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::kMdButton) {
-    DCHECK_EQ(std::string(views::FrameCaptionButton::kViewClassName),
+    DCHECK_EQ(views::FrameCaptionButton::kViewClassName,
               button->GetClassName());
     const int caption_button_center_size =
         button_width - 2 * views::kCaptionButtonInkDropDefaultCornerRadius;
@@ -501,8 +501,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
   } else if (delegate_->GetFrameButtonStyle() ==
              OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::
                  kImageButton) {
-    DCHECK_EQ(std::string(views::ImageButton::kViewClassName),
-              button->GetClassName());
+    DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
     auto* const image_button = static_cast<views::ImageButton*>(button);
     image_button->SetImageHorizontalAlignment(
         (alignment == ALIGN_LEADING) ? views::ImageButton::ALIGN_RIGHT
@@ -591,11 +590,7 @@ void OpaqueBrowserFrameViewLayout::SetView(int id, views::View* view) {
       window_icon_ = view;
       break;
     case VIEW_ID_WINDOW_TITLE:
-      if (view) {
-        DCHECK_EQ(std::string(views::Label::kViewClassName),
-                  view->GetClassName());
-      }
-      window_title_ = static_cast<views::Label*>(view);
+      window_title_ = views::AsViewClass<views::Label>(view);
       break;
   }
 

@@ -157,11 +157,6 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     @Override
-    public byte[][] getCertificateChain(WebContents webContents) {
-        return new byte[0][];
-    }
-
-    @Override
     public boolean isOriginAllowedToUseWebPaymentApis(GURL lastCommittedUrl) {
         return mIsOriginAllowedToUseWebPaymentApis;
     }

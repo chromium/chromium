@@ -108,8 +108,9 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
   __block bool did_finish = false;
   bool function_call_successful = frame->CallJavaScriptFunctionInContentWorld(
       function, parameters, world, base::BindOnce(^(const base::Value* value) {
-        if (value)
+        if (value) {
           result = std::make_unique<base::Value>(value->Clone());
+        }
         did_finish = true;
       }),
       kWaitForJSCompletionTimeout);
@@ -204,15 +205,17 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
     return false;
   });
 
-  if (!found)
+  if (!found) {
     return CGRectNull;
+  }
 
   std::optional<double> left = rect->FindDouble("left");
   std::optional<double> top = rect->FindDouble("top");
   std::optional<double> width = rect->FindDouble("width");
   std::optional<double> height = rect->FindDouble("height");
-  if (!(left && top && width && height))
+  if (!(left && top && width && height)) {
     return CGRectNull;
+  }
 
   CGFloat scale = [[web_state->GetWebViewProxy() scrollViewProxy] zoomScale];
 
@@ -252,16 +255,16 @@ bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
       js_action = ".selected = true;";
       break;
   }
-  NSString* script = [NSString stringWithFormat:
-                                   @"(function() {"
-                                    "  var element = %s;"
-                                    "  if (element) {"
-                                    "    element%s;"
-                                    "    return true;"
-                                    "  }"
-                                    "  return false;"
-                                    "})();",
-                                   element_script.c_str(), js_action];
+  NSString* script =
+      [NSString stringWithFormat:@"(function() {"
+                                  "  var element = %s;"
+                                  "  if (element) {"
+                                  "    element%s;"
+                                  "    return true;"
+                                  "  }"
+                                  "  return false;"
+                                  "})();",
+                                 element_script.c_str(), js_action];
   __block bool did_complete = false;
   __block bool element_found = false;
   __block NSError* block_error = nil;

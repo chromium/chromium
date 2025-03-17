@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/system/sys_info.h"
 
 #include <errno.h>
@@ -15,6 +20,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <iostream>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -64,8 +70,9 @@ base::LazyInstance<
 bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
   struct statfs stats;
 
-  if (HANDLE_EINTR(statfs(path.value().c_str(), &stats)) != 0)
+  if (HANDLE_EINTR(statfs(path.value().c_str(), &stats)) != 0) {
     return false;
+  }
 
   // This static_cast is here because various libcs disagree about the size
   // and signedness of statfs::f_type. In particular, glibc has it as either a
@@ -87,8 +94,9 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
                       int64_t* available_bytes,
                       int64_t* total_bytes) {
   struct statvfs stats;
-  if (HANDLE_EINTR(statvfs(path.value().c_str(), &stats)) != 0)
+  if (HANDLE_EINTR(statvfs(path.value().c_str(), &stats)) != 0) {
     return false;
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const bool zero_size_means_unlimited =
@@ -111,6 +119,24 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
             : base::saturated_cast<int64_t>(stats.f_blocks * stats.f_frsize);
   }
   return true;
+}
+
+void GetKernelVersionNumbers(int32_t* major_version,
+                             int32_t* minor_version,
+                             int32_t* bugfix_version) {
+  struct utsname info;
+  CHECK_EQ(uname(&info), 0);
+  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
+                        bugfix_version);
+  if (num_read < 1) {
+    *major_version = 0;
+  }
+  if (num_read < 2) {
+    *minor_version = 0;
+  }
+  if (num_read < 3) {
+    *bugfix_version = 0;
+  }
 }
 
 }  // namespace
@@ -186,8 +212,9 @@ int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t available;
-  if (!GetDiskSpaceInfo(path, &available, nullptr))
+  if (!GetDiskSpaceInfo(path, &available, nullptr)) {
     return -1;
+  }
   return available;
 }
 
@@ -197,8 +224,9 @@ int64_t SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t total;
-  if (!GetDiskSpaceInfo(path, nullptr, &total))
+  if (!GetDiskSpaceInfo(path, nullptr, &total)) {
     return -1;
+  }
   return total;
 }
 
@@ -229,20 +257,21 @@ std::string SysInfo::OperatingSystemVersion() {
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
-  struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
-  }
-  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
-                        bugfix_version);
-  if (num_read < 1)
-    *major_version = 0;
-  if (num_read < 2)
-    *minor_version = 0;
-  if (num_read < 3)
-    *bugfix_version = 0;
+  GetKernelVersionNumbers(major_version, minor_version, bugfix_version);
 }
 #endif
+
+// static
+SysInfo::KernelVersionNumber SysInfo::KernelVersionNumber::Current() {
+  KernelVersionNumber v;
+  GetKernelVersionNumbers(&v.major, &v.minor, &v.bugfix);
+  return v;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const SysInfo::KernelVersionNumber& v) {
+  return out << v.major << "." << v.minor << "." << v.bugfix;
+}
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
 // static
@@ -282,20 +311,23 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
     std::string content;
     auto path = StringPrintf(
         "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", core_index);
-    if (!ReadFileToStringNonBlocking(FilePath(path), &content))
+    if (!ReadFileToStringNonBlocking(FilePath(path), &content)) {
       return 0;
+    }
     if (!StringToUint(
             content,
-            &max_core_frequencies_khz[static_cast<size_t>(core_index)]))
+            &max_core_frequencies_khz[static_cast<size_t>(core_index)])) {
       return 0;
+    }
   }
 
   auto [min_max_core_frequencies_khz_it, max_max_core_frequencies_khz_it] =
       std::minmax_element(max_core_frequencies_khz.begin(),
                           max_core_frequencies_khz.end());
 
-  if (*min_max_core_frequencies_khz_it == *max_max_core_frequencies_khz_it)
+  if (*min_max_core_frequencies_khz_it == *max_max_core_frequencies_khz_it) {
     return 0;
+  }
 
   return static_cast<int>(std::count(max_core_frequencies_khz.begin(),
                                      max_core_frequencies_khz.end(),

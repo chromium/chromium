@@ -32,7 +32,6 @@ class Profile;
 class ScopedProfileKeepAlive;
 class ProfileManagementFlowController;
 class ProfilePickerFlowController;
-class Browser;
 class ProfilePickerFeaturePromoController;
 class ForceSigninUIError;
 
@@ -62,12 +61,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // ProfilePickerWebContentsHost:
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
-                  base::OnceClosure navigation_finished_closure =
-                      base::OnceClosure()) override;
+                  base::OnceClosure navigation_finished_closure) override;
   void ShowScreenInPickerContents(
       const GURL& url,
-      base::OnceClosure navigation_finished_closure =
-          base::OnceClosure()) override;
+      base::OnceClosure navigation_finished_closure) override;
   bool ShouldUseDarkColors() const override;
   content::WebContents* GetPickerContents() const override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
@@ -192,21 +189,13 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // when the picker is shown on startup.
   void SwitchToSignedOutPostIdentityFlow(
       std::optional<SkColor> profile_color,
-      base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Callback used when the profile is created in the signed out flow.
   void OnLocalProfileInitialized(
       std::optional<SkColor> profile_color,
-      base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* profile);
-
-  // Callback used when the browser is launched after finishing the signed out
-  // flow.
-  void ShowLocalProfileCustomization(
-      base::TimeTicks profile_picked_time_on_startup,
-      Browser* browser);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile or
@@ -238,10 +227,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // on Windows).
   void ConfigureAccelerators();
 
-  // Getter of the target page url. If not empty and is valid, it opens on
-  // profile selection instead of the new tab page.
-  GURL GetOnSelectProfileTargetUrl() const;
-
   ProfilePickerFlowController* GetProfilePickerFlowController() const;
 
   // Returns a closure that can be executed to clear (see
@@ -250,13 +235,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // `ProfilePicker::Hide()` because it only clears this specific instance of
   // the picker view, whereas `Hide()` would close any picker view.
   ClearHostClosure GetClearClosure();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when the user selects an account on the Lacros-specific account
-  // selection screen. Only called for existing profiles, not as part of profile
-  // creation.
-  void NotifyAccountSelected(const GaiaId& gaia_id);
-#endif
 
   void UpdateAccessibleNameForRootView(views::WebView*);
 

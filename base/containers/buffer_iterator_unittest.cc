@@ -77,9 +77,9 @@ TEST(BufferIteratorTest, MutableObject) {
   }
 }
 
-TEST(BufferIteratorTest, ObjectSizeOverflow) {
+TEST(BufferIteratorTest, ObjectDoesNotFit) {
   char buffer[64];
-  BufferIterator<char> iterator(buffer, std::numeric_limits<size_t>::max());
+  BufferIterator<char> iterator(buffer);
 
   auto* pointer = iterator.Object<uint64_t>();
   EXPECT_TRUE(pointer);
@@ -238,8 +238,9 @@ TEST(BufferIteratorTest, SeekWithSizeConfines) {
   EXPECT_TRUE(iterator.Span<char>(4).empty());
 
   std::string result;
-  while (const char* c = iterator.Object<char>())
+  while (const char* c = iterator.Object<char>()) {
     result += *c;
+  }
   EXPECT_EQ(result, "cat");
 }
 

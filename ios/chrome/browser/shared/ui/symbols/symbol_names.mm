@@ -60,7 +60,6 @@ NSString* const kChromiumSigninPromoLogoImage = @"chromium_signin_promo_logo";
 
 // Custom symbol names.
 NSString* const kPrivacySymbol = @"checkerboard_shield";
-NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";
 NSString* const kSafetyCheckSymbol = @"checkermark_shield";
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
@@ -125,6 +124,8 @@ NSString* const kCameraFillSymbol = @"custom_camera_fill";
 
 // Default symbol names.
 NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
+NSString* const kChartLineDowntrendXYAxisSymbol =
+    @"chart.line.downtrend.xyaxis";
 NSString* const kCircleSymbol = @"circle";
 NSString* const kCircleFillSymbol = @"circle.fill";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
@@ -240,6 +241,7 @@ NSString* const kShippingBoxSymbol = @"shippingbox";
 NSString* const kSliderHorizontalSymbol = @"slider.horizontal.3";
 NSString* const kMacbookAndIPhoneSymbol = @"macbook.and.iphone";
 NSString* const kCheckmarkShieldSymbol = @"checkmark.shield";
+NSString* const kListBulletSymbol = @"list.bullet";
 NSString* const kListBulletClipboardSymbol = @"list.bullet.clipboard";
 NSString* const kListBulletRectangleSymbol = @"list.bullet.rectangle.portrait";
 NSString* const kBoxTruckFillSymbol = @"box.truck.fill";
@@ -280,6 +282,7 @@ NSString* const kArrowUTurnForwardCircleFillSymbol =
     @"arrow.uturn.forward.circle.fill";
 NSString* const kIPhoneAndArrowForwardSymbol = @"iphone.and.arrow.forward";
 NSString* const kPersonPlusSymbol = @"person.crop.circle.badge.plus";
+NSString* const kArrowUpTrashSymbol = @"arrow.up.trash";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

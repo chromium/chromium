@@ -22,7 +22,7 @@ class CreditCard;
 }  // namespace autofill
 
 // WebView extension of AutofillClientIOSBridge.
-@protocol CWVAutofillClientIOSBridge<AutofillClientIOSBridge>
+@protocol CWVAutofillClientIOSBridge <AutofillClientIOSBridge>
 
 // Bridge for AutofillClient's method |ConfirmSaveCreditCardToCloud|.
 - (void)

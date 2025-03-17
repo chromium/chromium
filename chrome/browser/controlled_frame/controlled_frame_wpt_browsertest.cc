@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
+#include "build/build_config.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "chrome/browser/controlled_frame/scoped_test_driver_proxy.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -21,21 +22,28 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace controlled_frame {
 
 namespace {
-const auto kTestFiles = testing::Values("add_content_scripts.window.js",
-                                        "camera.window.js",
-                                        "client_hints_user_agent.window.js",
-                                        "event_handlers.window.js",
-                                        "geolocation.window.js",
-                                        "new_window.window.js",
-                                        "no_callback.window.js",
-                                        "scheme.window.js",
-                                        "user_agent_override.window.js",
-                                        "webrequest_event_handlers.window.js");
+
+// TODO(crbug.com/383348612): Re-enable webrequest_event_handlers_part_1 once
+// they no longer timeout on Windows ASN bots.
+const auto kTestFiles =
+    testing::Values("add_content_scripts.window.js",
+                    "camera.window.js",
+                    "client_hints_user_agent.window.js",
+                    "frame_event_handlers_part_1.window.js",
+                    "frame_event_handlers_part_2.window.js",
+                    "geolocation.window.js",
+                    "new_window.window.js",
+                    "no_callback.window.js",
+                    "scheme.window.js",
+                    "user_agent_override.window.js",
+#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+                    "webrequest_event_handlers_part_1.window.js",
+#endif
+                    "webrequest_event_handlers_part_2.window.js");
 
 constexpr char kTestDirectory[] = "chrome/test/data/controlled_frame";
 constexpr char kTestHarnessPath[] =

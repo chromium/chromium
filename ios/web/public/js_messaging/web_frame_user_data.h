@@ -37,8 +37,9 @@ class WebFrameUserData : public base::SupportsUserData::Data {
   // If an instance is already attached, does nothing.
   static void CreateForWebFrame(WebFrame* web_frame) {
     DCHECK(web_frame);
-    if (!FromWebFrame(web_frame))
+    if (!FromWebFrame(web_frame)) {
       web_frame->SetUserData(UserDataKey(), base::WrapUnique(new T(web_frame)));
+    }
   }
 
   // Retrieves the instance of type T that was attached to the specified

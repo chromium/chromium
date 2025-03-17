@@ -1,0 +1,140 @@
+Tests frameStartedNavigating on frameset
+
+Prepare
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 0>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frameset.html
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 1>
+        navigationType : differentDocument
+        url : http://devtools.test:8000/inspector-protocol/resources/basic.html?spif
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 2>
+        navigationType : differentDocument
+        url : http://oopif.test:8000/inspector-protocol/resources/basic.html?oopif
+    }
+    sessionId : <string>
+}
+
+Fragment navigation
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 3>
+        navigationType : sameDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frameset.html#some_fragment
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 3>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frameset.html#some_fragment
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 4>
+        navigationType : differentDocument
+        url : http://devtools.test:8000/inspector-protocol/resources/basic.html?spif
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 5>
+        navigationType : differentDocument
+        url : http://oopif.test:8000/inspector-protocol/resources/basic.html?oopif
+    }
+    sessionId : <string>
+}
+
+Cross-document navigation
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 6>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frameset.html?load_again
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 7>
+        navigationType : differentDocument
+        url : http://devtools.test:8000/inspector-protocol/resources/basic.html?spif
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 8>
+        navigationType : differentDocument
+        url : http://oopif.test:8000/inspector-protocol/resources/basic.html?oopif
+    }
+    sessionId : <string>
+}
+
+Reload
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 9>
+        navigationType : reload
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frameset.html?load_again
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 10>
+        navigationType : differentDocument
+        url : http://devtools.test:8000/inspector-protocol/resources/basic.html?spif
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 11>
+        navigationType : differentDocument
+        url : http://oopif.test:8000/inspector-protocol/resources/basic.html?oopif
+    }
+    sessionId : <string>
+}
+

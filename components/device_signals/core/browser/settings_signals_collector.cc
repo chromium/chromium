@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "components/device_signals/core/browser/settings_client.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 
 namespace device_signals {
 
@@ -27,9 +28,14 @@ SettingsSignalsCollector::SettingsSignalsCollector(
 SettingsSignalsCollector::~SettingsSignalsCollector() = default;
 
 void SettingsSignalsCollector::GetSettingsSignal(
+    UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  if (permission != UserPermission::kGranted) {
+    std::move(done_closure).Run();
+    return;
+  }
   if (request.settings_signal_parameters.empty()) {
     SettingsResponse signal_response;
     signal_response.collection_error =

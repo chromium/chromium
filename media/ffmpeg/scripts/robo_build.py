@@ -111,18 +111,26 @@ def CopyConfigPythonTranslation(robo_configuration):
                             os.makedirs(os.path.dirname(copy_to))
                         print(f'CP {copy_from} {copy_to}')
                         shutil.copy(copy_from, copy_to)
-            # Since we cannot cross-compile for ios, we just duplicate the mac config
-            # for this platform.
-            if opsys == "mac":
-                mac_dir = robo_configuration.target_config_directory(
-                    arch, opsys, "noarch")
-                ios_dir = robo_configuration.target_config_directory(
-                    arch, 'ios', "noarch")
-                copy_from = os.path.dirname(mac_dir)
-                if os.path.exists(copy_from):
-                    copy_to = os.path.dirname(ios_dir)
-                    shutil.copy(copy_from, copy_to)
-
+                # Since we cannot cross-compile for ios, we just duplicate the
+                # mac config for this platform and arch.
+                if opsys == "mac":
+                    copy_from = export_dir
+                    ios_dir = robo_configuration.exported_configs_directory(
+                        arch, 'ios', target)
+                    if robo_configuration.Call(["mkdir", "-p", ios_dir]):
+                      raise Exception(
+                          f"Could not make iOS config directory {ios_dir}")
+                    # `cp -r` is a little odd.  If the target directory does
+                    # not exist, then `cp a b` will copy the contents of `a`
+                    # into a newly created `b` such that `ls a` and `ls b`
+                    # will show the same files.  If the target directory does
+                    # exist already (e.g., if you run the command twice), then
+                    # the second copy will result in a subdirectory called `a`
+                    # inside `b`.  `-T` fixes this.
+                    if robo_configuration.Call(
+                        ["cp", "-rT", copy_from, ios_dir]):
+                      raise Exception(
+                          f"Could not copy iOS configs from {copy_from} to {ios_dir}")
 
 def BuildAndImportAllFFmpegConfigs(robo_configuration):
     """Build ffmpeg for all platforms that we can, and build the gn files.

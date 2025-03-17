@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/base/address_tracker_linux.h"
 
 #include <errno.h>
@@ -31,7 +36,7 @@
 #include "net/base/network_interfaces_linux.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace net::internal {
@@ -204,8 +209,8 @@ void AddressTrackerLinux::Init() {
   // https://developer.android.com/preview/privacy/mac-address),
   // so AddressTrackerLinux should not be used in later versions
   // of Android.  Chromium code doesn't need it past Android P.
-  DCHECK_LT(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_P);
+  DCHECK_LT(base::android::android_info::sdk_int(),
+            base::android::android_info::SDK_VERSION_P);
 #endif
   netlink_fd_.reset(socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE));
   if (!netlink_fd_.is_valid()) {
@@ -490,16 +495,6 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           return;
         if (IsInterfaceIgnored(msg->ifa_index))
           break;
-        // To improve privacy, IPv6 permits each device to create a new IP
-        // address for itself, on the same subnet but with the lower 64 bits
-        // randomized, as frequently as once every two seconds (RFC 8981). In
-        // addition to these short-lived, randomly created addresses, each
-        // device always has at least one permanent IPv6 address, from which the
-        // temporary addresses are derived. Avoid false network change events by
-        // watching only the permanent IP addresses for changes and ignoring the
-        // temporary addresses.  https://crbug.com/373461934
-        if (msg->ifa_family == AF_INET6 && msg->ifa_flags & IFA_F_TEMPORARY)
-          break;
         if (GetAddress(header, length, &address, &really_deprecated)) {
           struct ifaddrmsg msg_copy = *msg;
           AddressTrackerAutoLock lock(*this, address_map_lock_);
@@ -534,9 +529,6 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
         if (msg == nullptr)
           return;
         if (IsInterfaceIgnored(msg->ifa_index))
-          break;
-        // Ignore IPv6 temporary addresses like above.
-        if (msg->ifa_family == AF_INET6 && msg->ifa_flags & IFA_F_TEMPORARY)
           break;
         if (GetAddress(header, length, &address, nullptr)) {
           AddressTrackerAutoLock lock(*this, address_map_lock_);

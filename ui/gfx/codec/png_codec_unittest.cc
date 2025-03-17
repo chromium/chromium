@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/gfx/codec/png_codec.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <optional>
@@ -18,7 +24,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "skia/buildflags.h"
@@ -26,7 +31,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libpng/png.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "third_party/zlib/zlib.h"
 #include "ui/gfx/geometry/size.h"
@@ -884,14 +888,19 @@ TEST_P(PNGCodecTest, DecodeGamma) {
 
   struct SourceFile {
     double gamma;
-    uint8_t corrected;
+    uint8_t min;
+    uint8_t max;
     std::string filename;
   };
-
   const SourceFile kSourceFiles[] = {
-      {1.0, 188, "checkerboard.gamma1dot0.png"},
-      {1.8, 146, "checkerboard.gamma1dot8.png"},
-      {2.2, 129, "checkerboard.gamma2dot2.png"},
+      {1.0, 188, 188, "checkerboard.gamma1dot0.png"},
+      {1.8, 146, 146, "checkerboard.gamma1dot8.png"},
+
+      // This testcase allows both 128 and 129 to reflect that `SkPngRustCodec`
+      // matches the behavior of `blink::PNGImageDecoder` for PNGs with `gAMA`
+      // chunk set to 1/2.2 and with no other color-profile-related chunks.  See
+      // https://crbug.com/388025081 for more details.
+      {2.2, 128, 129, "checkerboard.gamma2dot2.png"},
   };
 
   for (const auto& sf : kSourceFiles) {
@@ -907,7 +916,10 @@ TEST_P(PNGCodecTest, DecodeGamma) {
     ASSERT_TRUE(output);
     ASSERT_GT(output->output.size(), 0u);
 
-    EXPECT_EQ(output->output[0], sf.corrected) << "gamma: " << sf.gamma;
+    // TODO(https://crbug.com/363052758): Go back to equality-based comparisons
+    // when the `base::Feature` is removed.
+    EXPECT_LE(sf.min, output->output[0]) << "gamma: " << sf.gamma;
+    EXPECT_LE(output->output[0], sf.max) << "gamma: " << sf.gamma;
   }
 }
 
@@ -1049,11 +1061,11 @@ TEST_P(PNGCodecTest, EncodeWithComment) {
   const uint8_t kExpected3[] =
       "\x00\x00\x00\x18tEXthave some\x00spaces in both\x8d\x69\x34\x2d";
 
-  EXPECT_NE(base::ranges::search(encoded.value(), kExpected1),
+  EXPECT_NE(std::ranges::search(encoded.value(), kExpected1).begin(),
             encoded.value().end());
-  EXPECT_NE(base::ranges::search(encoded.value(), kExpected2),
+  EXPECT_NE(std::ranges::search(encoded.value(), kExpected2).begin(),
             encoded.value().end());
-  EXPECT_NE(base::ranges::search(encoded.value(), kExpected3),
+  EXPECT_NE(std::ranges::search(encoded.value(), kExpected3).begin(),
             encoded.value().end());
 }
 

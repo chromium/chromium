@@ -46,7 +46,7 @@ namespace signin_util {
 namespace {
 
 constexpr signin_metrics::AccessPoint kCredentialsProviderAccessPointWin =
-    signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
+    signin_metrics::AccessPoint::kMachineLogon;
 
 std::unique_ptr<TurnSyncOnHelper::Delegate>*
 GetTurnSyncOnHelperDelegateForTestingStorage() {

@@ -61,7 +61,7 @@ class CORE_EXPORT HitTestResult {
   DISALLOW_NEW();
 
  public:
-  typedef HeapLinkedHashSet<Member<Node>> NodeSet;
+  using NodeSet = GCedHeapLinkedHashSet<Member<Node>>;
 
   HitTestResult();
   HitTestResult(const HitTestRequest&, const HitTestLocation&);

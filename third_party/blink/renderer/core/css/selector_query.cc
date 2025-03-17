@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -120,7 +121,7 @@ Element* SelectorQuery::Closest(Element& target_element) const {
   QUERY_STATS_RESET();
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &target_element.GetDocument(), /*within_selector_checking=*/false);
-  if (selectors_.empty()) {
+  if (selector_start_offsets_.empty()) {
     return nullptr;
   }
 
@@ -262,14 +263,26 @@ static void CollectElementsByAttributeExact(
   const bool needs_synchronize_attribute =
       NeedsSynchronizeAttribute(selector_attr, is_html_doc);
 
+  const uint32_t filter = Element::FilterForAttribute(selector_attr);
+
   for (Element& element : ElementTraversal::DescendantsOf(root_node)) {
     QUERY_STATS_INCREMENT(fast_scan);
+
     if (needs_synchronize_attribute) {
       // Synchronize the attribute in case it is lazy-computed.
       // Currently all lazy properties have a null namespace, so only pass
       // localName().
       element.SynchronizeAttribute(selector_attr.LocalName());
     }
+#if !DCHECK_IS_ON()
+    // In non-debug builds, we test the Bloom filter here and exit early
+    // if the attribute could not exist on the element. For non-debug builds,
+    // we go through the entire normal operation but verify that the Bloom
+    // filter would not erroneously reject a match.
+    if (!element.CouldHaveAttributeWithPrecomputedFilter(filter)) {
+      continue;
+    }
+#endif
     AttributeCollection attributes = element.AttributesWithoutUpdate();
     for (const auto& attribute_item : attributes) {
       if (!attribute_item.Matches(selector_attr)) {
@@ -288,6 +301,15 @@ static void CollectElementsByAttributeExact(
           continue;
         }
       }
+
+#if DCHECK_IS_ON()
+      // NOTE: Even if the value doesn't match, we want to check that the
+      // attribute name was properly found.
+      DCHECK(element.CouldHaveAttributeWithPrecomputedFilter(filter))
+          << element << " should have contained attribute " << selector_attr
+          << ", Bloom bits on element are "
+          << element.AttributeBloomFilterForDebug();
+#endif
 
       if (AttributeValueMatchesExact(attribute_item, selector_value,
                                      case_insensitive)) {
@@ -328,18 +350,18 @@ void SelectorQuery::FindTraverseRootsAndExecute(
   // We need to return the matches in document order. To use id lookup while
   // there is possiblity of multiple matches we would need to sort the
   // results. For now, just traverse the document in that case.
-  DCHECK_EQ(selectors_.size(), 1u);
+  DCHECK_EQ(selector_start_offsets_.size(), 1u);
 
   bool is_rightmost_selector = true;
   bool is_affected_by_sibling_combinator = false;
 
-  for (const CSSSelector* selector = selectors_[0]; selector;
+  for (const CSSSelector* selector = StartOfComplexSelector(0); selector;
        selector = selector->NextSimpleSelector()) {
     if (!is_affected_by_sibling_combinator &&
         selector->Match() == CSSSelector::kClass) {
       if (is_rightmost_selector) {
         CollectElementsByClassName<SelectorQueryTrait>(
-            root_node, selector->Value(), selectors_[0], output);
+            root_node, selector->Value(), StartOfComplexSelector(0), output);
         return;
       }
       // Since there exists some ancestor element which has the class name, we
@@ -385,9 +407,9 @@ void SelectorQuery::ExecuteForTraverseRoot(
     ContainerNode& traverse_root,
     ContainerNode& root_node,
     typename SelectorQueryTrait::OutputType& output) const {
-  DCHECK_EQ(selectors_.size(), 1u);
+  DCHECK_EQ(selector_start_offsets_.size(), 1u);
 
-  const CSSSelector& selector = *selectors_[0];
+  const CSSSelector& selector = *StartOfComplexSelector(0);
   SelectorChecker checker(SelectorChecker::kQueryingRules);
 
   for (Element& element : ElementTraversal::DescendantsOf(traverse_root)) {
@@ -404,8 +426,9 @@ void SelectorQuery::ExecuteForTraverseRoot(
 bool SelectorQuery::SelectorListMatches(ContainerNode& root_node,
                                         Element& element) const {
   SelectorChecker checker(SelectorChecker::kQueryingRules);
-  for (auto* const selector : selectors_) {
-    if (SelectorMatches(*selector, element, root_node, checker)) {
+  for (unsigned offset : selector_start_offsets_) {
+    if (SelectorMatches(UNSAFE_TODO(*(selector_list_->First() + offset)),
+                        element, root_node, checker)) {
       return true;
     }
   }
@@ -432,10 +455,10 @@ template <typename SelectorQueryTrait>
 void SelectorQuery::ExecuteWithId(
     ContainerNode& root_node,
     typename SelectorQueryTrait::OutputType& output) const {
-  DCHECK_EQ(selectors_.size(), 1u);
+  DCHECK_EQ(selector_start_offsets_.size(), 1u);
   DCHECK(!root_node.GetDocument().InQuirksMode());
 
-  const CSSSelector& first_selector = *selectors_[0];
+  const CSSSelector& first_selector = *StartOfComplexSelector(0);
   DCHECK(root_node.IsInTreeScope());
   const TreeScope& scope = root_node.GetTreeScope();
   SelectorChecker checker(SelectorChecker::kQueryingRules);
@@ -495,7 +518,7 @@ template <typename SelectorQueryTrait>
 void SelectorQuery::Execute(
     ContainerNode& root_node,
     typename SelectorQueryTrait::OutputType& output) const {
-  if (selectors_.empty()) {
+  if (selector_start_offsets_.empty()) {
     return;
   }
 
@@ -504,7 +527,7 @@ void SelectorQuery::Execute(
     return;
   }
 
-  DCHECK_EQ(selectors_.size(), 1u);
+  DCHECK_EQ(selector_start_offsets_.size(), 1u);
 
   // In quirks mode getElementById("a") is case sensitive and should only
   // match elements with lowercase id "a", but querySelector is case-insensitive
@@ -516,7 +539,7 @@ void SelectorQuery::Execute(
     return;
   }
 
-  const CSSSelector& first_selector = *selectors_[0];
+  const CSSSelector& first_selector = *StartOfComplexSelector(0);
   if (!first_selector.NextSimpleSelector()) {
     // Fast path for querySelector*('.foo'), and querySelector*('div').
     switch (first_selector.Match()) {
@@ -525,6 +548,7 @@ void SelectorQuery::Execute(
             root_node, first_selector.Value(), nullptr, output);
         return;
       case CSSSelector::kTag:
+      case CSSSelector::kUniversalTag:
         if (first_selector.TagQName().NamespaceURI() == g_star_atom) {
           CollectElementsByTagName<SelectorQueryTrait>(
               root_node, first_selector.TagQName(), output);
@@ -550,28 +574,23 @@ void SelectorQuery::Execute(
   FindTraverseRootsAndExecute<SelectorQueryTrait>(root_node, output);
 }
 
-std::unique_ptr<SelectorQuery> SelectorQuery::Adopt(
-    CSSSelectorList* selector_list) {
-  return base::WrapUnique(new SelectorQuery(selector_list));
-}
-
 SelectorQuery::SelectorQuery(CSSSelectorList* selector_list)
     : selector_list_(selector_list),
       selector_id_is_rightmost_(true),
       selector_id_affected_by_sibling_combinator_(false),
       use_slow_scan_(true) {
-  selectors_.ReserveInitialCapacity(selector_list_->ComputeLength());
-  for (const CSSSelector* selector = selector_list_->First(); selector;
+  const CSSSelector* base = selector_list_->First();
+  for (const CSSSelector* selector = base; selector;
        selector = CSSSelectorList::Next(*selector)) {
     if (selector->MatchesPseudoElement()) {
       continue;
     }
-    selectors_.UncheckedAppend(selector);
+    selector_start_offsets_.push_back(selector - base);
   }
 
-  if (selectors_.size() == 1) {
+  if (selector_start_offsets_.size() == 1) {
     use_slow_scan_ = false;
-    for (const CSSSelector* current = selectors_[0]; current;
+    for (const CSSSelector* current = StartOfComplexSelector(0); current;
          current = current->NextSimpleSelector()) {
       if (current->Match() == CSSSelector::kId) {
         selector_id_ = current->Value();
@@ -606,10 +625,9 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
     return nullptr;
   }
 
-  HashMap<AtomicString, std::unique_ptr<SelectorQuery>>::iterator it =
-      entries_.find(selectors);
+  auto it = entries_.find(selectors);
   if (it != entries_.end()) {
-    return it->value.get();
+    return it->value.Get();
   }
 
   HeapVector<CSSSelector> arena;
@@ -634,8 +652,9 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
     entries_.erase(entries_.begin());
   }
 
-  return entries_.insert(selectors, SelectorQuery::Adopt(selector_list))
-      .stored_value->value.get();
+  return entries_
+      .insert(selectors, MakeGarbageCollected<SelectorQuery>(selector_list))
+      .stored_value->value.Get();
 }
 
 void SelectorQueryCache::Invalidate() {

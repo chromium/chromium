@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,8 +20,12 @@ MantisUntrustedService::MantisUntrustedService(
 MantisUntrustedService::~MantisUntrustedService() = default;
 
 mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedService>
-MantisUntrustedService::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
+MantisUntrustedService::BindNewPipeAndPassRemote(
+    base::OnceClosure disconnect_handler) {
+  mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedService> remote =
+      receiver_.BindNewPipeAndPassRemote();
+  receiver_.set_disconnect_handler(std::move(disconnect_handler));
+  return remote;
 }
 
 void MantisUntrustedService::SegmentImage(const std::vector<uint8_t>& image,
@@ -46,6 +51,14 @@ void MantisUntrustedService::InpaintImage(const std::vector<uint8_t>& image,
                                           InpaintImageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   processor_->Inpainting(image, mask, seed, std::move(callback));
+}
+
+void MantisUntrustedService::OutpaintImage(const std::vector<uint8_t>& image,
+                                           const std::vector<uint8_t>& mask,
+                                           uint32_t seed,
+                                           OutpaintImageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  processor_->Outpainting(image, mask, seed, std::move(callback));
 }
 
 void MantisUntrustedService::ClassifyImageSafety(

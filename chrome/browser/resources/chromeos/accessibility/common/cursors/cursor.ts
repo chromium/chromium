@@ -14,7 +14,8 @@ import {StringUtil} from '../string_util.js';
 import {TestImportManager} from '../testing/test_import_manager.js';
 import {AutomationTreeWalker} from '../tree_walker.js';
 
-import {AncestryRecoveryStrategy, RecoveryStrategy} from './recovery_strategy.js';
+import type {RecoveryStrategy} from './recovery_strategy.js';
+import {AncestryRecoveryStrategy} from './recovery_strategy.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
 import Dir = constants.Dir;

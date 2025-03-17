@@ -127,8 +127,9 @@ using web::NavigationManagerImpl;
 - (void)webViewLoadingStateDidChange {
   self.webStateImpl->SetIsLoading(self.webView.loading);
 
-  if (self.webView.loading)
+  if (self.webView.loading) {
     return;
+  }
 
   GURL webViewURL = net::GURLWithNSURL(self.webView.URL);
 
@@ -187,7 +188,7 @@ using web::NavigationManagerImpl;
 - (void)webViewBackForwardStateDidChange {
   // Don't trigger for LegacyNavigationManager because its back/foward state
   // doesn't always match that of WKWebView.
-    self.webStateImpl->OnBackForwardStateChanged();
+  self.webStateImpl->OnBackForwardStateChanged();
 }
 
 // Called when WKWebView URL has been changed.

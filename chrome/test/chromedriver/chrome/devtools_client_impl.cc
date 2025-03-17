@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 
 #include <cstring>
@@ -140,19 +145,19 @@ Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
   base::Value::Dict* cdp_params = cdp_cmd.FindDict("params");
 
   base::Value::Dict params;
-  params.Set("cdpMethod", std::move(*cdp_method));
+  params.Set("method", std::move(*cdp_method));
   if (cdp_session_id) {
-    params.Set("cdpSession", std::move(*cdp_session_id));
+    params.Set("session", std::move(*cdp_session_id));
   }
   if (cdp_params) {
-    params.Set("cdpParams", std::move(*cdp_params));
+    params.Set("params", std::move(*cdp_params));
   }
 
   base::Value::Dict dict;
   dict.Set("id", *cdp_cmd_id);
-  dict.Set("method", "cdp.sendCommand");
+  dict.Set("method", "goog:cdp.sendCommand");
   dict.Set("params", std::move(params));
-  dict.Set("channel", DevToolsClientImpl::kCdpTunnelChannel);
+  dict.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
   *bidi_cmd = std::move(dict);
   return Status{kOk};
 }
@@ -193,26 +198,28 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
   // handle CDP over BiDi events and responses
   const std::string* payload_method = payload.FindString("method");
 
-  if (payload_method && *payload_method == "cdp.eventReceived") {  // CDP event
+  // CDP events in BiDi have format "goog:cdp.<CDP EVENT NAME>".
+  if (payload_method && base::StartsWith(*payload_method, "goog:cdp.",
+                                         base::CompareCase::SENSITIVE)) {
     base::Value::Dict* payload_params = payload.FindDict("params");
     if (!payload_params) {
       LOG(WARNING) << "params field is missing in the payload of "
                       "Runtime.bindingCalled message";
       return false;
     }
-    const std::string* cdp_method = payload_params->FindString("cdpMethod");
+    const std::string* cdp_method = payload_params->FindString("method");
     if (!cdp_method) {
-      LOG(WARNING) << "params.cdpMethod is missing in the payload of "
+      LOG(WARNING) << "params.method is missing in the payload of "
                       "Runtime.bindingCalled message";
       return false;
     }
 
     type = internal::kEventMessageType;
     event.method = *cdp_method;
-    const std::string* cdp_session = payload_params->FindString("cdpSession");
+    const std::string* cdp_session = payload_params->FindString("session");
     session_id = cdp_session ? *cdp_session : "";
 
-    base::Value::Dict* cdp_params = payload_params->FindDict("cdpParams");
+    base::Value::Dict* cdp_params = payload_params->FindDict("params");
     if (cdp_params) {
       event.params = std::move(*cdp_params);
     } else {
@@ -226,7 +233,7 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
       return false;
     }
 
-    const std::string* cdp_session = payload.FindString("cdpSession");
+    const std::string* cdp_session = payload.FindString("session");
     session_id = cdp_session ? *cdp_session : "";
 
     base::Value::Dict* cdp_result = payload.FindDict("result");
@@ -297,18 +304,22 @@ Status DevToolsClientImpl::SetTunnelSessionId(std::string session_id) {
   return Status{kOk};
 }
 
-Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script) {
+Status DevToolsClientImpl::StartBidiServer(
+    std::string bidi_mapper_script,
+    bool enable_unsafe_extension_debugging) {
   // Give BiDiMapper generous amount of time to start.
   // If the wait times out then we likely have a bug in BiDiMapper.
   // There is no need to make this timeout user configurable.
   // We use the default page load timeout (the biggest in the standard).
   Timeout timeout = Timeout(base::Seconds(300));
-  return StartBidiServer(std::move(bidi_mapper_script), timeout);
+  return StartBidiServer(std::move(bidi_mapper_script), timeout,
+                         enable_unsafe_extension_debugging);
 }
 
 Status DevToolsClientImpl::StartBidiServer(
     std::string bidi_mapper_script,
-    const Timeout& timeout) {
+    const Timeout& timeout,
+    bool enable_unsafe_extension_debugging) {
   if (!is_main_page_) {
     // Later we might want to start the BiDiMapper an another type of targets
     // however for the moment being we support pages only.
@@ -330,6 +341,9 @@ Status DevToolsClientImpl::StartBidiServer(
     base::Value::Dict params;
     params.Set("bindingName", "cdp");
     params.Set("targetId", target_id);
+    // Additional permissions are needed if enable_unsafe_extension_debugging is
+    // enabled.
+    params.Set("inheritPermissions", enable_unsafe_extension_debugging);
     DevToolsClient* root_client = this;
     while (root_client->GetParentClient() != nullptr) {
       root_client = root_client->GetParentClient();
@@ -424,7 +438,7 @@ Status DevToolsClientImpl::StartBidiServer(
 
   if (event_tunneling_is_enabled_) {
     base::Value::Dict params;
-    params.Set("events", "cdp.eventReceived");
+    params.Set("events", "goog:cdp");
     base::Value::Dict bidi_cmd;
     bidi_cmd.Set("id", AdvanceNextMessageId());
     bidi_cmd.Set("method", "session.subscribe");
@@ -601,7 +615,7 @@ Status DevToolsClientImpl::SetUpDevTools() {
 }
 
 Status DevToolsClientImpl::PostBidiCommand(base::Value::Dict command) {
-  std::string* maybe_channel = command.FindString("channel");
+  std::string* maybe_channel = command.FindString("goog:channel");
   std::string channel =
       maybe_channel ? *maybe_channel + DevToolsClientImpl::kBidiChannelSuffix
                     : std::string();
@@ -817,7 +831,7 @@ Status DevToolsClientImpl::PostBidiCommandInternal(std::string channel,
         "uanble to send BiDi commands without BiDi server session id"};
   }
   if (!channel.empty()) {
-    command.Set("channel", std::move(channel));
+    command.Set("goog:channel", std::move(channel));
   }
 
   std::string json;
@@ -1398,7 +1412,7 @@ bool ParseInspectorMessage(const std::string& message,
         return false;
       }
 
-      std::string* channel = payload.FindString("channel");
+      std::string* channel = payload.FindString("goog:channel");
 
       if (channel && *channel == DevToolsClientImpl::kCdpTunnelChannel) {
         return ParseCdpTunnelMessage(std::move(payload), session_id, type,

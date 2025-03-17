@@ -72,13 +72,13 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto [adjusted_input, starter_pack_engine] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService());
+      AdjustInputForStarterPackKeyword(input,
+                                       client()->GetTemplateURLService());
   input_ = adjusted_input;
   starter_pack_engine_ = starter_pack_engine;
 
   int num_terms =
-      history_embeddings::CountWords(base::UTF16ToUTF8(adjusted_input.text()));
+      history_embeddings::CountWords(base::UTF16ToUTF8(input_.text()));
   if (num_terms < history_embeddings::GetFeatureParameters()
                       .search_query_minimum_word_count) {
     return;
@@ -91,8 +91,8 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
       metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE);
   service->Search(
-      nullptr, base::UTF16ToUTF8(adjusted_input.text()), {},
-      provider_max_matches_, /*skip_answering=*/false,
+      nullptr, base::UTF16ToUTF8(input_.text()), {}, provider_max_matches_,
+      /*skip_answering=*/false,
       base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
                           weak_factory_.GetWeakPtr()));
 }

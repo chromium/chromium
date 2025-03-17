@@ -89,7 +89,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
                 FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.invokePurchaseAction(
-                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+                /* primaryAccount= */ null,
+                SecurePayload.create(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
         Assert.assertEquals(PurchaseActionResult.COULD_NOT_INVOKE, delegate.mPurchaseActionResult);
@@ -113,7 +114,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
         }
 
         @Override
-        public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
+        public void invokePurchaseAction(
+                CoreAccountInfo primaryAccount, SecurePayload securePayload) {
             mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.RESULT_OK);
         }
     }
@@ -161,7 +163,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
                 FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.invokePurchaseAction(
-                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+                /* primaryAccount= */ null,
+                SecurePayload.create(new byte[] {'A', 'c', 't', 'i', 'o', 'n'}, new SecureData[0]));
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
         Assert.assertEquals(PurchaseActionResult.RESULT_OK, delegate.mPurchaseActionResult);

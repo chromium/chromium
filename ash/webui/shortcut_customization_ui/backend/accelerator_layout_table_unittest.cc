@@ -14,6 +14,7 @@
 #include "base/hash/md5_boringssl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 
@@ -156,6 +157,13 @@ TEST_F(AcceleratorLayoutMetadataTest, ModifyAcceleratorShouldUpdateLayout) {
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     for (const AcceleratorData& data :
          ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData) {
+      ash_accelerators.emplace_back(data);
+    }
+  }
+
+  if (!ash::assistant::features::IsNewEntryPointEnabled()) {
+    for (const AcceleratorData& data :
+         ash::kAssistantSearchPlusAAcceleratorData) {
       ash_accelerators.emplace_back(data);
     }
   }

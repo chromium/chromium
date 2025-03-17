@@ -79,8 +79,8 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
         static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
     // Set the `IdleTimeoutActions` policy. This is needed for the snackbar
     // message.
-    prefs->SetList(
-        enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+    prefs->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
+                   std::move(actions));
 
     // Setup idle timeout service.
     idle_service_ = std::make_unique<enterprise_idle::IdleService>(

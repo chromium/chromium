@@ -311,7 +311,7 @@ void ClipboardIOS::ReadFilenames(ClipboardBuffer buffer,
           base::apple::NSStringToFilePath(file_url.lastPathComponent));
     }
   }
-  base::ranges::move(files, std::back_inserter(*result));
+  std::ranges::move(files, std::back_inserter(*result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -359,6 +359,7 @@ void ClipboardIOS::ReadData(const ClipboardFormatType& format,
 void ClipboardIOS::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
@@ -370,6 +371,9 @@ void ClipboardIOS::WritePortableAndPlatformRepresentations(
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& object : objects) {
     DispatchPortableRepresentation(object.second);
+  }
+  for (const auto& raw_object : raw_objects) {
+    DispatchPortableRepresentation(raw_object);
   }
 }
 

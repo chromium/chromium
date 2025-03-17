@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
@@ -158,7 +159,7 @@ HeapVector<Member<Node>> ChildNodePart::children() const {
 }
 
 void ChildNodePart::replaceChildren(
-    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+    const HeapVector<Member<V8UnionNodeOrString>>& nodes,
     ExceptionState& exception_state) {
   if (!IsValid()) {
     exception_state.ThrowDOMException(
@@ -179,24 +180,36 @@ void ChildNodePart::replaceChildren(
       return;
     }
   }
-  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
-    // Insert new contents.
-    VectorOf<Node> node_vector =
-        Node::ConvertNodeUnionsIntoNodes(parent, nodes, parent->GetDocument(),
-                                         "replaceChildren", exception_state);
-    if (exception_state.HadException()) {
-      return;
+  // TODO(masonf) This can be removed when/if ParentNode/ChildNode eventually
+  // have TrustedScript removed as well. See
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/wIADRnljZDA/m/whzEaaAADAAJ.
+  // Before that, if this is a performance concern for the DOM Parts API, we
+  // could as well make Node::ConvertNodeUnionsIntoNodes and friends accept the
+  // union type as a template parameter. Then use std::is_same_v to skip the
+  // trusted type handling if that template parameter is a V8UnionNodeOrString.
+  HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>> nodes_mapped;
+  nodes_mapped.ReserveInitialCapacity(nodes.size());
+  for (auto node_or_string : nodes) {
+    if (node_or_string->IsNode()) {
+      nodes_mapped.push_back(
+          MakeGarbageCollected<V8UnionNodeOrStringOrTrustedScript>(
+              node_or_string->GetAsNode()));
+    } else {
+      CHECK(node_or_string->IsString());
+      nodes_mapped.push_back(
+          MakeGarbageCollected<V8UnionNodeOrStringOrTrustedScript>(
+              node_or_string->GetAsString()));
     }
-    parent->InsertBefore(node_vector, next_sibling_, exception_state);
-  } else {
-    Node* nodes_as_node =
-        Node::ConvertNodeUnionsIntoNode(parent, nodes, parent->GetDocument(),
-                                        "replaceChildren", exception_state);
-    if (exception_state.HadException()) {
-      return;
-    }
-    parent->InsertBefore(nodes_as_node, next_sibling_, exception_state);
   }
+
+  // Insert new contents.
+  VectorOf<Node> node_vector = Node::ConvertNodeUnionsIntoNodes(
+      parent, nodes_mapped, parent->GetDocument(), "replaceChildren",
+      exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  parent->InsertBefore(node_vector, next_sibling_, exception_state);
 }
 
 void ChildNodePart::Trace(Visitor* visitor) const {

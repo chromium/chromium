@@ -16,14 +16,14 @@ class PrefService;
 @protocol SigninScreenConsumer;
 namespace signin {
 class IdentityManager;
-}  // namespace
+}  // namespace signin
 namespace signin_metrics {
 enum class AccessPoint : int;
 enum class PromoAction : int;
 }  // namespace signin_metrics
 namespace syncer {
 class SyncService;
-}  // syncer
+}  // namespace syncer
 @protocol SystemIdentity;
 
 // Mediator that handles the sign-in operation.

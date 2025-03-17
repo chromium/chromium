@@ -15,9 +15,19 @@ enum class LensOverlayEntrypoint {
   kOverflowMenu,
   // Search image button from context menu.
   kSearchImageContextMenu,
+  // Image captured by LVF camera.
+  kLVFCameraCapture,
+  // Image retrieved from gallery.
+  kLVFImagePicker,
 };
 
 namespace lens {
+
+/// Whether the entrypoint corresponds to an LVF session.
+bool IsLVFEntrypoint(LensOverlayEntrypoint entrypoint);
+
+/// Whether the entrypoint corresponds to a context menu session.
+bool IsImageContextMenuEntrypoint(LensOverlayEntrypoint entrypoint);
 
 /// Returns the LensOverlayInvocationSource equivalent of the
 /// LensOverlayEntrypoint.

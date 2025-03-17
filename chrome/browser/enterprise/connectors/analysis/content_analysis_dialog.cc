@@ -18,9 +18,11 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,10 +51,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout_view.h"
 
-// This should be after all other #includes.
-#if defined(_WINDOWS_)  // Detect whether windows.h was included.
 #include "base/win/windows_h_disallowed.h"
-#endif  // defined(_WINDOWS_)
 
 namespace enterprise_connectors {
 
@@ -82,7 +81,7 @@ base::TimeDelta show_dialog_delay_ = base::Seconds(1);
 // TODO(pkasting): This is copy and pasted from ThemedSolidBackground.  Merge.
 class CircleBackground : public views::Background {
  public:
-  explicit CircleBackground(ui::ColorId color_id) : color_id_(color_id) {}
+  explicit CircleBackground(ui::ColorId color) { SetColor(color); }
 
   CircleBackground(const CircleBackground&) = delete;
   CircleBackground& operator=(const CircleBackground&) = delete;
@@ -96,17 +95,14 @@ class CircleBackground : public views::Background {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
     canvas->DrawCircle(center, radius, flags);
   }
 
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
 
- private:
-  ui::ColorId color_id_;
 };
 
 ContentAnalysisDialog::TestObserver* observer_for_testing = nullptr;
@@ -163,10 +159,8 @@ class DeepScanningSideIconImageView : public DeepScanningBaseView,
                                             dialog()->GetSideImageLogoColor(),
                                             kSideImageSize));
     if (dialog()->is_result()) {
-      ui::ColorId color = dialog()->GetSideImageBackgroundColor();
-      SetBackground(std::make_unique<CircleBackground>(color));
-      GetBackground()->SetNativeControlColor(
-          GetColorProvider()->GetColor(color));
+      SetBackground(std::make_unique<CircleBackground>(
+          dialog()->GetSideImageBackgroundColor()));
     }
   }
 
@@ -281,6 +275,20 @@ ContentAnalysisDialog::ContentAnalysisDialog(
 void ContentAnalysisDialog::ShowDialogNow() {
   if (will_be_deleted_soon_) {
     DVLOG(1) << __func__ << ": aborting since dialog will be deleted soon";
+    return;
+  }
+
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents());
+  if (!manager) {
+    // `manager` being null indicates that `web_contents()` doesn't correspond
+    // to a browser tab (ex: an extension background page reading the
+    // clipboard). In such a case, we don't show a dialog and instead simply
+    // accept/cancel the result immediately. See crbug.com/374120523 and
+    // crbug.com/388049470 for more context.
+    if (!is_pending()) {
+      CancelButtonCallback();
+    }
     return;
   }
 

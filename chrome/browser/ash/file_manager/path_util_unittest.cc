@@ -8,12 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
@@ -58,10 +52,17 @@
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -218,8 +219,8 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
                                    profile_.get(), "/media/archive/foo/a/b/c"));
 
   TestingProfile profile2(FilePath("/home/chronos/u-0123456789abcdef"));
-  user_manager_->AddUser(
-      AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345"));
+  user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
+      profile2.GetProfileUserName(), GaiaId("12345")));
   profile2.GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
 
   drive::DriveIntegrationServiceFactory::GetForProfile(&profile2)->SetEnabled(
@@ -363,8 +364,8 @@ TEST_F(FileManagerPathUtilTest, MigrateToDriveFs) {
 
   // Migrate paths under old drive mount.
   TestingProfile profile2(FilePath("/home/chronos/u-0123456789abcdef"));
-  user_manager_->AddUser(
-      AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345"));
+  user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
+      profile2.GetProfileUserName(), GaiaId("12345")));
   PrefService* prefs = profile2.GetPrefs();
   prefs->SetString(drive::prefs::kDriveFsProfileSalt, "a");
   drive::DriveIntegrationServiceFactory::GetForProfile(&profile2)->SetEnabled(
@@ -404,8 +405,8 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
       storage::ExternalMountPoints::GetSystemInstance();
 
   // Setup for DriveFS.
-  user_manager_->AddUser(
-      AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345"));
+  user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
+      profile_->GetProfileUserName(), GaiaId("12345")));
   profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
 
   // Initialize D-Bus clients.
@@ -714,9 +715,9 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
 
     // Set up fake user manager.
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId("user@gmail.com", "1111111111"));
-    const AccountId account_id_2(
-        AccountId::FromUserEmailGaiaId("user2@gmail.com", "2222222222"));
+        AccountId::FromUserEmailGaiaId("user@gmail.com", GaiaId("1111111111")));
+    const AccountId account_id_2(AccountId::FromUserEmailGaiaId(
+        "user2@gmail.com", GaiaId("2222222222")));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     fake_user_manager_->AddUser(account_id_2);

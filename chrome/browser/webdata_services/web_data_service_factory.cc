@@ -73,7 +73,7 @@ void ProfileErrorCallback(WebDataServiceWrapper::ErrorType error_type,
 // account web database should be persisted on disk or in-memory only.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(WebDatabaseAutofillAccountStorageWithReason)
+// LINT.IfChange(WebDatabaseAutofillAccountStorageResult)
 enum class AutofillAccountStorageResult {
   kInMemory_FlagDisabled = 0,
   kInMemory_SignedInImplicitly = 1,
@@ -82,7 +82,7 @@ enum class AutofillAccountStorageResult {
   kOnDisk_SyncFeatureEnabled = 4,
   kMaxValue = kOnDisk_SyncFeatureEnabled
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/others/enums.xml:WebDatabaseAutofillAccountStorageWithReason)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:WebDatabaseAutofillAccountStorageResult)
 
 // See `ShouldUseInMemoryAutofillAccountDatabase()` for details about how this
 // function is useful. Instead of returning a boolean, this function returns an
@@ -216,7 +216,7 @@ WebDataServiceFactory::GetAutofillWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetProfileAutofillWebData()
                  : scoped_refptr<autofill::AutofillWebDataService>(nullptr);
 }
@@ -228,7 +228,7 @@ WebDataServiceFactory::GetAutofillWebDataForAccount(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetAccountAutofillWebData()
                  : scoped_refptr<autofill::AutofillWebDataService>(nullptr);
 }
@@ -240,7 +240,7 @@ WebDataServiceFactory::GetKeywordWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetKeywordWebData()
                  : scoped_refptr<KeywordWebDataService>(nullptr);
 }
@@ -252,7 +252,7 @@ WebDataServiceFactory::GetPlusAddressWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetPlusAddressWebData()
                  : scoped_refptr<plus_addresses::PlusAddressWebDataService>(
                        nullptr);
@@ -264,7 +264,7 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper =
       WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
+  // |wrapper| can be null in tests.
   return wrapper ? wrapper->GetTokenWebData()
                  : scoped_refptr<TokenWebData>(nullptr);
 }

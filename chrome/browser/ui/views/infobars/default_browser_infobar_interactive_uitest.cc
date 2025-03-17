@@ -6,7 +6,6 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -46,44 +44,13 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 }  // namespace
 
-class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDefaultBrowserPromptRefresh);
-
-    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
-    InteractiveBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarInteractiveTest,
-                       ShowsDefaultBrowserPromptRefreshDisabled) {
-  ShowPromptForTesting();
-  RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId));
-}
-
 class DefaultBrowserInfobarWithRefreshInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDefaultBrowserPromptRefresh,
-        {{features::kShowDefaultBrowserInfoBar.name, "true"},
-         {features::kShowDefaultBrowserAppMenuItem.name, "true"}});
-
     shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     InteractiveBrowserTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,

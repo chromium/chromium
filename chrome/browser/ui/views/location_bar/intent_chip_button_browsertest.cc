@@ -19,7 +19,6 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -177,9 +176,9 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
                        NavigationToInScopeLinkShowsIntentChip) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
+  EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-  });
+  }));
 
   EXPECT_TRUE(GetIntentChip()->GetVisible());
 
@@ -223,23 +222,23 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
 
   // First three visits will always show as expanded.
   for (int i = 0; i < 3; i++) {
-    DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
+    EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-    });
+    }));
     EXPECT_TRUE(GetIntentChip()->GetVisible());
     EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
 
-    DoAndWaitForIntentPickerIconUpdate([this, out_of_scope_url] {
+    EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, out_of_scope_url] {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), out_of_scope_url));
-    });
+    }));
     EXPECT_FALSE(GetIntentChip()->GetVisible());
   }
 
   // Fourth visit should show as expanded because the app is set as preferred
   // for this URL.
-  DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
+  EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-  });
+  }));
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
 }
@@ -252,9 +251,9 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
+  EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-  });
+  }));
 
   Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
 
@@ -267,7 +266,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     IntentChipButtonBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
@@ -334,7 +334,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     IntentChipButtonBrowserUiTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
 #endif  // BUILDFLAG(IS_CHROMEOS)

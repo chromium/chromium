@@ -34,14 +34,18 @@ base::OnceClosure InstallOperation(
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
     const std::string& id,
+    const std::string& file_hash,
     const std::vector<uint8_t>& pk_hash,
     scoped_refptr<CrxInstaller> installer,
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
-    const std::string& next_fp,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
     CrxInstaller::ProgressCallback progress_callback,
-    base::OnceCallback<void(const CrxInstaller::Result&)> callback,
-    const base::FilePath& crx_file);
+    base::OnceCallback<void(const CrxInstaller::Result&)>
+        install_result_callback,
+    const base::FilePath& crx_file,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback);
 
 }  // namespace update_client
 

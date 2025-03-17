@@ -6,11 +6,12 @@
 
 #include <string.h>
 
+#include <algorithm>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/fixed_array.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,7 +45,7 @@ void FakeAudioCapturer::SendData(base::TimeTicks timestamp, void* data) {
   EXPECT_TRUE(is_active_);
 
   // Find unused packet.
-  auto it = base::ranges::find(packets_usage_, false);
+  auto it = std::ranges::find(packets_usage_, false);
 
   // Currently tests don't try to send more than 2 packets and the buffer
   // always will have space for at least 2 packets.

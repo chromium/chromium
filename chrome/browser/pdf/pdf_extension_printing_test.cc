@@ -188,8 +188,7 @@ class PDFExtensionPrintingTest
         printer_name,
         /*display_name=*/"test printer",
         /*printer_description=*/"A printer for testing.",
-        /*printer_status=*/0,
-        /*is_default=*/true, printing::test::kPrintInfoOptions);
+        printing::test::kPrintInfoOptions);
 
     auto default_caps =
         std::make_unique<printing::PrinterSemanticCapsAndDefaults>();
@@ -201,6 +200,7 @@ class PDFExtensionPrintingTest
     test_print_backend_->AddValidPrinter(
         printer_name, std::move(default_caps),
         std::make_unique<printing::PrinterBasicInfo>(printer_info));
+    test_print_backend_->SetDefaultPrinterName(printer_name);
   }
 
   void SetupPrintViewManagerForJobMonitoring(content::RenderFrameHost* frame) {

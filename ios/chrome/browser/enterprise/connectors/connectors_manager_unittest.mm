@@ -48,8 +48,8 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
   auto settings = manager.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
   EXPECT_EQ(settings->enabled_event_names,
-            std::set<std::string>(kAllReportingEvents.begin(),
-                                  kAllReportingEvents.end()));
+            std::set<std::string>(kAllReportingEnabledEvents.begin(),
+                                  kAllReportingEnabledEvents.end()));
   EXPECT_TRUE(settings->enabled_opt_in_events.empty());
   auto provider_names = manager.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));

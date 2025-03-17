@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -122,7 +121,7 @@ void OpenURLAfterCheckIsDefaultBrowser(
     case shell_integration::UNKNOWN_DEFAULT:
     case shell_integration::OTHER_MODE_IS_DEFAULT:
       platform_util::OpenExternal(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           profile,
 #endif
           params.url);
@@ -346,7 +345,7 @@ bool ChromeAppDelegate::CheckMediaAccessPermission(
 }
 
 int ChromeAppDelegate::PreferredIconSize() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Use a size appropriate for the ash shelf (see ash::kShelfSize).
   return extension_misc::EXTENSION_ICON_MEDIUM;
 #else
@@ -405,12 +404,6 @@ void ChromeAppDelegate::OnShow() {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         profile_, ProfileKeepAliveOrigin::kAppWindow);
   }
-}
-
-bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
-                                  bool reverse) {
-  // TODO(crbug.com/376354347): Remove this method.
-  return false;
 }
 
 content::PictureInPictureResult ChromeAppDelegate::EnterPictureInPicture(

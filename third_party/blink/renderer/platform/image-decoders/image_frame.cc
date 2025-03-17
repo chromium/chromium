@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -229,25 +228,25 @@ static uint8_t BlendChannel(uint8_t src,
 }
 
 static uint32_t BlendSrcOverDstNonPremultiplied(uint32_t src, uint32_t dst) {
-  uint8_t src_a = SkGetPackedA32(src);
+  uint8_t src_a = SkPMColorGetA(src);
   if (src_a == 0) {
     return dst;
   }
 
-  uint8_t dst_a = SkGetPackedA32(dst);
-  uint8_t dst_factor_a = (dst_a * SkAlpha255To256(255 - src_a)) >> 8;
+  uint8_t dst_a = SkPMColorGetA(dst);
+  uint8_t dst_factor_a = (dst_a * (256 - src_a)) >> 8;
   DCHECK(src_a + dst_factor_a < (1U << 8));
   uint8_t blend_a = src_a + dst_factor_a;
   unsigned scale = (1UL << 24) / blend_a;
 
-  uint8_t blend_r = BlendChannel(SkGetPackedR32(src), src_a,
-                                 SkGetPackedR32(dst), dst_factor_a, scale);
-  uint8_t blend_g = BlendChannel(SkGetPackedG32(src), src_a,
-                                 SkGetPackedG32(dst), dst_factor_a, scale);
-  uint8_t blend_b = BlendChannel(SkGetPackedB32(src), src_a,
-                                 SkGetPackedB32(dst), dst_factor_a, scale);
+  uint8_t blend_r = BlendChannel(SkPMColorGetR(src), src_a, SkPMColorGetR(dst),
+                                 dst_factor_a, scale);
+  uint8_t blend_g = BlendChannel(SkPMColorGetG(src), src_a, SkPMColorGetG(dst),
+                                 dst_factor_a, scale);
+  uint8_t blend_b = BlendChannel(SkPMColorGetB(src), src_a, SkPMColorGetB(dst),
+                                 dst_factor_a, scale);
 
-  return SkPackARGB32(blend_a, blend_r, blend_g, blend_b);
+  return SkPMColorSetARGB(blend_a, blend_r, blend_g, blend_b);
 }
 
 void ImageFrame::BlendRGBARaw(PixelData* dest,
@@ -255,7 +254,7 @@ void ImageFrame::BlendRGBARaw(PixelData* dest,
                               unsigned g,
                               unsigned b,
                               unsigned a) {
-  *dest = BlendSrcOverDstNonPremultiplied(SkPackARGB32(a, r, g, b), *dest);
+  *dest = BlendSrcOverDstNonPremultiplied(SkPMColorSetARGB(a, r, g, b), *dest);
 }
 
 void ImageFrame::BlendSrcOverDstRaw(PixelData* src, PixelData dst) {

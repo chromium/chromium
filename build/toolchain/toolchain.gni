@@ -51,7 +51,7 @@ declare_args() {
   if (llvm_android_mainline) {  # https://crbug.com/1481060
     clang_version = "17"
   } else {
-    clang_version = "20"
+    clang_version = "21"
   }
 }
 

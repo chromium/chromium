@@ -319,32 +319,6 @@ std::string IconsWithSizeAny::ToString() const {
 // WebAppInstallInfo
 
 // static
-WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
-    const GURL& document_url,
-    const std::u16string& document_title,
-    const WebAppInstallInfo& other) {
-  WebAppInstallInfo create_shortcut_info(
-      GenerateManifestIdFromStartUrlOnly(document_url), document_url);
-  create_shortcut_info.title = document_title;
-  create_shortcut_info.description = other.description;
-  create_shortcut_info.manifest_url = other.manifest_url;
-  create_shortcut_info.manifest_icons = other.manifest_icons;
-  create_shortcut_info.icon_bitmaps = other.icon_bitmaps;
-  create_shortcut_info.other_icon_bitmaps = other.other_icon_bitmaps;
-  create_shortcut_info.is_generated_icon = other.is_generated_icon;
-  create_shortcut_info.theme_color = other.theme_color;
-  create_shortcut_info.dark_mode_theme_color = other.dark_mode_theme_color;
-  create_shortcut_info.background_color = other.background_color;
-  create_shortcut_info.dark_mode_background_color =
-      other.dark_mode_background_color;
-  create_shortcut_info.display_mode = other.display_mode;
-  create_shortcut_info.display_override = other.display_override;
-  create_shortcut_info.additional_search_terms = other.additional_search_terms;
-  create_shortcut_info.install_url = other.install_url;
-  return create_shortcut_info;
-}
-
-// static
 std::unique_ptr<WebAppInstallInfo>
 WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
   CHECK_IS_TEST();
@@ -359,13 +333,15 @@ std::unique_ptr<WebAppInstallInfo> WebAppInstallInfo::CreateForTesting(
     const GURL& start_url,
     blink::mojom::DisplayMode display,
     mojom::UserDisplayMode user_mode,
-    blink::mojom::ManifestLaunchHandler_ClientMode client_mode) {
+    std::optional<blink::mojom::ManifestLaunchHandler_ClientMode> client_mode) {
   CHECK_IS_TEST();
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::ASCIIToUTF16(start_url.PathForRequest());
   info->display_mode = display;
   info->user_display_mode = user_mode;
   info->launch_handler = blink::Manifest::LaunchHandler(client_mode);
+  CHECK_EQ(info->launch_handler->client_mode_valid_and_specified(),
+           client_mode.has_value());
   return info;
 }
 

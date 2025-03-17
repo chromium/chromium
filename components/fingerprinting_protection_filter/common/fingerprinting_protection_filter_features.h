@@ -15,8 +15,9 @@ enum class ActivationLevel;
 
 namespace fingerprinting_protection_filter::features {
 
-const char kPerformanceMeasurementRateParam[] = "performance_measurement_rate";
 const char kEnableConsoleLoggingParam[] = "enable_console_logging";
+const char kExperimentVersionParam[] = "experimental_version";
+const char kPerformanceMeasurementRateParam[] = "performance_measurement_rate";
 const char kRefreshHeuristicExceptionThresholdParam[] =
     "refresh_heuristic_exception_threshold";
 
@@ -29,12 +30,14 @@ COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionFilterInIncognito);
 
 // Returns true if either of the Fingerprinting Protection feature flags are
-// enabled. Notably, does not check UX flags.
+// enabled, or if the Tracking Protection kFingerprintingProtectionUx flag is
+// enabled.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 bool IsFingerprintingProtectionFeatureEnabled();
 
 // Returns true if Fingerprinting Protection is enabled for the given incognito
-// state.
+// state. Also returns true if the Tracking Protection
+// kFingerprintingProtectionUx flag is enabled when `is_incognito` is true.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito);
 
@@ -53,6 +56,12 @@ bool IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito);
 
+// Randomly determines whether performance measurements will be enabled,
+// using the rate specified by the regular or incognito feature flag parameter,
+// depending on the value of `is_incognito`.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+bool SampleEnablePerformanceMeasurements(bool is_incognito);
+
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
     kActivationLevel;
@@ -68,6 +77,13 @@ COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito;
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<bool> kEnableConsoleLoggingIncognito;
+
+// String used to build the component's installer attributes and possibly
+// determine which version of the fingerprinting protection list is retrieved.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+extern const base::FeatureParam<std::string> kExperimentVersionNonIncognito;
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+extern const base::FeatureParam<std::string> kExperimentVersionIncognito;
 
 // Serves as both a toggle for the refresh heuristic exception and as the
 // threshold for it. If set to 0, no exceptions are saved or applied for

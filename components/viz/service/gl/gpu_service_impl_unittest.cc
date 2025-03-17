@@ -109,7 +109,6 @@ class GpuServiceTest : public testing::Test {
     gpu_info.in_process_gpu = false;
     GpuServiceImpl::InitParams init_params;
     init_params.io_runner = io_thread_.task_runner();
-    init_params.exit_callback = base::DoNothing();
     gpu_service_ = std::make_unique<testing::NiceMock<MockGpuServiceImpl>>(
         gpu::GpuPreferences(), gpu_info, gpu::GpuFeatureInfo(), gpu::GPUInfo(),
         gpu::GpuFeatureInfo(), gfx::GpuExtraInfo(), std::move(init_params));
@@ -153,25 +152,6 @@ TEST_F(GpuServiceTest, ServiceDestroyedAfterBind) {
                                                   base::Unretained(&wait)));
   wait.Wait();
   DestroyService();
-}
-
-TEST_F(GpuServiceTest, LoseAllContexts) {
-  mojo::Remote<mojom::GpuService> gpu_service_remote;
-  gpu_service()->Bind(gpu_service_remote.BindNewPipeAndPassReceiver());
-
-  // Use a disconnected mojo remote for GpuHost, we don't need to receive any
-  // messages.
-  mojo::PendingRemote<mojom::GpuHost> gpu_host_proxy;
-  std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
-  gpu_service()->InitializeWithHost(
-      std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
-      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
-      mojom::GpuServiceCreationParams::New());
-  gpu_service_remote.FlushForTesting();
-
-  gpu_service()->MaybeExitOnContextLost(
-      /*synthetic_loss=*/false, gpu::error::ContextLostReason::kUnknown);
-  EXPECT_TRUE(gpu_service()->IsExiting());
 }
 
 // Tests that the visibility callback gets called when visibility changes.

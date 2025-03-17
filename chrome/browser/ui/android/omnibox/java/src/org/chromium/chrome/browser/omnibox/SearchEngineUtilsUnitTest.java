@@ -151,7 +151,7 @@ public class SearchEngineUtilsUnitTest {
 
         var expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
         var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class SearchEngineUtilsUnitTest {
 
         var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
     }
 
     @Test
@@ -174,7 +174,7 @@ public class SearchEngineUtilsUnitTest {
 
         var expected = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
         var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
     }
 
     private void configureSearchEngine(String keyword) {
@@ -293,10 +293,10 @@ public class SearchEngineUtilsUnitTest {
 
         var expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
         var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
 
         icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
 
         // Expect only one actual fetch, that happens independently from get request.
         // All get requests always supply cached value.
@@ -326,7 +326,7 @@ public class SearchEngineUtilsUnitTest {
         var expected = SearchEngineUtils.getFallbackSearchIcon(BrandedColorScheme.APP_DEFAULT);
         var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -350,7 +350,7 @@ public class SearchEngineUtilsUnitTest {
         var expected = SearchEngineUtils.getFallbackSearchIcon(BrandedColorScheme.APP_DEFAULT);
         var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -374,7 +374,7 @@ public class SearchEngineUtilsUnitTest {
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         faviconCallback.onFaviconAvailable(null, new GURL(LOGO_URL));
 
-        assertEquals(icon, expected);
+        assertEquals(expected, icon);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(

@@ -8,17 +8,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/extensions_browser_client.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
 namespace extensions {
 
 namespace {
-
-// Created on demand and will leak when the process exits.
-DisplayInfoProvider* g_display_info_provider = nullptr;
 
 // Converts Rotation enum to integer.
 int RotationToDegrees(display::Display::Rotation rotation) {
@@ -37,6 +32,9 @@ int RotationToDegrees(display::Display::Rotation rotation) {
 
 }  // namespace
 
+// static
+DisplayInfoProvider* DisplayInfoProvider::g_display_info_provider = nullptr;
+
 DisplayInfoProvider::DisplayInfoProvider(display::Screen* screen)
     : provided_screen_(screen) {
   // Do not use/call on the screen object in this constructor yet because a
@@ -44,16 +42,6 @@ DisplayInfoProvider::DisplayInfoProvider(display::Screen* screen)
 }
 
 DisplayInfoProvider::~DisplayInfoProvider() = default;
-
-// static
-DisplayInfoProvider* DisplayInfoProvider::Get() {
-  if (!g_display_info_provider) {
-    // Let the DisplayInfoProvider leak.
-    g_display_info_provider =
-        ExtensionsAPIClient::Get()->CreateDisplayInfoProvider().release();
-  }
-  return g_display_info_provider;
-}
 
 // static
 void DisplayInfoProvider::InitializeForTesting(
@@ -200,19 +188,6 @@ void DisplayInfoProvider::SetMirrorMode(
     const api::system_display::MirrorModeInfo& info,
     ErrorCallback callback) {
   NOTREACHED();  // Implemented on Chrome OS only in override.
-}
-
-void DisplayInfoProvider::DispatchOnDisplayChangedEvent() {
-  // This function will dispatch the OnDisplayChangedEvent to both on-the-record
-  // and off-the-record profiles. This allows extensions running in incognito
-  // to be notified mirroring is enabled / disabled, which allows the Virtual
-  // keyboard on ChromeOS to correctly disable key highlighting when typing
-  // passwords on the login page (crbug/824656)
-  constexpr bool dispatch_to_off_the_record_profiles = true;
-  ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
-      events::SYSTEM_DISPLAY_ON_DISPLAY_CHANGED,
-      extensions::api::system_display::OnDisplayChanged::kEventName,
-      base::Value::List(), dispatch_to_off_the_record_profiles);
 }
 
 void DisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(

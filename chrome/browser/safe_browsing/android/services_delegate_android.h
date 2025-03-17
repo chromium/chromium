@@ -11,6 +11,7 @@
 namespace safe_browsing {
 
 class AndroidTelemetryService;
+class DownloadProtectionService;
 
 // Android ServicesDelegate implementation. Create via
 // ServicesDelegate::Create().
@@ -18,6 +19,10 @@ class ServicesDelegateAndroid : public ServicesDelegate {
  public:
   explicit ServicesDelegateAndroid(
       SafeBrowsingServiceImpl* safe_browsing_service);
+
+  // Constructor for tests.
+  ServicesDelegateAndroid(SafeBrowsingServiceImpl* safe_browsing_service,
+                          ServicesDelegate::ServicesCreator* services_creator);
 
   ServicesDelegateAndroid(const ServicesDelegateAndroid&) = delete;
   ServicesDelegateAndroid& operator=(const ServicesDelegateAndroid&) = delete;
@@ -38,6 +43,7 @@ class ServicesDelegateAndroid : public ServicesDelegate {
   void RegisterDelayedAnalysisCallback(
       DelayedAnalysisCallback callback) override;
   void AddDownloadManager(content::DownloadManager* download_manager) override;
+  DownloadProtectionService* GetDownloadService() override;
 
   void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
@@ -47,8 +53,17 @@ class ServicesDelegateAndroid : public ServicesDelegate {
   void CreateTelemetryService(Profile* profile) override;
   void RemoveTelemetryService(Profile* profile) override;
 
+  // Creates DownloadProtectionService instance and releases ownership to
+  // caller.
+  DownloadProtectionService* CreateDownloadProtectionService();
+
+  // Notifies DownloadProtectionService of profile shutdown.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // The telemetry service tied to the current profile.
   std::unique_ptr<AndroidTelemetryService> telemetry_service_;
+
+  std::unique_ptr<DownloadProtectionService> download_service_;
 
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   // Has the database_manager been set for tests?

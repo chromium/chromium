@@ -27,10 +27,6 @@ found in the LICENSE file.
     <!-- As in dimens.xml, signin uses values from the First Run Experience -->
     <macro name="signin_head_background">@macro/default_bg_color</macro>
     <macro name="signin_body_background">@macro/default_bg_color</macro>
-    <color name="signin_header_animation_background">@color/baseline_neutral_95</color>
-    <color name="signin_header_animation_line_light">#E8E9EB</color>
-    <color name="signin_header_animation_line_dark">#BDC0C5</color>
-    <color name="signin_header_animation_laptop_screen">#F4F4F4</color>
 
     <!-- NTP and Home sheet colors. Also used on the bookmarks and recent tabs pages. -->
     <color name="ntp_bg_incognito">@color/default_bg_color_dark</color>
@@ -53,7 +49,6 @@ found in the LICENSE file.
 
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>
-    <color name="bookmark_widget_background">@color/default_bg_color_baseline</color>
 
     <!-- History Navigation UI colors -->
     <color name="navigation_bubble_arrow">@android:color/black</color>

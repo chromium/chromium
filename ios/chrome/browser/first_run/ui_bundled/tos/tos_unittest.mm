@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
-
 #import <WebKit/WebKit.h>
 #import <gtest/gtest.h>
+
+#import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"

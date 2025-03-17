@@ -84,7 +84,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void NavigateEventHandlerPresenceChanged(bool present) override {}
   void UpdateTitle(const WTF::String& title,
                    base::i18n::TextDirection title_direction) override;
-  void UpdateAppTitle(const WTF::String& app_title) override;
+  void UpdateApplicationTitle(const WTF::String& application_title) override;
   void UpdateUserActivationState(
       mojom::blink::UserActivationUpdateType update_type,
       mojom::UserActivationNotificationType notification_type) override;
@@ -121,7 +121,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void ShowPopupMenu(
       mojo::PendingRemote<mojom::blink::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int32_t item_height,
       double font_size,
       int32_t selected_item,
       Vector<mojom::blink::MenuItemPtr> menu_items,

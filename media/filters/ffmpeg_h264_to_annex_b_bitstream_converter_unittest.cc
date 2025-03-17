@@ -339,7 +339,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessBigPacket) {
   // Converter will be automatically cleaned up.
 }
 
-TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_FailureNullParams) {
+TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessNullParams) {
   // Set up AVCConfigurationRecord to represent NULL data.
   AVCodecParameters dummy_parameters;
   dummy_parameters.extradata = nullptr;
@@ -355,7 +355,11 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_FailureNullParams) {
                sizeof(kPacketDataOkWithFieldLen4));
 
   // Try out the actual conversion. This should fail due to missing extradata.
-  EXPECT_FALSE(converter.ConvertPacket(test_packet.get()));
+  auto* packet_data = test_packet->data;
+  EXPECT_TRUE(converter.ConvertPacket(test_packet.get()));
+  EXPECT_EQ(static_cast<size_t>(test_packet->size),
+            sizeof(kPacketDataOkWithFieldLen4));
+  EXPECT_EQ(test_packet->data, packet_data);
 
   // Converter will be automatically cleaned up.
 }

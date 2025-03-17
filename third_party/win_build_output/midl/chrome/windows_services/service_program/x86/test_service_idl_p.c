@@ -49,11 +49,11 @@
 
 #include "test_service_idl.h"
 
-#define TYPE_FORMAT_STRING_SIZE   7                                 
-#define PROC_FORMAT_STRING_SIZE   37                                
+#define TYPE_FORMAT_STRING_SIZE   51                                
+#define PROC_FORMAT_STRING_SIZE   169                               
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
-#define WIRE_MARSHAL_TABLE_SIZE   0            
+#define WIRE_MARSHAL_TABLE_SIZE   1            
 
 typedef struct _test_service_idl_MIDL_TYPE_FORMAT_STRING
     {
@@ -150,6 +150,7 @@ extern const MIDL_SERVER_INFO ITestService_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO ITestService_ProxyInfo;
 
 
+extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ];
 
 #if !defined(__RPC_WIN32__)
 #error  Invalid build platform for this stub.
@@ -199,6 +200,115 @@ static const test_service_idl_MIDL_PROC_FORMAT_STRING test_service_idl__MIDL_Pro
 /* 34 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure IsRunningUnattended */
+
+/* 36 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 38 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 42 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 44 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 46 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 48 */	NdrFcShort( 0x22 ),	/* 34 */
+/* 50 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x2,		/* 2 */
+/* 52 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 54 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 56 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 58 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter is_running_unattended */
+
+/* 60 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+/* 62 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 64 */	0x6,		/* FC_SHORT */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 66 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 68 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 70 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure GetCrashpadDatabasePath */
+
+/* 72 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 74 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 78 */	NdrFcShort( 0x5 ),	/* 5 */
+/* 80 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 82 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 84 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 86 */	0x45,		/* Oi2 Flags:  srv must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 88 */	0x8,		/* 8 */
+			0x3,		/* Ext Flags:  new corr desc, clt corr check, */
+/* 90 */	NdrFcShort( 0x1 ),	/* 1 */
+/* 92 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 94 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter database_path */
+
+/* 96 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
+/* 98 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 100 */	NdrFcShort( 0x28 ),	/* Type Offset=40 */
+
+	/* Return value */
+
+/* 102 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 104 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 106 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure InduceCrash */
+
+/* 108 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 110 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 114 */	NdrFcShort( 0x6 ),	/* 6 */
+/* 116 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 118 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 120 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 122 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x1,		/* 1 */
+/* 124 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 126 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 128 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 130 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Return value */
+
+/* 132 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 134 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 136 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure InduceCrashSoon */
+
+/* 138 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 140 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 144 */	NdrFcShort( 0x7 ),	/* 7 */
+/* 146 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 148 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 150 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 152 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x1,		/* 1 */
+/* 154 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 156 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 158 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 160 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Return value */
+
+/* 162 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 164 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 166 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -212,10 +322,62 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
 /*  4 */	0x8,		/* FC_LONG */
 			0x5c,		/* FC_PAD */
+/*  6 */	
+			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
+/*  8 */	0x6,		/* FC_SHORT */
+			0x5c,		/* FC_PAD */
+/* 10 */	
+			0x11, 0x4,	/* FC_RP [alloced_on_stack] */
+/* 12 */	NdrFcShort( 0x1c ),	/* Offset= 28 (40) */
+/* 14 */	
+			0x13, 0x0,	/* FC_OP */
+/* 16 */	NdrFcShort( 0xe ),	/* Offset= 14 (30) */
+/* 18 */	
+			0x1b,		/* FC_CARRAY */
+			0x1,		/* 1 */
+/* 20 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 22 */	0x9,		/* Corr desc: FC_ULONG */
+			0x0,		/*  */
+/* 24 */	NdrFcShort( 0xfffc ),	/* -4 */
+/* 26 */	NdrFcShort( 0x1 ),	/* Corr flags:  early, */
+/* 28 */	0x6,		/* FC_SHORT */
+			0x5b,		/* FC_END */
+/* 30 */	
+			0x17,		/* FC_CSTRUCT */
+			0x3,		/* 3 */
+/* 32 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 34 */	NdrFcShort( 0xfff0 ),	/* Offset= -16 (18) */
+/* 36 */	0x8,		/* FC_LONG */
+			0x8,		/* FC_LONG */
+/* 38 */	0x5c,		/* FC_PAD */
+			0x5b,		/* FC_END */
+/* 40 */	0xb4,		/* FC_USER_MARSHAL */
+			0x83,		/* 131 */
+/* 42 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 44 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 46 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 48 */	NdrFcShort( 0xffde ),	/* Offset= -34 (14) */
 
 			0x0
         }
     };
+
+XFG_TRAMPOLINES(BSTR)
+
+static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ] = 
+        {
+            
+            {
+            (USER_MARSHAL_SIZING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserSize)
+            ,(USER_MARSHAL_MARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserMarshal)
+            ,(USER_MARSHAL_UNMARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserUnmarshal)
+            ,(USER_MARSHAL_FREEING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserFree)
+            
+            }
+            
+
+        };
+
 
 
 /* Object interface: IUnknown, ver. 0.0,
@@ -228,7 +390,11 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 #pragma code_seg(".orpc")
 static const unsigned short ITestService_FormatStringOffsetTable[] =
     {
-    0
+    0,
+    36,
+    72,
+    108,
+    138
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ITestService_ProxyInfo =
@@ -252,21 +418,25 @@ static const MIDL_SERVER_INFO ITestService_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _ITestServiceProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(8) _ITestServiceProxyVtbl = 
 {
     &ITestService_ProxyInfo,
     &IID_ITestService,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */
+    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */ ,
+    (void *) (INT_PTR) -1 /* ITestService::IsRunningUnattended */ ,
+    (void *) (INT_PTR) -1 /* ITestService::GetCrashpadDatabasePath */ ,
+    (void *) (INT_PTR) -1 /* ITestService::InduceCrash */ ,
+    (void *) (INT_PTR) -1 /* ITestService::InduceCrashSoon */
 };
 
 const CInterfaceStubVtbl _ITestServiceStubVtbl =
 {
     &IID_ITestService,
     &ITestService_ServerInfo,
-    4,
+    8,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };
@@ -290,7 +460,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0,
     0x8010274, /* MIDL Version 8.1.628 */
     0,
-    0,
+    UserMarshalRoutines,
     0,  /* notify & notify_flag routine table */
     0x1, /* MIDL flag */
     0, /* cs routines */

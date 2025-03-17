@@ -166,7 +166,6 @@ class CORE_EXPORT LineInfo {
 
   bool HasTrailingSpaces() const { return has_trailing_spaces_; }
   void SetHasTrailingSpaces() { has_trailing_spaces_ = true; }
-  bool ShouldHangTrailingSpaces() const;
 
   // True if this line has overflow, excluding preserved trailing spaces.
   bool HasOverflow() const { return has_overflow_; }

@@ -40,8 +40,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowLooper;
-import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -78,13 +76,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
-import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider;
-import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -93,17 +89,13 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link FeedSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -113,12 +105,7 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.WEB_FEED_ONBOARDING,
     ChromeFeatureList.FEED_CONTAINMENT
 })
-@EnableFeatures({
-    ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
-    ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT
-})
+@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;
@@ -210,8 +197,6 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgePadAdjusterCaptor;
 
-    @Mock private ImageCacheHelper mImageCacheHelper;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private FeedSurfaceMediator mMediatorSpy;
@@ -276,8 +261,6 @@ public class FeedSurfaceCoordinatorTest {
 
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
         when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
-
-        when(mProcessScope.provideImageCacheHelper()).thenReturn(mImageCacheHelper);
 
         mCoordinator = createCoordinator(mRecyclerView);
 
@@ -474,32 +457,6 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
-    public void testIsPrimaryAccountSupervisedForChildUser() {
-        AccountInfo account = TestAccounts.CHILD_ACCOUNT;
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
-                .thenReturn(account);
-        when(mProfileMock.isChild()).thenReturn(true);
-
-        assertTrue(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
-    public void testIsPrimaryAccountSupervisedForRegularUser() {
-        AccountInfo account = TestAccounts.ACCOUNT1;
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
-                .thenReturn(account);
-        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
-    public void testIsPrimaryAccountSupervisedForSignedOutUser() {
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testTabStripHeightChangeCallback() {
         ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -534,64 +491,6 @@ public class FeedSurfaceCoordinatorTest {
                 mCoordinator.getRecyclerView().getClipToPadding());
         assertEquals(
                 "Padding should be reset.", 0, mCoordinator.getRecyclerView().getPaddingBottom());
-    }
-
-    @Test
-    public void testClearFeedCacheImmediately() {
-        FeedSurfaceTracker.getInstance().startup();
-        Mockito.doReturn(ClosedReason.LEAVE_FEED).when(mMediatorSpy).getClosedReason();
-        mCoordinator.destroy();
-        mCoordinator = null;
-        verify(mImageCacheHelper, times(1)).clearMemoryCache();
-    }
-
-    @Test
-    public void testClearFeedCacheAfterDelay() {
-        FeedSurfaceTracker.getInstance().startup();
-        Mockito.doReturn(ClosedReason.OPEN_CARD).when(mMediatorSpy).getClosedReason();
-        mCoordinator.destroy();
-        mCoordinator = null;
-        verify(mImageCacheHelper, never()).clearMemoryCache();
-        advanceBy(60);
-        verify(mImageCacheHelper, times(1)).clearMemoryCache();
-    }
-
-    @Test
-    public void testClearFeedCacheCancelledAfterBackToFeed() {
-        FeedSurfaceTracker.getInstance().startup();
-        Mockito.doReturn(ClosedReason.OPEN_CARD).when(mMediatorSpy).getClosedReason();
-        mCoordinator.destroy();
-        mCoordinator = null;
-        verify(mImageCacheHelper, never()).clearMemoryCache();
-        mCoordinator = createCoordinator(mRecyclerView);
-        advanceBy(60);
-        verify(mImageCacheHelper, never()).clearMemoryCache();
-    }
-
-    @Test
-    public void testClearFeedCacheMultipleSurfaces() {
-        FeedSurfaceTracker.getInstance().startup();
-        Mockito.doReturn(ClosedReason.LEAVE_FEED).when(mMediatorSpy).getClosedReason();
-
-        // Create another feed surface.
-        RecyclerView recyclerView2 = new RecyclerView(mActivity);
-        FeedSurfaceCoordinator coordinator2 = createCoordinator(recyclerView2);
-        coordinator2.setMediatorForTesting(mMediatorSpy);
-
-        // No action if not all surfaces are destroyed.
-        mCoordinator.destroy();
-        mCoordinator = null;
-        verify(mImageCacheHelper, never()).clearMemoryCache();
-
-        // Feed cache is cleared after the last surface is gone.
-        coordinator2.destroy();
-        ShadowLooper.runUiThreadTasks();
-        verify(mImageCacheHelper, times(1)).clearMemoryCache();
-    }
-
-    private static void advanceBy(long seconds) {
-        ShadowSystemClock.advanceBy(seconds, TimeUnit.SECONDS);
-        ShadowLooper.runUiThreadTasks();
     }
 
     private boolean hasStreamBound() {

@@ -280,7 +280,7 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
   void VerifyRestoreInitSettingHistogram(RestoreOption option,
-                                         base::HistogramBase::Count count) {
+                                         base::HistogramBase::Count32 count) {
     histogram_tester_.ExpectUniqueSample("Apps.RestoreInitSetting", option,
                                          count);
   }
@@ -1246,6 +1246,22 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
   EXPECT_TRUE(allow_save());
 }
 
+// Test that the informed restore dialog is not shown if the previous session
+// was crashed, there was full restore data and the restore option is always.
+// Regression test for crbug.com/388309832.
+TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
+       NoInformedRestoreSessionIfCrash) {
+  SetRestoreOption(RestoreOption::kAlways);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+}
+
 TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
        AskEveryTimeAndRestore) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
@@ -1267,7 +1283,7 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
   EXPECT_TRUE(allow_save());
 }
 
-// Test tha for an existing user, if re-image, do not show the informed restore
+// Test that for an existing user, if re-image, do not show the informed restore
 // dialog for the first run.
 TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
   // Set the restore pref setting to simulate sync for the first time.

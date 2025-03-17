@@ -6,8 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-// TODO(http://b/307989065) Make this web_app.proto
-package web_app;
+package web_app.proto;
 
 // Translations for all apps.
 message AllTranslations {

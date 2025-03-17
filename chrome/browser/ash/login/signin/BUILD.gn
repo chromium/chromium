@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("signin") {
   sources = [
@@ -34,8 +32,14 @@ static_library("signin") {
     "signin_error_notifier.h",
     "signin_error_notifier_factory.cc",
     "signin_error_notifier_factory.h",
+    "token_handle_checker.cc",
+    "token_handle_checker.h",
     "token_handle_fetcher.cc",
     "token_handle_fetcher.h",
+    "token_handle_store_factory.cc",
+    "token_handle_store_factory.h",
+    "token_handle_store_impl.cc",
+    "token_handle_store_impl.h",
     "token_handle_util.cc",
     "token_handle_util.h",
   ]
@@ -153,6 +157,7 @@ source_set("unit_tests") {
   sources = [
     "offline_signin_limiter_unittest.cc",
     "signin_error_notifier_unittest.cc",
+    "token_handle_checker_unittest.cc",
   ]
 
   deps = [

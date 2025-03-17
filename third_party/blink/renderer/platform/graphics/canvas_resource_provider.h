@@ -92,7 +92,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   enum ResourceProviderType {
     kTexture [[deprecated]] = 0,
     kBitmap = 1,
-    kSharedBitmap = 2,
+    kSharedBitmap [[deprecated]] = 2,
     kTextureGpuMemoryBuffer [[deprecated]] = 3,
     kBitmapGpuMemoryBuffer [[deprecated]] = 4,
     kSharedImage = 5,
@@ -110,26 +110,27 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       ShouldInitialize initialize_provider,
       CanvasResourceHost* resource_host = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateSharedBitmapProvider(
+  static std::unique_ptr<CanvasResourceProvider>
+  CreateSoftwareSharedImageProvider(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       ShouldInitialize initialize_provider,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
@@ -138,25 +139,25 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       CanvasResourceHost* resource_host = nullptr);
@@ -182,16 +183,21 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason);
+
+  // TODO(crbug.com/371227617): Trim callsites of this method to those that
+  // actually need to pass this info to Skia APIs and then eliminate the
+  // method/this class holding `info_` by inlining creation of SkImageInfo at
+  // those callsites.
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
-  gfx::ColorSpace GetColorSpace() const;
-  SkAlphaType GetAlphaType() const;
-  gfx::Size Size() const;
+  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
+  gfx::ColorSpace GetColorSpace() const { return color_space_; }
+  SkAlphaType GetAlphaType() const { return alpha_type_; }
+  gfx::Size Size() const { return size_; }
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
   // Returns true if the resource can be used by the display compositor.
   virtual bool SupportsDirectCompositing() const = 0;
-  virtual bool SupportsSingleBuffering() const { return false; }
   uint32_t ContentUniqueID() const;
 
   // Indicates that the compositing path is single buffered, meaning that
@@ -201,12 +207,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // queue, thus reducing latency, but with the possible side effects of tearing
   // (in cases where the resource is scanned out directly) and irregular frame
   // rate.
-  bool IsSingleBuffered() const { return is_single_buffered_; }
-
-  // Attempt to enable single buffering mode on this resource provider.  May
-  // fail if the CanvasResourcePRovider subclass does not support this mode of
-  // operation.
-  void TryEnableSingleBuffering();
+  virtual bool IsSingleBuffered() const = 0;
 
   // Only works in single buffering mode.
   bool ImportResource(scoped_refptr<CanvasResource>&&);
@@ -218,7 +219,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
-  virtual bool IsSharedBitmapGpuChannelLost() const;
+
+  // Returns true iff the resource provider is (a) using a GPU channel for
+  // software SharedImages and (b) that channel has been lost.
+  virtual bool IsSoftwareSharedImageGpuChannelLost() const;
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,
@@ -364,9 +368,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   CanvasResourceProvider(const ResourceProviderType&,
                          gfx::Size size,
-                         SkColorType sk_color_type,
+                         viz::SharedImageFormat format,
                          SkAlphaType alpha_type,
-                         sk_sp<SkColorSpace> sk_color_space,
+                         const gfx::ColorSpace& color_space,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>
                              context_provider_wrapper,
                          CanvasResourceHost* resource_host);
@@ -443,6 +447,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
+  gfx::Size size_;
+  viz::SharedImageFormat format_;
+  SkAlphaType alpha_type_;
+  gfx::ColorSpace color_space_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<CanvasResourceHost> resource_host_ = nullptr;
@@ -460,7 +468,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   WTF::Vector<UnusedResource> canvas_resources_;
   base::OneShotTimer unused_resources_reclaim_timer_;
   bool resource_recycling_enabled_ = true;
-  bool is_single_buffered_ = false;
   bool oopr_uses_dmsaa_ = false;
   bool always_enable_raster_timers_for_testing_ = false;
 

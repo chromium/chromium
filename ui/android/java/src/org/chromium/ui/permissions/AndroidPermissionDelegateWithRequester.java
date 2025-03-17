@@ -13,6 +13,7 @@ import android.util.SparseArray;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,15 +140,17 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     /**
      * Returns if an information about permission denial should be stored. Denial should not be
      * stored iff:
+     *
      * <ul>
-     *   <li> Android version >= Android.R
-     *   <li> The information about initial @see Activity.shouldShowRequestPermissionRationale is
-     *        present and the value is false
-     *   <li> The current value of @see Activity.shouldShowRequestPermissionRationale is false as
-     *        well
+     *   <li>Android version >= Android.R
+     *   <li>The information about initial @see Activity.shouldShowRequestPermissionRationale is
+     *       present and the value is false
+     *   <li>The current value of @see Activity.shouldShowRequestPermissionRationale is false as
+     *       well
      * </ul>
      */
-    private boolean shouldPersistDenial(PermissionRequestInfo requestInfo, String permission) {
+    private boolean shouldPersistDenial(
+            @Nullable PermissionRequestInfo requestInfo, String permission) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return true;
 
         boolean initialShowRationaleState = false;

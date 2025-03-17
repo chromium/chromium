@@ -61,8 +61,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity_);
 
-    auth_service_->SignIn(identity_,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service_->SignIn(identity_, signin_metrics::AccessPoint::kUnknown);
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
@@ -123,11 +122,11 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
   bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
 
  protected:
-  std::unique_ptr<PushNotificationService> push_notification_service_;
   TestingPrefServiceSimple pref_service_;
   TestingPrefServiceSimple local_state_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<PushNotificationService> push_notification_service_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_;

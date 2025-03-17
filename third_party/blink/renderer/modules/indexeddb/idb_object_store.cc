@@ -551,7 +551,7 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
   // Records 1KB to 1GB.
   UMA_HISTOGRAM_COUNTS_1M(
       "WebCore.IndexedDB.PutValueSize2",
-      base::saturated_cast<base::HistogramBase::Sample>(
+      base::saturated_cast<base::HistogramBase::Sample32>(
           value_wrapper.DataLengthBeforeWrapInBytes() / 1024));
 
   IDBRequest* request = IDBRequest::Create(

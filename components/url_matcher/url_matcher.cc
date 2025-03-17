@@ -739,8 +739,8 @@ bool URLMatcherCidrBlockFilter::IsMatch(const GURL& url) const {
     return false;
   }
 
-  return base::ranges::any_of(cidr_blocks_, [&ip_address](
-                                                const CidrBlock& block) {
+  return std::ranges::any_of(cidr_blocks_, [&ip_address](
+                                               const CidrBlock& block) {
     return net::IPAddressMatchesPrefix(ip_address, block.first, block.second);
   });
 }

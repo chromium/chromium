@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.device;
 
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 /**
  * This class is used to turn on and off certain features for different types of
  * devices.
  */
+@NullMarked
 public class DeviceClassManager {
-    private static DeviceClassManager sInstance;
+    private static @Nullable DeviceClassManager sInstance;
 
     // Set of features that can be enabled/disabled
     private boolean mEnableLayerDecorationCache;

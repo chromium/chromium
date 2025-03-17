@@ -35,12 +35,13 @@ class CORE_EXPORT LayoutViewTransitionContent : public LayoutReplaced {
 
  protected:
   PaintLayerType LayerTypeRequired() const override;
-  void IntrinsicSizeChanged() override { NOT_DESTROYED(); }
+  void NaturalSizeChanged() override { NOT_DESTROYED(); }
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 
  private:
   PhysicalRect ReplacedContentRectForCapturedContent() const;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
   scoped_refptr<cc::ViewTransitionContentLayer> layer_;
   gfx::RectF captured_rect_;

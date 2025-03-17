@@ -55,7 +55,7 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
   return net::X509Certificate::CreateFromBytes(base::as_byte_span(cert_der));
 }
 
-}
+}  // namespace
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
 CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
@@ -66,8 +66,9 @@ CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
   if (net::GetValueForKeyInQuery(url, kChromeInterstitialSslUrlQueryKey,
                                  &url_param)) {
     GURL query_url_param(url_param);
-    if (query_url_param.is_valid())
+    if (query_url_param.is_valid()) {
       request_url = query_url_param;
+    }
   }
 
   bool overridable = false;
@@ -156,8 +157,9 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   if (net::GetValueForKeyInQuery(
           url, kChromeInterstitialSafeBrowsingUrlQueryKey, &url_param)) {
     GURL query_url_param(url_param);
-    if (query_url_param.is_valid())
+    if (query_url_param.is_valid()) {
       request_url = query_url_param;
+    }
   }
 
   std::string type_param;

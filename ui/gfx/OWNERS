@@ -54,7 +54,7 @@ per-file *buffer_types.*=vikassoni@chromium.org
 per-file *native_pixmap*=spang@chromium.org
 
 # Vector icons.
-per-file *vector_icon*=estade@chromium.org
+per-file *vector_icon*=file://components/vector_icons/OWNERS
 
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*

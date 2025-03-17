@@ -243,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(), ui::AXMode(),
                                           ax::mojom::Event::kLoadComplete);
-  ScopedAccessibilityModeOverride ax_mode_override(ui::AXMode::kScreenReader);
+  ScopedAccessibilityModeOverride ax_mode_override(
+      ui::AXMode::kExtendedProperties);
   ASSERT_TRUE(waiter2.WaitForNotification());
 
   const ui::BrowserAccessibility* textbox2 =

@@ -67,10 +67,10 @@ class UpdaterNetworkTest : public ::testing::Test {
                                    const std::string& header_etag,
                                    const std::string& header_x_cup_server_proof,
                                    int64_t xheader_retry_after_sec) {
-    EXPECT_STREQ(response_body->c_str(), expected_body.c_str());
+    EXPECT_EQ(*response_body, expected_body);
     EXPECT_EQ(net_error, 0);
-    EXPECT_STREQ(header_etag.c_str(), "Wfhw789h");
-    EXPECT_STREQ(header_x_cup_server_proof.c_str(), "server-proof");
+    EXPECT_EQ(header_etag, "Wfhw789h");
+    EXPECT_EQ(header_x_cup_server_proof, "server-proof");
     EXPECT_EQ(xheader_retry_after_sec, 67);
     PostRequestCompleted();
   }
@@ -142,7 +142,7 @@ class UpdaterDownloadTest : public ::testing::Test {
     server_.ServeFilesFromSourceDirectory("chrome/updater/test/data");
     server_handle_ = server_.StartAndReturnHandle();
     ASSERT_TRUE(scoped_dir_.CreateUniqueTempDir());
-    dest_ = scoped_dir_.GetPath().AppendASCII("updater-signed.exe");
+    dest_ = scoped_dir_.GetPath().AppendUTF8("updater-signed.exe");
     gurl_ = GURL(base::StrCat({server_.base_url().spec(), "signed.exe"}));
   }
 
@@ -227,7 +227,7 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
 TEST_F(UpdaterDownloadTest, URLMonFetcher) {
   EXPECT_FALSE(base::PathExists(dest_));
   EXPECT_HRESULT_SUCCEEDED(
-      ::URLDownloadToFile(nullptr, base::ASCIIToWide(gurl_.spec()).c_str(),
+      ::URLDownloadToFile(nullptr, base::UTF8ToWide(gurl_.spec()).c_str(),
                           dest_.value().c_str(), 0, nullptr));
   EXPECT_TRUE(base::PathExists(dest_));
 }

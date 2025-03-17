@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 
 #include <algorithm>
@@ -185,10 +190,14 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
 
   // Disable cookies for this request. The credentials mode should be omit by
   // default, only change to include for debug purpose.
-  resource_request->credentials_mode =
-      base::FeatureList::IsEnabled(kContextualSearchWithCredentialsForDebug)
-          ? network::mojom::CredentialsMode::kInclude
-          : network::mojom::CredentialsMode::kOmit;
+  if (base::FeatureList::IsEnabled(kContextualSearchWithCredentialsForDebug)) {
+    resource_request->credentials_mode =
+        network::mojom::CredentialsMode::kInclude;
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(request_url);
+  } else {
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
 
   // Semantic details for this "Resolve" request:
   net::NetworkTrafficAnnotationTag traffic_annotation =

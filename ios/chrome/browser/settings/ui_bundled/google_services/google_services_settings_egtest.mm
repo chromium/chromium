@@ -10,12 +10,13 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/supervised_user/core/common/features.h"
-#import "components/variations/pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_app_interface.h"
@@ -25,9 +26,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -122,9 +120,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     // the feature is not enabled.
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
   }
-  if ([self isRunningTest:@selector(testParcelTrackingSetting)]) {
-    config.features_disabled.push_back(kIOSDisableParcelTracking);
-  }
   return config;
 }
 
@@ -169,9 +164,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kWaitForActionTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kWaitForActionTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
@@ -340,44 +335,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_SETTING_OFF))]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests the parcel tracking settings row is properly shown.
-- (void)testParcelTrackingSetting {
-  // Parcel tracking is only enabled in the US.
-  [ChromeEarlGrey setStringValue:"us"
-               forLocalStatePref:variations::prefs::
-                                     kVariationsPermanentOverriddenCountry];
-
-  [self openGoogleServicesSettings];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_accessibilityLabel(GetNSString(
-                  IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)),
-              grey_kindOfClassName(@"UITableViewCell"),
-              grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests the parcel tracking settings row is not shown for non-US countries.
-- (void)testParcelTrackingSetting_notShownOutsideUS {
-  // Set permanent country to somthing other than the US.
-  [ChromeEarlGrey setStringValue:"fr"
-               forLocalStatePref:variations::prefs::
-                                     kVariationsPermanentOverriddenCountry];
-
-  [self openGoogleServicesSettings];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_accessibilityLabel(GetNSString(
-                  IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)),
-              grey_kindOfClassName(@"UITableViewCell"),
-              grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Helpers

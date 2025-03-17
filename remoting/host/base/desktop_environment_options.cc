@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace remoting {
@@ -93,6 +94,15 @@ bool DesktopEnvironmentOptions::enable_remote_webauthn() const {
 
 void DesktopEnvironmentOptions::set_enable_remote_webauthn(bool enabled) {
   enable_remote_webauthn_ = enabled;
+}
+
+base::TimeDelta DesktopEnvironmentOptions::maximum_session_duration() const {
+  return maximum_session_duration_;
+}
+
+void DesktopEnvironmentOptions::set_maximum_session_duration(
+    base::TimeDelta duration) {
+  maximum_session_duration_ = duration;
 }
 
 bool DesktopEnvironmentOptions::capture_video_on_dedicated_thread() const {

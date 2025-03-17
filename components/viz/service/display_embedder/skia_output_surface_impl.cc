@@ -575,7 +575,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(current_paint_);
-  DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
+  DCHECK(!image_context->mailbox().IsZero());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaOutputSurfaceImpl::MakePromiseSkImage");
 
@@ -583,16 +583,15 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
       static_cast<ImageContextImpl*>(image_context);
   images_in_current_paint_.push_back(image_context_impl);
 
-  const auto& mailbox_holder = image_context->mailbox_holder();
+  const auto& sync_token = image_context->sync_token();
 
   if (is_using_raw_draw_) {
     auto* sync_point_manager = dependency_->GetSyncPointManager();
-    auto const& sync_token = mailbox_holder.sync_token;
     if (sync_token.HasData() &&
         !sync_point_manager->IsSyncTokenReleased(sync_token)) {
       gpu_task_sync_tokens_.push_back(sync_token);
       FlushGpuTasks(SyncMode::kWaitForTasksStarted);
-      image_context->mutable_mailbox_holder()->sync_token.Clear();
+      image_context->mutable_sync_token()->Clear();
     }
     CHECK(representation_factory_);
     if (image_context_impl->BeginRasterAccess(representation_factory_.get())) {
@@ -612,9 +611,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     MakePromiseSkImageMultiPlane(image_context_impl, color_space);
   }
 
-  if (mailbox_holder.sync_token.HasData()) {
-    resource_sync_tokens_.push_back(mailbox_holder.sync_token);
-    image_context->mutable_mailbox_holder()->sync_token.Clear();
+  if (sync_token.HasData()) {
+    resource_sync_tokens_.push_back(sync_token);
+    image_context->mutable_sync_token()->Clear();
   }
 }
 
@@ -630,7 +629,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   SkColorType color_type =
       format.PrefersExternalSampler()
           ? gpu::ToClosestSkColorTypeExternalSampler(format)
-          : ToClosestSkColorType(/*gpu_compositing=*/true, format);
+          : ToClosestSkColorType(format);
 
   if (force_rgbx) {
     if (color_type == SkColorType::kBGRA_8888_SkColorType ||
@@ -659,8 +658,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   } else {
     CHECK(gr_context_thread_safe_);
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        format, /*plane_index=*/0,
-        image_context->mailbox_holder().texture_target,
+        format, /*plane_index=*/0, image_context->texture_target(),
         image_context->ycbcr_info(), color_space);
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
@@ -716,7 +714,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     }
 
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(
-        graphite_recorder_, yuva_info, texture_infos, skgpu::Mipmapped::kNo);
+        yuva_info, texture_infos, skgpu::Mipmapped::kNo);
     void* fulfill_array_ptr = std::move(fulfill_array).leak().data();
     auto image = SkImages::PromiseTextureFromYUVA(
         graphite_recorder_, yuva_backend_info, image_context->color_space(),
@@ -734,7 +732,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
       // NOTE: To compute the format, it is necessary to pass the ColorSpace
       // that came originally from the TransferableResource.
       formats.push_back(GetGrBackendFormatForTexture(
-          format, plane_index, image_context->mailbox_holder().texture_target,
+          format, plane_index, image_context->texture_target(),
           image_context->ycbcr_info(), color_space));
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
     }
@@ -767,16 +765,19 @@ gpu::SyncToken SkiaOutputSurfaceImpl::ReleaseImageContexts(
 
 std::unique_ptr<ExternalUseClient::ImageContext>
 SkiaOutputSurfaceImpl::CreateImageContext(
-    const gpu::MailboxHolder& holder,
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    uint32_t texture_target,
     const gfx::Size& size,
     SharedImageFormat format,
     bool maybe_concurrent_reads,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
+    GrSurfaceOrigin origin,
     bool raw_draw_if_possible) {
   return std::make_unique<ImageContextImpl>(
-      holder, size, format, maybe_concurrent_reads, ycbcr_info,
-      std::move(color_space),
+      mailbox, sync_token, texture_target, size, format, maybe_concurrent_reads,
+      ycbcr_info, std::move(color_space), origin,
       /*is_for_render_pass=*/false, raw_draw_if_possible);
 }
 
@@ -848,8 +849,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   CHECK(!current_paint_);
   CHECK(resource_sync_tokens_.empty());
 
-  SkColorType color_type =
-      ToClosestSkColorType(/*gpu_compositing=*/true, format);
+  SkColorType color_type = ToClosestSkColorType(format);
   if (graphite_recorder_) {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
@@ -985,10 +985,11 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
 
   auto& image_context = render_pass_image_cache_[id];
   if (!image_context) {
-    gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), GL_TEXTURE_2D);
     image_context = std::make_unique<ImageContextImpl>(
-        mailbox_holder, size, format, /*maybe_concurrent_reads=*/false,
+        mailbox, gpu::SyncToken(), GL_TEXTURE_2D, size, format,
+        /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/std::nullopt, std::move(color_space),
+        kTopLeft_GrSurfaceOrigin,
         /*is_for_render_pass=*/true);
   }
   if (!image_context->has_image()) {

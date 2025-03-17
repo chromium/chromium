@@ -26,6 +26,7 @@
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
@@ -161,7 +162,7 @@ bool GetActiveAdapterLuid(LUID* luid) {
 
 // This has to be called after a context is created, active GPU is identified,
 // and GPU driver bug workarounds are computed again. Otherwise the workaround
-// |disable_direct_composition| may not be correctly applied.
+// `disable_direct_composition_video_overlays` may not be correctly applied.
 // Also, this has to be called after falling back to SwiftShader decision is
 // finalized because this function depends on GL is ANGLE's GLES or not.
 void CollectHardwareOverlayInfo(OverlayInfo* overlay_info) {
@@ -284,8 +285,17 @@ void CollectNPUInformation(GPUInfo* gpu_info) {
       LUID instance_luid;
       if (SUCCEEDED(dxcore_adapter->GetProperty(
               DXCoreAdapterProperty::InstanceLuid, &instance_luid))) {
+        device.system_device_id =
+            (static_cast<uint64_t>(instance_luid.HighPart) << 32) |
+            static_cast<uint64_t>(instance_luid.LowPart);
         device.luid =
             CHROME_LUID{instance_luid.LowPart, instance_luid.HighPart};
+      }
+      char* driver_description = nullptr;
+      if (SUCCEEDED(dxcore_adapter->GetProperty(
+              DXCoreAdapterProperty::DriverDescription, &driver_description))) {
+        CHECK(driver_description);
+        device.device_string = std::string(driver_description);
       }
       gpu_info->npus.push_back(device);
     }
@@ -311,10 +321,16 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     GPUInfo::GPUDevice device;
     device.vendor_id = desc.VendorId;
     device.device_id = desc.DeviceId;
+    device.system_device_id =
+        (static_cast<uint64_t>(desc.AdapterLuid.HighPart) << 32) |
+        static_cast<uint64_t>(desc.AdapterLuid.LowPart);
     device.sub_sys_id = desc.SubSysId;
     device.revision = desc.Revision;
     device.luid =
         CHROME_LUID{desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart};
+    device.device_string = base::WideToUTF8(std::wstring_view(
+        desc.Description,
+        wcsnlen_s(desc.Description, std::size(desc.Description))));
 
     LARGE_INTEGER umd_version;
     hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice),
@@ -323,7 +339,7 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
       device.driver_version = DriverVersionToString(umd_version);
     } else {
       DLOG(ERROR) << "Unable to retrieve the umd version of adapter: "
-                  << desc.Description << " HR: " << std::hex << hr;
+                  << device.device_string << " HR: " << std::hex << hr;
     }
     if (i == 0) {
       gpu_info->gpu = device;

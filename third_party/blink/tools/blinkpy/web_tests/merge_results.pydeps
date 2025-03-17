@@ -61,7 +61,6 @@ layout_package/bot_test_expectations.py
 layout_package/json_results_generator.py
 merge_results.py
 models/__init__.py
-models/failure_reason.py
 models/test_configuration.py
 models/test_expectations.py
 models/test_failures.py

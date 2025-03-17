@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationRationaleResult;
 import org.chromium.chrome.browser.notifications.R;
@@ -24,6 +25,7 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog to explain the advantages of Chrome notifications. */
+@NullMarked
 public class NotificationPermissionRationaleDialogController implements RationaleDelegate {
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;

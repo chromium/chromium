@@ -105,6 +105,56 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             app:drawableLeftCompat="@drawable/enterprise_legacy_tech" />
 
+        <TextView
+            android:id="@+id/threat_protection_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cm_title_margin_top"
+            android:text="@string/management_threat_protection"
+            android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+        <TextView
+            android:id="@+id/threat_protection_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cm_description_margin_top"
+            android:text="@string/management_threat_protection_description"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <CheckedTextView
+            android:id="@+id/threat_protection_more"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cm_browser_margin_top"
+            android:text="@string/management_threat_protection_more"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/threat_protection_security_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cm_browser_item_margin_top"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <TextView
+            android:id="@+id/threat_protection_security_event_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <TextView
+            android:id="@+id/threat_protection_page_visited"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cm_browser_item_margin_top"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <TextView
+            android:id="@+id/threat_protection_page_visited_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
     </LinearLayout>
 
 </org.chromium.chrome.browser.management.ManagementView>

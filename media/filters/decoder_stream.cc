@@ -544,10 +544,16 @@ void DecoderStream<StreamType>::DecodeInternal(
   traits_->OnDecode(*buffer);
 
   const bool is_eos = buffer->end_of_stream();
-  if (is_eos)
+  if (is_eos) {
     decoding_eos_ = true;
-  else if (buffer->duration() != kNoTimestamp)
-    duration_tracker_.AddSample(buffer->duration());
+  } else {
+    if (buffer->duration() != kNoTimestamp) {
+      duration_tracker_.AddSample(buffer->duration());
+    } else if (last_buffer_timestamp_ != kNoTimestamp) {
+      duration_tracker_.AddSample(buffer->timestamp() - last_buffer_timestamp_);
+    }
+    last_buffer_timestamp_ = buffer->timestamp();
+  }
 
   ++pending_decode_requests_;
 
@@ -1038,6 +1044,7 @@ void DecoderStream<StreamType>::OnDecoderReset() {
   fallback_buffers_.clear();
   pending_buffers_.clear();
   fallback_buffers_being_decoded_ = 0;
+  last_buffer_timestamp_ = kNoTimestamp;
 
   if (state_ != State::kStateFlushingDecoder) {
     state_ = State::kStateNormal;

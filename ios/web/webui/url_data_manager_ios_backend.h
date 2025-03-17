@@ -57,7 +57,7 @@ class URLDataManagerIOSBackend : public base::SupportsUserData::Data {
  private:
   friend class URLRequestChromeJob;
 
-  typedef std::map<std::string, scoped_refptr<URLDataSourceIOSImpl> >
+  typedef std::map<std::string, scoped_refptr<URLDataSourceIOSImpl>>
       DataSourceMap;
   typedef std::map<RequestID, URLRequestChromeJob*> PendingRequestMap;
 

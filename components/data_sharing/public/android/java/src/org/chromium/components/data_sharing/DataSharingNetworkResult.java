@@ -7,8 +7,11 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Information about a group. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingNetworkResult {
     public final byte[] resultBytes;
     public final @NetworkLoaderStatus int status;

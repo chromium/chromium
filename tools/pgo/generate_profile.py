@@ -85,8 +85,6 @@ class OptionsNamespace(argparse.Namespace):
     # The following are bot-specific args.
     isolated_script_test_output: Optional[str]
     isolated_script_test_perf_output: Optional[str]
-    # TODO(wnwen): Remove this when no longer needed.
-    suffix: str
 
 
 def parse_args():
@@ -194,9 +192,6 @@ def parse_args():
 
     if args.isolated_script_test_output:
         args.outputdir = os.path.dirname(args.isolated_script_test_output)
-        args.suffix = '.profraw'
-    else:
-        args.suffix = '.profdata'
 
     _LOGGER.info(f"Output directory: {args.outputdir}")
     _LOGGER.info(f"Profile directory: {args.profiledir}")
@@ -265,7 +260,7 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
         shutil.rmtree(profraw_path)
     os.makedirs(profraw_path, exist_ok=True)
 
-    profdata_path = f'{args.profiledir}/{name}{args.suffix}'
+    profdata_path = f'{args.profiledir}/{name}.profdata'
     _LOGGER.debug(f"profdata path: {profdata_path}")
     if os.path.exists(profdata_path):
         _LOGGER.debug(f"Removing existing profdata file: {profdata_path}")
@@ -424,7 +419,7 @@ def run_benchmarks(benchmarks: List[List[str]], args: OptionsNamespace):
 
 def merge_profdata(profile_output_path: str, args: OptionsNamespace):
     _LOGGER.info(f"Merging all profdata files into: {profile_output_path}")
-    profdata_files = glob.glob(f'{args.profiledir}/*{args.suffix}')
+    profdata_files = glob.glob(f'{args.profiledir}/*.profdata')
     _LOGGER.debug(f"Found {len(profdata_files)} profdata files")
     if not profdata_files:
         raise RuntimeError(f'No profdata files found in {args.profiledir}')
@@ -493,15 +488,7 @@ def main():
             f'rendering.{platform}',
             '--also-run-disabled-tests',
             '--story-tag-filter=motionmark_fixed_2_seconds',
-            '--story-filter-exclude=motionmark_fixed_2_seconds_images',
         ])
-        if sys.platform == 'darwin':
-            benchmarks.append([
-                f'rendering.{platform}',
-                '--also-run-disabled-tests',
-                '--story-tag-filter=motionmark_fixed_2_seconds',
-                '--extra-browser-args=--enable-features=SkiaGraphite',
-            ])
 
     fail_count = run_benchmarks(benchmarks, args)
     if fail_count:
@@ -510,7 +497,10 @@ def main():
                         'runs.')
 
     if not args.skip_profdata:
-        profile_output_path = f'{args.outputdir}/profile{args.suffix}'
+        # Bots run a separate merge step (merge_results.py) that expects profraw
+        # files instead of profdata files.
+        suffix = ".profraw" if args.isolated_script_test_output else ".profdata"
+        profile_output_path = f'{args.outputdir}/profile{suffix}'
         merge_profdata(profile_output_path, args)
 
     if not args.keep_temps:

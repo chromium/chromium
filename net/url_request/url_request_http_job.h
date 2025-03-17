@@ -329,6 +329,15 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // started.
   FirstPartySetMetadata first_party_set_metadata_;
 
+  // The number of times this request was deferred due to a Device Bound
+  // Session.
+  size_t device_bound_session_deferral_count_ = 0;
+
+  // The time of the first deferral due to Device Bound Sessions. This
+  // is used to measure the total delay of Device Bound Session
+  // Deferral.
+  base::TimeTicks device_bound_session_first_deferral_;
+
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };
 

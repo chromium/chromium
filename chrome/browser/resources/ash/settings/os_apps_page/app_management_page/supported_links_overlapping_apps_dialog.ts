@@ -52,7 +52,7 @@ export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
 
   private getBodyText_(apps: AppMap): string {
     const appNames: string[] = this.overlappingAppIds.map(appId => {
-      return apps[appId]!.title!;
+      return apps[appId].title!;
     });
 
     const appTitle = castExists(this.app.title);

@@ -406,20 +406,20 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
   auto label3 = std::make_unique<views::Label>(u"Label 3");
   auto label4 = std::make_unique<views::Label>(u"Label 4");
 
-  payment_view->AddChildView(label1.get());
+  payment_view->AddChildViewRaw(label1.get());
   ui::AXNodeData data;
   payment_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(u"Label 1",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 
-  label1->AddChildView(label2.get());
+  label1->AddChildViewRaw(label2.get());
   data = ui::AXNodeData();
   payment_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(u"Label 1",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 
-  payment_view->AddChildView(label3.get());
-  payment_view->AddChildView(label4.get());
+  payment_view->AddChildViewRaw(label3.get());
+  payment_view->AddChildViewRaw(label4.get());
   data = ui::AXNodeData();
   payment_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(u"Label 1\nLabel 3\nLabel 4",
@@ -427,14 +427,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
   auto payment_button = std::make_unique<PaymentRequestRowView>();
   auto label5 = std::make_unique<views::Label>(u"Label 5");
-  payment_button->AddChildView(label5.get());
+  payment_button->AddChildViewRaw(label5.get());
 
   data = ui::AXNodeData();
   payment_button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(u"Label 5",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 
-  payment_view->AddChildView(payment_button.get());
+  payment_view->AddChildViewRaw(payment_button.get());
   data = ui::AXNodeData();
   payment_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(u"Label 1\nLabel 3\nLabel 4",

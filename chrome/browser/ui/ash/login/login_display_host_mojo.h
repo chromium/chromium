@@ -50,7 +50,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                              public views::ViewObserver,
                              public ui::UserActivityObserver {
  public:
-  explicit LoginDisplayHostMojo(DisplayedScreen displayed_screen);
+  LoginDisplayHostMojo(DisplayedScreen displayed_screen,
+                       bool update_geolocation_usage_allowed);
 
   LoginDisplayHostMojo(const LoginDisplayHostMojo&) = delete;
   LoginDisplayHostMojo& operator=(const LoginDisplayHostMojo&) = delete;

@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
@@ -39,19 +40,18 @@ import java.util.List;
 import java.util.Optional;
 
 /** Builds DropdownItemViewInfo list from AutocompleteResult for the Suggestions list. */
+@NullMarked
 class DropdownItemViewInfoListBuilder {
+    private final List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
+    private final Supplier<Tab> mActivityTabSupplier;
 
-    private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
-    private final @NonNull Supplier<Tab> mActivityTabSupplier;
-
-    private @Nullable GroupSeparatorProcessor mGroupSeparatorProcessor;
-    private @Nullable HeaderProcessor mHeaderProcessor;
+    private GroupSeparatorProcessor mGroupSeparatorProcessor;
+    private HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
-    private @NonNull BookmarkState mBookmarkState;
+    private Optional<OmniboxImageSupplier> mImageSupplier;
+    private BookmarkState mBookmarkState;
 
-    DropdownItemViewInfoListBuilder(
-            @NonNull Supplier<Tab> tabSupplier, @NonNull BookmarkState bookmarkState) {
+    DropdownItemViewInfoListBuilder(Supplier<Tab> tabSupplier, BookmarkState bookmarkState) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mActivityTabSupplier = tabSupplier;
         mImageSupplier = Optional.empty();
@@ -65,10 +65,9 @@ class DropdownItemViewInfoListBuilder {
      * @param host Component creating suggestion view delegates and responding to suggestion events.
      * @param textProvider Provider of querying/editing the Omnibox.
      */
+    @Initializer
     void initDefaultProcessors(
-            @NonNull Context context,
-            @NonNull SuggestionHost host,
-            @NonNull UrlBarEditingTextStateProvider textProvider) {
+            Context context, SuggestionHost host, UrlBarEditingTextStateProvider textProvider) {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
         final Supplier<ShareDelegate> shareSupplier =
@@ -146,7 +145,7 @@ class DropdownItemViewInfoListBuilder {
      *
      * @param shareDelegateSupplier Share facility supplier.
      */
-    void setShareDelegateSupplier(Supplier<ShareDelegate> shareDelegateSupplier) {
+    void setShareDelegateSupplier(@Nullable Supplier<ShareDelegate> shareDelegateSupplier) {
         mShareDelegateSupplier = shareDelegateSupplier;
     }
 
@@ -188,12 +187,11 @@ class DropdownItemViewInfoListBuilder {
      * @param firstVerticalPosition The index of the first AutocompleteMatch in the target list
      */
     @VisibleForTesting
-    @NonNull
     List<DropdownItemViewInfo> buildVerticalSuggestionsGroup(
-            @NonNull AutocompleteInput input,
-            @NonNull GroupConfig groupDetails,
+            AutocompleteInput input,
+            GroupConfig groupDetails,
             @Nullable GroupConfig previousDetails,
-            @NonNull List<AutocompleteMatch> groupMatches,
+            List<AutocompleteMatch> groupMatches,
             int firstVerticalPosition) {
         assert groupDetails != null;
         assert groupMatches != null;
@@ -221,8 +219,6 @@ class DropdownItemViewInfoListBuilder {
 
         for (int indexInList = 0; indexInList < numGroupMatches; indexInList++) {
             var indexOnList = firstVerticalPosition + indexInList;
-            @SuppressWarnings("null")
-            @NonNull
             AutocompleteMatch match = groupMatches.get(indexInList);
             var processor = getProcessorForSuggestion(match, indexOnList);
             var model = processor.createModel();
@@ -256,11 +252,10 @@ class DropdownItemViewInfoListBuilder {
      * @param position The index on the target list
      */
     @VisibleForTesting
-    @NonNull
     List<DropdownItemViewInfo> buildHorizontalSuggestionsGroup(
-            @NonNull AutocompleteInput input,
-            @NonNull GroupConfig groupDetails,
-            @NonNull List<AutocompleteMatch> groupMatches,
+            AutocompleteInput input,
+            GroupConfig groupDetails,
+            List<AutocompleteMatch> groupMatches,
             int position) {
         assert groupDetails != null;
         assert groupMatches != null;
@@ -283,8 +278,6 @@ class DropdownItemViewInfoListBuilder {
         var model = processor.createModel();
 
         for (int index = 0; index < numGroupMatches; index++) {
-            @SuppressWarnings("null") // The list should never include null elements.
-            @NonNull
             AutocompleteMatch match = groupMatches.get(index);
             assert processor.doesProcessSuggestion(match, position);
             processor.populateModel(input, match, model, position);
@@ -305,7 +298,6 @@ class DropdownItemViewInfoListBuilder {
      * @return List of DropdownItemViewInfo representing the corresponding content of the
      *     suggestions list.
      */
-    @NonNull
     List<DropdownItemViewInfo> buildDropdownViewInfoList(
             AutocompleteInput input, AutocompleteResult autocompleteResult) {
         mHeaderProcessor.onSuggestionsReceived();
@@ -381,15 +373,15 @@ class DropdownItemViewInfoListBuilder {
      * @param suggestion The suggestion to be processed.
      * @param position Position of the suggestion in the list.
      */
-    private @NonNull SuggestionProcessor getProcessorForSuggestion(
-            @NonNull AutocompleteMatch suggestion, int position) {
+    private SuggestionProcessor getProcessorForSuggestion(
+            AutocompleteMatch suggestion, int position) {
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
             SuggestionProcessor processor = mPriorityOrderedSuggestionProcessors.get(index);
             if (processor.doesProcessSuggestion(suggestion, position)) return processor;
         }
 
-        // Crash intentionally. This should never happen.
-        assert false : "No default handler for suggestions";
-        return null;
+        // Crash intentionally. This should never happen. The final suggestion processor is the
+        // catch-all.
+        throw new RuntimeException("No default handler for suggestions");
     }
 }

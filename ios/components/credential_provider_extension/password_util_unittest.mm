@@ -134,24 +134,4 @@ TEST_F(PasswordUtilKeychainTest, StoreEmptyIdentifier) {
   EXPECT_FALSE(StorePasswordInKeychain(kCredentialPassword1, @""));
 }
 
-// Tests storing and loading the account info (gaia and email).
-TEST_F(PasswordUtilKeychainTest, StoreAccountInfo) {
-  EXPECT_TRUE(
-      StoreAccountInfoInKeychain(kAccountInfoGaia1, kAccountInfoEmail1));
-  EXPECT_NSEQ(LoadAccountInfoFromKeychain().gaia, kAccountInfoGaia1);
-  EXPECT_NSEQ(LoadAccountInfoFromKeychain().email, kAccountInfoEmail1);
-}
-
-// Tests updating an existing account info (gaia and email).
-TEST_F(PasswordUtilKeychainTest, UpdateAccountInfo) {
-  EXPECT_TRUE(
-      StoreAccountInfoInKeychain(kAccountInfoGaia2, kAccountInfoEmail2));
-  EXPECT_NSEQ(LoadAccountInfoFromKeychain().gaia, kAccountInfoGaia2);
-  EXPECT_NSEQ(LoadAccountInfoFromKeychain().email, kAccountInfoEmail2);
-  EXPECT_TRUE(
-      StoreAccountInfoInKeychain(kAccountInfoGaia2, kAccountInfoEmail2));
-  EXPECT_NSEQ(LoadAccountInfoFromKeychain().gaia, kAccountInfoGaia2);
-  EXPECT_NSEQ(LoadAccountInfoFromKeychain().email, kAccountInfoEmail2);
-}
-
-}  // credential_provider_extension
+}  // namespace credential_provider_extension

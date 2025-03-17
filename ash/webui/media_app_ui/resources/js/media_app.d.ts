@@ -35,6 +35,8 @@ type InitializeResult =
 type MantisResult = import('./mantis_processor.mojom-webui.js').MantisResult;
 type MantisSafetyClassifierVerdict =
     import('./mantis_processor.mojom-webui.js').SafetyClassifierVerdict;
+type Uuid =
+    import('//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js').Uuid;
 
 /**
  * Wraps an HTML File object (or a mock, or media loaded through another means).
@@ -304,7 +306,7 @@ declare interface ClientApiDelegate {
    * Loads Mantis' assets from DLC and initializes the processor for subsequent
    * queries.
    */
-  initializeMantis(): Promise<InitializeResult>;
+  initializeMantis(dlcId: Uuid): Promise<InitializeResult>;
   /**
    * Performs image segmentation on the image based on the prior selection.
    * The `image` and `selection` are byte arrays containing the encoded
@@ -344,6 +346,17 @@ declare interface ClientApiDelegate {
    * @param image The image to classify.
    */
   classifyImageSafety(image: number[]): Promise<MantisSafetyClassifierVerdict>;
+  /**
+   * Outpaints the image based on the mask and seed. Pass the same `seed` across
+   * method calls to get identical result. The `image` and `mask` are byte
+   * arrays containing the encoded format of an image (e.g., PNG, JPEG).
+   * @param image The image to modify.
+   * @param mask The image indicating which area that outpainting should be
+   *     applied. The area to outpaint should be indicated by the red channel.
+   * @param seed The number to allow reproducibility.
+   */
+  outpaintImage(image: number[], mask: number[], seed: number):
+      Promise<MantisResult>;
 }
 
 /**

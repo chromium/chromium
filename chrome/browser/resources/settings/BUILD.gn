@@ -68,6 +68,7 @@ build_webui("build") {
     "appearance_page/home_url_input.ts",
     "autofill_page/address_edit_dialog.ts",
     "autofill_page/address_remove_confirmation_dialog.ts",
+    "autofill_page/autofill_ai_add_or_edit_dialog.ts",
     "autofill_page/autofill_ai_section.ts",
     "autofill_page/autofill_page.ts",
     "autofill_page/autofill_section.ts",
@@ -75,11 +76,13 @@ build_webui("build") {
     "autofill_page/credit_card_list_entry.ts",
     "autofill_page/iban_edit_dialog.ts",
     "autofill_page/iban_list_entry.ts",
+    "autofill_page/pay_over_time_issuer_list_entry.ts",
     "autofill_page/payments_list.ts",
     "autofill_page/payments_section.ts",
     "autofill_page/virtual_card_unenroll_dialog.ts",
     "basic_page/basic_page.ts",
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
+    "clear_browsing_data_dialog/clear_browsing_data_dialog_v2.ts",
     "clear_browsing_data_dialog/history_deletion_dialog.ts",
     "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
     "controls/controlled_button.ts",
@@ -205,23 +208,7 @@ build_webui("build") {
   ]
 
   if (enable_glic) {
-    web_component_files += [
-      "glic_page/glic_data_page.ts",
-      "glic_page/glic_page.ts",
-    ]
-  }
-
-  if (!is_chromeos_ash) {
-    web_component_files += [
-      "languages_page/add_languages_dialog.ts",
-      "languages_page/languages_page.ts",
-      "languages_page/spell_check_page.ts",
-      "languages_page/translate_page.ts",
-      "people_page/manage_profile.ts",
-      "people_page/sync_account_control.ts",
-      "relaunch_confirmation_dialog.ts",
-      "system_page/system_page.ts",
-    ]
+    web_component_files += [ "glic_page/glic_page.ts" ]
   }
 
   if (!is_chromeos) {
@@ -229,16 +216,23 @@ build_webui("build") {
       "a11y_page/live_caption_section.ts",
       "a11y_page/live_translate_section.ts",
       "default_browser_page/default_browser_page.ts",
+      "languages_page/add_languages_dialog.ts",
+      "languages_page/languages_page.ts",
+      "languages_page/spell_check_page.ts",
+      "languages_page/translate_page.ts",
       "people_page/import_data_dialog.ts",
+      "people_page/manage_profile.ts",
+      "people_page/sync_account_control.ts",
+      "relaunch_confirmation_dialog.ts",
+      "system_page/system_page.ts",
     ]
   }
 
-  if (!is_chromeos_ash && !is_mac) {
-    web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
-  }
-
   if (!is_chromeos && !is_mac) {
-    web_component_files += [ "a11y_page/captions_subpage.ts" ]
+    web_component_files += [
+      "a11y_page/captions_subpage.ts",
+      "languages_page/edit_dictionary_page.ts",
+    ]
   }
 
   if (is_mac) {
@@ -270,9 +264,10 @@ build_webui("build") {
     "appearance_page/appearance_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
+    "autofill_page/country_detail_manager_proxy.ts",
+    "autofill_page/entity_data_manager_proxy.ts",
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/payments_manager_proxy.ts",
-    "autofill_page/user_annotations_manager_proxy.ts",
     "base_mixin.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/settings_idle_load.ts",
@@ -317,7 +312,7 @@ build_webui("build") {
     "tooltip_mixin.ts",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     non_web_component_files +=
         [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
@@ -338,6 +333,10 @@ build_webui("build") {
   }
   if (is_win || is_mac) {
     non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
+  }
+
+  if (enable_glic) {
+    non_web_component_files += [ "glic_page/glic_browser_proxy.ts" ]
   }
 
   # -----------------non_web_component_files end -------------------------------
@@ -393,6 +392,7 @@ build_webui("build") {
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/cr_shortcut_input:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
@@ -402,7 +402,7 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/theme_color_picker:build_ts" ]
   } else {
@@ -419,7 +419,7 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/settings_shared/tsc/*",
             target_gen_dir) ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     # TODO(crbug.com/1013466): Browser Settings should not depend on ash/webui/
     # code. The codepath needing this (in people_page.ts) should be removed when
     # the SplitSettings effort makes progress (unclear status as of this

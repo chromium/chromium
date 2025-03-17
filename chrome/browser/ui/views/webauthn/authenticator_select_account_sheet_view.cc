@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
 
+#include <cstddef>
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
-#include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
-#include "device/fido/discoverable_credential_metadata.h"
+#include "chrome/browser/ui/webauthn/account_hover_list_model.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view.h"
 
 AuthenticatorSelectAccountSheetView::AuthenticatorSelectAccountSheetView(
     std::unique_ptr<AuthenticatorSelectAccountSheetModel> sheet_model)

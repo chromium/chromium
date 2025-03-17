@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -31,7 +32,6 @@
 class NearbyShareClient;
 class NearbyShareClientFactory;
 class NearbyShareLocalDeviceDataManager;
-class NearbyShareProfileInfoProvider;
 class PrefService;
 
 namespace device {
@@ -68,12 +68,12 @@ class NearbyShareCertificateManagerImpl
   class Factory {
    public:
     static std::unique_ptr<NearbyShareCertificateManager> Create(
+        std::string user_email,
+        const base::FilePath& profile_path,
+        PrefService* pref_service,
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareContactManager* contact_manager,
-        NearbyShareProfileInfoProvider* profile_info_provider,
-        PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-        const base::FilePath& profile_path,
         NearbyShareClientFactory* client_factory,
         const base::Clock* clock = base::DefaultClock::GetInstance());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -81,12 +81,12 @@ class NearbyShareCertificateManagerImpl
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<NearbyShareCertificateManager> CreateInstance(
+        std::string user_email,
+        const base::FilePath& profile_path,
+        PrefService* pref_service,
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareContactManager* contact_manager,
-        NearbyShareProfileInfoProvider* profile_info_provider,
-        PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-        const base::FilePath& profile_path,
         NearbyShareClientFactory* client_factory,
         const base::Clock* clock) = 0;
 
@@ -98,12 +98,12 @@ class NearbyShareCertificateManagerImpl
 
  private:
   NearbyShareCertificateManagerImpl(
+      std::string user_email,
+      const base::FilePath& profile_path,
+      PrefService* pref_service,
       NearbyShareLocalDeviceDataManager* local_device_data_manager,
       NearbyShareContactManager* contact_manager,
-      NearbyShareProfileInfoProvider* profile_info_provider,
-      PrefService* pref_service,
       leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-      const base::FilePath& profile_path,
       NearbyShareClientFactory* client_factory,
       const base::Clock* clock);
 
@@ -212,11 +212,14 @@ class NearbyShareCertificateManagerImpl
       size_t certificate_count);
 
   base::OneShotTimer timer_;
+
+  // User/Profile attributes.
+  const std::string user_email_;
+  const raw_ptr<PrefService> pref_service_;
+
   raw_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_ =
       nullptr;
   raw_ptr<NearbyShareContactManager> contact_manager_ = nullptr;
-  raw_ptr<NearbyShareProfileInfoProvider> profile_info_provider_ = nullptr;
-  raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<NearbyShareClientFactory> client_factory_ = nullptr;
   raw_ptr<const base::Clock> clock_;
   std::unique_ptr<NearbyShareCertificateStorage> certificate_storage_;

@@ -1,6 +1,9 @@
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
     .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="${this.i18nRecursive('',
+                              'modulesMoreActions',
+                              'modulesMicrosoftAuthName')}"
     @disable-button-click="${this.onDisableButtonClick_}"
     @dismiss-button-click="${this.onDismissButtonClick_}">
 </ntp-module-header-v2>
@@ -10,7 +13,7 @@
   <div id="headingsAndButton">
     <div id="headings">
       <h2 id="heading">$i18n{modulesMicrosoftAuthHeading}</h2>
-      <h3 id="subheading">$i18n{modulesMicrosoftAuthSubheading}</h3>
+      <div id="subheading">$i18n{modulesMicrosoftAuthSubheading}</div>
     </div>
     <cr-button role="link" class="action-button" id="signInButton"
         @click="${this.onSignInClick_}">

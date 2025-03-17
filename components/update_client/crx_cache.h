@@ -5,66 +5,91 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 #define COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 
+#include <map>
 #include <optional>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
-#include "components/update_client/update_client_errors.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace update_client {
 
-// CRX cache for storing and looking up the previous CRX for a given product
-// so that it can be used in the Puffin patching process.
+enum class UnpackerError;
+class CrxCacheSynchronous;
+
+// A CRX cache is a filesystem-backed cache of files. It keeps files inside a
+// particular directory, and uses a metadata file within that directory to
+// track data about the entries.
+//
+// When constructed, the cache loads the existing metadata file in the provided
+// directory and immediately deletes any files in the directory that don't have
+// a corresponding entry in the metadata file. If there is no metadata file,
+// the cache does not delete anything. The metadata is created after the first
+// Put.
+//
+// It is unsafe to instantiate multiple CrxCaches with a shared `cache_root`.
+//
+// The cache maintains only a single cached element per app ID.
 class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
  public:
   CrxCache(const CrxCache&) = delete;
   CrxCache& operator=(const CrxCache&) = delete;
 
-  // Constructs an CrxCache to facilitate lookups and updates on a given path.
-  explicit CrxCache(std::optional<base::FilePath> path);
+  // Constructs a CrxCache that operates in `cache_root`. If `cache_root` is
+  // not provided, the CrxCache returns errors from most methods. Deletes any
+  // contents in `cache_root` that do not belong to the cache.
+  explicit CrxCache(std::optional<base::FilePath> cache_root);
 
-  // Requests a lookup of the previous CRX for the requested component given
-  // `id` and `fp`.
-  void Get(
-      const std::string& id,
+  // Returns a multimap of app IDs to hashes that are present in the cache.
+  void ListHashesByAppId(
+      base::OnceCallback<void(const std::multimap<std::string, std::string>&)>
+          callback) const;
+
+  // Returns a cached element with a matching hash. If there is no element
+  // cached, returns base::unexpected(kCrxCacheFileNotCached). O(1) lookup.
+  void GetByHash(
+      const std::string& hash,
+      base::OnceCallback<void(base::expected<base::FilePath, UnpackerError>)>
+          callback) const;
+
+  // Similar to GetByHash, but looks up an item by fingerprint. O(N) lookup.
+  void GetByFp(
       const std::string& fp,
       base::OnceCallback<void(base::expected<base::FilePath, UnpackerError>)>
-          callback);
+          callback) const;
 
-  // Requests an entry for the current CRX to be added given the path `crx`,
-  // `id` and `fp`. An entry with the same `id` is overwritten. This helps
-  // to reduce cache size. This method takes ownership of the file, moves it,
-  // and can only be accessed via the new path in the cache, given by `result`.
-  // `callback` is called with the result.
+  // Adds `file` to the cache. Any entries with the same `app_id` are first
+  // evicted. The file is moved into the cache, and the new path to the
+  // file is returned. Hashes should be in ASCII. O(N) time.
   void Put(
-      const base::FilePath& crx,
-      const std::string& id,
+      const base::FilePath& file,
+      const std::string& app_id,
+      const std::string& hash,
       const std::string& fp,
       base::OnceCallback<void(base::expected<base::FilePath, UnpackerError>)>
           callback);
 
-  // Removes any stale entries for the given product, should any exist. Runs as
-  // a best effort and ignores any delete errors.
-  void RemoveAll(const std::string& id);
+  // Removes all entries associated with a particular app ID. O(N) time.
+  void RemoveAll(const std::string& app_id);
 
  private:
   friend class base::RefCountedThreadSafe<CrxCache>;
 
-  // Builds a full path to a crx in the cache, based on `id` and `fp`.
-  base::FilePath BuildCrxFilePath(const std::string& id, const std::string& fp);
-
+  // Destroying the CrxCache schedules a write of the metadata to disk. The
+  // write will block shutdown, but callers can't depend on it happening before
+  // the destructor returns, so it is unsafe to construct a new CrxCache with
+  // the same cache_root before the process shuts down.
   virtual ~CrxCache();
 
-  SEQUENCE_CHECKER(main_sequence_checker_);
-  const std::optional<base::FilePath> crx_cache_root_path_;
-  const scoped_refptr<base::TaskRunner> task_runner_ =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::SequenceBound<CrxCacheSynchronous> delegate_;
 };
 
 }  // namespace update_client

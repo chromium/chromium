@@ -4,13 +4,15 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddDialogPage, AssignedKeyCombo, ComplexActions, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrSettingsPrefs, CrSliderElement, FaceGazeSubpageBrowserProxyImpl, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {FaceGazeAddActionDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, AssignedKeyCombo, ComplexActions, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrSliderElement, IronListElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, FaceGazeSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
-import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
+import type {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -274,7 +276,7 @@ suite('<facegaze-actions-add-dialog>', () => {
     const container: HTMLElement|null =
         faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLElement>(
             '#complexActionContainer');
-    return container
+    return container;
   }
 
   function getThresholdPreviousButton(): CrButtonElement {

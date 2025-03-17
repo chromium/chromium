@@ -19,6 +19,10 @@
 FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
   set_template_url_service(
       search_engines_test_enviroment_.template_url_service());
+  document_suggestions_service_ =
+      std::make_unique<DocumentSuggestionsService>(
+          /*identity_manager=*/nullptr,
+          /*url_loader_factory=*/nullptr);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   on_device_tail_model_service_ =
@@ -81,6 +85,11 @@ InMemoryURLIndex* FakeAutocompleteProviderClient::GetInMemoryURLIndex() {
   return in_memory_url_index_.get();
 }
 
+DocumentSuggestionsService*
+FakeAutocompleteProviderClient::GetDocumentSuggestionsService() const {
+  return document_suggestions_service_.get();
+}
+
 scoped_refptr<ShortcutsBackend>
 FakeAutocompleteProviderClient::GetShortcutsBackend() {
   return shortcuts_backend_;
@@ -99,6 +108,10 @@ scoped_refptr<history::TopSites> FakeAutocompleteProviderClient::GetTopSites() {
   return top_sites_;
 }
 
+std::string FakeAutocompleteProviderClient::ProfileUserName() const {
+  return "goodEmail@gmail.com";
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 OnDeviceTailModelService*
 FakeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
@@ -109,4 +122,5 @@ FakeAutocompleteScoringModelService*
 FakeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
   return scoring_model_service_.get();
 }
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

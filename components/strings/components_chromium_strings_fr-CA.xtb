@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">Chromium a bloqué cette page</translation>
 <translation id="48558539577516920">Autorisez Chromium à accéder au réseau dans les paramètres de votre pare-feu
         ou de votre antivirus.</translation>
+<translation id="4949828774841497663">Accédez à Applis &gt; Paramètres système &gt; Réseau, sélectionnez le réseau actif, cliquez sur le bouton Détails et désélectionnez tous les mandataires qui ont pu être sélectionnés.</translation>
 <translation id="580822234363523061">Accédez au
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           et assurez-vous que vos paramètres aient comme valeur « sans mandataire » ou « direct ».</translation>
+<translation id="648062525172759633">Ces pages visent à être utilisées par les développeurs Chromium et ne peuvent pas être activement entretenues ou testées. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton permettant d'activer les pages de débogage, puis accédez de nouveau à cette page.</translation>
 <translation id="6549378540556750549">Chromium est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="691026815377248078">Chromium nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -41,9 +43,6 @@
           et décochez « <ph name="NO_PREFETCH_DESCRIPTION" /> ».
           Si le problème persiste, nous vous conseillons de sélectionner
           à nouveau cette option pour améliorer les performances.</translation>
-<translation id="8187289872471304532">Sélectionnez
-          Applications &gt; Préférences Système &gt; Réseau &gt; Avancé... &gt; Proxys et 
-          désélectionnez tous les serveurs mandataires qui ont été sélectionnés.</translation>
 <translation id="8597726643333341451">Vous consultez une page sécurisée Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium n'a pas été fermé correctement.</translation>
 </translationbundle>

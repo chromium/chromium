@@ -33,11 +33,11 @@ namespace ash {
 namespace {
 
 const char kFamilyLinkUser[] = "fl@gmail.com";
-const char kFamilyLinkGaiaID[] = "111111";
+const GaiaId::Literal kFamilyLinkGaiaID("111111");
 const char kRegularUser[] = "regular@gmail.com";
-const char kRegularGaiaID[] = "222222";
+const GaiaId::Literal kRegularGaiaID("222222");
 const char kSchoolUser[] = "student@edu.com";
-const char kSchoolGaiaID[] = "333333";
+const GaiaId::Literal kSchoolGaiaID("333333");
 const char kSchoolAllowlist[] = "*@edu.com";
 
 }  // namespace
@@ -106,12 +106,11 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
 
  private:
   const LoginManagerMixin::TestUserInfo school_user_{
-      AccountId::FromUserEmailGaiaId(kSchoolUser, GaiaId(kSchoolGaiaID))};
+      AccountId::FromUserEmailGaiaId(kSchoolUser, kSchoolGaiaID)};
   const LoginManagerMixin::TestUserInfo regular_user_{
-      AccountId::FromUserEmailGaiaId(kRegularUser, GaiaId(kRegularGaiaID))};
+      AccountId::FromUserEmailGaiaId(kRegularUser, kRegularGaiaID)};
   const LoginManagerMixin::TestUserInfo family_link_user_{
-      AccountId::FromUserEmailGaiaId(kFamilyLinkUser,
-                                     GaiaId(kFamilyLinkGaiaID)),
+      AccountId::FromUserEmailGaiaId(kFamilyLinkUser, kFamilyLinkGaiaID),
       test::kDefaultAuthSetup, user_manager::UserType::kChild};
 
   policy::DevicePolicyCrosTestHelper policy_helper_;

@@ -114,7 +114,7 @@ public class SearchWidgetProviderTest {
                                     searchEngineName,
                                     null,
                                     voiceSearchAvailable,
-                                    /* lensAvailable= */ false,
+                                    /* googleLensAvailable= */ false,
                                     /* incognitoAvailable= */ true));
                 });
     }

@@ -40,8 +40,9 @@ JobDelegate::JobDelegate(
 }
 
 JobDelegate::~JobDelegate() {
-  if (task_id_ != kInvalidTaskId)
+  if (task_id_ != kInvalidTaskId) {
     task_source_->ReleaseTaskId(task_id_);
+  }
 }
 
 bool JobDelegate::ShouldYield() {
@@ -69,8 +70,9 @@ void JobDelegate::NotifyConcurrencyIncrease() {
 }
 
 uint8_t JobDelegate::GetTaskId() {
-  if (task_id_ == kInvalidTaskId)
+  if (task_id_ == kInvalidTaskId) {
     task_id_ = task_source_->AcquireTaskId();
+  }
   return task_id_;
 }
 
@@ -130,8 +132,9 @@ void JobHandle::Join() {
     task_source_->delegate()->EnqueueJobTaskSource(task_source_);
   }
   bool must_run = task_source_->WillJoin();
-  while (must_run)
+  while (must_run) {
     must_run = task_source_->RunJoinTask();
+  }
   // Remove |task_source_| from the ThreadPool to prevent access to
   // |max_concurrency_callback| after Join().
   task_source_->delegate()->RemoveJobTaskSource(task_source_);

@@ -7,8 +7,8 @@
  * testing.
  */
 
-import {personalizationSearchMojom} from 'chrome://os-settings/os_settings.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {personalizationSearchMojom} from 'chrome://os-settings/os_settings.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 type SearchResult = personalizationSearchMojom.SearchResult;
 type SearchHandlerInterface = personalizationSearchMojom.SearchHandlerInterface;
@@ -24,9 +24,9 @@ export class FakePersonalizationSearchHandler implements
     this.fakeResults_ = results;
   }
 
-  async search(_query: String16, _maxNumResults: number):
+  search(_query: String16, _maxNumResults: number):
       Promise<{results: SearchResult[]}> {
-    return {results: this.fakeResults_};
+    return Promise.resolve({results: this.fakeResults_});
   }
 
   addObserver(observer: SearchResultsObserverInterface): void {

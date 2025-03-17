@@ -191,7 +191,7 @@ public class ThreadUtils {
      * @param c The Callable to run
      * @return The result of the callable
      */
-    public static <T> T runOnUiThreadBlocking(Callable<T> c) {
+    public static <T extends @Nullable Object> T runOnUiThreadBlocking(Callable<T> c) {
         return PostTask.runSynchronously(TaskTraits.UI_DEFAULT, c);
     }
 
@@ -202,7 +202,7 @@ public class ThreadUtils {
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    public static <T> FutureTask<T> runOnUiThread(FutureTask<T> task) {
+    public static <T extends @Nullable Object> FutureTask<T> runOnUiThread(FutureTask<T> task) {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, task);
         return task;
     }
@@ -224,7 +224,7 @@ public class ThreadUtils {
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    public static <T> FutureTask<T> postOnUiThread(FutureTask<T> task) {
+    public static <T extends @Nullable Object> FutureTask<T> postOnUiThread(FutureTask<T> task) {
         PostTask.postTask(TaskTraits.UI_DEFAULT, task);
         return task;
     }

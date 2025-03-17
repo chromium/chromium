@@ -4,7 +4,7 @@
 
 import("//testing/test.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 component("vision") {
   defines = [ "IS_KIOSK_VISION_IMPL" ]

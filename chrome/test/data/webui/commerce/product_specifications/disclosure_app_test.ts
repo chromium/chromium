@@ -50,17 +50,17 @@ suite('DisclosureAppTest', () => {
     await flushTasks();
   });
 
-  test('records metrics for disclosure show', async () => {
+  test('records metrics for disclosure show', () => {
     assertEquals(1, metrics.count('Commerce.Compare.FirstRunExperience.Shown'));
   });
 
-  test('disclosure has 4 items', async () => {
-    const container = app.shadowRoot!.querySelectorAll('.item');
+  test('disclosure has 4 items', () => {
+    const container = app.shadowRoot.querySelectorAll('.item');
     assertEquals(4, container.length);
   });
 
-  test('disclosure has correct icons', async () => {
-    const icons = app.shadowRoot!.querySelectorAll('.item cr-icon');
+  test('disclosure has correct icons', () => {
+    const icons = app.shadowRoot.querySelectorAll('.item cr-icon');
     assertEquals(4, icons.length);
     assertEquals(
         'product-specifications-disclosure:plant',
@@ -76,8 +76,8 @@ suite('DisclosureAppTest', () => {
         icons[3]!.getAttribute('icon'));
   });
 
-  test('disclosure has correct item text', async () => {
-    const items = app.shadowRoot!.querySelectorAll('.item div');
+  test('disclosure has correct item text', () => {
+    const items = app.shadowRoot.querySelectorAll('.item div');
     assertEquals(4, items.length);
     assertEquals(app.i18n('disclosureAboutItem'), items[0]!.textContent);
     assertEquals(app.i18n('disclosureTabItem'), items[1]!.textContent);
@@ -87,18 +87,18 @@ suite('DisclosureAppTest', () => {
         items[3]!.textContent);
   });
 
-  test('disclosure has correct learn more link', async () => {
+  test('disclosure has correct learn more link', () => {
     const learnMoreLinkElement = $$<HTMLElement>(app, '#learnMoreLink');
     assertTrue(!!learnMoreLinkElement);
-    assertTrue(!!learnMoreLinkElement!.textContent);
+    assertTrue(!!learnMoreLinkElement.textContent);
     assertEquals(
-        app.i18n('learnMore'), learnMoreLinkElement!.textContent!.trim());
+        app.i18n('learnMore'), learnMoreLinkElement.textContent.trim());
     assertEquals(
         loadTimeData.getString('compareLearnMoreUrl'),
-        learnMoreLinkElement!.getAttribute('href'));
+        learnMoreLinkElement.getAttribute('href'));
   });
 
-  test('click disclosure learn more link', async () => {
+  test('click disclosure learn more link', () => {
     // Overwrite `chrome.send` for testing.
     const chromeSend = chrome.send;
     let receivedMessage = 'none';
@@ -113,7 +113,7 @@ suite('DisclosureAppTest', () => {
 
     const learnMoreLinkElement = $$<HTMLElement>(app, '#learnMoreLink');
     assertTrue(!!learnMoreLinkElement);
-    learnMoreLinkElement!.click();
+    learnMoreLinkElement.click();
 
     assertEquals(
         1, metrics.count('Commerce.Compare.FirstRunExperience.LearnMore'));
@@ -124,10 +124,10 @@ suite('DisclosureAppTest', () => {
     chrome.send = chromeSend;
   });
 
-  test('accept button shows the correct text', async () => {
+  test('accept button shows the correct text', () => {
     const acceptButton = $$<HTMLElement>(app, 'cr-button.action-button');
     assertTrue(!!acceptButton);
-    assertEquals(app.i18n('acceptDisclosure'), acceptButton!.innerText);
+    assertEquals(app.i18n('acceptDisclosure'), acceptButton.innerText);
   });
 
   test('click accept button', async () => {
@@ -213,7 +213,7 @@ suite('DisclosureAppTest', () => {
     chrome.send = chromeSend;
   });
 
-  test('click accept button to create set with default name', async () => {
+  test('click accept button to create set with default name', () => {
     const setValue = {
       name: '',
       uuid: {value: '123'},
@@ -253,7 +253,7 @@ suite('DisclosureAppTest', () => {
     chrome.getVariableValue = chromeGetVariableValue;
   });
 
-  test('click accept button to open existing set', async () => {
+  test('click accept button to open existing set', () => {
     // Overwrite `chrome.getVariableValue` for testing.
     const set_id = '123';
     const chromeGetVariableValue = chrome.getVariableValue;
@@ -304,13 +304,13 @@ suite('DisclosureAppTest', () => {
     chrome.send = chromeSend;
   });
 
-  test('decline button shows the correct text', async () => {
+  test('decline button shows the correct text', () => {
     const declineButton = $$<HTMLElement>(app, 'cr-button.tonal-button');
     assertTrue(!!declineButton);
-    assertEquals(app.i18n('declineDisclosure'), declineButton!.innerText);
+    assertEquals(app.i18n('declineDisclosure'), declineButton.innerText);
   });
 
-  test('click decline button', async () => {
+  test('click decline button', () => {
     // Overwrite `chrome.send` for testing.
     const chromeSend = chrome.send;
     let receivedMessage = 'none';

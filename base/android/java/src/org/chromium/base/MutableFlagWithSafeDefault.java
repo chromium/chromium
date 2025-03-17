@@ -43,7 +43,7 @@ public class MutableFlagWithSafeDefault extends Flag {
     @Override
     public boolean isEnabled() {
         if (mInMemoryCachedValue != null) return mInMemoryCachedValue;
-        if (FeatureList.hasTestFeature(mFeatureName)) {
+        if (FeatureOverrides.hasTestFeature(mFeatureName)) {
             return mFeatureMap.isEnabledInNative(mFeatureName);
         }
 

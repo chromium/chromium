@@ -1,0 +1,95 @@
+This is a testharness.js-based test.
+[FAIL] conv2d default + relu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + relu / float16
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + reshape / float16
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] reshape + conv2d default/ float16
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + sigmoid
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + clamp
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + leakyRelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + elu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + prelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + hardSwish
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + gelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + hardSigmoid
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + linear
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + softplus
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + softsign
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + relu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + leakyRelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + sigmoid
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + softplus
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + clamp
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + elu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + gelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + hardSigmoid
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + hardSwish
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + linear
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + prelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + softsign
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + relu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + leakyRelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + sigmoid
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + clamp
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + prelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + elu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization options.axis=0 + gelu
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + hardSigmoid
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + hardSwish
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + linear
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization options.axis=0 + softplus
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization default + softsign
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d default + softmax
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] conv2d with options.inputLayout='nchw' + softmax
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] gemm default + softmax
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d default + softmax
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] convTranspose2d with options.inputLayout=nchw + softmax
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] batchNormalization options.axis=0  + softmax
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+[FAIL] add + sub + mul + gather default
+  Unable to create context for gpu variant. UnknownError: Failed to execute 'createContext' on 'ML': DirectML: Unable to find a capable adapter.
+Harness: the test ran to completion.
+

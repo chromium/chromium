@@ -51,6 +51,7 @@ constexpr CGFloat kheaderImageSize = 48;
 constexpr CGFloat kFullheaderImageSize = 100;
 constexpr CGFloat kStackViewEquallyWeightedButtonSpacing = 12;
 constexpr CGFloat kStackViewDefaultButtonSpacing = 0;
+constexpr CGFloat kButtonPadding = 8;
 
 // Corner radius for the whole view.
 constexpr CGFloat kCornerRadius = 20;
@@ -140,6 +141,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 }
 
 @synthesize actionButtonsVisibility = _actionButtonsVisibility;
+@synthesize dismissButton = _dismissButton;
 @synthesize learnMoreButton = _learnMoreButton;
 @synthesize primaryButtonSpinnerEnabled = _primaryButtonSpinnerEnabled;
 
@@ -236,9 +238,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   [_scrollView addSubview:_scrollContentView];
   [view addSubview:_scrollView];
 
-  // Add learn more button to top left of the view, if requested
+  // Add learn more button to top left of the view, if requested.
   if (self.shouldShowLearnMoreButton) {
     [view insertSubview:self.learnMoreButton aboveSubview:_scrollView];
+  }
+
+  // Add dismiss button to top right of the view, if requested.
+  if (self.shouldShowDismissButton) {
+    [view insertSubview:self.dismissButton aboveSubview:_scrollView];
   }
 
   _actionButtonsStackView = [[UIStackView alloc] init];
@@ -515,8 +522,38 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     ]];
   }
 
+  if (self.shouldShowDismissButton) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_dismissButton.topAnchor
+          constraintEqualToAnchor:_scrollContentView.topAnchor],
+      [_dismissButton.trailingAnchor
+          constraintEqualToAnchor:view.trailingAnchor
+                         constant:-kPromoStyleDefaultMargin],
+    ]];
+
+    // Align learn more and dismiss buttons vertically if both exist.
+    if (self.shouldShowLearnMoreButton) {
+      [NSLayoutConstraint activateConstraints:@[
+        [_learnMoreButton.centerYAnchor
+            constraintEqualToAnchor:self.dismissButton.centerYAnchor],
+        [_learnMoreButton.trailingAnchor
+            constraintLessThanOrEqualToAnchor:_dismissButton.leadingAnchor
+                                     constant:-kButtonPadding],
+      ]];
+    }
+  }
+
   if (self.hideHeaderOnTallContent) {
     [self updateActionButtonsAndPushUpScrollViewIfMandatory];
+  }
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = @[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+      UITraitPreferredContentSizeCategory.class
+    ];
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
   }
 }
 
@@ -694,22 +731,16 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  // Reset the title font and the learn more text to make sure that they are
-  // properly scaled. Nothing will be done for the Read More text if the
-  // bottom is reached.
-  self.titleLabel.font = GetFRETitleFont(self.titleLabelFontTextStyle);
-  [self setReadMoreText];
-
-  // Update the primary button once the layout changes take effect to have the
-  // right measurements to evaluate the scroll position.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self updateViewsOnScrollViewUpdate];
-    [self hideHeaderOnTallContentIfNeeded];
-  });
+  [self updateUIOnTraitChange];
 }
+#endif
 
 #pragma mark - Accessors
 
@@ -916,6 +947,25 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                forControlEvents:UIControlEventTouchUpInside];
   }
   return _learnMoreButton;
+}
+
+// Helper to create the dismiss button.
+- (UIButton*)dismissButton {
+  if (!_dismissButton) {
+    CHECK(self.shouldShowDismissButton);
+    CHECK(self.dismissButtonString);
+
+    _dismissButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [_dismissButton setTitle:self.dismissButtonString
+                    forState:UIControlStateNormal];
+    [_dismissButton addTarget:self
+                       action:@selector(didTapDismissButton)
+             forControlEvents:UIControlEventTouchUpInside];
+    _dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _dismissButton.titleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  }
+  return _dismissButton;
 }
 
 - (void)setPrimaryButtonEnabled:(BOOL)primaryButtonEnabled {
@@ -1346,6 +1396,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
+// Handle taps on the dismiss button.
+- (void)didTapDismissButton {
+  CHECK(self.shouldShowDismissButton);
+  if ([self.delegate respondsToSelector:@selector(didTapDismissButton)]) {
+    [self.delegate didTapDismissButton];
+  }
+}
+
 - (UIFontTextStyle)disclaimerLabelFontTextStyle {
   return UIFontTextStyleCaption2;
 }
@@ -1536,6 +1594,23 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
+// Updates certain UI elements when changes in the device's UI traits have been
+// observed.
+- (void)updateUIOnTraitChange {
+  // Reset the title font and the learn more text to make sure that they are
+  // properly scaled. Nothing will be done for the Read More text if the
+  // bottom is reached.
+  self.titleLabel.font = GetFRETitleFont(self.titleLabelFontTextStyle);
+  [self setReadMoreText];
+
+  // Update the primary button once the layout changes take effect to have the
+  // right measurements to evaluate the scroll position.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self updateViewsOnScrollViewUpdate];
+    [self hideHeaderOnTallContentIfNeeded];
+  });
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
@@ -1544,6 +1619,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -1553,6 +1629,22 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [self.delegate didTapURLInDisclaimer:URL];
   }
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  if (!(textView == self.disclaimerView &&
+        [self.delegate respondsToSelector:@selector(didTapURLInDisclaimer:)])) {
+    return defaultAction;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  NSURL* URL = textItem.link;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate didTapURLInDisclaimer:URL];
+  }];
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {

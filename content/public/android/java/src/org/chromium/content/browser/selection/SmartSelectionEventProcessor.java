@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.selection;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Build;
 import android.view.textclassifier.SelectionEvent;
@@ -11,10 +13,12 @@ import android.view.textclassifier.TextClassificationContext;
 import android.view.textclassifier.TextClassificationManager;
 import android.view.textclassifier.TextClassifier;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content_public.browser.SelectionClient;
@@ -33,19 +37,21 @@ import org.chromium.ui.base.WindowAndroid;
  * are ignored but we count each punctuation mark as a word.
  */
 @RequiresApi(Build.VERSION_CODES.P)
+@NullMarked
 public class SmartSelectionEventProcessor implements SelectionEventProcessor {
     private static final String TAG = "SmartSelectionLogger";
     private static final boolean DEBUG = false;
 
     // May be null if {@link onWindowAndroidChanged()} sets it to null.
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
 
-    private TextClassifier mSession;
+    private @Nullable TextClassifier mSession;
 
-    private SelectionIndicesConverter mConverter;
+    private @Nullable SelectionIndicesConverter mConverter;
 
-    public static SmartSelectionEventProcessor create(WebContents webContents) {
-        if (webContents.getTopLevelNativeWindow().getContext().get() == null) {
+    public static @Nullable SmartSelectionEventProcessor create(WebContents webContents) {
+        var topWindow = webContents.getTopLevelNativeWindow();
+        if (topWindow == null || topWindow.getContext().get() == null) {
             return null;
         }
         return new SmartSelectionEventProcessor(webContents);
@@ -53,12 +59,13 @@ public class SmartSelectionEventProcessor implements SelectionEventProcessor {
 
     private SmartSelectionEventProcessor(WebContents webContents) {
         mWindowAndroid = webContents.getTopLevelNativeWindow();
-        WindowEventObserverManager manager = WindowEventObserverManager.from(webContents);
+        WindowEventObserverManager manager = WindowEventObserverManager.maybeFrom(webContents);
         if (manager != null) {
             manager.addObserver(
                     new WindowEventObserver() {
                         @Override
-                        public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+                        public void onWindowAndroidChanged(
+                                @Nullable WindowAndroid newWindowAndroid) {
                             mWindowAndroid = newWindowAndroid;
                         }
                     });
@@ -81,8 +88,9 @@ public class SmartSelectionEventProcessor implements SelectionEventProcessor {
     }
 
     public void onSelectionModified(
-            String selectionText, int startOffset, SelectionClient.Result result) {
+            String selectionText, int startOffset, SelectionClient.@Nullable Result result) {
         if (mSession == null) return;
+        assumeNonNull(mConverter);
         if (!mConverter.updateSelectionState(selectionText, startOffset)) {
             // DOM change detected, end logging session.
             endTextClassificationSession();
@@ -112,10 +120,14 @@ public class SmartSelectionEventProcessor implements SelectionEventProcessor {
     }
 
     public void onSelectionAction(
-            String selectionText, int startOffset, int action, SelectionClient.Result result) {
+            String selectionText,
+            int startOffset,
+            int action,
+            SelectionClient.@Nullable Result result) {
         if (mSession == null) {
             return;
         }
+        assumeNonNull(mConverter);
         if (!mConverter.updateSelectionState(selectionText, startOffset)) {
             // DOM change detected, end logging session.
             endTextClassificationSession();
@@ -170,12 +182,12 @@ public class SmartSelectionEventProcessor implements SelectionEventProcessor {
         mSession = null;
     }
 
+    @RequiresNonNull("mSession")
     public void logEvent(SelectionEvent selectionEvent) {
         mSession.onSelectionEvent(selectionEvent);
     }
 
-    @Nullable
-    public TextClassifier getTextClassifierSession() {
+    public @Nullable TextClassifier getTextClassifierSession() {
         return mSession;
     }
 }

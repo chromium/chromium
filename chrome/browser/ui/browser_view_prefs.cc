@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/browser_view_prefs.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 

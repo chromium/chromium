@@ -44,10 +44,13 @@ const CFTimeInterval kSecondsPerDay = 60 * 60 * 24;
 // checking for null closure).
 void RunCallback(base::ScopedClosureRunner closure_runner) {}
 
-NSSet* ComputeReferencedExternalFiles(Browser* browser) {
+NSSet* ComputeReferencedExternalFiles(
+    Browser* browser,
+    sessions::TabRestoreService* restore_service) {
   NSMutableSet* referenced_files = [NSMutableSet set];
-  if (!browser)
+  if (!browser) {
     return referenced_files;
+  }
   WebStateList* web_state_list = browser->GetWebStateList();
   // Check the currently open tabs for external files.
   for (int index = 0; index < web_state_list->count(); ++index) {
@@ -72,8 +75,6 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
     }
   }
   // Do the same for the recently closed tabs.
-  sessions::TabRestoreService* restore_service =
-      IOSChromeTabRestoreServiceFactory::GetForProfile(browser->GetProfile());
   DCHECK(restore_service);
   for (const auto& entry : restore_service->entries()) {
     sessions::tab_restore::Tab* tab =
@@ -95,8 +96,9 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
 NSString* GetInboxDirectoryPath() {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                        NSUserDomainMask, YES);
-  if ([paths count] < 1)
+  if ([paths count] < 1) {
     return nil;
+  }
 
   NSString* documents_directory_path = [paths objectAtIndex:0];
   return [documents_directory_path stringByAppendingPathComponent:kInboxPath];
@@ -115,8 +117,9 @@ void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
   for (NSString* filename in external_files) {
     NSString* file_path =
         [inbox_directory stringByAppendingPathComponent:filename];
-    if ([files_to_keep containsObject:filename])
+    if ([files_to_keep containsObject:filename]) {
       continue;
+    }
     // Checks the age of the file and do not remove files that are too recent.
     // Under normal circumstances, e.g. when file purge is not initiated by
     // user action, leave recently downloaded files around to avoid users
@@ -131,8 +134,9 @@ void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
       continue;
     }
     NSDate* date = [attributesDictionary objectForKey:NSFileCreationDate];
-    if (-[date timeIntervalSinceNow] <= (age_in_days * kSecondsPerDay))
+    if (-[date timeIntervalSinceNow] <= (age_in_days * kSecondsPerDay)) {
       continue;
+    }
     // Removes the file.
     [file_manager removeItemAtPath:file_path error:&error];
     if (error) {
@@ -179,44 +183,23 @@ void ExternalFileRemoverImpl::Shutdown() {
     tab_restore_service_->RemoveObserver(this);
     tab_restore_service_ = nullptr;
   }
-  delayed_file_remove_requests_.clear();
 }
 
 void ExternalFileRemoverImpl::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (service->IsLoaded())
+  if (service->IsLoaded()) {
     return;
+  }
 
   tab_restore_service_->RemoveObserver(this);
   tab_restore_service_ = nullptr;
-
-  std::vector<DelayedFileRemoveRequest> delayed_file_remove_requests;
-  delayed_file_remove_requests = std::move(delayed_file_remove_requests_);
-  for (DelayedFileRemoveRequest& request : delayed_file_remove_requests) {
-    RemoveFiles(request.remove_all_files, std::move(request.closure_runner));
-  }
 }
 
 void ExternalFileRemoverImpl::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED() << "Should never happen as unregistration happen in Shutdown";
-}
-
-void ExternalFileRemoverImpl::Remove(bool all_files,
-                                     base::ScopedClosureRunner closure_runner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!tab_restore_service_) {
-    RemoveFiles(all_files, std::move(closure_runner));
-    return;
-  }
-  // Removal is delayed until tab restore loading completes.
-  DCHECK(!tab_restore_service_->IsLoaded());
-  DelayedFileRemoveRequest request = {all_files, std::move(closure_runner)};
-  delayed_file_remove_requests_.push_back(std::move(request));
-  if (delayed_file_remove_requests_.size() == 1)
-    tab_restore_service_->LoadTabsFromLastSession();
 }
 
 void ExternalFileRemoverImpl::RemoveFiles(
@@ -245,7 +228,8 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
           : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
-    NSSet* files = ComputeReferencedExternalFiles(browser);
+    NSSet* files =
+        ComputeReferencedExternalFiles(browser, tab_restore_service_);
     if (files) {
       [referenced_external_files unionSet:files];
     }
@@ -254,8 +238,9 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   bookmarks::BookmarkModel* bookmark_model =
       ios::BookmarkModelFactory::GetForProfile(profile_);
   // Check if the bookmark model is loaded.
-  if (!bookmark_model || !bookmark_model->loaded())
+  if (!bookmark_model || !bookmark_model->loaded()) {
     return referenced_external_files;
+  }
 
   // Add files from Bookmarks.
   for (const auto& bookmark : bookmark_model->GetUniqueUrls()) {

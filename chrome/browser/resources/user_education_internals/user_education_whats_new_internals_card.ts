@@ -87,11 +87,7 @@ export class UserEducationWhatsNewInternalsCardElement extends CrLitElement {
 
   protected formatIsFeatureEnabled_() {
     assert(this.item);
-    return (this.item as
-            (WhatsNewModuleDemoPageInfo | WhatsNewEditionDemoPageInfo))
-               .isFeatureEnabled ?
-        'yes' :
-        'no';
+    return this.item.isFeatureEnabled ? 'yes' : 'no';
   }
 
   protected formatQueuePosition_() {

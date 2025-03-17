@@ -11,6 +11,7 @@
 #include "base/power_monitor/sampling_event_source.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
@@ -24,6 +25,8 @@
 
 namespace {
 
+constexpr const char* kBatteryDischargeIsValidSampleInterval =
+    "Power.BatteryDischargeReporter.IsValidSampleInterval";
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode5";
 constexpr const char* kBatteryDischargeModeTenMinutesHistogramName =
@@ -51,7 +54,7 @@ std::optional<base::BatteryLevelProvider::BatteryState> MakeBatteryState(
 
 struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
-  base::Histogram::Sample sample;
+  base::Histogram::Sample32 sample;
 };
 
 // For each histogram named after the combination of prefixes from
@@ -78,6 +81,7 @@ class NoopSamplingEventSource : public base::SamplingEventSource {
   ~NoopSamplingEventSource() override = default;
 
   bool Start(SamplingEventCallback callback) override { return true; }
+  base::TimeDelta GetSampleInterval() override { return base::Minutes(1); }
 };
 
 class NoopBatteryLevelProvider : public base::BatteryLevelProvider {
@@ -271,9 +275,9 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooLate) {
       MakeBatteryState(kHalfBatteryChargeLevel - 10));
 
   // No rate because the interval is invalid.
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kInvalidInterval,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeIsValidSampleInterval,
+                                       false, 1);
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeModeHistogramName, 0);
   histogram_tester_.ExpectTotalCount(
       kBatteryDischargeRateMilliwattsHistogramName, 0);
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
@@ -295,7 +299,6 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsLate) {
   battery_discharge_reporter.OnBatteryStateSampled(
       MakeBatteryState(kHalfBatteryChargeLevel - 10));
 
-  // No rate because the interval is invalid.
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
                                        BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectTotalCount(
@@ -319,9 +322,9 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooEarly) {
       MakeBatteryState(kHalfBatteryChargeLevel - 10));
 
   // No rate because the interval is invalid.
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kInvalidInterval,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeIsValidSampleInterval,
+                                       false, 1);
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeModeHistogramName, 0);
   histogram_tester_.ExpectTotalCount(
       kBatteryDischargeRateMilliwattsHistogramName, 0);
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
@@ -601,8 +604,18 @@ TEST_F(BatteryDischargeReporterTest, TenMinutesInterval) {
   {
     base::HistogramTester tester;
 
+    // t = 11 to 19 minutes: No 10-minutes histograms emitted.
+    for (int i = 0; i < 9; ++i) {
+      task_environment_.FastForwardBy(base::Minutes(1));
+      battery_discharge_reporter.OnBatteryStateSampled(
+          MakeBatteryState(kHalfBatteryChargeLevel - 200));
+      tester.ExpectTotalCount(kBatteryDischargeModeTenMinutesHistogramName, 0);
+      tester.ExpectTotalCount(
+          kBatteryDischargeRateMilliwattsTenMinutesHistogramName, 0);
+    }
+
     // t = 20 minutes: Expect 10-minutes histograms to be emitted again.
-    task_environment_.FastForwardBy(base::Minutes(10));
+    task_environment_.FastForwardBy(base::Minutes(1));
     battery_discharge_reporter.OnBatteryStateSampled(
         MakeBatteryState(kHalfBatteryChargeLevel - 300));
     // 200 mWh discharge over 10 minutes equals 1200 mW.
@@ -617,12 +630,12 @@ TEST_F(BatteryDischargeReporterTest, TenMinutesInterval) {
   {
     base::HistogramTester tester;
 
-    // t = 31 minutes: The interval duration is invalid.
-    task_environment_.FastForwardBy(base::Minutes(11));
+    // t = 22 minutes: The interval duration is invalid.
+    task_environment_.FastForwardBy(base::Minutes(2));
     battery_discharge_reporter.OnBatteryStateSampled(
         MakeBatteryState(kHalfBatteryChargeLevel - 400));
-    tester.ExpectUniqueSample(kBatteryDischargeModeTenMinutesHistogramName,
-                              BatteryDischargeMode::kInvalidInterval, 1);
+    tester.ExpectUniqueSample(kBatteryDischargeIsValidSampleInterval, false, 1);
+    tester.ExpectTotalCount(kBatteryDischargeModeTenMinutesHistogramName, 0);
     tester.ExpectTotalCount(
         kBatteryDischargeRateMilliwattsTenMinutesHistogramName, 0);
   }

@@ -18,24 +18,86 @@
 namespace data_controls {
 
 void AndroidDataControlsDialog::Show(base::OnceClosure on_destructed) {
-  on_destructed_ = std::move(on_destructed);
+  ui::WindowAndroid* window = web_contents()->GetTopLevelNativeWindow();
+  // On Clank, the modal dialog model is created per-instance, so it must be
+  // created and built in this method, as opposed to the constructor (like the
+  // desktop dialog).
+  ui::ModalDialogWrapper::ShowTabModal(
+      CreateDialogModel(std::move(on_destructed)), window);
+}
 
+std::unique_ptr<ui::DialogModel> AndroidDataControlsDialog::CreateDialogModel(
+    base::OnceClosure on_destructed) {
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(GetDialogTitle())
-      .AddParagraph(ui::DialogModelLabel(GetDialogLabel()))
-      .AddOkButton(std::move(on_destructed_),
-                   ui::DialogModel::Button::Params().SetLabel(
-                       l10n_util::GetStringUTF16(IDS_OK)));
+      .AddParagraph(ui::DialogModelLabel(GetDialogLabel()));
 
-  ui::WindowAndroid* window = web_contents()->GetTopLevelNativeWindow();
-  ui::ModalDialogWrapper::ShowTabModal(dialog_builder.Build(), window);
-}
+  switch (type_) {
+    case Type::kClipboardPasteBlock:
+      // TODO (crbug.com/385163723): Remove callbacks for copy/paste block
+      dialog_builder.AddOkButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/false),
+          ui::DialogModel::Button::Params().SetLabel(
+              l10n_util::GetStringUTF16(IDS_OK)));
+      break;
 
-AndroidDataControlsDialog::~AndroidDataControlsDialog() {
-  if (on_destructed_) {
-    std::move(on_destructed_).Run();
+    case Type::kClipboardCopyBlock:
+      // TODO (crbug.com/385163723): Remove callbacks for copy/paste block
+      dialog_builder.AddOkButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/false),
+          ui::DialogModel::Button::Params().SetLabel(
+              l10n_util::GetStringUTF16(IDS_OK)));
+      break;
+
+      // For the "Warn" dialogs, "Cancel" and "Ok" buttons have their labels /
+      // callbacks seemingly flipped - this is because the cancelling the action
+      // that is warned against should be the desired / "default" response from
+      // the user.
+
+    case Type::kClipboardPasteWarn:
+      dialog_builder.AddCancelButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/true),
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)));
+      dialog_builder.AddOkButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/false),
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON))
+              .SetStyle(ui::ButtonStyle::kProminent));
+      break;
+
+    case Type::kClipboardCopyWarn:
+      dialog_builder.AddCancelButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/true),
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)));
+      dialog_builder.AddOkButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/false),
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON))
+              .SetStyle(ui::ButtonStyle::kProminent));
+      break;
   }
+
+  dialog_builder.SetDialogDestroyingCallback(std::move(on_destructed));
+  return dialog_builder.Build();
 }
+
+AndroidDataControlsDialog::~AndroidDataControlsDialog() = default;
 
 std::u16string AndroidDataControlsDialog::GetDialogTitle() const {
   int id;

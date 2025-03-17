@@ -6,8 +6,8 @@
 
 #include <optional>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "ui/aura/window.h"
 
 namespace arc {

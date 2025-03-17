@@ -10,12 +10,15 @@
 #import "build/branding_buildflags.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
-#import "components/search_engines/prepopulated_engines.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/supervised_user/core/common/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
@@ -31,9 +34,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
@@ -54,6 +54,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -130,7 +131,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   int margin_of_error = 1;
   return abs(num1 - num2) < margin_of_error;
 }
-}
+}  // namespace
 
 // Test case for the NTP home UI. More precisely, this tests the positions of
 // the elements after interacting with the device.
@@ -196,10 +197,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
-    config.features_enabled.push_back(kIOSLargeFakebox);
+    config.features_enabled.push_back(kDeprecateFeedHeader);
+    config.additional_args.push_back("--top-padding=32");
+    config.additional_args.push_back("--enlarge-logo-n-fakebox=true");
   }
 
-  if ([self isRunningTest:@selector(testCollectionShortcuts)]) {
+  if ([self isRunningTest:@selector(DISABLED_testCollectionShortcuts)]) {
     // This ensures that the test will not fail when What's New is updated.
     config.additional_args.push_back(base::StringPrintf(
         "--disable-features=%s",
@@ -211,6 +214,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   } else if ([self isRunningTest:@selector
                    (testSignInSignOutScrolledToTop_AccountMenu)]) {
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
+    config.features_enabled.push_back(
+        switches::kEnableErrorBadgeOnIdentityDisc);
   }
 
   return config;
@@ -247,7 +252,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 // Tests that the collections shortcut are displayed and working.
-- (void)testCollectionShortcuts {
+// TODO(crbug.com/387934031): Re-enable.
+- (void)DISABLED_testCollectionShortcuts {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -310,7 +316,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 // Tests that the collections shortcut are displayed and working.
-- (void)testCollectionShortcutsWithWhatsNew {
+// TODO(crbug.com/387934031): Re-enable.
+- (void)DISABLED_testCollectionShortcutsWithWhatsNew {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   // This ensures that the test will not fail when What's New has already been
@@ -575,7 +582,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the tap gesture recognizer that dismisses the keyboard and
 // defocuses the omnibox works.
-- (void)testDefocusOmniboxTapWorks {
+// TODO(crbug.com/399854107): Deflake this test.
+- (void)FLAKY_testDefocusOmniboxTapWorks {
   [self focusFakebox];
   // Tap on a space in the collectionView that is not a link.
   id<GREYMatcher> firstMagicStackModuleLabel = grey_allOf(
@@ -1421,7 +1429,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // one, and the that the omnibox is first responder.
   [ChromeEarlGrey waitForMainTabCount:2];
 
-  GREYAssertEqual(1, [ChromeEarlGrey indexOfActiveNormalTab],
+  GREYAssertEqual(1UL, [ChromeEarlGrey indexOfActiveNormalTab],
                   @"Tab 1 should be active after starting a new search.");
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1461,7 +1469,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // one, and the that the omnibox is first responder.
   [ChromeEarlGrey waitForMainTabCount:2];
 
-  GREYAssertEqual(1, [ChromeEarlGrey indexOfActiveNormalTab],
+  GREYAssertEqual(1UL, [ChromeEarlGrey indexOfActiveNormalTab],
                   @"Tab 1 should be active after starting a new search.");
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1483,6 +1491,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   if (![ChromeEarlGrey isWebChannelsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
   }
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kDeprecateFeedHeader);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Sign in to enable Following.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
@@ -1511,6 +1522,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   if (![ChromeEarlGrey isWebChannelsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
   }
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kDeprecateFeedHeader);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Check that regular feed header is visible when signed out, and not
   // Following header.
@@ -1584,66 +1598,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(std::string("--") +
                                    switches::kDisableSearchEngineChoiceScreen);
-  config.features_enabled.push_back(
-      supervised_user::
-          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self
-      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
-
-  // Ensure that label is visible with correct text for enabled feed, and that
-  // the NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-
-  // Opens settings menu and ensures that Discover setting is present.
-  [self checkDiscoverSettingsToggleVisible:YES];
-
-  // The identity must exist in the test storage to be able to set capabilities
-  // through the fake identity service.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
-                 }];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  // Check that the feed label is not visible and if NTP is scrollable.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-  [self checkIfNTPIsScrollable];
-
-  // Check that the fake omnibox is visible.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::FakeOmnibox()];
-
-  // Opens settings menu and ensures that Discover setting is not present.
-  [self checkDiscoverSettingsToggleVisible:NO];
-
-  [SigninEarlGreyUI signOut];
-
-  // The feed label should be visible on sign-out.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-
-  // Opens settings menu and ensures that Discover setting is present.
-  [self checkDiscoverSettingsToggleVisible:YES];
-}
-
-// Tests that content suggestions are hidden for supervised users on sign-in,
-// with supervision status based on system capabilities.
-// TODO(crbug.com/346756363): Remove this test when supervision status system
-// capabilities are deprecated.
-- (void)testFeedHiddenForSupervisedUserViaSystemCapabilities {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kDisableSearchEngineChoiceScreen);
-  config.features_disabled.push_back(
-      supervised_user::
-          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self

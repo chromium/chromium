@@ -152,6 +152,8 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
     // This will be deleted soon.
     return;
   }
+  TRACE_EVENT0("loading",
+               "StreamingSearchPrefetchURLLoader::ResponseReader::PushData");
   while (true) {
     std::string_view response_data =
         loader_->GetMoreDataFromCache(write_position_);
@@ -193,6 +195,9 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady(
     // result, in which case we do not want to do anything.
     return;
   }
+  TRACE_EVENT0(
+      "loading",
+      "StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady");
   if (result != MOJO_RESULT_OK) {
     status_ = ResponseDataReaderStatus::kServingError;
     OnForwardingDisconnection();
@@ -262,12 +267,6 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::FollowRedirect(
 void StreamingSearchPrefetchURLLoader::ResponseReader::SetPriority(
     net::RequestPriority priority,
     int32_t intra_priority_value) {}
-// TODO(crbug.com/40250486): We may need to pause the producer from
-// pushing data to the client.
-void StreamingSearchPrefetchURLLoader::ResponseReader::
-    PauseReadingBodyFromNet() {}
-void StreamingSearchPrefetchURLLoader::ResponseReader::
-    ResumeReadingBodyFromNet() {}
 
 StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     SearchPrefetchRequest* streaming_prefetch_request,
@@ -669,6 +668,7 @@ void StreamingSearchPrefetchURLLoader::PushData() {
   // as we are at the intermediate state during refactoring.
   DCHECK(forwarding_client_);
   DCHECK(!streaming_prefetch_request_);
+  TRACE_EVENT0("loading", "StreamingSearchPrefetchURLLoader::PushData");
   while (true) {
     std::string_view response_data = GetMoreDataFromCache(write_position_);
 
@@ -784,22 +784,6 @@ void StreamingSearchPrefetchURLLoader::SetPriority(
   }
 }
 
-void StreamingSearchPrefetchURLLoader::PauseReadingBodyFromNet() {
-  paused_ = true;
-  // Pass through.
-  if (network_url_loader_) {
-    network_url_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void StreamingSearchPrefetchURLLoader::ResumeReadingBodyFromNet() {
-  paused_ = false;
-  // Pass through.
-  if (network_url_loader_) {
-    network_url_loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 void StreamingSearchPrefetchURLLoader::OnURLLoaderMojoDisconnect() {
   if (!network_url_loader_) {
     // The connection should close after complete.
@@ -882,9 +866,6 @@ void StreamingSearchPrefetchURLLoader::Fallback() {
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &StreamingSearchPrefetchURLLoader::OnURLLoaderMojoDisconnectInFallback,
       base::Unretained(this)));
-  if (paused_) {
-    network_url_loader_->PauseReadingBodyFromNet();
-  }
 }
 
 void StreamingSearchPrefetchURLLoader::OnURLLoaderMojoDisconnectInFallback() {

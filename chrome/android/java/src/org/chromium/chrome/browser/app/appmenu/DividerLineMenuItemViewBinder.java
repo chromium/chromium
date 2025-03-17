@@ -18,6 +18,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class DividerLineMenuItemViewBinder implements CustomViewBinder {
     private static final int DIVIDER_LINE_ITEM_VIEW_TYPE = 0;
 
+    public static boolean isDividerLineItemId(int id) {
+        return id == R.id.divider_line_id
+                || id == R.id.managed_by_divider_line_id
+                || id == R.id.quick_delete_divider_line_id;
+    }
+
     @Override
     public int getViewTypeCount() {
         return 1;
@@ -25,11 +31,7 @@ public class DividerLineMenuItemViewBinder implements CustomViewBinder {
 
     @Override
     public int getItemViewType(int id) {
-        return (id == R.id.divider_line_id
-                        || id == R.id.managed_by_divider_line_id
-                        || id == R.id.quick_delete_divider_line_id)
-                ? DIVIDER_LINE_ITEM_VIEW_TYPE
-                : CustomViewBinder.NOT_HANDLED;
+        return isDividerLineItemId(id) ? DIVIDER_LINE_ITEM_VIEW_TYPE : CustomViewBinder.NOT_HANDLED;
     }
 
     @Override
@@ -47,9 +49,7 @@ public class DividerLineMenuItemViewBinder implements CustomViewBinder {
 
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
-            assert id == R.id.divider_line_id
-                    || id == R.id.managed_by_divider_line_id
-                    || id == R.id.quick_delete_divider_line_id;
+            assert isDividerLineItemId(id);
             view.setId(id);
             view.setEnabled(false);
         }

@@ -8,8 +8,8 @@ use crate::deps;
 use crate::gn;
 use crate::paths;
 use crate::util::{
-    check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed, init_handlebars,
-    run_cargo_metadata,
+    check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed,
+    get_guppy_package_graph, init_handlebars,
 };
 use crate::GenCommandArgs;
 
@@ -31,8 +31,7 @@ pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()
 
 fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
-    let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
-    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+    let config = config::BuildConfig::from_path(paths.std_config_file)?;
 
     let template_path =
         paths.std_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
@@ -97,49 +96,27 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
     let mut dependencies = {
-        let metadata =
-            run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)
-                .with_context(|| {
-                    format!(
-                        "Failed to parse cargo metadata in a directory synthesized from \
-                         {} and {}",
-                        paths.std_fake_root_cargo_template.display(),
-                        paths.std_fake_root_config_template.display(),
-                    )
-                })?;
-        deps::collect_dependencies(
-            &metadata,
-            Some(vec![config.resolve.root.clone()]),
-            None,
-            &config,
+        let metadata = get_guppy_package_graph(
+            paths.std_fake_root.into(),
+            cargo_extra_options,
+            cargo_extra_env,
         )
+        .with_context(|| {
+            format!(
+                "Failed to parse cargo metadata in a directory synthesized from \
+                         {} and {}",
+                paths.std_fake_root_cargo_template.display(),
+                paths.std_fake_root_config_template.display(),
+            )
+        })?;
+        deps::collect_dependencies(&metadata, &config.resolve.root, &config)?
     };
-
-    // Filter out any crates' dependencies removed by config file.
-    for dep in dependencies.iter_mut() {
-        let combined: HashSet<&str> =
-            config.get_combined_set(&dep.package_name, |crate_cfg| &crate_cfg.remove_deps);
-        if combined.is_empty() {
-            continue;
-        }
-
-        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.contains(dep_of_dep.package_name.as_str()));
-        }
-    }
-
-    // Remove any excluded dep entries.
-    dependencies
-        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
 
     // Remove dev dependencies since tests aren't run. Also remove build deps
     // since we configure flags and env vars manually. Include the root
     // explicitly since it doesn't get a dependency_kinds entry.
     dependencies.retain(|dep| dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal));
 
-    dependencies.sort_unstable_by(|a, b| {
-        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
-    });
     for dep in dependencies.iter_mut() {
         // Rehome stdlib deps from the `rust_src_root` to where they will be installed
         // in the Chromium checkout.
@@ -171,7 +148,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     // the set of third-party dependencies vendored in the Rust source package.
     let vendored_crates: HashSet<VendoredCrate> =
         crates::collect_std_vendored_crates(&rust_src_root.join(paths.rust_src_vendor_subdir))
-            .unwrap()
+            .context("Collecting vendored `std` crates")?
             .into_iter()
             .collect();
 
@@ -230,8 +207,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
 }
 
 fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
-    let config_file_contents = std::fs::read_to_string(paths.third_party_config_file).unwrap();
-    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+    let config = config::BuildConfig::from_path(paths.third_party_config_file)?;
 
     let template_path =
         paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
@@ -248,47 +224,15 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     ];
 
     // Compute the set of all third-party crates.
-    let mut dependencies = deps::collect_dependencies(
-        &run_cargo_metadata(
+    let dependencies = deps::collect_dependencies(
+        &get_guppy_package_graph(
             paths.third_party_cargo_root.into(),
             cargo_extra_options,
             HashMap::new(),
         )?,
-        Some(vec![config.resolve.root.clone()]),
-        None,
+        &config.resolve.root,
         &config,
-    );
-
-    // Filter out any crates' dependencies removed by config file.
-    for dep in dependencies.iter_mut() {
-        let all: Option<&Vec<String>> = Some(&config.all_config.remove_deps);
-        let per: Option<&Vec<String>> =
-            config.per_crate_config.get(&dep.package_name).map(|config| &config.remove_deps);
-
-        let combined: Vec<&String> = all.into_iter().chain(per).flatten().collect();
-        if combined.is_empty() {
-            continue;
-        }
-
-        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.iter().any(|r| **r == dep_of_dep.package_name));
-        }
-    }
-
-    // Remove any excluded dep entries.
-    dependencies
-        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
-
-    // Remove dev dependencies since tests aren't run.
-    dependencies.retain(|dep| {
-        dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal)
-        // TODO: Needed?
-            || dep.dependency_kinds.contains_key(&deps::DependencyKind::Build)
-    });
-
-    dependencies.sort_unstable_by(|a, b| {
-        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
-    });
+    )?;
 
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()

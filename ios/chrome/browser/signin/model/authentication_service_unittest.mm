@@ -72,7 +72,7 @@ using HandleMDMNotificationCallback =
 namespace {
 
 CoreAccountId GetAccountId(id<SystemIdentity> identity) {
-  return CoreAccountId::FromGaiaId(base::SysNSStringToUTF8([identity gaiaID]));
+  return CoreAccountId::FromGaiaId(GaiaId([identity gaiaID]));
 }
 
 }  // namespace
@@ -144,13 +144,6 @@ class AuthenticationServiceTestBase : public PlatformTest {
     return prefs;
   }
 
-  void FlushTaskRunner() {
-    base::RunLoop loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-
   void VerifyLastSigninTimestamp() {
     EXPECT_EQ(profile_.get()->GetPrefs()->GetTime(prefs::kLastSigninTimestamp),
               base::Time::Now());
@@ -163,6 +156,21 @@ class AuthenticationServiceTestBase : public PlatformTest {
   void FireAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                     id<RefreshAccessTokenError> error) {
     authentication_service()->OnAccessTokenRefreshFailed(identity, error);
+  }
+
+  void MarkSignedinUserMigratedFromSyncing() {
+    profile_->GetPrefs()->SetString(
+        prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+        base::SysNSStringToUTF8(
+            authentication_service()
+                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                .gaiaID));
+    profile_->GetPrefs()->SetString(
+        prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
+        base::SysNSStringToUTF8(
+            authentication_service()
+                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                .userEmail));
   }
 
   // Simulates that fetching access token for `identity` fails with a given
@@ -236,7 +244,7 @@ class AuthenticationServiceTestBase : public PlatformTest {
 
   // Returns the n-th identity on the device, identified by `index`.
   id<SystemIdentity> identity(NSUInteger index) {
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (IsUseAccountListFromIdentityManagerEnabled()) {
       std::vector<AccountInfo> accountInfos =
           identity_manager()->GetAccountsOnDevice();
       CHECK_LT(index, accountInfos.size());
@@ -302,8 +310,8 @@ TEST_P(AuthenticationServiceTest, TestDefaultGetPrimaryIdentity) {
 
 TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kSigninPromo);
   VerifyLastSigninTimestamp();
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
@@ -313,14 +321,13 @@ TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   AccountInfo account_info =
       identity_manager()->FindExtendedAccountInfoByEmailAddress(user_email);
   EXPECT_EQ(user_email, account_info.email);
-  EXPECT_EQ(base::SysNSStringToUTF8([identity(0) gaiaID]), account_info.gaia);
+  EXPECT_EQ(GaiaId([identity(0) gaiaID]), account_info.gaia);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   histogram_tester_.ExpectUniqueSample(
-      "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO, 1);
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kSigninPromo, 1);
 }
 
 // Tests that reauth prompt can be set and reset.
@@ -338,10 +345,10 @@ TEST_P(AuthenticationServiceTest, TestSetReauthPromptForSignInAndSync) {
 TEST_P(AuthenticationServiceTest,
        TestHandleForgottenIdentityNoPromptSignIn_SyncingUser) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the authentication service as "In Foreground", remove identity and run
@@ -362,17 +369,16 @@ TEST_P(AuthenticationServiceTest,
 // an other app when the user was signed and syncing.
 TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the authentication service as "In Background", remove identity and run
   // the loop.
   fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
       identity(0));
-  base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
@@ -385,15 +391,14 @@ TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
 TEST_P(AuthenticationServiceTest,
        TestHandleForgottenIdentityNoPromptSignIn_NonSyncingUser) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the authentication service as "In Background", remove identity and run
   // the loop.
   fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
       identity(0));
-  base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
@@ -401,16 +406,13 @@ TEST_P(AuthenticationServiceTest,
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
-TEST_P(AuthenticationServiceTest,
-       OnApplicationEnterForegroundReloadCredentials) {
+// Tests that AuthenticationService triggers the IdentityManager reloads when
+// a secondary identity is added.
+TEST_P(AuthenticationServiceTest, OnAddIdentity) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
-
-  FakeSystemIdentity* fake_system_identity3 =
-      [FakeSystemIdentity fakeIdentity3];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity3);
 
   auto account_compare_func = [](const CoreAccountInfo& first,
                                  const CoreAccountInfo& second) {
@@ -420,34 +422,33 @@ TEST_P(AuthenticationServiceTest,
       identity_manager()->GetAccountsWithRefreshTokens();
   std::sort(accounts.begin(), accounts.end(), account_compare_func);
   ASSERT_EQ(2u, accounts.size());
-  CoreAccountId gaiad_id_1 = CoreAccountId::FromGaiaId(
-      base::SysNSStringToUTF8(fake_system_identity1_.gaiaID));
+  CoreAccountId gaiad_id_1 =
+      CoreAccountId::FromGaiaId(GaiaId(fake_system_identity1_.gaiaID));
   EXPECT_EQ(gaiad_id_1, accounts[0].account_id);
-  CoreAccountId gaiad_id_2 = CoreAccountId::FromGaiaId(
-      base::SysNSStringToUTF8(fake_system_identity2_.gaiaID));
+  CoreAccountId gaiad_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId(fake_system_identity2_.gaiaID));
   EXPECT_EQ(gaiad_id_2, accounts[1].account_id);
 
-  // Simulate a switching to background and back to foreground, triggering a
-  // credentials reload.
-  fake_system_identity_manager()->FireSystemIdentityReloaded();
-  base::RunLoop().RunUntilIdle();
+  FakeSystemIdentity* fake_system_identity3 =
+      [FakeSystemIdentity fakeIdentity3];
+  fake_system_identity_manager()->AddIdentity(fake_system_identity3);
 
   // Accounts are reloaded, "foo3@gmail.com" is added as it is now in
-  // ChromeAccountManagerService.
+  // IdentityManager.
   accounts = identity_manager()->GetAccountsWithRefreshTokens();
   std::sort(accounts.begin(), accounts.end(), account_compare_func);
   ASSERT_EQ(3u, accounts.size());
   EXPECT_EQ(gaiad_id_1, accounts[0].account_id);
   EXPECT_EQ(gaiad_id_2, accounts[1].account_id);
-  CoreAccountId gaiad_id_3 = CoreAccountId::FromGaiaId(
-      base::SysNSStringToUTF8(fake_system_identity3.gaiaID));
+  CoreAccountId gaiad_id_3 =
+      CoreAccountId::FromGaiaId(GaiaId(fake_system_identity3.gaiaID));
   EXPECT_EQ(gaiad_id_3, accounts[2].account_id);
 }
 
 TEST_P(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
@@ -465,8 +466,8 @@ TEST_P(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
 // Tests that MDM errors are correctly cleared on foregrounding, sending
 // notifications that the state of error has changed.
 TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
@@ -488,7 +489,7 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
     FireApplicationWillEnterForeground();
     EXPECT_TRUE(notification_received);
     EXPECT_EQ(
-        base::SysNSStringToUTF8([identity(0) gaiaID]),
+        GaiaId([identity(0) gaiaID]),
         observer.AccountFromErrorStateOfRefreshTokenUpdatedCallback().gaia);
   }
 
@@ -506,35 +507,45 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
 
 // Tests that MDM errors are correctly cleared when signing out.
 TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
 }
 
-// Tests that MDM errors are correctly cleared when signing out with clearing
-// browsing data.
-TEST_P(AuthenticationServiceTest,
+// Tests that MDM errors are correctly cleared when signing out from a managed
+// account which clears browsing data in this case.
+// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
+// assigned into their own separate profiles and cannot sign out from there, so
+// this test doesn't apply.
+TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
        MDMErrorsClearedOnSignoutAndClearBrowsingData) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
-  VerifyLastSigninTimestamp();
+  // Add a managed identity to device.
+  FakeSystemIdentity* fake_system_identity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  fake_system_identity_manager()->AddIdentity(fake_system_identity);
 
-  SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
+  VerifyLastSigninTimestamp();
+  // Mark the signed-in user as "migrated from previously syncing".
+  MarkSignedinUserMigratedFromSyncing();
+
+  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/true, nil);
-  EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
+  EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }
 
@@ -549,12 +560,10 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -562,8 +571,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
@@ -579,24 +587,18 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
-  // Data will be cleared regardless of `force_clear_browsing_data` value
-  // passed. This is intended because signout is not always triggered from UI
-  // sources that set this value to true.
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 1);
@@ -618,12 +620,10 @@ TEST_F(
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -632,8 +632,7 @@ TEST_F(
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
   // Data should not be cleared if the browser is managed.
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
@@ -654,12 +653,10 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -668,7 +665,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   // Grant Sync consent.
   EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
   authentication_service()->GrantSyncConsent(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(2), signin_metrics::AccessPoint::kUnknown);
 
   EXPECT_NSEQ(identity(2), authentication_service()->GetPrimaryIdentity(
                                signin::ConsentLevel::kSync));
@@ -681,8 +678,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
           IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
@@ -690,21 +686,26 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 }
 
 // Tests that MDM errors do not lead to seeding empty account ids.
-//
-// Regression test for root cause of crbug/1482236
+// Regression test for root cause of crbug.com/1482236
 TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2u);
 
   // Fake an mdm error for an identity that is not loaded in IdentityManager.
   FakeSystemIdentity* fake_system_identity3 =
       [FakeSystemIdentity fakeIdentity3];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity3);
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
+  id<RefreshAccessTokenError> mdm_error_mock =
+      OCMStrictProtocolMock(@protocol(RefreshAccessTokenError));
+  SetCachedMDMInfo(fake_system_identity3, mdm_error_mock);
+
+  // Make sure we still have 2 identities and `fake_system_identity3` is still
+  // not loaded.
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2u);
 
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
@@ -717,6 +718,7 @@ TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
       identity_manager()->GetAccountsWithRefreshTokens()[0].account_id.empty());
   EXPECT_FALSE(
       identity_manager()->GetAccountsWithRefreshTokens()[1].account_id.empty());
+  EXPECT_OCMOCK_VERIFY((id)mdm_error_mock);
 }
 
 // Tests that MDM errors are correctly cleared when signing out of a managed
@@ -730,12 +732,10 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
@@ -745,8 +745,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   VerifyLastSigninTimestamp();
 
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
@@ -763,22 +762,23 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
-  authentication_service()->SignIn(
-      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
+  // Mark the signed-in user as "migrated from previously syncing".
+  MarkSignedinUserMigratedFromSyncing();
 
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
+  // Note: Clear data on signout is decided inside AuthenticationService based
+  // on the account state.
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/true, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
@@ -787,8 +787,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 // Tests that potential MDM notifications are correctly handled and dispatched
 // to MDM service when necessary.
 TEST_P(AuthenticationServiceTest, HandleMDMNotification) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   GoogleServiceAuthError error(
@@ -826,8 +826,8 @@ TEST_P(AuthenticationServiceTest, HandleMDMNotification) {
 // Tests that MDM blocked notifications are correctly signing out the user if
 // the primary account is blocked.
 TEST_P(AuthenticationServiceTest, HandleMDMBlockedNotification) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -875,8 +875,8 @@ TEST_P(AuthenticationServiceTest, ShowMDMErrorDialogInvalidCachedError) {
 // Tests that MDM dialog is shown when there is a cached error and a
 // corresponding error for the account.
 TEST_P(AuthenticationServiceTest, ShowMDMErrorDialog) {
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -897,8 +897,8 @@ TEST_P(AuthenticationServiceTest, ShowMDMErrorDialog) {
 // phase 3. See ConsentLevel::kSync documentation for details.
 TEST_P(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
@@ -913,7 +913,7 @@ TEST_P(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Grant Sync consent.
   EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
                                signin::ConsentLevel::kSignin));
@@ -931,7 +931,7 @@ TEST_P(AuthenticationServiceTest, SigninDisallowedCrash) {
 
   // Attempt to sign in, and verify there is a crash.
   EXPECT_CHECK_DEATH(authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      identity(0), signin_metrics::AccessPoint::kUnknown));
 }
 
 // Tests that reauth prompt is not set if the primary identity is restricted and
@@ -940,18 +940,15 @@ TEST_P(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   AuthenticationServiceObserverTest observer_test;
   authentication_service()->AddObserver(&observer_test);
   // Sign in.
-  authentication_service()->SignIn(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
   authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the account restriction.
   SetPattern("foo");
   EXPECT_FALSE(account_manager_->HasIdentities());
-
-  // Set the authentication service as "In Background" and run the loop.
-  base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
@@ -1015,7 +1012,6 @@ TEST_P(AuthenticationServiceTest,
   // Let's load `fakeIdentity3`.
   id<SystemIdentity> fake_identity3 = [FakeSystemIdentity fakeIdentity3];
   fake_system_identity_manager()->AddIdentity(fake_identity3);
-  base::RunLoop().RunUntilIdle();
   account_info_vector =
       identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
   EXPECT_EQ(3ul, account_info_vector.size());

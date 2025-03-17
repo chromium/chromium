@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.lens;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A wrapper class for the Lens image query result from Lens Prime SDK. */
+@NullMarked
 public class LensQueryResult {
     private boolean mIsShoppyIntent;
     private boolean mIsTranslateIntent;
     private int mLensIntentType;
-    private String mSessionId;
+    private @Nullable String mSessionId;
     private int mQueryId;
 
     /** Builder class for LensQueryParams. */
@@ -19,7 +23,7 @@ public class LensQueryResult {
         private boolean mIsShoppyIntent;
         private boolean mIsTranslateIntent;
         private int mLensIntentType;
-        private String mSessionId;
+        private @Nullable String mSessionId;
         private int mQueryId;
 
         public Builder() {}
@@ -75,7 +79,7 @@ public class LensQueryResult {
         return mLensIntentType;
     }
 
-    public String getSessionId() {
+    public @Nullable String getSessionId() {
         return mSessionId;
     }
 

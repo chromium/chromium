@@ -177,7 +177,7 @@ export async function getEntries(): Promise<FileAccessEntry[]> {
         !hasDocumentPrefix(entry)) {
       return false;
     }
-    return /_(\d{8})_(\d{6})(?: \((\d+)\))?/.exec(entry.name);
+    return /_(\d{8})_(\d{6})(?: \((\d+)\))?/.exec(entry.name) !== null;
   });
 }
 

@@ -161,17 +161,6 @@ export class OsSettingsSyncSubpageElement extends
         computed: 'computeExistingPassphraseLabel_(syncPrefs.encryptAllData,' +
             'syncPrefs.explicitPassphraseTime)',
       },
-
-      /**
-       * Whether to show the new UI for OS Sync Settings
-       * which include sublabel and Apps toggle
-       * shared between Ash and Lacros.
-       */
-      showSyncSettingsRevamp_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
-        readOnly: true,
-      },
     };
   }
 
@@ -189,7 +178,6 @@ export class OsSettingsSyncSubpageElement extends
   private encryptionExpanded_: boolean;
   forceEncryptionExpanded: boolean;
   private existingPassphrase_: string;
-  private showSyncSettingsRevamp_: boolean;
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;
@@ -208,7 +196,7 @@ export class OsSettingsSyncSubpageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route = routes.SYNC;
+    this.route = routes.OS_SYNC_SETUP;
 
     /**
      * The beforeunload callback is used to show the 'Leave site' dialog. This
@@ -264,7 +252,7 @@ export class OsSettingsSyncSubpageElement extends
     super.disconnectedCallback();
 
     const router = Router.getInstance();
-    if (routes.SYNC.contains(router.currentRoute)) {
+    if (this.route!.contains(router.currentRoute)) {
       this.onNavigateAwayFromPage_();
     }
 
@@ -281,7 +269,7 @@ export class OsSettingsSyncSubpageElement extends
   override ready(): void {
     super.ready();
 
-    this.addFocusConfig(routes.OS_SYNC, '#syncAdvancedRow');
+    this.addFocusConfig(routes.OS_SYNC_CONTROLS, '#syncAdvancedRow');
   }
 
   getEncryptionOptions(): OsSettingsSyncEncryptionOptionsElement|null {
@@ -330,7 +318,7 @@ export class OsSettingsSyncSubpageElement extends
       return;
     }
 
-    if (routes.SYNC.contains(newRoute)) {
+    if (this.route!.contains(newRoute)) {
       return;
     }
 
@@ -405,24 +393,6 @@ export class OsSettingsSyncSubpageElement extends
   private handleSyncPrefsChanged_(syncPrefs: SyncPrefs): void {
     this.syncPrefs = syncPrefs;
     this.pageStatus_ = PageStatus.CONFIGURE;
-  }
-
-  private onManageChromeBrowserSyncClick_(): void {
-    chrome.send('OpenBrowserSyncSettings');
-  }
-
-  private getManageSyncedDataSubtitle_(): string {
-    if (this.showSyncSettingsRevamp_) {
-      return this.i18n('manageSyncedDataSubtitle');
-    }
-    return '';
-  }
-
-  private getSyncAdvancedTitle_(): string {
-    if (this.showSyncSettingsRevamp_) {
-      return this.i18n('syncAdvancedDevicePageTitle');
-    }
-    return this.i18n('syncAdvancedPageTitle');
   }
 
   private onSyncDashboardLinkClick_(): void {
@@ -534,7 +504,7 @@ export class OsSettingsSyncSubpageElement extends
         this.pageStatus_ = pageStatus;
         return;
       case PageStatus.DONE:
-        if (router.currentRoute === routes.SYNC) {
+        if (router.currentRoute === this.route) {
           router.navigateTo(routes.OS_PEOPLE);
         }
         return;
@@ -569,7 +539,7 @@ export class OsSettingsSyncSubpageElement extends
 
   private onSyncAdvancedClick_(): void {
     const router = Router.getInstance();
-    router.navigateTo(routes.OS_SYNC);
+    router.navigateTo(routes.OS_SYNC_CONTROLS);
   }
 
   /**
@@ -580,7 +550,7 @@ export class OsSettingsSyncSubpageElement extends
     const passphraseInput = this.shadowRoot!.querySelector<CrInputElement>(
         '#existingPassphraseInput');
     const router = Router.getInstance();
-    if (passphraseInput && router.currentRoute === routes.SYNC) {
+    if (passphraseInput && router.currentRoute === this.route) {
       passphraseInput.focus();
     }
   }

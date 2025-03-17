@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "url/gurl.h"
@@ -60,14 +61,6 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
     loader_sink_->SetPriority(priority, intra_priority_value);
-  }
-
-  void PauseReadingBodyFromNet() override {
-    loader_sink_->PauseReadingBodyFromNet();
-  }
-
-  void ResumeReadingBodyFromNet() override {
-    loader_sink_->ResumeReadingBodyFromNet();
   }
 
   // network::mojom::URLLoaderClient implementation:
@@ -137,8 +130,8 @@ ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
           std::move(base_factories->pending_default_factory()),
           std::move(base_factories->pending_scheme_specific_factories()),
           std::move(base_factories->pending_isolated_world_factories()),
-          base_factories->bypass_redirect_checks()) {
-}
+          std::move(base_factories->local_resource_loader_config()),
+          base_factories->bypass_redirect_checks()) {}
 
 ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -151,11 +144,13 @@ ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
         pending_keep_alive_loader_factory,
     mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
         pending_fetch_later_loader_factory,
+    mojom::LocalResourceLoaderConfigPtr local_resource_loader_config,
     bool bypass_redirect_checks)
     : PendingURLLoaderFactoryBundle(
           std::move(pending_default_factory),
           std::move(pending_scheme_specific_factories),
           std::move(pending_isolated_world_factories),
+          std::move(local_resource_loader_config),
           bypass_redirect_checks),
       pending_subresource_proxying_loader_factory_(
           std::move(pending_subresource_proxying_loader_factory)),
@@ -321,7 +316,8 @@ ChildURLLoaderFactoryBundle::Clone() {
       CloneRemoteMapToPendingRemoteMap(isolated_world_factories_),
       std::move(pending_subresource_proxying_loader_factory),
       std::move(pending_keep_alive_loader_factory),
-      std::move(pending_fetch_later_loader_factory), bypass_redirect_checks_);
+      std::move(pending_fetch_later_loader_factory),
+      local_resource_loader_config_.Clone(), bypass_redirect_checks_);
 }
 
 std::unique_ptr<ChildPendingURLLoaderFactoryBundle>
@@ -354,7 +350,8 @@ ChildURLLoaderFactoryBundle::PassInterface() {
       BoundRemoteMapToPendingRemoteMap(std::move(isolated_world_factories_)),
       std::move(pending_subresource_proxying_loader_factory),
       std::move(pending_keep_alive_loader_factory),
-      std::move(pending_fetch_later_loader_factory), bypass_redirect_checks_);
+      std::move(pending_fetch_later_loader_factory),
+      std::move(local_resource_loader_config_), bypass_redirect_checks_);
 }
 
 void ChildURLLoaderFactoryBundle::Update(

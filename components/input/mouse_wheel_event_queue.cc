@@ -17,6 +17,27 @@ using ui::LatencyInfo;
 
 namespace input {
 
+// This class represents a single queued mouse wheel event. Its main use
+// is that it is reported via trace events.
+class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
+ public:
+  QueuedWebMouseWheelEvent(const MouseWheelEventWithLatencyInfo& original_event,
+                           DispatchToRendererCallback callback)
+      : MouseWheelEventWithLatencyInfo(original_event),
+        dispatch_callback(std::move(callback)) {
+    TRACE_EVENT_ASYNC_BEGIN0("input", "MouseWheelEventQueue::QueueEvent", this);
+  }
+
+  QueuedWebMouseWheelEvent(const QueuedWebMouseWheelEvent&) = delete;
+  QueuedWebMouseWheelEvent& operator=(const QueuedWebMouseWheelEvent&) = delete;
+
+  ~QueuedWebMouseWheelEvent() {
+    TRACE_EVENT_ASYNC_END0("input", "MouseWheelEventQueue::QueueEvent", this);
+  }
+
+  DispatchToRendererCallback dispatch_callback;
+};
+
 MouseWheelEventQueue::MouseWheelEventQueue(MouseWheelEventQueueClient* client)
     : client_(client),
       send_wheel_events_async_(false),
@@ -28,7 +49,8 @@ MouseWheelEventQueue::~MouseWheelEventQueue() {
 }
 
 void MouseWheelEventQueue::QueueEvent(
-    const MouseWheelEventWithLatencyInfo& event) {
+    const MouseWheelEventWithLatencyInfo& event,
+    DispatchToRendererCallback& dispatch_callback) {
   TRACE_EVENT0("input", "MouseWheelEventQueue::QueueEvent");
 
   if (event_sent_for_gesture_ack_ && !wheel_queue_.empty()) {
@@ -37,6 +59,8 @@ void MouseWheelEventQueue::QueueEvent(
       // Terminate the LatencyInfo of the event before it gets coalesced away.
       event.latency.Terminate();
 
+      std::move(dispatch_callback)
+          .Run(event.event, DispatchToRendererResult::kNotDispatched);
       last_event->CoalesceWith(event);
       // The deltas for the coalesced event change; the corresponding action
       // might be different now.
@@ -57,8 +81,8 @@ void MouseWheelEventQueue::QueueEvent(
       WebMouseWheelEvent::GetPlatformSpecificDefaultEventAction(event.event);
   // Update the expected event action before queuing the event. From this point
   // on, the action should not change.
-  wheel_queue_.push_back(
-      std::make_unique<QueuedWebMouseWheelEvent>(event_with_action));
+  wheel_queue_.push_back(std::make_unique<QueuedWebMouseWheelEvent>(
+      event_with_action, std::move(dispatch_callback)));
   TryForwardNextEventToRenderer();
   LOCAL_HISTOGRAM_COUNTS_100("Renderer.WheelQueueSize", wheel_queue_.size());
 }
@@ -276,7 +300,8 @@ void MouseWheelEventQueue::TryForwardNextEventToRenderer() {
   client_->SendMouseWheelEventImmediately(
       *event_sent_for_gesture_ack_,
       base::BindOnce(&MouseWheelEventQueue::ProcessMouseWheelAck,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      event_sent_for_gesture_ack_->dispatch_callback);
 }
 
 void MouseWheelEventQueue::SendScrollEnd(WebGestureEvent update_event,

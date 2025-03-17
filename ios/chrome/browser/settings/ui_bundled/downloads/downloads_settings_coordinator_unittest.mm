@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
@@ -26,7 +28,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/test/fakes/fake_ui_navigation_controller.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "testing/platform_test.h"
@@ -93,7 +94,9 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
                                                 GetForProfile(profile_.get())
                                 prefService:profile_->GetPrefs()
                             identityManager:IdentityManagerFactory::
-                                                GetForProfile(profile_.get())])
+                                                GetForProfile(profile_.get())
+                              photosService:PhotosServiceFactory::GetForProfile(
+                                                profile_.get())])
           .andReturn(mock_save_to_photos_settings_mediator_);
     }
   }
@@ -164,6 +167,8 @@ TEST_F(DownloadsSettingsCoordinatorTest,
                                             GetForProfile(profile_.get())
                             prefService:profile_->GetPrefs()
                         identityManager:IdentityManagerFactory::GetForProfile(
+                                            profile_.get())
+                          photosService:PhotosServiceFactory::GetForProfile(
                                             profile_.get())])
       .andReturn(mock_save_to_photos_settings_mediator_);
 
@@ -319,8 +324,7 @@ TEST_F(DownloadsSettingsCoordinatorTest,
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);
                 EXPECT_FALSE(command.identity);
-                EXPECT_EQ(signin_metrics::AccessPoint::
-                              ACCESS_POINT_SAVE_TO_PHOTOS_IOS,
+                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToPhotosIos,
                           command.accessPoint);
                 EXPECT_EQ(
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,

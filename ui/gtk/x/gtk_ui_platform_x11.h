@@ -26,7 +26,6 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
 
   // GtkUiPlatform:
   void OnInitialized(GtkWidget* widget) override;
-  GdkKeymap* GetGdkKeymap() override;
   GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) override;
   int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;

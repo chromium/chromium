@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Criteria.checkThat;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
@@ -22,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -140,7 +141,7 @@ public class TouchToFillCreditCardTest {
                     View creditCardSuggestionItemLayout = getItemsList().getChildAt(1);
                     verifyCardSuggestionIsCorrectlyDisplayed(creditCardSuggestionItemLayout);
                     // Check that continue button is present
-                    Assert.assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
+                    assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
 
                     creditCardSuggestionItemLayout.performClick();
                 });

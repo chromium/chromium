@@ -4,9 +4,8 @@
 
 import type {BookmarksAppElement, BookmarksItemElement, BookmarksListElement, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
 import {BrowserProxyImpl, Command, MenuSource, removeBookmark} from 'chrome://bookmarks/bookmarks.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
@@ -19,7 +18,7 @@ suite('<bookmarks-list>', function() {
   setup(function() {
     const nodes = testTree(createFolder('10', [
       createItem('1'),
-      createFolder('3', []),
+      createFolder('3', [createItem('8')]),
       createItem('5'),
       createItem('7'),
     ]));
@@ -36,18 +35,18 @@ suite('<bookmarks-list>', function() {
     list.style.position = 'absolute';
 
     replaceBody(list);
-    flush();
+    return eventToPromise('viewport-filled', list.$.list);
   });
 
   test('renders correct <bookmark-item> elements', function() {
-    const items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    const items = list.shadowRoot.querySelectorAll('bookmarks-item');
     const ids = Array.from(items).map((item) => item.itemId);
 
     assertDeepEquals(['1', '3', '5', '7'], ids);
   });
 
   test('shift-selects multiple items', function() {
-    const items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    const items = list.shadowRoot.querySelectorAll('bookmarks-item');
 
     customClick(items[0]!);
 
@@ -74,24 +73,24 @@ suite('<bookmarks-list>', function() {
     assertEquals('deselect-items', lastAction.name);
   });
 
-  test('adds, deletes, and moves update displayedList_', function() {
+  test('adds, deletes, and moves update displayedList_', async () => {
     list.setDisplayedIdsForTesting(['1', '7', '3', '5']);
-    flush();
-    let items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    await eventToPromise('viewport-filled', list.$.list);
+    let items = list.shadowRoot.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '7', '3', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
     list.setDisplayedIdsForTesting(['1', '3', '5']);
-    flush();
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    await eventToPromise('viewport-filled', list.$.list);
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '3', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
     list.setDisplayedIdsForTesting(['1', '3', '7', '5']);
-    flush();
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    await eventToPromise('viewport-filled', list.$.list);
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
     assertDeepEquals(
         ['1', '3', '7', '5'],
         Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
@@ -106,6 +105,37 @@ suite('<bookmarks-list>', function() {
     assertEquals('1', lastAction.anchor);
     assertDeepEquals(['1', '3'], lastAction.items);
   });
+
+  test('resets focused index if out of bounds', async () => {
+    let items = list.shadowRoot.querySelectorAll('bookmarks-item');
+    assertEquals(4, items.length);
+    assertEquals(0, items[0]!.tabIndex);
+
+    items[3]!.focus();
+    customClick(items[3]!);
+    await microtasksFinished();
+    assertEquals(-1, items[0]!.tabIndex);
+    assertEquals(0, items[3]!.tabIndex);
+
+    // Changing the search term won't reset, if the index is still in bounds.
+    store.data.search.term = 'google.com';
+    store.notifyObservers();
+    await microtasksFinished();
+
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
+    assertEquals(4, items.length);
+    assertEquals(0, items[3]!.tabIndex);
+
+    // Changing the selected folder such that the index is out of bounds resets
+    // the focused index so that the list remains in the tab order.
+    store.data.selectedFolder = '3';
+    store.notifyObservers();
+    await eventToPromise('items-rendered', list.$.list);
+
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
+    assertEquals(1, items.length);
+    assertEquals(0, items[0]!.tabIndex);
+  });
 });
 
 suite('<bookmarks-list> integration test', function() {
@@ -113,7 +143,7 @@ suite('<bookmarks-list> integration test', function() {
   let store: TestStore;
   let items: NodeListOf<BookmarksItemElement>;
 
-  setup(function() {
+  setup(async function() {
     store = new TestStore({
       nodes: testTree(createFolder(
           '10',
@@ -135,9 +165,9 @@ suite('<bookmarks-list> integration test', function() {
     list.style.position = 'absolute';
 
     replaceBody(list);
-    flush();
+    await eventToPromise('viewport-filled', list.$.list);
 
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
   });
 
   test('shift-selects multiple items', function() {
@@ -190,16 +220,18 @@ suite('<bookmarks-list> integration test', function() {
     assertDeepEquals('5', store.data.selection.anchor);
   });
 
-  // TODO(b/343974530) disable for flaky / unpredictable failures.
-  test.skip('delete restores focus on item after anchor', async function() {
+  test('delete restores focus on item after anchor', async function() {
     customClick(items[2]!);
     customClick(items[4]!, {ctrlKey: true});
     assertDeepEquals(['5', '9'], normalizeIterable(store.data.selection.items));
     assertEquals('9', store.data.selection.anchor);
 
     // customClick does not set focus like a real click does.
-    list.$.list.focusItem(4);
-    await waitAfterNextRender(list);
+    await list.$.list.ensureItemRendered(4);
+    const item = list.$.list.domItems()[4];
+    assertTrue(!!item);
+    (item as HTMLElement).focus();
+    await microtasksFinished();
     assertEquals(
         '9',
         (list.shadowRoot?.activeElement as BookmarksItemElement | null)
@@ -217,12 +249,12 @@ suite('<bookmarks-list> integration test', function() {
     store.endBatchUpdate();
 
     // Let `list` update its dom.
-    await waitAfterNextRender(list);
+    await eventToPromise('viewport-filled', list.$.list);
 
     // `list` internally uses setTimeout to trigger focus after deletion. Using
-    // `flushTasks` here should force assertions to run after focus has been
-    // updated.
-    await flushTasks();
+    // `microtasksFinished` here should force assertions to run after focus has
+    // been updated.
+    await microtasksFinished();
 
     // The element immediately preceding the deleted '9' should now be focused.
     assertEquals(
@@ -255,22 +287,24 @@ suite('<bookmarks-list> command manager integration test', function() {
 
     replaceBody(app);
 
-    flush();
+    return microtasksFinished();
   });
 
   test('show context menu', async () => {
     const commandManager =
-        app.shadowRoot!.querySelector('bookmarks-command-manager')!;
-    const list = app.shadowRoot!.querySelector('bookmarks-list')!;
+        app.shadowRoot.querySelector('bookmarks-command-manager')!;
+    const list = app.shadowRoot.querySelector('bookmarks-list')!;
     list.dispatchEvent(new CustomEvent(
         'contextmenu',
         {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
 
     assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());
+    await microtasksFinished();
     const menuCommands =
-        commandManager.shadowRoot!.querySelectorAll('.dropdown-item');
+        commandManager.shadowRoot.querySelectorAll<HTMLElement>(
+            '.dropdown-item');
     assertDeepEquals(
         [Command.ADD_BOOKMARK.toString(), Command.ADD_FOLDER.toString()],
-        Array.from(menuCommands).map(el => el.getAttribute('command')));
+        Array.from(menuCommands).map(el => el.dataset['command']));
   });
 });

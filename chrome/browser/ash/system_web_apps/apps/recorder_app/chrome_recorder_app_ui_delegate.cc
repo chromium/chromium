@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/chrome_recorder_app_ui_delegate.h"
 
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "chrome/browser/browser_process.h"
@@ -20,8 +21,21 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
+#include "components/variations/service/variations_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+namespace {
+// Returns country code in the format of lowercase ISO 3166-1 alpha-2. Example:
+// us, br, in. Returns empty string on failure case, which would not pass
+// IsGenerativeAiAllowedForCountry check.
+std::string GetCountryCode() {
+  return (g_browser_process != nullptr &&
+          g_browser_process->variations_service() != nullptr)
+             ? g_browser_process->variations_service()->GetLatestCountry()
+             : "";
+}
+}  // namespace
 
 ChromeRecorderAppUIDelegate::ChromeRecorderAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
@@ -50,6 +64,12 @@ std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
   return l10n_util::GetDisplayNameForLocale(
       speech::GetLanguageName(language_code),
       g_browser_process->GetApplicationLocale(), /*is_for_ui=*/true);
+}
+
+std::string ChromeRecorderAppUIDelegate::GetDefaultTranscriptionLanguage() {
+  return speech::GetDefaultLiveCaptionLanguage(
+      g_browser_process->GetApplicationLocale(),
+      Profile::FromWebUI(web_ui_)->GetPrefs());
 }
 
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
@@ -90,8 +110,13 @@ bool ChromeRecorderAppUIDelegate::CanUseGenerativeAiForCurrentProfile() {
 
   const AccountInfo extended_account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-  return extended_account_info.capabilities
-             .can_use_generative_ai_in_recorder_app() == signin::Tribool::kTrue;
+  if (extended_account_info.capabilities
+          .can_use_generative_ai_in_recorder_app() != signin::Tribool::kTrue) {
+    return false;
+  }
+
+  // Check location restrictions.
+  return ash::IsGenerativeAiAllowedForCountry(GetCountryCode());
 }
 
 bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {

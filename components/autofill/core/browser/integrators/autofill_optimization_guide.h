@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_OPTIMIZATION_GUIDE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
@@ -21,7 +21,7 @@ namespace autofill {
 class AutofillField;
 class CreditCard;
 class FormStructure;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Class to enable and disable features on a per-origin basis using
 // optimization_guide::OptimizationGuideDecider.
@@ -38,12 +38,12 @@ class AutofillOptimizationGuide : public KeyedService {
   // Registers the necessary optimization guide deciders based on
   // `form_structure`, which is a result of the form parsing that takes place
   // once a user navigates to a new page. Based on `form_structure`,
-  // `personal_data_manager` is used to check whether the user has the required
+  // `payments_data_manager` is used to check whether the user has the required
   // pre-requisites saved in the web database to necessitate an optimization
   // type registration for certain optimization types that require additional
   // web database checks.
   virtual void OnDidParseForm(const FormStructure& form_structure,
-                              const PersonalDataManager& personal_data_manager);
+                              const PaymentsDataManager& payments_data_manager);
 
   // Checks if the `url` has an applicable category benefit for the credit card
   // issuer `issuer_id`. If an optimization is found, returns the applicable
@@ -86,15 +86,16 @@ class AutofillOptimizationGuide : public KeyedService {
       const GURL& url,
       optimization_guide::proto::OptimizationType type) const;
 
-  // Returns whether `url` is eligible for a buy now pay later flow
+  // Returns whether `url` is eligible for a checkout amount search
   // with the provided issuer based on the `issuer_id`.
-  virtual bool IsEligibleForBuyNowPayLater(std::string_view issuer_id,
-                                           const GURL& url) const;
+  virtual bool IsUrlEligibleForCheckoutAmountSearchForIssuerId(
+      std::string_view issuer_id,
+      const GURL& url) const;
 
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.
-  raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
+  const raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
 };
 
 }  // namespace autofill

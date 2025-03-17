@@ -87,9 +87,9 @@ public class FakeCredentialManagerLauncherTest {
                 failureCallbackHelper.getOnlyPayloadBlocking()
                         instanceof CredentialManagerBackendException);
         assertEquals(
+                CredentialManagerError.NO_ACCOUNT_NAME,
                 ((CredentialManagerBackendException) failureCallbackHelper.getOnlyPayloadBlocking())
-                        .errorCode,
-                CredentialManagerError.NO_ACCOUNT_NAME);
+                        .errorCode);
     }
 
     @Test
@@ -115,8 +115,8 @@ public class FakeCredentialManagerLauncherTest {
         // Verify that failure callback was called.
         assertTrue(failureCallbackHelper.getOnlyPayloadBlocking() instanceof ApiException);
         assertEquals(
-                ((ApiException) failureCallbackHelper.getOnlyPayloadBlocking()).getStatusCode(),
-                CommonStatusCodes.INTERNAL_ERROR);
+                CommonStatusCodes.INTERNAL_ERROR,
+                ((ApiException) failureCallbackHelper.getOnlyPayloadBlocking()).getStatusCode());
     }
 
     @Test
@@ -160,7 +160,7 @@ public class FakeCredentialManagerLauncherTest {
         // Verify that failure callback was called.
         assertTrue(failureCallbackHelper.getOnlyPayloadBlocking() instanceof ApiException);
         assertEquals(
-                ((ApiException) failureCallbackHelper.getOnlyPayloadBlocking()).getStatusCode(),
-                CommonStatusCodes.INTERNAL_ERROR);
+                CommonStatusCodes.INTERNAL_ERROR,
+                ((ApiException) failureCallbackHelper.getOnlyPayloadBlocking()).getStatusCode());
     }
 }

@@ -46,6 +46,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Close"/>
 </enum>
 
+<enum name="InterventionHealthChange">
+  <int value="0" label="Healthy to Healthy"/>
+  <int value="1" label="Healthy to Degraded"/>
+  <int value="2" label="Healthy to Unhealthy"/>
+  <int value="3" label="Degraded to Healthy"/>
+  <int value="4" label="Degraded to Degraded"/>
+  <int value="5" label="Degraded to Unhealthy"/>
+  <int value="6" label="Unhealthy to Healthy"/>
+  <int value="7" label="Unhealthy to Degraded"/>
+  <int value="8" label="Unhealthy to Unhealthy"/>
+</enum>
+
 <enum name="InterventionMessageTriggerResult">
   <int value="0" label="Shown"/>
   <int value="1" label="Rate Limited"/>

@@ -151,16 +151,6 @@
       ],
     },
     {
-      name: "CSSCustomStateDeprecatedSyntax",
-      message: "`:--customstatename` is deprecated. Please use the `:state(customstatename)` syntax instead.",
-      translation_note: "Warning displayed to developers when their website uses `:--customstatename` in CSS. They can simply switch their CSS to `:state(customstatename)` and it will be the same.",
-      web_features: [
-        "kCSSCustomStateDeprecatedSyntax",
-      ],
-      milestone: 122,
-      chrome_status_feature: 5140610730426368,
-    },
-    {
       name: "CSSSelectorInternalMediaControlsOverlayCastButton",
       message: "The `disableRemotePlayback` attribute should be used in order to disable the default Cast integration instead of using `-internal-media-controls-overlay-cast-button` selector.",
       translation_note: "Warning displayed to developers when they hide the Cast button on a video element using the deprecated CSS selector instead of using the disableRemotePlayback attribute on the element.",
@@ -253,6 +243,16 @@
       ],
     },
     {
+      name: "H1UserAgentFontSizeInSection",
+      message: "The website has an <h1> tag within an <article>, <aside>, <nav>, or <section>, and relies on deprecated UA stylesheet rules for the resulting font size. See the second block of 'x h1' styles in https://html.spec.whatwg.org/multipage/rendering.html#sections-and-headings. These special rules are deprecated and will be removed. See https://github.com/whatwg/html/issues/7867.",
+      translation_note: "This warning occurs when a site uses <h1> inside <section>. It means the behavior may change in a future Chrome release, when these special rules are removed.",
+      web_features: [
+        "kH1UserAgentFontSizeInSectionApplied",
+      ],
+      chrome_status_feature: 6192419898654720,
+      milestone: 136,
+    },
+    {
       name: "HostCandidateAttributeGetter",
       message: "`RTCPeerConnectionIceErrorEvent.hostCandidate` is deprecated. Please use `RTCPeerConnectionIceErrorEvent.address` or `RTCPeerConnectionIceErrorEvent.port` instead.",
       translation_note: "A deprecation warning shown to developers in the DevTools Issues tab when code tries to use the deprecated hostCandidate field, guiding developers to use the equivalent information in the .address and .port fields instead.",
@@ -287,6 +287,14 @@
       translation_note: "This is a deprecated warning to developers that a field in a structure has been renamed.",
       web_features: [
         "kDeprecatedInterestGroupDailyUpdateUrl",
+      ],
+    },
+    {
+      name: "IntlV8BreakIterator",
+      message: "`Intl.v8BreakIterator` is deprecated. Please use `Intl.Segmenter` instead.",
+      translation_note: "Warning displayed to developers that instead of calling the `Intl.v8BreakIterator` constructor, which is not a standard JavaScript API, use ECMA402 standard API Intl.Segmenter shipped in end of 2020 instead.",
+      web_features: [
+        "kBreakIterator",
       ],
     },
     {
@@ -358,7 +366,7 @@
     },
     {
       name: "ObsoleteCreateImageBitmapImageOrientationNone",
-      message: "Option `imageOrientation: 'none'` in createImageBitmap is deprecated. Please use createImageBitmap with option {imageOrientation: 'from-image'} instead.",
+      message: "Option `imageOrientation: 'none'` in createImageBitmap is deprecated. Please use createImageBitmap with option '{imageOrientation: 'from-image'}' instead.",
       translation_note: "Warning displayed to developers when CreateImageBitmap is used with the newly deprecated option imageOrientation: 'none'.",
       web_features: [
         "kObsoleteCreateImageBitmapImageOrientationNone",
@@ -567,24 +575,6 @@
       milestone: 71,
     },
     {
-      name: "ThirdPartyCookieAccessError",
-      message: "Cookies marked with `SameSite=None; Secure` and not `Partitioned` are blocked in cross-site contexts.",
-      translation_note: "This error occurs when the website attempts to access third-party cookies and the browser blocks them.",
-      web_features: [
-        // This deprecation is used for Legacy Technology Report generation only.
-      ],
-      chrome_status_feature: 5133113939722240,
-    },
-    {
-      name: "ThirdPartyCookieAccessWarning",
-      message: "In a future version of the browser, cookies marked with `SameSite=None; Secure` and not `Partitioned` will be blocked in cross-site context.",
-      translation_note: "This warning occurs when the website attempts to access third-party cookies but the browser does not block them yet.",
-      web_features: [
-        // This deprecation is used for Legacy Technology Report generation only.
-      ],
-      chrome_status_feature: 5133113939722240,
-    },
-    {
       name: "UnloadHandler",
       message: "Unload event listeners are deprecated and will be removed.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when a listener for the `unload` event is added.",
@@ -603,26 +593,6 @@
       milestone: 96,
     },
     {
-      name: "WebGPULimitMaxInterStageShaderComponents",
-      message: "The WebGPU limit `maxInterStageShaderComponents` is deprecated, instead use the WebGPU limit `maxInterStageShaderVariables`.",
-      translation_note: "This warning occurs when the website attempts to use the deprecated WebGPU limit `maxInterStageShaderComponents`.",
-      web_features: [
-        "kMaxInterStageShaderComponentsRequiredLimit",
-        "kV8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter",
-      ],
-      chrome_status_feature: 4853767735083008,
-    },
-    {
-      name: "WebSQL",
-      message: "Web SQL is deprecated. Please use SQLite WebAssembly or Indexed Database",
-      translation_note: "Warning displayed to developers when the Web SQL API is used to let them know this API is deprecated.",
-      web_features: [
-        "kOpenWebDatabase",
-      ],
-      chrome_status_feature: 5134293578285056,
-      milestone: 115,
-    },
-    {
       name: "XHRJSONEncodingDetection",
       message: "UTF-16 is not supported by response json in `XMLHttpRequest`",
       translation_note: "Warning displayed to developers that they are using `XMLHttpRequest` API in a way that they expect an unsupported character encoding `UTF-16` could be used in the server reply.",
@@ -638,15 +608,6 @@
       web_features: [
         "kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload",
       ],
-    },
-    {
-      name: "XRSupportsSession",
-      message: "`supportsSession()` is deprecated. Please use `isSessionSupported()` and check the resolved boolean value instead.",
-      translation_note: "Warning displayed to developers that instead of using `supportsSession()`, which returns a promise that resolves if the XR session can be supported and rejects if not, they should use `isSessionSupported()` which will return a promise which resolves to a boolean indicating if the XR session can be supported or not, but may reject to throw an exception.",
-      web_features: [
-        "kXRSupportsSession",
-      ],
-      milestone: 80,
     },
   ],
 }

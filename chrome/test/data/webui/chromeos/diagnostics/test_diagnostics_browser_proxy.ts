@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
+import type {DiagnosticsBrowserProxy} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
+import type {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {getNavigationViewForPageId} from 'chrome://diagnostics/diagnostics_utils.js';
-
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
-import { DiagnosticsBrowserProxy} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 
 /** Test version of DiagnosticsBrowserProxy. */
 export class TestDiagnosticsBrowserProxy extends TestBrowserProxy implements DiagnosticsBrowserProxy {

@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">ይህ ገፅ በChromium ታግዷል</translation>
 <translation id="48558539577516920">Chromium በኬላ ወይም የጸረ-ቫይረስ ቅንብሮችዎን አውታረ መረቡን እንዲደርስበት
         ይፍቀዱለት።</translation>
+<translation id="4949828774841497663">ወደ መተግበሪያዎች &gt; የሥርዓት ቅንብሮች &gt; አውታረ መረብ ይሂዱ፣
+          ንቁ አውታረ መረብ የሚለውን ይምረጡ፣ የዝርዝሮች... አዝራሩ ላይ ጠቅ ያድርጉ እና የተመረጡ ሊሆኑ የሚችሉ
+          ማናቸውም ተኪዎችን አይምረጡ።</translation>
 <translation id="580822234363523061">ወደ
           የChromium ምናሌ &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ይሂዱና ውቅርዎ ወደ «ምንም ተኪ» ወይም «ቀጥታ» መዋቀሩን ያረጋግጡ።</translation>
+<translation id="648062525172759633">እነዚህ ገፆች በChromium ገንቢዎች ጥቅም ላይ እንዲውሉ የታሰቡ ናቸው እና በንቃት ተጠብቀው ላይቆዩ ወይም ላይፈተሹ ይችላሉ። እነሱን ለማንቃት ወደ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> ያስሱ፣ የስሕተት አርም ገፆችን ለማንቃት አዝራሩን ጠቅ ያድርጉ እና ከዚያም እንደገና ወደዚህ ገፅ ያስሱ።</translation>
 <translation id="6549378540556750549">እንዲሁም Chromium በሌላ <ph name="BEGIN_LINK_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_OSS" /> እንዲሆን ተደርጓል።</translation>
 <translation id="6613594504749178791">ለውጦችዎ Chromium በሚያስጀምሩበት ቀጣዩ ጊዜ ላይ ይተገበራሉ።</translation>
 <translation id="691026815377248078">Chromium ማጣመርን ለመቀጠል የብሉቱዝ መዳረሻ ያስፈልገዋል። <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -40,9 +44,6 @@
         <ph name="ADVANCED_TITLE" />
         ይሂዱና «<ph name="NO_PREFETCH_DESCRIPTION" />»ን አይምረጡ።
         ይሄ ችግሩን ካልፈታው ለተሻሻለ አፈጻጸም ይህን አማራጭ እንደገና መምረጥ እንመክራለን።</translation>
-<translation id="8187289872471304532">ወደ
-          መተግበሪያዎች &gt; የስርዓት ምርጫዎች &gt; አውታረ መረብ &gt; የላቁ &gt; ተኪዎች
-          ይሂዱና የተመረጡ ማናቸውም ተኪዎችን አይምረጡ።</translation>
 <translation id="8597726643333341451">ደህንነቱ የተጠበቀ የChrome ለሙከራ ገፅ እየተመለከቱ ነው</translation>
 <translation id="8684913864886094367">Chromium በትክክል አልተዘጋም።</translation>
 </translationbundle>

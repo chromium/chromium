@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
-#include "base/memory/raw_ptr.h"
 
-#include "ash/components/arc/arc_features.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
@@ -19,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/strings/grit/components_strings.h"

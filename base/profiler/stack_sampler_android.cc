@@ -20,8 +20,9 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
   auto thread_delegate = ThreadDelegatePosix::Create(thread_token);
-  if (!thread_delegate)
+  if (!thread_delegate) {
     return nullptr;
+  }
   return base::WrapUnique(new StackSampler(
       std::make_unique<StackCopierSignal>(std::move(thread_delegate)),
       std::move(stack_unwind_data), std::move(core_unwinders_factory),
@@ -33,8 +34,9 @@ size_t StackSampler::GetStackBufferSize() {
 
   pthread_attr_t attr;
   if (stack_size == 0 && pthread_attr_init(&attr) == 0) {
-    if (pthread_attr_getstacksize(&attr, &stack_size) != 0)
+    if (pthread_attr_getstacksize(&attr, &stack_size) != 0) {
       stack_size = 0;
+    }
     pthread_attr_destroy(&attr);
   }
 

@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/fido_ble_connection.h"
 
+#include <algorithm>
 #include <bitset>
 #include <cstdint>
 #include <memory>
@@ -21,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -85,7 +85,7 @@ BluetoothDevice* GetMockDevice(MockBluetoothAdapter* adapter,
                                const std::string& address) {
   const std::vector<BluetoothDevice*> devices = adapter->GetMockDevices();
   auto found =
-      base::ranges::find(devices, address, &BluetoothDevice::GetAddress);
+      std::ranges::find(devices, address, &BluetoothDevice::GetAddress);
   return found != devices.end() ? *found : nullptr;
 }
 

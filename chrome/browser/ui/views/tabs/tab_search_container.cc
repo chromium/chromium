@@ -55,8 +55,7 @@ constexpr char kDeclutterTriggerOutcomeName[] =
     "Tab.Organization.Declutter.Trigger.Outcome";
 constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
-constexpr int kSmallSpaceBetweenButtons = 2;
-constexpr int kLargeSpaceBetweenButtons = 4;
+constexpr int kSpaceBetweenButtons = 2;
 
 Edge GetFlatEdge(bool is_search_button, bool tab_search_before_chips) {
   const bool is_rtl = base::i18n::IsRTL();
@@ -118,15 +117,17 @@ void TabSearchContainer::TabOrganizationAnimationSession::Show() {
   flat_edge_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
 
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionInDuration));
+      gfx::Animation::RichAnimationDuration(kExpansionInDuration));
   flat_edge_animation_.SetSlideDuration(
-      GetAnimationDuration(kFlatEdgeInDuration));
-  opacity_animation_.SetSlideDuration(GetAnimationDuration(kOpacityInDuration));
+      gfx::Animation::RichAnimationDuration(kFlatEdgeInDuration));
+  opacity_animation_.SetSlideDuration(
+      gfx::Animation::RichAnimationDuration(kOpacityInDuration));
 
   expansion_animation_.Show();
   flat_edge_animation_.Show();
 
-  const base::TimeDelta delay = GetAnimationDuration(kOpacityDelay);
+  const base::TimeDelta delay =
+      gfx::Animation::RichAnimationDuration(kOpacityDelay);
   opacity_animation_delay_timer_.Start(
       FROM_HERE, delay, this,
       &TabSearchContainer::TabOrganizationAnimationSession::
@@ -148,24 +149,17 @@ void TabSearchContainer::TabOrganizationAnimationSession::Hide() {
   flat_edge_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
 
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionOutDuration));
+      gfx::Animation::RichAnimationDuration(kExpansionOutDuration));
 
   flat_edge_animation_.SetSlideDuration(
-      GetAnimationDuration(kFlatEdgeOutDuration));
+      gfx::Animation::RichAnimationDuration(kFlatEdgeOutDuration));
 
   opacity_animation_.SetSlideDuration(
-      GetAnimationDuration(kOpacityOutDuration));
+      gfx::Animation::RichAnimationDuration(kOpacityOutDuration));
 
   expansion_animation_.Hide();
   flat_edge_animation_.Hide();
   opacity_animation_.Hide();
-}
-
-base::TimeDelta
-TabSearchContainer::TabOrganizationAnimationSession::GetAnimationDuration(
-    base::TimeDelta duration) {
-  return gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                     : base::TimeDelta();
 }
 
 void TabSearchContainer::TabOrganizationAnimationSession::
@@ -228,27 +222,13 @@ TabSearchContainer::TabSearchContainer(
     tab_organization_observation_.Observe(tab_organization_service_);
   }
 
-  std::unique_ptr<TabSearchButton> tab_search_button;
-  if (features::IsTabstripComboButtonEnabled()) {
-    // With backgrounded combo button, edge adjacent to new tab button should
-    // be flat and opposite edge should be rounded with no change on chip
-    // animation.
-    Edge flat_edge = Edge::kNone;
-    if (features::HasTabstripComboButtonWithBackground()) {
-      flat_edge = base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft;
-    }
-    tab_search_button = std::make_unique<TabSearchButton>(
-        tab_strip_controller, browser_window_interface, flat_edge, Edge::kNone,
-        anchor_view ? anchor_view : this, tab_strip);
-    tab_search_button->SetFlatEdgeFactor(1);
-  } else {
-    // Edge adjacent to new tab button should be rounded and opposite edge
-    // should animate to flat on chip show.
-    tab_search_button = std::make_unique<TabSearchButton>(
-        tab_strip_controller, browser_window_interface, Edge::kNone,
-        GetFlatEdge(true, tab_search_before_chips),
-        anchor_view ? anchor_view : this, tab_strip);
-  }
+  // Edge adjacent to new tab button should be rounded and opposite edge
+  // should animate to flat on chip show.
+  std::unique_ptr<TabSearchButton> tab_search_button =
+      std::make_unique<TabSearchButton>(
+          tab_strip_controller, browser_window_interface, Edge::kNone,
+          GetFlatEdge(true, tab_search_before_chips),
+          anchor_view ? anchor_view : this, tab_strip);
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
   tab_search_button_ = AddChildView(std::move(tab_search_button));
@@ -290,14 +270,11 @@ TabSearchContainer::~TabSearchContainer() {
 void TabSearchContainer::SetupButtonProperties(TabStripNudgeButton* button,
                                                bool tab_search_before_chips) {
   // Set the margins for the button
-  const int space_between_buttons = features::IsTabstripComboButtonEnabled()
-                                        ? kLargeSpaceBetweenButtons
-                                        : kSmallSpaceBetweenButtons;
   gfx::Insets margin;
   if (tab_search_before_chips) {
-    margin.set_left(space_between_buttons);
+    margin.set_left(kSpaceBetweenButtons);
   } else {
-    margin.set_right(space_between_buttons);
+    margin.set_right(kSpaceBetweenButtons);
   }
   button->SetProperty(views::kMarginsKey, margin);
 
@@ -316,9 +293,8 @@ TabSearchContainer::CreateAutoTabGroupButton(
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonDismissed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE), kAutoTabGroupButtonElementId,
-      features::IsTabstripComboButtonEnabled()
-          ? Edge::kNone
-          : GetFlatEdge(false, tab_search_before_chips));
+      GetFlatEdge(false, tab_search_before_chips),
+      gfx::VectorIcon::EmptyIcon());
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
@@ -340,10 +316,8 @@ TabSearchContainer::CreateTabDeclutterButton(
       features::IsTabstripDedupeEnabled()
           ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
           : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
-      kTabDeclutterButtonElementId,
-      features::IsTabstripComboButtonEnabled()
-          ? Edge::kNone
-          : GetFlatEdge(false, tab_search_before_chips));
+      kTabDeclutterButtonElementId, GetFlatEdge(false, tab_search_before_chips),
+      gfx::VectorIcon::EmptyIcon());
 
   button->SetTooltipText(
       features::IsTabstripDedupeEnabled()

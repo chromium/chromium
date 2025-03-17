@@ -12,18 +12,21 @@
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -176,7 +179,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   if (url_has_extension_scheme) {
     // "chrome-extension://" URL.
     target_extension = registry->enabled_extensions().GetExtensionOrAppByURL(
-        url, true /*include_guid*/);
+        url, /*include_guid=*/true);
   } else if (target_origin.scheme() == kExtensionScheme) {
     // "blob:chrome-extension://" or "filesystem:chrome-extension://" URL.
     DCHECK(url.SchemeIsFileSystem() || url.SchemeIsBlob());
@@ -190,14 +193,16 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     if (guest) {
       const Extension* hosted_app =
           registry->enabled_extensions().GetHostedAppByURL(url);
-      if (hosted_app && hosted_app->id() == kWebStoreAppId)
+      if (hosted_app && hosted_app->id() == kWebStoreAppId) {
         return content::NavigationThrottle::BLOCK_REQUEST;
+      }
       // Also apply the same blocking if the URL maps to the new webstore
       // domain. Note: We can't use the extension_urls::IsWebstoreDomain check
       // here, as the webstore hosted app is associated with a specific path and
       // we don't want to block navigations to other paths on that domain.
-      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host()))
+      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host())) {
         return content::NavigationThrottle::BLOCK_REQUEST;
+      }
     }
 #endif
 
@@ -213,6 +218,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // code once that's supported. https://crbug.com/649869
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
+  CHECK(target_extension);
 
   // Hosted apps don't have any associated resources outside of icons, so
   // block any requests to URLs in their extension origin.
@@ -294,15 +300,38 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // to be reached again if there are more redirects in the same navigation.
     const GURL& upstream = redirect_chain[redirect_chain.size() - 2];
     auto upstream_origin = url::Origin::Create(upstream);
+
+    // In the case of a server redirect where there's no initiator, the
+    // upstream (redirecting) URL is the initiator. For instance, example.com
+    // redirected to an extension resource, example.com will be treated as
+    // the initiator for the purpose of web-accessible resource checks. In other
+    // cases, the initiator associated with the request (if any) should be the
+    // right one to use.
+    std::optional<url::Origin> initiator_origin;
+    if (navigation_handle()->GetInitiatorOrigin().has_value()) {
+      initiator_origin = *navigation_handle()->GetInitiatorOrigin();
+    } else if (navigation_handle()->WasServerRedirect()) {
+      initiator_origin = upstream_origin;
+    }
+
     // Cross-origin-redirects require that the resource is accessible in the
     // "web_accessible_resources" section of the manifest.
     if (!upstream_origin.opaque() && upstream_origin != target_origin) {
-      base::UmaHistogramBoolean(
-          target_extension->manifest_version() < 3
-              ? "Extensions.WAR.XOriginWebAccessible.MV2"
-              : "Extensions.WAR.XOriginWebAccessible.MV3",
+      bool is_accessible =
           WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-              target_extension, url, target_origin, upstream));
+              target_extension, url, initiator_origin, upstream);
+
+      base::UmaHistogramBoolean(target_extension->manifest_version() < 3
+                                    ? "Extensions.WAR.XOriginWebAccessible.MV2"
+                                    : "Extensions.WAR.XOriginWebAccessible.MV3",
+                                is_accessible);
+
+      if (!is_accessible &&
+          !ExtensionNavigationRegistry::Get(browser_context)
+               ->CanRedirect(navigation_handle()->GetNavigationId(), url,
+                             *target_extension)) {
+        return content::NavigationThrottle::BLOCK_REQUEST;
+      }
     }
   }
 
@@ -313,8 +342,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // * Renderer-initiated navigations without an initiator origin represent a
   //   history traversal to an entry that was originally loaded in a
   //   browser-initiated navigation.
-  if (!navigation_handle()->GetInitiatorOrigin().has_value())
+  if (!navigation_handle()->GetInitiatorOrigin().has_value()) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   // Not automatically trusted navigation:
   // * Some browser-initiated navigations with an initiator origin are not
@@ -344,8 +374,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   }
 
   // An extension can initiate navigations to any of its resources.
-  if (initiator_origin == target_origin)
+  if (initiator_origin == target_origin) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   // Cancel cross-origin-initiator navigations to blob: or filesystem: URLs.
   if (!url_has_extension_scheme) {

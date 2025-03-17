@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
-#include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 
 namespace blink {
@@ -39,41 +37,19 @@ XRGPUSwapChain::XRGPUSwapChain(GPUDevice* device) : device_(device) {
   CHECK(device);
 }
 
-void XRGPUSwapChain::OnFrameStart() {
-  texture_queried_ = false;
-}
-void XRGPUSwapChain::OnFrameEnd() {
-  ResetCurrentTexture();
-}
-
-GPUTexture* XRGPUSwapChain::GetCurrentTexture() {
-  texture_queried_ = true;
-  if (!current_texture_) {
-    current_texture_ = ProduceTexture();
-  }
-  return current_texture_;
-}
-
-// Resets the cached texture so that next GetCurrentTexture call will trigger a
-// ProduceTexture call.
-GPUTexture* XRGPUSwapChain::ResetCurrentTexture() {
-  GPUTexture* texture = current_texture_.Get();
-  current_texture_ = nullptr;
-  return texture;
-}
-
 // Clears the contents of the current texture to transparent black or 0 (for
 // depth/stencil textures).
 void XRGPUSwapChain::ClearCurrentTexture(wgpu::CommandEncoder command_encoder) {
-  if (!current_texture_) {
+  GPUTexture* texture = current_texture();
+  if (!texture) {
     return;
   }
 
-  bool hasDepth = IsDepthFormat(current_texture_->Format());
-  bool hasStencil = IsStencilFormat(current_texture_->Format());
+  bool hasDepth = IsDepthFormat(texture->Format());
+  bool hasStencil = IsStencilFormat(texture->Format());
 
   // Clear each level of the texture array.
-  for (uint32_t i = 0; i < current_texture_->depthOrArrayLayers(); ++i) {
+  for (uint32_t i = 0; i < texture->depthOrArrayLayers(); ++i) {
     wgpu::TextureViewDescriptor view_desc = {
         .dimension = wgpu::TextureViewDimension::e2D,
         .baseMipLevel = 0,
@@ -82,8 +58,7 @@ void XRGPUSwapChain::ClearCurrentTexture(wgpu::CommandEncoder command_encoder) {
         .arrayLayerCount = 1,
     };
 
-    wgpu::TextureView view =
-        current_texture_->GetHandle().CreateView(&view_desc);
+    wgpu::TextureView view = texture->GetHandle().CreateView(&view_desc);
 
     wgpu::RenderPassEncoder render_pass;
     if (hasDepth || hasStencil) {
@@ -131,8 +106,7 @@ void XRGPUSwapChain::ClearCurrentTexture(wgpu::CommandEncoder command_encoder) {
 
 void XRGPUSwapChain::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
-  visitor->Trace(current_texture_);
-  visitor->Trace(layer_);
+  XRSwapChain::Trace(visitor);
 }
 
 XRGPUStaticSwapChain::XRGPUStaticSwapChain(GPUDevice* device,

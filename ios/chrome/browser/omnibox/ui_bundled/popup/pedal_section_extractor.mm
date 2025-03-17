@@ -45,9 +45,10 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
         addObject:[[PedalSuggestionWrapper alloc] initWithPedal:pedal]];
   }
 
-  AutocompleteSuggestionGroupImpl* pedalGroup =
-      [AutocompleteSuggestionGroupImpl groupWithTitle:nil
-                                          suggestions:wrappedPedals];
+  AutocompleteSuggestionGroupImpl* pedalGroup = [AutocompleteSuggestionGroupImpl
+      groupWithTitle:nil
+         suggestions:wrappedPedals
+                type:SuggestionGroupType::kPedalSuggestionGroup];
   return pedalGroup;
 }
 

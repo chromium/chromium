@@ -100,7 +100,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
       GetConfigForGemini(device_info),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(/*is_standalone=*/true,
-                             /*only_for_new_users=*/true),
+                             /*only_for_new_users=*/false),
       GetConfigForGoogleMeet(),
 #endif  // BUILDFLAG(IS_CHROMEOS)
   };
@@ -190,8 +190,8 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
     if (options.uninstall_and_replace.size() != 1)
       continue;
 
-    if (options.gate_on_feature && !IsPreinstalledAppInstallFeatureEnabled(
-                                       *options.gate_on_feature, profile)) {
+    if (options.gate_on_feature &&
+        !IsPreinstalledAppInstallFeatureEnabled(*options.gate_on_feature)) {
       continue;
     }
 

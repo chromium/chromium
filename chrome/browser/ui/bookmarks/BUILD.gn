@@ -36,12 +36,6 @@ source_set("bookmarks") {
     "//ui/menus",
     "//url",
   ]
-
-  if (!is_chromeos) {
-    sources += [ "bookmark_bubble_sign_in_delegate.h" ]
-
-    public_deps += [ "//chrome/browser/ui/signin:bubble_signin_promo_delegate" ]
-  }
 }
 
 source_set("impl") {
@@ -82,12 +76,6 @@ source_set("impl") {
     "//components/user_prefs",
   ]
 
-  if (!is_chromeos) {
-    sources += [ "bookmark_bubble_sign_in_delegate.cc" ]
-
-    deps += [ "//chrome/browser/ui:browser_list" ]
-  }
-
   if (is_mac) {
     deps += [ "//chrome/browser/web_applications" ]
   }
@@ -102,7 +90,6 @@ source_set("browser_tests") {
     ":bookmarks",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser",
     "//chrome/browser:browser_process",

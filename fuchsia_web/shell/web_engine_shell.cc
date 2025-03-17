@@ -221,13 +221,13 @@ int main(int argc, char** argv) {
             *base::ComponentContextForProcess()->outgoing(),
             /*is_web_instance_component_in_same_package=*/false);
     if (enable_web_instance_tmp) {
-      const zx_status_t status = fdio_open(
+      const zx_status_t status = fdio_open3(
           "/tmp",
-          static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                                fuchsia::io::OpenFlags::RIGHT_WRITABLE |
-                                fuchsia::io::OpenFlags::DIRECTORY),
+          static_cast<uint64_t>(fuchsia::io::PERM_READABLE |
+                                fuchsia::io::PERM_WRITABLE |
+                                fuchsia::io::Flags::PROTOCOL_DIRECTORY),
           tmp_directory.NewRequest().TakeChannel().release());
-      ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
+      ZX_CHECK(status == ZX_OK, status) << "fdio_open3(/tmp)";
       web_instance_host->set_tmp_dir(std::move(tmp_directory));
     }
     fidl::InterfaceRequest<fuchsia::io::Directory> services_request;

@@ -121,7 +121,7 @@ NotificationCenterController::GetOngoingProcessMessageViewContainerById(
   // and ongoing process lists when they're all created by this controller.
   auto* list_view = ongoing_process_list_view_.get();
 
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       list_view->children(), id,
       [](const views::View* v) { return AsMVC(v)->GetNotificationId(); });
   return (i == list_view->children().cend()) ? nullptr : AsMVC(*i);

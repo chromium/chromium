@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import java.util.List;
  * of the ancestor view. Only the first matching TouchDelegate that can handle a touch event will be
  * sent the event.
  */
+@NullMarked
 public class CompositeTouchDelegate extends TouchDelegate {
     private final List<TouchDelegate> mDelegates = new ArrayList<>();
 

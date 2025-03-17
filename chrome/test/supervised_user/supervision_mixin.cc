@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -144,10 +145,6 @@ void SupervisionMixin::SetParentalControlsAccountCapability(
 
 void SupervisionMixin::SetPendingStateForPrimaryAccount() {
   CHECK_NE(sign_in_mode_, SignInMode::kSignedOut);
-  // Getting into pending state pre-Uno requires the user to sync.
-  CHECK(consent_level_ == signin::ConsentLevel::kSync ||
-        base::FeatureList::IsEnabled(
-            switches::kExplicitBrowserSigninUIOnDesktop));
 
   auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
 
@@ -216,7 +213,7 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
 }
 
 Profile* SupervisionMixin::GetProfile() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ProfileManager::GetActiveUserProfile();
 #else
   return test_base_->browser()->profile();

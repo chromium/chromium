@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.components.policy.PolicyService;
 
 /** Unit test for {@link TosDialogBehaviorSharedPrefInvalidator}. */
@@ -35,7 +36,7 @@ import org.chromium.components.policy.PolicyService;
 @Config(manifest = Config.NONE)
 public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
+    @Mock public AppRestrictionSupplier mMockAppRestrictionInfo;
     @Mock public PolicyService mMockPolicyService;
     @Mock public SkipTosDialogPolicyListener mMockPolicyListener;
 
@@ -49,7 +50,7 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
         Mockito.doReturn(null).when(mMockPolicyListener).get();
 
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
+        AppRestrictionSupplier.setInitializedInstanceForTest(mMockAppRestrictionInfo);
         PolicyServiceFactory.setPolicyServiceForTest(mMockPolicyService);
     }
 

@@ -457,8 +457,25 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       storage_partition->GetWeakPtr(), result->final_response_url,
       coep.reporting_endpoint, coep.report_only_reporting_endpoint,
       reporting_source_, isolation_info_.network_anonymization_key());
-  // TODO(crbug.com/40176729): Bind the receiver of ReportingObserver to the
-  // worker in the renderer process.
+  mojo::PendingReceiver<blink::mojom::ReportingObserver>
+      coep_reporting_observer;
+  mojo::PendingRemote<blink::mojom::ReportingObserver> coep_reporting_remote;
+  coep_reporting_observer =
+      coep_reporting_remote.InitWithNewPipeAndPassReceiver();
+  coep_reporter_->BindObserver(std::move(coep_reporting_remote));
+
+  // Create a DIP reporter with worker's policy.
+  const network::DocumentIsolationPolicy& dip =
+      worker_client_security_state_->document_isolation_policy;
+  dip_reporter_ = std::make_unique<DocumentIsolationPolicyReporter>(
+      storage_partition->GetWeakPtr(), result->final_response_url,
+      dip.reporting_endpoint, dip.report_only_reporting_endpoint,
+      reporting_source_, isolation_info_.network_anonymization_key());
+  mojo::PendingReceiver<blink::mojom::ReportingObserver> dip_reporting_observer;
+  mojo::PendingRemote<blink::mojom::ReportingObserver> dip_reporting_remote;
+  dip_reporting_observer =
+      dip_reporting_remote.InitWithNewPipeAndPassReceiver();
+  dip_reporter_->BindObserver(std::move(dip_reporting_remote));
 
   // > 14.8 If the result of checking a global object's embedder policy with
   // worker global scope, owner, and response is false, then set response to a
@@ -487,15 +504,27 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
-    // TODO(crbug.com/41478971): Plumb the COEP reporter.
     // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
     // here.
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter;
+    if (GetWorkerCoepReporter()) {
+      GetWorkerCoepReporter()->Clone(
+          coep_reporter.InitWithNewPipeAndPassReceiver());
+    }
+
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter;
+    if (dip_reporter_) {
+      dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+    }
     std::tie(container_info, controller) =
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
                 /*rfh_id=*/std::nullopt,
                 std::move(result->policy_container_policies),
-                /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+                std::move(coep_reporter), std::move(dip_reporter),
+                ukm::kInvalidSourceId);
   }
 
   client_->OnScriptLoadStarted(
@@ -503,7 +532,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       std::move(result->subresource_loader_factories),
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
       std::move(controller),
-      BindAndPassRemoteForBackForwardCacheControllerHost());
+      BindAndPassRemoteForBackForwardCacheControllerHost(),
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
   }
@@ -542,19 +572,25 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
 
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+  }
+
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
           ancestor_render_frame_host, GetStorageKey().origin(), isolation_info_,
           worker_client_security_state_->Clone(), std::move(coep_reporter),
-          worker_process_host_,
+          std::move(dip_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::
+              network::mojom::PermissionsPolicyFeature::
                   kPrivateStateTokenIssuance)
               ? network::mojom::TrustTokenOperationPolicyVerdict::
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
           ancestor_render_frame_host->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
+              network::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
               ? network::mojom::TrustTokenOperationPolicyVerdict::
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
@@ -791,6 +827,8 @@ void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), renderer_origin_, GetProcessHost()->GetDeprecatedID(),
       std::move(receiver),
+      !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
+          GetProcessHost()->GetBrowserContext())),
       storage::BlobURLValidityCheckBehavior::
           ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
 }
@@ -804,7 +842,6 @@ void DedicatedWorkerHost::CreateCodeCacheHost(
                                  GetStorageKey(), std::move(receiver));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void DedicatedWorkerHost::BindSerialService(
     mojo::PendingReceiver<blink::mojom::SerialService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -819,6 +856,7 @@ void DedicatedWorkerHost::BindSerialService(
   ancestor_render_frame_host->BindSerialService(std::move(receiver));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void DedicatedWorkerHost::BindHidService(
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -874,7 +912,7 @@ void DedicatedWorkerHost::BindPressureService(
   }
 
   if (!ancestor_render_frame_host->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+          network::mojom::PermissionsPolicyFeature::kComputePressure)) {
     ancestor_render_frame_host->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "This frame is connected to a Dedicated Worker that has requested "
@@ -1137,10 +1175,15 @@ void DedicatedWorkerHost::BindCacheStorageInternal(
     GetWorkerCoepReporter()->Clone(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+  }
   worker_process_host_->BindCacheStorage(
       cross_origin_embedder_policy(), std::move(coep_reporter),
-      worker_client_security_state_->document_isolation_policy, bucket_locator,
-      std::move(receiver));
+      worker_client_security_state_->document_isolation_policy,
+      std::move(dip_reporter), bucket_locator, std::move(receiver));
 }
 
 void DedicatedWorkerHost::GetSandboxedFileSystemForBucket(

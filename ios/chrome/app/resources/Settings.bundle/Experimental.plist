@@ -410,34 +410,6 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Tab Resumption force Decoration</string>
-			<key>Key</key>
-			<string>TabResumptionDecorationOverride</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Values</key>
-			<array>
-				<string></string>
-				<string>MostRecent</string>
-				<string>FrequentlyVisited</string>
-				<string>FrequentlyVisitedAtTime</string>
-				<string>VisitedSomeTimeAgoRecent</string>
-				<string>VisitedSomeTimeAgoOld</string>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Unset</string>
-				<string>Most recent</string>
-				<string>Frequently visited</string>
-				<string>Frequently visited at time</string>
-				<string>Visited some time ago (recent)</string>
-				<string>Visited some time ago (old)</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
 			<string>Tips (Magic Stack) State</string>
 			<key>Key</key>
 			<string>TipsMagicStackStateOverride</string>
@@ -501,6 +473,7 @@
 				<string>500ms</string>
 				<string>FirstPartyIncognitoNoDelay</string>
 				<string>FirstPartyIncognito500Delay</string>
+				<string>AlwaysShowTheUI</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -508,6 +481,7 @@
 				<string>500ms delay</string>
 				<string>With first party incognito</string>
 				<string>With 500ms delayed first party incognito</string>
+				<string>Always show the UI</string>
 			</array>
 		</dict>
 		<dict>
@@ -589,6 +563,16 @@
 				<string>1000</string>
 				<string>10000 (this can OOM debug builds)</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable AI Prototyping Menu</string>
+			<key>Key</key>
+			<string>EnableAIPrototypingMenu</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>

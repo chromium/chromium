@@ -31,7 +31,7 @@ export class SegmentedButtonOptionElement extends
 
   // Overridden from CrRippleMixin
   override createRipple() {
-    this.rippleContainer = this.shadowRoot!.querySelector('#button');
+    this.rippleContainer = this.shadowRoot.querySelector('#button');
     return super.createRipple();
   }
 }

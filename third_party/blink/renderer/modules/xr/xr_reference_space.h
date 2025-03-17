@@ -63,14 +63,8 @@ class XRReferenceSpace : public XRSpace {
   virtual XRReferenceSpace* cloneWithOriginOffset(
       XRRigidTransform* origin_offset) const;
 
-  // Updates the mojo_from_floor_ transform to match the one present in the
-  // latest display parameters of a session.
-  void SetMojoFromFloor() const;
+  std::optional<gfx::Transform> GetMojoFromFloorFallback() const;
 
-  mutable uint32_t stage_parameters_id_ = 0;
-
-  // Floor from mojo (aka local-floor_from_mojo) transform.
-  mutable std::unique_ptr<gfx::Transform> mojo_from_floor_;
   Member<XRRigidTransform> origin_offset_;
   device::mojom::blink::XRReferenceSpaceType type_;
 };

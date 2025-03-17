@@ -148,6 +148,7 @@ TEST(WebAuthenticationJSONConversionTest,
           /*provider_scope_requested=*/true,
           device::AttestationConveyancePreference::kDirect,
           std::vector<std::string>({"a", "b", "c"})),
+      /*payment_browser_bound_key_parameters=*/std::nullopt,
       std::vector<std::string>{"attfmt1", "attfmt2"}, /*is_conditional=*/false);
 
   base::Value value = ToValue(options);
@@ -170,7 +171,7 @@ TEST(WebAuthenticationJSONConversionTest,
 
   // Exercise all supported fields.
   auto options = PublicKeyCredentialRequestOptions::New(
-      /*is_conditional=*/false, /*requested_credential_type_flags=*/0,
+      blink::mojom::Mediation::MODAL, /*requested_credential_type_flags=*/0,
       kChallenge, std::nullopt, kTimeout, kRpId, GetCredentialList(),
       /*hints=*/
       std::vector<blink::mojom::Hint>({
@@ -198,7 +199,8 @@ TEST(WebAuthenticationJSONConversionTest,
               /*device_scope_requested=*/true,
               /*provider_scope_requested=*/true,
               device::AttestationConveyancePreference::kDirect,
-              std::vector<std::string>({"a", "b", "c"}))));
+              std::vector<std::string>({"a", "b", "c"})),
+          std::vector<device::PublicKeyCredentialParams::CredentialInfo>()));
 
   base::Value value = ToValue(options);
   std::string json;
@@ -524,11 +526,11 @@ TEST(WebAuthenticationJSONConversionTest,
             expected->extensions->appid_extension);
   EXPECT_EQ(response->extensions->echo_prf, expected->extensions->echo_prf);
   ASSERT_TRUE(response->extensions->prf_results);
-  EXPECT_TRUE(base::ranges::equal(response->extensions->prf_results->first,
-                                  expected_prf_first));
+  EXPECT_TRUE(std::ranges::equal(response->extensions->prf_results->first,
+                                 expected_prf_first));
   ASSERT_TRUE(response->extensions->prf_results->second);
-  EXPECT_TRUE(base::ranges::equal(*response->extensions->prf_results->second,
-                                  expected_prf_second));
+  EXPECT_TRUE(std::ranges::equal(*response->extensions->prf_results->second,
+                                 expected_prf_second));
   EXPECT_EQ(response->extensions->prf_not_evaluated,
             expected->extensions->prf_not_evaluated);
   EXPECT_EQ(response->extensions->echo_large_blob,

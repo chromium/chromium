@@ -2720,16 +2720,14 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
   EXPECT_FALSE(window_->wayland_subsurfaces().begin()->get()->IsVisible());
 }
 
-TEST_P(WaylandBufferManagerTest,
-       DoesNotAttachAndCommitOnHideIfNoBuffersAttached) {
+TEST_P(WaylandBufferManagerTest, AttachNullBufferAndCommitOnHide) {
   EXPECT_TRUE(window_->IsVisible());
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(id);
 
-    constexpr uint32_t kNumberOfCommits = 0;
-    EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
-    EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+    EXPECT_CALL(*mock_surface, Attach(nullptr, 0, 0)).Times(1);
+    EXPECT_CALL(*mock_surface, Commit()).Times(1);
   });
 
   window_->Hide();

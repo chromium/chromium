@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
@@ -26,6 +27,10 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -110,30 +115,6 @@ manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
   return manta::FeatureSupportStatus::kUnknown;
 }
 
-bool IsCountryAllowed(std::string_view country_code) {
-  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>(
-      {"ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
-       "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
-       "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",
-       "ci", "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de",
-       "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
-       "fi", "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi",
-       "gm", "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr",
-       "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je",
-       "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky",
-       "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
-       "ma", "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw",
-       "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np",
-       "nr", "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn",
-       "pr", "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd",
-       "se", "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv",
-       "sz", "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr",
-       "tt", "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg",
-       "vi", "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
-
-  return kCountryAllowlist.contains(country_code);
-}
-
 bool IsInputTypeAllowed(ui::TextInputType type) {
   constexpr auto kTextInputTypeAllowlist =
       base::MakeFixedFlatSet<ui::TextInputType>(
@@ -167,10 +148,13 @@ bool IsAppTypeAllowed(chromeos::AppType app_type) {
   return !kAppTypeDenylist.contains(app_type);
 }
 
-bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
-  return consent_status == ConsentStatus::kApproved ||
-         consent_status == ConsentStatus::kPending ||
-         consent_status == ConsentStatus::kUnset;
+bool IsTriggerableFromConsentStatus(
+    chromeos::editor_menu::EditorConsentStatus consent_status) {
+  return consent_status ==
+             chromeos::editor_menu::EditorConsentStatus::kApproved ||
+         consent_status ==
+             chromeos::editor_menu::EditorConsentStatus::kPending ||
+         consent_status == chromeos::editor_menu::EditorConsentStatus::kUnset;
 }
 
 bool IsUrlAllowed(GURL url) {
@@ -258,7 +242,7 @@ bool IsAllowedForUseInDemoMode(std::string_view country_code) {
   return base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
          base::FeatureList::IsEnabled(
              chromeos::features::kFeatureManagementOrca) &&
-         IsCountryAllowed(country_code);
+         IsGenerativeAiAllowedForCountry(country_code);
 }
 
 bool IsAllowedForUseInNonDemoMode(Profile* profile,
@@ -266,7 +250,7 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
   if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
       !base::FeatureList::IsEnabled(
           chromeos::features::kFeatureManagementOrca) ||
-      !IsCountryAllowed(country_code) ||
+      !IsGenerativeAiAllowedForCountry(country_code) ||
       (base::FeatureList::IsEnabled(
            ash::features::kOrcaUseAccountCapabilities) &&
        FetchOrcaAccountCapabilityFromMantaService(profile) !=
@@ -278,7 +262,8 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
   // either one scenario: (1) The feature is not driven by any policy. (2) The
   // feature is driven by a policy, and we allow the policy to take effect by
   // the feature flag value.
-  return !profile->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) ||
+  return !profile->GetPrefs()->IsManagedPreference(
+             prefs::kHmwManagedSettings) ||
          base::FeatureList::IsEnabled(features::kOrcaForManagedUsers);
 }
 
@@ -326,13 +311,10 @@ bool EditorSwitch::IsFeedbackEnabled() const {
     return false;
   }
 
-  // If unmanaged, allow Feedback.
-  if (!profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaFeedbackEnabled)) {
-    return true;
-  }
-
   // If managed, check the enablement value.
-  return profile_->GetPrefs()->GetBoolean(prefs::kOrcaFeedbackEnabled);
+  return profile_->GetPrefs()->GetInteger(prefs::kHmwManagedSettings) ==
+         base::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
+                                 kAllowedWithModelImprovement);
 }
 
 bool EditorSwitch::CanShowNoticeBanner() const {
@@ -342,8 +324,9 @@ bool EditorSwitch::CanShowNoticeBanner() const {
   //  2. The consent status is currently disabled.
   return pref->IsManagedPreference(prefs::kOrcaEnabled) &&
          pref->GetBoolean(prefs::kOrcaEnabled) &&
-         GetConsentStatusFromInteger(pref->GetInteger(
-             prefs::kOrcaConsentStatus)) == ConsentStatus::kDeclined;
+         chromeos::editor_menu::GetConsentStatusFromInteger(
+             pref->GetInteger(prefs::kOrcaConsentStatus)) ==
+             chromeos::editor_menu::EditorConsentStatus::kDeclined;
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
@@ -364,7 +347,7 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
   std::vector<EditorBlockedReason> blocked_reasons;
 
   if (base::FeatureList::IsEnabled(chromeos::features::kOrca)) {
-    if (!IsCountryAllowed(context_->active_country_code())) {
+    if (!IsGenerativeAiAllowedForCountry(context_->active_country_code())) {
       blocked_reasons.push_back(
           EditorBlockedReason::kBlockedByUnsupportedRegion);
     }
@@ -391,8 +374,9 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
     }
   }
 
-  if (!IsTriggerableFromConsentStatus(GetConsentStatusFromInteger(
-          profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus)))) {
+  if (!IsTriggerableFromConsentStatus(
+          chromeos::editor_menu::GetConsentStatusFromInteger(
+              profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus)))) {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedByConsent);
   }
 
@@ -441,8 +425,9 @@ bool EditorSwitch::CanBeTriggered() const {
     return false;
   }
 
-  ConsentStatus current_consent_status = GetConsentStatusFromInteger(
-      profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
+  chromeos::editor_menu::EditorConsentStatus current_consent_status =
+      chromeos::editor_menu::GetConsentStatusFromInteger(
+          profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
   return IsAllowedForUse() &&
          IsInputMethodEngineAllowed(ime_allowlist_,
@@ -454,6 +439,9 @@ bool EditorSwitch::CanBeTriggered() const {
          IsAppAllowed(context_->app_id()) &&
          !net::NetworkChangeNotifier::IsOffline() &&
          !context_->InTabletMode() &&
+         profile_->GetPrefs()->GetInteger(prefs::kHmwManagedSettings) !=
+             base::to_underlying(
+                 chromeos::editor_menu::EditorEnterprisePolicy::kDisallowed) &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
          context_->selected_text_length() <= kTextLengthMaxLimit &&
@@ -461,30 +449,40 @@ bool EditorSwitch::CanBeTriggered() const {
           IsSystemInEnglishLanguage());
 }
 
-EditorMode EditorSwitch::GetEditorMode() const {
+chromeos::editor_menu::EditorMode EditorSwitch::GetEditorMode() const {
   if (!IsAllowedForUse()) {
-    return EditorMode::kHardBlocked;
+    return chromeos::editor_menu::EditorMode::kHardBlocked;
   }
 
   if (!CanBeTriggered()) {
-    return EditorMode::kSoftBlocked;
+    return chromeos::editor_menu::EditorMode::kSoftBlocked;
   }
 
-  ConsentStatus current_consent_status = GetConsentStatusFromInteger(
-      profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
+  chromeos::editor_menu::EditorConsentStatus current_consent_status =
+      chromeos::editor_menu::GetConsentStatusFromInteger(
+          profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
-  if (current_consent_status == ConsentStatus::kPending ||
-      current_consent_status == ConsentStatus::kUnset) {
-    return EditorMode::kConsentNeeded;
+  if (current_consent_status ==
+          chromeos::editor_menu::EditorConsentStatus::kPending ||
+      current_consent_status ==
+          chromeos::editor_menu::EditorConsentStatus::kUnset) {
+    return chromeos::editor_menu::EditorMode::kConsentNeeded;
   } else if (context_->selected_text_length() > 0) {
-    return EditorMode::kRewrite;
+    return chromeos::editor_menu::EditorMode::kRewrite;
   } else {
-    return EditorMode::kWrite;
+    return chromeos::editor_menu::EditorMode::kWrite;
   }
 }
 
+chromeos::editor_menu::EditorTextSelectionMode
+EditorSwitch::GetEditorTextSelectionMode() const {
+  return context_->selected_text_length() > 0
+             ? chromeos::editor_menu::EditorTextSelectionMode::kHasSelection
+             : chromeos::editor_menu::EditorTextSelectionMode::kNoSelection;
+}
+
 void EditorSwitch::OnContextUpdated() {
-  EditorMode current_mode = GetEditorMode();
+  chromeos::editor_menu::EditorMode current_mode = GetEditorMode();
   if (current_mode != last_known_editor_mode_) {
     observer_->OnEditorModeChanged(current_mode);
   }

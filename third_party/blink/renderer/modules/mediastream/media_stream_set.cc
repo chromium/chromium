@@ -28,11 +28,11 @@ ScreenDetailed* FindScreenDetailedByDisplayId(
     return nullptr;
   }
 
-  auto screen_iterator = base::ranges::find_if(
-      screen_details->screens(),
-      [display_id](const ScreenDetailed* screen_detailed) {
-        return *display_id == screen_detailed->DisplayId();
-      });
+  auto screen_iterator =
+      std::ranges::find_if(screen_details->screens(),
+                           [display_id](const ScreenDetailed* screen_detailed) {
+                             return *display_id == screen_detailed->DisplayId();
+                           });
 
   return (screen_iterator != screen_details->screens().end()) ? *screen_iterator
                                                               : nullptr;

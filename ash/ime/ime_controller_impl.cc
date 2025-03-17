@@ -4,6 +4,7 @@
 
 #include "ash/ime/ime_controller_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/ime/ime_mode_indicator_view.h"
@@ -14,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/display/manager/display_manager.h"
@@ -114,7 +114,7 @@ void ImeControllerImpl::SwitchImeWithAccelerator(
       GetCandidateImesForAccelerator(accelerator);
   if (candidate_ids.empty())
     return;
-  auto it = base::ranges::find(candidate_ids, current_ime_.id);
+  auto it = std::ranges::find(candidate_ids, current_ime_.id);
   if (it != candidate_ids.end())
     ++it;
   if (it == candidate_ids.end())

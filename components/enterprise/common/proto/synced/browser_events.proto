@@ -43,7 +43,7 @@ enum ContentTransferMethod {
 
 message CrowdstrikeAgent {
   // Ensure field names are snake_case to be consistent with serialization in
-  // //j/c/g/chrome/cros/boq/common/connectors/events/JsonEventData.java
+  // //j/c/g/chrome/cros/boq/common/connectors/proto/reporting_event_data.proto
   string agent_id = 1 [json_name = "agent_id"];
 
   string customer_id = 2 [
@@ -82,6 +82,16 @@ message MatchedDetector {
 
   // The type of this detector.
   DetectorType detector_type = 3;
+
+  enum MaskType {
+    MASK_TYPE_UNSPECIFIED = 0;
+    LIGHT_OBFUSCATION = 1;
+    HARD_OBFUSCATION = 2;
+    REDACT = 3;
+  }
+
+  // The mask type of this detector, if it is used for data masking.
+  MaskType mask_type = 4;
 }
 
 // Information about notification configuration for a triggered rule.
@@ -225,6 +235,125 @@ message TriggeredRuleInfo {
   bool has_screenshot_protection = 13;
 }
 
+// Risk level for a url/ip/file
+enum RiskLevel {
+  RISK_LEVEL_UNSPECIFIED = 0;
+
+  // The URI given is risky / mildly suspicious.
+  LOW = 20;
+
+  // Higher (>90%) confidence that the URI given is risky (with no egregious
+  // false positives)
+  MEDIUM = 30;
+
+  // Extremely high (>99%) confidence that the URI given is risky.
+  HIGH = 40;
+}
+
+// RiskInfo proto for url/ip/file
+// This field is considered Enriched/Proprietary, it should only be
+// available to SecOps, and removed for Workspace BIP/SIT, GCP Cloud Pubsub
+// or 3P SIEMs.
+// Next ID: 7
+message RiskInfo {
+  enum ThreatType {
+    THREAT_TYPE_UNSPECIFIED = 0;
+    // Anything related to malware, for either URL or file.
+    MALWARE = 1;
+    // Unwanted software.
+    UNWANTED_SOFTWARE = 2;
+    // Social engineering, including phishing.
+    SOCIAL_ENGINEERING = 3;
+    // Violating data protection/DLP rules.
+    DATA_LOSS = 4;
+    // Violates URL filtering rules.
+    URL_FILTERING = 5;
+  }
+  ThreatType threat_type = 1;
+
+  RiskLevel risk_level = 2;
+
+  // Risk category (malware category/family, phishing brand, etc.)
+  message RiskCategory {
+    string key = 1;
+    string value = 2;
+  }
+  repeated RiskCategory risk_categories = 3;
+
+  // Reasons like Safe Browsing blocklist, ML models vs. heuristic rules.
+  repeated string risk_reasons = 4;
+
+  // RiskIndicators (e.g, contains_macros)
+  // See Safe Browsing entity prevalence doc.
+  message RiskIndicator {
+    // The key of the indicator.
+    string key = 1;
+
+    // The value of the indicator.
+    oneof value {
+      int32 int_value = 2;
+      bool bool_value = 3;
+      string string_value = 4;
+      float float_value = 5;
+    }
+  }
+  repeated RiskIndicator risk_indicators = 5;
+
+  // Risk source, to differentiate risk info from pipelines like Bineval
+  // Reputation  server, SUMS, LLAMA, etc.
+  enum RiskSource {
+    RISK_SOURCE_UNSPECIFIED = 0;
+    FILE_REPUTATION = 1;        // Bineval Reputation Server or SB blocklist.
+    FILE_CONTENT_SCANNING = 2;  // GAVS or SUMS.
+    URL_REPUTATION = 3;         // Llama / WebRisk Evaluate API or SB blocklist.
+    URL_CONTENT_SCANNING = 4;   // Ictis scanning pipeline.
+  }
+  RiskSource risk_source = 6;
+}
+
+// Next ID: 9
+message UrlInfo {
+  // The URL.
+  string url = 1;
+
+  // The URL category according to go/webcat-doc.
+  repeated string url_categories = 2;
+
+  string ip = 3;
+
+  // Type of the URL stored below, reference ResourceType
+  enum URLType {
+    URL_TYPE_UNSPECIFIED = 0;
+    DOWNLOAD_URL = 1;
+    DOWNLOAD_REDIRECT = 2;
+    TAB_URL = 3;
+    TAB_REDIRECT = 4;
+  }
+  URLType type = 4;
+
+  // Per-threat-type-Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 5;
+
+  // Top level risk level for the URL, aggregated over all per-threat-type
+  RiskLevel risk_level = 6;
+
+  message NavigationInitiator {
+    enum InitiatorType {
+      INITIATOR_TYPE_UNSPECIFIED = 0;
+      USER_INITIATIATED_NAVIGATION_OR_CLICK = 1;
+      BROWSER_INITIATED_NAVIGATION_OR_REDIRECT = 2;
+      CHROME_NOTIFICATION = 3;
+    }
+    InitiatorType initiator_type = 1;
+
+    string entity = 2;  // URL of the notification, name of APP, etc.
+  }
+  NavigationInitiator navigation_initiator = 7;
+
+  // The http(s) method via which the URL is requested. e.g. GET, POST, etc.
+  string request_http_method = 8;
+}
+
 // A message for reporting password reuse events.
 // Next ID: 16.
 message SafeBrowsingPasswordReuseEvent {
@@ -295,7 +424,7 @@ message SafeBrowsingPasswordChangedEvent {
 }
 
 // A message for reporting dangerous download events.
-// Next ID: 32.
+// Next ID: 40.
 message SafeBrowsingDangerousDownloadEvent {
   reserved 5, 11, 12, 13, 14, 15, 16;
 
@@ -403,6 +532,32 @@ message SafeBrowsingDangerousDownloadEvent {
 
   // The server side scan status.
   ServerScanStatus server_scan_status = 31;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 32;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 33;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 34;
+
+  // Per-threat Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 35;
+
+  // Top-level risk level for the content.
+  RiskLevel risk_level = 36;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 37;
+
+  // The sha256 hash of the PEdata based on Safe Browsing's PEHash.
+  string pehash_sha256 = 38;
+
+  // Whether the content is encrypted.
+  bool is_encrypted = 39;
 }
 
 // Types of data transferring operations that may have triggered the event to
@@ -419,9 +574,14 @@ enum DataTransferEventTrigger {
 
   // Trigger for file transfers on ChromeOS.
   FILE_TRANSFER = 5;
+
+  // Trigger for data masking events.
+  PAGE_LOAD = 8;
+  MUTATION = 9;
+  MOUSE_ACTION = 10;
 }
 
-// Next ID: 20.
+// Next ID: 22.
 message SafeBrowsingInterstitialEvent {
   reserved 2, 6, 8, 9, 10, 11, 12, 13, 15;
 
@@ -483,10 +643,17 @@ message SafeBrowsingInterstitialEvent {
 
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 19;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 20;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 21;
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 31.
+// Next ID: 34.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -575,6 +742,17 @@ message DlpSensitiveDataEvent {
 
   // The server side scan status.
   ServerScanStatus server_scan_status = 30;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 31;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 32;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 33;
 }
 
 // Event where a large file could not be scanned for analysis e.g. malware or
@@ -668,7 +846,7 @@ message UnscannedFileEvent {
 
 // Event that indicates that content was transferred.
 //
-// Next ID: 14.
+// Next ID: 22.
 message ContentTransferEvent {
   // The id of the scan. This will be shared by all events that are triggered
   // from a single scan.
@@ -740,6 +918,32 @@ message ContentTransferEvent {
 
   // The user action led to a content transfer event.
   ContentTransferMethod content_transfer_method = 13;
+
+  // The total scan time in milliseconds on the server side before reporting
+  // this event.
+  int64 server_scan_latency_millis = 14;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 15;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 16;
+
+  // Per-threat Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 17;
+
+  // Top-level risk level for the content.
+  RiskLevel risk_level = 18;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 19;
+
+  // The sha256 hash of the PEdata based on Safe Browsing's PEHash.
+  string pehash_sha256 = 20;
+
+  // Whether the content is encrypted.
+  bool is_encrypted = 21;
 }
 
 // Event sent when a user successfully logs in to a website, as determined by
@@ -939,7 +1143,7 @@ message BrowserCrashEvent {
   repeated SecurityAgent security_agents = 7;
 }
 
-// Next ID: 11
+// Next ID: 13
 message UrlFilteringInterstitialEvent {
   // Top level URL that triggers this interstitial.
   string url = 1;
@@ -990,6 +1194,13 @@ message UrlFilteringInterstitialEvent {
 
   // The reporting target of the event.
   ReportingTarget reporting_target = 10;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 11;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 12;
 }
 
 // Next ID: 5
@@ -1020,4 +1231,65 @@ message ExtensionTelemetryEvent {
 
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 4;
+}
+
+// Event sent when a user navigates to a URL.
+// Next ID: 7
+message UrlNavigationEvent {
+  // Tab URL of the navigation.
+  UrlInfo url_info = 1;
+
+  // The referrers of the webpage that sent the user to this url.
+  repeated UrlInfo referrers = 2;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USERNAME
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 5;
+}
+
+// Event for suspicious site visits.
+message SuspiciousURLEvent {
+  // Tab URL of the navigation.
+  UrlInfo url_info = 1;
+
+  // The referrers of the webpage that sent the user to this url.
+  repeated UrlInfo referrers = 2;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 3;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 5;
 }

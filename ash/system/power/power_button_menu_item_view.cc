@@ -59,9 +59,9 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   title_->SetLineHeight(kLineHeight);
   title_->SetMultiLine(true);
   title_->SetMaxLines(2);
-  title_->SetEnabledColorId(cros_tokens::kTextColorPrimary);
+  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
-  GetViewAccessibility().SetName(title_->GetText(),
+  GetViewAccessibility().SetName(std::u16string(title_->GetText()),
                                  ax::mojom::NameFrom::kAttribute);
 
   SetBorder(views::CreateEmptyBorder(
@@ -93,7 +93,7 @@ gfx::Size PowerButtonMenuItemView::CalculatePreferredSize(
 
 void PowerButtonMenuItemView::OnFocus() {
   parent()->SetFocusBehavior(FocusBehavior::NEVER);
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
   SchedulePaint();
 }
 

@@ -3545,7 +3545,17 @@ TEST(PaintOpBufferTest, SkSLCommandShaderSerialization) {
       "half4 main(float2 coord) { return half4(0.5); }";
 
   PaintFlags flags;
-  flags.setShader(PaintShader::MakeSkSLCommand(kCommand));
+  std::vector<PaintShader::FloatUniform> scalar_uniforms = {
+      {.name = SkString("u_scalar"), .value = 42.f}};
+  std::vector<PaintShader::Float2Uniform> float2_uniforms = {
+      {.name = SkString("u_vec2"), .value = SkV2{42.f, 21.f}}};
+  std::vector<PaintShader::Float4Uniform> float4_uniforms = {
+      {.name = SkString("u_vec4"), .value = SkV4{42.f, 21.f, 10.f, 5.f}}};
+  std::vector<PaintShader::IntUniform> int_uniforms = {
+      {.name = SkString("u_int"), .value = 2}};
+  flags.setShader(PaintShader::MakeSkSLCommand(
+      kCommand, std::move(scalar_uniforms), std::move(float2_uniforms),
+      std::move(float4_uniforms), std::move(int_uniforms)));
   PaintOpBuffer buffer;
   buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
 

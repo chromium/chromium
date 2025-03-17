@@ -148,27 +148,6 @@ void HttpStreamPool::Group::OnJobComplete(Job* job) {
   }
 }
 
-int HttpStreamPool::Group::Preconnect(
-    size_t num_streams,
-    quic::ParsedQuicVersion quic_version,
-    const NetLogWithSource& job_controller_net_log,
-    CompletionOnceCallback callback) {
-  if (ActiveStreamSocketCount() >= num_streams) {
-    return OK;
-  }
-
-  // When failing, just returns the current error.
-  // TODO(crbug.com/381742472): Consider resuming this preconnect after the
-  // current failing attempt manager completes.
-  if (IsFailing()) {
-    return attempt_manager_->final_error_to_notify_jobs();
-  }
-
-  EnsureAttemptManager();
-  return attempt_manager_->Preconnect(
-      num_streams, quic_version, job_controller_net_log, std::move(callback));
-}
-
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket,
     StreamSocketHandle::SocketReuseType reuse_type,
@@ -217,7 +196,7 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
                               : kClosedConnectionReturnedToPool;
   } else if (generation != generation_) {
     not_reusable_reason = kSocketGenerationOutOfDate;
-  } else if (ReachedMaxStreamLimit()) {
+  } else if (ReachedMaxStreamLimit() || pool_->ReachedMaxStreamLimit()) {
     not_reusable_reason = kExceededSocketLimits;
   } else {
     reusable = true;
@@ -237,14 +216,12 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
 
 void HttpStreamPool::Group::AddIdleStreamSocket(
     std::unique_ptr<StreamSocket> socket) {
-  CHECK(socket->IsConnectedAndIdle());
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
-  MaybeComplete();
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
@@ -304,7 +281,7 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
                             kExceededSocketLimits);
   idle_stream_sockets_.pop_front();
   pool_->DecrementTotalIdleStreamCount();
-  // Use MaybeCompeleteLater since MaybeComplete() may delete `this`, and this
+  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
   // method could be called while iterating all groups.
   MaybeCompleteLater();
   return true;
@@ -338,13 +315,8 @@ void HttpStreamPool::Group::FlushWithError(
     int error,
     StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
-  // Refresh() may delete this. Get a weak pointer to this and call CancelJobs()
-  // only when this is still alive.
-  base::WeakPtr<Group> weak_this = weak_ptr_factory_.GetWeakPtr();
   Refresh(net_log_close_reason_utf8, attempt_cancel_reason);
-  if (weak_this) {
-    CancelJobs(error);
-  }
+  CancelJobs(error);
 }
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
@@ -352,18 +324,15 @@ void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
   // TODO(crbug.com/381742472): Should we do anything for paused
   // jobs/preconnects?
   ++generation_;
-  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
   if (attempt_manager_) {
     attempt_manager_->CancelInFlightAttempts(cancel_reason);
   }
+  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
 
 void HttpStreamPool::Group::CloseIdleStreams(
     std::string_view net_log_close_reason_utf8) {
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
-  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
-  // method could be called while iterating all groups.
-  MaybeCompleteLater();
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
@@ -396,6 +365,10 @@ void HttpStreamPool::Group::OnAttemptManagerComplete() {
       attempt_manager_->is_failing() && !paused_jobs_.empty();
 
   attempt_manager_.reset();
+
+  if (on_attempt_manager_complete_callback_for_testing_) {
+    std::move(on_attempt_manager_complete_callback_for_testing_).Run();
+  }
 
   if (should_start_new_attempt_manager) {
     EnsureAttemptManager();
@@ -436,6 +409,12 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
+}
+
+void HttpStreamPool::Group::SetOnAttemptManagerCompleteCallbackForTesting(
+    base::OnceClosure callback) {
+  CHECK(on_attempt_manager_complete_callback_for_testing_.is_null());
+  on_attempt_manager_complete_callback_for_testing_ = std::move(callback);
 }
 
 bool HttpStreamPool::Group::IsFailing() const {
@@ -515,6 +494,9 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(
       ++it;
     }
   }
+  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
+  // method could be called while iterating all groups.
+  MaybeCompleteLater();
 }
 
 void HttpStreamPool::Group::EnsureAttemptManager() {

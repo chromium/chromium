@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
@@ -22,9 +22,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/device_signals/core/browser/ash/user_permission_service_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_signals {
 
@@ -81,7 +81,7 @@ UserPermissionServiceFactory::BuildServiceInstanceForBrowserContext(
   auto user_delegate = std::make_unique<UserDelegateImpl>(
       profile, identity_manager, device_trust_connector_service);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto user_permission_service =
       std::make_unique<device_signals::UserPermissionServiceAsh>(
           management_service, std::move(user_delegate), profile->GetPrefs());
@@ -89,7 +89,7 @@ UserPermissionServiceFactory::BuildServiceInstanceForBrowserContext(
   auto user_permission_service =
       std::make_unique<device_signals::UserPermissionServiceImpl>(
           management_service, std::move(user_delegate), profile->GetPrefs());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return user_permission_service;
 }

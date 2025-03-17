@@ -226,7 +226,7 @@ public class SwitchToTabTest {
 
         List<ImageView> buttonsList = baseSuggestionView.getActionButtons();
         Assert.assertNotNull(buttonsList);
-        Assert.assertEquals(buttonsList.size(), 1);
+        Assert.assertEquals(1, buttonsList.size());
         TestTouchUtils.performClickOnMainSync(
                 InstrumentationRegistry.getInstrumentation(), buttonsList.get(0));
     }

@@ -24,7 +24,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
-#include "components/tpcd/metadata/browser/manager.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
@@ -33,6 +33,10 @@ class PrefService;
 namespace net {
 class SiteForCookies;
 }  // namespace net
+
+namespace tpcd::metadata {
+class Manager;
+}  // namespace tpcd::metadata
 
 namespace content_settings {
 
@@ -160,10 +164,7 @@ class CookieSettings
   // not covered by user bypass at this state of art.
   bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url) const;
 
-  const ContentSettingsForOneType GetTpcdMetadataGrants() const {
-    return tpcd_metadata_manager_ ? tpcd_metadata_manager_->GetGrants()
-                                  : ContentSettingsForOneType();
-  }
+  ContentSettingsForOneType GetTpcdMetadataGrants() const;
 
   // Resets the cookie setting for the given url.
   //
@@ -204,7 +205,7 @@ class CookieSettings
   // Returns true if third party cookies should be blocked.
   //
   // This method may be called on any thread. Virtual for testing.
-  bool ShouldBlockThirdPartyCookies() const override;
+  bool ShouldBlockThirdPartyCookies() const;
 
   // Returns true iff third party cookies deprecation mitigations should be
   // allowed.
@@ -267,6 +268,9 @@ class CookieSettings
       content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
+  bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const override;
 
   // TrackingProtectionSettingsObserver:
   void OnTrackingProtection3pcdChanged() override;

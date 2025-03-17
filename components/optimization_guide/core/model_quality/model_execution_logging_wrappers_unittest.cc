@@ -146,7 +146,6 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelSessionWithLogging) {
                     StreamingResponse{.response = AnyWrapProto(response),
                                       .is_complete = true},
                     /*provided_by_on_device=*/true,
-                    /*log_entry=*/nullptr,
                     std::make_unique<proto::ModelExecutionInfo>(
                         model_execution_info)));
           }));
@@ -187,7 +186,6 @@ TEST_F(ModelExecutionLoggingWrappersTest,
                                 OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kDisabled)),
                     /*provided_by_on_device=*/true,
-                    /*log_entry=*/nullptr,
                     // Errors that don't end up making a request to the model
                     // won't have a ModelExecutionInfo.
                     nullptr));
@@ -229,7 +227,6 @@ TEST_F(ModelExecutionLoggingWrappersTest,
                     StreamingResponse{.response = AnyWrapProto(response),
                                       .is_complete = false},
                     /*provided_by_on_device=*/true,
-                    /*log_entry=*/nullptr,
                     // execution_info is not set for incomplete responses.
                     /*execution_info=*/nullptr));
           }));

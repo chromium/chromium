@@ -21,8 +21,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @class FakeOverlayPresenationContextDelegate;
 
@@ -106,8 +106,9 @@ class OverlayPresentationContextImplTest : public PlatformTest {
   // Setter for whether the presentation context should support overlay UI
   // implemented using child UIViewControllers.
   void SetSupportsContainedOverlayUI() {
-    if (supports_contained_ui_)
+    if (supports_contained_ui_) {
       return;
+    }
 
     // Updating the support for contained overlay UI will notifiy the observer
     // of this change.
@@ -131,8 +132,9 @@ class OverlayPresentationContextImplTest : public PlatformTest {
   // Setter for whether the presentation context should support overlay UI
   // implemented using presented UIViewControllers.
   void SetSupportsPresentedOverlayUI() {
-    if (supports_presented_ui_)
+    if (supports_presented_ui_) {
       return;
+    }
 
     // Updating the support for presented overlay UI will notifiy the observer
     // of this change.

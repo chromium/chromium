@@ -13,12 +13,6 @@ TestExtensionService::TestExtensionService() = default;
 
 TestExtensionService::~TestExtensionService() = default;
 
-extensions::PendingExtensionManager*
-TestExtensionService::pending_extension_manager() {
-  ADD_FAILURE();
-  return nullptr;
-}
-
 extensions::CorruptedExtensionReinstaller*
 TestExtensionService::corrupted_extension_reinstaller() {
   ADD_FAILURE();
@@ -41,12 +35,6 @@ const Extension* TestExtensionService::GetPendingExtensionUpdate(
 bool TestExtensionService::FinishDelayedInstallationIfReady(
     const std::string& extension_id,
     bool install_immediately) {
-  ADD_FAILURE();
-  return false;
-}
-
-bool TestExtensionService::IsExtensionEnabled(
-    const std::string& extension_id) const {
   ADD_FAILURE();
   return false;
 }

@@ -171,7 +171,6 @@ class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
 }  // namespace android_webview
 namespace ash {
-class BrowserDataBackMigrator;
 class LoginEventRecorder;
 class StartupCustomizationDocument;
 class StartupUtils;
@@ -216,7 +215,6 @@ class CrashUtil;
 }
 namespace chromeos {
 class BlockingMethodCaller;
-class ChromeOsCdmFactory;
 namespace system {
 bool IsCoreSchedulingAvailable();
 int NumberOfPhysicalCores();
@@ -259,9 +257,6 @@ namespace cronet {
 class CronetPrefsManager;
 class CronetContext;
 }  // namespace cronet
-namespace crosapi {
-class LacrosThreadTypeDelegate;
-}  // namespace crosapi
 namespace crypto {
 class ScopedAllowBlockingForNSS;
 }
@@ -377,7 +372,7 @@ class ScopedAllowBlockingForSettingGetter;
 namespace internal {
 class AddressTrackerLinux;
 class PemFileCertStore;
-}
+}  // namespace internal
 }  // namespace net
 namespace printing {
 class LocalPrinterHandlerDefault;
@@ -585,7 +580,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ::WebEngineBrowserMainParts;
   friend class android_webview::AwBrowserContext;
   friend class android_webview::ScopedAllowInitGLBindings;
-  friend class ash::BrowserDataBackMigrator;
   friend class ash::LoginEventRecorder;
   friend class ash::StartupCustomizationDocument;  // http://crosbug.com/11103
   friend class ash::StartupUtils;
@@ -616,7 +610,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::WebContentsViewMac;
   friend class cronet::CronetContext;
   friend class cronet::CronetPrefsManager;
-  friend class crosapi::LacrosThreadTypeDelegate;
   friend class crypto::ScopedAllowBlockingForNSS;  // http://crbug.com/59847
   friend class drive::FakeDriveService;
   friend class extensions::DesktopAndroidExtensionSystem;
@@ -659,7 +652,7 @@ class BASE_EXPORT ScopedAllowBlocking {
 #if BUILDFLAG(IS_WIN)
   friend class base::win::OSInfo;
   friend class content::SlowWebPreferenceCache;  // http://crbug.com/1262162
-  friend class media::GpuMojoMediaClientWin;  // https://crbug.com/360642944
+  friend class media::GpuMojoMediaClientWin;     // https://crbug.com/360642944
 #endif
 #if BUILDFLAG(IS_IOS)
   friend class ::BrowserStateDirectoryBuilder;
@@ -799,10 +792,9 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class android_webview::
       OverlayProcessorWebView;                     // http://crbug.com/341151462
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
-  friend class chromeos::ChromeOsCdmFactory;       // http://crbug.com/368792274
   friend class viz::
-      DisplayCompositorMemoryAndTaskController;  // http://crbug.com/341151462
-  friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
+      DisplayCompositorMemoryAndTaskController;    // http://crbug.com/341151462
+  friend class viz::SkiaOutputSurfaceImpl;         // http://crbug.com/341151462
   friend class viz::SharedImageInterfaceProvider;  // http://crbug.com/341151462
 
   ScopedAllowBaseSyncPrimitives();
@@ -884,14 +876,14 @@ class BASE_EXPORT
   friend class base::Thread;                      // http://crbug.com/918039
   friend class cc::CompletionEvent;               // http://crbug.com/902653
   friend class content::
-      BrowserGpuChannelHostFactory;                 // http://crbug.com/125248
-  friend class content::TextInputClientMac;         // http://crbug.com/121917
-  friend class dbus::Bus;                           // http://crbug.com/125222
+      BrowserGpuChannelHostFactory;          // http://crbug.com/125248
+  friend class content::TextInputClientMac;  // http://crbug.com/121917
+  friend class dbus::Bus;                    // http://crbug.com/125222
   friend class discardable_memory::
-      ClientDiscardableSharedMemoryManager;         // http://crbug.com/1396355
-  friend class disk_cache::BackendImpl;             // http://crbug.com/74623
-  friend class disk_cache::InFlightIO;              // http://crbug.com/74623
-  friend class midi::TaskService;                   // https://crbug.com/796830
+      ClientDiscardableSharedMemoryManager;  // http://crbug.com/1396355
+  friend class disk_cache::BackendImpl;      // http://crbug.com/74623
+  friend class disk_cache::InFlightIO;       // http://crbug.com/74623
+  friend class midi::TaskService;            // https://crbug.com/796830
   friend class net::
       MultiThreadedProxyResolverScopedAllowJoinOnIO;  // http://crbug.com/69710
   friend class net::NetworkChangeNotifierApple;       // http://crbug.com/125097

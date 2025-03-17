@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
-
 #import "base/task/sequenced_task_runner.h"
+#import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 
 namespace ios {
 namespace provider {

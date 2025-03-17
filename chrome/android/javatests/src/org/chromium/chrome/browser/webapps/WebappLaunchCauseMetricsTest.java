@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
+import android.os.Build;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
@@ -26,6 +27,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
@@ -62,6 +64,7 @@ public final class WebappLaunchCauseMetricsTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "crbug.com/40816321")
     public void testHomescreenLaunch() throws Throwable {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(

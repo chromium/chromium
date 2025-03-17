@@ -63,6 +63,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   // OnConnected() or OnConnectionFailed() is called on the Visitor.
   void Connect() override;
   void Close(const std::optional<WebTransportCloseInfo>& close_info) override;
+  void CloseIfNonceMatches(base::UnguessableToken nonce) override;
 
   quic::WebTransportSession* session() override;
 

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -98,7 +99,7 @@ class SimpleFeatureTest : public testing::Test {
 };
 
 TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
-  const IsAvailableTestData tests[] = {
+  const auto tests = std::to_array<IsAvailableTestData>({
       {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
@@ -119,7 +120,8 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
        Feature::IS_AVAILABLE},
       {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, 25, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE}};
+       Feature::IS_AVAILABLE},
+  });
 
   SimpleFeature feature;
   for (const auto& test : tests) {
@@ -457,7 +459,7 @@ TEST_F(SimpleFeatureTest, SessionType) {
   EXPECT_EQ("", error);
   ASSERT_TRUE(extension.get());
 
-  const FeatureSessionTypeTestData kTestData[] = {
+  const auto kTestData = std::to_array<FeatureSessionTypeTestData>({
       {"kiosk_feature in kiosk session",
        Feature::IS_AVAILABLE,
        mojom::FeatureSessionType::kKiosk,
@@ -532,7 +534,8 @@ TEST_F(SimpleFeatureTest, SessionType) {
       {"feature with kiosk session type in auto-launched kiosk session",
        Feature::IS_AVAILABLE,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
-       {mojom::FeatureSessionType::kKiosk}}};
+       {mojom::FeatureSessionType::kKiosk}},
+  });
 
   for (const auto& entry : kTestData) {
     std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> current_session(
@@ -767,25 +770,6 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             simple_feature_2.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
-}
-
-TEST_F(SimpleFeatureTest, IsIdInArray) {
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", {}, 0));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray(
-      "bbbbccccdddddddddeeeeeeffffgghhh", {}, 0));
-
-  const char* const kIdArray[] = {
-    "bbbbccccdddddddddeeeeeeffffgghhh",
-    // aaaabbbbccccddddeeeeffffgggghhhh
-    "9A0417016F345C934A1A88F55CA17C05014EEEBA"
-  };
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", kIdArray, std::size(kIdArray)));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                          kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("bbbbccccdddddddddeeeeeeffffgghhh",
-                                         kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("aaaabbbbccccddddeeeeffffgggghhhh",
-                                         kIdArray, std::size(kIdArray)));
 }
 
 // Tests that all combinations of feature channel and Chrome channel correctly

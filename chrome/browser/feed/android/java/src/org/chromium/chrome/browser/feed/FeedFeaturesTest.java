@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
@@ -42,7 +41,6 @@ public class FeedFeaturesTest {
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
 
-    private FeatureList.TestValues mParamsTestValues;
     private @StreamTabId int mPrefStoredTab;
 
     @Before
@@ -61,14 +59,6 @@ public class FeedFeaturesTest {
                         })
                 .when(mPrefService)
                 .setInteger(eq(Pref.LAST_SEEN_FEED_TYPE), anyInt());
-
-        mParamsTestValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(mParamsTestValues);
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     @Test
@@ -83,9 +73,8 @@ public class FeedFeaturesTest {
 
     @Test
     public void testShouldUseNewIndicator_noLimit() {
-        mParamsTestValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation_no_limit");
-        FeatureList.setTestValues(mParamsTestValues);
 
         when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(true);
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
@@ -96,9 +85,8 @@ public class FeedFeaturesTest {
 
     @Test
     public void testShouldUseNewIndicator_seenFeed() {
-        mParamsTestValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-        FeatureList.setTestValues(mParamsTestValues);
 
         when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(true);
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME)).thenReturn("0");
@@ -108,9 +96,8 @@ public class FeedFeaturesTest {
 
     @Test
     public void testShouldUseNewIndicator_seenAnimation() {
-        mParamsTestValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-        FeatureList.setTestValues(mParamsTestValues);
 
         when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(false);
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
@@ -122,9 +109,8 @@ public class FeedFeaturesTest {
     @Test
     @DisabledTest(message = "https://crbug.com/1445267")
     public void testShouldUseNewIndicator_notSeenFeedAndAnimation() {
-        mParamsTestValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-        FeatureList.setTestValues(mParamsTestValues);
 
         when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(false);
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
@@ -135,9 +121,8 @@ public class FeedFeaturesTest {
 
     @Test
     public void testShouldUseNewIndicator_notSeenAnimationInFuture() {
-        mParamsTestValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-        FeatureList.setTestValues(mParamsTestValues);
 
         when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(false);
         when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))

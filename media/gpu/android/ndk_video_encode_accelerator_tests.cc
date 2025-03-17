@@ -4,6 +4,7 @@
 
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -31,8 +31,6 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 
-#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
-    NDK_MEDIA_CODEC_MIN_API)
 using testing::Return;
 
 namespace media {
@@ -41,6 +39,11 @@ struct VideoParams {
   VideoCodecProfile profile;
   VideoPixelFormat pixel_format;
 };
+
+// We're putting this *after* VideoParams, so that it can be used with
+// ::testing::ValuesIn without triggering -Wunguarded-availability warnings.
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
 
 class NdkVideoEncoderAcceleratorTest
     : public ::testing::TestWithParam<VideoParams>,
@@ -279,7 +282,7 @@ class NdkVideoEncoderAcceleratorTest
       }
       default: {
         EXPECT_TRUE(
-            base::ranges::any_of(data, [](uint8_t x) { return x != 0; }));
+            std::ranges::any_of(data, [](uint8_t x) { return x != 0; }));
       }
     }
   }

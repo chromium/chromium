@@ -54,7 +54,7 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
         ui::ImageModel::FromVectorIcon(kSaveCardAndVcnSuccessConfirmationIcon),
         ui::ImageModel::FromVectorIcon(
             kSaveCardAndVcnSuccessConfirmationDarkIcon),
-        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+        base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                             base::Unretained(this)));
     image_view->SetBorder(
         views::CreateEmptyBorder(ChromeLayoutProvider::Get()

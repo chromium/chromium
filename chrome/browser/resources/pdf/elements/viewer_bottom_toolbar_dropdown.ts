@@ -66,7 +66,7 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
     }
 
     // Skip if dropdown is not shown or if the focus target is the menu.
-    const nextElement = e.relatedTarget as HTMLElement;
+    const nextElement = e.relatedTarget;
     if (!this.showDropdown_ ||
         (nextElement !== this && this.contains(nextElement))) {
       return;

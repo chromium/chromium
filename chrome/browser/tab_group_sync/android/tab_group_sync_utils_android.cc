@@ -38,15 +38,38 @@ static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
 
   auto* navigation_handle =
       reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
-  tab_groups::SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
-  service->UpdateTabProperties(group_id, tab_id, tab_builder);
 
   tab_groups::TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
       tab_id,
       tab_group->collaboration_id() ? tab_groups::SavedTabGroupType::SHARED
                                     : tab_groups::SavedTabGroupType::SYNCED,
       navigation_handle, service);
+}
+
+static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
+    JNIEnv* env,
+    Profile* profile,
+    const JavaParamRef<jobject>& j_group_id,
+    jint j_tab_id,
+    jlong navigation_handle_ptr) {
+  CHECK(profile);
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  CHECK(service);
+
+  auto group_id = tab_groups::TabGroupSyncConversionsBridge::FromJavaTabGroupId(
+      env, j_group_id);
+  auto tab_group = service->GetGroup(group_id);
+  if (!tab_group) {
+    return;
+  }
+  auto tab_id = tab_groups::FromJavaTabId(j_tab_id);
+
+  auto* navigation_handle =
+      reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
+  tab_groups::SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
+  service->UpdateTabProperties(group_id, tab_id, tab_builder);
 }
 
 static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(

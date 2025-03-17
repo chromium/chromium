@@ -9,9 +9,11 @@
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 namespace payments::facilitated {
 
@@ -34,6 +36,14 @@ class EwalletManagerTestApi {
     ewallet_manager_->scheme_ = scheme;
   }
 
+  void set_is_device_bound(bool is_device_bound) {
+    ewallet_manager_->is_device_bound_for_logging_ = is_device_bound;
+  }
+
+  bool is_device_bound() {
+    return ewallet_manager_->is_device_bound_for_logging_;
+  }
+
   FacilitatedPaymentsApiClient* GetApiClient() {
     return ewallet_manager_->GetApiClient();
   }
@@ -43,10 +53,8 @@ class EwalletManagerTestApi {
     ewallet_manager_->OnApiAvailabilityReceived(start_time, is_api_available);
   }
 
-  void OnEwalletPaymentPromptResult(bool is_prompt_accepted,
-                                    int64_t selected_instrument_id) {
-    ewallet_manager_->OnEwalletPaymentPromptResult(is_prompt_accepted,
-                                                   selected_instrument_id);
+  void OnEwalletAccountSelected(int64_t selected_instrument_id) {
+    ewallet_manager_->OnEwalletAccountSelected(selected_instrument_id);
   }
 
   void OnRiskDataLoaded(base::TimeTicks start_time,
@@ -75,6 +83,28 @@ class EwalletManagerTestApi {
           response_details) {
     ewallet_manager_->OnInitiatePaymentResponseReceived(
         start_time, result, std::move(response_details));
+  }
+
+  UiState ui_state() { return ewallet_manager_->ui_state_; }
+
+  void OnUiEvent(UiEvent ui_event_type) {
+    ewallet_manager_->OnUiEvent(ui_event_type);
+  }
+
+  void ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions,
+      base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {
+    ewallet_manager_->ShowEwalletPaymentPrompt(
+        ewallet_suggestions, std::move(on_ewallet_account_selected));
+  }
+
+  void ShowProgressScreen() { ewallet_manager_->ShowProgressScreen(); }
+
+  void ShowErrorScreen() { ewallet_manager_->ShowErrorScreen(); }
+
+  void OnTransactionResult(base::TimeTicks start_time,
+                           PurchaseActionResult result) {
+    ewallet_manager_->OnTransactionResult(start_time, result);
   }
 
  private:

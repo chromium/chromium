@@ -200,6 +200,16 @@ enum class ActionButtonsVisibility {
 // The help button item in the top left of the view. Nil if not available.
 @property(nonatomic, readonly) UIButton* learnMoreButton;
 
+// Controls if there is a dismiss button in the top right of the view. Must be
+// set before the view is loaded. Defaults to NO.
+@property(nonatomic, assign) BOOL shouldShowDismissButton;
+
+// The dismiss button item in the top right of the view. Nil if not available.
+@property(nonatomic, readonly) UIButton* dismissButton;
+
+// The text for the dismiss button.
+@property(nonatomic, copy) NSString* dismissButtonString;
+
 // Whether the bottom of the view controller is reached. This value will always
 // be YES when `self.scrollToEndMandatory` is NO.
 @property(nonatomic, assign, readonly) BOOL didReachBottom;

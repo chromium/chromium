@@ -33,9 +33,12 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
     const GURL& prefetch_url,
     bool use_prefetch_proxy,
     const std::optional<url::Origin>& referring_origin) {
-  CHECK(
-      base::FeatureList::IsEnabled(chrome::android::kCCTNavigationalPrefetch));
-
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kCCTNavigationalPrefetch) ||
+      !base::FeatureList::IsEnabled(
+          features::kPrefetchBrowserInitiatedTriggers)) {
+    return;
+  }
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&GetWebContents());
 
@@ -53,7 +56,6 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kChromeCustomTabs,
           content::PreloadingType::kPrefetch, std::move(matcher),
-          /*planned_max_preloading_type=*/std::nullopt,
           /*triggering_primary_page_source_id=*/ukm::kInvalidSourceId);
 
   std::optional<content::PreloadingHoldbackStatus> holdback_status_override;
@@ -63,17 +65,24 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
 
   // TODO(crbug.com/40288091): Specify appropriate referrer value that comes
   // from CCT.
-  GetWebContents().StartPrefetch(prefetch_url, use_prefetch_proxy,
-                                 blink::mojom::Referrer(), referring_origin,
-                                 preloading_attempt->GetWeakPtr(),
-                                 holdback_status_override);
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle =
+      GetWebContents().StartPrefetch(
+          prefetch_url, use_prefetch_proxy, blink::mojom::Referrer(),
+          referring_origin,
+          /*no_vary_search_hint=*/std::nullopt,
+          content::PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/content::PreloadingType::
+                  kPrefetch),
+          preloading_attempt->GetWeakPtr(), holdback_status_override);
+  // TODO(crbug.com/40288091): Clean up staled handles. Please see
+  // crrev.com/c/5534282/comment/cea1fdce_ada24c2b/ for more discussions,
+  if (prefetch_handle) {
+    all_prefetches_.push_back(std::move(prefetch_handle));
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 ChromePrefetchManager::ChromePrefetchManager(content::WebContents* web_contents)
-    : content::WebContentsUserData<ChromePrefetchManager>(*web_contents) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kPrefetchBrowserInitiatedTriggers));
-}
+    : content::WebContentsUserData<ChromePrefetchManager>(*web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromePrefetchManager);

@@ -5,14 +5,16 @@
 #ifndef REMOTING_HOST_CLOUD_HEARTBEAT_SERVICE_CLIENT_H_
 #define REMOTING_HOST_CLOUD_HEARTBEAT_SERVICE_CLIENT_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/cloud_service_client.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/host/heartbeat_service_client.h"
 
 namespace google::internal::remoting::cloud::v1alpha {
@@ -26,6 +28,7 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
+class InstanceIdentityTokenGetter;
 class OAuthTokenGetter;
 
 // HeartbeatServiceClient implementation which is used for Cloud hosts.
@@ -34,6 +37,7 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
   CloudHeartbeatServiceClient(
       const std::string& directory_id,
       OAuthTokenGetter* oauth_token_getter,
+      InstanceIdentityTokenGetter* instance_identity_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   CloudHeartbeatServiceClient(const CloudHeartbeatServiceClient&) = delete;
@@ -51,35 +55,46 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
   void CancelPendingRequests() override;
 
  private:
+  // Overloads used to create callbacks for |instance_identity_token_getter_|.
+  void SendFullHeartbeatWithIdToken(bool is_initial_heartbeat,
+                                    std::optional<std::string> signaling_id,
+                                    std::optional<std::string> offline_reason,
+                                    HeartbeatResponseCallback callback,
+                                    std::string_view instance_identity_token);
+  void SendLiteHeartbeatWithIdToken(HeartbeatResponseCallback callback,
+                                    std::string_view instance_identity_token);
+
   void OnSendHeartbeatResponse(
       HeartbeatResponseCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::Empty>);
 
   void OnUpdateRemoteAccessHostResponse(
       HeartbeatResponseCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<
           ::google::internal::remoting::cloud::v1alpha::RemoteAccessHost>);
 
   void OnReportHostOffline(
       HeartbeatResponseCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<
           ::google::internal::remoting::cloud::v1alpha::RemoteAccessHost>);
 
   void MakeUpdateRemoteAccessHostCall(
       std::optional<std::string> signaling_id,
       std::optional<std::string> offline_reason,
+      std::string_view instance_identity_token,
       CloudServiceClient::UpdateRemoteAccessHostCallback callback);
 
   void RunHeartbeatResponseCallback(HeartbeatResponseCallback callback,
-                                    const ProtobufHttpStatus& status);
+                                    const HttpStatus& status);
 
-  // The entity to update in Directory service.
+  // The entity to update in the Directory service.
   std::string directory_id_;
 
-  CloudServiceClient client_;
+  std::unique_ptr<CloudServiceClient> client_;
+  const raw_ptr<InstanceIdentityTokenGetter> instance_identity_token_getter_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

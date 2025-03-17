@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
                                     const gfx::Transform& uv_transform);
 
  private:
-  void DoRuntimeInitialization(int texture_taget) override;
+  void DoRuntimeInitialization() override;
 
   // Makes all the relevant GL calls to actually draw the texture for the
   // runtime, will operate on the supplied framebuffer.

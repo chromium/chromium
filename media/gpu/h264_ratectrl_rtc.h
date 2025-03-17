@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_H264_RATECTRL_RTC_H_
 #define MEDIA_GPU_H264_RATECTRL_RTC_H_
 
+#include <memory>
+
 #include "media/gpu/h264_rate_controller.h"
 #include "media/gpu/media_gpu_export.h"
 

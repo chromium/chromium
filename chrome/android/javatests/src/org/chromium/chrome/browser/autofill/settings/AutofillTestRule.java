@@ -9,6 +9,9 @@ import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -40,11 +43,25 @@ class AutofillTestRule extends ChromeBrowserTestRule
         mValidationUpdate = new CallbackHelper();
         mConfirmationDialogUpdate = new CallbackHelper();
         mFragmentShown = new CallbackHelper();
-        AutofillCardBenefitsFragment.setObserverForTest(AutofillTestRule.this);
-        AutofillProfilesFragment.setObserverForTest(AutofillTestRule.this);
-        AutofillLocalCardEditor.setObserverForTest(AutofillTestRule.this);
-        AutofillLocalIbanEditor.setObserverForTest(AutofillTestRule.this);
-        FinancialAccountsManagementFragment.setObserverForTest(AutofillTestRule.this);
+    }
+
+    @Override
+    public Statement apply(final Statement base, Description description) {
+        Statement statement = super.apply(base, description);
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                // If the test suit is batched, the observers are reset after every test method by
+                // the {@link ResettersForTesting}. Thus the observers must be set in the
+                // {@link TestRule#apply()} method.
+                AutofillCardBenefitsFragment.setObserverForTest(AutofillTestRule.this);
+                AutofillProfilesFragment.setObserverForTest(AutofillTestRule.this);
+                AutofillLocalCardEditor.setObserverForTest(AutofillTestRule.this);
+                AutofillLocalIbanEditor.setObserverForTest(AutofillTestRule.this);
+                FinancialAccountsManagementFragment.setObserverForTest(AutofillTestRule.this);
+                statement.evaluate();
+            }
+        };
     }
 
     protected void setTextInEditorAndWait(final String[] values) throws TimeoutException {

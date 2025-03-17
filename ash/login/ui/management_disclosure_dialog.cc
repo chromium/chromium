@@ -70,7 +70,7 @@ std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
   label->SetAutoColorReadabilityEnabled(false);
   label->SetTextStyle(style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColorId(
+  label->SetEnabledColor(
       static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
   label->SetMultiLine(true);
   return label;

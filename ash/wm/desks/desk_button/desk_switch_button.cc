@@ -178,7 +178,7 @@ void DeskSwitchButton::DeskSwitchButtonPressed() {
 void DeskSwitchButton::SetBackgroundVisible(bool visible) {
   SetBackground(
       visible
-          ? views::CreateThemedRoundedRectBackground(
+          ? views::CreateRoundedRectBackground(
                 cros_tokens::kCrosSysHoverOnSubtle,
                 type_ == Type::kPrev
                     ? gfx::RoundedCornersF(kDeskButtonCornerRadius,

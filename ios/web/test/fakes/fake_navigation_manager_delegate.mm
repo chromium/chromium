@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
+
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "url/gurl.h"
 

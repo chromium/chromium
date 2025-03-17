@@ -4,14 +4,17 @@
 
 package org.chromium.components.segmentation_platform;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 
 import java.util.List;
 
+@NullMarked
 public class ClassificationResult {
     public final @PredictionStatus int status;
 
-    public final List<String> orderedLabels;
+    public final @Nullable List<String> orderedLabels;
 
     public ClassificationResult(int status, String[] orderedLabels) {
         this.status = status;

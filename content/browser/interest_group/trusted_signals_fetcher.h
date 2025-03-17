@@ -22,14 +22,20 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace auction_worklet {
+class AuctionDownloader;
+}
 
 namespace content {
 
@@ -150,9 +156,19 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   TrustedSignalsFetcher(const TrustedSignalsFetcher&) = delete;
   TrustedSignalsFetcher& operator=(const TrustedSignalsFetcher&) = delete;
 
+  // `frame_tree_node_id` is used to log events for devtools.
+  //
   // `main_frame_origin` and `network_partition_nonce` are used to create an
   // IsolationInfo identifying the network partition to use.
   // `main_frame_origin`'s host is also sent as part of the encrypted request.
+  //
+  // `ip_address_space` is the IPAddressSpace of the frame that's running the
+  // auction. It's used to create a ClientSecurityState that, depending on
+  // global settings, can have a PrivateNetworkRequestPolicy that sends CORS
+  // preflight requests if the signals URL maps to an IP on a less public
+  // address space. The other members of ClientSecurityState use default values.
+  // Default values are safe since these are credentialless requests. Any data
+  // taken from the frame would also potentially be a leak.
   //
   // `script_origin` is the owner of the interest group the request is for. Used
   // as the initiator for CORS.
@@ -161,7 +177,9 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       base::UnguessableToken network_partition_nonce,
       const url::Origin& script_origin,
       const GURL& trusted_bidding_signals_url,
@@ -169,9 +187,16 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
+  // `frame_tree_node_id` is used to log events for devtools.
+  //
   // `main_frame_origin` and `network_partition_nonce` are used to create an
   // IsolationInfo identifying the network partition to use.
   // `main_frame_origin`'s host is also sent as part of the encrypted request.
+  //
+  // `ip_address_space` is the IPAddressSpace of the frame that's running the
+  // auction. The other members of ClientSecurityState are either based on its
+  // value or use defaults. Defaults are safe since these are credentialless
+  // requests. Any data taken from the frame would also potentially be a leak.
   //
   // `script_origin` is the seller for the auction. Used as the initiator for
   // CORS.
@@ -180,7 +205,9 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       base::UnguessableToken network_partition_nonce,
       const url::Origin& script_origin,
       const GURL& trusted_scoring_signals_url,
@@ -197,7 +224,9 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // this class.
   void EncryptRequestBodyAndStart(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       base::UnguessableToken network_partition_nonce,
       const url::Origin& script_origin,
       const GURL& trusted_signals_url,
@@ -205,10 +234,9 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       std::string plaintext_request_body,
       Callback callback);
 
-  void OnResponseStarted(const GURL& final_url,
-                         const network::mojom::URLResponseHead& response_head);
-
-  void OnRequestComplete(std::unique_ptr<std::string> response_body);
+  void OnRequestComplete(std::unique_ptr<std::string> response_body,
+                         scoped_refptr<net::HttpResponseHeaders> headers,
+                         std::optional<std::string> error);
 
   void OnCborParsed(data_decoder::DataDecoder::ValueOrError value_or_error);
 
@@ -234,7 +262,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // The URL being fetched. Cached for using in error strings.
   GURL trusted_signals_url_;
   Callback callback_;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+  std::unique_ptr<auction_worklet::AuctionDownloader> auction_downloader_;
 
   // Context needed to decrypt the response. Initialized while encrypting the
   // request body.

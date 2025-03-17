@@ -201,7 +201,7 @@ export const HelpBubbleMixinLit = <T extends Constructor<CrLitElement>>(
         }
         this.unregisterHelpBubble(nativeId);
       }
-      const controller = new HelpBubbleController(nativeId, this.shadowRoot!);
+      const controller = new HelpBubbleController(nativeId, this.shadowRoot);
       controller.track(trackable, parseOptions(options));
       this.helpBubbleControllerById_.set(nativeId, controller);
       // This can be called before or after `connectedCallback()`, so if the

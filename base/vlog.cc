@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -27,8 +26,9 @@ VlogInfo::VmodulePattern::VmodulePattern(const std::string& pattern)
   // If the pattern contains a {forward,back} slash, we assume that
   // it's meant to be tested against the entire __FILE__ string.
   std::string::size_type first_slash = pattern.find_first_of("\\/");
-  if (first_slash != std::string::npos)
+  if (first_slash != std::string::npos) {
     match_target = MATCH_FILE;
+  }
 }
 
 VlogInfo::VmodulePattern::VmodulePattern()
@@ -57,11 +57,9 @@ std::vector<VlogInfo::VmodulePattern> VlogInfo::ParseVmoduleLevels(
 
 VlogInfo::VlogInfo(const std::string& v_switch,
                    const std::string& vmodule_switch,
-                   int* min_log_level)
+                   int& min_log_level)
     : vmodule_levels_(ParseVmoduleLevels(vmodule_switch)),
       min_log_level_(min_log_level) {
-  DCHECK_NE(min_log_level, nullptr);
-
   int vlog_level = 0;
   if (!v_switch.empty()) {
     if (base::StringToInt(v_switch, &vlog_level)) {
@@ -89,8 +87,9 @@ std::string_view GetModule(std::string_view file) {
   module = module.substr(0, extension_start);
   static const char kInlSuffix[] = "-inl";
   static const int kInlSuffixLen = std::size(kInlSuffix) - 1;
-  if (base::EndsWith(module, kInlSuffix))
+  if (base::EndsWith(module, kInlSuffix)) {
     module.remove_suffix(kInlSuffixLen);
+  }
   return module;
 }
 
@@ -102,8 +101,9 @@ int VlogInfo::GetVlogLevel(std::string_view file) const {
     for (const auto& it : vmodule_levels_) {
       std::string_view target(
           (it.match_target == VmodulePattern::MATCH_FILE) ? file : module);
-      if (MatchVlogPattern(target, it.pattern))
+      if (MatchVlogPattern(target, it.pattern)) {
         return it.vlog_level;
+      }
     }
   }
   return GetMaxVlogLevel();
@@ -119,7 +119,7 @@ int VlogInfo::GetMaxVlogLevel() const {
 }
 
 VlogInfo::VlogInfo(std::vector<VmodulePattern> vmodule_levels,
-                   int* min_log_level)
+                   int& min_log_level)
     : vmodule_levels_(std::move(vmodule_levels)),
       min_log_level_(min_log_level) {}
 
@@ -129,7 +129,7 @@ VlogInfo* VlogInfo::WithSwitches(const std::string& vmodule_switch) const {
       ParseVmoduleLevels(vmodule_switch);
   vmodule_levels.insert(vmodule_levels.end(), additional_vmodule_levels.begin(),
                         additional_vmodule_levels.end());
-  return new VlogInfo(std::move(vmodule_levels), min_log_level_);
+  return new VlogInfo(std::move(vmodule_levels), *min_log_level_);
 }
 
 bool MatchVlogPattern(std::string_view string, std::string_view vlog_pattern) {

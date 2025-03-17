@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import type {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager} from './data/destination_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from './data/print_ticket_manager.js';
 import {createCustomEvent} from './utils/event_utils.js';
-import {Destination} from './utils/print_preview_cros_app_types.js';
+import type {Destination} from './utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

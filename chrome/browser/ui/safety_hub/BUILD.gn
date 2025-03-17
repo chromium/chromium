@@ -9,6 +9,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 source_set("safety_hub") {
   sources = [
     "abusive_notification_permissions_manager.h",
+    "disruptive_notification_permissions_manager.h",
     "menu_notification.h",
     "menu_notification_service.h",
     "menu_notification_service_factory.h",
@@ -66,6 +67,7 @@ source_set("impl") {
 
   sources = [
     "abusive_notification_permissions_manager.cc",
+    "disruptive_notification_permissions_manager.cc",
     "menu_notification.cc",
     "menu_notification_service.cc",
     "menu_notification_service_factory.cc",
@@ -95,6 +97,7 @@ source_set("impl") {
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/site_engagement/content",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 
   if (is_android) {
@@ -148,7 +151,7 @@ source_set("test_support") {
     "//services/network:test_support",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     public_deps += [
       "//chrome/browser/extensions",
       "//extensions/common",
@@ -184,6 +187,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/permissions:permissions",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/safe_browsing:test_support",
       "//chrome/browser/ui",
@@ -242,6 +246,7 @@ source_set("unit_tests") {
     sources += [
       "abusive_notification_permissions_manager_unittest.cc",
       "card_data_helper_unittest.cc",
+      "disruptive_notification_permissions_manager_unittest.cc",
       "extensions_result_unittest.cc",
       "notification_permission_review_service_unittest.cc",
       "password_status_check_result_unittest.cc",
@@ -261,6 +266,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui",
       "//chrome/browser/ui/hats:test_support",
       "//components/content_settings/core/common:features",
+      "//components/content_settings/core/test:test_support",
       "//components/crx_file",
       "//components/history/core/browser",
       "//components/history/core/test",

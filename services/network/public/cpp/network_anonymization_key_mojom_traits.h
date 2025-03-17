@@ -10,7 +10,9 @@
 #include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/network_isolation_partition_mojom_traits.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/network_anonymization_key.mojom-shared.h"
 
@@ -44,6 +46,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const std::optional<base::UnguessableToken>& nonce(
       const net::NetworkAnonymizationKey& input) {
     return input.GetNonce();
+  }
+
+  static net::NetworkIsolationPartition network_isolation_partition(
+      const net::NetworkAnonymizationKey& input) {
+    return input.network_isolation_partition();
   }
 
   static bool Read(network::mojom::NonEmptyNetworkAnonymizationKeyDataView data,

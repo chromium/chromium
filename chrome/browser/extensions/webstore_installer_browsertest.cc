@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,7 +47,7 @@ class TestWebstoreInstaller : public WebstoreInstaller {
                         FailureCallback failure_callback,
                         content::WebContents* web_contents,
                         const std::string& id,
-                        std::unique_ptr<Approval> approval,
+                        std::unique_ptr<InstallApproval> approval,
                         InstallSource source)
       : WebstoreInstaller(profile,
                           std::move(success_callback),
@@ -133,8 +134,8 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, WebstoreInstall) {
   ASSERT_TRUE(active_web_contents);
 
   // Create an approval.
-  std::unique_ptr<WebstoreInstaller::Approval> approval =
-      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
+  std::unique_ptr<InstallApproval> approval =
+      InstallApproval::CreateWithNoInstallPrompt(
           browser()->profile(), kTestExtensionId, GetManifest(), false);
 
   // Create and run a WebstoreInstaller.
@@ -164,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
   ASSERT_TRUE(active_web_contents);
 
   // Create an approval.
-  std::unique_ptr<WebstoreInstaller::Approval> approval =
-      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
+  std::unique_ptr<InstallApproval> approval =
+      InstallApproval::CreateWithNoInstallPrompt(
           browser()->profile(), kTestExtensionId, manifest.Clone(), false);
 
   // Create and run a WebstoreInstaller.
@@ -247,8 +248,8 @@ IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
 
   // Create an approval that withhelds permissions when the checkbox is not
   // selected.
-  std::unique_ptr<WebstoreInstaller::Approval> approval =
-      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
+  std::unique_ptr<InstallApproval> approval =
+      InstallApproval::CreateWithNoInstallPrompt(
           browser()->profile(), kTestExtensionWithPermissionsId, GetManifest(),
           false);
   approval->withhold_permissions = shoud_withhold_permissions;

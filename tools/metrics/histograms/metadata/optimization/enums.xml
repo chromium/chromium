@@ -247,6 +247,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Request was filtered"/>
   <int value="9" label="Response was disabled"/>
   <int value="10" label="The request was cancelled"/>
+  <int value="11" label="Response quality was low"/>
 </enum>
 
 <enum name="OptimizationGuideModelQualityLogsUploadStatus">
@@ -364,7 +365,7 @@ chromium-metrics-reviews@google.com.
     The service running the on-device model has experienced too many crashes in
     a row.
   </int>
-  <int value="7" label="Too many recent timeouts">
+  <int value="7" label="DEPRECATED: Too many recent timeouts">
     The service took too long to respond too many times in a row.
   </int>
   <int value="8" label="Safety model not available">
@@ -736,6 +737,18 @@ chromium-metrics-reviews@google.com.
   <int value="75" label="EWALLET_MERCHANT_ALLOWLIST"/>
   <int value="76" label="OPTIMIZATION_GUIDE_ICON_VIEW"/>
   <int value="77" label="PRIVACY_POLICY_ANNOTATION"/>
+  <int value="78" label="BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS"/>
+  <int value="79" label="BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS"/>
+  <int value="80" label="BMO_CREDIT_CARD_DINING_BENEFITS"/>
+  <int value="81" label="BMO_CREDIT_CARD_DRUGSTORE_BENEFITS"/>
+  <int value="82" label="BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS"/>
+  <int value="83" label="BMO_CREDIT_CARD_GROCERY_BENEFITS"/>
+  <int value="84" label="BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS"/>
+  <int value="85" label="BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS"/>
+  <int value="86" label="BMO_CREDIT_CARD_TRANSIT_BENEFITS"/>
+  <int value="87" label="BMO_CREDIT_CARD_TRAVEL_BENEFITS"/>
+  <int value="88" label="BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS"/>
+  <int value="90" label="GLIC_CONTEXTUAL_CUEING"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

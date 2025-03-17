@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/osauth/impl/early_login_auth_policy_connector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -93,8 +94,8 @@ bool ChromeLoginPerformer::IsUserAllowlisted(
     const AccountId& account_id,
     bool* wildcard_match,
     const std::optional<user_manager::UserType>& user_type) {
-  return CrosSettings::Get()->IsUserAllowlisted(account_id.GetUserEmail(),
-                                                wildcard_match, user_type);
+  return UserLoginPermissionTracker::Get()->IsUserAllowlisted(
+      account_id.GetUserEmail(), wildcard_match, user_type);
 }
 
 void ChromeLoginPerformer::RunOnlineAllowlistCheck(

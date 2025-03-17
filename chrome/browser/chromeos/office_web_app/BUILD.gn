@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 source_set("office_web_app") {
@@ -16,17 +14,15 @@ source_set("office_web_app") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/resources:office_web_app_resources",
+    "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/web_applications",
     "//components/webapps/browser",
     "//ui/base:base",
     "//url",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/webui/ash/cloud_upload" ]
-    allow_circular_includes_from =
-        [ "//chrome/browser/ui/webui/ash/cloud_upload" ]
-  }
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/cloud_upload" ]
 }
 
 source_set("unit_tests") {

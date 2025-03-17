@@ -45,7 +45,8 @@ export class SettingsAiLoggingInfoBullet extends
 
   private isLoggingDisabledByPolicy_(): boolean {
     return this.pref?.value ===
-        ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING;
+        ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING ||
+        this.pref?.value === ModelExecutionEnterprisePolicyValue.DISABLE;
   }
 
   private computeLabel_(): string {

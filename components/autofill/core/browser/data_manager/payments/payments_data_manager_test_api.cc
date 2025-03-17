@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_art_image.h"
 
 namespace autofill {
 
@@ -42,6 +42,29 @@ void PaymentsDataManagerTestApi::AddServerCreditCard(
 void PaymentsDataManagerTestApi::AddOfferData(
     std::unique_ptr<AutofillOfferData> offer_data) {
   payments_data_manager_->autofill_offer_data_.push_back(std::move(offer_data));
+}
+
+void PaymentsDataManagerTestApi::AddBnplIssuer(const BnplIssuer& bnpl_issuer) {
+  std::vector<BnplIssuer>& linked_issuers =
+      payments_data_manager_->linked_bnpl_issuers_;
+  std::vector<BnplIssuer>& unlinked_issuers =
+      payments_data_manager_->unlinked_bnpl_issuers_;
+
+  // No duplicated issuer should be inserted into the BNPL issuer list.
+  CHECK(!std::ranges::any_of(
+      linked_issuers, [&](const BnplIssuer& saved_bnpl_issuer) {
+        return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
+      }));
+  CHECK(!std::ranges::any_of(
+      unlinked_issuers, [&](const BnplIssuer& saved_bnpl_issuer) {
+        return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
+      }));
+
+  if (bnpl_issuer.payment_instrument().has_value()) {
+    linked_issuers.push_back(bnpl_issuer);
+  } else {
+    unlinked_issuers.push_back(bnpl_issuer);
+  }
 }
 
 void PaymentsDataManagerTestApi::OnCardArtImagesFetched(

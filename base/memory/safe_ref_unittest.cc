@@ -168,7 +168,7 @@ TEST(SafeRefTest, InvalidAfterMoveConstruction) {
     SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
     EXPECT_CHECK_DEATH(safe3 = std::move(safe));
   }
-  EXPECT_CHECK_DEATH((void)safe->self->i);
+  EXPECT_CHECK_DEATH((void)safe->self->i);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(SafeRefTest, InvalidAfterMoveAssignment) {
@@ -199,7 +199,7 @@ TEST(SafeRefTest, InvalidAfterMoveAssignment) {
     SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
     EXPECT_CHECK_DEATH(safe3 = std::move(safe));
   }
-  EXPECT_CHECK_DEATH((void)safe->self->i);
+  EXPECT_CHECK_DEATH((void)safe->self->i);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(SafeRefTest, InvalidAfterMoveConversionConstruction) {
@@ -229,6 +229,7 @@ TEST(SafeRefTest, InvalidAfterMoveConversionConstruction) {
     SafeRef<ReallyBaseClass> safe3(with.factory.GetSafeRef());
     EXPECT_CHECK_DEATH(safe3 = std::move(safe));
   }
+  // NOLINTNEXTLINE(bugprone-use-after-move)
   EXPECT_CHECK_DEATH((void)static_cast<WithWeak*>(&*safe)->self->i);
 }
 
@@ -260,6 +261,7 @@ TEST(SafeRefTest, InvalidAfterMoveConversionAssignment) {
     SafeRef<ReallyBaseClass> safe3(with.factory.GetSafeRef());
     EXPECT_CHECK_DEATH(safe3 = std::move(safe));
   }
+  // NOLINTNEXTLINE(bugprone-use-after-move)
   EXPECT_CHECK_DEATH((void)static_cast<WithWeak*>(&*safe)->self->i);
 }
 

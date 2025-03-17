@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,13 +28,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -80,15 +75,14 @@ AutofillBubbleBase* ShowUpdateBubble(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-AutofillBubbleBase* ShowSignInPromo(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> move_address_callback) {
+AutofillBubbleBase* ShowSignInPromo(content::WebContents* web_contents,
+                                    const AutofillProfile& autofill_profile) {
   // TODO(crbug.com/381390420): Expose the `AutofillBubbleHandler` in
   // `BrowserWindowInterface` and use that instead.
   return chrome::FindBrowserWithTab(web_contents)
       ->window()
       ->GetAutofillBubbleHandler()
-      ->ShowAddressSignInPromo(web_contents, std::move(move_address_callback));
+      ->ShowAddressSignInPromo(web_contents, autofill_profile);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -167,9 +161,8 @@ void AddressBubblesController::OnUserDecision(
     MaybeShowSignInPromo(profile);
   }
 
-  if ((decision == AutofillClient::AddressPromptUserDecision::kAccepted ||
-       decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) &&
-      base::FeatureList::IsEnabled(::features::kIOSPromoAddressBubble)) {
+  if (decision == AutofillClient::AddressPromptUserDecision::kAccepted ||
+      decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) {
     MaybeShowIOSDektopAddressPromo();
   }
 }
@@ -267,10 +260,7 @@ void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   // Verify if user is eligible for iOS promo, and attempt showing if they are.
-  ios_promos_utils::VerifyIOSPromoEligibility(
-      IOSPromoType::kAddress, browser->profile(),
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->toolbar_button_provider());
+  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress, browser);
 }
 
 void AddressBubblesController::MaybeShowSignInPromo(
@@ -285,34 +275,11 @@ void AddressBubblesController::MaybeShowSignInPromo(
     return;
   }
 
-  // Prepare the move callback that is executed upon sign in.
-  auto move_address_callback = base::BindOnce(
-      [](const std::string& guid, content::WebContents* web_contents) {
-        AddressDataManager& address_data_manager =
-            PersonalDataManagerFactory::GetForBrowserContext(
-                web_contents->GetBrowserContext())
-                ->address_data_manager();
-        const AutofillProfile* autofill_profile =
-            address_data_manager.GetProfileByGUID(guid);
-
-        // Do nothing if the address was not found, e.g. if it was deleted
-        // during the sign in process.
-        if (!autofill_profile) {
-          return;
-        }
-
-        // At this point, the address should be local.
-        CHECK(!autofill_profile->IsAccountProfile());
-        address_data_manager.MigrateProfileToAccount(*autofill_profile);
-      },
-      autofill_profile.value().guid());
-
   // Close the current save bubble.
   HideBubble();
 
   // Open the bubble with the sign in promo.
-  set_bubble_view(
-      ShowSignInPromo(web_contents(), std::move(move_address_callback)));
+  set_bubble_view(ShowSignInPromo(web_contents(), autofill_profile.value()));
   CHECK(bubble_view());
   is_showing_sign_in_promo_ = true;
   UpdatePageActionIcon();

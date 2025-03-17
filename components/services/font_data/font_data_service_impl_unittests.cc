@@ -121,6 +121,60 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 3u);
   EXPECT_EQ(out_result.get(), nullptr);
 }
+
+TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterNoLanguageTags) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  std::string family_name = "Segoe UI";
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  SkUnichar uni_char = 0x0041;  // 'A'
+
+  font_service_->MatchFamilyNameCharacter(
+      family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      {}, uni_char, &out_result);
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  EXPECT_TRUE(out_result->typeface_data->is_font_file());
+  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  std::string family_name = "Segoe UI";
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  SkUnichar uni_char = 0x0041;  // 'A'
+
+  font_service_->MatchFamilyNameCharacter(
+      family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      {"zh"}, uni_char, &out_result);
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  EXPECT_TRUE(out_result->typeface_data->is_font_file());
+  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+}
+
+TEST_F(FontDataServiceImplUnitTest, GetAllFamilyNames) {
+  std::vector<std::string> out_result;
+  font_service_->GetAllFamilyNames(&out_result);
+
+  // This tests that GetAllFamilyNames returns the actual font family names
+  // installed on the system. There's no guarantee that these are going to be
+  // stable across systems, so just assert that the function is returning
+  // something, and that the names are non-empty.
+  EXPECT_GT(out_result.size(), 0UL);
+  for (const auto& family_name : out_result) {
+    EXPECT_GT(family_name.size(), 0UL);
+  }
+}
+
+TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
+  mojom::MatchFamilyNameResultPtr out_result;
+
+  // LegacyMakeTypeface should return the default font if `family_name` is null.
+  font_service_->LegacyMakeTypeface(
+      std::nullopt, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      &out_result);
+  EXPECT_TRUE(out_result->typeface_data->is_font_file());
+  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+}
+
 }  // namespace
 
 }  // namespace font_data_service

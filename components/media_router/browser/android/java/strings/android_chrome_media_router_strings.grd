@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- android_chrome_strings.grd contains strings for VR DFM of Chrome for Android. -->
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="values-af/android_chrome_media_router_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_chrome_media_router_strings.xml" lang="am" type="android" />

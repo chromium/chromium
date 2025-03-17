@@ -20,7 +20,7 @@ constexpr unsigned kNumberOfOutputChannels = 1;
 GainHandler::GainHandler(AudioNode& node,
                          float sample_rate,
                          AudioParamHandler& gain)
-    : AudioHandler(kNodeTypeGain, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeGain, node, sample_rate),
       gain_(&gain),
       sample_accurate_gain_values_(
           GetDeferredTaskHandler().RenderQuantumFrames()) {

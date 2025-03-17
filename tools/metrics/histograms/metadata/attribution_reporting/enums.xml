@@ -200,28 +200,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:ReportCorruptionStatus) -->
 
-<!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
-
-<enum name="ConversionCreateAggregatableReportStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal error"/>
-  <int value="2" label="No capacity for conversion destination"/>
-  <int value="3" label="No matching impressions"/>
-  <int value="4" label="Excessive attributions"/>
-  <int value="5" label="Excessive reporting origins"/>
-  <int value="6" label="No histograms created"/>
-  <int value="7" label="Insufficient aggregatable budget"/>
-  <int value="8" label="No matching source filter data"/>
-  <int value="9" label="Not registered"/>
-  <int value="10" label="Prohibited by browser policy"/>
-  <int value="11" label="Deduplicated"/>
-  <int value="12" label="Report window has passed"/>
-  <int value="13" label="Excessive reports"/>
-  <int value="14" label="Insufficient aggregatable named budget"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_result.mojom:AggregatableResult) -->
-
 <!-- LINT.IfChange(ConversionNavigationDataHostStatus) -->
 
 <enum name="ConversionNavigationDataHostStatus">
@@ -335,18 +313,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCount) -->
-
-<!-- LINT.IfChange(ConversionReportSendRetryCountThirdRetryEnabled) -->
-
-<enum name="ConversionReportSendRetryCountThirdRetryEnabled">
-  <int value="0" label="None"/>
-  <int value="1" label="One retry"/>
-  <int value="2" label="Two retries"/>
-  <int value="3" label="Three retries"/>
-  <int value="4" label="Failed"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCountThirdRetryEnabled) -->
 
 <!-- LINT.IfChange(ConversionReportStatus) -->
 
@@ -471,58 +437,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:RegistrationMethod) -->
-
-<!-- LINT.IfChange(ConversionStorageCreateReportStatus) -->
-
-<enum name="ConversionStorageCreateReportStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Success, but dropped lower-priority report"/>
-  <int value="2" label="Internal error"/>
-  <int value="3" label="No capacity for conversion destination"/>
-  <int value="4" label="No matching impressions"/>
-  <int value="5" label="Deduplicated against existing report"/>
-  <int value="6" label="Excessive attributions"/>
-  <int value="7" label="Priority lower than existing reports"/>
-  <int value="8" label="Source never attributed (noised)"/>
-  <int value="9" label="Excessive reporting origins"/>
-  <int value="10" label="No matching source filter data"/>
-  <int value="11" label="Prohibited by browser policy"/>
-  <int value="12" label="No matching configurations"/>
-  <int value="13" label="Excessive reports"/>
-  <int value="14" label="Falsely attributed source"/>
-  <int value="15" label="Report window has passed"/>
-  <int value="16" label="Not registered"/>
-  <int value="17" label="Report window has not started"/>
-  <int value="18" label="No matching trigger data"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/event_level_result.mojom:EventLevelResult) -->
-
-<!-- LINT.IfChange(ConversionStorageSourceStatus) -->
-
-<enum name="ConversionStorageSourceStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal error"/>
-  <int value="2" label="No capacity for source site"/>
-  <int value="3" label="Excessive unique destination sites"/>
-  <int value="4" label="Excessive reporting orgins"/>
-  <int value="5" label="Prohibited by browser policy"/>
-  <int value="6" label="Success but noise applied"/>
-  <int value="7" label="Excessive destinations (per-reporting rate-limit)"/>
-  <int value="8" label="Excessive destinations (global rate-limit)"/>
-  <int value="9" label="Excessive destinations (both rate-limits)"/>
-  <int value="10" label="Excessive reporting origins per site limit"/>
-  <int value="11" label="Excessive channel capacity"/>
-  <int value="12"
-      label="(Obsolete) Event Report Windows start time is invalid. Removed
-             in 2023/10."/>
-  <int value="13" label="Excessive trigger state cardinality"/>
-  <int value="14" label="Excessive destinations (per reporting site per day)"/>
-  <int value="15" label="Excessive scopes channel capacity"/>
-  <int value="16" label="Excessive trigger event states"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/store_source_result.mojom:StoreSourceResult) -->
 
 <!-- LINT.IfChange(ConversionStorageSqlInitStatus) -->
 

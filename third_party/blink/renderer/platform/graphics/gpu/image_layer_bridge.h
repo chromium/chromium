@@ -7,14 +7,13 @@
 
 #include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
-class CrossThreadSharedBitmap;
 class Layer;
 class TextureLayer;
 }
@@ -54,42 +53,42 @@ class PLATFORM_EXPORT ImageLayerBridge
   void Trace(Visitor* visitor) const {}
 
  private:
-  // SharedMemory bitmap that was registered with SharedBitmapIdRegistrar. Used
-  // only with software compositing.
-  struct RegisteredBitmap {
-    RegisteredBitmap();
-    RegisteredBitmap(RegisteredBitmap&& other);
-    RegisteredBitmap& operator=(RegisteredBitmap&& other);
+  // Resource holding a software SharedImage. Used only with software
+  // compositing.
+  struct SoftwareResource {
+    SoftwareResource();
+    SoftwareResource(SoftwareResource&& other);
+    SoftwareResource& operator=(SoftwareResource&& other);
 
-    scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
     base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
   };
 
-  // Returns a SharedMemory bitmap of |size|. Tries to recycle returned bitmaps
-  // first and allocates a new bitmap if necessary. Note this will delete
-  // recycled bitmaps that are the wrong size.
-  RegisteredBitmap CreateOrRecycleBitmap(const gfx::Size& size,
-                                         viz::SharedImageFormat format);
+  // Returns a software resource of |size|. Tries to recycle returned resources
+  // first and allocates a new resource if necessary. Note this will delete
+  // recycled resources that are the wrong size.
+  SoftwareResource CreateOrRecycleSoftwareResource(
+      const gfx::Size& size,
+      viz::SharedImageFormat format);
 
   void ResourceReleasedGpu(scoped_refptr<StaticBitmapImage>,
                            const gpu::SyncToken&,
                            bool lost_resource);
 
-  void ResourceReleasedSoftware(RegisteredBitmap registered,
+  void ResourceReleasedSoftware(SoftwareResource resource,
                                 const gpu::SyncToken&,
                                 bool lost_resource);
 
   scoped_refptr<StaticBitmapImage> image_;
   scoped_refptr<cc::TextureLayer> layer_;
 
-  // SharedMemory bitmaps that can be recycled.
-  Vector<RegisteredBitmap> recycled_bitmaps_;
+  // SharedMemory resources that can be recycled.
+  Vector<SoftwareResource> recycled_software_resources_;
 
   bool disposed_ = false;
   bool has_presented_since_last_set_image_ = false;
-  OpacityMode opacity_mode_ = kNonOpaque;
+  bool is_opaque_ = false;
 };
 
 }  // namespace blink

@@ -7,7 +7,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {TextEditHandler} from '../editing/text_edit_handler.js';
+import type {TextEditHandler} from '../editing/text_edit_handler.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 

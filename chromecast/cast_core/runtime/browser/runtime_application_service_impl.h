@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
@@ -59,7 +60,14 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void Stop(const cast::runtime::StopApplicationRequest& request,
             StatusCallback callback);
 
-  const std::string& app_id() { return runtime_application_->GetAppId(); }
+  // Returns current application ID.
+  const std::string& app_id() const { return runtime_application_->GetAppId(); }
+
+  // Returns RuntimeApplicationService gRPC server endpoint.
+  const std::string& endpoint() const {
+    CHECK(grpc_server_);
+    return grpc_server_->endpoint();
+  }
 
   // EmbedderApplication implementation:
   void NotifyApplicationStarted() override;
@@ -87,6 +95,8 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void SetTouchInput(cast::common::TouchInput::Type state);
   void SetVisibility(cast::common::Visibility::Type state);
   void SetMediaBlocking(cast::common::MediaState::Type state);
+
+  void SetApplicationMediaCapabilities();
 
   // Called on an error is hit during running of cast mirroring or remoting.
   void OnStreamingApplicationError(cast_receiver::Status status);
@@ -141,6 +151,8 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   raw_ref<CastWebService> web_service_;
+
+  shell::ApplicationMediaCapabilities app_media_capabilities_;
 
   // The WebView associated with the window in which the Cast application is
   // displayed.

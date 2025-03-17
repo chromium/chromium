@@ -10,9 +10,11 @@
 #include "ash/display/display_util.h"
 #include "ash/display/shared_display_edge_indicator.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/host/ash_window_tree_host.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_event_dispatcher.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/util/display_manager_util.h"
@@ -192,9 +194,14 @@ bool ExtendedMouseWarpController::WarpMouseCursorInNativeCoords(
     // The mouse must move.
     aura::Window* dst_window = Shell::GetRootWindowForDisplayId(
         in_a_edge ? warp->b_display_id_ : warp->a_display_id_);
+    aura::Window* src_window = Shell::GetRootWindowForDisplayId(
+        in_a_edge ? warp->a_display_id_ : warp->b_display_id_);
     AshWindowTreeHost* target_ash_host =
         RootWindowController::ForWindow(dst_window)->ash_host();
+    AshWindowTreeHost* src_ash_host =
+        RootWindowController::ForWindow(src_window)->ash_host();
 
+    src_ash_host->AsWindowTreeHost()->dispatcher()->OnHostCursorExit();
     MoveCursorTo(target_ash_host, point_in_screen, update_mouse_location_now);
     return true;
   }

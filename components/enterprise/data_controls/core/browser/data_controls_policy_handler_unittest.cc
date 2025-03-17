@@ -503,8 +503,6 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
                ]
              }
           ])",
-        u"Error at PolicyForTesting[0].restrictions[0].class: Schema "
-        u"validation error: Invalid value for string\n"
         u"Error at PolicyForTesting[0]: \"PRINTING\" is not a supported "
         u"restriction on this platform",
     },
@@ -605,7 +603,8 @@ TEST_F(DataControlsPolicyHandlerTest, WarnInvalidSchema) {
 
     ASSERT_FALSE(errors.empty());
     ASSERT_TRUE(errors.HasError(kPolicyName));
-    std::u16string messages = errors.GetErrorMessages(kPolicyName);
+    std::u16string messages = errors.GetErrorMessages(
+        kPolicyName, policy::PolicyMap::MessageType::kWarning);
     ASSERT_EQ(messages,
               u"Error at PolicyForTesting[2]: Schema validation error: Policy "
               u"type mismatch: expected: \"dictionary\", actual: \"integer\".");
@@ -625,8 +624,6 @@ TEST_F(DataControlsPolicyHandlerTest, AllowsPartiallyValidRules) {
     std::u16string messages = errors.GetErrorMessages(kPolicyName);
     ASSERT_EQ(
         messages,
-        u"Error at PolicyForTesting[3].restrictions[0].class: Schema "
-        u"validation error: Invalid value for string\n"
         u"Error at PolicyForTesting[2]: Keys \"and, or\" cannot be set in the "
         u"same dictionary");
 

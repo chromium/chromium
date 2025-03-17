@@ -10,14 +10,9 @@ source_set("app_service") {
     "publisher_helper.h",
     "web_app_publisher_helper.cc",
     "web_app_publisher_helper.h",
+    "web_apps.cc",
+    "web_apps.h",
   ]
-
-  if (!is_chromeos_lacros) {
-    sources += [
-      "web_apps.cc",
-      "web_apps.h",
-    ]
-  }
 
   # TODO(crbug.com/40251079): Remove circular dependencies.
   allow_circular_includes_from = [ "//chrome/browser/apps/app_service" ]
@@ -44,42 +39,24 @@ source_set("app_service") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/apps/browser_instance" ]
-    allow_circular_includes_from += [ "//chrome/browser/apps/browser_instance" ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
-      "//ash/components/arc:arc_base",
       "//ash/public/cpp",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/apps/almanac_api_client",
-      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/apps/browser_instance",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/system_web_apps",
-      "//chrome/browser/ash/system_web_apps/types",
       "//chromeos/ash/components/file_manager:constants",
+      "//chromeos/ash/experiences/arc:arc_base",
+      "//chromeos/ash/experiences/system_web_apps/types",
       "//components/app_restore",
       "//components/services/app_service/public/cpp:instance_update",
       "//extensions/browser/api/file_handlers",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "lacros_web_apps_controller.cc",
-      "lacros_web_apps_controller.h",
-    ]
-
-    deps += [
-      "//chromeos/constants",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/startup",
-    ]
+    allow_circular_includes_from += [ "//chrome/browser/apps/browser_instance" ]
   }
 }
 
@@ -109,39 +86,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      ":test_support",
-      "//chromeos/lacros",
-      "//chromeos/startup",
-    ]
-  }
-}
-
-source_set("test_support") {
-  testonly = true
-
-  sources = []
-  deps = []
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "test/loopback_crosapi_app_service_proxy.cc",
-      "test/loopback_crosapi_app_service_proxy.h",
-    ]
-
-    deps += [
-      ":app_service",
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/browser/apps/app_service",
-      "//chromeos/crosapi/mojom",
-      "//components/services/app_service",
-      "//mojo/public/cpp/bindings",
-    ]
   }
 }

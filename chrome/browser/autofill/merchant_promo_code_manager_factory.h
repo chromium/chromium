@@ -23,7 +23,7 @@ class MerchantPromoCodeManager;
 // cleans up the associated MerchantPromoCodeManager.
 class MerchantPromoCodeManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the MerchantPromoCodeManager for |profile|, creating it
+  // Returns the MerchantPromoCodeManager for `profile`, creating it
   // if it is not yet created.
   static MerchantPromoCodeManager* GetForProfile(Profile* profile);
 

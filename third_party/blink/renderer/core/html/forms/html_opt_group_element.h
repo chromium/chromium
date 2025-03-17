@@ -42,7 +42,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
 
   bool IsDisabledFormControl() const override;
   String DefaultToolTip() const override;
-  HTMLSelectElement* OwnerSelectElement() const;
+  HTMLSelectElement* OwnerSelectElement(bool skip_check = false) const;
 
   String GroupLabelText() const;
   HTMLDivElement& OptGroupLabelElement() const;
@@ -66,6 +66,8 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void UpdateGroupLabel();
 
   Member<HTMLSlotElement> opt_group_slot_;
+  Member<HTMLDivElement> label_;
+  Member<HTMLSelectElement> owner_select_;
 
   // customizable_select_rendering_ is set to true when the CustomizableSelect
   // flag is enabled and this element is in the DOM subtree of a <select> which

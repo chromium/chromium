@@ -13,8 +13,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -68,7 +69,7 @@ ScopedServer::~ScopedServer() {
     // Forces `request_matcher` to log to help debugging, unless the
     // matcher matches the empty request.
     ADD_FAILURE() << "Unmet expectation: ";
-    base::ranges::for_each(request_matcher_group, [](request::Matcher matcher) {
+    std::ranges::for_each(request_matcher_group, [](request::Matcher matcher) {
       matcher.Run(HttpRequest());
     });
   }
@@ -85,7 +86,19 @@ void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,
                               const std::string& response_body,
                               net::HttpStatusCode http_status_code) {
   request_matcher_groups_.push_back(std::move(request_matcher_group));
-  responses_.push_back(std::make_pair(http_status_code, response_body));
+  responses_.emplace_back(
+      http_status_code,
+      base::BindRepeating([](const std::string& response_body,
+                             bool v4) { return response_body; },
+                          response_body));
+}
+
+void ScopedServer::ExpectOnce(
+    request::MatcherGroup request_matcher_group,
+    base::RepeatingCallback<std::string(bool)> response_body_provider,
+    net::HttpStatusCode http_status_code) {
+  request_matcher_groups_.push_back(std::move(request_matcher_group));
+  responses_.emplace_back(http_status_code, response_body_provider);
 }
 
 std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
@@ -100,10 +113,10 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
-  if (!base::ranges::all_of(request_matcher_groups_.front(),
-                            [&request](request::Matcher matcher) {
-                              return matcher.Run(request);
-                            })) {
+  if (!std::ranges::all_of(request_matcher_groups_.front(),
+                           [&request](request::Matcher matcher) {
+                             return matcher.Run(request);
+                           })) {
     VLOG(0) << "Request did not match.";
     ADD_FAILURE() << "Unmatched " << SerializeRequest(request);
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
@@ -116,7 +129,10 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response.reset(new net::test_server::DelayedHttpResponse(download_delay_));
   }
 
-  const auto& [response_code, response_body] = responses_.front();
+  const auto& [response_code, response_body_provider] = responses_.front();
+  const std::string response_body =
+      response_body_provider.Run(re2::RE2::PartialMatch(
+          request.decoded_content, "\"protocol\": *\"4\\.0\""));
   response->set_code(response_code);
   if (base::StartsWith(request.relative_url, device_management_path())) {
     response->set_content_type("application/x-protobuf");

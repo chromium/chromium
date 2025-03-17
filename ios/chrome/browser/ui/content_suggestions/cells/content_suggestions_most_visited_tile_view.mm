@@ -10,7 +10,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_elements_provider.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -34,32 +35,32 @@
                      tileType:ContentSuggestionsTileType::kMostVisited
                  inMagicStack:inMagicStack];
   if (self) {
-      self.imageContainerView.backgroundColor =
-          [UIColor colorNamed:kGrey100Color];
-      self.imageContainerView.layer.cornerRadius =
-          kMagicStackImageContainerWidth / 2;
-      self.imageContainerView.layer.masksToBounds = NO;
-      self.imageContainerView.clipsToBounds = YES;
+    self.imageContainerView.backgroundColor =
+        [UIColor colorNamed:kGrey100Color];
+    self.imageContainerView.layer.cornerRadius =
+        kMagicStackImageContainerWidth / 2;
+    self.imageContainerView.layer.masksToBounds = NO;
+    self.imageContainerView.clipsToBounds = YES;
 
-      UIStackView* stackView = [[UIStackView alloc] init];
-      stackView.translatesAutoresizingMaskIntoConstraints = NO;
-      stackView.axis = UILayoutConstraintAxisVertical;
-      stackView.spacing = 10;
-      stackView.alignment = UIStackViewAlignmentCenter;
-      stackView.distribution = UIStackViewDistributionFill;
+    UIStackView* stackView = [[UIStackView alloc] init];
+    stackView.translatesAutoresizingMaskIntoConstraints = NO;
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.spacing = 10;
+    stackView.alignment = UIStackViewAlignmentCenter;
+    stackView.distribution = UIStackViewDistributionFill;
 
-      [stackView addArrangedSubview:self.imageContainerView];
-      [stackView addArrangedSubview:self.titleLabel];
+    [stackView addArrangedSubview:self.imageContainerView];
+    [stackView addArrangedSubview:self.titleLabel];
 
-      [NSLayoutConstraint activateConstraints:@[
-        [self.imageContainerView.widthAnchor
-            constraintEqualToConstant:kMagicStackImageContainerWidth],
-        [self.imageContainerView.heightAnchor
-            constraintEqualToAnchor:self.imageContainerView.widthAnchor],
-      ]];
+    [NSLayoutConstraint activateConstraints:@[
+      [self.imageContainerView.widthAnchor
+          constraintEqualToConstant:kMagicStackImageContainerWidth],
+      [self.imageContainerView.heightAnchor
+          constraintEqualToAnchor:self.imageContainerView.widthAnchor],
+    ]];
 
-      [self addSubview:stackView];
-      AddSameConstraints(stackView, self);
+    [self addSubview:stackView];
+    AddSameConstraints(stackView, self);
 
     _faviconView = [[FaviconView alloc] init];
     _faviconView.font = [UIFont systemFontOfSize:22];
@@ -106,8 +107,30 @@
 - (UIContextMenuConfiguration*)contextMenuInteraction:
                                    (UIContextMenuInteraction*)interaction
                        configurationForMenuAtLocation:(CGPoint)location {
-  return [self.menuProvider contextMenuConfigurationForItem:self.config
-                                                   fromView:self];
+  NSArray<UIMenuElement*>* elements =
+      [self.menuElementsProvider defaultContextMenuElementsForItem:self.config
+                                                          fromView:self];
+
+  if (self.inMagicStack) {
+    // Add the menu items for the most visited tile as well.
+    CHECK(self.magicStackModuleDelegate);
+    UIMenu* subMenu = [UIMenu menuWithTitle:@""
+                                      image:nil
+                                 identifier:nil
+                                    options:UIMenuOptionsDisplayInline
+                                   children:elements];
+    elements = [@[ subMenu ] arrayByAddingObjectsFromArray:
+                                 [self.magicStackModuleDelegate
+                                         contextMenuElementsForCurrentModule]];
+  }
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        return [UIMenu menuWithTitle:@"" children:elements];
+      };
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
 }
 
 - (UITargetedPreview*)contextMenuInteraction:
@@ -124,6 +147,15 @@
       [UIBezierPath bezierPathWithRoundedRect:previewPath cornerRadius:12];
   return [[UITargetedPreview alloc] initWithView:self
                                       parameters:previewParameters];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (configuration) {
+    [self.magicStackModuleDelegate
+        notifyContextMenuInteractionEndWithAnimator:animator];
+  }
 }
 
 #pragma mark - AccessibilityCustomAction

@@ -464,7 +464,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
                 .thenReturn(STRING_PARAM_NATIVE_1);
         CachedFlagUtils.cacheNativeFlags(List.of(Arrays.asList(mCrashyFeature, mOkFeature)));
         CachedFlagUtils.cacheFeatureParams(
-                Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
+                List.of(Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam)));
 
         clearMemory();
         // Cached values became true(crashy)/true/native1.
@@ -696,7 +696,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
 
         CachedFlagUtils.cacheNativeFlags(List.of(Arrays.asList(mCrashyFeature, mOkFeature)));
         CachedFlagUtils.cacheFeatureParams(
-                Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
+                List.of(Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam)));
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mExecutorRule.runAllBackgroundAndUi();

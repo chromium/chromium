@@ -24,6 +24,8 @@
 
 #include <array>
 #include <bitset>
+#include <concepts>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -360,6 +362,13 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // "global" information that cannot be changed by CSS.
   bool IsComputationallyIndependent() const;
 
+  // Returns true if the value has a calculation that depends on an element
+  // context. For instance sibling-index().
+  //
+  // Note that font-relative units are not element-dependent since they resolve
+  // against the initial font outside an element context.
+  bool IsElementDependent() const;
+
   // True if this value contains any of cq[w,h,i,b,min,max], false otherwise.
   bool HasContainerRelativeUnits() const;
 
@@ -442,8 +451,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   }
 
   template <typename T>
-  inline T ConvertTo(const CSSLengthResolver&)
-      const;  // Defined in CSSPrimitiveValueMappings.h
+    requires std::integral<T> || std::floating_point<T>
+  inline T ConvertTo(const CSSLengthResolver& length_resolver) const {
+    DCHECK(IsNumber() || IsPercentage());
+    return ClampTo<T>(ComputeNumber(length_resolver));
+  }
 
   int ComputeInteger(const CSSLengthResolver&) const;
   // NOTE: As a special exception, we allow treating percentage values

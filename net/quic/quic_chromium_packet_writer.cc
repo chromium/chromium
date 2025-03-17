@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/quic/quic_chromium_packet_writer.h"
 
 #include <string>
@@ -67,6 +72,22 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "QuicChromiumClientStream classes for references."
     )");
 
+EcnCodePoint QuicheEcnToChromiumEcn(const quic::QuicEcnCodepoint codepoint) {
+  switch (codepoint) {
+    case quic::ECN_NOT_ECT:
+      return ECN_NOT_ECT;
+    case quic::ECN_ECT1:
+      return ECN_ECT1;
+    case quic::ECN_ECT0:
+      return ECN_ECT0;
+    case quic::ECN_CE:
+      return ECN_CE;
+    default:
+      break;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 QuicChromiumPacketWriter::ReusableIOBuffer::ReusableIOBuffer(size_t capacity)
@@ -93,7 +114,11 @@ QuicChromiumPacketWriter::QuicChromiumPacketWriter(
       &QuicChromiumPacketWriter::OnWriteComplete, weak_factory_.GetWeakPtr());
 }
 
-QuicChromiumPacketWriter::~QuicChromiumPacketWriter() = default;
+QuicChromiumPacketWriter::~QuicChromiumPacketWriter() {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Net.QuicSession.OutgoingEcn",
+      static_cast<EcnPermutations>(outgoing_ecn_history_));
+}
 
 void QuicChromiumPacketWriter::set_force_write_blocked(
     bool force_write_blocked) {
@@ -123,12 +148,18 @@ void QuicChromiumPacketWriter::SetPacket(const char* buffer, size_t buf_len) {
 quic::WriteResult QuicChromiumPacketWriter::WritePacket(
     const char* buffer,
     size_t buf_len,
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
     quic::PerPacketOptions* /*options*/,
-    const quic::QuicPacketWriterParams& /*params*/) {
+    const quic::QuicPacketWriterParams& params) {
   CHECK(!IsWriteBlocked());
   SetPacket(buffer, buf_len);
+  EcnCodePoint new_ecn = QuicheEcnToChromiumEcn(params.ecn_codepoint);
+  outgoing_ecn_history_ |= (1 << static_cast<uint8_t>(new_ecn));
+  if (new_ecn != outgoing_ecn_) {
+    socket_->SetTos(DSCP_NO_CHANGE, new_ecn);
+    outgoing_ecn_ = new_ecn;
+  }
   return WritePacketToSocketImpl();
 }
 
@@ -271,11 +302,11 @@ bool QuicChromiumPacketWriter::IsBatchMode() const {
 }
 
 bool QuicChromiumPacketWriter::SupportsEcn() const {
-  return false;
+  return true;
 }
 
 quic::QuicPacketBuffer QuicChromiumPacketWriter::GetNextWriteLocation(
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address) {
   return {nullptr, nullptr};
 }

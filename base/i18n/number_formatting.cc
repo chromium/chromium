@@ -26,9 +26,7 @@ namespace {
 // A simple wrapper around icu::NumberFormat that allows for resetting it
 // (as LazyInstance does not).
 struct NumberFormatWrapper {
-  NumberFormatWrapper() {
-    Reset();
-  }
+  NumberFormatWrapper() { Reset(); }
 
   void Reset() {
     // There's no ICU call to destroy a NumberFormat object other than

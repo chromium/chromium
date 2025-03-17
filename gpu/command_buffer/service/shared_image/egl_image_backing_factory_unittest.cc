@@ -15,7 +15,6 @@
 #include "base/bits.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -111,7 +110,7 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
 }
 
 class EGLImageBackingFactoryThreadSafeTest
-    : public testing::TestWithParam<std::tuple<bool, viz::SharedImageFormat>> {
+    : public testing::TestWithParam<viz::SharedImageFormat> {
  public:
   EGLImageBackingFactoryThreadSafeTest()
       : shared_image_manager_(std::make_unique<SharedImageManager>(true)) {}
@@ -165,11 +164,12 @@ class EGLImageBackingFactoryThreadSafeTest
   }
 
   bool use_passthrough() {
-    return std::get<0>(GetParam()) &&
-           gles2::PassthroughCommandDecoderSupported();
+    static bool passthrough = gles2::UsePassthroughCommandDecoder(
+        base::CommandLine::ForCurrentProcess());
+    return passthrough;
   }
 
-  viz::SharedImageFormat get_format() { return std::get<1>(GetParam()); }
+  viz::SharedImageFormat get_format() { return GetParam(); }
 
  protected:
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
@@ -233,9 +233,10 @@ class EGLImageBackingFactoryThreadSafeTest
     wgpu::Buffer buffer = device.CreateBuffer(&buffer_desc);
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
-    auto src = wgpu::ImageCopyTexture{.texture = texture, .origin = {0, 0, 0}};
-    auto dst = wgpu::ImageCopyBuffer{.layout = {.bytesPerRow = buffer_stride},
-                                     .buffer = buffer};
+    auto src =
+        wgpu::TexelCopyTextureInfo{.texture = texture, .origin = {0, 0, 0}};
+    auto dst = wgpu::TexelCopyBufferInfo{
+        .layout = {.bytesPerRow = buffer_stride}, .buffer = buffer};
     auto copy_size = wgpu::Extent3D{static_cast<uint32_t>(size.width()),
                                     static_cast<uint32_t>(size.height(), 1)};
     encoder.CopyTextureToBuffer(&src, &dst, &copy_size);
@@ -498,8 +499,8 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
-  WGPUInstanceDescriptor instance_desc = {
-      .features =
+  wgpu::InstanceDescriptor instance_desc = {
+      .capabilities =
           {
               .timedWaitAnyEnable = true,
           },
@@ -791,19 +792,14 @@ const auto kSharedImageFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888);
 
 std::string TestParamToString(
-    const testing::TestParamInfo<std::tuple<bool, viz::SharedImageFormat>>&
-        param_info) {
-  const bool allow_passthrough = std::get<0>(param_info.param);
-  const viz::SharedImageFormat format = std::get<1>(param_info.param);
-  return base::StringPrintf(
-      "%s_%s", (allow_passthrough ? "AllowPassthrough" : "DisallowPassthrough"),
-      format.ToString().c_str());
+    const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
+  const viz::SharedImageFormat format = param_info.param;
+  return format.ToString();
 }
 
 INSTANTIATE_TEST_SUITE_P(Service,
                          EGLImageBackingFactoryThreadSafeTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            kSharedImageFormats),
+                         kSharedImageFormats,
                          TestParamToString);
 
 }  // anonymous namespace

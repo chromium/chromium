@@ -131,8 +131,7 @@ class TabStripControlButton : public views::LabelButton,
   float flat_edge_factor_ = 1;
 
   // Tab strip that contains this button.
-  raw_ptr<TabStripController, AcrossTasksDanglingUntriaged>
-      tab_strip_controller_;
+  raw_ptr<TabStripController> tab_strip_controller_;
 
   // Stored ColorId values to differentiate for ChromeRefresh.
   ui::ColorId foreground_frame_active_color_id_;

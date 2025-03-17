@@ -9,6 +9,7 @@ import "gpu/ipc/common/context_result.mojom";
 import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/shared_image_pool_id.mojom";
+import "gpu/ipc/common/shared_image_pool_client_interface.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
@@ -60,7 +61,7 @@ struct ContextCreationAttribs {
   bool enable_gles2_interface = true;
   bool enable_grcontext = false;
   bool enable_raster_interface = false;
-  bool enable_oop_rasterization = false;
+  bool enable_gpu_rasterization = false;
 
   ContextType context_type = kOpenGLES2;
 };
@@ -71,6 +72,7 @@ struct CreateCommandBufferParams {
   SchedulingPriority stream_priority;
   ContextCreationAttribs attribs;
   url.mojom.Url active_url;
+  string label;
 };
 
 // Corresponds to the definition in gpu/command_buffer/common/constants.h.
@@ -532,6 +534,12 @@ union DeferredSharedImageRequest {
   // See UnregisterDxgiFenceParams.
   [EnableIf=is_win]
   UnregisterDxgiFenceParams unregister_dxgi_fence;
+
+  // See CreateSharedImagePoolParams.
+  CreateSharedImagePoolParams create_shared_image_pool;
+
+  // See DestroySharedImagePoolParams.
+  DestroySharedImagePoolParams destroy_shared_image_pool;
 };
 
 // Asynchronously synchronize the put and get offsets of both processes.
@@ -721,4 +729,22 @@ struct UnregisterDxgiFenceParams {
 
   // The DXGIHandleToken to identifying the fence needs to be cleared.
   gfx.mojom.DXGIHandleToken dxgi_token;
+};
+
+// Params needed when creating a SharedImagePool in the GPU service side.
+struct CreateSharedImagePoolParams {
+  // SharedImagePoolId corresponding to which the service side SharedImagePool
+  // will be created.
+  SharedImagePoolId pool_id;
+
+  // Interface used by service side SharedImagePool to communicate with client
+  // side SharedImagePool.
+  pending_remote<gpu.mojom.SharedImagePoolClientInterface> client_remote;
+};
+
+// Params needed to destroy a specific SharedImagePool in the GPU service side.
+struct DestroySharedImagePoolParams {
+  // SharedImagePool in the service side corresponding to the SharedImagePoolId
+  // will be destroyed.
+  SharedImagePoolId pool_id;
 };

@@ -135,7 +135,11 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   int used_column_count_;
   LayoutUnit column_inline_size_;
   LayoutUnit column_inline_progression_;
-  LayoutUnit column_block_size_;
+
+  // The remaining space available to columns in the multicol container, if
+  // block-size isn't auto.
+  LayoutUnit remaining_content_block_size_;
+
   LayoutUnit intrinsic_block_size_;
   LayoutUnit tallest_unbreakable_block_size_;
   bool is_constrained_by_outer_fragmentation_context_ = false;

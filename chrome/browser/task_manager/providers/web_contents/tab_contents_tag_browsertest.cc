@@ -57,7 +57,7 @@ struct TestPageData {
 // The below test files are available in src/chrome/test/data/
 // TODO(afakhry): Add more test pages here as needed (e.g. pages that are hosted
 // in the tabs as apps or extensions).
-const auto kTestPages = std::to_array<TestPageData>({
+constexpr auto kTestPages = std::to_array<TestPageData>({
     {"/title1.html", "", Task::RENDERER, IDS_TASK_MANAGER_TAB_PREFIX},
     {"/title2.html", "Title Of Awesomeness", Task::RENDERER,
      IDS_TASK_MANAGER_TAB_PREFIX},

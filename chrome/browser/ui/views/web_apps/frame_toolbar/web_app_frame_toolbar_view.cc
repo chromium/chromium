@@ -189,6 +189,11 @@ WebAppFrameToolbarView::GetExtensionsToolbarContainer() {
   return right_container_->extensions_container();
 }
 
+PinnedToolbarActionsContainer*
+WebAppFrameToolbarView::GetPinnedToolbarActionsContainer() {
+  return right_container_->pinned_toolbar_actions_container();
+}
+
 gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
   const int size = GetLayoutConstant(WEB_APP_MENU_BUTTON_SIZE);
   return gfx::Size(size, size);
@@ -208,6 +213,12 @@ PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
   return right_container_->page_action_icon_controller()->GetIconView(type);
 }
 
+page_actions::PageActionView* WebAppFrameToolbarView::GetPageActionView(
+    actions::ActionId action_id) {
+  return right_container_->page_action_container()->GetPageActionView(
+      action_id);
+}
+
 AppMenuButton* WebAppFrameToolbarView::GetAppMenuButton() {
   return right_container_->web_app_menu_button();
 }
@@ -220,7 +231,7 @@ gfx::Rect WebAppFrameToolbarView::GetFindBarBoundingBox(int contents_bottom) {
   // If LTR find bar will be right aligned so align to right edge of app menu
   // button. Otherwise it will be left aligned so align to the left edge of the
   // app menu button.
-  views::View* anchor_view = GetAnchorView(PageActionIconType::kFind);
+  views::View* anchor_view = GetAnchorView(std::nullopt);
   gfx::Rect anchor_bounds =
       anchor_view->ConvertRectToWidget(anchor_view->GetLocalBounds());
   int x_pos = 0;
@@ -242,7 +253,7 @@ views::AccessiblePaneView* WebAppFrameToolbarView::GetAsAccessiblePaneView() {
 }
 
 views::View* WebAppFrameToolbarView::GetAnchorView(
-    std::optional<PageActionIconType> type) {
+    std::optional<actions::ActionId> action_id) {
   views::View* anchor = GetAppMenuButton();
   return anchor ? anchor : this;
 }
@@ -268,8 +279,8 @@ IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {
   return nullptr;
 }
 
-DownloadToolbarButtonView* WebAppFrameToolbarView::GetDownloadButton() {
-  return right_container_ ? right_container_->download_button() : nullptr;
+ToolbarButton* WebAppFrameToolbarView::GetDownloadButton() {
+  return right_container_ ? right_container_->GetDownloadButton() : nullptr;
 }
 
 bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,

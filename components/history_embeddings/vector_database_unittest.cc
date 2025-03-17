@@ -17,10 +17,13 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
+
+using passage_embeddings::Embedding;
 
 namespace {
 

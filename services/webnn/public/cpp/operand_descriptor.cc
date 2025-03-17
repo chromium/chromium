@@ -4,15 +4,25 @@
 
 #include "services/webnn/public/cpp/operand_descriptor.h"
 
+#include <algorithm>
 #include <numeric>
 
+#include "base/containers/to_vector.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
+#include "base/types/expected_macros.h"
+#include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 
 namespace webnn {
 
-// static
-base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
+namespace {
+
+#define ASSIGN_OR_RETURN_ERROR_WITH_LABEL_IF_ERROR(lhs, rexpr, label) \
+  ASSIGN_OR_RETURN(lhs, rexpr, [&label](std::string error) {          \
+    return ErrorWithLabel(label, error);                              \
+  });
+
+base::expected<uint64_t, std::string> ValidateAndGetByteLength(
     OperandDataType data_type,
     base::span<const uint32_t> shape) {
   // TODO(crbug.com/329482489): Specify the max rank of an operand. Consider
@@ -25,7 +35,7 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
 
   // Enforce dimension range according to
   // https://www.w3.org/TR/webnn/#valid-dimension.
-  if (base::ranges::any_of(shape, [](uint32_t dimension) {
+  if (std::ranges::any_of(shape, [](uint32_t dimension) {
         return !base::CheckedNumeric<int32_t>(dimension).IsValid();
       })) {
     return base::unexpected(
@@ -44,7 +54,7 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
   // up an integer multiple of 8 to calculate the `checked_number_of_bytes`.
   base::CheckedNumeric<uint64_t> checked_number_of_bytes =
       (checked_number_of_elements.Cast<uint64_t>() *
-           GetBitsPerElement(data_type) +
+           OperandDescriptor::GetBitsPerElement(data_type) +
        7) /
       8;
 
@@ -60,16 +70,42 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
         "Invalid descriptor: All dimensions should be positive.");
   }
 
-  return OperandDescriptor(data_type,
-                           std::vector<uint32_t>(shape.begin(), shape.end()));
+  return number_of_bytes;
+}
+
+}  // namespace
+
+// static
+base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
+    const ContextProperties& context_properties,
+    OperandDataType data_type,
+    base::span<const uint32_t> shape,
+    std::string_view label) {
+  ASSIGN_OR_RETURN_ERROR_WITH_LABEL_IF_ERROR(
+      uint64_t byte_length, ValidateAndGetByteLength(data_type, shape), label);
+
+  if (byte_length > context_properties.tensor_byte_length_limit) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedTensorSizeError(
+                   byte_length, context_properties.tensor_byte_length_limit)));
+  }
+  return OperandDescriptor(data_type, base::ToVector(shape));
+}
+
+// static
+base::expected<OperandDescriptor, std::string>
+OperandDescriptor::CreateForDeserialization(OperandDataType data_type,
+                                            base::span<const uint32_t> shape) {
+  RETURN_IF_ERROR(ValidateAndGetByteLength(data_type, shape));
+
+  return OperandDescriptor(data_type, base::ToVector(shape));
 }
 
 // static
 OperandDescriptor OperandDescriptor::UnsafeCreateForTesting(
     OperandDataType data_type,
     base::span<const uint32_t> shape) {
-  return OperandDescriptor(data_type,
-                           std::vector<uint32_t>(shape.begin(), shape.end()));
+  return OperandDescriptor(data_type, base::ToVector(shape));
 }
 
 // static

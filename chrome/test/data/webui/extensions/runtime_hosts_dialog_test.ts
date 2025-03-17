@@ -49,7 +49,7 @@ suite('RuntimeHostsDialog', function() {
   });
 
   test('valid input', async function() {
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
@@ -69,7 +69,7 @@ suite('RuntimeHostsDialog', function() {
   test('invalid input', async () => {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     assertFalse(input.invalid);
     const submit = dialog.$.submit;
@@ -98,7 +98,7 @@ suite('RuntimeHostsDialog', function() {
   test('delegate indicates invalid input', async function() {
     delegate.acceptRuntimeHostPermission = false;
 
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     const site = 'http://....a';
     input.value = site;
@@ -121,7 +121,7 @@ suite('RuntimeHostsDialog', function() {
     const newPattern = 'http://chromium.org/*';
 
     dialog.currentSite = oldPattern;
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = newPattern;
     input.dispatchEvent(
@@ -167,7 +167,7 @@ suite('RuntimeHostsDialog', function() {
 
   test('update site access', async function() {
     dialog.updateHostAccess = true;
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
@@ -241,23 +241,23 @@ suite('RuntimeHostsDialog', function() {
     await delegate.whenCalled('getUserSiteSettings');
     await microtasksFinished();
 
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = 'http://www.nomatch.com';
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     await microtasksFinished();
     assertFalse(input.invalid);
-    assertFalse(isVisible(dialog.shadowRoot!.querySelector(
-        '.matching-restricted-sites-warning')));
+    assertFalse(isVisible(
+        dialog.shadowRoot.querySelector('.matching-restricted-sites-warning')));
 
     input.value = 'http://*.restricted.com';
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     await microtasksFinished();
     assertFalse(input.invalid);
-    assertTrue(isVisible(dialog.shadowRoot!.querySelector(
-        '.matching-restricted-sites-warning')));
+    assertTrue(isVisible(
+        dialog.shadowRoot.querySelector('.matching-restricted-sites-warning')));
 
     const submit = dialog.$.submit;
     assertFalse(submit.disabled);

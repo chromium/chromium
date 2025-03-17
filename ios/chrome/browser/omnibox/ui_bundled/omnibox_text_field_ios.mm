@@ -16,7 +16,7 @@
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -53,6 +53,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 @interface OmniboxTextFieldIOS () <UIGestureRecognizerDelegate>
 
 @property(nonatomic, assign, getter=isPreEditing) BOOL preEditing;
+
+/// Optional text displayed after user and autocomplete text.
+@property(nonatomic, strong) NSAttributedString* attributedAdditionalText;
 
 @end
 
@@ -126,6 +129,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
     [self pasteboardDidChange:nil];
 
+    // Similar logic as `omnibox_view_controller.mm`.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(applicationDidBecomeActive:)
+               name:UIApplicationDidBecomeActiveNotification
+             object:nil];
+
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
           @[ UITraitPreferredContentSizeCategory.class ]);
@@ -141,6 +151,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   NOTREACHED();
 }
 
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)setText:(NSAttributedString*)text
     userTextLength:(size_t)userTextLength {
   DCHECK_LE(userTextLength, text.length);
@@ -150,6 +164,22 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
   NSUInteger autocompleteLength = text.length - userTextLength;
   [self setTextInternal:text autocompleteLength:autocompleteLength];
+}
+
+- (void)setAdditionalText:(NSString*)additionalText {
+  if (!additionalText.length) {
+    self.attributedAdditionalText = nil;
+    return;
+  }
+  NSMutableAttributedString* additionalAttributedText =
+      [[NSMutableAttributedString alloc] initWithString:additionalText];
+  [additionalAttributedText
+      addAttributes:@{
+        NSForegroundColorAttributeName :
+            [UIColor colorNamed:kTextSecondaryColor]
+      }
+              range:NSMakeRange(0, additionalAttributedText.length)];
+  self.attributedAdditionalText = additionalAttributedText;
 }
 
 - (void)insertTextWhileEditing:(NSString*)text {
@@ -224,14 +254,16 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
 }
 
-- (void)setAdditionalText:(NSAttributedString*)additionalText {
+- (void)setAttributedAdditionalText:
+    (NSAttributedString*)attributedAdditionalText {
   [self removeAdditionalText];
 
-  if (!additionalText.length) {
+  if (!attributedAdditionalText.length) {
     return;
   }
+
   NSAttributedString* currentText = self.attributedText;
-  _additionalText = additionalText;
+  _attributedAdditionalText = attributedAdditionalText;
   [self setTextInternal:currentText autocompleteLength:_autocompleteTextLength];
 }
 
@@ -385,8 +417,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   if (self.editing) {
     NSRange foregroundColorRange = entireString;
     if ([self hasAdditionalText]) {
-      foregroundColorRange =
-          NSMakeRange(0, mutableText.length - self.additionalText.length);
+      foregroundColorRange = NSMakeRange(
+          0, mutableText.length - self.attributedAdditionalText.length);
     }
     [mutableText addAttribute:NSForegroundColorAttributeName
                         value:self.textColor
@@ -743,7 +775,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   if (NSClassFromString(@"XCTest")) {
     return [NSString stringWithFormat:@"%@||||%@||||%@", self.userText ?: @"",
                                       self.autocompleteText ?: @"",
-                                      self.additionalText ?: @""];
+                                      self.attributedAdditionalText ?: @""];
   }
   return self.text;
 }
@@ -874,7 +906,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 /// Length of added text in the omnibox (autocomplete and additional text).
 - (NSUInteger)addedTextLength {
-  return _autocompleteTextLength + self.additionalText.length;
+  return _autocompleteTextLength + self.attributedAdditionalText.length;
 }
 
 /// Returns whether there is added text in the omnibox (autocomplete or
@@ -885,17 +917,17 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 /// Returns whether there is additional text.
 - (BOOL)hasAdditionalText {
-  return self.additionalText.length;
+  return self.attributedAdditionalText.length;
 }
 
 /// Text in the omnibox without the additional text.
 - (NSAttributedString*)textWithoutAdditionalText {
-  if (!self.additionalText.length) {
+  if (!self.attributedAdditionalText.length) {
     return self.attributedText;
   }
-  CHECK_LE(self.additionalText.length, self.attributedText.length);
+  CHECK_LE(self.attributedAdditionalText.length, self.attributedText.length);
   NSUInteger textLength =
-      self.attributedText.length - self.additionalText.length;
+      self.attributedText.length - self.attributedAdditionalText.length;
   NSAttributedString* substring = [self.attributedText
       attributedSubstringFromRange:NSMakeRange(0, textLength)];
   return substring;
@@ -903,11 +935,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 /// Removes the additional text.
 - (void)removeAdditionalText {
-  if (!_additionalText) {
+  if (!self.attributedAdditionalText) {
     return;
   }
   NSAttributedString* substring = [self textWithoutAdditionalText];
-  _additionalText = nil;
+  _attributedAdditionalText = nil;
   [self setTextInternal:substring autocompleteLength:_autocompleteTextLength];
 }
 
@@ -932,7 +964,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 /// Sets the `text` in the textfield. `text` includes autocomplete text but
 /// doesn't include the additional text. The additional text is taken from
-/// `self.additionalText`.
+/// `self.attributedAdditionalText`.
 - (void)setTextInternal:(NSAttributedString*)text
      autocompleteLength:(NSUInteger)autocompleteLength {
   _autocompleteTextLength = autocompleteLength;
@@ -959,8 +991,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     [fieldText appendAttributedString:autocompleteText];
   }
   // Append additional text.
-  if (self.additionalText) {
-    [fieldText appendAttributedString:self.additionalText];
+  if (self.attributedAdditionalText) {
+    [fieldText appendAttributedString:self.attributedAdditionalText];
   }
 
   // The following BOOL was introduced to workaround a UIKit bug
@@ -1032,6 +1064,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)pasteboardDidChangeCallback:(UIPasteboard*)pasteboard {
   _pasteboardHasStrings = pasteboard.hasStrings;
+}
+
+- (void)applicationDidBecomeActive:(NSNotification*)notification {
+  [self pasteboardDidChange:nil];
 }
 
 // Resets Omnibox's the font and attributed text when a UITrait is modified.

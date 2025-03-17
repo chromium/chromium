@@ -25,6 +25,7 @@ namespace {
 // When adding a port to the list, consider also adding it to kAllowablePorts,
 // below. See <https://fetch.spec.whatwg.org/#port-blocking>.
 const int kRestrictedPorts[] = {
+    0,      // Not in Fetch Spec.
     1,      // tcpmux
     7,      // echo
     9,      // discard

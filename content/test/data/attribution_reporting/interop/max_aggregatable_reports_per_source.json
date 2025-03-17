@@ -83,8 +83,10 @@
         "responses": [
           {
             "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
                 "aggregatable_trigger_data": [
                   {
                     "source_keys": ["a"],
@@ -93,7 +95,10 @@
                 ],
                 "aggregatable_values": {
                   "a": 3
-                }
+                },
+                // Reports originating with trigger context ID do not contribute
+                // to the report count.
+                "trigger_context_id": ""
               }
             }
           }
@@ -109,7 +114,8 @@
             "url": "https://reporter.test/register-trigger",
             "debug_permission": true,
             "response": {
-              // Should be rejected because the max was already reached.
+              // Should be allowed because the previous trigger should not have
+              // contributed to the report count.
               "Attribution-Reporting-Register-Trigger": {
                 "debug_reporting": true,
                 "aggregatable_trigger_data": [
@@ -125,11 +131,91 @@
             }
           }
         ]
+      },
+      {
+        "timestamp": "1004",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              // Should be rejected because the previous trigger did not have
+              // a trigger context ID, and therefore its associated report
+              // should have contributed to the report count.
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 5
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1005",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 6
+                },
+                // Trigger context ID causes report to be ignored with respect
+                // to maximum count.
+                "trigger_context_id": ""
+              }
+            }
+          }
+        ]
       }
     ]
   },
   "output": {
     "reports": [
+      {
+        "payload": {
+           "aggregation_coordinator_origin": "https://coordinator.test",
+           "histograms": [
+             {
+               "id": "0",
+               "key": "0x559",
+               "value": 3
+             }
+           ],
+           "shared_info": {
+              "api": "attribution-reporting",
+              "attribution_destination": "https://destination.test",
+              "reporting_origin": "https://reporter.test",
+              "scheduled_report_time": "1",
+              "version": "1.0"
+           },
+           "trigger_context_id": ""
+        },
+        "report_time": "1002",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
       {
         "payload": [
           {
@@ -142,8 +228,30 @@
             "type": "trigger-aggregate-excessive-reports"
           }
         ],
-        "report_time": "1003",
+        "report_time": "1004",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+           "aggregation_coordinator_origin": "https://coordinator.test",
+           "histograms": [
+             {
+               "id": "0",
+               "key": "0x559",
+               "value": 6
+             }
+           ],
+           "shared_info": {
+              "api": "attribution-reporting",
+              "attribution_destination": "https://destination.test",
+              "reporting_origin": "https://reporter.test",
+              "scheduled_report_time": "1",
+              "version": "1.0"
+           },
+           "trigger_context_id": ""
+        },
+        "report_time": "1005",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
@@ -194,7 +302,7 @@
             {
               "id": "0",
               "key": "0x559",
-              "value": 3
+              "value": 4
             }
           ],
           "shared_info": {
@@ -206,7 +314,7 @@
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "3601002"
+        "report_time": "3601003"
       }
     ]
   }

@@ -29,19 +29,19 @@ public class OwnedScopeTest {
     public void closeAfterSetting() {
         Box<String> state = new Box<>("");
         OwnedScope scope = new OwnedScope(() -> state.value = "a");
-        assertEquals(state.value, "");
+        assertEquals("", state.value);
         // set() closes the scope passed in the constructor, if one was passed.
         scope.set(() -> state.value = "b");
-        assertEquals(state.value, "a");
+        assertEquals("a", state.value);
         // set() closes the inner scope when set() has previously been called.
         scope.set(() -> state.value += "*");
-        assertEquals(state.value, "b");
+        assertEquals("b", state.value);
         // close() closes the inner scope.
         scope.close();
-        assertEquals(state.value, "b*");
+        assertEquals("b*", state.value);
         // Second close is a no-op.
         scope.close();
-        assertEquals(state.value, "b*");
+        assertEquals("b*", state.value);
     }
 
     @Test
@@ -49,12 +49,12 @@ public class OwnedScopeTest {
         Box<String> state = new Box<>("");
         Scope scope = () -> state.value += "x";
         OwnedScope ownedScope = new OwnedScope(scope);
-        assertEquals(state.value, "");
+        assertEquals("", state.value);
         ownedScope.set(scope);
-        assertEquals(state.value, "");
+        assertEquals("", state.value);
         ownedScope.set(scope);
-        assertEquals(state.value, "");
+        assertEquals("", state.value);
         ownedScope.close();
-        assertEquals(state.value, "x");
+        assertEquals("x", state.value);
     }
 }

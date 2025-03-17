@@ -4,7 +4,10 @@
 
 package org.chromium.components.webauthn;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants related to the Authenticator. */
+@NullMarked
 public final class AuthenticatorConstants {
     /**
      * https://w3c.github.io/webauthn/#enumdef-clientcapability
@@ -13,6 +16,7 @@ public final class AuthenticatorConstants {
      * //third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc.
      */
     public static final String CAPABILITY_RELATED_ORIGINS = "relatedOrigins";
+
     public static final String CAPABILITY_HYBRID_TRANSPORT = "hybridTransport";
     public static final String CAPABILITY_PPAA = "passkeyPlatformAuthenticator";
     public static final String CAPABILITY_UVPAA = "userVerifyingPlatformAuthenticator";

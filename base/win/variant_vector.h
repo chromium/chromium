@@ -61,8 +61,9 @@ class BASE_EXPORT VariantVector final {
             std::enable_if_t<ExpectedVartype != VT_BOOL, int> = 0>
   void Insert(
       typename internal::VariantConverter<ExpectedVartype>::Type value) {
-    if (vartype_ == VT_EMPTY)
+    if (vartype_ == VT_EMPTY) {
       vartype_ = ExpectedVartype;
+    }
     AssertVartype<ExpectedVartype>();
     ScopedVariant scoped_variant;
     scoped_variant.Set(value);
@@ -74,8 +75,9 @@ class BASE_EXPORT VariantVector final {
   template <VARTYPE ExpectedVartype,
             std::enable_if_t<ExpectedVartype == VT_BOOL, int> = 0>
   void Insert(bool value) {
-    if (vartype_ == VT_EMPTY)
+    if (vartype_ == VT_EMPTY) {
       vartype_ = ExpectedVartype;
+    }
     AssertVartype<ExpectedVartype>();
     ScopedVariant scoped_variant;
     scoped_variant.Set(value);
@@ -87,8 +89,9 @@ class BASE_EXPORT VariantVector final {
   template <>
   void Insert<VT_DATE>(
       typename internal::VariantConverter<VT_DATE>::Type value) {
-    if (vartype_ == VT_EMPTY)
+    if (vartype_ == VT_EMPTY) {
       vartype_ = VT_DATE;
+    }
     AssertVartype<VT_DATE>();
     ScopedVariant scoped_variant;
     scoped_variant.SetDate(value);

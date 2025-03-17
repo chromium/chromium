@@ -30,17 +30,18 @@ BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              "WebViewDigitalAssetLinksLoadIncludes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables partitioned cookies by default on WebView. This can still be
+// overridden by our `setPartitionedCookiesEnabled` Android X API.
+BASE_FEATURE(kWebViewDisableCHIPS,
+             "WebViewDisableCHIPS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Disables MSAA and default sharpening when rendering scaled elements. This is
 // often preferable when rendering images/video but can have adverse effects for
 // text on some displays.
 BASE_FEATURE(kWebViewDisableSharpeningAndMSAA,
              "WebViewDisableSharpeningAndMSAA",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Allows JS DataTransfer Files from content URIs in drag-drop.
-BASE_FEATURE(kWebViewDragDropFiles,
-             "WebViewDragDropFiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable JS FileSystemAccess API.
 // This flag is set by WebView internal code based on an app's targetSdkVersion.
@@ -65,7 +66,7 @@ const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
              "WebViewLazyFetchHandWritingIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the WebView Media Integrity API as a Blink extension.
 // This feature requires `kWebViewMediaIntegrityApi` to be disabled.
@@ -106,23 +107,11 @@ BASE_FEATURE(kWebViewRestrictSensitiveContent,
              "WebViewRestrictSensitiveContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable detection of loading mature sites (according to Google SafeSearch)
-// on WebViews running on supervised user accounts.
-BASE_FEATURE(kWebViewSupervisedUserSiteDetection,
-             "WebViewSupervisedUserSiteDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable blocking the loading of mature sites (according to Google SafeSearch)
 // on WebViews running on supervised user accounts.
 BASE_FEATURE(kWebViewSupervisedUserSiteBlock,
              "WebViewSupervisedUserSiteBlock",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
-// is not same origin with the main frame.
-BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,
-             "WebViewSuppressDifferentOriginSubframeJSDialogs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A Feature used for WebView variations tests. Not used in production. Please
 // do not clean up this stale feature: we intentionally keep this feature flag
@@ -183,7 +172,7 @@ BASE_FEATURE(kWebViewInvokeZoomPickerOnGSU,
 // Whether to use WebView's own Context for resource related lookups.
 BASE_FEATURE(kWebViewSeparateResourceContext,
              "WebViewSeparateResourceContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to use initial network state during initialization to speed up
 // startup.
@@ -205,6 +194,15 @@ BASE_FEATURE(kWebViewEnableCrash,
 BASE_FEATURE(kWebViewPreloadClasses,
              "WebViewPreloadClasses",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Prefetches the native WebView code to memory during startup.
+BASE_FEATURE(kWebViewPrefetchNativeLibrary,
+             "WebViewPrefetchNativeLibrary",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A parameter to trigger the prefetch from the renderer instead of the browser.
+const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
+    &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", false};
 
 // If enabled TYPE_SCROLLED accessibility events are sent every 100ms when user
 // is scrolling irrespective of GestureScrollUpdate being consumed or not.
@@ -238,15 +236,25 @@ BASE_FEATURE(kWebViewRenderDocument,
              "WebViewRenderDocument",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the cookie header will be included in the request headers
-// for shouldInterceptRequest, excepting when
-// kWebViewInterceptedCookieHeaderReadWrite is also enabled.
+// When enabled, WebView performs normal processing work for cookie request
+// headers and response headers for the shouldInterceptRequest API. However,
+// whether the app is provided the cookie jar contents is controlled by
+// WebViewInterceptedCookieHeaderReadWrite. Whether Set-Cookie headers
+// affect the cookie jar is also controlled by
+// WebViewInterceptedCookieHeaderReadWrite. When that flag is disabled,
+// set-cookie headers are ignored and the response headers passed to the
+// app remain unchanged.
 BASE_FEATURE(kWebViewInterceptedCookieHeader,
              "WebViewInterceptedCookieHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the cookie header will be included in the request headers
-// for shouldInterceptRequest.
+// When enabled in conjunction with WebViewInterceptedCookieHeader flag, the
+// cookie header in the request headers will be included for
+// shouldInterceptRequest. Also, the set-cookie header in the response headers
+// will be processed and stored in the cookie jar for shouldInterceptRequest.
+// When disabled while WebViewInterceptedCookieHeader is enabled, the response
+// headers passed to the app remain unchanged. Also, the set-cookie
+// header has no effect on the cookie jar.
 BASE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite,
              "WebViewInterceptedCookieHeaderReadWrite",
              base::FEATURE_DISABLED_BY_DEFAULT);

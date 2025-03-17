@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
@@ -192,6 +192,25 @@ class AXRelationCache {
                               const QualifiedName& attr_name,
                               TargetIdToSourceNodeMap& id_map,
                               TargetNodeToSourceNodeMap& node_map);
+
+  // Get ID or element reference relation target for source for the
+  // given attribute. Either id or element will be populated with the
+  // appropriate values, depending on whether the attribute was set as a content
+  // attribute or an element reference attribute.
+  // Use this for attributes which take a single ID/Element value.
+  static void GetSingleRelationTarget(const Element& source,
+                                      const QualifiedName& attr_name,
+                                      AtomicString& id,
+                                      Element** element);
+
+  // If source has a value for attr_name, update either id_map or node_map with
+  // a new entry, depending on whether the attribute was set as a content
+  // attribute or an element reference attribute.
+  // Use this for attributes which take a single ID/Element value.
+  void UpdateReverseSingleRelation(Element& source,
+                                   const QualifiedName& attr_name,
+                                   TargetIdToSourceNodeMap& id_map,
+                                   TargetNodeToSourceNodeMap& node_map);
 
   // Update map of ids to reverse relations. This populates a lookup table so
   // that if an element with that id appears later, it can be added when you

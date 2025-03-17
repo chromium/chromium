@@ -9,10 +9,14 @@ import("//build/config/features.gni")
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
 
-# Xcode 13.1 or higher is required to build Chromium on iOS. This file should
+# LINT.IfChange
+
+# Xcode 16.0 or higher is required to build Chromium on iOS. This file should
 # only be included when building Chromium, not other related projects (cronet,
 # webrtc, ...).
-assert(xcode_version_int >= 1310, "Xcode 13.1 or higher is required.")
+assert(xcode_version_int >= 1600, "Xcode 16.0 or higher is required.")
+
+# LINT.ThenChange(//docs/ios/build_instructions.md)
 
 declare_args() {
   # Disable notification center widget extensions.
@@ -22,13 +26,14 @@ declare_args() {
   # Enable share extension.
   ios_enable_share_extension = true
 
+  # Disable the new share extension UI and entry points.
+  ios_enable_extended_share_extension = false
+
   # Enable open in extension.
   ios_enable_open_extension = true
 
   # Enable credential provider extension.
-  # TODO(crbug.com/356196908): The iOS for Blink should be built without
-  # //components/keyed_service/core dependency.
-  ios_enable_credential_provider_extension = !use_blink
+  ios_enable_credential_provider_extension = true
 
   # Enable intents extension.
   ios_enable_intents_extension = true
@@ -55,12 +60,12 @@ declare_args() {
   ios_font_provider_target =
       "//ios/chrome/credential_provider_extension:font_provider_implementation"
 
-  # Enable passkey capabilities in the Credential Provider Extension (CPE).
-  ios_cpe_enable_passkey_capabilities = true
-
   # Label of the target providing implementation for the PushNotificationServiceExtension.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_push_notification_service_extension_target = "//ios/chrome/push_notification_service_extension:push_notification_service_extension_implementation"
+
+  # Enable passkey capabilities in the Credential Provider Extension (CPE).
+  ios_cpe_enable_passkey_capabilities = true
 
   # The API key to query Google services in the Credential Provider Extension.
   ios_credential_provider_extension_api_key = ""
@@ -108,7 +113,8 @@ declare_args() {
   ios_enable_memory_debugging = !is_chrome_branded
 
   # The iOS app bundle id.
-  ios_chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
+  ios_chromium_bundle_id =
+      "$ios_app_bundle_id_prefix.chrome.ios$apple_mobile_app_bundle_id_suffix"
 
   # Path to a PrivacyInfo.xcprivacy file to be included in app extensions.
   ios_app_extension_privacy_manifest = ""

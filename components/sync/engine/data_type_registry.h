@@ -7,14 +7,12 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_connector.h"
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"

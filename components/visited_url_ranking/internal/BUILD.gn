@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 static_library("internal") {
   visibility = [
     ":*",
@@ -53,12 +59,47 @@ static_library("internal") {
   ]
 }
 
+static_library("internal_url_grouping") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+  sources = [
+    "url_grouping/group_suggestions_manager.cc",
+    "url_grouping/group_suggestions_manager.h",
+    "url_grouping/group_suggestions_service_impl.cc",
+    "url_grouping/group_suggestions_service_impl.h",
+    "url_grouping/grouping_heuristics.cc",
+    "url_grouping/grouping_heuristics.h",
+    "url_grouping/tab_event_tracker_impl.cc",
+    "url_grouping/tab_event_tracker_impl.h",
+    "url_grouping/tab_events_visit_transformer.cc",
+    "url_grouping/tab_events_visit_transformer.h",
+  ]
+  deps = [
+    "//base",
+    "//components/segmentation_platform/public",
+    "//components/visited_url_ranking/public",
+  ]
+
+  if (is_android) {
+    sources += [
+      "url_grouping/android/group_suggestions_service_android.cc",
+      "url_grouping/android/group_suggestions_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
   sources = [
     "transformer/transformer_test_support.cc",
     "transformer/transformer_test_support.h",
+    "url_grouping/mock_suggestions_delegate.cc",
+    "url_grouping/mock_suggestions_delegate.h",
   ]
 
   deps = [
@@ -84,11 +125,17 @@ source_set("unit_tests") {
     "transformer/history_url_visit_aggregates_visibility_score_transformer_unittest.cc",
     "transformer/recency_filter_transformer_unittest.cc",
     "transformer/url_visit_aggregates_segmentation_metrics_transformer_unittest.cc",
+    "url_grouping/group_suggestions_manager_unittest.cc",
+    "url_grouping/group_suggestions_service_impl_unittest.cc",
+    "url_grouping/grouping_heuristics_unittest.cc",
+    "url_grouping/tab_event_tracker_impl_unittest.cc",
+    "url_grouping/tab_events_visit_transformer_unittest.cc",
     "visited_url_ranking_service_impl_unittest.cc",
   ]
 
   deps = [
     ":internal",
+    ":internal_url_grouping",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -108,4 +155,29 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (is_android) {
+  android_library("internal_java") {
+    visibility = [ "//chrome/android:chrome_all_java" ]
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/tab:java",
+      "//components/visited_url_ranking/public:public_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java" ]
+  }
 }

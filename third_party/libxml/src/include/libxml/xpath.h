@@ -401,8 +401,11 @@ struct _xmlXPathParserContext {
  * Objects and Nodesets handling
  */
 
+XML_DEPRECATED
 XMLPUBVAR double xmlXPathNAN;
+XML_DEPRECATED
 XMLPUBVAR double xmlXPathPINF;
+XML_DEPRECATED
 XMLPUBVAR double xmlXPathNINF;
 
 /* These macros may later turn into functions */

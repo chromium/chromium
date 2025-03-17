@@ -80,6 +80,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   HTMLElement* PlaceholderElement() const;
   void UpdatePlaceholderVisibility();
   void UpdatePlaceholderShadowPseudoId(HTMLElement& placeholder);
+  virtual String GetPlaceholderValue() const = 0;
 
   VisiblePosition VisiblePositionForIndex(int) const;
   unsigned selectionStart() const;
@@ -177,7 +178,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
  protected:
   TextControlElement(const QualifiedName&, Document&);
   virtual HTMLElement* UpdatePlaceholderText() = 0;
-  virtual String GetPlaceholderValue() const = 0;
 
   // Creates the editor if necessary. Implementations that support an editor
   // should callback to CreateInnerEditorElement().

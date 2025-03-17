@@ -61,9 +61,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * shown after sign-in completion.
  *
  * <p>The activity may also hold the re-FRE which consists of a fullscreen sign-in dialog followed
- * by the history sync opt-in. This is why the dependency on {@link FirstRunActivityBase} is needed.
+ * by the history sync opt-in. This is why the dependency on {@link
+ * FullscreenSigninAndHistorySyncActivityBase} is needed.
  */
-public class SigninAndHistorySyncActivity extends FirstRunActivityBase
+public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySyncActivityBase
         implements BottomSheetSigninAndHistorySyncCoordinator.Delegate,
                 FullscreenSigninAndHistorySyncCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
@@ -103,11 +104,17 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         super.triggerLayoutInflation();
 
         Intent intent = getIntent();
-        int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
-        assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+        int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT,
+                                                   SigninAccessPoint.MAX_VALUE);
+        assert signinAccessPoint <= SigninAccessPoint.MAX_VALUE :
+          "Cannot find SigninAccessPoint!";
 
         if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
             updateSystemUiForFullscreenSignin();
+
+            // Workaround for https://crbug.com/172602571. See https://crbug.com/394559360
+            intent.setExtrasClassLoader(
+                    FullscreenSigninAndHistorySyncConfig.class.getClassLoader());
             FullscreenSigninAndHistorySyncConfig config =
                     intent.getParcelableExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG);
             mIsFullscreenPromo = true;
@@ -137,6 +144,9 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         }
 
         setStatusBarColor(Color.TRANSPARENT);
+
+        // Workaround for https://crbug.com/172602571. See https://crbug.com/394559360
+        intent.setExtrasClassLoader(BottomSheetSigninAndHistorySyncConfig.class.getClassLoader());
         BottomSheetSigninAndHistorySyncConfig config =
                 intent.getParcelableExtra(ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG);
         mCoordinator =
@@ -236,7 +246,10 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public void setStatusBarColor(int statusBarColor) {
-        StatusBarColorController.setStatusBarColor(getWindow(), statusBarColor);
+        StatusBarColorController.setStatusBarColor(
+                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                getWindow(),
+                statusBarColor);
     }
 
     @Override

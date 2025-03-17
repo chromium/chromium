@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
@@ -37,25 +38,34 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/net/server_certificate_database.h"     // nogncheck
-#include "chrome/browser/net/server_certificate_database.pb.h"  // nogncheck
-#include "chrome/browser/net/server_certificate_database_service.h"  // nogncheck
 #include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database.pb.h"  // nogncheck
+#include "components/server_certificate_database/server_certificate_database_service.h"  // nogncheck
 #include "crypto/sha2.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
+#include "chrome/common/chrome_paths.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "net/cert/cert_type.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
@@ -228,18 +238,23 @@ class CertVerifierUserSettingsTest : public PlatformBrowserTest {
 
   testing::AssertionResult AddCertificateToDatabaseAndWaitForVerifierUpdate(
       net::ServerCertificateDatabase::CertInformation cert_info) {
+    return AddCertificateToProfileDatabaseAndWaitForVerifierUpdate(
+        browser()->profile(), std::move(cert_info));
+  }
+
+  static testing::AssertionResult
+  AddCertificateToProfileDatabaseAndWaitForVerifierUpdate(
+      Profile* profile,
+      net::ServerCertificateDatabase::CertInformation cert_info) {
     base::test::TestFuture<void> cert_verifier_service_update_waiter;
-    browser()
-        ->profile()
-        ->GetDefaultStoragePartition()
+    profile->GetDefaultStoragePartition()
         ->GetCertVerifierServiceUpdater()
         ->WaitUntilNextUpdateForTesting(
             cert_verifier_service_update_waiter.GetCallback());
     base::test::TestFuture<bool> future;
     std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
     cert_infos.push_back(std::move(cert_info));
-    net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-        browser()->profile())
+    net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(profile)
         ->AddOrUpdateUserCertificates(std::move(cert_infos),
                                       future.GetCallback());
     if (!future.Get()) {
@@ -542,6 +557,184 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
       chrome_test_utils::GetActiveWebContents(this)));
 }
 
+class CertVerifierMultiProfileUserSettingsTest
+    : public CertVerifierUserSettingsTest {
+ public:
+#if BUILDFLAG(IS_CHROMEOS)
+  static inline constexpr char kPrimaryUserAccount[] = "test1@test.com";
+  static inline constexpr GaiaId::Literal kPrimaryUserGaiaId{"1234567890"};
+  static inline constexpr char kPrimaryUserHash[] = "test1-hash";
+  static inline constexpr char kSecondaryUserAccount[] = "test2@test.com";
+  static inline constexpr GaiaId::Literal kSecondaryUserGaiaId{"9876543210"};
+  static inline constexpr char kSecondaryUserHash[] = "test2-hash";
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CertVerifierUserSettingsTest::SetUpCommandLine(command_line);
+    // Don't require policy for our sessions - this is required so the policy
+    // code knows not to expect cached policy for the secondary profile.
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
+                                    "false");
+
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    kPrimaryUserAccount);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    kPrimaryUserHash);
+  }
+
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    CertVerifierUserSettingsTest::SetUpLocalStatePrefService(local_state);
+
+    // Register a persisted user.
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state, AccountId::FromUserEmailGaiaId(kPrimaryUserAccount,
+                                                     kPrimaryUserGaiaId));
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state, AccountId::FromUserEmailGaiaId(kSecondaryUserAccount,
+                                                     kSecondaryUserGaiaId));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  void SetUpOnMainThread() override {
+    CertVerifierUserSettingsTest::SetUpOnMainThread();
+
+    net::EmbeddedTestServer::ServerCertificateConfig test_cert_config;
+    test_cert_config.dns_names = {"localhost"};
+    test_cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
+    test_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+    test_server_1_.SetSSLConfig(test_cert_config);
+    test_server_2_.SetSSLConfig(test_cert_config);
+    test_server_1_.ServeFilesFromSourceDirectory("chrome/test/data");
+    test_server_2_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(
+        (test_server_handle_1_ = test_server_1_.StartAndReturnHandle()));
+    ASSERT_TRUE(
+        (test_server_handle_2_ = test_server_2_.StartAndReturnHandle()));
+
+    profile_1_ = browser()->profile();
+
+    // Create a second profile.
+    {
+#if BUILDFLAG(IS_CHROMEOS)
+      ON_CALL(policy_for_profile_2_, IsInitializationComplete(testing::_))
+          .WillByDefault(testing::Return(true));
+      ON_CALL(policy_for_profile_2_, IsFirstPolicyLoadComplete(testing::_))
+          .WillByDefault(testing::Return(true));
+      policy::PushProfilePolicyConnectorProviderForTesting(
+          &policy_for_profile_2_);
+
+      base::FilePath user_data_directory;
+      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
+      session_manager::SessionManager::Get()->CreateSession(
+          AccountId::FromUserEmailGaiaId(kSecondaryUserAccount,
+                                         kSecondaryUserGaiaId),
+          kSecondaryUserHash,
+          /*new_user=*/false,
+          /*has_active_session=*/false);
+      // Set up the secondary profile.
+      base::FilePath profile_dir = user_data_directory.Append(
+          ash::ProfileHelper::GetUserProfileDir(kSecondaryUserHash).BaseName());
+      profile_2_ =
+          g_browser_process->profile_manager()->GetProfile(profile_dir);
+#else
+      ProfileManager* profile_manager = g_browser_process->profile_manager();
+      base::FilePath new_path =
+          profile_manager->GenerateNextProfileDirectoryPath();
+      profile_2_ =
+          &profiles::testing::CreateProfileSync(profile_manager, new_path);
+#endif
+    }
+  }
+
+  void TearDownOnMainThread() override {
+    profile_1_ = nullptr;
+    profile_2_ = nullptr;
+  }
+
+  Profile* profile_1() { return profile_1_; }
+  Profile* profile_2() { return profile_2_; }
+  net::EmbeddedTestServer* test_server_1() { return &test_server_1_; }
+  net::EmbeddedTestServer* test_server_2() { return &test_server_2_; }
+
+ private:
+  net::EmbeddedTestServer test_server_1_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer test_server_2_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::test_server::EmbeddedTestServerHandle test_server_handle_1_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_2_;
+
+  raw_ptr<Profile> profile_1_;
+  raw_ptr<Profile> profile_2_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Policy provider for |profile_2_|. Overrides any other policy providers.
+  testing::NiceMock<policy::MockConfigurationPolicyProvider>
+      policy_for_profile_2_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+IN_PROC_BROWSER_TEST_F(CertVerifierMultiProfileUserSettingsTest,
+                       SeparateTrustPerProfile) {
+  // Trust the root for test_server_1 in profile_1.
+  {
+    scoped_refptr<net::X509Certificate> root_cert = test_server_1()->GetRoot();
+    net::ServerCertificateDatabase::CertInformation user_root_info(
+        root_cert->cert_span());
+    user_root_info.cert_metadata.mutable_trust()->set_trust_type(
+        chrome_browser_server_certificate_database::CertificateTrust::
+            CERTIFICATE_TRUST_TYPE_TRUSTED);
+
+    ASSERT_TRUE(AddCertificateToProfileDatabaseAndWaitForVerifierUpdate(
+        profile_1(), std::move(user_root_info)));
+  }
+
+  // Trust the root for test_server_2 in profile_2.
+  {
+    scoped_refptr<net::X509Certificate> root_cert = test_server_2()->GetRoot();
+    net::ServerCertificateDatabase::CertInformation user_root_info(
+        root_cert->cert_span());
+    user_root_info.cert_metadata.mutable_trust()->set_trust_type(
+        chrome_browser_server_certificate_database::CertificateTrust::
+            CERTIFICATE_TRUST_TYPE_TRUSTED);
+
+    ASSERT_TRUE(AddCertificateToProfileDatabaseAndWaitForVerifierUpdate(
+        profile_2(), std::move(user_root_info)));
+  }
+
+  Browser* browser_for_profile_1 = CreateBrowser(profile_1());
+  Browser* browser_for_profile_2 = CreateBrowser(profile_2());
+
+  // profile 1 can load page using root 1 successfully.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_for_profile_1, test_server_1()->GetURL("/simple.html")));
+  ssl_test_util::CheckSecurityState(
+      browser_for_profile_1->tab_strip_model()->GetActiveWebContents(),
+      ssl_test_util::CertError::NONE, security_state::SECURE,
+      ssl_test_util::AuthState::NONE);
+
+  // profile 1 cannot load page using root 2.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_for_profile_1, test_server_2()->GetURL("/simple.html")));
+  ssl_test_util::CheckSecurityState(
+      browser_for_profile_1->tab_strip_model()->GetActiveWebContents(),
+      net::CERT_STATUS_AUTHORITY_INVALID, security_state::DANGEROUS,
+      ssl_test_util::AuthState::SHOWING_ERROR);
+
+  // profile 2 cannot load page using root 1.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_for_profile_2, test_server_1()->GetURL("/simple.html")));
+  ssl_test_util::CheckSecurityState(
+      browser_for_profile_2->tab_strip_model()->GetActiveWebContents(),
+      net::CERT_STATUS_AUTHORITY_INVALID, security_state::DANGEROUS,
+      ssl_test_util::AuthState::SHOWING_ERROR);
+
+  // profile 2 can load page using root 2 successfully.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_for_profile_2, test_server_2()->GetURL("/simple.html")));
+  ssl_test_util::CheckSecurityState(
+      browser_for_profile_2->tab_strip_model()->GetActiveWebContents(),
+      ssl_test_util::CertError::NONE, security_state::SECURE,
+      ssl_test_util::AuthState::NONE);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 class CertVerifierNSSMigrationTest : public PlatformBrowserTest {
  public:
@@ -591,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
 
   // Migration pref should be false.
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
-                prefs::kNSSCertsMigratedToServerCertDb),
+                net::prefs::kNSSCertsMigratedToServerCertDb),
             static_cast<int>(net::ServerCertificateDatabaseService::
                                  NSSMigrationResultPref::kNotMigrated));
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
@@ -617,20 +810,15 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
   // server cert db.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server.GetURL("/simple.html")));
-  // TODO(https://crbug.com/40928765): This should not be
-  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
-  // additional certs provided to the verifier need some additional flag to
-  // indicate which ones are policy provided and which are user added.
   ssl_test_util::CheckSecurityState(
       chrome_test_utils::GetActiveWebContents(this),
-      ssl_test_util::CertError::NONE,
-      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::CertError::NONE, security_state::SECURE,
       ssl_test_util::AuthState::NONE);
 
   // Migration pref should be true now.
   EXPECT_EQ(
       browser()->profile()->GetPrefs()->GetInteger(
-          prefs::kNSSCertsMigratedToServerCertDb),
+          net::prefs::kNSSCertsMigratedToServerCertDb),
       static_cast<int>(net::ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kMigratedSuccessfully));
 
@@ -671,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
   // Migration pref should already be true.
   EXPECT_EQ(
       browser()->profile()->GetPrefs()->GetInteger(
-          prefs::kNSSCertsMigratedToServerCertDb),
+          net::prefs::kNSSCertsMigratedToServerCertDb),
       static_cast<int>(net::ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kMigratedSuccessfully));
 
@@ -688,14 +876,9 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
   // is no longer used.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server.GetURL("/simple.html")));
-  // TODO(https://crbug.com/40928765): This should not be
-  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
-  // additional certs provided to the verifier need some additional flag to
-  // indicate which ones are policy provided and which are user added.
   ssl_test_util::CheckSecurityState(
       chrome_test_utils::GetActiveWebContents(this),
-      ssl_test_util::CertError::NONE,
-      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::CertError::NONE, security_state::SECURE,
       ssl_test_util::AuthState::NONE);
 
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",

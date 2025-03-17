@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_test_api.h"
@@ -47,8 +48,10 @@ template <typename T>
 class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer {
  public:
   explicit TestAutofillManagerInjector(web::WebState* web_state)
-      : web_state_(web_state),
-        factory_(AutofillDriverIOSFactory::FromWebState(web_state)) {
+      : web_state_(web_state) {
+    AutofillClientIOS& client =
+        CHECK_DEREF(AutofillClientIOS::FromWebState(web_state));
+    factory_ = &(client.GetAutofillDriverFactory());
     test_api(*factory_).AddObserverAtIndex(this, 0);
 
     web::WebFramesManager& frames_manager = CHECK_DEREF(

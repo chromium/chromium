@@ -505,7 +505,7 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
 
   std::unique_ptr<NativeViewHost> native_view_host =
       std::make_unique<NativeViewHost>();
-  toplevel()->GetContentsView()->AddChildView(native_view_host.get());
+  toplevel()->GetContentsView()->AddChildViewRaw(native_view_host.get());
 
   auto widget_delegate_view = std::make_unique<WidgetDelegateView>();
   Widget::InitParams params =
@@ -654,7 +654,7 @@ TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
   widget_delegate.set_window(window.get());
 
   CreateTestingHost();
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
   host()->SetVisible(true);
   host()->SetBoundsRect(gfx::Rect(0, 0, 200, 200));
   host()->Attach(window.get());

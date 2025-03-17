@@ -642,9 +642,10 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string tethering_config = arg_list[1].GetString();
-    std::optional<base::Value> value = base::JSONReader::Read(tethering_config);
+    std::optional<base::Value::Dict> value =
+        base::JSONReader::ReadDict(tethering_config);
 
-    if (!value || !value->is_dict()) {
+    if (!value) {
       NET_LOG(ERROR) << "Invalid tethering configuration: " << tethering_config;
       Respond(callback_id, base::Value("Invalid tethering configuration"));
       return;
@@ -652,14 +653,14 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     NET_LOG(USER) << "SetManagerProperty: " << shill::kTetheringConfigProperty
                   << ": " << *value;
     const std::string* ssid =
-        value->GetDict().FindString(shill::kTetheringConfSSIDProperty);
+        value->FindString(shill::kTetheringConfSSIDProperty);
     if (ssid) {
-      value->GetDict().Set(shill::kTetheringConfSSIDProperty,
-                           base::Value(base::HexEncode(*ssid)));
+      value->Set(shill::kTetheringConfSSIDProperty,
+                 base::Value(base::HexEncode(*ssid)));
     }
 
     ShillManagerClient::Get()->SetProperty(
-        shill::kTetheringConfigProperty, *value,
+        shill::kTetheringConfigProperty, base::Value(std::move(*value)),
         base::BindOnce(&HotspotConfigMessageHandler::RespondStringResult,
                        weak_ptr_factory_.GetWeakPtr(), callback_id, "success"),
         base::BindOnce(

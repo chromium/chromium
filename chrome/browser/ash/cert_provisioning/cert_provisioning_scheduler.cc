@@ -734,11 +734,12 @@ void CertProvisioningSchedulerImpl::UpdateFailedCertProfiles(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   FailedWorkerInfo info;
+  info.process_id = worker.GetProcessId();
   info.state_before_failure = worker.GetPreviousState();
   info.cert_profile_name = worker.GetCertProfile().name;
   info.public_key = worker.GetPublicKey();
   info.last_update_time = worker.GetLastUpdateTime();
-  info.failure_message = worker.GetFailureMessage();
+  info.failure_message = worker.GetFailureMessageWithPii();
 
   failed_cert_profiles_[worker.GetCertProfile().profile_id] = std::move(info);
 }

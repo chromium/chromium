@@ -18,7 +18,7 @@ import {StringUtil} from '/common/string_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
-import {TtsInterface} from '../tts_interface.js';
+import type {TtsInterface} from '../tts_interface.js';
 
 import {TypingEchoState} from './typing_echo.js';
 

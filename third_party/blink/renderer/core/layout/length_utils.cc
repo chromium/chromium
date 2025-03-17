@@ -52,8 +52,18 @@ LayoutUnit ResolveInlineLengthInternal(
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      LayoutUnit margins_to_subtract = margins.InlineSum();
+      if (length.GetType() == Length::kStretch) [[unlikely]] {
+        const LogicalBoxSides& ignore_margin_sides =
+            constraint_space.IgnoreMarginsForStretch();
+        margins_to_subtract = ignore_margin_sides.inline_start
+                                  ? LayoutUnit()
+                                  : margins.inline_start;
+        margins_to_subtract +=
+            ignore_margin_sides.inline_end ? LayoutUnit() : margins.inline_end;
+      }
       return std::max(border_padding.InlineSum(),
-                      available_size - margins.InlineSum());
+                      available_size - margins_to_subtract);
     }
     case Length::kPercent:
     case Length::kFixed:
@@ -167,12 +177,19 @@ LayoutUnit ResolveBlockLengthInternal(
                    : kIndefiniteSize;
       }
       DCHECK_GE(available_size, LayoutUnit());
-      // TODO(https://crbug.com/41253915): This is where 'stretch' and
-      // '-webkit-fill-available' will be different. We won't always subtract
-      // both margins for 'stretch'.
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      LayoutUnit margins_to_subtract = margins.BlockSum();
+      if (length.GetType() == Length::kStretch) [[unlikely]] {
+        const LogicalBoxSides& ignore_margin_sides =
+            constraint_space.IgnoreMarginsForStretch();
+        margins_to_subtract = ignore_margin_sides.block_start
+                                  ? LayoutUnit()
+                                  : margins.block_start;
+        margins_to_subtract +=
+            ignore_margin_sides.block_end ? LayoutUnit() : margins.block_end;
+      }
       return std::max(border_padding.BlockSum(),
-                      available_size - margins.BlockSum());
+                      available_size - margins_to_subtract);
     }
     case Length::kPercent:
     case Length::kFixed:
@@ -967,7 +984,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
-  const LogicalSize aspect_ratio = node.GetAspectRatio();
+  const LogicalSize aspect_ratio = node.GetReplacedAspectRatio();
   const std::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
       node, border_padding, box_sizing, aspect_ratio);
 
@@ -1001,7 +1018,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     const LayoutUnit min_max_percentage_resolution_size =
         node.GetDocument().InQuirksMode() && !node.IsOutOfFlowPositioned()
             ? space.AvailableSize().block_size
-            : space.ReplacedPercentageResolutionBlockSize();
+            : space.PercentageResolutionBlockSize();
 
     block_min_max_sizes = {
         ResolveMinBlockLength(space, style, border_padding, BlockSizeFunc,
@@ -1024,7 +1041,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
           block_length.HasAuto() ? Length::FillAvailable() : block_length;
 
       const LayoutUnit main_percentage_resolution_size =
-          space.ReplacedPercentageResolutionBlockSize();
+          space.PercentageResolutionBlockSize();
       const LayoutUnit block_size = ResolveMainBlockLength(
           space, style, border_padding, block_length_to_resolve,
           /* auto_length*/ nullptr,
@@ -1744,7 +1761,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
   // Anonymous block or spaces should use the parent percent block-size.
   if (space.IsAnonymous() || node.IsAnonymousBlock()) {
     return {child_available_size.inline_size,
-            space.PercentageResolutionBlockSize()};
+            space.ReplacedChildPercentageResolutionBlockSize()};
   }
 
   // Table cell children don't apply the "percentage-quirk". I.e. if their
@@ -1771,7 +1788,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
 
   return AdjustChildPercentageSize(
       space, node, child_available_size,
-      space.ReplacedPercentageResolutionBlockSize());
+      space.ReplacedChildPercentageResolutionBlockSize());
 }
 
 LayoutUnit ClampIntrinsicBlockSize(

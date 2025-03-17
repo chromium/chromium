@@ -107,7 +107,7 @@ class SafetyCheckNotificationClient
   // Navigates to and displays the relevant UI based on the provided
   // `notification_metadata`.
   void ShowUIForNotificationMetadata(NSDictionary* notification_metadata,
-                                     Browser* browser);
+                                     base::WeakPtr<Browser> weak_browser);
 
   // Logs to a histogram if notifications that were requested have been
   // triggered.

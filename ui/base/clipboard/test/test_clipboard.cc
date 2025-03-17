@@ -312,6 +312,7 @@ bool TestClipboard::IsSelectionBufferAvailable() const {
 void TestClipboard::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
@@ -321,8 +322,12 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
   GetStore(buffer).SetDataSource(base::OptionalFromPtr(data_src.get()));
 
   DispatchPlatformRepresentations(std::move(platform_representations));
-  for (const auto& kv : objects)
+  for (const auto& kv : objects) {
     DispatchPortableRepresentation(kv.second);
+  }
+  for (const auto& raw_object : raw_objects) {
+    DispatchPortableRepresentation(raw_object);
+  }
   default_store_buffer_ = ClipboardBuffer::kCopyPaste;
 }
 

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,8 +54,9 @@ constexpr char kLoggerComponent[] = "AccessCodeCastSinkService";
 
 bool IsAccessCodeCastEnabled() {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
   return GetAccessCodeCastEnabledPref(profile);
 }
@@ -215,8 +217,9 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
   }
 
   // No routes were removed.
-  if (removed_routes.empty())
+  if (removed_routes.empty()) {
     return;
+  }
 
   // There should only be 1 element in the |removed_routes| set.
   DCHECK(removed_routes.size() < 2)
@@ -253,8 +256,9 @@ bool AccessCodeCastSinkService::IsSinkValidAccessCodeSink(
     const MediaSinkInternal* sink) {
   // The route Id did not correspond to a sink for some reason. Return to
   // avoid nullptr issues.
-  if (!sink || !sink->is_cast_sink())
+  if (!sink || !sink->is_cast_sink()) {
     return false;
+  }
 
   // Check to see if route was created by an access code sink.
   CastDiscoveryType type = sink->cast_data().discovery_type;
@@ -289,8 +293,9 @@ void AccessCodeCastSinkService::HandleMediaRouteAdded(
     const bool is_route_local,
     const MediaSource media_source,
     const MediaSinkInternal* sink) {
-  if (!IsSinkValidAccessCodeSink(sink))
+  if (!IsSinkValidAccessCodeSink(sink)) {
     return;
+  }
 
   if (is_route_local) {
     current_route_start_times_[route_id] = base::Time::Now();
@@ -324,8 +329,9 @@ void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
 
   // If there is no active route, check manually if the device should be
   // instantly expired.
-  if (!route.has_value())
+  if (!route.has_value()) {
     CheckMediaSinkForExpiration(sink->id());
+  }
 }
 
 void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
@@ -488,13 +494,15 @@ void AccessCodeCastSinkService::OpenChannelWithParams(
 
 std::optional<const MediaRoute> AccessCodeCastSinkService::GetActiveRoute(
     const MediaSink::Id& sink_id) {
-  if (!media_router_)
+  if (!media_router_) {
     return std::nullopt;
+  }
   auto routes = media_router_->GetCurrentRoutes();
   auto route_it =
-      base::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
-  if (route_it == routes.end())
+      std::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
+  if (route_it == routes.end()) {
     return std::nullopt;
+  }
   return *route_it;
 }
 
@@ -917,8 +925,9 @@ void AccessCodeCastSinkService::UpdateExistingSink(
   // AddOrUpdate takes time, so avoid calling it if we can
   if (existing_sink->sink().name() == new_sink.sink().name() &&
       existing_sink->cast_data().capabilities ==
-          new_sink.cast_data().capabilities)
+          new_sink.cast_data().capabilities) {
     return;
+  }
 
   MediaSinkInternal existing_sink_copy = *existing_sink;
   existing_sink_copy.sink().set_name(new_sink.sink().name());
@@ -998,8 +1007,9 @@ void AccessCodeCastSinkService::RemoveAndDisconnectExistingSinksOnNetwork() {
 
 void AccessCodeCastSinkService::LogInfo(const std::string& log_message,
                                         const std::string& sink_id) {
-  if (!media_router_ || !media_router_->GetLogger())
+  if (!media_router_ || !media_router_->GetLogger()) {
     return;
+  }
   media_router_->GetLogger()->LogInfo(mojom::LogCategory::kDiscovery,
                                       kLoggerComponent, log_message, sink_id,
                                       "", "");
@@ -1007,8 +1017,9 @@ void AccessCodeCastSinkService::LogInfo(const std::string& log_message,
 
 void AccessCodeCastSinkService::LogWarning(const std::string& log_message,
                                            const std::string& sink_id) {
-  if (!media_router_ || !media_router_->GetLogger())
+  if (!media_router_ || !media_router_->GetLogger()) {
     return;
+  }
   media_router_->GetLogger()->LogWarning(mojom::LogCategory::kDiscovery,
                                          kLoggerComponent, log_message, sink_id,
                                          "", "");
@@ -1016,8 +1027,9 @@ void AccessCodeCastSinkService::LogWarning(const std::string& log_message,
 
 void AccessCodeCastSinkService::LogError(const std::string& log_message,
                                          const std::string& sink_id) {
-  if (!media_router_ || !media_router_->GetLogger())
+  if (!media_router_ || !media_router_->GetLogger()) {
     return;
+  }
   media_router_->GetLogger()->LogError(mojom::LogCategory::kDiscovery,
                                        kLoggerComponent, log_message, sink_id,
                                        "", "");
@@ -1066,8 +1078,9 @@ void AccessCodeCastSinkService::Shutdown() {
   // dtor. Since MediaRouter and |this| are both KeyedServices, we must not
   // access MediaRouter in the dtor of |this|, so we do it here.
   media_routes_observer_.reset();
-  if (user_prefs_registrar_)
+  if (user_prefs_registrar_) {
     user_prefs_registrar_->RemoveAll();
+  }
   user_prefs_registrar_.reset();
   media_router_ = nullptr;
   ResetExpirationTimers();

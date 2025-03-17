@@ -55,6 +55,23 @@ extern const base::FeatureParam<int> kMaxPassagesPerPage;
 // passage extraction algorithm.
 extern const base::FeatureParam<int> kMinWordsPerPassage;
 
+// Specifies whether GPU execution is allowed for execution if there is a GPU
+// for the device.
+extern const base::FeatureParam<bool> kAllowGpuExecution;
+
+// Maximum number of jobs the SchedulingEmbedder will hold at a time. This
+// acts as a hard cap to limit memory usage, which may be needed
+// especially when waiting for performance scenario.
+extern const base::FeatureParam<int> kSchedulerMaxJobs;
+
+// Maximum number of embeddings the SchedulingEmbedder submits for a single
+// batch of work.
+extern const base::FeatureParam<int> kSchedulerMaxBatchSize;
+
+// Whether to wait for a suitable performance scenario before submitting
+// work to the embedder.
+extern const base::FeatureParam<bool> kUsePerformanceScenario;
+
 }  // namespace passage_embeddings
 
 #endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_FEATURES_H_

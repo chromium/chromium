@@ -93,6 +93,20 @@ class MessageCardViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop>
             PRICE_DROP = new PropertyModel.WritableObjectPropertyKey<>();
 
+    /**
+     * By default, {@code @dimen/tab_list_selected_margin} margin is applied on all sides. Following
+     * properties can be used to override the specific side margins.
+     */
+    public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN_OVERRIDE_PX =
+            new PropertyModel.WritableIntPropertyKey();
+
+    public static final PropertyModel.WritableIntPropertyKey BOTTOM_MARGIN_OVERRIDE_PX =
+            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey LEFT_MARGIN_OVERRIDE_PX =
+            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey RIGHT_MARGIN_OVERRIDE_PX =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ACTION_TEXT,
@@ -119,6 +133,10 @@ class MessageCardViewProperties {
                 MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
                 PRICE_DROP,
                 VIEW_AS_ACTION_BUTTON,
-                ACTION_BUTTON_VISIBLE
+                ACTION_BUTTON_VISIBLE,
+                TOP_MARGIN_OVERRIDE_PX,
+                BOTTOM_MARGIN_OVERRIDE_PX,
+                LEFT_MARGIN_OVERRIDE_PX,
+                RIGHT_MARGIN_OVERRIDE_PX
             };
 }

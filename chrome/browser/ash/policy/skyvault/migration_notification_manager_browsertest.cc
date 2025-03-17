@@ -63,24 +63,25 @@ class MigrationNotificationManagerTest : public InProcessBrowserTest {
 
 class MigrationNotificationManagerParamTest
     : public MigrationNotificationManagerTest,
-      public ::testing::WithParamInterface<CloudProvider> {
+      public ::testing::WithParamInterface<MigrationDestination> {
  public:
   MigrationNotificationManagerParamTest() {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
   static std::string ParamToName(const testing::TestParamInfo<ParamType> info) {
     switch (info.param) {
-      case CloudProvider::kGoogleDrive:
+      case MigrationDestination::kGoogleDrive:
         return "google_drive";
-      case CloudProvider::kOneDrive:
+      case MigrationDestination::kOneDrive:
         return "one_drive";
-      case CloudProvider::kNotSpecified:
+      case MigrationDestination::kNotSpecified:
+      case MigrationDestination::kDelete:
         NOTREACHED();
     }
   }
 
  protected:
-  CloudProvider CloudProvider() { return GetParam(); }
+  MigrationDestination CloudProvider() { return GetParam(); }
 
   base::ScopedTempDir temp_dir_;
 };
@@ -272,8 +273,8 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest, ShowDialog) {
 
 INSTANTIATE_TEST_SUITE_P(LocalUserFiles,
                          MigrationNotificationManagerParamTest,
-                         ::testing::Values(CloudProvider::kGoogleDrive,
-                                           CloudProvider::kOneDrive),
+                         ::testing::Values(MigrationDestination::kGoogleDrive,
+                                           MigrationDestination::kOneDrive),
                          MigrationNotificationManagerParamTest::ParamToName);
 
 }  // namespace policy::local_user_files

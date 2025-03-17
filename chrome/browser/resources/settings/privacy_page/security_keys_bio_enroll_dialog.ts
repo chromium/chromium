@@ -303,8 +303,8 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
         100 * (this.maxSamples_ - 1) / this.maxSamples_, 100, true);
 
     assert(response.enrollment);
-    this.recentEnrollmentId_ = response.enrollment!.id;
-    this.recentEnrollmentName_ = response.enrollment!.name;
+    this.recentEnrollmentId_ = response.enrollment.id;
+    this.recentEnrollmentName_ = response.enrollment.name;
     this.cancelButtonVisible_ = false;
     this.confirmButtonVisible_ = true;
     this.confirmButtonDisabled_ = false;

@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/services/device_sync/stub_device_sync.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/stub_multidevice_util.h"
@@ -186,7 +186,7 @@ class StubDeviceSync : public DeviceSyncBase {
   multidevice::RemoteDevice* GetRemoteDevice(
       const std::optional<std::string>& device_public_key,
       const std::optional<std::string>& device_instance_id) {
-    auto it = base::ranges::find_if(synced_devices_, [&](const auto& device) {
+    auto it = std::ranges::find_if(synced_devices_, [&](const auto& device) {
       if (device_public_key.has_value())
         return device.public_key == device_public_key;
       if (device_instance_id.has_value())
@@ -214,7 +214,6 @@ class StubDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
       gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
-      const GcmDeviceInfoProvider* gcm_device_info_provider,
       ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<base::OneShotTimer> timer,

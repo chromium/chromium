@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 
 // static

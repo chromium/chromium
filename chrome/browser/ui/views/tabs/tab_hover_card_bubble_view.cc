@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/messaging/message.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,7 +76,7 @@ constexpr int kTitleDomainSpacing = 4;
 constexpr auto kTextMargins = gfx::Insets::VH(12, 12);
 
 // Calculates an appropriate size to display a preview image in the hover card.
-// For the vast majority of images, the |preferred_size| is used, but extremely
+// For the vast majority of images, the `preferred_size` is used, but extremely
 // tall or wide images use the image size instead, centering in the available
 // space.
 gfx::Size GetPreviewImageSize(gfx::Size preview_size,
@@ -223,7 +225,7 @@ class TabHoverCardBubbleView::ThumbnailView
       case ImageType::kNone:
       case ImageType::kNoneButWaiting:
         image_view->SetBackground(
-            views::CreateSolidBackground(bubble_view_->color()));
+            views::CreateSolidBackground(bubble_view_->background_color()));
         break;
       case ImageType::kPlaceholder:
         image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
@@ -391,7 +393,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
       views::style::STYLE_BODY_3_EMPHASIS));
   domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
       1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
-  domain_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
+  domain_label_->SetEnabledColor(kColorTabHoverCardSecondaryText);
 
   if (bubble_params_.show_image_preview) {
     thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
@@ -502,7 +504,8 @@ TabHoverCardBubbleView::GetCollaborationMessagingData(
     default:
       NOTREACHED();
   }
-  collaboration_messaging_data.avatar = data->hover_card_avatar();
+
+  collaboration_messaging_data.avatar = data->GetHoverCardImage(GetWidget());
   collaboration_messaging_data.should_show_collaboration_messaging = true;
 
   return collaboration_messaging_data;
@@ -631,11 +634,11 @@ void TabHoverCardBubbleView::SetPlaceholderImage() {
   thumbnail_view_->SetPlaceholderImage();
 }
 
-std::u16string TabHoverCardBubbleView::GetTitleTextForTesting() const {
+std::u16string_view TabHoverCardBubbleView::GetTitleTextForTesting() const {
   return title_label_->GetText();
 }
 
-std::u16string TabHoverCardBubbleView::GetDomainTextForTesting() const {
+std::u16string_view TabHoverCardBubbleView::GetDomainTextForTesting() const {
   return domain_label_->GetText();
 }
 

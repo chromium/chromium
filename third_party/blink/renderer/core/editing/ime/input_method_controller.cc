@@ -1945,24 +1945,24 @@ void InputMethodController::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpans() const {
+std::vector<ui::ImeTextSpan> InputMethodController::GetImeTextSpans() const {
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
   Element* target = GetDocument().FocusedElement();
   if (!target)
-    return WebVector<ui::ImeTextSpan>();
+    return std::vector<ui::ImeTextSpan>();
 
   Element* editable = GetFrame()
                           .Selection()
                           .ComputeVisibleSelectionInDOMTree()
                           .RootEditableElement();
   if (!editable)
-    return WebVector<ui::ImeTextSpan>();
+    return std::vector<ui::ImeTextSpan>();
 
-  WebVector<ui::ImeTextSpan> ime_text_spans;
+  std::vector<ui::ImeTextSpan> ime_text_spans;
 
   const EphemeralRange range = EphemeralRange::RangeOfContents(*editable);
   if (range.IsNull())
-    return WebVector<ui::ImeTextSpan>();
+    return std::vector<ui::ImeTextSpan>();
 
   // MarkersIntersectingRange() might be expensive. In practice, we hope we will
   // only check one node for the range.

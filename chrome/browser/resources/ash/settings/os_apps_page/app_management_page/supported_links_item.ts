@@ -28,7 +28,7 @@ import {getTemplate} from './supported_links_item.html.js';
 import type {AppManagementSupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
 
 type PreferenceType = 'preferred'|'browser';
-const PREFERRED_APP_PREF = 'preferred' as const;
+const PREFERRED_APP_PREF = 'preferred';
 
 export interface AppManagementSupportedLinksItemElement {
   $: {
@@ -159,7 +159,7 @@ export class AppManagementSupportedLinksItemElement extends
     }
     this.overlappingAppIds_ = overlappingAppIds;
 
-    const appNames = overlappingAppIds.map(appId => apps[appId]!.title!);
+    const appNames = overlappingAppIds.map(appId => apps[appId].title!);
     if (appNames.length === 0) {
       this.showOverlappingAppsWarning_ = false;
       return;

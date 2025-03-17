@@ -119,4 +119,3 @@ void OverrideJavaScriptFeatures(web::BrowserState* browser_state,
 
 }  // namespace test
 }  // namespace web
-

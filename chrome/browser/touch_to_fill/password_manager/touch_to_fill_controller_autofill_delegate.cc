@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/base64.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
@@ -37,14 +37,12 @@
 
 namespace {
 
-using ToShowVirtualKeyboard =
-    password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using password_manager::UiCredential;
 
 // Returns whether there is at least one credential with a non-empty username.
 bool ContainsNonEmptyUsername(
     const base::span<const UiCredential>& credentials) {
-  return base::ranges::any_of(credentials, [](const UiCredential& credential) {
+  return std::ranges::any_of(credentials, [](const UiCredential& credential) {
     return !credential.username().empty();
   });
 }
@@ -63,7 +61,6 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     const password_manager::PasswordForm* form_to_fill,
     autofill::FieldRendererId focused_field_renderer_id,
     ShowHybridOption should_show_hybrid_option,
-    ShowPasswordMigrationWarningCallback show_password_migration_warning,
     std::unique_ptr<PasswordAccessLossWarningBridge> data_loss_warning_bridge)
     : password_client_(password_client),
       web_contents_(web_contents),
@@ -73,8 +70,6 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       form_to_fill_(form_to_fill),
       focused_field_renderer_id_(focused_field_renderer_id),
       should_show_hybrid_option_(should_show_hybrid_option),
-      show_password_migration_warning_(
-          std::move(show_password_migration_warning)),
       access_loss_warning_bridge_(std::move(data_loss_warning_bridge)) {}
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
@@ -98,8 +93,6 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       form_to_fill_(form_to_fill),
       focused_field_renderer_id_(focused_field_renderer_id),
       should_show_hybrid_option_(should_show_hybrid_option),
-      show_password_migration_warning_(
-          base::BindRepeating(&local_password_migration::ShowWarning)),
       access_loss_warning_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       source_id_(password_client->web_contents()
@@ -232,7 +225,6 @@ void TouchToFillControllerAutofillDelegate::OnCredManDismissed(
   if (!filler_) {
     return;
   }
-  filler_->Dismiss(ToShowVirtualKeyboard(false));
   std::move(action_completed).Run();
 }
 
@@ -242,15 +234,6 @@ GURL TouchToFillControllerAutofillDelegate::GetFrameUrl() {
 }
 
 bool TouchToFillControllerAutofillDelegate::ShouldShowTouchToFill() {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordSuggestionBottomSheetV2)) {
-    // For password suggesion bottom sheet version 1 all the conditions for
-    // showing TTF are checked in the renderer (see
-    // `PasswordAutofillAgent::TryToShowKeyboardReplacingSurface`). That's why
-    // no additional checks are needed here.
-    return true;
-  }
-
   if (!form_to_fill_) {
     return false;
   }
@@ -321,7 +304,6 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
   PrefService* prefs = profile->GetPrefs();
   filler_->UpdateTriggerSubmission(
       ShouldTriggerSubmission() &&
-      !local_password_migration::ShouldShowWarning(profile) &&
       !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
           prefs, /*called_at_startup=*/false));
   filler_->FillUsernameAndPassword(
@@ -344,9 +326,6 @@ void TouchToFillControllerAutofillDelegate::OnFillingCredentialComplete(
         /*called_at_startup=*/false,
         password_manager_android_util::PasswordAccessLossWarningTriggers::
             kTouchToFill);
-  } else {
-    // TODO: crbug.com/340437382 - Deprecate the migration warning sheet.
-    ShowPasswordMigrationWarningIfNeeded();
   }
 
   if (triggered_submission) {
@@ -372,20 +351,6 @@ void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
   if (!url.is_empty()) {
     password_client_->MarkSharedCredentialsAsNotified(url);
   }
-  filler_->Dismiss(ToShowVirtualKeyboard(show_virtual_keyboard));
   filler_.reset();
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
-}
-
-void TouchToFillControllerAutofillDelegate::
-    ShowPasswordMigrationWarningIfNeeded() {
-  if (!local_password_migration::ShouldShowWarning(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
-    return;
-  }
-  show_password_migration_warning_.Run(
-      web_contents_->GetTopLevelNativeWindow(),
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      password_manager::metrics_util::PasswordMigrationWarningTriggers::
-          kTouchToFill);
 }

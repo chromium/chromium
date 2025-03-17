@@ -6,14 +6,16 @@ include_rules = [
   "+components/browser_ui/device_lock/android",
   "+components/browser_ui/edge_to_edge/android",
   "+components/browser_ui/util/android/url_constants.h",
-  "+components/chrome_urls_ui",
+  "+components/webui/chrome_urls",
   "+components/collaboration/public",
   "+components/country_codes",
   "+components/data_sharing/public",
   "+components/endpoint_fetcher",
   "+components/enterprise",
   "+components/fingerprinting_protection_filter/browser",
+  "+components/ip_protection/common",
   "+components/infobars/android",
+  "+components/language_detection/core",
   "+components/live_caption",
   "+components/omnibox",
   "+components/page_image_service",
@@ -36,7 +38,6 @@ include_rules = [
   "+components/user_education/common",
   "+components/user_education/test",
   "+components/user_education/webui",
-  "+components/user_notes",
   "+components/web_package",
   "+services/content/public",
   "+services/device/public/mojom",
@@ -44,46 +45,46 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "application_launch_browsertest\.cc": [
+  r"application_launch_browsertest\.cc": [
     "+ash/shell.h",
   ],
-  "browser_command_controller_browsertest\.cc": [
+  r"browser_command_controller_browsertest\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
-  "browser_finder_chromeos_browsertest\.cc": [
+  r"browser_finder_chromeos_browsertest\.cc": [
     "+ash/wm/desks/desk.h",
     "+ash/wm/desks/desks_controller.h",
     "+ash/wm/desks/desks_test_util.h",
   ],
-  "browser_navigator_browsertest\.cc": [
+  r"browser_navigator_browsertest\.cc": [
     "+ash/shell.h",
   ],
-  "browser_navigator_browsertest_chromeos\.cc": [
+  r"browser_navigator_browsertest_chromeos\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
-  "browser_tabstrip_browsertest_chromeos\.cc": [
+  r"browser_tabstrip_browsertest_chromeos\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
-  "dark_mode_manager_linux(_unittest)?\.cc": [
+  r"dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
   ],
-  "fullscreen_controller_browsertest\.cc": [
+  r"fullscreen_controller_browsertest\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
-  "fullscreen_controller_interactive_browsertest\.cc": [
+  r"fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
     "+ash/wm/window_pin_util.h",
   ],
-  "popup_browsertest\.cc": [
+  r"popup_browsertest\.cc": [
     "+ash/shell.h",
   ],
   "sad_tab_helper.cc": [
     "+content/common/content_navigation_policy.h",
   ],
-  "settings_window_manager_chromeos\.cc": [
+  r"settings_window_manager_chromeos\.cc": [
     "+ash/wm/window_properties.h",
   ],
-  "hid_chooser_controller_unittest\.cc": [
+  r"hid_chooser_controller_unittest\.cc": [
     "+services/device/hid",
   ],
 }

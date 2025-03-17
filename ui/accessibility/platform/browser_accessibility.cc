@@ -6,16 +6,17 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -835,7 +836,13 @@ bool BrowserAccessibility::IsOffscreen() const {
 }
 
 bool BrowserAccessibility::IsWebContent() const {
-  return true;
+  AXPlatformTreeManagerDelegate* delegate =
+      manager_->GetDelegateFromRootManager();
+  if (!delegate) {
+    return false;
+  }
+
+  return delegate->AccessibilityIsWebContentSource();
 }
 
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
@@ -1228,6 +1235,11 @@ bool BrowserAccessibility::AccessibilityPerformAction(
         selection_manager = manager_;
       }
       DCHECK(selection_manager);
+
+      if (selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
+        selection_manager->SetSelection(selection);
+        return true;
+      }
 
       // "data.anchor_offset" and "data.focus_offset" might need to be adjusted
       // if the anchor or the focus nodes include ignored children.
@@ -2017,7 +2029,7 @@ TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
       TextAttributeList previous_attributes = attributes_map.rbegin()->second;
       // Must check the size, otherwise if attributes is a subset of
       // prev_attributes, they would appear to be equal.
-      if (!base::ranges::equal(attributes, previous_attributes)) {
+      if (!std::ranges::equal(attributes, previous_attributes)) {
         attributes_map[start_offset] = attributes;
       }
     }

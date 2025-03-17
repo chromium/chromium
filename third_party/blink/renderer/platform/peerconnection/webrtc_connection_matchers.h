@@ -5,19 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_CONNECTION_MATCHERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_CONNECTION_MATCHERS_H_
 
+#include <algorithm>
 #include <iterator>
 #include <ostream>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
-
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
 namespace cricket {
@@ -143,8 +141,8 @@ MATCHER_P(ConnectionSequenceEq,
           /* std::vector<const cricket::Connection*> */ connections,
           "") {
   std::vector<const cricket::Connection*> non_null_connections;
-  base::ranges::copy_if(connections, std::back_inserter(non_null_connections),
-                        [](auto conn) { return conn != nullptr; });
+  std::ranges::copy_if(connections, std::back_inserter(non_null_connections),
+                       [](auto conn) { return conn != nullptr; });
   return ExplainMatchResult(
       UnorderedPointwise(CricketBlinkConnectionTupleEq(), non_null_connections),
       arg, result_listener);

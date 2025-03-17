@@ -10,15 +10,15 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/native_theme/caption_style.h"
-#include "ui/native_theme/native_theme_observer.h"
+#include "components/live_caption/caption_controller_base.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
-class PrefChangeRegistrar;
 class PrefService;
 
 namespace captions {
 class CaptionBubbleContext;
 class CaptionBubbleController;
+class CaptionBubbleSettings;
 }  // namespace captions
 
 namespace media {
@@ -27,32 +27,15 @@ struct SpeechRecognitionResult;
 
 namespace ash::babelorca {
 
-class CaptionController : public ui::NativeThemeObserver {
+class CaptionBubbleSettingsImpl;
+
+class CaptionController : public ::captions::CaptionControllerBase {
  public:
-  class Delegate {
-   public:
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-
-    virtual ~Delegate() = default;
-
-    virtual std::unique_ptr<::captions::CaptionBubbleController>
-    CreateCaptionBubbleController(PrefService* profile_prefs,
-                                  const std::string& application_locale) = 0;
-
-    virtual void AddCaptionStyleObserver(ui::NativeThemeObserver* observer) = 0;
-
-    virtual void RemoveCaptionStyleObserver(
-        ui::NativeThemeObserver* observer) = 0;
-
-   protected:
-    Delegate() = default;
-  };
-
   CaptionController(
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       PrefService* profile_prefs,
       const std::string& application_locale,
+      std::unique_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings,
       std::unique_ptr<Delegate> delegate = nullptr);
 
   CaptionController(const CaptionController&) = delete;
@@ -64,28 +47,23 @@ class CaptionController : public ui::NativeThemeObserver {
   // transcription result was routed successfully.
   bool DispatchTranscription(const media::SpeechRecognitionResult& result);
 
-  // Alerts the CaptionBubbleController that the audio stream has ended.
-  void OnAudioStreamEnd();
+  void OnLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& event);
 
   void StartLiveCaption();
 
   void StopLiveCaption();
 
+  void SetLiveTranslateEnabled(bool enabled);
+
+  std::string GetLiveTranslateTargetLanguageCode();
+
  private:
-  // ui::NativeThemeObserver:
-  void OnCaptionStyleUpdated() override;
+  // CaptionControllerBase:
+  captions::CaptionBubbleSettings* caption_bubble_settings() override;
 
   std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context_;
-  raw_ptr<PrefService> profile_prefs_;
-  const std::string application_locale_;
-  const std::unique_ptr<Delegate> delegate_;
-
-  std::unique_ptr<::captions::CaptionBubbleController>
-      caption_bubble_controller_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::optional<ui::CaptionStyle> caption_style_;
-
-  bool is_ui_constructed_ = false;
+  const std::unique_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings_;
 };
 
 }  // namespace ash::babelorca

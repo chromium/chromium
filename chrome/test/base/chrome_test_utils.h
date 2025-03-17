@@ -20,11 +20,20 @@ namespace chrome_test_utils {
 
 // Returns the active WebContents. On desktop this is in the first browser
 // window created by tests, more specific behaviour requires other means.
-content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test);
+// Takes a const PlatformBrowserTest so it can be called from other const
+// methods:
+// void MyConstMemberFunction() const {
+//   auto* tab = chrome_test_utils::GetActiveWebContents(this);
+//   ...
+content::WebContents* GetActiveWebContents(
+    const PlatformBrowserTest* browser_test);
 
 // Returns the active Profile. On desktop this is in the first browser
 // window created by tests, more specific behaviour requires other means.
-Profile* GetProfile(PlatformBrowserTest* browser_test);
+Profile* GetProfile(const PlatformBrowserTest* browser_test);
+
+// Returns the test data path used by the embedded test server.
+base::FilePath GetChromeTestDataDir();
 
 }  // namespace chrome_test_utils
 

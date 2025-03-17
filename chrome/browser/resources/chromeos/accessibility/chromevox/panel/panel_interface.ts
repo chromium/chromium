@@ -5,7 +5,7 @@
 /**
  * @fileoverview An interface to control the ChromeVox Panel.
  */
-import {PanelMode} from './panel_mode.js';
+import type {PanelMode} from './panel_mode.js';
 
 // TODO(a11y): Convert to an interface once TypeScript migration is done.
 export abstract class PanelInterface {

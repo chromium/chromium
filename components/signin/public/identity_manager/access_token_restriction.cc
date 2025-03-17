@@ -8,7 +8,6 @@
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/plus_addresses/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 
@@ -114,6 +113,9 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       // Required by Omnibox / DocumentSuggestionsService.
       GaiaConstants::kCloudSearchQueryOAuth2Scope,
 
+      // Required by Omnibox / EnterpriseSearchAggregatorSuggestionsService.
+      GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope,
+
       // Used by AdvancedProtectionStatusManager, as well as internally by the
       // identity system.
       GaiaConstants::kOAuth1LoginScope,
@@ -125,7 +127,7 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       GaiaConstants::kAidaOAuth2Scope,
 
     // Required by ChromeOS only.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       GaiaConstants::kAssistantOAuth2Scope,
       GaiaConstants::kAuditRecordingOAuth2Scope,
       GaiaConstants::kCastBackdropOAuth2Scope,
@@ -141,7 +143,7 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       GaiaConstants::kContactsOAuth2Scope,
       GaiaConstants::kPhotosOAuth2Scope,
       GaiaConstants::kTachyonOAuthScope,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       // clang-format on
   });
 

@@ -21,15 +21,10 @@ class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
       delete;
 
   void StartFetching(FetchResultCallback callback) override;
-  void DeleteHostData(const std::string& host,
-                      blink::mojom::StorageType type) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             base::OnceClosure completed) override;
 
-  void AddHost(const blink::StorageKey& storage_key,
-               int64_t temporary_usage,
-               int64_t syncable_usage);
+  void AddHost(const blink::StorageKey& storage_key, int64_t usage);
   void AddQuotaSamples();
   void Notify();
 

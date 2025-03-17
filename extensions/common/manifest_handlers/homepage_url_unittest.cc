@@ -20,15 +20,11 @@ TEST_F(HomepageURLManifestTest, ParseHomepageURLs) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("homepage_url_valid.json"));
 
-  Testcase testcases[] = {
-    Testcase("homepage_url_empty.json",
-             errors::kInvalidHomepageURL),
-    Testcase("homepage_url_invalid.json",
-             errors::kInvalidHomepageURL),
-    Testcase("homepage_url_bad_schema.json",
-             errors::kInvalidHomepageURL)
-  };
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  const Testcase testcases[] = {
+      Testcase("homepage_url_empty.json", errors::kInvalidHomepageURL),
+      Testcase("homepage_url_invalid.json", errors::kInvalidHomepageURL),
+      Testcase("homepage_url_bad_schema.json", errors::kInvalidHomepageURL)};
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 }
 
 TEST_F(HomepageURLManifestTest, GetHomepageURL) {

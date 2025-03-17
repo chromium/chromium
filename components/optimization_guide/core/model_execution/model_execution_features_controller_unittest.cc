@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -121,7 +122,8 @@ TEST_F(ModelExecutionFeaturesControllerTest, OneFeatureSettingVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::internal::kComposeSettingsVisibility},
-      {features::internal::kComposeGraduated});
+      {features::internal::kComposeGraduated,
+       features::kAiSettingsPageRefresh});
   CreateController();
 
   EnableSignIn();
@@ -150,7 +152,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       {{features::internal::kComposeSettingsVisibility, {}},
        {features::internal::kTabOrganizationSettingsVisibility, {}}},
       {features::internal::kComposeGraduated,
-       features::internal::kTabOrganizationGraduated});
+       features::internal::kTabOrganizationGraduated,
+       features::kAiSettingsPageRefresh});
   CreateController();
   EXPECT_FALSE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(
@@ -173,7 +176,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
        {features::internal::kTabOrganizationSettingsVisibility,
         {{"allow_unsigned_user", "true"}}}},
       {features::internal::kComposeGraduated,
-       features::internal::kTabOrganizationGraduated});
+       features::internal::kTabOrganizationGraduated,
+       features::kAiSettingsPageRefresh});
   CreateController();
   EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_TRUE(
@@ -231,7 +235,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   scoped_feature_list.InitWithFeatures(
       {features::internal::kComposeSettingsVisibility,
        features::internal::kModelExecutionCapabilityDisable},
-      {features::internal::kComposeGraduated});
+      {features::internal::kComposeGraduated,
+       features::kAiSettingsPageRefresh});
   CreateController();
   EnableSignInWithoutCapability();
 
@@ -250,7 +255,8 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
       /*disabled_features=*/
       {features::internal::kComposeSettingsVisibility,
        features::internal::kTabOrganizationSettingsVisibility,
-       features::internal::kWallpaperSearchSettingsVisibility});
+       features::internal::kWallpaperSearchSettingsVisibility,
+       features::kAiSettingsPageRefresh});
   CreateController();
 
   EnableSignIn();

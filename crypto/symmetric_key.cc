@@ -10,9 +10,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/check_op.h"
-#include "base/notreached.h"
-#include "crypto/kdf.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
 
@@ -53,54 +50,6 @@ SymmetricKey SymmetricKey::RandomKey(size_t key_size_in_bits) {
   CHECK(IsValidKeySize(key_size_in_bytes));
 
   return SymmetricKey(crypto::RandBytesAsVector(key_size_in_bytes));
-}
-
-// static
-std::unique_ptr<SymmetricKey> SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-    Algorithm,
-    const std::string& password,
-    const std::string& salt,
-    size_t iterations,
-    size_t key_size_in_bits) {
-  if ((key_size_in_bits % 8) || !IsValidKeySize(key_size_in_bits / 8)) {
-    return nullptr;
-  }
-
-  kdf::Pbkdf2HmacSha1Params params = {
-      .iterations = base::checked_cast<decltype(params.iterations)>(iterations),
-  };
-
-  std::vector<uint8_t> key(key_size_in_bits / 8);
-  kdf::DeriveKeyPbkdf2HmacSha1(params, base::as_byte_span(password),
-                               base::as_byte_span(salt), key, SubtlePassKey{});
-
-  return std::make_unique<SymmetricKey>(key);
-}
-
-// static
-std::unique_ptr<SymmetricKey> SymmetricKey::DeriveKeyFromPasswordUsingScrypt(
-    Algorithm,
-    const std::string& password,
-    const std::string& salt,
-    size_t cost_parameter,
-    size_t block_size,
-    size_t parallelization_parameter,
-    size_t max_memory_bytes,
-    size_t key_size_in_bits) {
-  if ((key_size_in_bits % 8) || !IsValidKeySize(key_size_in_bits / 8)) {
-    return nullptr;
-  }
-
-  kdf::ScryptParams params = {
-      .cost = cost_parameter,
-      .block_size = block_size,
-      .parallelization = parallelization_parameter,
-      .max_memory_bytes = max_memory_bytes,
-  };
-  std::vector<uint8_t> key(key_size_in_bits / 8);
-  kdf::DeriveKeyScrypt(params, base::as_byte_span(password),
-                       base::as_byte_span(salt), key, SubtlePassKey{});
-  return std::make_unique<SymmetricKey>(key);
 }
 
 // static

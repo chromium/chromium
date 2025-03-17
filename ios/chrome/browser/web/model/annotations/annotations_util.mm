@@ -7,7 +7,6 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/web/common/features.h"
@@ -95,7 +94,8 @@ bool ShouldPresentConsentIPH(PrefService* prefs) {
   if (param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
     return true;
   }
-  if (param == web::features::kOneTapForMapsConsentModeIPHParam) {
+  if (param == web::features::kOneTapForMapsConsentModeIPHParam ||
+      param == "") {
     return !IsAddressAutomaticDetectionAccepted(prefs);
   }
   return false;
@@ -110,7 +110,8 @@ bool ShouldPresentConsentScreen(PrefService* prefs) {
   }
   if (param == web::features::kOneTapForMapsConsentModeDisabledParam ||
       param == web::features::kOneTapForMapsConsentModeIPHParam ||
-      param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
+      param == web::features::kOneTapForMapsConsentModeIPHForcedParam ||
+      param == "") {
     return false;
   }
   return !IsAddressAutomaticDetectionAccepted(prefs);
@@ -143,7 +144,8 @@ bool IsLongPressAnnotationEnabledForType(PrefService* prefs,
     case WebAnnotationType::kEMailAddresses:
       return true;
     case WebAnnotationType::kPackage:
-      return IsIOSParcelTrackingEnabled();
+      // Package tracking was turned down in https://crbug.com/377724731
+      return false;
     case WebAnnotationType::kPhoneNumbers:
       return true;
     case WebAnnotationType::kUnits:
@@ -168,7 +170,8 @@ bool IsOneTapAnnotationEnabledForType(PrefService* prefs,
     case WebAnnotationType::kEMailAddresses:
       return true;
     case WebAnnotationType::kPackage:
-      return IsIOSParcelTrackingEnabled();
+      // Package tracking was turned down in https://crbug.com/377724731
+      return false;
     case WebAnnotationType::kPhoneNumbers:
       return true;
     case WebAnnotationType::kUnits:

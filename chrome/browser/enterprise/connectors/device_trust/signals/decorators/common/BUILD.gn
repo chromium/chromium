@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 source_set("common") {
   public = [
     "common_signals_decorator.h",
@@ -54,7 +52,6 @@ source_set("unit_tests") {
     ":common",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//chrome/common:constants",
     "//components/component_updater",
@@ -68,7 +65,7 @@ source_set("unit_tests") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
   }
 }

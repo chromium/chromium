@@ -304,7 +304,7 @@ public class DialogOverlayCoreTest {
         mAsPanel = true;
         createOverlay();
         mCore.onWindowToken(mWindowToken);
-        assertEquals(layoutParams().type, WindowManager.LayoutParams.TYPE_APPLICATION_PANEL);
+        assertEquals(WindowManager.LayoutParams.TYPE_APPLICATION_PANEL, layoutParams().type);
     }
 
     @Test

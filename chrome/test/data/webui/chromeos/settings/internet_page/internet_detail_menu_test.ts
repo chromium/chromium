@@ -4,14 +4,16 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrActionMenuElement, Router, routes, SettingsInternetDetailMenuElement} from 'chrome://os-settings/os_settings.js';
+import type {CrActionMenuElement, SettingsInternetDetailMenuElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/chromeos/cellular_setup/fake_esim_manager_remote.js';
@@ -252,12 +254,12 @@ suite('<settings-internet-detail-menu>', () => {
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       inhibitReason: InhibitReason.kConnectingToProfile,
-      ipv4Address: undefined,
-      ipv6Address: undefined,
+      ipv4Address: null,
+      ipv6Address: null,
       imei: '',
       macAddress: '',
       scanning: false,
-      simLockStatus: undefined,
+      simLockStatus: null,
       simInfos: [],
       simAbsent: false,
       managedNetworkAvailable: false,

@@ -82,7 +82,7 @@ IsolatedWebAppThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
                                         .controller()
                                         .GetBrowserContext();
 
-  if (IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(browser_context)) {
+  if (AreIsolatedWebAppsEnabled(browser_context)) {
     return std::make_unique<IsolatedWebAppThrottle>(handle);
   }
   return nullptr;

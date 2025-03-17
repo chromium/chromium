@@ -20,9 +20,7 @@ class FullscreenJavaScriptFeatureTest : public WebTestWithWebState {
   FullscreenJavaScriptFeatureTest() = default;
   ~FullscreenJavaScriptFeatureTest() override = default;
 
-  void SetUp() override {
-    WebTestWithWebState::SetUp();
-  }
+  void SetUp() override { WebTestWithWebState::SetUp(); }
 };
 
 // Tests that a page with viewport-fit=cover correctly propagates this state

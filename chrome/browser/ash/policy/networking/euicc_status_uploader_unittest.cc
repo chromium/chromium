@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -75,8 +76,8 @@ bool RequestsAreEqual(
     return std::tie(profile.iccid(), profile.smdp_address());
   };
   return lhs.euicc_count() == rhs.euicc_count() &&
-         base::ranges::equal(lhs.esim_profiles(), rhs.esim_profiles(),
-                             std::equal_to<>(), proj, proj) &&
+         std::ranges::equal(lhs.esim_profiles(), rhs.esim_profiles(),
+                            std::equal_to<>(), proj, proj) &&
          lhs.clear_profile_list() == rhs.clear_profile_list();
 }
 

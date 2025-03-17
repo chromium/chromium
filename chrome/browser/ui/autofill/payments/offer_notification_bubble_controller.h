@@ -62,12 +62,6 @@ class OfferNotificationBubbleController {
   // Returns whether the omnibox icon should be visible.
   virtual bool IsIconVisible() const = 0;
 
-  // Returns whether the omnibox icon should expand if it's visible.
-  virtual bool ShouldIconExpand() const = 0;
-
-  // Once icon is expanded, the expand state will be reset to false.
-  virtual void OnIconExpanded() = 0;
-
   // Removes the reference the controller has to the bubble.
   virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
 };

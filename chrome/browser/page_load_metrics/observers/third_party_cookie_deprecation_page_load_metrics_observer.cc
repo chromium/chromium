@@ -244,6 +244,7 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     case ThirdPartyCookieAllowMechanism::kNone:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
     case ThirdPartyCookieAllowMechanism::kAllowByScheme:
+    case ThirdPartyCookieAllowMechanism::kAllowBySandboxValue:
       break;
   }
 

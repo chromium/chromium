@@ -239,8 +239,8 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
   EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs));
-  EXPECT_EQ(disable_reason::DISABLE_GREYLIST,
-            prefs->GetDisableReasons(kTestExtensionId));
+  EXPECT_THAT(prefs->GetDisableReasons(kTestExtensionId),
+              testing::UnorderedElementsAre(disable_reason::DISABLE_GREYLIST));
 
   // Remove malware.
   attributes.Set("_malware", false);

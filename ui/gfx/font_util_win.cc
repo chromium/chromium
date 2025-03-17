@@ -26,7 +26,7 @@ TextParameters GetTextParameters() {
   static TextParameters text_parameters;
   static std::once_flag flag;
   std::call_once(flag, [&] {
-    text_parameters.contrast = FontUtilWin::TextGammaContrast();
+    text_parameters.contrast = SK_GAMMA_CONTRAST;
     text_parameters.gamma = SK_GAMMA_EXPONENT;
     // Only apply values from `IDWriteRenderingParams` if the user has
     // the appropriate registry keys set. Otherwise, `IDWriteRenderingParams`
@@ -91,17 +91,6 @@ float FontUtilWin::GetContrastFromRegistry() {
 // static
 float FontUtilWin::GetGammaFromRegistry() {
   return GetTextParameters().gamma;
-}
-
-// static
-float FontUtilWin::TextGammaContrast() {
-  if (base::FeatureList::IsEnabled(features::kIncreaseWindowsTextContrast)) {
-    // On Windows, SK_GAMMA_CONTRAST is currently 0.5. This flag increases it
-    // to 1.0.
-    return 1.0f;
-  } else {
-    return SK_GAMMA_CONTRAST;
-  }
 }
 
 }  // namespace gfx

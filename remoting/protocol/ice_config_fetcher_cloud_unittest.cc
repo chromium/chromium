@@ -11,8 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "remoting/base/http_status.h"
+#include "remoting/base/instance_identity_token_getter.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/network_traversal_service.pb.h"
 #include "remoting/protocol/ice_config.h"
@@ -35,6 +36,12 @@ using ::google::internal::remoting::cloud::v1alpha::TurnServer;
 
 constexpr int kLifetimeDurationSeconds = 43200;
 
+// Matches the URL generated for requests from ComputeEngineServiceClient.
+constexpr char kHttpMetadataRequestUrl[] =
+    "http://metadata.google.internal/computeMetadata/v1/instance/"
+    "service-accounts/default/identity?audience=audience_for_testing&"
+    "format=full";
+
 }  // namespace
 
 class IceConfigFetcherCloudTest : public testing::Test {
@@ -48,6 +55,10 @@ class IceConfigFetcherCloudTest : public testing::Test {
           out_config = std::move(ice_config);
           run_loop_to_quit->Quit();
         });
+
+    test_responder_.AddResponse(kHttpMetadataRequestUrl,
+                                "header.payload.signature");
+
     fetcher_.GetIceConfig(mock_on_result->Get());
     return mock_on_result;
   }
@@ -56,8 +67,11 @@ class IceConfigFetcherCloudTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ProtobufHttpTestResponder test_responder_;
   PassthroughOAuthTokenGetter oauth_token_getter_{{"blergh", "blargh"}};
+  InstanceIdentityTokenGetter instance_identity_token_getter_{
+      "audience_for_testing", test_responder_.GetUrlLoaderFactory()};
   IceConfigFetcherCloud fetcher_{test_responder_.GetUrlLoaderFactory(),
-                                 &oauth_token_getter_};
+                                 &oauth_token_getter_,
+                                 &instance_identity_token_getter_};
 };
 
 TEST_F(IceConfigFetcherCloudTest, StunOnlyResponse) {
@@ -197,7 +211,7 @@ TEST_F(IceConfigFetcherCloudTest, FailedRequest) {
 
   ASSERT_GT(test_responder_.GetNumPending(), 0);
   test_responder_.AddErrorToMostRecentRequestUrl(
-      ProtobufHttpStatus(ProtobufHttpStatus::Code::INVALID_ARGUMENT, ""));
+      HttpStatus(HttpStatus::Code::INVALID_ARGUMENT, ""));
   run_loop.Run();
 
   EXPECT_FALSE(received_config.has_value());

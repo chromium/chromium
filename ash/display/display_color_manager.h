@@ -63,6 +63,10 @@ class ASH_EXPORT DisplayColorManager
     return displays_ctm_support_;
   }
 
+  // Returns whether |display_id| has color correction matrix according to
+  // |configurator_|
+  bool HasColorCorrectionMatrix(int64_t display_id);
+
   // Sets the color temperature adjustment for |display_id|. Returns true if the
   // hardware supports this operation.
   bool SetDisplayColorTemperatureAdjustment(

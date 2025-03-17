@@ -26,7 +26,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -59,7 +60,6 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -117,7 +117,6 @@
 #include "ui/views/widget/widget.h"
 
 using base::UserMetricsAction;
-using bookmarks::BookmarkModel;
 using content::WebContents;
 using ui::ButtonMenuItemModel;
 using ui::MenuModel;
@@ -310,13 +309,13 @@ class InMenuButton : public LabelButton {
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
     label()->SetFontList(MenuConfig::instance().font_list);
 
-    SetTextColorId(views::Button::STATE_DISABLED,
-                   ui::kColorMenuItemForegroundDisabled);
-    SetTextColorId(views::Button::STATE_HOVERED,
-                   ui::kColorMenuItemForegroundSelected);
-    SetTextColorId(views::Button::STATE_PRESSED,
-                   ui::kColorMenuItemForegroundSelected);
-    SetTextColorId(views::Button::STATE_NORMAL, ui::kColorMenuItemForeground);
+    SetTextColor(views::Button::STATE_DISABLED,
+                 ui::kColorMenuItemForegroundDisabled);
+    SetTextColor(views::Button::STATE_HOVERED,
+                 ui::kColorMenuItemForegroundSelected);
+    SetTextColor(views::Button::STATE_PRESSED,
+                 ui::kColorMenuItemForegroundSelected);
+    SetTextColor(views::Button::STATE_NORMAL, ui::kColorMenuItemForeground);
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   }
@@ -408,7 +407,7 @@ void AddSignedInChipToProfileMenuItem(
               views::Builder<views::Label>()
                   .SetText(GetSigninStatusChipString(profile))
                   .CopyAddressTo(&profile_chip_label)
-                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                  .SetBackground(views::CreateRoundedRectBackground(
                       item->IsSelected()
                           ? ui::kColorAppMenuProfileRowChipHovered
                           : ui::kColorAppMenuProfileRowChipBackground,
@@ -433,7 +432,7 @@ void AddSignedInChipToProfileMenuItem(
       item->AddSelectedChangedCallback(base::BindRepeating(
           [](MenuItemView* menu_item_view, View* child_view,
              int corner_radius) {
-            child_view->SetBackground(views::CreateThemedRoundedRectBackground(
+            child_view->SetBackground(views::CreateRoundedRectBackground(
                 menu_item_view->IsSelected()
                     ? ui::kColorAppMenuProfileRowChipHovered
                     : ui::kColorAppMenuProfileRowChipBackground,
@@ -686,7 +685,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
     zoom_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
     zoom_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0, kZoomLabelHorizontalPadding, 0, kZoomLabelHorizontalPadding)));
-    zoom_label->SetEnabledColorId(ui::kColorMenuItemForeground);
+    zoom_label->SetEnabledColor(ui::kColorMenuItemForeground);
 
     // Need to set a font list for the zoom label width calculations.
     zoom_label->SetFontList(MenuConfig::instance().font_list);
@@ -832,7 +831,8 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
     if (!on_construction) {
       // An alert notification will ensure that the zoom label is always
       // announced even if is not focusable.
-      zoom_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      zoom_label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                      true);
     }
     zoom_label_max_width_.reset();
   }
@@ -1027,10 +1027,10 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
 
 AppMenu::~AppMenu() {
   if (bookmark_menu_delegate_.get()) {
-    BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
-    if (model) {
-      model->RemoveObserver(this);
+    BookmarkMergedSurfaceService* service =
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(browser_->profile());
+    if (service) {
+      service->RemoveObserver(this);
     }
   }
 }
@@ -1338,7 +1338,7 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
   static constexpr auto kSafetyHubCommandIds =
       std::array{IDC_OPEN_SAFETY_HUB, IDC_SAFETY_HUB_MANAGE_EXTENSIONS,
                  IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP};
-  const bool has_safety_hub_notification = base::ranges::any_of(
+  const bool has_safety_hub_notification = std::ranges::any_of(
       kSafetyHubCommandIds,
       [&](int id) { return command_id_to_entry_.contains(id); });
   if (has_safety_hub_notification &&
@@ -1353,11 +1353,12 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
   browser_view->toolbar_button_provider()->GetAppMenuButton()->OnMenuClosed();
 
   if (bookmark_menu_delegate_.get()) {
-    BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
-    if (model) {
-      model->RemoveObserver(this);
+    BookmarkMergedSurfaceService* service =
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(browser_->profile());
+    if (service) {
+      service->RemoveObserver(this);
     }
+    bookmark_menu_delegate_.reset();
   }
 
   if (selected_menu_model_) {
@@ -1391,11 +1392,53 @@ bool AppMenu::ShouldTryPositioningBesideAnchor() const {
   return false;
 }
 
-void AppMenu::BookmarkModelChanged() {
+void AppMenu::BookmarkMergedSurfaceServiceChanged() {
   DCHECK(bookmark_menu_delegate_.get());
   if (!bookmark_menu_delegate_->is_mutating_model()) {
     root_->Cancel();
   }
+}
+
+void AppMenu::BookmarkMergedSurfaceServiceLoaded() {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void AppMenu::BookmarkMergedSurfaceServiceBeingDeleted() {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void AppMenu::BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                                size_t index) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void AppMenu::BookmarkNodesRemoved(
+    const BookmarkParentFolder& parent,
+    const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void AppMenu::BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
+                                size_t old_index,
+                                const BookmarkParentFolder& new_parent,
+                                size_t new_index) {
+  // The delegate is also an observer and will handle updating the menu.
+  // Overriding the BookmarkNodeMoved method prevents the base class from
+  // invoking `BookmarkMergedSurfaceServiceChanged`, which would close the menu.
+  CHECK(bookmark_menu_delegate_.get());
+}
+
+void AppMenu::BookmarkNodeChanged(const bookmarks::BookmarkNode* node) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void AppMenu::BookmarkParentFolderChildrenReordered(
+    const BookmarkParentFolder& folder) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void AppMenu::BookmarkAllUserNodesRemoved() {
+  BookmarkMergedSurfaceServiceChanged();
 }
 
 void AppMenu::OnGlobalErrorsChanged() {
@@ -1466,7 +1509,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
           item->AddChildView(
               views::Builder<views::Label>()
                   .SetText(upgrade_substring_text)
-                  .SetEnabledColorId(
+                  .SetEnabledColor(
                       ui::kColorAppMenuUpgradeRowSubstringForeground)
                   .SetEnabled(true)
                   .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
@@ -1596,13 +1639,13 @@ void AppMenu::CreateBookmarkMenu() {
     return;  // Already created the menu.
   }
 
-  BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser_->profile());
-  if (!model->loaded()) {
+  BookmarkMergedSurfaceService* service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(browser_->profile());
+  if (!service->loaded()) {
     return;
   }
 
-  model->AddObserver(this);
+  service->AddObserver(this);
 
   // TODO(oshima): Replace with views only API.
   views::Widget* parent = views::Widget::GetWidgetForNativeWindow(

@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_menu_selector/cr_menu_selector.js';
 
-import {CrMenuSelector} from 'chrome://resources/ash/common/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelector} from 'chrome://resources/ash/common/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -159,7 +159,7 @@ suite('CrMenuSelectorFocusTest', () => {
   test('ActivatesItemOnClick', async () => {
     const itemToSelect = getChild(1);
     const onActivate = eventToPromise('iron-activate', element);
-    itemToSelect.dispatchEvent(new Event('click', {bubbles: true}));
+    itemToSelect.click();
     await onActivate;
     assertTrue(itemToSelect.hasAttribute('selected'));
     assertEquals(itemToSelect.href, element.selected);

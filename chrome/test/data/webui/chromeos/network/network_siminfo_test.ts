@@ -59,8 +59,8 @@ suite('NetworkSiminfoTest', () => {
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       inhibitReason: InhibitReason.kNotInhibited,
-      ipv4Address: undefined,
-      ipv6Address: undefined,
+      ipv4Address: null,
+      ipv6Address: null,
       imei: '',
       macAddress: '',
       scanning: false,
@@ -168,13 +168,13 @@ suite('NetworkSiminfoTest', () => {
     assertEquals(getUnlockPinButton(), getDeepActiveElement());
   });
 
-  test('Show sim lock dialog when unlock button is clicked', async () => {
+  test('Show sim lock dialog when unlock button is clicked', () => {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ true);
     verifyExistsAndClickOpensDialog('unlockPinButton');
   });
 
-  test('Show sim lock dialog when toggle is clicked', async () => {
+  test('Show sim lock dialog when toggle is clicked', () => {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ false, /*isLocked=*/ false);
     verifyExistsAndClickOpensDialog('simLockButton');

@@ -36,8 +36,9 @@ NSArray* SubviewsWithClass(UIView* root, Class aClass) {
 
   while ([viewsToExamine count]) {
     UIView* view = [viewsToExamine lastObject];
-    if ([view isKindOfClass:aClass])
+    if ([view isKindOfClass:aClass]) {
       [subviews addObject:view];
+    }
 
     [viewsToExamine removeLastObject];
     [viewsToExamine addObjectsFromArray:[view subviews]];
@@ -49,8 +50,9 @@ NSArray* SubviewsWithClass(UIView* root, Class aClass) {
 // Returns true if `item`'s action name contains `actionName`.
 BOOL ItemActionMatchesName(UIBarButtonItem* item, NSString* actionName) {
   SEL itemAction = [item action];
-  if (!itemAction)
+  if (!itemAction) {
     return false;
+  }
   NSString* itemActionName = NSStringFromSelector(itemAction);
 
   // This doesn't do a strict string match for the action name.
@@ -65,8 +67,9 @@ NSArray* FindToolbarItemsForActionName(UIToolbar* toolbar,
   NSMutableArray* toolbarItems = [NSMutableArray array];
 
   for (UIBarButtonItem* item in [toolbar items]) {
-    if (ItemActionMatchesName(item, actionName))
+    if (ItemActionMatchesName(item, actionName)) {
       [toolbarItems addObject:item];
+    }
   }
 
   return toolbarItems;
@@ -95,16 +98,19 @@ NSArray* FindDescendantToolbarItemsForActionName(
   NSMutableArray* toolbarItems = [NSMutableArray array];
 
   NSMutableArray* buttonGroupsGroup = [[NSMutableArray alloc] init];
-  if (inputAssistantItem.leadingBarButtonGroups)
+  if (inputAssistantItem.leadingBarButtonGroups) {
     [buttonGroupsGroup addObject:inputAssistantItem.leadingBarButtonGroups];
-  if (inputAssistantItem.trailingBarButtonGroups)
+  }
+  if (inputAssistantItem.trailingBarButtonGroups) {
     [buttonGroupsGroup addObject:inputAssistantItem.trailingBarButtonGroups];
+  }
   for (NSArray* buttonGroups in buttonGroupsGroup) {
     for (UIBarButtonItemGroup* group in buttonGroups) {
       NSArray* items = group.barButtonItems;
       for (UIBarButtonItem* item in items) {
-        if (ItemActionMatchesName(item, actionName))
+        if (ItemActionMatchesName(item, actionName)) {
           [toolbarItems addObject:item];
+        }
       }
     }
   }
@@ -149,21 +155,24 @@ NSArray* FindDescendantToolbarItemsForActionName(
     UIResponder* firstResponder = GetFirstResponder();
     UITextInputAssistantItem* inputAssistantItem =
         firstResponder.inputAssistantItem;
-    if (!inputAssistantItem)
+    if (!inputAssistantItem) {
       return NO;
+    }
     descendants =
         FindDescendantToolbarItemsForActionName(inputAssistantItem, actionName);
   } else {
     UIResponder* firstResponder = GetFirstResponder();
     UIView* inputAccessoryView = firstResponder.inputAccessoryView;
-    if (!inputAccessoryView)
+    if (!inputAccessoryView) {
       return NO;
+    }
     descendants =
         FindDescendantToolbarItemsForActionName(inputAccessoryView, actionName);
   }
 
-  if (![descendants count])
+  if (![descendants count]) {
     return NO;
+  }
 
   UIBarButtonItem* item = descendants.firstObject;
   if (!item.enabled) {

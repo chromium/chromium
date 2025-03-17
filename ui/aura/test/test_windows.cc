@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -67,8 +68,8 @@ bool ObjectIsAbove(T* upper, T* lower) {
   DCHECK_EQ(upper->parent(), lower->parent());
   DCHECK_NE(upper, lower);
   const auto& children = upper->parent()->children();
-  const size_t upper_i = base::ranges::find(children, upper) - children.begin();
-  const size_t lower_i = base::ranges::find(children, lower) - children.begin();
+  const size_t upper_i = std::ranges::find(children, upper) - children.begin();
+  const size_t lower_i = std::ranges::find(children, lower) - children.begin();
   return upper_i > lower_i;
 }
 

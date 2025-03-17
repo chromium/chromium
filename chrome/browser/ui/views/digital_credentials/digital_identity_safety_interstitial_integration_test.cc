@@ -60,7 +60,8 @@ class TestDigitalIdentityProvider final
 
     base::OnceClosure observer = std::move(credential_request_observer_);
     // Calling the callback might destroy `this`.
-    std::move(callback).Run("token");
+    std::move(callback).Run(
+        DigitalCredential(/*protocol=*/std::nullopt, "token"));
     if (observer) {
       std::move(observer).Run();
     }

@@ -181,8 +181,7 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   // Overridden from View:
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
-  // Overridden from ImageButton:
-  void OnSetTooltipText(const std::u16string& tooltip_text) override;
+  void OnTooltipTextChanged(const std::u16string& old_tooltip) override;
 
   void UpdateAccessibleRoleIfNeeded();
 

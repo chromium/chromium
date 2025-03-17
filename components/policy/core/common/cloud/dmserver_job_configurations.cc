@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -109,6 +110,9 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_POLICY_AGENT_REGISTRATION:
       return dm_protocol::kValueRequestRegisterPolicyAgent;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_DETERMINE_PROMOTION_ELIGIBILITY:
+      return dm_protocol::kValueRequestDeterminePromotionEligibility;
   }
   NOTREACHED() << "Invalid job type " << type;
 }
@@ -178,6 +182,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(CreateParams params)
     : JobConfigurationBase(params.type,
                            std::move(params.auth_data),
                            std::move(params.oauth_token),
+                           params.use_cookies,
                            params.factory),
       server_url_(params.service->configuration()->GetDMServerUrl()),
       callback_(std::move(params.callback)) {
@@ -301,6 +306,8 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
       return DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE;
     case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
       return DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK;
+    case DeviceManagementService::kOrgUnitEnrollmentLimitExceeded:
+      return DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED;
     default:
       // Handle all unknown 5xx HTTP error codes as temporary and any other
       // unknown error as one that needs more time to recover.
@@ -359,7 +366,7 @@ GURL DMServerJobConfiguration::GetURL(int last_error) const {
 
   GURL url(server_url_);
   url = net::AppendQueryParameter(url, dm_protocol::kParamRetry,
-                                  last_error == 0 ? "false" : "true");
+                                  base::ToString(last_error != 0));
 
   if (last_error != 0) {
     url = net::AppendQueryParameter(url, dm_protocol::kParamLastError,

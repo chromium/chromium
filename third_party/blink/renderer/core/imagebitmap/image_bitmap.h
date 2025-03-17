@@ -80,11 +80,6 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
               bool is_image_bitmap_origin_clean,
               ImageOrientationEnum);
 
-  // Type and helper function required by CallbackPromiseAdapter:
-  using IDLType = ImageBitmap;
-  using WebType = sk_sp<SkImage>;
-  static ImageBitmap* Take(ScriptPromiseResolverBase*, sk_sp<SkImage>);
-
   scoped_refptr<StaticBitmapImage> BitmapImage() const { return image_; }
 
   // Retrieve the SkImageInfo that best represents BitmapImage().
@@ -110,13 +105,11 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   ~ImageBitmap() override;
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                               SourceImageStatus*,
+                                               const gfx::SizeF&) override;
   bool WouldTaintOrigin() const override {
-    return image_ ? !image_->OriginClean() : false;
+    return image_ && !image_->OriginClean();
   }
   gfx::SizeF ElementSize(const gfx::SizeF&,
                          const RespectImageOrientationEnum) const override;
@@ -124,7 +117,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   bool IsAccelerated() const override;
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const override { return Size(); }
+  ImageBitmapSourceStatus CheckUsability() const override;
   ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
                                                std::optional<gfx::Rect>,
                                                const ImageBitmapOptions*,

@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 
 class Section;
 using Groups = std::vector<Group>;
@@ -160,6 +161,17 @@ class DesktopNTPZpsSection : public ZpsSection {
                                 size_t limit);
 };
 
+// Section expressing the Desktop ZPS limits and grouping for unscoped
+// extensions.
+// - Up to 8 unscoped extension suggestions total.
+//  - Up to 4 from the first extension.
+//  - Up to 4 from the second extension.
+class DesktopZpsUnscopedExtensionSection : public ZpsSection {
+ public:
+  explicit DesktopZpsUnscopedExtensionSection(
+      omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Desktop ZPS limits and grouping for the IPH suggestion
 // on the NTP.
 // - Up to 1 IPH suggestion total
@@ -180,21 +192,29 @@ class DesktopSecondaryNTPZpsSection : public ZpsSection {
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the SRP.
-// - up to 8 suggestions total.
-//  - up to 8 previous search related suggestions.
-//  - up to 8 personalized suggestions.
+// - up to `max_suggestions` suggestions total.
+//  - up to `search_limit` previous search related suggestions.
+//  - up to `search_limit` personalized suggestions.
+//  - up to `max_suggestions` most visited tiles suggestions
+// We allow max_suggestions in order to backfill search suggestions.
 class DesktopSRPZpsSection : public ZpsSection {
  public:
-  explicit DesktopSRPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit DesktopSRPZpsSection(omnibox::GroupConfigMap& group_configs,
+                                size_t max_suggestions,
+                                size_t search_limit);
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the Web.
-// - up to 8 suggestions total.
-//  - up to 8 page related suggestions.
-//  - up to 8 personalized suggestions.
+// - up to `max_suggestions` suggestions total.
+//  - up to `url_limit` most visited tiles suggestions.
+//  - up to `max_suggestions` page related suggestions.
+//  - up to `max_suggestions` personalized suggestions.
+// We allow max_suggestions to backfill url suggestions.
 class DesktopWebZpsSection : public ZpsSection {
  public:
-  explicit DesktopWebZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit DesktopWebZpsSection(omnibox::GroupConfigMap& group_configs,
+                                size_t max_suggestions,
+                                size_t url_limit);
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the Lens

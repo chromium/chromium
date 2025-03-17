@@ -21,7 +21,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -30,6 +30,8 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/containers/span.h"
+#include "third_party/crashpad/crashpad/client/simple_address_range_bag.h"
+#include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"  // nogncheck
 #endif
 
 namespace base {
@@ -117,7 +119,7 @@ void DestroyCrashpadClient();
 
 // ChromeOS has its own, OS-level consent system; Chrome does not maintain a
 // separate Upload Consent on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Enables or disables crash report upload, taking the given consent to upload
 // into account. Consent may be ignored, uploads may not be enabled even with
@@ -129,7 +131,7 @@ void DestroyCrashpadClient();
 // running.
 void SetUploadConsent(bool consent);
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 enum class ReportUploadState {
   NotUploaded,
@@ -175,6 +177,21 @@ bool ProcessExternalDump(
 
 // "platform", used to determine device_model, can be overridden.
 void OverridePlatformValue(const std::string& platform_value);
+
+// The simple extra memory ranges SimpleAddressRangeBag object.
+crashpad::SimpleAddressRangeBag* ExtraMemoryRanges();
+
+// Sets the bag of extra memory ranges to be included in the snapshot.
+void SetExtraMemoryRanges(crashpad::SimpleAddressRangeBag* address_range_bag);
+
+// The extra memory ranges SimpleAddressRangeBag object stored in the snapshot
+// but not the minidump.
+crashpad::SimpleAddressRangeBag* IntermediateDumpExtraMemoryRanges();
+
+// Sets the bag of extra memory ranges to be included in the snapshot but not
+// the minidump.
+void SetIntermediateDumpExtraMemoryRanges(
+    crashpad::SimpleAddressRangeBag* address_range_bag);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -232,7 +249,8 @@ void DumpProcessWithoutCrashing(task_t task_port);
 // merge with any process annotations. These are useful for adding annotations
 // detected on the next run after a crash but before upload.
 void ProcessIntermediateDumps(
-    const std::map<std::string, std::string>& annotations = {});
+    const std::map<std::string, std::string>& annotations = {},
+    const crashpad::UserStreamDataSources* user_stream_sources = nullptr);
 
 // Convert a single intermediate dump at |file| into a minidump and
 // trigger an upload if StartProcessingPendingReports() has been called.

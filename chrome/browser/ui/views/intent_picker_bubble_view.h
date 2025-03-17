@@ -125,7 +125,6 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
 
- protected:
   // LocationBarBubbleDelegateView overrides:
   std::u16string GetWindowTitle() const override;
   void CloseBubble() override;

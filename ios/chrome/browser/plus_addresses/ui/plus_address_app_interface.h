@@ -15,6 +15,9 @@
 // Setter to enable plus address creation in `FakePlusAddressService` in tests.
 + (void)setShouldOfferPlusAddressCreation:(BOOL)shouldOfferPlusAddressCreation;
 
+// Setter to override the user consent acceptance.
++ (void)setUserHasAcceptedNotice;
+
 // Setter to return no affiliated plus profiles in call to
 // `FakePlusAddressService::GetAffiliatedPlusProfiles`.
 + (void)setShouldReturnNoAffiliatedPlusProfiles:

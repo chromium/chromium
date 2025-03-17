@@ -17,37 +17,37 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1"
-base64 = "0.13"
+base64 = "0.22"
 bitflags = "2"
-bytemuck = "1"
 bytes = "1"
 cfg-if = "1"
 cxx = "1"
 fend-core = "1"
-font-types = "0.7"
+font-types = "0.8"
 hex = "0.4"
 hex-literal = "0.4"
 itertools = "0.11"
 lazy_static = "1"
 libc = "0.2"
 nom = "7.1.3"
+png = "=0.18.0-rc"
 proc-macro2 = "1"
 prost = "0.13.3"
 qr_code = "2"
 quote = "1"
 rand = "0.8"
 rand_pcg = "0.3"
-read-fonts = "0.23"
+read-fonts = "0.27.2"
 regex = "1"
 rustc-demangle-capi = "0.1"
 serde = "1"
 serde_json = "1"
-skrifa = "0.24.1"
+sfv = "0.10.4"
+skrifa = "0.28.1"
 small_ctor = "0.1"
 static_assertions = "1"
 strum = "0.25.0"
 strum_macros = "0.25.3"
-wycheproof = "0.4"
 
 [dependencies.bstr]
 version = "1"
@@ -55,14 +55,23 @@ version = "1"
 default-features = false
 features = ["serde", "std"]
 
-[dependencies.png]
-version = "0.17"
-features = ["unstable"]  # For `std::simd`.
+[dependencies.crc32fast]
+version = "1.4.2"
+features = ["nightly"]  # For optimized aarch64 implementation.
+
+[dependencies.icu_capi]
+version = "2.0.0-beta2"
+default-features = false
+features = ["calendar", "compiled_data", "experimental"]
 
 [dependencies.tinyvec]
 version = "1.6.0"
 features = ["rustc_1_55"]
 
+# Without the `artifact` field Cargo will only build the `[lib]` target from a
+# dependency.  Specifying `artifact = "bin"` below allows Cargo (and `gnrt`) to
+# also cover `cxxbridge-cmd` when analyzing the dependency tree.  See also
+# https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#artifact-dependencies
 [dependencies.cxxbridge-cmd]
 version = "1"
 artifact = "bin"
@@ -101,3 +110,7 @@ version = "0.1"
 [dependencies.zerocopy]
 version = "0.7.35"
 features = ["derive", "simd"]
+
+[dependencies.bytemuck]
+version = "1"
+features = ["nightly_portable_simd"]  # For std::simd coverage.

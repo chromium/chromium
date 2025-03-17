@@ -675,7 +675,6 @@ TwentyEightDayImpl::GetPsmIdentifiersToQueryPhaseTwo() {
     return {};
   }
 
-  // TODO(hirthanan): Thoroughly evaluate different scenarios of calculations.
   base::TimeDelta time_diff = right_ts - left_ts;
   base::Time query_day = (left_ts + time_diff / 2).UTCMidnight();
   std::string window_id_query_day = utils::TimeToYYYYMMDDString(query_day);
@@ -902,7 +901,6 @@ void TwentyEightDayImpl::OnCheckMembershipQueryCompleteSecondPhase(
   SaveActivesCachePref();
 
   if (IsSecondPhaseComplete()) {
-    // TODO(hirthanan): Finish implementation here.
     base::Time last_ping_ts = FindLeftMostKnownMembership() - base::Days(28);
     LOG(ERROR) << "Device pinged last on = " << last_ping_ts;
     SetLastPingTimestamp(last_ping_ts);

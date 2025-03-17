@@ -525,8 +525,8 @@
   <message name="IDS_OS_SETTINGS_TAG_LOCAL_DATA_RECOVERY" desc="Text for search result item which, when clicked, navigates the user to Local Data Recovery toggle.">
     Local Data Recovery
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_GRADUATION" desc="Text for search result item which, when clicked, navigates to the setting that opens the Content Transfer app.">
-    Content Transfer
+  <message name="IDS_OS_SETTINGS_TAG_GRADUATION" desc="Text for search result item which, when clicked, navigates to the setting that opens the Content transfer app.">
+    Content transfer
   </message>
 
   <!-- Kerberos section. -->
@@ -1686,11 +1686,14 @@
   </message>
 
   <!-- On Startup section. -->
-  <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
+  <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
     Startup
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
+  <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
     Restore apps and pages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_WELCOME_RECAP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
+    Welcome recap
   </message>
 
   <!-- Multitasking section. -->

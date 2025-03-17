@@ -2,19 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import SwiftUI
 import WidgetKit
 
+// Entry containing info needed for multi-profile.
+struct ConfigureWidgetEntry: TimelineEntry {
+  let date: Date
+  let isPreview: Bool
+  let avatar: Image?
+  let gaiaID: String?
+}
+
 struct Provider: TimelineProvider {
-  typealias Entry = SimpleEntry
-  func placeholder(in context: Context) -> SimpleEntry {
-    SimpleEntry(date: Date())
+  typealias Entry = ConfigureWidgetEntry
+  func placeholder(in context: Context) -> Entry {
+    Entry(date: Date(), isPreview: true, avatar: nil, gaiaID: nil)
   }
 
   func getSnapshot(
     in context: Context,
-    completion: @escaping (SimpleEntry) -> Void
+    completion: @escaping (Entry) -> Void
   ) {
-    let entry = SimpleEntry(date: Date())
+    let entry = Entry(date: Date(), isPreview: context.isPreview, avatar: nil, gaiaID: nil)
     completion(entry)
   }
 
@@ -22,7 +31,7 @@ struct Provider: TimelineProvider {
     in context: Context,
     completion: @escaping (Timeline<Entry>) -> Void
   ) {
-    let entry = SimpleEntry(date: Date())
+    let entry = Entry(date: Date(), isPreview: context.isPreview, avatar: nil, gaiaID: nil)
     let timeline = Timeline(entries: [entry], policy: .never)
     completion(timeline)
   }
@@ -31,22 +40,28 @@ struct Provider: TimelineProvider {
 #if IOS_ENABLE_WIDGETS_FOR_MIM
   @available(iOS 17, *)
   struct ConfigurableProvider: AppIntentTimelineProvider {
-    func placeholder(in: Self.Context) -> SimpleEntry {
-      SimpleEntry(date: Date())
+    typealias Entry = ConfigureWidgetEntry
+
+    func placeholder(in: Self.Context) -> Entry {
+      Entry(date: Date(), isPreview: true, avatar: nil, gaiaID: nil)
     }
-    func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> SimpleEntry
-    {
-      return SimpleEntry(date: Date())
+    func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+
+      return Entry(date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID)
     }
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
-      SimpleEntry
+      Entry
     > {
-      return Timeline(entries: [SimpleEntry(date: Date())], policy: .never)
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      return Timeline(
+        entries: [
+          Entry(date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID)
+        ], policy: .never
+      )
     }
 
   }
 #endif
-
-struct SimpleEntry: TimelineEntry {
-  let date: Date
-}

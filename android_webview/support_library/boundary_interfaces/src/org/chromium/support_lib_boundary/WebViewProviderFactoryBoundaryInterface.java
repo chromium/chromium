@@ -6,10 +6,13 @@ package org.chromium.support_lib_boundary;
 
 import android.webkit.WebView;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.reflect.InvocationHandler;
 
 /**
  */
+@NullMarked
 public interface WebViewProviderFactoryBoundaryInterface {
     /* SupportLibraryWebViewChromium */ InvocationHandler createWebView(WebView webview);
 

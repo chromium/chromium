@@ -56,9 +56,9 @@ bool ShouldShowDeviceSelectorView(
     global_media_controls::mojom::DeviceService* device_service,
     const std::string& item_id,
     const base::WeakPtr<media_message_center::MediaNotificationItem>& item,
-
     MediaItemUIDeviceSelectorDelegate* selector_delegate) {
-  if (!device_service || !selector_delegate || !profile || !item) {
+  if (!device_service || !selector_delegate || !profile || !item ||
+      !media_router::MediaRouterEnabled(profile)) {
     return false;
   }
 

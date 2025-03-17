@@ -1,0 +1,19 @@
+Name: Search Engines resources
+URL: This is the canonical public repository
+Version: N/A
+License: BSD-3-Clause
+License File: //LICENSE
+Shipped: yes
+Security Critical: no
+Description:
+
+Chrome Search Engines resources, including, but not limited to:
+
+- Set of prepopulated engines,
+- Country associations,
+- Translations,
+- Images,
+etc.
+
+The contents of this repository are populated by an automated process.
+Do not modify the content directly.

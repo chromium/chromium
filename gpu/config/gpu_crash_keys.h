@@ -13,9 +13,9 @@ namespace gpu {
 namespace crash_keys {
 
 // Keys that can be used for crash reporting.
-#if !BUILDFLAG(IS_ANDROID)
 extern GPU_EXPORT crash_reporter::CrashKeyString<16> gpu_vendor_id;
 extern GPU_EXPORT crash_reporter::CrashKeyString<16> gpu_device_id;
+#if !BUILDFLAG(IS_ANDROID)
 extern GPU_EXPORT crash_reporter::CrashKeyString<16> gpu_count;
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)

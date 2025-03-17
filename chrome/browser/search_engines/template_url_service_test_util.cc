@@ -7,19 +7,28 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -29,6 +38,7 @@
 #include "components/search_engines/testing_search_terms_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webdata/common/web_database_service.h"
+#include "content/public/browser/browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -106,7 +116,9 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     base::Time last_modified,
     bool safe_for_autoreplace,
     TemplateURLData::PolicyOrigin policy_origin,
-    int prepopulate_id) {
+    int prepopulate_id,
+    int starter_pack_id,
+    TemplateURLData::ActiveStatus is_active) {
   DCHECK(!base::StartsWith(guid, "key"))
       << "Don't use test GUIDs with the form \"key1\". Use \"guid1\" instead "
          "for clarity.";
@@ -121,6 +133,8 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
   data.last_modified = last_modified;
   data.policy_origin = policy_origin;
   data.prepopulate_id = prepopulate_id;
+  data.starter_pack_id = starter_pack_id;
+  data.is_active = is_active;
   if (!guid.empty()) {
     data.sync_guid = guid;
   }
@@ -138,8 +152,24 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
     TestingProfile::TestingFactories testing_factories,
     PrefService* local_state)
     : local_state_(local_state) {
+  if (!local_state_) {
+    if (g_browser_process->local_state()) {
+      local_state_ = g_browser_process->local_state();
+    } else {
+      // `g_browser_process->local_state()` might be null in unit tests.
+      owned_local_state_ = std::make_unique<ScopedTestingLocalState>(
+          TestingBrowserProcess::GetGlobal());
+      local_state_ = owned_local_state_->Get();
+    }
+  }
+  CHECK(local_state_);
+
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactories(std::move(testing_factories));
+  profile_builder.AddTestingFactories(
+      TemplateURLServiceTestUtil::SetUpRequiredServicesWithCustomLocalState(
+          local_state_));
+
   profile_ = profile_builder.Build();
 
   scoped_refptr<WebDatabaseService> web_database_service =
@@ -155,33 +185,94 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   web_data_service_->Init(base::NullCallback());
 
-  if (!local_state_) {
-    if (g_browser_process->local_state()) {
-      local_state_ = g_browser_process->local_state();
-    } else {
-      // `g_browser_process->local_state()` might be null in unit tests.
-      owned_local_state_ = std::make_unique<ScopedTestingLocalState>(
-          TestingBrowserProcess::GetGlobal());
-      local_state_ = owned_local_state_->Get();
-    }
-  }
-
-  search_engine_choice_service_ =
-      std::make_unique<search_engines::SearchEngineChoiceService>(
-          *profile_->GetPrefs(), local_state_,
-          /*is_profile_eligible_for_dse_guest_propagation=*/false);
-
   ResetModel(false);
 }
 
 TemplateURLServiceTestUtil::~TemplateURLServiceTestUtil() {
   ClearModel();
   web_data_service_->ShutdownOnUISequence();
-  search_engine_choice_service_.reset();
   profile_.reset();
 
   // Flush the message loop to make application verifiers happy.
   base::RunLoop().RunUntilIdle();
+}
+
+// static
+TestingProfile::TestingFactories
+TemplateURLServiceTestUtil::SetUpRequiredServicesWithCustomLocalState(
+    PrefService* local_state_override) {
+  TestingProfile::TestingFactories testing_factories;
+
+  testing_factories.push_back({
+      search_engines::SearchEngineChoiceServiceFactory::GetInstance(),
+      base::BindLambdaForTesting(
+          [local_state_override](content::BrowserContext* browser_context)
+              -> std::unique_ptr<KeyedService> {
+            Profile* profile = Profile::FromBrowserContext(browser_context);
+            regional_capabilities::RegionalCapabilitiesService*
+                regional_capabilities =
+                    regional_capabilities::RegionalCapabilitiesServiceFactory::
+                        GetInstance()
+                            ->GetForProfile(profile);
+            PrefService* local_state = local_state_override
+                                           ? local_state_override
+                                           : g_browser_process->local_state();
+            CHECK(local_state);
+
+            return std::make_unique<search_engines::SearchEngineChoiceService>(
+                *profile->GetPrefs(), local_state, *regional_capabilities,
+                CHECK_DEREF(
+                    TemplateURLPrepopulateData::ResolverFactory::GetInstance()
+                        ->GetForProfile(profile)),
+                /*is_profile_eligible_for_dse_guest_propagation=*/false);
+          }),
+  });
+
+  return testing_factories;
+}
+
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory() {
+  return base::BindRepeating(
+      [](content::BrowserContext* context) -> std::unique_ptr<KeyedService> {
+        return TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
+            Profile::FromBrowserContext(context));
+      });
+}
+
+// static
+std::unique_ptr<TemplateURLService>
+TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
+    Profile* profile,
+    std::unique_ptr<SearchTermsData> search_terms_data,
+    scoped_refptr<KeywordWebDataService> web_data_service,
+    std::unique_ptr<TemplateURLServiceClient> client,
+    base::RepeatingClosure dsp_change_callback) {
+  return std::make_unique<TemplateURLService>(
+      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(
+          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+              profile)),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
+      std::move(search_terms_data), web_data_service, std::move(client),
+      std::move(dsp_change_callback));
+}
+
+// static
+std::unique_ptr<TemplateURLService>
+TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
+    Profile* profile,
+    base::span<const TemplateURLService::Initializer> initializers) {
+  return std::make_unique<TemplateURLService>(
+      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(
+          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+              profile)),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
+      initializers);
 }
 
 void TemplateURLServiceTestUtil::OnTemplateURLServiceChanged() {
@@ -222,8 +313,8 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
   if (model_) {
     ClearModel();
   }
-  model_ = std::make_unique<TemplateURLService>(
-      *profile()->GetPrefs(), *search_engine_choice_service_,
+  model_ = CreateTemplateURLServiceForTesting(
+      profile(),
       std::make_unique<TestingSearchTermsData>("http://www.google.com/"),
       web_data_service_.get(),
       std::unique_ptr<TemplateURLServiceClient>(
@@ -231,12 +322,7 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
               HistoryServiceFactory::GetForProfileIfExists(
                   profile(), ServiceAccessType::EXPLICIT_ACCESS),
               &search_term_)),
-      base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; })
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          ,
-      profile()->IsMainProfile()
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+      base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; }));
   model()->AddObserver(this);
   changed_count_ = 0;
   if (verify_load) {

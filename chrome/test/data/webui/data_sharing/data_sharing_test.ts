@@ -9,12 +9,13 @@ import {BrowserProxyImpl} from 'chrome-untrusted://data-sharing/browser_proxy.js
 import type {PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
-import {Code} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
+import {Code, LoggingIntent, Progress} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 class TestDataSharingBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
@@ -45,7 +46,7 @@ suite('Start flows', () => {
   let dataSharingApp: DataSharingApp|null = null;
   let testBrowserProxy: TestDataSharingBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
     testBrowserProxy = new TestDataSharingBrowserProxy();
     testDataSharingSdk = TestMock.fromClass(DataSharingSdkImpl);
     DataSharingSdkImpl.setInstance(testDataSharingSdk);
@@ -56,6 +57,10 @@ suite('Start flows', () => {
         'runJoinFlow', Promise.resolve({status: Code.OK}));
     testDataSharingSdk.setResultFor(
         'runManageFlow', Promise.resolve({status: Code.OK}));
+    testDataSharingSdk.setResultFor(
+        'runDeleteFlow', Promise.resolve({status: Code.OK}));
+    testDataSharingSdk.setResultFor(
+        'runCloseFlow', Promise.resolve({status: Code.OK}));
   });
 
   test('Invite flow', async () => {
@@ -73,7 +78,7 @@ suite('Start flows', () => {
 
   test('Manage flow', async () => {
     DataSharingApp.setUrlForTesting(
-        'chrome-untrusted://data-sharing?flow=manage&group_id=fake_id');
+        'chrome-untrusted://data-sharing?flow=manage&group_id=fake_id&tab_group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
     testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
@@ -86,12 +91,59 @@ suite('Start flows', () => {
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
 
+  test('Leave flow', async () => {
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing/?flow=leave&group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
+    const arg = testDataSharingSdk.getArgs('runManageFlow')[0];
+    assertEquals('fake_id', arg.groupId);
+    assertEquals(true, arg.showLeaveDialogAtStartup);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Delete flow', async () => {
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=delete&group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testDataSharingSdk.getCallCount('runDeleteFlow'));
+    assertEquals(
+        'fake_id', testDataSharingSdk.getArgs('runDeleteFlow')[0].groupId);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Close flow', async () => {
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=close&group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testDataSharingSdk.getCallCount('runCloseFlow'));
+    assertEquals(
+        'fake_id', testDataSharingSdk.getArgs('runCloseFlow')[0].groupId);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
   test('Join flow', async () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=join&group_id=fake_group_id&token_secret=fake_token');
     dataSharingApp = document.createElement('data-sharing-app');
     testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
+    dataSharingApp.setSuccessfullyJoinedForTesting();
     await microtasksFinished();
     assertEquals(1, testBrowserProxy.getCallCount('showUi'));
     assertEquals(1, testDataSharingSdk.getCallCount('runJoinFlow'));
@@ -100,5 +152,56 @@ suite('Start flows', () => {
     assertEquals('fake_token', arg.tokenSecret);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Join flow error case', async () => {
+    // If join flows neither joined successfully nor abandon by user, we
+    // consider it an error.
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=join&group_id=fake_group_id&token_secret=fake_token');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.UNKNOWN, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Join flow abandon case', async () => {
+    // If user abandoned join by clicking on the cancel button, we still return
+    // Code.OK when the dialog is closed.
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=join&group_id=fake_group_id&token_secret=fake_token');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    dataSharingApp.onEvent(
+        {intentType: LoggingIntent.ABANDON_JOIN, progress: Progress.SUCCEEDED});
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Metrics reporting', async () => {
+    loadTimeData.overrideValues({
+      metricsReportingEnabled: true,
+    });
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=share&tab_group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testDataSharingSdk.getCallCount('updateClearcut'));
+    const arg = testDataSharingSdk.getArgs('updateClearcut')[0];
+    assertEquals(true, arg.enabled);
+  });
+
+  test('Load favicon', async () => {
+    const img = document.createElement('img');
+    img.src =
+        'chrome-untrusted://favicon2/?size=16&scaleFactor=1x&pageUrl=chrome%3A%2F%2Fsettings&allowGoogleServerFallback=1';
+    document.body.appendChild(img);
+    await eventToPromise('load', img);
   });
 });

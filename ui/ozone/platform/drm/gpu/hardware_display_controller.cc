@@ -8,6 +8,7 @@
 #include <string.h>
 #include <xf86drm.h>
 
+#include <algorithm>
 #include <ios>
 #include <memory>
 #include <type_traits>
@@ -16,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -133,6 +133,25 @@ void HardwareDisplayController::GetEnableProps(
                           /*enable_vrr=*/std::nullopt);
 }
 
+void HardwareDisplayController::GetCurrentModesetPropsWithoutPlanes(
+    CommitRequest* commit_request) {
+  DCHECK(commit_request);
+  GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
+
+  for (const auto& controller : crtc_controllers_) {
+    drmModeModeInfo modeset_mode = controller->mode();
+    if (!controller->is_enabled() || ShouldDisableNonprimaryTileController(
+                                         *controller, modeset_mode, true)) {
+      continue;
+    }
+
+    CrtcCommitRequest request = CrtcCommitRequest::DetachPlanesRequest(
+        controller->crtc(), controller->connector(), modeset_mode, origin_,
+        /*plane_list=*/&owned_hardware_planes_, controller->vrr_enabled());
+    commit_request->push_back(std::move(request));
+  }
+}
+
 void HardwareDisplayController::GetModesetPropsForCrtcs(
     CommitRequest* commit_request,
     const DrmOverlayPlaneList& modeset_planes,
@@ -149,12 +168,9 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
 
     if (ShouldDisableNonprimaryTileController(*controller, modeset_mode,
                                               use_current_crtc_mode)) {
-      if (controller->is_enabled()) {
-        CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
-            controller->crtc(), controller->connector());
-        commit_request->push_back(std::move(request));
-      }
-
+      CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
+          controller->crtc(), controller->connector());
+      commit_request->push_back(std::move(request));
       continue;
     }
 
@@ -444,7 +460,7 @@ void HardwareDisplayController::AddCrtc(
 std::unique_ptr<CrtcController> HardwareDisplayController::RemoveCrtc(
     const scoped_refptr<DrmDevice>& drm,
     uint32_t crtc) {
-  auto controller_it = base::ranges::find_if(
+  auto controller_it = std::ranges::find_if(
       crtc_controllers_,
       [drm, crtc](const std::unique_ptr<CrtcController>& crtc_controller) {
         return crtc_controller->drm() == drm && crtc_controller->crtc() == crtc;

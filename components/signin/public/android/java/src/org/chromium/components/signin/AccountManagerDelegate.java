@@ -13,10 +13,12 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
  * Abstraction of account management implementation.
  * Provides methods for getting accounts and managing auth tokens.
  */
+@NullMarked
 public interface AccountManagerDelegate {
     /** Response code of the {@link AccountManagerDelegate#hasCapability} result. */
     @IntDef({CapabilityResponse.EXCEPTION, CapabilityResponse.YES, CapabilityResponse.NO})
@@ -79,23 +82,25 @@ public interface AccountManagerDelegate {
      */
     @WorkerThread
     @CapabilityResponse
-    int hasCapability(Account account, String capability);
+    int hasCapability(@Nullable Account account, String capability);
 
     /**
-     * Creates an intent that will ask the user to add a new account to the device. See
-     * {@link AccountManager#addAccount} for details.
+     * Creates an intent that will ask the user to add a new account to the device. See {@link
+     * AccountManager#addAccount} for details.
+     *
      * @param callback The callback to get the created intent. Will be invoked on the main thread.
-     *         If there is an issue while creating the intent, callback will receive null.
+     *     If there is an issue while creating the intent, callback will receive null.
      */
     @AnyThread
-    void createAddAccountIntent(Callback<Intent> callback);
+    void createAddAccountIntent(Callback<@Nullable Intent> callback);
 
     /**
      * Asks the user to enter a new password for an account, updating the saved credentials for the
      * account.
+     *
      * @param account The {@link Account} for which the update is requested.
      * @param activity The {@link Activity} context to use for launching a new authenticator-defined
-     * sub-Activity to prompt the user to enter a password.
+     *     sub-Activity to prompt the user to enter a password.
      * @param callback The callback to indicate whether update is succeed or not.
      */
     @AnyThread
@@ -103,26 +108,25 @@ public interface AccountManagerDelegate {
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
-     * Returns the Gaia id for the account associated with the given email address.
-     * If an account with the given email address is not installed on the device
-     * then null is returned.
+     * Returns the Gaia id for the account associated with the given email address. If an account
+     * with the given email address is not installed on the device then null is returned.
      *
-     * This method will throw IllegalStateException if called on the main thread.
+     * <p>This method will throw IllegalStateException if called on the main thread.
      *
      * @param accountEmail The email address of a Google account.
      */
     @WorkerThread
-    @Nullable
-    String getAccountGaiaId(String accountEmail);
+    @Nullable GaiaId getAccountGaiaId(String accountEmail);
 
     /**
      * Asks the user to confirm their knowledge of the password to the given account.
      *
      * @param account The {@link Account} to confirm the credentials for.
      * @param activity The {@link Activity} context to use for launching a new authenticator-defined
-     *                 sub-Activity to prompt the user to confirm the account's password.
+     *     sub-Activity to prompt the user to confirm the account's password.
      * @param callback The callback to indicate whether the user successfully confirmed their
-     *                 knowledge of the account's credentials.
+     *     knowledge of the account's credentials.
      */
-    void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback);
+    void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback);
 }

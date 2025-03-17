@@ -122,7 +122,7 @@ class AdminTemplateWindowObserver : public aura::WindowObserver {
 
       // ignore windows not being tracked.
       if (const auto it =
-              base::ranges::find(all_rwids_, rwid, &WindowIdPair::unique_rwid);
+              std::ranges::find(all_rwids_, rwid, &WindowIdPair::unique_rwid);
           it != all_rwids_.end()) {
         update_cb_.Run({.template_rwid = it->template_rwid,
                         .activation_index = activation_index});
@@ -166,7 +166,7 @@ class AdminTemplateDeskObserver : public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowAdded(aura::Window* new_window) override {
     int32_t rwid = new_window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (auto it = base::ranges::find(rwids_, rwid, &WindowIdPair::unique_rwid);
+    if (auto it = std::ranges::find(rwids_, rwid, &WindowIdPair::unique_rwid);
         it != rwids_.end()) {
       auto window_observer = std::make_unique<AdminTemplateWindowObserver>(
           update_cb_, done_cb_, new_window, it->template_rwid,

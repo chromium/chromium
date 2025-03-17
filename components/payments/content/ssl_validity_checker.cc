@@ -29,7 +29,6 @@ std::string SslValidityChecker::GetInvalidSslCertificateErrorMessage(
   switch (security_level) {
     // Indicate valid SSL with an empty string.
     case security_state::SECURE:
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
       return "";
 
     case security_state::NONE:
@@ -73,8 +72,6 @@ bool SslValidityChecker::IsValidPageInPaymentHandlerWindow(
     security_state::SecurityLevel security_level =
         GetSecurityLevel(web_contents);
     return security_level == security_state::SECURE ||
-           security_level ==
-               security_state::SECURE_WITH_POLICY_INSTALLED_CERT ||
            // No early return, so the other code is exercised in tests, too.
            base::CommandLine::ForCurrentProcess()->HasSwitch(
                switches::kIgnoreCertificateErrors);
@@ -91,8 +88,7 @@ security_state::SecurityLevel SslValidityChecker::GetSecurityLevel(
       security_state::GetVisibleSecurityState(web_contents);
   DCHECK(state);
 
-  return security_state::GetSecurityLevel(
-      *state, /*used_policy_installed_certificate=*/false);
+  return security_state::GetSecurityLevel(*state);
 }
 
 }  // namespace payments

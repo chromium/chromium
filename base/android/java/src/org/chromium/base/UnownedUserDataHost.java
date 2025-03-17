@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.os.Looper;
 
@@ -13,7 +15,6 @@ import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
@@ -275,18 +276,23 @@ public final class UnownedUserDataHost {
         return mUnownedUserDataMap.size();
     }
 
-    @NullUnmarked // NullAway cannot validate postconditions.
     @EnsuresNonNullIf(
             value = {"mUnownedUserDataMap", "mHandler"},
             result = false)
     /* package */ boolean isDestroyed() {
-        return mDestroyChecker.isDestroyed();
+        if (!mDestroyChecker.isDestroyed()) {
+            assumeNonNull(mUnownedUserDataMap);
+            assumeNonNull(mHandler);
+            return false;
+        }
+        return true;
     }
 
-    @NullUnmarked // NullAway cannot validate postconditions.
     @EnsuresNonNull({"mUnownedUserDataMap", "mHandler"})
     private void checkState() {
         mThreadChecker.assertOnValidThread();
         mDestroyChecker.checkNotDestroyed();
+        assumeNonNull(mUnownedUserDataMap);
+        assumeNonNull(mHandler);
     }
 }

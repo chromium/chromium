@@ -20,42 +20,34 @@
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_test_util.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
+#include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
-namespace {
-
-bool ParseAnswer(const std::string& answer_json,
-                 omnibox::AnswerType answer_type,
-                 omnibox::RichAnswerTemplate* answer) {
-  std::optional<base::Value> value = base::JSONReader::Read(answer_json);
-  if (!value || !value->is_dict()) {
-    return false;
-  }
-
-  return omnibox::answer_data_parser::ParseJsonToAnswerData(value->GetDict(),
-                                                            answer);
-}
-
-}  // namespace
-
 class AutocompleteControllerTest : public testing::Test {
  public:
   AutocompleteControllerTest() : controller_(&task_environment_) {}
+
+  void SetUp() override {
+    EnterpriseSearchManager::RegisterProfilePrefs(pref_service()->registry());
+  }
 
   void SetAutocompleteMatches(const std::vector<AutocompleteMatch>& matches) {
     controller_.internal_result_.ClearMatches();
@@ -72,175 +64,14 @@ class AutocompleteControllerTest : public testing::Test {
                ->image_dominant_color.empty();
   }
 
-  AutocompleteMatch CreateHistoryURLMatch(std::string destination_url) {
-    AutocompleteMatch match;
-    match.type = AutocompleteMatchType::Type::HISTORY_URL;
-    match.destination_url = GURL(destination_url);
-    return match;
-  }
-
-  AutocompleteMatch CreateCompanyEntityMatch(std::string website_uri) {
-    AutocompleteMatch match;
-    match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY;
-    match.website_uri = website_uri;
-    match.image_url = GURL("https://url");
-    match.image_dominant_color = "#000000";
-    return match;
-  }
-
-  AutocompleteMatch CreateSearchMatch(std::u16string contents = u"text") {
-    AutocompleteMatch match;
-    match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
-    match.contents = contents;
-    return match;
-  }
-
-  AutocompleteMatch CreateStarterPackMatch(std::u16string keyword) {
-    AutocompleteMatch match;
-    match.type = AutocompleteMatchType::Type::STARTER_PACK;
-    match.contents = keyword;
-    match.keyword = keyword;
-    match.associated_keyword = std::make_unique<AutocompleteMatch>(
-        nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-    match.associated_keyword->keyword = keyword;
-    return match;
-  }
-
-  AutocompleteMatch CreateFeaturedEnterpriseSearch(std::u16string keyword) {
-    AutocompleteMatch match;
-    match.type = AutocompleteMatchType::Type::FEATURED_ENTERPRISE_SEARCH;
-    match.contents = keyword;
-    match.keyword = keyword;
-    match.associated_keyword = std::make_unique<AutocompleteMatch>(
-        nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-    match.associated_keyword->keyword = keyword;
-    return match;
-  }
-
-  AutocompleteMatch CreateSearchMatch(std::string name,
-                                      bool allowed_to_be_default_match,
-                                      int traditional_relevance) {
-    auto match =
-        CreateAutocompleteMatch(name, AutocompleteMatchType::SEARCH_SUGGEST,
-                                allowed_to_be_default_match, false,
-                                traditional_relevance, std::nullopt);
-    match.keyword = u"keyword";
-    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
-        base::UTF8ToUTF16(name));
-    return match;
-  }
-
-  AutocompleteMatch CreatePersonalizedZeroPrefixMatch(
-      std::string name,
-      int traditional_relevance) {
-    auto match = CreateAutocompleteMatch(
-        name, AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, false, false,
-        traditional_relevance, std::nullopt);
-    match.keyword = u"keyword";
-    match.search_terms_args =
-        std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
-    match.suggestion_group_id = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
-    match.subtypes.emplace(omnibox::SUBTYPE_PERSONAL);
-    match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX);
-    return match;
-  }
-
-  AutocompleteMatch CreateHistoryUrlMlScoredMatch(
-      std::string name,
-      bool allowed_to_be_default_match,
-      int traditional_relevance,
-      float ml_output) {
-    return CreateMlScoredMatch(name, AutocompleteMatchType::HISTORY_URL,
-                               allowed_to_be_default_match,
-                               traditional_relevance, ml_output);
-  }
-
-  AutocompleteMatch CreateAnswerMlScoredMatch(std::string name,
-                                              omnibox::AnswerType answer_type,
-                                              std::string answer_json,
-                                              bool allowed_to_be_default_match,
-                                              int traditional_relevance,
-                                              float ml_output) {
-    AutocompleteMatch match = CreateSearchMlScoredMatch(
-        name, allowed_to_be_default_match, traditional_relevance, ml_output);
-    match.answer_type = answer_type;
-    omnibox::RichAnswerTemplate answer;
-    EXPECT_TRUE(ParseAnswer(answer_json, match.answer_type, &answer));
-    match.answer_template = answer;
-    return match;
-  }
-
-  AutocompleteMatch CreateSearchMlScoredMatch(std::string name,
-                                              bool allowed_to_be_default_match,
-                                              int traditional_relevance,
-                                              float ml_output) {
-    AutocompleteMatch match = CreateMlScoredMatch(
-        name, AutocompleteMatchType::SEARCH_SUGGEST,
-        allowed_to_be_default_match, traditional_relevance, ml_output);
-    match.keyword = u"keyword";
-    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
-        base::UTF8ToUTF16(name));
-    return match;
-  }
-
-  AutocompleteMatch CreateMlScoredMatch(std::string name,
-                                        AutocompleteMatchType::Type type,
-                                        bool allowed_to_be_default_match,
-                                        int traditional_relevance,
-                                        float ml_output) {
-    return CreateAutocompleteMatch(name, type, allowed_to_be_default_match,
-                                   false, traditional_relevance, ml_output);
-  }
-
-  AutocompleteMatch CreateBoostedShortcutMatch(std::string name,
-                                               int traditional_relevance,
-                                               float ml_output) {
-    return CreateAutocompleteMatch(name, AutocompleteMatchType::HISTORY_URL,
-                                   true, true, traditional_relevance,
-                                   ml_output);
-  }
-
-  AutocompleteMatch CreateKeywordHintMatch(std::string name,
-                                           int traditional_relevance) {
-    auto match = CreateAutocompleteMatch(
-        name, AutocompleteMatchType::SEARCH_SUGGEST, false, false,
-        traditional_relevance, std::nullopt);
-    match.keyword = u"keyword";
-    match.associated_keyword = std::make_unique<AutocompleteMatch>(
-        nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-    return match;
-  }
-
-  AutocompleteMatch CreateHistoryClusterMatch(std::string name,
-                                              int traditional_relevance) {
-    return CreateAutocompleteMatch(name, AutocompleteMatchType::HISTORY_CLUSTER,
-                                   false, false, traditional_relevance,
-                                   std::nullopt);
-  }
-
-  AutocompleteMatch CreateAutocompleteMatch(std::string name,
-                                            AutocompleteMatchType::Type type,
-                                            bool allowed_to_be_default_match,
-                                            bool shortcut_boosted,
-                                            int traditional_relevance,
-                                            std::optional<float> ml_output) {
-    AutocompleteMatch match{nullptr, traditional_relevance, false, type};
-    match.shortcut_boosted = shortcut_boosted;
-    match.allowed_to_be_default_match = allowed_to_be_default_match;
-    match.destination_url = GURL{"https://google.com/" + name};
-    match.stripped_destination_url = GURL{"https://google.com/" + name};
-    match.contents = base::UTF8ToUTF16(name);
-    match.contents_class = {{0, 1}};
-    if (ml_output.has_value()) {
-      match.scoring_signals = {{}};
-      match.scoring_signals->set_site_engagement(ml_output.value());
-    }
-    return match;
-  }
-
   FakeAutocompleteProviderClient* provider_client() {
     return static_cast<FakeAutocompleteProviderClient*>(
         controller_.autocomplete_provider_client());
+  }
+
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+        provider_client()->GetPrefs());
   }
 
  protected:
@@ -2206,7 +2037,7 @@ TEST_F(AutocompleteControllerTest,
   }
 
   // In keyword mode, all limit provider params on by default, limit document
-  //  and history cluster suggestions as well.
+  // and history cluster suggestions as well.
   controller_.input_.UpdateText(u"keyword", 0, {});
   controller_.input_.set_keyword_mode_entry_method(
       metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
@@ -2284,31 +2115,126 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_LensSearchbox) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
-  // For Lens searchboxes, run search provider only.
-  std::set<AutocompleteProvider::Type> expected_provider_types = {
-      AutocompleteProvider::TYPE_SEARCH, AutocompleteProvider::TYPE_OPEN_TAB};
+// The EnterpriseSearchAggregatorProvider is only run on desktop.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+TEST_F(AutocompleteControllerTest,
+       ShouldRunProvider_EnterpriseSearchAggregator) {
+  // Populate template URL service.
+  auto add_template_url = [&](const std::string& name,
+                              TemplateURLData::PolicyOrigin policy_origin,
+                              bool featured) {
+    TemplateURLData data;
+    data.SetShortName(base::UTF8ToUTF16(name));
+    data.SetKeyword(base::UTF8ToUTF16(name));
+    data.SetURL("https://" + name + ".com/q={searchTerms}");
+    data.policy_origin = policy_origin;
+    data.featured_by_policy = featured;
+    controller_.template_url_service_->Add(std::make_unique<TemplateURL>(data));
+  };
 
-  controller_.input_ =
-      AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,
-                        TestSchemeClassifier());
+  add_template_url("site_search_not_featured",
+                   TemplateURLData::PolicyOrigin::kSiteSearch, false);
+  add_template_url("site_search_featured",
+                   TemplateURLData::PolicyOrigin::kSiteSearch, true);
+  add_template_url("aggregator_not_featured",
+                   TemplateURLData::PolicyOrigin::kSearchAggregator, false);
+  add_template_url("aggregator_featured",
+                   TemplateURLData::PolicyOrigin::kSearchAggregator, true);
+
+  // Setup the providers.
+  auto aggregator_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
+  controller_.providers_.push_back(aggregator_provider);
+  auto document_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_DOCUMENT);
+  controller_.providers_.push_back(document_provider);
+
+  // In unscoped mode (not keyword mode), aggregator is run when
+  // `require_shortcut` policy field is false, and is not run when
+  // `require_shortcut` policy field is true. When it is run, the document
+  // provider should not be run and vice versa.
+  controller_.input_ = AutocompleteInput(
+      u"query", 1u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  EXPECT_FALSE(controller_.ShouldRunProvider(document_provider.get()));
+
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      base::Value(true));
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  EXPECT_TRUE(controller_.ShouldRunProvider(document_provider.get()));
+
+  // If the feature param `disable_drive` is false, then the document provider
+  // should run regardless of whether the aggregator provider is ran.
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SearchAggregatorProvider>
+      scoped_config;
+  scoped_config.Get().disable_drive = false;
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      base::Value(false));
+  EXPECT_TRUE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  EXPECT_TRUE(controller_.ShouldRunProvider(document_provider.get()));
+
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      base::Value(true));
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  EXPECT_TRUE(controller_.ShouldRunProvider(document_provider.get()));
+
+  // Enter keyword mode.
+  controller_.input_.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+
+  // Aggregator not ran when in site search mode, regardless of
+  // `enterprise_search_aggregator_settings.require_shortcut` pref value.
+  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"site_search_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      base::Value(false));
+  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"site_search_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+
+  // Only search, keyword, and aggregator providers ran when in aggregator mode.
+  std::set<AutocompleteProvider::Type> expected_provider_types = {
+      AutocompleteProvider::TYPE_SEARCH, AutocompleteProvider::TYPE_KEYWORD,
+      AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR};
+  controller_.input_.UpdateText(u"aggregator_not_featured", 0, {});
   for (auto& provider : controller_.providers()) {
     EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
               expected_provider_types.contains(provider->type()))
         << "Provider Type: "
         << AutocompleteProvider::TypeToString(provider->type());
   }
+  controller_.input_.UpdateText(u"aggregator_featured", 0, {});
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+       // BUILDFLAG(IS_CHROMEOS)
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kAndroidHubSearch, {{"enable_bookmark_provider", "true"},
-                                   {"enable_history_provider", "true"}});
-
-  expected_provider_types = {AutocompleteProvider::TYPE_SEARCH,
-                             AutocompleteProvider::TYPE_OPEN_TAB,
-                             AutocompleteProvider::TYPE_BOOKMARK,
-                             AutocompleteProvider::TYPE_HISTORY_QUICK};
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
+  // Include bookmarks and history as default providers for hub search.
+  std::set<AutocompleteProvider::Type> expected_provider_types = {
+      AutocompleteProvider::TYPE_SEARCH, AutocompleteProvider::TYPE_OPEN_TAB,
+      AutocompleteProvider::TYPE_BOOKMARK,
+      AutocompleteProvider::TYPE_HISTORY_QUICK};
 
   controller_.input_ =
       AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,
@@ -2415,3 +2341,117 @@ TEST_F(AutocompleteControllerTest, NoActionsAttachedToLensSearchboxMatches) {
       controller_.internal_result_.match_at(2)->has_tab_match.value_or(false));
 }
 #endif
+
+TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
+  controller_.keyword_provider_ =
+      new KeywordProvider(provider_client(), nullptr);
+  controller_.providers_.push_back(controller_.keyword_provider_.get());
+
+  auto add_keyword = [&](std::u16string keyword, bool is_starter_pack = false,
+                         bool is_featured_enterprise_search = false) {
+    TemplateURLData turl_data;
+    turl_data.SetShortName(u"name");
+    turl_data.SetURL("https://google.com/search?q={searchTerms}");
+    turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+    turl_data.SetKeyword(keyword);
+    if (is_starter_pack) {
+      turl_data.starter_pack_id = 1;
+    } else if (is_featured_enterprise_search) {
+      turl_data.featured_by_policy = true;
+    }
+    controller_.template_url_service_->Add(
+        std::make_unique<TemplateURL>(turl_data));
+  };
+
+  struct MatchData {
+    std::u16string fill_into_edit;
+    AutocompleteMatchType::Type type;
+  };
+
+  auto test = [&](const std::u16string input_text,
+                  const std::u16string input_keyword,
+                  std::vector<MatchData> match_datas) {
+    controller_.input_ = FakeAutocompleteController::CreateInput(input_text);
+    AutocompleteResult result;
+    for (const auto& match_data : match_datas) {
+      AutocompleteMatch match;
+      match.fill_into_edit = match_data.fill_into_edit;
+      match.type = match_data.type;
+      result.AppendMatches({match});
+    }
+    if (!input_keyword.empty()) {
+      result.match_at(0)->keyword = input_keyword;
+      result.match_at(0)->transition = ui::PAGE_TRANSITION_KEYWORD;
+    }
+    controller_.UpdateAssociatedKeywords(&result);
+
+    std::vector<std::u16string> attached_keywords;
+    for (const auto& match : result) {
+      attached_keywords.push_back(
+          match.associated_keyword ? match.associated_keyword->keyword : u"");
+    }
+    return attached_keywords;
+  };
+
+  add_keyword(u"keyword_0");
+  add_keyword(u"keyword_1");
+  add_keyword(u"keyword_starter_pack", true);
+  add_keyword(u"keyword_featured_enterprise_search", false, true);
+
+  // When the input text's 1st word matches a keyword, the keyword hint is added
+  // to the 1st match regardless of which match is similar to the keyword. Only
+  // 1 keyword is added even if there's another match matching the keyword.
+  EXPECT_THAT(test(u"keyword_0", u"", {{u"bing.com"}, {u"keyword_0"}}),
+              testing::ElementsAreArray({u"keyword_0", u""}));
+  EXPECT_THAT(
+      test(u"keyword_0 more words", u"", {{u"bing.com"}, {u"keyword_0"}}),
+      testing::ElementsAreArray({u"keyword_0", u""}));
+
+  // Only 1 keyword is added even if there're 2 non-exact matches matching the
+  // keyword.
+  EXPECT_THAT(
+      test(u"input", u"", {{u"bing.com"}, {u"keyword_0"}, {u"keyword_0"}}),
+      testing::ElementsAreArray({u"", u"keyword_0", u""}));
+
+  // When the user is in a keyword mode, don't show keyword hints for that
+  // keyword, but do still show other keywords.
+  EXPECT_THAT(test(u"keyword_0", u"keyword_0",
+                   {{u"keyword_0"}, {u"keyword_0"}, {u"keyword_1"}}),
+              testing::ElementsAreArray({u"", u"", u"keyword_1"}));
+
+  // Starter pack and featured enterprise matches should always have keywords,
+  // regardless of the input or the match position.
+  EXPECT_THAT(test(u"input", u"",
+                   {{u"keyword_starter_pack",
+                     AutocompleteMatchType::Type::STARTER_PACK},
+                    {u"keyword_featured_enterprise_search",
+                     AutocompleteMatchType::Type::FEATURED_ENTERPRISE_SEARCH},
+                    {u"keyword_0"},
+                    {u"keywo"}}),
+              testing::ElementsAreArray({u"keyword_starter_pack",
+                                         u"keyword_featured_enterprise_search",
+                                         u"keyword_0", u""}));
+
+  // Normal matches should not have keyword hints for starter pack or featured
+  // enterprise keywords.
+  EXPECT_THAT(test(u"input", u"",
+                   {{u"keyword_starter_pack"},
+                    {u"keyword_featured_enterprise_search"}}),
+              testing::ElementsAreArray({u"", u""}));
+
+  // Normal matches should not have keyword hints for starter pack or featured
+  // enterprise keywords, even if the input is an exact keyword match.
+  EXPECT_THAT(test(u"keyword_starter_pack", u"", {{u"keyword_starter_pack"}}),
+              testing::ElementsAreArray({u""}));
+  EXPECT_THAT(test(u"keyword_featured_enterprise_search", u"",
+                   {{u"keyword_featured_enterprise_search"}}),
+              testing::ElementsAreArray({u""}));
+
+  // Keywords are added if the 1st word of the match text matches, even if the
+  // match text has more non-matching words after. Keywords are not added if the
+  // 1st word of the match text is a prefix of or prefixed by the keyword.
+  EXPECT_THAT(
+      test(u"input", u"",
+           {{u"keywo"}, {u"keyword_0_underscore"}, {u"keyword_0 space"}}),
+      testing::ElementsAreArray({u"", u"", u"keyword_0"}));
+}

@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Marker interface for WebContents internal objects that should be managed by
  * embedders. Embedders should call {@link WebContents#setInternalHolder} with
@@ -13,4 +15,5 @@ package org.chromium.content_public.browser;
  * address the requirements that there not be any gc root to webview in content
  * layer after webview gets detached from view tree. See https://crbug.com/755174.
  */
+@NullMarked
 public interface WebContentsInternals {}

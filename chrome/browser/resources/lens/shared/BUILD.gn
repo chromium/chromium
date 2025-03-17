@@ -28,6 +28,9 @@ build_webui("build") {
   mojo_files_deps =
       [ "//chrome/browser/lens/core/mojom:mojo_bindings_ts__generator" ]
 
-  mojo_files = [ "$root_gen_dir/chrome/browser/lens/core/mojom/lens_ghost_loader.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/lens/core/mojom/lens_ghost_loader.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/page_content_type.mojom-webui.ts",
+  ]
   webui_context_type = "relative"
 }

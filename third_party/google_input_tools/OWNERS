@@ -1,6 +1,1 @@
-bshe@chromium.org
-rsadam@chromium.org
-shuchen@chromium.org
-
-# Use the following owner only when the above owners are not available.
-kevers@chromium.org
+file://chromeos/ash/components/input_method/OWNERS

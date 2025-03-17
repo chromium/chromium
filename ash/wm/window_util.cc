@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 
@@ -41,7 +42,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -230,8 +230,8 @@ bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
   CHECK_EQ(win1->parent(), win2->parent());
 
   const auto& children = win1->parent()->children();
-  auto win1_iter = base::ranges::find(children, win1);
-  auto win2_iter = base::ranges::find(children, win2);
+  auto win1_iter = std::ranges::find(children, win1);
+  auto win2_iter = std::ranges::find(children, win2);
   CHECK(win1_iter != children.end());
   CHECK(win2_iter != children.end());
   return win1_iter < win2_iter;
@@ -546,7 +546,7 @@ void ExpandArcPipWindow() {
     return;
 
   auto pip_window_iter =
-      base::ranges::find_if(pip_container->children(), IsArcPipWindow);
+      std::ranges::find_if(pip_container->children(), IsArcPipWindow);
   if (pip_window_iter == pip_container->children().end())
     return;
 
@@ -834,7 +834,6 @@ float GetSnapRatioForWindow(aura::Window* window) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // TODO(sophiewen): Determine whether to enable the setting by default.
   registry->RegisterBooleanPref(prefs::kSnapWindowSuggestions, true);
 }
 

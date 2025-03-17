@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/system_cpu/cpu_info_provider.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif
 
 namespace extensions {
 
@@ -47,11 +42,7 @@ class MockCpuInfoProviderImpl : public CpuInfoProvider {
   ~MockCpuInfoProviderImpl() override = default;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-using SystemCpuApiTest = ExtensionPlatformApiTest;
-#else
 using SystemCpuApiTest = ExtensionApiTest;
-#endif
 
 IN_PROC_BROWSER_TEST_F(SystemCpuApiTest, Cpu) {
   scoped_refptr<CpuInfoProvider> provider = new MockCpuInfoProviderImpl;

@@ -624,25 +624,23 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                         HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   // Primary.
-  const std::u16string last_primary_text = primary_label_->GetText();
   primary_label_->SetText(item()->GetText());
-  primary_label_->SetEnabledColorId(selected() && multiselect
-                                        ? kColorAshMultiSelectTextColor
-                                        : kColorAshTextColorPrimary);
+  primary_label_->SetEnabledColor(selected() && multiselect
+                                      ? kColorAshMultiSelectTextColor
+                                      : kColorAshTextColorPrimary);
 
   // Secondary.
-  const std::u16string last_secondary_text = secondary_label_->GetText();
   secondary_label_->SetText(
       item()->secondary_text().value_or(std::u16string()));
 
   if (selected() && multiselect) {
-    secondary_label_->SetEnabledColorId(kColorAshMultiSelectTextColor);
+    secondary_label_->SetEnabledColor(kColorAshMultiSelectTextColor);
   } else if (const std::optional<HoldingSpaceColorVariant>& color_variant =
                  item()->secondary_text_color_variant()) {
     // Handle the case where the `color_variant` is set.
     std::visit(base::Overloaded{
                    [&](const ui::ColorId& color_id) {
-                     secondary_label_->SetEnabledColorId(color_id);
+                     secondary_label_->SetEnabledColor(color_id);
                    },
                    [&](const HoldingSpaceColors& colors) {
                      secondary_label_->SetEnabledColor(
@@ -654,7 +652,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                *color_variant);
   } else {
     // Use the default color.
-    secondary_label_->SetEnabledColorId(kColorAshTextColorSecondary);
+    secondary_label_->SetEnabledColor(kColorAshTextColorSecondary);
   }
 
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
@@ -692,14 +690,13 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
 }
 
 void HoldingSpaceItemChipView::UpdateTooltipText() {
-  constexpr gfx::Point p;
-  std::u16string primary_tooltip = primary_label_->GetTooltipText(p);
-  std::u16string secondary_tooltip = secondary_label_->GetTooltipText(p);
+  std::u16string primary_tooltip = primary_label_->GetTooltipText();
+  std::u16string secondary_tooltip = secondary_label_->GetTooltipText();
 
   // If there is neither a primary nor a secondary tooltip which should be
   // shown, then there is no tooltip to be shown at all.
   if (primary_tooltip.empty() && secondary_tooltip.empty()) {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
     return;
   }
 
@@ -718,13 +715,13 @@ void HoldingSpaceItemChipView::UpdateTooltipText() {
   // If there still is no secondary tooltip, only the primary tooltip should be
   // shown. This would occur if there is no visible `secondary_label_`.
   if (secondary_tooltip.empty()) {
-    SetCachedTooltipText(primary_tooltip);
+    SetTooltipText(primary_tooltip);
     return;
   }
 
   // Otherwise, concatenate and return the primary and secondary tooltips. This
   // will look something of the form: "filename.txt, Paused, 10/100 MB".
-  SetCachedTooltipText(l10n_util::GetStringFUTF16(
+  SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, primary_tooltip,
       secondary_tooltip));
 }

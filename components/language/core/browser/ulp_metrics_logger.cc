@@ -4,10 +4,11 @@
 
 #include "components/language/core/browser/ulp_metrics_logger.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace language {
@@ -77,7 +78,7 @@ ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
 
   // Search for exact match of language in ulp_languages (e.g. pt-BR != pt-MZ).
   std::vector<std::string>::const_iterator exact_match =
-      base::ranges::find(ulp_languages, language);
+      std::ranges::find(ulp_languages, language);
   if (exact_match == ulp_languages.begin()) {
     return ULPLanguageStatus::kTopULPLanguageExactMatch;
   } else if (exact_match != ulp_languages.end()) {
@@ -86,7 +87,7 @@ ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
 
   // Now search for a base language match (e.g pt-BR == pt-MZ).
   const std::string base_language = l10n_util::GetLanguage(language);
-  std::vector<std::string>::const_iterator base_match = base::ranges::find_if(
+  std::vector<std::string>::const_iterator base_match = std::ranges::find_if(
       ulp_languages, [&base_language](const std::string& ulp_language) {
         return base_language.compare(l10n_util::GetLanguage(ulp_language)) == 0;
       });
@@ -109,7 +110,7 @@ int ULPMetricsLogger::LanguagesOverlapRatio(
   for (const std::string& language : languages) {
     // Search for base matches of language (e.g. pt-BR == pt-MZ).
     const std::string base_language = l10n_util::GetLanguage(language);
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             compare_languages,
             [&base_language](const std::string& compare_language) {
               return base_language.compare(
@@ -129,7 +130,7 @@ std::vector<std::string> ULPMetricsLogger::RemoveULPLanguages(
   for (const auto& language : languages) {
     // Only add languages that do not have a base match in ulp_languages.
     const std::string base_language = l10n_util::GetLanguage(language);
-    if (base::ranges::none_of(
+    if (std::ranges::none_of(
             ulp_languages, [&base_language](const std::string& ulp_language) {
               return base_language.compare(
                          l10n_util::GetLanguage(ulp_language)) == 0;

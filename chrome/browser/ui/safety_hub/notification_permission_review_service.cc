@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -29,36 +29,6 @@
 namespace {
 
 constexpr char kExcludedKey[] = "exempted";
-constexpr char kDisplayedKey[] = "display_count";
-// The daily average is calculated over the past this many days.
-constexpr int kDays = 7;
-
-int ExtractNotificationCount(ContentSettingPatternSource item,
-                             std::string date) {
-  if (!item.setting_value.is_dict()) {
-    return 0;
-  }
-
-  base::Value::Dict* bucket = item.setting_value.GetDict().FindDict(date);
-  if (!bucket) {
-    return 0;
-  }
-  return bucket->FindInt(kDisplayedKey).value_or(0);
-}
-
-int GetDailyAverageNotificationCount(ContentSettingPatternSource item) {
-  // Calculate daily average count for the past week.
-  base::Time date = base::Time::Now();
-  int notification_count_total = 0;
-
-  for (int day = 0; day < kDays; ++day) {
-    notification_count_total += ExtractNotificationCount(
-        item, permissions::NotificationsEngagementService::GetBucketLabel(
-                  date - base::Days(day)));
-  }
-
-  return std::ceil(notification_count_total / kDays);
-}
 
 std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
 GetIgnoredPatternPairs(scoped_refptr<HostContentSettingsMap> hcsm) {
@@ -74,20 +44,6 @@ GetIgnoredPatternPairs(scoped_refptr<HostContentSettingsMap> hcsm) {
       result.insert(
           {std::move(item.primary_pattern), std::move(item.secondary_pattern)});
     }
-  }
-
-  return result;
-}
-
-std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-GetNotificationCountMapPerPatternPair(
-    scoped_refptr<HostContentSettingsMap> hcsm) {
-  std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-      result;
-  for (auto& item : hcsm->GetSettingsForOneType(
-           ContentSettingsType::NOTIFICATION_INTERACTIONS)) {
-    result[std::pair{item.primary_pattern, item.secondary_pattern}] =
-        GetDailyAverageNotificationCount(item);
   }
 
   return result;
@@ -204,7 +160,7 @@ bool NotificationPermissionsReviewService::NotificationPermissionsResult::
         *notification_permission.FindString(kSafetyHubOriginKey)));
   }
   std::set<ContentSettingsPattern> new_origins = GetOrigins();
-  return !base::ranges::includes(old_origins, new_origins);
+  return !std::ranges::includes(old_origins, new_origins);
 }
 
 std::u16string NotificationPermissionsReviewService::
@@ -228,11 +184,13 @@ NotificationPermissionsReviewService::NotificationPermissionsReviewService(
     : engagement_service_(engagement_service), hcsm_(hcsm) {
   content_settings_observation_.Observe(hcsm);
 
+#if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
     return;
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug.com/40267370): Because there is only an UI thread for this
+  // TODO(crbug.com/40267370): Because there is only a UI thread for this
   // service, calling both |StartRepeatedUpdates()| and
   // |InitializeLatestResult()| will result in the result being calculated twice
   // when the service starts. When redesigning SafetyHubService, that should be
@@ -311,7 +269,8 @@ NotificationPermissionsReviewService::UpdateOnUIThread(
 
   // Get daily average notification count of pattern pairs.
   std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-      notification_count_map = GetNotificationCountMapPerPatternPair(hcsm_);
+      notification_count_map = permissions::NotificationsEngagementService::
+          GetNotificationCountMapPerPatternPair(hcsm_.get());
 
   // Get the permissions with notification counts that needs to be reviewed.
   // This list is filtered based on notification count and site engagement

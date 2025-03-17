@@ -75,7 +75,7 @@ public class PasswordAccessReauthenticationHelper {
             RecordHistogram.recordEnumeratedHistogram(
                     SETTINGS_REAUTHENTICATION_HISTOGRAM,
                     ReauthResult.SKIPPED,
-                    ReauthResult.MAX_VALUE + 1);
+                    ReauthResult.MAX_VALUE);
 
             callback.onResult(true);
             return;

@@ -4,6 +4,8 @@
 
 #include "media/gpu/test/bitstream_helpers.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "media/base/decoder_buffer.h"
 
 namespace media {
@@ -17,11 +19,13 @@ BitstreamProcessor::BitstreamRef::Create(
     int32_t id,
     base::TimeTicks source_timestamp,
     base::OnceClosure release_cb) {
-  return new BitstreamRef(std::move(buffer), metadata, id, source_timestamp,
-                          std::move(release_cb));
+  return base::MakeRefCounted<BitstreamRef>(
+      base::PassKey<BitstreamRef>(), std::move(buffer), metadata, id,
+      source_timestamp, std::move(release_cb));
 }
 
 BitstreamProcessor::BitstreamRef::BitstreamRef(
+    base::PassKey<BitstreamRef>,
     scoped_refptr<DecoderBuffer> buffer,
     const BitstreamBufferMetadata& metadata,
     int32_t id,
@@ -36,5 +40,6 @@ BitstreamProcessor::BitstreamRef::BitstreamRef(
 BitstreamProcessor::BitstreamRef::~BitstreamRef() {
   std::move(release_cb).Run();
 }
+
 }  // namespace test
 }  // namespace media

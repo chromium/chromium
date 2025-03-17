@@ -4,10 +4,11 @@
 
 #include "content/browser/web_contents/file_chooser_impl.h"
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
@@ -29,7 +30,7 @@ std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
     std::vector<blink::mojom::FileChooserFileInfoPtr> files,
     base::FilePath base_dir) {
   DCHECK(!base_dir.empty());
-  auto new_end = base::ranges::remove_if(
+  auto to_remove = std::ranges::remove_if(
       files,
       [&base_dir](const base::FilePath& file_path) {
         if (base::IsLink(file_path))
@@ -42,7 +43,7 @@ std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
         return false;
       },
       [](const auto& file) { return file->get_native_file()->file_path; });
-  files.erase(new_end, files.end());
+  files.erase(to_remove.begin(), to_remove.end());
   return files;
 }
 
@@ -209,7 +210,6 @@ void FileChooserImpl::FileSelected(
   listener_impl_ = nullptr;
   if (!render_frame_host()) {
     std::move(callback_).Run(nullptr);
-    weak_factory_.InvalidateWeakPtrs();
     return;
   }
   storage::FileSystemContext* file_system_context = nullptr;
@@ -236,14 +236,11 @@ void FileChooserImpl::FileSelected(
     }
   }
   std::move(callback_).Run(FileChooserResult::New(std::move(files), base_dir));
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 void FileChooserImpl::FileSelectionCanceled() {
   listener_impl_ = nullptr;
   std::move(callback_).Run(nullptr);
-
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 RenderFrameHostImpl* FileChooserImpl::render_frame_host() {

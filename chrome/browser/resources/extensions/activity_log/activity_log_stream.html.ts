@@ -44,6 +44,7 @@ export function getHtml(this: ActivityLogStreamElement) {
   <span id="activity-time">$i18n{activityLogTimeColumn}</span>
 </div>
 <cr-infinite-list .items="${this.filteredActivityStream_}" item-size="56"
+    chunk-size="10"
     .template="${(item: StreamItem) => html`
         <activity-log-stream-item .data="${item}">
         </activity-log-stream-item>`}">

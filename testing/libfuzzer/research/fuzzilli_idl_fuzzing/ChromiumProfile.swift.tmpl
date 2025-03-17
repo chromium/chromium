@@ -51,7 +51,7 @@ fileprivate let TurbofanVerifyTypeGenerator = CodeGenerator("TurbofanVerifyTypeG
 
 // Insert random GC calls throughout our code.
 fileprivate let GcGenerator = CodeGenerator("GcGenerator") { b in
-    let gc = b.loadBuiltin("gc")
+    let gc = b.createNamedVariable(forBuiltin: "gc")
 
     // Do minor GCs more frequently.
     let type = b.loadString(probability(0.25) ? "major" : "minor")
@@ -66,17 +66,17 @@ fileprivate let GcGenerator = CodeGenerator("GcGenerator") { b in
 
 public extension ILType {
 {% for enum in database.enumerations %}
-  static let js{{enum.identifier}} = ILType.string
+  static let js{{enum.identifier}} = ILType.enumeration(ofName: "{{enum.identifier}}", withValues: [ {{enum.values|map("tojson")|join(", ")}} ])
 {% endfor %}
-{% for interface in database.interfaces %}
+{% for interface in database.interfaces|sort_object_groups %}
   {% set inter = interface|parse_interface -%}
   static let js{{interface.identifier}} = {{inter[0].fuzzilli_repr()}}
 {% endfor %}
-{% for d in database.dictionaries %}
+{% for d in database.dictionaries|sort_object_groups %}
   {% set dictionary = d|parse_dictionary -%}
   static let js{{d.identifier}} = {{dictionary[0].fuzzilli_repr()}}
 {% endfor %}
-{% for interface in database.interfaces -%}
+{% for interface in database.interfaces|sort_object_groups -%}
   {% set constructor = interface|parse_constructors -%}
 {%   if constructor[0] %}
   static let js{{interface.identifier}}Constructor = {{constructor[0].fuzzilli_repr()}}
@@ -113,22 +113,24 @@ let js{{identifier}} = ObjectGroup(
   {% else %}
     :
   {% endfor -%}
-  ]
+  ]{%- if group.parent %},
+  parent: "{{group.parent}}"
+  {%- endif %}
 )
 {%- endmacro -%}
 
 
-{% for interface in database.interfaces %}
+{% for interface in database.interfaces|sort_object_groups %}
   {%- set inter = interface|parse_interface -%}
 {{define_group(interface.identifier, inter[1])}}
 {% endfor %}
-{% for interface in database.interfaces %}
+{% for interface in database.interfaces|sort_object_groups %}
   {%- set constructor = interface|parse_constructors -%}
 {%   if constructor[1] %}
 {{define_group(interface.identifier+"Constructor", constructor[1])}}
 {%   endif %}
 {%- endfor %}
-{% for d in database.dictionaries %}
+{% for d in database.dictionaries|sort_object_groups %}
   {%- set dictionary = d|parse_dictionary -%}
 {{define_group(d.identifier, dictionary[1])}}
 {% endfor -%}
@@ -180,7 +182,7 @@ let chromiumProfile = Profile(
     disabledMutators: [],
 
     additionalBuiltins: [
-{%- for interface in database.interfaces -%}
+{%- for interface in database.interfaces|sort_object_groups -%}
   {% set constructor = interface|parse_constructors -%}
 {%   if constructor[0] %}
       "{{interface.identifier}}": ILType.js{{interface.identifier}}Constructor,
@@ -193,16 +195,16 @@ let chromiumProfile = Profile(
     ],
 
     additionalObjectGroups: [
-{%- for interface in database.interfaces %}
+{%- for interface in database.interfaces|sort_object_groups %}
       js{{interface.identifier}},
 {% endfor -%}
-{% for interface in database.interfaces -%}
+{% for interface in database.interfaces|sort_object_groups -%}
   {% set constructor = interface|parse_constructors -%}
 {%   if constructor[1] %}
       js{{interface.identifier}}Constructor,
 {%   endif %}
 {%- endfor -%}
-{% for d in database.dictionaries %}
+{% for d in database.dictionaries|sort_object_groups %}
       js{{d.identifier}},
 {% endfor -%}
 {% for interface in database.callback_interfaces %}

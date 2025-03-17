@@ -57,7 +57,7 @@ class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
 
   // Returns true if last_cookies_ is not guaranteed to be up to date and an IPC
   // is needed to get the current cookie string.
-  bool IPCNeeded();
+  bool IPCNeeded(bool should_apply_devtools_overrides);
 
   // Updates the fake cookie cache after a
   // RestrictedCookieManager::GetCookiesString request returns.
@@ -78,6 +78,10 @@ class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
   // cache version and/or cookie string on SET. Especially, if SET is the first
   // request.
   void LogFirstCookieRequest(FirstCookieRequest first_cookie_request);
+
+  // Checks with probe function if devtools is active. If so, devtools overrides
+  // are applied to the cookie operation.
+  bool ShouldApplyDevtoolsOverrides() const;
 
   HeapMojoRemote<network::mojom::blink::RestrictedCookieManager> backend_;
   Member<blink::Document> document_;
@@ -100,6 +104,10 @@ class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
 
   std::optional<mojo::SharedMemoryVersionClient> shared_memory_version_client_;
   uint64_t last_version_ = mojo::shared_memory_version::kInvalidVersion;
+
+  // Last decision of if devtools overrides needed to be applied. If the
+  // decision changes, IPC is needed to get cookie with new devtools overrides
+  bool last_devtools_overrides_were_applied = false;
 
   // Last received cookie string. Null if there is no last cached-version. Can
   // be empty since that is a valid cookie string.

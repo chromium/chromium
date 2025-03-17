@@ -361,7 +361,9 @@ IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, ViewPpd) {
                     "() => document.body.textContent", kDefaultPpd));
 }
 
-IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, AddAndEditPrinter) {
+// TODO(b:329467826): Disable due to flakiness.
+IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest,
+                       DISABLED_AddAndEditPrinter) {
   SetupContextWidget();
 
   login_mixin().Login();

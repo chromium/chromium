@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 
+#include <algorithm>
 #include <unordered_set>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -174,7 +174,7 @@ std::vector<MediaSinkWithCastModes> QueryResultManager::GetSinksWithCastModes()
   }
   for (const auto& sink : all_sinks_) {
     if (!base::Contains(sinks_with_sources_, sink.id())) {
-      sinks.push_back(MediaSinkWithCastModes(sink));
+      sinks.emplace_back(sink);
     }
   }
 
@@ -278,7 +278,7 @@ bool QueryResultManager::AreSourcesValidForCastMode(
   bool has_cast_mode = cast_mode_it != cast_mode_sources_.end();
   // If a source has already been registered, then it must be associated with
   // |cast_mode|.
-  return base::ranges::none_of(sources, [=, this](const MediaSource& source) {
+  return std::ranges::none_of(sources, [=, this](const MediaSource& source) {
     return base::Contains(sinks_observers_, source) &&
            (!has_cast_mode || !base::Contains(cast_mode_it->second, source));
   });

@@ -298,15 +298,15 @@ public class LocationBarLayoutTest {
                             MeasureSpec.makeMeasureSpec(constrainedWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.INVISIBLE);
+                            View.INVISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
 
                     locationBar.measure(
                             MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.VISIBLE);
+                            View.VISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
 
                     locationBar.measure(
                             MeasureSpec.makeMeasureSpec(
@@ -314,13 +314,13 @@ public class LocationBarLayoutTest {
                                     MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.INVISIBLE);
+                            View.INVISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
 
                     locationBar.setUrlActionContainerVisibility(VISIBLE);
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.INVISIBLE);
+                            View.INVISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
                 });
     }
 

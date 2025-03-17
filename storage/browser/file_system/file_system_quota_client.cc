@@ -33,16 +33,11 @@ namespace storage {
 
 namespace {
 
-static const FileSystemType kTemporaryAndPersistent[] = {
-    kFileSystemTypeTemporary,
-    kFileSystemTypePersistent,
-};
 static const FileSystemType kTemporaryAndPersistentAndSyncable[] = {
     kFileSystemTypeTemporary,
     kFileSystemTypePersistent,
     kFileSystemTypeSyncable,
 };
-static const FileSystemType kSyncable[] = {kFileSystemTypeSyncable};
 
 template <typename T>
 std::vector<T> MergeWithoutDuplicates(const std::vector<std::vector<T>>& tss) {
@@ -57,8 +52,9 @@ std::vector<T> MergeWithoutDuplicates(const std::vector<std::vector<T>>& tss) {
   for (const auto& ts : tss) {
     merged.insert(merged.end(), ts.begin(), ts.end());
   }
-  base::ranges::sort(merged);
-  merged.erase(base::ranges::unique(merged), merged.end());
+  std::ranges::sort(merged);
+  auto repeated = std::ranges::unique(merged);
+  merged.erase(repeated.begin(), repeated.end());
   return merged;
 }
 
@@ -68,20 +64,12 @@ base::span<const FileSystemType> QuotaStorageTypeToFileSystemTypes(
     blink::mojom::StorageType storage_type) {
   using StorageType = blink::mojom::StorageType;
 
-  if (base::FeatureList::IsEnabled(storage::features::kDisableSyncableQuota)) {
-    DCHECK_NE(storage_type, StorageType::kSyncable);
-    if (storage_type == StorageType::kTemporary) {
-      return kTemporaryAndPersistentAndSyncable;
-    }
-  }
-
   switch (storage_type) {
     case StorageType::kTemporary:
-      return kTemporaryAndPersistent;
-    case StorageType::kSyncable:
-      return kSyncable;
+      return kTemporaryAndPersistentAndSyncable;
     case StorageType::kDeprecatedQuotaNotManaged:
     case StorageType::kDeprecatedPersistent:
+    case StorageType::kSyncable:
     case StorageType::kUnknown:
       NOTREACHED();
   }

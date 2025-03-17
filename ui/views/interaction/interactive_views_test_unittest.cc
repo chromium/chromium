@@ -219,8 +219,8 @@ TEST_F(InteractiveViewsTestTest, PollView) {
   DoPost(base::BindLambdaForTesting(
       [this]() { button1_->SetText(kButton2Caption); }));
   RunTestSequence(PollView(kButtonTextState, kButton1Id,
-                           [](const LabelButton* b) -> std::u16string {
-                             return b->GetText();
+                           [](const LabelButton* b) {
+                             return std::u16string(b->GetText());
                            }),
                   WaitForState(kButtonTextState, kButton2Caption));
 }
@@ -249,7 +249,7 @@ TEST_F(InteractiveViewsTestTest, WaitForViewPropertyInParallel) {
   button1_->SetEnabled(false);
   tabs_->SetEnabled(false);
   RunTestSequence(InParallel(
-      Steps(
+      RunSubsequence(
           // These have to be inside the subsequences because there's an
           // implicit flush before a subsequence starts; if we queued them
           // all up ahead of time we wouldn't accurately be testing the
@@ -259,11 +259,12 @@ TEST_F(InteractiveViewsTestTest, WaitForViewPropertyInParallel) {
           WaitForViewProperty(kButton1Id, View, Enabled, true),
           Post(base::BindLambdaForTesting([this]() { button1_->SetID(998); })),
           WaitForViewProperty(kButton1Id, View, ID, 998)),
-      Steps(Post(base::BindLambdaForTesting(
-                [this]() { button1_->SetEnabled(true); })),
-            WaitForViewProperty(kTabbedPaneId, View, Enabled, true),
-            Post(base::BindLambdaForTesting([this]() { tabs_->SetID(999); })),
-            WaitForViewProperty(kTabbedPaneId, View, ID, 999))));
+      RunSubsequence(
+          Post(base::BindLambdaForTesting(
+              [this]() { button1_->SetEnabled(true); })),
+          WaitForViewProperty(kTabbedPaneId, View, Enabled, true),
+          Post(base::BindLambdaForTesting([this]() { tabs_->SetID(999); })),
+          WaitForViewProperty(kTabbedPaneId, View, ID, 999))));
 }
 
 TEST_F(InteractiveViewsTestTest, NameViewAbsoluteValue) {
@@ -387,8 +388,8 @@ TEST_F(InteractiveViewsTestTest, IfViewTrue) {
 
   EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(true));
   EXPECT_CALL(step1, Run);
-  RunTestSequence(
-      IfView(kButton1Id, condition.Get(), Do(step1.Get()), Do(step2.Get())));
+  RunTestSequence(IfView(kButton1Id, condition.Get(), Then(Do(step1.Get())),
+                         Else(Do(step2.Get()))));
 }
 
 TEST_F(InteractiveViewsTestTest, IfViewFalse) {
@@ -399,8 +400,8 @@ TEST_F(InteractiveViewsTestTest, IfViewFalse) {
 
   EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(false));
   EXPECT_CALL(step2, Run);
-  RunTestSequence(
-      IfView(kButton1Id, condition.Get(), Do(step1.Get()), Do(step2.Get())));
+  RunTestSequence(IfView(kButton1Id, condition.Get(), Then(Do(step1.Get())),
+                         Else(Do(step2.Get()))));
 }
 
 TEST_F(InteractiveViewsTestTest, IfViewMatchesTrue) {
@@ -411,8 +412,8 @@ TEST_F(InteractiveViewsTestTest, IfViewMatchesTrue) {
 
   EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(1));
   EXPECT_CALL(step1, Run);
-  RunTestSequence(IfViewMatches(kButton1Id, condition.Get(), 1, Do(step1.Get()),
-                                Do(step2.Get())));
+  RunTestSequence(IfViewMatches(kButton1Id, condition.Get(), 1,
+                                Then(Do(step1.Get())), Else(Do(step2.Get()))));
 }
 
 TEST_F(InteractiveViewsTestTest, IfViewMatchesFalse) {
@@ -423,8 +424,8 @@ TEST_F(InteractiveViewsTestTest, IfViewMatchesFalse) {
 
   EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(2));
   EXPECT_CALL(step2, Run);
-  RunTestSequence(IfViewMatches(kButton1Id, condition.Get(), 1, Do(step1.Get()),
-                                Do(step2.Get())));
+  RunTestSequence(IfViewMatches(kButton1Id, condition.Get(), 1,
+                                Then(Do(step1.Get())), Else(Do(step2.Get()))));
 }
 
 TEST_F(InteractiveViewsTestTest, IfViewPropertyMatchesTrue) {
@@ -432,9 +433,9 @@ TEST_F(InteractiveViewsTestTest, IfViewPropertyMatchesTrue) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
 
   EXPECT_CALL(step1, Run);
-  RunTestSequence(IfViewPropertyMatches(kButton1Id, &LabelButton::GetText,
-                                        std::u16string(kButton1Caption),
-                                        Do(step1.Get()), Do(step2.Get())));
+  RunTestSequence(IfViewPropertyMatches(
+      kButton1Id, &LabelButton::GetText, std::u16string(kButton1Caption),
+      Then(Do(step1.Get())), Else(Do(step2.Get()))));
 }
 
 TEST_F(InteractiveViewsTestTest, IfViewPropertyMatchesFalse) {
@@ -442,9 +443,9 @@ TEST_F(InteractiveViewsTestTest, IfViewPropertyMatchesFalse) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
 
   EXPECT_CALL(step2, Run);
-  RunTestSequence(IfViewPropertyMatches(kButton1Id, &LabelButton::GetText,
-                                        testing::Ne(kButton1Caption),
-                                        Do(step1.Get()), Do(step2.Get())));
+  RunTestSequence(IfViewPropertyMatches(
+      kButton1Id, &LabelButton::GetText, testing::Ne(kButton1Caption),
+      Then(Do(step1.Get())), Else(Do(step2.Get()))));
 }
 
 // Test that elements named in the main test sequence are available in
@@ -459,8 +460,8 @@ TEST_F(InteractiveViewsTestTest, InParallelNamedView) {
       NameView(kViewName, button1_.get()), NameView(kViewName2, button2_.get()),
       // Run subsequences, each of which references a different named view from
       // the outer sequence. Both should succeed.
-      InParallel(CheckView(kViewName, is_view(), button1_),
-                 CheckView(kViewName2, is_view(), button2_)));
+      InParallel(RunSubsequence(CheckView(kViewName, is_view(), button1_)),
+                 RunSubsequence(CheckView(kViewName2, is_view(), button2_))));
 }
 
 // Test that various automatic binding methods work with verbs and conditions.
@@ -477,11 +478,11 @@ TEST_F(InteractiveViewsTestTest, BindingMethods) {
       WithView(kViewName, [](TabbedPaneTab* tab) { EXPECT_NE(nullptr, tab); }),
       IfView(
           kViewName, [](const TabbedPaneTab* tab) { return tab != nullptr; },
-          Do(correct.Get()), Do(incorrect.Get())),
+          Then(Do(correct.Get())), Else(Do(incorrect.Get()))),
       IfViewMatches(
           kViewName,
           [this](const TabbedPaneTab* tab) { return tabs_->GetIndexOf(tab); },
-          0U, Do(incorrect.Get()), Do(correct.Get())));
+          0U, Then(Do(incorrect.Get())), Else(Do(correct.Get()))));
 }
 
 TEST_F(InteractiveViewsTestTest, ScrollIntoView) {

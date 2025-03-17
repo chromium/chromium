@@ -28,6 +28,7 @@ include_rules = [
   "+chrome/browser/ash/fusebox",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/input_method",
+  "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/core",

@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -117,7 +116,7 @@ enum AppMenuAction {
   MENU_ACTION_DECLUTTER_TABS = 93,
   LIMIT_MENU_ACTION
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:WrenchMenuAction)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)
 
 enum class AlertMenuItem { kNone, kPasswordManager };
 
@@ -194,8 +193,9 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // varies depending upon the underlying model. The command IDs for items in
   // these menus will be staggered and each increment by this value, so they
   // don't have conflicts. Currently, this accounts for the bookmarks, recent
-  // tabs menus, the profile submenu and tab groups submenu.
-  static constexpr int kNumUnboundedMenuTypes = 4;
+  // tabs menus, the profile submenu, tab groups submenu, and the comparison
+  // tables submenu.
+  static constexpr int kNumUnboundedMenuTypes = 5;
 
   // First command ID to use for each unbounded menu. These should be staggered,
   // and there should be kNumUnboundedMenuTypes of them.
@@ -203,6 +203,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   static constexpr int kMinRecentTabsCommandId = kMinBookmarksCommandId + 1;
   static constexpr int kMinOtherProfileCommandId = kMinRecentTabsCommandId + 1;
   static constexpr int kMinTabGroupsCommandId = kMinOtherProfileCommandId + 1;
+  static constexpr int kMinCompareCommandId = kMinTabGroupsCommandId + 1;
 
   // Creates an app menu model for the given browser. Init() must be called
   // before passing this to an AppMenu. |app_menu_icon_controller|, if provided,

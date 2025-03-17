@@ -210,6 +210,9 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver) = 0;
 #endif
+
+  // Returns true if a form manager is processing a password update.
+  virtual bool IsFormManagerPendingPasswordUpdate() const = 0;
 };
 
 }  // namespace password_manager

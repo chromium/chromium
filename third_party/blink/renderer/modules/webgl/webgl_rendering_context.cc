@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/modules/webgl/angle_instanced_arrays.h"
 #include "third_party/blink/renderer/modules/webgl/ext_blend_min_max.h"
@@ -176,7 +177,7 @@ WebGLRenderingContext::AsV8OffscreenRenderingContext() {
 ImageBitmap* WebGLRenderingContext::TransferToImageBitmap(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return TransferToImageBitmapBase(script_state);
+  return TransferToImageBitmapBase(script_state, exception_state);
 }
 
 void WebGLRenderingContext::RegisterContextExtensions() {

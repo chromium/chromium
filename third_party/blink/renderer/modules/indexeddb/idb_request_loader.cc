@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_loader.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -79,7 +75,7 @@ void IDBRequestLoader::StartNextValue() {
     if (unwrapper.Parse(current_value_->get())) {
       break;
     }
-    ++current_value_;
+    UNSAFE_TODO(++current_value_);
   }
 
   DCHECK(current_value_ != values_.end());
@@ -129,7 +125,7 @@ void IDBRequestLoader::DidFinishLoading() {
   base::UmaHistogramTimes("IndexedDB.WrappedBlobLoadTime",
                           base::TimeTicks::Now() - start_loading_time_);
   IDBValueUnwrapper::Unwrap(std::move(wrapped_data_), **current_value_);
-  ++current_value_;
+  UNSAFE_TODO(++current_value_);
 
   StartNextValue();
 }

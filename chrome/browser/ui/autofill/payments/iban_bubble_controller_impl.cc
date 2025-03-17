@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -231,7 +232,7 @@ IbanBubbleControllerImpl::GetOnBubbleClosedCallback() {
                         weak_ptr_factory_.GetWeakPtr());
 }
 
-void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
+void IbanBubbleControllerImpl::OnAcceptButton(std::u16string_view nickname) {
   switch (current_bubble_type_) {
     case IbanBubbleType::kLocalSave:
       CHECK(!save_iban_prompt_callback_.is_null());
@@ -240,7 +241,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       should_show_iban_saved_label_animation_ = true;
       autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/false);
-      iban_.set_nickname(nickname);
+      iban_.set_nickname(std::u16string(nickname));
       std::move(save_iban_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
                    kAccepted,
@@ -250,11 +251,8 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       CHECK(!save_iban_prompt_callback_.is_null());
       autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/true);
-      iban_.set_nickname(nickname);
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-        current_bubble_type_ = IbanBubbleType::kUploadInProgress;
-      }
+      iban_.set_nickname(std::u16string(nickname));
+      current_bubble_type_ = IbanBubbleType::kUploadInProgress;
       std::move(save_iban_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
                    kAccepted,

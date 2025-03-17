@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 
 #include <stddef.h>
@@ -33,7 +32,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,7 +55,6 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_isolation_data.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -67,6 +64,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -86,11 +84,11 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -238,7 +236,7 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
   return share_target;
 }
 
-blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
+network::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
     RandomHelper& random) {
   const int num_permissions_policy_declarations =
       random.next_uint(test_features.size());
@@ -249,7 +247,7 @@ blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
   std::default_random_engine rng;
   std::shuffle(available_features.begin(), available_features.end(), rng);
 
-  blink::ParsedPermissionsPolicy permissions_policy(
+  network::ParsedPermissionsPolicy permissions_policy(
       num_permissions_policy_declarations);
   const auto& feature_name_map = blink::GetPermissionsPolicyNameToFeatureMap();
   for (int i = 0; i < num_permissions_policy_declarations; ++i) {
@@ -261,7 +259,7 @@ blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
       const auto origin =
           url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
       permissions_policy[i].allowed_origins.emplace_back(
-          *blink::OriginWithPossibleWildcards::FromOrigin(origin));
+          *network::OriginWithPossibleWildcards::FromOrigin(origin));
     }
   }
   return permissions_policy;
@@ -292,11 +290,18 @@ ScopeExtensions CreateRandomScopeExtensions(uint32_t suffix,
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
 
-    ScopeExtensionInfo scope_extension;
-    scope_extension.origin =
-        url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
-    scope_extension.has_origin_wildcard = random.next_bool();
-    scope_extensions.insert(std::move(scope_extension));
+    if (random.next_bool()) {
+      auto scope_extension = ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://app-" + suffix_str + ".com/")),
+          /*has_origin_wildcard*/ random.next_bool());
+      scope_extensions.insert(std::move(scope_extension));
+    } else {
+      std::string random_scope = base::NumberToString(random.next_uint());
+      auto scope_extension = ScopeExtensionInfo::CreateForScope(
+          GURL("https://app-" + suffix_str + ".com/" + random_scope),
+          /*has_origin_wildcard*/ random.next_bool());
+      scope_extensions.insert(std::move(scope_extension));
+    }
   }
 
   return scope_extensions;
@@ -466,10 +471,10 @@ std::vector<blink::SafeUrlPattern> CreateRandomScopePatterns(
   return scope_patterns;
 }
 
-proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
+proto::os_state::WebAppOsIntegration GenerateRandomWebAppOsIntegration(
     RandomHelper& random,
     WebApp& app) {
-  proto::WebAppOsIntegrationState state;
+  proto::os_state::WebAppOsIntegration state;
 
   // Randomly fill shortcuts data.
   auto* shortcuts = state.mutable_shortcut();
@@ -490,11 +495,12 @@ proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
   }
 
   // Randomly fill run_on_os_login.
-  const std::array<proto::RunOnOsLoginMode, 3> run_on_os_login_modes = {
-      proto::RunOnOsLoginMode::NOT_RUN,
-      proto::RunOnOsLoginMode::WINDOWED,
-      proto::RunOnOsLoginMode::MINIMIZED,
-  };
+  const std::array<proto::os_state::RunOnOsLogin::Mode, 3>
+      run_on_os_login_modes = {
+          proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
+          proto::os_state::RunOnOsLogin::MODE_WINDOWED,
+          proto::os_state::RunOnOsLogin::MODE_MINIMIZED,
+      };
   state.mutable_run_on_os_login()->set_run_on_os_login_mode(
       run_on_os_login_modes[random.next_uint(/*bound=*/3)]);
 
@@ -560,12 +566,37 @@ std::optional<IsolatedWebAppIntegrityBlockData> CreateIntegrityBlockData(
   auto signatures = CreateSignatures();
 
   std::mt19937 rng(random.next_uint());
-  base::ranges::shuffle(signatures, rng);
+  std::ranges::shuffle(signatures, rng);
 
   size_t signatures_count = random.next_uint(signatures.size()) + 1;
   signatures.erase(signatures.begin() + signatures_count, signatures.end());
 
   return IsolatedWebAppIntegrityBlockData(std::move(signatures));
+}
+
+std::vector<blink::Manifest::RelatedApplication>
+CreateRandomRelatedApplications(RandomHelper& random) {
+  std::vector<blink::Manifest::RelatedApplication> related_applications;
+  const std::array<std::string, 7> platforms = {
+      "chrome_web_store", "play",    "chromeos_play", "webapp",
+      "windows",          "f-droid", "amazon"};
+  for (int i = random.next_uint(4) + 1; i >= 0; --i) {
+    blink::Manifest::RelatedApplication related_application;
+    related_application.platform =
+        base::UTF8ToUTF16(platforms[random.next_uint(platforms.size())]);
+    bool set_url = random.next_bool();
+    bool set_id = !set_url || random.next_bool();
+    if (set_url) {
+      related_application.url =
+          GURL("https://example.com/" + base::NumberToString(i));
+    }
+    if (set_id) {
+      related_application.id =
+          base::UTF8ToUTF16("id" + base::NumberToString(i));
+    }
+    related_applications.push_back(std::move(related_application));
+  }
+  return related_applications;
 }
 
 }  // namespace
@@ -577,6 +608,7 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
+  web_app->SetScope(start_url.GetWithoutFilename());
   web_app->AddSource(source_type);
   web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
@@ -586,7 +618,7 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   // correct OS integration state to match that.
   web_app->SetInstallState(
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
-  proto::WebAppOsIntegrationState os_state;
+  proto::os_state::WebAppOsIntegration os_state;
   web_app->SetCurrentOsIntegrationStates(os_state);
 
   return web_app;
@@ -836,12 +868,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       CreateRandomScopeExtensions(random.next_uint(), random));
 
   ScopeExtensions validated_scope_extensions;
-  base::ranges::copy_if(app->scope_extensions(),
-                        std::inserter(validated_scope_extensions,
-                                      validated_scope_extensions.begin()),
-                        [&random](const ScopeExtensionInfo& extension) {
-                          return random.next_bool();
-                        });
+  std::ranges::copy_if(app->scope_extensions(),
+                       std::inserter(validated_scope_extensions,
+                                     validated_scope_extensions.begin()),
+                       [&random](const ScopeExtensionInfo& extension) {
+                         return random.next_bool();
+                       });
   app->SetValidatedScopeExtensions(validated_scope_extensions);
 
   if (random.next_bool()) {
@@ -1014,7 +1046,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetAlwaysShowToolbarInFullscreen(random.next_bool());
 
   app->SetCurrentOsIntegrationStates(
-      GenerateRandomWebAppOsIntegrationState(random, *app));
+      GenerateRandomWebAppOsIntegration(random, *app));
 
   if (random.next_bool()) {
     bool dev_mode = random.next_bool();
@@ -1094,9 +1126,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetLatestInstallTime(random.next_time());
 
   if (random.next_bool()) {
-    GeneratedIconFix generated_icon_fix;
-    generated_icon_fix.set_source(
-        NEXT_PROTO_ENUM(random, GeneratedIconFixSource, /*skip_zero=*/true));
+    proto::GeneratedIconFix generated_icon_fix;
+    generated_icon_fix.set_source(NEXT_PROTO_ENUM(
+        random, proto::GeneratedIconFixSource, /*skip_zero=*/true));
     generated_icon_fix.set_window_start_time(random.next_proto_time());
     if (random.next_bool()) {
       generated_icon_fix.set_last_attempt_time(random.next_proto_time());
@@ -1111,6 +1143,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetIsDiyApp(random.next_bool());
 
   app->SetWasShortcutApp(random.next_bool());
+
+  app->SetRelatedApplications(CreateRandomRelatedApplications(random));
+
+  app->SetDiyAppIconsMaskedOnMac(random.next_bool());
+
   return app;
 }
 
@@ -1137,6 +1174,7 @@ void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app) {
 }
 
 void TestAcceptDialogCallback(
+    base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -1146,6 +1184,7 @@ void TestAcceptDialogCallback(
 }
 
 void TestDeclineDialogCallback(
+    base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -1263,16 +1302,5 @@ std::vector<web_package::SignedWebBundleSignatureInfo> CreateSignatures() {
   signatures.push_back(web_package::SignedWebBundleSignatureInfoUnknown());
   return signatures;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-ScopedSkipMainProfileCheck::ScopedSkipMainProfileCheck() {
-  EXPECT_FALSE(IsMainProfileCheckSkippedForTesting());
-  SetSkipMainProfileCheckForTesting(/*skip_check=*/true);
-}
-
-ScopedSkipMainProfileCheck::~ScopedSkipMainProfileCheck() {
-  SetSkipMainProfileCheckForTesting(/*skip_check=*/false);
-}
-#endif
 
 }  // namespace web_app::test

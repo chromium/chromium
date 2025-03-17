@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 // An object that represents the edit state location bar for focusing animation.
-@protocol EditViewAnimatee<NSObject>
+@protocol EditViewAnimatee <NSObject>
 
 // Sets the scale of the leading icon.
 - (void)setLeadingIconScale:(CGFloat)scale;

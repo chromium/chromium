@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "base/functional/callback_forward.h"
-#include "chromeos/crosapi/mojom/desk_template.mojom-forward.h"
 
 namespace aura {
 class Window;

@@ -10,6 +10,8 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/app/application_delegate/app_init_stage.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
@@ -45,6 +47,7 @@
 // corresponding main-thread methods have names beginning with `handle`.
 
 @implementation BackgroundRefreshAppAgent {
+  BGTask* _pendingTask;
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
@@ -67,6 +70,14 @@
 
 - (void)appDidEnterBackground {
   [self requestAppRefresh];
+}
+
+- (void)appState:(AppState*)appState
+    willTransitionToInitStage:(AppInitStage)nextInitStage {
+  if (nextInitStage > AppInitStage::kBrowserObjectsForBackgroundHandlers &&
+      _pendingTask) {
+    [self executeProvidersForTask:_pendingTask];
+  }
 }
 
 #pragma mark - Private
@@ -141,15 +152,24 @@
   });
 }
 
-// Handles `task` execution on the main thread.
+// Main-threrad handler for task execution.
+// Records metrics for backgroud refresh invocation.
+// If the app is ready, triggers provider execution.
+// If not, caches the task for later executuion.
 - (void)handleExecutionForTask:(BGTask*)task {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   // Record cold/warm start for this refresh.
-
   LaunchTypeForBackgroundRefreshActions launchType =
       LaunchTypeForBackgroundRefreshActions::kUnknown;
-  if (self.startupInformation.isColdStart) {
+  BOOL continueExecution = YES;
+  if (self.appState.initStage <=
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
+    // Early launch, no threads available! Record it and don't continue.
+    launchType =
+        LaunchTypeForBackgroundRefreshActions::kLaunchTypePreBrowserObjects;
+    continueExecution = NO;
+  } else if (self.startupInformation.isColdStart) {
     launchType = LaunchTypeForBackgroundRefreshActions::kLaunchTypeCold;
   } else {
     launchType = LaunchTypeForBackgroundRefreshActions::kLaunchTypeWarm;
@@ -159,6 +179,21 @@
 
   // Schedule another refresh.
   [self requestAppRefresh];
+
+  // If it's possible to handle the tasks now, do it. If not, mark the task as
+  // pending.
+  if (continueExecution) {
+    [self executeProvidersForTask:task];
+  } else {
+    _pendingTask = task;
+  }
+}
+
+- (void)executeProvidersForTask:(BGTask*)task {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  // Remove any pending task.
+  _pendingTask = nil;
 
   [self refreshStarted];
   for (AppRefreshProvider* provider in self.providers) {
@@ -174,6 +209,8 @@
       [provider handleRefreshWithCompletion:completion];
     }
   }
+
+  // If none of the providers were due, mark the refresh complete.
   if (self.activeProviders.count == 0) {
     [task setTaskCompletedWithSuccess:YES];
     [self refreshComplete];
@@ -186,6 +223,9 @@
   // TODO(crbug.com/354919106): While this should correctly handle task
   // expiration, there's no mechanism for looging or informing the app as a
   // whole that this has happened.
+
+  // Remove any pending task.
+  _pendingTask = nil;
 
   // Cancel all provider tasks. The completion callback will not be called.
   for (AppRefreshProvider* provider in self.activeProviders) {

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/shared_tab_group_data_helper.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -49,8 +50,8 @@ bool AreServicesEqual(TabGroupSyncService* service_1,
     return false;
   }
 
-  base::ranges::sort(shared_tab_groups_1, &CompareSavedTabGroups);
-  base::ranges::sort(shared_tab_groups_2, &CompareSavedTabGroups);
+  std::ranges::sort(shared_tab_groups_1, &CompareSavedTabGroups);
+  std::ranges::sort(shared_tab_groups_2, &CompareSavedTabGroups);
 
   for (size_t group_index = 0; group_index < shared_tab_groups_1.size();
        ++group_index) {

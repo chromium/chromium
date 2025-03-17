@@ -82,10 +82,6 @@ void RemoveOperationDelegate::DidTryRemoveDirectory(
 
 void RemoveOperationDelegate::DidRemoveFile(StatusCallback callback,
                                             base::File::Error error) {
-  if (error == base::File::FILE_ERROR_NOT_FOUND) {
-    std::move(callback).Run(base::File::FILE_OK);
-    return;
-  }
   std::move(callback).Run(error);
 }
 

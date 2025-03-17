@@ -18,6 +18,7 @@
 namespace media {
 
 class VideoEncoderMetricsProvider;
+class GpuVideoAcceleratorFactories;
 
 namespace cast {
 
@@ -31,7 +32,7 @@ class VideoEncoder {
  public:
   // Callback used to deliver an encoded frame on the MAIN thread.
   using FrameEncodedCallback =
-      base::RepeatingCallback<void(std::unique_ptr<SenderEncodedFrame>)>;
+      base::OnceCallback<void(std::unique_ptr<SenderEncodedFrame>)>;
 
   // Creates a VideoEncoder instance from the given `video_config` and based on
   // the current platform's hardware/library support; or null if no
@@ -45,20 +46,20 @@ class VideoEncoder {
       const FrameSenderConfig& video_config,
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
-      FrameEncodedCallback output_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
 
   virtual ~VideoEncoder() {}
 
   // If true is returned, the Encoder has accepted the request and will process
-  // it asynchronously, running `output_cb_` on the MAIN CastEnvironment thread
-  // with the result. If false is returned, the video frame has been dropped and
-  // the `output_cb_` will not be called. This may be due to the encoder being
-  // overloaded, in which case the calling class can just try again. More
-  // serious errors will be reported through the `status_change_cb_`.
-  [[nodiscard]] virtual bool EncodeVideoFrame(
+  // it asynchronously, running `frame_encoded_callback` on the MAIN
+  // CastEnvironment thread with the result--either a valid SenderEncodedFrame
+  // or nullptr if an encoding error occurred.  If false is returned, nothing
+  // happens and the callback will not be run.
+  virtual bool EncodeVideoFrame(
       scoped_refptr<media::VideoFrame> video_frame,
-      base::TimeTicks reference_time) = 0;
+      base::TimeTicks reference_time,
+      FrameEncodedCallback frame_encoded_callback) = 0;
 
   // Inform the encoder about the new target bit rate.
   virtual void SetBitRate(int new_bit_rate) = 0;

@@ -107,7 +107,7 @@ public class ActionChipsProcessorUnitTest {
         // click on one action, and then emit a "focus" signal. There should be NO uma records.
         populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         assertEquals(2, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* result= */ null);
 
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -153,10 +153,10 @@ public class ActionChipsProcessorUnitTest {
 
         // Click!
         assertEquals(1, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* result= */ null);
         mProcessor.onOmniboxSessionStateChange(false);
 
-        verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, /* used= */ true);
+        verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, /* executed= */ true);
         histogramWatcher.assertExpected();
 
         verifyNoFollowUpRecords();
@@ -217,7 +217,7 @@ public class ActionChipsProcessorUnitTest {
 
         // Only the latest ModelList is available (previos two have been overwritten).
         assertEquals(2, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* result= */ null);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

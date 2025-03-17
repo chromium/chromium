@@ -11,7 +11,7 @@ class GURL;
 @protocol OverscrollActionsControllerDelegate;
 @class SadTabViewController;
 
-@protocol SadTabViewControllerDelegate<NSObject>
+@protocol SadTabViewControllerDelegate <NSObject>
 // Instructs the delegate to show Report An Issue UI.
 - (void)sadTabViewControllerShowReportAnIssue:
     (SadTabViewController*)sadTabViewController;

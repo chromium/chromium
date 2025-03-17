@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -26,7 +27,7 @@
 namespace {
 constexpr char kHintsHost[] = "hints.com";
 constexpr char kHintsURL[] = "https://hints.com/with_hints.html";
-}
+}  // namespace
 
 class OptimizationGuideValidationTabHelperTest : public PlatformTest {
  public:
@@ -74,6 +75,7 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
   }
 
  protected:
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;

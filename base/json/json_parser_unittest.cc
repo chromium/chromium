@@ -14,8 +14,7 @@
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 class JSONParserTest : public testing::Test {
  public:
@@ -339,5 +338,4 @@ TEST_F(JSONParserTest, ErrorMessages) {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -16,7 +16,7 @@
 namespace {
 const char kTestUrl1[] = "https://test1.test/";
 const char kTestUrl2[] = "https://test2.test/";
-}
+}  // namespace
 
 namespace web {
 
@@ -154,11 +154,11 @@ TEST_F(CRWWKNavigationStatesTest, Context) {
   EXPECT_FALSE([states_ contextForNavigation:navigation3_]);
   ASSERT_TRUE([states_ contextForNavigation:navigation1_]);
   EXPECT_EQ(GURL(kTestUrl1),
-            [states_ contextForNavigation:navigation1_] -> GetUrl());
-  EXPECT_TRUE([states_ contextForNavigation:navigation1_] -> IsSameDocument());
-  EXPECT_FALSE([states_ contextForNavigation:navigation1_] -> GetError());
+            [states_ contextForNavigation:navigation1_]->GetUrl());
+  EXPECT_TRUE([states_ contextForNavigation:navigation1_]->IsSameDocument());
+  EXPECT_FALSE([states_ contextForNavigation:navigation1_]->GetError());
   EXPECT_FALSE(
-      [states_ contextForNavigation:navigation1_] -> IsRendererInitiated());
+      [states_ contextForNavigation:navigation1_]->IsRendererInitiated());
 
   // Replace existing context.
   std::unique_ptr<web::NavigationContextImpl> context2 =
@@ -173,11 +173,11 @@ TEST_F(CRWWKNavigationStatesTest, Context) {
   EXPECT_FALSE([states_ contextForNavigation:navigation3_]);
   ASSERT_TRUE([states_ contextForNavigation:navigation1_]);
   EXPECT_EQ(GURL(kTestUrl2),
-            [states_ contextForNavigation:navigation1_] -> GetUrl());
-  EXPECT_FALSE([states_ contextForNavigation:navigation1_] -> IsSameDocument());
-  EXPECT_EQ(error, [states_ contextForNavigation:navigation1_] -> GetError());
+            [states_ contextForNavigation:navigation1_]->GetUrl());
+  EXPECT_FALSE([states_ contextForNavigation:navigation1_]->IsSameDocument());
+  EXPECT_EQ(error, [states_ contextForNavigation:navigation1_]->GetError());
   EXPECT_TRUE(
-      [states_ contextForNavigation:navigation1_] -> IsRendererInitiated());
+      [states_ contextForNavigation:navigation1_]->IsRendererInitiated());
 
   // Extract existing context.
   std::unique_ptr<web::NavigationContextImpl> extractedContext =

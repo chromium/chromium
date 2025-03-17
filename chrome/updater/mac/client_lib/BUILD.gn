@@ -18,7 +18,7 @@ config("cruregistration_include_path") {
   include_dirs = [ "$target_gen_dir" ]
 }
 
-source_set("public_sources") {
+source_set("cruregistration_base_sources") {
   sources = [
     "$target_gen_dir/CRURegistration.h",
     "CRURegistration-Private.h",
@@ -36,7 +36,19 @@ source_set("public_sources") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("test_sources") {
+source_set("public_sources") {
+  sources = [ "CRURegistrationPaths.m" ]
+  public_deps = [ ":cruregistration_base_sources" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("integration_test_sources") {
+  sources = [ "CRURegistrationTestPaths.m" ]
+  public_deps = [ ":cruregistration_base_sources" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_test_sources") {
   testonly = true
   sources = [ "CRURegistration_unittests.mm" ]
   deps = [
@@ -54,6 +66,7 @@ copy("archive_literal_sources") {
   sources = [
     "CRURegistration-Private.h",
     "CRURegistration.m",
+    "CRURegistrationPaths.m",
   ]
   outputs = [ "$root_out_dir/CRURegistration/{{source_file_part}}" ]
 }

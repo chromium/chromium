@@ -108,12 +108,14 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
       },
       /*aliases=*/{{c_cctld, c}});
 
-  original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary,
-                                                   std::nullopt)},
-                       {b, net::FirstPartySetEntry(
-                               a, net::SiteType::kAssociated, 0)}},
-      /*aliases=*/{{b_cctld, b}}));
+  original.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/{{a, net::FirstPartySetEntry(
+                                   a, net::SiteType::kPrimary, std::nullopt)},
+                           {b, net::FirstPartySetEntry(
+                                   a, net::SiteType::kAssociated, 0)}},
+          /*aliases=*/{{b_cctld, b}})
+          .value());
 
   net::GlobalFirstPartySets round_tripped;
 
@@ -144,12 +146,14 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
       },
       /*aliases=*/{{c_cctld, c}});
 
-  original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary,
-                                                   std::nullopt)},
-                       {b, net::FirstPartySetEntry(
-                               a, net::SiteType::kAssociated, 0)}},
-      /*aliases=*/{{b_cctld, b}}));
+  original.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/{{a, net::FirstPartySetEntry(
+                                   a, net::SiteType::kPrimary, std::nullopt)},
+                           {b, net::FirstPartySetEntry(
+                                   a, net::SiteType::kAssociated, 0)}},
+          /*aliases=*/{{b_cctld, b}})
+          .value());
 
   net::GlobalFirstPartySets round_tripped;
 
@@ -170,15 +174,22 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
 TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {
   net::SchemefulSite a(GURL("https://a.test"));
   net::SchemefulSite b(GURL("https://b.test"));
+  net::SchemefulSite b_alias(GURL("https://b.foo"));
   net::SchemefulSite c(GURL("https://c.test"));
 
-  const net::FirstPartySetsContextConfig original({
-      {a, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-              a, net::SiteType::kPrimary, std::nullopt))},
-      {b, net::FirstPartySetEntryOverride(
-              net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0))},
-      {c, net::FirstPartySetEntryOverride()},
-  });
+  const net::FirstPartySetsContextConfig original =
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {a, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                      a, net::SiteType::kPrimary, std::nullopt))},
+              {b, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                      a, net::SiteType::kAssociated, 0))},
+              {b_alias, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                            a, net::SiteType::kAssociated, 0))},
+              {c, net::FirstPartySetEntryOverride()},
+          },
+          {{b_alias, b}})
+          .value();
 
   net::FirstPartySetsContextConfig round_tripped;
 

@@ -169,7 +169,7 @@ HoverHighlightView* NetworkDetailedNetworkViewImpl::AddConfigureNetworkEntry(
   entry->AddViewAndLabel(std::move(image_view),
                          GetLabelForConfigureNetworkEntry(type));
   views::Label* label = entry->text_label();
-  label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+  label->SetEnabledColor(cros_tokens::kCrosSysPrimary);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                         *label);
 

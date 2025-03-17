@@ -10,7 +10,9 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/crypto.h"
+#include "third_party/blink/renderer/platform/feature_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -107,7 +109,7 @@ class SubresourceIntegrityTest : public testing::Test {
 
     IntegrityAlgorithm algorithm;
     auto result = SubresourceIntegrity::ParseAttributeAlgorithm(
-        base::as_string_view(string_data), algorithm);
+        base::as_string_view(string_data), nullptr, algorithm);
     ASSERT_TRUE(result.has_value());
     // All algorithm identifiers are currently 6 or 7 characters long.
     EXPECT_TRUE(result.value() == 6u || result.value() == 7u);
@@ -121,7 +123,7 @@ class SubresourceIntegrityTest : public testing::Test {
 
     IntegrityAlgorithm algorithm;
     auto result = SubresourceIntegrity::ParseAttributeAlgorithm(
-        base::as_string_view(string_data), algorithm);
+        base::as_string_view(string_data), nullptr, algorithm);
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(expected_error, result.error());
   }
@@ -148,8 +150,8 @@ class SubresourceIntegrityTest : public testing::Test {
                    const char* expected_digest,
                    IntegrityAlgorithm expected_algorithm) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(1u, metadata_set.hashes.size());
     if (metadata_set.hashes.size() > 0) {
       IntegrityMetadata metadata = *metadata_set.hashes.begin();
@@ -166,15 +168,15 @@ class SubresourceIntegrityTest : public testing::Test {
       expected_metadata_set.hashes.insert(expected.ToPair());
     }
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(expected_metadata_set, metadata_set);
   }
 
   void ExpectParseFailure(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(metadata_set.hashes.size(), 0u);
     EXPECT_EQ(metadata_set.signatures.size(), 0u);
   }
@@ -182,8 +184,8 @@ class SubresourceIntegrityTest : public testing::Test {
   void ExpectEmptyParseResult(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
 
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(0u, metadata_set.hashes.size());
     EXPECT_EQ(0u, metadata_set.signatures.size());
   }
@@ -213,8 +215,8 @@ class SubresourceIntegrityTest : public testing::Test {
                               const TestCase& test,
                               Expectation expectation) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(String(integrity),
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        String(integrity), metadata_set, /*feature_context=*/nullptr);
     SegmentedBuffer buffer;
     buffer.Append(base::span_from_cstring(kBasicScript));
     IntegrityReport integrity_report;
@@ -223,7 +225,7 @@ class SubresourceIntegrityTest : public testing::Test {
                   metadata_set, &buffer, test.url,
                   *CreateTestResource(test.url, test.request_mode,
                                       test.response_type),
-                  integrity_report, nullptr));
+                  nullptr, integrity_report, nullptr));
   }
 
   Resource* CreateTestResource(
@@ -599,7 +601,28 @@ class SubresourceIntegritySignatureTest
     : public SubresourceIntegrityTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  SubresourceIntegritySignatureTest() : scoped_feature_(GetParam()) {}
+  class SignatureFeatureContext : public FeatureContext {
+   public:
+    explicit SignatureFeatureContext(bool status) : status_(status) {}
+
+    // This would need to be more complicated if we had more than one feature
+    // under test. Happily, we don't.
+    bool FeatureEnabled(mojom::blink::OriginTrialFeature) const override {
+      return status_;
+    }
+    RuntimeFeatureStateOverrideContext* GetRuntimeFeatureStateOverrideContext()
+        const override {
+      return nullptr;
+    }
+
+   private:
+    bool status_;
+  };
+
+  SubresourceIntegritySignatureTest()
+      : feature_context_(GetParam()),
+        scoped_integrity_(GetParam()),
+        scoped_inline_integrity_(GetParam()) {}
 
   bool SignaturesEnabled() { return GetParam(); }
 
@@ -609,8 +632,8 @@ class SubresourceIntegritySignatureTest
   void ValidateSingleSignatureBasedItem(const String& integrity_attribute,
                                         const String& digest) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(0u, metadata_set.hashes.size());
     if (SignaturesEnabled()) {
       ASSERT_EQ(1u, metadata_set.signatures.size());
@@ -629,8 +652,8 @@ class SubresourceIntegritySignatureTest
                              const Vector<IntegrityMetadataPair>& hashes,
                              const Vector<IntegrityMetadataPair>& signatures) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
 
     // Validate hashes:
     ASSERT_EQ(hashes.size(), metadata_set.hashes.size());
@@ -649,8 +672,12 @@ class SubresourceIntegritySignatureTest
     }
   }
 
+ protected:
+  SignatureFeatureContext feature_context_;
+
  private:
-  ScopedSignatureBasedIntegrityForTest scoped_feature_;
+  ScopedSignatureBasedIntegrityForTest scoped_integrity_;
+  ScopedSignatureBasedInlineIntegrityForTest scoped_inline_integrity_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FeatureFlag,
@@ -789,14 +816,14 @@ TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
   String raw_headers = "";
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
       metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
-      raw_headers, integrity_report))
+      raw_headers, /*feature_context=*/nullptr, integrity_report))
       << "Fetch variant";
 
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
-      nullptr))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource,
+      /*feature_context=*/nullptr, integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -809,17 +836,18 @@ TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
 
   // If the flag is set, the lack of a signature will fail any signature
   // integrity requirement.
-  EXPECT_EQ(!SignaturesEnabled(),
-            SubresourceIntegrity::CheckSubresourceIntegrity(
-                metadata_set, /*buffer=*/nullptr, sec_url,
-                FetchResponseType::kCors, raw_headers, integrity_report));
+  EXPECT_EQ(
+      !SignaturesEnabled(),
+      SubresourceIntegrity::CheckSubresourceIntegrity(
+          metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
+          raw_headers, /*feature_context=*/nullptr, integrity_report));
 
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   EXPECT_EQ(!SignaturesEnabled(),
             SubresourceIntegrity::CheckSubresourceIntegrity(
                 metadata_set, /*buffer=*/nullptr, sec_url, *resource,
-                integrity_report, nullptr))
+                /*feature_context=*/nullptr, integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -829,15 +857,15 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   String kValidDigestHeader =
       "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
   String kValidSignatureInputHeader =
-      "signature=(\"identity-digest\";sf);"
+      "signature=(\"unencoded-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
   String kValidSignatureHeader =
-      "signature=:eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO0zUofe5T"
-      "23RGuquHLdZx177tBX45CUcAg==:";
+      "signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9"
+      "p7C0hzW4o4Qpkm5aApd6WLLCw==:";
 
   String raw_headers =
       "HTTP/1.1 200 OK\r\n"
-      "Identity-Digest: " +
+      "Unencoded-Digest: " +
       kValidDigestHeader +
       "\r\n"
       "Signature-Input: " +
@@ -854,21 +882,137 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   // Valid signature matching the integrity requirement should always pass.
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
       metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
-      raw_headers, integrity_report));
+      raw_headers, /*feature_context=*/nullptr, integrity_report));
 
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   ResourceResponse& response = resource->GetMutableResponseForTesting();
-  response.SetHttpHeaderField(http_names::kIdentityDigest,
+  response.SetHttpHeaderField(http_names::kUnencodedDigest,
                               AtomicString(kValidDigestHeader));
   response.SetHttpHeaderField(http_names::kSignatureInput,
                               AtomicString(kValidSignatureInputHeader));
   response.SetHttpHeaderField(http_names::kSignature,
                               AtomicString(kValidSignatureHeader));
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
-      nullptr))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource,
+      /*feature_context=*/nullptr, integrity_report, nullptr))
       << "Resource variant";
+}
+
+TEST_P(SubresourceIntegritySignatureTest, Inline_NoSignatures) {
+  String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  String kSource = "alert(1);";
+
+  const char* cases[] = {
+      "",                            // Empty
+      "   ",                         // Whitespace
+      "invalid-signature",           // Invalid prefix
+      "ed25519-invalid-base64ness",  // Invalid base64
+      "ed25519-aaa",                 // Invalid length
+  };
+
+  for (const char* test : cases) {
+    EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+        kIntegrity, test, kSource, &feature_context_));
+  }
+}
+
+TEST_P(SubresourceIntegritySignatureTest, Inline_MatchingSignature) {
+  String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  String kSource = "alert(1);";
+  String kSignature =
+      "ed25519-JXqOX/Ah0/d/"
+      "QEVqirecUGwbPaVWGWXWF6CcZrhYlVwB2+"
+      "64fDhfMKBXQna2RLH4lBBOPjWkZ8juVmIRItaoCQ==";
+
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, kSignature, kSource, &feature_context_));
+  // Valid + valid = Verified
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, kSignature + " " + kSignature, kSource, &feature_context_));
+
+  // Valid + invalid = Verified
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, kSignature + " ed25519-aaa", kSource, &feature_context_));
+
+  // Invalid + valid = Verified
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, "ed25519-aaa " + kSignature, kSource, &feature_context_));
+}
+
+TEST_P(SubresourceIntegritySignatureTest, Inline_NonMatchingSignature) {
+  String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  String kSource = "alert(1);";
+  String kSignature =
+      "ed25519-"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAA==";
+
+  bool should_fail_verification = !SignaturesEnabled();
+
+  // Non-matching => Fail verification
+  EXPECT_EQ(should_fail_verification,
+            SubresourceIntegrity::VerifyInlineIntegrity(
+                kIntegrity, kSignature, kSource, &feature_context_));
+
+  // Non-matching + Non-matching => Fail verification
+  EXPECT_EQ(should_fail_verification,
+            SubresourceIntegrity::VerifyInlineIntegrity(
+                kIntegrity, kSignature + " " + kSignature, kSource,
+                &feature_context_));
+
+  // Non-matching + invalid => Fail verification
+  EXPECT_EQ(
+      should_fail_verification,
+      SubresourceIntegrity::VerifyInlineIntegrity(
+          kIntegrity, kSignature + " ed25519-aaa", kSource, &feature_context_));
+
+  // Invalid + non-matching => Fail verification
+  EXPECT_EQ(
+      should_fail_verification,
+      SubresourceIntegrity::VerifyInlineIntegrity(
+          kIntegrity, "ed25519-aaa " + kSignature, kSource, &feature_context_));
+}
+
+TEST_P(SubresourceIntegritySignatureTest, UseCounter) {
+  // Just public key:
+  {
+    String kIntegrity = "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+    IntegrityMetadataSet metadata;
+    IntegrityReport report;
+    SubresourceIntegrity::ParseIntegrityAttribute(kIntegrity, metadata,
+                                                  &feature_context_, &report);
+    EXPECT_FALSE(
+        report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
+    EXPECT_EQ(SignaturesEnabled(), report.UseCountersForTesting().Contains(
+                                       WebFeature::kSRIPublicKeyAssertion));
+  }
+  // Just hash:
+  {
+    String kIntegrity = "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=";
+    IntegrityMetadataSet metadata;
+    IntegrityReport report;
+    SubresourceIntegrity::ParseIntegrityAttribute(kIntegrity, metadata,
+                                                  &feature_context_, &report);
+    EXPECT_TRUE(
+        report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
+    EXPECT_FALSE(report.UseCountersForTesting().Contains(
+        WebFeature::kSRIPublicKeyAssertion));
+  }
+  // Both:
+  {
+    String kIntegrity =
+        "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4= "
+        "ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+    IntegrityMetadataSet metadata;
+    IntegrityReport report;
+    SubresourceIntegrity::ParseIntegrityAttribute(kIntegrity, metadata,
+                                                  &feature_context_, &report);
+    EXPECT_TRUE(
+        report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
+    EXPECT_EQ(SignaturesEnabled(), report.UseCountersForTesting().Contains(
+                                       WebFeature::kSRIPublicKeyAssertion));
+  }
 }
 
 }  // namespace blink

@@ -135,7 +135,7 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsTab.hidden);
   });
 
-  test('InvalidCert', async function() {
+  test('InvalidCert', function() {
     // Error should be shown instead of cert fields.
     assertFalse(getRequiredElement('general-error').hidden);
     assertTrue(getRequiredElement('general-fields').hidden);
@@ -157,15 +157,14 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
   }
 
-  test('CheckMetadataNotEditable', async function() {
+  test('CheckMetadataNotEditable', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
@@ -176,21 +175,20 @@ suite('CertificateViewer', function() {
     assertFalse(isVisible(modificationsPanel.$.addConstraintSection));
     assertTrue(isVisible(modificationsPanel.$.constraintListSection));
     const deleteButton =
-        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot.querySelector<CrIconButtonElement>(
             '#constraint-delete-0');
     assert(deleteButton);
     assertFalse(isVisible(deleteButton));
   });
 
-  test('CheckMetadataNotEditableNoConstraints', async function() {
+  test('CheckMetadataNotEditableNoConstraints', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
@@ -201,15 +199,14 @@ suite('CertificateViewer', function() {
     assertFalse(isVisible(modificationsPanel.$.addConstraintSection));
   });
 
-  test('CheckMetadataEditable', async function() {
+  test('CheckMetadataEditable', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
@@ -221,22 +218,21 @@ suite('CertificateViewer', function() {
     assertFalse(modificationsPanel.$.addConstraintButton.disabled);
     assertTrue(isVisible(modificationsPanel.$.constraintListSection));
     const deleteButton =
-        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot.querySelector<CrIconButtonElement>(
             '#constraint-delete-0');
     assert(deleteButton);
     assertTrue(isVisible(deleteButton));
     assertFalse(deleteButton.disabled);
   });
 
-  test('CheckMetadataEditableNoConstraints', async function() {
+  test('CheckMetadataEditableNoConstraints', function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
     // Select the modifications tab to allow for visibility checks
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
@@ -261,8 +257,7 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
@@ -304,8 +299,7 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
@@ -355,8 +349,7 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     checkDefaultConstraints(modificationsPanel);
 
     modificationsPanel.$.addConstraintInput.value = 'foo.com';
@@ -387,8 +380,7 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     checkDefaultConstraints(modificationsPanel);
 
     modificationsPanel.$.addConstraintInput.value = '10.10.0.0/15';
@@ -420,8 +412,7 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     checkDefaultConstraints(modificationsPanel);
 
     modificationsPanel.$.addConstraintInput.value = 'foo.com';
@@ -451,12 +442,11 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     checkDefaultConstraints(modificationsPanel);
 
     const deleteButton =
-        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot.querySelector<CrIconButtonElement>(
             '#constraint-delete-0');
     assert(deleteButton);
     const deleteConstraint =
@@ -493,12 +483,11 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     checkDefaultConstraints(modificationsPanel);
 
     const deleteButton =
-        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot.querySelector<CrIconButtonElement>(
             '#constraint-delete-2');
     assert(deleteButton);
     const deleteConstraint =
@@ -531,13 +520,12 @@ suite('CertificateViewer', function() {
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
-        (getRequiredElement('modifications-panel') as
-         ModificationsPanelElement);
+        getRequiredElement<ModificationsPanelElement>('modifications-panel');
     checkDefaultConstraints(modificationsPanel);
     assertFalse(isVisible(modificationsPanel.$.constraintDeleteError));
 
     const deleteButton =
-        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot.querySelector<CrIconButtonElement>(
             '#constraint-delete-0');
     assert(deleteButton);
     const deleteConstraint =

@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/server/http_handler.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -23,7 +20,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -232,12 +229,13 @@ CommandMapping::CommandMapping(const CommandMapping& other) = default;
 CommandMapping::~CommandMapping() = default;
 
 // Create a command mapping with a prefixed HTTP path (.e.g goog/).
-CommandMapping VendorPrefixedCommandMapping(HttpMethod method,
-                                            const char* path_pattern,
-                                            const Command& command) {
+CommandMapping VendorPrefixedSessionCommandMapping(HttpMethod method,
+                                                   std::string_view path_suffix,
+                                                   const Command& command) {
   return CommandMapping(
       method,
-      base::StringPrintfNonConstexpr(path_pattern, kChromeDriverCompanyPrefix),
+      base::StrCat({"session/:sessionId/", kChromeDriverCompanyPrefix, "/",
+                    path_suffix}),
       command);
 }
 
@@ -1020,7 +1018,7 @@ HttpHandler::HttpHandler(
 
       // Extensions for Navigational Tracking Mitigations:
       // https://privacycg.github.io/nav-tracking-mitigations
-      VendorPrefixedCommandMapping(
+      CommandMapping(
           kDelete, "session/:sessionId/storage/run_bounce_tracking_mitigations",
           WrapToCommand(
               "RunBounceTrackingMitigations",
@@ -1149,41 +1147,41 @@ HttpHandler::HttpHandler(
       CommandMapping(kPost, "session/:sessionId/chromium/send_command",
                      WrapToCommand("SendCommand",
                                    base::BindRepeating(&ExecuteSendCommand))),
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/cdp/execute",
+      VendorPrefixedSessionCommandMapping(
+          kPost, "cdp/execute",
           WrapToCommand("ExecuteCDP",
                         base::BindRepeating(&ExecuteSendCommandAndGetResult))),
       CommandMapping(
           kPost, "session/:sessionId/chromium/send_command_and_get_result",
           WrapToCommand("SendCommandAndGetResult",
                         base::BindRepeating(&ExecuteSendCommandAndGetResult))),
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/page/freeze",
+      VendorPrefixedSessionCommandMapping(
+          kPost, "page/freeze",
           WrapToCommand("Freeze", base::BindRepeating(&ExecuteFreeze))),
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/page/resume",
+      VendorPrefixedSessionCommandMapping(
+          kPost, "page/resume",
           WrapToCommand("Resume", base::BindRepeating(&ExecuteResume))),
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/cast/set_sink_to_use",
+      VendorPrefixedSessionCommandMapping(
+          kPost, "cast/set_sink_to_use",
           WrapToCommand("SetSinkToUse",
                         base::BindRepeating(&ExecuteSetSinkToUse))),
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/cast/start_desktop_mirroring",
+      VendorPrefixedSessionCommandMapping(
+          kPost, "cast/start_desktop_mirroring",
           WrapToCommand("StartDesktopMirroring",
                         base::BindRepeating(&ExecuteStartDesktopMirroring))),
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/cast/start_tab_mirroring",
+      VendorPrefixedSessionCommandMapping(
+          kPost, "cast/start_tab_mirroring",
           WrapToCommand("StartTabMirroring",
                         base::BindRepeating(&ExecuteStartTabMirroring))),
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/cast/stop_casting",
+      VendorPrefixedSessionCommandMapping(
+          kPost, "cast/stop_casting",
           WrapToCommand("StopCasting",
                         base::BindRepeating(&ExecuteStopCasting))),
-      VendorPrefixedCommandMapping(
-          kGet, "session/:sessionId/%s/cast/get_sinks",
+      VendorPrefixedSessionCommandMapping(
+          kGet, "cast/get_sinks",
           WrapToCommand("GetSinks", base::BindRepeating(&ExecuteGetSinks))),
-      VendorPrefixedCommandMapping(
-          kGet, "session/:sessionId/%s/cast/get_issue_message",
+      VendorPrefixedSessionCommandMapping(
+          kGet, "cast/get_issue_message",
           WrapToCommand("GetIssueMessage",
                         base::BindRepeating(&ExecuteGetIssueMessage))),
 
@@ -1213,7 +1211,7 @@ HttpHandler::HttpHandler(
                         base::BindRepeating(&ExecuteSendCommandFromWebSocket))),
   };
   command_map_ =
-      std::make_unique<CommandMap>(commands, commands + std::size(commands));
+      std::make_unique<CommandMap>(std::begin(commands), std::end(commands));
 
   static_bidi_command_map_.emplace(
       "session.status", base::BindRepeating(&ExecuteBidiSessionStatus));
@@ -1960,7 +1958,7 @@ void HttpHandler::OnClose(HttpServerInterface* http_server, int connection_id) {
     return;
   }
   std::vector<int>& bucket = ses_it->second;
-  auto bucket_it = base::ranges::find(bucket, connection_id);
+  auto bucket_it = std::ranges::find(bucket, connection_id);
   // The case when it can happen:
   // The session thread has sent a response (e.g. Quit command) to the client.
   // After that the session thread preempted before closing all connections.

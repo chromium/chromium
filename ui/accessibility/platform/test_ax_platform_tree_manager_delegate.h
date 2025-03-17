@@ -36,6 +36,7 @@ class TestAXPlatformTreeManagerDelegate : public AXPlatformTreeManagerDelegate {
   bool ShouldSuppressAXLoadComplete() override;
   content::WebContentsAccessibility*
     AccessibilityGetWebContentsAccessibility() override;
+  bool AccessibilityIsWebContentSource() override;
 
   bool is_root_frame_;
   gfx::AcceleratedWidget accelerated_widget_;

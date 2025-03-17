@@ -180,7 +180,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
     const LayoutAlgorithmParams& params,
     const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments)
     : LayoutAlgorithm(params),
-      is_webkit_box_(Style().IsDeprecatedWebkitBox()),
+      is_webkit_box_(Style().IsDeprecatedFlexbox()),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_wrap_reverse_(Style().FlexWrap() == EFlexWrap::kWrapReverse),
       is_reverse_direction_(Style().ResolvedIsReverseFlexDirection()),
@@ -219,32 +219,21 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
   if (is_webkit_box_) {
     const EBoxPack box_pack = Style().BoxPack();
     const ContentPosition position = ([&]() {
-      // -webkit-box row-reverse currently flips the start/end (e.g. it always
-      // uses "start" rather than "flex-start"). Firefox doesn't have this
-      // quirk, we should attempt to remove it.
-      const bool is_row_reverse =
-          !RuntimeEnabledFeatures::LayoutDisableWebkitBoxQuirksEnabled() &&
-          Style().ResolvedIsRowReverseFlexDirection();
       switch (box_pack) {
         case EBoxPack::kCenter:
           return ContentPosition::kCenter;
         case EBoxPack::kJustify:
         case EBoxPack::kStart:
-          return is_row_reverse ? ContentPosition::kFlexEnd
-                                : ContentPosition::kFlexStart;
+          return ContentPosition::kFlexStart;
         case EBoxPack::kEnd:
-          return is_row_reverse ? ContentPosition::kFlexStart
-                                : ContentPosition::kFlexEnd;
+          return ContentPosition::kFlexEnd;
       }
     })();
     const ContentDistributionType distribution =
         box_pack == EBoxPack::kJustify ? ContentDistributionType::kSpaceBetween
                                        : ContentDistributionType::kDefault;
-    return StyleContentAlignmentData(
-        position, distribution,
-        RuntimeEnabledFeatures::LayoutDisableWebkitBoxQuirksEnabled()
-            ? OverflowAlignment::kDefault
-            : OverflowAlignment::kSafe);
+    return StyleContentAlignmentData(position, distribution,
+                                     OverflowAlignment::kDefault);
   }
 
   const auto writing_direction = GetConstraintSpace().GetWritingDirection();
@@ -578,32 +567,33 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
     return;
   }
   HeapVector<Member<blink::Node>> reading_flow_nodes;
+  reading_flow_nodes.ReserveInitialCapacity(flex_items_.size());
   // Add flex item if it is a DOM node
-  auto AddItemIfNeeded = [&](const wtf_size_t item_index) {
+  auto add_item_if_needed = [&](const wtf_size_t item_index) {
     if (blink::Node* node = flex_items_[item_index].block_node.GetDOMNode()) {
       reading_flow_nodes.push_back(node);
     }
   };
   // Given CSS reading-flow, flex-flow, flex-direction; read values
   // in correct order.
-  auto AddFlexItems = [&](const FlexLine& line) {
+  auto add_flex_items = [&](const FlexLine& line) {
     if (reading_flow == EReadingFlow::kFlexFlow && is_reverse_direction_) {
       for (const wtf_size_t item_index : base::Reversed(line.item_indices)) {
-        AddItemIfNeeded(item_index);
+        add_item_if_needed(item_index);
       }
     } else {
       for (const wtf_size_t item_index : line.item_indices) {
-        AddItemIfNeeded(item_index);
+        add_item_if_needed(item_index);
       }
     }
   };
   if (reading_flow == EReadingFlow::kFlexFlow && is_wrap_reverse_) {
     for (const auto& line : base::Reversed(flex_lines)) {
-      AddFlexItems(line);
+      add_flex_items(line);
     }
   } else {
     for (const auto& line : flex_lines) {
-      AddFlexItems(line);
+      add_flex_items(line);
     }
   }
   container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
@@ -648,8 +638,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
                                        /* is_new_fc */ true);
   builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
   builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
-  builder.SetReplacedPercentageResolutionBlockSize(
-      child_percentage_size_.block_size);
   if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child, alignment)) {
     builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
   }
@@ -691,9 +679,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     space_builder.SetAvailableSize(ChildAvailableSize());
   }
   space_builder.SetPercentageResolutionSize(child_percentage_size);
-  // TODO(dgrogan): The SetReplacedPercentageResolutionSize calls in this file
-  // may be untested. Write a test or determine why they're unnecessary.
-  space_builder.SetReplacedPercentageResolutionSize(child_percentage_size);
   return space_builder.ToConstraintSpace();
 }
 
@@ -708,7 +693,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
   // need the available and percentage sizes.
   space_builder.SetAvailableSize(ChildAvailableSize());
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
-  space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
   return space_builder.ToConstraintSpace();
 }
 
@@ -787,7 +771,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
 
   space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
-  space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
   return space_builder.ToConstraintSpace();
 }
 
@@ -886,9 +869,10 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (has_aspect_ratio && type == SizeType::kContent) {
         const LayoutUnit inline_size = InlineSizeFunc();
         if (inline_size != kIndefiniteSize) {
-          return BlockSizeFromAspectRatio(
-              border_padding_in_child_writing_mode, child.GetAspectRatio(),
-              child_style.BoxSizingForAspectRatio(), inline_size);
+          return BlockSizeFromAspectRatio(border_padding_in_child_writing_mode,
+                                          child_style.LogicalAspectRatio(),
+                                          child_style.BoxSizingForAspectRatio(),
+                                          inline_size);
         }
       }
 
@@ -1098,7 +1082,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (child.IsReplaced()) {
         return false;
       }
-      return child.HasAspectRatio() && InlineSizeFunc() != kIndefiniteSize;
+      return !child_style.AspectRatio().IsAuto() &&
+             InlineSizeFunc() != kIndefiniteSize;
     };
 
     // For flex-items whose main-axis is the block-axis we treat the initial
@@ -1478,7 +1463,6 @@ void FlexLayoutAlgorithm::ApplyReversals(HeapVector<FlexLine>* flex_lines) {
 namespace {
 
 LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
-                                        ContentPosition safe_position,
                                         LayoutUnit free_space,
                                         unsigned number_of_items,
                                         bool is_reverse) {
@@ -1508,13 +1492,12 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
       return is_reverse ? free_space : LayoutUnit();
   }
 
-  ContentPosition position = data.GetPosition();
   if (free_space <= LayoutUnit() &&
       data.Overflow() == OverflowAlignment::kSafe) {
-    position = safe_position;
+    return LayoutUnit();
   }
 
-  switch (position) {
+  switch (data.GetPosition()) {
     case ContentPosition::kCenter:
       return free_space / 2;
     case ContentPosition::kStart:
@@ -1542,13 +1525,13 @@ LayoutUnit ContentDistributionSpace(const StyleContentAlignmentData& data,
   }
   switch (data.Distribution()) {
     case ContentDistributionType::kDefault:
+    case ContentDistributionType::kStretch:
       return LayoutUnit();
     case ContentDistributionType::kSpaceBetween:
       return free_space / (number_of_items - 1);
     case ContentDistributionType::kSpaceEvenly:
       return free_space / (number_of_items + 1);
     case ContentDistributionType::kSpaceAround:
-    case ContentDistributionType::kStretch:
       return free_space / number_of_items;
   }
 }
@@ -1621,23 +1604,13 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     cross_axis_free_space = LayoutUnit();
   }
 
-  // -webkit-box has a weird quirk - an RTL box will overflow as if it was LTR.
-  // NOTE: We should attempt to remove this in the future.
-  const ContentPosition safe_justify_position =
-      !RuntimeEnabledFeatures::LayoutDisableWebkitBoxQuirksEnabled() &&
-              is_webkit_box_ && !is_column_ &&
-              style.Direction() == TextDirection::kRtl
-          ? ContentPosition::kEnd
-          : ContentPosition::kStart;
-
   const LayoutUnit space_between_lines =
       ContentDistributionSpace(align_content, cross_axis_free_space, num_lines);
   LayoutUnit line_cross_axis_offset =
       (is_column_ ? BorderScrollbarPadding().inline_start
                   : BorderScrollbarPadding().block_start) +
-      InitialContentPositionOffset(align_content, ContentPosition::kStart,
-                                   cross_axis_free_space, num_lines,
-                                   is_wrap_reverse_);
+      InitialContentPositionOffset(align_content, cross_axis_free_space,
+                                   num_lines, is_wrap_reverse_);
 
   BaselineAccumulator baseline_accumulator(style);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
@@ -1677,9 +1650,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     LayoutUnit main_axis_offset =
         (is_column_ ? BorderScrollbarPadding().block_start
                     : BorderScrollbarPadding().inline_start) +
-        InitialContentPositionOffset(justify_content, safe_justify_position,
-                                     main_axis_free_space, line_items_size,
-                                     is_reverse_direction_);
+        InitialContentPositionOffset(justify_content, main_axis_free_space,
+                                     line_items_size, is_reverse_direction_);
 
     for (wtf_size_t item_index : flex_line.item_indices) {
       const FlexItem& item = flex_items_[item_index];
@@ -2489,7 +2461,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   return {min_max_sizes, /* depends_on_block_constraints */ true};
 }
 
-MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
+MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
   MinMaxSizes container_sizes;
   bool depends_on_block_constraints = false;
 
@@ -2508,7 +2480,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
 
     const ConstraintSpace space =
         BuildSpaceForIntrinsicInlineSize(child, item.alignment);
-    MinMaxSizesResult min_max_content_contributions =
+    const MinMaxSizesResult min_max_content_contributions =
         ComputeMinAndMaxContentContribution(Style(), child, space);
     depends_on_block_constraints |=
         min_max_content_contributions.depends_on_block_constraints;
@@ -2519,20 +2491,35 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     const LayoutUnit hypothetical_main_size_border_box =
         item.hypothetical_content_size + item.main_axis_border_padding;
 
+    const LayoutUnit main_axis_margins =
+        is_horizontal_flow_ ? item.initial_margins.HorizontalSum()
+                            : item.initial_margins.VerticalSum();
+
     if (is_multi_line_) {
-      const LayoutUnit main_axis_margins =
-          is_horizontal_flow_ ? item.initial_margins.HorizontalSum()
-                              : item.initial_margins.VerticalSum();
       largest_outer_min_content_contribution = std::max(
           largest_outer_min_content_contribution,
           min_max_content_contributions.sizes.min_size + main_axis_margins);
     } else {
       const LayoutUnit min_contribution =
           min_max_content_contributions.sizes.min_size;
+
+      // Note: |cant_move| is not actually necessary to pass the compat cases
+      // that have broke in the past, but it does restrict the new algorithm to
+      // a smaller set of scenarios where the old algorithm was egregiously
+      // wrong. If this version of the algorithm IS web compatible, we can then
+      // try removing the cant_move requirement.
       const bool cant_move = (min_contribution > flex_base_size_border_box &&
                               item.flex_grow == 0.f) ||
                              (min_contribution < flex_base_size_border_box &&
                               item.flex_shrink == 0.f);
+      // Note: We could further restrict the new algorithm to only apply to
+      // items that have both a fixed flex basis AND do not use automatic
+      // minimum sizing AND whose min and max properties do not depend on the
+      // item's content (e.g. fit-content, max-content etc). But last time we
+      // enabled this algorithm there were no bugs filed, so hopefully those
+      // further restrictions are not necessary. If we have compat problems this
+      // iteration, we can see if any would be fixed by employing such
+      // restrictions.
       if (cant_move && !item.is_used_flex_basis_indefinite) {
         item_final_contribution.min_size = hypothetical_main_size_border_box;
       } else {
@@ -2553,10 +2540,6 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     }
 
     container_sizes += item_final_contribution;
-
-    const LayoutUnit main_axis_margins =
-        is_horizontal_flow_ ? item.initial_margins.HorizontalSum()
-                            : item.initial_margins.VerticalSum();
     container_sizes += main_axis_margins;
   }
 
@@ -2601,9 +2584,9 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
     return ComputeMinMaxSizeOfMultilineColumnContainer();
   }
 
-  if (RuntimeEnabledFeatures::LayoutFlexNewRowAlgorithmV3Enabled() &&
+  if (RuntimeEnabledFeatures::LayoutFlexNewRowAlgorithmEnabled() &&
       !is_column_) {
-    return ComputeMinMaxSizeOfRowContainerV3();
+    return ComputeMinMaxSizeOfRowContainer();
   }
 
   MinMaxSizes sizes;

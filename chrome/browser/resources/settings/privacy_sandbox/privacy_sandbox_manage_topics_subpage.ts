@@ -161,7 +161,7 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     const toggleBeingChanged =
         this.shadowRoot!.querySelector<CrToggleElement>(toggleId);
     assert(toggleBeingChanged);
-    toggleBeingChanged!.click();
+    toggleBeingChanged.click();
   }
 
   private async onToggleChange_(e: DomRepeatEvent<PrivacySandboxInterest>) {

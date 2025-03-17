@@ -20,6 +20,10 @@ struct BLINK_COMMON_EXPORT Impression {
   // Indicates the attributionsrc request associated with `this`.
   // Data parameters will be used from the attributionsrc response.
   AttributionSrcToken attribution_src_token;
+
+  // Whether there were any impression string associated with the attributionsrc
+  // tag. This is only used for internal metric collection purpose.
+  bool is_empty_attribution_src_tag = false;
 };
 
 }  // namespace blink

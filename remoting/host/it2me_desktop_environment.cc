@@ -5,21 +5,29 @@
 #include "remoting/host/it2me_desktop_environment.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "remoting/base/errors.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/basic_desktop_environment.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/desktop_environment.h"
+#include "remoting/host/desktop_interaction_strategy.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/protocol/capability_names.h"
-#include "remoting/protocol/errors.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/types.h>
@@ -41,22 +49,19 @@ It2MeDesktopEnvironment::~It2MeDesktopEnvironment() {
 
 It2MeDesktopEnvironment::It2MeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    std::unique_ptr<DesktopInteractionStrategy> interaction_strategy,
     base::WeakPtr<ClientSessionControl> client_session_control,
     const DesktopEnvironmentOptions& options)
     : BasicDesktopEnvironment(caller_task_runner,
-                              video_capture_task_runner,
-                              input_task_runner,
                               ui_task_runner,
+                              std::move(interaction_strategy),
                               client_session_control,
                               options) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());
 
   // Create the local input monitor.
-  local_input_monitor_ = LocalInputMonitor::Create(
-      caller_task_runner, input_task_runner, ui_task_runner);
+  local_input_monitor_ = this->interaction_strategy().CreateLocalInputMonitor();
   local_input_monitor_->StartMonitoringForClientSession(client_session_control);
 
   bool enable_user_interface = options.enable_user_interface();
@@ -73,11 +78,21 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   enable_user_interface = getuid() != 0;
 #endif  // BUILDFLAG(IS_APPLE)
 
-  // Create the continue window.  The implication of this window is that the
-  // session length will be limited.  If the user interface is disabled,
-  // then sessions will not have a maximum length enforced by the continue
-  // window timer.
-  if (enable_user_interface) {
+  // Enforce the maximum session length defined in the session options. If a
+  // specific session duration limit is configured, the ContinueWindow mechanism
+  // should not require re-authentication for the ongoing session.
+  if (!options.maximum_session_duration().is_zero()) {
+    ui_task_runner->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ClientSessionControl::DisconnectSession,
+                       client_session_control, ErrorCode::MAX_SESSION_LENGTH,
+                       "Maximum session duration has been reached.", FROM_HERE),
+        options.maximum_session_duration());
+  } else if (enable_user_interface) {
+    // Create the continue window.  The implication of this window is that the
+    // session length will be limited.  If the user interface is disabled,
+    // then sessions will not have a maximum length enforced by the continue
+    // window timer.
     continue_window_ = HostWindow::CreateContinueWindow();
     continue_window_ = std::make_unique<HostWindowProxy>(
         caller_task_runner, ui_task_runner, std::move(continue_window_));
@@ -109,25 +124,39 @@ std::string It2MeDesktopEnvironment::GetCapabilities() const {
 
 It2MeDesktopEnvironmentFactory::It2MeDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
-    : BasicDesktopEnvironmentFactory(caller_task_runner,
-                                     video_capture_task_runner,
-                                     input_task_runner,
-                                     ui_task_runner) {}
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    std::unique_ptr<DesktopInteractionStrategyFactory>
+        interaction_strategy_factory)
+    : BasicDesktopEnvironmentFactory(std::move(caller_task_runner),
+                                     std::move(ui_task_runner),
+                                     std::move(interaction_strategy_factory)) {}
 
 It2MeDesktopEnvironmentFactory::~It2MeDesktopEnvironmentFactory() = default;
 
-std::unique_ptr<DesktopEnvironment> It2MeDesktopEnvironmentFactory::Create(
+void It2MeDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
     base::WeakPtr<ClientSessionEvents> client_session_events,
-    const DesktopEnvironmentOptions& options) {
+    const DesktopEnvironmentOptions& options,
+    CreateCallback callback) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  return base::WrapUnique(new It2MeDesktopEnvironment(
-      caller_task_runner(), video_capture_task_runner(), input_task_runner(),
-      ui_task_runner(), client_session_control, options));
+  auto create_with_interaction_strategy =
+      [](scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+         scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+         base::WeakPtr<ClientSessionControl> client_session_control,
+         const DesktopEnvironmentOptions& options,
+         std::unique_ptr<DesktopInteractionStrategy> interaction_strategy) {
+        return base::WrapUnique(new It2MeDesktopEnvironment(
+            std::move(caller_task_runner), std::move(ui_task_runner),
+            std::move(interaction_strategy), std::move(client_session_control),
+            options));
+      };
+
+  CreateInteractionStrategy(
+      options, base::BindOnce(create_with_interaction_strategy,
+                              caller_task_runner(), ui_task_runner(),
+                              std::move(client_session_control), options)
+                   .Then(std::move(callback)));
 }
 
 }  // namespace remoting

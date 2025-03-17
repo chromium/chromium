@@ -252,10 +252,6 @@ const FontData* CSSFontSelector::GetFontData(
     return nullptr;
   }
 
-  ReportFontFamilyLookupByGenericFamily(
-      family_name, request_description.GetScript(),
-      request_description.GenericFamily(), settings_family_name);
-
   const SimpleFontData* font_data =
       FontCache::Get().GetFontData(request_description, settings_family_name);
   if (font_data && request_description.HasSizeAdjust()) {
@@ -269,9 +265,6 @@ const FontData* CSSFontSelector::GetFontData(
                                                settings_family_name);
     }
   }
-
-  ReportFontLookupByUniqueOrFamilyName(settings_family_name,
-                                       request_description, font_data);
 
   return font_data;
 }

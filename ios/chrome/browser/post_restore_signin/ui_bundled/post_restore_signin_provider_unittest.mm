@@ -90,8 +90,7 @@ class PostRestoreSignInProviderTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity);
-    auth_service_->SignIn(fake_identity,
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    auth_service_->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
   }
 
  protected:
@@ -117,7 +116,7 @@ TEST_F(PostRestoreSignInProviderTest, standardPromoAlertDefaultAction) {
   SetupMockHandler();
   OCMExpect([mock_handler_ showSignin:[OCMArg any]]);
   [provider_ standardPromoAlertDefaultAction];
-  [mock_handler_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_handler_);
 }
 
 // Test the title text.

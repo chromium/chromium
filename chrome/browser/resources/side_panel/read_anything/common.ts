@@ -70,7 +70,7 @@ export function openMenu(
   });
   target.classList.add(ACTIVE_CSS_CLASS);
 
-  // TODO(b/337058857): We shouldn't need to wrap this twice in
+  // TODO: crbug.com/337058857 - We shouldn't need to wrap this twice in
   // requestAnimationFrame in order to get an accessible label to be read by
   // ChromeVox. We should investigate more in what's going on with
   // cr-action-menu to find a better long-term solution. This is sufficient
@@ -90,4 +90,9 @@ export function openMenu(
               showAtConfig));
     });
   });
+}
+
+// Returns true is the given string can be considered whitespace.
+export function isWhitespace(s: string): boolean {
+  return /\s+/g.test(s);
 }

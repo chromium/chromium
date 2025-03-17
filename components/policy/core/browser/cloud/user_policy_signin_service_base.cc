@@ -111,11 +111,6 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
                                             PolicyFetchReason::kSignin);
 }
 
-void UserPolicySigninServiceBase::OnPolicyFetched(CloudPolicyClient* client) {}
-
-void UserPolicySigninServiceBase::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {}
-
 void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
   if (client->is_registered()) {
     // If the client is already registered, it means this error must have
@@ -153,11 +148,8 @@ void UserPolicySigninServiceBase::PrepareForCloudPolicyManagerShutdown() {
   // Don't run the callbacks to be consistent with
   // `CloudPolicyService::RefreshPolicy()` behavior during shutdown.
   policy_fetch_callbacks_.reset();
-  CloudPolicyManager* manager = policy_manager();
-  if (manager && manager->core()->client())
-    manager->core()->client()->RemoveObserver(this);
-  if (manager && manager->core()->service())
-    manager->core()->service()->RemoveObserver(this);
+  cloud_policy_client_observation_.Reset();
+  cloud_policy_service_observation_.Reset();
   registration_callback_.Cancel();
 }
 
@@ -258,9 +250,9 @@ void UserPolicySigninServiceBase::InitializeCloudPolicyManager(
   DCHECK(manager->core()->service());
 
   // Observe the client to detect errors fetching policy.
-  manager->core()->client()->AddObserver(this);
+  cloud_policy_client_observation_.Observe(manager->core()->client());
   // Observe the service to determine when it's initialized.
-  manager->core()->service()->AddObserver(this);
+  cloud_policy_service_observation_.Observe(manager->core()->service());
 }
 
 void UserPolicySigninServiceBase::ShutdownCloudPolicyManager() {
@@ -429,10 +421,6 @@ void UserPolicySigninServiceBase::UpdateLastPolicyCheckTime() {}
 signin::ConsentLevel
 UserPolicySigninServiceBase::GetConsentLevelForRegistration() {
   return signin::ConsentLevel::kSignin;
-}
-
-std::string_view UserPolicySigninServiceBase::name() const {
-  return "UserPolicySigninServiceBase";
 }
 
 }  // namespace policy

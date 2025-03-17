@@ -28,7 +28,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "crypto/nss_crypto_module_delegate.h"
 #include "crypto/nss_util_internal.h"
 
@@ -36,7 +35,7 @@ namespace crypto {
 
 namespace {
 
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
 base::FilePath GetDefaultConfigDirectory() {
   base::FilePath dir;
   base::PathService::Get(base::DIR_HOME, &dir);
@@ -52,17 +51,17 @@ base::FilePath GetDefaultConfigDirectory() {
   DVLOG(2) << "DefaultConfigDirectory: " << dir.value();
   return dir;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG!(IS_CHROMEOS)
 
-// On non-Chrome OS platforms, return the default config directory. On Chrome
-// OS return a empty path which will result in NSS being initialized without a
+// On non-ChromeOS platforms, return the default config directory. On ChromeOS
+// return a empty path which will result in NSS being initialized without a
 // persistent database.
 base::FilePath GetInitialConfigDirectory() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return base::FilePath();
 #else
   return GetDefaultConfigDirectory();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // This callback for NSS forwards all requests to a caller-specified
@@ -157,9 +156,9 @@ class NSSInitSingleton {
     } else {
       LOG(ERROR) << "Error opening persistent database (" << modspec
                  << "): " << GetNSSErrorMessage();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       DiagnosePublicSlotAndCrash(path);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
 
     return ScopedPK11Slot(db_slot_info);
@@ -218,7 +217,7 @@ class NSSInitSingleton {
       // Use "sql:" which can be shared by multiple processes safely.
       std::string nss_config_dir =
           base::StringPrintf("sql:%s", database_dir.value().c_str());
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
       status = NSS_Init(nss_config_dir.c_str());
 #else
       status = NSS_InitReadWrite(nss_config_dir.c_str());

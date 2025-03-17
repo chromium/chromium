@@ -6,9 +6,10 @@
 
 #include <fcntl.h>
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -106,7 +107,7 @@ bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
   ScopedListPrefUpdate update(pref_service,
                               crostini::prefs::kCrostiniPortForwarding);
   base::Value::List& update_list = update.Get();
-  auto it = base::ranges::find_if(update_list, [&key, this](const auto& dict) {
+  auto it = std::ranges::find_if(update_list, [&key, this](const auto& dict) {
     return MatchPortRuleDict(dict, key);
   });
   if (it == update_list.end()) {
@@ -121,7 +122,7 @@ std::optional<base::Value> CrostiniPortForwarder::ReadPortPreference(
   PrefService* pref_service = profile_->GetPrefs();
   const base::Value::List& all_ports =
       pref_service->GetList(crostini::prefs::kCrostiniPortForwarding);
-  auto it = base::ranges::find_if(all_ports, [&key, this](const auto& dict) {
+  auto it = std::ranges::find_if(all_ports, [&key, this](const auto& dict) {
     return MatchPortRuleDict(dict, key);
   });
   if (it == all_ports.end()) {

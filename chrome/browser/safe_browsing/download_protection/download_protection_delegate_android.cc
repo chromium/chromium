@@ -1,0 +1,177 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.h"
+
+#include <algorithm>
+
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/android/download_protection_metrics_data.h"
+#include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/download_item_utils.h"
+#include "url/url_constants.h"
+
+namespace safe_browsing {
+namespace {
+
+using Outcome = DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome;
+
+// Default URL for download check server.
+const char kDownloadRequestDefaultUrl[] =
+    "https://androidchromeprotect.pa.googleapis.com/v1/download";
+
+// File suffix for APKs.
+const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
+
+GURL ConstructDownloadRequestUrl() {
+  return GURL(kDownloadRequestDefaultUrl);
+}
+
+// Determines whether Android download protection should be active.
+// Also sets the metrics outcome if the result is disabled.
+bool IsAndroidDownloadProtectionEnabledForDownloadProfile(
+    download::DownloadItem* item) {
+  CHECK(item);
+  bool enabled = base::FeatureList::IsEnabled(kMaliciousApkDownloadCheck);
+
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+  enabled = enabled && profile && profile->GetPrefs();
+
+  // Android download protection should only ever be enabled if Safe Browsing is
+  // enabled.
+  enabled = enabled && IsSafeBrowsingEnabled(*profile->GetPrefs());
+
+  if (!enabled) {
+    DownloadProtectionMetricsData::SetOutcome(
+        item, Outcome::kDownloadProtectionDisabled);
+  }
+  return enabled;
+}
+
+Outcome ConvertDownloadCheckResultReason(DownloadCheckResultReason reason) {
+  switch (reason) {
+    case DownloadCheckResultReason::REASON_EMPTY_URL_CHAIN:
+      return Outcome::kEmptyUrlChain;
+    case DownloadCheckResultReason::REASON_INVALID_URL:
+      return Outcome::kInvalidUrl;
+    case DownloadCheckResultReason::REASON_UNSUPPORTED_URL_SCHEME:
+      return Outcome::kUnsupportedUrlScheme;
+    case DownloadCheckResultReason::REASON_REMOTE_FILE:
+      return Outcome::kRemoteFile;
+    case DownloadCheckResultReason::REASON_LOCAL_FILE:
+      return Outcome::kLocalFile;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
+DownloadProtectionDelegateAndroid::DownloadProtectionDelegateAndroid()
+    : download_request_url_(ConstructDownloadRequestUrl()) {}
+
+DownloadProtectionDelegateAndroid::~DownloadProtectionDelegateAndroid() =
+    default;
+
+bool DownloadProtectionDelegateAndroid::ShouldCheckDownloadUrl(
+    download::DownloadItem* item) const {
+  return IsAndroidDownloadProtectionEnabledForDownloadProfile(item);
+}
+
+bool DownloadProtectionDelegateAndroid::ShouldCheckClientDownload(
+    download::DownloadItem* item) const {
+  return IsAndroidDownloadProtectionEnabledForDownloadProfile(item);
+}
+
+bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
+    download::DownloadItem& item,
+    const base::FilePath& target_path) const {
+  // On Android, the target path is likely a content-URI. Therefore, use the
+  // display name instead. This assumes the DownloadItem's display name has
+  // already been populated by InProgressDownloadManager.
+  base::FilePath file_name = item.GetFileNameToReportUser();
+
+  DownloadCheckResultReason reason = REASON_MAX;
+  if (!CheckClientDownloadRequest::IsSupportedDownload(item, file_name,
+                                                       &reason)) {
+    DownloadProtectionMetricsData::SetOutcome(
+        &item, ConvertDownloadCheckResultReason(reason));
+    return false;
+  }
+
+  // For Android download protection, only check APK files (as defined by having
+  // a filename ending in a ".apk" extension).
+  if (!file_name.MatchesExtension(kApkSuffix)) {
+    DownloadProtectionMetricsData::SetOutcome(
+        &item, Outcome::kDownloadNotSupportedType);
+    return false;
+  }
+
+  return true;
+}
+
+const GURL& DownloadProtectionDelegateAndroid::GetDownloadRequestUrl() const {
+  return download_request_url_;
+}
+
+net::NetworkTrafficAnnotationTag DownloadProtectionDelegateAndroid::
+    CompleteClientDownloadRequestTrafficAnnotation(
+        const net::PartialNetworkTrafficAnnotationTag&
+            partial_traffic_annotation) const {
+  // TODO(crbug.com/397407934): Update the `data` and `user_data` fields after
+  // additional Android-specific data is added to ClientDownloadRequest.
+  return net::BranchedCompleteNetworkTrafficAnnotation(
+      "client_download_request_android", "client_download_request_for_platform",
+      partial_traffic_annotation, R"(
+          semantics {
+            description:
+              "Chromium checks whether a given APK download is likely to be "
+              "dangerous by sending this client download request to Google's "
+              "Android Chrome protection server. The server will respond to "
+              "this request by sending back a verdict, indicating if this "
+              "download is safe or the danger type of this download (e.g. "
+              "dangerous content, uncommon content, potentially harmful, etc)."
+            trigger:
+              "This request may be triggered when an eligible download is "
+              "about to complete, for a random sample of eligible downloads "
+              "at a sampling rate between 0% and 100% configured via "
+              "fieldtrial. A download is eligible if the download URL is valid "
+              "and its file extension matches '.apk'."
+            data:
+              "URL of the file to be downloaded, its referrer chain, digest "
+              "and other features extracted from the downloaded file. Refer to "
+              "ClientDownloadRequest message in https://cs.chromium.org/"
+              "chromium/src/components/safe_browsing/csd.proto for all "
+              "submitted features."
+            user_data {
+              type: SENSITIVE_URL
+              type: WEB_CONTENT
+            }
+            last_reviewed: "2025-03-10"
+          })");
+}
+
+float DownloadProtectionDelegateAndroid::GetAllowlistedDownloadSampleRate()
+    const {
+  // TODO(chlily): The allowlist is not implemented yet for Android download
+  // protection.
+  return 0.0;
+}
+
+float DownloadProtectionDelegateAndroid::GetUnsupportedFileSampleRate(
+    const base::FilePath& filename) const {
+  // "Light" pings for a sample of unsupported files is disabled on Android.
+  return 0.0;
+}
+
+}  // namespace safe_browsing

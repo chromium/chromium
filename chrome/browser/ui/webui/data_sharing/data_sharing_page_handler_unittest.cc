@@ -31,7 +31,7 @@ class MockPage : public data_sharing::mojom::Page {
   MOCK_METHOD(void, OnAccessTokenFetched, (const std::string& access_token));
   MOCK_METHOD(void,
               ReadGroups,
-              (const std::vector<std::string>& group_ids,
+              (data_sharing::mojom::ReadGroupsParamsPtr read_groups_params,
                ReadGroupsCallback callback));
   MOCK_METHOD(void,
               DeleteGroup,
@@ -64,7 +64,6 @@ class DataSharingPageHandlerUnitTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
     BrowserWithTestWindowTest::SetUp();

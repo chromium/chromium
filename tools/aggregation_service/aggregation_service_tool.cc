@@ -5,6 +5,7 @@
 #include "tools/aggregation_service/aggregation_service_tool.h"
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -14,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/abseil_string_number_conversions.h"
@@ -211,11 +212,10 @@ bool AggregationServiceTool::WriteReportToFile(const base::Value& contents,
     return false;
   }
 
-  std::string contents_json;
-  JSONStringValueSerializer serializer(&contents_json);
-  CHECK(serializer.Serialize(contents));
+  std::optional<std::string> contents_json = base::WriteJson(contents);
+  CHECK(contents_json);
 
-  return base::WriteFile(filename, contents_json);
+  return base::WriteFile(filename, *contents_json);
 }
 
 }  // namespace aggregation_service

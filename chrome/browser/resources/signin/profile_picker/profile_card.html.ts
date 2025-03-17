@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ProfileCardElement} from './profile_card.js';
+import {isGlicVersion} from './profile_picker_flags.js';
 
 export function getHtml(this: ProfileCardElement) {
   return html`<!--_html_template_start_-->
@@ -37,11 +38,16 @@ export function getHtml(this: ProfileCardElement) {
         @blur="${this.onProfileNameInputBlur_}" pattern="${this.pattern_}"
         auto-validate spellcheck="false"
         @pointerenter="${this.onNameInputPointerEnter_}"
-        @pointerleave="${this.onNameInputPointerLeave_}" required>
+        @pointerleave="${this.onNameInputPointerLeave_}"
+        ?disabled="${
+      isGlicVersion() || this.profileState.hasEnterpriseLabel}" required>
     </cr-input>
-    <div id="hoverUnderline"></div>
+    <div id="hoverUnderline" ?hidden="${
+      isGlicVersion() || this.profileState.hasEnterpriseLabel}"></div>
   </div>
-  <profile-card-menu .profileState="${this.profileState}"></profile-card-menu>
+  <profile-card-menu .profileState="${this.profileState}"
+      ?hidden="${isGlicVersion()}">
+  </profile-card-menu>
 </div>
 <cr-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
     position="bottom" aria-hidden="true">
@@ -49,7 +55,7 @@ export function getHtml(this: ProfileCardElement) {
 </cr-tooltip>
 <cr-tooltip id="tooltip" for="nameInput" manual-mode offset="-10"
     aria-hidden="true">
-  ${this.profileState.localProfileName}
+  ${this.getNameInputTooltipText()}
 </cr-tooltip>
 <!--_html_template_end_-->`;
 }

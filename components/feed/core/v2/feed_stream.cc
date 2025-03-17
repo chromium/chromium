@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
@@ -287,6 +286,7 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
 
 void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   metadata_ = *std::move(result.startup_data.metadata);
+  delegate_->SetFeedLaunchCuiMetadata(metadata_.feed_launch_cui_metadata());
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
     StreamType stream_type =
@@ -447,6 +447,7 @@ const feedstore::Metadata& FeedStream::GetMetadata() const {
 void FeedStream::SetMetadata(feedstore::Metadata metadata) {
   metadata_ = std::move(metadata);
   store_->WriteMetadata(metadata_, base::DoNothing());
+  delegate_->SetFeedLaunchCuiMetadata(metadata_.feed_launch_cui_metadata());
 }
 
 void FeedStream::SetStreamStale(const StreamType& stream_type, bool is_stale) {
@@ -494,14 +495,12 @@ void FeedStream::DestroySurface(SurfaceId surface) {
 }
 
 void FeedStream::CleanupDestroyedSurfaces() {
-  all_surfaces_.erase(base::ranges::remove_if(
-                          all_surfaces_,
-                          [&](const FeedStreamSurface& surface) {
-                            return base::ranges::find(destroyed_surfaces_,
-                                                      surface.GetSurfaceId()) !=
-                                   destroyed_surfaces_.end();
-                          }),
-                      all_surfaces_.end());
+  auto to_remove = std::ranges::remove_if(
+      all_surfaces_, [&](const FeedStreamSurface& surface) {
+        return std::ranges::find(destroyed_surfaces_, surface.GetSurfaceId()) !=
+               destroyed_surfaces_.end();
+      });
+  all_surfaces_.erase(to_remove.begin(), to_remove.end());
   destroyed_surfaces_.clear();
 }
 
@@ -635,7 +634,6 @@ bool FeedStream::IsFeedEnabledByDse() {
 
 bool FeedStream::IsWebFeedEnabled() {
   return feed::IsWebFeedEnabledForLocale(delegate_->GetCountry()) &&
-         !delegate_->IsSupervisedAccount() &&
          !base::FeatureList::IsEnabled(kWebFeedKillSwitch);
 }
 
@@ -1109,9 +1107,6 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
     case StreamKind::kUnknown:
       DLOG(ERROR) << "Unknown stream kind";
       [[fallthrough]];
-    case StreamKind::kSupervisedUser:
-      request_type = NetworkRequestType::kSupervisedFeed;
-      break;
     case StreamKind::kForYou:
       request_type = (load_type != LoadType::kLoadMore)
                          ? NetworkRequestType::kFeedQuery

@@ -482,4 +482,50 @@ TEST_P(DataTransferTest, NodeImageTranslatedOutOfView) {
   }
 }
 
+TEST_P(DataTransferTest, DragImageWithVeryLargeWidthAndHeight) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #drag {
+        width: 30000px;
+        height: 30000px;
+        background: #F00;
+      }
+    </style>
+      <div id="drag" draggable="true"></div>
+  )HTML");
+  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  const auto image = DataTransfer::NodeImage(GetFrame(), drag);
+  const int scale_dimension = 64 * 128;
+  const int drag_width = image->Size().width() > scale_dimension
+                             ? scale_dimension
+                             : image->Size().width();
+  const int drag_height = image->Size().height() > scale_dimension
+                              ? scale_dimension
+                              : image->Size().height();
+  EXPECT_EQ(gfx::Size(drag_width, drag_height), image->Size());
+}
+
+TEST_P(DataTransferTest, DragImageWithVeryLargeWidth) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #drag {
+        width: 50000px;
+        height: 300px;
+        background: #F00;
+      }
+    </style>
+      <div id="drag" draggable="true"></div>
+  )HTML");
+  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  const auto image = DataTransfer::NodeImage(GetFrame(), drag);
+  const int scale_dimension = 64 * 128;
+  const int drag_width = image->Size().width() > scale_dimension
+                             ? scale_dimension
+                             : image->Size().width();
+  const int drag_height = image->Size().height() > scale_dimension
+                              ? scale_dimension
+                              : image->Size().height();
+  EXPECT_EQ(gfx::Size(drag_width, drag_height), image->Size());
+}
+
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include <jni.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "url/android/gurl_android.h"
@@ -25,7 +25,7 @@
 namespace {
 using password_manager::PasswordForm;
 using Store = password_manager::PasswordForm::Store;
-using base::ranges::count_if;
+using std::ranges::count_if;
 
 PasswordForm ConvertJavaObjectToPasswordForm(
     JNIEnv* env,

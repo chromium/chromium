@@ -4,12 +4,12 @@
 
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -118,7 +118,7 @@ class SortedPasskeysView {
     for (size_t i = 0; i < passkeys_.size(); i++) {
       sorted_indexes_.push_back(i);
     }
-    base::ranges::sort(sorted_indexes_, [this](size_t a, size_t b) {
+    std::ranges::sort(sorted_indexes_, [this](size_t a, size_t b) {
       return passkeys_[a].username() < passkeys_[b].username();
     });
   }
@@ -251,10 +251,10 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
 std::vector<CredentialUIEntry> PasswordsGrouper::GetBlockedSites() const {
   std::vector<CredentialUIEntry> results;
   results.reserve(blocked_sites_.size());
-  base::ranges::transform(blocked_sites_, std::back_inserter(results),
-                          [](const auto& key_value) {
-                            return CredentialUIEntry(key_value.second.front());
-                          });
+  std::ranges::transform(blocked_sites_, std::back_inserter(results),
+                         [](const auto& key_value) {
+                           return CredentialUIEntry(key_value.second.front());
+                         });
   // Sort blocked sites.
   std::sort(results.begin(), results.end());
   return results;
@@ -313,8 +313,8 @@ std::optional<PasskeyCredential> PasswordsGrouper::GetPasskeyFor(
   const std::vector<PasskeyCredential>& passkeys =
       map_group_id_to_credentials_[group_id_iterator->second].passkeys;
   const auto passkey_it =
-      base::ranges::find(passkeys, credential.passkey_credential_id,
-                         &PasskeyCredential::credential_id);
+      std::ranges::find(passkeys, credential.passkey_credential_id,
+                        &PasskeyCredential::credential_id);
   if (passkey_it == passkeys.end()) {
     return std::nullopt;
   }

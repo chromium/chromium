@@ -14,9 +14,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "content/public/browser/network_service_instance.h"
@@ -157,10 +160,16 @@ void RecordComponentAvailability(bool available) {
 
 namespace screen_ai {
 
-ScreenAIServiceRouter::ScreenAIServiceRouter() = default;
+ScreenAIServiceRouter::ScreenAIServiceRouter()
+    : screen_ai_service_shutdown_handler_(this) {}
+
 ScreenAIServiceRouter::~ScreenAIServiceRouter() = default;
 
 std::optional<bool> ScreenAIServiceRouter::GetServiceState(Service service) {
+  if (GetAndRecordSuspendedState()) {
+    return false;
+  }
+
   switch (service) {
     case Service::kOCR:
       if (ocr_service_.is_bound()) {
@@ -224,8 +233,6 @@ ScreenAIServiceRouter::GetAllPendingStatusServices() {
 void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
   switch (state) {
     case ScreenAIInstallState::State::kNotDownloaded:
-      ABSL_FALLTHROUGH_INTENDED;
-
     case ScreenAIInstallState::State::kDownloading:
       return;
 
@@ -252,12 +259,63 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
   component_ready_observer_.Reset();
 }
 
+void ScreenAIServiceRouter::ShuttingDownOnIdle() {
+  shutdown_handler_data_.shutdown_message_received = true;
+}
+
+bool ScreenAIServiceRouter::GetAndRecordSuspendedState() {
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.Service.IsSuspended",
+                            shutdown_handler_data_.suspended);
+  return shutdown_handler_data_.suspended;
+}
+
 void ScreenAIServiceRouter::OnScreenAIServiceDisconnected() {
   screen_ai_service_factory_.reset();
   std::set<Service> all_services = GetAllPendingStatusServices();
   for (Service service : all_services) {
     CallPendingStatusRequests(service, false);
   }
+
+  screen_ai_service_shutdown_handler_.reset();
+  if (shutdown_handler_data_.shutdown_message_received) {
+    if (shutdown_handler_data_.crash_count) {
+      base::UmaHistogramCounts100(
+          "Accessibility.ScreenAI.Service.CrashCountBeforeResume",
+          shutdown_handler_data_.crash_count);
+    }
+    shutdown_handler_data_.crash_count = 0;
+    RecordMemoryMetrics(false);
+    return;
+  }
+
+  // Crashed!
+  shutdown_handler_data_.crash_count++;
+  shutdown_handler_data_.suspended = true;
+  base::TimeDelta suspense_time = base::Minutes(
+      shutdown_handler_data_.crash_count * shutdown_handler_data_.crash_count);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ScreenAIServiceRouter::ResetSuspend,
+                     weak_ptr_factory_.GetWeakPtr()),
+      suspense_time);
+  VLOG(0) << "Service suspended due to crash for: " << suspense_time;
+  RecordMemoryMetrics(true);
+}
+
+void ScreenAIServiceRouter::RecordMemoryMetrics(bool crashed) {
+  if (!ocr_initialized_) {
+    return;
+  }
+  std::string prefix = "Accessibility.ScreenAI.Service.MemoryBefore.";
+  prefix += crashed ? "Crash." : "Shutdown.";
+  if (memory_stats_before_launch_.pressure_available) {
+    base::UmaHistogramEnumeration(prefix + "Pressure",
+                                  memory_stats_before_launch_.pressure_level);
+  }
+  base::UmaHistogramCounts100000(prefix + "Total",
+                                 memory_stats_before_launch_.total_memory);
+  base::UmaHistogramCounts100000(prefix + "Available",
+                                 memory_stats_before_launch_.available_memory);
 }
 
 void ScreenAIServiceRouter::CallPendingStatusRequests(Service service,
@@ -309,11 +367,32 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
   // to use this service. However, they can detect it by using an on-disconnect
   // handler.
   if (!state_instance->IsComponentAvailable()) {
-    LOG(ERROR) << "ScreenAI service launch triggered when component is not "
-                  "available.";
+    VLOG(0) << "ScreenAI service launch triggered when component is not "
+               "available.";
     state_instance->DownloadComponent();
     return;
   }
+
+  if (GetAndRecordSuspendedState()) {
+    VLOG(0) << "ScreenAI service triggered while suspended.";
+    return;
+  }
+
+  // Keep memory stats for metrics after shutdown or crash.
+  memory_stats_before_launch_.total_memory =
+      base::SysInfo::AmountOfPhysicalMemoryMB();
+  memory_stats_before_launch_.available_memory = static_cast<int>(
+      base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024));
+
+  const auto* const memory_monitor = base::MemoryPressureMonitor::Get();
+  if (memory_monitor) {
+    memory_stats_before_launch_.pressure_available = true;
+    memory_stats_before_launch_.pressure_level =
+        memory_monitor->GetCurrentPressureLevel();
+  } else {
+    memory_stats_before_launch_.pressure_available = false;
+  }
+  ocr_initialized_ = false;
 
   base::FilePath binary_path = state_instance->get_component_binary_path();
 #if BUILDFLAG(IS_WIN)
@@ -336,6 +415,10 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
           .WithExtraCommandLineSwitches(extra_switches)
 #endif  // BUILDFLAG(IS_WIN)
           .Pass());
+
+  shutdown_handler_data_.shutdown_message_received = false;
+  screen_ai_service_factory_->BindShutdownHandler(
+      screen_ai_service_shutdown_handler_.BindNewPipeAndPassRemote());
 
   screen_ai_service_factory_.set_disconnect_handler(
       base::BindOnce(&ScreenAIServiceRouter::OnScreenAIServiceDisconnected,
@@ -403,6 +486,7 @@ void ScreenAIServiceRouter::InitializeOCR(
       base::BindOnce(&ScreenAIServiceRouter::SetLibraryLoadState,
                      weak_ptr_factory_.GetWeakPtr(), Service::kOCR,
                      request_start_time));
+  ocr_initialized_ = true;
 }
 
 void ScreenAIServiceRouter::InitializeMainContentExtraction(

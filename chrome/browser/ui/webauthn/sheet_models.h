@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/discoverable_credential_metadata.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "device/fido/pin.h"
 
 namespace gfx {
@@ -190,6 +191,19 @@ class AuthenticatorInternalUnrecognizedErrorSheetModel
   void OnAccept() override;
 };
 
+class AuthenticatorChallengeFetchErrorModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorChallengeFetchErrorModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+};
+
 class AuthenticatorBlePowerOnManualSheetModel
     : public AuthenticatorSheetModelBase {
  public:
@@ -252,7 +266,8 @@ class AuthenticatorTouchIdSheetModel : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model);
 
   // Called after the user taps their Touch ID sensor.
-  void OnTouchIDSensorTapped(std::optional<crypto::ScopedLAContext> lacontext);
+  void OnTouchIDSensorTapped(
+      std::optional<webauthn::LocalAuthenticationToken> local_auth_token);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -471,22 +486,6 @@ class AuthenticatorSelectAccountSheetModel
   size_t selected_ = 0;
 };
 
-class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
- public:
-  explicit AuthenticatorQRSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-  ~AuthenticatorQRSheetModel() override;
-
-  // Returns the labels that indicate to the user they can insert and activate
-  // a hardware security key. If empty then a security key cannot be used.
-  std::vector<std::u16string> GetSecurityKeyLabels() const;
-
- private:
-  // AuthenticatorSheetModelBase:
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-};
-
 class AuthenticatorHybridAndSecurityKeySheetModel
     : public AuthenticatorSheetModelBase {
  public:
@@ -645,6 +644,7 @@ class AuthenticatorMultiSourcePickerSheetModel
   std::vector<int> primary_passkey_indices_;
   std::vector<int> secondary_passkey_indices_;
   std::u16string primary_passkeys_label_;
+  bool has_passwords_ = false;
 };
 
 class AuthenticatorPriorityMechanismSheetModel
@@ -866,6 +866,33 @@ class AuthenticatorGPMLockedPinSheetModel : public AuthenticatorSheetModelBase {
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+};
+
+class CombinedSelectorSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  enum class SelectionStatus {
+    kNone,
+    kNotSelected,
+    kSelected,
+  };
+  explicit CombinedSelectorSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+  SelectionStatus GetSelectionStatus(size_t index) const;
+  size_t GetSelectionIndex() const;
+  void SetSelectionIndex(size_t index);
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonVisible() const override;
+  bool IsCancelButtonVisible() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+
+  size_t selection_index_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -93,13 +94,13 @@ class VIEWS_EXPORT EditableCombobox : public View,
 
   void SetModel(std::unique_ptr<ui::ComboboxModel> model);
 
-  const std::u16string& GetText() const;
-  void SetText(const std::u16string& text);
+  std::u16string_view GetText() const;
+  void SetText(std::u16string_view text);
 
   void SetInvalid(bool invalid);
 
-  const std::u16string& GetPlaceholderText() const;
-  void SetPlaceholderText(const std::u16string& text);
+  std::u16string_view GetPlaceholderText() const;
+  void SetPlaceholderText(std::u16string_view text);
 
   const gfx::FontList& GetFontList() const;
 
@@ -152,7 +153,7 @@ class VIEWS_EXPORT EditableCombobox : public View,
   void OnItemSelected(size_t index);
 
   // Notifies listener of new content and updates the menu items to show.
-  void HandleNewContent(const std::u16string& new_content);
+  void HandleNewContent(std::u16string_view new_content);
 
   // Toggles the dropdown menu in response to |event|.
   void ArrowButtonPressed(const ui::Event& event);

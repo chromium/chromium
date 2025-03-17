@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/process/process_metrics.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <sstream>
@@ -25,7 +31,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -38,7 +43,6 @@
 #include "base/types/expected.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -56,8 +60,7 @@
 #include "base/process/port_provider_mac.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||      \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
 #define ENABLE_CPU_TESTS 1
 #else
@@ -459,7 +462,7 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
 
   // output from a system with a large page cache, to catch arithmetic errors
   // that incorrectly assume free + buffers + cached <= total. (Copied from
-  // ash/components/arc/test/data/mem_profile/16G.)
+  // chromeos/ash/experiences/arc/test/data/mem_profile/16G.)
   const char large_cache_input[] =
       "MemTotal:       18025572 kB\n"
       "MemFree:        13150176 kB\n"
@@ -1069,12 +1072,12 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
 
   // Should have at least the test runner thread and the thread spawned above.
   EXPECT_GE(prev_thread_times.size(), 2u);
-  EXPECT_TRUE(ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       prev_thread_times,
       [&thread1](const std::pair<PlatformThreadId, base::TimeDelta>& entry) {
         return entry.first == thread1.GetThreadId();
       }));
-  EXPECT_TRUE(ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       prev_thread_times,
       [](const std::pair<PlatformThreadId, base::TimeDelta>& entry) {
         return entry.first == base::PlatformThread::CurrentId();
@@ -1091,7 +1094,7 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
 
   // The stopped thread may still be reported until the kernel cleans it up.
   EXPECT_GE(prev_thread_times.size(), 1u);
-  EXPECT_TRUE(ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       current_thread_times,
       [](const std::pair<PlatformThreadId, base::TimeDelta>& entry) {
         return entry.first == base::PlatformThread::CurrentId();
@@ -1099,7 +1102,7 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
 
   // Reported times should not decrease.
   for (const auto& entry : current_thread_times) {
-    auto prev_it = ranges::find_if(
+    auto prev_it = std::ranges::find_if(
         prev_thread_times,
         [&entry](
             const std::pair<PlatformThreadId, base::TimeDelta>& prev_entry) {

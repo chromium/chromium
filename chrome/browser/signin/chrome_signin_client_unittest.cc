@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +27,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +35,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class MockChromeSigninClient : public ChromeSigninClient {
  public:
@@ -115,24 +115,8 @@ TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
   PreSignOut(source_metric);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(ChromeSigninClientSignoutTest, MainProfile) {
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-
-  CreateClient(profile.get());
-  EXPECT_FALSE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
-  EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
-}
-#endif
-
 TEST_F(ChromeSigninClientSignoutTest, AllAllowed) {
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_FALSE(profile->IsMainProfile());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(profile->IsChild());
 
   CreateClient(profile.get());
@@ -201,7 +185,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kDeviceLockRemovedOnAutomotive:
     case signin_metrics::ProfileSignout::kRevokeSyncFromSettings:
     case signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut:
-    case signin_metrics::ProfileSignout::kChangeAccountInAccountMenu:
+    case signin_metrics::ProfileSignout::kSignoutForAccountSwitching:
     case signin_metrics::ProfileSignout::kUserClickedSignoutInAccountMenu:
     case signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn:
       return false;
@@ -222,28 +206,6 @@ bool IsAlwaysAllowedSignoutSources(
       return true;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutMainProfile) {
-  signin_metrics::ProfileSignout signout_source = GetParam();
-
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-
-  CreateClient(profile.get());
-  ASSERT_FALSE(
-      client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
-
-  SigninClient::SignoutDecision signout_decision =
-      IsAlwaysAllowedSignoutSources(signout_source)
-          ? SigninClient::SignoutDecision::ALLOW
-          : SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
-  EXPECT_CALL(*client_, SignOutCallback(signout_source, signout_decision))
-      .Times(1);
-  PreSignOut(signout_source);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
   signin_metrics::ProfileSignout signout_source = GetParam();
@@ -355,7 +317,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
     signin_metrics::ProfileSignout::kMovePrimaryAccount,
     signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion,
-    signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
+    signin_metrics::ProfileSignout::kSignoutForAccountSwitching,
     signin_metrics::ProfileSignout::kUserClickedSignoutInAccountMenu,
     signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn,
 };
@@ -390,7 +352,7 @@ struct MetricsAccessPointHistogramNamesParam {
 // Expected values for each access point group.
 const MetricsAccessPointHistogramNamesParam params_per_access_point_group[] = {
     // Expecting 'PreUnoWebSignin'.
-    {.access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+    {.access_point = signin_metrics::AccessPoint::kWebSignin,
      .extensions_signin_histogram_name =
          "Signin.Extensions.OnSignin.PreUnoWebSignin",
      .extensions_sync_histogram_name =
@@ -406,8 +368,7 @@ const MetricsAccessPointHistogramNamesParam params_per_access_point_group[] = {
      .suffix_test_name = "AccessPointGroup_PreUnoWebSignin"},
 
     // Expecting 'UnoSigninBubble'.
-    {.access_point = signin_metrics::AccessPoint::
-         ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+    {.access_point = signin_metrics::AccessPoint::kChromeSigninInterceptBubble,
      .extensions_signin_histogram_name =
          "Signin.Extensions.OnSignin.UnoSigninBubble",
      .extensions_sync_histogram_name =
@@ -423,7 +384,7 @@ const MetricsAccessPointHistogramNamesParam params_per_access_point_group[] = {
      .suffix_test_name = "AccessPointGroup_UnoSigninBubble"},
 
     // Expecting 'ProfileCreation'.
-    {.access_point = signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+    {.access_point = signin_metrics::AccessPoint::kUserManager,
      .extensions_signin_histogram_name =
          "Signin.Extensions.OnSignin.ProfileCreation",
      .extensions_sync_histogram_name =
@@ -439,8 +400,7 @@ const MetricsAccessPointHistogramNamesParam params_per_access_point_group[] = {
      .suffix_test_name = "AccessPointGroup_ProfileCreation"},
 
     // Expecting 'ProfileMenu'.
-    {.access_point =
-         signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+    {.access_point = signin_metrics::AccessPoint::kAvatarBubbleSignIn,
      .extensions_signin_histogram_name =
          "Signin.Extensions.OnSignin.ProfileMenu",
      .extensions_sync_histogram_name = "Signin.Extensions.OnSync.ProfileMenu",
@@ -455,7 +415,7 @@ const MetricsAccessPointHistogramNamesParam params_per_access_point_group[] = {
      .suffix_test_name = "AccessPointGroup_ProfileMenu"},
 
     // Expecting 'Other'.
-    {.access_point = signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+    {.access_point = signin_metrics::AccessPoint::kExtensions,
      .extensions_signin_histogram_name = "Signin.Extensions.OnSignin.Other",
      .extensions_sync_histogram_name = "Signin.Extensions.OnSync.Other",
      .all_bookmarks_signin_histogram_name =
@@ -542,7 +502,7 @@ TEST_P(ChromeSigninClientMetricsTest, ExentsionsAndBookmarkCount) {
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   signin::ConsentLevel consent_level = std::get<0>(GetParam());
@@ -671,7 +631,7 @@ TEST_F(ChromeSigninClientMetricsTest,
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   // State goes from no account to an account with `kSync` set.
@@ -681,7 +641,7 @@ TEST_F(ChromeSigninClientMetricsTest,
       /*current_state=*/
       signin::PrimaryAccountChangeEvent::State(account,
                                                signin::ConsentLevel::kSync),
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN};
+      signin_metrics::AccessPoint::kWebSignin};
   // Both Signin and Sync event are being set.
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
             signin::PrimaryAccountChangeEvent::Type::kSet);
@@ -767,7 +727,7 @@ TEST_F(ChromeSigninClientMetricsTest,
   signin::PrimaryAccountChangeEvent event_details{
       /*previous_state=*/signin::PrimaryAccountChangeEvent::State(),
       /*current_state=*/signin::PrimaryAccountChangeEvent::State(),
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN};
+      signin_metrics::AccessPoint::kWebSignin};
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
             signin::PrimaryAccountChangeEvent::Type::kNone);
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSync),
@@ -796,7 +756,7 @@ TEST_F(ChromeSigninClientMetricsTest,
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   // Simulating revoking Signin consent.
@@ -837,7 +797,7 @@ TEST_F(ChromeSigninClientMetricsTest,
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   // Simulating signing in update.
@@ -846,7 +806,7 @@ TEST_F(ChromeSigninClientMetricsTest,
       /*current_state=*/
       signin::PrimaryAccountChangeEvent::State(account,
                                                signin::ConsentLevel::kSignin),
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN};
+      signin_metrics::AccessPoint::kWebSignin};
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
             signin::PrimaryAccountChangeEvent::Type::kSet);
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSync),
@@ -864,4 +824,4 @@ TEST_F(ChromeSigninClientMetricsTest,
               testing::ContainerEq(expected_counts));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)

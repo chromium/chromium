@@ -296,6 +296,7 @@ void PingManager::ReportSafeBrowsingHit(
   if (!hit_report->post_data.empty()) {
     resource_request->method = "POST";
   }
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(report_url);
 
   auto report_ptr = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
@@ -463,6 +464,7 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
   resource_request->url = report_url;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->method = "POST";
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(report_url);
 
   if (!access_token.empty()) {
     LogAuthenticatedCookieResets(

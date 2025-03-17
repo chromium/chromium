@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -256,13 +252,12 @@ static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
                                             unsigned length,
                                             char* dst) {
   for (unsigned i = 0; i < length; ++i) {
-    UChar c = src[i];
+    UChar c = UNSAFE_TODO(src[i]);
     if (c == 0 || c >= 0x7F) {  // illegal character
       return false;
     }
-    dst[i] = ToASCIILower(c);
+    UNSAFE_TODO(dst[i]) = ToASCIILower(c);
   }
-  dst[length] = '\0';
   return true;
 }
 
@@ -285,15 +280,14 @@ static inline bool QuasiLowercaseIntoBuffer(const LChar* src,
   unsigned i;
   for (i = 0; i < (length & ~3); i += 4) {
     uint32_t x;
-    memcpy(&x, src + i, sizeof(x));
+    UNSAFE_TODO(memcpy(&x, src + i, sizeof(x)));
     x |= (x & 0x40404040) >> 1;
-    memcpy(dst + i, &x, sizeof(x));
+    UNSAFE_TODO(memcpy(dst + i, &x, sizeof(x)));
   }
   for (; i < length; ++i) {
-    LChar c = src[i];
-    dst[i] = c | ((c & 0x40) >> 1);
+    LChar c = UNSAFE_TODO(src[i]);
+    UNSAFE_TODO(dst[i]) = c | ((c & 0x40) >> 1);
   }
-  dst[length] = '\0';
   return true;
 }
 
@@ -333,14 +327,15 @@ static CSSPropertyID UnresolvedCSSPropertyID(
   if (length == 0) {
     return CSSPropertyID::kInvalid;
   }
-  if (length >= 3 && property_name[0] == '-' && property_name[1] == '-') {
+  if (length >= 3 && property_name[0] == '-' &&
+      UNSAFE_TODO(property_name[1]) == '-') {
     return CSSPropertyID::kVariable;
   }
   if (length > kMaxCSSPropertyNameLength) {
     return CSSPropertyID::kInvalid;
   }
 
-  char buffer[kMaxCSSPropertyNameLength + 1];  // 1 for null character
+  char buffer[kMaxCSSPropertyNameLength];
   if (!QuasiLowercaseIntoBuffer(property_name, length, buffer)) {
     return CSSPropertyID::kInvalid;
   }
@@ -350,7 +345,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    buffer[i] = ToASCIILower(property_name[i]);
+    UNSAFE_TODO(buffer[i] = ToASCIILower(property_name[i]));
   }
   DCHECK_EQ(hash_table_entry, FindProperty(buffer, length));
 #endif
@@ -358,17 +353,20 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     return CSSPropertyID::kInvalid;
   }
 
-  CSSPropertyID property_id = static_cast<CSSPropertyID>(hash_table_entry->id);
-  if (kKnownExposedProperties.Has(property_id)) {
+  int id_and_exposed_bit = hash_table_entry->id_and_exposed_bit;
+  if (id_and_exposed_bit & kNotKnownExposedPropertyBit) {
+    // The property is behind a runtime flag, so we need to go ahead
+    // and actually do the resolution to see if that flag is on or not.
+    // This should happen only occasionally.
+    CSSPropertyID property_id = static_cast<CSSPropertyID>(
+        id_and_exposed_bit & ~kNotKnownExposedPropertyBit);
+    return ExposedProperty(property_id, execution_context, mode);
+  } else {
+    CSSPropertyID property_id = static_cast<CSSPropertyID>(id_and_exposed_bit);
     DCHECK_EQ(property_id,
               ExposedProperty(property_id, execution_context, mode));
     return property_id;
   }
-
-  // The property is behind a runtime flag, so we need to go ahead
-  // and actually do the resolution to see if that flag is on or not.
-  // This should happen only occasionally.
-  return ExposedProperty(property_id, execution_context, mode);
 }
 
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
@@ -383,7 +381,7 @@ CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
 template <typename CharacterType>
 static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
                                     unsigned length) {
-  char buffer[kMaxCSSValueKeywordLength + 1];  // 1 for null character
+  char buffer[kMaxCSSValueKeywordLength];
   if (!QuasiLowercaseIntoBuffer(value_keyword, length, buffer)) {
     return CSSValueID::kInvalid;
   }
@@ -392,7 +390,7 @@ static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    buffer[i] = ToASCIILower(value_keyword[i]);
+    UNSAFE_TODO(buffer[i] = ToASCIILower(value_keyword[i]));
   }
   DCHECK_EQ(hash_table_entry, FindValue(buffer, length));
 #endif

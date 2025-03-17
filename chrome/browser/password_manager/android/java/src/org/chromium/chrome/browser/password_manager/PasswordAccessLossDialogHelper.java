@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
+
 import android.content.Context;
 
 import androidx.fragment.app.FragmentActivity;
@@ -18,6 +21,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -91,7 +95,14 @@ public class PasswordAccessLossDialogHelper {
             Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
         assert activity != null : "Context is expected to be a fragment activity";
-
+        if (ChromeFeatureList.isEnabled(LOGIN_DB_DEPRECATION_ANDROID)) {
+            PasswordCsvDownloadFlowControllerFactory.getOrCreateController()
+                    .showDialogAndStartFlow(
+                            activity,
+                            profile,
+                            PasswordManagerUtilBridge.isGooglePlayServicesUpdatable());
+            return;
+        }
         new PasswordAccessLossExportFlowCoordinator(activity, profile, modalDialogManagerSupplier)
                 .startExportFlow();
     }
@@ -104,13 +115,15 @@ public class PasswordAccessLossDialogHelper {
      */
     public static @PasswordAccessLossWarningType int getAccessLossWarningType(
             PrefService prefService) {
-        // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
-        // PasswordManagerHelperTest in all tests before launch.
+        // TODO(crbug.com/323149739): Enable the access loss warning feature flag in
+        //  SafetyCheckMediatorTest and PasswordManagerHelperTest in all tests before launch.
         if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList
-                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+                        UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+                || ChromeFeatureList.isEnabled(LOGIN_DB_DEPRECATION_ANDROID)) {
+            // If the login db deprecation has started, the warning is no longer relevant.
             return PasswordAccessLossWarningType.NONE;
         }
+
         return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
     }
 }

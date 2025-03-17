@@ -7,9 +7,11 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace autofill {
 class AddressBubbleBaseView : public AutofillLocationBarBubble {
+  METADATA_HEADER(AddressBubbleBaseView, AutofillLocationBarBubble)
   using AutofillLocationBarBubble::AutofillLocationBarBubble;
 
   // TODO(crbug.com/325440757): Add common for Save/UpdateAddressProfileView

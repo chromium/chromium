@@ -23,8 +23,7 @@ public final class IncognitoCustomTabColorProvider implements ColorProvider {
         mToolbarColor =
                 mBottomBarColor =
                         mNavigationBarColor =
-                                ChromeColors.getDefaultThemeColor(
-                                        context, /* forceDarkBgColor= */ true);
+                                ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ true);
     }
 
     @Override

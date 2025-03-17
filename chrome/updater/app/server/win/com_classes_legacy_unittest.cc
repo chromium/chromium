@@ -114,8 +114,8 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
-            EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
-            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
+            EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
+            EXPECT_EQ(command_id, base::WideToUTF8(kCmdId1));
             EXPECT_EQ(error_params.error_code, 7);
             EXPECT_EQ(error_params.extra_code1, 0);
           }),
@@ -159,8 +159,8 @@ TEST_F(LegacyAppCommandWebImplTest, ExecuteParameterizedCommand) {
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
-            EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
-            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
+            EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
+            EXPECT_EQ(command_id, base::WideToUTF8(kCmdId1));
             EXPECT_EQ(error_params.error_code, 5420);
             EXPECT_EQ(error_params.extra_code1, 0);
           }),
@@ -195,8 +195,8 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
-            EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
-            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
+            EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
+            EXPECT_EQ(command_id, base::WideToUTF8(kCmdId1));
             EXPECT_EQ(error_params.error_code,
                       HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
             EXPECT_EQ(error_params.extra_code1, kErrorAppCommandLaunchFailed);
@@ -241,8 +241,8 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
-            EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
-            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
+            EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
+            EXPECT_EQ(command_id, base::WideToUTF8(kCmdId1));
             EXPECT_EQ(error_params.error_code, 999);
             EXPECT_EQ(error_params.extra_code1, 0);
           }),

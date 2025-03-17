@@ -305,11 +305,11 @@ DialogModelTextfield::DialogModelTextfield(
 DialogModelTextfield::~DialogModelTextfield() = default;
 
 void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelFieldHost>,
-                                         std::u16string text) {
+                                         std::u16string_view text) {
   if (text == text_) {
     return;
   }
-  text_ = std::move(text);
+  text_ = std::u16string(text);
   NotifyOnFieldChanged();
 }
 
@@ -332,11 +332,11 @@ void DialogModelPasswordField::Invalidate() {
 
 void DialogModelPasswordField::OnTextChanged(
     base::PassKey<DialogModelFieldHost>,
-    std::u16string text) {
+    std::u16string_view text) {
   if (text == text_) {
     return;
   }
-  text_ = std::move(text);
+  text_ = std::u16string(text);
   NotifyOnFieldChanged();
 }
 
@@ -390,7 +390,7 @@ base::CallbackListSubscription DialogModelSection::AddOnFieldChangedCallback(
 DialogModelField* DialogModelSection::GetFieldByUniqueId(ElementIdentifier id) {
   // Assert that there are not duplicate fields corresponding to `id`. There
   // could be no matches in `fields_` if `id` corresponds to a button.
-  CHECK_EQ(static_cast<int>(base::ranges::count_if(
+  CHECK_EQ(static_cast<int>(std::ranges::count_if(
                fields_,
                [id](auto& field) {
                  // TODO(pbos): This does not

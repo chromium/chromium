@@ -4,6 +4,8 @@
 
 #include "media/cast/common/openscreen_conversion_helpers.h"
 
+#include <iterator>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_codecs.h"
@@ -12,6 +14,13 @@
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace media::cast {
+
+namespace {
+
+using media::mojom::RemotingSinkAudioCapability;
+using media::mojom::RemotingSinkVideoCapability;
+
+}  // namespace
 
 openscreen::Clock::time_point ToOpenscreenTimePoint(
     std::optional<base::TimeTicks> ticks) {
@@ -211,6 +220,61 @@ openscreen::cast::VideoCaptureConfig ToOpenscreenVideoConfig(
       .target_playout_delay =
           std::chrono::milliseconds(config.max_playout_delay.InMilliseconds()),
       .codec_parameter = std::string()};
+}
+
+RemotingSinkAudioCapability ToRemotingAudioCapability(
+    openscreen::cast::AudioCapability capability) {
+  switch (capability) {
+    case openscreen::cast::AudioCapability::kBaselineSet:
+      return RemotingSinkAudioCapability::CODEC_BASELINE_SET;
+
+    case openscreen::cast::AudioCapability::kAac:
+      return RemotingSinkAudioCapability::CODEC_AAC;
+
+    case openscreen::cast::AudioCapability::kOpus:
+      return RemotingSinkAudioCapability::CODEC_OPUS;
+  }
+}
+
+RemotingSinkVideoCapability ToRemotingVideoCapability(
+    openscreen::cast::VideoCapability capability) {
+  switch (capability) {
+    case openscreen::cast::VideoCapability::kSupports4k:
+      return RemotingSinkVideoCapability::SUPPORT_4K;
+
+    case openscreen::cast::VideoCapability::kH264:
+      return RemotingSinkVideoCapability::CODEC_H264;
+
+    case openscreen::cast::VideoCapability::kVp8:
+      return RemotingSinkVideoCapability::CODEC_VP8;
+
+    case openscreen::cast::VideoCapability::kVp9:
+      return RemotingSinkVideoCapability::CODEC_VP9;
+
+    case openscreen::cast::VideoCapability::kHevc:
+      return RemotingSinkVideoCapability::CODEC_HEVC;
+
+    case openscreen::cast::VideoCapability::kAv1:
+      return RemotingSinkVideoCapability::CODEC_AV1;
+  }
+}
+
+// Convert the sink capabilities to media::mojom::RemotingSinkMetadata.
+media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
+    const openscreen::cast::RemotingCapabilities& capabilities,
+    std::string_view friendly_name) {
+  media::mojom::RemotingSinkMetadata sink_metadata;
+  sink_metadata.friendly_name = friendly_name;
+
+  std::transform(capabilities.audio.begin(), capabilities.audio.end(),
+                 std::back_insert_iterator(sink_metadata.audio_capabilities),
+                 ToRemotingAudioCapability);
+
+  std::transform(capabilities.video.begin(), capabilities.video.end(),
+                 std::back_insert_iterator(sink_metadata.video_capabilities),
+                 ToRemotingVideoCapability);
+
+  return sink_metadata;
 }
 
 }  // namespace media::cast

@@ -4,9 +4,10 @@
 
 #include "components/sync/test/nigori_test_utils.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -245,7 +246,7 @@ std::unique_ptr<Cryptographer> InitCustomPassphraseCryptographerFromNigori(
   EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
 
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
-  base::ranges::for_each(
+  std::ranges::for_each(
       decrypted_keys.key(),
       [&key_bag](sync_pb::NigoriKey key) { key_bag.AddKeyFromProto(key); });
 

@@ -73,11 +73,6 @@ using ConstReverseIterator = typename std::reverse_iterator<ConstIterator<A>>;
 template <typename A>
 using MoveIterator = typename std::move_iterator<Iterator<A>>;
 
-template <typename Iterator>
-using IsAtLeastForwardIterator = std::is_convertible<
-    typename std::iterator_traits<Iterator>::iterator_category,
-    std::forward_iterator_tag>;
-
 template <typename A>
 using IsMoveAssignOk = std::is_move_assignable<ValueType<A>>;
 template <typename A>
@@ -234,7 +229,7 @@ class AllocationTransaction {
     return result.data;
   }
 
-  ABSL_MUST_USE_RESULT Allocation<A> Release() && {
+  [[nodiscard]] Allocation<A> Release() && {
     Allocation<A> result = {GetData(), GetCapacity()};
     Reset();
     return result;

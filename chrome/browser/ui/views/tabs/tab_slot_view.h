@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_VIEW_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,7 +35,6 @@ class TabSlotView : public views::View {
 
   // Used to set the tab group that this view belongs to.
   virtual void SetGroup(std::optional<tab_groups::TabGroupId> group);
-  virtual void OnGroupChanged() {}
 
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
@@ -49,6 +50,9 @@ class TabSlotView : public views::View {
   void set_animating(bool animating) { animating_ = animating; }
   bool animating() const { return animating_; }
 
+  void set_split(bool split) { split_ = split; }
+  bool split() const { return split_; }
+
   // views::View:
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
@@ -63,6 +67,9 @@ class TabSlotView : public views::View {
 
   // True if the tab's bounds are being animated by the tabstrip.
   bool animating_ = false;
+
+  // True if the tab is part of a split.
+  bool split_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_VIEW_H_

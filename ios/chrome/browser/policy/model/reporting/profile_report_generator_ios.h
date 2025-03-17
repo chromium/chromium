@@ -22,7 +22,6 @@ namespace policy {
 class CloudPolicyManager;
 }
 
-
 namespace enterprise_reporting {
 
 /**
@@ -45,6 +44,10 @@ class ProfileReportGeneratorIOS : public ProfileReportGenerator::Delegate {
   void GetExtensionInfo(
       enterprise_management::ChromeUserProfileInfo* report) override;
   void GetExtensionRequest(
+      enterprise_management::ChromeUserProfileInfo* report) override;
+  void GetProfileId(
+      enterprise_management::ChromeUserProfileInfo* report) override;
+  void GetProfileName(
       enterprise_management::ChromeUserProfileInfo* report) override;
   std::unique_ptr<policy::PolicyConversionsClient> MakePolicyConversionsClient(
       bool is_machine_scope) override;

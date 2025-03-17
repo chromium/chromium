@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Utility class for fetching favicons in bulk. */
+@NullMarked
 class BulkFaviconUtil {
 
     private static final class FaviconFetchRequest {
@@ -49,9 +52,9 @@ class BulkFaviconUtil {
         }
     }
 
-    private FaviconHelper mFaviconHelper;
-    private FaviconHelper.DefaultFaviconHelper mDefaultFaviconHelper;
-    private RoundedIconGenerator mRoundedIconGenerator;
+    private @Nullable FaviconHelper mFaviconHelper;
+    private FaviconHelper.@Nullable DefaultFaviconHelper mDefaultFaviconHelper;
+    private @Nullable RoundedIconGenerator mRoundedIconGenerator;
 
     BulkFaviconUtil() {}
 

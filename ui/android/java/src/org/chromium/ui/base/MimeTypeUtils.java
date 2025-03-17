@@ -4,6 +4,7 @@
 package org.chromium.ui.base;
 
 import android.Manifest;
+import android.content.ClipDescription;
 import android.os.Build;
 import android.webkit.MimeTypeMap;
 
@@ -28,6 +29,9 @@ public class MimeTypeUtils {
 
     /** The MIME type for a tab object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
+
+    /** The MIME type for a tab group object dragged from Chrome. */
+    public static final String CHROME_MIMETYPE_TAB_GROUP = "chrome/tab-group";
 
     /** The MIME type for pdf. */
     public static final String PDF_MIME_TYPE = "application/pdf";
@@ -98,6 +102,12 @@ public class MimeTypeUtils {
             default:
                 return null;
         }
+    }
+
+    public static boolean clipDescriptionHasBrowserContent(ClipDescription clipDescription) {
+        if (clipDescription == null) return false;
+        return clipDescription.hasMimeType(CHROME_MIMETYPE_TAB)
+                || clipDescription.hasMimeType(CHROME_MIMETYPE_TAB_GROUP);
     }
 
     static boolean useExternalStoragePermission() {

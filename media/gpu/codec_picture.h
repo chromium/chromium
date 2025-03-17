@@ -25,8 +25,9 @@ namespace media {
 class MEDIA_GPU_EXPORT CodecPicture
     : public base::RefCountedThreadSafe<CodecPicture> {
  public:
-  CodecPicture();
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
+  CodecPicture();
   CodecPicture(const CodecPicture&) = delete;
   CodecPicture& operator=(const CodecPicture&) = delete;
 

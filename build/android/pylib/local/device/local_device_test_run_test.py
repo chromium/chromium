@@ -6,7 +6,13 @@
 # pylint: disable=protected-access
 
 
+import os
 import unittest
+
+import sys
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 from pylib.base import base_test_result
 from pylib.local.device import local_device_test_run
@@ -32,6 +38,29 @@ class TestLocalDeviceNonStringTestRun(
 
   def _GetUniqueTestName(self, test):
     return test['name']
+
+
+class TestLocalDeviceRetryTestRun(local_device_test_run.LocalDeviceTestRun):
+
+  # pylint: disable=abstract-method
+
+  def __init__(self, tests=None):
+    mock_env = mock.MagicMock()
+    mock_prop_current_try = mock.PropertyMock(side_effect=[0, 0, 1, 1, 2, 2, 3])
+    type(mock_env).current_try = mock_prop_current_try
+    mock_prop_max_tries = mock.PropertyMock(return_value=3)
+    type(mock_env).max_tries = mock_prop_max_tries
+    super().__init__(mock_env, mock.MagicMock())
+    self._tests = tests or []
+
+  def _GetTests(self):
+    return self._tests
+
+  def _GetTestsToRetry(self, tests, try_results):
+    return [test for test in self._tests if test.endswith('fail')]
+
+  def _ShouldShardTestsForDevices(self):
+    pass
 
 
 class LocalDeviceTestRunTest(unittest.TestCase):
@@ -142,6 +171,37 @@ class LocalDeviceTestRunTest(unittest.TestCase):
     self.assertEqual(1, len(tests_to_retry))
     self.assertIsInstance(tests_to_retry[0], dict)
     self.assertEqual(tests[1], tests_to_retry[0])
+
+  def testDeviceRecovery_highFailedTests(self):
+    total_count = 10
+    failed_count = (total_count * local_device_test_run.FAILED_TEST_PCT_MAX //
+                    100) + 1
+    tests = ['TestCase.Test%d_fail' % i for i in range(1, failed_count + 1)]
+    tests += [
+        'TestCase.Test%d_pass' % i
+        for i in range(failed_count + 1, total_count + 1)
+    ]
+
+    test_run = TestLocalDeviceRetryTestRun(tests=tests)
+    with mock.patch.object(test_run, '_RecoverDevices') as mock_recover:
+      test_run.RunTests(results=[])
+      self.assertEqual(mock_recover.call_count, 2)
+
+  def testDeviceRecovery_lowFailedTests(self):
+    total_count = 10
+    failed_count = (total_count * local_device_test_run.FAILED_TEST_PCT_MAX //
+                    100)
+    tests = ['TestCase.Test%d_fail' % i for i in range(1, failed_count + 1)]
+    tests += [
+        'TestCase.Test%d_pass' % i
+        for i in range(failed_count + 1, total_count + 1)
+    ]
+
+    test_run = TestLocalDeviceRetryTestRun(tests=tests)
+    with mock.patch.object(test_run, '_RecoverDevices') as mock_recover:
+      test_run.RunTests(results=[])
+      # Only called once for the last attempt.
+      self.assertEqual(mock_recover.call_count, 1)
 
 
 if __name__ == '__main__':

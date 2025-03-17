@@ -4,6 +4,7 @@
 
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "base/types/expected_macros.h"
@@ -370,14 +370,16 @@ void CastMessageHandler::OnMessage(const CastSocket& socket,
                   << message.namespace_();
     }
   } else {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnAppMessage(socket.id(), message);
+    }
   }
 }
 
 void CastMessageHandler::OnReadyStateChanged(const CastSocket& socket) {
-  if (socket.ready_state() == ReadyState::CLOSED)
+  if (socket.ready_state() == ReadyState::CLOSED) {
     pending_requests_.erase(socket.id());
+  }
 }
 
 void CastMessageHandler::HandleCastInternalMessage(
@@ -405,11 +407,12 @@ void CastMessageHandler::HandleCastInternalMessage(
   std::optional<int> request_id = GetRequestIdFromResponse(*payload);
   if (request_id) {
     auto requests_it = pending_requests_.find(channel_id);
-    if (requests_it != pending_requests_.end())
+    if (requests_it != pending_requests_.end()) {
       // You might think this method should return in this case, but there is at
       // least one message type (RECEIVER_STATUS), that has a request ID but
       // also needs to be handled by the registered observers.
       requests_it->second->HandlePendingRequest(*request_id, *payload);
+    }
   }
 
   CastMessageType type = ParseMessageTypeFromPayload(*payload);
@@ -427,8 +430,9 @@ void CastMessageHandler::HandleCastInternalMessage(
 
   InternalMessage internal_message(type, source_id, destination_id, namespace_,
                                    std::move(*payload));
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnInternalMessage(channel_id, internal_message);
+  }
 }
 
 void CastMessageHandler::SendCastMessageToSocket(CastSocket* socket,
@@ -455,8 +459,9 @@ void CastMessageHandler::DoEnsureConnection(
   VirtualConnection connection(socket->id(), source_id, destination_id);
 
   // If there is already a connection, there is nothing to do.
-  if (virtual_connections_.find(connection) != virtual_connections_.end())
+  if (virtual_connections_.find(connection) != virtual_connections_.end()) {
     return;
+  }
 
   VLOG(1) << "Creating VC for channel: " << connection.channel_id
           << ", source: " << connection.source_id
@@ -493,11 +498,13 @@ CastMessageHandler::PendingRequests::~PendingRequests() {
         .Run(std::move(response), nullptr);
   }
 
-  if (pending_stop_session_request_)
+  if (pending_stop_session_request_) {
     std::move(pending_stop_session_request_->callback).Run(Result::kFailed);
+  }
 
-  for (auto& request : pending_volume_requests_by_id_)
+  for (auto& request : pending_volume_requests_by_id_) {
     std::move(request.second->callback).Run(Result::kFailed);
+  }
 }
 
 bool CastMessageHandler::PendingRequests::AddAppAvailabilityRequest(
@@ -569,8 +576,8 @@ void CastMessageHandler::PendingRequests::HandlePendingRequest(
     const base::Value::Dict& response) {
   // Look up an app availability request by its |request_id|.
   auto app_availability_it =
-      base::ranges::find(pending_app_availability_requests_, request_id,
-                         &GetAppAvailabilityRequest::request_id);
+      std::ranges::find(pending_app_availability_requests_, request_id,
+                        &GetAppAvailabilityRequest::request_id);
   // If we found a request, process and remove all requests with the same
   // |app_id|, which will of course include the one we just found.
   if (app_availability_it != pending_app_availability_requests_.end()) {
@@ -624,8 +631,8 @@ void CastMessageHandler::PendingRequests::AppAvailabilityTimedOut(
     int request_id) {
   DVLOG(1) << __func__ << ", request_id: " << request_id;
 
-  auto it = base::ranges::find(pending_app_availability_requests_, request_id,
-                               &GetAppAvailabilityRequest::request_id);
+  auto it = std::ranges::find(pending_app_availability_requests_, request_id,
+                              &GetAppAvailabilityRequest::request_id);
 
   CHECK(it != pending_app_availability_requests_.end());
   std::move((*it)->callback)

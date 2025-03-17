@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/video_capture_device_descriptor.h"
+
+#include <array>
 
 #include "base/strings/string_util.h"
 
@@ -64,7 +61,8 @@ VideoCaptureDeviceDescriptor::VideoCaptureDeviceDescriptor(
 
 bool VideoCaptureDeviceDescriptor::operator<(
     const VideoCaptureDeviceDescriptor& other) const {
-  static constexpr int kFacingMapping[NUM_MEDIA_VIDEO_FACING_MODES] = {0, 2, 1};
+  constexpr static std::array<int, NUM_MEDIA_VIDEO_FACING_MODES>
+      kFacingMapping = {0, 2, 1};
   static_assert(kFacingMapping[MEDIA_VIDEO_FACING_NONE] == 0,
                 "FACING_NONE has a wrong value");
   static_assert(kFacingMapping[MEDIA_VIDEO_FACING_ENVIRONMENT] == 1,

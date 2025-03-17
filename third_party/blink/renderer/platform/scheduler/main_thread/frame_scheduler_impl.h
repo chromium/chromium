@@ -80,9 +80,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameSchedulerImpl& operator=(const FrameSchedulerImpl&) = delete;
   ~FrameSchedulerImpl() override;
 
-  // FrameOrWorkerScheduler implementation:
-  void SetPreemptedForCooperativeScheduling(Preempted) override;
-
   // FrameScheduler implementation:
   void SetFrameVisible(bool frame_visible) override;
   bool IsFrameVisible() const override;
@@ -127,6 +124,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override;
   void OnMainFrameInteractive() override;
   void OnDispatchLoadEvent() override;
+  void OnDidInstallNewDocument() override;
   base::TimeDelta UnreportedTaskTime() const override;
 
   bool IsWaitingForContentfulPaint() const;
@@ -372,8 +370,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   StateTracer<TracingCategory::kInfo> url_tracer_;
   TraceableState<ThrottlingType, TracingCategory::kInfo> throttling_type_;
   Vector<MainThreadTaskQueue::ThrottleHandle> throttled_task_queue_handles_;
-  TraceableState<bool, TracingCategory::kInfo>
-      preempted_for_cooperative_scheduling_;
   // TODO(https://crbug.com/827113): Trace the count of opt-outs.
   int aggressive_throttling_opt_out_count_;
   TraceableState<bool, TracingCategory::kInfo>

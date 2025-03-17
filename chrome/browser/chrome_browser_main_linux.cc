@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -34,15 +33,11 @@
 #include "components/metrics/call_stacks/stack_sampling_recorder.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
-#endif
-
 #if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -65,8 +60,8 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
         base::MakeRefCounted<metrics::StackSamplingRecorder>();
     stack_sampling_recorder_->Start();
   }
-  // Don't initialize DBus here. Ash and Lacros Bluetooth DBusManager
-  // initialization depend on FeatureList, and is done elsewhere.
+  // Don't initialize DBus here. Bluetooth DBusManager initialization depends on
+  // FeatureList, and is done elsewhere.
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -104,7 +99,7 @@ void ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() {
 #endif
 
 void ChromeBrowserMainPartsLinux::PreProfileInit() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Needs to be called after we have chrome::DIR_USER_DATA and
   // g_browser_process.  This happens in PreCreateThreads.
   // base::GetLinuxDistro() will initialize its value if needed.

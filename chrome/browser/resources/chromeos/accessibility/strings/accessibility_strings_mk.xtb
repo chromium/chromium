@@ -462,7 +462,7 @@
 <translation id="3821689185319271077">Нема сидро за покажувач</translation>
 <translation id="3840823741487267909">Кратенка</translation>
 <translation id="385383972552776628">Се отвора страница со опции</translation>
-<translation id="3856075812838139784">Само за читање</translation>
+<translation id="3856075812838139784">Само за преглед</translation>
 <translation id="3857141338659865495">Среднотиркизна</translation>
 <translation id="3870295413168340326">Нема претходен наслов на ниво 3</translation>
 <translation id="3887399638190992181">Основни копчиња</translation>
@@ -1116,6 +1116,7 @@
 <translation id="8316881042119029234">Боја на стара чипка</translation>
 <translation id="8326783648485765113">Зелена како трева</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{тараба}one{# знак тараба}other{# знаци тараба}}</translation>
+<translation id="8351821207686449674">Вклучување/Исклучување титлови</translation>
 <translation id="8378855320830505539">Регион</translation>
 <translation id="8382679411218029383">Линеарно автоматско комплетирање и набројување</translation>
 <translation id="8394908167088220973">Пушти/Паузирај медиум</translation>

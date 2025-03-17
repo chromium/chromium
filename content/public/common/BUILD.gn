@@ -12,6 +12,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
+import("//ui/webui/webui_features.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -19,7 +20,10 @@ if (is_android) {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_SCREEN_CAPTURE=$enable_screen_capture" ]
+  flags = [
+    "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
+    "LOAD_WEBUI_FROM_DISK=$load_webui_from_disk",
+  ]
 }
 
 # See //content/BUILD.gn for how this works. Note that targets in `//content`
@@ -88,6 +92,7 @@ source_set("static_switches") {
   ]
 
   public_configs = [ ":static_switches_defines" ]
+  public_deps = [ ":buildflags" ]
 
   # Deps required by the above headers.
   deps = [
@@ -112,6 +117,8 @@ source_set("switches") {
     "//media:media_buildflags",
     "//tools/v8_context_snapshot:buildflags",
   ]
+
+  public_deps = [ ":buildflags" ]
 
   configs += [ "//content:content_implementation" ]
 
@@ -157,6 +164,7 @@ source_set("common_sources") {
 
   sources = [
     "bindings_policy.h",
+    "btm_utils.h",
     "cdm_info.cc",
     "cdm_info.h",
     "color_parser.h",
@@ -175,7 +183,6 @@ source_set("common_sources") {
     "content_paths.h",
     "content_switch_dependent_feature_overrides.cc",
     "content_switch_dependent_feature_overrides.h",
-    "dips_utils.h",
     "drop_data.cc",
     "drop_data.h",
     "isolated_world_ids.h",
@@ -210,7 +217,6 @@ source_set("common_sources") {
     "url_constants.h",
     "url_utils.cc",
     "url_utils.h",
-    "user_agent.h",
     "web_identity.h",
     "webplugininfo.cc",
     "webplugininfo.h",
@@ -265,6 +271,7 @@ source_set("common_sources") {
   ]
   deps = [
     ":content_descriptor_keys",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
 

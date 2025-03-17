@@ -25,6 +25,7 @@ class WhatsNewStorageService {
   // Read-only access.
   virtual const base::Value::List& ReadModuleData() const = 0;
   virtual const base::Value::Dict& ReadEditionData() const = 0;
+  virtual std::optional<int> ReadVersionData() const = 0;
 
   // Get the version this edition was used. Return nullopt if unused.
   virtual std::optional<int> GetUsedVersion(
@@ -41,11 +42,17 @@ class WhatsNewStorageService {
   // Returns whether an edition has ever been used for version.
   virtual bool IsUsedEdition(std::string_view edition_name) const = 0;
 
+  // Returns whether a version page was shown for the current milestone.
+  virtual bool WasVersionPageUsedForCurrentMilestone() const = 0;
+
   // Add a module to the ordered list of enabled modules.
   virtual void SetModuleEnabled(std::string_view module_name) = 0;
 
   // Set a "used version" for an edition.
   virtual void SetEditionUsed(std::string_view edition_name) = 0;
+
+  // Record that a version page was shown for this milestone.
+  virtual void SetVersionUsed() = 0;
 
   // Clear module from stored data.
   virtual void ClearModules(std::set<std::string_view> modules_to_clear) = 0;

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -87,7 +89,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   // CardUnmaskPromptControllerImpl:.
   // When the confirm button is clicked.
-  void OnUnmaskPromptAccepted(const std::u16string& cvc,
+  void OnUnmaskPromptAccepted(std::u16string_view cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
                               bool enable_fido_auth,
@@ -143,7 +145,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   using CardUnmaskPromptControllerImpl::view;
 
  private:
-  void ShowVerificationResult(const std::u16string verification_message,
+  void ShowVerificationResult(const std::u16string& verification_message,
                               bool allow_retry) {
     // It's possible the prompt has been closed.
     if (!view()) {

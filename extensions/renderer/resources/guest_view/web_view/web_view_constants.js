@@ -31,7 +31,7 @@ var WebViewConstants = {
   ERROR_MSG_PERMISSION_ACTION_ALREADY_TAKEN:
       'Permission has already been decided for this "permissionrequest" event.',
   WARNING_MSG_DIALOG_REQUEST_BLOCKED: '%1 %2 dialog was blocked.',
-  WARNING_MSG_LOAD_ABORTED: 'The load has aborted with error %1: %2.',
+  WARNING_MSG_LOAD_ABORTED: 'The load has aborted with error %1: %2. url: %3',
   WARNING_MSG_NEWWINDOW_REQUEST_BLOCKED: 'A new window was blocked.',
   WARNING_MSG_PERMISSION_REQUEST_BLOCKED:
       'The permission request for "%1" has been denied.'

@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.lifecycle;
 
 import android.content.res.Configuration;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Implement this interface and register in {@link ActivityLifecycleDispatcher} to be notified of
  * configuration changes.
  */
+@NullMarked
 public interface ConfigurationChangedObserver extends LifecycleObserver {
     /**
      * Called when the Activity configuration changes. See

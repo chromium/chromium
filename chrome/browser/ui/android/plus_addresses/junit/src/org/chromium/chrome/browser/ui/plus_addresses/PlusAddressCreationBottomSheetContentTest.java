@@ -113,13 +113,13 @@ public class PlusAddressCreationBottomSheetContentTest {
                 mView.mProposedPlusAddress.getText(),
                 FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
 
-        assertEquals(mView.mProposedPlusAddressIcon.getVisibility(), View.GONE);
-        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.VISIBLE);
-        assertEquals(mView.mRefreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, mView.mProposedPlusAddressIcon.getVisibility());
+        assertEquals(View.VISIBLE, mView.mProposedPlusAddressLoadingView.getVisibility());
+        assertEquals(View.VISIBLE, mView.mRefreshIcon.getVisibility());
         // Refresh icon should be disabled before the first proposed plus address is displayed.
         assertFalse(mView.mRefreshIcon.isEnabled());
 
-        assertEquals(mView.mFirstTimeNotice.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mView.mFirstTimeNotice.getVisibility());
 
         assertEquals(
                 mView.mPlusAddressConfirmButton.getText(), FIRST_TIME_USAGE_INFO.getConfirmText());
@@ -128,7 +128,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
         assertEquals(
                 mView.mPlusAddressCancelButton.getText(), FIRST_TIME_USAGE_INFO.getCancelText());
-        assertEquals(mView.mPlusAddressCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mView.mPlusAddressCancelButton.getVisibility());
         assertTrue(mView.mPlusAddressCancelButton.isEnabled());
     }
 
@@ -147,14 +147,14 @@ public class PlusAddressCreationBottomSheetContentTest {
                 mView.mProposedPlusAddress.getText(),
                 SECOND_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
 
-        assertEquals(mView.mProposedPlusAddressIcon.getVisibility(), View.GONE);
-        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.VISIBLE);
-        assertEquals(mView.mRefreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, mView.mProposedPlusAddressIcon.getVisibility());
+        assertEquals(View.VISIBLE, mView.mProposedPlusAddressLoadingView.getVisibility());
+        assertEquals(View.VISIBLE, mView.mRefreshIcon.getVisibility());
         // Refresh icon should be disabled before the first proposed plus address is displayed.
         assertFalse(mView.mRefreshIcon.isEnabled());
 
         // Onboarding notice should not be displayed after the user has accepted it once.
-        assertEquals(mView.mFirstTimeNotice.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mView.mFirstTimeNotice.getVisibility());
 
         assertEquals(
                 mView.mPlusAddressConfirmButton.getText(), SECOND_TIME_USAGE_INFO.getConfirmText());
@@ -162,7 +162,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         assertFalse(mView.mPlusAddressConfirmButton.isEnabled());
 
         // Cancel button is displayed only when the onboarding notice is shown.
-        assertEquals(mView.mPlusAddressCancelButton.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mView.mPlusAddressCancelButton.getVisibility());
     }
 
     @Test
@@ -174,7 +174,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         PropertyModelChangeProcessor.create(
                 model, mView, PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
 
-        assertEquals(mView.mRefreshIcon.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mView.mRefreshIcon.getVisibility());
     }
 
     @Test
@@ -185,12 +185,12 @@ public class PlusAddressCreationBottomSheetContentTest {
                         SECOND_TIME_USAGE_INFO, mDelegate, /* refreshSupported= */ false);
         PropertyModelChangeProcessor.create(
                 model, mView, PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
-        assertEquals(mView.mProposedPlusAddressIcon.getVisibility(), View.GONE);
-        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, mView.mProposedPlusAddressIcon.getVisibility());
+        assertEquals(View.VISIBLE, mView.mProposedPlusAddressLoadingView.getVisibility());
 
         model.set(PLUS_ADDRESS_LOADING_VIEW_VISIBLE, false);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mView.mProposedPlusAddressLoadingView.getVisibility());
         verify(mDelegate).onPlusAddressLoadingViewHidden();
     }
 
@@ -207,7 +207,7 @@ public class PlusAddressCreationBottomSheetContentTest {
                 SECOND_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
 
         model.set(PROPOSED_PLUS_ADDRESS, MODAL_PROPOSED_PLUS_ADDRESS);
-        assertEquals(mView.mProposedPlusAddress.getText(), MODAL_PROPOSED_PLUS_ADDRESS);
+        assertEquals(MODAL_PROPOSED_PLUS_ADDRESS, mView.mProposedPlusAddress.getText());
     }
 
     @Test
@@ -219,17 +219,17 @@ public class PlusAddressCreationBottomSheetContentTest {
         PropertyModelChangeProcessor.create(
                 model, mView, PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
 
-        assertEquals(mView.mPlusAddressContent.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mView.mPlusAddressContent.getVisibility());
         // This view is not inflated before the error message is shown.
         assertNull(mView.mContentView.findViewById(R.id.plus_address_error_container));
 
         model.set(ERROR_STATE_INFO, RESERVE_ERROR_STATE);
 
-        assertEquals(mView.mPlusAddressContent.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mView.mPlusAddressContent.getVisibility());
         assertNotNull(mView.mContentView.findViewById(R.id.plus_address_error_container));
         assertEquals(
-                mView.mContentView.findViewById(R.id.plus_address_error_container).getVisibility(),
-                View.VISIBLE);
+                View.VISIBLE,
+                mView.mContentView.findViewById(R.id.plus_address_error_container).getVisibility());
 
         TextView title = mView.mContentView.findViewById(R.id.plus_address_error_title);
         TextView description = mView.mContentView.findViewById(R.id.plus_address_error_description);
@@ -252,9 +252,9 @@ public class PlusAddressCreationBottomSheetContentTest {
         PropertyModelChangeProcessor.create(
                 model, mView, PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
 
-        assertEquals(mView.mFirstTimeNotice.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mView.mFirstTimeNotice.getVisibility());
         ClickableSpan[] spans = mView.mFirstTimeNotice.getClickableSpans();
-        assertEquals(spans.length, 1);
+        assertEquals(1, spans.length);
         spans[0].onClick(mView.mFirstTimeNotice);
 
         verify(mDelegate).openUrl(FIRST_TIME_USAGE_INFO.getLearnMoreUrl());
@@ -264,9 +264,9 @@ public class PlusAddressCreationBottomSheetContentTest {
     @SmallTest
     public void testBottomSheetOverriddenAttributes() {
         assertEquals(mView.getToolbarView(), null);
-        assertEquals(mView.getPriority(), ContentPriority.HIGH);
-        assertEquals(mView.swipeToDismissEnabled(), true);
-        assertEquals(mView.getPeekHeight(), HeightMode.DISABLED);
+        assertEquals(ContentPriority.HIGH, mView.getPriority());
+        assertEquals(true, mView.swipeToDismissEnabled());
+        assertEquals(HeightMode.DISABLED, mView.getPeekHeight());
         assertEquals(mView.getHalfHeightRatio(), HeightMode.DISABLED, 0.1);
         assertEquals(mView.getFullHeightRatio(), HeightMode.WRAP_CONTENT, 0.1);
         Context context = mView.getContentView().getContext();

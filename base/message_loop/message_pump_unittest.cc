@@ -27,6 +27,10 @@
 #include "base/test/test_support_android.h"
 #endif
 
+#if !BUILDFLAG(IS_IOS)
+#include "base/message_loop/message_pump_default.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
@@ -76,8 +80,8 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
 
   void BeforeWait() override {}
   void BeginNativeWorkBeforeDoWork() override {}
-  MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
-  MOCK_METHOD0(DoIdleWork, void());
+  MOCK_METHOD(MessagePump::Delegate::NextWorkInfo, DoWork, ());
+  MOCK_METHOD(void, DoIdleWork, ());
 
   // Functions invoked directly by the message pump.
   void OnBeginWorkItem() override {
@@ -120,8 +124,8 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   }
 
   // Mock functions for asserting.
-  MOCK_METHOD0(MockOnBeginWorkItem, void(void));
-  MOCK_METHOD1(MockOnEndWorkItem, void(int));
+  MOCK_METHOD(void, MockOnBeginWorkItem, ());
+  MOCK_METHOD(void, MockOnEndWorkItem, (int));
 
   // If native events are covered in the current configuration it's not
   // possible to precisely test all assertions related to work items. This is
@@ -323,38 +327,6 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   message_pump_->Run(&delegate);
 }
 
-TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
-  // The handling of the "yield_to_native" boolean in the NextWorkInfo is only
-  // implemented on the MessagePumpAndroid. However since we inject a fake one
-  // for testing this is hard to test. This test ensures that setting this
-  // boolean doesn't cause any MessagePump to explode.
-  testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
-
-  testing::InSequence sequence;
-
-  // Return an immediate task with |yield_to_native| set.
-  AddPreDoWorkExpectations(delegate);
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([] {
-    return MessagePump::Delegate::NextWorkInfo{TimeTicks(), TimeDelta(),
-                                               TimeTicks(),
-                                               /* yield_to_native = */ true};
-  }));
-  AddPostDoWorkExpectations(delegate);
-
-  AddPreDoWorkExpectations(delegate);
-  // Return a delayed task with |yield_to_native| set, and exit.
-  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
-    message_pump_->Quit();
-    auto now = TimeTicks::Now();
-    return MessagePump::Delegate::NextWorkInfo{now + Milliseconds(1),
-                                               TimeDelta(), now, true};
-  }));
-  EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
-
-  message_pump_->ScheduleWork();
-  message_pump_->Run(&delegate);
-}
-
 TEST_P(MessagePumpTest, LeewaySmokeTest) {
   // The handling of the "leeway" in the NextWorkInfo is only implemented on
   // mac. However since we inject a fake one for testing this is hard to test.
@@ -436,5 +408,41 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(MessagePumpType::DEFAULT,
                                            MessagePumpType::UI,
                                            MessagePumpType::IO));
+
+// On iOS, MessagePumpDefault is not used.
+#if !BUILDFLAG(IS_IOS)
+TEST(MessagePumpDefaultTest, BusyLoop) {
+  MessagePumpDefault message_pump;
+
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  base::TimeDelta busy_loop_for = base::Milliseconds(1);
+  message_pump.SetBusyLoop(busy_loop_for);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+
+  // Many long waits, no more busy looping.
+  for (int i = 0; i < 10; i++) {
+    message_pump.RecordWaitTime(busy_loop_for * 10);
+  }
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  // One short wait, busy loop.
+  message_pump.RecordWaitTime(busy_loop_for / 1.5);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+  // But as long as the moving average is high enough, don't loop.
+  message_pump.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  // Eventually, the moving average gets low enough
+  for (int i = 0; i < 100; i++) {
+    message_pump.RecordWaitTime(busy_loop_for / 10);
+  }
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+
+  // Even if the last wait time was higher than the limit.
+  message_pump.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace base

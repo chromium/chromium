@@ -11,6 +11,8 @@ import android.view.autofill.VirtualViewFillInfo;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Locale;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Locale;
  * android.view.autofill.AutofillManager#notifyVirtualViewsReady(View, SparseArray)} from the {@link
  * FormData} object sent for the cache request.
  */
+@NullMarked
 class PrefillRequest {
     public static final String TAG = "PrefillRequest";
     private final FormData mForm;

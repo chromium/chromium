@@ -11,6 +11,10 @@
 
 BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
+BASE_DECLARE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading);
+
+BASE_DECLARE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache);
+
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
 
@@ -64,6 +68,18 @@ bool AllowTopNavigationPrefetch();
 // Allows search history suggestions to be prefetched by navigation prefetch
 // strategies.
 bool PrefetchSearchHistorySuggestions();
+
+// Whether Omnibox prefetch and prerender should be restricted to the suggestion
+// being the default match.
+bool OnlyAllowDefaultMatchPreloading();
+bool IsNoVarySearchDiskCacheEnabled();
+
+// Allows the omnibox search prefetch in Incognito.
+//
+// Note SearchPrefetchService partially supports Incognito profile. For now,
+// it supports the on-press triggered search prefetch only. Other prefetches
+// must not be triggered in Incognito. crbug.com/394716358 for more details.
+bool IsPrefetchIncognitoEnabled();
 
 // When this feature is enabled, SearchPrefetchService will send a request to
 // the network service to preload shared dictionary from the disk storage for

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,7 +42,7 @@ class ContextMenuHeaderCoordinator {
 
     @VisibleForTesting
     static PropertyModel buildModel(Context context, String title, CharSequence url) {
-        boolean usePopupContextMenu = ContextMenuUtils.usePopupContextMenuForContext(context);
+        boolean usePopupContextMenu = ContextMenuUtils.isPopupSupported(context);
 
         int monogramSizeDimen =
                 usePopupContextMenu

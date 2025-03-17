@@ -71,9 +71,12 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
 
     // Values for internal use, not web-exposed:
     kFirstInternalRule = 16,
+    // go/keep-sorted start
     kContainerRule = kFirstInternalRule,
     kFontFeatureRule,
     kFontPaletteValuesRule,
+    kFunctionDeclarationsRule,
+    kFunctionRule,
     kLayerBlockRule,
     kLayerStatementRule,
     kNestedDeclarationsRule,
@@ -82,7 +85,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kScopeRule,
     kStartingStyleRule,
     kViewTransitionRule,
-    // Lexicographical order above.
+    // go/keep-sorted end
   };
 
   virtual Type GetType() const = 0;

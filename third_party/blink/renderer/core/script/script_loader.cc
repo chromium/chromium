@@ -334,7 +334,9 @@ bool IsEligibleForForceInOrder(const Document& element_document) {
 // [Intervention, DelayAsyncScriptExecution, crbug.com/1340837]
 bool IsEligibleForDelay(const Resource& resource,
                         const Document& element_document,
-                        const ScriptElementBase& element) {
+                        const ScriptElementBase& element,
+                        bool parser_inserted,
+                        bool is_in_document_write) {
   if (!base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution)) {
     return false;
   }
@@ -386,6 +388,18 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
     case features::AsyncScriptExperimentalSchedulingTarget::kBoth:
       break;
+  }
+
+  static const bool exclude_non_parser_inserted =
+      features::kDelayAsyncExecExcludeNonParserInsertedParam.Get();
+  if (exclude_non_parser_inserted && !parser_inserted) {
+    return false;
+  }
+
+  static const bool exclude_scripts_via_document_write =
+      features::kDelayAsyncExecExcludeDocumentWriteParam.Get();
+  if (exclude_scripts_via_document_write && is_in_document_write) {
+    return false;
   }
 
   const bool opt_out_low =
@@ -650,8 +664,12 @@ PendingScript* ScriptLoader::PrepareScript(
   // returns "Blocked" when given el, "script", and source text, then return.
   // [CSP]</spec>
   if (!element_->HasSourceAttribute() &&
-      !element_->AllowInlineScriptForCSP(element_->GetNonceForElement(),
-                                         position.line_, source_text)) {
+      (!element_->AllowInlineScriptForCSP(element_->GetNonceForElement(),
+                                          position.line_, source_text) ||
+       !SubresourceIntegrity::VerifyInlineIntegrity(
+           element_->IntegrityAttributeValue(),
+           element_->SignatureAttributeValue(), source_text,
+           element_->GetExecutionContext()))) {
     return nullptr;
   }
 
@@ -684,7 +702,8 @@ PendingScript* ScriptLoader::PrepareScript(
   if (!integrity_attr.empty()) {
     IntegrityReport integrity_report;
     SubresourceIntegrity::ParseIntegrityAttribute(
-        integrity_attr, integrity_metadata, &integrity_report);
+        integrity_attr, integrity_metadata, element_->GetExecutionContext(),
+        &integrity_report);
     integrity_report.SendReports(element_->GetExecutionContext());
   }
 
@@ -794,9 +813,7 @@ PendingScript* ScriptLoader::PrepareScript(
     // TODO(apaseltiner): Propagate the element instead of passing nullptr.
     if (element_->HasAttributionsrcAttribute() &&
         context_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-            url,
-            /*element=*/nullptr,
-            /*request_id=*/std::nullopt)) {
+            url, /*element=*/nullptr)) {
       options.SetAttributionReportingEligibility(
           ScriptFetchOptions::AttributionReportingEligibility::kEligible);
     }
@@ -877,7 +894,8 @@ PendingScript* ScriptLoader::PrepareScript(
         Resource* resource = pending_script->GetResource();
         resource_keep_alive_ = resource;
         is_eligible_for_delay =
-            IsEligibleForDelay(*resource, element_document, *element_);
+            IsEligibleForDelay(*resource, element_document, *element_,
+                               parser_inserted_, is_in_document_write);
         is_eligible_for_selective_in_order =
             IsEligibleForSelectiveInOrder(*resource, element_document);
         break;

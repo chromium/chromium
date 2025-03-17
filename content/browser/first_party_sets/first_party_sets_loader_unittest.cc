@@ -153,15 +153,17 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
   SetComponentSets(loader(), base::Version("1.2.3"),
                    R"({"primary": "https://example.test", "associatedSites": )"
                    R"(["https://associatedsite1.test"]})");
-  loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/base::flat_map<net::SchemefulSite,
-                                     net::FirstPartySetEntry>({
-          {bar,
-           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
-          {associated2,
-           net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      }),
-      /*aliases=*/{}));
+  loader().SetManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                         net::FirstPartySetEntry>({
+              {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
+                                            std::nullopt)},
+              {associated2,
+               net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
+          }),
+          /*aliases=*/{})
+          .value());
 
   EXPECT_THAT(
       WaitAndGetResult().FindEntry(associated2,
@@ -174,26 +176,30 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
   const net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
   const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
 
-  loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/base::flat_map<net::SchemefulSite,
-                                     net::FirstPartySetEntry>({
-          {bar,
-           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
-          {associated1,
-           net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      }),
-      /*aliases=*/{}));
+  loader().SetManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                         net::FirstPartySetEntry>({
+              {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
+                                            std::nullopt)},
+              {associated1,
+               net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
+          }),
+          /*aliases=*/{})
+          .value());
 
   // All but the first SetManuallySpecifiedSet call should be ignored.
-  loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/base::flat_map<net::SchemefulSite,
-                                     net::FirstPartySetEntry>({
-          {bar,
-           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
-          {associated2,
-           net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      }),
-      /*aliases=*/{}));
+  loader().SetManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                         net::FirstPartySetEntry>({
+              {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
+                                            std::nullopt)},
+              {associated2,
+               net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
+          }),
+          /*aliases=*/{})
+          .value());
 
   SetComponentSets(loader(), base::Version(), "");
 

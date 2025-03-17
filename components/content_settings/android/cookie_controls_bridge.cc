@@ -24,16 +24,18 @@ CookieControlsBridge::CookieControlsBridge(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle)
+    const JavaParamRef<jobject>& joriginal_browser_context_handle,
+    bool is_incognito_branded)
     : jobject_(obj) {
   UpdateWebContents(env, jweb_contents_android,
-                    joriginal_browser_context_handle);
+                    joriginal_browser_context_handle, is_incognito_branded);
 }
 
 void CookieControlsBridge::UpdateWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle) {
+    const JavaParamRef<jobject>& joriginal_browser_context_handle,
+    bool is_incognito_branded) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents_android);
 
@@ -50,7 +52,8 @@ void CookieControlsBridge::UpdateWebContents(
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr,
       permissions_client->GetSettingsMap(context),
-      permissions_client->GetTrackingProtectionSettings(context));
+      permissions_client->GetTrackingProtectionSettings(context),
+      is_incognito_branded);
 
   observation_.Observe(controller_.get());
   controller_->Update(web_contents);
@@ -157,9 +160,11 @@ static jlong JNI_CookieControlsBridge_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle) {
+    const JavaParamRef<jobject>& joriginal_browser_context_handle,
+    jboolean is_incognito_branded) {
   return reinterpret_cast<intptr_t>(new CookieControlsBridge(
-      env, obj, jweb_contents_android, joriginal_browser_context_handle));
+      env, obj, jweb_contents_android, joriginal_browser_context_handle,
+      is_incognito_branded));
 }
 
 }  // namespace content_settings

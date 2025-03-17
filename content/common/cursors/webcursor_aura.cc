@@ -10,6 +10,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/cursor_util.h"
 
 namespace content {
@@ -22,13 +23,18 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
       float cursor_image_scale = device_scale_factor_;
       wm::ScaleAndRotateCursorBitmapAndHotpoint(GetCursorScaleFactor(&bitmap),
                                                 rotation_, &bitmap, &hotspot);
-      custom_cursor_ = ui::Cursor::NewCustom(
-          std::move(bitmap), std::move(hotspot), cursor_image_scale);
-      custom_cursor_->SetPlatformCursor(
+      ui::Cursor custom_cursor =
+          ui::Cursor::NewCustom(std::move(bitmap), hotspot, cursor_image_scale);
+
+      auto cursor_data =
+          aura::client::GetCursorShapeClient().GetCursorData(custom_cursor);
+
+      custom_cursor.SetPlatformCursor(
           ui::CursorFactory::GetInstance()->CreateImageCursor(
-              custom_cursor_->type(), custom_cursor_->custom_bitmap(),
-              custom_cursor_->custom_hotspot(),
-              custom_cursor_->image_scale_factor()));
+              custom_cursor.type(), std::move(cursor_data->bitmaps[0]),
+              cursor_data->hotspot, cursor_data->scale_factor));
+
+      custom_cursor_ = custom_cursor;
     }
     return *custom_cursor_;
   }

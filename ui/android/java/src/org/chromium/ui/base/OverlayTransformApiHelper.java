@@ -4,6 +4,8 @@
 
 package org.chromium.ui.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,7 +18,6 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.gfx.OverlayTransform;
 
@@ -102,12 +103,12 @@ final class OverlayTransformApiHelper
         }
     }
 
-    @NullUnmarked
     private void addOnFrameMetricsAvailableListener() {
         if (mFrameMetricsListenerAdded) return;
         Window window = mWindow.get();
         if (window == null) return;
-        window.addOnFrameMetricsAvailableListener(this, new Handler(Looper.myLooper()));
+        window.addOnFrameMetricsAvailableListener(
+                this, new Handler(assumeNonNull(Looper.myLooper())));
         mFrameMetricsListenerAdded = true;
     }
 

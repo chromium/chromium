@@ -7,12 +7,14 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
@@ -197,7 +199,7 @@ TEST_F(FormInteractionsUkmLoggerTest, TypeOfEditedAutofilledFieldsUkmLogging) {
 
   base::HistogramTester histogram_tester;
   // Simulate text input in the first and second fields.
-  SimulateUserChangedTextField(form, form.fields()[0]);
+  SimulateUserChangedField(form, form.fields()[0]);
 
   SubmitForm(form);
   ExpectedUkmMetricsRecord name_field_ukm_record{
@@ -355,8 +357,8 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     // Simulate text input in the first fields.
-    SimulateUserChangedTextFieldTo(form, form.fields()[0], u"United States",
-                                   parse_time + base::Milliseconds(3));
+    SimulateUserChangedFieldTo(form, form.fields()[0], u"United States",
+                               parse_time + base::Milliseconds(3));
     task_environment_.FastForwardBy(base::Milliseconds(1200));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
@@ -645,20 +647,10 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
     };
     if (heuristic_types[i] != UNKNOWN_TYPE) {
-      field_log_events_count += 2;
       expected.merge(std::map<std::string, int64_t>({
           {UFIT::kHeuristicTypeName, heuristic_types[i]},
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-          {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
-          {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
-          {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
       }));
-#else
-          {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
-          {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
-          {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-      }));
-#endif
+      field_log_events_count += 2;
     } else {
       ++field_log_events_count;
     }
@@ -762,10 +754,10 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
                                    .begin()
                                    ->second->form_parsed_timestamp();
   // Simulate text input in the first and second fields.
-  SimulateUserChangedTextFieldTo(form, form.fields()[0], u"Elvis Aaron Presley",
-                                 parse_time + base::Milliseconds(3));
-  SimulateUserChangedTextFieldTo(form, form.fields()[1], u"buddy@gmail.com",
-                                 parse_time + base::Milliseconds(3));
+  SimulateUserChangedFieldTo(form, form.fields()[0], u"Elvis Aaron Presley",
+                             parse_time + base::Milliseconds(3));
+  SimulateUserChangedFieldTo(form, form.fields()[1], u"buddy@gmail.com",
+                             parse_time + base::Milliseconds(3));
   task_environment_.FastForwardBy(base::Milliseconds(1200));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -1163,19 +1155,9 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
          base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
         {UFIT::kHeuristicTypeName, field_types[i]},
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
-        {UFIT::kHeuristicTypeDefaultName, field_types[i]},
-        {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-#else
-        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
-        {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
-        {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-#endif
-        {UFIT::kFieldLogEventCountName, 2},
         {UFIT::kRankInFieldSignatureGroupName, 1},
+        {UFIT::kFieldLogEventCountName, 2},
     };
-
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
       test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
@@ -1685,7 +1667,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<
         LogFocusedComplexFormAtFormRemoveTest::ParamType>& info) {
       std::string name = info.param.test_name;
-      base::ranges::replace_if(
+      std::ranges::replace_if(
           name, [](char c) { return !std::isalnum(c); }, '_');
       return name;
     });
@@ -1698,7 +1680,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
       {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
        "1000"},
       {features::kAutofillAblationStudyIsDryRun.name,
-       GetParam().ablation_study_is_dry_run ? "true" : "false"}};
+       base::ToString(GetParam().ablation_study_is_dry_run)}};
   base::test::ScopedFeatureList scoped_feature_list;
   if (GetParam().enable_ablation_study_for_addresses) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -1733,7 +1715,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
 
   if (GetParam().step_2_typing) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));
-    SimulateUserChangedTextField(form, first_field, base::TimeTicks::Now());
+    SimulateUserChangedField(form, first_field, base::TimeTicks::Now());
   }
   if (GetParam().step_3_autofill) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));
@@ -1760,7 +1742,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
   }
   if (GetParam().step_4_edit_after_autofill) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));
-    SimulateUserChangedTextField(form, first_field, base::TimeTicks::Now());
+    SimulateUserChangedField(form, first_field, base::TimeTicks::Now());
   }
   if (GetParam().step_5_submit) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));

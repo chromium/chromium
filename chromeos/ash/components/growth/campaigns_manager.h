@@ -139,6 +139,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
     return queued_events_record_and_trigger_;
   }
 
+  void SetCampaignsForTesting(const base::Value::Dict* campaigns) {
+    campaigns_ = campaigns->Clone();
+  }
+
  private:
   // Record queued events before `campaigns_loaded_` is set to true. Trigger
   // campaigns if needed.
@@ -168,6 +172,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Notify observers that campaigns are loaded and CampaignsManager is ready
   // to query.
   void NotifyCampaignsLoaded();
+
+  // Record impression events if the campaign is a control campaigns.
+  void MaybeRecordImpressionForControl(const Campaign* campaign) const;
 
   // Register synthetic trial for growth. It will not work if campaign is
   // incomplete, i.e. missing id.

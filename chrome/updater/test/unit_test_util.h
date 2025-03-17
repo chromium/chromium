@@ -77,10 +77,6 @@ base::FilePath GetLogDestinationDir();
 void InitLoggingForUnitTest(const base::FilePath& log_base_path);
 
 #if BUILDFLAG(IS_WIN)
-// Change Windows Defender settings to skip scanning the paths used by the
-// updater if test runs with the flag `exclude-paths-from-win-defender`.
-void MaybeExcludePathsFromWindowsDefender();
-
 // Starts procmon logging if admin and procmon exists at
 // `C:\\tools\\Procmon.exe`. Returns the path to the PML file if procmon could
 // be successfully started.

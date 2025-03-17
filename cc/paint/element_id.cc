@@ -41,4 +41,9 @@ std::ostream& operator<<(std::ostream& out, const ElementId& id) {
   return out << id.ToString();
 }
 
+ElementId RemapElementIdToCcNamespace(ElementId element_id) {
+  CHECK(!(element_id.GetInternalValue() & 1));
+  return ElementId(element_id.GetInternalValue() | 1);
+}
+
 }  // namespace cc

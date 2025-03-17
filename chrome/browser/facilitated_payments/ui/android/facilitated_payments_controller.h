@@ -10,8 +10,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
-#include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 namespace content {
@@ -37,12 +37,12 @@ class FacilitatedPaymentsController {
   // Shows the PIX FOP selector.
   virtual void Show(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Shows the eWallet FOP selector.
   virtual void ShowForEwallet(
       base::span<const autofill::Ewallet> ewallet_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Asks the `view_` to show the progress screen. Virtual for overriding in
   // tests.
@@ -63,9 +63,6 @@ class FacilitatedPaymentsController {
 
   // Called by the Java view to communicate `payments::facilitated::UiEvent`.
   void OnUiEvent(JNIEnv* env, jint event);
-
-  // Called whenever the surface gets hidden (regardless of the cause).
-  virtual void OnDismissed(JNIEnv* env);
 
   void OnBankAccountSelected(JNIEnv* env, jlong instrument_id);
 
@@ -92,10 +89,8 @@ class FacilitatedPaymentsController {
   // used to delegate user actions from Java to native.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
-  // TODO: crbug.com/375089558 - Make this on_user_selected_ when user decline
-  // can be routed using ui_event_listener_.
-  // Called after showing PIX payment prompt.
-  base::OnceCallback<void(bool, int64_t)> on_user_decision_callback_;
+  // Called when user selects the payment account to pay with.
+  base::OnceCallback<void(int64_t)> on_payment_account_selected_;
 
   // Callback used to communicate view events to the feature.
   base::RepeatingCallback<void(payments::facilitated::UiEvent)>

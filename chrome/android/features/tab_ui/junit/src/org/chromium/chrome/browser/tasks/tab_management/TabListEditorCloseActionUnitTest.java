@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Icon
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionUnitTestHelper.TabIdGroup;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionUnitTestHelper.TabListHolder;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
@@ -84,7 +82,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         assertEquals(
                 R.id.tab_list_editor_close_menu_item,
@@ -104,7 +101,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionNoTabs() {
         configure(false);
         mAction.onSelectionStateChange(Collections.emptyList());
@@ -113,7 +109,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithOneTab() {
         configure(false);
         List<Integer> tabIds = Arrays.asList(5, 3, 7);
@@ -136,7 +131,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithTabs() throws TimeoutException {
         configure(false);
         List<Integer> tabIds = Arrays.asList(5, 3, 7);
@@ -171,7 +165,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithTabGroups_ActionOnRelatedTabs() {
         final boolean actionOnRelatedTabs = true;
         configure(actionOnRelatedTabs);
@@ -243,7 +236,6 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseActionWithTabGroups_NoActionOnRelatedTabs() {
         final boolean actionOnRelatedTabs = false;
         configure(actionOnRelatedTabs);

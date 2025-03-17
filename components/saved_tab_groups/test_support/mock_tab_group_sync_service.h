@@ -8,6 +8,7 @@
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace tab_groups {
@@ -53,19 +54,22 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void, MoveTab, (const LocalTabGroupID&, const LocalTabID&, int));
   MOCK_METHOD(void,
               OnTabSelected,
-              (const std::optional<LocalTabGroupID>&, const LocalTabID&));
-  MOCK_METHOD((std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>),
-              GetCurrentlySelectedTabID,
-              ());
+              (const std::optional<LocalTabGroupID>&,
+               const LocalTabID&,
+               const std::u16string&));
+  MOCK_METHOD((SelectedTabInfo), GetCurrentlySelectedTabInfo, ());
   MOCK_METHOD(void, SaveGroup, (SavedTabGroup));
   MOCK_METHOD(void, UnsaveGroup, (const LocalTabGroupID&));
   MOCK_METHOD(void,
               MakeTabGroupShared,
-              (const LocalTabGroupID&, std::string_view));
+              (const LocalTabGroupID&,
+               std::string_view,
+               TabGroupSharingCallback));
   MOCK_METHOD(void,
               AboutToUnShareTabGroup,
               (const LocalTabGroupID&, base::OnceClosure));
   MOCK_METHOD(void, OnTabGroupUnShareComplete, (const LocalTabGroupID&, bool));
+  MOCK_METHOD(void, OnCollaborationRemoved, (const syncer::CollaborationId&));
 
   MOCK_METHOD(std::vector<SavedTabGroup>, GetAllGroups, (), (const));
   MOCK_METHOD(std::optional<SavedTabGroup>,

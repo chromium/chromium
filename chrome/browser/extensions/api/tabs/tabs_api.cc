@@ -53,7 +53,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -82,6 +81,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -130,6 +130,10 @@
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#endif
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -426,6 +430,12 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
 // Returns whether the given `bounds` intersect with at least 50% of all the
 // displays.
 bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
+  // Bail if `bounds` has an overflown area.
+  auto checked_area = bounds.size().GetCheckedArea();
+  if (!checked_area.IsValid()) {
+    return false;
+  }
+
   int intersect_area = 0;
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     gfx::Rect display_bounds = display.bounds();
@@ -441,6 +451,7 @@ void NotifyExtensionTelemetry(Profile* profile,
                               const std::string& current_url,
                               const std::string& new_url,
                               const std::optional<StackTrace>& js_callstack) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Ignore API calls that are not invoked by extensions.
   if (!extension) {
     return;
@@ -457,6 +468,7 @@ void NotifyExtensionTelemetry(Profile* profile,
       extension->id(), api_method, current_url, new_url,
       js_callstack.value_or(StackTrace()));
   extension_telemetry_service->AddSignal(std::move(tabs_api_signal));
+#endif
 }
 
 }  // namespace
@@ -899,18 +911,19 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // somewhat asynchronous. This causes the immediate Deactivate() call to not
     // work.
     BrowserList* const browser_list = BrowserList::GetInstance();
-    Browser* active_browser = browser_list->GetLastActive();
+    Browser* last_active_browser = browser_list->GetLastActive();
     // Check if there's a currently-active window that should re-take focus.
     new_window->window()->ShowInactive();
-    // Unconditionally activate the last active window, if it is still alive.
+
+    // If the browser is still active, activate the last active (alive) window.
     // It's possible that showing the new browser synchronously caused the old
-    // one to close.
-    // Ideally, we should only activate the old window if it was previously
-    // active, so that we don't interrupt the user's workflow.
-    // However, `active_browser->window()->IsActive()` is not reliable for this
-    // purpose, since it returns false if the activation is on a child window.
-    if (base::Contains(*browser_list, active_browser)) {
-      active_browser->window()->Activate();
+    // one to close, so we check for alive-ness.
+    // We check `active_browser->IsActive()` instead of
+    // `active_browser->window()->IsActive()` because the latter returns false
+    // if only child windows are active.
+    if (base::Contains(*browser_list, last_active_browser) &&
+        last_active_browser->IsActive()) {
+      last_active_browser->window()->Activate();
     }
   }
 

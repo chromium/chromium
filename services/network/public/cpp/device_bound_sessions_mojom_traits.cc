@@ -24,4 +24,20 @@ bool StructTraits<network::mojom::DeviceBoundSessionKeyDataView,
   return true;
 }
 
+// static
+bool StructTraits<network::mojom::DeviceBoundSessionAccessDataView,
+                  net::device_bound_sessions::SessionAccess>::
+    Read(network::mojom::DeviceBoundSessionAccessDataView data,
+         net::device_bound_sessions::SessionAccess* out) {
+  if (!data.ReadAccessType(&out->access_type)) {
+    return false;
+  }
+
+  if (!data.ReadSessionKey(&out->session_key)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace mojo

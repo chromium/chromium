@@ -26,6 +26,7 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/trace_event/histogram_scope.h"  // no-presubmit-check
 #include "base/values.h"
 
 namespace base {
@@ -50,8 +51,9 @@ std::string HistogramTypeToString(HistogramType type) {
 
 HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {
   int type;
-  if (!iter->ReadInt(&type))
+  if (!iter->ReadInt(&type)) {
     return nullptr;
+  }
 
   switch (type) {
     case HISTOGRAM:
@@ -69,7 +71,7 @@ HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {
   }
 }
 
-HistogramBase::CountAndBucketData::CountAndBucketData(Count count,
+HistogramBase::CountAndBucketData::CountAndBucketData(Count32 count,
                                                       int64_t sum,
                                                       Value::List buckets)
     : count(count), sum(sum), buckets(std::move(buckets)) {}
@@ -82,25 +84,29 @@ HistogramBase::CountAndBucketData::CountAndBucketData(
 HistogramBase::CountAndBucketData& HistogramBase::CountAndBucketData::operator=(
     CountAndBucketData&& other) = default;
 
-const HistogramBase::Sample HistogramBase::kSampleType_MAX = INT_MAX;
+const HistogramBase::Sample32 HistogramBase::kSampleType_MAX = INT_MAX;
 
-HistogramBase::HistogramBase(const char* name)
-    : histogram_name_(name), flags_(kNoFlags) {}
+HistogramBase::HistogramBase(DurableStringView name)
+    : histogram_name_(name->data()),
+      histogram_name_length_(base::saturated_cast<uint16_t>(name->length())),
+      flags_(kNoFlags) {
+  DCHECK_LT(name->length(), static_cast<size_t>(UINT16_MAX));
+}
 
 HistogramBase::~HistogramBase() = default;
 
 void HistogramBase::CheckName(std::string_view name) const {
-  DCHECK_EQ(std::string_view(histogram_name()), name)
+  DCHECK_EQ(histogram_name(), name)
       << "Provided histogram name doesn't match instance name. Are you using a "
          "dynamic string in a macro?";
 }
 
 void HistogramBase::SetFlags(int32_t flags) {
-  flags_.fetch_or(flags, std::memory_order_relaxed);
+  flags_.fetch_or(static_cast<uint16_t>(flags), std::memory_order_relaxed);
 }
 
 void HistogramBase::ClearFlags(int32_t flags) {
-  flags_.fetch_and(~flags, std::memory_order_relaxed);
+  flags_.fetch_and(static_cast<uint16_t>(~flags), std::memory_order_relaxed);
 }
 
 bool HistogramBase::HasFlags(int32_t flags) const {
@@ -109,7 +115,7 @@ bool HistogramBase::HasFlags(int32_t flags) const {
   return (this->flags() & flags) == flags;
 }
 
-void HistogramBase::AddScaled(Sample value, int count, int scale) {
+void HistogramBase::AddScaled(Sample32 value, int count, int scale) {
   DCHECK_GT(scale, 0);
 
   // Convert raw count and probabilistically round up/down if the remainder
@@ -117,32 +123,35 @@ void HistogramBase::AddScaled(Sample value, int count, int scale) {
   // count when there are a large number of records. RandInt is "inclusive",
   // hence the -1 for the max value.
   int count_scaled = count / scale;
-  if (count - (count_scaled * scale) > base::RandInt(0, scale - 1))
+  if (count - (count_scaled * scale) > base::RandInt(0, scale - 1)) {
     ++count_scaled;
-  if (count_scaled <= 0)
+  }
+  if (count_scaled <= 0) {
     return;
+  }
 
   AddCount(value, count_scaled);
 }
 
-void HistogramBase::AddKilo(Sample value, int count) {
+void HistogramBase::AddKilo(Sample32 value, int count) {
   AddScaled(value, count, 1000);
 }
 
-void HistogramBase::AddKiB(Sample value, int count) {
+void HistogramBase::AddKiB(Sample32 value, int count) {
   AddScaled(value, count, 1024);
 }
 
 void HistogramBase::AddTimeMillisecondsGranularity(const TimeDelta& time) {
-  Add(saturated_cast<Sample>(time.InMilliseconds()));
+  Add(saturated_cast<Sample32>(time.InMilliseconds()));
 }
 
 void HistogramBase::AddTimeMicrosecondsGranularity(const TimeDelta& time) {
   // Intentionally drop high-resolution reports on clients with low-resolution
   // clocks. High-resolution metrics cannot make use of low-resolution data and
   // reporting it merely adds noise to the metric. https://crbug.com/807615#c16
-  if (TimeTicks::IsHighResolution())
-    Add(saturated_cast<Sample>(time.InMicroseconds()));
+  if (TimeTicks::IsHighResolution()) {
+    Add(saturated_cast<Sample32>(time.InMicroseconds()));
+  }
 }
 
 void HistogramBase::AddBoolean(bool value) {
@@ -171,17 +180,20 @@ void HistogramBase::WriteJSON(std::string* output,
   root.Set("sum", static_cast<double>(count_and_bucket_data.sum));
   root.Set("flags", flags());
   root.Set("params", std::move(parameters));
-  if (verbosity_level != JSON_VERBOSITY_LEVEL_OMIT_BUCKETS)
+  if (verbosity_level != JSON_VERBOSITY_LEVEL_OMIT_BUCKETS) {
     root.Set("buckets", std::move(count_and_bucket_data.buckets));
+  }
   root.Set("pid", static_cast<int>(GetUniqueIdForProcess().GetUnsafeValue()));
   serializer.Serialize(root);
 }
 
-void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample sample) const {
+void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample32 sample) const {
+  auto event_id = trace_event::HistogramScope::GetFlowId();
   StatisticsRecorder::GlobalSampleCallback global_sample_callback =
       StatisticsRecorder::global_sample_callback();
-  if (global_sample_callback)
-    global_sample_callback(histogram_name(), name_hash(), sample);
+  if (global_sample_callback) {
+    global_sample_callback(histogram_name(), name_hash(), sample, event_id);
+  }
 
   // We check the flag first since it is very cheap and we can avoid the
   // function call and lock overhead of FindAndRunHistogramCallbacks().
@@ -190,20 +202,21 @@ void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample sample) const {
   }
 
   StatisticsRecorder::FindAndRunHistogramCallbacks(
-      base::PassKey<HistogramBase>(), histogram_name(), name_hash(), sample);
+      base::PassKey<HistogramBase>(), histogram_name(), name_hash(), sample,
+      event_id);
 }
 
 HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
   std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
-  Count count = snapshot->TotalCount();
+  Count32 count = snapshot->TotalCount();
   int64_t sum = snapshot->sum();
   std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
 
   Value::List buckets;
   while (!it->Done()) {
-    Sample bucket_min;
+    Sample32 bucket_min;
     int64_t bucket_max;
-    Count bucket_count;
+    Count32 bucket_count;
     it->Get(&bucket_min, &bucket_max, &bucket_count);
 
     Value::Dict bucket_value;
@@ -224,19 +237,21 @@ void HistogramBase::WriteAsciiBucketGraph(double x_count,
                                           std::string* output) const {
   int x_remainder = line_length - x_count;
 
-  while (0 < x_count--)
+  while (0 < x_count--) {
     output->append("-");
+  }
   output->append("O");
-  while (0 < x_remainder--)
+  while (0 < x_remainder--) {
     output->append(" ");
+  }
 }
 
 const std::string HistogramBase::GetSimpleAsciiBucketRange(
-    Sample sample) const {
+    Sample32 sample) const {
   return StringPrintf("%d", sample);
 }
 
-void HistogramBase::WriteAsciiBucketValue(Count current,
+void HistogramBase::WriteAsciiBucketValue(Count32 current,
                                           double scaled_sum,
                                           std::string* output) const {
   StringAppendF(output, " (%d = %3.1f%%)", current, current / scaled_sum);
@@ -250,16 +265,21 @@ void HistogramBase::WriteAscii(std::string* output) const {
 }
 
 // static
-char const* HistogramBase::GetPermanentName(std::string_view name) {
-  // A set of histogram names that provides the "permanent" lifetime required
-  // by histogram objects for those strings that are not already code constants
-  // or held in persistent memory.
-  static base::NoDestructor<std::set<std::string>> permanent_names;
+DurableStringView HistogramBase::GetPermanentName(std::string_view name) {
+  // A set of histogram names that provides the "permanent" lifetime required by
+  // histogram objects for those strings that are not already code constants or
+  // held in persistent memory. The container used for `permanent_names` MUST
+  // support pointer-stability for its keys, due to small-string-optimization
+  // in std::string.
+  static base::NoDestructor<std::set<std::string, std::less<>>> permanent_names;
   static base::NoDestructor<Lock> permanent_names_lock;
 
   AutoLock lock(*permanent_names_lock);
-  auto result = permanent_names->insert(std::string(name));
-  return result.first->c_str();
+  auto it = permanent_names->lower_bound(name);
+  if (it == permanent_names->end() || *it != name) {
+    it = permanent_names->emplace_hint(it, name);
+  }
+  return DurableStringView(*it);
 }
 
 }  // namespace base

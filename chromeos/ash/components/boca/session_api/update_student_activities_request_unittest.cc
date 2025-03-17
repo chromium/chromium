@@ -119,7 +119,7 @@ TEST_F(UpdateStudentActivitiesRequestTest, UpdateActivityAndSucceed) {
 
   std::unique_ptr<UpdateStudentActivitiesRequest> request =
       std::make_unique<UpdateStudentActivitiesRequest>(
-          request_sender(), session_id, gaia_id, device_id,
+          request_sender(), "https://test", session_id, gaia_id, device_id,
           future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
@@ -155,7 +155,7 @@ TEST_F(UpdateStudentActivitiesRequestTest, UpdateEmptyActivityAndSucceed) {
 
   std::unique_ptr<UpdateStudentActivitiesRequest> request =
       std::make_unique<UpdateStudentActivitiesRequest>(
-          request_sender(), session_id, gaia_id, device_id,
+          request_sender(), "https://test", session_id, gaia_id, device_id,
           future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
@@ -190,7 +190,7 @@ TEST_F(UpdateStudentActivitiesRequestTest, UpdateActivityAndFail) {
 
   std::unique_ptr<UpdateStudentActivitiesRequest> request =
       std::make_unique<UpdateStudentActivitiesRequest>(
-          request_sender(), session_id, gaia_id, device_id,
+          request_sender(), "https://test", session_id, gaia_id, device_id,
           future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());

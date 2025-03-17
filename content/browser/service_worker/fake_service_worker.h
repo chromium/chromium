@@ -67,8 +67,6 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
       FetchHandlerExistence fetch_handler_existence,
-      mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          reporting_observer_receiver,
       blink::mojom::AncestorFrameType ancestor_frame_type,
       const blink::StorageKey& storage_key) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;

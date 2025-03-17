@@ -22,7 +22,7 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -130,8 +130,7 @@ void FakeSkiaOutputSurface::MakePromiseSkImage(
     return;
   }
 
-  auto sk_color_type =
-      ToClosestSkColorType(true /* gpu_compositing */, image_context->format());
+  auto sk_color_type = ToClosestSkColorType(image_context->format());
   image_context->SetImage(
       SkImages::BorrowTextureFrom(gr_context(), backend_texture,
                                   kTopLeft_GrSurfaceOrigin, sk_color_type,
@@ -147,15 +146,19 @@ gpu::SyncToken FakeSkiaOutputSurface::ReleaseImageContexts(
 
 std::unique_ptr<ExternalUseClient::ImageContext>
 FakeSkiaOutputSurface::CreateImageContext(
-    const gpu::MailboxHolder& holder,
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    uint32_t texture_target,
     const gfx::Size& size,
     SharedImageFormat format,
     bool concurrent_reads,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
+    GrSurfaceOrigin origin,
     bool raw_draw_if_possible) {
   return std::make_unique<ExternalUseClient::ImageContext>(
-      holder, size, format, ycbcr_info, std::move(color_space));
+      mailbox, sync_token, texture_target, size, format, ycbcr_info,
+      std::move(color_space), origin);
 }
 
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
@@ -176,8 +179,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
   auto& sk_surface = sk_surfaces_[id];
 
   if (!sk_surface) {
-    SkColorType color_type =
-        ToClosestSkColorType(true /* gpu_compositing */, format);
+    SkColorType color_type = ToClosestSkColorType(format);
     SkImageInfo image_info = SkImageInfo::Make(
         surface_size.width(), surface_size.height(), color_type,
         kPremul_SkAlphaType, std::move(color_space));
@@ -347,18 +349,16 @@ gpu::SyncToken FakeSkiaOutputSurface::GenerateSyncToken() {
 bool FakeSkiaOutputSurface::GetGrBackendTexture(
     const ImageContext& image_context,
     GrBackendTexture* backend_texture) {
-  DCHECK(!image_context.mailbox_holder().mailbox.IsZero());
+  DCHECK(!image_context.mailbox().IsZero());
 
   auto* gl = context_provider()->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(
-      image_context.mailbox_holder().sync_token.GetConstData());
+  gl->WaitSyncTokenCHROMIUM(image_context.sync_token().GetConstData());
   auto texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      image_context.mailbox_holder().mailbox.name);
+      image_context.mailbox().name);
   auto gl_format_desc = gpu::GLFormatCaps().ToGLFormatDesc(
       image_context.format(), /*plane_index=*/0);
-  GrGLTextureInfo gl_texture_info = {
-      image_context.mailbox_holder().texture_target, texture_id,
-      gl_format_desc.storage_internal_format};
+  GrGLTextureInfo gl_texture_info = {image_context.texture_target(), texture_id,
+                                     gl_format_desc.storage_internal_format};
   *backend_texture = GrBackendTextures::MakeGL(
       image_context.size().width(), image_context.size().height(),
       skgpu::Mipmapped::kNo, gl_texture_info);

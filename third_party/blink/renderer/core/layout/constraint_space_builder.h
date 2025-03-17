@@ -85,35 +85,59 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   void SetAvailableSize(LogicalSize available_size) {
 #if DCHECK_IS_ON()
     is_available_size_set_ = true;
+    DCHECK(!is_percentage_resolution_size_set_);
 #endif
 
     if (is_in_parallel_flow_) [[likely]] {
-      space_.available_size_ = available_size;
+      space_.available_size_ = space_.percentage_size_ = available_size;
     } else {
-      space_.available_size_ = {available_size.block_size,
-                                available_size.inline_size};
-      if (adjust_inline_size_if_needed_)
-        AdjustInlineSizeIfNeeded(&space_.available_size_.inline_size);
+      if (adjust_inline_size_if_needed_) {
+        AdjustInlineSizeIfNeeded(&available_size.block_size);
+      }
+      space_.available_size_ = space_.percentage_size_ = {
+          available_size.block_size, available_size.inline_size};
     }
   }
 
-  // Set percentage resolution size. Prior to calling this method,
-  // SetAvailableSize() must have been called, since we'll compare the input
-  // against the available size set, because if they are equal in either
-  // dimension, we won't have to store the values separately.
-  void SetPercentageResolutionSize(LogicalSize percentage_resolution_size);
+  // Set percentage resolution size.
+  void SetPercentageResolutionSize(LogicalSize percentage_size) {
+#if DCHECK_IS_ON()
+    is_percentage_resolution_size_set_ = true;
+#endif
+    if (is_in_parallel_flow_) [[likely]] {
+      space_.percentage_size_ = percentage_size;
+    } else {
+      if (adjust_inline_size_if_needed_) {
+        AdjustInlineSizeIfNeeded(&percentage_size.block_size);
+      }
+      space_.percentage_size_ = {percentage_size.block_size,
+                                 percentage_size.inline_size};
+    }
+  }
 
-  // Set percentage resolution size for replaced content (a special quirk inside
-  // tables). Only honored if the writing modes (container vs. child) are
-  // parallel. In orthogonal writing modes, we'll use whatever regular
-  // percentage resolution size is already set. Prior to calling this method,
-  // SetAvailableSize() must have been called, since we'll compare the input
-  // against the available size set, because if they are equal in either
-  // dimension, we won't have to store the values separately. Additionally,
-  // SetPercentageResolutionSize() must have been called, since we'll override
-  // with that value on orthogonal writing mode roots.
-  void SetReplacedPercentageResolutionSize(
-      LogicalSize replaced_percentage_resolution_size);
+  // Sets the percentage resolution size for a replaced child.
+  // Replaced children within a table-cell have *slightly* different rules for
+  // percentage resolution. This should only be used for passing this
+  // information to inline-layout.
+  void SetReplacedChildPercentageResolutionSize(
+      LogicalSize replaced_child_percentage_resolution_size) {
+#if DCHECK_IS_ON()
+    DCHECK(is_percentage_resolution_size_set_);
+    DCHECK(is_in_parallel_flow_);
+#endif
+
+    // We don't store the replaced percentage resolution inline size, so we
+    // need it to be the same as the regular percentage resolution inline size.
+    DCHECK_EQ(replaced_child_percentage_resolution_size.inline_size,
+              space_.PercentageResolutionInlineSize());
+    DCHECK(replaced_child_percentage_resolution_size.block_size !=
+           kIndefiniteSize);
+    DCHECK(replaced_child_percentage_resolution_size.block_size !=
+           space_.PercentageResolutionBlockSize());
+
+    space_.EnsureRareData()->replaced_child_percentage_resolution_block_size =
+        replaced_child_percentage_resolution_size.block_size;
+  }
 
   // Set the fallback available inline-size for an orthogonal child. The size is
   // the inline size in the writing mode of the orthogonal child.
@@ -260,8 +284,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetRequiresContentBeforeBreaking(bool b) {
-    if (!b && !space_.HasRareData())
+    if (!b && !space_.rare_data_) {
       return;
+    }
     space_.EnsureRareData()->requires_content_before_breaking = b;
   }
 
@@ -283,8 +308,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetMinBreakAppeal(BreakAppeal min_break_appeal) {
-    if (!space_.HasRareData() && min_break_appeal == kBreakAppealLastResort)
+    if (!space_.rare_data_ && min_break_appeal == kBreakAppealLastResort) {
       return;
+    }
     space_.EnsureRareData()->min_break_appeal = min_break_appeal;
   }
 
@@ -292,8 +318,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       bool propagate_child_break_values = true) {
     // Don't create rare data if `propagate_child_break_values` is already
     // false.
-    if (!space_.HasRareData() && !propagate_child_break_values)
+    if (!space_.rare_data_ && !propagate_child_break_values) {
       return;
+    }
     space_.EnsureRareData()->propagate_child_break_values =
         propagate_child_break_values;
   }
@@ -346,6 +373,19 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       space_.EnsureRareData()->SetBlockStartAnnotationSpace(space);
   }
 
+  void SetIgnoreMarginsForStretch(WritingMode parent_mode,
+                                  LineLogicalBoxSides sides) {
+#if DCHECK_IS_ON()
+    DCHECK(!is_ignored_margins_set_);
+    is_ignored_margins_set_ = true;
+#endif
+    if (!sides.IsEmpty()) {
+      space_.EnsureRareData()->ignore_margins_for_stretch =
+          PhysicalBoxSides(sides, parent_mode)
+              .ToLogical(space_.GetWritingDirection());
+    }
+  }
+
   void SetMarginStrut(const MarginStrut& margin_strut) {
 #if DCHECK_IS_ON()
     DCHECK(!is_margin_strut_set_);
@@ -358,10 +398,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
 
   void SetBfcOffset(const BfcOffset& bfc_offset) {
     if (!is_new_fc_) {
-      if (space_.HasRareData())
-        space_.rare_data_->bfc_offset = bfc_offset;
-      else
-        space_.bfc_offset_ = bfc_offset;
+      space_.bfc_offset_ = bfc_offset;
     }
   }
 
@@ -637,6 +674,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   bool is_table_row_data_set_ = false;
   bool is_table_section_data_set_ = false;
   bool is_grid_layout_subtree_set_ = false;
+  bool is_ignored_margins_set_ = false;
 
   bool to_constraint_space_called_ = false;
 #endif
@@ -670,8 +708,8 @@ class CORE_EXPORT MinMaxConstraintSpaceBuilder final {
     delegate_.SetPercentageResolutionSize({kIndefiniteSize, block_size});
   }
 
-  void SetReplacedPercentageResolutionBlockSize(LayoutUnit block_size) {
-    delegate_.SetReplacedPercentageResolutionSize(
+  void SetReplacedChildPercentageResolutionBlockSize(LayoutUnit block_size) {
+    delegate_.SetReplacedChildPercentageResolutionSize(
         {kIndefiniteSize, block_size});
   }
 

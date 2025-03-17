@@ -3,11 +3,27 @@
 // found in the LICENSE file.
 
 #include "components/os_crypt/sync/key_storage_util_linux.h"
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace os_crypt {
 namespace {
+
+// Set the setting that disables using OS-level encryption. `use` determines
+// whether a backend will be used or not.
+bool WriteBackendUse(const base::FilePath& user_data_dir, bool use) {
+  if (user_data_dir.empty()) {
+    return false;
+  }
+  base::FilePath pref_path = user_data_dir.Append(kBackendPreferenceFileName);
+  if (use) {
+    return base::DeleteFile(pref_path);
+  }
+  FILE* f = base::OpenFile(pref_path, "w");
+  return f && base::CloseFile(f);
+}
 
 class KeyStorageUtilLinuxPreferenceTest : public testing::Test {
  public:
@@ -33,76 +49,61 @@ class KeyStorageUtilLinuxPreferenceTest : public testing::Test {
 };
 
 TEST_F(KeyStorageUtilLinuxPreferenceTest, FirstTimeDefaultsToTrue) {
-  EXPECT_TRUE(os_crypt::GetBackendUse(fake_user_data_dir_));
+  EXPECT_TRUE(GetBackendUse(fake_user_data_dir_));
 }
 
 TEST_F(KeyStorageUtilLinuxPreferenceTest, SetToTrue) {
-  EXPECT_TRUE(os_crypt::WriteBackendUse(fake_user_data_dir_, true));
-  EXPECT_TRUE(os_crypt::GetBackendUse(fake_user_data_dir_));
+  EXPECT_TRUE(WriteBackendUse(fake_user_data_dir_, true));
+  EXPECT_TRUE(GetBackendUse(fake_user_data_dir_));
 }
 
 TEST_F(KeyStorageUtilLinuxPreferenceTest, SetToFalse) {
-  EXPECT_TRUE(os_crypt::WriteBackendUse(fake_user_data_dir_, false));
-  EXPECT_FALSE(os_crypt::GetBackendUse(fake_user_data_dir_));
+  EXPECT_TRUE(WriteBackendUse(fake_user_data_dir_, false));
+  EXPECT_FALSE(GetBackendUse(fake_user_data_dir_));
 }
 
 TEST_F(KeyStorageUtilLinuxPreferenceTest, MultipleWrites) {
-  EXPECT_TRUE(os_crypt::WriteBackendUse(fake_user_data_dir_, false));
-  EXPECT_FALSE(os_crypt::GetBackendUse(fake_user_data_dir_));
+  EXPECT_TRUE(WriteBackendUse(fake_user_data_dir_, false));
+  EXPECT_FALSE(GetBackendUse(fake_user_data_dir_));
 
-  EXPECT_TRUE(os_crypt::WriteBackendUse(fake_user_data_dir_, true));
-  EXPECT_TRUE(os_crypt::GetBackendUse(fake_user_data_dir_));
+  EXPECT_TRUE(WriteBackendUse(fake_user_data_dir_, true));
+  EXPECT_TRUE(GetBackendUse(fake_user_data_dir_));
 
-  EXPECT_TRUE(os_crypt::WriteBackendUse(fake_user_data_dir_, false));
-  EXPECT_FALSE(os_crypt::GetBackendUse(fake_user_data_dir_));
+  EXPECT_TRUE(WriteBackendUse(fake_user_data_dir_, false));
+  EXPECT_FALSE(GetBackendUse(fake_user_data_dir_));
 }
 
-class KeyStorageUtilLinuxTest : public testing::Test {
- public:
-  KeyStorageUtilLinuxTest() = default;
-
-  KeyStorageUtilLinuxTest(const KeyStorageUtilLinuxTest&) = delete;
-  KeyStorageUtilLinuxTest& operator=(const KeyStorageUtilLinuxTest&) = delete;
-
-  ~KeyStorageUtilLinuxTest() override = default;
-
-  void SetUp() override {}
-
-  void TearDown() override {}
-};
+using KeyStorageUtilLinuxTest = testing::Test;
 
 TEST_F(KeyStorageUtilLinuxTest, PasswordStoreFlagOverrides) {
-  os_crypt::SelectedLinuxBackend selected;
-
-  selected = os_crypt::SelectBackend(
+  SelectedLinuxBackend selected = SelectBackend(
       "basic", true, base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_GNOME);
-  EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::BASIC_TEXT);
+  EXPECT_EQ(selected, SelectedLinuxBackend::BASIC_TEXT);
 
-  selected = os_crypt::SelectBackend(
-      "gnome-libsecret", false,
-      base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE4);
-  EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::GNOME_LIBSECRET);
+  selected =
+      SelectBackend("gnome-libsecret", false,
+                    base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE4);
+  EXPECT_EQ(selected, SelectedLinuxBackend::GNOME_LIBSECRET);
 
-  selected = os_crypt::SelectBackend(
-      "gnome-libsecret", true,
-      base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE4);
-  EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::GNOME_LIBSECRET);
+  selected =
+      SelectBackend("gnome-libsecret", true,
+                    base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE4);
+  EXPECT_EQ(selected, SelectedLinuxBackend::GNOME_LIBSECRET);
 }
 
 TEST_F(KeyStorageUtilLinuxTest, IgnoreBackends) {
-  os_crypt::SelectedLinuxBackend selected;
-
-  selected = os_crypt::SelectBackend(
+  SelectedLinuxBackend selected = SelectBackend(
       "", false, base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_GNOME);
-  EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::BASIC_TEXT);
+  EXPECT_EQ(selected, SelectedLinuxBackend::BASIC_TEXT);
 
-  selected = os_crypt::SelectBackend(
+  selected = SelectBackend(
       "", true, base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE5);
-  EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::KWALLET5);
+  EXPECT_EQ(selected, SelectedLinuxBackend::KWALLET5);
 
-  selected = os_crypt::SelectBackend(
+  selected = SelectBackend(
       "", false, base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_KDE5);
-  EXPECT_EQ(selected, os_crypt::SelectedLinuxBackend::BASIC_TEXT);
+  EXPECT_EQ(selected, SelectedLinuxBackend::BASIC_TEXT);
 }
 
+}  // namespace
 }  // namespace os_crypt

@@ -12,8 +12,13 @@ source_set("platform_keys") {
   sources = [
     "platform_keys_api.cc",
     "platform_keys_api.h",
-    "verify_trust_api.cc",
-    "verify_trust_api.h",
+    "verify_trust_api_base.h",
+    "verify_trust_api_service.cc",
+    "verify_trust_api_service.h",
+    "verify_trust_api_v1.cc",
+    "verify_trust_api_v1.h",
+    "verify_trust_api_v2.cc",
+    "verify_trust_api_v2.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

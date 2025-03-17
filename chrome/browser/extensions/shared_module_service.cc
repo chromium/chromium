@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/version.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "extensions/browser/extension_system.h"
@@ -93,7 +94,7 @@ SharedModuleService::ImportStatus SharedModuleService::SatisfyImports(
       ExtensionSystem::Get(browser_context_)->extension_service();
 
   PendingExtensionManager* pending_extension_manager =
-      service->pending_extension_manager();
+      PendingExtensionManager::Get(browser_context_);
   DCHECK(pending_extension_manager);
 
   if (status == IMPORT_STATUS_UNSATISFIED) {
@@ -121,7 +122,8 @@ std::unique_ptr<ExtensionSet> SharedModuleService::GetDependentExtensions(
     ExtensionSet set_to_check;
     set_to_check.InsertAll(registry->enabled_extensions());
     set_to_check.InsertAll(registry->disabled_extensions());
-    set_to_check.InsertAll(*service->delayed_installs());
+    set_to_check.InsertAll(
+        service->delayed_install_manager()->delayed_installs());
 
     for (ExtensionSet::const_iterator iter = set_to_check.begin();
          iter != set_to_check.end();
@@ -158,7 +160,8 @@ void SharedModuleService::PruneSharedModules() {
   ExtensionSet set_to_check;
   set_to_check.InsertAll(registry->enabled_extensions());
   set_to_check.InsertAll(registry->disabled_extensions());
-  set_to_check.InsertAll(*service->delayed_installs());
+  set_to_check.InsertAll(
+      service->delayed_install_manager()->delayed_installs());
 
   std::vector<std::string> shared_modules;
   std::set<std::string> used_shared_modules;

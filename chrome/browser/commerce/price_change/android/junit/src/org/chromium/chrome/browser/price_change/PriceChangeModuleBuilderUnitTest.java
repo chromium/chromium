@@ -78,7 +78,8 @@ public class PriceChangeModuleBuilderUnitTest {
                         RuntimeEnvironment.application,
                         new ObservableSupplier<>() {
                             @Override
-                            public Profile addObserver(Callback<Profile> obs) {
+                            public Profile addObserver(
+                                    Callback<Profile> obs, @NotifyBehavior int behavior) {
                                 return null;
                             }
 

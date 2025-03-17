@@ -21,7 +21,7 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
@@ -291,14 +291,14 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     // first opt-in.
     if (this.isTosHidden) {
       const useageStatsDiv =
-          this.shadowRoot?.querySelector<HTMLDivElement>('#usageStats');
+          this.shadowRoot?.querySelector<HTMLElement>('#usageStats');
       if (useageStatsDiv instanceof HTMLDivElement) {
         useageStatsDiv.classList.add('first-optin-no-tos');
       }
     }
 
     const loadedContentDiv =
-        this.shadowRoot?.querySelector<HTMLDivElement>('#loadedContent');
+        this.shadowRoot?.querySelector<HTMLElement>('#loadedContent');
     if (loadedContentDiv instanceof HTMLDivElement) {
       if (this.isArcOptInsHidden(this.isArcEnabled, this.isDemo)) {
         loadedContentDiv.classList.remove('landscape-vertical-centered');

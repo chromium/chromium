@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Inserisci un valore valido. I due valori validi più vicini sono <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Dettagli</translation>
 <translation id="4664250907885839816">Una parte che segue "<ph name="ATSIGN" />" non deve contenere il simbolo "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="4703271465972936359">Tracce audio</translation>
 <translation id="4718048029184481307">Riproduzione in modalità Picture in picture</translation>
 <translation id="4812940957355064477">Inserisci un numero.</translation>
 <translation id="4975562563186953947">Elementi selezionati: <ph name="SELECTED_COUNT" /></translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5630795885300617244">Tocca due volte a sinistra o destra per saltare di 10 secondi</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
+<translation id="5868587040512539609">Tracce video</translation>
 <translation id="588258955323874662">Schermo intero</translation>
 <translation id="5888666972993069672">Trasmissione in corso a <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Reimposta</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Formatta il codice</translation>
 <translation id="6550675742724504774">Opzioni</translation>
 <translation id="6643016212128521049">Cancella</translation>
+<translation id="6661136971638885481">Traccia n. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Altro...</translation>
 <translation id="6709093583001123835">Il valore deve essere <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Scarsa qualità di riproduzione</translation>

@@ -33,8 +33,9 @@ void TestLogListenerSafe::set_on_log_message(
 void TestLogListenerSafe::Log(
     TestLogListenerSafe::LogRequest& request,
     TestLogListenerSafe::LogCompleter::Sync& completer) {
-  if (on_log_message_)
+  if (on_log_message_) {
     on_log_message_.Run(request.log());
+  }
   completer.Reply();
 }
 

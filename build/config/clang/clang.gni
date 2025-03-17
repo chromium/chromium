@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/c++/c++.gni")
+import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 
 default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
@@ -13,7 +15,10 @@ declare_args() {
   # Chrome OS's.
   clang_use_chrome_plugins =
       is_clang && !is_nacl && current_os != "zos" &&
-      default_toolchain != "//build/toolchain/cros:target"
+      default_toolchain != "//build/toolchain/cros:target" &&
+      # TODO(https://crbug.com/351909443): Remove this after fixing performance
+      # of Clang modules build.
+      !use_libcxx_modules
 
   # Use this instead of clang_use_chrome_plugins to enable just the raw-ptr-plugin.
   clang_use_raw_ptr_plugin = false
@@ -21,14 +26,14 @@ declare_args() {
   enable_check_raw_ptr_fields =
       build_with_chromium && !is_official_build &&
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_mac ||
-       is_ios || is_win || is_chromeos_lacros || is_chromeos_ash)
+       is_ios || is_win || is_chromeos)
 
   # TODO(crbug.com/40268473): Merge with enable_check_raw_ptr_fields once both
   # checks are activated on the same set of platforms.
   enable_check_raw_ref_fields =
       build_with_chromium && !is_official_build &&
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_win ||
-       is_mac || is_ios || is_chromeos_lacros || is_chromeos_ash)
+       is_mac || is_ios || is_chromeos)
 
   clang_base_path = default_clang_base_path
 
@@ -44,3 +49,20 @@ declare_args() {
 # We don't really need to collect a corpus for the host tools, just for the target.
 lld_emit_indexes_and_imports =
     lld_emit_indexes_and_imports && is_a_target_toolchain
+
+# TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++
+# targets. This file is added to `inputs` for all C targets in
+# //build/config/BUILDCONFIG.gn via //build/config/clang:unsafe_buffers.
+# We work around the bug in Reclient by specifying the file here.
+#
+# This is a comma-delimited list of paths relative to the source tree root. The
+# leading space is important, if the string is non-empty. :)
+rbe_bug_326584510_missing_inputs = ""
+if (clang_use_chrome_plugins && defined(clang_unsafe_buffers_paths) &&
+    "$clang_unsafe_buffers_paths" != "") {
+  if (rbe_exec_root != rebase_path("//")) {
+    assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
+  }
+  from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
+  rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
+}

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <set>
 #include <string>
 
 #include "base/time/time.h"
@@ -163,6 +164,12 @@ void AddTabToFakeServer(const tab_groups::SavedTabGroupTab& tab);
 
 // Deletes a tab or a group with `uuid` on the server.
 void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid);
+
+// Adds the `collaboration_id` on the server.
+void AddCollaborationGroupToFakeServer(const std::string& collaboration_id);
+
+// Deletes the shared group with `uuid` on the server.
+void DeleteSharedGroupFromFakeServer(const base::Uuid& uuid);
 
 }  // namespace chrome_test_util
 

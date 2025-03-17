@@ -349,9 +349,7 @@ interface PageHandler {
   SetTabOrganizationUserInstruction(string user_instruction);
 
   // Store the user feedback supplied by the user.
-  SetUserFeedback(int32 session_id,
-                  int32 organization_id,
-                  UserFeedback feedback);
+  SetUserFeedback(int32 session_id, UserFeedback feedback);
 
   // Notify the backend that the Organization UI is ready to be shown. The
   // surface will only be shown once both Organization and Search are ready.

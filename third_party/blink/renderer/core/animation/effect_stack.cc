@@ -104,8 +104,9 @@ bool EffectStack::HasActiveAnimationsOnCompositor(
   for (const auto& sampled_effect : sampled_effects_) {
     if (sampled_effect->Effect() &&
         sampled_effect->Effect()->HasPlayingAnimation() &&
-        sampled_effect->Effect()->HasActiveAnimationsOnCompositor(property))
+        sampled_effect->Effect()->HasActiveAnimationsOnCompositor(property)) {
       return true;
+    }
   }
   return false;
 }

@@ -36,7 +36,7 @@ namespace net {
 namespace {
 
 // MAXNS is normally 3, but let's test 4 if possible.
-const auto kNameserversIPv4 = std::to_array<const char*>({
+constexpr auto kNameserversIPv4 = std::to_array<const char*>({
     "8.8.8.8",
     "192.168.1.1",
     "63.1.2.4",
@@ -44,7 +44,7 @@ const auto kNameserversIPv4 = std::to_array<const char*>({
 });
 
 #if BUILDFLAG(IS_LINUX)
-const auto kNameserversIPv6 = std::to_array<const char*>({
+constexpr auto kNameserversIPv6 = std::to_array<const char*>({
     nullptr,
     "2001:db8::42",
     nullptr,

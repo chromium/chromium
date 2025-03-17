@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -120,6 +121,119 @@ bool IsWindowCloaked(HWND hwnd) {
   return SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &is_cloaked,
                                          sizeof(is_cloaked))) &&
          is_cloaked;
+}
+
+bool IsWindowVisibleAndFullyOpaque(HWND hwnd, Rect* window_rect) {
+  // Filter out windows that are not "visible", IsWindowVisible().
+  if (!IsWindow(hwnd) || !IsWindowVisible(hwnd)) {
+    return false;
+  }
+
+  // Filter out minimized windows.
+  if (IsIconic(hwnd)) {
+    return false;
+  }
+
+  LONG ex_styles = ::GetWindowLong(hwnd, GWL_EXSTYLE);
+  // Filter out "transparent" windows, windows where the mouse clicks fall
+  // through them.
+  if (ex_styles & WS_EX_TRANSPARENT) {
+    return false;
+  }
+
+  // Filter out "tool windows", which are floating windows that do not appear on
+  // the taskbar or ALT-TAB. Floating windows can have larger window rectangles
+  // than what is visible to the user, so by filtering them out we will avoid
+  // incorrectly marking native windows as occluded. We do not filter out the
+  // Windows Taskbar.
+  if (ex_styles & WS_EX_TOOLWINDOW) {
+    if (GetClassName(hwnd) != L"Shell_TrayWnd") {
+      return false;
+    }
+  }
+
+  // Filter out layered windows that are not opaque or that set a transparency
+  // colorkey.
+  if (ex_styles & WS_EX_LAYERED) {
+    BYTE alpha;
+    DWORD flags;
+
+    // GetLayeredWindowAttributes only works if the application has
+    // previously called SetLayeredWindowAttributes on the window.
+    // The function will fail if the layered window was setup with
+    // UpdateLayeredWindow. Treat this failure as the window being transparent.
+    // See Remarks section of
+    // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlayeredwindowattributes
+    if (!GetLayeredWindowAttributes(hwnd, nullptr, &alpha, &flags)) {
+      return false;
+    }
+
+    if (flags & LWA_ALPHA && alpha < 255) {
+      return false;
+    }
+    if (flags & LWA_COLORKEY) {
+      return false;
+    }
+  }
+
+  // Filter out windows that do not have a simple rectangular region.
+  base::win::ScopedGDIObject<HRGN> region(CreateRectRgn(0, 0, 0, 0));
+  if (GetWindowRgn(hwnd, region.get()) == COMPLEXREGION) {
+    return false;
+  }
+
+  // Windows 10 has cloaked windows, windows with WS_VISIBLE attribute but
+  // not displayed. explorer.exe, in particular has one that's the
+  // size of the desktop. It's usually behind Chrome windows in the z-order,
+  // but using a remote desktop can move it up in the z-order. So, ignore them.
+  if (IsWindowCloaked(hwnd)) {
+    return false;
+  }
+
+  RECT win_rect;
+  // Filter out windows that take up zero area. The call to GetWindowRect is one
+  // of the most expensive parts of this function, so it is last.
+  if (!GetWindowRect(hwnd, &win_rect)) {
+    return false;
+  }
+  if (IsRectEmpty(&win_rect)) {
+    return false;
+  }
+
+  // Ignore popup windows since they're transient unless it is a Chrome Widget
+  // Window or the Windows Taskbar
+  if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
+    std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
+    if (!hwnd_class_name.starts_with(L"Chrome_WidgetWin_") &&
+        hwnd_class_name != L"Shell_TrayWnd") {
+      return false;
+    }
+  }
+
+  if (window_rect) {
+    *window_rect = Rect(win_rect);
+
+    WINDOWPLACEMENT window_placement = {0};
+    window_placement.length = sizeof(WINDOWPLACEMENT);
+    ::GetWindowPlacement(hwnd, &window_placement);
+    if (window_placement.showCmd == SW_MAXIMIZE) {
+      // If the window is maximized the window border extends beyond the visible
+      // region of the screen. Adjust the maximized window rect to fit the
+      // screen dimensions to ensure that fullscreen windows, which do not
+      // extend beyond the screen boundaries since they typically have no
+      // borders, will occlude maximized windows underneath them.
+      HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+      if (hmon) {
+        MONITORINFO mi;
+        mi.cbSize = sizeof(mi);
+        if (GetMonitorInfo(hmon, &mi)) {
+          (*window_rect).AdjustToFit(gfx::Rect(mi.rcWork));
+        }
+      }
+    }
+  }
+
+  return true;
 }
 
 std::optional<bool> IsWindowOnCurrentVirtualDesktop(

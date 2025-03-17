@@ -171,4 +171,9 @@ bool MidiManagerUsb::AddPorts(UsbMidiDevice* device, int device_id) {
   return true;
 }
 
+const char* MidiManagerUsb::GetBackendName() const {
+  static constexpr char kBackendName[] = "Usb";
+  return kBackendName;
+}
+
 }  // namespace midi

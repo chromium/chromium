@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -27,10 +28,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -60,12 +61,14 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/filter/filter_source_stream.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/log/net_log_source_type.h"
+#include "net/log/net_log_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -85,6 +88,7 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/loading_params.h"
@@ -101,6 +105,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -127,6 +132,17 @@ constexpr size_t kBlockedBodyAllocationSize = 1;
 
 // Size to allocate for `discard_buffer_`.
 constexpr size_t kDiscardBufferSize = 128 * 1024;
+
+// TODO(https://crbug.com/375352611): add the check for enabling third-party
+// cookies.
+constexpr uint64_t kAllowedDevToolsCookieSettingOverrides =
+    1u << static_cast<int>(
+        net::CookieSettingOverride::kForceDisableThirdPartyCookies) |
+    1u << static_cast<int>(
+        net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations) |
+    1u << static_cast<int>(net::CookieSettingOverride::kSkipTPCDMetadataGrant) |
+    1u << static_cast<int>(
+        net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
 
 constexpr char kActivateStorageAccessHeader[] = "activate-storage-access";
 
@@ -319,20 +335,20 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
   // Filter out tentative secure source scheme warnings. They're used for netlog
   // debugging and not something we want to inform cookie observers about.
   status.RemoveWarningReason(
-      net::CookieInclusionStatus::
+      net::CookieInclusionStatus::WarningReason::
           WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
 
   return status.IsInclude() || status.ShouldWarn() ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_PORT_MISMATCH) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_USER_PREFERENCES) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_THIRD_PARTY_PHASEOUT) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_DOMAIN_NON_ASCII) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_PORT_MISMATCH) ||
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_SCHEME_MISMATCH);
 }
 
 // Parses AcceptCHFrame and removes client hints already in the headers.
@@ -552,6 +568,30 @@ mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
   return new_observer;
 }
 
+int32_t PopulateOptions(int32_t initial_options,
+                        bool is_orb_enabled,
+                        bool has_devtools_request_id) {
+  int32_t options = initial_options;
+
+  if (options & mojom::kURLLoadOptionReadAndDiscardBody) {
+    CHECK(!(options & mojom::kURLLoadOptionSniffMimeType))
+        << "options ReadAndDiscardBody and SniffMimeType cannot be used "
+           "together";
+    if (is_orb_enabled) {
+      // TODO(ricea): Make ReadAndDiscardBody and ORB work together.
+      LOG(WARNING) << "Disabling ReadAndDiscardBody because ORB is enabled";
+      options &= ~mojom::kURLLoadOptionReadAndDiscardBody;
+    }
+  }
+
+  if (has_devtools_request_id) {
+    options |= mojom::kURLLoadOptionSendSSLInfoWithResponse |
+               mojom::kURLLoadOptionSendSSLInfoForCertificateError;
+  }
+
+  return options;
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -609,11 +649,11 @@ URLLoader::URLLoader(
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
-      options_(options),
       resource_type_(request.resource_type),
       is_load_timing_enabled_(request.enable_load_timing),
       factory_params_(context.GetFactoryParams()),
       coep_reporter_(context.GetCoepReporter()),
+      dip_reporter_(context.GetDipReporter()),
       request_id_(request_id),
       keepalive_request_size_(keepalive_request_size),
       keepalive_(request.keepalive),
@@ -630,6 +670,9 @@ URLLoader::URLLoader(
           base::SequencedTaskRunner::GetCurrentDefault()),
       per_factory_orb_state_(context.GetMutableOrbState()),
       devtools_request_id_(request.devtools_request_id),
+      options_(PopulateOptions(options,
+                               factory_params_->is_orb_enabled,
+                               !!devtools_request_id())),
       request_mode_(request.mode),
       request_credentials_mode_(request.credentials_mode),
       has_user_activation_(request.trusted_params &&
@@ -690,15 +733,30 @@ URLLoader::URLLoader(
       provide_data_use_updates_(context.DataUseUpdatesEnabled()) {
   DCHECK(delete_callback_);
 
+  // crbug.com/387537990: Experiment with creating the mojo data pipe
+  // asynchronously to evaluate the impact of removing a small amount of work
+  // per-resource from the main network service sequence. This isn't meant to
+  // ship as-is, rather it'll allow us to understand the potential payoff of
+  // investing in URLLoader optimization.
+  create_data_pipe_async_ =
+      base::FeatureList::IsEnabled(features::kCreateURLLoaderPipeAsync);
+  if (create_data_pipe_async_ &&
+      !(options_ & mojom::kURLLoadOptionReadAndDiscardBody)) {
+    // If the data pipe is created asynchronously, post the task to do so here
+    // so it can start being created while other things are happening.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(&URLLoader::PrepareDataPipe,
+                       base::BindPostTaskToCurrentDefault(
+                           base::BindOnce(&URLLoader::OnPrepareDataPipeSuccess,
+                                          weak_ptr_factory_.GetWeakPtr())),
+                       base::BindPostTaskToCurrentDefault(
+                           base::BindOnce(&URLLoader::OnPrepareDataPipeError,
+                                          weak_ptr_factory_.GetWeakPtr()))));
+  }
+
   if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
-    CHECK(!(options_ & mojom::kURLLoadOptionSniffMimeType))
-        << "options ReadAndDiscardBody and SniffMimeType cannot be used "
-           "together";
-    if (factory_params_->is_orb_enabled) {
-      // TODO(ricea): Make ReadAndDiscardBody and ORB work together.
-      LOG(WARNING) << "Disabling ReadAndDiscardBody because ORB is enabled";
-      options_ &= ~mojom::kURLLoadOptionReadAndDiscardBody;
-    } else {
+    if (!factory_params_->is_orb_enabled) {
       discard_buffer_ =
           base::MakeRefCounted<net::IOBufferWithSize>(kDiscardBufferSize);
     }
@@ -720,19 +778,14 @@ URLLoader::URLLoader(
     header_client_.set_disconnect_handler(
         base::BindOnce(&URLLoader::OnMojoDisconnect, base::Unretained(this)));
   }
-  if (devtools_request_id()) {
-    options_ |= mojom::kURLLoadOptionSendSSLInfoWithResponse |
-                mojom::kURLLoadOptionSendSSLInfoForCertificateError;
-  }
   receiver_.set_disconnect_handler(
       base::BindOnce(&URLLoader::OnMojoDisconnect, base::Unretained(this)));
   url_request_ = url_request_context_->CreateRequest(
       request.url, request.priority, this, traffic_annotation,
       /*is_for_websockets=*/false, request.net_log_create_info);
 
-  TRACE_EVENT(
-      "loading", "URLLoader::URLLoader",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
+  TRACE_EVENT("loading", "URLLoader::URLLoader",
+              net::NetLogWithSourceToFlow(url_request_->net_log()));
 
   // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
   // They are non-empty when the values are given by the UA code, therefore
@@ -780,6 +833,7 @@ URLLoader::URLLoader(
       request.referrer_policy,
       /*upgrade_if_insecure=*/request.upgrade_if_insecure,
       /*is_ad_tagged=*/request.is_ad_tagged,
+      request.client_side_content_decoding_enabled,
       /*isolation_info=*/
       GetIsolationInfo(factory_params_->isolation_info,
                        factory_params_->automatically_assign_isolation_info,
@@ -791,15 +845,17 @@ URLLoader::URLLoader(
       /*request_load_flags=*/request.load_flags,
       /*priority_incremental=*/request.priority_incremental,
       /*cookie_setting_overrides=*/
-      CalculateCookieSettingOverrides(factory_params_->cookie_setting_overrides,
-                                      request, /*emit_metrics=*/true),
+      CalculateCookieSettingOverrides(
+          factory_params_->cookie_setting_overrides,
+          factory_params_->devtools_cookie_setting_overrides, request,
+          /*emit_metrics=*/true),
       /*shared_dictionary_getter=*/
       shared_dictionary_manager
           ? std::make_optional(
                 shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
                     request.load_flags, request_destination_))
           : std::nullopt,
-      request.socket_tag);
+      request.socket_tag, request.allows_device_bound_sessions);
 
   if (context.ShouldRequireIsolationInfo()) {
     DCHECK(!url_request_->isolation_info().IsEmpty());
@@ -839,11 +895,12 @@ void URLLoader::ConfigureRequest(
     net::ReferrerPolicy referrer_policy,
     bool upgrade_if_insecure,
     bool is_ad_tagged,
+    bool client_side_content_decoding_enabled,
     std::optional<net::IsolationInfo> isolation_info,
     bool force_main_frame_for_same_site_cookies,
     net::SecureDnsPolicy secure_dns_policy,
     net::HttpRequestHeaders extra_request_headers,
-    const std::optional<std::vector<net::SourceStream::SourceType>>&
+    const std::optional<std::vector<net::SourceStreamType>>&
         accepted_stream_types,
     const std::optional<url::Origin>& initiator,
     net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
@@ -851,7 +908,8 @@ void URLLoader::ConfigureRequest(
     bool priority_incremental,
     net::CookieSettingOverrides cookie_setting_overrides,
     std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
-    net::SocketTag socket_tag) {
+    net::SocketTag socket_tag,
+    bool allows_device_bound_sessions) {
   url_request_->set_method(method);
   url_request_->set_site_for_cookies(site_for_cookies);
   url_request_->set_force_ignore_site_for_cookies(
@@ -863,6 +921,8 @@ void URLLoader::ConfigureRequest(
   url_request_->set_referrer_policy(referrer_policy);
   url_request_->set_upgrade_if_insecure(upgrade_if_insecure);
   url_request_->set_ad_tagged(is_ad_tagged);
+  url_request_->set_client_side_content_decoding_enabled(
+      client_side_content_decoding_enabled);
 
   if (isolation_info) {
     url_request_->set_isolation_info(std::move(isolation_info).value());
@@ -935,6 +995,8 @@ void URLLoader::ConfigureRequest(
         &mojom::DeviceBoundSessionAccessObserver::OnDeviceBoundSessionAccessed,
         Clone(*device_bound_session_observer_)));
   }
+
+  url_request_->set_allows_device_bound_sessions(allows_device_bound_sessions);
 }
 
 // This class is used to manage the queue of pending file upload operations
@@ -1267,9 +1329,8 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
 }
 
 void URLLoader::ScheduleStart() {
-  TRACE_EVENT(
-      "loading", "URLLoader::ScheduleStart",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
+  TRACE_EVENT("loading", "URLLoader::ScheduleStart",
+              net::NetLogWithSourceToFlow(url_request_->net_log()));
   bool defer = false;
   if (resource_scheduler_client_) {
     resource_scheduler_request_handle_ =
@@ -1279,16 +1340,91 @@ void URLLoader::ScheduleStart() {
         base::BindOnce(&URLLoader::ResumeStart, base::Unretained(this)));
     resource_scheduler_request_handle_->WillStartRequest(&defer);
   }
+
   if (defer)
     url_request_->LogBlockedBy("ResourceScheduler");
   else
     url_request_->Start();
 }
 
+void URLLoader::PrepareDataPipe(
+    URLLoader::PrepareDataPipeSuccessCallback success_cb,
+    base::OnceClosure error_cb) {
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
+      DataPipeAllocationSize::kLargerSizeIfPossible);
+
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  MojoResult result =
+      mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
+  if (result != MOJO_RESULT_OK) {
+    std::move(error_cb).Run();
+    return;
+  }
+
+  std::move(success_cb)
+      .Run(std::move(producer_handle), std::move(consumer_handle));
+}
+
+void URLLoader::OnPrepareDataPipeSuccess(
+    mojo::ScopedDataPipeProducerHandle producer_handle,
+    mojo::ScopedDataPipeConsumerHandle consumer_handle) {
+  if (was_continue_and_response_started_called_ || !create_data_pipe_async_) {
+    // `ContinueOnResponseStarted` was already called, or the pipe creation is
+    // synchronous and we're currently being called by
+    // `ContinueOnResponseStarted` so finish setting up the pipe and invoke
+    // `ContinueOnResponseStartedImmediately` right away.
+    SetupPipeHandlesAndWatchers(std::move(producer_handle),
+                                std::move(consumer_handle));
+    CHECK(response_body_stream_.is_valid());
+    CHECK(consumer_handle_.is_valid());
+    ContinueOnResponseStartedImmediately();
+  } else {
+    // Nothing is waiting on the pipe, but a lot of this code's preconditions
+    // encode the fact that the handles aren't setup until
+    // `ContinueOnResponseStarted` is called. Instead of setting up the pipe
+    // handles right away, store them as "pending" and let
+    // `ContinueOnResponseStarted` call setup.
+    pending_pipe_handles_ = std::make_pair<mojo::ScopedDataPipeProducerHandle,
+                                           mojo::ScopedDataPipeConsumerHandle>(
+        std::move(producer_handle), std::move(consumer_handle));
+  }
+}
+
+void URLLoader::OnPrepareDataPipeError() {
+  NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+  // Don't do any more work here because `NotifyCompleted` deletes this
+  // URLLoader.
+}
+
+void URLLoader::SetupPipeHandlesAndWatchers(
+    mojo::ScopedDataPipeProducerHandle producer_handle,
+    mojo::ScopedDataPipeConsumerHandle consumer_handle) {
+  response_body_stream_ = std::move(producer_handle);
+  consumer_handle_ = std::move(consumer_handle);
+
+  CHECK(response_body_stream_.is_valid());
+  CHECK(consumer_handle_.is_valid());
+
+  peer_closed_handle_watcher_.Watch(
+      response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
+                          base::Unretained(this)));
+  peer_closed_handle_watcher_.ArmOrNotify();
+
+  writable_handle_watcher_.Watch(
+      response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      base::BindRepeating(&URLLoader::OnResponseBodyStreamReady,
+                          base::Unretained(this)));
+}
+
 URLLoader::~URLLoader() {
-  TRACE_EVENT(
-      "loading", "URLLoader::~URLLoader",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
+  TRACE_EVENT("loading", "URLLoader::~URLLoader",
+              net::NetLogWithSourceToFlow(url_request_->net_log()));
   if (keepalive_ && keepalive_statistics_recorder_) {
     keepalive_statistics_recorder_->OnLoadFinished(
         *factory_params_->top_frame_id, keepalive_request_size_);
@@ -1367,30 +1503,6 @@ void URLLoader::SetPriority(net::RequestPriority priority,
   }
 }
 
-void URLLoader::PauseReadingBodyFromNet() {
-  DVLOG(1) << "URLLoader pauses fetching response body for "
-           << (url_request_ ? url_request_->original_url().spec()
-                            : "a URL that has completed loading or failed.");
-
-  // Please note that we pause reading body in all cases. Even if the URL
-  // request indicates that the response was cached, there could still be
-  // network activity involved. For example, the response was only partially
-  // cached.
-  should_pause_reading_body_ = true;
-}
-
-void URLLoader::ResumeReadingBodyFromNet() {
-  DVLOG(1) << "URLLoader resumes fetching response body for "
-           << (url_request_ ? url_request_->original_url().spec()
-                            : "a URL that has completed loading or failed.");
-  should_pause_reading_body_ = false;
-
-  if (paused_reading_body_) {
-    paused_reading_body_ = false;
-    ReadMore();
-  }
-}
-
 PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
     const net::TransportInfo& transport_info) {
   PrivateNetworkAccessCheckResult result =
@@ -1398,6 +1510,10 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
 
   mojom::IPAddressSpace response_address_space =
       *private_network_access_checker_.ResponseAddressSpace();
+  mojom::IPAddressSpace client_address_space =
+      private_network_access_checker_.ClientAddressSpace();
+  mojom::IPAddressSpace target_address_space =
+      private_network_access_checker_.TargetAddressSpace();
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
@@ -1411,8 +1527,18 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
                  PrivateNetworkAccessCheckResultToStringPiece(result));
       });
 
+  if (url_loader_network_observer_) {
+    if (response_address_space == mojom::IPAddressSpace::kLocal ||
+        response_address_space == mojom::IPAddressSpace::kPrivate) {
+      url_loader_network_observer_->OnUrlLoaderConnectedToPrivateNetwork(
+          url_request_->url(), response_address_space, client_address_space,
+          target_address_space);
+    }
+  }
+
   bool is_warning = false;
   switch (result) {
+    case PrivateNetworkAccessCheckResult::kLNAAllowedByPolicyWarn:
     case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:
       is_warning = true;
       break;
@@ -1565,8 +1691,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->has_range_requested =
       url_request_->extra_request_headers().HasHeader(
           net::HttpRequestHeaders::kRange);
-  base::ranges::copy(url_request_->response_info().dns_aliases,
-                     std::back_inserter(response->dns_aliases));
+  std::ranges::copy(url_request_->response_info().dns_aliases,
+                    std::back_inserter(response->dns_aliases));
   // [spec]: https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
   // 13. Set response’s request-includes-credentials to includeCredentials.
   response->request_include_credentials = url_request_->allow_credentials();
@@ -1578,6 +1704,12 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
       private_network_access_checker_.ClientAddressSpace();
 
   response->load_with_storage_access = ShouldSetLoadWithStorageAccess();
+  if (url_request_->client_side_content_decoding_enabled() &&
+      response->headers) {
+    response->client_side_content_decoding_types =
+        net::FilterSourceStream::GetContentEncodingTypes(
+            url_request_->accepted_stream_types(), *response->headers);
+  }
 
   return response;
 }
@@ -1614,7 +1746,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response, request_mode_,
               request_destination_, cross_origin_embedder_policy,
-              coep_reporter_, document_isolation_policy)) {
+              coep_reporter_, document_isolation_policy, dip_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // TODO(crbug.com/40054032):  Close the socket here.
@@ -1660,11 +1792,12 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
       // TODO(https://crbug.com/379030052): the `CookieSettingOverride`s for
       // Storage Access API and Storage Access Headers should be handled
       // consistently during a same-site, cross-origin redirect.
-      bool cross_site =
-          net::SchemefulSite(origin) != net::SchemefulSite(pending_origin);
+      bool cross_site = !net::SchemefulSite::IsSameSite(origin, pending_origin);
       storage_access_redirect_kind =
           cross_site ? kCrossSite : kCrossOriginSameSite;
-      if (cross_site) {
+      if (cross_site ||
+          base::FeatureList::IsEnabled(
+              net::features::kStorageAccessApiFollowsSameOriginPolicy)) {
         url_request_->cookie_setting_overrides().Remove(
             net::CookieSettingOverride::kStorageAccessGrantEligible);
       }
@@ -1779,6 +1912,7 @@ std::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
 // static
 net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
+    net::CookieSettingOverrides devtools_overrides,
     const ResourceRequest& request,
     bool emit_metrics) {
   net::CookieSettingOverrides overrides(factory_overrides);
@@ -1790,6 +1924,14 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
 
   AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides,
                                         emit_metrics);
+  // Only apply the DevTools overrides if the request is from devtools enabled
+  // context.
+  if (request.devtools_request_id.has_value()) {
+    CHECK_EQ(devtools_overrides.ToEnumBitmask() &
+                 ~kAllowedDevToolsCookieSettingOverrides,
+             0u);
+    overrides = base::Union(overrides, devtools_overrides);
+  }
 
   // The `kStorageAccessGrantEligible` override should not be present in
   // factory_overrides.
@@ -1974,33 +2116,46 @@ void URLLoader::ContinueOnResponseStarted() {
     upload_progress_tracker_ = nullptr;
   }
 
-  if (!(options_ & mojom::kURLLoadOptionReadAndDiscardBody)) {
-    MojoCreateDataPipeOptions options;
-    options.struct_size = sizeof(MojoCreateDataPipeOptions);
-    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-    options.element_num_bytes = 1;
-    options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
-        DataPipeAllocationSize::kLargerSizeIfPossible);
-    MojoResult result =
-        mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
-    if (result != MOJO_RESULT_OK) {
-      NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
-      return;
-    }
-    CHECK(response_body_stream_.is_valid());
-    CHECK(consumer_handle_.is_valid());
-    peer_closed_handle_watcher_.Watch(
-        response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-        base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
-                            base::Unretained(this)));
-    peer_closed_handle_watcher_.ArmOrNotify();
-
-    writable_handle_watcher_.Watch(
-        response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-        base::BindRepeating(&URLLoader::OnResponseBodyStreamReady,
-                            base::Unretained(this)));
+  if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
+    // If the body is to be discarded, the pipe won't be used and it's correct
+    // to keep going without waiting for it.
+    ContinueOnResponseStartedImmediately();
+    return;
   }
 
+  if (create_data_pipe_async_) {
+    // If the body isn't discarded, the mojo pipe is required before continuing.
+    if (pending_pipe_handles_) {
+      // The pipe is already in a usable state, set up the pipe handles so it's
+      // safe to continue the work
+      SetupPipeHandlesAndWatchers(std::move(pending_pipe_handles_->first),
+                                  std::move(pending_pipe_handles_->second));
+      pending_pipe_handles_ = std::nullopt;
+      CHECK(response_body_stream_.is_valid());
+      CHECK(consumer_handle_.is_valid());
+      ContinueOnResponseStartedImmediately();
+    } else {
+      // The pipe isn't ready.
+      // Its creation was started from the constructor and
+      // OnPrepareDataPipeSuccess will
+      was_continue_and_response_started_called_ = true;
+    }
+  } else {
+    // If the data pipe is to be created synchronously, invoke `PrepareDataPipe`
+    // directly on this sequence. Either of `OnPrepareDataPipeSuccess` or
+    // `OnPrepareDataPipeError` will be invoked synchronously and
+    // URLLoader::OnPrepareDataPipeSuccess will set the pipe handles before
+    // calling `ContinueOnResponseStartedImmediately`
+    PrepareDataPipe(base::BindOnce(&URLLoader::OnPrepareDataPipeSuccess,
+                                   base::Unretained(this)),
+                    base::BindOnce(&URLLoader::OnPrepareDataPipeError,
+                                   base::Unretained(this)));
+    // If PrepareDataPipe fails, `this` is deleted by `OnPrepareDataPipeError`
+    // and is invalid here.
+  }
+}
+
+void URLLoader::ContinueOnResponseStartedImmediately() {
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
   const CrossOriginEmbedderPolicy kEmptyCoep;
   const CrossOriginEmbedderPolicy& cross_origin_embedder_policy =
@@ -2017,7 +2172,7 @@ void URLLoader::ContinueOnResponseStarted() {
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response_, request_mode_,
               request_destination_, cross_origin_embedder_policy,
-              coep_reporter_, document_isolation_policy)) {
+              coep_reporter_, document_isolation_policy, dip_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking
@@ -2031,8 +2186,10 @@ void URLLoader::ContinueOnResponseStarted() {
   //
   // https://wicg.github.io/signature-based-sri/
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
-          MaybeBlockResponseForSRIMessageSignature(url_request_->url(),
-                                                   *response_)) {
+          MaybeBlockResponseForSRIMessageSignature(
+              url_request_->url(), *response_,
+              /*checks_forced_by_initiator=*/!expected_signatures_.empty(),
+              devtools_observer_, devtools_request_id().value_or(""))) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking
@@ -2093,6 +2250,9 @@ void URLLoader::ContinueOnResponseStarted() {
       response_->mime_type.assign("text/plain");
     }
   }
+  // TODO(crbug.com/402337002): When client side content decoding is enabled,
+  // we need to run MIME sniffing after decoding the first 1024 bytes of the
+  // body.
 
   StartReading();
 }
@@ -2102,11 +2262,6 @@ void URLLoader::ReadMore() {
   // Once the MIME type is sniffed, all data is sent as soon as it is read from
   // the network.
   DCHECK(consumer_handle_.is_valid() || !pending_write_);
-
-  if (should_pause_reading_body_) {
-    paused_reading_body_ = true;
-    return;
-  }
 
   // TODO(ricea): Refactor this method and DidRead() to reduce duplication.
   if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
@@ -2608,10 +2763,9 @@ void URLLoader::DeleteSelf() {
 }
 
 void URLLoader::SendResponseToClient() {
-  TRACE_EVENT(
-      "loading", "network::URLLoader::SendResponseToClient",
-      perfetto::Flow::ProcessScoped(url_request_->net_log().source().id), "url",
-      url_request_->url());
+  TRACE_EVENT("loading", "network::URLLoader::SendResponseToClient",
+              net::NetLogWithSourceToFlow(url_request_->net_log()), "url",
+              url_request_->url());
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response_->emitted_extra_info = emitted_devtools_raw_request_;
 

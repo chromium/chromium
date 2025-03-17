@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_util.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/half_float.h"
 #include "ui/gl/init/gl_factory.h"
@@ -67,6 +68,10 @@ UNSAFE_BUFFER_USAGE base::span<uint64_t> ToSpan_uint64(uint8_t* data,
 // static
 GLDisplay* GLTestSupport::InitializeGL(
     std::optional<GLImplementationParts> prefered_impl) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  gpu::EnsureNonSoftwareDeviceForTesting(gl::GpuPreference ::kDefault);
+#endif
+
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;

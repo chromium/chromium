@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/find_bar_view.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -126,19 +127,8 @@ class FindBarMatchCountLabel : public views::Label {
     UpdateAccessibleName();
 
     if (last_result_->final_update()) {
-      ui::AXNodeData node_data;
-      // This is a temporary fix that mimics what's done in
-      // `ViewAccessibility::GetAccessibleNodeData`. We must set the cached role
-      // on the local AXNodeData to pass the check that ensures the role is set
-      // before the accessible name. This is now necessary because the role is
-      // now set in the cache directly instead of in `GetAccessibleNodeData`.
-      //
-      // TODO(crbug.com/325137417): Remove this once we get the name from the
-      // cache directly.
-      node_data.role = GetViewAccessibility().GetCachedRole();
-      GetAccessibleNodeData(&node_data);
       GetViewAccessibility().AnnouncePolitely(
-          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+          GetViewAccessibility().GetCachedName());
     }
   }
 
@@ -226,8 +216,8 @@ FindBarView::FindBarView(FindBarHost* host) {
                   .SetController(this),
               views::Builder<FindBarMatchCountLabel>()
                   .CopyAddressTo(&match_count_text_)
-                  .SetBackgroundColorId(kColorFindBarBackground)
-                  .SetEnabledColorId(kColorFindBarMatchCount)
+                  .SetBackgroundColor(kColorFindBarBackground)
+                  .SetEnabledColor(kColorFindBarMatchCount)
                   .SetCanProcessEventsWithinSubtree(false)
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets(toast_label_vertical_margin +
@@ -300,8 +290,8 @@ FindBarView::FindBarView(FindBarHost* host) {
       views::ShapeContextTokens::kFindBarViewRadius);
   {
     auto border = std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-        kColorFindBarBackground);
+        views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+    border->SetColor(kColorFindBarBackground);
     border->set_md_shadow_elevation(
         layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh));
     border->SetCornerRadius(corner_radius);
@@ -334,7 +324,7 @@ void FindBarView::SetFindTextAndSelectedRange(
   last_searched_text_ = find_text;
 }
 
-std::u16string FindBarView::GetFindText() const {
+std::u16string_view FindBarView::GetFindText() const {
   return find_text_->GetText();
 }
 
@@ -342,11 +332,11 @@ gfx::Range FindBarView::GetSelectedRange() const {
   return find_text_->GetSelectedRange();
 }
 
-std::u16string FindBarView::GetFindSelectedText() const {
+std::u16string_view FindBarView::GetFindSelectedText() const {
   return find_text_->GetSelectedText();
 }
 
-std::u16string FindBarView::GetMatchCountText() const {
+std::u16string_view FindBarView::GetMatchCountText() const {
   return match_count_text_->GetText();
 }
 
@@ -394,6 +384,11 @@ void FindBarView::ClearMatchCount() {
   UpdateMatchCountAppearance(false);
   DeprecatedLayoutImmediately();
   SchedulePaint();
+}
+
+bool FindBarView::ContainsFocus() const {
+  return find_text_->HasFocus() || find_previous_button_->HasFocus() ||
+         find_next_button_->HasFocus() || close_button_->HasFocus();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -461,7 +456,7 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
   if (key_event.key_code() == ui::VKEY_RETURN &&
       key_event.type() == ui::EventType::kKeyPressed) {
     // Pressing Return/Enter starts the search (unless text box is empty).
-    std::u16string find_string = find_text_->GetText();
+    std::u16string find_string(find_text_->GetText());
     if (!find_string.empty()) {
       FindBarController* controller = find_bar_host_->GetFindBarController();
       find_in_page::FindTabHelper* find_tab_helper =
@@ -493,7 +488,7 @@ void FindBarView::OnAfterPaste() {
   last_searched_text_.clear();
 }
 
-void FindBarView::Find(const std::u16string& search_text) {
+void FindBarView::Find(std::u16string_view search_text) {
   DCHECK(find_bar_host_);
   FindBarController* controller = find_bar_host_->GetFindBarController();
   DCHECK(controller);
@@ -508,14 +503,14 @@ void FindBarView::Find(const std::u16string& search_text) {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents);
 
-  last_searched_text_ = search_text;
+  last_searched_text_ = std::u16string(search_text);
 
   controller->OnUserChangedFindText(search_text);
 
   // Initiate a search (even though old searches might be in progress).
-  find_tab_helper->StartFinding(search_text, true /* forward_direction */,
-                                false /* case_sensitive */,
-                                true /* find_match */);
+  find_tab_helper->StartFinding(
+      last_searched_text_, true /* forward_direction */,
+      false /* case_sensitive */, true /* find_match */);
 }
 
 void FindBarView::FindNext(bool reverse) {
@@ -526,7 +521,7 @@ void FindBarView::FindNext(bool reverse) {
     find_in_page::FindTabHelper* find_tab_helper =
         find_in_page::FindTabHelper::FromWebContents(
             find_bar_host_->GetFindBarController()->web_contents());
-    find_tab_helper->StartFinding(find_text_->GetText(),
+    find_tab_helper->StartFinding(std::u16string(find_text_->GetText()),
                                   !reverse, /* forward_direction */
                                   false,    /* case_sensitive */
                                   true /* find_match */);

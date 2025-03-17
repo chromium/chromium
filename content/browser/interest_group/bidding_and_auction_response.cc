@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
@@ -105,6 +106,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     return std::nullopt;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeBiddingAndAuctionNonceSupport)) {
+    const std::string* nonce = input_dict->FindString("nonce");
+    if (nonce) {
+      base::Uuid nonce_uuid = base::Uuid::ParseCaseInsensitive(*nonce);
+      if (nonce_uuid.is_valid()) {
+        output.nonce = nonce_uuid.AsLowercaseString();
+      }
+    }
+  }
+
   base::Value::Dict* error_struct = input_dict->FindDict("error");
   if (error_struct) {
     std::string* message = error_struct->FindString("message");
@@ -117,10 +129,16 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     return std::move(output);
   }
 
-  std::optional<bool> maybe_is_chaff = input_dict->FindBool("isChaff");
-  if (maybe_is_chaff && maybe_is_chaff.value()) {
-    output.is_chaff = true;
-    return std::move(output);
+  base::Value* is_chaff_value = input_dict->Find("isChaff");
+  if (is_chaff_value) {
+    if (!is_chaff_value->is_bool()) {
+      return std::nullopt;
+    }
+    bool is_chaff = is_chaff_value->GetBool();
+    if (is_chaff) {
+      output.is_chaff = true;
+      return std::move(output);
+    }
   }
   output.is_chaff = false;
 
@@ -175,43 +193,51 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
       return std::nullopt;
     }
   }
-
-  base::Value::Dict* bidding_groups = input_dict->FindDict("biddingGroups");
-  if (!bidding_groups) {
-    return std::nullopt;
-  }
-  for (const auto owner_groups : *bidding_groups) {
-    url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
-    if (!network::IsOriginPotentiallyTrustworthy(owner)) {
+  base::Value* bidding_groups_value = input_dict->Find("biddingGroups");
+  if (bidding_groups_value) {
+    if (!bidding_groups_value->is_dict()) {
       return std::nullopt;
     }
-
-    auto it = group_names.find(owner);
-    if (it == group_names.end()) {
-      return std::nullopt;
-    }
-    const std::vector<std::string>& names = it->second;
-
-    const base::Value::List* groups = owner_groups.second.GetIfList();
-    if (!groups) {
-      return std::nullopt;
-    }
-
-    for (const auto& group : *groups) {
-      std::optional<int> maybe_group_idx = group.GetIfInt();
-      if (!maybe_group_idx) {
+    base::Value::Dict& bidding_groups = bidding_groups_value->GetDict();
+    for (const auto owner_groups : bidding_groups) {
+      url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
+      if (!network::IsOriginPotentiallyTrustworthy(owner)) {
         return std::nullopt;
       }
-      if (*maybe_group_idx < 0 ||
-          static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+
+      auto it = group_names.find(owner);
+      if (it == group_names.end()) {
         return std::nullopt;
       }
-      output.bidding_groups.emplace_back(owner, names[*maybe_group_idx]);
+      const std::vector<std::string>& names = it->second;
+
+      const base::Value::List* groups = owner_groups.second.GetIfList();
+      if (!groups) {
+        return std::nullopt;
+      }
+
+      for (const auto& group : *groups) {
+        std::optional<int> maybe_group_idx = group.GetIfInt();
+        if (!maybe_group_idx) {
+          return std::nullopt;
+        }
+        if (*maybe_group_idx < 0 ||
+            static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+          return std::nullopt;
+        }
+        output.bidding_groups.emplace_back(owner, names[*maybe_group_idx]);
+      }
     }
   }
 
   output.score = input_dict->FindDouble("score");
-  output.bid = input_dict->FindDouble("bid");
+  base::Value* bid_value = input_dict->Find("bid");
+  if (bid_value) {
+    if (!bid_value->is_double() && !bid_value->is_int()) {
+      return std::nullopt;
+    }
+    output.bid = bid_value->GetDouble();
+  }
 
   std::string* maybe_currency = input_dict->FindString("bidCurrency");
   if (maybe_currency) {
@@ -242,11 +268,14 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
           ReportingURLs::TryParse(component_seller_reporting);
     }
   }
-  std::string* maybe_top_level_seller =
-      input_dict->FindString("topLevelSeller");
-  if (maybe_top_level_seller) {
+  base::Value* maybe_top_level_seller_value =
+      input_dict->Find("topLevelSeller");
+  if (maybe_top_level_seller_value) {
+    if (!maybe_top_level_seller_value->is_string()) {
+      return std::nullopt;
+    }
     url::Origin top_level_seller =
-        url::Origin::Create(GURL(*maybe_top_level_seller));
+        url::Origin::Create(GURL(maybe_top_level_seller_value->GetString()));
     if (!network::IsOriginPotentiallyTrustworthy(top_level_seller)) {
       return std::nullopt;
     }
@@ -268,8 +297,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kFledgeAuctionDealSupport) &&
-      base::FeatureList::IsEnabled(features::kEnableBandADealSupport)) {
+          blink::features::kFledgeAuctionDealSupport)) {
     std::string* maybe_selected_buyer_and_seller_reporting_id =
         input_dict->FindString("selectedBuyerAndSellerReportingId");
     if (maybe_selected_buyer_and_seller_reporting_id) {
@@ -450,32 +478,41 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
   base::Value* ghost_winner_private_aggregation_signals_value =
       k_anon_ghost_winner->Find("ghostWinnerPrivateAggregationSignals");
   if (ghost_winner_private_aggregation_signals_value) {
-    base::Value::Dict* ghost_winner_private_aggregation_signals =
-        ghost_winner_private_aggregation_signals_value->GetIfDict();
-    if (!ghost_winner_private_aggregation_signals) {
+    base::Value::List* ghost_winner_private_aggregation_signals_list =
+        ghost_winner_private_aggregation_signals_value->GetIfList();
+    if (!ghost_winner_private_aggregation_signals_list) {
       return std::nullopt;
     }
-    // `ghostWinnerPrivateAggregationSignals` will only have reject reason
-    // contributions, which the server will guarantee.
-    const std::vector<uint8_t>* bucket =
-        ghost_winner_private_aggregation_signals->FindBlob("bucket");
-    std::optional<int> value =
-        ghost_winner_private_aggregation_signals->FindInt("value");
-    if (!bucket || bucket->size() > 16 || !value.has_value()) {
-      return std::nullopt;
+    for (const auto& ghost_winner_private_aggregation_signals :
+         *ghost_winner_private_aggregation_signals_list) {
+      const base::Value::Dict* ghost_winner_private_aggregation_signals_dict =
+          ghost_winner_private_aggregation_signals.GetIfDict();
+      if (!ghost_winner_private_aggregation_signals_dict) {
+        return std::nullopt;
+      }
+      // `ghostWinnerPrivateAggregationSignals` will only have reject reason
+      // contributions, which the server will guarantee.
+      const std::vector<uint8_t>* bucket =
+          ghost_winner_private_aggregation_signals_dict->FindBlob("bucket");
+      std::optional<int> value =
+          ghost_winner_private_aggregation_signals_dict->FindInt("value");
+      if (!bucket || bucket->size() > 16 || !value.has_value()) {
+        return std::nullopt;
+      }
+      // Server already filtered out not needed contributions based on final
+      // auction result.
+      result.non_kanon_private_aggregation_requests.emplace_back(
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewHistogramContribution(
+                      blink::mojom::AggregatableReportHistogramContribution::
+                          New(
+                              /*bucket=*/U128FromBigEndian(*bucket),
+                              /*value=*/*value,
+                              /*filtering_id=*/std::nullopt)),
+              blink::mojom::AggregationServiceMode::kDefault,
+              blink::mojom::DebugModeDetails::New()));
     }
-    // Server already filtered out not needed contributions based on final
-    // auction result.
-    result.non_kanon_private_aggregation_request =
-        auction_worklet::mojom::PrivateAggregationRequest::New(
-            auction_worklet::mojom::AggregatableReportContribution::
-                NewHistogramContribution(
-                    blink::mojom::AggregatableReportHistogramContribution::New(
-                        /*bucket=*/U128FromBigEndian(*bucket),
-                        /*value=*/*value,
-                        /*filtering_id=*/std::nullopt)),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New());
   }
 
   base::Value* ghost_winner_for_top_level_auction_value =

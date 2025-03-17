@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -50,16 +50,18 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
   SameSizeAsLayer();
   ~SameSizeAsLayer() override;
 
-  void* pointers[4];
+  raw_ptr<void> raw_pointers[2];
+  std::unique_ptr<void> unique_pointers[2];
 
   struct {
     LayerList children;
     gfx::Size bounds;
-    unsigned bitfields;
+    HitTestOpaqueness hit_test_opaqueness;
+    bool bitfields;
     SkColor4f background_color;
     TouchActionRegion touch_action_region;
     ElementId element_id;
-    raw_ptr<void> rare_inputs;
+    std::unique_ptr<void> rare_inputs;
   } inputs;
   gfx::Rect update_rect;
   int int_fields[7];
@@ -208,10 +210,10 @@ void Layer::SetNeedsCommit() {
   layer_tree_host()->SetNeedsCommit();
 }
 
-void Layer::SetDebugName(const std::string& name) {
-  if (name.empty() && !debug_info_.Read(*this))
-    return;
-  EnsureDebugInfo().name = name;
+void Layer::SetDebugName(std::string name) {
+  if (!name.empty() || debug_info_.Read(*this)) {
+    EnsureDebugInfo().name = std::move(name);
+  }
 }
 
 viz::ViewTransitionElementResourceId Layer::ViewTransitionResourceId() const {
@@ -391,8 +393,8 @@ void Layer::ReplaceChild(Layer* reference, scoped_refptr<Layer> new_layer) {
 
   // Find the index of |reference| in |children_|.
   auto& inputs = inputs_.Write(*this);
-  auto reference_it = base::ranges::find(inputs.children, reference,
-                                         &scoped_refptr<Layer>::get);
+  auto reference_it =
+      std::ranges::find(inputs.children, reference, &scoped_refptr<Layer>::get);
   CHECK(reference_it != inputs.children.end(), base::NotFatalUntil::M130);
   size_t reference_index = reference_it - inputs.children.begin();
   reference->RemoveFromParent();
@@ -520,7 +522,7 @@ void Layer::RequestCopyOfOutput(
   auto& inputs = EnsureLayerTreeInputs();
   if (request->has_source()) {
     const base::UnguessableToken& source = request->source();
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         inputs.copy_requests,
         [&source](const std::unique_ptr<viz::CopyOutputRequest>& x) {
           return x->has_source() && x->source() == source;
@@ -1470,7 +1472,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     if (subtree_property_changed_.Read(*this)) {
       layer->NoteLayerPropertyChanged();
     }
-    layer->set_may_contain_video(may_contain_video());
+    layer->SetMayContainVideo(may_contain_video());
     layer->SetTouchActionRegion(inputs.touch_action_region);
     layer->SetContentsOpaque(inputs.contents_opaque);
     layer->SetContentsOpaqueForText(inputs.contents_opaque_for_text);

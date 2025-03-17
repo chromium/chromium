@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/devtools/protocol/webauthn_handler.h"
 
 #include <map>
@@ -123,7 +118,7 @@ std::optional<device::Ctap2Version> ConvertToCtap2Version(
 }
 
 std::vector<uint8_t> CopyBinaryToVector(const Binary& binary) {
-  return std::vector<uint8_t>(binary.data(), binary.data() + binary.size());
+  return std::vector<uint8_t>(binary.begin(), binary.end());
 }
 
 std::unique_ptr<WebAuthn::Credential> BuildCredentialFromRegistration(

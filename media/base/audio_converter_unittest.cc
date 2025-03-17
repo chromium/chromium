@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_converter.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 
@@ -85,28 +81,31 @@ class AudioConverterTest
   // Resets all input callbacks to a pristine state.
   void Reset() {
     converter_->Reset();
-    for (size_t i = 0; i < fake_callbacks_.size(); ++i)
-      fake_callbacks_[i]->reset();
+    for (const auto& fake_callback : fake_callbacks_) {
+      fake_callback->reset();
+    }
     expected_callback_->reset();
   }
 
   // Sets the volume on all input callbacks to |volume|.
   void SetVolume(float volume) {
-    for (size_t i = 0; i < fake_callbacks_.size(); ++i)
-      fake_callbacks_[i]->set_volume(volume);
+    for (const auto& fake_callback : fake_callbacks_) {
+      fake_callback->set_volume(volume);
+    }
   }
 
   // Validates audio data between |audio_bus_| and |expected_audio_bus_| from
   // |index|..|frames| after |scale| is applied to the expected audio data.
   bool ValidateAudioData(int index, int frames, float scale) {
-    for (int i = 0; i < audio_bus_->channels(); ++i) {
+    for (int ch = 0; ch < audio_bus_->channels(); ++ch) {
+      auto channel_data = audio_bus_->channel_span(ch);
+      auto expected_channel_data = expected_audio_bus_->channel_span(ch);
       for (int j = index; j < frames; ++j) {
-        double error = fabs(audio_bus_->channel(i)[j] -
-            expected_audio_bus_->channel(i)[j] * scale);
+        double error = fabs(channel_data[j] - expected_channel_data[j] * scale);
         if (error > epsilon_) {
-          EXPECT_NEAR(expected_audio_bus_->channel(i)[j] * scale,
-                      audio_bus_->channel(i)[j], epsilon_)
-              << " i=" << i << ", j=" << j;
+          EXPECT_NEAR(expected_channel_data[j] * scale, channel_data[j],
+                      epsilon_)
+              << " ch=" << ch << ", j=" << j;
           return false;
         }
       }
@@ -128,8 +127,7 @@ class AudioConverterTest
     // would during channel mixing.
     for (int i = input_parameters_.channels();
          i < output_parameters_.channels(); ++i) {
-      memset(expected_audio_bus_->channel(i), 0,
-             audio_bus_->frames() * sizeof(*audio_bus_->channel(i)));
+      std::ranges::fill(expected_audio_bus_->channel_span(i), 0);
     }
 
     return ValidateAudioData(0, audio_bus_->frames(), scale);
@@ -137,9 +135,8 @@ class AudioConverterTest
 
   // Fills |audio_bus_| fully with |value|.
   void FillAudioData(float value) {
-    for (int i = 0; i < audio_bus_->channels(); ++i) {
-      std::fill(audio_bus_->channel(i),
-                audio_bus_->channel(i) + audio_bus_->frames(), value);
+    for (auto channel : audio_bus_->AllChannels()) {
+      std::ranges::fill(channel, value);
     }
   }
 

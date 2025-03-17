@@ -6,7 +6,42 @@
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
+
 #import <string>
+
+// Enum specifying the various types of push notifications. Entries should not
+// be renumbered and numeric values should never be reused.
+// LINT.IfChange(NotificationType)
+enum class NotificationType {
+  kTipsDefaultBrowser = 0,
+  kTipsWhatsNew = 1,
+  kTipsSignin = 2,
+  kTipsSetUpListContinuation = 3,
+  kTipsDocking = 4,
+  kTipsOmniboxPosition = 5,
+  kTipsLens = 6,
+  kTipsEnhancedSafeBrowsing = 7,
+  kSafetyCheckUpdateChrome = 8,
+  kSafetyCheckPasswords = 9,
+  kSafetyCheckSafeBrowsing = 10,
+  kMaxValue = kSafetyCheckSafeBrowsing,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
+// Enum for the metric logging the source of the native Notification enable
+// alert. Entries should not be renumbered and numeric values should never be
+// reused.
+// LINT.IfChange(NotificationOptInAccessPoint)
+enum class NotificationOptInAccessPoint {
+  kTips = 1,
+  kSetUpList = 2,
+  kSendTabMagicStackPromo = 3,
+  kSafetyCheck = 4,
+  kFeed = 5,
+  kSettings = 6,
+  kMaxValue = kSettings,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Enum for the NAU implementation for Content notifications. Change
 // NotificationActionType enum when this one changes.
@@ -67,6 +102,10 @@ extern const char kSendTabNotificationKey[];
 // Key of Safety Check notification used in pref
 // `kFeaturePushNotificationPermissions`.
 extern const char kSafetyCheckNotificationKey[];
+
+// Key of Reminder notification used in pref
+// `kFeaturePushNotificationPermissions`.
+extern const char kReminderNotificationKey[];
 
 // Action identifier for the Content Notifications Feedback action.
 extern NSString* const kContentNotificationFeedbackActionIdentifier;

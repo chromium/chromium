@@ -35,6 +35,9 @@ class CORE_EXPORT FragmentItems final {
   }
   bool IsSubSpan(const Span& span) const;
 
+  const FragmentItem& operator[](wtf_size_t index) const {
+    return items_[index];
+  }
   const FragmentItem& front() const {
     CHECK_GE(items_.size(), 1u);
     return items_[0];

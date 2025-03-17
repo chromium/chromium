@@ -10,6 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
+#include "net/filter/source_stream_type.h"
 
 namespace net {
 namespace {
@@ -71,7 +73,7 @@ SharedDictionaryHeaderCheckerSourceStream::
         std::unique_ptr<SourceStream> upstream,
         Type type,
         const SHA256HashValue& dictionary_hash)
-    : SourceStream(SourceStream::TYPE_NONE),
+    : SourceStream(SourceStreamType::kNone),
       upstream_(std::move(upstream)),
       type_(type),
       dictionary_hash_(dictionary_hash),

@@ -19,7 +19,6 @@ source_set("js_messaging") {
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:web_view_js_utils",
     "//ios/web/util",

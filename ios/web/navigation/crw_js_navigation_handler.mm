@@ -75,14 +75,16 @@ GURL URLEscapedForHistory(const GURL& url) {
   // UIWebView seems to choke on unicode characters that haven't been
   // escaped; escape the URL now so the expected load URL is correct.
   pushURL = URLEscapedForHistory(pushURL);
-  if (!pushURL.is_valid())
+  if (!pushURL.is_valid()) {
     return;
+  }
 
   web::NavigationItemImpl* navItem = navigationManagerImpl.GetCurrentItemImpl();
   // PushState happened before first navigation entry or called when the
   // navigation entry does not contain a valid URL.
-  if (!navItem || !navItem->GetURL().is_valid())
+  if (!navItem || !navItem->GetURL().is_valid()) {
     return;
+  }
   if (!web::history_state_util::IsHistoryStateChangeValid(navItem->GetURL(),
                                                           pushURL)) {
     // If the current session entry URL origin still doesn't match pushURL's
@@ -147,8 +149,9 @@ GURL URLEscapedForHistory(const GURL& url) {
   // UIWebView seems to choke on unicode characters that haven't been
   // escaped; escape the URL now so the expected load URL is correct.
   replaceURL = URLEscapedForHistory(replaceURL);
-  if (!replaceURL.is_valid())
+  if (!replaceURL.is_valid()) {
     return;
+  }
 
   const web::NavigationManagerImpl& navigationManagerImpl =
       webStateImpl->GetNavigationManagerImpl();
@@ -156,8 +159,9 @@ GURL URLEscapedForHistory(const GURL& url) {
   // ReplaceState happened before first navigation entry or called right
   // after window.open when the url is empty/not valid.
   if (!navItem || (navigationManagerImpl.GetItemCount() <= 1 &&
-                   navItem->GetURL().is_empty()))
+                   navItem->GetURL().is_empty())) {
     return;
+  }
   if (!web::history_state_util::IsHistoryStateChangeValid(navItem->GetURL(),
                                                           replaceURL)) {
     // If the current session entry URL origin still doesn't match

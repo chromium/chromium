@@ -130,13 +130,15 @@ CastTransportImpl::WriteRequest::WriteRequest(WriteRequest&& other) = default;
 CastTransportImpl::WriteRequest::~WriteRequest() = default;
 
 void CastTransportImpl::SetReadState(ReadState read_state) {
-  if (read_state_ != read_state)
+  if (read_state_ != read_state) {
     read_state_ = read_state;
+  }
 }
 
 void CastTransportImpl::SetWriteState(WriteState write_state) {
-  if (write_state_ != write_state)
+  if (write_state_ != write_state) {
     write_state_ = write_state;
+  }
 }
 
 void CastTransportImpl::SetErrorState(ChannelError error_state) {
@@ -161,8 +163,8 @@ void CastTransportImpl::OnWriteResult(int result) {
   do {
     VLOG_WITH_CONNECTION(2)
         << "OnWriteResult (state=" << AsInteger(write_state_) << ", "
-        << "result=" << rv << ", "
-        << "queue size=" << write_queue_.size() << ")";
+        << "result=" << rv << ", " << "queue size=" << write_queue_.size()
+        << ")";
 
     WriteState state = write_state_;
     write_state_ = WriteState::UNKNOWN;
@@ -198,7 +200,8 @@ int CastTransportImpl::DoWrite() {
   DCHECK(!write_queue_.empty());
   net::DrainableIOBuffer* io_buffer = write_queue_.front().io_buffer.get();
 
-  VLOG_WITH_CONNECTION(2) << "WriteData byte_count = " << io_buffer->size()
+  VLOG_WITH_CONNECTION(2) << "WriteData byte_count = "
+                          << (io_buffer->BytesConsumed() + io_buffer->size())
                           << " bytes_written " << io_buffer->BytesConsumed();
 
   SetWriteState(WriteState::WRITE_COMPLETE);

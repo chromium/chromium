@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -24,13 +25,29 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** {@link SigninPromoDelegate} for ntp signin promo. */
 public class NtpSigninPromoDelegate extends SigninPromoDelegate {
+
+    /** Indicates the type of content the should be shown in the visible promo. */
+    @IntDef({PromoState.NONE, PromoState.SIGNIN})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PromoState {
+        /** No promo should be shown. */
+        int NONE = 0;
+
+        /** The promo content should promote sign-in. Shown to signed-out user. */
+        int SIGNIN = 1;
+    }
+
     @VisibleForTesting static final int MAX_IMPRESSIONS_NTP = 5;
     // 14 days in hours.
     @VisibleForTesting static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS = 336;
     @VisibleForTesting static final int NTP_SYNC_PROMO_RESET_AFTER_DAYS = 30;
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTES = 30;
+    private @PromoState int mPromoState = PromoState.NONE;
 
     /**
      * If the signin promo card has been hidden for longer than the {@link
@@ -92,33 +109,16 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean canShowPromo(@Nullable CoreAccountInfo visibleAccount) {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                || !signinManager.isSigninAllowed()) {
-            return false;
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
-            return false;
-        }
+    boolean canShowPromo() {
+        return mPromoState != PromoState.NONE;
+    }
 
-        boolean isPromoDismissed =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
-        if (isPromoDismissed) {
-            return false;
-        }
-        if (timeElapsedSinceFirstShownExceedsLimit()) {
-            return false;
-        }
-        if (visibleAccount == null) {
-            return true;
-        }
-        // Don't show the promo if account image is not available yet.
-        return identityManager.findExtendedAccountInfoByEmailAddress(visibleAccount.getEmail())
-                != null;
+    @Override
+    boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount) {
+        @PromoState int newState = computePromoState(visibleAccount);
+        boolean wasStateChanged = mPromoState != newState;
+        mPromoState = newState;
+        return wasStateChanged;
     }
 
     @Override
@@ -161,5 +161,36 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     private static String getPromoShowCountPreferenceName() {
         return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                 SigninPreferencesManager.SigninPromoAccessPointId.NTP);
+    }
+
+    private @PromoState int computePromoState(@Nullable CoreAccountInfo visibleAccount) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                || !signinManager.isSigninAllowed()) {
+            return PromoState.NONE;
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
+            return PromoState.NONE;
+        }
+
+        boolean isPromoDismissed =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+        if (isPromoDismissed) {
+            return PromoState.NONE;
+        }
+        if (timeElapsedSinceFirstShownExceedsLimit()) {
+            return PromoState.NONE;
+        }
+        if (visibleAccount == null) {
+            return PromoState.SIGNIN;
+        }
+        // Don't show the promo if account image is not available yet.
+        return identityManager.findExtendedAccountInfoByEmailAddress(visibleAccount.getEmail())
+                        == null
+                ? PromoState.NONE
+                : PromoState.SIGNIN;
     }
 }

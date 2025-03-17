@@ -148,6 +148,9 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
   if (entry_type == performance_entry_names::kLongAnimationFrame) {
     return kLongAnimationFrame;
   }
+  if (entry_type == performance_entry_names::kContainer) {
+    return kContainer;
+  }
   return kInvalid;
 }
 

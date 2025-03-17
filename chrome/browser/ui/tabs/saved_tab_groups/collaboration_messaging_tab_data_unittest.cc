@@ -11,6 +11,7 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
+#include "components/signin/public/base/avatar_icon_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +25,8 @@ using data_sharing::GroupMember;
 using testing::_;
 
 namespace {
+const int kAvatarSize = signin::kAccountInfoImageSize;
+
 PersistentMessage CreateMessage(std::string given_name,
                                 std::string avatar_url,
                                 CollaborationEvent event) {
@@ -97,7 +100,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
     EXPECT_CALL(*sharing_service(), GetAvatarImageForURL)
         .WillOnce([&](GURL url, int size, auto load_callback, auto fetcher) {
           EXPECT_EQ(url, GURL(message.attribution.triggering_user->avatar_url));
-          EXPECT_EQ(size, 20);
+          EXPECT_EQ(size, kAvatarSize);
 
           // Trigger callback with a mock avatar.
           std::move(load_callback).Run(favicon::GetDefaultFavicon());
@@ -113,7 +116,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
   EXPECT_TRUE(tab_data().HasMessage());
   EXPECT_EQ(tab_data().given_name(), base::UTF8ToUTF16(given_name));
   EXPECT_EQ(tab_data().collaboration_event(), CollaborationEvent::TAB_ADDED);
-  EXPECT_FALSE(tab_data().page_action_avatar().IsEmpty());
+  EXPECT_FALSE(tab_data().get_avatar_for_testing()->IsEmpty());
 
   // Overwrite with a new message.
   std::string given_name2 = "User2";
@@ -130,7 +133,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
         .WillOnce([&](GURL url, int size, auto load_callback, auto fetcher) {
           EXPECT_EQ(url,
                     GURL(message2.attribution.triggering_user->avatar_url));
-          EXPECT_EQ(size, 20);
+          EXPECT_EQ(size, kAvatarSize);
 
           // Trigger callback with empty image.
           std::move(load_callback).Run(gfx::Image());
@@ -145,7 +148,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
   EXPECT_TRUE(tab_data().HasMessage());
   EXPECT_EQ(tab_data().given_name(), base::UTF8ToUTF16(given_name2));
   EXPECT_EQ(tab_data().collaboration_event(), CollaborationEvent::TAB_UPDATED);
-  EXPECT_TRUE(tab_data().page_action_avatar().IsEmpty());
+  EXPECT_TRUE(tab_data().get_avatar_for_testing()->IsEmpty());
 
   tab_data().ClearMessage(message2);
   EXPECT_FALSE(tab_data().HasMessage());
@@ -161,7 +164,7 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresRequestsWhenMessageIsCleared) {
 
   // Service will be triggered to request the image.
   EXPECT_CALL(*sharing_service(),
-              GetAvatarImageForURL(GURL(avatar_url), 20, _, _))
+              GetAvatarImageForURL(GURL(avatar_url), kAvatarSize, _, _))
       .Times(1);
 
   // Set the message. This will trigger the avatar request, but will not
@@ -189,7 +192,7 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresRequestsWhenMessageIsChanged) {
 
   // Service will be triggered to request the image.
   EXPECT_CALL(*sharing_service(),
-              GetAvatarImageForURL(GURL(avatar_url), 20, _, _))
+              GetAvatarImageForURL(GURL(avatar_url), kAvatarSize, _, _))
       .Times(1);
 
   // Set the message. This will trigger the avatar request, but will not
@@ -203,13 +206,42 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresRequestsWhenMessageIsChanged) {
 
   // Service will be triggered to request the image.
   EXPECT_CALL(*sharing_service(),
-              GetAvatarImageForURL(GURL(avatar_url2), 20, _, _))
+              GetAvatarImageForURL(GURL(avatar_url2), kAvatarSize, _, _))
       .Times(1);
 
   // Set a new message. This will cause the following Commit to be rejected.
   tab_data().SetMessage(message2);
 
   // Attempt to commit the first message. This will be rejected.
+  // Mock resolution of the avatar image request by directly
+  // triggering the callback.
+  tab_data().CommitMessage(message, gfx::Image());
+
+  // Data will not be set.
+  EXPECT_FALSE(tab_data().HasMessage());
+}
+
+TEST_F(CollaborationMessagingTabDataTest, IgnoresMessageWithoutUser) {
+  EXPECT_FALSE(tab_data().HasMessage());
+
+  std::string given_name = "User";
+  std::string avatar_url = "https://google.com/chrome/1";
+  auto message =
+      CreateMessage(given_name, avatar_url, CollaborationEvent::TAB_ADDED);
+
+  // Remove triggering_user. Not all messages will be fully formed, so tab
+  // data should be able to ignore messages without enough data to display.
+  message.attribution.triggering_user = std::nullopt;
+
+  // Service will be triggered to request the image.
+  EXPECT_CALL(*sharing_service(),
+              GetAvatarImageForURL(GURL(avatar_url), kAvatarSize, _, _))
+      .Times(0);
+
+  // Set the message. This will trigger the avatar request, but will not
+  // set data since the fetcher is mocked.
+  tab_data().SetMessage(message);
+
   // Mock resolution of the avatar image request by directly
   // triggering the callback.
   tab_data().CommitMessage(message, gfx::Image());

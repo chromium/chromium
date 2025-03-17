@@ -17,7 +17,6 @@ import 'chrome://resources/ash/common/network/network_ip_config.js';
 import 'chrome://resources/ash/common/network/network_nameservers.js';
 import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import 'chrome://resources/ash/common/network/network_siminfo.js';
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -710,9 +709,9 @@ export class SettingsInternetDetailPageElement extends
     this.updateHiddenPref_();
 
     if (this.isCellular_(this.managedProperties_) &&
-        this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
+        this.managedProperties_.typeProperties.cellular!.allowTextMessages) {
       this.suppressTextMessagesOverride_ = !!OncMojo.getActiveValue(
-          this.managedProperties_!.typeProperties.cellular!.allowTextMessages);
+          this.managedProperties_.typeProperties.cellular!.allowTextMessages);
     }
 
     const metered = this.managedProperties_.metered;
@@ -956,8 +955,8 @@ export class SettingsInternetDetailPageElement extends
       textMessageAllowState: {
         allowTextMessages: e.detail.value,
       },
-      roaming: undefined,
-      apn: undefined,
+      roaming: null,
+      apn: null,
     };
     this.networkConfig_.setProperties(this.guid, config).then(response => {
       if (!response.success) {
@@ -1813,7 +1812,7 @@ export class SettingsInternetDetailPageElement extends
     const config = this.getDefaultConfigProperties_();
     const apn = event.detail;
     config.typeConfig
-        .cellular = {apn, roaming: undefined, textMessageAllowState: undefined};
+        .cellular = {apn, roaming: null, textMessageAllowState: null};
     this.setMojoNetworkProperties_(config);
   }
 

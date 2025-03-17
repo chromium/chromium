@@ -397,7 +397,7 @@ TEST_F(LineBreakerTest, OverflowMargin) {
     </style>
     <div id=container><span>123 456</span> 789</div>
   )HTML");
-  const HeapVector<InlineItem>& items = node.ItemsData(false).items;
+  const InlineItems& items = node.ItemsData(false).items;
 
   // While "123 456" can fit in a line, "456" has a right margin that cannot
   // fit. Since "456" and its right margin is not breakable, "456" should be on
@@ -407,7 +407,7 @@ TEST_F(LineBreakerTest, OverflowMargin) {
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
-  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second - 1].Type());
+  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second - 1]->Type());
   EXPECT_EQ("789", lines[2].first);
 
   // Same as above, but this time "456" overflows the line because it is 70px.
@@ -415,7 +415,7 @@ TEST_F(LineBreakerTest, OverflowMargin) {
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
-  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second].Type());
+  DCHECK_EQ(InlineItem::kCloseTag, items[lines[1].second]->Type());
   EXPECT_EQ("789", lines[2].first);
 }
 
@@ -1200,7 +1200,7 @@ C AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 // crbug.com/342027571 A crash with an overflowing continuation ruby column.
 TEST_F(LineBreakerTest, OverflowingContinuationRuby2) {
   InlineNode node = CreateInlineNode(R"HTML(
-<div id="container" style="writing-mode:vertical-rl; word-wrap:break-word;">
+<div id="container" style="writing-mode:vertical-rl; word-wrap:break-word; font-size: 12px;">
 <ruby>)S
 <rb dir="rtl" style="margin-bottom:-6em;"><svg></svg></rb>
 <rt>x AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -1296,6 +1296,15 @@ TEST_P(CanBreakInsideTest, Data) {
                            /* column_spanner_path */ nullptr, &exclusion_space);
   EXPECT_EQ(line_breaker.CanBreakInside(line_info_list[0]),
             data.can_break_insde);
+}
+
+// crbug.com/398527874
+TEST_F(LineBreakerTest, SplitTrailingBidiCrCrash) {
+  InlineNode node = CreateInlineNode(R"HTML(
+    <div id="container" dir="rtl" style="white-space: pre; font-size: 16px;">&#x0D; </div>
+  )HTML");
+  ComputeMinMaxSizes(node);
+  // Pass if no CHECK failure.
 }
 
 }  // namespace

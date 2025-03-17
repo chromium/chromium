@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/data_controls/core/browser/conditions/and_condition.h"
@@ -493,8 +494,9 @@ bool Rule::AddUnsupportedAttributeErrors(
     const char* policy_name,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  static const base::flat_map<Rule::Restriction, std::set<std::string_view>>
-      kSupportedAttributes = {
+  static const base::NoDestructor<
+      base::flat_map<Rule::Restriction, std::set<std::string_view>>>
+      kSupportedAttributes({
           {Restriction::kClipboard,
            {AttributesCondition::kKeyOsClipboard, AttributesCondition::kKeyUrls,
             AttributesCondition::kKeyIncognito,
@@ -509,18 +511,18 @@ bool Rule::AddUnsupportedAttributeErrors(
             AttributesCondition::kKeyComponents,
 #endif  // BUILDFLAG(IS_CHROMEOS)
             kKeyAnd, kKeyOr, kKeyNot, kKeySources}},
-      };
+      });
 
   bool valid = true;
   for (const auto& restriction : restrictions) {
-    if (!kSupportedAttributes.contains(restriction.first)) {
+    if (!kSupportedAttributes->contains(restriction.first)) {
       // This shouldn't be reached as `AddUnsupportedRestrictionErrors` should
       // catch these unsupported restrictions.
       NOTREACHED();
     }
 
     for (const auto& attribute : anyof_conditions) {
-      if (!kSupportedAttributes.at(restriction.first).contains(attribute)) {
+      if (!kSupportedAttributes->at(restriction.first).contains(attribute)) {
         if (errors) {
           errors->AddError(policy_name,
                            IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
@@ -531,7 +533,7 @@ bool Rule::AddUnsupportedAttributeErrors(
       }
     }
     for (const auto& attribute : oneof_conditions) {
-      if (!kSupportedAttributes.at(restriction.first).contains(attribute)) {
+      if (!kSupportedAttributes->at(restriction.first).contains(attribute)) {
         if (errors) {
           errors->AddError(policy_name,
                            IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
@@ -552,18 +554,19 @@ bool Rule::AddUnsupportedRestrictionErrors(
     const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  static const base::flat_map<Rule::Restriction, std::set<Rule::Level>>
-      kSupportedRestrictions = {
+  static const base::NoDestructor<
+      base::flat_map<Rule::Restriction, std::set<Rule::Level>>>
+      kSupportedRestrictions({
           {Restriction::kClipboard,
            {Level::kNotSet, Level::kReport, Level::kWarn, Level::kBlock}},
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
           {Restriction::kScreenshot, {Level::kNotSet, Level::kBlock}},
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-      };
+      });
 
   bool valid = true;
   for (const auto& restriction : restrictions) {
-    if (!kSupportedRestrictions.contains(restriction.first)) {
+    if (!kSupportedRestrictions->contains(restriction.first)) {
       if (errors) {
         errors->AddError(policy_name,
                          IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_RESTRICTION,
@@ -572,7 +575,7 @@ bool Rule::AddUnsupportedRestrictionErrors(
       valid = false;
       continue;
     }
-    if (!kSupportedRestrictions.at(restriction.first)
+    if (!kSupportedRestrictions->at(restriction.first)
              .contains(restriction.second)) {
       if (errors) {
         errors->AddError(policy_name,

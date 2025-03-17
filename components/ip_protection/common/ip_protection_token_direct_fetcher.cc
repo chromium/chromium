@@ -4,19 +4,23 @@
 
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -248,12 +252,6 @@ std::optional<base::TimeDelta> IpProtectionTokenDirectFetcher::CalculateBackoff(
       backoff = base::TimeDelta::Max();
       break;
     case kFailedNotEligible:
-      // TODO(crbug.com/40267788): When we add a client side account
-      // capabilities check, if this capability/eligibility is something that
-      // can change and be detected via callbacks to an overridden
-      // `IdentityManager::Observer::OnExtendedAccountInfoUpdated()` method,
-      // then update this failure so that we wait indefinitely as well (like
-      // the cases above).
     case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.

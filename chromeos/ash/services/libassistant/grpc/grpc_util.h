@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
-#include "third_party/grpc/src/include/grpcpp/support/byte_buffer.h"
-#include "third_party/grpc/src/include/grpcpp/support/status.h"
+#include "third_party/grpc/source/include/grpc/grpc_security_constants.h"
+#include "third_party/grpc/source/include/grpcpp/support/byte_buffer.h"
+#include "third_party/grpc/source/include/grpcpp/support/status.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ash::libassistant {

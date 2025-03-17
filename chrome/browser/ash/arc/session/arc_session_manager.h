@@ -11,9 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -26,7 +23,6 @@
 #include "chrome/browser/ash/arc/session/arc_activation_necessity_checker.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
-#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/session/arc_vm_data_migration_necessity_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
@@ -34,6 +30,10 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -62,7 +62,7 @@ class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
 class ArcUiAvailabilityReporter;
-class ArcRevenHardwareChecker;
+class ArcDlcInstallHardwareChecker;
 
 enum class ProvisioningStatus;
 enum class ArcStopReason;
@@ -353,6 +353,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     android_management_checker_factory_ = android_management_checker_factory;
   }
 
+  // Invoking OnEnableArcOnReven() only for testing
+  void OnEnableArcOnRevenForTesting(std::deque<JobDesc> jobs,
+                                    bool is_compatible);
+
   // Returns whether the Play Store app is requested to be launched by this
   // class. Should be used only for tests.
   bool IsPlaystoreLaunchRequestedForTesting() const;
@@ -402,13 +406,36 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // The unit test will use a mock hardware checker for testing.
   void SetHardwareCheckerForTesting(
-      std::unique_ptr<ArcRevenHardwareChecker> hardware_checker) {
-    hardware_checker_ = std::move(hardware_checker);
+      std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker);
+
+  // The unit test will inject an ArcDlcInstallNotificationManager for
+  // testing.
+  void SetArcDlcInstallNotificationManagerForTesting(
+      std::unique_ptr<ArcDlcInstallNotificationManager>
+          arc_dlc_install_notification_manager) {
+    arc_dlc_install_notification_manager_ =
+        std::move(arc_dlc_install_notification_manager);
   }
 
  private:
+  // TODO(crbug.com/395161942, crbug.com/393644378): Tracking
+  // internal state transition for the production behavior.
+  // We saw some unexpected behavior, but we didn't see the root cause
+  // yet. This is for additional logging purpose only. We should remove
+  // once we get the idea why unexpected behavior happens.
+  enum InternalState {
+    kNotInitialized,
+    kRunning,
+    kShutdown,
+    kDestroying,
+  };
+
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
+
+  // Sends out a pending notification for DLC installation when the user profile
+  // is set.
+  void MaybeShowDlcInstallNotification(NotificationType type);
 
   // Handles the completion of the hardware compatibility check for ARC on a
   // reven device. If the device is compatible with ARC, the DLC service client
@@ -535,12 +562,23 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Unowned pointer. Keeps current profile.
   raw_ptr<Profile> profile_ = nullptr;
 
+  std::unique_ptr<ArcDlcInstallNotificationManager>
+      arc_dlc_install_notification_manager_;
+
+  // Stores any pending notifications for DLC installation.
+  std::vector<NotificationType> dlc_install_pending_notifications_;
+
   // Whether ArcSessionManager is requested to enable (starting to run ARC
   // instance) or not.
   bool enable_requested_ = false;
 
   // Internal state machine. See also State enum class.
   State state_ = State::NOT_INITIALIZED;
+
+  // Internal state for investigation purpose.
+  // TODO(crbug.com/395161942, crbug.com/393644378): remove these once
+  // we figure out the cause.
+  InternalState internal_state_ = InternalState::kNotInitialized;
 
   base::ObserverList<ArcSessionManagerObserver>::UncheckedAndDanglingUntriaged
       observer_list_;
@@ -574,8 +612,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcPaiStarter> pai_starter_;
   std::unique_ptr<ArcFastAppReinstallStarter> fast_app_reinstall_starter_;
   std::unique_ptr<ArcUiAvailabilityReporter> arc_ui_availability_reporter_;
-  std::unique_ptr<ArcRevenHardwareChecker> hardware_checker_ =
-      std::make_unique<arc::ArcRevenHardwareChecker>();
+  std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker_;
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;

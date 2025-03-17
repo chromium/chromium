@@ -22,7 +22,7 @@ using bookmarks::TestBookmarkClient;
 // OnComboboxModelChanged() is invoked.
 class TestComboboxModelObserver : public ui::ComboboxModelObserver {
  public:
-  TestComboboxModelObserver() : changed_(false) {}
+  TestComboboxModelObserver() = default;
 
   TestComboboxModelObserver(const TestComboboxModelObserver&) = delete;
   TestComboboxModelObserver& operator=(const TestComboboxModelObserver&) =
@@ -45,7 +45,7 @@ class TestComboboxModelObserver : public ui::ComboboxModelObserver {
   void OnComboboxModelDestroying(ui::ComboboxModel* model) override {}
 
  private:
-  bool changed_;
+  bool changed_ = false;
 };
 
 class RecentlyUsedFoldersComboModelTest : public testing::Test {

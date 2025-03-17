@@ -176,10 +176,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
-  bool ShouldBlockThirdPartyCookies() const override;
+  bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const override;
   bool MitigationsEnabledFor3pcd() const override;
 
-  bool IsThirdPartyPhaseoutEnabled() const;
+  // Returns true iff any of the ways of enabling third-party cookies
+  // restrictions are enabled.
+  bool IsThirdPartyPhaseoutEnabled(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const;
 
   // Returns a vector of host-indexed content settings associated with the input
   // `type`. Each element of the vector corresponds to a Provider from
@@ -222,6 +228,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       base::optional_ref<const url::Origin> top_frame_origin,
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieSettingOverrides overrides,
       net::CookieInclusionStatus& out_status) const;
 
   // Returns true if at least one content settings is session only.

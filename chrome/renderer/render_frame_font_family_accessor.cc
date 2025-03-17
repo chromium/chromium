@@ -11,7 +11,7 @@
 namespace {
 
 std::vector<std::string> WebStringVectorToStl(
-    const blink::WebVector<blink::WebString>& web_vector) {
+    const std::vector<blink::WebString>& web_vector) {
   std::vector<std::string> stl_vector;
   for (const blink::WebString& web_string : web_vector)
     stl_vector.push_back(web_string.Utf8());

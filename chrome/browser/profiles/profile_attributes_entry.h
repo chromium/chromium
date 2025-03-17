@@ -110,6 +110,10 @@ class ProfileAttributesEntry {
   // Gets the local profile name.
   std::u16string GetLocalProfileName() const;
 
+  // Get the profile label set for a managed profile. This is used instead of
+  // the local profile name if present.
+  std::u16string GetEnterpriseProfileLabel() const;
+
   std::u16string GetShortcutName() const;
   // Gets the path to the profile. Should correspond to the path passed to
   // ProfileAttributesStorage::GetProfileAttributesWithPath to get this entry.
@@ -222,13 +226,18 @@ class ProfileAttributesEntry {
   // doesn't have any associated `user_manager::User`.
   std::string GetAccountIdKey() const;
 
+  // Returns whether the current profile state is glic eligibile or not based on
+  // the signed in account. Signed out profiles are ineligible.
+  bool IsGlicEligible() const;
+
   // Gets/Sets the gaia IDs of the accounts signed into the profile (accounts
   // known by the `IdentityManager`).
-  base::flat_set<std::string> GetGaiaIds() const;
-  void SetGaiaIds(const base::flat_set<std::string>& gaia_ids);
+  base::flat_set<GaiaId> GetGaiaIds() const;
+  void SetGaiaIds(const base::flat_set<GaiaId>& gaia_ids);
 
   // |is_using_default| should be set to false for non default profile names.
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);
+  void SetEnterpriseProfileLabel(const std::u16string& name);
   void SetShortcutName(const std::u16string& name);
   void SetActiveTimeToNow();
   // Only ephemeral profiles can be set as omitted.
@@ -267,6 +276,8 @@ class ProfileAttributesEntry {
                    const std::u16string& user_name,
                    bool is_consented_primary_account);
 
+  void SetIsGlicEligible(bool value);
+
   // Update info about accounts. These functions are idempotent, only the first
   // call for a given input matters.
   void AddAccountName(const std::string& name);
@@ -289,10 +300,12 @@ class ProfileAttributesEntry {
   static const char kGAIAIdKey[];
   static const char kIsConsentedPrimaryAccountKey[];
   static const char kNameKey[];
+  static const char kEnterpriseLabelKey[];
   static const char kIsUsingDefaultNameKey[];
   static const char kIsUsingDefaultAvatarKey[];
   static const char kUseGAIAPictureKey[];
   static const char kAccountIdKey[];
+  static const char kIsGlicEligible[];
 
  private:
   friend class ProfileAttributesStorage;

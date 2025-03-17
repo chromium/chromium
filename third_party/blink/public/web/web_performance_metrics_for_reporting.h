@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PERFORMANCE_METRICS_FOR_REPORTING_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
 namespace blink {
@@ -59,7 +59,7 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   };
 
   using BackForwardCacheRestoreTimings =
-      WebVector<BackForwardCacheRestoreTiming>;
+      std::vector<BackForwardCacheRestoreTiming>;
 
   ~WebPerformanceMetricsForReporting() { Reset(); }
 

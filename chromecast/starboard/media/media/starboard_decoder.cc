@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -111,11 +112,9 @@ void StarboardDecoder::SetDecoderDelegate(
 BufferStatus StarboardDecoder::PushBufferInternal(
     StarboardSampleInfo sample_info,
     DrmInfoWrapper drm_info,
-    std::unique_ptr<uint8_t[]> buffer_data,
-    size_t buffer_data_size) {
+    base::HeapArray<uint8_t> buffer_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(buffer_data);
-  DCHECK_GT(buffer_data_size, 0UL);
+  CHECK(!buffer_data.empty());
 
   if (!player_) {
     if (pending_first_push_) {
@@ -134,12 +133,10 @@ BufferStatus StarboardDecoder::PushBufferInternal(
     // destructed).
     pending_first_push_ = base::BindOnce(
         &StarboardDecoder::PushBufferInternal, base::Unretained(this),
-        std::move(sample_info), std::move(drm_info), std::move(buffer_data),
-        buffer_data_size);
+        std::move(sample_info), std::move(drm_info), std::move(buffer_data));
     return BufferStatus::kBufferPending;
   }
 
-  DCHECK(buffer_data);
   DCHECK(delegate_);
   DCHECK(!pending_first_push_);
 
@@ -159,13 +156,12 @@ BufferStatus StarboardDecoder::PushBufferInternal(
       // once the key becomes available.
       CHECK_GE(drm_sample_info->identifier_size, 0);
       const size_t key_hash = base::FastHash(
-          base::span(drm_sample_info->identifier,
-                     static_cast<size_t>(drm_sample_info->identifier_size)));
+          base::span(drm_sample_info->identifier)
+              .first(static_cast<size_t>(drm_sample_info->identifier_size)));
       LOG(INFO) << "Waiting for DRM key with hash: " << key_hash;
       pending_drm_key_ = base::BindOnce(
           &StarboardDecoder::PushBufferInternal, base::Unretained(this),
-          std::move(sample_info), std::move(drm_info), std::move(buffer_data),
-          buffer_data_size);
+          std::move(sample_info), std::move(drm_info), std::move(buffer_data));
 
       CHECK(base::SequencedTaskRunner::HasCurrentDefault());
       drm_key_token_ = StarboardDrmKeyTracker::GetInstance().WaitForKey(
@@ -181,7 +177,10 @@ BufferStatus StarboardDecoder::PushBufferInternal(
     // starboard.
   }
 
-  const uint8_t* buffer_addr = buffer_data.get();
+  const uint8_t* buffer_addr = buffer_data.data();
+  sample_info.buffer = static_cast<const void*>(buffer_addr);
+  sample_info.buffer_size = buffer_data.size();
+  sample_info.drm_info = drm_info.GetDrmSampleInfo();
 
   // Ensure that we do not delete the media data until Deallocate is called.
   const bool inserted =
@@ -189,12 +188,8 @@ BufferStatus StarboardDecoder::PushBufferInternal(
   DCHECK(inserted) << "Duplicate memory address in copied_buffers_: "
                    << static_cast<const void*>(buffer_addr);
 
-  sample_info.buffer = static_cast<const void*>(buffer_addr);
-  sample_info.buffer_size = buffer_data_size;
-  sample_info.drm_info = drm_info.GetDrmSampleInfo();
-
-  starboard_->WriteSample(player_, media_type_, &sample_info,
-                          /*sample_infos_count=*/1);
+  starboard_->WriteSample(player_, media_type_,
+                          base::span_from_ref(sample_info));
 
   // Returning kBufferPending here means that another buffer will not be pushed
   // until Decoder::Delegate::OnPushBufferComplete is called.

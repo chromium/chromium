@@ -136,8 +136,11 @@ WPT_FINGERPRINT = 'GHzeRS4aLf+NeadKdUm+tUlmntyCJI4XyqCVWkDCnoc='
 # One for `//third_party/wpt_tools/certs/127.0.0.1.sxg.pem` used by non-WPT
 # tests under `web_tests/http/`.
 SXG_FINGERPRINT = '55qC1nKu2A88ESbFmk5sTPQS/ScG+8DD7P+2bgFA9iM='
-# And one for external/wpt/signed-exchange/resources/127.0.0.1.sxg.pem
+# One for external/wpt/signed-exchange/resources/127.0.0.1.sxg.pem
 SXG_WPT_FINGERPRINT = '0Rt4mT6SJXojEMHTnKnlJ/hBKMBcI4kteBlhR1eTTdk='
+# And one for `//third_party/blink/tools/apache_config/webkit-httpd.pem` used by
+# non-WPT tests under `web_tests/http/`.
+WEB_TESTS_HTTP_FINGERPRINT = 'KLy6vv6synForXwI6lDIl+D3ZrMV6Y1EMTY6YpOcAos='
 
 # A convervative rule for names that are valid for file or directory names.
 VALID_FILE_NAME_REGEX = re.compile(r'^[\w\-=]+$')
@@ -216,6 +219,8 @@ class Port(object):
         ('linux', 'x86_64'),
         ('fuchsia', 'x86_64'),
         ('ios17-simulator', 'x86_64'),
+        ('android', 'x86_64'),
+        ('webview', 'x86_64'),
     )
 
     CONFIGURATION_SPECIFIER_MACROS = {
@@ -227,6 +232,8 @@ class Port(object):
         'win': ['win10.20h2', 'win11-arm64', 'win11'],
         'linux': ['linux'],
         'fuchsia': ['fuchsia'],
+        'android': ['android'],
+        'webview': ['webview'],
     }
 
     # List of ports open on the host that the tests will connect to. When tests
@@ -252,12 +259,10 @@ class Port(object):
     FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
 
     # The following two constants must match. When adding a new WPT root, also
-    # remember to update configurations in:
-    #     //third_party/blink/web_tests/external/wpt/config.json
-    #     //third_party/blink/web_tests/wptrunner.blink.ini
-    #
+    # remember to add an alias rule to external/wpt/.config.json.
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
+    # Consider using port.wpt_dirs() instead.
     WPT_DIRS = collections.OrderedDict([
         ('wpt_internal', '/wpt_internal/'),
         ('external/wpt', '/'),
@@ -372,6 +377,14 @@ class Port(object):
         ])
 
     @memoized
+    def wpt_dirs(self):
+        """Get WPT directories of interest for current context.
+        """
+        if self.get_option('product') is None:
+            return self.WPT_DIRS
+        return collections.OrderedDict([('external/wpt', '/')])
+
+    @memoized
     def flag_specific_config_name(self):
         """Returns the name of the flag-specific configuration if it's specified in
            --flag-specific option, or None. The name must be defined in
@@ -452,6 +465,7 @@ class Port(object):
             WPT_FINGERPRINT,
             SXG_FINGERPRINT,
             SXG_WPT_FINGERPRINT,
+            WEB_TESTS_HTTP_FINGERPRINT,
         ]
         flags.extend([
             '--ignore-certificate-errors-spki-list=' +
@@ -1112,6 +1126,7 @@ class Port(object):
                 or max(100, num_tests // 33))
 
     WPTDirectory = Literal[tuple(WPT_DIRS)]
+    PathsByWPTDir = Mapping[Optional[WPTDirectory], Set[str]]
 
     # A "test root" represents a (virtual suite, WPT directory) pair (where
     # `None` means the affiliated paths are not virtual and not WPT,
@@ -1158,6 +1173,11 @@ class Port(object):
         # Contrary to the behavior of `_parse_paths()`, `Port.tests([])` should
         # still return all tests, so coerce `paths` here.
         paths_by_root = self._parse_paths(paths or None)
+
+        if self._path_finder.is_cog():
+            # Only update wpt manifest for tests intended to run
+            self._maybe_partial_update_wpt_manifest(paths_by_root)
+
         bases_by_root = self._filter_paths(paths_by_root, bases_by_root)
         tests_by_root = self._resolve_paths(bases_by_root)
         return sorted(self._format_paths(tests_by_root))
@@ -1168,19 +1188,13 @@ class Port(object):
         bases = []
         if self._options.virtual_tests:
             for suite in self.virtual_test_suites():
-                bases.extend(suite.full_prefix + base for base in suite.bases)
+                bases.extend(
+                    [suite.full_prefix + base for base in suite.bases])
         bases_by_root = self._parse_paths(bases)
         # Treat non-virtual tests like a special virtual suite that runs
         # everything.
-        for root in (None, *self.WPT_DIRS):
+        for root in (None, *self.wpt_dirs()):
             bases_by_root[None, root] = {''}
-        if not self.get_option('run_wpt_internal', True):
-            # Exclude entries, including virtual ones, for `--no-wpt-internal`.
-            bases_by_root = {
-                (virtual_suite, wpt_dir): bases
-                for (virtual_suite, wpt_dir), bases in bases_by_root.items()
-                if wpt_dir != 'wpt_internal'
-            }
         return bases_by_root
 
     def _parse_paths(self,
@@ -1201,6 +1215,9 @@ class Port(object):
         for path in map(self._as_posix_path, paths):
             virtual_suite, base_test = self.get_suite_name_and_base_test(path)
             wpt_dir, path_from_root = self.split_wpt_dir(base_test)
+            if wpt_dir and wpt_dir not in self.wpt_dirs():
+                # Skip wpt_internal tests on run_wpt_tests.py
+                continue
             virtual_suite = virtual_suite or None
             if virtual_suite and self._path_has_wildcard(path):
                 _log.warning('WARNING: Wildcards in paths are not supported '
@@ -1219,7 +1236,7 @@ class Port(object):
             # A pattern of the form `virtual/<suite>` should also encompass any
             # virtual WPT roots.
             if virtual_suite and not wpt_dir and not path_from_root:
-                for wpt_dir in self.WPT_DIRS:
+                for wpt_dir in self.wpt_dirs():
                     paths_by_root[virtual_suite, wpt_dir].add('')
         return paths_by_root
 
@@ -1429,20 +1446,45 @@ class Port(object):
                 and not Port.is_reference_html_file(self._filesystem, dirname,
                                                     filename))
 
+    def _maybe_partial_update_wpt_manifest(self,
+                                           bases_by_root: PathsByRoot) -> None:
+        path_by_wpt_dir = defaultdict(set)
+        for (_, wpt_dir), paths_from_root in bases_by_root.items():
+            if wpt_dir:
+                for path in paths_from_root:
+                    if self._filesystem.exists(
+                            self._filesystem.join(self.web_tests_dir(),
+                                                  wpt_dir, path)):
+                        path_by_wpt_dir[wpt_dir].add(path)
+                    else:
+                        # update directories only in case path is a url
+                        path_by_wpt_dir[wpt_dir].add(
+                            self._filesystem.dirname(path))
+
+        for wpt_dir, paths in path_by_wpt_dir.items():
+            if '' in paths:
+                WPTManifest.ensure_manifest(self, wpt_dir)
+            else:
+                # update wpt manifest for tests to run
+                WPTManifest.ensure_manifest(self, wpt_dir, [
+                    self._path_finder.path_from_web_tests(wpt_dir, path)
+                    for path in paths
+                ])
+
+        # Skip Manifest update in future.
+        self.set_option('manifest_update', False)
+
     @memoized
-    def wpt_manifest(self,
-                     path: str,
-                     exclude_jsshell: bool = True) -> WPTManifest:
+    def wpt_manifest(self, path: str) -> WPTManifest:
         assert path in self.WPT_DIRS
+        exclude_jsshell = not self.get_option('use_upstream_wpt')
         # Convert '/' to the platform-specific separator.
         path = self._filesystem.normpath(path)
         self._filesystem.maybe_make_directory(
             self._filesystem.join(self.web_tests_dir(), path))
         manifest_path = self._filesystem.join(self.web_tests_dir(), path,
                                               MANIFEST_NAME)
-        if self.should_update_manifest(path):
-            _log.debug('Generating MANIFEST.json for %s...', path)
-            WPTManifest.ensure_manifest(self, path)
+        WPTManifest.ensure_manifest(self, path)
         return WPTManifest.from_file(self, manifest_path,
                                      self.get_option('test_types'),
                                      exclude_jsshell)
@@ -1455,8 +1497,8 @@ class Port(object):
         contents changed from the last update. The previous hash is cached on
         the filesystem.
         """
-        manifest_path = self._path_finder.path_from_web_tests(
-            path, MANIFEST_NAME)
+        manifest_path = self._filesystem.join(self.web_tests_dir(), path,
+                                              MANIFEST_NAME)
         if not self._filesystem.exists(manifest_path):
             return True
         manifest_update: Optional[bool] = self.get_option('manifest_update')
@@ -1856,6 +1898,11 @@ class Port(object):
 
     @memoized
     def tests_from_file(self, filename: str) -> Set[str]:
+        """Read test patterns (URLs, files, or directories) from the given file.
+
+        The returned patterns are not necessarily valid and need to be resolved
+        to URLs by `Port.tests()` at some point.
+        """
         tests = set()
         file_contents = self._filesystem.read_text_file(filename)
         for line in file_contents.splitlines():
@@ -1864,6 +1911,10 @@ class Port(object):
                 continue
             tests.add(line)
         return tests
+
+    @memoized
+    def _resolved_tests_from_file(self, filename: str) -> List[str]:
+        return self.tests(self.tests_from_file(filename))
 
     def skipped_due_to_manual_test(self, test_name):
         """Checks whether a manual test should be skipped."""
@@ -1887,7 +1938,7 @@ class Port(object):
         smoke_test_filename = self.path_to_smoke_tests_file()
         if not self._filesystem.exists(smoke_test_filename):
             return False
-        smoke_tests = self.tests_from_file(smoke_test_filename)
+        smoke_tests = self._resolved_tests_from_file(smoke_test_filename)
         return test not in smoke_tests
 
     def default_smoke_test_only(self):
@@ -1975,50 +2026,54 @@ class Port(object):
         of any virtual suite, and the base test is not in the test's own virtual
         suite's exclusive_tests list.
         """
-        base_test = self.lookup_virtual_test_base(test)
-        if base_test:
-            # For a virtual test, if the base test is in exclusive_tests of the
-            # test's own virtual suite, then we should not skip the test.
-            virtual_suite = self._lookup_virtual_suite(test)
-            for exclusive_test in self._normalized_exclusive_tests(
-                    virtual_suite):
-                if base_test.startswith(exclusive_test):
-                    return False
-                if exclusive_test.startswith(base_test):
-                    # This means base_test is a directory containing exclusive
-                    # tests, so should not skip the directory.
-                    return False
-        else:
-            base_test = self.normalize_test_name(test)
+        base_test = self.lookup_virtual_test_base(test) or test
+        wpt_dir, path_from_root = self.split_wpt_dir(
+            posixpath.normpath(base_test))
+        virtual_suite = self._lookup_virtual_suite(test)
+        if virtual_suite:
+            exclusive_tests = self._parse_exclusive_tests_for_suite(
+                virtual_suite)
+            # When `test` is a virtual test,
+            # * If `base_test` descends from any exclusive test of `test`'s
+            #   own virtual suite, don't skip `test`.
+            # * Conversely, if any exclusive test descends from `base_test`,
+            #   `test` is a virtual test file/directory that encompasses at
+            #   least some non-skipped test IDs, so `test` itself is not
+            #   considered skipped.
+            common_tests = self._common_tests(exclusive_tests[wpt_dir],
+                                              {path_from_root}, wpt_dir)
+            if next(common_tests, None):
+                return False
 
         # For a non-virtual test or a virtual test not listed in exclusive_tests
         # of the test's own virtual suite, we should skip the test if the base
         # test is in exclusive_tests of any virtual suite.
-        for exclusive_test in self._all_normalized_exclusive_tests():
-            if base_test.startswith(exclusive_test):
-                return True
-        return False
+        all_exclusive_tests = self._parse_all_exclusive_tests()
+        return self._is_test_descendent(all_exclusive_tests[wpt_dir],
+                                        path_from_root, wpt_dir)
 
     @memoized
-    def _all_normalized_exclusive_tests(self):
-        tests = set()
+    def _parse_all_exclusive_tests(self) -> PathsByWPTDir:
+        all_exclusive_tests = defaultdict(set)
         for suite in self.virtual_test_suites():
-            tests.update(self._normalized_exclusive_tests(suite))
-        return tests
+            exclusive_tests = self._parse_exclusive_tests_for_suite(suite)
+            for wpt_dir, paths_from_root in exclusive_tests.items():
+                all_exclusive_tests[wpt_dir].update(paths_from_root)
+        return all_exclusive_tests
 
     @memoized
-    def _normalized_exclusive_tests(self, virtual_suite):
-        tests = set()
-        for exclusive_test in virtual_suite.exclusive_tests:
-            normalized_test = self.normalize_test_name(exclusive_test)
-            # WPT JS tests can expand to multiple tests. Remove the "js" suffix
-            # so that generated variants (e.g. "test.any.worker.html") match
-            # against the base with startswith and are correctly excluded.
-            if self.is_wpt_test(normalized_test) and normalized_test.endswith(
-                    '.js'):
-                normalized_test = normalized_test[:-2]
-            tests.add(normalized_test)
-        return tests
+    def _parse_exclusive_tests_for_suite(
+            self, virtual_suite: 'VirtualTestSuite') -> PathsByWPTDir:
+        # Callers don't need the virtual roots because `_parse_paths()` already
+        # copies physical test paths under `virtual/` into the non-virtual
+        # non-WPT root (None, None). Drop them here, which simplifies the return
+        # type.
+        exclusive_tests_by_root = self._parse_paths(
+            virtual_suite.exclusive_tests)
+        return {
+            wpt_dir: exclusive_tests_by_root[None, wpt_dir]
+            for wpt_dir in (None, *self.wpt_dirs())
+        }
 
     @memoized
     def skipped_due_to_skip_base_tests(self, test):
@@ -2086,6 +2141,9 @@ class Port(object):
 
     def get_option(self, name, default_value=None):
         return getattr(self._options, name, default_value)
+
+    def set_option(self, name, value):
+        return setattr(self._options, name, value)
 
     def set_option_default(self, name, default_value):
         return self._options.ensure_value(name, default_value)
@@ -2944,19 +3002,17 @@ class Port(object):
         if not suite:
             return None
         assert test_name.startswith(suite.full_prefix)
-        maybe_base = self.normalize_test_name(
-            test_name[len(suite.full_prefix):])
-        for base in suite.bases:
-            normalized_base = self.normalize_test_name(base)
-            # Wpt js file can expand to multiple tests. Remove the "js"
-            # suffix so that the startswith test can pass. This could
-            # be inaccurate but is computationally cheap.
-            if (self.is_wpt_test(normalized_base)
-                    and normalized_base.endswith(".js")):
-                normalized_base = normalized_base[:-2]
-            if normalized_base.startswith(maybe_base) or maybe_base.startswith(
-                    normalized_base):
-                return maybe_base
+        virtual_suite, target_base = self.get_suite_name_and_base_test(
+            posixpath.normpath(test_name))
+        if not target_base:
+            return None
+        wpt_dir, target_path_from_root = self.split_wpt_dir(target_base)
+        bases_by_root = self._parse_all_bases()
+        common_tests = self._common_tests(
+            bases_by_root[virtual_suite, wpt_dir], {target_path_from_root},
+            wpt_dir)
+        if next(common_tests, None):
+            return self.normalize_test_name(target_base)
         return None
 
     def _lookup_virtual_test_args(self, test_name):

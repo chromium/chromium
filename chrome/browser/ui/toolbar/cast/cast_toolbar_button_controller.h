@@ -105,6 +105,10 @@ class CastToolbarButtonController : public media_router::IssuesObserver,
   // depending on whether or not we have issues, local routes or a dialog.
   virtual void MaybeToggleIconVisibility();
 
+  // Updates the kActionMediaRouterToggleMediaRemoting ActionItem based on
+  // changes to the pref.
+  void UpdateToggleMediaRouterRemotingAction();
+
   // The profile |this| is associated with. There should be one instance of this
   // class per profile.
   const raw_ptr<Profile> profile_;

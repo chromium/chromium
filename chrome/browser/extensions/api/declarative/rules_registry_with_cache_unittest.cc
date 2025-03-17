@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/extension_test_util.h"
@@ -25,6 +26,7 @@
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
@@ -39,7 +41,7 @@ const char kRule2Id[] = "rule2";
 }
 
 namespace extensions {
-const int kRulesRegistryID = RulesRegistryService::kDefaultRulesRegistryID;
+const int kRulesRegistryID = rules_registry_ids::kDefaultRulesRegistryID;
 
 class RulesRegistryWithCacheTest : public testing::Test {
  public:
@@ -347,9 +349,12 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
   // on registry (in particular, browser) restart.
 
   // The Declarative Web Request API used below to interact with the rule
-  // registry is not in stable, threfore set the channel to something where that
-  // API is available.
+  // registry is not in stable, therefore set the channel to something where
+  // that API is available.
   ScopedCurrentChannel channel(version_info::Channel::UNKNOWN);
+  // The Declarative Web Request API is also restricted to MV2, so allow MV2
+  // extensions.
+  ScopedTestMV2Enabler mv2_enabler;
 
   ExtensionService* extension_service = env_.GetExtensionService();
 

@@ -44,9 +44,7 @@ void TabContentsTask::UpdateTitle() {
 }
 
 void TabContentsTask::UpdateFavicon() {
-  const gfx::ImageSkia* icon =
-      RendererTask::GetFaviconFromWebContents(web_contents());
-  set_icon(icon ? *icon : gfx::ImageSkia());
+  DefaultUpdateFaviconImpl();
 }
 
 Task::Type TabContentsTask::GetType() const {

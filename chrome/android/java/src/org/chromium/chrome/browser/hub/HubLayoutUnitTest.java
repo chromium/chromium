@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,6 +22,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +34,7 @@ import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +63,10 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -78,9 +82,11 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -100,8 +106,8 @@ public class HubLayoutUnitTest {
     private static final long FAKE_NATIVE_ADDRESS_1 = 498723734L;
     private static final long FAKE_NATIVE_ADDRESS_2 = 123210L;
     private static final float FLOAT_ERROR = 0.001f;
-    private static final int TAB_ID = 5;
-    private static final int NEW_TAB_ID = 6;
+    private static final @TabId int TAB_ID = 5;
+    private static final @TabId int NEW_TAB_ID = 6;
     private static final int NEW_TAB_INDEX = 0;
     // This animation doesn't depend on time from the LayoutManager.
     private static final long FAKE_TIME = 0L;
@@ -136,6 +142,8 @@ public class HubLayoutUnitTest {
     @Mock private Tab mTab;
     @Mock private DoubleConsumer mOnAlphaChange;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private HubContainerView mHubContainerViewMock;
+    @Mock private HubContainerView mPaneHostViewMock;
 
     private UserActionTester mActionTester;
 
@@ -255,14 +263,10 @@ public class HubLayoutUnitTest {
         doAnswer(
                         invocation -> {
                             var args = invocation.getArguments();
-                            return new LayoutTab(
-                                    (Integer) args[0],
-                                    (Boolean) args[1],
-                                    ((Float) args[2]).intValue(),
-                                    ((Float) args[3]).intValue());
+                            return new LayoutTab((Integer) args[0], (Boolean) args[1], -1, -1);
                         })
                 .when(mUpdateHost)
-                .createLayoutTab(anyInt(), anyBoolean(), anyFloat(), anyFloat());
+                .createLayoutTab(anyInt(), anyBoolean());
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
@@ -622,6 +626,74 @@ public class HubLayoutUnitTest {
         verify(mTab, never()).hide(anyInt());
     }
 
+    @Test
+    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testFinalRect_SameModel() {
+        setupFinalRectMocks(/* modelIsIncognito= */ false);
+        Rect expectedRect = new Rect(0, 10, 90, 110);
+        Rect actualRect = new Rect();
+
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ false, actualRect);
+        assertEquals(expectedRect, actualRect);
+
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ true, actualRect);
+        assertEquals(expectedRect, actualRect);
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testFinalRect_SwitchingModel() {
+        setupFinalRectMocks(/* modelIsIncognito= */ false);
+        Rect expectedRect = new Rect(0, 0, 90, 110);
+        Rect actualRect = new Rect();
+
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ true, actualRect);
+        assertEquals(expectedRect, actualRect);
+
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ false, actualRect);
+        assertEquals(expectedRect, actualRect);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testFinalRectWithHubSearch_SwitchingModel() {
+        setupFinalRectMocks(/* modelIsIncognito= */ false);
+        Rect expectedRect = new Rect(0, 0, 90, 110);
+        Rect actualRect = new Rect();
+
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ true, actualRect);
+        assertEquals(expectedRect, actualRect);
+
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ false, actualRect);
+        assertEquals(expectedRect, actualRect);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testFinalRectWithHubSearch_SameModel() {
+        setupFinalRectMocks(/* modelIsIncognito= */ false);
+        Rect spyRect = spy(new Rect());
+
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ false, spyRect);
+        verify(spyRect, times(2)).offset(anyInt(), anyInt());
+
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+        reset(spyRect);
+        mHubLayout.getFinalRectForNewTabAnimation(
+                mHubContainerViewMock, /* newIsIncognito= */ true, spyRect);
+        verify(spyRect, times(2)).offset(anyInt(), anyInt());
+    }
+
     private void show(
             @LayoutType int fromLayout,
             boolean animate,
@@ -656,7 +728,7 @@ public class HubLayoutUnitTest {
 
     private void hide(
             @LayoutType int nextLayout,
-            int nextTabId,
+            @TabId int nextTabId,
             boolean skipStartHiding,
             @HubLayoutAnimationType int expectedAnimationType) {
         if (skipStartHiding) {
@@ -696,7 +768,7 @@ public class HubLayoutUnitTest {
         mHubLayout.show(FAKE_TIME, animate);
     }
 
-    private void startHiding(@LayoutType int nextLayout, int nextTabId) {
+    private void startHiding(@LayoutType int nextLayout, @TabId int nextTabId) {
         @LayoutType int layoutType = mHubLayout.getLayoutType();
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(layoutType);
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
@@ -710,7 +782,7 @@ public class HubLayoutUnitTest {
     }
 
     private void animateCheckingSceneLayerAndLayoutTabs(
-            Runnable startAnimationRunnable, int tabId) {
+            Runnable startAnimationRunnable, @TabId int tabId) {
         assertThat(mHubLayout.getSceneLayer(), instanceOf(SolidColorSceneLayer.class));
         LayoutTab[] layoutTabs = mHubLayout.getLayoutTabsToRender();
         assertNull(layoutTabs);
@@ -762,6 +834,33 @@ public class HubLayoutUnitTest {
         mHubLayoutAnimatorSupplier.set(mHubLayoutAnimatorMock);
         when(mHubLayoutAnimatorProviderMock.getAnimatorSupplier())
                 .thenReturn(mHubLayoutAnimatorSupplier);
+    }
+
+    private void setupFinalRectMocks(boolean modelIsIncognito) {
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(modelIsIncognito);
+        when(mHubController.getContainerView()).thenReturn(mHubContainerViewMock);
+        when(mHubContainerViewMock.isLaidOut()).thenReturn(true);
+        Rect hubContainerRect = new Rect(10, 10, 100, 100);
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(hubContainerRect);
+                            return true;
+                        })
+                .when(mHubContainerViewMock)
+                .getGlobalVisibleRect(any());
+
+        when(mHubController.getPaneHostView()).thenReturn(mPaneHostViewMock);
+        when(mPaneHostViewMock.isLaidOut()).thenReturn(true);
+        Rect paneHostRect = new Rect(10, 20, 100, 120);
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(paneHostRect);
+                            return true;
+                        })
+                .when(mPaneHostViewMock)
+                .getGlobalVisibleRect(any());
     }
 
     private void forceLayout() {

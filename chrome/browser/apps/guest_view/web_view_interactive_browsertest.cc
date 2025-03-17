@@ -17,7 +17,6 @@
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,20 +85,16 @@ using guest_view::TestGuestViewManagerFactory;
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// This class observes the RenderWidgetHostViewCocoa corresponding to the outer
-// most WebContents provided for newly added subviews. The added subview
-// corresponds to a NSPopUpButtonCell which will be removed shortly after being
-// shown.
-class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
+class PopupShowAttemptObserver : content::RenderWidgetHostViewCocoaObserver {
  public:
-  explicit NewSubViewAddedObserver(content::WebContents* web_contents)
+  explicit PopupShowAttemptObserver(content::WebContents* web_contents)
       : content::RenderWidgetHostViewCocoaObserver(web_contents) {}
 
-  NewSubViewAddedObserver(const NewSubViewAddedObserver&) = delete;
-  NewSubViewAddedObserver& operator=(const NewSubViewAddedObserver&) = delete;
-  ~NewSubViewAddedObserver() override = default;
+  PopupShowAttemptObserver(const PopupShowAttemptObserver&) = delete;
+  PopupShowAttemptObserver& operator=(const PopupShowAttemptObserver&) = delete;
+  ~PopupShowAttemptObserver() override = default;
 
-  void WaitForNextSubView() {
+  void WaitForPopup() {
     if (did_receive_rect_)
       return;
 
@@ -110,12 +105,13 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
   const gfx::Rect& view_bounds_in_screen() const { return bounds_; }
 
  private:
-  void DidAddSubviewWillBeDismissed(
-      const gfx::Rect& bounds_in_root_view) override {
+  void DidAttemptToShowPopup(const gfx::Rect& bounds,
+                             int selected_item) override {
     did_receive_rect_ = true;
-    bounds_ = bounds_in_root_view;
-    if (run_loop_)
+    bounds_ = bounds;
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   bool did_receive_rect_ = false;
@@ -127,11 +123,7 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
 class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
  public:
   WebViewInteractiveTest()
-      : guest_view_(nullptr),
-        embedder_web_contents_(nullptr),
-        corner_(gfx::Point()),
-        mouse_click_result_(false),
-        first_click_(true) {}
+      : guest_view_(nullptr), embedder_web_contents_(nullptr) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
@@ -492,8 +484,8 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
       embedder_web_contents_;
 
   gfx::Point corner_;
-  bool mouse_click_result_;
-  bool first_click_;
+  bool mouse_click_result_ = false;
+  bool first_click_ = true;
 };
 
 class WebViewImeInteractiveTest : public WebViewInteractiveTest {
@@ -1587,7 +1579,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
 // This test verifies that drop-down lists appear correctly inside OOPIF-based
 // webviews which have offset inside embedder. This is a test for all guest
 // views as the logic for showing such popups is inside content/ layer. For more
-// context see https://crbug.com/772840.
+// context see https://crbug.com/41348804.
 IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
                        DropDownPopupInCorrectPosition) {
   TestHelper("testSelectPopupPositionInMac", "web_view/shim", NO_TEST_SERVER);
@@ -1604,19 +1596,19 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
                .Length() >= distance_from_root_view_origin;
   }));
 
-  // Now trigger the popup and wait until it is displayed. The popup will get
-  // dismissed after being shown.
-  NewSubViewAddedObserver popup_observer(embedder_web_contents_);
+  // Now trigger the popup and wait for the callback that indicates that it
+  // would have been displayed.
+  PopupShowAttemptObserver popup_observer(embedder_web_contents_);
   // Now send a mouse click and wait until the <select> tag is focused.
   SimulateRWHMouseClick(guest_rwhv->GetRenderWidgetHost(),
                         blink::WebMouseEvent::Button::kLeft, 5, 5);
-  popup_observer.WaitForNextSubView();
+  popup_observer.WaitForPopup();
 
-  // Verify the popup bounds intersect with those of the guest. Since the popup
-  // is relatively small (the width is determined by the <select> element's
-  // width and the hight is a factor of font-size and number of items), the
-  // intersection alone is a good indication the popup is shown properly inside
-  // the screen.
+  // Verify that the popup bounds (where it would have been displayed) intersect
+  // with the bounds of the guest. Since the popup is relatively small (the
+  // width is determined by the <select> element's width and the height is a
+  // factor of font-size and number of items), the intersection alone is a good
+  // indication the popup is shown properly inside the screen.
   gfx::Rect guest_bounds_in_embedder(
       guest_rwhv->TransformPointToRootCoordSpace(gfx::Point()),
       guest_rwhv->GetViewBounds().size());

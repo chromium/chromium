@@ -4,37 +4,40 @@
 
 package org.chromium.ui.resources.dynamics;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 
 /**
  * ViewResourceInflater is a utility class that facilitates using an Android View as a dynamic
- * resource, which can be later used as a compositor layer. This class assumes that the View
- * is defined declaratively, using a XML Layout file, and that the View that is going to be
- * inflated is the single top-level View of the layout (its root).
+ * resource, which can be later used as a compositor layer. This class assumes that the View is
+ * defined declaratively, using a XML Layout file, and that the View that is going to be inflated is
+ * the single top-level View of the layout (its root).
  *
- * By default, the View is inflated without being attached to the hierarchy, which allows
- * subclasses to read/modify the View "offscreen", via the method {@link #onFinishInflate()}.
- * When a new snapshot of the View is required, which is triggered when the method
- * {@link #invalidate()} is called, the View is drawn and automatically detached from the
- * hierarchy after the snapshot has been captured.  View drawing and capturing is done async,
- * so when calling {@link #invalidate()} the caller may want to wait until onCaptureEnd has been
- * called to make sure a new snapshot has been captured in cases where rendering an older snapshot
- * for a frame or two would be problematic.  This can be done by overriding onCaptureEnd.
+ * <p>By default, the View is inflated without being attached to the hierarchy, which allows
+ * subclasses to read/modify the View "offscreen", via the method {@link #onFinishInflate()}. When a
+ * new snapshot of the View is required, which is triggered when the method {@link #invalidate()} is
+ * called, the View is drawn and automatically detached from the hierarchy after the snapshot has
+ * been captured. View drawing and capturing is done async, so when calling {@link #invalidate()}
+ * the caller may want to wait until onCaptureEnd has been called to make sure a new snapshot has
+ * been captured in cases where rendering an older snapshot for a frame or two would be problematic.
+ * This can be done by overriding onCaptureEnd.
  *
- * There's also an option to not attach to the hierarchy at all, by overriding the method
- * {@link #shouldAttachView()} and making it return false (the default is true). In this case
- * the changes to the View will always be "offscreen". By default an unspecified value of
- * {@link View.MeasureSpec} will be used to determine the width and height of the View.
- * It's possible to specify custom size constraints by overriding the methods
- * {@link #getWidthMeasureSpec()} and {@link #getHeightMeasureSpec()}.
+ * <p>There's also an option to not attach to the hierarchy at all, by overriding the method {@link
+ * #shouldAttachView()} and making it return false (the default is true). In this case the changes
+ * to the View will always be "offscreen". By default an unspecified value of {@link
+ * View.MeasureSpec} will be used to determine the width and height of the View. It's possible to
+ * specify custom size constraints by overriding the methods {@link #getWidthMeasureSpec()} and
+ * {@link #getHeightMeasureSpec()}.
  */
 @NullMarked
 public class ViewResourceInflater {
@@ -58,8 +61,7 @@ public class ViewResourceInflater {
     private @Nullable ViewResourceAdapter mResourceAdapter;
 
     /** The inflated View. */
-    @SuppressWarnings("NullAway.Init")
-    private View mView;
+    private @Nullable View mView;
 
     /** Whether the View needs a layout update. */
     private boolean mNeedsLayoutUpdate;
@@ -97,6 +99,7 @@ public class ViewResourceInflater {
     }
 
     /** Inflate the layout. */
+    @EnsuresNonNull("mView")
     public void inflate() {
         if (mView != null) return;
 
@@ -158,7 +161,7 @@ public class ViewResourceInflater {
     }
 
     /** Destroy the instance. */
-    @NullUnmarked
+    @SuppressWarnings("NullAway") // Nulls out non-null fields.
     public void destroy() {
         if (mView == null) return;
 
@@ -249,6 +252,7 @@ public class ViewResourceInflater {
     }
 
     /** Lays out the View. */
+    @RequiresNonNull("mView")
     protected void layout() {
         mView.measure(getWidthMeasureSpec(), getHeightMeasureSpec());
         mView.layout(0, 0, getMeasuredWidth(), getMeasuredHeight());
@@ -257,7 +261,7 @@ public class ViewResourceInflater {
     /**
      * @return The View resource.
      */
-    protected View getView() {
+    protected @Nullable View getView() {
         return mView;
     }
 
@@ -269,6 +273,7 @@ public class ViewResourceInflater {
     }
 
     /** Attach the View to the hierarchy. */
+    @RequiresNonNull("mView")
     private void attachView() {
         if (!mIsAttached) {
             assert mView.getParent() == null;
@@ -287,6 +292,7 @@ public class ViewResourceInflater {
     /** Detach the View from the hierarchy. */
     private void detachView() {
         if (mIsAttached) {
+            assumeNonNull(mView);
             if (mOnDrawListener != null) {
                 mView.getViewTreeObserver().removeOnDrawListener(mOnDrawListener);
                 mOnDrawListener = null;
@@ -330,6 +336,7 @@ public class ViewResourceInflater {
     }
 
     /** Register the resource and creates an adapter for it. */
+    @RequiresNonNull("mView")
     private void registerResource() {
         if (mResourceAdapter == null) {
             mResourceAdapter = new ViewInflaterAdapter(mView.findViewById(mViewId));

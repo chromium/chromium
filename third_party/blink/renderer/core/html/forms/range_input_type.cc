@@ -356,6 +356,11 @@ void RangeInputType::WarnIfValueIsInvalid(const String& value) const {
       "The specified value %s cannot be parsed, or is out of range.", value);
 }
 
+String RangeInputType::ValueNotEqualText(const Decimal& value) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_NOT_EQUAL,
+                                 LocalizeValue(Serialize(value)));
+}
+
 String RangeInputType::RangeOverflowText(const Decimal& maximum) const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_OVERFLOW,
                                  LocalizeValue(Serialize(maximum)));

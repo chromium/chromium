@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_H_
 #define CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -19,6 +20,7 @@
 
 namespace base {
 class Version;
+class FilePath;
 }
 
 // Cross-platform client to communicate between the browser and the Chromium
@@ -34,6 +36,12 @@ class BrowserUpdaterClient
       base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
           proxy_provider,
       updater::UpdaterScope scope);
+  static std::optional<updater::UpdateService::UpdateState>
+  GetLastOnDemandUpdateState();
+  static std::optional<updater::UpdateService::AppState>
+  GetLastKnownBrowserRegistration();
+  static std::optional<updater::UpdateService::AppState>
+  GetLastKnownUpdaterRegistration();
 
   explicit BrowserUpdaterClient(
       scoped_refptr<updater::UpdateService> update_service);
@@ -71,14 +79,19 @@ class BrowserUpdaterClient
   // will be run on the same sequence.
   void IsBrowserRegistered(base::OnceCallback<void(bool)> callback);
 
+  // Returns the browser's app ID. App IDs are case-insensitive and it may not
+  // be in the same case used elsewhere in the browser.
+  static std::string GetAppId();
+
+  // Returns the expected existence checker path for this browser instance.
+  static base::FilePath GetExpectedEcp();
+
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;
   virtual ~BrowserUpdaterClient();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-
-  static std::string GetAppId();
   static bool AppMatches(const updater::UpdateService::AppState& app);
   updater::RegistrationRequest GetRegistrationRequest();
 

@@ -5,6 +5,8 @@
 #include "components/optimization_guide/core/bloom_filter.h"
 
 #include <stdint.h>
+
+#include <bit>
 #include <string>
 
 #include "build/build_config.h"
@@ -16,12 +18,8 @@ namespace {
 
 int CountBits(const ByteVector& vector) {
   int bit_count = 0;
-  for (size_t i = 0; i < vector.size(); ++i) {
-    uint8_t byte = vector[i];
-    for (int j = 0; j < 8; ++j) {
-      if (byte & (1 << j))
-        bit_count++;
-    }
+  for (const uint8_t byte : vector) {
+    bit_count += std::popcount(byte);
   }
   return bit_count;
 }

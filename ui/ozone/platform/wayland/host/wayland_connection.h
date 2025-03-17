@@ -13,23 +13,14 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/display/tablet_state.h"
-#include "ui/events/event.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
-#include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
-#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
-#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
-#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
-#include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+
+class SkBitmap;
 
 struct wl_cursor;
 struct wl_event_queue;
@@ -45,31 +36,35 @@ class WaylandProxy;
 namespace ui {
 
 struct InputDevice;
-class OrgKdeKwinIdle;
 struct KeyboardDevice;
 struct TouchscreenDevice;
+
+class GtkPrimarySelectionDeviceManager;
+class GtkShell1;
+class OrgKdeKwinIdle;
+class OverlayPrioritizer;
+class SinglePixelBuffer;
 class WaylandBufferFactory;
 class WaylandBufferManagerHost;
+class WaylandClipboard;
 class WaylandCursor;
 class WaylandCursorBufferListener;
+class WaylandCursorPosition;
+class WaylandCursorShape;
+class WaylandDataDeviceManager;
+class WaylandDataDragController;
 class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
+class WaylandWindowDragController;
 class WaylandZcrColorManager;
 class WaylandZwpPointerConstraints;
 class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
-class WaylandDataDeviceManager;
-class WaylandCursorPosition;
-class WaylandCursorShape;
-class WaylandWindowDragController;
-class GtkPrimarySelectionDeviceManager;
-class GtkShell1;
-class ZwpIdleInhibitManager;
-class ZwpPrimarySelectionDeviceManager;
 class XdgActivation;
 class XdgForeignWrapper;
-class OverlayPrioritizer;
+class ZwpIdleInhibitManager;
+class ZwpPrimarySelectionDeviceManager;
 
 // These values are persisted to logs.  Entries should not be renumbered and
 // numeric values should never be reused.
@@ -273,6 +268,9 @@ class WaylandConnection {
   // Returns true when there an active outgoing drag-and-drop session.
   bool IsDragInProgress() const;
 
+  // Returns true if a wl_keyboard is available.
+  bool IsKeyboardAvailable() const;
+
   // Creates a new wl_surface.
   wl::Object<wl_surface> CreateSurface();
 
@@ -300,35 +298,15 @@ class WaylandConnection {
     supports_viewporter_surface_scaling_ = enabled;
   }
 
-  bool UsePerSurfaceScaling() const {
-    return base::FeatureList::IsEnabled(features::kWaylandPerSurfaceScale) &&
-           supports_viewporter_surface_scaling();
-  }
-
-  bool IsUiScaleEnabled() const {
-    return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
-           UsePerSurfaceScaling();
-  }
-
+  bool UsePerSurfaceScaling() const;
+  bool IsUiScaleEnabled() const;
   bool ShouldUseOverlayDelegation() const;
 
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
-  void set_tablet_layout_state(display::TabletState tablet_layout_state) {
-    tablet_layout_state_ = tablet_layout_state;
-  }
-  bool GetTabletMode() {
-    return tablet_layout_state_ == display::TabletState::kInTabletMode ||
-           tablet_layout_state_ == display::TabletState::kEnteringTabletMode;
-  }
-  display::TabletState GetTabletState() { return tablet_layout_state_; }
-
   void DumpState(std::ostream& out) const;
 
-  bool UseImplicitSyncInterop() const {
-    return !SupportsExplicitSync() &&
-           WaylandBufferManagerHost::SupportsImplicitSyncInterop();
-  }
+  bool UseImplicitSyncInterop() const;
 
   // Returns a sync callback, which is invoked when the server has processed all
   // pending events prior to this sync point.
@@ -518,10 +496,6 @@ class WaylandConnection {
   std::unique_ptr<wl::WaylandProxy> wayland_proxy_;
 
   raw_ptr<WaylandCursorBufferListener> listener_ = nullptr;
-
-  // The current window table mode layout state.
-  display::TabletState tablet_layout_state_ =
-      display::TabletState::kInClamshellMode;
 
   // This is set if wp_viewporter may be used to instruct the compositor to
   // properly scale fractional scaled surfaces.

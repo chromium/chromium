@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.fold_transitions;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 
@@ -24,18 +23,13 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 /** A utility class to handle saving and restoring the UI state across fold transitions. */
 public class FoldTransitionController {
     public static final String DID_CHANGE_TABLET_MODE = "did_change_tablet_mode";
-    public static final long KEYBOARD_RESTORATION_TIMEOUT_MS = 2 * 1000; // 2 seconds
-    static final String URL_BAR_FOCUS_STATE = "url_bar_focus_state";
-    static final String URL_BAR_EDIT_TEXT = "url_bar_edit_text";
-    static final String KEYBOARD_VISIBILITY_STATE = "keyboard_visibility_state";
-    static final String TAB_SWITCHER_VISIBILITY_STATE = "tab_switcher_visibility_state";
+    static final String ACTIVITY_RECREATION_UI_STATE = "activity_recreation_ui_state";
 
     private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final ActivityTabProvider mActivityTabProvider;
     private final Handler mLayoutStateHandler;
-    private boolean mKeyboardVisibleDuringFoldTransition;
-    private Long mKeyboardVisibilityTimestamp;
+    private ActivityRecreationUiState mRetainedUiState;
 
     /**
      * Construct a {@link FoldTransitionController} instance.
@@ -57,12 +51,38 @@ public class FoldTransitionController {
     }
 
     /**
-     * Saves the relevant UI when the activity is recreated on a device fold transition. Expected to
-     * be invoked during {@code Activity#onSaveInstanceState()}.
+     * Saves the relevant UI to {@link ActivityRecreationUiState} before the activity is recreated
+     * on a device fold transition. This preserves the actual UI state, that could change before
+     * {@code Activity#onSaveInstanceState()} is called. For e.g. url bar focus is cleared before
+     * {@code Activity#onSaveInstanceState()}.
+     */
+    public void prepareUiState() {
+        mRetainedUiState = new ActivityRecreationUiState();
+        if (mToolbarManagerSupplier.hasValue() && mToolbarManagerSupplier.get().isUrlBarFocused()) {
+            mRetainedUiState.mIsUrlBarFocused = true;
+            mRetainedUiState.mUrlBarEditText =
+                    mToolbarManagerSupplier.get().getUrlBarTextWithoutAutocomplete();
+        }
+
+        if (getKeyboardVisibilityState()) {
+            mRetainedUiState.mIsKeyboardShown = true;
+        }
+
+        if (mLayoutManagerSupplier.hasValue()) {
+            if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                mRetainedUiState.mIsTabSwitcherShown = true;
+            }
+        }
+    }
+
+    /**
+     * Saves the relevant UI from {@link ActivityRecreationUiState} to {@link Bundle} when the
+     * activity is recreated on a device fold transition. Expected to be invoked during {@code
+     * Activity#onSaveInstanceState()}.
      *
      * @param savedInstanceState The {@link Bundle} where the UI state will be saved.
      * @param didChangeTabletMode Whether the activity is recreated due to a fold configuration
-     *         change. {@code true} if the fold configuration changed, {@code false} otherwise.
+     *     change. {@code true} if the fold configuration changed, {@code false} otherwise.
      * @param isIncognito Whether the current TabModel is incognito mode.
      */
     public void saveUiState(
@@ -70,22 +90,8 @@ public class FoldTransitionController {
         if (savedInstanceState == null) return;
 
         savedInstanceState.putBoolean(DID_CHANGE_TABLET_MODE, didChangeTabletMode);
-        if (mToolbarManagerSupplier.hasValue() && mToolbarManagerSupplier.get().isUrlBarFocused()) {
-            savedInstanceState.putBoolean(URL_BAR_FOCUS_STATE, true);
-            savedInstanceState.putString(
-                    URL_BAR_EDIT_TEXT,
-                    mToolbarManagerSupplier.get().getUrlBarTextWithoutAutocomplete());
-        }
-
-        if (getKeyboardVisibilityState()) {
-            savedInstanceState.putBoolean(KEYBOARD_VISIBILITY_STATE, true);
-        }
-
-        if (mLayoutManagerSupplier.hasValue()) {
-            if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-                savedInstanceState.putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
-            }
-        }
+        if (mRetainedUiState == null || mRetainedUiState.shouldRetainState()) return;
+        savedInstanceState.putParcelable(ACTIVITY_RECREATION_UI_STATE, mRetainedUiState);
     }
 
     /**
@@ -103,25 +109,19 @@ public class FoldTransitionController {
             return;
         }
 
+        ActivityRecreationUiState uiState =
+                savedInstanceState.getParcelable(ACTIVITY_RECREATION_UI_STATE);
+        if (uiState == null) {
+            return;
+        }
         restoreOmniboxState(
-                savedInstanceState,
+                uiState,
                 mToolbarManagerSupplier.get(),
                 mLayoutManagerSupplier.get(),
                 mLayoutStateHandler);
         restoreKeyboardState(
-                savedInstanceState,
-                mActivityTabProvider,
-                mLayoutManagerSupplier.get(),
-                mLayoutStateHandler);
-        restoreTabSwitcherState(savedInstanceState, mLayoutManagerSupplier.get());
-    }
-
-    boolean getKeyboardVisibleDuringFoldTransitionForTesting() {
-        return mKeyboardVisibleDuringFoldTransition;
-    }
-
-    Long getKeyboardVisibilityTimestampForTesting() {
-        return mKeyboardVisibilityTimestamp;
+                uiState, mActivityTabProvider, mLayoutManagerSupplier.get(), mLayoutStateHandler);
+        restoreTabSwitcherState(uiState, mLayoutManagerSupplier.get());
     }
 
     private boolean getKeyboardVisibilityState() {
@@ -129,30 +129,7 @@ public class FoldTransitionController {
             return false;
         }
 
-        var actualKeyboardVisibilityState = false;
-        var keyboardVisible = isKeyboardVisible(mActivityTabProvider);
-        if (keyboardVisible) {
-            // The keyboard is currently visible.
-            actualKeyboardVisibilityState = true;
-            mKeyboardVisibleDuringFoldTransition = true;
-            mKeyboardVisibilityTimestamp = SystemClock.elapsedRealtime();
-        } else if (mKeyboardVisibleDuringFoldTransition) {
-            // This is to handle the case when folding a device invokes Activity#onStop twice
-            // (see crbug.com/1426678 for details), thereby invoking #onSaveInstanceState twice.
-            // In this flow, Activity#onPause is also invoked twice, and the first call to
-            // #onPause hides the keyboard if it is visible, while also clearing the previous
-            // instance state. The actual keyboard visibility state during the second invocation
-            // is determined by |mKeyboardVisibleDuringFoldTransition| that will be used only if
-            // it is valid in terms of a timeout within which the fold transition occurs, to
-            // avoid erroneously setting the keyboard state under other circumstances if
-            // |mKeyboardVisibleDuringFoldTransition| is not reset.
-            if (isKeyboardStateValid(mKeyboardVisibilityTimestamp)) {
-                actualKeyboardVisibilityState = true;
-            }
-            mKeyboardVisibleDuringFoldTransition = false;
-            mKeyboardVisibilityTimestamp = null;
-        }
-        return actualKeyboardVisibilityState;
+        return isKeyboardVisible(mActivityTabProvider);
     }
 
     /**
@@ -193,20 +170,6 @@ public class FoldTransitionController {
                                 .getContainerView());
     }
 
-    /**
-     * Determines whether the keyboard visibility state is valid for restoration after a fold
-     * transition.
-     *
-     * @param timestamp The time (in milliseconds) at which the keyboard visibility state was saved
-     *         during a fold transition.
-     * @return {@code true} if the keyboard visibility state is valid for restoration, {@code false}
-     *         otherwise.
-     */
-    private static boolean isKeyboardStateValid(Long timestamp) {
-        return timestamp != null
-                && SystemClock.elapsedRealtime() - timestamp <= KEYBOARD_RESTORATION_TIMEOUT_MS;
-    }
-
     private static void restoreUiStateOnLayoutDoneShowing(
             LayoutManager layoutManager,
             Handler layoutStateHandler,
@@ -241,14 +204,14 @@ public class FoldTransitionController {
     }
 
     private static void restoreOmniboxState(
-            @NonNull Bundle savedInstanceState,
+            @NonNull ActivityRecreationUiState uiState,
             ToolbarManager toolbarManager,
             @NonNull LayoutManager layoutManager,
             Handler layoutStateHandler) {
-        if (toolbarManager == null || !savedInstanceState.getBoolean(URL_BAR_FOCUS_STATE, false)) {
+        if (toolbarManager == null || !uiState.mIsUrlBarFocused) {
             return;
         }
-        String urlBarText = savedInstanceState.getString(URL_BAR_EDIT_TEXT, "");
+        String urlBarText = uiState.mUrlBarEditText;
         restoreUiStateOnLayoutDoneShowing(
                 layoutManager,
                 layoutStateHandler,
@@ -256,16 +219,13 @@ public class FoldTransitionController {
     }
 
     private static void restoreKeyboardState(
-            @NonNull Bundle savedInstanceState,
+            @NonNull ActivityRecreationUiState uiState,
             @NonNull ActivityTabProvider activityTabProvider,
             @NonNull LayoutManager layoutManager,
             Handler layoutStateHandler) {
         // Restore the keyboard only if the omnibox focus was not restored, because omnibox code
         // is assumed to restore the keyboard on omnibox focus restoration.
-        if (savedInstanceState.getBoolean(URL_BAR_FOCUS_STATE, false)) {
-            return;
-        }
-        if (!savedInstanceState.getBoolean(KEYBOARD_VISIBILITY_STATE, false)) {
+        if (uiState.mIsUrlBarFocused || !uiState.mIsKeyboardShown) {
             return;
         }
         restoreUiStateOnLayoutDoneShowing(
@@ -273,8 +233,8 @@ public class FoldTransitionController {
     }
 
     private static void restoreTabSwitcherState(
-            @NonNull Bundle savedInstanceState, @NonNull LayoutManager layoutManager) {
-        if (!savedInstanceState.getBoolean(TAB_SWITCHER_VISIBILITY_STATE, false)) {
+            @NonNull ActivityRecreationUiState uiState, @NonNull LayoutManager layoutManager) {
+        if (!uiState.mIsTabSwitcherShown) {
             return;
         }
         layoutManager.showLayout(LayoutType.TAB_SWITCHER, false);

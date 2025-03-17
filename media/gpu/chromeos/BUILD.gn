@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
@@ -61,6 +60,8 @@ source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "chromeos_status.h",
+    "default_video_frame_converter.cc",
+    "default_video_frame_converter.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
     "frame_registry.cc",
@@ -110,7 +111,6 @@ source_set("common") {
   deps = [
     ":fourcc",
     "//base",
-    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
@@ -204,6 +204,7 @@ source_set("video_frame_utils") {
     "//ui/gfx:memory_buffer",
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",
+    "//ui/ozone",
   ]
 }
 
@@ -241,6 +242,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build/config/linux/libdrm",
+    "//gpu:test_support",
     "//gpu/ipc/service:service",
     "//media",
     "//media:test_support",
@@ -264,7 +266,7 @@ source_set("unit_tests") {
     "video_decoder_pipeline_unittest.cc",
     "video_frame_resource_unittest.cc",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps +=
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
@@ -290,7 +292,6 @@ test("image_processor_test") {
   deps = [
     ":chromeos",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//media:test_support",
     "//media/gpu:buildflags",
     "//media/gpu:video_frame_mapper_common",
@@ -323,10 +324,12 @@ if (use_v4l2_codec) {
       ":chromeos",
       ":perf_test_utils",
       "//base/test:test_support",
+      "//gpu:test_support",
       "//media:test_support",
       "//media/gpu:video_frame_mapper_common",
       "//media/gpu/test:helpers",
       "//media/gpu/test:video_test_environment",
+      "//testing/gmock",
       "//testing/gtest",
       "//testing/perf",
       "//third_party/libyuv",

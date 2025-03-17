@@ -18,13 +18,13 @@ namespace internal {
 // At most |r1| * |r2| comparisons.
 // At most |r2| comparisons if |r1| is a subsequence of |r2|.
 //
-// Unlike for base::ranges::set_difference, |r1| and |r2| do not need to be
+// Unlike for std::ranges::set_difference, |r1| and |r2| do not need to be
 // sorted. Aside from the order of the |fun| calls,
-//   base::ranges::sort(r1, {}, proj);
-//   base::ranges::sort(r2, {}, proj);
+//   std::ranges::sort(r1, {}, proj);
+//   std::ranges::sort(r2, {}, proj);
 //   std::vector<decltype(fun(T()))> diff;
-//   base::ranges::set_difference(r1, r2, std::back_inserter(diff), {}, proj);
-//   base::ranges::for_each(diff, fun);
+//   std::ranges::set_difference(r1, r2, std::back_inserter(diff), {}, proj);
+//   std::ranges::for_each(diff, fun);
 // is equivalent to
 //   for_each_in_set_difference(r1, r2, fun, proj).
 //

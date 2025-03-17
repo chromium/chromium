@@ -4,12 +4,12 @@
 
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -339,9 +339,6 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     // Not supported (do nothing).
   }
 
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
-
   void OnMojoDisconnect() { deleteThis(); }
 
   const GURL url_;
@@ -477,7 +474,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
     DCHECK(!finished_loading_);
     base::UmaHistogramCustomCounts(
         "SubresourceWebBundles.ReceivedSize",
-        base::saturated_cast<base::Histogram::Sample>(buffer_.size()), 1,
+        base::saturated_cast<base::Histogram::Sample32>(buffer_.size()), 1,
         50000000, 50);
     DCHECK(data_completed_closure_);
     // Defer calling |data_completed_closure_| not to run
@@ -748,7 +745,7 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
     return;
   }
 
-  if (!base::ranges::all_of(metadata->requests, [this](const auto& entry) {
+  if (!std::ranges::all_of(metadata->requests, [this](const auto& entry) {
         return IsAllowedExchangeUrl(entry.first);
       })) {
     std::string error_message = "Exchange URL is not valid.";
@@ -896,7 +893,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
               loader->url(), loader->url(), loader->request_initiator(),
               *response_head, loader->request_mode(),
               loader->request_destination(), cross_origin_embedder_policy_,
-              coep_reporter_, DocumentIsolationPolicy())) {
+              coep_reporter_, DocumentIsolationPolicy(), nullptr)) {
     loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
                                     blocked_reason);
     return;

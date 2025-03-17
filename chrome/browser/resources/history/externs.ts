@@ -7,54 +7,6 @@
  */
 
 /**
- * The type of the debug object nested in the history result object. The
- * definition is based on chrome/browser/ui/webui/browsing_history_handler.cc:
- * HistoryEntryToValue()
- */
-export interface HistoryEntryDebug {
-  isUrlInLocalDatabase: boolean;
-  visitCount: number;
-  typedCount: number;
-}
-
-/**
- * The type of the history result object. The definition is based on
- * chrome/browser/ui/webui/browsing_history_handler.cc: HistoryEntryToValue()
- */
-export interface HistoryEntry {
-  allTimestamps: number[];
-  remoteIconUrlForUma: string;
-  isUrlInRemoteUserData: boolean;
-  blockedVisit: boolean;
-  dateRelativeDay: string;
-  dateShort: string;
-  dateTimeOfDay: string;
-  deviceName: string;
-  deviceType: string;
-  domain: string;
-  fallbackFaviconText: string;
-  hostFilteringBehavior: number;
-  snippet: string;
-  starred: boolean;
-  time: number;
-  title: string;
-  url: string;
-  selected: boolean;
-  readableTimestamp: string;
-  debug?: HistoryEntryDebug;
-}
-
-/**
- * The type of the history results info object. The definition is based on
- * chrome/browser/ui/webui/browsing_history_handler.cc:
- *     BrowsingHistoryHandler::QueryComplete()
- */
-export interface HistoryQuery {
-  finished: boolean;
-  term: string;
-}
-
-/**
  * The type of the foreign session tab object. This definition is based on
  * chrome/browser/ui/webui/foreign_session_handler.cc:
  */
@@ -90,17 +42,4 @@ export interface ForeignSession {
   tag: string;
   timestamp: number;
   windows: ForeignSessionWindow[];
-}
-
-export interface QueryState {
-  incremental: boolean;
-  querying: boolean;
-  searchTerm: string;
-  after?: string;
-}
-
-export interface QueryResult {
-  info?: HistoryQuery;
-  results?: HistoryEntry[];
-  sessionList?: ForeignSession[];
 }

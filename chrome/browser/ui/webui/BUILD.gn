@@ -2,14 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
 generate_allowlist_from_histograms_file("webui_url_hashes") {
   namespace = "webui_metrics"
-  input_xml_file = "//tools/metrics/histograms/enums.xml"
+  input_xml_file = "//tools/metrics/histograms/metadata/ui/enums.xml"
   tag = "enum"
   output_file = "webui_url_hashes.h"
   allow_list_name = "WebUIUrlHashes"
@@ -33,7 +35,6 @@ source_set("configs") {
     ":webui",
     "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui/safe_browsing",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -43,6 +44,10 @@ source_set("configs") {
     "//skia",
     "//third_party/abseil-cpp:absl",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//chrome/browser/ui/webui/safe_browsing" ]
+  }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
@@ -64,6 +69,14 @@ source_set("configs") {
       "//chrome/browser/ui/webui/ash/config",
       "//chromeos/constants",
     ]
+  }
+
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
+  }
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 

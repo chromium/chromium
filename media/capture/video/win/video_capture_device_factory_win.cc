@@ -37,7 +37,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -331,7 +330,7 @@ bool DevicesInfoContainsDeviceId(const DevicesInfo& devices_info,
 DevicesInfo::const_iterator FindNonDirectShowDeviceInfoByNameAndModel(
     const DevicesInfo& devices_info,
     const std::string& name_and_model) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       devices_info,
       [name_and_model](const VideoCaptureDeviceInfo& device_info) {
         return device_info.descriptor.capture_api !=
@@ -364,6 +363,8 @@ void FindAndSetDefaultVideoCamera(
 class VideoCaptureDeviceFactoryWin::ComThreadData
     : public base::RefCountedThreadSafe<ComThreadData> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   ComThreadData(base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory,
                 scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner,
                 scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner)
@@ -395,6 +396,8 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
     : public base::RefCountedThreadSafe<UsageReportHandler>,
       public IMFSensorActivitiesReportCallback {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   UsageReportHandler() : my_pid_(base::GetCurrentProcId()) {}
 
   // IUnknown
@@ -525,11 +528,10 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
     });
   }
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<UsageReportHandler>;
   virtual ~UsageReportHandler() = default;
 
- private:
   void UpdateAvailabilityCache(
       const std::map<std::string, CameraAvailability>& report_availabilities) {
     bool should_invoke_system_monitor = false;

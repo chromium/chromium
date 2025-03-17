@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 
@@ -21,6 +21,13 @@ namespace password_manager {
 class WebAuthnCredentialsDelegate {
  public:
   using OnPasskeySelectedCallback = base::OnceClosure;
+
+  // Reasons why `GetPasskeys` might not have a passkey list to return.
+  enum class PasskeysUnavailableReason {
+    kNotReceived,
+    kRequestAborted,
+  };
+
   virtual ~WebAuthnCredentialsDelegate() = default;
 
   // Launches the WebAuthn flow that lets users use their phones (hybrid) or
@@ -30,7 +37,7 @@ class WebAuthnCredentialsDelegate {
 
   // Called when the user selects a passkey from the autofill suggestion list
   // The selected credential must be from the list returned by the last call to
-  // GetPasskeys(). |callback| should be invoked when the selected passkey is
+  // GetPasskeys(). `callback` should be invoked when the selected passkey is
   // consumed.
   virtual void SelectPasskey(const std::string& backend_id,
                              OnPasskeySelectedCallback callback) = 0;
@@ -38,18 +45,29 @@ class WebAuthnCredentialsDelegate {
   // Returns the list of eligible passkeys to fulfill an ongoing WebAuthn
   // request if one has been received and is active. Returns std::nullopt
   // otherwise.
-  virtual const std::optional<std::vector<PasskeyCredential>>& GetPasskeys()
-      const = 0;
+  virtual base::expected<const std::vector<PasskeyCredential>*,
+                         PasskeysUnavailableReason>
+  GetPasskeys() const = 0;
+
+  // Called when a passkey consumer is displaying a UI surface that will
+  // include passkeys, if any are available. This is for metrics recording
+  // purposes.
+  virtual void NotifyForPasskeysDisplay() = 0;
 
   // Returns whether an option to use a passkey on a security key or another
   // device (e.g. phone via hybrid) should be offered. This option can be used
   // to trigger `LaunchSecurityKeyOrHybridFlow`.
   virtual bool IsSecurityKeyOrHybridFlowAvailable() const = 0;
 
-  // Initiates retrieval of passkeys from the platform authenticator.
-  // |callback| is invoked when credentials have been received, which could be
-  // immediately.
-  virtual void RetrievePasskeys(base::OnceCallback<void()> callback) = 0;
+  // Retrieval of passkeys is initiated by the navigator.credentials.get()
+  // WebAuthn call. Callers of this method will be notified via `callback` when
+  // the passkey list is available, or if the WebAuthn request is aborted
+  // before passkeys become available.
+  // `callback` can be invoked mmediately if the passkey list has already been
+  // received.
+  // This can be called multiple times and all callbacks will be invoked.
+  virtual void RequestNotificationWhenPasskeysReady(
+      base::OnceCallback<void()> callback) = 0;
 
   // Returns true iff a passkey was selected via `SelectPasskey` and
   // `OnPasskeySelectedCallback` has not been called yet.

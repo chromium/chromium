@@ -1034,6 +1034,7 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
           ContentSettingsType::FILE_SYSTEM_READ_GUARD,
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
           ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+          ContentSettingsType::POINTER_LOCK,
           // clang-format on
       });
 
@@ -1366,7 +1367,6 @@ class SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest
   SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(features::kSafetyHub);
     disabled_features.push_back(
         content_settings::features::
             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);

@@ -10,7 +10,11 @@
 <translation id="2447485272386224171">I-Chrome yenziwa ikhonakale i-<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> iphrojekthi yomthombo ovulekile kanye nenye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Ilogo ye-Chrome</translation>
 <translation id="3444832043240812445">Leli khasi libonisa kuphela ulwazi lokuphahlazeka kwakho kwakamuva uma ngabe <ph name="BEGIN_LINK" />unika amandla ukubikwa kokuphahlazeka<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Lawa makhasi enzelwe ukusetshenziswa onjiniyela beChrome, futhi kungenzeka anganakekelwa noma angahlolwa. Ukuze uzinike amandla, funa kokuthi <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, chofoza inkinobho ukuze unike amandla amakhasi okususa iphutha, bese ufuna kuleli khasi futhi.</translation>
 <translation id="3875312571075912821">Vumela i-Chrome ukufinyelela inethiwekhi kuzilungiselelo zakho zohlelo lokuvikela noma isilwi magciwane.</translation>
+<translation id="4949828774841497663">Iya kuma-Application &gt; Amasethingi Ohlelo &gt; Inethiwekhi, khetha
+          inethiwekhi esebenzayo, chofoza inkinobho ethi Imininingwane..., bese uyeka ukukhetha noma yibaphi abameleli
+          okungenzeka ukuthi bakhethiwe.</translation>
 <translation id="5005121315113832363">Leli khasi livinjwe yi-Chrome</translation>
 <translation id="6011049234605203654">Hamba
           kumenyu ye-Chrome &gt;
@@ -38,9 +42,6 @@
           Izilungiselelo ze-LAN
           uphinde uyekise ukukhetha i-"Sebenzisa iseva elibamba nge-LAN yakho".</translation>
 <translation id="7230956101631259640">Ubuka ikhasi eliphephile le-Chrome</translation>
-<translation id="8187289872471304532">Hamba ku-
-          Izinhlelo zokusebenza &gt; Okuncamelayo kwesistimu &gt; Inethiwekhi &gt; Okuthuthukisiwe &gt; Ommeleli
-          uphinde uyekele ukukhetha noma yibaphi abammeleli abakhethiwe.</translation>
 <translation id="8232971017369963250">I-Chrome yenziwe yenzeke iphrojekthi yomthombo ovulekile we-<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">I-Chrome iphinda yenziwe enye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">I-Google Chrome izama ukulungisa amasethingi okugcwalisa izindlela zokukhokha.</translation>

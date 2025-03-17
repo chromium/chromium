@@ -1,0 +1,6 @@
+AXWebArea
+++AXGroup AXSubrole=AXApplicationDialog
+++++AXButton AXTitle='d1 button - inside - show-modal'
+++++AXButton AXTitle='d1 button - inside - close'
+++++AXButton AXTitle='Button inside popover, with unrelated action'
+++++AXButton AXTitle='d1 button - inside - custom action'

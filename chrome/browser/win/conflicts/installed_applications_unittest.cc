@@ -4,10 +4,10 @@
 
 #include "chrome/browser/win/conflicts/installed_applications.h"
 
+#include <algorithm>
 #include <map>
 
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/browser/win/conflicts/msi_util.h"
@@ -396,7 +396,7 @@ TEST_F(InstalledApplicationsTest, NoDuplicates) {
   auto applications = installed_applications().applications_;
   std::sort(std::begin(applications), std::end(applications));
   EXPECT_EQ(std::end(applications),
-            base::ranges::adjacent_find(
+            std::ranges::adjacent_find(
                 applications, std::equal_to<>(), [](const auto& app) {
                   return std::tie(app.name, app.registry_root,
                                   app.registry_key_path,

@@ -169,8 +169,7 @@ class BASE_EXPORT DelegateSimpleThread : public SimpleThread {
     virtual void Run() = 0;
   };
 
-  DelegateSimpleThread(Delegate* delegate,
-                       const std::string& name_prefix);
+  DelegateSimpleThread(Delegate* delegate, const std::string& name_prefix);
   DelegateSimpleThread(Delegate* delegate,
                        const std::string& name_prefix,
                        const Options& options);
@@ -226,8 +225,8 @@ class BASE_EXPORT DelegateSimpleThreadPool
   size_t num_threads_;
   std::vector<std::unique_ptr<DelegateSimpleThread>> threads_;
   base::queue<raw_ptr<Delegate, CtnExperimental>> delegates_;
-  base::Lock lock_;            // Locks delegates_
-  WaitableEvent dry_;    // Not signaled when there is no work to do.
+  base::Lock lock_;    // Locks delegates_
+  WaitableEvent dry_;  // Not signaled when there is no work to do.
 };
 
 }  // namespace base

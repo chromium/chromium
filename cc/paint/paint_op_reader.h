@@ -109,6 +109,10 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkGradientShader::Interpolation* interpolation);
   void Read(scoped_refptr<SkottieWrapper>* skottie);
   void Read(SkString* sk_string);
+  void Read(std::vector<PaintShader::FloatUniform>* uniforms);
+  void Read(std::vector<PaintShader::Float2Uniform>* uniforms);
+  void Read(std::vector<PaintShader::Float4Uniform>* uniforms);
+  void Read(std::vector<PaintShader::IntUniform>* uniforms);
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
@@ -121,6 +125,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
   void Read(SkColorType* color_type) {
     ReadEnum<SkColorType, kLastEnum_SkColorType>(color_type);
+  }
+  void Read(SkAlphaType* alpha_type) {
+    ReadEnum<SkAlphaType, kLastEnum_SkAlphaType>(alpha_type);
   }
   void Read(PaintFlags::FilterQuality* quality) {
     ReadEnum<PaintFlags::FilterQuality, PaintFlags::FilterQuality::kLast>(
@@ -158,6 +165,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
   template <typename T>
+    requires(!std::is_const_v<T>)
   void Read(std::vector<T>& vec) {
     size_t size = 0;
     ReadSize(&size);
@@ -182,6 +190,11 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
  private:
+  template <typename ValueType>
+  friend void ReadSimpleValueUniformsHelper(
+      PaintOpReader&,
+      std::vector<PaintShader::Uniform<ValueType>>*);
+
   enum class DeserializationError {
     // Enum values must remain synchronized with PaintOpDeserializationError
     // in tools/metrics/histograms/metadata/gpu/enums.xml.
@@ -350,6 +363,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void DidRead(size_t bytes_read);
 
   template <typename T>
+    requires(!std::is_const_v<T>)
   void ReadVectorContent(size_t size, std::vector<T>& vec) {
     vec.resize(size);
     for (base::span span(vec); !span.empty();

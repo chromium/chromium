@@ -8,14 +8,16 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './base_page.js';
 import './shimless_rma_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createCustomEvent, OPEN_LOGS_DIALOG, OpenLogsDialogEvent} from './events.js';
+import type {OpenLogsDialogEvent} from './events.js';
+import {createCustomEvent, OPEN_LOGS_DIALOG} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {PowerCableStateObserverReceiver, ShimlessRmaServiceInterface, ShutdownMethod} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {PowerCableStateObserverReceiver, ShutdownMethod} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 import {getTemplate} from './wrapup_repair_complete_page.html.js';
 

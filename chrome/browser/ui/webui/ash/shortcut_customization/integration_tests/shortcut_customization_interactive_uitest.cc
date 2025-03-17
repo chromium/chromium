@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(Steps(
+      InAnyContext(
           SendShortcutAccelerator(new_accel),
           EnsureNotPresent(kCalendarViewElementId),
           Log("Verify that the custom shortcut does not open the calendar "
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           Log("Default shortcut still works"),
           SendShortcutAccelerator(new_accel),
           EnsureNotPresent(kCalendarViewElementId),
-          Log("Custom shortcut no longer works"))));
+          Log("Custom shortcut no longer works")));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(Steps(
+      InAnyContext(
           Log("Focusing search box"), FocusSearchBox(),
           Log("Searching for shortcut 'hxz' which should have no results"),
           EnterLowerCaseText("hxz"),
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           WaitForElementTextContains(webcontents_id_, kActiveNavTabQuery,
                                      "Text"),
           ExecuteJsAt(webcontents_id_, kRedoActionAcceleratorRowQuery,
-                      "el => { return !!el;}"))));
+                      "el => { return !!el;}")));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -471,13 +471,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(Steps(
+      InAnyContext(
           Log("Use Ctrl + F to focus search box"),
           SendKeyPressEvent(ui::VKEY_F, ui::EF_CONTROL_DOWN),
           Log("Searching for 'Redo last action' shortcut"),
           EnterLowerCaseText("redo"),
           Log("Verifying that 'Redo last action' search result row is visible"),
-          WaitForElementExists(webcontents_id_, kSearchRowActionQuery))));
+          WaitForElementExists(webcontents_id_, kSearchRowActionQuery)));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(Steps(
+      InAnyContext(
           OpenEditShortcutDialog(kCalendarAcceleratorRowQuery),
           EditDefaultShortcut(new_accel),
           Log("Setting Search + Ctrl + n as the default open/close calendar "
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           Log("New accelerator closes calendar"),
           SendShortcutAccelerator(default_accel),
           EnsureNotPresent(kCalendarViewElementId),
-          Log("Default accelerator no longer opens the calendar"))));
+          Log("Default accelerator no longer opens the calendar")));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(Steps(
+      InAnyContext(
           SendShortcutAccelerator(new_accel),
           EnsureNotPresent(kCalendarViewElementId),
           Log("Verify that the custom shortcut does not open the calendar "
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           Log("Default shortcut still works"),
           SendShortcutAccelerator(new_accel),
           EnsureNotPresent(kCalendarViewElementId),
-          Log("Custom shortcut no longer works"))));
+          Log("Custom shortcut no longer works")));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(Steps(
+      InAnyContext(
           OpenEditShortcutDialog(kCalendarAcceleratorRowQuery),
           ClickAddShortcutButton(), SendAccelerator(webcontents_id_, new_accel),
           Log("Attempting to Add Search + Ctrl + s as a custom "
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           Log("New accelerator closes calendar"),
           SendShortcutAccelerator(default_accel),
           EnsurePresent(kCalendarViewElementId),
-          Log("Default accelerator also opens the calendar"))));
+          Log("Default accelerator also opens the calendar")));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(Steps(
+      InAnyContext(
           OpenEditShortcutDialog(kCalendarAcceleratorRowQuery),
           ClickAddShortcutButton(),
           Log("Attempting to Add Alt + Shift + I as a custom open/close "
@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
           SendShortcutAccelerator(feedback_accel),
           Log("Verifying that 'Open feedback tool' accelerator still works"),
-          WaitForShow(kOsFeedbackWebContentsId))));
+          WaitForShow(kOsFeedbackWebContentsId)));
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
@@ -743,16 +743,14 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
       SendShortcutAccelerator(custom_open_quick_settings_accel),
       WaitForShow(kQuickSettingsViewElementId),
       SendShortcutAccelerator(custom_open_quick_settings_accel),
-      WaitForHide(kQuickSettingsViewElementId),
-      Steps(ClickDoneButton(),
-            ClickElement(webcontents_id_, kResetAllShortcutsButtonQuery),
-            WaitForElementExists(webcontents_id_, kConfirmButtonQuery),
-            ClickElement(webcontents_id_, kConfirmButtonQuery),
-            SendShortcutAccelerator(default_accel),
-            WaitForShow(kCalendarViewElementId),
-            SendShortcutAccelerator(default_accel),
-            WaitForHide(kCalendarViewElementId),
-            Log("Default shortcut still works"))
+      WaitForHide(kQuickSettingsViewElementId), ClickDoneButton(),
+      ClickElement(webcontents_id_, kResetAllShortcutsButtonQuery),
+      WaitForElementExists(webcontents_id_, kConfirmButtonQuery),
+      ClickElement(webcontents_id_, kConfirmButtonQuery),
+      SendShortcutAccelerator(default_accel),
+      WaitForShow(kCalendarViewElementId),
+      SendShortcutAccelerator(default_accel),
+      WaitForHide(kCalendarViewElementId), Log("Default shortcut still works")
 
   );
 }

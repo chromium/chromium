@@ -80,8 +80,7 @@ public class AllTabObserver implements TabWindowManager.Observer, TabModelObserv
     public AllTabObserver(Observer observer) {
         mTabWindowManager = TabWindowManagerSingleton.getInstance();
         mObserver = observer;
-        for (int i = 0; i < mTabWindowManager.getMaxSimultaneousSelectors(); i++) {
-            var selector = mTabWindowManager.getTabModelSelectorById(i);
+        for (TabModelSelector selector : mTabWindowManager.getAllTabModelSelectors()) {
             if (selector != null) {
                 mTabModelSelectorStates.add(new TabModelSelectorState(selector));
             }

@@ -24,16 +24,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_selector.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "style_rule.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
@@ -43,6 +40,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -142,6 +140,7 @@ CSSSelector::CSSSelector(MatchType match_type,
 
 void CSSSelector::CreateRareData() {
   DCHECK_NE(Match(), kTag);
+  DCHECK_NE(Match(), kUniversalTag);
   if (HasRareData()) {
     return;
   }
@@ -280,10 +279,9 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
     case kAttributeEnd:
       return kClassLikeSpecificity;
     case kTag:
-      if (TagQName().LocalName() == UniversalSelectorAtom()) {
-        return 0;
-      }
       return kTagSpecificity;
+    case kUniversalTag:
+      return 0;
     case kInvalidList:
     case kPagePseudoClass:
       NOTREACHED();
@@ -301,7 +299,7 @@ unsigned CSSSelector::SpecificityForPage() const {
        component = component->NextSimpleSelector()) {
     switch (component->Match()) {
       case kTag:
-        s += TagQName().LocalName() == UniversalSelectorAtom() ? 0 : 4;
+        s += 4;
         break;
       case kPagePseudoClass:
         switch (component->GetPseudoType()) {
@@ -432,6 +430,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoFullscreen:
     case kPseudoFutureCue:
     case kPseudoHas:
+    case kPseudoHasInterest:
     case kPseudoHasSlotted:
     case kPseudoHasDatalist:
     case kPseudoHorizontal:
@@ -615,6 +614,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"future", CSSSelector::kPseudoFutureCue},
     {"grammar-error", CSSSelector::kPseudoGrammarError},
     {"granted", CSSSelector::kPseudoPermissionGranted},
+    {"has-interest", CSSSelector::kPseudoHasInterest},
     {"has-slotted", CSSSelector::kPseudoHasSlotted},
     {"horizontal", CSSSelector::kPseudoHorizontal},
     {"host", CSSSelector::kPseudoHost},
@@ -711,13 +711,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   const NameToPseudoStruct* pseudo_type_map;
   const NameToPseudoStruct* pseudo_type_map_end;
   if (has_arguments) {
-    pseudo_type_map = kPseudoTypeWithArgumentsMap;
-    pseudo_type_map_end =
-        kPseudoTypeWithArgumentsMap + std::size(kPseudoTypeWithArgumentsMap);
+    pseudo_type_map = std::begin(kPseudoTypeWithArgumentsMap);
+    pseudo_type_map_end = std::end(kPseudoTypeWithArgumentsMap);
   } else {
-    pseudo_type_map = kPseudoTypeWithoutArgumentsMap;
-    pseudo_type_map_end = kPseudoTypeWithoutArgumentsMap +
-                          std::size(kPseudoTypeWithoutArgumentsMap);
+    pseudo_type_map = std::begin(kPseudoTypeWithoutArgumentsMap);
+    pseudo_type_map_end = std::end(kPseudoTypeWithoutArgumentsMap);
   }
   const NameToPseudoStruct* match = std::lower_bound(
       pseudo_type_map, pseudo_type_map_end, name,
@@ -741,11 +739,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if (match->type == CSSSelector::kPseudoPlaying &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoDetailsContent &&
-      !RuntimeEnabledFeatures::DetailsStylingEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -794,13 +787,19 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if (match->type == CSSSelector::kPseudoPicker &&
-      !RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      !HTMLSelectElement::CustomizableSelectEnabled(document)) {
     return CSSSelector::kPseudoUnknown;
   }
 
   if ((match->type == CSSSelector::kPseudoSearchText ||
        match->type == CSSSelector::kPseudoCurrent) &&
       !RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if (match->type == CSSSelector::kPseudoHasInterest &&
+      !RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          document ? document->GetExecutionContext() : nullptr)) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -816,11 +815,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 void CSSSelector::Show(int indent) const {
   printf("%*sSelectorText(): %s\n", indent, "", SelectorText().Ascii().c_str());
   printf("%*smatch_: %d\n", indent, "", Match());
-  if (Match() != kTag) {
+  if (Match() != kTag && Match() != kUniversalTag) {
     printf("%*sValue(): %s\n", indent, "", Value().Ascii().c_str());
   }
   printf("%*sGetPseudoType(): %d\n", indent, "", GetPseudoType());
-  if (Match() == kTag) {
+  if (Match() == kTag && Match() != kUniversalTag) {
     printf("%*sTagQName().LocalName(): %s\n", indent, "",
            TagQName().LocalName().Ascii().c_str());
   }
@@ -973,6 +972,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoFullscreen:
     case kPseudoFutureCue:
     case kPseudoHas:
+    case kPseudoHasInterest:
     case kPseudoHasSlotted:
     case kPseudoHorizontal:
     case kPseudoHost:
@@ -1346,7 +1346,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
 template <bool expand_pseudo_references>
 const CSSSelector* CSSSelector::SerializeCompound(StringBuilder& builder,
                                                   uintptr_t scope_id) const {
-  if (Match() == kTag && !IsImplicit()) {
+  if ((Match() == kTag || Match() == kUniversalTag) && !IsImplicit()) {
     SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
                                      IsAttributeSelector());
     SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
@@ -1429,7 +1429,7 @@ String CSSSelector::SelectorTextInternal(uintptr_t scope_id) const {
 
 String CSSSelector::SimpleSelectorTextForDebug() const {
   StringBuilder builder;
-  if (Match() == kTag && !IsImplicit()) {
+  if ((Match() == kTag || Match() == kUniversalTag) && !IsImplicit()) {
     SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
                                      IsAttributeSelector());
     SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
@@ -1469,6 +1469,7 @@ void CSSSelector::SetHasArgumentMatchInShadowTree() {
 static bool ValidateSubSelector(const CSSSelector* selector) {
   switch (selector->Match()) {
     case CSSSelector::kTag:
+    case CSSSelector::kUniversalTag:
     case CSSSelector::kId:
     case CSSSelector::kClass:
     case CSSSelector::kAttributeExact:
@@ -1715,6 +1716,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFocusVisible:
     case kPseudoFocusWithin:
     case kPseudoFullPageMedia:
+    case kPseudoHasInterest:
     case kPseudoHasSlotted:
     case kPseudoHover:
     case kPseudoIndeterminate:
@@ -2039,8 +2041,8 @@ constexpr bool IsPseudoMapSorted(const NameToPseudoStruct* map, unsigned size) {
   for (unsigned i = 0; i < size - 1; i++) {
     // strcmp/strncmp would be much better here, but unfortunately they aren't
     // constexpr.
-    const char* current_string = map[i].string;
-    const char* next_string = map[i + 1].string;
+    const char* current_string = UNSAFE_TODO(map[i].string);
+    const char* next_string = UNSAFE_TODO(map[i + 1].string);
     while (true) {
       if (*current_string > *next_string) {
         return false;
@@ -2054,8 +2056,8 @@ constexpr bool IsPseudoMapSorted(const NameToPseudoStruct* map, unsigned size) {
       if (!*next_string) {
         return false;
       }
-      current_string++;
-      next_string++;
+      UNSAFE_TODO(current_string++);
+      UNSAFE_TODO(next_string++);
     }
   }
   return true;

@@ -10,6 +10,7 @@
 //components/test/data/history/Favicons.v6.sql
 //components/test/data/history/Favicons.v7.sql
 //components/test/data/history/Favicons.v8.sql
+//components/test/data/history/Favicons.v9.sql
 //components/test/data/history/HistoryNoDuration
 //components/test/data/history/HistoryNoSource
 //components/test/data/history/History_with_starred
@@ -57,6 +58,7 @@
 //components/test/data/history/history.67.sql
 //components/test/data/history/history.68.sql
 //components/test/data/history/history.69.sql
+//components/test/data/history/history.70.sql
 //components/test/data/history/thumbnail_wild/Favicons.corrupt_meta.disable
 //components/test/data/history/thumbnail_wild/Favicons.v2.init.sql
 //components/test/data/history/thumbnail_wild/Favicons.v3.init.sql

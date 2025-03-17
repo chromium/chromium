@@ -5,8 +5,11 @@
 package org.chromium.components.webxr;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Class used to create XrDelegate instances. */
+@NullMarked
 public class XrDelegateProvider {
     private static final String TAG = "XrDelegateProvider";
     private static final boolean DEBUG_LOGS = false;
@@ -15,13 +18,13 @@ public class XrDelegateProvider {
      * Cached instance of XrDelegate implementation. It is ok to cache since the
      * inclusion of XrDelegateImpl is controlled at build time.
      */
-    private static XrDelegate sDelegate;
+    private static @Nullable XrDelegate sDelegate;
 
     /** True if sDelegate already contains cached result, false otherwise. */
     private static boolean sDelegateInitialized;
 
     /** Provides an instance of XrDelegate. */
-    public static XrDelegate getDelegate() {
+    public static @Nullable XrDelegate getDelegate() {
         if (DEBUG_LOGS) {
             Log.i(
                     TAG,

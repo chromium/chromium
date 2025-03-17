@@ -23,6 +23,13 @@
   <settings-animated-pages id="pages" section="ai"
       focus-config="[[focusConfig_]]">
     <div route-path="default">
+      <cr-link-row id="passwordChangeRowV2" class="hr"
+          hidden="[[!showPasswordChangeControl_]]"
+          start-icon="cr20:password"
+          label="$i18n{passwordChangeSettingLabel}"
+          sub-label="$i18n{passwordChangeSettingSubLabel}"
+          on-click="onPasswordChangeRowClick_" external>
+      </cr-link-row>
       <cr-link-row id="autofillAiRowV2" class="hr"
           hidden="[[!showAutofillAIControl_]]"
           start-icon="settings20:text-analysis"
@@ -63,13 +70,6 @@
           sub-label="$i18n{tabOrganizationSettingSublabelV2}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onTabOrganizationRowClick_">
-      </cr-link-row>
-      <cr-link-row id="wallpaperSearchRowV2" class="hr"
-          hidden="[[!showWallpaperSearchControl_]]"
-          start-icon="settings20:photo-filter-auto"
-          label="$i18n{wallpaperSearchSettingLabel}"
-          sub-label="$i18n{wallpaperSearchSettingSublabelV2}"
-          on-click="onWallpaperSearchRowClick_" external>
       </cr-link-row>
     </div>
 

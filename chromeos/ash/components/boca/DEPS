@@ -1,15 +1,33 @@
 include_rules = [
-  "+ash",
-  "+ash/constants",
-  "+google_apis/common",
-  "+components/user_manager",
-  "+content/public/test",
-  "+components/signin/public/identity_manager",
+  "+chromeos/ash/components/channel/channel_info.h",
+  "+chromeos/ash/components/network/network_ui_data.h",
+  "+chromeos/ash/services/network_config/public/cpp",
+  "+chromeos/services/network_config/public/cpp",
+  "+components/content_settings",
   "+components/gcm_driver",
   "+components/sessions/core/session_id.h",
+  "+components/signin/public/identity_manager",
+  "+components/user_manager",
+  "+content/public/test",
+  "+google_apis/common",
   "+ui/base/l10n/l10n_util.h",
   "+ui/message_center/fake_message_center.h",
   "+ui/message_center/message_center.h",
   "+ui/message_center/public/cpp/notification.h",
   "+ui/message_center/public/cpp/notification_types.h",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/network_config_service.h",
+  "+ash/public/cpp/notification_utils.h",
+  "+ash/public/cpp/system/toast_data.h",
+  "+ash/public/cpp/system/toast_manager.h",
+  "+ash/resources/vector_icons/vector_icons.h",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+ash/test/ash_test_base.h",
+    "+chromeos/ash/components/settings",
+  ]
+}

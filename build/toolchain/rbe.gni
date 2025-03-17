@@ -4,11 +4,8 @@
 
 # Defines the configuration of Remote Build Execution (RBE).
 
-use_remoteexec_default =
-    exec_script(rebase_path("//build/toolchain/use_remoteexec_value.py"),
-                [],
-                "value",
-                [])
+import("//build/toolchain/remoteexec_defaults.gni")
+import("//build/toolchain/siso.gni")
 
 declare_args() {
   # Deprecated: Please use reclient_bin_dir instead.
@@ -27,16 +24,16 @@ declare_args() {
   rbe_exec_root = rebase_path("//")
 
   # Set to true to enable remote executions.
-  use_remoteexec = use_remoteexec_default
+  use_remoteexec = false
 }
 
 use_reclient_default = false
-if (use_remoteexec && current_toolchain == default_toolchain) {
-  use_reclient_default =
-      exec_script(rebase_path("//build/toolchain/use_reclient_value.py"),
-                  [],
-                  "value",
-                  [])
+if (use_remoteexec) {
+  if (use_siso) {
+    use_reclient_default = use_reclient_on_siso
+  } else {
+    use_reclient_default = use_reclient_on_ninja
+  }
 }
 
 declare_args() {
@@ -95,32 +92,24 @@ declare_args() {
   if (!use_reclient_cfgs) {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
-    reclient_py_large_cfg_file = ""
   } else if (use_reclient && host_os == "linux") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_linux.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_linux_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_linux.cfg"
   } else if (host_os == "win") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_windows.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_windows_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_windows.cfg"
   } else if (host_os == "mac") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_mac.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_mac_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_mac.cfg"
   } else {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
-    reclient_py_large_cfg_file = ""
   }
 
   if (use_reclient) {
@@ -144,22 +133,11 @@ declare_args() {
 if (use_reclient_cfgs && current_toolchain == default_toolchain) {
   # Check existence of reclient configs and show user friendly error message if
   # it doesn't.
-  exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
-              [ reclient_cc_cfg_file ],
-              "",
-              [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
-}
-
-# TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++
-# targets. This file is added to `inputs` for all C targets in
-# //build/config/BUILDCONFIG.gn. We work around the bug in Reclient by
-# specifying the file here.
-#
-# This is a comma-delimited list of paths relative to the source tree root. The
-# leading space is important, if the string is non-empty. :)
-rbe_bug_326584510_missing_inputs = ""
-if (defined(clang_unsafe_buffers_paths) &&
-    "$clang_unsafe_buffers_paths" != "") {
-  from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
-  rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
+  if (!path_exists(reclient_cc_cfg_file)) {
+    # Use exec_script() to show a good error message.
+    exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
+                [ reclient_cc_cfg_file ],
+                "",
+                [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
+  }
 }

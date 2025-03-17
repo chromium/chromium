@@ -4,11 +4,12 @@
 
 package org.chromium.components.ip_protection_auth;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
+@NullMarked
 public interface IpProtectionByteArrayCallback {
     // Result contains a serialized com.google.privacy.ppn.proto protobuf.
-    public void onResult(@NonNull byte[] result);
+    public void onResult(byte[] result);
 
     // Error is an auth request error defined in IpProtectionAuthClent.AuthRequestError
     public void onError(int authRequestError);

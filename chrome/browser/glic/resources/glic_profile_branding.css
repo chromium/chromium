@@ -1,0 +1,15 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This style will be applied on parts of the Glic version of the title. */
+/* Check IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC string resource. */
+.glic-brand-style {
+  background: linear-gradient(74deg,
+      darkgrey 0%,
+      white 50%,
+      grey 100%);
+
+  background-clip: text;
+  color: transparent;
+}

@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
@@ -712,45 +712,6 @@ void ArcLocationServicePolicyHandler::ApplyPolicySettings(
 
   // Legacy handling.
   ArcServicePolicyHandler::ApplyPolicySettings(policies, prefs);
-}
-
-HelpMeWritePolicyHandler::HelpMeWritePolicyHandler()
-    : IntRangePolicyHandlerBase(
-          /*policy_name=*/key::kHelpMeWriteSettings,
-          /*min=*/
-          static_cast<int>(
-              HelpMeWritePolicyValue::kEnabledWithModelImprovement),
-          /*max=*/static_cast<int>(HelpMeWritePolicyValue::kDisabled),
-          /*clamp=*/false) {}
-
-void HelpMeWritePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
-                                                   PrefValueMap* prefs) {
-  // It is safe to use `GetValueUnsafe()` because type checking is performed
-  // before the value is used.
-  const base::Value* value = policies.GetValueUnsafe(policy_name());
-  int value_in_range;
-
-  if (value && EnsureInRange(value, &value_in_range, nullptr)) {
-    switch (value_in_range) {
-      case static_cast<int>(HelpMeWritePolicyValue::kDisabled):
-        prefs->SetBoolean(ash::prefs::kOrcaEnabled, false);
-        prefs->SetBoolean(ash::prefs::kOrcaFeedbackEnabled, false);
-        break;
-      case static_cast<int>(
-          HelpMeWritePolicyValue::kEnabledWithModelImprovement):
-        prefs->SetBoolean(ash::prefs::kOrcaEnabled, true);
-        prefs->SetBoolean(ash::prefs::kOrcaFeedbackEnabled, true);
-        break;
-      case static_cast<int>(
-          HelpMeWritePolicyValue::kEnabledWithoutModelImprovement):
-        prefs->SetBoolean(ash::prefs::kOrcaEnabled, true);
-        prefs->SetBoolean(ash::prefs::kOrcaFeedbackEnabled, false);
-        break;
-      default:
-        LOG(ERROR) << "Policy value out of range.";
-        break;
-    }
-  }
 }
 
 }  // namespace policy

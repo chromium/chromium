@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
@@ -15,15 +16,15 @@
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
-#import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/web/public/download/download_task.h"
@@ -57,7 +58,6 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   id<SaveToDriveCommands> _saveToDriveHandler;
   id<ManageStorageAlertCommands> _manageStorageAlertHandler;
-  id<ApplicationCommands> _applicationHandler;
   id<AccountPickerCommands> _accountPickerHandler;
   raw_ptr<drive::DriveService> _driveService;
   raw_ptr<PrefService> _prefService;
@@ -73,7 +73,6 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
                   saveToDriveHandler:(id<SaveToDriveCommands>)saveToDriveHandler
            manageStorageAlertHandler:
                (id<ManageStorageAlertCommands>)manageStorageAlertHandler
-                  applicationHandler:(id<ApplicationCommands>)applicationHandler
                 accountPickerHandler:
                     (id<AccountPickerCommands>)accountPickerHandler
                          prefService:(PrefService*)prefService
@@ -92,7 +91,6 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     _webState->AddObserver(_webStateObserverBridge.get());
     _saveToDriveHandler = saveToDriveHandler;
     _manageStorageAlertHandler = manageStorageAlertHandler;
-    _applicationHandler = applicationHandler;
     _accountPickerHandler = accountPickerHandler;
     _prefService = prefService;
     _driveService = driveService;
@@ -139,13 +137,13 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
       _prefService->ClearPref(prefs::kIosSaveToDriveDefaultGaiaId);
       // If the selected file destination is Files, start the download
       // immediately and hide the account picker.
+      [_accountPickerHandler hideAccountPickerAnimated:YES];
       DownloadManagerTabHelper* downloadManagerTabHelper =
           DownloadManagerTabHelper::FromWebState(_webState);
       downloadManagerTabHelper->StartDownload(_downloadTask);
       base::UmaHistogramEnumeration(kSaveToDriveUIOutcome,
                                     SaveToDriveOutcome::kSuccessSelectedFiles);
       [self recordCommonHistogramsWithSuffix:".SuccessSelectedFiles"];
-      [_accountPickerHandler hideAccountPickerAnimated:YES];
       break;
     }
     case FileDestination::kDrive: {
@@ -164,18 +162,11 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   }
 }
 
-- (void)showManageStorageForIdentity:(id<SystemIdentity>)identity {
-  // The uploading identity's user email is used to switch to the uploading
-  // account before loading the "Manage Storage" web page.
-  GURL manageStorageURL = GenerateManageDriveStorageUrl(
-      base::SysNSStringToUTF8(identity.userEmail));
-  OpenNewTabCommand* newTabCommand =
-      [OpenNewTabCommand commandWithURLFromChrome:manageStorageURL];
+- (void)willShowManageStorage {
   base::UmaHistogramEnumeration(
       kSaveToDriveUIOutcome,
       SaveToDriveOutcome::kSuccessSelectedDriveManageStorage);
   [self recordCommonHistogramsWithSuffix:".SuccessSelectedDriveManageStorage"];
-  [_applicationHandler openURLInNewTab:newTabCommand];
 }
 
 - (void)cancelSaveToDrive {
@@ -264,8 +255,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 
 - (void)loadPrefs {
   // Retrieve the last selected identity from prefs.
-  const std::string defaultGaiaId =
-      _prefService->GetString(prefs::kIosSaveToDriveDefaultGaiaId);
+  const GaiaId defaultGaiaId(
+      _prefService->GetString(prefs::kIosSaveToDriveDefaultGaiaId));
   id<SystemIdentity> defaultIdentity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(defaultGaiaId);
   if (defaultIdentity) {

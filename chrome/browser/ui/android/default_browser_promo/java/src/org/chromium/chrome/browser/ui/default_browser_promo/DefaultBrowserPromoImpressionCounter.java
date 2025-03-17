@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.ui.default_browser_promo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
@@ -18,17 +18,14 @@ import java.util.concurrent.TimeUnit;
  * A utility class providing the default browser promo impression counts, including total promo
  * count, session count, and intervals.
  */
+@NullMarked
 public class DefaultBrowserPromoImpressionCounter {
-    private static final int MAX_PROMO_COUNT = 1;
+    private static final int MAX_PROMO_COUNT = 3;
     private static final int MIN_TRIGGER_SESSION_COUNT = 3;
-    private static final int MIN_PROMO_INTERVAL = 0;
+    private static final int PROMO_SESSION_INTERVAL = 2;
+    private static final int PROMO_TIME_INTERVAL_DAYS = 3;
 
     @VisibleForTesting static final String MAX_PROMO_COUNT_PARAM = "max_promo_count";
-
-    @VisibleForTesting
-    static final String PROMO_TIME_INTERVAL_DAYS_PARAM = "promo_time_interval_days";
-
-    @VisibleForTesting static final String PROMO_SESSION_INTERVAL_PARAM = "promo_session_interval";
 
     DefaultBrowserPromoImpressionCounter() {}
 
@@ -69,10 +66,6 @@ public class DefaultBrowserPromoImpressionCounter {
     }
 
     int getMaxPromoCount() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID, MAX_PROMO_COUNT_PARAM, 3);
-        }
         return MAX_PROMO_COUNT;
     }
 
@@ -101,27 +94,18 @@ public class DefaultBrowserPromoImpressionCounter {
     }
 
     int getMinSessionCount() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)) {
-            if (getPromoCount() == 0) {
-                return MIN_TRIGGER_SESSION_COUNT;
-            } else {
-                int sessionCountAtLastPromo = getLastPromoSessionCount();
-                // If we've shown a promo before and the newer last promo session count hasn't
-                // been set, assume the session count at the last time of promo was the minimum
-                // required to show the promo.
-                if (sessionCountAtLastPromo == 0) {
-                    sessionCountAtLastPromo = MIN_TRIGGER_SESSION_COUNT;
-                }
-                int promoSessionInterval =
-                        ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                                ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID,
-                                PROMO_SESSION_INTERVAL_PARAM,
-                                2);
-
-                return promoSessionInterval + sessionCountAtLastPromo;
+        if (getPromoCount() == 0) {
+            return MIN_TRIGGER_SESSION_COUNT;
+        } else {
+            int sessionCountAtLastPromo = getLastPromoSessionCount();
+            // If we've shown a promo before and the newer last promo session count hasn't
+            // been set, assume the session count at the last time of promo was the minimum
+            // required to show the promo.
+            if (sessionCountAtLastPromo == 0) {
+                sessionCountAtLastPromo = MIN_TRIGGER_SESSION_COUNT;
             }
+            return PROMO_SESSION_INTERVAL + sessionCountAtLastPromo;
         }
-        return MIN_TRIGGER_SESSION_COUNT;
     }
 
     int getLastPromoInterval() {
@@ -137,19 +121,11 @@ public class DefaultBrowserPromoImpressionCounter {
     }
 
     int getMinPromoInterval() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)) {
-            int timeIntervalDays =
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                            ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID,
-                            PROMO_TIME_INTERVAL_DAYS_PARAM,
-                            3);
-            // Scale the time delay by the number of times the promo has shown.
-            // By default, expect 0 time delay for first promo show, 3 days for second promo
-            // show and 6 days for third promo show.
-            int timeIntervalMinutes =
-                    (int) (TimeUnit.DAYS.toMinutes(timeIntervalDays) * getPromoCount());
-            return timeIntervalMinutes;
-        }
-        return MIN_PROMO_INTERVAL;
+        // Scale the time delay by the number of times the promo has shown.
+        // By default, expect 0 time delay for first promo show, 3 days for second promo
+        // show and 6 days for third promo show.
+        int timeIntervalMinutes =
+                (int) (TimeUnit.DAYS.toMinutes(PROMO_TIME_INTERVAL_DAYS) * getPromoCount());
+        return timeIntervalMinutes;
     }
 }

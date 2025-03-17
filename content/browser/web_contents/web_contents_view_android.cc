@@ -89,12 +89,7 @@ bool IsDragAndDropEnabled() {
 }
 
 bool IsDragEnabledForDropData(const DropData& drop_data) {
-  if (!IsDragAndDropEnabled()) {
-    return drop_data.text.has_value();
-  }
-  return !drop_data.url.is_empty() || !drop_data.file_contents.empty() ||
-         drop_data.text.has_value() ||
-         base::FeatureList::IsEnabled(features::kDragDropEmpty);
+  return IsDragAndDropEnabled() || drop_data.text.has_value();
 }
 }
 
@@ -243,12 +238,11 @@ void WebContentsViewAndroid::FocusThroughTabTraversal(bool reverse) {
 }
 
 DropData* WebContentsViewAndroid::GetDropData() const {
-  NOTIMPLEMENTED();
-  return NULL;
+  return drop_data_.get();
 }
 
 gfx::Rect WebContentsViewAndroid::GetViewBounds() const {
-  return gfx::Rect(view_.GetSize());
+  return gfx::Rect(view_.GetSizeDIPs());
 }
 
 void WebContentsViewAndroid::CreateView(gfx::NativeView context) {}
@@ -379,7 +373,6 @@ void WebContentsViewAndroid::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -475,15 +468,6 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
   switch (event.action()) {
     case JNI_DragEvent::ACTION_DRAG_ENTERED: {
       drag_metadata_.clear();
-      if (!base::FeatureList::IsEnabled(features::kDragDropFiles)) {
-        for (const std::u16string& mime_type : event.mime_types()) {
-          drag_metadata_.push_back(DropData::Metadata::CreateForMimeType(
-              DropData::Kind::STRING, mime_type));
-        }
-        OnDragEntered(event.location(), event.screen_location());
-        break;
-      }
-
       for (const std::u16string& mime_type : event.mime_types()) {
         if (mime_type == base::ASCIIToUTF16(ui::kMimeTypeText) ||
             mime_type == base::ASCIIToUTF16(ui::kMimeTypeHTML) ||
@@ -508,49 +492,30 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       OnDragUpdated(event.location(), event.screen_location());
       break;
     case JNI_DragEvent::ACTION_DROP: {
-      auto drop_data = std::make_unique<DropData>();
-      drop_data->did_originate_from_renderer = false;
-      drop_data->document_is_handling_drag = document_is_handling_drag_;
+      drop_data_ = std::make_unique<DropData>();
+      drop_data_->did_originate_from_renderer = false;
+      drop_data_->document_is_handling_drag = document_is_handling_drag_;
       JNIEnv* env = AttachCurrentThread();
-      if (!base::FeatureList::IsEnabled(features::kDragDropFiles)) {
-        std::u16string drop_content =
-            ConvertJavaStringToUTF16(env, event.GetJavaContent());
-        for (const std::u16string& mime_type : event.mime_types()) {
-          if (base::EqualsASCII(mime_type, ui::kMimeTypeURIList)) {
-            drop_data->url = GURL(drop_content);
-          } else if (base::EqualsASCII(mime_type, ui::kMimeTypeText)) {
-            drop_data->text = drop_content;
-          } else {
-            drop_data->html = drop_content;
-          }
-        }
-
-        OnPerformDrop(std::move(drop_data), event.location(),
-                      event.screen_location());
-        break;
-      }
-
       std::vector<std::vector<std::string>> filenames;
       base::android::Java2dStringArrayTo2dStringVector(
           env, event.GetJavaFilenames(), &filenames);
       for (const auto& info : filenames) {
         CHECK_EQ(info.size(), 2u);
-        drop_data->filenames.push_back(
+        drop_data_->filenames.push_back(
             ui::FileInfo(base::FilePath(info[0]), base::FilePath(info[1])));
       }
       if (!event.GetJavaText().is_null()) {
-        drop_data->text = ConvertJavaStringToUTF16(env, event.GetJavaText());
+        drop_data_->text = ConvertJavaStringToUTF16(env, event.GetJavaText());
       }
       if (!event.GetJavaHtml().is_null()) {
-        drop_data->html = ConvertJavaStringToUTF16(env, event.GetJavaHtml());
+        drop_data_->html = ConvertJavaStringToUTF16(env, event.GetJavaHtml());
       }
       if (!event.GetJavaUrl().is_null()) {
-        drop_data->url =
+        drop_data_->url =
             GURL(ConvertJavaStringToUTF16(env, event.GetJavaUrl()));
       }
 
-      OnPerformDrop(std::move(drop_data), event.location(),
-                    event.screen_location());
+      OnPerformDrop(event.location(), event.screen_location());
       break;
     }
     case JNI_DragEvent::ACTION_DRAG_EXITED:
@@ -704,8 +669,7 @@ void WebContentsViewAndroid::OnDragExited() {
   }
 }
 
-void WebContentsViewAndroid::OnPerformDrop(std::unique_ptr<DropData> drop_data,
-                                           const gfx::PointF& location,
+void WebContentsViewAndroid::OnPerformDrop(const gfx::PointF& location,
                                            const gfx::PointF& screen_location) {
   if (drag_drop_oopif_enabled_) {
     web_contents_->GetRenderWidgetHostAtPointAsynchronously(
@@ -713,20 +677,19 @@ void WebContentsViewAndroid::OnPerformDrop(std::unique_ptr<DropData> drop_data,
             web_contents_->GetRenderWidgetHostView()),
         location,
         base::BindOnce(&WebContentsViewAndroid::PerformDropCallback,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(drop_data),
-                       location, screen_location));
+                       weak_ptr_factory_.GetWeakPtr(), location,
+                       screen_location));
     return;
   }
 
   web_contents_->Focus();
   web_contents_->GetRenderViewHost()->GetWidget()->FilterDropData(
-      drop_data.get());
+      drop_data_.get());
   web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDrop(
-      *drop_data, location, screen_location, 0, base::DoNothing());
+      *drop_data_, location, screen_location, 0, base::DoNothing());
 }
 
 void WebContentsViewAndroid::PerformDropCallback(
-    std::unique_ptr<DropData> drop_data,
     const gfx::PointF& location,
     const gfx::PointF& screen_location,
     base::WeakPtr<RenderWidgetHostViewBase> target,
@@ -749,8 +712,8 @@ void WebContentsViewAndroid::PerformDropCallback(
   }
 
   web_contents_->Focus();
-  target_rwh->FilterDropData(drop_data.get());
-  target_rwh->DragTargetDrop(*drop_data, *transformed_pt, screen_location, 0,
+  target_rwh->FilterDropData(drop_data_.get());
+  target_rwh->DragTargetDrop(*drop_data_, *transformed_pt, screen_location, 0,
                              base::DoNothing());
 }
 

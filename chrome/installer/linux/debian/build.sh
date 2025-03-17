@@ -62,6 +62,10 @@ stage_install_debian() {
     # Make it possible to distinguish between menu entries
     # for different channels.
     local MENUNAME="${MENUNAME} (${CHANNEL})"
+
+    local RDN_DESKTOP="${RDN}.${CHANNEL}"
+  else
+    local RDN_DESKTOP="${RDN}"
   fi
   prep_staging_debian
   SHLIB_PERMS=644

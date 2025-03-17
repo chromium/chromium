@@ -47,7 +47,6 @@ void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
   WriteParam(m, p.has_sha1);
   WriteParam(m, p.public_key_hashes);
   WriteParam(m, p.is_issued_by_known_root);
-  WriteParam(m, p.is_issued_by_additional_trust_anchor);
   WriteParam(m, p.ocsp_result);
   WriteParam(m, p.scts);
   WriteParam(m, p.policy_compliance);
@@ -61,7 +60,6 @@ bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->has_sha1) &&
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->is_issued_by_known_root) &&
-         ReadParam(m, iter, &r->is_issued_by_additional_trust_anchor) &&
          ReadParam(m, iter, &r->ocsp_result) && ReadParam(m, iter, &r->scts) &&
          ReadParam(m, iter, &r->policy_compliance);
 }

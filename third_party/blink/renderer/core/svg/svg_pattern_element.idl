@@ -27,13 +27,13 @@
 
 [Exposed=Window]
 interface SVGPatternElement : SVGElement {
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedEnumeration patternUnits;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedEnumeration patternContentUnits;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedTransformList patternTransform;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength x;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength y;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength width;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength height;
+    readonly attribute SVGAnimatedEnumeration patternUnits;
+    readonly attribute SVGAnimatedEnumeration patternContentUnits;
+    readonly attribute SVGAnimatedTransformList patternTransform;
+    readonly attribute SVGAnimatedLength x;
+    readonly attribute SVGAnimatedLength y;
+    readonly attribute SVGAnimatedLength width;
+    readonly attribute SVGAnimatedLength height;
 };
 
 SVGPatternElement includes SVGFitToViewBox;

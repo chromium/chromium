@@ -4,13 +4,13 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"

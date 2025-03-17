@@ -11,7 +11,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -21,6 +20,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "ui/gfx/geometry/size.h"
@@ -39,7 +39,6 @@ class ScriptState;
 
 class CORE_EXPORT OffscreenCanvas final
     : public EventTarget,
-      public ImageBitmapSource,
       public CanvasRenderingContextHost,
       public CanvasResourceDispatcherClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -164,18 +163,15 @@ class CORE_EXPORT OffscreenCanvas final
   }
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const final;
   ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
                                                std::optional<gfx::Rect>,
                                                const ImageBitmapOptions*,
                                                ExceptionState&) final;
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final;
+  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                               SourceImageStatus*,
+                                               const gfx::SizeF&) final;
   bool WouldTaintOrigin() const final { return !origin_clean_; }
   gfx::SizeF ElementSize(const gfx::SizeF& default_object_size,
                          const RespectImageOrientationEnum) const final {
@@ -202,7 +198,15 @@ class CORE_EXPORT OffscreenCanvas final
     restoring_gpu_context_ = restoring_gpu_context;
   }
 
-  FontSelector* GetFontSelector() override;
+  TextDirection GetTextDirection(const ComputedStyle*) override;
+  void SetTextDirection(TextDirection direction) {
+    text_direction_ = direction;
+  }
+
+  const LayoutLocale* GetLocale() const override;
+  void SetLocale(scoped_refptr<const LayoutLocale> locale);
+
+  UniqueFontSelector* GetFontSelector() override;
 
   void Trace(Visitor*) const override;
 
@@ -267,6 +271,11 @@ class CORE_EXPORT OffscreenCanvas final
   WeakMember<ExecutionContext> execution_context_;
 
   DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
+  std::optional<TextDirection> text_direction_;
+
+  // Required for the TextStyle lang attribute, only non-null if control
+  // was transferred from an HTML canvas.
+  scoped_refptr<const LayoutLocale> locale_ = nullptr;
 
   bool disposing_ = false;
   bool is_neutered_ = false;

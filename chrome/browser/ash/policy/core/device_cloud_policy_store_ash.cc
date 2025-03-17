@@ -39,7 +39,7 @@ namespace features {
 
 BASE_FEATURE(kDeviceIdValidation,
              "DeviceIdValidation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -117,8 +117,10 @@ void DeviceCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
       CloudPolicyValidatorBase::TIMESTAMP_VALIDATED,
       CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,
       CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  validator->RunValidation();
-  OnPolicyToStoreValidated(validator.get());
+  DeviceCloudPolicyValidator::StartValidation(
+      std::move(validator),
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreAsh::Load() {
@@ -148,8 +150,10 @@ void DeviceCloudPolicyStoreAsh::InstallInitialPolicy(
   validator->ValidateInitialKey(install_attributes_->GetDomain());
   validator->ValidateDeviceId(install_attributes_->GetDeviceId(),
                               CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  validator->RunValidation();
-  OnPolicyToStoreValidated(validator.get());
+  DeviceCloudPolicyValidator::StartValidation(
+      std::move(validator),
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreAsh::DeviceSettingsUpdated() {
@@ -310,7 +314,7 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
   if (policy_fetch_response) {
     debug_info << ", has_signature: "
                << policy_fetch_response->has_policy_data_signature();
-    debug_info << ", size = " << policy_fetch_response->ByteSize();
+    debug_info << ", size = " << policy_fetch_response->ByteSizeLong();
     std::unique_ptr<em::PolicyData> poldata =
         std::make_unique<em::PolicyData>();
     if (!policy_fetch_response->has_policy_data() ||

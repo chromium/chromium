@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -100,6 +101,7 @@ void BrowserCommandHandler::CanExecuteCommand(
                                 can_execute);
       break;
     case Command::kStartTabGroupTutorial:
+    case Command::kStartSavedTabGroupTutorial:
       can_execute = TutorialServiceExists() && BrowserSupportsTabGroups();
       break;
     case Command::kOpenPasswordManager:
@@ -117,11 +119,6 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kStartPasswordManagerTutorial:
       can_execute = TutorialServiceExists();
       break;
-    case Command::kStartSavedTabGroupTutorial:
-      can_execute = TutorialServiceExists() &&
-                    BrowserSupportsSavedTabGroups() &&
-                    !tab_groups::IsTabGroupsSaveV2Enabled();
-      break;
     case Command::kOpenAISettings:
       can_execute = true;
       break;
@@ -130,12 +127,6 @@ void BrowserCommandHandler::CanExecuteCommand(
       break;
     case Command::kOpenPaymentsSettings:
       can_execute = true;
-      break;
-    case Command::KOpenHistorySearchSettings:
-      can_execute = true;
-      break;
-    case Command::kShowCustomizeChromeToolbar:
-      can_execute = ActiveTabSupportsCustomizeChrome();
       break;
   }
   std::move(callback).Run(can_execute);
@@ -189,6 +180,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
           base::UserMetricsAction("NewTabPage_Promos_PrivacyGuide"));
       break;
     case Command::kStartTabGroupTutorial:
+    case Command::kStartSavedTabGroupTutorial:
       StartTabGroupTutorial();
       break;
     case Command::kOpenPasswordManager:
@@ -207,9 +199,6 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
     case Command::kStartPasswordManagerTutorial:
       StartPasswordManagerTutorial();
       break;
-    case Command::kStartSavedTabGroupTutorial:
-      StartSavedTabGroupTutorial();
-      break;
     case Command::kOpenAISettings:
       OpenAISettings();
       break;
@@ -220,13 +209,6 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
     case Command::kOpenPaymentsSettings:
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
                     disposition);
-      break;
-    case Command::KOpenHistorySearchSettings:
-      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kHistorySearchSubpage)),
-                    disposition);
-      break;
-    case Command::kShowCustomizeChromeToolbar:
-      ShowCustomizeChromeToolbar();
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
@@ -258,18 +240,6 @@ bool BrowserCommandHandler::BrowserSupportsTabGroups() {
   return browser->tab_strip_model()->SupportsTabGroups();
 }
 
-bool BrowserCommandHandler::ActiveTabSupportsCustomizeChrome() {
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
-  if (!tab || !tab->GetTabFeatures()) {
-    return false;
-  }
-  customize_chrome::SidePanelController* side_panel_controller =
-      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
-  return side_panel_controller &&
-         side_panel_controller->IsCustomizeChromeEntryAvailable();
-}
-
 void BrowserCommandHandler::StartTabGroupTutorial() {
   auto* tutorial_id = kTabGroupTutorialId;
 
@@ -295,11 +265,6 @@ void BrowserCommandHandler::OpenPasswordManager() {
 void BrowserCommandHandler::OpenAISettings() {
   chrome::ShowSettingsSubPage(chrome::FindBrowserWithProfile(profile_),
                               chrome::kExperimentalAISettingsSubPage);
-}
-
-void BrowserCommandHandler::ShowCustomizeChromeToolbar() {
-  chrome::ExecuteCommand(chrome::FindBrowserWithProfile(profile_),
-                         IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
 }
 
 bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {

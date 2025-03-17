@@ -24,8 +24,9 @@ namespace {
 std::string GetRandomString(size_t len) {
   std::vector<char> random_chars;
   random_chars.reserve(len);
-  for (size_t i = 0; i < len; i++)
+  for (size_t i = 0; i < len; i++) {
     random_chars.push_back(base::RandInt('a', 'z'));
+  }
 
   return std::string(random_chars.begin(), random_chars.end());
 }
@@ -43,8 +44,9 @@ TEST(SubstringSetMatcherPerfTest, RandomKeys) {
     std::string str = GetRandomString(kPatternLen);
 
     // Ensure we don't have any duplicate pattern strings.
-    if (base::Contains(pattern_strings, str))
+    if (base::Contains(pattern_strings, str)) {
       continue;
+    }
 
     pattern_strings.insert(str);
     patterns.emplace_back(str, i);

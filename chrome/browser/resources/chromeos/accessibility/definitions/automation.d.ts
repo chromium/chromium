@@ -632,7 +632,7 @@ declare namespace chrome {
     export interface AutomationIntent {
       command: IntentCommandType;
       textBoundary: IntentTextBoundaryType;
-      moveDirection: IntentMoveDirectionType;
+      moveDirection?: IntentMoveDirectionType;
     }
 
     export interface AutomationEvent {

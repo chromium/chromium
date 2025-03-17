@@ -35,7 +35,7 @@ class BrowsingDataModelAndroid {
 
   // Destroys the BrowsingDataModelAndroid object. This needs to be called on
   // the java side when the object is not in use anymore.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
  private:
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;

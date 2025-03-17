@@ -8,8 +8,7 @@
 #include "base/sequence_token.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 PooledSequencedTaskRunner::PooledSequencedTaskRunner(
     const TaskTraits& traits,
@@ -73,5 +72,4 @@ void PooledSequencedTaskRunner::UpdatePriority(TaskPriority priority) {
   pooled_task_runner_delegate_->UpdatePriority(sequence_, priority);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

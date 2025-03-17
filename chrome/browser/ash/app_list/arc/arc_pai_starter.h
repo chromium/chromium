@@ -7,13 +7,13 @@
 
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 
 class PrefService;
 class Profile;

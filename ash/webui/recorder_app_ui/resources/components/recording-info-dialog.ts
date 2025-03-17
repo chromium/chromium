@@ -34,6 +34,7 @@ import {
 } from '../core/utils/datetime.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {withTooltip} from './directives/with-tooltip.js';
 
 export class RecordingInfoDialog extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
@@ -209,6 +210,7 @@ export class RecordingInfoDialog extends ReactiveLitElement {
           shape="circle"
           @click=${this.hide}
           aria-label=${i18n.closeDialogButtonTooltip}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="close"></cra-icon>
         </cra-icon-button>

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <XCTest/XCTest.h>
+
 #import <map>
 #import <memory>
 #import <string>
-
-#import <XCTest/XCTest.h>
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"

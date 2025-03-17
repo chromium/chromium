@@ -7,11 +7,10 @@ import("//ash/webui/camera_app_ui/resources/images/images.gni")
 import("//ash/webui/camera_app_ui/resources/js/js.gni")
 import("//ash/webui/camera_app_ui/resources/sounds/sounds.gni")
 import("//ash/webui/camera_app_ui/resources/views/views.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Camera App is ash-chrome only")
+assert(is_chromeos, "Camera App is ChromeOS only")
 
 static_library("camera_app_ui") {
   sources = [
@@ -38,7 +37,6 @@ static_library("camera_app_ui") {
     ":mojo_bindings",
     ":window_managemet",
     "//ash",
-    "//ash/components/arc/intent_helper",
     "//ash/public/cpp",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/system_apps/public:system_web_app_config",
@@ -57,6 +55,10 @@ static_library("camera_app_ui") {
     "//net",
     "//services/network/public/mojom",
     "//ui/webui",
+
+    # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences
+    # from here for arc directory migration. Fix this later.
+    "//chromeos/ash/experiences/arc/intent_helper",
   ]
 }
 
@@ -146,7 +148,7 @@ mojom("mojo_bindings") {
   deps = [
     ":ocr",
     ":pdf_builder",
-    "//ash/components/arc/mojom:camera_intent",
+    "//chromeos/ash/experiences/arc/mojom:camera_intent",
     "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",

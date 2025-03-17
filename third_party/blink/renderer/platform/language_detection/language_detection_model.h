@@ -55,12 +55,15 @@ class PLATFORM_EXPORT LanguageDetectionModel
   //
   // This is an asynchronous operation. The result will be passed to the
   // `on_complete` callback.
-  void DetectLanguage(const WTF::String& text,
+  void DetectLanguage(scoped_refptr<base::SequencedTaskRunner>& task_runner,
+                      const WTF::String& text,
                       DetectLanguageCallback on_complete);
 
   int64_t GetModelSize() const;
 
  private:
+  void DetectLanguageImpl(const WTF::String& text,
+                          DetectLanguageCallback on_complete);
   // This model is shared across all execution contexts in the process.
   language_detection::LanguageDetectionModel language_detection_model_;
 };

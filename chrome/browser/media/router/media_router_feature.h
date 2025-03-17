@@ -59,13 +59,6 @@ BASE_DECLARE_FEATURE(kShowCastPermissionRejectedError);
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 
-// When enabled, Cast virtual connections are removed without explicitly sending
-// a close connection request to the receiver when the sender webpage navigates
-// away.
-// TODO(crbug.com/1508704): Remove the flag when confident that the default-
-// enabled feature is not causing a regression.
-BASE_DECLARE_FEATURE(kCastSilentlyRemoveVcOnNavigation);
-
 // When enabled, messages between websites and Chrome, and Chrome and Cast
 // receivers will be logged in chrome://media-router-internals.  These messages
 // can be frequent and contain sensitive information, so disabled by default.

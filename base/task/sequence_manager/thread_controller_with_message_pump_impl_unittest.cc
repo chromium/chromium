@@ -29,8 +29,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::ElementsAre;
+using testing::Invoke;
 
 namespace base::sequence_manager::internal {
 
@@ -43,8 +43,9 @@ class ThreadControllerForTest : public ThreadControllerWithMessagePumpImpl {
       : ThreadControllerWithMessagePumpImpl(std::move(pump), settings) {}
 
   ~ThreadControllerForTest() override {
-    if (trace_observer_)
+    if (trace_observer_) {
       RunLevelTracker::SetTraceObserverForTesting(nullptr);
+    }
   }
 
   using ThreadControllerWithMessagePumpImpl::BeforeWait;
@@ -131,10 +132,12 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
 
   std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now,
                                              SelectTaskOption option) override {
-    if (tasks_.empty())
+    if (tasks_.empty()) {
       return std::nullopt;
-    if (tasks_.front().delayed_run_time > clock_->NowTicks())
+    }
+    if (tasks_.front().delayed_run_time > clock_->NowTicks()) {
       return std::nullopt;
+    }
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
         !tasks_.front().delayed_run_time.is_null()) {
       return std::nullopt;
@@ -154,16 +157,19 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
 
   std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
                                          SelectTaskOption option) override {
-    if (tasks_.empty())
+    if (tasks_.empty()) {
       return std::nullopt;
+    }
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
         !tasks_.front().delayed_run_time.is_null()) {
       return std::nullopt;
     }
-    if (tasks_.front().delayed_run_time.is_null())
+    if (tasks_.front().delayed_run_time.is_null()) {
       return WakeUp{};
-    if (lazy_now->Now() > tasks_.front().delayed_run_time)
+    }
+    if (lazy_now->Now() > tasks_.front().delayed_run_time) {
       return WakeUp{};
+    }
     return WakeUp{tasks_.front().delayed_run_time};
   }
 
@@ -173,10 +179,10 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
                TimeTicks queue_time = TimeTicks()) {
     DCHECK(tasks_.empty() || delayed_run_time.is_null() ||
            tasks_.back().delayed_run_time < delayed_run_time);
-    tasks_.push(
-        Task(PostedTask(nullptr, std::move(task), posted_from, delayed_run_time,
-                        base::subtle::DelayPolicy::kFlexibleNoSooner),
-             EnqueueOrder::FromIntForTesting(13), EnqueueOrder(), queue_time));
+    tasks_.emplace(
+        PostedTask(nullptr, std::move(task), posted_from, delayed_run_time,
+                   base::subtle::DelayPolicy::kFlexibleNoSooner),
+        EnqueueOrder::FromIntForTesting(13), EnqueueOrder(), queue_time);
   }
 
   bool HasPendingHighResolutionTasks() override {
@@ -577,92 +583,12 @@ TEST_F(ThreadControllerWithMessagePumpTest, QuitInterruptsBatch) {
   RunLoop run_loop;
   for (int i = 0; i < kBatchSize; i++) {
     task_source_.AddTask(FROM_HERE, BindLambdaForTesting([&] {
-                           if (!task_count++)
+                           if (!task_count++) {
                              run_loop.Quit();
+                           }
                          }),
                          TimeTicks());
   }
-
-  run_loop.Run();
-  testing::Mock::VerifyAndClearExpectations(message_pump_);
-}
-
-TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
-  SingleThreadTaskRunner::CurrentDefaultHandle handle(
-      MakeRefCounted<FakeTaskRunner>());
-
-  testing::InSequence sequence;
-
-  RunLoop run_loop;
-  const auto delayed_time = FromNow(Seconds(10));
-  EXPECT_CALL(*message_pump_, Run(_))
-      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        clock_.Advance(Seconds(5));
-        std::array<MockCallback<OnceClosure>, 5> tasks;
-
-        // A: Post 5 application tasks, 4 immediate 1 delayed.
-        // B: Run one of them (enter active)
-        //   C: Expect we return immediate work item without yield_to_native
-        //      (default behaviour).
-        // D: Set PrioritizeYieldingToNative until 8 seconds and run second
-        //    task.
-        //   E: Expect we return immediate work item with yield_to_native.
-        // F: Exceed the PrioritizeYieldingToNative deadline and run third task.
-        //   G: Expect we return immediate work item without yield_to_native.
-        // H: Set PrioritizeYieldingToNative to Max() and run third of them
-        //   I: Expect we return a delayed work item with yield_to_native.
-
-        // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(),
-                             /* delayed_run_time=*/base::TimeTicks(),
-                             /* queue_time=*/clock_.NowTicks());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get(),
-                             /* delayed_run_time=*/base::TimeTicks(),
-                             /* queue_time=*/clock_.NowTicks());
-        task_source_.AddTask(FROM_HERE, tasks[2].Get(),
-                             /* delayed_run_time=*/base::TimeTicks(),
-                             /* queue_time=*/clock_.NowTicks());
-        task_source_.AddTask(FROM_HERE, tasks[3].Get(),
-                             /* delayed_run_time=*/base::TimeTicks(),
-                             /* queue_time=*/clock_.NowTicks());
-        task_source_.AddTask(FROM_HERE, tasks[4].Get(),
-                             /* delayed_run_time=*/delayed_time,
-                             /* queue_time=*/clock_.NowTicks());
-
-        // B:
-        EXPECT_CALL(tasks[0], Run());
-        auto next_work_item = thread_controller_.DoWork();
-        // C:
-        EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
-        EXPECT_FALSE(next_work_item.yield_to_native);
-
-        // D:
-        thread_controller_.PrioritizeYieldingToNative(FromNow(Seconds(3)));
-        EXPECT_CALL(tasks[1], Run());
-        next_work_item = thread_controller_.DoWork();
-        // E:
-        EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
-        EXPECT_TRUE(next_work_item.yield_to_native);
-
-        // F:
-        clock_.Advance(Seconds(3));
-        EXPECT_CALL(tasks[2], Run());
-        next_work_item = thread_controller_.DoWork();
-        // G:
-        EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
-        EXPECT_FALSE(next_work_item.yield_to_native);
-
-        // H:
-        thread_controller_.PrioritizeYieldingToNative(base::TimeTicks::Max());
-        EXPECT_CALL(tasks[3], Run());
-        next_work_item = thread_controller_.DoWork();
-
-        // I:
-        EXPECT_EQ(next_work_item.delayed_run_time, delayed_time);
-        EXPECT_TRUE(next_work_item.yield_to_native);
-
-        thread_controller_.DoIdleWork();
-      }));
 
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(message_pump_);
@@ -1000,8 +926,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         std::array<MockCallback<OnceClosure>, 5> tasks;
         // Post 5 tasks, run them, go idle. Expected to only exit
         // "ThreadController active" state at the end.
-        for (auto& t : tasks)
+        for (auto& t : tasks) {
           task_source_.AddTask(FROM_HERE, t.Get());
+        }
         for (size_t i = 0; i < std::size(tasks); ++i) {
           const TimeTicks expected_delayed_run_time =
               i < std::size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();

@@ -42,27 +42,19 @@ class AffiliationService : public KeyedService {
 
   // Prefetches change password URLs for sites requested. Receives a callback to
   // run when the prefetch finishes.
-  virtual void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                          base::OnceClosure callback) = 0;
-
-  // Clears the result of URLs fetch.
-  virtual void Clear() = 0;
+  virtual void PrefetchChangePasswordURL(const GURL& urls,
+                                         base::OnceClosure callback) = 0;
 
   // Returns a URL with change password form for a site requested.
   virtual GURL GetChangePasswordURL(const GURL& url) const = 0;
 
   // Looks up facets affiliated with the facet identified by |facet_uri| and
-  // branding information, and invokes |result_callback| with the results. It is
-  // guaranteed that the results will contain one facet with URI equal to
-  // |facet_uri| when |result_callback| is invoked with success set to true.
-  //
-  // If the local cache contains fresh affiliation and branding information for
-  // |facet_uri|, the request will be served from cache. Otherwise,
-  // |cache_miss_policy| controls whether to issue an on-demand network request,
-  // or to fail the request without fetching.
+  // branding information in the local cache if it's fresh. Invokes
+  // |result_callback| with the results, it is guaranteed that the results will
+  // contain one facet with URI equal to |facet_uri| when |result_callback| is
+  // invoked with success set to true.
   virtual void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
-      AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
       ResultCallback result_callback) = 0;
 
   // Prefetches affiliation information for the facet identified by

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -594,14 +595,14 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
   if (!clockless_playback_) {
     DCHECK(!mono_output_) << " NullAudioSink doesn't specify output parameters";
 
-    audio_sink_ =
-        new NullAudioSink(task_environment_.GetMainThreadTaskRunner());
+    audio_sink_ = base::MakeRefCounted<NullAudioSink>(
+        task_environment_.GetMainThreadTaskRunner());
   } else {
     ChannelLayoutConfig output_layout_config =
         mono_output_ ? ChannelLayoutConfig::Mono()
                      : ChannelLayoutConfig::Stereo();
 
-    clockless_audio_sink_ = new ClocklessAudioSink(
+    clockless_audio_sink_ = base::MakeRefCounted<ClocklessAudioSink>(
         OutputDeviceInfo("", OUTPUT_DEVICE_STATUS_OK,
                          AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                          output_layout_config, 44100, 512)));

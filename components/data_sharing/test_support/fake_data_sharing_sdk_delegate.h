@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DATA_SHARING_TEST_SUPPORT_FAKE_DATA_SHARING_SDK_DELEGATE_H_
 #define COMPONENTS_DATA_SHARING_TEST_SUPPORT_FAKE_DATA_SHARING_SDK_DELEGATE_H_
 
+#include <map>
 #include <string>
 
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"

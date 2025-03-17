@@ -1,0 +1,214 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
+
+#include <memory>
+
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
+#include "base/test/protobuf_matchers.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/signatures.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
+#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
+#include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+namespace {
+
+using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+using optimization_guide::OptimizationGuideModelExecutionError;
+using optimization_guide::OptimizationGuideModelExecutionResult;
+using optimization_guide::OptimizationGuideModelExecutionResultCallback;
+using optimization_guide::proto::AutofillAiTypeResponse;
+using ::testing::_;
+using ::testing::An;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
+class AutofillAiModelExecutorImplTest : public testing::Test {
+ public:
+  void SetUp() override {
+    logs_uploader_ = std::make_unique<
+        optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
+    engine_ = std::make_unique<AutofillAiModelExecutorImpl>(
+        &model_cache_, &model_executor_, logs_uploader_.get());
+  }
+
+  AutofillAiModelExecutor* engine() { return engine_.get(); }
+
+  MockAutofillAiModelCache& model_cache() { return model_cache_; }
+
+  optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
+    return &model_executor_;
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_env_;
+  TestingPrefServiceSimple local_state_;
+  MockAutofillAiModelCache model_cache_;
+  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+      model_executor_;
+  std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
+      logs_uploader_;
+  std::unique_ptr<AutofillAiModelExecutor> engine_;
+};
+
+TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
+  const FormData form =
+      test::GetFormData({.fields = {{.name = u"Passport number"}}});
+  AutofillAiTypeResponse response;
+  response.add_field_responses()->set_field_type(PASSPORT_NUMBER);
+
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(
+      model_cache(),
+      Update(CalculateFormSignature(form), base::test::EqualsProto(response),
+             ElementsAre(FieldIdentifier{
+                 .signature = CalculateFieldSignatureForField(form.fields()[0]),
+                 .rank_in_signature_group = 0})));
+
+  engine()->GetPredictions(form);
+}
+
+// Tests that if there is an ongoing request with the same form signature, then
+// GetPredictions will return immediately without result. However, queries for
+// forms with different signatures will still be processed.
+TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
+  // Two forms with different signatures and two different responses.
+  const FormData form1 =
+      test::GetFormData({.fields = {{.name = u"Passport number"}}});
+  AutofillAiTypeResponse response1;
+  response1.add_field_responses()->set_field_type(PASSPORT_NUMBER);
+
+  const FormData form2 =
+      test::GetFormData({.fields = {{.name = u"First name"}}});
+  AutofillAiTypeResponse response2;
+  response2.add_field_responses()->set_field_type(PASSPORT_NAME_TAG);
+
+  ASSERT_NE(CalculateFormSignature(form1), CalculateFormSignature(form2));
+
+  OptimizationGuideModelExecutionResultCallback model_callback1;
+  OptimizationGuideModelExecutionResultCallback model_callback2;
+  // We only expect two calls to the model and to the cache even though
+  // `GetPredictions` is called three times.
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .Times(2)
+      .WillOnce(MoveArg<3>(&model_callback1))
+      .WillOnce(MoveArg<3>(&model_callback2));
+  EXPECT_CALL(
+      model_cache(),
+      Update(
+          CalculateFormSignature(form2), base::test::EqualsProto(response2),
+          ElementsAre(FieldIdentifier{
+              .signature = CalculateFieldSignatureForField(form2.fields()[0]),
+              .rank_in_signature_group = 0})));
+  EXPECT_CALL(
+      model_cache(),
+      Update(
+          CalculateFormSignature(form1), base::test::EqualsProto(response1),
+          ElementsAre(FieldIdentifier{
+              .signature = CalculateFieldSignatureForField(form1.fields()[0]),
+              .rank_in_signature_group = 0})));
+
+  engine()->GetPredictions(form1);
+
+  // We expect this call not to trigger a run.
+  engine()->GetPredictions(form1);
+
+  // The simulated model call for a different form runs immediately and
+  // completes successfully.
+  engine()->GetPredictions(form2);
+  ASSERT_TRUE(model_callback2);
+  std::move(model_callback2)
+      .Run(OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response2),
+               /*execution_info=*/nullptr),
+           /*log_entry=*/nullptr);
+
+  // Now simulate responding to the first call.
+  ASSERT_TRUE(model_callback1);
+  std::move(model_callback1)
+      .Run(OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response1),
+               /*execution_info=*/nullptr),
+           /*log_entry=*/nullptr);
+}
+
+// Tests that model errors are handled by writing an empty entry into the cache.
+TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
+  const FormData form;
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kGenericFailure)),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(
+      model_cache(),
+      Update(CalculateFormSignature(form),
+             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+
+  engine()->GetPredictions(form);
+}
+
+// Tests that wrongly typed model responses are handled by writing an empty
+// entry into the cache.
+TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
+  const FormData form;
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              optimization_guide::proto::Any(), /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(
+      model_cache(),
+      Update(CalculateFormSignature(form),
+             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+
+  engine()->GetPredictions(form);
+}
+
+}  // namespace
+}  // namespace autofill

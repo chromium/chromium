@@ -20,7 +20,7 @@ std::optional<SafeBaseName> SafeBaseName::Create(const FilePath& path) {
 
 // static
 std::optional<SafeBaseName> SafeBaseName::Create(
-    FilePath::StringPieceType path) {
+    FilePath::StringViewType path) {
   return Create(FilePath(path));
 }
 

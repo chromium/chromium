@@ -15,7 +15,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -39,7 +38,6 @@ class WaitableEvent;
 
 namespace content {
 class BrowserContext;
-class DipsDelegate;
 class StoragePartition;
 }
 
@@ -193,7 +191,7 @@ class ChromeBrowsingDataRemoverDelegate
   // A helper method that checks if time period is for "all time".
   bool IsForAllTime() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnClearPlatformKeys(base::OnceClosure done, bool);
 #endif
 
@@ -265,8 +263,6 @@ class ChromeBrowsingDataRemoverDelegate
   base::OnceClosure deferred_disable_passwords_auto_signin_cb_;
 
   std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;
-
-  std::unique_ptr<content::DipsDelegate> dips_delegate_;
 
   base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_{
       this};

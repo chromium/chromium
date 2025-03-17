@@ -234,24 +234,24 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 
 - (void)clearAllSpotlightEntries {
   [self showSpinner];
-  [self.spotlightInterface deleteAllSearchableItemsWithCompletionHandler:^(
-                               NSError* error) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      UIAlertController* controller = [UIAlertController
-          alertControllerWithTitle:@"Clear Entries"
-                           message:error ? error.localizedDescription
-                                         : @"Success"
-                    preferredStyle:UIAlertControllerStyleAlert];
-      [controller
-          addAction:[UIAlertAction actionWithTitle:@"OK"
-                                             style:UIAlertActionStyleDefault
-                                           handler:nil]];
-      [self presentViewController:controller animated:YES completion:nil];
+  [self.spotlightInterface
+      deleteAllSearchableItemsWithCompletionHandler:^(NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIAlertController* controller = [UIAlertController
+              alertControllerWithTitle:@"Clear Entries"
+                               message:error ? error.localizedDescription
+                                             : @"Success"
+                        preferredStyle:UIAlertControllerStyleAlert];
+          [controller
+              addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                 style:UIAlertActionStyleDefault
+                                               handler:nil]];
+          [self presentViewController:controller animated:YES completion:nil];
 
-      [self removeSpinner];
-      [self.tableView reloadData];
-    });
-  }];
+          [self removeSpinner];
+          [self.tableView reloadData];
+        });
+      }];
   _prefService->ClearPref(spotlight::kSpotlightLastIndexingDateKey);
 }
 

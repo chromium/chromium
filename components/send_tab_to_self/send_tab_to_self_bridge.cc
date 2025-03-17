@@ -409,8 +409,9 @@ void SendTabToSelfBridge::OnHistoryDeletions(
     return;  // Sync processor not yet ready, don't sync.
   }
 
-  if (deletion_info.is_from_expiration())
+  if (deletion_info.is_from_expiration()) {
     return;
+  }
 
   if (!deletion_info.IsAllHistory()) {
     std::vector<GURL> urls;
@@ -639,12 +640,12 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
       device_info_tracker_->GetAllDeviceInfo();
 
   // Sort the DeviceInfo vector so the most recently modified devices are first.
-  std::stable_sort(all_devices.begin(), all_devices.end(),
-                   [](const syncer::DeviceInfo* device1,
-                      const syncer::DeviceInfo* device2) {
-                     return device1->last_updated_timestamp() >
-                            device2->last_updated_timestamp();
-                   });
+  std::stable_sort(
+      all_devices.begin(), all_devices.end(),
+      [](const syncer::DeviceInfo* device1, const syncer::DeviceInfo* device2) {
+        return device1->last_updated_timestamp() >
+               device2->last_updated_timestamp();
+      });
 
   target_device_info_sorted_list_.clear();
   std::set<std::string> unique_device_names;

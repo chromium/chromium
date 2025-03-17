@@ -11,10 +11,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -47,6 +47,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,7 +60,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -71,7 +72,7 @@ namespace {
 
 // The URL for the the Learn More page shown on incognito new tab.
 const char kLearnMoreIncognitoUrl[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "https://support.google.com/chromebook/?p=incognito";
 #else
     "https://support.google.com/chrome/?p=incognito";
@@ -79,7 +80,7 @@ const char kLearnMoreIncognitoUrl[] =
 
 // The URL for the Learn More page shown on guest session new tab.
 const char kLearnMoreGuestSessionUrl[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "https://support.google.com/chromebook/?p=chromebook_guest";
 #else
     "https://support.google.com/chrome/?p=ui_guest";
@@ -295,12 +296,28 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
+  replacements["cookieControlsHeader"] = "cookie-controls-title";
 
-  if (is_tracking_protection_3pcd_enabled ||
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
     replacements["hideBlockCookiesToggle"] = "hidden";
     replacements["hideTooltipIcon"] = "hidden";
+    replacements["hideUserBypassIcon"] = "";
+    replacements["cookieControlsHeader"] = "cookie-controls-header";
+
+    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
+        IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER);
+    localized_strings.Set(
+        "cookieControlsDescription",
+        l10n_util::GetStringFUTF16(
+            IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP,
+            chrome::kUserBypassHelpCenterURL,
+            l10n_util::GetStringUTF16(
+                IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
+  } else if (is_tracking_protection_3pcd_enabled) {
+    replacements["hideBlockCookiesToggle"] = "hidden";
+    replacements["hideTooltipIcon"] = "hidden";
+    replacements["hideUserBypassIcon"] = "hidden";
 
     // Overwrite the cookies control title and description if 3pcd enabled.
     replacements["cookieControlsTitle"] =
@@ -312,13 +329,13 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
             chrome::kUserBypassHelpCenterURL,
             l10n_util::GetStringUTF16(
                 IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
-
   } else {
     replacements["hideBlockCookiesToggle"] = "";
     replacements["hideTooltipIcon"] =
         cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
     replacements["cookieControlsDescription"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
+    replacements["hideUserBypassIcon"] = "hidden";
   }
 
   replacements["cookieControlsToggleChecked"] =
@@ -333,7 +350,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       ThemeService::GetThemeProviderForProfile(incognito_profile);
 
   replacements["hasCustomBackground"] =
-      tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
+      base::ToString(tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
@@ -357,7 +374,7 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
   int guest_tab_heading_ids = IDS_NEW_TAB_GUEST_SESSION_HEADING;
   int guest_tab_link_ids = IDS_LEARN_MORE;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   guest_tab_idr = IDR_GUEST_SESSION_TAB_HTML;
 
   policy::BrowserPolicyConnectorAsh* connector =

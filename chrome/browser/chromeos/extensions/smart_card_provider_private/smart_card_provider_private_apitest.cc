@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +23,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -219,6 +225,7 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
 
     context.Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
                     std::move(preferred_protocols),
+                    connections_watcher_.GetNewPipe(),
                     result_future.GetCallback());
 
     device::mojom::SmartCardConnectResultPtr result = result_future.Take();
@@ -239,6 +246,41 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
   SmartCardProviderPrivateAPI& ProviderAPI() {
     return SmartCardProviderPrivateAPI::Get(*profile());
   }
+
+  class TestConnectionsWatcher
+      : public device::mojom::SmartCardConnectionWatcher {
+   public:
+    TestConnectionsWatcher() {
+      receivers_.set_disconnect_handler(base::BindRepeating(
+          &TestConnectionsWatcher::OnDisconnect, base::Unretained(this)));
+    }
+    void NotifyConnectionUsed() override { ++times_used_; }
+    uint32_t GetTimesUsed() const { return times_used_; }
+    uint32_t GetTimesDisconnected() const { return times_disconnected_; }
+    void WaitForDisconnect() { ASSERT_TRUE(disconnect_future_.Wait()); }
+    void ClearDisconnectFuture() { disconnect_future_.Clear(); }
+
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+    GetNewPipe() {
+      mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+          pending_remote;
+      receivers_.Add(this, pending_remote.InitWithNewPipeAndPassReceiver());
+      return pending_remote;
+    }
+
+   private:
+    void OnDisconnect() {
+      ++times_disconnected_;
+      disconnect_future_.SetValue();
+    }
+
+   private:
+    uint32_t times_used_ = 0;
+    uint32_t times_disconnected_ = 0;
+    mojo::ReceiverSet<device::mojom::SmartCardConnectionWatcher> receivers_;
+    base::test::TestFuture<void> disconnect_future_;
+    base::WeakPtrFactory<TestConnectionsWatcher> weak_factory_{this};
+  };
 
   using ContextAndConnection =
       std::tuple<mojo::Remote<device::mojom::SmartCardContext>,
@@ -270,6 +312,8 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
                                     "jofgjdphhceggjecimellaapdjjadibj");
     ExtensionApiTest::SetUpCommandLine(command_line);
   }
+
+  TestConnectionsWatcher connections_watcher_;
 
  private:
   raw_ptr<const Extension, DanglingUntriaged> extension_;
@@ -678,11 +722,15 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Connect) {
   preferred_protocols->t1 = true;
   preferred_protocols->raw = false;
 
+  uint32_t usages_before_connection = connections_watcher_.GetTimesUsed();
   context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
-                   std::move(preferred_protocols), result_future.GetCallback());
+                   std::move(preferred_protocols),
+                   connections_watcher_.GetNewPipe(),
+                   result_future.GetCallback());
 
   device::mojom::SmartCardConnectResultPtr result = result_future.Take();
   ASSERT_TRUE(result->is_success());
+  EXPECT_EQ(usages_before_connection + 1, connections_watcher_.GetTimesUsed());
 
   device::mojom::SmartCardConnectSuccessPtr success =
       std::move(result->get_success());
@@ -708,7 +756,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ConnectNoProvider) {
   preferred_protocols->t1 = true;
 
   context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
-                   std::move(preferred_protocols), result_future.GetCallback());
+                   std::move(preferred_protocols), mojo::NullRemote(),
+                   result_future.GetCallback());
 
   EXPECT_THAT(result_future.Take(), IsError(SmartCardError::kNoService));
 }
@@ -736,7 +785,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   preferred_protocols->t1 = true;
 
   context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
-                   std::move(preferred_protocols), result_future.GetCallback());
+                   std::move(preferred_protocols), mojo::NullRemote(),
+                   result_future.GetCallback());
 
   EXPECT_THAT(result_future.Take(), IsError(SmartCardError::kNoService));
 }
@@ -764,11 +814,26 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
 
   base::test::TestFuture<SmartCardResultPtr> result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->Disconnect(device::mojom::SmartCardDisposition::kUnpower,
                          result_future.GetCallback());
 
   SmartCardResultPtr result = result_future.Take();
   EXPECT_TRUE(result->is_success());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       DisconnectConnectionDisconnectsWatcher) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs});
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  auto disconnect_count = connections_watcher_.GetTimesDisconnected();
+  connections_watcher_.ClearDisconnectFuture();
+  connection.reset();
+  connections_watcher_.WaitForDisconnect();
+  EXPECT_EQ(disconnect_count + 1, connections_watcher_.GetTimesDisconnected());
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectNoProvider) {
@@ -1059,7 +1124,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ContextBusy) {
             1u);
 
   context->Connect("foo", device::mojom::SmartCardShareMode::kShared,
-                   device::mojom::SmartCardProtocols::New(),
+                   device::mojom::SmartCardProtocols::New(), mojo::NullRemote(),
                    connect_future.GetCallback());
   context.FlushForTesting();
   // The Connect request should not have been sent since the context is still
@@ -1234,11 +1299,13 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Transmit) {
 
   base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->Transmit(device::mojom::SmartCardProtocol::kT1, {3u, 2u, 1u},
                        result_future.GetCallback());
 
   auto result = result_future.Take();
   ASSERT_TRUE(result->is_data());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
 
   EXPECT_EQ(result->get_data(), std::vector<uint8_t>({1u, 100u, 255u}));
 }
@@ -1297,10 +1364,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Control) {
 
   base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->Control(111u, {3u, 2u, 1u}, result_future.GetCallback());
 
   device::mojom::SmartCardDataResultPtr result = result_future.Take();
   ASSERT_TRUE(result->is_data());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
 
   EXPECT_EQ(result->get_data(), std::vector<uint8_t>({1u, 100u, 255u}));
 }
@@ -1351,10 +1420,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, GetAttrib) {
 
   base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->GetAttrib(111u, result_future.GetCallback());
 
   device::mojom::SmartCardDataResultPtr result = result_future.Take();
   ASSERT_TRUE(result->is_data());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
 
   EXPECT_EQ(result->get_data(), std::vector<uint8_t>({1u, 100u, 255u}));
 }
@@ -1409,11 +1480,13 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, SetAttrib) {
 
   base::test::TestFuture<device::mojom::SmartCardResultPtr> result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->SetAttrib(111u, std::vector<uint8_t>({3u, 2u, 1u}),
                         result_future.GetCallback());
 
   device::mojom::SmartCardResultPtr result = result_future.Take();
   EXPECT_TRUE(result->is_success());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, SetAttribTimeout) {
@@ -1463,10 +1536,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Status) {
 
   base::test::TestFuture<device::mojom::SmartCardStatusResultPtr> result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->Status(result_future.GetCallback());
 
   auto result = result_future.Take();
   ASSERT_TRUE(result->is_status());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
 
   device::mojom::SmartCardStatusPtr& status = result->get_status();
   EXPECT_EQ(status->reader_name, "FooReader");
@@ -1528,10 +1603,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
       result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->BeginTransaction(result_future.GetCallback());
 
   auto result = result_future.Take();
   ASSERT_TRUE(result->is_transaction());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
 
   mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction(
       std::move(result->get_transaction()));

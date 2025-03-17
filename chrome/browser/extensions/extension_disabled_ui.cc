@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_install_error_menu_item_id_provider.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_util.h"
@@ -50,7 +50,7 @@ class ExtensionDisabledGlobalError final
       public ExtensionUninstallDialog::Delegate,
       public ExtensionRegistryObserver {
  public:
-  ExtensionDisabledGlobalError(ExtensionService* service,
+  ExtensionDisabledGlobalError(Profile* profile,
                                const Extension* extension,
                                bool is_remote_install);
 
@@ -92,7 +92,7 @@ class ExtensionDisabledGlobalError final
 
   void RemoveGlobalError();
 
-  raw_ptr<ExtensionService, DanglingUntriaged> service_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   scoped_refptr<const Extension> extension_;
   bool is_remote_install_;
 
@@ -109,13 +109,13 @@ class ExtensionDisabledGlobalError final
 
 // TODO(yoz): create error at startup for disabled extensions.
 ExtensionDisabledGlobalError::ExtensionDisabledGlobalError(
-    ExtensionService* service,
+    Profile* profile,
     const Extension* extension,
     bool is_remote_install)
-    : service_(service),
+    : profile_(profile),
       extension_(extension),
       is_remote_install_(is_remote_install) {
-  registry_observation_.Observe(ExtensionRegistry::Get(service->profile()));
+  registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
 ExtensionDisabledGlobalError::~ExtensionDisabledGlobalError() = default;
@@ -163,8 +163,7 @@ ExtensionDisabledGlobalError::GetBubbleViewMessages() {
   std::vector<std::u16string> messages;
 
   std::unique_ptr<const PermissionSet> granted_permissions =
-      ExtensionPrefs::Get(service_->GetBrowserContext())
-          ->GetGrantedPermissions(extension_->id());
+      ExtensionPrefs::Get(profile_)->GetGrantedPermissions(extension_->id());
 
   PermissionMessages permission_warnings =
       extension_->permissions_data()->GetNewPermissionMessages(
@@ -207,15 +206,23 @@ void ExtensionDisabledGlobalError::BubbleViewAcceptButtonPressed(
   // Delay extension reenabling so this bubble closes properly.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ExtensionService::GrantPermissionsAndEnableExtension,
-                     service_->AsExtensionServiceWeakPtr(),
-                     base::RetainedRef(extension_)));
+      base::BindOnce(
+          // Adapt scoped_refptr<> as it can't be bound to const&.
+          [](base::WeakPtr<ExtensionRegistrar> registrar,
+             const scoped_refptr<const Extension>& extension) {
+            if (registrar) {
+              CHECK(extension);
+              registrar->GrantPermissionsAndEnableExtension(*extension);
+            }
+          },
+          ExtensionRegistrar::Get(profile_)->GetWeakPtr(),
+          base::RetainedRef(extension_)));
 }
 
 void ExtensionDisabledGlobalError::BubbleViewCancelButtonPressed(
     Browser* browser) {
   uninstall_dialog_ = ExtensionUninstallDialog::Create(
-      service_->profile(), browser->window()->GetNativeWindow(), this);
+      profile_, browser->window()->GetNativeWindow(), this);
   // Delay showing the uninstall dialog, so that this function returns
   // immediately, to close the bubble properly. See crbug.com/121544.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -270,14 +277,14 @@ void ExtensionDisabledGlobalError::OnExtensionUninstalled(
 }
 
 void ExtensionDisabledGlobalError::OnShutdown(ExtensionRegistry* registry) {
-  DCHECK_EQ(ExtensionRegistry::Get(service_->profile()), registry);
+  DCHECK_EQ(ExtensionRegistry::Get(profile_), registry);
   registry_observation_.Reset();
 }
 
 void ExtensionDisabledGlobalError::RemoveGlobalError() {
   std::unique_ptr<GlobalError> ptr =
-      GlobalErrorServiceFactory::GetForProfile(service_->profile())
-          ->RemoveGlobalError(this);
+      GlobalErrorServiceFactory::GetForProfile(profile_)->RemoveGlobalError(
+          this);
   registry_observation_.Reset();
   // Delete this object after any running tasks, so that the extension dialog
   // still has it as a delegate to finish the current tasks.
@@ -287,13 +294,13 @@ void ExtensionDisabledGlobalError::RemoveGlobalError() {
 
 // Globals --------------------------------------------------------------------
 
-void AddExtensionDisabledError(ExtensionService* service,
+void AddExtensionDisabledError(Profile* profile,
                                const Extension* extension,
                                bool is_remote_install) {
   if (extension) {
-    GlobalErrorServiceFactory::GetForProfile(service->profile())
-        ->AddGlobalError(std::make_unique<ExtensionDisabledGlobalError>(
-            service, extension, is_remote_install));
+    GlobalErrorServiceFactory::GetForProfile(profile)->AddGlobalError(
+        std::make_unique<ExtensionDisabledGlobalError>(profile, extension,
+                                                       is_remote_install));
   }
 }
 

@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -199,10 +199,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         // Flag state cannot change within the same process instance, so this behavior does not
         // actually get triggered in real usage.
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
+        FeatureOverrides.disable(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS);
 
         // Push another notification to trigger the clear.
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
@@ -357,7 +354,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         int startSuccessErrorCount =
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* SUCCESS= */ 1);
+                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 1);
         int startTotalCount =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "OptimizationGuide.PushNotifications.ReadCacheResult");
@@ -373,7 +370,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         int afterSuccessErrorCount =
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* SUCCESS= */ 1);
+                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 1);
         int afterTotalCount =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "OptimizationGuide.PushNotifications.ReadCacheResult");
@@ -389,8 +386,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         int startPbErrorCount =
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult",
-                        /* INVALID_PROTOBUF= */ 2);
+                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 2);
         int startTotalCount =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "OptimizationGuide.PushNotifications.ReadCacheResult");
@@ -412,8 +408,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         int afterPbErrorCount =
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult",
-                        /* INVALID_PROTOBUF= */ 2);
+                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 2);
         int afterTotalCount =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "OptimizationGuide.PushNotifications.ReadCacheResult");
@@ -429,8 +424,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         int startB64ErrorCount =
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult",
-                        /* BASE64_ERROR= */ 3);
+                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 3);
         int startTotalCount =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "OptimizationGuide.PushNotifications.ReadCacheResult");
@@ -449,8 +443,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         int afterB64ErrorCount =
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult",
-                        /* BASE64_ERROR= */ 3);
+                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 3);
         int afterTotalCount =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "OptimizationGuide.PushNotifications.ReadCacheResult");

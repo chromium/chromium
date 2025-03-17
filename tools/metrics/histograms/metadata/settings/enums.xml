@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
   <int value="-67456740" label="MainSettings"/>
   <int value="-45144853" label="DownloadSettings"/>
   <int value="-27162861" label="FledgeFragment"/>
-  <int value="19814032" label="ClearBrowsingDataFragmentAdvanced"/>
+  <int value="19814032" label="ClearBrowsingDataFragment"/>
   <int value="51577713" label="AccessibilitySettings"/>
   <int value="91451948" label="ContextualSearchSettingsFragment"/>
   <int value="383093746" label="PrivacySandboxSettingsFragment"/>
@@ -84,8 +84,8 @@ chromium-metrics-reviews@google.com.
   <int value="1849593145" label="AndroidPaymentAppsFragment"/>
   <int value="1891640238" label="AutofillPaymentMethodsFragment"/>
   <int value="1952237285" label="TracingSettings"/>
-  <int value="1968319616" label="ClearBrowsingDataFragmentBasic"/>
-  <int value="2070921964" label="ClearBrowsingDataTabsFragment"/>
+  <int value="1968319616" label="(Obsolete) ClearBrowsingDataFragmentBasic"/>
+  <int value="2070921964" label="(Obsolete) ClearBrowsingDataTabsFragment"/>
 </enum>
 
 <enum name="BooleanRedirected">
@@ -97,6 +97,22 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Top level MyActivity URL"/>
   <int value="1" label="Search history in MyActivity"/>
 </enum>
+
+<!-- LINT.IfChange(DisruptiveNotificationRevocationResult) -->
+
+<enum name="DisruptiveNotificationRevocationResult">
+  <int value="0" label="Content setting not allowed"/>
+  <int value="1" label="Invalid content setting"/>
+  <int value="2" label="Content setting not site scoped"/>
+  <int value="3" label="Managed content setting"/>
+  <int value="4" label="Site already in the revoke list"/>
+  <int value="5" label="False positive"/>
+  <int value="6" label="Site not disruptive"/>
+  <int value="7" label="Revoke notification"/>
+  <int value="8" label="Notification not revoked because of default block"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:RevocationResult) -->
 
 <enum name="FirstPartySetsState">
   <int value="0" label="Not Relevant"/>
@@ -121,6 +137,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Set Up List"/>
   <int value="4" label="External Action"/>
   <int value="5" label="Tips Notification"/>
+  <int value="6" label="Banner Promo"/>
 </enum>
 
 <enum name="LockScreenProgress">
@@ -243,6 +260,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unavailable"/>
   <int value="2" label="Info"/>
   <int value="3" label="Safe"/>
+  <int value="4" label="Loading"/>
 </enum>
 
 <enum name="SafetyHubModuleType">
@@ -304,8 +322,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Compare row click"/>
   <int value="2" label="Compose row click"/>
   <int value="3" label="Tab organization row click"/>
-  <int value="4" label="Themes row click"/>
+  <int value="4" label="Themes row click (Deprecated 02/2025)"/>
   <int value="5" label="Autofill AI row click"/>
+  <int value="6" label="Automated Password Change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->
@@ -429,25 +448,6 @@ chromium-metrics-reviews@google.com.
   <int value="-1840427391" label="settings"/>
   <int value="-1762176184" label="history"/>
   <int value="-1652896464" label="new-tab-page"/>
-</enum>
-
-<enum name="SettingsPrivacySandboxEnabled">
-  <int value="0" label="PS enabled, allow all cookies"/>
-  <int value="1" label="PS enabled, block 3P cookies"/>
-  <int value="2" label="PS enabled, block all cookies"/>
-  <int value="3" label="PS disabled, allow all cookies"/>
-  <int value="4" label="PS disabled, block 3P cookies"/>
-  <int value="5" label="PS disabled, block all cookies"/>
-  <int value="6" label="PS disabled, policy block 3P cookies"/>
-  <int value="7" label="PS disabled, policy block all cookies"/>
-  <int value="8"
-      label="PS enabled, FLoC disabled, allow all cookies (deprecated
-             07/2022)"/>
-  <int value="9"
-      label="PS enabled, FLoC disabled, block 3P cookies (deprecated 07/2022)"/>
-  <int value="10"
-      label="PS enabled, FLoC disabled, block all cookies (deprecated
-             07/2022)"/>
 </enum>
 
 <enum name="SettingsPrivacySandboxPromptHelperEvent">

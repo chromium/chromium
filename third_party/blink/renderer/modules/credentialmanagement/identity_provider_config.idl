@@ -6,9 +6,7 @@
 
 dictionary IdentityProviderConfig {
   // URL for the Identity Provider Configuration.
-  // Not marked as required to allow implementation of registered providers.
-  // See crbug.com/1406698.
-  USVString configURL;
+  required USVString configURL;
   // Not marked as required to allow implementation of digital credentials.
   // See crbug.com/1416939.
   USVString clientId;
@@ -28,8 +26,8 @@ dictionary IdentityProviderField {
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
-  [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
-  [RuntimeEnabled=FedCmAuthz] sequence<(USVString or IdentityProviderField)> fields;
-  [RuntimeEnabled=FedCmAuthz] any params;
+  DOMString domainHint;
+  sequence<(USVString or IdentityProviderField)> fields;
+  any params;
   [RuntimeEnabled=FedCmDelegation] IdentityProviderRequestOptionsFormat format;
 };

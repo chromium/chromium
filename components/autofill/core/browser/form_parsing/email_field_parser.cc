@@ -20,9 +20,7 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
     AutofillScanner* scanner) {
   std::optional<FieldAndMatchInfo> match;
 
-  base::span<const MatchPatternRef> email_patterns = GetMatchPatterns(
-      "EMAIL_ADDRESS", context.page_language, context.pattern_file);
-  if (ParseField(context, scanner, email_patterns, &match, "EMAIL_ADDRESS")) {
+  if (ParseField(context, scanner, "EMAIL_ADDRESS", &match)) {
     return std::make_unique<EmailFieldParser>(std::move(*match));
   }
 

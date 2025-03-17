@@ -15,8 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 #define EXPECT_MATCH_IGNORE_CASE(find_this, in_this, ex_start, ex_len)         \
   {                                                                            \
@@ -110,8 +109,9 @@ namespace i18n {
 TEST(StringSearchTest, ASCII) {
   std::string default_locale(uloc_getDefault());
   bool locale_is_posix = (default_locale == "en_US_POSIX");
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale("en_US");
+  }
 
   EXPECT_MATCH_IGNORE_CASE(u"hello", u"hello world", 0U, 5U);
 
@@ -136,8 +136,9 @@ TEST(StringSearchTest, ASCII) {
 
   EXPECT_MISS_SENSITIVE(u"case insensitivity", u"CaSe InSeNsItIvItY");
 
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale(default_locale.data());
+  }
 }
 
 TEST(StringSearchTest, UnicodeLocaleIndependent) {
@@ -162,8 +163,9 @@ TEST(StringSearchTest, UnicodeLocaleIndependent) {
 
   std::string default_locale(uloc_getDefault());
   bool locale_is_posix = (default_locale == "en_US_POSIX");
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale("en_US");
+  }
 
   EXPECT_MATCH_IGNORE_CASE(e_base, e_with_acute_accent, 0U,
                            e_with_acute_accent.size());
@@ -258,8 +260,9 @@ TEST(StringSearchTest, UnicodeLocaleIndependent) {
   EXPECT_MATCH_SENSITIVE(a_with_acute_combining_mark,
                          a_with_acute_combining_mark, 0U, 2U);
 
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale(default_locale.data());
+  }
 }
 
 TEST(StringSearchTest, UnicodeLocaleDependent) {
@@ -287,22 +290,25 @@ TEST(StringSearchTest, UnicodeLocaleDependent) {
 TEST(StringSearchTest, SearchBackwards) {
   std::string default_locale(uloc_getDefault());
   bool locale_is_posix = (default_locale == "en_US_POSIX");
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale("en_US");
+  }
 
   EXPECT_MATCH_IGNORE_CASE_BACKWARDS(u"ab", u"ABAB", 2U, 2U);
   EXPECT_MATCH_SENSITIVE_BACKWARDS(u"ab", u"abab", 2U, 2U);
   EXPECT_MISS_SENSITIVE_BACKWARDS(u"ab", u"ABAB");
 
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale(default_locale.data());
+  }
 }
 
 TEST(StringSearchTest, FixedPatternMultipleSearch) {
   std::string default_locale(uloc_getDefault());
   bool locale_is_posix = (default_locale == "en_US_POSIX");
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale("en_US");
+  }
 
   size_t index = 0;
   size_t length = 0;
@@ -331,8 +337,9 @@ TEST(StringSearchTest, FixedPatternMultipleSearch) {
   EXPECT_EQ(0U, index);
   EXPECT_EQ(5U, length);
 
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale(default_locale.data());
+  }
 }
 
 TEST(StringSearchTest, RepeatingStringSearch) {
@@ -343,8 +350,9 @@ TEST(StringSearchTest, RepeatingStringSearch) {
 
   std::string default_locale(uloc_getDefault());
   bool locale_is_posix = (default_locale == "en_US_POSIX");
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale("en_US");
+  }
 
   const char16_t kPattern[] = u"fox";
   const char16_t kTarget[] = u"The quick brown fox jumped over the lazy Fox";
@@ -389,9 +397,9 @@ TEST(StringSearchTest, RepeatingStringSearch) {
     }
   }
 
-  if (locale_is_posix)
+  if (locale_is_posix) {
     SetICUDefaultLocale(default_locale.data());
+  }
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

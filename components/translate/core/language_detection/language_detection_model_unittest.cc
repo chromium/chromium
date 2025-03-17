@@ -15,9 +15,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/language_detection/testing/language_detection_test_utils.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace translate {
@@ -66,7 +66,7 @@ TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("en", predicted_language);
-  EXPECT_EQ(translate::kUnknownLanguageCode, language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
@@ -117,7 +117,7 @@ TEST_F(LanguageDetectionModelValidTest, UnreliableLanguageDetermination) {
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_FALSE(is_prediction_reliable);
-  EXPECT_EQ(translate::kUnknownLanguageCode, predicted_language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, predicted_language);
   // Rely on the provided language code if the mode is unreliable.
   EXPECT_EQ("ja", language);
   histogram_tester_.ExpectUniqueSample(
@@ -177,7 +177,7 @@ TEST_F(LanguageDetectionModelValidTest, LongTextLanguageDetemination) {
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("zh-CN", predicted_language);
-  EXPECT_EQ(translate::kUnknownLanguageCode, language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }

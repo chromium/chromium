@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/version.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"

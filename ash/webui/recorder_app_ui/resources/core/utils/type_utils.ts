@@ -18,7 +18,7 @@ export function upcast<T>(x: T): T {
  */
 export function forceCast<T>(x: unknown): T {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return x as unknown as T;
+  return x as T;
 }
 
 /*

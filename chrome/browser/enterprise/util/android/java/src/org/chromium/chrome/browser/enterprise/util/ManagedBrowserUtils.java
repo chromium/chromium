@@ -8,10 +8,12 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Util methods for interacting with managed browser (enterprise) state. */
 @JNINamespace("enterprise_util")
+@NullMarked
 public class ManagedBrowserUtils {
     /** Wrapper around native call to determine if the browser is managed. */
     public static boolean isBrowserManaged(Profile profile) {
@@ -38,6 +40,16 @@ public class ManagedBrowserUtils {
         return ManagedBrowserUtilsJni.get().isProfileReportingEnabled(profile);
     }
 
+    /** Wrapper around native call to check if "OnSecurityEventEnterpriseConnector" is enabled. */
+    public static boolean isOnSecurityEventEnterpriseConnectorEnabled(Profile profile) {
+        return ManagedBrowserUtilsJni.get().isOnSecurityEventEnterpriseConnectorEnabled(profile);
+    }
+
+    /** Wrapper around native call to check if "EnterpriseRealTimeUrlCheckMode" is enabled. */
+    public static boolean isEnterpriseRealTimeUrlCheckModeEnabled(Profile profile) {
+        return ManagedBrowserUtilsJni.get().isEnterpriseRealTimeUrlCheckModeEnabled(profile);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isBrowserManaged(@JniType("Profile*") Profile profile);
@@ -50,5 +62,9 @@ public class ManagedBrowserUtils {
         boolean isBrowserReportingEnabled();
 
         boolean isProfileReportingEnabled(@JniType("Profile*") Profile profile);
+
+        boolean isOnSecurityEventEnterpriseConnectorEnabled(@JniType("Profile*") Profile profile);
+
+        boolean isEnterpriseRealTimeUrlCheckModeEnabled(@JniType("Profile*") Profile profile);
     }
 }

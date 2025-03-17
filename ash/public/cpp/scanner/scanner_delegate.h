@@ -5,7 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_SCANNER_SCANNER_DELEGATE_H_
 #define ASH_PUBLIC_CPP_SCANNER_SCANNER_DELEGATE_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/functional/callback_forward.h"
+
+class AccountId;
 
 namespace ash {
 
@@ -15,15 +20,22 @@ class ScannerProfileScopedDelegate;
 // Provides access to the browser from //ash/scanner.
 class ASH_PUBLIC_EXPORT ScannerDelegate {
  public:
+  using SendFeedbackCallback =
+      base::OnceCallback<void(ScannerFeedbackInfo feedback_info,
+                              const std::string& user_description)>;
+
   virtual ~ScannerDelegate() = default;
 
   virtual ScannerProfileScopedDelegate* GetProfileScopedDelegate() = 0;
 
-  // Opens a feedback form system dialog for the active user profile.
-  //
-  // TODO: b/382562555 - Consider taking in a `context::BrowserContext*` here
-  // to ensure that the dialog is opened for the correct user.
-  virtual void OpenFeedbackDialog(ScannerFeedbackInfo feedback_info) = 0;
+  // Opens a feedback form system dialog for the given account.
+  // Calls the provided callback with the provided feedback info and the user's
+  // description when the user clicks "Send". If the user does not click "Send",
+  // the callback is not run.
+  virtual void OpenFeedbackDialog(
+      const AccountId& account_id,
+      ScannerFeedbackInfo feedback_info,
+      SendFeedbackCallback send_feedback_callback) = 0;
 };
 
 }  // namespace ash

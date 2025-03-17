@@ -38,6 +38,16 @@ class SubframeHistoryNavigationThrottle final : public NavigationThrottle {
       NavigationHandle* navigation_handle);
 
  private:
+  enum class State {
+    // The initial state.
+    kRunning,
+    // This throttle returned DEFER and hasn't call Resume yet.
+    kDeferred,
+    // This throttle received Resume signal, and should not DEFER anymore.
+    kRunningAfterResumeSignal,
+  };
+  State state_= State::kRunning;
+
   base::WeakPtrFactory<SubframeHistoryNavigationThrottle> weak_factory_{this};
 };
 

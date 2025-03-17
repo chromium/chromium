@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.accessibility.hierarchysnapshotter;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Base class to handle the HierarchySnapshotter functionality. This will allow Chrome to output
  * custom AccessibilityNodeInfo attributes during ui dumps, such as those used by uiautomator or
  * go/HSV.
  */
+@NullMarked
 public class HierarchySnapshotter {
     /** Initialize a HierarchySnapshotter. */
     public static void initialize() {

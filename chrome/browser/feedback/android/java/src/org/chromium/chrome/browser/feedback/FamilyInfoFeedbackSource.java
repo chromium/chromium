@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.feedback;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.HashMap;
@@ -18,6 +18,7 @@ import java.util.Map;
 
 /** Reports profile settings for users in a family group. */
 @JNINamespace("chrome::android")
+@NullMarked
 public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
     // LINT.IfChange
     private static final String FAMILY_MEMBER_ROLE = "Family_Member_Role";
@@ -27,7 +28,7 @@ public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
     private final Profile mProfile;
     private Map<String, String> mFeedbackMap = new HashMap<>();
     private boolean mIsReady;
-    private Runnable mCallback;
+    private @Nullable Runnable mCallback;
 
     public FamilyInfoFeedbackSource(Profile profile) {
         mProfile = profile;

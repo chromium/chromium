@@ -135,7 +135,7 @@ interface PasswordAutofillAgent {
 
   // Informs that there are no saved credentials for filling.
   // This is the "no results" equivalent of SetPasswordFillData.
-  InformNoSavedCredentials(bool should_show_popup_without_passwords);
+  InformNoSavedCredentials();
 
   // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(
@@ -166,14 +166,6 @@ interface PasswordAutofillAgent {
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
-
-  // Informs that the Keyboard Replacing Surface has been closed.
-  // Indicates whether the virtual keyboard should be shown instead.
-  // TODO(crbug.com/40274966): Remove this API once
-  // PasswordSuggestionBottomSheetV2
-  // is launched.
-  [EnableIf=is_android]
-  KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard);
 
   // Triggers a form submission on the last interacted element.
   [EnableIf=is_android]

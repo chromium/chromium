@@ -32,9 +32,9 @@ function getSplitterElement(): XfSplitter {
 /**
  * Returns the <div> element that is the splitter separator.
  */
-function getSplitterDivElement(): HTMLDivElement {
+function getSplitterDivElement(): HTMLElement {
   const splitter = getSplitterElement();
-  return splitter.shadowRoot!.querySelector<HTMLDivElement>('#splitter')!;
+  return splitter.shadowRoot!.querySelector<HTMLElement>('#splitter')!;
 }
 
 function simulateMouseDown(element: HTMLElement, position: number) {

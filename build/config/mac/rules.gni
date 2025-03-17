@@ -6,6 +6,14 @@ import("//build/apple/apple_info_plist.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/mac/mac_sdk.gni")
 
+_sanitizer_runtime_names = []
+if (is_asan) {
+  _sanitizer_runtime_names += [ "libclang_rt.asan_osx_dynamic.dylib" ]
+}
+if (is_ubsan_any) {
+  _sanitizer_runtime_names += [ "libclang_rt.ubsan_osx_dynamic.dylib" ]
+}
+
 # Generates Info.plist files for Mac apps and frameworks.
 #
 # Arguments
@@ -216,7 +224,8 @@ template("mac_framework_bundle") {
                      "Version=" + invoker.framework_version,
                      _output_name,
                    ] + invoker.framework_contents
-  _framework_contents = [ _output_name ] + invoker.framework_contents
+  _framework_contents = [ _output_name ] + invoker.sanitizer_runtime_names +
+                        invoker.framework_contents
   _framework_toc_file = "$target_out_dir/${target_name}.toc"
   write_file(_framework_toc_file, _framework_toc)
 
@@ -383,6 +392,7 @@ template("mac_framework_bundle") {
 
 set_defaults("mac_framework_bundle") {
   configs = default_shared_library_configs
+  sanitizer_runtime_names = _sanitizer_runtime_names
 }
 
 # Template to create a Mac executable application bundle.

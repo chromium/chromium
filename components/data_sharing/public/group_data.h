@@ -18,7 +18,13 @@ using GroupId = base::StrongAlias<class GroupIdTag, std::string>;
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.data_sharing.member_role)
-enum class MemberRole { kUnknown = 0, kOwner = 1, kMember = 2, kInvitee = 3 };
+enum class MemberRole {
+  kUnknown = 0,
+  kOwner = 1,
+  kMember = 2,
+  kInvitee = 3,
+  kFormerMember = 4
+};
 
 struct GroupMember {
   GroupMember();
@@ -41,7 +47,7 @@ struct GroupMember {
   GaiaId gaia_id;
   std::string display_name;
   std::string email;
-  MemberRole role;
+  MemberRole role = MemberRole::kUnknown;
   GURL avatar_url;
   std::string given_name;
 };
@@ -95,6 +101,7 @@ struct GroupData {
   GroupData(GroupId group_id,
             std::string display_name,
             std::vector<GroupMember> members,
+            std::vector<GroupMember> former_members,
             std::string access_token);
 
   GroupData(const GroupData&);
@@ -108,6 +115,7 @@ struct GroupData {
   GroupToken group_token;
   std::string display_name;
   std::vector<GroupMember> members;
+  std::vector<GroupMember> former_members;
 };
 
 struct GroupEvent {
@@ -193,6 +201,25 @@ struct SharedDataPreview {
 
   // Shared tab group data.
   std::optional<SharedTabGroupPreview> shared_tab_group_preview;
+};
+
+// The state of the sync bridge wrt sign-in / sign-out, i.e. whether the bridge
+// has completed initial merge and isn't in the process of disabling sync.
+// Interested consumers might want to ignore the incoming updates from sync
+// based on this enum.
+enum class SyncBridgeUpdateType {
+  // The bridge is currently undergoing initial merge. After this stage, it will
+  // transition to `kDefaultState`.
+  kInitialMerge = 0,
+
+  // The bridge is currently in the process of disabling, i.e.
+  // ApplyDisableSyncChanges has been invoked. After this stage, it will
+  // transition to `kDefaultState`.
+  kDisableSync = 1,
+
+  // The bridge is not currently doing an initial merge or disable sync
+  // operation.
+  kDefaultState = 2,
 };
 
 // Only takes `group_id` into account, used to allow storing GroupData in

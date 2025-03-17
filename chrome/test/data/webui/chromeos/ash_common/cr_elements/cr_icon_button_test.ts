@@ -8,7 +8,7 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {downAndUp, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -54,7 +54,7 @@ suite('cr-icon-button', function() {
   test('iron-icon children svg and img elements have role set to none', () => {
     button.ironIcon = 'cr:clear';
     assertTrue(!!button.shadowRoot);
-    const ironIcons = button.shadowRoot!.querySelectorAll('iron-icon');
+    const ironIcons = button.shadowRoot.querySelectorAll('iron-icon');
     assertEquals(1, ironIcons.length);
     const iconChildren = ironIcons[0]!.shadowRoot!.querySelectorAll('svg, img');
     assertEquals(1, iconChildren.length);

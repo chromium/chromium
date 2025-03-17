@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback.Status;
 import org.chromium.components.data_sharing.protocol.AddAccessTokenParams;
 import org.chromium.components.data_sharing.protocol.AddAccessTokenResult;
@@ -20,6 +21,7 @@ import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupResult;
 import org.chromium.components.data_sharing.protocol.DeleteGroupParams;
+import org.chromium.components.data_sharing.protocol.LeaveGroupParams;
 import org.chromium.components.data_sharing.protocol.LookupGaiaIdByEmailParams;
 import org.chromium.components.data_sharing.protocol.LookupGaiaIdByEmailResult;
 import org.chromium.components.data_sharing.protocol.ReadGroupsParams;
@@ -28,6 +30,7 @@ import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 
 /** Java counterpart to the C++ DataSharingSDKDelegateAndroid class. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingSDKDelegateBridge {
 
     private DataSharingSDKDelegate mSDKDelegateImpl;
@@ -136,6 +139,27 @@ public class DataSharingSDKDelegateBridge {
             return;
         }
         mSDKDelegateImpl.removeMember(
+                params,
+                (Integer status) ->
+                        DataSharingSDKDelegateBridgeJni.get()
+                                .runGetStatusCallback(nativeCallbackPtr, status));
+    }
+
+    @CalledByNative
+    public void leaveGroup(String protoParams, long nativeCallbackPtr) {
+        LeaveGroupParams params;
+        try {
+            params = LeaveGroupParams.parseFrom(protoParams.getBytes());
+        } catch (InvalidProtocolBufferException e) {
+            PostTask.postTask(
+                    TaskTraits.USER_VISIBLE,
+                    () -> {
+                        DataSharingSDKDelegateBridgeJni.get()
+                                .runGetStatusCallback(nativeCallbackPtr, Status.FAILURE);
+                    });
+            return;
+        }
+        mSDKDelegateImpl.leaveGroup(
                 params,
                 (Integer status) ->
                         DataSharingSDKDelegateBridgeJni.get()

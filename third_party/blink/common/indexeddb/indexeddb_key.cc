@@ -4,11 +4,11 @@
 
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace blink {
@@ -78,7 +78,7 @@ IndexedDBKey& IndexedDBKey::operator=(const IndexedDBKey& other) = default;
 bool IndexedDBKey::IsValid() const {
   switch (type_) {
     case mojom::IDBKeyType::Array:
-      return base::ranges::all_of(array_, &IndexedDBKey::IsValid);
+      return std::ranges::all_of(array_, &IndexedDBKey::IsValid);
     case mojom::IDBKeyType::Binary:
     case mojom::IDBKeyType::String:
     case mojom::IDBKeyType::Date:

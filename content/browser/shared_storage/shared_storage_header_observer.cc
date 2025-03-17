@@ -34,6 +34,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
 
@@ -42,7 +43,7 @@ namespace {
 using MethodWithOptionsPtr =
     network::mojom::SharedStorageModifierMethodWithOptionsPtr;
 using ContextType = StoragePartitionImpl::ContextType;
-using AccessScope = SharedStorageLockManager::AccessScope;
+using AccessScope = blink::SharedStorageAccessScope;
 
 bool IsSharedStorageAllowedByPermissionsPolicy(
     SharedStorageHeaderObserver::PermissionsPolicyDoubleCheckStatus
@@ -235,7 +236,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
     // "'Shared-Storage-Write: shared storage is disabled."
     // 2. Send a non-null `out_debug_message` param and append it to the above
     // error message if the value of
-    // `blink::features::kSharedStorageExposeDebugMessageForSettingsStatus`
+    // `network::features::kSharedStorageExposeDebugMessageForSettingsStatus`
     // is true.
     std::move(callback).Run();
     return;
@@ -307,13 +308,15 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
       // Create a dummy `network::ResourceRequest` so that we can signal to
       // `permissions_policy` that the actual request was opted-in to shared
       // storage and hence that
-      // `blink::mojom::PermissionsPolicyFeature::kSharedStorage` should be
+      // `network::mojom::PermissionsPolicyFeature::kSharedStorage` should be
       // treated as an assumed opt-in feature during the permissions check.
       network::ResourceRequest dummy_request;
       dummy_request.shared_storage_writable_eligible = true;
       return permissions_policy->IsFeatureEnabledForSubresourceRequest(
-                 blink::mojom::PermissionsPolicyFeature::kSharedStorage,
-                 request_origin, dummy_request)
+                 network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                 request_origin, dummy_request.browsing_topics,
+                 dummy_request.shared_storage_writable_eligible,
+                 dummy_request.ad_auction_headers)
                  ? PermissionsPolicyDoubleCheckStatus::kEnabled
                  : PermissionsPolicyDoubleCheckStatus::kDisabled;
     }
@@ -324,13 +327,13 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
         return PermissionsPolicyDoubleCheckStatus::
             kDisallowedMainFrameNavigation;
       }
-      const blink::PermissionsPolicy* parent_policy =
-          frame_tree_node->parent()->permissions_policy();
+      const network::PermissionsPolicy* parent_policy =
+          frame_tree_node->parent()->GetPermissionsPolicy();
       if (!parent_policy) {
         return PermissionsPolicyDoubleCheckStatus::kNavigationSourceNoPolicy;
       }
       return parent_policy->IsFeatureEnabledForOrigin(
-                 blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+                 network::mojom::PermissionsPolicyFeature::kSharedStorage,
                  request_origin)
                  ? PermissionsPolicyDoubleCheckStatus::kEnabled
                  : PermissionsPolicyDoubleCheckStatus::kDisabled;
@@ -369,16 +372,6 @@ bool SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings(
       storage_partition_->browser_context(), rfh, top_frame_origin,
       request_origin, out_debug_message,
       /*out_block_is_site_setting_specific=*/nullptr);
-}
-
-void SharedStorageHeaderObserver::NotifySharedStorageAccessed(
-    AccessType type,
-    FrameTreeNodeId main_frame_id,
-    const url::Origin& request_origin,
-    const SharedStorageEventParams& params) {
-  storage_partition_->GetSharedStorageRuntimeManager()
-      ->NotifySharedStorageAccessed(type, main_frame_id,
-                                    request_origin.Serialize(), params);
 }
 
 }  // namespace content

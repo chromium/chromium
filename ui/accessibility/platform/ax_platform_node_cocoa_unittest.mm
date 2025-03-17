@@ -400,10 +400,12 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   NSArray<NSString*>* selectors_enabled_when_migrated = @[
     @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
     @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
-    @"accessibilityHeader", @"accessibilityIndex", @"accessibilityRowCount",
+    @"accessibilityHeader", @"accessibilityHorizontalScrollBar",
+    @"accessibilityIndex", @"accessibilityRowCount",
     @"accessibilitySortDirection", @"accessibilitySplitters",
-    @"accessibilityToolbarButton", @"isAccessibilityDisclosed",
-    @"isAccessibilityExpanded", @"isAccessibilityFocused"
+    @"accessibilityToolbarButton", @"accessibilityVerticalScrollBar",
+    @"isAccessibilityDisclosed", @"isAccessibilityExpanded",
+    @"isAccessibilityFocused"
   ];
 
   // Old API for which the new API was implemented prior to the creation of the
@@ -427,6 +429,20 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
     EXPECT_EQ([node respondsToSelector:NSSelectorFromString(selectorName)],
               !migration_enabled);
   }
+}
+
+// respondsToSelector for `accessibilityPerformPress`.
+TEST_P(AXPlatformNodeCocoaTest, RespondsToSelectorAccessibilityPerformPress) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kButton
+    ++++3 kGenericContainer
+  )HTML"));
+
+  EXPECT_TRUE([GetCocoaNode(2)
+      respondsToSelector:@selector(accessibilityPerformPress)]);
+  EXPECT_FALSE([GetCocoaNode(3)
+      respondsToSelector:@selector(accessibilityPerformPress)]);
 }
 
 // Tests that -addTextAnnotations:to: correctly applies attributes to the
@@ -797,6 +813,30 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleRows) {
             [row node]->GetUniqueId());
 }
 
+// accessibilityLineForIndex
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityLineForIndex) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  EXPECT_EQ([text_field accessibilityLineForIndex:0], 0);
+}
+
+// accessibilityRangeForLine
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRangeForLine) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  NSRange range = [text_field accessibilityRangeForLine:0];
+  EXPECT_EQ(range.location, 0U);
+  EXPECT_EQ(range.length, 11U);
+}
+
 // accessibilityStringForRange
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityStringForRange) {
   Init(std::string(R"HTML(
@@ -807,6 +847,19 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityStringForRange) {
   AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
   NSString* string = [text_field accessibilityStringForRange:NSMakeRange(0, 3)];
   EXPECT_TRUE([string isEqualToString:@"hey"]);
+}
+
+// accessibilityStyleRangeForIndex
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityStyleRangeForIndex) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  NSRange range = [text_field accessibilityStyleRangeForIndex:0];
+  EXPECT_EQ(range.location, 0U);
+  EXPECT_EQ(range.length, 11U);
 }
 
 // Non-header cells should not support accessibilitySortDirection, even if
@@ -1043,6 +1096,50 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityIndexOnRowsAndColumns) {
   EXPECT_EQ([child accessibilityIndex], NSNotFound);
 }
 
+// accessibilityChildrenInNavigationOrder.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityChildrenInNavigationOrder) {
+  Init(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+  )HTML"));
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  TestUIElements([table accessibilityChildrenInNavigationOrder], { 2 });
+}
+
+// accessibilityDisclosureLevel.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityDisclosureLevel) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea intAttribute=kHierarchicalLevel,3
+    ++++2 kTree
+    ++++++3 kTreeItem intAttribute=kHierarchicalLevel,1
+    ++++++++4 kGroup
+    ++++++++++5 kTreeItem intAttribute=kHierarchicalLevel,2
+    ++++6 kHeading intAttribute=kHierarchicalLevel,3
+    ++++7 kTable
+    ++++++8 kRow intAttribute=kHierarchicalLevel,3
+  )HTML"));
+
+  EXPECT_EQ([GetCocoaNode(1) accessibilityDisclosureLevel], 0);
+  EXPECT_EQ([GetCocoaNode(3) accessibilityDisclosureLevel], 0);
+  EXPECT_EQ([GetCocoaNode(5) accessibilityDisclosureLevel], 1);
+  EXPECT_EQ([GetCocoaNode(6) accessibilityDisclosureLevel], 2);
+  EXPECT_EQ([GetCocoaNode(8) accessibilityDisclosureLevel], 2);
+}
+
+// isAccessibilityDisclosed.
+TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityDisclosed) {
+  Init(std::string(R"HTML(
+    ++1 kTree
+    ++++2 kTreeItem state=kExpanded
+    ++++++3 kGroup
+    ++++++++4 kTreeItem
+  )HTML"));
+
+  EXPECT_EQ([GetCocoaNode(2) isAccessibilityDisclosed], YES);
+  EXPECT_EQ([GetCocoaNode(4) isAccessibilityDisclosed], NO);
+}
+
 // `accessibilityRowCount` and `accessibilityColumnCount` on a table.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowAndColumnCount) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(
@@ -1211,6 +1308,44 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityToolbarButton) {
   Init(root);
   AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_EQ([node accessibilityToolbarButton], nil);
+}
+
+// `accessibilityHorizontalScrollBar` and `accessibilityVerticalScrollBar`
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityScrollbars) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kGenericContainer;
+  root.child_ids = {2, 3};
+
+  AXNodeData horizontal_scrollbar = AXNodeData();
+  horizontal_scrollbar.id = 2;
+  horizontal_scrollbar.role = ax::mojom::Role::kScrollBar;
+  horizontal_scrollbar.AddState(ax::mojom::State::kHorizontal);
+  horizontal_scrollbar.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds, {1});
+  horizontal_scrollbar.SetNameChecked("Horizontal scrollbar");
+
+  AXNodeData vertical_scrollbar = AXNodeData();
+  vertical_scrollbar.id = 3;
+  vertical_scrollbar.role = ax::mojom::Role::kScrollBar;
+  vertical_scrollbar.AddState(ax::mojom::State::kVertical);
+  vertical_scrollbar.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds, {1});
+  vertical_scrollbar.SetNameChecked("Vertical scrollbar");
+
+  ui::AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+  update.nodes.push_back(horizontal_scrollbar);
+  update.nodes.push_back(vertical_scrollbar);
+  Init(update);
+
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  AXPlatformNodeCocoa* scrollbar = [node accessibilityHorizontalScrollBar];
+  EXPECT_NSEQ([scrollbar accessibilityLabel], @"Horizontal scrollbar");
+
+  scrollbar = [node accessibilityVerticalScrollBar];
+  EXPECT_NSEQ([scrollbar accessibilityLabel], @"Vertical scrollbar");
 }
 
 }  // namespace ui

@@ -22,14 +22,14 @@ blink_python_runner("make_generated_permissions_policy_helper") {
 
   inputs = scripts_for_json5_files + [
              "../../renderer/build/scripts/make_policy_helper_public.py",
-             "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+             "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
              "../../renderer/build/scripts/templates/policy_helper_public.cc.tmpl",
            ]
   outputs = [ "$root_gen_dir/third_party/blink/public/common/permissions_policy/policy_helper_public.cc" ]
 
   args = [
     rebase_path(
-        "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+        "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
         root_build_dir),
     "--output_dir",
     rebase_path(
@@ -98,6 +98,10 @@ source_set("common_export") {
   sources = [ "common_export.h" ]
 }
 
+source_set("preloading_headers") {
+  sources = [ "navigation/preloading_headers.h" ]
+}
+
 source_set("headers") {
   visibility = [
     ":*",
@@ -144,7 +148,6 @@ source_set("headers") {
     "fetch/fetch_api_request_headers_mojom_traits.h",
     "forcedark/forcedark_switches.h",
     "frame/delegated_capability_request_token.h",
-    "frame/fenced_frame_permissions_policies.h",
     "frame/fenced_frame_sandbox_flags.h",
     "frame/frame_ad_evidence.h",
     "frame/frame_owner_element_type.h",
@@ -268,15 +271,10 @@ source_set("headers") {
     "peerconnection/webrtc_ip_handling_policy.h",
     "peerconnection/webrtc_ip_handling_url_entry.h",
     "performance/largest_contentful_paint_type.h",
-    "performance/performance_scenario_observer.h",
-    "performance/performance_scenarios.h",
     "performance/performance_timeline_constants.h",
     "permissions/permission_utils.h",
     "permissions_policy/document_policy.h",
     "permissions_policy/document_policy_features.h",
-    "permissions_policy/permissions_policy.h",
-    "permissions_policy/permissions_policy_declaration.h",
-    "permissions_policy/permissions_policy_features.h",
     "permissions_policy/policy_helper_public.h",
     "permissions_policy/policy_value.h",
     "renderer_preferences/renderer_preferences.h",
@@ -314,6 +312,9 @@ source_set("headers") {
     "web_package/signed_exchange_consts.h",
     "web_package/web_package_request_matcher.h",
     "web_preferences/web_preferences.h",
+    "webid/federated_auth_request_mojom_traits.h",
+    "webid/login_status_account.h",
+    "webid/login_status_options.h",
     "widget/constants.h",
     "widget/device_emulation_params.h",
     "widget/visual_properties.h",
@@ -325,10 +326,12 @@ source_set("headers") {
   public_deps = [
     ":make_generated_permissions_policy_helper",
     ":make_runtime_feature_state_contexts_headers",
+    ":preloading_headers",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//skia",
     "//skia/public/mojom:shared_typemap_traits",
     "//third_party/blink/public:runtime_features_for_public",

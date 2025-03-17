@@ -14,7 +14,6 @@ import org.jni_zero.JniType;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -62,7 +61,7 @@ final class SigninBridge {
                     accountPickerLaunchMode,
                     /* isWebSignin= */ true,
                     SigninAccessPoint.WEB_SIGNIN,
-                    /* selectedCoreAccountId= */ null);
+                    /* selectedAccountId= */ null);
         }
     }
 
@@ -133,19 +132,11 @@ final class SigninBridge {
         }
         // TODO(b/41493784): Update this when the new sign-in flow will be used for the web signin
         // entry point.
-        int titleId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_account_picker_bottom_sheet_title
-                        : R.string.signin_account_picker_dialog_title;
-        int subtitleId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin
-                        : R.string.signin_account_picker_bottom_sheet_subtitle;
         AccountPickerBottomSheetStrings strings =
-                new AccountPickerBottomSheetStrings.Builder(titleId)
-                        .setSubtitleStringId(subtitleId)
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .setSubtitleStringId(
+                                R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
                         .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
                         .build();
 

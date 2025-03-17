@@ -433,7 +433,7 @@ public class MinidumpUploadCallableTest {
         Assert.assertTrue(time <= now);
         Assert.assertTrue(time > now - 60 * 60);
 
-        Assert.assertEquals(uploadId, MinidumpUploaderTestConstants.UPLOAD_CRASH_ID);
-        Assert.assertEquals(localId, LOCAL_CRASH_ID);
+        Assert.assertEquals(MinidumpUploaderTestConstants.UPLOAD_CRASH_ID, uploadId);
+        Assert.assertEquals(LOCAL_CRASH_ID, localId);
     }
 }

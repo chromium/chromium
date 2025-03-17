@@ -33,4 +33,11 @@ FakeDeskSyncService::GetControllerDelegate() {
   return fake_data_type_controller_delegate_.GetWeakPtr();
 }
 
+void FakeDeskSyncService::RunWhenDesksTemplatesAreReadyOnFirstSync(
+    base::OnceClosure callback) {
+  if (!skip_on_first_sync_callback_) {
+    std::move(callback).Run();
+  }
+}
+
 }  // namespace desks_storage

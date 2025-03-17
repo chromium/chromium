@@ -30,11 +30,11 @@
 
 #include "base/unguessable_token.h"
 #include "net/base/request_priority.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -457,11 +457,19 @@ const CacheControlHeader& ResourceRequestHead::GetCacheControlHeader() const {
   return cache_control_header_cache_;
 }
 
-void ResourceRequestHead::SetFetchIntegrity(const String& integrity) {
+void ResourceRequestHead::SetFetchIntegrity(
+    const String& integrity,
+    const FeatureContext* feature_context) {
   fetch_integrity_ = integrity;
 
   IntegrityMetadataSet metadata;
-  SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata);
+  SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata,
+                                                feature_context);
+  SetExpectedSignatures(metadata);
+}
+
+void ResourceRequestHead::SetExpectedSignatures(
+    const IntegrityMetadataSet& metadata) {
   for (const auto& signature : metadata.signatures) {
     expected_signatures_.push_back(signature.first);
   }
@@ -499,28 +507,28 @@ bool ResourceRequestHead::NeedsHTTPOrigin() const {
 }
 
 bool ResourceRequest::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-    const PermissionsPolicy* policy,
-    mojom::blink::PermissionsPolicyFeature feature,
+    const network::PermissionsPolicy* policy,
+    network::mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) {
   if (!policy) {
     return false;
   }
 
   bool browsing_topics_opted_in =
-      (feature == mojom::blink::PermissionsPolicyFeature::kBrowsingTopics ||
-       feature == mojom::blink::PermissionsPolicyFeature::
+      (feature == network::mojom::PermissionsPolicyFeature::kBrowsingTopics ||
+       feature == network::mojom::PermissionsPolicyFeature::
                       kBrowsingTopicsBackwardCompatible) &&
       GetBrowsingTopics();
   bool shared_storage_opted_in =
-      feature == mojom::blink::PermissionsPolicyFeature::kSharedStorage &&
+      feature == network::mojom::PermissionsPolicyFeature::kSharedStorage &&
       GetSharedStorageWritableOptedIn();
 
   if (!browsing_topics_opted_in && !shared_storage_opted_in) {
     return false;
   }
 
-  return policy->IsFeatureEnabledForSubresourceRequestAssumingOptIn(feature,
-                                                                    origin);
+  return policy->IsFeatureEnabledForOrigin(
+      feature, origin, /*override_default_policy_to_all=*/true);
 }
 
 }  // namespace blink

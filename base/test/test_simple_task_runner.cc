@@ -93,13 +93,15 @@ void TestSimpleTaskRunner::RunPendingTasks() {
     ttrh_override.emplace(this);
   }
 
-  for (auto& task : tasks_to_run)
+  for (auto& task : tasks_to_run) {
     std::move(task.task).Run();
+  }
 }
 
 void TestSimpleTaskRunner::RunUntilIdle() {
-  while (HasPendingTask())
+  while (HasPendingTask()) {
     RunPendingTasks();
+  }
 }
 
 }  // namespace base

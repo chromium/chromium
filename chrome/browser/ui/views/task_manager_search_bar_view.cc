@@ -35,6 +35,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
   auto* layout_provider = ChromeLayoutProvider::Get();
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  search_bar_layout->set_main_axis_alignment(views::LayoutAlignment::kStretch);
   search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
 
   auto search_icon =
@@ -51,7 +52,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
               IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME))
           .SetController(this)
           .SetBorder(nullptr)
-          .SetBackgroundColor(kColorTaskManagerSearchBarTransparent)
+          .SetBackgroundColor(kColorTaskManagerSearchBarBackground)
           .SetProperty(views::kElementIdentifierKey, kInputField)
           // Set margins to remove duplicate space between search
           // icon and textfield.
@@ -79,8 +80,6 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 
   AddChildView(std::move(search_icon));
   input_ = AddChildView(std::move(input));
-  // Search bar has its own hover on/off behavior, so remove hover effect for
-  // textfield.
   input_->RemoveHoverEffect();
   input_changed_subscription_ =
       input_->AddTextChangedCallback(base::BindRepeating(
@@ -101,17 +100,7 @@ void TaskManagerSearchBarView::OnThemeChanged() {
   UpdateTextfield();
 }
 
-void TaskManagerSearchBarView::OnMouseEntered(const ui::MouseEvent& event) {
-  if (!input_->HasFocus()) {
-    // Hover on effect only when text field is not in focus.
-    delegate_->SearchBarOnHoverChange(true);
-  }
-}
-void TaskManagerSearchBarView::OnMouseExited(const ui::MouseEvent& event) {
-  delegate_->SearchBarOnHoverChange(false);
-}
-
-bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* sender,
+bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* /*sender*/,
                                               const ui::KeyEvent& key_event) {
   // Clear button should be visible only if input text is not empty.
   // Early return if visibility is consistent with the input text.

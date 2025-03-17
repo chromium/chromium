@@ -9,10 +9,11 @@ found in the LICENSE file.
 <appwidget-provider
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="180dp"
-    android:minHeight="150dp"
+    android:minHeight="180dp"
     android:minResizeWidth="@dimen/bookmark_widget_min_width"
     android:minResizeHeight="@dimen/bookmark_widget_min_height"
     android:previewImage="@drawable/bookmark_widget_preview"
+    android:previewLayout="@layout/bookmark_widget_preview_layout"
     android:initialLayout="@layout/bookmark_widget"
     android:resizeMode="vertical|horizontal"
     android:updatePeriodMillis="86400000"> <!-- Once per day -->

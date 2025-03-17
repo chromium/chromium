@@ -4,19 +4,25 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Context;
+import android.os.ParcelUuid;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /** Wraps android.bluetooth.BluetoothDevice. */
 @NullMarked
@@ -24,13 +30,14 @@ public class BluetoothDeviceWrapper {
     private static final String TAG = "Bluetooth";
     public static final int DEVICE_CLASS_UNSPECIFIED = 0x1F00;
 
-    private final BluetoothDevice mDevice;
+    private final @Nullable BluetoothDevice mDevice;
     final HashMap<BluetoothGattCharacteristic, BluetoothGattCharacteristicWrapper>
             mCharacteristicsToWrappers;
     final HashMap<BluetoothGattDescriptor, BluetoothGattDescriptorWrapper> mDescriptorsToWrappers;
 
+    @NullUnmarked
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public BluetoothDeviceWrapper(BluetoothDevice device) {
+    public BluetoothDeviceWrapper(@Nullable BluetoothDevice device) {
         mDevice = device;
         mCharacteristicsToWrappers = new HashMap<>();
         mDescriptorsToWrappers = new HashMap<>();
@@ -41,6 +48,7 @@ public class BluetoothDeviceWrapper {
             boolean autoConnect,
             BluetoothGattCallbackWrapper callback,
             int transport) {
+        assumeNonNull(mDevice);
         return new BluetoothGattWrapper(
                 mDevice.connectGatt(
                         context,
@@ -51,6 +59,7 @@ public class BluetoothDeviceWrapper {
     }
 
     public String getAddress() {
+        assumeNonNull(mDevice);
         return mDevice.getAddress();
     }
 
@@ -65,20 +74,45 @@ public class BluetoothDeviceWrapper {
     }
 
     public int getBondState() {
+        assumeNonNull(mDevice);
         return mDevice.getBondState();
     }
 
     public String getName() {
+        assumeNonNull(mDevice);
         return mDevice.getName();
     }
 
+    public int getType() {
+        assumeNonNull(mDevice);
+        return mDevice.getType();
+    }
+
+    public ParcelUuid[] getUuids() {
+        assumeNonNull(mDevice);
+        return mDevice.getUuids();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof BluetoothDeviceWrapper) {
+            return Objects.equals(mDevice, ((BluetoothDeviceWrapper) o).mDevice);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return mDevice == null ? 0 : mDevice.hashCode();
+    }
+
     /**
-     * Implements android.bluetooth.BluetoothGattCallback and forwards calls through
-     * to a provided BluetoothGattCallbackWrapper instance.
+     * Implements android.bluetooth.BluetoothGattCallback and forwards calls through to a provided
+     * BluetoothGattCallbackWrapper instance.
      *
-     * This class is required so that Fakes can use BluetoothGattCallbackWrapper
-     * without it extending from BluetoothGattCallback. Fakes must function even on
-     * Android versions where BluetoothGattCallback class is not defined.
+     * <p>This class is required so that Fakes can use BluetoothGattCallbackWrapper without it
+     * extending from BluetoothGattCallback. Fakes must function even on Android versions where
+     * BluetoothGattCallback class is not defined.
      */
     private static class ForwardBluetoothGattCallbackToWrapper extends BluetoothGattCallback {
         final BluetoothGattCallbackWrapper mWrapperCallback;
@@ -152,5 +186,4 @@ public class BluetoothDeviceWrapper {
             mWrapperCallback.onServicesDiscovered(status);
         }
     }
-
 }

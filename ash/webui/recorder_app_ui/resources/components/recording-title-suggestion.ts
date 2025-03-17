@@ -60,6 +60,9 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 
       /* To have the border-radius applied to content. */
       overflow: hidden;
+      max-width: inherit;
+      min-width: inherit;
+      resize: horizontal;
 
       & > cra-icon-button {
         position: absolute;
@@ -130,11 +133,14 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     suggestedTitles: {attribute: false},
+    transcription: {attribute: false},
     wordCount: {attribute: false},
   };
 
   suggestedTitles: ScopedAsyncComputed<ModelResponse<string[]>|null>|null =
     null;
+
+  transcription: string|null = null;
 
   wordCount = 0;
 
@@ -201,7 +207,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     ></cros-chip>`;
   }
 
-  private renderSuggestionFooter() {
+  private renderSuggestionFooter(result: string) {
     return html`
       <div id="footer">
         ${i18n.genAiDisclaimerText}
@@ -213,18 +219,18 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
           ${i18n.genAiLearnMoreLink}
         </a>
       </div>
-      <genai-feedback-buttons .resultType=${GenaiResultType.TITLE_SUGGESTION}>
-      </genai-feedback-buttons>
+      <genai-feedback-buttons
+        .resultType=${GenaiResultType.TITLE_SUGGESTION}
+        .result=${result}
+        .transcription=${this.transcription}
+      ></genai-feedback-buttons>
     `;
   }
 
   private renderContent() {
-    // TODO(pihsun): There should also be a consent / download model / loading
-    // state for title suggestion too. Implement it when the UI spec is done.
     if (this.suggestedTitles === null ||
         this.suggestedTitles.state !== ComputedState.DONE ||
         this.suggestedTitles.value === null) {
-      // TOOD(pihsun): Handle error.
       return html`<div id="loading">
         <genai-placeholder
           aria-label=${i18n.titleSuggestionStartedStatusMessage}
@@ -250,11 +256,13 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
           suggestedTitles.result,
           (s, index) => this.renderSuggestion(s, index),
         );
+        const concatenatedTitles =
+          suggestedTitles.result.map((title) => '- ' + title).join('\n');
         return html`<spoken-message role="status" aria-live="polite">
             ${i18n.titleSuggestionFinishedStatusMessage}
           </spoken-message>
           <div id="suggestions">${suggestions}</div>
-          ${this.renderSuggestionFooter()}`;
+          ${this.renderSuggestionFooter(concatenatedTitles)}`;
       }
       default:
         assertExhaustive(suggestedTitles);

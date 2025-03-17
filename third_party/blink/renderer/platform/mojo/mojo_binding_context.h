@@ -6,22 +6,27 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_MOJO_BINDING_CONTEXT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
-#include "third_party/blink/renderer/platform/mojo/browser_interface_broker_proxy_impl.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace mojo {
+template <typename Interface>
+class PendingRemote;
+}
+
 namespace blink {
 
 class BrowserInterfaceBrokerProxy;
+
+namespace mojom::blink {
+class BrowserInterfaceBroker;
+}
 
 // This class encapsulates the necessary information for binding Mojo
 // interfaces, to enable interfaces provided by the platform to be aware of the
@@ -30,37 +35,24 @@ class PLATFORM_EXPORT MojoBindingContext
     : public ContextLifecycleNotifier,
       public Supplementable<MojoBindingContext> {
  public:
-  MojoBindingContext() : mojo_js_interface_broker_(this) {}
-
   virtual const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
       const = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       TaskType) = 0;
 
-  bool use_mojo_js_interface_broker() { return use_mojo_js_interface_broker_; }
+  bool ShouldUseMojoJSInterfaceBroker() const;
 
   // Returns a BrowserInterfaceBroker that should be used to handle JavaScript
-  // Mojo.bindInterface calls. Returns nullptr if there isn't one.
-  const BrowserInterfaceBrokerProxy& GetMojoJSInterfaceBroker() {
-    return mojo_js_interface_broker_;
-  }
+  // Mojo.bindInterface calls.
+  const BrowserInterfaceBrokerProxy& GetMojoJSInterfaceBroker() const;
 
   void SetMojoJSInterfaceBroker(
-      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> broker_remote) {
-    use_mojo_js_interface_broker_ = true;
-    mojo_js_interface_broker_.Bind(std::move(broker_remote),
-                                   GetTaskRunner(TaskType::kInternalDefault));
-  }
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> broker_remote);
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(mojo_js_interface_broker_);
     ContextLifecycleNotifier::Trace(visitor);
     Supplementable::Trace(visitor);
   }
-
- private:
-  bool use_mojo_js_interface_broker_;
-  BrowserInterfaceBrokerProxyImpl mojo_js_interface_broker_;
 };
 
 }  // namespace blink

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -22,7 +23,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -159,7 +159,7 @@ std::unique_ptr<device_management_storage::CachedPolicyInfo>
 GetCachedPolicyInfo(
     scoped_refptr<device_management_storage::DMStorage> dm_storage) {
   const base::FilePath policy_info_file =
-      dm_storage->policy_cache_folder().AppendASCII("CachedPolicyInfo");
+      dm_storage->policy_cache_folder().AppendUTF8("CachedPolicyInfo");
   auto cached_info =
       std::make_unique<device_management_storage::CachedPolicyInfo>();
   std::string policy_info_data;
@@ -175,8 +175,8 @@ std::unique_ptr<edm::OmahaSettingsClientProto> GetOmahaPolicySettings() {
 
   base::FilePath omaha_policy_file = GetDMStorage()
                                          ->policy_cache_folder()
-                                         .AppendASCII(encoded_omaha_policy_type)
-                                         .AppendASCII("PolicyFetchResponse");
+                                         .AppendUTF8(encoded_omaha_policy_type)
+                                         .AppendUTF8("PolicyFetchResponse");
   std::string response_data;
   ::enterprise_management::PolicyFetchResponse response;
   ::enterprise_management::PolicyData policy_data;
@@ -195,13 +195,13 @@ std::unique_ptr<edm::OmahaSettingsClientProto> GetOmahaPolicySettings() {
 
 void PrintCachedPolicy(const base::FilePath& policy_path) {
   std::string policy_type;
-  if (!base::Base64Decode(policy_path.BaseName().MaybeAsASCII(),
+  if (!base::Base64Decode(policy_path.BaseName().AsUTF8Unsafe(),
                           &policy_type)) {
     std::cout << "Directory not base64 encoded: [" << policy_path << "]";
     return;
   }
 
-  base::FilePath policy_file = policy_path.AppendASCII("PolicyFetchResponse");
+  base::FilePath policy_file = policy_path.AppendUTF8("PolicyFetchResponse");
   std::string response_data;
   ::enterprise_management::PolicyFetchResponse response;
   auto omaha_settings = std::make_unique<edm::OmahaSettingsClientProto>();
@@ -589,7 +589,7 @@ void UpdaterUtilApp::FindApp(
       [](const std::string& app_id,
          base::OnceCallback<void(scoped_refptr<AppState>)> callback,
          const std::vector<updater::UpdateService::AppState>& states) {
-        auto it = base::ranges::find_if(
+        auto it = std::ranges::find_if(
             states, [&app_id](const updater::UpdateService::AppState& state) {
               return base::EqualsCaseInsensitiveASCII(state.app_id, app_id);
             });
@@ -606,7 +606,7 @@ void UpdaterUtilApp::FindApp(
 void UpdaterUtilApp::ListUpdate() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  const std::string app_id = command_line->GetSwitchValueASCII(kProductSwitch);
+  const std::string app_id = command_line->GetSwitchValueUTF8(kProductSwitch);
   if (app_id.empty()) {
     PrintUsage("Must specify a product to list update.");
     return;
@@ -665,7 +665,7 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
 
 void UpdaterUtilApp::Update() {
   const std::string app_id =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
           kProductSwitch);
   if (app_id.empty()) {
     service_proxy_->UpdateAll(

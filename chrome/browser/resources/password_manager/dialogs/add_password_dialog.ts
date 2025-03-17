@@ -245,12 +245,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
-      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
-          isAccountStoreDefault => {
-            this.$.storePicker.value = isAccountStoreDefault ?
-                this.storeOptionAccountValue_ :
-                this.storeOptionDeviceValue_;
-          });
+      this.$.storePicker.value = this.storeOptionAccountValue_;
     }
   }
 
@@ -263,7 +258,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   /**
    * Helper function that checks whether the entered url is valid.
    */
-  private async validateWebsite_() {
+  private validateWebsite_() {
     if (this.website_.length === 0) {
       this.websiteErrorMessage_ = null;
       return;
@@ -292,7 +287,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private showWebsiteError_(): boolean {
-    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_!.length > 0;
+    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_.length > 0;
   }
 
   private computeUsernameErrorMessage_(): string|null {

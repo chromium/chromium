@@ -6,11 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -55,7 +56,7 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     : bookmark_model_(model), parent_node_(node->parent()) {
   bookmark_model_->AddObserver(this);
 
-  const bookmarks::RecentlyUsedFolders mru_bookmarks =
+  const bookmarks::BookmarkNodesSplitByAccountAndLocal mru_bookmarks =
       bookmarks::GetMostRecentlyUsedFoldersForDisplay(model, node);
 
   if (!mru_bookmarks.account_nodes.empty()) {
@@ -67,7 +68,7 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     }
 
     for (const BookmarkNode* mru_node : mru_bookmarks.account_nodes) {
-      items_.emplace_back(mru_node, mru_node == model->other_node()
+      items_.emplace_back(mru_node, mru_node == model->account_other_node()
                                         ? Item::TYPE_ALL_BOOKMARKS_NODE
                                         : Item::TYPE_NODE);
     }
@@ -147,10 +148,10 @@ std::optional<size_t> RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
   // that we don't remove `parent_node_`.
   // TODO(pbos): Look at returning -1 here if there's no default index. Right
   // now a lot of code in Combobox assumes an index within `items_` bounds.
-  auto it = base::ranges::find(items_, Item(parent_node_, Item::TYPE_NODE));
+  auto it = std::ranges::find(items_, Item(parent_node_, Item::TYPE_NODE));
   if (it == items_.end()) {
-    it = base::ranges::find(items_,
-                            Item(parent_node_, Item::TYPE_ALL_BOOKMARKS_NODE));
+    it = std::ranges::find(items_,
+                           Item(parent_node_, Item::TYPE_ALL_BOOKMARKS_NODE));
   }
   return it == items_.end() ? 0 : static_cast<int>(it - items_.begin());
 }
@@ -248,11 +249,4 @@ void RecentlyUsedFoldersComboModel::MaybeChangeParent(const BookmarkNode* node,
 
 const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(size_t index) {
   return (index < items_.size()) ? items_[index].node.get() : nullptr;
-}
-
-void RecentlyUsedFoldersComboModel::RemoveNode(const BookmarkNode* node) {
-  auto it = base::ranges::find(items_, Item(node, Item::TYPE_NODE));
-  if (it != items_.end()) {
-    items_.erase(it);
-  }
 }

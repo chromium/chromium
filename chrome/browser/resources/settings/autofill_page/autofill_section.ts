@@ -123,7 +123,8 @@ export class SettingsAutofillSectionElement extends
           this.accountInfo_ = accountInfo || null;
         };
     const setPersonalDataListener: PersonalDataChangedListener =
-        (addressList, _cardList, _ibans, accountInfo?) => {
+        (addressList, _cardList, _ibans, _payOverTimeIssuerList,
+         accountInfo?) => {
           this.addresses = addressList;
           this.accountInfo_ = accountInfo || null;
         };
@@ -203,7 +204,7 @@ export class SettingsAutofillSectionElement extends
         focusWithoutInk(this.$.addAddress);
       } else {
         const lastIndex = this.addresses.length - 1;
-        if (this.activeAddress!.guid === this.addresses[lastIndex]!.guid) {
+        if (this.activeAddress!.guid === this.addresses[lastIndex].guid) {
           focusWithoutInk(this.$.addressList.querySelectorAll<HTMLElement>(
               '.address-menu')[lastIndex - 1]);
         }
@@ -257,11 +258,6 @@ export class SettingsAutofillSectionElement extends
     }
 
     if (accountInfo.isSyncEnabledForAutofillProfiles) {
-      return false;
-    }
-
-    if (!loadTimeData.getBoolean(
-            'syncEnableContactInfoDataTypeInTransportMode')) {
       return false;
     }
 

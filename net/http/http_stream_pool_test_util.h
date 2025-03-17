@@ -31,34 +31,39 @@ class IOBuffer;
 class SSLInfo;
 
 // A fake ServiceEndpointRequest implementation that provides testing harnesses.
+// See the comment of HostResolver::ServiceEndpointRequest for details.
 class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
  public:
   FakeServiceEndpointRequest();
   ~FakeServiceEndpointRequest() override;
 
-  void set_start_result(int start_result) { start_result_ = start_result; }
-
+  // Sets the current endpoints to `endpoints`. Previous endpoints are
+  // discarded.
   FakeServiceEndpointRequest& set_endpoints(
       std::vector<ServiceEndpoint> endpoints) {
     endpoints_ = std::move(endpoints);
     return *this;
   }
 
+  // Add `endpoint` to the current endpoints.
   FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint) {
     endpoints_.emplace_back(std::move(endpoint));
     return *this;
   }
 
+  // Sets the return value of GetDnsAliasResults().
   FakeServiceEndpointRequest& set_aliases(std::set<std::string> aliases) {
     aliases_ = std::move(aliases);
     return *this;
   }
 
+  // Sets the return value of EndpointsCryptoReady().
   FakeServiceEndpointRequest& set_crypto_ready(bool endpoints_crypto_ready) {
     endpoints_crypto_ready_ = endpoints_crypto_ready;
     return *this;
   }
 
+  // Sets the return value of GetResolveErrorInfo().
   FakeServiceEndpointRequest& set_resolve_error_info(
       ResolveErrorInfo resolve_error_info) {
     resolve_error_info_ = resolve_error_info;
@@ -71,10 +76,17 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
     return *this;
   }
 
+  // Make `this` complete synchronously when ServiceEndpointRequest::Start()
+  // is called.
   FakeServiceEndpointRequest& CompleteStartSynchronously(int rv);
 
+  // Calls `delegate_->OnServiceEndpointsUpdated()`. Must not be used after
+  // calling CompleteStartSynchronously() or
+  // CallOnServiceEndpointRequestFinished()
   FakeServiceEndpointRequest& CallOnServiceEndpointsUpdated();
 
+  // Calls `delegate_->OnServiceEndpointRequestFinished()`. Mut not be used
+  // after calling CompleteStartSynchronously().
   FakeServiceEndpointRequest& CallOnServiceEndpointRequestFinished(int rv);
 
   // HostResolver::ServiceEndpointRequest methods:
@@ -83,6 +95,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   const std::set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;
+  const HostCache::EntryStaleness* GetStaleInfo() const override;
+  bool IsStaleWhileRefresing() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
 
  private:
@@ -108,6 +122,11 @@ class FakeServiceEndpointResolver : public HostResolver {
 
   ~FakeServiceEndpointResolver() override;
 
+  // Create a FakeServiceEndpointRequest that will be used for the next
+  // CreateServiceEndpointRequest() call. Note that
+  // CreateServiceEndpointRequest() consumes the request. You will need to call
+  // this method multiple times when you expect multiple
+  // CreateServiceEndpointRequest() calls.
   FakeServiceEndpointRequest* AddFakeRequest();
 
   // HostResolver methods:
@@ -127,6 +146,7 @@ class FakeServiceEndpointResolver : public HostResolver {
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       ResolveHostParameters parameters) override;
+  bool IsHappyEyeballsV3Enabled() const override;
 
  private:
   std::list<std::unique_ptr<FakeServiceEndpointRequest>> requests_;
@@ -190,9 +210,15 @@ class FakeStreamSocket : public MockClientSocket {
   bool WasEverUsed() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
 
+  // Simulate a situation where a connected socket immediately disconnects after
+  // checking IsConnected(). This could happen in the real world.
+  void DisconnectAfterIsConnectedCall();
+
  private:
   bool is_idle_ = true;
   bool was_ever_used_ = false;
+  bool disconnect_after_is_connected_call_ = false;
+  mutable std::optional<bool> is_connected_override_;
   std::optional<SSLInfo> ssl_info_;
 };
 
@@ -287,6 +313,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
                           const SSLInfo& ssl_info) override;
   void OnNeedsClientAuth(HttpStreamPool::Job* job,
                          SSLCertRequestInfo* cert_info) override;
+  void OnPreconnectComplete(HttpStreamPool::Job* job, int status) override;
 
   HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
 
@@ -312,6 +339,9 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
 
 // Convert a ClientSocketPool::GroupId to an HttpStreamKey.
 HttpStreamKey GroupIdToHttpStreamKey(const ClientSocketPool::GroupId& group_id);
+
+// Wait for the `group`'s current AttemptManager completion.
+void WaitForAttemptManagerComplete(HttpStreamPool::Group& group);
 
 }  // namespace net
 

@@ -267,11 +267,11 @@ export class DataSeries {
    */
   getLatestStatistics(startTime: number, endTime: number):
       DataPointsStatistics {
-    let output: DataPointsStatistics = {
+    const output: DataPointsStatistics = {
       latest: 0,
       min: Number.POSITIVE_INFINITY,
       max: Number.NEGATIVE_INFINITY,
-      average: 0
+      average: 0,
     };
     let count = 0;
 

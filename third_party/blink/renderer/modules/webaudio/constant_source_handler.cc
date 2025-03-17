@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/constant_source_handler.h"
 
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 
 namespace blink {
@@ -25,7 +21,9 @@ constexpr unsigned kNumberOfOutputChannels = 1;
 ConstantSourceHandler::ConstantSourceHandler(AudioNode& node,
                                              float sample_rate,
                                              AudioParamHandler& offset)
-    : AudioScheduledSourceHandler(kNodeTypeConstantSource, node, sample_rate),
+    : AudioScheduledSourceHandler(NodeType::kNodeTypeConstantSource,
+                                  node,
+                                  sample_rate),
       offset_(&offset),
       sample_accurate_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddOutput(kNumberOfOutputChannels);
@@ -83,9 +81,10 @@ void ConstantSourceHandler::Process(uint32_t frames_to_process) {
     float* offsets = sample_accurate_values_.Data();
     offset_->CalculateSampleAccurateValues(offsets, frames_to_process);
     if (non_silent_frames_to_process > 0) {
-      memcpy(output_bus->Channel(0)->MutableData() + quantum_frame_offset,
-             offsets + quantum_frame_offset,
-             non_silent_frames_to_process * sizeof(*offsets));
+      UNSAFE_TODO(
+          memcpy(output_bus->Channel(0)->MutableData() + quantum_frame_offset,
+                 offsets + quantum_frame_offset,
+                 non_silent_frames_to_process * sizeof(*offsets)));
       output_bus->ClearSilentFlag();
     } else {
       output_bus->Zero();
@@ -98,12 +97,14 @@ void ConstantSourceHandler::Process(uint32_t frames_to_process) {
   if (value == 0) {
     output_bus->Zero();
   } else {
-    float* dest = output_bus->Channel(0)->MutableData();
-    dest += quantum_frame_offset;
-    for (unsigned k = 0; k < non_silent_frames_to_process; ++k) {
-      dest[k] = value;
-    }
-    output_bus->ClearSilentFlag();
+    UNSAFE_TODO({
+      float* dest = output_bus->Channel(0)->MutableData();
+      dest += quantum_frame_offset;
+      for (unsigned k = 0; k < non_silent_frames_to_process; ++k) {
+        dest[k] = value;
+      }
+      output_bus->ClearSilentFlag();
+    });
   }
 }
 

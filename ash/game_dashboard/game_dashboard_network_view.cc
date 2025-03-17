@@ -49,7 +49,7 @@ void GameDashboardNetworkView::UpdateNetworkStateHandlerIcon() {
 
   const bool image_exists = !image.isNull();
   if (image_exists) {
-    SetImage(image);
+    SetImage(ui::ImageModel::FromImageSkia(image));
   }
   SetVisible(image_exists);
 
@@ -74,7 +74,7 @@ void GameDashboardNetworkView::UpdateConnectionStatus(bool notify_a11y) {
   SetTooltipText(tooltip);
   if (notify_a11y && !accessible_name.empty() &&
       accessible_name != GetViewAccessibility().GetCachedName()) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 
   if (accessible_description.empty()) {

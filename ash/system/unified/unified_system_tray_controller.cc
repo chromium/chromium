@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
@@ -150,7 +151,8 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
 void UnifiedSystemTrayController::HandleSignOutAction() {
   base::RecordAction(base::UserMetricsAction("StatusArea_SignOut"));
   if (Shell::Get()->session_controller()->IsDemoSession()) {
-    base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromSystemTray"));
+    DemoSessionMetricsRecorder::RecordExitSessionAction(
+        DemoSessionMetricsRecorder::ExitSessionFrom::kSystemTray);
   }
 
   if (ShouldShowDeferredUpdateDialog()) {
@@ -407,11 +409,9 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   create_tile(VIEW_ID_FEATURE_TILE_HOTSPOT,
               std::make_unique<HotspotFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  if (features::IsFocusModeEnabled()) {
-    create_tile(VIEW_ID_FEATURE_TILE_FOCUS_MODE,
-                std::make_unique<FocusModeFeaturePodController>(this),
-                feature_pod_controllers_, tiles);
-  }
+  create_tile(VIEW_ID_FEATURE_TILE_FOCUS_MODE,
+              std::make_unique<FocusModeFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
   create_tile(VIEW_ID_FEATURE_TILE_NEARBY_SHARE,
               std::make_unique<NearbyShareFeaturePodController>(this),
               feature_pod_controllers_, tiles);
@@ -465,7 +465,7 @@ void UnifiedSystemTrayController::ShowDetailedView(
   if (bubble_) {
     UpdateBubble();
     // Notify accessibility features that a new view is showing.
-    bubble_->NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
+    bubble_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kShow, true);
   }
 }
 

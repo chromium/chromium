@@ -48,6 +48,9 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
   WallpaperLayout layout = controller->GetWallpaperLayout();
 
   if (wallpaper.isNull()) {
+    // Paint the canvas black if there is no wallpaper present.
+    // See crbug.com/383440913 for why this is necessary.
+    canvas->DrawColor(SK_ColorBLACK);
     return;
   }
 

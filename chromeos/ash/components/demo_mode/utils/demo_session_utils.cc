@@ -7,12 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash::demo_mode {
 
 namespace {
-bool g_should_fall_back_mgs = false;
+bool g_force_enable_demo_account_sign_in = false;
 }
 
 bool IsDeviceInDemoMode() {
@@ -44,13 +45,22 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                std::string());
 }
 
-bool ShouldFallBackToMGS() {
-  // Always fall back to MGS if demo mode sign in not enable.
-  return !features::IsDemoModeSignInEnabled() || g_should_fall_back_mgs;
+void SetForceEnableDemoAccountSignIn(bool force_enabled) {
+  g_force_enable_demo_account_sign_in = force_enabled;
 }
 
-void SetShouldFallBackMGS(bool should_fall_back_mgs) {
-  g_should_fall_back_mgs = should_fall_back_mgs;
+bool IsDemoAccountSignInEnabled() {
+  return IsDeviceInDemoMode() && (features::IsDemoModeSignInEnabled() ||
+                                  g_force_enable_demo_account_sign_in);
+}
+
+void SetDoNothingWhenPowerIdle() {
+  chromeos::PowerPolicyController::Get()
+      ->SetShouldDoNothingWhenIdleInDemoMode();
+}
+
+bool ForceSessionLengthCountFromSessionStarts() {
+  return IsDemoAccountSignInEnabled();
 }
 
 }  // namespace ash::demo_mode

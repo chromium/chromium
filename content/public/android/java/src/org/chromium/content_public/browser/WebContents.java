@@ -9,13 +9,12 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.blink_public.input.SelectionGranularity;
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
+import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -44,6 +43,7 @@ import org.chromium.url.GURL;
  * bundle.setClassLoader(WebContents.class.getClassLoader()); webContents =
  * bundle.get("WEBCONTENTSKEY");
  */
+@NullMarked
 public interface WebContents extends Parcelable {
     /**
      * Interface used to transfer the internal objects (but callers should own) from WebContents.
@@ -54,9 +54,10 @@ public interface WebContents extends Parcelable {
          *
          * @param internals a {@link WebContentsInternals} object.
          */
-        void set(WebContentsInternals internals);
+        void set(@Nullable WebContentsInternals internals);
 
         /** Returns {@link WebContentsInternals} object. Can be {@code null}. */
+        @Nullable
         WebContentsInternals get();
     }
 
@@ -66,15 +67,15 @@ public interface WebContents extends Parcelable {
      */
     public static InternalsHolder createDefaultInternalsHolder() {
         return new InternalsHolder() {
-            private WebContentsInternals mInternals;
+            private @Nullable WebContentsInternals mInternals;
 
             @Override
-            public void set(WebContentsInternals internals) {
+            public void set(@Nullable WebContentsInternals internals) {
                 mInternals = internals;
             }
 
             @Override
-            public WebContentsInternals get() {
+            public @Nullable WebContentsInternals get() {
                 return mInternals;
             }
         };
@@ -99,7 +100,7 @@ public interface WebContents extends Parcelable {
             ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate,
             WindowAndroid windowAndroid,
-            @NonNull InternalsHolder internalsHolder);
+            InternalsHolder internalsHolder);
 
     /**
      * Clear Java WebContentsObservers so we can put this WebContents to the background. Use this
@@ -123,7 +124,7 @@ public interface WebContents extends Parcelable {
      * TODO(jinsukkim): This should happen through view android tree instead.
      * @param windowAndroid The new {@link WindowAndroid} for this {@link WebContents}.
      */
-    void setTopLevelNativeWindow(WindowAndroid windowAndroid);
+    void setTopLevelNativeWindow(@Nullable WindowAndroid windowAndroid);
 
     /**
      * If called too early, the {@link ViewAndroidDelegate} might not be yet available. One can
@@ -154,6 +155,7 @@ public interface WebContents extends Parcelable {
     /**
      * @return The navigation controller associated with this WebContents.
      */
+    @Nullable
     NavigationController getNavigationController();
 
     /**
@@ -392,9 +394,9 @@ public interface WebContents extends Parcelable {
      */
     void postMessageToMainFrame(
             MessagePayload messagePayload,
-            String sourceOrigin,
+            @Nullable String sourceOrigin,
             String targetOrigin,
-            @Nullable MessagePort[] ports);
+            MessagePort @Nullable [] ports);
 
     /**
      * Creates a message channel for sending postMessage requests and returns the ports for
@@ -450,33 +452,19 @@ public interface WebContents extends Parcelable {
      *
      * @param stylusWritingHandler the object that implements StylusWritingHandler interface.
      */
-    void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler);
+    void setStylusWritingHandler(@Nullable StylusWritingHandler stylusWritingHandler);
 
     /**
      * @return {@link StylusWritingImeCallback} which is used to implement the IME functionality for
      *     the Stylus handwriting feature.
      */
-    StylusWritingImeCallback getStylusWritingImeCallback();
+    @Nullable StylusWritingImeCallback getStylusWritingImeCallback();
 
     /**
-     * Returns {@link EventForwarder} which is used to forward input/view events
-     * to native content layer.
+     * Returns {@link EventForwarder} which is used to forward input/view events to native content
+     * layer.
      */
     EventForwarder getEventForwarder();
-
-    /**
-     * Add an observer to the WebContents
-     *
-     * @param observer The observer to add.
-     */
-    void addObserver(WebContentsObserver observer);
-
-    /**
-     * Remove an observer from the WebContents
-     *
-     * @param observer The observer to remove.
-     */
-    void removeObserver(WebContentsObserver observer);
 
     /**
      * Sets a handler to handle swipe to refresh events.
@@ -533,8 +521,7 @@ public interface WebContents extends Parcelable {
      * the rectangle is meaningless. Will return null if there is no such video. Fullscreen videos
      * may take a moment to register.
      */
-    @Nullable
-    Rect getFullscreenVideoSize();
+    @Nullable Rect getFullscreenVideoSize();
 
     /**
      * Notifies the WebContents about the new persistent video status. It should be called whenever
@@ -623,15 +610,13 @@ public interface WebContents extends Parcelable {
     void setLongPressLinkSelectText(boolean enabled);
 
     /**
-     * Notify that the constraints of the browser controls have changed. This means that the the
-     * browser controls went from being forced fully visible/hidden to not being forced (or
-     * vice-versa).
+     * Update the OffsetTagDefinitions. This could be because the controls' visibility constraints
+     * have changed, which requires adding/removing the OffsetTags, or because the
+     * OffsetTagConstraints have changed due to a change in the controls' scrollable height.
      */
-    void notifyControlsConstraintsChanged(
-            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-            BrowserControlsOffsetTagsInfo offsetTagsInfo);
-
-    void disconnectFileSelectListenerIfAny();
+    void updateOffsetTagDefinitions(BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
 
     void captureContentAsBitmapForTesting(Callback<Bitmap> callback);
+
+    void setSupportsForwardTransitionAnimation(boolean supports);
 }

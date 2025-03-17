@@ -55,7 +55,7 @@ const ManagedUserNoticeTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "SmallWindow",
-                          .use_small_window = true}},
+                          .window_size = PixelTestParam::kSmallWindowSize}},
 };
 
 const ManagedUserNoticeTestParam kDialogTestParams[] = {
@@ -111,6 +111,7 @@ class ManagedUserNoticeStepControllerForTest
         ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
         std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
             *account_info_, /*is_oidc_account=*/false,
+            /*turn_sync_on_signed_profile=*/false,
             /*profile_creation_required_by_policy=*/false,
             /*show_link_data_option=*/false,
             /*process_user_choice_callback=*/
@@ -159,10 +160,7 @@ class ManagedUserNoticeUIWindowPixelTest
               return std::make_unique<ManagedUserNoticeStepControllerForTest>(
                   host, browser()->profile(), account_info);
             }));
-    profile_picker_view_->ShowAndWait(
-        GetParam().pixel_test_param.use_small_window
-            ? std::optional<gfx::Size>(gfx::Size(750, 590))
-            : std::nullopt);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
   }
 
   bool VerifyUi() override {
@@ -243,6 +241,7 @@ class ManagedUserNoticeUIDialogPixelTest
     controller->ShowModalManagedUserNoticeDialog(
         std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
             account_info, /*is_oidc_account=*/false,
+            /*turn_sync_on_signed_profile=*/false,
             GetParam().profile_creation_required_by_policy,
             GetParam().show_link_data_checkbox,
             /*process_user_choice_callback=*/

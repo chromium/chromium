@@ -24,6 +24,10 @@ struct ReadV2InkPathResult {
   ink::PartitionedMesh shape;
 };
 
+// Returns whether the given `page` contains a "V2" path created by Ink.
+// Returns false if `page` is null.
+bool PageContainsV2InkPath(FPDF_PAGE page);
+
 // For the given `page`, iterate through all page objects and import "V2" paths
 // created by Ink as ink::PartitionedMeshs. For each shape, also return its
 // associated page object. The shapes do not have outlines and are only suitable

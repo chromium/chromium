@@ -87,7 +87,7 @@ void ContactInfoLocalDataBatchUploader::TriggerLocalDataMigration() {
   TriggerLocalDataMigration(GetAllLocalAutofillProfilesEligibleForMigration());
 }
 
-void ContactInfoLocalDataBatchUploader::TriggerLocalDataMigration(
+void ContactInfoLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
   // Read `syncer::LocalDataItemModel::DataId` as `std::string` as the Id type
   // used. The set of `std::string_view` is used to efficiently search in the

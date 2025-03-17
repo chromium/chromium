@@ -58,7 +58,25 @@ public class ViewElement extends Element<View> {
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
                         .withExpectEnabled(mOptions.mExpectEnabled)
+                        .withExpectDisabled(mOptions.mExpectDisabled)
                         .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
+                        .withSettleTimeMs(mOptions.mInitialSettleTimeMs)
+                        .build();
+        return new DisplayedCondition(viewMatcher, conditionOptions);
+    }
+
+    /**
+     * Create a {@link DisplayedCondition} like the enter Condition, but also waiting for the View
+     * to settle (no changes to its rect coordinates) for 1 second.
+     */
+    public ConditionWithResult<View> createSettleCondition() {
+        Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
+        DisplayedCondition.Options conditionOptions =
+                DisplayedCondition.newOptions()
+                        .withExpectEnabled(mOptions.mExpectEnabled)
+                        .withExpectDisabled(mOptions.mExpectDisabled)
+                        .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
+                        .withSettleTimeMs(1000)
                         .build();
         return new DisplayedCondition(viewMatcher, conditionOptions);
     }
@@ -77,8 +95,10 @@ public class ViewElement extends Element<View> {
         static final Options DEFAULT = new Options();
         protected boolean mScoped = true;
         protected boolean mExpectEnabled = true;
+        protected boolean mExpectDisabled;
         protected String mElementId;
-        protected Integer mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
+        protected int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
+        protected int mInitialSettleTimeMs;
 
         protected Options() {}
 
@@ -110,6 +130,14 @@ public class ViewElement extends Element<View> {
              */
             public Builder expectDisabled() {
                 mExpectEnabled = false;
+                mExpectDisabled = true;
+                return this;
+            }
+
+            /** Do not expect the View to be necessarily disabled or enabled. */
+            public Builder allowDisabled() {
+                mExpectEnabled = false;
+                mExpectDisabled = false;
                 return this;
             }
 
@@ -120,6 +148,12 @@ public class ViewElement extends Element<View> {
              */
             public Builder displayingAtLeast(int percentage) {
                 mDisplayedPercentageRequired = percentage;
+                return this;
+            }
+
+            /** Waits for the View's rect to stop moving. */
+            public Builder initialSettleTime(int settleTimeMs) {
+                mInitialSettleTimeMs = settleTimeMs;
                 return this;
             }
         }
@@ -138,6 +172,11 @@ public class ViewElement extends Element<View> {
     /** Convenience {@link Options} setting expectDisabled(). */
     public static Options expectDisabledOption() {
         return newOptions().expectDisabled().build();
+    }
+
+    /** Convenience {@link Options} setting allowDisabled(). */
+    public static Options allowDisabledOption() {
+        return newOptions().allowDisabled().build();
     }
 
     /** Convenience {@link Options} setting displayingAtLeast(). */

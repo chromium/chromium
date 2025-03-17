@@ -14,8 +14,9 @@ namespace {
 
 void OnChangeNodeUsing(content::GlobalRenderFrameHostId id,
                        blink::mojom::ObservedFeatureType feature_type,
-                       bool is_using,
-                       GraphImpl* graph) {
+                       bool is_using) {
+  GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();
+
   FrameNodeImpl* frame_node = graph->GetFrameNodeById(
       RenderProcessHostId(id.child_id), id.frame_routing_id);
   if (!frame_node)
@@ -46,18 +47,14 @@ void PerformanceManagerFeatureObserverClient::OnStartUsing(
     content::GlobalRenderFrameHostId id,
     blink::mojom::ObservedFeatureType feature_type) {
   bool is_using = true;
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&OnChangeNodeUsing, id, feature_type, is_using));
+  OnChangeNodeUsing(id, feature_type, is_using);
 }
 
 void PerformanceManagerFeatureObserverClient::OnStopUsing(
     content::GlobalRenderFrameHostId id,
     blink::mojom::ObservedFeatureType feature_type) {
   bool is_using = false;
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&OnChangeNodeUsing, id, feature_type, is_using));
+  OnChangeNodeUsing(id, feature_type, is_using);
 }
 
 }  // namespace performance_manager

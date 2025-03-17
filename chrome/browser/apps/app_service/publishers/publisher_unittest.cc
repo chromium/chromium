@@ -37,18 +37,16 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -229,7 +227,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     service_->Init();
     ConfigureWebAppProvider();
 #if BUILDFLAG(IS_CHROMEOS)
-    browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
     ash::LoginState::Initialize();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -239,7 +236,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     profile_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
     ash::LoginState::Shutdown();
-    browser_manager_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -422,11 +418,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
               NOTREACHED();
             }));
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
- private:
-  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -28,12 +28,12 @@
 [
     Exposed=Window
 ] interface SVGFESpotLightElement : SVGElement {
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber x;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber y;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber z;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber pointsAtX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber pointsAtY;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber pointsAtZ;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber specularExponent;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber limitingConeAngle;
+    readonly attribute SVGAnimatedNumber x;
+    readonly attribute SVGAnimatedNumber y;
+    readonly attribute SVGAnimatedNumber z;
+    readonly attribute SVGAnimatedNumber pointsAtX;
+    readonly attribute SVGAnimatedNumber pointsAtY;
+    readonly attribute SVGAnimatedNumber pointsAtZ;
+    readonly attribute SVGAnimatedNumber specularExponent;
+    readonly attribute SVGAnimatedNumber limitingConeAngle;
 };

@@ -9,7 +9,7 @@
 
 #include <memory>
 #include <optional>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -118,7 +118,7 @@ class COMPONENT_EXPORT(GFX) Canvas {
   // height and then width as needed to make the text fit. This method
   // supports multiple lines. On Skia only a line_height can be specified and
   // specifying a 0 value for it will cause the default height to be used.
-  static void SizeStringInt(const std::u16string& text,
+  static void SizeStringInt(std::u16string_view text,
                             const FontList& font_list,
                             int* width,
                             int* height,
@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(GFX) Canvas {
 
   // This is same as SizeStringInt except that fractional size is returned.
   // See comment in GetStringWidthF for its usage.
-  static void SizeStringFloat(const std::u16string& text,
+  static void SizeStringFloat(std::u16string_view text,
                               const FontList& font_list,
                               float* width,
                               float* height,
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(GFX) Canvas {
 
   // Returns the number of horizontal pixels needed to display the specified
   // |text| with |font_list|.
-  static int GetStringWidth(const std::u16string& text,
+  static int GetStringWidth(std::u16string_view text,
                             const FontList& font_list);
 
   // This is same as GetStringWidth except that fractional width is returned.
@@ -144,7 +144,7 @@ class COMPONENT_EXPORT(GFX) Canvas {
   // summed up. This is because GetStringWidth returns the ceiled width and
   // adding multiple ceiled widths could cause more precision loss for certain
   // platform like Mac where the fractional width is used.
-  static float GetStringWidthF(const std::u16string& text,
+  static float GetStringWidthF(std::u16string_view text,
                                const FontList& font_list);
 
   // Returns the default text alignment to be used when drawing text on a
@@ -374,7 +374,7 @@ class COMPONENT_EXPORT(GFX) Canvas {
   // Draws text with the specified color, fonts and location. The text is
   // aligned to the left, vertically centered, clipped to the region. If the
   // text is too big, it is truncated and '...' is added to the end.
-  void DrawStringRect(const std::u16string& text,
+  void DrawStringRect(std::u16string_view text,
                       const FontList& font_list,
                       SkColor color,
                       const Rect& display_rect);
@@ -382,7 +382,7 @@ class COMPONENT_EXPORT(GFX) Canvas {
   // Draws text with the specified color, fonts and location. The last argument
   // specifies flags for how the text should be rendered. It can be one of
   // TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_LEFT.
-  void DrawStringRectWithFlags(const std::u16string& text,
+  void DrawStringRectWithFlags(std::u16string_view text,
                                const FontList& font_list,
                                SkColor color,
                                const Rect& display_rect,
@@ -430,17 +430,21 @@ class COMPONENT_EXPORT(GFX) Canvas {
   // Apply transformation on the canvas.
   void Transform(const Transform& transform);
 
+  // Text will be clipped when the canvas is scaled. See crbug.com/1469229.
+  // This method prevents clipping by increasing the clip rect size by 0.5f.
+  void AdjustClipRectForTextBounds(const Rect& text_bounds);
+
   // Note that writing to this bitmap will modify pixels stored in this canvas.
   SkBitmap GetBitmap() const;
+
+  // Tests whether the provided rectangle intersects the current clip rect.
+  bool IntersectsClipRect(const SkRect& rect) const;
 
   // TODO(enne): rename sk_canvas members and interface.
   cc::PaintCanvas* sk_canvas() { return canvas_; }
   float image_scale() const { return image_scale_; }
 
  private:
-  // Tests whether the provided rectangle intersects the current clip rect.
-  bool IntersectsClipRect(const SkRect& rect);
-
   // Helper for the DrawImageInt functions declared above. The
   // |remove_image_scale| parameter indicates if the scale of the |image_rep|
   // should be removed when drawing the image, to avoid double-scaling it.

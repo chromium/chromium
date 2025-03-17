@@ -24,8 +24,9 @@ ProcessId GetParentProcessId(ProcessHandle process) {
           process, internal::VM_PPID));
 #endif
   // TODO(zijiehe): Returns 0 if |process| does not have a parent process.
-  if (pid)
+  if (pid) {
     return pid;
+  }
   return -1;
 }
 

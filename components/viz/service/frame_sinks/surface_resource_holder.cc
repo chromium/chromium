@@ -27,11 +27,8 @@ void SurfaceResourceHolder::ReceiveFromChild(
     const std::vector<TransferableResource>& resources) {
   for (const auto& resource : resources) {
     // We don't handle reserved resources here. CompositorFrames from clients
-    // can never contain reserved ResourceIds, but viz can pretend to submit
-    // frames from the client (see
-    // `CompositorFrameSinkSupport::SubmitCompositorFrameLocally`), e.g. for
-    // frame eviction purposes. Those CompositorFrames may contain reserved
-    // resources, so ignore them here.
+    // can never contain reserved ResourceIds, but viz may handle resources
+    // of its own (e.g. see `SurfaceAnimationManager`), so skip them here.
     if (resource.id >= kVizReservedRangeStartId) {
       continue;
     }

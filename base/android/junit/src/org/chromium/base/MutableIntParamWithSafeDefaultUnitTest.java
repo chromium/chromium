@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
 
@@ -48,10 +47,7 @@ public class MutableIntParamWithSafeDefaultUnitTest {
         MutableIntParamWithSafeDefault paramBA = makeParam(FEATURE_B, PARAM_A, 3);
         MutableIntParamWithSafeDefault paramBB = makeParam(FEATURE_B, PARAM_B, 4);
 
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(FEATURE_A, true);
-        testValues.addFieldTrialParamOverride(paramAA, "11");
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder().enable(FEATURE_A).param(PARAM_A, 11).apply();
 
         assertEquals(11, paramAA.getValue());
         assertEquals(2, paramAB.getValue());

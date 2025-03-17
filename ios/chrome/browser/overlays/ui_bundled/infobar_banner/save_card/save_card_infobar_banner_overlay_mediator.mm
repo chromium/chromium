@@ -21,6 +21,8 @@
 
 // The save card banner config from the request.
 @property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
+// `YES` if the banner's button was pressed by the user.
+@property(nonatomic, assign) BOOL bannerButtonWasPressed;
 
 @end
 
@@ -52,6 +54,12 @@
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
 
+  _bannerButtonWasPressed = YES;
+
+  delegate->LogSaveCreditCardInfoBarResultMetric(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+
   // Display the modal (thus the ToS) if the card will be uploaded, this is a
   // legal requirement and shouldn't be changed.
   if (delegate->is_for_upload()) {
@@ -67,14 +75,36 @@
   [self dismissOverlay];
 }
 
+- (void)dismissInfobarBannerForUserInteraction:(BOOL)userInitiated {
+  autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
+      self.saveCardDelegate;
+
+  if (!userInitiated) {
+    // Banner is dismissed without user interaction when it times out.
+    delegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::KTimedOut,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+  } else if (userInitiated && !_bannerButtonWasPressed) {
+    // Banner is dismissed with user interaction by swiping it up or by tapping
+    // its button. To distinguish swipe-up dismissal, the method checks if the
+    // button was pressed.
+    delegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kSwiped,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+  }
+
+  [super dismissInfobarBannerForUserInteraction:userInitiated];
+}
+
 @end
 
 @implementation SaveCardInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
   DefaultInfobarOverlayRequestConfig* config = self.config;
-  if (!self.consumer || !config)
+  if (!self.consumer || !config) {
     return;
+  }
 
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;

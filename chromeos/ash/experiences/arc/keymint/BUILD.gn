@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("keymint") {
+  sources = [
+    "arc_keymint_bridge.cc",
+    "arc_keymint_bridge.h",
+    "cert_store_bridge_keymint.cc",
+    "cert_store_bridge_keymint.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/arc",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/services/keymint/public/mojom",
+    "//components/keyed_service/core",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_keymint_bridge_unittest.cc" ]
+
+  deps = [
+    ":keymint",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//components/user_prefs/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -6,7 +6,7 @@
  * @fileoverview A tree walker over the automation tree.
  */
 
-import {AutomationPredicate} from './automation_predicate.js';
+import type {AutomationPredicate} from './automation_predicate.js';
 import {constants} from './constants.js';
 import {TestImportManager} from './testing/test_import_manager.js';
 

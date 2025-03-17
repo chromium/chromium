@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 261 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 115 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <li> - text-align
   assert_equals: expected "start" but got "left"
 [FAIL] <li> (in <dir>) - text-align
@@ -16,374 +16,82 @@ Found 261 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li> (in <ul>) - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <dir> (in <dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
-[FAIL] <menu> (in <dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
 [FAIL] <menu> (in <dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <dir>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
 [FAIL] <ul> (in <dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
-[FAIL] <menu> (in <menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
 [FAIL] <menu> (in <menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <menu>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
 [FAIL] <ul> (in <menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
-[FAIL] <menu> (in <ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
 [FAIL] <menu> (in <ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul> (in <ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
-[FAIL] <menu> (in <ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul>) - list-style-type
-  assert_equals: expected "circle" but got "disc"
 [FAIL] <menu> (in <ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul> (in <ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <dir><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <dir><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <dir><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <dir><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <dir><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <dir><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <ul> (in <dir><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <dir><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <dir><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <dir><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <dir><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <dir><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <dir><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <ul> (in <dir><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <dir><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <dir><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <dir><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <dir><ol>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <dir><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <dir><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <dir><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <dir><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <dir><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <dir><ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <dir><ul>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <dir><ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <menu><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <menu><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <menu><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <menu><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <menu><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <menu><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <ul> (in <menu><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <menu><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <menu><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <menu><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <menu><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <menu><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <ul> (in <menu><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <ul> (in <menu><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <menu><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <menu><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <menu><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <menu><ol>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <menu><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <menu><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <menu><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <menu><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <menu><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <menu><ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <menu><ul>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <menu><ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ol><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ol><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ol><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <ol><dir>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <ol><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ol><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ol><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ol><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <ol><menu>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <ol><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ol><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ol><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ol><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul> (in <ol><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ol><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ol><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ol><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ol><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ol><ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul> (in <ol><ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ul><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ul><dir>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><dir>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><dir>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ul><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <ul><dir>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <ul><dir>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ul><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ul><menu>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><menu>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><menu>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ul><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <ul> (in <ul><menu>) - list-style-type
-  assert_equals: expected "square" but got "circle"
 [FAIL] <ul> (in <ul><menu>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ul><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ul><ol>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><ol>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><ol>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ul><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul> (in <ul><ol>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
-[FAIL] <dir> (in <ul><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <dir> (in <ul><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
-[FAIL] <menu> (in <ul><ul>) - margin-top
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><ul>) - margin-bottom
-  assert_equals: expected "0px" but got "16px"
-[FAIL] <menu> (in <ul><ul>) - list-style-type
-  assert_equals: expected "square" but got "disc"
 [FAIL] <menu> (in <ul><ul>) - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul> (in <ul><ul>) - counter-reset

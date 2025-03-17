@@ -547,7 +547,7 @@ void WorkerOrWorkletGlobalScope::InitContentSecurityPolicyFromVector(
         GetSecurityOrigin()->Protocol()));
 
     // Check if the embedder wants to add any default policies, and add them.
-    WebVector<WebContentSecurityPolicyHeader> embedder_default_csp;
+    std::vector<WebContentSecurityPolicyHeader> embedder_default_csp;
     Platform::Current()->AppendContentSecurityPolicy(WebURL(Url()),
                                                      &embedder_default_csp);
     for (const auto& header : embedder_default_csp) {

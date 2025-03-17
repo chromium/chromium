@@ -31,7 +31,7 @@
 // https://encoding.spec.whatwg.org/#textdecoder
 
 [
-    Exposed=(Window,Worker,SharedStorageWorklet)
+    Exposed=(Window,Worker,SharedStorageWorklet,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface TextDecoder {
     [RaisesException, MeasureAs=TextDecoderConstructor] constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options = {});
     readonly attribute DOMString encoding;

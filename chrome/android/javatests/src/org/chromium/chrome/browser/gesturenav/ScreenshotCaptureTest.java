@@ -64,7 +64,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
 @DoNotBatch(reason = "Affect nav settings")
 @EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
     "BackForwardTransitions:transition_from_native_pages/true/transition_to_native_pages/true"
 })
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
@@ -154,6 +153,7 @@ public class ScreenshotCaptureTest {
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S)
     public void testNavigatingAwayFromNtpToNormalPageHardware(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
         mRenderTestRule.setVariantPrefix("hardware");

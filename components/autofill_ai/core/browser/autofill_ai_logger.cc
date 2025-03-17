@@ -44,10 +44,6 @@ void AutofillAiLogger::OnFormHasDataToFill(autofill::FormGlobalId form_id) {
   form_states_[form_id].has_data_to_fill = true;
 }
 
-void AutofillAiLogger::OnSuggestionsShown(autofill::FormGlobalId form_id) {
-  form_states_[form_id].did_show_suggestions = true;
-}
-
 void AutofillAiLogger::OnTriggeredFillingSuggestions(
     autofill::FormGlobalId form_id) {
   form_states_[form_id].did_start_loading_suggestions = true;
@@ -77,21 +73,6 @@ void AutofillAiLogger::RecordMetricsForForm(autofill::FormGlobalId form_id,
   LogFunnelMetric("ReadinessAfterEligibility", submission_state,
                   form_states_[form_id].has_data_to_fill);
   if (!form_states_[form_id].has_data_to_fill) {
-    return;
-  }
-  LogFunnelMetric("SuggestionAfterReadiness", submission_state,
-                  form_states_[form_id].did_show_suggestions);
-  if (!form_states_[form_id].did_show_suggestions) {
-    return;
-  }
-  LogFunnelMetric("LoadingAfterSuggestion", submission_state,
-                  form_states_[form_id].did_start_loading_suggestions);
-  if (!form_states_[form_id].did_start_loading_suggestions) {
-    return;
-  }
-  LogFunnelMetric("FillingSuggestionAfterLoading", submission_state,
-                  form_states_[form_id].did_show_filling_suggestions);
-  if (!form_states_[form_id].did_show_filling_suggestions) {
     return;
   }
   LogFunnelMetric("FillAfterSuggestion", submission_state,

@@ -26,13 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_backend.h"
 
+#include <array>
 #include <memory>
 
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
@@ -467,7 +463,7 @@ void SQLTransactionBackend::SetShouldRetryCurrentStatement(bool should_retry) {
 
 SQLTransactionBackend::StateFunction SQLTransactionBackend::StateFunctionFor(
     SQLTransactionState state) {
-  static const StateFunction kStateFunctions[] = {
+  static const auto kStateFunctions = std::to_array<StateFunction>({
       &SQLTransactionBackend::UnreachableState,                      // 0. end
       &SQLTransactionBackend::UnreachableState,                      // 1. idle
       &SQLTransactionBackend::AcquireLock,                           // 2.
@@ -486,7 +482,7 @@ SQLTransactionBackend::StateFunction SQLTransactionBackend::StateFunctionFor(
       &SQLTransactionBackend::SendToFrontendState,
       // 12. deliverSuccessCallback
       &SQLTransactionBackend::SendToFrontendState,
-  };
+  });
 
   DCHECK(std::size(kStateFunctions) ==
          static_cast<int>(SQLTransactionState::kNumberOfStates));

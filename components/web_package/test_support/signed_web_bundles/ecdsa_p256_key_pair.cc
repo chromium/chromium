@@ -9,8 +9,9 @@
 
 #include "components/web_package/test_support/signed_web_bundles/ecdsa_p256_key_pair.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/sha2.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -53,7 +54,7 @@ EcdsaP256KeyPair::EcdsaP256KeyPair(
     bool produce_invalid_signature)
     : public_key(*EcdsaP256PublicKey::Create(public_key_bytes)),
       produce_invalid_signature(produce_invalid_signature) {
-  base::ranges::copy(private_key_bytes, private_key.begin());
+  std::ranges::copy(private_key_bytes, private_key.begin());
 }
 
 EcdsaP256KeyPair::EcdsaP256KeyPair(const EcdsaP256KeyPair&) = default;

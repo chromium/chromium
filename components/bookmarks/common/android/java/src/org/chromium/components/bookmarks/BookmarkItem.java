@@ -4,11 +4,13 @@
 
 package org.chromium.components.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
 /** Contains data about a bookmark or bookmark folder. */
+@NullMarked
 public class BookmarkItem {
     private final String mTitle;
     private final GURL mUrl;

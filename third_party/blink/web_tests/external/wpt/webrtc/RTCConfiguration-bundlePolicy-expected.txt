@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] "balanced" bundle policy should gather ICE candidates for each media type in use
+  assert_equals: Second audio m-line should have no candidates expected 0 but got 1
+Harness: the test ran to completion.
+

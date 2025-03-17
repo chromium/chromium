@@ -19,7 +19,6 @@ import '../icons.html.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {CrA11yAnnouncerElement} from '../cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from '../cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {getCss} from './cr_toolbar_selection_overlay.css.js';
@@ -69,7 +68,7 @@ export class CrToolbarSelectionOverlayElement extends CrLitElement {
         return;
       }
       this.setAttribute('aria-label', this.selectionLabel);
-      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      const announcer = getAnnouncerInstance();
       announcer.announce(this.selectionLabel);
     }
   }

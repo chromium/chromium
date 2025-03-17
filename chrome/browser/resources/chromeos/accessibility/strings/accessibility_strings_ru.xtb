@@ -138,7 +138,7 @@
 <translation id="1771761307086386028">Вправо</translation>
 <translation id="1781173782405573156">Пропустить нажатие</translation>
 <translation id="1787176709638001873">Поле для ввода пароля</translation>
-<translation id="1795438342141780114">Переместить курсор в центр экрана</translation>
+<translation id="1795438342141780114">Переместить указатель в центр экрана</translation>
 <translation id="180203835522132923">Поиск + O, затем W</translation>
 <translation id="1810107444790159527">Список</translation>
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
@@ -1041,7 +1041,7 @@
 <translation id="7839679365527550018">К предыдущему слову</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7851816175263618915">Некоторые знаки препинания.</translation>
-<translation id="7871691770940645922">Виртуальный брайлевский дисплей</translation>
+<translation id="7871691770940645922">Виртуальный дисплей Брайля</translation>
 <translation id="7882421473871500483">Коричневый</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">Следующего заголовка второго уровня нет</translation>
@@ -1114,6 +1114,7 @@
 <translation id="8316881042119029234">Старое кружево</translation>
 <translation id="8326783648485765113">Зеленая лужайка</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{решетка}one{# решетка}few{# решетки}many{# решеток}other{# pound signs}}</translation>
+<translation id="8351821207686449674">Включить/выключить расшифровку речи</translation>
 <translation id="8378855320830505539">Регион</translation>
 <translation id="8382679411218029383">Строка и список автозаполнения</translation>
 <translation id="8394908167088220973">Воспроизведение/пауза</translation>

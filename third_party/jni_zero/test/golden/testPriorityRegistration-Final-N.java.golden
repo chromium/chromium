@@ -8,13 +8,13 @@ public class N {
   public static final long WHOLE_HASH = -7874644414477415949L;
   public static final long PRIORITY_HASH = 4128442159926458844L;
 
-  public static native void _V(int _switchNum);
-  public static native int _I_I(int _switchNum, int p0);
-  public static native Object _O_O(int _switchNum, Object p0);
-  public static native boolean _Z_O(int _switchNum, Object p0);
-  public static native void _V_IO(int _switchNum, int p0, Object p1);
-  public static native void _V_OO(int _switchNum, Object p0, Object p1);
-  public static native int _I_OO(int _switchNum, Object p0, Object p1);
-  public static native Object _O_OO(int _switchNum, Object p0, Object p1);
-  public static native boolean _Z_IO(int _switchNum, int p0, Object p1);
+  public static native void V(int _switchNum);
+  public static native int II(int _switchNum, int p0);
+  public static native Object OO(int _switchNum, Object p0);
+  public static native boolean ZO(int _switchNum, Object p0);
+  public static native void VIO(int _switchNum, int p0, Object p1);
+  public static native void VOO(int _switchNum, Object p0, Object p1);
+  public static native int IOO(int _switchNum, Object p0, Object p1);
+  public static native Object OOO(int _switchNum, Object p0, Object p1);
+  public static native boolean ZIO(int _switchNum, int p0, Object p1);
 }

@@ -230,3 +230,20 @@ def CheckCpp17CompatibleKeywords(input_api, output_api):
                         '%s:%d\nPartitionAlloc disallows C++20 keywords: %s'
                         % (f.LocalPath(), line_number + 1, keyword)))
     return errors
+
+# Check `NDEBUG` is not used inside partition_alloc. We prefer to use the
+# buildflags `#if PA_BUILDFLAG(IS_DEBUG)` instead.
+def CheckNoNDebug(input_api, output_api):
+    sources = lambda affected_file: input_api.FilterSourceFile(
+        affected_file,
+        files_to_skip=[],
+        files_to_check=[_SOURCE_FILE_PATTERN])
+
+    errors = []
+    for f in input_api.AffectedSourceFiles(sources):
+        for line_number, line in f.ChangedContents():
+            if 'NDEBUG' in line:
+                errors.append(output_api.PresubmitError('%s:%d\nPartitionAlloc'
+                  % (f.LocalPath(), line_number + 1)
+                  + 'disallows NDEBUG, use PA_BUILDFLAG(IS_DEBUG) instead'))
+    return errors

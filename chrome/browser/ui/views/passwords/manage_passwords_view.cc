@@ -168,7 +168,7 @@ ManagePasswordsView::CreatePasswordListView() {
                         kManagePasswordsButtonClicked);
           },
           base::Unretained(this)),
-      controller_.IsOptedInForAccountStorage());
+      controller_.IsAccountStorageEnabled());
 }
 
 std::unique_ptr<ManagePasswordsDetailsView>
@@ -190,7 +190,11 @@ ManagePasswordsView::CreatePasswordDetailsView() {
                 l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UPDATE));
             view->GetBubbleFrameView()->SetFootnoteView(
                 view->CreateFooterView());
-            view->PreferredSizeChanged();
+
+            // TODO(crbug.com/41493925): Remove this SizeToContents().
+            // This SizeToContent() is used for immediate layout to ensure that
+            // a subsequent RequestFocus() sets the correct focus.
+            view->SizeToContents();
           },
           base::Unretained(this)),
       base::BindRepeating(&ManagePasswordsView::ExtendAuthValidity,
@@ -315,7 +319,7 @@ void ManagePasswordsView::RecreateLayout() {
         CreatePasswordDetailsView();
     password_details_view_ = details_view.get();
     page_container_->SwitchToPage(std::move(details_view));
-    if (controller_.IsOptedInForAccountStorage() &&
+    if (controller_.IsAccountStorageEnabled() &&
         !controller_.get_details_bubble_credential()
              .value()
              .IsUsingAccountStore()) {

@@ -1395,7 +1395,7 @@ AtomicString SourceBuffer::DefaultTrackLanguage(
 }
 
 void SourceBuffer::AddPlaceholderCrossThreadTracks(
-    const WebVector<MediaTrackInfo>& new_tracks,
+    const std::vector<MediaTrackInfo>& new_tracks,
     scoped_refptr<MediaSourceAttachmentSupplement> attachment) {
   // TODO(https://crbug.com/878133): Complete the MSE-in-Workers function
   // necessary to enable successful experimental usage of AudioVideoTracks
@@ -1491,7 +1491,7 @@ void SourceBuffer::RemovePlaceholderCrossThreadTracks(
 }
 
 bool SourceBuffer::InitializationSegmentReceived(
-    const WebVector<MediaTrackInfo>& new_tracks) {
+    const std::vector<MediaTrackInfo>& new_tracks) {
   DVLOG(3) << __func__ << " this=" << this << " tracks=" << new_tracks.size();
   DCHECK(source_);
   source_->AssertAttachmentsMutexHeldIfCrossThreadForDebugging();

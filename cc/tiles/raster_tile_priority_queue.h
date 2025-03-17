@@ -10,10 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
-#include "cc/layers/picture_layer_impl.h"
 #include "cc/tiles/tile_priority.h"
 
 namespace cc {
+class PictureLayerImpl;
 class PrioritizedTile;
 
 class CC_EXPORT RasterTilePriorityQueue {

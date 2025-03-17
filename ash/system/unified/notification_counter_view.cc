@@ -26,6 +26,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -165,9 +166,9 @@ void NotificationCounterView::Update() {
   int icon_id = std::min(notification_count, kTrayNotificationMaxCount + 1);
   if (icon_id != count_for_display_) {
     count_for_display_ = icon_id;
-    image_view()->SetImage(
+    image_view()->SetImage(ui::ImageModel::FromImageSkia(
         gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(this,
-                                                                     icon_id));
+                                                                     icon_id)));
     UpdateLabelOrImageViewColor(is_active());
   }
   SetVisible(true);
@@ -191,9 +192,9 @@ void NotificationCounterView::OnThemeChanged() {
 void NotificationCounterView::UpdateLabelOrImageViewColor(bool active) {
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
-  image_view()->SetImage(
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(
       gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
-          this, count_for_display_));
+          this, count_for_display_)));
 }
 
 BEGIN_METADATA(NotificationCounterView)

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 
+#include <array>
 #include <optional>
 #include <utility>
 
@@ -16,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/encoder_status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
@@ -174,21 +169,23 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   std::string data;
   scoped_refptr<media::DecoderBuffer> buffer;
 
-  const uint8_t kNALStartCode[4] = {0, 0, 0, 1};
+  const std::array<uint8_t, 4> kNALStartCode = {0, 0, 0, 1};
   for (int layer = 0; layer < info.iLayerNum; ++layer) {
-    const SLayerBSInfo& layerInfo = info.sLayerInfo[layer];
+    const SLayerBSInfo& layerInfo = UNSAFE_TODO(info.sLayerInfo[layer]);
     // Iterate NAL units making up this layer, noting fragments.
     size_t layer_len = 0;
-    for (int nal = 0; nal < layerInfo.iNalCount; ++nal) {
-      // The following DCHECKs make sure that the header of each NAL unit is OK.
-      DCHECK_GE(layerInfo.pNalLengthInByte[nal], 4);
-      DCHECK_EQ(kNALStartCode[0], layerInfo.pBsBuf[layer_len + 0]);
-      DCHECK_EQ(kNALStartCode[1], layerInfo.pBsBuf[layer_len + 1]);
-      DCHECK_EQ(kNALStartCode[2], layerInfo.pBsBuf[layer_len + 2]);
-      DCHECK_EQ(kNALStartCode[3], layerInfo.pBsBuf[layer_len + 3]);
-
-      layer_len += layerInfo.pNalLengthInByte[nal];
-    }
+    UNSAFE_TODO({
+      for (int nal = 0; nal < layerInfo.iNalCount; ++nal) {
+        // The following DCHECKs make sure that the header of each NAL unit
+        // is OK.
+        DCHECK_GE(layerInfo.pNalLengthInByte[nal], 4);
+        DCHECK_EQ(kNALStartCode[0], layerInfo.pBsBuf[layer_len + 0]);
+        DCHECK_EQ(kNALStartCode[1], layerInfo.pBsBuf[layer_len + 1]);
+        DCHECK_EQ(kNALStartCode[2], layerInfo.pBsBuf[layer_len + 2]);
+        DCHECK_EQ(kNALStartCode[3], layerInfo.pBsBuf[layer_len + 3]);
+        layer_len += layerInfo.pNalLengthInByte[nal];
+      }
+    });
     // Copy the entire layer's data (including NAL start codes).
     data.append(reinterpret_cast<char*>(layerInfo.pBsBuf), layer_len);
   }

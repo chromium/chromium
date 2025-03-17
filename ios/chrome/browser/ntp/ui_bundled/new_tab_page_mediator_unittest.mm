@@ -11,7 +11,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feed/core/v2/public/common_enums.h"
-#import "components/search_engines/search_engines_switches.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -94,18 +95,20 @@ class NewTabPageMediatorTest : public PlatformTest {
         DiscoverFeedServiceFactory::GetForProfile(profile_.get());
     PrefService* prefs = profile_->GetPrefs();
     mediator_ = [[NewTabPageMediator alloc]
-        initWithTemplateURLService:ios::TemplateURLServiceFactory::
-                                       GetForProfile(profile_.get())
-                         URLLoader:url_loader_
-                       authService:auth_service_
-                   identityManager:identity_manager_
-             accountManagerService:account_manager_service
-          identityDiscImageUpdater:image_updater_
-                       isIncognito:is_incognito
-               discoverFeedService:discover_feed_service
-                       prefService:prefs
-                       syncService:&test_sync_service_
-                        isSafeMode:NO];
+         initWithTemplateURLService:ios::TemplateURLServiceFactory::
+                                        GetForProfile(profile_.get())
+                          URLLoader:url_loader_
+                        authService:auth_service_
+                    identityManager:identity_manager_
+              accountManagerService:account_manager_service
+           identityDiscImageUpdater:image_updater_
+                        isIncognito:is_incognito
+                discoverFeedService:discover_feed_service
+                        prefService:prefs
+                        syncService:&test_sync_service_
+        regionalCapabilitiesService:ios::RegionalCapabilitiesServiceFactory::
+                                        GetForProfile(profile_.get())
+                         isSafeMode:NO];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
     feed_metrics_recorder_ =

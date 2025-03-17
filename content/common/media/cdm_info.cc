@@ -34,6 +34,22 @@ CdmInfo::CdmInfo(const std::string& key_system,
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
                  std::optional<media::CdmCapability> capability,
+                 bool supports_sub_key_systems,
+                 const std::string& name,
+                 const media::CdmType& type,
+                 const base::FilePath& path)
+    : CdmInfo(key_system,
+              robustness,
+              std::move(capability),
+              supports_sub_key_systems,
+              name,
+              type,
+              base::Version(),
+              path) {}
+
+CdmInfo::CdmInfo(const std::string& key_system,
+                 Robustness robustness,
+                 std::optional<media::CdmCapability> capability,
                  const media::CdmType& type)
     : CdmInfo(key_system,
               robustness,

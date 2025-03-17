@@ -36,7 +36,6 @@ class StubLayerTreeFrameSink : public LayerTreeFrameSink {
                 ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
                     /*for_renderer=*/false)),
             std::move(compositor_task_runner),
-            nullptr,
             /*shared_image_interface=*/nullptr) {}
 
   void SubmitCompositorFrame(viz::CompositorFrame frame,
@@ -45,9 +44,6 @@ class StubLayerTreeFrameSink : public LayerTreeFrameSink {
   }
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override {}
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {}
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
 };
 
 TEST(LayerTreeFrameSinkTest, ContextLossInformsClient) {

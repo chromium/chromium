@@ -37,6 +37,7 @@
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -471,7 +472,7 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
                                             const std::wstring& password,
                                             const std::wstring& fullname,
                                             const std::wstring& comment,
-                                            const std::wstring& gaia_id,
+                                            const GaiaId& gaia_id,
                                             const std::wstring& email,
                                             BSTR* sid) {
   return CreateTestOSUser(username, password, fullname, comment, gaia_id, email,
@@ -482,7 +483,7 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
                                             const std::wstring& password,
                                             const std::wstring& fullname,
                                             const std::wstring& comment,
-                                            const std::wstring& gaia_id,
+                                            const GaiaId& gaia_id,
                                             const std::wstring& email,
                                             const std::wstring& domain,
                                             BSTR* sid) {
@@ -494,7 +495,8 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
   }
 
   if (!gaia_id.empty()) {
-    hr = SetUserProperty(OLE2CW(*sid), kUserId, gaia_id);
+    hr = SetUserProperty(OLE2CW(*sid), kUserId,
+                         base::UTF8ToWide(gaia_id.ToString()));
     if (FAILED(hr)) {
       return hr;
     }

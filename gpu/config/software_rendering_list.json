@@ -1026,7 +1026,7 @@
         { "gl_vendor": "freedreno" },
         { "gl_renderer": "Mali-T8.*",
           "subpixel_font_rendering": "unsupported"},
-        { "gl_renderer": "Mali-G.*",
+        { "gl_renderer": ".*Mali-G.*",
           "subpixel_font_rendering": "unsupported"},
         { "gl_renderer": "PowerVR.*" },
         { "vendor_id": "0x1002" }
@@ -1437,23 +1437,15 @@
       ]
     },
     {
-      "id": 182,
-      "cr_bugs": [332731568],
-      "description": "Accelerated video decoding fails with SkiaGraphite on win10+nvidia",
+      "id": 183,
+      "cr_bugs": [1227033],
+      "description": "Don't use the OOPR Canvas feature on Macs with NVIDIA GPUs",
       "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10.0.22621"
-        }
+        "type" : "macosx"
       },
       "vendor_id": "0x10de",
-      "driver_version": {
-        "op": "<",
-        "value": "31.0.15.3623"
-      },
       "features": [
-        "skia_graphite"
+        "accelerated_2d_canvas"
       ]
     }
   ]

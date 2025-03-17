@@ -15,6 +15,10 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
  public:
   MockProductSpecificationsService();
   ~MockProductSpecificationsService() override;
+
+  // Produces a testing::NiceMock of the MockProductSpecificationsService.
+  static std::unique_ptr<KeyedService> Build();
+
   MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
               GetAllProductSpecifications,
               (),

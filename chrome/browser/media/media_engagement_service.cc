@@ -50,28 +50,6 @@ enum class MediaEngagementClearReason {
   kCount
 };
 
-bool MediaEngagementFilterAdapter(
-    const url::Origin& predicate,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
-  url::Origin origin = url::Origin::Create(GURL(primary_pattern.ToString()));
-  DCHECK(!origin.opaque());
-  return predicate == origin;
-}
-
-bool MediaEngagementTimeFilterAdapter(
-    MediaEngagementService* service,
-    base::Time delete_begin,
-    base::Time delete_end,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
-  url::Origin origin = url::Origin::Create(GURL(primary_pattern.ToString()));
-  DCHECK(!origin.opaque());
-  MediaEngagementScore score = service->CreateEngagementScore(origin);
-  base::Time playback_time = score.last_media_playback_time();
-  return playback_time >= delete_begin && playback_time <= delete_end;
-}
-
 }  // namespace
 
 // static
@@ -162,10 +140,15 @@ void MediaEngagementService::ClearDataBetweenTime(
     const base::Time& delete_end) {
   HostContentSettingsMapFactory::GetForProfile(profile_)
       ->ClearSettingsForOneTypeWithPredicate(
-          ContentSettingsType::MEDIA_ENGAGEMENT, base::Time(),
-          base::Time::Max(),
-          base::BindRepeating(&MediaEngagementTimeFilterAdapter, this,
-                              delete_begin, delete_end));
+          ContentSettingsType::MEDIA_ENGAGEMENT,
+          [&](const ContentSettingPatternSource& setting) {
+            url::Origin origin =
+                url::Origin::Create(GURL(setting.primary_pattern.ToString()));
+            DCHECK(!origin.opaque());
+            MediaEngagementScore score = CreateEngagementScore(origin);
+            base::Time playback_time = score.last_media_playback_time();
+            return playback_time >= delete_begin && playback_time <= delete_end;
+          });
 }
 
 void MediaEngagementService::Shutdown() {
@@ -244,10 +227,13 @@ void MediaEngagementService::RemoveOriginsWithNoVisits(
 void MediaEngagementService::Clear(const url::Origin& origin) {
   HostContentSettingsMapFactory::GetForProfile(profile_)
       ->ClearSettingsForOneTypeWithPredicate(
-          ContentSettingsType::MEDIA_ENGAGEMENT, base::Time(),
-          base::Time::Max(),
-          base::BindRepeating(&MediaEngagementFilterAdapter,
-                              std::cref(origin)));
+          ContentSettingsType::MEDIA_ENGAGEMENT,
+          [&](const ContentSettingPatternSource& setting) {
+            url::Origin pattern_origin =
+                url::Origin::Create(GURL(setting.primary_pattern.ToString()));
+            DCHECK(!pattern_origin.opaque());
+            return origin == pattern_origin;
+          });
 }
 
 double MediaEngagementService::GetEngagementScore(

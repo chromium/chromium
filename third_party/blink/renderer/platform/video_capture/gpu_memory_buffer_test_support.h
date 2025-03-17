@@ -23,19 +23,6 @@ class TestSharedImageInterface;
 
 namespace blink {
 
-class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {
- public:
-  std::unique_ptr<gpu::GpuMemoryBufferImpl> CreateGpuMemoryBufferImplFromHandle(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      gpu::GpuMemoryBufferImpl::DestructionCallback callback,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr,
-      base::span<uint8_t> premapped_memory = base::span<uint8_t>()) override;
-};
-
 class TestingPlatformSupportForGpuMemoryBuffer
     : public IOTaskRunnerTestingPlatformSupport {
  public:

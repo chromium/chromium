@@ -70,9 +70,11 @@ class ExtensionInstallPromptShowParams {
   base::WeakPtr<content::WebContents> parent_web_contents_;
   gfx::NativeWindow parent_window_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Used to track the parent_window_'s lifetime. We need to explicitly track it
   // because aura::Window does not expose a WeakPtr like WebContents.
   std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
+#endif
 };
 
 namespace test {

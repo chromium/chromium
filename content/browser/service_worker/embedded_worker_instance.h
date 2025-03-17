@@ -46,6 +46,7 @@
 namespace content {
 
 class CrossOriginEmbedderPolicyReporter;
+class DocumentIsolationPolicyReporter;
 class RenderProcessHost;
 class ServiceWorkerContentSettingsProxyImpl;
 class ServiceWorkerContextCore;
@@ -268,11 +269,16 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       ContentBrowserClient::URLLoaderFactoryType factory_type,
       const std::string& devtools_worker_token);
 
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
   GetCoepReporter();
+
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+  GetDipReporter();
 
  private:
   typedef base::ObserverList<Listener>::Unchecked ListenerList;
@@ -344,6 +350,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   void BindCacheStorageInternal();
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
   GetCoepReporterInternal(StoragePartitionImpl* storage_partition);
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+  GetDipReporterInternal(StoragePartitionImpl* storage_partition);
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
   raw_ptr<ServiceWorkerVersion> owner_version_;
@@ -422,6 +430,15 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // requests initiated from the service worker. The impl lives on the UI
   // thread, and |coep_reporter_| has the ownership of the impl instance.
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
+  mojo::PendingReceiver<blink::mojom::ReportingObserver>
+      coep_reporting_observer_receiver_;
+
+  // DIP Reporter connected to the URLLoaderFactories that handles subresource
+  // requests initiated from the service worker. The impl lives on the UI
+  // thread, and |coep_reporter_| has the ownership of the impl instance.
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
+  mojo::PendingReceiver<blink::mojom::ReportingObserver>
+      dip_reporting_observer_receiver_;
 
   bool in_dtor_{false};
 

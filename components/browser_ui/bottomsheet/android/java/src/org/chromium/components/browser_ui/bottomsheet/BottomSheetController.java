@@ -6,8 +6,9 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -19,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@link #requestShowContent(BottomSheetContent, boolean)} which will return true if the content
  * was actually shown (see full doc on method).
  */
+@NullMarked
 public interface BottomSheetController {
     /** The different states that the bottom sheet can have. */
     @IntDef({
@@ -151,6 +153,12 @@ public interface BottomSheetController {
     int getContainerHeight();
 
     /**
+     * @return The width of the bottom sheet's container in px. This will return 0 if the sheet has
+     *     not been initialized (content has not been requested).
+     */
+    int getContainerWidth();
+
+    /**
      * @return The maximum width of the bottom sheet. This will return 0 if the sheet has not been
      *     initialized (content has not been requested). Can be used to measure content if needed in
      *     {@link BottomSheetContent#getHalfHeightRatio()} and {@link
@@ -159,21 +167,20 @@ public interface BottomSheetController {
     int getMaxSheetWidth();
 
     /**
-     * @return The srcim's coordinator. This can be used to customize the bottom sheet's interaction
-     *     with the scrim if the default behavior is not desired -- fading in behind the sheet as
-     *     the sheet is expanded.
+     * Returns the entry point for showing and interacting with scrims. Can be used to customize the
+     * bottom sheet's interaction with the scrim if the default behavior is not desired -- fading in
+     * behind the sheet as the sheet is expanded.
      */
-    ScrimCoordinator getScrimCoordinator();
+    ScrimManager getScrimManager();
 
     /**
      * This method provides a property model that can be used to show the scrim behind the bottom
-     * sheet. This can be used in conjunction with {@link #getScrimCoordinator()} to customize the
-     * scrim's behavior. While this method is not required to show the scrim, this method returns
-     * a model set up to appear behnind the sheet. Common usage is the following:
+     * sheet. This can be used in conjunction with {@link #getScrimManager()} to customize the
+     * scrim's behavior. While this method is not required to show the scrim, this method returns a
+     * model set up to appear behnind the sheet. Common usage is the following:
      *
-     * PropertyModel params = controller.createScrimParams();
-     * // further modify params
-     * controller.getScrimCoordinator().showScrim(params);
+     * <p>PropertyModel params = controller.createScrimParams(); // further modify params
+     * controller.getScrimManager().showScrim(params);
      *
      * @return A property model used to show the scrim behind the bottom sheet.
      */
@@ -196,4 +203,11 @@ public interface BottomSheetController {
      *     sheet state.
      */
     boolean isSmallScreen();
+
+    /**
+     * Whether the bottom sheet is anchored on top of the browser controls. When false, the bottom
+     * sheet will be anchored at the bottom of the window and potentially covering the bottom
+     * controls UI.
+     */
+    boolean isAnchoredToBottomControls();
 }

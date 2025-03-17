@@ -13,7 +13,7 @@ class WebContents;
 }  // namespace content
 
 namespace commerce {
-// Minimum number of tabsrequired for product specifications experience menu.
+// Minimum number of tabs required for product specifications experience menu.
 extern const int kProductSpecificationsMinTabsCount;
 
 // Extracts the list of URLs that can be used for ProductSpecs experience from
@@ -25,6 +25,9 @@ const std::vector<GURL> GetListOfProductSpecsEligibleUrls(
 // ProductSpecs.
 bool IsWebContentsListEligibleForProductSpecs(
     const std::vector<content::WebContents*>& web_contents_list);
+
+// Returns true if |url| is eligible to be added to a comparison table.
+bool IsUrlEligibleForProductSpecs(const GURL& url);
 
 // Returns true the multi-selection context menu should be enabled for |profile|
 // and |web_contents|

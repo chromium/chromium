@@ -22,6 +22,7 @@ struct UpdateInfo {
   url.mojom.Url update_manifest_url;
   string update_channel;
   string? pinned_version;
+  bool allow_downgrades = false;
 };
 
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
@@ -68,54 +69,57 @@ struct InstallFromBundleUrlParams {
 interface WebAppInternalsHandler {
   // Returns Web App related debug information as a JSON string.
   GetDebugInfoAsJsonString() => (string result);
-  // Returns whether the clearing is successful.
-  [EnableIf=is_chromeos_lacros]
-  ClearExperimentalWebAppIsolationData() => (bool success);
 
   // Returns whether the installation succeeded.
-  InstallIsolatedWebAppFromDevProxy(url.mojom.Url url) =>
-      (InstallIsolatedWebAppResult result);
+  InstallIsolatedWebAppFromDevProxy(url.mojom.Url url)
+      => (InstallIsolatedWebAppResult result);
+
   // Returns whether the installation succeeded.
-  SelectFileAndInstallIsolatedWebAppFromDevBundle() =>
-      (InstallIsolatedWebAppResult result);
+  SelectFileAndInstallIsolatedWebAppFromDevBundle()
+      => (InstallIsolatedWebAppResult result);
 
   // Attempts to fetch & parse an IWA update manifest from the provided url.
-  ParseUpdateManifestFromUrl(
-      url.mojom.Url update_manifest_url) =>
-      (ParseUpdateManifestFromUrlResult result);
+  ParseUpdateManifestFromUrl(url.mojom.Url update_manifest_url)
+      => (ParseUpdateManifestFromUrlResult result);
+
   // Attempts to download a web bundle & install an IWA in dev mode with the
   // provided `params`.
-  InstallIsolatedWebAppFromBundleUrl(
-      InstallFromBundleUrlParams params) =>
-      (InstallIsolatedWebAppResult result);
+  InstallIsolatedWebAppFromBundleUrl(InstallFromBundleUrlParams params)
+      => (InstallIsolatedWebAppResult result);
 
   // Triggers an update for a dev mode proxy app. Returns a string containing a
   // success or error message.
   UpdateDevProxyIsolatedWebApp(string app_id) => (string result);
+
   // Triggers an update for a dev mode bundle app by opening a file picker to
   // let the user choose a Signed Web Bundle. Returns a string containing a
   // success or error message.
-  SelectFileAndUpdateIsolatedWebAppFromDevBundle(string app_id) =>
-      (string result);
+  SelectFileAndUpdateIsolatedWebAppFromDevBundle(string app_id)
+      => (string result);
+
   // Triggers an update for a manifest-installed dev mode app.
   // Returns a string containing a success or error message.
   UpdateManifestInstalledIsolatedWebApp(string app_id) => (string result);
 
   // Sets `web_app.isolation_data.update_channel` to `update_channel` for this
   // `app_id`.
-  SetUpdateChannelForIsolatedWebApp(string app_id, string update_channel) =>
-      (bool success);
+  SetUpdateChannelForIsolatedWebApp(string app_id, string update_channel)
+      => (bool success);
 
   // Sets `pinned_version` value for given `app_id`.
-  SetPinnedVersionForIsolatedWebApp(string app_id, string pinned_version) =>
-      (bool success);
+  SetPinnedVersionForIsolatedWebApp(string app_id, string pinned_version)
+      => (bool success);
 
   // Unpins the IWA by setting `pinned_version` to null.
   ResetPinnedVersionForIsolatedWebApp(string app_id);
 
+  // Sets the `allow_downgrades` value for a given `app_id`.
+  SetAllowDowngradesForIsolatedWebApp(bool allow_downgrades, string app_id);
+
   // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
   // Returns a string containing a success or error message.
   SearchForIsolatedWebAppUpdates() => (string result);
+
   // Returns information about installed dev mode IWAs.
   GetIsolatedWebAppDevModeAppInfo() => (array<IwaDevModeAppInfo> apps);
 

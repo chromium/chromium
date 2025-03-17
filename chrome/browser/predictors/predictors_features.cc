@@ -45,15 +45,11 @@ BASE_FEATURE(kLoadingPredictorDisregardAlwaysAccessesNetwork,
              "LoadingPredictorDisregardAlwaysAccessesNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureState
-    kLoadingPredictorUseOptimizationGuideDefaultFeatureState =
-        kFeatureEnabledOnlyOnAndroid;
-
 // Modifies loading predictor so that it can also use predictions coming from
 // the optimization guide.
 BASE_FEATURE(kLoadingPredictorUseOptimizationGuide,
              "LoadingPredictorUseOptimizationGuide",
-             kLoadingPredictorUseOptimizationGuideDefaultFeatureState);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureState kLoadingPredictorPrefetchDefaultFeatureState =
     kFeatureEnabledOnlyOnAndroid;

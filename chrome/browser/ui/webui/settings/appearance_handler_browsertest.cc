@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -33,9 +32,6 @@ class AppearanceHandlerTest : public InProcessBrowserTest {
     EXPECT_TRUE(content::WaitForLoadStop(
         browser()->tab_strip_model()->GetActiveWebContents()));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kToolbarPinning};
 };
 
 IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest,

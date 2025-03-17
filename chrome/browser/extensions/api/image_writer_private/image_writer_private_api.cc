@@ -4,7 +4,9 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_private_api.h"
 
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
@@ -16,7 +18,9 @@
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/disks/disks_prefs.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/policy/external_storage/device_id.h"
+#include "chromeos/ash/components/policy/external_storage/external_storage_policy_controller.h"
 #endif
 
 namespace image_writer_api = extensions::api::image_writer_private;
@@ -24,6 +28,32 @@ namespace image_writer_api = extensions::api::image_writer_private;
 namespace extensions {
 
 namespace {
+
+bool IsDeviceWriteable(content::BrowserContext* browser_context,
+                       const std::string& storage_unit_id) {
+#if BUILDFLAG(IS_CHROMEOS)
+  const Profile* profile = Profile::FromBrowserContext(browser_context);
+  const PrefService& pref_service = *profile->GetPrefs();
+
+  const ash::disks::Disk* disk =
+      ash::disks::DiskMountManager::GetInstance()->FindDiskBySourcePath(
+          storage_unit_id);
+  std::optional<policy::DeviceId> device_id = policy::DeviceId::FromDisk(disk);
+
+  return policy::ExternalStoragePolicyController::IsDeviceWriteable(
+      pref_service, device_id);
+#else
+  return true;
+#endif
+}
+
+void MaybeFilterDeviceList(
+    content::BrowserContext* browser_context,
+    std::vector<image_writer_api::RemovableStorageDevice>& device_list_data) {
+  std::erase_if(device_list_data, [&browser_context](const auto& device) {
+    return !IsDeviceWriteable(browser_context, device.storage_unit_id);
+  });
+}
 
 }  // namespace
 
@@ -47,16 +77,13 @@ ImageWriterPrivateWriteFromUrlFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateWriteFromUrlFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS)
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageDisabled) ||
-      profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageReadOnly)) {
-    return RespondNow(Error(image_writer::error::kDeviceWriteError));
-  }
-#endif
   std::optional<image_writer_api::WriteFromUrl::Params> params =
       image_writer_api::WriteFromUrl::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!IsDeviceWriteable(browser_context(), params->storage_unit_id)) {
+    return RespondNow(Error(image_writer::error::kDeviceWriteError));
+  }
 
   GURL url(params->image_url);
   if (!url.is_valid())
@@ -84,13 +111,6 @@ ImageWriterPrivateWriteFromFileFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateWriteFromFileFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS)
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageDisabled) ||
-      profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageReadOnly)) {
-    return RespondNow(Error(image_writer::error::kDeviceWriteError));
-  }
-#endif
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
@@ -99,6 +119,10 @@ ImageWriterPrivateWriteFromFileFunction::Run() {
   const std::string& storage_unit_id = args()[0].GetString();
   const std::string& filesystem_name = args()[1].GetString();
   const std::string& filesystem_path = args()[2].GetString();
+
+  if (!IsDeviceWriteable(browser_context(), storage_unit_id)) {
+    return RespondNow(Error(image_writer::error::kDeviceWriteError));
+  }
 
   base::FilePath path;
 
@@ -142,17 +166,13 @@ ImageWriterPrivateDestroyPartitionsFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateDestroyPartitionsFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS)
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageDisabled) ||
-      profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageReadOnly)) {
-    return RespondNow(Error(image_writer::error::kDeviceWriteError));
-  }
-#endif
-
   std::optional<image_writer_api::DestroyPartitions::Params> params =
       image_writer_api::DestroyPartitions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!IsDeviceWriteable(browser_context(), params->storage_unit_id)) {
+    return RespondNow(Error(image_writer::error::kDeviceWriteError));
+  }
 
   image_writer::OperationManager::Get(browser_context())
       ->DestroyPartitions(
@@ -171,15 +191,6 @@ ImageWriterPrivateListRemovableStorageDevicesFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateListRemovableStorageDevicesFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS)
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageDisabled)) {
-    // Return an empty device list.
-    OnDeviceListReady(base::MakeRefCounted<StorageDeviceList>());
-    return AlreadyResponded();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   RemovableStorageProvider::GetAllDevices(base::BindOnce(
       &ImageWriterPrivateListRemovableStorageDevicesFunction::OnDeviceListReady,
       this));
@@ -189,14 +200,16 @@ ImageWriterPrivateListRemovableStorageDevicesFunction::Run() {
 
 void ImageWriterPrivateListRemovableStorageDevicesFunction::OnDeviceListReady(
     scoped_refptr<StorageDeviceList> device_list) {
-  const bool success = device_list.get() != nullptr;
-  if (success) {
-    Respond(ArgumentList(
-        image_writer_api::ListRemovableStorageDevices::Results::Create(
-            device_list->data)));
-  } else {
+  if (!device_list) {
     Respond(Error(image_writer::error::kDeviceListError));
+    return;
   }
+
+  MaybeFilterDeviceList(browser_context(), device_list->data);
+
+  Respond(ArgumentList(
+      image_writer_api::ListRemovableStorageDevices::Results::Create(
+          device_list->data)));
 }
 
 }  // namespace extensions

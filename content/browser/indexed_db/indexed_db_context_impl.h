@@ -5,9 +5,7 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTEXT_IMPL_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTEXT_IMPL_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -17,8 +15,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
@@ -345,10 +341,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   mojo::ReceiverSet<storage::mojom::IndexedDBControl> control_receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBControlTest> test_receivers_;
-  // See comment above IDBFactory overrides.
-  mojo::ReceiverSet<blink::mojom::IDBFactory> factory_receivers_;
-  std::optional<mojo::Receiver<storage::mojom::MockFailureInjector>>
-      mock_failure_injector_;
+
   mojo::RemoteSet<storage::mojom::IndexedDBObserver> observers_;
 
   // For testing: when non-null, this receiver will be passed off to the next
@@ -383,7 +376,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // If recording begins on a bucket ID that doesn't currently have a context,
   // add it to a pending set and actually begin once the context is created.
   std::set<storage::BucketId> pending_bucket_recording_;
-  std::vector<storage::mojom::IdbBucketMetadataPtr> metadata_record_buffer_;
+
   // When `Shutdown()` was called, or null if it's not been called. Used for
   // UMA.
   base::TimeTicks shutdown_start_time_;

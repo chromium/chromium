@@ -96,12 +96,12 @@ export class SettingsEditDictionaryPageElement extends
     this.languageSettingsPrivate_ =
         LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
 
-    this.languageSettingsPrivate_!.getSpellcheckWords().then(words => {
+    this.languageSettingsPrivate_.getSpellcheckWords().then(words => {
       this.hasWords_ = words.length > 0;
       this.words_ = words;
     });
 
-    this.languageSettingsPrivate_!.onCustomDictionaryChanged.addListener(
+    this.languageSettingsPrivate_.onCustomDictionaryChanged.addListener(
         this.onCustomDictionaryChanged_.bind(this));
   }
 

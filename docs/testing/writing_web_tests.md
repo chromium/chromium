@@ -308,7 +308,7 @@ text expectations.
 Because of [baseline fallback](./web_test_baseline_fallback.md), it may not be
 possible to [represent a platform-specific all-`PASS`
 status](https://crbug.com/1324638) by the platform baseline's absence. In such
-rare cases, `blink_tool.py rebaseline-cl` will generate a dummy baseline
+rare cases, `blink_tool.py rebaseline-cl` will generate a placeholder baseline
 indicating to `run_web_tests.py` that all subtests are meant to pass:
 
 ```
@@ -318,7 +318,7 @@ See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_w
 Harness: the test ran to completion.
 ```
 
-`blink_tool.py optimize-baselines` will automatically remove these dummy
+`blink_tool.py optimize-baselines` will automatically remove these placeholder
 baselines once all platforms are all-`PASS`.
 ***
 

@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -1509,6 +1510,20 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_carouselNoTabs() {
+        performCssTest("carousel-no-tabs.html");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_carouselWithTabs() {
+        performCssTest("carousel-with-tabs.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_characterLocations() {
         performHtmlTest("character-locations.html");
     }
@@ -1557,6 +1572,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_comboboxItemVisibility() {
+        performHtmlTest("combobox-item-visibility.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_comboboxWithRedundantAriaRole() {
+        performHtmlTest("combobox-with-redundant-aria-role.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_comboboxOptgroup() {
         performHtmlTest("combobox-optgroup.html");
     }
@@ -1595,6 +1622,18 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_customSelectOpen() {
         performHtmlTest("custom-select-open.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_customSelectLabelElement() {
+        performHtmlTest("custom-select-label-element.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_customSelectMixedOptions() {
+        performHtmlTest("custom-select-mixed-options.html");
     }
 
     @Test
@@ -1746,6 +1785,18 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_header() {
         performHtmlTest("header.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_headingWithHeadingOffset() {
+        performHtmlTest("heading-with-headingoffset.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_headingWithHeadingOffsetDialog() {
+        performHtmlTest("heading-with-headingoffset-dialog.html");
     }
 
     @Test
@@ -2133,6 +2184,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_labelWithSelectedOption() {
+        performHtmlTest("label-with-selected-option.html");
+    }
+
+    @Test
+    @SmallTest
     @DisabledTest(message = "https://crbug.com/1258230")
     public void test_landmark() {
         performHtmlTest("landmark.html");
@@ -2279,6 +2336,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_optionInDatalist() {
+        performHtmlTest("option-in-datalist.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_output() {
         performHtmlTest("output.html");
     }
@@ -2383,6 +2446,18 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_select() {
         performHtmlTest("select.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_selectInCanvas() {
+        performHtmlTest("select-in-canvas.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_selectOpen() {
+        performHtmlTest("select-open.html");
     }
 
     @Test

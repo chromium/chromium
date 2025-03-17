@@ -343,6 +343,34 @@ INSTANTIATE_TEST_SUITE_P(
                  .submitted_plus_address_is_single_field_renderer_form = true,
                  .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
                      true}},
+        // Submission of an email form after seeing combined plus address &
+        // Autocomplete suggestions and creating and filling a new plus address
+        // using Desktop's creation suggestion.
+        PlusAddressSubmissionTestCase{
+            .input = {.context = SuggestionContext::kAutocomplete,
+                      .form_type = PasswordFormType::kNoPasswordForm,
+                      .suggestion_type =
+                          SuggestionType::kCreateNewPlusAddressInline,
+                      .plus_address_count = 0,
+                      .submitted_value = kSamplePlusAddress_U16},
+            .ukms = {CreateUkmMetrics(
+                /*field_count_browser_form=*/1,
+                /*field_count_renderer_form=*/1,
+                /*plus_address_count=*/kNoPlusAddress,
+                /*is_checkout_or_cart_page=*/false,
+                /*is_managed=*/false,
+                /*is_newly_created=*/true,
+                /*submitted_plus_address=*/true,
+                PasswordFormType::kNoPasswordForm,
+                SuggestionContext::kAutocomplete,
+                /*was_shown_create_suggestion=*/true)},
+            .uma =
+                {.submitted_plus_address = true,
+                 .submitted_plus_address_first_time_user_yes = true,
+                 .submitted_plus_address_managed_user_no = true,
+                 .submitted_plus_address_is_single_field_renderer_form = true,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     true}},
         // Submission of an email form after filling an existing plus address.
         PlusAddressSubmissionTestCase{
             .input =

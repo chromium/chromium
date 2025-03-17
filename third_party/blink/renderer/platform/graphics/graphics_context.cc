@@ -35,18 +35,24 @@
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/platform_focus_ring.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
@@ -539,12 +545,13 @@ void GraphicsContext::DrawEmphasisMarksInternal(
   });
 }
 
+// This function is not used if TextCombineEmphasisNG flag is enabled.
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
-                                        const TextRunPaintInfo& text_info,
+                                        const TextRun& run,
                                         const AtomicString& mark,
                                         const gfx::PointF& point,
                                         const AutoDarkMode& auto_dark_mode) {
-  DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
+  DrawEmphasisMarksInternal(font, run, mark, point, auto_dark_mode);
 }
 
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
@@ -556,11 +563,21 @@ void GraphicsContext::DrawEmphasisMarks(const Font& font,
 }
 
 void GraphicsContext::DrawBidiText(const Font& font,
-                                   const TextRunPaintInfo& run_info,
+                                   const TextRun& run,
                                    const gfx::PointF& point,
                                    const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
-    if (font.DrawBidiText(canvas_, run_info, point,
+    if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+      if (PlainTextPainter::Shared().DrawWithBidiReorder(
+              run, 0, run.length(), font, Font::kDoNotPaintIfFontNotReady,
+              *canvas_, point, DarkModeFlags(this, auto_dark_mode, flags),
+              printing_ ? Font::DrawType::kGlyphsAndClusters
+                        : Font::DrawType::kGlyphsOnly)) {
+        paint_controller_.SetTextPainted();
+      }
+      return;
+    }
+    if (font.DrawBidiText(canvas_, TextRunPaintInfo(run), point,
                           Font::kDoNotPaintIfFontNotReady,
                           DarkModeFlags(this, auto_dark_mode, flags),
                           printing_ ? Font::DrawType::kGlyphsAndClusters
@@ -942,19 +959,26 @@ void GraphicsContext::StrokeRect(const gfx::RectF& rect,
   }
 }
 
-void GraphicsContext::ClipRoundedRect(const FloatRoundedRect& rrect,
-                                      SkClipOp clip_op,
-                                      AntiAliasingMode should_antialias) {
-  if (!rrect.IsRounded()) {
-    ClipRect(gfx::RectFToSkRect(rrect.Rect()), should_antialias, clip_op);
+void GraphicsContext::ClipContouredRect(const ContouredRect& contoured_rect,
+                                        SkClipOp clip_op,
+                                        AntiAliasingMode should_antialias) {
+  if (!contoured_rect.IsRounded()) {
+    ClipRect(gfx::RectFToSkRect(contoured_rect.Rect()), should_antialias,
+             clip_op);
     return;
   }
 
-  ClipRRect(SkRRect(rrect), should_antialias, clip_op);
+  if (contoured_rect.HasRoundCurvature()) {
+    ClipRRect(SkRRect(contoured_rect.AsRoundedRect()), should_antialias,
+              clip_op);
+    return;
+  }
+
+  ClipPath(contoured_rect.GetPath().GetSkPath(), should_antialias, clip_op);
 }
 
-void GraphicsContext::ClipOutRoundedRect(const FloatRoundedRect& rect) {
-  ClipRoundedRect(rect, SkClipOp::kDifference);
+void GraphicsContext::ClipOutContouredRect(const ContouredRect& rect) {
+  ClipContouredRect(rect, SkClipOp::kDifference);
 }
 
 void GraphicsContext::ClipRect(const SkRect& rect,
@@ -1025,7 +1049,7 @@ void GraphicsContext::SetURLDestinationLocation(const String& name,
 }
 
 void GraphicsContext::ConcatCTM(const AffineTransform& affine) {
-  Concat(AffineTransformToSkM44(affine));
+  Concat(affine.ToSkM44());
 }
 
 void GraphicsContext::AdjustLineToPixelBoundaries(gfx::PointF& p1,

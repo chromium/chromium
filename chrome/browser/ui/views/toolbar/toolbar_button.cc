@@ -124,6 +124,13 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+
+#if BUILDFLAG(IS_WIN)
+  // Paint image(s) to a layer so that the canvas is snapped to pixel
+  // boundaries.
+  image_container_view()->SetPaintToLayer();
+  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
+#endif
 }
 
 ToolbarButton::~ToolbarButton() = default;
@@ -139,7 +146,7 @@ void ToolbarButton::SetHighlight(const std::u16string& highlight_text,
   SetText(highlight_text);
 }
 
-void ToolbarButton::SetText(const std::u16string& text) {
+void ToolbarButton::SetText(std::u16string_view text) {
   LabelButton::SetText(text);
   UpdateColorsAndInsets();
 }
@@ -518,11 +525,11 @@ void ToolbarButton::AfterPropertyChange(const void* key, int64_t old_value) {
     // TODO(crbug.com/40258442): Investigate if we should suppress tooltip for
     // all Buttons rather than just ToolbarButtons when IPH is on.
     if (has_in_product_help_promo_) {
-      suppressed_tooltip_text_ = GetCachedTooltipText();
-      SetCachedTooltipText(std::u16string());
+      suppressed_tooltip_text_ = GetTooltipText();
+      SetTooltipText(std::u16string());
     } else {
-      if (GetCachedTooltipText().empty()) {
-        SetCachedTooltipText(suppressed_tooltip_text_);
+      if (GetTooltipText().empty()) {
+        SetTooltipText(suppressed_tooltip_text_);
       }
       suppressed_tooltip_text_ = std::u16string();
     }
@@ -751,6 +758,24 @@ void ToolbarButton::HighlightColorAnimation::ClearHighlightColor() {
 std::unique_ptr<views::ActionViewInterface>
 ToolbarButton::GetActionViewInterface() {
   return std::make_unique<ToolbarButtonActionViewInterface>(this);
+}
+
+void ToolbarButton::AddLayerToRegion(ui::Layer* new_layer,
+                                     views::LayerRegion region) {
+#if !BUILDFLAG(IS_WIN)
+  image_container_view()->SetPaintToLayer();
+  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
+#endif
+  ink_drop_container()->SetVisible(true);
+  ink_drop_container()->AddLayerToRegion(new_layer, region);
+}
+
+void ToolbarButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  ink_drop_container()->RemoveLayerFromRegions(old_layer);
+  ink_drop_container()->SetVisible(false);
+#if !BUILDFLAG(IS_WIN)
+  image_container_view()->DestroyLayer();
+#endif
 }
 
 ToolbarButtonActionViewInterface::ToolbarButtonActionViewInterface(

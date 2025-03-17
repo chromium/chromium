@@ -102,7 +102,7 @@ class WebSocketConnection(object):
     return response
 
   def _IsExpectedResponse(self, message, expected_id, expected_channel):
-    actual_channel = message.get('channel', None)
+    actual_channel = message.get('goog:channel', None)
     actual_id = message.get('id', None)
     return actual_id == expected_id and actual_channel == expected_channel
 
@@ -122,7 +122,7 @@ class WebSocketConnection(object):
   def _IsExpectedEvent(self, message, event_name, channel):
     return (message.get('id') == None
             and message.get('method') == event_name
-            and message.get('channel') == channel)
+            and message.get('goog:channel') == channel)
 
   def WaitForEvent(self, event_name, channel=None, timeout=None):
     return self._WaitForMessage(
@@ -145,7 +145,7 @@ class WebSocketConnection(object):
       while True:
         msg = json.loads(self._websocket.recv())
         if 'id' in msg:
-          resp_channel = msg.get('channel', None)
+          resp_channel = msg.get('goog:channel', None)
           if resp_channel not in self._responses:
             self._responses[resp_channel] = {}
           self._responses[resp_channel][msg['id']] = msg

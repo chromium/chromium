@@ -48,7 +48,6 @@ id<GREYMatcher> SecondaryActionMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.additional_args.push_back("-enable-promo-manager-fullscreen-promos");
   // Override trigger requirements to force the promo to appear.
   config.additional_args.push_back("-NextPromoForDisplayOverride");
   config.additional_args.push_back(

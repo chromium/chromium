@@ -23,9 +23,10 @@ import './sea_pen_zero_state_svg_element.js';
 
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY, Query, SeaPenImageId} from './constants.js';
+import type {Query, SeaPenImageId} from './constants.js';
+import {QUERY} from './constants.js';
 import {isManagedSeaPenFeedbackEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
-import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
@@ -35,7 +36,7 @@ import {WithSeaPenStore} from './sea_pen_store.js';
 import {isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
 
 const kFreeformLoadingPlaceholderCount = 4;
-const kTemplateLoadingPlaceholderCount = 8;
+const kTemplateLoadingPlaceholderCount = isSeaPenTextInputEnabled() ? 4 : 8;
 
 export class SeaPenHistoryPromptSelectedEvent extends CustomEvent<string> {
   static readonly EVENT_NAME = 'sea-pen-history-prompt-selected';
@@ -180,8 +181,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
       showHistory_: {
         type: Boolean,
-        computed:
-            'computeShowHistory_(thumbnailsLoading_, seaPenQuery_, textQueryHistory_)',
+        computed: 'computeShowHistory_(thumbnailsLoading_, textQueryHistory_)',
       },
 
       seaPenQuery_: {
@@ -193,6 +193,12 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         type: Array,
         value: null,
       },
+
+      latestTextQuery_: {
+        type: String,
+        value: null,
+        computed: 'computeLatestTextQuery_(seaPenQuery_)',
+      }
     };
   }
 
@@ -208,6 +214,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private isSeaPenTextInputEnabled_: boolean;
   private seaPenQuery_: SeaPenQuery|null;
   private textQueryHistory_: TextQueryHistoryEntry[]|null;
+  private latestTextQuery_: string|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -392,8 +399,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
     if (this.cameraFeed_) {
       // Attached cameraFeed_ to the selected image.
-      const item = ((event.target as Element)!.shadowRoot as
-                    ShadowRoot)!.querySelector<HTMLElement>('.item')!;
+      const item = ((event.target as Element).shadowRoot as ShadowRoot)
+                       .querySelector<HTMLElement>('.item')!;
       this.cameraFeed_.remove();
       item.appendChild(this.cameraFeed_);
       this.cameraFeed_.width = item.clientWidth;
@@ -527,16 +534,28 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private computeShowHistory_(
-      thumbnailsLoading: boolean, seaPenQuery: SeaPenQuery|null,
+      thumbnailsLoading: boolean,
       textQueryHistory: TextQueryHistoryEntry[]): boolean {
-    return !thumbnailsLoading && !!seaPenQuery?.textQuery &&
-        isNonEmptyArray(textQueryHistory);
+    return !thumbnailsLoading && isNonEmptyArray(textQueryHistory);
   }
 
-  private onHistoryPromptClicked_(e: Event&
-                                  {model: {item: TextQueryHistoryEntry}}) {
+  private onHistoryPromptClicked_(e: Event&{
+    model: {queryHistoryEntry: TextQueryHistoryEntry}
+  }) {
     this.dispatchEvent(
-        new SeaPenHistoryPromptSelectedEvent(e.model.item.query));
+        new SeaPenHistoryPromptSelectedEvent(e.model.queryHistoryEntry.query));
+  }
+
+  private onLatestTextQueryClicked_() {
+    if (!this.latestTextQuery_) {
+      return;
+    }
+    this.dispatchEvent(
+        new SeaPenHistoryPromptSelectedEvent(this.latestTextQuery_));
+  }
+
+  private computeLatestTextQuery_(seaPenQuery_: SeaPenQuery): string|null {
+    return seaPenQuery_?.textQuery?.trim() || null;
   }
 }
 

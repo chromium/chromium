@@ -34,11 +34,16 @@ std::unique_ptr<TemplateURLData> DictToTemplateURLData(
 const char EnterpriseSearchManager::kSiteSearchSettingsPrefName[] =
     "site_search_settings.template_url_data";
 
-// A dictionary to hold all data related to the site search engines defined by
-// policy.
+// A dictionary to hold all TemplateURL data related to the enterprise search
+// aggregator defined by policy.
 const char
     EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName[] =
         "enterprise_search_aggregator_settings.template_url_data";
+// A boolean to hold whether a shortcut is required for the enterprise search
+// aggregator.
+const char EnterpriseSearchManager::
+    kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName[] =
+        "enterprise_search_aggregator_settings.require_shortcut";
 
 EnterpriseSearchManager::EnterpriseSearchManager(
     PrefService* pref_service,
@@ -67,6 +72,27 @@ void EnterpriseSearchManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kSiteSearchSettingsPrefName);
   registry->RegisterListPref(kEnterpriseSearchAggregatorSettingsPrefName);
+  registry->RegisterBooleanPref(
+      kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName, false);
+}
+
+bool EnterpriseSearchManager::GetRequireShortcutValue() const {
+  // Use the `require_shortcut` preference value if set by policy.
+  const PrefService::Preference* pref = pref_service_->FindPreference(
+      kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName);
+  if (pref && pref->IsManaged()) {
+    return pref->GetValue()->GetBool();
+  }
+
+  // Fallback to mock settings if policy is not set and mock engine is valid.
+  if (omnibox_feature_configs::SearchAggregatorProvider::Get()
+          .AreMockEnginesValid()) {
+    return omnibox_feature_configs::SearchAggregatorProvider::Get()
+        .require_shortcut;
+  }
+
+  // Use the pref's default value if neither policy nor mock settings apply.
+  return pref && pref->GetValue()->GetBool();
 }
 
 void EnterpriseSearchManager::OnPrefChanged() {
@@ -108,30 +134,24 @@ EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
 EnterpriseSearchManager::LoadingResult
 EnterpriseSearchManager::LoadSearchAggregator(
     EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines) {
-  // Use the search engines created by policy if the policy is available (e.g.
-  // controlling feature is enabled) and the policy value is set as a valid
-  // search engine.
-  LoadingResult pref_loading_result = LoadSearchEnginesFromPrefs(
-      pref_service_->FindPreference(
-          kEnterpriseSearchAggregatorSettingsPrefName),
-      search_engines);
-  if (pref_loading_result == LoadingResult::kAvailableNonEmpty) {
-    return LoadingResult::kAvailableNonEmpty;
-  }
-
-  // Use pref loading result (either empty or non-empty) if there are no mock
-  // search engines available.
+  // Prefer mock engines over engines from pref.
+  // TODO(crbug.com/402175538): Remove the ability to override pref engines via
+  // feature.
   if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
-           .valid_search_engine()) {
-    return pref_loading_result;
+           .AreMockEnginesValid()) {
+    return LoadSearchEnginesFromPrefs(
+        pref_service_->FindPreference(
+            kEnterpriseSearchAggregatorSettingsPrefName),
+        search_engines);
   }
 
-  // In case the policy is not available or the policy value is empty,
-  auto mock_engines = omnibox_feature_configs::SearchAggregatorProvider::Get()
-                          .GetSearchEngines();
-  CHECK(!mock_engines.empty());
-  for (const base::Value& mock_engine : mock_engines) {
-    search_engines->emplace_back(DictToTemplateURLData(mock_engine));
-  }
+  // NOTE: This function assumes that `search_engines` does not contain any
+  // engines that should be overridden by the feature config.
+  std::ranges::transform(
+      omnibox_feature_configs::SearchAggregatorProvider::Get()
+          .CreateMockSearchEngines(),
+      std::back_inserter(*search_engines), [](const base::Value& mock_engine) {
+        return DictToTemplateURLData(mock_engine);
+      });
   return LoadingResult::kAvailableNonEmpty;
 }

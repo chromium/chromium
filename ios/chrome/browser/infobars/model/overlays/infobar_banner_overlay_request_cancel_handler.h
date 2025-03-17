@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_INFOBAR_BANNER_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_INFOBAR_BANNER_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 
-#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
-
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_modal_completion_notifier.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 
 // A cancel handler for Infobar banner UI OverlayRequests.

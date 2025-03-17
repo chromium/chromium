@@ -9,6 +9,8 @@ import androidx.test.espresso.Espresso;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.ui.test.transit.SoftKeyboardElement;
 
 /** Represents the soft keyboard shown, expecting it to hide after exiting the Facility. */
@@ -21,7 +23,15 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
                 elements.declareElement(new SoftKeyboardElement(mHostStation.getActivityElement()));
     }
 
-    public void close() {
+    /**
+     * Close the soft keyboard and wait for the passed ViewElements to stop moving after the
+     * relayout.
+     *
+     * <p>If it was expected to not be shown, just ensure that and exit this Facility.
+     *
+     * @param viewElementsToSettle the ViewElements to wait to stop moving
+     */
+    public void close(ViewElement... viewElementsToSettle) {
         assertSuppliersCanBeUsed();
 
         if (mSoftKeyboardElement.get()) {
@@ -29,7 +39,11 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
 
             // If this fails, the keyboard was closed before, but not by this facility.
             recheckActiveConditions();
-            mHostStation.exitFacilitySync(this, Espresso::pressBack);
+            Transition.TransitionOptions.Builder options = Transition.newOptions();
+            for (ViewElement viewElement : viewElementsToSettle) {
+                options.withCondition(viewElement.createSettleCondition());
+            }
+            mHostStation.exitFacilitySync(this, options.build(), Espresso::pressBack);
         } else {
             // Keyboard was not expected to be shown
             mHostStation.exitFacilitySync(this, /* trigger= */ null);

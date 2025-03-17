@@ -8,8 +8,9 @@ import("//chrome/android/modules/buildflags.gni")
 # not enabled on non-official builds to not affect build time for developers.
 # The unwind file is ~2MB in apk, which is fine for Canary.
 add_unwind_tables_in_chrome_32bit_apk =
-    !skip_secondary_abi_for_cq && is_official_build &&
-    (target_cpu == "arm" || target_cpu == "arm64") &&
+    is_official_build &&
+    (target_cpu == "arm" ||
+     (target_cpu == "arm64" && defined(android_app_secondary_abi))) &&
     (android_channel == "default" || android_channel == "beta" ||
      android_channel == "canary" || android_channel == "dev")
 

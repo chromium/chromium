@@ -5,13 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_SNAPSHOT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_SNAPSHOT_AGENT_H_
 
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom_snapshot.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -25,6 +26,7 @@ class Element;
 class InspectedFrames;
 class Node;
 class PaintLayer;
+struct OriginUrlMap;
 
 class CORE_EXPORT InspectorDOMSnapshotAgent final
     : public InspectorBaseAgent<protocol::DOMSnapshot::Metainfo> {
@@ -71,7 +73,7 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
       const LayoutObject* layout_object,
       const LayoutText::TextBoxInfo& text_box);
 
-  using PaintOrderMap = HeapHashMap<Member<PaintLayer>, int>;
+  using PaintOrderMap = GCedHeapHashMap<Member<PaintLayer>, int>;
   static PaintOrderMap* BuildPaintLayerTree(Document*);
 
  private:
@@ -105,7 +107,6 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
   static void VisitPaintLayer(PaintLayer*, PaintOrderMap* paint_order_map);
 
   using CSSPropertyFilter = Vector<const CSSProperty*>;
-  using OriginUrlMap = WTF::HashMap<DOMNodeId, String>;
 
   // State of current snapshot.
   std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>> dom_nodes_;

@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 
 /** Interface represented in the bottom controls stack. */
+@NullMarked
 public interface BottomControlsLayer {
     /** Return the type of the layer. This should not change once the layer is created. */
     @LayerType
@@ -115,5 +116,5 @@ public interface BottomControlsLayer {
      * @param layerYOffset The yOffset for the layer's position in the bottom controls
      * @see BrowserControlsStateProvider.Observer#onControlsOffsetChanged
      */
-    default void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {}
+    default void onBrowserControlsOffsetUpdate(int layerYOffset) {}
 }

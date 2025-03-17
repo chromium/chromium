@@ -6,11 +6,22 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
+#import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/commerce/core/commerce_constants.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/commerce_types.h"
+#import "components/commerce/core/proto/price_tracking.pb.h"
+#import "components/optimization_guide/core/optimization_guide_decision.h"
+#import "components/optimization_guide/proto/common_types.pb.h"
+#import "components/optimization_guide/proto/hints.pb.h"
 #import "components/page_image_service/features.h"
 #import "components/page_image_service/image_service.h"
 #import "components/page_image_service/mojom/page_image_service.mojom.h"
+#import "components/payments/core/currency_formatter.h"
 #import "components/sessions/core/session_id.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -18,8 +29,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
-#import "components/visited_url_ranking/public/url_visit_util.h"
-#import "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
@@ -27,8 +37,10 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -56,72 +68,24 @@
 #import "ios/chrome/browser/tabs/model/tab_sync_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
 // The key to store the timestamp when the scene enters into background.
 NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
     @"StartSurfaceSceneEnterIntoBackgroundTime";
-
-// Helper function to extract tab data from url aggregate.
-// Try first the session tab data, then the tab model tab data.
-const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
-    const visited_url_ranking::URLVisitAggregate& url_aggregate) {
-  const auto& session_iterator = url_aggregate.fetcher_data_map.find(
-      visited_url_ranking::Fetcher::kSession);
-  if (session_iterator != url_aggregate.fetcher_data_map.end()) {
-    const visited_url_ranking::URLVisitAggregate::URLVisitVariant&
-        url_visit_variant = session_iterator->second;
-    const visited_url_ranking::URLVisitAggregate::TabData* tab_data =
-        std::get_if<visited_url_ranking::URLVisitAggregate::TabData>(
-            &url_visit_variant);
-    if (tab_data) {
-      return tab_data;
-    }
-  }
-
-  const auto& tab_model_iterator = url_aggregate.fetcher_data_map.find(
-      visited_url_ranking::Fetcher::kTabModel);
-  if (tab_model_iterator != url_aggregate.fetcher_data_map.end()) {
-    const visited_url_ranking::URLVisitAggregate::URLVisitVariant&
-        url_visit_variant = tab_model_iterator->second;
-    const visited_url_ranking::URLVisitAggregate::TabData* tab_data =
-        std::get_if<visited_url_ranking::URLVisitAggregate::TabData>(
-            &url_visit_variant);
-    if (tab_data) {
-      return tab_data;
-    }
-  }
-  return nullptr;
-}
-
-// Helper function to extract history data from url aggregate.
-const visited_url_ranking::URLVisitAggregate::HistoryData* ExtractHistoryData(
-    const visited_url_ranking::URLVisitAggregate& url_aggregate) {
-  const auto& history_iterator = url_aggregate.fetcher_data_map.find(
-      visited_url_ranking::Fetcher::kHistory);
-  if (history_iterator != url_aggregate.fetcher_data_map.end()) {
-    const visited_url_ranking::URLVisitAggregate::URLVisitVariant&
-        url_visit_variant = history_iterator->second;
-    const visited_url_ranking::URLVisitAggregate::HistoryData* history_data =
-        std::get_if<visited_url_ranking::URLVisitAggregate::HistoryData>(
-            &url_visit_variant);
-    if (history_data) {
-      return history_data;
-    }
-  }
-  return nullptr;
-}
 
 // Whether the item should be displayed immediately (before fetching an image).
 bool ShouldShowItemImmediately() {
@@ -132,39 +96,130 @@ bool ShouldShowItemImmediately() {
 // Salient images should come from gstatic.com.
 const char kGStatic[] = ".gstatic.com";
 
-// Overrides the reason for testing purpose.
-NSString* GetOverridenReason(
-    const visited_url_ranking::URLVisitAggregate& url_aggregate) {
-  NSString* override_flag =
-      experimental_flags::GetTabResumptionDecorationOverride();
-  if (![override_flag length]) {
-    return nil;
+NSString* GetFormattedPrice(payments::CurrencyFormatter* formatter,
+                            long price_micros) {
+  float price = static_cast<float>(price_micros) /
+                static_cast<float>(commerce::kToMicroCurrency);
+  formatter->SetMaxFractionalDigits(price >= 10.0 ? 0 : 2);
+  return base::SysUTF16ToNSString(
+      formatter->Format(base::NumberToString(price)));
+}
+
+PriceDrop GetPriceDrop(payments::CurrencyFormatter* formatter,
+                       long current_price_micros,
+                       long previous_price_micros) {
+  PriceDrop price_drop;
+  price_drop.current_price = GetFormattedPrice(formatter, current_price_micros);
+  price_drop.previous_price =
+      GetFormattedPrice(formatter, previous_price_micros);
+  return price_drop;
+}
+
+bool HasPriceDropDataForTabResumption(
+    const std::optional<const commerce::PriceTrackingData>&
+        price_tracking_data) {
+  return price_tracking_data.has_value() &&
+         price_tracking_data->has_product_update() &&
+         price_tracking_data->product_update().has_old_price() &&
+         price_tracking_data->product_update().has_new_price() &&
+         price_tracking_data->product_update()
+             .old_price()
+             .has_currency_code() &&
+         price_tracking_data->product_update()
+             .new_price()
+             .has_currency_code() &&
+         price_tracking_data->product_update().old_price().currency_code() ==
+             price_tracking_data->product_update()
+                 .new_price()
+                 .currency_code() &&
+         price_tracking_data->has_buyable_product() &&
+         price_tracking_data->buyable_product().has_title();
+}
+
+// A Product Detail Page is price trackable if it has a cluster ID.
+bool IsPriceTrackable(const std::optional<const commerce::PriceTrackingData>&
+                          price_tracking_data) {
+  return price_tracking_data.has_value() &&
+         price_tracking_data->has_buyable_product() &&
+         price_tracking_data->buyable_product().has_product_cluster_id();
+}
+
+std::u16string GetHostnameFromGURL(const GURL& url) {
+  return url_formatter::
+      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(url);
+}
+
+void ConfigureTabResumptionItemForShopCard(
+    const base::flat_map<
+        optimization_guide::proto::OptimizationType,
+        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions,
+    TabResumptionItem* item,
+    const GURL& url) {
+  auto iter = decisions.find(optimization_guide::proto::PRICE_TRACKING);
+  if (iter == decisions.end()) {
+    return;
   }
-  if ([override_flag isEqualToString:@"MostRecent"]) {
-    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
-        visited_url_ranking::DecorationType::kMostRecent));
+
+  optimization_guide::OptimizationGuideDecisionWithMetadata
+      decisionWithMetadata = iter->second;
+  if (decisionWithMetadata.decision !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return;
   }
-  if ([override_flag isEqualToString:@"FrequentlyVisited"]) {
-    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
-        visited_url_ranking::DecorationType::kFrequentlyVisited));
+  const std::optional<const commerce::PriceTrackingData>& price_tracking_data =
+      decisionWithMetadata.metadata
+          .ParsedMetadata<commerce::PriceTrackingData>();
+
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 &&
+      HasPriceDropDataForTabResumption(price_tracking_data)) {
+    item.shopCardData = [[ShopCardData alloc] init];
+    item.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
+
+    std::unique_ptr<payments::CurrencyFormatter> formatter =
+        std::make_unique<payments::CurrencyFormatter>(
+            price_tracking_data->product_update().new_price().currency_code(),
+            GetApplicationContext()->GetApplicationLocale());
+    item.shopCardData.priceDrop = GetPriceDrop(
+        formatter.get(),
+        price_tracking_data->product_update().new_price().amount_micros(),
+        price_tracking_data->product_update().old_price().amount_micros());
+    item.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(item.shopCardData.priceDrop->previous_price),
+        base::SysNSStringToUTF16(item.shopCardData.priceDrop->current_price),
+        base::UTF8ToUTF16(price_tracking_data->buyable_product().title()),
+        GetHostnameFromGURL(url));
   }
-  if ([override_flag isEqualToString:@"FrequentlyVisitedAtTime"]) {
-    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
-        visited_url_ranking::DecorationType::kFrequentlyVisitedAtTime));
+
+  // A URL is price trackable if it has a cluster ID.
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 &&
+      IsPriceTrackable(price_tracking_data)) {
+    item.shopCardData = [[ShopCardData alloc] init];
+    item.shopCardData.shopCardItemType =
+        ShopCardItemType::kPriceTrackableProductOnTab;
   }
-  if ([override_flag isEqualToString:@"VisitedSomeTimeAgoRecent"]) {
-    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
-        visited_url_ranking::DecorationType::kVisitedXAgo, true));
-  }
-  if ([override_flag isEqualToString:@"VisitedSomeTimeAgoOld"]) {
-    return base::SysUTF16ToNSString(
-        visited_url_ranking::GetStringForRecencyDecorationWithTime(
-            url_aggregate.GetLastVisitTime()));
-  }
-  return nil;
 }
 
 }  // namespace
+
+// Call through to OptimizationGuide's OnDemand API which is a restricted
+// API. In order to call the private function CanApplyOptimizationOnDemand,
+// a class to friend OptimizationGuideService is needed.
+class TabResumptionMediatorProxy {
+ public:
+  // Call through to optimizationGuideService->CanApplyOptimizationOnDemand
+  static void CanApplyOptimizationOnDemand(
+      OptimizationGuideService* optimizationGuideService,
+      const GURL& url,
+      const optimization_guide::proto::OptimizationType& optimization_type,
+      optimization_guide::proto::RequestContext request_context,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) {
+    optimizationGuideService->CanApplyOptimizationOnDemand(
+        {url}, {optimization_type}, request_context, std::move(callback),
+        std::nullopt);
+  }
+};
 
 @interface TabResumptionMediator () <BooleanObserver,
                                      IdentityManagerObserverBridgeDelegate,
@@ -194,7 +249,6 @@ NSString* GetOverridenReason(
 
   // The owning Browser.
   raw_ptr<Browser> _browser;
-  raw_ptr<PrefService> _localState;
   raw_ptr<PrefService> _profilePrefs;
   SceneState* _sceneState;
   // Loads favicons.
@@ -207,9 +261,6 @@ NSString* GetOverridenReason(
   raw_ptr<syncer::SyncService> _syncService;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
   raw_ptr<WebStateList> _webStateList;
-  // KeyedService for Tab resumption 2.0.
-  raw_ptr<visited_url_ranking::VisitedURLRankingService>
-      _visitedURLRankingService;
   // KeyedService for Salient images.
   raw_ptr<page_image_service::ImageService> _pageImageService;
   // Observer bridge for mediator to listen to
@@ -227,16 +278,18 @@ NSString* GetOverridenReason(
   // Whether the item is currently presented as Top Module by Magic Stack.
   BOOL _currentlyTopModule;
   PrefBackedBoolean* _tabResumptionDisabled;
+  raw_ptr<OptimizationGuideService> _optimizationGuideService;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState
                        prefService:(PrefService*)prefService
                    identityManager:(signin::IdentityManager*)identityManager
-                           browser:(Browser*)browser {
+                           browser:(Browser*)browser
+          optimizationGuideService:
+              (OptimizationGuideService*)optimizationGuideService {
   self = [super init];
   if (self) {
     CHECK(IsTabResumptionEnabled());
-    _localState = localState;
     _profilePrefs = prefService;
     _browser = browser;
     _tabId = SessionID::InvalidValue();
@@ -253,8 +306,8 @@ NSString* GetOverridenReason(
       [_tabResumptionDisabled setObserver:self];
     } else {
       _tabResumptionDisabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:_localState
-                     prefName:tab_resumption_prefs::kTabResumptioDisabledPref];
+          initWithPrefService:_profilePrefs
+                     prefName:tab_resumption_prefs::kTabResumptionDisabledPref];
       [_tabResumptionDisabled setObserver:self];
     }
 
@@ -269,29 +322,20 @@ NSString* GetOverridenReason(
         std::make_unique<StartSurfaceRecentTabObserverBridge>(self);
     StartSurfaceRecentTabBrowserAgent::FromBrowser(_browser)->AddObserver(
         _startSurfaceObserver.get());
-    if (IsTabResumption1_5Enabled()) {
       _pageImageService = PageImageServiceFactory::GetForProfile(profile);
-    }
     _imageFetcher = std::make_unique<image_fetcher::ImageDataFetcher>(
         profile->GetSharedURLLoaderFactory());
+    _syncedSessionsObserverBridge.reset(
+        new synced_sessions::SyncedSessionsObserverBridge(self,
+                                                          _sessionSyncService));
 
-    if (IsTabResumption2_0Enabled()) {
-      _visitedURLRankingService =
-          VisitedURLRankingServiceFactory::GetForProfile(profile);
-    }
-
-    if (IsTabResumption2_0Enabled() ||
-        !IsTabResumptionEnabledForMostRecentTabOnly()) {
-      // Tab resumption 2.0 will get foreign tabs and so needs to register to
-      // sync/identity notifications.
-      _syncedSessionsObserverBridge.reset(
-          new synced_sessions::SyncedSessionsObserverBridge(
-              self, _sessionSyncService));
-
-      _syncObserverModelBridge.reset(
-          new SyncObserverBridge(self, _syncService));
-      _identityManagerObserverBridge.reset(
-          new signin::IdentityManagerObserverBridge(identityManager, self));
+    _syncObserverModelBridge.reset(new SyncObserverBridge(self, _syncService));
+    _identityManagerObserverBridge.reset(
+        new signin::IdentityManagerObserverBridge(identityManager, self));
+    if (optimizationGuideService) {
+      _optimizationGuideService = optimizationGuideService;
+      _optimizationGuideService->RegisterOptimizationTypes(
+          {optimization_guide::proto::PRICE_TRACKING});
     }
   }
   return self;
@@ -321,11 +365,6 @@ NSString* GetOverridenReason(
 
   NSUInteger index = [self.delegate
       indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
-  if (IsTabResumption2_0Enabled() && index == 0 && _visitedURLRankingService) {
-    _visitedURLRankingService->RecordAction(visited_url_ranking::kActivated,
-                                            self.itemConfig.URLKey,
-                                            self.itemConfig.requestID);
-  }
 
   switch (item.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
@@ -376,8 +415,7 @@ NSString* GetOverridenReason(
 }
 
 - (void)disableModule {
-  tab_resumption_prefs::DisableTabResumption(
-      IsHomeCustomizationEnabled() ? _profilePrefs : _localState);
+  tab_resumption_prefs::DisableTabResumption(_profilePrefs);
 }
 
 - (void)setDelegate:(id<TabResumptionHelperDelegate>)delegate {
@@ -393,11 +431,6 @@ NSString* GetOverridenReason(
      wasDisplayedAtIndex:(NSUInteger)index {
   CHECK(self.itemConfig == magicStackModule);
   _currentlyTopModule = (index == 0);
-  if (IsTabResumption2_0Enabled() && index == 0 && _visitedURLRankingService) {
-    _visitedURLRankingService->RecordAction(visited_url_ranking::kSeen,
-                                            self.itemConfig.URLKey,
-                                            self.itemConfig.requestID);
-  }
   switch (self.itemConfig.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
       [self.NTPActionsDelegate distantTabResumptionDisplayedAtIndex:index];
@@ -473,36 +506,18 @@ NSString* GetOverridenReason(
 
 // Fetches the item to display from the model.
 - (void)fetchLastTabResumptionItem {
-  if (tab_resumption_prefs::IsTabResumptionDisabled(
-          IsHomeCustomizationEnabled() ? _profilePrefs : _localState)) {
-    return;
-  }
-  if (_visitedURLRankingService && IsTabResumption2_0Enabled()) {
-    __weak __typeof(self) weakSelf = self;
-    _visitedURLRankingService->FetchURLVisitAggregates(
-        visited_url_ranking::FetchOptions::
-            CreateDefaultFetchOptionsForTabResumption(),
-        base::BindOnce(
-            ^(visited_url_ranking::ResultStatus status,
-              visited_url_ranking::URLVisitsMetadata url_visits_metadata,
-              std::vector<visited_url_ranking::URLVisitAggregate> urls) {
-              [weakSelf onURLFetched:std::move(urls)
-                        withMetadata:url_visits_metadata
-                          withStatus:status];
-            }));
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_profilePrefs)) {
     return;
   }
 
   _sessionTag = "";
   _tabId = SessionID::InvalidValue();
 
-  if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
-    // If sync is enabled and `GetOpenTabsUIDelegate()` returns nullptr, that
-    // means the `_sessionSyncService` is not fully operational.
-    if (_syncService->IsSyncFeatureEnabled() &&
-        !_sessionSyncService->GetOpenTabsUIDelegate()) {
-      return;
-    }
+  // If sync is enabled and `GetOpenTabsUIDelegate()` returns nullptr, that
+  // means the `_sessionSyncService` is not fully operational.
+  if (_syncService->IsSyncFeatureEnabled() &&
+      !_sessionSyncService->GetOpenTabsUIDelegate()) {
+    return;
   }
 
   base::Time mostRecentTabOpenedTime = base::Time::UnixEpoch();
@@ -521,7 +536,6 @@ NSString* GetOverridenReason(
   const synced_sessions::DistantTab* tab = nullptr;
   auto const syncedSessions =
       std::make_unique<synced_sessions::SyncedSessions>(_sessionSyncService);
-  if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
     LastActiveDistantTab lastDistantTab = GetLastActiveDistantTab(
         syncedSessions.get(), TabResumptionForXDevicesTimeThreshold());
     if (lastDistantTab.tab) {
@@ -532,7 +546,6 @@ NSString* GetOverridenReason(
         lastSyncedTabSyncedTime = tab->last_active_time;
       }
     }
-  }
 
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   bool canShowMostRecentItem =
@@ -543,13 +556,37 @@ NSString* GetOverridenReason(
       lastSyncedTabSyncedTime == base::Time::UnixEpoch()) {
     return;
   } else if (lastSyncedTabSyncedTime > mostRecentTabOpenedTime) {
-    CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
     [self fetchLastSyncedTabItemFromLastActiveDistantTab:tab session:session];
     _sessionTag = session->tag;
     _tabId = tab->tab_id;
   } else if (canShowMostRecentItem) {
     [self fetchMostRecentTabItemFromWebState:mostRecentTab
                                   openedTime:mostRecentTabOpenedTime];
+  }
+}
+
+- (void)fetchShopCardDataForItemIfApplicable:(TabResumptionItem*)item
+                                         url:(const GURL&)resumptionURL {
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+      commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+    __weak __typeof(self) weakSelf = self;
+    TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
+        _optimizationGuideService, resumptionURL,
+        optimization_guide::proto::PRICE_TRACKING,
+        optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
+        base::BindRepeating(
+            ^(const GURL& url,
+              const base::flat_map<
+                  optimization_guide::proto::OptimizationType,
+                  optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                  decisions) {
+              ConfigureTabResumptionItemForShopCard(decisions, item, url);
+              // Fetch the favicon.
+              [weakSelf fetchImageForItem:item];
+            }));
+  } else {
+    // Fetch the favicon.
+    [self fetchImageForItem:item];
   }
 }
 
@@ -693,17 +730,6 @@ NSString* GetOverridenReason(
     return;
   }
 
-  if (IsTabResumption2_0Enabled() && _currentlyTopModule &&
-      _visitedURLRankingService) {
-    // If the item is currently displayed, report the display of the new URL.
-    if (item.requestID != self.itemConfig.requestID ||
-        item.URLKey != self.itemConfig.URLKey) {
-      _visitedURLRankingService->RecordAction(visited_url_ranking::kSeen,
-                                              self.itemConfig.URLKey,
-                                              self.itemConfig.requestID);
-    }
-  }
-
   // The item is already used by some view, so it cannot be replaced.
   // Instead the existing config must be updated.
   [self.itemConfig reconfigureWithItem:item];
@@ -716,7 +742,6 @@ NSString* GetOverridenReason(
                                                session:(const synced_sessions::
                                                             DistantSession*)
                                                            session {
-  CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
   TabResumptionItem* item = [[TabResumptionItem alloc]
       initWithItemType:TabResumptionItemType::kLastSyncedTab];
   item.sessionName = base::SysUTF8ToNSString(session->name);
@@ -725,9 +750,8 @@ NSString* GetOverridenReason(
   item.tabURL = tab->virtual_url;
   item.commandHandler = self;
   item.delegate = self;
-  item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
-  // Fetch the image.
-  [self fetchImageForItem:item];
+  item.shouldShowSeeMore = true;
+  [self fetchShopCardDataForItemIfApplicable:item url:tab->virtual_url];
 }
 
 // Creates a TabResumptionItem corresponding to the `webState`.
@@ -740,9 +764,9 @@ NSString* GetOverridenReason(
   item.tabURL = webState->GetLastCommittedURL();
   item.commandHandler = self;
   item.delegate = self;
-  item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
-  // Fetch the image.
-  [self fetchImageForItem:item];
+  item.shouldShowSeeMore = true;
+  [self fetchShopCardDataForItemIfApplicable:item
+                                         url:webState->GetLastCommittedURL()];
 }
 
 // Compares `item` and `_pendingItem` on tabURL and tabTitle field.
@@ -752,141 +776,6 @@ NSString* GetOverridenReason(
   }
   return item.tabURL == _pendingItem.tabURL &&
          [item.tabTitle isEqualToString:_pendingItem.tabTitle];
-}
-
-#pragma mark - Private method for Tab resumption 2.0 tab fetch.
-
-// Called when the URLs have been fetched from the different fetcher.
-// This method just forwards the URLs to the ranker.
-- (void)onURLFetched:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
-        withMetadata:(const visited_url_ranking::URLVisitsMetadata&)metadata
-          withStatus:(visited_url_ranking::ResultStatus)status {
-  if (status != visited_url_ranking::ResultStatus::kSuccess) {
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  visited_url_ranking::Config config = {
-      .key = visited_url_ranking::kTabResumptionRankerKey};
-  _visitedURLRankingService->RankURLVisitAggregates(
-      config, std::move(URLs),
-      base::BindOnce(
-          ^(visited_url_ranking::URLVisitsMetadata local_metadata,
-            visited_url_ranking::ResultStatus rankStatus,
-            std::vector<visited_url_ranking::URLVisitAggregate> rankedURLs) {
-            [weakSelf onURLRanked:std::move(rankedURLs)
-                     withMetadata:local_metadata
-                       withStatus:rankStatus];
-          },
-          metadata));
-}
-
-// Called when the URLs have been ranked. Select the first one and decorate it.
-- (void)onURLRanked:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
-       withMetadata:(const visited_url_ranking::URLVisitsMetadata&)metadata
-         withStatus:(visited_url_ranking::ResultStatus)status {
-  if (status != visited_url_ranking::ResultStatus::kSuccess ||
-      URLs.size() == 0) {
-    return;
-  }
-  if (!IsTabResumption2ReasonEnabled()) {
-    return [self onURLDecorated:std::move(URLs) withStatus:status];
-  }
-
-  size_t index;
-  // Select the first URL with tab data.
-  for (index = 0; index < URLs.size(); index++) {
-    if (ExtractTabData(URLs[index]) || ExtractHistoryData(URLs[index])) {
-      break;
-    }
-  }
-  if (index == URLs.size()) {
-    return;
-  }
-
-  std::vector<visited_url_ranking::URLVisitAggregate> selectedURLs;
-  selectedURLs.push_back(std::move(URLs[index]));
-
-  __weak __typeof(self) weakSelf = self;
-  _visitedURLRankingService->DecorateURLVisitAggregates(
-      {}, metadata, std::move(selectedURLs),
-      base::BindOnce(
-          ^(visited_url_ranking::ResultStatus decorateStatus,
-            std::vector<visited_url_ranking::URLVisitAggregate> decoratedURLs) {
-            [weakSelf onURLDecorated:std::move(decoratedURLs)
-                          withStatus:decorateStatus];
-          }));
-}
-
-// Called when the URLs have been decorated.
-- (void)onURLDecorated:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
-            withStatus:(visited_url_ranking::ResultStatus)status {
-  if (status != visited_url_ranking::ResultStatus::kSuccess ||
-      URLs.size() == 0) {
-    return;
-  }
-  const visited_url_ranking::URLVisitAggregate::TabData* tabData = nullptr;
-  const visited_url_ranking::URLVisitAggregate::HistoryData* historyData =
-      nullptr;
-  const visited_url_ranking::URLVisit* visit = nullptr;
-
-  const visited_url_ranking::URLVisitAggregate* URLAggregate = nullptr;
-  for (auto& aggregate : URLs) {
-    tabData = ExtractTabData(aggregate);
-    if (tabData) {
-      URLAggregate = &aggregate;
-      visit = &tabData->last_active_tab.visit;
-      break;
-    }
-    historyData = ExtractHistoryData(aggregate);
-    if (historyData) {
-      URLAggregate = &aggregate;
-      visit = &historyData->visit;
-      break;
-    }
-  }
-  if (!URLAggregate || !visit) {
-    return;
-  }
-
-  bool isLocal =
-      visit->source != visited_url_ranking::URLVisit::Source::kForeign;
-  TabResumptionItemType type =
-      (isLocal ? TabResumptionItemType::kMostRecentTab
-               : TabResumptionItemType::kLastSyncedTab);
-  TabResumptionItem* item = [[TabResumptionItem alloc] initWithItemType:type];
-  item.tabTitle = base::SysUTF16ToNSString(visit->title);
-  item.syncedTime = visit->last_modified;
-  item.tabURL = visit->url;
-  item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
-  item.URLKey = URLAggregate->url_key;
-  item.requestID = URLAggregate->request_id;
-  if (visit->client_name) {
-    item.sessionName = base::SysUTF8ToNSString(visit->client_name.value());
-  }
-  item.commandHandler = self;
-  item.delegate = self;
-  if (IsTabResumption2ReasonEnabled()) {
-    NSString* overridenReason = GetOverridenReason(*URLAggregate);
-    if (overridenReason) {
-      item.reason = overridenReason;
-    } else if (URLAggregate->decorations.size()) {
-      item.reason = base::SysUTF16ToNSString(
-          visited_url_ranking::GetMostRelevantDecoration(*URLAggregate)
-              .GetDisplayString());
-    }
-  }
-  if (tabData) {
-    const visited_url_ranking::URLVisitAggregate::Tab& tab =
-        tabData->last_active_tab;
-    if (tab.id > 0 && tab.session_tag && !isLocal) {
-      item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());
-      _sessionTag = tab.session_tag.value();
-      _tabId = SessionID::FromSerializedValue(tab.id);
-    }
-  }
-
-  // Fetch the favicon.
-  [self fetchImageForItem:item];
 }
 
 @end

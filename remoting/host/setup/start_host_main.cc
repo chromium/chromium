@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "remoting/host/setup/start_host_main.h"
 
 #include <stddef.h>
@@ -21,8 +26,10 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
+#include "net/ssl/client_cert_store.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "remoting/base/crash/breakpad.h"
+#include "remoting/base/certificate_helpers.h"
+#include "remoting/base/crash/crash_reporting.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/cloud_host_starter.h"
@@ -118,11 +125,14 @@ void PrintCloudUserHelpMessage(const char* process_name) {
   // TODO: joedow - Add a link to public documentation and/or samples when they
   // are available.
   fprintf(stdout,
-          "Setting up a machine for a cloud user requires the email address of "
-          "that user, an API_KEY created for the project the request is being "
-          "made from, and an optional display name.\n"
-          "Example usage:\n%s --%s=<user_email_address> --%s=<API_KEY> "
-          "[--%s=cloud-instance-name] [--%s]\n",
+          "Setting up a Compute Engine Instance requires the email address of "
+          "the user.\n\nAn optional API_KEY, created for the project the "
+          "Compute Engine Instance is in, can be provided. Otherwise an access "
+          "token will be retrieved for the default service account.\n\nAn "
+          "optional display name can also be provided, otherwise the hostname, "
+          "or FQDN, of the instance will be used.\n\n"
+          "Example usage:\n%s --%s=<user_email_address> [--%s=<API_KEY>] "
+          "[--%s=cloud-instance-display-name] [--%s]\n",
           process_name, kCloudUserSwitchName, kCloudApiKeySwitchName,
           kDisplayNameSwitchName, kDisableCrashReportingSwitchName);
 }
@@ -328,19 +338,9 @@ bool InitializeCloudMachineParams(HostStarter::Params& params,
   }
 
   if (command_line->HasSwitch(kCloudApiKeySwitchName)) {
-    // Using a cloud API_KEY means the host will be configured to use session
-    // authorization and does not require a PIN.
+    // Using a cloud API_KEY means start-host will not attempt to retrieve an
+    // access token for the default service-account.
     params.api_key = command_line->GetSwitchValueASCII(kCloudApiKeySwitchName);
-    cloud_arg_count++;
-  } else {
-    // Require a PIN when setting an instance up for a cloud user since the
-    // session authorization service is not available to them.
-    // TODO: joedow - Remove this node once the API_KEY path is fully supported.
-    params.pin = command_line->GetSwitchValueASCII(kPinSwitchName);
-    if (!remoting::IsPinValid(params.pin)) {
-      fprintf(stdout, kInvalidPinErrorMessage);
-      return false;
-    }
     cloud_arg_count++;
   }
 
@@ -440,13 +440,13 @@ int StartHostMain(int argc, char** argv) {
     return 1;
   }
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
   // We don't have a config file yet so we can't use IsUsageStatsAllowed(),
   // instead we can just check the command line parameter.
   if (params.enable_crash_reporting) {
     InitializeCrashReporting();
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   // Provide SingleThreadTaskExecutor and threads for the
   // URLRequestContextGetter.
@@ -465,13 +465,14 @@ int StartHostMain(int argc, char** argv) {
   std::unique_ptr<HostStarter> host_starter;
   if (use_corp_machine_flow) {
     host_starter =
-        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
+        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory(),
+                             CreateClientCertStoreInstance());
   } else if (use_cloud_machine_flow) {
     fprintf(stdout,
             "*** Warning: This workflow is experimental and not fully "
             "supported at this time ***\n");
-    host_starter = ProvisionCloudInstance(
-        params.api_key, url_loader_factory_owner.GetURLLoaderFactory());
+    host_starter =
+        ProvisionCloudInstance(url_loader_factory_owner.GetURLLoaderFactory());
   } else {
     host_starter =
         CreateOAuthHostStarter(url_loader_factory_owner.GetURLLoaderFactory());

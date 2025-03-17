@@ -85,7 +85,7 @@ class BrowserDesktopWindowTreeHostLinux
   void UnlockMouse(aura::Window* window) override;
 
   // ui::X11ExtensionDelegate:
-  bool IsOverrideRedirect() const override;
+  bool IsOverrideRedirect(const ui::X11Extension& x11_extension) const override;
 
   // ui::PlatformWindowDelegate
   gfx::Insets CalculateInsetsInDIP(

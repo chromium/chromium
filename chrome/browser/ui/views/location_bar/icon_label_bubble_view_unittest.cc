@@ -9,8 +9,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -28,7 +28,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
 
@@ -66,27 +66,10 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   TestIconLabelBubbleView(const TestIconLabelBubbleView&) = delete;
   TestIconLabelBubbleView& operator=(const TestIconLabelBubbleView&) = delete;
 
-  void SetCurrentAnimationValue(int value) {
-    value_ = value;
-    SizeToPreferredSize();
-  }
-
   int width() const { return bounds().width(); }
   bool IsLabelVisible() const { return label()->GetVisible(); }
   void SetLabelVisible(bool visible) { label()->SetVisible(visible); }
   const gfx::Rect& GetLabelBounds() const { return label()->bounds(); }
-
-  State state() const {
-    const double kOpenFraction = double{kOpenTimeMS} / kAnimationDurationMS;
-    double state = static_cast<double>(value_) / kNumberOfSteps;
-    if (state < kOpenFraction) {
-      return GROWING;
-    }
-    if (state > (1.0 - kOpenFraction)) {
-      return SHRINKING;
-    }
-    return STEADY;
-  }
 
   void HideBubble() {
     views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
@@ -96,24 +79,49 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
 
   bool IsBubbleShowing() const override { return is_bubble_showing_; }
 
- protected:
-  int GetWidthBetween(int min, int max) const override {
-    const double kOpenFraction =
-        static_cast<double>(kOpenTimeMS) / kAnimationDurationMS;
-    double fraction = static_cast<double>(value_) / kNumberOfSteps;
-    switch (state()) {
-      case GROWING:
-        return min + (max - min) * (fraction / kOpenFraction);
-      case STEADY:
-        return max;
-      case SHRINKING:
-        return min + (max - min) * ((1.0 - fraction) / kOpenFraction);
-    }
-    NOTREACHED();
+  void SetUpAnimation() { SetUpForAnimation(); }
+
+  void SetSlideAnimationDuration(base::TimeDelta duration) {
+    slide_animation_.SetDuration(duration);
   }
 
-  bool IsShrinking() const override { return state() == SHRINKING; }
+  void AwaitAnimateOut() {
+    base::RunLoop animation_loop;
+    SetAnimationEndedCallback(animation_loop.QuitClosure());
+    AnimateOut();
+    animation_loop.Run();
+  }
 
+  void AwaitAnimateIn() {
+    base::RunLoop animation_loop;
+    SetAnimationEndedCallback(animation_loop.QuitClosure());
+    AnimateIn(std::nullopt);
+    animation_loop.Run();
+  }
+
+  void SetAnimationEndedCallback(base::RepeatingClosure cb) {
+    animation_ended_closure_ = std::move(cb);
+  }
+
+  void SetAnimationStepCallback(base::RepeatingClosure cb) {
+    animation_step_closure_ = std::move(cb);
+  }
+
+  void AnimationEnded(const gfx::Animation* animation) override {
+    IconLabelBubbleView::AnimationEnded(animation);
+    if (animation_ended_closure_) {
+      animation_ended_closure_.Run();
+    }
+  }
+
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    IconLabelBubbleView::AnimationProgressed(animation);
+    if (animation_step_closure_) {
+      animation_step_closure_.Run();
+    }
+  }
+
+ protected:
   bool ShowBubble(const ui::Event& event) override {
     views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
                                               nullptr /* event */);
@@ -125,8 +133,9 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_ =
       std::make_unique<ui::ScopedAnimationDurationScaleMode>(
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  int value_ = 0;
   bool is_bubble_showing_ = false;
+  base::RepeatingClosure animation_ended_closure_;
+  base::RepeatingClosure animation_step_closure_;
 };
 
 }  // namespace
@@ -173,15 +182,6 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void VerifyWithAnimationStep(int step, bool icon_visible) {
-    Reset(icon_visible);
-    for (int value = 0; value < kNumberOfSteps; value += step) {
-      SetValue(value);
-      VerifyAnimationStep();
-    }
-    view_->SetLabelVisible(false);
-  }
-
   TestInkDrop* GetInkDrop() {
     return static_cast<TestInkDrop*>(views::InkDrop::Get(view_)->GetInkDrop());
   }
@@ -191,6 +191,106 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
   ui::test::EventGenerator* generator() { return generator_.get(); }
 
  private:
+  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<TestIconLabelBubbleView, DanglingUntriaged> view_ = nullptr;
+  raw_ptr<TestInkDrop, DanglingUntriaged> ink_drop_ = nullptr;
+  std::unique_ptr<ui::test::EventGenerator> generator_;
+};
+
+// Provides control over animation progress by overriding default animation
+// behaviour.
+class TestIconLabelBubbleFakeAnimationView : public TestIconLabelBubbleView {
+ public:
+  using TestIconLabelBubbleView::TestIconLabelBubbleView;
+
+  void SetCurrentAnimationValue(int value) {
+    value_ = value;
+    SizeToPreferredSize();
+  }
+
+  State state() const {
+    const double kOpenFraction = double{kOpenTimeMS} / kAnimationDurationMS;
+    double state = static_cast<double>(value_) / kNumberOfSteps;
+    if (state < kOpenFraction) {
+      return GROWING;
+    }
+    if (state > (1.0 - kOpenFraction)) {
+      return SHRINKING;
+    }
+    return STEADY;
+  }
+
+ protected:
+  int GetWidthBetween(int min, int max) const override {
+    const double kOpenFraction =
+        static_cast<double>(kOpenTimeMS) / kAnimationDurationMS;
+    double fraction = static_cast<double>(value_) / kNumberOfSteps;
+    switch (state()) {
+      case GROWING:
+        return min + (max - min) * (fraction / kOpenFraction);
+      case STEADY:
+        return max;
+      case SHRINKING:
+        return min + (max - min) * ((1.0 - fraction) / kOpenFraction);
+    }
+    NOTREACHED();
+  }
+
+  bool IsShrinking() const override { return state() == SHRINKING; }
+
+ private:
+  int value_ = 0;
+};
+
+// Provides control over animation progress by using
+// TestIconLabelBubbleFakeAnimationView to override default animation
+// behaviour.
+class IconLabelBubbleFakeAnimationViewTest
+    : public IconLabelBubbleViewTestBase {
+ public:
+  using IconLabelBubbleViewTestBase::IconLabelBubbleViewTestBase;
+
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    gfx::FontList font_list;
+
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    view_ = widget_->SetContentsView(
+        std::make_unique<TestIconLabelBubbleFakeAnimationView>(font_list,
+                                                               this));
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    view_ = nullptr;
+    widget_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+  void VerifyWithAnimationStep(int step, bool icon_visible) {
+    Reset(icon_visible);
+    for (int value = 0; value < kNumberOfSteps; value += step) {
+      SetValue(value);
+      VerifyAnimationStep();
+    }
+    view_->SetLabelVisible(false);
+  }
+
+ private:
+  void SetValue(int value) { view_->SetCurrentAnimationValue(value); }
+
+  TestIconLabelBubbleView::State state() const { return view_->state(); }
+
+  int width() { return view_->width(); }
+
+  bool IsLabelVisible() { return view_->IsLabelVisible(); }
+
+  const gfx::Rect& GetLabelBounds() const { return view_->GetLabelBounds(); }
+
+  const gfx::Rect& GetImageContainerBounds() const {
+    return view_->GetImageContainerView()->bounds();
+  }
+
   void Reset(bool icon_visible) {
     view_->SetLabelVisible(true);
     SetValue(0);
@@ -263,25 +363,8 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     previous_width_ = width();
   }
 
-  void SetValue(int value) { view_->SetCurrentAnimationValue(value); }
-
-  TestIconLabelBubbleView::State state() const { return view_->state(); }
-
-  int width() { return view_->width(); }
-
-  bool IsLabelVisible() { return view_->IsLabelVisible(); }
-
-  const gfx::Rect& GetLabelBounds() const { return view_->GetLabelBounds(); }
-
-  const gfx::Rect& GetImageContainerBounds() const {
-    return view_->GetImageContainerView()->bounds();
-  }
-
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TestIconLabelBubbleView, DanglingUntriaged> view_ = nullptr;
-  raw_ptr<TestInkDrop, DanglingUntriaged> ink_drop_ = nullptr;
-  std::unique_ptr<ui::test::EventGenerator> generator_;
-
+  raw_ptr<TestIconLabelBubbleFakeAnimationView> view_ = nullptr;
   bool steady_reached_ = false;
   bool shrinking_reached_ = false;
   bool minimum_size_reached_ = false;
@@ -294,7 +377,7 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
 // constant and finally shrinking it down to its minimum size which is the image
 // size.
 // Various step sizes during animation simulate different possible timing.
-TEST_F(IconLabelBubbleViewTest, AnimateLayout) {
+TEST_F(IconLabelBubbleFakeAnimationViewTest, AnimateLayout) {
   VerifyWithAnimationStep(1, false);
   VerifyWithAnimationStep(5, false);
   VerifyWithAnimationStep(10, false);
@@ -305,7 +388,7 @@ TEST_F(IconLabelBubbleViewTest, AnimateLayout) {
 // with the icon initially visible.
 // The animation is first growing the bubble from the image size, then keeping
 // its size constant and finally shrinking it down to the initial size.
-TEST_F(IconLabelBubbleViewTest, AnimateLayoutWithVisibleIcon) {
+TEST_F(IconLabelBubbleFakeAnimationViewTest, AnimateLayoutWithVisibleIcon) {
   VerifyWithAnimationStep(1, true);
   VerifyWithAnimationStep(5, true);
   VerifyWithAnimationStep(10, true);
@@ -394,14 +477,37 @@ TEST_F(IconLabelBubbleViewTest, GestureInkDropState) {
 }
 #endif
 
-TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimation) {
+TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimateIn) {
+  view()->SetUpAnimation();
+
   view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
-  view()->AnimateOut();
+
+  view()->AwaitAnimateOut();
   EXPECT_FALSE(view()->IsLabelVisible());
+
   // Label should reappear if animated in after being animated out.
   view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
+}
+
+// The label should be visible while the view is animating out, and should be
+// hidden at the end of the animation.
+TEST_F(IconLabelBubbleViewTest, LabelVisibilityOnAnimateOut) {
+  view()->SetUpAnimation();
+
+  view()->ResetSlideAnimation(true);
+  EXPECT_TRUE(view()->IsLabelVisible());
+
+  view()->SetAnimationStepCallback(base::BindRepeating(
+      [](TestIconLabelBubbleView* view) {
+        EXPECT_TRUE(view->IsLabelVisible());
+      },
+      view()));
+
+  view()->AwaitAnimateOut();
+
+  EXPECT_FALSE(view()->IsLabelVisible());
 }
 
 TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimationReset) {
@@ -414,18 +520,42 @@ TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimationReset) {
   EXPECT_TRUE(view()->IsLabelVisible());
 }
 
+TEST_F(IconLabelBubbleViewTest, PreemptedAnimateOut) {
+  view()->SetUpAnimation();
+  view()->ResetSlideAnimation(true);
+  EXPECT_TRUE(view()->IsLabelVisible());
+
+  view()->SetAnimationEndedCallback(base::BindRepeating(
+      []() { NOTREACHED() << "AnimateOut animation should not have ended"; }));
+
+  // Set the animation duration to an hour to prevent the animation from ending
+  // before starting AnimateIn.
+  view()->SetSlideAnimationDuration(base::Hours(1));
+  view()->AnimateOut();
+  EXPECT_TRUE(view()->IsLabelVisible());
+
+  view()->SetSlideAnimationDuration(base::Seconds(1));
+  view()->AwaitAnimateIn();
+  EXPECT_TRUE(view()->IsLabelVisible());
+}
+
 TEST_F(IconLabelBubbleViewTest,
        LabelVisibilityAfterAnimationWithDefinedString) {
+  view()->SetUpAnimation();
+
   view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
   EXPECT_TRUE(view()->IsLabelVisible());
-  view()->AnimateOut();
+
+  view()->AwaitAnimateOut();
   EXPECT_FALSE(view()->IsLabelVisible());
+
   // Label should reappear if animated in after being animated out.
   view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
   EXPECT_TRUE(view()->IsLabelVisible());
 }
 
 TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundWithLabel) {
+  view()->SetUpAnimation();
   view()->ResetSlideAnimation(false);
 
   // Initially no background should be present.
@@ -460,6 +590,7 @@ TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundWithLabel) {
 }
 
 TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundAlways) {
+  view()->SetUpAnimation();
   view()->ResetSlideAnimation(false);
 
   // Initially no background should be present.
@@ -512,3 +643,79 @@ TEST_F(IconLabelBubbleViewCrashTest,
   static_cast<views::View*>(icon_label_bubble_view)->GetPreferredSize();
 }
 #endif
+
+// This view facilitates checking each of its calculated widths, used
+// for regression testing crbug.com/401231035.
+class TestIconLabelBubbleViewWidthChecker : public TestIconLabelBubbleView {
+ public:
+  using TestIconLabelBubbleView::TestIconLabelBubbleView;
+
+  void SetWidthCheckCallback(base::RepeatingCallback<void(int)> cb) {
+    width_check_cb_ = std::move(cb);
+  }
+
+ private:
+  int GetWidthBetween(int min, int max) const override {
+    int result = IconLabelBubbleView::GetWidthBetween(min, max);
+    if (width_check_cb_) {
+      width_check_cb_.Run(result);
+    }
+    return result;
+  }
+
+  base::RepeatingCallback<void(int)> width_check_cb_;
+};
+
+class IconLabelBubbleViewWidthTest : public IconLabelBubbleViewTestBase {
+ public:
+  using IconLabelBubbleViewTestBase::IconLabelBubbleViewTestBase;
+
+ protected:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    gfx::FontList font_list;
+
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    view_ = widget_->SetContentsView(
+        std::make_unique<TestIconLabelBubbleViewWidthChecker>(font_list, this));
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    view_ = nullptr;
+    widget_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+  TestIconLabelBubbleViewWidthChecker* view() { return view_; }
+
+ private:
+  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<TestIconLabelBubbleViewWidthChecker> view_;
+};
+
+// Regression test for crbug.com/401231035, where AnimateOut would flicker at
+// the beginning of the animation.
+TEST_F(IconLabelBubbleViewWidthTest, WidthDecreasesDuringAnimateOut) {
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
+  ASSERT_FALSE(gfx::Animation::PrefersReducedMotion());
+
+  view()->SetUpAnimation();
+
+  view()->ResetSlideAnimation(true);
+  EXPECT_TRUE(view()->GetVisible());
+  EXPECT_TRUE(view()->IsLabelVisible());
+
+  int last_width = view()->GetPreferredSize().width();
+  int animation_step_count = 0;
+  view()->SetWidthCheckCallback(base::BindRepeating(
+      [](int& last_width, int& animation_step_count, int width) {
+        EXPECT_LE(width, last_width)
+            << "Failed on animation step #" << animation_step_count;
+        last_width = width;
+        ++animation_step_count;
+      },
+      std::ref(last_width), std::ref(animation_step_count)));
+
+  view()->AwaitAnimateOut();
+}

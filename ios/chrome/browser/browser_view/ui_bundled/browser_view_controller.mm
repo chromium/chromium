@@ -18,6 +18,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/authentication/ui_bundled/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
@@ -29,6 +30,9 @@
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
@@ -42,7 +46,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -60,7 +64,10 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -74,14 +81,10 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui_broadcasting_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_broadcasting_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -163,16 +166,17 @@ enum HeaderBehaviour {
 #pragma mark - BVC
 
 // Note other delegates defined in the Delegates category header.
-@interface BrowserViewController () <FullscreenUIElement,
+@interface BrowserViewController () <CardSwipeViewDelegate,
+                                     FullscreenUIElement,
                                      MainContentUI,
-                                     SideSwipeMediatorDelegate,
+                                     SideSwipeUIControllerDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
 
   // Mediator for edge swipe gestures for page and tab navigation.
-  SideSwipeMediator* _sideSwipeMediator;
+  SideSwipeCoordinator* _sideSwipeCoordinator;
 
   // Keyboard commands provider.  It offloads most of the keyboard commands
   // management off of the BVC.
@@ -208,8 +212,8 @@ enum HeaderBehaviour {
   // button.
   BookmarksCoordinator* _bookmarksCoordinator;
 
-  // Toolbar state that broadcasts changes to min and max heights.
-  ToolbarUIState* _toolbarUIState;
+  // Toolbars size that broadcasts changes to min and max heights.
+  ToolbarsSize* _toolbarsSize;
 
   // The main content UI updater for the content displayed by this BVC.
   MainContentUIStateUpdater* _mainContentUIUpdater;
@@ -354,8 +358,9 @@ enum HeaderBehaviour {
   if (self) {
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
-    _sideSwipeMediator = dependencies.sideSwipeMediator;
-    [_sideSwipeMediator setSwipeDelegate:self];
+    _sideSwipeCoordinator = dependencies.sideSwipeCoordinator;
+    [_sideSwipeCoordinator setSideSwipeUIControllerDelegate:self];
+    [_sideSwipeCoordinator setCardSwipeViewDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
     self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
     self.ntpCoordinator = dependencies.ntpCoordinator;
@@ -412,8 +417,9 @@ enum HeaderBehaviour {
 
   _infobarBannerOverlayContainerViewController =
       infobarBannerOverlayContainerViewController;
-  if (!_infobarBannerOverlayContainerViewController)
+  if (!_infobarBannerOverlayContainerViewController) {
     return;
+  }
 
   DCHECK_EQ(_infobarBannerOverlayContainerViewController.parentViewController,
             self);
@@ -431,8 +437,9 @@ enum HeaderBehaviour {
 
   _infobarModalOverlayContainerViewController =
       infobarModalOverlayContainerViewController;
-  if (!_infobarModalOverlayContainerViewController)
+  if (!_infobarModalOverlayContainerViewController) {
     return;
+  }
 
   DCHECK_EQ(_infobarModalOverlayContainerViewController.parentViewController,
             self);
@@ -444,15 +451,17 @@ enum HeaderBehaviour {
 #pragma mark - Private Properties
 
 - (void)setVisible:(BOOL)visible {
-  if (_visible == visible)
+  if (_visible == visible) {
     return;
+  }
 
   _visible = visible;
 }
 
 - (void)setViewVisible:(BOOL)viewVisible {
-  if (_viewVisible == viewVisible)
+  if (_viewVisible == viewVisible) {
     return;
+  }
   _viewVisible = viewVisible;
   self.visible = viewVisible;
   [self.browserViewVisibilityConsumer browserViewDidChangeVisibility];
@@ -460,18 +469,22 @@ enum HeaderBehaviour {
 }
 
 - (void)setBroadcasting:(BOOL)broadcasting {
-  if (_broadcasting == broadcasting)
+  if (_broadcasting == broadcasting) {
     return;
+  }
   _broadcasting = broadcasting;
 
   ChromeBroadcaster* broadcaster = self.fullscreenController->broadcaster();
   if (_broadcasting) {
-    _toolbarUIState = [[ToolbarUIState alloc] init];
-    // Must update _toolbarUIState with current toolbar height state before
+    _toolbarsSize = [[ToolbarsSize alloc] init];
+    // Must update _toolbarsSize with current toolbar height state before
     // starting broadcasting.
     [self updateToolbarState];
-    StartBroadcastingToolbarUI(_toolbarUIState, broadcaster);
+    self.fullscreenController->SetToolbarsSize(_toolbarsSize);
 
+    if (!IsRefactorToolbarsSize()) {
+      StartBroadcastingToolbarsSize(_toolbarsSize, broadcaster);
+    }
     _mainContentUIUpdater = [[MainContentUIStateUpdater alloc]
         initWithState:[[MainContentUIState alloc] init]];
     _webMainContentUIForwarder = [[WebScrollViewMainContentUIForwarder alloc]
@@ -483,10 +496,12 @@ enum HeaderBehaviour {
         std::make_unique<FullscreenUIUpdater>(self.fullscreenController, self);
     [self updateForFullscreenProgress:self.fullscreenController->GetProgress()];
   } else {
-    StopBroadcastingToolbarUI(broadcaster);
+    if (!IsRefactorToolbarsSize()) {
+      StopBroadcastingToolbarsSize(broadcaster);
+    }
     StopBroadcastingMainContentUI(broadcaster);
     _mainContentUIUpdater = nil;
-    _toolbarUIState = nil;
+    _toolbarsSize = nil;
     [_webMainContentUIForwarder disconnect];
     _webMainContentUIForwarder = nil;
 
@@ -503,16 +518,18 @@ enum HeaderBehaviour {
 }
 
 - (void)setHideStatusBar:(BOOL)hideStatusBar {
-  if (_hideStatusBar == hideStatusBar)
+  if (_hideStatusBar == hideStatusBar) {
     return;
+  }
   _hideStatusBar = hideStatusBar;
   [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (NSArray<HeaderDefinition*>*)headerViews {
   NSMutableArray<HeaderDefinition*>* results = [[NSMutableArray alloc] init];
-  if (![self isViewLoaded])
+  if (![self isViewLoaded]) {
     return results;
+  }
 
   if (!IsRegularXRegularSizeClass(self)) {
     if (self.toolbarCoordinator.primaryToolbarViewController.view) {
@@ -797,7 +814,7 @@ enum HeaderBehaviour {
 
   [self.toolbarCoordinator stop];
   self.toolbarCoordinator = nil;
-  _sideSwipeMediator = nil;
+  _sideSwipeCoordinator = nil;
   [_voiceSearchController disconnect];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _bookmarksCoordinator = nil;
@@ -836,14 +853,17 @@ enum HeaderBehaviour {
 // about the state of `self` can be made; accordingly, if there's anything
 // not initialized (or being torn down), this method should return NO.
 - (BOOL)shouldSupportKeyCommands {
-  if (_isShutdown)
+  if (_isShutdown) {
     return NO;
+  }
 
-  if (self.presentedViewController)
+  if (self.presentedViewController) {
     return NO;
+  }
 
-  if (_voiceSearchController.visible)
+  if (_voiceSearchController.visible) {
     return NO;
+  }
 
   return self.viewVisible;
 }
@@ -886,7 +906,7 @@ enum HeaderBehaviour {
   [self setUpViewLayout:YES];
   [self addConstraintsToToolbar];
 
-  [_sideSwipeMediator addHorizontalGesturesToView:self.view];
+  [_sideSwipeCoordinator addHorizontalGesturesToView:self.view];
 
   // Add a tap gesture recognizer to save the last tap location for the source
   // location of the new tab animation.
@@ -985,8 +1005,9 @@ enum HeaderBehaviour {
   web::WebState* activeWebState = self.currentWebState;
   if (activeWebState) {
     [self updateWebStateVisibility:NO];
-    if (!self.presentedViewController)
+    if (!self.presentedViewController) {
       activeWebState->SetKeepRenderProcessAlive(false);
+    }
   }
 
   [_bookmarksCoordinator dismissSnackbar];
@@ -1008,7 +1029,7 @@ enum HeaderBehaviour {
     _voiceSearchController.dispatcher = nil;
     [self.toolbarCoordinator stop];
     self.toolbarCoordinator = nil;
-    _toolbarUIState = nil;
+    _toolbarsSize = nil;
     if (IsModernTabStripOrRaccoonEnabled()) {
       [self.tabStripCoordinator stop];
       self.tabStripCoordinator = nil;
@@ -1017,7 +1038,8 @@ enum HeaderBehaviour {
       self.legacyTabStripCoordinator = nil;
     }
     self.tabStripView = nil;
-    _sideSwipeMediator = nil;
+    [_sideSwipeCoordinator stop];
+    _sideSwipeCoordinator = nil;
   }
 }
 
@@ -1037,8 +1059,9 @@ enum HeaderBehaviour {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
   // After `-shutdown` is called, browser is invalid and will cause a crash.
-  if (_isShutdown)
+  if (_isShutdown) {
     return;
+  }
 
   // TODO(crbug.com/40432185): Support size changes for all popups and modal
   // dialogs.
@@ -1063,7 +1086,7 @@ enum HeaderBehaviour {
 }
 
 - (void)animateTransition {
-  // Force updates of the toolbar state as the toolbar height might
+  // Force updates of the toolbars' size as the toolbar height might
   // change on rotation.
   [self updateToolbarState];
   // Resize horizontal viewport if Smooth Scrolling is on.
@@ -1117,8 +1140,9 @@ enum HeaderBehaviour {
                             completion:^{
                               BrowserViewController* strongSelf = weakSelf;
                               strongSelf.dismissingModal = NO;
-                              if (completion)
+                              if (completion) {
                                 completion();
+                              }
                             }];
 }
 
@@ -1173,12 +1197,14 @@ enum HeaderBehaviour {
       finalCompletionHandler = ^{
         [launchScreenView removeFromSuperview];
         weakSelf.hideStatusBar = NO;
-        if (completion)
+        if (completion) {
           completion();
+        }
       };
     }
   }
-  [_sideSwipeMediator resetContentView];
+
+  [_sideSwipeCoordinator stopActiveSideSwipeAnimation];
 
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
@@ -1204,8 +1230,8 @@ enum HeaderBehaviour {
       self.presentedViewController.beingDismissed) {
     // Don't rotate while a presentation or dismissal animation is occurring.
     return NO;
-  } else if (_sideSwipeMediator && ![_sideSwipeMediator shouldAutorotate]) {
-    // Don't auto rotate if side swipe controller view says not to.
+  } else if (_sideSwipeCoordinator.swipeInProgress) {
+    // Don't auto rotate if a side swipe is in progress.
     return NO;
   } else {
     return [super shouldAutorotate];
@@ -1293,8 +1319,9 @@ enum HeaderBehaviour {
   UIView* primaryToolbar =
       self.toolbarCoordinator.primaryToolbarViewController.view;
   UIView* topmostHeader = [self.headerViews firstObject].view;
-  if (primaryToolbar != topmostHeader)
+  if (primaryToolbar != topmostHeader) {
     return height;
+  }
   // If the primary toolbar is topmost, subtract the height of the portion of
   // the unsafe area.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.top;
@@ -1579,8 +1606,9 @@ enum HeaderBehaviour {
   UIView* presentedContainerView =
       containerViewController.presentedViewController.presentationController
           .containerView;
-  if (presentedContainerView.superview == self.view)
+  if (presentedContainerView.superview == self.view) {
     [self.view bringSubviewToFront:presentedContainerView];
+  }
 }
 
 #pragma mark - Private Methods: UI Configuration, update and Layout
@@ -1596,8 +1624,9 @@ enum HeaderBehaviour {
 - (void)dismissPopups {
   // The dispatcher may not be fully connected during shutdown, so selectors may
   // be unrecognized.
-  if (_isShutdown)
+  if (_isShutdown) {
     return;
+  }
 
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
   [self.helpHandler hideAllHelpBubbles];
@@ -1642,17 +1671,20 @@ enum HeaderBehaviour {
     CGRect frame = [header.view frame];
     frame.origin.y = yOrigin;
     [header.view setFrame:frame];
-    if (header.behaviour != Overlap)
+    if (header.behaviour != Overlap) {
       height += CGRectGetHeight(frame);
+    }
 
-    if (header.view == self.tabStripView)
+    if (header.view == self.tabStripView) {
       [self setNeedsStatusBarAppearanceUpdate];
+    }
   }
 }
 
 - (UIView*)viewForWebState:(web::WebState*)webState {
-  if (!webState)
+  if (!webState) {
     return nil;
+  }
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     return self.ntpCoordinator.started ? self.ntpCoordinator.viewController.view
                                        : nil;
@@ -1708,8 +1740,9 @@ enum HeaderBehaviour {
     self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
   }
 
-  // Toolbar state must be updated before `updateFootersForFullscreenProgress`
-  // as the later uses the insets from fullscreen model.
+  // Toolbars size must be updated before
+  // `updateFootersForFullscreenProgress` as the later uses the insets from
+  // fullscreen model.
   [self updateToolbarState];
 
   // Change the height of the secondary toolbar to show/hide it.
@@ -1890,8 +1923,9 @@ enum HeaderBehaviour {
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
-  if (!enabled)
+  if (!enabled) {
     [self updateForFullscreenProgress:1.0];
+  }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
@@ -1964,15 +1998,23 @@ enum HeaderBehaviour {
          self.headerOffset;
 }
 
-// Updates the ToolbarUIState, which broadcasts any changes to registered
+// Updates the ToolbarsSize, which broadcasts any changes to registered
 // listeners.
 - (void)updateToolbarState {
-  _toolbarUIState.collapsedTopToolbarHeight = [self collapsedTopToolbarHeight];
-  _toolbarUIState.expandedTopToolbarHeight = [self expandedTopToolbarHeight];
-  _toolbarUIState.collapsedBottomToolbarHeight =
-      [self collapsedBottomToolbarHeight];
-  _toolbarUIState.expandedBottomToolbarHeight =
-      [self secondaryToolbarHeightWithInset];
+  if (IsRefactorToolbarsSize()) {
+    [_toolbarsSize
+        setCollapsedTopToolbarHeight:[self collapsedTopToolbarHeight]
+            expandedTopToolbarHeight:[self expandedTopToolbarHeight]
+         expandedBottomToolbarHeight:[self secondaryToolbarHeightWithInset]
+        collapsedBottomToolbarHeight:[self collapsedBottomToolbarHeight]];
+  } else {
+    _toolbarsSize.collapsedTopToolbarHeight = [self collapsedTopToolbarHeight];
+    _toolbarsSize.expandedTopToolbarHeight = [self expandedTopToolbarHeight];
+    _toolbarsSize.collapsedBottomToolbarHeight =
+        [self collapsedBottomToolbarHeight];
+    _toolbarsSize.expandedBottomToolbarHeight =
+        [self secondaryToolbarHeightWithInset];
+  }
 }
 
 // Returns the height difference between the fully expanded and fully collapsed
@@ -2037,8 +2079,9 @@ enum HeaderBehaviour {
 // Updates the browser container view such that its viewport is the space
 // between the primary and secondary toolbars.
 - (void)updateBrowserViewportForFullscreenProgress:(CGFloat)progress {
-  if (!self.currentWebState)
+  if (!self.currentWebState) {
     return;
+  }
 
   // Calculate the heights of the toolbars for `progress`.  `-toolbarHeight`
   // returns the height of the toolbar extending below this view controller's
@@ -2057,8 +2100,9 @@ enum HeaderBehaviour {
 // on the the proxy's `shouldUseViewContentInset` property.
 - (void)updateContentPaddingForTopToolbarHeight:(CGFloat)topToolbarHeight
                             bottomToolbarHeight:(CGFloat)bottomToolbarHeight {
-  if (!self.currentWebState)
+  if (!self.currentWebState) {
     return;
+  }
 
   id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
   UIEdgeInsets contentPadding = webViewProxy.contentInset;
@@ -2069,8 +2113,9 @@ enum HeaderBehaviour {
 
 - (CGFloat)currentHeaderOffset {
   NSArray<HeaderDefinition*>* headers = [self headerViews];
-  if (!headers.count)
+  if (!headers.count) {
     return 0.0;
+  }
 
   // Prerender tab does not have a toolbar, return `headerHeight` as promised by
   // API documentation.
@@ -2094,7 +2139,7 @@ enum HeaderBehaviour {
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     [self.ntpCoordinator locationBarDidBecomeFirstResponder];
   }
-  [_sideSwipeMediator setEnabled:NO];
+  [_sideSwipeCoordinator setEnabled:NO];
 
   if (!IsVisibleURLNewTabPage(self.currentWebState) ||
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -2114,7 +2159,7 @@ enum HeaderBehaviour {
 }
 
 - (void)omniboxDidResignFirstResponder {
-  [_sideSwipeMediator setEnabled:YES];
+  [_sideSwipeCoordinator setEnabled:YES];
 
   [self.ntpCoordinator locationBarWillResignFirstResponder];
 
@@ -2267,8 +2312,9 @@ enum HeaderBehaviour {
 - (void)executeAndClearForegroundTabWasAddedCompletionBlock:(BOOL)animated {
   // Test existence again as the block may have been deleted.
   ProceduralBlock completion = self.foregroundTabWasAddedCompletionBlock;
-  if (!completion)
+  if (!completion) {
     return;
+  }
 
   // Clear the property before executing the completion, in case the
   // completion calls appendTabAddedCompletion:tabAddedCompletion.
@@ -2342,8 +2388,9 @@ enum HeaderBehaviour {
     }
 
     // Do not resize the same view.
-    if (webStateView != newPage)
+    if (webStateView != newPage) {
       webStateView.frame = strongSelf.contentArea.bounds;
+    }
 
     if (currentAnimationIdentifier != strongSelf->_NTPAnimationIdentifier) {
       // Prevent the completion block from being executed if a new animation has
@@ -2357,8 +2404,9 @@ enum HeaderBehaviour {
     strongSelf.inNewTabAnimation = NO;
 
     [strongSelf webStateSelected];
-    if (completion)
+    if (completion) {
       completion();
+    }
 
     [strongSelf executeAndClearForegroundTabWasAddedCompletionBlock:YES];
   };
@@ -2510,9 +2558,7 @@ enum HeaderBehaviour {
   return [hitView isDescendantOfView:self.contentArea];
 }
 
-// TODO(crbug.com/40842427): Factor this delegate into a mediator or other
-// helper
-#pragma mark - SideSwipeMediatorDelegate
+#pragma mark - CardSwipeViewDelegate
 
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView {
   DCHECK(!IsRegularXRegularSizeClass(self));
@@ -2523,7 +2569,15 @@ enum HeaderBehaviour {
 
   // Reset horizontal stack view.
   [sideSwipeView removeFromSuperview];
-  [_sideSwipeMediator setInSwipe:NO];
+  [_sideSwipeCoordinator setSwipeInProgress:NO];
+}
+
+// TODO(crbug.com/40842427): Factor this delegate into a mediator or other
+// helper
+#pragma mark - SideSwipeUIControllerDelegate
+
+- (UIView*)sideSwipeFullscreenView {
+  return self.view;
 }
 
 - (UIView*)sideSwipeContentView {
@@ -2536,14 +2590,17 @@ enum HeaderBehaviour {
 
 // TODO(crbug.com/40842427): Federate side swipe logic.
 - (BOOL)preventSideSwipe {
-  if ([self.popupMenuCoordinator isShowingPopupMenu])
+  if ([self.popupMenuCoordinator isShowingPopupMenu]) {
     return YES;
+  }
 
-  if (_voiceSearchController.visible)
+  if (_voiceSearchController.visible) {
     return YES;
+  }
 
-  if (!self.active)
+  if (!self.active) {
     return YES;
+  }
 
   BOOL isShowingIncognitoBlocker = (self.blockingView.superview != nil);
   if (isShowingIncognitoBlocker) {
@@ -2589,8 +2646,12 @@ enum HeaderBehaviour {
 #pragma mark - ToolbarHeightDelegate
 
 - (void)toolbarsHeightChanged {
-  // Toolbar state must be updated before `updateForFullscreenProgress` as the
-  // later uses the insets from fullscreen model.
+  if (![self isViewLoaded]) {
+    return;
+  }
+
+  // Toolbars size must be updated before `updateForFullscreenProgress` as
+  // the later uses the insets from fullscreen model.
   [self updateToolbarState];
 
   self.primaryToolbarHeightConstraint.constant =

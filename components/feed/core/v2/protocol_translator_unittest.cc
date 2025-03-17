@@ -252,6 +252,19 @@ TEST_F(ProtocolTranslatorTest, ExperimentsAreNotTranslatedGroupAndIDMissing) {
   ASSERT_FALSE(refresh.experiments.has_value());
 }
 
+TEST_F(ProtocolTranslatorTest, HasFeedLaunchCuiMetadata) {
+  feedwire::Response response = EmptyWireResponse();
+  response.mutable_feed_response()
+      ->mutable_feed_response_metadata()
+      ->mutable_feed_launch_cui_server_metadata()
+      ->mutable_unknown_fields()
+      ->assign("hello");
+
+  RefreshResponseData refresh = TranslateWireResponse(response);
+  ASSERT_TRUE(refresh.feed_launch_cui_metadata.has_value());
+  EXPECT_EQ("hello", refresh.feed_launch_cui_metadata);
+}
+
 TEST_F(ProtocolTranslatorTest, MissingResponseVersion) {
   feedwire::Response response = EmptyWireResponse();
   response.set_response_version(feedwire::Response::UNKNOWN_RESPONSE_VERSION);

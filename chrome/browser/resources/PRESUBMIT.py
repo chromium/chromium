@@ -131,31 +131,19 @@ def CheckWebDevStyle(input_api, output_api):
 
 def CheckNoNewJs(input_api, output_api):
   EXCLUDED_PATHS = [
-    'chrome/browser/resources/.eslintrc',
-    'chrome/browser/resources/about_sys/',
-    'chrome/browser/resources/ash/settings/.eslintrc',
     'chrome/browser/resources/bluetooth_internals/',
     'chrome/browser/resources/chromeos/',
     'chrome/browser/resources/device_log/',
-    'chrome/browser/resources/explore_sites_internals/',
-    'chrome/browser/resources/family_link_user_internals/',
-    'chrome/browser/resources/feed_internals/',
+    # TODO(crbug.com/403113291): Migrate incognito_navigation_blocked_page to
+    # TypeScript and remove exception.
+    'chrome/browser/resources/enterprise/incognito_navigation_blocked_page/',
     'chrome/browser/resources/gaia_auth_host/',
     'chrome/browser/resources/hangout_services/',
-    'chrome/browser/resources/image_editor/',
-    'chrome/browser/resources/identity_scope_approval_dialog/',
-    'chrome/browser/resources/internals/notifications/',
-    'chrome/browser/resources/internals/query_tiles/',
     'chrome/browser/resources/inspect/',
     'chrome/browser/resources/net_internals/',
     'chrome/browser/resources/network_speech_synthesis/',
     'chrome/browser/resources/new_tab_page_incognito_guest/',
-    'chrome/browser/resources/new_tab_page/untrusted/',
-    'chrome/browser/resources/offline_pages/',
-    'chrome/browser/resources/omnibox/',
     'chrome/browser/resources/reading_mode_gdocs_helper/',
-    'chrome/browser/resources/settings/',
-    'chrome/browser/resources/tools/',
   ]
 
   normalized_excluded_paths = []
@@ -171,6 +159,30 @@ def CheckNoNewJs(input_api, output_api):
   presubmit_support = _ImportWebDevStyle(input_api)
   return presubmit_support.DisallowNewJsFiles(input_api, output_api,
                                               lambda f: not excluded_path(f))
+
+
+def CheckNoNewPolymer(input_api, output_api):
+  EXCLUDED_PATHS = [
+    'chrome/browser/resources/ash/',
+    'chrome/browser/resources/chromeos/',
+    'chrome/browser/resources/password_manager/',
+    'chrome/browser/resources/print_preview/',
+    'chrome/browser/resources/settings/',
+  ]
+
+  normalized_excluded_paths = []
+  for path in EXCLUDED_PATHS:
+    normalized_excluded_paths.append(input_api.os_path.normpath(path))
+
+  def excluded_path(f):
+    for path in normalized_excluded_paths:
+      if f.LocalPath().startswith(path):
+        return True
+    return False
+
+  presubmit_support = _ImportWebDevStyle(input_api)
+  return presubmit_support.DisallowNewPolymerElements(
+      input_api, output_api, lambda f: not excluded_path(f))
 
 def CheckPatchFormatted(input_api, output_api):
   results = input_api.canned_checks.CheckPatchFormatted(input_api, output_api,

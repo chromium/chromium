@@ -74,13 +74,15 @@ std::unique_ptr<KeyedService> CreateSyncService(
 
 class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
  public:
-  EnterpriseSigninServiceTest()
-      : dependency_manager_subscription_(
-            BrowserContextDependencyManager::GetInstance()
-                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                    &EnterpriseSigninServiceTest::SetTestingFactories,
-                    base::Unretained(this)))) {}
+  EnterpriseSigninServiceTest() = default;
   ~EnterpriseSigninServiceTest() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateSyncService));
+  }
 
   void SetUpOnMainThread() override {
     CHECK(browser());
@@ -162,13 +164,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
   }
 
  private:
-  void SetTestingFactories(content::BrowserContext* context) {
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateSyncService));
-  }
-
   raw_ptr<syncer::TestSyncService> sync_service_;
-  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {

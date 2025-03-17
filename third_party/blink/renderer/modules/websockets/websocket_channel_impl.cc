@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_impl.h"
 
 #include <string.h>
@@ -195,7 +190,8 @@ FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t) {
 
 FileErrorCode WebSocketChannelImpl::BlobLoader::DidReceiveData(
     base::span<const uint8_t> data) {
-  auto remaining_message = base::span(data_.get(), size_).subspan(offset_);
+  auto remaining_message =
+      UNSAFE_TODO(base::span(data_.get(), size_)).subspan(offset_);
   const size_t data_to_copy = std::min(remaining_message.size(), data.size());
   if (!data_to_copy) {
     return FileErrorCode::kOK;
@@ -475,8 +471,8 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
     "WebSocketSend", InspectorWebSocketTransferEvent::Data,
     execution_context_.Get(), identifier_, byte_length);
   bool did_attempt_to_send = false;
-  auto message = base::span(
-      static_cast<const char*>(buffer.Data()) + byte_offset, byte_length);
+  auto message = UNSAFE_TODO(base::span(
+      static_cast<const char*>(buffer.Data()) + byte_offset, byte_length));
   if (messages_.empty() && !wait_for_writable_) {
     did_attempt_to_send = true;
     if (MaybeSendSynchronously(
@@ -721,7 +717,8 @@ WebSocketChannelImpl::Message::Message(v8::Isolate* isolate,
       did_call_send_message_(did_call_send_message),
       completion_callback_(std::move(completion_callback)) {
   memcpy(message_data_.get(), text.data(), text.length());
-  pending_payload_ = base::span(message_data_.get(), text.length());
+  pending_payload_ =
+      UNSAFE_TODO(base::span(message_data_.get(), text.length()));
 }
 
 WebSocketChannelImpl::Message::Message(
@@ -731,7 +728,7 @@ WebSocketChannelImpl::Message::Message(
 WebSocketChannelImpl::Message::Message(MessageData data, size_t size)
     : message_data_(std::move(data)),
       type_(kMessageTypeArrayBuffer),
-      pending_payload_(base::span(message_data_.get(), size)) {}
+      pending_payload_(UNSAFE_TODO(base::span(message_data_.get(), size))) {}
 
 WebSocketChannelImpl::Message::Message(v8::Isolate* isolate,
                                        base::span<const char> message,
@@ -742,7 +739,8 @@ WebSocketChannelImpl::Message::Message(v8::Isolate* isolate,
       did_call_send_message_(did_call_send_message),
       completion_callback_(std::move(completion_callback)) {
   memcpy(message_data_.get(), message.data(), message.size());
-  pending_payload_ = base::span(message_data_.get(), message.size());
+  pending_payload_ =
+      UNSAFE_TODO(base::span(message_data_.get(), message.size()));
 }
 
 WebSocketChannelImpl::Message::Message(uint16_t code, const String& reason)
@@ -1116,7 +1114,7 @@ void WebSocketChannelImpl::ConsumeDataFrame(
   // instead.
   if (receiving_message_type_is_text_ && received_text_is_all_ascii_) {
     for (size_t i = 0; i < size; i++) {
-      if (!IsASCII(data[i])) {
+      if (!IsASCII(UNSAFE_TODO(data[i]))) {
         received_text_is_all_ascii_ = false;
         break;
       }
@@ -1124,13 +1122,13 @@ void WebSocketChannelImpl::ConsumeDataFrame(
   }
 
   if (!fin) {
-    message_chunks_->Append(base::span(data, size));
+    message_chunks_->Append(UNSAFE_TODO(base::span(data, size)));
     return;
   }
 
   Vector<base::span<const char>> chunks = message_chunks_->GetView();
   if (size > 0) {
-    chunks.push_back(base::span(data, size));
+    chunks.push_back(UNSAFE_TODO(base::span(data, size)));
   }
   auto opcode = receiving_message_type_is_text_
                     ? WebSocketOpCode::kOpCodeText

@@ -12,12 +12,7 @@ var testStep = [
   function(info) {
     chrome.test.getConfig(function(config) {
       chrome.test.assertEq(0, info.usageBytes);
-
-      if (config.customArg == "enabled") {
-        chrome.test.assertEq(123456, info.quotaBytes);
-      } else {
-        chrome.test.assertNe(123456, info.quotaBytes);
-      }
+      chrome.test.assertNe(123456, info.quotaBytes);
       chrome.test.succeed();
     });
   }

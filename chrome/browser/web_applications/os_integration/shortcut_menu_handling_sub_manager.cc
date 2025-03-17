@@ -28,7 +28,7 @@ namespace web_app {
 
 namespace {
 
-bool HasShortcutsMenuInfo(const proto::WebAppOsIntegrationState& state) {
+bool HasShortcutsMenuInfo(const proto::os_state::WebAppOsIntegration& state) {
   return state.has_shortcut_menus() &&
          state.shortcut_menus().shortcut_menu_info_size() > 0;
 }
@@ -67,7 +67,7 @@ ShortcutMenuHandlingSubManager::~ShortcutMenuHandlingSubManager() = default;
 
 void ShortcutMenuHandlingSubManager::Configure(
     const webapps::AppId& app_id,
-    proto::WebAppOsIntegrationState& desired_state,
+    proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_shortcut_menus());
 
@@ -84,7 +84,8 @@ void ShortcutMenuHandlingSubManager::Configure(
     return;
   }
 
-  proto::ShortcutMenus* shortcut_menus = desired_state.mutable_shortcut_menus();
+  proto::os_state::ShortcutMenus* shortcut_menus =
+      desired_state.mutable_shortcut_menus();
   provider_->icon_manager().ReadAllShortcutMenuIconsWithTimestamp(
       app_id,
       base::BindOnce(&ShortcutMenuHandlingSubManager::StoreShortcutMenuData,
@@ -96,8 +97,8 @@ void ShortcutMenuHandlingSubManager::Configure(
 void ShortcutMenuHandlingSubManager::Execute(
     const webapps::AppId& app_id,
     const std::optional<SynchronizeOsOptions>& synchronize_options,
-    const proto::WebAppOsIntegrationState& desired_state,
-    const proto::WebAppOsIntegrationState& current_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure execute_complete) {
   if (!ShouldRegisterShortcutsMenuWithOs()) {
     std::move(execute_complete).Run();
@@ -149,7 +150,7 @@ void ShortcutMenuHandlingSubManager::ForceUnregister(
 void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
     const webapps::AppId& app_id,
     std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info,
-    proto::ShortcutMenus* shortcut_menus,
+    proto::os_state::ShortcutMenus* shortcut_menus,
     WebAppIconManager::ShortcutIconDataVector downloaded_shortcut_menu_items) {
   MeasureShortcutMenuIconHistograms(downloaded_shortcut_menu_items.size(),
                                     shortcut_menu_item_info.size());
@@ -164,7 +165,7 @@ void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
   }
   for (size_t menu_index = 0; menu_index < shortcut_menu_item_info.size();
        menu_index++) {
-    proto::ShortcutMenuInfo* new_shortcut_menu_item =
+    proto::os_state::ShortcutMenuInfo* new_shortcut_menu_item =
         shortcut_menus->add_shortcut_menu_info();
     new_shortcut_menu_item->set_shortcut_name(
         base::UTF16ToUTF8(shortcut_menu_item_info[menu_index].name));
@@ -173,7 +174,7 @@ void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
 
     for (const auto& [size, time] :
          downloaded_shortcut_menu_items[menu_index][IconPurpose::ANY]) {
-      proto::ShortcutIconData* icon_data =
+      proto::os_state::ShortcutIconData* icon_data =
           new_shortcut_menu_item->add_icon_data_any();
       icon_data->set_icon_size(size);
       icon_data->set_timestamp(syncer::TimeToProtoTime(time));
@@ -181,7 +182,7 @@ void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
 
     for (const auto& [size, time] :
          downloaded_shortcut_menu_items[menu_index][IconPurpose::MASKABLE]) {
-      proto::ShortcutIconData* icon_data =
+      proto::os_state::ShortcutIconData* icon_data =
           new_shortcut_menu_item->add_icon_data_maskable();
       icon_data->set_icon_size(size);
       icon_data->set_timestamp(syncer::TimeToProtoTime(time));
@@ -189,7 +190,7 @@ void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
 
     for (const auto& [size, time] :
          downloaded_shortcut_menu_items[menu_index][IconPurpose::MONOCHROME]) {
-      proto::ShortcutIconData* icon_data =
+      proto::os_state::ShortcutIconData* icon_data =
           new_shortcut_menu_item->add_icon_data_monochrome();
       icon_data->set_icon_size(size);
       icon_data->set_timestamp(syncer::TimeToProtoTime(time));
@@ -199,7 +200,7 @@ void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
 
 void ShortcutMenuHandlingSubManager::StartShortcutsMenuUnregistration(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& current_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure registration_callback) {
   if (!HasShortcutsMenuInfo(current_state)) {
     std::move(registration_callback).Run();
@@ -216,7 +217,7 @@ void ShortcutMenuHandlingSubManager::StartShortcutsMenuUnregistration(
 
 void ShortcutMenuHandlingSubManager::ReadIconDataForShortcutsMenu(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure execute_complete) {
   if (!HasShortcutsMenuInfo(desired_state)) {
     std::move(execute_complete).Run();
@@ -232,7 +233,7 @@ void ShortcutMenuHandlingSubManager::ReadIconDataForShortcutsMenu(
 
 void ShortcutMenuHandlingSubManager::OnIconDataLoadedRegisterShortcutsMenu(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure execute_complete,
     ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps) {
   base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(

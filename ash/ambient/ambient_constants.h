@@ -67,6 +67,9 @@ constexpr char kScreenSaverPreviewUserAction[] =
 inline constexpr personalization_app::mojom::AmbientTheme kDefaultAmbientTheme =
     personalization_app::mojom::AmbientTheme::kSlideshow;
 
+// Special string to identify devices that support time-of-day Jupiter asset.
+inline constexpr std::string_view kJupiterScreensaverCustomizationId = "navi";
+
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_AMBIENT_CONSTANTS_H_

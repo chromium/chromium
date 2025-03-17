@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
-
 #import <Foundation/Foundation.h>
 
 #import "components/autofill/ios/browser/form_suggestion.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 namespace ios_web_view {
 

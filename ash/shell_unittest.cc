@@ -4,6 +4,7 @@
 
 #include "ash/shell.h"
 
+#include <algorithm>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -40,7 +41,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -445,9 +445,9 @@ TEST_F(ShellTest, TestPreTargetHandlerOrder) {
 
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
   ui::EventHandlerList::const_iterator cursor_filter =
-      base::ranges::find(handlers, shell->mouse_cursor_filter());
+      std::ranges::find(handlers, shell->mouse_cursor_filter());
   ui::EventHandlerList::const_iterator drag_drop =
-      base::ranges::find(handlers, shell_test_api.drag_drop_controller());
+      std::ranges::find(handlers, shell_test_api.drag_drop_controller());
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), drag_drop);
   EXPECT_GT(drag_drop, cursor_filter);
@@ -462,9 +462,9 @@ TEST_F(ShellTest, AcceleratorPreTargetHandlerOrder) {
 
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
   ui::EventHandlerList::const_iterator accelerator_tracker =
-      base::ranges::find(handlers, shell->accelerator_tracker());
+      std::ranges::find(handlers, shell->accelerator_tracker());
   ui::EventHandlerList::const_iterator accelerator_filter =
-      base::ranges::find(handlers, shell->accelerator_filter());
+      std::ranges::find(handlers, shell->accelerator_filter());
   EXPECT_NE(handlers.end(), accelerator_tracker);
   EXPECT_NE(handlers.end(), accelerator_filter);
   EXPECT_GT(accelerator_filter, accelerator_tracker);
@@ -484,13 +484,13 @@ TEST_F(ShellTest, TestAccessibilityHandlerOrder) {
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
 
   ui::EventHandlerList::const_iterator cursor_filter =
-      base::ranges::find(handlers, shell->mouse_cursor_filter());
+      std::ranges::find(handlers, shell->mouse_cursor_filter());
   ui::EventHandlerList::const_iterator fullscreen_magnifier_filter =
-      base::ranges::find(handlers, shell->fullscreen_magnifier_controller());
+      std::ranges::find(handlers, shell->fullscreen_magnifier_controller());
   ui::EventHandlerList::const_iterator chromevox_filter =
-      base::ranges::find(handlers, shell->key_accessibility_enabler());
+      std::ranges::find(handlers, shell->key_accessibility_enabler());
   ui::EventHandlerList::const_iterator select_to_speak_filter =
-      base::ranges::find(handlers, &select_to_speak);
+      std::ranges::find(handlers, &select_to_speak);
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), fullscreen_magnifier_filter);
   EXPECT_NE(handlers.end(), chromevox_filter);
@@ -504,12 +504,12 @@ TEST_F(ShellTest, TestAccessibilityHandlerOrder) {
   shell->RemoveAccessibilityEventHandler(&select_to_speak);
 
   handlers = test_api.GetPreTargetHandlers();
-  cursor_filter = base::ranges::find(handlers, shell->mouse_cursor_filter());
+  cursor_filter = std::ranges::find(handlers, shell->mouse_cursor_filter());
   fullscreen_magnifier_filter =
-      base::ranges::find(handlers, shell->fullscreen_magnifier_controller());
+      std::ranges::find(handlers, shell->fullscreen_magnifier_controller());
   chromevox_filter =
-      base::ranges::find(handlers, shell->key_accessibility_enabler());
-  select_to_speak_filter = base::ranges::find(handlers, &select_to_speak);
+      std::ranges::find(handlers, shell->key_accessibility_enabler());
+  select_to_speak_filter = std::ranges::find(handlers, &select_to_speak);
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), fullscreen_magnifier_filter);
   EXPECT_NE(handlers.end(), chromevox_filter);
@@ -526,13 +526,13 @@ TEST_F(ShellTest, TestAccessibilityHandlerOrder) {
       AccessibilityEventHandlerManager::HandlerType::kDockedMagnifier);
 
   handlers = test_api.GetPreTargetHandlers();
-  cursor_filter = base::ranges::find(handlers, shell->mouse_cursor_filter());
+  cursor_filter = std::ranges::find(handlers, shell->mouse_cursor_filter());
   fullscreen_magnifier_filter =
-      base::ranges::find(handlers, shell->fullscreen_magnifier_controller());
+      std::ranges::find(handlers, shell->fullscreen_magnifier_controller());
   chromevox_filter =
-      base::ranges::find(handlers, shell->key_accessibility_enabler());
+      std::ranges::find(handlers, shell->key_accessibility_enabler());
   ui::EventHandlerList::const_iterator docked_magnifier_filter =
-      base::ranges::find(handlers, &docked_magnifier);
+      std::ranges::find(handlers, &docked_magnifier);
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), fullscreen_magnifier_filter);
   EXPECT_NE(handlers.end(), docked_magnifier_filter);
@@ -633,7 +633,7 @@ TEST_F(ShellLoginTest, DragAndDropDisabledBeforeLogin) {
   DragDropControllerTestApi drag_drop_controller_test_api(drag_drop_controller);
   EXPECT_FALSE(drag_drop_controller_test_api.enabled());
 
-  SimulateUserLogin("user1@test.com");
+  SimulateUserLogin({"user1@test.com"});
   EXPECT_TRUE(drag_drop_controller_test_api.enabled());
 }
 

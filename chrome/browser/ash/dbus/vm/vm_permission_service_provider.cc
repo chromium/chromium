@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/dbus/vm/vm_permission_service_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -12,13 +13,11 @@
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -44,7 +43,7 @@ base::UnguessableToken TokenFromString(const std::string& str) {
 
   uint64_t high = 0, low = 0;
   int count = 0;
-  base::ranges::for_each(base::Reversed(bytes), [&](auto byte) {
+  std::ranges::for_each(base::Reversed(bytes), [&](auto byte) {
     auto* p = count < kBytesPerUint64 ? &low : &high;
     int pos = count < kBytesPerUint64 ? count : count - kBytesPerUint64;
     *p += static_cast<uint64_t>(byte) << (pos * 8);
@@ -79,7 +78,7 @@ VmPermissionServiceProvider::~VmPermissionServiceProvider() = default;
 VmPermissionServiceProvider::VmMap::iterator
 VmPermissionServiceProvider::FindVm(const std::string& owner_id,
                                     const std::string& name) {
-  return base::ranges::find_if(vms_, [&](const auto& vm) {
+  return std::ranges::find_if(vms_, [&](const auto& vm) {
     return vm.second->owner_id == owner_id && vm.second->name == name;
   });
 }

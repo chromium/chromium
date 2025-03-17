@@ -109,12 +109,18 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     this.resizeObserver_ = new ResizeObserver(() => {
       const scrollbarVisible =
           dataContainer.scrollHeight > dataContainer.clientHeight;
-      // Show the container border line if the scroll bar is visible.
-      dataContainer.classList.toggle('border-line', scrollbarVisible);
-      // Adapt the section padding if the scrollbar is visible by overriding the
-      // value (removing the scrollbar width).
-      this.$.dataSections.classList.toggle(
-          'data-sections-with-scrollbar', scrollbarVisible);
+      // Defer style changes to after the browser repaints to avoid triggering a
+      // resize loop. Applying the style changes would not interfere with the
+      // previously computed value of `scrollbarVisible` on the newer
+      // notification. Check crbug.com/397366630.
+      requestAnimationFrame(() => {
+        // Show the container border line if the scroll bar is visible.
+        dataContainer.classList.toggle('border-line', scrollbarVisible);
+        // Adapt the section padding if the scrollbar is visible by overriding
+        // the value (removing the scrollbar width).
+        this.$.dataSections.classList.toggle(
+            'data-sections-with-scrollbar', scrollbarVisible);
+      });
     });
     this.resizeObserver_.observe(dataContainer);
   }
@@ -168,7 +174,7 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     const idsToMove: number[][] = [];
 
     // Get the section element list.
-    const dataSections = this.shadowRoot!.querySelectorAll(`data-section`);
+    const dataSections = this.shadowRoot.querySelectorAll(`data-section`);
     // Getting the output from each section.
     for (let i = 0; i < dataSections.length; ++i) {
       const selectedIds = dataSections[i]!.dataSelected;

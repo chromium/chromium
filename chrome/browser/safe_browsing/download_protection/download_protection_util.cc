@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -21,8 +22,12 @@
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #endif
 
 namespace safe_browsing {
@@ -63,7 +68,7 @@ void SelectEncryptedEntry(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       *considering, &ClientDownloadRequest::ArchivedBinary::is_encrypted);
   if (it != considering->end()) {
     *selected->Add() = *it;
@@ -75,7 +80,7 @@ void SelectDeepestEntry(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  auto it = base::ranges::max_element(*considering, {}, &ArchiveEntryDepth);
+  auto it = std::ranges::max_element(*considering, {}, &ArchiveEntryDepth);
   if (it != considering->end()) {
     *selected->Add() = *it;
     considering->erase(it);
@@ -86,7 +91,7 @@ void SelectWildcardEntryAtFront(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  int remaining_executables = base::ranges::count_if(
+  int remaining_executables = std::ranges::count_if(
       *considering, &ClientDownloadRequest::ArchivedBinary::is_executable);
   for (auto it = considering->begin(); it != considering->end(); ++it) {
     if (it->is_executable()) {
@@ -131,7 +136,7 @@ void AddEventUrlToReferrerChain(const download::DownloadItem& item,
   }
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 bool IsDownloadReportGatedByExtendedReporting(
     ClientSafeBrowsingReportRequest::ReportType report_type) {
   switch (report_type) {
@@ -298,6 +303,15 @@ void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event) {
   }
 }
 
+void LogDeepScanEvent(const DeepScanningMetadata& metadata,
+                      DeepScanEvent event) {
+  base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent3", event);
+  if (metadata.IsTopLevelEncryptedArchive()) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.PasswordProtectedDeepScanEvent3", event);
+  }
+}
+
 void LogLocalDecryptionEvent(DeepScanEvent event) {
   base::UmaHistogramEnumeration("SBClientDownload.LocalDecryptionEvent", event);
 }
@@ -412,7 +426,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                                              recent_navigations_to_collect);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 bool ShouldSendDangerousDownloadReport(
     download::DownloadItem* item,
     ClientSafeBrowsingReportRequest::ReportType report_type) {
@@ -464,5 +478,17 @@ bool ShouldSendDangerousDownloadReport(
   }
 }
 #endif
+
+std::optional<enterprise_connectors::AnalysisSettings>
+ShouldUploadBinaryForDeepScanning(download::DownloadItem* item) {
+#if BUILDFLAG(IS_ANDROID)
+  // Deep scanning is not supported on Android.
+  return std::nullopt;
+#else
+  // Create temporary metadata wrapper on the stack.
+  DownloadItemMetadata metadata(item);
+  return DeepScanningRequest::ShouldUploadBinary(metadata);
+#endif
+}
 
 }  // namespace safe_browsing

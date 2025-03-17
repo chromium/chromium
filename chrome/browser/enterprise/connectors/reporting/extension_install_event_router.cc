@@ -6,15 +6,21 @@
 
 #include <optional>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+
+using ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent;
 
 namespace enterprise_connectors {
 
@@ -26,7 +32,7 @@ namespace {
 constexpr char kKeyId[] = "id";
 constexpr char kKeyName[] = "name";
 constexpr char kKeyDescription[] = "description";
-constexpr char kKeyAction[] = "extension_action_type";
+constexpr char kKeyExtensionAction[] = "extension_action_type";
 constexpr char kKeyVersion[] = "extension_version";
 constexpr char kKeySource[] = "extension_source";
 
@@ -61,6 +67,37 @@ ExtensionInstallEventRouter::~ExtensionInstallEventRouter() {
 
 void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
     const extensions::Extension* extension,
+    const BrowserExtensionInstallEvent::ExtensionAction extension_action) {
+  DCHECK(base::FeatureList::IsEnabled(
+      policy::kUploadRealtimeReportingEventsUsingProto));
+
+  std::optional<ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kExtensionInstallEvent) == 0) {
+    return;
+  }
+
+  // Build the event proto.
+  ::chrome::cros::reporting::proto::Event event;
+  auto* extension_event = event.mutable_browser_extension_install_event();
+  extension_event->set_id(extension->id());
+  extension_event->set_name(extension->name());
+  extension_event->set_description(extension->description());
+  extension_event->set_extension_action_type(extension_action);
+  extension_event->set_extension_version(extension->GetVersionForDisplay());
+  extension_event->set_extension_source(
+      extension->from_webstore()
+          ? BrowserExtensionInstallEvent::ExtensionSource::
+                BrowserExtensionInstallEvent_ExtensionSource_CHROME_WEBSTORE
+          : BrowserExtensionInstallEvent::ExtensionSource::
+                BrowserExtensionInstallEvent_ExtensionSource_EXTERNAL);
+
+  reporting_client_->ReportEvent(std::move(event), std::move(settings.value()));
+}
+
+void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
+    const extensions::Extension* extension,
     const char* extension_action) {
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
@@ -73,7 +110,7 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   event.Set(kKeyId, extension->id());
   event.Set(kKeyName, extension->name());
   event.Set(kKeyDescription, extension->description());
-  event.Set(kKeyAction, extension_action);
+  event.Set(kKeyExtensionAction, extension_action);
   event.Set(kKeyVersion, extension->GetVersionForDisplay());
   event.Set(kKeySource, extension->from_webstore() ? kChromeWebstoreSource
                                                    : kExternalSource);
@@ -86,15 +123,32 @@ void ExtensionInstallEventRouter::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     bool is_update) {
-  ReportExtensionInstallEvent(extension,
-                              is_update ? kUpdateAction : kInstallAction);
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    ReportExtensionInstallEvent(
+        extension,
+        is_update ? BrowserExtensionInstallEvent::ExtensionAction::
+                        BrowserExtensionInstallEvent_ExtensionAction_UPDATE
+                  : BrowserExtensionInstallEvent::ExtensionAction::
+                        BrowserExtensionInstallEvent_ExtensionAction_INSTALL);
+  } else {
+    ReportExtensionInstallEvent(extension,
+                                is_update ? kUpdateAction : kInstallAction);
+  }
 }
 
 void ExtensionInstallEventRouter::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UninstallReason reason) {
-  ReportExtensionInstallEvent(extension, kUninstallAction);
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    ReportExtensionInstallEvent(
+        extension, BrowserExtensionInstallEvent::ExtensionAction::
+                       BrowserExtensionInstallEvent_ExtensionAction_UNINSTALL);
+  } else {
+    ReportExtensionInstallEvent(extension, kUninstallAction);
+  }
 }
 
 // static

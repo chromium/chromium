@@ -9,7 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 
 namespace chromeos::editor_menu {
 
@@ -17,7 +18,7 @@ class EditorManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnEditorModeChanged(const EditorMode& mode) = 0;
+    virtual void OnEditorModeChanged(EditorMode mode) = 0;
   };
 
   virtual ~EditorManager() = default;
@@ -33,7 +34,7 @@ class EditorManager {
   virtual void LogEditorMode(EditorMode mode) = 0;
   virtual void AddObserver(EditorManager::Observer* observer) = 0;
   virtual void RemoveObserver(EditorManager::Observer* observer) = 0;
-  virtual void NotifyEditorModeChanged(const EditorMode& mode) = 0;
+  virtual void NotifyEditorModeChanged(EditorMode mode) = 0;
   virtual void RequestCacheContext() = 0;
 };
 

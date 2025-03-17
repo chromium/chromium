@@ -25,7 +25,7 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "AndroidClock",
     "Droid Sans Mono",
     "Roboto",
@@ -38,7 +38,7 @@ const auto kExpectedFontFamilyNames = std::to_array({
     "Noto Sans Thai UI",
 });
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "Ahem",
     "Arimo",
     "Arimo",
@@ -67,7 +67,7 @@ const auto kExpectedFontFamilyNames = std::to_array({
     "Tinos",
 });
 #elif BUILDFLAG(IS_APPLE)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "American Typewriter",
     "Arial Narrow",
     "Baskerville",
@@ -80,12 +80,23 @@ const auto kExpectedFontFamilyNames = std::to_array({
     "Hiragino Kaku Gothic StdN",
 });
 #elif BUILDFLAG(IS_WIN)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "Cambria Math",
     "MingLiU_HKSCS-ExtB",
     "NSimSun",
     "Calibri",
 });
+#endif
+
+#if !BUILDFLAG(IS_FUCHSIA)
+std::string_view MaybeStripFontationsSuffix(const std::string& font_name) {
+  std::string_view view = font_name;
+  std::size_t pos = view.rfind(" (Fontations)");
+  if (pos != std::string_view::npos) {
+    view.remove_suffix(view.size() - pos);
+  }
+  return view;
+}
 #endif
 
 }  // namespace
@@ -159,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
         first_font_info.GetDict().FindString("familyName");
     ASSERT_TRUE(first_font_name);
     ASSERT_GT(first_font_name->size(), 0u);
-    ASSERT_EQ(*first_font_name, kExpectedFontFamilyNames[i]);
+    ASSERT_EQ(MaybeStripFontationsSuffix(*first_font_name),
+              kExpectedFontFamilyNames[i]);
   }
 }
 #endif

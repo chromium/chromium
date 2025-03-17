@@ -203,6 +203,7 @@ Verbs fall into a number of different categories:
    - `PollView()` [Views]
    - `PollViewProperty()` [Views]
    - `WaitForState()`
+   - `CheckState()`
    - `PollState()`
    - `PollElement()`
    - `PollView()` [Views]
@@ -323,18 +324,14 @@ Note: this dump automatically happens when a test fails.
 A modifier wraps around a step or steps and change their behavior.
 
 - **InAnyContext** allows the modified verb to find an element outside the test's default
-  `ElementContext`. Unlike the other modifiers, there are a number of limitations on its use:
-  - It should not be used with any `Ensure` verbs.
-    - This is a shortcoming in the underlying framework that will be fixed in the future.
-  - It should not be used with named elements, which can already be found in any context.
-  - For unsupported verbs, it is best to either use `InSameContext()` or `InContext()` instead.
-  - Usage example:
+  `ElementContext`. Note that the order of contexts searched may be non-deterministic,
+  but is generally stable. To ensure that you are tracking the same context across steps,
+  consider following up with `InSameContext()` (see below).
 
 ```cpp
 RunTestSequence(
     // This button might be in a different window!
-    InAnyContext(PressButton(kMyButton)),
-    InAnyContext(CheckView(kMyButton, ensure_pressed)));
+    InAnyContext(PressButton(kMyButton)));
 ```
 
 - **InSameContext** allows the modified verb (or verbs) to find an element in the same context
@@ -362,9 +359,9 @@ Browser* const incognito = CreateIncognitoBrowser();
 RunTestSequence(
   /* Do stuff in primary browser context here */
   /* ... */
-  InContext(incognito->window()->GetElementContext(), Steps(
+  InContext(incognito->window()->GetElementContext(),
     PressButton(kAppMenuButton),
-    WaitForShow(kDownloadsMenuItemElementId))));
+    WaitForShow(kDownloadsMenuItemElementId)));
 ```
 
 ### Control Flow
@@ -378,11 +375,12 @@ Kombucha now provides two options for control flow:
 In some cases, you may want to execute part of a test only if, for example, a
 particular flag is set. In order to do this, we provide the various `If()`
 control-flow statements:
- - `If(condition, then_steps[, else_steps])` - executes `then_steps`, which can
-   be a single step or a `MultiStep`, if `condition` returns true. If
-   `else_steps` is present, it will be executed if `condition` returns false.
- - `IfMatches(function, matcher, then_steps[, else_steps])` - same as above
-   but `then_steps` executes if the result of `function` matches `matcher`.
+ - `If(condition, Then(then_steps)[, Else(else_steps)])` - executes
+   `Then()`, which can be a single step or a `MultiStep`, if `condition` returns
+   true. If `Else()` is present, it will be executed if `condition` returns
+   false.
+ - `IfMatches(function, matcher, Then(then_steps)[, Else(else_steps)])` - same
+   as above but `Then()` executes if the result of `function` matches `matcher`.
  - `IfElement()`, `IfElementMatches()` - same as above, but the `condition` or
    `function` receives a const pointer to the specified element as an argument.
    If the element is not visible, the condition receives `nullptr` (it does not
@@ -401,8 +399,8 @@ RunTestSequence(
   // If MyFeature is enabled, it may interfere with the rest of this test, so
   // toggle its UI off:
   If(base::Bind(&base::FeatureList::IsEnabled, kMyFeature)),
-     Steps(PressButton(kFeatureToggleButtonElementId),
-           WaitForHide(kMyFeatureUiElementId)),
+     Then(PressButton(kFeatureToggleButtonElementId),
+          WaitForHide(kMyFeatureUiElementId)),
   /* Proceed with test... */
 )
 ```
@@ -417,10 +415,10 @@ RunTestSequence(
          // If the side panel is visible...
          [](const SidePanel* side_panel) { return side_panel != nullptr; },
          // Then press the side panel button to close the side panel.
-         Steps(PressButton(kToolbarSidePanelButtonElementId),
+         Then(PressButton(kToolbarSidePanelButtonElementId),
                WaitForHide(kSidePanelElementId)),
          // Else note that it was not open.
-         Log("Side panel was already closed.")),
+         Else(Log("Side panel was already closed."))),
   /* ... */
 )
 ```
@@ -435,7 +433,7 @@ RunTestSequence(
       [this]() { return browser()->tab_strip_model()->count(); },
       testing::Lt(2),
       // Then open a new tab:
-      PressButton(kNewTabButtonElementId)),
+      Then(PressButton(kNewTabButtonElementId))),
   /* ... */
 )
 ```
@@ -449,11 +447,12 @@ non-deterministic timing, you need to be able to execute multiple steps in
 parallel.
 
 For this, we provide `InParallel()` and `AnyOf()`:
- - `InParallel(step[s], step[s], ...)` - Executes each of `step[s]` in parallel
-   with each other. All must complete before the main test sequence can proceed.
- - `AnyOf(step[s], step[s], ...)` - Executes each of `step[s]` in parallel with
-   each other. Only one must complete, at which point the main test sequence
-   proceeds and the other sequences are scuttled.
+ - `InParallel(RunSubsequence(...), RunSubsequence(...), ...)` - Executes each
+   subsequence in parallel with each other. All must complete before the main
+   test sequence can proceed.
+ - `AnyOf(RunSubsequence(...), RunSubsequence(...), ...)` - Executes each
+   subsequence in parallel with each other. Only one must complete, at which
+   point the main test sequence proceeds and the other sequences are aborted.
 
 Example:
 ```cpp
@@ -462,8 +461,8 @@ RunTestSequence(
   // This button press will cause two asynchronous processes to spawn.
   PressButton(kStartBackgroundProcessesButtonElementId),
   InParallel(
-    WaitForEvent(kMyFeatureUiElementID, kUserDataUpdatedEvent),
-    WaitForEvent(kMyFeatureUiElementId, kUiUpdated)),
+    RunSubsequence(WaitForEvent(kMyFeatureUiElementID, kUserDataUpdatedEvent)),
+    RunSubsequence(WaitForEvent(kMyFeatureUiElementId, kUiUpdated))),
   // It's now safe to proceed.
   /* ... */
 )
@@ -485,8 +484,8 @@ RunTestSequence(
   AnyOf(
     // WARNING: One or both of these buttons will be pressed, but which is not
     // deterministic!
-    Steps(WaitForShow(kMyElementId1), PressButton(kMyButtonId1)),
-    Steps(WaitForShow(kMyElementId2), PressButton(kMyButtonId2)))
+    RunSubsequence(WaitForShow(kMyElementId1), PressButton(kMyButtonId1)),
+    RunSubsequence(WaitForShow(kMyElementId2), PressButton(kMyButtonId2)))
 )
 ```
 
@@ -503,9 +502,9 @@ RunTestSequence(
   InParallel(
     // This is okay, since the first step of a subsequence can trigger during
     // the previous step.
-    WaitForActivate(kButtonElementId),
-    Steps(WaitForEvent(kButtonElementId, kBackgroundProcessEvent),
-          PressButton(kOtherButtonElementId))),
+    RunSubsequence(WaitForActivate(kButtonElementId)),
+    RunSubsequence(WaitForEvent(kButtonElementId, kBackgroundProcessEvent),
+                   PressButton(kOtherButtonElementId))),
   // WARNING: This is unsafe as the PressButton() above occurs in a subsequence,
   // but this action is in the main sequence.
   WaitForActivate(kOtherButtonElementId)
@@ -823,6 +822,28 @@ IN_PROC_BROWSER_TEST_F(MyHistoryTest, NavigateTwoPagesAndCheckHistory) {
     WaitForStateChange(kHistoryPageTabId,
                        HistoryEntriesPopulated(kUrl1, kUrl2)));
 }
+```
+
+You can also add to an existing sequence created by `Steps()` using the `+=`
+operator:
+
+```cpp
+  auto OpenHistoryPageInNewTab() {
+    auto steps = Steps(
+        InstrumentNextTab(kHistoryPageTabId),
+        PressButton(kNewTabButton),
+        PressButton(kAppMenuButton));
+    if (use_new_history_menu_) {
+      steps += SelectMenuItem(kNewHistoryMenuItem),
+    } else {
+      steps += SelectMenuItem(kHistoryMenuItem),
+    }
+    steps += Steps(
+        SelectMenuItem(kOpenHistoryPageMenuItem),
+        WaitForWebContentsNavigation(kHistoryPageTabId,
+                                     chrome::kHistoryPageUrl));
+    return steps;
+  }
 ```
 
 ### Custom Callbacks and Checks

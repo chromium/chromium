@@ -10,6 +10,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import java.io.File;
  * successfully uploaded any minidumps. At the end of a job it simply checks whether there are any
  * minidumps left to upload, and if so, the job is rescheduled.
  */
+@NullMarked
 public class MinidumpUploadJobImpl implements MinidumpUploadJob {
     private static final String TAG = "MDUploadJobImpl";
 

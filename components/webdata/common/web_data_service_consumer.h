@@ -12,6 +12,10 @@
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/webdata_export.h"
 
+using WebDataServiceRequestCallback =
+    base::OnceCallback<void(WebDataServiceBase::Handle,
+                            std::unique_ptr<WDTypedResult>)>;
+
 // All requests to the web data service are asynchronous. When the request has
 // been performed, the data consumer is notified using the following interface.
 // As the WebDataServiceConsumer has a WeakPtrFactory, it does not need to

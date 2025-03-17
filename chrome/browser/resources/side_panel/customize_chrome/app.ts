@@ -12,6 +12,7 @@ import './appearance.js';
 import './cards.js';
 import './categories.js';
 import './customize_toolbar/toolbar.js';
+import './footer.js';
 import './shortcuts.js';
 import './themes.js';
 import './wallpaper_search/wallpaper_search.js';
@@ -53,7 +54,7 @@ const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface AppElement {
   $: {
-    overviewPage: HTMLDivElement,
+    overviewPage: HTMLElement,
     categoriesPage: CategoriesElement,
     themesPage: ThemesElement,
     appearanceElement: AppearanceElement,
@@ -79,8 +80,8 @@ export class AppElement extends AppElementBase {
       modulesEnabled_: {type: Boolean},
       selectedCollection_: {type: Object},
       extensionsCardEnabled_: {type: Boolean},
+      footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
-      toolbarCustomizationEnabled_: {type: Boolean},
       isSourceTabFirstPartyNtp_: {type: Boolean},
     };
   }
@@ -98,10 +99,11 @@ export class AppElement extends AppElementBase {
   protected selectedCollection_: BackgroundCollection|null = null;
   protected extensionsCardEnabled_: boolean =
       loadTimeData.getBoolean('extensionsCardEnabled');
+  // TODO(crbug.com/400952431) Footer section is hidden until the first time the
+  // user has a 3P NTP or non-default and non-3P themed 1P NTP
+  protected footerEnabled_: boolean = loadTimeData.getBoolean('footerEnabled');
   protected wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected toolbarCustomizationEnabled_: boolean =
-      loadTimeData.getBoolean('toolbarCustomizationEnabled');
   protected isSourceTabFirstPartyNtp_: boolean = true;
   private scrollToSectionListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
@@ -125,7 +127,7 @@ export class AppElement extends AppElementBase {
                     return;
                   }
                   const selector = SECTION_TO_SELECTOR[section];
-                  const element = this.shadowRoot!.querySelector(selector);
+                  const element = this.shadowRoot.querySelector(selector);
                   if (!element) {
                     return;
                   }
@@ -174,7 +176,7 @@ export class AppElement extends AppElementBase {
       // Start observing if extension cards are scroll into view.
       if (this.shadowRoot && this.shadowRoot.querySelector('#extensions')) {
         extensionsCardSectionObserver.observe(
-            this.shadowRoot!.querySelector('#extensions')!);
+            this.shadowRoot.querySelector('#extensions')!);
       }
     }, {once: true});
   }
@@ -231,7 +233,7 @@ export class AppElement extends AppElementBase {
   protected onWallpaperSearchSelect_() {
     this.page_ = CustomizeChromePage.WALLPAPER_SEARCH;
     const page =
-        this.shadowRoot!.querySelector('customize-chrome-wallpaper-search');
+        this.shadowRoot.querySelector('customize-chrome-wallpaper-search');
     assert(page);
     page.focusOnBackButton();
   }
@@ -270,7 +272,7 @@ export class AppElement extends AppElementBase {
 
   private async openToolbarCustomizationPage() {
     this.page_ = CustomizeChromePage.TOOLBAR;
-    const page = this.shadowRoot!.querySelector('customize-chrome-toolbar');
+    const page = this.shadowRoot.querySelector('customize-chrome-toolbar');
     assert(page);
     await this.updateComplete;
     page.focusOnBackButton();

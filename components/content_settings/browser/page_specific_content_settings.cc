@@ -7,15 +7,19 @@
 #include <list>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/lazy_instance.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -24,6 +28,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -51,10 +56,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/page_info/core/features.h"
-#endif
-
 using content::BrowserThread;
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
@@ -72,6 +73,11 @@ constexpr auto kMediaIndicatorMinimumHoldDurationPhase2 = base::Seconds(4);
 // A delay before blocked media indicator disappears.
 constexpr auto kBlockedMediaIndicatorDismissDelay = base::Minutes(1);
 constexpr auto kBlockedMediaIndicatorDismissDelayPhase2 = base::Seconds(4);
+#if BUILDFLAG(IS_CHROMEOS)
+// A delay before in-use indicator for device (currently only smart cards)
+// disappears.
+constexpr auto kDeviceInUseIndicatorHideDelay = base::Seconds(15);
+#endif
 
 // Determines which taxonomy is used to generate sample topics for the Topics
 // API.
@@ -104,7 +110,7 @@ class InflightNavigationContentSettings
       service_worker_accesses;
   std::vector<network::mojom::SharedDictionaryAccessDetailsPtr>
       shared_dictionary_accesses;
-  std::vector<net::device_bound_sessions::SessionKey>
+  std::vector<net::device_bound_sessions::SessionAccess>
       device_bound_session_accesses;
 
  private:
@@ -192,10 +198,10 @@ class WebContentsHandler
       const network::mojom::SharedDictionaryAccessDetails& details) override;
   void OnDeviceBoundSessionAccessed(
       content::NavigationHandle* navigation,
-      const net::device_bound_sessions::SessionKey& details) override;
+      const net::device_bound_sessions::SessionAccess& details) override;
   void OnDeviceBoundSessionAccessed(
       content::RenderFrameHost* rfh,
-      const net::device_bound_sessions::SessionKey& details) override;
+      const net::device_bound_sessions::SessionAccess& details) override;
   void WebContentsDestroyed() override;
 
   std::unique_ptr<Delegate> delegate_;
@@ -236,8 +242,8 @@ bool DelayUntilCommitIfNecessary(content::RenderFrameHost* rfh,
 }
 
 bool IsThirdPartyCookieDetails(const content::CookieAccessDetails& details) {
-  return net::SchemefulSite(details.url) !=
-             net::SchemefulSite(details.first_party_url) ||
+  return !net::SchemefulSite::IsSameSite(details.url,
+                                         details.first_party_url) ||
          !details.site_for_cookies.IsFirstParty(details.url);
 }
 
@@ -403,7 +409,7 @@ void WebContentsHandler::OnSharedDictionaryAccessed(
 
 void WebContentsHandler::OnDeviceBoundSessionAccessed(
     content::NavigationHandle* navigation,
-    const net::device_bound_sessions::SessionKey& details) {
+    const net::device_bound_sessions::SessionAccess& details) {
   if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
     auto* inflight_navigation_settings =
         content::NavigationHandleUserData<InflightNavigationContentSettings>::
@@ -422,9 +428,10 @@ void WebContentsHandler::OnDeviceBoundSessionAccessed(
 
 void WebContentsHandler::OnDeviceBoundSessionAccessed(
     content::RenderFrameHost* rfh,
-    const net::device_bound_sessions::SessionKey& details) {
+    const net::device_bound_sessions::SessionAccess& details) {
   PageSpecificContentSettings::BrowsingDataAccessed(
-      rfh, details, BrowsingDataModel::StorageType::kDeviceBoundSession,
+      rfh, details.session_key,
+      BrowsingDataModel::StorageType::kDeviceBoundSession,
       /*blocked=*/false);
 }
 
@@ -474,6 +481,12 @@ void WebContentsHandler::ReadyToCommitNavigation(
   content_settings->allow_mixed_content =
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::MIXEDSCRIPT) ==
+      CONTENT_SETTING_ALLOW;
+#endif
+#if !BUILDFLAG(IS_IOS)
+  content_settings->allow_controlled_frame =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::CONTROLLED_FRAME) ==
       CONTENT_SETTING_ALLOW;
 #endif
 
@@ -637,6 +650,7 @@ PageSpecificContentSettings::~PageSpecificContentSettings() {
     switch (last_used_entry.first) {
       case ContentSettingsType::MEDIASTREAM_MIC:
       case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::SMART_CARD_GUARD:
         map_->UpdateLastUsedTime(media_stream_access_origin_,
                                  media_stream_access_origin_,
                                  last_used_entry.first, last_used_entry.second);
@@ -1291,8 +1305,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     MaybeUpdateLocationBar();
   }
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kImprovedSemanticsActivityIndicators)) {
     // Camera and/or Mic is blocked, start a blocked indicator's dismiss timer.
     if (microphone_camera_state_.Has(kMicrophoneBlocked)) {
       StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_MIC);
@@ -1300,7 +1312,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     if (microphone_camera_state_.Has(kCameraBlocked)) {
       StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_CAMERA);
     }
-  }
 }
 
 void PageSpecificContentSettings::AddPermissionUsageObserver(
@@ -1591,6 +1602,47 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void PageSpecificContentSettings::OnDeviceUsed(ContentSettingsType type) {
+  // For now, only smart card permissions are supported.
+  CHECK_EQ(ContentSettingsType::SMART_CARD_GUARD, type);
+  last_used_time_[type] = base::Time::Now();
+  if (in_use_.insert(type).second) {
+    MaybeUpdateLocationBar();
+  }
+}
+
+void PageSpecificContentSettings::OnLastDeviceConnectionLost(
+    ContentSettingsType type) {
+  // For now, only smart card permissions are supported.
+  CHECK_EQ(mojom::ContentSettingsType::SMART_CARD_GUARD, type);
+  in_use_.erase(type);
+
+  // The indicator should remain for `kDeviceInUseIndicatorHideDelay` seconds
+  // after the connection has died in order to also make user aware of very
+  // rapid connections.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PageSpecificContentSettings::MaybeUpdateLocationBar,
+                     weak_factory_.GetWeakPtr()),
+      kDeviceInUseIndicatorHideDelay);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool PageSpecificContentSettings::IsInUse(ContentSettingsType type) const {
+  return in_use_.contains(type);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool PageSpecificContentSettings::ShouldShowDeviceInUseIndicator(
+    ContentSettingsType type) const {
+  return IsInUse(type) ||
+         GetLastUsedTime(type) >
+             base::Time::Now() - kDeviceInUseIndicatorHideDelay;
+  ;
+}
+#endif
+
 void PageSpecificContentSettings::OnCapturingStateChangedInternal(
     ContentSettingsType type,
     bool is_capturing) {
@@ -1631,7 +1683,7 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
 }
 
 const base::Time PageSpecificContentSettings::GetLastUsedTime(
-    ContentSettingsType type) {
+    ContentSettingsType type) const {
   auto it = last_used_time_.find(type);
   if (it != last_used_time_.end()) {
     // After a recent usage HCSM will not have an updated last used time. HCSM

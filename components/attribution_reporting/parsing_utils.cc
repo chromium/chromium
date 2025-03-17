@@ -20,7 +20,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -314,8 +313,9 @@ base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
     }
   }
 
-  base::ranges::sort(list);
-  list.erase(base::ranges::unique(list), list.end());
+  std::ranges::sort(list);
+  auto repeated = std::ranges::unique(list);
+  list.erase(repeated.begin(), repeated.end());
 
   if (list.size() > max_set_size) {
     return base::unexpected(StringSetError::kSetTooLong);

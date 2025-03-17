@@ -173,17 +173,14 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   }
 
   const GapFragmentData::GapGeometry* GapGeometry() const {
-    if (const auto* field = GetRareField(FieldId::kGapGeometry)) {
-      return field->gap_geometry.get();
-    }
-    return nullptr;
+    return rare_data_->gap_geometry_.Get();
   }
 
   LogicalRect TableGridRect() const {
     return rare_data_->GetField(FieldId::kTableGridRect)->table_grid_rect;
   }
 
-  const TableFragmentData::ColumnGeometries* TableColumnGeometries() const {
+  const TableColumnGeometries* TableColumnGeometries() const {
     return rare_data_->table_column_geometries_.Get();
   }
 
@@ -191,8 +188,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return rare_data_ ? rare_data_->table_collapsed_borders_.Get() : nullptr;
   }
 
-  const TableFragmentData::CollapsedBordersGeometry*
-  TableCollapsedBordersGeometry() const {
+  const CollapsedTableBordersGeometry* TableCollapsedBordersGeometry() const {
     if (const auto* field =
             GetRareField(FieldId::kTableCollapsedBordersGeometry)) {
       return field->table_collapsed_borders_geometry.get();
@@ -542,15 +538,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     }
 
     // Remove existing children, and add those from new_fragment.
-    void ReplaceChildren(const PhysicalBoxFragment& new_fragment) {
-      // Replacing children that establish an inline formatting context is not
-      // supported. An anonymous wrapper block should have been created.
-      DCHECK(!new_fragment.HasItems());
-      DCHECK(!fragment_.HasItems());
-
-      fragment_.children_.clear();
-      fragment_.children_.AppendVector(new_fragment.children_);
-    }
+    void ReplaceChildren(const PhysicalBoxFragment& new_fragment);
 
    private:
     explicit MutableForCloning(const PhysicalBoxFragment& fragment)

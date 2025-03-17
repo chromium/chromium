@@ -48,8 +48,7 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 TextOffsetMap::TextOffsetMap(const TextOffsetMap& map12,
-                             const TextOffsetMap& map23,
-                             bool fix_crash) {
+                             const TextOffsetMap& map23) {
   if (map12.IsEmpty()) {
     entries_ = map23.entries_;
     return;
@@ -93,7 +92,7 @@ TextOffsetMap::TextOffsetMap(const TextOffsetMap& map12,
       ++index23;
     } else {
       DCHECK_GT(entry12.target, entry23.source);
-      if (fix_crash && chunk_length_diff_12 > 0 && chunk_length_diff_23 < 0) {
+      if (chunk_length_diff_12 > 0 && chunk_length_diff_23 < 0) {
         // No need to append entry23 because it is included in entry12.
       } else {
         Append(entry23.source - offset_diff_12, entry23.target);
@@ -131,6 +130,52 @@ void TextOffsetMap::Append(const icu::Edits& edits) {
                           edit.destinationIndex() + edit.newLength());
   }
   DCHECK(U_SUCCESS(error));
+}
+
+// Convert this TextOffsetMap to a form we can split easily.
+Vector<TextOffsetMap::Length> TextOffsetMap::CreateLengthMap(
+    wtf_size_t old_length,
+    wtf_size_t new_length) const {
+  Vector<Length> map;
+  if (IsEmpty()) {
+    return map;
+  }
+  map.reserve(new_length);
+  unsigned old_offset = 0;
+  unsigned new_offset = 0;
+  for (const auto& entry : Entries()) {
+    unsigned old_chunk_length = entry.source - old_offset;
+    unsigned new_chunk_length = entry.target - new_offset;
+    if (old_chunk_length < new_chunk_length) {
+      unsigned i = 0;
+      for (; i < old_chunk_length; ++i) {
+        map.push_back(1u);
+      }
+      for (; i < new_chunk_length; ++i) {
+        map.push_back(0u);
+      }
+    } else if (old_chunk_length > new_chunk_length) {
+      CHECK_GE(new_chunk_length, 1u);
+      for (unsigned i = 0; i < new_chunk_length - 1; ++i) {
+        map.push_back(1u);
+      }
+      unsigned length = 1u + (old_chunk_length - new_chunk_length);
+      map.push_back(length);
+    } else {
+      for (unsigned i = 0; i < new_chunk_length; ++i) {
+        map.push_back(1u);
+      }
+    }
+    old_offset = entry.source;
+    new_offset = entry.target;
+  }
+  DCHECK_EQ(old_length - old_offset, new_length - new_offset);
+  // TODO(layout-dev): We may drop this trailing '1' sequence to save memory.
+  for (; new_offset < new_length; ++new_offset) {
+    map.push_back(1u);
+  }
+  DCHECK_EQ(map.size(), new_length);
+  return map;
 }
 
 }  // namespace WTF

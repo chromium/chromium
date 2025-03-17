@@ -7,8 +7,7 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
@@ -45,12 +44,10 @@ public class AppHooks {
                 new AppRestrictionsProvider(ContextUtils.getApplicationContext()));
     }
 
-    /**
-     * @return An iterator of partner bookmarks.
-     */
-    @Nullable
-    public PartnerBookmark.BookmarkIterator getPartnerBookmarkIterator() {
-        return PartnerBookmarksProviderIterator.createIfAvailable();
+    /** Async fetch the iterator of partner bookmarks (or null if not available). */
+    public void requestPartnerBookmarkIterator(
+            Callback<PartnerBookmark.BookmarkIterator> callback) {
+        PartnerBookmarksProviderIterator.createIfAvailable(callback);
     }
 
     /** Returns the URL to the WebAPK creation/update server. */

@@ -77,12 +77,24 @@ bool Manifest::RelatedApplication::operator==(
   return AsTuple(*this) == AsTuple(other);
 }
 
-Manifest::LaunchHandler::LaunchHandler() : client_mode(ClientMode::kAuto) {}
-Manifest::LaunchHandler::LaunchHandler(ClientMode client_mode)
-    : client_mode(client_mode) {}
+Manifest::LaunchHandler::LaunchHandler() = default;
+
+Manifest::LaunchHandler::LaunchHandler(std::optional<ClientMode> client_mode)
+    : client_mode_(client_mode) {}
+
+// See https://wicg.github.io/web-app-launch/#dfn-process-the-client_mode-member
+// for more details.
+Manifest::LaunchHandler::ClientMode
+Manifest::LaunchHandler::parsed_client_mode() const {
+  return client_mode_.value_or(Manifest::LaunchHandler::ClientMode::kAuto);
+}
+
+bool Manifest::LaunchHandler::client_mode_valid_and_specified() const {
+  return client_mode_.has_value();
+}
 
 bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
-  return client_mode == other.client_mode;
+  return parsed_client_mode() == other.parsed_client_mode();
 }
 
 bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
@@ -90,7 +102,7 @@ bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
 }
 
 bool Manifest::LaunchHandler::TargetsExistingClients() const {
-  switch (client_mode) {
+  switch (parsed_client_mode()) {
     case ClientMode::kAuto:
     case ClientMode::kNavigateNew:
       return false;
@@ -101,7 +113,7 @@ bool Manifest::LaunchHandler::TargetsExistingClients() const {
 }
 
 bool Manifest::LaunchHandler::NeverNavigateExistingClients() const {
-  switch (client_mode) {
+  switch (parsed_client_mode()) {
     case ClientMode::kAuto:
     case ClientMode::kNavigateNew:
     case ClientMode::kNavigateExisting:

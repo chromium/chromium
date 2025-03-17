@@ -18,6 +18,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
@@ -30,7 +31,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,6 +45,7 @@ namespace {
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
+using bookmarks::test::AddNodesFromModelString;
 
 template <class T>
 class BookmarkUIOperationsHelperTest : public testing::Test {
@@ -72,7 +74,8 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
     bookmark_merged_surface_service_ =
         BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
-    model_->LoadEmptyForTest();
+    WaitForBookmarkMergedSurfaceServiceToLoad(bookmark_merged_surface_service_);
+
     CHECK(managed_bookmark_service()->managed_node());
   }
 
@@ -339,6 +342,37 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPaste) {
   EXPECT_FALSE(helper->CanPasteFromClipboard());
 }
 
+TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMultipleNodes) {
+  BookmarkModel* model = this->model();
+  AddNodesFromModelString(model, model->bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+  size_t bookmark_bar_children = model->bookmark_bar_node()->children().size();
+  const BookmarkNode* n1 = model->AddURL(model->other_node(), 0, u"foo bar 1 ",
+                                         GURL("http://www.google.com"));
+  const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, u"foo bar 2 ",
+                                         GURL("http://www.google.com"));
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
+  internal::BookmarkUIOperationsHelper::CopyToClipboard(
+      model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+      /*is_off_the_record=*/false);
+
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(model->bookmark_bar_node());
+
+  // And make sure we can paste a bookmark from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+
+  helper->PasteFromClipboard(1);
+  EXPECT_EQ(model->bookmark_bar_node()->children().size(),
+            bookmark_bar_children + 2u);
+  CHECK_EQ(model->bookmark_bar_node()->children()[1]->GetTitle(),
+           u"foo bar 1 ");
+  CHECK_EQ(model->bookmark_bar_node()->children()[2]->GetTitle(),
+           u"foo bar 2 ");
+}
+
 TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
   BookmarkModel* model = this->model();
   bookmarks::MockBookmarkModelObserver observer;
@@ -346,13 +380,14 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
       model_observation{&observer};
   model_observation.Observe(model);
 
-  std::u16string title(u"foo");
   GURL url("http://foo.com");
-  const BookmarkNode* n1 = model->AddURL(model->other_node(), 0, title, url);
-  const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, title, url);
+  const BookmarkNode* n1 =
+      model->AddURL(model->other_node(), 0, u"foo bar 1 ", url);
+  const BookmarkNode* n2 =
+      model->AddURL(model->other_node(), 1, u"foo bar 2 ", url);
 
-  EXPECT_CALL(observer, GroupedBookmarkChangesBeginning());
-  EXPECT_CALL(observer, GroupedBookmarkChangesEnded());
+  EXPECT_CALL(observer, GroupedBookmarkChangesBeginning()).Times(2);
+  EXPECT_CALL(observer, GroupedBookmarkChangesEnded()).Times(2);
   // Cut the nodes to the clipboard.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
   internal::BookmarkUIOperationsHelper::CutToClipboard(
@@ -366,6 +401,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
       this->CreateHelper(model->other_node());
   // And make sure we can paste from the clipboard.
   EXPECT_TRUE(helper->CanPasteFromClipboard());
+
+  helper->PasteFromClipboard(0);
+  EXPECT_EQ(model->other_node()->children().size(), 2u);
+  CHECK_EQ(model->other_node()->children()[0]->GetTitle(), u"foo bar 1 ");
+  CHECK_EQ(model->other_node()->children()[1]->GetTitle(), u"foo bar 2 ");
 }
 
 TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
@@ -395,11 +435,12 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
 TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
      GetDefaultParentForNonMergedSurfacesWithAccountPermanentNodes) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   bookmarks::BookmarkModel model(
       std::make_unique<bookmarks::TestBookmarkClient>());
   BookmarkMergedSurfaceService service(&model,
                                        /*managed_bookmark_service=*/nullptr);
+  service.LoadForTesting({});
   model.LoadEmptyForTest();
   model.CreateAccountPermanentFolders();
 
@@ -416,6 +457,7 @@ TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
       std::make_unique<bookmarks::TestBookmarkClient>());
   BookmarkMergedSurfaceService service(&model,
                                        /*managed_bookmark_service=*/nullptr);
+  service.LoadForTesting({});
   model.LoadEmptyForTest();
   ASSERT_FALSE(model.account_bookmark_bar_node());
   BookmarkParentFolder folder = BookmarkParentFolder::BookmarkBarFolder();
@@ -427,12 +469,13 @@ TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
 TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
      GetDefaultParentForNonMergedSurfacesNonPermanentFolder) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   bookmarks::BookmarkModel model(
       std::make_unique<bookmarks::TestBookmarkClient>());
   BookmarkMergedSurfaceService service(&model,
                                        /*managed_bookmark_service=*/nullptr);
   model.LoadEmptyForTest();
+  service.LoadForTesting({});
   {
     // Test regular non permanent node.
     const BookmarkNode* node =

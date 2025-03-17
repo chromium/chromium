@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -44,7 +45,6 @@ namespace {
 
 // TODO(yhirano): Unify these with variables in
 // content/public/common/content_constants.h.
-constexpr char kCorsExemptPurposeHeaderName[] = "Purpose";
 constexpr char kCorsExemptRequestedWithHeaderName[] = "X-Requested-With";
 
 // TODO(yhirano) Dedupe this and the same-name function in
@@ -262,10 +262,9 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->upgrade_if_insecure = src.UpgradeIfInsecure();
   dest->is_revalidating = src.IsRevalidating();
   if (src.GetDevToolsAcceptedStreamTypes()) {
-    dest->devtools_accepted_stream_types =
-        std::vector<net::SourceStream::SourceType>(
-            src.GetDevToolsAcceptedStreamTypes()->data.begin(),
-            src.GetDevToolsAcceptedStreamTypes()->data.end());
+    dest->devtools_accepted_stream_types = std::vector<net::SourceStreamType>(
+        src.GetDevToolsAcceptedStreamTypes()->data.begin(),
+        src.GetDevToolsAcceptedStreamTypes()->data.end());
   }
   if (src.RequestorOrigin()->ToString() == "null") {
     // "file:" origin is treated like an opaque unique origin when
@@ -309,7 +308,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   // Set Purpose header to cors_exempt_headers rather than headers to be
   // exempted from CORS checks.
   if (!src.GetPurposeHeader().empty()) {
-    dest->cors_exempt_headers.SetHeader(kCorsExemptPurposeHeaderName,
+    dest->cors_exempt_headers.SetHeader(kPurposeHeaderName,
                                         src.GetPurposeHeader().Utf8());
   }
 
@@ -426,6 +425,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->shared_dictionary_writer_enabled = src.SharedDictionaryWriterEnabled();
 
   dest->is_ad_tagged = src.IsAdResource();
+
+  dest->allows_device_bound_sessions = src.AllowsDeviceBoundSessions();
 }
 
 }  // namespace blink

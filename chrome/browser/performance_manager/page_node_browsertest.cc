@@ -19,16 +19,6 @@ namespace {
 
 using PageNodeBrowserTest = extensions::ExtensionBrowserTest;
 
-void ExpectPageType(base::WeakPtr<PageNode> page_node, PageType expected_type) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(FROM_HERE, base::BindLambdaForTesting([&]() {
-                                    EXPECT_EQ(page_node->GetType(),
-                                              expected_type);
-                                    run_loop.Quit();
-                                  }));
-  run_loop.Run();
-}
-
 }  // namespace
 
 // Integration test verifying that the correct type is set for a PageNode
@@ -40,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(PageNodeBrowserTest, TypeTab) {
       PerformanceManager::GetPrimaryPageNodeForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
 
-  ExpectPageType(page_node, PageType::kTab);
+  EXPECT_EQ(page_node->GetType(), PageType::kTab);
 }
 
 // Integration test verifying that the correct type is set for a PageNode
@@ -60,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(PageNodeBrowserTest, TypeExtension) {
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(
           host->host_contents());
-  ExpectPageType(page_node, PageType::kExtension);
+  EXPECT_EQ(page_node->GetType(), PageType::kExtension);
 }
 
 }  // namespace performance_manager

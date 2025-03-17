@@ -18,7 +18,7 @@ suite('AppManagementUninstallButtonTest', () => {
   let uninstallButton: UninstallButtonElement;
   let testProxy: TestAppManagementBrowserProxy;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestAppManagementBrowserProxy();
     BrowserProxy.setInstance(testProxy);
@@ -37,7 +37,7 @@ suite('AppManagementUninstallButtonTest', () => {
     app.installReason = InstallReason.kUser;
     setupUninstallButton(app);
 
-    const clickable = uninstallButton.shadowRoot!.querySelector<HTMLElement>(
+    const clickable = uninstallButton.shadowRoot.querySelector<HTMLElement>(
         '#uninstallButton');
     assertTrue(!!clickable);
     clickable.click();
@@ -51,7 +51,7 @@ suite('AppManagementUninstallButtonTest', () => {
     app.installReason = InstallReason.kPolicy;
 
     await setupUninstallButton(app);
-    const clickable = uninstallButton.shadowRoot!.querySelector<HTMLElement>(
+    const clickable = uninstallButton.shadowRoot.querySelector<HTMLElement>(
         '#uninstallButton');
     assertTrue(!!clickable);
     clickable.click();
@@ -65,7 +65,7 @@ suite('AppManagementUninstallButtonTest', () => {
     app.installReason = InstallReason.kSystem;
     await setupUninstallButton(app);
 
-    assertFalse(!!uninstallButton.shadowRoot!.querySelector<HTMLElement>(
+    assertFalse(!!uninstallButton.shadowRoot.querySelector<HTMLElement>(
         '#uninstallButton'));
   });
 
@@ -75,8 +75,8 @@ suite('AppManagementUninstallButtonTest', () => {
     app.installReason = InstallReason.kCommandLine;
     await setupUninstallButton(app);
 
-    uninstallButton.shadowRoot!.querySelector<HTMLElement>(
-                                   '#uninstallButton')!.click();
+    uninstallButton.shadowRoot.querySelector<HTMLElement>(
+                                  '#uninstallButton')!.click();
 
     assertEquals(
         await testProxy.handler.whenCalled('uninstall'),

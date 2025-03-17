@@ -263,7 +263,7 @@ function isAncestorOf(
     if (currentId === ancestorId) {
       return true;
     }
-    currentId = nodes[currentId!]!.parentId;
+    currentId = nodes[currentId]!.parentId;
   }
   return false;
 }

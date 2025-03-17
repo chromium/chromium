@@ -417,24 +417,43 @@ size_t ParkableStringImpl::CharactersSizeInBytes() const {
   return metadata_->length_ * (is_8bit() ? sizeof(LChar) : sizeof(UChar));
 }
 
-size_t ParkableStringImpl::MemoryFootprintForDump() const {
+namespace {
+void RecordStringImplMemoryUsage(ParkableStringImpl::MemoryUsage* result,
+                                 const String& string) {
+  if (StringImpl* impl = string.Impl()) {
+    result->string_impl = impl;
+    result->string_impl_size = sizeof(*impl) + impl->CharactersSizeInBytes();
+  }
+}
+}  // namespace
+
+ParkableStringImpl::MemoryUsage ParkableStringImpl::MemoryUsageForSnapshot()
+    const {
   AssertOnValidThread();
-  size_t size = sizeof(ParkableStringImpl);
+  MemoryUsage result = {0, nullptr, 0};
+  result.this_size = sizeof(ParkableStringImpl);
 
-  if (!may_be_parked())
-    return size + string_.CharactersSizeInBytes();
+  if (!may_be_parked()) {
+    RecordStringImplMemoryUsage(&result, string_);
+    return result;
+  }
 
-  size += sizeof(ParkableMetadata);
+  result.this_size += sizeof(ParkableMetadata);
 
   base::AutoLock locker(metadata_->lock_);
-  if (!is_parked_no_lock()) {
-    size += string_.CharactersSizeInBytes();
+  if (!is_parked_no_lock() && !is_on_disk_no_lock()) {
+    RecordStringImplMemoryUsage(&result, string_);
   }
 
   if (metadata_->compressed_)
-    size += metadata_->compressed_->size();
+    result.this_size += metadata_->compressed_->size();
 
-  return size;
+  return result;
+}
+
+size_t ParkableStringImpl::MemoryFootprintForDump() const {
+  MemoryUsage usage = MemoryUsageForSnapshot();
+  return usage.this_size + usage.string_impl_size;
 }
 
 ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
@@ -687,11 +706,11 @@ String ParkableStringImpl::UnparkInternal() {
 
   switch (GetCompressionAlgorithm()) {
     case CompressionAlgorithm::kZlib: {
-      const auto uncompressed_string_piece = base::as_string_view(chars);
+      const auto uncompressed_span = chars;
       // If the buffer size is incorrect, then we have a corrupted data issue,
       // and in such case there is nothing else to do than crash.
       CHECK_EQ(compression::GetUncompressedSize(compressed_string_piece),
-               uncompressed_string_piece.size());
+               uncompressed_span.size());
       // If decompression fails, this is either because:
       // 1. Compressed data is corrupted
       // 2. Cannot allocate memory in zlib
@@ -699,11 +718,11 @@ String ParkableStringImpl::UnparkInternal() {
       // (1) is data corruption, and (2) is OOM. In all cases, we cannot
       // recover the string we need, nothing else to do than to abort.
       if (!compression::GzipUncompress(compressed_string_piece,
-                                       uncompressed_string_piece)) {
+                                       uncompressed_span)) {
         // Since this is almost always OOM, report it as such. We don't have
         // certainty, but memory corruption should be much rarer, and could make
         // us crash anywhere else.
-        OOM_CRASH(uncompressed_string_piece.size());
+        OOM_CRASH(uncompressed_span.size());
       }
       break;
     }

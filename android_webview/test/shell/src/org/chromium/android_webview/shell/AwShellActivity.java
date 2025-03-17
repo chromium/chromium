@@ -107,25 +107,24 @@ public class AwShellActivity extends Activity {
         AwContents.setShouldDownloadFavicons();
         mUrlTextView.setText(startupUrl);
 
-        mWebContents.addObserver(
-                new WebContentsObserver() {
-                    @Override
-                    public void navigationEntriesChanged() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            if (mNavigationController.canGoBack()) {
-                                AwShellActivity.this
-                                        .getOnBackInvokedDispatcher()
-                                        .registerOnBackInvokedCallback(
-                                                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                                                mOnBackInvokedCallback);
-                            } else if (!mNavigationController.canGoBack()) {
-                                AwShellActivity.this
-                                        .getOnBackInvokedDispatcher()
-                                        .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
-                            }
-                        }
+        new WebContentsObserver(mWebContents) {
+            @Override
+            public void navigationEntriesChanged() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (mNavigationController.canGoBack()) {
+                        AwShellActivity.this
+                                .getOnBackInvokedDispatcher()
+                                .registerOnBackInvokedCallback(
+                                        OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                                        mOnBackInvokedCallback);
+                    } else if (!mNavigationController.canGoBack()) {
+                        AwShellActivity.this
+                                .getOnBackInvokedDispatcher()
+                                .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
                     }
-                });
+                }
+            }
+        };
     }
 
     @Override
@@ -244,7 +243,7 @@ public class AwShellActivity extends Activity {
         final AwSettings awSettings =
                 new AwSettings(
                         /* context= */ this,
-                        /* isAccessFromFileURLsGrantedByDefault= */ false,
+                        /* isAccessFromFileUrlsGrantedByDefault= */ false,
                         /* supportsLegacyQuirks= */ false,
                         /* allowEmptyDocumentPersistence= */ false,
                         /* allowGeolocationOnInsecureOrigins= */ true,

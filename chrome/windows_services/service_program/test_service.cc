@@ -6,22 +6,35 @@
 
 #include <wrl/module.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "base/types/expected.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/win_util.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/common/win/eventlog_messages.h"
+#include "chrome/windows_services/service_program/crash_reporting.h"
 #include "chrome/windows_services/service_program/factory_and_clsid.h"
 #include "chrome/windows_services/service_program/get_calling_process.h"
+#include "chrome/windows_services/service_program/is_running_unattended.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "chrome/windows_services/service_program/service_delegate.h"
 #include "chrome/windows_services/service_program/service_program_main.h"
 #include "chrome/windows_services/service_program/test_service_idl.h"
+#include "chrome/windows_services/service_program/user_crash_state.h"
+#include "components/crash/core/app/crash_export_thunks.h"
 
 namespace {
 
@@ -63,6 +76,75 @@ class TestServiceImpl
     *handle = base::win::HandleToUint32(duplicate);
     return S_OK;
   }
+
+  IFACEMETHOD(IsRunningUnattended)
+  (VARIANT_BOOL* is_running_unattended) override {
+    *is_running_unattended =
+        internal::IsRunningUnattended() ? VARIANT_TRUE : VARIANT_FALSE;
+    return S_OK;
+  }
+
+  IFACEMETHOD(GetCrashpadDatabasePath)(BSTR* database_path) override {
+    StartCrashHandler();
+    const wchar_t* path_str = GetCrashpadDatabasePath_ExportThunk();
+    if (!path_str) {
+      return E_FAIL;
+    }
+    *database_path = base::win::ScopedBstr(path_str).Release();
+    return S_OK;
+  }
+
+  IFACEMETHOD(InduceCrash)() override {
+    StartCrashHandler();
+    base::ImmediateCrash();
+  }
+
+  IFACEMETHOD(InduceCrashSoon)() override {
+    StartCrashHandler();
+    CrashThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce([]() { base::ImmediateCrash(); }));
+    return S_OK;
+  }
+
+ private:
+  scoped_refptr<base::SingleThreadTaskRunner> CrashThreadTaskRunner() {
+    if (!crash_thread_.task_runner()) {
+      base::Thread::Options crash_thread_options;
+      crash_thread_options.joinable = false;
+      CHECK(crash_thread_.StartWithOptions(std::move(crash_thread_options)));
+    }
+    return crash_thread_.task_runner();
+  }
+
+  void StartCrashHandler() {
+    if (crash_handler_started_) {
+      return;
+    }
+
+    // Get crash state for the client.
+    std::unique_ptr<UserCrashState> user_crash_state;
+    {
+      ScopedClientImpersonation impersonate;
+      CHECK(impersonate.is_valid());
+      base::Process client_process = GetCallingProcess();
+      CHECK(client_process.IsValid());
+      user_crash_state = UserCrashState::Create(impersonate, client_process);
+    }
+
+    // Use the elevated tracing service's process type, to avoid tripping on the
+    // allowlist in InitializeCrashpadImpl.
+    windows_services::StartCrashHandler(
+        std::move(user_crash_state),
+        /*directory_name=*/
+        FILE_PATH_LITERAL(PRODUCT_SHORTNAME_STRING)
+            FILE_PATH_LITERAL("TestService"),
+        /*process_type=*/"elevated-tracing-service", CrashThreadTaskRunner());
+
+    crash_handler_started_ = true;
+  }
+
+  base::Thread crash_thread_{"CrashThread"};
+  bool crash_handler_started_ = false;
 };
 
 class TestServiceDelegate : public ServiceDelegate {

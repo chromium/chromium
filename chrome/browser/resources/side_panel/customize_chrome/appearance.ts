@@ -11,7 +11,6 @@ import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -189,11 +188,11 @@ export class AppearanceElement extends AppearanceElementBase {
         changedPrivateProperties.has('showClassicChromeButton_') &&
         !!changedPrivateProperties.get('theme_') &&
         !this.showClassicChromeButton_) {
-      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('updatedToClassicChrome'));
       // If the classicChrome button has focus, change focus to editTheme
       // button, since the button is disappearing.
-      if (this.shadowRoot!.activeElement === this.$.setClassicChromeButton) {
+      if (this.shadowRoot.activeElement === this.$.setClassicChromeButton) {
         this.focusOnThemeButton();
       }
     }

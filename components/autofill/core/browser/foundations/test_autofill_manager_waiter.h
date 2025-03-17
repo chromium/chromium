@@ -29,9 +29,9 @@ enum class AutofillManagerEvent {
   kLanguageDetermined,
   kFormsSeen,
   kCaretMovedInFormField,
-  kTextFieldDidChange,
+  kTextFieldValueChanged,
   kTextFieldDidScroll,
-  kSelectControlDidChange,
+  kSelectControlSelectionChanged,
   kAskForValuesToFill,
   kFocusOnFormField,
   kDidFillAutofillFormData,
@@ -187,13 +187,13 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                     const std::u16string& selection,
                                     const gfx::Rect& caret_bounds) override;
 
-  void OnBeforeTextFieldDidChange(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field) override;
-  void OnAfterTextFieldDidChange(AutofillManager& manager,
-                                 FormGlobalId form,
-                                 FieldGlobalId field,
-                                 const std::u16string& text_value) override;
+  void OnBeforeTextFieldValueChanged(AutofillManager& manager,
+                                     FormGlobalId form,
+                                     FieldGlobalId field) override;
+  void OnAfterTextFieldValueChanged(AutofillManager& manager,
+                                    FormGlobalId form,
+                                    FieldGlobalId field,
+                                    const std::u16string& text_value) override;
 
   void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                   FormGlobalId form,
@@ -202,12 +202,12 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                  FormGlobalId form,
                                  FieldGlobalId field) override;
 
-  void OnBeforeSelectControlDidChange(AutofillManager& manager,
-                                      FormGlobalId form,
-                                      FieldGlobalId field) override;
-  void OnAfterSelectControlDidChange(AutofillManager& manager,
-                                     FormGlobalId form,
-                                     FieldGlobalId field) override;
+  void OnBeforeSelectControlSelectionChanged(AutofillManager& manager,
+                                             FormGlobalId form,
+                                             FieldGlobalId field) override;
+  void OnAfterSelectControlSelectionChanged(AutofillManager& manager,
+                                            FormGlobalId form,
+                                            FieldGlobalId field) override;
 
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form,
@@ -411,16 +411,17 @@ class TestAutofillManagerSingleEventWaiter {
       MaybeQuit(&Observer::OnAfterCaretMovedInFormField, manager, form,
                 field_id, selection, caret_bounds);
     }
-    void OnBeforeTextFieldDidChange(AutofillManager& manager,
-                                    FormGlobalId form,
-                                    FieldGlobalId field) override {
-      MaybeQuit(&Observer::OnBeforeTextFieldDidChange, manager, form, field);
+    void OnBeforeTextFieldValueChanged(AutofillManager& manager,
+                                       FormGlobalId form,
+                                       FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnBeforeTextFieldValueChanged, manager, form, field);
     }
-    void OnAfterTextFieldDidChange(AutofillManager& manager,
-                                   FormGlobalId form,
-                                   FieldGlobalId field,
-                                   const std::u16string& text_value) override {
-      MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field,
+    void OnAfterTextFieldValueChanged(
+        AutofillManager& manager,
+        FormGlobalId form,
+        FieldGlobalId field,
+        const std::u16string& text_value) override {
+      MaybeQuit(&Observer::OnAfterTextFieldValueChanged, manager, form, field,
                 text_value);
     }
     void OnBeforeTextFieldDidScroll(AutofillManager& manager,
@@ -433,16 +434,17 @@ class TestAutofillManagerSingleEventWaiter {
                                    FieldGlobalId field) override {
       MaybeQuit(&Observer::OnAfterTextFieldDidScroll, manager, form, field);
     }
-    void OnBeforeSelectControlDidChange(AutofillManager& manager,
-                                        FormGlobalId form,
-                                        FieldGlobalId field) override {
-      MaybeQuit(&Observer::OnBeforeSelectControlDidChange, manager, form,
+    void OnBeforeSelectControlSelectionChanged(AutofillManager& manager,
+                                               FormGlobalId form,
+                                               FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnBeforeSelectControlSelectionChanged, manager, form,
                 field);
     }
-    void OnAfterSelectControlDidChange(AutofillManager& manager,
-                                       FormGlobalId form,
-                                       FieldGlobalId field) override {
-      MaybeQuit(&Observer::OnAfterSelectControlDidChange, manager, form, field);
+    void OnAfterSelectControlSelectionChanged(AutofillManager& manager,
+                                              FormGlobalId form,
+                                              FieldGlobalId field) override {
+      MaybeQuit(&Observer::OnAfterSelectControlSelectionChanged, manager, form,
+                field);
     }
     void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                     FormGlobalId form,

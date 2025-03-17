@@ -10,14 +10,12 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
-#import "base/types/pass_key.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #import "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
 
 namespace web {
 class WebFrame;
@@ -26,14 +24,16 @@ class WebState;
 
 namespace autofill {
 
+class AutofillClientIOS;
 class AutofillDriverIOS;
 
-// This factory will keep the parameters needed to create an AutofillDriverIOS.
-// These parameters only depend on the web_state, so there is one
-// AutofillDriverIOSFactory per WebState.
+// Creates one AutofillDriverIOS per web::WebState and manages its lifecycle
+// corresponding to the web::WebState's lifecycle.
+//
+// Owned by AutofillClientIOS, therefore there is one AutofillDriverIOSFactory
+// per web::WebState.
 class AutofillDriverIOSFactory final
     : public AutofillDriverFactory,
-      public web::WebStateUserData<AutofillDriverIOSFactory>,
       public web::WebStateObserver,
       public web::WebFramesManager::Observer {
  public:
@@ -62,6 +62,9 @@ class AutofillDriverIOSFactory final
                                       LifecycleState new_state) final;
   };
 
+  AutofillDriverIOSFactory(AutofillClientIOS* client,
+                           id<AutofillDriverIOSBridge> bridge);
+
   ~AutofillDriverIOSFactory() override;
 
   // Returns the AutofillDriverIOS for `web_frame`. Creates the driver if
@@ -71,18 +74,9 @@ class AutofillDriverIOSFactory final
   AutofillDriverRouter& router() { return router_; }
 
  private:
-  friend class web::WebStateUserData<AutofillDriverIOSFactory>;
   friend class AutofillDriverIOSFactoryTestApi;
 
-  // Creates a AutofillDriverIOSFactory that will store all the
-  // needed to create a AutofillDriverIOS.
-  AutofillDriverIOSFactory(web::WebState* web_state,
-                           AutofillClient* client,
-                           id<AutofillDriverIOSBridge> bridge);
-
-  void TearDown();
-
-  //  web::WebStateObserver:
+  // web::WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // web::WebFramesManager::Observer:
@@ -92,11 +86,15 @@ class AutofillDriverIOSFactory final
                                  const std::string& frame_id) override;
 
   web::WebFramesManager& GetWebFramesManager();
+  web::WebState* web_state();
 
-  raw_ptr<AutofillClient> client_ = nullptr;
-  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ref<AutofillClientIOS> client_;
   AutofillDriverRouter router_;
   id<AutofillDriverIOSBridge> bridge_ = nil;
+
+  // Indicates whether WebStateDestroyed() has been fired already to prevent
+  // that subsequent DriverForFrame() calls create new drivers.
+  bool web_state_destroyed_ = false;
 
   // Owns the drivers. Drivers are created lazily in DriverForFrame() and
   // destroyed in WebFrameBecameUnavailable(). An entry with a null driver
@@ -121,8 +119,6 @@ class AutofillDriverIOSFactory final
   // The maximum number of coexisting drivers over the lifetime of this factory.
   // TODO: crbug.com/365097975 - Remove the counter and the metric.
   size_t max_drivers_ = 0;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace autofill

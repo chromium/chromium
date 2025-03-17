@@ -277,8 +277,13 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
     const std::string& source_language,
     const std::string& target_language,
     bool is_final,
-    const std::string& result) {
-  std::string formatted_result = result;
+    const captions::TranslateEvent& result) {
+  // TODO(384019306) Maybe report metrics on failure?
+  if (!result.has_value()) {
+    return;
+  }
+
+  std::string formatted_result = result.value();
   // Don't cache the translation if the source language is an ideographic
   // language but the target language is not to avoid translate
   // sentence by sentence because the Cloud Translation API does not properly
@@ -288,24 +293,14 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
     if (is_final) {
       translation_cache_.Clear();
     } else {
-      translation_cache_.InsertIntoCache(original_transcription, result,
+      translation_cache_.InsertIntoCache(original_transcription, result.value(),
                                          source_language, target_language);
-    }
-  } else {
-    // Append a space after final results when translating from an ideographic
-    // to non-ideographic locale. The Speech On-Device API (SODA) automatically
-    // prepends a space to recognition events after a final event, but only for
-    // non-ideographic locales.
-    // TODO(crbug.com/40261536): Consider moving this to the
-    // LiveTranslateController.
-    if (is_final) {
-      formatted_result += " ";
     }
   }
 
-  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   auto text = base::StrCat({cached_translation, formatted_result});
 
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   stop_transcriptions_ = !live_caption_controller->DispatchTranscription(
       context_.get(), media::SpeechRecognitionResult(
                           GetTextForDispatch(text, is_final), is_final));

@@ -28,6 +28,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="2329392777730037872">Otevření <ph name="URL" /> na klientovi se nezdařilo.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2366718077645204424">Hostitele nelze nalézt. Pravděpodobnou příčinou je aktuální konfigurace sítě.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="2504109125669302160">Udělte službě <ph name="PRODUCT_NAME" /> oprávnění Přístupnost</translation>
 <translation id="2509394361235492552">Připojeno k zařízení <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Chcete tento počítač sdílet s dalším uživatelem, aby jej mohl zobrazit a ovládat?</translation>
@@ -133,6 +134,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="7067321367069083429">Obrazovka se chová jako dotyková obrazovka</translation>
 <translation id="7116737094673640201">Vítá vás Vzdálená plocha Chrome</translation>
 <translation id="7144878232160441200">Opakovat</translation>
+<translation id="7298392173540380852">Copyright 2025 Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="7312846573060934304">Hostitel je offline.</translation>
 <translation id="7319983568955948908">Ukončit sdílení</translation>
 <translation id="7359298090707901886">Vybraný prohlížeč nelze použít k otevření URL na místním zařízení.</translation>
@@ -149,7 +151,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="7693372326588366043">Obnovit seznam hostitelů</translation>
 <translation id="7714222945760997814">Nahlásit selhání</translation>
 <translation id="7868137160098754906">Zadejte kód PIN pro vzdálený počítač.</translation>
-<translation id="7881455334687220899">Copyright 2024 Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="7895403300744144251">Zásady zabezpečení na vzdáleném počítači připojení z vašeho účtu nepovolují.</translation>
 <translation id="7936528439960309876">Ukotvit vpravo</translation>
 <translation id="7970576581263377361">Ověření selhalo. Přihlaste se do prohlížeče Chromium znovu.</translation>
@@ -181,7 +182,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="8747048596626351634">Relace selhala, nebo se ji nepodařilo spustit. Je-li ve vzdáleném počítači k dispozici návštěvy ~/.chrome-remote-desktop-session, zkontrolujte, zda spouští dlouho běžící proces na popředí, například počítačovou plochu nebo správce oken.</translation>
 <translation id="8804164990146287819">Zásady ochrany soukromí</translation>
 <translation id="8906511416443321782">Přístup k mikrofonu je potřeba k zaznamenání zvuku a jeho odeslání do klienta Vzdálené plochy Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="9111855907838866522">Jste připojeni ke vzdálenému zařízení. Chcete-li otevřít nabídku, klepněte na obrazovku čtyřmi prsty.</translation>
 <translation id="9126115402994542723">Při připojování k tomuto hostiteli z tohoto zařízení již nežádat o zadání kódu PIN.</translation>
 <translation id="916856682307586697">Spustit výchozí relaci XSession</translation>

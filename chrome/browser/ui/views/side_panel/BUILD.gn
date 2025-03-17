@@ -23,6 +23,8 @@ source_set("side_panel") {
     "extensions/extension_side_panel_manager.cc",
     "extensions/extension_side_panel_manager.h",
     "extensions/extension_side_panel_utils.cc",
+    "history/history_side_panel_coordinator.cc",
+    "history/history_side_panel_coordinator.h",
     "history_clusters/history_clusters_side_panel_controller.cc",
     "history_clusters/history_clusters_side_panel_controller.h",
     "history_clusters/history_clusters_side_panel_controller_utils.cc",
@@ -119,12 +121,12 @@ source_set("side_panel") {
     # dependency in history_clusters_side_panel_ui.h; that file is
     # part of //chrome/browser/ui:ui, but we can't depend on that
     # because that depends on this.
+    "//ui/webui/resources/cr_components/history:mojo_bindings",
     "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     "//url",
   ]
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
@@ -170,7 +172,6 @@ source_set("side_panel") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/user_education/common",
-    "//components/user_notes:features",
     "//components/vector_icons",
     "//components/web_modal",
     "//extensions/buildflags",

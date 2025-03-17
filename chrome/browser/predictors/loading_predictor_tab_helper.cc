@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -608,8 +609,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
           GetDestination(subresource.resource_type());
       if (ShouldPrefetchDestination(destination)) {
         // TODO(falken): Detect duplicates.
-        prediction.prefetch_requests.emplace_back(
-            subresource_url, network_anonymization_key, destination);
+        prediction.prefetch_requests.emplace_back(subresource_url, destination);
       }
     } else if (should_add_preconnects_to_prediction) {
       url::Origin subresource_origin = url::Origin::Create(subresource_url);

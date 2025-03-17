@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 
 #include <map>
@@ -17,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/browser/test_support.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
@@ -188,10 +194,17 @@ class MockPageActivationThrottle : public content::NavigationThrottle {
   PageActivationNotificationTiming activation_throttle_state_;
 };
 
+struct ThrottleManagerTestCase {
+  std::string test_name;
+
+  PageActivationNotificationTiming notification_timing;
+  bool is_incognito;
+};
+
 class ThrottleManagerTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver,
-      public ::testing::WithParamInterface<PageActivationNotificationTiming> {
+      public ::testing::WithParamInterface<ThrottleManagerTestCase> {
  public:
   ThrottleManagerTest()
       // We need the task environment to use a separate IO thread so that the
@@ -233,9 +246,9 @@ class ThrottleManagerTest
     test_support_ = std::make_unique<TestSupport>();
 
     FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-        web_contents, test_support_->prefs(),
+        web_contents, test_support_->prefs(), test_support_->content_settings(),
         test_support_->tracking_protection_settings(), dealer_handle_.get(),
-        /*is_incognito=*/false);
+        GetParam().is_incognito);
 
     Observe(web_contents);
 
@@ -268,24 +281,37 @@ class ThrottleManagerTest
   // Helper methods:
 
   void SetFingerprintingProtectionFlags(bool is_enabled,
+                                        bool is_incognito,
                                         bool is_dry_run = false) {
-    if (is_enabled && !is_dry_run) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{features::kEnableFingerprintingProtectionFilter,
-            {{"activation_level", "enabled"}}}},
-          /*disabled_features=*/{});
-    } else if (is_enabled && is_dry_run) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{features::kEnableFingerprintingProtectionFilter,
-            {{"activation_level", "dry_run"}}}},
-          /*disabled_features=*/{});
+    if (is_incognito) {
+      if (is_enabled) {
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            /*enabled_features=*/
+            {{features::kEnableFingerprintingProtectionFilterInIncognito,
+              {{"enable_console_logging", "true"}}}},
+            /*disabled_features=*/{});
+      } else {
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kEnableFingerprintingProtectionFilterInIncognito);
+      }
     } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              features::kEnableFingerprintingProtectionFilter});
+      if (is_enabled && !is_dry_run) {
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            /*enabled_features=*/
+            {{features::kEnableFingerprintingProtectionFilter,
+              {{"activation_level", "enabled"},
+               {"enable_console_logging", "true"}}}},
+            /*disabled_features=*/{});
+      } else if (is_enabled && is_dry_run) {
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            /*enabled_features=*/
+            {{features::kEnableFingerprintingProtectionFilter,
+              {{"activation_level", "dry_run"}}}},
+            /*disabled_features=*/{});
+      } else {
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kEnableFingerprintingProtectionFilter);
+      }
     }
   }
 
@@ -352,7 +378,7 @@ class ThrottleManagerTest
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
     PageActivationNotificationTiming state =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param()
-            ? GetParam()
+            ? GetParam().notification_timing
             : WILL_PROCESS_RESPONSE;
     throttles.push_back(
         std::make_unique<MockPageActivationThrottle>(navigation_handle, state));
@@ -419,10 +445,28 @@ class ThrottleManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+const ThrottleManagerTestCase TestCases[] = {
+    {.test_name = "Incognito_WillStartRequest",
+     .notification_timing = WILL_START_REQUEST,
+     .is_incognito = true},
+    {.test_name = "Incognito_WillProcessResponse",
+     .notification_timing = WILL_PROCESS_RESPONSE,
+     .is_incognito = true},
+    {.test_name = "Nonincognito_WillStartRequest",
+     .notification_timing = WILL_START_REQUEST,
+     .is_incognito = false},
+    {.test_name = "Nonincognito_WillProcessResponse",
+     .notification_timing = WILL_PROCESS_RESPONSE,
+     .is_incognito = false},
+};
+
 // Class for tests with fingerprinting protection completely disabled.
 class ThrottleManagerDisabledTest : public ThrottleManagerTest {
  public:
-  ThrottleManagerDisabledTest() { SetFingerprintingProtectionFlags(false); }
+  ThrottleManagerDisabledTest() {
+    SetFingerprintingProtectionFlags(/*is_enabled=*/false,
+                                     GetParam().is_incognito);
+  }
 
   ThrottleManagerDisabledTest(const ThrottleManagerDisabledTest&) = delete;
   ThrottleManagerDisabledTest& operator=(const ThrottleManagerDisabledTest&) =
@@ -431,10 +475,13 @@ class ThrottleManagerDisabledTest : public ThrottleManagerTest {
   ~ThrottleManagerDisabledTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ThrottleManagerDisabledTest,
-                         ::testing::Values(WILL_START_REQUEST,
-                                           WILL_PROCESS_RESPONSE));
+INSTANTIATE_TEST_SUITE_P(
+    ThrottleManagerDisabledTestSuiteInstantiation,
+    ThrottleManagerDisabledTest,
+    testing::ValuesIn<ThrottleManagerTestCase>(TestCases),
+    [](const testing::TestParamInfo<ThrottleManagerTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 // No subresource loads should be filtered with the feature disabled.
 TEST_P(ThrottleManagerDisabledTest,
@@ -466,7 +513,10 @@ TEST_P(ThrottleManagerDisabledTest, DoNotCreateThrottleManager) {
 // Class for tests with fingerprinting protection completely enabled.
 class ThrottleManagerEnabledTest : public ThrottleManagerTest {
  public:
-  ThrottleManagerEnabledTest() { SetFingerprintingProtectionFlags(true); }
+  ThrottleManagerEnabledTest() {
+    SetFingerprintingProtectionFlags(/*is_enabled=*/true,
+                                     GetParam().is_incognito);
+  }
 
   ThrottleManagerEnabledTest(const ThrottleManagerEnabledTest&) = delete;
   ThrottleManagerEnabledTest& operator=(const ThrottleManagerEnabledTest&) =
@@ -475,10 +525,13 @@ class ThrottleManagerEnabledTest : public ThrottleManagerTest {
   ~ThrottleManagerEnabledTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ThrottleManagerEnabledTest,
-                         ::testing::Values(WILL_START_REQUEST,
-                                           WILL_PROCESS_RESPONSE));
+INSTANTIATE_TEST_SUITE_P(
+    ThrottleManagerEnabledTestSuiteInstantiation,
+    ThrottleManagerEnabledTest,
+    testing::ValuesIn<ThrottleManagerTestCase>(TestCases),
+    [](const testing::TestParamInfo<ThrottleManagerTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 TEST_P(ThrottleManagerEnabledTest,
        ActivateMainFrameAndFilterSubframeNavigation) {
@@ -489,12 +542,21 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   // A disallowed subframe navigation should be successfully filtered.
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
+
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
 
   // Check test ukm recorder contains event with expected metrics.
   const auto& entries = test_ukm_recorder.GetEntriesByName(
@@ -505,6 +567,9 @@ TEST_P(ThrottleManagerEnabledTest,
         entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
         static_cast<int64_t>(
             subresource_filter::ActivationDecision::ACTIVATED));
+    // DryRun metric is a boolean recorded iff the filter was activated in
+    // dry_run mode. With the filter activated in enabled mode, this metric is
+    // not expected to be recorded here.
     EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
         entry, ukm::builders::FingerprintingProtection::kDryRunName));
   }
@@ -531,8 +596,10 @@ TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
                         ukm::builders::FingerprintingProtection::kEntryName)
                     .size());
 }
-
 TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
+  // Set up test ukm recorder.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
   CreateAgentForHost(main_rfh());
@@ -549,6 +616,26 @@ TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
       navigation_simulator()->GetFinalRenderFrameHost();
   // But they should still be activated.
   ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
+
+  // Nothing should be printed to the console if nothing is blocked on a page.
+  EXPECT_TRUE(content::RenderFrameHostTester::For(main_rfh())
+                  ->GetConsoleMessages()
+                  .empty());
+
+  // Check test ukm recorder contains event with expected metrics.
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtection::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
+        static_cast<int64_t>(
+            subresource_filter::ActivationDecision::ACTIVATED));
+    // DryRun metric is a boolean recorded iff the filter was activated in
+    // dry_run mode, so expect it to be recorded in this case.
+    EXPECT_TRUE(test_ukm_recorder.EntryHasMetric(
+        entry, ukm::builders::FingerprintingProtection::kDryRunName));
+  }
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -557,6 +644,9 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   // A disallowed subframe navigation via redirect should be successfully
   // filtered.
@@ -569,6 +659,12 @@ TEST_P(ThrottleManagerEnabledTest,
                 navigation_simulator(),
                 GURL("https://www.example.com/disallowed.html"))
                 .action());
+
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -592,6 +688,11 @@ TEST_P(ThrottleManagerEnabledTest,
   content::RenderFrameHost* child =
       navigation_simulator()->GetFinalRenderFrameHost();
   ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
+
+  // Nothing should be printed to the console if nothing is blocked on a page.
+  EXPECT_TRUE(content::RenderFrameHostTester::For(main_rfh())
+                  ->GetConsoleMessages()
+                  .empty());
 }
 
 // This should fail if the throttle manager notifies the delegate twice of a
@@ -602,16 +703,29 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/1/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
 
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
+
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/2/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
+
+  // Blocking a second subframe navigation within a single page should not
+  // result in a second console message.
+  EXPECT_EQ(rfh_tester->GetConsoleMessages().size(), 1ul);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -765,50 +879,6 @@ TEST_P(ThrottleManagerEnabledTest, SameSiteNavigationStopsActivation) {
             SimulateStartAndGetResult(navigation_simulator()).action());
 }
 
-TEST_P(ThrottleManagerEnabledTest, CreateHelperForWebContents) {
-  auto web_contents =
-      content::RenderViewHostTestHarness::CreateTestWebContents();
-  ASSERT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
-                web_contents.get()),
-            nullptr);
-
-  TestSupport test_support;
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
-      test_support.tracking_protection_settings();
-
-  {
-    base::test::ScopedFeatureList scoped_feature;
-    scoped_feature.InitAndDisableFeature(
-        features::kEnableFingerprintingProtectionFilter);
-
-    // CreateForWebContents() should not do anything if the fingerprinting
-    // protection filter feature is not enabled.
-    FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-        web_contents.get(), test_support.prefs(), tracking_protection_settings,
-        dealer_handle(), /*is_incognito=*/false);
-    EXPECT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
-                  web_contents.get()),
-              nullptr);
-  }
-
-  // If the fingerprinting protection filter feature is enabled,
-  // CreateForWebContents() should create and attach an instance.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      web_contents.get(), test_support.prefs(), tracking_protection_settings,
-      dealer_handle(), /*is_incognito=*/false);
-  auto* helper = FingerprintingProtectionWebContentsHelper::FromWebContents(
-      web_contents.get());
-  EXPECT_NE(helper, nullptr);
-
-  // A second call should not attach a different instance.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      web_contents.get(), test_support.prefs(), tracking_protection_settings,
-      dealer_handle(), /*is_incognito=*/false);
-  EXPECT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
-                web_contents.get()),
-            helper);
-}
-
 // Basic test of throttle manager lifetime and getter methods. Ensure a new
 // page creating navigation creates a new throttle manager and it's reachable
 // using FromNavigationHandle until commit time. Once committed that same
@@ -923,12 +993,21 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   // A disallowed fenced frame navigation should be successfully filtered.
   CreateFencedFrameWithTestNavigation(
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
+
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
 }
 
 TEST_P(ThrottleManagerEnabledTest,

@@ -25,13 +25,13 @@ found in the LICENSE file.
         <item name="android:windowContentOverlay">@null</item>
 
         <!-- Navigation Transitions, requires API level 21 -->
-        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="21">false</item>
-        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="21">true</item>
-        <item name="android:windowContentTransitions" tools:targetApi="21">true</item>
-        <item name="android:windowEnterTransition" tools:targetApi="21">@transition/fade</item>
-        <item name="android:windowExitTransition" tools:targetApi="21">@null</item>
-        <item name="android:windowSharedElementEnterTransition" tools:targetApi="21">@transition/move_image</item>
-        <item name="android:windowSharedElementExitTransition" tools:targetApi="21">@transition/move_image</item>
+        <item name="android:windowAllowEnterTransitionOverlap">false</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/fade</item>
+        <item name="android:windowExitTransition">@null</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/move_image</item>
+        <item name="android:windowSharedElementExitTransition">@transition/move_image</item>
     </style>
 
     <style name="Theme.Chromium" parent="Base.Theme.Chromium" />
@@ -62,14 +62,10 @@ found in the LICENSE file.
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <!-- Extend base theme rather than Theme.Chromium.WithWindowAnimation to avoid values-v27
-         navigation bar colors from being applied -->
-    <style name="Theme.Chromium.SearchActivity" parent="Base.Theme.Chromium.WithWindowAnimation" />
+    <style name="Theme.Chromium.SearchActivity" parent="Theme.Chromium.WithWindowAnimation" />
 
     <!-- Web app themes -->
-    <!-- Extend base theme rather than Theme.Chromium.WithWindowAnimation to avoid values-v27
-        navigation bar colors from being applied -->
-    <style name="Theme.Chromium.Webapp" parent="Base.Theme.Chromium.WithWindowAnimation">
+    <style name="Theme.Chromium.Webapp" parent="Theme.Chromium.WithWindowAnimation">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowDisablePreview">true</item>
     </style>
@@ -143,7 +139,7 @@ found in the LICENSE file.
     <!-- First Run and Bookmark/recent-tabs dialogs.
         TODO(crbug.com/41374924): Remove textAppearance when all TextViews have text style
         explicitly specified. -->
-    <style name="Base.V17.Theme.Chromium.DialogWhenLarge"
+    <style name="Base.Theme.Chromium.DialogWhenLarge"
         parent="Theme.BrowserUI.DialogWhenLarge.DayNight">
         <item name="android:windowBackground">@drawable/bg_white_dialog</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
@@ -158,9 +154,8 @@ found in the LICENSE file.
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
-    <style name="Base.Theme.Chromium.DialogWhenLarge"
-        parent="Base.V17.Theme.Chromium.DialogWhenLarge" />
-    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
+    <style name="Base.V27.Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
+    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.V27.Theme.Chromium.DialogWhenLarge" />
     <style name="DimmingDialog" parent="Base.Theme.Chromium.DialogWhenLarge">
         <item name="android:windowLightNavigationBar" tools:targetApi="28">false</item>
     </style>
@@ -318,7 +313,7 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/text_size_small</item>
     </style>
     <style name="TextAppearance.AutofillCardInstructionsText">
-        <item name="android:textColor">@color/explanation_text_color</item>
+        <item name="android:textColor">@macro/default_text_color_secondary</item>
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
     <style name="TextAppearance.AutofillCardCheckBoxText">
@@ -347,12 +342,6 @@ found in the LICENSE file.
     </style>
 
     <!-- Misc styles -->
-    <style name="TabBarShadow">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/action_bar_shadow_height</item>
-        <item name="android:src">@drawable/modern_toolbar_shadow</item>
-        <item name="android:scaleType">fitXY</item>
-    </style>
     <style name="TabBarLineShadow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
@@ -396,10 +385,8 @@ found in the LICENSE file.
         <item name="android:textColorHint">@macro/ntp_search_box_hint</item>
     </style>
 
-    <!-- Launcher widgets can't use theme attributes, so this should use the baseline colors for
-         android:textColorHint -->
     <style name="TextAppearance.SearchBoxText.Widget">
-        <item name="android:textColorHint">@color/search_box_hint_baseline</item>
+        <item name="android:textColorHint">@macro/default_text_color_secondary</item>
     </style>
 
     <!-- Bookmarks -->
@@ -486,9 +473,6 @@ found in the LICENSE file.
     </style>
 
      <!-- Bookmark styles -->
-    <style name="TextAppearance.ShoppingPriceDropText" parent="TextAppearance.TextMedium.Secondary">
-        <item name="android:textColor">@color/price_drop_annotation_text_green</item>
-    </style>
     <style name="TextAppearance.SpecialFolderChildCount" parent="TextAppearance.TextLarge.Primary.OnAccent1Container" tools:ignore="SpUsage">
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
@@ -511,4 +495,6 @@ found in the LICENSE file.
     <style name="ModernToolbarPopupTheme">
         <item name="android:listChoiceIndicatorSingle">@drawable/checkmark_selection_drawable</item>
     </style>
+
+    <style name="Theme.Chromium.Widget" parent="Theme.BrowserUI.DayNight" />
 </resources>

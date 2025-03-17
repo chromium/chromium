@@ -6,11 +6,14 @@ package org.chromium.content_public.browser;
 
 import androidx.annotation.IdRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 /** Data class representing a group in the text selection menu. */
+@NullMarked
 public final class SelectionMenuGroup implements Comparable<SelectionMenuGroup> {
     public final @IdRes int id;
     public final int order;

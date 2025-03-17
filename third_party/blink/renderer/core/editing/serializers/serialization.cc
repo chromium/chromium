@@ -128,13 +128,14 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
  public:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
-    // TODO(crbug.com/1413912): CreateSanitizedFragmentFromMarkupWithContext may
+    // TODO(crbug.com/1413912): CreateFragmentFromMarkupWithContext may
     // call this method for data: URL resources. But ResourceLoader::Start()
     // don't need to call GetURLLoaderFactory() for data: URL because
     // ResourceLoader handles the data: URL resource load without the returned
     // SharedURLLoaderFactory.
-    // Note: Non-data: URL resource can't be loaded because the CORS check in
-    // BaseFetchContext::CanRequestInternal fails for non-data: URL resources.
+    // Note: Non-data: URL resource can't be loaded because the security checks
+    // in BaseFetchContext::CanRequestInternal fails for non-data: URL
+    // resources.
     return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
         WTF::BindOnce(
             [](const network::ResourceRequest& resource_request,
@@ -683,6 +684,14 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
         markup, document, *fragment, *context_element, parser_content_policy,
         parser_behavior, &log_tag_stats);
     if (parsed_fast_path) {
+      if (RuntimeEnabledFeatures::DOMInsertionFasterEnabled()) {
+        fragment->SetHoldsUnnotifiedChildren(true);
+        fragment->ParserFinishedBuildingDocumentFragment(
+            DocumentFragment::ShouldNotifyInsertedNodes::kSkip);
+      } else {
+        fragment->ParserFinishedBuildingDocumentFragment(
+            DocumentFragment::ShouldNotifyInsertedNodes::kNotify);
+      }
       LogFastPathParserTotalTime(parse_timer.Elapsed());
 #if DCHECK_IS_ON()
       // As a sanity check for the fast-path, create another fragment using

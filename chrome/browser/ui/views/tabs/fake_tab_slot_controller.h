@@ -13,7 +13,6 @@
 
 class TabContainer;
 class TabStripController;
-class TabGroup;
 
 class FakeTabSlotController : public TabSlotController {
  public:
@@ -45,12 +44,10 @@ class FakeTabSlotController : public TabSlotController {
   void MoveTabLast(Tab* tab) override {}
   void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
-      ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kMenuAction) override;
+      ToggleTabGroupCollapsedStateOrigin origin) override;
   void NotifyTabstripBubbleOpened() override {}
   void NotifyTabstripBubbleClosed() override {}
 
-  TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::mojom::MenuSourceType source_type) override {}
@@ -68,11 +65,14 @@ class FakeTabSlotController : public TabSlotController {
                         const ui::LocatedEvent& event) override;
   bool EndDrag(EndDragReason reason) override;
   Tab* GetTabAt(const gfx::Point& point) override;
-  const Tab* GetAdjacentTab(const Tab* tab, int offset) override;
+  Tab* GetAdjacentTab(const Tab* tab, int offset) override;
+  Tab* GetAdjacentSplitTab(const Tab* tab) override;
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override {}
   void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override {}
   bool HoverCardIsShowingForTab(Tab* tab) override;
+  void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) override {}
+  void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override {}
   int GetBackgroundOffset() const override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
@@ -99,7 +99,7 @@ class FakeTabSlotController : public TabSlotController {
   const Browser* GetBrowser() const override;
   int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
-  std::optional<int> GetModelIndexOf(const TabSlotView* view) const override;
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;

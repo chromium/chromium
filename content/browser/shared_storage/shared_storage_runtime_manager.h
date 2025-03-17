@@ -16,6 +16,7 @@
 #include "content/browser/shared_storage/shared_storage_lock_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 
@@ -31,6 +32,7 @@ class StoragePartitionImpl;
 // `StoragePartition`.
 class CONTENT_EXPORT SharedStorageRuntimeManager {
  public:
+  using AccessScope = blink::SharedStorageAccessScope;
   using WorkletHosts = std::map<SharedStorageWorkletHost*,
                                 std::unique_ptr<SharedStorageWorkletHost>>;
 
@@ -39,38 +41,28 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
 
   class SharedStorageObserverInterface : public base::CheckedObserver {
    public:
-    // TODO(https://crbug.com/380291909): Introduce more granular types to
-    // distinguish PA worklet access from shared storage worklet access.
-    enum AccessType {
-      // The "Document" prefix indicates that the method is called from the
-      // Window scope, and the "Worklet" prefix indicates that the method is
-      // called from SharedStorageWorkletGlobalScope.
-      kDocumentAddModule,
-      kDocumentSelectURL,
-      kDocumentRun,
-      kDocumentSet,
-      kDocumentAppend,
-      kDocumentDelete,
-      kDocumentClear,
-      kDocumentGet,
-      kWorkletSet,
-      kWorkletAppend,
-      kWorkletDelete,
-      kWorkletClear,
-      kWorkletGet,
-      kWorkletKeys,
-      kWorkletEntries,
-      kWorkletLength,
-      kWorkletRemainingBudget,
-      kHeaderSet,
-      kHeaderAppend,
-      kHeaderDelete,
-      kHeaderClear,
+    enum AccessMethod {
+      kAddModule,
+      kCreateWorklet,
+      kSelectURL,
+      kRun,
+      kBatchUpdate,
+      kSet,
+      kAppend,
+      kDelete,
+      kClear,
+      kGet,
+      kKeys,
+      kValues,
+      kEntries,
+      kLength,
+      kRemainingBudget,
     };
 
     virtual void OnSharedStorageAccessed(
         const base::Time& access_time,
-        AccessType type,
+        AccessScope scope,
+        AccessMethod method,
         FrameTreeNodeId main_frame_id,
         const std::string& owner_origin,
         const SharedStorageEventParams& params) = 0;
@@ -92,6 +84,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       SharedStorageDocumentServiceImpl* document_service,
       const url::Origin& frame_origin,
       const url::Origin& data_origin,
+      blink::mojom::SharedStorageDataOriginType data_origin_type,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
@@ -107,7 +100,8 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   void RemoveSharedStorageObserver(SharedStorageObserverInterface* observer);
 
   void NotifySharedStorageAccessed(
-      SharedStorageObserverInterface::AccessType type,
+      AccessScope scope,
+      SharedStorageObserverInterface::AccessMethod method,
       FrameTreeNodeId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
@@ -137,9 +131,11 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const url::Origin& data_origin,
+      blink::mojom::SharedStorageDataOriginType data_origin_type,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
+      int worklet_id,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -166,6 +162,12 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   SharedStorageLockManager lock_manager_;
 
   base::ObserverList<SharedStorageObserverInterface> observers_;
+
+  // A monotonically increasing ID assigned to each SharedStorageWorkletHost.
+  // This ID is assigned during construction of the SharedStorageWorkletHost.
+  // TODO(crbug.com/401011862): Use the worklet IDs generated in DevTools
+  // reporting.
+  int next_worklet_id_ = 0;
 };
 
 }  // namespace content

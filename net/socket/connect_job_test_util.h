@@ -6,6 +6,7 @@
 #define NET_SOCKET_CONNECT_JOB_TEST_UTIL_H_
 
 #include <memory>
+#include <set>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -42,6 +43,8 @@ class TestConnectJobDelegate : public ConnectJob::Delegate {
                         HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         ConnectJob* job) override;
+  Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                        ConnectJob* job) override;
 
   // Waits for the specified number of total auth challenges to be seen. Number
   // includes auth challenges that have already been waited for. Fails the test
@@ -65,6 +68,18 @@ class TestConnectJobDelegate : public ConnectJob::Delegate {
   // Returns true if the ConnectJob has a result.
   bool has_result() const { return has_result_; }
 
+  // Returns true if the ConnectJob called `OnDestinationDnsAliasesResolved` on
+  // the delegate.
+  bool on_dns_aliases_resolved_called() const {
+    return on_dns_aliases_resolved_called_;
+  }
+
+  std::set<std::string> dns_aliases() const { return dns_aliases_; }
+
+  void set_error_for_on_destination_dns_aliases_resolved(Error error) {
+    error_for_dns_aliases_resolved_ = error;
+  }
+
   void StartJobExpectingResult(ConnectJob* connect_job,
                                net::Error expected_result,
                                bool expect_sync_result);
@@ -76,8 +91,11 @@ class TestConnectJobDelegate : public ConnectJob::Delegate {
  private:
   const SocketExpected socket_expected_;
   bool has_result_ = false;
+  bool on_dns_aliases_resolved_called_ = false;
   int result_ = ERR_IO_PENDING;
   std::unique_ptr<StreamSocket> socket_;
+  std::set<std::string> dns_aliases_;
+  Error error_for_dns_aliases_resolved_ = OK;
 
   // These values are all updated each time a proxy auth challenge is seen.
   int num_auth_challenges_ = 0;

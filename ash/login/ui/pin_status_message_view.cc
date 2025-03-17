@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -50,8 +51,8 @@ PinStatusMessageView::TestApi::TestApi(PinStatusMessageView* view)
 
 PinStatusMessageView::TestApi::~TestApi() = default;
 
-const std::u16string&
-PinStatusMessageView::TestApi::GetPinStatusMessageContent() const {
+std::u16string_view PinStatusMessageView::TestApi::GetPinStatusMessageContent()
+    const {
   return view_->message_->GetText();
 }
 
@@ -71,11 +72,11 @@ PinStatusMessageView::PinStatusMessageView(OnPinUnlock on_pin_unlock)
   message_->SetSubpixelRenderingEnabled(false);
   message_->SetAutoColorReadabilityEnabled(false);
   message_->SetMultiLine(true);
-  message_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_->SetEnabledColor(kColorAshTextColorPrimary);
   message_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   message_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  AddChildView(message_.get());
+  AddChildViewRaw(message_.get());
 }
 
 PinStatusMessageView::~PinStatusMessageView() {

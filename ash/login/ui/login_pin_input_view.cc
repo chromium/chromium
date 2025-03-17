@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_pin_input_view.h"
 
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
@@ -211,7 +212,7 @@ void LoginPinInputView::Init(const OnPinSubmit& on_submit,
   on_changed_ = on_changed;
 }
 
-void LoginPinInputView::SubmitPin(const std::u16string& pin) {
+void LoginPinInputView::SubmitPin(std::u16string_view pin) {
   DCHECK(on_submit_);
   on_submit_.Run(pin);
 }

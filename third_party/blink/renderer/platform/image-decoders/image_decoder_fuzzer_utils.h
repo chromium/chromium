@@ -15,7 +15,6 @@ enum class DecoderType {
   kBmpDecoder,
   kJpegDecoder,
   kPngDecoder,
-  kAvifDecoder,
   kCrabbyAvifDecoder,
 };
 

@@ -19,10 +19,11 @@ const SkBitmap CreateTestBitmap(int width, int height);
 manta::proto::Request CreateTestMantaRequest(std::string_view query,
                                              std::optional<uint32_t> seed,
                                              const gfx::Size& size,
-                                             int num_outputs);
+                                             int num_outputs,
+                                             bool use_query_rewritter);
 
 std::unique_ptr<manta::proto::Response> CreateFakeMantaResponse(
-    size_t num_candidates,
+    const std::vector<std::string>& queries_returned_from_server,
     const gfx::Size& image_dimensions);
 
 testing::Matcher<ash::LobsterImageCandidate> EqLobsterImageCandidate(

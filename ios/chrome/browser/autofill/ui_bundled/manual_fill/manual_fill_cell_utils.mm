@@ -504,13 +504,13 @@ UIStackView* CreateHeaderView(UIView* icon,
   return header_view;
 }
 
-UIButton* CreateOverflowMenuButton() {
+UIButton* CreateOverflowMenuButton(NSInteger cell_index) {
   ExtendedTouchTargetButton* menu_button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   menu_button.translatesAutoresizingMaskIntoConstraints = NO;
   menu_button.contentMode = UIViewContentModeCenter;
   menu_button.accessibilityIdentifier =
-      manual_fill::kExpandedManualFillOverflowMenuID;
+      [ManualFillUtil expandedManualFillOverflowMenuID:cell_index];
 
   UIImage* menu_image = SymbolWithPalette(
       DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,

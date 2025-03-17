@@ -6,19 +6,15 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/user_manager/user.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
 #else
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -39,7 +35,7 @@ DMToken* GetTestingDMTokenStorage() {
 DMToken GetDMToken(Profile* const profile) {
   DMToken dm_token = *GetTestingDMTokenStorage();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!profile)
     return dm_token;
 
@@ -64,26 +60,6 @@ DMToken GetDMToken(Profile* const profile) {
       policy_manager->IsClientRegistered()) {
     dm_token =
         DMToken::CreateValidToken(policy_manager->core()->client()->dm_token());
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile)
-    return dm_token;
-
-  if (profile->IsMainProfile()) {
-    const enterprise_management::PolicyData* policy =
-        policy::PolicyLoaderLacros::main_user_policy_data();
-    if (dm_token.is_empty() && policy && policy->has_request_token() &&
-        !policy->request_token().empty()) {
-      dm_token = DMToken::CreateValidToken(policy->request_token());
-    }
-  } else {
-    UserCloudPolicyManager* policy_manager =
-        profile->GetUserCloudPolicyManager();
-    if (dm_token.is_empty() && policy_manager &&
-        policy_manager->IsClientRegistered()) {
-      dm_token = DMToken::CreateValidToken(
-          policy_manager->core()->client()->dm_token());
-    }
   }
 #else
   if (dm_token.is_empty() &&

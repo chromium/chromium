@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SettingsMultideviceCombinedSetupItemElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, MultiDeviceFeatureState, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
+
+import type {SettingsMultideviceCombinedSetupItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement} from 'chrome://os-settings/os_settings.js';
+import {MultiDeviceFeatureState, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -28,7 +31,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
     combinedSetupItem.remove();
   });
 
-  test('Setup button is disabled when PhoneHub is disabled.', async () => {
+  test('Setup button is disabled when PhoneHub is disabled.', () => {
     let button = combinedSetupItem.shadowRoot!.querySelector<CrButtonElement>(
         'cr-button[slot=feature-controller]');
     assert(button);
@@ -47,7 +50,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
 
   test(
       'Correct strings are shown for camera roll, notifications and apps.',
-      async () => {
+      () => {
         combinedSetupItem.setProperties({
           cameraRoll: true,
           notifications: true,
@@ -66,8 +69,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
       });
 
   test(
-      'Correct strings are shown for camera roll and notifications.',
-      async () => {
+      'Correct strings are shown for camera roll and notifications.', () => {
         combinedSetupItem.setProperties({
           cameraRoll: true,
           notifications: true,
@@ -84,7 +86,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
             combinedSetupItem.get('setupSummary_'));
       });
 
-  test('Correct strings are shown for camera roll and apps.', async () => {
+  test('Correct strings are shown for camera roll and apps.', () => {
     combinedSetupItem.setProperties({
       cameraRoll: true,
       appStreaming: true,
@@ -100,7 +102,7 @@ suite('<settings-multidevice-combined-setup-item>', () => {
         combinedSetupItem.get('setupSummary_'));
   });
 
-  test('Correct strings are shown for notifications and apps.', async () => {
+  test('Correct strings are shown for notifications and apps.', () => {
     combinedSetupItem.setProperties({
       notifications: true,
       appStreaming: true,

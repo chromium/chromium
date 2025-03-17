@@ -969,7 +969,24 @@ suite('CookiesCardNavigations', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickCookies');
   });
 
-  test('cookiesAllowAllNavigatesAway', async function() {
+  test('cookiesCardVisibleWhenCookieControlsModeOff', async function() {
+    setFirstPartyCookieSetting(page, ContentSetting.DEFAULT);
+    setThirdPartyCookieSetting(page, CookieControlsMode.OFF);
+    setThirdPartyCookieBlockingSetting(
+        page, ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    assertTrue(shouldShowCookiesCard(page));
+    await navigateToStep(PrivacyGuideStep.COOKIES);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+  });
+
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+  test('cookieControlsModeOffNavigatesAway', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
+
     await navigateToStep(PrivacyGuideStep.COOKIES);
     assertCookiesCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
@@ -995,25 +1012,9 @@ suite('CookiesCardNavigations', function() {
     assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
   });
 
-  test('cookiesCardVisibleWhenCookieControlsModeOff', async function() {
-    loadTimeData.overrideValues({
-      isAlwaysBlock3pcsIncognitoEnabled: true,
-      is3pcdCookieSettingsRedesignEnabled: false,
-    });
-
-    setFirstPartyCookieSetting(page, ContentSetting.DEFAULT);
-    setThirdPartyCookieSetting(page, CookieControlsMode.OFF);
-    setThirdPartyCookieBlockingSetting(
-        page, ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-    assertTrue(shouldShowCookiesCard(page));
-    await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(
-        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
-  });
-
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
   test(
-      'cookiesCardNotVisibleWhenAlwaysBlock3pcsIncognitoDisabled',
-      async function() {
+      'cookiesCardNotVisibleWhenAlwaysBlock3pcsIncognitoDisabled', function() {
         loadTimeData.overrideValues({
           isAlwaysBlock3pcsIncognitoEnabled: false,
           is3pcdCookieSettingsRedesignEnabled: false,
@@ -1261,7 +1262,9 @@ suite('3pcdOff', function() {
   let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
     resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -1383,7 +1386,8 @@ suite('3pcdOff', function() {
     const cookiesRadioGroup =
         page.shadowRoot!
             .querySelector<HTMLElement>('#' + PrivacyGuideStep.COOKIES)!
-            .shadowRoot!.querySelector<HTMLElement>('#cookiesRadioGroup');
+            .shadowRoot!.querySelector<HTMLElement>(
+                '#cookiesRadioGroupAlwaysBlock3pcsIncognito');
     assertTrue(!!cookiesRadioGroup);
     cookiesRadioGroup.dispatchEvent(arrowLeftEvent);
     assertCookiesCardVisible(
@@ -1435,13 +1439,46 @@ suite('3pcdOff', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickSafeBrowsing');
   });
 
+  test(
+      'safeBrowsingForwardNavigationShouldShowCookiesWhenOff',
+      async function() {
+        setThirdPartyCookieSetting(page, CookieControlsMode.OFF);
+        await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
+        assertSafeBrowsingCardVisible(
+            page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+        const nextButton =
+            page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
+        assertTrue(!!nextButton);
+        nextButton.click();
+        assertCookiesCardVisible(
+            page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+        const result = await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideNextNavigationHistogram');
+        assertEquals(
+            PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON, result);
+
+        const actionResult =
+            await testMetricsBrowserProxy.whenCalled('recordAction');
+        assertEquals(
+            actionResult, 'Settings.PrivacyGuide.NextClickSafeBrowsing');
+      });
+
+  // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
   test('safeBrowsingForwardNavigationShouldHideCookies', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: false,
+    });
     setThirdPartyCookieSetting(page, CookieControlsMode.OFF);
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
     assertSafeBrowsingCardVisible(
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    const nextButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
+    assertTrue(!!nextButton);
+    nextButton.click();
     await flushTasks();
     assertCompletionCardVisible(page);
     // Verify user actions are only emitted for available cards on navigation.

@@ -68,6 +68,10 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
             "autofill_virtual_card_suggestion_accepted";
 
+    /** The keyboard accessory was used to fill card info retrieval data into a form. */
+    public static final String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED =
+            "autofill_card_info_retrieval_suggestion_accepted";
+
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
 
@@ -134,6 +138,10 @@ public final class EventConstants {
     /** AdaptiveButtonInTopToolbarCustomization new tab events. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED =
             "adaptive_toolbar_customization_new_tab_opened";
+
+    /** AdaptiveButtonInTopToolbarCustomization open in browser events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_OPENED =
+            "adaptive_toolbar_customization_open_in_browser_opened";
 
     /** AdaptiveButtonInTopToolbarCustomization share events. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED =
@@ -208,8 +216,6 @@ public final class EventConstants {
             "restore_tabs_on_first_run_show_promo";
 
     public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
-
-    public static final String TAB_GROUP_SYNC_ON_STRIP_USED = "tab_group_sync_on_strip_used";
 
     /** Description text for tab group sync functionality in the tab group creation dialog. */
     public static final String TAB_GROUP_CREATION_DIALOG_SHOWN = "tab_group_creation_dialog_shown";

@@ -15,10 +15,9 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/webui/extensions/extension_basic_info.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
 #endif
 
@@ -46,22 +45,17 @@ base::Value::Dict GetPrerenderInfo(Profile* profile) {
 base::Value::List GetExtensionInfo(Profile* profile) {
   base::Value::List extension_list;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(profile);
-  if (extension_system) {
-    extensions::ExtensionService* extension_service =
-        extension_system->extension_service();
-    if (extension_service) {
-      const extensions::ExtensionSet extensions =
-          extensions::ExtensionRegistry::Get(profile)
-              ->GenerateInstalledExtensionsSet();
-      for (const auto& extension : extensions) {
-        base::Value::Dict extension_info;
-        bool enabled = extension_service->IsExtensionEnabled(extension->id());
-        extensions::GetExtensionBasicInfo(extension.get(), enabled,
-                                          &extension_info);
-        extension_list.Append(std::move(extension_info));
-      }
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile);
+  if (extension_registrar) {
+    const extensions::ExtensionSet extensions =
+        extensions::ExtensionRegistry::Get(profile)
+            ->GenerateInstalledExtensionsSet();
+    for (const auto& extension : extensions) {
+      base::Value::Dict extension_info;
+      bool enabled = extension_registrar->IsExtensionEnabled(extension->id());
+      extensions::GetExtensionBasicInfo(extension.get(), enabled,
+                                        &extension_info);
+      extension_list.Append(std::move(extension_info));
     }
   }
 #endif

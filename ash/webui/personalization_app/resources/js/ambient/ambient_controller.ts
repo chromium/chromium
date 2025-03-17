@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AmbientModeAlbum, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {PersonalizationStore} from '../personalization_store.js';
+import type {AmbientModeAlbum, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import type {PersonalizationStore} from '../personalization_store.js';
 
 import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -35,9 +35,9 @@ export async function initializeData(
 }
 
 // Enable or disable ambient mode.
-export async function setAmbientModeEnabled(
+export function setAmbientModeEnabled(
     ambientModeEnabled: boolean, provider: AmbientProviderInterface,
-    store: PersonalizationStore): Promise<void> {
+    store: PersonalizationStore): void {
   provider.setAmbientModeEnabled(ambientModeEnabled);
 
   // Dispatch action to toggle the button to indicate if the ambient mode is

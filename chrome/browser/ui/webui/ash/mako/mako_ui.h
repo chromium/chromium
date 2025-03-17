@@ -8,12 +8,17 @@
 #include "chrome/browser/ui/webui/ash/lobster/lobster_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
-#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ash {
+
+// Forward declare this class to avoid importing `orca_service.mojom.h` into
+// this header file.
+namespace orca::mojom {
+class EditorClient;
+}  // namespace orca::mojom
 
 class MakoUntrustedUI;
 

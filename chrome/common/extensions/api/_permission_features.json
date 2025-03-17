@@ -373,7 +373,7 @@
   },
   "experimentalAiData": {
     "extension_types": ["extension"],
-    "channel": "dev",
+    "channel": "beta",
     "command_line_switch": "extension-ai-data-collection"
   },
   "favicon": {
@@ -420,22 +420,6 @@
     "channel": "stable",
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
-    ]
-  },
-  // Used by gnubbyd in ash and lacros.  Stores small amounts of data in ash
-  // prefs which is shared by ash and lacros versions of the extension.
-  // TODO(b/231890240): Once Terminal SWA runs in lacros rather than ash, we can
-  // migrate gnubbyd back to using chrome.storage.local and remove this private
-  // API.
-  "sharedStoragePrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "6F9E349A0561C78A0D3F41496FE521C5151C7F71", // gnubbyd app stable
-      "C06709A259378015404ED20F75C7D08547E0F10B", // gnubbyd app dev
-      "57A1B95957F9EDB159FA9278BF87FE70DF62BED8", // ske stable
-      "05E9C7F02C6E55E1DE334A1B1EFD2D9A68F10E34"  // ske dev
     ]
   },
   "history": {
@@ -844,16 +828,6 @@
       "extension", "legacy_packaged_app", "platform_app"
     ],
     "location": "component"
-  },
-  "rtcPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "allowlist": [
-      "53041A2FA309EECED01FFC751E7399186E860B2C",  // Google Talk prod
-      "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Google Talk beta
-      "E7E2461CE072DF036CF9592740196159E2D7C089",  // Google Talk alpha
-      "312745D9BF916161191143F6490085EEA0434997"   // Google Talk debug
-    ]
   },
   "safeBrowsingPrivate": {
     "channel": "stable",

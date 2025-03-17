@@ -214,8 +214,8 @@ class DiceWebSigninInterceptor : public KeyedService,
                            ShouldEnforceEnterpriseProfileSeparationReauth);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            EnforceManagedAccountAsPrimary);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
-                           ShouldEnforceEnterpriseProfileSeparationReauth);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTestWithUnoEnabled,
+                           EnforceManagedAccountAsPrimaryReauth);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ForcedEnterpriseInterceptionTestAccountLevelPolicy);
   FRIEND_TEST_ALL_PREFIXES(
@@ -250,7 +250,8 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   // Helper functions to determine which interception UI should be shown.
   const ProfileAttributesEntry* ShouldShowProfileSwitchBubble(
-      const std::string& intercepted_email,
+      const GaiaId& intercepted_gaia_id,
+      const std::string& intercepted_email_fallback,
       ProfileAttributesStorage* profile_attribute_storage) const;
   bool ShouldEnforceEnterpriseProfileSeparation(
       const AccountInfo& intercepted_account_info) const;
@@ -397,7 +398,7 @@ class DiceWebSigninInterceptor : public KeyedService,
     std::optional<WebSigninInterceptor::SigninInterceptionType>
         interception_type_;
     signin_metrics::AccessPoint access_point_ =
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+        signin_metrics::AccessPoint::kUnknown;
     std::optional<ShouldShowChromeSigninBubbleWithReason>
         should_show_chrome_signin_bubble_;
 

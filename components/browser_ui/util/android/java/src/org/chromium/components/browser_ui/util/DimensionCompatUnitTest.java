@@ -95,7 +95,7 @@ public class DimensionCompatUnitTest {
         assertEquals(
                 "Status bar height is not as expected.",
                 TEST_STATUS_BAR_HEIGHT,
-                dimensionCompat.getStatusbarHeight());
+                dimensionCompat.getStatusBarHeight());
 
         try {
             dimensionCompat.updatePosition();
@@ -129,6 +129,6 @@ public class DimensionCompatUnitTest {
         assertEquals(
                 "Status bar height is not as expected.",
                 statusBarHeight,
-                dimensionCompat.getStatusbarHeight());
+                dimensionCompat.getStatusBarHeight());
     }
 }

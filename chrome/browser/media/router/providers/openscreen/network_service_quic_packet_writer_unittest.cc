@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/providers/openscreen/network_service_quic_packet_writer.h"
-#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 
 #include <utility>
 
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "net/base/net_errors.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
 
@@ -23,7 +22,8 @@ using ::testing::WithArg;
 
 namespace {
 
-const quic::QuicIpAddress kValidIPAddress(quic::QuicIpAddress::Loopback4());
+const quiche::QuicheIpAddress kValidIPAddress(
+    quiche::QuicheIpAddress::Loopback4());
 const quic::QuicSocketAddress kValidSocketAddress(kValidIPAddress, 80);
 
 const net::Error kFailureErrorCode = net::Error::ERR_CONNECTION_CLOSED;

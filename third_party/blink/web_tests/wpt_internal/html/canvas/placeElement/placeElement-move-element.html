@@ -5,8 +5,6 @@
   <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
   <link rel="help" href="https://github.com/WICG/canvas-place-element" />
   <link rel="match" href="placeElement-ref.html">
-  <!-- TODO(crbug.com/382294240): 2 pixels overflow the bounding box. -->
-  <meta name="fuzzy" content="maxDifference=0-40; totalPixels=0-2">
   <style>
     .fallback {
       background-color: green;
@@ -21,7 +19,7 @@
 
 <body>
   <canvas id="placeElementCanvas">
-    <div class="fallback" id="fallback">Placed Element</div>
+    <div class="fallback" id="fallback">Placed Element!</div>
     <div class="fallback" id="movedElement">Moved Element</div>
   </canvas>
   <div id="otherDiv"></div>

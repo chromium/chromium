@@ -109,7 +109,7 @@ constexpr std::array<const char*, 64> kFilteredEventGroupNames = {
     "base",                                  // 0x80000
     "devtools.timeline",                     // 0x100000
     "mediastream",                           // 0x200000
-    "unused_bit_22",                         // 0x400000
+    "blink_style",                           // 0x400000
     "unused_bit_23",                         // 0x800000
     "unused_bit_24",                         // 0x1000000
     "unused_bit_25",                         // 0x2000000

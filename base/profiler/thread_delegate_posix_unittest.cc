@@ -7,7 +7,6 @@
 #include "base/numerics/clamped_math.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -38,8 +37,8 @@ TEST(ThreadDelegatePosixTest, MAYBE_CurrentThreadBase) {
 // GetThreadStackBaseAddressTest.MainThread.
 TEST(ThreadDelegatePosixTest, MainThreadStackBase) {
   // The delegate does not use pthread id for main thread.
-  auto delegate = ThreadDelegatePosix::Create(
-      SamplingProfilerThreadToken{GetCurrentProcId(), pthread_t()});
+  auto delegate = ThreadDelegatePosix::Create(SamplingProfilerThreadToken{
+      PlatformThreadId(GetCurrentProcId()), pthread_t()});
   ASSERT_TRUE(delegate);
   uintptr_t base = delegate->GetStackBaseAddress();
   EXPECT_GT(base, 0u);

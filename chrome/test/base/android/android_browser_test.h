@@ -48,6 +48,9 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   // and setup functions.
   static size_t GetTestPreCount();
 
+  // Returns the test data path used by the embedded test server.
+  base::FilePath GetChromeTestDataDir() const;
+
  private:
   // Temporary user data directory. Used only when a user data directory is not
   // specified in the command line.

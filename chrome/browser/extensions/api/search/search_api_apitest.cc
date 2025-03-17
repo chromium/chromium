@@ -16,7 +16,13 @@ namespace {
 using SearchApiTest = ExtensionApiTest;
 
 // Test various scenarios, such as the use of input different parameters.
-IN_PROC_BROWSER_TEST_F(SearchApiTest, Normal) {
+// Disabled due to flakes on Mac testers; see https://crbug.com/394345948.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Normal DISABLED_Normal
+#else
+#define MAYBE_Normal Normal
+#endif
+IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Normal) {
   ASSERT_TRUE(RunExtensionTest("search/query/normal")) << message_;
 }
 

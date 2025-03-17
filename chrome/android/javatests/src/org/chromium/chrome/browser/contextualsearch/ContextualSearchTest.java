@@ -74,7 +74,7 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
         Assert.assertEquals(1, mPanelManager.getRequestPanelShowCount());
         Assert.assertEquals(0, mPanelManager.getPanelHideCount());
         Assert.assertEquals(
-                mContextualSearchManager.getSelectionController().getSelectedText(), "text");
+                "text", mContextualSearchManager.getSelectionController().getSelectedText());
 
         // Fake tap on non-text.
         mockTapEmptySpace();

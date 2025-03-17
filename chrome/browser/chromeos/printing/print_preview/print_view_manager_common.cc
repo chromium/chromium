@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "build/chromeos_buildflags.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -41,10 +40,8 @@ content::RenderFrameHost* GetRenderFrameHostToUse(
 }  // namespace
 
 void StartPrint(content::WebContents* contents,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
                 mojo::PendingAssociatedRemote<::printing::mojom::PrintRenderer>
                     print_renderer,
-#endif
                 bool print_preview_disabled,
                 bool has_selection) {
   content::RenderFrameHost* rfh_to_use = GetRenderFrameHostToUse(contents);

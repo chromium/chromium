@@ -780,7 +780,7 @@ bool HTMLInputElement::IsPresentationAttribute(
 void HTMLInputElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kVspaceAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
     AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
@@ -1115,18 +1115,15 @@ void HTMLInputElement::SetChecked(bool now_checked,
       cache->CheckedStateChanged(this);
   }
 
-  if (!RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled()) {
-    // Only send a change event for items in the document (avoid firing during
-    // parsing) and don't send a change event for a radio button that's getting
-    // unchecked to match other browsers. DOM is not a useful standard for this
-    // because it says only to fire change events at "lose focus" time, which is
-    // definitely wrong in practice for these types of elements.
-    if (event_behavior ==
-            TextFieldEventBehavior::kDispatchInputAndChangeEvent &&
-        isConnected() &&
-        input_type_->ShouldSendChangeEventAfterCheckedChanged()) {
-      DispatchInputEvent();
-    }
+  // Only send a change event for items in the document (avoid firing during
+  // parsing) and don't send a change event for a radio button that's getting
+  // unchecked to match other browsers. DOM is not a useful standard for this
+  // because it says only to fire change events at "lose focus" time, which is
+  // definitely wrong in practice for these types of elements.
+  if (event_behavior == TextFieldEventBehavior::kDispatchInputAndChangeEvent &&
+      isConnected() &&
+      input_type_->ShouldSendChangeEventAfterCheckedChanged()) {
+    DispatchInputEvent();
   }
 
   // We set the Autofilled state again because setting the autofill value
@@ -1305,17 +1302,12 @@ void HTMLInputElement::SetValue(const String& value,
     }
   }
 
-  if (!RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled()) {
-    // We set the Autofilled state again because setting the autofill value
-    // triggers JavaScript events and the site may override the autofilled
-    // value, which resets the autofill state. Even if the website modifies the
-    // form control element's content during the autofill operation, we want the
-    // state to show as autofilled.
-    // If AllowJavaScriptToResetAutofillState is enabled, the WebAutofillClient
-    // will monitor JavaScript induced changes and take care of resetting the
-    // autofill state when appropriate.
-    SetAutofillState(autofill_state);
-  }
+  // We set the Autofilled state again because setting the autofill value
+  // triggers JavaScript events and the site may override the autofilled
+  // value, which resets the autofill state. Even if the website modifies the
+  // form control element's content during the autofill operation, we want the
+  // state to show as autofilled.
+  SetAutofillState(autofill_state);
 }
 
 void HTMLInputElement::SetNonAttributeValue(const String& sanitized_value) {
@@ -1464,9 +1456,9 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
       return;
   }
 
-  auto* keyboad_event = DynamicTo<KeyboardEvent>(evt);
-  if (keyboad_event && evt.type() == event_type_names::kKeydown) {
-    input_type_view_->HandleKeydownEvent(*keyboad_event);
+  auto* keyboard_event = DynamicTo<KeyboardEvent>(evt);
+  if (keyboard_event && evt.type() == event_type_names::kKeydown) {
+    input_type_view_->HandleKeydownEvent(*keyboard_event);
     if (evt.DefaultHandled())
       return;
   }
@@ -1497,14 +1489,14 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
 
   // Use key press event here since sending simulated mouse events
   // on key down blocks the proper sending of the key press event.
-  if (keyboad_event && evt.type() == event_type_names::kKeypress) {
-    input_type_view_->HandleKeypressEvent(*keyboad_event);
+  if (keyboard_event && evt.type() == event_type_names::kKeypress) {
+    input_type_view_->HandleKeypressEvent(*keyboard_event);
     if (evt.DefaultHandled())
       return;
   }
 
-  if (keyboad_event && evt.type() == event_type_names::kKeyup) {
-    input_type_view_->HandleKeyupEvent(*keyboad_event);
+  if (keyboard_event && evt.type() == event_type_names::kKeyup) {
+    input_type_view_->HandleKeyupEvent(*keyboard_event);
     if (evt.DefaultHandled())
       return;
   }
@@ -2196,9 +2188,8 @@ bool HTMLInputElement::SetupDateTimeChooserParameters(
   parameters.double_value = input_type_->ValueAsDouble();
   parameters.focused_field_index = input_type_view_->FocusedFieldIndex();
   parameters.is_anchor_element_rtl =
-      GetLayoutObject()
-          ? input_type_view_->ComputedTextDirection() == TextDirection::kRtl
-          : false;
+      GetLayoutObject() &&
+      input_type_view_->ComputedTextDirection() == TextDirection::kRtl;
   if (HTMLDataListElement* data_list = DataList()) {
     HTMLDataListOptionsCollection* options = data_list->options();
     for (unsigned i = 0; HTMLOptionElement* option = options->Item(i); ++i) {
@@ -2270,7 +2261,10 @@ void HTMLInputElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 void HTMLInputElement::DidNotifySubtreeInsertionsToDocument() {
-  ListAttributeTargetChanged();
+  input_type_view_->ListAttributeTargetChanged();
+  if (!RuntimeEnabledFeatures::DOMInsertionFasterEnabled()) {
+    PseudoStateChanged(CSSSelector::kPseudoHasDatalist);
+  }
 }
 
 AXObject* HTMLInputElement::PopupRootAXObject() {
@@ -2365,7 +2359,7 @@ bool HTMLInputElement::IsPickerVisible() const {
 bool HTMLInputElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                              CommandEventType command) {
   bool parent_is_valid = HTMLElement::IsValidBuiltinCommand(invoker, command);
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled() ||
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() ||
       parent_is_valid) {
     return parent_is_valid;
   }

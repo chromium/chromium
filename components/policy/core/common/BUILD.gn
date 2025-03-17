@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -46,17 +45,14 @@ source_set("util") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
+    "//net",
   ]
 
   if (is_chromeos) {
-    deps += [ "//components/user_manager" ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup:startup" ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/system" ]
+    deps += [
+      "//chromeos/ash/components/system",
+      "//components/user_manager",
+    ]
   }
 }
 
@@ -238,9 +234,11 @@ source_set("internal") {
 
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/account_id",
     "//components/enterprise/common:strings",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core:constants",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings",
@@ -255,20 +253,6 @@ source_set("internal") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "management/platform_management_status_provider_lacros.cc",
-      "management/platform_management_status_provider_lacros.h",
-      "policy_loader_lacros.cc",
-      "policy_loader_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/startup:startup",
-    ]
-  }
 
   allow_circular_includes_from = [
     # Generated files use policy_details.h and policy_map.h from this target.
@@ -351,14 +335,11 @@ source_set("internal") {
     deps += [ "//components/policy/android:jni_headers" ]
   }
   if (is_chromeos) {
+    visibility += [ "//chrome/browser/ash/boca/spotlight/*" ]
+    deps += [ "//chromeos/ash/components/system" ]
     sources += [
       "default_chrome_apps_migrator.cc",
       "default_chrome_apps_migrator.h",
-    ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/system" ]
-    sources += [
       "policy_scheduler.cc",
       "policy_scheduler.h",
     ]
@@ -445,7 +426,7 @@ static_library("test_support") {
     "remote_commands/test_support/testing_remote_commands_server.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources -= [
       "cloud/mock_user_cloud_policy_store.cc",
       "cloud/mock_user_cloud_policy_store.h",
@@ -475,6 +456,7 @@ static_library("test_support") {
     # so it will be linked to dependent targets. Otherwise in component
     # build, it will be hidden inside the policy component.
     "//components/account_id",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/policy:generated",
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",
@@ -487,18 +469,12 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//services/network:test_support",
-  ]
+  deps = [ "//services/network:test_support" ]
 }
 
 source_set("common_constants") {
   configs += [ "//components/policy:component_implementation" ]
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
   sources = [
     "../../policy_export.h",
     "cloud/cloud_policy_constants.cc",
@@ -578,7 +554,7 @@ source_set("unit_tests") {
   if (is_win || is_linux || is_chromeos) {
     sources += [ "registry_dict_unittest.cc" ]
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "default_chrome_apps_migrator_unittest.cc",
       "policy_scheduler_unittest.cc",
@@ -654,17 +630,16 @@ source_set("unit_tests") {
       "scoped_critical_policy_section_unittest.cc",
     ]
   }
-  if (is_chromeos_lacros) {
-    sources += [ "policy_loader_lacros_unittest.cc" ]
-  }
-
   deps = [
     ":common_constants",
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/account_id",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core:constants",
     "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",
     "//components/policy:generated",
@@ -679,20 +654,11 @@ source_set("unit_tests") {
     "//third_party/libxml:xml_reader",
     "//ui/base",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
   }
   if (is_android) {
     deps += [ "//components/policy/android:test_jni_headers" ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/browser",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/startup:startup",
-    ]
   }
 }
 

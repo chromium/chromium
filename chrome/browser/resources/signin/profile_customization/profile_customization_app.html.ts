@@ -38,13 +38,21 @@ export function getHtml(this: ProfileCustomizationAppElement) {
         <div id="title">${this.welcomeTitle_}</div>
       </div>
 
-      <cr-input id="nameInput" pattern=".*\\S.*" .value="${this.profileName_}"
-          @value-changed="${this.onProfileNameChanged_}"
-          aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
-          placeholder="$i18n{profileCustomizationInputPlaceholder}" autofocus
-          error-message="$i18n{profileCustomizationInputErrorMessage}"
-          required spellcheck="false" @blur="${this.validateInputOnBlur_}">
-      </cr-input>
+        <cr-input id="nameInput" pattern=".*\\S.*" .value="${this.profileName_}"
+            @value-changed="${this.onProfileNameChanged_}"
+            aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
+            placeholder="$i18n{profileCustomizationInputPlaceholder}" autofocus
+            error-message="$i18n{profileCustomizationInputErrorMessage}"
+            required spellcheck="false" @blur="${this.validateInputOnBlur_}"
+            ?disabled="${this.hasEnterpriseLabel}">
+              <cr-icon id="policyIcon" icon="cr:domain" slot="suffix"
+                ?hidden="${!this.hasEnterpriseLabel}">
+              </cr-icon>
+        </cr-input>
+        <cr-tooltip
+          for="policyIcon" position="top">
+          $i18n{controlledSettingPolicy}
+        </cr-tooltip>
 
       <div id="pickThemeContainer">
         <cr-theme-color-picker columns="6"></cr-theme-color-picker>

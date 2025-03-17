@@ -55,47 +55,59 @@ FileAnalyzer::FileAnalyzer(
 
 FileAnalyzer::~FileAnalyzer() = default;
 
-void FileAnalyzer::Start(const base::FilePath& target_path,
+void FileAnalyzer::Start(const base::FilePath& target_file_name,
                          const base::FilePath& tmp_path,
                          base::optional_ref<const std::string> password,
                          base::OnceCallback<void(Results)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  target_path_ = target_path;
+  target_file_name_ = target_file_name;
   tmp_path_ = tmp_path;
   password_ = password.CopyAsOptional();
   callback_ = std::move(callback);
   start_time_ = base::Time::Now();
 
+#if !BUILDFLAG(IS_ANDROID)
   DownloadFileType::InspectionType inspection_type =
       FileTypePolicies::GetInstance()
-          ->PolicyForFile(target_path_, GURL{}, nullptr)
+          ->PolicyForFile(target_file_name_, GURL{}, nullptr)
           .inspection_type();
 
   if (inspection_type == DownloadFileType::ZIP) {
     StartExtractZipFeatures();
-  } else if (inspection_type == DownloadFileType::RAR) {
-    StartExtractRarFeatures();
-#if BUILDFLAG(IS_MAC)
-  } else if (inspection_type == DownloadFileType::DMG) {
-    StartExtractDmgFeatures();
-#endif
-  } else if (inspection_type == DownloadFileType::SEVEN_ZIP) {
-    StartExtractSevenZipFeatures();
-  } else {
-#if BUILDFLAG(IS_MAC)
-    // Checks for existence of "koly" signature even if file doesn't have
-    // archive-type extension, then calls ExtractFileOrDmgFeatures() with
-    // result.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(DiskImageTypeSnifferMac::IsAppleDiskImage, tmp_path_),
-        base::BindOnce(&FileAnalyzer::ExtractFileOrDmgFeatures,
-                       weakptr_factory_.GetWeakPtr()));
-#else
-    StartExtractFileFeatures();
-#endif
+    return;
   }
+
+  if (inspection_type == DownloadFileType::RAR) {
+    StartExtractRarFeatures();
+    return;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  if (inspection_type == DownloadFileType::DMG) {
+    StartExtractDmgFeatures();
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  if (inspection_type == DownloadFileType::SEVEN_ZIP) {
+    StartExtractSevenZipFeatures();
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+  // Checks for existence of "koly" signature even if file doesn't have
+  // archive-type extension, then calls ExtractFileOrDmgFeatures() with
+  // result.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(DiskImageTypeSnifferMac::IsAppleDiskImage, tmp_path_),
+      base::BindOnce(&FileAnalyzer::ExtractFileOrDmgFeatures,
+                     weakptr_factory_.GetWeakPtr()));
+#else   // BUILDFLAG(IS_MAC)
+  StartExtractFileFeatures();
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void FileAnalyzer::StartExtractFileFeatures() {
@@ -113,10 +125,11 @@ void FileAnalyzer::StartExtractFileFeatures() {
 
 void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
   LogAnalysisDurationWithAndWithoutSuffix("Executable");
-  results.type = download_type_util::GetDownloadType(target_path_);
+  results.type = download_type_util::GetDownloadType(target_file_name_);
   std::move(callback_).Run(results);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void FileAnalyzer::StartExtractZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -169,7 +182,7 @@ void FileAnalyzer::OnZipAnalysisFinished(
     // unpacked by other archive tools, so they may be a real threat.
     results_.type = ClientDownloadRequest::INVALID_ZIP;
   } else {
-    results_.type = download_type_util::GetDownloadType(target_path_);
+    results_.type = download_type_util::GetDownloadType(target_file_name_);
   }
 
   results_.archive_summary.set_file_count(archive_results.file_count);
@@ -227,7 +240,7 @@ void FileAnalyzer::OnRarAnalysisFinished(
     // other archive tools, so they may be a real threat.
     results_.type = ClientDownloadRequest::INVALID_RAR;
   } else {
-    results_.type = download_type_util::GetDownloadType(target_path_);
+    results_.type = download_type_util::GetDownloadType(target_file_name_);
   }
 
   results_.archive_summary.set_file_count(archive_results.file_count);
@@ -238,6 +251,7 @@ void FileAnalyzer::OnRarAnalysisFinished(
 
   std::move(callback_).Run(std::move(results_));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
 // This is called for .DMGs and other files that can be parsed by
@@ -315,6 +329,7 @@ void FileAnalyzer::OnDmgAnalysisFinished(
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+#if !BUILDFLAG(IS_ANDROID)
 void FileAnalyzer::StartExtractSevenZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -364,7 +379,7 @@ void FileAnalyzer::OnSevenZipAnalysisFinished(
     // unpacked by other archive tools, so they may be a real threat.
     results_.type = ClientDownloadRequest::INVALID_SEVEN_ZIP;
   } else {
-    results_.type = download_type_util::GetDownloadType(target_path_);
+    results_.type = download_type_util::GetDownloadType(target_file_name_);
   }
 
   results_.archive_summary.set_file_count(archive_results.file_count);
@@ -375,6 +390,7 @@ void FileAnalyzer::OnSevenZipAnalysisFinished(
 
   std::move(callback_).Run(std::move(results_));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void FileAnalyzer::LogAnalysisDurationWithAndWithoutSuffix(
     const std::string& suffix) {

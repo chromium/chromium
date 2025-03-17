@@ -49,8 +49,8 @@ class CORE_EXPORT ResourceProgressEvent final : public ProgressEvent {
  public:
   ResourceProgressEvent(const AtomicString& type,
                         bool length_computable,
-                        uint64_t loaded,
-                        uint64_t total,
+                        double loaded,
+                        double total,
                         const String& url);
 
   const String& url() const;

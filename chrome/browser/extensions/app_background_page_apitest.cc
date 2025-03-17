@@ -20,7 +20,7 @@
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
 #include "chrome/browser/background/background_contents_test_waiter.h"
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -618,7 +618,9 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
   base::FilePath app_dir;
   ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
 
-  BackgroundContentsTestWaiter background_waiter(profile());
+  auto background_waiter =
+      std::make_unique<BackgroundContentsTestWaiter>(profile());
+
   // Background mode should not be active now because no background app was
   // loaded.
   ASSERT_TRUE(LoadExtension(app_dir));
@@ -627,10 +629,14 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
   ASSERT_TRUE(VerifyBackgroundMode(true));
 
   const Extension* extension = GetSingleLoadedExtension();
-  background_waiter.WaitForBackgroundContents(extension->id());
+  background_waiter->WaitForBackgroundContents(extension->id());
   ASSERT_TRUE(
       BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
           ->GetAppBackgroundContents(extension->id()));
+
+  // We need to ensure `background_waiter` gets freed before the call to
+  // UnloadExtensionViaTask(), otherwise we'll get a dangling raw_ptr warning.
+  background_waiter.reset();
 
   // Close all browsers - app should continue running.
   set_exit_when_last_browser_closes(false);

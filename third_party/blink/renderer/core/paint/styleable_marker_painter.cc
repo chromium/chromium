@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
@@ -125,7 +126,8 @@ bool StyleableMarkerPainter::ShouldPaintUnderline(
   if (marker.HasThicknessNone() ||
       (marker.UnderlineColor() == Color::kTransparent &&
        !marker.UseTextColor()) ||
-      marker.UnderlineStyle() == ui::mojom::blink::ImeTextSpanUnderlineStyle::kNone) {
+      marker.UnderlineStyle() ==
+          ui::mojom::blink::ImeTextSpanUnderlineStyle::kNone) {
     return false;
   }
   return true;
@@ -155,7 +157,7 @@ void StyleableMarkerPainter::PaintUnderline(const StyleableMarker& marker,
   // underline will touch or overlap characters. Line thickness should change
   // with zoom.
   int line_thickness = 1 * style.EffectiveZoom();
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   DCHECK(font_data);
   int baseline = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   if (marker.HasThicknessThick()) {

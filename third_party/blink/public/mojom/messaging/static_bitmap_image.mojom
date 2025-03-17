@@ -41,10 +41,6 @@ struct AcceleratedStaticBitmapImage {
   gpu.mojom.SyncToken sync_token;
   // Common image metadata.
   skia.mojom.ImageInfo image_info;
-  // Indicates if the display compositing may be used with this image.
-  bool supports_display_compositing;
-  // Indicates if the image is an overlay candidate.
-  bool is_overlay_candidate;
   // Resource lifetime management callback. Until this pending remote is
   // destroyed or the callback is called the sender shall keep the
   // resource alive.

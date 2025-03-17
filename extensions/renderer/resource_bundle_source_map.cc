@@ -49,12 +49,14 @@ ResourceBundleSourceMap::~ResourceBundleSourceMap() {
 
 void ResourceBundleSourceMap::RegisterSource(const char* const name,
                                              int resource_id) {
+  base::AutoLock lock(lock_);
   resource_map_.emplace(name, resource_id);
 }
 
 v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
     v8::Isolate* isolate,
     const std::string& name) const {
+  base::AutoLock lock(lock_);
   auto resource_iter = resource_map_.find(name);
   if (resource_iter == resource_map_.end()) {
     DUMP_WILL_BE_NOTREACHED()
@@ -76,23 +78,21 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
   bool is_gzipped = resource_bundle_->IsGzipped(info.id);
   if (is_gzipped) {
     info.cached = std::make_unique<std::string>();
-    uint32_t size = compression::GetUncompressedSize(resource);
-    info.cached->resize(size);
-    std::string_view uncompressed(*info.cached);
-    if (!compression::GzipUncompress(resource, uncompressed)) {
+    if (!compression::GzipUncompress(resource, info.cached.get())) {
       // Let |info.cached| point to an empty string, so that the next time when
       // the resource is requested, the method returns an empty string directly,
       // instead of trying to uncompress again.
       info.cached->clear();
       return v8::Local<v8::String>();
     }
-    resource = uncompressed;
+    resource = *info.cached;
   }
 
   return ConvertString(isolate, resource);
 }
 
 bool ResourceBundleSourceMap::Contains(const std::string& name) const {
+  base::AutoLock lock(lock_);
   return base::Contains(resource_map_, name);
 }
 

@@ -221,6 +221,10 @@ void TestDelegate::OnResponseStarted(URLRequest* request, int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
   EXPECT_FALSE(request->is_redirecting());
 
+  if (net_error == OK) {
+    response_code_ = request->GetResponseCode();
+  }
+
   response_started_count_++;
   request_status_ = net_error;
   if (cancel_in_rs_) {
@@ -509,8 +513,9 @@ bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 
   if (!allow) {
     blocked_annotate_cookies_count_++;
-    ExcludeAllCookies(CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
+    ExcludeAllCookies(
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
+        maybe_included_cookies, excluded_cookies);
   }
 
   return allow;
@@ -623,21 +628,24 @@ bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 
   if (!allowed) {
     ++blocked_annotate_cookies_count_;
-    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
+    ExcludeAllCookies(
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
+        maybe_included_cookies, excluded_cookies);
   }
 
   if (allowed && block_get_cookies_by_name_ && !cookie_name_filter_.empty()) {
     for (auto& cookie : maybe_included_cookies) {
       if (cookie.cookie.Name().find(cookie_name_filter_) != std::string::npos) {
         cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+            net::CookieInclusionStatus::ExclusionReason::
+                EXCLUDE_USER_PREFERENCES);
       }
     }
     for (auto& cookie : excluded_cookies) {
       if (cookie.cookie.Name().find(cookie_name_filter_) != std::string::npos) {
         cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+            net::CookieInclusionStatus::ExclusionReason::
+                EXCLUDE_USER_PREFERENCES);
       }
     }
 

@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -12,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_future.h"
@@ -45,9 +50,23 @@ class TestChromeContentRendererClient : public ChromeContentRendererClient {
   TestChromeContentRendererClient() = default;
   ~TestChromeContentRendererClient() override = default;
   // Since visited_link_reader_ in ChromeContentRenderClient never get
-  // initiated, overrides VisitedLinkedHash() function to prevent crashing.
+  // initiated, overrides visited link functions to prevent crashing.
   uint64_t VisitedLinkHash(std::string_view canonical_url) override {
     return 0;
+  }
+
+  uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin) override {
+    return 0;
+  }
+
+  bool IsLinkVisited(uint64_t link_hash) override { return false; }
+
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override {
+    return;
   }
 };
 
@@ -90,7 +109,7 @@ class PhishingClassifierTest
     std::vector<int> indices_map_from_original;
     for (const auto& original_hash : original_hashes_vector) {
       indices_map_from_original.push_back(
-          base::ranges::find(hashes_vector, original_hash) -
+          std::ranges::find(hashes_vector, original_hash) -
           hashes_vector.begin());
     }
     for (std::string& feature : hashes_vector) {

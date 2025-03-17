@@ -253,4 +253,10 @@ interface NetworkServiceTest {
   // Only relevant on ChromeOS and Linux.
   [Sync]
   AllowsGSSAPILibraryLoad() => (bool allow_gssapi_library_load);
+
+  // Disable exclusive locking of the cookie database for testing.
+  // TODO(crbug.com/377940976): Remove this once the background sequence runner
+  // can be fully drained of tasks during network context shutdown.
+  [EnableIf=is_win]
+  DisableExclusiveCookieDatabaseLockingForTesting() => ();
 };

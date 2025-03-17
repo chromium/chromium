@@ -5,7 +5,8 @@
 import {CrInputElement} from 'chrome://os-settings/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {SetLocalPasswordInputApiInterface, SetLocalPasswordInputApiReceiver, SetLocalPasswordInputApiRemote} from '../set_local_password_input_api.test-mojom-webui.js';
+import type {SetLocalPasswordInputApiInterface, SetLocalPasswordInputApiRemote} from '../set_local_password_input_api.test-mojom-webui.js';
+import {SetLocalPasswordInputApiReceiver} from '../set_local_password_input_api.test-mojom-webui.js';
 import {assertAsync, assertForDuration, retry} from '../utils.js';
 
 // The test API for the settings-password-settings element.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/lobster/lobster_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -22,12 +23,7 @@ constexpr int kLobsterHeightThreshold = 400;
 
 LobsterView::LobsterView(WebUIContentsWrapper* contents_wrapper,
                          const gfx::Rect& caret_bounds)
-    : WebUIBubbleDialogView(nullptr,
-                            contents_wrapper->GetWeakPtr(),
-                            std::nullopt,
-                            views::BubbleBorder::TOP_RIGHT,
-                            /*autosize=*/false),
-      caret_bounds_(caret_bounds) {
+    : DraggableBubbleDialogView(contents_wrapper), caret_bounds_(caret_bounds) {
   set_has_parent(false);
   set_corner_radius(kLobsterResultCornerRadius);
   // Disable the default offscreen adjustment so that we can customise it.
@@ -56,12 +52,7 @@ void LobsterView::ResizeDueToAutoResize(content::WebContents* source,
   gfx::Rect anchor = caret_bounds_;
   anchor.Outset(gfx::Outsets::VH(kLobsterAnchorVerticalPadding, 0));
 
-  gfx::Rect lobster_contents_bounds =
-      gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
-                    new_size.width() / 2,
-                screen_work_area.y() + screen_work_area.height() / 2 -
-                    new_size.height() / 2,
-                new_size.width(), new_size.height());
+  gfx::Rect lobster_contents_bounds = gfx::Rect(anchor.bottom_left(), new_size);
 
   // If horizontally offscreen, just move it to the right edge of the screen.
   if (lobster_contents_bounds.right() > screen_work_area.right()) {
@@ -89,6 +80,9 @@ void LobsterView::ResizeDueToAutoResize(content::WebContents* source,
 
 void LobsterView::ShowUI() {
   WebUIBubbleDialogView::ShowUI();
+  if (base::FeatureList::IsEnabled(ash::features::kLobsterDraggingSupport)) {
+    SetupDraggingSupport();
+  }
 }
 
 void LobsterView::SetContentsBounds(content::WebContents* source,
@@ -97,6 +91,14 @@ void LobsterView::SetContentsBounds(content::WebContents* source,
     web_view_ptr->SetPreferredSize(bounds.size());
   }
   GetWidget()->SetBounds(bounds);
+}
+
+bool LobsterView::IsDraggingEnabled() {
+  return base::FeatureList::IsEnabled(ash::features::kLobsterDraggingSupport);
+}
+
+bool LobsterView::IsResizingEnabled() {
+  return false;
 }
 
 BEGIN_METADATA(LobsterView)

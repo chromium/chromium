@@ -5,11 +5,10 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_CWV_WEB_VIEW_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_CWV_WEB_VIEW_INTERNAL_H_
 
-#import "ios/web_view/public/cwv_web_view.h"
-
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ios/web_view/public/cwv_web_view.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

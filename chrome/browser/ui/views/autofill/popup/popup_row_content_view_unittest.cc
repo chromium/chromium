@@ -80,8 +80,7 @@ TEST_F(PopupRowContentViewTest, SetSelectedUpdatesBackground) {
   view().UpdateStyle(true);
   background = view().GetBackground();
   ASSERT_TRUE(background);
-  EXPECT_EQ(background->get_color(), view().GetColorProvider()->GetColor(
-                                         ui::kColorDropdownBackgroundSelected));
+  EXPECT_EQ(background->color(), ui::kColorDropdownBackgroundSelected);
 }
 
 }  // namespace autofill

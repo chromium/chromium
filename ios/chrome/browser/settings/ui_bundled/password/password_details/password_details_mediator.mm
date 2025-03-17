@@ -12,20 +12,18 @@
 #import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
-#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -36,7 +34,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_controller_delegate.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #import "base/command_line.h"
@@ -179,7 +177,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 @interface PasswordDetailsMediator () <
     PasswordCheckObserver,
-    PasswordDetailsTableViewControllerDelegate> {
+    PasswordDetailsTableViewControllerDelegate,
+    SyncObserverModelBridge> {
   // Password Check manager.
   scoped_refptr<IOSChromePasswordCheckManager> _manager;
 
@@ -194,6 +193,9 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
   // Delegate for this mediator.
   id<PasswordDetailsMediatorDelegate> _delegate;
+
+  // Sync observer.
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 
 // Dictionary of usernames of a same domain. Key: domain and value: NSSet of
@@ -212,28 +214,30 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 @implementation PasswordDetailsMediator
 
-- (instancetype)
-    initWithPasswords:(const std::vector<CredentialUIEntry>&)credentials
-          displayName:(NSString*)displayName
-              profile:(ProfileIOS*)profile
-              context:(DetailsContext)context
-             delegate:(id<PasswordDetailsMediatorDelegate>)delegate {
-  DCHECK(profile);
-  DCHECK(!credentials.empty());
+- (instancetype)initWithPasswords:
+                    (const std::vector<CredentialUIEntry>&)credentials
+                      displayName:(NSString*)displayName
+                          context:(DetailsContext)context
+                         delegate:(id<PasswordDetailsMediatorDelegate>)delegate
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService {
+  CHECK(!credentials.empty());
 
   self = [super init];
   if (!self) {
     return nil;
   }
 
-  _manager = IOSChromePasswordCheckManagerFactory::GetForProfile(profile).get();
+  _manager = manager;
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, _manager.get());
   _credentials = credentials;
   _displayName = displayName;
   _context = context;
-  _prefService = profile->GetPrefs();
-  _syncService = SyncServiceFactory::GetForProfile(profile);
+  _prefService = prefService;
+  _syncService = syncService;
+  _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
   _delegate = delegate;
 
   return self;
@@ -278,7 +282,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 
   // Map from CredentialDetails to CredentialUIEntry. Should support blocklists.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
                                                            credential);
@@ -307,7 +311,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 - (void)moveCredentialToAccountStore:(CredentialDetails*)credentialDetails {
   // Map from CredentialDetails to CredentialUIEntry.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
                                                            credential);
@@ -326,7 +330,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 - (void)moveCredentialToAccountStoreWithConflict:
     (CredentialDetails*)credentialDetails {
-  auto localCredential = base::ranges::find_if(
+  auto localCredential = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
                                                            credential);
@@ -354,7 +358,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 - (void)didConfirmWarningDismissalForPassword:
     (CredentialDetails*)credentialDetails {
   // Map from CredentialDetails to CredentialUIEntry.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](
                         const password_manager::CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
@@ -385,7 +389,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   CredentialUIEntry updatedCredential;
   std::vector<CredentialUIEntry>::iterator it;
   if (credentialDetails.credentialType == CredentialTypePasskey) {
-    it = base::ranges::find_if(
+    it = std::ranges::find_if(
         _credentials, [credentialDetails, oldUsername, oldUserDisplayName](
                           const CredentialUIEntry& credential) {
           return AreMatchingCredentials(credential, credentialDetails,
@@ -402,7 +406,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     updatedCredential.user_display_name =
         SysNSStringToUTF16(credentialDetails.userDisplayName);
   } else if ([credentialDetails.password length] != 0) {
-    it = base::ranges::find_if(
+    it = std::ranges::find_if(
         _credentials, [credentialDetails, oldUsername, oldPassword,
                        oldNote](const CredentialUIEntry& credential) {
           return AreMatchingCredentials(credential, credentialDetails,
@@ -441,39 +445,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 }
 
-- (void)didFinishEditingPasswordDetails {
+- (void)didFinishEditingCredentialDetails {
   [self providePasswordsToConsumer];
-}
-
-- (void)passwordDetailsViewController:
-            (PasswordDetailsTableViewController*)viewController
-                didAddPasswordDetails:(NSString*)username
-                             password:(NSString*)password {
-  NOTREACHED();
-}
-
-- (void)checkForDuplicates:(NSString*)username {
-  NOTREACHED();
-}
-
-- (void)showExistingCredential:(NSString*)username {
-  NOTREACHED();
-}
-
-- (void)didCancelAddPasswordDetails {
-  NOTREACHED();
-}
-
-- (void)setWebsiteURL:(NSString*)website {
-  NOTREACHED();
-}
-
-- (BOOL)isURLValid {
-  return YES;
-}
-
-- (BOOL)isTLDMissing {
-  return NO;
 }
 
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {
@@ -512,6 +485,23 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 - (void)passwordCheckManagerWillShutdown {
   _passwordCheckObserver.reset();
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  [_consumer setUserEmail:base::SysUTF8ToNSString(
+                              _syncService->GetAccountInfo().email)];
+  [self providePasswordsToConsumer];
+
+  if ([self shouldDisplayShareButton]) {
+    [_consumer setupRightShareButton:
+                   _prefService->GetBoolean(
+                       password_manager::prefs::kPasswordSharingEnabled)];
+  } else {
+    [_delegate stopPasswordSharingFlowIfActive];
+    [_consumer hideShareButton];
+  }
 }
 
 #pragma mark - Private
@@ -578,11 +568,11 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     // Only offer moving to the account if all of these hold.
     // - The embedder of this page wants to support it.
     // - The entry was flagged as local only in the top-level view.
-    // - The user is interested in saving passwords to the account, i.e. they
-    // are opted in to account storage.
+    // - The user is interested in saving passwords to the account, i.e. account
+    // storage is enabled.
     credentialDetails.shouldOfferToMoveToAccount =
         self.context == DetailsContext::kPasswordSettings &&
-        password_manager::features_util::IsOptedInForAccountStorage(
+        password_manager::features_util::IsAccountStorageEnabled(
             _prefService, _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);
     [passwords addObject:credentialDetails];
@@ -614,7 +604,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   // All credentials for the same website are in `_credentials` due to password
   // grouping. So it's enough to search that reduced list and not all saved
   // passwords.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return credential.stored_in.contains(
                    password_manager::PasswordForm::Store::kAccountStore) &&
@@ -632,9 +622,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 }
 
 // Returns YES if all of the following conditions are met:
-// * User is syncing or signed in and opted in to account storage.
-// * Password sending feature is enabled.
 // * Build is branded (bypassed with a command line switch in EG tests).
+// * User is signed in with account storage enabled.
 - (BOOL)shouldDisplayShareButton {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -643,9 +632,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  return password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                          _syncService)
-      .has_value();
+  return password_manager::features_util::IsAccountStorageEnabled(_prefService,
+                                                                  _syncService);
 }
 
 @end

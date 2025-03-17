@@ -104,8 +104,7 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
                                             base::TimeTicks,
                                             base::TimeTicks);
   using TaskOrEventFinishedCallback =
-      absl::variant<base::OnceCallback<TaskOrEventFinishedSignature>,
-                    base::FunctionRef<TaskOrEventFinishedSignature>>;
+      base::FunctionRef<TaskOrEventFinishedSignature>;
   // |callback| will either be synchronously invoked, or else never invoked.
   void DidRunTask(const base::PendingTask* task,
                   std::vector<Metadata>* currently_running_metadata,

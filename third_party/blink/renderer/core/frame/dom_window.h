@@ -168,10 +168,8 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   // marked as "CrossOrigin" in the window.idl.
   void ReportCoopAccess(const char* property_name);
 
-  // Records metrics for cross-origin access to the WindowProxy properties,
+  // Records metrics for access to the cross-origin WindowProxy properties.
   void RecordWindowProxyAccessMetrics(
-      mojom::blink::WebFeature property_access,
-      mojom::blink::WebFeature property_access_from_other_page,
       mojom::blink::WindowProxyAccessType access_type) const;
 
   // We need to check proxy access to see if it's blocked, and if so whether

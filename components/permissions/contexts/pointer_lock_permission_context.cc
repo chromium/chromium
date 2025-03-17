@@ -6,16 +6,16 @@
 
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permissions_client.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
 PointerLockPermissionContext::PointerLockPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::POINTER_LOCK,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::POINTER_LOCK,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void PointerLockPermissionContext::NotifyPermissionSet(
     const PermissionRequestID& id,
@@ -43,12 +43,6 @@ ContentSetting PointerLockPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
-    return PermissionsClient::Get()
-        ->GetSettingsMap(browser_context())
-        ->GetContentSetting(requesting_origin, embedding_origin,
-                            ContentSettingsType::POINTER_LOCK);
-  }
   return CONTENT_SETTING_ALLOW;
 }
 #endif

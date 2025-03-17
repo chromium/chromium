@@ -70,12 +70,12 @@ interface SharedStorageWorkletServiceClient {
 
   // Handle each modifier method within `methods_with_options`. If `with_lock`
   // is provided, the methods within the batch will be executed with a lock
-  // acquired on the resource with name `with_lock`. Return an empty
-  // `error_message` on success, and return an non-empty `error_message` on
-  // failure.
+  // acquired on the resource with name `with_lock`. `with_lock` shouldn't start
+  // with '-'. Return an empty `error_message` on success, and return an
+  // non-empty `error_message` on failure.
   SharedStorageBatchUpdate(
     array<network.mojom.SharedStorageModifierMethodWithOptions> methods_with_options,
-    string? with_lock)
+    network.mojom.LockName? with_lock)
       => (string error_message);
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if

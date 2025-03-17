@@ -31,8 +31,8 @@ TEST_F(CardUnmaskHeaderItemTest, ConfigureHeaderFooterView) {
 
   CardUnmaskHeaderItem* header_item =
       [[CardUnmaskHeaderItem alloc] initWithType:0
-                                titleText:title_text
-                         instructionsText:instructions_text];
+                                       titleText:title_text
+                                instructionsText:instructions_text];
 
   id view = [[[header_item cellClass] alloc] init];
   ASSERT_TRUE([view isMemberOfClass:[CardUnmaskHeaderView class]]);

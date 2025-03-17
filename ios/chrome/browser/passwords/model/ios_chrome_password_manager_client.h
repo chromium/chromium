@@ -34,7 +34,7 @@ class ProfileIOS;
 namespace autofill {
 class LogManager;
 class LogRouter;
-}
+}  // namespace autofill
 
 namespace password_manager {
 class PasswordFormManagerForUI;
@@ -120,6 +120,7 @@ class IOSChromePasswordManagerClient
   void NotifySuccessfulLoginWithExistingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
+  bool IsPasswordChangeOngoing() override;
   void NotifyStorePasswordCalled() override;
   void NotifyUserCredentialsWereLeaked(
       password_manager::LeakedPasswordDetails details) override;

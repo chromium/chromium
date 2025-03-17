@@ -6,11 +6,14 @@ package org.chromium.content_public.browser;
 
 import android.os.Handler;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.content.browser.AppWebMessagePort;
 
 /** Interface for message ports that handle postMessage requests. */
 @UsedByReflection("")
+@NullMarked
 public interface MessagePort {
     /** The message callback for receiving messages. */
     public interface MessageCallback {
@@ -19,7 +22,7 @@ public interface MessagePort {
          * @param messagePayload   The message payload that was received.
          * @param sentPorts The {@link MessagePort}s that were sent if any.
          */
-        void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts);
+        void onMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts);
     }
 
     /**
@@ -63,5 +66,5 @@ public interface MessagePort {
      * @param messagePayload   The message payload to be sent.
      * @param sentPorts The ports to be transferred.
      */
-    void postMessage(MessagePayload messagePayload, MessagePort[] sentPorts);
+    void postMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts);
 }

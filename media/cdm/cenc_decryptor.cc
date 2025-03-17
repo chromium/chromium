@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "crypto/aes_ctr.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/subsample_entry.h"
@@ -68,12 +67,6 @@ void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
 }
 
 }  // namespace
-
-scoped_refptr<DecoderBuffer> DecryptCencBuffer(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& wrapped_key) {
-  return DecryptCencBuffer(input, base::as_byte_span(wrapped_key.key()));
-}
 
 scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
                                                base::span<const uint8_t> key) {

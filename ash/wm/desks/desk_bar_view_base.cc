@@ -143,7 +143,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  view->SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  view->SetBackground(views::CreateSolidBackground(background_color_id));
 }
 
 }  // namespace
@@ -313,7 +313,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
     // views before laying them out.
     const bool is_rtl = base::i18n::IsRTL();
     if (is_rtl) {
-      base::ranges::reverse(mini_views);
+      std::ranges::reverse(mini_views);
     }
 
     width_ = std::max(scroll_bounds.width(), contents_size.width());
@@ -744,7 +744,7 @@ class DeskBarViewBase::ScrollForActiveMiniView
   void Run() override {
     // When the bar is initialized, scroll to make active desk mini view
     // visible.
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         bar_view_->mini_views_,
         [](DeskMiniView* mini_view) { return mini_view->desk()->is_active(); });
     if (it != bar_view_->mini_views_.end()) {
@@ -770,11 +770,7 @@ DeskBarViewBase::DeskBarViewBase(
 
   MaybeSetupBackgroundView(this);
 
-  if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
-    contents_view_ = AddChildView(std::make_unique<views::View>());
-  } else {
-    InitScrolling();
-  }
+  contents_view_ = AddChildView(std::make_unique<views::View>());
 
   default_desk_button_ =
       contents_view_->AddChildView(std::make_unique<DefaultDeskButton>(this));
@@ -957,11 +953,6 @@ void DeskBarViewBase::Layout(PassKey) {
   // needed here.
   scroll_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
   GetTopLevelViewWithContents().SetBoundsRect(scroll_bounds);
-  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
-    // When the bar reaches its max possible size, it's size does not change,
-    // but we still need to layout child UIs to their right positions.
-    GetTopLevelViewWithContents().DeprecatedLayoutImmediately();
-  }
 
   if (IsScrollingInitialized()) {
     UpdateScrollButtonsVisibility();
@@ -1067,7 +1058,7 @@ DeskMiniView* DeskBarViewBase::FindMiniViewForDesk(const Desk* desk) const {
 }
 
 int DeskBarViewBase::GetMiniViewIndex(const DeskMiniView* mini_view) const {
-  auto iter = base::ranges::find(mini_views_, mini_view);
+  auto iter = std::ranges::find(mini_views_, mini_view);
   return (iter == mini_views_.cend())
              ? -1
              : std::distance(mini_views_.cbegin(), iter);
@@ -1153,10 +1144,7 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
     new_library_button_state = DeskIconButton::State::kExpanded;
   }
 
-  // Lazy initialization will be the default when
-  // `kOverviewSessionInitOptimizations` is launched.
-  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled() ||
-      should_show_library_button) {
+  if (should_show_library_button) {
     GetOrCreateLibraryButton();
   }
 
@@ -1191,14 +1179,10 @@ void DeskBarViewBase::UpdateNewDeskButtonLabelVisibility(
     bool layout_if_changed) {
   const bool current_visibility =
       new_desk_button_label_ && new_desk_button_label_->GetVisible();
-  if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
-    if (new_visibility) {
-      GetOrCreateNewDeskButtonLabel().SetVisible(true);
-    } else if (new_desk_button_label_) {
-      new_desk_button_label_->SetVisible(false);
-    }
-  } else {
-    GetOrCreateNewDeskButtonLabel().SetVisible(new_visibility);
+  if (new_visibility) {
+    GetOrCreateNewDeskButtonLabel().SetVisible(true);
+  } else if (new_desk_button_label_) {
+    new_desk_button_label_->SetVisible(false);
   }
 
   if (new_visibility != current_visibility && layout_if_changed) {
@@ -1447,7 +1431,7 @@ void DeskBarViewBase::ContinueDragDesk(DeskMiniView* mini_view,
     return;
   }
 
-  const auto drag_view_iter = base::ranges::find(mini_views_, drag_view_);
+  const auto drag_view_iter = std::ranges::find(mini_views_, drag_view_);
   CHECK(drag_view_iter != mini_views_.cend());
 
   const int old_index = drag_view_iter - mini_views_.cbegin();
@@ -1523,7 +1507,7 @@ void DeskBarViewBase::OnDeskAdded(const Desk* desk, bool from_undo) {
 
 void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   DeskNameView::CommitChanges(GetWidget());
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       mini_views_,
       [desk](DeskMiniView* mini_view) { return mini_view->desk() == desk; });
 
@@ -1574,7 +1558,7 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
   // Update the order of child views.
   auto* reordered_view = mini_views_[new_index].get();
   reordered_view->parent()->ReorderChildView(reordered_view, new_index);
-  reordered_view->parent()->NotifyAccessibilityEvent(
+  reordered_view->parent()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTreeChanged, true);
 
   // Update the desk indices in the shortcut views.
@@ -1950,7 +1934,7 @@ void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
     // The combine desks button only exists if the feature is disabled. The
     // context menu button that would appear in its place does not need to
     // update its tooltip as it doesn't use a formatted string.
-    if (!features::IsSavedDeskUiRevampEnabled()) {
+    if (!features::IsForestFeatureEnabled()) {
       desk_action_view->combine_desks_button()->UpdateTooltip(
           combine_desk_tooltip);
     }

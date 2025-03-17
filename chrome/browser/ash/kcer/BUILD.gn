@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("kcer") {
   sources = [
@@ -16,16 +16,15 @@ static_library("kcer") {
 
   deps = [
     "//ash",
-    "//ash/components/kcer",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/kcer",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/tpm",
     "//components/account_id",
@@ -51,7 +50,6 @@ source_set("browser_tests") {
 
   deps = [
     ":kcer",
-    "//ash/components/kcer",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -62,6 +60,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/kcer",
     "//components/user_manager",
     "//content/test:test_support",
     "//crypto:test_support",

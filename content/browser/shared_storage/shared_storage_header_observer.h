@@ -23,9 +23,6 @@
 
 namespace content {
 
-using AccessType =
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
-
 // Receives notifications from `StoragePartitionImpl` when a parsed
 // "Shared-Storage-Write" header is received from the network service. The
 // parsed header takes the form of a vector of StructPtrs bundling operation
@@ -120,11 +117,6 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
       NavigationOrDocumentHandle* navigation_or_document_handle,
       const url::Origin& request_origin,
       std::string* out_debug_message = nullptr);
-
-  void NotifySharedStorageAccessed(AccessType type,
-                                   FrameTreeNodeId main_frame_id,
-                                   const url::Origin& request_origin,
-                                   const SharedStorageEventParams& params);
 
   // `storage_partition_` owns `this`, so it will outlive `this`.
   raw_ptr<StoragePartitionImpl> storage_partition_;

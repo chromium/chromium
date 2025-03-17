@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
-#include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -41,7 +40,8 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   SimpleEnclosedRegion VisibleOpaqueRegion() const override;
   void ReleaseResources() override;
@@ -63,19 +63,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
                                viz::ReleaseCallback release_callback);
   bool NeedSetTransferableResource() const;
 
-  // These methods notify the display compositor, through the
-  // CompositorFrameSink, of the existence of a SharedBitmapId and its
-  // mapping to a SharedMemory in |bitmap|. Then this SharedBitmapId can be used
-  // in TransferableResources inserted on the layer while it is registered. If
-  // the layer is destroyed, the SharedBitmapId will be unregistered
-  // automatically, and if the CompositorFrameSink is replaced, it will be
-  // re-registered on the new one. The SharedMemory must be kept alive while it
-  // is registered.
-  // If this is a pending layer, the registration is deferred to the active
-  // layer.
-  void RegisterSharedBitmapId(viz::SharedBitmapId id,
-                              scoped_refptr<CrossThreadSharedBitmap> bitmap);
-  void UnregisterSharedBitmapId(viz::SharedBitmapId id);
   void SetInInvisibleLayerTree() override;
   // Whether the resource may be evicted in background. If it returns true, main
   // is responsible for making sure that the resource is imported again after a
@@ -107,26 +94,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   // TransferableResource given to it.
   viz::ResourceId resource_id_ = viz::kInvalidResourceId;
   viz::ReleaseCallback release_callback_;
-
-  // As a pending layer, the set of SharedBitmapIds and the underlying
-  // base::SharedMemory that must be notified to the display compositor through
-  // the LayerTreeFrameSink. These will be passed to the active layer. As an
-  // active layer, the set of SharedBitmapIds that need to be registered but
-  // have not been yet, since it is done lazily.
-  base::flat_map<viz::SharedBitmapId, scoped_refptr<CrossThreadSharedBitmap>>
-      to_register_bitmaps_;
-
-  // For active layers only. The set of SharedBitmapIds and ownership of the
-  // underlying base::SharedMemory that have been notified to the display
-  // compositor through the LayerTreeFrameSink. These will need to be
-  // re-registered if the LayerTreeFrameSink changes (ie ReleaseResources()
-  // occurs).
-  base::flat_map<viz::SharedBitmapId, scoped_refptr<CrossThreadSharedBitmap>>
-      registered_bitmaps_;
-
-  // As a pending layer, the set of SharedBitmapIds that the active layer should
-  // unregister.
-  std::vector<viz::SharedBitmapId> to_unregister_bitmap_ids_;
 };
 
 }  // namespace cc

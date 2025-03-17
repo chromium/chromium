@@ -9,100 +9,196 @@
   <h2 class="header-label-phase2">$i18n{privacyGuideCookiesCardHeader}</h2>
 </div>
 <div class="fragment-content">
-  <settings-radio-group id="cookiesRadioGroup"
-      pref="{{prefs.generated.third_party_cookie_blocking_setting}}"
-      selectable-elements="settings-collapse-radio-button">
-    <settings-collapse-radio-button id="block3PIncognito"
-        pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
-        name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
-        label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoSubheader}"
-        expand-aria-label=
-            "$i18n{thirdPartyCookiesPageBlockIncognitoExpandA11yLabel}"
-        on-click="onCookies3pIncognitoClick_">
-      <div slot="collapse" class="settings-columned-section">
-        <div class="column">
-          <h3 class="description-header">
-            $i18n{columnHeadingWhenOn}
-          </h3>
-          <ul class="icon-bulleted-list">
-            <li>
-              <cr-icon icon="settings20:shoppingcart" aria-hidden="true">
-              </cr-icon>
-              <div class="secondary">
-                $i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription1}
-              </div>
-            </li>
-            <li>
-              <cr-icon icon="settings20:broken" aria-hidden="true"></cr-icon>
-              <div class="secondary">
-                $i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription2}
-              </div>
-            </li>
-          </ul>
+  <template is="dom-if" if="[[!isAlwaysBlock3pcsIncognitoEnabled_]]">
+    <settings-radio-group id="cookiesRadioGroup"
+        pref="{{prefs.generated.third_party_cookie_blocking_setting}}"
+        selectable-elements="settings-collapse-radio-button">
+      <settings-collapse-radio-button id="block3PIncognito"
+          pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+          name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
+          label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoSubheader}"
+          expand-aria-label=
+              "$i18n{thirdPartyCookiesPageBlockIncognitoExpandA11yLabel}"
+          on-click="onCookies3pIncognitoClick_">
+        <div slot="collapse" class="settings-columned-section">
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings20:shoppingcart" aria-hidden="true">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription1}
+                </div>
+              </li>
+              <li>
+                <cr-icon icon="settings20:broken" aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription2}
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription1}
+                </div>
+              </li>
+              <li>
+                <cr-icon icon="settings20:incognito-unfilled"
+                    aria-hidden="true">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription2}
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="column">
-          <h3 class="description-header">
-            $i18n{columnHeadingConsider}
-          </h3>
-          <ul class="icon-bulleted-list">
-            <li>
-              <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
-              <div class="secondary">
-                $i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription1}
-              </div>
-            </li>
-            <li>
-              <cr-icon icon="settings20:incognito-unfilled" aria-hidden="true">
-              </cr-icon>
-              <div class="secondary">
-                $i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription2}
-              </div>
-            </li>
-          </ul>
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button id="block3P"
+          pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+          name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
+          label="$i18n{privacyGuideCookiesCardBlockTpcSubheader}"
+          expand-aria-label="$i18n{thirdPartyCookiesPageBlockExpandA11yLabel}"
+          on-click="onCookies3pClick_">
+        <div slot="collapse" class="settings-columned-section">
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings20:shoppingcart" aria-hidden="true">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookiesCardBlockTpcFeatureDescription1}
+                </div>
+              </li>
+              <li>
+                <cr-icon icon="settings20:broken" aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookiesCardBlockTpcFeatureDescription2}
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookiesCardBlockTpcPrivacyDescription1}
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </settings-collapse-radio-button>
-    <settings-collapse-radio-button id="block3P"
-        pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
-        name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
-        label="$i18n{privacyGuideCookiesCardBlockTpcSubheader}"
-        expand-aria-label="$i18n{thirdPartyCookiesPageBlockExpandA11yLabel}"
-        on-click="onCookies3pClick_">
-      <div slot="collapse" class="settings-columned-section">
-        <div class="column">
-          <h3 class="description-header">
-            $i18n{columnHeadingWhenOn}
-          </h3>
-          <ul class="icon-bulleted-list">
-            <li>
-              <cr-icon icon="settings20:shoppingcart" aria-hidden="true">
-              </cr-icon>
-              <div class="secondary">
-                $i18n{privacyGuideCookiesCardBlockTpcFeatureDescription1}
-              </div>
-            </li>
-            <li>
-              <cr-icon icon="settings20:broken" aria-hidden="true"></cr-icon>
-              <div class="secondary">
-                $i18n{privacyGuideCookiesCardBlockTpcFeatureDescription2}
-              </div>
-            </li>
-          </ul>
+      </settings-collapse-radio-button>
+    </settings-radio-group>
+  </template>
+  <template is="dom-if" if="[[isAlwaysBlock3pcsIncognitoEnabled_]]">
+    <settings-radio-group id="cookiesRadioGroupAlwaysBlock3pcsIncognito"
+        pref="{{prefs.generated.third_party_cookie_blocking_setting}}"
+        selectable-elements="settings-collapse-radio-button">
+      <settings-collapse-radio-button id="allow3pcs"
+          pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+          name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
+          label="$i18n{privacyGuideCookiesCardBlockTpcAllowSubheader}"
+          expand-aria-label="$i18n{allowThirdPartyCookiesExpandA11yLabel}"
+          on-click="onCookies3pIncognitoClick_">
+        <div slot="collapse" class="settings-columned-section">
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings20:account-circle-filled"
+                    aria-hidden="true">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsAllowWhenOnBulletOne}
+                </div>
+              </li>
+              <li>
+                <cr-icon icon="settings20:web" aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsAllowWhenOnBulletTwo}
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings20:user-attributes-filled"
+                    aria-hidden="true">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsAllowThingsToConsiderBulletOne}
+                </div>
+              </li>
+              <li>
+                <cr-icon icon="settings20:incognito-unfilled"
+                    aria-hidden="true">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsAllowThingsToConsiderBulletTwo}
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="column">
-          <h3 class="description-header">
-            $i18n{columnHeadingConsider}
-          </h3>
-          <ul class="icon-bulleted-list">
-            <li>
-              <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
-              <div class="secondary">
-                $i18n{privacyGuideCookiesCardBlockTpcPrivacyDescription1}
-              </div>
-            </li>
-          </ul>
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button id="block3pcs"
+          pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+          name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
+          label="$i18n{privacyGuideCookiesCardBlockTpcBlockSubheader}"
+          expand-aria-label="$i18n{blockThirdPartyCookiesExpandA11yLabel}"
+          on-click="onCookies3pClick_">
+        <div slot="collapse" class="settings-columned-section">
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings20:block" aria-hidden="true">
+                </cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsBlockWhenOnBulletOne}
+                </div>
+              </li>
+              <li>
+                <cr-icon icon="settings20:broken" aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsBlockWhenOnBulletTwo}
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+            <ul class="icon-bulleted-list">
+              <li>
+                <cr-icon icon="settings:domain-verification"
+                    aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsBlockThingsToConsiderBulletOne}
+                </div>
+              </li>
+              <li>
+                <cr-icon icon="settings20:fact-check"
+                    aria-hidden="true"></cr-icon>
+                <div class="secondary">
+                  $i18n{privacyGuideCookieSettingsBlockThingsToConsiderBulletTwo}
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </settings-collapse-radio-button>
-  </settings-radio-group>
+      </settings-collapse-radio-button>
+    </settings-radio-group>
+  </template>
 </div>

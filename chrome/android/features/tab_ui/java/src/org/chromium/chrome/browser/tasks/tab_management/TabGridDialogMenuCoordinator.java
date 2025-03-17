@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -27,20 +28,19 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  * menu items, setting up the menu and displaying the menu.
  */
 public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    private Supplier<Integer> mTabIdSupplier;
+    private final Supplier<Token> mTabGroupIdSupplier;
 
     /**
      * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
-     * @param tabIdSupplier The tab ID supplier for the tab or a tab ID from the group being acted
-     *     on.
+     * @param tabGroupIdSupplier The tab group ID supplier for the tab group being acted on.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
      */
     public TabGridDialogMenuCoordinator(
-            OnItemClickedCallback onItemClicked,
+            OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
-            Supplier<Integer> tabIdSupplier,
+            Supplier<Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @NonNull CollaborationService collaborationService) {
         super(
@@ -49,7 +49,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                 tabModelSupplier,
                 tabGroupSyncService,
                 collaborationService);
-        mTabIdSupplier = tabIdSupplier;
+        mTabGroupIdSupplier = tabGroupIdSupplier;
     }
 
     /**
@@ -58,16 +58,18 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @return The on click listener.
      */
     public View.OnClickListener getOnClickListener() {
-        return view -> createAndShowMenu(view, mTabIdSupplier.get(), (Activity) view.getContext());
+        return view ->
+                createAndShowMenu(view, mTabGroupIdSupplier.get(), (Activity) view.getContext());
     }
 
     @VisibleForTesting
     @Override
-    public void buildMenuActionItems(
-            ModelList itemList,
-            boolean isIncognito,
-            boolean isTabGroupSyncEnabled,
-            boolean hasCollaborationData) {
+    public void buildMenuActionItems(ModelList itemList, Token tabGroupId) {
+        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
+        @Nullable String collaborationId = getCollaborationIdOrNull(tabGroupId);
+        boolean hasCollaborationData =
+                TabShareUtils.isCollaborationIdValid(collaborationId)
+                        && mCollaborationService.getServiceStatus().isAllowedToJoin();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.menu_select_tabs,
@@ -104,7 +106,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         /* enabled= */ true));
-        if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {
+        if (mTabGroupSyncService != null && !isIncognito && !hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.tab_grid_dialog_toolbar_delete_group,

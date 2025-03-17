@@ -48,6 +48,7 @@ test("caspian_unittests") {
   ]
   deps = [
     ":caspian-lib",
+    "//base",
     "//testing/gtest",
     "//testing/gtest:gtest_main",
     "//third_party/re2:re2",

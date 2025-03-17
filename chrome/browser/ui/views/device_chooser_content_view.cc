@@ -315,7 +315,7 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
   auto throbber_label = std::make_unique<views::Label>(
       throbber_strings.first, views::style::CONTEXT_LABEL,
       views::style::STYLE_DISABLED);
-  throbber_label->SetTooltipText(throbber_strings.second);
+  throbber_label->SetCustomTooltipText(throbber_strings.second);
   throbber_label_ = throbber_container->AddChildView(std::move(throbber_label));
 
   if (chooser_controller_->ShouldShowReScanButton()) {

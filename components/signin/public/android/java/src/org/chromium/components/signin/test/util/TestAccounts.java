@@ -139,6 +139,17 @@ public class TestAccounts {
      */
     public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = ACCOUNT1;
 
+    /* An enterprise managed account with a hosted domain specified. */
+    public static final AccountInfo MANAGED_ACCOUNT =
+            new AccountInfo.Builder(
+                            "test@example.com",
+                            FakeAccountManagerFacade.toGaiaId("test@example.com"))
+                    .fullName("Managed Full")
+                    .givenName("Managed Given")
+                    .hostedDomain("example.com")
+                    .accountImage(createAvatar())
+                    .build();
+
     /**
      * Creates an email used to identify child accounts in tests. A child-specific prefix will be
      * appended to the base name so that the created account will be considered as {@link

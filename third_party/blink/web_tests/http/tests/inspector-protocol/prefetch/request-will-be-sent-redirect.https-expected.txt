@@ -83,7 +83,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>
@@ -166,8 +166,8 @@ Network.requestWillBeSentExtraInfo{
         Host : 127.0.0.1:8443
         Purpose : prefetch
         Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
-        Sec-Fetch-Dest : empty
-        Sec-Fetch-Mode : no-cors
+        Sec-Fetch-Dest : document
+        Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
@@ -214,7 +214,7 @@ Network.requestWillBeSent{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 302
         statusText : Found
         timing : <object>
@@ -278,8 +278,8 @@ Network.requestWillBeSentExtraInfo{
         Host : 127.0.0.1:8443
         Purpose : prefetch
         Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
-        Sec-Fetch-Dest : empty
-        Sec-Fetch-Mode : no-cors
+        Sec-Fetch-Dest : document
+        Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
@@ -322,7 +322,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>

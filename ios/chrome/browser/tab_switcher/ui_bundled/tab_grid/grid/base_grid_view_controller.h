@@ -96,6 +96,11 @@ class WebStateID;
 - (void)gridViewControllerDidRequestContextMenu:
     (BaseGridViewController*)gridViewController;
 
+// Tells the delegate that a button ("x" button or "Activity" button) in the
+// activity summary was tapped.
+- (void)didTapButtonInActivitySummary:
+    (BaseGridViewController*)gridViewController;
+
 @end
 
 // A view controller that contains a grid of items.

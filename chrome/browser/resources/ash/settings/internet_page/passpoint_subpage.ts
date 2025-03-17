@@ -175,7 +175,7 @@ export class SettingsPasspointSubpageElement extends PasspointListenerMixin
     };
     const response = await this.networkConfig_.getNetworkStateList(filter);
     this.networks_ = response.result.filter(network => {
-      return network.typeState!.wifi!.passpointId === subscription.id;
+      return network.typeState.wifi!.passpointId === subscription.id;
     });
   }
 

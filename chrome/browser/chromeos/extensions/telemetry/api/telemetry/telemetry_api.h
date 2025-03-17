@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_TELEMETRY_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_TELEMETRY_API_H_
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
@@ -26,10 +25,6 @@ class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
   ~TelemetryApiFunctionBase() override;
 
   crosapi::mojom::TelemetryProbeService* GetRemoteService();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool IsCrosApiAvailable() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 class OsTelemetryGetAudioInfoFunction : public TelemetryApiFunctionBase {

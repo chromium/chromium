@@ -791,15 +791,15 @@ void CheckOutput(
             std::string(stored_text_iterator, stored_text.end()) + "\"");
 
         auto mismatch_pair =
-            base::ranges::mismatch(string.begin(), string.end(),
-                                   stored_text_iterator, stored_text.end());
+            std::ranges::mismatch(string.begin(), string.end(),
+                                  stored_text_iterator, stored_text.end());
 
         // The first mismatch should be at the end of the string, indicating
         // that the entire string was matched.
-        EXPECT_EQ(string.end(), mismatch_pair.first);
+        EXPECT_EQ(string.end(), mismatch_pair.in1);
 
         // Update text iterator to where the matches for this string stopped.
-        stored_text_iterator = mismatch_pair.second;
+        stored_text_iterator = mismatch_pair.in2;
 
         // The iterator should now point to the whitespace character joining the
         // strings, unless we're at the end of the string.

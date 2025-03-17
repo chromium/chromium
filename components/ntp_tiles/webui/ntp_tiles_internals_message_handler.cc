@@ -270,7 +270,7 @@ void NTPTilesInternalsMessageHandler::OnURLsAvailable(
     const std::map<SectionType, NTPTilesVector>& sections) {
   cancelable_task_tracker_.TryCancelAll();
 
-  // TODO(fhorschig): Handle non-personalized tiles - https://crbug.com/753852.
+  // Non-personalized tiles have never been relevant.
   const NTPTilesVector& tiles = sections.at(SectionType::PERSONALIZED);
   if (tiles.empty()) {
     SendTiles(tiles, FaviconResultMap());

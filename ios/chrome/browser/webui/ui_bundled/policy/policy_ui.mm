@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui.h"
 
 #import <memory>
+#import <optional>
 #import <string>
 
-#import "base/json/json_string_value_serializer.h"
 #import "base/json/json_writer.h"
 #import "components/grit/policy_resources.h"
 #import "components/grit/policy_resources_map.h"
@@ -20,7 +20,7 @@
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
-#import "components/version_ui/version_handler_helper.h"
+#import "components/webui/version/version_handler_helper.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -178,10 +178,9 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
         policy::Schema::Wrap(policy::GetChromeSchemaData());
     base::Value::List policy_names = GetChromePolicyNames(profile);
 
-    std::string schema;
-    JSONStringValueSerializer serializer(&schema);
-    serializer.Serialize(PolicyUI::GetSchema(profile));
-    source->AddString("initialSchema", schema);
+    std::optional<std::string> schema =
+        base::WriteJson(PolicyUI::GetSchema(profile));
+    source->AddString("initialSchema", schema.value_or(std::string()));
 
     // Strings for policy levels, scopes and sources.
     static constexpr webui::LocalizedString kPolicyTestTypes[] = {
@@ -250,7 +249,8 @@ PolicyUI::PolicyUI(web::WebUIIOS* web_ui, const std::string& host)
 // static
 bool PolicyUI::ShouldLoadTestPage(ProfileIOS* profile) {
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
+      AuthenticationServiceFactory::GetForProfile(
+          profile->GetOriginalProfile());
   // Test page should only load if testing is enabled and the profile is not
   // managed.
   return policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),

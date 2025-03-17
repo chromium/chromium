@@ -878,7 +878,7 @@ void InspectImage(
 
 void TestAvifBppHistogram(const char* image_name,
                           const char* histogram_name = nullptr,
-                          base::HistogramBase::Sample sample = 0) {
+                          base::HistogramBase::Sample32 sample = 0) {
   TestBppHistogram(CreateAVIFDecoder, "Avif", image_name, histogram_name,
                    sample);
 }
@@ -1462,9 +1462,10 @@ TEST(CrabbyStaticAVIFTests, IncrementalDecoding) {
       // Decoding all bytes gives all 13 tile rows.
       {data.size(), ImageFrame::kFrameComplete, 13 * 64}};
   size_t previous_size = 0;
+  auto data_span = base::span(data);
   for (const Step& step : steps) {
     stream_buffer->Append(
-        base::span(data).subspan(previous_size, step.size - previous_size));
+        data_span.subspan(previous_size, step.size - previous_size));
     decoder->SetData(stream_buffer, step.status == ImageFrame::kFrameComplete);
 
     EXPECT_EQ(decoder->FrameCount(), 1u);

@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_EMBEDDINGS_ANSWERER_H_
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/functional/callback.h"

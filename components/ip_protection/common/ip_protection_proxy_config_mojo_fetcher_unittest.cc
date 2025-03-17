@@ -4,8 +4,11 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_mojo_fetcher.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -15,6 +18,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/proxy_chain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {
@@ -30,6 +34,11 @@ class FakeCoreHost : public ip_protection::mojom::CoreHost {
 
   void GetProxyConfig(GetProxyConfigCallback callback) override {
     std::move(callback).Run(std::nullopt, std::nullopt);
+  }
+
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override {
+    NOTREACHED();
   }
 };
 

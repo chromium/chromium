@@ -9,9 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -467,7 +467,7 @@ void DialogClientView::SetupLayout() {
 
   std::array<View*, kNumButtons> views = GetButtonRowViews();
 
-  if (base::ranges::count(views, nullptr) == kNumButtons) {
+  if (std::ranges::count(views, nullptr) == kNumButtons) {
     return;
   }
 
@@ -556,7 +556,7 @@ void DialogClientView::SetupLayout() {
 }
 
 void DialogClientView::UpdateButtonsFromModel() {
-  if (PlatformStyle::kIsOkButtonLeading) {
+  if constexpr (PlatformStyle::kIsOkButtonLeading) {
     UpdateDialogButton(&ok_button_, ui::mojom::DialogButton::kOk);
     UpdateDialogButton(&cancel_button_, ui::mojom::DialogButton::kCancel);
   } else {

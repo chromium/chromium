@@ -8,12 +8,17 @@
 #import <Foundation/Foundation.h>
 #import <xpc/xpc.h>
 
+@protocol ChildProcessExtension <NSObject>
+- (void)applySandbox;
+@end
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void ChildProcessInit();
-void ChildProcessHandleNewConnection(xpc_connection_t);
+void ChildProcessInit(id<ChildProcessExtension> process);
+void GpuProcessInit();
+void ChildProcessHandleNewConnection(xpc_connection_t connection);
 
 #ifdef __cplusplus
 }

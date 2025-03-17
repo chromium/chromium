@@ -861,6 +861,10 @@ mojom("speech_recognition_recognition_context") {
     {
       types = [
         {
+          mojom = "media.mojom.SpeechRecognitionPhrase"
+          cpp = "::media::SpeechRecognitionPhrase"
+        },
+        {
           mojom = "media.mojom.SpeechRecognitionRecognitionContext"
           cpp = "::media::SpeechRecognitionRecognitionContext"
         },
@@ -876,6 +880,9 @@ mojom("speech_recognition_recognition_context") {
       traits_public_deps = [ "//base" ]
     },
   ]
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
 }
 
 source_set("shared_mojom_traits") {

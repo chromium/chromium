@@ -18,7 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/input_method/candidate_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -150,7 +150,7 @@ TEST_F(CandidateWindowViewTest, UpdateCandidatesTest_CursorVisibility) {
 }
 
 TEST_F(CandidateWindowViewTest, UpdateCandidatesSendsA11yEvents) {
-  views::test::AXEventCounter event_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter event_counter(views::AXUpdateNotifier::Get());
 
   // User is not selecting. (Simulates a state showing suggestions)
   ui::CandidateWindow candidate_window;

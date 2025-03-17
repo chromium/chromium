@@ -416,7 +416,7 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   _priceHistoryStackView.layoutMarginsRelativeArrangement = YES;
   _priceHistoryStackView.layoutMargins =
       UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
-                    kContentVerticalInset, kContentHorizontalInset);
+                   kContentVerticalInset, kContentHorizontalInset);
   _priceHistoryStackView.insetsLayoutMarginsFromSafeArea = NO;
 }
 

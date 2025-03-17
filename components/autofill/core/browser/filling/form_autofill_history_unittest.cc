@@ -37,7 +37,8 @@ class FormAutofillHistoryTest : public testing::Test {
     field.set_is_autofilled(is_autofilled);
     filled_fields_.push_back(field);
     AutofillField autofill_field(field);
-    autofill_field.SetTypeTo(AutofillType(field_type));
+    autofill_field.SetTypeTo(AutofillType(field_type),
+                             AutofillPredictionSource::kHeuristics);
     autofill_field.set_autofill_source_profile_guid(kGuid);
     autofill_field.set_autofilled_type(std::nullopt);
     autofill_field.set_filling_product(FillingProduct::kNone);
@@ -78,7 +79,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
           .GetFieldFillingEntry(first_name_id),
       FormAutofillHistory::FieldFillingEntry(
           u"some-value", false, kGuid, /*field_autofilled_type=*/std::nullopt,
-          FillingProduct::kNone));
+          FillingProduct::kNone, /*ignore_is_autofilled=*/false));
 
   form_autofill_history_.Reset();
   EXPECT_FALSE(form_autofill_history_.HasHistory(first_name_id));
@@ -111,14 +112,16 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
           .GetFieldFillingEntry(first_name_id),
       FormAutofillHistory::FieldFillingEntry(
           u"some-first-name", false, kGuid,
-          /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone));
+          /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+          /*ignore_is_autofilled=*/false));
 
   ASSERT_TRUE(form_autofill_history_.HasHistory(last_name_id));
   EXPECT_EQ(form_autofill_history_.GetLastFillingOperationForField(last_name_id)
                 .GetFieldFillingEntry(last_name_id),
             FormAutofillHistory::FieldFillingEntry(
                 u"some-other-last-name", true, kGuid,
-                /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone));
+                /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+                /*ignore_is_autofilled=*/false));
 
   form_autofill_history_.EraseFormFillEntry(
       form_autofill_history_.GetLastFillingOperationForField(first_name_id));

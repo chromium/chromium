@@ -15,13 +15,13 @@ std::ostream& operator<<(std::ostream& stream, const AXMode& mode) {
   return stream << mode.ToString();
 }
 
-bool AXMode::HasExperimentalFlags(uint32_t experimental_flag) const {
-  return (experimental_flags_ & experimental_flag) == experimental_flag;
+bool AXMode::HasFilterFlags(uint32_t filter_flag) const {
+  return (filter_flags_ & filter_flag) == filter_flag;
 }
 
-void AXMode::SetExperimentalFlags(uint32_t experimental_flag, bool value) {
-  experimental_flags_ = value ? (experimental_flags_ | experimental_flag)
-                              : (experimental_flags_ & ~experimental_flag);
+void AXMode::SetFilterFlags(uint32_t filter_flag, bool value) {
+  filter_flags_ =
+      value ? (filter_flags_ | filter_flag) : (filter_flags_ & ~filter_flag);
 }
 
 std::string AXMode::ToString() const {
@@ -42,8 +42,8 @@ std::string AXMode::ToString() const {
       case AXMode::kInlineTextBoxes:
         flag_name = "kInlineTextBoxes";
         break;
-      case AXMode::kScreenReader:
-        flag_name = "kScreenReader";
+      case AXMode::kExtendedProperties:
+        flag_name = "kExtendedProperties";
         break;
       case AXMode::kHTML:
         flag_name = "kHTML";
@@ -71,19 +71,19 @@ std::string AXMode::ToString() const {
       tokens.push_back(flag_name);
   }
 
-  for (uint32_t experimental_mode_flag = AXMode::kExperimentalFirstFlag;
-       experimental_mode_flag <= AXMode::kExperimentalLastFlag;
-       experimental_mode_flag = experimental_mode_flag << 1) {
+  for (uint32_t filter_mode_flag = AXMode::kFilterFirstFlag;
+       filter_mode_flag <= AXMode::kFilterLastFlag;
+       filter_mode_flag = filter_mode_flag << 1) {
     std::string_view flag_name;
-    switch (experimental_mode_flag) {
-      case AXMode::kExperimentalFormControls:
-        flag_name = "kExperimentalFormControls";
+    switch (filter_mode_flag) {
+      case AXMode::kFormsAndLabelsOnly:
+        flag_name = "kFormsAndLabelsOnly";
         break;
     }
 
     DCHECK(!flag_name.empty());
 
-    if (HasExperimentalFlags(experimental_mode_flag)) {
+    if (HasFilterFlags(filter_mode_flag)) {
       tokens.push_back(flag_name);
     }
   }

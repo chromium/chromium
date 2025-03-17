@@ -4,9 +4,10 @@
 
 #include "ui/views/controls/button/radio_button.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -45,7 +46,7 @@ RadioButton::~RadioButton() = default;
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;
   GetViewsInGroupFromParent(group, &views);
-  const auto i = base::ranges::find_if(views, [](const views::View* view) {
+  const auto i = std::ranges::find_if(views, [](const views::View* view) {
     // Why don't we check the runtime type like is done in SetChecked()?
     return static_cast<const RadioButton*>(view)->GetChecked();
   });
@@ -86,7 +87,7 @@ void RadioButton::RequestFocusFromEvent() {
   // Take focus only if another radio button in the group has focus.
   Views views;
   GetViewsInGroupFromParent(GetGroup(), &views);
-  if (base::ranges::any_of(views, [](View* v) { return v->HasFocus(); })) {
+  if (std::ranges::any_of(views, [](View* v) { return v->HasFocus(); })) {
     RequestFocus();
   }
 }

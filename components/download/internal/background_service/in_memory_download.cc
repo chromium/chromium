@@ -14,6 +14,7 @@
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -35,13 +36,11 @@ InMemoryDownloadImpl::InMemoryDownloadImpl(
     scoped_refptr<network::ResourceRequestBody> request_body,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Delegate* delegate,
-    network::mojom::URLLoaderFactory* url_loader_factory,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : InMemoryDownload(guid),
       request_params_(request_params),
       request_body_(std::move(request_body)),
       traffic_annotation_(traffic_annotation),
-      url_loader_factory_(url_loader_factory),
       io_task_runner_(io_task_runner),
       delegate_(delegate),
       completion_notified_(false),
@@ -56,7 +55,16 @@ InMemoryDownloadImpl::~InMemoryDownloadImpl() {
 
 void InMemoryDownloadImpl::Start() {
   DCHECK(state_ == State::INITIAL) << "Only call Start() for new download.";
+  state_ = State::RETRIEVE_URL_LOADER_FACTIORY;
+  delegate_->RetrievedURLLoaderFactory(
+      base::BindOnce(&InMemoryDownloadImpl::OnRetrievedURLLoaderFactory,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void InMemoryDownloadImpl::OnRetrievedURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   state_ = State::RETRIEVE_BLOB_CONTEXT;
+  url_loader_factory_ = url_loader_factory;
   delegate_->RetrieveBlobContextGetter(
       base::BindOnce(&InMemoryDownloadImpl::OnRetrievedBlobContextGetter,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -72,8 +80,9 @@ void InMemoryDownloadImpl::OnRetrievedBlobContextGetter(
 }
 
 void InMemoryDownloadImpl::Pause() {
-  if (state_ == State::IN_PROGRESS)
+  if (state_ == State::IN_PROGRESS) {
     paused_ = true;
+  }
 }
 
 void InMemoryDownloadImpl::Resume() {
@@ -81,12 +90,14 @@ void InMemoryDownloadImpl::Resume() {
 
   switch (state_) {
     case State::INITIAL:
+    case State::RETRIEVE_URL_LOADER_FACTIORY:
     case State::RETRIEVE_BLOB_CONTEXT:
       return;
     case State::IN_PROGRESS:
       // Let the network pipe continue to read data.
-      if (resume_callback_)
+      if (resume_callback_) {
         std::move(resume_callback_).Run();
+      }
       return;
     case State::FAILED:
       // Restart the download.
@@ -142,8 +153,9 @@ void InMemoryDownloadImpl::OnComplete(bool success) {
 
   // OnComplete() called without OnResponseStarted(). This will happen when the
   // request was aborted.
-  if (!started_)
+  if (!started_) {
     OnResponseStarted(GURL(), network::mojom::URLResponseHead());
+  }
 
   NotifyDelegateDownloadComplete();
 }
@@ -189,8 +201,9 @@ void InMemoryDownloadImpl::OnSaveBlobDone(
 }
 
 void InMemoryDownloadImpl::NotifyDelegateDownloadComplete() {
-  if (completion_notified_)
+  if (completion_notified_) {
     return;
+  }
   completion_notified_ = true;
 
   delegate_->OnDownloadComplete(this);
@@ -225,7 +238,7 @@ void InMemoryDownloadImpl::SendRequest() {
 
   // TODO(xingliu): Use SimpleURLLoader's retry when it won't hit CHECK in
   // SharedURLLoaderFactory.
-  loader_->DownloadAsStream(url_loader_factory_, this);
+  loader_->DownloadAsStream(url_loader_factory_.get(), this);
 }
 
 void InMemoryDownloadImpl::OnRedirect(

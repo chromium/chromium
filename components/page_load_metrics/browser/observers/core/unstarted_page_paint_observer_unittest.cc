@@ -310,3 +310,70 @@ TEST_F(
   tester()->histogram_tester().ExpectTotalCount(
       ::internal::kPageLoadUnstartedPagePaint, 1);
 }
+
+TEST_F(
+    UnstartedPagePaintObserverTest,
+    PrimaryPageNavigationCreatedInBackgroundTimerOnlyExpiresAfterBecomingVisibleFiresHistogramToTrue) {
+  // Set in background (not visible)
+  web_contents()->WasHidden();
+
+  // Navigate in.
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Forward time to potentially force navigation to expire.
+  task_environment()->FastForwardBy(
+      base::Seconds(internal::kUnstartedPagePaintTimeoutSeconds));
+
+  // Validate no histogram fired.
+  tester()->histogram_tester().ExpectTotalCount(
+      ::internal::kPageLoadUnstartedPagePaint, 0);
+
+  // Simulate tab back to shown.
+  web_contents()->WasShown();
+
+  // Forward time to force navigation to expire.
+  task_environment()->FastForwardBy(
+      base::Seconds(internal::kUnstartedPagePaintTimeoutSeconds));
+
+  // Validate histogram was fired.
+  tester()->histogram_tester().ExpectTotalCount(
+      ::internal::kPageLoadUnstartedPagePaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      ::internal::kPageLoadUnstartedPagePaint, true, 1);
+}
+
+TEST_F(
+    UnstartedPagePaintObserverTest,
+    PrimaryPageNavigationCreatedInBackgroundAndFirstContentFulPaintReceivedAfterBecomingVisibleFiresHistogramToFalse) {
+  // Set in background (not visible)
+  web_contents()->WasHidden();
+
+  // Navigate in.
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Forward time to potentially force navigation to expire.
+  task_environment()->FastForwardBy(
+      base::Seconds(internal::kUnstartedPagePaintTimeoutSeconds));
+
+  // Validate no histogram fired.
+  tester()->histogram_tester().ExpectTotalCount(
+      ::internal::kPageLoadUnstartedPagePaint, 0);
+
+  // Simulate tab back to shown.
+  web_contents()->WasShown();
+
+  // Simulate timing report with first contentful paint.
+  page_load_metrics::mojom::PageLoadTiming timing;
+  InitFirstContentfulPaintTiming(timing);
+  tester()->SimulateTimingUpdate(timing);
+
+  // Forward time to force navigation to expire.
+  task_environment()->FastForwardBy(
+      base::Seconds(internal::kUnstartedPagePaintTimeoutSeconds));
+
+  // Validate histogram was fired.
+  tester()->histogram_tester().ExpectTotalCount(
+      ::internal::kPageLoadUnstartedPagePaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      ::internal::kPageLoadUnstartedPagePaint, false, 1);
+}

@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -20,6 +21,7 @@
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 #include "components/data_sharing/internal/group_data_proto_utils.h"
+#include "components/data_sharing/internal/logger_impl.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
@@ -37,8 +39,8 @@ namespace data_sharing {
 
 namespace {
 
-constexpr char kGroupIdKey[] = "group_id";
-constexpr char kTokenBlobKey[] = "token_blob";
+constexpr char kGroupIdKey[] = "g";
+constexpr char kTokenBlobKey[] = "t";
 constexpr base::FilePath::CharType kDataSharingDir[] =
     FILE_PATH_LITERAL("DataSharing");
 
@@ -108,7 +110,8 @@ DataSharingServiceImpl::DataSharingServiceImpl(
           std::make_unique<PreviewServerProxy>(identity_manager,
                                                url_loader_factory,
                                                channel)),
-      avatar_fetcher_(std::make_unique<AvatarFetcher>()) {
+      avatar_fetcher_(std::make_unique<AvatarFetcher>()),
+      logger_(std::make_unique<LoggerImpl>()) {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COLLABORATION_GROUP,
@@ -179,6 +182,16 @@ std::optional<GroupMemberPartialData>
 DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
     const GaiaId& member_gaia_id) {
+  if (group_data_for_testing_.contains(group_id)) {
+    CHECK_IS_TEST();
+    const auto& group = group_data_for_testing_[group_id];
+    for (const auto& member : group.members) {
+      if (member.gaia_id == member_gaia_id) {
+        return GroupMemberPartialData::FromGroupMember(member);
+      }
+    }
+  }
+
   if (!group_data_model_) {
     return std::nullopt;
   }
@@ -225,8 +238,31 @@ void DataSharingServiceImpl::ReadGroupDeprecated(
 void DataSharingServiceImpl::ReadNewGroup(
     const GroupToken& token,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
-  // TODO(crbug.com/377780190): Implement this.
-  return std::move(callback).Run(GroupData());
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(PeopleGroupActionFailure::kPersistentFailure)));
+    return;
+  }
+
+  data_sharing_pb::ReadGroupsParams params;
+  const std::string& group_id = token.group_id.value();
+  params.add_group_ids(group_id);
+  // TODO (ritikagup) : Remove it once migrated to use the access_token in the
+  // group params.
+  params.set_access_token(token.access_token);
+  data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
+      params.add_group_params();
+  group_params->set_group_id(group_id);
+  group_params->set_access_token(token.access_token);
+
+  sdk_delegate_->ReadGroups(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnReadSingleGroupCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DataSharingServiceImpl::CreateGroup(
@@ -261,6 +297,9 @@ void DataSharingServiceImpl::DeleteGroup(
                        PeopleGroupActionOutcome::kPersistentFailure));
     return;
   }
+
+  groups_attempted_to_leave_or_delete_by_current_user_in_current_session_
+      .insert(group_id);
 
   data_sharing_pb::DeleteGroupParams params;
   params.set_group_id(group_id.value());
@@ -348,12 +387,20 @@ void DataSharingServiceImpl::LeaveGroup(
     return;
   }
 
+  groups_attempted_to_leave_or_delete_by_current_user_in_current_session_
+      .insert(group_id);
+
   data_sharing_pb::LeaveGroupParams params;
   params.set_group_id(group_id.value());
   sdk_delegate_->LeaveGroup(
       params,
       base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool DataSharingServiceImpl::IsLeavingOrDeletingGroup(const GroupId& group_id) {
+  return groups_attempted_to_leave_or_delete_by_current_user_in_current_session_
+      .contains(group_id);
 }
 
 std::vector<GroupEvent> DataSharingServiceImpl::GetGroupEventsSinceStartup() {
@@ -364,6 +411,12 @@ std::vector<GroupEvent> DataSharingServiceImpl::GetGroupEventsSinceStartup() {
 }
 
 void DataSharingServiceImpl::OnModelLoaded() {
+  std::set<GroupData> groups = ReadAllGroups();
+  for (const GroupData& group : groups) {
+    base::UmaHistogramCounts100("DataSharing.TotalMembersInGroup.AtStartup",
+                                group.members.size());
+  }
+
   for (auto& observer : observers_) {
     observer.OnGroupDataModelLoaded();
   }
@@ -372,7 +425,6 @@ void DataSharingServiceImpl::OnModelLoaded() {
 void DataSharingServiceImpl::OnGroupAdded(const GroupId& group_id,
                                           const base::Time& event_time) {
   CHECK(group_data_model_);
-
   std::optional<GroupData> group_data = group_data_model_->GetGroup(group_id);
   CHECK(group_data);
   for (auto& observer : observers_) {
@@ -420,10 +472,28 @@ void DataSharingServiceImpl::OnMemberRemoved(const GroupId& group_id,
   }
 }
 
+void DataSharingServiceImpl::OnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(sync_bridge_update_type);
+  }
+}
+
 void DataSharingServiceImpl::Shutdown() {
   if (sdk_delegate_) {
     sdk_delegate_->Shutdown();
   }
+}
+
+// static
+std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingUrl(
+    const GroupToken& group_token) {
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get());
+
+  url =
+      net::AppendQueryParameter(url, kGroupIdKey, group_token.group_id.value());
+  url = net::AppendQueryParameter(url, kTokenBlobKey, group_token.access_token);
+  return std::make_unique<GURL>(url);
 }
 
 void DataSharingServiceImpl::OnReadSingleGroupCompleted(
@@ -539,14 +609,7 @@ std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingUrl(
   if (!group_data.group_token.IsValid()) {
     return nullptr;
   }
-
-  GURL url = GURL(data_sharing::features::kDataSharingURL.Get());
-
-  url = net::AppendQueryParameter(url, kGroupIdKey,
-                                  group_data.group_token.group_id.value());
-  url = net::AppendQueryParameter(url, kTokenBlobKey,
-                                  group_data.group_token.access_token);
-  return std::make_unique<GURL>(url);
+  return GetDataSharingUrl(group_data.group_token);
 }
 
 DataSharingService::ParseUrlResult DataSharingServiceImpl::ParseDataSharingUrl(
@@ -628,11 +691,34 @@ void DataSharingServiceImpl::SetUIDelegate(
 }
 
 DataSharingUIDelegate* DataSharingServiceImpl::GetUiDelegate() {
+  if (sdk_delegate_) {
+    sdk_delegate_->ForceInitialize(data_sharing_network_loader_.get());
+  }
   return ui_delegate_.get();
+}
+
+Logger* DataSharingServiceImpl::GetLogger() {
+  return logger_.get();
 }
 
 void DataSharingServiceImpl::AddGroupDataForTesting(GroupData group_data) {
   group_data_for_testing_.emplace(group_data.group_token.group_id, group_data);
+}
+
+void DataSharingServiceImpl::SetPreviewServerProxyForTesting(
+    std::unique_ptr<PreviewServerProxy> preview_server_proxy) {
+  preview_server_proxy_ = std::move(preview_server_proxy);
+}
+
+PreviewServerProxy* DataSharingServiceImpl::GetPreviewServerProxyForTesting() {
+  return preview_server_proxy_.get();
+}
+
+void DataSharingServiceImpl::OnCollaborationGroupRemoved(
+    const data_sharing::GroupId& group_id) {
+  if (collaboration_group_sync_bridge_) {
+    collaboration_group_sync_bridge_->RemoveGroupLocally(group_id);
+  }
 }
 
 void DataSharingServiceImpl::OnAccessTokenAdded(

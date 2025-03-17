@@ -4,17 +4,18 @@
 
 package org.chromium.components.language;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Controller to manage getting language preferences from device. */
+@NullMarked
 public final class LanguageProfileController {
     private static final String TAG = "ULP";
     private static final int TIMEOUT_IN_SECONDS = 60;

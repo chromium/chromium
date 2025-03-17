@@ -11,49 +11,53 @@
 namespace printing {
 
 // Length of an inch in 0.001mm unit.
-constexpr int kMicronsPerInch = 25400;
+inline constexpr int kMicronsPerInch = 25400;
 
 // A micron is a thousandth of a mm.
-constexpr int kMicronsPerMm = 1000;
+inline constexpr int kMicronsPerMm = 1000;
 
 // Length of a PWG unit in 0.001mm unit.
-constexpr int kMicronsPerPwgUnit = kMicronsPerMm / 100;
+inline constexpr int kMicronsPerPwgUnit = kMicronsPerMm / 100;
 
 // Mil is a thousandth of an inch.
-constexpr float kMicronsPerMil = 25.4f;
-constexpr int kMilsPerInch = 1000;
+inline constexpr float kMicronsPerMil = 25.4f;
+inline constexpr int kMilsPerInch = 1000;
 
 // Length of an inch in CSS's 1pt unit.
 // http://dev.w3.org/csswg/css3-values/#absolute-length-units-cm-mm.-in-pt-pc
-constexpr int kPointsPerInch = 72;
+inline constexpr int kPointsPerInch = 72;
 
 // Length of an inch in CSS's 1px unit.
 // http://dev.w3.org/csswg/css3-values/#the-px-unit
-constexpr int kPixelsPerInch = 96;
+inline constexpr int kPixelsPerInch = 96;
+
+// Factor to convert from pixels per inch to points per inch.
+inline constexpr float kUnitConversionFactorPixelsToPoints =
+    static_cast<float>(kPointsPerInch) / kPixelsPerInch;
 
 #if BUILDFLAG(IS_MAC)
-constexpr int kDefaultMacDpi = 72;
+inline constexpr int kDefaultMacDpi = 72;
 #endif  // BUILDFLAG(IS_MAC)
 
 // DPI used for Save to PDF. Also used as the default DPI in various use cases
 // where there is no specified DPI.
-constexpr int kDefaultPdfDpi = 300;
+inline constexpr int kDefaultPdfDpi = 300;
 
 // LETTER: 8.5 x 11 inches
-constexpr float kLetterWidthInch = 8.5f;
-constexpr float kLetterHeightInch = 11.0f;
+inline constexpr float kLetterWidthInch = 8.5f;
+inline constexpr float kLetterHeightInch = 11.0f;
 
 // LEGAL: 8.5 x 14 inches
-constexpr float kLegalWidthInch = 8.5f;
-constexpr float kLegalHeightInch = 14.0f;
+inline constexpr float kLegalWidthInch = 8.5f;
+inline constexpr float kLegalHeightInch = 14.0f;
 
 // A4: 8.27 x 11.69 inches
-constexpr float kA4WidthInch = 8.27f;
-constexpr float kA4HeightInch = 11.69f;
+inline constexpr float kA4WidthInch = 8.27f;
+inline constexpr float kA4HeightInch = 11.69f;
 
 // A3: 11.69 x 16.54 inches
-constexpr float kA3WidthInch = 11.69f;
-constexpr float kA3HeightInch = 16.54f;
+inline constexpr float kA3WidthInch = 11.69f;
+inline constexpr float kA3HeightInch = 16.54f;
 
 // Converts from one unit system to another using integer arithmetics.
 COMPONENT_EXPORT(PRINTING_BASE)

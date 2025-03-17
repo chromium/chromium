@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("arc_app_dialog_view") {
   sources = [ "arc_app_dialog_view.cc" ]
@@ -28,8 +26,6 @@ source_set("browser_tests") {
   sources = [ "arc_app_dialog_view_browsertest.cc" ]
 
   deps = [
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
@@ -38,6 +34,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
     "//content/test:test_support",
   ]
 }

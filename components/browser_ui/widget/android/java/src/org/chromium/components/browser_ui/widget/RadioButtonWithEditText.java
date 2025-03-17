@@ -13,6 +13,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -57,6 +58,7 @@ import java.util.List;
  * }</pre>
  * </p>
  */
+@NullMarked
 public class RadioButtonWithEditText extends RadioButtonWithDescription {
     /**
      * Interface that will subscribe to changes to the text inside {@link RadioButtonWithEditText}.
@@ -70,7 +72,9 @@ public class RadioButtonWithEditText extends RadioButtonWithDescription {
         void onTextChanged(CharSequence newText);
     }
 
+    @SuppressWarnings("NullAway.Init")
     private EditText mEditText;
+
     private List<OnTextChangeListener> mListeners;
 
     public RadioButtonWithEditText(Context context, AttributeSet attrs) {

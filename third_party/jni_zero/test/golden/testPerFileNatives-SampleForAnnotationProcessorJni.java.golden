@@ -7,7 +7,6 @@ import android.content.Context;
 import android.view.View;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniTestInstanceHolder;
-import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForAnnotationProcessor;
 import org.jni_zero.internal.NullUnmarked;
 import org.jni_zero.internal.Nullable;
@@ -22,7 +21,6 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
     if (holder != null && holder.value != null) {
       return (SampleForAnnotationProcessor.Natives) holder.value;
     }
-    NativeLibraryLoadedStatus.checkLoaded();
     return new SampleForAnnotationProcessorJni();
   }
 

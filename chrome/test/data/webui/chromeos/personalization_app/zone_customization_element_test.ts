@@ -4,15 +4,16 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {BacklightColor, CurrentBacklightState, KeyboardBacklightActionName, KeyboardBacklightObserver, SetCurrentBacklightStateAction, staticColorIds, ZoneCustomizationElement} from 'chrome://personalization/js/personalization_app.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CurrentBacklightState, SetCurrentBacklightStateAction} from 'chrome://personalization/js/personalization_app.js';
+import {BacklightColor, KeyboardBacklightActionName, KeyboardBacklightObserver, staticColorIds, ZoneCustomizationElement} from 'chrome://personalization/js/personalization_app.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
 
 suite('ZoneCustomizationElementTest', function() {
   let zoneCustomizationElement: ZoneCustomizationElement|null;
@@ -44,10 +45,11 @@ suite('ZoneCustomizationElementTest', function() {
 
   function verifyColorIconAriaChecked(
       expectedColor: string, colorContainers: NodeListOf<Element>) {
-    for (let i = 0; i < colorContainers!.length; i++) {
+    for (let i = 0; i < colorContainers.length; i++) {
       const colorContainer = colorContainers[i] as HTMLElement;
       const colorIconElem =
-          colorContainer!.querySelector('color-icon') as HTMLElement;
+          colorContainer.querySelector<HTMLElement>('color-icon');
+      assertTrue(!!colorIconElem);
       const colorId = colorContainer.id;
       if (colorId === expectedColor) {
         assertEquals(
@@ -62,10 +64,11 @@ suite('ZoneCustomizationElementTest', function() {
   }
 
   function verifyNoColorIconsAriaChecked(colorContainers: NodeListOf<Element>) {
-    for (let i = 0; i < colorContainers!.length; i++) {
+    for (let i = 0; i < colorContainers.length; i++) {
       const colorContainer = colorContainers[i] as HTMLElement;
       const colorIconElem =
-          colorContainer!.querySelector('color-icon') as HTMLElement;
+          colorContainer.querySelector<HTMLElement>('color-icon');
+      assertTrue(!!colorIconElem);
       const colorId = colorContainer.id;
       assertNotEquals(
           'rainbowColor', colorId,
@@ -87,7 +90,7 @@ suite('ZoneCustomizationElementTest', function() {
         const zoneTabs =
             zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
         assertEquals(
-            5, zoneTabs!.length,
+            5, zoneTabs.length,
             '5 zones should display in customization dialog');
         const colorSelectorElement =
             zoneCustomizationElement!.shadowRoot!.querySelector(
@@ -96,7 +99,7 @@ suite('ZoneCustomizationElementTest', function() {
         const colorContainers =
             colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
         assertEquals(
-            8, colorContainers!.length,
+            8, colorContainers.length,
             '8 color options should display in customization dialog');
         const dialogCloseButton =
             zoneCustomizationElement!.shadowRoot!.getElementById(
@@ -118,13 +121,13 @@ suite('ZoneCustomizationElementTest', function() {
         const zoneTabs =
             zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
         assertEquals(
-            4, zoneTabs!.length,
+            4, zoneTabs.length,
             '4 zones should display in customization dialog');
         const colorIcons =
             zoneCustomizationElement!.shadowRoot!.querySelectorAll(
                 'color-icon');
         assertEquals(
-            4, colorIcons!.length,
+            4, colorIcons.length,
             '4 color icons should display in customization dialog');
         // Color of the color-icon displayed in each zone should match with the
         // corresponding one in zone colors.
@@ -166,7 +169,7 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneTabs =
         zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneTabs!.length, '4 zones should display in customization dialog');
+        4, zoneTabs.length, '4 zones should display in customization dialog');
     // Zone 2 has zone color as red, expect red color button to be highlighted.
     (zoneTabs[1] as CrButtonElement).click();
     const colorSelectorElement =
@@ -174,12 +177,12 @@ suite('ZoneCustomizationElementTest', function() {
     assertTrue(!!colorSelectorElement, 'color-selector should display.');
     const colorContainers =
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
-    assertEquals(8, colorContainers!.length);
+    assertEquals(8, colorContainers.length);
     verifyColorIconAriaChecked('redColor', colorContainers);
 
     // Zone 4 has zone color as yellow, expect yellow color button to be
     // highlighted.
-    (zoneTabs[3] as HTMLDivElement).click();
+    (zoneTabs[3] as HTMLElement).click();
     await waitAfterNextRender(zoneCustomizationElement!);
     verifyColorIconAriaChecked('yellowColor', colorContainers);
   });
@@ -195,18 +198,18 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneTabs =
         zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneTabs!.length, '4 zones should display in customization dialog');
+        4, zoneTabs.length, '4 zones should display in customization dialog');
 
     // Click on zone 2, expect red color icon to be highlighted.
-    (zoneTabs[1] as HTMLDivElement).click();
+    (zoneTabs[1] as HTMLElement).click();
     const colorSelectorElement =
-        zoneCustomizationElement!.shadowRoot!.querySelector('color-selector') as
-        HTMLElement;
+        zoneCustomizationElement!.shadowRoot!.querySelector<HTMLElement>(
+            'color-selector');
     assertTrue(!!colorSelectorElement, 'color-selector should display.');
     const colorContainers =
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
     assertEquals(
-        8, colorContainers.length!, 'there should be 8 color containers');
+        8, colorContainers.length, 'there should be 8 color containers');
     verifyColorIconAriaChecked('redColor', colorContainers);
 
     personalizationStore.setReducersEnabled(true);
@@ -214,7 +217,7 @@ suite('ZoneCustomizationElementTest', function() {
         KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE);
 
     // Selects wallpaper color, color of zone 2 should change to wallpaper.
-    (colorContainers[7]!.querySelector('color-icon') as HTMLElement).click();
+    colorContainers[7]!.querySelector<HTMLElement>('color-icon')!.click();
 
     await keyboardBacklightProvider.whenCalled('setBacklightZoneColor');
     const action =
@@ -245,19 +248,19 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneTabs =
         zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneTabs!.length, '4 zones should display in customization dialog');
+        4, zoneTabs.length, '4 zones should display in customization dialog');
 
     // Click on zone 2, none of color icons to be highlighted as no rainbow
     // color available in color options.
-    (zoneTabs[1] as HTMLDivElement).click();
+    (zoneTabs[1] as HTMLElement).click();
     const colorSelectorElement =
-        zoneCustomizationElement!.shadowRoot!.querySelector('color-selector') as
-        HTMLElement;
+        zoneCustomizationElement!.shadowRoot!.querySelector<HTMLElement>(
+            'color-selector');
     assertTrue(!!colorSelectorElement, 'color-selector should display.');
     const colorContainers =
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
     assertEquals(
-        8, colorContainers.length!, 'there should be 8 color containers');
+        8, colorContainers.length, 'there should be 8 color containers');
     verifyNoColorIconsAriaChecked(colorContainers);
 
     personalizationStore.setReducersEnabled(true);
@@ -265,7 +268,7 @@ suite('ZoneCustomizationElementTest', function() {
         KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE);
 
     // Selects wallpaper color, color of zone 2 should change to wallpaper.
-    (colorContainers[7]!.querySelector('color-icon') as HTMLElement).click();
+    colorContainers[7]!.querySelector<HTMLElement>('color-icon')!.click();
 
     await keyboardBacklightProvider.whenCalled('setBacklightZoneColor');
     assertDeepEquals(

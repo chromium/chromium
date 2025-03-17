@@ -10,12 +10,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_role.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -25,11 +28,15 @@ class AILanguageModel final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Get the mojo enum value for the given V8 `role` enum value.
+  static mojom::blink::AILanguageModelPromptRole ConvertRoleToMojo(
+      V8AILanguageModelPromptRole role);
+
   AILanguageModel(
       ExecutionContext* execution_context,
       mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      mojom::blink::AILanguageModelInfoPtr info);
+      mojom::blink::AILanguageModelInstanceInfoPtr info);
   ~AILanguageModel() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -42,11 +49,11 @@ class AILanguageModel final : public EventTarget,
 
   // ai_language_model.idl implementation.
   ScriptPromise<IDLString> prompt(ScriptState* script_state,
-                                  const WTF::String& input,
+                                  const V8AILanguageModelPromptInput* input,
                                   const AILanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
   ReadableStream* promptStreaming(ScriptState* script_state,
-                                  const WTF::String& input,
+                                  const V8AILanguageModelPromptInput* input,
                                   const AILanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
   ScriptPromise<IDLUnsignedLongLong> countPromptTokens(
@@ -60,6 +67,9 @@ class AILanguageModel final : public EventTarget,
 
   uint32_t topK() const { return top_k_; }
   float temperature() const { return temperature_; }
+  std::optional<WTF::Vector<WTF::String>> expectedInputLanguages() const {
+    return expected_input_languages_;
+  }
 
   ScriptPromise<AILanguageModel> clone(
       ScriptState* script_state,
@@ -80,6 +90,7 @@ class AILanguageModel final : public EventTarget,
   uint64_t max_tokens_ = 0;
   uint32_t top_k_ = 0;
   float temperature_ = 0.0;
+  std::optional<WTF::Vector<WTF::String>> expected_input_languages_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;

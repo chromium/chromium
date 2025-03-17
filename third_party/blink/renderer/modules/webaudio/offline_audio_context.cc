@@ -130,7 +130,7 @@ OfflineAudioContext::OfflineAudioContext(LocalDOMWindow* window,
                                          uint32_t number_of_frames,
                                          float sample_rate,
                                          ExceptionState& exception_state)
-    : BaseAudioContext(window, kOfflineContext),
+    : BaseAudioContext(window, ContextType::kOfflineContext),
       total_render_frames_(number_of_frames) {
   destination_node_ = OfflineAudioDestinationNode::Create(
       this, number_of_channels, number_of_frames, sample_rate);

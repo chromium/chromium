@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 
@@ -58,14 +53,19 @@ class LiteralBufferBase {
 
   // Iterators, so this type meets the requirements of
   // `std::ranges::contiguous_range`.
-  ALWAYS_INLINE iterator begin() const { return iterator(begin_, end_); }
-  ALWAYS_INLINE iterator end() const { return iterator(begin_, end_, end_); }
+  ALWAYS_INLINE iterator begin() const {
+    return UNSAFE_TODO(iterator(begin_, end_));
+  }
+  ALWAYS_INLINE iterator end() const {
+    return UNSAFE_TODO(iterator(begin_, end_, end_));
+  }
 
   ALWAYS_INLINE bool IsEmpty() const { return begin_ == end_; }
 
   ALWAYS_INLINE const T& operator[](wtf_size_t index) const {
     CHECK_GT(size(), index);
-    return begin_[index];
+    // SAFETY: Check above.
+    return UNSAFE_BUFFERS(begin_[index]);
   }
 
  protected:
@@ -78,7 +78,7 @@ class LiteralBufferBase {
     if (end_ == end_of_storage_) [[unlikely]] {
       end_ = Grow();
     }
-    *end_++ = val;
+    UNSAFE_TODO(*end_++) = val;
   }
 
   template <typename OtherT, wtf_size_t kOtherSize>
@@ -90,7 +90,7 @@ class LiteralBufferBase {
     if (capacity() < new_size)
       Grow(new_size);
     std::copy_n(val.data(), count, end_);
-    end_ += count;
+    UNSAFE_TODO(end_ += count);
   }
 
   template <wtf_size_t kOtherInlineSize>
@@ -102,10 +102,10 @@ class LiteralBufferBase {
         WTF::Partitions::BufferFree(begin_);
       begin_ = static_cast<T*>(WTF::Partitions::BufferMalloc(
           AllocationSize(other_size), "LiteralBufferBase"));
-      end_of_storage_ = begin_ + other_size;
+      end_of_storage_ = UNSAFE_TODO(begin_ + other_size);
     }
     std::copy_n(other.data(), other_size, begin_);
-    end_ = begin_ + other_size;
+    end_ = UNSAFE_TODO(begin_ + other_size);
   }
 
   void Move(LiteralBufferBase&& other) {
@@ -118,12 +118,13 @@ class LiteralBufferBase {
       end_of_storage_ = other.end_of_storage_;
       other.begin_ = &other.inline_storage[0];
       other.end_ = other.begin_;
-      other.end_of_storage_ = other.begin_ + BUFFER_INLINE_CAPACITY;
+      other.end_of_storage_ =
+          UNSAFE_TODO(other.begin_ + BUFFER_INLINE_CAPACITY);
     } else {
       DCHECK_GE(capacity(), other.size());  // Sanity check.
       wtf_size_t other_size = other.size();
       std::copy_n(other.data(), other_size, begin_);
-      end_ = begin_ + other_size;
+      end_ = UNSAFE_TODO(begin_ + other_size);
     }
   }
 
@@ -164,8 +165,8 @@ class LiteralBufferBase {
     if (!is_stored_inline())
       WTF::Partitions::BufferFree(begin_);
     begin_ = new_storage;
-    end_ = new_storage + in_use;
-    end_of_storage_ = new_storage + new_capacity;
+    end_ = UNSAFE_TODO(new_storage + in_use);
+    end_of_storage_ = UNSAFE_TODO(new_storage + new_capacity);
     return end_;
   }
 
@@ -175,7 +176,7 @@ class LiteralBufferBase {
   // register.
   T* begin_ = &inline_storage[0];
   T* end_ = begin_;
-  T* end_of_storage_ = begin_ + BUFFER_INLINE_CAPACITY;
+  T* end_of_storage_ = UNSAFE_TODO(begin_ + BUFFER_INLINE_CAPACITY);
   T inline_storage[BUFFER_INLINE_CAPACITY];
 };
 

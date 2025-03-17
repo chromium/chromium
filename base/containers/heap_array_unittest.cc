@@ -75,8 +75,8 @@ TEST(HeapArray, MoveConstructor) {
   base::HeapArray<uint32_t> vec(std::move(that));
   EXPECT_EQ(vec.size(), 2u);
   EXPECT_NE(vec.data(), nullptr);
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArray, MoveAssign) {
@@ -85,8 +85,8 @@ TEST(HeapArray, MoveAssign) {
   vec = std::move(that);
   EXPECT_EQ(vec.size(), 2u);
   EXPECT_NE(vec.data(), nullptr);
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArray, DataAndIndex) {
@@ -322,8 +322,8 @@ TEST(HeapArray, TakeFirst) {
   auto smaller_that = std::move(that).take_first(1u);
   EXPECT_EQ(smaller_that.size(), 1u);
   EXPECT_EQ(that_data, smaller_that.data());
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArray, TakeFirstWithZeroSize) {
@@ -331,8 +331,8 @@ TEST(HeapArray, TakeFirstWithZeroSize) {
   auto smaller_that = std::move(that).take_first(0u);
   EXPECT_EQ(smaller_that.size(), 0u);
   EXPECT_EQ(smaller_that.data(), nullptr);
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArrayDeathTest, TakeFirstWithOverSize) {

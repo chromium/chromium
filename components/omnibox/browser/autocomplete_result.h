@@ -48,7 +48,10 @@ class AutocompleteResult {
   // may be different for zero suggest and non zero suggest. Does not take into
   // account the boost conditionally provided by the
   // omnibox::kDynamicMaxAutocomplete feature.
-  static size_t GetMaxMatches(bool is_zero_suggest = false);
+  static size_t GetMaxMatches(
+      bool is_zero_suggest = false,
+      AutocompleteInput::FeaturedKeywordMode featured_keyword_mode =
+          AutocompleteInput::FeaturedKeywordMode::kFalse);
   // Defaults to GetMaxMatches if omnibox::kDynamicMaxAutocomplete is disabled;
   // otherwise returns the boosted dynamic limit.
   static size_t GetDynamicMaxMatches();
@@ -221,11 +224,17 @@ class AutocompleteResult {
   // and relevancies.
   static size_t CalculateNumMatches(
       bool is_zero_suggest,
+      AutocompleteInput::FeaturedKeywordMode featured_keyword_mode,
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
   // Determines how many matches to keep depending on how many URLs would be
-  // shown. CalculateNumMatches defers to CalculateNumMatchesPerUrlCount if the
-  // kDynamicMaxAutocomplete feature is enabled.
+  // shown. Increases the match limit if there are TYPE_UNSCOPED_EXTENSION
+  // suggestions available so they don't replace other match types.
+  // CalculateNumMatches defers to CalculateNumMatchesPerUrlCount if
+  // all of the following are true:
+  // 1) not in zero suggest.
+  // 2) not in exact featured keyword mode.
+  // 3) `kDynamicMaxAutocomplete` feature is enabled.
   static size_t CalculateNumMatchesPerUrlCount(
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
@@ -434,8 +443,8 @@ class AutocompleteResult {
   void MergeMatchesByProvider(ACMatches* old_matches,
                               const ACMatches& new_matches);
 
-  // Returns a tuple encompassing all attributes relevant to determining whether a match should
-  // be deduplicated with another match.
+  // Returns a tuple encompassing all attributes relevant to determining whether
+  // a match should be deduplicated with another match.
   static MatchDedupComparator GetMatchComparisonFields(
       const AutocompleteMatch& match);
 

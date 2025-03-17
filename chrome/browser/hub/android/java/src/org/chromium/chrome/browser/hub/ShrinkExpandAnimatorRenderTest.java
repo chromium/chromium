@@ -37,11 +37,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.ui.animation.RenderTestAnimationUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
-
-import java.util.Locale;
 
 /** Render tests for {@link ShrinkExpandAnimator}. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
@@ -66,6 +65,12 @@ public class ShrinkExpandAnimatorRenderTest {
 
     private FrameLayout mRootView;
     private ShrinkExpandImageView mView;
+
+    // Retains a strong reference to the {@link ShrinkExpandAnimator} on the class to prevent it
+    // from being prematurely GC'd during {@link RenderTestAnimationUtils#stepThroughAnimation}. The
+    // {@link ObjectAnimator} only retains a {@link java.lang.ref.WeakReference} to the object,
+    //  meaning it could be GC'd anytime after changing stack frames.
+    private ShrinkExpandAnimator mAnimator;
 
     @BeforeClass
     public static void setupSuite() {
@@ -121,12 +126,20 @@ public class ShrinkExpandAnimatorRenderTest {
                         startX + thumbnailSize.getWidth(),
                         startY + thumbnailSize.getHeight());
 
-        setupShrinkExpandImageView(startValue);
-        ShrinkExpandAnimator animator =
-                createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
-
         Rect startValueCopy = new Rect(startValue);
         Rect endValueCopy = new Rect(endValue);
+
+        setupShrinkExpandImageView(startValue);
+        mAnimator = createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
+        ObjectAnimator expandAnimator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ObjectAnimator.ofObject(
+                                        mAnimator,
+                                        ShrinkExpandAnimator.RECT,
+                                        new RectEvaluator(),
+                                        startValueCopy,
+                                        endValueCopy));
 
         // Verify changing rects after doesn't cause ShrinkExpandAnimator to behave differently.
         startValue.left = 0;
@@ -138,8 +151,8 @@ public class ShrinkExpandAnimatorRenderTest {
         endValue.top = 100;
         endValue.bottom = 200;
 
-        stepThroughAnimation(
-                "expand_rect", animator, startValueCopy, endValueCopy, ANIMATION_STEPS);
+        RenderTestAnimationUtils.stepThroughAnimation(
+                "expand_rect", mRenderTestRule, mRootView, expandAnimator, ANIMATION_STEPS);
     }
 
     @Test
@@ -162,11 +175,23 @@ public class ShrinkExpandAnimatorRenderTest {
                         Math.round(thumbnailSize.getHeight() / 2.0f));
 
         setupShrinkExpandImageView(startValue);
-        ShrinkExpandAnimator animator =
-                createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
+        mAnimator = createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
+        ObjectAnimator expandAnimator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ObjectAnimator.ofObject(
+                                        mAnimator,
+                                        ShrinkExpandAnimator.RECT,
+                                        new RectEvaluator(),
+                                        startValue,
+                                        endValue));
 
-        stepThroughAnimation(
-                "expand_rect_with_top_clip", animator, startValue, endValue, ANIMATION_STEPS);
+        RenderTestAnimationUtils.stepThroughAnimation(
+                "expand_rect_with_top_clip",
+                mRenderTestRule,
+                mRootView,
+                expandAnimator,
+                ANIMATION_STEPS);
     }
 
     @Test
@@ -190,14 +215,22 @@ public class ShrinkExpandAnimatorRenderTest {
                         Math.round(thumbnailSize.getHeight() / 2.0f));
 
         setupShrinkExpandImageView(startValue);
-        ShrinkExpandAnimator animator =
-                createAnimator(startValue, endValue, thumbnailSize, SEARCH_BOX_HEIGHT);
+        mAnimator = createAnimator(startValue, endValue, thumbnailSize, SEARCH_BOX_HEIGHT);
+        ObjectAnimator expandAnimator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ObjectAnimator.ofObject(
+                                        mAnimator,
+                                        ShrinkExpandAnimator.RECT,
+                                        new RectEvaluator(),
+                                        startValue,
+                                        endValue));
 
-        stepThroughAnimation(
+        RenderTestAnimationUtils.stepThroughAnimation(
                 "expand_rect_with_top_clip_hub_search",
-                animator,
-                startValue,
-                endValue,
+                mRenderTestRule,
+                mRootView,
+                expandAnimator,
                 ANIMATION_STEPS);
     }
 
@@ -222,10 +255,19 @@ public class ShrinkExpandAnimatorRenderTest {
                         endY + thumbnailSize.getHeight());
 
         setupShrinkExpandImageView(startValue);
-        ShrinkExpandAnimator animator =
-                createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
+        mAnimator = createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
+        ObjectAnimator shrinkAnimator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ObjectAnimator.ofObject(
+                                        mAnimator,
+                                        ShrinkExpandAnimator.RECT,
+                                        new RectEvaluator(),
+                                        startValue,
+                                        endValue));
 
-        stepThroughAnimation("shrink_rect_rect", animator, startValue, endValue, ANIMATION_STEPS);
+        RenderTestAnimationUtils.stepThroughAnimation(
+                "shrink_rect_rect", mRenderTestRule, mRootView, shrinkAnimator, ANIMATION_STEPS);
     }
 
     private ShrinkExpandAnimator createAnimator(
@@ -240,56 +282,10 @@ public class ShrinkExpandAnimatorRenderTest {
                 });
     }
 
-    /** Returns a thumbnail size 1/4 the size of {@link mRootView}. */
+    /** Returns a thumbnail size 1/4 the size of {@link #mRootView}. */
     private Size getThumbnailSize() {
         return new Size(
                 Math.round(mRootView.getWidth() / 4.0f), Math.round(mRootView.getHeight() / 4.0f));
-    }
-
-    /**
-     * Steps through an animation.
-     *
-     * @param testcaseName The base name for the render test results.
-     * @param rectAnimator The animator to drive the animation of.
-     * @param startValue The initial react.
-     * @param endValue The final rect.
-     * @param steps The number of steps to take. Must be 2 or more.
-     */
-    private void stepThroughAnimation(
-            String testcaseName,
-            ShrinkExpandAnimator rectAnimator,
-            Rect startValue,
-            Rect endValue,
-            int steps)
-            throws Exception {
-        assert steps >= 2;
-        float fractionPerStep = 1.0f / (steps - 1);
-
-        ObjectAnimator animator =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return ObjectAnimator.ofObject(
-                                    rectAnimator,
-                                    ShrinkExpandAnimator.RECT,
-                                    new RectEvaluator(),
-                                    startValue,
-                                    endValue);
-                        });
-
-        // Manually drive the animation instead of using an ObjectAnimator for exact control over
-        // step size and timing.
-        for (int step = 0; step < steps; step++) {
-            final float animationFraction = fractionPerStep * step;
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        animator.setCurrentFraction(animationFraction);
-                    });
-
-            mRenderTestRule.render(
-                    mRootView,
-                    testcaseName
-                            + String.format(Locale.ENGLISH, "_step_%d_of_%d", step + 1, steps));
-        }
     }
 
     /**
@@ -321,7 +317,7 @@ public class ShrinkExpandAnimatorRenderTest {
         onNextLayout.waitForNext();
     }
 
-    /** Returns a blue checkerboard bitmap the size of {@link mRootView}. */
+    /** Returns a blue checkerboard bitmap the size of {@link #mRootView}. */
     private Bitmap createBitmap() {
         int width = mRootView.getWidth();
         int height = mRootView.getHeight();

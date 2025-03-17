@@ -42,8 +42,6 @@ class DemoService {
   ~DemoService();
 
  private:
-  void ExitProcess(viz::ExitCode immediate_exit_code);
-
   std::unique_ptr<viz::VizCompositorThreadRunnerImpl> runner_;
 
   std::unique_ptr<base::Thread> io_thread_;

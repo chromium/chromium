@@ -16,6 +16,7 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/trust_token_access_details.h"
 #include "ipc/ipc_message.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -49,6 +50,7 @@ bool RenderFrameHostDelegate::DidAddMessageToConsole(
 }
 
 void RenderFrameHostDelegate::RequestMediaAccessPermission(
+    RenderFrameHostImpl* render_frame_host,
     const MediaStreamRequest& request,
     MediaResponseCallback callback) {
   LOG(ERROR) << "RenderFrameHostDelegate::RequestMediaAccessPermission: "
@@ -200,10 +202,10 @@ bool RenderFrameHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
   return false;
 }
 
-std::optional<blink::ParsedPermissionsPolicy>
+std::optional<network::ParsedPermissionsPolicy>
 RenderFrameHostDelegate::GetPermissionsPolicyForIsolatedWebApp(
     RenderFrameHostImpl* source) {
-  return blink::ParsedPermissionsPolicy();
+  return network::ParsedPermissionsPolicy();
 }
 
 bool RenderFrameHostDelegate::IsPopup() const {
@@ -221,6 +223,15 @@ RenderFrameHostDelegate::GetPartitionedPopinOpenerProperties() const {
 
 WebContents* RenderFrameHostDelegate::GetOpenedPartitionedPopin() const {
   return nullptr;
+}
+
+gfx::NativeWindow RenderFrameHostDelegate::GetOwnerNativeWindow() {
+  return gfx::NativeWindow();
+}
+
+media::PictureInPictureEventsInfo::AutoPipReason
+RenderFrameHostDelegate::GetAutoPipReason() const {
+  return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
 }
 
 }  // namespace content

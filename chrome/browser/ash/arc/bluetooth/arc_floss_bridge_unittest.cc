@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "testing/gmock/include/gmock/gmock.h"

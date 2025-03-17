@@ -71,6 +71,15 @@ def default_location_filters(builder_name = None):
 
     return filters
 
+_DEFAULT_DISABLE_REUSE_FOOTERS = [
+    "Include-Ci-Only-Tests",
+]
+
+def default_owner_whitelist_group_for_cq_bots(project):
+    if project.startswith("chrome"):
+        return ["googlers", "project-chromium-robot-committers"]
+    return []
+
 def location_filters_without_defaults(tryjob_builder_proto):
     default_filters = default_location_filters(tryjob_builder_proto.name)
     return [f for f in tryjob_builder_proto.location_filters if cq.location_filter(
@@ -79,6 +88,15 @@ def location_filters_without_defaults(tryjob_builder_proto):
         path_regexp = f.path_regexp,
         exclude = f.exclude,
     ) not in default_filters]
+
+def owner_whitelist_group_without_defaults(tryjob_builder_proto):
+    project = tryjob_builder_proto.name.split("/")[0]
+    default_group = default_owner_whitelist_group_for_cq_bots(project)
+    return [
+        g
+        for g in tryjob_builder_proto.owner_whitelist_group
+        if g not in default_group
+    ]
 
 # Intended to be used for the `caches` builder arg when no source checkout is
 # required.
@@ -119,8 +137,10 @@ def tryjob(
         experiment_percentage = None,
         includable_only = False,
         location_filters = None,
+        disable_reuse_footers = None,
         cancel_stale = None,
         add_default_filters = True,
+        add_default_disable_reuse_footers = True,
         equivalent_builder = None,
         equivalent_builder_percentage = None,
         equivalent_builder_whitelist = None,
@@ -139,12 +159,18 @@ def tryjob(
         This is the same as the location_filters value of cq.tryjob_verifier
         except that strings can be provided, which will be converted to a
         cq.location_filter with path_regexp set to the provided string.
+      disable_reuse_footers: A list of footer names to disable reuse for the
+        builder for. This ensures that changes to those footer values will cause
+        the builder to rerun with the footer change applied.
       cancel_stale: See cq.tryjob_verifier.
       add_default_filters: A bool indicating whether to add default filters that
         exclude certain directories that would have no impact when building
         chromium with the patch applied (docs, config files that don't take
         effect until landing, etc., see default_location_filters). This arg has
         no effect when includable_only=True, and will instead be set to False.
+      add_default_disable_reuse_footers: A bool indicating whether to add
+        default footers that should disable reuse for the builder
+        (Include-Ci-Only-Tests, etc., see _DEFAULT_DISABLE_REUSE_FOOTERS).
       equivalent_builder: See cq.tryjob_verifier.
       equivalent_builder_percentage: See cq.tryjob_verifier.
       equivalent_builder_whitelist: See cq.tryjob_verifier.
@@ -174,6 +200,8 @@ def tryjob(
 
     return struct(
         disable_reuse = disable_reuse,
+        add_default_disable_reuse_footers = add_default_disable_reuse_footers,
+        disable_reuse_footers = disable_reuse_footers,
         experiment_percentage = experiment_percentage,
         includable_only = includable_only,
         add_default_filters = add_default_filters,
@@ -340,6 +368,13 @@ def try_builder(
             location_filters = tryjob.location_filters
             if tryjob.add_default_filters:
                 location_filters = (location_filters or []) + default_location_filters(builder)
+            disable_reuse_footers = tryjob.disable_reuse_footers
+            if tryjob.disable_reuse:
+                # disable_reuse and disable_reuse_footers canot be used
+                # together, so set disable_reuse_footers to None
+                disable_reuse_footers = None
+            elif tryjob.add_default_disable_reuse_footers:
+                disable_reuse_footers = args.listify(disable_reuse_footers, _DEFAULT_DISABLE_REUSE_FOOTERS)
             if not tryjob.omit_from_luci_cv:
                 kwargs = {}
                 if settings.project.startswith("chromium"):
@@ -351,6 +386,7 @@ def try_builder(
                         builder = builder,
                         cq_group = cq_group,
                         disable_reuse = tryjob.disable_reuse,
+                        disable_reuse_footers = disable_reuse_footers,
                         experiment_percentage = tryjob.experiment_percentage,
                         includable_only = tryjob.includable_only,
                         location_filters = location_filters,
@@ -367,6 +403,10 @@ def try_builder(
                     builder = builder,
                     cq_group = cq_group,
                     includable_only = True,
+                    # If someone adds a builder using CQ-Include-Trybots and it
+                    # has ci_only tests configured, then we would want it to get
+                    # rerun if the Include-Ci-Only-Tests footer gets changed
+                    disable_reuse_footers = _DEFAULT_DISABLE_REUSE_FOOTERS,
                 )
 
     return ret

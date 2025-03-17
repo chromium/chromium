@@ -131,7 +131,7 @@ void PopupSearchBarView::OnInputChanged() {
 }
 
 void PopupSearchBarView::OnClearPressed() {
-  input_->SetText(u"");
+  input_->SetText({});
 }
 
 BEGIN_METADATA(PopupSearchBarView)

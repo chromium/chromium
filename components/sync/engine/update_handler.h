@@ -44,6 +44,9 @@ class UpdateHandler {
   virtual void RecordRemoteInvalidation(
       std::unique_ptr<SyncInvalidation> incoming) = 0;
 
+  // Records a failure during a GetUpdates request.
+  virtual void RecordDownloadFailure() const = 0;
+
   // Fill invalidation related fields in GetUpdates request.
   virtual void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) = 0;
   // Returns true if `pending_invalidations_` vector is not empty.

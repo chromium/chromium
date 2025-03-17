@@ -14,10 +14,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <type_traits>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "components/zucchini/algorithm.h"
 
 namespace zucchini {
@@ -158,7 +158,7 @@ class BufferViewBase {
   BufferRegion local_region() const { return BufferRegion{0, size()}; }
 
   bool equals(BufferViewBase other) const {
-    return base::ranges::equal(*this, other);
+    return std::ranges::equal(*this, other);
   }
 
   // Modifiers

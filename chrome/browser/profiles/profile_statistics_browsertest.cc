@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profiles/profile_statistics.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/profiles/profile_statistics.h"
 #include "chrome/browser/profiles/profile_statistics_aggregator.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
@@ -72,8 +73,8 @@ std::string ProfileCategoryStatToString(
     const char* expected_expression,
     const profiles::ProfileCategoryStats& actual_value,
     const profiles::ProfileCategoryStats& expected_value) {
-  if (base::ranges::is_permutation(actual_value, expected_value,
-                                   IsProfileCategoryStatEqual)) {
+  if (std::ranges::is_permutation(actual_value, expected_value,
+                                  IsProfileCategoryStatEqual)) {
     return ::testing::AssertionSuccess();
   } else {
     ::testing::AssertionResult result = testing::AssertionFailure();

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 

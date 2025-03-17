@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MEDIA_INSPECTOR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MEDIA_INSPECTOR_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -18,19 +19,19 @@ struct InspectorPlayerMessage {
   Level level;
   WebString message;
 };
-using InspectorPlayerMessages = WebVector<InspectorPlayerMessage>;
+using InspectorPlayerMessages = std::vector<InspectorPlayerMessage>;
 
 struct InspectorPlayerProperty {
   WebString name;
   WebString value;
 };
-using InspectorPlayerProperties = WebVector<InspectorPlayerProperty>;
+using InspectorPlayerProperties = std::vector<InspectorPlayerProperty>;
 
 struct InspectorPlayerEvent {
   base::TimeTicks timestamp;
   WebString value;
 };
-using InspectorPlayerEvents = WebVector<InspectorPlayerEvent>;
+using InspectorPlayerEvents = std::vector<InspectorPlayerEvent>;
 
 struct InspectorPlayerError {
   struct Data {
@@ -44,11 +45,11 @@ struct InspectorPlayerError {
   WebString group;
   int code;
   WebString message;
-  WebVector<SourceLocation> stack;
-  WebVector<InspectorPlayerError> caused_by;
-  WebVector<Data> data;
+  std::vector<SourceLocation> stack;
+  std::vector<InspectorPlayerError> caused_by;
+  std::vector<Data> data;
 };
-using InspectorPlayerErrors = WebVector<InspectorPlayerError>;
+using InspectorPlayerErrors = std::vector<InspectorPlayerError>;
 
 class MediaInspectorContext {
  public:

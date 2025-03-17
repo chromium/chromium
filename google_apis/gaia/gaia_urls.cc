@@ -12,8 +12,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
 #include "url/url_canon.h"
@@ -327,6 +327,11 @@ GURL GaiaUrls::ListAccountsURLWithSource(const std::string& source) {
     return list_accounts_url_;
   } else {
     std::string query = list_accounts_url_.query();
+    if (base::FeatureList::IsEnabled(
+            gaia::features::kListAccountsUsesBinaryFormat)) {
+      return list_accounts_url_.Resolve(base::StringPrintf(
+          "?gpsia=1&source=%s&laf=b64bin&%s", source.c_str(), query.c_str()));
+    }
     return list_accounts_url_.Resolve(base::StringPrintf(
         "?gpsia=1&source=%s&%s", source.c_str(), query.c_str()));
   }

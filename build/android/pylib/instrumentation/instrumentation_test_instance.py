@@ -112,8 +112,16 @@ def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
 
   def add_result(result):
     if result.GetName().endswith('#null'):
-      assert result.GetType() == base_test_result.ResultType.FAIL
-      class_failure_results.append(result)
+      if result.GetType() == base_test_result.ResultType.UNKNOWN:
+        # Not sure how this happens. http://crbug.com/397924393
+        # It presumably means two START events happen in a row.
+        pass
+      else:
+        assert result.GetType() == base_test_result.ResultType.FAIL, (
+            'test result of %r should be %r, but got %r' %
+            (result.GetName(), base_test_result.ResultType.FAIL,
+             result.GetType()))
+        class_failure_results.append(result)
     else:
       results.append(result)
 

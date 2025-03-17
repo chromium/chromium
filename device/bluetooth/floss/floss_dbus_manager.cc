@@ -443,14 +443,13 @@ void FlossDBusManager::OnManagerClientInitComplete() {
 }
 
 void FlossDBusManager::SwitchAdapter(int adapter, base::OnceClosure on_ready) {
-  if (!object_manager_supported_) {
-    DVLOG(1) << "Floss can't switch to adapter without object manager";
-    std::move(on_ready).Run();
+  if (!object_manager_supported_ && adapter != kInvalidAdapter) {
+    BLUETOOTH_LOG(ERROR) << "Floss can't switch to adapter " << adapter
+                         << " without object manager";
     return;
   }
 
   InitializeAdapterClients(adapter, std::move(on_ready));
-  return;
 }
 
 bool FlossDBusManager::HasActiveAdapter() const {

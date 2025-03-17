@@ -50,6 +50,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
@@ -57,6 +58,7 @@
 extern "C" {
 #include <setjmp.h>
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
+#include <string.h>
 
 #include "jpeglib.h"
 }
@@ -245,6 +247,9 @@ class JPEGImageReader final {
 
     // Keep APP2 blocks, for obtaining ICC and MPF data.
     jpeg_save_markers(&info_, JPEG_APP0 + 2, 0xFFFF);
+
+    // Keep APP11 blocks, for obtaining JUMBF data including C2PA manifests
+    jpeg_save_markers(&info_, JPEG_APP0 + 11, 0xFFFF);
   }
 
   JPEGImageReader(const JPEGImageReader&) = delete;
@@ -476,8 +481,8 @@ class JPEGImageReader final {
           sk_sp<SkData> profile_data =
               metadata_decoder_->getICCProfileData(/*copyData=*/false);
           if (profile_data) {
-            std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
-                base::span(profile_data->bytes(), profile_data->size()));
+            std::unique_ptr<ColorProfile> profile =
+                ColorProfile::Create(skia::as_byte_span(*profile_data));
             if (profile) {
               uint32_t data_color_space =
                   profile->GetProfile()->data_color_space;
@@ -1015,6 +1020,51 @@ bool JPEGImageDecoder::GetGainmapInfoAndData(
   }
   out_gainmap_info = gainmap_info;
   out_gainmap_data = data_;
+  return true;
+}
+
+bool JPEGImageDecoder::HasC2PAManifest() const {
+  auto* metadata_decoder = reader_ ? reader_->GetMetadataDecoder() : nullptr;
+  if (!metadata_decoder) {
+    return false;
+  }
+
+  // C2PA manifests are contained in APP11 blocks in JUMBF format
+  sk_sp<SkData> jumbf_data =
+      metadata_decoder->getJUMBFMetadata(/*copyData=*/false);
+  if (!jumbf_data) {
+    return false;
+  }
+
+  // APP11 blocks have a 2-byte extension type set to 'JP' for JUMBF
+  // (stripped by getJUMBFMetadata), followed by a 2-byte segment ID,
+  // and a 4-byte sequence number.
+  // This is followed by JUMBF boxes: { LBox(4), TBox(4), payload },
+  // as defined in ISO 19566-5 (https://iso.org/standard/84635.html)
+  // the payload of the first superbox is more boxes.
+  // The C2PA manifest store is a JUMBF superbox with a label of 'c2pa':
+  // https://c2pa.org/specifications/specifications/2.1/specs/C2PA_Specification.html#_jpeg_specific_handling
+  // C2PA support would require full JUMBF parsing; for detection, we
+  // just look for a fixed signature based on this box structure.
+  // This won't detect C2PA manifests preceded by a non-C2PA JUMBF
+  // superbox, which is OK since this is for a lower bound metric.
+  static constexpr uint8_t kSBSig[] = {'j', 'u', 'm', 'b'};
+  static constexpr size_t kSBOffset = 10;
+  static constexpr uint8_t kDBSig[] = {'j', 'u', 'm', 'd'};
+  static constexpr size_t kDBOffset = 18;
+  static constexpr uint8_t kC2PASig[] = {'c', '2', 'p', 'a'};
+  static constexpr size_t kC2PAOffset = 22;
+
+  if (jumbf_data->size() < kC2PAOffset + sizeof(kC2PASig)) {
+    return false;
+  }
+  const uint8_t* jumbf_bytes = jumbf_data->bytes();
+  if (memcmp(jumbf_bytes + kSBOffset, kSBSig, sizeof(kSBSig)) != 0 ||
+      memcmp(jumbf_bytes + kDBOffset, kDBSig, sizeof(kDBSig)) != 0 ||
+      memcmp(jumbf_bytes + kC2PAOffset, kC2PASig, sizeof(kC2PASig)) != 0) {
+    return false;
+  }
+
   return true;
 }
 

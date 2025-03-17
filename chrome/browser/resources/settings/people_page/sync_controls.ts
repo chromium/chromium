@@ -160,7 +160,7 @@ export class SettingsSyncControlsElement extends
    */
   private onSingleSyncDataTypeChanged_() {
     assert(this.syncPrefs);
-    this.browserProxy_.setSyncDatatypes(this.syncPrefs!);
+    this.browserProxy_.setSyncDatatypes(this.syncPrefs);
   }
 
   private disableTypeCheckBox_(

@@ -76,7 +76,7 @@ struct AccountInfo : public CoreAccountInfo {
   // token is updated or refreshed. This field is not consistently set on all
   // platforms.
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::kUnknown;
 
   AccountCapabilities capabilities;
   signin::Tribool is_child_account = signin::Tribool::kUnknown;
@@ -128,30 +128,60 @@ bool operator==(const AccountInfo& l, const AccountInfo& r) = delete;
 bool operator!=(const AccountInfo& l, const AccountInfo& r) = delete;
 
 #if BUILDFLAG(IS_ANDROID)
-// Constructs a Java CoreAccountInfo from the provided C++ CoreAccountInfo
+// Constructs a Java CoreAccountInfo from the provided C++ CoreAccountInfo.
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
     JNIEnv* env,
     const CoreAccountInfo& account_info);
 
-// Constructs a Java AccountInfo from the provided C++ AccountInfo
+// Constructs a Java AccountInfo from the provided C++ AccountInfo.
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
     JNIEnv* env,
     const AccountInfo& account_info);
 
-// Constructs a Java CoreAccountId from the provided C++ CoreAccountId
+// Constructs a Java CoreAccountId from the provided C++ CoreAccountId.
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
     JNIEnv* env,
     const CoreAccountId& account_id);
 
-// Constructs a C++ CoreAccountInfo from the provided Java CoreAccountInfo
+// Constructs a Java GaiaId from the provided C++ GaiaId.
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaGaiaId(
+    JNIEnv* env,
+    const GaiaId& gaia_id);
+
+// Constructs a C++ CoreAccountInfo from the provided Java CoreAccountInfo.
 CoreAccountInfo ConvertFromJavaCoreAccountInfo(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_core_account_info);
 
-// Constructs a C++ CoreAccountId from the provided Java CoreAccountId
+// Constructs a C++ AccountInfo from the provided Java AccountInfo.
+AccountInfo ConvertFromJavaAccountInfo(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_account_info);
+
+// Constructs a C++ CoreAccountId from the provided Java CoreAccountId.
 CoreAccountId ConvertFromJavaCoreAccountId(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_core_account_id);
+
+// Constructs a C++ GaiaId from the provided Java GaiaId.
+GaiaId ConvertFromJavaGaiaId(JNIEnv* env,
+                             const base::android::JavaRef<jobject>& j_gaia_id);
+
+namespace jni_zero {
+template <>
+inline CoreAccountInfo FromJniType<CoreAccountInfo>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_core_account_info) {
+  return ConvertFromJavaCoreAccountInfo(env, j_core_account_info);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const CoreAccountInfo& core_account_info) {
+  return ConvertToJavaCoreAccountInfo(env, core_account_info);
+}
+}  // namespace jni_zero
 #endif
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_INFO_H_

@@ -82,16 +82,14 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
     data_.disconnected_callback_ =
         V8VoidFunction::Create(v8_disconnected_callback_.As<v8::Function>());
   }
-  if (RuntimeEnabledFeatures::AtomicMoveAPIEnabled()) {
-    v8_connected_move_callback_ = retriever.GetMethodOrUndefined(
-        "connectedMoveCallback", exception_state_);
-    if (exception_state_.HadException()) {
-      return false;
-    }
-    if (v8_connected_move_callback_->IsFunction()) {
-      data_.connected_move_callback_ = V8VoidFunction::Create(
-          v8_connected_move_callback_.As<v8::Function>());
-    }
+  v8_connected_move_callback_ =
+      retriever.GetMethodOrUndefined("connectedMoveCallback", exception_state_);
+  if (exception_state_.HadException()) {
+    return false;
+  }
+  if (v8_connected_move_callback_->IsFunction()) {
+    data_.connected_move_callback_ =
+        V8VoidFunction::Create(v8_connected_move_callback_.As<v8::Function>());
   }
   v8_adopted_callback_ =
       retriever.GetMethodOrUndefined("adoptedCallback", exception_state_);

@@ -15,7 +15,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -615,18 +614,20 @@ void MenuController::Run(Widget* parent,
         menu_start_mouse_press_loc_ = View::ConvertPointToScreen(
             static_cast<View*>(event->target()),
             static_cast<const ui::MouseEvent*>(event)->location());
-      } else if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard &&
-                 !IsEditableCombobox() &&
-                 (source_type == ui::mojom::MenuSourceType::kKeyboard ||
-                  is_key_event)) {
-        // On Windows, we want to select the first menu item when the menu is
-        // opened via keyboard. This is because NVDA expects the focus to be on
-        // a menu item when the menu is opened via keyboard.
-        direction_is_down =
-            !(is_key_event && event->AsKeyEvent()->key_code() == ui::VKEY_UP);
-        to_select = FindInitialSelectableMenuItem(
-            root, direction_is_down ? INCREMENT_SELECTION_DOWN
-                                    : INCREMENT_SELECTION_UP);
+      } else if constexpr (views::PlatformStyle::
+                               kAutoSelectFirstMenuItemFromKeyboard) {
+        if (!IsEditableCombobox() &&
+            (source_type == ui::mojom::MenuSourceType::kKeyboard ||
+             is_key_event)) {
+          // On Windows, we want to select the first menu item when the menu is
+          // opened via keyboard. This is because NVDA expects the focus to be
+          // on a menu item when the menu is opened via keyboard.
+          direction_is_down =
+              !(is_key_event && event->AsKeyEvent()->key_code() == ui::VKEY_UP);
+          to_select = FindInitialSelectableMenuItem(
+              root, direction_is_down ? INCREMENT_SELECTION_DOWN
+                                      : INCREMENT_SELECTION_UP);
+        }
       }
     }
   }
@@ -961,15 +962,8 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     }
   }
 
-  // A plain left click on a folder that has children serves to open that folder
-  // by setting the selection, rather than executing a command via the delegate
-  // or doing anything else.
-  // TODO(ellyjones): Why isn't a case needed here for EF_CONTROL_DOWN?
-  bool plain_left_click_with_children =
-      part.should_submenu_show && part.menu && part.menu->HasSubmenu() &&
-      (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) &&
-      !(event.flags() & ui::EF_COMMAND_DOWN);
-  if (!part.is_scroll() && part.menu && !plain_left_click_with_children) {
+  if (!part.is_scroll() && part.menu &&
+      part.menu->GetDelegate()->IsTriggerableEvent(part.menu, event)) {
     if (active_mouse_view_tracker_->view()) {
       SendMouseReleaseToActiveView(source, event);
       return;
@@ -1521,6 +1515,11 @@ void MenuController::OnWidgetDestroying(Widget* widget) {
   owner_->RemoveObserver(this);
   owner_ = nullptr;
   native_view_for_gestures_ = nullptr;
+
+#if BUILDFLAG(IS_MAC)
+  menu_closure_animation_.reset();
+#endif
+
   // Exit menu to ensure that we are not holding on to resources when the
   // widget has been destroyed.
   ExitMenu();
@@ -1661,9 +1660,11 @@ void MenuController::SetSelection(MenuItemView* menu_item,
     // submenu.
     if (menu_item->GetParentMenuItem() &&
         menu_item->GetParentMenuItem()->GetSubmenu()) {
-      menu_item->GetParentMenuItem()->GetSubmenu()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kSelectedChildrenChanged,
-          /*send_native_event=*/true);
+      menu_item->GetParentMenuItem()
+          ->GetSubmenu()
+          ->NotifyAccessibilityEventDeprecated(
+              ax::mojom::Event::kSelectedChildrenChanged,
+              /*send_native_event=*/true);
     }
   }
 }
@@ -2474,7 +2475,7 @@ void MenuController::BuildPathsAndCalculateDiff(
   BuildMenuItemPath(new_item, new_path);
 
   *first_diff_at = static_cast<size_t>(std::distance(
-      old_path->begin(), base::ranges::mismatch(*old_path, *new_path).first));
+      old_path->begin(), std::ranges::mismatch(*old_path, *new_path).in1));
 }
 
 void MenuController::BuildMenuItemPath(MenuItemView* item,
@@ -3566,7 +3567,7 @@ void MenuController::SetNextHotTrackedView(
   if (num_menu_items <= 1) {
     return;
   }
-  const auto i = base::ranges::find(menu_items, item);
+  const auto i = std::ranges::find(menu_items, item);
   DCHECK(i != menu_items.cend());
   auto index = static_cast<size_t>(std::distance(menu_items.cbegin(), i));
 
@@ -3610,7 +3611,8 @@ void MenuController::SetHotTrackedButton(Button* new_hot_button) {
   if (hot_button_) {
     hot_button_->GetViewAccessibility().SetPopupFocusOverride();
     hot_button_->SetHotTracked(true);
-    hot_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+    hot_button_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelection, true);
   }
 }
 

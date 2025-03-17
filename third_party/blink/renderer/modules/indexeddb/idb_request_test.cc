@@ -23,6 +23,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 
 #include <memory>
@@ -316,7 +321,6 @@ class BackendDatabaseWithMockedClose
 class IDBRequestTest : public testing::Test {
  protected:
   void SetUp() override {
-    fake_blob_registry_.support_binary_blob_bodies_ = true;
     BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
 
     url_loader_mock_factory_ = URLLoaderMockFactory::GetSingletonInstance();
@@ -438,7 +442,7 @@ class IDBRequestTest : public testing::Test {
 
   // Setup the blob registry to test get all requests that include results with
   // IDB values wrapped in a blob.
-  FakeBlobRegistry fake_blob_registry_;
+  FakeBlobRegistry fake_blob_registry_{/*support_binary_blob_bodies=*/true};
   mojo::Remote<mojom::blink::BlobRegistry> blob_registry_remote_;
   mojo::Receiver<mojom::blink::BlobRegistry> blob_registry_receiver_{
       &fake_blob_registry_, blob_registry_remote_.BindNewPipeAndPassReceiver()};

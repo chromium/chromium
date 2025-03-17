@@ -4,17 +4,18 @@
 
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -818,8 +819,8 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
            {HttpRequestHeaders::kConnectMethod,
             flat_rule::RequestMethod_CONNECT}});
 
-  DCHECK(base::ranges::all_of(*kRequestMethods, [](const auto& key_value) {
-    return base::ranges::none_of(key_value.first, base::IsAsciiLower<char>);
+  DCHECK(std::ranges::all_of(*kRequestMethods, [](const auto& key_value) {
+    return std::ranges::none_of(key_value.first, base::IsAsciiLower<char>);
   }));
 
   std::string normalized_method = base::ToUpperASCII(method);

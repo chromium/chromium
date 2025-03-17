@@ -138,7 +138,7 @@ export class LocalizedLinkElement extends PolymerElement {
     assert(
         anchorTags.length === 1,
         'localized-link should contain exactly one anchor tag');
-    const anchorTag = anchorTags[0]!;
+    const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
     anchorTag.tabIndex = this.linkDisabled ? -1 : 0;
 

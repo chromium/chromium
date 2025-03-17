@@ -4,6 +4,8 @@
 
 #include "content/renderer/media/render_media_client.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/time/default_tick_clock.h"
 #include "content/public/common/content_client.h"
@@ -11,6 +13,7 @@
 #include "content/renderer/render_thread_impl.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_color_space.h"
 #include "media/mojo/buildflags.h"
 #include "media/video/video_encode_accelerator.h"
@@ -148,38 +151,6 @@ RenderMediaClient::RenderMediaClient()
       base::BindOnce(&RenderMediaClient::OnGetSupportedAudioDecoderConfigs,
                      base::Unretained(this)));
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
-
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
-  RenderThreadImpl::current()->BindHostReceiver(
-      gpu_for_supported_profiles_.BindNewPipeAndPassReceiver());
-  gpu_for_supported_profiles_.set_disconnect_handler(
-      base::BindOnce(&RenderMediaClient::OnGpuDisconnected,
-                     // base::Unretained(this) is safe because the
-                     // RenderMediaClient is never destructed.
-                     base::Unretained(this)));
-
-  gpu_for_supported_profiles_->CreateVideoEncodeAcceleratorProvider(
-      video_encoder_for_supported_profiles_.BindNewPipeAndPassReceiver());
-  gpu_for_supported_profiles_.reset();
-  video_encoder_for_supported_profiles_.set_disconnect_handler(
-      base::BindOnce(&RenderMediaClient::OnVideoEncoderDisconnected,
-                     // base::Unretained(this) is safe because the
-                     // RenderMediaClient is never destructed.
-                     base::Unretained(this)),
-      main_task_runner_);
-  // In case this causing too much jank on the gpu main thread at startup,
-  // query the configs 1s later.
-  //
-  // NOTE: The side effect of this approach is that for non-main threads,
-  // it is likely have to be blocked for up to a second to complete.
-  main_task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&RenderMediaClient::GetSupportedVideoEncoderConfigs,
-                     // base::Unretained(this) is safe because the
-                     // RenderMediaClient is never destructed.
-                     base::Unretained(this)),
-      base::Milliseconds(1000));
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
 }
 
 RenderMediaClient::~RenderMediaClient() {
@@ -253,22 +224,13 @@ bool RenderMediaClient::IsDecoderSupportedVideoType(
 bool RenderMediaClient::IsEncoderSupportedVideoType(
     const media::VideoType& type) {
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
-  if (!did_video_encoder_update_.IsSignaled()) {
-    // The asynchronous request didn't complete in time, so we must now block
-    // or retrieve the information synchronously.
-    if (main_task_runner_->BelongsToCurrentThread()) {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
-      media::VideoEncodeAccelerator::SupportedProfiles configs;
-      if (!video_encoder_for_supported_profiles_
-               ->GetVideoEncodeAcceleratorSupportedProfiles(&configs)) {
-        configs.clear();
-      }
-      OnGetSupportedVideoEncoderConfigs(configs);
-      DCHECK(did_video_encoder_update_.IsSignaled());
-    } else {
-      // There's already an asynchronous request on the main thread, so wait...
-      did_video_encoder_update_.Wait();
-    }
+  if (media::IsEncoderOptionalVideoType(type) && !did_video_encoder_update_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+    // Currently only MediaRecorder will call this, which only support main
+    // thread. On main thread, we need to block and retrieve the supported
+    // profiles synchronously.
+    GetSupportedVideoEncoderConfigs();
+    DCHECK(did_video_encoder_update_);
   }
 #endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
 
@@ -290,15 +252,30 @@ RenderMediaClient::GetAudioRendererAlgorithmParameters(
 void RenderMediaClient::GetSupportedVideoEncoderConfigs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
-  if (!video_encoder_for_supported_profiles_) {
-    return;
+  DCHECK(!did_video_encoder_update_);
+  RenderThreadImpl::current()->BindHostReceiver(
+      gpu_for_supported_profiles_.BindNewPipeAndPassReceiver());
+  gpu_for_supported_profiles_.set_disconnect_handler(
+      base::BindOnce(&RenderMediaClient::OnGpuDisconnected,
+                     // base::Unretained(this) is safe because the
+                     // RenderMediaClient is never destructed.
+                     base::Unretained(this)));
+
+  gpu_for_supported_profiles_->CreateVideoEncodeAcceleratorProvider(
+      video_encoder_for_supported_profiles_.BindNewPipeAndPassReceiver());
+  gpu_for_supported_profiles_.reset();
+  video_encoder_for_supported_profiles_.set_disconnect_handler(
+      base::BindOnce(&RenderMediaClient::OnVideoEncoderDisconnected,
+                     // base::Unretained(this) is safe because the
+                     // RenderMediaClient is never destructed.
+                     base::Unretained(this)),
+      main_task_runner_);
+  media::VideoEncodeAccelerator::SupportedProfiles configs;
+  if (!video_encoder_for_supported_profiles_
+           ->GetVideoEncodeAcceleratorSupportedProfiles(&configs)) {
+    configs.clear();
   }
-  video_encoder_for_supported_profiles_
-      ->GetVideoEncodeAcceleratorSupportedProfiles(
-          base::BindOnce(&RenderMediaClient::OnGetSupportedVideoEncoderConfigs,
-                         // base::Unretained(this) is safe because the
-                         // RenderMediaClient is never destructed.
-                         base::Unretained(this)));
+  OnGetSupportedVideoEncoderConfigs(configs);
 #endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
 }
 
@@ -383,12 +360,12 @@ void RenderMediaClient::OnGetSupportedVideoEncoderConfigs(
     const media::VideoEncodeAccelerator::SupportedProfiles& configs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
-  if (did_video_encoder_update_.IsSignaled()) {
+  if (did_video_encoder_update_) {
     return;
   }
 
   UpdateEncoderVideoProfilesInternal(configs);
-  did_video_encoder_update_.Signal();
+  did_video_encoder_update_ = true;
 
   video_encoder_for_supported_profiles_.reset();
 #endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)

@@ -20,6 +20,8 @@ promise_test(async t => {
   assert_equals(script.sourceURL, location.href);
   assert_equals(script.sourceFunctionName, "non_bound_function");
   assert_greater_than(script.sourceCharPosition, 0);
+  assert_greater_than(script.sourceLine, 0);
+  assert_greater_than(script.sourceColumn, 0);
 }, "Source location should be extracted from non-bound functions");
 
 promise_test(async t => {
@@ -32,6 +34,8 @@ promise_test(async t => {
   assert_equals(script.sourceURL, location.href);
   assert_equals(script.sourceFunctionName, "my_bound_function");
   assert_greater_than(script.sourceCharPosition, 0);
+  assert_greater_than(script.sourceLine, 0);
+  assert_greater_than(script.sourceColumn, 0);
 }, "Source location should be extracted from bound functions");
 
 promise_test(async t => {
@@ -52,6 +56,8 @@ promise_test(async t => {
   }, script => script.invoker === "Window.fetch.then", t);
   assert_true(script.sourceURL.includes("promise-generates-loaf.js"));
   assert_equals(script.sourceCharPosition, 0);
+  assert_equals(script.sourceLine, 1);
+  assert_equals(script.sourceColumn, 1);
 }, "Source location should be extracted for promises");
 
 // This test verifies that script entries of type "promise-resolve" correctly return
@@ -66,6 +72,8 @@ promise_test(async t => {
   }, script => script.invoker === "Window.fetch.then", t);
   assert_true(script.sourceURL.includes("promise-generates-loaf-start-pos.js"));
   assert_equals(script.sourceCharPosition, 64);
+  assert_equals(script.sourceLine, 2);
+  assert_equals(script.sourceColumn, 1);
 }, "SourceCharPosition should be 64 for promises");
 
 </script>

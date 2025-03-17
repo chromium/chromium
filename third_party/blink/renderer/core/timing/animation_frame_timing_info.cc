@@ -29,6 +29,13 @@ ScriptTimingInfo::ScriptTimingInfo(ExecutionContext* context,
   CHECK(security_origin_);
 }
 
+void ScriptTimingInfo::SetSourceLocation(const ScriptSourceLocation& location) {
+  source_location_ = location;
+  if (KURL(location.url).ProtocolIsData()) {
+    source_location_.url = "data:";
+  }
+}
+
 void ScriptTimingInfo::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
 }

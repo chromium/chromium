@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
@@ -29,6 +31,56 @@ DisplayLockUtilities::LockCheckMemoizationScope*
 
 namespace {
 
+template <class Traversal = FlatTreeTraversal>
+class AncestorTraversal {
+  STACK_ALLOCATED();
+
+ public:
+  class Iterator {
+    STACK_ALLOCATED();
+
+   public:
+    explicit Iterator(const Node* start)
+        : current_node_(const_cast<Node*>(start)) {}
+
+    bool operator==(const Iterator& other) {
+      return other.current_node_ == current_node_;
+    }
+    bool operator!=(const Iterator& other) { return !(*this == other); }
+    Iterator& operator++() {
+      if (auto* element = DynamicTo<Element>(current_node_);
+          element && element->IsScrollMarkerPseudoElement()) {
+        current_node_ = static_cast<ScrollMarkerPseudoElement*>(element)
+                            ->ScrollMarkerGroup();
+      } else {
+        current_node_ = Traversal::Parent(*current_node_);
+      }
+      return *this;
+    }
+
+    Node& operator*() const {
+      CHECK(current_node_);
+      return *current_node_;
+    }
+
+   private:
+    Node* current_node_;
+  };
+
+  explicit AncestorTraversal(const Node* start, bool inclusive = false)
+      : iterator_(start) {
+    if (!inclusive) {
+      ++iterator_;
+    }
+  }
+
+  Iterator begin() { return iterator_; }
+  Iterator end() { return Iterator(nullptr); }
+
+ private:
+  Iterator iterator_;
+};
+
 // Returns the nearest non-inclusive ancestor of |node| that is display
 // locked.
 Element* NearestLockedExclusiveAncestor(const Node& node) {
@@ -41,7 +93,7 @@ Element* NearestLockedExclusiveAncestor(const Node& node) {
   }
   // TODO(crbug.com/924550): Once we figure out a more efficient way to
   // determine whether we're inside a locked subtree or not, change this.
-  for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
+  for (Node& ancestor : AncestorTraversal(&node)) {
     auto* ancestor_element = DynamicTo<Element>(ancestor);
     if (!ancestor_element)
       continue;
@@ -108,7 +160,7 @@ Node* GetFrameOwnerNode(const Node* child) {
 void PopulateAncestorContexts(
     Node& node,
     HeapHashSet<Member<DisplayLockContext>>& contexts) {
-  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
+  for (Node& ancestor : AncestorTraversal(&node, true)) {
     auto* ancestor_element = DynamicTo<Element>(ancestor);
     if (!ancestor_element)
       continue;
@@ -205,8 +257,7 @@ bool DisplayLockUtilities::NeedsActivationForFindInPage(
       EnclosingBlock(range.StartPosition(), kCanCrossEditingBoundary);
 
   HeapVector<Member<Element>> activatable_targets;
-  for (Node& ancestor :
-       FlatTreeTraversal::InclusiveAncestorsOf(*enclosing_block)) {
+  for (Node& ancestor : AncestorTraversal(enclosing_block, true)) {
     auto* ancestor_element = DynamicTo<Element>(ancestor);
     if (!ancestor_element) {
       continue;
@@ -235,7 +286,7 @@ DisplayLockUtilities::ActivatableLockedInclusiveAncestors(
           .DisplayLockBlockingAllActivationCount())
     return elements_to_activate;
 
-  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
+  for (Node& ancestor : AncestorTraversal(&node, true)) {
     auto* ancestor_element = DynamicTo<Element>(ancestor);
     if (!ancestor_element)
       continue;
@@ -292,8 +343,7 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     if (node->IsChildOfShadowHost()) {
       // This node may be slotted into another place in the flat tree, so we
       // have to do a flat tree parent traversal for it.
-      for (Node* ancestor = node; ancestor;
-           ancestor = FlatTreeTraversal::Parent(*ancestor)) {
+      for (Node& ancestor : AncestorTraversal(node, true)) {
         if (Element* element = DynamicTo<Element>(ancestor)) {
           if (DisplayLockContext* context = element->GetDisplayLockContext()) {
             forced_context_set_.insert(context);
@@ -308,8 +358,7 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
       }
     }
   }
-  for (Node* node = range->FirstNode(); node;
-       node = FlatTreeTraversal::Parent(*node)) {
+  for (Node& node : AncestorTraversal(range->FirstNode(), true)) {
     if (Element* element = DynamicTo<Element>(node)) {
       if (DisplayLockContext* context = element->GetDisplayLockContext()) {
         forced_context_set_.insert(context);
@@ -352,25 +401,18 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     node = node->ParentOrShadowHostNode();
   }
 
-  // Get the right ancestor view. Only use inclusive ancestors if the node
-  // itself is locked and it prevents self layout, or if |include_self| is true.
-  // If self layout is not prevented, we don't need to force the subtree layout,
-  // so use exclusive ancestors in that case.
-  auto ancestor_view = [node, include_self] {
-    if (auto* element = DynamicTo<Element>(node)) {
-      auto* context = element->GetDisplayLockContext();
-      if (context && include_self)
-        return FlatTreeTraversal::InclusiveAncestorsOf(*node);
-    }
-    return FlatTreeTraversal::AncestorsOf(*node);
-  }();
+  bool use_inclusive_walk = false;
+  if (auto* element = DynamicTo<Element>(node)) {
+    auto* context = element->GetDisplayLockContext();
+    use_inclusive_walk = context && include_self;
+  }
 
   // TODO(vmpstr): This is somewhat inefficient, since we would pay the cost
   // of traversing the ancestor chain even for nodes that are not in the
   // locked subtree. We need to figure out if there is a supplementary
   // structure that we can use to quickly identify nodes that are in the
   // locked subtree.
-  for (Node& ancestor : ancestor_view) {
+  for (Node& ancestor : AncestorTraversal(node, use_inclusive_walk)) {
     auto* ancestor_node = DynamicTo<Element>(ancestor);
     if (!ancestor_node)
       continue;
@@ -426,7 +468,7 @@ DisplayLockUtilities::LockedInclusiveAncestorPreventingStyleWithinTreeScope(
     return nullptr;
   }
 
-  for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(node)) {
+  for (Node& ancestor : AncestorTraversal<NodeTraversal>(&node, true)) {
     DCHECK(ancestor.GetTreeScope() == node.GetTreeScope());
     Element* ancestor_element = DynamicTo<Element>(ancestor);
     if (!ancestor_element)
@@ -545,7 +587,7 @@ bool DisplayLockUtilities::IsLockedForAccessibility(const Node& node) {
   // See IsDisplayLockedPreventingPaint for an explanation of memoization.
   const Node* previous_ancestor = &node;
   bool ancestor_is_locked = false;
-  for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
+  for (Node& ancestor : AncestorTraversal(&node)) {
     // Reset ancestor is locked, we may set it again just below.
     ancestor_is_locked = false;
 
@@ -623,10 +665,13 @@ void DisplayLockUtilities::ElementLostFocus(Element* element) {
           0) {
     return;
   }
-  for (; element; element = FlatTreeTraversal::ParentElement(*element)) {
-    auto* context = element->GetDisplayLockContext();
-    if (context)
-      context->NotifySubtreeLostFocus();
+  for (Node& ancestor : AncestorTraversal(element, true)) {
+    if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
+      auto* context = ancestor_element->GetDisplayLockContext();
+      if (context) {
+        context->NotifySubtreeLostFocus();
+      }
+    }
   }
 }
 void DisplayLockUtilities::ElementGainedFocus(Element* element) {
@@ -636,10 +681,13 @@ void DisplayLockUtilities::ElementGainedFocus(Element* element) {
     return;
   }
 
-  for (; element; element = FlatTreeTraversal::ParentElement(*element)) {
-    auto* context = element->GetDisplayLockContext();
-    if (context)
-      context->NotifySubtreeGainedFocus();
+  for (Node& ancestor : AncestorTraversal(element, true)) {
+    if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
+      auto* context = ancestor_element->GetDisplayLockContext();
+      if (context) {
+        context->NotifySubtreeGainedFocus();
+      }
+    }
   }
 }
 
@@ -783,11 +831,11 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   // elements to open and then open them all.
   HeapVector<Member<HTMLElement>> elements_to_reveal;
 
-  for (Node& parent : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
+  for (Node& parent : AncestorTraversal(&node, true)) {
     if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
       if (EqualIgnoringASCIICase(
               element->FastGetAttribute(html_names::kHiddenAttr),
-              "until-found")) {
+              keywords::kUntilFound)) {
         elements_to_reveal.push_back(element);
       }
     }
@@ -883,7 +931,7 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
   // calls, it will eventually only check only a few levels. This also keeps the
   // memoizer cache fairly small.
   const Node* previous_ancestor = node;
-  for (Node& ancestor : FlatTreeTraversal::AncestorsOf(*node)) {
+  for (Node& ancestor : AncestorTraversal(node)) {
     if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
       if (auto* context = ancestor_element->GetDisplayLockContext()) {
         // Note that technically we could do a similar approach to

@@ -7,7 +7,7 @@ import 'chrome://resources/cros_components/button/button.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {Button} from 'chrome://resources/cros_components/button/button.js';
+import type {Button} from 'chrome://resources/cros_components/button/button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -235,19 +235,18 @@ class AppInstallDialogElement extends HTMLElement {
               loadTimeData.getString('iconAlt'), appInfo.name));
 
       if (appInfo.description) {
-        this.$<HTMLDivElement>('#description').textContent =
-            appInfo.description;
-        this.$<HTMLDivElement>('#description-and-screenshots').hidden = false;
+        this.$<HTMLElement>('#description').textContent = appInfo.description;
+        this.$<HTMLElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
       }
 
       if (appInfo.screenshots[0]) {
         this.$<HTMLSpanElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
-        this.$<HTMLDivElement>('#screenshot-container').hidden = false;
+        this.$<HTMLElement>('#screenshot-container').hidden = false;
         const height = appInfo.screenshots[0].size.height /
             (appInfo.screenshots[0].size.width / 408);
-        this.$<HTMLDivElement>('#screenshot-container').style.height =
+        this.$<HTMLElement>('#screenshot-container').style.height =
             height.toString() + 'px';
         this.$<HTMLImageElement>('#screenshot').onload = () => {
           this.onScreenshotLoad();
@@ -277,7 +276,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private onScreenshotLoad(): void {
-    this.$<HTMLImageElement>('#screenshot')!.style.display = 'block';
+    this.$<HTMLImageElement>('#screenshot').style.display = 'block';
   }
 
   private onCancelButtonClick(): void {
@@ -302,12 +301,12 @@ class AppInstallDialogElement extends HTMLElement {
                          DialogState.FAILED_INSTALL_ERROR);
   }
 
-  private async onOpenAppButtonClick() {
+  private onOpenAppButtonClick() {
     this.dialogArgs!.appInfoArgs!.actions.launchApp();
     this.proxy.handler.closeDialog();
   }
 
-  private async onTryAgainButtonClick() {
+  private onTryAgainButtonClick() {
     this.dialogArgs!.connectionErrorActions!.tryAgain();
     // TODO(b/333460441): Run the retry logic within the same dialog instead of
     // creating a new one.
@@ -315,7 +314,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private changeDialogState(state: DialogState) {
-    const data = this.dialogStateDataMap![state];
+    const data = this.dialogStateDataMap[state];
     assert(data);
 
     for (const icon of this.$$('.title-icon')) {
@@ -325,17 +324,17 @@ class AppInstallDialogElement extends HTMLElement {
     this.$<HTMLElement>('#title').textContent =
         loadTimeData.getString(data.title.labelId);
 
-    const contentCard = this.$<HTMLElement>('#content-card')!;
+    const contentCard = this.$<HTMLElement>('#content-card');
     contentCard.style.display = data.content?.hidden ? 'none' : 'block';
 
-    const errorMessage = this.$<HTMLElement>('#error-message')!;
+    const errorMessage = this.$<HTMLElement>('#error-message');
     errorMessage.style.display = data.errorMessage?.visible ? 'block' : 'none';
     if (data.errorMessage) {
       errorMessage.textContent =
           loadTimeData.getString(data.errorMessage.textId);
     }
 
-    const actionButton = this.$<Button>('.action-button')!;
+    const actionButton = this.$<Button>('.action-button');
     assert(actionButton);
     actionButton.style.display = data.actionButton.hidden ? 'none' : 'block';
     actionButton.disabled = Boolean(data.actionButton.disabled);

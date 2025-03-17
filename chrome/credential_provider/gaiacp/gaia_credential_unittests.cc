@@ -24,6 +24,7 @@
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "content/public/common/content_switches.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -118,8 +119,7 @@ TEST_F(GcpGaiaCredentialTest, OnUserAuthenticated_DiffPassword) {
           L"foo_bar",
           base::UTF8ToWide(test_data_storage.GetSuccessPassword()).c_str(),
           base::UTF8ToWide(test_data_storage.GetSuccessFullName()).c_str(),
-          L"comment",
-          base::UTF8ToWide(test_data_storage.GetSuccessId()).c_str(),
+          L"comment", GaiaId(test_data_storage.GetSuccessId()),
           base::UTF8ToWide(test_data_storage.GetSuccessEmail()).c_str(), &sid));
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -233,7 +233,7 @@ TEST_F(GcpGaiaCredentialGlsRunnerTest,
   // as the test gaia id.
   CComBSTR sid;
   std::wstring base_username(L"foo1234567890abcdefg");
-  std::wstring base_gaia_id(L"other-gaia-id");
+  GaiaId base_gaia_id("other-gaia-id");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       base_username.c_str(), L"password", L"name", L"comment",
                       base_gaia_id, std::wstring(), &sid));
@@ -289,21 +289,22 @@ TEST_P(GcpAssociatedUserRunnableGaiaCredentialTest,
   // as the test gaia id.
   CComBSTR sid;
   std::wstring base_username(L"foo");
-  std::wstring base_gaia_id(L"other-gaia-id");
+  std::string base_gaia_id("other-gaia-id");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       base_username.c_str(), L"password", L"name", L"comment",
-                      should_associate ? base_gaia_id : std::wstring(),
+                      should_associate ? GaiaId(base_gaia_id) : GaiaId(),
                       std::wstring(), &sid));
-  ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid), kUserId, base_gaia_id));
+  ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid), kUserId,
+                                  base::UTF8ToWide(base_gaia_id)));
 
   for (int i = 0; i < last_user_index; ++i) {
-    std::wstring user_suffix =
-        base::NumberToWString(i + kInitialDuplicateUsernameIndex);
+    std::string user_suffix =
+        base::NumberToString(i + kInitialDuplicateUsernameIndex);
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                        (base_username + user_suffix).c_str(), L"password",
-                        L"name", L"comment",
-                        should_associate ? base_gaia_id + user_suffix
-                                         : std::wstring(),
+                        (base_username + base::UTF8ToWide(user_suffix)).c_str(),
+                        L"password", L"name", L"comment",
+                        should_associate ? GaiaId(base_gaia_id + user_suffix)
+                                         : GaiaId(),
                         std::wstring(), &sid));
   }
 

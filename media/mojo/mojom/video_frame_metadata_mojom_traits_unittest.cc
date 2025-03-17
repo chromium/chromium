@@ -68,7 +68,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.allow_overlay);
   EXPECT_FALSE(metadata_out.copy_required);
   EXPECT_FALSE(metadata_out.end_of_stream);
-  EXPECT_FALSE(metadata_out.texture_owner);
+  EXPECT_FALSE(metadata_out.in_surface_view);
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
   EXPECT_FALSE(metadata_out.protected_video);
   EXPECT_FALSE(metadata_out.hw_protected);
@@ -94,6 +94,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.frame_duration.has_value());
   EXPECT_FALSE(metadata_out.wallclock_frame_duration.has_value());
   EXPECT_FALSE(metadata_out.frame_sequence.has_value());
+  EXPECT_FALSE(metadata_out.source_id.has_value());
   EXPECT_FALSE(metadata_out.background_blur.has_value());
 }
 
@@ -105,6 +106,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   // ints
   metadata_in.capture_counter = 123;
   metadata_in.frame_sequence = 456;
+  metadata_in.source_id = 789;
 
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
@@ -116,7 +118,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.allow_overlay = true;
   metadata_in.copy_required = true;
   metadata_in.end_of_stream = true;
-  metadata_in.texture_owner = true;
+  metadata_in.in_surface_view = true;
   metadata_in.wants_promotion_hint = true;
   metadata_in.protected_video = true;
   metadata_in.hw_protected = true;
@@ -163,7 +165,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.allow_overlay, metadata_out.allow_overlay);
   EXPECT_EQ(metadata_in.copy_required, metadata_out.copy_required);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);
-  EXPECT_EQ(metadata_in.texture_owner, metadata_out.texture_owner);
+  EXPECT_EQ(metadata_in.in_surface_view, metadata_out.in_surface_view);
   EXPECT_EQ(metadata_in.wants_promotion_hint,
             metadata_out.wants_promotion_hint);
   EXPECT_EQ(metadata_in.protected_video, metadata_out.protected_video);
@@ -196,6 +198,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.wallclock_frame_duration,
             metadata_out.wallclock_frame_duration);
   EXPECT_EQ(metadata_in.frame_sequence, metadata_out.frame_sequence);
+  EXPECT_EQ(metadata_in.source_id, metadata_out.source_id);
   EXPECT_EQ(metadata_in.background_blur->enabled,
             metadata_out.background_blur->enabled);
 }

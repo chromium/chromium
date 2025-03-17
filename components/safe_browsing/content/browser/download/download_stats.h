@@ -56,22 +56,6 @@ void RecordDangerousDownloadWarningBypassed(
     bool is_https,
     bool has_user_gesture);
 
-// Records the latency after completion a download was opened from the download
-// shelf/bubble or the chrome://downloads page, or show in folder was clicked.
-void RecordDownloadOpenedLatency(download::DownloadDangerType danger_type,
-                                 download::DownloadContent download_content,
-                                 base::Time download_opened_time,
-                                 base::Time download_end_time,
-                                 bool show_download_in_folder);
-
-// Records the latency after completion for when a download was opened (via the
-// shelf/bubble or chrome://downloads), or show in folder was clicked, by
-// extension type.
-void RecordDownloadOpenedLatencyFileType(
-    download::DownloadContent download_content,
-    base::Time download_opened_time,
-    base::Time download_end_time);
-
 // Records the attributes of a download.
 void RecordDownloadFileTypeAttributes(
     DownloadFileType::DangerLevel danger_level,

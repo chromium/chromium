@@ -149,8 +149,8 @@ std::string GetLauncherCommandLine(UpdaterScope scope,
                                    base::FilePath launcher) {
   base::CommandLine command(launcher);
   command.AppendSwitch(kServerSwitch);
-  command.AppendSwitchASCII(kServerServiceSwitch,
-                            kServerUpdateServiceSwitchValue);
+  command.AppendSwitchUTF8(kServerServiceSwitch,
+                           kServerUpdateServiceSwitchValue);
   if (scope == UpdaterScope::kSystem) {
     command.AppendSwitch(kSystemSwitch);
   }
@@ -193,12 +193,12 @@ bool InstallSystemdUnits(UpdaterScope scope) {
   UninstallSystemdUnits(scope);
 
   if (!InstallSystemdUnit(
-          unit_dir->AppendASCII(kUpdaterServiceName),
+          unit_dir->Append(kUpdaterServiceName),
           base::StringPrintf(
               kUpdaterServiceDefinitionTemplate,
               GetLauncherCommandLine(scope, *launcher_path).c_str())) ||
       !InstallSystemdUnit(
-          unit_dir->AppendASCII(kUpdaterSocketName),
+          unit_dir->Append(kUpdaterSocketName),
           base::StringPrintf(
               kUpdaterSocketDefinitionTemplate,
               GetActivationSocketPath(scope).AsUTF8Unsafe().c_str()))) {
@@ -224,8 +224,8 @@ bool UninstallSystemdUnits(UpdaterScope scope) {
 
   // Note: It is considered successful to attempt to delete units that do not
   // exist.
-  bool success = base::DeleteFile(unit_dir->AppendASCII(kUpdaterServiceName)) &&
-                 base::DeleteFile(unit_dir->AppendASCII(kUpdaterSocketName));
+  bool success = base::DeleteFile(unit_dir->Append(kUpdaterServiceName)) &&
+                 base::DeleteFile(unit_dir->Append(kUpdaterSocketName));
   ReloadUnitFiles(scope);
   return success;
 }
@@ -236,8 +236,8 @@ bool SystemdUnitsInstalled(UpdaterScope scope) {
     return false;
   }
 
-  return base::PathExists(unit_dir->AppendASCII(kUpdaterServiceName)) ||
-         base::PathExists(unit_dir->AppendASCII(kUpdaterSocketName));
+  return base::PathExists(unit_dir->Append(kUpdaterServiceName)) ||
+         base::PathExists(unit_dir->Append(kUpdaterSocketName));
 }
 
 }  // namespace updater

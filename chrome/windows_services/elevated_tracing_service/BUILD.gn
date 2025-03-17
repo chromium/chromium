@@ -3,8 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/toolchain/win/midl.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
+
+midl("tracing_service_idl") {
+  sources = [ "tracing_service_idl.idl" ]
+
+  writes_tlb = true
+}
 
 executable("elevated_tracing_service") {
   sources = [
@@ -21,11 +28,22 @@ executable("elevated_tracing_service") {
   deps = [
     ":lib",
     ":service_lib",
+    ":tracing_service_idl",
     ":version_resources",
     "//build/win:default_exe_manifest",
-    "//chrome/windows_services/service_program",
-    "//components/tracing:tracing_service_idl",
+    "//chrome/windows_services/service_program:service_program_with_crashpad",
+    "//components/crash/core/app:crash_export_thunks",
     "//mojo/core/embedder",
+  ]
+}
+
+# A source set for use by the service and by its clients.
+source_set("integration") {
+  public = [ "service_integration.h" ]
+  sources = [ "service_integration.cc" ]
+  deps = [
+    "//base",
+    "//chrome/install_static:install_static_util",
   ]
 }
 
@@ -42,10 +60,9 @@ source_set("lib") {
   ]
 
   deps = [
-    "//base/version_info:channel",
-    "//base/version_info:version_info",
-    "//chrome/install_static:install_static_util",
+    ":integration",
     "//chrome/windows_services/service_program:common",
+    "//chrome/windows_services/service_program:crash_integration",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
@@ -56,8 +73,8 @@ source_set("lib") {
   ]
 
   public_deps = [
+    ":tracing_service_idl",
     "//base",
-    "//components/tracing:tracing_service_idl",
   ]
 }
 
@@ -102,18 +119,18 @@ test("elevated_tracing_service_unittests") {
   deps = [
     ":lib",
     ":service_lib",
+    ":tracing_service_idl",
     "//base",
     "//base/test:test_support",
     "//chrome/common/win:eventlog_provider",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
-    "//chrome/windows_services/service_program",
     "//chrome/windows_services/service_program:common",
     "//chrome/windows_services/service_program:lib",
     "//chrome/windows_services/service_program:unit_tests",
     "//chrome/windows_services/service_program/test_support",
     "//chrome/windows_services/service_program/test_support:unit_tests",
-    "//components/tracing:tracing_service_idl",
+    "//components/crash/core/app:crash_export_thunks",
     "//mojo/core/embedder",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",

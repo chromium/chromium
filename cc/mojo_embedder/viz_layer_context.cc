@@ -5,6 +5,7 @@
 #include "cc/mojo_embedder/viz_layer_context.h"
 
 #include <cstdint>
+#include <memory>
 #include <type_traits>
 #include <unordered_set>
 #include <utility>
@@ -21,8 +22,12 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/picture_layer_impl.h"
+#include "cc/layers/surface_layer_impl.h"
+#include "cc/tiles/picture_layer_tiling.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "services/viz/public/mojom/compositing/layer.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -131,7 +136,8 @@ void ComputePropertyTreeNodeUpdate(
 void ComputePropertyTreeNodeUpdate(
     const EffectNode* old_node,
     const EffectNode& new_node,
-    std::vector<viz::mojom::EffectNodePtr>& container) {
+    std::vector<viz::mojom::EffectNodePtr>& container,
+    std::vector<std::unique_ptr<viz::CopyOutputRequest>> copy_requests) {
   if (old_node && old_node->id == new_node.id &&
       old_node->parent_id == new_node.parent_id &&
       old_node->transform_id == new_node.transform_id &&
@@ -141,7 +147,11 @@ void ComputePropertyTreeNodeUpdate(
       old_node->render_surface_reason == new_node.render_surface_reason &&
       old_node->surface_contents_scale == new_node.surface_contents_scale &&
       old_node->blend_mode == new_node.blend_mode &&
-      old_node->target_id == new_node.target_id) {
+      old_node->target_id == new_node.target_id &&
+      old_node->backdrop_mask_element_id == new_node.backdrop_mask_element_id &&
+      old_node->has_copy_request == new_node.has_copy_request &&
+      old_node->backdrop_filters == new_node.backdrop_filters &&
+      copy_requests.empty()) {
     return;
   }
 
@@ -157,6 +167,9 @@ void ComputePropertyTreeNodeUpdate(
   wire->surface_contents_scale = new_node.surface_contents_scale;
   wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
   wire->target_id = new_node.target_id;
+  wire->backdrop_mask_element_id = new_node.backdrop_mask_element_id;
+  wire->copy_output_requests = std::move(copy_requests);
+  wire->backdrop_filters = new_node.backdrop_filters;
   container.push_back(std::move(wire));
 }
 
@@ -212,6 +225,29 @@ void ComputePropertyTreeUpdate(const TreeType& old_tree,
   for (size_t i = 0; i < new_tree.size(); ++i) {
     const NodeType* old_node = old_tree.size() > i ? old_tree.Node(i) : nullptr;
     ComputePropertyTreeNodeUpdate(old_node, *new_tree.Node(i), updates);
+  }
+}
+
+void ComputeEffectTreeUpdate(const EffectTree& old_tree,
+                             EffectTree& new_tree,
+                             std::vector<::viz::mojom::EffectNodePtr>& updates,
+                             uint32_t& new_num_nodes) {
+  // Take any copy output requests from `new_tree` to push over the wire.
+  auto copy_requests = new_tree.TakeCopyRequests();
+
+  new_num_nodes = base::checked_cast<uint32_t>(new_tree.size());
+  for (size_t i = 0; i < new_tree.size(); ++i) {
+    const auto* old_node = old_tree.size() > i ? old_tree.Node(i) : nullptr;
+
+    // Push any copy output requests for this node.
+    auto range = copy_requests.equal_range(i);
+    std::vector<std::unique_ptr<viz::CopyOutputRequest>> copy_requests_for_node;
+    for (auto it = range.first; it != range.second; ++it) {
+      copy_requests_for_node.push_back(std::move(it->second));
+    }
+
+    ComputePropertyTreeNodeUpdate(old_node, *new_tree.Node(i), updates,
+                                  std::move(copy_requests_for_node));
   }
 }
 
@@ -392,12 +428,28 @@ void SerializePictureLayerTileUpdates(
   }
 }
 
+void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
+                                viz::mojom::SurfaceLayerExtraPtr& extra) {
+  extra->surface_range = layer.range();
+  if (layer.deadline_in_frames().has_value()) {
+    extra->deadline_in_frames = layer.deadline_in_frames().value();
+  }
+  extra->stretch_content_to_fill_bounds =
+      layer.stretch_content_to_fill_bounds();
+  extra->surface_hit_testable = layer.surface_hit_testable();
+  extra->has_pointer_events_none = layer.has_pointer_events_none();
+  extra->is_reflection = layer.is_reflection();
+  extra->will_draw_needs_reset = layer.will_draw_needs_reset();
+  extra->override_child_paint_flags = layer.override_child_paint_flags();
+}
+
 void SerializeLayer(LayerImpl& layer,
                     viz::ClientResourceProvider& resource_provider,
                     viz::RasterContextProvider& context_provider,
                     viz::mojom::LayerTreeUpdate& update) {
   auto& wire = *update.layers.emplace_back(viz::mojom::Layer::New());
   wire.id = layer.id();
+  wire.element_id = layer.element_id();
   wire.type = layer.GetLayerType();
   wire.bounds = layer.bounds();
   wire.is_drawable = layer.draws_content();
@@ -411,10 +463,29 @@ void SerializeLayer(LayerImpl& layer,
   wire.clip_tree_index = layer.clip_tree_index();
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
-  if (layer.GetLayerType() == mojom::LayerType::kPicture) {
-    SerializePictureLayerTileUpdates(static_cast<PictureLayerImpl&>(layer),
-                                     resource_provider, context_provider,
-                                     update.tilings);
+  switch (layer.GetLayerType()) {
+    case mojom::LayerType::kSurface: {
+      auto surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
+      SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),
+                                 surface_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewSurfaceLayerExtra(
+          std::move(surface_layer_extra));
+      break;
+    }
+    case mojom::LayerType::kPicture: {
+      PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
+      wire.is_backdrop_filter_mask = picture_layer.is_backdrop_filter_mask();
+
+      if (picture_layer.GetRasterSource()->IsSolidColor()) {
+        wire.solid_color = picture_layer.GetRasterSource()->GetSolidColor();
+      }
+      SerializePictureLayerTileUpdates(picture_layer, resource_provider,
+                                       context_provider, update.tilings);
+      break;
+    }
+    default:
+      // TODO(zmo): handle other types of LayerImpl.
+      break;
   }
 }
 
@@ -674,6 +745,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     viz::RasterContextProvider& context_provider) {
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
+  update->begin_frame_args = tree.CurrentBeginFrameArgs();
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
   update->device_viewport = tree.GetDeviceViewport();
@@ -716,9 +788,9 @@ void VizLayerContext::UpdateDisplayTreeFrom(
       update->transform_nodes, update->num_transform_nodes);
   ComputePropertyTreeUpdate(old_trees.clip_tree(), property_trees.clip_tree(),
                             update->clip_nodes, update->num_clip_nodes);
-  ComputePropertyTreeUpdate(old_trees.effect_tree(),
-                            property_trees.effect_tree(), update->effect_nodes,
-                            update->num_effect_nodes);
+  ComputeEffectTreeUpdate(old_trees.effect_tree(),
+                          property_trees.effect_tree_mutable(),
+                          update->effect_nodes, update->num_effect_nodes);
   ComputePropertyTreeUpdate(old_trees.scroll_tree(),
                             property_trees.scroll_tree(), update->scroll_nodes,
                             update->num_scroll_nodes);
@@ -727,7 +799,18 @@ void VizLayerContext::UpdateDisplayTreeFrom(
 
   last_committed_property_trees_ = property_trees;
 
-  SerializeAnimationUpdates(tree, *update);
+  if (tree.needs_surface_ranges_sync()) {
+    update->surface_ranges.emplace();
+    update->surface_ranges->reserve(tree.SurfaceRanges().size());
+    for (const auto& surface_range : tree.SurfaceRanges()) {
+      update->surface_ranges->push_back(surface_range);
+    }
+    tree.set_needs_surface_ranges_sync(false);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    SerializeAnimationUpdates(tree, *update);
+  }
   service_->UpdateDisplayTree(std::move(update));
 }
 

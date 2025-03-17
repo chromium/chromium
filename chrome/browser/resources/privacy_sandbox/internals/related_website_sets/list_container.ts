@@ -82,7 +82,7 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
 
   protected onClick_() {
     const rows =
-        this.shadowRoot!.querySelectorAll('related-website-sets-list-item');
+        this.shadowRoot.querySelectorAll('related-website-sets-list-item');
     for (const row of rows) {
       row.expanded = this.isAnyRowCollapsed;
     }

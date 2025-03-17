@@ -8,8 +8,6 @@ found in the LICENSE file.
   <dimen name="ntp_logo_height">72dp</dimen>
   <dimen name="ntp_logo_margin_top">64dp</dimen>
   <dimen name="ntp_logo_margin_bottom">24dp</dimen>
-  <dimen name="logo_height_logo_polish_large">112dp</dimen>
-  <dimen name="logo_height_logo_polish_medium">104dp</dimen>
-  <dimen name="logo_height_logo_polish_small">84dp</dimen>
-  <dimen name="logo_margin_top_logo_polish">@dimen/ntp_logo_margin_top</dimen>
+  <dimen name="doodle_height">104dp</dimen>
+  <dimen name="doodle_margin_top">@dimen/ntp_logo_margin_top</dimen>
 </resources>

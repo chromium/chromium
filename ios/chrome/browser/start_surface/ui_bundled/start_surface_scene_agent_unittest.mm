@@ -62,6 +62,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     scene_state_.activationLevel = SceneActivationLevelUnattached;
     scene_state_.profileState = profile_state_;
+    scene_state_.UIEnabled = YES;
 
     agent_ = [[StartSurfaceSceneAgent alloc] init];
     agent_.sceneState = scene_state_;

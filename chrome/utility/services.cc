@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -69,7 +68,9 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if (BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && \
+     !BUILDFLAG(IS_ANDROID)) ||                      \
+    BUILDFLAG(IS_CHROMEOS)
 #include "chrome/services/file_util/file_util_service.h"  // nogncheck
 #endif
 
@@ -104,7 +105,7 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 static_assert(BUILDFLAG(ENABLE_PDF), "ChromeOS Ash must enable PDF");
 static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chrome/services/ipp_parser/ipp_parser.h"  // nogncheck
@@ -125,6 +126,10 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chromeos/ash/services/orca/orca_library.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_service.h"
 #include "chromeos/ash/services/recording/recording_service.h"
+#include "chromeos/components/mahi/content_extraction_service.h"
+#include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
+#include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
+#include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #include "chromeos/constants/chromeos_features.h"  // nogncheck
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
@@ -133,13 +138,6 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chromeos/ash/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"  // nogncheck
 #include "chromeos/ash/services/libassistant/libassistant_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/mahi/content_extraction_service.h"
-#include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
-#include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
-#include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
@@ -267,14 +265,16 @@ auto RunScreenAIServiceFactory(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 auto RunCupsIppParser(
     mojo::PendingReceiver<ipp_parser::mojom::IppParser> receiver) {
   return std::make_unique<ipp_parser::IppParser>(std::move(receiver));
 }
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if (BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && \
+     !BUILDFLAG(IS_ANDROID)) ||                      \
+    BUILDFLAG(IS_CHROMEOS)
 auto RunFileUtil(
     mojo::PendingReceiver<chrome::mojom::FileUtilService> receiver) {
   return std::make_unique<FileUtilService>(std::move(receiver));
@@ -295,7 +295,7 @@ auto RunMediaParserFactory(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 auto RunPdfService(mojo::PendingReceiver<pdf::mojom::PdfService> receiver) {
   return std::make_unique<pdf::PdfService>(std::move(receiver));
 }
@@ -343,7 +343,7 @@ auto RunPrintCompositor(
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 auto RunImeService(
     mojo::PendingReceiver<ash::ime::mojom::ImeService> receiver) {
   return std::make_unique<ash::ime::ImeService>(
@@ -412,9 +412,7 @@ auto RunLibassistantService(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 auto RunQuickAnswersSpellCheckService(
     mojo::PendingReceiver<quick_answers::mojom::SpellCheckService> receiver) {
   return std::make_unique<quick_answers::SpellCheckService>(
@@ -437,14 +435,14 @@ auto RunOnDeviceTranslationService(
 }
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 auto RunBabelOrcaTachyonParsingService(
     mojo::PendingReceiver<ash::babelorca::mojom::TachyonParsingService>
         receiver) {
   return std::make_unique<ash::babelorca::TachyonParsingService>(
       std::move(receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -485,7 +483,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunSystemSignalsService);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunCupsIppParser);
 #endif
 
@@ -493,7 +491,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunMacNotificationService);
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if (BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && \
+     !BUILDFLAG(IS_ANDROID)) ||                      \
+    BUILDFLAG(IS_CHROMEOS)
   services.Add(RunFileUtil);
 #endif
 
@@ -506,7 +506,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunMediaParserFactory);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunPdfService);
 #endif
 
@@ -528,7 +528,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunPaintPreviewCompositor);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunImeService);
   if (chromeos::features::IsOrcaEnabled()) {
     services.Add(RunOrcaService);
@@ -544,9 +544,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunAssistantAudioDecoder);
   services.Add(RunLibassistantService);
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunQuickAnswersSpellCheckService);
   services.Add(RunMahiContentExtractionServiceFactory);
 #endif  // BUILDFLAG(IS_CHROMEOS)

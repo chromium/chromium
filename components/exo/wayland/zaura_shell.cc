@@ -8,8 +8,10 @@
 #include <wayland-server-protocol-core.h>
 #include <xdg-shell-server-protocol.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -28,7 +30,6 @@
 #include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -295,7 +296,8 @@ void aura_surface_show_tooltip(wl_client* client,
                                uint32_t show_delay,
                                uint32_t hide_delay) {
   GetUserDataAs<AuraSurface>(resource)->ShowTooltip(
-      text, gfx::Point(x, y), trigger, base::Milliseconds((uint64_t)show_delay),
+      base::UTF8ToUTF16(text), gfx::Point(x, y), trigger,
+      base::Milliseconds((uint64_t)show_delay),
       base::Milliseconds((uint64_t)hide_delay));
 }
 
@@ -651,7 +653,7 @@ void AuraSurface::ThrottleFrameRate(bool on) {
 }
 
 void AuraSurface::OnTooltipShown(Surface* surface,
-                                 const std::u16string& text,
+                                 std::u16string_view text,
                                  const gfx::Rect& bounds) {
   if (wl_resource_get_version(resource_) <
       ZAURA_SURFACE_TOOLTIP_SHOWN_SINCE_VERSION) {
@@ -691,12 +693,12 @@ void AuraSurface::Unpin() {
   surface_->Unpin();
 }
 
-void AuraSurface::ShowTooltip(const char* text,
+void AuraSurface::ShowTooltip(std::u16string text,
                               const gfx::Point& position,
                               uint32_t trigger,
                               const base::TimeDelta& show_delay,
                               const base::TimeDelta& hide_delay) {
-  tooltip_text_ = base::UTF8ToUTF16(text);
+  tooltip_text_ = std::move(text);
   auto* window = surface_->window();
   wm::SetTooltipText(window, &tooltip_text_);
   wm::SetTooltipId(window, surface_);

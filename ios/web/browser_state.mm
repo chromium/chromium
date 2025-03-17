@@ -96,8 +96,9 @@ BrowserState::~BrowserState() {
   if (url_data_manager_ios_backend_) {
     bool posted = web::GetIOThreadTaskRunner({})->DeleteSoon(
         FROM_HERE, url_data_manager_ios_backend_.get());
-    if (!posted)
+    if (!posted) {
       delete url_data_manager_ios_backend_;
+    }
   }
 }
 
@@ -160,14 +161,16 @@ const base::Uuid& BrowserState::GetWebKitStorageID() const {
 URLDataManagerIOSBackend*
 BrowserState::GetURLDataManagerIOSBackendOnIOThread() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  if (!url_data_manager_ios_backend_)
+  if (!url_data_manager_ios_backend_) {
     url_data_manager_ios_backend_ = new URLDataManagerIOSBackend();
+  }
   return url_data_manager_ios_backend_;
 }
 
 void BrowserState::CreateNetworkContextIfNecessary() {
-  if (network_context_owner_)
+  if (network_context_owner_) {
     return;
+  }
 
   DCHECK(!network_context_);
 

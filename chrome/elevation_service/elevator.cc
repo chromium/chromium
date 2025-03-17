@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "base/win/scoped_localalloc.h"
@@ -79,7 +80,9 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
 
   std::string plaintext_str(reinterpret_cast<char*>(plaintext), length);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto pre_process_result = PreProcessData(plaintext_str);
+  InternalFlags pre_process_flags{.use_latest_encryption =
+                                      flags.use_latest_key};
+  auto pre_process_result = PreProcessData(plaintext_str, &pre_process_flags);
   if (!pre_process_result.has_value()) {
     return pre_process_result.error();
   }
@@ -111,7 +114,11 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
 
     if (!::CryptProtectData(
             &input, /*szDataDescr=*/
-            base::SysUTF8ToWide(version_info::GetProductName()).c_str(),
+            base::SysUTF8ToWide(base::StrCat({version_info::GetProductName(),
+                                              version_info::IsOfficialBuild()
+                                                  ? ""
+                                                  : " (Developer Build)"}))
+                .c_str(),
             nullptr, nullptr, nullptr, /*dwFlags=*/CRYPTPROTECT_AUDIT,
             &intermediate)) {
       *last_error = ::GetLastError();

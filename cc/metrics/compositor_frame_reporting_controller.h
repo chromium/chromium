@@ -10,6 +10,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -103,7 +104,11 @@ class CC_EXPORT CompositorFrameReportingController {
     tick_clock_ = tick_clock;
   }
 
-  std::unique_ptr<CompositorFrameReporter>* reporters() { return reporters_; }
+  std::array<std::unique_ptr<CompositorFrameReporter>,
+             PipelineStage::kNumPipelineStages>&
+  ReportersForTesting() {
+    return reporters_;
+  }
 
   void SetDroppedFrameCounter(DroppedFrameCounter* counter);
 
@@ -145,16 +150,19 @@ class CC_EXPORT CompositorFrameReportingController {
   }
 
  private:
+  using SmoothThread = CompositorFrameReporter::SmoothThread;
+  using SmoothEffectDrivingThread =
+      CompositorFrameReporter::SmoothEffectDrivingThread;
+
   void AdvanceReporterStage(PipelineStage start, PipelineStage target);
   bool CanSubmitImplFrame(const viz::BeginFrameId& id) const;
   bool CanSubmitMainFrame(const viz::BeginFrameId& id) const;
   std::unique_ptr<CompositorFrameReporter> RestoreReporterAtBeginImpl(
       const viz::BeginFrameId& id);
-  CompositorFrameReporter::SmoothThread GetSmoothThread() const;
-  CompositorFrameReporter::SmoothEffectDrivingThread GetScrollingThread() const;
-  CompositorFrameReporter::SmoothThread GetSmoothThreadAtTime(
-      base::TimeTicks timestamp) const;
-  CompositorFrameReporter::SmoothEffectDrivingThread GetScrollThreadAtTime(
+  SmoothThread GetSmoothThread() const;
+  SmoothEffectDrivingThread GetScrollingThread() const;
+  SmoothThread GetSmoothThreadAtTime(base::TimeTicks timestamp) const;
+  SmoothEffectDrivingThread GetScrollThreadAtTime(
       base::TimeTicks timestamp) const;
 
   // Checks whether there are reporters containing updates from the main
@@ -202,12 +210,10 @@ class CC_EXPORT CompositorFrameReportingController {
   bool is_raster_thread_driving_smoothness_ = false;
   // Sorted history of smooththread. Element i indicating the smooththread
   // from timestamp of element i-1 until timestamp of element i.
-  std::map<base::TimeTicks, CompositorFrameReporter::SmoothThread>
-      smooth_thread_history_;
+  std::map<base::TimeTicks, SmoothThread> smooth_thread_history_;
   // Sorted history of scrollthread. Element i indicating the smooththread
   // from timestamp of element i-1 until timestamp of element i.
-  std::map<base::TimeTicks, CompositorFrameReporter::SmoothEffectDrivingThread>
-      scroll_thread_history_;
+  std::map<base::TimeTicks, SmoothEffectDrivingThread> scroll_thread_history_;
 
   // Must outlive `reporters_` and `submitted_compositor_frames_` (which also
   // have reporters), since destroying the reporters can flush frames to
@@ -224,8 +230,9 @@ class CC_EXPORT CompositorFrameReportingController {
       scroll_jank_dropped_frame_tracker_;
   std::unique_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_;
 
-  std::unique_ptr<CompositorFrameReporter>
-      reporters_[PipelineStage::kNumPipelineStages];
+  std::array<std::unique_ptr<CompositorFrameReporter>,
+             PipelineStage::kNumPipelineStages>
+      reporters_;
 
   // Mapping of frame token to pipeline reporter for submitted compositor
   // frames.
@@ -242,8 +249,7 @@ class CC_EXPORT CompositorFrameReportingController {
     FrameInfo::SmoothEffectDrivingThread scrolling_thread =
         FrameInfo::SmoothEffectDrivingThread::kUnknown;
     ActiveTrackers active_trackers;
-    CompositorFrameReporter::SmoothThread smooth_thread =
-        CompositorFrameReporter::SmoothThread::kSmoothNone;
+    SmoothThread smooth_thread = SmoothThread::kSmoothNone;
   } last_started_compositor_frame_;
 
   base::TimeTicks begin_main_frame_start_time_;

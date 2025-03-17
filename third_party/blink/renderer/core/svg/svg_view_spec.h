@@ -35,8 +35,8 @@ class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
  public:
   static const SVGViewSpec* CreateFromFragment(const String&);
   static const SVGViewSpec* CreateForViewElement(const SVGViewElement&);
-
-  SVGViewSpec();
+  static const SVGViewSpec* CreateFromAspectRatio(
+      const SVGPreserveAspectRatio*);
 
   const SVGRect* ViewBox() const { return view_box_.Get(); }
   const SVGPreserveAspectRatio* PreserveAspectRatio() const {
@@ -52,10 +52,10 @@ class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
   template <typename CharType>
   bool ParseViewSpecInternal(const CharType* ptr, const CharType* end);
 
-  Member<SVGRect> view_box_;
-  Member<SVGPreserveAspectRatio> preserve_aspect_ratio_;
-  Member<SVGTransformList> transform_;
-  SVGZoomAndPanType zoom_and_pan_;
+  Member<const SVGRect> view_box_;
+  Member<const SVGPreserveAspectRatio> preserve_aspect_ratio_;
+  Member<const SVGTransformList> transform_;
+  SVGZoomAndPanType zoom_and_pan_ = kSVGZoomAndPanUnknown;
 };
 
 }  // namespace blink

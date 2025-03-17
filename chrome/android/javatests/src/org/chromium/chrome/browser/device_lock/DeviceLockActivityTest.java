@@ -56,7 +56,7 @@ public class DeviceLockActivityTest {
         onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
 
         mDeviceLockActivity.onDeviceLockReady();
-        assertEquals("Activity should be finished", mDeviceLockActivity.isFinishing(), true);
+        assertEquals("Activity should be finished", true, mDeviceLockActivity.isFinishing());
         assertEquals(
                 "Setting a device lock should set activity result to OK",
                 Activity.RESULT_OK,
@@ -72,7 +72,7 @@ public class DeviceLockActivityTest {
 
         mDeviceLockActivity.onDeviceLockRefused();
 
-        assertEquals("Activity should be finished", mDeviceLockActivity.isFinishing(), true);
+        assertEquals("Activity should be finished", true, mDeviceLockActivity.isFinishing());
         assertEquals(
                 "Refusing a device lock should set activity result to CANCELED",
                 Activity.RESULT_CANCELED,

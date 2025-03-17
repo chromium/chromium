@@ -967,6 +967,7 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -974,6 +975,17 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   [self.actionDelegate showLearnMore];
   return NO;
 }
+
+#else
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.actionDelegate showLearnMore];
+  }];
+}
+#endif
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
   // Always force the `selectedTextRange` to `nil` to prevent users from

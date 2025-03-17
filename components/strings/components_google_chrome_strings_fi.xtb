@@ -10,8 +10,12 @@
 <translation id="2447485272386224171">Chromen mahdollistivat avoimen lähdekoodin projekti <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ja muut <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmistot<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Tällä sivulla näkyy tietoja viimeaikaisista kaatumisista vain, jos <ph name="BEGIN_LINK" />otat kaatumisraportit käyttöön<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Nämä sivut on tarkoitettu Chromen kehittäjille, eikä niitä välttämättä ylläpidetä tai testata aktiivisesti. Voit ottaa ne käyttöön siirtymällä osoitteeseen <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikkaamalla painiketta, jolla voit ottaa virheenkorjaussivut käyttöön, ja siirtymällä sitten uudelleen tälle sivulle.</translation>
 <translation id="3875312571075912821">Myönnä Chromelle verkon käyttöoikeus palomuurin tai virustorjuntaohjelmiston
           asetuksissa</translation>
+<translation id="4949828774841497663">Siirry kohtaan Sovellukset &gt; Järjestelmäasetukset &gt; Verkko, valitse
+          aktiivinen verkko, klikkaa Tiedot…-painiketta ja poista valinta kaikista mahdollisesti
+          valituista välityspalvelimista.</translation>
 <translation id="5005121315113832363">Chrome on estänyt tämän sivun</translation>
 <translation id="6011049234605203654">Avaa
           Chrome-valikko &gt;
@@ -40,9 +44,6 @@
           Lähiverkon asetukset
           ja poista valinta kohdasta Käytä välityspalvelinta lähiverkossa.</translation>
 <translation id="7230956101631259640">Tämä on suojattu Chrome-sivu</translation>
-<translation id="8187289872471304532">Avaa
-          Sovellukset &gt; Järjestelmäasetukset &gt; Verkko &gt; Lisäasetukset &gt; Välityspalvelimet
-          ja poista valinta kaikkien valittujen välityspalvelimien kohdalta.</translation>
 <translation id="8232971017369963250">Chromen mahdollistivat avoimen lähdekoodin projekti <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Muu <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_OSS" /> tukee Chromea.</translation>
 <translation id="8544217240017914508">Google Chrome yrittää muuttaa maksutapojen täytön asetuksia.</translation>

@@ -1,8 +1,5 @@
 {
   "description": "A source with scope data set to null should be removed with incoming scope data.",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       // S1: attribution scopes -> [1] destinations -> [D1]

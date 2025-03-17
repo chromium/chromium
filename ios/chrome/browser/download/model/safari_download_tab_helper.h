@@ -35,6 +35,7 @@ class SafariDownloadTabHelper
   // task is dropped and destroyed at the end of the method.
   void DownloadMobileConfig(std::unique_ptr<web::DownloadTask> task);
   void DownloadCalendar(std::unique_ptr<web::DownloadTask> task);
+  void DownloadAppleWalletOrder(std::unique_ptr<web::DownloadTask> task);
 
  private:
   friend class web::WebStateUserData<SafariDownloadTabHelper>;

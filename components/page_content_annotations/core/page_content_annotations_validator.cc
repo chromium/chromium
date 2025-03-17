@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/page_content_annotations/core/page_content_annotations_validator.h"
+
+#include <array>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -32,12 +29,12 @@ namespace page_content_annotations {
 
 namespace {
 
-const char* kRandomNouns[] = {
+auto kRandomNouns = std::to_array<const char*>({
     "Airplane", "Boat",       "Book",          "Dinosaur",   "Earth",
     "Football", "Fork",       "Hummingbird",   "Magic Wand", "Mailbox",
     "Molecule", "Pizza",      "Record Player", "Skeleton",   "Soda",
     "Sphere",   "Strawberry", "Tiger",         "Turkey",     "Wolf",
-};
+});
 const size_t kCountRandomNouns = 20;
 
 void LogLinesToFileOnBackgroundSequence(const base::FilePath& path,

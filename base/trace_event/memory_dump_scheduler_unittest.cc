@@ -13,12 +13,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::AtMost;
 using ::testing::Invoke;
-using ::testing::_;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -32,8 +31,7 @@ struct CallbackWrapper {
 class MemoryDumpSchedulerTest : public testing::Test {
  public:
   MemoryDumpSchedulerTest()
-      : testing::Test(),
-        evt_(WaitableEvent::ResetPolicy::MANUAL,
+      : evt_(WaitableEvent::ResetPolicy::MANUAL,
              WaitableEvent::InitialState::NOT_SIGNALED),
         bg_thread_("MemoryDumpSchedulerTest Thread") {
     bg_thread_.Start();
@@ -200,5 +198,4 @@ TEST_F(MemoryDumpSchedulerTest, StopAndStartOnAnotherThread) {
   scheduler_.Stop();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

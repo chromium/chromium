@@ -10,10 +10,11 @@
 namespace ui {
 
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate* delegate) {
   AXPlatformNode* node = new AXPlatformNodeIOS();
   node->Init(delegate);
-  return node;
+  return Pointer(node);
 }
 
 // static

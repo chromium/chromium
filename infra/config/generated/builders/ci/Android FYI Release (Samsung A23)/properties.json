@@ -16,7 +16,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -46,7 +46,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -64,6 +64,12 @@
           "bucket": "ci",
           "builder": "Android FYI Release (Samsung A23)",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "gpu-fyi-try-android-a23-32",
+          "group": "tryserver.chromium.android"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/ci/Android FYI Release (Samsung A23)/targets"

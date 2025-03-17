@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(url_service);
-  VerifyTemplateURLServiceLoad(url_service);
+  EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
       url_service->GetTemplateURLs();
   // Navigate to a page with a search descriptor. Path doesn't matter as the
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(url_service);
-  VerifyTemplateURLServiceLoad(url_service);
+  EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
       url_service->GetTemplateURLs();
 

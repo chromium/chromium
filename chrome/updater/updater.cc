@@ -4,6 +4,7 @@
 
 #include "chrome/updater/updater.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/at_exit.h"
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
@@ -83,9 +83,6 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
   if (!CrashClient::GetInstance()->InitializeCrashReporting(updater_scope)) {
     VLOG(1) << "Crash reporting is not available.";
     return;
-  }
-  if (AreRawUsageStatsEnabled(updater_scope)) {
-    CrashClient::GetInstance()->SetUploadsEnabled(true);
   }
   crash_reporter::InitializeCrashKeys();
   crash_keys::SetSwitchesFromCommandLine(
@@ -237,7 +234,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kHandoffSwitch,
       kNetWorkerSwitch,
   };
-  const auto it = base::ranges::find_if(commands, [command_line](auto cmd) {
+  const auto it = std::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);
   });
   // Return the command. As a workaround for recovery component invocations
@@ -257,10 +254,12 @@ constexpr const char* BuildFlavor() {
 }
 
 constexpr const char* BuildArch() {
-#if defined(ARCH_CPU_64_BITS)
-  return "64 bits";
-#elif defined(ARCH_CPU_32_BITS)
-  return "32 bits";
+#if defined(ARCH_CPU_ARM64)
+  return "64 bit (ARM)";
+#elif defined(ARCH_CPU_X86_64)
+  return "64 bit (x64)";
+#elif defined(ARCH_CPU_X86)
+  return "32 bit (x86)";
 #else
 #error CPU architecture is unknown.
 #endif
@@ -293,8 +292,8 @@ void EnableLoggingByDefault() {
     command_line->AppendSwitch(kEnableLoggingSwitch);
   }
   if (!command_line->HasSwitch(kLoggingModuleSwitch)) {
-    command_line->AppendSwitchASCII(kLoggingModuleSwitch,
-                                    kLoggingModuleSwitchValue);
+    command_line->AppendSwitchUTF8(kLoggingModuleSwitch,
+                                   kLoggingModuleSwitchValue);
   }
 }
 

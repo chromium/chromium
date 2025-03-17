@@ -4,7 +4,10 @@
 
 source_set("application_mode_fetcher") {
   testonly = true
-  sources = [ "test_application_mode_fetcher.mm" ]
+  sources = [
+    "test_application_mode_fetcher.h",
+    "test_application_mode_fetcher.mm",
+  ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/application_mode_fetcher:application_mode_fetcher_api",

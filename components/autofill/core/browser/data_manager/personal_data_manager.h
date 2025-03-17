@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -125,14 +124,6 @@ class PersonalDataManager : public KeyedService,
   void AddObserver(PersonalDataManagerObserver* observer);
   void RemoveObserver(PersonalDataManagerObserver* observer);
 
-  // Depending on what the `guid` identifies, removes either an AutofillProfile,
-  // a credit card or an IBAN.
-  // TODO(crbug.com/322170538): Remove. Callers should use one of the following
-  // functions instead:
-  // - `address_data_manager().RemoveProfile()`.
-  // - `payments_data_manager().RemoveByGUID()`.
-  void RemoveByGUID(const std::string& guid);
-
   // Returns whether the personal data has been loaded from the web database.
   virtual bool IsDataLoaded() const;
 
@@ -143,9 +134,6 @@ class PersonalDataManager : public KeyedService,
   // browser sync engine processed a change from the cloud, we will learn of
   // these as a result of this call.
   void Refresh();
-
-  // Returns the |app_locale_| that was provided during construction.
-  const std::string& app_locale() const { return app_locale_; }
 
   // Triggers `OnPersonalDataChanged()` for all `observers_` if no address or
   // payment changes are pending.
@@ -174,14 +162,6 @@ class PersonalDataManager : public KeyedService,
 
  private:
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
-
-  // Stores the |app_locale| supplied on construction.
-  const std::string app_locale_;
-
-  // The HistoryService to be observed by the personal data manager. Must
-  // outlive this instance. This unowned pointer is retained so the PDM can
-  // remove itself from the history service's observer list on shutdown.
-  raw_ptr<history::HistoryService> history_service_ = nullptr;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

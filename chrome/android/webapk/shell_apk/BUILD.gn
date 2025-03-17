@@ -28,7 +28,7 @@ mustache_pass("generate_chromeos_manifest_for_upload") {
       get_path_info(generate_chromeos_manifest_for_upload_output, "dir")
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
-    "use_new_splash=false",
+    "is_arc_chromeos=true",
   ]
 }
 
@@ -37,7 +37,7 @@ mustache_pass("generate_manifest_for_upload") {
   output_dir = get_path_info(generate_manifest_for_upload_output, "dir")
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
-    "use_new_splash=true",
+    "is_arc_chromeos=false",
   ]
 }
 
@@ -226,14 +226,12 @@ template("webapk_tmpl") {
       "res/values-night-v31/dimens.xml",
       "res/values-night-v31/styles.xml",
       "res/values-v17/styles.xml",
-      "res/values-v24/default_enabled_activity.xml",
       "res/values-v31/dimens.xml",
       "res/values-v31/styles.xml",
       "res/values-xhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxxhdpi/is_splash_icon_maskable_bool.xml",
       "res/values/colors.xml",
-      "res/values/default_enabled_activity.xml",
       "res/values/dimens.xml",
       "res/xml/shortcuts.xml",
     ]

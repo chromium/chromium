@@ -226,7 +226,6 @@ public class TracingSettingsTest {
         // Recording started, a notification with a stop button should be displayed.
         Notification notification = waitForNotification().notification;
         Assert.assertEquals(FLAG_ONGOING_EVENT, notification.flags & FLAG_ONGOING_EVENT);
-        Assert.assertEquals(null, notification.deleteIntent);
         Assert.assertEquals(1, NotificationCompat.getActionCount(notification));
         PendingIntent stopIntent = NotificationCompat.getAction(notification, 0).actionIntent;
 

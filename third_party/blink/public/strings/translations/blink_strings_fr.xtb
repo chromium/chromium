@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Veuillez saisir une valeur valide. Les deux valeurs valides les plus proches sont "<ph name="VALID_VALUE_LOW" />" et "<ph name="VALID_VALUE_HIGHER" />".</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4664250907885839816">La partie précédée du symbole "<ph name="ATSIGN" />" ne doit pas contenir le caractère "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="4703271465972936359">Pistes audio</translation>
 <translation id="4718048029184481307">Lecture en mode Picture-in-picture</translation>
 <translation id="4812940957355064477">Veuillez saisir un nombre.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> élément(s) sélectionné(s)</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Caster</translation>
 <translation id="5630795885300617244">Appuyez deux fois à gauche/droite pour reculer/avancer de 10 s</translation>
 <translation id="57838592816432529">Couper le son</translation>
+<translation id="5868587040512539609">Pistes vidéo</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5888666972993069672">Diffusion en cours sur l'appareil "<ph name="DEVICE_FRIENDLY_NAME" />"</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Impression élégante</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6661136971638885481">Titre n°<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Autre...</translation>
 <translation id="6709093583001123835">Veuillez indiquer la valeur <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Mauvaise qualité de lecture</translation>

@@ -19,6 +19,7 @@ struct CORE_EXPORT LogicalFragmentLink {
   DISALLOW_NEW();
 
  public:
+  LogicalFragmentLink() = default;
   LogicalFragmentLink(const PhysicalFragment& fragment, LogicalOffset offset)
       : fragment(&fragment), offset(offset) {}
 

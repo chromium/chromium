@@ -46,6 +46,10 @@ enum AnnotationType {
   // given text exists in the document, and immediately disconnects the agent
   // upon finishing searching to remove the visual highlight effect.
   kTextFinder,
+
+  // Finds and highlights text for Glic. Has different scrolling and
+  // highlighting properties from kSharedHighlight.
+  kGlic,
 };
 
 // RAII wrapper for managing a single annotation in the renderer from the

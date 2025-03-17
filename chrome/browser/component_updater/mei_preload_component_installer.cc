@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 
 #include <memory>
@@ -118,9 +113,8 @@ MediaEngagementPreloadComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 void MediaEngagementPreloadComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(
-      kMeiPreloadPublicKeySHA256,
-      kMeiPreloadPublicKeySHA256 + std::size(kMeiPreloadPublicKeySHA256));
+  hash->assign(std::begin(kMeiPreloadPublicKeySHA256),
+               std::end(kMeiPreloadPublicKeySHA256));
 }
 
 std::string MediaEngagementPreloadComponentInstallerPolicy::GetName() const {

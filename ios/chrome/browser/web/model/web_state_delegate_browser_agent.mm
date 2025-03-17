@@ -185,8 +185,9 @@ void WebStateDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(web_state_list_, web_state_list);
 
   // Remove all web state delegates.
-  for (int index = 0; index < web_state_list_->count(); ++index)
+  for (int index = 0; index < web_state_list_->count(); ++index) {
     web_state_list_->GetWebStateAt(index)->SetDelegate(nullptr);
+  }
 
   web_state_observations_.RemoveAllObservations();
   web_state_list_observation_.Reset();
@@ -215,8 +216,9 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
   // (typically deleting a WebState and then activating another as a side
   // effect). See crbug.com/988504 for details. In this case, the request to
   // create a new WebState is silently dropped.
-  if (web_state_list_->IsMutating())
+  if (web_state_list_->IsMutating()) {
     return nullptr;
+  }
 
   // Check if requested web state is a popup and block it if necessary.
   if (!initiated_by_user) {
@@ -243,8 +245,9 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
 
 void WebStateDelegateBrowserAgent::CloseWebState(web::WebState* source) {
   int index = web_state_list_->GetIndexOfWebState(source);
-  if (index != WebStateList::kInvalidIndex)
+  if (index != WebStateList::kInvalidIndex) {
     web_state_list_->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  }
 }
 
 web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
@@ -348,8 +351,9 @@ void WebStateDelegateBrowserAgent::OnAuthRequired(
   std::string message = base::SysNSStringToUTF8(
       nsurlprotectionspace_util::MessageForHTTPAuth(protection_space));
   std::string default_username;
-  if (proposed_credential.user)
+  if (proposed_credential.user) {
     default_username = base::SysNSStringToUTF8(proposed_credential.user);
+  }
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<HTTPAuthOverlayRequestConfig>(
           nsurlprotectionspace_util::RequesterOrigin(protection_space), message,
@@ -379,8 +383,9 @@ void WebStateDelegateBrowserAgent::ContextMenuWillCommitWithAnimator(
     web::WebState* source,
     id<UIContextMenuInteractionCommitAnimating> animator) {
   GURL url_to_load = [context_menu_provider_ URLToLoad];
-  if (!url_to_load.is_valid())
+  if (!url_to_load.is_valid()) {
     return;
+  }
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(url_to_load);
   UrlLoadingBrowserAgent::FromBrowser(browser_)->Load(params);

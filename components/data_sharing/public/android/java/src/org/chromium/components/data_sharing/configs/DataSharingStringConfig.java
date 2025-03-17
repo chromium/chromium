@@ -6,12 +6,16 @@ package org.chromium.components.data_sharing.configs;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Config class for the Data Sharing UI Strings. */
+@NullMarked
 public class DataSharingStringConfig {
 
     private Map<Integer, Integer> mResourceIds;
@@ -24,7 +28,7 @@ public class DataSharingStringConfig {
         this.mResourceIds = builder.mResourceIds;
     }
 
-    public Integer getResourceId(@StringKey.Key int key) {
+    public @Nullable Integer getResourceId(@StringKey.Key int key) {
         return mResourceIds.get(key);
     }
 
@@ -67,19 +71,20 @@ public class DataSharingStringConfig {
             MANAGE_HEADER,
             MANAGE_DESCRIPTION,
             LET_ANYONE_JOIN_DESCRIPTION,
-            BLOCK_TITLE,
             BLOCK_MESSAGE,
-            REMOVE_TITLE,
+            BLOCK_AND_LEAVE_GROUP_MESSAGE,
             REMOVE_MESSAGE,
-            DELETE_GROUP_TITLE,
             DELETE_GROUP_MESSAGE,
-            LEAVE_GROUP_TITLE,
             LEAVE_GROUP_MESSAGE,
-            STOP_SHARING_TITLE,
             STOP_SHARING_MESSAGE,
             JOIN_TITLE_SINGLE,
             TABS_COUNT_TITLE,
             LEARN_ABOUT_SHARED_TAB_GROUPS,
+            LEARN_ABOUT_BLOCKED_ACCOUNTS,
+            JOIN_GROUP_IS_FULL_ERROR_TITLE,
+            JOIN_GROUP_IS_FULL_ERROR_BODY,
+            ACTIVITY_LOGS_TITLE,
+            LET_ANYONE_JOIN_GROUP_WHEN_FULL_DESCRIPTION,
         })
         public @interface Key {}
 
@@ -93,18 +98,19 @@ public class DataSharingStringConfig {
         public static final int MANAGE_HEADER = 7;
         public static final int MANAGE_DESCRIPTION = 8;
         public static final int LET_ANYONE_JOIN_DESCRIPTION = 9;
-        public static final int BLOCK_TITLE = 10;
-        public static final int BLOCK_MESSAGE = 11;
-        public static final int REMOVE_TITLE = 12;
-        public static final int REMOVE_MESSAGE = 13;
-        public static final int DELETE_GROUP_TITLE = 14;
-        public static final int DELETE_GROUP_MESSAGE = 15;
-        public static final int LEAVE_GROUP_TITLE = 16;
-        public static final int LEAVE_GROUP_MESSAGE = 17;
-        public static final int STOP_SHARING_TITLE = 18;
-        public static final int STOP_SHARING_MESSAGE = 19;
-        public static final int JOIN_TITLE_SINGLE = 20;
-        public static final int TABS_COUNT_TITLE = 21;
-        public static final int LEARN_ABOUT_SHARED_TAB_GROUPS = 22;
+        public static final int BLOCK_MESSAGE = 10;
+        public static final int BLOCK_AND_LEAVE_GROUP_MESSAGE = 11;
+        public static final int REMOVE_MESSAGE = 12;
+        public static final int DELETE_GROUP_MESSAGE = 13;
+        public static final int LEAVE_GROUP_MESSAGE = 14;
+        public static final int STOP_SHARING_MESSAGE = 15;
+        public static final int JOIN_TITLE_SINGLE = 16;
+        public static final int TABS_COUNT_TITLE = 17;
+        public static final int LEARN_ABOUT_SHARED_TAB_GROUPS = 18;
+        public static final int LEARN_ABOUT_BLOCKED_ACCOUNTS = 19;
+        public static final int JOIN_GROUP_IS_FULL_ERROR_TITLE = 20;
+        public static final int JOIN_GROUP_IS_FULL_ERROR_BODY = 21;
+        public static final int ACTIVITY_LOGS_TITLE = 22;
+        public static final int LET_ANYONE_JOIN_GROUP_WHEN_FULL_DESCRIPTION = 23;
     }
 }

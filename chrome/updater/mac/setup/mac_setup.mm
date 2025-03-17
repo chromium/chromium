@@ -371,9 +371,6 @@ int Uninstall(UpdaterScope scope) {
             LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
   }
 
-  // Delete the updater's caches. On Mac, this is different from the
-  // install directory.
-  DeleteFolder(GetCacheBaseDirectory(scope));
   // Deleting the install folder is best-effort. Current running processes such
   // as the crash handler process may still write to the updater log file, thus
   // it is not always possible to delete the log file. Additionally, the log

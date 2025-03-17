@@ -127,7 +127,8 @@ public final class TabGroupSyncControllerImpl
                 new LocalTabGroupMutationHelper(
                         mTabGroupModelFilter, mTabGroupSyncService, mTabCreationDelegate);
         mRemoteMutationHelper =
-                new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
+                new RemoteTabGroupMutationHelper(
+                        mTabGroupModelFilter, mTabGroupSyncService, mLocalMutationHelper);
 
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector,
@@ -171,7 +172,8 @@ public final class TabGroupSyncControllerImpl
                         mTabGroupModelFilter,
                         mTabGroupSyncService,
                         mLocalMutationHelper,
-                        mRemoteMutationHelper);
+                        mRemoteMutationHelper,
+                        mPrefService);
         mLocalObserver =
                 new TabGroupSyncLocalObserver(
                         mTabModelSelector,

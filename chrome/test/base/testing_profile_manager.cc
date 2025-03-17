@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -32,21 +31,17 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#endif
-
-constexpr char kGuestProfileName[] = "Guest";
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+constexpr char kGuestProfileName[] = "$guest";
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 constexpr char kSystemProfileName[] = "System";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -121,9 +116,6 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   builder.SetIsNewProfile(is_new_profile.value_or(false));
   if (policy_service)
     builder.SetPolicyService(std::move(*policy_service));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  builder.SetIsMainProfile(is_main_profile);
-#endif
 
   builder.AddTestingFactories(std::move(testing_factories));
 
@@ -148,6 +140,11 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   testing_profiles_.insert(std::make_pair(profile_name, profile_ptr));
   profile_observations_.AddObservation(profile_ptr);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!callback_.is_null()) {
+    callback_.Run(profile_name, profile_ptr);
+  }
+#endif
   return profile_ptr;
 }
 
@@ -174,22 +171,23 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
       shared_url_loader_factory);
 }
 
-TestingProfile* TestingProfileManager::CreateGuestProfile() {
+TestingProfile* TestingProfileManager::CreateGuestProfile(
+    std::optional<TestingProfile::Builder> builder) {
   DCHECK(called_set_up_);
-
-  // Create the profile and register it.
-  TestingProfile::Builder builder;
-  builder.SetDelegate(profile_manager_.get());
-  builder.SetGuestSession();
-  builder.SetPath(ProfileManager::GetGuestProfilePath());
-  builder.SetProfileName(kGuestProfileName);
+  if (!builder) {
+    builder = TestingProfile::Builder();
+  }
+  builder->SetGuestSession();
+  builder->SetPath(ProfileManager::GetGuestProfilePath());
+  builder->SetProfileName(kGuestProfileName);
+  builder->SetDelegate(profile_manager_.get());
 
   // Add the guest profile to the profile manager, but not to the attributes
   // storage.
   auto* profile_ptr =
       static_cast<TestingProfile*>(profile_manager_->CreateAndInitializeProfile(
           ProfileManager::GetGuestProfilePath(),
-          base::BindOnce(&BuildTestingProfile, std::move(builder))));
+          base::BindOnce(&BuildTestingProfile, std::move(*builder))));
 
   // Set up a profile with an off the record profile.
   TestingProfile::Builder off_the_record_builder;
@@ -199,10 +197,15 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   testing_profiles_.insert(std::make_pair(kGuestProfileName, profile_ptr));
   profile_observations_.AddObservation(profile_ptr);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!callback_.is_null()) {
+    callback_.Run(kGuestProfileName, profile_ptr);
+  }
+#endif
   return profile_ptr;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TestingProfile* TestingProfileManager::CreateSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -224,7 +227,7 @@ TestingProfile* TestingProfileManager::CreateSystemProfile() {
 
   return profile_ptr;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
   DCHECK(called_set_up_);
@@ -271,7 +274,7 @@ void TestingProfileManager::DeleteGuestProfile() {
   profile_manager_->profiles_info_.erase(ProfileManager::GetGuestProfilePath());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 void TestingProfileManager::DeleteSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -281,7 +284,7 @@ void TestingProfileManager::DeleteSystemProfile() {
   profile_manager_->profiles_info_.erase(
       ProfileManager::GetSystemProfilePath());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 void TestingProfileManager::DeleteProfileAttributesStorage() {
   profile_manager_->profile_attributes_storage_.reset(nullptr);
@@ -291,7 +294,7 @@ base::FilePath TestingProfileManager::GetProfilePath(
     const std::string& profile_name) {
   // Create a path for the profile based on the name.
   base::FilePath profile_path(profiles_path_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::IsUserBrowserContextBaseName(base::FilePath(profile_name))) {
     const std::string fake_email =
         profile_name.find('@') == std::string::npos
@@ -309,15 +312,6 @@ base::FilePath TestingProfileManager::GetProfilePath(
 #endif
   return profile_path;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TestingProfileManager::SetAccountProfileMapper(
-    std::unique_ptr<AccountProfileMapper> mapper) {
-  DCHECK(!profile_manager_->account_profile_mapper_)
-      << "AccountProfileMapper must be set before the first usage";
-  profile_manager_->account_profile_mapper_ = std::move(mapper);
-}
-#endif
 
 const base::FilePath& TestingProfileManager::profiles_dir() {
   DCHECK(called_set_up_);

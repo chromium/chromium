@@ -46,7 +46,6 @@
 #include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -374,10 +373,14 @@ ComposeSession::~ComposeSession() {
   if (most_recent_error_log_) {
     // First set final status on most_recent_error_log.
     most_recent_error_log_
-        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_final_status(final_status_);
     most_recent_error_log_
-        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_final_model_status(final_model_status_);
 
     optimization_guide::ModelQualityLogEntry::Upload(
@@ -385,9 +388,13 @@ ComposeSession::~ComposeSession() {
   } else if (auto last_response_state = LastResponseState();
              last_response_state.has_value()) {
     if (auto* log_entry = last_response_state->modeling_log_entry()) {
-      log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+      log_entry->log_ai_data_request()
+          ->mutable_compose()
+          ->mutable_quality()
           ->set_final_status(final_status_);
-      log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+      log_entry->log_ai_data_request()
+          ->mutable_compose()
+          ->mutable_quality()
           ->set_final_model_status(final_model_status_);
       last_response_state->UploadModelQualityLogs();
     }
@@ -707,15 +714,21 @@ void ComposeSession::ModelExecutionComplete(
   }
 
   if (log_entry) {
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_was_generated_via_edit(was_input_edited);
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_started_with_proactive_nudge(
             session_events_.started_with_proactive_nudge);
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_request_latency_ms(request_delta.InMilliseconds());
     optimization_guide::proto::Int128* token =
-        log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        log_entry->log_ai_data_request()->mutable_compose()->mutable_quality()
             ->mutable_session_id();
 
     token->set_high(session_id_.high());
@@ -1021,7 +1034,9 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
   // Apply feedback to the last saved state with a valid response.
   optimization_guide::proto::ComposeQuality* quality =
       last_response_state->modeling_log_entry()
-          ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
+          ->log_ai_data_request()
+          ->mutable_compose()
+          ->mutable_quality();
   if (quality) {
     quality->set_user_feedback(user_feedback);
   }
@@ -1345,16 +1360,20 @@ void ComposeSession::SetQualityLogEntryUponError(
     base::TimeDelta request_time,
     bool was_input_edited) {
   if (log_entry) {
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_request_latency_ms(request_time.InMilliseconds());
     optimization_guide::proto::Int128* token =
-        log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        log_entry->log_ai_data_request()->mutable_compose()->mutable_quality()
             ->mutable_session_id();
 
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
 
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_was_generated_via_edit(was_input_edited);
     // In the event that we are holding onto an error log upload it before it
     // gets overwritten

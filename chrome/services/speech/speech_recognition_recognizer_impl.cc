@@ -350,13 +350,34 @@ void SpeechRecognitionRecognizerImpl::MarkDone() {
   soda_client_->MarkDone();
 }
 
+void SpeechRecognitionRecognizerImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  soda::chrome::RecognitionContext context;
+  auto* context_input = context.add_context();
+  context_input->set_name(kContextInputName);
+  for (const auto& phrase : recognition_context.phrases) {
+    auto* p = context_input->mutable_phrases()->add_phrase();
+    p->set_phrase(phrase.phrase);
+    p->set_boost(phrase.boost);
+  }
+
+  auto serialized = context.SerializeAsString();
+  RecognitionContext serialized_recognition_context;
+  serialized_recognition_context.recognition_context = serialized.c_str();
+  serialized_recognition_context.recognition_context_size = serialized.size();
+  CHECK(soda_client_);
+  soda_client_->UpdateRecognitionContext(serialized_recognition_context);
+}
+
 void SpeechRecognitionRecognizerImpl::AddAudio(
     media::mojom::AudioDataS16Ptr buffer) {
   SendAudioToSpeechRecognitionService(std::move(buffer));
 }
+
 void SpeechRecognitionRecognizerImpl::OnAudioCaptureEnd() {
   MarkDone();
 }
+
 void SpeechRecognitionRecognizerImpl::OnAudioCaptureError() {
   OnSpeechRecognitionError();
 }

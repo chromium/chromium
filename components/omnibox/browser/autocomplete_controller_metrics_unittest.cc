@@ -4,13 +4,13 @@
 
 #include "components/omnibox/browser/autocomplete_controller_metrics.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -516,7 +516,7 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_Interrupted) {
 TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
   auto create_result = [&](std::vector<int> ids) {
     std::vector<AutocompleteMatch> matches;
-    base::ranges::transform(ids, std::back_inserter(matches), [&](int id) {
+    std::ranges::transform(ids, std::back_inserter(matches), [&](int id) {
       auto match = CreateMatch(id);
       match.relevance -= id;
       return match;

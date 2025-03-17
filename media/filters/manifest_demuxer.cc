@@ -267,15 +267,52 @@ ManifestDemuxer::GetContainerForMetrics() const {
   return std::nullopt;
 }
 
+void ManifestDemuxer::OnChunkDemuxerTracksChangeComplete(
+    DemuxerStream::Type type,
+    std::optional<MediaTrack::Id> track_id,
+    TrackChangeCB change_completed_cb,
+    const std::vector<DemuxerStream*>& streams) {
+  if (!track_id.has_value()) {
+    // TODO(crbug.com/361853710): We might want to stop running the rendition
+    // impl loop when there is no enabled track. Doing so would require a
+    // restart and seek of the rendition impl when re-enabling.
+    std::move(change_completed_cb).Run({});
+    return;
+  }
+
+  if (type == DemuxerStream::AUDIO) {
+    impl_->SelectAudioRendition(*track_id);
+  } else if (type == DemuxerStream::VIDEO) {
+    impl_->SelectVideoVariant(*track_id);
+  } else {
+    NOTREACHED();
+  }
+
+  std::vector<DemuxerStream*> mapped_streams;
+  for (const auto* const stream : streams) {
+    mapped_streams.push_back(streams_.at(stream).get());
+  }
+  std::move(change_completed_cb).Run(mapped_streams);
+}
+
 void ManifestDemuxer::OnEnabledAudioTracksChanged(
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  std::optional<MediaTrack::Id> selected_track = std::nullopt;
+  std::vector<MediaTrack::Id> chunk_demuxer_tracks = track_ids;
+  if (!track_ids.empty()) {
+    selected_track = track_ids[0];
+    chunk_demuxer_tracks = {*internal_audio_track_id_};
+  }
+
   chunk_demuxer_->OnEnabledAudioTracksChanged(
-      MapTrackIds(track_ids), curr_time,
-      base::BindOnce(&ManifestDemuxer::MapDemuxerStreams,
-                     weak_factory_.GetWeakPtr(),
+      std::move(chunk_demuxer_tracks), curr_time,
+      base::BindOnce(&ManifestDemuxer::OnChunkDemuxerTracksChangeComplete,
+                     weak_factory_.GetWeakPtr(), DemuxerStream::AUDIO,
+                     std::move(selected_track),
                      std::move(change_completed_cb)));
 }
 
@@ -284,10 +321,19 @@ void ManifestDemuxer::OnSelectedVideoTrackChanged(
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  std::optional<MediaTrack::Id> selected_track = std::nullopt;
+  std::vector<MediaTrack::Id> chunk_demuxer_tracks = track_ids;
+  if (!track_ids.empty()) {
+    selected_track = track_ids[0];
+    chunk_demuxer_tracks = {*internal_video_track_id_};
+  }
+
   chunk_demuxer_->OnSelectedVideoTrackChanged(
-      MapTrackIds(track_ids), curr_time,
-      base::BindOnce(&ManifestDemuxer::MapDemuxerStreams,
-                     weak_factory_.GetWeakPtr(),
+      std::move(chunk_demuxer_tracks), curr_time,
+      base::BindOnce(&ManifestDemuxer::OnChunkDemuxerTracksChangeComplete,
+                     weak_factory_.GetWeakPtr(), DemuxerStream::VIDEO,
+                     std::move(selected_track),
                      std::move(change_completed_cb)));
 }
 
@@ -635,32 +681,6 @@ void ManifestDemuxer::OnDemuxerStreamRead(
   }
 
   std::move(wrapped_read_cb).Run(status, std::move(buffers));
-}
-
-void ManifestDemuxer::MapDemuxerStreams(
-    TrackChangeCB cb,
-    const std::vector<DemuxerStream*>& streams) {
-  std::vector<DemuxerStream*> mapped_streams;
-  for (const auto* const stream : streams) {
-    mapped_streams.push_back(streams_.at(stream).get());
-  }
-  std::move(cb).Run(mapped_streams);
-}
-
-std::vector<MediaTrack::Id> ManifestDemuxer::MapTrackIds(
-    const std::vector<MediaTrack::Id>& track_ids) {
-  std::vector<MediaTrack::Id> chunk_demuxer_ids;
-  for (const auto& track_id : track_ids) {
-    // TODO(crbug/40057824): replace track binding when we expose multiple
-    // tracks for renditions and variants.
-    if (track_id.value() == "audio" && internal_audio_track_id_.has_value()) {
-      chunk_demuxer_ids.push_back(*internal_audio_track_id_);
-    }
-    if (track_id.value() == "video" && internal_video_track_id_.has_value()) {
-      chunk_demuxer_ids.push_back(*internal_video_track_id_);
-    }
-  }
-  return chunk_demuxer_ids;
 }
 
 }  // namespace media

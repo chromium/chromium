@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
@@ -19,6 +21,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.R;
@@ -28,6 +32,7 @@ import org.chromium.ui.widget.Toast;
 
 /** The Coordinator for managing the Pwa Universal Install bottom sheet experience. */
 @JNINamespace("webapps")
+@NullMarked
 public class PwaUniversalInstallBottomSheetCoordinator {
     public static boolean sShowBeforeAppTypeKnownForTesting;
     public static boolean sEnableManualIconFetchingForTesting;
@@ -63,7 +68,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
 
     // Tracks what we're showing this dialog for (specifically, what the results of the
     // installability check was for the site).
-    private @AppType Integer mAppType;
+    private @AppType @Nullable Integer mAppType;
 
     // Whether we are showing the dialog for the root of the domain (path == '/') or a leaf page.
     private boolean mIsRoot;
@@ -73,7 +78,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     private boolean mWaitingToShow = true;
 
     // The toast to show if the dialog opening takes too long.
-    private Toast mToast;
+    private @Nullable Toast mToast;
 
     // Tracks when the fetch application data starts.
     private long mFetchStartTime;
@@ -207,6 +212,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     }
 
     private void onAddShortcutClicked() {
+        assumeNonNull(mAppType);
         RecordHistogram.recordEnumeratedHistogram(
                 "WebApk.UniversalInstall.DialogAction",
                 mAppType == AppType.SHORTCUT ? CREATE_SHORTCUT : CREATE_SHORTCUT_TO_APP,

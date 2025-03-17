@@ -21,9 +21,9 @@ BASE_FEATURE(kOneTimePermission,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kKeyboardAndPointerLockPrompt,
-             "KeyboardAndPointerLockPrompt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kKeyboardLockPrompt,
+             "KeyboardLockPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables different positioning of the permission dialog, so that it's placed
@@ -45,9 +45,9 @@ BASE_FEATURE(kPermissionPredictionsV2,
              "PermissionPredictionsV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPermissionPredictionsV3,
-             "PermissionPredictionsV3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPermissionsAIv1,
+             "PermissionsAIv1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to trigger showing a HaTS survey, with the given
 // `probability` and `trigger_id`. The `probability` parameter is defined and
@@ -76,12 +76,6 @@ BASE_FEATURE(kAllowMultipleOriginsForWebKioskPermissions,
 
 BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
              "PermissionDedicatedCpssSettingAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, permissions grants with a durable session model will have
-// an expiration date set.
-BASE_FEATURE(kRecordPermissionExpirationTimestamps,
-             "RecordPermissionExpirationTimestamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #else
@@ -122,6 +116,23 @@ BASE_FEATURE(kCpssQuietChipTextUpdate,
 BASE_FEATURE(kCpssUseTfliteSignatureRunner,
              "CpssUseTfliteSignatureRunner",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, FederatedIdentityApiEmbargoDurationDismiss will use values from
+// a field trial.
+BASE_FEATURE(kFedCmUpdatedCooldownPeriod,
+             "FedCmUpdatedCooldownPeriod",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// When the kill switch is unset, some Chrome features such as
+// Javascript-Optimizers are gated on an additional OS-provided security
+// permission. When the kill switch is set, the OS-provided security permission
+// is ignored when determining whether to enable Chrome features such as
+// Javascript-Optimizers.
+BASE_FEATURE(kOsAdditionalSecurityPermissionKillSwitch,
+             "OsAdditionalSecurityPermissionKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 }  // namespace features
 namespace feature_params {
 
@@ -154,18 +165,6 @@ const base::FeatureParam<PermissionElementPromptPosition>
         "PermissionElementPromptPositioningParam",
         PermissionElementPromptPosition::kWindowMiddle,
         &kPromptPositioningOptions};
-
-const base::FeatureParam<double>
-    kPermissionOnDeviceGeolocationPredictionsHoldbackChance(
-        &features::kPermissionOnDeviceGeolocationPredictions,
-        "holdback_chance",
-        0.3);
-
-const base::FeatureParam<double>
-    kPermissionOnDeviceNotificationPredictionsHoldbackChance(
-        &features::kPermissionOnDeviceNotificationPredictions,
-        "holdback_chance",
-        0.2);
 
 const base::FeatureParam<double> kPermissionPredictionsV2HoldbackChance(
     &features::kPermissionPredictionsV2,
@@ -330,6 +329,11 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<std::string> kWebKioskBrowserPermissionsAllowlist{
     &permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
     "allowlist_urls", ""};
+
+#if !BUILDFLAG(IS_ANDROID)
+const base::FeatureParam<bool> kKeyboardLockPromptUIStyle{
+    &permissions::features::kKeyboardLockPrompt, "use_pepc_ui", true};
+#endif
 
 }  // namespace feature_params
 }  // namespace permissions

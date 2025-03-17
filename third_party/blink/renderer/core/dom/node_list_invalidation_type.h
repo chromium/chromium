@@ -17,6 +17,7 @@ enum NodeListInvalidationType : int {
   kInvalidateOnHRefAttrChange,
   kInvalidateOnAnyAttrChange,
   kInvalidateOnPopoverInvokerAttrChange,
+  kInvalidateOnCommandInvokerAttrChange,
 };
 const int kNumNodeListInvalidationTypes = kInvalidateOnAnyAttrChange + 1;
 

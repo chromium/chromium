@@ -50,10 +50,16 @@ export class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
       showCustomizedShortcut_: Boolean,
 
       shortcutLabelProperties: Array,
+
+      hideDismissButton: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   header: string;
+  hideDismissButton: boolean;
   body: TrustedHTML[];
   shortcutLabelProperties: ShortcutLabelProperties[];
   private showCustomizedShortcut_ =

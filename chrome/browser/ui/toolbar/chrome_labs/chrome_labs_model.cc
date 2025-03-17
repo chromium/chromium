@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,7 +57,7 @@ const std::vector<LabInfo>& GetData() {
 
     // Thumbnail Tab Strip for Windows.
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS))
     lab_info.emplace_back(
         flag_descriptions::kWebUITabStripFlagId,
         l10n_util::GetStringUTF16(IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME),

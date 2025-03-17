@@ -19,6 +19,10 @@ enum class ContentSuggestionsModuleType;
 // user.
 - (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card;
 
+// Notifies the audience that a module of type `moduleType` was shown as the top
+// module.
+- (void)logTopModuleImpressionForType:(ContentSuggestionsModuleType)moduleType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_COLLECTION_VIEW_AUDIENCE_H_

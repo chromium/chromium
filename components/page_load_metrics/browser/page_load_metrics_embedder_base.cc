@@ -22,6 +22,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace page_load_metrics {
@@ -44,16 +45,19 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
     return;
   }
 
+  bool is_incognito = IsIncognito(tracker->GetWebContents());
   tracker->AddObserver(
-      std::make_unique<BackForwardCachePageLoadMetricsObserver>());
-  tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
+      std::make_unique<BackForwardCachePageLoadMetricsObserver>(is_incognito));
+  tracker->AddObserver(
+      std::make_unique<UmaPageLoadMetricsObserver>(is_incognito));
   tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
-  tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
+  tracker->AddObserver(
+      std::make_unique<PrerenderPageLoadMetricsObserver>(is_incognito));
   tracker->AddObserver(std::make_unique<SameOriginPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<CrossOriginPageLoadMetricsObserver>());
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
     tracker->AddObserver(
         std::make_unique<SharedStoragePageLoadMetricsObserver>());
   }

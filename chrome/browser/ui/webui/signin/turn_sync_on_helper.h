@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
@@ -32,13 +31,7 @@ class SigninUIError;
 class TurnSyncOnHelperPolicyFetchTracker;
 class AccountSelectionInProgressHandle;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class DiceSignedInProfileCreator;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class ProfilePickerLacrosSignInProvider;
-#endif
 
 namespace signin {
 class IdentityManager;
@@ -150,18 +143,24 @@ class TurnSyncOnHelper {
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode,
                    std::unique_ptr<Delegate> delegate,
-                   base::OnceClosure callback);
+                   base::OnceClosure callback,
+                   bool turn_sync_on_signed_profile = false);
 
   // Convenience constructor using the default delegate and empty callback.
   // `is_sync_promo` is true if the sync confirmation dialog is offered as an
   // option. It is false if the user explicitly initiated the flow.
+  // `turn_sync_on_signed_profile` is true if the user was already signed in
+  // before starting the sync flow. Used by UIs to decide whether the signin
+  // proposition value should be shown, and what state should the user be in if
+  // they cancel.
   TurnSyncOnHelper(Profile* profile,
                    Browser* browser,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode,
-                   bool is_sync_promo);
+                   bool is_sync_promo,
+                   bool turn_sync_on_signed_profile = false);
 
   TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
   TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;
@@ -270,6 +269,8 @@ class TurnSyncOnHelper {
   // Whether the refresh token should be deleted if the Sync flow is aborted.
   SigninAbortedMode signin_aborted_mode_;
 
+  const bool turn_sync_on_signed_profile_;
+
   // Account information.
   const AccountInfo account_info_;
 
@@ -285,16 +286,11 @@ class TurnSyncOnHelper {
 
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
   std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
-#endif
 
   // The initial primary account is restored if the flow aborts. This is only
-  // needed on Lacros or if UNO Desktop is enabled, because the `SigninManager`
-  // does it automatically on DICE platforms.
+  // needed if UNO Desktop is enabled, because the `SigninManager` does it
+  // automatically on DICE platforms.
   CoreAccountId initial_primary_account_;
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;

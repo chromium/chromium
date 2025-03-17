@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
@@ -17,8 +18,8 @@
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/supervised_user/browser_user.h"
 #include "chrome/test/supervised_user/family_live_test.h"
-#include "chrome/test/supervised_user/family_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -109,9 +110,9 @@ class SupervisedUserExtensionsParentalControlsUiTest
   auto ChildClicksEnableExtensionIfExtensionDisabled(
       ui::ElementIdentifier kChildTab,
       bool expected_extension_enabled) {
-    return Steps(ExecuteJs(kChildTab,
-                           base::StringPrintf(
-                               R"js(
+    return Steps(
+        ExecuteJs(kChildTab, base::StringPrintf(
+                                 R"js(
                 () => {
                   const view_manager =
                     document.querySelector("extensions-manager").shadowRoot
@@ -144,8 +145,8 @@ class SupervisedUserExtensionsParentalControlsUiTest
                   }
                 }
               )js",
-                               expected_extension_enabled ? "true" : "false")),
-                 Log("Child inspected extension toggle."));
+                                 base::ToString(expected_extension_enabled))),
+        Log("Child inspected extension toggle."));
   }
 
   // Installs programmatically (not through the UI) an extension for the given
@@ -246,7 +247,7 @@ class SupervisedUserExtensionsParentalControlsUiTest
                 }
               }
           )js",
-                      permissions_button_greyed_out ? "true" : "false")),
+                      base::ToString(permissions_button_greyed_out))),
         Log("Child inspected Location Permission button."));
   }
 
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
 
   InstallExtension(&child().profile());
 
-  RunTestSequence(InAnyContext(Steps(
+  RunTestSequence(InAnyContext(
       Log("Given an installed disabled extension."),
       // Parent sets both the FL Permissions and Extensions switches.
       // Only one of them impacts the handling of supervised user extensions.
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       // If the extension is not already enabled, check that the expect UI
       // dialog appears.
       CheckForParentDialogIfExtensionDisabled(should_be_enabled),
-      CheckExtensionLocationPermissions(kChildElementId, &child().profile()))));
+      CheckExtensionLocationPermissions(kChildElementId, &child().profile())));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -118,7 +118,7 @@ interface Attributes {
  */
 function createElem(
     tag: string, attrs: Attributes|string = {}, children: HTMLElement[] = []) {
-  const elem = document.createElement(tag) as HTMLElement;
+  const elem = document.createElement(tag);
   if (typeof attrs === 'string') {
     elem.textContent = attrs;
   } else {
@@ -382,13 +382,13 @@ export class InfoViewElement extends CustomElement {
   }
 
   getSelectionText(all: boolean) {
-    const dynamicStyle = this.getRequiredElement('#dynamic-style')!;
+    const dynamicStyle = this.getRequiredElement('#dynamic-style');
     dynamicStyle.textContent = `
       #content { white-space: pre !important; }
       .copy { display: initial; }
       .hide-on-copy { display: none; }
     `;
-    const contentDiv = this.getRequiredElement('#content')!;
+    const contentDiv = this.getRequiredElement('#content');
 
     // document.getSelection doesn't work through shadowDom
     // and shadowRoot getSelection is non-standard chromium
@@ -464,11 +464,11 @@ export class InfoViewElement extends CustomElement {
     // Add a copy handler to massage the text for plain text.
     document.addEventListener('copy', (event) => {
       const text = this.getSelectionText(false);
-      event!.clipboardData!.setData('text/plain', text);
+      event.clipboardData!.setData('text/plain', text);
       event.preventDefault();
     });
 
-    const contentDiv = this.getRequiredElement('#content')!;
+    const contentDiv = this.getRequiredElement('#content');
     this.sections = Object.fromEntries(Object.entries(kSections).map(
                         ([propName, [title, tag]]) => {
                           const div = createHeading('h3', '=', title);

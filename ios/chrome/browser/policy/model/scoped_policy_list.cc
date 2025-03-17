@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/policy/model/scoped_policy_list.h"
+
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 
 ScopedPolicyList::ScopedPolicyList() {}

@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
+#import "ios/chrome/common/ui/util/background_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -24,15 +25,16 @@ constexpr CGFloat kLargeAccessoryHeight = 59;
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
-// The width for the background-colored gradient UIView.
-constexpr CGFloat ManualFillGradientWidth = 44;
+// Trailing horizontal padding.
+constexpr CGFloat kKeyboardHozirontalPadding = 16;
 
-// The width for the background-colored gradient UIView for the large keyboard
-// accessory.
-constexpr CGFloat ManualFillLargeAccessoryGradientWidth = 6;
+// The padding between the image and the title on the manual fill button.
+// Only applies to the iPad version of this button.
+constexpr CGFloat kManualFillTitlePadding = 4;
 
-// The margin for the background-colored gradient UIView.
-constexpr CGFloat ManualFillGradientMargin = 14;
+// The font size used for the title of the manual fill button.
+// Only applies to the iPad version of this button.
+constexpr CGFloat kManualFillTitleFontSize = 18;
 
 // The spacing between the items in the navigation view.
 constexpr CGFloat ManualFillNavigationItemSpacing = 4;
@@ -103,8 +105,18 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   NSLayoutConstraint* _omniboxTypingShieldHiddenBottomConstraint;
   // View containing the leading and trailing buttons.
   UIView* _contentView;
+  // The view used as the background for the content view.
+  UIView* _backgroundView;
   // Whether we are using the large accessory view.
   BOOL _largeAccessoryViewEnabled;
+  // Whether the current form factor is a tablet.
+  BOOL _isTabletFormFactor;
+  // Whether the size of the accessory is compact.
+  BOOL _isCompact;
+  // Trailing constraint in non compact mode (tablet only).
+  NSLayoutConstraint* _trailingConstraint;
+  // Trailing constraint in compact mode (tablet only).
+  NSLayoutConstraint* _compactTrailingConstraint;
 }
 
 #pragma mark - Public
@@ -144,9 +156,11 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
-             closeButtonSymbol:(UIImage*)closeButtonSymbol {
+             closeButtonSymbol:(UIImage*)closeButtonSymbol
+            isTabletFormFactor:(BOOL)isTabletFormFactor {
   DCHECK(manualFillSymbol);
   _largeAccessoryViewEnabled = YES;
+  _isTabletFormFactor = isTabletFormFactor;
   [self setUpWithLeadingView:leadingView
               customTrailingView:nil
               navigationDelegate:delegate
@@ -162,6 +176,16 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   if (self.window) {
     [self layoutIfNeeded];
   }
+}
+
+- (void)setIsCompact:(BOOL)isCompact {
+  if (_isCompact == isCompact) {
+    return;
+  }
+
+  _isCompact = isCompact;
+  [self adjustManualFillButtonTitle:self.manualFillButton];
+  [self setHorizontalConstraints];
 }
 
 #pragma mark - UIInputViewAudioFeedback
@@ -231,7 +255,14 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
   _contentView = [[UIView alloc] init];
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
-  _contentView.backgroundColor = [self contentBackgroundColor];
+  if (_largeAccessoryViewEnabled) {
+    _backgroundView = PrimaryBackgroundBlurView();
+    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:_backgroundView];
+    AddSameConstraints(_backgroundView, _contentView);
+  } else {
+    _contentView.backgroundColor = [self contentBackgroundColor];
+  }
   [self addSubview:_contentView];
   AddSameConstraintsToSides(
       self, _contentView,
@@ -285,66 +316,61 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
     [leadingViewContainer.leadingAnchor
         constraintEqualToAnchor:layoutGuide.leadingAnchor],
-    [trailingView.trailingAnchor
-        constraintEqualToAnchor:layoutGuide.trailingAnchor],
     [trailingView.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
     [trailingView.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
   ]];
 
-  // Gradient view to disolve the leading view's end.
-  UIView* gradientView =
-      [[GradientView alloc] initWithStartColor:[[self contentBackgroundColor]
-                                                   colorWithAlphaComponent:0]
-                                      endColor:[self contentBackgroundColor]
-                                    startPoint:CGPointMake(0, 0.5)
-                                      endPoint:CGPointMake(0.6, 0.5)];
+  if (_isTabletFormFactor && _largeAccessoryViewEnabled) {
+    // On tablets, when using the large keyboard accessory, add padding at both
+    // ends of the content view to match the keyboard's padding.
 
-  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (base::i18n::IsRTL()) {
-    gradientView.transform = CGAffineTransformMakeRotation(M_PI);
+    // Trailing constraint in non compact mode.
+    _trailingConstraint = [trailingView.trailingAnchor
+        constraintEqualToAnchor:layoutGuide.trailingAnchor
+                       constant:-kKeyboardHozirontalPadding];
+    // Trailing constraint in compact mode.
+    _compactTrailingConstraint = [trailingView.trailingAnchor
+        constraintEqualToAnchor:layoutGuide.trailingAnchor];
+
+    [self setHorizontalConstraints];
+  } else {
+    [trailingView.trailingAnchor
+        constraintEqualToAnchor:layoutGuide.trailingAnchor]
+        .active = YES;
   }
-  [_contentView insertSubview:gradientView belowSubview:trailingView];
 
-  UIView* topGrayLine = [[UIView alloc] init];
-  topGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
-  topGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
-  [_contentView addSubview:topGrayLine];
+  // When using the blur effect background, do not add top and bottom lines.
+  if (!_largeAccessoryViewEnabled) {
+    UIView* topGrayLine = [[UIView alloc] init];
+    topGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
+    topGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:topGrayLine];
 
-  UIView* bottomGrayLine = [[UIView alloc] init];
-  bottomGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
-  bottomGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
-  [_contentView addSubview:bottomGrayLine];
+    UIView* bottomGrayLine = [[UIView alloc] init];
+    bottomGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
+    bottomGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:bottomGrayLine];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [topGrayLine.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
-    [topGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [topGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [topGrayLine.heightAnchor
-        constraintEqualToConstant:ManualFillSeparatorHeight],
+    [NSLayoutConstraint activateConstraints:@[
+      [topGrayLine.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
+      [topGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [topGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [topGrayLine.heightAnchor
+          constraintEqualToConstant:ManualFillSeparatorHeight],
 
-    [bottomGrayLine.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-    [bottomGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [bottomGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [bottomGrayLine.heightAnchor
-        constraintEqualToConstant:ManualFillSeparatorHeight],
+      [bottomGrayLine.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [bottomGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [bottomGrayLine.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [bottomGrayLine.heightAnchor
+          constraintEqualToConstant:ManualFillSeparatorHeight],
+    ]];
+  }
 
-    [gradientView.topAnchor constraintEqualToAnchor:trailingView.topAnchor],
-    [gradientView.bottomAnchor
-        constraintEqualToAnchor:trailingView.bottomAnchor],
-    [gradientView.widthAnchor
-        constraintEqualToConstant:_largeAccessoryViewEnabled
-                                      ? ManualFillLargeAccessoryGradientWidth
-                                      : ManualFillGradientWidth],
-    [gradientView.trailingAnchor
-        constraintEqualToAnchor:trailingView.leadingAnchor
-                       constant:_largeAccessoryViewEnabled
-                                    ? 0
-                                    : ManualFillGradientMargin],
-
-    [leadingViewContainer.trailingAnchor
-        constraintEqualToAnchor:trailingView.leadingAnchor],
-  ]];
+  [leadingViewContainer.trailingAnchor
+      constraintEqualToAnchor:trailingView.leadingAnchor]
+      .active = YES;
 
   [self createOmniboxTypingShield];
 }
@@ -376,6 +402,10 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         [self createAddressManualFillButtonWithText:textData];
     addressManualFillButton.hidden = YES;
     self.addressManualFillButton = addressManualFillButton;
+
+    if (_isTabletFormFactor) {
+      closeButton.hidden = YES;
+    }
 
     navigationView = [[UIStackView alloc] initWithArrangedSubviews:@[
       passwordManualFillButton, creditCardManualFillButton,
@@ -416,12 +446,54 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   return imageButton;
 }
 
+// Sets or removes the title for the manual fill button based on whether the UI
+// is currently in compact mode (tablets only).
+- (void)adjustManualFillButtonTitle:(UIButton*)manualFillButton {
+  // The manual fill button can only have a title when using the large accessory
+  // view on a tablet.
+  if (!_isTabletFormFactor || !_largeAccessoryViewEnabled) {
+    return;
+  }
+
+  // The default configuration has no title or padding.
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+
+  // The image should always be set, whether or not there's a title.
+  buttonConfiguration.image = self.manualFillSymbol;
+
+  if (!_isCompact) {
+    // Set the button title with a custom sized font.
+    FormInputAccessoryViewTextData* textData =
+        [self.delegate textDataforFormInputAccessoryView:self];
+    UIFont* font = [UIFont systemFontOfSize:kManualFillTitleFontSize
+                                     weight:UIFontWeightMedium];
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:textData.manualFillButtonTitle
+            attributes:@{NSFontAttributeName : font}];
+    buttonConfiguration.attributedTitle = attributedTitle;
+
+    // If the button has both a title and an image, add padding around the
+    // title so that it's not directly next to the image.
+    if (self.manualFillSymbol) {
+      buttonConfiguration.imagePadding = kManualFillTitlePadding;
+    }
+  }
+
+  manualFillButton.configuration = buttonConfiguration;
+}
+
 // Create the manual fill button.
 - (UIButton*)createManualFillButtonWithText:
     (FormInputAccessoryViewTextData*)textData {
-  return [self createImageButton:self.manualFillSymbol
-                          action:@selector(manualFillButtonTapped)
-              accessibilityLabel:textData.manualFillButtonAccessibilityLabel];
+  UIButton* manualFillButton =
+      [self createImageButton:self.manualFillSymbol
+                       action:@selector(manualFillButtonTapped)
+           accessibilityLabel:textData.manualFillButtonAccessibilityLabel];
+
+  [self adjustManualFillButtonTitle:manualFillButton];
+
+  return manualFillButton;
 }
 
 // Create the password manual fill button.
@@ -537,6 +609,17 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   return _largeAccessoryViewEnabled
              ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
              : [UIColor colorNamed:kBackgroundColor];
+}
+
+// Applies the proper horizontal padding, depending on whether the keyboard
+// accessory is in compact mode (tablet only).
+- (void)setHorizontalConstraints {
+  if (!_isTabletFormFactor || !_largeAccessoryViewEnabled) {
+    return;
+  }
+
+  _trailingConstraint.active = !_isCompact;
+  _compactTrailingConstraint.active = _isCompact;
 }
 
 #pragma mark - UIView

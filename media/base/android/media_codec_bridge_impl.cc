@@ -680,11 +680,6 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     const DecryptConfig& decrypt_config) {
   DVLOG(3) << __func__ << " " << index << ": " << data.size();
   CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
-
-  if (!FillInputBuffer(index, data)) {
-    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
-  }
-
   JNIEnv* env = AttachCurrentThread();
 
   // The MediaCodec.CryptoInfo documentation says to pass NULL for |clear_array|
@@ -711,6 +706,48 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
       native_clear_array[i] = subsamples.clear_bytes;
       native_cypher_array[i] = subsamples.cypher_bytes;
     }
+  }
+
+  if (use_block_model_) {
+    ScopedJavaLocalRef<jobject> j_result =
+        Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
+    ScopedJavaLocalRef<jobject> j_block =
+        Java_ObtainBlockResult_block(env, j_result);
+    if (j_block.is_null()) {
+      return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
+    }
+
+    if (!data.empty()) {
+      ScopedJavaLocalRef<jobject> j_buffer =
+          Java_ObtainBlockResult_buffer(env, j_result);
+      base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+          .first(data.size())
+          .copy_from_nonoverlapping(data);
+    }
+
+    const auto status = static_cast<MediaCodecStatus>(
+        Java_MediaCodecBridge_queueSecureInputBlock(
+            env, j_bridge_, index, j_block, 0, data.size(),
+            ToJavaByteArray(env, decrypt_config.iv()),
+            ToJavaByteArray(env, decrypt_config.key_id()),
+            ToJavaIntArray(env, native_clear_array),
+            ToJavaIntArray(env, native_cypher_array), num_subsamples,
+            static_cast<int>(decrypt_config.encryption_scheme()),
+            decrypt_config.encryption_pattern()
+                ? decrypt_config.encryption_pattern()->crypt_byte_block()
+                : 0,
+            decrypt_config.encryption_pattern()
+                ? decrypt_config.encryption_pattern()->skip_byte_block()
+                : 0,
+            presentation_time.InMicroseconds(), /*flags=*/0));
+
+    Java_ObtainBlockResult_recycle(env, j_result);
+    ReportAnyErrorToUMA(status);
+    return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
+  }
+
+  if (!FillInputBuffer(index, data)) {
+    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
   }
 
   // Note: All the To*Array() calls each make a copy below. This could be a
@@ -929,6 +966,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
   if (!data.empty()) {
     auto j_buffer = Java_ObtainBlockResult_buffer(env, j_result);
     base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+        .first(data.size())
         .copy_from_nonoverlapping(data);
   }
 

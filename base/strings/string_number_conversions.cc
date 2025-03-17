@@ -170,8 +170,9 @@ bool HexStringToString(std::string_view input, std::string* output) {
 }
 
 bool HexStringToSpan(std::string_view input, span<uint8_t> output) {
-  if (input.size() / 2 != output.size())
+  if (input.size() / 2 != output.size()) {
     return false;
+  }
 
   return internal::HexStringToByteContainer<uint8_t>(input, output.begin());
 }

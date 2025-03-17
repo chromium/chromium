@@ -74,7 +74,7 @@ bool MatchesStorageKey(const std::set<url::Origin>& origins,
 
   auto third_party_predicate = [&]() {
     return is_delete_list ==
-           base::ranges::any_of(
+           std::ranges::any_of(
                registerable_domains, [&](const std::string& domain) {
                  return storage_key
                      .MatchesRegistrableDomainForTrustedStorageDeletion(domain);

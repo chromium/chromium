@@ -7,15 +7,18 @@ package org.chromium.chrome.browser.crash;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 
 /** This class updates crash keys when the application state changes. */
+@NullMarked
 public class ApplicationStatusTracker implements ApplicationStatus.ApplicationStateListener {
     private static final String APP_FOREGROUND = "app_foreground";
     private static final String APP_BACKGROUND = "app_background";
 
-    private String mCurrentState;
+    private @Nullable String mCurrentState;
 
     @Override
     public void onApplicationStateChange(int newState) {

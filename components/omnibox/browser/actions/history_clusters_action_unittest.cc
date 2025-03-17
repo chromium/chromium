@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -40,7 +40,7 @@ struct MatchData {
 ACMatches CreateACMatches(std::vector<MatchData> matches_data) {
   ACMatches matches;
   matches.reserve(matches_data.size());
-  base::ranges::transform(
+  std::ranges::transform(
       matches_data, std::back_inserter(matches), [](const auto& match_data) {
         AutocompleteMatch match(nullptr, match_data.relevance, true,
                                 match_data.type);

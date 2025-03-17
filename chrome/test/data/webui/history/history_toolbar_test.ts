@@ -4,9 +4,11 @@
 
 import 'chrome://history/history.js';
 
-import type {HistoryAppElement, HistoryEntry} from 'chrome://history/history.js';
+import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, ensureLazyLoaded, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
+import type {HistoryEntry, QueryResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -43,17 +45,19 @@ suite('history-toolbar', function() {
     return Promise
         .all([
           ensureLazyLoaded(),
-          testService.whenCalled('queryHistory'),
+          testService.handler.whenCalled('queryHistory'),
         ])
         .then(flushTasks);
   });
 
   test('selecting checkbox causes toolbar to change', async function() {
-    testService.setQueryResult(
-        {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
+    testService.handler.setResultFor(
+        'queryHistoryContinuation', Promise.resolve({
+          results: {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS},
+        }));
     app.$.history.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: true}));
-    await testService.whenCalled('queryHistoryContinuation');
+    await testService.handler.whenCalled('queryHistoryContinuation');
     await flushTasks();
     const item = app.$.history.shadowRoot!.querySelector('history-item')!;
     item.$.checkbox.click();
@@ -76,30 +80,36 @@ suite('history-toolbar', function() {
   });
 
   test('search term gathered correctly from toolbar', async function() {
-    testService.resetResolver('queryHistory');
+    testService.handler.resetResolver('queryHistory');
     const toolbar = app.$.toolbar;
-    testService.setQueryResult(
-        {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS});
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS},
+    }));
     toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
         'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
-    const query = await testService.whenCalled('queryHistory');
-    assertEquals('Test', query);
+    const queryArgs = await testService.handler.whenCalled('queryHistory');
+    assertEquals('Test', queryArgs[0]);
   });
 
   test('spinner is active on search', async function() {
-    testService.resetResolver('queryHistory');
-    testService.delayQueryResult();
-    testService.setQueryResult({
-      info: createHistoryInfo('Test2'),
-      value: TEST_HISTORY_RESULTS,
-    });
+    testService.handler.resetResolver('queryHistory');
+
+    const delayedQuery = new PromiseResolver<{results: QueryResult}>();
+
+    testService.handler.setResultFor('queryHistory', delayedQuery.promise);
+
     const toolbar = app.$.toolbar;
     toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
         'search-changed', {bubbles: true, composed: true, detail: 'Test2'}));
-    await testService.whenCalled('queryHistory');
-    await flushTasks();
+    await testService.handler.whenCalled('queryHistory');
+
     assertTrue(toolbar.spinnerActive);
-    testService.finishQueryHistory();
+    delayedQuery.resolve({
+      results: {
+        info: createHistoryInfo('Test2'),
+        value: TEST_HISTORY_RESULTS,
+      },
+    });
     await flushTasks();
     assertFalse(toolbar.spinnerActive);
   });

@@ -7,8 +7,7 @@
 
 // State of on-device encryption.
 typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
-  // User can not opt-in in their current state, so the section should not be
-  // shown.
+  // User can not opt-in in their current state.
   PasswordSettingsOnDeviceEncryptionStateNotShown = 0,
   // On-device encryption is on.
   PasswordSettingsOnDeviceEncryptionStateOptedIn,
@@ -20,44 +19,34 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // the password settings submenu.
 @protocol PasswordSettingsConsumer
 
-// Indicates whether the delete flow can be started. Should be NO when no
-// credentials saved, and YES otherwise.
+// User-modifiable preferences.
+
+- (void)setSavingPasswordsEnabled:(BOOL)enabled
+                  managedByPolicy:(BOOL)managedByPolicy;
+
+- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled;
+
+// Read-only data.
+
+- (void)setUserEmail:(NSString*)userEmail;
+
+// This is enabled by default and can only be modified by an enterprise policy.
+- (void)setSavingPasskeysEnabled:(BOOL)enabled;
+
+// State machines triggering UI changes.
+
+- (void)setCanChangeGPMPin:(BOOL)canChangeGPMPin;
+
 - (void)setCanDeleteAllCredentials:(BOOL)canDeleteAllCredentials;
 
-// Indicates whether the export flow can be started. Should be NO when an
-// export is already in progress, and YES when idle.
 - (void)setCanExportPasswords:(BOOL)canExportPasswords;
 
-// Indicates whether or not the Password Manager is managed by enterprise
-// policy.
-- (void)setManagedByPolicy:(BOOL)managedByPolicy;
+- (void)setCanBulkMove:(BOOL)canBulkMove localPasswordsCount:(int)count;
 
-// Indicates whether or not the "Offer to Save Passwords" feature is enabled.
-- (void)setSavePasswordsEnabled:(BOOL)enabled;
-
-// The count of local passwords passed along with the user eligibility to see
-// the move passwords to account section.
-- (void)setLocalPasswordsCount:(int)count withUserEligibility:(BOOL)eligibility;
-
-// Indicates the signed-in account.
-- (void)setSignedInAccount:(NSString*)account;
-
-// Indicates whether or not Chromium has been enabled as a credential provider
-// at the iOS level.
-- (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled;
-
-// Indicates the on-device encryption state according to the sync service.
 - (void)setOnDeviceEncryptionState:
     (PasswordSettingsOnDeviceEncryptionState)onDeviceEncryptionState;
 
-// Enables/disables the "Delete all data" button based on the current state.
-- (void)updateDeleteAllCredentialsButton;
-
-// Enables/disables the "Export Passwords..." button based on the current state.
-- (void)updateExportPasswordsButton;
-
-// Sets up button for changing GPM Pin.
-- (void)setupChangeGPMPinButton;
+- (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled;
 
 @end
 

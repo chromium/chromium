@@ -21,7 +21,7 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
  public:
   template <typename ResponseType>
   using ResponseCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus& status,
+      base::OnceCallback<void(const HttpStatus& status,
                               std::unique_ptr<ResponseType> response)>;
 
   explicit ProtobufHttpRequest(
@@ -41,8 +41,7 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
     response_message_ = response.get();
     response_callback_ = base::BindOnce(
         [](std::unique_ptr<ResponseType> response,
-           ResponseCallback<ResponseType> callback,
-           const ProtobufHttpStatus& status) {
+           ResponseCallback<ResponseType> callback, const HttpStatus& status) {
           if (!status.ok()) {
             response.reset();
           }
@@ -53,7 +52,7 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
 
  private:
   // ProtobufHttpRequestBase implementations.
-  void OnAuthFailed(const ProtobufHttpStatus& status) override;
+  void OnAuthFailed(const HttpStatus& status) override;
   void StartRequestInternal(
       network::mojom::URLLoaderFactory* loader_factory) override;
   base::TimeDelta GetRequestTimeoutDuration() const override;
@@ -61,12 +60,12 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
   void OnResponse(std::unique_ptr<std::string> response_body);
 
   // Parses |response_body| and writes it to |response_message_|.
-  ProtobufHttpStatus ParseResponse(std::unique_ptr<std::string> response_body);
+  HttpStatus ParseResponse(std::unique_ptr<std::string> response_body);
 
-  void RunResponseCallback(const ProtobufHttpStatus& status);
+  void RunResponseCallback(const HttpStatus& status);
 
   base::TimeDelta timeout_duration_ = base::Seconds(30);
-  base::OnceCallback<void(const ProtobufHttpStatus&)> response_callback_;
+  base::OnceCallback<void(const HttpStatus&)> response_callback_;
 
   // This is owned by |response_callback_|.
   raw_ptr<google::protobuf::MessageLite> response_message_;

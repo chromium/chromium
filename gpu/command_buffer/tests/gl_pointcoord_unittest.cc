@@ -6,6 +6,8 @@
 #include <GLES2/gl2ext.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -39,13 +41,18 @@ GLuint PointCoordTest::SetupQuad(
   GLuint vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  float vertices[] = {
-    -0.5f + pixel_offset, -0.5f + pixel_offset,
-     0.5f + pixel_offset, -0.5f + pixel_offset,
-    -0.5f + pixel_offset,  0.5f + pixel_offset,
-     0.5f + pixel_offset,  0.5f + pixel_offset,
-  };
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  auto vertices = std::to_array<float>({
+      -0.5f + pixel_offset,
+      -0.5f + pixel_offset,
+      0.5f + pixel_offset,
+      -0.5f + pixel_offset,
+      -0.5f + pixel_offset,
+      0.5f + pixel_offset,
+      0.5f + pixel_offset,
+      0.5f + pixel_offset,
+  });
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
+               vertices.data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(position_location);
   glVertexAttribPointer(position_location, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -101,7 +108,7 @@ TEST_F(PointCoordTest, MAYBE_RenderTo) {
   GLint position_loc = glGetAttribLocation(program, "a_position");
   GLint pointsize_loc = glGetUniformLocation(program, "u_pointsize");
 
-  GLint range[2] = { 0, 0 };
+  std::array<GLint, 2> range = {0, 0};
   glGetIntegerv(GL_ALIASED_POINT_SIZE_RANGE, &range[0]);
   GLint max_point_size = range[1];
   EXPECT_GE(max_point_size, 1);
@@ -149,6 +156,3 @@ TEST_F(PointCoordTest, MAYBE_RenderTo) {
 }
 
 }  // namespace gpu
-
-
-

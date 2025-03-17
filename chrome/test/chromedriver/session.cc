@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/session.h"
 
+#include <algorithm>
 #include <list>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -39,7 +39,7 @@ Status SplitChannel(std::string* channel,
   }
   if (k == 0) {
     return Status{kUnknownError,
-                  "channel does not end with an expected suffix"};
+                  "goog:channel does not end with an expected suffix"};
   }
   *suffix = channel->substr(k - 1);
   channel->erase(std::next(channel->begin(), k - 1), channel->end());
@@ -48,7 +48,7 @@ Status SplitChannel(std::string* channel,
   for (; k && (*channel)[k - 1] != '/'; --k) {
   }
   if (k == 0) {
-    return Status{kUnknownError, "channel does not contain connection_id"};
+    return Status{kUnknownError, "goog:channel does not contain connection_id"};
   }
   std::string connection_str = channel->substr(k);
   channel->erase(std::next(channel->begin(), k - 1), channel->end());
@@ -150,13 +150,18 @@ Status Session::GetTargetWindow(WebView** web_view) {
     return Status(kNoSuchWindow, "target window already closed", status);
   }
 
-  Timeout timeout;
-  status = tab->WaitForPendingActivePage(timeout);
-  if (status.IsError()) {
-    return status;
-  }
+  if (tab->IsTab()) {
+    Timeout timeout;
+    status = tab->WaitForPendingActivePage(timeout);
+    if (status.IsError()) {
+      return status;
+    }
 
-  status = tab->GetActivePage(web_view);
+    status = tab->GetActivePage(web_view);
+  } else {
+    // If target window is not a tab (eg. webview), return it as is.
+    *web_view = tab;
+  }
   return status;
 }
 
@@ -211,9 +216,10 @@ void Session::SwitchFrameInternal(bool for_top_frame) {
 }
 
 Status Session::OnBidiResponse(base::Value::Dict payload) {
-  std::string* channel = payload.FindString("channel");
+  std::string* channel = payload.FindString("goog:channel");
   if (!channel) {
-    return Status{kUnknownError, "channel is missing in the BiDi response"};
+    return Status{kUnknownError,
+                  "goog:channel is missing in the BiDi response"};
   }
 
   int connection_id = -1;
@@ -224,7 +230,7 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
   }
 
   if (suffix == kNoChannelSuffix) {
-    payload.Remove("channel");
+    payload.Remove("goog:channel");
   } else if (suffix != kChannelSuffix) {
     return Status{kUnknownError,
                   "unexpected channel name in the BiDi response"};
@@ -239,8 +245,8 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
     return Status{kUnknownError, "unable to serialize a BiDi response"};
   }
 
-  auto it = base::ranges::find(bidi_connections_, connection_id,
-                               &BidiConnection::connection_id);
+  auto it = std::ranges::find(bidi_connections_, connection_id,
+                              &BidiConnection::connection_id);
   if (it == bidi_connections_.end()) {
     // It can happen that we receive a message from the mapper designated to the
     // channel that has recently been closed.
@@ -266,8 +272,8 @@ void Session::RemoveBidiConnection(int connection_id) {
   // connection as an error.
   // Reallistically we will not have many connections, therefore linear search
   // is optimal.
-  auto it = base::ranges::find(bidi_connections_, connection_id,
-                               &BidiConnection::connection_id);
+  auto it = std::ranges::find(bidi_connections_, connection_id,
+                              &BidiConnection::connection_id);
   if (it != bidi_connections_.end()) {
     bidi_connections_.erase(it);
   }
@@ -304,7 +310,7 @@ Status Session::SendBidiSessionEnd() {
     return status;
   }
   base::Value::Dict bidi_cmd;
-  bidi_cmd.Set("channel", "/before-session-shutdown");
+  bidi_cmd.Set("goog:channel", "/before-session-shutdown");
   bidi_cmd.Set("id", 1);
   bidi_cmd.Set("method", "session.end");
   bidi_cmd.Set("params", base::Value::Dict());

@@ -43,7 +43,7 @@ void SetUserDisplayModeCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (app_lock_->registrar().IsNotInRegistrar(app_id_)) {
+  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
     CompleteAndSelfDestruct(CommandResult::kFailure);
     return;
   }

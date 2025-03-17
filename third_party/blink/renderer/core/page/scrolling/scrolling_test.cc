@@ -866,16 +866,8 @@ TEST_P(ScrollingTest, touchActionOnScrollingElement) {
   cc::Region region =
       scrolling_contents_layer->touch_action_region().GetRegionForTouchAction(
           TouchAction::kPanY | TouchAction::kInternalNotWritable);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_EQ(scrolling_contents_layer->bounds(), gfx::Size(100, 150));
-    EXPECT_EQ(cc::Region(gfx::Rect(0, 0, 100, 150)), region);
-  } else {
-    // When HitTestOpaqueness is not enabled, the scrolling contents layer
-    // contains only the drawable contents due to the lack of the hit test
-    // data for the whole scrolling contents.
-    EXPECT_EQ(scrolling_contents_layer->bounds(), gfx::Size(50, 150));
-    EXPECT_EQ(cc::Region(gfx::Rect(0, 0, 50, 150)), region);
-  }
+  EXPECT_EQ(scrolling_contents_layer->bounds(), gfx::Size(100, 150));
+  EXPECT_EQ(cc::Region(gfx::Rect(0, 0, 100, 150)), region);
 
   const auto* container_layer = LayerByDOMElementId("scrollable");
   region = container_layer->touch_action_region().GetRegionForTouchAction(
@@ -1717,7 +1709,7 @@ TEST_P(ScrollingTest, MainThreadScrollHitTestRegionWithBorder) {
   ForceFullCompositingUpdate();
 
   auto* layer = MainFrameScrollingContentsLayer();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_TRUE(layer->main_thread_scroll_hit_test_region().IsEmpty());
     EXPECT_EQ(
         gfx::Rect(0, 0, 120, 120),
@@ -1756,7 +1748,7 @@ TEST_P(ScrollingTest, NonFastScrollableRegionWithBorderAndBorderRadius) {
   EXPECT_TRUE(layer->non_composited_scroll_hit_test_rects()->empty());
 }
 
-TEST_P(ScrollingTest, FastNonCompositedScrollHitTest) {
+TEST_P(ScrollingTest, RasterInducingScroll) {
   SetPreferCompositingToLCDText(false);
   LoadHTML(R"HTML(
     <!doctype html>
@@ -1812,7 +1804,7 @@ TEST_P(ScrollingTest, FastNonCompositedScrollHitTest) {
       layer->main_thread_scroll_hit_test_region();
   const std::vector<cc::ScrollHitTestRect>* scroll_hit_test_rects =
       layer->non_composited_scroll_hit_test_rects();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     cc::Region expected_non_fast_region(gfx::Rect(50, 150, 100, 400));
     EXPECT_EQ(RegionFromRects(
                   {// nested-parent, covered1, covered2, covered3.
@@ -2212,7 +2204,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingHideAndShow) {
 
   ForceFullCompositingUpdate();
 
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     // Should have a NonCompositedScrollHitTestRect initially.
     EXPECT_TRUE(MainFrameScrollingContentsLayer()
                     ->main_thread_scroll_hit_test_region()
@@ -2248,7 +2240,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingHideAndShow) {
   // NonCompositedScrollHitTestRect.
   iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   ForceFullCompositingUpdate();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_TRUE(MainFrameScrollingContentsLayer()
                     ->main_thread_scroll_hit_test_region()
                     .IsEmpty());
@@ -2290,7 +2282,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingHideAndShowVisibility) {
 
   ForceFullCompositingUpdate();
 
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     // Should have a NonCompositedScrollHitTestRect initially.
     EXPECT_TRUE(MainFrameScrollingContentsLayer()
                     ->main_thread_scroll_hit_test_region()
@@ -2326,7 +2318,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingHideAndShowVisibility) {
   // NonCompositedScrollHitTestRect.
   iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   ForceFullCompositingUpdate();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_TRUE(MainFrameScrollingContentsLayer()
                     ->main_thread_scroll_hit_test_region()
                     .IsEmpty());
@@ -2376,7 +2368,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingHideAndShowScrollable) {
   Element* iframe =
       GetFrame()->GetDocument()->getElementById(AtomicString("iframe"));
 
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     // Should have a MainThreadScrollHitTestRegion initially.
     EXPECT_FALSE(MainFrameScrollingContentsLayer()
                      ->non_composited_scroll_hit_test_rects()
@@ -2407,7 +2399,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingHideAndShowScrollable) {
 
   iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   ForceFullCompositingUpdate();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     // Showing it again should compute the NonCompositedScrollHitTestRect.
     EXPECT_FALSE(MainFrameScrollingContentsLayer()
                      ->non_composited_scroll_hit_test_rects()
@@ -2447,7 +2439,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingNested) {
       MainFrameScrollingContentsLayer()->main_thread_scroll_hit_test_region();
   auto* hit_test_rects =
       MainFrameScrollingContentsLayer()->non_composited_scroll_hit_test_rects();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_TRUE(main_thread_region.IsEmpty());
     EXPECT_EQ(2u, hit_test_rects->size());
     EXPECT_EQ(gfx::Rect(51, 102, 100, 100),
@@ -2515,7 +2507,7 @@ TEST_P(ScrollingTest, IframeNonCompositedScrollingPageScaled) {
   // cc::Layer::main_thread_scroll_hit_test_region and
   // non_composited_scroll_hit_test_rects are in layer space and are not
   // affected by the page scale.
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_TRUE(MainFrameScrollingContentsLayer()
                     ->main_thread_scroll_hit_test_region()
                     .IsEmpty());
@@ -2546,7 +2538,7 @@ TEST_P(ScrollingTest, NonCompositedScrollTransformChange) {
   )HTML");
   ForceFullCompositingUpdate();
 
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_EQ(gfx::Rect(0, 0, 222, 222),
               MainFrameScrollingContentsLayer()
                   ->non_composited_scroll_hit_test_rects()
@@ -2561,7 +2553,7 @@ TEST_P(ScrollingTest, NonCompositedScrollTransformChange) {
   GetFrame()->GetDocument()->body()->SetInlineStyleProperty(
       CSSPropertyID::kPadding, "10px");
   ForceFullCompositingUpdate();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_EQ(gfx::Rect(10, 10, 222, 222),
               MainFrameScrollingContentsLayer()
                   ->non_composited_scroll_hit_test_rects()
@@ -2578,7 +2570,7 @@ TEST_P(ScrollingTest, NonCompositedScrollTransformChange) {
       ->getElementById(AtomicString("scroll"))
       ->SetInlineStyleProperty(CSSPropertyID::kTransform, "translateX(100px)");
   ForceFullCompositingUpdate();
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_EQ(gfx::Rect(110, 10, 222, 222),
               MainFrameScrollingContentsLayer()
                   ->non_composited_scroll_hit_test_rects()
@@ -2693,7 +2685,7 @@ TEST_P(ScrollingTest, NonCompositedMainThreadScrollHitTestRegion) {
   ForceFullCompositingUpdate();
 
   const auto* cc_layer = LayerByDOMElementId("composited_container");
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     // The non-scrolling layer should have a NonCompositedScrollHitTestRect
     // for the non-composited scroller.
     EXPECT_TRUE(cc_layer->main_thread_scroll_hit_test_region().IsEmpty());

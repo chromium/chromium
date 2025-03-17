@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
@@ -228,7 +227,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   }
 
   if (is_android && is_google && suggestion.answer_template()) {
-    base::ranges::transform(
+    std::ranges::transform(
         suggestion.answer_template()->enhancements().enhancements(),
         std::back_inserter(match.actions),
         [&](const omnibox::SuggestionEnhancement& enhancement) {

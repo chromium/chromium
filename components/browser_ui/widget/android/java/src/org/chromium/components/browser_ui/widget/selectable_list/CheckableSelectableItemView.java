@@ -11,10 +11,12 @@ import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 
@@ -27,6 +29,7 @@ import org.chromium.components.browser_ui.widget.R;
  *
  * @param <E> The type of the item associated with this SelectableItemViewBase.
  */
+@NullMarked
 public abstract class CheckableSelectableItemView<E> extends SelectableItemViewBase<E> {
     private final AnimatedVectorDrawableCompat mCheckDrawable;
 
@@ -37,6 +40,7 @@ public abstract class CheckableSelectableItemView<E> extends SelectableItemViewB
     private @Nullable Drawable mIconDrawable;
 
     /** Constructor for inflating from XML. */
+    @NullUnmarked
     public CheckableSelectableItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mIconSelectedColorList =
@@ -76,13 +80,13 @@ public abstract class CheckableSelectableItemView<E> extends SelectableItemViewB
      * Set drawable for the start icon view. Note that you may need to use this method instead of
      * mIconView#setImageDrawable to ensure icon view is correctly set in selection mode.
      */
-    public void setIconDrawable(Drawable iconDrawable) {
+    public void setIconDrawable(@Nullable Drawable iconDrawable) {
         mIconDrawable = iconDrawable;
         updateView(false);
     }
 
     /** Returns the drawable set for the start icon view, if any. */
-    public Drawable getIconDrawable() {
+    public @Nullable Drawable getIconDrawable() {
         return mIconDrawable;
     }
 

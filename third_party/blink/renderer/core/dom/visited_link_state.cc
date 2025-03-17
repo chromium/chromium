@@ -210,13 +210,8 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
     // inside Fenced Frames or any frame which has a Fenced Frame in its
     // FrameTree.
     if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
-      UMA_HISTOGRAM_BOOLEAN("Blink.History.VisitedLinks.InFencedFrameTree",
-                            true);
       return EInsideLink::kNotInsideLink;
     }
-    // Record in our histogram that we are not in or a child of a Fenced Frame.
-    UMA_HISTOGRAM_BOOLEAN("Blink.History.VisitedLinks.InFencedFrameTree",
-                          false);
   }
 
   // An empty attribute refers to the document itself which is always

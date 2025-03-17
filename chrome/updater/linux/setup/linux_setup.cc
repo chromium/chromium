@@ -95,7 +95,7 @@ int PromoteCandidate(UpdaterScope scope) {
   }
 
   base::FilePath tmp_launcher_name =
-      launcher_path->DirName().AppendASCII("launcher_new");
+      launcher_path->DirName().Append("launcher_new");
   if (link(updater_executable.value().c_str(),
            tmp_launcher_name.value().c_str())) {
     return kErrorFailedToLinkCurrent;

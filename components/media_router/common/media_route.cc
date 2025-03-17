@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/media_router/common/media_route.h"
 
 #include <ostream>
@@ -17,8 +22,10 @@ constexpr char kRouteIdPrefix[] = "urn:x-org.chromium:media:route:";
 namespace {
 
 bool IsValidMediaRouteId(const MediaRoute::Id route_id) {
-  if (!base::StartsWith(route_id, kRouteIdPrefix, base::CompareCase::SENSITIVE))
+  if (!base::StartsWith(route_id, kRouteIdPrefix,
+                        base::CompareCase::SENSITIVE)) {
     return false;
+  }
   // return false if there are not at least two slashes in |route_id|.
   size_t pos;
   return ((pos = route_id.find("/")) != std::string::npos &&

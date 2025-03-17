@@ -22,7 +22,6 @@
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
@@ -109,9 +108,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -124,7 +123,7 @@
 #include "extensions/browser/extension_system.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
@@ -134,11 +133,6 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
 using base::Time;
@@ -180,7 +174,7 @@ TestingProfile::TestingFactories::~TestingFactories() = default;
 const char TestingProfile::kDefaultProfileUserName[] = "testing_profile@test";
 
 // static
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Must be kept in sync with
 // `ChromeBrowserMainPartsAsh::PreEarlyInitialization`.
 const char TestingProfile::kTestUserProfileDir[] = "test-user";
@@ -210,9 +204,6 @@ TestingProfile::TestingProfile(const base::FilePath& path,
                      /*allows_browser_windows=*/true,
                      /*is_new_profile=*/false,
                      /*is_supervised_profile=*/false,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                     /*is_main_profile=*/false,
-#endif
                      /*policy_manager=*/{},
                      /*policy_service=*/nullptr,
                      /*testing_factories=*/{},
@@ -235,16 +226,13 @@ TestingProfile::TestingProfile(
     bool allows_browser_windows,
     bool is_new_profile,
     bool is_supervised_profile,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool is_main_profile,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
     absl::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
                   std::unique_ptr<policy::ProfileCloudPolicyManager>>
         policy_manager,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     std::unique_ptr<policy::PolicyService> policy_service,
     TestingFactories testing_factories,
     const std::string& profile_name,
@@ -257,9 +245,6 @@ TestingProfile::TestingProfile(
       guest_session_(guest_session),
       allows_browser_windows_(allows_browser_windows),
       is_new_profile_(is_new_profile),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      is_main_profile_(is_main_profile),
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_special_storage_policy_(extension_policy),
 #endif
@@ -270,7 +255,7 @@ TestingProfile::TestingProfile(
           override_policy_connector_is_managed),
       policy_service_(std::move(policy_service)),
       url_loader_factory_(url_loader_factory) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_cloud_policy_manager_ = std::move(policy_manager);
 #else
   if (absl::holds_alternative<std::unique_ptr<policy::UserCloudPolicyManager>>(
@@ -283,8 +268,8 @@ TestingProfile::TestingProfile(
         std::move(absl::get<std::unique_ptr<policy::ProfileCloudPolicyManager>>(
             policy_manager));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!user_manager::UserManager::IsInitialized()) {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
@@ -359,15 +344,6 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   signin::SetUpMockAccountManagerFacade();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // `LacrosService` has to be initialized before
-  // `EnsureBrowserContextKeyedServiceFactoriesBuilt` call.
-  if (!chromeos::LacrosService::Get()) {
-    lacros_service_test_helper_ =
-        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Normally this would happen during browser startup, but for tests
   // we need to trigger creation of Profile-related services.
   ChromeBrowserMainExtraPartsProfiles::
@@ -404,7 +380,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   if (!base::PathExists(profile_path_))
     base::CreateDirectory(profile_path_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Initialize |account_manager::AccountManager|.
   auto* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
@@ -422,7 +398,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   arc::ArcServiceLauncher* launcher = arc::ArcServiceLauncher::Get();
   if (launcher)
     launcher->MaybeSetProfile(this);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!AreKeyedServicesDisabledForProfileByDefault(this)) {
     ReadingListModelFactory::GetInstance()->SetTestingFactory(
@@ -453,17 +429,17 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
     extensions::ExtensionPrefsFactory::GetInstance()->SetInstanceForTesting(
         this, std::move(extension_prefs));
 
-    extensions::ExtensionSystemFactory::GetInstance()->SetTestingFactory(
+    extensions::ChromeExtensionSystemFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&extensions::TestExtensionSystem::Build));
 
     web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&ash::TestSystemWebAppManager::BuildDefault));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   // Prefs for incognito profiles are set in CreateIncognitoPrefService().
@@ -493,7 +469,7 @@ void TestingProfile::InitializeProfileType() {
     return;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   bool is_system = false;
   if (IsOffTheRecord()) {
     is_system = original_profile_->IsSystemProfile();
@@ -508,7 +484,7 @@ void TestingProfile::InitializeProfileType() {
         this, profile_metrics::BrowserProfileType::kSystem);
     return;
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   if (IsOffTheRecord()) {
     profile_metrics::SetBrowserProfileType(
@@ -635,17 +611,6 @@ TestingProfile* TestingProfile::AsTestingProfile() {
 std::string TestingProfile::GetProfileUserName() const {
   return profile_name_;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool TestingProfile::IsMainProfile() const {
-  return is_main_profile_;
-}
-
-void TestingProfile::SetIsMainProfile(bool is_main_profile) {
-  is_main_profile_ = is_main_profile;
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void TestingProfile::SetOffTheRecordProfile(
     std::unique_ptr<Profile> otr_profile) {
@@ -885,7 +850,7 @@ TestingProfile::GetPolicySchemaRegistryService() {
   return schema_registry_service_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void TestingProfile::SetUserCloudPolicyManagerAsh(
     std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager) {
@@ -905,10 +870,10 @@ policy::ProfileCloudPolicyManager*
 TestingProfile::GetProfileCloudPolicyManager() {
   return profile_cloud_policy_manager_.get();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 policy::CloudPolicyManager* TestingProfile::GetCloudPolicyManager() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return GetUserCloudPolicyManagerAsh();
 #else
   if (user_cloud_policy_manager_) {
@@ -948,7 +913,7 @@ void TestingProfile::set_last_selected_directory(const base::FilePath& path) {
   last_selected_directory_ = path;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void TestingProfile::ChangeAppLocale(const std::string& locale,
                                      AppLocaleChangedVia via) {
   requested_locale_ = locale;
@@ -1117,15 +1082,7 @@ TestingProfile::Builder& TestingProfile::Builder::SetIsSupervisedProfile() {
   return *this;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TestingProfile::Builder& TestingProfile::Builder::SetIsMainProfile(
-    bool is_main_profile) {
-  is_main_profile_ = is_main_profile;
-  return *this;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TestingProfile::Builder& TestingProfile::Builder::SetUserCloudPolicyManagerAsh(
     std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager) {
@@ -1201,7 +1158,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
   DCHECK(!build_called_);
   build_called_ = true;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   absl::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
                 std::unique_ptr<policy::ProfileCloudPolicyManager>>
       policy_manager;
@@ -1211,7 +1168,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
   } else {
     policy_manager = std::move(profile_cloud_policy_manager_);
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<TestingProfile>(
       path_, delegate_, create_mode_,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1219,14 +1176,11 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
 #endif
       std::move(pref_service_), nullptr, guest_session_,
       allows_browser_windows_, is_new_profile_, is_supervised_profile_,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      is_main_profile_,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       std::move(user_cloud_policy_manager_),
 #else
       std::move(policy_manager),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       std::move(policy_service_), std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_, nullptr, url_loader_factory_);
 }
@@ -1253,9 +1207,6 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
 #endif
       std::move(pref_service_), original_profile, guest_session_,
       allows_browser_windows_, is_new_profile_, is_supervised_profile_,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      is_main_profile_,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_, &otr_profile_id,

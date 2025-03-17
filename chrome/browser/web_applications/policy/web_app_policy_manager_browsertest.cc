@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -38,7 +39,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/user_names.h"
@@ -266,12 +267,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   EXPECT_EQ(GURL(kDefaultCustomIconUrl), manifest->icons[0].src);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Scenario: A policy installed web app is replacing an existing app causing it
 // to be uninstalled after the policy app is installed.
-// This test does not yet work in Lacros because
-// AppServiceProxyLacros::UninstallSilently() has not yet been implemented.
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
   // Install old app to replace.
   auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
@@ -294,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
   uninstall_observer.Wait();
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class WebAppPolicyManagerGuestModeTest : public InProcessBrowserTest {
  public:
@@ -306,7 +305,7 @@ class WebAppPolicyManagerGuestModeTest : public InProcessBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitch(ash::switches::kGuestSession);
     command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                     user_manager::kGuestUserName);
@@ -320,10 +319,6 @@ class WebAppPolicyManagerGuestModeTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
                        DoNotCreateAppsOnGuestMode) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   base::Value::List app_list;
   app_list.Append(GetForceInstalledAppItem());
 
@@ -343,15 +338,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
   EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
             test_provider->registrar_unsafe().GetInstallState(app_id));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // This waits until ExternallyManagedAppManager::SynchronizeInstalledApps()
-  // has finished running, hence we know that for guest mode, the app was not
-  // installed.
+#if !BUILDFLAG(IS_CHROMEOS)
   Profile* guest_profile = CreateGuestBrowser()->profile();
-  WebAppProvider* guest_provider = WebAppProvider::GetForTest(guest_profile);
-  DCHECK(guest_provider);
-  test::WaitUntilWebAppProviderAndSubsystemsReady(guest_provider);
-  EXPECT_TRUE(guest_provider->registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(WebAppProvider::GetForTest(guest_profile));
 #endif
 }
 

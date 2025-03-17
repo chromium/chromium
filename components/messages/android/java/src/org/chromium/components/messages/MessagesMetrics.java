@@ -4,17 +4,18 @@
 
 package org.chromium.components.messages;
 
-
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Static utility methods for recording messages related metrics. TODO(crbug.com/40877562): remove
  * logs.
  */
+@NullMarked
 public class MessagesMetrics {
     private static final String TAG = "MessagesMetrics";
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";
@@ -42,12 +43,6 @@ public class MessagesMetrics {
     static final String STACKING_HIDING_NAME = "Android.Messages.Stacking.Hiding";
     static final String STACKING_REQUEST_TO_SHOW_NAME =
             "Android.Messages.Stacking.RequestToFullyShow";
-    static final String STACKING_BLOCKED_BY_BROWSER_CONTROL_NAME =
-            "Android.Messages.Stacking.BlockedByBrowserControl";
-    static final String STACKING_BLOCKED_BY_CONTAINER_INITING_NAME =
-            "Android.Messages.Stacking.BlockedByContainerInitializing";
-    static final String STACKING_BLOCKED_BY_CONTAINER_NOT_INITED_NAME =
-            "Android.Messages.Stacking.BlockedByContainerNotInitialized";
     static final String STACKING_TIME_TO_FULLY_SHOW_PREFIX = "Android.Messages.TimeToFullyShow.";
     static final String STACKING_ACTION_HISTOGRAM_PREFIX = "Android.Messages.Stacking.";
     static final String THREE_STACKED_HISTOGRAM_NAME = "Android.Messages.Stacking.ThreeStacked";
@@ -179,45 +174,6 @@ public class MessagesMetrics {
     static void recordRequestToFullyShow(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
                 STACKING_REQUEST_TO_SHOW_NAME, messageIdentifier, MessageIdentifier.COUNT);
-    }
-
-    /**
-     * Record the id of candidate which will be displayed in the foreground but now is waiting for
-     * browser control to be ready.
-     *
-     * @param messageIdentifier The id of the next front message.
-     */
-    static void recordBlockedByBrowserControl(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                STACKING_BLOCKED_BY_BROWSER_CONTROL_NAME,
-                messageIdentifier,
-                MessageIdentifier.COUNT);
-    }
-
-    /**
-     * Record the id of candidate which will be displayed in the foreground but now is waiting for
-     * message container to finishing initialization.
-     *
-     * @param messageIdentifier The id of the next front message.
-     */
-    static void recordBlockedByContainerInitializing(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                STACKING_BLOCKED_BY_CONTAINER_INITING_NAME,
-                messageIdentifier,
-                MessageIdentifier.COUNT);
-    }
-
-    /**
-     * Record the id of candidate which will be displayed in the foreground but container has not
-     * been initialized.
-     *
-     * @param messageIdentifier The id of the next front message.
-     */
-    static void recordBlockedByContainerNotInitialized(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                STACKING_BLOCKED_BY_CONTAINER_NOT_INITED_NAME,
-                messageIdentifier,
-                MessageIdentifier.COUNT);
     }
 
     static void recordTimeToFullyShow(@MessageIdentifier int messageIdentifier, long durationMs) {
@@ -415,6 +371,8 @@ public class MessagesMetrics {
                 return "CollaborationRemoved";
             case MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE:
                 return "CctAccountMismatchNotice";
+            case MessageIdentifier.PROMPT_HATS_CLEAR_BROWSING_DATA:
+                return "PromptHatsClearBrowsingData";
             default:
                 return "Unknown";
         }

@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/gfx/geometry/point.h"
@@ -19,6 +20,12 @@ class Size;
 }
 
 namespace ui {
+
+inline constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
+
+inline constexpr int kDefaultLargeCursorSize = 64;
+inline constexpr int kMinLargeCursorSize = 25;
+inline constexpr int kMaxLargeCursorSize = 128;
 
 struct COMPONENT_EXPORT(UI_BASE_CURSOR) CursorData {
  public:

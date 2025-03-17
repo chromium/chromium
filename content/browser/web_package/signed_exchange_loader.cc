@@ -205,14 +205,6 @@ void SignedExchangeLoader::SetPriority(net::RequestPriority priority,
   url_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void SignedExchangeLoader::PauseReadingBodyFromNet() {
-  url_loader_->PauseReadingBodyFromNet();
-}
-
-void SignedExchangeLoader::ResumeReadingBodyFromNet() {
-  url_loader_->ResumeReadingBodyFromNet();
-}
-
 void SignedExchangeLoader::ConnectToClient(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   DCHECK(pending_client_receiver_.is_valid());

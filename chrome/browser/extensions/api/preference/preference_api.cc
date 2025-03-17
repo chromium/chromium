@@ -12,18 +12,19 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pref_mapping.h"
 #include "chrome/browser/extensions/pref_transformer_interface.h"
 #include "chrome/browser/extensions/preference/preference_helpers.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -43,10 +44,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
-#endif
 
 using extensions::mojom::APIPermissionID;
 
@@ -402,6 +399,16 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
       pref_key, &browser_pref, &read_permission, &write_permission));
   if (!extension()->permissions_data()->HasAPIPermission(write_permission))
     return RespondNow(Error(kPermissionErrorMessage, pref_key));
+
+  // If 3PCs are globally blocked in incognito re-allowing them is not
+  // supported, so error out.
+  if (incognito && browser_pref == prefs::kCookieControlsMode &&
+      value->GetBool() &&
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
+    return RespondNow(
+        Error(extension_misc::kCookiesAllowedIncognitoErrorMessage));
+  }
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
   const PrefService::Preference* pref =

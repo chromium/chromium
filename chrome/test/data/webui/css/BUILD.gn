@@ -9,7 +9,7 @@ build_webui_tests("build") {
     "color_provider_css_colors_test.ts",
     "text_defaults_test.ts",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     files += [ "color_provider_css_colors_test_chromeos.ts" ]
   }
 

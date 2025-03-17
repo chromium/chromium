@@ -49,6 +49,7 @@ const char* const BOOL_ATTRIBUTES[] = {
     "multiselectable",
     "password",
     "range",
+    "required",
     "selected",
     "interesting",
     "table_header"
@@ -117,7 +118,6 @@ base::Value::Dict AccessibilityTreeFormatterAndroid::BuildNode(
 void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   AddPropertyFilter(property_filters, "hint=*");
-  AddPropertyFilter(property_filters, "interesting", AXPropertyFilter::DENY);
   AddPropertyFilter(property_filters, "has_character_locations",
                     AXPropertyFilter::DENY);
   AddPropertyFilter(property_filters, "has_image", AXPropertyFilter::DENY);
@@ -184,6 +184,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->Set("multiline", android_node->IsMultiLine());
   dict->Set("multiselectable", android_node->IsMultiselectable());
   dict->Set("range", android_node->GetData().IsRangeValueSupported());
+  dict->Set("required", android_node->IsRequired());
   dict->Set("password", android_node->IsPasswordField());
   dict->Set("selected", android_node->IsSelected());
   dict->Set("interesting", android_node->IsInterestingOnAndroid());

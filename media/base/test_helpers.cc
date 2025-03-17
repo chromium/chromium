@@ -16,6 +16,8 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
@@ -246,8 +248,9 @@ void FillFourColorsFrameARGB(VideoFrame& dest_frame,
 // Utility mock for testing methods expecting Closures and PipelineStatusCBs.
 class MockCallback : public base::RefCountedThreadSafe<MockCallback> {
  public:
-  MockCallback();
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
+  MockCallback() = default;
   MockCallback(const MockCallback&) = delete;
   MockCallback& operator=(const MockCallback&) = delete;
 
@@ -257,28 +260,25 @@ class MockCallback : public base::RefCountedThreadSafe<MockCallback> {
 
  protected:
   friend class base::RefCountedThreadSafe<MockCallback>;
-  virtual ~MockCallback();
+  virtual ~MockCallback() = default;
 };
 
-MockCallback::MockCallback() = default;
-MockCallback::~MockCallback() = default;
-
 base::OnceClosure NewExpectedClosure() {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, Run());
-  return base::BindOnce(&MockCallback::Run, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::Run, std::move(callback));
 }
 
 base::OnceCallback<void(bool)> NewExpectedBoolCB(bool success) {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, RunWithBool(success));
-  return base::BindOnce(&MockCallback::RunWithBool, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::RunWithBool, std::move(callback));
 }
 
 PipelineStatusCallback NewExpectedStatusCB(PipelineStatus status) {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, RunWithStatus(status));
-  return base::BindOnce(&MockCallback::RunWithStatus, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::RunWithStatus, std::move(callback));
 }
 
 WaitableMessageLoopEvent::WaitableMessageLoopEvent()
@@ -655,19 +655,38 @@ scoped_refptr<AudioBuffer> MakeBitstreamAudioBuffer(
   return output;
 }
 
-void VerifyBitstreamAudioBus(AudioBus* bus,
-                             size_t data_size,
-                             uint8_t start,
-                             uint8_t increment) {
+void VerifyBitstreamAudioBus(AudioBus* bus, uint8_t start, uint8_t increment) {
   ASSERT_TRUE(bus->is_bitstream_format());
 
   // Values in channel 0 will be:
   //   start
   //   start + increment
   //   start + 2 * increment, ...
-  uint8_t* buffer = reinterpret_cast<uint8_t*>(bus->channel(0));
-  for (size_t i = 0; i < data_size; ++i) {
-    ASSERT_EQ(buffer[i], static_cast<uint8_t>(start + i * increment));
+  uint8_t expected_value = start;
+  for (uint8_t datum : bus->bitstream_data()) {
+    EXPECT_EQ(datum, expected_value);
+    expected_value += increment;
+  }
+}
+
+void VerifyBitstreamIECDtsAudioBus(AudioBus* bus,
+                                   size_t data_size,
+                                   uint8_t start,
+                                   uint8_t increment) {
+  ASSERT_TRUE(bus->is_bitstream_format());
+
+  // Values in channel 0 will be:
+  //   start
+  //   start + increment
+  //   start + 2 * increment, ...
+  uint8_t expected_value = start;
+  for (uint8_t datum : bus->bitstream_data().first(data_size)) {
+    ASSERT_EQ(datum, expected_value);
+    expected_value += increment;
+  }
+
+  for (uint8_t datum : bus->bitstream_data().subspan(data_size)) {
+    ASSERT_EQ(datum, 0u);
   }
 }
 

@@ -20,7 +20,7 @@
 <translation id="1087788677726983142">Ezkutatu gertaeren jarioaren iragazkiak</translation>
 <translation id="1088402100970133699">Ez dago zerrendako beste elementurik honen aurretik</translation>
 <translation id="1120743664840974483">{"a": "Araba", "b": "Bilbo", "c": "Cuenca", "d": "Donostia", "e": "Eibar", "f": "Finisterre", "g": "Getxo", "h": "Huelva", "i": "Irun", "j": "Jaka","k": "Kanada", "l": "Logroño", "m": "Madril", "n": "Nafarroa", "o": "Olite","p": "Pontevedra", "q": "Quebec", "r": "Riga", "s": "Santurtzi", "t": "Tolosa", "u": "Urretxu", "v": "Valentzia", "w": "Washington","x": "Xemein", "y": "York", "z": "Zarautz"}</translation>
-<translation id="1120938014254001895">Pasatu bi hatz gorantz</translation>
+<translation id="1120938014254001895">Pasatu bi hatz gora</translation>
 <translation id="1126928665165112660">Ez du formatu etzanik</translation>
 <translation id="1133751489735776037">Saguarekin klik hirukoitza egitea</translation>
 <translation id="113582498867142724"><ph name="NUM" /> elementu dituen <ph name="TAG" /> bilduma</translation>
@@ -325,7 +325,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3046838483509668188">ChromeVox aukerak</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menua ireki da</translation>
 <translation id="3060880924447482063">Pasatu hatza ezkerrera edo eskuinera elementu batetik bestera joateko</translation>
-<translation id="3070245424257836917">Pasatu hiru hatz gorantz</translation>
+<translation id="3070245424257836917">Pasatu hiru hatz gora</translation>
 <translation id="307516670110542567">Orientazio bizkorra</translation>
 <translation id="3077734595579995578">maius</translation>
 <translation id="3078345202707391975">2. mailako hurrengo goiburua</translation>
@@ -1114,6 +1114,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8316881042119029234">Horixka</translation>
 <translation id="8326783648485765113">Zelai-berdea</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{traola}other{# traol ikur}}</translation>
+<translation id="8351821207686449674">Aktibatu/Desaktibatu azpitituluak</translation>
 <translation id="8378855320830505539">Lurraldea</translation>
 <translation id="8382679411218029383">Osatze automatiko txertatua eta zerrenda</translation>
 <translation id="8394908167088220973">Erreproduzitu/Pausatu multimedia-elementua</translation>

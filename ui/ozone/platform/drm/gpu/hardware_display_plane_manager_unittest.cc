@@ -48,7 +48,9 @@ namespace ui {
 namespace {
 
 using testing::_;
+using testing::IsEmpty;
 using testing::Return;
+using testing::SizeIs;
 
 // TODO(crbug.com/40945652): These tests should not use a single-point
 // curve as the non-empty value (it is arguably not a valid input).
@@ -2277,5 +2279,67 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CrtcOffsetPageFlip) {
             static_cast<uint64_t>(-100));
   EXPECT_EQ(GetPlanePropertyValue(kPlaneOffset, "CRTC_Y"),
             static_cast<uint64_t>(-200));
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, DeatchPlanesCommit) {
+  fake_drm_->ResetStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+  fake_drm_->InitializeState(/*use_atomic=*/true);
+
+  const uint32_t crtc_id = fake_drm_->crtc_property(0).id;
+
+  // Set up pipe with a plane, so that the test has a pipe to detach planes
+  // from.
+  {
+    HardwareDisplayPlaneList plane_list;
+    fake_drm_->plane_manager()->BeginFrame(&plane_list);
+    DrmOverlayPlaneList overlays;
+    overlays.push_back(DrmOverlayPlane::TestPlane(fake_buffer_));
+    CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
+        crtc_id, fake_drm_->connector_property(0).id, kDefaultMode,
+        gfx::Point(), &plane_list, std::move(overlays),
+        /*enable_vrr=*/false);
+
+    CommitRequest commit_request;
+    commit_request.push_back(std::move(request));
+    ASSERT_TRUE(fake_drm_->plane_manager()->Commit(
+        std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
+
+    EXPECT_EQ(1, fake_drm_->get_commit_count());
+    // Check that the plane was successfully attached to the CRTC.
+    ASSERT_EQ(GetPlanePropertyValue(fake_drm_->plane_property(0).id, "CRTC_ID"),
+              crtc_id);
+  }
+
+  // Set up |plane_list.old_planes| as this triggers the plane disablement.
+  HardwareDisplayPlaneList plane_list;
+  for (const auto& plane : fake_drm_->plane_manager()->planes()) {
+    if (plane->owning_crtc() == crtc_id) {
+      plane_list.old_plane_list.push_back(plane.get());
+    }
+  }
+  ASSERT_THAT(plane_list.old_plane_list, SizeIs(1));
+  fake_drm_->plane_manager()->BeginFrame(&plane_list);
+  CommitRequest commit_request;
+  CrtcCommitRequest request = CrtcCommitRequest::DetachPlanesRequest(
+      crtc_id, fake_drm_->connector_property(0).id, kDefaultMode, gfx::Point(),
+      &plane_list, /*enable_vrr=*/false);
+
+  // Check that the request detaches planes.
+  ASSERT_EQ(request.plane_list(), &plane_list);
+  ASSERT_THAT(request.plane_list()->old_plane_list, SizeIs(1));
+  ASSERT_THAT(request.plane_list()->plane_list, IsEmpty());
+  ASSERT_THAT(request.overlays(), IsEmpty());
+  commit_request.push_back(std::move(request));
+
+  // Detach planes.
+  ASSERT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
+
+  EXPECT_EQ(2, fake_drm_->get_commit_count());
+
+  // Check that the plane was successfully detached from CRTC.
+  ASSERT_NE(GetPlanePropertyValue(fake_drm_->plane_property(0).id, "CRTC_ID"),
+            crtc_id);
 }
 }  // namespace ui

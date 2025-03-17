@@ -60,6 +60,13 @@
 # Referenced by androidx.preference.PreferenceInflater.
 -keep public class androidx.preference.SwitchPreference {}
 
+# File: ../../third_party/androidx/androidx_xr.flags
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+-dontwarn com.google.ar.imp.core.web.FragmentHost
+
 # File: ../../third_party/jni_zero/checkdiscard_proguard.flags
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -140,16 +147,16 @@
 # Use assumevalues in addition to assumenosideeffects block because Google3 proguard cannot parse
 # assumenosideeffects blocks which overwrite return value.
 -assumevalues class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** *(...) return _NONNULL_;
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *(...) return _NONNULL_;
 }
 -assumenosideeffects class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** *(...);
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *(...);
 }
 -assumevalues class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** * return _NONNULL_;
+  @org.chromium.build.annotations.OptimizeAsNonNull *** * return _NONNULL_;
 }
 -assumenosideeffects class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** *;
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *;
 }
 
 # File: ../../base/android/proguard/chromium_apk.flags
@@ -188,13 +195,6 @@
 }
 -keepclassmembers class !cr_allowunused,** extends androidx.fragment.app.Fragment {
   public <init>();
-}
-
-# Keep all enum values and valueOf methods. See
-# http://proguard.sourceforge.net/index.html#manual/examples.html
-# for the reason for this. Also, see http://crbug.com/248037.
--keepclassmembers enum !cr_allowunused,** {
-    public static **[] values();
 }
 
 # This is to workaround crbug.com/1204690 - an old GMS app version crashes when
@@ -491,10 +491,25 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
--keep class ** implements androidx.appsearch.app.DocumentClassFactory { *; }
--keep class ** implements androidx.appsearch.app.AppSearchDocumentClassMap { *; }
+# Keep DocumentClassFactory classes only when DocumentClassFactoryRegistry is used. Since
+# DocumentClassFactoryRegistry loads these classes by name, also do not obfuscate names.
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keep,allowoptimization class ** implements androidx.appsearch.app.DocumentClassFactory {}
 
--keep @androidx.appsearch.annotation.Document class *
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keepnames,allowoptimization @androidx.appsearch.annotation.Document class ** {}
+
+# Keep AppSearchDocumentClassMap name for ServiceLoader
+-keepnames,allowoptimization class androidx.appsearch.app.AppSearchDocumentClassMap {}
+
+# If AppSearchDocumentClassMap#getGlobalMap() is used, keep any implementing subclasses since
+# AppSearchDocumentClassMap#getMap() is used to populate the global map.
+-if class androidx.appsearch.app.AppSearchDocumentClassMap {
+  public static java.util.Map getGlobalMap();
+}
+-keep,allowoptimization class ** implements androidx.appsearch.app.AppSearchDocumentClassMap {
+  public java.util.Map getMap();
+}
 
 # File: obj/third_party/androidx/androidx_biometric_biometric_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
@@ -855,6 +870,10 @@
 -dontwarn com.google.auto.value.AutoValue
 -dontwarn com.google.auto.value.AutoValue$Builder
 
+# File: obj/third_party/android_deps/google_android_datatransport_transport_backend_cct_java/proguard.txt
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
 # File: obj/third_party/android_deps/google_firebase_firebase_common_java/proguard.txt
 -dontwarn com.google.firebase.platforminfo.KotlinDetector
 -dontwarn com.google.auto.value.AutoValue
@@ -865,18 +884,13 @@
 -dontwarn com.google.firebase.components.Component$ComponentType
 
 -keep class * implements com.google.firebase.components.ComponentRegistrar
-
-# File: obj/third_party/android_deps/google_firebase_firebase_messaging_java/proguard.txt
-# Analytics library is optional.
-# Access to this class is protected by try/catch(NoClassDefFoundError e)
-# b/35686744 Don't fail during proguard if the class is missing from the APK.
--dontwarn com.google.android.gms.measurement.AppMeasurement*
+-keep,allowshrinking interface com.google.firebase.components.ComponentRegistrar
 
 # File: obj/third_party/android_deps/google_play_services_auth_base_java/proguard.txt
 # We keep all fields for every generated proto file as the runtime uses
 # reflection over them that ProGuard cannot detect. Without this keep
 # rule, fields may be removed that would cause runtime failures.
--keepclassmembers class * extends com.google.android.gms.internal.auth.zzev {
+-keepclassmembers class * extends com.google.android.gms.internal.auth.zzew {
   <fields>;
 }
 
@@ -906,7 +920,7 @@
 -dontwarn javax.annotation.**
 -dontwarn org.checkerframework.**
 -dontwarn com.google.errorprone.annotations.**
--dontwarn org.jspecify.nullness.NullMarked
+-dontwarn org.jspecify.annotations.NullMarked
 
 # Annotations no longer exist. Suppression prevents ProGuard failures in
 # SDKs which depend on earlier versions of play-services-basement.
@@ -963,7 +977,29 @@
 }
 
 # File: obj/third_party/android_deps/google_play_services_cast_framework_java/proguard.txt
--keep public class * implements com.google.android.gms.cast.framework.OptionsProvider
+-keep public class * implements com.google.android.gms.cast.framework.OptionsProvider {
+  public <methods>;
+}
+
+# Don't warn about the auto value in Cast SDK Proguard.
+# This is due to the dependency on transport-api:2.0.0.
+# Can be removed after transport-api exposes this in their proguard rule.
+-dontwarn com.google.auto.value.**
+
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zztx {
+  <fields>;
+}
+
+# File: obj/third_party/android_deps/google_play_services_cast_java/proguard.txt
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zztx {
+  <fields>;
+}
 
 # File: obj/third_party/android_deps/google_play_services_clearcut_java/proguard.txt
 # We keep all fields for every generated proto file as the runtime uses
@@ -1078,12 +1114,19 @@
   final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
 }
 
-# File: ../../third_party/android_deps/cipd/libs/com_google_dagger_dagger/dagger-2.52.jar:META-INF/com.android.tools/r8/r8.pro
--identifiernamestring @dagger.internal.IdentifierNameString class ** {
-    static java.lang.String *;
+# File: ../../third_party/android_deps/cipd/libs/com_android_support_support_annotations/support-annotations-28.0.0.jar:META-INF/proguard/androidx-annotations.pro
+-keep @android.support.annotation.Keep class * {*;}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <methods>;
 }
--keepclassmembers,includedescriptorclasses,allowobfuscation,allowshrinking class * {
-   @dagger.internal.KeepFieldType <fields>;
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <fields>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <init>(...);
 }
 
 # File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.8.1.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
@@ -1110,7 +1153,7 @@
     boolean getRECOVER_STACK_TRACES() return false;
 }
 
-# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.8.1.jar:META-INF/com.android.tools/r8/coroutines.pro
+# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.10.1.jar:META-INF/com.android.tools/r8/coroutines.pro
 # When editing this file, update the following files as well:
 # - META-INF/proguard/coroutines.pro
 # - META-INF/com.android.tools/proguard/coroutines.pro
@@ -1125,7 +1168,7 @@
     volatile <fields>;
 }
 
-# These classes are only required by kotlinx.coroutines.debug.AgentPremain, which is only loaded when
+# These classes are only required by kotlinx.coroutines.debug.internal.AgentPremain, which is only loaded when
 # kotlinx-coroutines-core is used as a Java agent, so these are not needed in contexts where ProGuard is used.
 -dontwarn java.lang.instrument.ClassFileTransformer
 -dontwarn sun.misc.SignalHandler

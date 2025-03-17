@@ -407,7 +407,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     histograms.ExpectBucketCount(
         permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
             ContentSettingsType::FILE_SYSTEM_WRITE_GUARD),
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND),
         1);
     EXPECT_EQ(grant1->GetStatus(), PermissionStatus::ASK);
@@ -500,9 +500,6 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
-#endif
 };
 
 class ChromeFileSystemAccessPermissionContextNoPersistenceTest

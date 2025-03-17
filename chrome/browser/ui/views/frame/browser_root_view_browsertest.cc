@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, DropOrderingCorrect) {
          BrowserRootView::DropIndex::RelativeToIndex relative_to_index) {
         std::vector<GURL> urls;
         for (const auto& url_string : url_strings) {
-          urls.push_back(GURL(url_string));
+          urls.emplace_back(url_string);
         }
         std::unique_ptr<BrowserRootView::DropInfo> drop_info;
         drop_info = std::make_unique<BrowserRootView::DropInfo>();

@@ -76,8 +76,8 @@ public class MissingDeviceLockMediatorUnitTest {
                         (invocation) -> {
                             Intent intent = invocation.getArgument(0);
                             assertEquals(
-                                    intent.getAction(),
-                                    DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
+                                    DevicePolicyManager.ACTION_SET_NEW_PASSWORD,
+                                    intent.getAction());
                             return null;
                         })
                 .when(mActivity)
@@ -93,7 +93,7 @@ public class MissingDeviceLockMediatorUnitTest {
         doAnswer(
                         (invocation) -> {
                             Intent intent = invocation.getArgument(0);
-                            assertEquals(intent.getAction(), Settings.ACTION_SECURITY_SETTINGS);
+                            assertEquals(Settings.ACTION_SECURITY_SETTINGS, intent.getAction());
                             return null;
                         })
                 .when(mActivity)

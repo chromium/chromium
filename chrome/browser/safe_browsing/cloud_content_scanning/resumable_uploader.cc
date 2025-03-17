@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,6 +24,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace safe_browsing {
@@ -38,6 +41,8 @@ constexpr char kUploadHeaderContentTypeHeader[] =
 constexpr char kUploadStatusHeader[] = "X-Goog-Upload-Status";
 constexpr char kUploadUrlHeader[] = "X-Goog-Upload-Url";
 constexpr char kUploadOffsetHeader[] = "X-Goog-Upload-Offset";
+constexpr char kUploadIntermediateHeader[] =
+    "X-Goog-Upload-Header-Cep-Response";
 // Content type of the upload contents.
 constexpr char kUploadContentType[] = "application/octet-stream";
 // Content type of metadata.
@@ -55,6 +60,10 @@ std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
                                                             is_obfuscated);
 }
 
+bool IsSuccess(int net_error, int response_code) {
+  return net_error == net::OK && response_code == net::HTTP_OK;
+}
+
 }  // namespace
 
 ResumableUploadRequest::ResumableUploadRequest(
@@ -67,7 +76,8 @@ ResumableUploadRequest::ResumableUploadRequest(
     bool is_obfuscated,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    Callback callback)
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -76,9 +86,11 @@ ResumableUploadRequest::ResumableUploadRequest(
                              is_obfuscated,
                              histogram_suffix,
                              traffic_annotation,
-                             std::move(callback)),
+                             base::DoNothing()),
+      verdict_received_callback_(std::move(verdict_received_callback)),
       get_data_result_(get_data_result),
-      is_obfuscated_(is_obfuscated) {
+      is_obfuscated_(is_obfuscated),
+      content_uploaded_callback_(std::move(content_uploaded_callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -90,15 +102,18 @@ ResumableUploadRequest::ResumableUploadRequest(
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    Callback callback)
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              std::move(page_region),
                              histogram_suffix,
                              traffic_annotation,
-                             std::move(callback)),
-      get_data_result_(get_data_result) {
+                             base::DoNothing()),
+      verdict_received_callback_(std::move(verdict_received_callback)),
+      get_data_result_(get_data_result),
+      content_uploaded_callback_(std::move(content_uploaded_callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -159,17 +174,20 @@ ResumableUploadRequest::CreateFileRequest(
     bool is_obfuscated,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    ResumableUploadRequest::Callback callback) {
-  if (!factory_) {
-    return std::make_unique<ResumableUploadRequest>(
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback) {
+  if (factory_) {
+    return factory_->CreateFileRequest(
         url_loader_factory, base_url, metadata, get_data_result, path,
         file_size, is_obfuscated, histogram_suffix, traffic_annotation,
-        std::move(callback));
+        std::move(verdict_received_callback)
+            .Then(std::move(content_uploaded_callback)));
   }
-
-  return factory_->CreateFileRequest(
+  return std::make_unique<ResumableUploadRequest>(
       url_loader_factory, base_url, metadata, get_data_result, path, file_size,
-      is_obfuscated, histogram_suffix, traffic_annotation, std::move(callback));
+      is_obfuscated, histogram_suffix, traffic_annotation,
+      std::move(verdict_received_callback),
+      std::move(content_uploaded_callback));
 }
 
 // static
@@ -182,18 +200,20 @@ ResumableUploadRequest::CreatePageRequest(
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    ResumableUploadRequest::Callback callback) {
-  if (!factory_) {
-    return std::make_unique<ResumableUploadRequest>(
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback) {
+  if (factory_) {
+    return factory_->CreatePageRequest(
         url_loader_factory, base_url, metadata, get_data_result,
         std::move(page_region), histogram_suffix, traffic_annotation,
-        std::move(callback));
+        std::move(verdict_received_callback)
+            .Then(std::move(content_uploaded_callback)));
   }
-
-  return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
-                                     get_data_result, std::move(page_region),
-                                     histogram_suffix, traffic_annotation,
-                                     std::move(callback));
+  return std::make_unique<ResumableUploadRequest>(
+      url_loader_factory, base_url, metadata, get_data_result,
+      std::move(page_region), histogram_suffix, traffic_annotation,
+      std::move(verdict_received_callback),
+      std::move(content_uploaded_callback));
 }
 
 void ResumableUploadRequest::SendMetadataRequest() {
@@ -218,13 +238,11 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scan_type_ = METADATA_ONLY;
-
   base::UmaHistogramCustomTimes(
       base::StrCat({"Enterprise.ResumableRequest.MetadataCheck.",
                     GetRequestType(), ".Duration"}),
       base::TimeTicks::Now() - start_time, base::Milliseconds(1),
       base::Minutes(6), 50);
-
   int response_code = 0;
   if (!url_loader_->ResponseInfo() || !url_loader_->ResponseInfo()->headers) {
     // TODO(b/322005992): Add retry logics.
@@ -232,12 +250,32 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
-  // If there is an error or if the metadata check has already determined a
-  // verdict, CanUploadContent() returns false.
-  response_code = url_loader_->ResponseInfo()->headers->response_code();
-  if (!CanUploadContent(url_loader_->ResponseInfo()->headers)) {
+  auto headers = url_loader_->ResponseInfo()->headers;
+  // If there is an error or if no content upload is required,
+  // CanUploadContent() returns false.
+  response_code = headers->response_code();
+  if (!CanUploadContent(headers)) {
     Finish(url_loader_->NetError(), response_code, std::move(response_body));
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableAsyncUploadAfterVerdict)) {
+    if (headers->HasHeader(kUploadIntermediateHeader)) {
+      response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
+
+      std::string output;
+      bool is_decoded = base::Base64Decode(response_body.value(), &output);
+
+      if (output.empty() || !is_decoded) {
+        Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::nullopt);
+        return;
+      }
+
+      std::move(verdict_received_callback_)
+          .Run(IsSuccess(url_loader_->NetError(), response_code), response_code,
+               output);
+    }
   }
 
   // If chrome is being told to upload the content but the content is too large
@@ -248,13 +286,14 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
-  SendContentSoon();
+  // At this point, we are guaranteed to have the upload url header
+  SendContentSoon(headers->GetNormalizedHeader(kUploadUrlHeader).value());
 }
 
-void ResumableUploadRequest::SendContentSoon() {
+void ResumableUploadRequest::SendContentSoon(const std::string& upload_url) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->method = "POST";
-  request->url = GURL(upload_url_);
+  request->url = GURL(upload_url);
   // Only sends content smaller than 50MB, in a single request.
   request->headers.SetHeader(kUploadCommandHeader, "upload, finalize");
   request->headers.SetHeader(kUploadOffsetHeader, "0");
@@ -299,7 +338,9 @@ void ResumableUploadRequest::OnDataPipeCreated(
     std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter) {
   scoped_file_access_.reset();
   if (!data_pipe_getter) {
-    std::move(callback_).Run(/*success=*/false, 0, "");
+    // TODO(329293309): Replace with meaningful net_error value since 0 does not
+    // indicate an error.
+    Finish(0, 0, std::nullopt);
     return;
   }
 
@@ -339,7 +380,6 @@ void ResumableUploadRequest::OnSendContentCompleted(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-
   Finish(url_loader_->NetError(), response_code, std::move(response_body));
 }
 
@@ -350,12 +390,9 @@ bool ResumableUploadRequest::CanUploadContent(
   }
   std::optional<std::string> upload_status =
       headers->GetNormalizedHeader(kUploadStatusHeader);
-  std::optional<std::string> upload_url =
-      headers->GetNormalizedHeader(kUploadUrlHeader);
-  if (!upload_status || !upload_url) {
+  if (!upload_status || !headers->HasHeader(kUploadUrlHeader)) {
     return false;
   }
-  upload_url_ = std::move(upload_url).value();
   return base::EqualsCaseInsensitiveASCII(upload_status.value_or(std::string()),
                                           "active");
 }
@@ -368,11 +405,15 @@ void ResumableUploadRequest::Finish(int net_error,
         {"SafeBrowsing.ResumableUploader.NetworkResult.", histogram_suffix_});
     RecordHttpResponseOrErrorCode(histogram.c_str(), net_error, response_code);
   }
-  // TODO(b/322005992): Add retry logics and consider sharing them with
-  // MultipartUploadRequest.
-  std::move(callback_).Run(
-      /*success=*/net_error == net::OK && response_code == net::HTTP_OK,
-      response_code, response_body.value_or(""));
+
+  // The callback may have been invoked when the metadata verdict was received
+  // with the CEP header, to unblock the user initiate an async upload.
+  if (!verdict_received_callback_.is_null()) {
+    std::move(verdict_received_callback_)
+        .Run(/*success=*/IsSuccess(net_error, response_code), response_code,
+             response_body.value_or(""));
+  }
+  std::move(content_uploaded_callback_).Run();
 }
 
 std::string ResumableUploadRequest::GetRequestType() {

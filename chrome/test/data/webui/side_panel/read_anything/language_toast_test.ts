@@ -9,8 +9,6 @@ import {NotificationType} from 'chrome-untrusted://read-anything-side-panel.top-
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice} from './common.js';
-
 suite('LanguageToast', () => {
   let toast: LanguageToastElement;
 
@@ -20,18 +18,19 @@ suite('LanguageToast', () => {
   }
 
   setup(() => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toast = document.createElement('language-toast');
     document.body.appendChild(toast);
-    toast.availableVoices = [];
+    toast.numAvailableVoices = 0;
     return microtasksFinished();
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('shows downloaded message on ChromeOS', async () => {
     const lang = 'pt-br';
-    toast.notify(lang, NotificationType.DOWNLOADING);
-    toast.notify(lang, NotificationType.DOWNLOADED);
+    toast.notify(NotificationType.DOWNLOADING, lang);
+    toast.notify(NotificationType.DOWNLOADED, lang);
     await microtasksFinished();
 
     assertTrue(toast.$.toast.open);
@@ -41,7 +40,7 @@ suite('LanguageToast', () => {
 
   test('does not show toast if not newly downloaded', async () => {
     const lang = 'pt-br';
-    toast.notify(lang, NotificationType.DOWNLOADED);
+    toast.notify(NotificationType.DOWNLOADED, lang);
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);
@@ -51,8 +50,8 @@ suite('LanguageToast', () => {
   // <if expr="not is_chromeos">
   test('no downloaded message outside ChromeOS', async () => {
     const lang = 'pt-br';
-    toast.notify(lang, NotificationType.DOWNLOADING);
-    toast.notify(lang, NotificationType.DOWNLOADED);
+    toast.notify(NotificationType.DOWNLOADING, lang);
+    toast.notify(NotificationType.DOWNLOADED, lang);
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);
@@ -62,7 +61,7 @@ suite('LanguageToast', () => {
   test('shows error message if enabled', async () => {
     const lang = 'pt-br';
     toast.showErrors = true;
-    toast.notify(lang, NotificationType.NO_SPACE_HQ);
+    toast.notify(NotificationType.NO_SPACE_HQ, lang);
     await microtasksFinished();
 
     assertTrue(toast.$.toast.open);
@@ -73,16 +72,25 @@ suite('LanguageToast', () => {
   test('no error message if disabled', async () => {
     const lang = 'pt-br';
     toast.showErrors = false;
-    toast.notify(lang, NotificationType.NO_SPACE_HQ);
+    toast.notify(NotificationType.NO_SPACE_HQ, lang);
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);
   });
 
+  test('shows toast for Google Voices Unavailable', async () => {
+    toast.notify(NotificationType.GOOGLE_VOICES_UNAVAILABLE);
+    await microtasksFinished();
+
+    assertTrue(toast.$.toast.open);
+    assertEquals(
+        'Some Google voices may not be available right now', getTitle());
+  });
+
   test('shows error for no internet and no voices', async () => {
     const lang = 'pt-br';
     toast.showErrors = true;
-    toast.notify(lang, NotificationType.NO_INTERNET);
+    toast.notify(NotificationType.NO_INTERNET, lang);
     await microtasksFinished();
 
     assertTrue(toast.$.toast.open);
@@ -91,10 +99,9 @@ suite('LanguageToast', () => {
 
   test('no error for no internet with some voices', async () => {
     const lang = 'pt-br';
-    toast.availableVoices =
-        [createSpeechSynthesisVoice({name: 'Odium', lang: lang})];
+    toast.numAvailableVoices = 1;
     toast.showErrors = true;
-    toast.notify(lang, NotificationType.NO_INTERNET);
+    toast.notify(NotificationType.NO_INTERNET, lang);
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);
@@ -104,10 +111,9 @@ suite('LanguageToast', () => {
       'no error for no internet with some voices in a different lang',
       async () => {
         const lang = 'pt-br';
-        toast.availableVoices =
-            [createSpeechSynthesisVoice({name: 'Edolyn', lang: 'en-au'})];
+        toast.numAvailableVoices = 1;
         toast.showErrors = true;
-        toast.notify(lang, NotificationType.NO_INTERNET);
+        toast.notify(NotificationType.NO_INTERNET, lang);
         await microtasksFinished();
 
         assertFalse(toast.$.toast.open);
@@ -116,7 +122,7 @@ suite('LanguageToast', () => {
   test('shows error for no space and no voices', async () => {
     const lang = 'pt-br';
     toast.showErrors = true;
-    toast.notify(lang, NotificationType.NO_SPACE);
+    toast.notify(NotificationType.NO_SPACE, lang);
     await microtasksFinished();
 
     assertTrue(toast.$.toast.open);
@@ -125,10 +131,9 @@ suite('LanguageToast', () => {
 
   test('no error for no space with some voices', async () => {
     const lang = 'pt-br';
-    toast.availableVoices =
-        [createSpeechSynthesisVoice({name: 'Odium', lang: lang})];
+    toast.numAvailableVoices = 1;
     toast.showErrors = true;
-    toast.notify(lang, NotificationType.NO_SPACE);
+    toast.notify(NotificationType.NO_SPACE, lang);
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);
@@ -138,10 +143,9 @@ suite('LanguageToast', () => {
       'no error for no space with some voices in a different lang',
       async () => {
         const lang = 'pt-br';
-        toast.availableVoices =
-            [createSpeechSynthesisVoice({name: 'Edolyn', lang: 'en-au'})];
+        toast.numAvailableVoices = 1;
         toast.showErrors = true;
-        toast.notify(lang, NotificationType.NO_SPACE);
+        toast.notify(NotificationType.NO_SPACE, lang);
         await microtasksFinished();
 
         assertFalse(toast.$.toast.open);

@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java accessor for search engines base::Features.
@@ -16,6 +17,7 @@ import org.chromium.base.FeatureMap;
  * //components/search_engines/android/search_engines_feature_map.cc
  */
 @JNINamespace("search_engines")
+@NullMarked
 public final class SearchEnginesFeatureMap extends FeatureMap {
     private static final SearchEnginesFeatureMap sInstance = new SearchEnginesFeatureMap();
 

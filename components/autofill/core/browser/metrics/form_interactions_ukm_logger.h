@@ -11,7 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -77,10 +77,10 @@ class FormInteractionsUkmLogger {
     kMaxValue = kWasFocused
   };
 
-  struct FormEventSetTraits : public DenseSetTraits<FormEvent> {
-    static constexpr FormEvent kMaxValue =
-        static_cast<FormEvent>(base::to_underlying(NUM_FORM_EVENTS) - 1);
-  };
+  using FormEventSetTraits =
+      EnumDenseSetTraits<FormEvent,
+                         static_cast<FormEvent>(0),
+                         static_cast<FormEvent>(NUM_FORM_EVENTS - 1)>;
   using FormEventSet = DenseSet<FormEvent, FormEventSetTraits>;
 
   explicit FormInteractionsUkmLogger(AutofillClient* autofill_client);
@@ -109,9 +109,9 @@ class FormInteractionsUkmLogger {
       const FormStructure& form,
       const AutofillField& field,
       std::optional<CreditCard::RecordType> record_type = std::nullopt);
-  void LogTextFieldDidChange(ukm::SourceId ukm_source_id,
-                             const FormStructure& form,
-                             const AutofillField& field);
+  void LogTextFieldValueChanged(ukm::SourceId ukm_source_id,
+                                const FormStructure& form,
+                                const AutofillField& field);
   void LogEditedAutofilledFieldAtSubmission(ukm::SourceId ukm_source_id,
                                             const FormStructure& form,
                                             const AutofillField& field);

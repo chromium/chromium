@@ -3,126 +3,164 @@
     flex: 1;
   }
 
-  .item-label {
-    font-size: 11px;
-    line-height: 11px;
+  .list-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
   }
 
   #entries {
     margin-block-end: 0;
     margin-block-start: 0;
   }
-
-  :host([disabled]) #topSection {
-    opacity: 50%;
-  }
 </style>
 <div id="topSection">
    <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
-   <settings-toggle-button
-       id="prefToggle" disabled$="[[disabled]]"
-       no-extension-indicator label=" "
-       sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
-       on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
-       on-settings-boolean-control-change="onPrefToggleChanged_"
-       pref="{{prefs.autofill.prediction_improvements.enabled}}">
-   </settings-toggle-button>
-   <div class="settings-columned-section">
-     <div class="column">
-       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
-       <ul class="icon-bulleted-list">
-         <li>
-           <cr-icon icon="settings20:sync-saved-locally"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiWhenOnSavedInfo}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:text-analysis"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiUseToFill}
-           </div>
-         </li>
-       </ul>
-     </div>
-     <div class="column">
-       <h3 class="description-header">
-         $i18n{columnHeadingConsider}
-       </h3>
-       <ul class="icon-bulleted-list">
-         <li>
-           <cr-icon icon="settings20:psychiatry"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiNewFeature}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:googleg"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiToConsiderDataUsage}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:file-save"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiToConsiderDataStorage}
-           </div>
-         </li>
-         <li>
-           <cr-icon icon="settings20:account-box"></cr-icon>
-           <div class="cr-secondary-text">
-             $i18n{autofillAiToConsiderDataImprovement}
-           </div>
-         </li>
-       </ul>
-     </div>
-   </div>
- </div>
+   <!-- If the user is not eligible for Autofill with Ai, the toggle is disabled
+        and turned off regardless of the pref value.
+        If the user is eligible for Autofill with Ai, the toggle is enabled.
+        The toggle changes the value of a pref which is used for opting in and
+        out of Autofill with Ai. -->
+  <template is="dom-if" if="[[!ineligibleUser]]" restamp>
+    <settings-toggle-button
+        id="prefToggle"
+        no-extension-indicator label=" "
+        sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
+        on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
+        pref="{{prefs.autofill.prediction_improvements.enabled}}">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[ineligibleUser]]" restamp>
+    <settings-toggle-button
+        id="prefToggle" disabled
+        no-extension-indicator label=" "
+        sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
+        on-sub-label-link-clicked="onToggleSubLabelLinkClick_">
+    </settings-toggle-button>
+  </template>
+
+  <div class="settings-columned-section">
+    <div class="column">
+      <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:sync-saved-locally"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiWhenOnSavedInfo}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:text-analysis"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiUseToFill}
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h3 class="description-header">
+        $i18n{columnHeadingConsider}
+      </h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:psychiatry"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiNewFeature}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:googleg"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataUsage}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:file-save"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataStorage}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:account-box"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataImprovement}
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 <div id="entriesHeader" class="cr-row">
   <h2 class="flex">
     <span id="entriesHeaderTitle">
-      $i18n{autofillAiUserAnnotationsHeader}</span>
+      $i18n{autofillAiEntityInstancesHeader}</span>
   </h2>
-  <cr-button id="deleteAllEntries" class="header-aligned-button"
-      on-click="onDeleteAllEntriesClick_"
-      disabled="[[!userAnnotationsEntries_.length]]">
-    $i18n{autofillAiDeleteAllEntriesButtonLabel}
+  <!-- Disabled: If the user is not eligible for Autofill with Ai or if the
+       user opted out by switching the toggle, the user should not be able to
+       add entity instances. -->
+  <cr-button id="addEntityInstance" class="header-aligned-button"
+      disabled$="[[computeDisableAddButton_(ineligibleUser,
+          prefs.autofill.prediction_improvements.enabled.value)]]"
+      on-click="onAddButtonClick_">
+    $i18n{add}
+    <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
   </cr-button>
 </div>
 <ul id="entries" class="list-frame vertical-list">
-  <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
+  <template is="dom-repeat" items="[[entityInstances_]]">
     <li class="list-item">
       <div class="start">
-        <div class="cr-secondary-text item-label">[[item.key]]</div>
-        [[item.value]]
+        [[item.entityInstanceLabel]]
+        <div class="cr-secondary-text">[[item.entityInstanceSubLabel]]</div>
       </div>
-      <cr-icon-button iron-icon="cr20:delete" on-click="onDeleteEntryCick_"
-          title="$i18n{autofillAiDeleteEntryDialogTitle}">
+      <cr-icon-button id="moreButton" class="icon-more-vert"
+          on-click="onMoreButtonClick_" title="[[getMoreButtonTitle_(
+              item.entityInstanceLabel, item.entityInstanceSubLabel)]]">
       </cr-icon-button>
     </li>
   </template>
-  <template is="dom-if" if="[[!userAnnotationsEntries_.length]]" restamp>
-    <li id="entriesNone" class="list-item">
-      $i18n{autofillAiUserAnnotationsNone}
-    </li>
-  </template>
+  <li id="entriesNone" class="list-item" hidden="[[entityInstances_.length]]">
+    $i18n{autofillAiEntityInstancesNone}
+  </li>
 </ul>
 
-<template is="dom-if" if="[[entryToDelete_]]" restamp>
-  <settings-simple-confirmation-dialog id="deleteEntryDialog"
-      title-text="$i18n{autofillAiDeleteEntryDialogTitle}"
-      body-text="[[deleteEntryConfirmationText_]]"
-      confirm-text="$i18n{delete}"
-      on-close="onDeleteEntryDialogClose_">
-  </settings-simple-confirmation-dialog>
-</template>
+<cr-lazy-render id="addMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <template is="dom-repeat" items="[[completeEntityTypesList_]]">
+        <button id="addSpecificEntityType" class="dropdown-item"
+            on-click="onAddEntityInstanceFromDropdownClick_">
+          [[item.typeNameAsString]]
+        </button>
+      </template>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
 
-<template is="dom-if" if="[[deleteAllEntriesConfirmationShown_]]" restamp>
-  <settings-simple-confirmation-dialog id="deleteAllEntriesDialog"
-      title-text="$i18n{autofillAiDeleteAllEntriesDialogTitle}"
-      body-text="$i18n{autofillAiDeleteAllEntriesDialogText}"
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="menuEditEntityInstance" class="dropdown-item"
+          on-click="onMenuEditEntityInstanceClick_">$i18n{edit}</button>
+      <button id="menuRemoveEntityInstance" class="dropdown-item"
+          on-click="onMenuRemoveEntityInstanceClick_">$i18n{delete}</button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+
+<template is="dom-if" if="[[showAddOrEditEntityInstanceDialog_]]" restamp>
+  <settings-autofill-ai-add-or-edit-dialog id="addOrEditEntityInstanceDialog"
+      entity-instance="[[activeEntityInstance_]]"
+      dialog-title="[[addOrEditEntityInstanceDialogTitle_]]"
+      on-autofill-ai-add-or-edit-done="onAutofillAiAddOrEditDone_"
+      on-close="onAddOrEditEntityInstanceDialogClose_">
+  </settings-autofill-ai-add-or-edit-dialog>
+</template>
+<template is="dom-if" if="[[showRemoveEntityInstanceDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="removeEntityInstanceDialog"
+      title-text="$i18n{autofillAiDeleteEntityInstanceDialogTitle}"
+      body-text="$i18n{autofillAiDeleteEntityInstanceDialogText}"
       confirm-text="$i18n{delete}"
-      on-close="onDeleteAllEntriesDialogClose_">
+      on-close="onRemoveEntityInstanceDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>

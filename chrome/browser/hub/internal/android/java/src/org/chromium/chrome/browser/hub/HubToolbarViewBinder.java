@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -14,7 +15,7 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.TOOLBAR_OVERVIEW_COLOR_SETTER;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -23,8 +24,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class HubToolbarViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(PropertyModel model, HubToolbarView view, PropertyKey key) {
-        if (key == ACTION_BUTTON_DATA || key == SHOW_ACTION_BUTTON_TEXT) {
-            view.setActionButton(model.get(ACTION_BUTTON_DATA), model.get(SHOW_ACTION_BUTTON_TEXT));
+        if (key == ACTION_BUTTON_DATA) {
+            view.setActionButton(model.get(ACTION_BUTTON_DATA));
         } else if (key == PANE_SWITCHER_BUTTON_DATA) {
             view.setPaneSwitcherButtonData(
                     model.get(PANE_SWITCHER_BUTTON_DATA), model.get(PANE_SWITCHER_INDEX));
@@ -44,6 +45,11 @@ public class HubToolbarViewBinder {
             view.setSearchListener(model.get(SEARCH_LISTENER));
         } else if (key == IS_INCOGNITO) {
             view.updateIncognitoElements(model.get(IS_INCOGNITO));
+        } else if (key == TOOLBAR_OVERVIEW_COLOR_SETTER) {
+            view.setToolbarColorOverviewListener(model.get(TOOLBAR_OVERVIEW_COLOR_SETTER));
+        } else if (key == APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION) {
+            view.setApplyDelayForSearchBoxAnimation(
+                    model.get(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION));
         }
     }
 }

@@ -185,7 +185,7 @@ const char kEphemeralCardRankerForceHideCardParam[] =
 // Feature flag for enabling the Emphemeral Card ranker.
 BASE_FEATURE(kSegmentationPlatformEphemeralCardRanker,
              "SegmentationPlatformEphemeralCardRanker",
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -243,5 +243,27 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
 constexpr base::FeatureParam<int> kMaxTabGroupCardImpressions{
     &kEducationalTipModule, "max_tab_group_card_impressions",
     /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxTabGroupSyncCardImpressions{
+    &kEducationalTipModule, "max_tab_group_sync_card_impressions",
+    /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxQuickDeleteCardImpressions{
+    &kEducationalTipModule, "max_quick_delete_card_impressions",
+    /*default_value=*/10};
+
+BASE_FEATURE(kAndroidAppIntegrationModule,
+             "AndroidAppIntegrationModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool> kMaxAuxiliarySearchForceShow{
+    &kAndroidAppIntegrationModule, "force_card_shown",
+    /*default_value=*/false};
+
+constexpr base::FeatureParam<int> kMaxAuxiliarySearchCardImpressions{
+    &kAndroidAppIntegrationModule, "max_auxiliary_search_card_impressions",
+    /*default_value=*/3};
+
+BASE_FEATURE(kSegmentationPlatformFedCmUser,
+             "SegmentationPlatformFedCmUser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace segmentation_platform::features

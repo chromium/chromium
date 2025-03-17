@@ -140,7 +140,6 @@ But, the tests are built by {}.\
                     dimensions = {
                         "gpu": None,
                     },
-                    shards = 18,
                 ),
             ),
             "browser_tests": targets.mixin(

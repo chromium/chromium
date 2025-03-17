@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
@@ -34,30 +34,6 @@ namespace {
 const char kExpectedSigninBaseUrl[] =
     "https://accounts.google.com/signin/chrome/sync";
 
-class MockHost : public ProfilePickerWebContentsHost {
- public:
-  MOCK_METHOD(void,
-              ShowScreen,
-              (content::WebContents * contents,
-               const GURL& url,
-               base::OnceClosure navigation_finished_closure));
-  MOCK_METHOD(void,
-              ShowScreenInPickerContents,
-              (const GURL& url, base::OnceClosure navigation_finished_closure));
-  MOCK_METHOD(bool, ShouldUseDarkColors, (), (const));
-  MOCK_METHOD(content::WebContents*, GetPickerContents, (), (const));
-  MOCK_METHOD(void, SetNativeToolbarVisible, (bool visible));
-  MOCK_METHOD(SkColor, GetPreferredBackgroundColor, (), (const));
-  MOCK_METHOD(content::WebContentsDelegate*, GetWebContentsDelegate, ());
-  MOCK_METHOD(web_modal::WebContentsModalDialogHost*,
-              GetWebContentsModalDialogHost,
-              ());
-  MOCK_METHOD(void, Reset, (StepSwitchFinishedCallback callback));
-  MOCK_METHOD(void,
-              ShowForceSigninErrorDialog,
-              (const ForceSigninUIError& error, bool success));
-};
-
 Profile* GetContentsProfile(content::WebContents* contents) {
   return Profile::FromBrowserContext(contents->GetBrowserContext());
 }
@@ -69,11 +45,10 @@ class ProfilePickerDiceSignInProviderBrowserTest : public InProcessBrowserTest {
   ProfilePickerDiceSignInProviderBrowserTest() = default;
   ~ProfilePickerDiceSignInProviderBrowserTest() override = default;
 
-  testing::NiceMock<MockHost>* host() { return &host_; }
+  testing::NiceMock<MockProfilePickerWebContentsHost>* host() { return &host_; }
 
  private:
-  testing::NiceMock<MockHost> host_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<MockProfilePickerWebContentsHost> host_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
@@ -89,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
 
   {
     ProfilePickerDiceSignInProvider provider{
-        host(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN};
+        host(), signin_metrics::AccessPoint::kUnknown};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))
         .WillOnce([&](content::WebContents* contents, const GURL& url,
@@ -133,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
 
   {
     ProfilePickerDiceSignInProvider provider{
-        host(), signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE,
+        host(), signin_metrics::AccessPoint::kForYouFre,
         browser()->profile()->GetPath()};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))

@@ -17,10 +17,11 @@ ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
       overridden_(false),
       was_set_(false) {
   was_set_ = environment_->GetVar(variable_name, &old_value_);
-  if (unset_var)
+  if (unset_var) {
     overridden_ = environment_->UnSetVar(variable_name);
-  else
+  } else {
     overridden_ = environment_->SetVar(variable_name, value);
+  }
 }
 
 ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
@@ -40,10 +41,11 @@ ScopedEnvironmentVariableOverride& ScopedEnvironmentVariableOverride::operator=(
 
 ScopedEnvironmentVariableOverride::~ScopedEnvironmentVariableOverride() {
   if (environment_ && overridden_) {
-    if (was_set_)
+    if (was_set_) {
       environment_->SetVar(variable_name_, old_value_);
-    else
+    } else {
       environment_->UnSetVar(variable_name_);
+    }
   }
 }
 

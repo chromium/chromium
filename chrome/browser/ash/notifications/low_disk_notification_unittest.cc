@@ -134,10 +134,14 @@ TEST_F(LowDiskNotificationTest, MediumNotificationsAreNotShownAfterThrottling) {
 }
 
 TEST_F(LowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
-  user_manager()->AddUser(AccountId::FromUserEmailGaiaId(
-      "test_user1@example.com", GaiaId("1234567891")));
-  user_manager()->AddUser(AccountId::FromUserEmailGaiaId(
-      "test_user2@example.com", GaiaId("1234567892")));
+  user_manager()->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("test_user1@example.com",
+                                     GaiaId("1234567891")),
+      user_manager::UserType::kRegular);
+  user_manager()->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("test_user2@example.com",
+                                     GaiaId("1234567892")),
+      user_manager::UserType::kRegular);
 
   SetNotificationThrottlingInterval(-1);
   low_disk_notification_->LowDiskSpace(high_message_);
@@ -145,10 +149,14 @@ TEST_F(LowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
 }
 
 TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
-  user_manager()->AddUser(AccountId::FromUserEmailGaiaId(
-      "test_user1@example.com", GaiaId("1234567891")));
-  user_manager()->AddUser(AccountId::FromUserEmailGaiaId(
-      "test_user2@example.com", GaiaId("1234567892")));
+  user_manager()->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("test_user1@example.com",
+                                     GaiaId("1234567891")),
+      user_manager::UserType::kRegular);
+  user_manager()->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("test_user2@example.com",
+                                     GaiaId("1234567892")),
+      user_manager::UserType::kRegular);
 
   GetCrosSettingsHelper()->SetBoolean(kDeviceShowLowDiskSpaceNotification,
                                       false);

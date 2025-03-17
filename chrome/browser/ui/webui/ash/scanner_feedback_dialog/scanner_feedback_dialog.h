@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -25,7 +26,9 @@ namespace ash {
 // be destroyed when the dialog is closed.
 class ScannerFeedbackDialog : public SystemWebDialogDelegate {
  public:
-  explicit ScannerFeedbackDialog(ScannerFeedbackInfo info);
+  explicit ScannerFeedbackDialog(
+      ScannerFeedbackInfo info,
+      ScannerDelegate::SendFeedbackCallback send_feedback_callback);
 
   ScannerFeedbackDialog(const ScannerFeedbackDialog&) = delete;
   ScannerFeedbackDialog& operator=(const ScannerFeedbackDialog&) = delete;
@@ -41,6 +44,9 @@ class ScannerFeedbackDialog : public SystemWebDialogDelegate {
   // browser context, and set this to `base::ScopedClosureRunner` to clean it
   // up once the dialog is closed.
   std::variant<ScannerFeedbackInfo, base::ScopedClosureRunner> feedback_info_;
+
+  // Set on construction. Set to null on `OnDialogShown`.
+  ScannerDelegate::SendFeedbackCallback send_feedback_callback_;
 
   base::WeakPtrFactory<ScannerFeedbackDialog> weak_ptr_factory_{this};
 };

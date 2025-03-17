@@ -124,11 +124,7 @@ void TestAXNodeWrapper::ResetGlobalState() {
   g_offset.set_y(0);
 }
 
-TestAXNodeWrapper::~TestAXNodeWrapper() {
-  if (platform_node_) {
-    platform_node_.ExtractAsDangling()->Destroy();
-  }
-}
+TestAXNodeWrapper::~TestAXNodeWrapper() = default;
 
 const AXNodeData& TestAXNodeWrapper::GetData() const {
   return node_->data();
@@ -144,7 +140,16 @@ const AXSelection TestAXNodeWrapper::GetUnignoredSelection() const {
     // gone.
     return AXSelection();
   }
-  return tree_->GetUnignoredSelection();
+  return tree_->GetUnignoredSelection(/*for_hypertext*/ false);
+}
+
+const AXSelection TestAXNodeWrapper::GetHypertextSelection() const {
+  if (!node_) {
+    // If node is not set, this means this is being shut down and the tree is
+    // gone.
+    return AXSelection();
+  }
+  return tree_->GetUnignoredSelection(/*for_hypertext*/ true);
 }
 
 AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(
@@ -1038,10 +1043,7 @@ void TestAXNodeWrapper::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
   // that no longer exists.
   if (node_ && node_->id() == node->id()) {
     node_ = nullptr;
-    if (platform_node_) {
-      // Owned by this class, so a proper destruction is necessary.
-      platform_node_.ExtractAsDangling()->Destroy();
-    }
+    platform_node_ = nullptr;
   }
 }
 

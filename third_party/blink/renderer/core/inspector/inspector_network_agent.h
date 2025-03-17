@@ -211,8 +211,26 @@ class CORE_EXPORT InspectorNetworkAgent final
   void WebTransportConnectionEstablished(uint64_t transport_id);
   void WebTransportClosed(uint64_t transport_id);
 
+  void DirectTCPSocketCreated(ExecutionContext*,
+                              uint64_t identifier,
+                              const String& remote_addr,
+                              uint16_t remote_port,
+                              protocol::Network::DirectTCPSocketOptions&);
+
+  void DirectTCPSocketOpened(uint64_t identifier,
+                             const String& remote_addr,
+                             uint16_t remote_port,
+                             std::optional<String> local_addr,
+                             std::optional<uint16_t> local_port);
+
+  void DirectTCPSocketAborted(uint64_t identifier, int net_error);
+
+  void DirectTCPSocketClosed(uint64_t identifier);
+
   void SetDevToolsIds(ResourceRequest& request, const FetchInitiatorInfo&);
   void IsCacheDisabled(bool* is_cache_disabled) const;
+  void ShouldApplyDevtoolsCookieSettingOverrides(
+      bool* should_apply_devtools_overrides) const;
 
   // Called from frontend
   protocol::Response enable(std::optional<int> total_buffer_size,

@@ -160,6 +160,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   FRIEND_TEST_ALL_PREFIXES(GetAuthTokenFunctionTest, InteractiveQueueShutdown);
   FRIEND_TEST_ALL_PREFIXES(GetAuthTokenFunctionTest, NoninteractiveShutdown);
 
+  class RefreshTokensLoadedWaiter;
   enum class InteractionType { kSignin, kConsent };
 
   // If `gaia_id` is empty or the account is not present in Chrome, this will
@@ -227,9 +228,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   virtual void ShowRemoteConsentDialog(
       const RemoteConsentResolutionData& resolution_data);
 
-  // Checks if there is a master login token to mint tokens for the extension.
-  bool HasRefreshTokenForTokenKeyAccount() const;
-
   std::string GetOAuth2ClientId() const;
 
   // Returns true if extensions are restricted to the primary account.
@@ -269,6 +267,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // When launched in interactive mode, and if there is no existing grant,
   // a permissions prompt will be popped up to the user.
   RemoteConsentResolutionData resolution_data_;
+  std::unique_ptr<RefreshTokensLoadedWaiter> refresh_tokens_loaded_waiter_;
   std::unique_ptr<GaiaRemoteConsentFlow> gaia_remote_consent_flow_;
   std::string consent_result_;
   // Added for debugging https://crbug.com/1091423.

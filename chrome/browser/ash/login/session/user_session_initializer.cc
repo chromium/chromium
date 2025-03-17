@@ -41,6 +41,7 @@
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -64,6 +66,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/live_caption/caption_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -179,6 +182,7 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
       NOTREACHED();
     }
     primary_profile_ = profile;
+    primary_profile_observer_.Observe(profile);
 
     InitRlz(profile);
     InitializeCerts(profile);
@@ -245,6 +249,15 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
                            ->CreateNSSCertDatabaseGetterForIOThread(),
                        base::BindPostTaskToCurrentDefault(
                            base::BindOnce(&OnGotNSSCertDatabaseForUser))));
+
+    if (base::FeatureList::IsEnabled(
+            ::features::kEnableCertManagementUIV2Write)) {
+      net::ServerCertificateDatabaseService* user_cert_db =
+          net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+              profile);
+      CHECK(user_cert_db);
+      NetworkCertLoader::Get()->SetUserServerCertDatabaseService(user_cert_db);
+    }
   }
 }
 
@@ -360,9 +373,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
       CrasAudioHandler::Get()->RefreshForceRespectUiGainsState();
     }
 
-    if (features::IsAudioHFPMicSRToggleEnabled()) {
-      CrasAudioHandler::Get()->RefreshHfpMicSrState();
-    }
+    CrasAudioHandler::Get()->RefreshHfpMicSrState();
 
     if (base::FeatureList::IsEnabled(ash::features::kShowSpatialAudioToggle)) {
       CrasAudioHandler::Get()->RefreshSpatialAudioState();
@@ -377,9 +388,32 @@ void UserSessionInitializer::OnUserSessionStartUpTaskCompleted() {
       cryptohome::CreateAccountIdentifierFromAccountId(account_id));
 }
 
+void UserSessionInitializer::OnProfileWillBeDestroyed(Profile* profile) {
+  // `primary_profile_` is the only Profile that an observer is added for.
+  CHECK_EQ(profile, primary_profile_);
+
+  primary_profile_observer_.Reset();
+  primary_profile_ = nullptr;
+
+  // CrosSafetyService depends on profile and should shutdown before profile
+  // being destroyed.
+  cros_safety_service_.reset();
+
+  if (NetworkCertLoader::IsInitialized() &&
+      base::SysInfo::IsRunningOnChromeOS() &&
+      base::FeatureList::IsEnabled(
+          ::features::kEnableCertManagementUIV2Write)) {
+    NetworkCertLoader::Get()->SetUserServerCertDatabaseService(nullptr);
+  }
+}
+
 void UserSessionInitializer::PreStartSession(bool is_primary_session) {
   if (is_primary_session) {
     NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
+    if (base::FeatureList::IsEnabled(
+            ::features::kEnableCertManagementUIV2Write)) {
+      NetworkCertLoader::Get()->MarkUserServerCertDatabaseWillBeInitialized();
+    }
   }
 }
 

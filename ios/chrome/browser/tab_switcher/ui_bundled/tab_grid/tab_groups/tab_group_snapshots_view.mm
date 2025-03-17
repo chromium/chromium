@@ -223,6 +223,7 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if (@available(iOS 17, *)) {
@@ -233,5 +234,6 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
     [self updateViews];
   }
 }
+#endif
 
 @end

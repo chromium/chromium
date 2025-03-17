@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/location.h"
 
 #include "base/compiler_specific.h"
@@ -25,7 +20,7 @@ namespace {
 // Returns the length of the given null terminated c-string.
 constexpr size_t StrLen(const char* str) {
   size_t str_len = 0;
-  for (str_len = 0; str[str_len] != '\0'; ++str_len)
+  for (str_len = 0; UNSAFE_TODO(str[str_len]) != '\0'; ++str_len)
     ;
   return str_len;
 }
@@ -59,11 +54,13 @@ constexpr bool StrEndsWith(const char* name,
                            const char* expected) {
   const size_t name_len = StrLen(name);
   const size_t expected_len = StrLen(expected);
-  if (name_len != prefix_len + expected_len)
+  if (name_len != prefix_len + expected_len) {
     return false;
+  }
   for (size_t i = 0; i < expected_len; ++i) {
-    if (name[i + prefix_len] != expected[i])
+    if (UNSAFE_TODO(name[i + prefix_len] != expected[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -106,9 +103,9 @@ Location::Location(const char* function_name,
 }
 
 std::string Location::ToString() const {
-  if (function_name_ || file_name_) {
-    return std::string(function_name_ ? function_name_ : "(unknown)") + "@" +
-           file_name_ + ":" + NumberToString(line_number_);
+  if (has_source_info()) {
+    return std::string(function_name_) + "@" + file_name_ + ":" +
+           NumberToString(line_number_);
   }
   return StringPrintf("pc:%p", program_counter_);
 }
@@ -133,23 +130,15 @@ void Location::WriteIntoTrace(perfetto::TracedValue context) const {
 NOINLINE Location Location::Current(const char* function_name,
                                     const char* file_name,
                                     int line_number) {
-  return Location(function_name, file_name + kStrippedPrefixLength, line_number,
-                  RETURN_ADDRESS());
+  return Location(function_name, UNSAFE_TODO(file_name + kStrippedPrefixLength),
+                  line_number, RETURN_ADDRESS());
 }
 
 // static
 NOINLINE Location Location::CurrentWithoutFunctionName(const char* file_name,
                                                        int line_number) {
-  // TODO(pbos): Make sure that Location clients
-  // don't expect all fields of Location to be set. Doing so may require
-  // experiment rollout as existing code doesn't necessarily nullptr check
-  // function_name() etc. Right now (2024-12-19) TraceEventTestFixture tests
-  // crash inside std::string when tracing calls
-  // .set_function_name(location.function_name()) as std::string can't be
-  // constructed with nullptr. For now we initialize with "(unknown)" as we
-  // don't know whether there are untested call sites that expect non-nullptr.
-  return Location("(unknown)", file_name + kStrippedPrefixLength, line_number,
-                  RETURN_ADDRESS());
+  return Location(nullptr, UNSAFE_TODO(file_name + kStrippedPrefixLength),
+                  line_number, RETURN_ADDRESS());
 }
 
 //------------------------------------------------------------------------------

@@ -87,10 +87,8 @@ class ProcessMemoryMetricsEmitter
   // be collated.
   void CollateResults();
 
-  using GetProcessToPageInfoMapCallback =
-      base::OnceCallback<void(std::vector<ProcessInfo>)>;
-  static void GetProcessToPageInfoMap(GetProcessToPageInfoMapCallback callback,
-                                      performance_manager::Graph* graph);
+  static std::vector<ProcessInfo> GetProcessToPageInfoMap(
+      performance_manager::Graph* graph);
 
   // The results of each request are cached. When both requests are finished,
   // the results are collated.

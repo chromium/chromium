@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/text_utils.h"
+#include <string_view>
 
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/text_utils.h"
 
 namespace gfx {
 
-int GetStringWidth(const std::u16string& text, const FontList& font_list) {
+int GetStringWidth(std::u16string_view text, const FontList& font_list) {
   return Canvas::GetStringWidth(text, font_list);
 }
 
-float GetStringWidthF(const std::u16string& text, const FontList& font_list) {
+float GetStringWidthF(std::u16string_view text, const FontList& font_list) {
   return Canvas::GetStringWidthF(text, font_list);
 }
 

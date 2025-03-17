@@ -29,7 +29,8 @@ class MockJniDelegate : public InputTransferHandlerAndroid::JniDelegate {
  public:
   ~MockJniDelegate() override = default;
 
-  MOCK_METHOD((bool), MaybeTransferInputToViz, (int), (override));
+  MOCK_METHOD((int), MaybeTransferInputToViz, (int, float), (override));
+  MOCK_METHOD((int), TransferInputToViz, (int), (override));
 };
 
 }  // namespace
@@ -75,7 +76,9 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
   input_transfer_handler->set_jni_delegate_for_testing(std::move(jni_delegate));
 
   gfx::Point point(/*x=*/100, /*y=*/100);
-  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  int tool_type = static_cast<int>(ui::MotionEvent::ToolType::FINGER);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0,
+                                    tool_type);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;
@@ -84,7 +87,10 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
       0, 0, false, &p, nullptr);
 
-  EXPECT_CALL(*mock_jni, MaybeTransferInputToViz(_)).WillOnce(Return(true));
+  int successfully_transferred =
+      static_cast<int>(TransferInputToVizResult::kSuccessfullyTransferred);
+  EXPECT_CALL(*mock_jni, MaybeTransferInputToViz(_, _))
+      .WillOnce(Return(successfully_transferred));
   view->OnTouchEvent(touch);
 
   absl::Status status = ttp.StopAndParseTrace();

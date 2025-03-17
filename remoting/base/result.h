@@ -8,9 +8,9 @@
 #include <optional>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // Result<SuccessType, ErrorType> represents the success or failure of an
 // operation, along with either the success value or error details.
@@ -130,7 +130,7 @@ namespace remoting {
 // state or error state, respectively.
 class SuccessTag {};
 class ErrorTag {};
-// absl::monostate can be used for SuccessType or ErrorType to indicate that
+// std::monostate can be used for SuccessType or ErrorType to indicate that
 // there is no data for that state. Thus, Result<SomeType, monostate> is
 // somewhat analogous to std::optional<SomeType>, and Result<monostate,
 // monostate> is effectively a (2-byte) boolean. Result<monostate, ErrorType>
@@ -139,7 +139,7 @@ class ErrorTag {};
 
 constexpr SuccessTag kSuccessTag = SuccessTag();
 constexpr ErrorTag kErrorTag = ErrorTag();
-constexpr absl::monostate kMonostate = absl::monostate();
+constexpr std::monostate kMonostate = std::monostate();
 
 namespace internal {
 

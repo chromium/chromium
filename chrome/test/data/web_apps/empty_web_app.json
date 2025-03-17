@@ -28,7 +28,7 @@
    "generated_icon_fix": null,
    "install_state": "2",
    "is_diy_app": false,
-   "was_shortcut_app": false,
+   "diy_app_icons_masked_on_mac": false,
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": false,
    "is_uninstalling": false,
@@ -49,6 +49,7 @@
    "note_taking_new_note_url": "",
    "parent_app_id": null,
    "protocol_handlers": [  ],
+   "related_applications": [  ],
    "run_on_os_login_mode": "not run",
    "scope": "",
    "scope_extensions": [  ],
@@ -64,5 +65,6 @@
    "tab_strip": null,
    "theme_color": "none",
    "user_link_capturing_preference": "0",
+   "was_shortcut_app": false,
    "window_controls_overlay_enabled": false
 }

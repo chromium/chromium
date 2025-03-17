@@ -1,1 +1,5 @@
+# Cross-platform supervised_user OWNERS.
 file://components/supervised_user/OWNERS
+
+# Directory-specific OWNERS.
+ddac@chromium.org

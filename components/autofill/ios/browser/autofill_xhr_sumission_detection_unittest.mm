@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <algorithm>
 #import <optional>
 #import <set>
 
-#import "base/ranges/algorithm.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -20,6 +20,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -72,8 +73,8 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
 
     // Driver factory needs to exist before any call to
     // `AutofillDriverIOS::FromWebStateAndWebFrame`, or we crash.
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil);
+    autofill_client_ =
+        std::make_unique<TestAutofillClientIOS>(&web_state_, /*bridge=*/nil);
 
     // Replace AutofillManager with the test implementation.
     autofill_manager_injector_ =
@@ -100,7 +101,7 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  autofill::TestAutofillClient autofill_client_;
+  std::unique_ptr<TestAutofillClientIOS> autofill_client_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   std::unique_ptr<TestAutofillManagerInjector<TestingAutofillManager>>
@@ -132,19 +133,19 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Simulate typing in the first form.
   auto* autofill_driver = main_frame_driver();
   ASSERT_TRUE(autofill_driver);
-  autofill_driver->TextFieldDidChange(form_data1, form_field_data1.global_id(),
-                                      base::TimeTicks::Now());
+  autofill_driver->TextFieldValueChanged(
+      form_data1, form_field_data1.global_id(), base::TimeTicks::Now());
   // Simulate typing in the first field of the second form.
   form_field_data2.set_value(u"value2");
   form_data2.set_fields({form_field_data2, form_field_data3});
-  autofill_driver->TextFieldDidChange(form_data2, form_field_data2.global_id(),
-                                      base::TimeTicks::Now());
+  autofill_driver->TextFieldValueChanged(
+      form_data2, form_field_data2.global_id(), base::TimeTicks::Now());
 
   // Simulate typing on the other field of the second form.
   form_field_data3.set_value(u"value3");
   form_data2.set_fields({form_field_data2, form_field_data3});
-  autofill_driver->TextFieldDidChange(form_data2, form_field_data3.global_id(),
-                                      base::TimeTicks::Now());
+  autofill_driver->TextFieldValueChanged(
+      form_data2, form_field_data3.global_id(), base::TimeTicks::Now());
   // Simulate forms removal.
   autofill_driver->FormsRemoved(
       /*removed_forms=*/{form_data1.renderer_id(), form_data2.renderer_id()},
@@ -238,14 +239,14 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   ASSERT_TRUE(autofill_driver);
   form_field_data1.set_value(u"value1");
   form_data.set_fields({form_field_data1, form_field_data2});
-  autofill_driver->TextFieldDidChange(form_data, form_field_data1.global_id(),
-                                      base::TimeTicks::Now());
+  autofill_driver->TextFieldValueChanged(
+      form_data, form_field_data1.global_id(), base::TimeTicks::Now());
 
   // Simulate the user updating the second field.
   form_field_data2.set_value(u"value2");
   form_data.set_fields({form_field_data1, form_field_data2});
-  autofill_driver->TextFieldDidChange(form_data, form_field_data2.global_id(),
-                                      base::TimeTicks::Now());
+  autofill_driver->TextFieldValueChanged(
+      form_data, form_field_data2.global_id(), base::TimeTicks::Now());
 
   // Simulate the removal of the first formless field.
   autofill_driver->FormsRemoved(
@@ -345,8 +346,8 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Simulate the user updating the form field.
   auto* autofill_driver = main_frame_driver();
   ASSERT_TRUE(autofill_driver);
-  autofill_driver->TextFieldDidChange(form_data, form_field_data.global_id(),
-                                      base::TimeTicks::Now());
+  autofill_driver->TextFieldValueChanged(form_data, form_field_data.global_id(),
+                                         base::TimeTicks::Now());
 
   // Update the form field in FieldDataManager.
   std::u16string data_manager_value = u"value2";

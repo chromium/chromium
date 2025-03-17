@@ -10,17 +10,18 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
+#include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "components/sessions/core/session_id.h"
 
 namespace task_manager {
 
 class ScopedInterceptTableModelObserver;
 class TaskManagerInterface;
-class TaskManagerTableModel;
 
 // An adapter to simplify testing the task manager.
 class TaskManagerTester {
@@ -69,6 +70,11 @@ class TaskManagerTester {
   // Get all task titles associated with a WebContents and return them in a
   // vector.
   std::vector<std::u16string> GetWebContentsTaskTitles();
+
+  // Updates the category and search terms against the real model. It is used to
+  // test Task Manager's tab switching / searching functionality.
+  bool UpdateModel(const DisplayCategory display_category,
+                   std::u16string_view search_term);
 
  private:
   explicit TaskManagerTester(const base::RepeatingClosure& on_resource_change);

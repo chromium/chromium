@@ -234,6 +234,11 @@ if [ "$BRANDING" = "google_chrome" ]; then
 else
   source "${OUTPUTDIR}/installer/common/chromium-browser.info"
 fi
+if [ "$CHANNEL" != "stable" ]; then
+  RDN_DESKTOP="${RDN}.${CHANNEL}"
+else
+  RDN_DESKTOP="${RDN}"
+fi
 eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/\1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 

@@ -173,6 +173,16 @@ TEST_P(FindLengthOfDeclarationListTest, NonASCII) {
   EXPECT_TRUE(BlockAccepted(String::FromUTF8("--fooŻ笁: value")));
 }
 
+TEST_P(FindLengthOfDeclarationListTest, NewlineInString) {
+  // Newlines are invalid in strings (they will produce “bad string tokens”,
+  // which immediately ends the string), so we give up here.
+  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: \"\n\"")));
+  EXPECT_FALSE(BlockAccepted(String::FromUTF8("--foo: '\n'")));
+
+  // However, newlines in general are allowed.
+  EXPECT_TRUE(BlockAccepted(String::FromUTF8("--foo: 'bar'\n--bar: 'foo'\n")));
+}
+
 #endif  // SIMD
 
 }  // namespace blink

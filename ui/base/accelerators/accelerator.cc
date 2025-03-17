@@ -317,16 +317,17 @@ std::u16string Accelerator::ApplyLongFormModifiers(
     const std::u16string& shortcut) const {
   std::u16string result = shortcut;
 
-  if (IsShiftDown())
+  if (IsShiftDown()) {
     result = ApplyModifierToAcceleratorString(result, IDS_APP_SHIFT_KEY);
+  }
 
-  // Note that we use 'else-if' in order to avoid using Ctrl+Alt as a shortcut.
-  // See https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003 for
-  // more information.
-  if (IsCtrlDown())
+  if (IsCtrlDown()) {
     result = ApplyModifierToAcceleratorString(result, IDS_APP_CTRL_KEY);
-  else if (IsAltDown())
+  }
+
+  if (IsAltDown()) {
     result = ApplyModifierToAcceleratorString(result, IDS_APP_ALT_KEY);
+  }
 
   if (IsCmdDown()) {
 #if BUILDFLAG(IS_MAC)

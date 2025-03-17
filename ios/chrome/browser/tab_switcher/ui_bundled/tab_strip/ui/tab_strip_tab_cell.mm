@@ -32,35 +32,42 @@
 namespace {
 
 // The size of the close button.
-const CGFloat kCloseButtonSize = 16;
-const CGFloat kCloseButtonMinimumTouchTarget = 36;
+constexpr CGFloat kCloseButtonSize = 16;
+constexpr CGFloat kCloseButtonMinimumTouchTarget = 36;
 
 // Size of the decoration corner and corner radius when the cell is selected.
-const CGFloat kCornerSize = 16;
+constexpr CGFloat kCornerSize = 16;
 
 // Threshold width for collapsing the cell and hiding the close button.
-const CGFloat kCollapsedWidthThreshold = 150;
+constexpr CGFloat kCollapsedWidthThreshold = 150;
 
 // Separator constraints.
-const CGFloat kSeparatorHorizontalInset = 2;
-const CGFloat kSeparatorHorizontalInsetDetached = 6;
-const CGFloat kSeparatorGradientWidth = 4;
-const CGFloat kDetachedOutlineWidth = 1;
+constexpr CGFloat kSeparatorHorizontalInset = 2;
+constexpr CGFloat kSeparatorHorizontalInsetDetached = 6;
+constexpr CGFloat kSeparatorGradientWidth = 4;
+constexpr CGFloat kDetachedOutlineWidth = 1;
 
 // Visibility constants.
 constexpr CGFloat kCloseButtonVisibilityThreshold = 0.3;
 
 // Content view constants.
-const CGFloat kFaviconLeadingMargin = 10;
-const CGFloat kCloseButtonMargin = 10;
-const CGFloat kTitleInset = 10;
-const CGFloat kTitleOverflowWidth = 20;
-const CGFloat kFaviconSize = 16;
-const CGFloat kTitleGradientWidth = 16;
-const CGFloat kContentViewBottomInset = 4;
+constexpr CGFloat kFaviconLeadingMargin = 10;
+constexpr CGFloat kCloseButtonMargin = 10;
+constexpr CGFloat kTitleInset = 10;
+constexpr CGFloat kTitleOverflowWidth = 20;
+constexpr CGFloat kFaviconSize = 16;
+constexpr CGFloat kTitleGradientWidth = 16;
+constexpr CGFloat kContentViewBottomInset = 4;
 
 // Selected border background view constants.
-const CGFloat kSelectedBorderBackgroundViewWidth = 8;
+constexpr CGFloat kSelectedBorderBackgroundViewWidth = 8;
+
+// The storke width around a blue dot view.
+constexpr CGFloat kBlueDotStrokeWidth = 2;
+
+// Size of a blue dot on icon view with considering the stroke width.
+constexpr CGFloat kBlueDotSize = 6 + kBlueDotStrokeWidth * 2;
+constexpr CGFloat kBlueDotInset = 1;
 
 // Returns the default favicon image.
 UIImage* DefaultFavicon() {
@@ -140,6 +147,9 @@ UIImage* DefaultFavicon() {
   // View used to provide accessibility labels/values while letting the close
   // button selectable by VoiceOver.
   UIView* _accessibilityContainerView;
+
+  // View used to display the blue dot at right bottom corner of the favicon.
+  UIView* _blueDotView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -447,6 +457,20 @@ UIImage* DefaultFavicon() {
   _selectedBackgroundOutline.alpha = visibility;
 }
 
+- (void)setHasBlueDot:(BOOL)hasBlueDot {
+  if (_hasBlueDot == hasBlueDot) {
+    return;
+  }
+
+  _hasBlueDot = hasBlueDot;
+
+  if (hasBlueDot) {
+    [self showBlueDotView];
+  } else {
+    [self hideBlueDotView];
+  }
+}
+
 #pragma mark - UICollectionViewCell
 
 - (void)applyLayoutAttributes:
@@ -473,6 +497,7 @@ UIImage* DefaultFavicon() {
   self.trailingSelectedBorderBackgroundViewHidden = NO;
   self.isFirstTabInGroup = NO;
   self.isLastTabInGroup = NO;
+  self.hasBlueDot = NO;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -570,19 +595,22 @@ UIImage* DefaultFavicon() {
 - (void)updateColors {
   BOOL isSelected = self.isSelected;
 
-  UIColor* backgroundColor;
   if (self.isHighlighted || self.configurationState.cellDragState !=
                                 UICellConfigurationDragStateNone) {
     // Before a cell is dragged, it is highlighted.
     // The cell's background color must be updated at this moment, otherwise it
     // will not be applied correctly.
-    backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  } else if (_hovered) {
-    backgroundColor = [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+    _selectedBackground.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    _accessibilityContainerView.backgroundColor =
+        _selectedBackground.backgroundColor;
   } else {
-    backgroundColor =
+    _selectedBackground.backgroundColor =
         isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
                    : TabStripHelper.cellBackgroundColor;
+    _accessibilityContainerView.backgroundColor =
+        _hovered ? [UIColor colorNamed:kGrey50Color]
+                 : _selectedBackground.backgroundColor;
   }
 
   if (TabStripFeaturesUtils.hasBlackBackground) {
@@ -605,7 +633,6 @@ UIImage* DefaultFavicon() {
         isSelected ? [UIColor colorNamed:kTextPrimaryColor] : inactiveColor;
   }
 
-  _selectedBackground.backgroundColor = backgroundColor;
   _faviconView.tintColor = self.selected
                                ? [UIColor colorNamed:kCloseButtonColor]
                                : [UIColor colorNamed:kGrey500Color];
@@ -1168,6 +1195,39 @@ UIImage* DefaultFavicon() {
               : IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE,
       base::NumberToString16(self.tabIndex),
       base::NumberToString16(self.numberOfTabs));
+}
+
+// Shows the blue dot view. Adds the view to the cell if there is none yet.
+- (void)showBlueDotView {
+  if (_blueDotView) {
+    _blueDotView.hidden = NO;
+    return;
+  }
+
+  _blueDotView = [[UIView alloc] init];
+  _blueDotView.translatesAutoresizingMaskIntoConstraints = NO;
+  _blueDotView.layer.cornerRadius = kBlueDotSize / 2;
+  _blueDotView.layer.borderWidth = kBlueDotStrokeWidth;
+  _blueDotView.layer.borderColor = TabStripHelper.cellBackgroundColor.CGColor;
+  _blueDotView.backgroundColor = [UIColor colorNamed:kBlue600Color];
+  [_accessibilityContainerView addSubview:_blueDotView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_blueDotView.widthAnchor constraintEqualToConstant:kBlueDotSize],
+    [_blueDotView.heightAnchor constraintEqualToConstant:kBlueDotSize],
+    // Position the blue dot at right bottom corner of the favicon image.
+    [_blueDotView.centerXAnchor
+        constraintEqualToAnchor:_faviconView.centerXAnchor
+                       constant:kFaviconSize / 2 - kBlueDotInset],
+    [_blueDotView.centerYAnchor
+        constraintEqualToAnchor:_faviconView.centerYAnchor
+                       constant:kFaviconSize / 2 - kBlueDotInset],
+  ]];
+}
+
+// Hides the blue dot view.
+- (void)hideBlueDotView {
+  _blueDotView.hidden = YES;
 }
 
 @end

@@ -31,4 +31,12 @@ PaymentsWindowManager::Vcn3dsContext::operator=(
     PaymentsWindowManager::Vcn3dsContext&&) = default;
 PaymentsWindowManager::Vcn3dsContext::~Vcn3dsContext() = default;
 
+PaymentsWindowManager::BnplContext::BnplContext() = default;
+PaymentsWindowManager::BnplContext::BnplContext(
+    PaymentsWindowManager::BnplContext&&) = default;
+PaymentsWindowManager::BnplContext&
+PaymentsWindowManager::BnplContext::operator=(
+    PaymentsWindowManager::BnplContext&&) = default;
+PaymentsWindowManager::BnplContext::~BnplContext() = default;
+
 }  // namespace autofill::payments

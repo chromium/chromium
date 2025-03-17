@@ -43,7 +43,7 @@ class SurveyClientBridge implements SurveyClient {
             Profile profile,
             String suppliedTriggerId) {
         assert SurveyClientFactory.getInstance() != null;
-        SurveyConfig config = SurveyConfig.get(trigger, suppliedTriggerId);
+        SurveyConfig config = SurveyConfig.get(profile, trigger, suppliedTriggerId);
         if (config == null) {
             return null;
         }

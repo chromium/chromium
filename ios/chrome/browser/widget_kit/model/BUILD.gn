@@ -8,8 +8,13 @@ import("//build/config/ios/ios_sdk.gni")
 import("//ios/build/chrome_build.gni")
 
 buildflag_header("features") {
+  _enable_widgets_for_mim =
+      ios_enable_widget_kit_extension && ios_enable_widgets_for_mim
   header = "features.h"
-  flags = [ "ENABLE_WIDGET_KIT_EXTENSION=$ios_enable_widget_kit_extension" ]
+  flags = [
+    "ENABLE_WIDGET_KIT_EXTENSION=" + "$ios_enable_widget_kit_extension",
+    "ENABLE_WIDGETS_FOR_MIM=" + "$_enable_widgets_for_mim",
+  ]
 }
 
 if (ios_enable_widget_kit_extension) {

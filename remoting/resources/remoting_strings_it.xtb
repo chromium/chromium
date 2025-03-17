@@ -28,6 +28,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="2329392777730037872">Impossibile aprire <ph name="URL" /> sul dispositivo client.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">Impossibile raggiungere l'host. Il problema potrebbe essere dovuto alla configurazione della rete in uso.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="2504109125669302160">Concedi l'autorizzazione "Accessibilità" a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Connessione a <ph name="HOSTNAME" /> effettuata</translation>
 <translation id="2540992418118313681">Vuoi condividere questo computer con un altro utente che potrà accedervi e controllarlo?</translation>
@@ -133,6 +134,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="7067321367069083429">Lo schermo funge da touch screen</translation>
 <translation id="7116737094673640201">Benvenuto in Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Riprova</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="7312846573060934304">L'host è offline.</translation>
 <translation id="7319983568955948908">Interrompi condivisione</translation>
 <translation id="7359298090707901886">Il browser selezionato non può essere utilizzato per aprire gli URL sulla macchina locale.</translation>
@@ -149,7 +151,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="7693372326588366043">Aggiorna l'elenco degli host</translation>
 <translation id="7714222945760997814">Segnala errore</translation>
 <translation id="7868137160098754906">Inserisci il codice PIN per il computer remoto.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="7895403300744144251">Le norme di sicurezza del computer remoto non consentono connessioni dal tuo account.</translation>
 <translation id="7936528439960309876">Aggancia a destra</translation>
 <translation id="7970576581263377361">Autenticazione non riuscita. Accedi di nuovo a Chromium.</translation>
@@ -181,7 +182,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="8747048596626351634">La sessione si è arrestata in modo anomalo o non si è avviata. Se sul computer remoto esiste la sessione ~/.chrome-remote-desktop-session, assicurati che avvii un processo in primo piano con esecuzione prolungata come un ambiente desktop o gestione finestre.</translation>
 <translation id="8804164990146287819">Norme sulla privacy</translation>
 <translation id="8906511416443321782">È richiesto l'accesso al microfono per acquisire l'audio e trasmetterlo in streaming al client Chrome Remote Desktop.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="9111855907838866522">Sei connesso al tuo dispositivo remoto. Per aprire il menu, tocca lo schermo con quattro dita.</translation>
 <translation id="9126115402994542723">Non chiedere di nuovo il PIN per il collegamento a questo host da questo dispositivo.</translation>
 <translation id="916856682307586697">Viene avviata la XSession predefinita</translation>

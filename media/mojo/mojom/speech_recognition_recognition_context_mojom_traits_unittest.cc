@@ -57,13 +57,14 @@ TEST(SpeechRecognitionRecognitionContextStructTraitsTest,
   EXPECT_EQ(context, output);
 }
 
-TEST(SpeechRecognitionRecognitionContextStructTraitsTest, InvalidEmptyPhrases) {
+TEST(SpeechRecognitionRecognitionContextStructTraitsTest, ValidEmptyPhrases) {
   media::SpeechRecognitionRecognitionContext context;
   std::vector<uint8_t> data =
       media::mojom::SpeechRecognitionRecognitionContext::Serialize(&context);
   media::SpeechRecognitionRecognitionContext output;
-  EXPECT_FALSE(media::mojom::SpeechRecognitionRecognitionContext::Deserialize(
+  EXPECT_TRUE(media::mojom::SpeechRecognitionRecognitionContext::Deserialize(
       std::move(data), &output));
+  EXPECT_EQ(context, output);
 }
 
 }  // namespace media

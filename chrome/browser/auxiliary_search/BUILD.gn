@@ -8,7 +8,10 @@ import("//chrome/browser/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":auxiliary_search_enums_srcjar",
+    ":jni_headers",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
@@ -16,6 +19,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchController.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactory.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDataEntry.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonor.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchHooks.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java",
@@ -27,10 +31,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleProperties.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleView.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/schema/CustomTabWebPage.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/schema/TabWebPage.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/schema/TopSiteWebPage.java",
   ]
 
   deps = [
     ":java_resources",
+    "//base:base_java",
     "//base:base_shared_preferences_java",
     "//base:callback_java",
     "//base:log_java",
@@ -73,9 +81,12 @@ generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java" ]
 }
 
+java_cpp_enum("auxiliary_search_enums_srcjar") {
+  sources = [ "auxiliary_search_provider.h" ]
+}
+
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/auxiliary_search_module_icon.xml",
     "java/res/layout/auxiliary_search_module_layout.xml",
     "java/res/values/dimens.xml",
   ]
@@ -88,12 +99,14 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTaskUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactoryUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImplUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetricsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProviderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchTestHelper.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediatorUnitTest.java",
@@ -125,7 +138,9 @@ robolectric_library("junit") {
     "//components/background_task_scheduler:public_java",
     "//components/browser_ui/theme/android:java_resources",
     "//components/segmentation_platform/public:public_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appsearch_appsearch_builtin_types_java",
     "//third_party/androidx:androidx_appsearch_appsearch_java",
     "//third_party/androidx:androidx_test_core_java",

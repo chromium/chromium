@@ -14,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -23,6 +24,7 @@
 namespace {
 constexpr int kTabStripNudgeCornerRadius = 10;
 constexpr int kTabStripNudgeFlatCornerRadius = 4;
+constexpr int kTabStripNudgeIconMargin = 6;
 constexpr int kTabStripNudgeLabelMargin = 10;
 constexpr int kTabStripNudgeCloseButtonMargin = 8;
 constexpr int kTabStripNudgeCloseButtonSize = 16;
@@ -34,9 +36,11 @@ TabStripNudgeButton::TabStripNudgeButton(
     PressedCallback close_pressed_callback,
     const std::u16string& label_text,
     const ui::ElementIdentifier& element_identifier,
-    Edge flat_edge)
+    Edge flat_edge,
+    const gfx::VectorIcon& icon)
     : TabStripControlButton(tab_strip_controller,
                             std::move(pressed_callback),
+                            icon,
                             label_text,
                             Edge::kNone,
                             flat_edge) {
@@ -46,6 +50,12 @@ TabStripNudgeButton::TabStripNudgeButton(
       views::BoxLayout::MainAxisAlignment::kEnd);
 
   SetProperty(views::kElementIdentifierKey, element_identifier);
+
+  if (!icon.is_empty()) {
+    const gfx::Insets icon_margin =
+        gfx::Insets().set_left(kTabStripNudgeIconMargin);
+    image_container_view()->SetProperty(views::kMarginsKey, icon_margin);
+  }
 
   SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
   label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
@@ -137,7 +147,17 @@ void TabStripNudgeButton::SetCloseButton(PressedCallback pressed_callback) {
       kTabStripNudgeCloseButtonMargin, kTabStripNudgeCloseButtonMargin);
   close_button->SetProperty(views::kMarginsKey, margin);
 
+  close_button->SetFocusBehavior(FocusBehavior::NEVER);
   close_button_ = AddChildView(std::move(close_button));
+}
+
+void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
+  is_showing_nudge_ = is_showing;
+  if (is_showing) {
+    close_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
+  } else {
+    close_button_->SetFocusBehavior(FocusBehavior::NEVER);
+  }
 }
 
 BEGIN_METADATA(TabStripNudgeButton)

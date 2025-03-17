@@ -9,12 +9,12 @@ import android.app.Activity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 
 /**
  * Provides an interface to allow external objects like the {@link ContextualSearchPanel} to drive
- * specific actions in the {@link ContextualSearchManager} e.g tell it to close or promote the
- * panel into a separate Tab.
+ * specific actions in the {@link ContextualSearchManager} e.g tell it to close or promote the panel
+ * into a separate Tab.
  */
 public interface ContextualSearchManagementDelegate {
 
@@ -82,16 +82,14 @@ public interface ContextualSearchManagementDelegate {
     /**
      * Notifies that a Related Searches suggestion has been clicked, and whether it was shown in the
      * Bar or the content area of the Panel.
-     * @param suggestionIndex The 0-based index into the list of suggestions provided by the
-     *        panel and presented in the UI. E.g. if the user clicked the second chip this value
-     *        would be 1.
+     *
+     * @param suggestionIndex The 0-based index into the list of suggestions provided by the panel
+     *     and presented in the UI. E.g. if the user clicked the second chip this value would be 1.
      */
     void onRelatedSearchesSuggestionClicked(int suggestionIndex);
 
-    /**
-     * @return A {@link ScrimCoordinator} to fade the status bar in and out.
-     */
-    ScrimCoordinator getScrimCoordinator();
+    /** Returns the {@link ScrimManager} to fade the status bar in and out. */
+    ScrimManager getScrimManager();
 
     /**
      * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.

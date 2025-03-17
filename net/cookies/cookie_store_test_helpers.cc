@@ -76,8 +76,8 @@ DelayedCookieMonster::DelayedCookieMonster()
                                                       nullptr /* netlog */)),
       result_(
           CookieAccessResult(CookieInclusionStatus::MakeFromReasonsForTesting(
-              /*exclusions=*/{
-                  CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}))) {}
+              /*exclusions=*/{CookieInclusionStatus::ExclusionReason::
+                                  EXCLUDE_FAILURE_TO_STORE}))) {}
 
 DelayedCookieMonster::~DelayedCookieMonster() = default;
 
@@ -107,6 +107,22 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
       base::BindOnce(&DelayedCookieMonster::SetCookiesInternalCallback,
                      base::Unretained(this)),
       std::move(cookie_access_result));
+  DCHECK_EQ(did_run_, true);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DelayedCookieMonster::InvokeSetCookiesCallback,
+                     base::Unretained(this), std::move(callback)),
+      base::Milliseconds(kDelayedTime));
+}
+
+void DelayedCookieMonster::SetUnsafeCanonicalCookieForTestAsync(
+    std::unique_ptr<CanonicalCookie> cookie,
+    SetCookiesCallback callback) {
+  did_run_ = false;
+  cookie_monster_->SetUnsafeCanonicalCookieForTestAsync(
+      std::move(cookie),
+      base::BindOnce(&DelayedCookieMonster::SetCookiesInternalCallback,
+                     base::Unretained(this)));
   DCHECK_EQ(did_run_, true);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

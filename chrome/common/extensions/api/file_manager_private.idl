@@ -420,7 +420,7 @@ enum BulkPinStage {
 // It's usually MyFiles. When SkyVault is enabled the admin might
 // choose between Google Drive and OneDrive.
 // NOTE: This is independent of the Downloads folder which is mostly used
-// in the browser (lacros or ash).
+// in the browser.
 enum DefaultLocation {
   my_files,
   google_drive,

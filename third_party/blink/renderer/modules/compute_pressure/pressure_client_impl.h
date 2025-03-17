@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COMPUTE_PRESSURE_PRESSURE_CLIENT_IMPL_H_
 
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/device/public/mojom/pressure_manager.mojom-blink-forward.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 
 namespace blink {
 
@@ -56,8 +56,8 @@ class MODULES_EXPORT PressureClientImpl final
     return observers_;
   }
 
-  void BindPressureClient(
-      mojo::PendingReceiver<device::mojom::blink::PressureClient>);
+  mojo::PendingAssociatedRemote<device::mojom::blink::PressureClient>
+      BindNewEndpointAndPassRemote(scoped_refptr<base::SequencedTaskRunner>);
 
   void Reset();
 
@@ -68,8 +68,9 @@ class MODULES_EXPORT PressureClientImpl final
 
   WeakMember<PressureObserverManager> manager_;
 
-  HeapMojoReceiver<device::mojom::blink::PressureClient, PressureClientImpl>
-      receiver_;
+  HeapMojoAssociatedReceiver<device::mojom::blink::PressureClient,
+                             PressureClientImpl>
+      associated_receiver_;
 
   HeapHashSet<Member<PressureObserver>> observers_;
 

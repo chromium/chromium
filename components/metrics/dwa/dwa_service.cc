@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "components/metrics/dwa/dwa_pref_names.h"
+#include "components/metrics/dwa/dwa_rotation_scheduler.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -79,9 +80,9 @@ DwaService::DwaService(MetricsServiceClient* client, PrefService* local_state)
   auto get_upload_interval_callback =
       base::BindRepeating(&metrics::MetricsServiceClient::GetUploadInterval,
                           base::Unretained(client_));
-  bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
-  scheduler_ = std::make_unique<MetricsRotationScheduler>(
-      rotate_callback, get_upload_interval_callback, fast_startup_for_testing);
+  bool fast_startup = client_->ShouldStartUpFast();
+  scheduler_ = std::make_unique<DwaRotationScheduler>(
+      rotate_callback, get_upload_interval_callback, fast_startup);
   scheduler_->InitTaskComplete();
 }
 

@@ -22,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -62,11 +61,11 @@
 #include "media/base/video_types.h"
 #include "media/renderers/video_resource_updater.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -274,13 +273,15 @@ void CreateTestTwoColoredTextureDrawQuad(
   SkPMColor pixel_color_one =
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color_one.toSkColor())
-          : SkPackARGB32(255 * texel_color_one.fA, 255 * texel_color_one.fR,
-                         255 * texel_color_one.fG, 255 * texel_color_one.fB);
+          : SkPMColorSetARGB(255 * texel_color_one.fA, 255 * texel_color_one.fR,
+                             255 * texel_color_one.fG,
+                             255 * texel_color_one.fB);
   SkPMColor pixel_color_two =
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color_two.toSkColor())
-          : SkPackARGB32(255 * texel_color_two.fA, 255 * texel_color_two.fR,
-                         255 * texel_color_two.fG, 255 * texel_color_two.fB);
+          : SkPMColorSetARGB(255 * texel_color_two.fA, 255 * texel_color_two.fR,
+                             255 * texel_color_two.fG,
+                             255 * texel_color_two.fB);
   // The default color is texel_color_one
   std::vector<uint32_t> pixels(rect.size().GetArea(), pixel_color_one);
   if (half_and_half) {
@@ -330,7 +331,7 @@ void CreateTestTwoColoredTextureDrawQuad(
         reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
     base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
 
-    base::ranges::copy(pixels, span.begin());
+    std::ranges::copy(pixels, span.begin());
   }
 
   // Return the mapped resource id.
@@ -368,8 +369,8 @@ void CreateTestTextureDrawQuad(
   SkPMColor pixel_color =
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color.toSkColor())
-          : SkPackARGB32(texel_color.fA * 255, texel_color.fR * 255,
-                         texel_color.fG * 255, texel_color.fB * 255);
+          : SkPMColorSetARGB(texel_color.fA * 255, texel_color.fR * 255,
+                             texel_color.fG * 255, texel_color.fB * 255);
   size_t num_pixels = static_cast<size_t>(rect.width()) * rect.height();
   std::vector<uint32_t> pixels(num_pixels, pixel_color);
 
@@ -399,7 +400,7 @@ void CreateTestTextureDrawQuad(
         reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
     base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
 
-    base::ranges::copy(pixels, span.begin());
+    std::ranges::copy(pixels, span.begin());
   }
 
   // Return the mapped resource id.
@@ -938,7 +939,7 @@ TEST_P(RendererPixelTest, SimpleDamageRect) {
 TEST_P(RendererPixelTest, OutputSurfaceClipRect) {
   gfx::Rect rect(device_viewport_size_);
 
-  auto draw_frame = [&](base::FilePath::StringPieceType path, SkColor4f color) {
+  auto draw_frame = [&](base::FilePath::StringViewType path, SkColor4f color) {
     AggregatedRenderPassId id{1};
     auto pass = CreateTestRootRenderPass(id, rect);
 
@@ -1598,6 +1599,120 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass_ScaledClip) {
       cc::ExactPixelComparator()));
 }
 
+TEST_P(RendererPixelTest, BypassableRenderPassQuad_BackdropFilter_Extents) {
+  // This tests that a bypassable render pass with a backdrop filter applies
+  // the backdrop filter to the RPDQ's entire visible_rect, even if the
+  // child of the render pass has smaller content that is being drawn directly
+  // because of the bypass.
+  gfx::Rect root_pass_rect(device_viewport_size_);
+  gfx::Rect backdrop_pass_rect(device_viewport_size_.width() - 20,
+                               device_viewport_size_.height() - 20);
+  gfx::Rect child_content_rect(90, 90);
+
+  AggregatedRenderPassId root_pass_id{1};
+  AggregatedRenderPassId backdrop_pass_id{2};
+
+  gfx::Transform transform_root_to_backdrop_pass;
+  transform_root_to_backdrop_pass.Translate(10, 10);
+
+  AggregatedRenderPassList pass_list;
+  {
+    // The child render pass has a single TextureDrawQuad so it will be bypassed
+    // by SkiaRenderer. The TextureDrawQuad is smaller than the visible rect
+    // of the child render pass, which has a backdrop filter that should cover
+    // the root pass up to a 10px inset.
+    auto backdrop_pass = std::make_unique<AggregatedRenderPass>();
+    backdrop_pass->SetNew(backdrop_pass_id, backdrop_pass_rect,
+                          backdrop_pass_rect,
+                          transform_root_to_backdrop_pass.GetCheckedInverse());
+    backdrop_pass->backdrop_filters.Append(
+        cc::FilterOperation::CreateBlurFilter(8.f, SkTileMode::kMirror));
+
+    gfx::Transform transform_child_to_backdrop_pass;
+    transform_child_to_backdrop_pass.Translate(
+        backdrop_pass_rect.CenterPoint().x() -
+            0.5f * child_content_rect.width(),
+        backdrop_pass_rect.CenterPoint().y() -
+            0.5f * child_content_rect.height());
+
+    auto* sqs = CreateTestSharedQuadState(
+        transform_child_to_backdrop_pass, child_content_rect,
+        backdrop_pass.get(), gfx::MaskFilterInfo());
+    sqs->clip_rect = cc::MathUtil::MapEnclosingClippedRect(
+        transform_child_to_backdrop_pass, child_content_rect);
+
+    // NOTE: From https://g-issues.chromium.org/issues/355981041, the backdrop
+    // filter of a bypassed render pass was being restricted to the visible rect
+    // of the child. Use kTransparent for the outer color and background color
+    // to allow backdrop filtered content to be visible under part of this
+    // texture quad to highlight that the filter is being processed, but was
+    // incorrectly clipped during bypassing.
+    CreateTestTwoColoredTextureDrawQuad(
+        !is_software_renderer(), child_content_rect,
+        /*texel_color_one=*/SkColors::kTransparent,
+        /*texel_color_two=*/SkColors::kMagenta,
+        /*background_color=*/SkColors::kTransparent,
+        /*premultiplied_alpha=*/true,
+        /*flipped_texture_quad=*/false,
+        /*half_and_half=*/false, sqs, resource_provider_.get(),
+        child_resource_provider_.get(), child_context_provider_,
+        backdrop_pass.get());
+    pass_list.push_back(std::move(backdrop_pass));
+  }
+
+  {
+    // The root render pass has a blue and yellow checkerboard background and
+    // draws the (bypassed) render pass inset in the root by 10px.
+    auto root_pass = CreateTestRootRenderPass(root_pass_id, root_pass_rect);
+    {
+      auto* sqs = CreateTestSharedQuadState(transform_root_to_backdrop_pass,
+                                            backdrop_pass_rect, root_pass.get(),
+                                            gfx::MaskFilterInfo());
+      auto* pass_quad =
+          root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+      pass_quad->SetNew(sqs, backdrop_pass_rect, backdrop_pass_rect,
+                        backdrop_pass_id, kInvalidResourceId, gfx::RectF(),
+                        gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+                        gfx::RectF(backdrop_pass_rect), false, 1.0f);
+    }
+    {
+      auto* sqs =
+          CreateTestSharedQuadState(gfx::Transform(), root_pass_rect,
+                                    root_pass.get(), gfx::MaskFilterInfo());
+      static constexpr int checker_size = 16;
+
+      for (int y = root_pass_rect.y(); y < root_pass_rect.bottom();
+           y += checker_size) {
+        for (int x = root_pass_rect.x(); x < root_pass_rect.right();
+             x += checker_size) {
+          gfx::Rect box{x, y, checker_size, checker_size};
+          bool firstColor =
+              ((x / checker_size) + ((y / checker_size) % 2)) % 2 == 0;
+          auto* quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+          quad->SetNew(sqs, box, box,
+                       firstColor ? SkColors::kBlue : SkColors::kYellow, false);
+        }
+      }
+    }
+    pass_list.push_back(std::move(root_pass));
+  }
+
+  // Use a fairly fuzz comparison to allow for deviations in how the renderer
+  // types implement the actual blur. In particular, the SW renderer does not
+  // support the mirror tile mode so its blurs deviate more from GPU renderers.
+  const bool blur_fully_supported = !is_software_renderer();
+  auto comparator =
+      cc::FuzzyPixelComparator()
+          .SetErrorPixelsPercentageLimit(blur_fully_supported ? 0.2f : 53.f)
+          .SetAvgAbsErrorLimit(blur_fully_supported ? 1 : 2)
+          .SetAbsErrorLimit(blur_fully_supported ? 1 : 8);
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("bypass_texture_backdrop_extent.png")),
+      comparator));
+}
+
 TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
   // Test is flaking with failed large allocations under TSAN when using
@@ -1917,20 +2032,19 @@ class IntersectingMultiplanarVideoQuadPixelTest : public VizPixelTestWithParam {
  public:
   void SetUp() override {
     VizPixelTestWithParam::SetUp();
-    constexpr bool kUseStreamVideoDrawQuad = false;
     constexpr bool kUseGpuMemoryBufferResources = false;
     constexpr int kMaxResourceSize = 10000;
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kMaxResourceSize);
+        /*shared_image_interface=*/nullptr, kUseGpuMemoryBufferResources,
+        kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kMaxResourceSize);
+        /*shared_image_interface=*/nullptr, kUseGpuMemoryBufferResources,
+        kMaxResourceSize);
   }
 
   void TearDown() override {
@@ -2396,13 +2510,12 @@ class VideoRendererPixelTestBase : public VizPixelTest {
 
   void SetUp() override {
     VizPixelTest::SetUp();
-    constexpr bool kUseStreamVideoDrawQuad = false;
     constexpr bool kUseGpuMemoryBufferResources = false;
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         child_context_provider_.get(), child_resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kMaxResourceSize);
+        /*shared_image_interface=*/nullptr, kUseGpuMemoryBufferResources,
+        kMaxResourceSize);
   }
 
   void TearDown() override {
@@ -4676,10 +4789,12 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   constexpr bool needs_blending = true;
   constexpr bool nearest_neighbor = true;
   constexpr bool force_anti_aliasing_off = false;
-  constexpr SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
+  const SharedImageFormat format = is_software_renderer()
+                                       ? SinglePlaneFormat::kBGRA_8888
+                                       : SinglePlaneFormat::kRGBA_8888;
   gfx::Rect viewport(this->device_viewport_size_);
 
-  SkColorType ct = ToClosestSkColorType(!is_software_renderer(), format);
+  SkColorType ct = ToClosestSkColorType(format);
   SkImageInfo info = SkImageInfo::Make(2, 2, ct, kPremul_SkAlphaType);
   SkBitmap bitmap;
   bitmap.allocPixels(info);
@@ -4692,10 +4807,9 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   gfx::Size tile_size(2, 2);
   ResourceId resource;
   if (!is_software_renderer()) {
-    resource = CreateGpuResource(this->child_context_provider_,
-                                 this->child_resource_provider_.get(),
-                                 tile_size, SinglePlaneFormat::kRGBA_8888,
-                                 gfx::ColorSpace(), MakePixelSpan(bitmap));
+    resource = CreateGpuResource(
+        this->child_context_provider_, this->child_resource_provider_.get(),
+        tile_size, format, gfx::ColorSpace(), MakePixelSpan(bitmap));
   } else {
     resource = this->AllocateAndFillSoftwareResource(
         this->child_context_provider_, tile_size, bitmap);

@@ -76,7 +76,8 @@ bool DataSharingChangeNotifierImpl::IsInitialized() {
 void DataSharingChangeNotifierImpl::OnGroupAdded(
     const data_sharing::GroupData& group_data,
     const base::Time& event_time) {
-  if (!has_flushed_) {
+  if (!has_flushed_ || sync_bridge_update_type_ !=
+                           data_sharing::SyncBridgeUpdateType::kDefaultState) {
     return;
   }
   OnGroupAddedInternal(group_data.group_token.group_id, group_data, event_time);
@@ -85,7 +86,8 @@ void DataSharingChangeNotifierImpl::OnGroupAdded(
 void DataSharingChangeNotifierImpl::OnGroupRemoved(
     const data_sharing::GroupId& group_id,
     const base::Time& event_time) {
-  if (!has_flushed_) {
+  if (!has_flushed_ || sync_bridge_update_type_ !=
+                           data_sharing::SyncBridgeUpdateType::kDefaultState) {
     return;
   }
   OnGroupRemovedInternal(group_id, event_time);
@@ -95,7 +97,8 @@ void DataSharingChangeNotifierImpl::OnGroupMemberAdded(
     const data_sharing::GroupId& group_id,
     const GaiaId& member_gaia_id,
     const base::Time& event_time) {
-  if (!has_flushed_) {
+  if (!has_flushed_ || sync_bridge_update_type_ !=
+                           data_sharing::SyncBridgeUpdateType::kDefaultState) {
     return;
   }
   std::optional<data_sharing::GroupData> group_data =
@@ -116,7 +119,8 @@ void DataSharingChangeNotifierImpl::OnGroupMemberRemoved(
     const data_sharing::GroupId& group_id,
     const GaiaId& member_gaia_id,
     const base::Time& event_time) {
-  if (!has_flushed_) {
+  if (!has_flushed_ || sync_bridge_update_type_ !=
+                           data_sharing::SyncBridgeUpdateType::kDefaultState) {
     return;
   }
   std::optional<data_sharing::GroupData> group_data =
@@ -131,6 +135,11 @@ void DataSharingChangeNotifierImpl::OnGroupMemberRemoved(
   for (Observer& observer : observers_) {
     observer.OnGroupMemberRemoved(*group_data, member_gaia_id, event_time);
   }
+}
+
+void DataSharingChangeNotifierImpl::OnSyncBridgeUpdateTypeChanged(
+    data_sharing::SyncBridgeUpdateType sync_bridge_update_type) {
+  sync_bridge_update_type_ = sync_bridge_update_type;
 }
 
 void DataSharingChangeNotifierImpl::NotifyDataSharingChangeNotifierInitialized()

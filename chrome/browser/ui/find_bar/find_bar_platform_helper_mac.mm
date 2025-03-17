@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include <string>
+#include <string_view>
 
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,7 +43,7 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
         removeObserver:find_pasteboard_notification_observer_];
   }
 
-  void OnUserChangedFindText(std::u16string text) override {
+  void OnUserChangedFindText(std::u16string_view text) override {
     if (find_bar_controller_->web_contents()
             ->GetBrowserContext()
             ->IsOffTheRecord()) {

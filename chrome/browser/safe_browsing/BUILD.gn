@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -10,8 +10,6 @@ static_library("safe_browsing") {
   sources = [
     "chrome_controller_client.cc",
     "chrome_controller_client.h",
-    "chrome_safe_browsing_tab_observer_delegate.cc",
-    "chrome_safe_browsing_tab_observer_delegate.h",
     "url_checker_delegate_impl.cc",
     "url_checker_delegate_impl.h",
   ]
@@ -50,8 +48,6 @@ static_library("safe_browsing") {
     "//components/resources:components_resources_grit",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/content/browser:client_side_detection",
-    "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/browser/notification_content_detection:notification_content_detection",
     "//components/safe_browsing/content/browser/triggers:suspicious_site_trigger",
     "//components/safe_browsing/content/browser/web_ui",
@@ -78,6 +74,9 @@ static_library("safe_browsing") {
     "//services/preferences/public/cpp",
   ]
 
+  # Note: is_android is not equivalent to safe_browsing_mode == 2.
+  # Sources and dependencies added to this block must not depend on anything
+  # requiring safe_browsing_mode != 0.
   if (is_android) {
     deps += [
       "//chrome/browser/password_manager/android:utils",
@@ -86,7 +85,7 @@ static_library("safe_browsing") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ash/file_manager" ]
 
     allow_circular_includes_from += [ "//chrome/browser/ash/file_manager" ]
@@ -104,6 +103,8 @@ static_library("safe_browsing") {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
     sources += [
+      "../download/download_completion_blocker.cc",
+      "../download/download_completion_blocker.h",
       "chrome_client_side_detection_host_delegate.cc",
       "chrome_client_side_detection_host_delegate.h",
       "chrome_client_side_detection_service_delegate.cc",
@@ -124,6 +125,8 @@ static_library("safe_browsing") {
       "chrome_safe_browsing_blocking_page_factory.h",
       "chrome_safe_browsing_local_state_delegate.cc",
       "chrome_safe_browsing_local_state_delegate.h",
+      "chrome_safe_browsing_tab_observer_delegate.cc",
+      "chrome_safe_browsing_tab_observer_delegate.h",
       "chrome_ui_manager_delegate.cc",
       "chrome_ui_manager_delegate.h",
       "chrome_user_population_helper.cc",
@@ -134,8 +137,34 @@ static_library("safe_browsing") {
       "client_side_detection_service_factory.h",
       "delayed_warning_navigation_throttle.cc",
       "delayed_warning_navigation_throttle.h",
+      "download_protection/check_client_download_request.cc",
+      "download_protection/check_client_download_request.h",
+      "download_protection/check_client_download_request_base.cc",
+      "download_protection/check_client_download_request_base.h",
+      "download_protection/check_file_system_access_write_request.cc",
+      "download_protection/check_file_system_access_write_request.h",
+      "download_protection/deep_scanning_metadata.cc",
+      "download_protection/deep_scanning_metadata.h",
+      "download_protection/download_item_metadata.cc",
+      "download_protection/download_item_metadata.h",
+      "download_protection/download_protection_delegate.cc",
+      "download_protection/download_protection_delegate.h",
+      "download_protection/download_protection_observer.cc",
+      "download_protection/download_protection_observer.h",
+      "download_protection/download_protection_service.cc",
+      "download_protection/download_protection_service.h",
       "download_protection/download_protection_util.cc",
       "download_protection/download_protection_util.h",
+      "download_protection/download_request_maker.cc",
+      "download_protection/download_request_maker.h",
+      "download_protection/download_url_sb_client.cc",
+      "download_protection/download_url_sb_client.h",
+      "download_protection/file_analyzer.cc",
+      "download_protection/file_analyzer.h",
+      "download_protection/file_system_access_metadata.cc",
+      "download_protection/file_system_access_metadata.h",
+      "download_protection/ppapi_download_request.cc",
+      "download_protection/ppapi_download_request.h",
       "external_app_redirect_checking.cc",
       "external_app_redirect_checking.h",
       "network_context_service.cc",
@@ -148,12 +177,16 @@ static_library("safe_browsing") {
       "phishy_interaction_tracker.h",
       "safe_browsing_navigation_observer_manager_factory.cc",
       "safe_browsing_navigation_observer_manager_factory.h",
+      "safe_browsing_pref_change_handler.cc",
+      "safe_browsing_pref_change_handler.h",
       "safe_browsing_service.cc",
       "safe_browsing_service.h",
       "services_delegate.cc",
       "services_delegate.h",
       "tailored_security/chrome_tailored_security_service.cc",
       "tailored_security/chrome_tailored_security_service.h",
+      "tailored_security/message_retry_handler.cc",
+      "tailored_security/message_retry_handler.h",
       "tailored_security/tailored_security_service_factory.cc",
       "tailored_security/tailored_security_service_factory.h",
       "tailored_security/tailored_security_url_observer.cc",
@@ -179,8 +212,12 @@ static_library("safe_browsing") {
       "//chrome/browser/content_extraction:content_extraction",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/download",
+      "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/safety_hub",
+      "//chrome/common/safe_browsing:archive_analyzer_results",
+      "//chrome/common/safe_browsing:binary_feature_extractor",
+      "//chrome/common/safe_browsing:download_type_util",
       "//chrome/common/safe_browsing:proto",
       "//components/autofill/core/browser",
       "//components/content_settings/core/browser",
@@ -223,6 +260,7 @@ static_library("safe_browsing") {
       "//components/site_engagement/core/mojom:mojo_bindings",
       "//components/sync_user_events",
       "//components/unified_consent",
+      "//components/url_matcher:url_matcher",
       "//components/variations/service",
       "//components/version_info",
       "//components/webdata/common",
@@ -235,12 +273,8 @@ static_library("safe_browsing") {
       # "Safe Browsing Full" files in addition to the "basic" ones to use for
       # full safe browsing. This has some in common with "mobile."
       sources += [
-        "../download/download_completion_blocker.cc",
-        "../download/download_completion_blocker.h",
         "chrome_safe_browsing_hats_delegate.cc",
         "chrome_safe_browsing_hats_delegate.h",
-        "cloud_content_scanning/binary_fcm_service.cc",
-        "cloud_content_scanning/binary_fcm_service.h",
         "cloud_content_scanning/binary_upload_service.cc",
         "cloud_content_scanning/binary_upload_service.h",
         "cloud_content_scanning/cloud_binary_upload_service.cc",
@@ -261,32 +295,16 @@ static_library("safe_browsing") {
         "cloud_content_scanning/multipart_uploader.h",
         "cloud_content_scanning/resumable_uploader.cc",
         "cloud_content_scanning/resumable_uploader.h",
-        "download_protection/check_client_download_request.cc",
-        "download_protection/check_client_download_request.h",
-        "download_protection/check_client_download_request_base.cc",
-        "download_protection/check_client_download_request_base.h",
-        "download_protection/check_file_system_access_write_request.cc",
-        "download_protection/check_file_system_access_write_request.h",
         "download_protection/deep_scanning_request.cc",
         "download_protection/deep_scanning_request.h",
         "download_protection/download_feedback.cc",
         "download_protection/download_feedback.h",
         "download_protection/download_feedback_service.cc",
         "download_protection/download_feedback_service.h",
-        "download_protection/download_protection_observer.cc",
-        "download_protection/download_protection_observer.h",
-        "download_protection/download_protection_service.cc",
-        "download_protection/download_protection_service.h",
-        "download_protection/download_request_maker.cc",
-        "download_protection/download_request_maker.h",
-        "download_protection/download_url_sb_client.cc",
-        "download_protection/download_url_sb_client.h",
-        "download_protection/file_analyzer.cc",
-        "download_protection/file_analyzer.h",
+        "download_protection/download_protection_delegate_desktop.cc",
+        "download_protection/download_protection_delegate_desktop.h",
         "download_protection/path_sanitizer.cc",
         "download_protection/path_sanitizer.h",
-        "download_protection/ppapi_download_request.cc",
-        "download_protection/ppapi_download_request.h",
         "extension_telemetry/cookies_get_all_signal.cc",
         "extension_telemetry/cookies_get_all_signal.h",
         "extension_telemetry/cookies_get_all_signal_processor.cc",
@@ -409,15 +427,10 @@ static_library("safe_browsing") {
         "//build:branding_buildflags",
         "//build:chromeos_buildflags",
         "//chrome/app/vector_icons:vector_icons",
-        "//chrome/browser/enterprise/connectors/analysis:features",
         "//chrome/browser/ui/hats",
         "//chrome/common",
-        "//chrome/common/safe_browsing:archive_analyzer_results",
-        "//chrome/common/safe_browsing:binary_feature_extractor",
-        "//chrome/common/safe_browsing:download_type_util",
         "//chrome/services/file_util/public/cpp",
         "//components/content_settings/core/browser",
-        "//components/enterprise/common/proto:connectors_proto",
         "//components/file_access",
         "//components/gcm_driver",
         "//components/gcm_driver/instance_id",
@@ -452,48 +465,43 @@ static_library("safe_browsing") {
           "//chrome/common:version_header",
         ]
       }
-      if (is_chromeos_ash) {
+      if (is_chromeos) {
         deps += [
           "//ash/constants:constants",
           "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+          "//chromeos/components/mgs:mgs",
         ]
-      }
-      if (is_chromeos_lacros) {
-        deps += [ "//chromeos/lacros:lacros" ]
-      }
-      if (is_chromeos) {
-        deps += [ "//chromeos/components/mgs:mgs" ]
       }
       if (!is_android) {
         deps += [ "//chrome/browser/ui:browser_list" ]
       }
     } else if (safe_browsing_mode == 2) {
-      if (is_android) {
-        sources += [
-          "android/services_delegate_android.cc",
-          "android/services_delegate_android.h",
-          "tailored_security/consented_message_android.cc",
-          "tailored_security/consented_message_android.h",
-          "tailored_security/unconsented_message_android.cc",
-          "tailored_security/unconsented_message_android.h",
-          "telemetry/android/android_telemetry_service.cc",
-          "telemetry/android/android_telemetry_service.h",
-        ]
-        deps += [
-          "//chrome/app/vector_icons:vector_icons",
-          "//components/messages/android:android",
-          "//components/safe_browsing/android:remote_database_manager",
-          "//ui/android:android",
-
-          # TODO(crbug.com/41437292): Use //chrome/browser after fixing cyclic
-          # dependency.
-          "//chrome/browser/page_info:page_info_buildflags",
-        ]
-      }
+      sources += [
+        "android/download_protection_metrics_data.cc",
+        "android/download_protection_metrics_data.h",
+        "android/services_delegate_android.cc",
+        "android/services_delegate_android.h",
+        "download_protection/download_protection_delegate_android.cc",
+        "download_protection/download_protection_delegate_android.h",
+        "tailored_security/consented_message_android.cc",
+        "tailored_security/consented_message_android.h",
+        "tailored_security/unconsented_message_android.cc",
+        "tailored_security/unconsented_message_android.h",
+        "telemetry/android/android_telemetry_service.cc",
+        "telemetry/android/android_telemetry_service.h",
+      ]
       deps += [
+        "//chrome/app/vector_icons:vector_icons",
         "//chrome/browser/safe_browsing/android",
+        "//components/messages/android:android",
         "//components/safe_browsing:buildflags",
+        "//components/safe_browsing/android:remote_database_manager",
         "//components/safe_browsing/android:safe_browsing_mobile",
+        "//ui/android:android",
+
+        # TODO(crbug.com/41437292): Use //chrome/browser after fixing cyclic
+        # dependency.
+        "//chrome/browser/page_info:page_info_buildflags",
       ]
     }
   }

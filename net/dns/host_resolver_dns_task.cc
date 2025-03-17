@@ -4,12 +4,12 @@
 
 #include "net/dns/host_resolver_dns_task.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/tick_clock.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
@@ -128,14 +128,15 @@ void RecordResolveTimeDiff(const char* histogram_variant,
 // TODO(crbug.com/40269419): Delete once results are always sorted as individual
 // transactions complete.
 std::vector<IPEndPoint> ExtractAddressResultsForSort(
-    HostResolverDnsTask::Results& results) {
+    HostResolverDnsTask::Results& results,
+    bool is_happy_eyeballs_v3_enabled) {
   CHECK(!base::FeatureList::IsEnabled(features::kUseHostResolverCache) &&
-        !base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
+        !is_happy_eyeballs_v3_enabled);
 
   // To simplify processing, assume no more than one result per address query
   // type.
   CHECK_LE(
-      base::ranges::count_if(
+      std::ranges::count_if(
           results,
           [](const std::unique_ptr<HostResolverInternalResult>& result) {
             return (result->type() == HostResolverInternalResult::Type::kData ||
@@ -145,7 +146,7 @@ std::vector<IPEndPoint> ExtractAddressResultsForSort(
           }),
       1);
   CHECK_LE(
-      base::ranges::count_if(
+      std::ranges::count_if(
           results,
           [](const std::unique_ptr<HostResolverInternalResult>& result) {
             return (result->type() == HostResolverInternalResult::Type::kData ||
@@ -155,13 +156,13 @@ std::vector<IPEndPoint> ExtractAddressResultsForSort(
           }),
       1);
 
-  auto a_result_it = base::ranges::find_if(
+  auto a_result_it = std::ranges::find_if(
       results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return (result->type() == HostResolverInternalResult::Type::kData ||
                 result->type() == HostResolverInternalResult::Type::kError) &&
                result->query_type() == DnsQueryType::A;
       });
-  auto aaaa_result_it = base::ranges::find_if(
+  auto aaaa_result_it = std::ranges::find_if(
       results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return (result->type() == HostResolverInternalResult::Type::kData ||
                 result->type() == HostResolverInternalResult::Type::kError) &&
@@ -212,14 +213,14 @@ std::vector<IPEndPoint> ExtractAddressResultsForSort(
   }
 
   // Expect no more data types after removed address results.
-  CHECK(!base::ranges::any_of(
+  CHECK(!std::ranges::any_of(
       results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kData;
       }));
 
   // Expect no UNSPECIFIED-type error result to ensure the one we're about to
   // create can be easily found.
-  CHECK(!base::ranges::any_of(
+  CHECK(!std::ranges::any_of(
       results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kError &&
                result->query_type() == DnsQueryType::UNSPECIFIED;
@@ -607,7 +608,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
 
   if (httpssvc_metrics_) {
     if (transaction_info.type == DnsQueryType::HTTPS) {
-      bool has_compatible_https = base::ranges::any_of(
+      bool has_compatible_https = std::ranges::any_of(
           results.value(),
           [](const std::unique_ptr<HostResolverInternalResult>& result) {
             return result->type() ==
@@ -654,7 +655,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
   }
 
   if (base::FeatureList::IsEnabled(features::kUseHostResolverCache) ||
-      base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      delegate_->IsHappyEyeballsV3Enabled()) {
     SortTransactionAndHandleResults(std::move(transaction_info),
                                     std::move(results).value());
   } else {
@@ -716,7 +717,7 @@ void HostResolverDnsTask::SortTransactionAndHandleResults(
     TransactionInfo transaction_info,
     Results transaction_results) {
   // Expect at most 1 data result in an individual transaction.
-  CHECK_LE(base::ranges::count_if(
+  CHECK_LE(std::ranges::count_if(
                transaction_results,
                [](const std::unique_ptr<HostResolverInternalResult>& result) {
                  return result->type() ==
@@ -724,7 +725,7 @@ void HostResolverDnsTask::SortTransactionAndHandleResults(
                }),
            1);
 
-  auto data_result_it = base::ranges::find_if(
+  auto data_result_it = std::ranges::find_if(
       transaction_results,
       [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kData;
@@ -775,13 +776,13 @@ void HostResolverDnsTask::OnTransactionSorted(
       std::move(transactions_in_progress_.extract(transaction_info_it).value());
 
   // Expect exactly one data result.
-  auto data_result_it = base::ranges::find_if(
+  auto data_result_it = std::ranges::find_if(
       transaction_results,
       [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kData;
       });
   CHECK(data_result_it != transaction_results.end());
-  DCHECK_EQ(base::ranges::count_if(
+  DCHECK_EQ(std::ranges::count_if(
                 transaction_results,
                 [](const std::unique_ptr<HostResolverInternalResult>& result) {
                   return result->type() ==
@@ -849,12 +850,12 @@ void HostResolverDnsTask::HandleTransactionResults(
 
   // Failures other than ERR_NAME_NOT_RESOLVED cannot be merged with other
   // transactions.
-  auto failure_result_it = base::ranges::find_if(
+  auto failure_result_it = std::ranges::find_if(
       transaction_results,
       [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kError;
       });
-  DCHECK_LE(base::ranges::count_if(
+  DCHECK_LE(std::ranges::count_if(
                 transaction_results,
                 [](const std::unique_ptr<HostResolverInternalResult>& result) {
                   return result->type() ==
@@ -901,9 +902,9 @@ void HostResolverDnsTask::OnTransactionsFinished(
   // If using HostResolverCache or Happy Eyeballs v3, transactions are already
   // invidvidually sorted on completion.
   if (!base::FeatureList::IsEnabled(features::kUseHostResolverCache) &&
-      !base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
-    std::vector<IPEndPoint> endpoints_to_sort =
-        ExtractAddressResultsForSort(saved_results_);
+      !delegate_->IsHappyEyeballsV3Enabled()) {
+    std::vector<IPEndPoint> endpoints_to_sort = ExtractAddressResultsForSort(
+        saved_results_, delegate_->IsHappyEyeballsV3Enabled());
 
     // Need to sort if results contain at least one IPv6 address.
     if (!endpoints_to_sort.empty()) {
@@ -927,7 +928,7 @@ void HostResolverDnsTask::OnSortComplete(base::TimeTicks sort_start_time,
                                          bool success,
                                          std::vector<IPEndPoint> sorted) {
   CHECK(!base::FeatureList::IsEnabled(features::kUseHostResolverCache));
-  CHECK(!base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
+  CHECK(!delegate_->IsHappyEyeballsV3Enabled());
 
   if (!success) {
     OnFailure(ERR_DNS_SORT_ERROR, /*allow_fallback=*/true, &results);
@@ -943,7 +944,7 @@ void HostResolverDnsTask::OnSortComplete(base::TimeTicks sort_start_time,
 
   // Find the merged error result that was created by
   // ExtractAddressResultsForSort().
-  auto merged_error_it = base::ranges::find_if(
+  auto merged_error_it = std::ranges::find_if(
       results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kError &&
                result->query_type() == DnsQueryType::UNSPECIFIED &&
@@ -969,11 +970,10 @@ bool HostResolverDnsTask::AnyPotentiallyFatalTransactionsRemain() {
     return behavior == TransactionErrorBehavior::kFatalOrEmpty;
   };
 
-  return base::ranges::any_of(transactions_needed_, is_fatal_or_empty_error,
-                              &TransactionInfo::error_behavior) ||
-         base::ranges::any_of(transactions_in_progress_,
-                              is_fatal_or_empty_error,
-                              &TransactionInfo::error_behavior);
+  return std::ranges::any_of(transactions_needed_, is_fatal_or_empty_error,
+                             &TransactionInfo::error_behavior) ||
+         std::ranges::any_of(transactions_in_progress_, is_fatal_or_empty_error,
+                             &TransactionInfo::error_behavior);
 }
 
 void HostResolverDnsTask::CancelNonFatalTransactions() {
@@ -1054,17 +1054,17 @@ bool HostResolverDnsTask::AnyOfTypeTransactionsRemain(
   DCHECK(!transactions_needed_.empty() || !transactions_in_progress_.empty());
 
   // Check running transactions.
-  if (base::ranges::find_first_of(transactions_in_progress_, types,
-                                  /*pred=*/{},
-                                  /*proj1=*/&TransactionInfo::type) !=
+  if (std::ranges::find_first_of(transactions_in_progress_, types,
+                                 /*pred=*/{},
+                                 /*proj1=*/&TransactionInfo::type) !=
       transactions_in_progress_.end()) {
     return true;
   }
 
   // Check queued transactions, in case it ever becomes possible to get here
   // without the transactions being started first.
-  return base::ranges::find_first_of(transactions_needed_, types, /*pred=*/{},
-                                     /*proj1=*/&TransactionInfo::type) !=
+  return std::ranges::find_first_of(transactions_needed_, types, /*pred=*/{},
+                                    /*proj1=*/&TransactionInfo::type) !=
          transactions_needed_.end();
 }
 
@@ -1154,7 +1154,7 @@ bool HostResolverDnsTask::ShouldTriggerHttpToHttpsUpgrade(
     return false;
   }
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kMetadata;
       });

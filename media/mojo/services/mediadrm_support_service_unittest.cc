@@ -36,11 +36,12 @@ TEST_F(MediaDrmSupportServiceTest, WidevineKeySystem) {
   Initialize();
 
   base::test::TestFuture<mojom::MediaDrmSupportResultPtr> support;
-  service_->IsKeySystemSupported(kWidevineKeySystem, support.GetCallback());
+  service_->IsKeySystemSupported(kWidevineKeySystem, /* is_secure= */ false,
+                                 support.GetCallback());
 
-  // All Android devices should support some form of Widevine support.
-  // However, support for WebM and MP4 formats may vary between devices,
-  // so we cannot check the other parameters.
+  // All Android devices should support some form of software secure Widevine
+  // support. However, support for WebM and MP4 formats and version may vary
+  // between devices, so we cannot check any returned values.
   ASSERT_TRUE(support.Get());
 }
 
@@ -50,7 +51,8 @@ TEST_F(MediaDrmSupportServiceTest, UnknownKeySystem) {
   Initialize();
 
   base::test::TestFuture<mojom::MediaDrmSupportResultPtr> support;
-  service_->IsKeySystemSupported(kUnsupportedKeySystem, support.GetCallback());
+  service_->IsKeySystemSupported(kUnsupportedKeySystem, /* is_secure= */ false,
+                                 support.GetCallback());
 
   // Unknown key system should not be supported.
   ASSERT_FALSE(support.Get());

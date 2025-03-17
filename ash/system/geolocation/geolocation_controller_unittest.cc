@@ -110,10 +110,11 @@ class FakeGeolocationController : public GeolocationController {
 };
 
 // Base test fixture.
-class GeolocationControllerTest : public AshTestBase {
+class GeolocationControllerTest : public NoSessionAshTestBase {
  public:
   GeolocationControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   GeolocationControllerTest(const GeolocationControllerTest&) = delete;
   GeolocationControllerTest& operator=(const GeolocationControllerTest&) =
       delete;
@@ -122,7 +123,7 @@ class GeolocationControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
     CreateTestUserSessions();
     // `SimpleGeolocationProvider` is initialized by `AshTestHelper`.
     controller_ = std::make_unique<FakeGeolocationController>(
@@ -145,7 +146,7 @@ class GeolocationControllerTest : public AshTestBase {
   // AshTestBase:
   void TearDown() override {
     controller_.reset();
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   FakeGeolocationController* controller() const { return controller_.get(); }
@@ -164,9 +165,10 @@ class GeolocationControllerTest : public AshTestBase {
   }
 
   void CreateTestUserSessions() {
-    GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(kUser1Email);
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    ClearLogin();
+    SimulateUserLogin({kUser1Email});
+    SimulateUserLogin({kUser2Email});
+    SwitchActiveUser({kUser1Email});
   }
 
   void SwitchActiveUser(const std::string& email) {

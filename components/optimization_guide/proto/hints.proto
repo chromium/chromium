@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 72;
+  reserved 11, 12, 16, 29, 32, 66, 72, 89;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -302,6 +302,21 @@ enum OptimizationType {
   // This optimization provides information about whether a page is a privacy
   // policy page.
   PRIVACY_POLICY_ANNOTATION = 77;
+  // The below optimizations provide information about merchant URLs that only
+  // BMO supports for credit card category benefits.
+  BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS = 78;
+  BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS = 79;
+  BMO_CREDIT_CARD_DINING_BENEFITS = 80;
+  BMO_CREDIT_CARD_DRUGSTORE_BENEFITS = 81;
+  BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS = 82;
+  BMO_CREDIT_CARD_GROCERY_BENEFITS = 83;
+  BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS = 84;
+  BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS = 85;
+  BMO_CREDIT_CARD_TRANSIT_BENEFITS = 86;
+  BMO_CREDIT_CARD_TRAVEL_BENEFITS = 87;
+  BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS = 88;
+  // Provides information about whether a page is eligible to cue for GLIC.
+  GLIC_CONTEXTUAL_CUEING = 90;
 }
 
 // Presents semantics for how page load URLs should be matched.

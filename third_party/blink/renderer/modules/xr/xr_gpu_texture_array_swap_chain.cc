@@ -97,11 +97,11 @@ void XRGPUTextureArraySwapChain::DirectCopy(
     GPUTexture* dest_texture) {
   CHECK_EQ(source_texture->Format(), dest_texture->Format());
 
-  wgpu::ImageCopyTexture source = {
+  wgpu::TexelCopyTextureInfo source = {
       .texture = source_texture->GetHandle(),
       .aspect = wgpu::TextureAspect::All,
   };
-  wgpu::ImageCopyTexture destination = {
+  wgpu::TexelCopyTextureInfo destination = {
       .texture = dest_texture->GetHandle(),
       .aspect = wgpu::TextureAspect::All,
   };

@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_recognition_context.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
 
 namespace blink {
@@ -28,6 +29,9 @@ namespace content {
 //   TakeAudioChunk      For every audio chunk pushed.
 //   AudioChunksEnded    Finalize the audio stream (omitted in case of errors).
 // EndRecognition        Mandatory at end of SR (even on errors).
+//
+// UpdateRecognitionContext can be called anywhere after StartRecognition and
+// before EndRecognition.
 //
 // No delegate callbacks are performed before StartRecognition or after
 // EndRecognition. If a recognition was started, the caller can free the
@@ -52,6 +56,9 @@ class CONTENT_EXPORT SpeechRecognitionEngine {
   SpeechRecognitionEngine() = default;
   virtual ~SpeechRecognitionEngine() = default;
   virtual void StartRecognition() = 0;
+  virtual void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext&
+          recognition_context) = 0;
   virtual void EndRecognition() = 0;
   virtual void TakeAudioChunk(const AudioChunk& data) = 0;
   virtual void AudioChunksEnded() = 0;

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
@@ -315,7 +315,7 @@ TEST_F(DeviceSyncCryptAuthFeatureStatusGetterImplTest,
                 ->second);
 
   // Ensure that BetterTogether host is marked as not supported in the response.
-  auto beto_host_supported_it = base::ranges::find(
+  auto beto_host_supported_it = std::ranges::find(
       *status.mutable_feature_statuses(),
       CryptAuthFeatureTypeToString(
           CryptAuthFeatureType::kBetterTogetherHostSupported),
@@ -324,7 +324,7 @@ TEST_F(DeviceSyncCryptAuthFeatureStatusGetterImplTest,
 
   // Erroneously mark the BetterTogether host feature state as enabled in the
   // response though it is not supported.
-  auto beto_host_enabled_it = base::ranges::find(
+  auto beto_host_enabled_it = std::ranges::find(
       *status.mutable_feature_statuses(),
       CryptAuthFeatureTypeToString(
           CryptAuthFeatureType::kBetterTogetherHostEnabled),

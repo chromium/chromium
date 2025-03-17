@@ -7,6 +7,9 @@
 }
 
 .customizable-select-popover {
+  position: fixed;
+  width: fit-content;
+  height: fit-content;
   box-sizing: border-box;
   border: 1px solid;
   padding: 0;
@@ -33,7 +36,7 @@
   padding-inline: 0.5em;
   padding-block-end: 0;
   display: flex;
-  place-items: center;
+  align-items: center;
   gap: 0.5em;
   white-space: nowrap;
 }
@@ -71,6 +74,10 @@
   min-block-size: max(24px, 1lh);
 }
 
+.customizable-select-button.disabled {
+  color: color-mix(in srgb, currentColor 50%, transparent);
+}
+
 .customizable-select-button.hover {
   background-color: color-mix(in lab, currentColor 10%, transparent);
 }
@@ -81,6 +88,7 @@
 
 .customizable-select-button::after {
   content: counter(fake-counter-name, disclosure-open);
+  margin-inline-start: auto;
 }
 
 .customizable-select-legend {

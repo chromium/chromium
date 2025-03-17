@@ -15,7 +15,6 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/base/port_util.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_pool.h"
@@ -35,17 +34,44 @@ namespace net {
 
 namespace {
 
-NextProtoSet CalculateAllowedAlpns(NextProto expected_protocol,
-                                   bool is_http1_allowed) {
+NextProtoSet CalculateAllowedAlpns(HttpStreamPool::Job::Delegate* delegate,
+                                   HttpStreamPool::Group* group,
+                                   NextProto expected_protocol) {
+  if (group->force_quic()) {
+    return NextProtoSet({NextProto::kProtoQUIC});
+  }
+
   NextProtoSet allowed_alpns = expected_protocol == NextProto::kProtoUnknown
                                    ? NextProtoSet::All()
                                    : NextProtoSet({expected_protocol});
-  if (!is_http1_allowed) {
-    static constexpr NextProtoSet kHttp11Protocols = {NextProto::kProtoUnknown,
-                                                      NextProto::kProtoHTTP11};
-    allowed_alpns.RemoveAll(kHttp11Protocols);
+
+  if (!delegate->is_http1_allowed()) {
+    allowed_alpns.RemoveAll(HttpStreamPool::kHttp11Protocols);
   }
+
+  if (!group->pool()->CanUseQuic(
+          group->stream_key().destination(),
+          group->stream_key().network_anonymization_key(),
+          delegate->enable_ip_based_pooling(),
+          delegate->enable_alternative_services())) {
+    allowed_alpns.Remove(NextProto::kProtoQUIC);
+  }
+
+  CHECK(!allowed_alpns.empty());
   return allowed_alpns;
+}
+
+// If the destination is forced to use QUIC and the QUIC version is unknown,
+// try the preferred QUIC version that is supported by default.
+quic::ParsedQuicVersion CalculateQuicVersion(
+    quic::ParsedQuicVersion original_quic_version,
+    HttpStreamPool::Group* group) {
+  return !original_quic_version.IsKnown() && group->force_quic()
+             ? group->http_network_session()
+                   ->context()
+                   .quic_context->params()
+                   ->supported_versions[0]
+             : original_quic_version;
 }
 
 }  // namespace
@@ -54,16 +80,18 @@ HttpStreamPool::Job::Job(Delegate* delegate,
                          Group* group,
                          quic::ParsedQuicVersion quic_version,
                          NextProto expected_protocol,
-                         const NetLogWithSource& request_net_log)
+                         const NetLogWithSource& request_net_log,
+                         size_t num_streams)
     : delegate_(delegate),
       group_(group),
-      quic_version_(quic_version),
-      allowed_alpns_(CalculateAllowedAlpns(expected_protocol,
-                                           delegate_->is_http1_allowed())),
+      quic_version_(CalculateQuicVersion(quic_version, group_)),
+      allowed_alpns_(
+          CalculateAllowedAlpns(delegate_, group_, expected_protocol)),
       request_net_log_(request_net_log),
       job_net_log_(
           NetLogWithSource::Make(request_net_log.net_log(),
                                  NetLogSourceType::HTTP_STREAM_POOL_JOB)),
+      num_streams_(num_streams),
       create_time_(base::TimeTicks::Now()) {
   CHECK(delegate_->is_http1_allowed() ||
         expected_protocol != NextProto::kProtoHTTP11);
@@ -76,6 +104,7 @@ HttpStreamPool::Job::Job(Delegate* delegate,
       allowed_alpn_list.Append(NextProtoToString(alpn));
     }
     dict.Set("allowed_alpns", std::move(allowed_alpn_list));
+    dict.Set("num_streams", static_cast<int>(num_streams_));
     delegate_->net_log().source().AddToEventParameters(dict);
     return dict;
   });
@@ -104,7 +133,18 @@ HttpStreamPool::Job::~Job() {
     }
   }
 
-  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE);
+  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
+    base::Value::Dict dict;
+    if (result_.has_value()) {
+      // Use "net_error" for the result as the NetLog viewer converts the value
+      // to a human-readable string.
+      dict.Set("net_error", *result_);
+    }
+    if (negotiated_protocol_.has_value()) {
+      dict.Set("negotiated_protocol", NextProtoToString(*negotiated_protocol_));
+    }
+    return dict;
+  });
 
   // `group_` may be deleted after this call.
   group_.ExtractAsDangling()->OnJobComplete(this);
@@ -114,6 +154,10 @@ void HttpStreamPool::Job::Start() {
   CHECK(group_);
 
   if (!group_->CanStartJob(this)) {
+    job_net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_PAUSED);
+    group_->net_log().AddEventReferencingSource(
+        NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_PAUSED,
+        job_net_log_.source());
     return;
   }
 
@@ -122,6 +166,16 @@ void HttpStreamPool::Job::Start() {
 
 void HttpStreamPool::Job::Resume() {
   resume_time_ = base::TimeTicks::Now();
+  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_PAUSED);
+  group_->net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_RESUMED, [&] {
+        base::Value::Dict dict;
+        base::TimeDelta elapsed = resume_time_ - create_time_;
+        dict.Set("elapsed_ms", elapsed.InMillisecondsF());
+        job_net_log_.source().AddToEventParameters(dict);
+        return dict;
+      });
+
   StartInternal();
 }
 
@@ -149,6 +203,7 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
                                         NextProto negotiated_protocol) {
   CHECK(delegate_);
   CHECK(!result_.has_value());
+  CHECK(!negotiated_protocol_);
 
   int result = OK;
   if (!allowed_alpns_.Has(negotiated_protocol)) {
@@ -168,6 +223,7 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
   }
 
   result_ = OK;
+  negotiated_protocol_ = negotiated_protocol;
   group_->http_network_session()->proxy_resolution_service()->ReportSuccess(
       delegate_->proxy_info());
   delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol);
@@ -199,6 +255,13 @@ void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   delegate_->OnNeedsClientAuth(this, cert_info);
 }
 
+void HttpStreamPool::Job::OnPreconnectComplete(int status) {
+  CHECK(delegate_);
+  CHECK(!result_.has_value());
+  result_ = status;
+  delegate_->OnPreconnectComplete(this, status);
+}
+
 base::TimeDelta HttpStreamPool::Job::CreateToResumeTime() const {
   if (resume_time_.is_null()) {
     return base::TimeDelta();
@@ -215,18 +278,11 @@ void HttpStreamPool::Job::StartInternal() {
   CHECK(attempt_manager());
   CHECK(!attempt_manager()->is_failing());
 
-  const url::SchemeHostPort& destination = group_->stream_key().destination();
-  if (!IsPortAllowedForScheme(destination.port(), destination.scheme())) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Job::OnStreamFailed, weak_ptr_factory_.GetWeakPtr(),
-                       ERR_UNSAFE_PORT, NetErrorDetails(), ResolveErrorInfo()));
-    return;
+  if (IsPreconnect()) {
+    attempt_manager()->Preconnect(this);
+  } else {
+    attempt_manager()->StartJob(this, request_net_log_);
   }
-
-  attempt_manager()->StartJob(this, priority(), delegate_->allowed_bad_certs(),
-                              quic_version_, request_net_log_,
-                              delegate_->net_log());
 }
 
 }  // namespace net

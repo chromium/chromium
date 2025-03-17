@@ -6,6 +6,7 @@
 #define UI_BASE_MODELS_TABLE_MODEL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
@@ -42,6 +43,25 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   // multiple columns in the row, this will only be shown when hovering over
   // column zero.
   virtual std::u16string GetTooltip(size_t row);
+
+  // Returns the accessibility name for the header.
+  // If there are multiple columns in the table, the AX name will be combined
+  // names from all visible columns' titles.
+  // For example: The table has 3 visible columns with title as `col1`, `col2`
+  // and `col3` correspondingly. The accessibility name for the `header` would
+  // be `col1 col2 col3`.
+  virtual std::u16string GetAXNameForHeader(
+      const std::vector<std::u16string>& visible_column_titles);
+
+  // Returns the accessibility name for the row.
+  // If there are multiple columns in the `row`, the AX name will be combined
+  // names from all visible columns.
+  // For example: The indexed `row` has 3 visible columns with value as `col1`,
+  // `col2` and `col3` correspondingly. The accessibility name for the `row`
+  // would be `col1 col2 col3`.
+  virtual std::u16string GetAXNameForRow(
+      size_t row,
+      const std::vector<int>& visible_column_ids);
 
   // Sets the observer for the model. The TableView should NOT take ownership
   // of the observer.

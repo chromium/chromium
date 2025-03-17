@@ -73,10 +73,12 @@ class TestAPITestWithContextType
     : public TestAPITest,
       public testing::WithParamInterface<ContextType> {};
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports service worker.
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          TestAPITestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
-
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          TestAPITestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
@@ -113,10 +115,10 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType,
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
            async function asyncAssertions() {
-             let tabs = await new Promise((resolve) => {
-               chrome.tabs.query({}, resolve);
+             let allowed = await new Promise((resolve) => {
+               chrome.extension.isAllowedIncognitoAccess(resolve);
              });
-             chrome.test.assertTrue(tabs.length > 0);
+             chrome.test.assertFalse(allowed);
              chrome.test.succeed();
            }
          ]);)";
@@ -132,10 +134,10 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType,
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
            async function asyncAssertions() {
-             let tabs = await new Promise((resolve) => {
-               chrome.tabs.query({}, resolve);
+             let allowed = await new Promise((resolve) => {
+               chrome.extension.isAllowedIncognitoAccess(resolve);
              });
-             chrome.test.assertEq(0, tabs.length);
+             chrome.test.assertTrue(allowed);
              chrome.test.succeed();
            }
          ]);)";

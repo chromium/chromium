@@ -22,11 +22,8 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/instance_update.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#endif
+#include "components/services/app_service/public/cpp/instance_update.h"
 
 namespace chromeos {
 
@@ -36,9 +33,7 @@ namespace chromeos {
 // 2. Starts the app using `AppServiceProxy::LaunchAppWithParams()` interface
 //    and waits for the launch to complete.
 class KioskAppServiceLauncher :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     public apps::InstanceRegistry::Observer,
-#endif
     public apps::AppRegistryCache::Observer {
  public:
   // Callback when the app is launched by App Service. App window instance is
@@ -63,18 +58,17 @@ class KioskAppServiceLauncher :
   void CheckAndMaybeLaunchApp(const std::string& app_id,
                               AppLaunchedCallback app_launched_callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ensures that `app_type` is initialized in App Service.
   void EnsureAppTypeInitialized(
       apps::AppType app_type,
       base::OnceClosure app_type_initialized_callback);
 
   // Same as the other `CheckAndMaybeLaunchApp`, but also waits for app window
-  // to be visible by observing `apps::InstanceRegistry`. Only works in Ash.
+  // to be visible by observing `apps::InstanceRegistry`.
   void CheckAndMaybeLaunchApp(const std::string& app_id,
                               AppLaunchedCallback app_launched_callback,
                               base::OnceClosure app_visible_callback);
-#endif
+
   void SetLaunchUrl(const GURL& launch_url);
 
  private:
@@ -89,12 +83,10 @@ class KioskAppServiceLauncher :
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // apps::InstanceRegistry::Observer:
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
-#endif
 
   std::string app_id_;
 
@@ -112,13 +104,11 @@ class KioskAppServiceLauncher :
                           apps::AppRegistryCache::Observer>
       app_registry_observation_{this};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::OnceClosure app_visible_callback_;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_{this};
-#endif
 
   base::WeakPtrFactory<KioskAppServiceLauncher> weak_ptr_factory_{this};
 };

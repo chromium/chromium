@@ -25,20 +25,13 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux(
     BrowserAccessibilityManager* manager,
     AXNode* node)
-    : BrowserAccessibility(manager, node) {
-  platform_node_ =
-      static_cast<AXPlatformNodeAuraLinux*>(AXPlatformNode::Create(this));
-}
+    : BrowserAccessibility(manager, node),
+      platform_node_(AXPlatformNode::Create(this)) {}
 
-BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() {
-  DCHECK(platform_node_);
-  // Clear platform_node_ and return another raw_ptr instance
-  // that is allowed to dangle.
-  platform_node_.ExtractAsDangling()->Destroy();
-}
+BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() = default;
 
 AXPlatformNodeAuraLinux* BrowserAccessibilityAuraLinux::GetNode() const {
-  return platform_node_;
+  return static_cast<AXPlatformNodeAuraLinux*>(platform_node_.get());
 }
 
 gfx::NativeViewAccessible
@@ -54,7 +47,8 @@ void BrowserAccessibilityAuraLinux::UpdatePlatformAttributes() {
 void BrowserAccessibilityAuraLinux::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
   DCHECK(platform_node_);
-  platform_node_->EnsureAtkObjectIsValid();
+  static_cast<AXPlatformNodeAuraLinux*>(platform_node_.get())
+      ->EnsureAtkObjectIsValid();
 }
 
 AXPlatformNode* BrowserAccessibilityAuraLinux::GetAXPlatformNode() const {

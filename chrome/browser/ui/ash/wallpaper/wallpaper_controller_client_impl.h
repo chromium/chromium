@@ -11,7 +11,9 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
@@ -43,7 +45,8 @@ class WallpaperControllerClientImpl
       public session_manager::SessionManagerObserver,
       public user_manager::UserManager::Observer {
  public:
-  explicit WallpaperControllerClientImpl(
+  WallpaperControllerClientImpl(
+      PrefService& local_state,
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
           wallpaper_fetcher_delegate);
 
@@ -165,7 +168,7 @@ class WallpaperControllerClientImpl
   // WallpaperController interface in ash.
   raw_ptr<ash::WallpaperController> wallpaper_controller_;
 
-  raw_ptr<PrefService> local_state_;
+  raw_ref<PrefService> local_state_;
 
   // The registrar used to watch DeviceWallpaperImageFilePath pref changes.
   PrefChangeRegistrar pref_registrar_;

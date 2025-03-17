@@ -188,14 +188,33 @@ TEST_F(VersionUpdaterCrosTest, CellularUpdateOneTimePermission) {
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 }
 
-TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_NoCallbackDuringInstallations) {
+TEST_F(VersionUpdaterCrosTest,
+       GetUpdateStatus_CallbackDuringInstallationsWhenDownloading) {
   SetEthernetService();
   update_engine::StatusResult status;
   status.set_is_install(true);
+  status.set_current_operation(update_engine::Operation::DOWNLOADING);
   fake_update_engine_client_->set_default_status(status);
 
-  // Expect the callback not to be called as it's an installation (not update).
   StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(VersionUpdater::UPDATED, 0, false, false,
+                                 std::string(), 0, std::u16string()))
+      .Times(1);
+  version_updater_->GetUpdateStatus(mock_callback.Get());
+}
+
+TEST_F(VersionUpdaterCrosTest,
+       GetUpdateStatus_CallbackDuringInstallationsWhenIdle) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  status.set_is_install(true);
+  status.set_current_operation(update_engine::Operation::IDLE);
+  fake_update_engine_client_->set_default_status(status);
+
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(VersionUpdater::UPDATED, 0, false, false,
+                                 std::string(), 0, std::u16string()))
+      .Times(1);
   version_updater_->GetUpdateStatus(mock_callback.Get());
 }
 
@@ -204,7 +223,7 @@ TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_CallbackDuringUpdates) {
   update_engine::StatusResult status;
   fake_update_engine_client_->set_default_status(status);
 
-  // Expect the callbac kto be called as it's an update status change.
+  // Expect the callback to be called as it's an update status change.
   StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
   EXPECT_CALL(mock_callback, Run(_, _, _, _, _, _, _)).Times(1);
   version_updater_->GetUpdateStatus(mock_callback.Get());

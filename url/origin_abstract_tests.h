@@ -11,12 +11,10 @@
 #include <type_traits>
 
 #include "base/containers/contains.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
-#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace url {
@@ -285,51 +283,38 @@ TYPED_TEST_P(
     AndroidWebViewHackWithStandardCompliantNonSpecialSchemeURLParsing) {
   EnableNonStandardSchemesForAndroidWebView();
 
-  // Manual flag-dependent tests to ensure that the behavior doesn't change
-  // whether the flag is enabled or not.
-  for (bool flag : {false, true}) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    if (flag) {
-      scoped_feature_list.InitAndEnableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list.InitAndDisableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    }
+  // Non-Standard scheme cases.
+  {
+    auto origin_a = this->CreateOriginFromString("non-standard://a.com:80");
+    // Ensure that a host and a port are discarded.
+    EXPECT_EQ(this->GetHost(origin_a), "");
+    EXPECT_EQ(this->GetPort(origin_a), 0);
+    EXPECT_EQ(this->Serialize(origin_a), "non-standard://");
+    EXPECT_FALSE(this->IsOpaque(origin_a));
 
-    // Non-Standard scheme cases.
-    {
-      auto origin_a = this->CreateOriginFromString("non-standard://a.com:80");
-      // Ensure that a host and a port are discarded.
-      EXPECT_EQ(this->GetHost(origin_a), "");
-      EXPECT_EQ(this->GetPort(origin_a), 0);
-      EXPECT_EQ(this->Serialize(origin_a), "non-standard://");
-      EXPECT_FALSE(this->IsOpaque(origin_a));
+    // URLs are considered same-origin if their schemes match, even if
+    // their host and port are different.
+    auto origin_b = this->CreateOriginFromString("non-standard://b.com:90");
+    EXPECT_TRUE(this->IsSameOrigin(origin_a, origin_b));
 
-      // URLs are considered same-origin if their schemes match, even if
-      // their host and port are different.
-      auto origin_b = this->CreateOriginFromString("non-standard://b.com:90");
-      EXPECT_TRUE(this->IsSameOrigin(origin_a, origin_b));
+    // URLs are not considered same-origin if their schemes don't match,
+    // even if their host and port are same.
+    auto another_origin_a =
+        this->CreateOriginFromString("another-non-standard://a.com:80");
+    EXPECT_FALSE(this->IsSameOrigin(origin_a, another_origin_a));
+  }
 
-      // URLs are not considered same-origin if their schemes don't match,
-      // even if their host and port are same.
-      auto another_origin_a =
-          this->CreateOriginFromString("another-non-standard://a.com:80");
-      EXPECT_FALSE(this->IsSameOrigin(origin_a, another_origin_a));
-    }
+  // Standard scheme cases.
+  {
+    // Ensure that the behavior of a standard URL is preserved.
+    auto origin_a = this->CreateOriginFromString("https://a.com:80");
+    EXPECT_EQ(this->GetHost(origin_a), "a.com");
+    EXPECT_EQ(this->GetPort(origin_a), 80);
+    EXPECT_EQ(this->Serialize(origin_a), "https://a.com:80");
+    EXPECT_FALSE(this->IsOpaque(origin_a));
 
-    // Standard scheme cases.
-    {
-      // Ensure that the behavior of a standard URL is preserved.
-      auto origin_a = this->CreateOriginFromString("https://a.com:80");
-      EXPECT_EQ(this->GetHost(origin_a), "a.com");
-      EXPECT_EQ(this->GetPort(origin_a), 80);
-      EXPECT_EQ(this->Serialize(origin_a), "https://a.com:80");
-      EXPECT_FALSE(this->IsOpaque(origin_a));
-
-      auto origin_b = this->CreateOriginFromString("https://b.com:80");
-      EXPECT_FALSE(this->IsSameOrigin(origin_a, origin_b));
-    }
+    auto origin_b = this->CreateOriginFromString("https://b.com:80");
+    EXPECT_FALSE(this->IsSameOrigin(origin_a, origin_b));
   }
 }
 
@@ -569,38 +554,18 @@ TYPED_TEST_P(AbstractOriginTest, CustomSchemes_TupleOrigins) {
 
 TYPED_TEST_P(AbstractOriginTest,
              CustomSchemes_TupleOrigins_StandardCompliantNonSpecialSchemeFlag) {
-  // Manual flag-dependent tests.
-  //
-  // See AbstractOriginTest/CustomSchemes_TupleOrigins, which covers common
-  // test cases.
-  for (bool flag : {false, true}) {
-    // Note: The feature must be set before we construct test cases because
-    // SchemeHostPort's constructor changes its behavior.
-    base::test::ScopedFeatureList scoped_feature_list;
-    if (flag) {
-      scoped_feature_list.InitAndEnableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list.InitAndDisableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-
-    struct TestCase {
-      std::string_view input;
-      SchemeHostPort expected_tuple_when_standard_compliant_flag_off;
-      SchemeHostPort expected_tuple_when_standard_compliant_flag_on;
-    } test_cases[] = {
-        {"local://bar", {"local", "", 0}, {"local", "bar", 0}},
-        {"also-local://bar", {"also-local", "", 0}, {"also-local", "bar", 0}},
-    };
-    for (const TestCase& test : test_cases) {
-      SCOPED_TRACE(testing::Message() << "Test input: " << test.input);
-      EXPECT_TRUE(this->IsValidUrl(test.input));
-      auto origin = this->CreateOriginFromString(test.input);
-      this->VerifyTupleOriginInvariants(
-          origin, flag ? test.expected_tuple_when_standard_compliant_flag_on
-                       : test.expected_tuple_when_standard_compliant_flag_off);
-    }
+  struct TestCase {
+    std::string_view input;
+    SchemeHostPort expected_tuple;
+  } test_cases[] = {
+      {"local://bar", {"local", "bar", 0}},
+      {"also-local://bar", {"also-local", "bar", 0}},
+  };
+  for (const TestCase& test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "Test input: " << test.input);
+    EXPECT_TRUE(this->IsValidUrl(test.input));
+    auto origin = this->CreateOriginFromString(test.input);
+    this->VerifyTupleOriginInvariants(origin, test.expected_tuple);
   }
 }
 

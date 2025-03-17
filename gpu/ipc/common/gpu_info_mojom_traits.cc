@@ -38,6 +38,64 @@ bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
 }
 
 // static
+gpu::mojom::SkiaBackendType
+EnumTraits<gpu::mojom::SkiaBackendType, gpu::SkiaBackendType>::ToMojom(
+    gpu::SkiaBackendType type) {
+  switch (type) {
+    case gpu::SkiaBackendType::kUnknown:
+      return gpu::mojom::SkiaBackendType::kUnknown;
+    case gpu::SkiaBackendType::kNone:
+      return gpu::mojom::SkiaBackendType::kNone;
+    case gpu::SkiaBackendType::kGaneshGL:
+      return gpu::mojom::SkiaBackendType::kGaneshGL;
+    case gpu::SkiaBackendType::kGaneshVulkan:
+      return gpu::mojom::SkiaBackendType::kGaneshVulkan;
+    case gpu::SkiaBackendType::kGraphiteDawnVulkan:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnVulkan;
+    case gpu::SkiaBackendType::kGraphiteDawnMetal:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnMetal;
+    case gpu::SkiaBackendType::kGraphiteDawnD3D11:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnD3D11;
+    case gpu::SkiaBackendType::kGraphiteDawnD3D12:
+      return gpu::mojom::SkiaBackendType::kGraphiteDawnD3D12;
+  }
+  NOTREACHED() << "Invalid SkiaBackendType:" << static_cast<int>(type);
+}
+
+// static
+bool EnumTraits<gpu::mojom::SkiaBackendType, gpu::SkiaBackendType>::FromMojom(
+    gpu::mojom::SkiaBackendType input,
+    gpu::SkiaBackendType* out) {
+  switch (input) {
+    case gpu::mojom::SkiaBackendType::kUnknown:
+      *out = gpu::SkiaBackendType::kUnknown;
+      return true;
+    case gpu::mojom::SkiaBackendType::kNone:
+      *out = gpu::SkiaBackendType::kNone;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGaneshGL:
+      *out = gpu::SkiaBackendType::kGaneshGL;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGaneshVulkan:
+      *out = gpu::SkiaBackendType::kGaneshVulkan;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnVulkan:
+      *out = gpu::SkiaBackendType::kGraphiteDawnVulkan;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnMetal:
+      *out = gpu::SkiaBackendType::kGraphiteDawnMetal;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnD3D11:
+      *out = gpu::SkiaBackendType::kGraphiteDawnD3D11;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteDawnD3D12:
+      *out = gpu::SkiaBackendType::kGraphiteDawnD3D12;
+      return true;
+  }
+  NOTREACHED() << "Invalid SkiaBackendType: " << input;
+}
+
+// static
 gpu::mojom::VideoCodecProfile
 EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::ToMojom(
     gpu::VideoCodecProfile video_codec_profile) {
@@ -366,6 +424,8 @@ gpu::mojom::ImageDecodeAcceleratorType EnumTraits<
     case gpu::ImageDecodeAcceleratorType::kUnknown:
       return gpu::mojom::ImageDecodeAcceleratorType::kUnknown;
   }
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorType: "
+               << static_cast<int>(image_type);
 }
 
 // static
@@ -400,6 +460,8 @@ EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
     case gpu::ImageDecodeAcceleratorSubsampling::k444:
       return gpu::mojom::ImageDecodeAcceleratorSubsampling::k444;
   }
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorSubsampling: "
+               << static_cast<int>(subsampling);
 }
 
 // static
@@ -447,6 +509,7 @@ EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport>::ToMojom(
     case gpu::OverlaySupport::kSoftware:
       return gpu::mojom::OverlaySupport::SOFTWARE;
   }
+  NOTREACHED() << "Invalid OverlaySupport: " << static_cast<int>(support);
 }
 
 bool EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport>::FromMojom(
@@ -455,18 +518,18 @@ bool EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport>::FromMojom(
   switch (input) {
     case gpu::mojom::OverlaySupport::NONE:
       *out = gpu::OverlaySupport::kNone;
-      break;
+      return true;
     case gpu::mojom::OverlaySupport::DIRECT:
       *out = gpu::OverlaySupport::kDirect;
-      break;
+      return true;
     case gpu::mojom::OverlaySupport::SCALING:
       *out = gpu::OverlaySupport::kScaling;
-      break;
+      return true;
     case gpu::mojom::OverlaySupport::SOFTWARE:
       *out = gpu::OverlaySupport::kSoftware;
-      break;
+      return true;
   }
-  return true;
+  NOTREACHED() << "Invalid OverlaySupport: " << input;
 }
 
 bool StructTraits<gpu::mojom::OverlayInfoDataView, gpu::OverlayInfo>::Read(
@@ -519,6 +582,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
          data.ReadMachineModelName(&out->machine_model_name) &&
          data.ReadMachineModelVersion(&out->machine_model_version) &&
          data.ReadDisplayType(&out->display_type) &&
+         data.ReadSkiaBackendType(&out->skia_backend_type) &&
          data.ReadGlVersion(&out->gl_version) &&
          data.ReadGlVendor(&out->gl_vendor) &&
          data.ReadGlRenderer(&out->gl_renderer) &&

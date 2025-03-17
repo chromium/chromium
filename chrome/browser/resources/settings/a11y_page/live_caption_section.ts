@@ -252,7 +252,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     this.$.menu.get().close();
     this.installedLanguagePacks_ = this.installedLanguagePacks_.filter(
         languagePack => languagePack.code !== this.detailLanguage_!.code);
-    this.browserProxy_.removeLanguagePack(this.detailLanguage_!.code);
+    this.browserProxy_.removeLanguagePack(this.detailLanguage_.code);
 
     if (this.installedLanguagePacks_.length === 0) {
       this.setPrefValue('accessibility.captions.live_caption_enabled', false);

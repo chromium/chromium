@@ -11,22 +11,22 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {EarconId} from '../common/earcon_id.js';
+import type {EarconId} from '../common/earcon_id.js';
 import {Spannable} from '../common/spannable.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import type {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
-import {AbstractEarcons} from './abstract_earcons.js';
+import type {AbstractEarcons} from './abstract_earcons.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
-import {BrailleInterface} from './braille/braille_interface.js';
+import type {BrailleInterface} from './braille/braille_interface.js';
 import {ChromeVoxState} from './chromevox_state.js';
-import {TtsInterface} from './tts_interface.js';
+import type {TtsInterface} from './tts_interface.js';
 
 /** A central access point for the different modes of output. */
 export class ChromeVox {
   static braille: BrailleInterface;
   static earcons: AbstractEarcons;
   static tts: TtsInterface;
-};
+}
 
 // Braille bridge functions.
 BridgeHelper.registerHandler(

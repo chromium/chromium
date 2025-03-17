@@ -1,0 +1,130 @@
+Tests trace events for dom stats.
+Recording started
+Tracing complete
+First DOM stats
+Object: {
+	args: {
+		data: {
+			frame: string
+			maxChildren: {
+				nodeId: number
+				nodeName: DIV id='parent'
+				numChildren: 2
+			}
+			maxDepth: {
+				depth: 3
+				nodeId: number
+				nodeName: DIV class='empty'
+			}
+			totalElements: 5
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Last DOM stats
+Object: {
+	args: {
+		data: {
+			frame: string
+			maxChildren: {
+				nodeId: number
+				nodeName: DIV id='parent'
+				numChildren: 52
+			}
+			maxDepth: {
+				depth: 5
+				nodeId: number
+				nodeName: DIV id='shadow-leaf'
+			}
+			totalElements: 57
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Recording started
+Tracing complete
+DOM stats with empty body element
+Object: {
+	args: {
+		data: {
+			frame: string
+			maxChildren: {
+				nodeId: number
+				nodeName: HTML
+				numChildren: 1
+			}
+			maxDepth: {
+				depth: 1
+				nodeId: number
+				nodeName: BODY
+			}
+			totalElements: 2
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Recording started
+Tracing complete
+DOM stats with no body element
+Object: {
+	args: {
+		data: {
+			frame: string
+			maxChildren: {
+				nodeId: number
+				nodeName: HTML
+				numChildren: 0
+			}
+			maxDepth: {
+				depth: 0
+				nodeId: number
+				nodeName: HTML
+			}
+			totalElements: 1
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Recording started
+Tracing complete
+DOM stats with no document element
+Object: {
+	args: {
+		data: {
+			frame: string
+			totalElements: 0
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+

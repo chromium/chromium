@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_context_state.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
 
-#include <atomic>
+#include "gpu/command_buffer/service/shared_context_state.h"
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
@@ -103,13 +106,11 @@ size_t MaxNumSkSurface() {
 #endif
 }
 
-// TODO: crbug.com/376667859 - passing the graphite::Context to here isn't safe.
-// Correct when a suitable Skia object is added.
 void PerformPrecompilation(
     std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext) {
-  constexpr skgpu::graphite::RenderPassProperties kProps = {
+  const skgpu::graphite::RenderPassProperties kProps = {
       skgpu::graphite::DepthStencilFlags::kDepth, kBGRA_8888_SkColorType,
-      /* requiresMSAA= */ false};
+      /* dstColorSpace= */ nullptr, /* requiresMSAA= */ false};
 
   // TODO: crbug.com/358074434 - add actually relevant precompilation
   skgpu::graphite::PaintOptions paintOptions;
@@ -147,61 +148,6 @@ std::unique_ptr<skgpu::graphite::Recorder> MakeGraphiteRecorder(
   options.fImageProvider =
       sk_make_sp<gpu::GraphiteImageProvider>(max_image_provider_cache_bytes);
   return context->makeRecorder(options);
-}
-
-// Used to represent Skia backend type for UMA.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SkiaBackendType {
-  kUnknown = 0,
-  kNone = 1,
-  kGaneshGL = 2,
-  kGaneshVulkan = 3,
-  kGraphiteDawnVulkan = 4,
-  kGraphiteDawnMetal = 5,
-  kGraphiteDawnD3D11 = 6,
-  kGraphiteDawnD3D12 = 7,
-  // It's not clear what granularity of kGraphiteDawnGL* backend dawn will
-  // provided yet so those values are to be added later.
-  kMaxValue = kGraphiteDawnD3D12
-};
-
-SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
-  switch (context->gr_context_type()) {
-    case gpu::GrContextType::kNone:
-      return SkiaBackendType::kNone;
-    case gpu::GrContextType::kGL:
-      return SkiaBackendType::kGaneshGL;
-    case gpu::GrContextType::kVulkan:
-      return SkiaBackendType::kGaneshVulkan;
-    case gpu::GrContextType::kGraphiteMetal:
-      // Graphite/Metal isn't expected to be used outside tests.
-      return SkiaBackendType::kUnknown;
-    case gpu::GrContextType::kGraphiteDawn: {
-#if BUILDFLAG(SKIA_USE_DAWN)
-      if (!context->dawn_context_provider()) {
-        // TODO(kylechar): Bail out of GPU process earlier if
-        // DawnContextProvider initialization fails.
-        return SkiaBackendType::kUnknown;
-      }
-      switch (context->dawn_context_provider()->backend_type()) {
-        case wgpu::BackendType::Vulkan:
-          return SkiaBackendType::kGraphiteDawnVulkan;
-        case wgpu::BackendType::D3D11:
-          return SkiaBackendType::kGraphiteDawnD3D11;
-        case wgpu::BackendType::D3D12:
-          return SkiaBackendType::kGraphiteDawnD3D12;
-        case wgpu::BackendType::Metal:
-          return SkiaBackendType::kGraphiteDawnMetal;
-        default:
-          break;
-      }
-#else
-      break;
-#endif
-    }
-  }
-  return SkiaBackendType::kUnknown;
 }
 
 GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
@@ -499,6 +445,15 @@ bool SharedContextState::IsGraphiteDawnD3D() const {
 #endif
 }
 
+bool SharedContextState::IsGraphiteDawnD3D11() const {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  return IsGraphiteDawn() &&
+         dawn_context_provider()->backend_type() == wgpu::BackendType::D3D11;
+#else
+  return false;
+#endif
+}
+
 bool SharedContextState::IsGraphiteDawnVulkan() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
   return IsGraphiteDawn() &&
@@ -523,17 +478,7 @@ bool SharedContextState::InitializeSkia(
     gpu::raster::GrShaderCache* cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
-  static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
-  crash_key.Set(GrContextTypeToString(gr_context_type_));
-
-  // Record the Skia backend type the first time Skia/SharedContextState is
-  // initialized. This can happen more than once and on different threads but
-  // the backend type should never change.
-  static std::atomic<bool> once(true);
-  if (once.exchange(false, std::memory_order_relaxed)) {
-    SkiaBackendType context_enum = FindSkiaBackendType(this);
-    base::UmaHistogramEnumeration("GPU.SkiaBackendType", context_enum);
-  }
+  is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;
 
   if (gr_context_type_ == GrContextType::kNone) {
     // SharedContextState only exists to hold a GL context for WebGL fallback
@@ -654,7 +599,6 @@ bool SharedContextState::InitializeGanesh(
       base::BindRepeating(&SharedContextState::ScheduleSkiaCleanup,
                           base::Unretained(this)));
   gr_cache_controller_ = std::make_unique<raster::GrCacheController>(this);
-  is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;
   return true;
 }
 
@@ -720,9 +664,14 @@ bool SharedContextState::InitializeGraphite(
           gpu_main_graphite_recorder_.get(), graphite_context_.get(),
           dawn_context_provider_);
 
-  viz_compositor_graphite_recorder_ =
-      MakeGraphiteRecorder(graphite_context_, context_options.fGpuBudgetInBytes,
-                           max_viz_compositor_image_provider_cache_bytes);
+  // Only create the Viz recorder for the SharedContextState used by the
+  // compositor which will be the GPU main context without DrDC and the
+  // the CompositorGpuThread context with DrDC.
+  if (!is_drdc_enabled_ || created_on_compositor_gpu_thread_) {
+    viz_compositor_graphite_recorder_ = MakeGraphiteRecorder(
+        graphite_context_, context_options.fGpuBudgetInBytes,
+        max_viz_compositor_image_provider_cache_bytes);
+  }
 
   transfer_cache_ = std::make_unique<ServiceTransferCache>(
       gpu_preferences,
@@ -747,8 +696,7 @@ bool SharedContextState::InitializeGL(
   DCHECK(context_->IsCurrent(nullptr));
 
   bool use_passthrough_cmd_decoder =
-      gpu_preferences.use_passthrough_cmd_decoder &&
-      gles2::PassthroughCommandDecoderSupported();
+      gpu_preferences.use_passthrough_cmd_decoder;
   // Virtualized contexts don't work with passthrough command decoder.
   // See https://crbug.com/914976
   DCHECK(!use_passthrough_cmd_decoder || !use_virtualized_gl_contexts_);
@@ -1441,10 +1389,10 @@ int32_t SharedContextState::GetMaxTextureSize() {
   } else {
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (dawn_context_provider()) {
-      wgpu::SupportedLimits limits = {};
+      wgpu::Limits limits = {};
       auto succeded = dawn_context_provider()->GetDevice().GetLimits(&limits);
       CHECK(succeded);
-      max_texture_size = limits.limits.maxTextureDimension2D;
+      max_texture_size = limits.maxTextureDimension2D;
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 #if BUILDFLAG(SKIA_USE_METAL)

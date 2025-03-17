@@ -17,6 +17,7 @@
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/test_support/family_link_settings_state_management.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -142,6 +144,13 @@ class TestFamilyLinkSettingsStateHelper {
               supervised_user::FamilyLinkSettingsState::
                   DefineManualSiteListIntent::BlockUrl(
                       GURL(base::SysNSStringToUTF8(url)))));
+}
+
++ (void)triggerSyncServiceRefresh {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
+  SyncServiceFactory::GetForProfile(profile)->TriggerRefresh(
+      syncer::DataTypeSet::All());
 }
 
 + (void)tearDownTestFamilyLinkSettingsStateHelper {

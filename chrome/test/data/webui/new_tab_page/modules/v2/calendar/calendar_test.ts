@@ -19,7 +19,7 @@ suite('NewTabPageModulesCalendarTest', () => {
   let element: CalendarElement;
   let windowProxy: TestMock<WindowProxy>;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     element = new CalendarElement();
@@ -34,7 +34,7 @@ suite('NewTabPageModulesCalendarTest', () => {
 
       // Assert.
       const eventElements =
-          element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+          element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(eventElements.length, numEvents);
       eventElements.forEach((element) => {
         assertTrue(isVisible(element));
@@ -62,7 +62,7 @@ suite('NewTabPageModulesCalendarTest', () => {
 
           // Assert.
           const eventElements =
-              element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+              element.shadowRoot.querySelectorAll('ntp-calendar-event');
           assertEquals(eventElements.length, 3);
           const expandedEvent = eventElements[1];
           assertTrue(expandedEvent!.hasAttribute('expanded'));
@@ -87,7 +87,7 @@ suite('NewTabPageModulesCalendarTest', () => {
 
       // Assert.
       const eventElements =
-          element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+          element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(eventElements.length, 2);
       const expandedEvent = eventElements[1];
       assertTrue(expandedEvent!.hasAttribute('expanded'));
@@ -112,11 +112,11 @@ suite('NewTabPageModulesCalendarTest', () => {
 
       // Assert.
       const eventElements =
-          element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+          element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(eventElements.length, 2);
       const expandedEvent = eventElements[0];
       assertTrue(expandedEvent!.hasAttribute('expanded'));
-      assertEquals(expandedEvent!.event!.title, 'Test Event 1');
+      assertEquals(expandedEvent!.event.title, 'Test Event 1');
     });
 
     test('prioritize event with other attendee', async () => {
@@ -137,11 +137,11 @@ suite('NewTabPageModulesCalendarTest', () => {
 
       // Assert.
       const eventElements =
-          element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+          element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(eventElements.length, 2);
       const expandedEvent = eventElements[0];
       assertTrue(expandedEvent!.hasAttribute('expanded'));
-      assertEquals(expandedEvent!.event!.title, 'Test Event 1');
+      assertEquals(expandedEvent!.event.title, 'Test Event 1');
     });
 
     test('do not expand any meetings if they are all over', async () => {
@@ -157,7 +157,7 @@ suite('NewTabPageModulesCalendarTest', () => {
 
       // Assert.
       const eventElements =
-          element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+          element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(eventElements.length, 1);
       assertFalse(eventElements[0]!.hasAttribute('expanded'));
     });
@@ -170,8 +170,8 @@ suite('NewTabPageModulesCalendarTest', () => {
       assertTrue(isVisible(element.$.seeMore));
       const anchor = element.$.seeMore.querySelector<HTMLAnchorElement>('a');
       assertTrue(!!anchor);
-      assertEquals('https://foo.com/', anchor!.href);
-      assertEquals('See more', anchor!.innerText);
+      assertEquals('https://foo.com/', anchor.href);
+      assertEquals('See more', anchor.innerText);
     });
 
     test('double booked events are marked', async () => {
@@ -198,7 +198,7 @@ suite('NewTabPageModulesCalendarTest', () => {
 
       // Assert.
       const eventElements =
-          element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+          element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(4, eventElements.length);
       assertTrue(eventElements[0]!.hasAttribute('expanded'));
       assertTrue(eventElements[1]!.hasAttribute('double-booked'));

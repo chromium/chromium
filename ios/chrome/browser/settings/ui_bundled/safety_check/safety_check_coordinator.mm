@@ -12,10 +12,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -178,7 +180,7 @@ using password_manager::WarningType;
   // `GetMobileNotificationPermissionStatusForClient()`.
   if (push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
-              PushNotificationClientId::kSafetyCheck, "")) {
+              PushNotificationClientId::kSafetyCheck, GaiaId())) {
     [self disableNotifications];
 
     return;
@@ -370,7 +372,8 @@ using password_manager::WarningType;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-
+  _optInAlertCoordinator.accessPoint =
+      NotificationOptInAccessPoint::kSafetyCheck;
   _optInAlertCoordinator.delegate = self;
 
   _optInAlertCoordinator.clientIds =

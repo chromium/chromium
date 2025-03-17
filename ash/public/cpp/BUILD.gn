@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # C++ headers and sources that can be used outside ash.
 component("cpp") {
@@ -126,7 +125,6 @@ component("cpp") {
     "connectivity_services.cc",
     "connectivity_services.h",
     "coral_delegate.h",
-    "debug_delegate.h",
     "default_user_image.cc",
     "default_user_image.h",
     "desk_profiles_delegate.cc",
@@ -208,11 +206,14 @@ component("cpp") {
     "lobster/lobster_feedback_preview.cc",
     "lobster/lobster_feedback_preview.h",
     "lobster/lobster_image_candidate.h",
+    "lobster/lobster_image_download_response.h",
     "lobster/lobster_metrics_state_enums.h",
     "lobster/lobster_result.h",
     "lobster/lobster_session.h",
     "lobster/lobster_system_state.cc",
     "lobster/lobster_system_state.h",
+    "lobster/lobster_text_input_context.cc",
+    "lobster/lobster_text_input_context.h",
     "locale_update_controller.cc",
     "locale_update_controller.h",
     "lock_screen_widget_factory.cc",
@@ -305,14 +306,11 @@ component("cpp") {
     "saved_desk_delegate.h",
     "scale_utility.cc",
     "scale_utility.h",
-    "scanner/scanner_action.h",
     "scanner/scanner_delegate.h",
     "scanner/scanner_enums.h",
     "scanner/scanner_feedback_info.cc",
     "scanner/scanner_feedback_info.h",
     "scanner/scanner_profile_scoped_delegate.h",
-    "scanner/scanner_system_state.cc",
-    "scanner/scanner_system_state.h",
     "schedule_enums.cc",
     "schedule_enums.h",
     "scoped_clipboard_history_pause.h",
@@ -394,6 +392,7 @@ component("cpp") {
     "tablet_mode.cc",
     "tablet_mode.h",
     "tablet_mode_observer.h",
+    "token_handle_store.h",
     "update_types.h",
     "views_text_services_context_menu_ash.cc",
     "views_text_services_context_menu_ash.h",
@@ -429,9 +428,9 @@ component("cpp") {
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
 
   assert_no_deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/intent_helper",
-    "//ash/public/cpp/external_arc",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/message_center",
     "//components/exo",
     "//components/soda",
   ]
@@ -449,6 +448,7 @@ component("cpp") {
     "//chromeos/ash/components/auth_panel/public",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/specialized_features",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/ash/services/cellular_setup:in_process_esim_manager",
@@ -466,6 +466,7 @@ component("cpp") {
     "//components/language/core/browser:browser",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/search_engines",
     "//components/sync/model",
     "//components/sync_device_info",
     "//components/tab_groups",
@@ -494,7 +495,6 @@ component("cpp") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom:notifications",
     "//ash/public/mojom",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
@@ -502,6 +502,7 @@ component("cpp") {
     "//base",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/experiences/arc/mojom:notifications",
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/cellular_setup/public/mojom",

@@ -95,7 +95,7 @@
       },
       {
         "args": [
-          "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--webview-variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_existing_behavior/seed.json",
           "--webview-command-line-arg=--accept-empty-variations-seed-signature",
           "--webview-command-line-arg=--webview-verbose-logging",
           "--webview-command-line-arg=--disable-field-trial-config",
@@ -144,7 +144,7 @@
       },
       {
         "args": [
-          "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--webview-variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_new_behavior/seed.json",
           "--webview-command-line-arg=--accept-empty-variations-seed-signature",
           "--webview-command-line-arg=--webview-verbose-logging",
           "--webview-command-line-arg=--disable-field-trial-config",
@@ -242,7 +242,7 @@
       {
         "args": [
           "--use-apk-under-test-flags-file",
-          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_existing_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",
           "--disable-field-trial-config",
@@ -293,7 +293,7 @@
       {
         "args": [
           "--use-apk-under-test-flags-file",
-          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_new_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",
           "--disable-field-trial-config",
@@ -371,7 +371,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
+              "revision": "8BpUBTnmt5bH3GiqPKpmTWTP-Ie2X1TuUgf4F0IsgVgC"
             }
           ],
           "dimensions": {
@@ -401,7 +401,7 @@
         "args": [
           "--store-data-dependencies-in-temp",
           "--store-tombstones",
-          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_existing_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",
           "--disable-field-trial-config",
@@ -430,7 +430,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
+              "revision": "8BpUBTnmt5bH3GiqPKpmTWTP-Ie2X1TuUgf4F0IsgVgC"
             }
           ],
           "dimensions": {
@@ -460,7 +460,7 @@
         "args": [
           "--store-data-dependencies-in-temp",
           "--store-tombstones",
-          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_new_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",
           "--disable-field-trial-config",
@@ -489,7 +489,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
+              "revision": "8BpUBTnmt5bH3GiqPKpmTWTP-Ie2X1TuUgf4F0IsgVgC"
             }
           ],
           "dimensions": {
@@ -563,7 +563,7 @@
       },
       {
         "args": [
-          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_existing_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",
           "--disable-field-trial-config",
@@ -612,7 +612,7 @@
       },
       {
         "args": [
-          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--variations-test-seed-path=../../components/variations/test_data/cipd/single_group_per_study_prefer_new_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",
           "--disable-field-trial-config",

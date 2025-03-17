@@ -21,6 +21,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 
+namespace webid {
+
 // TODO(https://crbug.com/378939142): This is a misuse of DialogBrowserTest.
 // DialogBrowserTest exists to test the visual properties of dialogs. Instead
 // use FedCmBrowserTest below.
@@ -42,11 +44,12 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
   void ShowAccounts(Account::SignInMode mode = Account::SignInMode::kExplicit) {
     idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
         "idp-example.com", content::IdentityProviderMetadata(),
-        content::ClientMetadata(GURL(), GURL(), GURL()),
+        content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
         blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
         /*has_login_status_mismatch=*/false)};
     accounts_ = {base::MakeRefCounted<Account>(
-        "id", "email", "name", "given_name", GURL(),
+        "id", "display_identifier", "display_name", "email", "name",
+        "given_name", GURL(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>())};
@@ -121,9 +124,6 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
   // The dialog should be reshown after the WebContents is Visible.
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
-  // Test workaround for http://crbug.com/1367309 where
-  // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_TRUE(GetDialog()->widget_delegate()->CanActivate());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
@@ -210,9 +210,6 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, AddTabHidesUI) {
   // The dialog should be hidden since the new tab is appended foregrounded.
   ASSERT_TRUE(GetDialog());
   EXPECT_FALSE(GetDialog()->IsVisible());
-  // Test workaround for http://crbug.com/1367309 where
-  // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_FALSE(GetDialog()->widget_delegate()->CanActivate());
 
   ASSERT_TRUE(AddTabAtIndex(2, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(GetDialog());
@@ -265,7 +262,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
       dialog_view->GetWidget()->GetWindowBoundsInScreen();
   gfx::Rect non_occluding_bounds =
       gfx::Rect(prompt_widget_bounds.right() + 1, 0, 100, 100);
-  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   init_params.bounds = non_occluding_bounds;
   auto pip_widget = std::make_unique<views::Widget>(std::move(init_params));
@@ -316,11 +315,12 @@ class FedCmMixin {
     Account::SignInMode mode = Account::SignInMode::kExplicit;
     idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
         "idp-example.com", content::IdentityProviderMetadata(),
-        content::ClientMetadata(GURL(), GURL(), GURL()),
+        content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
         blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
         /*has_login_status_mismatch=*/false)};
     accounts_ = {base::MakeRefCounted<Account>(
-        "id", "email", "name", "given_name", GURL(),
+        "id", "display_identifier", "display_name", "email", "name",
+        "given_name", GURL(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>())};
@@ -461,3 +461,5 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
     Reset();
   }
 }
+
+}  // namespace webid

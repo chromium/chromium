@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/json_to_struct/json_to_struct.gni")
+
+json_to_struct("prepopulated_engines") {
+  visibility = [ "//components/search_engines:*" ]
+
+  source = "resources/definitions/prepopulated_engines.json"
+  schema_file = "prepopulated_engines_schema.json"
+  namespace = "TemplateURLPrepopulateData"
+  deps = [ "//base" ]
+}

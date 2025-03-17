@@ -269,8 +269,7 @@ class FileSystemOperationImplTest : public testing::Test {
   void GrantQuotaForCurrentUsage() {
     int64_t usage;
     GetUsageAndQuota(&usage, nullptr);
-    quota_manager()->SetQuota(sandbox_file_system_.storage_key(),
-                              sandbox_file_system_.storage_type(), usage);
+    quota_manager()->SetQuota(sandbox_file_system_.storage_key(), usage);
   }
 
   int64_t GetUsage() {
@@ -283,7 +282,6 @@ class FileSystemOperationImplTest : public testing::Test {
     int64_t quota;
     GetUsageAndQuota(nullptr, &quota);
     quota_manager()->SetQuota(sandbox_file_system_.storage_key(),
-                              sandbox_file_system_.storage_type(),
                               quota + quota_delta);
   }
 

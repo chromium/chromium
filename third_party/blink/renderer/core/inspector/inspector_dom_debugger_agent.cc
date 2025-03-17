@@ -489,6 +489,7 @@ InspectorDOMDebuggerAgent::BuildObjectForEventListener(
     return nullptr;
 
   v8::Local<v8::Function> function = info.effective_function;
+  v8::Location location = function->GetScriptLocation();
   std::unique_ptr<protocol::DOMDebugger::EventListener> value =
       protocol::DOMDebugger::EventListener::create()
           .setType(info.event_type)
@@ -496,8 +497,8 @@ InspectorDOMDebuggerAgent::BuildObjectForEventListener(
           .setPassive(info.passive)
           .setOnce(info.once)
           .setScriptId(String::Number(function->ScriptId()))
-          .setLineNumber(function->GetScriptLineNumber())
-          .setColumnNumber(function->GetScriptColumnNumber())
+          .setLineNumber(location.GetLineNumber())
+          .setColumnNumber(location.GetColumnNumber())
           .build();
   if (object_group_id.length()) {
     value->setHandler(v8_session_->wrapObject(

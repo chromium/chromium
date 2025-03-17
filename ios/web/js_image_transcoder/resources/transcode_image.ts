@@ -16,7 +16,7 @@ function base64toBlob(dataBase64: string): Blob {
     byteArrays.push(new Uint8Array(byteNumbers));
   }
   return new Blob(byteArrays);
-};
+}
 
 // Converts `dataBlob` from a Blob to a base-64 encoded string asynchronously.
 function blobToBase64(dataBlob: Blob): Promise<string> {
@@ -30,7 +30,7 @@ function blobToBase64(dataBlob: Blob): Promise<string> {
       resolve(btoa(byteCharacters));
     }, reject);
   });
-};
+}
 
 // Decodes the image data `sourceDataBase64` and reencodes it to the selected
 // destination type, width and height. If the destination type supports lossy

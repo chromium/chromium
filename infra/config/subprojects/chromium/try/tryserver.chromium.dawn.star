@@ -19,6 +19,7 @@ try_.defaults.set(
     check_for_flakiness_with_resultdb = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    reclient_enabled = False,
     service_account = try_.gpu.SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
@@ -482,38 +483,45 @@ try_.builder(
     ),
 )
 
-try_.builder(
+def dawn_mac_builder(*, name, **kwargs):
+    kwargs.setdefault("cpu", None)
+    return try_.builder(
+        name = name,
+        builderless = True,
+        cores = None,
+        free_space = None,
+        os = os.MAC_ANY,
+        ssd = None,
+        pool = "luci.chromium.gpu.try",
+        max_concurrent_builds = 1,
+        **kwargs
+    )
+
+dawn_mac_builder(
     name = "dawn-try-mac-amd-exp",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (AMD)",
     ],
     gn_args = "ci/Dawn Mac x64 Builder",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
-    builderless = True,
-    os = os.MAC_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_mac_builder(
     name = "dawn-try-mac-arm64-deps-rel",
     mirrors = [
         "ci/Dawn Mac arm64 DEPS Builder",
         "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     ],
     gn_args = "ci/Dawn Mac arm64 DEPS Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
-    builderless = True,
-    os = os.MAC_ANY,
-    cpu = None,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_mac_builder(
     name = "dawn-try-mac-arm64-m2-exp",
     description_html = "Manual-only trybot for running ToT Dawn tests on experimental M2 machines",
     mirrors = [
@@ -521,41 +529,30 @@ try_.builder(
         "ci/Dawn Mac arm64 Experimental Release (Apple M2)",
     ],
     gn_args = "ci/Dawn Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
-    builderless = True,
-    os = os.MAC_ANY,
-    cpu = None,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_mac_builder(
     name = "dawn-try-mac-arm64-rel",
     mirrors = [
         "ci/Dawn Mac arm64 Builder",
         "ci/Dawn Mac arm64 Release (Apple M2)",
     ],
     gn_args = "ci/Dawn Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
-    builderless = True,
-    os = os.MAC_ANY,
-    cpu = None,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_mac_builder(
     name = "dawn-try-mac-intel-exp",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (Intel)",
     ],
     gn_args = "ci/Dawn Mac x64 Builder",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
-    builderless = True,
-    os = os.MAC_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

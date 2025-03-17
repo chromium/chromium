@@ -341,12 +341,7 @@ public class FeedStream implements Stream {
 
         @Override
         public void showSyncConsentPrompt() {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                startSigninFlow();
-            } else {
-                mActionDelegate.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
-            }
+            startSigninFlow();
         }
 
         @Override
@@ -357,9 +352,7 @@ public class FeedStream implements Stream {
         @Override
         public void showSignInInterstitial() {
             mActionDelegate.showSignInInterstitial(
-                    SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
-                    mBottomSheetController,
-                    mWindowAndroid);
+                    SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, mBottomSheetController);
         }
 
         @Override
@@ -733,6 +726,7 @@ public class FeedStream implements Stream {
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         mBridge =
                 feedSurfaceRendererBridgeFactory.create(
+                        profile,
                         new Renderer(),
                         mReliabilityLoggingBridge,
                         streamKind,
@@ -1297,8 +1291,6 @@ public class FeedStream implements Stream {
                 return StreamType.WEB_FEED;
             case StreamKind.SINGLE_WEB_FEED:
                 return StreamType.SINGLE_WEB_FEED;
-            case StreamKind.SUPERVISED_USER:
-                return StreamType.SUPERVISED_USER_FEED;
             default:
                 return StreamType.UNSPECIFIED;
         }

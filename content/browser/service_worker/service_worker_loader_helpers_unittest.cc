@@ -27,6 +27,12 @@ bool IsPathRestrictionSatisfiedWithServiceWorkerAllowedHeader(
       scope, script_url, service_worker_allowed, &error_message);
 }
 
+bool IsEligibleForSyntheticResponse(const GURL& client_url,
+                                    const std::string& allowed_urls) {
+  return service_worker_loader_helpers::
+      IsEligibleForSyntheticResponseForTesting(client_url, allowed_urls);
+}
+
 }  // namespace
 
 TEST(ServiceWorkerLoaderHelpersTest, PathRestriction_Basic) {
@@ -321,6 +327,34 @@ TEST(ServiceWorkerLoaderHelpersTest, PathRestriction_ServiceWorkerAllowed) {
   EXPECT_FALSE(IsPathRestrictionSatisfiedWithServiceWorkerAllowedHeader(
       GURL("http://example.com/foo/"), GURL("http://example.com/bar/sw.js"),
       "http://other.com/foo/"));
+}
+
+TEST(ServiceWorkerLoaderHelpersTest, IsEligibleForSyntheticResponse) {
+  EXPECT_TRUE(IsEligibleForSyntheticResponse(GURL("http://example.com/"),
+                                             "http://example.com/"));
+  EXPECT_TRUE(IsEligibleForSyntheticResponse(GURL("http://example.com/foo/"),
+                                             "http://example.com/foo/"));
+  // Currently trailing slash is not accepted. Will consider accepting once we
+  // have a use case.
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/foo/"),
+                                              "http://example.com/foo"));
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/"),
+                                              "http://example.com/foo"));
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/foo"),
+                                              "http://example.com/bar"));
+  // With query params.
+  EXPECT_TRUE(
+      IsEligibleForSyntheticResponse(GURL("http://example.com/foo?param=bar"),
+                                     "http://example.com/foo?param="));
+  EXPECT_FALSE(
+      IsEligibleForSyntheticResponse(GURL("http://example.com/foo?param="),
+                                     "http://example.com/foo?param=bar"));
+  EXPECT_FALSE(
+      IsEligibleForSyntheticResponse(GURL("http://example.com/foo?param=bar"),
+                                     "http://example.com/foo?param=baz"));
+  EXPECT_FALSE(
+      IsEligibleForSyntheticResponse(GURL("http://example.com/foo?param=test"),
+                                     "http://example.com/bar?param=test"));
 }
 
 }  // namespace service_worker_loader_helpers

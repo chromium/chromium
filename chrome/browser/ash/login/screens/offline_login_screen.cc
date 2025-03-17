@@ -90,8 +90,9 @@ OfflineLoginScreen::~OfflineLoginScreen() = default;
 void OfflineLoginScreen::ShowImpl() {
   CHECK(session_manager::SessionManager::Get()->session_state() ==
         session_manager::SessionState::LOGIN_PRIMARY);
-  if (!view_)
+  if (!view_) {
     return;
+  }
 
   scoped_observer_ = std::make_unique<base::ScopedObservation<
       NetworkStateInformer, NetworkStateInformerObserver>>(this);
@@ -100,8 +101,9 @@ void OfflineLoginScreen::ShowImpl() {
 
   base::Value::Dict params;
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
-  if (!enterprise_domain_manager.empty())
+  if (!enterprise_domain_manager.empty()) {
     params.Set("enterpriseDomainManager", enterprise_domain_manager);
+  }
   std::string email_domain;
   if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
                                      &email_domain) &&
@@ -115,8 +117,9 @@ void OfflineLoginScreen::HideImpl() {
   scoped_observer_.reset();
   idle_detector_.reset();
   authenticate_by_pin_ = false;
-  if (view_)
+  if (view_) {
     view_->Hide();
+  }
 }
 
 void OfflineLoginScreen::OnUserAction(const base::Value::List& args) {
@@ -150,8 +153,9 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
     LOG(ERROR) << "OfflineLoginScreen::HandleCompleteAuth: User not found! "
                   "account type="
                << AccountId::AccountTypeToString(account_id.GetAccountType());
-    if (!view_)
+    if (!view_) {
       return;
+    }
     view_->ShowPasswordMismatchMessage();
     return;
   }
@@ -165,8 +169,6 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
     user_context.SetPasswordKey(Key(password));
   }
   user_context.SetIsUsingPin(authenticate_by_pin_);
-  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY)
-      << "Incorrect Active Directory user type " << user_context.GetUserType();
   user_context.SetIsUsingOAuth(false);
 
   if (ExistingUserController::current_controller()) {
@@ -179,8 +181,9 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
 }
 
 void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
-  if (!view_)
+  if (!view_) {
     return;
+  }
 
   bool offline_limit_expired = false;
   const std::string sanitized_email = gaia::SanitizeEmail(email);
@@ -276,8 +279,9 @@ void OfflineLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
 }
 
 void OfflineLoginScreen::ShowPasswordMismatchMessage() {
-  if (!view_)
+  if (!view_) {
     return;
+  }
   view_->ShowPasswordMismatchMessage();
 }
 

@@ -49,11 +49,11 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
 
   const std::string& rule_name() const { return rule_name_; }
   std::optional<int32_t> triggered_value() const { return triggered_value_; }
-  uint64_t GetFlowId() const;
+  uint64_t flow_id() const { return flow_id_; }
 
   bool is_crash() const { return is_crash_; }
 
-  bool OnRuleTriggered(std::optional<int32_t> value);
+  bool OnRuleTriggered(std::optional<int32_t> value, uint64_t flow_id);
 
  protected:
   virtual std::string GetDefaultRuleName() const;
@@ -75,6 +75,7 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   base::OneShotTimer activation_timer_;
   std::string rule_name_;
   std::optional<int32_t> triggered_value_;
+  uint64_t flow_id_;
   bool is_crash_ = false;
 };
 

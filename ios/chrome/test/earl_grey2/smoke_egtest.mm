@@ -330,7 +330,6 @@
 - (void)testGetPrefs {
   // The actual pref names and values below are irrelevant, but the calls
   // themselves should return data without crashing or asserting.
-  [ChromeEarlGrey localStateIntegerPref:prefs::kNumberOfProfiles];
   [ChromeEarlGrey localStateBooleanPref:prefs::kAppStoreRatingPolicyEnabled];
 
   [ChromeEarlGrey userBooleanPref:prefs::kIosBookmarkPromoAlreadySeen];

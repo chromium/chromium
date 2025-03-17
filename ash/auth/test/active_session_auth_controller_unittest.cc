@@ -20,9 +20,11 @@
 #include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -31,6 +33,7 @@ namespace ash {
 namespace {
 
 constexpr char kUserEmail[] = "expected_email@example.com";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
 constexpr char kExpectedPassword[] = "expected_password";
 constexpr char kExpectedPin[] = "123456";
 constexpr char kExpectedSalt[] = "test salt";
@@ -60,16 +63,12 @@ class ActiveSessionAuthControllerTest
     SystemSaltGetter::Initialize();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
-    auth_parts_ = AuthParts::Create(&local_state_);
+    auth_parts_ = AuthParts::Create(local_state());
 
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
-    GetSessionControllerClient()->DisableAutomaticallyProvideSigninPref();
-    GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(
-        kUserEmail, user_manager::UserType::kRegular);
-    GetSessionControllerClient()->SetSessionState(
-        session_manager::SessionState::ACTIVE);
+    ClearLogin();
+    SimulateUserLogin({kUserEmail, user_manager::UserType::kRegular});
   }
 
   void TearDown() override {
@@ -82,22 +81,24 @@ class ActiveSessionAuthControllerTest
     CryptohomeMiscClient::Shutdown();
     UserDataAuthClient::Shutdown();
 
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   void InitializeUserManager() {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     user_manager_ =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+        std::make_unique<user_manager::FakeUserManager>(local_state());
     user_manager_->Initialize();
   }
 
   void AddUserToUserManager() {
-    account_id_ = AccountId::FromUserEmail(kUserEmail);
-    const user_manager::User* user = user_manager_->AddUser(account_id_);
-    user_manager_->UserLoggedIn(account_id_, user->username_hash(), false,
-                                false);
-    user_manager_->SetUserCryptohomeDataEphemeral(account_id_, false);
+    account_id_ = AccountId::FromUserEmailGaiaId(kUserEmail, kFakeGaia);
+    user_manager_->AddGaiaUser(account_id_, user_manager::UserType::kRegular);
+    user_manager_->UserLoggedIn(
+        account_id_,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+    ASSERT_FALSE(user_manager_->IsUserCryptohomeDataEphemeral(account_id_));
   }
 
   std::string HashPassword(const std::string& unhashed_password) {
@@ -199,7 +200,6 @@ class ActiveSessionAuthControllerTest
 
  protected:
   AccountId account_id_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   std::unique_ptr<AuthParts> auth_parts_;
 };

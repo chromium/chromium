@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/dom/element_data.h"
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -45,7 +40,8 @@ namespace blink {
 struct SameSizeAsElementData final
     : public GarbageCollected<SameSizeAsElementData> {
   unsigned bitfield;
-  Member<void*> willbe_member;
+  Member<void*> inline_style_;
+  Member<void*> presentation_attribute_style_;
   SpaceSplitString class_names_;
   void* pointers[1];
 };
@@ -81,8 +77,8 @@ ElementData::ElementData(const ElementData& other, bool is_unique)
               other.bit_field_.get<SvgAttributesAreDirty>())),
       class_names_(other.class_names_),
       id_for_style_resolution_(other.id_for_style_resolution_) {
-  // NOTE: The inline style is copied by the subclass copy constructor since we
-  // don't know what to do with it here.
+  // NOTE: The inline and presentation attribute styles are copied by the
+  // subclass copy constructor since we don't know what to do with it here.
 }
 
 void ElementData::FinalizeGarbageCollectedObject() {
@@ -126,31 +122,37 @@ void ElementData::Trace(Visitor* visitor) const {
 
 void ElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(inline_style_);
+  visitor->Trace(presentation_attribute_style_);
   visitor->Trace(class_names_);
 }
 
 ShareableElementData::ShareableElementData(
     const Vector<Attribute, kAttributePrealloc>& attributes)
     : ElementData(attributes.size()) {
-  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
-    new (&attribute_array_[i]) Attribute(attributes[i]);
+  for (size_t i = 0; i < attributes.size(); ++i) {
+    new (&AttributesSpan()[i]) Attribute(attributes[i]);
+  }
 }
 
 ShareableElementData::~ShareableElementData() {
-  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
-    attribute_array_[i].~Attribute();
+  for (auto& attribute : AttributesSpan()) {
+    attribute.~Attribute();
+  }
 }
 
 ShareableElementData::ShareableElementData(const UniqueElementData& other)
     : ElementData(other, false) {
-  DCHECK(!other.presentation_attribute_style_);
-
   if (other.inline_style_) {
     inline_style_ = other.inline_style_->ImmutableCopyIfNeeded();
   }
+  if (other.presentation_attribute_style_) {
+    presentation_attribute_style_ =
+        other.presentation_attribute_style_->ImmutableCopyIfNeeded();
+  }
 
-  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
-    new (&attribute_array_[i]) Attribute(other.attribute_vector_.at(i));
+  for (unsigned i = 0; i < other.attribute_vector_.size(); ++i) {
+    new (&AttributesSpan()[i]) Attribute(other.attribute_vector_.at(i));
+  }
 }
 
 ShareableElementData* ShareableElementData::CreateWithAttributes(
@@ -164,24 +166,29 @@ ShareableElementData* ShareableElementData::CreateWithAttributes(
 UniqueElementData::UniqueElementData() = default;
 
 UniqueElementData::UniqueElementData(const UniqueElementData& other)
-    : ElementData(other, true),
-      presentation_attribute_style_(other.presentation_attribute_style_),
-      attribute_vector_(other.attribute_vector_) {
+    : ElementData(other, true), attribute_vector_(other.attribute_vector_) {
   inline_style_ =
       other.inline_style_ ? other.inline_style_->MutableCopy() : nullptr;
+  presentation_attribute_style_ =
+      other.presentation_attribute_style_
+          ? other.presentation_attribute_style_->MutableCopy()
+          : nullptr;
 }
 
 UniqueElementData::UniqueElementData(const ShareableElementData& other)
     : ElementData(other, true) {
   // An ShareableElementData should never have a mutable inline
-  // CSSPropertyValueSet attached.
+  // CSSPropertyValueSet attached. Same for presentation attribute style.
   DCHECK(!other.inline_style_ || !other.inline_style_->IsMutable());
   inline_style_ = other.inline_style_;
+  DCHECK(!other.presentation_attribute_style_ ||
+         !other.presentation_attribute_style_->IsMutable());
+  presentation_attribute_style_ = other.presentation_attribute_style_;
 
-  unsigned length = other.Attributes().size();
-  attribute_vector_.reserve(length);
-  for (unsigned i = 0; i < length; ++i)
-    attribute_vector_.UncheckedAppend(other.attribute_array_[i]);
+  attribute_vector_.reserve(other.Attributes().size());
+  for (auto& attribute : other.AttributesSpan()) {
+    attribute_vector_.UncheckedAppend(attribute);
+  }
 }
 
 ShareableElementData* UniqueElementData::MakeShareableCopy() const {
@@ -192,7 +199,6 @@ ShareableElementData* UniqueElementData::MakeShareableCopy() const {
 }
 
 void UniqueElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(presentation_attribute_style_);
   ElementData::TraceAfterDispatch(visitor);
 }
 

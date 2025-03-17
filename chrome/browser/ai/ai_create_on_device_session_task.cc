@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_create_on_device_session_task.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/built_in_ai_logger.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 
 namespace {
 
@@ -61,6 +61,11 @@ void CreateOnDeviceSessionTask::Start() {
     return;
   }
 
+  if (override_session_) {
+    Finish(std::move(override_session_));
+    return;
+  }
+
   if (auto session = StartSession()) {
     Finish(std::move(session));
     return;
@@ -90,7 +95,7 @@ void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
   bool waitable = kWaitableReasons.contains(reason);
   BUILT_IN_AI_LOGGER() << "Feature '" << feature << "' "
                        << "availability changed due to '" << reason << "'. "
-                       << "Waitable: " << (waitable ? "true" : "false");
+                       << "Waitable: " << base::ToString(waitable);
   CHECK(state_ == State::kPending);
   if (waitable) {
     return;
@@ -158,7 +163,7 @@ CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
     AIManager& ai_manager,
     AIContextBoundObjectSet& context_bound_object_set,
     content::BrowserContext* browser_context,
-    const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
+    optimization_guide::SamplingParams sampling_params,
     base::OnceCallback<
         void(std::unique_ptr<
              optimization_guide::OptimizationGuideModelExecutor::Session>)>
@@ -167,16 +172,8 @@ CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
           context_bound_object_set,
           browser_context,
           optimization_guide::ModelBasedCapabilityKey::kPromptApi),
-      completion_callback_(std::move(completion_callback)) {
-  if (sampling_params) {
-    sampling_params_ = optimization_guide::SamplingParams{
-        .top_k = std::min(sampling_params->top_k,
-                          ai_manager.GetLanguageModelMaxTopK()),
-        .temperature = sampling_params->temperature};
-  } else {
-    sampling_params_ = ai_manager.GetLanguageModelDefaultSamplingParams();
-  }
-}
+      sampling_params_(std::move(sampling_params)),
+      completion_callback_(std::move(completion_callback)) {}
 
 CreateLanguageModelOnDeviceSessionTask::
     ~CreateLanguageModelOnDeviceSessionTask() = default;

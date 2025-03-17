@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -30,6 +31,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -108,7 +110,7 @@ class ScopedSetMetricsConsent {
 };
 
 constexpr float kTestDefaultTemperature = 0.9;
-constexpr int kTestDefaultTopK = 7;
+constexpr uint32_t kTestDefaultTopK = 7;
 
 }  // namespace
 
@@ -152,23 +154,6 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&ModelExecutionBrowserTestBase::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitchASCII(
         switches::kOptimizationGuideServiceModelExecutionURL,
@@ -184,6 +169,21 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
                 GURL(kOptimizationGuideServiceModelQualtiyDefaultURL).host(),
                 "/")
             .spec());
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void TearDownOnMainThread() override {
@@ -222,13 +222,14 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   // Executes the model for the feature, waits until the response is received,
   // and returns the response.
   void ExecuteModel(UserVisibleFeatureKey feature,
-                    const google::protobuf::MessageLite& request_metadata,
+                    const proto::ComposeRequest& request_metadata,
                     Profile* profile = nullptr) {
     if (!profile) {
       profile = browser()->profile();
     }
     base::RunLoop run_loop;
-    GetOptimizationGuideKeyedService(profile)->ExecuteModel(
+    ExecuteModelWithLogging(
+        GetOptimizationGuideKeyedService(profile),
         ToModelBasedCapabilityKey(feature), request_metadata,
         /*execution_timeout=*/std::nullopt,
         base::BindOnce(&ModelExecutionBrowserTestBase::OnModelExecutionResponse,
@@ -260,7 +261,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     while (num_logs_requests_ < expected_num_logs_requests) {
       base::RunLoop run_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }
     EXPECT_EQ(num_logs_requests_, expected_num_logs_requests);
@@ -270,7 +271,17 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   void OnModelExecutionResponse(
       base::OnceClosure on_model_execution_closure,
       OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<ModelQualityLogEntry> log_entry) {
+      std::unique_ptr<proto::ComposeLoggingData> logging_data) {
+    ModelQualityLogsUploaderService* logs_uploader =
+        GetOptimizationGuideKeyedService()
+            ->GetModelQualityLogsUploaderService();
+    base::WeakPtr<ModelQualityLogsUploaderService> logs_uploader_weak_ptr;
+    if (logs_uploader) {
+      logs_uploader_weak_ptr = logs_uploader->GetWeakPtr();
+    }
+    auto log_entry =
+        std::make_unique<ModelQualityLogEntry>(logs_uploader_weak_ptr);
+    *log_entry->log_ai_data_request()->mutable_compose() = *logging_data;
     if (result.response.has_value() ||
         result.response.error().error() ==
             OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -278,21 +289,11 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         result.response.error().error() ==
             OptimizationGuideModelExecutionError::ModelExecutionError::
                 kUnsupportedLanguage) {
-      EXPECT_TRUE(log_entry);
-      proto::LogAiDataRequest* log_ai_data_request =
-          log_entry.get()->log_ai_data_request();
-      EXPECT_NE(log_ai_data_request, nullptr);
-      EXPECT_EQ(log_ai_data_request->feature_case(),
-                proto::LogAiDataRequest::FeatureCase::kCompose);
-      EXPECT_TRUE(log_ai_data_request->has_compose());
-      EXPECT_TRUE(log_ai_data_request->mutable_compose()->has_request());
+      EXPECT_TRUE(logging_data->has_request());
     }
 
     if (result.response.has_value()) {
-      EXPECT_TRUE(log_entry.get()
-                      ->log_ai_data_request()
-                      ->mutable_compose()
-                      ->has_response());
+      EXPECT_TRUE(logging_data->has_response());
     }
     model_execution_result_.emplace(std::move(result));
     ModelQualityLogEntry::Upload(std::move(log_entry));
@@ -356,7 +357,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
     // Access token should not be set.
     EXPECT_FALSE(base::Contains(request.headers,
-                               net::HttpRequestHeaders::kAuthorization));
+                                net::HttpRequestHeaders::kAuthorization));
 
     std::string serialized_response;
     response->set_code(net::HTTP_OK);
@@ -364,11 +365,6 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
     num_logs_requests_++;
     return std::move(response);
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   // Virtualize for testing different feature configurations.
@@ -388,7 +384,6 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 
   std::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
@@ -451,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledOnDeviceDisabledBrowserTest,
     GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
-  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose, ),
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 
@@ -661,8 +656,16 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
       0);
 }
 
+// TODO(crbug.com/388544208): Flaky on linux-win-cross-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
+  DISABLED_GetOnDeviceModelEligibilityModelNotEligible
+#else
+#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
+  GetOnDeviceModelEligibilityModelNotEligible
+#endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       GetOnDeviceModelEligibilityModelNotEligible) {
+                       MAYBE_GetOnDeviceModelEligibilityModelNotEligible) {
   EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kModelNotEligible);
 }
@@ -803,8 +806,7 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
  public:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {::switches::kExplicitBrowserSigninUIOnDesktop,
-         features::internal::kHistorySearchSettingsVisibility},
+        {features::internal::kHistorySearchSettingsVisibility},
         {features::internal::kTabOrganizationGraduated});
   }
 };
@@ -968,8 +970,6 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
       disabled_features.push_back(
           features::internal::kHistorySearchSettingsVisibility);
     }
-    enabled_features.push_back(
-        {::switches::kExplicitBrowserSigninUIOnDesktop, {}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -997,18 +997,20 @@ class ModelExecutionEnterprisePolicyBrowserTest
         features::kModelQualityLogging,
         features::internal::kTabOrganizationSettingsVisibility,
         features::internal::kWallpaperSearchSettingsVisibility};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::internal::kComposeGraduated,
+        features::internal::kComposeSettingsVisibility,
+        features::internal::kTabOrganizationGraduated,
+        features::internal::kWallpaperSearchGraduated};
 
     if (ShowEnterpriseDisabledFeatures()) {
       enabled_features.push_back(features::kAiSettingsPageEnterpriseDisabledUi);
+    } else {
+      disabled_features.push_back(
+          features::kAiSettingsPageEnterpriseDisabledUi);
     }
 
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features,
-        /*disabled_features=*/
-        {features::internal::kComposeGraduated,
-         features::internal::kComposeSettingsVisibility,
-         features::internal::kTabOrganizationGraduated,
-         features::internal::kWallpaperSearchGraduated});
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool ShowEnterpriseDisabledFeatures() { return GetParam(); }

@@ -82,6 +82,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     kSoftNavigation = 1 << 14,
     kLongAnimationFrame = 1 << 15,
     kScript = 1 << 16,
+    kContainer = 1 << 17,
   };
 
   const AtomicString& name() const { return name_; }
@@ -111,11 +112,12 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
       // first for compatibility.
       // TODO: create NT entry eagerly so that we don't have to do this
       // https://bugs.chromium.org/p/chromium/issues/detail?id=1432565
-      if (a->EntryTypeEnum() == kNavigation) {
+      if (a->EntryTypeEnum() == kNavigation &&
+          b->EntryTypeEnum() != kNavigation) {
         return true;
       } else if (b->EntryTypeEnum() == kNavigation) {
         return false;
-      } else if (a->EntryTypeEnum() == kPaint) {
+      } else if (a->EntryTypeEnum() == kPaint && b->EntryTypeEnum() != kPaint) {
         return true;
       } else if (b->EntryTypeEnum() == kPaint) {
         return false;

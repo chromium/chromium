@@ -157,6 +157,10 @@ class MEDIA_EXPORT PipelineController {
   // OnceCallback, and doesn't play nicely with gmock.
   void FireOnTrackChangeCompleteForTesting(State set_to);
 
+  // Sets a flag indicating whether to render muted audio to the active sink or
+  // switch to a null sink.
+  void SetRenderMutedAudio(bool render_muted_audio);
+
  private:
   // Attempts to make progress from the current state to the target state.
   void Dispatch();

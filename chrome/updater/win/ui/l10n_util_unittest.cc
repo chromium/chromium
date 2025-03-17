@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/ui/l10n_util.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -193,6 +194,7 @@ struct GetLocalizedMetainstallerErrorStringTestCase {
   const DWORD exit_code;
   const DWORD windows_error;
   const std::wstring expected_string;
+  const std::optional<std::wstring> lang;
 };
 
 class GetLocalizedMetainstallerErrorStringTest
@@ -258,7 +260,9 @@ INSTANTIATE_TEST_SUITE_P(
              std::vector<std::wstring>{L"UNABLE_TO_SET_DIRECTORY_ACL", {}})},
         {INVALID_OPTION, 0,
          GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
-                             std::vector<std::wstring>{L"INVALID_OPTION", {}})},
+                             std::vector<std::wstring>{L"INVALID_OPTION", {}},
+                             L"de"),
+         L"de"},
         {FAILED_TO_DE_ELEVATE_METAINSTALLER, 0,
          GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
                              std::vector<std::wstring>{
@@ -287,12 +291,15 @@ INSTANTIATE_TEST_SUITE_P(
          GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE)},
         {FAILED_TO_ELEVATE_METAINSTALLER, ERROR_CANCELLED,
          GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
-                             GetTextForSystemError(ERROR_CANCELLED))},
+                             GetTextForSystemError(ERROR_CANCELLED),
+                             L"ar"),
+         L"ar"},
     }));
 
 TEST_P(GetLocalizedMetainstallerErrorStringTest, TestCases) {
-  ASSERT_EQ(GetLocalizedMetainstallerErrorString(GetParam().exit_code,
-                                                 GetParam().windows_error),
+  ASSERT_EQ(GetLocalizedMetainstallerErrorString(
+                GetParam().exit_code, GetParam().windows_error,
+                GetParam().lang.value_or(GetPreferredLanguage())),
             GetParam().expected_string);
 }
 

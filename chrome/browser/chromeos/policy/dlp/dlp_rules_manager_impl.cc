@@ -261,11 +261,9 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
   if (IsReportingEnabled())
     reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::DlpClient::Get()) {
     dlp_client_observation_.Observe(chromeos::DlpClient::Get());
   }
-#endif
 }
 
 bool DlpRulesManagerImpl::IsReportingEnabled() const {
@@ -320,9 +318,7 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   src_conditions_.clear();
   dst_conditions_.clear();
   rules_id_metadata_mapping_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   files_controller_ = nullptr;
-#endif
 
   const base::Value::List& rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
@@ -467,16 +463,10 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
           data_controls::dlp::kFilesDaemonStartedUMA, true);
       chromeos::DlpClient::Get()->SetDlpFilesPolicy(
           request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (!files_controller_) {
         files_controller_ =
             std::make_unique<DlpFilesControllerAsh>(*this, profile_);
       }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      if (!files_controller_) {
-        files_controller_ = std::make_unique<DlpFilesControllerLacros>(*this);
-      }
-#endif
     } else if (chromeos::DlpClient::Get() &&
                chromeos::DlpClient::Get()->IsAlive()) {
       // The daemon is running, but should be deactivated by sending empty

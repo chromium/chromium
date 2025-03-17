@@ -19,8 +19,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/version_info.h"
-#import "components/version_ui/version_handler_helper.h"
-#import "components/version_ui/version_ui_constants.h"
+#import "components/webui/version/version_handler_helper.h"
+#import "components/webui/version/version_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -92,8 +92,10 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   std::string command_line;
   typedef std::vector<std::string> ArgvList;
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
-  for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end(); iter++)
+  for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end();
+       iter++) {
     command_line += " " + *iter;
+  }
   // This assumes that `command_line` uses UTF-8 encoding.
   html_source->AddString(version_ui::kCommandLine, command_line);
 

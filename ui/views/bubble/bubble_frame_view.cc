@@ -6,8 +6,10 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/default_style.h"
 #include "ui/base/hit_test.h"
@@ -18,6 +20,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -30,6 +33,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/footnote_container_view.h"
@@ -374,7 +378,7 @@ void BubbleFrameView::InsertClientView(ClientView* client_view) {
   // Place the client view before any footnote view for focus order.
   footnote_container_
       ? AddChildViewAt(client_view, GetIndexOf(footnote_container_).value())
-      : AddChildView(client_view);
+      : AddChildViewRaw(client_view);
 }
 
 void BubbleFrameView::UpdateWindowRoundedCorners() {
@@ -822,14 +826,10 @@ bool BubbleFrameView::GetDisplayVisibleArrow() const {
   return bubble_border_->visible_arrow();
 }
 
-void BubbleFrameView::SetBackgroundColor(SkColor color) {
+void BubbleFrameView::SetBackgroundColor(ui::ColorVariant color) {
   bubble_border_->SetColor(color);
   UpdateClientViewBackground();
   SchedulePaint();
-}
-
-SkColor BubbleFrameView::GetBackgroundColor() const {
-  return bubble_border_->color();
 }
 
 void BubbleFrameView::UpdateClientViewBackground() {
@@ -842,8 +842,10 @@ void BubbleFrameView::UpdateClientViewBackground() {
   if (client_view->layer()) {
     // If the ClientView's background is transparent this could result in visual
     // artifacts. Make sure this isn't the case.
-    DCHECK_EQ(SK_AlphaOPAQUE, SkColorGetA(GetBackgroundColor()));
-    client_view->SetBackground(CreateSolidBackground(GetBackgroundColor()));
+    const SkColor color =
+        background_color().ConvertToSkColor(GetWidget()->GetColorProvider());
+    CHECK(SkColor4f::FromColor(color).isOpaque());
+    client_view->SetBackground(CreateSolidBackground(color));
     client_view->SchedulePaint();
   }
 }
@@ -1262,6 +1264,10 @@ std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContextAndStyle(
   label->SetCollapseWhenHidden(true);
   label->SetMultiLine(true);
   return label;
+}
+
+SkColor BubbleFrameView::GetBackgroundColor() const {
+  return bubble_border_->color().ConvertToSkColor(GetColorProvider());
 }
 
 BEGIN_METADATA(BubbleFrameView)

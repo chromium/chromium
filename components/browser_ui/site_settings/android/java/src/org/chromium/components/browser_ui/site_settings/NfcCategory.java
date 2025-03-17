@@ -7,10 +7,13 @@ package org.chromium.components.browser_ui.site_settings;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** A class for dealing with the NFC category. */
+@NullMarked
 public class NfcCategory extends SiteSettingsCategory {
     public NfcCategory(BrowserContextHandle browserContextHandle) {
         // As NFC is not a per-app permission, passing an empty string means the NFC permission is
@@ -34,7 +37,7 @@ public class NfcCategory extends SiteSettingsCategory {
     }
 
     @Override
-    protected Intent getIntentToEnableOsGlobalPermission(Context context) {
+    protected @Nullable Intent getIntentToEnableOsGlobalPermission(Context context) {
         return NfcSystemLevelSetting.getNfcSystemLevelSettingIntent();
     }
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
 
+#import "ios/chrome/browser/share_kit/model/share_kit_flow_outcome.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 
 @implementation FakeShareKitFlowViewController {
@@ -59,21 +60,33 @@
   }
 }
 
-- (void)handleCancelButton {
-  if (_completionBlock) {
-    _completionBlock(NO);
-  }
-  [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)handleSaveButton {
+- (void)accept {
   if (_sharedGroupCompletionBlock) {
     _sharedGroupCompletionBlock([[NSUUID UUID] UUIDString]);
   }
   if (_completionBlock) {
-    _completionBlock(YES);
+    _completionBlock(ShareKitFlowOutcome::kSuccess);
   }
   [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)cancel {
+  if (_completionBlock) {
+    _completionBlock(ShareKitFlowOutcome::kCancel);
+  }
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Private
+
+// Handler for the "save" button.
+- (void)handleSaveButton {
+  [self accept];
+}
+
+// Handler for the "cancel" button.
+- (void)handleCancelButton {
+  [self cancel];
 }
 
 @end

@@ -31,7 +31,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     document.body.append(module);
   }
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({
       modulesGoogleCalendarTitle: title,
       modulesGoogleCalendarDismissToastMessage: dismissToast,
@@ -77,7 +77,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Act.
-    event.detail.restoreCallback!();
+    event.detail.restoreCallback();
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
@@ -112,8 +112,8 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     // Assert.
     const dismissButton = $$(module.$.moduleHeaderElementV2, '#dismiss');
     assertTrue(!!dismissButton);
-    assertTrue(!!dismissButton!.textContent);
+    assertTrue(!!dismissButton.textContent);
     assertEquals(
-        dismissButton!.textContent!.trim(), `Hide for ${dismissTime} hours`);
+        dismissButton.textContent.trim(), `Hide for ${dismissTime} hours`);
   });
 });

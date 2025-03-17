@@ -4,9 +4,13 @@
 
 package org.chromium.components.autofill.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -18,14 +22,15 @@ import java.util.Objects;
  * will be created from the C++ side via JNI.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class Ewallet extends PaymentInstrument {
     private final String mEwalletName;
     private final String mAccountDisplayName;
 
     private Ewallet(
             long instrumentId,
-            String nickname,
-            GURL displayIconUrl,
+            @Nullable String nickname,
+            @Nullable GURL displayIconUrl,
             @PaymentRail int[] supportedPaymentRails,
             boolean isFidoEnrolled,
             String ewalletName,
@@ -88,9 +93,9 @@ public class Ewallet extends PaymentInstrument {
 
     /** Builder for {@link Ewallet}. */
     public static final class Builder {
-        private String mEwalletName;
-        private String mAccountDisplayName;
-        private PaymentInstrument mPaymentInstrument;
+        private @Nullable String mEwalletName;
+        private @Nullable String mAccountDisplayName;
+        private @Nullable PaymentInstrument mPaymentInstrument;
 
         /** Set the eWallet name on the Ewallet. */
         public Builder setEwalletName(String ewalletName) {
@@ -120,7 +125,7 @@ public class Ewallet extends PaymentInstrument {
             assert mAccountDisplayName != null && !mAccountDisplayName.isEmpty()
                     : "Account display name cannot be null or empty.";
             return new Ewallet(
-                    mPaymentInstrument.getInstrumentId(),
+                    assumeNonNull(mPaymentInstrument).getInstrumentId(),
                     mPaymentInstrument.getNickname(),
                     mPaymentInstrument.getDisplayIconUrl(),
                     mPaymentInstrument.getSupportedPaymentRails(),

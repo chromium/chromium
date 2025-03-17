@@ -18,10 +18,12 @@ class FakeOAuthTokenGetter : public OAuthTokenGetter {
   // OAuthTokenGetter interface.
   void CallWithToken(TokenCallback on_access_token) override;
   void InvalidateCache() override;
+  base::WeakPtr<OAuthTokenGetter> GetWeakPtr() override;
 
  private:
   Status status_;
   OAuthTokenInfo token_info_;
+  base::WeakPtrFactory<FakeOAuthTokenGetter> weak_factory_{this};
 };
 
 }  // namespace remoting

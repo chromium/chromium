@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <optional>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,6 +17,7 @@
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,13 +27,20 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/google_groups_manager.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
+#include "components/variations/variations_seed_processor.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -37,6 +48,9 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
+
+constexpr char kRelevantGroupId[] = "1234";
+constexpr base::TimeDelta kCooldownOverride = base::Days(14);
 
 base::test::FeatureRefAndParams probability_zero{
     features::kHappinessTrackingSurveysForDesktopSettings,
@@ -46,6 +60,17 @@ base::test::FeatureRefAndParams probability_one{
     {{"probability", "1.000"},
      {"survey", kHatsSurveyTriggerSettings},
      {"en_site_id", "test_site_id"}}};
+base::test::FeatureRefAndParams cool_down_period_overriden{
+    autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+    {{"probability", "1.000"},
+     {"survey", kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate},
+     {"cooldown-override-days", /*days=*/"14"}}};
+base::test::FeatureRefAndParams cool_down_period_overriden_and_group_controlled{
+    autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+    {{variations::internal::kGoogleGroupFeatureParamName, kRelevantGroupId},
+     {"probability", "1.000"},
+     {"survey", kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate},
+     {"cooldown-override-days", /*days=*/"14"}}};
 
 class ScopedSetMetricsConsent {
  public:
@@ -68,6 +93,11 @@ class ScopedSetMetricsConsent {
 };
 
 class HatsServiceBrowserTestBase : public policy::PolicyTest {
+ public:
+  HatsServiceBrowserTestBase(const HatsServiceBrowserTestBase&) = delete;
+  HatsServiceBrowserTestBase& operator=(const HatsServiceBrowserTestBase&) =
+      delete;
+
  protected:
   explicit HatsServiceBrowserTestBase(
       std::vector<base::test::FeatureRefAndParams> enabled_features)
@@ -76,12 +106,9 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
   }
 
   HatsServiceBrowserTestBase() = default;
-
-  HatsServiceBrowserTestBase(const HatsServiceBrowserTestBase&) = delete;
-  HatsServiceBrowserTestBase& operator=(const HatsServiceBrowserTestBase&) =
-      delete;
-
   ~HatsServiceBrowserTestBase() override = default;
+
+  Profile* profile() { return chrome_test_utils::GetProfile(this); }
 
   HatsServiceDesktop* GetHatsService() {
     HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
@@ -139,6 +166,51 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
 
   void TearDownOnMainThread() override {
     GetHatsService()->SetSurveyMetadataForTesting({});
+  }
+};
+
+class HatsServiceConfigCoolDownPeriodOverriden
+    : public HatsServiceBrowserTestBase {
+ public:
+  HatsServiceConfigCoolDownPeriodOverriden(
+      const HatsServiceConfigCoolDownPeriodOverriden&) = delete;
+  HatsServiceConfigCoolDownPeriodOverriden& operator=(
+      const HatsServiceConfigCoolDownPeriodOverriden&) = delete;
+
+ protected:
+  HatsServiceConfigCoolDownPeriodOverriden()
+      : HatsServiceBrowserTestBase({cool_down_period_overriden}) {}
+
+  ~HatsServiceConfigCoolDownPeriodOverriden() override = default;
+};
+
+class HatsServiceSurveyFeatureControlledByGroup
+    : public HatsServiceBrowserTestBase {
+ public:
+  HatsServiceSurveyFeatureControlledByGroup(
+      const HatsServiceSurveyFeatureControlledByGroup&) = delete;
+  HatsServiceSurveyFeatureControlledByGroup& operator=(
+      const HatsServiceSurveyFeatureControlledByGroup&) = delete;
+
+ protected:
+  HatsServiceSurveyFeatureControlledByGroup()
+      : HatsServiceBrowserTestBase(
+            {cool_down_period_overriden_and_group_controlled}) {}
+
+  ~HatsServiceSurveyFeatureControlledByGroup() override = default;
+
+  void AddProfileToGroup(const std::string& group) {
+    base::Value::List pref_groups_list;
+    base::Value::Dict group_dict;
+    group_dict.Set(variations::kDogfoodGroupsSyncPrefGaiaIdKey, group);
+    pref_groups_list.Append(std::move(group_dict));
+    profile()->GetPrefs()->SetList(
+#if BUILDFLAG(IS_CHROMEOS)
+        variations::kOsDogfoodGroupsSyncPrefName,
+#else
+        variations::kDogfoodGroupsSyncPrefName,
+#endif
+        std::move(pref_groups_list));
   }
 };
 
@@ -270,6 +342,147 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
       kHatsShouldShowSurveyReasonHistogram,
       HatsServiceDesktop::ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HatsServiceConfigCoolDownPeriodOverriden,
+    SurveyWithCoolddownOverride_FeatureNotGroupControlled_NoSurvey) {
+  base::HistogramTester histogram_tester;
+  SetMetricsConsent(true);
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                  base::Days(31));
+
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(profile());
+  EXPECT_FALSE(groups_manager->IsFeatureGroupControlled(
+      autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
+  EXPECT_TRUE(groups_manager->IsFeatureEnabledForProfile(
+      autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
+  // The cooldown override for the feature should be set to 14 days.
+  EXPECT_EQ(base::FeatureParam<int>(
+                &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+                plus_addresses::hats::kCooldownOverrideDays, 0)
+                .Get(),
+            14);
+
+  HatsServiceDesktop::SurveyMetadata metadata;
+  metadata.any_last_survey_started_time = base::Time::Now();
+  metadata.any_last_survey_with_cooldown_override_started_time =
+      base::Time::Now() - (kCooldownOverride + base::Days(1));
+  GetHatsService()->SetSurveyMetadataForTesting(metadata);
+  // kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate overrides the cool
+  // down period.
+  GetHatsService()->LaunchSurvey(
+      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
+      /*success_callback=*/base::DoNothing(),
+      /*failure_callback=*/base::DoNothing(), /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/
+      std::map<std::string, std::string>{
+          {plus_addresses::hats::kPlusAddressesCount, "0"},
+          {plus_addresses::hats::kFirstPlusAddressCreationTime, "0"},
+          {plus_addresses::hats::kLastPlusAddressFillingTime, "0"}});
+  EXPECT_FALSE(GetHatsService()->hats_next_dialog_exists_for_testing());
+  // Since the feature is not group controlled, the cooldown override has no
+  // effect. The default cooldown of 180 days is used, so the survey is on
+  // cooldown.
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HatsServiceSurveyFeatureControlledByGroup,
+    SurveyWithCoolddownOverride_FeatureIsOnCooldown_NoSurvey) {
+  base::HistogramTester histogram_tester;
+  // Add the profile to the group assigned in the field trial config.
+  // `GoogleGroupsManager::IsFeatureGroupControlled()` returns `false` without
+  // this call.
+  AddProfileToGroup(kRelevantGroupId);
+  SetMetricsConsent(true);
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                  base::Days(31));
+
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(profile());
+  EXPECT_TRUE(groups_manager->IsFeatureGroupControlled(
+      autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
+  EXPECT_TRUE(groups_manager->IsFeatureEnabledForProfile(
+      autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
+  // The cooldown override for the feature should be set to 14 days.
+  EXPECT_EQ(base::FeatureParam<int>(
+                &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+                plus_addresses::hats::kCooldownOverrideDays, 0)
+                .Get(),
+            14);
+
+  HatsServiceDesktop::SurveyMetadata metadata;
+  metadata.any_last_survey_started_time = base::Time::Now() - base::Days(365);
+  metadata.any_last_survey_with_cooldown_override_started_time =
+      base::Time::Now() - (kCooldownOverride - base::Days(1));
+  GetHatsService()->SetSurveyMetadataForTesting(metadata);
+  // kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate overrides the cool
+  // down period.
+  GetHatsService()->LaunchSurvey(
+      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
+      /*success_callback=*/base::DoNothing(),
+      /*failure_callback=*/base::DoNothing(), /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/
+      std::map<std::string, std::string>{
+          {plus_addresses::hats::kPlusAddressesCount, "0"},
+          {plus_addresses::hats::kFirstPlusAddressCreationTime, "0"},
+          {plus_addresses::hats::kLastPlusAddressFillingTime, "0"}});
+  EXPECT_FALSE(GetHatsService()->hats_next_dialog_exists_for_testing());
+  // Cooldown period is set, the feature is enabled for profile and group
+  // controlled. However, the last survey with cooldown override was shown just
+  // 2 days ago, so the survey is on cooldown.
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HatsServiceSurveyFeatureControlledByGroup,
+    SurveyWithCoolddownOverride_FeatureIsGroupControlled_StartsSurvey) {
+  // Add the profile to the group assigned in the field trial config.
+  // `GoogleGroupsManager::IsFeatureGroupControlled()` returns `false` without
+  // this call.
+  AddProfileToGroup(kRelevantGroupId);
+  SetMetricsConsent(true);
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                  base::Days(31));
+
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(profile());
+  EXPECT_TRUE(groups_manager->IsFeatureGroupControlled(
+      autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
+  EXPECT_TRUE(groups_manager->IsFeatureEnabledForProfile(
+      autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
+  // The cooldown override for the feature should be set to 14 days.
+  EXPECT_EQ(base::FeatureParam<int>(
+                &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+                plus_addresses::hats::kCooldownOverrideDays, 0)
+                .Get(),
+            14);
+
+  HatsServiceDesktop::SurveyMetadata metadata;
+  metadata.any_last_survey_started_time = base::Time::Now();
+  metadata.any_last_survey_with_cooldown_override_started_time =
+      base::Time::Now() - (kCooldownOverride + base::Days(1));
+  GetHatsService()->SetSurveyMetadataForTesting(metadata);
+  // kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate overrides the cool
+  // down period.
+  GetHatsService()->LaunchSurvey(
+      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
+      /*success_callback=*/base::DoNothing(),
+      /*failure_callback=*/base::DoNothing(), /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/
+      std::map<std::string, std::string>{
+          {plus_addresses::hats::kPlusAddressesCount, "0"},
+          {plus_addresses::hats::kFirstPlusAddressCreationTime, "0"},
+          {plus_addresses::hats::kLastPlusAddressFillingTime, "0"}});
+  EXPECT_TRUE(GetHatsService()->hats_next_dialog_exists_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {

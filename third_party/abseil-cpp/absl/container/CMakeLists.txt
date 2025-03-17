@@ -131,6 +131,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::dynamic_annotations
+    absl::iterator_traits_internal
     absl::throw_delegate
     absl::memory
   PUBLIC
@@ -148,6 +149,7 @@ absl_cc_test(
     absl::config
     absl::exception_testing
     absl::hash_testing
+    absl::iterator_traits_test_helper_internal
     absl::memory
     absl::test_allocator
     GTest::gmock_main
@@ -718,9 +720,11 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
+    absl::common_policy_traits
     absl::container_memory
     absl::core_headers
     absl::raw_hash_set
+    absl::type_traits
     absl::throw_delegate
   PUBLIC
 )
@@ -740,6 +744,21 @@ absl_cc_library(
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
+    hashtable_control_bytes
+  HDRS
+    "internal/hashtable_control_bytes.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::bits
+    absl::config
+    absl::core_headers
+    absl::endian
+)
+
+# Internal-only target, do not depend on directly.
+absl_cc_library(
+  NAME
     raw_hash_set
   HDRS
     "internal/raw_hash_set.h"
@@ -749,6 +768,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::bits
+    absl::common_policy_traits
     absl::compressed_tuple
     absl::config
     absl::container_common
@@ -756,11 +776,14 @@ absl_cc_library(
     absl::core_headers
     absl::dynamic_annotations
     absl::endian
+    absl::function_ref
     absl::hash
     absl::hash_function_defaults
     absl::hash_policy_traits
+    absl::hashtable_control_bytes
     absl::hashtable_debug_hooks
     absl::hashtablez_sampler
+    absl::iterator_traits_internal
     absl::memory
     absl::meta
     absl::optional
@@ -791,6 +814,7 @@ absl_cc_test(
     absl::hash_policy_testing
     absl::hashtable_debug
     absl::hashtablez_sampler
+    absl::int128
     absl::log
     absl::memory
     absl::node_hash_set
@@ -1027,5 +1051,6 @@ absl_cc_test(
     absl::flat_hash_set
     absl::node_hash_map
     absl::node_hash_set
+    absl::hashtablez_sampler
     GTest::gmock_main
 )

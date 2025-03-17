@@ -16,15 +16,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -41,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
@@ -69,10 +65,9 @@ std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 }
 
 void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
-  if (browser) {
-    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/true);
-  }
+  views::Widget* top = views::Widget::GetTopLevelWidgetForNativeView(
+      web_ui_->GetWebContents()->GetNativeView());
+  top->SetFullscreen(!top->IsFullscreen());
 }
 
 void ChromeMediaAppUIDelegate::MaybeTriggerPdfHats() {
@@ -197,17 +192,9 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
 void ChromeMediaAppUIDelegate::SubmitForm(const GURL& url,
                                           const std::vector<int8_t>& payload,
                                           const std::string& header) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    crosapi::CrosapiManager::Get()->crosapi_ash()->media_app_ash()->SubmitForm(
-        url, payload, header, base::DoNothing());
-    return;
-  }
-  // Keep this impl in sync with chrome/browser/lacros/media_app_lacros.cc
   Profile* profile = Profile::FromWebUI(web_ui_);
   NavigateParams navigate_params(
       profile, url,
-      // The page transition is chosen to satisfy one of the conditions in
-      // lacros_url_handling::IsNavigationInterceptable.
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_API |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));

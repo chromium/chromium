@@ -4,7 +4,9 @@
 
 #include "chrome/updater/win/installer/splash_wnd.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_gdi_object.h"
+#include "chrome/updater/util/util.h"
 #include "chrome/updater/win/installer/installer_resource.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/ui_util.h"
@@ -18,7 +20,8 @@ LRESULT SplashWnd::OnInitDialog(UINT /*msg*/,
                                 WPARAM /*wparam*/,
                                 LPARAM /*lparam*/,
                                 BOOL& handled) {
-  SetWindowText(GetInstallerDisplayName({}).c_str());
+  SetWindowText(
+      GetInstallerDisplayName({}, base::UTF8ToWide(GetTagLanguage())).c_str());
 
   CenterWindow();
   SetWindowIcon(m_hWnd, IDI_MINI_INSTALLER,

@@ -13,12 +13,13 @@ build_webui_tests("build") {
     "url_test.ts",
   ]
 
-  ts_path_mappings = [ "chrome://flags/*|" + rebase_path(
-                           "$root_gen_dir/components/flags_ui/resources/tsc/*",
-                           target_gen_dir) ]
+  ts_path_mappings =
+      [ "chrome://flags/*|" +
+        rebase_path("$root_gen_dir/components/webui/flags/resources/tsc/*",
+                    target_gen_dir) ]
 
   ts_deps = [
-    "//components/flags_ui/resources:build_ts",
+    "//components/webui/flags/resources:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

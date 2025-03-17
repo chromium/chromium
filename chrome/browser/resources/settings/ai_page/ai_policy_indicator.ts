@@ -18,7 +18,7 @@ import {ModelExecutionEnterprisePolicyValue} from './constants.js';
 export function isFeatureDisabledByPolicy(
     enterprisePref: chrome.settingsPrivate.PrefObject|undefined): boolean {
   return !!enterprisePref &&
-      enterprisePref!.value === ModelExecutionEnterprisePolicyValue.DISABLE;
+      enterprisePref.value === ModelExecutionEnterprisePolicyValue.DISABLE;
 }
 
 const SettingsAiPolicyIndicatorBase = PrefControlMixin(PolymerElement);

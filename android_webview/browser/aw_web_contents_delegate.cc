@@ -201,6 +201,11 @@ WebContents* AwWebContentsDelegate::AddNewContents(
   return nullptr;
 }
 
+void AwWebContentsDelegate::SetContentsBounds(content::WebContents* source,
+                                              const gfx::Rect& bounds) {
+  // Do nothing.
+}
+
 void AwWebContentsDelegate::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
@@ -363,6 +368,12 @@ content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
   }
 
   return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+}
+
+int AwWebContentsDelegate::AllowedPrerenderingCount(
+    content::WebContents& web_contents) {
+  return AwBrowserContext::FromWebContents(&web_contents)
+      ->AllowedPrerenderingCount();
 }
 
 content::NavigationController::UserAgentOverrideOption

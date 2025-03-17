@@ -170,9 +170,9 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   void Init(scoped_refptr<value_store::ValueStoreFactory> storage_factory);
 
   // Should be called on the UI thread after a read has been performed in
-  // `storage_area`. Fires `callback` with the keys from `get_result`.
+  // `storage_area`. Fires `callback` with the keys from `result`.
   void OnReadKeysFinished(base::OnceCallback<void(GetKeysResult)> callback,
-                          GetResult get_result);
+                          value_store::ValueStore::ReadResult result);
 
   // Should be called on the UI thread after a read has been performed in
   // `storage_area`. Fires `callback` with the `result` from the read

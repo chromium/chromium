@@ -66,25 +66,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
         raster_context_provider_(std::move(raster_context_provider)) {}
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      const viz::SharedImageFormat& si_format,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet usage,
-      gpu::SyncToken& sync_token) override {
-    auto* sii = SharedImageInterface();
-    if (!sii) {
-      return nullptr;
-    }
-    auto client_shared_image =
-        sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
-                                color_space, usage, "WebRTCVideoFramePool"},
-                               gpu_memory_buffer->CloneHandle());
-    CHECK(client_shared_image);
-    sync_token = sii->GenVerifiedSyncToken();
-    return client_shared_image;
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
       gfx::BufferUsage buffer_usage,
       const viz::SharedImageFormat& si_format,
@@ -115,15 +96,13 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     shared_image->UpdateDestructionSyncToken(sync_token);
   }
 
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return SharedImageInterface()->GetCapabilities();
+  }
+
  private:
   gpu::SharedImageInterface* SharedImageInterface() const {
     return raster_context_provider_->SharedImageInterface();
-  }
-
-  gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() const {
-    auto* manager = gpu_factories_->GpuMemoryBufferManager();
-    DCHECK(manager);
-    return manager;
   }
 
   raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
@@ -298,7 +277,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         // synchronized with the GPU.
         gpu::SyncToken empty_sync_token;
         media::SimpleSyncTokenClient simple_client(empty_sync_token);
-        dst_frame->UpdateAcquireSyncToken(&simple_client);
+        dst_frame->UpdateAcquireSyncToken(empty_sync_token);
         dst_frame->UpdateReleaseSyncToken(&simple_client);
 
         auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));
@@ -317,8 +296,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   }
 
   return media::ReadbackTextureBackedFrameToMemorySync(
-      *source_frame, ri, raster_context_provider->ContextCapabilities(),
-      &pool_for_mapped_frames_);
+      *source_frame, ri, &pool_for_mapped_frames_);
 }
 
 scoped_refptr<media::VideoFrame>

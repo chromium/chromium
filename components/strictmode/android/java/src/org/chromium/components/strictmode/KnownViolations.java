@@ -11,6 +11,8 @@ import static org.chromium.components.strictmode.Violation.DETECT_RESOURCE_MISMA
 
 import android.os.Build;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Locale;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Locale;
  * list for other apps (http://go/chrome-known-violations-upstream). Add Chrome-specific exemptions
  * to {@link ChromeStrictMode}.
  */
+@NullMarked
 public final class KnownViolations {
     public static ThreadStrictModeInterceptor.Builder addExemptions(
             ThreadStrictModeInterceptor.Builder builder) {

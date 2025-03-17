@@ -85,7 +85,7 @@ void MediaSessionItemProducer::Session::MediaSessionInfoChanged(
 void MediaSessionItemProducer::Session::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
   bool is_audio_device_switching_supported =
-      base::ranges::find(
+      std::ranges::find(
           actions,
           media_session::mojom::MediaSessionAction::kSwitchAudioDevice) !=
       actions.end();

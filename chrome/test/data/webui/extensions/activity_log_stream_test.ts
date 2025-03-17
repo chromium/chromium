@@ -84,7 +84,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
   // Returns a list of visible stream items.
   function getStreamItems(): NodeListOf<ActivityLogStreamItemElement> {
-    return activityLogStream.shadowRoot!.querySelectorAll(
+    return activityLogStream.shadowRoot.querySelectorAll(
         'activity-log-stream-item');
   }
 
@@ -94,7 +94,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     boundTestVisible('#empty-stream-message', true);
     boundTestVisible('#stream-started-message', true);
 
-    activityLogStream.shadowRoot!
+    activityLogStream.shadowRoot
         .querySelector<HTMLElement>('#toggle-stream-button')!.click();
     await microtasksFinished();
     boundTestVisible('#stream-stopped-message', true);
@@ -112,7 +112,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
         assertEquals(1, streamItems.length);
 
         // Pause the stream.
-        activityLogStream.shadowRoot!
+        activityLogStream.shadowRoot
             .querySelector<HTMLElement>('#toggle-stream-button')!.click();
         await microtasksFinished();
         proxyDelegate.getOnExtensionActivity().callListeners(
@@ -125,7 +125,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
         assertEquals(1, streamItems.length);
 
         // Resume the stream.
-        activityLogStream.shadowRoot!
+        activityLogStream.shadowRoot
             .querySelector<HTMLElement>('#toggle-stream-button')!.click();
         await microtasksFinished();
         proxyDelegate.getOnExtensionActivity().callListeners(activity2);
@@ -135,12 +135,12 @@ suite('ExtensionsActivityLogStreamTest', function() {
         assertEquals(2, streamItems.length);
         await waitForPaint();
         assertEquals(
-            streamItems[0]!.shadowRoot!
-                .querySelector<HTMLElement>('#activity-name')!.innerText!,
+            streamItems[0]!.shadowRoot
+                .querySelector<HTMLElement>('#activity-name')!.innerText,
             'testAPI.testMethod');
         assertEquals(
-            streamItems[1]!.shadowRoot!
-                .querySelector<HTMLElement>('#activity-name')!.innerText!,
+            streamItems[1]!.shadowRoot
+                .querySelector<HTMLElement>('#activity-name')!.innerText,
             'testAPI.DOMMethod');
       });
 
@@ -153,7 +153,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     assertEquals(2, getStreamItems().length);
 
     const search =
-        activityLogStream.shadowRoot!.querySelector('cr-search-field');
+        activityLogStream.shadowRoot.querySelector('cr-search-field');
     assertTrue(!!search);
 
     // Search for the apiCall of |activity1|.
@@ -164,8 +164,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
     assertEquals(1, getStreamItems().length);
     await waitForPaint();
     assertEquals(
-        filteredStreamItems[0]!.shadowRoot!
-            .querySelector<HTMLElement>('#activity-name')!.innerText!,
+        filteredStreamItems[0]!.shadowRoot
+            .querySelector<HTMLElement>('#activity-name')!.innerText,
         'testAPI.testMethod');
 
     // search again, expect none
@@ -181,7 +181,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
     await microtasksFinished();
 
-    search!.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!.click();
+    search.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
     await eventToPromise('viewport-filled', activityLogStream);
 
     // We expect 4 activities to appear as |contentScriptActivity| (which is
@@ -200,12 +200,12 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
     // We should see two items: one for every script called.
     assertEquals(
-        streamItems[0]!.shadowRoot!
-            .querySelector<HTMLElement>('#activity-name')!.innerText!,
+        streamItems[0]!.shadowRoot.querySelector<HTMLElement>(
+                                      '#activity-name')!.innerText,
         'script1.js');
     assertEquals(
-        streamItems[1]!.shadowRoot!
-            .querySelector<HTMLElement>('#activity-name')!.innerText!,
+        streamItems[1]!.shadowRoot.querySelector<HTMLElement>(
+                                      '#activity-name')!.innerText,
         'script2.js');
   });
 
@@ -215,7 +215,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     await eventToPromise('viewport-filled', activityLogStream);
     assertEquals(1, getStreamItems().length);
     boundTestVisible('.activity-table-headings', true);
-    activityLogStream.shadowRoot!
+    activityLogStream.shadowRoot
         .querySelector<HTMLElement>('.clear-activities-button')!.click();
 
     await eventToPromise('viewport-filled', activityLogStream);

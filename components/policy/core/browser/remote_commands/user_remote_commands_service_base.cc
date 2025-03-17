@@ -60,8 +60,4 @@ void UserRemoteCommandsServiceBase::Shutdown() {
   }
 }
 
-std::string_view UserRemoteCommandsServiceBase::name() const {
-  return "UserRemoteCommandsServiceBase";
-}
-
 }  // namespace policy

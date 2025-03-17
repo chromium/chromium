@@ -126,7 +126,7 @@ suite('ManageProfileTests', function() {
     await microtasksFinished();
     items =
         manageProfile.shadowRoot!.querySelector(
-                                     'cr-profile-avatar-selector')!.shadowRoot!
+                                     'cr-profile-avatar-selector')!.shadowRoot
             .querySelector('#avatar-grid')!.querySelectorAll<HTMLElement>(
                 '.avatar-container > .avatar');
 
@@ -152,6 +152,10 @@ suite('ManageProfileTests', function() {
     assertEquals('.*\\S.*', nameField.pattern);
 
     assertEquals('Initial Fake Name', nameField.value);
+    // No policy indicator is shown.
+    const policyIndicator =
+        nameField.shadowRoot.querySelector<HTMLElement>('#policyIcon');
+    assertEquals(policyIndicator, null);
 
     nameField.value = 'New Name';
     nameField.dispatchEvent(
@@ -172,6 +176,21 @@ suite('ManageProfileTests', function() {
     flush();
 
     assertEquals('New Name From Browser', nameField.value);
+  });
+
+  // Tests profile name is not editable for work profile.
+  test('ManageProfileNameDisabledForEnterprise', function() {
+    loadTimeData.overrideValues({hasEnterpriseLabel: true});
+    manageProfile = createManageProfileElement();
+    flush();
+    const nameField = manageProfile.$.name;
+    assertTrue(nameField.disabled);
+    assertEquals('Initial Fake Name', nameField.value);
+
+    // The policy indicator is shown.
+    const policyIndicator =
+        nameField.shadowRoot.querySelector<HTMLElement>('#policyIcon');
+    assertFalse(!!policyIndicator && policyIndicator.hidden);
   });
 
   // Tests that the theme selector is visible.
@@ -210,19 +229,19 @@ suite('ManageProfileTests', function() {
     assertTrue(!!hasShortcutToggle);
 
     // The profile shortcut toggle is checked.
-    assertTrue(hasShortcutToggle!.checked);
+    assertTrue(hasShortcutToggle.checked);
 
     // Simulate tapping the profile shortcut toggle.
-    hasShortcutToggle!.click();
+    hasShortcutToggle.click();
     await browserProxy.whenCalled('removeProfileShortcut');
 
     flush();
 
     // The profile shortcut toggle is checked.
-    assertFalse(hasShortcutToggle!.checked);
+    assertFalse(hasShortcutToggle.checked);
 
     // Simulate tapping the profile shortcut toggle.
-    hasShortcutToggle!.click();
+    hasShortcutToggle.click();
     await browserProxy.whenCalled('addProfileShortcut');
   });
 
@@ -248,7 +267,7 @@ suite('ManageProfileTests', function() {
             '#hasShortcutToggle');
     assertTrue(!!hasShortcutToggle);
 
-    assertFalse(hasShortcutToggle!.checked);
+    assertFalse(hasShortcutToggle.checked);
   });
 
   // Tests the case when the profile shortcut setting is hidden. This can

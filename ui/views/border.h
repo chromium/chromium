@@ -9,6 +9,7 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/views_export.h"
@@ -45,7 +46,6 @@ class View;
 class VIEWS_EXPORT Border {
  public:
   Border();
-  explicit Border(SkColor color);
 
   Border(const Border&) = delete;
   Border& operator=(const Border&) = delete;
@@ -70,13 +70,13 @@ class VIEWS_EXPORT Border {
   // subclasses that depend on theme colors.
   virtual void OnViewThemeChanged(View* view);
 
-  SkColor color() const { return color_; }
+  ui::ColorVariant color() const { return color_; }
 
   // Sets the border color.
-  void set_color(SkColor color) { color_ = color; }
+  virtual void SetColor(ui::ColorVariant color);
 
  private:
-  SkColor color_ = gfx::kPlaceholderColor;
+  ui::ColorVariant color_;
 };
 
 // Convenience for creating a scoped_ptr with no Border.
@@ -84,34 +84,21 @@ VIEWS_EXPORT std::unique_ptr<Border> NullBorder();
 
 // Creates a border that is a simple line of the specified thickness and color.
 VIEWS_EXPORT std::unique_ptr<Border> CreateSolidBorder(int thickness,
-                                                       SkColor color);
-
-// Creates a border that is a simple line of the specified thickness and color,
-// which updates on theme changes.
-VIEWS_EXPORT std::unique_ptr<Border> CreateThemedSolidBorder(int thickness,
-                                                             ui::ColorId color);
+                                                       ui::ColorVariant color);
 
 // Creates a border that is a rounded rectangle of the specified thickness and
 // color.
 // NOTE: `corner_radius` is an OUTER EDGE RADIUS, not a stroke radius!
-VIEWS_EXPORT std::unique_ptr<Border>
-CreateRoundedRectBorder(int thickness, float corner_radius, SkColor color);
+VIEWS_EXPORT std::unique_ptr<Border> CreateRoundedRectBorder(
+    int thickness,
+    float corner_radius,
+    ui::ColorVariant color);
+
 VIEWS_EXPORT std::unique_ptr<Border> CreateRoundedRectBorder(
     int thickness,
     float corner_radius,
     const gfx::Insets& paint_insets,
-    SkColor color);
-
-// Same as above except the color updates with theme changes.
-VIEWS_EXPORT std::unique_ptr<Border> CreateThemedRoundedRectBorder(
-    int thickness,
-    float corner_radius,
-    ui::ColorId color_id);
-VIEWS_EXPORT std::unique_ptr<Border> CreateThemedRoundedRectBorder(
-    int thickness,
-    float corner_radius,
-    const gfx::Insets& paint_insets,
-    ui::ColorId color_id);
+    ui::ColorVariant color);
 
 // Creates a border for reserving space. The returned border does not paint
 // anything.
@@ -125,13 +112,7 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateEmptyBorder(int thickness);
 // in |insets|.
 VIEWS_EXPORT std::unique_ptr<Border> CreateSolidSidedBorder(
     const gfx::Insets& insets,
-    SkColor color);
-
-// Creates a border of the specified color with thickness on each side specified
-// in |insets|. The border updates on theme changes.
-VIEWS_EXPORT std::unique_ptr<Border> CreateThemedSolidSidedBorder(
-    const gfx::Insets& insets,
-    ui::ColorId color_id);
+    ui::ColorVariant color);
 
 // Creates a new border that draws |border| and adds additional padding. This is
 // equivalent to changing the insets of |border| without changing how or what it

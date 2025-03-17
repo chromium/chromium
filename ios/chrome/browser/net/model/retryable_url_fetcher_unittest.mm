@@ -14,12 +14,12 @@
 namespace {
 // An arbitrary text string for a fake response.
 NSString* const kFakeResponseString = @"Something interesting here.";
-}
+}  // namespace
 
 // Delegate object to provide data for RetryableURLFetcher and
 // handles the callback when URL is fetched.
 @interface TestRetryableURLFetcherDelegate
-    : NSObject<RetryableURLFetcherDelegate>
+    : NSObject <RetryableURLFetcherDelegate>
 // Counts the number of times that a successful response has been processed.
 @property(nonatomic, assign) NSUInteger responsesProcessed;
 @end
@@ -40,7 +40,8 @@ NSString* const kFakeResponseString = @"Something interesting here.";
 
 @end
 
-@interface TestFailingURLFetcherDelegate : NSObject<RetryableURLFetcherDelegate>
+@interface TestFailingURLFetcherDelegate
+    : NSObject <RetryableURLFetcherDelegate>
 @property(nonatomic, assign) NSUInteger responsesProcessed;
 @end
 

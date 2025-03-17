@@ -21,17 +21,12 @@ import "services/network/public/mojom/ct_log_info.mojom";
 struct CertVerifierCreationParams {
   // Specifies the path to the directory where NSS will store its database.
   // Example: /home/chronos/u-<hash>
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   mojo_base.mojom.FilePath? nss_path;
-
-  // Specifies the path to the software NSS database.
-  // Example: /home/chronos/u-<hash>/.pki/nssdb
-  [EnableIf=is_chromeos_lacros]
-  mojo_base.mojom.FilePath? nss_full_path;
 
   // This is used in combination with nss_path, to ensure that the NSS database
   // isn't opened multiple times for NetworkContexts in the same profie.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   string username_hash;
 
   // Initial additional certificates that will be used for certificate
@@ -59,17 +54,20 @@ struct ChromeRootStoreInfo {
   array<ChromeRootCertInfo> root_cert_info;
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 enum CertificateTrust {
   kUnspecified,
   kDistrusted,
   kTrusted,
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 struct PlatformCertInfo {
   array<uint8> cert;
   CertificateTrust trust_setting;
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 struct PlatformRootStoreInfo {
   array<PlatformCertInfo> user_added_certs;
 };
@@ -117,7 +115,7 @@ interface CertVerifierServiceFactory {
   GetChromeRootStoreInfo() => (ChromeRootStoreInfo root_store_info);
 
   // Returns information about the current Platform Root Store.
-  [EnableIf=is_chrome_root_store_supported]
+  [EnableIf=is_platform_root_store_info_supported]
   GetPlatformRootStoreInfo() => (PlatformRootStoreInfo root_store_info);
 
   // Updates the time used for certificate verification. After this is called,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OncMojo} from './onc_mojo.js';
+import type {OncMojo} from './onc_mojo.js';
 
 export namespace NetworkList {
   export enum CustomItemType {

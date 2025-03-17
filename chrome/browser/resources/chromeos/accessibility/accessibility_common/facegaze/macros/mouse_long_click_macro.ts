@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CheckContextResult, Macro, MacroError, RunMacroResult, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
+import type {CheckContextResult, RunMacroResult} from '/common/action_fulfillment/macros/macro.js';
+import {Macro, MacroError, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 
-import {MouseController} from '../mouse_controller.js';
+import type {MouseController} from '../mouse_controller.js';
 
 /** Class that implements a macro to toggle a long click action. */
 export class MouseLongClickMacro extends Macro {

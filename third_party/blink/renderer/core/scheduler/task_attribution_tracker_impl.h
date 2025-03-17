@@ -18,8 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-class AbortSignal;
-class DOMTaskSignal;
+class SchedulerTaskContext;
 class SoftNavigationContext;
 }  // namespace blink
 
@@ -49,11 +48,11 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
   TaskScope CreateTaskScope(ScriptState* script_state,
                             SoftNavigationContext*) override;
 
-  TaskScope CreateTaskScope(ScriptState* script_state,
-                            TaskAttributionInfo* task_state,
-                            TaskScopeType type,
-                            AbortSignal* abort_source,
-                            DOMTaskSignal* priority_source) override;
+  TaskScope CreateTaskScope(
+      ScriptState* script_state,
+      TaskAttributionInfo* task_state,
+      TaskScopeType type,
+      SchedulerTaskContext* continuation_context) override;
 
   std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
       ScriptState*,

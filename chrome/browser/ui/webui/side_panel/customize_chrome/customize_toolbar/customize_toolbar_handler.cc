@@ -10,9 +10,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -141,11 +144,12 @@ CustomizeToolbarHandler::CustomizeToolbarHandler(
         side_panel::customize_chrome::mojom::CustomizeToolbarHandler> handler,
     mojo::PendingRemote<
         side_panel::customize_chrome::mojom::CustomizeToolbarClient> client,
-    raw_ptr<Browser> browser)
+    content::WebContents* web_contents)
     : client_(std::move(client)),
       receiver_(this, std::move(handler)),
-      browser_(browser),
-      model_(PinnedToolbarActionsModel::Get(browser_->profile())) {
+      web_contents_(web_contents),
+      model_(PinnedToolbarActionsModel::Get(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
   model_observation_.Observe(model_);
   pref_change_registrar_.Init(prefs());
   pref_change_registrar_.Add(
@@ -162,43 +166,44 @@ CustomizeToolbarHandler::~CustomizeToolbarHandler() = default;
 
 void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
-
-  const ui::ColorProvider* const provider =
-      browser_->window()->GetColorProvider();
+  const ui::ColorProvider& provider = web_contents_->GetColorProvider();
   const int icon_color_id = ui::kColorSysOnSurface;
   const float scale_factor =
       display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(browser_->window()->GetNativeWindow())
+          ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
           .device_scale_factor();
 
   auto home_action = side_panel::customize_chrome::mojom::Action::New(
       MojoActionForChromeAction(kActionHome).value(),
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME)),
-      prefs()->GetBoolean(prefs::kShowHomeButton),
+      prefs()->GetBoolean(prefs::kShowHomeButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
           ui::ImageModel::FromVectorIcon(kNavigateHomeChromeRefreshIcon,
                                          icon_color_id)
-              .Rasterize(provider),
+              .Rasterize(&provider),
           scale_factor)));
 
   auto forward_action = side_panel::customize_chrome::mojom::Action::New(
       MojoActionForChromeAction(kActionForward).value(),
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD)),
-      prefs()->GetBoolean(prefs::kShowForwardButton),
+      prefs()->GetBoolean(prefs::kShowForwardButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
           ui::ImageModel::FromVectorIcon(
               vector_icons::kForwardArrowChromeRefreshIcon, icon_color_id)
-              .Rasterize(provider),
+              .Rasterize(&provider),
           scale_factor)));
 
+  const raw_ptr<BrowserWindowInterface> bwi =
+      webui::GetBrowserWindowInterface(web_contents_);
+  CHECK(bwi);
   const auto add_action =
-      [&actions, this, provider, scale_factor](
+      [&actions, this, &provider, scale_factor, bwi](
           actions::ActionId id,
           side_panel::customize_chrome::mojom::CategoryId category) {
         actions::ActionItem* const scope_action =
-            browser_->browser_actions()->root_action_item();
+            bwi->GetActions()->root_action_item();
         actions::ActionItem* const action_item =
             actions::ActionManager::Get().FindAction(id, scope_action);
         if (!action_item || !action_item->GetVisible()) {
@@ -224,12 +229,16 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
                       action_item->GetImage().GetVectorIcon().icon_size())
                 : original_icon;
 
+        bool has_enterprise_controlled_pinned_state =
+            action_item->GetProperty(actions::kActionItemPinnableKey) ==
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kEnterpriseControlled);
         auto mojo_action = side_panel::customize_chrome::mojom::Action::New(
             MojoActionForChromeAction(id).value(),
             base::UTF16ToUTF8(action_item->GetText()), model_->Contains(id),
-            category,
+            has_enterprise_controlled_pinned_state, category,
             GURL(webui::EncodePNGAndMakeDataURI(
-                recolored_icon.Rasterize(provider), scale_factor)));
+                recolored_icon.Rasterize(&provider), scale_factor)));
         actions.push_back(std::move(mojo_action));
       };
 
@@ -265,10 +274,10 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionQrCodeGenerator,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
-  // TODO(b/323962377): Reinstate after Cast action implementation is
-  // complete.
-  // add_action(kActionRouteMedia,
-  //             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    add_action(kActionRouteMedia,
+               side_panel::customize_chrome::mojom::CategoryId::kTools);
+  }
   add_action(kActionSidePanelShowReadAnything,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionCopyUrl,
@@ -373,5 +382,6 @@ void CustomizeToolbarHandler::OnActionItemChanged() {
 }
 
 PrefService* CustomizeToolbarHandler::prefs() const {
-  return browser_->profile()->GetPrefs();
+  return Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+      ->GetPrefs();
 }

@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test.h"
@@ -54,12 +53,14 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
     policy_provider_.SetAutoRefresh();
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &PrintingMetricsApiTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ExtensionApiTest::SetUpBrowserContextKeyedServices(context);
+    ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildTestCupsPrintJobManager));
   }
 
   const Extension* extension() {
@@ -99,14 +100,6 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-
- private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildTestCupsPrintJobManager));
-  }
-
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {

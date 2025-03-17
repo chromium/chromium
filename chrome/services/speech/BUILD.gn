@@ -43,7 +43,7 @@ source_set("lib") {
     "//services/audio/public/cpp",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cros_speech_recognition_recognizer_impl.cc",
       "cros_speech_recognition_recognizer_impl.h",
@@ -73,7 +73,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "audio_source_fetcher_unittest.cc",
       "cros_speech_recognition_recognizer_impl_test.cc",

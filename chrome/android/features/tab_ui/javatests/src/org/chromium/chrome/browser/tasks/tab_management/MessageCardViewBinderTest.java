@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,6 +46,7 @@ public class MessageCardViewBinderTest {
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
     private static final String DISMISS_BUTTON_CONTENT_DESCRIPTION = "dismiss";
+    private static final int MARGIN_OVERRIDE = 10;
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -217,6 +219,74 @@ public class MessageCardViewBinderTest {
         assertThat(
                 closeButton.getImageTintList().getDefaultColor(),
                 equalTo(sActivity.getColor(R.color.default_icon_color_light)));
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetLeftMargin() {
+        View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
+        mItemViewModel.set(MessageCardViewProperties.LEFT_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
+        ViewGroup.MarginLayoutParams oldParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+
+        ViewGroup.MarginLayoutParams newParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+        assertEquals(MARGIN_OVERRIDE, newParams.leftMargin);
+        assertEquals(oldParams.topMargin, newParams.topMargin);
+        assertEquals(oldParams.rightMargin, newParams.rightMargin);
+        assertEquals(oldParams.bottomMargin, newParams.bottomMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetTopMargin() {
+        View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
+        mItemViewModel.set(MessageCardViewProperties.TOP_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
+        ViewGroup.MarginLayoutParams oldParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+
+        ViewGroup.MarginLayoutParams newParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+        assertEquals(oldParams.leftMargin, newParams.leftMargin);
+        assertEquals(MARGIN_OVERRIDE, newParams.topMargin);
+        assertEquals(oldParams.rightMargin, newParams.rightMargin);
+        assertEquals(oldParams.bottomMargin, newParams.bottomMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetRightMargin() {
+        View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
+        mItemViewModel.set(MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
+        ViewGroup.MarginLayoutParams oldParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+
+        ViewGroup.MarginLayoutParams newParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+        assertEquals(oldParams.leftMargin, newParams.leftMargin);
+        assertEquals(oldParams.topMargin, newParams.topMargin);
+        assertEquals(MARGIN_OVERRIDE, newParams.rightMargin);
+        assertEquals(oldParams.bottomMargin, newParams.bottomMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetBottomMargin() {
+        View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
+        mItemViewModel.set(MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
+        ViewGroup.MarginLayoutParams oldParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+
+        ViewGroup.MarginLayoutParams newParams =
+                (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
+        assertEquals(oldParams.leftMargin, newParams.leftMargin);
+        assertEquals(oldParams.topMargin, newParams.topMargin);
+        assertEquals(oldParams.rightMargin, newParams.rightMargin);
+        assertEquals(MARGIN_OVERRIDE, newParams.bottomMargin);
     }
 
     @After

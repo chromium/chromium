@@ -58,6 +58,6 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
   __weak id<CRWWebStatePolicyDecider> decider_ = nil;
 };
 
-}  // web
+}  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_NAVIGATION_WEB_STATE_POLICY_DECIDER_BRIDGE_H_

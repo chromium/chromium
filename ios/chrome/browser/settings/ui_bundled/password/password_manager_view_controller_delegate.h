@@ -14,31 +14,6 @@ class AffiliatedGroup;
 struct CredentialUIEntry;
 }  // namespace password_manager
 
-// State of on-device encryption used for
-// ItemTypeOnDeviceEncryptionOptInDescription, ItemTypeOnDeviceEncryptionSetUp
-// and ItemTypeOnDeviceEncryptionSetUp.
-typedef NS_ENUM(NSInteger, OnDeviceEncryptionState) {
-  // On device encryption is on.
-  // ItemTypeOnDeviceEncryptionOptInDescription is shown.
-  OnDeviceEncryptionStateOptedIn,
-  // User can opt-in on device encryption.
-  // ItemTypeOnDeviceEncryptionOptInDescription and
-  // ItemTypeOnDeviceEncryptionSetUp are shown.
-  OnDeviceEncryptionStateOfferOptIn,
-  // User can not opt-in in their current state.
-  // Currently it is either because:
-  // * User is not signed-in,
-  // * User hasn’t opted in to or disabled Sync for passwords (or equivalent
-  // enterprise policies),
-  // * User has a custom passphrase.
-  // SectionIdentifierOnDeviceEncryption is hidden.
-  OnDeviceEncryptionStateNotShown,
-};
-
-namespace password_manager {
-struct CredentialUIEntry;
-}
-
 // Delegate for `PasswordManagerViewController`.
 @protocol PasswordManagerViewControllerDelegate
 
@@ -58,15 +33,8 @@ struct CredentialUIEntry;
 // Returns detailed information about Password Check error if applicable.
 - (NSAttributedString*)passwordCheckErrorInfo;
 
-// Returns the on-device encryption state according to the sync service.
-- (OnDeviceEncryptionState)onDeviceEncryptionState;
-
-// Returns whether a special icon should be shown next to `credential` that
-// indicates it's not backed up to any account.
-- (BOOL)shouldShowLocalOnlyIconForCredential:
-    (const password_manager::CredentialUIEntry&)credential;
-
-// Similar to above but for an affiliated group.
+// Returns whether a special icon should be shown next to `group` that indicates
+// it's not backed up to any account.
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group;
 

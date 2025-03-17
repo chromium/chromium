@@ -14,8 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/performance_manager/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -29,7 +31,10 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -42,6 +47,23 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Mock;
+
+class MockFreezingPolicy : public FreezingPolicy {
+ public:
+  explicit MockFreezingPolicy(
+      std::unique_ptr<freezing::Discarder> discarder,
+      std::unique_ptr<freezing::OptOutChecker> opt_out_checker = nullptr)
+      : FreezingPolicy(std::move(discarder), std::move(opt_out_checker)) {}
+  ~MockFreezingPolicy() override = default;
+
+  MOCK_METHOD(void,
+              RecordFreezingEligibilityUKMForPage,
+              (ukm::SourceId source_id,
+               double highest_cpu_current_interval,
+               double highest_cpu_any_interval_without_cannot_freeze_reason,
+               CannotFreezeReasonSet cannot_freeze_reasons),
+              (override));
+};
 
 // Mock version of a Freezer.
 class LenientMockFreezer : public Freezer {
@@ -89,8 +111,8 @@ class FreezingPolicyTest : public GraphTestHarness {
     auto discarder = std::make_unique<MockDiscarder>();
     discarder_ = discarder.get();
     // Create the policy and pass it to the graph.
-    auto policy = std::make_unique<FreezingPolicy>(std::move(discarder),
-                                                   CreateTestOptOutChecker());
+    auto policy = std::make_unique<MockFreezingPolicy>(
+        std::move(discarder), CreateTestOptOutChecker());
     policy_ = policy.get();
     auto freezer = std::make_unique<MockFreezer>();
     freezer_ = freezer.get();
@@ -146,7 +168,7 @@ class FreezingPolicyTest : public GraphTestHarness {
 
   PageNodeImpl* page_node() { return page_node_.get(); }
   ProcessNodeImpl* process_node() { return process_node_.get(); }
-  FreezingPolicy* policy() { return policy_; }
+  MockFreezingPolicy* policy() { return policy_; }
   MockFreezer* freezer() { return freezer_; }
   MockDiscarder* discarder() { return discarder_; }
 
@@ -154,6 +176,8 @@ class FreezingPolicyTest : public GraphTestHarness {
       content::BrowsingInstanceId(1);
   const content::BrowsingInstanceId kBrowsingInstanceB =
       content::BrowsingInstanceId(2);
+  const content::BrowsingInstanceId kBrowsingInstanceC =
+      content::BrowsingInstanceId(3);
   const resource_attribution::OriginInBrowsingInstanceContext kContext{
       url::Origin(), kBrowsingInstanceA};
 
@@ -163,7 +187,7 @@ class FreezingPolicyTest : public GraphTestHarness {
   TestNodeWrapper<FrameNodeImpl> frame_node_;
   raw_ptr<MockFreezer> freezer_;
   raw_ptr<MockDiscarder> discarder_;
-  raw_ptr<FreezingPolicy> policy_;
+  raw_ptr<MockFreezingPolicy> policy_;
 };
 
 // A page with no `CannotFreezeReason` that is alone in its browsing instance is
@@ -1117,16 +1141,16 @@ class FreezingPolicyBatterySaverTest : public FreezingPolicyTest {
  public:
   FreezingPolicyBatterySaverTest() = default;
 
-  // Reports CPU usage for `context` to the the freezing policy, with "now" as
-  // the measurement time. `cumulative_background_cpu` is used as cumulative
+  // Adds CPU usage for `context` to `cpu_result_map`, with "now" as the
+  // measurement time. `cumulative_background_cpu` is used as cumulative
   // background CPU and `cumulative_cpu` is used as cumulative CPU
   // (`cumulative_background_cpu` is used as cumulative CPU if `cumulative_cpu`
   // is nullopt).
-  void ReportCumulativeCPUUsage(
+  void AddCPUMeasurement(
+      resource_attribution::QueryResultMap& cpu_result_map,
       resource_attribution::ResourceContext context,
       base::TimeDelta cumulative_background_cpu,
       std::optional<base::TimeDelta> cumulative_cpu = std::nullopt) {
-    resource_attribution::QueryResultMap cpu_result_map;
     cpu_result_map[context] = resource_attribution::QueryResults{
         .cpu_time_result = resource_attribution::CPUTimeResult{
             .metadata = resource_attribution::ResultMetadata(
@@ -1137,6 +1161,20 @@ class FreezingPolicyBatterySaverTest : public FreezingPolicyTest {
                                   ? cumulative_cpu.value()
                                   : cumulative_background_cpu,
             .cumulative_background_cpu = cumulative_background_cpu}};
+  }
+
+  // Reports CPU usage for `context` to the the freezing policy, with "now" as
+  // the measurement time. `cumulative_background_cpu` is used as cumulative
+  // background CPU and `cumulative_cpu` is used as cumulative CPU
+  // (`cumulative_background_cpu` is used as cumulative CPU if `cumulative_cpu`
+  // is nullopt).
+  void ReportCumulativeCPUUsage(
+      resource_attribution::ResourceContext context,
+      base::TimeDelta cumulative_background_cpu,
+      std::optional<base::TimeDelta> cumulative_cpu = std::nullopt) {
+    resource_attribution::QueryResultMap cpu_result_map;
+    AddCPUMeasurement(cpu_result_map, context, cumulative_background_cpu,
+                      cumulative_cpu);
     resource_attribution::QueryResultObserver* observer = policy();
     observer->OnResourceUsageUpdated(std::move(cpu_result_map));
   }
@@ -1158,6 +1196,289 @@ TEST_F(FreezingPolicyBatterySaverTest, Basic) {
   // >=25% CPU in background.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   ReportCumulativeCPUUsage(kContext, base::Seconds(75));
+}
+
+TEST_F(FreezingPolicyBatterySaverTest, RecordFreezingEligibilityUKM) {
+  base::test::ScopedFeatureList feature_list(
+      features::kRecordFreezingEligibilityUKM);
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  // page_node(), page2 and page3 are connected. page4 is disjoint.
+  auto [page2, frame2] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  auto frame2b =
+      CreateFrameNodeAutoId(process_node(), page2.get(),
+                            /* parent_frame_node=*/nullptr, kBrowsingInstanceB);
+  auto [page3, frame3] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceB);
+  auto [page4, frame4] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceC);
+
+  page_node()->SetUkmSourceId(ukm::AssignNewSourceId());
+  page2->SetUkmSourceId(ukm::AssignNewSourceId());
+  page3->SetUkmSourceId(ukm::AssignNewSourceId());
+  page4->SetUkmSourceId(ukm::AssignNewSourceId());
+
+  // kContext affects page_node(), page2 and page3. kContext2 and kContext3
+  // affect page4.
+  const resource_attribution::OriginInBrowsingInstanceContext kContext2{
+      url::Origin(), kBrowsingInstanceC};
+  const resource_attribution::OriginInBrowsingInstanceContext kContext3{
+      url::Origin(), kBrowsingInstanceC};
+
+  // A `CannotFreezeReason` applicable at the beginning of the CPU measurement
+  // interval affects the UKM event.
+  page_node()->SetIsHoldingWebLockForTesting(true);
+
+  // Simulate initial CPU measurement.
+  {
+    resource_attribution::QueryResultMap cpu_result_map;
+    AddCPUMeasurement(cpu_result_map, kContext, base::Seconds(0));
+    AddCPUMeasurement(cpu_result_map, kContext2, base::Seconds(0));
+    AddCPUMeasurement(cpu_result_map, kContext3, base::Seconds(0));
+    resource_attribution::QueryResultObserver* observer = policy();
+    observer->OnResourceUsageUpdated(std::move(cpu_result_map));
+  }
+  AdvanceClock(base::Seconds(60));
+
+  page_node()->SetIsHoldingWebLockForTesting(false);
+
+  // A `CannotFreezeReason` applicable transiently during the CPU measurement
+  // interval affects the UKM event.
+  page_node()->SetIsHoldingBlockingIndexedDBLockForTesting(true);
+  page_node()->SetIsHoldingBlockingIndexedDBLockForTesting(false);
+
+  // Simulate 2nd CPU measurement. Expect UKM events to be reported.
+  {
+    CannotFreezeReasonSet expected_cannot_freeze_reasons{
+        CannotFreezeReason::kHoldingWebLock,
+        CannotFreezeReason::kHoldingBlockingIndexedDBLock};
+
+    EXPECT_CALL(*policy(),
+                RecordFreezingEligibilityUKMForPage(
+                    page_node()->GetUkmSourceID(),
+                    /*highest_cpu_current_interval=*/0.5,
+                    /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0,
+                    expected_cannot_freeze_reasons));
+    EXPECT_CALL(*policy(),
+                RecordFreezingEligibilityUKMForPage(
+                    page2->GetUkmSourceID(),
+                    /*highest_cpu_current_interval=*/0.5,
+                    /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0,
+                    expected_cannot_freeze_reasons));
+    EXPECT_CALL(*policy(),
+                RecordFreezingEligibilityUKMForPage(
+                    page3->GetUkmSourceID(),
+                    /*highest_cpu_current_interval=*/0.5,
+                    /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0,
+                    expected_cannot_freeze_reasons));
+    EXPECT_CALL(
+        *policy(),
+        RecordFreezingEligibilityUKMForPage(
+            page4->GetUkmSourceID(),
+            /*highest_cpu_current_interval=*/1.0,
+            /*highest_cpu_any_interval_without_cannot_freeze_reason=*/1.0,
+            CannotFreezeReasonSet{}));
+
+    resource_attribution::QueryResultMap cpu_result_map;
+    AddCPUMeasurement(cpu_result_map, kContext, base::Seconds(30));   // 50%
+    AddCPUMeasurement(cpu_result_map, kContext2, base::Seconds(45));  // 75%
+    AddCPUMeasurement(cpu_result_map, kContext3, base::Seconds(60));  // 100%
+    resource_attribution::QueryResultObserver* observer = policy();
+    observer->OnResourceUsageUpdated(std::move(cpu_result_map));
+  }
+  AdvanceClock(base::Seconds(60));
+
+  // Simulate 3rd CPU measurement (no applicable `CannotFreezeReason` this
+  // time). Expect UKM events to be reported.
+  {
+    EXPECT_CALL(
+        *policy(),
+        RecordFreezingEligibilityUKMForPage(
+            page_node()->GetUkmSourceID(),
+            /*highest_cpu_current_interval=*/0.25,
+            /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.25,
+            CannotFreezeReasonSet{}));
+    EXPECT_CALL(
+        *policy(),
+        RecordFreezingEligibilityUKMForPage(
+            page2->GetUkmSourceID(),
+            /*highest_cpu_current_interval=*/0.25,
+            /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.25,
+            CannotFreezeReasonSet{}));
+    EXPECT_CALL(
+        *policy(),
+        RecordFreezingEligibilityUKMForPage(
+            page3->GetUkmSourceID(),
+            /*highest_cpu_current_interval=*/0.25,
+            /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.25,
+            CannotFreezeReasonSet{}));
+    EXPECT_CALL(
+        *policy(),
+        RecordFreezingEligibilityUKMForPage(
+            page4->GetUkmSourceID(),
+            /*highest_cpu_current_interval=*/0.75,
+            /*highest_cpu_any_interval_without_cannot_freeze_reason=*/1.0,
+            CannotFreezeReasonSet{}));
+
+    resource_attribution::QueryResultMap cpu_result_map;
+    AddCPUMeasurement(cpu_result_map, kContext, base::Seconds(45));   // 25%
+    AddCPUMeasurement(cpu_result_map, kContext2, base::Seconds(90));  // 75%
+    AddCPUMeasurement(cpu_result_map, kContext3, base::Seconds(66));  // 10%
+    resource_attribution::QueryResultObserver* observer = policy();
+    observer->OnResourceUsageUpdated(std::move(cpu_result_map));
+  }
+}
+
+TEST_F(FreezingPolicyBatterySaverTest,
+       RecordFreezingEligibilityUKMForPageStatic) {
+  // No "opt-out" field is set.
+  // CPU usage is bucketed.
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.1,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.2,
+        CannotFreezeReasonSet{});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 16);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            8);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 0);
+  }
+
+  // All "opt-out" fields are set.
+  // CPU usage is bucketed.
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.16,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.32,
+        CannotFreezeReasonSet{
+            CannotFreezeReason::kAudible, CannotFreezeReason::kBeingMirrored,
+            CannotFreezeReason::kCapturingAudio,
+            CannotFreezeReason::kConnectedToBluetoothDevice,
+            CannotFreezeReason::kHoldingBlockingIndexedDBLock,
+            CannotFreezeReason::kHoldingWebLock, CannotFreezeReason::kLoading,
+            CannotFreezeReason::kNotificationPermission,
+            CannotFreezeReason::kFreezingOriginTrialOptOut,
+            CannotFreezeReason::kRecentlyAudible,
+            CannotFreezeReason::kRecentlyVisible, CannotFreezeReason::kVisible,
+            CannotFreezeReason::kWebRTC});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 32);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            16);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 1);
+  }
+
+  // Opt-out fields from Audible -> Loading are set.
+  // CPU usage is zero.
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.0,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.0,
+        CannotFreezeReasonSet{
+            CannotFreezeReason::kAudible, CannotFreezeReason::kBeingMirrored,
+            CannotFreezeReason::kCapturingVideo,
+            CannotFreezeReason::kConnectedToUsbDevice,
+            CannotFreezeReason::kHoldingBlockingIndexedDBLock,
+            CannotFreezeReason::kHoldingWebLock, CannotFreezeReason::kLoading});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 0);
+  }
+
+  // Opt-out fields from Notification -> WebRTC are set.
+  // CPU usage is very low (bucketing has no effect at this level).
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.01,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.02,
+        CannotFreezeReasonSet{CannotFreezeReason::kNotificationPermission,
+                              CannotFreezeReason::kFreezingOriginTrialOptOut,
+                              CannotFreezeReason::kRecentlyAudible,
+                              CannotFreezeReason::kRecentlyVisible,
+                              CannotFreezeReason::kVisible,
+                              CannotFreezeReason::kWebRTC});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 2);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 1);
+  }
 }
 
 TEST_F(FreezingPolicyBatterySaverTest, ConnectedPages) {

@@ -7,8 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
 
 namespace apps {
@@ -23,16 +26,17 @@ class DeskModel;
 class TestingPrefServiceSimple;
 
 namespace ash {
+class SessionControllerImpl;
 
 // This class creates a desk model and has functionality used by unit tests that
 // involve saved desk functionality.
-class SavedDeskTestHelper {
+class SavedDeskTestHelper : public SessionObserver {
  public:
   // Creates a desk model. Will CHECK-fail on errors.
   SavedDeskTestHelper();
   SavedDeskTestHelper(const SavedDeskTestHelper&) = delete;
   SavedDeskTestHelper& operator=(const SavedDeskTestHelper&) = delete;
-  ~SavedDeskTestHelper();
+  ~SavedDeskTestHelper() override;
 
   // Adds `app_id` to `registry_cache_` for `account_id_`.
   void AddAppIdToAppRegistryCache(const std::string& app_id);
@@ -50,6 +54,13 @@ class SavedDeskTestHelper {
     return test_pref_service_.get();
   }
 
+  // SessionObserver:
+  void OnUserSessionAdded(const AccountId& account_id) override;
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // Shutdown and clear the internal states.
+  void Shutdown();
+
  private:
   AccountId account_id_;
 
@@ -59,9 +70,13 @@ class SavedDeskTestHelper {
 
   std::unique_ptr<desks_storage::DeskModel> saved_desk_model_;
 
-  std::unique_ptr<apps::AppRegistryCache> cache_;
+  std::unordered_map<AccountId, std::unique_ptr<apps::AppRegistryCache>>
+      cache_map_;
 
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
+
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      scoped_observation_{this};
 };
 
 }  // namespace ash

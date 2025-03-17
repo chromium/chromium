@@ -6,10 +6,6 @@ import type {NativeInitialSettings, PrintPreviewAppElement, SerializedSettings, 
 import {getInstance, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
-
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
@@ -23,9 +19,6 @@ suite('RestoreStateTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
@@ -47,7 +40,7 @@ suite('RestoreStateTest', function() {
         stickySettings.mediaSize!.width_microns,
         page.settings.mediaSize.value.width_microns);
     assertEquals(
-        (stickySettings.vendorOptions! as {[key: string]: any})!['paperType'],
+        (stickySettings.vendorOptions! as {[key: string]: any})['paperType'],
         page.settings.vendorItems.value.paperType);
     assertEquals(
         (stickySettings.vendorOptions! as {[key: string]: any})['printArea'],
@@ -66,8 +59,8 @@ suite('RestoreStateTest', function() {
     ] as Array<[keyof Settings, string]>)
         .forEach(keys => {
           assertEquals(
-              (stickySettings as {[key: string]: any})[keys[1]!],
-              page.settings![keys[0]!]!.value);
+              (stickySettings as {[key: string]: any})[keys[1]],
+              page.settings[keys[0]].value);
         });
   }
 
@@ -134,10 +127,6 @@ suite('RestoreStateTest', function() {
           isDuplexShortEdge: true,
           isLandscapeEnabled: true,
           isColorEnabled: true,
-          // <if expr="is_chromeos">
-          isPinEnabled: true,
-          pinValue: '0000',
-          // </if>
         };
         await testInitializeWithStickySettings(stickySettings);
       });
@@ -174,10 +163,6 @@ suite('RestoreStateTest', function() {
           isDuplexShortEdge: false,
           isLandscapeEnabled: false,
           isColorEnabled: false,
-          // <if expr="is_chromeos">
-          isPinEnabled: false,
-          pinValue: '',
-          // </if>
         };
         await testInitializeWithStickySettings(stickySettings);
       });
@@ -292,20 +277,6 @@ suite('RestoreStateTest', function() {
           printArea: 6,
         },
       },
-      // <if expr="is_chromeos">
-      {
-        section: 'print-preview-pin-settings',
-        settingName: 'pin',
-        key: 'isPinEnabled',
-        value: true,
-      },
-      {
-        section: 'print-preview-pin-settings',
-        settingName: 'pinValue',
-        key: 'pinValue',
-        value: '0000',
-      },
-      // </if>
     ];
 
     // Setup

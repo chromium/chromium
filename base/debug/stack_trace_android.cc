@@ -18,9 +18,9 @@
 #include "base/threading/thread_restrictions.h"
 
 #ifdef __LP64__
-#define FMT_ADDR  "0x%016lx"
+#define FMT_ADDR "0x%016lx"
 #else
-#define FMT_ADDR  "0x%08x"
+#define FMT_ADDR "0x%08x"
 #endif
 
 namespace {
@@ -49,8 +49,9 @@ _Unwind_Reason_Code TraceStackFrame(_Unwind_Context* context, void* arg) {
   }
 
   state->frames[state->frame_count++] = ip;
-  if (state->frame_count >= state->max_depth)
+  if (state->frame_count >= state->max_depth) {
     return _URC_END_OF_STACK;
+  }
   return _URC_NO_REASON;
 }
 
@@ -114,11 +115,11 @@ void StackTrace::OutputToStreamWithPrefixImpl(
   // UI thread.
   base::ScopedAllowBlocking scoped_allow_blocking;
   if (!ReadProcMaps(&proc_maps)) {
-    __android_log_write(
-        ANDROID_LOG_ERROR, "chromium", "Failed to read /proc/self/maps");
+    __android_log_write(ANDROID_LOG_ERROR, "chromium",
+                        "Failed to read /proc/self/maps");
   } else if (!ParseProcMaps(proc_maps, &regions)) {
-    __android_log_write(
-        ANDROID_LOG_ERROR, "chromium", "Failed to parse /proc/self/maps");
+    __android_log_write(ANDROID_LOG_ERROR, "chromium",
+                        "Failed to parse /proc/self/maps");
   }
 
   for (size_t i = 0; i < count_; ++i) {

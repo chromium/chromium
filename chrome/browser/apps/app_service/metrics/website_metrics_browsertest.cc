@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics_browser_test_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -747,14 +746,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// TODO(crbug.com/40910130): Test is flaky.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MoveActivatedTabToNewBrowser DISABLED_MoveActivatedTabToNewBrowser
-#else
-#define MAYBE_MoveActivatedTabToNewBrowser MoveActivatedTabToNewBrowser
-#endif
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_MoveActivatedTabToNewBrowser) {
+                       MoveActivatedTabToNewBrowser) {
   auto website_metrics_ptr =
       std::make_unique<apps::TestWebsiteMetrics>(profile());
   auto* const metrics = website_metrics_ptr.get();

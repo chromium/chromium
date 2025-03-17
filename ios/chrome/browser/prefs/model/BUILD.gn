@@ -17,6 +17,7 @@ source_set("model") {
     "//components/prefs/ios",
     "//components/proxy_config",
     "//components/search_engines",
+    "//components/signin/public/base:signin_switches",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/sync_preferences",

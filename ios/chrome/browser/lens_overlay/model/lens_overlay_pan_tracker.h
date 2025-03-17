@@ -30,13 +30,15 @@
 @end
 
 // Delegate for starting and stopping tracking pan gesture.
-@protocol LensOverlayPanTrackerDelegate
+@protocol LensOverlayPanTrackerDelegate <NSObject>
 
-// The tracker started tracking a pan gesture.
-- (void)onPanGestureStarted:(LensOverlayPanTracker*)panTracker;
+// Called when the tracker started recognizing a pan gesture.
+- (void)lensOverlayPanTrackerDidBeginPanGesture:
+    (LensOverlayPanTracker*)panTracker;
 
-// The tracker ended tracking the pan gesture.
-- (void)onPanGestureEnded:(LensOverlayPanTracker*)panTracker;
+// Called when the tracker ended recognizing a pan gesture.
+- (void)lensOverlayPanTrackerDidEndPanGesture:
+    (LensOverlayPanTracker*)panTracker;
 
 @end
 

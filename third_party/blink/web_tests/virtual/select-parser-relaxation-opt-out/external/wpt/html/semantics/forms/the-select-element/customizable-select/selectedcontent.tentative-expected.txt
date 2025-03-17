@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] The <selectedcontent> element should reflect the HTML contents of the selected <option>.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'innerHTML')"
+[FAIL] When there are multiple <selectedcontent> elements, only the one in tree order should be kept up to date.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'textContent')"
+Harness: the test ran to completion.
+

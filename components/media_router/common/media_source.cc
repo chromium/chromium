@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/media_router/common/media_source.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdio>
 #include <ostream>
 #include <string>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -48,9 +53,9 @@ constexpr std::array<const char* const, 5> kAllowedSchemes{
 
 bool IsSchemeAllowed(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS() ||
-         base::ranges::any_of(
-             kAllowedSchemes,
-             [&url](const char* const scheme) { return url.SchemeIs(scheme); });
+         std::ranges::any_of(kAllowedSchemes, [&url](const char* const scheme) {
+           return url.SchemeIs(scheme);
+         });
 }
 
 bool IsSystemAudioCaptureSupported() {
@@ -88,8 +93,9 @@ bool IsAutoJoinPresentationId(const std::string& presentation_id) {
 
 MediaSource::MediaSource(const MediaSource::Id& source_id) : id_(source_id) {
   GURL url(source_id);
-  if (IsValidPresentationUrl(url))
+  if (IsValidPresentationUrl(url)) {
     url_ = url;
+  }
 }
 
 MediaSource::MediaSource(const GURL& presentation_url)
@@ -140,9 +146,7 @@ MediaSource MediaSource::ForDesktop(const std::string& desktop_media_id,
 
 // static
 MediaSource MediaSource::ForUnchosenDesktop() {
-  return IsSystemAudioCaptureSupported() &&
-                 base::FeatureList::IsEnabled(
-                     media::kCastLoopbackAudioToAudioReceivers)
+  return IsSystemAudioCaptureSupported()
              ? MediaSource(std::string(kUnchosenDesktopWithAudioMediaUrn))
              : MediaSource(std::string(kUnchosenDesktopMediaUrn));
 }

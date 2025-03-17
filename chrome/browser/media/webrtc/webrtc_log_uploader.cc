@@ -10,6 +10,8 @@
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 
 #include <stddef.h>
+
+#include <array>
 #include <cstdlib>
 #include <utility>
 
@@ -27,7 +29,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "components/version_info/version_info.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
@@ -104,9 +105,7 @@ std::string GetLogUploadProduct() {
   const char product[] = "Chrome";
 #elif BUILDFLAG(IS_MAC)
   const char product[] = "Chrome_Mac";
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
 #if !defined(ADDRESS_SANITIZER)
   const char product[] = "Chrome_Linux";
 #else
@@ -114,7 +113,7 @@ std::string GetLogUploadProduct() {
 #endif
 #elif BUILDFLAG(IS_ANDROID)
   const char product[] = "Chrome_Android";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   const char product[] = "Chrome_ChromeOS";
 #else
 #error Platform not supported.
@@ -429,8 +428,10 @@ void WebRtcLogUploader::SetupMultipart(
   AddLogData(post_data, compressed_log);
 
   // Add the rtp dumps if they exist.
-  base::FilePath rtp_dumps[2] = {incoming_rtp_dump, outgoing_rtp_dump};
-  static const char* const kRtpDumpNames[2] = {"rtpdump_recv", "rtpdump_send"};
+  std::array<base::FilePath, 2> rtp_dumps = {incoming_rtp_dump,
+                                             outgoing_rtp_dump};
+  static const std::array<const char*, 2> kRtpDumpNames = {"rtpdump_recv",
+                                                           "rtpdump_send"};
 
   for (size_t i = 0; i < 2; ++i) {
     if (!rtp_dumps[i].empty() && base::PathExists(rtp_dumps[i])) {
@@ -457,7 +458,8 @@ std::string WebRtcLogUploader::CompressLog(WebRtcLogBuffer* buffer) {
   std::string compressed_log;
   ResizeForNextOutput(&compressed_log, &stream);
 
-  uint8_t intermediate_buffer[kIntermediateCompressionBufferBytes] = {};
+  std::array<uint8_t, kIntermediateCompressionBufferBytes> intermediate_buffer =
+      {};
   webrtc_logging::PartialCircularBuffer read_buffer(buffer->Read());
   do {
     if (stream.avail_in == 0) {

@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -90,7 +91,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to divider_line_bg_color. */
     public static @ColorInt int getDividerLineBgColor(Context context) {
-        return resolve(R.attr.colorSurfaceVariant, context);
+        return resolve(R.attr.colorSurfaceContainerHighest, context);
     }
 
     /** Returns the semantic color value that corresponds to bottom_system_nav_color. */
@@ -150,7 +151,7 @@ public class SemanticColorUtils {
 
     /** Returns the surface color value of the conceptual dialog_bg_color. */
     public static @ColorInt int getDialogBgColor(Context context) {
-        return resolveSurfaceColorElev(R.dimen.dialog_bg_color_elev, context);
+        return ContextCompat.getColor(context, R.color.dialog_bg_color);
     }
 
     /** Returns the surface color value of the conceptual sheet_bg_color. */
@@ -158,15 +159,20 @@ public class SemanticColorUtils {
         return resolveSurfaceColorElev(R.dimen.sheet_bg_color_elev, context);
     }
 
-    /** Returns the surface color value of the conceptual snackbar_background_color_baseline. */
+    /** Returns the surface color value of the conceptual snackbar_background_color. */
     public static @ColorInt int getSnackbarBackgroundColor(Context context) {
-        return resolveSurfaceColorElev(R.dimen.snackbar_background_color_elev, context);
+        return resolve(R.attr.colorSurface, context);
     }
 
     /** Returns the semantic color value that corresponds to default_text_color_link. */
     public static @ColorInt int getDefaultTextColorLink(Context context) {
         final @ColorInt int fallback = context.getColor(R.color.default_text_color_link_baseline);
         return MaterialColors.getColor(context, R.attr.globalLinkTextColor, fallback);
+    }
+
+    /** Returns the semantic color value that corresponds to menu_bg_color. */
+    public static @ColorInt int getMenuBgColor(Context context) {
+        return ContextCompat.getColor(context, R.color.menu_bg_color);
     }
 
     /** Returns the semantic color values that corresponds to colorPrimaryContainer. */
@@ -186,5 +192,10 @@ public class SemanticColorUtils {
 
     public static @ColorInt int getColorOnSecondaryContainer(Context context) {
         return resolve(R.attr.colorOnSecondaryContainer, context);
+    }
+
+    /** Returns the semantic color values that correspond to colorSurfaceContainerLow. */
+    public static @ColorInt int getColorSurfaceContainerLow(Context context) {
+        return resolve(R.attr.colorSurfaceContainerLow, context);
     }
 }

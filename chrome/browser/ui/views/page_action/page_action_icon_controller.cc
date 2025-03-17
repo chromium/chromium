@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_icon_views.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
@@ -59,6 +61,12 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace {
+
+static constexpr std::array<PageActionIconType, 5> kMigratedPageActionTypes = {
+    PageActionIconType::kLensOverlay, PageActionIconType::kMemorySaver,
+    PageActionIconType::kTranslate,   PageActionIconType::kIntentPicker,
+    PageActionIconType::kZoom,
+};
 
 void RecordCTRMetrics(const char* name, PageActionCTREvent event) {
   base::UmaHistogramEnumeration(
@@ -103,6 +111,13 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   };
 
   for (PageActionIconType type : params.types_enabled) {
+    // When the page action migration is enabled, the new
+    // PageActionContainerView will contain the migrated page action icon.
+    if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+      if (base::Contains(kMigratedPageActionTypes, type)) {
+        continue;
+      }
+    }
     switch (type) {
       case PageActionIconType::kPaymentsOfferNotification:
         add_page_action_icon(
@@ -168,6 +183,13 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         DCHECK(params.command_updater);
         add_page_action_icon(
             type, std::make_unique<ManagePasswordsIconViews>(
+                      params.command_updater, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate, params.browser));
+        break;
+      case PageActionIconType::kChangePassword:
+        DCHECK(params.command_updater);
+        add_page_action_icon(
+            type, std::make_unique<PasswordChangeIconViews>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate, params.browser));
         break;
@@ -271,13 +293,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                                              params.page_action_icon_delegate));
         break;
       case PageActionIconType::kLensOverlay:
-        // When the page action migration is enabled, the new
-        // PageActionContainerView will contain the page action icon. To avoid a
-        // duplicated icon, we don't add the LensOverlayPageActionIconView.
-        if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
-          break;
-        }
-
         add_page_action_icon(
             type, std::make_unique<LensOverlayPageActionIconView>(
                       params.browser, params.icon_label_bubble_delegate,
@@ -343,7 +358,7 @@ void PageActionIconController::UpdateAll() {
 }
 
 bool PageActionIconController::IsAnyIconVisible() const {
-  return base::ranges::any_of(page_action_icon_views_, [](auto icon_item) {
+  return std::ranges::any_of(page_action_icon_views_, [](auto icon_item) {
     return icon_item.second->GetVisible();
   });
 }
@@ -414,9 +429,9 @@ void PageActionIconController::ZoomChangedForActiveTab(bool can_show_bubble) {
 std::vector<const PageActionIconView*>
 PageActionIconController::GetPageActionIconViewsForTesting() const {
   std::vector<const PageActionIconView*> icon_views;
-  base::ranges::transform(page_action_icon_views_,
-                          std::back_inserter(icon_views),
-                          &IconViews::value_type::second);
+  std::ranges::transform(page_action_icon_views_,
+                         std::back_inserter(icon_views),
+                         &IconViews::value_type::second);
   return icon_views;
 }
 
@@ -445,7 +460,7 @@ void PageActionIconController::PrimaryPageChanged(content::Page& page) {
 }
 
 int PageActionIconController::VisibleEphemeralActionCount() const {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       page_action_icon_views_,
       [](std::pair<PageActionIconType, PageActionIconView*> view) {
         return view.second->ephemeral() && view.second->GetVisible();

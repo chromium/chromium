@@ -4,13 +4,13 @@
 
 #include "device/bluetooth/emulation/fake_remote_gatt_characteristic.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/emulation/fake_read_response.h"
@@ -102,7 +102,7 @@ bool FakeRemoteGattCharacteristic::AllResponsesConsumed() {
   // SetNextUnsubscribeFromNotificationsResponse is implemented.
   return !next_read_response_ && !next_write_response_ &&
          !next_subscribe_to_notifications_response_ &&
-         base::ranges::all_of(descriptors_, [](const auto& e) {
+         std::ranges::all_of(descriptors_, [](const auto& e) {
            return static_cast<FakeRemoteGattDescriptor*>(e.second.get())
                ->AllResponsesConsumed();
          });

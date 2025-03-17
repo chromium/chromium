@@ -553,7 +553,28 @@ TEST_F(ExtensionInstallStatusTest, NonWebstoreUpdateUrlPolicy) {
                               URLPatternSet(), URLPatternSet())));
 }
 
-TEST_F(ExtensionInstallStatusTest, ManifestVersionIsBlocked) {
+class ExtensionInstallStatusTestWithoutMv2Deprecation
+    : public ExtensionInstallStatusTest {
+ public:
+  ExtensionInstallStatusTestWithoutMv2Deprecation() {
+    // This test assumes MV2 is not blocked by Chrome. Versions with MV2
+    // blocked by Chrome are exercised in
+    // `ExtensionInstallStatusTestWithMV2Deprecation`.
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionManifestV2Disabled);
+  }
+  ExtensionInstallStatusTestWithoutMv2Deprecation(
+      const ExtensionInstallStatusTestWithoutMv2Deprecation&) = delete;
+  ExtensionInstallStatusTestWithoutMv2Deprecation& operator=(
+      const ExtensionInstallStatusTestWithoutMv2Deprecation&) = delete;
+  ~ExtensionInstallStatusTestWithoutMv2Deprecation() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ExtensionInstallStatusTestWithoutMv2Deprecation,
+       ManifestVersionIsBlocked) {
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
@@ -575,7 +596,7 @@ TEST_F(ExtensionInstallStatusTest, ManifestVersionIsBlocked) {
                 PermissionSet(), /*manifest_version=*/3));
 }
 
-TEST_F(ExtensionInstallStatusTest,
+TEST_F(ExtensionInstallStatusTestWithoutMv2Deprecation,
        ManifestVersionIsBlockedWithExtensionRequest) {
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));

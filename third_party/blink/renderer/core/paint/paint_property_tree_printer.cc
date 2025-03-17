@@ -91,7 +91,7 @@ class TransformNodeCollector : public NodeCollector {
   }
   void AddObjectPaintProperties(const ObjectPaintProperties& properties,
                                 PropertyTreePrinter& printer) const override {
-    properties.AddTransformNodesToPrinter(printer);
+    properties.AddNodesToPrinter<TransformPaintPropertyNodeOrAlias>(printer);
   }
 };
 
@@ -99,7 +99,7 @@ class ClipNodeCollector : public NodeCollector {
  public:
   void AddObjectPaintProperties(const ObjectPaintProperties& properties,
                                 PropertyTreePrinter& printer) const override {
-    properties.AddClipNodesToPrinter(printer);
+    properties.AddNodesToPrinter<ClipPaintPropertyNodeOrAlias>(printer);
   }
 };
 
@@ -107,7 +107,7 @@ class EffectNodeCollector : public NodeCollector {
  public:
   void AddObjectPaintProperties(const ObjectPaintProperties& properties,
                                 PropertyTreePrinter& printer) const override {
-    properties.AddEffectNodesToPrinter(printer);
+    properties.AddNodesToPrinter<EffectPaintPropertyNodeOrAlias>(printer);
   }
 
   void AddOtherProperties(const LocalFrameView& frame_view,
@@ -126,7 +126,7 @@ class ScrollNodeCollector : public NodeCollector {
 
   void AddObjectPaintProperties(const ObjectPaintProperties& properties,
                                 PropertyTreePrinter& printer) const override {
-    properties.AddScrollNodesToPrinter(printer);
+    properties.AddNodesToPrinter<ScrollPaintPropertyNode>(printer);
   }
 };
 

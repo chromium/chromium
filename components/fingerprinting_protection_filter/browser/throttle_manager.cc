@@ -26,6 +26,7 @@
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
+#include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/document_user_data.h"
@@ -90,20 +91,19 @@ void ThrottleManager::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::FingerprintingProtectionHost>
         pending_receiver,
     content::RenderFrameHost* render_frame_host) {
+  for (auto navigation_handle :
+       render_frame_host->GetPendingCommitCrossDocumentNavigations()) {
+    // TODO(https://crbug.com/347304498): Add `ThrottleManagers` to
+    // `RenderFrames` from creation time once activation is decoupled from
+    // navigations.
+    if (auto* manager = FromNavigationHandle(*navigation_handle)) {
+      manager->receivers_.Bind(render_frame_host, std::move(pending_receiver));
+      return;
+    }
+  }
+
   if (auto* manager = FromPage(render_frame_host->GetPage())) {
     manager->receivers_.Bind(render_frame_host, std::move(pending_receiver));
-  } else {
-    for (auto navigation_handle :
-         render_frame_host->GetPendingCommitCrossDocumentNavigations()) {
-      // TODO(https://crbug.com/347304498): Add `ThrottleManagers` to
-      // `RenderFrames` from creation time once activation is decoupled from
-      // navigations.
-      if ((manager = FromNavigationHandle(*navigation_handle))) {
-        manager->receivers_.Bind(render_frame_host,
-                                 std::move(pending_receiver));
-        return;
-      }
-    }
   }
 }
 
@@ -132,7 +132,8 @@ std::unique_ptr<ThrottleManager> ThrottleManager::CreateForNewPage(
     content::NavigationHandle& initiating_navigation_handle,
     bool is_incognito) {
   CHECK(IsInSubresourceFilterRoot(&initiating_navigation_handle));
-  if (!features::IsFingerprintingProtectionFeatureEnabled()) {
+  if (!features::IsFingerprintingProtectionEnabledForIncognitoState(
+          is_incognito)) {
     return nullptr;
   }
 
@@ -163,7 +164,7 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
     // Attempt to create root throttles.
     throttles->push_back(
         std::make_unique<FingerprintingProtectionPageActivationThrottle>(
-            navigation_handle,
+            navigation_handle, web_contents_helper_->content_settings(),
             web_contents_helper_->tracking_protection_settings(),
             web_contents_helper_->pref_service(), is_incognito_));
     auto activation_throttle =
@@ -177,9 +178,16 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
     AsyncDocumentSubresourceFilter* parent_filter =
         GetParentFrameFilter(navigation_handle);
     if (parent_filter) {
+      if (navigation_handle->GetParentFrame() &&
+          !subresource_filter::FirstPartyOrigin(
+               navigation_handle->GetParentFrame()->GetLastCommittedOrigin())
+               .IsThirdParty(navigation_handle->GetURL())) {
+        // Don't create throttles for first-party requests.
+        return;
+      }
       throttles->push_back(
           std::make_unique<FingerprintingProtectionChildNavigationThrottle>(
-              navigation_handle, parent_filter,
+              navigation_handle, parent_filter, is_incognito_,
               base::BindRepeating([](const GURL& url) {
                 return base::StringPrintf(
                     kDisallowChildFrameConsoleMessageFormat,
@@ -259,13 +267,6 @@ void ThrottleManager::DidFinishInFrameNavigation(
       statistics_ = std::make_unique<subresource_filter::PageLoadStatistics>(
           filter->activation_state(),
           kFingerprintingProtectionRulesetConfig.uma_tag);
-      if (filter->activation_state().enable_logging) {
-        CHECK(filter->activation_state().activation_level !=
-              subresource_filter::mojom::ActivationLevel::kDisabled);
-        frame_host->AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kWarning,
-            kActivationConsoleMessage);
-      }
     }
     RecordUmaHistogramsForRootNavigation(
         navigation_handle,
@@ -280,7 +281,7 @@ void ThrottleManager::DidFinishLoad(content::RenderFrameHost* render_frame_host,
   if (!statistics_ || render_frame_host != &page_->GetMainDocument()) {
     return;
   }
-  statistics_->OnDidFinishLoad();
+  statistics_->OnDidFinishLoad(/*record_incognito_metrics=*/is_incognito_);
 }
 
 void ThrottleManager::DidBecomePrimaryPage() {
@@ -409,15 +410,13 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
     web_contents_helper_->NotifyOnBlockedSubresource(
         filter_handle->filter()->activation_state().activation_level);
 
-#if defined(NDEBUG)
     if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {
       // Log generic "subresource blocked" message in non-debug builds. In debug
       // builds, a more specific message logs per blocked subresource.
       frame_host->GetMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
-          kDisallowSubresourceConsoleMessage);
+          kDisallowFirstResourceConsoleMessage);
     }
-#endif
   }
 }
 

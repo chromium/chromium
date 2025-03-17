@@ -173,14 +173,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   candidate.overlay_damage_index =
       sqs->overlay_damage_index.value_or(OverlayCandidate::kInvalidDamageIndex);
 
-  static_assert(
-      std::is_same<decltype(SharedQuadState::layer_id), uint32_t>::value);
-  static_assert(std::is_same<decltype(SharedQuadState::layer_namespace_id),
-                             uint32_t>::value);
-  candidate.aggregated_layer_id =
-      static_cast<uint64_t>(sqs->layer_id) |
-      (static_cast<uint64_t>(sqs->layer_namespace_id) << 32);
-
   auto status = CandidateStatus::kFailQuadNotSupported;
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent:
@@ -285,15 +277,17 @@ float OverlayCandidateFactory::EstimateVisibleDamage(
       0.f, quad_damage.size().GetArea() - occluded_damage_estimate_total);
 }
 
+// static
 bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
-    const OverlayCandidate& candidate,
+    const DrawQuad& quad,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
     const base::flat_map<AggregatedRenderPassId,
                          raw_ptr<cc::FilterOperations, CtnExperimental>>&
-        render_pass_backdrop_filters) const {
-  gfx::RectF target_rect =
-      OverlayCandidate::DisplayRectInTargetSpace(candidate);
+        render_pass_backdrop_filters) {
+  const gfx::RectF target_rect =
+      quad.shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(quad.visible_rect));
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     if (auto* render_pass_draw_quad =
@@ -312,14 +306,16 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
   return false;
 }
 
+// static
 bool OverlayCandidateFactory::IsOccluded(
-    const OverlayCandidate& candidate,
+    const DrawQuad& quad,
     QuadList::ConstIterator quad_list_begin,
-    QuadList::ConstIterator quad_list_end) const {
+    QuadList::ConstIterator quad_list_end) {
   // The rects are rounded as they're snapped by the compositor to pixel unless
   // it is AA'ed, in which case, it won't be overlaid.
-  gfx::Rect target_rect =
-      gfx::ToRoundedRect(OverlayCandidate::DisplayRectInTargetSpace(candidate));
+  const gfx::Rect target_rect = gfx::ToRoundedRect(
+      quad.shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(quad.visible_rect)));
 
   // Check that no visible quad overlaps the candidate.
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
@@ -355,6 +351,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     candidate.needs_detiling =
         resource_provider_->GetNeedsDetiling(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
+    candidate.low_latency_rendering =
+        resource_provider_->IsLowLatencyRendering(resource_id);
 
     if (!context_.is_delegated_context &&
         !base::Contains(kOverlayFormats, candidate.format)) {
@@ -484,7 +482,7 @@ void OverlayCandidateFactory::SetDisplayRect(
       auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
       if (filter_it != render_pass_filters_->end()) {
         candidate.display_rect = gfx::RectF(
-            filter_it->second->ExpandRectForPixelMovement(quad.visible_rect));
+            GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second));
         // uv_rect will be updated in SkiaRenderer because the buffer size will
         // be rounded up some.
       }
@@ -689,13 +687,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
 
 #if BUILDFLAG(IS_ANDROID)
     candidate.is_video_in_surface_view =
-        quad->is_stream_video &&
-        !resource_provider_->IsBackedBySurfaceTexture(quad->resource_id);
-    if (quad->is_stream_video) {
-      // StreamVideoDrawQuad used to set the resource_size_in_pixels directly
-      // from the quad rather than from the resource.
-      candidate.resource_size_in_pixels = quad->resource_size_in_pixels();
-    }
+        resource_provider_->IsBackedBySurfaceView(quad->resource_id);
 #endif
 
     candidate.has_rounded_display_masks =

@@ -31,6 +31,7 @@ import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RttThroughputValues;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 import org.chromium.net.urlconnection.CronetHttpURLConnection;
 import org.chromium.net.urlconnection.CronetURLStreamHandlerFactory;
@@ -181,6 +182,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     /** The logger to be used for logging. */
     private final CronetLogger mLogger;
 
+    private final CronetSource mSource;
+
     long getLogId() {
         return mLogId;
     }
@@ -201,9 +204,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 new CronetLogger.CronetInitializedInfo();
 
         public CronetInitializedInfoLogger(
-                CronetLogger cronetLogger, long cronetInitializationRef, long startUptimeMillis) {
+                CronetLogger cronetLogger,
+                long cronetInitializationRef,
+                long startUptimeMillis,
+                CronetSource source) {
             mCronetLogger = cronetLogger;
             mCronetInitializedInfo.cronetInitializationRef = cronetInitializationRef;
+            mCronetInitializedInfo.source = source;
+            mCronetInitializedInfo.cronetImplVersion = ImplVersion.getCronetVersion();
             mStartUptimeMillis = startUptimeMillis;
         }
 
@@ -250,6 +258,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     public CronetUrlRequestContext(final CronetEngineBuilderImpl builder, long startUptimeMillis) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#CronetUrlRequestContext")) {
+            mSource = builder.getCronetSource();
             mRttListenerList.disableThreadAsserts();
             mThroughputListenerList.disableThreadAsserts();
             mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
@@ -300,7 +309,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             ? new CronetInitializedInfoLogger(
                                     mLogger,
                                     builderLoggerInfo.getCronetInitializationRef(),
-                                    startUptimeMillis)
+                                    startUptimeMillis,
+                                    builder.getCronetSource())
                             : null;
 
             // Init native Chromium URLRequestContext on init thread.
@@ -433,6 +443,10 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
 
         return resultBuilder.build();
+    }
+
+    CronetSource getCronetSource() {
+        return mSource;
     }
 
     @Override

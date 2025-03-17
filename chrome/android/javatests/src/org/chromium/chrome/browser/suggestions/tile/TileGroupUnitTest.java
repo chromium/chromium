@@ -42,8 +42,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
@@ -107,13 +106,10 @@ public class TileGroupUnitTest {
                 .when(mTileGroupDelegate)
                 .setMostVisitedSitesObserver(any(MostVisitedSites.Observer.class), anyInt());
 
-        FeatureList.TestValues testValues = new TestValues();
-        // testValues is set to avoid the FeatureListJni assertion check in tests.
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2,
                 "prerender_new_tab_page_on_touch_trigger",
-                "0");
-        FeatureList.setTestValues(testValues);
+                0);
     }
 
     @Test
@@ -349,6 +345,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(((SuggestionsTileView) layout.getChildAt(0)).getUrl().getSpec(), is(URLS[0]));
         assertThat(((SuggestionsTileView) layout.getChildAt(1)).getUrl().getSpec(), is(URLS[1]));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     /** Check for https://crbug.com/703628: don't crash on duplicated URLs. */
@@ -373,6 +371,8 @@ public class TileGroupUnitTest {
         mMostVisitedSites.setTileSuggestions(URLS[0], URLS[1], URLS[0]);
 
         // Render them to the layout. The duplicated URL should not trigger an exception.
+        refreshData(tileGroup, layout);
+        // Rerun to test SuggestionsTileView caching.
         refreshData(tileGroup, layout);
     }
 
@@ -407,6 +407,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.indexOfChild(view1), is(-1));
         assertThat(layout.indexOfChild(view2), is(-1));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     @Test
@@ -440,6 +442,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.getChildAt(0), CoreMatchers.is(view1));
         assertThat(layout.getChildAt(1), CoreMatchers.is(view2));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     @Test

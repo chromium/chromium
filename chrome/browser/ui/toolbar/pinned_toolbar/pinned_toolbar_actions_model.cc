@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -67,7 +66,7 @@ bool PinnedToolbarActionsModel::CanUpdate() {
 
 bool PinnedToolbarActionsModel::Contains(
     const actions::ActionId& action_id) const {
-  auto iter = base::ranges::find(pinned_action_ids_, action_id);
+  auto iter = std::ranges::find(pinned_action_ids_, action_id);
   return iter != pinned_action_ids_.end();
 }
 
@@ -117,7 +116,7 @@ void PinnedToolbarActionsModel::MovePinnedAction(
     return;
   }
 
-  auto action_to_move = base::ranges::find(pinned_action_ids_, action_id);
+  auto action_to_move = std::ranges::find(pinned_action_ids_, action_id);
   if (action_to_move == pinned_action_ids_.end()) {
     // Do nothing if this action is not pinned.
     return;
@@ -130,11 +129,11 @@ void PinnedToolbarActionsModel::MovePinnedAction(
 
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
 
-  auto start_iter = base::ranges::find(updated_pinned_action_ids, action_id);
+  auto start_iter = std::ranges::find(updated_pinned_action_ids, action_id);
   CHECK(start_iter != updated_pinned_action_ids.end());
 
-  auto end_iter = base::ranges::find(updated_pinned_action_ids,
-                                     pinned_action_ids_[target_index]);
+  auto end_iter = std::ranges::find(updated_pinned_action_ids,
+                                    pinned_action_ids_[target_index]);
   CHECK(end_iter != updated_pinned_action_ids.end());
 
   // Rotate |action_id| to be in the target position.
@@ -236,17 +235,21 @@ bool PinnedToolbarActionsModel::IsDefault() const {
   return action_are_default && home_is_default && forward_is_default;
 }
 
-void PinnedToolbarActionsModel::MaybeMigrateChromeLabsPinnedState() {
-  if (!features::IsToolbarPinningEnabled()) {
+void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
+  if (!CanUpdate()) {
     return;
   }
-  if (pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
-    return;
-  }
-
-  if (CanUpdate()) {
+  if (!pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
     UpdatePinnedState(kActionShowChromeLabs, true);
     pref_service_->SetBoolean(prefs::kPinnedChromeLabsMigrationComplete, true);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton) &&
+      !pref_service_->GetBoolean(prefs::kPinnedCastMigrationComplete)) {
+    bool previously_pinned =
+        pref_service_->GetBoolean(prefs::kShowCastIconInToolbar);
+    UpdatePinnedState(kActionRouteMedia, previously_pinned);
+    pref_service_->SetBoolean(prefs::kPinnedCastMigrationComplete, true);
   }
 }
 

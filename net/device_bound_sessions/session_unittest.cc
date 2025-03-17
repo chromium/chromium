@@ -4,6 +4,8 @@
 
 #include "net/device_bound_sessions/session.h"
 
+#include <string_view>
+
 #include "base/test/bind.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -19,9 +21,11 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-class SessionTest : public TestWithTaskEnvironment {
+class SessionTest : public ::testing::Test, public WithTaskEnvironment {
  protected:
-  SessionTest() : context_(CreateTestURLRequestContextBuilder()->Build()) {}
+  SessionTest()
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        context_(CreateTestURLRequestContextBuilder()->Build()) {}
 
   std::unique_ptr<URLRequestContext> context_;
 };
@@ -33,39 +37,131 @@ class FakeDelegate : public URLRequest::Delegate {
 constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
     net::DefineNetworkTrafficAnnotation("dbsc_registration", "");
 constexpr char kSessionId[] = "SessionId";
+constexpr char kRefreshUrlString[] = "https://example.test/refresh";
 constexpr char kUrlString[] = "https://example.test/index.html";
+constexpr char kUrlStringForWrongETLD[] = "https://example.co.uk/index.html";
 const GURL kTestUrl(kUrlString);
+const GURL kRefreshUrl(kRefreshUrlString);
+const GURL kTestUrlForWrongETLD(kUrlStringForWrongETLD);
 
 SessionParams CreateValidParams() {
   SessionParams::Scope scope;
+  scope.origin = "https://example.test";
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie",
                                  "Secure; Domain=example.test"}});
-  SessionParams params{kSessionId, kUrlString, std::move(scope),
-                       std::move(cookie_credentials)};
-  return params;
+  return SessionParams{kSessionId,
+                       kTestUrl,
+                       kRefreshUrlString,
+                       std::move(scope),
+                       std::move(cookie_credentials),
+                       unexportable_keys::UnexportableKeyId()};
 }
 
 TEST_F(SessionTest, ValidService) {
-  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session_or_error = Session::CreateIfValid(CreateValidParams());
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   EXPECT_TRUE(session);
 }
 
 TEST_F(SessionTest, DefaultExpiry) {
-  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session_or_error = Session::CreateIfValid(CreateValidParams());
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   EXPECT_LT(base::Time::Now() + base::Days(399), session->expiry_date());
+}
+
+TEST_F(SessionTest, RelativeServiceRefreshUrl) {
+  auto params = CreateValidParams();
+  params.refresh_url = "/internal/RefreshSession";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+
+  // Validate session refresh URL.
+  EXPECT_EQ(session->refresh_url().spec(),
+            "https://example.test/internal/RefreshSession");
+}
+
+TEST_F(SessionTest, RelativeServiceRefreshUrlEscaped) {
+  auto params = CreateValidParams();
+  params.refresh_url = "/internal%26RefreshSession";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+
+  // Validate session refresh URL.
+  EXPECT_EQ(session->refresh_url().spec(),
+            "https://example.test/internal&RefreshSession");
 }
 
 TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = "";
-  EXPECT_FALSE(Session::CreateIfValid(params, kTestUrl));
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kInvalidRefreshUrl);
+}
+
+TEST_F(SessionTest, InvalidScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "hello world";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kInvalidScopeOrigin);
+}
+
+TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
+  auto params = CreateValidParams();
+  params.fetcher_url = kTestUrlForWrongETLD;
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kScopeOriginSameSiteMismatch);
+}
+
+TEST_F(SessionTest, SameSiteMismatchRefreshUrl) {
+  auto params = CreateValidParams();
+  params.refresh_url = kUrlStringForWrongETLD;
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kRefreshUrlSameSiteMismatch);
+}
+
+TEST_F(SessionTest, NonSecureUrl) {
+  // HTTP is not allowed for the refresh URL.
+  {
+    auto params = CreateValidParams();
+    params.fetcher_url = GURL("http://example.test/index.html");
+    params.refresh_url = "http://example.test/registration";
+    params.scope.origin = "http://example.test";
+    auto session_or_error = Session::CreateIfValid(params);
+    ASSERT_FALSE(session_or_error.has_value());
+    EXPECT_EQ(session_or_error.error().type,
+              SessionError::ErrorType::kInvalidRefreshUrl);
+  }
+
+  // But localhost is okay.
+  {
+    auto params = CreateValidParams();
+    params.fetcher_url = GURL("http://localhost:8080/index.html");
+    params.refresh_url = "http://localhost:8080/registration";
+    params.scope.origin = "http://localhost:8080";
+    EXPECT_TRUE(Session::CreateIfValid(params).has_value());
+  }
 }
 
 TEST_F(SessionTest, ToFromProto) {
-  std::unique_ptr<Session> session =
-      Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session_or_error = Session::CreateIfValid(CreateValidParams());
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
 
   // Convert to proto and validate contents.
@@ -78,6 +174,8 @@ TEST_F(SessionTest, ToFromProto) {
   // Restore session from proto and validate contents.
   std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
   ASSERT_TRUE(restored);
+  // Simulate unwrapping successfully.
+  restored->set_unexportable_key_id(session->unexportable_key_id());
   EXPECT_TRUE(restored->IsEqualForTesting(*session));
 }
 
@@ -89,8 +187,9 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
   }
 
   // Create a fully populated proto.
-  std::unique_ptr<Session> session =
-      Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session_or_error = Session::CreateIfValid(CreateValidParams());
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   proto::Session sproto = session->ToProto();
 
@@ -145,14 +244,17 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
 
 TEST_F(SessionTest, DeferredSession) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred = session->ShouldDeferRequest(request.get());
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
 }
 
@@ -163,14 +265,17 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   spec.domain = "example.test";
   spec.path = "/index.html";
   params.scope.specifications.push_back(spec);
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred = session->ShouldDeferRequest(request.get());
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
 }
 
@@ -178,14 +283,17 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   const char subdomain[] = "https://test.example.test/index.html";
   const GURL url_subdomain(subdomain);
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
 
-  bool is_deferred = session->ShouldDeferRequest(request.get());
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
 }
 
@@ -201,24 +309,30 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
   spec.domain = "test.example.test";
   spec.path = "/index.html";
   params.scope.specifications.push_back(spec);
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  ASSERT_TRUE(session->ShouldDeferRequest(request.get()));
+  ASSERT_TRUE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
 }
 
 TEST_F(SessionTest, NotDeferredWithCookieSession) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  bool is_deferred = session->ShouldDeferRequest(request.get());
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
 
   CookieInclusionStatus status;
@@ -229,22 +343,101 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   ASSERT_TRUE(cookie);
   CookieAccessResult access_result;
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
-  EXPECT_FALSE(session->ShouldDeferRequest(request.get()));
+  EXPECT_FALSE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
 }
 
 TEST_F(SessionTest, NotDeferredInsecure) {
   const char insecure_url[] = "http://example.test/index.html";
   const GURL test_insecure_url(insecure_url);
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       test_insecure_url, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred = session->ShouldDeferRequest(request.get());
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
+}
+
+TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
+  auto params = CreateValidParams();
+  // Set the credentials attributes field to an empty string. This will use
+  // default cookie attributes.
+  params.credentials = {SessionParams::Credential{"test_cookie",
+                                                  /*attributes=*/""}};
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(is_deferred);
+}
+
+TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://sub.example.test";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  // Create a request matching the scope origin.
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(GURL("https://sub.example.test/index.html"), IDLE,
+                              &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(is_deferred);
+}
+
+TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://sub.example.test";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  // Create a request with a broader scope than the scope origin.
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_FALSE(is_deferred);
+}
+
+TEST_F(SessionTest, DeferredMissingScopeOrigin) {
+  auto params = CreateValidParams();
+  params.scope.origin = "";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  // Create a request matching the fetcher URL.
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(is_deferred);
 }
 
 class InsecureDelegate : public CookieAccessDelegate {
@@ -258,7 +451,7 @@ class InsecureDelegate : public CookieAccessDelegate {
   }
 
   CookieScopeSemantics GetScopeSemantics(
-      const CanonicalCookie& cookie) const override {
+      const std::string_view domain) const override {
     return CookieScopeSemantics::UNKNOWN;
   }
   // Returns whether a cookie should be attached regardless of its SameSite
@@ -291,13 +484,16 @@ class InsecureDelegate : public CookieAccessDelegate {
 
 TEST_F(SessionTest, NotDeferredNotSameSite) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
-  bool is_deferred = session->ShouldDeferRequest(request.get());
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
 }
 
@@ -305,13 +501,16 @@ TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
   context_->cookie_store()->SetCookieAccessDelegate(
       std::make_unique<InsecureDelegate>());
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
-  bool is_deferred = session->ShouldDeferRequest(request.get());
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
 }
 
@@ -330,17 +529,22 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", "Secure;"}});
   params.credentials = std::move(cookie_credentials);
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  ASSERT_FALSE(session->ShouldDeferRequest(request.get()));
+  ASSERT_FALSE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
 }
 
 TEST_F(SessionTest, CreationDate) {
-  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session_or_error = Session::CreateIfValid(CreateValidParams());
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   // Make sure it's set to a plausible value.
   EXPECT_LT(base::Time::Now() - base::Days(1), session->creation_date());
@@ -348,7 +552,9 @@ TEST_F(SessionTest, CreationDate) {
 
 TEST_F(SessionTest, NetLogSessionInfo) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -356,7 +562,7 @@ TEST_F(SessionTest, NetLogSessionInfo) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get());
+  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_EQ(
       net_log_observer.GetEntriesWithType(NetLogEventType::DBSC_REQUEST).size(),
       1u);
@@ -364,7 +570,9 @@ TEST_F(SessionTest, NetLogSessionInfo) {
 
 TEST_F(SessionTest, NetLogMissingCookie) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -372,7 +580,7 @@ TEST_F(SessionTest, NetLogMissingCookie) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get());
+  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_EQ(
       net_log_observer
           .GetEntriesWithType(NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED)
@@ -382,7 +590,9 @@ TEST_F(SessionTest, NetLogMissingCookie) {
 
 TEST_F(SessionTest, NetLogNoRefresh) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -399,12 +609,75 @@ TEST_F(SessionTest, NetLogNoRefresh) {
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get());
+  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_EQ(
       net_log_observer
           .GetEntriesWithType(NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED)
           .size(),
       1u);
+}
+
+TEST_F(SessionTest, RefreshUrlExcludedFromSession) {
+  auto params = CreateValidParams();
+
+  // Make sure the refresh endpoint isn't explicitly excluded
+  EXPECT_TRUE(params.scope.specifications.empty());
+
+  auto session_or_error = Session::CreateIfValid(CreateValidParams());
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+
+  EXPECT_FALSE(session->IncludesUrl(kRefreshUrl));
+}
+
+TEST_F(SessionTest, Backoff) {
+  using enum SessionError::ErrorType;
+
+  auto params = CreateValidParams();
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  struct TestCase {
+    SessionError::ErrorType error_type;
+    bool expect_backoff;
+  };
+
+  const TestCase kTestCases[] = {
+      {kSuccess, /*expect_backoff=*/false},
+      {kNetError, /*expect_backoff=*/false},
+      {kTransientHttpError, /*expect_backoff=*/true},
+      {kPersistentHttpError, /*expect_backoff=*/false}};
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Error type: " << static_cast<int>(test_case.error_type)
+                 << (test_case.expect_backoff ? " should backoff"
+                                              : " should not backoff"));
+    // Reset the backoff state
+    for (size_t i = 0; i < 4; i++) {
+      session->InformOfRefreshResult(kSuccess);
+    }
+    FastForwardBy(base::Seconds(1));
+    EXPECT_TRUE(
+        session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+
+    // Four errors in a row will enter backoff, if necessary
+    for (size_t i = 0; i < 4; i++) {
+      session->InformOfRefreshResult(test_case.error_type);
+    }
+
+    EXPECT_EQ(
+        session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()),
+        !test_case.expect_backoff);
+  }
 }
 
 }  // namespace

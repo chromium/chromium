@@ -94,6 +94,7 @@ source_set("tests") {
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
+    "public/cpp/trace_startup_shared_memory_unittest.cc",
   ]
 
   deps = [
@@ -104,7 +105,6 @@ source_set("tests") {
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:proto_test_support",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp:buildflags",
     "//services/tracing/public/cpp/background_tracing:unit_tests",

@@ -1,0 +1,34 @@
+source_set("auto_deletion") {
+  sources = [
+    "auto_deletion_coordinator.h",
+    "auto_deletion_coordinator.mm",
+    "auto_deletion_iph_coordinator.h",
+    "auto_deletion_iph_coordinator.mm",
+    "auto_deletion_mediator.h",
+    "auto_deletion_mediator.mm",
+    "auto_deletion_settings_mediator.h",
+    "auto_deletion_settings_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/prefs",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/download/model/auto_deletion",
+    "//ios/chrome/browser/download/ui/auto_deletion",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public/download",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

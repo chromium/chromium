@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.phone.NewTabAnimationLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,6 +31,8 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
+    private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final ViewGroup mContentView;
     private Layout mSimpleAnimationLayout;
 
     /**
@@ -44,6 +47,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
+     * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
+     * @param contentView The base content view.
      */
     public LayoutManagerChromePhone(
             LayoutManagerHost host,
@@ -52,7 +57,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            HubLayoutDependencyHolder hubLayoutDependencyHolder) {
+            HubLayoutDependencyHolder hubLayoutDependencyHolder,
+            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            ViewGroup contentView) {
         super(
                 host,
                 contentContainer,
@@ -61,6 +68,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 tabContentManagerSupplier,
                 topUiThemeColorProvider,
                 hubLayoutDependencyHolder);
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mContentView = contentView;
     }
 
     @Override
@@ -76,7 +85,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            Supplier<Integer> bottomControlsOffsetSupplier) {
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
@@ -84,7 +93,13 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // TODO(crbug.com/40282469): Change from getContentContainer() as it is z-indexed behind
             // the NTP.
             mSimpleAnimationLayout =
-                    new NewTabAnimationLayout(context, this, renderHost, getContentContainer());
+                    new NewTabAnimationLayout(
+                            context,
+                            this,
+                            renderHost,
+                            getContentContainer(),
+                            mCompositorViewHolderSupplier,
+                            mContentView);
         } else {
             mSimpleAnimationLayout =
                     new SimpleAnimationLayout(context, this, renderHost, getContentContainer());

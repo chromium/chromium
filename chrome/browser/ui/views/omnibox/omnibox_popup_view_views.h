@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -67,7 +69,8 @@ class OmniboxPopupViewViews : public views::View,
   void OnMatchIconUpdated(size_t match_index) override;
   void OnDragCanceled() override;
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
-  std::u16string GetAccessibleButtonTextForResult(size_t line) const override;
+  std::u16string_view GetAccessibleButtonTextForResult(
+      size_t line) const override;
   void SetSuggestionGroupVisibility(size_t match_index,
                                     bool suggestion_group_hidden) override;
 

@@ -59,6 +59,7 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool AreExtensionsDisabledForContext(
       content::BrowserContext* context) override;
 #if BUILDFLAG(IS_CHROMEOS)
+  bool IsActiveContext(content::BrowserContext* browser_context) const override;
   std::string GetUserIdHashFromContext(
       content::BrowserContext* context) override;
 #endif
@@ -132,7 +133,6 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::WebContents* web_contents) override;
   KioskDelegate* GetKioskDelegate() override;
   std::string GetApplicationLocale() override;
-  std::string GetUserAgent() const override;
 
   // |context| is the single BrowserContext used for IsValidContext().
   // |pref_service| is used for GetPrefServiceForContext().

@@ -45,11 +45,197 @@ config("winver") {
   ]
 }
 
+template("builtin_modules") {
+  # This is a template to build clang builtin's module file.
+  source_set(target_name) {
+    use_libcxx_modules = false
+    if (use_explicit_libcxx_modules) {
+      sources = [ "//third_party/llvm-build/Release+Asserts/lib/clang/21/include/module.modulemap" ]
+    }
+
+    deps = []
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    } else {
+      not_needed(invoker, "*")
+    }
+  }
+}
+
+builtin_modules("_Builtin_float") {
+}
+
+builtin_modules("_Builtin_inttypes") {
+  deps = [ ":_Builtin_stdint" ]
+}
+
+builtin_modules("_Builtin_limits") {
+}
+
+builtin_modules("_Builtin_stdalign") {
+}
+
+builtin_modules("_Builtin_stdarg") {
+}
+
+builtin_modules("_Builtin_stddef") {
+}
+
+builtin_modules("_Builtin_stdint") {
+  if (is_mac) {
+    deps = [
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+    ]
+  }
+}
+
+configs_to_add = [
+  ":config",
+  "//build/config/compiler:no_chromium_code",
+  "//build/config/compiler:exceptions",
+  "//build/config/compiler:rtti",
+]
+
+configs_to_remove = [
+  "//build/config/compiler:chromium_code",
+  "//build/config/compiler:no_exceptions",
+  "//build/config/compiler:no_rtti",
+  "//build/config/coverage:default_coverage",
+]
+
+template("libcxx_modules") {
+  # This is a template to build libc++'s module file.
+  source_set(target_name) {
+    use_libcxx_modules = false
+    if (use_explicit_libcxx_modules) {
+      sources = [ "//third_party/libc++/src/include/module.modulemap" ]
+    }
+    deps = []
+
+    configs -= configs_to_remove
+    configs += configs_to_add
+
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    } else {
+      not_needed(invoker, "*")
+    }
+  }
+}
+
+libcxx_modules("std") {
+  deps = [
+    ":_Builtin_limits",
+    ":_Builtin_stdalign",
+    ":_Builtin_stdarg",
+    ":std_config",
+    ":std_core",
+    ":std_ctype_h",
+    ":std_errno_h",
+    ":std_fenv_h",
+    ":std_float_h",
+    ":std_inttypes_h",
+    ":std_math_h",
+    ":std_private_mbstate_t",
+    ":std_string_h",
+    ":std_uchar_h",
+    ":std_wctype_h",
+  ]
+}
+
+libcxx_modules("std_config") {
+}
+
+libcxx_modules("std_core") {
+  deps = [
+    ":_Builtin_stddef",
+    ":_Builtin_stdint",
+    ":std_config",
+  ]
+}
+
+libcxx_modules("std_ctype_h") {
+  deps = [
+    ":std_config",
+  ]
+}
+
+libcxx_modules("std_errno_h") {
+  deps = [
+    ":std_config",
+  ]
+}
+
+libcxx_modules("std_fenv_h") {
+  deps = [
+    ":std_config",
+  ]
+}
+
+libcxx_modules("std_float_h") {
+  deps = [
+    ":_Builtin_float",
+    ":std_config",
+  ]
+}
+
+libcxx_modules("std_inttypes_h") {
+  deps = [
+    ":_Builtin_inttypes",
+    ":_Builtin_stdint",
+    ":std_config",
+  ]
+}
+
+libcxx_modules("std_math_h") {
+  deps = [
+    ":_Builtin_limits",
+    ":std_core",
+  ]
+}
+
+libcxx_modules("std_private_mbstate_t") {
+  deps = [
+    ":std_config",
+ ]
+}
+
+libcxx_modules("std_stddef_h") {
+}
+
+libcxx_modules("std_string_h") {
+  deps = [
+    ":_Builtin_stddef",
+    ":std_config",
+  ]
+}
+
+libcxx_modules("std_uchar_h") {
+  deps = [
+    ":_Builtin_stddef",
+    ":std_config",
+  ]
+  if (is_mac) {
+    deps += [ ":std_private_mbstate_t" ]
+  }
+}
+
+libcxx_modules("std_wctype_h") {
+  deps = [
+    ":std_config",
+  ]
+  if (is_mac) {
+    deps += [ ":std_ctype_h" ]
+  }
+}
+
 if (libcxx_is_shared) {
   _libcxx_target_type = "shared_library"
 } else {
   _libcxx_target_type = "source_set"
 }
+
 target(_libcxx_target_type, "libc++") {
   # Most things that need to depend on libc++ should do so via the implicit
   # 'common_deps' dependency below.  Some targets that package libc++.so may
@@ -171,14 +357,21 @@ target(_libcxx_target_type, "libc++") {
       ]
     }
   }
-  configs -= [
-    "//build/config/compiler:chromium_code",
-    "//build/config/compiler:no_exceptions",
-    "//build/config/compiler:no_rtti",
-    "//build/config/coverage:default_coverage",
-  ]
+
+  configs -= configs_to_remove
+  configs += configs_to_add
+
   if (use_libcxx_modules) {
+    # TODO(https://github.com/llvm/llvm-project/issues/127012): We don't enable
+    # Clang modules for libc++ as libc++'s iostream.cpp has ODR issue
+    # (https://crbug.com/40440396#comment81). Also we don't take care about the
+    # libc++'s build performance much.
+    # (https://crrev.com/c/6248376/4#message-0ddf8e6a0f3ce1eb1654f7025280d8ed75cf2e81)
     configs -= [ "//build/config/compiler:libcxx_module" ]
+
+    # This removes deps to libc++'s modules from libc++'s build as libc++
+    # doesn't support modules build itself.
+    use_libcxx_modules = false
   }
   if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
@@ -188,12 +381,6 @@ target(_libcxx_target_type, "libc++") {
       configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     }
   }
-  configs += [
-    ":config",
-    "//build/config/compiler:no_chromium_code",
-    "//build/config/compiler:exceptions",
-    "//build/config/compiler:rtti",
-  ]
 
   if (libcxx_is_shared && !is_win) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -201,6 +388,7 @@ target(_libcxx_target_type, "libc++") {
   }
 
   defines = []
+  cflags = []
 
   if (!libcxx_is_shared && !is_win) {
     if (is_apple && is_clang) {
@@ -209,7 +397,7 @@ target(_libcxx_target_type, "libc++") {
       # specified in the C++ spec 3.7.4p2, which makes them always have default
       # visibility.  This option is needed to force hidden visibility since
       # -fvisibility=hidden doesn't have the desired effect.
-      cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
+      cflags += [ "-fvisibility-global-new-delete=force-hidden" ]
     } else {
       # This resets the visibility to default only for the various
       # flavors of operator new and operator delete.  These symbols

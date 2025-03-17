@@ -37,55 +37,55 @@ namespace chrome_preloading_predictor {
 // When the preloading URL is predicted from the Omnibox Direct URL Input
 // (DUI). This is used to perform various preloading operations like prefetch
 // and prerender to load Omnibox predicted URLs faster.
-static constexpr content::PreloadingPredictor kOmniboxDirectURLInput(
+inline constexpr content::PreloadingPredictor kOmniboxDirectURLInput(
     100,
     "OmniboxDirectURLInput");
 
 // When a pointerdown (e.g. mousedown or touchstart) event happens on an
 // anchor element with an href value pointing to an HTTP(S) origin, we may
 // attempt to preload the link.
-static constexpr content::PreloadingPredictor kPointerDownOnAnchor(
+inline constexpr content::PreloadingPredictor kPointerDownOnAnchor(
     101,
     "PointerDownOnAnchor");
 
 // When the preloading URL is predicted from the default search suggest
 // service for faster search page loads.
-static constexpr content::PreloadingPredictor kDefaultSearchEngine(
+inline constexpr content::PreloadingPredictor kDefaultSearchEngine(
     102,
     "DefaultSearchEngine");
 
 // When the preloading URL is predicted from the default search suggest due to
 // change in Omnibox selection.
-static constexpr content::PreloadingPredictor kOmniboxSearchPredictor(
+inline constexpr content::PreloadingPredictor kOmniboxSearchPredictor(
     103,
     "OmniboxSearchPredictor");
 
 // When the preloading URL is predicted from the default search suggest due to
 // mouse being pressed down on a Omnibox Search suggestion.
-static constexpr content::PreloadingPredictor kOmniboxMousePredictor(
+inline constexpr content::PreloadingPredictor kOmniboxMousePredictor(
     104,
     "OmniboxMousePredictor");
 
 // When the default match in omnibox has the search prefetch or prerender
 // hint.
-static constexpr content::PreloadingPredictor kOmniboxSearchSuggestDefaultMatch(
+inline constexpr content::PreloadingPredictor kOmniboxSearchSuggestDefaultMatch(
     105,
     "OmniboxSearchSuggestDefaultMatch");
 
 // When the user hovers their mouse over the back button.
-static constexpr content::PreloadingPredictor kBackButtonHover(
+inline constexpr content::PreloadingPredictor kBackButtonHover(
     106,
     "BackButtonHover");
 
 // When a pointerdown (e.g. mousedown or touchstart) event happens on an
 // bookmark bar link to an HTTPS origin, we may attempt to preload the link.
-static constexpr content::PreloadingPredictor kPointerDownOnBookmarkBar(
+inline constexpr content::PreloadingPredictor kPointerDownOnBookmarkBar(
     107,
     "PointerDownOnBookmarkBar");
 
 // When a mousehover event happens on a bookmark bar link to an HTTPS origin,
 // we may attempt to preload the link.
-static constexpr content::PreloadingPredictor kMouseHoverOnBookmarkBar(
+inline constexpr content::PreloadingPredictor kMouseHoverOnBookmarkBar(
     108,
     "MouseHoverOnBookmarkBar");
 
@@ -93,7 +93,7 @@ static constexpr content::PreloadingPredictor kMouseHoverOnBookmarkBar(
 // new tab page link to an HTTPS origin, we may attempt to preload the link.
 // TODO(crbug.com/376421273): This predictor would be replaced by
 // kMouseHoverOrMouseDownOnNewTabPage.
-static constexpr content::PreloadingPredictor kPointerDownOnNewTabPage(
+inline constexpr content::PreloadingPredictor kPointerDownOnNewTabPage(
     109,
     "PointerDownOnNewTabPage");
 
@@ -101,37 +101,37 @@ static constexpr content::PreloadingPredictor kPointerDownOnNewTabPage(
 // we may attempt to preload the link.
 // TODO(crbug.com/376421273): This predictor would be replaced by
 // kMouseHoverOrMouseDownOnNewTabPage.
-static constexpr content::PreloadingPredictor kMouseHoverOnNewTabPage(
+inline constexpr content::PreloadingPredictor kMouseHoverOnNewTabPage(
     110,
     "MouseHoverOnNewTabPage");
 
 // When the preloading URL is predicted from the default search suggest due to
 // the user touching down on a Omnibox Search suggestion.
-static constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
+inline constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
     111,
     "OmniboxTouchDownPredirector");
 
 // When the Link-Preview loads a page with prerendering infrastractures.
 // TODO(b:291867362): This is not used by the current implementation, but might
 // be reused in the future.
-static constexpr content::PreloadingPredictor kLinkPreview(112, "LinkPreview");
+inline constexpr content::PreloadingPredictor kLinkPreview(112, "LinkPreview");
 
 // When a mousehover or mousedown event happens on a bookmark bar linking to an
 // HTTPS origin, we may attempt to preload the link. This predictor, instead of
 // using kPointerDownOnBookmarkBar or kMouseHoverOnBookmarkBar, is for solving
 // the problem in https://crbug.com/1516514.
-static constexpr content::PreloadingPredictor
+inline constexpr content::PreloadingPredictor
     kMouseHoverOrMouseDownOnBookmarkBar(113,
                                         "MouseHoverOrMouseDownOnBookmarkBar");
 
 // When a touch event happens on a new tab page link to an HTTPS origin,
 // we may attempt to preload the link.
-static constexpr content::PreloadingPredictor kTouchOnNewTabPage(
+inline constexpr content::PreloadingPredictor kTouchOnNewTabPage(
     114,
     "TouchOnNewTabPage");
 
 // When a certain CCT prefetch API is triggered.
-static constexpr content::PreloadingPredictor kChromeCustomTabs(
+inline constexpr content::PreloadingPredictor kChromeCustomTabs(
     115,
     "ChromeCustomTabs");
 
@@ -139,7 +139,7 @@ static constexpr content::PreloadingPredictor kChromeCustomTabs(
 // HTTPS origin, we may attempt to preload the link. This predictor, instead of
 // using kPointerDownOnNewTabPage or MouseHoverOnNewTabPage, is for solving
 // the problem in https://crbug.com/376421273.
-static constexpr content::PreloadingPredictor
+inline constexpr content::PreloadingPredictor
     kMouseHoverOrMouseDownOnNewTabPage(116,
                                        "MouseHoverOrMouseDownOnNewTabPage");
 }  // namespace chrome_preloading_predictor

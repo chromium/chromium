@@ -292,9 +292,7 @@ bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {
       const_cast<PlusAddressCreationControllerDesktop*>(this)
           ->GetPlusAddressSettingService();
 
-  return setting_service && !setting_service->GetHasAcceptedNotice() &&
-         base::FeatureList::IsEnabled(
-             features::kPlusAddressUserOnboardingEnabled);
+  return setting_service && !setting_service->GetHasAcceptedNotice();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PlusAddressCreationControllerDesktop);

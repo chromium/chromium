@@ -35,6 +35,6 @@ NSURLResponse* GetNSURLResponseForRequest(URLRequest* request);
 // Copy HTTP headers from |in_request| to |out_request|.
 void CopyHttpHeaders(NSURLRequest* in_request, URLRequest* out_request);
 
-}  // namespace protocol_handler_util
+}  // namespace net
 
 #endif  // IOS_NET_PROTOCOL_HANDLER_UTIL_H_

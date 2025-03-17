@@ -433,7 +433,7 @@ DataObject* DataObject::Create(const WebDragData& data) {
 
 WebDragData DataObject::ToWebDragData() {
   WebDragData data;
-  WebVector<WebDragData::Item> item_list(length());
+  std::vector<WebDragData::Item> item_list(length());
 
   for (wtf_size_t i = 0; i < length(); ++i) {
     DataObjectItem* original_item = Item(i);

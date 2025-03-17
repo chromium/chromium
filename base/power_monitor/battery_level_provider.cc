@@ -4,14 +4,15 @@
 
 #include "base/power_monitor/battery_level_provider.h"
 
+#include <algorithm>
+
 #include "base/power_monitor/power_monitor_buildflags.h"
-#include "base/ranges/algorithm.h"
 
 namespace base {
 
 #if !BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40871810): ChromeOS doesn't define
   // `HAS_BATTERY_LEVEL_PROVIDER_IMPL` but still supplies its own
   // `BatteryLevelProvider`
@@ -29,7 +30,7 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
   state.battery_count = static_cast<int>(battery_details.size());
   state.is_external_power_connected =
       battery_details.size() == 0 ||
-      base::ranges::any_of(battery_details, [](const BatteryDetails& details) {
+      std::ranges::any_of(battery_details, [](const BatteryDetails& details) {
         return details.is_external_power_connected;
       });
 

@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/video_frame_compositor.h"
+#include "third_party/blink/renderer/platform/media/video_frame_compositor.h"
 
 #include <memory>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
-#include "third_party/blink/public/platform/web_video_frame_submitter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -39,23 +42,26 @@ VideoFrameCompositor::VideoFrameCompositor(
       background_rendering_timer_(
           FROM_HERE,
           base::Milliseconds(kBackgroundRenderingTimeoutMs),
-          base::BindRepeating(&VideoFrameCompositor::BackgroundRender,
-                              base::Unretained(this),
-                              RenderingMode::kBackground)),
+          ConvertToBaseRepeatingCallback(
+              CrossThreadBindRepeating(&VideoFrameCompositor::BackgroundRender,
+                                       CrossThreadUnretained(this),
+                                       RenderingMode::kBackground))),
       force_begin_frames_timer_(
           FROM_HERE,
           base::Milliseconds(kForceBeginFramesTimeoutMs),
-          base::BindRepeating(&VideoFrameCompositor::StopForceBeginFrames,
-                              base::Unretained(this))),
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &VideoFrameCompositor::StopForceBeginFrames,
+              CrossThreadUnretained(this)))),
       submitter_(std::move(submitter)) {
   if (submitter_) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VideoFrameCompositor::InitializeSubmitter,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    update_submission_state_callback_ = base::BindPostTask(
-        task_runner_,
-        base::BindRepeating(&VideoFrameCompositor::SetIsSurfaceVisible,
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&VideoFrameCompositor::InitializeSubmitter,
                             weak_ptr_factory_.GetWeakPtr()));
+    update_submission_state_callback_ = base::BindPostTask(
+        task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                          &VideoFrameCompositor::SetIsSurfaceVisible,
+                          weak_ptr_factory_.GetWeakPtr())));
   }
 }
 
@@ -68,7 +74,11 @@ void VideoFrameCompositor::SetIsSurfaceVisible(
     bool is_visible,
     base::WaitableEvent* done_event) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  submitter_->SetIsSurfaceVisible(is_visible);
+  // TODO(394137303): Re-enable SetIsSurfaceVisible(false) in TreesInViz
+  // once the visibility callback is wired.
+  static const bool trees_in_viz_mode =
+      base::FeatureList::IsEnabled(features::kTreesInViz);
+  submitter_->SetIsSurfaceVisible(is_visible || trees_in_viz_mode);
   if (done_event)
     done_event->Signal();
 }
@@ -223,9 +233,10 @@ void VideoFrameCompositor::Start(RenderCallback* callback) {
   base::AutoLock lock(callback_lock_);
   DCHECK(!callback_);
   callback_ = callback;
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
-                                weak_ptr_factory_.GetWeakPtr(), true));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
+                          weak_ptr_factory_.GetWeakPtr(), true));
 }
 
 void VideoFrameCompositor::Stop() {
@@ -235,19 +246,21 @@ void VideoFrameCompositor::Stop() {
   base::AutoLock lock(callback_lock_);
   DCHECK(callback_);
   callback_ = nullptr;
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
-                                weak_ptr_factory_.GetWeakPtr(), false));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
+                          weak_ptr_factory_.GetWeakPtr(), false));
 }
 
 void VideoFrameCompositor::PaintSingleFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool repaint_duplicate_frame) {
   if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VideoFrameCompositor::PaintSingleFrame,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(frame), repaint_duplicate_frame));
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&VideoFrameCompositor::PaintSingleFrame,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(frame),
+                            repaint_duplicate_frame));
     return;
   }
   if (ProcessNewFrame(std::move(frame), tick_clock_->NowTicks(),
@@ -304,9 +317,10 @@ void VideoFrameCompositor::SetOnFramePresentedCallback(
   base::AutoLock lock(current_frame_lock_);
   new_presented_frame_cb_ = std::move(present_cb);
 
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoFrameCompositor::StartForceBeginFrames,
-                                weak_ptr_factory_.GetWeakPtr()));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&VideoFrameCompositor::StartForceBeginFrames,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VideoFrameCompositor::StartForceBeginFrames() {

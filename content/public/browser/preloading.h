@@ -114,35 +114,35 @@ namespace preloading_predictor {
 // No PreloadingTrigger is present. This may include the small percentage of
 // usages of browser triggers, link-rel, OptimizationGuideService e.t.c which
 // will be added later as a separate elements.
-static constexpr PreloadingPredictor kUnspecified(0, "Unspecified");
+inline constexpr PreloadingPredictor kUnspecified(0, "Unspecified");
 
 // Preloading is triggered by OnPointerDown event heuristics.
-static constexpr PreloadingPredictor kUrlPointerDownOnAnchor(
+inline constexpr PreloadingPredictor kUrlPointerDownOnAnchor(
     1,
     "UrlPointerDownOnAnchor");
 
 // Preloading is triggered by OnPointerHover event heuristics.
-static constexpr PreloadingPredictor kUrlPointerHoverOnAnchor(
+inline constexpr PreloadingPredictor kUrlPointerHoverOnAnchor(
     2,
     "UrlPointerHoverOnAnchor");
 
 // Preloading was triggered by embedding a keyword for the rel attribute of
 // the <link> HTML element to hint to browsers that the user might need it for
 // next navigation.
-static constexpr PreloadingPredictor kLinkRel(3, "LinkRel");
+inline constexpr PreloadingPredictor kLinkRel(3, "LinkRel");
 
 // When overscroll that could trigger a back navigation starts.
-static constexpr PreloadingPredictor kBackGestureNavigation(
+inline constexpr PreloadingPredictor kBackGestureNavigation(
     4,
     "BackGestureNavigation");
 
 // Preloading heuristics ML model.
-static constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
+inline constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
     5,
     "PreloadingHeuristicsMLModel");
 
 // Preloading is triggered by a deterministic viewport-based heuristic.
-static constexpr PreloadingPredictor kViewportHeuristic(6, "ViewportHeuristic");
+inline constexpr PreloadingPredictor kViewportHeuristic(6, "ViewportHeuristic");
 }  // namespace preloading_predictor
 // LINT.ThenChange()
 
@@ -235,13 +235,37 @@ enum class PreloadingEligibility {
   // Preloading was ineligible because the network is too slow.
   kSlowNetwork = 20,
 
-  // Preloading was ineligible because the V8 optimizer was disabled by the site
-  // settings. It's known that prerendering a page that has the COOP crashes
-  // when the V8 optimizer is disabled. See https://crbug.com/40076091 for
-  // details.
-  kV8OptimizerDisabled = 21,
+  // Previously reserved for cases where prerendering was disabled because the
+  // v8 optimizer was disabled by site settings. This was previously causing
+  // crashes, but the crash has since been fixed. See https://crbug.com/40076091
+  // for details.
+  // kV8OptimizerDisabled = 21,
 
+  // The initial URL is controlled by a ServiceWorker and then redirected
+  // (https://crbug.com/399819894).
+  kRedirectFromServiceWorker = 22,
+
+  // The initial URL is redirected to a URL controlled by a ServiceWorker
+  // (https://crbug.com/399819894).
+  // This case was previously counted as `kUserHasServiceWorker`.
+  kRedirectToServiceWorker = 23,
+
+  // The url was not eligible to be prefetched because there was a registered
+  // service worker with no fetch handler (when
+  // `kPrefetchServiceWorkerNoFetchHandlerFix` is enabled,
+  // https://crbug.com/379076354).
+  // This case was previously counted as `kUserHasServiceWorker`.
+  // Even after the initial ServiceWorker support (https://crbug.com/40947546),
+  // this will be still used for ServiceWorker-ineligible prefetches.
+  kUserHasServiceWorkerNoFetchHandler = 24,
+
+  // ##########################################################################
+  // The range 50-99 is reserved for corresponding values in `PrefetchStatus`.
   // See corresponding values in PrefetchStatus for documentation.
+  // Note: The values outside this range also can have corresponding values in
+  // `PrefetchStatus`, e.g. `kDataSaverEnabled`.
+  // When adding a new prefetch-related `PreloadingEligibility` value, add it
+  // outside this range, because this range 50-99 is already full.
   kUserHasCookies = 55,
   kUserHasServiceWorker = 56,
   // This is similar to `kHttpsOnly`, but separately defined here to keep
@@ -256,13 +280,15 @@ enum class PreloadingEligibility {
   //  OBSOLETE: kBrowserContextOffTheRecord = 89,
   kSameSiteCrossOriginPrefetchRequiredProxy = 96,
 
+  // ##########################################################################
+  // The range 100-199 is reserved for embedders.
   // This constant is used to define the value beyond which embedders can add
   // more enums.
   kPreloadingEligibilityContentEnd = 100,
 
-  // This is another range reserved for content internal values, namely
-  // `PrerenderBackNavigationEligibility`. Embedders may add more values
-  // beyond this range.
+  // ##########################################################################
+  // The range 200-249 is another range reserved for content internal values,
+  // namely `PrerenderBackNavigationEligibility`.
   kPreloadingEligibilityContentStart2 = 200,
   kPreloadingEligibilityContentEnd2 = 250,
 };

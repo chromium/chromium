@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -529,20 +530,20 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   feature_list()->InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting,
       {{"use_profile_filtering", "true"},
-       {"force_eligible", test_case.force_eligible ? "true" : "false"},
+       {"force_eligible", base::ToString(test_case.force_eligible)},
        {tpcd::experiment::kExclude3PCBlockedName,
-        test_case.exclude_3pc_blocked ? "true" : "false"},
+        base::ToString(test_case.exclude_3pc_blocked)},
        {tpcd::experiment::kExcludeNotSeenAdsAPIsNoticeName,
-        test_case.exclude_not_seen_notice ? "true" : "false"},
+        base::ToString(test_case.exclude_not_seen_notice)},
        {tpcd::experiment::kExcludeDasherAccountName,
-        test_case.exclude_dasher_account ? "true" : "false"},
+        base::ToString(test_case.exclude_dasher_account)},
        {tpcd::experiment::kExcludeNewUserName,
-        test_case.exclude_new_user ? "true" : "false"},
+        base::ToString(test_case.exclude_new_user)},
        {tpcd::experiment::kInstallTimeForNewUserName,
         test_case.install_time_new_user},
 #if BUILDFLAG(IS_ANDROID)
        {tpcd::experiment::kExcludePwaOrTwaInstalledName,
-        test_case.exclude_pwa_twa_installed ? "true" : "false"}
+        base::ToString(test_case.exclude_pwa_twa_installed)}
 #endif
       });
 
@@ -608,8 +609,8 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
 
   const bool use_profile_filtering = GetParam();
 
-  const char* use_profile_filtering_param =
-      use_profile_filtering ? "true" : "false";
+  const std::string use_profile_filtering_param =
+      base::ToString(use_profile_filtering);
 
   {
     feature_list()->InitAndEnableFeatureWithParameters(
@@ -668,8 +669,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(CookieDeprecationLabelAllowedTest, IsClientEligibleChecked) {
   feature_list()->InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting,
-      {{tpcd::experiment::kDisable3PCookiesName,
-        GetParam() ? "true" : "false"}});
+      {{tpcd::experiment::kDisable3PCookiesName, base::ToString(GetParam())}});
 
   const bool disable_3pcs = GetParam();
   if (disable_3pcs) {
@@ -734,9 +734,9 @@ TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
     feature_list()->InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
         {{tpcd::experiment::kDisable3PCookiesName,
-          disable_3pcs ? "true" : "false"},
+          base::ToString(disable_3pcs)},
          {tpcd::experiment::kNeedOnboardingForLabelName,
-          test_case.need_onboarding ? "true" : "false"},
+          base::ToString(test_case.need_onboarding)},
          {tpcd::experiment::kEnableSilentOnboardingName, "true"}});
 
     if (disable_3pcs) {

@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -32,7 +31,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "ui/accessibility/platform/ax_platform_node.h"
 #endif
 
@@ -40,8 +39,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -98,7 +96,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
     first_item_->GetViewAccessibility().GetAccessibleNodeData(&item_node_data);
     EXPECT_EQ(item_node_data.role, ax::mojom::Role::kMenuItem);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)  // ChromeOS does not use popup focus override.
+#if !BUILDFLAG(IS_CHROMEOS)  // ChromeOS does not use popup focus override.
     EXPECT_TRUE(first_item_->GetViewAccessibility().IsFocusedForTesting());
 #endif
     ui::AXNodeData menu_node_data;
@@ -130,7 +128,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
 
 // TODO(crbug.com/40765889): Re-enable this test
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   content::ScopedAccessibilityModeOverride ax_mode_override(
       ui::kAXModeComplete);
 #endif
@@ -139,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
   Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.bounds = {0, 0, 200, 200};
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
   params.native_widget = CreateNativeWidget(
       NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA, &params, widget.get());
 #endif
@@ -159,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
 
   // SetupMenu leaves the mouse position where the first menu item will be
   // when we run the menu.
-  AXEventCounter ax_counter(views::AXEventManager::Get());
+  AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 0);
@@ -173,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 1);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuEnd), 1);
   EXPECT_FALSE(first_item_->IsSelected());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)  // ChromeOS does not use popup focus override.
+#if !BUILDFLAG(IS_CHROMEOS)  // ChromeOS does not use popup focus override.
   EXPECT_FALSE(first_item_->GetViewAccessibility().IsFocusedForTesting());
 #endif
   menu_runner_->RunMenuAt(widget.get(), nullptr, gfx::Rect(),
@@ -188,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
   // Process event(s), and check what's selected in the menu.
   RunPendingMessages();
   EXPECT_FALSE(first_item_->IsSelected());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)  // ChromeOS does not use popup focus override.
+#if !BUILDFLAG(IS_CHROMEOS)  // ChromeOS does not use popup focus override.
   EXPECT_FALSE(first_item_->GetViewAccessibility().IsFocusedForTesting());
   EXPECT_TRUE(button.GetViewAccessibility().IsFocusedForTesting());
 #endif
@@ -200,12 +198,12 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
                                            run_loop2.QuitClosure());
   run_loop2.Run();
   EXPECT_TRUE(first_item_->IsSelected());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)  // ChromeOS does not use popup focus override.
+#if !BUILDFLAG(IS_CHROMEOS)  // ChromeOS does not use popup focus override.
   EXPECT_TRUE(first_item_->GetViewAccessibility().IsFocusedForTesting());
   EXPECT_FALSE(button.GetViewAccessibility().IsFocusedForTesting());
 #endif
   menu_runner_->Cancel();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)  // ChromeOS does not use popup focus override.
+#if !BUILDFLAG(IS_CHROMEOS)  // ChromeOS does not use popup focus override.
   EXPECT_FALSE(first_item_->GetViewAccessibility().IsFocusedForTesting());
   EXPECT_TRUE(button.GetViewAccessibility().IsFocusedForTesting());
 #endif
@@ -238,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   MenuDelegate menu_delegate;
   auto menu_item_owning = std::make_unique<MenuItemView>(&menu_delegate);
   MenuItemView* menu_item = menu_item_owning.get();
-  AXEventCounter ax_counter(views::AXEventManager::Get());
+  AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 0);
@@ -271,5 +269,4 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

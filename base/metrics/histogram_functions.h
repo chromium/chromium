@@ -68,8 +68,9 @@ BASE_EXPORT void UmaHistogramExactLinear(std::string_view name,
 //   base::UmaHistogramEnumeration("My.Enumeration",
 //                                 NewTabPageAction::kClickTitle);
 //
-// Note that there are code that refer implementation details of this function.
-// Keep them synchronized.
+// `kMaxValue` should be 1000 or less.
+// Note that there is code that refers to implementation details of this
+// function. Keep it synchronized.
 // LINT.IfChange(UmaHistogramEnumeration)
 template <typename T>
 void UmaHistogramEnumeration(std::string_view name, T sample) {
@@ -81,6 +82,8 @@ void UmaHistogramEnumeration(std::string_view name, T sample) {
                 "Enumeration's kMaxValue is out of range of INT_MAX!");
   DCHECK_LE(static_cast<uintmax_t>(sample),
             static_cast<uintmax_t>(T::kMaxValue));
+  // While UmaHistogramExactLinear’s documentation states that the third
+  // argument should be 101 or less, a value up to 1001 is actually accepted.
   return UmaHistogramExactLinear(name, static_cast<int>(sample),
                                  static_cast<int>(T::kMaxValue) + 1);
 }
@@ -101,24 +104,27 @@ void UmaHistogramEnumeration(std::string_view name, T sample) {
 //                                 kCount);
 // Note: The value in |sample| must be strictly less than |enum_size|. This is
 // otherwise functionally equivalent to the above.
+// `enum_size` must be less than or equal to 1001.
 template <typename T>
 void UmaHistogramEnumeration(std::string_view name, T sample, T enum_size) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
   DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
   DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
+  // While UmaHistogramExactLinear’s documentation states that the third
+  // argument should be 101 or less, a value up to 1001 is actually accepted.
   return UmaHistogramExactLinear(name, static_cast<int>(sample),
                                  static_cast<int>(enum_size));
 }
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramEnumeration)
 
-// For adding boolean sample to histogram.
+// For adding a boolean sample to histogram.
 // Sample usage:
 //   base::UmaHistogramBoolean("My.Boolean", true)
 // LINT.IfChange(UmaHistogramBoolean)
 BASE_EXPORT void UmaHistogramBoolean(std::string_view name, bool sample);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramBoolean)
 
-// For adding histogram sample denoting a percentage.
+// For adding a histogram sample denoting a percentage.
 // Percents are integers between 1 and 100, inclusively.
 // Sample usage:
 //   base::UmaHistogramPercentage("My.Percent", 69)
@@ -130,7 +136,7 @@ BASE_EXPORT void UmaHistogramPercentageObsoleteDoNotUse(std::string_view name,
                                                         int percent);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramPercentage)
 
-// For adding counts histogram.
+// For adding a counts histogram.
 // Sample usage:
 //   base::UmaHistogramCustomCounts("My.Counts", some_value, 1, 600, 30)
 // LINT.IfChange(UmaHistogramCounts)
@@ -149,7 +155,7 @@ BASE_EXPORT void UmaHistogramCounts1M(std::string_view name, int sample);
 BASE_EXPORT void UmaHistogramCounts10M(std::string_view name, int sample);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramCounts)
 
-// For histograms storing times. It uses milliseconds granularity.
+// For histograms storing times. Uses milliseconds granularity.
 // LINT.IfChange(UmaHistogramTimes)
 BASE_EXPORT void UmaHistogramCustomTimes(std::string_view name,
                                          TimeDelta sample,
@@ -162,6 +168,7 @@ BASE_EXPORT void UmaHistogramCustomTimes(std::string_view name,
 BASE_EXPORT void UmaHistogramTimes(std::string_view name, TimeDelta sample);
 
 // For medium timings up to 3 minutes (50 buckets).
+// TODO(crbug.com/353712922): rename and disambiguate this function/macro
 BASE_EXPORT void UmaHistogramMediumTimes(std::string_view name,
                                          TimeDelta sample);
 // For time intervals up to 1 hr (50 buckets).
@@ -185,20 +192,24 @@ BASE_EXPORT void UmaHistogramMicrosecondsTimes(std::string_view name,
                                                TimeDelta sample);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramMicrosecondsTimes)
 
-// For recording memory related histograms.
+// For recording memory-related histograms.
 // LINT.IfChange(UmaHistogramMemory)
-// Used to measure common KB-granularity memory stats. Range is up to 500M.
+//
+// Used to measure common KB-granularity memory stats. Sample is in KB. Range is
+// from 1000KB (see crbug.com/40526504) to 500M. For measuring sizes less than
+// 1000K, use `UmaHistogramCounts`.
 BASE_EXPORT void UmaHistogramMemoryKB(std::string_view name, int sample);
-// Used to measure common MB-granularity memory stats. Range is up to ~1G.
+// Used to measure common MB-granularity memory stats. Sample is in MB. Range is
+// 1MB to ~1G.
 BASE_EXPORT void UmaHistogramMemoryMB(std::string_view name, int sample);
-// Used to measure common MB-granularity memory stats. Range is up to ~64G.
+// Used to measure common MB-granularity memory stats. Range is 1G to ~64G.
 BASE_EXPORT void UmaHistogramMemoryLargeMB(std::string_view name, int sample);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramMemory)
 
 // For recording sparse histograms.
 // The |sample| can be a negative or non-negative number.
 //
-// Sparse histograms are well suited for recording counts of exact sample values
+// Sparse histograms are well-suited for recording counts of exact sample values
 // that are sparsely distributed over a relatively large range, in cases where
 // ultra-fast performance is not critical. For instance, Sqlite.Version.* are
 // sparse because for any given database, there's going to be exactly one

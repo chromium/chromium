@@ -9,7 +9,7 @@
 #include "base/test/icu_test_util.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/flags_ui/feature_entry.h"
+#include "components/webui/flags/feature_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

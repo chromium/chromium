@@ -17,12 +17,11 @@ public class PageContentProviderMetrics {
         PageContentProviderEvent.QUERY_FAILED_INVALID_URL,
         PageContentProviderEvent.QUERY_FAILED_INVALID_ID,
         PageContentProviderEvent.QUERY_FAILED_TO_GET_CURRENT_TAB,
-        PageContentProviderEvent.QUERY_SUCCEEDED_ALREADY_EXTRACTING,
         PageContentProviderEvent.QUERY_SUCCEEDED_RETURNED_EXTRACTED,
-        PageContentProviderEvent.QUERY_SUCCEEDED_STARTED_EXTRACTION,
-        PageContentProviderEvent.TEXT_EXTRACTION_FAILED_EMPTY_RESULT,
-        PageContentProviderEvent.TEXT_EXTRACTION_FAILED_TAB_CHANGED,
-        PageContentProviderEvent.TEXT_EXTRACTION_SUCCEEDED,
+        PageContentProviderEvent.QUERY_FAILED_EMPTY_RESULT,
+        PageContentProviderEvent.QUERY_FAILED_INTERRUPTED,
+        PageContentProviderEvent.QUERY_FAILED_TIMED_OUT,
+        PageContentProviderEvent.QUERY_FAILED_EXCEPTION,
         PageContentProviderEvent.TIMEOUT,
     })
     public static @interface PageContentProviderEvent {
@@ -33,14 +32,13 @@ public class PageContentProviderMetrics {
         int QUERY_FAILED_INVALID_URL = 3;
         int QUERY_FAILED_INVALID_ID = 4;
         int QUERY_FAILED_TO_GET_CURRENT_TAB = 5;
-        int QUERY_SUCCEEDED_ALREADY_EXTRACTING = 6;
         int QUERY_SUCCEEDED_RETURNED_EXTRACTED = 7;
-        int QUERY_SUCCEEDED_STARTED_EXTRACTION = 8;
-        int TEXT_EXTRACTION_FAILED_EMPTY_RESULT = 9;
-        int TEXT_EXTRACTION_FAILED_TAB_CHANGED = 10;
-        int TEXT_EXTRACTION_SUCCEEDED = 11;
+        int QUERY_FAILED_EMPTY_RESULT = 9;
         int TIMEOUT = 12;
-        int NUM_ENTRIES = 13;
+        int QUERY_FAILED_INTERRUPTED = 13;
+        int QUERY_FAILED_TIMED_OUT = 14;
+        int QUERY_FAILED_EXCEPTION = 15;
+        int NUM_ENTRIES = 16;
     }
 
     public static void recordPageProviderEvent(@PageContentProviderEvent int event) {
@@ -59,6 +57,12 @@ public class PageContentProviderMetrics {
         RecordHistogram.recordBooleanHistogram(
                 "Android.AssistContent.StructuredDataAttachedSuccess.Pdf",
                 pdfStructuredDataAttached);
+    }
+
+    public static void recordEnterpriseInfoCacheStateForWebAssistContent(
+            boolean isEnterpriseInfoCached) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.AssistContent.IsEnterpriseInfoCached", isEnterpriseInfoCached);
     }
 
     public static void recordWebStructuredDataAttachedToAssistContent(

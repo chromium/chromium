@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -42,7 +41,7 @@ SigninErrorControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   SigninErrorController::AccountMode account_mode =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       SigninErrorController::AccountMode::ANY_ACCOUNT;
 #else
       AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)

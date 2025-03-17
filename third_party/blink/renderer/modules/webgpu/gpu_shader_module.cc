@@ -91,19 +91,8 @@ void GPUShaderModule::OnCompilationInfoCallback(
     switch (status) {
       case wgpu::CompilationInfoRequestStatus::Success:
         NOTREACHED();
-      case wgpu::CompilationInfoRequestStatus::Error:
-        message = "Unexpected error in getCompilationInfo";
-        break;
-      case wgpu::CompilationInfoRequestStatus::DeviceLost:
-        message =
-            "Device lost during getCompilationInfo (do not use this error for "
-            "recovery - it is NOT guaranteed to happen on device loss)";
-        break;
       case wgpu::CompilationInfoRequestStatus::InstanceDropped:
         message = "Instance dropped error in getCompilationInfo";
-        break;
-      case wgpu::CompilationInfoRequestStatus::Unknown:
-        message = "Unknown failure in getCompilationInfo";
         break;
     }
     resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
@@ -119,9 +108,20 @@ void GPUShaderModule::OnCompilationInfoCallback(
       UNSAFE_BUFFERS(base::span<const wgpu::CompilationMessage>(
           info->messages, info->messageCount));
   for (const auto& message : info_span) {
+    const wgpu::DawnCompilationMessageUtf16* utf16 = nullptr;
+    for (const auto* chain = message.nextInChain; chain != nullptr;
+         chain = chain->nextInChain) {
+      if (chain->sType == wgpu::SType::DawnCompilationMessageUtf16) {
+        utf16 =
+            reinterpret_cast<const wgpu::DawnCompilationMessageUtf16*>(chain);
+      }
+    }
+    uint64_t linePos = utf16 ? utf16->linePos : message.linePos;
+    uint64_t offset = utf16 ? utf16->offset : message.offset;
+    uint64_t length = utf16 ? utf16->length : message.length;
     result->AppendMessage(MakeGarbageCollected<GPUCompilationMessage>(
         StringFromASCIIAndUTF8(message.message), message.type, message.lineNum,
-        message.utf16LinePos, message.utf16Offset, message.utf16Length));
+        linePos, offset, length));
   }
 
   resolver->Resolve(result);

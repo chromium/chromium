@@ -6,12 +6,12 @@ import 'chrome://shimless-rma/shimless_rma.js';
 
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
-import {NetworkListElement} from 'chrome://resources/ash/common/network/network_list.js';
+import type {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
+import type {NetworkListElement} from 'chrome://resources/ash/common/network/network_list.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {SET_NEXT_BUTTON_LABEL} from 'chrome://shimless-rma/events.js';
 import {fakeNetworks} from 'chrome://shimless-rma/fake_data.js';

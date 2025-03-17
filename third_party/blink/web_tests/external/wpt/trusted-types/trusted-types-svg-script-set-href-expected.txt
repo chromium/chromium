@@ -1,9 +1,19 @@
 This is a testharness.js-based test.
+[FAIL] Assign string to SVGScriptElement.href.baseVal.
+  assert_equals: expected "SVGScriptElement href|about:blank" but got "SVGAnimatedString baseVal|about:blank"
+[FAIL] Assign string to non-attached SVGScriptElement.href via setAttribute.
+  assert_equals: expected "SVGScriptElement href|about:blank" but got "Element setAttribute|about:blank"
+[FAIL] Assign string to attached SVGScriptElement.href via setAttribute.
+  assert_equals: expected "SVGScriptElement href|about:blank" but got "Element setAttribute|about:blank"
+[FAIL] Assign string to SVGScriptElement.className.baseVal.
+  Failed to set the 'baseVal' property on 'SVGAnimatedString': This document requires 'TrustedScriptURL' assignment.
 [FAIL] Assign string to SVGScriptElement.href.baseVal  w/ default policy.
   assert_equals: expected "SVGScriptElement href" but got "SVGAnimatedString baseVal"
 [FAIL] Assign string to non-attached SVGScriptElement.href via setAttribute w/ default policy.
   assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
 [FAIL] Assign string to attached SVGScriptElement.href via setAttribute w/ default policy.
   assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Assign string to SVGScriptElement.className.baseVal w/ default policy.
+  assert_equals: expected "SVGScriptElement href" but got "SVGAnimatedString baseVal"
 Harness: the test ran to completion.
 

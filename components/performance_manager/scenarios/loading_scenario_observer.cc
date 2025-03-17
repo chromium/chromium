@@ -15,9 +15,9 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
 namespace performance_manager {
 
@@ -181,8 +181,8 @@ void LoadingScenarioObserver::OnPassedToGraph(Graph* graph) {
   CHECK(graph->GetAllPageNodes().empty());
   CHECK(graph->GetAllProcessNodes().empty());
   CHECK(graph->GetAllFrameNodes().empty());
-  CHECK_EQ(blink::performance_scenarios::GetLoadingScenario(
-               blink::performance_scenarios::ScenarioScope::kGlobal)
+  CHECK_EQ(performance_scenarios::GetLoadingScenario(
+               performance_scenarios::ScenarioScope::kGlobal)
                ->load(std::memory_order_relaxed),
            LoadingScenario::kNoPageLoading);
   graph->AddFrameNodeObserver(this);

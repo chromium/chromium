@@ -1,0 +1,13 @@
+This is a wdspec test.
+[FAIL] test_capture[with activate]
+  assert (2937, 4203) == (2940, 4206)
+[FAIL] test_capture[without activate]
+  assert (1080, 1545) == (2940, 4206)
+[FAIL] test_capture_with_viewport[height smaller-width smaller]
+  assert (2937, 4158) == (2910, 4116)
+[FAIL] test_capture_with_viewport[height larger-width smaller]
+  assert (2937, 4368) == (2910, 4326)
+[FAIL] test_capture_with_different_dpr[2]
+  assert 1960 <= 1958
+Harness: the test ran to completion.
+

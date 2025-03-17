@@ -15,7 +15,6 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/switches.h"
-#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -76,6 +75,7 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::MaybeCreate(
     compositor_thread_device_queue->InitializeForCompositorGpuThread(
         device_queue->GetVulkanPhysicalDevice(),
         device_queue->GetVulkanDevice(), device_queue->GetVulkanQueue(),
+        device_queue->GetVulkanQueueLockContext(),
         device_queue->GetVulkanQueueIndex(), device_queue->enabled_extensions(),
         device_queue->enabled_device_features_2(),
         device_queue->vma_allocator());
@@ -135,7 +135,6 @@ CompositorGpuThread::GetSharedContextState() {
   const auto& gpu_preferences = gpu_channel_manager_->gpu_preferences();
 
   const bool use_passthrough_decoder =
-      gpu::gles2::PassthroughCommandDecoderSupported() &&
       gpu_preferences.use_passthrough_cmd_decoder;
   gl::GLContextAttribs attribs =
       gpu::gles2::GenerateGLContextAttribsForCompositor(

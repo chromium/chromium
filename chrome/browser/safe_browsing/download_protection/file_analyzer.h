@@ -10,13 +10,18 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
+#include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_seven_zip_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
-#include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
@@ -81,7 +86,7 @@ class FileAnalyzer {
   explicit FileAnalyzer(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
   ~FileAnalyzer();
-  void Start(const base::FilePath& target_path,
+  void Start(const base::FilePath& target_file_name,
              const base::FilePath& tmp_path,
              base::optional_ref<const std::string> password,
              base::OnceCallback<void(Results)> callback);
@@ -90,11 +95,13 @@ class FileAnalyzer {
   void StartExtractFileFeatures();
   void OnFileAnalysisFinished(FileAnalyzer::Results results);
 
+#if !BUILDFLAG(IS_ANDROID)
   void StartExtractZipFeatures();
   void OnZipAnalysisFinished(const ArchiveAnalyzerResults& archive_results);
 
   void StartExtractRarFeatures();
   void OnRarAnalysisFinished(const ArchiveAnalyzerResults& archive_results);
+#endif
 
 #if BUILDFLAG(IS_MAC)
   void StartExtractDmgFeatures();
@@ -103,33 +110,45 @@ class FileAnalyzer {
       const safe_browsing::ArchiveAnalyzerResults& archive_results);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
   void StartExtractSevenZipFeatures();
   void OnSevenZipAnalysisFinished(
       const ArchiveAnalyzerResults& archive_results);
+#endif
 
   void LogAnalysisDurationWithAndWithoutSuffix(const std::string& suffix);
 
-  base::FilePath target_path_;
+  // The ultimate destination/filename for the download. This is used to
+  // determine the filetype from the filename extension/suffix, and should be a
+  // human-readable filename (i.e. not a content-URI, on Android).
+  base::FilePath target_file_name_;
+
+  // The current path to the file contents.
   base::FilePath tmp_path_;
+
   std::optional<std::string> password_;
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   base::OnceCallback<void(Results)> callback_;
   base::Time start_time_;
   Results results_;
 
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
       zip_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
   std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>
       rar_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+#endif
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<SandboxedDMGAnalyzer, base::OnTaskRunnerDeleter>
       dmg_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SandboxedSevenZipAnalyzer, base::OnTaskRunnerDeleter>
       seven_zip_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+#endif
 
   base::WeakPtrFactory<FileAnalyzer> weakptr_factory_{this};
 };

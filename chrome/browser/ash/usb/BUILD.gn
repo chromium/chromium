@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("usb") {
   sources = [
@@ -13,7 +13,6 @@ static_library("usb") {
   ]
 
   public_deps = [
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants",
@@ -23,6 +22,7 @@ static_library("usb") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/vm_plugin_dispatcher",
     "//chromeos/ash/components/disks",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//components/prefs",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

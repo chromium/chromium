@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -29,7 +29,7 @@ namespace {
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 bool IsValid(const AggregatableValues::Values& values) {
-  return base::ranges::all_of(values, [](const auto& value) {
+  return std::ranges::all_of(values, [](const auto& value) {
     return IsAggregatableValueInRange(value.second.value());
   });
 }

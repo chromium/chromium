@@ -74,8 +74,7 @@ _ALLOWLISTED_NON_BASE_SERVICES = {
     # Only on API level 33+ which is past the fix for b/169196314.
     'androidx.pdf.service.PdfDocumentServiceImpl',
     'androidx.pdf.service.PdfDocumentService',
-    # These need to be burned down.
-    'androidx.room.MultiInstanceInvalidationService',
+    # These need to be burned down - these have likely never fully worked.
     'com.google.apps.tiktok.concurrent.AndroidFuturesService',
     'com.google.apps.tiktok.concurrent.InternalForegroundService',
 }

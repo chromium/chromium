@@ -57,7 +57,7 @@ std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
 
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
-  return path ? std::optional<base::FilePath>(path->AppendASCII(kLauncherName))
+  return path ? std::optional<base::FilePath>(path->Append(kLauncherName))
               : std::nullopt;
 }
 
@@ -77,7 +77,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
     return std::nullopt;
   }
 
-  return install_dir->AppendASCII(
+  return install_dir->Append(
       base::StrCat({enterprise_companion::kExecutableName, kExecutableSuffix}));
 }
 

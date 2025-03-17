@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/raster/raster_source.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -312,8 +311,8 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
 }
 
 int PictureLayerTilingSet::NumHighResTilings() const {
-  return base::ranges::count(tilings_, HIGH_RESOLUTION,
-                             &PictureLayerTiling::resolution);
+  return std::ranges::count(tilings_, HIGH_RESOLUTION,
+                            &PictureLayerTiling::resolution);
 }
 
 PictureLayerTiling* PictureLayerTilingSet::FindTilingWithScaleKey(
@@ -328,7 +327,7 @@ PictureLayerTiling* PictureLayerTilingSet::FindTilingWithScaleKey(
 PictureLayerTiling* PictureLayerTilingSet::FindTilingWithResolution(
     TileResolution resolution) const {
   auto iter =
-      base::ranges::find(tilings_, resolution, &PictureLayerTiling::resolution);
+      std::ranges::find(tilings_, resolution, &PictureLayerTiling::resolution);
   if (iter == tilings_.end())
     return nullptr;
   return iter->get();
@@ -379,8 +378,8 @@ void PictureLayerTilingSet::RemoveAllTilings() {
 }
 
 void PictureLayerTilingSet::Remove(PictureLayerTiling* tiling) {
-  auto iter = base::ranges::find(tilings_, tiling,
-                                 &std::unique_ptr<PictureLayerTiling>::get);
+  auto iter = std::ranges::find(tilings_, tiling,
+                                &std::unique_ptr<PictureLayerTiling>::get);
   if (iter == tilings_.end())
     return;
   tilings_.erase(iter);

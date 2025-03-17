@@ -9,8 +9,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
@@ -71,6 +71,21 @@ bool IsValidFencedFrameReportingURL(const KURL& url) {
     return false;
   }
   return url.ProtocolIs("https");
+}
+
+// Precondition: `data_origin_type` is not kInvalid.
+mojom::blink::SharedStorageDataOriginType SharedStorageDataOriginToMojom(
+    SharedStorageDataOrigin data_origin_type) {
+  switch (data_origin_type) {
+    case SharedStorageDataOrigin::kContextOrigin:
+      return mojom::blink::SharedStorageDataOriginType::kContextOrigin;
+    case SharedStorageDataOrigin::kScriptOrigin:
+      return mojom::blink::SharedStorageDataOriginType::kScriptOrigin;
+    case SharedStorageDataOrigin::kCustomOrigin:
+      return mojom::blink::SharedStorageDataOriginType::kCustomOrigin;
+    case SharedStorageDataOrigin::kInvalid:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -195,16 +210,28 @@ void SharedStorageWorklet::AddModuleHelper(
   url::Origin shared_storage_origin =
       shared_storage_security_origin->ToUrlOrigin();
 
-  const PermissionsPolicy* policy =
+  const network::PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   if (!policy || !policy->IsFeatureEnabledForOrigin(
-                     mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+                     network::mojom::PermissionsPolicyFeature::kSharedStorage,
                      shared_storage_origin)) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
         "The \"shared-storage\" Permissions Policy denied the method for the "
         "worklet origin."));
 
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
+    return;
+  }
+
+  // data: url is treated as unexpected request and reported as bad message by
+  // CorsURLLoaderFactory, which will generate dump in official build and crash
+  // in non official build. Explicitly reject the request for data: url here.
+  if (script_source_url.ProtocolIs(url::kDataScheme)) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "data: module script url is not allowed."));
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return;
@@ -223,7 +250,8 @@ void SharedStorageWorklet::AddModuleHelper(
   SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
-          script_source_url, shared_storage_security_origin, credentials_mode,
+          script_source_url, shared_storage_security_origin,
+          SharedStorageDataOriginToMojom(data_origin_type), credentials_mode,
           resolve_to_worklet
               ? mojom::blink::SharedStorageWorkletCreationMethod::kCreateWorklet
               : mojom::blink::SharedStorageWorkletCreationMethod::kAddModule,
@@ -336,15 +364,15 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
   // The `kSharedStorage` permissions policy should have been checked in
   // addModule() already.
-  const PermissionsPolicy* policy =
+  const network::PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   CHECK(policy);
   CHECK(policy->IsFeatureEnabledForOrigin(
-      mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+      network::mojom::PermissionsPolicyFeature::kSharedStorage,
       shared_storage_origin_));
 
   if (!policy->IsFeatureEnabledForOrigin(
-          mojom::blink::PermissionsPolicyFeature::kSharedStorageSelectUrl,
+          network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
           shared_storage_origin_)) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
@@ -364,6 +392,17 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
+  }
+
+  // We want an accurate measure up to 8. Numbers beyond that will be grouped to
+  // the overflow bucket `kExclusiveMaxBucket`.
+  int kExclusiveMaxBucket = 9;
+  base::UmaHistogramExactLinear("Storage.SharedStorage.SelectURL.UrlsLength",
+                                urls.size(), kExclusiveMaxBucket);
+
+  if (urls.size() == 1) {
+    execution_context->CountUse(
+        WebFeature::kSharedStorageAPI_SelectURL_Method_CalledWithOneURL);
   }
 
   v8::Local<v8::Context> v8_context =
@@ -517,7 +556,8 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
   worklet_host_->SelectURL(
       name, std::move(converted_urls), std::move(*serialized_data), keep_alive,
-      std::move(private_aggregation_config), options->savedQuery(),
+      std::move(private_aggregation_config), resolve_to_config,
+      options->savedQuery(),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8SharedStorageResponse>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
@@ -619,11 +659,11 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
 
   // The `kSharedStorage` permissions policy should have been checked in
   // addModule() already.
-  const PermissionsPolicy* policy =
+  const network::PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   CHECK(policy);
   CHECK(policy->IsFeatureEnabledForOrigin(
-      mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+      network::mojom::PermissionsPolicyFeature::kSharedStorage,
       shared_storage_origin_));
 
   if (!keep_alive_after_operation_) {

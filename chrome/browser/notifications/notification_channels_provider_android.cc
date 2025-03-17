@@ -133,7 +133,7 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
             ContentSettingsPattern::FromURLNoWildcard(GURL(channel.origin)),
             ContentSettingsPattern::Wildcard(),
             base::Value(ChannelStatusToContentSetting(channel.status)),
-            metadata);
+            std::move(metadata));
     index_++;
     return rule;
   }
@@ -233,7 +233,7 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessaryImpl(
   {
     std::unique_ptr<content_settings::RuleIterator> it(
         pref_provider->GetRuleIterator(
-            ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+            ContentSettingsType::NOTIFICATIONS, false /* off_the_record */,
             content_settings::PartitionKey::WipGetDefault()));
 
     while (it && it->HasNext()) {
@@ -298,9 +298,9 @@ void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessaryImpl(
 std::unique_ptr<content_settings::RuleIterator>
 NotificationChannelsProviderAndroid::GetRuleIterator(
     ContentSettingsType content_type,
-    bool incognito,
+    bool off_the_record,
     const content_settings::PartitionKey& partition_key) const {
-  if (content_type != ContentSettingsType::NOTIFICATIONS || incognito) {
+  if (content_type != ContentSettingsType::NOTIFICATIONS || off_the_record) {
     return nullptr;
   }
 
@@ -360,7 +360,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   InitCachedChannels(base::BindOnce(
       &NotificationChannelsProviderAndroid::UpdateChannelForWebsiteImpl,
       weak_factory_.GetWeakPtr(), primary_pattern, secondary_pattern,
-      content_type, setting, constraints));
+      content_type, setting, constraints.Clone()));
 
   if (setting == CONTENT_SETTING_DEFAULT) {
     return false;

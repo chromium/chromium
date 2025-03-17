@@ -38,7 +38,7 @@ class PermissionIndicatorsTabData : public content::WebContentsObserver {
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
   void OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType connection_type,
+      content::WebContentsCapabilityType connection_type,
       bool used) override;
 
  private:

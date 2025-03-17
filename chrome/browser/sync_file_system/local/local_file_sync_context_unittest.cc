@@ -20,7 +20,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -35,7 +34,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -74,8 +72,6 @@ class LocalFileSyncContextTest : public testing::Test {
         has_inflight_prepare_for_sync_(false) {}
 
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        storage::features::kDisableSyncableQuota);
     RegisterSyncableFileSystem();
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("LocalFileSyncContextTest");
@@ -359,7 +355,6 @@ class LocalFileSyncContextTest : public testing::Test {
 
   base::ScopedTempDir dir_;
   std::unique_ptr<leveldb::Env> in_memory_env_;
-  base::test::ScopedFeatureList feature_list_;
 
   // These need to remain until the very end.
   content::BrowserTaskEnvironment task_environment_;
@@ -425,7 +420,7 @@ TEST_F(LocalFileSyncContextTest, InitializeFileSystemContext) {
   file_system.TearDown();
 }
 
-TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
+TEST_F(LocalFileSyncContextTest, CreateDefaultTemporaryBucket) {
   CannedSyncableFileSystem file_system(GURL(kOrigin1), in_memory_env_.get(),
                                        io_task_runner_.get(),
                                        file_task_runner_.get());
@@ -439,18 +434,17 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
   EXPECT_EQ(SYNC_STATUS_OK,
             file_system.MaybeInitializeFileSystemContext(sync_context_.get()));
 
-  // Opens the file_system, to verify a kSyncable bucket is created.
+  // Opens the file_system, to verify a bucket is created.
   EXPECT_EQ(base::File::FILE_OK, file_system.OpenFileSystem());
 
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   file_system.quota_manager()->proxy()->GetBucketByNameUnsafe(
       blink::StorageKey::CreateFromStringForTesting(kOrigin1),
-      storage::kDefaultBucketName, blink::mojom::StorageType::kSyncable,
+      storage::kDefaultBucketName,
       base::SequencedTaskRunner::GetCurrentDefault(), future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(const auto result, future.Take());
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
-  EXPECT_EQ(result.type, blink::mojom::StorageType::kSyncable);
   EXPECT_GT(result.id.value(), 0);
 
   // Finishing the test.

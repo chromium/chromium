@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_PARKABLE_STRING_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_PARKABLE_STRING_MANAGER_H_
 
@@ -109,9 +104,7 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
 
     static bool Equal(const ParkableStringImpl::SecureDigest* const a,
                       const ParkableStringImpl::SecureDigest* const b) {
-      return a == b ||
-             std::equal(a->data(), a->data() + ParkableStringImpl::kDigestSize,
-                        b->data());
+      return a == b || *a == *b;
     }
 
     static constexpr bool kSafeToCompareToEmptyOrDeleted = false;

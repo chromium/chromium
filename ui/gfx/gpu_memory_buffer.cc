@@ -27,7 +27,53 @@ base::win::ScopedHandle CloneDXGIHandle(HANDLE handle) {
   return base::win::ScopedHandle(target_handle);
 }
 }  // namespace
-#endif
+
+DXGIHandle DXGIHandle::CreateFakeForTest() {
+  // DXGIHandle requires a valid HANDLE, so just create a placeholder event.
+  base::win::ScopedHandle fake_handle(
+      ::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+  return DXGIHandle(std::move(fake_handle));
+}
+
+DXGIHandle::DXGIHandle() = default;
+DXGIHandle::~DXGIHandle() = default;
+
+DXGIHandle::DXGIHandle(base::win::ScopedHandle buffer_handle)
+    : buffer_handle_(std::move(buffer_handle)) {
+  DCHECK(buffer_handle_.is_valid());
+}
+
+DXGIHandle::DXGIHandle(base::win::ScopedHandle buffer_handle,
+                       const DXGIHandleToken& token,
+                       base::UnsafeSharedMemoryRegion region)
+    : buffer_handle_(std::move(buffer_handle)),
+      token_(token),
+      region_(std::move(region)) {
+  DCHECK(buffer_handle_.is_valid());
+}
+
+DXGIHandle::DXGIHandle(DXGIHandle&&) = default;
+DXGIHandle& DXGIHandle::operator=(DXGIHandle&&) = default;
+
+bool DXGIHandle::IsValid() const {
+  return buffer_handle_.is_valid();
+}
+
+DXGIHandle DXGIHandle::Clone() const {
+  DXGIHandle handle;
+  if (buffer_handle_.is_valid()) {
+    handle.buffer_handle_ = CloneDXGIHandle(buffer_handle_.Get());
+  }
+  handle.token_ = token_;
+  handle.region_ = region_.Duplicate();
+  return handle;
+}
+
+base::win::ScopedHandle DXGIHandle::TakeBufferHandle() {
+  DCHECK(buffer_handle_.is_valid());
+  return std::move(buffer_handle_);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 GpuMemoryBufferHandle::GpuMemoryBufferHandle() = default;
 
@@ -60,7 +106,6 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   GpuMemoryBufferHandle handle;
   handle.type = type;
   handle.id = id;
-  handle.region = region.Duplicate();
   handle.offset = offset;
   handle.stride = stride;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -68,13 +113,11 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
 #elif BUILDFLAG(IS_APPLE)
   handle.io_surface = io_surface;
 #elif BUILDFLAG(IS_WIN)
-  if (dxgi_handle.is_valid()) {
-    handle.dxgi_handle = CloneDXGIHandle(dxgi_handle.Get());
-  }
-  handle.dxgi_token = dxgi_token;
+  handle.dxgi_handle_ = dxgi_handle_.Clone();
 #elif BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #endif
+  handle.region_ = region_.Duplicate();
   return handle;
 }
 

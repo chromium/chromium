@@ -20,6 +20,7 @@
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 #include <sys/syscall.h>
+
 #include <atomic>
 #endif
 

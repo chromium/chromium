@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package auto_deletion.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// All fields are required.
+message ScheduledFile {
+  string path = 1;
+  string hash = 2;
+  int64 download_timestamp = 3;
+}
+
+message ScheduleFileList {
+  repeated ScheduledFile files = 1;
+}

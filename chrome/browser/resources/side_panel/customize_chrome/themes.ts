@@ -136,7 +136,7 @@ export class ThemesElement extends ThemesElementBase {
   }
 
   private onThemesRendered_() {
-    const firstTile = this.shadowRoot!.querySelector('.tile.theme');
+    const firstTile = this.shadowRoot.querySelector('.tile.theme');
     if (firstTile) {
       this.registerHelpBubble(CHROME_THEME_ELEMENT_ID, firstTile);
     }
@@ -178,7 +178,7 @@ export class ThemesElement extends ThemesElementBase {
     this.themes_ = [];
     if (this.selectedCollection) {
       this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
-      this.pageHandler_.getBackgroundImages(this.selectedCollection!.id)
+      this.pageHandler_.getBackgroundImages(this.selectedCollection.id)
           .then(({images}) => {
             this.themes_ = images;
           });
@@ -215,8 +215,7 @@ export class ThemesElement extends ThemesElementBase {
     }
     return !!this.theme_ && !!this.theme_.backgroundImage &&
         this.theme_.backgroundImage.dailyRefreshEnabled &&
-        this.selectedCollection!.id ===
-        this.theme_.backgroundImage.collectionId;
+        this.selectedCollection.id === this.theme_.backgroundImage.collectionId;
   }
 
   protected onRefreshDailyToggleChange_(e: CustomEvent<boolean>) {

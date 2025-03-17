@@ -28,7 +28,6 @@ import {getTemplate} from './privacy_sandbox_fledge_subpage.html.js';
 export interface SettingsPrivacySandboxFledgeSubpageElement {
   $: {
     fledgeToggle: SettingsToggleButtonElement,
-    footer: HTMLElement,
   };
 }
 
@@ -158,10 +157,6 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
 
     this.privacySandboxBrowserProxy_.getFledgeState().then(
         state => this.onFledgeStateChanged_(state));
-
-    this.$.footer.querySelectorAll('a').forEach(
-        link =>
-            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
   }
 
   private isFledgePrefManaged_(): boolean {
@@ -236,7 +231,7 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
 
   private onCloseDialog_() {
     this.isLearnMoreDialogOpen_ = false;
-    afterNextRender(this, async () => {
+    afterNextRender(this, () => {
       // `learnMoreLink` might be null if the toggle was disabled after the
       // dialog was opened.
       this.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')?.focus();
@@ -269,7 +264,7 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
 
     // After allowing or blocking the last item, the focus is lost after the
     // item is removed. Set the focus to the #blockedSitesRow element.
-    afterNextRender(this, async () => {
+    afterNextRender(this, () => {
       if (!this.shadowRoot!.activeElement) {
         this.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')
             ?.focus();

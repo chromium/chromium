@@ -9,7 +9,7 @@ This is a guide on writing your first test with Public Transit.
 This can be in any instrumentation test target. The naming convention is to use
 the suffix `PTTest.java`. I'll create as an example
 `chrome/android/javatests/src/org/chromium/chrome/browser/MyPTTest.java` and add
-it to `chrome/android/chrome_test_java_sources.gni`
+it to `chrome/android/javatests/BUILD.gn`
 
 If you're using a new `"javatests"` target instead, you need to add BUILD.gn
 deps on:

@@ -52,7 +52,6 @@
 #include "ui/gfx/geometry/size_conversions.h"
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-#include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/avif/crabbyavif_image_decoder.h"
 #endif
 
@@ -198,9 +197,7 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
     return "image/bmp";
   }
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-  if (base::FeatureList::IsEnabled(blink::features::kCrabbyAvif)
-          ? CrabbyAVIFImageDecoder::MatchesAVIFSignature(fast_reader)
-          : AVIFImageDecoder::MatchesAVIFSignature(fast_reader)) {
+  if (CrabbyAVIFImageDecoder::MatchesAVIFSignature(fast_reader)) {
     return "image/avif";
   }
 #endif
@@ -310,15 +307,9 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
                                                 max_decoded_bytes);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   } else if (mime_type == "image/avif") {
-    if (base::FeatureList::IsEnabled(blink::features::kCrabbyAvif)) {
-      decoder = std::make_unique<CrabbyAVIFImageDecoder>(
-          alpha_option, high_bit_depth_decoding_option, color_behavior,
-          aux_image, max_decoded_bytes, animation_option);
-    } else {
-      decoder = std::make_unique<AVIFImageDecoder>(
-          alpha_option, high_bit_depth_decoding_option, color_behavior,
-          aux_image, max_decoded_bytes, animation_option);
-    }
+    decoder = std::make_unique<CrabbyAVIFImageDecoder>(
+        alpha_option, high_bit_depth_decoding_option, color_behavior, aux_image,
+        max_decoded_bytes, animation_option);
 #endif
   }
 
@@ -529,6 +520,10 @@ uint8_t ImageDecoder::GetYUVBitDepth() const {
 
 std::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
   return std::nullopt;
+}
+
+bool ImageDecoder::HasC2PAManifest() const {
+  return false;
 }
 
 gfx::Size ImageDecoder::FrameSizeAtIndex(wtf_size_t) const {

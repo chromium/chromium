@@ -238,8 +238,7 @@ class ReportTableModel extends TableModel<Report> {
       new ValueColumn<Report, string>(
           'API identifier', (e) => e.apiIdentifier, '90px'),
       new ValueColumn<Report, string>('API version', (e) => e.apiVersion),
-      new CodeColumn<Report>(
-          'Contributions', (e) => (e as Report).contributions),
+      new CodeColumn<Report>('Contributions', (e) => (e).contributions),
       new CodeColumn<Report>('Report Body', (e) => e.reportBody),
     ];
 
@@ -365,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const reportTable =
       document.querySelector<PrivateAggregationInternalsTableElement<Report>>(
           '#reportTable');
-  reportTable!.setModel(reportTableModel!);
+  reportTable!.setModel(reportTableModel);
 
   PrivateAggregationInternalsFactory.getRemote().create(
     new ObserverReceiver(new Observer()).$.bindNewPipeAndPassRemote(),

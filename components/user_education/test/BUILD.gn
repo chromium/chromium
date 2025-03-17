@@ -42,4 +42,13 @@ source_set("test") {
     "//ui/base:test_support",
     "//ui/events",
   ]
+
+  if (toolkit_views) {
+    sources += [
+      "test_custom_help_bubble_view.cc",
+      "test_custom_help_bubble_view.h",
+    ]
+
+    deps += [ "//ui/views" ]
+  }  # toolkit_views
 }

@@ -228,7 +228,6 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that when requesting desktop on another page and coming back to a page
 // that has been purged from memory, we still display the mobile page.
 - (void)testRequestDesktopSiteGoBackToMobilePurged {
-
   std::unique_ptr<web::DataResponseProvider> provider(
       new UserAgentResponseProvider());
   web::test::SetUpHttpServer(std::move(provider));

@@ -36,8 +36,6 @@ constexpr int kMaxLargeCursorSize = 128;
 
 constexpr int kDefaultCaretBlinkIntervalMs = 500;
 
-constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
-
 // Default notification flash color is yellow.
 constexpr SkColor kDefaultFlashNotificationsColor = 0xffff00;
 

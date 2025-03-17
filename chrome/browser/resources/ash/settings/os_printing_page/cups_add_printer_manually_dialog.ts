@@ -10,7 +10,6 @@
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
-import './cups_add_print_server_dialog.js';
 import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
 import './cups_printer_shared.css.js';
@@ -157,7 +156,7 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
               this.onAddPrinterSucceeded_.bind(this),
               this.onAddPrinterFailed_.bind(this));
     } else {
-      this.getAddPrinterDialog_()!.close();
+      this.getAddPrinterDialog_().close();
       this.openManufacturerModelDialog_();
     }
   }
@@ -180,13 +179,13 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
       this.browserProxy_.getPrinterInfo(this.newPrinter)
           .then(this.onPrinterFound_.bind(this), this.infoFailed_.bind(this));
     } else {
-      this.getAddPrinterDialog_()!.close();
+      this.getAddPrinterDialog_().close();
       this.openManufacturerModelDialog_();
     }
   }
 
   private onPrintServerClick_(): void {
-    this.getAddPrinterDialog_()!.close();
+    this.getAddPrinterDialog_().close();
 
     const openAddPrintServerDialogEvent =
         new CustomEvent('open-add-print-server-dialog', {
@@ -200,7 +199,7 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
     // Queue input should be hidden when protocol is set to "App Socket".
     const selectEl = cast(event.target, HTMLSelectElement);
     this.showPrinterQueue_ = selectEl.value !== 'socket';
-    this.set('newPrinter.printerProtocol', selectEl!.value);
+    this.set('newPrinter.printerProtocol', selectEl.value);
   }
 
   private canAddPrinter_(): boolean {

@@ -4,16 +4,7 @@
 
 #include "content/browser/preloading/prerender/prerender_features.h"
 
-#include "third_party/blink/public/common/features.h"
-
 namespace features {
-
-// This was used for enabling a new limit and scheduler for prerender triggers
-// (crbug.com/1464021). Now the new implementation is used by default and this
-// flag is just for injecting parameters through field trials.
-BASE_FEATURE(kPrerender2NewLimitAndScheduler,
-             "Prerender2NewLimitAndScheduler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows activation in background tab. For now, this is used only on web
 // platform tests on macOS to run activation with target hint tests that have
@@ -50,25 +41,28 @@ const base::FeatureParam<size_t> kPrerender2FallbackBodySizeLimit{
     &kPrerender2FallbackPrefetchSpecRules, "kPrerender2FallbackBodySizeLimit",
     65536};
 
+BASE_FEATURE(kPrerender2NoVarySearch,
+             "Prerender2NoVarySearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender{
-        &blink::features::kPrerender2NoVarySearch,
-        "wait_for_headers_timeout_eager_prerender", 1000};
+        &kPrerender2NoVarySearch, "wait_for_headers_timeout_eager_prerender",
+        1000};
 
 const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutModeratePrerender{
-        &blink::features::kPrerender2NoVarySearch,
-        "wait_for_headers_timeout_moderate_prerender", 0};
+        &kPrerender2NoVarySearch, "wait_for_headers_timeout_moderate_prerender",
+        0};
 
 const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutConservativePrerender{
-        &blink::features::kPrerender2NoVarySearch,
+        &kPrerender2NoVarySearch,
         "wait_for_headers_timeout_conservative_prerender", 0};
 
 const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutForEmbedders{
-        &blink::features::kPrerender2NoVarySearch,
-        "wait_for_headers_timeout_embedders", 1000};
+        &kPrerender2NoVarySearch, "wait_for_headers_timeout_embedders", 1000};
 
 // If enabled, suppresses prerendering on slow network.
 BASE_FEATURE(kSuppressesPrerenderingOnSlowNetwork,

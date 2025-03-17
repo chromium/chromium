@@ -33,10 +33,10 @@ CastDeviceFooterView::CastDeviceFooterView(
     base::RepeatingClosure stop_casting_callback,
     media_message_center::MediaColorTheme media_color_theme)
     : stop_casting_callback_(std::move(stop_casting_callback)) {
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme.device_selector_border_color_id));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       media_color_theme.device_selector_background_color_id,
       kBackgroundCornerRadius));
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -58,7 +58,7 @@ CastDeviceFooterView::CastDeviceFooterView(
     device_name_->SetText(base::UTF8ToUTF16(device_name.value()));
   }
   device_name_->SetTextStyle(views::style::STYLE_BODY_2_MEDIUM);
-  device_name_->SetEnabledColorId(
+  device_name_->SetEnabledColor(
       media_color_theme.device_selector_foreground_color_id);
   device_name_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   layout->SetFlexForView(device_name_, 1);
@@ -78,10 +78,10 @@ CastDeviceFooterView::CastDeviceFooterView(
   stop_casting_button_->SetBorder(
       views::CreateEmptyBorder(kStopCastingButtonInsets));
   stop_casting_button_->SetLabelStyle(views::style::STYLE_BODY_5);
-  stop_casting_button_->SetEnabledTextColorIds(
+  stop_casting_button_->SetEnabledTextColors(
       media_color_theme.error_foreground_color_id);
   stop_casting_button_->SetImageLabelSpacing(kStopCastingButtonSeparator);
-  stop_casting_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+  stop_casting_button_->SetBackground(views::CreateRoundedRectBackground(
       media_color_theme.error_container_color_id,
       kStopCastingButtonCornerRadius));
 

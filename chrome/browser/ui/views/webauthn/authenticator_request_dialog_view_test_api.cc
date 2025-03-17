@@ -4,32 +4,38 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_test_api.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_controller_views.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
-#include "components/constrained_window/constrained_window_views.h"
 
 namespace test {
 
 // static
-AuthenticatorRequestDialogView*
-AuthenticatorRequestDialogViewTestApi::CreateDialogView(
-    content::WebContents* web_contents,
-    AuthenticatorRequestDialogModel* dialog_model) {
-  return new AuthenticatorRequestDialogView(web_contents, dialog_model);
-}
-
-// static
-void AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
-    AuthenticatorRequestDialogView* dialog,
+void AuthenticatorRequestDialogViewTestApi::SetSheetTo(
+    AuthenticatorRequestDialogViewControllerViews* controller,
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
-  dialog->ReplaceCurrentSheetWith(std::move(new_sheet));
-  dialog->Show();
+  AuthenticatorRequestDialogView* view = GetView(controller);
+  view->ReplaceCurrentSheetWith(std::move(new_sheet));
+  view->Show();
 }
 
 // static
 AuthenticatorRequestSheetView* AuthenticatorRequestDialogViewTestApi::GetSheet(
-    AuthenticatorRequestDialogView* dialog) {
-  return dialog->sheet_;
+    AuthenticatorRequestDialogViewControllerViews* controller) {
+  return GetView(controller)->sheet_;
+}
+
+// static
+AuthenticatorRequestDialogView* AuthenticatorRequestDialogViewTestApi::GetView(
+    AuthenticatorRequestDialogViewControllerViews* controller) {
+  CHECK(controller);
+  AuthenticatorRequestDialogView* view =
+      controller->view_for_test();  // IN-TEST
+  CHECK(view);
+  return view;
 }
 
 }  // namespace test

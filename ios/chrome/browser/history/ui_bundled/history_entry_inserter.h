@@ -17,7 +17,7 @@ class Time;
 
 // Delegate for HistoryEntryInserter. Provides callbacks for completion of item
 // and section insertion and deletion.
-@protocol HistoryEntryInserterDelegate<NSObject>
+@protocol HistoryEntryInserterDelegate <NSObject>
 // Invoked when the inserter has finished inserting an item.
 - (void)historyEntryInserter:(HistoryEntryInserter*)inserter
     didInsertItemAtIndexPath:(NSIndexPath*)indexPath;

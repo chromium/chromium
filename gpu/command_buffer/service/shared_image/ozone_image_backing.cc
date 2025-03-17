@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
@@ -141,6 +142,7 @@ OzoneImageBacking::GetSinglePlaneGpuMemoryBufferHandle(uint32_t index) {
 #else
   DCHECK(gmb_handle.native_pixmap_handle.modifier == 0);
   auto& planes = gmb_handle.native_pixmap_handle.planes;
+  CHECK(!planes.empty());
   DCHECK(index < planes.size());
   gfx::NativePixmapPlane plane = std::move(planes[index]);
   planes.clear();
@@ -156,6 +158,9 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     wgpu::BackendType backend_type,
     std::vector<wgpu::TextureFormat> view_formats,
     scoped_refptr<SharedContextState> context_state) {
+  // Creating a representation in GPU is not allowed when usage is CPU only.
+  CHECK(!(usage().Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)));
+
 #if BUILDFLAG(USE_DAWN)
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
@@ -177,6 +182,9 @@ OzoneImageBacking::ProduceSkiaGraphite(
     scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state);
   CHECK(context_state->IsGraphiteDawn());
+  // Creating a representation in GPU is not allowed when usage is CPU only.
+  CHECK(!(usage().Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)));
+
 #if BUILDFLAG(SKIA_USE_DAWN)
   auto device = context_state->dawn_context_provider()->GetDevice();
   auto backend_type = context_state->dawn_context_provider()->backend_type();
@@ -189,7 +197,7 @@ OzoneImageBacking::ProduceSkiaGraphite(
 
   // Use GPU main recorder since this should only be called for
   // fulfilling Graphite promise images on GPU main thread.
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
@@ -236,7 +244,7 @@ OzoneImageBacking::RetainGLTexturePerContextCache() {
   // fail when doing multiple reimport of dmas (and creating multiple textures
   // from a single image). See https://crbug.com/1498703.
   scoped_refptr<OzoneImageGLTexturesHolder> new_holder;
-  const auto context_cache_pair = base::ranges::find_if(
+  const auto context_cache_pair = std::ranges::find_if(
       per_context_cached_textures_holders_.begin(),
       per_context_cached_textures_holders_.end(),
       [current_context](const auto& holder_per_context) {
@@ -283,6 +291,9 @@ OzoneImageBacking::RetainGLTexturePerContextCache() {
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                MemoryTypeTracker* tracker) {
+  // Creating a representation in GPU is not allowed when usage is CPU only.
+  CHECK(!(usage().Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)));
+
   auto texture_holder = RetainGLTexturePerContextCache();
   if (!texture_holder) {
     return nullptr;
@@ -301,6 +312,9 @@ OzoneImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
+  // Creating a representation in GPU is not allowed when usage is CPU only.
+  CHECK(!(usage().Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)));
+
   if (context_state->GrContextIsGL()) {
     auto gl_representation = ProduceGLTexturePassthrough(manager, tracker);
     if (!gl_representation) {
@@ -340,6 +354,10 @@ OzoneImageBacking::ProduceSkiaGanesh(
       }
       vulkan_images.push_back(std::move(vulkan_image));
     } else {
+      // Set debug_label crash key for the OzoneImageBacking with multiplanar
+      // formats where we fail to get proper GpuMemoryBufferHandle.
+      SCOPED_CRASH_KEY_STRING32("ozone image backing", "debug label",
+                                debug_label());
       // For multi-planar SharedImages, we create a VkImage per plane. We
       // also need to pass the correct plane when creating the VulkanImage.
       for (int i = 0; i < format().NumberOfPlanes(); i++) {
@@ -372,6 +390,9 @@ OzoneImageBacking::ProduceSkiaGanesh(
 std::unique_ptr<OverlayImageRepresentation> OzoneImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
+  // Creating a representation in GPU is not allowed when usage is CPU only.
+  CHECK(!(usage().Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)));
+
   return std::make_unique<OverlayOzoneImageRepresentation>(manager, this,
                                                            tracker);
 }
@@ -389,17 +410,18 @@ OzoneImageBacking::OzoneImageBacking(
     scoped_refptr<gfx::NativePixmap> pixmap,
     const GpuDriverBugWorkarounds& workarounds,
     std::optional<gfx::BufferUsage> buffer_usage)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
-                                      GetPixmapSizeInBytes(*pixmap),
-                                      false,
-                                      std::move(buffer_usage)),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          format,
+          size,
+          color_space,
+          surface_origin,
+          alpha_type,
+          usage,
+          std::move(debug_label),
+          pixmap ? GetPixmapSizeInBytes(*pixmap) : 0,
+          false,
+          std::move(buffer_usage)),
       pixmap_(std::move(pixmap)),
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
@@ -451,6 +473,9 @@ std::unique_ptr<VulkanImageRepresentation> OzoneImageBacking::ProduceVulkan(
     gpu::VulkanDeviceQueue* vulkan_device_queue,
     gpu::VulkanImplementation& vulkan_impl,
     bool needs_detiling) {
+  // Creating a representation in GPU is not allowed when usage is CPU only.
+  CHECK(!(usage().Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)));
+
   viz::SharedImageFormat image_format = format();
   gfx::Size image_size = size();
   gfx::GpuMemoryBufferHandle gmb_handle = GetGpuMemoryBufferHandle();

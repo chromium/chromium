@@ -4,11 +4,12 @@
 
 #include "extensions/browser/script_injection_tracker.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/buildflags/buildflags.h"
@@ -29,6 +30,7 @@
 #include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/trace_util.h"
 #include "extensions/common/user_script.h"
@@ -196,7 +198,7 @@ std::vector<const UserScript*> GetLoadedDynamicScripts(
 GURL GetEffectiveDocumentURL(
     content::RenderFrameHost* frame,
     const GURL& document_url,
-    MatchOriginAsFallbackBehavior match_origin_as_fallback) {
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback) {
   // This is a simplification to avoid calling
   // `BrowserFrameContextData::CanAccess` which is unable to replicate all of
   // WebSecurityOrigin::CanAccess checks (e.g. universal access or file
@@ -293,7 +295,7 @@ bool DoScriptsMatch(const Extension& extension,
                     const std::vector<const UserScript*>& scripts,
                     content::RenderFrameHost& frame,
                     const GURL& url) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       scripts.begin(), scripts.end(),
       [&extension, &frame, &url](const UserScript* script) {
         return DoesScriptMatch(extension, *script, frame, url);

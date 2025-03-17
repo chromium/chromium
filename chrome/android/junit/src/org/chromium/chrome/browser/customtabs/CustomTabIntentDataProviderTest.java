@@ -19,6 +19,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -1628,5 +1629,52 @@ public class CustomTabIntentDataProviderTest {
 
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(CustomTabsUiType.DEFAULT, dataProvider.getUiType());
+    }
+
+    @Test
+    public void setCloseButtonDisabled() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, false);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(dataProvider.isCloseButtonEnabled());
+    }
+
+    @Test
+    public void setCloseButtonEnabled() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, true);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(dataProvider.isCloseButtonEnabled());
+    }
+
+    @Test
+    public void testCloseButtonDisabled_disablesCloseButtonCustomization() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        Bitmap icon =
+                Bitmap.createBitmap(/* width= */ 16, /* height= */ 16, Bitmap.Config.ARGB_8888);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, false);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, icon);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(dataProvider.isCloseButtonEnabled());
+        assertNull(dataProvider.getCloseButtonDrawable());
+        assertEquals(
+                CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT,
+                dataProvider.getCloseButtonPosition());
+    }
+
+    @Test
+    public void testCloseButtonEnabledByDefault_enablesCloseButtonCustomization() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        Bitmap icon =
+                Bitmap.createBitmap(/* width= */ 16, /* height= */ 16, Bitmap.Config.ARGB_8888);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, icon);
+        intent.putExtra(
+                CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION,
+                CustomTabsIntent.CLOSE_BUTTON_POSITION_END);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(dataProvider.isCloseButtonEnabled());
+        assertNotNull(dataProvider.getCloseButtonDrawable());
+        assertEquals(
+                CustomTabsIntent.CLOSE_BUTTON_POSITION_END, dataProvider.getCloseButtonPosition());
     }
 }

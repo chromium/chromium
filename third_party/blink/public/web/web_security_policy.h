@@ -132,6 +132,13 @@ class BLINK_EXPORT WebSecurityPolicy {
   // response time match from the network cache.
   static void RegisterURLSchemeAsCodeCacheWithHashing(const WebString&);
 
+  // Registers a WebUI URL scheme which can use bundled resource bytecode,
+  // retrieved from the application's static resource bundle. This is only used
+  // for renderer-side checks (the concept does not generalize beyond the
+  // renderer). As a result there is no need to mirror this policy into
+  // ChildProcessSecurityPolicy or browser-side scheme registration.
+  static void RegisterURLSchemeAsWebUIBundledBytecode(const WebString&);
+
  private:
   WebSecurityPolicy() = delete;
 };

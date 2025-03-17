@@ -4,8 +4,8 @@
 
 import type {BookmarksFolderNodeElement, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
 import {selectFolder} from 'chrome://bookmarks/bookmarks.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
@@ -44,12 +44,12 @@ suite('<bookmarks-folder-node>', function() {
     rootNode.itemId = '0';
     rootNode.depth = -1;
     replaceBody(rootNode);
-    flush();
+    return microtasksFinished();
   });
 
-  test('selecting and deselecting folders dispatches action', function() {
+  test('selecting and deselecting folders dispatches action', async () => {
     const rootFolders =
-        rootNode.shadowRoot!.querySelectorAll('bookmarks-folder-node');
+        rootNode.shadowRoot.querySelectorAll('bookmarks-folder-node');
     const firstGen = rootFolders[0]!.$['descendants'].querySelectorAll(
         'bookmarks-folder-node');
     const secondGen =
@@ -71,6 +71,7 @@ suite('<bookmarks-folder-node>', function() {
     // Doesn't re-select if the folder is already selected.
     store.data.selectedFolder = '7';
     store.notifyObservers();
+    await microtasksFinished();
     store.resetLastAction();
 
     rootFolders[1]!.$['container'].click();
@@ -79,7 +80,7 @@ suite('<bookmarks-folder-node>', function() {
 
   test('depth calculation', function() {
     const rootFolders =
-        rootNode.shadowRoot!.querySelectorAll('bookmarks-folder-node');
+        rootNode.shadowRoot.querySelectorAll('bookmarks-folder-node');
     const firstGen = rootFolders[0]!.$['descendants'].querySelectorAll(
         'bookmarks-folder-node');
     const secondGen =
@@ -99,9 +100,9 @@ suite('<bookmarks-folder-node>', function() {
     });
   });
 
-  test('doesn\'t highlight selected folder while searching', function() {
+  test('doesn\'t highlight selected folder while searching', async () => {
     const rootFolders =
-        rootNode.shadowRoot!.querySelectorAll('bookmarks-folder-node');
+        rootNode.shadowRoot.querySelectorAll('bookmarks-folder-node');
 
     assertEquals('1', rootFolders[0]!.itemId);
     assertTrue(rootFolders[0]!.$.container.hasAttribute('selected'));
@@ -112,23 +113,26 @@ suite('<bookmarks-folder-node>', function() {
       results: ['3'],
     };
     store.notifyObservers();
+    await microtasksFinished();
 
     assertFalse(rootFolders[0]!.$.container.hasAttribute('selected'));
   });
 
-  test('last visible descendant', function() {
+  test('last visible descendant', async () => {
     assertEquals('7', rootNode.getLastVisibleDescendant().itemId);
     assertEquals('4', getFolderNode('1')!.getLastVisibleDescendant().itemId);
 
     store.data.folderOpenState.set('2', false);
     store.notifyObservers();
+    await microtasksFinished();
 
     assertEquals('2', getFolderNode('1')!.getLastVisibleDescendant().itemId);
   });
 
-  test('deep folders are hidden by default', function() {
+  test('deep folders are hidden by default', async () => {
     store.data.folderOpenState = new Map();
     store.notifyObservers();
+    await microtasksFinished();
     assertTrue(getFolderNode('0')!.isOpen);
     assertTrue(getFolderNode('1')!.isOpen);
     assertTrue(getFolderNode('2')!.isOpen);
@@ -142,7 +146,7 @@ suite('<bookmarks-folder-node>', function() {
     assertEquals(null, getFolderNode('0')!.getParentFolderNode());
   });
 
-  test('next/previous folder nodes', function() {
+  test('next/previous folder nodes', async () => {
     function getNextChild(parentId: string, targetId: string, reverse: boolean):
         BookmarksFolderNodeElement|null {
       return getFolderNode(parentId)!.getNextChild(
@@ -161,6 +165,7 @@ suite('<bookmarks-folder-node>', function() {
     // Skips closed folders.
     store.data.folderOpenState.set('2', false);
     store.notifyObservers();
+    await microtasksFinished();
 
     assertEquals(null, getNextChild('1', '2', false));
     assertEquals('2', getNextChild('0', '7', true)!.itemId);

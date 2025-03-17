@@ -109,12 +109,7 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
 
   void SendPings(const KURL& destination_url) const;
 
-  // Element overrides:
-  void SetHovered(bool hovered) override;
-
   Element* interestTargetElement() override;
-
-  AtomicString interestAction() const override;
 
   void Trace(Visitor*) const override;
 

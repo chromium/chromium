@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {NearbyShareReceiveDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrCardRadioButtonElement, CrDialogElement, NearbyProgressElement, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/os_settings.js';
+import type {NearbyShareReceiveDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrCardRadioButtonElement, CrDialogElement, NearbyProgressElement} from 'chrome://os-settings/os_settings.js';
+import {setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/os_settings.js';
 import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';

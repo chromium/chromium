@@ -39,12 +39,13 @@ import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
   $: {
+    accountStorageToggle: PrefToggleButtonElement,
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
+    passkeyUpgradeToggle: PrefToggleButtonElement,
     passwordToggle: PrefToggleButtonElement,
-    trustedVaultBanner: CrLinkRowElement,
-    accountStorageToggle: PrefToggleButtonElement,
     toast: CrToastElement,
+    trustedVaultBanner: CrLinkRowElement,
   };
 }
 
@@ -84,6 +85,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         },
       },
       // </if>
+
+      isPasskeyUpgradeSettingsToggleVisible_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('passkeyUpgradeSettingsToggleVisible');
+        },
+      },
 
       hasPasswordsToExport_: {
         type: Boolean,
@@ -141,13 +149,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
-      isDeleteAllPasswordManagerDataRowAvailable_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableWebAuthnGpmPin');
-        },
-      },
-
       localPasswordCount_: {
         type: Number,
         value: 0,
@@ -165,6 +166,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private blockedSites_: BlockedSite[];
   private hasPasskeys_: boolean;
   private hasPasswordsToExport_: boolean;
+  private isPasskeyUpgradeSettingsToggleVisible_: boolean;
   private showPasswordsImporter_: boolean;
   private showMovePasswordsDialog_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
@@ -175,7 +177,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private isDisconnectCloudAuthenticatorInProgress_: boolean = false;
   private toastMessage_: string = '';
   private showDisconnectCloudAuthenticatorDialog_: boolean = false;
-  private isDeleteAllPasswordManagerDataRowAvailable_: boolean;
   // This variable depend on the sync service API, which the Batch Upload Dialog
   // uses.
   private localPasswordCount_: number = 0;
@@ -322,7 +323,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   // <if expr="is_win or is_macosx or is_chromeos">
   private switchBiometricAuthBeforeFillingState_(e: Event) {
     const biometricAuthenticationForFillingToggle =
-        e!.target as PrefToggleButtonElement;
+        e.target as PrefToggleButtonElement;
     assert(biometricAuthenticationForFillingToggle);
     PasswordManagerImpl.getInstance().switchBiometricAuthBeforeFillingState();
   }

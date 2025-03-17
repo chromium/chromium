@@ -57,14 +57,6 @@ public interface LocationBar {
      */
     void clearUrlBarCursorWithoutFocusAnimations();
 
-    /**
-     * Request to unfocus url bar on back gesture or when OS back button is pressed.
-     *
-     * @return True if url bar is unfocused. False if url bar has already been unfocused when back
-     *     is pressed.
-     */
-    boolean unfocusUrlBarOnBackPressed();
-
     /** Selects all of the editable text in the {@link UrlBar}. */
     void selectAll();
 

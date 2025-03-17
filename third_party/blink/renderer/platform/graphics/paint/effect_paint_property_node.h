@@ -135,6 +135,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     // propagated to the subtree of the effect tree.
     bool self_or_ancestor_participates_in_view_transition = false;
 
+    bool has_2d_scale_transform = false;
+
     PaintPropertyChangeType ComputeChange(
         const State& other,
         const AnimationState& animation_state) const;
@@ -333,6 +335,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   bool SelfOrAncestorParticipatesInViewTransition() const {
     return state_.self_or_ancestor_participates_in_view_transition;
   }
+
+  bool Has2DScaleTransform() const { return state_.has_2d_scale_transform; }
 
   std::unique_ptr<JSONObject> ToJSON() const final;
 

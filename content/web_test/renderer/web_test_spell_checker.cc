@@ -15,16 +15,14 @@
 #include <array>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 
 namespace content {
 
 namespace {
 
-void Append(blink::WebVector<blink::WebString>* data,
-            const blink::WebString& item) {
-  blink::WebVector<blink::WebString> result(data->size() + 1);
+void Append(std::vector<blink::WebString>* data, const blink::WebString& item) {
+  std::vector<blink::WebString> result(data->size() + 1);
   for (size_t i = 0; i < data->size(); ++i)
     result[i] = (*data)[i];
   result[data->size()] = item;
@@ -67,7 +65,7 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     // If the given string doesn't include any ASCII characters, we can treat
     // the string as valid one.
     std::u16string::iterator first_char =
-        base::ranges::find_if(string_text, IsASCIIAlpha);
+        std::ranges::find_if(string_text, IsASCIIAlpha);
     if (first_char == string_text.end())
       return true;
     int word_offset = std::distance(string_text.begin(), first_char);
@@ -136,7 +134,7 @@ bool WebTestSpellChecker::IsMultiWordMisspelling(
 
 void WebTestSpellChecker::FillSuggestionList(
     const blink::WebString& word,
-    blink::WebVector<blink::WebString>* suggestions) {
+    std::vector<blink::WebString>* suggestions) {
   if (word == "wellcome")
     Append(suggestions, blink::WebString::FromUTF8("welcome"));
   else if (word == "upper case")

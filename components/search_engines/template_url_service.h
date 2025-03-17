@@ -24,7 +24,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -52,6 +51,10 @@ struct TemplateURLData;
 class TemplateUrlServiceAndroid;
 #endif
 
+namespace regional_capabilities {
+class CountryIdHolder;
+}  // namespace regional_capabilities
+
 namespace search_engines {
 class SearchEngineChoiceService;
 class ChoiceScreenData;
@@ -59,6 +62,10 @@ class ChoiceScreenData;
 
 namespace syncer {
 class SyncData;
+}
+
+namespace TemplateURLPrepopulateData {
+class Resolver;
 }
 
 namespace user_prefs {
@@ -140,6 +147,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   TemplateURLService(
       PrefService& prefs,
       search_engines::SearchEngineChoiceService& search_engine_choice_service,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       std::unique_ptr<SearchTermsData> search_terms_data,
       const scoped_refptr<KeywordWebDataService>& web_data_service,
       std::unique_ptr<TemplateURLServiceClient> client,
@@ -150,6 +158,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   explicit TemplateURLService(
       PrefService& prefs,
       search_engines::SearchEngineChoiceService& search_engine_choice_service,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       base::span<const TemplateURLService::Initializer> initializers = {});
 
   TemplateURLService(const TemplateURLService&) = delete;
@@ -198,11 +207,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   bool BothPolicySetKeywordsNotOverriden(const TemplateURL* template_url) const;
 
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
-  // sorted shortest-keyword-first. If |supports_replacement_only| is true, only
-  // TemplateURLs that support replacement are returned. This method must be
+  // sorted shortest-keyword-first. This method must be
   // efficient, since it's run roughly once per omnibox keystroke.
   void AddMatchingKeywords(const std::u16string& prefix,
-                           bool supports_replacement_only,
                            TemplateURLVector* matches);
 
   // Looks up |keyword| and returns the best TemplateURL for it.  Returns
@@ -230,6 +237,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Caller must ensure TemplateURLService is loaded before calling this.
   // TODO(crbug.com/40224222): Delete after bug is fixed.
   size_t GetTemplateURLCountForHostForLogging(const std::string& host) const;
+
+  // Returns the TemplateURL associated with |extension_id|, if any.
+  TemplateURL* FindTemplateURLForExtension(const std::string& extension_id,
+                                           TemplateURL::Type type);
 
   // Adds a new TemplateURL to this model.
   //
@@ -306,6 +317,15 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   TemplateURLService::TemplateURLVector GetFeaturedEnterpriseSearchEngines()
       const;
+
+  // Returns the TemplateURL created by the EnterpriseSearchAggregatorSettings
+  // policy.
+  TemplateURL* GetEnterpriseSearchAggregatorEngine() const;
+
+  // Returns the value of `EnterpriseSearchAggregatorSettings.require_shortcut`
+  // policy from the prefs indicating whether keyword mode is required for using
+  // the enterprise search aggregator TemplateURL.
+  bool IsShortcutRequiredForSearchAggregatorEngine() const;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the list prepopulated template URLs for `country_code`.
@@ -408,33 +428,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns search metadata if |url| is a valid Search URL.
   std::optional<SearchMetadata> ExtractSearchMetadata(const GURL& url) const;
-
-  // Returns true if the default search provider supports the side search
-  // feature.
-  bool IsSideSearchSupportedForDefaultSearchProvider() const;
-
-  // Returns true if the default search provider supports the opening
-  // image search requests in the side panel.
-  bool IsSideImageSearchSupportedForDefaultSearchProvider() const;
-
-  // Generates a side search URL for the default search provider's search url.
-  GURL GenerateSideSearchURLForDefaultSearchProvider(
-      const GURL& search_url,
-      const std::string& version) const;
-
-  // Takes a search URL that belongs to this side search in the side panel and
-  // removes the side search param from the URL.
-  GURL RemoveSideSearchParamFromURL(const GURL& side_search_url) const;
-
-  // Generates a side image search URL for the default search provider's image
-  // search url.
-  GURL GenerateSideImageSearchURLForDefaultSearchProvider(
-      const GURL& image_search_url,
-      const std::string& version) const;
-
-  // Takes a search URL that belongs to this image search in the side panel and
-  // removes the side image search param from the URL.
-  GURL RemoveSideImageSearchParamFromURL(const GURL& image_search_url) const;
 
   // Returns true if the default search is managed through group policy.
   bool is_default_search_managed() const {
@@ -545,21 +538,16 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void StopSyncing(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
-  // Processes a local TemplateURL change for Sync. |turl| is the TemplateURL
-  // that has been modified, and |type| is the Sync ChangeType that took place.
+  // Processes a TemplateURL change for Sync. `turl` is the TemplateURL
+  // that has been modified, and `type` is the Sync ChangeType that took place.
   // This may send a new SyncChange to the cloud. If our model has not yet been
   // associated with Sync, or if this is triggered by a Sync change, then this
-  // does nothing.
+  // does nothing. In case local and account data are kept separate, this copies
+  // the current active value, over to both the local and the account data,
+  // thereby dual-writing the the template url upon change.
   void ProcessTemplateURLChange(const base::Location& from_here,
-                                const TemplateURL* turl,
+                                TemplateURL* turl,
                                 syncer::SyncChange::SyncChangeType type);
-
-  // Returns whether the device is from an EEA country. This is consistent with
-  // countries which are eligible for the EEA default search engine choice
-  // prompt. "Default country" or "country at install" are used for
-  // SearchEngineChoiceCountry. It might be different than what LocaleUtils
-  // returns.
-  bool IsEeaChoiceCountry();
 
   // Returns a SearchTermsData which can be used to call TemplateURL methods.
   const SearchTermsData& search_terms_data() const {
@@ -577,20 +565,15 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // data.
   void ClearSessionToken();
 
-  // Explicitly converts from ActiveStatus enum in sync protos to enum in
-  // TemplateURLData.
-  static TemplateURLData::ActiveStatus ActiveStatusFromSync(
-      sync_pb::SearchEngineSpecifics_ActiveStatus is_active);
-
   // Explicitly converts from ActiveStatus enum in TemplateURLData to enum in
   // sync protos.
   static sync_pb::SearchEngineSpecifics_ActiveStatus ActiveStatusToSync(
       TemplateURLData::ActiveStatus is_active);
 
   // Returns a SyncData with a sync representation of the search engine data
-  // from |turl|.
-  static syncer::SyncData CreateSyncDataFromTemplateURL(
-      const TemplateURL& turl);
+  // from `data`.
+  static syncer::SyncData CreateSyncDataFromTemplateURLData(
+      const TemplateURLData& data);
 
   // Creates a new heap-allocated TemplateURL* which is populated by overlaying
   // |sync_data| atop |existing_turl|.  |existing_turl| may be NULL; if not it
@@ -605,8 +588,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   static std::unique_ptr<TemplateURL>
   CreateTemplateURLFromTemplateURLAndSyncData(
       TemplateURLServiceClient* client,
-      PrefService* prefs,
-      search_engines::SearchEngineChoiceService* search_engine_choice_service,
+      const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       const SearchTermsData& search_terms_data,
       const TemplateURL* existing_turl,
       const syncer::SyncData& sync_data,
@@ -642,6 +624,18 @@ class TemplateURLService final : public WebDataServiceConsumer,
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceSyncTest, MergeInSyncTemplateURL);
   FRIEND_TEST_ALL_PREFIXES(LocationBarModelTest, GoogleBaseURL);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceUnitTest, SessionToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+      ShouldNotSendUpdateToSyncIfAccountDataIsUnchanged);
+  FRIEND_TEST_ALL_PREFIXES(
+      TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+      ShouldNotDualWriteUponUpdateTemplateURLVisitTime);
+  FRIEND_TEST_ALL_PREFIXES(
+      TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+      ShouldNotDualWriteUponUpdateTemplateURLVisitTimeForLocalOnlyTemplateURL);
+  FRIEND_TEST_ALL_PREFIXES(
+      TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+      ShouldNotDualWriteUponUpdateTemplateURLVisitTimeForAccountOnlyTemplateURL);
 
   friend class InstantUnitTestBase;
   friend class Scoper;
@@ -758,14 +752,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // updates needed in that case.
   bool Update(TemplateURL* existing_turl, const TemplateURL& new_values);
 
-  // If the TemplateURL comes from a prepopulated URL available in the current
-  // country, update all its fields save for the keyword, short name and id so
-  // that they match the internal prepopulated URL. TemplateURLs not coming from
-  // a prepopulated URL are not modified.
-  static void UpdateTemplateURLIfPrepopulated(
-      TemplateURL* existing_turl,
-      PrefService* prefs,
-      search_engines::SearchEngineChoiceService* search_engine_choice_service);
+  // Similar to Update(), however updates only the current active value of
+  // `existing_turl` with `new_data`. The current active value can either be the
+  // local value or the account value.
+  bool UpdateData(TemplateURL* existing_turl, TemplateURLData new_data);
 
   // If the TemplateURL's sync GUID matches the kSyncedDefaultSearchProviderGUID
   // preference it will be used to update the DSE in prefs.
@@ -844,21 +834,14 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void MaybeSetIsActiveSearchEngines(OwnedTemplateURLVector* template_urls);
 
   // Adds to |matches| all TemplateURLs stored in |keyword_to_turl|
-  // whose keywords begin with |prefix|, sorted shortest-keyword-first.  If
-  // |supports_replacement_only| is true, only TemplateURLs that support
-  // replacement are returned.
+  // whose keywords begin with |prefix|, sorted shortest-keyword-first.
   template <typename Container>
   void AddMatchingKeywordsHelper(const Container& keyword_to_turl,
                                  const std::u16string& prefix,
-                                 bool supports_replacement_only,
                                  TemplateURLVector* matches);
 
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.
   TemplateURL* FindPrepopulatedTemplateURL(int prepopulated_id);
-
-  // Returns the TemplateURL associated with |extension_id|, if any.
-  TemplateURL* FindTemplateURLForExtension(const std::string& extension_id,
-                                           TemplateURL::Type type);
 
   // Finds any NORMAL_CONTROLLED_BY_EXTENSION engine that matches |data| and
   // wants to be default. Returns nullptr if not found.
@@ -899,10 +882,12 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void LogSearchPolicyConflict(
       const OwnedTemplateURLVector& policy_search_engines);
 
-  int initial_keywords_database_country() {
+  const std::optional<regional_capabilities::CountryIdHolder>&
+  initial_keywords_database_country() {
     return initial_keywords_database_country_;
   }
-  int updated_keywords_database_country() {
+  const std::optional<regional_capabilities::CountryIdHolder>&
+  updated_keywords_database_country() {
     return updated_keywords_database_country_;
   }
 
@@ -911,6 +896,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   raw_ref<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
+
+  raw_ref<TemplateURLPrepopulateData::Resolver> prepopulate_data_resolver_;
 
   std::unique_ptr<SearchTermsData> search_terms_data_ =
       std::make_unique<SearchTermsData>();
@@ -1050,8 +1037,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   std::string postponed_deleted_default_engine_guid_;
 
   // TODO(b:380002162) - Remove these 2 properties when the bug is fixed.
-  int initial_keywords_database_country_ = country_codes::kCountryIDUnknown;
-  int updated_keywords_database_country_ = country_codes::kCountryIDUnknown;
+  std::optional<regional_capabilities::CountryIdHolder>
+      initial_keywords_database_country_;
+  std::optional<regional_capabilities::CountryIdHolder>
+      updated_keywords_database_country_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this TemplateURLService on

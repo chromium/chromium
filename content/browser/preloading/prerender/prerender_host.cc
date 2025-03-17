@@ -8,7 +8,9 @@
 #include <optional>
 
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
@@ -42,6 +44,7 @@
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
 
 namespace content {
@@ -116,10 +119,10 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   // `potential_activation_headers` doesn't contain it. Remove "Purpose" and
   // "Sec-Purpose" matching from consideration so that activation works with the
   // header.
-  prerender_headers.RemoveHeader("Purpose");
-  potential_activation_headers.RemoveHeader("Purpose");
-  prerender_headers.RemoveHeader("Sec-Purpose");
-  potential_activation_headers.RemoveHeader("Sec-Purpose");
+  prerender_headers.RemoveHeader(blink::kPurposeHeaderName);
+  potential_activation_headers.RemoveHeader(blink::kPurposeHeaderName);
+  prerender_headers.RemoveHeader(blink::kSecPurposeHeaderName);
+  potential_activation_headers.RemoveHeader(blink::kSecPurposeHeaderName);
 
   prerender_headers.RemoveHeader("RTT");
   potential_activation_headers.RemoveHeader("RTT");
@@ -313,14 +316,12 @@ bool PrerenderHost::IsActivationHeaderMatch(
 }
 
 PrerenderHost::~PrerenderHost() {
-  for (auto& observer : observers_) {
-    observer.OnHostDestroyed(
-        final_status_.value_or(PrerenderFinalStatus::kDestroyed));
-  }
-
-  if (!final_status_) {
+  if (!final_status_.has_value()) {
     RecordFailedFinalStatusImpl(
         PrerenderCancellationReason(PrerenderFinalStatus::kDestroyed));
+  }
+  for (auto& observer : observers_) {
+    observer.OnHostDestroyed(final_status_.value());
   }
 
   // If we are still waiting on test loop, we can assume the page loading step
@@ -366,6 +367,12 @@ FrameTree* PrerenderHost::GetOwnedPictureInPictureFrameTree() {
 
 FrameTree* PrerenderHost::GetPictureInPictureOpenerFrameTree() {
   return nullptr;
+}
+
+bool PrerenderHost::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  return false;
 }
 
 FrameTreeNodeId PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
@@ -522,8 +529,7 @@ void PrerenderHost::ReadyToCommitNavigation(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
-      navigation_request->response() &&
+  if (navigation_request->response() &&
       navigation_request->response()->parsed_headers &&
       navigation_request->response()
           ->parsed_headers->no_vary_search_with_parse_error) {
@@ -815,6 +821,15 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   return true;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// The flag below is provided in case the workaround had a bug. Use the flag to
+// revert back to the previous behavior.
+// TODO(crbug.com/399478939): Remove the workaround and this flag.
+BASE_FEATURE(kPrerenderActivationMismatchWebViewWorkaround,
+             "PrerenderActivationMismatchWebViewWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     const GURL& potential_activation_url,
@@ -832,14 +847,22 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kInitiatorFrameToken;
   }
 
-  if (!AreHttpRequestHeadersCompatible(
-          potential_activation.headers,
 #if BUILDFLAG(IS_ANDROID)
-          web_contents_->GetBrowserContext()->GetExtraHeadersForUrl(
-              potential_activation_url),
+  std::string activation_additional_headers_str;
+  bool workaround_enabled = base::FeatureList::IsEnabled(
+      kPrerenderActivationMismatchWebViewWorkaround);
+  if (!workaround_enabled || !IsSpeculationRuleType(trigger_type())) {
+    activation_additional_headers_str =
+        web_contents_->GetBrowserContext()->GetExtraHeadersForUrl(
+            potential_activation_url);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
-          begin_params_->headers, trigger_type(), GetHistogramSuffix(),
-          reason)) {
+  if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
+#if BUILDFLAG(IS_ANDROID)
+                                       activation_additional_headers_str,
+#endif  // BUILDFLAG(IS_ANDROID)
+                                       begin_params_->headers, trigger_type(),
+                                       GetHistogramSuffix(), reason)) {
     return ActivationNavigationParamsMatch::kHttpRequestHeader;
   }
 
@@ -1074,6 +1097,10 @@ void PrerenderHost::RecordFailedFinalStatusImpl(
   // Set failure reason for this PreloadingAttempt specific to the
   // FinalStatus.
   SetFailureReason(reason);
+
+  for (auto& observer : observers_) {
+    observer.OnFailed(final_status_.value());
+  }
 }
 
 void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {
@@ -1237,8 +1264,8 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kAllPrerenderingCanceled:
     case PrerenderFinalStatus::kWindowClosed:
     case PrerenderFinalStatus::kSlowNetwork:
-    case PrerenderFinalStatus::kV8OptimizerDisabled:
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
+    case PrerenderFinalStatus::kBrowsingDataRemoved:
       if (attempt_) {
         attempt_->SetFailureReason(
             ToPreloadingFailureReason(reason.final_status()));
@@ -1460,6 +1487,10 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
       case PrefetchStatus::kPrefetchNotStarted:
       case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
       case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+      case PrefetchStatus::
+          kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+      case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+      case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
       case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
       case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
       case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -1476,7 +1507,6 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
       case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
       case PrefetchStatus::kPrefetchIneligibleExistingProxy:
       case PrefetchStatus::kPrefetchHeldback:
-      case PrefetchStatus::kPrefetchAllowed:
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       case PrefetchStatus::
@@ -1493,6 +1523,9 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
     switch (prefetch_eligibility) {
       // Prefetch is not available if SW exists, but prerender is.
       case PreloadingEligibility::kUserHasServiceWorker:
+      case PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler:
+      case PreloadingEligibility::kRedirectFromServiceWorker:
+      case PreloadingEligibility::kRedirectToServiceWorker:
         // Prefetch is not available for HTTP, but prerender is available
         // for HTTPS/HTTP.
       case PreloadingEligibility::kSchemeIsNotHttps:
@@ -1518,7 +1551,6 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
       case PreloadingEligibility::kHttpsOnly:
       case PreloadingEligibility::kHttpOrHttpsOnly:
       case PreloadingEligibility::kSlowNetwork:
-      case PreloadingEligibility::kV8OptimizerDisabled:
       case PreloadingEligibility::kUserHasCookies:
       case PreloadingEligibility::kNonDefaultStoragePartition:
       case PreloadingEligibility::kRetryAfter:
@@ -1533,7 +1565,7 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
     }
   };
   // If a prerender navigation reached to `PrefetchURLLoaderInterceptor`, it is
-  // blocked by `PrefetchMatchResolver2` and prefetch ahead of prerender. So, we
+  // blocked by `PrefetchMatchResolver` and prefetch ahead of prerender. So, we
   // should've got prefetch eligibility when it reached to
   // `PrerenderURLLoaderThrottle`. Therefore, if prefetch eligibility is
   // `PreloadingEligibility::kUnspecified`, it implies that the navigation is

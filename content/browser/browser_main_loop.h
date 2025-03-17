@@ -247,8 +247,6 @@ class CONTENT_EXPORT BrowserMainLoop {
       base::StrongAlias<class ProceedWithMainMessageLoopRunTag, bool>;
   ProceedWithMainMessageLoopRun InterceptMainMessageLoopRun();
 
-  void MainMessageLoopRun();
-
   void InitializeMojo();
 
   void InitializeAudio();

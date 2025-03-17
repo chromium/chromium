@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrButtonElement, CrLinkRowElement, ParentalControlsBrowserProxyImpl, ParentalControlsSettingsCardElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {CrButtonElement, CrLinkRowElement, ParentalControlsSettingsCardElement} from 'chrome://os-settings/os_settings.js';
+import {ParentalControlsBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

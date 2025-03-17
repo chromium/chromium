@@ -207,13 +207,13 @@ void ChromeOSIntegrationLoginMixin::DoTestLogin() {
   // Any gmail account and password works for test login.
   constexpr char kTestUser[] = "testuser@gmail.com";
   constexpr char kTestPassword[] = "testpass";
-  constexpr char kTestGaiaId[] = "12345";
+  constexpr GaiaId::Literal kTestGaiaId("12345");
 
   username_ = kTestUser;
 
-  ash::test::OobeJS().Evaluate(
-      base::StringPrintf("Oobe.loginForTesting(\"%s\", \"%s\",\"%s\")",
-                         kTestUser, kTestPassword, kTestGaiaId));
+  ash::test::OobeJS().Evaluate(base::StringPrintf(
+      "Oobe.loginForTesting(\"%s\", \"%s\",\"%s\")", kTestUser, kTestPassword,
+      kTestGaiaId.ToString().c_str()));
 
   // Skip post login steps, such as ToS etc.
   ash::WizardController::default_controller()->SkipPostLoginScreensForTesting();

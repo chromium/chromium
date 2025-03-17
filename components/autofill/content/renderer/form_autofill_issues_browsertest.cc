@@ -89,7 +89,7 @@ TEST_F(FormAutofillIssuesTest, FormDuplicateIdForInputError) {
       GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
   int duplicated_ids_issue_count =
-      base::ranges::count_if(form_issues, [](const FormIssue& form_issue) {
+      std::ranges::count_if(form_issues, [](const FormIssue& form_issue) {
         return form_issue.issue_type ==
                    GenericIssueErrorType::kFormDuplicateIdForInputError &&
                form_issue.violating_node_attribute.Utf8() == "id";

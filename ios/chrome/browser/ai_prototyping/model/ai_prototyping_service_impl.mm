@@ -8,12 +8,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
-#endif
 
 namespace ai {
 
@@ -22,9 +20,9 @@ AIPrototypingServiceImpl::AIPrototypingServiceImpl(
     web::BrowserState* browser_state,
     bool start_on_device)
     : receiver_(this, std::move(receiver)) {
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   service_ = OptimizationGuideServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(browser_state));
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   if (start_on_device) {
     StartOnDeviceSession();
   }
@@ -36,7 +34,6 @@ AIPrototypingServiceImpl::~AIPrototypingServiceImpl() = default;
 void AIPrototypingServiceImpl::ExecuteServerQuery(
     ::mojo_base::ProtoWrapper request,
     ExecuteServerQueryCallback callback) {
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   optimization_guide::proto::BlingPrototypingRequest proto_request =
       request.As<optimization_guide::proto::BlingPrototypingRequest>().value();
 
@@ -56,7 +53,6 @@ void AIPrototypingServiceImpl::ExecuteServerQuery(
       optimization_guide::ModelBasedCapabilityKey::kBlingPrototyping,
       proto_request,
       /*execution_timeout*/ std::nullopt, std::move(result_callback));
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
 
 void AIPrototypingServiceImpl::ExecuteOnDeviceQuery(
@@ -88,7 +84,6 @@ void AIPrototypingServiceImpl::ExecuteOnDeviceQuery(
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 std::string AIPrototypingServiceImpl::OnServerModelExecuteResponse(
     optimization_guide::OptimizationGuideModelExecutionResult result) {
   std::string response = "";
@@ -100,17 +95,18 @@ std::string AIPrototypingServiceImpl::OnServerModelExecuteResponse(
     if (!parsed->output().empty()) {
       response = parsed->output();
     } else {
-      response = "Empty server response.";
+      return "Empty server response.";
     }
   } else {
-    response =
-        base::StringPrintf("Server model execution error: %d",
-                           static_cast<int>(result.response.error().error()));
+    return base::StrCat({"Server model execution error: ",
+                         service_->ResponseForErrorCode(static_cast<int>(
+                             result.response.error().error()))});
   }
 
   return response;
 }
 
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 std::string AIPrototypingServiceImpl::OnDeviceModelExecuteResponse(
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   std::string response = "";

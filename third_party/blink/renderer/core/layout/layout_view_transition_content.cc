@@ -22,11 +22,7 @@ LayoutViewTransitionContent::LayoutViewTransitionContent(
       captured_rect_(element->captured_rect()),
       reference_rect_in_enclosing_layer_space_(
           element->reference_rect_in_enclosing_layer_space()),
-      propagate_max_extent_rect_(element->propagate_max_extent_rect()) {
-  SetIntrinsicSize(PhysicalSize(
-      LayoutUnit(reference_rect_in_enclosing_layer_space_.width()),
-      LayoutUnit(reference_rect_in_enclosing_layer_space_.height())));
-}
+      propagate_max_extent_rect_(element->propagate_max_extent_rect()) {}
 
 LayoutViewTransitionContent::~LayoutViewTransitionContent() = default;
 
@@ -35,9 +31,6 @@ void LayoutViewTransitionContent::OnIntrinsicSizeUpdated(
     const gfx::RectF& reference_rect_in_enclosing_layer_space,
     bool propagate_max_extent_rect) {
   NOT_DESTROYED();
-  SetIntrinsicSize(PhysicalSize(
-      LayoutUnit(reference_rect_in_enclosing_layer_space.width()),
-      LayoutUnit(reference_rect_in_enclosing_layer_space.height())));
   if (captured_rect_ != captured_rect) {
     SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kImage);
@@ -63,6 +56,15 @@ LayoutViewTransitionContent::ReplacedContentRectForCapturedContent() const {
   gfx::RectF clipped_paint_rect = gfx::MapRect(
       captured_rect_, reference_rect_in_enclosing_layer_space_, paint_rect);
   return PhysicalRect::EnclosingRect(clipped_paint_rect);
+}
+
+PhysicalNaturalSizingInfo LayoutViewTransitionContent::GetNaturalDimensions()
+    const {
+  NOT_DESTROYED();
+  const PhysicalSize natural_size(
+      LayoutUnit(reference_rect_in_enclosing_layer_space_.width()),
+      LayoutUnit(reference_rect_in_enclosing_layer_space_.height()));
+  return PhysicalNaturalSizingInfo::MakeFixed(natural_size);
 }
 
 void LayoutViewTransitionContent::PaintReplaced(

@@ -6,17 +6,35 @@
 
 #import <memory>
 
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/testing_pref_service.h"
+#import "download_manager_tab_helper.h"
+#import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 char kUrl[] = "https://test.test/";
 const char kMimeType[] = "";
-}
+}  // namespace
 
 // Test fixture for testing DownloadManagerTabHelper class.
 class DownloadManagerTabHelperTest : public PlatformTest {
@@ -24,6 +42,13 @@ class DownloadManagerTabHelperTest : public PlatformTest {
   DownloadManagerTabHelperTest()
       : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[FakeDownloadManagerTabHelperDelegate alloc] init]) {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    web_state_->SetBrowserState(profile_.get());
     DriveTabHelper::GetOrCreateForWebState(web_state_.get());
     DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     DownloadManagerTabHelper::FromWebState(web_state_.get())
@@ -44,7 +69,35 @@ class DownloadManagerTabHelperTest : public PlatformTest {
     return task;
   }
 
+  // Set up download restrictions.
+  void SetUpDownloadRestrictions() {
+    PrefService* pref_service = profile_.get()->GetPrefs();
+    pref_service->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions,
+        static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+    pref_service->SetInteger(
+        prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+        static_cast<int>(SaveToDrivePolicySettings::kDisabled));
+  }
+
+  // Fake a sign in.
+  void SignIn() {
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(fake_identity);
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auth_service->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
+  }
+
+  web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
+  FakeSystemIdentity* fake_identity_ = nullptr;
   FakeDownloadManagerTabHelperDelegate* delegate_;
 };
 
@@ -171,3 +224,95 @@ TEST_F(DownloadManagerTabHelperTest, HasDownloadTask) {
   EXPECT_FALSE(tab_helper()->has_download_task());
 }
 
+// Tests that download is restricted for a visible web state when the download
+// restrictions policy is enabled and the Save to Drive policy is disabled. The
+// test verifies that the delegate state remains nil. Additionally, the test
+// checks that a snackbar is displayed to the user.
+TEST_F(DownloadManagerTabHelperTest, DownloadRestrictedForVisibleWebState) {
+  SignIn();
+  PrefService* pref_service = profile_.get()->GetPrefs();
+  pref_service->SetInteger(
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+  pref_service->SetInteger(
+      prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+      static_cast<int>(SaveToDrivePolicySettings::kDisabled));
+
+  web_state_->WasShown();
+  id mock_snackbar_command_handler_ =
+      OCMProtocolMock(@protocol(SnackbarCommands));
+
+  OCMExpect([mock_snackbar_command_handler_ showSnackbarWithMessage:[OCMArg any]
+                                                         buttonText:[OCMArg any]
+                                                      messageAction:nil
+                                                   completionAction:nil]);
+  ASSERT_FALSE(delegate_.state);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
+  tab_helper()->SetSnackbarHandler(mock_snackbar_command_handler_);
+  tab_helper()->SetCurrentDownload(std::move(task));
+  ASSERT_FALSE(delegate_.state);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_command_handler_);
+}
+
+// Tests that download is restricted for a visible web state when the download
+// restrictions policy is enabled and browser is incognito. The test verifies
+// that the delegate state remains nil. Additionally, the test checks
+// that a snackbar is displayed to the user.
+TEST_F(DownloadManagerTabHelperTest,
+       DownloadRestrictedAndIncognitoForVisibleWebState) {
+  web_state_->SetBrowserState(profile_->GetOffTheRecordProfile());
+  SignIn();
+  PrefService* pref_service = profile_.get()->GetPrefs();
+  pref_service->SetInteger(
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+  pref_service->SetInteger(
+      prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+      static_cast<int>(SaveToDrivePolicySettings::kEnabled));
+  web_state_->WasShown();
+  id mock_snackbar_command_handler_ =
+      OCMProtocolMock(@protocol(SnackbarCommands));
+
+  OCMExpect([mock_snackbar_command_handler_ showSnackbarWithMessage:[OCMArg any]
+                                                         buttonText:[OCMArg any]
+                                                      messageAction:nil
+                                                   completionAction:nil]);
+  ASSERT_FALSE(delegate_.state);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
+  tab_helper()->SetSnackbarHandler(mock_snackbar_command_handler_);
+  tab_helper()->SetCurrentDownload(std::move(task));
+  ASSERT_FALSE(delegate_.state);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_command_handler_);
+}
+
+// Tests that download is not restricted for a visible web state when the
+// download restrictions policy is enabled but the Save to Drive policy is also
+// enable. The test verifies that the delegate state is set. Additionally, the
+// test checks that a snackbar is not displayed to the user.
+TEST_F(DownloadManagerTabHelperTest, NoDownloadRestrictionForVisibleWebState) {
+  SignIn();
+  PrefService* pref_service = profile_.get()->GetPrefs();
+  pref_service->SetInteger(
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+  pref_service->SetInteger(
+      prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+      static_cast<int>(SaveToDrivePolicySettings::kEnabled));
+  web_state_->WasShown();
+  id mock_snackbar_command_handler_ =
+      OCMProtocolMock(@protocol(SnackbarCommands));
+
+  OCMReject([mock_snackbar_command_handler_ showSnackbarWithMessage:[OCMArg any]
+                                                         buttonText:[OCMArg any]
+                                                      messageAction:nil
+                                                   completionAction:nil]);
+  ASSERT_FALSE(delegate_.state);
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
+  tab_helper()->SetSnackbarHandler(mock_snackbar_command_handler_);
+  tab_helper()->SetCurrentDownload(std::move(task));
+  ASSERT_TRUE(delegate_.state);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_command_handler_);
+}

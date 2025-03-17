@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("autotest_private") {
   sources = [
@@ -19,8 +19,6 @@ static_library("autotest_private") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -35,12 +33,12 @@ static_library("autotest_private") {
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/ash/bruschetta",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
@@ -62,6 +60,8 @@ static_library("autotest_private") {
     "//chromeos/ash/components/default_pinned_apps",
     "//chromeos/ash/components/metrics",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/components/quick_answers/public/cpp",
@@ -78,6 +78,7 @@ static_library("autotest_private") {
     "//components/user_manager",
     "//components/variations",
     "//components/viz/host",
+    "//components/webui/chrome_urls",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
@@ -112,11 +113,6 @@ source_set("browser_tests") {
     "//ash",
     "//ash:test_support",
     "//ash/app_list",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -136,6 +132,11 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session",
     "//components/device_event_log",
     "//components/feature_engagement/public",
     "//components/language/core/browser",

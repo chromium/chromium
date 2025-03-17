@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 
 namespace device {
@@ -33,6 +34,7 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   void InitWithFakeAdapter() override;
   bool DenyPermission() override;
   BluetoothDevice* SimulateLowEnergyDevice(int device_ordinal) override;
+  BluetoothDevice* SimulateClassicDevice() override;
   void RememberDeviceForSubsequentAction(BluetoothDevice* device) override;
   void SimulateGattConnection(BluetoothDevice* device) override;
   void SimulateGattConnectionError(BluetoothDevice* device,
@@ -103,6 +105,24 @@ class BluetoothTestAndroid : public BluetoothTestBase {
       BluetoothGattService::GattErrorCode) override;
   void SimulateGattDescriptorWriteWillFailSynchronouslyOnce(
       BluetoothRemoteGattDescriptor* descriptor) override;
+
+  // Instruct the fake adapter to enable/disable BT classic and BLE.
+  void SetEnabledDeviceTransport(BluetoothTransport transport);
+
+  // Creates a fake paired classic device
+  //
+  // |device_ordinal| selects between multiple fake device data sets to produce:
+  //   0: Name: kTestDeviceName
+  //      Address: kTestDeviceAddress3
+  //      UUID: <empty>
+  //   1: Name: kTestDeviceNameEmpty
+  //      Address: kTestDeviceAddress1
+  //      UUID: kTestUUIDSerial
+  //   2: Name: kTestDeviceName
+  //      Address: kTestDeviceAddress2
+  //      UUID: kTestUUIDSerial
+  // Returns the address of the simulated device.
+  std::string SimulatePairedClassicDevice(int device_ordinal);
 
   // Instruct the fake adapter to claim that location services are off for the
   // device.

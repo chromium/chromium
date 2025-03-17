@@ -1,11 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
-<translation id="1066101356081285416">‏‫Chrome شماره‌های رهگیری را در سایت‌هایی که از آن‌ها بازدید می‌کنید شناسایی می‌کند و به‌روزرسانی‌های بسته را در صفحه «برگه جدید» نشان می‌دهد. برای ارائه این ویژگی و بهبود ویژگی‌های Google Shopping برای همه، شماره رهگیری بسته و نام وب‌سایت به Google ارسال می‌شود. هرزمان خواستید می‌توانید این مورد را در <ph name="BEGIN_LINK" />تنظیمات رهگیری بسته<ph name="END_LINK" /> به‌روزرسانی کنید.</translation>
+<translation id="1076643793026027628">‏‫Chrome پیوندهای «ناشناس» YouTube را به‌طور خودکار در حالت «ناشناس» باز می‌کند.</translation>
 <translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
 <translation id="1143896152279775643">‏گذرواژه‌تان در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="1146503048444965320">‏باز کردن برگه جدید در Chrome</translation>
 <translation id="1166460004393506534">‏حذف کردن داده‌های مرور در Chrome</translation>
+<translation id="1171255741903316750">‏«قفل کردن برگه‌های ناشناس هنگام بستن Chrome» را روشن کنید</translation>
 <translation id="1179527450541388808">‏از جایگاه صفحه اصلی iPad سریع‌تر به Chrome دسترسی داشته باشید.</translation>
 <translation id="1180362651362502943">‏به استفاده از داده‌های Chrome ذخیره‌شده در «حساب Google» خود ادامه دهید.</translation>
 <translation id="1200396280085622191">‏با ضربه زدن روی پیوندهای موجود در پیام‌ها و برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">‏این حساب و همه داده‌های ذخیره‌نشده از Chrome و دیگر برنامه‌های Google در این دستگاه برداشته می‌شود.</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
 <translation id="1965935827552890526">‏کاری را که در پنجره باز Chrome دیگر انجام می‌دادید تمام کنید.</translation>
+<translation id="1973910962341002002">‏در تنظیمات «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»، «Chrome» را روشن کنید</translation>
 <translation id="1984705450038014246">‏همگام‌سازی داده‌های Chrome</translation>
 <translation id="1987779152850321833">‏اقدامات پیشنهادی زیر را تکمیل کنید تا بیشترین بهره را از Chrome ببرید.</translation>
 <translation id="2055826352861631739">‏استفاده از Chrome برای iPad به‌طور پیش‌فرض</translation>
@@ -67,7 +69,6 @@
 <translation id="2574249610672786438">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، به سیستم وارد شوید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="2576431527583832481">‏‫Chrome بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="257708665678654955">‏می‌خواهید دفعه بعد Google Chrome ترجمه صفحات <ph name="LANGUAGE_NAME" /> این سایت را به شما پیشنهاد دهد؟</translation>
-<translation id="2650286135394207535">‏به Chrome اجازه دهید در ردیابی بسته‌ها به شما کمک کند</translation>
 <translation id="2668242166988961773">‏جستجو کردن با صدا در Chrome.</translation>
 <translation id="2671426118752779020">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه Google» در برنامه‌های دیگر iPhone خودتان استفاده کنید.</translation>
 <translation id="2689064829982324496">‏برای خارج شدن از سیستم «حساب Google» خود در همه وب‌سایت‌ها، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
@@ -97,10 +98,13 @@
 <translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3303503998967553377">‏استفاده از کنش‌های Chrome در iOS</translation>
 <translation id="3348862487678490430">‏افزودن مورد «فهرست خواندن» به Chrome</translation>
+<translation id="3357827134511189025">‏بااستفاده از «Chrome برای تکمیل خودکار»، با گذرواژه‌ها و گذرکلیدهای ذخیره‌شده‌تان از هر برنامه‌ای، به سیستم وارد شوید</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}one{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}other{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}}</translation>
 <translation id="3367797402528056312">‏راه‌اندازی Chrome را تمام کنید</translation>
 <translation id="3371064404604898522">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="3399930248910934354">‏باز کردن «تنظیمات Chrome»</translation>
+<translation id="3440830787838130530">‏به‌راحتی و با ایمنی نسخه‌ای از گذرواژه را در «مدیر گذرواژه Google» با گروه خانواده‌تان هم‌رسانی کنید</translation>
+<translation id="3460369101684070455">‏برای دریافت آسان گذرواژه‌های ذخیره‌شده در برنامه‌های دیگر، «Chrome برای تکمیل خودکار» را انتخاب کنید</translation>
 <translation id="3472587960215700950">‏‫Chrome برای ارائه مسیرها و اطلاعات محلی به شما در نشانی‌های شناسایی‌شده از Google Maps استفاده می‌کند.</translation>
 <translation id="3503014945441706099">‏برای این نمایه Chrome نیز «مرور ایمن پیشرفته» را دریافت کنید</translation>
 <translation id="3522659714780527202">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
@@ -120,12 +124,13 @@
 <translation id="4064699917955374540">‏برای استفاده از داده‌های Chrome و ذخیره کردن این داده‌ها در «حساب Google»، هویت خود را به‌تأیید برسانید.</translation>
 <translation id="417201473131094001">‏در Chrome Canary پشتیبانی نمی‌شود</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
+<translation id="4430797724889237570">‏پیوندهایی از Gmail،‏ Maps،‏ YouTube و سایر برنامه‌ها را در Chrome باز کنید</translation>
 <translation id="447252321002412580">‏کمک به بهبود ویژگی‌ها و عملکرد Chrome</translation>
 <translation id="4523886039239821078">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید:</translation>
 <translation id="4633328489441962921">‏Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="4636900170638246267">‏به سیستم این سایت و Chrome وارد شوید.</translation>
-<translation id="4646014602299206846">‏‫Chrome شماره‌های رهگیری بسته را در سایت‌هایی که از آن‌ها بازدید می‌کنید شناسایی می‌کند و به‌روزرسانی‌های بسته را در صفحه برگه جدید نشان می‌دهد. برای ارائه این ویژگی و بهبود Shopping برای همه، داده‌هایتان با Google هم‌رسانی خواهد شد.</translation>
 <translation id="4647910807533196601">‏باز کردن آخرین برگه من در Chrome.</translation>
+<translation id="4693084815234024320">‏در حالت «ناشناس» Chrome هستید</translation>
 <translation id="4724297637870447613">‏استفاده از Chrome در همه‌جا</translation>
 <translation id="4738647308035481133">‏صفحه Google Chrome</translation>
 <translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
@@ -135,7 +140,6 @@
 <translation id="4830799082179398588">‏آیا Chrome مرورگر پیش‌فرض شود؟</translation>
 <translation id="484033449593719797">‏در «Chrome بتا» پشتیبانی نمی‌شود</translation>
 <translation id="4840404732697892756">‏وقتی با «حساب Google» خود به سیستم وارد شوید، «مدیر گذرواژه Google» می‌تواند گذرواژه‌هایتان را بررسی کند.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{‏‫Chrome می‌تواند به شما کمک کند این بسته را در «صفحه برگه جدید» ردیابی کنید.}one{‏‫Chrome می‌تواند به شما کمک کند این بسته را در «صفحه برگه جدید» ردیابی کنید.}other{‏‫Chrome می‌تواند به شما کمک کند این بسته‌ها را در «صفحه برگه جدید» ردیابی کنید.}}</translation>
 <translation id="4903674399067644695">‏این کارت پیشنهادهایی را برای بردن بیشترین بهره از Chrome نشان می‌دهد.</translation>
 <translation id="49200511069271369">‏سازمانتان (<ph name="DOMAIN" />) حسابی که با آن به سیستم وارد می‌شوید و نحوه استفاده از Chrome را مدیریت می‌کند. سرپرستتان می‌توانید برخی‌از ویژگی‌ها را راه‌اندازی یا محدود کند.</translation>
 <translation id="4925322001044117929">‏استفاده از Chrome در iPad به‌طور پیش‌فرض</translation>
@@ -155,9 +159,7 @@
 <translation id="5395376160638294582">‏مطمئن شوید همیشه می‌توانید از داده‌های Chrome ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="5404252374083197467">‏‫Chrome به‌عنوان پیش‌فرض تنظیم شود؟</translation>
 <translation id="5439191312780166229">‏با تجزیه‌وتحلیل داده‌های بیشتری از سایت‌ها در مقایسه با محافظت استاندارد، درباره سایت‌های خطرناک به شما هشدار می‌دهد، حتی سایت‌هایی که Google قبلاً از آن‌ها اطلاعی نداشته است. می‌توانید هشدارهای Chrome را رد کنید.</translation>
-<translation id="5442013002200339429">‏اگر «<ph name="MODULE_NAME" />» را پنهان کنید، Chrome دیگر بسته‌های پستی بعدی‌تان را به‌طور خودکار پیگیری نخواهد کرد و همه داده‌های پیگیری بسته قبلی‌تان را حذف خواهد کرد.</translation>
 <translation id="5460571915754665838">‏۴. Chrome را انتخاب کنید</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{‏‫Chrome به ردیابی این بسته در «صفحه برگه جدید» کمک خواهد کرد.}one{‏‫Chrome به ردیابی این بسته در «صفحه برگه جدید» کمک خواهد کرد.}other{‏‫Chrome به ردیابی این بسته‌ها در «صفحه برگه جدید» کمک خواهد کرد.}}</translation>
 <translation id="5492504007368565877">‏«مدیر گذرواژه Google» نتوانست گذرواژه‌هایتان را بررسی کند.</translation>
 <translation id="5525095647255982834">‏برای ارسال این برگه به دستگاهی دیگر، در آنجا به سیستم Chrome وارد شوید.</translation>
 <translation id="5527026824954593399">‏روی «مشاهده با Google Maps در Chrome» تک‌ضرب بزنید.</translation>
@@ -167,11 +169,13 @@
 <translation id="5639704535586432836">‏Settings (تنظیمات) &gt; Privacy (حریم خصوصی) &gt; Camera (دوربین) &gt; Google Chrome را باز کنید و دوربین را روشن کنید.</translation>
 <translation id="5642200033778930880">‏Google Chrome نمی‌تواند از دوربین درحالت «نمای تقسیم‌شده» استفاده کند</translation>
 <translation id="5661521615548540542">‏«مدیر گذرواژه Google» نتوانست همه گذرواژه‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
+<translation id="5681291952421236520">‏روشن/خاموش کردن Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{‏درحال نمایش ۱ پنجره Chrome}one{‏درحال نمایش {count} پنجره Chrome}other{‏درحال نمایش {count} پنجره Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="571296537125272375">‏آفلاین هستید، Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند.</translation>
 <translation id="5716154293141027663">‏هرزمان در برنامه‌های دیگر روی پیوندها تک‌ضرب بزنید، Chrome باز می‌شود</translation>
+<translation id="5752489513673657785">‏یک فید سفارشی که Google برای شما می‌سازد</translation>
 <translation id="5772407442571703917">‏‫Chrome را از اینجا بارگیری کنید.</translation>
 <translation id="5779767936254214055">‏وقتی Chrome را ترک می‌کنید یا به برنامه دیگری می‌روید، برگه‌های «ناشناس» را قفل کنید.</translation>
 <translation id="5808435672482059465">‏مشاهده «سابقه Chrome»</translation>
@@ -180,7 +184,7 @@
 <translation id="5998675059699164418">‏سازمانتان از شما می‌خواهد برای استفاده از Chrome به سیستم وارد شوید.</translation>
 <translation id="6021312115739110405">‏یک فید سفارشی که Google برای شما می‌سازد. شامل اخبار، ورزش، و آب‌وهوا.</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
-<translation id="6110625574506755980">‏برخی‌از ویژگی‌های Chrome دیگر دردسترس نخواهد بود.</translation>
+<translation id="6132075343662013154">‏‫Chrome پیشنهاد می‌دهد که گذرواژه‌تان را ذخیره کند</translation>
 <translation id="6132149203299792222">‏برای همگام‌سازی گذرواژه‌ها، نشانک‌ها، و موارد دیگر، به سیستم «حساب Google» خود وارد شوید.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">‏جستجو در Chrome</translation>
@@ -202,8 +206,9 @@
 <translation id="6484712497741564393">‏با ایمیل <ph name="EMAIL" /> به سیستم وارد شده‌اید.
 
 داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای استفاده از داده‌های Chrome و ذخیره کردن این داده‌ها در «حساب Google»، این گذرعبارت را وارد کنید.</translation>
+<translation id="6533470733797826516">‏با تکمیل خودکار Chrome سریع‌تر به سیستم وارد شوید</translation>
+<translation id="6536544321553662809">‏با تنظیم کردن Chrome به‌عنوان مرورگر پیش‌فرض، به‌راحتی پیوندها را هم‌رسانی و باز کنید.</translation>
 <translation id="6545449117344801102">‏‫Chrome نشانی‌ها را شناسایی می‌کند و برای ارائه مسیرها و اطلاعات محلی از Google Maps استفاده می‌کند.</translation>
-<translation id="6634107063912726160">‏وقتی از سیستم خارج شوید، Chrome هیچ‌کدام از داده‌های جدید را با «حساب Google» شما همگام‌سازی نخواهد کرد. داده‌هایی که قبلاً همگام‌سازی شده‌اند در حساب می‌مانند.</translation>
 <translation id="6636941099779251629">‏سازمانتان از شما می‌خواهد برای استفاده از Chrome به سیستم وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">‏بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی که نشانی IP شما را پنهان می‌کند به Google ارسال می‌کند. اگر سایتی تلاش کند گذرواژه‌تان را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به Google ارسال کند.</translation>
 <translation id="6647304104688527905">‏برگه جدیدی را در Chrome باز می‌کند.</translation>
@@ -227,6 +232,7 @@
 <translation id="7061455974939528301">‏نماد Chrome را فشار دهید و نگه دارید و روی «ویرایش کردن صفحه اصلی» کلیک کنید</translation>
 <translation id="7065813315247345131">‏انتقال Chrome به سکوی برنامه‌ها</translation>
 <translation id="7124339256045485976">‏به‌روز نگه داشتن Chrome</translation>
+<translation id="7145599899567697473">‏گذرواژه‌ها در Chrome ذخیره و به‌طور خودکار تکمیل می‌شود</translation>
 <translation id="7161390184744336561">‏نسخه Google Chrome قدیمی است</translation>
 <translation id="7165736900384873061">‏استفاده از اسکنر QR در Google Chrome را شروع کنید</translation>
 <translation id="7175129790242719365">‏نکته Chrome: به سیستم Chrome وارد شوید</translation>
@@ -260,6 +266,7 @@
 <translation id="7693590760643069321">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر همیشه در Chrome باز شوند.</translation>
 <translation id="7698568245838009292">‏Chrome می‌خواهد به «دوربین» دسترسی داشته باشد</translation>
 <translation id="7707877166818730835">‏باز کردن آخرین برگه من در Chrome</translation>
+<translation id="7747746207470479571">‏بااستفاده از «Chrome برای تکمیل خودکار»، به گذرواژه‌ها و گذرکلیدهایتان به‌راحتی دسترسی داشته باشید</translation>
 <translation id="776305366874821582">‏از جایگاه صفحه اصلی iPhone سریع‌تر به Chrome دسترسی داشته باشید.</translation>
 <translation id="7780154209050837198">‏برای اینکه بیشترین بهره را از Chrome ببرید، با «حساب Google» به سیستم Chrome وارد شوید.</translation>
 <translation id="7787205077729386167">‏تنظیمات Chrome را در iOS باز کنید، سپس روی «برنامه مرورگر پیش‌فرض» تک‌ضرب بزنید و Chrome را انتخاب کنید.</translation>
@@ -280,15 +287,16 @@
 <translation id="8136856065410661948">‏از این دسترسی برای ایجاد رویداد در Apple Calendar از Chrome و «لنز Google» استفاده می‌شود.</translation>
 <translation id="8154120522323162874">‏با ادامه راه‌اندازی مرورگرتان، بیشترین بهره را از Chrome ببرید.</translation>
 <translation id="8160472928944011082">‏Chrome به‌روزرسانی نمی‌شود</translation>
+<translation id="8245080522851805544">‏وقتی Chrome را می‌بندید، مرورتان را با اصالت‌سنجی دستگاه خصوصی نگه دارید</translation>
 <translation id="8248887045858762645">‏نکات Chrome</translation>
 <translation id="8265730590513812063">‏باز کردن منو Chrome</translation>
 <translation id="8317674518145175158">‏روش‌های پرداخت و نشانی‌ها رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.
 
 فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
-<translation id="8357607116237445042">‏انتخاب کنید داده‌های Chrome شما از این دستگاه پاک شوند یا نگه داشته شوند</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="8371138994040262994">‏تنظیمات را در Chrome باز می‌کند.</translation>
 <translation id="8387459386171870978">‏ادامه استفاده از Chrome</translation>
+<translation id="8392023217086447677">‏در حالت ناشناس Chrome باز شد</translation>
 <translation id="840168496893712993">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید.</translation>
 <translation id="8413500425974960807">‏نکته Chrome: برنامه Chrome را به جایگاه انتقال دهید</translation>
 <translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودن آن‌ها مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>
@@ -321,8 +329,8 @@
 <translation id="9122931302567044771">‏به این معنی که Chrome هربار سایت ویژه رایانه را درخواست خواهد کرد.</translation>
 <translation id="9176561303811134420">‏مدیریت کردن روش‌های پرداخت در Chrome</translation>
 <translation id="9181628561061032322">‏برگه‌های اخیر Chrome را باز می‌کند.</translation>
-<translation id="9194404253580584015">‏یک فید سفارشی که Google برای شما می‌سازد.</translation>
 <translation id="948597495737267756">‏صفحه «سابقه Chrome» را باز می‌کند.</translation>
 <translation id="97300214378190234">‏با ضربه زدن روی پیوندهای موجود در برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
+<translation id="997929539742564806">‏بااستفاده از تکمیل خودکار گذرواژه‌ها و گذرکلیدها در Chrome، سریع‌تر به سیستم برنامه‌ها و سایت‌ها وارد شوید</translation>
 <translation id="998677222109959694">‏مدیریت تنظیمات Chrome</translation>
 </translationbundle>

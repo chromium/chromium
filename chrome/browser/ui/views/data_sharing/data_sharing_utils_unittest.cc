@@ -31,8 +31,7 @@ TEST(DataSharingUtils, ProcessPreviewWithValidTitle) {
             EXPECT_EQ(preview->shared_tabs.size(), size_t(1));
             // Trimmed from `kUrl`.
             EXPECT_EQ(preview->shared_tabs[0]->display_url, "foo.com");
-            EXPECT_EQ(preview->shared_tabs[0]->favicon_url,
-                      GURL("chrome://favicon2"));
+            EXPECT_EQ(preview->shared_tabs[0]->favicon_url, GURL(kUrl));
             EXPECT_EQ(preview->status_code,
                       mojo_base::mojom::AbslStatusCode::kOk);
           });

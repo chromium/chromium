@@ -40,10 +40,6 @@ void RequestSucceeded(blink::ApplyConstraintsRequest* request) {
 
 }  // namespace
 
-BASE_FEATURE(kApplyConstraintsRestartsVideoContentSources,
-             "ApplyConstraintsRestartsVideoContentSources",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ApplyConstraintsProcessor::ApplyConstraintsProcessor(
     LocalFrame* frame,
     MediaDevicesDispatcherCallback media_devices_dispatcher_cb,
@@ -121,9 +117,7 @@ void ApplyConstraintsProcessor::ProcessVideoRequest() {
   const blink::MediaStreamDevice& device_info = video_source_->device();
   if (device_info.type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     ProcessVideoDeviceRequest();
-  } else if (base::FeatureList::IsEnabled(
-                 kApplyConstraintsRestartsVideoContentSources) &&
-             video_source_->GetSubCaptureTargetVersion() == 0 &&
+  } else if (video_source_->GetSubCaptureTargetVersion() == 0 &&
              (device_info.type ==
                   mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
               device_info.type ==

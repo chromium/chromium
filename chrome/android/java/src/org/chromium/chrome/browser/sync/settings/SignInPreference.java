@@ -17,11 +17,9 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -161,16 +159,9 @@ public class SignInPreference extends Preference
 
     private void setupSigninDisabledByPolicy() {
         setFragment(null);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            setTitle(R.string.signin_settings_title);
-            setSummary(R.string.settings_signin_disabled_by_administrator);
-            setIcon(R.drawable.ic_business_small_with_bg);
-        } else {
-            setTitle(R.string.sync_promo_turn_on_sync);
-            setSummary(R.string.sign_in_to_chrome_disabled_summary);
-            setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
-        }
+        setTitle(R.string.signin_settings_title);
+        setSummary(R.string.settings_signin_disabled_by_administrator);
+        setIcon(R.drawable.ic_business_small_with_bg);
         setViewEnabledAndShowAlertIcon(/* enabled= */ false, /* alertIconVisible= */ false);
         setOnPreferenceClickListener(
                 pref -> {
@@ -185,55 +176,35 @@ public class SignInPreference extends Preference
     }
 
     private void setupGenericPromo() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            setTitle(R.string.signin_settings_title);
-            setSummary(R.string.signin_settings_subtitle);
-        } else {
-            setTitle(R.string.sync_promo_turn_on_sync);
-            setSummary(R.string.signin_pref_summary);
-        }
+        setTitle(R.string.signin_settings_title);
+        setSummary(R.string.signin_settings_subtitle);
 
         setFragment(null);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            setIcon(
-                    AppCompatResources.getDrawable(
-                            getContext(), R.drawable.account_circle_with_bg));
-        } else {
-            setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
-        }
+        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.account_circle_with_bg));
         setViewEnabledAndShowAlertIcon(/* enabled= */ true, /* alertIconVisible= */ false);
         OnPreferenceClickListener clickListener =
                 pref -> {
-                    if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                        AccountPickerBottomSheetStrings bottomSheetStrings =
-                                new AccountPickerBottomSheetStrings.Builder(
-                                                R.string.signin_account_picker_bottom_sheet_title)
-                                        .build();
-                        BottomSheetSigninAndHistorySyncConfig config =
-                                new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                                bottomSheetStrings,
-                                                NoAccountSigninMode.BOTTOM_SHEET,
-                                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                                HistorySyncConfig.OptInMode.OPTIONAL)
-                                        .build();
-                        @Nullable
-                        Intent intent =
-                                SigninAndHistorySyncActivityLauncherImpl.get()
-                                        .createBottomSheetSigninIntentOrShowError(
-                                                getContext(),
-                                                mProfile,
-                                                config,
-                                                SigninAccessPoint.SETTINGS);
-                        if (intent != null) {
-                            getContext().startActivity(intent);
-                        }
-                    } else {
-                        SyncConsentActivityLauncherImpl.getForProfile(mProfile)
-                                .launchActivityIfAllowed(
-                                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
+                    AccountPickerBottomSheetStrings bottomSheetStrings =
+                            new AccountPickerBottomSheetStrings.Builder(
+                                            R.string.signin_account_picker_bottom_sheet_title)
+                                    .build();
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            bottomSheetStrings,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.OPTIONAL)
+                                    .build();
+                    @Nullable
+                    Intent intent =
+                            SigninAndHistorySyncActivityLauncherImpl.get()
+                                    .createBottomSheetSigninIntentOrShowError(
+                                            getContext(),
+                                            mProfile,
+                                            config,
+                                            SigninAccessPoint.SETTINGS);
+                    if (intent != null) {
+                        getContext().startActivity(intent);
                     }
                     return true;
                 };
@@ -253,8 +224,7 @@ public class SignInPreference extends Preference
         setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && !mSyncService.hasSyncConsent()) {
+        if (!mSyncService.hasSyncConsent()) {
             setFragment(ManageSyncSettings.class.getName());
         } else {
             setFragment(AccountManagementFragment.class.getName());

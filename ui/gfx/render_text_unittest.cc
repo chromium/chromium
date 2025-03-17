@@ -8,10 +8,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <set>
+#include <string>
+#include <string_view>
 #include <tuple>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/format_macros.h"
@@ -22,8 +26,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -113,7 +117,7 @@ bool IndexInRange(const Range& range, size_t index) {
   return index >= range.start() && index < range.end();
 }
 
-std::u16string GetSelectedText(RenderText* render_text) {
+std::u16string_view GetSelectedText(RenderText* render_text) {
   return render_text->text().substr(render_text->selection().GetMin(),
                                     render_text->selection().length());
 }
@@ -194,7 +198,7 @@ DecoratedText::RangedAttribute CreateRangedAttribute(
     Font::Weight weight,
     int style_mask) {
   const auto iter =
-      base::ranges::find_if(font_spans, [font_index](const FontSpan& span) {
+      std::ranges::find_if(font_spans, [font_index](const FontSpan& span) {
         return IndexInRange(span.second, font_index);
       });
   CHECK(font_spans.end() != iter);
@@ -232,9 +236,9 @@ void VerifyDecoratedWordsAreEqual(const DecoratedText& expected,
       return IndexInRange(attr.range, i);
     };
     const auto expected_attr =
-        base::ranges::find_if(expected.attributes, find_attribute_func);
+        std::ranges::find_if(expected.attributes, find_attribute_func);
     const auto actual_attr =
-        base::ranges::find_if(actual.attributes, find_attribute_func);
+        std::ranges::find_if(actual.attributes, find_attribute_func);
     ASSERT_NE(expected.attributes.end(), expected_attr);
     ASSERT_NE(actual.attributes.end(), actual_attr);
 
@@ -497,7 +501,7 @@ class RenderTextTest : public testing::Test {
     test_api()->EnsureLayout();
 
     std::vector<FontSpan> spans;
-    base::ranges::transform(
+    std::ranges::transform(
         GetHarfBuzzRunList()->runs(), std::back_inserter(spans),
         [this](const auto& run) {
           return FontSpan(
@@ -547,8 +551,8 @@ class RenderTextTest : public testing::Test {
   std::vector<std::u16string> GetRunListStrings() {
     std::vector<std::u16string> runs_as_text;
     for (const auto& span : GetFontSpans()) {
-      runs_as_text.push_back(render_text_->text().substr(span.second.GetMin(),
-                                                         span.second.length()));
+      runs_as_text.emplace_back(render_text_->text().substr(
+          span.second.GetMin(), span.second.length()));
     }
     return runs_as_text;
   }
@@ -636,7 +640,7 @@ class RenderTextTest : public testing::Test {
     test_api()->SetGlyphHeight(test_height);
   }
 
-  bool ShapeRunWithFont(const std::u16string& text,
+  bool ShapeRunWithFont(std::u16string_view text,
                         const Font& font,
                         const FontRenderParams& render_params,
                         internal::TextRunHarfBuzz* run) {
@@ -690,16 +694,18 @@ TEST_F(RenderTextTest, DefaultStyles) {
   // Check the default styles applied to new instances and adjusted text.
   RenderText* render_text = GetRenderText();
   EXPECT_TRUE(render_text->text().empty());
-  const auto cases =
-      std::to_array<const char16_t*>({kWeak, kLtr, u"Hello", kRtl, u"", u""});
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  const auto cases = std::to_array<const std::u16string_view>(
+      {kWeak, kLtr, u"Hello", kRtl, u""});
+  for (auto testcase : cases) {
     EXPECT_TRUE(test_api()->colors().EqualsValueForTesting(kPlaceholderColor));
     EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(
         BaselineStyle::kNormalBaseline));
     EXPECT_TRUE(test_api()->font_size_overrides().EqualsValueForTesting(0));
-    for (size_t style = 0; style < static_cast<int>(TEXT_STYLE_COUNT); ++style)
+    for (size_t style = 0; style < static_cast<int>(TEXT_STYLE_COUNT);
+         ++style) {
       EXPECT_TRUE(test_api()->styles()[style].EqualsValueForTesting(false));
-    render_text->SetText(cases[i]);
+    }
+    render_text->SetText(testcase);
   }
 }
 
@@ -711,8 +717,8 @@ TEST_F(RenderTextTest, SetStyles) {
   render_text->SetBaselineStyle(BaselineStyle::kSuperscript);
   render_text->SetWeight(Font::Weight::BOLD);
   render_text->SetStyle(TEXT_STYLE_UNDERLINE, false);
-  const auto cases =
-      std::to_array<const char16_t*>({kWeak, kLtr, u"Hello", kRtl, u"", u""});
+  const auto cases = std::to_array<const std::u16string_view>(
+      {kWeak, kLtr, u"Hello", kRtl, u""});
   for (size_t i = 0; i < std::size(cases); ++i) {
     EXPECT_TRUE(test_api()->colors().EqualsValueForTesting(color));
     EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(
@@ -1407,7 +1413,7 @@ TEST_F(RenderTextTest, ObscuredTextMultiline) {
   render_text->SetMultiline(true);
 
   // Newlines should be kept in multiline mode.
-  std::u16string display_text = render_text->GetDisplayText();
+  std::u16string_view display_text = render_text->GetDisplayText();
   EXPECT_EQ(display_text[1], '\n');
   EXPECT_EQ(display_text[4], '\n');
 }
@@ -1420,7 +1426,7 @@ TEST_F(RenderTextTest, ObscuredTextMultilineNewline) {
   render_text->SetMultiline(true);
 
   // Newlines should be kept in multiline mode.
-  std::u16string display_text = render_text->GetDisplayText();
+  std::u16string_view display_text = render_text->GetDisplayText();
   EXPECT_EQ(display_text[0], '\r');
   EXPECT_EQ(display_text[1], '\r');
   EXPECT_EQ(display_text[2], '\n');
@@ -1605,14 +1611,14 @@ TEST_P(RenderTextTestWithTextIndexConversionCase, TextIndexConversion) {
   render_text->SetObscuredRevealIndex(reveal_index);
   render_text->Draw(canvas());
 
-  std::u16string text = render_text->text();
-  std::u16string display_text = render_text->GetDisplayText();
+  std::u16string_view text = render_text->text();
+  std::u16string_view display_text = render_text->GetDisplayText();
 
   // Adjust reveal_index to point to the beginning of the surrogate pair, if
   // needed.
   // SAFETY: icu guarantees that U16_SET_CP_START() does not walk beyond the
   // string's bounds.
-  UNSAFE_BUFFERS(U16_SET_CP_START(text.c_str(), 0, reveal_index));
+  UNSAFE_BUFFERS(U16_SET_CP_START(text.data(), 0, reveal_index));
 
   // Validate that codepoints still match.
   for (base::i18n::UTF16CharIterator iter(render_text->text()); !iter.end();
@@ -2393,10 +2399,10 @@ TEST_F(RenderTextTest, ElidedText_NoTrimWhitespace) {
   EXPECT_EQ(kInputString, render_text->text());
 
   // Verify that the string is truncated to |kDesiredChars| with the ellipsis.
-  const std::u16string result = render_text->GetDisplayText();
-  const std::u16string expected =
-      std::u16string(kInputString).substr(0, kDesiredChars - 1) +
-      kEllipsisUTF16[0];
+  const std::u16string_view result = render_text->GetDisplayText();
+  const std::u16string expected = base::StrCat(
+      {std::u16string_view(kInputString).substr(0, kDesiredChars - 1),
+       kEllipsisUTF16});
   EXPECT_EQ(expected, result);
 }
 
@@ -2487,8 +2493,9 @@ TEST_F(RenderTextTest, MultilineElide) {
     render_text->GetStringSize();
     actual_text = render_text->GetDisplayText();
     EXPECT_LT(actual_text.size(), input_text.size());
-    EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                               std::u16string(kEllipsisUTF16));
+    EXPECT_EQ(actual_text,
+              base::StrCat({input_text.substr(0, actual_text.size() - 1),
+                            kEllipsisUTF16}));
     EXPECT_EQ(3U, render_text->GetNumLines());
   }
   // Now remove line restriction.
@@ -2500,8 +2507,9 @@ TEST_F(RenderTextTest, MultilineElide) {
   render_text->SetMaxLines(3);
   render_text->GetStringSize();
   EXPECT_LT(actual_text.size(), input_text.size());
-  EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                             std::u16string(kEllipsisUTF16));
+  EXPECT_EQ(actual_text,
+            base::StrCat({input_text.substr(0, actual_text.size() - 1),
+                          kEllipsisUTF16}));
 }
 
 TEST_F(RenderTextTest, MultilineElideWrap) {
@@ -2522,10 +2530,11 @@ TEST_F(RenderTextTest, MultilineElideWrap) {
   for (auto wrap_behavior : wrap_behaviors) {
     render_text->SetWordWrapBehavior(wrap_behavior);
     render_text->GetStringSize();
-    std::u16string actual_text = render_text->GetDisplayText();
+    std::u16string_view actual_text = render_text->GetDisplayText();
     EXPECT_LE(actual_text.size(), input_text.size());
-    EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                               std::u16string(kEllipsisUTF16));
+    EXPECT_EQ(actual_text,
+              base::StrCat({input_text.substr(0, actual_text.size() - 1),
+                            kEllipsisUTF16}));
     EXPECT_LE(render_text->GetNumLines(), 3U);
   }
 }
@@ -2554,10 +2563,11 @@ TEST_F(RenderTextTest, DISABLED_MultilineElideWrapWithStyle) {
   for (auto wrap_behavior : wrap_behaviors) {
     render_text->SetWordWrapBehavior(wrap_behavior);
     render_text->GetStringSize();
-    std::u16string actual_text = render_text->GetDisplayText();
+    std::u16string_view actual_text = render_text->GetDisplayText();
     EXPECT_LE(actual_text.size(), input_text.size());
-    EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                               std::u16string(kEllipsisUTF16));
+    EXPECT_EQ(actual_text,
+              base::StrCat({input_text.substr(0, actual_text.size() - 1),
+                            kEllipsisUTF16}));
     EXPECT_LE(render_text->GetNumLines(), 3U);
   }
 }
@@ -2585,7 +2595,7 @@ TEST_F(RenderTextTest, MultilineElideWrapStress) {
       render_text->SetDisplayRect(Rect(i, 0));
       render_text->SetWordWrapBehavior(wrap_behavior);
       render_text->GetStringSize();
-      std::u16string actual_text = render_text->GetDisplayText();
+      std::u16string_view actual_text = render_text->GetDisplayText();
       EXPECT_LE(actual_text.size(), input_text.size());
       EXPECT_LE(render_text->GetNumLines(), 3U);
     }
@@ -2620,7 +2630,7 @@ TEST_F(RenderTextTest, DISABLED_MultilineElideWrapStressWithStyle) {
       render_text->SetDisplayRect(Rect(i, 0));
       render_text->SetWordWrapBehavior(wrap_behavior);
       render_text->GetStringSize();
-      std::u16string actual_text = render_text->GetDisplayText();
+      std::u16string_view actual_text = render_text->GetDisplayText();
       EXPECT_LE(actual_text.size(), input_text.size());
       EXPECT_LE(render_text->GetNumLines(), 3U);
     }
@@ -2656,7 +2666,7 @@ TEST_F(RenderTextTest, MultilineElideRTL) {
   render_text->GetStringSize();
 
   EXPECT_EQ(render_text->GetDisplayText(),
-            input_text.substr(0, 8) + std::u16string(kEllipsisUTF16));
+            base::StrCat({input_text.substr(0, 8), kEllipsisUTF16}));
   EXPECT_EQ(render_text->GetNumLines(), 1U);
 }
 
@@ -2674,7 +2684,7 @@ TEST_F(RenderTextTest, MultilineElideBiDi) {
   test_api()->EnsureLayout();
 
   EXPECT_EQ(render_text->GetDisplayText(),
-            u"אa\nbcdבג" + std::u16string(kEllipsisUTF16));
+            base::StrCat({u"אa\nbcdבג", kEllipsisUTF16}));
   EXPECT_EQ(render_text->GetNumLines(), 2U);
 }
 
@@ -2692,7 +2702,7 @@ TEST_F(RenderTextTest, MultilineElideLinebreak) {
   render_text->GetStringSize();
 
   EXPECT_EQ(render_text->GetDisplayText(),
-            input_text.substr(0, 5) + std::u16string(kEllipsisUTF16));
+            base::StrCat({input_text.substr(0, 5), kEllipsisUTF16}));
   EXPECT_EQ(render_text->GetNumLines(), 1U);
 }
 
@@ -2718,7 +2728,7 @@ TEST_F(RenderTextTest, ElidedStyledTextRtl) {
       SCOPED_TRACE(base::StringPrintf("ElidedStyledTextRtl width = %d", i));
       render_text->SetDisplayRect(Rect(i, 20));
       render_text->GetStringSize();
-      std::u16string display_text = render_text->GetDisplayText();
+      std::u16string_view display_text = render_text->GetDisplayText();
       EXPECT_LE(display_text.size(), text.size());
 
       // Every size of content width was tried.
@@ -4184,7 +4194,7 @@ TEST_F(RenderTextTest, GetCursorBoundsMultilineLTR) {
   render_text->SetMultiline(true);
   render_text->SetText(u"one\n\ntwo three");
 
-  const auto& text = render_text->GetDisplayText();
+  std::u16string_view text = render_text->GetDisplayText();
   int expected_x = 0;
   int current_line = 0;
   for (size_t i = 0; i < text.size(); ++i) {
@@ -4226,7 +4236,7 @@ TEST_F(RenderTextTest, GetCursorBoundsMultilineCarriageReturn) {
   render_text->SetMultiline(true);
   render_text->SetText(u"abc\n\n\ndef\r\n\r\n");
 
-  const auto& text = render_text->GetDisplayText();
+  std::u16string_view text = render_text->GetDisplayText();
   int expected_x = 0;
   int current_line = 0;
   for (size_t i = 0; i < text.size(); ++i) {
@@ -4264,7 +4274,7 @@ TEST_F(RenderTextTest, GetCursorBoundsMultilineRTL) {
   // Line 1 is 3 codepoints, 5px wide each. Line 2 has 0 codepoints, and Line 3
   // has 8 codepoints, 5px wide each.
   const auto kExpectedFirstGlyphInLineX = std::to_array<int>({15, 0, 40});
-  const auto& text = render_text->GetDisplayText();
+  std::u16string_view text = render_text->GetDisplayText();
   int expected_x_offset = 0;
   int current_line = 0;
   for (size_t i = 0; i < text.size(); ++i) {
@@ -4820,7 +4830,7 @@ TEST_F(RenderTextTest, MoveLeftRightByWordInChineseText) {
 TEST_F(RenderTextTest, DirectedSelections) {
   RenderText* render_text = GetRenderText();
 
-  auto ResultAfter = [&](VisualCursorDirection direction) -> std::u16string {
+  auto ResultAfter = [&](VisualCursorDirection direction) {
     render_text->MoveCursor(CHARACTER_BREAK, direction, SELECTION_RETAIN);
     return GetSelectedText(render_text);
   };
@@ -6189,7 +6199,6 @@ TEST_F(RenderTextTest, Multiline_NewlineCharacterReplacement) {
     render_text->SetDisplayRect(Rect(200, 1000));
     render_text->SetText(kTestStrings[i]);
 
-    std::u16string display_text = render_text->GetDisplayText();
     // If RenderText is not multiline, the newline characters are replaced
     // by symbols, therefore the character should be changed.
     EXPECT_NE(kTestStrings[i], render_text->GetDisplayText());
@@ -6726,7 +6735,7 @@ TEST_F(RenderTextTest, HarfBuzz_Clusters) {
   run.shape.glyph_to_char.resize(4);
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    base::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
+    std::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
     run.font_params.is_rtl = cases[i].is_rtl;
 
     for (size_t j = 0; j < 4; ++j) {
@@ -6820,7 +6829,7 @@ TEST_F(RenderTextTest, HarfBuzz_SubglyphGraphemePartition) {
   render_text->SetText(u"abcd");
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    base::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
+    std::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
     run.font_params.is_rtl = cases[i].is_rtl;
     for (int j = 0; j < 2; ++j)
       run.shape.positions[j].set(j * 10, 0);

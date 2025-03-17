@@ -14,12 +14,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+namespace {
 
-const char kResultHistogramName[] =
+using testing::Eq;
+
+constexpr char kResultHistogramName[] =
     "Signin.Extensions.GaiaRemoteConsentFlowResult";
+constexpr GaiaId::Literal kGaiaId("fake_gaia_id");
+constexpr char kConsentResult[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
 
-const char kGaiaId[] = "fake_gaia_id";
-const char kConsentResult[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
+}  // namespace
 
 class FakeWebAuthFlow : public WebAuthFlow {
  public:
@@ -76,8 +80,8 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
   std::unique_ptr<TestGaiaRemoteConsentFlow> CreateTestFlow(
       GaiaRemoteConsentFlow::Delegate* delegate) {
     CoreAccountInfo user_info;
-    user_info.account_id = CoreAccountId::FromGaiaId("account_id");
-    user_info.gaia = "account_id";
+    user_info.gaia = GaiaId("account_id");
+    user_info.account_id = CoreAccountId::FromGaiaId(user_info.gaia);
     user_info.email = "email";
 
     ExtensionTokenKey token_key("extension_id", user_info,
@@ -99,7 +103,7 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
 TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult) {
   std::unique_ptr<TestGaiaRemoteConsentFlow> flow = CreateTestFlow();
   EXPECT_CALL(delegate_,
-              OnGaiaRemoteConsentFlowApproved(kConsentResult, GaiaId(kGaiaId)));
+              OnGaiaRemoteConsentFlowApproved(kConsentResult, Eq(kGaiaId)));
   flow->ReactToConsentResult(kConsentResult);
   histogram_tester()->ExpectUniqueSample(kResultHistogramName,
                                          GaiaRemoteConsentFlow::NONE, 1);
@@ -116,7 +120,7 @@ TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult_TwoWindows) {
   flow2->ReactToConsentResult(kConsentResult2);
 
   EXPECT_CALL(delegate_,
-              OnGaiaRemoteConsentFlowApproved(kConsentResult, GaiaId(kGaiaId)));
+              OnGaiaRemoteConsentFlowApproved(kConsentResult, Eq(kGaiaId)));
   flow->ReactToConsentResult(kConsentResult);
   histogram_tester()->ExpectUniqueSample(kResultHistogramName,
                                          GaiaRemoteConsentFlow::NONE, 2);

@@ -8,16 +8,18 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for displaying a single recent activity row. */
+@NullMarked
 class RecentActivityListProperties {
     public static final WritableObjectPropertyKey<String> TITLE_TEXT =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> DESCRIPTION_TEXT =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<DescriptionAndTimestamp>
+            DESCRIPTION_AND_TIMESTAMP_TEXT = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<Callback<ImageView>> FAVICON_PROVIDER =
             new WritableObjectPropertyKey<>();
@@ -30,6 +32,10 @@ class RecentActivityListProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                TITLE_TEXT, DESCRIPTION_TEXT, FAVICON_PROVIDER, AVATAR_PROVIDER, ON_CLICK_LISTENER
+                TITLE_TEXT,
+                DESCRIPTION_AND_TIMESTAMP_TEXT,
+                FAVICON_PROVIDER,
+                AVATAR_PROVIDER,
+                ON_CLICK_LISTENER
             };
 }

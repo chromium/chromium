@@ -29,6 +29,8 @@
 
 namespace {
 
+using enum PrivacySandboxService::AdsDialogCallbackNoArgsEvents;
+
 constexpr int kM1DialogWidth = 600;
 constexpr int kDefaultDialogHeight = 494;
 constexpr int kMinRequiredDialogHeight = 100;
@@ -116,7 +118,6 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
     : browser_(browser) {
   CHECK_NE(PrivacySandboxService::PromptType::kNone, prompt_type);
   // Create the web view in the native bubble.
-  dialog_created_time_ = base::TimeTicks::Now();
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
   web_view_->LoadInitialURL(GetDialogURL(prompt_type));
@@ -146,19 +147,32 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   // Unretained is fine because this outlives the inner web UI.
   web_ui->Initialize(
       browser->profile(),
-      base::BindOnce(&PrivacySandboxDialogView::Close, base::Unretained(this)),
+      base::BindRepeating(&PrivacySandboxDialogView::AdsDialogNoArgsCallback,
+                          base::Unretained(this)),
       base::BindOnce(&PrivacySandboxDialogView::ResizeNativeView,
                      base::Unretained(this)),
-      base::BindOnce(&PrivacySandboxDialogView::ShowNativeView,
-                     base::Unretained(this)),
-      base::BindOnce(&PrivacySandboxDialogView::OpenPrivacySandboxSettings,
-                     base::Unretained(this)),
-      base::BindOnce(
-          &PrivacySandboxDialogView::OpenPrivacySandboxAdMeasurementSettings,
-          base::Unretained(this)),
+
       prompt_type);
 
   SetUseDefaultFillLayout(true);
+}
+
+void PrivacySandboxDialogView::AdsDialogNoArgsCallback(
+    PrivacySandboxService::AdsDialogCallbackNoArgsEvents event) {
+  switch (event) {
+    case kShowDialog:
+      ShowNativeView();
+      break;
+    case kCloseDialog:
+      Close();
+      break;
+    case kOpenAdsPrivacySettings:
+      OpenPrivacySandboxSettings();
+      break;
+    case kOpenMeasurementSettings:
+      OpenPrivacySandboxAdMeasurementSettings();
+      break;
+  }
 }
 
 void PrivacySandboxDialogView::Close() {
@@ -180,10 +194,6 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
 void PrivacySandboxDialogView::ShowNativeView() {
   GetWidget()->Show();
   web_view_->RequestFocus();
-
-  DCHECK(!dialog_created_time_.is_null());
-  base::UmaHistogramTimes("Settings.PrivacySandbox.DialogLoadTime",
-                          base::TimeTicks::Now() - dialog_created_time_);
 }
 
 void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {

@@ -1963,7 +1963,7 @@ bool DrawSkottieOp::EqualsForTesting(const DrawSkottieOp& other) const {
       text_map != other.text_map) {
     return false;
   }
-  return base::ranges::equal(
+  return std::ranges::equal(
       images, other.images, [](const auto& a, const auto& b) {
         return a.first == b.first &&
                // PaintImage::IsSameForTesting() returns false in cases where
@@ -2017,7 +2017,7 @@ bool SaveLayerAlphaOp::EqualsForTesting(const SaveLayerAlphaOp& other) const {
 bool SaveLayerFiltersOp::EqualsForTesting(
     const SaveLayerFiltersOp& other) const {
   return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         base::ranges::equal(
+         std::ranges::equal(
              filters, other.filters,
              [](const sk_sp<PaintFilter>& lhs, const sk_sp<PaintFilter>& rhs) {
                return base::ValuesEquivalent(

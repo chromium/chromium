@@ -7,7 +7,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {

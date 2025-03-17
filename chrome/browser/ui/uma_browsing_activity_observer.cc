@@ -129,7 +129,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
       }
     }
 
-    if (browser->window()->IsActive()) {
+    if (browser->IsActive()) {
       // Record how many tabs the active window has open.
       UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountActiveWindow",
                                   browser->tab_strip_model()->count(), 1, 200,

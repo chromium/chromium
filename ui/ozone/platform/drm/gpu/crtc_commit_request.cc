@@ -30,6 +30,21 @@ CrtcCommitRequest::CrtcCommitRequest(uint32_t crtc_id,
   DCHECK(!should_enable_crtc || DrmOverlayPlane::GetPrimaryPlane(overlays_));
 }
 
+CrtcCommitRequest::CrtcCommitRequest(uint32_t crtc_id,
+                                     uint32_t connector_id,
+                                     drmModeModeInfo mode,
+                                     gfx::Point origin,
+                                     HardwareDisplayPlaneList* plane_list,
+                                     bool enable_vrr,
+                                     bool should_enable_crtc)
+    : should_enable_crtc_(should_enable_crtc),
+      crtc_id_(crtc_id),
+      connector_id_(connector_id),
+      mode_(mode),
+      origin_(origin),
+      plane_list_(plane_list),
+      enable_vrr_(enable_vrr) {}
+
 CrtcCommitRequest::~CrtcCommitRequest() = default;
 
 CrtcCommitRequest::CrtcCommitRequest(const CrtcCommitRequest& other)
@@ -82,6 +97,19 @@ CrtcCommitRequest CrtcCommitRequest::DisableCrtcRequest(
   return CrtcCommitRequest(crtc_id, connector_id, {}, gfx::Point(), plane_list,
                            DrmOverlayPlaneList(), /*enable_vrr=*/false,
                            /*should_enable_crtc_=*/false);
+}
+
+// static
+CrtcCommitRequest CrtcCommitRequest::DetachPlanesRequest(
+    uint32_t crtc_id,
+    uint32_t connector_id,
+    drmModeModeInfo mode,
+    gfx::Point origin,
+    HardwareDisplayPlaneList* plane_list,
+    bool enable_vrr) {
+  return CrtcCommitRequest(crtc_id, connector_id, mode, origin, plane_list,
+                           enable_vrr,
+                           /*should_enable_crtc_=*/true);
 }
 
 }  // namespace ui

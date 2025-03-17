@@ -44,8 +44,8 @@ base::flat_map<gfx::BufferFormat, std::vector<uint64_t>> GetDawnModifierMap(
       continue;
     }
 
-    wgpu::DrmFormatCapabilities drmCapabilities;
-    wgpu::FormatCapabilities formatCapabilities;
+    wgpu::DawnDrmFormatCapabilities drmCapabilities;
+    wgpu::DawnFormatCapabilities formatCapabilities;
     formatCapabilities.nextInChain = &drmCapabilities;
     adapter.GetFormatCapabilities(wgpu_format, &formatCapabilities);
 

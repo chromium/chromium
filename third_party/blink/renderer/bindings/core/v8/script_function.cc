@@ -27,8 +27,7 @@ const WrapperTypeInfo function_holder_info = {
     kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kCustomWrappableId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kCustomWrappableKind,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 }  // namespace

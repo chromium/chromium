@@ -10,6 +10,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.base.CoreAccountId;
 
@@ -19,8 +21,9 @@ import java.util.List;
  * This class is used to pass consent records from Android Java UI to the C++
  * consent_auditor component.
  */
+@NullMarked
 public final class ConsentAuditorBridge {
-    private static ConsentAuditorBridge sInstance;
+    private static @Nullable ConsentAuditorBridge sInstance;
 
     /**
      * Records that the user consented to a feature.

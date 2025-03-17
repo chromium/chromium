@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 
+#include <algorithm>
+
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -16,7 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -28,9 +30,9 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/language_detection/core/constants.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/common/language_detection_details.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -188,7 +190,7 @@ void AutofillManager::OnLanguageDetermined(
       !base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
     return;
   }
-  if (details.adopted_language == translate::kUnknownLanguageCode ||
+  if (details.adopted_language == language_detection::kUnknownLanguageCode ||
       !driver_->IsActive()) {
     return;
   }
@@ -354,21 +356,21 @@ void AutofillManager::OnCaretMovedInFormField(const FormData& form,
                     field_id, field.selected_text(), caret_bounds)));
 }
 
-void AutofillManager::OnTextFieldDidChange(const FormData& form,
-                                           const FieldGlobalId& field_id,
-                                           const base::TimeTicks timestamp) {
+void AutofillManager::OnTextFieldValueChanged(const FormData& form,
+                                              const FieldGlobalId& field_id,
+                                              const base::TimeTicks timestamp) {
   if (!IsValidFormData(form)) {
     return;
   }
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-  NotifyObservers(&Observer::OnBeforeTextFieldDidChange, form.global_id(),
+  NotifyObservers(&Observer::OnBeforeTextFieldValueChanged, form.global_id(),
                   field_id);
-  ParseFormAsync(form,
-                 ParsingCallback(&AutofillManager::OnTextFieldDidChangeImpl,
-                                 field_id, timestamp)
-                     .Then(NotifyObserversCallback(
-                         &Observer::OnAfterTextFieldDidChange, form.global_id(),
-                         field_id, field.value())));
+  ParseFormAsync(
+      form, ParsingCallback(&AutofillManager::OnTextFieldValueChangedImpl,
+                            field_id, timestamp)
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterTextFieldValueChanged, form.global_id(),
+                    field_id, field.value())));
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,
@@ -385,19 +387,20 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
                                         form.global_id(), field_id)));
 }
 
-void AutofillManager::OnSelectControlDidChange(const FormData& form,
-                                               const FieldGlobalId& field_id) {
+void AutofillManager::OnSelectControlSelectionChanged(
+    const FormData& form,
+    const FieldGlobalId& field_id) {
   if (!IsValidFormData(form)) {
     return;
   }
-  NotifyObservers(&Observer::OnBeforeSelectControlDidChange, form.global_id(),
-                  field_id);
+  NotifyObservers(&Observer::OnBeforeSelectControlSelectionChanged,
+                  form.global_id(), field_id);
   ParseFormAsync(
-      form,
-      ParsingCallback(&AutofillManager::OnSelectControlDidChangeImpl, field_id)
-          .Then(
-              NotifyObserversCallback(&Observer::OnAfterSelectControlDidChange,
-                                      form.global_id(), field_id)));
+      form, ParsingCallback(
+                &AutofillManager::OnSelectControlSelectionChangedImpl, field_id)
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterSelectControlSelectionChanged,
+                    form.global_id(), field_id)));
 }
 
 void AutofillManager::OnAskForValuesToFill(
@@ -465,8 +468,7 @@ void AutofillManager::OnSelectFieldOptionsDidChange(const FormData& form) {
 void AutofillManager::OnJavaScriptChangedAutofilledValue(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const std::u16string& old_value,
-    bool formatting_only) {
+    const std::u16string& old_value) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -475,7 +477,7 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnJavaScriptChangedAutofilledValueImpl,
-                      field_id, old_value, formatting_only)
+                      field_id, old_value)
           .Then(NotifyObserversCallback(
               &Observer::OnAfterJavaScriptChangedAutofilledValue,
               form.global_id(), field_id)));
@@ -487,21 +489,12 @@ bool AutofillManager::GetCachedFormAndField(
     FormStructure** form_structure,
     AutofillField** autofill_field) const {
   FormStructure* cached_form = FindCachedFormById(form_id);
-  // TODO: crbug.com/40232021 - Look into removing the `autofill_count() == 0`
-  // disjunct. Because it is inconvenient that some code needs to tolerate null
-  // FormStructures and/or AutofillFields because for Autocomplete still needs
-  // to work if `autofill_count() == 0`. See
-  // BrowserAutofillManager::AskForValuesToFillImpl() and
-  // BrowserAutofillManager::FillOrPreviewField().
-  if (!cached_form ||
-      (cached_form->autofill_count() == 0 &&
-       !base::FeatureList::IsEnabled(
-           features::kAutofillDecoupleAutofillCountFromCache))) {
+  if (!cached_form) {
     return false;
   }
   *form_structure = cached_form;
   auto field_it =
-      base::ranges::find(*cached_form, field_id, &AutofillField::global_id);
+      std::ranges::find(*cached_form, field_id, &AutofillField::global_id);
   *autofill_field = field_it == cached_form->end() ? nullptr : field_it->get();
   return *autofill_field != nullptr;
 }
@@ -525,6 +518,18 @@ size_t AutofillManager::FindCachedFormsBySignature(
 FormStructure* AutofillManager::FindCachedFormById(FormGlobalId form_id) const {
   auto it = form_structures_.find(form_id);
   return it != form_structures_.end() ? it->second.get() : nullptr;
+}
+
+FormStructure* AutofillManager::FindCachedFormById(
+    FieldGlobalId field_id) const {
+  for (const auto& [form_id, form_structure] : form_structures_) {
+    if (std::ranges::any_of(*form_structure, [&](const auto& field) {
+          return field->global_id() == field_id;
+        })) {
+      return form_structure.get();
+    }
+  }
+  return nullptr;
 }
 
 bool AutofillManager::CanShowAutofillUi() const {
@@ -617,10 +622,10 @@ void AutofillManager::ParseFormsAsync(
   // Remove duplicates by their FormGlobalId. Otherwise, after moving the forms
   // into `form_structures_`, duplicates may be destroyed and we'd end up with
   // dangling pointers.
-  base::ranges::sort(form_structures, {}, &FormStructure::global_id);
-  form_structures.erase(
-      base::ranges::unique(form_structures, {}, &FormStructure::global_id),
-      form_structures.end());
+  std::ranges::sort(form_structures, {}, &FormStructure::global_id);
+  auto repeated =
+      std::ranges::unique(form_structures, {}, &FormStructure::global_id);
+  form_structures.erase(repeated.begin(), repeated.end());
 
   ParseFormsAsyncCommon(
       std::move(form_structures),
@@ -827,6 +832,8 @@ void AutofillManager::OnLoadedServerPredictions(
   ParseServerPredictionsQueryResponse(
       std::move(response->response), queried_forms,
       response->queried_form_signatures, log_manager());
+
+  OnLoadedServerPredictionsImpl(queried_forms);
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.

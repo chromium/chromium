@@ -104,7 +104,14 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
       "table size should match number of auth error types");
 
   for (GoogleServiceAuthError::State state : table) {
-    GoogleServiceAuthError error(state);
+    GoogleServiceAuthError error;
+    if (state == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+    } else {
+      error = GoogleServiceAuthError(state);
+    }
     if (!error.IsPersistentError() || error.IsScopePersistentError()) {
       continue;
     }
@@ -136,7 +143,14 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
   EXPECT_TRUE(delegate.BackoffEntry());
   int failure_count = 0;
   for (GoogleServiceAuthError::State state : table) {
-    GoogleServiceAuthError error(state);
+    GoogleServiceAuthError error;
+    if (state == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+    } else {
+      error = GoogleServiceAuthError(state);
+    }
     if (!error.IsTransientError()) {
       continue;
     }
@@ -164,8 +178,10 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest,
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
 
   // Scope persistent errors are not persisted or notified as it does not imply
   // that the account is in an error state but the error is only relevant to

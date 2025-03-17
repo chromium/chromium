@@ -4,10 +4,10 @@
 
 #include "chrome/browser/status_icons/status_tray.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
 StatusTray::~StatusTray() = default;
@@ -23,21 +23,22 @@ StatusIcon* StatusTray::CreateStatusIcon(StatusIconType type,
   return status_icons_.back().icon.get();
 }
 
-void StatusTray::RemoveStatusIcon(StatusIcon* icon) {
+std::unique_ptr<StatusIcon> StatusTray::RemoveStatusIcon(StatusIcon* icon) {
   for (auto iter = status_icons_.begin(); iter != status_icons_.end(); ++iter) {
     if (iter->icon.get() == icon) {
+      auto removed_icon = std::move(iter->icon);
       status_icons_.erase(iter);
-      return;
+      return removed_icon;
     }
   }
   NOTREACHED();
 }
 
 bool StatusTray::HasStatusIconOfTypeForTesting(StatusIconType type) const {
-  return base::ranges::any_of(status_icons_,
-                              [type](const StatusIconWithType& status_icon) {
-                                return status_icon.type == type;
-                              });
+  return std::ranges::any_of(status_icons_,
+                             [type](const StatusIconWithType& status_icon) {
+                               return status_icon.type == type;
+                             });
 }
 
 StatusTray::StatusIconWithType::StatusIconWithType(

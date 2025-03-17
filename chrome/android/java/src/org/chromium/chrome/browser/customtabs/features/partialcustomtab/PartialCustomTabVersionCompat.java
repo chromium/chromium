@@ -57,7 +57,7 @@ abstract class PartialCustomTabVersionCompat {
     abstract @Px int getScreenWidth();
 
     /** Returns the status bar height */
-    abstract @Px int getStatusbarHeight();
+    abstract @Px int getStatusBarHeight();
 
     /** Returns the bottom navigation bar height */
     abstract @Px int getNavbarHeight();
@@ -125,7 +125,7 @@ abstract class PartialCustomTabVersionCompat {
 
         @Override
         @Px
-        int getStatusbarHeight() {
+        int getStatusBarHeight() {
             return mActivity
                     .getWindowManager()
                     .getCurrentWindowMetrics()
@@ -266,7 +266,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @SuppressWarnings("DiscouragedApi")
         @Px
-        int getStatusbarHeight() {
+        int getStatusBarHeight() {
             int statusBarHeight = 0;
             final int statusBarHeightResourceId =
                     mActivity.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -301,7 +301,7 @@ abstract class PartialCustomTabVersionCompat {
             // matter) doesn't have the top action bar. So getting the height of |content| is
             // enough.
             View contentFrame = mActivity.findViewById(android.R.id.content);
-            return contentFrame.getHeight() + getStatusbarHeight();
+            return contentFrame.getHeight() + getStatusBarHeight();
         }
 
         private int getAppUsableScreenHeightFromDisplay() {

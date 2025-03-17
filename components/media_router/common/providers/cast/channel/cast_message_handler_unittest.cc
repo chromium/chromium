@@ -71,24 +71,28 @@ data_decoder::DataDecoder::ValueOrError ParseJsonLikeDataDecoder(
 
 std::optional<base::Value::Dict> GetDictionaryFromCastMessage(
     const CastMessage& message) {
-  if (!message.has_payload_utf8())
+  if (!message.has_payload_utf8()) {
     return std::nullopt;
+  }
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(message.payload_utf8());
-  if (!value || !value->is_dict())
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(message.payload_utf8());
+  if (!value) {
     return std::nullopt;
-  return std::move(*value).TakeDict();
+  }
+  return value;
 }
 
 CastMessageType GetMessageType(const CastMessage& message) {
   std::optional<base::Value::Dict> dict = GetDictionaryFromCastMessage(message);
-  if (!dict)
+  if (!dict) {
     return CastMessageType::kOther;
+  }
 
   const std::string* message_type = dict->FindString("type");
-  if (!message_type)
+  if (!message_type) {
     return CastMessageType::kOther;
+  }
 
   return CastMessageTypeFromString(*message_type);
 }
@@ -131,8 +135,9 @@ class CastMessageHandlerTest : public testing::Test {
 
   void OnAppAvailability(const std::string& app_id,
                          GetAppAvailabilityResult result) {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
     DoOnAppAvailability(app_id, result);
   }
 
@@ -143,12 +148,14 @@ class CastMessageHandlerTest : public testing::Test {
   void ExpectSessionLaunchResult(LaunchSessionResponse::Result expected_result,
                                  LaunchSessionResponse response,
                                  LaunchSessionCallbackWrapper* out_callback) {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
     ++session_launch_response_count_;
     EXPECT_EQ(expected_result, response.result);
-    if (response.result == LaunchSessionResponse::Result::kOk)
+    if (response.result == LaunchSessionResponse::Result::kOk) {
       EXPECT_TRUE(response.receiver_status);
+    }
   }
 
   void ExpectEnsureConnection() {
@@ -442,10 +449,12 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
       static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing));
   ExpectEnsureConnectionThen(CastMessageType::kLaunch);
 
-  const std::optional<base::Value> json = base::JSONReader::Read(kAppParams);
+  const std::optional<base::Value::Dict> json =
+      base::JSONReader::ReadDict(kAppParams);
 
   handler_.LaunchSession(
-      channel_id_, kAppId1, base::Seconds(30), {"WEB"}, json,
+      channel_id_, kAppId1, base::Seconds(30), {"WEB"},
+      json ? std::make_optional(base::Value(json->Clone())) : std::nullopt,
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kOk));
@@ -458,7 +467,7 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
   int request_id = *request_id_value;
   EXPECT_GT(request_id, 0);
   const base::Value* app_params = dict->Find("appParams");
-  EXPECT_EQ(json.value(), *app_params);
+  EXPECT_EQ(*json, *app_params);
 
   CastMessage response;
   response.set_namespace_("urn:x-cast:com.google.cast.receiver");

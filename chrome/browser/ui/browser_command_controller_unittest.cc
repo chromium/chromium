@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -51,13 +50,17 @@
 #endif  // ((BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&
         // BUILDFLAG(ENABLE_EXTENSIONS))
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/common/chrome_features.h"
+#endif
+
 class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
  public:
   BrowserCommandControllerTest() = default;
 };
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // F1-3 keys are reserved Chrome accelerators on Chrome OS.
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_BACK, input::NativeWebKeyboardEvent(ui::KeyEvent(
@@ -114,7 +117,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
               ui::EventType::kKeyPressed, ui::VKEY_F3, ui::DomCode::F3,
               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN))));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(USE_AURA)
   // Ctrl+n, Ctrl+w are reserved while Ctrl+f is not.
@@ -147,7 +150,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   ASSERT_TRUE(browser()->is_type_app());
 
   // When is_type_app(), no keys are reserved.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_BACK,
       input::NativeWebKeyboardEvent(ui::KeyEvent(
@@ -163,7 +166,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
               ui::EventType::kKeyPressed, ui::VKEY_F4, ui::DomCode::F4, 0))));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(USE_AURA)
   // The input::NativeWebKeyboardEvent constructor is available only when
@@ -237,7 +240,7 @@ TEST_F(BrowserCommandControllerTest, AvatarAcceleratorEnabledOnDesktop) {
   const CommandUpdater* command_updater = &command_controller;
 
   // Chrome OS uses system tray menu to handle multi-profiles.
-  bool enabled = !BUILDFLAG(IS_CHROMEOS_ASH);
+  bool enabled = !BUILDFLAG(IS_CHROMEOS);
 
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
   EXPECT_EQ(enabled, command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
@@ -277,11 +280,9 @@ class BrowserCommandControllerFullscreenTest;
 class FullscreenTestBrowserWindow : public TestBrowserWindow,
                                     ExclusiveAccessContext {
  public:
-  FullscreenTestBrowserWindow(
+  explicit FullscreenTestBrowserWindow(
       BrowserCommandControllerFullscreenTest* test_browser)
-      : fullscreen_(false),
-        toolbar_showing_(false),
-        test_browser_(test_browser) {}
+      : test_browser_(test_browser) {}
 
   FullscreenTestBrowserWindow(const FullscreenTestBrowserWindow&) = delete;
   FullscreenTestBrowserWindow& operator=(const FullscreenTestBrowserWindow&) =
@@ -292,7 +293,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   // TestBrowserWindow overrides:
   bool ShouldHideUIForFullscreen() const override { return fullscreen_; }
   bool IsFullscreen() const override { return fullscreen_; }
-  void EnterFullscreen(const GURL& url,
+  void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType type,
                        int64_t display_id) override {
     fullscreen_ = true;
@@ -317,8 +318,8 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   void set_toolbar_showing(bool showing) { toolbar_showing_ = showing; }
 
  private:
-  bool fullscreen_;
-  bool toolbar_showing_;
+  bool fullscreen_ = false;
+  bool toolbar_showing_ = false;
   raw_ptr<BrowserCommandControllerFullscreenTest> test_browser_;
 };
 
@@ -408,13 +409,13 @@ TEST_F(BrowserCommandControllerFullscreenTest,
       blink::WebInputEvent::Type::kUndefined, 0,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Defaults for a tabbed browser.
-  for (size_t i = 0; i < std::size(commands); i++) {
-    SCOPED_TRACE(commands[i].command_id);
-    EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
-              commands[i].enabled_in_tab);
+  for (auto& command : commands) {
+    SCOPED_TRACE(command.command_id);
+    EXPECT_EQ(chrome::IsCommandEnabled(browser(), command.command_id),
+              command.enabled_in_tab);
     EXPECT_EQ(browser()->command_controller()->IsReservedCommandOrKey(
-                  commands[i].command_id, key_event),
-              commands[i].reserved_in_tab);
+                  command.command_id, key_event),
+              command.reserved_in_tab);
   }
 
   // Simulate going fullscreen.
@@ -425,13 +426,13 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   // By default, in fullscreen mode, the toolbar should be hidden; and all
   // platforms behave similarly.
   EXPECT_FALSE(window()->IsToolbarShowing());
-  for (size_t i = 0; i < std::size(commands); i++) {
-    SCOPED_TRACE(commands[i].command_id);
-    EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
-              commands[i].enabled_in_fullscreen);
+  for (auto& command : commands) {
+    SCOPED_TRACE(command.command_id);
+    EXPECT_EQ(chrome::IsCommandEnabled(browser(), command.command_id),
+              command.enabled_in_fullscreen);
     EXPECT_EQ(browser()->command_controller()->IsReservedCommandOrKey(
-                  commands[i].command_id, key_event),
-              commands[i].reserved_in_fullscreen);
+                  command.command_id, key_event),
+              command.reserved_in_fullscreen);
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -459,13 +460,13 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   browser()->command_controller()->FullscreenStateChanged();
 
-  for (size_t i = 0; i < std::size(commands); i++) {
-    SCOPED_TRACE(commands[i].command_id);
-    EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
-              commands[i].enabled_in_tab);
+  for (auto& command : commands) {
+    SCOPED_TRACE(command.command_id);
+    EXPECT_EQ(chrome::IsCommandEnabled(browser(), command.command_id),
+              command.enabled_in_tab);
     EXPECT_EQ(browser()->command_controller()->IsReservedCommandOrKey(
-                  commands[i].command_id, key_event),
-              commands[i].reserved_in_tab);
+                  command.command_id, key_event),
+              command.reserved_in_tab);
   }
 
   // Guest Profiles disallow some options.

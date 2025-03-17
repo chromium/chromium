@@ -57,6 +57,13 @@ void ShapeResultSpacing<TextContainerType>::SetSpacingAndExpansion(
 template <>
 void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
     const FontDescription& font_description) {
+  SetSpacingAndExpansion(font_description, text_.NormalizeSpace());
+}
+
+template <typename TextContentType>
+void ShapeResultSpacing<TextContentType>::SetSpacingAndExpansion(
+    const FontDescription& font_description,
+    bool normalize_space) {
   letter_spacing_ = TextRunLayoutUnit(font_description.LetterSpacing());
   word_spacing_ = TextRunLayoutUnit(font_description.WordSpacing());
   expansion_ = InlineLayoutUnit();
@@ -64,7 +71,7 @@ void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
   if (!has_spacing_)
     return;
 
-  normalize_space_ = text_.NormalizeSpace();
+  normalize_space_ = normalize_space;
   allow_tabs_ = false;
 }
 

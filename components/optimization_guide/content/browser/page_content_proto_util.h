@@ -7,17 +7,18 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
-#include "url/scheme_host_port.h"
+#include "url/origin.h"
 
 namespace optimization_guide {
 
 struct RenderFrameInfo {
   content::GlobalRenderFrameHostToken global_frame_token;
-  url::SchemeHostPort source_origin;
+  url::Origin source_origin;
 };
 
 // Converts the mojom data structure for AIPageContent to its equivalent proto
@@ -33,7 +34,7 @@ bool ConvertAIPageContentToProto(
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,
-    optimization_guide::proto::AnnotatedPageContent* proto);
+    optimization_guide::AIPageContentResult& page_content);
 
 }  // namespace optimization_guide
 

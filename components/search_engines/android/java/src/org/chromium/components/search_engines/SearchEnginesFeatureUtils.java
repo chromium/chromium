@@ -6,7 +6,10 @@ package org.chromium.components.search_engines;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helpers to access feature params for {@link SearchEnginesFeatures}. */
+@NullMarked
 public final class SearchEnginesFeatureUtils {
     /**
      * Whether the feature should be powered by a fake backend. This avoid having dependencies on
@@ -42,7 +45,8 @@ public final class SearchEnginesFeatureUtils {
      * <p>This param is surfaced in {@code chrome://flags}.
      */
     public static boolean clayBlockingEnableVerboseLogging() {
-        return clayBlockingFeatureParamAsBoolean("enable_verbose_logging", false);
+        // TODO(crbug.com/391570180): Finish cleaning up this flag once usage is removed.
+        return false;
     }
 
     /**
@@ -80,7 +84,7 @@ public final class SearchEnginesFeatureUtils {
      * disabled if an unexpected value (including {@code 0}) is provided.
      */
     public static int clayBlockingEscapeHatchBlockLimit() {
-        return clayBlockingFeatureParamAsInt("escape_hatch_block_limit", 0);
+        return clayBlockingFeatureParamAsInt("escape_hatch_block_limit", 10);
     }
 
     /**
@@ -107,7 +111,7 @@ public final class SearchEnginesFeatureUtils {
 
         return SearchEnginesFeatureMap.getInstance()
                 .getFieldTrialParamByFeatureAsInt(
-                        SearchEnginesFeatures.CLAY_BACKEND_CONNECTION_V2, "max_retries", 0);
+                        SearchEnginesFeatures.CLAY_BACKEND_CONNECTION_V2, "max_retries", 2);
     }
 
     @VisibleForTesting

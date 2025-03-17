@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
@@ -37,7 +38,7 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif  // #if BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
@@ -80,7 +81,7 @@ constexpr int kSuccessCode = 200;
 constexpr int kHardFailureCode = 400;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 DeviceTrustConnectorState CreateManagedDeviceState() {
   DeviceTrustConnectorState state;
 
@@ -91,7 +92,7 @@ DeviceTrustConnectorState CreateManagedDeviceState() {
 
   return state;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 DeviceTrustConnectorState CreateUnmanagedState() {
   return DeviceTrustConnectorState();
@@ -99,7 +100,7 @@ DeviceTrustConnectorState CreateUnmanagedState() {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class DeviceTrustAshBrowserTest : public test::DeviceTrustBrowserTestBase {
  protected:
   explicit DeviceTrustAshBrowserTest(
@@ -168,7 +169,7 @@ class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
 };
 
 using DeviceTrustBrowserTest = DeviceTrustDesktopBrowserTest;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the whole attestation flow occurs when navigating to an
 // allowed domain.
@@ -230,9 +231,9 @@ class DeviceTrustDelayedManagementBrowserTest
             kDTCKeyRotationUploadedBySharedAPIEnabled,
 #endif  // BUILDFLAG(IS_MAC)
             kDTCKeyUploadedBySharedAPIEnabled,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{});
   }
@@ -276,12 +277,12 @@ INSTANTIATE_TEST_SUITE_P(UnmanagedState,
                          DeviceTrustDelayedManagementBrowserTest,
                          testing::Values(CreateUnmanagedState()));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(ManagedState,
                          DeviceTrustDelayedManagementBrowserTest,
                          testing::Values(CreateManagedDeviceState()));
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that signal values respect the expected format and is filled-out as
 // expect per platform.
@@ -299,7 +300,8 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
 
   const base::Value::Dict& signals_dict = future.Get();
 
-  const auto signals_contract_map = device_signals::test::GetSignalsContract();
+  const auto signals_contract_map =
+      device_signals::test::GetSignalsContract(IsDTCAntivirusSignalEnabled());
   ASSERT_FALSE(signals_contract_map.empty());
   for (const auto& signals_contract_entry : signals_contract_map) {
     // First is the signal name.
@@ -518,9 +520,8 @@ class DeviceTrustBrowserTestWithConsent
 
     RunTestSequence(
         InAnyContext(WaitForShow(kDeviceSignalsConsentOkButtonElementId)),
-        InSameContext(
-            Steps(PressButton(kDeviceSignalsConsentOkButtonElementId),
-                  WaitForHide(kDeviceSignalsConsentOkButtonElementId))));
+        InSameContext(PressButton(kDeviceSignalsConsentOkButtonElementId),
+                      WaitForHide(kDeviceSignalsConsentOkButtonElementId)));
 
     WaitForNavigation();
   }
@@ -799,7 +800,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class DeviceTrustBrowserTestForUnmanagedDevices
     : public DeviceTrustBrowserTest,
@@ -901,7 +902,8 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTestSignalsContractForUnmanagedDevices,
   const base::Value::Dict& signals_dict = future.Get();
 
   const auto signals_contract_map =
-      device_signals::test::GetSignalsContractForUnmanagedDevices();
+      device_signals::test::GetSignalsContractForUnmanagedDevices(
+          IsDTCAntivirusSignalEnabled());
   ASSERT_FALSE(signals_contract_map.empty());
   for (const auto& signals_contract_entry : signals_contract_map) {
     // First is the signal name.
@@ -912,6 +914,6 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTestSignalsContractForUnmanagedDevices,
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors::test

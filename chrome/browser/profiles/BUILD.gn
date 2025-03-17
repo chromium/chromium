@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 # This target should be the default place for adding public interface things
@@ -118,9 +119,9 @@ source_set("profile_util") {
     "//components/autofill/core/browser",
     "//components/browsing_data/core",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/password_store:password_store_interface",
-    "//components/user_annotations:user_annotations",
     "//device/fido:fido",
     "//mojo/public/cpp/bindings",
     "//services/preferences/public/mojom",
@@ -165,7 +166,7 @@ source_set("profile_util_impl") {
     "//chrome/common:constants",
     "//components/account_id",
     "//components/browsing_data/core",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
@@ -193,10 +194,7 @@ source_set("profile_util_impl") {
   ]
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/ui:browser_list",
-      "//chrome/browser/user_annotations:user_annotations",
-    ]
+    deps += [ "//chrome/browser/ui:browser_list" ]
   }
 
   if (is_chromeos) {
@@ -225,6 +223,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser:font_pref",
     "//chrome/browser/ai",
     "//chrome/browser/autofill",
+    "//chrome/browser/background:background",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",
@@ -240,6 +239,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/prefs",
     "//chrome/browser/reading_list",
+    "//chrome/browser/regional_capabilities",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/safe_browsing:metrics_collector",
@@ -296,6 +296,7 @@ source_set("profiles_extra_parts_impl") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/devtools",
       "//chrome/browser/feedback",
       "//chrome/browser/hid",
@@ -311,7 +312,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login",
-      "//chrome/browser/user_annotations",
     ]
   }
 
@@ -366,10 +366,11 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:enabling",
-    ]
+    deps += [ "//chrome/browser/glic" ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//chrome/browser/on_device_translation" ]
   }
 }
 

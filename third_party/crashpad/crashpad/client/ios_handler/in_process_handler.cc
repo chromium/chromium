@@ -254,21 +254,23 @@ bool InProcessHandler::MoveIntermediateDumpAtPathToPending(
   return MoveFileOrDirectory(path, new_path_unlocked);
 }
 void InProcessHandler::ProcessIntermediateDumps(
-    const std::map<std::string, std::string>& annotations) {
+    const std::map<std::string, std::string>& annotations,
+    const UserStreamDataSources* user_stream_sources) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
 
   for (auto& file : PendingFiles())
-    ProcessIntermediateDump(file, annotations);
+    ProcessIntermediateDump(file, annotations, user_stream_sources);
 }
 
 void InProcessHandler::ProcessIntermediateDump(
     const base::FilePath& file,
-    const std::map<std::string, std::string>& annotations) {
+    const std::map<std::string, std::string>& annotations,
+    const UserStreamDataSources* user_stream_sources) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
 
   ProcessSnapshotIOSIntermediateDump process_snapshot;
   if (process_snapshot.InitializeWithFilePath(file, annotations)) {
-    SaveSnapshot(process_snapshot);
+    SaveSnapshot(process_snapshot, user_stream_sources);
   }
 }
 
@@ -320,7 +322,8 @@ void InProcessHandler::UpdatePruneAndUploadThreads(
 }
 
 void InProcessHandler::SaveSnapshot(
-    ProcessSnapshotIOSIntermediateDump& process_snapshot) {
+    ProcessSnapshotIOSIntermediateDump& process_snapshot,
+    const UserStreamDataSources* user_stream_sources) {
   std::unique_ptr<CrashReportDatabase::NewReport> new_report;
   CrashReportDatabase::OperationStatus database_status =
       database_->PrepareNewCrashReport(&new_report);
@@ -339,6 +342,8 @@ void InProcessHandler::SaveSnapshot(
 
   MinidumpFileWriter minidump;
   minidump.InitializeFromSnapshot(&process_snapshot);
+  AddUserExtensionStreams(user_stream_sources, &process_snapshot, &minidump);
+
   if (!minidump.WriteEverything(new_report->Writer())) {
     Metrics::ExceptionCaptureResult(
         Metrics::CaptureResult::kMinidumpWriteFailed);

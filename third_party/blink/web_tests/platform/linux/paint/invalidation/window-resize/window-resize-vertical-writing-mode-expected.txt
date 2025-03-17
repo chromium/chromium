@@ -82,7 +82,7 @@
       "backgroundColor": "#FFFFFF",
       "invalidations": [
         [400, 0, 400, 600],
-        [39, 8, 352, 561]
+        [39, 8, 352, 553]
       ]
     }
   ]

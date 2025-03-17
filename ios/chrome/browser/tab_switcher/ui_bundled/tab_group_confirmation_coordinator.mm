@@ -20,6 +20,9 @@
 @implementation TabGroupConfirmationCoordinator {
   // The action type that a tab group is going to take.
   TabGroupActionType _actionType;
+  // The secondary action type that a tab group is going to take. Default value
+  // is kNone.
+  TabGroupActionType _secondaryActionType;
   // The source view where the confirmation dialog anchors to.
   UIView* _sourceView;
   // The source button item where the confirmation dialog anchors to.
@@ -55,7 +58,10 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  CHECK(self.action);
+  CHECK(self.primaryAction);
+  if ([self shouldHaveSecondaryAction]) {
+    CHECK(self.secondaryAction);
+  }
 
   if (_sourceView) {
     _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
@@ -75,15 +81,25 @@
                      barButtonItem:_sourceButtonItem];
   }
 
+  _actionSheetCoordinator.alertStyle = _showAsAlert
+                                           ? UIAlertControllerStyleAlert
+                                           : UIAlertControllerStyleActionSheet;
   _actionSheetCoordinator.popoverArrowDirection =
       UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
 
   __weak TabGroupConfirmationCoordinator* weakSelf = self;
-  [_actionSheetCoordinator addItemWithTitle:[self itemTitle]
+  [_actionSheetCoordinator addItemWithTitle:[self primaryItemTitle]
                                      action:^{
-                                       [weakSelf handleAction];
+                                       [weakSelf handlePrimaryAction];
                                      }
                                       style:UIAlertActionStyleDestructive];
+  if ([self shouldHaveSecondaryAction]) {
+    [_actionSheetCoordinator addItemWithTitle:[self secondaryItemTitle]
+                                       action:^{
+                                         [weakSelf handleSecondaryAction];
+                                       }
+                                        style:UIAlertActionStyleDefault];
+  }
   [_actionSheetCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                                      action:^{
                                        [weakSelf stop];
@@ -104,10 +120,16 @@
 
 #pragma mark - Private
 
-// Helper method to execute an `action`.
-- (void)handleAction {
-  if (self.action) {
-    self.action();
+// Helper methods to execute an `action`.
+- (void)handlePrimaryAction {
+  if (self.primaryAction) {
+    self.primaryAction();
+  }
+}
+
+- (void)handleSecondaryAction {
+  if (self.secondaryAction) {
+    self.secondaryAction();
   }
 }
 
@@ -118,13 +140,33 @@
   _actionSheetCoordinator = nil;
 }
 
-// Returns a string used in the context menu.
-- (NSString*)itemTitle {
+// Returns a string used in the first item of the context menu.
+- (NSString*)primaryItemTitle {
   switch (_actionType) {
     case TabGroupActionType::kUngroupTabGroup:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP);
     case TabGroupActionType::kDeleteTabGroup:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
+    case TabGroupActionType::kLeaveSharedTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP);
+    case TabGroupActionType::kDeleteSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP);
+  }
+}
+
+// Returns a string for the second item in the context menu.
+- (NSString*)secondaryItemTitle {
+  switch (_actionType) {
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_KEEPSHAREDGROUP);
+    case TabGroupActionType::kUngroupTabGroup:
+    case TabGroupActionType::kDeleteTabGroup:
+    case TabGroupActionType::kLeaveSharedTabGroup:
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      NOTREACHED();
   }
 }
 
@@ -137,6 +179,15 @@
     case TabGroupActionType::kDeleteTabGroup:
       return l10n_util::GetNSString(
           IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_TITLE);
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      return l10n_util::GetNSString(
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_TITLE);
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      return l10n_util::GetNSString(
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_DELETE_TITLE);
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      return l10n_util::GetNSString(IDS_IOS_TAB_GROUP_CONFIRMATION_KEEP_TITLE);
   }
 }
 
@@ -174,7 +225,39 @@
         return l10n_util::GetNSString(
             IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL);
       }
+    case TabGroupActionType::kLeaveSharedTabGroup: {
+      CHECK(_tabGroupName);
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_MESSAGE,
+          base::SysNSStringToUTF16(_tabGroupName));
+    }
+    case TabGroupActionType::kDeleteSharedTabGroup: {
+      CHECK(_tabGroupName);
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE,
+          base::SysNSStringToUTF16(_tabGroupName));
+    }
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      CHECK(_tabGroupName);
+      return [NSString
+          stringWithFormat:
+              @"%@\n%@",
+              l10n_util::GetNSString(
+                  IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_DELETE_MESSAGE),
+              l10n_util::GetNSStringF(
+                  IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_DELETE_MESSAGE_EXPLANATION_PART,
+                  base::SysNSStringToUTF16(_tabGroupName))];
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      return l10n_util::GetNSString(
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_LEAVE_MESSAGE);
   }
+}
+
+// Returns YES if the confirmation have two actions + Cancel instead of one
+// action and Cancel only.
+- (BOOL)shouldHaveSecondaryAction {
+  return _actionType == TabGroupActionType::kDeleteOrKeepSharedTabGroup ||
+         _actionType == TabGroupActionType::kLeaveOrKeepSharedTabGroup;
 }
 
 @end

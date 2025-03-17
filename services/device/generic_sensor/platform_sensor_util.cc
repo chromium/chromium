@@ -4,10 +4,10 @@
 
 #include "services/device/generic_sensor/platform_sensor_util.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 
 namespace device {

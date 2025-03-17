@@ -46,12 +46,14 @@ PredictionModelDownloadManager*
 PredictionModelDownloadClient::GetPredictionModelDownloadManager() {
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForProfile(profile_);
-  if (!optimization_guide_service)
+  if (!optimization_guide_service) {
     return nullptr;
+  }
   PredictionManager* prediction_manager =
       optimization_guide_service->GetPredictionManager();
-  if (!prediction_manager)
+  if (!prediction_manager) {
     return nullptr;
+  }
   return prediction_manager->prediction_model_download_manager();
 }
 
@@ -60,8 +62,9 @@ void PredictionModelDownloadClient::OnServiceInitialized(
     const std::vector<download::DownloadMetaData>& downloads) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (!download_manager)
+  if (!download_manager) {
     return;
+  }
 
   std::set<std::string> outstanding_download_guids;
   std::map<std::string, base::FilePath> successful_downloads;
@@ -81,8 +84,9 @@ void PredictionModelDownloadClient::OnServiceInitialized(
 void PredictionModelDownloadClient::OnServiceUnavailable() {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
+  if (download_manager) {
     download_manager->OnDownloadServiceUnavailable();
+  }
 }
 
 void PredictionModelDownloadClient::OnDownloadStarted(
@@ -101,9 +105,10 @@ void PredictionModelDownloadClient::OnDownloadFailed(
     download::Client::FailureReason reason) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
+  if (download_manager) {
     download_manager->OnDownloadFailed(
         ParseOptimizationTarget(completion_info.custom_data), guid);
+  }
 }
 
 void PredictionModelDownloadClient::OnDownloadSucceeded(
@@ -111,10 +116,11 @@ void PredictionModelDownloadClient::OnDownloadSucceeded(
     const download::CompletionInfo& completion_info) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
+  if (download_manager) {
     download_manager->OnDownloadSucceeded(
         ParseOptimizationTarget(completion_info.custom_data), guid,
         completion_info.path);
+  }
 }
 
 bool PredictionModelDownloadClient::CanServiceRemoveDownloadedFile(

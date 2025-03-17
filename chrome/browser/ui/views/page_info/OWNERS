@@ -1,2 +1,3 @@
 file://chrome/browser/ui/page_info/OWNERS
 per-file safety_tip*=jdeblasio@chromium.org
+per-file page_info_cookies_content_view*=file://components/privacy_sandbox/OWNERS

@@ -351,7 +351,7 @@ class OutputMatch extends HTMLTableRowElement {
     COLUMNS.forEach(({displayAlways}, i) => {
       const outputProperty = this.outputProperties[i];
       assert(outputProperty);
-      return outputProperty!.hidden = !showDetails && !displayAlways;
+      return outputProperty.hidden = !showDetails && !displayAlways;
     });
   }
 

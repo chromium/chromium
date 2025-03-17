@@ -19,14 +19,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
 namespace blink {
@@ -51,8 +47,9 @@ bool ParseNumberOptionalNumber(const String& s, float& h, float& v);
 
 template <typename CharType>
 inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {
-  while (ptr < end && IsHTMLSpace<CharType>(*ptr))
-    ptr++;
+  while (ptr < end && IsHTMLSpace<CharType>(*ptr)) {
+    UNSAFE_TODO(ptr++);
+  }
   return ptr < end;
 }
 
@@ -64,7 +61,7 @@ inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
     return false;
   if (SkipOptionalSVGSpaces(ptr, end)) {
     if (*ptr == delimiter) {
-      ptr++;
+      UNSAFE_TODO(ptr++);
       SkipOptionalSVGSpaces(ptr, end);
     }
   }

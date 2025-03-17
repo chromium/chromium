@@ -4,10 +4,12 @@
 
 package org.chromium.base;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.base.test.util.BaseFlagTestRule.A_OFF_B_ON;
 import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
 import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_B;
-import static org.chromium.base.test.util.BaseFlagTestRule.assertIsEnabledMatches;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,10 +45,11 @@ public class PostNativeFlagUnitTest {
         PostNativeFlag featureA = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
         PostNativeFlag featureB = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B);
 
-        // Values from ChromeFeatureList should be used from now on.
-        FeatureList.setTestFeatures(A_OFF_B_ON);
+        // Values from the FeatureMap should be used from now on.
+        A_OFF_B_ON.apply();
 
-        // Assert {@link MutableFlagWithSafeDefault} uses the values from {@link ChromeFeatureList}.
-        assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
+        // Assert {@link MutableFlagWithSafeDefault} uses the values from FeatureMap.
+        assertFalse(featureA.isEnabled());
+        assertTrue(featureB.isEnabled());
     }
 }

@@ -12,7 +12,6 @@
 #include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -248,7 +247,7 @@ void AutofillDriverRouter::CaretMovedInFormField(
   callback(CHECK_DEREF(target), browser_form, field_id, caret_bounds);
 }
 
-void AutofillDriverRouter::TextFieldDidChange(
+void AutofillDriverRouter::TextFieldValueChanged(
     RoutedCallback<const FormData&, const FieldGlobalId&, base::TimeTicks>
         callback,
     AutofillDriver& source,
@@ -296,7 +295,7 @@ void AutofillDriverRouter::TextFieldDidScroll(
   callback(CHECK_DEREF(target), browser_form, field_id);
 }
 
-void AutofillDriverRouter::SelectControlDidChange(
+void AutofillDriverRouter::SelectControlSelectionChanged(
     RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     AutofillDriver& source,
     FormData form,
@@ -456,15 +455,12 @@ void AutofillDriverRouter::SelectFieldOptionsDidChange(
 }
 
 void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
-    RoutedCallback<const FormData&,
-                   const FieldGlobalId&,
-                   const std::u16string&,
-                   bool> callback,
+    RoutedCallback<const FormData&, const FieldGlobalId&, const std::u16string&>
+        callback,
     AutofillDriver& source,
     FormData form,
     const FieldGlobalId& field_id,
-    const std::u16string& old_value,
-    bool formatting_only) {
+    const std::u16string& old_value) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -480,8 +476,7 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
     return;
   }
   auto* target = DriverOfFrame(browser_form.host_frame());
-  callback(CHECK_DEREF(target), browser_form, field_id, old_value,
-           formatting_only);
+  callback(CHECK_DEREF(target), browser_form, field_id, old_value);
 }
 
 // Routing of events triggered by the browser.

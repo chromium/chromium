@@ -162,6 +162,7 @@ android_library("content_view_java") {
 android_library("view_java") {
   deps = [
     "//build/android:build_java",
+    "//components/input/android:java",
     "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -293,6 +294,7 @@ android_library("context_menu_java") {
   deps = [
     "//base:base_java",
     "//content/public/android:content_java",
+    "//content/public/common:common_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -312,7 +314,9 @@ android_library("context_menu_java") {
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulator.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulatorFactory.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuSwitches.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUi.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUtils.java",
   ]
 }
 
@@ -341,19 +345,24 @@ robolectric_library("junit_test_support") {
 
 robolectric_library("components_embedder_support_junit_tests") {
   sources = [
+    "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUtilsUnitTest.java",
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
     "junit/src/org/chromium/components/embedder_support/view/ContentViewTest.java",
   ]
   deps = [
     ":content_view_java",
     ":util_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/embedder_support/android:context_menu_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:org_mockito_mockito_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/blink/public:blink_headers_java",
     "//third_party/junit",
     "//ui/android:ui_java",
+    "//url:url_java",
   ]
 }
 

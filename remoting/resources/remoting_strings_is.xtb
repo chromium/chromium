@@ -28,6 +28,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="2329392777730037872">Ekki tókst að opna <ph name="URL" /> í biðlaranum.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2366718077645204424">Ekki næst í hýsilinn. Þetta er líklega vegna grunnstillingar á netkerfinu sem þú notar.</translation>
+<translation id="242591256144136845">Höfundarréttur 2025 Google LLC. Öll réttindi áskilin.</translation>
 <translation id="2504109125669302160">Veittu <ph name="PRODUCT_NAME" /> heimildina „Aðgengi“</translation>
 <translation id="2509394361235492552">Tengt við <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Viltu deila þessari tölvu þannig að annar notandi hafi aðgang og stjórn á henni?</translation>
@@ -133,6 +134,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="7067321367069083429">Skjárinn virkar sem snertiskjár</translation>
 <translation id="7116737094673640201">Velkomin(n) í fjarstjórnun tölvu í Chrome</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
+<translation id="7298392173540380852">Höfundarréttur 2025 höfundar Chromium. Öll réttindi áskilin.</translation>
 <translation id="7312846573060934304">Hýsillinn er ekki tengdur.</translation>
 <translation id="7319983568955948908">Hætta að deila</translation>
 <translation id="7359298090707901886">Ekki er hægt að nota valinn vafra til að opna vefslóðir í staðbundna tækinu.</translation>
@@ -149,7 +151,6 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="7693372326588366043">Uppfæra listann yfir hýsla</translation>
 <translation id="7714222945760997814">Tilkynna þetta</translation>
 <translation id="7868137160098754906">Sláðu inn PIN-númer fyrir fjartengdu tölvuna.</translation>
-<translation id="7881455334687220899">Höfundarréttur 2024 höfundar Chromium. Öll réttindi áskilin.</translation>
 <translation id="7895403300744144251">Öryggisstefnur á fjartengdu tölvunni leyfa ekki tengingar frá reikningnum þínum.</translation>
 <translation id="7936528439960309876">Festa til hægri</translation>
 <translation id="7970576581263377361">Auðkenning mistókst. Skráðu þig aftur inn í Chromium.</translation>
@@ -158,7 +159,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8060029310790625334">Hjálparmiðstöð</translation>
 <translation id="806699900641041263">Tengist við <ph name="HOSTNAME" /></translation>
-<translation id="8073845705237259513">Til að nota fjarstjórnun tölvu í Chrome þarftu að bæta Google reikningi við tækið þitt.</translation>
+<translation id="8073845705237259513">Til að nota fjarstjórnun tölvu í Chrome þarftu að bæta Google-reikningi við tækið þitt.</translation>
 <translation id="809687642899217504">Tölvurnar mínar</translation>
 <translation id="8116630183974937060">Netvilla kom upp. Gakktu úr skugga um að tækið sé nettengt og reyndu aftur.</translation>
 <translation id="8295077433896346116">Til að nota <ph name="PRODUCT_NAME" /> þarftu að veita heimildina „Aðgengi“ til að hægt sé að senda inntak úr fjartengdu tölvunni inn í þessa Mac-tölvu.
@@ -167,7 +168,7 @@ Til að veita þessa heimild skaltu smella á <ph name="BUTTON_NAME" /> hér fyr
 
 Ef þegar er merkt í „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlægja merkið og merkja svo aftur í reitinn.</translation>
 <translation id="8305209735512572429">Fjarvinnsla Web Authentication</translation>
-<translation id="8383794970363966105">Til að nota Chromoting þarftu að bæta Google reikningi við tækið þitt.</translation>
+<translation id="8383794970363966105">Til að nota Chromoting þarftu að bæta Google-reikningi við tækið þitt.</translation>
 <translation id="8386846956409881180">Hýsillinn er stilltur með ógildum OAuth-skilríkjum.</translation>
 <translation id="8397385476380433240">Veita <ph name="PRODUCT_NAME" /> heimild</translation>
 <translation id="8406498562923498210">Veldu lotu sem þú vilt ræsa innan fjarstjórnunar tölvu í Chrome. (Athugaðu að sumar lotugerðir styðja hugsanlega ekki keyrslu innan fjarstjórnunar Chrome og á staðbundnu stjórnborði samtímis.)</translation>
@@ -181,7 +182,6 @@ Ef þegar er merkt í „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlægja 
 <translation id="8747048596626351634">Lotan hrundi eða ekki tókst að ræsa hana. Ef ~/.chrome-remote-desktop-session er til staðar í fjartengdu tölvunni skaltu ganga úr skugga um að hún ræsi ferli sem er lengi í gangi í forgrunni, til dæmis skjáborðsumhverfi eða gluggastýringu.</translation>
 <translation id="8804164990146287819">Persónuverndarstefna</translation>
 <translation id="8906511416443321782">Aðgangur að hljóðnema er áskilinn til að taka upp hljóð og senda það út í biðlara fjarstjórnunar tölvu í Chrome.</translation>
-<translation id="9042277333359847053">Höfundarréttur 2024 Google LLC. Öll réttindi áskilin.</translation>
 <translation id="9111855907838866522">Þú ert tengd(ur) við fjartengda tækið. Ýttu á skjáinn með fjórum fingrum til að opna valmyndina.</translation>
 <translation id="9126115402994542723">Ekki biðja aftur um PIN-númer þegar tengst er við þennan þjón úr þessu tæki.</translation>
 <translation id="916856682307586697">Ræsa sjálfgefið XSession</translation>

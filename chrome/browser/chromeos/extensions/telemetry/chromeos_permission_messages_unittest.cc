@@ -79,11 +79,13 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
                .SetManifestKey("permissions", std::move(required_permissions))
                .SetManifestKey("optional_permissions",
                                std::move(optional_permissions))
-               .SetManifestKey("externally_connectable",
-                               base::Value::Dict().Set(
-                                   "matches",
-                                   base::Value::List().Append(
-                                       "*://googlechromelabs.github.io/*")))
+               .SetManifestKey(
+                   "externally_connectable",
+                   base::Value::Dict().Set(
+                       "matches",
+                       base::Value::List().Append(
+                           "*://googlechromelabs.github.io/"
+                           "cros-sample-telemetry-extension/test-page/*")))
                .SetID(kChromeOSSystemExtensionId)  // only allowlisted id
                .SetLocation(ManifestLocation::kInternal)
                .Build();

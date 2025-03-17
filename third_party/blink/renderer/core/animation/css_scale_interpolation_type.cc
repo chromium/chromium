@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -20,13 +21,16 @@ namespace blink {
 
 namespace {
 
-InterpolableNumber* CSSValueToInterpolableNumber(const CSSValue& value) {
-  if (auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
-    return MakeGarbageCollected<InterpolableNumber>(numeric->ComputeNumber());
-  }
-  CHECK(value.IsMathFunctionValue());
-  auto& function = To<CSSMathFunctionValue>(value);
-  return MakeGarbageCollected<InterpolableNumber>(*function.ExpressionNode());
+InterpolableNumber* CSSValueToInterpolableNumber(
+    const CSSValue& value,
+    const CSSLengthResolver& length_resolver) {
+  const auto& primitive_value = To<CSSPrimitiveValue>(value);
+  // TODO(crbug.com/41494232): Don't resolve it here, once we can divide units.
+  // The problem now is when we end up with kNumber for neutral keyframe
+  // and kPercentage for non-neutral keyframe, we have to sum number and
+  // percentage, which is not allowed (context: crbug.com/396584141).
+  return MakeGarbageCollected<InterpolableNumber>(
+      primitive_value.ComputeNumber(length_resolver));
 }
 
 InterpolableValue* CreateScaleIdentity() {
@@ -188,7 +192,7 @@ InterpolationValue CSSScaleInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSScaleInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
   if (!value.IsBaseValueList())
     return CreateInterpolationValue();
@@ -196,21 +200,30 @@ InterpolationValue CSSScaleInterpolationType::MaybeConvertValue(
   const auto& list = To<CSSValueList>(value);
   DCHECK(list.length() >= 1 && list.length() <= 3);
 
+  CSSToLengthConversionData conversion_data =
+      state ? state->CssToLengthConversionData()
+            : CSSToLengthConversionData(/*element=*/nullptr);
   if (list.length() == 1) {
-    InterpolableNumber* scale = CSSValueToInterpolableNumber(list.Item(0));
+    InterpolableNumber* scale =
+        CSSValueToInterpolableNumber(list.Item(0), conversion_data);
     // single value defines a 2d scale according to the spec
     // see https://drafts.csswg.org/css-transforms-2/#propdef-scale
     return CreateInterpolationValue(
         {scale, scale, MakeGarbageCollected<InterpolableNumber>(1.0)});
   } else if (list.length() == 2) {
-    InterpolableNumber* x_scale = CSSValueToInterpolableNumber(list.Item(0));
-    InterpolableNumber* y_scale = CSSValueToInterpolableNumber(list.Item(1));
+    InterpolableNumber* x_scale =
+        CSSValueToInterpolableNumber(list.Item(0), conversion_data);
+    InterpolableNumber* y_scale =
+        CSSValueToInterpolableNumber(list.Item(1), conversion_data);
     return CreateInterpolationValue(
         {x_scale, y_scale, MakeGarbageCollected<InterpolableNumber>(1.0)});
   } else {
-    InterpolableNumber* x_scale = CSSValueToInterpolableNumber(list.Item(0));
-    InterpolableNumber* y_scale = CSSValueToInterpolableNumber(list.Item(1));
-    InterpolableNumber* z_scale = CSSValueToInterpolableNumber(list.Item(2));
+    InterpolableNumber* x_scale =
+        CSSValueToInterpolableNumber(list.Item(0), conversion_data);
+    InterpolableNumber* y_scale =
+        CSSValueToInterpolableNumber(list.Item(1), conversion_data);
+    InterpolableNumber* z_scale =
+        CSSValueToInterpolableNumber(list.Item(2), conversion_data);
     return CreateInterpolationValue({x_scale, y_scale, z_scale});
   }
 }

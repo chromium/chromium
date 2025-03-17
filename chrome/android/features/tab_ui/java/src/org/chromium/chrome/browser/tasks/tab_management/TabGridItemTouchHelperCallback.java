@@ -22,10 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -58,6 +59,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
     private final TabListModel mModel;
     private final Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    private final ObservableSupplierImpl<Integer> mRecentlySwipedTabIdSupplier =
+            new ObservableSupplierImpl<>(Tab.INVALID_TAB_ID);
     private final TabListMediator.TabActionListener mTabClosedListener;
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
@@ -195,10 +198,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 || target.getItemViewType() == TabProperties.UiType.CUSTOM_MESSAGE) {
             return false;
         }
-        // Collaborations cannot be dropped as it would destroy the collaboration.
-        if (hasCollaboration(current)) {
-            return false;
-        }
         return super.canDropOver(recyclerView, current, target);
     }
 
@@ -251,6 +250,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
 
+        int tabId = simpleViewHolder.model.get(TabProperties.TAB_ID);
+        mRecentlySwipedTabIdSupplier.set(tabId);
+
         if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
             mTabClosedListener.run(
                     viewHolder.itemView, simpleViewHolder.model.get(TabProperties.TAB_ID));
@@ -283,7 +285,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     !(hoveredViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder)
                             || hasTabPropertiesModel(hoveredViewHolder);
 
-            if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs) {
+            if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX
+                    && mActionsOnAllRelatedTabs
+                    && !hasCollaboration(viewHolder)) {
                 RecyclerView.ViewHolder selectedViewHolder =
                         mRecyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
                 if (selectedViewHolder != null
@@ -442,21 +446,28 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
             assert viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder;
 
-            int index = TabModel.INVALID_TAB_INDEX;
             SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                     (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
 
-            if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
-                index = mModel.indexFromId(simpleViewHolder.model.get(TabProperties.TAB_ID));
-            } else if (simpleViewHolder.model.get(CARD_TYPE) == MESSAGE) {
-                index =
+            @Nullable PropertyModel viewHolderModel = simpleViewHolder.model;
+            if (viewHolderModel == null) return;
+
+            @Nullable PropertyModel cardModel = null;
+            if (viewHolderModel.get(CARD_TYPE) == TAB) {
+                cardModel =
+                        mModel.getModelFromTabId(viewHolderModel.get(TabProperties.TAB_ID));
+            } else if (viewHolderModel.get(CARD_TYPE) == MESSAGE) {
+                int index =
                         mModel.lastIndexForMessageItemFromType(
-                                simpleViewHolder.model.get(MESSAGE_TYPE));
+                                viewHolderModel.get(MESSAGE_TYPE));
+                if (index == TabModel.INVALID_TAB_INDEX) return;
+
+                cardModel = mModel.get(index).model;
             }
 
-            if (index == TabModel.INVALID_TAB_INDEX) return;
+            if (cardModel == null) return;
 
-            mModel.get(index).model.set(TabListModel.CardProperties.CARD_ALPHA, alpha);
+            cardModel.set(TabListModel.CardProperties.CARD_ALPHA, alpha);
             boolean isOverThreshold = Math.abs(dX) >= mSwipeToDismissThreshold;
             if (isOverThreshold && !mIsSwipingToDismiss) {
                 viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -523,7 +534,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 filter.willMergingCreateNewGroup(List.of(selectedCard, hoveredCard));
         filter.mergeTabsToGroup(selectedCard.getId(), hoveredCard.getId());
 
-        if (willMergingCreateNewGroup && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
+        if (willMergingCreateNewGroup) {
             mTabGroupCreationDialogManager.showDialog(hoveredCard.getRootId(), filter);
         }
 
@@ -580,6 +591,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     boolean hasDragFlagForTesting(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         int flags = getMovementFlags(recyclerView, viewHolder);
         return (flags >> 16) != 0;
+    }
+
+    /** Provides the tab ID for the most recently swiped tab. */
+    ObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
+        return mRecentlySwipedTabIdSupplier;
     }
 
     @VisibleForTesting

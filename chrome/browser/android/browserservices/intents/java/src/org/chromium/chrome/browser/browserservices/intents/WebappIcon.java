@@ -18,24 +18,27 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 
 /** Represents bitmap icon. Lazily converts icon format. */
+@NullMarked
 public class WebappIcon {
     public static final int ICON_WITH_URL_AND_HASH_SHELL_VERSION = 169;
 
     private static final String TAG = "WebappIcon";
 
-    private byte[] mUnsafeData;
-    private String mEncoded;
-    private Bitmap mBitmap;
-    private String mWebApkPackageName;
+    private byte @Nullable [] mUnsafeData;
+    private @Nullable String mEncoded;
+    private @Nullable Bitmap mBitmap;
+    private @Nullable String mWebApkPackageName;
     private int mResourceId;
     private boolean mIsTrusted;
 
-    private String mIconUrl;
-    private String mIconHash;
+    private @Nullable String mIconUrl;
+    private @Nullable String mIconHash;
 
     public WebappIcon() {}
 
@@ -100,7 +103,7 @@ public class WebappIcon {
         return mEncoded;
     }
 
-    public Bitmap bitmap() {
+    public @Nullable Bitmap bitmap() {
         if (mBitmap == null) {
             mBitmap = generateBitmap();
         }
@@ -111,15 +114,15 @@ public class WebappIcon {
         return mResourceId;
     }
 
-    public String iconUrl() {
+    public @Nullable String iconUrl() {
         return mIconUrl;
     }
 
-    public String iconHash() {
+    public @Nullable String iconHash() {
         return mIconHash;
     }
 
-    private Bitmap generateBitmap() {
+    private @Nullable Bitmap generateBitmap() {
         if (mEncoded != null && mIsTrusted) {
             return BitmapHelper.decodeBitmapFromString(mEncoded);
         }

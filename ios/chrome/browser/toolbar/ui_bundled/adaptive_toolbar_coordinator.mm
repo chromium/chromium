@@ -6,7 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -30,8 +33,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_visibility_configuration.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -75,7 +76,10 @@
   self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   self.viewController.adaptiveDelegate = self;
 
-  self.mediator = [[AdaptiveToolbarMediator alloc] init];
+  self.mediator = [[AdaptiveToolbarMediator alloc]
+      initWithMessagingService:collaboration::messaging::
+                                   MessagingBackendServiceFactory::
+                                       GetForProfile(browser->GetProfile())];
   self.mediator.incognito = browser->GetProfile()->IsOffTheRecord();
   self.mediator.consumer = self.viewController;
   self.mediator.navigationBrowserAgent =

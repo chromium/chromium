@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -324,7 +324,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
 
   const printing::PrintSettings::RequestedMedia& requested_media =
       settings.requested_media();
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       capabilities.papers,
       [&requested_media](
           const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {

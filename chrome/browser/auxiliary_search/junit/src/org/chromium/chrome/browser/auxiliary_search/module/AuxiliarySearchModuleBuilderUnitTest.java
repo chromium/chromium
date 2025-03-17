@@ -39,9 +39,7 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.magic_stack.HomeModulesUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -81,6 +79,8 @@ public class AuxiliarySearchModuleBuilderUnitTest {
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
         mFactory.setHooksForTesting(mHooks);
         assertTrue(mFactory.isEnabled());
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);
 
         mBuilder = new AuxiliarySearchModuleBuilder(mContext, mOpenSettingsRunnable);
     }
@@ -93,6 +93,14 @@ public class AuxiliarySearchModuleBuilderUnitTest {
 
         when(mHooks.isEnabled()).thenReturn(false);
         assertFalse(mFactory.isEnabled());
+        assertFalse(mBuilder.isEligible());
+
+        // Verifies that if the device doesn't provide a consumer schema, we no longer build the
+        // opt in card module.
+        when(mHooks.isEnabled()).thenReturn(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
+        assertTrue(mFactory.isEnabled());
         assertFalse(mBuilder.isEligible());
     }
 
@@ -131,15 +139,19 @@ public class AuxiliarySearchModuleBuilderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2})
+    @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE})
     public void testCreateInputContext() {
         InputContext inputContext = mBuilder.createInputContext();
         assertEquals(
-                0f,
-                inputContext.getEntryForTesting(
-                                HomeModulesUtils.getFreshnessInputContextString(
-                                        ModuleType.AUXILIARY_SEARCH))
-                        .floatValue,
-                0.01);
+                0f, inputContext.getEntryForTesting("auxiliary_search_available").floatValue, 0.01);
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateInputContext_Enabled() {
+        AuxiliarySearchModuleBuilder.resetShownInThisSessionForTesting();
+        InputContext inputContext = mBuilder.createInputContext();
+        assertEquals(
+                1f, inputContext.getEntryForTesting("auxiliary_search_available").floatValue, 0.01);
     }
 }

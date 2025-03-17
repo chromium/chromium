@@ -25,7 +25,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
+#include "net/base/backoff_entry.h"
 
 class GURL;
 class Profile;
@@ -50,7 +51,8 @@ class IsolatedWebAppURLLoaderFactory;
 class WebAppProvider;
 
 namespace {
-constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency = base::Hours(5);
+inline constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency =
+    base::Hours(5);
 }
 
 // This enum lists the error types that can occur during the update of an
@@ -304,6 +306,8 @@ class IsolatedWebAppUpdateManager
   void OnComponentUpdateSuccess(const base::Version& version,
                                 bool is_preloaded) override;
 
+  void QueueUpdatesForIwasAffectedByKeyRotation();
+
   bool IsAnyIwaInstalled();
 
   // Queues new update discovery tasks and returns the number of new tasks that
@@ -406,6 +410,9 @@ class IsolatedWebAppUpdateManager
   base::ScopedObservation<IwaKeyDistributionInfoProvider,
                           IwaKeyDistributionInfoProvider::Observer>
       key_distribution_info_observation_{this};
+
+  // Provides retry logic for updates initiated by key rotation.
+  net::BackoffEntry key_rotation_backoff_retry_entry_;
 
   class LocalDevModeUpdateDiscoverer;
   std::unique_ptr<LocalDevModeUpdateDiscoverer>

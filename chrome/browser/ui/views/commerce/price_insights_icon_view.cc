@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -174,7 +176,7 @@ bool PriceInsightsIconView::ShouldShow() const {
   return tab_helper && tab_helper->ShouldShowPriceInsightsIconView();
 }
 
-const std::u16string& PriceInsightsIconView::GetIconLabelForTesting() {
+std::u16string_view PriceInsightsIconView::GetIconLabelForTesting() const {
   return label()->GetText();
 }
 

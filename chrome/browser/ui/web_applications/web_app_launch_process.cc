@@ -101,7 +101,7 @@ WebAppLaunchProcess::WebAppLaunchProcess(
 content::WebContents* WebAppLaunchProcess::Run() {
   if (Browser::GetCreationStatusForProfile(&profile_.get()) !=
           Browser::CreationStatus::kOk ||
-      registrar_->IsNotInRegistrar(params_->app_id)) {
+      !registrar_->IsInRegistrar(params_->app_id)) {
     return nullptr;
   }
 
@@ -267,10 +267,10 @@ LaunchHandler WebAppLaunchProcess::GetLaunchHandler() const {
 
 LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
   LaunchHandler launch_handler = GetLaunchHandler();
-  if (launch_handler.client_mode == LaunchHandler::ClientMode::kAuto) {
+  if (launch_handler.parsed_client_mode() == LaunchHandler::ClientMode::kAuto) {
     return LaunchHandler::ClientMode::kNavigateNew;
   }
-  return launch_handler.client_mode;
+  return launch_handler.parsed_client_mode();
 }
 
 std::tuple<Browser*, bool /*is_new_browser*/>

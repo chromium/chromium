@@ -74,13 +74,13 @@ void FlingSchedulerAndroid::StartObservingBeginFrames() {
     return;
   }
 
-  auto* begin_frame_provider = GetBeginFrameSource();
-  if (!begin_frame_provider) {
+  auto* begin_frame_source = GetBeginFrameSource();
+  if (!begin_frame_source) {
     return;
   }
 
-  begin_frame_provider->AddObserver(this);
-  observed_begin_frame_source_ = begin_frame_provider;
+  observed_begin_frame_source_ = begin_frame_source;
+  observed_begin_frame_source_->AddObserver(this);
 }
 
 void FlingSchedulerAndroid::StopObservingBeginFrames() {

@@ -15,8 +15,11 @@ class WebContents;
 namespace safe_browsing {
 
 // Get referring app info from Java side.
+// If `get_webapk_info` is true, then the referring WebAPK's start_url and
+// manifest_id will also be retrieved if the referring app is a WebAPK.
 internal::ReferringAppInfo GetReferringAppInfo(
-    content::WebContents* web_contents);
+    content::WebContents* web_contents,
+    bool get_webapk_info);
 
 }  // namespace safe_browsing
 

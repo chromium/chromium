@@ -4,10 +4,13 @@
 
 package org.chromium.components.signin;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * AccountManagerDelegateException encapsulates errors that can happen while getting list of
  * accounts.
  */
+@NullMarked
 public class AccountManagerDelegateException extends Exception {
     public AccountManagerDelegateException(String message) {
         super(message);

@@ -9,6 +9,7 @@
 
 #include "net/disk_cache/blockfile/block_files.h"
 
+#include <array>
 #include <atomic>
 #include <limits>
 #include <memory>
@@ -32,7 +33,9 @@ const char kBlockName[] = "data_";
 
 // This array is used to perform a fast lookup of the nibble bit pattern to the
 // type of entry that can be stored there (number of consecutive blocks).
-const char s_types[16] = {4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+const std::array<char, 16> s_types = {
+    4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+};
 
 // Returns the type of block (number of consecutive blocks that can be stored)
 // for a given nibble of the bitmap.

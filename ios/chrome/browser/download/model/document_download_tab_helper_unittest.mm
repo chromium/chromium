@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper_metrics.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
+#import "ios/chrome/browser/drive/model/drive_policy.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/web/public/download/download_controller.h"
@@ -68,6 +72,40 @@ TEST_F(DocumentDownloadTabHelperTest, DownloadPDF) {
                                       DocumentDownloadState::kNotStarted, 1);
   histogram_tester.ExpectUniqueSample(kIOSDocumentDownloadFinalState,
                                       DocumentDownloadState::kNotStarted, 1);
+}
+
+// Tests that loading a PDF will not trigger a download task when download
+// restriction is enabled.
+TEST_F(DocumentDownloadTabHelperTest,
+       NoDownloadPDFWhenDownloadRestrictionEnabled) {
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetInteger(
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+  pref_service->SetInteger(
+      prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+      static_cast<int>(SaveToDrivePolicySettings::kDisabled));
+  base::HistogramTester histogram_tester;
+  web_state_.SetContentsMimeType("application/pdf");
+  web_state_.SetCurrentURL(GURL("https://foo.test"));
+  web_state_.SetContentIsHTML(false);
+  web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_EQ(nullptr, download_manager_delegate_.state);
+
+  web::FakeNavigationContext context;
+  web_state_.OnNavigationStarted(&context);
+
+  histogram_tester.ExpectUniqueSample(
+      kIOSDocumentDownloadMimeType,
+      DownloadMimeTypeResult::AdobePortableDocumentFormat, 0);
+  histogram_tester.ExpectUniqueSample(kIOSDocumentDownloadSizeInMB, 0, 0);
+  histogram_tester.ExpectUniqueSample(
+      kIOSDocumentDownloadConflictResolution,
+      DocumentDownloadConflictResolution::kNoConflict, 0);
+  histogram_tester.ExpectUniqueSample(kIOSDocumentDownloadStateAtNavigation,
+                                      DocumentDownloadState::kNotStarted, 0);
+  histogram_tester.ExpectUniqueSample(kIOSDocumentDownloadFinalState,
+                                      DocumentDownloadState::kNotStarted, 0);
 }
 
 // Tests that loading an HTML page will not trigger a download task.

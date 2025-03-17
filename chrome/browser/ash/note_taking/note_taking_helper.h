@@ -10,9 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "ash/components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,6 +18,9 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_observer.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 class Profile;
@@ -35,11 +35,6 @@ class BrowserContext;
 
 namespace extensions {
 class Extension;
-namespace api {
-namespace app_runtime {
-struct ActionData;
-}  // namespace app_runtime
-}  // namespace api
 }  // namespace extensions
 
 namespace ash {
@@ -114,8 +109,7 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   // Callback used to launch a Chrome app.
   using LaunchChromeAppCallback =
       base::RepeatingCallback<void(content::BrowserContext* context,
-                                   const extensions::Extension*,
-                                   extensions::api::app_runtime::ActionData)>;
+                                   const extensions::Extension*)>;
 
   // Intent action used to launch Android apps.
   static const char kIntentAction[];

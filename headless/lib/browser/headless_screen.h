@@ -11,6 +11,7 @@
 #include "ui/display/display.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen_base.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace headless {
@@ -43,7 +44,7 @@ class HeadlessScreen : public display::ScreenBase {
   bool IsNaturalPortrait(int64_t display_id) const;
   bool IsNaturalLandscape(int64_t display_id) const;
 
- private:
+ protected:
   HeadlessScreen(const gfx::Size& window_size,
                  std::string_view screen_info_spec);
 

@@ -7,11 +7,14 @@ package org.chromium.components.browser_ui.widget.animation;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An {@link AnimatorListenerAdapter} that distinguishes cancel and end signal. Subclasses should
  * override {@link #onStart(Animator)}, {@link #onEnd(Animator)} and {@link #onCancel(Animator)}
  * instead of the standard callback functions.
  */
+@NullMarked
 public class CancelAwareAnimatorListener extends AnimatorListenerAdapter {
     // Only allows one of the following to be called for any one start(): onEnd(), onCancel(). Also
     // serves as a guard against an infinite loop that's present in ValueAnimator triggered

@@ -7,9 +7,10 @@
  * It includes some methods and property shared between subflows.
  */
 import {assertNotReached} from '//resources/js/assert.js';
-import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ButtonBarState} from './cellular_types.js';
+import type {ButtonBarState} from './cellular_types.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

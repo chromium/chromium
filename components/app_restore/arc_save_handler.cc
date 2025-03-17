@@ -4,8 +4,9 @@
 
 #include "components/app_restore/arc_save_handler.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -47,7 +48,7 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
 
       // Go through `arc_window_candidates_`. If the window for `session_id` has
       // been created, call OnAppLaunched to save the window info.
-      auto window_it = base::ranges::find(
+      auto window_it = std::ranges::find(
           arc_window_candidates_, session_id, [](aura::Window* window) {
             return window->GetProperty(app_restore::kGhostWindowSessionIdKey);
           });
@@ -193,7 +194,7 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
 
   // Go through |arc_window_candidates_|. If the window for |task_id| has been
   // created, call OnAppLaunched to save the window info.
-  auto window_it = base::ranges::find(
+  auto window_it = std::ranges::find(
       arc_window_candidates_, task_id, [](aura::Window* window) {
         return window->GetProperty(app_restore::kWindowIdKey);
       });

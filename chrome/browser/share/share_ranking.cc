@@ -4,11 +4,11 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -99,8 +99,8 @@ std::string LowestShown(const std::vector<std::string>& ranking,
 void SwapRankingElement(std::vector<std::string>& ranking,
                         const std::string& from,
                         const std::string& to) {
-  auto from_loc = base::ranges::find(ranking, from);
-  auto to_loc = base::ranges::find(ranking, to);
+  auto from_loc = std::ranges::find(ranking, from);
+  auto to_loc = std::ranges::find(ranking, to);
 
   CHECK(from_loc != ranking.end());
   CHECK(to_loc != ranking.end());
@@ -113,7 +113,7 @@ std::vector<std::string> ReplaceUnavailableEntries(
     const std::vector<std::string>& ranking,
     const std::vector<std::string>& available) {
   std::vector<std::string> result;
-  base::ranges::transform(
+  std::ranges::transform(
       ranking, std::back_inserter(result), [&](const std::string& e) {
         return RankingContains(available, e) ? e : std::string();
       });

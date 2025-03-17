@@ -55,4 +55,20 @@ const base::FeatureParam<int> kMinWordsPerPassage(&kPassageEmbedder,
                                                   "MinWordsPerPassage",
                                                   5);
 
+const base::FeatureParam<bool> kAllowGpuExecution(&kPassageEmbedder,
+                                                  "AllowGpuExecution",
+                                                  false);
+
+const base::FeatureParam<int> kSchedulerMaxJobs(&kPassageEmbedder,
+                                                "SchedulerMaxJobs",
+                                                64);
+
+const base::FeatureParam<int> kSchedulerMaxBatchSize(&kPassageEmbedder,
+                                                     "SchedulerMaxBatchSize",
+                                                     1);
+
+const base::FeatureParam<bool> kUsePerformanceScenario(&kPassageEmbedder,
+                                                       "UsePerformanceScenario",
+                                                       false);
+
 }  // namespace passage_embeddings

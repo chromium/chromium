@@ -8,13 +8,13 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
+#include "third_party/blink/renderer/modules/webaudio/iir_filter_handler.h"
 
 namespace blink {
 
 class BaseAudioContext;
 class ExceptionState;
 class IIRFilterOptions;
-class IIRProcessor;
 
 class IIRFilterNode : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
@@ -48,7 +48,7 @@ class IIRFilterNode : public AudioNode {
   void ReportWillBeDestroyed() final;
 
  private:
-  IIRProcessor* GetIIRFilterProcessor() const;
+  IIRFilterHandler& GetIIRFilterHandler() const;
 };
 
 }  // namespace blink

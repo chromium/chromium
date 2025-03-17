@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getInterestGroupAdAuctionData() multi-seller with multiple sellers - valid
+  assert_not_own_property: unexpected property "error" is found on object
+[FAIL] getInterestGroupAdAuctionData() multi-seller with multiple sellers - one invalid coordinator
+  assert_not_own_property: unexpected property "error" is found on object
+Harness: the test ran to completion.
+

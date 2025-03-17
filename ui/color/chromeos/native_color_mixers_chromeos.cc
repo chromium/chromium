@@ -75,6 +75,11 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
       SkColorSetRGB(0x40, 0x67, 0x43));
   mixer[kColorCrosSysComplementVariant] = {dark_mode ? complement.get(30)
                                                      : complement.get(95)};
+
+  // This matches cros.sys.input-field-on-base
+  mixer[kColorCrosSysInputFieldOnBase] = {
+      dark_mode ? SetAlpha(ui::kColorRefNeutral0, SK_AlphaOPAQUE * 0.6f)
+                : kColorRefNeutral95};
 }
 
 }  // namespace ui

@@ -7,10 +7,10 @@ package org.chromium.components.signin.base;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.components.signin.SigninConstants;
 import org.chromium.components.signin.Tribool;
@@ -22,6 +22,7 @@ import java.util.HashMap;
  *
  * This class has a native counterpart called AccountInfo.
  */
+@NullMarked
 public class AccountInfo extends CoreAccountInfo {
     /** Used to instantiate `AccountInfo`. */
     public static class Builder {
@@ -32,7 +33,7 @@ public class AccountInfo extends CoreAccountInfo {
         private @Nullable Bitmap mAccountImage;
         private AccountCapabilities mAccountCapabilities = new AccountCapabilities(new HashMap<>());
 
-        public Builder(String email, String gaiaId) {
+        public Builder(String email, GaiaId gaiaId) {
             mCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId);
         }
 
@@ -105,7 +106,7 @@ public class AccountInfo extends CoreAccountInfo {
     private AccountInfo(
             CoreAccountId id,
             String email,
-            String gaiaId,
+            GaiaId gaiaId,
             String fullName,
             String givenName,
             @Nullable String hostedDomain,
@@ -137,11 +138,13 @@ public class AccountInfo extends CoreAccountInfo {
     }
 
     /** Returns the full name of the account. */
+    @CalledByNative
     public String getFullName() {
         return mFullName;
     }
 
     /** Returns the given name of the account. */
+    @CalledByNative
     public String getGivenName() {
         return mGivenName;
     }
@@ -159,7 +162,7 @@ public class AccountInfo extends CoreAccountInfo {
     /**
      * Management domain for the account. Can only be called if `isManaged` returns `Tribool.TRUE`.
      */
-    public String getManagementDomain() {
+    public @Nullable String getManagementDomain() {
         if (isManaged() != Tribool.TRUE) {
             throw new IllegalStateException("The account isn't managed (or the status is unknown)");
         }
@@ -184,5 +187,10 @@ public class AccountInfo extends CoreAccountInfo {
         return !TextUtils.isEmpty(mFullName)
                 || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
+    }
+
+    @CalledByNative
+    private @Nullable String getRawHostedDomain() {
+        return mHostedDomain;
     }
 }

@@ -21,6 +21,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/translation_util.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
@@ -318,8 +319,13 @@ void SystemLiveCaptionService::OnTranslationCallback(
     const std::string& source_language,
     const std::string& target_language,
     bool is_final,
-    const std::string& result) {
-  std::string formatted_result = result;
+    const ::captions::TranslateEvent& event) {
+  // TODO(384019306) Maybe record dispatcher error metric?
+  if (!event.has_value()) {
+    return;
+  }
+
+  std::string formatted_result = event.value();
   // Don't cache the translation if the source language is an ideographic
   // language but the target language is not. This avoids translate
   // sentence by sentence because the Cloud Translation API does not properly
@@ -329,7 +335,7 @@ void SystemLiveCaptionService::OnTranslationCallback(
     if (is_final) {
       translation_cache_.Clear();
     } else {
-      translation_cache_.InsertIntoCache(original_transcription, result,
+      translation_cache_.InsertIntoCache(original_transcription, event.value(),
                                          source_language, target_language);
     }
   } else {
@@ -345,7 +351,11 @@ void SystemLiveCaptionService::OnTranslationCallback(
   }
 
   auto text = base::StrCat({cached_translation, formatted_result});
+  AttemptDispatch(text, is_final);
+}
 
+void SystemLiveCaptionService::AttemptDispatch(const std::string& text,
+                                               bool is_final) {
   if (!controller_->DispatchTranscription(
           &context_, media::SpeechRecognitionResult(text, is_final))) {
     StopRecognizing();
@@ -353,27 +363,18 @@ void SystemLiveCaptionService::OnTranslationCallback(
 }
 
 void SystemLiveCaptionService::BindToBrowserInterface() {
-  switch (source_) {
-    case AudioSource::kLoopback:
-      SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
-          ->BindSpeechRecognitionBrowserObserver(
-              browser_observer_receiver_.BindNewPipeAndPassRemote());
-      break;
-    case AudioSource::kUserMicrophone:
-      SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
-          ->BindBabelOrcaSpeechRecognitionBrowserObserver(
-              browser_observer_receiver_.BindNewPipeAndPassRemote());
-      break;
+  // The UserMicrophone source will ignore events from the
+  // RecognitionClientBrowserInterface. The BabelOrcaSpeechRecognizerImpl
+  // handles SODA installation itself.
+  if (source_ == AudioSource::kLoopback) {
+    SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
+        ->BindSpeechRecognitionBrowserObserver(
+            browser_observer_receiver_.BindNewPipeAndPassRemote());
   }
 }
 
 std::string SystemLiveCaptionService::GetPrimaryLanguageCode() const {
-  switch (source_) {
-    case AudioSource::kLoopback:
-      return prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs());
-    case AudioSource::kUserMicrophone:
-      return prefs::GetUserMicrophoneCaptionLanguage(profile_->GetPrefs());
-  }
+  return prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs());
 }
 
 void SystemLiveCaptionService::OpenCaptionSettings() {

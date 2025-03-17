@@ -6,7 +6,7 @@
  * @fileoverview Obsers taps on Choose file inputs.
  */
 
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const CHOOSE_FILE_INPUT_HANDLER_NAME = 'ChooseFileHandler';
 
@@ -14,98 +14,116 @@ const CHOOSE_FILE_INPUT_HANDLER_NAME = 'ChooseFileHandler';
 // are filtered.
 const AUDIO_FILES = ['aac', 'flac', 'm4a', 'mp3', 'ogg', 'pcm', 'wav', 'wma'];
 const IMAGE_FILES = [
-  'apng', 'avif', 'gif', 'jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'png', 'svg',
-  'webp'
+  'apng',
+  'avif',
+  'gif',
+  'jpg',
+  'jpeg',
+  'jfif',
+  'pjpeg',
+  'pjp',
+  'png',
+  'svg',
+  'webp',
 ];
 const VIDEO_FILES = ['avi', 'flv', 'mkv', 'mov', 'mp4', 'mpeg', 'webm', 'wmv'];
 const COMPRESSED_FILES = ['7z', 'cab', 'gz', 'rar', 'tar', 'zip'];
 const PDF_FILES = ['pdf'];
 const DOC_FILES = [
-  'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'key', 'numbers', 'pages',
-  'epub', 'txt'
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+  'ppt',
+  'pptx',
+  'key',
+  'numbers',
+  'pages',
+  'epub',
+  'txt',
 ];
 const APPLE_FILES = ['pkpass', 'mobileprovision'];
 
 // The accept type sent to the browser.
 enum AcceptType {
-  NoAccept = 0,
-  MixedAccept = 1,
-  UnknownAccept = 2,
-  ImageAccept = 3,
-  VideoAccept = 4,
-  AudioAccept = 5,
-  ArchiveAccept = 6,
-  PDFAccept = 7,
-  DocAccept = 8,
-  AppleAccept = 9,
+  NO_ACCEPT = 0,
+  MIXED_ACCEPT = 1,
+  UNKNOWN_ACCEPT = 2,
+  IMAGE_ACCEPT = 3,
+  VIDEO_ACCEPT = 4,
+  AUDIO_ACCEPT = 5,
+  ARCHIVE_ACCEPT = 6,
+  PDF_ACCEPT = 7,
+  DOC_ACCEPT = 8,
+  APPLE_ACCEPT = 9,
 }
 
 // Converts a single accept string to an AcceptType
-function stringToAcceptType(acceptString: String): AcceptType {
-  var accept = acceptString.trim().toLowerCase();
+function stringToAcceptType(acceptString: string): AcceptType {
+  let accept = acceptString.trim().toLowerCase();
   if (accept === '') {
-    return AcceptType.NoAccept;
+    return AcceptType.NO_ACCEPT;
   }
   if (accept.startsWith('image/')) {
-    return AcceptType.ImageAccept;
+    return AcceptType.IMAGE_ACCEPT;
   }
   if (accept.startsWith('video/')) {
-    return AcceptType.VideoAccept;
+    return AcceptType.VIDEO_ACCEPT;
   }
   if (accept.startsWith('audio/')) {
-    return AcceptType.AudioAccept;
+    return AcceptType.AUDIO_ACCEPT;
   }
   if (accept.startsWith('.')) {
     accept = accept.substring(1);
   }
   if (IMAGE_FILES.includes(accept)) {
-    return AcceptType.ImageAccept;
+    return AcceptType.IMAGE_ACCEPT;
   }
   if (VIDEO_FILES.includes(accept)) {
-    return AcceptType.VideoAccept;
+    return AcceptType.VIDEO_ACCEPT;
   }
   if (AUDIO_FILES.includes(accept)) {
-    return AcceptType.AudioAccept;
+    return AcceptType.AUDIO_ACCEPT;
   }
   if (COMPRESSED_FILES.includes(accept)) {
-    return AcceptType.ArchiveAccept;
+    return AcceptType.ARCHIVE_ACCEPT;
   }
   if (PDF_FILES.includes(accept)) {
-    return AcceptType.PDFAccept;
+    return AcceptType.PDF_ACCEPT;
   }
   if (DOC_FILES.includes(accept)) {
-    return AcceptType.DocAccept;
+    return AcceptType.DOC_ACCEPT;
   }
   if (APPLE_FILES.includes(accept)) {
-    return AcceptType.AppleAccept;
+    return AcceptType.APPLE_ACCEPT;
   }
-  return AcceptType.UnknownAccept;
+  return AcceptType.UNKNOWN_ACCEPT;
 }
 
 // Converts a multiple accept string to an AcceptType
-function MultipleStringToAcceptType(acceptString: String): AcceptType {
+function multipleStringToAcceptType(acceptString: string): AcceptType {
   const accepts = acceptString.split(',');
-  var acceptType = AcceptType.NoAccept;
+  let acceptType = AcceptType.NO_ACCEPT;
   for (const accept of accepts) {
     const current = stringToAcceptType(accept);
-    if (acceptType == AcceptType.NoAccept ||
-        acceptType == AcceptType.UnknownAccept) {
+    if (acceptType === AcceptType.NO_ACCEPT ||
+        acceptType === AcceptType.UNKNOWN_ACCEPT) {
       acceptType = current;
       continue;
     }
-    if (acceptType == current || current == AcceptType.UnknownAccept ||
-        current == AcceptType.NoAccept) {
+    if (acceptType === current || current === AcceptType.UNKNOWN_ACCEPT ||
+        current === AcceptType.NO_ACCEPT) {
       continue;
     }
     // Types are different and neither is Unknown, so it is Mixed.
-    return AcceptType.MixedAccept;
+    return AcceptType.MIXED_ACCEPT;
   }
   return acceptType;
 }
 
 // Returns whether `ch` is a string with a single UTF-16 code unit which is a
 // valid RFC2616 token character. This is mimicking verifications done by Blink.
-function isRFC2616TokenCharacter(ch: String): boolean {
+function isRFC2616TokenCharacter(ch: string): boolean {
   const code = ch.charCodeAt(0);
   if (code < 32 || code > 127) {
     return false;
@@ -138,14 +156,14 @@ function isRFC2616TokenCharacter(ch: String): boolean {
 }
 
 // Returns whether `mimeType` is a string which represents a valid MIME type.
-function isValidMIMEType(mimeType: String): boolean {
-  let slashPosition = mimeType.indexOf('/');
-  if (slashPosition == -1 || slashPosition == mimeType.length - 1 ||
-      slashPosition == 0) {
+function isValidMIMEType(mimeType: string): boolean {
+  const slashPosition = mimeType.indexOf('/');
+  if (slashPosition === -1 || slashPosition === mimeType.length - 1 ||
+      slashPosition === 0) {
     return false;
   }
   for (let i = 0; i < mimeType.length; i++) {
-    if (!isRFC2616TokenCharacter(mimeType[i]!) && i != slashPosition) {
+    if (!isRFC2616TokenCharacter(mimeType[i]!) && i !== slashPosition) {
       return false;
     }
   }
@@ -154,7 +172,7 @@ function isValidMIMEType(mimeType: String): boolean {
 
 // Returns whether `fileExtension` is a string which represents a valid file
 // extension.
-function isValidFileExtension(fileExtension: String): boolean {
+function isValidFileExtension(fileExtension: string): boolean {
   if (fileExtension.length < 2) {
     return false;
   }
@@ -163,13 +181,13 @@ function isValidFileExtension(fileExtension: String): boolean {
       return false;
     }
   }
-  return fileExtension[0] == '.';
+  return fileExtension[0] === '.';
 }
 
 // Filters `acceptString` so it only contains valid MIME types.
-function parseAcceptAttributeMimeTypes(acceptString: String): String {
+function parseAcceptAttributeMimeTypes(acceptString: string): string {
   const acceptTypes = acceptString.split(',');
-  var mimeTypes: String[] = [];
+  const mimeTypes: string[] = [];
   for (const acceptType of acceptTypes) {
     const trimmedType = acceptType.trim();
     if (isValidMIMEType(trimmedType)) {
@@ -180,9 +198,9 @@ function parseAcceptAttributeMimeTypes(acceptString: String): String {
 }
 
 // Filters `acceptString` so it only contains valid file extensions.
-function parseAcceptAttributeFileExtensions(acceptString: String): String {
+function parseAcceptAttributeFileExtensions(acceptString: string): string {
   const acceptTypes = acceptString.split(',');
-  var fileExtensions: String[] = [];
+  const fileExtensions: string[] = [];
   for (const acceptType of acceptTypes) {
     const trimmedType = acceptType.trim();
     if (isValidFileExtension(trimmedType)) {
@@ -198,15 +216,15 @@ function processChooseFileClick(inputEvent: MouseEvent): void {
     return;
   }
   const target = inputEvent.target as HTMLInputElement;
-  if (target.type.toLowerCase() !== "file") {
+  if (target.type.toLowerCase() !== 'file') {
     return;
   }
-  var accept = AcceptType.NoAccept;
-  var acceptString = target.getAttribute('accept')
+  let accept = AcceptType.NO_ACCEPT;
+  let acceptString = target.getAttribute('accept');
   if (acceptString) {
-    accept = MultipleStringToAcceptType(acceptString!);
+    accept = multipleStringToAcceptType(acceptString!);
   }
-  var hasFiles = false;
+  let hasFiles = false;
   if (target.files && target.files.length > 0) {
     hasFiles = true;
   }

@@ -11,11 +11,13 @@
 #pragma mark - NSObject
 
 - (BOOL)isEqual:(id)object {
-  if (self == object)
+  if (self == object) {
     return YES;
+  }
 
-  if (![object isMemberOfClass:[FollowedWebSite class]])
+  if (![object isMemberOfClass:[FollowedWebSite class]]) {
     return NO;
+  }
 
   return [self isEqualToFollowedWebSite:object];
 }

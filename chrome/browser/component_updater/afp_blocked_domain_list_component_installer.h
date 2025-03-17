@@ -29,6 +29,23 @@ namespace component_updater {
 
 class ComponentUpdateService;
 
+constexpr char kExperimentalVersionAttributeName[] =
+    "_experimental_list_version";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(InstallationResult)
+enum class InstallationResult {
+  // The blocklist component was successfully installed.
+  kSuccess = 0,
+  // The component file wasn't present.
+  kMissingBlocklistFileError = 1,
+  // The ruleset format in the component doesn't match expected format.
+  kRulesetFormatError = 2,
+  kMaxValue = kRulesetFormatError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FingerprintingProtectionComponentInstallationResult)
+
 class AntiFingerprintingBlockedDomainListComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
@@ -45,9 +62,13 @@ class AntiFingerprintingBlockedDomainListComponentInstallerPolicy
       delete;
   ~AntiFingerprintingBlockedDomainListComponentInstallerPolicy() override;
 
+  // ComponentInstallerPolicy:
+  update_client::InstallerAttributes GetInstallerAttributes() const override;
+
  private:
   friend class AntiFingerprintingBlockedDomainListComponentInstallerTest;
-  // The following methods override ComponentInstallerPolicy.
+
+  // ComponentInstallerPolicy:
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
@@ -62,7 +83,6 @@ class AntiFingerprintingBlockedDomainListComponentInstallerPolicy
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
-  update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 
 // Called once during startup to make the component update service aware of

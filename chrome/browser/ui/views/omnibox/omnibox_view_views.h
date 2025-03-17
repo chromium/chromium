@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
@@ -193,7 +194,7 @@ class OmniboxViewViews
   void SetSelectedRanges(const std::vector<gfx::Range>& ranges);
 
   // Returns the selected text.
-  std::u16string GetSelectedText() const;
+  std::u16string_view GetSelectedText() const;
   void UpdateAccessibleTextSelection() override;
 
   // Paste text from the clipboard into the omnibox.

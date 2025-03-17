@@ -15,7 +15,6 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -56,7 +55,6 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   };
 
   explicit TransferableResourceTracker(
-      SharedBitmapManager* shared_bitmap_manager,
       ReservedResourceIdTracker* id_tracker);
   TransferableResourceTracker(const TransferableResourceTracker&) = delete;
   ~TransferableResourceTracker();
@@ -99,8 +97,6 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   static_assert(std::is_same<decltype(kInvalidResourceId.GetUnsafeValue()),
                              uint32_t>::value,
                 "ResourceId underlying type should be uint32_t");
-
-  const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
 
   struct TransferableResourceHolder {
     using ResourceReleaseCallback =

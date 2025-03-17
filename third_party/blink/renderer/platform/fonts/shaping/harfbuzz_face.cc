@@ -91,12 +91,6 @@ VariationSelectorMode HarfBuzzFace::GetVariationSelectorMode() {
 }
 
 void HarfBuzzFace::SetVariationSelectorMode(VariationSelectorMode value) {
-  // Ignore variation selectors mode should be on only when the
-  // FontVariationSequences runtime flag is enabled.
-  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled() ||
-         !ShouldIgnoreVariationSelector(value));
-  DCHECK(RuntimeEnabledFeatures::FontVariantEmojiEnabled() ||
-         !UseFontVariantEmojiVariationSelector(value));
   GetIgnoreVariationSelectorModeRef() = value;
 }
 
@@ -143,18 +137,15 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   // on FontFallbackPriority in `FontCache::PlatformFallbackFontForCharacter`.
   VariationSelectorMode variation_selector_mode =
       HarfBuzzFace::GetVariationSelectorMode();
-  if (RuntimeEnabledFeatures::FontVariationSequencesEnabled()) {
     if (!ShouldIgnoreVariationSelector(variation_selector_mode) &&
         Character::IsUnicodeVariationSelector(variation_selector) &&
         Character::IsVariationSequence(unicode, variation_selector)) {
       is_variation_sequence = true;
       consider_variation_selector = true;
-    } else if (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
-               UseFontVariantEmojiVariationSelector(variation_selector_mode) &&
+    } else if (UseFontVariantEmojiVariationSelector(variation_selector_mode) &&
                Character::IsEmoji(unicode)) {
       consider_variation_selector = true;
     }
-  }
 
   bool text_presentation_requested = false;
   bool emoji_presentation_requested = false;

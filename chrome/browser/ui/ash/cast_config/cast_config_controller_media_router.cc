@@ -247,6 +247,10 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   StopObservingMirroringMediaControllerHosts();
   UpdateDevices();
 
+  if (!IsAccessCodeCastFreezeUiEnabled()) {
+    return;
+  }
+
   for (auto& device : devices_) {
     if (device.route.id.size() > 0) {
       media_router::MirroringMediaControllerHost* freeze_host =

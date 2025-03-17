@@ -54,6 +54,7 @@
         "autotest_name": "chromium",
         "cros_board": "brya",
         "cros_cbx": true,
+        "cros_model": "kano",
         "name": "base_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
@@ -65,6 +66,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "brya",
         "cros_cbx": true,
+        "cros_model": "kano",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "shards": 30,
@@ -80,6 +82,7 @@
         "autotest_name": "chromium",
         "cros_board": "brya",
         "cros_cbx": true,
+        "cros_model": "kano",
         "name": "chromeos_integration_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
@@ -258,7 +261,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ash_components_unittests",
-        "test_id_prefix": "ninja://ash/components:ash_components_unittests/"
+        "test_id_prefix": "ninja://chromeos/ash/experiences:ash_components_unittests/"
       },
       {
         "merge": {
@@ -1551,6 +1554,27 @@
         },
         "test": "usage_time_limit_unittests",
         "test_id_prefix": "ninja://chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ViewsAccessibilitySerializeOnDataChanged",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/views_ax_chromeos.browser_tests.filter"
+        ],
+        "experiment_percentage": 10,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "views_ax_chromeos_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests",
+            "ssd": "0"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
       },
       {
         "merge": {

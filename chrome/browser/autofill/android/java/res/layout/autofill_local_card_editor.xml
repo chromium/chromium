@@ -107,21 +107,22 @@ found in the LICENSE file.
     </LinearLayout>
 
     <!--- Expiration date & CVC -->
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/credit_card_expiration_and_cvc_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/credit_card_expiration_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/credit_card_expiration_month_and_year_label"
                 android:labelFor="@+id/expiration_month_and_year"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
                 android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
@@ -132,7 +133,7 @@ found in the LICENSE file.
             <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
                 android:id="@+id/expiration_month_and_year"
                 android:width="@dimen/local_card_expiration_date_editor_width"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:digits="0123456789/"
                 android:gravity="start"
@@ -145,37 +146,56 @@ found in the LICENSE file.
                 tools:ignore="Autofill,LabelFor" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/credit_card_security_code_layout"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toStartOf="@id/cvc_hint_image">
+            android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/credit_card_security_code_label"
-                android:labelFor="@+id/cvc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-                android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-                android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
-                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                android:text="@string/autofill_credit_card_editor_security_code" />
+            <!-- While a 3-deep nested layout is typically not recommended, it
+                 is used here because of the tight constraints shown below.
 
-            <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
-                android:id="@+id/cvc"
-                android:width="@dimen/local_card_cvc_editor_width"
-                android:layout_width="match_parent"
+                 Small display/font size:
+
+                 |Expiration date                  Security code *Icon*|
+                 |_______________                  _____________ *    *|
+
+                 Large display/font size:
+
+                 |Expiration Security *Icon*|
+                 |date       code     *    *|
+                 |__________ ________ *    *| -->
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="start"
-                android:hint="@string/autofill_optional_tag"
-                android:imeOptions="actionNext"
-                android:inputType="number"
-                android:minHeight="@dimen/min_touch_target_size"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-                tools:ignore="Autofill,LabelFor" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:layout_gravity="end"
+                tools:ignore="UselessParent">
+
+                <TextView
+                    android:id="@+id/credit_card_security_code_label"
+                    android:labelFor="@+id/cvc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
+                    android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+                    android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
+                    android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                    android:text="@string/autofill_credit_card_editor_security_code" />
+
+                <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+                    android:id="@+id/cvc"
+                    android:width="@dimen/local_card_cvc_editor_width"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:hint="@string/autofill_optional_tag"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:minHeight="@dimen/min_touch_target_size"
+                    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                    tools:ignore="Autofill,LabelFor" />
+            </LinearLayout>
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/cvc_hint_image"
@@ -183,12 +203,11 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/local_card_cvc_image_horizontal_margin"
             android:layout_marginEnd="@dimen/local_card_cvc_image_large_horizontal_margin"
-            android:layout_centerInParent="true"
-            android:layout_alignParentEnd="true"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/cvc_icon"
             tools:ignore="ContentDescription" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <!-- Name -->
     <com.google.android.material.textfield.TextInputLayout

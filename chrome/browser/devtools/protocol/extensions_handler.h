@@ -30,6 +30,9 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
                 const extensions::Extension* extension,
                 const base::FilePath&,
                 const std::string&);
+  void Uninstall(const protocol::String& id,
+                 std::unique_ptr<UninstallCallback> callback) override;
+  void OnUninstalled(std::unique_ptr<UninstallCallback> callback);
   void GetStorageItems(
       const protocol::String& id,
       const protocol::String& storage_area,

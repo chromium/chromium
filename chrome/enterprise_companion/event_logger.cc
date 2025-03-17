@@ -25,15 +25,19 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
@@ -43,7 +47,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -54,6 +60,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace enterprise_companion {
 
@@ -107,6 +117,44 @@ proto::EnterpriseCompanionMetadata GetMetadata() {
     metadata.set_omaha_cohort_id(
         command_line->GetSwitchValueASCII(kCohortIdSwitch));
   }
+
+#if defined(ARCH_CPU_X86)
+  metadata.set_application_arch(proto::X86);
+#elif defined(ARCH_CPU_X86_64)
+  metadata.set_application_arch(proto::X86_64);
+#elif defined(ARCH_CPU_ARM64)
+  metadata.set_application_arch(proto::ARM64);
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  metadata.set_os_platform(proto::LINUX);
+#elif BUILDFLAG(IS_MAC)
+  metadata.set_os_platform(proto::MAC);
+#elif BUILDFLAG(IS_WIN)
+  metadata.set_os_platform(proto::WINDOWS);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  const base::win::OSInfo::VersionNumber v =
+      base::win::OSInfo::GetInstance()->version_number();
+  metadata.set_os_version(
+      base::StringPrintf("%u.%u.%u", v.major, v.minor, v.build));
+#elif BUILDFLAG(IS_MAC)
+  int32_t os_major = 0, os_minor = 0, os_bugfix = 0;
+  base::SysInfo::OperatingSystemVersionNumbers(&os_major, &os_minor,
+                                               &os_bugfix);
+  metadata.set_os_version(base::StringPrintf("%u.%u", os_major, os_minor));
+#endif
+
+  const std::string os_arch = base::SysInfo::OperatingSystemArchitecture();
+  if (os_arch == "x86") {
+    metadata.set_os_arch(proto::X86);
+  } else if (os_arch == "x86_64") {
+    metadata.set_os_arch(proto::X86_64);
+  } else if (os_arch == "arm64") {
+    metadata.set_os_arch(proto::ARM64);
+  }
+
   return metadata;
 }
 
@@ -115,6 +163,61 @@ proto::Status ToProtoStatus(EnterpriseCompanionStatus status) {
   proto_status.set_space(status.space());
   proto_status.set_code(status.code());
   return proto_status;
+}
+
+// Creates a logging cookie from the provided value. Returns nullptr if the
+// value is invalid.
+std::unique_ptr<net::CanonicalCookie> MakeLoggingCookieFromValue(
+    const GURL& url,
+    const std::string& cookie_value) {
+  net::CookieInclusionStatus cookie_status;
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateSanitizedCookie(
+          url, "NID", cookie_value,
+          base::StrCat({".", url::SchemeHostPort(url).host()}),
+          /*path=*/"/", /*creation_time=*/base::Time::Now(),
+          /*expiration_time=*/base::Time::Now() + base::Days(180),
+          /*last_access_time=*/base::Time::Now(), /*secure=*/false,
+          /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
+          net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+          /*partition_key=*/std::nullopt, &cookie_status);
+  if (!cookie) {
+    VLOG(1) << "Failed to initialize logging cookie: " << cookie_status;
+    return nullptr;
+  }
+  if (!cookie->IsCanonical()) {
+    VLOG(1) << "Failed to initialize logging cookie. Not canonical: "
+            << cookie->DebugString();
+    return nullptr;
+  }
+  return cookie;
+}
+
+// Initializes a logging cookie from the contents of a file. Returns nullptr if
+// the file can not be read or the contents are invalid.
+std::unique_ptr<net::CanonicalCookie> MakeLoggingCookieFromFile(
+    const GURL& url,
+    base::File& file) {
+  std::string cookie_value(kCookieValueBufferSize, 0);
+  std::optional<size_t> bytes_read =
+      file.Read(0, base::as_writable_byte_span(cookie_value));
+  if (!bytes_read || bytes_read == 0) {
+    return nullptr;
+  }
+  cookie_value.resize(*bytes_read);
+  return MakeLoggingCookieFromValue(url, cookie_value);
+}
+
+// Initializes a logging cookie from the contents of a file. If the file could
+// not be read or the contents are invalid, returns a logging cookie with the
+// default value. Returns nullptr if no cookie could be made.
+std::unique_ptr<net::CanonicalCookie> MakeLoggingCookie(const GURL& url,
+                                                        base::File& file) {
+  std::unique_ptr<net::CanonicalCookie> file_cookie =
+      MakeLoggingCookieFromFile(url, file);
+  return file_cookie
+             ? std::move(file_cookie)
+             : MakeLoggingCookieFromValue(url, kLoggingCookieDefaultValue);
 }
 
 class EventUploader {
@@ -252,19 +355,15 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
   // one on the next request.
   void InitLoggingCookie(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::string cookie_value(kCookieValueBufferSize, 0);
-    std::optional<size_t> bytes_read =
-        cookie_file_.Read(0, base::as_writable_byte_span(cookie_value));
-    if (!bytes_read || bytes_read == 0) {
-      // If no logging cookie is present, the default value will signal to the
-      // server to provision a new one.
-      cookie_value = kLoggingCookieDefaultValue;
-    } else {
-      cookie_value.resize(*bytes_read);
-    }
-
     const GURL event_logging_url =
         GetGlobalConstants()->EnterpriseCompanionEventLoggingURL();
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        MakeLoggingCookie(event_logging_url, cookie_file_);
+    if (!cookie) {
+      VLOG(1) << "Failed to initialize logging cookie.";
+      std::move(callback).Run();
+      return;
+    }
 
     net::CookieOptions cookie_options;
     cookie_options.set_include_httponly();
@@ -272,31 +371,12 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
         net::CookieOptions::SameSiteCookieContext(
             net::CookieOptions::SameSiteCookieContext::ContextType::
                 SAME_SITE_STRICT));
-    url::SchemeHostPort event_logging_scheme_host_port =
-        url::SchemeHostPort(event_logging_url);
-    std::unique_ptr<net::CanonicalCookie> cookie =
-        net::CanonicalCookie::CreateSanitizedCookie(
-            event_logging_url, "NID", cookie_value,
-            base::StrCat({".", event_logging_scheme_host_port.host()}),
-            /*path=*/"/", /*creation_time=*/base::Time::Now(),
-            /*expiration_time=*/base::Time::Now() + base::Days(180),
-            /*last_access_time=*/base::Time::Now(), /*secure=*/false,
-            /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
-            net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
-            /*partition_key=*/std::nullopt, /*status=*/nullptr);
-
-    if (cookie->IsCanonical()) {
-      cookie_manager_remote_->SetCanonicalCookie(
-          *cookie, event_logging_url, cookie_options,
-          base::BindOnce([](net::CookieAccessResult result) {
-            LOG_IF(ERROR, !result.status.IsInclude())
-                << "Failed to set logging cookie: " << result.status;
-          }).Then(std::move(callback)));
-    } else {
-      VLOG(1) << "Failed to initialize logging cookie. Not canonical: "
-              << cookie->DebugString();
-      std::move(callback).Run();
-    }
+    cookie_manager_remote_->SetCanonicalCookie(
+        *cookie, event_logging_url, cookie_options,
+        base::BindOnce([](net::CookieAccessResult result) {
+          LOG_IF(ERROR, !result.status.IsInclude())
+              << "Failed to set logging cookie: " << result.status;
+        }).Then(std::move(callback)));
   }
 
   // Overrides for network::mojom::CookieChangeListener
@@ -375,7 +455,7 @@ std::optional<base::File> OpenDefaultEventLoggerCookieFile() {
   if (!install_dir) {
     return std::nullopt;
   }
-  return base::File(install_dir->AppendASCII("logging_cookie"),
+  return base::File(install_dir->Append(FILE_PATH_LITERAL("logging_cookie")),
                     base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                         base::File::FLAG_WRITE);
 }

@@ -314,13 +314,13 @@ def add_results_options_group(parser: argparse.ArgumentParser,
         help=('Path to a test_expectations file that will override previous '
               'expectations. Specify multiple times for multiple sets of '
               'overrides.'))
+    results_group.add_argument(
+        '--ignore-default-expectations',
+        action='store_true',
+        help='Do not use the default set of TestExpectations files.')
     results_group.add_argument('--driver-name',
                                help='Alternative driver binary to use')
     if rwt:
-        results_group.add_argument(
-            '--ignore-default-expectations',
-            action='store_true',
-            help='Do not use the default set of TestExpectations files.')
         results_group.add_argument(
             '--no-expectations',
             action='store_true',
@@ -348,23 +348,29 @@ def add_results_options_group(parser: argparse.ArgumentParser,
         results_group.add_argument(
             '--reset-results',
             action='store_true',
-            help=
-            ('Reset baselines to the generated results in their existing '
-             'location or the default location if no baseline exists. For '
-             'virtual tests, reset the virtual baselines. If '
-             '--additional-driver-flag is specified, reset the flag-specific '
-             'baselines. If --copy-baselines is specified, the copied '
-             'baselines will be reset.'))
+            help=(
+                'Reset baselines to the generated results in their existing '
+                'location or the default location if no baseline exists. For '
+                'virtual tests, reset the virtual baselines. If '
+                '--flag-specific is specified, reset the flag-specific '
+                'baselines. If --copy-baselines is specified, the copied '
+                'baselines will be reset.'))
     else:
+        # TODO(crbug.com/395544417): Support `--copy-baselines`.
         results_group.add_argument(
             '--reset-results',
             action='store_true',
-            help=('Reset expectations in test metadata to the generated '
-                  'results. Without existing platform-specific expectations, '
-                  'extend local results to all platforms. If `--product` or '
-                  '`--flag-specific` is specified, only reset expectations '
-                  'for that product or flag. Virtual expectations are always '
-                  'updated per-suite.'))
+            help=(
+                'Reset baselines to the generated results in their existing '
+                'location or the default location if no baseline exists. For '
+                'virtual tests, reset the virtual baselines. If '
+                '--flag-specific is specified, reset the flag-specific '
+                'baselines.'))
+        results_group.add_argument(
+            '--no-expectations',
+            action='store_true',
+            help=('Do not use TestExpectations. All the results will be '
+                  'reported as expected.'))
 
 
 def add_testing_options_group(parser: argparse.ArgumentParser,
@@ -515,6 +521,8 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
         action='store_true',
         help=('Skip tests marked TIMEOUT. Use it to speed up running the '
               'entire test suite.'))
+    testing_group.add_argument('--layout-tests-directory',
+                               help='Path to a custom web tests directory')
     if rwt:
         testing_group.add_argument(
             '--build',
@@ -573,8 +581,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
              "the bot. 'maybe-flaky' == Ignore any tests that flaked once on "
              "the bot. 'unexpected' == Ignore any tests that had unexpected "
              'results on the bot.'))
-        testing_group.add_argument('--layout-tests-directory',
-                                   help='Path to a custom web tests directory')
         testing_group.add_argument(
             '--max-locked-shards',
             type=int,
@@ -696,10 +702,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                    action='store_true',
                                    default=None,
                                    help=('Do not run virtual tests.'))
-        testing_group.add_argument('--no-wpt-internal',
-                                   action='store_false',
-                                   dest='run_wpt_internal',
-                                   help='Do not run internal WPTs.')
 
 
 # for run_wpt_tests.py only

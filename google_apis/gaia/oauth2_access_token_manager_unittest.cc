@@ -25,7 +25,7 @@
 
 namespace {
 
-constexpr char kTestAccountId[] = "test_user_account_id";
+constexpr GaiaId::Literal kTestAccountId("test_user_account_id");
 
 class FakeOAuth2AccessTokenManagerDelegate
     : public OAuth2AccessTokenManager::Delegate {
@@ -279,7 +279,7 @@ class OAuth2AccessTokenManagerTest : public testing::Test {
   }
 
   void SetUp() override {
-    account_id_ = CoreAccountId::FromGaiaId(GaiaId(kTestAccountId));
+    account_id_ = CoreAccountId::FromGaiaId(kTestAccountId);
     delegate_.AddAccount(account_id_, "fake_refresh_token");
   }
 
@@ -595,6 +595,31 @@ TEST_F(OAuth2AccessTokenManagerTest,
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       token_manager_->StartRequest(account_id_, scopeset, &consumer_));
+  run_loop.Run();
+  token_manager_->RemoveDiagnosticsObserver(&observer);
+}
+
+// Test that DiagnosticsObserver::OnFetchAccessTokenComplete is invoked when a
+// request is completed and then deleted by the delegate.
+TEST_F(OAuth2AccessTokenManagerTest,
+       OnFetchAccessTokenCompleteWhenRequestIsDeletedByDelegate) {
+  DiagnosticsObserverForTesting observer;
+  OAuth2AccessTokenManager::ScopeSet scopeset;
+  scopeset.insert("scope");
+  base::RunLoop run_loop;
+  GoogleServiceAuthError error(GoogleServiceAuthError::NONE);
+  observer.SetOnFetchAccessTokenComplete(account_id_, consumer_.id(), scopeset,
+                                         error, run_loop.QuitClosure());
+  token_manager_->AddDiagnosticsObserver(&observer);
+  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
+
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+      token_manager_->StartRequest(account_id_, scopeset, &consumer_));
+  // Move request ownership to delegate_ lambda which will delete the object
+  // upon return.
+  delegate_.SetOnAccessTokenFetched(
+      account_id_, error,
+      base::BindLambdaForTesting([request = std::move(request)]() {}));
   run_loop.Run();
   token_manager_->RemoveDiagnosticsObserver(&observer);
 }

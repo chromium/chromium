@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_locate_by_context[same_origin]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+[FAIL] test_locate_by_context[cross_origin]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+Harness: the test ran to completion.
+

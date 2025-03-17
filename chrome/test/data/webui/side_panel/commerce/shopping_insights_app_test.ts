@@ -103,7 +103,7 @@ suite('ShoppingInsightsAppTest', () => {
     currencyCode: 'usd',
   };
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     shoppingServiceApi.reset();

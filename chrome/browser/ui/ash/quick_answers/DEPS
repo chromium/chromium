@@ -7,7 +7,6 @@ include_rules = [
   "+chrome/browser/ui/ash/read_write_cards",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h",
-  "+chrome/browser/ui/ash/editor_menu/utils/editor_types.h",
   "+chrome/browser/ui/ash/editor_menu/utils/focus_search.h",
   "+chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h",
   "+chrome/browser/ui/views/mahi/mahi_menu_controller.h",
@@ -16,8 +15,9 @@ include_rules = [
 specific_include_rules = {
   ".*test.*": [
     "+chrome/browser/ash/accessibility",
-    "+chrome/browser/notifications",
     "+chrome/browser/ash/login/users",
+    "+chrome/browser/ash/profiles",
+    "+chrome/browser/notifications",
   ],
   ".*pixeltest\.cc": [
     "+chrome/browser/ui/browser.h",

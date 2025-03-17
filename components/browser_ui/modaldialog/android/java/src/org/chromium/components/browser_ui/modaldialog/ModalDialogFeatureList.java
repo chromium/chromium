@@ -4,12 +4,15 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Lists base::Features that can be accessed through {@link ModalDialogFeatureMap}.
  *
  * <p>Should be kept in sync with |kFeaturesExposedToJava| in
  * //components/browser_ui/modaldialog/android/modaldialog_feature_map.cc
  */
+@NullMarked
 public abstract class ModalDialogFeatureList {
     public static final String MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS =
             "ModalDialogLayoutWithSystemInsets";

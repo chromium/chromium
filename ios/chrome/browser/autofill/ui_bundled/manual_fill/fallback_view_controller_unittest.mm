@@ -26,7 +26,7 @@ class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest,
                                    public base::test::WithFeatureOverride {
  public:
   FallbackViewControllerTest()
-      : base::test::WithFeatureOverride(kIOSKeyboardAccessoryUpgrade) {}
+      : base::test::WithFeatureOverride(kIOSKeyboardAccessoryUpgradeForIPad) {}
 
  protected:
   void SetUp() override {
@@ -88,7 +88,7 @@ TEST_P(FallbackViewControllerTest, CheckItems) {
   [fallbackViewController presentActionItems:action_items];
   [fallbackViewController presentHeaderItem:item_four];
 
-  // When the kIOSKeyboardAccessoryUpgrade feature is enabled, data items each
+  // When the Keyboard Accessory Upgrade feature is enabled, data items each
   // have their own section. When disabled, data items are grouped in the same
   // section.
   if (IsKeyboardAccessoryUpgradeEnabled()) {
@@ -140,7 +140,7 @@ TEST_P(FallbackViewControllerTest, RemoveUnusedDataItemSections) {
   // Present three data items.
   [fallback_view_controller
       presentDataItems:@[ item_one, item_two, item_three ]];
-  // When the kIOSKeyboardAccessoryUpgrade feature is enabled, data items each
+  // When the Keyboard Accessory Upgrade feature is enabled, data items each
   // have their own section. When disabled, data items are grouped in the same
   // section.
   EXPECT_EQ(NumberOfSections(), IsKeyboardAccessoryUpgradeEnabled() ? 3 : 1);
@@ -180,7 +180,7 @@ TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessage) {
   [fallback_view_controller presentDataItems:data_items];
   [fallback_view_controller presentActionItems:action_items];
 
-  // When the kIOSKeyboardAccessoryUpgrade feature is enabled, the "no data
+  // When the Keyboard Accessory Upgrade feature is enabled, the "no data
   // items to show" message is displayed as a header for the actions
   // section. When disabled, it is displayed as a regular table view item in the
   // data items section.

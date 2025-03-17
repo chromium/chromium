@@ -85,6 +85,11 @@ class CreateTabGroupMediatorTest : public PlatformTest {
 // Tests that when a mediator is configured to edit a group, it notifies its
 // delegate when that group is deleted.
 TEST_F(CreateTabGroupMediatorTest, DeletingGroupNotifiesDelegate) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+
   const TabGroup* tab_group = builder_.GetTabGroupForIdentifier('0');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
@@ -103,6 +108,11 @@ TEST_F(CreateTabGroupMediatorTest, DeletingGroupNotifiesDelegate) {
 // Tests that when a mediator is configured to edit a group, it doesn't notify
 // its delegate when another group is deleted.
 TEST_F(CreateTabGroupMediatorTest, DeletingOtherGroupDoesntNotifyDelegate) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+
   const TabGroup* tab_group_0 = builder_.GetTabGroupForIdentifier('0');
   const TabGroup* tab_group_1 = builder_.GetTabGroupForIdentifier('1');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
@@ -122,6 +132,11 @@ TEST_F(CreateTabGroupMediatorTest, DeletingOtherGroupDoesntNotifyDelegate) {
 // Tests that when a mediator is configured to edit a group, it notifies its
 // delegate when that group's visual data is updated.
 TEST_F(CreateTabGroupMediatorTest, UpdatingGroupNotifiesDelegate) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+
   const TabGroup* tab_group = builder_.GetTabGroupForIdentifier('0');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
@@ -142,6 +157,11 @@ TEST_F(CreateTabGroupMediatorTest, UpdatingGroupNotifiesDelegate) {
 // Tests that when a mediator is configured to edit a group, it doesn't notify
 // its delegate when another group is updated.
 TEST_F(CreateTabGroupMediatorTest, UpdatingOtherGroupDoesntNotifyDelegate) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+
   const TabGroup* tab_group_0 = builder_.GetTabGroupForIdentifier('0');
   const TabGroup* tab_group_1 = builder_.GetTabGroupForIdentifier('1');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]

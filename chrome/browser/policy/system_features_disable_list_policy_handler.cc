@@ -4,19 +4,18 @@
 
 #include "system_features_disable_list_policy_handler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace policy {
 
@@ -33,6 +32,18 @@ const char kGalleryFeature[] = "gallery";
 const char kPrintJobsFeature[] = "print_jobs";
 const char kKeyShortcutsFeature[] = "key_shortcuts";
 const char kRecorderFeature[] = "recorder";
+const char kGmailFeature[] = "gmail";
+const char kGoogleDocsFeature[] = "google_docs";
+const char kGoogleSlidesFeature[] = "google_slides";
+const char kGoogleSheetsFeature[] = "google_sheets";
+const char kGoogleDriveFeature[] = "google_drive";
+const char kGoogleKeepFeature[] = "google_keep";
+const char kGoogleCalendarFeature[] = "google_calendar";
+const char kGoogleChatFeature[] = "google_chat";
+const char kYoutubeFeature[] = "youtube";
+const char kGoogleMapsFeature[] = "google_maps";
+const char kCalculatorFeature[] = "calculator";
+const char kTextEditorFeature[] = "text_editor";
 
 const char kBlockedDisableMode[] = "blocked";
 const char kHiddenDisableMode[] = "hidden";
@@ -94,11 +105,9 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool os_settings_disabled = base::Contains(
       enums_list, base::Value(static_cast<int>(SystemFeature::kOsSettings)));
   prefs->SetBoolean(ash::prefs::kOsSettingsEnabled, !os_settings_disabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->SetValue(policy_prefs::kSystemFeaturesDisableList,
                   base::Value(std::move(enums_list)));
 }
@@ -143,6 +152,42 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
   }
   if (system_feature == kRecorderFeature) {
     return SystemFeature::kRecorder;
+  }
+  if (system_feature == kGmailFeature) {
+    return SystemFeature::kGmail;
+  }
+  if (system_feature == kGoogleDocsFeature) {
+    return SystemFeature::kGoogleDocs;
+  }
+  if (system_feature == kGoogleSlidesFeature) {
+    return SystemFeature::kGoogleSlides;
+  }
+  if (system_feature == kGoogleSheetsFeature) {
+    return SystemFeature::kGoogleSheets;
+  }
+  if (system_feature == kGoogleDriveFeature) {
+    return SystemFeature::kGoogleDrive;
+  }
+  if (system_feature == kGoogleKeepFeature) {
+    return SystemFeature::kGoogleKeep;
+  }
+  if (system_feature == kGoogleCalendarFeature) {
+    return SystemFeature::kGoogleCalendar;
+  }
+  if (system_feature == kGoogleChatFeature) {
+    return SystemFeature::kGoogleChat;
+  }
+  if (system_feature == kYoutubeFeature) {
+    return SystemFeature::kYoutube;
+  }
+  if (system_feature == kGoogleMapsFeature) {
+    return SystemFeature::kGoogleMaps;
+  }
+  if (system_feature == kCalculatorFeature) {
+    return SystemFeature::kCalculator;
+  }
+  if (system_feature == kTextEditorFeature) {
+    return SystemFeature::kTextEditor;
   }
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return SystemFeature::kUnknownSystemFeature;

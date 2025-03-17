@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/privacy_budget/privacy_budget_browsertest_util.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test_utils.h"

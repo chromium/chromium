@@ -10,7 +10,8 @@ namespace history_clusters {
 
 namespace prefs {
 
-// Whether History Clusters are visible to the user. True by default.
+// Whether History Clusters part of History UI are visible to the user. True
+// by default.
 const char kVisible[] = "history_clusters.visible";
 
 // Dictionary containing the short keyword cache and associated timestamp.

@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
 
 class Profile;
 
@@ -19,6 +20,11 @@ namespace reporting {
 // returns corresponding info to a Device, Browser and Profile protos defined in
 // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
 base::Value::Dict GetContext(Profile* profile);
+
+// Creates and returns an UploadEventsRequest proto with the Device, Browser and
+// Profile fields set.
+::chrome::cros::reporting::proto::UploadEventsRequest CreateUploadEventsRequest(
+    Profile* profile);
 
 // Fetches the same information as GetContext, but in a protobuf instead of a
 // Value.

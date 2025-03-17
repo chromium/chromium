@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+#include <variant>
+
 #include "base/check_is_test.h"
 #include "base/logging.h"
 
@@ -17,7 +19,7 @@ static bool g_disable_user_context_check_for_testing = false;
 
 }  // namespace
 
-protocol::FileTransferResult<absl::monostate> EnsureUserContext() {
+protocol::FileTransferResult<std::monostate> EnsureUserContext() {
   if (g_disable_user_context_check_for_testing) {
     CHECK_IS_TEST();
     return kSuccessTag;

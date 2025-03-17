@@ -130,8 +130,7 @@ bool RasterInProcessContext::SupportedInTest() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   GpuPreferences gpu_preferences = gles2::ParseGpuPreferences(command_line);
-  return !gpu_preferences.use_passthrough_cmd_decoder ||
-         !gles2::PassthroughCommandDecoderSupported();
+  return !gpu_preferences.use_passthrough_cmd_decoder;
 }
 
 }  // namespace gpu

@@ -139,6 +139,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
     std::string policy_data_signature;
 
     ValidationResult();
+    ValidationResult(const ValidationResult&);
+    ValidationResult& operator=(const ValidationResult&);
     ~ValidationResult();
   };
 

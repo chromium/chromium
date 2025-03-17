@@ -209,14 +209,12 @@ void FirstPartySetsPolicyService::ClearContentSettings(Profile* profile) const {
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::STORAGE_ACCESS,
       [](const ContentSettingPatternSource& setting) -> bool {
-        return content_settings::IsGrantedByRelatedWebsiteSets(
-            ContentSettingsType::STORAGE_ACCESS, setting.metadata);
+        return setting.metadata.decided_by_related_website_sets();
       });
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       [](const ContentSettingPatternSource& setting) -> bool {
-        return content_settings::IsGrantedByRelatedWebsiteSets(
-            ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, setting.metadata);
+        return setting.metadata.decided_by_related_website_sets();
       });
 }
 

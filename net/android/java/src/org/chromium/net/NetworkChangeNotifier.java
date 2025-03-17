@@ -85,12 +85,14 @@ public class NetworkChangeNotifier {
     }
 
     @CalledByNative
-    public int getCurrentConnectionSubtype() {
+    public int getCurrentConnectionSubtype(boolean forceUpdateNetworkState) {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("NetworkChangeNotifier.getCurrentConnectionSubtype")) {
             if (mAutoDetector == null) return ConnectionSubtype.SUBTYPE_UNKNOWN;
 
-            mAutoDetector.updateCurrentNetworkState();
+            if (forceUpdateNetworkState) {
+                mAutoDetector.updateCurrentNetworkState();
+            }
             return mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
         }
     }
@@ -261,6 +263,8 @@ public class NetworkChangeNotifier {
                                         }
                                     },
                                     policy);
+                    // TODO(crbug.com/376646498): Remove this once we have finished
+                    // the experiment as its definitely a redundant call.
                     if (forceUpdateNetworkState) mAutoDetector.updateCurrentNetworkState();
 
                     final NetworkChangeNotifierAutoDetect.NetworkState networkState =

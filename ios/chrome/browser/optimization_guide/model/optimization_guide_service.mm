@@ -4,15 +4,19 @@
 
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/files/file_util.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
+#import "base/system/sys_info.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "components/component_updater/pref_names.h"
 #import "components/optimization_guide/core/command_line_top_host_provider.h"
 #import "components/optimization_guide/core/hints_processing_util.h"
+#import "components/optimization_guide/core/model_execution/model_execution_manager.h"
+#import "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_logger.h"
@@ -32,18 +36,19 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-#import "base/apple/bundle_locations.h"
-#import "base/system/sys_info.h"
-#import "components/optimization_guide/core/model_execution/model_execution_manager.h"
+#import "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #import "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
-#import "ios/web/public/thread/web_thread.h"
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace {
+
+using ModelExecutionError = optimization_guide::
+    OptimizationGuideModelExecutionError::ModelExecutionError;
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 using ::optimization_guide::OnDeviceModelComponentStateManager;
@@ -168,8 +173,8 @@ OptimizationGuideService::OptimizationGuideService(
             }));
   }
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   if (!off_the_record_) {
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
     PrefService* local_state = GetApplicationContext()->GetLocalState();
 
     // Create and startup the on-device model's state manager.
@@ -179,7 +184,7 @@ OptimizationGuideService::OptimizationGuideService(
             std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
     on_device_model_state_manager_->OnStartup();
 
-    // TODO(crbug.com/370768381): Always set a high perfomance class for
+    // TODO(crbug.com/387509291): Always set a high perfomance class for
     // prototyping.
     on_device_model_state_manager_->DevicePerformanceClassChanged(
         optimization_guide::OnDeviceModelPerformanceClass::kHigh);
@@ -189,14 +194,22 @@ OptimizationGuideService::OptimizationGuideService(
         on_device_model_service_controller =
             GetApplicationContext()->GetOnDeviceModelServiceController(
                 on_device_model_state_manager_->GetWeakPtr());
+    on_device_asset_manager_ =
+        std::make_unique<optimization_guide::OnDeviceAssetManager>(
+            local_state, on_device_model_service_controller->GetWeakPtr(),
+            on_device_model_state_manager_->GetWeakPtr(), this);
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
-            url_loader_factory, local_state, identity_manager,
-            std::move(on_device_model_service_controller), this,
-            on_device_model_state_manager_->GetWeakPtr(),
+            url_loader_factory, identity_manager,
+            std::move(on_device_model_service_controller),
             optimization_guide_logger_.get(), nullptr);
-  }
+#else   // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+    model_execution_manager_ =
+        std::make_unique<optimization_guide::ModelExecutionManager>(
+            url_loader_factory, identity_manager, nullptr,
+            optimization_guide_logger_.get(), nullptr);
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  }
 
   // Some previous paths were written in incorrect locations. Delete the
   // old paths.
@@ -340,7 +353,39 @@ void OptimizationGuideService::OnBrowsingDataRemoved() {
   hints_manager_->ClearFetchedHints();
 }
 
+std::string OptimizationGuideService::ResponseForErrorCode(int error_code) {
+  ModelExecutionError model_execution_error =
+      static_cast<ModelExecutionError>(error_code);
+  switch (model_execution_error) {
+    case ModelExecutionError::kUnknown:
+      return "Unknown error (error code 0)";
+    case ModelExecutionError::kInvalidRequest:
+      return "Invalid request (error code 1)";
+    case ModelExecutionError::kRequestThrottled:
+      return "Request throttled (error code 2)";
+    case ModelExecutionError::kPermissionDenied:
+      return "Permission denied (error code 3)";
+    case ModelExecutionError::kGenericFailure:
+      return "Generic failure (error code 4)";
+    case ModelExecutionError::kRetryableError:
+      return "Retryable error in server (error code 5)";
+    case ModelExecutionError::kNonRetryableError:
+      return "Non-retryable error in server (error code 6)";
+    case ModelExecutionError::kUnsupportedLanguage:
+      return "Unsupported language (error code 7)";
+    case ModelExecutionError::kFiltered:
+      return "Request was filtered (error code 8)";
+    case ModelExecutionError::kDisabled:
+      return "Response was disabled (error code 9)";
+    case ModelExecutionError::kCancelled:
+      return "Response was cancelled (error code 10)";
+    case ModelExecutionError::kResponseLowQuality:
+      return "Low quality response (error code 11)";
+  }
+}
+
 #pragma mark - optimization_guide::OptimizationGuideModelProvider implementation
+
 void OptimizationGuideService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const std::optional<optimization_guide::proto::Any>& model_metadata,
@@ -360,7 +405,6 @@ void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
   }
 }
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #pragma mark - optimization_guide::OptimizationGuideModelExecutor implementation
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
@@ -398,6 +442,8 @@ void OptimizationGuideService::ExecuteModel(
       feature, request_metadata, execution_timeout,
       /*log_ai_data_request=*/nullptr, std::move(callback));
 }
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 void OptimizationGuideService::AddOnDeviceModelAvailabilityChangeObserver(
     optimization_guide::ModelBasedCapabilityKey feature,
@@ -450,5 +496,15 @@ OptimizationGuideService::GetSamplingParamsConfig(
   }
 
   return model_execution_manager_->GetSamplingParamsConfig(feature);
+}
+
+std::optional<const optimization_guide::proto::Any>
+OptimizationGuideService::GetFeatureMetadata(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!model_execution_manager_) {
+    return std::nullopt;
+  }
+
+  return model_execution_manager_->GetFeatureMetadata(feature);
 }
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)

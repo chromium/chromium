@@ -15,7 +15,8 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.autofill.editors.EditorDialogToolbar
         android:id="@+id/action_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"

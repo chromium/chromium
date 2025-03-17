@@ -193,7 +193,6 @@ TEST_F(DeviceAuthenticatorChromeOSTest, RecordFailAuthHistogram) {
                                         1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies that the caching mechanism for BiometricsAvailable works.
 struct TestCase {
   const char* description;
@@ -245,5 +244,4 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_result = false,
             .expected_bucket = 3,
         }));
-#endif
 }  // namespace

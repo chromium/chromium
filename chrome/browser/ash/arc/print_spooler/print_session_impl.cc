@@ -9,8 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/intent_helper/custom_tab.h"
-#include "ash/components/arc/mojom/print_common.mojom.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -29,6 +27,8 @@
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
+#include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/mojom/print_common.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"
@@ -398,9 +398,13 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
 }
 
 void PrintSessionImpl::StartPrintNow() {
-  printing::StartPrint(web_contents_.get(),
-                       print_renderer_receiver_.BindNewEndpointAndPassRemote(),
-                       false, false);
+  VLOG(1) << "Starting print preview.";
+  if (!printing::StartPrint(
+          web_contents_.get(),
+          print_renderer_receiver_.BindNewEndpointAndPassRemote(), false,
+          false)) {
+    LOG(ERROR) << "Failed to start print preview.";
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl);

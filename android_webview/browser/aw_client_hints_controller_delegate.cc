@@ -52,20 +52,16 @@ AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
   bool parse_result = base::StringToInt(major_version, &major_version_number);
   DCHECK(parse_result);
 
-  // The old grease brand algorithm will removed soon, we should always use the
-  // updated algorithm.
-  bool enable_updated_grease_by_policy = true;
   // Regenerate the brand version lists with Android WebView product name.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
       major_version_number, kAndroidWebViewProductName, major_version,
-      enable_updated_grease_by_policy,
       blink::UserAgentBrandVersionType::kMajorVersion);
 
   if (!only_low_entropy_ch) {
     metadata.brand_full_version_list =
         embedder_support::GenerateBrandVersionList(
             major_version_number, kAndroidWebViewProductName,
-            metadata.full_version, enable_updated_grease_by_policy,
+            metadata.full_version,
             blink::UserAgentBrandVersionType::kFullVersion);
   }
 

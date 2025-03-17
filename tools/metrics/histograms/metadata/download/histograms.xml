@@ -69,8 +69,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Transient"/>
 </variants>
 
+<histogram name="Download.Android.NotificationAttachEvent"
+    enum="NotificationAttachEvent" expires_after="2025-08-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records events related to attaching a notification to a download job to keep
+    the chrome running during a download. This is recorded either when the
+    notification is first attached, or when the job completes while no
+    notification is attached. This is only recorded on Android U and above.
+  </summary>
+</histogram>
+
 <histogram name="Download.Android.OpenDialog.Events"
-    enum="OpenDownloadDialogEvent" expires_after="2025-05-04">
+    enum="OpenDownloadDialogEvent" expires_after="2025-09-07">
   <owner>qinmin@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <summary>
@@ -93,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>dtrainor@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -117,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.BandwidthOverallBytesPerSecond2" units="bytes/second"
-    expires_after="2025-04-13">
+    expires_after="2025-09-07">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Overall bandwidth seen for a completed download. This includes all file
@@ -151,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.ProcessedCommand2" enum="DownloadCommand"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -209,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
-    units="items" expires_after="2025-06-07">
+    units="items" expires_after="2025-08-10">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -265,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.Counts" enum="DownloadCountType"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>shaktisahu@chromium.org</owner>
@@ -277,57 +289,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousDialog.Events"
-    enum="DangerousDownloadDialogEvent" expires_after="2025-06-08">
+    enum="DangerousDownloadDialogEvent" expires_after="2025-08-10">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records user interactions with the dangerous download dialog on Android.
     Records when the dialog is shown, or when user clicks on a button or
     dismisses the dialog.
-  </summary>
-</histogram>
-
-<histogram name="Download.DangerousDownloadInterstitial.Action"
-    enum="DangerousDownloadInterstitialAction" expires_after="2025-06-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records user action while attempting to recover a blocked download from
-    chrome://downloads. This is logged when the user interacts with the
-    dangerous download interstitial.
-  </summary>
-</histogram>
-
-<histogram
-    name="Download.DangerousDownloadInterstitial.InteractionTime.{InteractionType}"
-    units="ms" expires_after="2025-06-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Measures the time (in ms) between {InteractionType} on the dangerous
-    download interstitial. The interstitial is shown when attempting to recover
-    a blocked download from chrome://downloads. This is logged at most once per
-    dangerous download.
-  </summary>
-  <token key="InteractionType">
-    <variant name="CancelInterstitial"
-        summary="opening and canceling the interstitial"/>
-    <variant name="CompleteSurvey" summary="opening and submitting the survey"/>
-    <variant name="OpenSurvey"
-        summary="opening the interstitial and opening the survey"/>
-    <variant name="SaveDangerous"
-        summary="opening and bypassing the interstitial"/>
-  </token>
-</histogram>
-
-<histogram name="Download.DangerousDownloadInterstitial.SurveyResponse"
-    enum="DangerousDownloadInterstitialSurveyOptions"
-    expires_after="2025-06-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records user response to the optional survey on the chrome://downloads
-    dangerous download interstitial. This is logged when the user attempts to
-    save the dangerous download and a survey option is selected.
   </summary>
 </histogram>
 
@@ -345,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DOMEvent" enum="DownloadDOMEvent"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>dtrainor@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -357,7 +324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.DownloadDangerPrompt.{DownloadDangerTypeString}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2025-04-13">
+    enum="SBClientDownloadExtensions" expires_after="2025-08-24">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -386,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DuplicatePdfDownloadTriggered"
-    enum="BooleanOpenInline" expires_after="2025-06-08">
+    enum="BooleanOpenInline" expires_after="2025-08-10">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -469,6 +436,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.IOSDownloadAppleWalletOrderFileUI"
+    enum="DownloadAppleWalletOrderFileUI" expires_after="2026-02-10">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Result when the warning alert is presented before downloading a .order file
+    on iOS. Values indicate if the user has continued the download workflow
+    after the presentation of the warning alert. The histogram will be emitted
+    once upon presentation of the alert, and a second time when the user
+    dismisses the alert by performing one of the alert actions.
+  </summary>
+</histogram>
+
 <histogram name="Download.IOSDownloadARModelState.USDZ"
     enum="DownloadARModelState" expires_after="2025-09-18">
   <owner>sdefresne@chromium.org</owner>
@@ -501,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -523,7 +504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileInBackground"
-    enum="DownloadFileInBackground" expires_after="2025-04-13">
+    enum="DownloadFileInBackground" expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -536,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileResult" enum="DownloadFileResult"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -544,7 +525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -555,7 +536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
-    enum="DownloadFileUIGoogleDrive" expires_after="2025-04-13">
+    enum="DownloadFileUIGoogleDrive" expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -567,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -690,13 +671,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Open.ContentType" enum="DownloadContentType"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Content types of the downloads being opened. This histogram is logged
     whenever a download is opened, whether from the shelf/bubble or
     chrome://downloads. Logged on Desktop platforms.
+  </summary>
+</histogram>
+
+<histogram name="Download.OpenDownloads.OpenWithExternalAppsSource"
+    enum="OpenDownloadWithExternalAppsSource" expires_after="2025-09-07">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records the source when download is forwarding from Chrome to an external
+    app to open. Recorded when the view intent is handled; even if the intent
+    picker is dismissed. Only record when there is an app to handle the intent.
+    Logged on Android only.
   </summary>
 </histogram>
 
@@ -1032,7 +1025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ShelfContextMenuAction"
-    enum="DownloadShelfContextMenuAction" expires_after="2025-03-09">
+    enum="DownloadShelfContextMenuAction" expires_after="2025-08-24">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1098,7 +1091,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.ContentType.NormalProfile"
-    enum="DownloadContentType" expires_after="2025-05-11">
+    enum="DownloadContentType" expires_after="2025-07-13">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1122,7 +1115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.ContentType.{TransientType}"
-    enum="DownloadContentType" expires_after="2025-06-08">
+    enum="DownloadContentType" expires_after="2025-08-10">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1134,7 +1127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.PerProfileType" enum="BrowserProfileType"
-    expires_after="2025-05-04">
+    expires_after="2025-09-07">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -1158,7 +1151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.UserValidatedDangerousDownload.DownloadsPage"
-    enum="DownloadItem.DangerType" expires_after="2025-06-08">
+    enum="DownloadItem.DangerType" expires_after="2025-08-10">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1178,7 +1171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.WarningData.ActionAdded" enum="DownloadWarningAction"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1191,7 +1184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.WarningData.AddWarningActionEventOutcome2"
-    enum="DownloadAddWarningActionEventOutcome" expires_after="2025-05-04">
+    enum="DownloadAddWarningActionEventOutcome" expires_after="2025-07-13">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1202,7 +1195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.WarningData.SurfaceWithoutWarningShown"
-    enum="DownloadWarningSurface" expires_after="2025-05-11">
+    enum="DownloadWarningSurface" expires_after="2025-07-13">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1225,7 +1218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.WebUi.LoadCompletedInMainFrame" units="ms"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>awado@google.com</owner>
   <owner>jacastro@chromium.org</owner>
   <summary>

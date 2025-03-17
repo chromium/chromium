@@ -23,7 +23,7 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
     std::optional<blink::ServiceWorkerRouterRules> router_rules,
-    blink::EmbeddedWorkerStatus initial_running_status,
+    std::optional<blink::EmbeddedWorkerStatus> initial_running_status,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
         running_status_receiver)
     : client_id_(client_id),
@@ -43,6 +43,7 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
     }
     if (running_status_receiver) {
       CHECK(router_evaluator_->need_running_status());
+      CHECK(running_status_.has_value());
       running_status_receiver_.Bind(std::move(running_status_receiver));
     }
   }
@@ -138,7 +139,8 @@ void ControllerServiceWorkerConnector::SetControllerServiceWorker(
 
 blink::EmbeddedWorkerStatus
 ControllerServiceWorkerConnector::GetRecentRunningStatus() {
-  return running_status_;
+  CHECK(running_status_.has_value());
+  return *running_status_;
 }
 
 void ControllerServiceWorkerConnector::OnStatusChanged(

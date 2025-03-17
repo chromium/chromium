@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_METRICS_INTENT_HANDLING_METRICS_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_METRICS_INTENT_HANDLING_METRICS_H_
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 
 namespace content {
@@ -127,15 +126,13 @@ class IntentHandlingMetrics {
   static void RecordLinkCapturingEvent(PickerEntryType app_type,
                                        LinkCapturingEvent event);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
   static void RecordExternalProtocolUserInteractionMetrics(
       content::BrowserContext* context,
       PickerEntryType entry_type,
       IntentPickerCloseReason close_reason,
       bool should_persist);
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace apps

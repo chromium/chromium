@@ -22,41 +22,6 @@ const execution_context::ExecutionContext* GetExecutionContext(
   return execution_context::ExecutionContext::From(frame_node);
 }
 
-// Both the voting channel and the LoadingPageVoter are expected live on the
-// graph, without being actual GraphOwned objects. This class wraps both to
-// allow this.
-class GraphOwnedWrapper : public GraphOwned {
- public:
-  GraphOwnedWrapper()
-      : loading_page_voter_(observer_.BuildVotingChannel()),
-        voter_id_(loading_page_voter_.voter_id()) {}
-
-  ~GraphOwnedWrapper() override = default;
-
-  GraphOwnedWrapper(const GraphOwnedWrapper&) = delete;
-  GraphOwnedWrapper& operator=(const GraphOwnedWrapper&) = delete;
-
-  // GraphOwned:
-  void OnPassedToGraph(Graph* graph) override {
-    loading_page_voter_.InitializeOnGraph(graph);
-  }
-  void OnTakenFromGraph(Graph* graph) override {
-    loading_page_voter_.TearDownOnGraph(graph);
-  }
-
-  // Exposes the DummyVoteObserver to validate expectations.
-  const DummyVoteObserver& observer() const { return observer_; }
-
-  VoterId voter_id() const { return voter_id_; }
-
- private:
-  DummyVoteObserver observer_;
-  LoadingPageVoter loading_page_voter_;
-  VoterId voter_id_;
-};
-
-}  // namespace
-
 class LoadingPageVoterTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
@@ -69,19 +34,26 @@ class LoadingPageVoterTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-    auto wrapper = std::make_unique<GraphOwnedWrapper>();
-    wrapper_ = wrapper.get();
-    graph()->PassToGraph(std::move(wrapper));
+    loading_page_voter_.InitializeOnGraph(graph(),
+                                          observer_.BuildVotingChannel());
+  }
+
+  void TearDown() override {
+    loading_page_voter_.TearDownOnGraph(graph());
+    Super::TearDown();
   }
 
   // Exposes the DummyVoteObserver to validate expectations.
-  const DummyVoteObserver& observer() const { return wrapper_->observer(); }
+  const DummyVoteObserver& observer() const { return observer_; }
 
-  VoterId voter_id() const { return wrapper_->voter_id(); }
+  VoterId voter_id() const { return loading_page_voter_.voter_id(); }
 
  private:
-  raw_ptr<GraphOwnedWrapper> wrapper_ = nullptr;
+  DummyVoteObserver observer_;
+  LoadingPageVoter loading_page_voter_;
 };
+
+}  // namespace
 
 // Tests that the LoadingPageVoter correctly casts a vote for every frame when
 // the page is loading.

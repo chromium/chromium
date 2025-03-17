@@ -39,8 +39,10 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -284,9 +286,12 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
                                    shape_image_threshold, writing_mode, margin);
       break;
     case ShapeValue::kBox: {
-      const FloatRoundedRect& shape_rect = RoundedBorderGeometry::RoundedBorder(
-          style, PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize()));
-      shape_ = Shape::CreateLayoutBoxShape(shape_rect, writing_mode, margin);
+      // TODO(crbug.com/402437726) support corner-shape in shape-outside
+      shape_ = Shape::CreateLayoutBoxShape(
+          ContouredBorderGeometry::ContouredBorder(
+              style, PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize()))
+              .AsRoundedRect(),
+          writing_mode, margin);
       break;
     }
   }
@@ -395,9 +400,10 @@ gfx::PointF ShapeOutsideInfo::ShapeToLayoutObjectPoint(
 
 // static
 ShapeOutsideInfo::InfoMap& ShapeOutsideInfo::GetInfoMap() {
-  DEFINE_STATIC_LOCAL(Persistent<InfoMap>, static_info_map,
-                      (MakeGarbageCollected<InfoMap>()));
-  return *static_info_map;
+  using InfoMapHolder = DisallowNewWrapper<InfoMap>;
+  DEFINE_STATIC_LOCAL(Persistent<InfoMapHolder>, holder,
+                      (MakeGarbageCollected<InfoMapHolder>()));
+  return holder->Value();
 }
 
 void ShapeOutsideInfo::Trace(Visitor* visitor) const {

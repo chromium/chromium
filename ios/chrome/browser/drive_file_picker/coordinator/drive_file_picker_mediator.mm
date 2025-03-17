@@ -16,6 +16,7 @@
 #import "base/timer/timer.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -557,7 +557,8 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   }
   CHECK(fileURLs.count > 0);
   _metricsHelper.submittedFiles = fileURLs;
-  tab_helper->StopChoosingFiles(fileURLs, nil, nil);
+  NSString* displayString = GetDisplayStringForFileUrls(fileURLs);
+  tab_helper->StopChoosingFiles(fileURLs, displayString, nil);
   [self.delegate mediatorDidStopFileSelection:self];
 }
 

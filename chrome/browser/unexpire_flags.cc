@@ -15,7 +15,7 @@
 #include "chrome/browser/expired_flags_list.h"
 #include "chrome/browser/unexpire_flags_gen.h"
 #include "chrome/common/chrome_version.h"
-#include "components/flags_ui/flags_storage.h"
+#include "components/webui/flags/flags_storage.h"
 
 namespace flags {
 

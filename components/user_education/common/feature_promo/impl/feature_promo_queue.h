@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_FEATURE_PROMO_QUEUE_H_
 
 #include <list>
+#include <map>
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
@@ -131,29 +132,41 @@ class FeaturePromoQueue {
   friend class FeaturePromoQueueTest;
 
   using Queue = std::list<internal::QueuedFeaturePromo>;
+  using ComputedData = FeaturePromoPrecondition::ComputedData;
+  using ComputedDataMap = std::map<const base::Feature*, ComputedData>;
 
   // Posts the failure report to result_callback if it is valid.
   static void SendFailureReport(
       FeaturePromoController::ShowPromoResultCallback result_callback,
       FeaturePromoResult::Failure failure);
 
-  // Removes timed-out promos from the list, calling their "show promo result"
-  // callbacks with an appropriate failure code.
-  void RemoveTimedOutPromos();
-
   // Removes promos that fail their required preconditions from the list,
   // calling their "show promo result" callbacks with the failure code of the
   // first failed required precondition.
-  void RemovePromosWithFailedPreconditions();
+  //
+  // Populates and returns data for remaining promos.
+  ComputedDataMap RemovePromosWithFailedPreconditions();
+
+  // Removes timed-out promos from the list, calling their "show promo result"
+  // callbacks with an appropriate failure code.
+  //
+  // Updates `data` and removes entries for deleted promos.
+  void RemoveTimedOutPromos(ComputedDataMap& data);
 
   // Finds the first promo whose wait-for preconditions are met without popping
   // it from the queue. Should be called after the two "Remove..." methods above
   // to ensure only valid promos are returned.
-  const base::Feature* IdentifyNextEligiblePromo();
+  //
+  // Uses `data` to pre-populate
+  const base::Feature* IdentifyNextEligiblePromo(ComputedDataMap& data);
 
   // Returns an iterator to the queued promo for `feature`, or
   // `queued_promos_.end()` if not found.
   Queue::iterator FindQueuedPromo(const base::Feature& feature);
+
+  // Records time a promo spent in queue and whether it succeeded.
+  void RecordQueueTime(const internal::QueuedFeaturePromo& promo,
+                       bool succeeded);
 
   Queue queued_promos_;
 

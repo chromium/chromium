@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
@@ -131,6 +132,23 @@ TEST(SessionBindingUtilsTest,
       "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, TestIsSecureUrl) {
+  const std::vector<GURL> secure_connection_urls = {
+      GURL("https://example.test/"), GURL("https://localhost:8080/"),
+      GURL("http://localhost:8080/")};
+  const std::vector<GURL> insecure_connection_urls = {
+      GURL("http://example.test/"),
+  };
+  for (const auto& url : secure_connection_urls) {
+    SCOPED_TRACE(base::StringPrintf("url: %s", url.spec()));
+    EXPECT_TRUE(IsSecure(url));
+  }
+  for (const auto& url : insecure_connection_urls) {
+    SCOPED_TRACE(base::StringPrintf("url: %s", url.spec()));
+    EXPECT_FALSE(IsSecure(url));
+  }
 }
 
 }  // namespace net::device_bound_sessions

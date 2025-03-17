@@ -160,15 +160,10 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   Profile* profile = browser()->profile();
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForTest(profile);
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   const std::optional<webapps::AppId> app_id =
       web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
           app_url,
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          });
+          web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   WebAppIconWaiter(profile, app_id.value()).Wait();
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
       content::GetContentClientForTesting()

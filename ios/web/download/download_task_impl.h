@@ -57,6 +57,7 @@ class DownloadTaskImpl : public DownloadTask {
   void Cancel() final;
   NSString* GetIdentifier() const final;
   const GURL& GetOriginalUrl() const final;
+  const GURL& GetRedirectedUrl() const final;
   NSString* GetOriginatingHost() const final;
   NSString* GetHttpMethod() const final;
   bool IsDone() const final;
@@ -103,6 +104,9 @@ class DownloadTaskImpl : public DownloadTask {
   // Called when download task was updated.
   void OnDownloadUpdated();
 
+  // Called when download task was updated.
+  void OnRedirected(const GURL& redirected_url);
+
   // Used to check that the methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -112,6 +116,7 @@ class DownloadTaskImpl : public DownloadTask {
   // Back up corresponding public methods of DownloadTask interface.
   State state_ = State::kNotStarted;
   GURL original_url_;
+  GURL redirected_url_;
   NSString* originating_host_;
   NSString* http_method_ = nil;
   int http_code_ = -1;

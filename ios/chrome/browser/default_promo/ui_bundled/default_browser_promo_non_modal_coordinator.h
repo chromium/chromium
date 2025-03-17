@@ -7,11 +7,15 @@
 
 #import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_coordinator.h"
 
+enum class NonModalDefaultBrowserPromoReason;
+
 // Coordinator that creates and manages a non-modal default browser promo.
 @interface DefaultBrowserPromoNonModalCoordinator : InfobarCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                               promoReason:(NonModalDefaultBrowserPromoReason)
+                                               promoReason
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithInfoBarDelegate:

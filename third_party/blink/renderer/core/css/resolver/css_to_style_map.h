@@ -118,6 +118,22 @@ class CSSToStyleMap {
   static void MapNinePieceImageRepeat(StyleResolverState&,
                                       const CSSValue&,
                                       NinePieceImage&);
+  static EAnimationTriggerType MapAnimationTriggerType(StyleResolverState&,
+                                                       const CSSValue&);
+  static StyleTimeline MapAnimationTriggerTimeline(StyleResolverState&,
+                                                   const CSSValue&);
+  static std::optional<TimelineOffset> MapAnimationTriggerRangeStart(
+      StyleResolverState&,
+      const CSSValue&);
+  static std::optional<TimelineOffset> MapAnimationTriggerRangeEnd(
+      StyleResolverState&,
+      const CSSValue&);
+  static std::optional<TimelineOffset> MapAnimationTriggerExitRangeStart(
+      StyleResolverState&,
+      const CSSValue&);
+  static std::optional<TimelineOffset> MapAnimationTriggerExitRangeEnd(
+      StyleResolverState&,
+      const CSSValue&);
 };
 
 }  // namespace blink

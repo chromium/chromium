@@ -33,7 +33,7 @@ public class PartnerBookmarksFaviconThrottleTest {
 
     @Test
     public void testInitEmpty() {
-        Assert.assertEquals(mFaviconThrottle.numEntries(), 0);
+        Assert.assertEquals(0, mFaviconThrottle.numEntries());
     }
 
     @Test
@@ -85,12 +85,12 @@ public class PartnerBookmarksFaviconThrottleTest {
         mFaviconThrottle.commit();
 
         mFaviconThrottle.init();
-        Assert.assertEquals(mFaviconThrottle.numEntries(), 1);
+        Assert.assertEquals(1, mFaviconThrottle.numEntries());
         mFaviconThrottle.onFaviconFetched("url2", FaviconFetchResult.FAILURE_SERVER_ERROR);
         mFaviconThrottle.commit();
 
         mFaviconThrottle.init();
-        Assert.assertEquals(mFaviconThrottle.numEntries(), 1);
+        Assert.assertEquals(1, mFaviconThrottle.numEntries());
         Assert.assertTrue(mFaviconThrottle.shouldFetchFromServerIfNecessary("url1"));
         Assert.assertFalse(mFaviconThrottle.shouldFetchFromServerIfNecessary("url2"));
     }

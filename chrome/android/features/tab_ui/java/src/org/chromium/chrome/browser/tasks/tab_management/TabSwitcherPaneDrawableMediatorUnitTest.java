@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDr
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -75,7 +74,6 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMediatorEarlyTabModelSelectorInit() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         var mediator =
@@ -102,7 +100,6 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMediatorLateTabModelSelectorInit() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
         var mediator =
@@ -125,7 +122,6 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroyBeforeInitAvoidsLeak() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
         var mediator =

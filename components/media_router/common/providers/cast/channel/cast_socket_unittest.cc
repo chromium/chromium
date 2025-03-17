@@ -295,10 +295,11 @@ class TestSocketFactory : public net::ClientSocketFactory {
   }
 
   void Pause() {
-    if (socket_data_provider_)
+    if (socket_data_provider_) {
       socket_data_provider_->Pause();
-    else
+    } else {
       socket_data_provider_paused_ = true;
+    }
   }
 
   void Resume() { socket_data_provider_->Resume(); }
@@ -317,8 +318,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
       net::NetworkQualityEstimator*,
       net::NetLog*,
       const net::NetLogSource&) override {
-    if (tcp_client_socket_)
+    if (tcp_client_socket_) {
       return std::move(tcp_client_socket_);
+    }
 
     if (tcp_unresponsive_) {
       socket_data_provider_ = std::make_unique<net::StaticSocketDataProvider>();
@@ -328,8 +330,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
       socket_data_provider_ =
           std::make_unique<net::StaticSocketDataProvider>(reads_, writes_);
       socket_data_provider_->set_connect_data(*tcp_connect_data_);
-      if (socket_data_provider_paused_)
+      if (socket_data_provider_paused_) {
         socket_data_provider_->Pause();
+      }
       return std::unique_ptr<net::TransportClientSocket>(
           new MockTCPSocket(false, socket_data_provider_.get()));
     }
@@ -348,8 +351,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
     ssl_socket_data_provider_ = std::make_unique<net::SSLSocketDataProvider>(
         ssl_connect_data_->mode, ssl_connect_data_->result);
 
-    if (tls_socket_created_)
+    if (tls_socket_created_) {
       std::move(tls_socket_created_).Run();
+    }
 
     return std::make_unique<net::MockSSLClientSocket>(
         std::move(nested_socket), net::HostPortPair(), net::SSLConfig(),

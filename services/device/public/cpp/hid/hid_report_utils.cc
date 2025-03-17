@@ -62,7 +62,7 @@ bool CollectionHasUnprotectedReports(
     const mojom::HidCollectionInfo& collection) {
   const HidReportType report_types[] = {
       HidReportType::kInput, HidReportType::kOutput, HidReportType::kFeature};
-  return base::ranges::any_of(report_types, [&collection](auto report_type) {
+  return std::ranges::any_of(report_types, [&collection](auto report_type) {
     return !ReportsForType(collection, report_type).empty() &&
            !IsAlwaysProtected(*collection.usage, report_type);
   });
@@ -80,7 +80,7 @@ const mojom::HidCollectionInfo* FindCollectionWithReport(
 
     // Return the first collection with a report of type `report_type`, or
     // nullptr if there is no report of that type.
-    auto find_it = base::ranges::find_if(
+    auto find_it = std::ranges::find_if(
         device.collections, [report_type](const auto& collection) {
           return !ReportsForType(*collection, report_type).empty();
         });
@@ -99,7 +99,7 @@ const mojom::HidCollectionInfo* FindCollectionWithReport(
 
   // Return the collection containing a report with `report_id` and type
   // `report_type`, or nullptr if it is not in any collection.
-  auto find_it = base::ranges::find_if(
+  auto find_it = std::ranges::find_if(
       device.collections, [report_id, report_type](const auto& collection) {
         return base::Contains(ReportsForType(*collection, report_type),
                               report_id,

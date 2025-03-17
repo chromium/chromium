@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 
 /**
@@ -51,6 +52,9 @@ class TitleAndUrlLayout extends FrameLayout {
                             }
                         },
                         ThreadUtils.getUiThreadHandler());
+        if (ChromeFeatureList.sCctNestedSecurityIcon.isEnabled()) {
+            setClipChildren(false);
+        }
     }
 
     @Override

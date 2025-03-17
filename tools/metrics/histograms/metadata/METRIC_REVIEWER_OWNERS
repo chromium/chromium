@@ -14,13 +14,12 @@ jinsukkim@chromium.org
 altimin@chromium.org
 wenyufu@chromium.org
 peter@chromium.org
+ashleynewson@chromium.org
 # apps
 nancylingwang@chromium.org
 tby@chromium.org
-yulunwu@chromium.org
 mek@chromium.org
 # arc
-mhasank@chromium.org
 batoon@google.com
 youkichihosoi@chromium.org
 lingyufeng@chromium.org
@@ -32,7 +31,6 @@ dmblack@google.com
 # ash
 tby@chromium.org
 jimmyxgong@chromium.org
-yulunwu@chromium.org
 michelefan@chromium.org
 junis@google.com
 # ash_growth
@@ -41,7 +39,6 @@ wutao@chromium.com
 xiaohuic@chromium.org
 # attribution_reporting
 csharrison@chromium.org
-johnidel@chromium.org
 # autofill
 fleimgruber@google.com
 jihadghanna@google.com
@@ -80,18 +77,15 @@ joenotcharles@google.com
 gjc@google.com
 # browsing_topics
 # chromeos_hps
-azeemarshad@chromium.org
 chadduffin@chromium.org
 crisrael@google.com
 jorgelo@chromium.org
 julietlevesque@google.com
 khorimoto@chromium.org
 tby@chromium.org
-tsergeant@chromium.org
 jimmyxgong@chromium.org
 gavinwill@chromium.org
 # chromeos
-azeemarshad@chromium.org
 chadduffin@chromium.org
 crisrael@google.com
 enlightened@chromium.org
@@ -101,8 +95,6 @@ jorgelo@chromium.org
 julietlevesque@google.com
 khorimoto@chromium.org
 nikhilcn@google.com
-tjohnsonkanu@google.com
-tsergeant@chromium.org
 # chromeos_settings
 xiaohuic@chromium.org
 # chrome
@@ -195,6 +187,14 @@ thesalsa@google.com
 peter@chromium.org
 # geolocation
 reillyg@chromium.org
+# glic
+dewittj@chromium.org
+jeffreycohen@chromium.org
+tbansal@chromium.org
+mcrouse@chromium.org
+perrier@chromium.org
+andreaxg@google.com
+iwells@google.com
 # gpu
 jonross@chromium.org
 # hang_watcher
@@ -218,6 +218,7 @@ ajuma@chromium.org
 guiperez@google.com
 olivierrobin@chromium.org
 sebsg@chromium.org
+rkgibson@google.com
 # language
 perrier@chromium.org
 curranmax@chromium.org
@@ -253,7 +254,6 @@ altimin@chromium.org
 cthomp@chromium.org
 tbansal@chromium.org
 toyoshim@chromium.org
-wanderview@chromium.org
 gjc@google.com
 # nearby
 crisrael@google.com
@@ -266,7 +266,6 @@ dschinazi@chromium.org
 nidhijaju@chromium.org
 toyoshim@chromium.org
 # network
-azeemarshad@chromium.org
 chadduffin@chromium.org
 hsuregan@google.com
 jiajunz@google.com
@@ -274,7 +273,6 @@ khorimoto@chromium.org
 matthewmwang@chromium.org
 nidhijaju@chromium.org
 nikhilcn@google.com
-tjohnsonkanu@google.com
 toyoshim@chromium.org
 # new_tab_page
 dewittj@chromium.org
@@ -303,7 +301,6 @@ tbansal@chromium.org
 # others
 jimmyxgong@chromium.org
 gavinwill@chromium.org
-johnidel@chromium.org
 jonross@chromium.org
 dullweber@chromium.org
 olivierli@chromium.org
@@ -313,7 +310,6 @@ junis@google.com
 # page
 csharrison@chromium.org
 iclelland@chromium.org
-johnidel@chromium.org
 toyoshim@chromium.org
 # password
 ioanap@chromium.org
@@ -338,6 +334,7 @@ joenotcharles@google.com
 # permissions
 andypaicu@chromium.org
 ravjit@chromium.org
+hempjudith@google.com
 # phonehub
 crisrael@google.com
 hansberry@chromium.org
@@ -369,8 +366,10 @@ andzaytsev@google.com
 dullweber@chromium.org
 harrisonsean@chromium.org
 csharrison@chromium.org
-johnidel@chromium.org
 boujane@google.com
+xiaochenzh@chromium.org
+liu@chromium.org
+svend@chromium.org
 # profile
 alexilin@chromium.org
 rsult@google.com
@@ -417,7 +416,6 @@ ritikagup@google.com
 jkeitel@google.com
 schwering@google.com
 # service
-wanderview@chromium.org
 ayui@chromium.org
 yyanagisawa@chromium.org
 # session
@@ -437,8 +435,6 @@ alexilin@chromium.org
 bsazonov@chromium.org
 myuu@google.com
 rsult@google.com
-# simple
-wanderview@chromium.org
 # software
 drubery@chromium.org
 thefrog@chromium.org
@@ -448,12 +444,10 @@ fdoray@chromium.org
 spvw@chromium.org
 # storage
 ayui@chromium.org
-wanderview@chromium.org
 # structured_metrics
 jongahn@chromium.org
 # subresource
 csharrison@chromium.org
-johnidel@chromium.org
 tbansal@chromium.org
 # sync
 mmoskvitin@google.com
@@ -490,7 +484,6 @@ mek@chromium.org
 # web_audio
 hongchan@chromium.org
 mjwilson@chromium.org
-sinafirooz@chromium.org
 # webauthn
 kenrb@chromium.org
 hcyang@google.com

@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/os_crypt/sync/os_crypt.h"
@@ -44,7 +45,7 @@ void EncryptAndSave(const PasswordHashData& password_hash_data,
   std::string encrypted_length_and_salt = EncryptString(LengthAndSaltToString(
       password_hash_data.salt, password_hash_data.length));
   std::string encrypted_is_gaia_value =
-      EncryptString(password_hash_data.is_gaia_password ? "true" : "false");
+      EncryptString(base::ToString(password_hash_data.is_gaia_password));
 
   base::Value::Dict encrypted_password_hash_entry;
   encrypted_password_hash_entry.Set("username", encrypted_username);

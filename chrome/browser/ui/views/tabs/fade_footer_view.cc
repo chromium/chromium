@@ -50,7 +50,7 @@ FooterRow<T>::FooterRow(bool is_fade_out_view)
   footer_label_ = views::View::AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT));
   icon_->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+      views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
   footer_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   footer_label_->SetMultiLine(true);
   footer_label_->SetProperty(
@@ -59,7 +59,7 @@ FooterRow<T>::FooterRow(bool is_fade_out_view)
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded, true));
 
-  footer_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
+  footer_label_->SetEnabledColor(kColorTabHoverCardSecondaryText);
   footer_label_->SetTextStyle(views::style::STYLE_BODY_4);
 
   // Vertically align the icon to the top line of the label
@@ -192,18 +192,7 @@ void FadeCollaborationMessagingFooterRow::SetData(
     return;
   }
 
-  if (!data_.avatar.IsEmpty()) {
-    // Use avatar, if supplied.
-    SetContent(data_.avatar, data_.text);
-    return;
-  }
-
-  // Fallback to using an icon.
-  // TODO(crbug.com/381719301): Define a color for the fallback icon
-  SetContent(ui::ImageModel::FromVectorIcon(
-                 kTabGroupSharingIcon, kColorHoverCardTabAlertAudioPlayingIcon,
-                 GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
-             data_.text);
+  SetContent(data_.avatar, data_.text);
 }
 
 CollaborationMessagingRowData::CollaborationMessagingRowData() = default;
@@ -263,8 +252,7 @@ FooterView::FooterView() {
                                views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded, true));
 
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
 }
 
 void FooterView::SetAlertData(const AlertFooterRowData& data) {

@@ -25,18 +25,6 @@ buildflag_header("features") {
   flags = [ "USE_REAL_CHROMEOS_SERVICES=$use_real_chromeos_services" ]
 }
 
-component("chromeos") {
-  deps = [ "//chromeos/dbus/constants" ]
-  sources = []
-
-  if (is_chromeos_ash) {
-    configs += [ ":chromeos_implementation" ]
-    if (current_cpu == "arm" || current_cpu == "x86") {
-      defines = [ "BINDER_IPC_32BIT" ]
-    }
-  }
-}
-
 source_set("chromeos_export") {
   deps = [ "//base" ]
   sources = [ "chromeos_export.h" ]
@@ -44,105 +32,53 @@ source_set("chromeos_export") {
 
 # This must be a static library instead of a source set because some of the
 # files pull in things with dependencies that aren't linked in all cases.
-#
-# TODO this should probably be changed such that it links in all cases and
-# can be converted to a source set.
 static_library("test_support") {
   testonly = true
-  public_deps = [ ":test_support_source_set" ]
-}
-
-source_set("test_support_source_set") {
-  testonly = true
-  public_deps = [
-    ":chromeos",
-    ":test_utils",
-  ]
-  deps = [
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/ash/components/dbus:test_support",
-      "//chromeos/ash/components/login/login_state:test_support",
-      "//chromeos/ash/components/network:test_support",
-      "//google_apis",
-      "//net:test_support",
-      "//services/network:test_support",
-    ]
-  }
-}
-
-source_set("test_utils") {
-  deps = [ "//base" ]
   sources = [
     "test/chromeos_test_utils.cc",
     "test/chromeos_test_utils.h",
   ]
+  deps = [ "//base" ]
 }
 
 test("chromeos_unittests") {
   configs += [ "//build/config/linux/dbus" ]
 
+  sources = [ "test/run_all_unittests.cc" ]
+
+  data = [ "test/data/" ]
+
   deps = [
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//chromeos/ash/components:test_support",
     "//mojo/core/embedder",
   ]
 
-  sources = [ "test/run_all_unittests.cc" ]
-
-  # Tests that are common to Ash and Lacros.
+  # Collect the actual tests.
   deps += [
+    "//chromeos/ash/components:unit_tests",
+    "//chromeos/ash/services:unit_tests",
     "//chromeos/components/firewall_hole:unit_tests",
     "//chromeos/constants:unit_tests",
+    "//chromeos/crosapi/cpp:unit_tests",
+    "//chromeos/dbus:unit_tests",
+    "//chromeos/printing:unit_tests",
+    "//chromeos/process_proxy:unit_tests",
+    "//chromeos/services:unit_tests",
     "//chromeos/system:unit_tests",
+    "//chromeos/ui/base:unit_tests",
+    "//chromeos/utils:unit_tests",
+    "//chromeos/version:unit_tests",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      ":test_support",
-      "//chromeos/ash/components:test_support",
-      "//chromeos/ash/components:unit_tests",
-      "//chromeos/ash/components/dbus:test_support",
-      "//chromeos/ash/components/network:test_support",
-      "//chromeos/ash/services:unit_tests",
-      "//chromeos/crosapi/cpp:unit_tests",
-      "//chromeos/crosapi/mojom:unit_tests",
-      "//chromeos/dbus:unit_tests",
-      "//chromeos/printing:unit_tests",
-      "//chromeos/process_proxy:unit_tests",
-      "//chromeos/services:unit_tests",
-      "//chromeos/ui/base:unit_tests",
-      "//chromeos/utils:unit_tests",
-      "//chromeos/version:unit_tests",
-      "//components/onc",
-      "//components/prefs:test_support",
-      "//components/proxy_config",
-      "//crypto",
-      "//dbus:test_support",
-      "//google_apis",
-      "//net",
-      "//net:test_support",
-      "//services/network/public/cpp",
-      "//url",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:unit_tests" ]
-  }
-
-  data = [ "test/data/" ]
 }
 
 # The following definitions only apply when building for a CrOS board (ie: not
 # linux-chromeos). See the following for reference:
 # https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md
 # https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md
-if (is_chromeos_ash && is_chromeos_device) {
+if (is_chromeos_device) {
   # This builds a tool that prepares a DUT or VM for testing, which can be
   # utilized by wrapping a host-side script test.
   generate_runner_script("cros_test_wrapper") {

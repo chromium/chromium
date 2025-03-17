@@ -15,6 +15,7 @@
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,8 +42,8 @@ TEST(DMMessage, GetPolicyFetchRequestData) {
 
   device_management_storage::CachedPolicyInfo policy_info;
   ASSERT_TRUE(policy_info.Populate(policy_response_string));
-  const std::string request_data =
-      GetPolicyFetchRequestData(policy_type, policy_info);
+  const std::string request_data = GetPolicyFetchRequestData(
+      policy::PolicyFetchReason::kScheduled, policy_type, policy_info);
   EXPECT_FALSE(request_data.empty());
 
   enterprise_management::DeviceManagementRequest dm_request;

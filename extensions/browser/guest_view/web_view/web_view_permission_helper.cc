@@ -189,7 +189,6 @@ WebViewPermissionHelper* WebViewPermissionHelper::FromRenderFrameHostId(
 }
 
 void WebViewPermissionHelper::RequestMediaAccessPermission(
-    content::WebContents* source,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
   base::Value::Dict request_info;
@@ -295,9 +294,10 @@ void WebViewPermissionHelper::CanDownload(
 
 void WebViewPermissionHelper::RequestPointerLockPermission(
     bool user_gesture,
-    bool last_unlocked_by_target) {
+    bool last_unlocked_by_target,
+    base::OnceCallback<void(bool)> callback) {
   web_view_permission_helper_delegate_->RequestPointerLockPermission(
-      user_gesture, last_unlocked_by_target);
+      user_gesture, last_unlocked_by_target, std::move(callback));
 }
 
 void WebViewPermissionHelper::RequestGeolocationPermission(
@@ -334,6 +334,11 @@ void WebViewPermissionHelper::RequestFullscreenPermission(
     PermissionResponseCallback callback) {
   web_view_permission_helper_delegate_->RequestFullscreenPermission(
       requesting_origin, std::move(callback));
+}
+
+std::optional<content::PermissionResult>
+WebViewPermissionHelper::OverridePermissionResult(ContentSettingsType type) {
+  return web_view_permission_helper_delegate_->OverridePermissionResult(type);
 }
 
 int WebViewPermissionHelper::RequestPermission(

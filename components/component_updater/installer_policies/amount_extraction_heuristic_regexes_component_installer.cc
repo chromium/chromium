@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 
 namespace component_updater {
@@ -36,6 +37,10 @@ static std::optional<std::string> LoadAmountExtractionHeuristicRegexesFromDisk(
     const base::FilePath& pb_path) {
   std::string binary_pb;
   if (!base::ReadFileToString(pb_path, &binary_pb)) {
+    autofill::autofill_metrics::LogAmountExtractionComponentInstallationResult(
+        autofill::autofill_metrics::
+            AmountExtractionComponentInstallationResult::
+                kReadingBinaryFileFailed);
     return std::nullopt;
   }
 
@@ -45,7 +50,10 @@ static std::optional<std::string> LoadAmountExtractionHeuristicRegexesFromDisk(
 static void PopulateAmountExtractionHeuristicRegexesData(
     const base::FilePath& pb_path,
     std::optional<std::string> binary_pb) {
-  if (!binary_pb) {
+  if (!binary_pb || binary_pb.value().empty()) {
+    autofill::autofill_metrics::LogAmountExtractionComponentInstallationResult(
+        autofill::autofill_metrics::
+            AmountExtractionComponentInstallationResult::kEmptyBinaryFile);
     return;
   }
 
@@ -96,7 +104,14 @@ void AmountExtractionHeuristicRegexesInstallerPolicy::ComponentReady(
 bool AmountExtractionHeuristicRegexesInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& /* manifest */,
     const base::FilePath& install_dir) const {
-  return base::PathExists(GetInstalledPath(install_dir));
+  bool installation_result = base::PathExists(GetInstalledPath(install_dir));
+  if (!installation_result) {
+    autofill::autofill_metrics::LogAmountExtractionComponentInstallationResult(
+        autofill::autofill_metrics::
+            AmountExtractionComponentInstallationResult::
+                kInvalidInstallationPath);
+  }
+  return installation_result;
 }
 
 base::FilePath

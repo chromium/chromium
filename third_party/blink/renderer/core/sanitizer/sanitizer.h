@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_presets.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_names.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -17,6 +18,7 @@ class Node;
 class QualifiedName;
 class SanitizerConfig;
 class SanitizerElementNamespace;
+class V8UnionSanitizerConfigOrSanitizerPresets;
 class V8UnionSanitizerAttributeNamespaceOrString;
 class V8UnionSanitizerElementNamespaceWithAttributesOrString;
 class V8UnionSanitizerElementNamespaceOrString;
@@ -25,8 +27,14 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Called by JS constructor, new Sanitizer(config).
-  static Sanitizer* Create(const SanitizerConfig*, ExceptionState&);
+  // Called by WebIDL for Sanitizer constructor, new Sanitizer(xxx).
+  static Sanitizer* Create(const V8UnionSanitizerConfigOrSanitizerPresets*,
+                           ExceptionState&);
+
+  // Called by Sanitizer API, to implement setHTML / setHTMLUnsafe & friends.
+  static Sanitizer* Create(const SanitizerConfig*, bool safe, ExceptionState&);
+  static Sanitizer* Create(const V8SanitizerPresets::Enum, ExceptionState&);
+
   Sanitizer() = default;
   ~Sanitizer() override = default;
   Sanitizer(const Sanitizer&) = delete;  // Use MakeGarbageCollected + setFrom.
@@ -45,7 +53,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   void allowElement(
       const V8UnionSanitizerElementNamespaceWithAttributesOrString*);
   void removeElement(const V8UnionSanitizerElementNamespaceOrString*);
-  void replaceWithChildrenElement(
+  void replaceElementWithChildren(
       const V8UnionSanitizerElementNamespaceOrString*);
   void allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   void removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
@@ -82,12 +90,16 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   void SanitizeUnsafe(Node* node) const;
 
  private:
-  // Helper for Sanitize: Sanitize a single element in the allow-element case.
+  // Helper methods for SanitizeSafe/Unsafe:
+  void Sanitize(Node* node, bool safe) const;
   void SanitizeElement(Element* element) const;
+  void SanitizeJavascriptNavigationAttributes(Element* element,
+                                              bool safe) const;
+  void SanitizeTemplate(Node* node, bool safe) const;
 
   // Helper for copy constructor and Create: Convert from IDL representation
   // to internal.
-  bool setFrom(const SanitizerConfig*);
+  bool setFrom(const SanitizerConfig*, bool safe);
   void setFrom(const Sanitizer&);
 
   // Helpers for get(): Convert from internal to IDL representation.
@@ -98,6 +110,13 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   QualifiedName getFrom(const V8UnionSanitizerElementNamespaceOrString*) const;
   QualifiedName getFrom(
       const V8UnionSanitizerAttributeNamespaceOrString*) const;
+
+  // Helpers for setFrom(SanitizerConfig*, ...): Count items in config.
+  // These are used for error checking.
+  int countItemsInSanitizerConfig(const SanitizerConfig*) const;
+  int countItemsInSanitizerElement(
+      const V8UnionSanitizerElementNamespaceWithAttributesOrString*) const;
+  int countItemsInConfig() const;
 
   // These members are Blink-representation of SanitizerConfig, and the core
   // data structure(s) for Sanitizer. We'll try to keep them simple (sets and

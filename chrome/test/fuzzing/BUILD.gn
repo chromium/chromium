@@ -13,6 +13,7 @@ import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
 group("test") {
   testonly = true
   deps = [
+    "mojo_js_fuzzing:test",
     "renderer_fuzzing:test",
     "webidl_fuzzing:test",
   ]
@@ -85,33 +86,35 @@ if (!is_android) {
     sources = [ "speech_synthesis_in_process_fuzzer.cc" ]
     proto_source = "speech_synthesis_in_process_fuzzer.proto"
   }
-  in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
-    sources = [
-      "kombucha_in_process_fuzzer.cc",
-      "kombucha_in_process_fuzzer.h",
-    ]
 
-    proto_source = "kombucha_in_process_fuzzer.proto"
-
-    deps = [
-      ":in_process_fuzzer_buildflags",
-      "//chrome:packed_resources",
-      "//chrome/app:command_ids",
-      "//chrome/browser/ui:browser_element_identifiers",
-      "//chrome/browser/ui:ui_features",
-    ]
-
-    # Used for UI controls
-    if (use_aura) {
-      deps += [ "//ui/aura:test_support" ]
-    }
-    if (use_aura && use_ozone) {
-      deps += [
-        "//ui/ozone",
-        "//ui/platform_window/common:common",
-      ]
-    }
-  }
+  # Disable kombucha_in_process_fuzzer temporarily https://crbug.com/401073471
+  # in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
+  #   sources = [
+  #     "kombucha_in_process_fuzzer.cc",
+  #     "kombucha_in_process_fuzzer.h",
+  #   ]
+  #
+  #   proto_source = "kombucha_in_process_fuzzer.proto"
+  #
+  #   deps = [
+  #     ":in_process_fuzzer_buildflags",
+  #     "//chrome:packed_resources",
+  #     "//chrome/app:command_ids",
+  #     "//chrome/browser/ui:browser_element_identifiers",
+  #     "//chrome/browser/ui:ui_features",
+  #   ]
+  #
+  #   # Used for UI controls
+  #   if (use_aura) {
+  #     deps += [ "//ui/aura:test_support" ]
+  #   }
+  #   if (use_aura && use_ozone) {
+  #     deps += [
+  #       "//ui/ozone",
+  #       "//ui/platform_window/common:common",
+  #     ]
+  #   }
+  # }
 
   # We cannot disable instrumenting protobuf generated files on MSAN builds,
   # which makes the build time explode and fail the CQ.
@@ -148,6 +151,30 @@ if (!is_android) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
+  }
+
+  domatolpm_fuzzer("notification_service_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/notification_service_in_process_fuzzer_grammar/template.js"
+    grammars = [ "notification_service_fuzzer://chrome/test/fuzzing/notification_service_in_process_fuzzer_grammar/notification_service.txt" ]
+  }
+
+  copy("notification_service_in_process_fuzzer_html") {
+    sources = [ "//chrome/test/fuzzing/notification_service_in_process_fuzzer_grammar/notification_service_in_process_fuzzer.html" ]
+    outputs = [ "$root_out_dir/notification_service_in_process_fuzzer.html" ]
+  }
+
+  in_process_fuzzer("notification_service_in_process_fuzzer") {
+    sources = [ "notification_service_in_process_fuzzer.cc" ]
+
+    deps = [
+      ":notification_service_fuzzer_grammar",
+      ":notification_service_in_process_fuzzer_html",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data_deps = [ ":notification_service_in_process_fuzzer_html" ]
+    data = [ "$root_gen_dir/" ]
   }
 
   if (is_linux) {

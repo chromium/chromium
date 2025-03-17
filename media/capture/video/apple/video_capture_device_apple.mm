@@ -244,7 +244,7 @@ void VideoCaptureDeviceApple::ReceiveFrame(
       video_frame, video_frame_length, frame_format, color_space,
       rotation /* clockwise_rotation */, false /* flip_y */,
       base::TimeTicks::Now(), timestamp, capture_begin_time,
-      /*metadata=*/std::nullopt);
+      GetVideoFrameMetadata());
 }
 
 void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
@@ -258,9 +258,10 @@ void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
                      ", and expected " + capture_format_.frame_size.ToString());
     return;
   }
+
   client_->OnIncomingCapturedExternalBuffer(
       std::move(frame), base::TimeTicks::Now(), timestamp, capture_begin_time,
-      gfx::Rect(capture_format_.frame_size), /*metadata=*/std::nullopt);
+      gfx::Rect(capture_format_.frame_size), GetVideoFrameMetadata());
 }
 
 void VideoCaptureDeviceApple::OnPhotoTaken(const uint8_t* image_data,
@@ -372,6 +373,16 @@ bool VideoCaptureDeviceApple::UpdateCaptureResolution() {
     return false;
   }
   return true;
+}
+
+VideoFrameMetadata VideoCaptureDeviceApple::GetVideoFrameMetadata() {
+  VideoFrameMetadata metadata;
+  if ([capture_device_ isPortraitEffectSupported]) {
+    bool isPortraitEffectActive = [capture_device_ isPortraitEffectActive];
+    metadata.background_blur = EffectInfo{.enabled = isPortraitEffectActive};
+  }
+
+  return metadata;
 }
 
 }  // namespace media

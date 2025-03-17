@@ -4,11 +4,11 @@
 
 #import "ios/components/webui/sync_internals/ios_sync_internals_message_handler.h"
 
+#import <algorithm>
 #import <string>
 #import <vector>
 
 #import "base/containers/span.h"
-#import "base/ranges/algorithm.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 
 IOSSyncInternalsMessageHandler::IOSSyncInternalsMessageHandler(
@@ -29,7 +29,7 @@ void IOSSyncInternalsMessageHandler::SendEventToPage(
     base::span<const base::ValueView> args) {
   std::vector<base::ValueView> event_name_and_args;
   event_name_and_args.push_back(event_name);
-  base::ranges::copy(args, std::back_inserter(event_name_and_args));
+  std::ranges::copy(args, std::back_inserter(event_name_and_args));
   base::span<base::ValueView> mutable_span(event_name_and_args);
   // `mutable_span` will be implicitly converted to a const one. Declaring
   // std::vector<const base::ValueView> above is not an option, because

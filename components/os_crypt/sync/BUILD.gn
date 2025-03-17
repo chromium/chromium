@@ -7,12 +7,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/os_crypt/sync/features.gni")
 
-# Wrapper component to allow dependencies to depend on //components/os_crypt/sync directly.
-group("sync") {
-  public_deps = [ ":os_crypt" ]
-}
-
-component("os_crypt") {
+component("sync") {
   sources = [
     "os_crypt.h",
     "os_crypt_metrics.cc",
@@ -25,7 +20,6 @@ component("os_crypt") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/prefs",
     "//crypto",
   ]
@@ -37,10 +31,6 @@ component("os_crypt") {
     defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
   }
 
-  if ((is_posix && !is_apple && !(is_linux && !is_castos)) || is_fuchsia) {
-    sources += [ "os_crypt_posix.cc" ]
-  }
-
   if (is_apple) {
     sources += [
       "keychain_password_mac.h",
@@ -48,15 +38,11 @@ component("os_crypt") {
       "os_crypt_mac.mm",
     ]
     deps += [ "//crypto:mock_apple_keychain" ]
-  }
-
-  if (is_win) {
+  } else if (is_win) {
     sources += [ "os_crypt_win.cc" ]
     deps += [ "//components/version_info" ]
     libs = [ "crypt32.lib" ]
-  }
-
-  if (is_linux && !is_castos) {
+  } else if (is_linux && !is_castos) {
     sources += [
       "key_storage_config_linux.cc",
       "key_storage_config_linux.h",
@@ -88,6 +74,8 @@ component("os_crypt") {
       deps += [ "//dbus" ]
       defines += [ "USE_KWALLET" ]
     }
+  } else if (is_posix || is_fuchsia) {
+    sources += [ "os_crypt_posix.cc" ]
   }
 }
 
@@ -98,7 +86,7 @@ static_library("test_support") {
     "os_crypt_mocker.h",
   ]
   deps = [
-    ":os_crypt",
+    ":sync",
     "//base",
     "//testing/gtest",
   ]
@@ -121,12 +109,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "os_crypt_unittest.cc" ]
   deps = [
-    ":os_crypt",
+    ":sync",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//crypto",
     "//testing/gmock",
@@ -135,11 +122,12 @@ source_set("unit_tests") {
   ]
 
   if (is_apple) {
-    sources += [ "keychain_password_mac_unittest.mm" ]
+    sources += [
+      "keychain_password_mac_unittest.mm",
+      "os_crypt_mac_unittest.cc",
+    ]
     deps += [ "//crypto:mock_apple_keychain" ]
-  }
-
-  if (is_linux && !is_castos) {
+  } else if (is_linux && !is_castos) {
     sources += [
       "key_storage_linux_unittest.cc",
       "key_storage_util_linux_unittest.cc",
@@ -160,5 +148,7 @@ source_set("unit_tests") {
       deps += [ "//dbus:test_support" ]
       defines += [ "USE_KWALLET" ]
     }
+  } else if (is_posix || is_fuchsia) {
+    sources += [ "os_crypt_posix_unittest.cc" ]
   }
 }

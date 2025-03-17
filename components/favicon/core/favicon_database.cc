@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <bit>
 #include <string>
@@ -25,6 +26,7 @@
 #include "build/build_config.h"
 #include "components/database_utils/upper_bound_string.h"
 #include "components/database_utils/url_converter.h"
+#include "components/favicon_base/favicon_types.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -42,6 +44,12 @@ namespace favicon {
 //   id               Unique ID.
 //   page_url         Page URL which has one or more associated favicons.
 //   icon_id          The ID of favicon that this mapping maps to.
+//   page_url_type    The type of the `page_url`. This is computed when the
+//                    entry is added. This may differ from the current type of
+//                    the `page_url`. For example if a site moves, or sign-in
+//                    state changes, the current page_url_type of the page may
+//                    differ from what is stored in the row. See `PageUrlType`
+//                    for valid values. By default this is `kRegularPage`.
 //
 // favicons           This table associates a row to each favicon for a
 //                    `page_url` in the `icon_mapping` table. This is the
@@ -91,8 +99,10 @@ namespace {
 // fatal (in fact, very old data may be expired immediately at startup
 // anyhow).
 
+// TODO(ckitagawa): Add commit hash after landing.
+// Version 9: <TODO>/r6208170 by ckitagawa@chromium.org on 2025-01-28
 // Version 8: 982ef2c1/r323176 by rogerm@chromium.org on 2015-03-31
-// Version 7: 911a634d/r209424 by qsr@chromium.org on 2013-07-01
+// Version 7: 911a634d/r209424 by qsr@chromium.org on 2013-07-01 (depr.)
 // Version 6: 610f923b/r152367 by pkotwicz@chromium.org on 2012-08-20 (depr.)
 // Version 5: e2ee8ae9/r105004 by groby@chromium.org on 2011-10-12 (deprecated)
 // Version 4: 5f104d76/r77288 by sky@chromium.org on 2011-03-08 (deprecated)
@@ -101,20 +111,9 @@ namespace {
 // Version number of the database.
 // NOTE(shess): When changing the version, add a new golden file for
 // the new version and a test to verify that Init() works with it.
-const int kCurrentVersionNumber = 8;
-const int kCompatibleVersionNumber = 8;
-const int kDeprecatedVersionNumber = 6;  // and earlier.
-
-void FillIconMapping(const GURL& page_url,
-                     sql::Statement& statement,
-                     IconMapping* icon_mapping) {
-  icon_mapping->mapping_id = statement.ColumnInt64(0);
-  icon_mapping->icon_id = statement.ColumnInt64(1);
-  icon_mapping->icon_type =
-      FaviconDatabase::FromPersistedIconType(statement.ColumnInt(2));
-  icon_mapping->icon_url = GURL(statement.ColumnString(3));
-  icon_mapping->page_url = page_url;
-}
+const int kCurrentVersionNumber = 9;
+const int kCompatibleVersionNumber = 9;
+const int kDeprecatedVersionNumber = 7;  // and earlier.
 
 // NOTE(shess): Schema modifications must consider initial creation in
 // `InitImpl()` and history pruning in `RetainDataForPageUrls()`.
@@ -124,7 +123,8 @@ bool InitTables(sql::Database* db) {
       "("
       "id INTEGER PRIMARY KEY,"
       "page_url LONGVARCHAR NOT NULL,"
-      "icon_id INTEGER"
+      "icon_id INTEGER,"
+      "page_url_type INTEGER DEFAULT 0"
       ")";
   if (!db->Execute(kIconMappingSql))
     return false;
@@ -232,16 +232,19 @@ bool FaviconDatabase::IconMappingEnumerator::GetNextIconMapping(
     IconMapping* icon_mapping) {
   if (!statement_.Step())
     return false;
-  FillIconMapping(GURL(statement_.ColumnString(4)), statement_, icon_mapping);
+  FillIconMapping(GURL(statement_.ColumnStringView(4)), statement_,
+                  icon_mapping);
   return true;
 }
 
 FaviconDatabase::FaviconDatabase()
-    : db_(
-          {// Favicons db only stores favicons, so we don't need that big a page
-           // size or cache.
-           .page_size = 2048,
-           .cache_size = 32},
+    : db_(sql::DatabaseOptions()
+              .set_preload(base::FeatureList::IsEnabled(
+                  sql::features::kPreOpenPreloadDatabase))
+              // Favicons db only stores favicons, so we don't need that big a
+              // page size or cache.
+              .set_page_size(2048)
+              .set_cache_size(32),
           /*tag=*/"Thumbnail") {}
 
 FaviconDatabase::~FaviconDatabase() {
@@ -321,8 +324,8 @@ FaviconDatabase::GetOldOnDemandFavicons(base::Time threshold) {
 
   while (old_icons.Step()) {
     favicon_base::FaviconID id = old_icons.ColumnInt64(0);
-    icon_mappings[id].icon_url = GURL(old_icons.ColumnString(1));
-    icon_mappings[id].page_urls.push_back(GURL(old_icons.ColumnString(2)));
+    icon_mappings[id].icon_url = GURL(old_icons.ColumnStringView(1));
+    icon_mappings[id].page_urls.push_back(GURL(old_icons.ColumnStringView(2)));
   }
 
   return icon_mappings;
@@ -598,7 +601,7 @@ favicon_base::FaviconID FaviconDatabase::GetFaviconIDForFaviconURL(
   statement.BindInt64(0, icon_id);
   while (statement.Step()) {
     const auto candidate_origin =
-        url::Origin::Create(GURL(statement.ColumnString(0)));
+        url::Origin::Create(GURL(statement.ColumnStringView(0)));
     if (candidate_origin == page_origin) {
       return icon_id;
     }
@@ -635,7 +638,7 @@ bool FaviconDatabase::GetFaviconHeader(favicon_base::FaviconID icon_id,
     return false;  // No entry for the id.
 
   if (icon_url)
-    *icon_url = GURL(statement.ColumnString(0));
+    *icon_url = GURL(statement.ColumnStringView(0));
   if (icon_type)
     *icon_type = FromPersistedIconType(statement.ColumnInt(1));
 
@@ -710,7 +713,7 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT icon_mapping.id, icon_mapping.icon_id, favicons.icon_type, "
-      "favicons.url "
+      "favicons.url, icon_mapping.page_url_type "
       "FROM icon_mapping "
       "INNER JOIN favicons "
       "ON icon_mapping.icon_id = favicons.id "
@@ -731,12 +734,16 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
   return result;
 }
 
-std::optional<GURL> FaviconDatabase::FindFirstPageURLForHost(
+std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
     const GURL& url,
     const favicon_base::IconTypeSet& required_icon_types) {
   if (url.host().empty())
     return std::nullopt;
 
+  // This query prioritizes PageUrlType::kRegular over PageUrlType::kRedirect.
+  // If PageUrlType is ever changed the ORDER BY clause for page_url_type may
+  // need to be revised.
+  CHECK_EQ(PageUrlType::kRedirect, PageUrlType::kMaxValue);
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE,
                              "SELECT icon_mapping.page_url, favicons.icon_type "
@@ -745,7 +752,8 @@ std::optional<GURL> FaviconDatabase::FindFirstPageURLForHost(
                              "ON icon_mapping.icon_id = favicons.id "
                              "WHERE (page_url >= ? AND page_url < ?) "
                              "OR (page_url >= ? AND page_url < ?) "
-                             "ORDER BY favicons.icon_type DESC"));
+                             "ORDER BY icon_mapping.page_url_type ASC, "
+                             "favicons.icon_type DESC"));
 
   // This is an optimization to avoid using the LIKE operator which can be
   // expensive. This statement finds all rows where page_url starts from either
@@ -764,21 +772,25 @@ std::optional<GURL> FaviconDatabase::FindFirstPageURLForHost(
         FaviconDatabase::FromPersistedIconType(statement.ColumnInt(1));
 
     if (required_icon_types.count(icon_type) != 0)
-      return std::make_optional(GURL(statement.ColumnString(0)));
+      return std::make_optional(GURL(statement.ColumnStringView(0)));
   }
   return std::nullopt;
 }
 
 IconMappingID FaviconDatabase::AddIconMapping(const GURL& page_url,
-                                              favicon_base::FaviconID icon_id) {
+                                              favicon_base::FaviconID icon_id,
+                                              PageUrlType page_url_type) {
   static const char kSql[] =
-      "INSERT INTO icon_mapping (page_url, icon_id) VALUES (?, ?)";
+      "INSERT INTO icon_mapping (page_url, icon_id, page_url_type) "
+      "VALUES (?, ?, ?)";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, database_utils::GurlToDatabaseUrl(page_url));
   statement.BindInt64(1, icon_id);
+  statement.BindInt64(2, ToPersistedPageUrlType(page_url_type));
 
-  if (!statement.Run())
+  if (!statement.Run()) {
     return 0;
+  }
 
   return db_.GetLastInsertRowId();
 }
@@ -899,8 +911,8 @@ bool FaviconDatabase::RetainDataForPageUrls(
   static const char kRenameIconMappingTable[] =
       "ALTER TABLE icon_mapping RENAME TO old_icon_mapping";
   static const char kCopyIconMapping[] =
-      "INSERT INTO icon_mapping (page_url, icon_id) "
-      "SELECT temp.retained_urls.url, mapping.new_icon_id "
+      "INSERT INTO icon_mapping (page_url, icon_id, page_url_type) "
+      "SELECT temp.retained_urls.url, mapping.new_icon_id, old.page_url_type "
       "FROM temp.retained_urls "
       "JOIN old_icon_mapping AS old "
       "ON (temp.retained_urls.url = old.page_url) "
@@ -997,6 +1009,29 @@ favicon_base::IconType FaviconDatabase::FromPersistedIconType(int icon_type) {
   return static_cast<favicon_base::IconType>(val);
 }
 
+// static
+int FaviconDatabase::ToPersistedPageUrlType(PageUrlType page_url_type) {
+  return static_cast<int>(page_url_type);
+}
+
+// static
+PageUrlType FaviconDatabase::FromPersistedPageUrlType(int page_url_type) {
+  return static_cast<PageUrlType>(page_url_type);
+}
+
+// static
+void FaviconDatabase::FillIconMapping(const GURL& page_url,
+                                      sql::Statement& statement,
+                                      IconMapping* icon_mapping) {
+  icon_mapping->mapping_id = statement.ColumnInt64(0);
+  icon_mapping->icon_id = statement.ColumnInt64(1);
+  icon_mapping->icon_type = FromPersistedIconType(statement.ColumnInt(2));
+  icon_mapping->icon_url = GURL(statement.ColumnStringView(3));
+  icon_mapping->page_url = page_url;
+  icon_mapping->page_url_type =
+      FromPersistedPageUrlType(statement.ColumnInt64(4));
+}
+
 sql::InitStatus FaviconDatabase::OpenDatabase(sql::Database* db,
                                               const base::FilePath& db_name) {
   // `OpenDatabase()` may be called repeatedly on the same `db`. Ensure that we
@@ -1006,7 +1041,9 @@ sql::InitStatus FaviconDatabase::OpenDatabase(sql::Database* db,
   }
   if (!db->Open(db_name))
     return sql::INIT_FAILURE;
-  db->Preload();
+  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
+    db->Preload();
+  }
 
   return sql::INIT_OK;
 }
@@ -1071,38 +1108,21 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
 
   int cur_version = meta_table_.GetVersionNumber();
 
-  if (!db_.DoesColumnExist("favicons", "icon_type")) {
-    LOG(ERROR) << "Raze because of missing favicon.icon_type";
-
-    db_.RazeAndPoison();
-    return sql::INIT_FAILURE;
-  }
-
-  if (cur_version < 7 && !db_.DoesColumnExist("favicons", "sizes")) {
-    LOG(ERROR) << "Raze because of missing favicon.sizes";
-
-    db_.RazeAndPoison();
-    return sql::INIT_FAILURE;
-  }
-
-  if (cur_version == 6) {
+  if (cur_version == 8) {
     ++cur_version;
-    if (!UpgradeToVersion7())
+    if (!UpgradeToVersion9()) {
       return CantUpgradeToVersion(cur_version);
-  }
-
-  if (cur_version == 7) {
-    ++cur_version;
-    if (!UpgradeToVersion8())
-      return CantUpgradeToVersion(cur_version);
+    }
   }
 
   LOG_IF(WARNING, cur_version < kCurrentVersionNumber)
       << "Favicon database version " << cur_version << " is too old to handle.";
 
   // Initialization is complete.
-  if (!transaction.Commit())
+  if (!transaction.Commit()) {
+    LOG(ERROR) << "Favicon init transaction commit failure.";
     return sql::INIT_FAILURE;
+  }
 
   // Raze the database if the structure of the favicons database is not what
   // it should be. This error cannot be detected via the SQL error code because
@@ -1127,41 +1147,17 @@ sql::InitStatus FaviconDatabase::CantUpgradeToVersion(int cur_version) {
   return sql::INIT_FAILURE;
 }
 
-bool FaviconDatabase::UpgradeToVersion7() {
-  // Sizes column was never used, remove it.
-  bool success =
-      db_.Execute(
-          "CREATE TABLE temp_favicons ("
-          "id INTEGER PRIMARY KEY,"
-          "url LONGVARCHAR NOT NULL,"
-          // default icon_type kFavicon to be consistent with
-          // past migration.
-          "icon_type INTEGER DEFAULT 1)") &&
-      db_.Execute(
-          "INSERT INTO temp_favicons (id, url, icon_type) "
-          "SELECT id, url, icon_type FROM favicons") &&
-      db_.Execute("DROP TABLE favicons") &&
-      db_.Execute("ALTER TABLE temp_favicons RENAME TO favicons") &&
-      db_.Execute("CREATE INDEX IF NOT EXISTS favicons_url ON favicons(url)");
-
-  if (!success)
+bool FaviconDatabase::UpgradeToVersion9() {
+  // Add the page_url_type column to the icon_mapping table.
+  static const char kIconMappingAddPageUrlTypeSql[] =
+      "ALTER TABLE icon_mapping ADD COLUMN page_url_type INTEGER DEFAULT 0";
+  if (!db_.Execute(kIconMappingAddPageUrlTypeSql)) {
     return false;
+  }
 
-  return meta_table_.SetVersionNumber(7) &&
+  return meta_table_.SetVersionNumber(9) &&
          meta_table_.SetCompatibleVersionNumber(
-             std::min(7, kCompatibleVersionNumber));
-}
-
-bool FaviconDatabase::UpgradeToVersion8() {
-  // Add the last_requested column to the favicon_bitmaps table.
-  static const char kFaviconBitmapsAddLastRequestedSql[] =
-      "ALTER TABLE favicon_bitmaps ADD COLUMN last_requested INTEGER DEFAULT 0";
-  if (!db_.Execute(kFaviconBitmapsAddLastRequestedSql))
-    return false;
-
-  return meta_table_.SetVersionNumber(8) &&
-         meta_table_.SetCompatibleVersionNumber(
-             std::min(8, kCompatibleVersionNumber));
+             std::min(9, kCompatibleVersionNumber));
 }
 
 bool FaviconDatabase::IsFaviconDBStructureIncorrect() {

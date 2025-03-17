@@ -10,7 +10,7 @@
 
 namespace blink {
 
-GridItems GridNode::ConstructGridItems(
+GridItems* GridNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
     bool* must_invalidate_placement_cache,
     HeapVector<Member<LayoutBox>>* opt_oof_children,
@@ -23,7 +23,7 @@ GridItems GridNode::ConstructGridItems(
                             opt_has_nested_subgrid);
 }
 
-GridItems GridNode::ConstructGridItems(
+GridItems* GridNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
     const ComputedStyle& root_grid_style,
     const ComputedStyle& parent_grid_style,
@@ -38,7 +38,7 @@ GridItems GridNode::ConstructGridItems(
     *opt_has_nested_subgrid = false;
   }
 
-  GridItems grid_items;
+  GridItems* grid_items = MakeGarbageCollected<GridItems>();
   auto* layout_grid = To<LayoutGrid>(box_.Get());
   const GridPlacementData* cached_placement_data = nullptr;
 
@@ -47,7 +47,7 @@ GridItems GridNode::ConstructGridItems(
 
     // Even if the cached placement data is incorrect, as long as the grid is
     // not marked as dirty, the grid item count should be the same.
-    grid_items.ReserveInitialCapacity(
+    grid_items->ReserveInitialCapacity(
         cached_placement_data->grid_item_positions.size());
 
     if (*must_invalidate_placement_cache ||
@@ -77,7 +77,7 @@ GridItems GridNode::ConstructGridItems(
         continue;
       }
 
-      auto grid_item = std::make_unique<GridItemData>(
+      GridItemData* grid_item = MakeGarbageCollected<GridItemData>(
           To<BlockNode>(child), parent_grid_style, root_grid_style,
           must_consider_grid_items_for_column_sizing,
           must_consider_grid_items_for_row_sizing);
@@ -90,33 +90,34 @@ GridItems GridNode::ConstructGridItems(
       if (opt_has_nested_subgrid) {
         *opt_has_nested_subgrid |= grid_item->IsSubgrid();
       }
-      grid_items.Append(std::move(grid_item));
+      grid_items->Append(std::move(grid_item));
     }
 
-    if (should_sort_grid_items_by_order_property)
-      grid_items.SortByOrderProperty();
+    if (should_sort_grid_items_by_order_property) {
+      grid_items->SortByOrderProperty();
+    }
   }
 
 #if DCHECK_IS_ON()
   if (cached_placement_data) {
     GridPlacement grid_placement(Style(), line_resolver);
     DCHECK(*cached_placement_data ==
-           grid_placement.RunAutoPlacementAlgorithm(grid_items));
+           grid_placement.RunAutoPlacementAlgorithm(*grid_items));
   }
 #endif
 
   if (!cached_placement_data) {
     GridPlacement grid_placement(Style(), line_resolver);
     layout_grid->SetCachedPlacementData(
-        grid_placement.RunAutoPlacementAlgorithm(grid_items));
+        grid_placement.RunAutoPlacementAlgorithm(*grid_items));
     cached_placement_data = &layout_grid->CachedPlacementData();
   }
 
   // Copy each resolved position to its respective grid item data.
-  auto resolved_position = cached_placement_data->grid_item_positions.begin();
-  for (auto& grid_item : grid_items) {
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    grid_item.resolved_position = *(UNSAFE_TODO(resolved_position++));
+  auto resolved_position =
+      base::span(cached_placement_data->grid_item_positions).begin();
+  for (auto& grid_item : *grid_items) {
+    grid_item.resolved_position = *(resolved_position++);
   }
   return grid_items;
 }
@@ -136,7 +137,7 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
     bool must_invalidate_placement_cache = false;
     const auto subgrid = To<GridNode>(current_item.node);
 
-    auto subgridded_items = subgrid.ConstructGridItems(
+    auto* subgridded_items = subgrid.ConstructGridItems(
         subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
         current_item.must_consider_grid_items_for_column_sizing,
         current_item.must_consider_grid_items_for_row_sizing,
@@ -167,7 +168,7 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
           }
         };
 
-    for (auto& subgridded_item : subgridded_items) {
+    for (auto& subgridded_item : *subgridded_items) {
       subgridded_item.is_subgridded_to_parent_grid = true;
       auto& item_position = subgridded_item.resolved_position;
 
@@ -178,7 +179,7 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
       TranslateSubgriddedItem(item_position.columns, kForColumns);
       TranslateSubgriddedItem(item_position.rows, kForRows);
     }
-    grid_items->Append(&subgridded_items);
+    grid_items->Append(subgridded_items);
   }
 }
 

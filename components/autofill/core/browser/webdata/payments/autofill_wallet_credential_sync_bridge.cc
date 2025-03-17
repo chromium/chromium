@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_credential_sync_bridge.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
@@ -22,6 +22,7 @@
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/webdata/common/web_database.h"
 
 namespace autofill {
 
@@ -100,6 +101,9 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   PaymentsAutofillTable* table = GetAutofillTable();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
@@ -142,7 +146,13 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
   }
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down.
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
 
   // There can be cases where `ApplyIncrementalSyncChanges` is called with
   // empty `entity_data`, where only the metadata needs to be updated. This
@@ -158,11 +168,11 @@ std::unique_ptr<syncer::DataBatch>
 AutofillWalletCredentialSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ranges::sort(storage_keys);
+  std::ranges::sort(storage_keys);
   std::vector<std::unique_ptr<ServerCvc>> filtered_server_cvc_list;
   for (std::unique_ptr<ServerCvc>& server_cvc_from_list :
        GetAutofillTable()->GetAllServerCvcs()) {
-    if (base::ranges::binary_search(
+    if (std::ranges::binary_search(
             storage_keys,
             base::NumberToString(server_cvc_from_list->instrument_id))) {
       filtered_server_cvc_list.push_back(std::move(server_cvc_from_list));
@@ -198,6 +208,9 @@ std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
 void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   PaymentsAutofillTable* table = GetAutofillTable();
   // Check if we have data to delete.
   if (table->GetAllServerCvcs().size() == 0) {
@@ -211,7 +224,15 @@ void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete wallet credential data from the table."});
   }
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   web_data_backend_->NotifyOnAutofillChangedBySync(
       syncer::AUTOFILL_WALLET_CREDENTIAL);
 }
@@ -266,6 +287,10 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
       change_processor()->Delete(std::move(key_str),
                                  syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list.get());
+      break;
+    case ServerCvcChange::HIDE_IN_AUTOFILL:
+      // `HIDE_IN_AUTOFILL` is not supported for wallet credentials.
+      NOTIMPLEMENTED();
       break;
   }
 }

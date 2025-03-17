@@ -13,6 +13,11 @@ found in the LICENSE file.
     <!-- Button bar dimensions -->
     <dimen name="button_bar_stacked_margin">8dp</dimen>
 
+    <!-- Modal dialog-->
+    <dimen name="modal_dialog_control_vertical_padding_filled">16dp</dimen>
+    <dimen name="modal_dialog_control_horizontal_padding_filled">16dp</dimen>
+    <dimen name="modal_dialog_spinner_size">24dp</dimen>
+
     <!-- Alert dialog -->
     <dimen name="dialog_padding_top">@dimen/abc_dialog_padding_top_material</dimen>
     <dimen name="dialog_padding_sides">@dimen/abc_dialog_padding_material</dimen>
@@ -30,9 +35,7 @@ found in the LICENSE file.
     <item name="filled_button_bg_disabled_alpha" format="float" type="dimen">0.12</item>
 
     <!-- Surface color elevations -->
-    <dimen name="dialog_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="sheet_bg_color_elev">@dimen/default_elevation_0</dimen>
-    <dimen name="snackbar_background_color_elev">@dimen/default_elevation_0</dimen>
 
     <!-- Favicon dimensions -->
     <dimen name="default_favicon_size">16dp</dimen>

@@ -42,7 +42,7 @@ QuickInsertBadgeView::QuickInsertBadgeView() {
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysHoverOnSubtle, kBadgeCornerRadius))
       .SetBorder(views::CreateEmptyBorder(kBadgePadding))
       .AddChildren(
@@ -61,7 +61,7 @@ QuickInsertBadgeView::QuickInsertBadgeView() {
 
 QuickInsertBadgeView::~QuickInsertBadgeView() = default;
 
-const std::u16string& QuickInsertBadgeView::GetText() const {
+std::u16string_view QuickInsertBadgeView::GetText() const {
   return label_->GetText();
 }
 

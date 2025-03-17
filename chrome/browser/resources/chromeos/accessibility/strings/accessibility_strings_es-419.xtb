@@ -1021,7 +1021,7 @@
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botón de selección anterior</translation>
 <translation id="7696631298608145306">ir a la palabra siguiente</translation>
-<translation id="7701040980221191251">Ninguna</translation>
+<translation id="7701040980221191251">No hay</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">No hay cuadros combinados siguientes</translation>
 <translation id="7715455358521357192">Entrecerrar el ojo derecho</translation>
@@ -1042,7 +1042,7 @@
 <translation id="7839679365527550018">Palabra anterior</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7851816175263618915">Algunos signos de puntuación</translation>
-<translation id="7871691770940645922">Dispositivo virtual braile</translation>
+<translation id="7871691770940645922">Pantalla braille virtual</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="78826985582142166">ctrl desl</translation>
 <translation id="7913106023953875143">No hay encabezados de nivel 2 siguientes</translation>
@@ -1115,6 +1115,7 @@
 <translation id="8316881042119029234">Crema</translation>
 <translation id="8326783648485765113">Verde césped</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{signo numeral}other{# signos numerales}}</translation>
+<translation id="8351821207686449674">Activar o desactivar subtítulos</translation>
 <translation id="8378855320830505539">Región</translation>
 <translation id="8382679411218029383">Autocompletados integrados y lista de autocompletados</translation>
 <translation id="8394908167088220973">Reproducir o pausar contenido multimedia</translation>

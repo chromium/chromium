@@ -11,9 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.NotificationChannel;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -28,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -57,7 +54,6 @@ import java.util.List;
  * channel was blocked. Thus some of these tests use different channel ids to avoid this problem.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@RequiresApi(Build.VERSION_CODES.O)
 public class SiteChannelsManagerTest {
     private SiteChannelsManager mSiteChannelsManager;
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -83,7 +79,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testCreateSiteChannel_enabled() {
         mSiteChannelsManager.createSiteChannel("https://example-enabled.org", 62102180000L, true);
@@ -95,7 +90,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testCreateSiteChannel_stripsSchemaForChannelName() {
         mSiteChannelsManager.createSiteChannel("http://127.0.0.1", 0L, true);
@@ -110,8 +104,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @RequiresApi(Build.VERSION_CODES.O)
     @SmallTest
     public void testCreateSiteChannel_disabled() {
         mSiteChannelsManager.createSiteChannel("https://example-blocked.org", 0L, false);
@@ -122,7 +114,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testDeleteSiteChannel_channelExists() {
         NotificationSettingsBridge.SiteChannel channel =
@@ -132,7 +123,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testDeleteAllSiteChannels() {
         mSiteChannelsManager.createSiteChannel("https://chromium.org", 0L, true);
@@ -142,7 +132,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testDeleteSiteChannel_channelDoesNotExist() {
         mSiteChannelsManager.createSiteChannel("https://chromium.org", 0L, true);
@@ -151,7 +140,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testGetChannelStatus_channelCreatedAsEnabled() {
         NotificationSettingsBridge.SiteChannel channel =
@@ -162,7 +150,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testGetChannelStatus_channelCreatedAsBlocked() {
         assertThat(
@@ -176,7 +163,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testGetChannelStatus_channelNotCreated() {
         assertThat(
@@ -185,7 +171,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testGetChannelStatus_channelCreatedThenDeleted() {
         NotificationSettingsBridge.SiteChannel channel =
@@ -197,7 +182,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testBlockingPermissionInIncognitoTabbedActivityCreatesNoChannels() {
         PermissionInfo info =
@@ -205,7 +189,7 @@ public class SiteChannelsManagerTest {
                         ContentSettingsType.NOTIFICATIONS,
                         "https://example-incognito.com",
                         null,
-                        /* isEmbargo= */ true,
+                        /* isEmbargoed= */ true,
                         SessionModel.DURABLE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -218,7 +202,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
     public void testBlockingPermissionInIncognitoCctCreatesNoChannels() {
         PermissionInfo info =
@@ -226,7 +209,7 @@ public class SiteChannelsManagerTest {
                         ContentSettingsType.NOTIFICATIONS,
                         "https://example-incognito.com",
                         null,
-                        /* isEmbargo= */ true,
+                        /* isEmbargoed= */ true,
                         SessionModel.DURABLE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -276,7 +259,6 @@ public class SiteChannelsManagerTest {
     }
 
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @MediumTest
     public void testGetChannelIdForOrigin_unknownOrigin() {
         String channelId = mSiteChannelsManager.getChannelIdForOrigin("https://unknown.com");

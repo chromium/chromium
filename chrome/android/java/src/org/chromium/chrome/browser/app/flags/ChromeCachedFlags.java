@@ -40,19 +40,43 @@ public class ChromeCachedFlags {
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER =
             List.of(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
 
-    private boolean mIsFinishedCachingNativeFlags;
+    static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS =
+            List.of(
+                    ChromeFeatureList.sFlagsCachedFullBrowser,
+                    OmniboxFeatures.getFlagsToCache(),
+                    ModalDialogFeatureMap.sCachedFlags,
+                    ChromeFeatureList.sFlagsCachedInMinimalBrowser);
+
+    static final List<List<CachedFeatureParam<?>>> LISTS_OF_FEATURE_PARAMS_FULL_BROWSER =
+            List.of(ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
 
     /**
      * A list of feature parameters that will be cached when starting minimal browser mode. See
      * {@link #cacheMinimalBrowserFlags()}.
      */
-    private static final List<CachedFeatureParam<?>> MINIMAL_BROWSER_FEATURE_PARAMS = List.of();
+    static final List<List<CachedFeatureParam<?>>> LISTS_OF_FEATURE_PARAMS_MINIMAL_BROWSER =
+            List.of();
+
+    static final List<List<CachedFeatureParam<?>>> LISTS_OF_FEATURE_PARAMS =
+            List.of(ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
+
+    private boolean mIsFinishedCachingNativeFlags;
 
     /**
      * @return The {@link ChromeCachedFlags} singleton.
      */
     public static ChromeCachedFlags getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Pass the full list of CachedFlags and CachedFeatureParams to CachedFlagUtils. This is needed
+     * before calling CachedFlagUtils.cacheNativeFlagsImmediately() and
+     * CachedFlagUtils.cacheFeatureParamsImmediately().
+     */
+    public void setFullListOfFlags() {
+        CachedFlagUtils.setFullListOfFlags(LISTS_OF_CACHED_FLAGS);
+        CachedFlagUtils.setFullListOfFeatureParams(LISTS_OF_FEATURE_PARAMS);
     }
 
     /**
@@ -68,21 +92,23 @@ public class ChromeCachedFlags {
         CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_FULL_BROWSER);
         cacheAdditionalNativeFlags();
 
-        tryToCatchMissingParameters(
-                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
-        CachedFlagUtils.cacheFeatureParams(
-                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
+        tryToCatchMissingParameters();
+        CachedFlagUtils.cacheFeatureParams(LISTS_OF_FEATURE_PARAMS_FULL_BROWSER);
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
     }
 
-    private void tryToCatchMissingParameters(List<CachedFeatureParam<?>>... listsOfParamsToTest) {
+    private void tryToCatchMissingParameters() {
         if (!BuildConfig.ENABLE_ASSERTS) return;
 
-        var paramsToTest = new ArrayList<CachedFeatureParam<?>>();
-        for (List<CachedFeatureParam<?>> list : listsOfParamsToTest) {
-            paramsToTest.addAll(list);
+        var paramsFullBrowser = new ArrayList<CachedFeatureParam<?>>();
+        for (List<CachedFeatureParam<?>> list : LISTS_OF_FEATURE_PARAMS_FULL_BROWSER) {
+            paramsFullBrowser.addAll(list);
+        }
+        var paramsMinimalBrowser = new ArrayList<CachedFeatureParam<?>>();
+        for (List<CachedFeatureParam<?>> list : LISTS_OF_FEATURE_PARAMS_MINIMAL_BROWSER) {
+            paramsMinimalBrowser.addAll(list);
         }
 
         // All instances of CachedFeatureParam should be manually passed to
@@ -91,8 +117,8 @@ public class ChromeCachedFlags {
         // instances might not be instantiated if the classes they belong to are not accessed yet.
         List<String> omissions = new ArrayList<>();
         for (CachedFeatureParam<?> param : CachedFeatureParam.getAllInstances()) {
-            if (paramsToTest.contains(param)) continue;
-            if (MINIMAL_BROWSER_FEATURE_PARAMS.contains(param)) continue;
+            if (paramsFullBrowser.contains(param)) continue;
+            if (paramsMinimalBrowser.contains(param)) continue;
             omissions.add(param.getFeatureName() + ":" + param.getName());
         }
         assert omissions.isEmpty()
@@ -109,7 +135,7 @@ public class ChromeCachedFlags {
     public void cacheMinimalBrowserFlags() {
         cacheMinimalBrowserFlagsTimeFromNativeTime();
         CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER);
-        CachedFlagUtils.cacheFeatureParams(MINIMAL_BROWSER_FEATURE_PARAMS);
+        CachedFlagUtils.cacheFeatureParams(LISTS_OF_FEATURE_PARAMS_MINIMAL_BROWSER);
     }
 
     /**

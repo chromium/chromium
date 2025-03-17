@@ -98,8 +98,6 @@ GetRotationDebugTerminationReason(
         switch (refresh_error) {
           case Result::kServerPersistentError:
             return RotationDebugInfo::ROTATION_PERSISTENT_ERROR;
-          case Result::kServerUnexepectedResponse:
-            return RotationDebugInfo::ROTATION_UNEXPECTED_RESPONSE;
           case Result::kChallengeRequiredUnexpectedFormat:
             return RotationDebugInfo::ROTATION_CHALLENGE_UNEXPECTED_FORMAT;
           case Result::kChallengeRequiredLimitExceeded:
@@ -223,7 +221,7 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
   base::StringPairs items;
   base::SplitStringIntoKeyValuePairs(*termination_header_value, '=', ';',
                                      &items);
-  auto session_id_it = base::ranges::find_if(items, [](const auto& kv_pair) {
+  auto session_id_it = std::ranges::find_if(items, [](const auto& kv_pair) {
     return base::EqualsCaseInsensitiveASCII(
         kv_pair.first, kGoogleSessionTerminationSessionIdKey);
   });

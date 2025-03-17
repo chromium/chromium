@@ -8,8 +8,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_app_from_verified_manifest_command.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -18,7 +16,6 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chromeos/crosapi/mojom/web_app_types.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -99,15 +96,6 @@ void RecordCommandResultMetric(apps::AppInstallSurface surface,
 namespace apps {
 
 WebAppInstaller::WebAppInstaller(Profile* profile) : profile_(profile) {
-  // Check CrosapiManager::IsInitialized as it is not initialized in some unit
-  // tests. This should never fail in production code.
-  if (web_app::IsWebAppsCrosapiEnabled() &&
-      crosapi::CrosapiManager::IsInitialized()) {
-    // Add an observer to observe when the lacros bridge connects.
-    crosapi::WebAppServiceAsh* web_app_service_ash =
-        crosapi::CrosapiManager::Get()->crosapi_ash()->web_app_service_ash();
-    web_app_service_observer_.Observe(web_app_service_ash);
-  }
 }
 
 WebAppInstaller::~WebAppInstaller() = default;
@@ -149,14 +137,6 @@ void WebAppInstaller::InstallApp(AppInstallSurface surface,
       kMaxManifestSizeInBytes);
 }
 
-void WebAppInstaller::OnWebAppProviderBridgeConnected() {
-  MaybeSendPendingCrosapiRequests();
-}
-
-void WebAppInstaller::OnWebAppServiceAshDestroyed() {
-  web_app_service_observer_.Reset();
-}
-
 void WebAppInstaller::OnManifestRetrieved(
     AppInstallSurface surface,
     AppInstallData data,
@@ -189,100 +169,44 @@ void WebAppInstaller::OnManifestRetrieved(
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
 
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    auto web_app_install_info =
-        crosapi::mojom::WebAppVerifiedManifestInstallInfo::New();
-    web_app_install_info->document_url = web_app_data.document_url;
-    web_app_install_info->verified_manifest_url =
-        web_app_data.original_manifest_url;
-    web_app_install_info->expected_app_id = expected_app_id;
-    web_app_install_info->verified_manifest_contents = std::move(*response);
-    web_app_install_info->install_source = [&] {
-      switch (surface) {
-        case AppInstallSurface::kAppInstallUriUnknown:
-        case AppInstallSurface::kAppInstallUriShowoff:
-        case AppInstallSurface::kAppInstallUriMall:
-        case AppInstallSurface::kAppInstallUriMallV2:
-        case AppInstallSurface::kAppInstallUriGetit:
-        case AppInstallSurface::kAppInstallUriLauncher:
-        case AppInstallSurface::kAppInstallUriPeripherals:
-          return crosapi::mojom::WebAppInstallSource::kAlmanacInstallAppUri;
-        case AppInstallSurface::kAppPreloadServiceOem:
-          return crosapi::mojom::WebAppInstallSource::kOemPreload;
-        case AppInstallSurface::kAppPreloadServiceDefault:
-          return crosapi::mojom::WebAppInstallSource::kDefaultPreload;
-        case AppInstallSurface::kOobeAppRecommendations:
-          return crosapi::mojom::WebAppInstallSource::kOobeAppRecommendations;
-      }
-    }();
-
-    pending_crosapi_requests_.emplace_back(
-        std::move(web_app_install_info),
-        base::BindOnce(&WebAppInstaller::OnAppInstalled,
-                       weak_ptr_factory_.GetWeakPtr(), surface,
-                       std::move(callback)));
-    MaybeSendPendingCrosapiRequests();
-    return;
-  } else {
-    webapps::WebappInstallSource install_source = [&] {
-      switch (surface) {
-        case AppInstallSurface::kAppInstallUriUnknown:
-        case AppInstallSurface::kAppInstallUriShowoff:
-        case AppInstallSurface::kAppInstallUriMall:
-        case AppInstallSurface::kAppInstallUriMallV2:
-        case AppInstallSurface::kAppInstallUriGetit:
-        case AppInstallSurface::kAppInstallUriLauncher:
-        case AppInstallSurface::kAppInstallUriPeripherals:
-          return webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI;
-        case AppInstallSurface::kAppPreloadServiceOem:
-          return webapps::WebappInstallSource::PRELOADED_OEM;
-        case AppInstallSurface::kAppPreloadServiceDefault:
-          return webapps::WebappInstallSource::PRELOADED_DEFAULT;
-        case AppInstallSurface::kOobeAppRecommendations:
-          return webapps::WebappInstallSource::OOBE_APP_RECOMMENDATIONS;
-      }
-    }();
-
-    bool is_website = data.package_id.package_type() == PackageType::kWebsite;
-    web_app::WebAppInstallParams install_params;
-    if (is_website) {
-      install_params.user_display_mode =
-          web_app_data.open_as_window
-              ? web_app::mojom::UserDisplayMode::kStandalone
-              : web_app::mojom::UserDisplayMode::kBrowser;
+  webapps::WebappInstallSource install_source = [&] {
+    switch (surface) {
+      case AppInstallSurface::kAppInstallUriUnknown:
+      case AppInstallSurface::kAppInstallUriShowoff:
+      case AppInstallSurface::kAppInstallUriMall:
+      case AppInstallSurface::kAppInstallUriMallV2:
+      case AppInstallSurface::kAppInstallUriGetit:
+      case AppInstallSurface::kAppInstallUriLauncher:
+      case AppInstallSurface::kAppInstallUriPeripherals:
+        return webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI;
+      case AppInstallSurface::kAppPreloadServiceOem:
+        return webapps::WebappInstallSource::PRELOADED_OEM;
+      case AppInstallSurface::kAppPreloadServiceDefault:
+        return webapps::WebappInstallSource::PRELOADED_DEFAULT;
+      case AppInstallSurface::kOobeAppRecommendations:
+        return webapps::WebappInstallSource::OOBE_APP_RECOMMENDATIONS;
     }
+  }();
 
-    provider->command_manager().ScheduleCommand(
-        std::make_unique<web_app::InstallAppFromVerifiedManifestCommand>(
-            install_source,
-            /*document_url=*/web_app_data.document_url,
-            /*verified_manifest_url=*/web_app_data.original_manifest_url,
-            /*verified_manifest_contents=*/std::move(*response),
-            expected_app_id, /*is_diy_app=*/is_website, install_params,
-            base::BindOnce(&WebAppInstaller::OnAppInstalled,
-                           weak_ptr_factory_.GetWeakPtr(), surface,
-                           std::move(callback))));
-  }
-}
-
-void WebAppInstaller::MaybeSendPendingCrosapiRequests() {
-  CHECK(web_app::IsWebAppsCrosapiEnabled());
-
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-  if (!web_app_provider_bridge) {
-    return;
+  bool is_website = data.package_id.package_type() == PackageType::kWebsite;
+  web_app::WebAppInstallParams install_params;
+  if (is_website) {
+    install_params.user_display_mode =
+        web_app_data.open_as_window
+            ? web_app::mojom::UserDisplayMode::kStandalone
+            : web_app::mojom::UserDisplayMode::kBrowser;
   }
 
-  for (PendingCrosapiRequest& request :
-       std::exchange(pending_crosapi_requests_, {})) {
-    web_app_provider_bridge->InstallWebAppFromVerifiedManifest(
-        std::move(request.info), std::move(request.callback));
-  }
-  CHECK(pending_crosapi_requests_.empty());
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<web_app::InstallAppFromVerifiedManifestCommand>(
+          install_source,
+          /*document_url=*/web_app_data.document_url,
+          /*verified_manifest_url=*/web_app_data.original_manifest_url,
+          /*verified_manifest_contents=*/std::move(*response), expected_app_id,
+          /*is_diy_app=*/is_website, install_params,
+          base::BindOnce(&WebAppInstaller::OnAppInstalled,
+                         weak_ptr_factory_.GetWeakPtr(), surface,
+                         std::move(callback))));
 }
 
 void WebAppInstaller::OnAppInstalled(AppInstallSurface surface,
@@ -297,16 +221,5 @@ void WebAppInstaller::OnAppInstalled(AppInstallSurface surface,
 
   std::move(callback).Run(success);
 }
-
-WebAppInstaller::PendingCrosapiRequest::PendingCrosapiRequest(
-    crosapi::mojom::WebAppVerifiedManifestInstallInfoPtr info,
-    crosapi::mojom::WebAppProviderBridge::
-        InstallWebAppFromVerifiedManifestCallback callback)
-    : info(std::move(info)), callback(std::move(callback)) {}
-
-WebAppInstaller::PendingCrosapiRequest::PendingCrosapiRequest(
-    PendingCrosapiRequest&&) = default;
-
-WebAppInstaller::PendingCrosapiRequest::~PendingCrosapiRequest() = default;
 
 }  // namespace apps

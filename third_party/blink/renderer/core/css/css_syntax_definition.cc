@@ -89,8 +89,7 @@ std::optional<CSSSyntaxType> ConsumeTypeName(CSSParserTokenStream& stream) {
     stream.Consume();
     return CSSSyntaxType::kResolution;
   }
-  if (RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled() &&
-      stream.Peek().Value() == "string") {
+  if (stream.Peek().Value() == "string") {
     stream.Consume();
     return CSSSyntaxType::kString;
   }
@@ -229,7 +228,6 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
     case CSSSyntaxType::kCustomIdent:
       return css_parsing_utils::ConsumeCustomIdent(stream, context);
     case CSSSyntaxType::kString:
-      DCHECK(RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled());
       return css_parsing_utils::ConsumeString(stream);
     default:
       NOTREACHED();
@@ -296,6 +294,16 @@ std::optional<CSSSyntaxDefinition> CSSSyntaxDefinition::Consume(
 
   save_point.Release();
   return CSSSyntaxDefinition(std::move(syntax_components));
+}
+
+std::optional<CSSSyntaxDefinition> CSSSyntaxDefinition::ConsumeComponent(
+    CSSParserTokenStream& stream) {
+  if (std::optional<CSSSyntaxComponent> syntax_component =
+          ConsumeSyntaxComponent(stream)) {
+    Vector<CSSSyntaxComponent> syntax_components(1u, syntax_component.value());
+    return CSSSyntaxDefinition(std::move(syntax_components));
+  }
+  return std::nullopt;
 }
 
 const CSSValue* CSSSyntaxDefinition::Parse(StringView text,

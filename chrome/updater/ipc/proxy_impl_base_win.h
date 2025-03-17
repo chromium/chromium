@@ -121,6 +121,8 @@ class ProxyImplBase {
     return interface_.value();
   }
 
+  UpdaterScope scope() const { return scope_; }
+
   HRESULT ConnectToServer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (interface_.has_value()) {
@@ -133,9 +135,6 @@ class ProxyImplBase {
   // Bound to the `task_runner_` sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
- protected:
-  const UpdaterScope scope_;
-
  private:
   // Sequences the outbound calls so that the main sequence is not blocked on an
   // RPC call.
@@ -144,6 +143,8 @@ class ProxyImplBase {
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::WithBaseSyncPrimitives(), base::MayBlock()});
+
+  const UpdaterScope scope_;
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> interface_ =
       base::unexpected(S_OK);

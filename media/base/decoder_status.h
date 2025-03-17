@@ -23,6 +23,7 @@ struct DecoderStatusTraits {
     kInvalidArgument = 3,
     kInterrupted = 4,
     kDisconnected = 5,  // Lost mojo connection, e.g remote crashed or teardown
+    kOutOfMemory = 6,
 
     // Reasons for failing to decode
     kNotInitialized = 100,

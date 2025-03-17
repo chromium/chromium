@@ -18,7 +18,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -147,7 +146,7 @@ void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
   // the active pinned set.
   DCHECK(!IsActionPinned(action_id));
   auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
-  auto iter = base::ranges::find(stored_pinned_actions, action_id);
+  auto iter = std::ranges::find(stored_pinned_actions, action_id);
   if (iter != stored_pinned_actions.end()) {
     stored_pinned_actions.erase(iter);
     extension_prefs_->SetPinnedExtensions(stored_pinned_actions);
@@ -239,7 +238,7 @@ bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   // If nay extension has access, we want to properly message that (since
   // saying "No extensions can run..." is inaccurate). Other extensions
   // will still be properly attributed in UI.
-  return base::ranges::all_of(action_ids(), [this, url](ActionId id) {
+  return std::ranges::all_of(action_ids(), [this, url](ActionId id) {
     // action_ids() could include disabled extensions that haven't been removed
     // yet from the set due to race conditions. Thus, we don't consider them in
     // the restricted url computation.
@@ -314,7 +313,7 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
       << "Changing action position is disallowed in incognito.";
 
   auto current_position_on_toolbar =
-      base::ranges::find(pinned_action_ids_, action_id);
+      std::ranges::find(pinned_action_ids_, action_id);
   CHECK(current_position_on_toolbar != pinned_action_ids_.end(),
         base::NotFatalUntil::M130);
   size_t current_index_on_toolbar =
@@ -384,11 +383,11 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
       non_force_pinned_neighbor == pinned_action_ids_.end();
   auto target_position = move_to_end
                              ? stored_pinned_actions.end()
-                             : base::ranges::find(stored_pinned_actions,
-                                                  *non_force_pinned_neighbor);
+                             : std::ranges::find(stored_pinned_actions,
+                                                 *non_force_pinned_neighbor);
 
   auto current_position_in_prefs =
-      base::ranges::find(stored_pinned_actions, action_id);
+      std::ranges::find(stored_pinned_actions, action_id);
   CHECK(current_position_in_prefs != stored_pinned_actions.end(),
         base::NotFatalUntil::M130);
 
@@ -532,7 +531,7 @@ ToolbarActionsModel::GetFilteredPinnedActionIds() const {
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
   // O(n^2), but there are typically very few force-pinned extensions.
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       management->GetForcePinnedList(), std::back_inserter(pinned),
       [&pinned](const std::string& id) { return !base::Contains(pinned, id); });
 

@@ -4,6 +4,8 @@
 
 #import "ios/web_view/shell/shell_app_delegate.h"
 
+#import <ChromeWebView/ChromeWebView.h>
+
 #import "ios/web_view/shell/shell_view_controller.h"
 
 @implementation ShellAppDelegate
@@ -12,6 +14,9 @@
 
 - (BOOL)application:(UIApplication*)application
     willFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
+  [[CWVGlobalState sharedInstance] earlyInit];
+  [[CWVGlobalState sharedInstance] start];
+
   // Note that initialization of the window and the root view controller must be
   // done here, not in -application:didFinishLaunchingWithOptions: when state
   // restoration is supported.
@@ -47,6 +52,7 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
+  [[CWVGlobalState sharedInstance] stop];
 }
 
 - (BOOL)application:(UIApplication*)application

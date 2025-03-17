@@ -1089,17 +1089,10 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
   pb_resource->set_url(kDOMParentURL);
-  pb_resource->add_child_ids(3);
-
-  // TODO(lpz): The data URL is added, despite being unreportable, because it
-  // is a child of the top-level page. Consider if this should happen.
-  pb_resource = expected.add_resources();
-  pb_resource->set_id(3);
-  pb_resource->set_url(kDataURL);
 
   // This child can't be mapped to its containing iframe so its parent is unset.
   pb_resource = expected.add_resources();
-  pb_resource->set_id(4);
+  pb_resource->set_id(3);
   pb_resource->set_url(kDOMChildUrl2);
 
   expected.set_complete(false);  // Since the cache was missing.
@@ -1116,7 +1109,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_element = expected.add_dom();
   pb_element->set_id(1);
   pb_element->set_tag("SCRIPT");
-  pb_element->set_resource_id(4);
+  pb_element->set_resource_id(3);
   pb_element->add_attribute()->set_name("src");
   pb_element->mutable_attribute(0)->set_value(kDOMChildUrl2);
 

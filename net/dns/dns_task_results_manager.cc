@@ -20,6 +20,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_dns_task.h"
 #include "net/dns/host_resolver_internal_result.h"
@@ -144,8 +145,13 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     }
   }
 
+  // Track whether new aliases are added.
+  bool aliases_updated = false;
+
   for (const auto& result : results) {
-    aliases_.insert(result->domain_name());
+    auto [unused_1_, updated_domain_name] =
+        aliases_.insert(result->domain_name());
+    aliases_updated |= updated_domain_name;
 
     switch (result->type()) {
       case HostResolverInternalResult::Type::kData: {
@@ -183,10 +189,13 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
 
         break;
       }
-      case net::HostResolverInternalResult::Type::kAlias:
-        aliases_.insert(result->AsAlias().alias_target());
+      case net::HostResolverInternalResult::Type::kAlias: {
+        auto [unused_2_, updated_alias] =
+            aliases_.insert(result->AsAlias().alias_target());
+        aliases_updated |= updated_alias;
 
         break;
+      }
       case net::HostResolverInternalResult::Type::kError:
         // Need to update endpoints when AAAA response is NODATA but A response
         // has at least one valid address.
@@ -208,6 +217,11 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
 
         break;
     }
+  }
+
+  // Only fix up aliases if new ones were added.
+  if (aliases_updated) {
+    aliases_ = dns_alias_utility::FixUpDnsAliases(aliases_);
   }
 
   const bool waiting_for_aaaa_response =
@@ -284,7 +298,7 @@ void DnsTaskResultsManager::UpdateEndpoints() {
       endpoint.ipv6_endpoints = per_domain_result->ipv6_endpoints;
       new_endpoints.emplace_back(std::move(endpoint));
     } else {
-      for (const auto& [_, metadata] : per_domain_result->metadatas) {
+      for (const auto& [unused_, metadata] : per_domain_result->metadatas) {
         ServiceEndpoint endpoint;
         endpoint.ipv4_endpoints = per_domain_result->ipv4_endpoints;
         endpoint.ipv6_endpoints = per_domain_result->ipv6_endpoints;
@@ -334,7 +348,7 @@ void DnsTaskResultsManager::UpdateEndpoints() {
 }
 
 bool DnsTaskResultsManager::HasIpv4Addresses() {
-  for (const auto& [_, per_domain_result] : per_domain_results_) {
+  for (const auto& [unused_, per_domain_result] : per_domain_results_) {
     if (!per_domain_result->ipv4_endpoints.empty()) {
       return true;
     }

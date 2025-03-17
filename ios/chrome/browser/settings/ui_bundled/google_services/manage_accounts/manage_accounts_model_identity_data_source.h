@@ -7,7 +7,6 @@
 
 #include <vector>
 
-@class AccountErrorUIInfo;
 struct CoreAccountInfo;
 enum class IdentityAvatarSize;
 @class IdentityViewItem;
@@ -24,12 +23,6 @@ enum class IdentityAvatarSize;
 // Provides identity avatar.
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
                                          size:(IdentityAvatarSize)size;
-
-// Returns YES if the account is signed in not syncing, NO otherwise.
-- (BOOL)isAccountSignedInNotSyncing;
-
-// Provides error UI info to the controller.
-- (AccountErrorUIInfo*)accountErrorUIInfo;
 
 // Returns the primary identity view item.
 - (IdentityViewItem*)primaryIdentityViewItem;

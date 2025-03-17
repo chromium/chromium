@@ -13,14 +13,13 @@
 #include "ash/user_education/user_education_types.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
-
-class ProfileManager;
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 // The delegate of the `UserEducationController` which facilitates communication
 // between Ash and user education services in the browser.
 class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
-                                    public ProfileManagerObserver {
+                                    public user_manager::UserManager::Observer {
  public:
   ChromeUserEducationDelegate();
   ChromeUserEducationDelegate(const ChromeUserEducationDelegate&) = delete;
@@ -56,9 +55,8 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
       const AccountId& account_id,
       std::optional<ash::TutorialId> tutorial_id = std::nullopt) const override;
 
-  // ProfileManagerObserver:
-  void OnProfileAdded(Profile* profile) override;
-  void OnProfileManagerDestroying() override;
+  // user_manager::UserManager::Observer:
+  void OnUserProfileCreated(const user_manager::User& user) override;
 
   // If present, indicates whether the user associated with the primary profile
   // is considered new. A user is considered new if the first app list sync in
@@ -67,10 +65,11 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
   // app list sync of the session is completed.
   std::optional<bool> is_primary_profile_new_user_;
 
-  // The profile manager is observed in order to ensure that all necessary
+  // The user manager is observed in order to ensure that all necessary
   // tutorial dependencies are registered for the primary user profile.
-  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
-      profile_manager_observation_{this};
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
 
   base::WeakPtrFactory<ChromeUserEducationDelegate> weak_ptr_factory_{this};
 };

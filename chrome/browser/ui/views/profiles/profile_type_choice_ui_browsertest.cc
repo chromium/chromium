@@ -38,7 +38,7 @@ const PixelTestParam kTestParams[] = {
     {.test_suffix = "DarkRtlSmall",
      .use_dark_theme = true,
      .use_right_to_left_language = true,
-     .use_small_window = true},
+     .window_size = PixelTestParam::kSmallWindowSize},
 };
 
 const char kRemoveAvatarIconJS[] =
@@ -84,10 +84,7 @@ class ProfileTypeChoiceUIPixelTest
               return ProfileManagementStepController::CreateForProfilePickerApp(
                   host, profile_type_choice_url);
             }));
-    profile_picker_view_->ShowAndWait(
-        GetParam().use_small_window
-            ? std::optional<gfx::Size>(gfx::Size(750, 590))
-            : std::nullopt);
+    profile_picker_view_->ShowAndWait(GetParam().window_size);
     observer.Wait();
 
     // We need to remove the avatar icon because it will be generated

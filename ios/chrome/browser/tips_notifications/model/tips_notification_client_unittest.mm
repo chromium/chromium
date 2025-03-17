@@ -329,7 +329,7 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
 TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
   WriteFirstRunSentinel();
   SetTrueChromeLikelyDefaultBrowser();
-  SetSentNotifications({TipsNotificationType::kSetUpListContinuation});
+  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing});
 
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kWhatsNew);
@@ -361,6 +361,10 @@ TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
 TEST_F(TipsNotificationClientTest, SetUpListContinuationRequest) {
   WriteFirstRunSentinel();
   StubGetPendingRequests(nil);
+  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing,
+                        TipsNotificationType::kWhatsNew,
+                        TipsNotificationType::kLens,
+                        TipsNotificationType::kOmniboxPosition});
   ExpectNotificationRequest(TipsNotificationType::kSetUpListContinuation);
 
   base::RunLoop run_loop;
@@ -392,11 +396,11 @@ TEST_F(TipsNotificationClientTest, SetUpListContinuationHandle) {
 // Tests that the client can register a Docking promo notification.
 TEST_F(TipsNotificationClientTest, DockingRequest) {
   WriteFirstRunSentinel();
-  SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
+  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing,
                         TipsNotificationType::kWhatsNew,
                         TipsNotificationType::kLens,
                         TipsNotificationType::kOmniboxPosition,
-                        TipsNotificationType::kEnhancedSafeBrowsing,
+                        TipsNotificationType::kSetUpListContinuation,
                         TipsNotificationType::kDefaultBrowser});
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kDocking);
@@ -433,9 +437,9 @@ TEST_F(TipsNotificationClientTest, OmniboxPositionRequest) {
   }
 
   WriteFirstRunSentinel();
-  SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
-                        TipsNotificationType::kLens,
-                        TipsNotificationType::kWhatsNew});
+  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing,
+                        TipsNotificationType::kWhatsNew,
+                        TipsNotificationType::kLens});
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kOmniboxPosition);
 
@@ -474,12 +478,6 @@ TEST_F(TipsNotificationClientTest, OmniboxPositionHandle) {
 // notification.
 TEST_F(TipsNotificationClientTest, EnhancedSafeBrowsingRequest) {
   WriteFirstRunSentinel();
-  SetSentNotifications({
-      TipsNotificationType::kLens,
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kSetUpListContinuation,
-      TipsNotificationType::kOmniboxPosition,
-  });
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kEnhancedSafeBrowsing);
 
@@ -503,15 +501,9 @@ TEST_F(TipsNotificationClientTest,
   SetFalseChromeLikelyDefaultBrowser();
   ClearDefaultBrowserPromoLastAction();
   WriteFirstRunSentinel();
-  SetSentNotifications({
-      TipsNotificationType::kLens,
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kSetUpListContinuation,
-      TipsNotificationType::kOmniboxPosition,
-  });
   StubGetPendingRequests(nil);
   // Expect to skip over ESB and send the next notification.
-  ExpectNotificationRequest(TipsNotificationType::kDefaultBrowser);
+  ExpectNotificationRequest(TipsNotificationType::kWhatsNew);
 
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
@@ -555,18 +547,11 @@ TEST_F(TipsNotificationClientTest, LensHandle) {
 TEST_F(TipsNotificationClientTest, ClassifyUserActiveSeeker) {
   base::ScopedMockClockOverride clock;
   WriteFirstRunSentinel();
-  SetSentNotifications({
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kOmniboxPosition,
-      TipsNotificationType::kDefaultBrowser,
-      TipsNotificationType::kDocking,
-      TipsNotificationType::kSignin,
-  });
   StubPrepareToPresentModal();
   EXPECT_EQ(GetUserType(), TipsNotificationUserType::kUnknown);
 
   StubGetPendingRequests(nil);
-  ExpectNotificationRequest(TipsNotificationType::kSetUpListContinuation);
+  ExpectNotificationRequest(TipsNotificationType::kEnhancedSafeBrowsing);
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
   run_loop.Run();
@@ -585,19 +570,12 @@ TEST_F(TipsNotificationClientTest, ClassifyUserActiveSeeker) {
 TEST_F(TipsNotificationClientTest, ClassifyUserLessEngaged) {
   base::ScopedMockClockOverride clock;
   WriteFirstRunSentinel();
-  SetSentNotifications({
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kOmniboxPosition,
-      TipsNotificationType::kDefaultBrowser,
-      TipsNotificationType::kDocking,
-      TipsNotificationType::kSignin,
-  });
   StubPrepareToPresentModal();
 
   EXPECT_EQ(GetUserType(), TipsNotificationUserType::kUnknown);
 
   StubGetPendingRequests(nil);
-  ExpectNotificationRequest(TipsNotificationType::kSetUpListContinuation);
+  ExpectNotificationRequest(TipsNotificationType::kEnhancedSafeBrowsing);
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
   run_loop.Run();

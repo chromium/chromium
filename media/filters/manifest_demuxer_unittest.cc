@@ -47,6 +47,8 @@ class MockEngine : public ManifestDemuxer::Engine {
   MOCK_METHOD(bool, IsSeekable, (), (const override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, SelectVideoVariant, (const MediaTrack::Id&), (override));
+  MOCK_METHOD(void, SelectAudioRendition, (const MediaTrack::Id&), (override));
 };
 
 // Fixture for ManifestDemuxer tests.
@@ -89,7 +91,7 @@ class ManifestDemuxerTest : public ::testing::Test {
         id, base::BindRepeating([](SourceBufferParseWarning) {}));
 
     scoped_refptr<DecoderBuffer> bear1 = ReadTestDataFile("bear-320x240.webm");
-    ASSERT_TRUE(demuxer->AppendToParseBuffer(id, bear1->AsSpan()));
+    ASSERT_TRUE(demuxer->AppendToParseBuffer(id, *bear1));
     for (;;) {
       base::TimeDelta start = base::Seconds(0), end = base::Seconds(10), offset;
       auto result = demuxer->RunSegmentParserLoop(id, start, end, &offset);
@@ -368,7 +370,7 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
   manifest_demuxer_->AddRole("test", RelaxedParserSupportedType::kMP2T);
   scoped_refptr<DecoderBuffer> bear = ReadTestDataFile("bear-1280x720.ts");
   manifest_demuxer_->AppendAndParseData("test", base::Seconds(10), &offset,
-                                        bear->AsSpan());
+                                        *bear);
 
   std::vector<DemuxerStream*> streams = manifest_demuxer_->GetAllStreams();
   ASSERT_EQ(streams.size(), 2u);

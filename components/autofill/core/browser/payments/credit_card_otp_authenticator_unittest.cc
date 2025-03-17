@@ -8,7 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
@@ -58,7 +58,6 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
         std::make_unique<CreditCardOtpAuthenticator>(&autofill_client_);
 
     card_ = test::GetMaskedServerCard();
-    card_.set_record_type(CreditCard::RecordType::kVirtualCard);
   }
 
   void TearDown() override {
@@ -74,7 +73,15 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     if (result != PaymentsRpcResult::kSuccess) {
       if (server_returned_decline_details) {
         AutofillErrorDialogContext context;
-        context.type = AutofillErrorDialogType::kVirtualCardTemporaryError;
+        if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::
+                          kVcnRetrievalPermanentFailure ||
+            result == payments::PaymentsAutofillClient::PaymentsRpcResult::
+                          kVcnRetrievalTryAgainFailure) {
+          context.type = AutofillErrorDialogType::kVirtualCardTemporaryError;
+        } else {
+          context.type =
+              AutofillErrorDialogType::kCardInfoRetrievalTemporaryError;
+        }
         context.server_returned_title = "test_server_returned_title";
         context.server_returned_description =
             "test_server_returned_description";
@@ -88,7 +95,11 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     response.expiration_month = test::NextMonth();
     response.expiration_year = test::NextYear();
     response.card_type =
-        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
+        card_.record_type() == CreditCard::RecordType::kVirtualCard
+            ? payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kVirtualCard
+            : payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kServerCard;
     authenticator_->OnDidGetRealPan(result, response);
   }
 
@@ -98,7 +109,11 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     response.flow_status = flow_status;
     response.context_token = context_token;
     response.card_type =
-        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
+        card_.record_type() == CreditCard::RecordType::kVirtualCard
+            ? payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kVirtualCard
+            : payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kServerCard;
     authenticator_->OnDidGetRealPan(PaymentsRpcResult::kSuccess, response);
   }
 
@@ -106,7 +121,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     return authenticator_->ContextTokenForTesting();
   }
 
-  void verifySelectChallengeOptionRequest(const std::string& context_token,
+  void VerifySelectChallengeOptionRequest(const std::string& context_token,
                                           int64_t billing_customer_number) {
     const payments::SelectChallengeOptionRequestDetails* request =
         payments_network_interface().select_challenge_option_request();
@@ -153,32 +168,53 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
 class CreditCardOtpAuthenticatorTest
     : public CreditCardOtpAuthenticatorTestBase,
-      public testing::WithParamInterface<CardUnmaskChallengeOptionType> {
+      public ::testing::WithParamInterface<
+          std::tuple<CardUnmaskChallengeOptionType, CreditCard::RecordType>> {
  public:
   CreditCardOtpAuthenticatorTest() = default;
   ~CreditCardOtpAuthenticatorTest() override = default;
 
   void SetUp() override {
     CreditCardOtpAuthenticatorTestBase::SetUp();
-    CreateSelectedOtpChallengeOption(GetParam());
+    CardUnmaskChallengeOptionType option_type = std::get<0>(GetParam());
+    record_type_ = std::get<1>(GetParam());
+    CreateSelectedOtpChallengeOption(option_type);
+
+    // Masked Server card is only tested for SmsOtp.
+    if (option_type == CardUnmaskChallengeOptionType::kSmsOtp &&
+        record_type_ == CreditCard::RecordType::kMaskedServerCard) {
+      card_.set_card_info_retrieval_enrollment_state(
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+    }
+    card_.set_record_type(record_type_);
   }
 
   std::string GetOtpAuthType() {
-    return autofill_metrics::GetOtpAuthType(GetParam());
+    return autofill_metrics::GetOtpAuthType(std::get<0>(GetParam()));
   }
+
+  // Recordtype of unmasked server card changes to kFullServerCard;
+  CreditCard::RecordType GetUnmaskedCardRecordType() {
+    return record_type_ == CreditCard::RecordType::kMaskedServerCard
+               ? CreditCard::RecordType::kFullServerCard
+               : record_type_;
+  }
+
+ private:
+  CreditCard::RecordType record_type_;
 };
 
+// Test the yellow path SMAS based OTP challenege flow.
 TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
-  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsNetworkInterface will ack the select
-  // challenge option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will directly invoke
+  // m the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
-  verifySelectChallengeOptionRequest(
+  VerifySelectChallengeOptionRequest(
       /*context_token=*/"context_token_from_previous_unmask_response",
       kTestBillingCustomerNumber);
   // Verify the context token is updated with SelectChallengeOption response.
@@ -208,6 +244,28 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  EXPECT_EQ(GetUnmaskedCardRecordType(), requester_->record_type());
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccessMetrics) {
+  base::HistogramTester histogram_tester;
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will directly invoke
+  // m the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+
+  // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+
+  // Simulate server returns success and invoke the callback.
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  kTestNumber);
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -225,7 +283,6 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
 }
 
 TEST_P(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
-  base::HistogramTester histogram_tester;
   // Simulate server returns virtual card permanent failure.
   payments_network_interface().set_select_challenge_option_result(
       PaymentsRpcResult::kVcnRetrievalPermanentFailure);
@@ -238,7 +295,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
-  verifySelectChallengeOptionRequest(
+  VerifySelectChallengeOptionRequest(
       /*context_token=*/"context_token_from_previous_unmask_response",
       kTestBillingCustomerNumber);
   // Verify error dialog is shown.
@@ -247,6 +304,22 @@ TEST_P(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_FALSE(*(requester_->did_succeed()));
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest,
+       SelectChallengeOptionFailsWithVcnErrorMetrics) {
+  base::HistogramTester histogram_tester;
+  // Simulate server returns virtual card permanent failure.
+  payments_network_interface().set_select_challenge_option_result(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kVcnRetrievalPermanentFailure);
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -264,7 +337,6 @@ TEST_P(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
 
 TEST_P(CreditCardOtpAuthenticatorTest,
        SelectChallengeOptionFailsWithOtherErrors) {
-  base::HistogramTester histogram_tester;
   // Simulate server returns non-virtual card permanent failure, e.g. response
   // not complete.
   payments_network_interface().set_select_challenge_option_result(
@@ -278,7 +350,7 @@ TEST_P(CreditCardOtpAuthenticatorTest,
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
-  verifySelectChallengeOptionRequest(
+  VerifySelectChallengeOptionRequest(
       /*context_token=*/"context_token_from_previous_unmask_response",
       kTestBillingCustomerNumber);
   // Verify error dialog is shown.
@@ -287,6 +359,23 @@ TEST_P(CreditCardOtpAuthenticatorTest,
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_FALSE(*(requester_->did_succeed()));
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest,
+       SelectChallengeOptionFailsWithOtherErrorsMetrics) {
+  base::HistogramTester histogram_tester;
+  // Simulate server returns non-virtual card permanent failure, e.g. response
+  // not complete.
+  payments_network_interface().set_select_challenge_option_result(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
+
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -302,7 +391,6 @@ TEST_P(CreditCardOtpAuthenticatorTest,
 
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
   for (bool server_returned_decline_details : {true, false}) {
-    base::HistogramTester histogram_tester;
     // Simulate user selects OTP challenge option. Current context_token is from
     // previous unmask response. TestPaymentsNetworkInterface will ack the
     // select challenge option request and directly invoke the callback.
@@ -340,6 +428,29 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
     EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
     ASSERT_TRUE(requester_->did_succeed().has_value());
     EXPECT_FALSE(*(requester_->did_succeed()));
+  }
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnErrorMetrics) {
+  for (bool server_returned_decline_details : {true, false}) {
+    base::HistogramTester histogram_tester;
+    // Simulate user selects OTP challenge option. Current context_token is from
+    // previous unmask response. TestPaymentsNetworkInterface will ack the
+    // select challenge option request and directly invoke the callback.
+    authenticator_->OnChallengeOptionSelected(
+        &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+        /*context_token=*/"context_token_from_previous_unmask_response",
+        /*billing_customer_number=*/kTestBillingCustomerNumber);
+    // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
+    // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+    // invoke the callback. OnDidGetRealPan below will manually invoke the
+    // callback.
+    authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+    // Simulate server returns virtual card retrieval try again failure. We will
+    // show the error dialog and end session.
+    OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::
+                        kVcnRetrievalTryAgainFailure,
+                    /*real_pan=*/"", server_returned_decline_details);
 
     // Ensures the metrics have been logged correctly.
     histogram_tester.ExpectUniqueSample(
@@ -359,7 +470,6 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
 }
 
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
-  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
@@ -388,6 +498,28 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_FALSE(*(requester_->did_succeed()));
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnErrorMetrics) {
+  base::HistogramTester histogram_tester;
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+
+  // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+  // Simulate server returns non-Vcn try again failure. We will reuse virtual
+  // card error dialog and end session.
+  OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
+      /*real_pan=*/"");
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -405,7 +537,6 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
 }
 
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
-  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
@@ -460,7 +591,34 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  EXPECT_EQ(GetUnmaskedCardRecordType(), requester_->record_type());
   EXPECT_FALSE(payments_autofill_client().show_otp_input_dialog());
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetryMetrics) {
+  base::HistogramTester histogram_tester;
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+  payments_autofill_client().ResetShowOtpInputDialog();
+  // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"222222");
+  // Simulate otp mismatch, server returns flow_status indicating incorrect otp.
+  OnDidGetRealPanWithFlowStatus(
+      /*flow_status=*/"FLOW_STATUS_INCORRECT_OTP",
+      /*context_token=*/"context_token_from_incorrect_otp");
+  // Simulate user types in another otp and click 'Confirm' again.
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"333333");
+  // Simulate server returns success for the second try and invoke the callback.
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  kTestNumber);
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -481,7 +639,6 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
 }
 
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
-  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
@@ -490,7 +647,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
-  verifySelectChallengeOptionRequest(
+  VerifySelectChallengeOptionRequest(
       /*context_token=*/"context_token_from_previous_unmask_response",
       kTestBillingCustomerNumber);
   // Verify the context token is updated with SelectChallengeOption response.
@@ -530,7 +687,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   authenticator_->OnNewOtpRequested();
   // Verify the second SelectChallengeRequest is correctly set, the only
   // difference from the previous call is the context_token.
-  verifySelectChallengeOptionRequest(
+  VerifySelectChallengeOptionRequest(
       /*context_token=*/"context_token_from_expired_otp",
       kTestBillingCustomerNumber);
   EXPECT_FALSE(payments_autofill_client().show_otp_input_dialog());
@@ -553,6 +710,37 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  EXPECT_EQ(GetUnmaskedCardRecordType(), requester_->record_type());
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtpMetrics) {
+  base::HistogramTester histogram_tester;
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+  payments_autofill_client().ResetShowOtpInputDialog();
+  // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"4444444");
+  // Simulate otp expired, server returns flow_status indicating expired otp.
+  OnDidGetRealPanWithFlowStatus(
+      /*flow_status=*/"FLOW_STATUS_EXPIRED_OTP",
+      /*context_token=*/"context_token_from_expired_otp");
+  // Simulate user clicks "Get new code" from the UI, which calls
+  // SendSelectChallengeOptionRequest() again. This will send the same selected
+  // challenge option with the new context token.
+  authenticator_->OnNewOtpRequested();
+  // Simulate user receives the new otp and types in the new otp.
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"555555");
+  // Simulate server returns success for the second try and invoke the callback.
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  kTestNumber);
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -573,7 +761,6 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
 }
 
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
-  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
@@ -582,7 +769,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
-  verifySelectChallengeOptionRequest(
+  VerifySelectChallengeOptionRequest(
       /*context_token=*/"context_token_from_previous_unmask_response",
       kTestBillingCustomerNumber);
   // Verify the context token is updated with SelectChallengeOption response.
@@ -594,6 +781,19 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
   authenticator_->OnUnmaskPromptClosed(/*user_closed_dialog=*/true);
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_FALSE(*(requester_->did_succeed()));
+}
+
+TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelledMetrics) {
+  base::HistogramTester histogram_tester;
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+  // Simulate user closes the otp input dialog.
+  authenticator_->OnUnmaskPromptClosed(/*user_closed_dialog=*/true);
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -613,8 +813,132 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     CreditCardOtpAuthenticatorTest,
-    testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
-                    CardUnmaskChallengeOptionType::kEmailOtp));
+    // Skip kEmailOtp with kMaskedServerCard as it is not supported.
+    testing::ValuesIn({
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kVirtualCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kMaskedServerCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kEmailOtp,
+                        CreditCard::RecordType::kVirtualCard),
+    }));
+
+// CardInfoRetrieval currently only supports SmsOtp, hence setting up a
+// separate SmsOtp error handling test for it. All other test cases are
+// covered by the above parameterized tests.
+class CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest
+    : public CreditCardOtpAuthenticatorTestBase {
+ public:
+  CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest() = default;
+  ~CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest() override = default;
+
+  void SetUp() override {
+    CreditCardOtpAuthenticatorTestBase::SetUp();
+    CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp);
+    card_.set_card_info_retrieval_enrollment_state(
+        CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  }
+};
+
+// Test failure of SelectChallenge option for cards enrolled in runtime
+// retrieval.
+TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest,
+       SelectChallengeOptionFailsWithCardInfoRetrievalError) {
+  base::HistogramTester histogram_tester;
+  // Simulate server returns card info retrieval permanent failure.
+  payments_network_interface().set_select_challenge_option_result(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
+
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+  // Verify the SelectChallengeRequest content.
+  VerifySelectChallengeOptionRequest(
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      kTestBillingCustomerNumber);
+  // Verify error dialog is shown.
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+  // Ensure the OTP authenticator is reset.
+  EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_FALSE(*(requester_->did_succeed()));
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.Result",
+      autofill_metrics::OtpAuthEvent::kSelectedChallengeOptionGenericError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
+}
+
+// Server returns try again failure for cards enrolled in runtime retrieval
+// after user enters the OTP.
+TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest,
+       OtpAuthServerCardInfoRetrievalError) {
+  for (bool server_returned_decline_details : {true, false}) {
+    base::HistogramTester histogram_tester;
+    // Simulate user selects OTP challenge option. Current context_token is from
+    // previous unmask response. TestPaymentsNetworkInterface will ack the
+    // select challenge option request and directly invoke the callback.
+    authenticator_->OnChallengeOptionSelected(
+        &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+        /*context_token=*/"context_token_from_previous_unmask_response",
+        /*billing_customer_number=*/kTestBillingCustomerNumber);
+    // Verify the context token is updated with SelectChallengeOption response.
+    EXPECT_FALSE(OtpAuthenticatorContextToken().empty());
+    EXPECT_NE(OtpAuthenticatorContextToken(),
+              "context_token_from_previous_unmask_response");
+    EXPECT_TRUE(
+        autofill_client_.GetPaymentsAutofillClient()->show_otp_input_dialog());
+
+    // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
+    // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+    // invoke the callback. OnDidGetRealPan below will manually invoke the
+    // callback.
+    authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+    // Simulate server returns card info retrieval try again failure. We will
+    // show the error dialog and end session.
+    OnDidGetRealPan(
+        payments::PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
+        /*real_pan=*/"", server_returned_decline_details);
+    // Verify error dialog is shown.
+    EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                    ->autofill_error_dialog_shown());
+    if (server_returned_decline_details) {
+      AutofillErrorDialogContext context =
+          autofill_client_.GetPaymentsAutofillClient()
+              ->autofill_error_dialog_context();
+      EXPECT_EQ(context.type,
+                AutofillErrorDialogType::kCardInfoRetrievalTemporaryError);
+      EXPECT_EQ(*context.server_returned_title, "test_server_returned_title");
+      EXPECT_EQ(*context.server_returned_description,
+                "test_server_returned_description");
+    }
+    // Ensure the OTP authenticator is reset.
+    EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+    ASSERT_TRUE(requester_->did_succeed().has_value());
+    EXPECT_FALSE(*(requester_->did_succeed()));
+
+    // Ensures the metrics have been logged correctly.
+    histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                        1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.OtpAuth.SmsOtp.Result",
+        autofill_metrics::OtpAuthEvent::kUnmaskCardAuthError, 1);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 1);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest",
+        1);
+  }
+}
 
 // Params of the CreditCardOtpAuthenticatorCardMetadataTest:
 // -- bool card_name_available;
@@ -630,6 +954,7 @@ class CreditCardOtpAuthenticatorCardMetadataTest
   void SetUp() override {
     CreditCardOtpAuthenticatorTestBase::SetUp();
     CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp);
+    card_.set_record_type(CreditCard::RecordType::kVirtualCard);
   }
 
   bool CardNameAvailable() { return std::get<0>(GetParam()); }
@@ -647,14 +972,12 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   base::test::ScopedFeatureList metadata_feature_list;
   if (MetadataEnabled()) {
     metadata_feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardProductName,
-                              features::kAutofillEnableCardArtImage},
+        /*enabled_features=*/{features::kAutofillEnableCardProductName},
         /*disabled_features=*/{});
   } else {
     metadata_feature_list.InitWithFeaturesAndParameters(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillEnableCardProductName,
-                               features::kAutofillEnableCardArtImage});
+        /*disabled_features=*/{features::kAutofillEnableCardProductName});
   }
   if (CardNameAvailable()) {
     card_.set_product_description(u"fake product description");
@@ -692,7 +1015,7 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
     EXPECT_NE(
         signals.end(),
-        base::ranges::find(
+        std::ranges::find(
             signals,
             ClientBehaviorConstants::kShowingCardArtImageAndCardProductName));
   } else {
@@ -717,7 +1040,7 @@ class CreditCardOtpAuthenticatorCardBenefitsTest
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kAutofillEnableCardBenefitsForAmericanExpress,
           IsCreditCardBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsForCapitalOne,
+         {features::kAutofillEnableCardBenefitsForBmo,
           IsCreditCardBenefitsEnabled()}});
     CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp);
     card_ = test::GetVirtualCard();
@@ -749,7 +1072,7 @@ INSTANTIATE_TEST_SUITE_P(
                           &test::GetActiveCreditCardCategoryBenefit,
                           &test::GetActiveCreditCardMerchantBenefit),
         ::testing::Bool(),
-        ::testing::Values("amex", "capitalone")));
+        ::testing::Values("amex", "bmo")));
 
 // Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
 // signal if a card benefit was shown when unmasking a credit card suggestion
@@ -764,8 +1087,8 @@ TEST_P(CreditCardOtpAuthenticatorCardBenefitsTest,
 
   std::vector<ClientBehaviorConstants> signals =
       payments_network_interface().unmask_request()->client_behavior_signals;
-  EXPECT_EQ(base::ranges::find(signals,
-                               ClientBehaviorConstants::kShowingCardBenefits) !=
+  EXPECT_EQ(std::ranges::find(signals,
+                              ClientBehaviorConstants::kShowingCardBenefits) !=
                 signals.end(),
             IsCreditCardBenefitsEnabled());
 }

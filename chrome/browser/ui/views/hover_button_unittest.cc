@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -115,7 +116,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
   for (size_t i = 0; i < std::size(kTitleSubtitlePairs); ++i) {
     TitleSubtitlePair pair = kTitleSubtitlePairs[i];
     SCOPED_TRACE(testing::Message() << "Index: " << i << ", expected_tooltip="
-                                    << (pair.tooltip ? "true" : "false"));
+                                    << base::ToString(pair.tooltip));
     auto button =
         std::make_unique<HoverButton>(views::Button::PressedCallback(),
                                       CreateIcon(), pair.title, pair.subtitle);
@@ -131,7 +132,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
     EXPECT_EQ(expected, GetAccessibleName(*button));
 
     EXPECT_EQ(pair.tooltip ? expected : std::u16string(),
-              button->GetTooltipText(gfx::Point()));
+              button->GetRenderedTooltipText(gfx::Point()));
   }
 }
 
@@ -149,7 +150,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleNameWithFooter) {
       button->GetViewAccessibility());
 
   EXPECT_EQ(expected, GetAccessibleName(*button));
-  EXPECT_EQ(std::u16string(), button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(std::u16string(), button->GetRenderedTooltipText(gfx::Point()));
 }
 
 TEST_F(HoverButtonTest, TooltipAndAccessibleName_DynamicTextUpdate) {

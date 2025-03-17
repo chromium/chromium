@@ -18,7 +18,7 @@ namespace webnn {
 // TODO(crbug.com/349428379): Consider allowing this class to be extended by
 // backend-specific implementations, which can stream the constant data into the
 // form needed by the backend.
-class COMPONENT_EXPORT(WEBNN_UTILS) WebNNConstantOperand {
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNConstantOperand {
  public:
   // Create a constant operand from an existing HeapArray.
   WebNNConstantOperand(OperandDescriptor descriptor,

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
@@ -46,7 +42,7 @@ PannerHandler::PannerHandler(AudioNode& node,
                              AudioParamHandler& orientation_x,
                              AudioParamHandler& orientation_y,
                              AudioParamHandler& orientation_z)
-    : AudioHandler(kNodeTypePanner, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypePanner, node, sample_rate),
       position_x_(&position_x),
       position_y_(&position_y),
       position_z_(&position_z),
@@ -267,29 +263,31 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
   const float* up_z = listener_handler_->GetUpZValues(
       render_quantum_frames);
 
-  // Compute the azimuth, elevation, and total gains for each position.
-  for (unsigned k = 0; k < frames_to_process; ++k) {
-    gfx::Point3F panner_position(panner_x[k], panner_y[k], panner_z[k]);
-    gfx::Vector3dF orientation(orientation_x[k], orientation_y[k],
-                               orientation_z[k]);
-    gfx::Point3F listener_position(listener_x[k], listener_y[k], listener_z[k]);
-    gfx::Vector3dF listener_forward(forward_x[k], forward_y[k], forward_z[k]);
-    gfx::Vector3dF listener_up(up_x[k], up_y[k], up_z[k]);
+  UNSAFE_TODO({
+    // Compute the azimuth, elevation, and total gains for each position.
+    for (unsigned k = 0; k < frames_to_process; ++k) {
+      gfx::Point3F panner_position(panner_x[k], panner_y[k], panner_z[k]);
+      gfx::Vector3dF orientation(orientation_x[k], orientation_y[k],
+                                 orientation_z[k]);
+      gfx::Point3F listener_position(listener_x[k], listener_y[k],
+                                     listener_z[k]);
+      gfx::Vector3dF listener_forward(forward_x[k], forward_y[k], forward_z[k]);
+      gfx::Vector3dF listener_up(up_x[k], up_y[k], up_z[k]);
 
-    CalculateAzimuthElevation(&azimuth[k], &elevation[k], panner_position,
-                              listener_position, listener_forward, listener_up);
+      CalculateAzimuthElevation(&azimuth[k], &elevation[k], panner_position,
+                                listener_position, listener_forward,
+                                listener_up);
 
-    total_gain[k] = CalculateDistanceConeGain(panner_position, orientation,
-                                              listener_position);
-  }
-
-  // Update cached values in case automations end.
-  if (frames_to_process > 0) {
-    cached_azimuth_ = azimuth[frames_to_process - 1];
-    cached_elevation_ = elevation[frames_to_process - 1];
-    cached_distance_cone_gain_ = total_gain[frames_to_process - 1];
-  }
-
+      total_gain[k] = CalculateDistanceConeGain(panner_position, orientation,
+                                                listener_position);
+    }
+    // Update cached values in case automations end.
+    if (frames_to_process > 0) {
+      cached_azimuth_ = azimuth[frames_to_process - 1];
+      cached_elevation_ = elevation[frames_to_process - 1];
+      cached_distance_cone_gain_ = total_gain[frames_to_process - 1];
+    }
+  });
   panner_->PanWithSampleAccurateValues(azimuth, elevation, source, destination,
                                        frames_to_process,
                                        InternalChannelInterpretation());

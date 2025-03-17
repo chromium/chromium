@@ -47,10 +47,10 @@ class MigrationCoordinator {
   virtual ~MigrationCoordinator();
 
   // Starts the upload of files specified by `source_urls` to the
-  // `upload_root` directory on `cloud_provider`. Invokes `callback` upon
+  // `upload_root` directory on `destination`. Invokes `callback` upon
   // completion, passing any errors that occurred and the absolute path to the
   // root upload directory. Fails if a migration is already in progress.
-  virtual void Run(CloudProvider cloud_provider,
+  virtual void Run(MigrationDestination destination,
                    std::vector<base::FilePath> files,
                    const std::string& upload_root,
                    MigrationDoneCallback callback);
@@ -79,7 +79,7 @@ class MigrationCoordinator {
   base::FilePath error_log_path_;
 
   // The implementation of the upload process, specific to the
-  // `cloud_provider` argument passed to the `Run` method.
+  // `destination` argument passed to the `Run` method.
   std::unique_ptr<MigrationCloudUploader> uploader_ = nullptr;
 
   // If set, invoked when all the uploaders are stopped. Used in tests.

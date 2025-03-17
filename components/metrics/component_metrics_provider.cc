@@ -97,6 +97,8 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_SODA_FR_FR},
       {"gonpemdgkjcecdgbnaabipppbmgfggbe",
        SystemProfileProto_ComponentId_FIRST_PARTY_SETS},
+      {"hajigopbbjhghbfimgkfmpenfkclmohk",
+       SystemProfileProto_ComponentId_AMOUNT_EXTRACTION_HEURISTIC_REGEXES},
       {"hfnkpimlhhgieaddgfemjhofmfblmnib",
        SystemProfileProto_ComponentId_CRL_SET},
       {"hkifppleldbgkdlijbdfkdpedggaopda",

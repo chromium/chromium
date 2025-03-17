@@ -79,5 +79,5 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized
 
-# crbug.com/385183438
--org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragmentTest.testHistorySyncCard_backButtonInitialSyncStateIsSet
+# crbug.com/402773550
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay

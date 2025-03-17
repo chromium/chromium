@@ -27,10 +27,10 @@
 
 [Exposed=Window]
 interface SVGRadialGradientElement : SVGGradientElement {
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength cx;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength cy;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength r;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength fx;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength fy;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength fr;
+    readonly attribute SVGAnimatedLength cx;
+    readonly attribute SVGAnimatedLength cy;
+    readonly attribute SVGAnimatedLength r;
+    readonly attribute SVGAnimatedLength fx;
+    readonly attribute SVGAnimatedLength fy;
+    readonly attribute SVGAnimatedLength fr;
 };

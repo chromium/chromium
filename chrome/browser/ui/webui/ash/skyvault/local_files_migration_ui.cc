@@ -84,7 +84,7 @@ void LocalFilesMigrationUI::CreatePageHandler(
   CHECK(!handler_);
 
   handler_ = std::make_unique<LocalFilesMigrationPageHandler>(
-      web_ui(), Profile::FromWebUI(web_ui()), cloud_provider_,
+      web_ui(), Profile::FromWebUI(web_ui()), destination_,
       migration_start_time_,
       base::BindOnce(&LocalFilesMigrationUI::ProcessResponseAndCloseDialog,
                      base::Unretained(this)),
@@ -92,9 +92,9 @@ void LocalFilesMigrationUI::CreatePageHandler(
 }
 
 void LocalFilesMigrationUI::SetInitialDialogInfo(
-    CloudProvider cloud_provider,
+    MigrationDestination destination,
     base::Time migration_start_time) {
-  cloud_provider_ = cloud_provider;
+  destination_ = destination;
   migration_start_time_ = migration_start_time;
 }
 
@@ -105,7 +105,7 @@ void LocalFilesMigrationUI::ProcessResponseAndCloseDialog(DialogAction action) {
     values.Append(kStartMigration);
   }
   CloseDialog(values);
-  SkyVaultMigrationDialogActionHistogram(cloud_provider_, action);
+  SkyVaultMigrationDialogActionHistogram(destination_, action);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LocalFilesMigrationUI)

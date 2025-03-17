@@ -1,27 +1,41 @@
-diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index bdb2eecbe2e47..8bd06d340f7c3 100644
---- a/src/google/protobuf/port_def.inc
-+++ b/src/google/protobuf/port_def.inc
-@@ -313,7 +313,10 @@
- #if defined(PROTOBUF_DEPRECATED_MSG)
- #error PROTOBUF_DEPRECATED_MSG was previously defined
- #endif
--#if __has_attribute(deprecated) || PROTOBUF_GNUC_MIN(3, 0)
-+#if defined(PROTOBUF_ALLOW_DEPRECATED)
-+# define PROTOBUF_DEPRECATED
-+# define PROTOBUF_DEPRECATED_MSG(msg)
-+#elif __has_attribute(deprecated) || PROTOBUF_GNUC_MIN(3, 0)
- # define PROTOBUF_DEPRECATED __attribute__((deprecated))
- # define PROTOBUF_DEPRECATED_MSG(msg) __attribute__((deprecated(msg)))
- #elif defined(_MSC_VER)
-@@ -327,7 +330,9 @@
- #if defined(PROTOBUF_DEPRECATED_ENUM)
- #error PROTOBUF_DEPRECATED_ENUM was previously defined
- #endif
--#if defined(__clang__) || PROTOBUF_GNUC_MIN(6, 0)
-+#if defined(PROTOBUF_ALLOW_DEPRECATED)
-+# define PROTOBUF_DEPRECATED_ENUM
-+#elif defined(__clang__) || PROTOBUF_GNUC_MIN(6, 0)
- // https://gcc.gnu.org/gcc-6/changes.html
- # define PROTOBUF_DEPRECATED_ENUM __attribute__((deprecated))
- #else
+diff --git a/src/google/protobuf/compiler/cpp/enum.cc b/src/google/protobuf/compiler/cpp/enum.cc
+index ba56b4bb5af42..61d8cfe0b20e3 100644
+--- a/src/google/protobuf/compiler/cpp/enum.cc
++++ b/src/google/protobuf/compiler/cpp/enum.cc
+@@ -131,7 +131,7 @@ void EnumGenerator::GenerateDefinition(io::Printer* p) {
+                            .AnnotatedAs(value),
+                        {"kNumber", Int32ToString(value->number())},
+                        {"DEPRECATED",
+-                        value->options().deprecated() ? "[[deprecated]]" : ""},
++                        /*value->options().deprecated() ? "[[deprecated]]" : */""},
+                    },
+                    R"cc(
+                      $Msg_Enum_VALUE$$ DEPRECATED$ = $kNumber$,
+@@ -287,7 +287,7 @@ void EnumGenerator::GenerateSymbolImports(io::Printer* p) const {
+         {
+             Sub("VALUE", EnumValueName(enum_->value(j))).AnnotatedAs(value),
+             {"DEPRECATED",
+-             value->options().deprecated() ? "[[deprecated]]" : ""},
++             /*value->options().deprecated() ? "[[deprecated]]" : */""},
+         },
+         R"cc(
+           $DEPRECATED $static constexpr $Enum_$ $VALUE$ = $Msg_Enum$_$VALUE$;
+diff --git a/src/google/protobuf/compiler/cpp/helpers.h b/src/google/protobuf/compiler/cpp/helpers.h
+index dbcc9245068b9..761c0adcb9a26 100644
+--- a/src/google/protobuf/compiler/cpp/helpers.h
++++ b/src/google/protobuf/compiler/cpp/helpers.h
+@@ -54,12 +54,12 @@ inline absl::string_view ProtobufNamespace(const Options& opts) {
+ 
+ inline std::string DeprecatedAttribute(const Options&,
+                                        const FieldDescriptor* d) {
+-  return d->options().deprecated() ? "[[deprecated]] " : "";
++  return /*d->options().deprecated() ? "[[deprecated]] " : */"";
+ }
+ 
+ inline std::string DeprecatedAttribute(const Options&,
+                                        const EnumValueDescriptor* d) {
+-  return d->options().deprecated() ? "[[deprecated]] " : "";
++  return /*d->options().deprecated() ? "[[deprecated]] " : */"";
+ }
+ 
+ // Commonly-used separator comments.  Thick is a line of '=', thin is a line

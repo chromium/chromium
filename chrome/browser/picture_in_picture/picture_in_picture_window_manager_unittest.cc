@@ -18,7 +18,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager_uma_helper.h"
 #include "chrome/browser/picture_in_picture/scoped_disallow_picture_in_picture.h"
 #include "media/base/media_switches.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -26,6 +28,11 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+const char kPictureInPictureTotalTimeHistogram[] =
+    "Media.PictureInPicture.Window.TotalTime";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 typedef base::ScopedObservation<PictureInPictureWindowManager,
                                 PictureInPictureWindowManager::Observer>
@@ -92,10 +99,35 @@ class PictureInPictureWindowManagerTest
     return mock_video_picture_in_picture_controller_.get();
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  void SetupPiPWindowManagerWithUmaHelper(
+      base::SimpleTestTickClock* test_clock) {
+    test_clock->SetNowTicks(base::TimeTicks::Now());
+
+    std::unique_ptr<PictureInPictureWindowManagerUmaHelper> test_uma_helper =
+        std::make_unique<PictureInPictureWindowManagerUmaHelper>();
+    test_uma_helper->SetClockForTest(test_clock);
+
+    PictureInPictureWindowManager* picture_in_picture_window_manager =
+        PictureInPictureWindowManager::GetInstance();
+    picture_in_picture_window_manager->set_uma_helper_for_testing(
+        std::move(test_uma_helper));
+  }
+
+  std::unique_ptr<base::HistogramSamples> GetHistogramSamplesSinceTestStart(
+      const std::string& name) {
+    return histogram_tester_.GetHistogramSamplesSinceCreation(name);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   std::unique_ptr<content::WebContents> child_web_contents_;
   raw_ptr<content::MockVideoPictureInPictureWindowControllerImpl>
       mock_video_picture_in_picture_controller_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::HistogramTester histogram_tester_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace
@@ -399,6 +431,82 @@ TEST_F(PictureInPictureWindowManagerTest,
         PictureInPictureWindowManager::GetInstance()
             ->ShouldFileDialogBlockPictureInPicture(child_web_contents()));
   }
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       EnterAndCloseDocumentPip_NormalCloseDoesCommit) {
+  base::SimpleTestTickClock test_clock;
+  SetupPiPWindowManagerWithUmaHelper(&test_clock);
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+
+  picture_in_picture_window_manager->EnterDocumentPictureInPicture(
+      web_contents(), child_web_contents());
+
+  test_clock.Advance(base::Milliseconds(3000));
+  picture_in_picture_window_manager->ExitPictureInPicture();
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(kPictureInPictureTotalTimeHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(3000));
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       EnterAndCloseVideoPip_NormalCloseDoesCommit) {
+  base::SimpleTestTickClock test_clock;
+  SetupPiPWindowManagerWithUmaHelper(&test_clock);
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+
+  picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
+
+  test_clock.Advance(base::Milliseconds(3000));
+  picture_in_picture_window_manager->ExitPictureInPicture();
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(kPictureInPictureTotalTimeHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(3000));
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       EnterAndCloseDocumentPip_UICloseDoesCommit) {
+  base::SimpleTestTickClock test_clock;
+  SetupPiPWindowManagerWithUmaHelper(&test_clock);
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+
+  picture_in_picture_window_manager->EnterDocumentPictureInPicture(
+      web_contents(), child_web_contents());
+
+  test_clock.Advance(base::Milliseconds(3000));
+  picture_in_picture_window_manager->ExitPictureInPictureViaWindowUi(
+      PictureInPictureWindowManager::UiBehavior::kCloseWindowOnly);
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(kPictureInPictureTotalTimeHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(3000));
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       EnterAndCloseVideoPip_UICloseDoesCommit) {
+  base::SimpleTestTickClock test_clock;
+  SetupPiPWindowManagerWithUmaHelper(&test_clock);
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+
+  picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
+
+  test_clock.Advance(base::Milliseconds(3000));
+  picture_in_picture_window_manager->ExitPictureInPictureViaWindowUi(
+      PictureInPictureWindowManager::UiBehavior::kCloseWindowOnly);
+
+  std::unique_ptr<base::HistogramSamples> samples(
+      GetHistogramSamplesSinceTestStart(kPictureInPictureTotalTimeHistogram));
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(3000));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

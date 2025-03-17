@@ -12,7 +12,6 @@
 #include "base/functional/function_ref.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -28,7 +27,6 @@
 #include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -579,9 +577,6 @@ TEST(TriggerRegistrationTest, ParseAttributionScopesConfig) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionScopes);
-
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
     SCOPED_TRACE(test_case.desc);
@@ -644,9 +639,6 @@ TEST(TriggerRegistrationTest, ParseAggregatableNamedBudgetCandidate) {
               TriggerRegistrationError::kAggregatableNamedBudgetNameInvalid),
       },
   };
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableNamedBudgets);
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;

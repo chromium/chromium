@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +28,6 @@
 class TabCollectionBaseTest : public ::testing::Test {
  public:
   TabCollectionBaseTest() {
-    scoped_feature_list_.InitWithFeatures({tabs::kTabStripCollectionStorage},
-                                          {});
     testing_profile_ = std::make_unique<TestingProfile>();
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
@@ -99,7 +98,6 @@ class TabCollectionBaseTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<Profile> testing_profile_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
@@ -255,7 +253,8 @@ class TabGroupTabCollectionTest : public TabCollectionBaseTest {
  public:
   TabGroupTabCollectionTest() {
     grouped_collection_ = std::make_unique<tabs::TabGroupTabCollection>(
-        tab_groups::TabGroupId::GenerateNew());
+        tab_groups::TabGroupId::GenerateNew(), tab_groups::TabGroupVisualData(),
+        GetTabStripModel());
   }
   TabGroupTabCollectionTest(const TabGroupTabCollectionTest&) = delete;
   TabGroupTabCollectionTest& operator=(const TabGroupTabCollectionTest&) =
@@ -376,8 +375,8 @@ class UnpinnedTabCollectionTest : public TabCollectionBaseTest {
   void PerformBasicSetup() {
     AddTabsToUnpinnedContainer(GetCollection(), GetTabStripModel(), 2);
     tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-    auto tab_group_one =
-        std::make_unique<tabs::TabGroupTabCollection>(group_id);
+    auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
+        group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
     AddTabsToGroupContainer(tab_group_one.get(), GetTabStripModel(), 2);
     GetCollection()->AddTabGroup(std::move(tab_group_one), 2);
     AddTabsToUnpinnedContainer(GetCollection(), GetTabStripModel(), 2);
@@ -403,7 +402,8 @@ TEST_F(UnpinnedTabCollectionTest, AddOperation) {
   auto tab_model_one =
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(group_id);
+  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
+      group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
 
   tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
   tabs::TabGroupTabCollection* tab_group_one_ptr = tab_group_one.get();
@@ -451,7 +451,8 @@ TEST_F(UnpinnedTabCollectionTest, RemoveOperation) {
   auto tab_model_one =
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(group_id);
+  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
+      group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
 
   tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
   tabs::TabGroupTabCollection* tab_group_one_ptr = tab_group_one.get();
@@ -505,7 +506,8 @@ TEST_F(UnpinnedTabCollectionTest, CloseGroupOperation) {
   // Use the basic setup scenario and track a group.
   PerformBasicSetup();
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(group_id);
+  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
+      group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
   tabs::TabGroupTabCollection* tab_group_one_ptr = tab_group_one.get();
   tabs::UnpinnedTabCollection* unpinned_collection = GetCollection();
 
@@ -523,7 +525,8 @@ TEST_F(UnpinnedTabCollectionTest, MoveOperation) {
   auto tab_model_one =
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(group_id);
+  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
+      group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
 
   tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
   tabs::TabGroupTabCollection* tab_group_one_ptr = tab_group_one.get();
@@ -570,7 +573,8 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
     // Add a group to the unpinned collection with two tabs.
     std::unique_ptr<tabs::TabGroupTabCollection> group_one =
         std::make_unique<tabs::TabGroupTabCollection>(
-            tab_groups::TabGroupId::GenerateNew());
+            tab_groups::TabGroupId::GenerateNew(),
+            tab_groups::TabGroupVisualData(), GetTabStripModel());
     tabs::TabGroupTabCollection* group_one_ptr = group_one.get();
     AddTabsToGroupContainer(group_one_ptr, GetTabStripModel(), 2);
     unpinned_collection->AddTabGroup(std::move(group_one), 2);
@@ -661,7 +665,8 @@ TEST_F(TabStripCollectionTest, TabOperations) {
 
   std::unique_ptr<tabs::TabGroupTabCollection> group_one =
       std::make_unique<tabs::TabGroupTabCollection>(
-          tab_groups::TabGroupId::GenerateNew());
+          tab_groups::TabGroupId::GenerateNew(),
+          tab_groups::TabGroupVisualData(), GetTabStripModel());
   tabs::TabGroupTabCollection* group_one_ptr = group_one.get();
   AddTabsToGroupContainer(group_one_ptr, GetTabStripModel(), 2);
 

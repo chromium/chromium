@@ -73,9 +73,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
   const bool attribution_reporting_enabled =
       dom_window &&
-      (RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window) ||
-       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-           dom_window));
+      RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window);
   const bool explicit_opener_enabled =
       RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(dom_window);
 
@@ -306,6 +304,10 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
         "Not allowed to load local resource: " + url.ElidedString()));
     return nullptr;
   }
+
+  request.SetInitiatorFrameToken(opener_frame.GetLocalFrameToken());
+  request.SetInitiatorNavigationStateKeepAliveHandle(
+      opener_frame.IssueKeepAliveHandle());
 
   const WebWindowFeatures& features = request.GetWindowFeatures();
   const auto& picture_in_picture_window_options =

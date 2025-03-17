@@ -11,7 +11,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
-#include "third_party/grpc/src/include/grpcpp/completion_queue.h"
+#include "third_party/grpc/source/include/grpcpp/completion_queue.h"
 
 namespace ash::libassistant {
 

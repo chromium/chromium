@@ -274,7 +274,7 @@ class MockWebFrameWidgetImpl : public frame_test_helpers::TestWebFrameWidget {
                     bool event_processed));
 
   MOCK_METHOD2(RequestDecode,
-               void(const cc::PaintImage&, base::OnceCallback<void(bool)>));
+               void(const cc::DrawImage&, base::OnceCallback<void(bool)>));
 };
 
 class WebFrameWidgetImplSimTest : public SimTest {
@@ -321,7 +321,7 @@ class WebFrameWidgetImplSimTest : public SimTest {
   void OnStartStylusWriting() {
     MockMainFrameWidget()->OnStartStylusWriting(
 #if BUILDFLAG(IS_WIN)
-        /*focus_rect_in_widget=*/gfx::Rect(),
+        /*focus_widget_rect_in_dips=*/gfx::Rect(),
 #endif  // BUILDFLAG(IS_WIN)
         base::DoNothing());
   }
@@ -601,7 +601,7 @@ TEST_F(WebFrameWidgetImplSimTest, NoSpeculativeDecodeOutsideViewport) {
   Compositor().BeginFrame();
 }
 
-TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeBackgroundImage) {
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeIgnoresBackgroundImage) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -614,7 +614,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeBackgroundImage) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest doc_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(0);
   doc_request.Complete(
       R"HTML(
 <!DOCTYPE html>
@@ -623,9 +623,77 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeBackgroundImage) {
   url_test_helpers::ServeAsynchronousRequests();
 }
 
+// Without extrinsic sizing (e.g., css width & height), an image's final decode
+// size can depend on both the image's intrinsic size and layout. Using only the
+// image's intrinsic size can result in a speculative decode that is too small
+// (will not be used), or too big (can cause small rendering differences as the
+// larger decode will be re-used and scaled). To avoid these issues, we should
+// wait for layout if the decoded size depends on it.
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeNoSizeWaitsForLayout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kSpeculativeImageDecodes,
+       ::features::kSendExplicitDecodeRequestsImmediately},
+      /*disabled_features=*/{});
+  SimRequest image_request("https://example.com/image.png", "image/png");
+  auto* widget = WebView().MainFrameViewWidget();
+  widget->Resize(gfx::Size(800, 600));
+  SimRequest doc_request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  {
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(0);
+    doc_request.Complete(
+        R"HTML(<!DOCTYPE html>
+        <img id="i1" src="image.png">
+        <img id="i2" style="height: auto; max-height: 50px;" src="image.png">
+      )HTML");
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    image_request.Complete(
+        *test::ReadFromFile(test::CoreTestDataPath("background_image.png")));
+  }
+
+  {
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+    widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  }
+}
+
+// A speculative decode of an image with extrinsic sizes does not need to wait
+// for layout.
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeWithExtrinsicSize) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kSpeculativeImageDecodes,
+       ::features::kSendExplicitDecodeRequestsImmediately},
+      /*disabled_features=*/{});
+  SimRequest image_request("https://example.com/image.png", "image/png");
+  auto* widget = WebView().MainFrameViewWidget();
+  widget->Resize(gfx::Size(800, 600));
+  SimRequest doc_request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  {
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+    doc_request.Complete(
+        R"HTML(<!DOCTYPE html>
+        <img style="width: 100px" src="image.png">
+      )HTML");
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    image_request.Complete(
+        *test::ReadFromFile(test::CoreTestDataPath("background_image.png")));
+    test::RunPendingTasks();
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 struct ProximateBoundsCollectionArgs final {
-  base::RepeatingCallback<gfx::Rect(const Document&)> get_focus_rect_in_widget;
+  base::RepeatingCallback<gfx::Rect(const Document&)>
+      get_focus_widget_rect_in_dips;
   std::string expected_focus_id;
   bool expect_null_proximate_bounds;
   gfx::Range expected_range;
@@ -664,8 +732,8 @@ struct WebFrameWidgetProximateBoundsCollectionSimTestParam {
     return proximate_bounds_collection_args_.expected_focus_id;
   }
 
-  gfx::Rect GetFocusRectInWidget(const Document& document) const {
-    return proximate_bounds_collection_args_.get_focus_rect_in_widget.Run(
+  gfx::Rect GetFocusWidgetRectInDips(const Document& document) const {
+    return proximate_bounds_collection_args_.get_focus_widget_rect_in_dips.Run(
         document);
   }
 
@@ -761,9 +829,9 @@ class WebFrameWidgetProximateBoundsCollectionSimTestBase
     EXPECT_EQ(GetDocument().FocusedElement(), nullptr);
   }
 
-  void OnStartStylusWriting(const gfx::Rect& focus_rect_in_widget) {
+  void OnStartStylusWriting(const gfx::Rect& focus_widget_rect_in_dips) {
     MockMainFrameWidget()->OnStartStylusWriting(
-        focus_rect_in_widget,
+        focus_widget_rect_in_dips,
         base::BindOnce(&WebFrameWidgetProximateBoundsCollectionSimTestBase::
                            OnStartStylusWritingComplete,
                        weak_factory_.GetWeakPtr()));
@@ -831,10 +899,10 @@ class WebFrameWidgetProximateBoundsCollectionSimTestF
             /*enable_stylus_handwriting_win=*/true) {}
 
   void StartStylusWritingOnElementCenter(const Element& element) {
-    gfx::Rect focus_rect_in_widget(element.BoundsInWidget().CenterPoint(),
-                                   gfx::Size());
-    focus_rect_in_widget.Outset(gfx::Outsets(25));
-    OnStartStylusWriting(focus_rect_in_widget);
+    gfx::Rect focus_widget_rect_in_dips(element.BoundsInWidget().CenterPoint(),
+                                        gfx::Size());
+    focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+    OnStartStylusWriting(focus_widget_rect_in_dips);
   }
 };
 
@@ -964,15 +1032,15 @@ INSTANTIATE_TEST_SUITE_P(
                 // directions relative to the pivot position up-to
                 // the `ProximateBoundsCollectionHalfLimit()`.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().top_center(),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"target_editable",
                     /*expect_null_proximate_bounds=*/false,
@@ -984,14 +1052,14 @@ INSTANTIATE_TEST_SUITE_P(
                 // range only expands in one direction up-to the
                 // `ProximateBoundsCollectionHalfLimit()`.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().origin(), gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"target_editable",
                     /*expect_null_proximate_bounds=*/false,
@@ -1002,16 +1070,16 @@ INSTANTIATE_TEST_SUITE_P(
                 // range only expands in one direction up-to the
                 // `ProximateBoundsCollectionHalfLimit()`.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().top_right() -
                                   gfx::Vector2d(1, 0),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"target_editable",
                     /*expect_null_proximate_bounds=*/false,
@@ -1019,38 +1087,38 @@ INSTANTIATE_TEST_SUITE_P(
                     /*expected_bounds=*/
                     {gfx::Rect(240, 0, 10, 10), gfx::Rect(250, 0, 9, 10)}},
                 // Test that `touch_fallback` is focused when
-                // `focus_rect_in_widget` misses, but it shouldn't collect
+                // `focus_widget_rect_in_dips` misses, but it shouldn't collect
                 // bounds because the pivot offset cannot be determined.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().right_center() +
                                   gfx::Vector2d(100, 0),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"touch_fallback",
                     /*expect_null_proximate_bounds=*/true,
                     /*expected_range=*/gfx::Range(),
                     /*expected_bounds=*/{}},
                 // Test that `touch_fallback` is focused when
-                // `focus_rect_in_widget` hits non-editable content, but it
+                // `focus_widget_rect_in_dips` hits non-editable content, but it
                 // shouldn't collect bounds because the pivot offset cannot be
                 // determined.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_readonly"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().CenterPoint(),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"touch_fallback",
                     /*expect_null_proximate_bounds=*/true,
@@ -1061,7 +1129,7 @@ TEST_P(WebFrameWidgetProximateBoundsCollectionSimTestP,
        TestProximateBoundsCollection) {
   LoadDocument(String(GetParam().GetHTMLDocument()));
   HandlePointerDownEventOverTouchFallback();
-  OnStartStylusWriting(GetParam().GetFocusRectInWidget(GetDocument()));
+  OnStartStylusWriting(GetParam().GetFocusWidgetRectInDips(GetDocument()));
   if (!GetParam().IsStylusHandwritingWinEnabled()) {
     EXPECT_EQ(GetDocument().FocusedElement(), nullptr);
     EXPECT_EQ(GetLastProximateBounds(), nullptr);
@@ -1079,10 +1147,11 @@ TEST_P(WebFrameWidgetProximateBoundsCollectionSimTestP,
   EXPECT_EQ(!GetLastProximateBounds(), GetParam().ExpectNullProximateBounds());
   if (!GetParam().ExpectNullProximateBounds()) {
     EXPECT_EQ(GetLastProximateBounds()->range, GetParam().GetExpectedRange());
-    EXPECT_TRUE(std::equal(GetLastProximateBounds()->bounds.begin(),
-                           GetLastProximateBounds()->bounds.end(),
-                           GetParam().GetExpectedBounds().begin(),
-                           GetParam().GetExpectedBounds().end()));
+    EXPECT_TRUE(
+        std::equal(GetLastProximateBounds()->widget_bounds_in_dips.begin(),
+                   GetLastProximateBounds()->widget_bounds_in_dips.end(),
+                   GetParam().GetExpectedBounds().begin(),
+                   GetParam().GetExpectedBounds().end()));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1476,7 +1545,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreEmptyBeforeFocus) {
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   EXPECT_EQ(0U, actual.size());
 }
 
@@ -1524,7 +1593,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   first->Focus();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, 0, 40, 10)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -1537,7 +1606,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
       second->GetBoundingClientRect()->ToEnclosingRect().origin();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   expected = Vector({gfx::Rect(origin.x(), origin.y(), 90, 10)});
-  actual = widget->GetVisibleLineBoundsOnScreen();
+  actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -1686,7 +1755,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
           border: none;
         }
       </style>
-      <div id='d' style='height: 0;'/>
+      <div id='d' style='height: 0;'></div>
       <input type='text' id='first' class='target' />
       )HTML");
   Compositor().BeginFrame();
@@ -1700,7 +1769,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   first->Focus();
   first->SetValue("hello world");
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  Vector<gfx::Rect>& expected = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect> expected = widget->GetVisibleLineBoundsOnScreenForTesting();
   // Offset each line bound by 200 pixels downwards (for after layout shift).
   for (auto& i : expected) {
     i.Offset(0, 200);
@@ -1710,7 +1779,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
       .getElementById(AtomicString("d"))
       ->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px"));
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
   }
@@ -1763,7 +1832,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
   Vector<gfx::Rect> expected;
-  for (auto& i : widget->GetVisibleLineBoundsOnScreen()) {
+  for (auto& i : widget->GetVisibleLineBoundsOnScreenForTesting()) {
     gfx::Rect bound(i.origin(), i.size());
     bound.Offset(0, -50);
     expected.push_back(bound);
@@ -1776,7 +1845,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
 
   // As line bounds are calculated in document coordinates, a document scroll
   // should not have any effect. Assert that they are the same as before.
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i).ToString(), actual.at(i).ToString());
   }
@@ -1834,7 +1903,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   Vector<gfx::Rect> expected;
 
   // Offset each line bound by 50 pixels upwards (for after a scroll down).
-  for (auto& i : widget->GetVisibleLineBoundsOnScreen()) {
+  for (auto& i : widget->GetVisibleLineBoundsOnScreenForTesting()) {
     gfx::Rect bound(i.origin(), i.size());
     bound.Offset(0, -50);
     expected.push_back(bound);
@@ -1844,7 +1913,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   GetDocument().FocusedElement()->scrollBy(0, 50);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -1898,18 +1967,18 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
   for (wtf_size_t i = 0; i < text.length(); ++i) {
     first->SetValue(first->Value() + text[i]);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreen().size());
+    EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
     EXPECT_EQ(gfx::Rect(origin.x(), origin.y(), 10 * (i + 1), 10),
-              widget->GetVisibleLineBoundsOnScreen().at(0));
+              widget->GetVisibleLineBoundsOnScreenForTesting().at(0));
   }
   first->SetValue(first->Value() + "\n");
   String new_text = "goodbye world";
   for (wtf_size_t i = 0; i < new_text.length(); ++i) {
     first->SetValue(first->Value() + new_text[i]);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(2U, widget->GetVisibleLineBoundsOnScreen().size());
+    EXPECT_EQ(2U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
     EXPECT_EQ(gfx::Rect(origin.x(), origin.y() + 10, 10 * (i + 1), 10),
-              widget->GetVisibleLineBoundsOnScreen().at(1));
+              widget->GetVisibleLineBoundsOnScreenForTesting().at(1));
   }
 }
 
@@ -1962,9 +2031,9 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   for (wtf_size_t i = last_line.length() - 1; i > 0; --i) {
     widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(2U, widget->GetVisibleLineBoundsOnScreen().size());
+    EXPECT_EQ(2U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
     EXPECT_EQ(gfx::Rect(origin.x(), origin.y() + 10, 10 * i, 10),
-              widget->GetVisibleLineBoundsOnScreen().at(1));
+              widget->GetVisibleLineBoundsOnScreenForTesting().at(1));
   }
 
   // Remove the last character on the second line.
@@ -1972,26 +2041,26 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   // line bound.
   widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreen().size());
+  EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
 
   // Remove the new line character.
   widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreen().size());
+  EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
 
   String first_line = "hello world";
   for (wtf_size_t i = first_line.length() - 1; i > 0; --i) {
     widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreen().size());
+    EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
     EXPECT_EQ(gfx::Rect(origin.x(), origin.y(), 10 * i, 10),
-              widget->GetVisibleLineBoundsOnScreen().at(0));
+              widget->GetVisibleLineBoundsOnScreenForTesting().at(0));
   }
 
   // Remove last character
   widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  EXPECT_EQ(0U, widget->GetVisibleLineBoundsOnScreen().size());
+  EXPECT_EQ(0U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
@@ -2051,7 +2120,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
   Compositor().BeginFrame();
 
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, /* 123+42= */ 165, 40, 10)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -2123,7 +2192,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
   Vector<gfx::Rect> expected(
       Vector({gfx::Rect(0, /* 70*1.2+40*1.2*1.5= */ 156, /* 40*1.2*1.5= */ 72,
                         /* 10*1.2*1.5= */ 18)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -2192,7 +2261,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
   // The expected height is 10 * 11 = 110 but this should be clipped as to the
   // screen height of 200px - 100px for the top of the bound.
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, 100, 200, 100)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));

@@ -72,13 +72,9 @@ class BASE_EXPORT ScopedMachVM {
   // aligned.
   void reset_unaligned(vm_address_t address, vm_size_t size);
 
-  vm_address_t address() const {
-    return address_;
-  }
+  vm_address_t address() const { return address_; }
 
-  vm_size_t size() const {
-    return size_;
-  }
+  vm_size_t size() const { return size_; }
 
   void swap(ScopedMachVM& that) {
     std::swap(address_, that.address_);

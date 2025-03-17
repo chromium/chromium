@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 #include <content-type-v1-client-protocol.h>
@@ -9,27 +14,22 @@
 #include <presentation-time-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 
-#include <algorithm>
 #include <cstdint>
-#include <memory>
-#include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/current_thread.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
-#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/features.h"
-#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
@@ -41,10 +41,12 @@
 #include "ui/ozone/platform/wayland/host/toplevel_icon_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
+#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
@@ -65,7 +67,6 @@
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
-#include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {
@@ -316,6 +317,10 @@ bool WaylandConnection::SupportsSetWindowGeometry() const {
   return !!shell_;
 }
 
+bool WaylandConnection::IsKeyboardAvailable() const {
+  return seat_ && seat_->keyboard();
+}
+
 wl::Object<wl_surface> WaylandConnection::CreateSurface() {
   DCHECK(compositor_);
   return wl::Object<wl_surface>(
@@ -484,6 +489,21 @@ void WaylandConnection::DumpState(std::ostream& out) const {
   }
 }
 
+bool WaylandConnection::UseImplicitSyncInterop() const {
+  return !SupportsExplicitSync() &&
+         WaylandBufferManagerHost::SupportsImplicitSyncInterop();
+}
+
+bool WaylandConnection::UsePerSurfaceScaling() const {
+  return base::FeatureList::IsEnabled(features::kWaylandPerSurfaceScale) &&
+         supports_viewporter_surface_scaling();
+}
+
+bool WaylandConnection::IsUiScaleEnabled() const {
+  return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
+         UsePerSurfaceScaling();
+}
+
 bool WaylandConnection::ShouldUseOverlayDelegation() const {
   // Since using fractional_scale_v1 requires using viewport to rescale the
   // window to Wayland logical coordinates, using overlays in conjunction with
@@ -492,7 +512,6 @@ bool WaylandConnection::ShouldUseOverlayDelegation() const {
   // isn't present on any non-exo Wayland compositors.
   bool should_use_overlay_delegation =
       IsWaylandOverlayDelegationEnabled() && !fractional_scale_manager_v1();
-#if BUILDFLAG(IS_LINUX)
   // Overlay delegation also requires a single-pixel-buffer protocol, which
   // allows creation of non-backed solid color buffers. Even though only video
   // overlays can be supported on Linux, these color buffers are still needed
@@ -501,7 +520,6 @@ bool WaylandConnection::ShouldUseOverlayDelegation() const {
   // transparent background buffer for a root surface while the content itself
   // is attached to a subsurface.
   should_use_overlay_delegation &= !!single_pixel_buffer();
-#endif
   return should_use_overlay_delegation;
 }
 

@@ -189,10 +189,10 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::SlowNetwork;
     case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       return Preload::PrerenderFinalStatusEnum::OtherPrerenderedPageActivated;
-    case PrerenderFinalStatus::kV8OptimizerDisabled:
-      return Preload::PrerenderFinalStatusEnum::V8OptimizerDisabled;
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
       return Preload::PrerenderFinalStatusEnum::PrerenderFailedDuringPrefetch;
+    case PrerenderFinalStatus::kBrowsingDataRemoved:
+      return Preload::PrerenderFinalStatusEnum::BrowsingDataRemoved;
   }
 }
 
@@ -267,8 +267,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
           PrefetchNotEligibleBatterySaverEnabled;
     case PrefetchStatus::kPrefetchHeldback:
       return Preload::PrefetchStatusEnum::PrefetchHeldback;
-    case PrefetchStatus::kPrefetchAllowed:
-      return Preload::PrefetchStatusEnum::PrefetchAllowed;
     case PrefetchStatus::kPrefetchResponseUsed:
       return Preload::PrefetchStatusEnum::PrefetchResponseUsed;
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
@@ -283,6 +281,15 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchEvictedAfterCandidateRemoved;
     case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
       return Preload::PrefetchStatusEnum::PrefetchEvictedForNewerPrefetch;
+    case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleRedirectFromServiceWorker;
+    case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleRedirectToServiceWorker;
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleUserHasServiceWorkerNoFetchHandler;
   }
 }
 

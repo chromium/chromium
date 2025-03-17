@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -26,7 +27,7 @@ struct SubstitutionResult {
 };
 
 std::optional<SubstitutionResult> CreateSubstitutions(
-    const google::protobuf::MessageLite& request,
+    MultimodalMessageReadView request,
     const google::protobuf::RepeatedPtrField<proto::SubstitutedString>&
         config_substitutions);
 

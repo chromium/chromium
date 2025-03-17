@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "media/audio/audio_features.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_thread.h"
 #include "media/audio/audio_thread_hang_monitor.h"
@@ -33,12 +32,6 @@ namespace {
 // since there are no super-strict realtime requirements (no system audio calls
 // waiting on these threads).
 constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
-
-HangAction GetAudioThreadHangAction() {
-  return base::FeatureList::IsEnabled(features::kDumpOnAudioServiceHang)
-             ? HangAction::kDumpAndTerminateCurrentProcess
-             : HangAction::kTerminateCurrentProcess;
-}
 
 // Thread class for hosting owned AudioManager on the main thread of the
 // service, with a separate worker thread (started on-demand) for running things
@@ -72,7 +65,7 @@ MainThread::MainThread()
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       worker_thread_("AudioWorkerThread", kReatimeThreadPeriod),
       hang_monitor_(media::AudioThreadHangMonitor::Create(
-          GetAudioThreadHangAction(),
+          HangAction::kTerminateCurrentProcess,
           /*use the default*/ std::nullopt,
           base::DefaultTickClock::GetInstance(),
           task_runner_)) {}

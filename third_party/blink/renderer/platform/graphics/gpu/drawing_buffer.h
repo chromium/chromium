@@ -38,7 +38,6 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/texture_layer_client.h"
-#include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -51,6 +50,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -104,6 +104,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     virtual void DrawingBufferClientRestorePixelPackParameters() = 0;
     // Restores the GL_TEXTURE_2D binding for the active texture unit only.
     virtual void DrawingBufferClientRestoreTexture2DBinding() = 0;
+    // Restores the GL_TEXTURE_2D_ARRAY binding for the active texture unit.
+    virtual void DrawingBufferClientRestoreTexture2DArrayBinding() = 0;
     // Restores the GL_TEXTURE_CUBE_MAP binding for the active texture unit.
     virtual void DrawingBufferClientRestoreTextureCubeMapBinding() = 0;
     virtual void DrawingBufferClientRestoreRenderbufferBinding() = 0;
@@ -342,34 +344,31 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool Initialize(const gfx::Size&, bool use_multisampling);
 
-  void SetSharedImageInterfaceProviderForBitmapTest(
+  void SetSharedImageInterfaceProviderForSoftwareRenderingTest(
       std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider);
 
-  struct RegisteredBitmap {
-    RegisteredBitmap(
-        scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
+  struct SoftwareResource {
+    SoftwareResource(
         scoped_refptr<gpu::ClientSharedImage> shared_image,
         gpu::SyncToken sync_token,
         base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
             sii_provider)
-        : bitmap(std::move(bitmap)),
-          shared_image(std::move(shared_image)),
+        : shared_image(std::move(shared_image)),
           sync_token(std::move(sync_token)),
           sii_provider(sii_provider) {}
-    RegisteredBitmap() = default;
+    SoftwareResource() = default;
 
     // Explicitly move-only.
-    RegisteredBitmap(RegisteredBitmap&&) = default;
-    RegisteredBitmap& operator=(RegisteredBitmap&&) = default;
+    SoftwareResource(SoftwareResource&&) = default;
+    SoftwareResource& operator=(SoftwareResource&&) = default;
 
-    scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
     base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
   };
-  // Shared memory bitmaps that were released by the compositor and can be used
-  // again by this DrawingBuffer.
-  Vector<RegisteredBitmap> recycled_bitmaps_;
+  // Resources that were released by the compositor and can be used again by
+  // this DrawingBuffer.
+  Vector<SoftwareResource> recycled_software_resources_;
 
  private:
   friend class ScopedRGBEmulationForBlitFramebuffer;
@@ -513,27 +512,31 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded(
       DiscardBehavior discardBehavior);
 
-  bool PrepareTransferableResourceInternal(
-      scoped_refptr<gpu::ClientSharedImage>* client_si,
-      viz::TransferableResource* out_resource,
+  // Exports a SharedImage holding the backbuffer's contents for external
+  // usage:
+  // * Ensures that the backbuffer's contents are up-to-date.
+  // * If the backbuffer's contents need to be preserved, copies the
+  //   backbuffer's contents into a newly allocated/recycled buffer and
+  //   exports the SharedImage from that buffer. Otherwise exports the
+  //   backbuffer's SharedImage directly and allocates/recycles a new
+  //   buffer to serve as the backbuffer.
+  // * Ends DrawingBuffer's GL access on the SharedImage of the buffer being
+  //   exported.
+  // * Changes `front_color_buffer_` to point to the buffer being exported.
+  // * Saves a ref on the buffer being exported in `out_release_callback`,
+  //   which should be invoked when the buffer's SharedImage is available for
+  //   reuse by WebGL after the external usage finishes.
+  scoped_refptr<gpu::ClientSharedImage> ExportSharedImageFromBackBuffer(
+      gpu::SyncToken& sync_token,
       viz::ReleaseCallback* out_release_callback);
 
-  // Helper functions to be called only by PrepareTransferableResourceInternal.
-  bool FinishPrepareTransferableResourceGpu(
-      viz::TransferableResource* out_resource,
-      scoped_refptr<gpu::ClientSharedImage>* client_si,
-      viz::ReleaseCallback* out_release_callback);
-  bool FinishPrepareTransferableResourceSoftware(
-      viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback);
-
-  // Callbacks for mailboxes given to the compositor from
-  // FinishPrepareTransferableResource{Gpu,Software}.
+  // Callbacks for SharedImages exported for external usage (e.g., by canvas/
+  // compositor/static bitmap image).
   static void NotifyMailboxReleasedGpu(scoped_refptr<ColorBuffer>,
                                        const gpu::SyncToken&,
                                        bool lost_resource);
   void MailboxReleasedGpu(scoped_refptr<ColorBuffer>, bool lost_resource);
-  void MailboxReleasedSoftware(RegisteredBitmap,
+  void MailboxReleasedSoftware(SoftwareResource,
                                const gpu::SyncToken&,
                                bool lost_resource);
 
@@ -546,7 +549,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   void ClearCcLayer();
 
-  RegisteredBitmap CreateOrRecycleBitmap();
+  SoftwareResource CreateOrRecycleSoftwareResource();
 
   // Updates the current size of the buffer, ensuring that
   // s_currentResourceUsePixels is updated.

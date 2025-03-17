@@ -67,6 +67,7 @@ namespace {
 
 const char* kLoginId = "hans";
 const char* kLoginEmail = "hans@my.domain.com";
+const char* kDeviceSerialNumber = "ABC123DEF456";
 
 const std::vector<std::string> kValidApnTypes = {
     ::onc::cellular_apn::kIpTypeAutomatic,
@@ -84,6 +85,7 @@ base::flat_map<std::string, std::string> GetTestStringSubstitutions() {
   base::flat_map<std::string, std::string> substitutions;
   substitutions[::onc::substitutes::kLoginID] = kLoginId;
   substitutions[::onc::substitutes::kLoginEmail] = kLoginEmail;
+  substitutions[::onc::substitutes::kDeviceSerialNumber] = kDeviceSerialNumber;
   return substitutions;
 }
 
@@ -103,7 +105,7 @@ TEST(ONCStringExpansion, OpenVPN) {
   EXPECT_EQ(*actual_expanded, std::string("abc ") + kLoginEmail + " def");
 }
 
-TEST(ONCStringExpansion, WiFi_EAP) {
+TEST(ONCStringExpansion, WiFiEap) {
   base::Value::Dict wifi_onc =
       test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
 
@@ -116,6 +118,71 @@ TEST(ONCStringExpansion, WiFi_EAP) {
   ASSERT_TRUE(actual_expanded);
   EXPECT_EQ(*actual_expanded,
             std::string("abc ") + kLoginId + "@my.domain.com");
+}
+
+// Test that placeholders are being expanded in the ClientCertPattern fields.
+TEST(ONCStringExpansion, WiFiEapPlaceholdersAreReplaced) {
+  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+      "wifi_clientcert_with_cert_placeholders.onc");
+
+  VariableExpander variable_expander(GetTestStringSubstitutions());
+  ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
+                           &wifi_onc);
+
+  base::Value::Dict* expanded_issuer =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Issuer");
+  ASSERT_TRUE(expanded_issuer);
+  EXPECT_EQ(*expanded_issuer,
+            base::Value::Dict()
+                .Set("CommonName", kDeviceSerialNumber)
+                .Set("Locality", kDeviceSerialNumber)
+                .Set("Organization", kDeviceSerialNumber)
+                .Set("OrganizationalUnit", kDeviceSerialNumber));
+
+  base::Value::Dict* expanded_subject =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Subject");
+  ASSERT_TRUE(expanded_subject);
+  EXPECT_EQ(*expanded_subject,
+            base::Value::Dict()
+                .Set("CommonName", kDeviceSerialNumber)
+                .Set("Locality", kDeviceSerialNumber)
+                .Set("Organization", kDeviceSerialNumber)
+                .Set("OrganizationalUnit", kDeviceSerialNumber));
+}
+
+// Test that strings that contain names of placeholders, but don't have the ${}
+// brackets around them are treated like normal strings and are not replaced.
+TEST(ONCStringExpansion, WiFiEapAlmostPlaceholdersAreNotReplaced) {
+  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+      "wifi_clientcert_with_almost_placeholders.onc");
+
+  VariableExpander variable_expander(GetTestStringSubstitutions());
+  ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
+                           &wifi_onc);
+
+  std::string* name = wifi_onc.FindStringByDottedPath("Name");
+  ASSERT_TRUE(name);
+  EXPECT_EQ(*name, "DEVICE_SERIAL_NUMBER_placeholder_test");
+
+  constexpr char kExpectedValue[] = "DEVICE_SERIAL_NUMBER";
+
+  base::Value::Dict* expanded_issuer =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Issuer");
+  ASSERT_TRUE(expanded_issuer);
+  EXPECT_EQ(*expanded_issuer, base::Value::Dict()
+                                  .Set("CommonName", kExpectedValue)
+                                  .Set("Locality", kExpectedValue)
+                                  .Set("Organization", kExpectedValue)
+                                  .Set("OrganizationalUnit", kExpectedValue));
+
+  base::Value::Dict* expanded_subject =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Subject");
+  ASSERT_TRUE(expanded_subject);
+  EXPECT_EQ(*expanded_subject, base::Value::Dict()
+                                   .Set("CommonName", kExpectedValue)
+                                   .Set("Locality", kExpectedValue)
+                                   .Set("Organization", kExpectedValue)
+                                   .Set("OrganizationalUnit", kExpectedValue));
 }
 
 TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {

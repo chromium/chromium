@@ -5,17 +5,21 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
+import type {SettingsGoogleDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {SettingsRadioGroupElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, SettingsGoogleDriveSubpageElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {CrButtonElement} from 'chrome://os-settings/os_settings.js';
+import {SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {PasswordSettingsApi} from './os_people_page/password_settings_api.js';
 import {PinSettingsApi} from './os_people_page/pin_settings_api.js';
-import {PasswordSettingsApiRemote} from './password_settings_api.test-mojom-webui.js';
-import {PinSettingsApiRemote} from './pin_settings_api.test-mojom-webui.js';
-import {GoogleDriveSettingsInterface, GoogleDriveSettingsReceiver, GoogleDriveSettingsRemote, LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
-import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, hasStringProperty, Lazy, querySelectorShadow, retry, retryUntilSome} from './utils.js';
+import type {PasswordSettingsApiRemote} from './password_settings_api.test-mojom-webui.js';
+import type {PinSettingsApiRemote} from './pin_settings_api.test-mojom-webui.js';
+import type {GoogleDriveSettingsInterface, GoogleDriveSettingsRemote, LockScreenSettingsInterface, LockScreenSettingsRemote, OSSettingsDriverInterface} from './test_api.test-mojom-webui.js';
+import {GoogleDriveSettingsReceiver, LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsReceiver, OSSettingsBrowserProcess, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
+import type {Lazy} from './utils.js';
+import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, hasStringProperty, querySelectorShadow, retry, retryUntilSome} from './utils.js';
 
 class RecoveryDialog {
   private element: HTMLElement;
@@ -372,14 +376,16 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
     assertTrue(this.googleDriveSubpage_?.freeSpace === freeSpace);
   }
 
-  async assertBulkPinningSpace(requiredSpace: string, freeSpace: string):
+  assertBulkPinningSpace(requiredSpace: string, freeSpace: string):
       Promise<void> {
     this.assertRequiredSpace(requiredSpace);
     this.assertRemainingSpace(freeSpace);
+    return Promise.resolve();
   }
 
-  async assertContentCacheSize(contentCacheSize: string): Promise<void> {
+  assertContentCacheSize(contentCacheSize: string): Promise<void> {
     assertTrue(this.googleDriveSubpage_?.contentCacheSize === contentCacheSize);
+    return Promise.resolve();
   }
 
   async clickClearOfflineFilesAndAssertNewSize(newSize: string): Promise<void> {

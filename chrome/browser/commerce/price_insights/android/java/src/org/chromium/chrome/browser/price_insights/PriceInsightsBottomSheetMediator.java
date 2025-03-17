@@ -160,7 +160,7 @@ public class PriceInsightsBottomSheetMediator {
             RecordHistogram.recordEnumeratedHistogram(
                     "Commerce.PriceInsights.PriceTracking." + histogramActionName,
                     mPriceBucket,
-                    PriceBucket.MAX_VALUE + 1);
+                    PriceBucket.MAX_VALUE);
             Callback<Boolean> callback =
                     (success) -> {
                         updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
@@ -221,7 +221,7 @@ public class PriceInsightsBottomSheetMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 "Commerce.PriceInsights.BuyingOptionsClicked",
                 mPriceBucket,
-                PriceBucket.MAX_VALUE + 1);
+                PriceBucket.MAX_VALUE);
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         mTabModelSelector.openNewTab(
                 loadUrlParams, TabLaunchType.FROM_LINK, mTab, /* incognito= */ false);

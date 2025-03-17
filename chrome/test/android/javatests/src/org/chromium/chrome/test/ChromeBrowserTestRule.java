@@ -9,6 +9,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
@@ -39,13 +40,8 @@ public class ChromeBrowserTestRule implements TestRule {
         return mSigninTestRule.addAccount(accountName);
     }
 
-    /** Adds and signs in an account with the default name without sync consent. */
-    public CoreAccountInfo addTestAccountThenSignin() {
-        return mSigninTestRule.addTestAccountThenSignin();
-    }
-
-    /** Add and sign in an account with the default name. */
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
-        return mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+    /** Adds and signs in with {@param account}. */
+    public void addAccountThenSignin(AccountInfo account) {
+        mSigninTestRule.addAccountThenSignin(account);
     }
 }

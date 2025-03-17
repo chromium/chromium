@@ -5,18 +5,21 @@
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "tips_notifications_egtest.mm" ]
+  sources = [
+    "tips_notifications_egtest.mm",
+    "tips_promos_egtest.mm",
+  ]
   deps = [
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/push_notification/ui_bundled:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/tips_notifications/model:utils",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:constants",
     "//ios/chrome/common/ui/confirmation_alert:constants",

@@ -4,9 +4,9 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
@@ -16,6 +16,7 @@ import java.util.List;
  * The core service class for handling tab group sync across devices. Provides 1. Mutation methods
  * to propagate local changes to remote. 2. Observer interface to propagate remote changes to local.
  */
+@NullMarked
 public interface TabGroupSyncService {
 
     /**
@@ -105,12 +106,11 @@ public interface TabGroupSyncService {
     void removeObserver(Observer observer);
 
     /**
-     * Creates a remote tab group with the given local group ID.
+     * Adds a given {@link SavedTabGroup} to the service.
      *
-     * @param localTabGroupId The local tab group ID.
-     * @return The sync ID of the group after it has been added to sync.
+     * @param savedTabGroup The {@link SavedTabGroup} to be added to the service.
      */
-    String createGroup(LocalTabGroupId localTabGroupId);
+    void addGroup(SavedTabGroup savedTabGroup);
 
     /**
      * Removes a remote tab group which is open locally.
@@ -133,8 +133,7 @@ public interface TabGroupSyncService {
      * @param title The title of the tab group.
      * @param color The color of the tab group.
      */
-    void updateVisualData(
-            LocalTabGroupId tabGroupId, @NonNull String title, @TabGroupColorId int color);
+    void updateVisualData(LocalTabGroupId tabGroupId, String title, @TabGroupColorId int color);
 
     /**
      * Makes the saved tab group a shared group.
@@ -142,7 +141,23 @@ public interface TabGroupSyncService {
      * @param tabGroupId The local group ID of the corresponding tab group.
      * @param collaborationId Collaboration ID with which the group is associated.
      */
-    void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId);
+    void makeTabGroupShared(LocalTabGroupId tabGroupId, String collaborationId);
+
+    /**
+     * Starts the process of converting a shared tab group to saved tab group.
+     *
+     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param callback Callback to be called when group is converted to saved tab group.
+     */
+    void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, @Nullable Callback<Boolean> callback);
+
+    /**
+     * Called when shared tab group is successfully converted to saved tab group.
+     *
+     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param success boolean for telling if the operation succeeded or failed.
+     */
+    void onTabGroupUnShareComplete(LocalTabGroupId tabGroupId, boolean success);
 
     /**
      * Adds a tab to a remote group. Should be called with response to a local tab addition to a tab
@@ -193,8 +208,9 @@ public interface TabGroupSyncService {
      * @param tabGroupId The local group ID of the corresponding tab group. Null if the tab is not
      *     part of a group.
      * @param tabId The local ID of the corresponding tab.
+     * @param tabTitle The title of the corresponding tab.
      */
-    void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId);
+    void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId, String tabTitle);
 
     /**
      * Called to return all the remote tab group IDs currently existing in the system.
@@ -209,6 +225,7 @@ public interface TabGroupSyncService {
      * @param syncGroupId The sync ID of the group to be returned.
      * @return The associated {@link SavedTabGroup}.
      */
+    @Nullable
     SavedTabGroup getGroup(String syncGroupId);
 
     /**
@@ -275,6 +292,14 @@ public interface TabGroupSyncService {
      *     attribution metadata.
      */
     boolean isRemoteDevice(String syncCacheGuid);
+
+    /**
+     * Returns whether a tab group with the given `sync_tab_group_id` was previously closed on this
+     * device. Reset to false whenever the user opens the group intentionally.
+     *
+     * @param syncTabGroupId The sync ID of the associated tab group.
+     */
+    boolean wasTabGroupClosedLocally(String syncTabGroupId);
 
     /**
      * Called to explicitly record a tab group event. See native for full documentation.

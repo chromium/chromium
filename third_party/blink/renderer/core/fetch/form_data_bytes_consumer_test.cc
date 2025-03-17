@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -19,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_test_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -35,6 +37,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
+#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -215,11 +218,12 @@ class FormDataBytesConsumerTest : public PageTestBase {
         .SetBinderForTesting(mojom::FileUtilitiesHost::Name_,
                              base::BindRepeating(&FileUtilitiesHostImpl::Bind));
 
-    auto fake_blob_registry = std::make_unique<FakeBlobRegistry>();
-    fake_blob_registry->support_binary_blob_bodies_ = true;
+    auto fake_blob_registry = std::make_unique<FakeBlobRegistry>(
+        /*support_binary_blob_bodies=*/true);
     mojo::MakeSelfOwnedReceiver(
         std::move(fake_blob_registry),
-        blob_registry_remote_.BindNewPipeAndPassReceiver());
+        blob_registry_remote_.BindNewPipeAndPassReceiver(),
+        Platform::Current()->GetIOTaskRunner());
     BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
 
     CHECK(scoped_temp_dir_.CreateUniqueTempDir());
@@ -228,12 +232,11 @@ class FormDataBytesConsumerTest : public PageTestBase {
     BlobDataHandle::SetBlobRegistryForTesting(nullptr);
   }
 
-  void AppendFile(scoped_refptr<EncodedFormData> data,
-                  const std::string& content) {
+  void AppendFile(scoped_refptr<EncodedFormData> data, String content) {
     base::FilePath file_path;
     CHECK(
         base::CreateTemporaryFileInDir(scoped_temp_dir_.GetPath(), &file_path));
-    CHECK(base::WriteFile(file_path, content));
+    CHECK(base::WriteFile(file_path, content.Utf8()));
     String file_name = String::FromUTF8(file_path.AsUTF8Unsafe());
     data->AppendFile(file_name, std::nullopt);
   }
@@ -674,6 +677,13 @@ TEST_F(FormDataBytesConsumerTest, DataAndFile) {
   EXPECT_EQ("foo hello world", DrainAsString(data));
 }
 
+TEST_F(FormDataBytesConsumerTest, Blob) {
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  data->AppendBlob(CreateBlobHandle("baz"));
+  data->AppendBlob(CreateBlobHandle("bar"));
+  EXPECT_EQ("bazbar", DrainAsString(data));
+}
+
 TEST_F(FormDataBytesConsumerTest, DataFileAndBlob) {
   scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
   data->AppendData(base::span_from_cstring("foo"));
@@ -714,41 +724,71 @@ TEST_F(FormDataBytesConsumerTest, DataAndDataPipeAsync) {
   EXPECT_EQ("foo hello world", DrainAsString(data));
 }
 
-TEST_F(FormDataBytesConsumerTest, InvalidType1) {
+TEST_F(FormDataBytesConsumerTest, DataPipeAndBlob) {
   scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
   data->AppendData(base::span_from_cstring("foo"));
   AppendDataPipe(data, " hello world");
   data->AppendBlob(CreateBlobHandle("bar"));
-  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
-
-  // The mid "hello world" datapipe is ignored.
-  EXPECT_EQ("foobar", DrainAsString(data));
+  EXPECT_EQ("foo hello worldbar", DrainAsString(data));
 }
 
-TEST_F(FormDataBytesConsumerTest, InvalidType2) {
+TEST_F(FormDataBytesConsumerTest, BlobAndDataPipe) {
   scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
   data->AppendData(base::span_from_cstring("foo"));
   data->AppendBlob(CreateBlobHandle("blob"));
   AppendDataPipe(data, " datapipe");
-  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
+  EXPECT_EQ("fooblob datapipe", DrainAsString(data));
+}
 
-  auto* consumer =
-      MakeGarbageCollected<FormDataBytesConsumer>(GetFrame().DomWindow(), data);
-  Vector<char> str;
-  {
-    base::span<const char> buffer;
-    EXPECT_EQ(BytesConsumer::Result::kOk, consumer->BeginRead(buffer));
-    str.AppendSpan(buffer);
-    EXPECT_EQ(BytesConsumer::Result::kOk, consumer->EndRead(buffer.size()));
-  }
-  EXPECT_EQ("foo", String(str));
+TEST_F(FormDataBytesConsumerTest, DataPipeAndFile) {
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  AppendDataPipe(data, "foo");
+  AppendFile(data, " bar");
+  EXPECT_EQ("foo bar", DrainAsString(data));
+}
 
-  {
-    base::span<const char> buffer;
-    EXPECT_EQ(BytesConsumer::Result::kError, consumer->BeginRead(buffer));
+// Any element type combination should be consumed properly.
+TEST_F(FormDataBytesConsumerTest, Any) {
+  FormDataElement::Type types[] = {
+      FormDataElement::kData,
+      FormDataElement::kEncodedFile,
+      FormDataElement::kEncodedBlob,
+      FormDataElement::kDataPipe,
+  };
+
+  auto append = base::BindRepeating(
+      [](FormDataBytesConsumerTest* test, scoped_refptr<EncodedFormData> data,
+         FormDataElement::Type type, String content) {
+        switch (type) {
+          case FormDataElement::kData:
+            data->AppendData(content.RawByteSpan());
+            break;
+          case FormDataElement::kEncodedFile:
+            test->AppendFile(data, content);
+            break;
+          case FormDataElement::kEncodedBlob:
+            data->AppendBlob(CreateBlobHandle(content));
+            break;
+          case FormDataElement::kDataPipe:
+            AppendDataPipe(data, content);
+            break;
+        }
+      },
+      base::Unretained(this));
+
+  for (auto type1 : types) {
+    for (auto type2 : types) {
+      for (auto type3 : types) {
+        scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+        append.Run(data, type1, "foo");
+        append.Run(data, type2, " bar");
+        append.Run(data, type3, " baz");
+        EXPECT_EQ("foo bar baz", DrainAsString(data))
+            << type1 << ", " << type2 << ", " << type3;
+      }
+    }
   }
 }
-// TODO(crbug.com/374124998): We should add more testing.
 
 }  // namespace
 }  // namespace blink

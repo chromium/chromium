@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -29,7 +30,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1034,8 +1034,8 @@ bool WebAppIconManager::HasIcons(const webapps::AppId& app_id,
   if (!web_app)
     return false;
 
-  return base::ranges::includes(web_app->downloaded_icon_sizes(purpose),
-                                icon_sizes);
+  return std::ranges::includes(web_app->downloaded_icon_sizes(purpose),
+                               icon_sizes);
 }
 
 std::optional<WebAppIconManager::IconSizeAndPurpose>

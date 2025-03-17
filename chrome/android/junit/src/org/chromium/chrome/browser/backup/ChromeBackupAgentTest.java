@@ -302,7 +302,7 @@ public class ChromeBackupAgentTest {
                         "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
                         unameBytes.length);
         verify(backupData).writeEntityData(unameBytes, unameBytes.length);
-        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId().toString());
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
@@ -412,7 +412,7 @@ public class ChromeBackupAgentTest {
                 .writeEntityHeader(
                         "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
                         unameBytes.length);
-        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId().toString());
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
@@ -622,7 +622,7 @@ public class ChromeBackupAgentTest {
         BackupDataInput backupData = mock(BackupDataInput.class);
 
         String syncingUserEmail = hasSyncingUser ? mAccountInfo.getEmail() : "";
-        String signedInUserGaiaId = hasSignedInUser ? mAccountInfo.getGaiaId() : "";
+        String signedInUserGaiaId = hasSignedInUser ? mAccountInfo.getGaiaId().toString() : "";
         ArrayList<Pair<String, byte[]>> keysAndValues =
                 new ArrayList(
                         Arrays.asList(
@@ -872,6 +872,42 @@ public class ChromeBackupAgentTest {
     }
 
     /**
+     * Test method for {@link ChromeBackupAgent#onRestore} when there's no signed-in account record
+     * in the backup data. The restore should be skipped.
+     */
+    @Test
+    public void testOnRestore_noUserInBackup() throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(
+                        /* hasSyncingUser= */ false,
+                        /* hasSignedInUser= */ false,
+                        /* hasAccountSettings= */ true);
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            // Triggers a restore.
+            mAgent.onRestore(backupData, 0, newState);
+        }
+
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        assertFalse(prefs.contains(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
+        verify(mTaskRunner, never())
+                .startBackgroundTasks(
+                        /* allocateChildConnection= */ false, /* fetchVariationSeed= */ true);
+
+        // Verify that no sign-in or prefs restoration is done.
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.NO_SIGNED_IN_ACCOUNT_IN_BACKUP));
+        verify(mSigninManager, never()).signin(any(CoreAccountInfo.class), anyInt(), any());
+        assertFalse(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
+        verifySyncTypeBoolPrefsRestored(false);
+        verifyAccountSettingsBackupRestored(false);
+        verifyBoolPrefsMigratedToAccountSettings(false);
+    }
+
+    /**
      * Test method for {@link ChromeBackupAgent#onRestore} for a user that doesn't exist on the
      * device. Since the recorded signed-in account is not present on the device and can't be
      * signed-in, the restore should be skipped.
@@ -899,7 +935,7 @@ public class ChromeBackupAgentTest {
         verify(mPrefService, never()).setBoolean(any(), anyBoolean());
         verify(mTaskRunner)
                 .startBackgroundTasks(
-                        /* allocateChildConnection= */ false, /* initVariationSeed= */ true);
+                        /* allocateChildConnection= */ false, /* fetchVariationSeed= */ true);
 
         // Verify that no sign-in or prefs restoration is done.
         verifyRestoreFinishWithoutSignin();
@@ -988,10 +1024,11 @@ public class ChromeBackupAgentTest {
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.BROWSER_STARTUP_FAILED));
 
         // Test the remaining values are implemented
-        ChromeBackupAgentImpl.setRestoreStatus(ChromeBackupAgentImpl.RestoreStatus.NOT_SIGNED_IN);
+        ChromeBackupAgentImpl.setRestoreStatus(
+                ChromeBackupAgentImpl.RestoreStatus.ACCOUNT_NOT_FOUND);
         assertThat(
                 ChromeBackupAgentImpl.getRestoreStatus(),
-                equalTo(ChromeBackupAgentImpl.RestoreStatus.NOT_SIGNED_IN));
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.ACCOUNT_NOT_FOUND));
         ChromeBackupAgentImpl.setRestoreStatus(
                 ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED);
         assertThat(
@@ -1105,7 +1142,7 @@ public class ChromeBackupAgentTest {
                     .migrateGlobalDataTypePrefsToAccount(mPrefService, mAccountInfo.getGaiaId());
         } else {
             verify(mChromeBackupAgentJniMock, never())
-                    .migrateGlobalDataTypePrefsToAccount(any(), anyString());
+                    .migrateGlobalDataTypePrefsToAccount(any(), any());
         }
     }
 
@@ -1113,7 +1150,7 @@ public class ChromeBackupAgentTest {
         // Verify that the status of the restore has been recorded.
         assertThat(
                 ChromeBackupAgentImpl.getRestoreStatus(),
-                equalTo(ChromeBackupAgentImpl.RestoreStatus.NOT_SIGNED_IN));
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.ACCOUNT_NOT_FOUND));
 
         // Verify that the sign-in is not triggered immediately.
         verify(mSigninManager, never()).signin(any(CoreAccountInfo.class), anyInt(), any());

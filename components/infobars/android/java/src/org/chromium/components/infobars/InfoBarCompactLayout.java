@@ -22,6 +22,8 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.text.ChromeClickableSpan;
 
 /**
@@ -29,6 +31,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
  * should only be used by the {@link InfoBar} class, and is created when the InfoBar subclass
  * declares itself to be using a compact layout via {@link InfoBar#usesCompactLayout}.
  */
+@NullMarked
 public class InfoBarCompactLayout extends LinearLayout implements View.OnClickListener {
     private final InfoBarInteractionHandler mInfoBar;
     private final int mCompactInfoBarSize;
@@ -51,7 +54,7 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
             InfoBarInteractionHandler infoBar,
             int iconResourceId,
             @ColorRes int iconTintId,
-            Bitmap iconBitmap) {
+            @Nullable Bitmap iconBitmap) {
         super(context);
         mInfoBar = infoBar;
         mCompactInfoBarSize =
@@ -96,11 +99,13 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
 
     /**
      * Adds an icon to the start of the infobar, if the infobar requires one.
+     *
      * @param iconResourceId Resource ID of the icon to use.
      * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.
      * @param iconBitmap Raw {@link Bitmap} to use instead of a resource.
      */
-    private void prepareIcon(int iconResourceId, @ColorRes int iconTintId, Bitmap iconBitmap) {
+    private void prepareIcon(
+            int iconResourceId, @ColorRes int iconTintId, @Nullable Bitmap iconBitmap) {
         ImageView iconView =
                 InfoBarLayout.createIconView(getContext(), iconResourceId, iconTintId, iconBitmap);
         if (iconView != null) {
@@ -126,8 +131,8 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
      */
     public static class MessageBuilder {
         private final InfoBarCompactLayout mLayout;
-        private CharSequence mMessage;
-        private CharSequence mLink;
+        private @Nullable CharSequence mMessage;
+        private @Nullable CharSequence mLink;
 
         /** @param layout The layout we are building a message view for. */
         public MessageBuilder(InfoBarCompactLayout layout) {

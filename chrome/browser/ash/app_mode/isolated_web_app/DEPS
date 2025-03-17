@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/app_mode",
+  "+chrome/browser/extensions/extension_special_storage_policy.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h",
@@ -30,6 +31,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/common/chrome_paths.h",
+  "+chrome/common/pref_names.h",
   "+chrome/common/url_constants.h",
   "+chrome/test/base",
 

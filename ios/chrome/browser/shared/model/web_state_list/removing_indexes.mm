@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 
 #import <algorithm>
+#import <variant>
 
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -200,23 +201,23 @@ RemovingIndexes& RemovingIndexes::operator=(RemovingIndexes&&) = default;
 RemovingIndexes::~RemovingIndexes() = default;
 
 int RemovingIndexes::count() const {
-  return absl::visit([](const auto& storage) { return storage.Count(); },
-                     removing_);
+  return std::visit([](const auto& storage) { return storage.Count(); },
+                    removing_);
 }
 
 RemovingIndexes::Range RemovingIndexes::span() const {
-  return absl::visit([](const auto& storage) { return storage.Span(); },
-                     removing_);
+  return std::visit([](const auto& storage) { return storage.Span(); },
+                    removing_);
 }
 
 bool RemovingIndexes::Contains(int index) const {
-  return absl::visit(
+  return std::visit(
       [index](const auto& storage) { return storage.ContainsIndex(index); },
       removing_);
 }
 
 int RemovingIndexes::IndexAfterRemoval(int index) const {
-  return absl::visit(
+  return std::visit(
       [index](const auto& storage) { return storage.IndexAfterRemoval(index); },
       removing_);
 }
@@ -225,7 +226,7 @@ TabGroupRange RemovingIndexes::RangeAfterRemoval(TabGroupRange range) const {
   if (!range.valid()) {
     return TabGroupRange::InvalidRange();
   }
-  return absl::visit(
+  return std::visit(
       [range](const auto& storage) { return storage.RangeAfterRemoval(range); },
       removing_);
 }

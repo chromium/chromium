@@ -12,8 +12,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,7 +30,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Acti
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
@@ -56,7 +53,7 @@ public class TabListEditorSelectionActionUnitTest {
     @Before
     public void setUp() {
         mContext = Robolectric.buildActivity(Activity.class).get();
-        mContext.setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mAction =
                 TabListEditorSelectionAction.createAction(
                         mContext, ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END);
@@ -67,7 +64,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
                 R.id.tab_list_editor_selection_menu_item,
@@ -90,7 +86,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTitleStateChange() {
         // For this test we will assume there are 2 tabs.
         List<Integer> selectedTabIds = new ArrayList<>();
@@ -144,7 +139,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectedAll_FromNoneSelected() {
         List<Integer> selectedTabIds = new ArrayList<>();
         when(mDelegate.areAllTabsSelected()).thenReturn(false);
@@ -155,7 +149,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectedAll_FromSomeSelected() {
         List<Integer> selectedTabIds = new ArrayList<>();
         selectedTabIds.add(5);
@@ -169,7 +162,6 @@ public class TabListEditorSelectionActionUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDeselectedAll_FromAllSelected() {
         List<Integer> selectedTabIds = new ArrayList<>();
         selectedTabIds.add(5);

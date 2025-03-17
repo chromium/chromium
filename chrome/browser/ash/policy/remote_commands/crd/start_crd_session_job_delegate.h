@@ -43,6 +43,9 @@ class StartCrdSessionJobDelegate {
     bool show_troubleshooting_tools = false;
     bool allow_reconnections = false;
     bool allow_file_transfer = false;
+    std::optional<base::TimeDelta> connection_auto_accept_timeout =
+        std::nullopt;
+    std::optional<base::TimeDelta> maximum_session_duration = std::nullopt;
   };
 
   virtual ~StartCrdSessionJobDelegate() = default;

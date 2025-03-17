@@ -58,8 +58,21 @@ ub-risk-4 = "ub-risk-4"
 criteria = [{{#each criteria}}{{#if @first}}{{else}}, {{/if}}"{{this}}"{{/each}}]
 {{/each}}
 
+[[exemptions.aho-corasick]]
+version = "1.1.3"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Part of ICU4X import. Partially audited in google3 without a published review, to be revisited later.
+
+Is not needed by the actual packages enabled in the ICU4X import.
+
+Critical dependency of a rust-lang maintained library (regex).
+
+https://crbug.com/366411886
+"""
+
 [[exemptions.cxx]]
-version = "1.0.135"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -78,10 +91,16 @@ Exemption updated to 1.0.129 in October 2024.
 Exemption updated to 1.0.130 in November 2024.
 Exemption updated to 1.0.131 in December 2024.
 Exemption updated to 1.0.135 in December 2024.
+Exemption updated to 1.0.136 in January 2025.
+Exemption updated to 1.0.137 in January 2025.
+Exemption updated to 1.0.140 in February 2025.
+Exemption updated to 1.0.141 in February 2025.
+Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.135"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -100,6 +119,25 @@ Exemption updated to 1.0.129 in October 2024.
 Exemption updated to 1.0.130 in November 2024.
 Exemption updated to 1.0.131 in December 2024.
 Exemption updated to 1.0.135 in December 2024.
+Exemption updated to 1.0.136 in January 2025.
+Exemption updated to 1.0.137 in January 2025.
+Exemption updated to 1.0.140 in February 2025.
+Exemption updated to 1.0.141 in February 2025.
+Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
+"""
+
+[[exemptions.icu_experimental]]
+version = "0.3.0-beta2"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, but needs comments.
+
+Is not needed by the actual packages enabled in the ICU4X import.
+
+Part of Google-co-maintained ICU4X project.
+
+https://crbug.com/366411886
 """
 
 [[exemptions.memchr]]
@@ -122,6 +160,18 @@ later if maybe we can just import their audit).
 Bumped up the exemption to 2.7.4 in June 2024, with a small and benign delta.
 """
 
+[[exemptions.num-bigint]]
+version = "0.4.6"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Part of ICU4X import. Partially audited in google3 without a published review, to be revisited later.
+
+Is not needed by the actual packages enabled in the ICU4X import.
+
+
+https://crbug.com/366411886
+"""
+
 [[exemptions.rand_core]]
 version = "0.6.4"
 criteria = "crypto-safe"
@@ -131,8 +181,21 @@ Grandparented-in when setting up `cargo vet` in Jan 2024
 TODO(b/341950532): Remove this exemption.
 """
 
+[[exemptions.regex-automata]]
+version = "0.4.9"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Part of ICU4X import. Partially audited in google3 without a published review, to be revisited later.
+
+Is not needed by the actual packages enabled in the ICU4X import.
+
+Maintained by rust-lang.
+
+https://crbug.com/366411886
+"""
+
 [[exemptions.ryu]]
-version = "1.0.18"
+version = "1.0.20"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024.
@@ -142,10 +205,30 @@ lack of a fully-audited baseline nothing was recorded in audits.toml
 
 Exemption updated to 1.0.17 in Feb 2024.
 Exemption updated to 1.0.18 in May 2024.
+Exemption updated to 1.0.19 in Feb 2025.
+Exemption updated to 1.0.20 in Feb 2025.
+"""
+
+[[exemptions.smallvec]]
+version = "1.14.0"
+criteria = "ub-risk-2"
+notes = """
+Part of ICU4X import. Audited in google3 with ub-risk-3, however it's a widely used crate and it should
+be fine to temporarily up its rating. The google3 audit showed that it needed better encapsulation and
+more comments (which disqualifies it from ub-risk-2), but it is still known to be sound.
+
+https://crbug.com/366411886
+
+Bumped up the exemption to 1.14.0 in February 2025.
+WARNING: The `malloc_size_of` feature has **not** been audited because
+this feature does not explicitly document its safety requirements.
+See also https://chromium-review.googlesource.com/c/chromium/src/+/6275133/comment/ea0d7a93_98051a2e/
+and https://github.com/servo/malloc_size_of/issues/8.
+This feature is banned in gnrt_config.toml.
 """
 
 [[exemptions.syn]]
-version = "2.0.90"
+version = "2.0.100"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -175,10 +258,50 @@ Exemption updated to 2.0.79 when updating the crate in October 2024.
 Exemption updated to 2.0.85 when updating the crate in October 2024.
 Exemption updated to 2.0.87 when updating the crate in November 2024.
 Exemption updated to 2.0.90 when updating the crate in November 2024.
+Exemption updated to 2.0.91 when updating the crate in December 2024.
+Exemption updated to 2.0.95 when updating the crate in January 2025.
+Exemption updated to 2.0.96 when updating the crate in January 2025.
+Exemption updated to 2.0.98 when updating the crate in February 2025.
+Exemption updated to 2.0.99 when updating the crate in February 2025.
+Exemption updated to 2.0.100 when updating the crate in March 2025.
+"""
+
+[[exemptions.tinystr]]
+version = "0.8.1"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Unsafe code is either authored or reviewed by a
+crabal member, but a formal audit is yet to be performed.
+
+Part of Google-co-maintained ICU4X project.
+
+https://crbug.com/393810918
+"""
+
+[[exemptions.utf8_iter]]
+version = "1.0.4"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, but needs comments.
+
+Is not needed by the actual packages enabled in the ICU4X import.
+
+Sister crate of Google-co-maintained ICU4X project, maintained by Mozillian ICU4X team members.
+
+https://crbug.com/366411886
 """
 
 [[exemptions.zerocopy]]
 version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerocopy]]
+version = "0.8.23"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Authored in Google and audit should come from there as well.
@@ -191,4 +314,32 @@ version = "0.7.35"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Authored in Google and audit should come from there as well.
+"""
+
+[[exemptions.zerovec]]
+version = "0.11.0"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Unsafe code is either authored or reviewed by a
+crabal member, but a formal audit is yet to be performed.
+
+Part of Google-co-maintained ICU4X project.
+
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerovec-derive]]
+version = "0.11.1"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Unsafe code is either authored or reviewed by a
+crabal member, but a formal audit is yet to be performed.
+
+Part of Google-co-maintained ICU4X project.
+
+
+https://crbug.com/366411886
+
+Exemption updated to 0.11.1 when updating the crate in February 2025.
 """

@@ -258,7 +258,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.addressLabel ], self.layoutGuide);
   } else {
-    self.overflowMenuButton = CreateOverflowMenuButton();
+    self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
     [self.contentView addSubview:self.overflowMenuButton];
     [staticConstraints
         addObject:[self.overflowMenuButton.topAnchor

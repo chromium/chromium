@@ -79,9 +79,9 @@ class AndroidAutofillManager : public AutofillManager,
                                    const FieldGlobalId& field_id,
                                    const gfx::Rect& caret_bounds) override {}
 
-  void OnTextFieldDidChangeImpl(const FormData& form,
-                                const FieldGlobalId& field_id,
-                                const base::TimeTicks timestamp) override;
+  void OnTextFieldValueChangedImpl(const FormData& form,
+                                   const FieldGlobalId& field_id,
+                                   const base::TimeTicks timestamp) override;
 
   void OnTextFieldDidScrollImpl(const FormData& form,
                                 const FieldGlobalId& field_id) override;
@@ -95,13 +95,18 @@ class AndroidAutofillManager : public AutofillManager,
   void OnFocusOnFormFieldImpl(const FormData& form,
                               const FieldGlobalId& field_id) override;
 
-  void OnSelectControlDidChangeImpl(const FormData& form,
-                                    const FieldGlobalId& field_id) override;
+  void OnSelectControlSelectionChangedImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id) override;
 
-  void OnJavaScriptChangedAutofilledValueImpl(const FormData& form,
-                                              const FieldGlobalId& field_id,
-                                              const std::u16string& old_value,
-                                              bool formatting_only) override {}
+  void OnJavaScriptChangedAutofilledValueImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const std::u16string& old_value) override {}
+
+  void OnLoadedServerPredictionsImpl(
+      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
+      override {}
 
   bool ShouldParseForms() override;
 

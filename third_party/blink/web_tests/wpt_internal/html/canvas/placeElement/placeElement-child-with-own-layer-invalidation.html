@@ -9,8 +9,7 @@
   <link rel="help" href="https://github.com/WICG/canvas-place-element" />
   <link rel="match" href="placeElement-ref.html">
   <!-- Use fuzzy matching to compensate for the 0.9999 opacity trick. -->
-  <!-- TODO(crbug.com/382294240): 2 pixels overflow the bounding box. -->
-  <meta name="fuzzy" content="maxDifference=0-98; totalPixels=0-3">
+  <meta name="fuzzy" content="maxDifference=0-1; totalPixels=0-1">
   <style>
     #placed {
       background-color: green;
@@ -27,7 +26,7 @@
 <body>
   <canvas>
     <div id="placed">
-      <div id="child">Placed Element</div>
+      <div id="child">Placed Element!</div>
     </div>
   </canvas>
 </body>

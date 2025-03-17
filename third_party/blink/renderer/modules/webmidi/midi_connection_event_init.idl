@@ -5,7 +5,7 @@
 // https://webaudio.github.io/web-midi-api/#MIDIConnectionEventInit
 
 dictionary MIDIConnectionEventInit : EventInit {
-    // TODO(foolip): |port| should be required and not nullable.
+    // TODO(crbug.com/40286113): `port` should be required and not nullable.
     // https://crbug.com/647693
     // https://github.com/WebAudio/web-midi-api/issues/168
     MIDIPort? port;

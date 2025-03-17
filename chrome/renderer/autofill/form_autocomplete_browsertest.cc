@@ -82,22 +82,22 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
                              FieldRendererId field_id,
                              const gfx::Rect& caret_bounds) override {}
 
-  void TextFieldDidChange(const FormData& form,
-                          FieldRendererId field_id,
-                          base::TimeTicks timestamp) override {}
+  void TextFieldValueChanged(const FormData& form,
+                             FieldRendererId field_id,
+                             base::TimeTicks timestamp) override {}
 
   void TextFieldDidScroll(const FormData& form,
                           FieldRendererId field_id) override {}
 
-  void SelectControlDidChange(const FormData& form,
-                              FieldRendererId field_id) override {
+  void SelectControlSelectionChanged(const FormData& form,
+                                     FieldRendererId field_id) override {
     select_control_changed_ = std::make_unique<FormData>(form);
   }
 
-  void JavaScriptChangedAutofilledValue(const FormData& form,
-                                        FieldRendererId field_id,
-                                        const std::u16string& old_value,
-                                        bool formatting_only) override {}
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      FieldRendererId field_id,
+      const std::u16string& old_value) override {}
 
   void AskForValuesToFill(
       const FormData& form,

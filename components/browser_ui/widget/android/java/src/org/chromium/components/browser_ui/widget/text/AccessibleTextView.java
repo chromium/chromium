@@ -10,7 +10,10 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Fake Button class, used so TextViews can announce themselves as Buttons, for accessibility. */
+@NullMarked
 public class AccessibleTextView extends TextView {
     public AccessibleTextView(Context context) {
         super(context);

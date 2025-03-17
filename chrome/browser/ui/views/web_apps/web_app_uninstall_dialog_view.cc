@@ -134,7 +134,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     checkbox_ = checkbox_container->AddChildView(std::move(checkbox));
   }
 
-  AddChildView(checkbox_container);
+  AddChildViewRaw(checkbox_container);
 
   uninstall_source_ = uninstall_source;
   install_manager_observation_.Observe(&provider_->install_manager());

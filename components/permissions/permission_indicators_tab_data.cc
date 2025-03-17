@@ -56,9 +56,9 @@ void PermissionIndicatorsTabData::OnMediaCaptureChanged(
 }
 
 void PermissionIndicatorsTabData::OnCapabilityTypesChanged(
-    content::WebContents::CapabilityType connection_type,
+    content::WebContentsCapabilityType connection_type,
     bool used) {
-  if (connection_type == content::WebContents::CapabilityType::kGeolocation) {
+  if (connection_type == content::WebContentsCapabilityType::kGeolocation) {
     if (used) {
       RecordActivity(RequestTypeForUma::PERMISSION_GEOLOCATION);
     } else {

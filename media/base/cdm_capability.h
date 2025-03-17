@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
@@ -54,7 +55,8 @@ struct MEDIA_EXPORT CdmCapability {
   CdmCapability(base::flat_set<AudioCodec> audio_codecs,
                 VideoCodecMap video_codecs,
                 base::flat_set<EncryptionScheme> encryption_schemes,
-                base::flat_set<CdmSessionType> session_types);
+                base::flat_set<CdmSessionType> session_types,
+                base::Version version);
   CdmCapability(const CdmCapability& other);
   ~CdmCapability();
 
@@ -73,6 +75,9 @@ struct MEDIA_EXPORT CdmCapability {
 
   // List of session types supported by the CDM.
   base::flat_set<CdmSessionType> session_types;
+
+  // Version of the CDM. May be empty if the version is not known.
+  base::Version version;
 };
 
 bool MEDIA_EXPORT operator==(const CdmCapability& lhs,
@@ -108,7 +113,9 @@ enum class CdmCapabilityQueryStatus {
   kCreateDummyMediaFoundationCdmFailed = 9,
   // Unexpected empty video codec, encryption scheme or session type.
   kUnexpectedEmptyCapability = 10,
-  kMaxValue = kUnexpectedEmptyCapability,
+  // MediaDrm not available for the key system and robustness specified.
+  kNoMediaDrmSupport = 11,
+  kMaxValue = kNoMediaDrmSupport,
 };
 
 // Returns a string version of the status.

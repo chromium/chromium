@@ -36,10 +36,6 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
 class ClipboardProvider;
 class DocumentProvider;
 class FeaturedSearchProvider;
@@ -279,7 +275,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   const AutocompleteResult& result() const { return published_result_; }
   // Groups `published_result_` by search vs URL.
   // See also `AutocompleteResult::GroupSuggestionsBySearchVsURL()`.
-  void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
+  virtual void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
   bool done() const {
     return last_update_type_ == UpdateType::kNone ||
            last_update_type_ == UpdateType::kSyncPassOnly ||
@@ -313,7 +309,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Sets the position of the omnibox when it's in steady state (unfocused).
   // Only used on iOS for logging purposes.
-  void SetSteadyStateOmniboxPosition(
+  virtual void SetSteadyStateOmniboxPosition(
       metrics::OmniboxEventProto::OmniboxPosition position);
 
  private:
@@ -371,6 +367,20 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleSelectionOnResultSelection);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, AccessibleResultName);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
+                           GetMatchIconForFeaturedEnterpriseSearchAggregator);
+  FRIEND_TEST_ALL_PREFIXES(
+      OmniboxEditModelPopupTest,
+      GetMatchIconForFeaturedEnterpriseSearchAggregatorContentSuggestion);
+  FRIEND_TEST_ALL_PREFIXES(
+      OmniboxEditModelPopupTest,
+      GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword);
+  FRIEND_TEST_ALL_PREFIXES(
+      OmniboxEditModelPopupTest,
+      GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
+                           GetIconForExtensionWithImageURL);
+  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
 
   // A minimal representation of the previous `AutocompleteResult`. Used by
   // `UpdateResult()`'s helper methods.

@@ -7,6 +7,10 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 // We add nognchecks on these includes so that Android bots do not fail
 // dependency checks.
@@ -130,8 +134,10 @@ void IdentityDialogController::OnAccountsDisplayed() {
   std::move(on_accounts_displayed_).Run();
 }
 
-void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
-                                                 const Account& account) {
+void IdentityDialogController::OnAccountSelected(
+    const GURL& idp_config_url,
+    const std::string& account_id,
+    const content::IdentityRequestAccount::LoginState& login_state) {
   CHECK(on_account_selection_);
 
   // We only allow dismiss after account selection on active modes and not on
@@ -143,9 +149,8 @@ void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
   }
 
   std::move(on_account_selection_)
-      .Run(idp_config_url, account.id,
-           account.login_state ==
-               content::IdentityRequestAccount::LoginState::kSignIn);
+      .Run(idp_config_url, account_id,
+           login_state == content::IdentityRequestAccount::LoginState::kSignIn);
 }
 
 void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
@@ -252,7 +257,16 @@ bool IdentityDialogController::TrySetAccountView() {
                   BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
     return false;
   }
-  account_view_ = std::make_unique<FedCmAccountSelectionView>(this, tab);
+  segmentation_platform::SegmentationPlatformService*
+      segmentation_platform_service = nullptr;
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::kSegmentationPlatformFedCmUser)) {
+    segmentation_platform_service =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetForProfile(tab->GetBrowserWindowInterface()->GetProfile());
+  }
+  account_view_ = std::make_unique<webid::FedCmAccountSelectionView>(
+      this, tab, segmentation_platform_service);
 #endif
   return true;
 }

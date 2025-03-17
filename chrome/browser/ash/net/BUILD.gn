@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("net") {
   sources = [
@@ -49,11 +49,8 @@ static_library("net") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/kcer",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net/dns_over_https",
@@ -72,6 +69,7 @@ static_library("net") {
     "//chromeos/ash/components/dbus/system_proxy",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/kcer",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/nearby/common/connections_manager",
@@ -79,6 +77,7 @@ static_library("net") {
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/sync_wifi",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/services/network_config/public/cpp",
     "//components/captive_portal/core",
@@ -137,7 +136,6 @@ source_set("unit_tests") {
   deps = [
     ":net",
     ":test_support",
-    "//ash/components/kcer:test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -153,6 +151,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/system_proxy",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
+    "//chromeos/ash/components/kcer:test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",

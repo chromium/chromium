@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
@@ -36,8 +34,8 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -137,7 +135,7 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
     // Create a fake anchor view for the bubble.
     BookmarkBubbleView::ShowBubble(
         anchor_widget_->GetContentsView(),
-        browser()->tab_strip_model()->GetActiveWebContents(), nullptr, nullptr,
+        browser()->tab_strip_model()->GetActiveWebContents(), nullptr,
         browser(), GURL(kTestBookmarkURL), already_bookmarked);
   }
 
@@ -189,9 +187,9 @@ TEST_F(BookmarkBubbleViewTest, SyncPromoNotSignedIn) {
   CreateBubbleView();
   views::View* footnote =
       BookmarkBubbleView::bookmark_bubble()->GetFootnoteViewForTesting();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(footnote);
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(footnote);
 #endif
 }
@@ -437,7 +435,7 @@ class BookmarkBubbleViewWithAccountBookmarksTest
  public:
   BookmarkBubbleViewWithAccountBookmarksTest() {
     test_features_.InitAndEnableFeature(
-        syncer::kSyncEnableBookmarksInTransportMode);
+        switches::kSyncEnableBookmarksInTransportMode);
   }
 };
 

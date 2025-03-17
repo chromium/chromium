@@ -13,6 +13,8 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "crypto/aes_cbc.h"
+#include "crypto/random.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/test_helpers.h"
@@ -187,16 +189,15 @@ MATCHER_P2(SingleSegmentQueue,
   return first.uri == GURL(urlstr) && first.range == range;
 }
 
-std::tuple<std::string, std::unique_ptr<crypto::SymmetricKey>> Encrypt(
+static constexpr size_t kKeySize = 16;
+std::tuple<std::string, std::array<uint8_t, kKeySize>> Encrypt(
     std::string cleartext,
-    std::string ivstr) {
-  std::string ciphertext;
-  auto mode = crypto::SymmetricKey::AES;
-  auto key = crypto::SymmetricKey::GenerateRandomKey(mode, 128);
-  auto encryptor = std::make_unique<crypto::Encryptor>();
-  encryptor->Init(key.get(), crypto::Encryptor::Mode::CBC, ivstr);
-  encryptor->Encrypt(cleartext, &ciphertext);
-  return std::make_tuple(ciphertext, std::move(key));
+    base::span<const uint8_t, crypto::aes_cbc::kBlockSize> iv) {
+  std::array<uint8_t, kKeySize> key;
+  crypto::RandBytes(key);
+  auto ciphertext =
+      crypto::aes_cbc::Encrypt(key, iv, base::as_byte_span(cleartext));
+  return std::make_tuple(std::string(base::as_string_view(ciphertext)), key);
 }
 
 class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
@@ -1020,14 +1021,18 @@ TEST_F(HlsManifestDemuxerEngineTest, TestOriginTainting) {
 TEST_F(HlsManifestDemuxerEngineTest, TestInitialSegmentEncrypted) {
   std::string cleartext = "G <- 0x47 (G) is the sentinal byte for TS content";
   std::string ciphertext;
-  std::unique_ptr<crypto::SymmetricKey> key;
-  std::tie(ciphertext, key) = Encrypt(cleartext, "ffffffffffffffff");
+  std::array<uint8_t, kKeySize> key;
+  constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{
+      'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
+      'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
+  };
+  std::tie(ciphertext, key) = Encrypt(cleartext, kIv);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8",
       kLiveFullEncryptedMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/K", key->key());
+      "http://media.example.com/K", std::string(base::as_string_view(key)));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/13979.js", ciphertext);
   InitializeEngine();

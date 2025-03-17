@@ -347,11 +347,6 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
   }
 
-  // No need to worry about a query failure for `GetDefaultPrinterName()` here,
-  // that would mean we can just treat it as there being no default printer.
-  std::string default_printer;
-  GetDefaultPrinterName(default_printer);
-
   const auto* printer_info =
       reinterpret_cast<PRINTER_INFO_4*>(printer_info_buffer.data());
   UNSAFE_TODO({
@@ -366,7 +361,6 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
         continue;
       }
 
-      info.value().is_default = (info.value().printer_name == default_printer);
       printer_list.push_back(info.value());
     }
   });
@@ -413,14 +407,6 @@ mojom::ResultCode PrintBackendWin::GetPrinterBasicInfo(
   }
 
   *printer_info = info.value();
-  std::string default_printer;
-  mojom::ResultCode result = GetDefaultPrinterName(default_printer);
-  if (result == mojom::ResultCode::kSuccess) {
-    printer_info->is_default = (printer_info->printer_name == default_printer);
-  } else {
-    // Query failure means we can treat this printer as not the default.
-    printer_info->is_default = false;
-  }
   return mojom::ResultCode::kSuccess;
 }
 

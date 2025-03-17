@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "h264_video_rate_control_wrapper.h"
+#include "media/gpu/windows/h264_video_rate_control_wrapper.h"
 
 #include "media/gpu/h264_ratectrl_rtc.h"
 
@@ -36,13 +36,13 @@ H264RateControlConfigRTC H264RateControl::ConvertControlConfig(
   constexpr base::TimeDelta kHRDBufferDelayDisplay = base::Milliseconds(3000);
   H264RateControlConfigRTC rc_config;
 
-  // Coded width and heght.
+  // Coded width and height.
   rc_config.frame_size.SetSize(config.width, config.height);
   // Maximum GOP duration in milliseconds. It is set to maximum value.
   rc_config.gop_max_duration = base::TimeDelta::Max();
   // Source frame rate.
   rc_config.frame_rate_max = static_cast<float>(config.framerate);
-  // Number of temopral layers.
+  // Number of temporal layers.
   rc_config.num_temporal_layers = config.ts_number_layers;
   // Type of the video content (camera or display).
   rc_config.content_type = config.content_type;
@@ -75,7 +75,6 @@ H264RateControlConfigRTC H264RateControl::ConvertControlConfig(
       DCHECK_GT(rc_config.layer_settings[tid].avg_bitrate,
                 rc_config.layer_settings[tid - 1].avg_bitrate);
     }
-
   }
   return rc_config;
 }

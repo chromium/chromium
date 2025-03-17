@@ -21,7 +21,7 @@ constexpr base::TimeDelta kFinalMigrationTimeout = base::Hours(1);
 inline constexpr char kUploadRootPrefix[] = "ChromeOS device";
 
 // The maximum number of retries before failing the migration.
-inline constexpr int kMaxRetryCount = 5;
+inline constexpr int kMaxRetryCount = 20;
 
 // The path where the log file for migration upload errors is stored.
 const base::FilePath::CharType kErrorLogFileBasePath[] =
@@ -30,6 +30,10 @@ const base::FilePath::CharType kErrorLogFileBasePath[] =
 // The name of the log file for migration upload errors.
 const base::FilePath::CharType kErrorLogFileName[] =
     FILE_PATH_LITERAL("local_files_upload");
+
+// The amount of time a file uploader waits for network reconnection before
+// failing.
+constexpr base::TimeDelta kReconnectionTimeout = base::Hours(4);
 
 }  // namespace policy::local_user_files
 

@@ -153,7 +153,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeAuto) {
   base::HistogramTester histogram_tester;
   webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?launch_handler_client_mode_auto.json");
-  EXPECT_EQ(GetLaunchHandler(app_id), (LaunchHandler{ClientMode::kAuto}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kAuto, launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   ExpectNavigateNewBehavior(app_id);
 
@@ -166,8 +168,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeNavigateNew) {
   webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_new.json");
-  EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{ClientMode::kNavigateNew}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kNavigateNew, launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   ExpectNavigateNewBehavior(app_id);
 
@@ -186,8 +189,10 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
       "client_mode=navigate-existing");
 
   base::HistogramTester histogram_tester;
-  EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{ClientMode::kNavigateExisting}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   // Create first web app browser window.
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
@@ -241,8 +246,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
       "client_mode=focus-existing");
 
   base::HistogramTester histogram_tester;
-  EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{ClientMode::kFocusExisting}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kFocusExisting, launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   Browser* browser_1 = LaunchWebAppBrowserAndWait(app_id);
   content::WebContents* web_contents =
@@ -312,8 +318,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_focus_existing.json");
-  EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{ClientMode::kFocusExisting}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kFocusExisting, launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   ui_test_utils::UrlLoadObserver url_observer(
       WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppLaunchUrl(
@@ -363,8 +370,10 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_existing.json");
-  EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{ClientMode::kNavigateExisting}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   // Launch the app three times in quick succession.
   Browser* browser_1 = LaunchWebAppBrowserAndWait(app_id);
@@ -402,8 +411,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_new.json");
-  EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{ClientMode::kNavigateNew}));
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kNavigateNew, launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
 
   // Launch the web app and immediately navigate it out of scope during its
   // initial navigation.

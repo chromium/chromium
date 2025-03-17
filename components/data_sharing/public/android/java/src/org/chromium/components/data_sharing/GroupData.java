@@ -7,17 +7,24 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 
 /** Information about a group. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class GroupData {
     public final String displayName;
-    public final List<GroupMember> members;
+    public final @Nullable List<GroupMember> members;
     public final GroupToken groupToken;
 
     public GroupData(
-            String groupId, String displayName, GroupMember[] members, String accessToken) {
+            String groupId,
+            String displayName,
+            GroupMember @Nullable [] members,
+            String accessToken) {
         this.displayName = displayName;
         this.members = members == null ? null : List.of(members);
         this.groupToken = new GroupToken(groupId, accessToken);
@@ -25,7 +32,10 @@ public class GroupData {
 
     @CalledByNative
     private static GroupData createGroupData(
-            String groupId, String displayName, GroupMember[] members, String accessToken) {
+            String groupId,
+            String displayName,
+            GroupMember @Nullable [] members,
+            String accessToken) {
         return new GroupData(groupId, displayName, members, accessToken);
     }
 }

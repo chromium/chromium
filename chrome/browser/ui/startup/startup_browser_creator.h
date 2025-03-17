@@ -258,6 +258,8 @@ class StartupBrowserCreator {
                            CommandLineWindowByAppId);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            LastUsedProfilesWithWebApp);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+                           KSameTabSwitchReplacesActiveTab);
 
   bool ProcessCmdLineImpl(const base::CommandLine& command_line,
                           const base::FilePath& cur_dir,

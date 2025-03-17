@@ -19,9 +19,6 @@ class HubToolbarProperties {
     // When set then an interactable button for the primary pane action should be shown.
     public static final WritableObjectPropertyKey<FullButtonData> ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey();
-    // Could be done by setting ACTION_BUTTON_DATA, but a separate property dedupes nicely.
-    public static final WritableBooleanPropertyKey SHOW_ACTION_BUTTON_TEXT =
-            new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<List<FullButtonData>> PANE_SWITCHER_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
@@ -46,6 +43,9 @@ class HubToolbarProperties {
 
     public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION =
+            new WritableBooleanPropertyKey();
+
     @FunctionalInterface
     public interface PaneButtonLookup {
         View get(int index);
@@ -54,9 +54,11 @@ class HubToolbarProperties {
     public static final WritableObjectPropertyKey<Callback<PaneButtonLookup>>
             PANE_BUTTON_LOOKUP_CALLBACK = new WritableObjectPropertyKey();
 
+    public static final WritableObjectPropertyKey<Callback<Integer>> TOOLBAR_OVERVIEW_COLOR_SETTER =
+            new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
         ACTION_BUTTON_DATA,
-        SHOW_ACTION_BUTTON_TEXT,
         PANE_SWITCHER_BUTTON_DATA,
         PANE_SWITCHER_INDEX,
         COLOR_SCHEME,
@@ -66,5 +68,7 @@ class HubToolbarProperties {
         SEARCH_LOUPE_VISIBLE,
         SEARCH_LISTENER,
         IS_INCOGNITO,
+        TOOLBAR_OVERVIEW_COLOR_SETTER,
+        APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
     };
 }

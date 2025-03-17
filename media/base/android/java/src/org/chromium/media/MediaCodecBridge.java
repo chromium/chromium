@@ -10,14 +10,11 @@ import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
 import android.media.MediaFormat;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.Surface;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -80,46 +77,17 @@ class MediaCodecBridge {
     private static @Nullable HandlerThread sCallbackHandlerThread;
     private static @Nullable Handler sCallbackHandler;
 
-    // |errorCode| is the error reported by MediaCodec.CryptoException
-    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException)
-    // Translated values are defined in media/base/android/media_codec_bridge.h.
-    // MediaCodec.CryptoException error codes were deprecated in API 31 (Android S) and replaced by
-    // MediaDrm error codes.
-    private static int translateCryptoExceptionPreS(int errorCode) {
-        switch (errorCode) {
-            case MediaCodec.CryptoException.ERROR_NO_KEY:
-                return MediaCodecStatus.NO_KEY;
-            case MediaCodec.CryptoException.ERROR_KEY_EXPIRED:
-                return MediaCodecStatus.KEY_EXPIRED;
-            case MediaCodec.CryptoException.ERROR_RESOURCE_BUSY:
-                return MediaCodecStatus.RESOURCE_BUSY;
-            case MediaCodec.CryptoException.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
-                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
-            case MediaCodec.CryptoException.ERROR_SESSION_NOT_OPENED:
-                return MediaCodecStatus.SESSION_NOT_OPENED;
-            case MediaCodec.CryptoException.ERROR_UNSUPPORTED_OPERATION:
-                return MediaCodecStatus.UNSUPPORTED_OPERATION;
-            case 7: // ERROR_INSUFFICIENT_SECURITY, added in API 29
-                return MediaCodecStatus.INSUFFICIENT_SECURITY;
-            case 8: // ERROR_FRAME_TOO_LARGE, added in API 29
-                return MediaCodecStatus.FRAME_TOO_LARGE;
-            case 9: // ERROR_LOST_STATE, added in API 29
-                return MediaCodecStatus.LOST_STATE;
-            default:
-                Log.e(TAG, "Unknown CryptoException error code: " + errorCode);
-                return MediaCodecStatus.UNKNOWN_CRYPTO_EXCEPTION;
-        }
-    }
-
     // |errorCode| is the error reported by MediaCodec.CryptoException.
     // As of API 31 (Android S) it returns MediaDrm.ErrorCodes
     // (https://developer.android.com/reference/android/media/MediaDrm.ErrorCodes).
+    // Pre Android S exceptions are still compatible with this ordering, as MediaDrm.ErrorCodes and
+    // MediaCodec.CryptoException.ErrorCodes are kept in sync.
+    // (https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/media/java/android/media/MediaDrm.java;l=304-306)
     // Not all possible values are handled here, only the ones specified as being returned by
     // getErrorCode
     // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException#getErrorCode())
     // Translated values are defined in media/base/android/media_codec_bridge.h.
-    @RequiresApi(Build.VERSION_CODES.S)
-    private static int translateCryptoExceptionPostS(int errorCode) {
+    private static int translateCryptoException(int errorCode) {
         switch (errorCode) {
             case MediaDrm.ErrorCodes.ERROR_NO_KEY:
                 return MediaCodecStatus.NO_KEY;
@@ -156,9 +124,7 @@ class MediaCodecBridge {
     }
 
     private static int convertCryptoException(MediaCodec.CryptoException e) {
-        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
-                ? translateCryptoExceptionPreS(e.getErrorCode())
-                : translateCryptoExceptionPostS(e.getErrorCode());
+        return translateCryptoException(e.getErrorCode());
     }
 
     private static int convertCodecException(MediaCodec.CodecException e) {
@@ -771,6 +737,77 @@ class MediaCodecBridge {
         return MediaCodecStatus.OK;
     }
 
+    private static final String QUEUE_SECURE_INPUT_BLOCK_ERR_MSG =
+            "Failed to queue secure input block: ";
+
+    @CalledByNative
+    @SuppressLint("NewApi")
+    private int queueSecureInputBlock(
+            int index,
+            MediaCodec.LinearBlock block,
+            int offset,
+            int size,
+            byte[] iv,
+            byte[] keyId,
+            int[] numBytesOfClearData,
+            int[] numBytesOfEncryptedData,
+            int numSubSamples,
+            int cipherMode,
+            int patternEncrypt,
+            int patternSkip,
+            long presentationTimeUs,
+            int flags) {
+        try {
+            cipherMode = translateEncryptionSchemeValue(cipherMode);
+
+            var status = validateCryptoInfo(cipherMode, patternEncrypt, patternSkip);
+            if (status != MediaCodecStatus.OK) {
+                return status;
+            }
+
+            var cryptoInfo =
+                    generateCryptoInfo(
+                            iv,
+                            keyId,
+                            numBytesOfClearData,
+                            numBytesOfEncryptedData,
+                            numSubSamples,
+                            cipherMode,
+                            patternEncrypt,
+                            patternSkip);
+            assert cryptoInfo != null;
+
+            MediaCodec.QueueRequest request = mMediaCodec.getQueueRequest(index);
+            request.setEncryptedLinearBlock(block, offset, size, cryptoInfo);
+            request.setPresentationTimeUs(presentationTimeUs);
+            request.setFlags(flags);
+            request.queue();
+        } catch (MediaCodec.CryptoException e) {
+            if (e.getErrorCode() == MediaDrm.ErrorCodes.ERROR_NO_KEY) {
+                Log.d(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG + "CryptoException.ERROR_NO_KEY");
+                return MediaCodecStatus.NO_KEY;
+            }
+            // Anything other than ERROR_NO_KEY is unexpected.
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return convertCryptoException(e);
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e.getDiagnosticInfo());
+            return convertCodecException(e);
+        } catch (IllegalArgumentException e) {
+            // IllegalArgumentException can occur when release() is called on the MediaCrypto
+            // object, but the MediaCodecBridge is unaware of the change.
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.ERROR;
+        } catch (IllegalStateException e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.ILLEGAL_STATE;
+        } catch (Exception e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.INPUT_SLOT_UNAVAILABLE;
+        }
+        return MediaCodecStatus.OK;
+    }
+
     @CalledByNative
     private void setVideoBitrate(int bps, int frameRate) {
         int targetBps = BitrateAdjuster.getTargetBitrate(mBitrateAdjuster, bps, frameRate);
@@ -880,7 +917,7 @@ class MediaCodecBridge {
             assert cryptoInfo != null;
             mMediaCodec.queueSecureInputBuffer(index, offset, cryptoInfo, presentationTimeUs, 0);
         } catch (MediaCodec.CryptoException e) {
-            if (e.getErrorCode() == MediaCodec.CryptoException.ERROR_NO_KEY) {
+            if (e.getErrorCode() == MediaDrm.ErrorCodes.ERROR_NO_KEY) {
                 Log.d(TAG, "Failed to queue secure input buffer: CryptoException.ERROR_NO_KEY");
                 return MediaCodecStatus.NO_KEY;
             }
@@ -1001,13 +1038,13 @@ class MediaCodecBridge {
                 // This is always provided by MediaFormatBuilder, but we should see if the input
                 // format has the real value.
                 mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-                if (flags != MediaCodec.CONFIGURE_FLAG_ENCODE) {
-                    if (inputFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
-                        mMaxInputSize = inputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-                    }
-                    return true;
+                if (inputFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
+                    mMaxInputSize = inputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
                 }
             }
+
+            // Aligned resolutions are only required for encoding.
+            if ((flags & MediaCodec.CONFIGURE_FLAG_ENCODE) == 0) return true;
 
             // Non 16x16 aligned resolutions don't work well with the MediaCodec encoder
             // unfortunately, see https://crbug.com/1084702 for details. It seems they

@@ -104,6 +104,9 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
 
   // content::SpeechRecognitionEngine:
   void StartRecognition() override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
   void EndRecognition() override;
   void TakeAudioChunk(const AudioChunk& data) override;
   void AudioChunksEnded() override;

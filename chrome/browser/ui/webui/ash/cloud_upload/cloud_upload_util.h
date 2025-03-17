@@ -110,7 +110,8 @@ enum class OfficeDriveOpenErrors {
   kDisableDrivePreferenceSet = 14,
   kDriveDisabledForAccountType = 15,
   kCannotGetRelativePath = 16,
-  kMaxValue = kCannotGetRelativePath,
+  kDriveFsUnavailable = 17,
+  kMaxValue = kDriveFsUnavailable,
 };
 
 // List of UMA enum values for opening Office files from OneDrive, with the
@@ -132,7 +133,9 @@ enum class OfficeOneDriveOpenErrors {
   kEmailsDoNotMatch = 12,
   kAndroidOneDriveUnsupportedLocation = 13,
   kAndroidOneDriveInvalidUrl = 14,
-  kMaxValue = kAndroidOneDriveInvalidUrl,
+  kFailedToLaunch = 15,
+  kMS365NotInstalled = 16,
+  kMaxValue = kMS365NotInstalled,
 };
 
 // Records the source volume that an office file is opened from. The values up

@@ -31,7 +31,7 @@ class FadeWrapper : public T {
   virtual void SetData(const V& data) = 0;
   const V& GetData() { return data_; }
 
-  // Sets the fade of this FadeWrapper's fade as |percent| in the range [0, 1]
+  // Sets the fade of this FadeWrapper's fade as `percent` in the range [0, 1]
   virtual void SetFade(double percent) = 0;
 
  protected:
@@ -59,7 +59,7 @@ class FadeView : public views::View {
     primary_view_->SetData(data);
   }
 
-  // Sets the fade-out of the `fade_out_view_` as |percent| in the range [0, 1].
+  // Sets the fade-out of the `fade_out_view_` as `percent` in the range [0, 1].
   // Since FadeView is designed to mask new view with the old and then fade
   // away, the higher the percentage the less opaque the view.
   void SetFade(double percent) {

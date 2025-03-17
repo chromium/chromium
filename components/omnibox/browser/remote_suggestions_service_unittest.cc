@@ -134,8 +134,10 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_ZeroPrefixSuggest) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -162,8 +164,10 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_Suggest) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -189,8 +193,10 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_DeleteSuggest) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
   auto loader = service.StartDeletionRequest(
       "https://google.com/complete/delete",
       /*is_off_the_record=*/false, base::DoNothing());
@@ -209,8 +215,10 @@ TEST_F(RemoteSuggestionsServiceTest, BypassCache) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -241,8 +249,10 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
       template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
   TestObserver observer(&service);
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
@@ -252,12 +262,16 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestCompleted,
                      base::Unretained(this)));
 
-  base::RunLoop().RunUntilIdle();
+  // Verify request histogram was recorded.
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 1);
+  histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 1);
 
   // Verify the observer got notified of request start.
   const std::string kRequestUrl = "https://www.example.com/suggest";
   ASSERT_EQ(observer.url().spec(), kRequestUrl);
   ASSERT_FALSE(observer.response_received());
+
+  base::RunLoop().RunUntilIdle();
 
   // Verify the pending request and resolve it.
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kRequestUrl));
@@ -266,9 +280,19 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
 
   base::RunLoop().RunUntilIdle();
 
-  // Verify histogram was recorded.
-  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 1);
-  histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 1);
+  // Verify response histograms were recorded.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode.ZeroSuggest", 1);
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent.ResponseTime",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.Successful", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest.Successful", 1);
 
   // Verify the observer got notified of request completion.
   ASSERT_EQ(observer.url().spec(), kRequestUrl);
@@ -288,8 +312,10 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
       template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   // Set up a delegate that will be replaced.
   MockDelegate delegate1(&service);
@@ -459,13 +485,22 @@ TEST_F(RemoteSuggestionsServiceTest,
       metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
   search_terms_args.lens_overlay_suggest_inputs =
       std::make_optional<lens::proto::LensOverlaySuggestInputs>();
-  search_terms_args.lens_overlay_suggest_inputs->set_encoded_image_signals(
-      "iil");
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
 
-  // Just iil query param appended.
+  // Just just the client param is appended.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-multimodal");
+
+  search_terms_args.lens_overlay_suggest_inputs->set_encoded_image_signals(
+      "iil");
+
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+
+  // The iil query param is appended.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
             "suggest?q=query&client=chrome-multimodal&iil=iil");
@@ -492,10 +527,10 @@ TEST_F(RemoteSuggestionsServiceTest,
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
 
-  // Appended gsessionid and vsrids. iil is removed.
+  // Appended gsessionid and vsrids.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&vsrid=vsrid&"
+            "suggest?q=query&client=chrome-multimodal&iil=iil&vsrid=vsrid&"
             "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
@@ -504,10 +539,11 @@ TEST_F(RemoteSuggestionsServiceTest,
       &google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vit.
-  ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&vit=vit&vsrid=vsrid&"
-            "gsessionid=gsessionid");
+  ASSERT_EQ(
+      endpoint_url.spec(),
+      "https://www.google.com/"
+      "suggest?q=query&client=chrome-multimodal&iil=iil&vit=vit&vsrid=vsrid&"
+      "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_vsint_for_lens_suggest(true);
@@ -515,10 +551,11 @@ TEST_F(RemoteSuggestionsServiceTest,
       &google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vsint.
-  ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&vsint=vsint&vit=vit&"
-            "vsrid=vsrid&gsessionid=gsessionid");
+  ASSERT_EQ(
+      endpoint_url.spec(),
+      "https://www.google.com/"
+      "suggest?q=query&client=chrome-multimodal&iil=iil&vsint=vsint&vit=vit&"
+      "vsrid=vsrid&gsessionid=gsessionid");
 }
 
 TEST_F(RemoteSuggestionsServiceTest,

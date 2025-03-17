@@ -56,17 +56,14 @@ class FilesRequestHandler : public RequestHandlerBase {
   // A factory function used in tests to create fake FilesRequestHandler
   // instances.
   using Factory = base::RepeatingCallback<std::unique_ptr<FilesRequestHandler>(
+      ContentAnalysisInfo* content_analysis_info,
       safe_browsing::BinaryUploadService* upload_service,
       Profile* profile,
-      const enterprise_connectors::AnalysisSettings& analysis_settings,
       GURL url,
       const std::string& source,
       const std::string& destination,
-      const std::string& user_action_id,
-      const std::string& tab_title,
       const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
-      ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback)>;
 
@@ -76,17 +73,14 @@ class FilesRequestHandler : public RequestHandlerBase {
   // The calling side is responsible that `analysis_settings` is not destroyed
   // before scanning is completed.
   static std::unique_ptr<FilesRequestHandler> Create(
+      ContentAnalysisInfo* content_analysis_info,
       safe_browsing::BinaryUploadService* upload_service,
       Profile* profile,
-      const enterprise_connectors::AnalysisSettings& analysis_settings,
       GURL url,
       const std::string& source,
       const std::string& destination,
-      const std::string& user_action_id,
-      const std::string& tab_title,
       const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
-      ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);
 
@@ -100,20 +94,16 @@ class FilesRequestHandler : public RequestHandlerBase {
       std::optional<std::u16string> user_justification) override;
 
  protected:
-  FilesRequestHandler(
-      safe_browsing::BinaryUploadService* upload_service,
-      Profile* profile,
-      const enterprise_connectors::AnalysisSettings& analysis_settings,
-      GURL url,
-      const std::string& source,
-      const std::string& destination,
-      const std::string& user_action_id,
-      const std::string& tab_title,
-      const std::string& content_transfer_method,
-      safe_browsing::DeepScanAccessPoint access_point,
-      ContentAnalysisRequest::Reason reason,
-      const std::vector<base::FilePath>& paths,
-      CompletionCallback callback);
+  FilesRequestHandler(ContentAnalysisInfo* content_analysis_info,
+                      safe_browsing::BinaryUploadService* upload_service,
+                      Profile* profile,
+                      GURL url,
+                      const std::string& source,
+                      const std::string& destination,
+                      const std::string& content_transfer_method,
+                      safe_browsing::DeepScanAccessPoint access_point,
+                      const std::vector<base::FilePath>& paths,
+                      CompletionCallback callback);
 
   bool UploadDataImpl() override;
 
@@ -188,6 +178,8 @@ class FilesRequestHandler : public RequestHandlerBase {
   // more data should be upload for `this` at that point.
   bool throttled_ = false;
 
+  std::string source_;
+  std::string destination_;
   std::string content_transfer_method_;
 
   CompletionCallback callback_;

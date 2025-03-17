@@ -1627,6 +1627,11 @@ class StructTraits<remoting::mojom::VideoTrackLayoutDataView,
     return {track.x_dpi(), track.y_dpi()};
   }
 
+  static const std::string& display_name(
+      const ::remoting::protocol::VideoTrackLayout& track) {
+    return track.display_name();
+  }
+
   static bool Read(remoting::mojom::VideoTrackLayoutDataView data_view,
                    ::remoting::protocol::VideoTrackLayout* out_track);
 };

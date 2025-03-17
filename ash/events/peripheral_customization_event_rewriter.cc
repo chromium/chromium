@@ -4,6 +4,7 @@
 
 #include <linux/input.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -25,7 +26,6 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "ui/aura/env.h"
@@ -589,7 +589,7 @@ std::optional<ui::mojom::ModifierKey> ConvertDomCodeToModifierKey(
 std::optional<PeripheralCustomizationEventRewriter::RemappingActionResult>
 GetRemappingActionFromMouseSettings(const mojom::Button& button,
                                     const mojom::MouseSettings& settings) {
-  const auto button_remapping_iter = base::ranges::find(
+  const auto button_remapping_iter = std::ranges::find(
       settings.button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (button_remapping_iter != settings.button_remappings.end()) {
@@ -612,7 +612,7 @@ std::optional<PeripheralCustomizationEventRewriter::RemappingActionResult>
 GetRemappingActionFromGraphicsTabletSettings(
     const mojom::Button& button,
     const mojom::GraphicsTabletSettings& settings) {
-  const auto pen_button_remapping_iter = base::ranges::find(
+  const auto pen_button_remapping_iter = std::ranges::find(
       settings.pen_button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (pen_button_remapping_iter != settings.pen_button_remappings.end()) {
@@ -630,7 +630,7 @@ GetRemappingActionFromGraphicsTabletSettings(
     return std::move(pen_action);
   }
 
-  const auto tablet_button_remapping_iter = base::ranges::find(
+  const auto tablet_button_remapping_iter = std::ranges::find(
       settings.tablet_button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (tablet_button_remapping_iter != settings.tablet_button_remappings.end()) {

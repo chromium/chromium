@@ -40,8 +40,7 @@ enum DialogState {
 }
 
 /**
- * Should be kept in sync with
- * |password_manager::metrics_util::PasswordsImportDesktopInteractions|.
+ * Should be kept in sync with PasswordsImportDesktopInteractions in enums.xml.
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */
@@ -171,12 +170,8 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
-      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
-          isAccountStoreDefault => {
-            this.selectedStoreOption_ = isAccountStoreDefault ?
-                chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT :
-                chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
-          });
+      this.selectedStoreOption_ =
+          chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
     }
   }
 

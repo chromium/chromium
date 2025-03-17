@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,7 +29,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -228,15 +226,12 @@ bool IsGuestModeEnabled() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // If there are any supervised profiles, disable guest mode.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kHideGuestModeForSupervisedUsers) &&
-      base::ranges::any_of(g_browser_process->profile_manager()
-                               ->GetProfileAttributesStorage()
-                               .GetAllProfilesAttributes(),
-                           [](const ProfileAttributesEntry* entry) {
-                             return entry->IsSupervised() &&
-                                    !entry->IsOmitted();
-                           })) {
+  if (std::ranges::any_of(g_browser_process->profile_manager()
+                              ->GetProfileAttributesStorage()
+                              .GetAllProfilesAttributes(),
+                          [](const ProfileAttributesEntry* entry) {
+                            return entry->IsSupervised() && !entry->IsOmitted();
+                          })) {
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -246,15 +241,12 @@ bool IsGuestModeEnabled() {
 
 bool IsGuestModeEnabled(const Profile& profile) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kHideGuestModeForSupervisedUsers)) {
-    ProfileAttributesEntry* profile_attributes =
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile.GetPath());
-    if (profile_attributes && profile_attributes->IsSupervised()) {
-      return false;
-    }
+  ProfileAttributesEntry* profile_attributes =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile.GetPath());
+  if (profile_attributes && profile_attributes->IsSupervised()) {
+    return false;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -287,11 +279,13 @@ void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // The BrowsingDataRemover relies on many objects that aren't created in unit
   // tests. Previously this code would depend on content::ResourceDispatcherHost
   // but that's gone, so do a similar hack for now.
   if (!g_browser_process->safe_browsing_service())
     return;
+#endif
 
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_path);

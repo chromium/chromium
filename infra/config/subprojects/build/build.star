@@ -142,7 +142,7 @@ cq_build_perf_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "mb",
             ],
@@ -177,7 +177,7 @@ cq_build_perf_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "mb",
             ],
@@ -287,7 +287,6 @@ cq_build_perf_builder(
         category = "windows",
         short_name = "ninja",
     ),
-    siso_configs = ["builder"],
     siso_enabled = False,
 )
 
@@ -320,7 +319,6 @@ cq_build_perf_builder(
         category = "windows",
         short_name = "siso",
     ),
-    siso_configs = ["builder"],
 )
 
 ci_build_perf_builder(
@@ -587,7 +585,7 @@ This builder measures build performance for Android developer builds, by simulat
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "main_builder",
             apply_configs = [
                 "mb",
             ],
@@ -676,7 +674,6 @@ This builder measures build performance for Windows developer builds, by simulat
         short_name = "dev",
     ),
     reclient_jobs = 1000,
-    siso_configs = [],
 )
 
 developer_build_perf_builder(
@@ -771,6 +768,10 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
+        args = {
+            # For analyze_includes.py
+            "show_includes": True,
+        },
         configs = [
             "no_remoteexec",
             "linux",

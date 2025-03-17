@@ -18,7 +18,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -100,17 +99,9 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 class SyncEnabledHistoryApiTest : public HistoryApiTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    HistoryApiTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &SyncEnabledHistoryApiTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
- private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    HistoryApiTest::SetUpBrowserContextKeyedServices(context);
     // Set up a fake SyncService that'll pretend Sync is enabled (without
     // actually talking to the server, or syncing anything). This is required
     // for tests exercising "foreign" (aka synced) visits - without this, the
@@ -123,8 +114,6 @@ class SyncEnabledHistoryApiTest : public HistoryApiTest {
               return std::make_unique<syncer::TestSyncService>();
             }));
   }
-
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

@@ -4,6 +4,8 @@
 
 #include "chrome/utility/importer/nss_decryptor_win.h"
 
+#include <windows.h>
+
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -34,13 +36,13 @@ bool NSSDecryptor::Init(const base::FilePath& dll_path,
   }
 
   ScopedSetDllDirectoryCaller caller;
-  nss3_dll_ = LoadLibrary(kNSS3Library);
+  nss3_dll_ = ::LoadLibrary(kNSS3Library);
   if (!nss3_dll_) {
     return false;
   }
 
-  HMODULE plds4_dll = GetModuleHandle(kPLDS4Library);
-  HMODULE nspr4_dll = GetModuleHandle(kNSPR4Library);
+  HMODULE plds4_dll = ::GetModuleHandle(kPLDS4Library);
+  HMODULE nspr4_dll = ::GetModuleHandle(kNSPR4Library);
 
   // On Firefox 22 and higher, NSPR is part of nss3.dll rather than separate
   // DLLs.

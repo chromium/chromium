@@ -7,7 +7,6 @@
 
 #include "base/time/time.h"
 #include "components/compose/core/browser/compose_enums.mojom.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {

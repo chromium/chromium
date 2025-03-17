@@ -270,8 +270,9 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
   // Legacy AMD drivers with UVD3 or earlier and some Intel GPU's crash while
   // creating surfaces larger than 1920 x 1088.
   const std::vector<gfx::Size> kModernResolutions = {
-      gfx::Size(4096, 2160), gfx::Size(4096, 2304), gfx::Size(7680, 4320),
-      gfx::Size(8192, 4320), gfx::Size(8192, 8192)};
+      gfx::Size(4096, 2160),  gfx::Size(4096, 2304), gfx::Size(4096, 4096),
+      gfx::Size(7680, 4320),  gfx::Size(8192, 4352), gfx::Size(8192, 8192),
+      gfx::Size(16384, 16384)};
 
   // Enumerate supported video profiles and look for the known profile for each
   // codec. We first look through the the decoder profiles so we don't run N

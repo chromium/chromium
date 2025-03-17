@@ -33,12 +33,17 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
     return {
       languages: Object,
       languageHelper: Object,
+      limitedByPolicy: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   // Public API: Downwards data flow.
   languages: LanguagesModel|undefined;
   languageHelper: LanguageHelper;
+  limitedByPolicy: boolean;
 
   // Internal state.
   private readonly shouldPrioritiseVietnameseExtensions_ =
@@ -100,7 +105,15 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
                name: inputMethod.displayName,
                searchTerms: inputMethod.tags,
                disabledByPolicy: !!inputMethod.isProhibitedByPolicy,
-             }));
+             }))
+        .sort((a, b) => {
+          if (a.disabledByPolicy === b.disabledByPolicy) {
+            return 0;
+          }
+          return a.disabledByPolicy ?
+              1 :
+              -1;  // Sort: enabled comes before disabled
+        });
   }
 
   /**

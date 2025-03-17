@@ -23,7 +23,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/display/screen.h"
@@ -278,7 +277,6 @@ void SplitViewDivider::StartResizeWithDivider(
   // avoids duplicate calls to `CreateDragDetails()` and `OnDragStarted()`. We
   // also bail out here if you try to start dragging the divider during its snap
   // animation.
-  // TODO(sophiewen): Consider refactoring `DividerSnapAnimation` to here.
   if (is_resizing_with_divider_ ||
       SplitViewController::Get(GetRootWindow())->IsDividerAnimating()) {
     return;
@@ -434,7 +432,7 @@ void SplitViewDivider::MaybeAddObservedWindow(aura::Window* window) {
 }
 
 void SplitViewDivider::MaybeRemoveObservedWindow(aura::Window* window) {
-  auto iter = base::ranges::find(observed_windows_, window);
+  auto iter = std::ranges::find(observed_windows_, window);
   if (iter != observed_windows_.end()) {
     window->RemoveObserver(this);
     observed_windows_.erase(iter);
@@ -651,7 +649,6 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<SplitViewDividerView>(this));
   auto* divider_widget_native_window = divider_widget_->GetNativeWindow();
-  // TODO(sophiewen): Evaluate and remove this property if needed.
   divider_widget_native_window->SetProperty(kLockedToRootKey, true);
 
   // Use a window targeter and enlarge the hit region to allow located events

@@ -23,6 +23,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
@@ -121,7 +122,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
         chromeos::features::IsSystemBlurEnabled()
             ? cros_tokens::kCrosSysSystemBaseElevated
             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-    SetBackground(views::CreateThemedSolidBackground(background_color_id));
+    SetBackground(views::CreateSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         GetCornerRadius(/*tablet_mode=*/true),
         views::HighlightBorder::Type::kHighlightBorderNoShadow));
@@ -194,7 +195,7 @@ void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
 
 void ContinueTaskView::UpdateIcon() {
   if (!result()) {
-    icon_->SetImage(gfx::ImageSkia());
+    icon_->SetImage(ui::ImageModel());
     return;
   }
 
@@ -210,12 +211,12 @@ void ContinueTaskView::UpdateIcon() {
     icon = result()->chip_icon();
   }
 
-  icon_->SetImage(CreateIconWithCircleBackground(
+  icon_->SetImage(ui::ImageModel::FromImageSkia(CreateIconWithCircleBackground(
       icon.size() == GetIconSize()
           ? icon
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 icon, skia::ImageOperations::RESIZE_BEST, GetIconSize()),
-      GetColorProvider()->GetColor(GetIconBackgroundColorId())));
+      GetColorProvider()->GetColor(GetIconBackgroundColorId()))));
 }
 
 ui::ColorId ContinueTaskView::GetIconBackgroundColorId() const {
@@ -368,8 +369,12 @@ ContinueTaskView::TaskResultType ContinueTaskView::GetTaskResultType() {
       return TaskResultType::kLocalFile;
     case AppListSearchResultType::kZeroStateDrive:
       return TaskResultType::kDriveFile;
+    case AppListSearchResultType::kZeroStateHelpApp:
+      return TaskResultType::kHelpApp;
+    case AppListSearchResultType::kDesksAdminTemplate:
+      return TaskResultType::kDesksAdminTemplate;
     default:
-      NOTREACHED();
+      return TaskResultType::kUnknown;
   }
 }
 

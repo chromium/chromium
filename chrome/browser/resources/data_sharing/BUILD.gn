@@ -14,6 +14,7 @@ html_to_wrapper_template = "native"
 build_webui("build") {
   grd_prefix = "data_sharing"
   ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
   ts_deps = [
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
@@ -40,7 +41,6 @@ build_webui("build") {
   non_web_component_files = [
     "browser_proxy.ts",
     "data_sharing_api.ts",
-    "data_sharing_sdk_types.ts",
     "mojom_conversion_utils.ts",
   ]
 
@@ -51,10 +51,16 @@ build_webui("build") {
     ts_extra_deps = [ ":copy_data_sharing_sdk" ]
     extra_grdp_deps = [ ":build_data_sharing_sdk_grdp" ]
     extra_grdp_files = [ "$target_gen_dir/data_sharing_sdk.grdp" ]
+
+    # Use the mojo_files rules to copy the ts type file to the preprocess dir.
+    # This helps to make sure third_party code is in sync with Chrome.
+    mojo_files += [ "//third_party/data_sharing_sdk/data_sharing_sdk_types.ts" ]
   } else {
     static_files += [ "data_sharing_sdk.css" ]
-
-    non_web_component_files += [ "dummy_data_sharing_sdk.ts" ]
+    non_web_component_files += [
+      "data_sharing_sdk_types.ts",
+      "dummy_data_sharing_sdk.ts",
+    ]
   }
 
   webui_context_type = "untrusted"

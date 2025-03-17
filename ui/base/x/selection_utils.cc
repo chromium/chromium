@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/x/selection_utils.h"
 
 #include <stdint.h>
 
 #include <set>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -50,11 +48,10 @@ void GetAtomIntersection(const std::vector<x11::Atom>& desired,
   }
 }
 
-void AddString16ToVector(const std::u16string& str,
+void AddString16ToVector(std::u16string_view str,
                          std::vector<unsigned char>* bytes) {
-  const unsigned char* front =
-      reinterpret_cast<const unsigned char*>(str.data());
-  bytes->insert(bytes->end(), front, front + (str.size() * 2));
+  auto span = base::as_byte_span(str);
+  bytes->insert(bytes->end(), span.begin(), span.end());
 }
 
 std::vector<std::string> ParseURIList(const SelectionData& data) {
@@ -157,12 +154,8 @@ x11::Atom SelectionData::GetType() const {
   return type_;
 }
 
-const unsigned char* SelectionData::GetData() const {
-  return memory_.get() ? memory_->data() : nullptr;
-}
-
-size_t SelectionData::GetSize() const {
-  return memory_.get() ? memory_->size() : 0;
+base::span<const unsigned char> SelectionData::GetSpan() const {
+  return memory_ ? *memory_ : base::span<const unsigned char>();
 }
 
 std::string SelectionData::GetText() const {
@@ -186,20 +179,23 @@ std::u16string SelectionData::GetHtml() const {
   std::u16string markup;
 
   CHECK_EQ(type_, x11::GetAtom(kMimeTypeHTML));
-  const unsigned char* data = GetData();
-  size_t size = GetSize();
+  base::span<const unsigned char> span = GetSpan();
 
   // If the data starts with U+FEFF, i.e., Byte Order Mark, assume it is
   // UTF-16, otherwise assume UTF-8.
-  if (size >= 2 && reinterpret_cast<const char16_t*>(data)[0] == u'\uFEFF') {
-    markup.assign(reinterpret_cast<const char16_t*>(data) + 1, (size / 2) - 1);
-  } else {
-    base::UTF8ToUTF16(reinterpret_cast<const char*>(data), size, &markup);
-  }
+  UNSAFE_TODO({
+    if (span.size() >= 2 &&
+        reinterpret_cast<const char16_t*>(span.data())[0] == u'\uFEFF') {
+      markup.assign(reinterpret_cast<const char16_t*>(span.data()) + 1,
+                    (span.size() / 2) - 1);
+    } else {
+      markup = base::UTF8ToUTF16(base::as_string_view(span));
+    }
+  });
 
   // If there is a terminating NULL, drop it.
-  if (!markup.empty() && markup.at(markup.length() - 1) == '\0') {
-    markup.resize(markup.length() - 1);
+  if (!markup.empty() && markup.back() == '\0') {
+    markup.pop_back();
   }
 
   return markup;

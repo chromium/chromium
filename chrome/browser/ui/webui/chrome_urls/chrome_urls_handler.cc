@@ -9,10 +9,10 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/features.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/webui_config_map.h"
@@ -63,7 +63,7 @@ ChromeUrlsHandler::ChromeUrlsHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_context_(browser_context) {
-  DCHECK(base::FeatureList::IsEnabled(features::kInternalOnlyUisPref));
+  DCHECK(base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref));
 }
 
 ChromeUrlsHandler::~ChromeUrlsHandler() = default;
@@ -101,13 +101,13 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
       chrome_urls::mojom::ChromeUrlsData::New());
   result->webui_urls = std::move(webui_urls);
   for (base::cstring_view url : chrome::ChromeDebugURLs()) {
-    result->command_urls.push_back(GURL(url));
+    result->command_urls.emplace_back(url);
   }
 
   PrefService* local_state = g_browser_process->local_state();
   result->internal_debugging_uis_enabled =
-      local_state->FindPreference(prefs::kInternalOnlyUisEnabled) &&
-      local_state->GetBoolean(prefs::kInternalOnlyUisEnabled);
+      local_state->FindPreference(chrome_urls::kInternalOnlyUisEnabled) &&
+      local_state->GetBoolean(chrome_urls::kInternalOnlyUisEnabled);
   std::move(callback).Run(std::move(result));
 }
 
@@ -115,7 +115,7 @@ void ChromeUrlsHandler::SetDebugPagesEnabled(
     bool enabled,
     SetDebugPagesEnabledCallback callback) {
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetBoolean(prefs::kInternalOnlyUisEnabled, enabled);
+  local_state->SetBoolean(chrome_urls::kInternalOnlyUisEnabled, enabled);
   std::move(callback).Run();
 }
 

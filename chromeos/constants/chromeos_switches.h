@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 
 // This file is only for command-line switches that are shared between
 // ash-chrome and lacros-chrome. For ash command-line switches, please add them

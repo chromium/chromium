@@ -20,19 +20,4 @@ std::ostream& operator<<(std::ostream& out, const PartitionedLockId& lock_id) {
   return out;
 }
 
-bool operator<(const PartitionedLockId& x, const PartitionedLockId& y) {
-  if (x.partition != y.partition) {
-    return x.partition < y.partition;
-  }
-  return x.key < y.key;
-}
-
-bool operator==(const PartitionedLockId& x, const PartitionedLockId& y) {
-  return x.partition == y.partition && x.key == y.key;
-}
-
-bool operator!=(const PartitionedLockId& x, const PartitionedLockId& y) {
-  return !(x == y);
-}
-
 }  // namespace web_app

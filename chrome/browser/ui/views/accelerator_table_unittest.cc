@@ -10,12 +10,11 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/public/cpp/accelerators.h"
 #endif
@@ -82,7 +81,7 @@ TEST(AcceleratorTableTest, OpenFeedbackWithSearchBasedAccelerator) {
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
   base::flat_set<AcceleratorMapping, Cmp> accelerators(GetAcceleratorList());
   for (const ash::AcceleratorData& ash_entry : ash::kAcceleratorData) {
@@ -187,6 +186,6 @@ TEST_F(GetAcceleratorListTest, DevToolsAreEnabled) {
   EXPECT_NE(iter, list.end());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace chrome

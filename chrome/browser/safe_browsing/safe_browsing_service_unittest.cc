@@ -46,6 +46,18 @@ namespace {
 const char kTestDownloadUrl[] = "https://example.com";
 }
 
+// Mock SafeBrowsingPrefChangeHandler.
+class MockSafeBrowsingPrefChangeHandler
+    : public safe_browsing::SafeBrowsingPrefChangeHandler {
+ public:
+  explicit MockSafeBrowsingPrefChangeHandler(Profile* profile)
+      : SafeBrowsingPrefChangeHandler(profile) {}
+  MOCK_METHOD(void,
+              MaybeShowEnhancedProtectionSettingChangeNotification,
+              (),
+              (override));
+};
+
 class SafeBrowsingServiceTest : public testing::Test {
  public:
   SafeBrowsingServiceTest() {
@@ -71,7 +83,8 @@ class SafeBrowsingServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     profile_ = std::make_unique<TestingProfile>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+    profile2_ = std::make_unique<TestingProfile>();
+#if BUILDFLAG(IS_CHROMEOS)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
     TestingBrowserProcess::GetGlobal()->SetLocalState(profile_->GetPrefs());
@@ -83,7 +96,7 @@ class SafeBrowsingServiceTest : public testing::Test {
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
     safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 #endif
     base::RunLoop().RunUntilIdle();
@@ -205,6 +218,7 @@ class SafeBrowsingServiceTest : public testing::Test {
   scoped_refptr<SafeBrowsingService> sb_service_;
   TestingProfile::Builder profile_builder_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfile> profile2_;
   raw_ptr<TestingProfile> otr_profile_;
 
   ::testing::NiceMock<download::MockDownloadItem> download_item_;
@@ -530,6 +544,56 @@ TEST_F(SafeBrowsingServiceTest,
             base::Time::Max());
 }
 
+TEST_F(SafeBrowsingServiceTest, EnhancedProtectionPrefChange_SingleProfile) {
+  // 1. Create a single profile (using the fixture's profile).
+  Profile* profile1 = profile();
+
+  // 2. Create a mock SafeBrowsingPrefChangeHandler.
+  auto mock_handler1 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile1);
+
+  // 3. Set the expectation: The mock should be called once.
+  EXPECT_CALL(*mock_handler1,
+              MaybeShowEnhancedProtectionSettingChangeNotification());
+
+  // 4. Add the mock handler to the map.
+  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
+
+  // 5. Call the method under test.
+  sb_service_->EnhancedProtectionPrefChange(profile1);
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       EnhancedProtectionPrefChange_SupportsMultipleProfiles) {
+  // 1. Create multiple profiles.
+  Profile* profile1 = profile();
+  Profile* profile2_ptr = profile2_.get();  // Store the pointer before moving
+
+  // 2. Create mock SafeBrowsingPrefChangeHandlers for each profile.
+  auto mock_handler1 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile1);
+  auto mock_handler2 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile2_ptr);
+
+  // 3. Set expectations: Each mock should be called once.
+  EXPECT_CALL(*mock_handler1.get(),
+              MaybeShowEnhancedProtectionSettingChangeNotification());
+  EXPECT_CALL(*mock_handler2.get(),
+              MaybeShowEnhancedProtectionSettingChangeNotification());
+
+  // 4. Add the mock handlers to the map, associating them with their profiles.
+  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
+  sb_service_->pref_change_handlers_map_[profile2_ptr] =
+      std::move(mock_handler2);
+
+  // 5. Call the method under test for each profile.
+  sb_service_->EnhancedProtectionPrefChange(profile1);
+  sb_service_->EnhancedProtectionPrefChange(profile2_ptr);
+}
+
 class SafeBrowsingServiceAntiPhishingTelemetryTest
     : public SafeBrowsingServiceTest {
  protected:
@@ -691,7 +755,7 @@ TEST_F(SendNotificationsAcceptedTest, SendReportForAllowlistedURL) {
           &test_url_loader_factory));
 // TODO(b/325636200): We should remove this once we figure out why the test is
 // crashing for ChromeOS and how to properly test it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(sb_service_->MaybeSendNotificationsAcceptedReport(
       nullptr, profile(), notification_url1, notification_url2,
       notification_url3, display_duration));

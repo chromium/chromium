@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "extensions/common/extension.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -26,8 +25,7 @@
 //                      bar which is shown while the Bubble is shown.
 //    GENERIC        -> The app menu. This case includes pageActions that don't
 //                      specify a default icon.
-class ExtensionInstalledBubbleView : public BubbleSignInPromoDelegate,
-                                     public views::BubbleDialogDelegateView {
+class ExtensionInstalledBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(ExtensionInstalledBubbleView, views::BubbleDialogDelegateView)
 
  public:
@@ -47,15 +45,9 @@ class ExtensionInstalledBubbleView : public BubbleSignInPromoDelegate,
 
   const ExtensionInstalledBubbleModel* model() const { return model_.get(); }
 
-  // Simulate a sign in from this bubble with `account_info`.
-  void SignInForTesting(const AccountInfo& account_info);
-
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
-
-  // BubbleSignInPromoDelegate:
-  void OnSignIn(const AccountInfo& account_info) override;
 
   void LinkClicked();
 

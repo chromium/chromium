@@ -94,7 +94,7 @@ void BackButton::OnThemeChanged() {
 
 void BackButton::OnAXNameChanged(ax::mojom::StringAttribute attribute,
                                  const std::optional<std::string>& name) {
-  SetCachedTooltipText(GetViewAccessibility().GetCachedName());
+  SetTooltipText(GetViewAccessibility().GetCachedName());
 }
 
 BEGIN_METADATA(BackButton)

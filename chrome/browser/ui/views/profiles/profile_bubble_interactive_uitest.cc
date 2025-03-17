@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -50,9 +51,9 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
   // Returns dummy parameters for the interception bubble.
   WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo account;
-    account.account_id = CoreAccountId::FromGaiaId("ID1");
+    account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID1"));
     AccountInfo primary_account;
-    primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
+    primary_account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID2"));
     return WebSigninInterceptor::Delegate::BubbleParameters(
         WebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
         primary_account);

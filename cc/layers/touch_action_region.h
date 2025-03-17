@@ -22,7 +22,15 @@ class CC_EXPORT TouchActionRegion {
   void Union(TouchAction, const gfx::Rect&);
   // Return all regions with any touch action.
   Region GetAllRegions() const;
-  const Region& GetRegionForTouchAction(TouchAction) const;
+  const Region& GetRegionForTouchAction(TouchAction touch_action) const;
+
+  // Allow iteration over the regions.
+  base::flat_map<TouchAction, Region>::const_iterator begin() const {
+    return map_.cbegin();
+  }
+  base::flat_map<TouchAction, Region>::const_iterator end() const {
+    return map_.cend();
+  }
 
   bool IsEmpty() const { return map_.empty(); }
 

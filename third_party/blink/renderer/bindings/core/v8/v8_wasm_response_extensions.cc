@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -167,7 +167,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       const String& url,
       std::shared_ptr<v8::WasmStreaming> streaming,
       ScriptState* script_state,
-      ScriptCachedMetadataHandler* cache_handler,
+      CachedMetadataHandler* cache_handler,
       std::shared_ptr<WasmCodeCachingCallback> code_caching_callback)
       : url_(url),
         streaming_(std::move(streaming)),
@@ -414,7 +414,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
   Member<FetchDataLoader::Client> client_;
   std::shared_ptr<v8::WasmStreaming> streaming_;
   const Member<ScriptState> script_state_;
-  Member<ScriptCachedMetadataHandler> cache_handler_;
+  Member<CachedMetadataHandler> cache_handler_;
   std::shared_ptr<WasmCodeCachingCallback> code_caching_callback_;
   CodeCacheState code_cache_state_ = CodeCacheState::kBeforeFirstByte;
   Digestor digestor_{kHashAlgorithmSha256};

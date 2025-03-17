@@ -319,9 +319,9 @@ SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
 
 bool TransportSecurityState::ShouldUpgradeToSSL(
     std::string_view host,
+    bool is_top_level_nav,
     const NetLogWithSource& net_log) {
-  // TODO(crbug.com/361746120): Propagate `is_top_level_nav` to callers.
-  return GetSSLUpgradeDecision(host, true, net_log) !=
+  return GetSSLUpgradeDecision(host, is_top_level_nav, net_log) !=
          SSLUpgradeDecision::kNoUpgrade;
 }
 

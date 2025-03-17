@@ -228,8 +228,6 @@ std::string GetModuleStatusString(
 enum ThirdPartyFeaturesStatus {
   // The third-party features are not available in non-Google Chrome builds.
   kNonGoogleChromeBuild,
-  // The ThirdPartyBlockingEnabled group policy is disabled.
-  kPolicyDisabled,
   // Both the IncompatibleApplicationsWarning and the
   // ThirdPartyModulesBlocking features are disabled.
   kFeatureDisabled,
@@ -264,14 +262,9 @@ ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
       case ThirdPartyConflictsManager::State::kWarningAndBlockingInitialized:
         return kWarningAndBlockingInitialized;
       case ThirdPartyConflictsManager::State::kDestroyed:
-        // Turning off the feature via group policy is the only way to have the
-        // manager destroyed.
-        return kPolicyDisabled;
+        // Manager was destroyed with unknown reason.
+        NOTREACHED();
     }
-  }
-
-  if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled()) {
-    return kPolicyDisabled;
   }
 
   if (!IncompatibleApplicationsUpdater::IsWarningEnabled() &&
@@ -295,8 +288,6 @@ std::string GetThirdPartyFeaturesStatusString(ThirdPartyFeaturesStatus status) {
     case ThirdPartyFeaturesStatus::kNonGoogleChromeBuild:
       return "The third-party features are not available in non-Google Chrome "
              "builds.";
-    case ThirdPartyFeaturesStatus::kPolicyDisabled:
-      return "The ThirdPartyBlockingEnabled group policy is disabled.";
     case ThirdPartyFeaturesStatus::kFeatureDisabled:
       return "Both the IncompatibleApplicationsWarning and "
              "ThirdPartyModulesBlocking features are disabled.";

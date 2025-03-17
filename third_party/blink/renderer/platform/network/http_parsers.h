@@ -190,7 +190,7 @@ ParseContentSecurityPolicyHeaders(
 // Parses SRI-relevant HTTP Message Signature headers. This wraps
 // network::ParseSRIMessageSignaturesFromHeaders with blink types.
 PLATFORM_EXPORT
-Vector<network::mojom::blink::SRIMessageSignaturePtr>
+network::mojom::blink::SRIMessageSignaturesPtr
 ParseSRIMessageSignaturesFromHeaders(const String& raw_headers);
 
 PLATFORM_EXPORT

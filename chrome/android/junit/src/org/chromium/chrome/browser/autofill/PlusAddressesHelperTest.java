@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.plus_addresses.PlusAddressesMetricsRecorder;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.TestActivity;
 
@@ -99,7 +100,7 @@ public class PlusAddressesHelperTest {
         var shadowActivity = Shadows.shadowOf(mActivity);
         Intent cctIntent = shadowActivity.getNextStartedActivity();
         assertNotNull(cctIntent);
-        assertEquals(cctIntent.getDataString(), PLUS_ADDRESS_MANAGEMENT_URL);
+        assertEquals(PLUS_ADDRESS_MANAGEMENT_URL, cctIntent.getDataString());
         histogramWatcher.assertExpected();
     }
 
@@ -150,7 +151,8 @@ public class PlusAddressesHelperTest {
                         .build();
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         CoreAccountInfo accountInfo =
-                CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
+                CoreAccountInfo.createFromEmailAndGaiaId(
+                        "test@gmail.com", new GaiaId("testGaiaId"));
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(accountInfo);
 
         PlusAddressesHelper.openManagePlusAddresses(mActivity, mProfile);

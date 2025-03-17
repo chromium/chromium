@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.partnerbookmarks;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /** Object defining a partner bookmark. */
+@NullMarked
 public class PartnerBookmark {
     // To be provided by the bookmark extractors.
     /** Local id of the read bookmark */
@@ -21,23 +25,24 @@ public class PartnerBookmark {
     public boolean mIsFolder;
 
     /** URL of the bookmark. Required for non-folders. */
-    public String mUrl;
+    public @Nullable String mUrl;
 
-    /** Title of the bookmark. */
+    @SuppressWarnings("NullAway.Init")
+    /* Title of the bookmark. */
     public String mTitle;
 
     /** .PNG Favicon of the bookmark. Optional. Not used for folders. */
-    byte[] mFavicon;
+    byte @Nullable [] mFavicon;
 
     /** .PNG TouchIcon of the bookmark. Optional. Not used for folders. */
-    byte[] mTouchicon;
+    byte @Nullable [] mTouchicon;
 
     // For auxiliary use while reading.
     /** Native id of the C++-processed bookmark */
     long mNativeId = PartnerBookmarksReader.INVALID_BOOKMARK_ID;
 
     /** The parent node if any */
-    PartnerBookmark mParent;
+    @Nullable PartnerBookmark mParent;
 
     /** Children nodes for the perfect garbage collection disaster */
     List<PartnerBookmark> mEntries = new ArrayList<>();

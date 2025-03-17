@@ -24,8 +24,9 @@ class RefillMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
         .FillOrPreviewForm(
             mojom::ActionPersistence::kFill, form, filling_payload,
             *autofill_manager().FindCachedFormById(form.global_id()),
-            *autofill_manager().GetAutofillField(form, form.fields().front()),
-            /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
+            *autofill_manager().GetAutofillField(
+                form.global_id(), form.fields().front().global_id()),
+            AutofillTriggerSource::kPopup);
   }
 };
 
@@ -93,8 +94,7 @@ TEST_F(RefillMetricsTest,
   base::HistogramTester histogram_tester;
   autofill_manager().OnJavaScriptChangedAutofilledValue(
       form_after_js_modification,
-      form_after_js_modification.fields()[2].global_id(), u"04/2099",
-      /*formatting_only=*/false);
+      form_after_js_modification.fields()[2].global_id(), u"04/2099");
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",

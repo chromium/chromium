@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -25,8 +25,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace media {
-namespace test {
+namespace media::test {
+
 namespace {
 
 #define ASSERT_TRUE_OR_RETURN_NULLPTR(predicate) \
@@ -51,7 +51,8 @@ std::optional<VideoFrameLayout> CreateLayout(
                                                config.planes);
   }
 }
-}  // namespace
+
+}  // anonymous namespace
 
 // static
 std::unique_ptr<ImageProcessorClient> ImageProcessorClient::Create(
@@ -74,6 +75,7 @@ ImageProcessorClient::ImageProcessorClient(
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors)
     : gpu_memory_buffer_factory_(
           gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
       frame_processors_(std::move(frame_processors)),
       image_processor_client_thread_("ImageProcessorClientThread"),
       output_cv_(&output_lock_),
@@ -156,7 +158,8 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
 
   if (VideoFrame::IsStorageTypeMappable(input_storage_type)) {
     return CloneVideoFrame(CreateVideoFrameFromImage(input_image).get(),
-                           *input_layout, VideoFrame::STORAGE_OWNED_MEMORY);
+                           *input_layout, test_sii_.get(),
+                           VideoFrame::STORAGE_OWNED_MEMORY);
   } else {
     ASSERT_TRUE_OR_RETURN_NULLPTR(
         input_storage_type == VideoFrame::STORAGE_DMABUFS ||
@@ -169,7 +172,8 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
             ? gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE
             : gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
     return CloneVideoFrame(CreateVideoFrameFromImage(input_image).get(),
-                           *input_layout, input_storage_type, dst_buffer_usage);
+                           *input_layout, test_sii_.get(), input_storage_type,
+                           dst_buffer_usage);
   }
 }
 
@@ -201,7 +205,8 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
 
   if (output_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     output_frame = CreateGpuMemoryBufferVideoFrame(
-        output_frame.get(), gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+        output_frame.get(), gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+        test_sii_.get());
   }
   return output_frame;
 }
@@ -289,5 +294,4 @@ void ImageProcessorClient::ProcessTask(scoped_refptr<VideoFrame> input_frame,
   next_frame_index_++;
 }
 
-}  // namespace test
-}  // namespace media
+}  // namespace media::test

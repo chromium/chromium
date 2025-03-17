@@ -22,7 +22,7 @@ class PropertyRegistry;
 // TODO(andruud): Move functionality from Variable to here, and eventually
 // remove Variable.
 class CORE_EXPORT CustomProperty : public Variable {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   CustomProperty() = default;
@@ -69,8 +69,6 @@ class CORE_EXPORT CustomProperty : public Variable {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-definition
   bool HasUniversalSyntax() const;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(registration_); }
-
  private:
   CustomProperty(const AtomicString& name,
                  const PropertyRegistration* registration);
@@ -81,7 +79,7 @@ class CORE_EXPORT CustomProperty : public Variable {
                                const CSSParserLocalContext&) const;
 
   AtomicString name_;
-  Member<const PropertyRegistration> registration_;
+  const PropertyRegistration* registration_;
 };
 
 template <>

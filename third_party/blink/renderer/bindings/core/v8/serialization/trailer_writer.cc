@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_writer.h"
 
+#include <algorithm>
+
 #include "base/containers/span_writer.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 
 namespace blink {

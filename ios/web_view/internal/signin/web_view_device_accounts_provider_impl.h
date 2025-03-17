@@ -27,7 +27,7 @@ class WebViewDeviceAccountsProviderImpl : public DeviceAccountsProvider {
   // ios::DeviceAccountsProvider
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void GetAccessToken(const std::string& gaia_id,
+  void GetAccessToken(const GaiaId& gaia_id,
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) override;

@@ -390,6 +390,7 @@ def register_builder_to_console_view(
                 "group": group,
                 "builder": builder,
             },
+            idempotent = True,
         ),
     )
 

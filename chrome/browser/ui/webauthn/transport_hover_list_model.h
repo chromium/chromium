@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_HOVER_LIST_MODEL_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_HOVER_LIST_MODEL_H_
 
+#include <cstddef>
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
-#include "base/memory/raw_span.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"

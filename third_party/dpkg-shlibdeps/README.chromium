@@ -1,7 +1,7 @@
 Name: dpkg-shlibdeps
 URL: http://anonscm.debian.org/cgit/dpkg/dpkg.git
 Version: a0828e04289639f875cb924f8d1a65a634683b19
-License: GPL v2
+License: GPL-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: no

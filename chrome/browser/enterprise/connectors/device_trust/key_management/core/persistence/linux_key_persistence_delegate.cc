@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/linux_key_persistence_delegate.h"
 
 #include <fcntl.h>
@@ -187,8 +182,8 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get dictionary key info.
-  auto keyinfo = base::JSONReader::Read(file_content);
-  if (!keyinfo || !keyinfo->is_dict()) {
+  auto keyinfo = base::JSONReader::ReadDict(file_content);
+  if (!keyinfo) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,
         KeyPersistenceError::kInvalidSigningKeyPairFormat,
@@ -198,7 +193,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get the trust level.
-  auto stored_trust_level = keyinfo->GetDict().FindInt(kSigningKeyTrustLevel);
+  auto stored_trust_level = keyinfo->FindInt(kSigningKeyTrustLevel);
   if (!stored_trust_level.has_value()) {
     RecordFailure(KeyPersistenceOperation::kLoadKeyPair,
                   KeyPersistenceError::kKeyPairMissingTrustLevel,
@@ -216,7 +211,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get the key.
-  std::string* encoded_key = keyinfo->GetDict().FindString(kSigningKeyName);
+  std::string* encoded_key = keyinfo->FindString(kSigningKeyName);
   std::string decoded_key;
   if (!encoded_key) {
     RecordFailure(

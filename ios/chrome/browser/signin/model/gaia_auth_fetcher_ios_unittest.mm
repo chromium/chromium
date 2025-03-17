@@ -78,7 +78,7 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
   MOCK_METHOD1(OnLogOutFailure, void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnGetCheckConnectionInfoSuccess, void(const std::string& data));
 };
-}
+}  // namespace
 
 // Tests fixture for GaiaAuthFetcherIOS
 class GaiaAuthFetcherIOSTest : public PlatformTest {
@@ -93,9 +93,7 @@ class GaiaAuthFetcherIOSTest : public PlatformTest {
         new FakeGaiaAuthFetcherIOSBridge(gaia_auth_fetcher_.get()));
   }
 
-  ~GaiaAuthFetcherIOSTest() override {
-    gaia_auth_fetcher_.reset();
-  }
+  ~GaiaAuthFetcherIOSTest() override { gaia_auth_fetcher_.reset(); }
 
   FakeGaiaAuthFetcherIOSBridge* GetBridge() {
     return static_cast<FakeGaiaAuthFetcherIOSBridge*>(

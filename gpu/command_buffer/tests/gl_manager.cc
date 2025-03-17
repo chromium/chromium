@@ -307,11 +307,11 @@ void GLManager::InitializeWithWorkaroundsImpl(
     // Always mark the passthrough command decoder as supported so that tests do
     // not unexpectedly use the wrong command decoder
     context_group = new gles2::ContextGroup(
-        gpu_preferences_, true, nullptr /* memory_tracker */,
-        translator_cache_.get(), &completeness_cache_, feature_info,
-        options.bind_generates_resource, nullptr /* progress_reporter */,
-        gpu_feature_info, discardable_manager_.get(),
-        passthrough_discardable_manager_.get(), &shared_image_manager_);
+        gpu_preferences_, /*memory_tracker=*/nullptr, translator_cache_.get(),
+        &completeness_cache_, feature_info, options.bind_generates_resource,
+        /*progress_reporter=*/nullptr, gpu_feature_info,
+        discardable_manager_.get(), passthrough_discardable_manager_.get(),
+        &shared_image_manager_);
   }
 
   command_buffer_.reset(

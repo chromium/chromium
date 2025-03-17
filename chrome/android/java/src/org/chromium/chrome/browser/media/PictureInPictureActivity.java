@@ -697,13 +697,19 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     private void onExitPictureInPicture(boolean closeByNative) {
         if (!closeByNative && mNativeOverlayWindowAndroid != 0) {
-            PictureInPictureActivityJni.get().destroy(mNativeOverlayWindowAndroid);
+            PictureInPictureActivityJni.get().destroyStartedByJava(mNativeOverlayWindowAndroid);
         }
 
         // If called by `closeByNative`, it means that the native side will be freed at some point
-        // after this returns.  If `!closeByNative`, then we called destroyed on our native side (if
-        // we have one).  Either way, we shouldn't refer to the native side after this.
+        // after this returns.  If `!closeByNative`, then we asked the native side to start cleaning
+        // up just now via `destroyStartedByJava()` (if we have a native side).  Either way, we
+        // shouldn't refer to the native side after this.
+        //
         // See crbug.com/40063137 for details.
+        //
+        // Also note that, if there's no native side when this fn is called, then there's probably
+        // no compositor etc. either.  This isn't immediately obvious, and we'd still want to call
+        // `finish()` in this case if our goal is to clean up after an init failure anyway.
         mNativeOverlayWindowAndroid = 0;
 
         if (mCompositorView != null) {
@@ -874,7 +880,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         long onActivityStart(
                 UnguessableToken token, PictureInPictureActivity self, WindowAndroid window);
 
-        void destroy(long nativeOverlayWindowAndroid);
+        void destroyStartedByJava(long nativeOverlayWindowAndroid);
 
         void togglePlayPause(long nativeOverlayWindowAndroid, boolean toggleOn);
 

@@ -34,7 +34,6 @@ include_rules = [
   "+components/feed/core/shared_prefs",
   "+components/feed/core/v2/public",
   "+components/feed/feed_feature_list.h",
-  "+components/flags_ui",
   "+components/gcm_driver",
   "+components/google/core",
   "+components/handoff",
@@ -51,6 +50,7 @@ include_rules = [
   "+components/keyed_service/ios",
   "+components/language",
   "+components/language_detection/core",
+  "+components/lens",
   "+components/leveldb_proto",
   "+components/local_state",
   "+components/lookalikes/core",
@@ -86,6 +86,7 @@ include_rules = [
   "+components/proxy_config",
   "+components/query_parser",
   "+components/reading_list",
+  "+components/regional_capabilities",
   "+components/rlz",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser",
@@ -131,11 +132,12 @@ include_rules = [
   "+components/variations",
   "+components/variations/net",
   "+components/version_info",
-  "+components/version_ui",
   "+components/web_resource",
   "+components/webauthn",
   "+components/webdata_services",
   "+components/webp_transcode",
+  "+components/webui/flags",
+  "+components/webui/version",
   "+crypto",
   "+google_apis",
   "+ios/chrome/app",
@@ -163,6 +165,7 @@ include_rules = [
   "+third_party/libaddressinput",
   "+third_party/libxml/chromium/xml_writer.h",
   "+third_party/metrics_proto",
+  "+third_party/search_engines_data",
   "+ui",
 
   # Those depend on //content; exclude them.
@@ -210,8 +213,8 @@ specific_include_rules = {
     # TODO(crbug.com/40820398): browser should not depend on UI, this is a
     # blanket exception for tests.
     "+ios/chrome/browser/ui",
-    # Use ios/chrome/browser/ui/authentication/signin_earl_grey.h instead
-    "-ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h",
+    # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
+    "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
     # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead
     "-ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
     # Blanket exception for tests to be allowed to depend on everything.

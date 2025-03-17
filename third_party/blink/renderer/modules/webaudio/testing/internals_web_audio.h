@@ -19,6 +19,7 @@ class InternalsWebAudio {
   static unsigned audioHandlerCount(Internals&);
   static unsigned audioWorkletProcessorCount(Internals&);
   static void emulateDeviceFailureOnAudioContext(Internals&, AudioContext*);
+  static bool isSilenceDetectionActive(Internals&, AudioContext*);
 };
 
 }  // namespace blink

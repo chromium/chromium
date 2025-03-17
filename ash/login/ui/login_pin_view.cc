@@ -114,7 +114,7 @@ class BasePinButton : public views::View {
     SetBackground(holding_space_util::CreateCircleBackground(
         cros_tokens::kCrosSysSystemBaseElevated, kButtonBackgroundDiameter));
 
-    SetCachedTooltipText(accessible_name);
+    SetTooltipText(accessible_name);
 
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical);
@@ -238,18 +238,18 @@ class LoginPinView::DigitPinButton : public BasePinButton {
                       base::BindRepeating(on_key, value)) {
     SetID(GetViewIdForPinNumber(value));
     const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-    label_ = AddChildView(new views::Label(GetButtonLabelForNumber(value),
-                                           views::style::CONTEXT_BUTTON,
-                                           views::style::STYLE_PRIMARY));
+    label_ = AddChildViewRaw(new views::Label(GetButtonLabelForNumber(value),
+                                              views::style::CONTEXT_BUTTON,
+                                              views::style::STYLE_PRIMARY));
     label_->SetAutoColorReadabilityEnabled(false);
     label_->SetSubpixelRenderingEnabled(false);
     label_->SetFontList(base_font_list.Derive(8 /*size_delta*/,
                                               gfx::Font::FontStyle::NORMAL,
                                               gfx::Font::Weight::NORMAL));
-    label_->SetEnabledColorId(kColorAshIconColorPrimary);
+    label_->SetEnabledColor(kColorAshIconColorPrimary);
 
     if (show_sub_label) {
-      sub_label_ = AddChildView(new views::Label(
+      sub_label_ = AddChildViewRaw(new views::Label(
           GetButtonSubLabelForNumber(value), views::style::CONTEXT_BUTTON,
           views::style::STYLE_SECONDARY));
       sub_label_->SetAutoColorReadabilityEnabled(false);
@@ -257,7 +257,7 @@ class LoginPinView::DigitPinButton : public BasePinButton {
       sub_label_->SetFontList(
           base_font_list.Derive(-1 /*size_delta*/, gfx::Font::FontStyle::NORMAL,
                                 gfx::Font::Weight::NORMAL));
-      sub_label_->SetEnabledColorId(kColorAshTextColorSecondary);
+      sub_label_->SetEnabledColor(kColorAshTextColorSecondary);
     }
   }
 
@@ -285,7 +285,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
                       l10n_util::GetStringUTF16(
                           IDS_ASH_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME),
                       on_press) {
-    image_ = AddChildView(new views::ImageView());
+    image_ = AddChildViewRaw(new views::ImageView());
     SetEnabled(false);
   }
 
@@ -503,7 +503,7 @@ LoginPinView::LoginPinView(Style keyboard_style,
   bool show_letters = keyboard_style == Style::kAlphanumeric;
 
   auto add_digit_button = [&](View* row, int value) {
-    digit_buttons_.push_back(row->AddChildView(
+    digit_buttons_.push_back(row->AddChildViewRaw(
         new DigitPinButton(value, show_letters, kButtonSize, on_key)));
   };
 
@@ -541,11 +541,11 @@ LoginPinView::LoginPinView(Style keyboard_style,
 LoginPinView::~LoginPinView() = default;
 
 void LoginPinView::NotifyAccessibilityLocationChanged() {
-  this->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                 false /*send_native_event*/);
+  this->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLocationChanged,
+                                           false /*send_native_event*/);
   for (NonAccessibleView* row : rows_) {
-    row->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                  false /*send_native_event*/);
+    row->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLocationChanged,
+                                            false /*send_native_event*/);
   }
 }
 

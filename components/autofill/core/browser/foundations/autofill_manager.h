@@ -25,6 +25,8 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -112,15 +114,16 @@ class AutofillManager
                                               const std::u16string& selection,
                                               const gfx::Rect& caret_bounds) {}
 
-    virtual void OnBeforeTextFieldDidChange(AutofillManager& manager,
-                                            FormGlobalId form,
-                                            FieldGlobalId field) {}
+    virtual void OnBeforeTextFieldValueChanged(AutofillManager& manager,
+                                               FormGlobalId form,
+                                               FieldGlobalId field) {}
 
     // TODO(crbug.com/40227496): Get rid of `text_value`.
-    virtual void OnAfterTextFieldDidChange(AutofillManager& manager,
-                                           FormGlobalId form,
-                                           FieldGlobalId field,
-                                           const std::u16string& text_value) {}
+    virtual void OnAfterTextFieldValueChanged(
+        AutofillManager& manager,
+        FormGlobalId form,
+        FieldGlobalId field,
+        const std::u16string& text_value) {}
 
     virtual void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                             FormGlobalId form,
@@ -129,12 +132,12 @@ class AutofillManager
                                            FormGlobalId form,
                                            FieldGlobalId field) {}
 
-    virtual void OnBeforeSelectControlDidChange(AutofillManager& manager,
-                                                FormGlobalId form,
-                                                FieldGlobalId field) {}
-    virtual void OnAfterSelectControlDidChange(AutofillManager& manager,
-                                               FormGlobalId form,
-                                               FieldGlobalId field) {}
+    virtual void OnBeforeSelectControlSelectionChanged(AutofillManager& manager,
+                                                       FormGlobalId form,
+                                                       FieldGlobalId field) {}
+    virtual void OnAfterSelectControlSelectionChanged(AutofillManager& manager,
+                                                      FormGlobalId form,
+                                                      FieldGlobalId field) {}
 
     virtual void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                             FormGlobalId form,
@@ -235,14 +238,14 @@ class AutofillManager
                            const std::vector<FormGlobalId>& removed_forms);
   virtual void OnFormSubmitted(const FormData& form,
                                mojom::SubmissionSource source);
-  virtual void OnTextFieldDidChange(const FormData& form,
-                                    const FieldGlobalId& field_id,
-                                    const base::TimeTicks timestamp);
+  virtual void OnTextFieldValueChanged(const FormData& form,
+                                       const FieldGlobalId& field_id,
+                                       const base::TimeTicks timestamp);
   void OnDidEndTextFieldEditing();
   virtual void OnTextFieldDidScroll(const FormData& form,
                                     const FieldGlobalId& field_id);
-  virtual void OnSelectControlDidChange(const FormData& form,
-                                        const FieldGlobalId& field_id);
+  virtual void OnSelectControlSelectionChanged(const FormData& form,
+                                               const FieldGlobalId& field_id);
   void OnSelectFieldOptionsDidChange(const FormData& form);
   virtual void OnFocusOnFormField(const FormData& form,
                                   const FieldGlobalId& field_id);
@@ -261,8 +264,7 @@ class AutofillManager
   virtual void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FieldGlobalId& field_id,
-      const std::u16string& old_value,
-      bool formatting_only);
+      const std::u16string& old_value);
 
   // Invoked when the suggestions are actually hidden.
   void OnSuggestionsHidden();
@@ -293,8 +295,11 @@ class AutofillManager
       AutofillField** autofill_field) const;
 
   // Returns nullptr if no cached form structure is found with a matching
-  // |form_id|. Runs in logarithmic time.
+  // `form_id`. Runs in logarithmic time.
   FormStructure* FindCachedFormById(FormGlobalId form_id) const;
+
+  // Searches for any cached form that contains a field with `field_id`.
+  FormStructure* FindCachedFormById(FieldGlobalId field_id) const;
 
   // Returns the number of forms this Autofill handler is aware of.
   size_t NumFormsDetected() const { return form_structures_.size(); }
@@ -363,14 +368,15 @@ class AutofillManager
   virtual void OnCaretMovedInFormFieldImpl(const FormData& form,
                                            const FieldGlobalId& field_id,
                                            const gfx::Rect& caret_bounds) = 0;
-  virtual void OnTextFieldDidChangeImpl(const FormData& form,
-                                        const FieldGlobalId& field_id,
-                                        const base::TimeTicks timestamp) = 0;
+  virtual void OnTextFieldValueChangedImpl(const FormData& form,
+                                           const FieldGlobalId& field_id,
+                                           const base::TimeTicks timestamp) = 0;
   virtual void OnDidEndTextFieldEditingImpl() = 0;
   virtual void OnTextFieldDidScrollImpl(const FormData& form,
                                         const FieldGlobalId& field_id) = 0;
-  virtual void OnSelectControlDidChangeImpl(const FormData& form,
-                                            const FieldGlobalId& field_id) = 0;
+  virtual void OnSelectControlSelectionChangedImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id) = 0;
   virtual void OnSelectFieldOptionsDidChangeImpl(const FormData& form) = 0;
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FieldGlobalId& field_id) = 0;
@@ -387,8 +393,9 @@ class AutofillManager
   virtual void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,
       const FieldGlobalId& field_id,
-      const std::u16string& old_value,
-      bool formatting_only) = 0;
+      const std::u16string& old_value) = 0;
+  virtual void OnLoadedServerPredictionsImpl(
+      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) = 0;
 
   // Return whether the |forms| from OnFormSeen() should be parsed to
   // form_structures.

@@ -507,7 +507,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ReverseRelations) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TreeChange) {
+// TODO(crbug.com/389060012): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TreeChange DISABLED_TreeChange
+#else
+#define MAYBE_TreeChange TreeChange
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_TreeChange) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/tree_change.js")) << message_;
 }

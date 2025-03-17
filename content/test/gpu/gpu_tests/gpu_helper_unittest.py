@@ -302,25 +302,6 @@ class TagHelpersUnittest(unittest.TestCase):
                     return_value=False):
       self.assertEqual(gpu_helper.GetDisplayServer(''), None)
 
-  def testGetOOPCanvasStatus(self) -> None:
-    """Tests all the code paths for the GetOOPCanvasStatus() method."""
-    cases = [
-        # No feature status.
-        TagHelperTestCase('no-oop-c'),
-        # Feature status off.
-        TagHelperTestCase(
-            'no-oop-c',
-            feature_status={'canvas_oop_rasterization': 'enabled_off'}),
-        # Feature status on.
-        TagHelperTestCase(
-            'oop-c', feature_status={'canvas_oop_rasterization': 'enabled_on'}),
-    ]
-
-    for tc in cases:
-      self.runTagHelperTest(tc, gpu_helper.GetOOPCanvasStatus)
-
-    # Undefined info.
-    self.assertEqual(gpu_helper.GetOOPCanvasStatus(None), 'no-oop-c')
 
   def testGetAsanStatus(self) -> None:
     """Tests all code paths for the GetAsanStatus() method."""

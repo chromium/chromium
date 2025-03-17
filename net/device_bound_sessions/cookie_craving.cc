@@ -14,6 +14,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/url_request/url_request.h"
 #include "url/url_canon.h"
 
 namespace net::device_bound_sessions {
@@ -114,14 +115,13 @@ std::optional<CookieCraving> CookieCraving::Create(
   if (parsed_cookie.HasDomain()) {
     domain_attribute_value = parsed_cookie.Domain();
   }
-  std::string domain;
   CookieInclusionStatus ignored_status;
+  std::optional<std::string> domain = cookie_util::GetCookieDomainWithString(
+      url, domain_attribute_value, ignored_status);
   // Note: This is a deviation from CanonicalCookie. Here, we also require that
   // domain is non-empty, which CanonicalCookie does not. See comment below in
   // IsValid().
-  if (!cookie_util::GetCookieDomainWithString(url, domain_attribute_value,
-                                              ignored_status, &domain) ||
-      domain.empty()) {
+  if (!domain || domain->empty()) {
     return std::nullopt;
   }
 
@@ -155,7 +155,7 @@ std::optional<CookieCraving> CookieCraving::Create(
   int source_port = url.EffectiveIntPort();
 
   CookieCraving cookie_craving{parsed_cookie.Name(),
-                               std::move(domain),
+                               std::move(domain).value(),
                                std::move(path),
                                creation_time,
                                parsed_cookie.IsSecure(),
@@ -403,6 +403,34 @@ std::optional<CookieCraving> CookieCraving::CreateFromProto(
   }
 
   return cookie_craving;
+}
+
+bool CookieCraving::ShouldIncludeForRequest(
+    URLRequest* request,
+    const FirstPartySetMetadata& first_party_set_metadata,
+    const CookieOptions& options,
+    const CookieAccessParams& params) const {
+  if (!IncludeForRequestURL(request->url(), options, params)
+           .status.IsInclude()) {
+    return false;
+  }
+
+  // The `NetworkDelegate` can also reject cookies for any reason
+  // (e.g. user preferences). So we need to synthesize a
+  // `CanonicalCookie` and make sure it would be included to check those
+  // conditions too.
+  base::Time now = base::Time::Now();
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> canonical_cookie =
+      CanonicalCookie::CreateSanitizedCookie(
+          request->url(), Name(), /*value=*/"", Domain(), Path(),
+          CreationDate(), now + base::Days(1), now, IsSecure(), IsHttpOnly(),
+          SameSite(), COOKIE_PRIORITY_DEFAULT, PartitionKey(), &status);
+  CookieAccessResultList included_cravings;
+  included_cravings.emplace_back(std::move(*canonical_cookie));
+  CookieAccessResultList excluded_cravings;
+  return request->network_delegate()->AnnotateAndMoveUserBlockedCookies(
+      *request, first_party_set_metadata, included_cravings, excluded_cravings);
 }
 
 }  // namespace net::device_bound_sessions

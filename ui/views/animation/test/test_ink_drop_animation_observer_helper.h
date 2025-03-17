@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/animation/ink_drop_animation_ended_reason.h"
 
@@ -138,7 +137,7 @@ class TestInkDropAnimationObserverHelper {
   testing::AssertionResult ContextsMatch(
       const std::vector<ContextType>& expected_contexts,
       const std::vector<ContextType>& actual_contexts) {
-    const bool match = base::ranges::equal(expected_contexts, actual_contexts);
+    const bool match = std::ranges::equal(expected_contexts, actual_contexts);
     testing::AssertionResult result =
         match ? (testing::AssertionSuccess() << "Expected == Actual: {")
               : (testing::AssertionFailure() << "Expected != Actual: {");

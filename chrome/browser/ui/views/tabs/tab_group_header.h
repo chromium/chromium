@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
@@ -58,9 +60,8 @@ class TabGroupHeader : public TabSlotView,
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
-  void OnGroupChanged() override;
 
-  void UpdateTooltipText();
+  void OnGroupContentsChanged();
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -89,14 +90,12 @@ class TabGroupHeader : public TabSlotView,
   // Returns whether the attention indicator should be shown.
   bool GetShowingAttentionIndicator();
 
+  // Returns the title text for testing.
+  std::u16string_view GetTitleTextForTesting() const;
+
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
-  FRIEND_TEST_ALL_PREFIXES(TabStripBrowsertest,
-                           TabGroupHeaderAccessibleProperties);
   FRIEND_TEST_ALL_PREFIXES(TabStripSaveBrowsertest, AttentionIndicatorIsShown);
-  FRIEND_TEST_ALL_PREFIXES(TabContainerTest, TabGroupHeaderTooltipText);
-  FRIEND_TEST_ALL_PREFIXES(TabContainerTest,
-                           TabGroupHeaderTooltipTextAccessibility);
 
   // Calculate the width for this View.
   int GetDesiredWidth() const;
@@ -110,7 +109,6 @@ class TabGroupHeader : public TabSlotView,
   void UpdateSyncIconView();
   void UpdateAttentionIndicatorView();
   void UpdateIsCollapsed();
-  void UpdateAccessibleName();
 
   // Creates a squircle (cross between a square and a circle).
   void CreateHeaderWithoutTitle();
@@ -118,8 +116,9 @@ class TabGroupHeader : public TabSlotView,
   // selected.
   void CreateHeaderWithTitle();
 
-  // Callback for tab group visuals changing.
-  void OnTabGroupVisualsChanged();
+  void UpdateTooltipText();
+
+  void UpdateAccessibleName();
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 
@@ -185,7 +184,6 @@ class TabGroupHeader : public TabSlotView,
   };
 
   EditorBubbleTracker editor_bubble_tracker_;
-  base::WeakPtrFactory<TabGroupHeader> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_

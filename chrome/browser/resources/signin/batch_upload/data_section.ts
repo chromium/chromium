@@ -28,6 +28,7 @@ function createEmptyContainer(): DataContainer {
   return {
     sectionTitle: '',
     dataItems: [],
+    isTheme: false,
   };
 }
 
@@ -143,8 +144,17 @@ export class DataSectionElement extends DataSectionElementBase {
       // id may be empty.
       if (this.dataContainer.sectionTitle &&
           this.dataContainer.sectionTitle.length > 0) {
-        this.title_ = await PluralStringProxyImpl.getInstance().getPluralString(
-            this.dataContainer.sectionTitle, this.dataSelectedCount_);
+        if (this.isThemeSection()) {
+          // Themes construct its title with the content of its one and only
+          // item title.
+          this.title_ = this.i18n(
+              this.dataContainer.sectionTitle,
+              this.dataContainer.dataItems[0]!.title);
+        } else {
+          this.title_ =
+              await PluralStringProxyImpl.getInstance().getPluralString(
+                  this.dataContainer.sectionTitle, this.dataSelectedCount_);
+        }
       }
     }
   }
@@ -208,7 +218,7 @@ export class DataSectionElement extends DataSectionElementBase {
 
   // Needs to react to both property change (through a reset caused from all
   // checkboxes being unselected) and user action.
-  protected async onToggleChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onToggleChanged_(e: CustomEvent<{value: boolean}>) {
     this.resetWithState_(/*disabled=*/ !e.detail.value);
 
     // Notify the parent with the new toggle value.
@@ -264,6 +274,13 @@ export class DataSectionElement extends DataSectionElementBase {
         this.i18n('lastItemSelectedScreenReader'),
       ].join('. '));
     }
+  }
+
+  // Theme section differs slightly from the regular section since it has always
+  // a single item. Therefore the Ui is simplified not to show the expand button
+  // and not giving access to items details.
+  protected isThemeSection(): boolean {
+    return this.dataContainer.isTheme;
   }
 
   protected isStrEmpty_(str: string) {

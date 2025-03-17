@@ -108,7 +108,6 @@ WorkerInspectorController::WorkerInspectorController(
 
 WorkerInspectorController::~WorkerInspectorController() {
   DCHECK(!thread_);
-  trace_event::RemoveEnabledStateObserver(this);
 }
 
 void WorkerInspectorController::AttachSession(DevToolsSession* session,
@@ -169,6 +168,7 @@ void WorkerInspectorController::Dispose() {
   if (agent_)
     agent_->Dispose();
   thread_ = nullptr;
+  trace_event::RemoveEnabledStateObserver(this);
 }
 
 void WorkerInspectorController::FlushProtocolNotifications() {
@@ -205,7 +205,8 @@ void WorkerInspectorController::EmitTraceEvent() {
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
       "TracingSessionIdForWorker",
       inspector_tracing_session_id_for_worker_event::Data,
-      worker_devtools_token_, parent_devtools_token_, url_, worker_thread_id_);
+      worker_devtools_token_, parent_devtools_token_, url_,
+      worker_thread_id_.raw());
 }
 
 void WorkerInspectorController::Trace(Visitor* visitor) const {

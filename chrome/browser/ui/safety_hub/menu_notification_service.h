@@ -98,10 +98,6 @@ class SafetyHubMenuNotificationService : public KeyedService {
   void DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType module);
 
-  // Returns the module of the notification that was last displayed to the user.
-  std::optional<safety_hub::SafetyHubModuleType>
-  GetLastShownNotificationModule() const;
-
   void UpdateResultGetterForTesting(
       safety_hub::SafetyHubModuleType type,
       base::RepeatingCallback<

@@ -44,7 +44,9 @@ ChromeClientSideDetectionServiceDelegate::
     : profile_(profile) {}
 
 ChromeClientSideDetectionServiceDelegate::
-    ~ChromeClientSideDetectionServiceDelegate() = default;
+    ~ChromeClientSideDetectionServiceDelegate() {
+  StopListeningToOnDeviceModelUpdate();
+}
 
 PrefService* ChromeClientSideDetectionServiceDelegate::GetPrefs() {
   if (profile_) {
@@ -138,9 +140,8 @@ void ChromeClientSideDetectionServiceDelegate::OnDeviceModelAvailabilityChanged(
   }
 
   if (reason == optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
-    base::UmaHistogramMediumTimes(
-        "SBClientPhishing.OnDeviceModelFetchTime",
-        base::TimeTicks::Now() - on_device_fetch_time_);
+    base::UmaHistogramLongTimes("SBClientPhishing.OnDeviceModelFetchTime",
+                                base::TimeTicks::Now() - on_device_fetch_time_);
     NotifyServiceOnDeviceModelAvailable();
   } else {
     LogOnDeviceModelDownloadSuccess(false);
@@ -176,6 +177,23 @@ ChromeClientSideDetectionServiceDelegate::GetModelExecutorSession() {
   return opt_guide->StartSession(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
       config_params);
+}
+
+void ChromeClientSideDetectionServiceDelegate::
+    LogOnDeviceModelEligibilityReason() {
+  auto* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+
+  if (!opt_guide) {
+    return;
+  }
+
+  optimization_guide::OnDeviceModelEligibilityReason eligibility =
+      opt_guide->GetOnDeviceModelEligibility(
+          optimization_guide::ModelBasedCapabilityKey::kScamDetection);
+  base::UmaHistogramEnumeration(
+      "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
+      eligibility);
 }
 
 }  // namespace safe_browsing

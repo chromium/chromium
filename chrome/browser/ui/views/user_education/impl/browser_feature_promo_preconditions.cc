@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 
+#include "base/time/default_clock.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -16,13 +18,16 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 #include "components/user_education/common/feature_promo/impl/precondition_data.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
@@ -34,6 +39,7 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kBrowserNotClosingPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kNoCriticalNoticeShowingPrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kUserNotActivePrecondition);
 
 WindowActivePrecondition::WindowActivePrecondition()
     : FeaturePromoPreconditionBase(kWindowActivePrecondition,
@@ -42,6 +48,10 @@ WindowActivePrecondition::~WindowActivePrecondition() = default;
 
 user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
     ComputedData& data) const {
+  if (user_education::FeaturePromoControllerCommon::
+          active_window_check_blocked()) {
+    return user_education::FeaturePromoResult::Success();
+  }
   auto& element_ref =
       data.Get(user_education::AnchorElementPrecondition::kAnchorElement);
   views::Widget* widget = nullptr;
@@ -53,7 +63,14 @@ user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
     widget = views::Widget::GetWidgetForNativeWindow(
         contents->GetTopLevelNativeWindow());
   }
-  return widget && widget->GetPrimaryWindowWidget()->ShouldPaintAsActive()
+  if (widget) {
+    // For some reason sometimes primary can be null;
+    // see https://crbug.com/400921315
+    if (auto* const primary = widget->GetPrimaryWindowWidget()) {
+      widget = primary;
+    }
+  }
+  return widget && widget->ShouldPaintAsActive()
              ? user_education::FeaturePromoResult::Success()
              : user_education::FeaturePromoResult::kBlockedByUi;
 }
@@ -142,4 +159,56 @@ NoCriticalNoticeShowingPrecondition::CheckPrecondition(ComputedData&) const {
   }
 
   return user_education::FeaturePromoResult::Success();
+}
+
+UserNotActivePrecondition::UserNotActivePrecondition(
+    BrowserView& browser_view,
+    const user_education::UserEducationTimeProvider& time_provider)
+    : FeaturePromoPreconditionBase(kUserNotActivePrecondition,
+                                   "The user is not actively sending input"),
+      browser_view_(browser_view),
+      time_provider_(time_provider) {
+  if (browser_view.GetWidget()) {
+    CreateEventMonitor();
+  } else {
+    browser_view_observation_.Observe(&browser_view);
+  }
+}
+
+UserNotActivePrecondition::~UserNotActivePrecondition() = default;
+
+void UserNotActivePrecondition::CreateEventMonitor() {
+  // Note that null is a valid value for the second parameter here; if for
+  // some reason there is no native window it simply falls back to
+  // application-wide event-sniffing, which for this case is better than not
+  // watching events at all.
+  event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+      this, browser_view_->GetWidget()->GetTopLevelWidget()->GetNativeWindow(),
+      {ui::EventType::kKeyPressed, ui::EventType::kKeyReleased,
+       ui::EventType::kMousePressed, ui::EventType::kMouseReleased,
+       ui::EventType::kTouchPressed, ui::EventType::kTouchReleased,
+       ui::EventType::kGestureBegin, ui::EventType::kGestureEnd});
+}
+
+void UserNotActivePrecondition::OnEvent(const ui::Event& event) {
+  // Delay heavyweight IPH for the prescribed amount of time.
+  last_active_time_ = time_provider_->GetCurrentTime();
+}
+
+user_education::FeaturePromoResult UserNotActivePrecondition::CheckPrecondition(
+    ComputedData&) const {
+  const auto elapsed = time_provider_->GetCurrentTime() - last_active_time_;
+  return elapsed < user_education::features::GetIdleTimeBeforeHeavyweightPromo()
+             ? user_education::FeaturePromoResult::kBlockedByUi
+             : user_education::FeaturePromoResult::Success();
+}
+
+void UserNotActivePrecondition::OnViewAddedToWidget(
+    views::View* observed_view) {
+  browser_view_observation_.Reset();
+  CreateEventMonitor();
+}
+
+void UserNotActivePrecondition::OnViewIsDeleting(views::View* observed_view) {
+  browser_view_observation_.Reset();
 }

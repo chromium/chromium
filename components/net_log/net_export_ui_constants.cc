@@ -6,10 +6,6 @@
 
 namespace net_log {
 
-// Resource paths.
-const char kNetExportUICSS[] = "net_export.css";
-const char kNetExportUIJS[] = "net_export.js";
-
 // Message handlers.
 const char kEnableNotifyUIWithStateHandler[] = "enableNotifyUIWithState";
 const char kSendNetLogHandler[] = "sendNetLog";

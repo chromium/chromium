@@ -8,7 +8,7 @@
 # http://go/chromium-cq#internal-builders-on-the-cq.
 
 load("//lib/branches.star", "branches")
-load("//lib/try.star", "default_location_filters", "try_")
+load("//lib/try.star", "default_location_filters", "default_owner_whitelist_group_for_cq_bots", "try_")
 load("//project.star", "settings")
 
 def chrome_internal_verifier(
@@ -44,10 +44,7 @@ def chrome_internal_verifier(
             builder = "{}:try/{}".format(settings.chrome_project, builder),
             cq_group = "cq",
             includable_only = True,
-            owner_whitelist = [
-                "googlers",
-                "project-chromium-robot-committers",
-            ],
+            owner_whitelist = default_owner_whitelist_group_for_cq_bots(settings.chrome_project),
             result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
             **kwargs
         )
@@ -80,6 +77,18 @@ chrome_internal_verifier(
 )
 
 ### Optional builders ###
+
+chrome_internal_verifier(
+    # TODO(https://crbug.com/400712231): Turn on branches for this bot.
+    #branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm32-orderfile",
+)
+
+chrome_internal_verifier(
+    # TODO(https://crbug.com/400712231): Turn on branches for this bot.
+    #branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm64-orderfile",
+)
 
 chrome_internal_verifier(
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -158,6 +167,12 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-volteer-chrome",
+)
+
+# TODO(http://issues.chromium.org/339354084): Remove this after chromeos-volteer-chrome gets
+# stabilized.
+chrome_internal_verifier(
     builder = "chromeos-volteer-chrome-skylab",
 )
 
@@ -223,6 +238,10 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "fuchsia-webgl-sherlock",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-webgl-sherlock-qemu",
 )
 
 chrome_internal_verifier(
@@ -308,11 +327,9 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "optimization_guide-linux",
     owner_whitelist = [
-        "optimization-guide-try-opt-in",
+        "google/optimization-guide-try-opt-in@google.com",
     ],
     tryjob = try_.job(
-        # TODO: crbug.com/375065753 - Promote out of experimental once stable.
-        experiment_percentage = 100,
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
@@ -324,11 +341,9 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "optimization_guide-mac-arm64",
     owner_whitelist = [
-        "optimization-guide-try-opt-in",
+        "google/optimization-guide-try-opt-in@google.com",
     ],
     tryjob = try_.job(
-        # TODO: crbug.com/375065753 - Promote out of experimental once stable.
-        experiment_percentage = 100,
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
@@ -348,11 +363,9 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "optimization_guide-win64",
     owner_whitelist = [
-        "optimization-guide-try-opt-in",
+        "google/optimization-guide-try-opt-in@google.com",
     ],
     tryjob = try_.job(
-        # TODO: crbug.com/375065753 - Promote out of experimental once stable.
-        experiment_percentage = 100,
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",

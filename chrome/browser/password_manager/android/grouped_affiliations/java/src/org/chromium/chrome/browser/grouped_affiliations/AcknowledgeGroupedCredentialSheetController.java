@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.grouped_affiliations;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -17,11 +21,12 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  * Controller, which displays the acknowledgement bottom sheet before filling credential that were
  * originally saved for another web site or app grouped with current site.
  */
+@NullMarked
 public class AcknowledgeGroupedCredentialSheetController {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final Callback<Integer> mOnSheetDismissed;
-    private AcknowledgeGroupedCredentialSheetView mView;
+    private @Nullable AcknowledgeGroupedCredentialSheetView mView;
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
@@ -51,6 +56,7 @@ public class AcknowledgeGroupedCredentialSheetController {
     }
 
     public void dismiss() {
+        assumeNonNull(mView);
         mBottomSheetController.hideContent(mView, true);
     }
 

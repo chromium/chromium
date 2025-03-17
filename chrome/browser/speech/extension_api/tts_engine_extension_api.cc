@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api_constants.h"
@@ -43,10 +42,10 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using extensions::EventRouter;
 using extensions::Extension;
@@ -232,7 +231,7 @@ content::LanguageInstallStatus VoicePackInstallStatusFromString(
   return content::LanguageInstallStatus::UNKNOWN;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 bool CanUseEnhancedNetworkVoices(const GURL& source_url, Profile* profile) {
   // Currently only Select-to-speak and its settings page can use Enhanced
@@ -254,11 +253,11 @@ bool CanUseEnhancedNetworkVoices(const GURL& source_url, Profile* profile) {
       ash::prefs::kAccessibilitySelectToSpeakEnhancedNetworkVoices);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TtsExtensionEngine* TtsExtensionEngine::GetInstance() {
   static base::NoDestructor<TtsExtensionEngine> tts_extension_engine;
   return tts_extension_engine.get();
@@ -301,12 +300,12 @@ void TtsExtensionEngine::GetVoices(
     if (!tts_voices)
       continue;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Only authorized sources can use Enhanced Network voices.
     if (extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId &&
         !CanUseEnhancedNetworkVoices(source_url, profile))
       continue;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     for (size_t i = 0; i < tts_voices->size(); ++i) {
       const extensions::TtsVoice& voice = tts_voices->at(i);
@@ -658,7 +657,7 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ExtensionTtsEngineSendTtsAudioFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
 
   const auto& utterance_id_value = args()[0];

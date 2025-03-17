@@ -51,6 +51,10 @@ bool AutofillClient::IsOffTheRecord() const {
   return false;
 }
 
+const EntityDataManager* AutofillClient::GetEntityDataManager() const {
+  return const_cast<AutofillClient*>(this)->GetEntityDataManager();
+}
+
 const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
 }
@@ -82,6 +86,14 @@ AutofillAiDelegate* AutofillClient::GetAutofillAiDelegate() {
   return nullptr;
 }
 
+AutofillAiModelCache* AutofillClient::GetAutofillAiModelCache() {
+  return nullptr;
+}
+
+AutofillAiModelExecutor* AutofillClient::GetAutofillAiModelExecutor() {
+  return nullptr;
+}
+
 void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     bool is_manual_fallback,
@@ -95,6 +107,10 @@ void AutofillClient::ShowPlusAddressAffiliationError(
     std::u16string affiliated_domain,
     std::u16string affiliated_plus_address,
     base::OnceClosure on_accepted) {}
+
+const GoogleGroupsManager* AutofillClient::GetGoogleGroupsManager() const {
+  return nullptr;
+}
 
 payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
   return nullptr;
@@ -209,5 +225,10 @@ PasswordFormClassification AutofillClient::ClassifyAsPasswordForm(
 
 void AutofillClient::TriggerPlusAddressUserPerceptionSurvey(
     plus_addresses::hats::SurveyType survey_type) {}
+
+const syncer::SyncService* AutofillClient::GetSyncService() const {
+  return const_cast<const syncer::SyncService*>(
+      const_cast<AutofillClient*>(this)->GetSyncService());
+}
 
 }  // namespace autofill

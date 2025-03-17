@@ -8,12 +8,14 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** An interface for items that can be added to an InfoBarContainerLayout. */
+@NullMarked
 public interface InfoBarUiItem {
     // The infobar priority.
     @IntDef({

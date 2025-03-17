@@ -12,6 +12,10 @@
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/event_logger.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace enterprise_companion {
 
 // The core of the Enterprise Companion App. All functions and callbacks must be
@@ -22,7 +26,8 @@ class EnterpriseCompanionService {
 
   virtual void Shutdown(base::OnceClosure callback) = 0;
 
-  virtual void FetchPolicies(StatusCallback callback) = 0;
+  virtual void FetchPolicies(policy::PolicyFetchReason reason,
+                             StatusCallback callback) = 0;
 };
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(

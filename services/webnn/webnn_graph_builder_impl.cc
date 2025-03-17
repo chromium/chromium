@@ -547,7 +547,7 @@ class OperationValidationContext {
 
   template <typename Operation>
   bool ValidateUnaryOperation(const Operation& operation,
-                              const webnn::SupportedDataTypes& input_constraint,
+                              const webnn::SupportedTensors& input_constraint,
                               size_t operation_id);
 
   bool ValidateCastOperation(const mojom::ElementWiseUnary& operation,
@@ -565,7 +565,7 @@ class OperationValidationContext {
   bool ValidateDequantizeLinear(
       const mojom::DequantizeLinear& dequantize_linear,
       size_t operation_id);
-  bool ValidateElementWiseBinaryDataTypes(
+  bool ValidateElementWiseBinaryOperands(
       const mojom::Operand* lhs,
       const mojom::Operand* rhs,
       const mojom::Operand* output,
@@ -673,7 +673,7 @@ OperationValidationContext::ValidateOperationsAndGetDependencies(
 template <typename Operation>
 bool OperationValidationContext::ValidateUnaryOperation(
     const Operation& operation,
-    const webnn::SupportedDataTypes& input_constraint,
+    const webnn::SupportedTensors& input_constraint,
     size_t operation_id) {
   if (!processed_operands_.contains(operation.input_operand_id)) {
     return false;
@@ -690,8 +690,7 @@ bool OperationValidationContext::ValidateUnaryOperation(
     return false;
   }
 
-  const auto input_data_type = input->descriptor.data_type();
-  if (!input_constraint.Has(input_data_type)) {
+  if (!input_constraint.Supports(input->descriptor)) {
     // The data type is not in the constraint.
     return false;
   }
@@ -715,18 +714,14 @@ bool OperationValidationContext::ValidateCastOperation(
     // The unary operator is invalid.
     return false;
   }
-  if (!base::ranges::equal(output->descriptor.shape(),
-                           input->descriptor.shape())) {
+  if (!std::ranges::equal(output->descriptor.shape(),
+                          input->descriptor.shape())) {
     // The output shape is not expected.
     return false;
   }
 
-  if (!context_properties_->data_type_limits.cast_input.Has(
-          input->descriptor.data_type())) {
-    return false;
-  }
-  if (!context_properties_->data_type_limits.cast_input.Has(
-          output->descriptor.data_type())) {
+  if (!context_properties_->data_type_limits.cast_input.SupportsAll(
+          {input->descriptor, output->descriptor})) {
     return false;
   }
 
@@ -1025,7 +1020,7 @@ bool OperationValidationContext::ValidateDequantizeLinear(
   return true;
 }
 
-bool OperationValidationContext::ValidateElementWiseBinaryDataTypes(
+bool OperationValidationContext::ValidateElementWiseBinaryOperands(
     const mojom::Operand* lhs,
     const mojom::Operand* rhs,
     const mojom::Operand* output,
@@ -1049,50 +1044,53 @@ bool OperationValidationContext::ValidateElementWiseBinaryDataTypes(
 
   switch (operation.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
-      return context_properties_->data_type_limits.add_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.add_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kSub:
-      return context_properties_->data_type_limits.sub_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.sub_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMul:
-      return context_properties_->data_type_limits.mul_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.mul_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kDiv:
-      return context_properties_->data_type_limits.div_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.div_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMax:
-      return context_properties_->data_type_limits.max_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.max_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMin:
-      return context_properties_->data_type_limits.min_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.min_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kPow:
-      return context_properties_->data_type_limits.pow_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.pow_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kEqual:
-      return context_properties_->data_type_limits.equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.equal_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kGreater:
-      return context_properties_->data_type_limits.greater_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.greater_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-      return context_properties_->data_type_limits.greater_or_equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.greater_or_equal_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLesser:
-      return context_properties_->data_type_limits.lesser_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.lesser_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-      return context_properties_->data_type_limits.lesser_or_equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.lesser_or_equal_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
+      return context_properties_->data_type_limits.not_equal_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-      return context_properties_->data_type_limits.logical_and_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_and_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
-      return context_properties_->data_type_limits.logical_or_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_or_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalXor:
-      return context_properties_->data_type_limits.logical_xor_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_xor_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
   }
 }
 
@@ -1118,7 +1116,7 @@ bool OperationValidationContext::ValidateElementWiseBinary(
     return false;
   }
 
-  if (!ValidateElementWiseBinaryDataTypes(a, b, output, operation)) {
+  if (!ValidateElementWiseBinaryOperands(a, b, output, operation)) {
     return false;
   }
 
@@ -1128,7 +1126,7 @@ bool OperationValidationContext::ValidateElementWiseBinary(
     // The input shapes are not broadcastable.
     return false;
   }
-  if (!base::ranges::equal(output->descriptor.shape(), dims_output.value())) {
+  if (!std::ranges::equal(output->descriptor.shape(), dims_output.value())) {
     // The output shape is not expected.
     return false;
   }
@@ -1233,8 +1231,8 @@ bool OperationValidationContext::ValidateExpand(const mojom::Expand& expand,
     // The expand operator is invalid.
     return false;
   }
-  if (!context_properties_->data_type_limits.expand_input.Has(
-          input->descriptor.data_type())) {
+  if (!context_properties_->data_type_limits.expand_input.Supports(
+          input->descriptor)) {
     return false;
   }
   if (output->descriptor.data_type() != input->descriptor.data_type()) {
@@ -1248,7 +1246,7 @@ bool OperationValidationContext::ValidateExpand(const mojom::Expand& expand,
     // The input shape is not broadcastable to the output shape.
     return false;
   }
-  CHECK(base::ranges::equal(output_shape.value(), output->descriptor.shape()));
+  CHECK(std::ranges::equal(output_shape.value(), output->descriptor.shape()));
 
   return true;
 }
@@ -2140,8 +2138,8 @@ bool OperationValidationContext::ValidateReshape(const mojom::Reshape& reshape,
     // The reshape operator is invalid.
     return false;
   }
-  if (!context_properties_->data_type_limits.reshape_input.Has(
-          input->descriptor.data_type())) {
+  if (!context_properties_->data_type_limits.reshape_input.Supports(
+          input->descriptor)) {
     return false;
   }
   if (output->descriptor.data_type() != input->descriptor.data_type()) {
@@ -2822,6 +2820,10 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   graph_constants.reserve(graph_info.constant_operand_ids_to_handles.size());
 
   for (auto& [id, operand] : graph_info.id_to_operand_map) {
+    const size_t byte_length = operand->descriptor.PackedByteLength();
+    if (byte_length > context_properties.tensor_byte_length_limit) {
+      return std::nullopt;
+    }
     const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {

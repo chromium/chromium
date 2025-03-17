@@ -5,6 +5,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -185,7 +186,7 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
     return;
   }
 
-  auto iter = base::ranges::find_if(items_, base::MatchesUniquePtr(item));
+  auto iter = std::ranges::find_if(items_, base::MatchesUniquePtr(item));
   if (iter == items_.end()) {
     return;
   }
@@ -244,6 +245,10 @@ void BirchBarController::ToggleTemperatureUnits() {
 }
 
 void BirchBarController::ProvideFeedbackForCoral() {
+  if (!coral_util::IsCoralFeedbackAllowedByPolicy(GetPrefService())) {
+    return;
+  }
+
   base::Value::List root;
   for (auto& item : items_) {
     if (item->GetType() == BirchItemType::kCoral) {
@@ -251,15 +256,10 @@ void BirchBarController::ProvideFeedbackForCoral() {
           static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
     }
   }
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      ShellDelegate::FeedbackSource::kOverview,
-      /*description_template=*/
-      base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
-                    base::WriteJsonWithOptions(
-                        root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
-                        .value_or(std::string()),
-                    "\n", kMarkdownBackticks}),
-      /*category_tag=*/"Coral");
+  Shell::Get()->coral_controller()->OpenFeedbackDialog(
+      /*group_description=*/
+      base::WriteJsonWithOptions(root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+          .value_or(std::string()));
 }
 
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {

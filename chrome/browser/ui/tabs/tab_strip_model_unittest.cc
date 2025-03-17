@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/commerce/core/commerce_utils.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -224,7 +226,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
 
   void PushDeactivateState(WebContents* contents,
                            const ui::ListSelectionModel& old_model) {
-    states_.push_back(State(contents, old_model.active(), DEACTIVATE));
+    states_.emplace_back(contents, old_model.active(), DEACTIVATE);
   }
 
   void PushSelectState(content::WebContents* new_contents,
@@ -250,11 +252,11 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   }
 
   void PushCloseState(WebContents* contents, int index) {
-    states_.push_back(State(contents, index, CLOSE));
+    states_.emplace_back(contents, index, CLOSE);
   }
 
   void PushDetachState(WebContents* contents, int index, bool was_active) {
-    states_.push_back(State(contents, index, DETACH));
+    states_.emplace_back(contents, index, DETACH);
   }
 
   void PushReplaceState(WebContents* old_contents,
@@ -337,6 +339,20 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
   }
 
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
+                              tabs::TabInterface* tab,
+                              int index) override {
+    if (old_group.has_value()) {
+      group_updates_[old_group.value()].contents_update_count++;
+    }
+
+    if (new_group.has_value()) {
+      group_updates_[new_group.value()].contents_update_count++;
+    }
+  }
+
   void OnTabGroupChanged(const TabGroupChange& change) override {
     switch (change.type) {
       case TabGroupChange::kCreated: {
@@ -344,10 +360,6 @@ class MockTabStripModelObserver : public TabStripModelObserver {
         break;
       }
       case TabGroupChange::kEditorOpened: {
-        break;
-      }
-      case TabGroupChange::kContentsChanged: {
-        group_updates_[change.group].contents_update_count++;
         break;
       }
       case TabGroupChange::kVisualsChanged: {
@@ -434,21 +446,18 @@ class MockTabStripModelObserver : public TabStripModelObserver {
 
 }  // namespace
 
-class TabStripModelTest : public testing::Test,
-                          public ::testing::WithParamInterface<bool> {
+class TabStripModelTest : public testing::Test {
  public:
   TabStripModelTest() : profile_(new TestingProfile) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/GetParam()
-            ? std::vector<
-                  base::test::FeatureRef>{tabs::kTabStripCollectionStorage}
-            : std::vector<base::test::FeatureRef>{},
-        /*disabled_features=*/std::vector<base::test::FeatureRef>{});
   }
   TabStripModelTest(const TabStripModelTest&) = delete;
   TabStripModelTest& operator=(const TabStripModelTest&) = delete;
 
   TestingProfile* profile() { return profile_.get(); }
+
+  base::test::ScopedFeatureList* scoped_feature_list() {
+    return &scoped_feature_list_;
+  }
 
   std::unique_ptr<WebContents> CreateWebContents() {
     return content::WebContentsTester::CreateTestWebContents(profile(),
@@ -487,9 +496,10 @@ class TabStripModelTest : public testing::Test,
   }
 
   // Returns the state of the given tab strip as a string. The state consists
-  // of the ID of each web contents followed by a 'p' if pinned. For example,
-  // if the model consists of two tabs with ids 2 and 1, with the first
-  // tab pinned, this returns "2p 1".
+  // of the ID of each web contents followed by a 'p' if pinned, or an 's' if
+  // split. For example, if the model consists of four tabs with ids 0, 1, 2,
+  // and 3, with the first tab pinned and the last two split, this returns
+  // "0p 1 2s 3s".
   std::string GetTabStripStateString(const TabStripModel& model) {
     std::string actual;
     for (int i = 0; i < model.count(); ++i) {
@@ -501,6 +511,10 @@ class TabStripModelTest : public testing::Test,
 
       if (model.IsTabPinned(i)) {
         actual += "p";
+      }
+
+      if (model.IsTabSplit(i)) {
+        actual += "s";
       }
     }
     return actual;
@@ -536,12 +550,12 @@ class TabStripModelTest : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   const std::unique_ptr<TestingProfile> profile_;
   tabs::PreventTabFeatureInitialization prevent_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(TabStripModelTest, TestBasicAPI) {
+TEST_F(TabStripModelTest, TestBasicAPI) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -769,7 +783,7 @@ TEST_P(TabStripModelTest, TestBasicAPI) {
   tabstrip.RemoveObserver(&observer);
 }
 
-TEST_P(TabStripModelTest, TestTabHandlesStaticTabstrip) {
+TEST_F(TabStripModelTest, TestTabHandlesStaticTabstrip) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -785,7 +799,7 @@ TEST_P(TabStripModelTest, TestTabHandlesStaticTabstrip) {
   EXPECT_EQ(handle2, tabstrip.GetTabAtIndex(1)->GetHandle());
 }
 
-TEST_P(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
+TEST_F(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -803,7 +817,7 @@ TEST_P(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
   EXPECT_EQ(handle1, tabstrip.GetTabAtIndex(1)->GetHandle());
 }
 
-TEST_P(TabStripModelTest, TestTabHandlesTabClosed) {
+TEST_F(TabStripModelTest, TestTabHandlesTabClosed) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -818,7 +832,7 @@ TEST_P(TabStripModelTest, TestTabHandlesTabClosed) {
   EXPECT_EQ(nullptr, handle.Get());
 }
 
-TEST_P(TabStripModelTest, TestTabHandlesOutOfBounds) {
+TEST_F(TabStripModelTest, TestTabHandlesOutOfBounds) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -831,7 +845,7 @@ TEST_P(TabStripModelTest, TestTabHandlesOutOfBounds) {
   EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabAtIndex(-1)->GetHandle(), "");
 }
 
-TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
+TEST_F(TabStripModelTest, TestTabHandlesAcrossModels) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   MockBrowserWindowInterface bwi;
@@ -887,7 +901,39 @@ TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
   delegate.SetBrowserWindowInterface(nullptr);
 }
 
-TEST_P(TabStripModelTest, TestBasicOpenerAPI) {
+TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(3), true);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(4), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(5), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(6), true);
+
+  tab_groups::TabGroupId group_id =
+      tabstrip.AddToNewGroup(std::vector<int>{1, 2});
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tabstrip.DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(detached_group->collection_->TabCountRecursive(), 2u);
+  EXPECT_FALSE(tabstrip.group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(tabstrip.count(), 4);
+
+  // Reinsert the detached group.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 0);
+
+  EXPECT_TRUE(tabstrip.group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(tabstrip.group_model()->GetTabGroup(group_id)->ListTabs().length(),
+            2u);
+  EXPECT_EQ(tabstrip.GetTabAtIndex(0)->GetGroup().value(), group_id);
+  EXPECT_EQ(tabstrip.GetTabAtIndex(1)->GetGroup().value(), group_id);
+  EXPECT_EQ(tabstrip.count(), 6);
+}
+
+TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1000,7 +1046,7 @@ static bool IsSiteInContentSettingExceptionList(
 }
 
 // Tests opening background tabs.
-TEST_P(TabStripModelTest, TestLTRInsertionOptions) {
+TEST_F(TabStripModelTest, TestLTRInsertionOptions) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1032,7 +1078,7 @@ TEST_P(TabStripModelTest, TestLTRInsertionOptions) {
 // that this tab is opened adjacent to the opener, then closes it.
 // Finally it tests that a tab opened for some non-link purpose opens at the
 // end of the strip, not bundled to any existing context.
-TEST_P(TabStripModelTest, TestInsertionIndexDetermination) {
+TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1114,7 +1160,7 @@ TEST_P(TabStripModelTest, TestInsertionIndexDetermination) {
 
 // Tests that non-adjacent tabs with an opener are ignored when deciding where
 // to position tabs.
-TEST_P(TabStripModelTest, TestInsertionIndexDeterminationAfterDragged) {
+TEST_F(TabStripModelTest, TestInsertionIndexDeterminationAfterDragged) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1170,7 +1216,7 @@ TEST_P(TabStripModelTest, TestInsertionIndexDeterminationAfterDragged) {
 
 // Tests that grandchild tabs are considered to be opened by their grandparent
 // tab when deciding where to position tabs.
-TEST_P(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
+TEST_F(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1247,7 +1293,7 @@ TEST_P(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
 // Tests that selection is shifted to the correct tab when a tab is closed.
 // If the tab is in the background when it is closed, the selection does not
 // change.
-TEST_P(TabStripModelTest, CloseInactiveTabKeepsSelection) {
+TEST_F(TabStripModelTest, CloseInactiveTabKeepsSelection) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1271,7 +1317,7 @@ TEST_P(TabStripModelTest, CloseInactiveTabKeepsSelection) {
 
 // Tests that selection is shifted to the correct tab when a tab is closed.
 // If the tab doesn't have an opener or a group, selection shifts to the right.
-TEST_P(TabStripModelTest, CloseActiveTabShiftsSelectionRight) {
+TEST_F(TabStripModelTest, CloseActiveTabShiftsSelectionRight) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1302,7 +1348,7 @@ TEST_P(TabStripModelTest, CloseActiveTabShiftsSelectionRight) {
 // Tests that selection is shifted to the correct tab when a tab is closed.
 // If the tab doesn't have an opener but is in a group, selection shifts to
 // another tab in the same group.
-TEST_P(TabStripModelTest, CloseGroupedTabShiftsSelectionWithinGroup) {
+TEST_F(TabStripModelTest, CloseGroupedTabShiftsSelectionWithinGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1334,7 +1380,7 @@ TEST_P(TabStripModelTest, CloseGroupedTabShiftsSelectionWithinGroup) {
 
 // Tests that the active selection will change to another non collapsed tab when
 // the active index is in the collapsing group.
-TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessNextTab) {
+TEST_F(TabStripModelTest, CollapseGroupShiftsSelection_SuccessNextTab) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1364,7 +1410,7 @@ TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessNextTab) {
 
 // Tests that the active selection will change to another non collapsed tab when
 // the active index is in the collapsing group.
-TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessPreviousTab) {
+TEST_F(TabStripModelTest, CollapseGroupShiftsSelection_SuccessPreviousTab) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1394,7 +1440,7 @@ TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessPreviousTab) {
 
 // Tests that there is no valid selection to shift to when the active tab is in
 // the group that will be collapsed.
-TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_NoAvailableTabs) {
+TEST_F(TabStripModelTest, CollapseGroupShiftsSelection_NoAvailableTabs) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1425,7 +1471,7 @@ TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_NoAvailableTabs) {
 // Tests that selection is shifted to the correct tab when a tab is closed.
 // If the tab does have an opener, selection shifts to the next tab opened by
 // the same opener scanning LTR.
-TEST_P(TabStripModelTest, CloseTabWithOpenerShiftsSelectionWithinOpened) {
+TEST_F(TabStripModelTest, CloseTabWithOpenerShiftsSelectionWithinOpened) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1455,7 +1501,7 @@ TEST_P(TabStripModelTest, CloseTabWithOpenerShiftsSelectionWithinOpened) {
 // Tests that selection is shifted to the correct tab when a tab is closed.
 // If the tab has an opener but no "siblings" opened by the same opener,
 // selection shifts to the opener itself.
-TEST_P(TabStripModelTest, CloseTabWithOpenerShiftsSelectionToOpener) {
+TEST_F(TabStripModelTest, CloseTabWithOpenerShiftsSelectionToOpener) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1479,7 +1525,7 @@ TEST_P(TabStripModelTest, CloseTabWithOpenerShiftsSelectionToOpener) {
   ASSERT_TRUE(tabstrip.empty());
 }
 
-TEST_P(TabStripModelTest, IsContextMenuCommandEnabledBadIndex) {
+TEST_F(TabStripModelTest, IsContextMenuCommandEnabledBadIndex) {
   constexpr int kTestTabCount = 1;
 
   TestTabStripModelDelegate delegate;
@@ -1501,7 +1547,7 @@ TEST_P(TabStripModelTest, IsContextMenuCommandEnabledBadIndex) {
 
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandCloseTab.
-TEST_P(TabStripModelTest, CommandCloseTab) {
+TEST_F(TabStripModelTest, CommandCloseTab) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1552,7 +1598,7 @@ TEST_P(TabStripModelTest, CommandCloseTab) {
 
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandCloseOtherTabs.
-TEST_P(TabStripModelTest, CommandCloseOtherTabs) {
+TEST_F(TabStripModelTest, CommandCloseOtherTabs) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1614,7 +1660,7 @@ TEST_P(TabStripModelTest, CommandCloseOtherTabs) {
 
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandCloseTabsToRight.
-TEST_P(TabStripModelTest, CommandCloseTabsToRight) {
+TEST_F(TabStripModelTest, CommandCloseTabsToRight) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1637,7 +1683,7 @@ TEST_P(TabStripModelTest, CommandCloseTabsToRight) {
 
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandTogglePinned.
-TEST_P(TabStripModelTest, CommandTogglePinned) {
+TEST_F(TabStripModelTest, CommandTogglePinned) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1667,8 +1713,34 @@ TEST_P(TabStripModelTest, CommandTogglePinned) {
 }
 
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
+// CommandTogglePinned.
+TEST_F(TabStripModelTest, CommandAddToSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create three tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 3, 2, "2"));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      2, TabStripModel::CommandAddToSplit));
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandAddToSplit);
+
+  // The first tab should become unpinned and adjacent to the last tab.
+  EXPECT_EQ("1p 0s 2s", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+// Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandToggleGrouped.
-TEST_P(TabStripModelTest, CommandToggleGrouped) {
+TEST_F(TabStripModelTest, CommandToggleGrouped) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1718,7 +1790,7 @@ TEST_P(TabStripModelTest, CommandToggleGrouped) {
 //  - Close Tab
 //  - Close Other Tabs
 //  - Close Tabs To Right
-TEST_P(TabStripModelTest, TestContextMenuCloseCommands) {
+TEST_F(TabStripModelTest, TestContextMenuCloseCommands) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1768,7 +1840,7 @@ TEST_P(TabStripModelTest, TestContextMenuCloseCommands) {
   EXPECT_TRUE(tabstrip.empty());
 }
 
-TEST_P(TabStripModelTest, GetIndicesClosedByCommand) {
+TEST_F(TabStripModelTest, GetIndicesClosedByCommand) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1823,7 +1895,7 @@ TEST_P(TabStripModelTest, GetIndicesClosedByCommand) {
 // Tests whether or not WebContentses are inserted in the correct position
 // using this "smart" function with a simulated middle click action on a series
 // of links on the home page.
-TEST_P(TabStripModelTest, AddWebContents_MiddleClickLinksAndClose) {
+TEST_F(TabStripModelTest, AddWebContents_MiddleClickLinksAndClose) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1897,7 +1969,7 @@ TEST_P(TabStripModelTest, AddWebContents_MiddleClickLinksAndClose) {
 // Tests whether or not a WebContents created by a left click on a link
 // that opens a new tab is inserted correctly adjacent to the tab that spawned
 // it.
-TEST_P(TabStripModelTest, AddWebContents_LeftClickPopup) {
+TEST_F(TabStripModelTest, AddWebContents_LeftClickPopup) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -1951,7 +2023,7 @@ TEST_P(TabStripModelTest, AddWebContents_LeftClickPopup) {
 // Tests whether or not new tabs that should split context (typed pages,
 // generated urls, also blank tabs) open at the end of the tabstrip instead of
 // in the middle.
-TEST_P(TabStripModelTest, AddWebContents_CreateNewBlankTab) {
+TEST_F(TabStripModelTest, AddWebContents_CreateNewBlankTab) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -2012,7 +2084,7 @@ TEST_P(TabStripModelTest, AddWebContents_CreateNewBlankTab) {
 
 // Tests whether opener state is correctly forgotten when the user switches
 // context.
-TEST_P(TabStripModelTest, AddWebContents_ForgetOpeners) {
+TEST_F(TabStripModelTest, AddWebContents_ForgetOpeners) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -2083,7 +2155,7 @@ TEST_P(TabStripModelTest, AddWebContents_ForgetOpeners) {
 
 // Tests whether or not a WebContents in a new tab belongs in the same tab
 // group as its opener.
-TEST_P(TabStripModelTest, AddWebContents_LinkOpensInSameGroupAsOpener) {
+TEST_F(TabStripModelTest, AddWebContents_LinkOpensInSameGroupAsOpener) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -2117,7 +2189,7 @@ TEST_P(TabStripModelTest, AddWebContents_LinkOpensInSameGroupAsOpener) {
 
 // Tests that a inserting a new ungrouped tab between two tabs in the same group
 // will add that new tab to the group.
-TEST_P(TabStripModelTest, AddWebContents_UngroupedTabDoesNotBreakContinuity) {
+TEST_F(TabStripModelTest, AddWebContents_UngroupedTabDoesNotBreakContinuity) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -2151,7 +2223,7 @@ TEST_P(TabStripModelTest, AddWebContents_UngroupedTabDoesNotBreakContinuity) {
   ASSERT_TRUE(tabstrip.empty());
 }
 // Added for http://b/issue?id=958960
-TEST_P(TabStripModelTest, AppendContentsReselectionTest) {
+TEST_F(TabStripModelTest, AppendContentsReselectionTest) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -2182,7 +2254,7 @@ TEST_P(TabStripModelTest, AppendContentsReselectionTest) {
 }
 
 // Added for http://b/issue?id=1027661
-TEST_P(TabStripModelTest, ReselectionConsidersChildrenTest) {
+TEST_F(TabStripModelTest, ReselectionConsidersChildrenTest) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -2238,7 +2310,7 @@ TEST_P(TabStripModelTest, ReselectionConsidersChildrenTest) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, NewTabAtEndOfStripInheritsOpener) {
+TEST_F(TabStripModelTest, NewTabAtEndOfStripInheritsOpener) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -2313,7 +2385,7 @@ TEST_P(TabStripModelTest, NewTabAtEndOfStripInheritsOpener) {
 // A test of navigations in a tab that is part of a tree of openers from some
 // parent tab. If the navigations are link clicks, the opener relationships of
 // the tab. If they are of any other type, they are not preserved.
-TEST_P(TabStripModelTest, NavigationForgetsOpeners) {
+TEST_F(TabStripModelTest, NavigationForgetsOpeners) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -2364,7 +2436,7 @@ TEST_P(TabStripModelTest, NavigationForgetsOpeners) {
 // A test for the "quick look" use case where the user can open a new tab at the
 // end of the tab strip, do one search, and then close the tab to get back to
 // where they were.
-TEST_P(TabStripModelTest, NavigationForgettingDoesntAffectNewTab) {
+TEST_F(TabStripModelTest, NavigationForgettingDoesntAffectNewTab) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -2482,7 +2554,7 @@ class UnloadListenerTabStripModelDelegate : public TestTabStripModelDelegate {
 }  // namespace
 
 // Tests that fast shutdown is attempted appropriately.
-TEST_P(TabStripModelTest, FastShutdown) {
+TEST_F(TabStripModelTest, FastShutdown) {
   UnloadListenerTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -2548,7 +2620,7 @@ TEST_P(TabStripModelTest, FastShutdown) {
 }
 
 // Tests various permutations of pinning tabs.
-TEST_P(TabStripModelTest, Pinning) {
+TEST_F(TabStripModelTest, Pinning) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -2712,7 +2784,7 @@ TEST_P(TabStripModelTest, Pinning) {
 
 // Makes sure the TabStripModel calls the right observer methods during a
 // replace.
-TEST_P(TabStripModelTest, ReplaceSendsSelected) {
+TEST_F(TabStripModelTest, ReplaceSendsSelected) {
   typedef MockTabStripModelObserver::State State;
 
   TestTabStripModelDelegate delegate;
@@ -2769,7 +2841,7 @@ TEST_P(TabStripModelTest, ReplaceSendsSelected) {
 
 // Ensure pinned tabs are not mixed with non-pinned tabs when using
 // MoveWebContentsAt.
-TEST_P(TabStripModelTest, MoveWebContentsAtWithPinned) {
+TEST_F(TabStripModelTest, MoveWebContentsAtWithPinned) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 6, 3, "0"));
@@ -2796,7 +2868,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAtWithPinned) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabNext) {
+TEST_F(TabStripModelTest, MoveTabNext) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 6, 3, "3"));
@@ -2814,7 +2886,7 @@ TEST_P(TabStripModelTest, MoveTabNext) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabNext_Pinned) {
+TEST_F(TabStripModelTest, MoveTabNext_Pinned) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 6, 3, "0"));
@@ -2832,7 +2904,7 @@ TEST_P(TabStripModelTest, MoveTabNext_Pinned) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabNext_Group) {
+TEST_F(TabStripModelTest, MoveTabNext_Group) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 4, 0, "0"));
@@ -2860,7 +2932,7 @@ TEST_P(TabStripModelTest, MoveTabNext_Group) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabNext_GroupAtEnd) {
+TEST_F(TabStripModelTest, MoveTabNext_GroupAtEnd) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 2, 0, "0"));
@@ -2879,7 +2951,7 @@ TEST_P(TabStripModelTest, MoveTabNext_GroupAtEnd) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabNext_PinnedDoesNotGroup) {
+TEST_F(TabStripModelTest, MoveTabNext_PinnedDoesNotGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 4, 1, "0"));
@@ -2895,7 +2967,7 @@ TEST_P(TabStripModelTest, MoveTabNext_PinnedDoesNotGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabPrevious) {
+TEST_F(TabStripModelTest, MoveTabPrevious) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 6, 3, "5"));
@@ -2913,7 +2985,7 @@ TEST_P(TabStripModelTest, MoveTabPrevious) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabPrevious_Pinned) {
+TEST_F(TabStripModelTest, MoveTabPrevious_Pinned) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 6, 3, "2"));
@@ -2931,7 +3003,7 @@ TEST_P(TabStripModelTest, MoveTabPrevious_Pinned) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabPrevious_Group) {
+TEST_F(TabStripModelTest, MoveTabPrevious_Group) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 4, 0, "3"));
@@ -2959,7 +3031,7 @@ TEST_P(TabStripModelTest, MoveTabPrevious_Group) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveTabPrevious_GroupAtEnd) {
+TEST_F(TabStripModelTest, MoveTabPrevious_GroupAtEnd) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 2, 0, "1"));
@@ -2978,7 +3050,7 @@ TEST_P(TabStripModelTest, MoveTabPrevious_GroupAtEnd) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveSelectedTabsTo) {
+TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
   struct TestData {
     // Number of tabs the tab strip should have.
     const int tab_count;
@@ -3042,7 +3114,7 @@ TEST_P(TabStripModelTest, MoveSelectedTabsTo) {
 }
 
 // Tests that moving a tab forgets all openers referencing it.
-TEST_P(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
+TEST_F(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -3107,7 +3179,7 @@ TEST_P(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, CloseSelectedTabs) {
+TEST_F(TabStripModelTest, CloseSelectedTabs) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   for (int i = 0; i < 3; ++i) {
@@ -3120,7 +3192,7 @@ TEST_P(TabStripModelTest, CloseSelectedTabs) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, FirstTabIsActive) {
+TEST_F(TabStripModelTest, FirstTabIsActive) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -3131,7 +3203,7 @@ TEST_P(TabStripModelTest, FirstTabIsActive) {
   EXPECT_EQ(0, strip.active_index());
 }
 
-TEST_P(TabStripModelTest, MultipleSelection) {
+TEST_F(TabStripModelTest, MultipleSelection) {
   typedef MockTabStripModelObserver::State State;
 
   TestTabStripModelDelegate delegate;
@@ -3235,7 +3307,7 @@ TEST_P(TabStripModelTest, MultipleSelection) {
 // Verifies that if we change the selection from a multi selection to a single
 // selection, but not in a way that changes the selected_index that
 // TabSelectionChanged is invoked.
-TEST_P(TabStripModelTest, MultipleToSingle) {
+TEST_F(TabStripModelTest, MultipleToSingle) {
   typedef MockTabStripModelObserver::State State;
 
   TestTabStripModelDelegate delegate;
@@ -3350,7 +3422,7 @@ class DummySingleWebContentsDialogManager
 
 // Verifies a newly inserted tab retains its previous blocked state.
 // http://crbug.com/276334
-TEST_P(TabStripModelTest, TabBlockedState) {
+TEST_F(TabStripModelTest, TabBlockedState) {
   // Start with a source tab strip.
   TestTabStripModelDelegate dummy_tab_strip_delegate;
   TabStripModel strip_src(&dummy_tab_strip_delegate, profile());
@@ -3404,7 +3476,7 @@ TEST_P(TabStripModelTest, TabBlockedState) {
 
 // Verifies ordering of tabs opened via a link from a pinned tab with a
 // subsequent pinned tab.
-TEST_P(TabStripModelTest, LinkClicksWithPinnedTabOrdering) {
+TEST_F(TabStripModelTest, LinkClicksWithPinnedTabOrdering) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -3439,7 +3511,7 @@ TEST_P(TabStripModelTest, LinkClicksWithPinnedTabOrdering) {
 // This test covers a bug in TabStripModel::MoveWebContentsAt(). Specifically
 // if |select_after_move| was true it checked if the index
 // select_after_move (as an int) was selected rather than |to_position|.
-TEST_P(TabStripModelTest, MoveWebContentsAt) {
+TEST_F(TabStripModelTest, MoveWebContentsAt) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -3461,7 +3533,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAt) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, NewTabsUngrouped) {
+TEST_F(TabStripModelTest, NewTabsUngrouped) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), false);
@@ -3473,7 +3545,7 @@ TEST_P(TabStripModelTest, NewTabsUngrouped) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroup) {
+TEST_F(TabStripModelTest, AddTabToNewGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_TRUE(strip.SupportsTabGroups());
@@ -3489,7 +3561,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroupUpdatesObservers) {
+TEST_F(TabStripModelTest, AddTabToNewGroupUpdatesObservers) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   ASSERT_TRUE(strip.SupportsTabGroups());
@@ -3507,7 +3579,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupUpdatesObservers) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, ReplacingTabGroupUpdatesObservers) {
+TEST_F(TabStripModelTest, ReplacingTabGroupUpdatesObservers) {
   TestTabStripModelDelegate delegate;
   TabStripModel tab_strip(&delegate, profile());
   ASSERT_TRUE(tab_strip.SupportsTabGroups());
@@ -3528,7 +3600,7 @@ TEST_P(TabStripModelTest, ReplacingTabGroupUpdatesObservers) {
   tab_strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroup) {
+TEST_F(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel tab_strip(&delegate, profile());
   ASSERT_TRUE(tab_strip.SupportsTabGroups());
@@ -3549,7 +3621,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroup) {
   tab_strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroupTwoGroups) {
+TEST_F(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroupTwoGroups) {
   TestTabStripModelDelegate delegate;
   TabStripModel tab_strip(&delegate, profile());
   PrepareTabs(&tab_strip, 4);
@@ -3563,7 +3635,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroupTwoGroups) {
   tab_strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroupReorders) {
+TEST_F(TabStripModelTest, AddTabToNewGroupReorders) {
   TestTabStripModelDelegate delegate;
   TabStripModel tab_strip(&delegate, profile());
   PrepareTabs(&tab_strip, 3);
@@ -3578,7 +3650,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupReorders) {
   tab_strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroupUnpins) {
+TEST_F(TabStripModelTest, AddTabToNewGroupUnpins) {
   TestTabStripModelDelegate delegate;
   TabStripModel tab_strip(&delegate, profile());
   PrepareTabs(&tab_strip, 2);
@@ -3591,7 +3663,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupUnpins) {
   tab_strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroupUnpinsAndReorders) {
+TEST_F(TabStripModelTest, AddTabToNewGroupUnpinsAndReorders) {
   TestTabStripModelDelegate delegate;
   TabStripModel tab_strip(&delegate, profile());
   PrepareTabs(&tab_strip, 3);
@@ -3605,7 +3677,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupUnpinsAndReorders) {
   tab_strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToNewGroupMovesPinnedAndUnpinnedTabs) {
+TEST_F(TabStripModelTest, AddTabToNewGroupMovesPinnedAndUnpinnedTabs) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 4);
@@ -3622,7 +3694,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupMovesPinnedAndUnpinnedTabs) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToExistingGroupIdempotent) {
+TEST_F(TabStripModelTest, AddTabToExistingGroupIdempotent) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -3641,7 +3713,7 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupIdempotent) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToExistingGroup) {
+TEST_F(TabStripModelTest, AddTabToExistingGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 2);
@@ -3657,7 +3729,7 @@ TEST_P(TabStripModelTest, AddTabToExistingGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToExistingGroupUpdatesObservers) {
+TEST_F(TabStripModelTest, AddTabToExistingGroupUpdatesObservers) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -3678,7 +3750,7 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupUpdatesObservers) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToLeftOfExistingGroupReorders) {
+TEST_F(TabStripModelTest, AddTabToLeftOfExistingGroupReorders) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -3694,7 +3766,7 @@ TEST_P(TabStripModelTest, AddTabToLeftOfExistingGroupReorders) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToRighOfExistingGroupReorders) {
+TEST_F(TabStripModelTest, AddTabToRighOfExistingGroupReorders) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -3711,7 +3783,7 @@ TEST_P(TabStripModelTest, AddTabToRighOfExistingGroupReorders) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToExistingGroupReorders) {
+TEST_F(TabStripModelTest, AddTabToExistingGroupReorders) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 4);
@@ -3729,7 +3801,7 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupReorders) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddTabToExistingGroupUnpins) {
+TEST_F(TabStripModelTest, AddTabToExistingGroupUnpins) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 2);
@@ -3746,7 +3818,7 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupUnpins) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, PinTabInGroupUngroups) {
+TEST_F(TabStripModelTest, PinTabInGroupUngroups) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 2);
@@ -3761,7 +3833,7 @@ TEST_P(TabStripModelTest, PinTabInGroupUngroups) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, RemoveTabFromGroupNoopForUngroupedTab) {
+TEST_F(TabStripModelTest, RemoveTabFromGroupNoopForUngroupedTab) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -3776,7 +3848,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupNoopForUngroupedTab) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, RemoveTabFromGroup) {
+TEST_F(TabStripModelTest, RemoveTabFromGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -3789,7 +3861,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, RemoveTabFromGroupUpdatesObservers) {
+TEST_F(TabStripModelTest, RemoveTabFromGroupUpdatesObservers) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -3809,7 +3881,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupUpdatesObservers) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, RemoveTabFromGroupMaintainsOrder) {
+TEST_F(TabStripModelTest, RemoveTabFromGroupMaintainsOrder) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 2);
@@ -3824,7 +3896,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupMaintainsOrder) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, RemoveTabFromGroupDoesntReorderIfNoGroup) {
+TEST_F(TabStripModelTest, RemoveTabFromGroupDoesntReorderIfNoGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -3836,7 +3908,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupDoesntReorderIfNoGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest,
+TEST_F(TabStripModelTest,
        RemoveTabFromGroupMaintainsRelativeOrderOfSelectedTabs) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3854,7 +3926,7 @@ TEST_P(TabStripModelTest,
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, RemoveTabFromGroupMixtureOfGroups) {
+TEST_F(TabStripModelTest, RemoveTabFromGroupMixtureOfGroups) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -3873,7 +3945,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupMixtureOfGroups) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, RemoveTabFromGroupDeletesGroup) {
+TEST_F(TabStripModelTest, RemoveTabFromGroupDeletesGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -3887,7 +3959,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupDeletesGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddToNewGroupDeletesGroup) {
+TEST_F(TabStripModelTest, AddToNewGroupDeletesGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -3903,7 +3975,7 @@ TEST_P(TabStripModelTest, AddToNewGroupDeletesGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveGroupToTest) {
+TEST_F(TabStripModelTest, MoveGroupToTest) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -3921,7 +3993,7 @@ TEST_P(TabStripModelTest, MoveGroupToTest) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AddToExistingGroupDeletesGroup) {
+TEST_F(TabStripModelTest, AddToExistingGroupDeletesGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -3939,7 +4011,7 @@ TEST_P(TabStripModelTest, AddToExistingGroupDeletesGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, CloseTabDeletesGroup) {
+TEST_F(TabStripModelTest, CloseTabDeletesGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -3951,7 +4023,7 @@ TEST_P(TabStripModelTest, CloseTabDeletesGroup) {
   EXPECT_EQ(strip.group_model()->ListTabGroups().size(), 0U);
 }
 
-TEST_P(TabStripModelTest, CloseTabNotifiesObserversOfGroupChange) {
+TEST_F(TabStripModelTest, CloseTabNotifiesObserversOfGroupChange) {
   TestTabStripModelDelegate delegate;
   MockTabStripModelObserver observer;
   TabStripModel strip(&delegate, profile());
@@ -3968,7 +4040,7 @@ TEST_P(TabStripModelTest, CloseTabNotifiesObserversOfGroupChange) {
   EXPECT_EQ(0u, observer.group_updates().size());
 }
 
-TEST_P(TabStripModelTest, InsertWebContentsAtWithGroupNotifiesObservers) {
+TEST_F(TabStripModelTest, InsertWebContentsAtWithGroupNotifiesObservers) {
   TestTabStripModelDelegate delegate;
   MockTabStripModelObserver observer;
   TabStripModel strip(&delegate, profile());
@@ -3994,7 +4066,7 @@ TEST_P(TabStripModelTest, InsertWebContentsAtWithGroupNotifiesObservers) {
 
 // When inserting a WebContents, if a group is not specified, the new tab
 // should be left ungrouped.
-TEST_P(TabStripModelTest, InsertWebContentsAtDoesNotGroupByDefault) {
+TEST_F(TabStripModelTest, InsertWebContentsAtDoesNotGroupByDefault) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -4013,7 +4085,7 @@ TEST_P(TabStripModelTest, InsertWebContentsAtDoesNotGroupByDefault) {
 
 // When inserting a WebContents, if a group is specified, the new tab should be
 // added to that group.
-TEST_P(TabStripModelTest, InsertWebContentsAtWithGroupGroups) {
+TEST_F(TabStripModelTest, InsertWebContentsAtWithGroupGroups) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContentsWithID(0), true);
@@ -4032,7 +4104,7 @@ TEST_P(TabStripModelTest, InsertWebContentsAtWithGroupGroups) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, NewTabWithGroup) {
+TEST_F(TabStripModelTest, NewTabWithGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4046,7 +4118,7 @@ TEST_P(TabStripModelTest, NewTabWithGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, NewTabWithGroupDeletedCorrectly) {
+TEST_F(TabStripModelTest, NewTabWithGroupDeletedCorrectly) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -4062,7 +4134,7 @@ TEST_P(TabStripModelTest, NewTabWithGroupDeletedCorrectly) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, NewTabWithoutIndexInsertsAtEndOfGroup) {
+TEST_F(TabStripModelTest, NewTabWithoutIndexInsertsAtEndOfGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4075,7 +4147,7 @@ TEST_P(TabStripModelTest, NewTabWithoutIndexInsertsAtEndOfGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, DiscontinuousNewTabIndexTooHigh) {
+TEST_F(TabStripModelTest, DiscontinuousNewTabIndexTooHigh) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4088,7 +4160,7 @@ TEST_P(TabStripModelTest, DiscontinuousNewTabIndexTooHigh) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, DiscontinuousNewTabIndexTooLow) {
+TEST_F(TabStripModelTest, DiscontinuousNewTabIndexTooLow) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4101,7 +4173,7 @@ TEST_P(TabStripModelTest, DiscontinuousNewTabIndexTooLow) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, CreateGroupSetsVisualData) {
+TEST_F(TabStripModelTest, CreateGroupSetsVisualData) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   tab_groups::ColorLabelMap all_colors = tab_groups::GetTabGroupColorLabelMap();
@@ -4124,7 +4196,7 @@ TEST_P(TabStripModelTest, CreateGroupSetsVisualData) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, SetVisualDataForGroup) {
+TEST_F(TabStripModelTest, SetVisualDataForGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 1);
@@ -4141,7 +4213,7 @@ TEST_P(TabStripModelTest, SetVisualDataForGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, VisualDataChangeNotifiesObservers) {
+TEST_F(TabStripModelTest, VisualDataChangeNotifiesObservers) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -4167,7 +4239,7 @@ TEST_P(TabStripModelTest, VisualDataChangeNotifiesObservers) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, ObserverCanBeDestroyedEarly) {
+TEST_F(TabStripModelTest, ObserverCanBeDestroyedEarly) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
 
@@ -4177,7 +4249,7 @@ TEST_P(TabStripModelTest, ObserverCanBeDestroyedEarly) {
   }
 }
 
-TEST_P(TabStripModelTest, MovingTabToStartOfGroupDoesNotChangeGroup) {
+TEST_F(TabStripModelTest, MovingTabToStartOfGroupDoesNotChangeGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -4192,7 +4264,7 @@ TEST_P(TabStripModelTest, MovingTabToStartOfGroupDoesNotChangeGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingTabToMiddleOfGroupDoesNotChangeGroup) {
+TEST_F(TabStripModelTest, MovingTabToMiddleOfGroupDoesNotChangeGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -4207,7 +4279,7 @@ TEST_P(TabStripModelTest, MovingTabToMiddleOfGroupDoesNotChangeGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingTabToEndOfGroupDoesNotChangeGroup) {
+TEST_F(TabStripModelTest, MovingTabToEndOfGroupDoesNotChangeGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -4222,7 +4294,7 @@ TEST_P(TabStripModelTest, MovingTabToEndOfGroupDoesNotChangeGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingTabOutsideOfGroupToStartOfTabstripClearsGroup) {
+TEST_F(TabStripModelTest, MovingTabOutsideOfGroupToStartOfTabstripClearsGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -4237,7 +4309,7 @@ TEST_P(TabStripModelTest, MovingTabOutsideOfGroupToStartOfTabstripClearsGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingTabOutsideOfGroupToEndOfTabstripClearsGroup) {
+TEST_F(TabStripModelTest, MovingTabOutsideOfGroupToEndOfTabstripClearsGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -4252,7 +4324,7 @@ TEST_P(TabStripModelTest, MovingTabOutsideOfGroupToEndOfTabstripClearsGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingTabBetweenUngroupedTabsClearsGroup) {
+TEST_F(TabStripModelTest, MovingTabBetweenUngroupedTabsClearsGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -4267,7 +4339,7 @@ TEST_P(TabStripModelTest, MovingTabBetweenUngroupedTabsClearsGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingUngroupedTabBetweenGroupsDoesNotAssignGroup) {
+TEST_F(TabStripModelTest, MovingUngroupedTabBetweenGroupsDoesNotAssignGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -4283,7 +4355,7 @@ TEST_P(TabStripModelTest, MovingUngroupedTabBetweenGroupsDoesNotAssignGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest,
+TEST_F(TabStripModelTest,
        MovingUngroupedTabBetweenGroupAndUngroupedDoesNotAssignGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -4299,7 +4371,7 @@ TEST_P(TabStripModelTest,
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest,
+TEST_F(TabStripModelTest,
        MovingUngroupedTabBetweenUngroupedAndGroupDoesNotAssignGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -4315,7 +4387,7 @@ TEST_P(TabStripModelTest,
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest,
+TEST_F(TabStripModelTest,
        MovingGroupMemberBetweenTwoDifferentGroupsClearsGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -4334,7 +4406,7 @@ TEST_P(TabStripModelTest,
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest,
+TEST_F(TabStripModelTest,
        MovingSingleTabGroupBetweenTwoGroupsDoesNotClearGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -4353,7 +4425,7 @@ TEST_P(TabStripModelTest,
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingUngroupedTabIntoGroupSetsGroup) {
+TEST_F(TabStripModelTest, MovingUngroupedTabIntoGroupSetsGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4368,7 +4440,7 @@ TEST_P(TabStripModelTest, MovingUngroupedTabIntoGroupSetsGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MovingGroupedTabIntoGroupChangesGroup) {
+TEST_F(TabStripModelTest, MovingGroupedTabIntoGroupChangesGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4384,7 +4456,7 @@ TEST_P(TabStripModelTest, MovingGroupedTabIntoGroupChangesGroup) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlyRemovesGroupEntries) {
+TEST_F(TabStripModelTest, MoveWebContentsAtCorrectlyRemovesGroupEntries) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4400,7 +4472,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlyRemovesGroupEntries) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupChangedEvent) {
+TEST_F(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupChangedEvent) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4427,7 +4499,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupChangedEvent) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupClearedEvent) {
+TEST_F(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupClearedEvent) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4456,7 +4528,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupClearedEvent) {
 
 // Ensure that the opener for a tab never refers to a dangling WebContents.
 // Regression test for crbug.com/1092308.
-TEST_P(TabStripModelTest, DanglingOpener) {
+TEST_F(TabStripModelTest, DanglingOpener) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 2);
@@ -4518,7 +4590,7 @@ class TabToWindowTestTabStripModelDelegate : public TestTabStripModelDelegate {
 
 // Sanity check to ensure that the "Move Tabs to Window" command talks to
 // the delegate correctly.
-TEST_P(TabStripModelTest, MoveTabsToNewWindow) {
+TEST_F(TabStripModelTest, MoveTabsToNewWindow) {
   TabToWindowTestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -4544,7 +4616,7 @@ TEST_P(TabStripModelTest, MoveTabsToNewWindow) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, SurroundingGroupAtIndex) {
+TEST_F(TabStripModelTest, SurroundingGroupAtIndex) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 4);
@@ -4561,7 +4633,7 @@ TEST_P(TabStripModelTest, SurroundingGroupAtIndex) {
   strip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, ActivateRecordsStartTime) {
+TEST_F(TabStripModelTest, ActivateRecordsStartTime) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 2);
@@ -4592,7 +4664,7 @@ TEST_P(TabStripModelTest, ActivateRecordsStartTime) {
   EXPECT_TRUE(has_tab_switch_start_time(1));
 }
 
-TEST_P(TabStripModelTest, ToggleSiteMuted) {
+TEST_F(TabStripModelTest, ToggleSiteMuted) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -4628,7 +4700,7 @@ TEST_P(TabStripModelTest, ToggleSiteMuted) {
   tabstrip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
+TEST_F(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -4678,7 +4750,7 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
   tabstrip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
+TEST_F(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -4724,7 +4796,7 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
   tabstrip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
+TEST_F(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -4757,7 +4829,7 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
   tabstrip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
+TEST_F(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -4792,7 +4864,7 @@ TEST_P(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
   tabstrip.CloseAllTabs();
 }
 
-TEST_P(TabStripModelTest, AppendTab) {
+TEST_F(TabStripModelTest, AppendTab) {
   TestTabStripModelDelegate delegate;
   std::unique_ptr<TabStripModel> tabstrip =
       std::make_unique<TabStripModel>(&delegate, profile());
@@ -4856,7 +4928,7 @@ TEST_P(TabStripModelTest, AppendTab) {
   delegate.SetBrowserWindowInterface(nullptr);
 }
 
-TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
+TEST_F(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
   TestTabStripModelDelegate delegate;
   MockTabStripModelObserver observer;
 
@@ -4875,11 +4947,11 @@ TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
                                 AddTabTypes::ADD_NONE);
   ObservedSelectionChange change = observer.GetLatestSelectionChange();
 
-  // Active webcontents should not change but selection list changes.
+  // Active webcontents and selection list should not change.
   EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(1)->GetHandle());
   EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(1)->GetHandle());
 
-  EXPECT_EQ(change.old_model.active(), 0u);
+  EXPECT_EQ(change.old_model.active(), 1u);
   EXPECT_EQ(change.old_model.size(), 1u);
 
   EXPECT_EQ(change.new_model.active(), 1u);
@@ -4915,7 +4987,7 @@ TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
   observer.ClearStates();
 }
 
-TEST_P(TabStripModelTest, SelectionChangedForMoveGroupWithSelectedTab) {
+TEST_F(TabStripModelTest, SelectionChangedForMoveGroupWithSelectedTab) {
   TestTabStripModelDelegate delegate;
   MockTabStripModelObserver observer;
 
@@ -4956,7 +5028,7 @@ TEST_P(TabStripModelTest, SelectionChangedForMoveGroupWithSelectedTab) {
   observer.ClearStates();
 }
 
-TEST_P(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
+TEST_F(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
   TestTabStripModelDelegate delegate;
   MockTabStripModelObserver observer;
 
@@ -4999,4 +5071,74 @@ TEST_P(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
   observer.ClearStates();
 }
 
-INSTANTIATE_TEST_SUITE_P(All, TabStripModelTest, ::testing::Bool());
+TEST_F(TabStripModelTest, AddToComparisonTable_EnabledForHttps) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  std::unique_ptr<content::WebContents> https_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(https_web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  tab_strip->AppendWebContents(std::move(https_web_contents), true);
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToNewComparisonTable));
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToExistingComparisonTable));
+}
+
+TEST_F(TabStripModelTest, AddToComparisonTable_EnabledForHttp) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  std::unique_ptr<content::WebContents> http_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(http_web_contents.get())
+      ->NavigateAndCommit(GURL("http://example.com"));
+
+  tab_strip->AppendWebContents(std::move(http_web_contents), true);
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToNewComparisonTable));
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToExistingComparisonTable));
+}
+
+TEST_F(TabStripModelTest, AddToComparisonTable_DisabledForNonHttpOrHttps) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  std::unique_ptr<content::WebContents> chrome_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(chrome_web_contents.get())
+      ->NavigateAndCommit(GURL("chrome://abc"));
+
+  tab_strip->AppendWebContents(std::move(chrome_web_contents), true);
+  ASSERT_FALSE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToNewComparisonTable));
+  ASSERT_FALSE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToExistingComparisonTable));
+}
+
+TEST_F(TabStripModelTest, AddToComparisonTable_AddToNewTableOpensTab) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  GURL url("https://example.com");
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(web_contents.get())->NavigateAndCommit(url);
+  tab_strip->AppendWebContents(std::move(web_contents), true);
+
+  tab_strip->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandAddToNewComparisonTable);
+
+  // New Compare tab with the URL should be opened and activated.
+  ASSERT_TRUE(tab_strip->count() == 2);
+  ASSERT_TRUE(tab_strip->GetActiveWebContents()->GetVisibleURL() ==
+              commerce::GetProductSpecsTabUrl({url}));
+}

@@ -11,9 +11,6 @@
 
 namespace content {
 
-// IDP IdpSigninStatus API modes.
-enum class FedCmIdpSigninStatusMode { METRICS_ONLY, ENABLED };
-
 // Whether the authz flags has been overridden. If it has been overridden
 // to false, we should not let it be enabled using an origin trial.
 std::optional<bool> IsFedCmAuthzOverridden();
@@ -23,11 +20,6 @@ bool IsFedCmAuthzFlagEnabled();
 
 // Whether multiple identity providers are enabled.
 bool IsFedCmMultipleIdentityProvidersEnabled();
-
-// Returns the IdpSigninStatus API mode.
-// Most callers should use webid::GetIdpSigninStatusMode() in webid_utils.h
-// instead, as that version takes origin trial status into account.
-FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag();
 
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();
@@ -65,6 +57,14 @@ bool IsFedCmFlexibleFieldsEnabled();
 // Whether showing filtered accounts is enabled.
 bool IsFedCmShowFilteredAccountsEnabled();
 
+// Whether lightweight FedCM credentials are enabled.
+bool IsFedCmLightweightModeEnabled();
+
+// Whether phone/username is supported and name/email are optional.
+bool IsFedCmAlternativeIdentifiersEnabled();
+
+// Whether cooldown on ignore is enabled.
+bool IsFedCmCooldownOnIgnoreEnabled();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

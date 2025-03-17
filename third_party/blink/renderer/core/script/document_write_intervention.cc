@@ -204,7 +204,7 @@ void PossiblyFetchBlockedDocWriteScript(
   ExecutionContext* context = element_document.GetExecutionContext();
   FetchParameters params(options.CreateFetchParameters(
       resource->Url(), context->GetSecurityOrigin(), context->GetCurrentWorld(),
-      cross_origin, resource->Encoding(), FetchParameters::kIdleLoad));
+      cross_origin, resource->Encoding(), FetchParameters::kIdleLoad, context));
   params.SetRenderBlockingBehavior(RenderBlockingBehavior::kNonBlocking);
   AddHeader(&params);
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 
 #include "base/functional/function_ref.h"
@@ -55,9 +60,6 @@ void Report(const LayerTreeImpl* layer_tree,
   }
 }
 
-constexpr char const* kTraceCategory =
-    TRACE_DISABLED_BY_DEFAULT("cc.debug.lcd_text");
-
 }  // anonymous namespace
 
 std::unique_ptr<LCDTextMetricsReporter> LCDTextMetricsReporter::CreateIfNeeded(
@@ -83,6 +85,8 @@ void LCDTextMetricsReporter::NotifySubmitFrame(
     last_report_frame_time_ = current_frame_time_;
   }
 
+  static constexpr char kTraceCategory[] =
+      TRACE_DISABLED_BY_DEFAULT("cc.debug.lcd_text");
   bool trace_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTraceCategory, &trace_enabled);
   if (trace_enabled) {

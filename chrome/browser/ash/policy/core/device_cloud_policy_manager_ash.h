@@ -70,6 +70,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
  public:
   class Observer {
    public:
+    virtual ~Observer() = default;
     // Invoked when the device cloud policy manager connects.
     virtual void OnDeviceCloudPolicyManagerConnected() = 0;
     // Invoked when the device cloud policy manager obtains schema registry.

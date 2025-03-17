@@ -1,0 +1,36 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This needs be be before `apply plugin: ChromiumPlugin` because otherwise we
+// would not have access to it early enough (inside the ResolutionStrategy
+// closure).
+// This map is empty when rolling but is filled by fetch_all_autorolled.py to
+// cache the resolved values of all the '+' versions when we are not trying to
+// roll (e.g. when the main project imports this subproject).
+project.ext.versionCache = [:]
+{{version_overrides}}
+
+apply plugin: ChromiumPlugin
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    // Use testCompile to have is_robolectric = true set on targets.
+    testCompileLatest "org.robolectric:robolectric:+"
+}
+
+task setUpRepository(type: BuildConfigGenerator) {
+    // Paths are relative to the chromium source root.
+    repositoryPath 'third_party/android_deps/autorolled/cipd'
+    chromiumSourceRoot '../../../..'
+    cipdBucket 'chromium'
+    internalTargetVisibility = [ '//third_party/android_deps:*', '//third_party/androidx:*', ':*' ]
+    allFilesInCipd true
+    skipLicenses false
+    ignoreDEPS true
+    writeBoM true
+}

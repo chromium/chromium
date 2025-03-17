@@ -83,8 +83,6 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Returns whether the given dialog is a help bubble.
   static bool IsHelpBubble(views::DialogDelegate* dialog);
 
-  bool IsFocusInHelpBubble() const;
-
   views::LabelButton* GetDefaultButtonForTesting() const;
   views::LabelButton* GetNonDefaultButtonForTesting(int index) const;
 

@@ -1,0 +1,8 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable actions='{DEFAULT}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable actions='{DEFAULT}'

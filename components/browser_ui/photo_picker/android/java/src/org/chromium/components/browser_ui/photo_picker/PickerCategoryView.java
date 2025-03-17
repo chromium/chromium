@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,6 +33,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.DiscardableReferencePool.DiscardableReference;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -49,6 +54,7 @@ import java.util.List;
  * A class for keeping track of common data associated with showing photos in the photo picker, for
  * example the RecyclerView and the bitmap caches.
  */
+@NullMarked
 public class PickerCategoryView extends RelativeLayout
         implements FileEnumWorkerTask.FilesEnumeratedCallback,
                 RecyclerView.RecyclerListener,
@@ -70,14 +76,18 @@ public class PickerCategoryView extends RelativeLayout
     public static class Thumbnail {
         public List<Bitmap> bitmaps;
         public Boolean fullWidth;
-        public String videoDuration;
+        public @Nullable String videoDuration;
 
         // The calculated ratio of the originals for the bitmaps above, were they to be shown
         // un-cropped. NOTE: The |bitmaps| above may already have been cropped and as such might
         // have a different ratio.
         public float ratioOriginal;
 
-        Thumbnail(List<Bitmap> bitmaps, String videoDuration, Boolean fullWidth, float ratio) {
+        Thumbnail(
+                List<Bitmap> bitmaps,
+                @Nullable String videoDuration,
+                Boolean fullWidth,
+                float ratio) {
             this.bitmaps = bitmaps;
             this.videoDuration = videoDuration;
             this.fullWidth = fullWidth;
@@ -86,7 +96,7 @@ public class PickerCategoryView extends RelativeLayout
     }
 
     // The dialog that owns us.
-    private PhotoPickerDialog mDialog;
+    private @Nullable PhotoPickerDialog mDialog;
 
     // The view containing the RecyclerView and the toolbar, etc.
     private SelectableListLayout<PickerBitmap> mSelectableListLayout;
@@ -98,7 +108,7 @@ public class PickerCategoryView extends RelativeLayout
     private ContentResolver mContentResolver;
 
     // The list of images on disk, sorted by last-modified first.
-    private List<PickerBitmap> mPickerBitmaps;
+    private @Nullable List<PickerBitmap> mPickerBitmaps;
 
     // True if multi-selection is allowed in the picker.
     private boolean mMultiSelectionAllowed;
@@ -107,7 +117,7 @@ public class PickerCategoryView extends RelativeLayout
     private PhotoPickerListener mListener;
 
     // The host class for the decoding service.
-    private DecoderServiceHost mDecoderServiceHost;
+    private @Nullable DecoderServiceHost mDecoderServiceHost;
 
     // The RecyclerView showing the images.
     private RecyclerView mRecyclerView;
@@ -127,13 +137,13 @@ public class PickerCategoryView extends RelativeLayout
     // A low-resolution cache for thumbnails, lazily created. Helpful for cache misses from the
     // high-resolution cache to avoid showing gray squares (we show pixelated versions instead until
     // image can be loaded off disk, which is much less jarring).
-    private DiscardableReference<LruCache<String, Thumbnail>> mLowResThumbnails;
+    private @Nullable DiscardableReference<LruCache<String, Thumbnail>> mLowResThumbnails;
 
     // A high-resolution cache for thumbnails, lazily created.
-    private DiscardableReference<LruCache<String, Thumbnail>> mHighResThumbnails;
+    private @Nullable DiscardableReference<LruCache<String, Thumbnail>> mHighResThumbnails;
 
     // A cache for full-screen versions of images, lazily created.
-    private DiscardableReference<LruCache<String, Thumbnail>> mFullScreenBitmaps;
+    private @Nullable DiscardableReference<LruCache<String, Thumbnail>> mFullScreenBitmaps;
 
     // The size of the low-res cache.
     private int mCacheSizeLarge;
@@ -167,7 +177,7 @@ public class PickerCategoryView extends RelativeLayout
     private int mSpecialTileHeight;
 
     // A worker task for asynchronously enumerating files off the main thread.
-    private FileEnumWorkerTask mWorkerTask;
+    private @Nullable FileEnumWorkerTask mWorkerTask;
 
     // The timestamp for the start of the enumeration of files on disk.
     private long mEnumStartTime;
@@ -179,7 +189,7 @@ public class PickerCategoryView extends RelativeLayout
     private List<String> mMimeTypes;
 
     // A list of files to use for testing (instead of reading files on disk).
-    private static List<PickerBitmap> sTestFiles;
+    private static @Nullable List<PickerBitmap> sTestFiles;
 
     // The Video Player.
     private final PickerVideoPlayer mVideoPlayer;
@@ -202,6 +212,7 @@ public class PickerCategoryView extends RelativeLayout
         super(windowAndroid.getContext().get());
         mWindowAndroid = windowAndroid;
         Context context = mWindowAndroid.getContext().get();
+        assumeNonNull(context);
         mContentResolver = contentResolver;
         mMultiSelectionAllowed = multiSelectionAllowed;
 
@@ -316,6 +327,7 @@ public class PickerCategoryView extends RelativeLayout
      * @param listener The listener who should be notified of actions.
      * @param mimeTypes A list of mime types to show in the dialog.
      */
+    @Initializer
     public void initialize(
             PhotoPickerDialog dialog, PhotoPickerListener listener, List<String> mimeTypes) {
         mDialog = dialog;
@@ -337,7 +349,7 @@ public class PickerCategoryView extends RelativeLayout
     // FileEnumWorkerTask.FilesEnumeratedCallback:
 
     @Override
-    public void filesEnumeratedCallback(List<PickerBitmap> files) {
+    public void filesEnumeratedCallback(@Nullable List<PickerBitmap> files) {
         if (files == null) {
             return;
         }
@@ -372,6 +384,7 @@ public class PickerCategoryView extends RelativeLayout
         PickerBitmapViewHolder bitmapHolder = (PickerBitmapViewHolder) holder;
         String filePath = bitmapHolder.getFilePath();
         if (filePath != null) {
+            assumeNonNull(getDecoderServiceHost());
             getDecoderServiceHost().cancelDecodeImage(filePath);
         }
     }
@@ -421,6 +434,7 @@ public class PickerCategoryView extends RelativeLayout
         mMagnifyingMode = !mMagnifyingMode;
 
         Context context = mWindowAndroid.getContext().get();
+        assumeNonNull(context);
         if (mMagnifyingMode) {
             mZoom.setImageResource(R.drawable.zoom_out);
             mZoom.setContentDescription(
@@ -493,11 +507,11 @@ public class PickerCategoryView extends RelativeLayout
         return mSelectionDelegate;
     }
 
-    public List<PickerBitmap> getPickerBitmaps() {
+    public @Nullable List<PickerBitmap> getPickerBitmaps() {
         return mPickerBitmaps;
     }
 
-    public DecoderServiceHost getDecoderServiceHost() {
+    public @Nullable DecoderServiceHost getDecoderServiceHost() {
         return mDecoderServiceHost;
     }
 
@@ -507,7 +521,7 @@ public class PickerCategoryView extends RelativeLayout
                     GlobalDiscardableReferencePool.getReferencePool()
                             .put(new LruCache<String, Thumbnail>(mCacheSizeSmall));
         }
-        return mLowResThumbnails.get();
+        return assumeNonNull(mLowResThumbnails.get());
     }
 
     public LruCache<String, Thumbnail> getHighResThumbnails() {
@@ -516,7 +530,7 @@ public class PickerCategoryView extends RelativeLayout
                     GlobalDiscardableReferencePool.getReferencePool()
                             .put(new LruCache<String, Thumbnail>(mCacheSizeLarge));
         }
-        return mHighResThumbnails.get();
+        return assumeNonNull(mHighResThumbnails.get());
     }
 
     public LruCache<String, Thumbnail> getFullScreenBitmaps() {
@@ -525,7 +539,7 @@ public class PickerCategoryView extends RelativeLayout
                     GlobalDiscardableReferencePool.getReferencePool()
                             .put(new LruCache<String, Thumbnail>(mCacheSizeFullScreen));
         }
-        return mFullScreenBitmaps.get();
+        return assumeNonNull(mFullScreenBitmaps.get());
     }
 
     public boolean isMultiSelectAllowed() {
@@ -546,6 +560,7 @@ public class PickerCategoryView extends RelativeLayout
     private void calculateGridMetrics() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         Context context = mWindowAndroid.getContext().get();
+        assumeNonNull(context);
         WindowManager windowManager =
                 (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -597,6 +612,7 @@ public class PickerCategoryView extends RelativeLayout
         Uri[] photos = new Uri[selectedFiles.size()];
         int i = 0;
         for (PickerBitmap bitmap : selectedFiles) {
+            assumeNonNull(bitmap.getUri());
             photos[i++] = bitmap.getUri();
         }
 
@@ -655,7 +671,7 @@ public class PickerCategoryView extends RelativeLayout
      * @param umaId The UMA value to record with the action.
      */
     private void executeAction(
-            @PhotoPickerListener.PhotoPickerAction int action, Uri[] photos, int umaId) {
+            @PhotoPickerListener.PhotoPickerAction int action, Uri @Nullable [] photos, int umaId) {
         mListener.onPhotoPickerUserAction(action, photos);
         if (mDialog != null) mDialog.dismiss();
         recordFinalUmaStats(umaId);

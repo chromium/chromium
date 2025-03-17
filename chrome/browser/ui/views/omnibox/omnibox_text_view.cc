@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -95,7 +96,9 @@ bool AnswerHasDefinedMaxLines(omnibox::AnswerType answer_type) {
 }  // namespace
 
 OmniboxTextView::OmniboxTextView(OmniboxResultView* result_view)
-    : result_view_(result_view) {}
+    : result_view_(result_view) {
+  SetCanProcessEventsWithinSubtree(false);
+}
 
 OmniboxTextView::~OmniboxTextView() = default;
 
@@ -126,10 +129,6 @@ gfx::Size OmniboxTextView::CalculatePreferredSize(
   return cached_calculate_preferred_size_;
 }
 
-bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
-  return false;
-}
-
 void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
 
@@ -148,11 +147,11 @@ void OmniboxTextView::ApplyTextColor(ui::ColorId id) {
   SchedulePaint();
 }
 
-const std::u16string& OmniboxTextView::GetText() const {
-  return render_text_ ? render_text_->text() : base::EmptyString16();
+std::u16string_view OmniboxTextView::GetText() const {
+  return render_text_ ? render_text_->text() : std::u16string_view();
 }
 
-void OmniboxTextView::SetText(const std::u16string& new_text) {
+void OmniboxTextView::SetText(std::u16string_view new_text) {
   if (cached_classifications_) {
     cached_classifications_.reset();
   } else if (GetText() == new_text) {
@@ -167,7 +166,7 @@ void OmniboxTextView::SetText(const std::u16string& new_text) {
 }
 
 void OmniboxTextView::SetTextWithStyling(
-    const std::u16string& new_text,
+    std::u16string_view new_text,
     const ACMatchClassifications& classifications) {
   if (GetText() == new_text && cached_classifications_ &&
       classifications == *cached_classifications_) {
@@ -284,7 +283,7 @@ void OmniboxTextView::ReapplyStyling() {
 }
 
 std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
-    const std::u16string& text) const {
+    std::u16string_view text) const {
   std::unique_ptr<gfx::RenderText> render_text =
       gfx::RenderText::CreateRenderText();
   render_text->SetDisplayRect(gfx::Rect(gfx::Size(INT_MAX, 0)));
@@ -323,6 +322,6 @@ void OmniboxTextView::OnStyleChanged() {
 }
 
 BEGIN_METADATA(OmniboxTextView)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_READONLY_PROPERTY_METADATA(int, LineHeight)
 END_METADATA

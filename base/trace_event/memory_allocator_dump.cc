@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/trace_event/memory_allocator_dump.h"
 
 #include <string.h>
@@ -18,8 +23,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 const char MemoryAllocatorDump::kNameSize[] = "size";
 const char MemoryAllocatorDump::kNameObjectCount[] = "object_count";
@@ -84,8 +88,9 @@ void MemoryAllocatorDump::AsValueInto(TracedValue* value) const {
     value->EndDictionary();
   }
   value->EndDictionary();  // "attrs": { ... }
-  if (flags_)
+  if (flags_) {
     value->SetInteger("flags", flags_);
+  }
   value->EndDictionary();  // "allocator_name/heap_subheap": { ... }
 }
 
@@ -136,8 +141,9 @@ void MemoryAllocatorDump::AsProtoInto(
 }
 
 uint64_t MemoryAllocatorDump::GetSizeInternal() const {
-  if (cached_size_.has_value())
+  if (cached_size_.has_value()) {
     return *cached_size_;
+  }
   for (const auto& entry : entries_) {
     if (entry.entry_type == Entry::kUint64 && entry.units == kUnitsBytes &&
         strcmp(entry.name.c_str(), kNameSize) == 0) {
@@ -163,8 +169,10 @@ MemoryAllocatorDump::Entry::Entry(std::string name,
     : name(name), units(units), entry_type(kString), value_string(value) {}
 
 bool MemoryAllocatorDump::Entry::operator==(const Entry& rhs) const {
-  if (!(name == rhs.name && units == rhs.units && entry_type == rhs.entry_type))
+  if (!(name == rhs.name && units == rhs.units &&
+        entry_type == rhs.entry_type)) {
     return false;
+  }
   switch (entry_type) {
     case EntryType::kUint64:
       return value_uint64 == rhs.value_uint64;
@@ -188,5 +196,4 @@ void PrintTo(const MemoryAllocatorDump::Entry& entry, std::ostream* out) {
   NOTREACHED();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

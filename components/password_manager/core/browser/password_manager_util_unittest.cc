@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manager_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,14 +13,12 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -74,12 +73,6 @@ class MockPasswordManagerClient
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(void,
-              TriggerReauthForPrimaryAccount,
-              (signin_metrics::ReauthAccessPoint,
-               base::OnceCallback<void(
-                   password_manager::PasswordManagerClient::ReauthSucceeded)>),
-              (override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
@@ -395,7 +388,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
             test_case.expected_best_matches_indices.at(username);
         size_t actual_index = std::distance(
             matches.begin(),
-            base::ranges::find_if(matches, [&match](const auto& non_federated) {
+            std::ranges::find_if(matches, [&match](const auto& non_federated) {
               return non_federated == match;
             }));
         EXPECT_EQ(expected_index, actual_index);
@@ -606,63 +599,10 @@ TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Proxy) {
   EXPECT_EQ(GURL(kTestProxyOrigin), blocklisted_credential.url);
 }
 
-TEST(PasswordManagerUtil, ManualGenerationShouldNotReauthIfNotNeeded) {
+TEST(PasswordManagerUtil, ManualGeneration) {
   MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(false));
 
-  EXPECT_CALL(mock_client, TriggerReauthForPrimaryAccount).Times(0);
   EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
-
-  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
-}
-
-TEST(PasswordManagerUtil,
-     ManualGenerationShouldGeneratePasswordIfReauthSucessful) {
-  MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(
-      mock_client,
-      TriggerReauthForPrimaryAccount(
-          signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu, _))
-      .WillOnce(
-          [](signin_metrics::ReauthAccessPoint,
-             base::OnceCallback<void(
-                 password_manager::PasswordManagerClient::ReauthSucceeded)>
-                 callback) {
-            std::move(callback).Run(
-                password_manager::PasswordManagerClient::ReauthSucceeded(true));
-          });
-  EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
-
-  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
-}
-
-TEST(PasswordManagerUtil,
-     ManualGenerationShouldNotGeneratePasswordIfReauthFailed) {
-  MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(
-      mock_client,
-      TriggerReauthForPrimaryAccount(
-          signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu, _))
-      .WillOnce(
-          [](signin_metrics::ReauthAccessPoint,
-             base::OnceCallback<void(
-                 password_manager::PasswordManagerClient::ReauthSucceeded)>
-                 callback) {
-            std::move(callback).Run(
-                password_manager::PasswordManagerClient::ReauthSucceeded(
-                    false));
-          });
-  EXPECT_CALL(mock_client, GeneratePassword).Times(0);
 
   UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
 }

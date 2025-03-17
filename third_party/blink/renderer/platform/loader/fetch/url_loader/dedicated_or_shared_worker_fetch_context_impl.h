@@ -118,7 +118,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
           url_loader_factory) override;
   std::optional<WebURL> WillSendRequest(const WebURL& url) override;
   void FinalizeRequest(WebURLRequest&) override;
-  WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+  std::vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;
@@ -132,7 +132,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       override;
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  void SetIsOfflineMode(bool is_offline_mode) override;
   bool IsDedicatedWorkerOrSharedWorkerFetchContext() const override {
     return true;
   }

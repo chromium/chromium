@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(INPUT) InputReceiverData {
   const ScopedInputTransferToken& viz_input_token() const {
     return viz_input_token_;
   }
+  const ScopedInputTransferToken& browser_input_token() const {
+    return browser_input_token_;
+  }
 
  private:
   scoped_refptr<gfx::SurfaceControl::Surface> parent_input_sc_;

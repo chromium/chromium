@@ -7,10 +7,12 @@ package org.chromium.components.find_in_page;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Allows issuing find in page related requests for a given WebContents. */
 @JNINamespace("find_in_page")
+@NullMarked
 public class FindInPageBridge {
     private long mNativeFindInPageBridge;
 

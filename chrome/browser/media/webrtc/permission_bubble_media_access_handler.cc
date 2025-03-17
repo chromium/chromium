@@ -131,7 +131,7 @@ PermissionBubbleMediaAccessHandler::~PermissionBubbleMediaAccessHandler() =
     default;
 
 bool PermissionBubbleMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
@@ -405,6 +405,12 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
         base::BindOnce(
             &PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest,
             base::Unretained(this), base::UnsafeDangling(web_contents)));
+  }
+
+  if (final_result != blink::mojom::MediaStreamRequestResult::OK) {
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(), final_result,
+                            std::move(ui));
+    return;
   }
 
   std::move(callback).Run(stream_devices_set, final_result, std::move(ui));

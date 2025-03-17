@@ -7,6 +7,7 @@
 #import "base/time/time.h"
 #import "components/segmentation_platform/public/trigger.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_commands.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -54,6 +55,11 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   item2.URLKey = std::string("url key b");
   item2.requestID =
       segmentation_platform::TrainingRequestId::FromUnsafeValue(2);
+  item2.shopCardData = [[ShopCardData alloc] init];
+  item2.shopCardData.priceDrop = std::make_optional<PriceDrop>();
+  item2.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
+  item2.shopCardData.priceDrop->current_price = @"$2.87";
+  item2.shopCardData.priceDrop->previous_price = @"$3.14";
 
   [item reconfigureWithItem:item2];
   EXPECT_EQ(item.itemType, TabResumptionItemType::kMostRecentTab);
@@ -68,4 +74,10 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   EXPECT_EQ(item.URLKey, "url key b");
   EXPECT_EQ(item.requestID,
             segmentation_platform::TrainingRequestId::FromUnsafeValue(2));
+  EXPECT_EQ(item2.shopCardData.shopCardItemType,
+            ShopCardItemType::kPriceDropOnTab);
+  EXPECT_EQ(item.shopCardData.priceDrop->current_price,
+            item2.shopCardData.priceDrop->current_price);
+  EXPECT_EQ(item.shopCardData.priceDrop->previous_price,
+            item2.shopCardData.priceDrop->previous_price);
 }

@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java accessor for state of Chrome-layer feature flags.
@@ -20,6 +21,7 @@ import org.chromium.base.FeatureMap;
  * backwards compatibility and convenience.
  */
 @JNINamespace("chrome::android")
+@NullMarked
 public class ChromeFeatureMap extends FeatureMap {
     private static final ChromeFeatureMap sInstance = new ChromeFeatureMap();
 

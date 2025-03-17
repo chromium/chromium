@@ -13,7 +13,6 @@ import {getTemplate} from './database.html.js';
 import {IdbInternalsHandler} from './indexed_db_internals.mojom-webui.js';
 import type {IdbDatabaseMetadata, IdbTransactionMetadata} from './indexed_db_internals_types.mojom-webui.js';
 import type {ExecutionContextToken} from './tokens.mojom-webui.js';
-import type {IndexedDbTransactionTable} from './transaction_table.js';
 
 export class IndexedDbDatabase extends CustomElement {
   clients: BucketClientInfo[];
@@ -101,8 +100,7 @@ export class IndexedDbDatabase extends CustomElement {
               .catch(errorMsg => console.error(errorMsg));
         });
     const transactionTable =
-        document.createElement('indexeddb-transaction-table') as
-        IndexedDbTransactionTable;
+        document.createElement('indexeddb-transaction-table');
     transactionTable.transactions = transactions;
     const container = document.createElement('div');
     container.appendChild(clientMetadata);

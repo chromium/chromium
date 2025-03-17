@@ -28,6 +28,7 @@ import {computed, Signal, signal} from '../../core/reactive/signal.js';
 import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
 import {SodaSession} from '../../core/soda/types.js';
 import {
+  assertEnumVariant,
   assertExists,
   assertInstanceof,
   checkEnumVariant,
@@ -60,6 +61,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   private readonly sodaStates = new Map<LanguageCode, Signal<ModelState>>();
 
   private readonly langPacks = new Map<LanguageCode, LangPackInfo>();
+
+  private defaultLanguage = LanguageCode.EN_US;
 
   override summaryModelLoader: SummaryModelLoader;
 
@@ -150,6 +153,13 @@ export class PlatformHandler extends PlatformHandlerBase {
       update(state);
     }
 
+    const languageCodeString =
+      (await this.remote.getDefaultLanguage()).languageCode;
+    const languageCode = assertEnumVariant(LanguageCode, languageCodeString);
+    if (this.getSodaState(languageCode).value.kind !== 'unavailable') {
+      this.defaultLanguage = languageCode;
+    }
+
     const quietModeMonitor = new QuietModeMonitorReceiver({
       update: (inQuietMode: boolean) => {
         this.quietModeInternal.value = inQuietMode;
@@ -164,6 +174,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     await this.titleSuggestionModelLoader.init();
 
     this.initPerfEventWatchers();
+  }
+
+  override getDefaultLanguage(): LanguageCode {
+    return this.defaultLanguage;
   }
 
   override getLangPackList = lazyInit((): readonly LangPackInfo[] => {

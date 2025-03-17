@@ -116,8 +116,6 @@ class ScheduledMetricsManager;
 }  // namespace metrics
 
 class BookmarkUpdateManager;
-class DiscountsStorage;
-class ParcelsManager;
 class ProductSpecificationsServerProxy;
 class ProductSpecificationsService;
 class ShoppingPowerBookmarkDataProvider;
@@ -240,6 +238,14 @@ class ShoppingService : public KeyedService,
   // that doesn't include information from the page on-device.
   virtual void GetProductInfoForUrl(const GURL& url,
                                     ProductInfoCallback callback);
+
+  // Attempts to retrieve product info for all of the URLs provided in |urls|.
+  // This API behaves the same as |GetProductInfoForUrl| with the exception of
+  // how on-demand requests are handled - rather than fetching individually,
+  // they are batched. The entire set of info is provided to the callback once
+  // complete.
+  virtual void GetProductInfoForUrls(const std::vector<GURL>& urls,
+                                     ProductInfoBatchCallback callback);
 
   // This API returns whatever product information is currently available for
   // the specified |url|. This method is less reliable than GetProductInfoForUrl
@@ -364,32 +370,6 @@ class ShoppingService : public KeyedService,
   virtual void WaitForReady(
       base::OnceCallback<void(ShoppingService*)> callback);
 
-  // This is a feature check for the "merchant viewer", which will return true
-  // if the user has the feature flag enabled or (if applicable) is in an
-  // enabled country and locale.
-  virtual bool IsMerchantViewerEnabled();
-
-  // This is a feature check for the "price insights", which will return true
-  // if the user has the feature flag enabled, has MSBB enabled, and (if
-  // applicable) is in an eligible country and locale. The value returned by
-  // this method can change at runtime, so it should not be used when deciding
-  // whether to create critical, feature-related infrastructure.
-  virtual bool IsPriceInsightsEligible();
-
-  // This is a feature check for "show discounts on navigation", which will
-  // return true if the user has the feature flag enabled, is signed-in and
-  // synced, has MSBB enabled, and (if applicable) is in an eligible country and
-  // locale. The value returned by this method can change at runtime, so it
-  // should not be used when deciding whether to create critical,
-  // feature-related infrastructure.
-  virtual bool IsDiscountEligibleToShowOnNavigation();
-
-  // Check if parcel tracking is eligible for use. This not only checks the
-  // feature flag, but also checks user's sign in state, country code, etc. The
-  // value returned here can change during runtime so it should not be used
-  // when deciding to build infrastructure.
-  virtual bool IsParcelTrackingEligible();
-
   // Returns a list of URLs corresponding to active WebWrappers the shopping
   // service is keeping track of. This does not map to open tabs across all
   // platforms. Excludes non-HTTP/HTTPS URLs.
@@ -404,30 +384,6 @@ class ShoppingService : public KeyedService,
   // user (ordered by most recent first). This generally aligns with recently
   // viewed tabs.
   virtual const std::vector<UrlInfo> GetUrlInfosForRecentlyViewedWebWrappers();
-
-  // Starts tracking a list of parcels from a given page.
-  void StartTrackingParcels(
-      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-          parcel_identifiers,
-      const std::string& source_page_domain,
-      GetParcelStatusCallback callback);
-
-  // Gets the status of all parcel status stored in the db.
-  virtual void GetAllParcelStatuses(GetParcelStatusCallback callback);
-
-  // Called to stop tracking a given parcel.
-  // DEPRECATED: use StopTrackingParcels() below()
-  virtual void StopTrackingParcel(const std::string& tracking_id,
-                                  base::OnceCallback<void(bool)> callback);
-
-  // Called to stop tracking multiple parcels.
-  void StopTrackingParcels(
-      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-          parcel_identifiers,
-      base::OnceCallback<void(bool)> callback);
-
-  // Called to stop tracking all parcels.
-  virtual void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);
 
   virtual ProductSpecificationsService* GetProductSpecificationsService();
 
@@ -518,10 +474,17 @@ class ShoppingService : public KeyedService,
       const optimization_guide::OptimizationMetadata& metadata,
       const GURL& url);
 
+  // The internal impl that supports the different variations of the public
+  // ProductInfo APIs.
+  void GetProductInfoForUrlInternal(const GURL& url,
+                                    ProductInfoCallback callback,
+                                    bool attempt_on_demand_fetch);
+
   void HandleOptGuideProductInfoResponse(
       const GURL& url,
       WebWrapper* web,
       ProductInfoCallback callback,
+      bool attempt_on_demand,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
@@ -540,6 +503,22 @@ class ShoppingService : public KeyedService,
   // accepts a repeating callback, it should only ever be called once.
   void HandleOnDemandProductInfoResponse(
       RepeatingProductInfoCallback callback,
+      const GURL& url,
+      const base::flat_map<
+          optimization_guide::proto::OptimizationType,
+          optimization_guide::OptimizationGuideDecisionWithMetadata>&
+          decisions);
+
+  // Handles the on-demand part of |GetProductInfoForUrls|, waiting for all
+  // fetches to complete before executing the callback.
+  void DoOnDemandFetchForProductInfoUrlBatch(
+      std::vector<GURL> urls,
+      std::map<GURL, std::optional<ProductInfo>> info_map,
+      ProductInfoBatchCallback callback);
+
+  // Process the result of an on-demand request for product info and handle any
+  // related cache maintenance.
+  std::optional<ProductInfo> HandleAndStoreProductInfoFromOnDemand(
       const GURL& url,
       const base::flat_map<
           optimization_guide::proto::OptimizationType,
@@ -584,13 +563,6 @@ class ShoppingService : public KeyedService,
   // Get the data stored in the cache or nullptr if none exists.
   const ProductInfo* GetFromProductInfoCache(const GURL& url);
 
-  // Whether APIs like |GetPriceInsightsInfoForURL| are enabled and allowed to
-  // be used.
-  bool IsPriceInsightsInfoApiEnabled();
-
-  // Whether APIs like |IsShoppingPage| are enabled and allowed to be used.
-  bool IsShoppingPageTypesApiEnabled();
-
   void HandleOptGuidePriceInsightsInfoResponse(
       const GURL& url,
       PriceInsightsInfoCallback callback,
@@ -609,10 +581,6 @@ class ShoppingService : public KeyedService,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  // Whether APIs like |GetDiscountInfoForUrls| are enabled and allowed to be
-  // used.
-  bool IsDiscountInfoApiEnabled();
-
   void GetDiscountInfoFromOptGuide(const GURL& url,
                                    DiscountInfoCallback callback);
 
@@ -628,8 +596,6 @@ class ShoppingService : public KeyedService,
   void OnGetAllDiscountsFromOptGuide(const std::vector<GURL>& urls,
                                      DiscountInfoCallback callback,
                                      const std::vector<DiscountsPair>& results);
-
-  void SetDiscountsStorageForTesting(std::unique_ptr<DiscountsStorage> storage);
 
   void GetProductIdentifierForUrl(const GURL& url,
                                   UrlProductIdentifierTupleCallback callback);
@@ -689,12 +655,6 @@ class ShoppingService : public KeyedService,
   // The object tracking metrics that are recorded at specific intervals.
   std::unique_ptr<commerce::metrics::ScheduledMetricsManager>
       scheduled_metrics_manager_;
-
-  // The object handling discounts storage.
-  std::unique_ptr<DiscountsStorage> discounts_storage_;
-
-  // Object for tracking parcel status.
-  std::unique_ptr<ParcelsManager> parcels_manager_;
 
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.

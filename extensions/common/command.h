@@ -33,10 +33,6 @@ class Command : public ui::Command {
   static ui::Accelerator StringToAccelerator(std::string_view accelerator,
                                              std::string_view command_name);
 
-  // Returns the string representation of an accelerator without localizing the
-  // shortcut text (like accelerator::GetShortcutText() does).
-  static std::string AcceleratorToString(const ui::Accelerator& accelerator);
-
   // Return true if the |command_name| is one of the following action events:
   // Action Command Event, Browser Action Command Event, Page Action Command
   // Event.

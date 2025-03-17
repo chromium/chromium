@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -18,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
@@ -25,6 +27,7 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
@@ -123,6 +126,10 @@ const char kMemoryMainFrameMaxHistogramId[] =
     "PageLoad.Clients.Ads.Memory.MainFrame.Max";
 const char kMemoryUpdateCountHistogramId[] =
     "PageLoad.Clients.Ads.Memory.UpdateCount";
+const char kAdClickHistoryQueryCountHistogramId[] =
+    "PageLoad.Clients.Ads.AdClick.HistoryQueryCount";
+const char kAdClickEtldPlusOneHistoryQueryCountHistogramId[] =
+    "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount";
 
 const int kMaxHeavyAdNetworkBytes =
     heavy_ad_thresholds::kMaxNetworkBytes +
@@ -868,6 +875,8 @@ class AdsPageLoadMetricsObserverTest
 
   bool WithFencedFrames() { return GetParam(); }
 
+  virtual bool IsIncognito() { return false; }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
 
@@ -886,8 +895,9 @@ class AdsPageLoadMetricsObserverTest
   void RegisterObservers(PageLoadTracker* tracker) {
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
         /*heavy_ad_service=*/nullptr,
+        /*history_service=*/nullptr,
         base::BindRepeating([]() { return std::string("en-US"); }),
-        clock_.get(), test_blocklist_.get());
+        IsIncognito(), clock_.get(), test_blocklist_.get());
     // Mock the noise provider to make tests deterministic. Tests can override
     // this again to test non-zero noise.
     observer->SetHeavyAdThresholdNoiseProviderForTesting(
@@ -2958,6 +2968,8 @@ TEST_P(AdsPageLoadMetricsObserverTest, NoFirstContentfulPaint_NotRecorded) {
   histogram_tester().ExpectTotalCount(
       "AdPaintTiming.NavigationToFirstContentfulPaint3", 0);
   histogram_tester().ExpectTotalCount(
+      "AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito", 0);
+  histogram_tester().ExpectTotalCount(
       "AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaint", 0);
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram(
@@ -3020,6 +3032,10 @@ TEST_P(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 100,
       1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram(
+          "AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito"),
+      100, 0);
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram(
@@ -3269,7 +3285,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
        FirstContentfulPaintPostAbortedOnDeviceAuction_NotRecorded) {
   SimulateFCPPostAuctions({CompleteAuctionResult(
       /*is_server_auction=*/false,
-      /*is_on_device_auction=*/true, content::AuctionResult::kAborted)});
+      /*is_on_device_auction=*/true, content::AuctionResult::kAbortSignal)});
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram(
@@ -3670,6 +3686,187 @@ TEST_P(AdsMemoryMeasurementTest, MainFrame_MaxMemoryBytesRecorded) {
   histogram_tester().ExpectUniqueSample(kMemoryMainFrameMaxHistogramId, 2000,
                                         1);
   histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 3, 1);
+}
+
+class AdsPageLoadMetricsObserverIncognitoTest
+    : public AdsPageLoadMetricsObserverTest {
+ private:
+  bool IsIncognito() override { return true; }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AdsPageLoadMetricsObserverIncognitoTest,
+                         testing::Bool());
+
+TEST_P(AdsPageLoadMetricsObserverIncognitoTest, FirstContentfulPaint_Recorded) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  RenderFrameHost* main_frame =
+      NavigateFrame(kNonAdUrl, web_contents()->GetPrimaryMainFrame(), start);
+
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(
+      kAdUrl, main_frame, start + base::Milliseconds(100));
+
+  // Load some bytes so that the frame is recorded.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+
+  // Set FirstContentfulPaint.
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
+
+  // Navigate away and check the histogram.
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 100,
+      1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram(
+          "AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito"),
+      100, 1);
+}
+
+class AdsPageLoadMetricsObserverAdUrlInHistoryTest : public testing::Test {
+ public:
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+  void SetUp() override {
+    ASSERT_TRUE(history_temp_dir_.CreateUniqueTempDir());
+    history_service_ =
+        history::CreateHistoryService(history_temp_dir_.GetPath(), true);
+  }
+
+  void QueryAdUrlAndWaitUntilComplete(const GURL& ad_url) {
+    AdsPageLoadMetricsObserver::QueryAdUrlFrequencyInHistory(
+        history_service_.get(), ad_url, &history_task_tracker_,
+        &etld_plus_one_history_task_tracker_);
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  }
+
+  void AddPageToHistory(const GURL& url) {
+    history_service_->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
+  std::unique_ptr<history::HistoryService> history_service_;
+  base::ScopedTempDir history_temp_dir_;
+  base::CancelableTaskTracker history_task_tracker_;
+  base::CancelableTaskTracker etld_plus_one_history_task_tracker_;
+};
+
+TEST_F(AdsPageLoadMetricsObserverAdUrlInHistoryTest,
+       AdClick_HistoryQueryCount_HistoryEmpty) {
+  QueryAdUrlAndWaitUntilComplete(GURL(kAdUrl));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/0, /*count=*/1}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>({{/*min=*/0, /*count=*/1}}));
+}
+
+TEST_F(AdsPageLoadMetricsObserverAdUrlInHistoryTest,
+       AdClick_HistoryQueryCount_VisitedAdUrl) {
+  GURL ad_url(kAdUrl);
+
+  AddPageToHistory(ad_url);
+  QueryAdUrlAndWaitUntilComplete(ad_url);
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+}
+
+TEST_F(AdsPageLoadMetricsObserverAdUrlInHistoryTest,
+       AdClick_HistoryQueryCount_VisitedSameAdUrl) {
+  GURL ad_url(kAdUrl);
+
+  AddPageToHistory(ad_url);
+  QueryAdUrlAndWaitUntilComplete(ad_url);
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+
+  AddPageToHistory(ad_url);
+  QueryAdUrlAndWaitUntilComplete(ad_url);
+
+  // {1,1} is from the previous histogram sample. {2,1} denotes that there is 1
+  // instance where an ad domain has been visited 2 times.
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>(
+          {{/*min=*/1, /*count=*/1}, {/*min=*/2, /*count=*/1}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>(
+                  {{/*min=*/1, /*count=*/1}, {/*min=*/2, /*count=*/1}}));
+}
+
+TEST_F(AdsPageLoadMetricsObserverAdUrlInHistoryTest,
+       AdClick_HistoryQueryCount_VisitedDifferentAdUrlAndSameEtldPlusOne) {
+  GURL ad_url("https://ads.com/ad1/disallowed.html");
+  GURL other_ad_url("https://ads.com/ad2/disallowed.html");
+
+  AddPageToHistory(ad_url);
+  QueryAdUrlAndWaitUntilComplete(ad_url);
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+
+  AddPageToHistory(other_ad_url);
+  QueryAdUrlAndWaitUntilComplete(other_ad_url);
+
+  // {1,2} denotes that there are 2 instances where an ad domain has been
+  // visited 1 time.
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/1, /*count=*/2}}));
+  // {1,1} is from the previous histogram sample. {2,1} denotes that there is 1
+  // instance where an ad domain has been visited 2 times.
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>(
+                  {{/*min=*/1, /*count=*/1}, {/*min=*/2, /*count=*/1}}));
+}
+
+TEST_F(AdsPageLoadMetricsObserverAdUrlInHistoryTest,
+       AdClick_HistoryQueryCount_VisitedDifferentAdUrlAndDifferentEtldPlusOne) {
+  GURL ad_url(kAdUrl);
+  GURL other_ad_url(kOtherAdUrl);
+
+  AddPageToHistory(ad_url);
+  QueryAdUrlAndWaitUntilComplete(ad_url);
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>({{/*min=*/1, /*count=*/1}}));
+
+  AddPageToHistory(other_ad_url);
+  QueryAdUrlAndWaitUntilComplete(other_ad_url);
+
+  // {1,2} denotes that there are 2 instances where an ad domain has been
+  // visited 1 time.
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/1, /*count=*/2}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>({{/*min=*/1, /*count=*/2}}));
 }
 
 }  // namespace page_load_metrics

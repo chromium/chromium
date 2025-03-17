@@ -38,10 +38,9 @@ const CGFloat kMaterialDuration7 = 0.4 * kSlowAnimationModifier;
 const CGFloat kMaterialDuration8 = 0.07 * kSlowAnimationModifier;
 
 CAMediaTimingFunction* MaterialTransformCurve2() {
-  return [[CAMediaTimingFunction alloc] initWithControlPoints:
-                                                         0.0f:
-                                                        0.84f:
-                                                        0.13f:0.99f];
+  return
+      [[CAMediaTimingFunction alloc] initWithControlPoints:
+                                                      0.0f:0.84f:0.13f:0.99f];
 }
 
 CAMediaTimingFunction* MaterialTimingFunction(MaterialCurve curve) {
@@ -49,24 +48,21 @@ CAMediaTimingFunction* MaterialTimingFunction(MaterialCurve curve) {
     case MaterialCurveEaseInOut:
       // This curve is slow both at the beginning and end.
       // Visualization of curve  http://cubic-bezier.com/#.4,0,.2,1
-      return [[CAMediaTimingFunction alloc] initWithControlPoints:
-                                                             0.4f:
-                                                             0.0f:
-                                                             0.2f:1.0f];
+      return
+          [[CAMediaTimingFunction alloc] initWithControlPoints:
+                                                          0.4f:0.0f:0.2f:1.0f];
     case MaterialCurveEaseOut:
       // This curve is slow at the end.
       // Visualization of curve  http://cubic-bezier.com/#0,0,.2,1
-      return [[CAMediaTimingFunction alloc] initWithControlPoints:
-                                                             0.0f:
-                                                             0.0f:
-                                                             0.2f:1.0f];
+      return
+          [[CAMediaTimingFunction alloc] initWithControlPoints:
+                                                          0.0f:0.0f:0.2f:1.0f];
     case MaterialCurveEaseIn:
       // This curve is slow at the beginning.
       // Visualization of curve  http://cubic-bezier.com/#.4,0,1,1
-      return [[CAMediaTimingFunction alloc] initWithControlPoints:
-                                                             0.4f:
-                                                             0.0f:
-                                                             1.0f:1.0f];
+      return
+          [[CAMediaTimingFunction alloc] initWithControlPoints:
+                                                          0.4f:0.0f:1.0f:1.0f];
     case MaterialCurveLinear:
       // This curve is linear.
       return

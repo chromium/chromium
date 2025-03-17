@@ -46,7 +46,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForWorker::CreateURLLoader(
         service_worker_race_network_request_token,
     bool is_from_origin_dirty_style_sheet) {
   Vector<std::unique_ptr<URLLoaderThrottle>> throttles;
-  WebVector<std::unique_ptr<URLLoaderThrottle>> web_throttles =
+  std::vector<std::unique_ptr<URLLoaderThrottle>> web_throttles =
       web_context_->CreateThrottles(network_request);
   throttles.reserve(base::checked_cast<wtf_size_t>(web_throttles.size()));
   for (auto& throttle : web_throttles) {

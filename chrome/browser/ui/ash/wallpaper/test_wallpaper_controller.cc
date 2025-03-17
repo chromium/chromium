@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
@@ -22,6 +22,10 @@
 #include "test_wallpaper_controller.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+
+namespace {
+inline constexpr uint64_t kTestTimeOfDayUnitId = 17;
+}  // namespace
 
 TestWallpaperController::TestWallpaperController() : id_cache_(0) {
   ClearCounts();
@@ -139,24 +143,25 @@ bool TestWallpaperController::SetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     const DailyGooglePhotosIdCache& ids) {
   id_cache_.ShrinkToSize(0);
-  base::ranges::for_each(base::Reversed(ids),
-                         [&](uint id) { id_cache_.Put(std::move(id)); });
+  std::ranges::for_each(base::Reversed(ids),
+                        [&](uint id) { id_cache_.Put(std::move(id)); });
   return true;
 }
 
 bool TestWallpaperController::GetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     DailyGooglePhotosIdCache& ids_out) const {
-  base::ranges::for_each(base::Reversed(id_cache_),
-                         [&](uint id) { ids_out.Put(std::move(id)); });
+  std::ranges::for_each(base::Reversed(id_cache_),
+                        [&](uint id) { ids_out.Put(std::move(id)); });
   return true;
 }
 
 void TestWallpaperController::SetTimeOfDayWallpaper(
     const AccountId& account_id,
-    SetWallpaperCallback callback) {
+    SetTimeOfDayWallpaperCallback callback) {
   ++set_default_time_of_day_wallpaper_count_;
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(kTestTimeOfDayUnitId,
+                          /*success=*/true);
 }
 
 void TestWallpaperController::SetDefaultWallpaper(

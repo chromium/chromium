@@ -19,7 +19,6 @@
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_feature_checks.h"
@@ -28,7 +27,9 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/video_types.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
@@ -221,7 +222,7 @@ bool IsOccluded(
       if (render_pass_it != render_pass_filters.end()) {
         auto* filters = render_pass_it->second.get();
         overlap_rect = gfx::RectF(
-            GetExpandedRectWithPixelMovingForegroundFilter(*rpdq, *filters));
+            GetTargetExpandedRectForPixelMovingFilters(*rpdq, *filters));
         has_pixel_moving_filter = true;
       }
     }
@@ -291,10 +292,7 @@ void RecordDCLayerResult(DCLayerResult result, const DrawQuad* quad) {
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent: {
       auto* tex_quad = TextureDrawQuad::MaterialCast(quad);
-      if (tex_quad->is_stream_video) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "GPU.DirectComposition.DCLayerResult.StreamVideo", result);
-      } else if (tex_quad->is_video_frame) {
+      if (tex_quad->is_video_frame) {
         RecordVideoDCLayerResult(result, tex_quad->protected_video_type);
       } else {
         UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.DCLayerResult.Texture",
@@ -316,7 +314,7 @@ void RecordOverlayHistograms(
   // underlay.
   bool is_overlay = true;
   for (auto& [render_pass, overlay_data] : render_pass_overlay_data_map) {
-    is_overlay = base::ranges::all_of(
+    is_overlay = std::ranges::all_of(
         overlay_data.promoted_overlays,
         [](const auto& dc_layer) { return dc_layer.plane_z_order > 0; });
     if (!is_overlay) {
@@ -324,7 +322,7 @@ void RecordOverlayHistograms(
     }
   }
 
-  bool damage_rects_empty = base::ranges::all_of(
+  bool damage_rects_empty = std::ranges::all_of(
       render_pass_overlay_data_map,
       [](const auto& data) { return data.second.damage_rect.IsEmpty(); });
 
@@ -347,7 +345,8 @@ QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
   for (auto quad_it = quad_list.begin(); quad_it != quad_list.end();
        ++quad_it) {
     if (quad_it->material == DrawQuad::Material::kTextureContent &&
-        TextureDrawQuad::MaterialCast(*quad_it)->is_stream_video) {
+        TextureDrawQuad::MaterialCast(*quad_it)->protected_video_type ==
+            gfx::ProtectedVideoType::kHardwareProtected) {
       return quad_list.end();
     }
     if (it == quad_list.end() &&
@@ -374,13 +373,7 @@ gfx::ProtectedVideoType GetProtectedVideoType(const DrawQuad* quad) {
 bool IsOverlayRequiredForQuad(const DrawQuad* quad) {
   // Hardware protected video always requires overlays, and for software
   // protected video we prefer it for the protection benefits of overlays.
-  if (GetProtectedVideoType(quad) != gfx::ProtectedVideoType::kClear) {
-    return true;
-  }
-  // As do stream video textures e.g. when MediaFoundationRenderer is used for
-  // clear video with direct composition.
-  return quad->material == DrawQuad::Material::kTextureContent &&
-         TextureDrawQuad::MaterialCast(quad)->is_stream_video;
+  return GetProtectedVideoType(quad) != gfx::ProtectedVideoType::kClear;
 }
 
 // A bit of a misnomer, but these are all the "standard" no overlay required
@@ -478,9 +471,10 @@ ValidateDrawQuadResult ValidateDrawQuad(
     }
   }
 
-  if (quad->is_stream_video) {
-    // Stream video quads contain Media Foundation dcomp surface which is
-    // always presented as overlay.
+  if (quad->protected_video_type ==
+      gfx::ProtectedVideoType::kHardwareProtected) {
+    // HardwareProtected video quads contain Media Foundation dcomp surface
+    // which is always presented as overlay.
     result.code = DC_LAYER_SUCCESS;
   } else {
     result.code = ValidateTextureQuad(
@@ -538,13 +532,6 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
   dc_layer.hdr_metadata = resource_provider->GetHDRMetadata(quad->resource_id);
 
   dc_layer.protected_video_type = quad->protected_video_type;
-  // Both color space and protected_video_type are hard-coded for stream video.
-  // TODO(crbug.com/40878556): Consider using quad->protected_video_type.
-  if (quad->is_stream_video) {
-    dc_layer.color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                                           gfx::ColorSpace::TransferID::BT709);
-    dc_layer.protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
-  }
   dc_layer.possible_video_fullscreen_letterboxing =
       is_possible_full_screen_letterboxing;
   if (quad->is_video_frame) {
@@ -1224,6 +1211,9 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   FromDrawQuad(resource_provider, render_pass,
                is_possible_full_screen_letterboxing, *it,
                global_overlay_state.processed_yuv_overlay_count, dc_layer);
+  dc_layer.layer_id =
+      gfx::OverlayLayerId(it->shared_quad_state->layer_namespace_id,
+                          it->shared_quad_state->layer_id);
 
   // Underlays are less efficient, so attempt regular overlays first. We can
   // only check for occlusion within a render pass.

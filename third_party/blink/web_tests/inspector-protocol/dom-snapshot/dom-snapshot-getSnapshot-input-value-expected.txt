@@ -47,7 +47,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             childNodeIndexes : [
                 [0] : 4
                 [1] : 5
-                [2] : 42
+                [2] : 48
             ]
             layoutNodeIndex : 2
             nodeName : BODY
@@ -71,21 +71,21 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             childNodeIndexes : [
                 [0] : 6
                 [1] : 7
-                [2] : 22
-                [3] : 23
-                [4] : 26
-                [5] : 27
-                [6] : 29
-                [7] : 30
-                [8] : 31
-                [9] : 32
-                [10] : 33
-                [11] : 34
-                [12] : 35
-                [13] : 36
-                [14] : 37
-                [15] : 38
-                [16] : 41
+                [2] : 28
+                [3] : 29
+                [4] : 32
+                [5] : 33
+                [6] : 35
+                [7] : 36
+                [8] : 37
+                [9] : 38
+                [10] : 39
+                [11] : 40
+                [12] : 41
+                [13] : 42
+                [14] : 43
+                [15] : 44
+                [16] : 47
             ]
             layoutNodeIndex : 3
             nodeName : DIV
@@ -103,9 +103,8 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             childNodeIndexes : [
                 [0] : 8
                 [1] : 10
-                [2] : 17
-                [3] : 18
-                [4] : 20
+                [2] : 11
+                [3] : 26
             ]
             layoutNodeIndex : 4
             nodeName : SELECT
@@ -141,87 +140,6 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             attributes : [
                 [0] : {
                     name : id
-                    value : select-options
-                }
-            ]
-            backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 11
-                [1] : 14
-            ]
-            nodeName : SLOT
-            nodeType : 1
-            nodeValue : 
-            shadowRootType : user-agent
-        }
-        [11] : {
-            attributes : [
-                [0] : {
-                    name : id
-                    value : OptionSelected
-                }
-            ]
-            backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 12
-            ]
-            nodeName : OPTION
-            nodeType : 1
-            nodeValue : 
-            optionSelected : true
-        }
-        [12] : {
-            backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 13
-            ]
-            nodeName : SLOT
-            nodeType : 1
-            nodeValue : 
-            shadowRootType : user-agent
-        }
-        [13] : {
-            backendNodeId : <number>
-            nodeName : #text
-            nodeType : 3
-            nodeValue : Option 1
-        }
-        [14] : {
-            attributes : [
-                [0] : {
-                    name : id
-                    value : OptionNotSelected
-                }
-            ]
-            backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 15
-            ]
-            nodeName : OPTION
-            nodeType : 1
-            nodeValue : 
-            optionSelected : false
-        }
-        [15] : {
-            backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 16
-            ]
-            nodeName : SLOT
-            nodeType : 1
-            nodeValue : 
-            shadowRootType : user-agent
-        }
-        [16] : {
-            backendNodeId : <number>
-            nodeName : #text
-            nodeType : 3
-            nodeValue : Option 2
-        }
-        [17] : {
-            attributes : [
-                [0] : {
-                    name : id
                     value : select-button
                 }
             ]
@@ -231,7 +149,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [18] : {
+        [11] : {
             attributes : [
                 [0] : {
                     name : pseudo
@@ -244,14 +162,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 19
+                [0] : 12
             ]
             nodeName : DIV
             nodeType : 1
             nodeValue : 
             shadowRootType : user-agent
         }
-        [19] : {
+        [12] : {
             attributes : [
                 [0] : {
                     name : id
@@ -259,12 +177,169 @@ Tests DOMSnapshot.getSnapshot method returning input values.
                 }
             ]
             backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 13
+                [1] : 14
+                [2] : 19
+                [3] : 20
+                [4] : 25
+            ]
             nodeName : SLOT
             nodeType : 1
             nodeValue : 
             shadowRootType : user-agent
         }
+        [13] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [14] : {
+            attributes : [
+                [0] : {
+                    name : id
+                    value : OptionSelected
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 15
+                [1] : 17
+            ]
+            nodeName : OPTION
+            nodeType : 1
+            nodeValue : 
+            optionSelected : true
+        }
+        [15] : {
+            attributes : [
+                [0] : {
+                    name : pseudo
+                    value : -internal-option-label-container
+                }
+                [1] : {
+                    name : aria-hidden
+                    value : true
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 16
+            ]
+            nodeName : SPAN
+            nodeType : 1
+            nodeValue : 
+            shadowRootType : user-agent
+        }
+        [16] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Option 1
+            shadowRootType : user-agent
+        }
+        [17] : {
+            attributes : [
+                [0] : {
+                    name : pseudo
+                    value : -internal-option-slot
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 18
+            ]
+            nodeName : SLOT
+            nodeType : 1
+            nodeValue : 
+            shadowRootType : user-agent
+        }
+        [18] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Option 1
+        }
+        [19] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
         [20] : {
+            attributes : [
+                [0] : {
+                    name : id
+                    value : OptionNotSelected
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 21
+                [1] : 23
+            ]
+            nodeName : OPTION
+            nodeType : 1
+            nodeValue : 
+            optionSelected : false
+        }
+        [21] : {
+            attributes : [
+                [0] : {
+                    name : pseudo
+                    value : -internal-option-label-container
+                }
+                [1] : {
+                    name : aria-hidden
+                    value : true
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 22
+            ]
+            nodeName : SPAN
+            nodeType : 1
+            nodeValue : 
+            shadowRootType : user-agent
+        }
+        [22] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Option 2
+            shadowRootType : user-agent
+        }
+        [23] : {
+            attributes : [
+                [0] : {
+                    name : pseudo
+                    value : -internal-option-slot
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 24
+            ]
+            nodeName : SLOT
+            nodeType : 1
+            nodeValue : 
+            shadowRootType : user-agent
+        }
+        [24] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Option 2
+        }
+        [25] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [26] : {
             attributes : [
                 [0] : {
                     name : popover
@@ -277,14 +352,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 21
+                [0] : 27
             ]
             nodeName : DIV
             nodeType : 1
             nodeValue : 
             shadowRootType : user-agent
         }
-        [21] : {
+        [27] : {
             attributes : [
                 [0] : {
                     name : pseudo
@@ -297,14 +372,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [22] : {
+        [28] : {
             backendNodeId : <number>
             layoutNodeIndex : 7
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [23] : {
+        [29] : {
             attributes : [
                 [0] : {
                     name : id
@@ -317,7 +392,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 24
+                [0] : 30
             ]
             inputValue : InputValue
             isClickable : true
@@ -326,10 +401,10 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [24] : {
+        [30] : {
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 25
+                [0] : 31
             ]
             isClickable : true
             layoutNodeIndex : 9
@@ -338,7 +413,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [25] : {
+        [31] : {
             backendNodeId : <number>
             isClickable : true
             layoutNodeIndex : 10
@@ -347,14 +422,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : InputValue
             shadowRootType : user-agent
         }
-        [26] : {
+        [32] : {
             backendNodeId : <number>
             layoutNodeIndex : 11
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [27] : {
+        [33] : {
             attributes : [
                 [0] : {
                     name : id
@@ -371,7 +446,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 28
+                [0] : 34
             ]
             inputValue : ButtonValue
             isClickable : true
@@ -380,7 +455,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [28] : {
+        [34] : {
             backendNodeId : <number>
             layoutNodeIndex : 13
             nodeName : #text
@@ -388,14 +463,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : ButtonValue
             shadowRootType : user-agent
         }
-        [29] : {
+        [35] : {
             backendNodeId : <number>
             layoutNodeIndex : 14
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [30] : {
+        [36] : {
             attributes : [
                 [0] : {
                     name : id
@@ -423,14 +498,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [31] : {
+        [37] : {
             backendNodeId : <number>
             layoutNodeIndex : 16
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [32] : {
+        [38] : {
             attributes : [
                 [0] : {
                     name : id
@@ -450,14 +525,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [33] : {
+        [39] : {
             backendNodeId : <number>
             layoutNodeIndex : 18
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [34] : {
+        [40] : {
             attributes : [
                 [0] : {
                     name : id
@@ -485,14 +560,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [35] : {
+        [41] : {
             backendNodeId : <number>
             layoutNodeIndex : 20
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [36] : {
+        [42] : {
             attributes : [
                 [0] : {
                     name : id
@@ -516,14 +591,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [37] : {
+        [43] : {
             backendNodeId : <number>
             layoutNodeIndex : 22
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [38] : {
+        [44] : {
             attributes : [
                 [0] : {
                     name : id
@@ -532,7 +607,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 39
+                [0] : 45
             ]
             layoutNodeIndex : 23
             nodeName : TEXTAREA
@@ -540,10 +615,10 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             textValue : TextAreaValue
         }
-        [39] : {
+        [45] : {
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 40
+                [0] : 46
             ]
             isClickable : true
             layoutNodeIndex : 24
@@ -552,7 +627,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [40] : {
+        [46] : {
             backendNodeId : <number>
             isClickable : true
             layoutNodeIndex : 25
@@ -561,14 +636,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : TextAreaValue
             shadowRootType : user-agent
         }
-        [41] : {
+        [47] : {
             backendNodeId : <number>
             layoutNodeIndex : 26
             nodeName : #text
             nodeType : 3
             nodeValue :  
         }
-        [42] : {
+        [48] : {
             backendNodeId : <number>
             nodeName : #text
             nodeType : 3

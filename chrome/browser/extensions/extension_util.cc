@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
@@ -48,7 +49,6 @@
 #else
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
@@ -138,6 +138,18 @@ bool IsLoginScreenExtension(
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsPolicyInstalled(const ExtensionId& extension_id,
+                       content::BrowserContext* context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->GetInstalledExtension(extension_id);
+  if (!extension) {
+    return false;
+  }
+
+  return Manifest::IsPolicyLocation(extension->location());
+}
+#endif
 }  // namespace
 
 bool HasIsolatedStorage(const ExtensionId& extension_id,
@@ -201,6 +213,14 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   }
 
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Admin installed extensions should not be restartable, so we will apply the
+  // change when Chrome restarts.
+  if (IsPolicyInstalled(extension_id, context)) {
+    extension_prefs->SetIsIncognitoEnabledDelayed(extension_id, enabled);
+    return;
+  }
+#endif
   // Broadcast unloaded and loaded events to update browser state. Only bother
   // if the value changed and the extension is actually enabled, since there is
   // no UI otherwise.
@@ -224,12 +244,18 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
 #endif
 }
 
-// TODO(crbug.com/356905053): Enable more extension util functions on
-// desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Admin installed extensions should not be restartable, so we will apply the
+  // change when Chrome restarts.
+  if (IsPolicyInstalled(extension_id, context)) {
+    ExtensionPrefs::Get(context)->SetAllowFileAccessDelayed(extension_id,
+                                                            allow);
+    return;
+  }
+#endif
   // Reload to update browser state if the value changed. We need to reload even
   // if the extension is disabled, in order to make sure file access is
   // reinitialized correctly.
@@ -242,6 +268,9 @@ void SetAllowFileAccess(const std::string& extension_id,
   ReloadExtension(extension_id, context);
 }
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 bool IsExtensionIdle(const std::string& extension_id,
                      content::BrowserContext* context) {
   std::vector<std::string> ids_to_check;
@@ -304,6 +333,7 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
 
   return dict;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
@@ -316,6 +346,7 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
   return extension->permissions_data()->active_permissions().Clone();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::vector<content::BrowserContext*> GetAllRelatedProfiles(
     Profile* profile,
     const Extension& extension) {
@@ -338,6 +369,7 @@ std::vector<content::BrowserContext*> GetAllRelatedProfiles(
 
   return related_contexts;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
   profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode,
@@ -374,7 +406,6 @@ std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name) {
   return GetFixupExtensionNameForUIDisplay(base::UTF8ToUTF16(extension_name));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace util
 }  // namespace extensions

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <string>
@@ -16,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -164,7 +164,7 @@ bool AttributionScopesSet::IsValidForSource(uint32_t scope_limit) const {
   CHECK_GT(scope_limit, 0u);
   return scopes_.size() <=
              std::min(kMaxScopesPerSource, static_cast<size_t>(scope_limit)) &&
-         base::ranges::all_of(scopes_, [](const std::string& scope) {
+         std::ranges::all_of(scopes_, [](const std::string& scope) {
            return scope.length() <= kMaxLengthPerAttributionScope;
          });
 }

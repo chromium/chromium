@@ -413,6 +413,20 @@ TEST_F(PowerPolicyControllerTest, DoNothingOnLidClosedWhileSigningOut) {
       PowerPolicyController::GetPolicyDebugString(power_manager()->policy()));
 }
 
+TEST_F(PowerPolicyControllerTest, DoNothingWhenIdleInDemoMode) {
+  policy_controller_->SetShouldDoNothingWhenIdleInDemoMode();
+
+  power_manager::PowerManagementPolicy expected_policy;
+  expected_policy.set_ac_idle_action(
+      power_manager::PowerManagementPolicy_Action_DO_NOTHING);
+  expected_policy.set_battery_idle_action(
+      power_manager::PowerManagementPolicy_Action_DO_NOTHING);
+
+  EXPECT_EQ(
+      PowerPolicyController::GetPolicyDebugString(expected_policy),
+      PowerPolicyController::GetPolicyDebugString(power_manager()->policy()));
+}
+
 TEST_F(PowerPolicyControllerTest, SuspendOnLidClosedWhileSignedOut) {
   PowerPolicyController::PrefValues prefs;
   policy_controller_->ApplyPrefs(prefs);

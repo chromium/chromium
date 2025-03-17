@@ -60,17 +60,6 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
     EnsureRareData().sticky_constraints = constraints;
   }
 
-  // A fragment ID unique within the LayoutObject. It is the same as the
-  // fragmentainer index.
-  wtf_size_t FragmentID() const {
-    return rare_data_ ? rare_data_->fragment_id : 0;
-  }
-  void SetFragmentID(wtf_size_t id) {
-    if (!rare_data_ && id == 0)
-      return;
-    EnsureRareData().fragment_id = id;
-  }
-
   // Holds references to the paint property nodes created by this object.
   const ObjectPaintProperties* PaintProperties() const {
     return rare_data_ ? rare_data_->paint_properties.Get() : nullptr;
@@ -202,7 +191,6 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
     CullRect cull_rect_;
     CullRect contents_cull_rect_;
     UniqueObjectId unique_id = 0;
-    wtf_size_t fragment_id = 0;
   };
 
   RareData& EnsureRareData();

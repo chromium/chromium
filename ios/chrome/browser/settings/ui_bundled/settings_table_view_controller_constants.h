@@ -26,7 +26,6 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeSignInButton = kItemTypeEnumZero,
   SettingsItemTypeSigninPromo,
   SettingsItemTypeAccount,
-  SettingsItemTypeGoogleSync,
   SettingsItemTypeGoogleServices,
   SettingsItemTypeHeader,
   SettingsItemTypeSearchEngine,
@@ -88,9 +87,6 @@ extern NSString* const kSettingsVoiceSearchCellId;
 
 // The accessibility identifier of the Bottom Omnibox cell.
 extern NSString* const kSettingsBottomOmniboxCellId;
-
-// The accessibility identifier of the Sync and Google services cell.
-extern NSString* const kSettingsGoogleSyncAndServicesCellId;
 
 // The accessibility identifier of the Google services cell.
 extern NSString* const kSettingsGoogleServicesCellId;

@@ -47,7 +47,7 @@ export class SigninEmailConfirmationAppElement extends CrLitElement {
   }
 
   protected onConfirm_() {
-    const action = this.shadowRoot!.querySelector('cr-radio-group')!.selected;
+    const action = this.shadowRoot.querySelector('cr-radio-group')!.selected;
     chrome.send('dialogClose', [JSON.stringify({'action': action})]);
   }
 

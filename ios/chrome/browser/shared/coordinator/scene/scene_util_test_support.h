@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_UTIL_TEST_SUPPORT_H_
 
 #import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 @class AppState;

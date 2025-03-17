@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter.h"
@@ -64,9 +63,9 @@ std::vector<nearby::sharing::proto::Contact> ContactRecordsToContacts(
 }
 
 nearby::sharing::proto::Contact CreateLocalContact(
-    const std::string& profile_user_name) {
+    const std::string& user_email) {
   nearby::sharing::proto::Contact contact;
-  contact.mutable_identifier()->set_account_name(profile_user_name);
+  contact.mutable_identifier()->set_account_name(user_email);
   // Always consider your own account a selected contact.
   contact.set_is_selected(true);
   return contact;
@@ -174,18 +173,18 @@ NearbyShareContactManagerImpl::Factory*
 // static
 std::unique_ptr<NearbyShareContactManager>
 NearbyShareContactManagerImpl::Factory::Create(
+    std::string user_email,
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
-    NearbyShareLocalDeviceDataManager* local_device_data_manager,
-    NearbyShareProfileInfoProvider* profile_info_provider) {
+    NearbyShareLocalDeviceDataManager* local_device_data_manager) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(pref_service, http_client_factory,
-                                         local_device_data_manager,
-                                         profile_info_provider);
+    return test_factory_->CreateInstance(std::move(user_email), pref_service,
+                                         http_client_factory,
+                                         local_device_data_manager);
   }
   return base::WrapUnique(new NearbyShareContactManagerImpl(
-      pref_service, http_client_factory, local_device_data_manager,
-      profile_info_provider));
+      std::move(user_email), pref_service, http_client_factory,
+      local_device_data_manager));
 }
 
 // static
@@ -197,14 +196,14 @@ void NearbyShareContactManagerImpl::Factory::SetFactoryForTesting(
 NearbyShareContactManagerImpl::Factory::~Factory() = default;
 
 NearbyShareContactManagerImpl::NearbyShareContactManagerImpl(
+    std::string user_email,
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
-    NearbyShareLocalDeviceDataManager* local_device_data_manager,
-    NearbyShareProfileInfoProvider* profile_info_provider)
-    : pref_service_(pref_service),
+    NearbyShareLocalDeviceDataManager* local_device_data_manager)
+    : user_email_(std::move(user_email)),
+      pref_service_(pref_service),
       http_client_factory_(http_client_factory),
       local_device_data_manager_(local_device_data_manager),
-      profile_info_provider_(profile_info_provider),
       periodic_contact_upload_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
               kContactUploadPeriod,
@@ -321,16 +320,14 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 
   // Enable cross-device self-share by adding your account to the list of
   // contacts. It is also marked as a selected contact.
-  std::optional<std::string> user_name =
-      profile_info_provider_->GetProfileUserName();
   base::UmaHistogramBoolean("Nearby.Share.Contacts.CanGetProfileUserName",
-                            user_name.has_value());
-  if (!user_name) {
+                            !user_email_.empty());
+  if (user_email_.empty()) {
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Profile user name is not valid; could not "
         << "add self to list of contacts to upload.";
   } else {
-    contacts_to_upload.push_back(CreateLocalContact(*user_name));
+    contacts_to_upload.push_back(CreateLocalContact(user_email_));
   }
 
   std::string contact_upload_hash = ComputeHash(contacts_to_upload);

@@ -22,6 +22,7 @@
 #include "base/metrics/record_histogram_checker.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/histogram_scope.h"  // no-presubmit-check
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,15 +122,24 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
     return StatisticsRecorder::top_ != nullptr;
   }
 
-  Histogram* CreateHistogram(const char* name,
-                             HistogramBase::Sample min,
-                             HistogramBase::Sample max,
+  Histogram* CreateHistogram(DurableStringView durable_name,
+                             HistogramBase::Sample32 min,
+                             HistogramBase::Sample32 max,
                              size_t bucket_count) {
     BucketRanges* ranges = new BucketRanges(bucket_count + 1);
     Histogram::InitializeBucketRanges(min, max, ranges);
     const BucketRanges* registered_ranges =
         StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges);
-    return new Histogram(name, registered_ranges);
+    return new Histogram(durable_name, registered_ranges);
+  }
+
+  template <size_t N>
+  Histogram* CreateHistogram(const char (&literal)[N],
+                             HistogramBase::Sample32 min,
+                             HistogramBase::Sample32 max,
+                             size_t bucket_count) {
+    return CreateHistogram(DurableStringView(std::string_view(literal, N - 1)),
+                           min, max, bucket_count);
   }
 
   void InitLogOnShutdown() { StatisticsRecorder::InitLogOnShutdown(); }
@@ -319,8 +329,9 @@ TEST_P(StatisticsRecorderTest, RegisterHistogramWithMacros) {
   // Macros cache pointers and so tests that use them can only be run once.
   // Stop immediately if this test has run previously.
   static bool already_run = false;
-  if (already_run)
+  if (already_run) {
     return;
+  }
   already_run = true;
 
   StatisticsRecorder::Histograms registered_histograms;
@@ -456,25 +467,30 @@ namespace {
 // CallbackCheckWrapper is simply a convenient way to check and store that
 // a callback was actually run.
 struct CallbackCheckWrapper {
-  CallbackCheckWrapper()
-      : called(false),
-        last_histogram_name(""),
-        last_name_hash(HashMetricName("")),
-        last_histogram_value(0) {}
+  CallbackCheckWrapper() : last_name_hash(HashMetricName("")) {}
 
-  void OnHistogramChanged(const char* histogram_name,
+  void OnHistogramChanged(std::string_view histogram_name,
                           uint64_t name_hash,
-                          base::HistogramBase::Sample histogram_value) {
+                          HistogramBase::Sample32 histogram_value) {
     called = true;
-    last_histogram_name = histogram_name;
+    last_histogram_name = std::string(histogram_name);
     last_name_hash = name_hash;
     last_histogram_value = histogram_value;
   }
 
-  bool called;
-  const char* last_histogram_name;
+  void OnHistogramChangedWithEventId(std::optional<uint64_t> event_id,
+                                     std::string_view histogram_name,
+                                     uint64_t name_hash,
+                                     HistogramBase::Sample32 histogram_value) {
+    last_event_id = event_id;
+    OnHistogramChanged(histogram_name, name_hash, histogram_value);
+  }
+
+  bool called = false;
+  std::optional<uint64_t> last_event_id;
+  std::string last_histogram_name = "";
   uint64_t last_name_hash;
-  base::HistogramBase::Sample last_histogram_value;
+  base::HistogramBase::Sample32 last_histogram_value = 0;
 };
 
 }  // namespace
@@ -482,7 +498,7 @@ struct CallbackCheckWrapper {
 TEST_P(StatisticsRecorderTest,
        AddHistogramCallbackBeforeHistogramRegistration) {
   test::TaskEnvironment task_environment;
-  const char* histogram_name = "TestHistogram";
+  constexpr char histogram_name[] = "TestHistogram";
   CallbackCheckWrapper callback_wrapper;
 
   auto callback =
@@ -496,14 +512,14 @@ TEST_P(StatisticsRecorderTest,
   EXPECT_EQ(StatisticsRecorder::RegisterOrDeleteDuplicate(histogram),
             histogram);
 
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 }
 
 TEST_P(StatisticsRecorderTest,
        RemoveHistogramCallbackBeforeHistogramRegistrationWithMultipleClients) {
   test::TaskEnvironment task_environment;
-  const char* histogram_name = "TestHistogram";
+  constexpr char histogram_name[] = "TestHistogram";
   CallbackCheckWrapper callback_wrapper1;
   CallbackCheckWrapper callback_wrapper2;
 
@@ -531,7 +547,7 @@ TEST_P(StatisticsRecorderTest,
   EXPECT_EQ(StatisticsRecorder::RegisterOrDeleteDuplicate(histogram),
             histogram);
 
-  EXPECT_FALSE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_FALSE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_FALSE(base::StatisticsRecorder::have_active_callbacks());
 }
 
@@ -551,7 +567,7 @@ TEST_P(StatisticsRecorderTest, AddHistogramCallbackWithMultipleClients) {
           base::BindRepeating(&CallbackCheckWrapper::OnHistogramChanged,
                               base::Unretained(&callback_wrapper1)));
 
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 
   auto callback2 =
@@ -560,7 +576,7 @@ TEST_P(StatisticsRecorderTest, AddHistogramCallbackWithMultipleClients) {
           base::BindRepeating(&CallbackCheckWrapper::OnHistogramChanged,
                               base::Unretained(&callback_wrapper2)));
 
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 
   histogram->Add(1);
@@ -592,11 +608,11 @@ TEST_P(StatisticsRecorderTest, RemoveHistogramCallbackWithMultipleClients) {
                               base::Unretained(&callback_wrapper2)));
 
   callback1.reset();
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 
   callback2.reset();
-  EXPECT_FALSE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_FALSE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_FALSE(base::StatisticsRecorder::have_active_callbacks());
 
   histogram->Add(1);
@@ -626,7 +642,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
   }
@@ -647,7 +663,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestLinearHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestLinearHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash,
               HashMetricName("TestLinearHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
@@ -672,7 +688,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestCustomHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestCustomHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash,
               HashMetricName("TestCustomHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
@@ -694,7 +710,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestSparseHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestSparseHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash,
               HashMetricName("TestSparseHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
@@ -719,9 +735,47 @@ TEST_P(StatisticsRecorderTest, CallbackUsedBeforeHistogramCreatedTest) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(callback_wrapper.called);
-  EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestHistogram");
+  EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
   EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
   EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
+}
+
+// Check that setting a callback before the histogram exists works.
+TEST_P(StatisticsRecorderTest, CallbackWithEventIdTest) {
+  test::TaskEnvironment task_environment;
+  CallbackCheckWrapper callback_wrapper;
+
+  auto callback =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          "TestHistogram",
+          base::BindRepeating(
+              &CallbackCheckWrapper::OnHistogramChangedWithEventId,
+              base::Unretained(&callback_wrapper)));
+
+  HistogramBase* histogram = Histogram::FactoryGet("TestHistogram", 1, 1000, 10,
+                                                   HistogramBase::kNoFlags);
+  EXPECT_TRUE(histogram);
+  {
+    base::trace_event::HistogramScope histogram_trace_scope(42);
+    histogram->Add(1);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(callback_wrapper.called);
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
+    EXPECT_EQ(callback_wrapper.last_event_id, 42);
+    EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
+    EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
+  }
+
+  callback_wrapper = CallbackCheckWrapper();  // clear previous callback data
+  histogram->Add(2);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(callback_wrapper.called);
+  EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
+  EXPECT_EQ(callback_wrapper.last_event_id, std::nullopt);
+  EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
+  EXPECT_EQ(callback_wrapper.last_histogram_value, 2);
 }
 
 TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
@@ -734,9 +788,10 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
   // function pointer.
   static size_t callback_callcount;
   callback_callcount = 0;
-  auto callback = [](const char* histogram_name, uint64_t name_hash,
-                     HistogramBase::Sample sample) {
-    EXPECT_STREQ(histogram_name, "TestHistogram");
+  auto callback = [](std::string_view histogram_name, uint64_t name_hash,
+                     HistogramBase::Sample32 sample,
+                     std::optional<uint64_t> event_id) {
+    EXPECT_EQ(histogram_name, "TestHistogram");
     EXPECT_EQ(sample, 1);
     ++callback_callcount;
   };
@@ -795,9 +850,10 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
   void MergeHistogramDeltas(bool async, OnceClosure done_callback) override {
     PersistentHistogramAllocator::Iterator hist_iter(allocator_.get());
     while (true) {
-      std::unique_ptr<base::HistogramBase> histogram = hist_iter.GetNext();
-      if (!histogram)
+      std::unique_ptr<HistogramBase> histogram = hist_iter.GetNext();
+      if (!histogram) {
         break;
+      }
       allocator_->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
     }
     std::move(done_callback).Run();

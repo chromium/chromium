@@ -654,10 +654,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   scoped_refptr<ui::WinCursor> current_cursor_;
 
   // The icon created from the bitmap image of the window icon.
-  base::win::ScopedHICON window_icon_;
+  base::win::ScopedGDIObject<HICON> window_icon_;
 
   // The icon created from the bitmap image of the app icon.
-  base::win::ScopedHICON app_icon_;
+  base::win::ScopedGDIObject<HICON> app_icon_;
 
   // The aspect ratio for the window. This is only used for sizing operations
   // for the non-client area.
@@ -719,7 +719,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   bool is_first_nccalc_;
 
   // Copy of custom window region specified via SetRegion(), if any.
-  base::win::ScopedRegion custom_window_region_;
+  base::win::ScopedGDIObject<HRGN> custom_window_region_;
 
   // If > 0 indicates a menu is running (we're showing a native menu).
   int menu_depth_;

@@ -18,6 +18,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -192,8 +193,7 @@ PopupRowView::PopupRowView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
   SetProperty(views::kMarginsKey, gfx::Insets::VH(0, GetHorizontalMargin()));
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -383,14 +383,16 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     // hide this API complexity from clients.
     GetA11ySelectionDelegate().NotifyAXSelection(*this);
     GetViewAccessibility().SetIsSelected(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
     content_view_->UpdateStyle(/*selected=*/highlight_on_select_);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     content_view_->GetViewAccessibility().SetIsSelected(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.
@@ -480,7 +482,7 @@ void PopupRowView::UpdateBackground() {
     // is being hovered.
     return !suggestion_is_acceptable_ && selected_cell_;
   }();
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       is_highlighted ? ui::kColorDropdownBackgroundSelected
                      : ui::kColorDropdownBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

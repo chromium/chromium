@@ -13,12 +13,15 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/payments/content/browser_binding/browser_bound_key.h"
+#include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
@@ -48,6 +51,15 @@ void RecordSystemPromptResult(
       result);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+const device::PublicKeyCredentialParams::CredentialInfo
+    kDefaultBrowserBoundKeyCredentialParameters[] = {
+        {device::CredentialType::kPublicKey,
+         base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256)},
+        {device::CredentialType::kPublicKey,
+         base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kRs256)}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
@@ -56,6 +68,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     const std::u16string& payment_instrument_label,
     std::unique_ptr<SkBitmap> payment_instrument_icon,
     std::vector<uint8_t> credential_id,
+    std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
     const url::Origin& merchant_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
@@ -76,6 +89,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)),
+      passkey_browser_binder_(std::move(passkey_browser_binder)),
       network_label_(network_label),
       network_icon_(network_icon),
       issuer_label_(issuer_label),
@@ -124,34 +138,27 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->allow_credentials = std::move(credentials);
 
   options->challenge = request_->challenge;
-  std::optional<std::vector<uint8_t>> maybe_browser_bound_key = std::nullopt;
+  std::optional<std::vector<uint8_t>> browser_bound_public_key = std::nullopt;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    if (!browser_bound_key_store_) {
-      browser_bound_key_store_ = GetBrowserBoundKeyStoreInstance();
-    }
-    browser_bound_key_ =
-        browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-            credential_id_);
-    maybe_browser_bound_key = browser_bound_key_->GetPublicKeyAsCoseKey();
+  if (passkey_browser_binder_) {
+    std::vector<device::PublicKeyCredentialParams::CredentialInfo>
+        credential_parameters =
+            options->extensions->payment_browser_bound_key_parameters.value_or(
+                base::ToVector(kDefaultBrowserBoundKeyCredentialParameters));
+    passkey_browser_binder_->GetOrCreateBoundKeyForPasskey(
+        credential_id_, effective_relying_party_identity_,
+        credential_parameters,
+        base::BindOnce(&SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
+                       weak_ptr_factory_.GetWeakPtr(), delegate,
+                       std::move(options)));
+  } else {
+    OnGetBrowserBoundKey(delegate, std::move(options),
+                         /*browser_bound_key=*/nullptr);
   }
-#endif
-  // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
-  // in the assertion, so that the verifier can check that the caller offered
-  // the experience if desired.
-  // TODO(crbug.com/333945861): The network and issuer information must also be
-  // signed in the assertion, so that the verifier can check that the caller
-  // passed the correct information.
-  authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
-      spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
-      request_->instrument.Clone(), request_->payee_name,
-      request_->payee_origin, maybe_browser_bound_key));
-
-  authenticator_->GetAssertion(
-      std::move(options),
-      base::BindOnce(&SecurePaymentConfirmationApp::OnGetAssertion,
-                     weak_ptr_factory_.GetWeakPtr(), delegate));
+#else   // BUILDFLAG(IS_ANDROID))
+  OnGetBrowserBoundKey(delegate, std::move(options),
+                       /*browser_bound_key=*/nullptr);
+#endif  // BUILDFLAG(IS_ANDROID))
 }
 
 bool SecurePaymentConfirmationApp::IsCompleteForPayment() const {
@@ -170,10 +177,6 @@ bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
   // If there's no platform authenticator, then the factory should not create
   // this app. Therefore, this function can always return true.
   return true;
-}
-
-void SecurePaymentConfirmationApp::RecordUse() {
-  NOTIMPLEMENTED();
 }
 
 bool SecurePaymentConfirmationApp::NeedsInstallation() const {
@@ -251,18 +254,16 @@ SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
           response_->extensions.Clone());
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    std::vector<std::vector<uint8_t>> signatures;
-    signatures.emplace_back(
-        browser_bound_key_->Sign(response_->info->client_data_json));
-    if (assertion_response->extensions->payment.is_null()) {
-      assertion_response->extensions->payment =
-          blink::mojom::AuthenticationExtensionsPaymentResponse::New();
-    }
-    assertion_response->extensions->payment->browser_bound_signatures =
-        std::move(signatures);
+          blink::features::kSecurePaymentConfirmationBrowserBoundKeys) &&
+      assertion_response->extensions->payment.is_null()) {
+    assertion_response->extensions->payment =
+        blink::mojom::AuthenticationExtensionsPaymentResponse::New();
   }
-#endif
+  if (browser_bound_key_) {
+    assertion_response->extensions->payment->browser_bound_signature =
+        browser_bound_key_->Sign(response_->info->client_data_json);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   response->get_assertion_authenticator_response =
       std::move(assertion_response);
   return response;
@@ -277,9 +278,35 @@ void SecurePaymentConfirmationApp::RenderFrameDeleted(
   }
 }
 
-void SecurePaymentConfirmationApp::SetBrowserBoundKeyStoreForTesting(
-    std::unique_ptr<BrowserBoundKeyStore> key_store) {
-  browser_bound_key_store_ = std::move(key_store);
+PasskeyBrowserBinder*
+SecurePaymentConfirmationApp::GetPasskeyBrowserBinderForTesting() {
+  return passkey_browser_binder_.get();
+}
+
+void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
+    base::WeakPtr<Delegate> delegate,
+    blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+    std::unique_ptr<BrowserBoundKey> browser_bound_key) {
+  browser_bound_key_ = std::move(browser_bound_key);
+  std::optional<std::vector<uint8_t>> browser_bound_public_key = std::nullopt;
+  if (browser_bound_key_) {
+    browser_bound_public_key = browser_bound_key_->GetPublicKeyAsCoseKey();
+  }
+  // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
+  // in the assertion, so that the verifier can check that the caller offered
+  // the experience if desired.
+  // TODO(crbug.com/333945861): The network and issuer information must also be
+  // signed in the assertion, so that the verifier can check that the caller
+  // passed the correct information.
+  authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
+      spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
+      request_->instrument.Clone(), request_->payee_name,
+      request_->payee_origin, std::move(browser_bound_public_key)));
+
+  authenticator_->GetAssertion(
+      std::move(options),
+      base::BindOnce(&SecurePaymentConfirmationApp::OnGetAssertion,
+                     weak_ptr_factory_.GetWeakPtr(), delegate));
 }
 
 void SecurePaymentConfirmationApp::OnGetAssertion(

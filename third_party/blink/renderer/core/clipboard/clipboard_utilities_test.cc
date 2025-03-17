@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 
+#include <string>
+
 #include "base/containers/span.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -64,9 +67,16 @@ TEST(ClipboardUtilitiesTest, PNGToImageMarkup) {
   Vector<uint8_t> png_data;
   EXPECT_TRUE(ImageEncoder::Encode(&png_data, pixmap, options));
 
-  EXPECT_EQ(
-      R"HTML(<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAADElEQVQYGWNgGEYAAADNAAGVVebMAAAAAElFTkSuQmCC" alt=""/>)HTML",
-      PNGToImageMarkup(png_data));
+  std::string markup = PNGToImageMarkup(png_data).Utf8();
+
+  // The first 16 of a PNG file are always the same, so the
+  // `StartsWith`/`EndsWith`-based assertions below are expected to succeed
+  // regardless of the exact encoding settings or the encoding library used.
+  EXPECT_THAT(
+      markup,
+      testing::StartsWith(
+          R"HTML(<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhE)HTML"));
+  EXPECT_THAT(markup, testing::EndsWith(R"HTML(" alt=""/>)HTML"));
 }
 
 }  // namespace blink

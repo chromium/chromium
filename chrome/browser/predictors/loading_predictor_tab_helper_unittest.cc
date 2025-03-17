@@ -24,6 +24,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -742,14 +743,11 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
       {{url::Origin::Create(GURL("http://preconnectonly.com/")), 1,
         network_anonymization_key}});
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://test.org/resource1"), network_anonymization_key,
-      destination);
+      GURL("http://test.org/resource1"), destination);
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://other.org/resource1"), network_anonymization_key,
-      destination);
+      GURL("http://other.org/resource1"), destination);
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://other.org/resource2"), network_anonymization_key,
-      destination);
+      GURL("http://other.org/resource2"), destination);
   prediction->preconnect_prediction = preconnect_prediction;
   prediction->predicted_subresources = {
       GURL("http://test.org/resource1"), GURL("http://other.org/resource2"),

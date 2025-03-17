@@ -53,7 +53,7 @@ class DecoderBufferReaderTest : public testing::Test {
   }
 
   void WriteBufferData() {
-    writer_->Write(serialized_data_.data(), serialized_data_.size(),
+    writer_->Write(serialized_data_,
                    base::BindOnce(&DecoderBufferReaderTest::OnWriteDone,
                                   base::Unretained(this)));
   }

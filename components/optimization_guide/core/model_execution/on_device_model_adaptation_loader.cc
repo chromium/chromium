@@ -183,6 +183,9 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
   if (base_model_spec_) {
     model_metadata.set_base_model_version(base_model_spec_->model_version);
     model_metadata.set_base_model_name(base_model_spec_->model_name);
+    *model_metadata.mutable_supported_performance_hints() = {
+        base_model_spec_->supported_performance_hints.begin(),
+        base_model_spec_->supported_performance_hints.end()};
   }
   model_metadata.SerializeToString(any_metadata.mutable_value());
 

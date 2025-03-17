@@ -42,25 +42,15 @@ void BrowsingDataQuotaHelperImpl::StartFetching(FetchResultCallback callback) {
                      this, std::move(callback)));
 }
 
-void BrowsingDataQuotaHelperImpl::DeleteHostData(const std::string& host,
-                                                 StorageType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BrowsingDataQuotaHelperImpl::DeleteHostDataOnIOThread,
-                     this, host, type));
-}
-
 void BrowsingDataQuotaHelperImpl::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     base::OnceClosure completed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &BrowsingDataQuotaHelperImpl::DeleteStorageKeyDataOnIOThread, this,
-          storage_key, type, std::move(completed)));
+          storage_key, std::move(completed)));
 }
 
 BrowsingDataQuotaHelperImpl::BrowsingDataQuotaHelperImpl(
@@ -75,69 +65,47 @@ void BrowsingDataQuotaHelperImpl::FetchQuotaInfoOnIOThread(
     FetchResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const StorageType types[] = {StorageType::kTemporary, StorageType::kSyncable};
-
-  // Query storage keys for each storage types. When complete, process the
-  // collected quota info.
-  QuotaInfoMap* quota_info = new QuotaInfoMap();
-
-  base::RepeatingClosure completion = base::BarrierClosure(
-      std::size(types),
-      base::BindOnce(&BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     base::Owned(quota_info)));
-
-  for (const StorageType& type : types) {
-    quota_manager_->GetStorageKeysForType(
-        type, base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeys,
-                             weak_factory_.GetWeakPtr(), quota_info, completion,
-                             type));
-  }
+  // Query for storage keys. When complete, process the collected quota info.
+  quota_manager_->GetAllStorageKeys(
+      base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeys,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BrowsingDataQuotaHelperImpl::GotStorageKeys(
-    QuotaInfoMap* quota_info,
-    base::OnceClosure completion,
-    StorageType type,
+    FetchResultCallback callback,
     const std::set<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  int storage_key_count = base::ranges::count_if(
+  int storage_key_count = std::ranges::count_if(
       storage_keys, [](const blink::StorageKey& storage_key) {
         return browsing_data::IsWebScheme(storage_key.origin().scheme());
       });
 
-  auto storage_key_completion =
-      base::BarrierClosure(storage_key_count, std::move(completion));
+  QuotaInfoMap* quota_info = new QuotaInfoMap();
+  base::RepeatingClosure completion = base::BarrierClosure(
+      storage_key_count,
+      base::BindOnce(&BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     base::Owned(quota_info)));
+
   for (const blink::StorageKey& storage_key : storage_keys) {
     if (!browsing_data::IsWebScheme(storage_key.origin().scheme())) {
       continue;  // Non-websafe state is not considered browsing data.
     }
     quota_manager_->GetStorageKeyUsageWithBreakdown(
-        storage_key, type,
+        storage_key, StorageType::kTemporary,
         base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeyUsage,
-                       weak_factory_.GetWeakPtr(), quota_info, storage_key,
-                       type)
-            .Then(storage_key_completion));
+                       weak_factory_.GetWeakPtr(), quota_info, storage_key)
+            .Then(completion));
   }
 }
 
 void BrowsingDataQuotaHelperImpl::GotStorageKeyUsage(
     QuotaInfoMap* quota_info,
     const blink::StorageKey& storage_key,
-    StorageType type,
     int64_t usage,
     blink::mojom::UsageBreakdownPtr usage_breakdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  switch (type) {
-    case StorageType::kTemporary:
-      (*quota_info)[storage_key].temporary_usage += usage;
-      break;
-    case StorageType::kSyncable:
-      (*quota_info)[storage_key].syncable_usage += usage;
-      break;
-    default:
-      NOTREACHED();
-  }
+  (*quota_info)[storage_key].usage = usage;
 }
 
 void BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete(
@@ -156,21 +124,12 @@ void BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void BrowsingDataQuotaHelperImpl::DeleteHostDataOnIOThread(
-    const std::string& host,
-    blink::mojom::StorageType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  quota_manager_->DeleteHostData(
-      host, type, base::DoNothingAs<void(blink::mojom::QuotaStatusCode)>());
-}
-
 void BrowsingDataQuotaHelperImpl::DeleteStorageKeyDataOnIOThread(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     base::OnceClosure completed) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   quota_manager_->DeleteStorageKeyData(
-      storage_key, type,
+      storage_key,
       base::BindOnce(
           &BrowsingDataQuotaHelperImpl::OnStorageKeyDeletionCompleted,
           weak_factory_.GetWeakPtr(), std::move(completed)));

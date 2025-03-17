@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_LANGUAGES_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class Profile;
 #endif
 
@@ -18,7 +17,7 @@ namespace settings {
 // Chrome "Languages" settings page UI handler.
 class LanguagesHandler : public SettingsPageUIHandler {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   explicit LanguagesHandler(Profile* profile);
 #else
   LanguagesHandler();
@@ -44,7 +43,7 @@ class LanguagesHandler : public SettingsPageUIHandler {
   // The actual UI language will not change until the next restart.
   void HandleSetProspectiveUILanguage(const base::Value::List& args);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<Profile> profile_;  // Weak pointer.
 #endif
 };

@@ -11,7 +11,8 @@
 
 namespace cc {
 
-const int TaskGraphRunnerTestBase::kNamespaceCount;
+TaskGraphRunnerTestBase::TaskGraphRunnerTestBase() = default;
+TaskGraphRunnerTestBase::~TaskGraphRunnerTestBase() = default;
 
 void TaskGraphRunnerTestBase::SetTaskGraphRunner(
     TaskGraphRunner* task_graph_runner) {

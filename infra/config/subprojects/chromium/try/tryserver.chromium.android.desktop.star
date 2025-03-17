@@ -4,7 +4,6 @@
 """Definitions of builders in the tryserver.chromium.android builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -18,8 +17,11 @@ try_.defaults.set(
     cores = 32,
     os = os.LINUX_DEFAULT,
     ssd = True,
+    compilator_cores = 32,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    orchestrator_cores = 4,
+    reclient_enabled = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
@@ -72,23 +74,37 @@ try_.builder(
     ),
 )
 
-try_.builder(
-    name = "android-desktop-x64-compile-rel",
+try_.orchestrator_builder(
+    name = "android-desktop-x64-rel",
+    description_html = "Run Chromium tests on Android Desktop emulators.",
     mirrors = [
         "ci/android-desktop-x64-compile-rel",
+        "ci/android-desktop-x64-rel-15-tests",
     ],
-    builder_config_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
     gn_args = gn_args.config(
         configs = [
             "ci/android-desktop-x64-compile-rel",
             "release_try_builder",
         ],
     ),
-    builderless = False,
+    compilator = "android-desktop-x64-rel-compilator",
+    experiments = {
+        # crbug.com/40617829
+        "chromium.enable_cleandead": 100,
+        # crbug.com/346598710
+        "chromium.luci_analysis_v2": 100,
+    },
+    main_list_view = "try",
+    # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
     tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "android-desktop-x64-rel-compilator",
+    description_html = "Compilator builder for android-desktop-x64-rel",
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -118,14 +134,27 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-desktop-14-x64-rel",
+    name = "android-desktop-15-x64-rel",
     mirrors = [
         "ci/android-desktop-x64-compile-rel",
-        "ci/android-desktop-x64-rel-14-tests",
+        "ci/android-desktop-x64-rel-15-tests",
     ],
     gn_args = gn_args.config(
         configs = [
             "ci/android-desktop-x64-compile-rel",
+            "release_try_builder",
+        ],
+    ),
+)
+
+try_.builder(
+    name = "android-desktop-15-x64-fyi-rel",
+    mirrors = [
+        "ci/android-desktop-15-x64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-15-x64-fyi-rel",
             "release_try_builder",
         ],
     ),

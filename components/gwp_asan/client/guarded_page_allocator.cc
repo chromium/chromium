@@ -441,7 +441,7 @@ void GuardedPageAllocator::RecordAllocationMetadata(
       Pack(reinterpret_cast<uintptr_t*>(trace), len,
            metadata_[metadata_idx].stack_trace_pool,
            sizeof(metadata_[metadata_idx].stack_trace_pool) / 2);
-  metadata_[metadata_idx].alloc.tid = AllocationInfo::GetCurrentTid();
+  metadata_[metadata_idx].alloc.tid = base::PlatformThread::CurrentId();
   metadata_[metadata_idx].alloc.trace_collected = true;
 
   metadata_[metadata_idx].dealloc.tid = base::kInvalidThreadId;
@@ -460,7 +460,7 @@ void GuardedPageAllocator::RecordDeallocationMetadata(
                metadata_[metadata_idx].alloc.trace_len,
            sizeof(metadata_[metadata_idx].stack_trace_pool) -
                metadata_[metadata_idx].alloc.trace_len);
-  metadata_[metadata_idx].dealloc.tid = AllocationInfo::GetCurrentTid();
+  metadata_[metadata_idx].dealloc.tid = base::PlatformThread::CurrentId();
   metadata_[metadata_idx].dealloc.trace_collected = true;
 }
 

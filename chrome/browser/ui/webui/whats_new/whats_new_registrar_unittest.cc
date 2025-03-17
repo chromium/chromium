@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
 #include "base/containers/contains.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/action_suffix_reader.h"
 #include "base/test/metrics/histogram_variants_reader.h"
 #include "base/threading/thread_restrictions.h"

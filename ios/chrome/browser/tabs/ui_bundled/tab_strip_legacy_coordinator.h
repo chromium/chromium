@@ -14,7 +14,7 @@
 
 // A legacy coordinator that presents the public interface for the tablet tab
 // strip feature.
-@interface TabStripLegacyCoordinator : ChromeCoordinator<TabStripHighlighting>
+@interface TabStripLegacyCoordinator : ChromeCoordinator <TabStripHighlighting>
 
 // Initializes this Coordinator with its `browser` and a nil base view
 // controller.

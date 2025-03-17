@@ -93,8 +93,7 @@
           "--experimental-tbmv3-metrics",
           "--extra-path=/b/s/w/ir/bin/",
           "-d",
-          "--os-check=check",
-          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/nelson-release/smart_display_m3_eng_paused"
+          "--os-check=ignore"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -122,7 +121,7 @@
           "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 1
         },
         "test": "performance_web_engine_test_suite",
         "trigger_script": {
@@ -150,8 +149,7 @@
           "--experimental-tbmv3-metrics",
           "--extra-path=/b/s/w/ir/bin/",
           "-d",
-          "--os-check=check",
-          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
+          "--os-check=ignore"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -179,7 +177,7 @@
           "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 1
         },
         "test": "performance_web_engine_test_suite",
         "trigger_script": {
@@ -310,7 +308,7 @@
             "cpu": "arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU",
             "os": "Windows-11",
             "pool": "chrome.tests.perf",
-            "synthetic_product_name": "Inspiron 14 Plus 7441 (Dell Inc.)"
+            "synthetic_product_name": "Latitude 7455 (Dell Inc.)"
           },
           "expiration": 7200,
           "hard_timeout": 14400,

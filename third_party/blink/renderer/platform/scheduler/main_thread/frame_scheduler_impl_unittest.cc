@@ -172,10 +172,11 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kMachineLearning,
     TaskType::kWebGPU,
     TaskType::kInternalPostMessageForwarding,
-    TaskType::kInternalNavigationCancellation};
+    TaskType::kInternalNavigationCancellation,
+    TaskType::kInternalAutofill};
 
 static_assert(
-    static_cast<int>(TaskType::kMaxValue) == 87,
+    static_cast<int>(TaskType::kMaxValue) == 88,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -518,8 +519,9 @@ class FrameSchedulerImplTest : public testing::Test {
   scoped_refptr<MainThreadTaskQueue>
   JavaScriptTimerNormalThrottleableTaskQueue() {
     return GetTaskQueue(
-        FrameSchedulerImpl::ThrottleableTaskQueueTraits().SetPrioritisationType(
-            PrioritisationType::kJavaScriptTimer));
+        FrameSchedulerImpl::ThrottleableTaskQueueTraits()
+            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
+            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue>
@@ -527,46 +529,55 @@ class FrameSchedulerImplTest : public testing::Test {
     return GetTaskQueue(
         FrameSchedulerImpl::ThrottleableTaskQueueTraits()
             .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
-            .SetCanBeIntensivelyThrottled(true));
+            .SetCanBeIntensivelyThrottled(true)
+            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> JavaScriptTimerNonThrottleableTaskQueue() {
     return GetTaskQueue(
-        FrameSchedulerImpl::DeferrableTaskQueueTraits().SetPrioritisationType(
-            PrioritisationType::kJavaScriptTimer));
+        FrameSchedulerImpl::DeferrableTaskQueueTraits()
+            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
+            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> LoadingTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::LoadingTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::LoadingTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> LoadingControlTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::LoadingControlTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::LoadingControlTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> UnfreezableLoadingTaskQueue() {
-    return GetTaskQueue(
-        FrameSchedulerImpl::UnfreezableLoadingTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::UnfreezableLoadingTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> DeferrableTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::DeferrableTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::DeferrableTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> PausableTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::PausableTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::PausableTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> UnpausableTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::UnpausableTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::UnpausableTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> ForegroundOnlyTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> InputBlockingTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::InputBlockingQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::InputBlockingQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(TaskType type) {
@@ -890,30 +901,6 @@ TEST_F(FrameSchedulerImplTest, PauseAndResume) {
   EXPECT_EQ(1, counter);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(5, counter);
-}
-
-TEST_F(FrameSchedulerImplTest, PauseAndResumeForCooperativeScheduling) {
-  EXPECT_TRUE(LoadingTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(ThrottleableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(DeferrableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(PausableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(UnpausableTaskQueue()->IsQueueEnabled());
-
-  frame_scheduler_->SetPreemptedForCooperativeScheduling(
-      FrameOrWorkerScheduler::Preempted(true));
-  EXPECT_FALSE(LoadingTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(ThrottleableTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(DeferrableTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(PausableTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(UnpausableTaskQueue()->IsQueueEnabled());
-
-  frame_scheduler_->SetPreemptedForCooperativeScheduling(
-      FrameOrWorkerScheduler::Preempted(false));
-  EXPECT_TRUE(LoadingTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(ThrottleableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(DeferrableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(PausableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(UnpausableTaskQueue()->IsQueueEnabled());
 }
 
 namespace {
@@ -1556,10 +1543,11 @@ TEST_F(FrameSchedulerImplTest, ThrottledTaskTypes) {
                  << "TaskType is "
                  << TaskTypeNames::TaskTypeToString(task_type));
     switch (task_type) {
+      case TaskType::kIdleTask:
       case TaskType::kInternalContentCapture:
+      case TaskType::kInternalTranslation:
       case TaskType::kJavascriptTimerDelayedLowNesting:
       case TaskType::kJavascriptTimerDelayedHighNesting:
-      case TaskType::kInternalTranslation:
         EXPECT_TRUE(IsTaskTypeThrottled(task_type));
         break;
       default:
@@ -1696,53 +1684,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebRTC));
 
   feature_handle2.reset();
-
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre());
-}
-
-TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre());
-
-  auto feature_handle = frame_scheduler_->RegisterFeature(
-      SchedulingPolicy::Feature::kWebSocket,
-      {SchedulingPolicy::DisableBackForwardCache()});
-
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));
-
-  frame_scheduler_->RegisterStickyFeature(
-      SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
-      {SchedulingPolicy::DisableBackForwardCache()});
-
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre(
-          SchedulingPolicy::Feature::kWebSocket,
-          SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore));
-
-  // Same document navigations don't affect anything.
-  frame_scheduler_->DidCommitProvisionalLoad(
-      false, FrameScheduler::NavigationType::kSameDocument);
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre(
-          SchedulingPolicy::Feature::kWebSocket,
-          SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore));
-
-  // Regular navigations reset all features.
-  frame_scheduler_->DidCommitProvisionalLoad(
-      false, FrameScheduler::NavigationType::kOther);
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre());
-
-  // Resetting a feature handle after navigation shouldn't do anything.
-  feature_handle.reset();
 
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
@@ -2965,6 +2906,9 @@ INSTANTIATE_TEST_SUITE_P(
             /* is_intensive_throttling_expected=*/false},
         IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kJavascriptTimerDelayedHighNesting,
+            /* is_intensive_throttling_expected=*/true},
+        IntensiveWakeUpThrottlingTestParam{
+            /* task_type=*/TaskType::kIdleTask,
             /* is_intensive_throttling_expected=*/true},
         IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kWebSchedulingPostedTask,

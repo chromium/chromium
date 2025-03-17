@@ -4,18 +4,21 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import static java.lang.Boolean.TRUE;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.activity.ComponentDialog;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -23,6 +26,8 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -35,32 +40,41 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The presenter that shows a {@link ModalDialogView} in an Android dialog. */
+@NullMarked
 public class AppModalPresenter extends ModalDialogManager.Presenter {
     // Duration of enter animation. This is an estimation because there is no reliable way to
     // get duration of AlertDialog's enter animation.
     private static final long ENTER_ANIMATION_ESTIMATION_MS = 200;
     private final Context mContext;
-    private ComponentDialog mDialog;
-    private ModalDialogView mDialogView;
-    private PropertyModel mModel;
-    private PropertyModelChangeProcessor<PropertyModel, ModalDialogView, PropertyKey>
+    private @Nullable ComponentDialog mDialog;
+    private @Nullable ModalDialogView mDialogView;
+    private @Nullable PropertyModel mModel;
+    private @Nullable PropertyModelChangeProcessor<PropertyModel, ModalDialogView, PropertyKey>
             mModelChangeProcessor;
 
-    private InsetObserver mInsetObserver;
-    private OnApplyWindowInsetsListener mWindowInsetsListener;
-    private ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
+    private @Nullable InsetObserver mInsetObserver;
+    private @Nullable OnApplyWindowInsetsListener mWindowInsetsListener;
+    private @Nullable ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
+    private boolean mIsEdgeToEdgeEverywhereEnabled;
+
+    @SuppressWarnings("NullAway.Init")
     private Callback<Boolean> mEdgeToEdgeStateObserver;
 
+    // Whether the currently showing dialog is a fullscreen dialog. This is cleared when the dialog
+    // is dismissed.
+    private @Nullable Boolean mIsFullscreenDialog;
     private int mFixedMargin;
 
     private class ViewBinder extends ModalDialogViewBinder {
         @Override
         public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
             if (ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE == propertyKey) {
-                mDialog.setCanceledOnTouchOutside(
-                        model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+                assumeNonNull(mDialog)
+                        .setCanceledOnTouchOutside(
+                                model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
             } else if (ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER == propertyKey) {
-                mDialog.getOnBackPressedDispatcher()
+                assumeNonNull(mDialog)
+                        .getOnBackPressedDispatcher()
                         .addCallback(
                                 model.get(
                                         ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
@@ -79,7 +93,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     private ModalDialogView loadDialogView() {
         return (ModalDialogView)
-                LayoutInflaterUtils.inflate(mDialog.getContext(), R.layout.modal_dialog_view, null);
+                LayoutInflaterUtils.inflate(
+                        assumeNonNull(mDialog).getContext(), R.layout.modal_dialog_view, null);
     }
 
     @Override
@@ -144,7 +159,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         if (ModalDialogFeatureMap.sModalDialogLayoutWithSystemInsets.isEnabled()) {
             mWindowInsetsListener =
                     (view, windowInsetsCompat) -> {
-                        updateMargins();
+                        applyWindowInsets();
                         return windowInsetsCompat;
                     };
             ViewCompat.setOnApplyWindowInsetsListener(
@@ -181,7 +196,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
-    protected void removeDialogView(PropertyModel model) {
+    protected void removeDialogView(@Nullable PropertyModel model) {
         if (mModelChangeProcessor != null) {
             mModelChangeProcessor.destroy();
             mModelChangeProcessor = null;
@@ -197,6 +212,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             mDialog = null;
             mDialogView = null;
             mModel = null;
+            mIsFullscreenDialog = null;
         }
 
         if (mEdgeToEdgeStateSupplier != null) {
@@ -210,11 +226,33 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
-    protected void setEdgeToEdgeStateSupplier(ObservableSupplier<Boolean> edgeToEdgeStateSupplier) {
+    protected void setEdgeToEdgeStateSupplier(
+            ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+            boolean isEdgeToEdgeEverywhereEnabled) {
         if (!ModalDialogFeatureMap.sModalDialogLayoutWithSystemInsets.isEnabled()) return;
         mEdgeToEdgeStateSupplier = edgeToEdgeStateSupplier;
-        mEdgeToEdgeStateObserver = isEdgeToEdgeActive -> updateMargins();
+        mIsEdgeToEdgeEverywhereEnabled = isEdgeToEdgeEverywhereEnabled;
+        mEdgeToEdgeStateObserver = isEdgeToEdgeActive -> applyWindowInsets();
         mEdgeToEdgeStateSupplier.addObserver(mEdgeToEdgeStateObserver);
+    }
+
+    /**
+     * Update to account for changes in window insets. This should also be called to account for
+     * changes in edge-to-edge status, which affects how the dialog should interact with window
+     * insets.
+     */
+    private void applyWindowInsets() {
+        if (mDialog == null) return;
+        if (isFullScreenDialog(mContext, mModel)) {
+            // If edge-to-edge everywhere is enabled, apply padding to fullscreen dialogs to ensure
+            // the dialog content fits within the system bars. Since the dialog is "fullscreen", it
+            // is padding, and not margins, that should be applied.
+            if (mIsEdgeToEdgeEverywhereEnabled) {
+                updatePaddingForEdgeToEdge();
+            }
+        } else {
+            updateMargins();
+        }
     }
 
     /**
@@ -222,7 +260,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
      * drawing into system insets' regions when edge-to-edge is active.
      */
     private void updateMargins() {
-        if (mDialog == null || isFullScreenDialog(mContext, mModel)) return;
+        if (mDialog == null) return;
+        assert mModel != null;
 
         // All modals should maintain a fixed distance from the app window's edges.
         if (mFixedMargin == 0) {
@@ -256,11 +295,35 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
         mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, horizontalMargin);
         mModel.set(ModalDialogProperties.VERTICAL_MARGIN, verticalMargin);
+        // Clear padding, as the margins will be used instead.
+        mModel.set(ModalDialogProperties.PADDING, new Rect());
 
         // If the dialog is already showing when the insets are applied, request a layout for the
         // margins to take effect immediately.
         if (mDialog.isShowing()) {
-            ViewUtils.requestLayout(mDialogView, "AppModalPresenter.updateMargins");
+            ViewUtils.requestLayout(assumeNonNull(mDialogView), "AppModalPresenter.updateMargins");
+        }
+    }
+
+    /**
+     * Apply padding to ensure the dialog content fits within the system bars. Any margins will be
+     * cleared to applying insets multiple times.
+     */
+    private void updatePaddingForEdgeToEdge() {
+        if (mDialog == null) return;
+        assert mModel != null;
+        assert isEdgeToEdgeActive();
+
+        if (mInsetObserver != null) {
+            @Nullable WindowInsetsCompat windowInsets = mInsetObserver.getLastRawWindowInsets();
+            if (windowInsets == null) return;
+
+            Insets padding = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Rect paddingRect = new Rect(padding.left, padding.top, padding.right, padding.bottom);
+
+            mModel.set(ModalDialogProperties.PADDING, paddingRect);
+            mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, 0);
+            mModel.set(ModalDialogProperties.VERTICAL_MARGIN, 0);
         }
     }
 
@@ -268,29 +331,37 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         return mEdgeToEdgeStateSupplier != null && TRUE.equals(mEdgeToEdgeStateSupplier.get());
     }
 
-    private static boolean isFullScreenDialog(Context context, PropertyModel model) {
+    private boolean isFullScreenDialog(Context context, @Nullable PropertyModel model) {
         assert model != null : "Model should not be null.";
+        // Check cached value on whether the dialog is fullscreen or not to keep a consistent value
+        // even if its dimensions are changed by the user.
+        if (mIsFullscreenDialog != null) return mIsFullscreenDialog;
+
         int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
 
         int screenSize =
                 context.getResources().getConfiguration().screenLayout
                         & Configuration.SCREENLAYOUT_SIZE_MASK;
-        return (dialogStyle == DialogStyles.DIALOG_WHEN_LARGE
-                        && screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE)
-                || dialogStyle == DialogStyles.FULLSCREEN_DIALOG
-                || dialogStyle == DialogStyles.FULLSCREEN_DARK_DIALOG;
+        mIsFullscreenDialog =
+                (dialogStyle == DialogStyles.DIALOG_WHEN_LARGE
+                                && screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE)
+                        || dialogStyle == DialogStyles.FULLSCREEN_DIALOG
+                        || dialogStyle == DialogStyles.FULLSCREEN_DARK_DIALOG;
+        return mIsFullscreenDialog;
     }
 
     @VisibleForTesting
     public Window getWindow() {
-        return mDialog.getWindow();
+        Window window = assumeNonNull(mDialog).getWindow();
+        assert window != null;
+        return window;
     }
 
-    public ModalDialogView getDialogViewForTesting() {
+    public @Nullable ModalDialogView getDialogViewForTesting() {
         return mDialogView;
     }
 
-    OnApplyWindowInsetsListener getWindowInsetsListenerForTesting() {
+    @Nullable OnApplyWindowInsetsListener getWindowInsetsListenerForTesting() {
         return mWindowInsetsListener;
     }
 }

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {TimezoneSelectorElement} from 'chrome://os-settings/lazy_load.js';
+import type {TimezoneSelectorElement} from 'chrome://os-settings/lazy_load.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -16,7 +16,7 @@ suite('<timezone-selector>', function() {
     timezoneSelector.remove();
   });
 
-  test('Per-user timezone disabled', async () => {
+  test('Per-user timezone disabled', () => {
     timezoneSelector = document.createElement('timezone-selector');
     timezoneSelector.prefs = {
       'cros': {
@@ -36,7 +36,7 @@ suite('<timezone-selector>', function() {
         timezoneSelector.shadowRoot!.querySelector('#userTimeZoneSelector'));
   });
 
-  test('Per-user timezone enabled', async () => {
+  test('Per-user timezone enabled', () => {
     timezoneSelector = document.createElement('timezone-selector');
     timezoneSelector.prefs = {
       'cros': {

@@ -4,6 +4,8 @@
 
 package org.chromium.ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -21,7 +23,6 @@ import android.widget.PopupMenu;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -106,7 +107,6 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
      * @param event The motion event to compare the spans against.
      * @return Whether the motion event intersected any clickable spans.
      */
-    @NullUnmarked
     protected boolean touchIntersectsAnyClickableSpans(MotionEvent event) {
         // This logic is borrowed from android.text.method.LinkMovementMethod.
         //
@@ -127,7 +127,7 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         x += getScrollX();
         y += getScrollY();
 
-        Layout layout = getLayout();
+        Layout layout = assumeNonNull(getLayout());
         int line = layout.getLineForVertical(y);
         int off = layout.getOffsetForHorizontal(line, x);
 

@@ -5,11 +5,13 @@
 #include "content/renderer/worker/embedded_shared_worker_stub.h"
 
 #include <stdint.h>
+
+#include <algorithm>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/policy_container_util.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
@@ -60,6 +62,10 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
         browser_interface_broker,
     ukm::SourceId ukm_source_id,
     bool require_cross_site_request_for_cookies,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        coep_reporting_observer,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        dip_reporting_observer,
     const std::vector<std::string>& cors_exempt_header_list)
     : receiver_(this, std::move(receiver)) {
   DCHECK(main_script_load_params);
@@ -130,7 +136,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       std::move(worker_main_script_load_params),
       ToWebPolicyContainer(std::move(policy_container)),
       std::move(web_worker_fetch_context), std::move(host), this, ukm_source_id,
-      require_cross_site_request_for_cookies);
+      require_cross_site_request_for_cookies,
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
 
   // If the host drops its connection, then self-destruct.
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -158,11 +165,8 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
   std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory =
       subresource_loader_factory_bundle_->Clone();
 
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
-      cors_exempt_header_list.size());
-  base::ranges::transform(
-      cors_exempt_header_list, web_cors_exempt_header_list.begin(),
-      [](const auto& header) { return blink::WebString::FromLatin1(header); });
+  std::vector<blink::WebString> web_cors_exempt_header_list =
+      base::ToVector(cors_exempt_header_list, &blink::WebString::FromLatin1);
 
   // |pending_subresource_loader_updater| and
   // |pending_resource_load_info_notifier| are not used for shared workers.

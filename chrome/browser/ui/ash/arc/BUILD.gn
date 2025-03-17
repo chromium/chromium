@@ -2,14 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("arc") {
   sources = [
-    "arc_custom_tab_modal_dialog_host.cc",
-    "arc_custom_tab_modal_dialog_host.h",
     "arc_open_url_delegate_impl.cc",
     "arc_open_url_delegate_impl.h",
     "arc_vm_data_migration_confirmation_dialog.cc",
@@ -20,11 +16,6 @@ static_library("arc") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/vector_icons",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/style",
@@ -38,7 +29,6 @@ static_library("arc") {
     "//chrome/browser/ash/arc/intent_helper",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/print_spooler",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/profiles",
@@ -48,6 +38,11 @@ static_library("arc") {
     "//chrome/browser/web_applications",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/vector_icons",
     "//components/user_manager",
     "//components/web_modal",
     "//content/public/browser",
@@ -72,9 +67,9 @@ source_set("unit_tests") {
   deps = [
     ":arc",
     "//ash:test_support",
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/ui",
+    "//chromeos/ash/experiences/arc",
     "//components/prefs:test_support",
     "//testing/gtest",
     "//ui/base/mojom",
@@ -91,7 +86,6 @@ source_set("browser_tests") {
 
   deps = [
     ":arc",
-    "//ash/components/arc/intent_helper",
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/system_web_apps",
@@ -101,6 +95,7 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc/intent_helper",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

@@ -60,7 +60,7 @@ suite('SystemDialogTest', function() {
               'FooDevice',
               sidebar.shadowRoot!
                   .querySelector(
-                      'print-preview-destination-settings')!.destination!.id);
+                      'print-preview-destination-settings')!.destination.id);
           // <if expr="is_win">
           link = linkContainer.$.systemDialogLink;
           // </if>

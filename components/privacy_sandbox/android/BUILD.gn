@@ -44,13 +44,13 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragmentTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragmentTest.java",
-    "javatests/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettingsTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreferenceTest.java",
   ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/browser_ui/site_settings/android:java",
     "//components/content_settings/android:content_settings_enums_java",
@@ -62,6 +62,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApp, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
+import type {EmojiPickerApp, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -13,7 +13,7 @@ const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
 function isCategoryButtonActive(element: HTMLElement|null|undefined) {
   assert(element, 'category button element should not be null.');
-  return element!.classList.contains(ACTIVE_CATEGORY_BUTTON);
+  return element.classList.contains(ACTIVE_CATEGORY_BUTTON);
 }
 
 suite('emoji-picker-extension', () => {
@@ -117,11 +117,11 @@ suite('emoji-picker-extension', () => {
             'cr-icon-button');
         const emojiGroups = await waitUntilFindInEmojiPicker('#groups');
         emoticonCategoryButton!.click();
-        const targetScroll = emojiGroups!.scrollTop;
+        const targetScroll = emojiGroups.scrollTop;
         emojiCategoryButton!.click();
 
         const emojiSearch = await waitUntilFindInEmojiPicker('emoji-search');
-        (emojiSearch as unknown as EmojiSearch)!.setSearchQuery('face');
+        (emojiSearch as unknown as EmojiSearch).setSearchQuery('face');
 
         await waitForCondition(
             () => findInEmojiPicker('emoji-search', 'emoji-group') !== null,
@@ -130,7 +130,7 @@ suite('emoji-picker-extension', () => {
         emoticonCategoryButton!.click();
 
         await waitForCondition(
-            () => emojiGroups!.scrollTop === targetScroll,
+            () => emojiGroups.scrollTop === targetScroll,
             'Wait for scrolling to complete');
 
         await waitForCondition(

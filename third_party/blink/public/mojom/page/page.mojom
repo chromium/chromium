@@ -52,8 +52,8 @@ struct PageRestoreParams {
   // back-forward cache.
   mojo_base.mojom.TimeTicks navigation_start;
 
-  // The offset in the session history list for the page to be restored.
-  int32 pending_history_list_offset;
+  // The index in the session history list for the page to be restored.
+  int32 pending_history_list_index;
 
   // Total size of the session history list.
   int32 current_history_list_length;
@@ -123,8 +123,8 @@ interface PageBroadcast {
   // Updates renderer preferences.
   UpdateRendererPreferences(blink.mojom.RendererPreferences preferences);
 
-  // Set history offset and length.
-  SetHistoryOffsetAndLength(int32 offset, int32 length);
+  // Set history index and length.
+  SetHistoryIndexAndLength(int32 index, int32 length);
 
   // Sent to whole page, but should only be used by the main frame.
   SetPageBaseBackgroundColor(skia.mojom.SkColor? color);

@@ -19,13 +19,14 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
-#include "services/webnn/tflite/buffer_content.h"
+#include "services/webnn/tflite/buffer_content_tflite.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/op_resolver.h"
@@ -107,7 +108,8 @@ class GraphImplTflite::ComputeResources {
          flatbuffers::DetachedBuffer buffer,
          std::vector<uint8_t> buffer_data,
          const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
-             constant_operands) {
+             constant_operands,
+         bool graph_requires_fp32_precision) {
     auto self = std::make_unique<ComputeResources>();
 
     self->model_content_ = std::move(buffer);
@@ -125,7 +127,7 @@ class GraphImplTflite::ComputeResources {
       DumpModelToFile(self->model_content_);
     }
 
-    OpResolver op_resolver(context->options());
+    OpResolver op_resolver(context->options(), graph_requires_fp32_precision);
 
     self->model_weights_ = std::move(buffer_data);
     self->allocation_ = std::make_unique<::tflite::MemoryAllocation>(
@@ -181,12 +183,13 @@ class GraphImplTflite::ComputeResources {
 #endif
   }
 
-  void DoDispatch(base::flat_map<int, raw_ref<const BufferContent>> tensors) {
-    TfLiteStatus status;
-    bool needs_reallocate_tensors = false;
+  void DoDispatch(base::flat_map<int, raw_ref<const BufferContent>> tensors,
+                  ScopedTrace scoped_trace) {
+    scoped_trace.AddStep("Set up intepreter");
 
     // TODO: Detect when `tensors` hasn't changed since the last invocation and
     // this step can be skipped.
+    bool needs_reallocate_tensors = false;
     for (auto& [tensor_idx, buffer] : tensors) {
       TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
       if (tensor->allocation_type == kTfLitePersistentRo) {
@@ -196,7 +199,7 @@ class GraphImplTflite::ComputeResources {
       }
 
       base::span<uint8_t> data = buffer->AsSpan();
-      status = interpreter_->SetCustomAllocationForTensor(
+      TfLiteStatus status = interpreter_->SetCustomAllocationForTensor(
           tensor_idx, {data.data(), data.size()});
       if (status != kTfLiteOk) {
         LOG(ERROR) << "Unable set custom tensor allocation: "
@@ -207,7 +210,7 @@ class GraphImplTflite::ComputeResources {
     }
 
     if (needs_reallocate_tensors) {
-      status = interpreter_->AllocateTensors();
+      TfLiteStatus status = interpreter_->AllocateTensors();
       if (status != kTfLiteOk) {
         LOG(ERROR) << "Unable to allocate tensors: "
                    << TfLiteStatusToString(status);
@@ -215,10 +218,11 @@ class GraphImplTflite::ComputeResources {
       }
     }
 
+    scoped_trace.AddStep("Run inference");
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
     profiler_.StartProfiling();
 #endif
-    status = interpreter_->Invoke();
+    TfLiteStatus status = interpreter_->Invoke();
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
     profiler_.StopProfiling();
 #endif
@@ -229,6 +233,7 @@ class GraphImplTflite::ComputeResources {
     }
 
     // Copy the outputs that weren't configured as custom allocations.
+    scoped_trace.AddStep("Process outputs");
     for (int tensor_idx : interpreter_->outputs()) {
       TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
       if (tensor->allocation_type == kTfLitePersistentRo) {
@@ -292,10 +297,11 @@ GraphImplTflite::CreateAndBuild(
                          std::move(error));
                    });
 
-  ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
-                   ComputeResources::Create(context, std::move(result.buffer),
-                                            std::move(result.buffer_data),
-                                            constant_operands));
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<ComputeResources> compute_resources,
+      ComputeResources::Create(context, std::move(result.buffer),
+                               std::move(result.buffer_data), constant_operands,
+                               result.graph_requires_fp32_precision));
 
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
@@ -323,6 +329,8 @@ GraphImplTflite::GraphImplTflite(
 void GraphImplTflite::DispatchImpl(
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
+  ScopedTrace scoped_trace("GraphImplTflite::DispatchImpl");
+
   std::vector<
       std::pair<int, scoped_refptr<QueueableResourceState<BufferContent>>>>
       input_buffer_states, output_buffer_states;
@@ -359,6 +367,7 @@ void GraphImplTflite::DispatchImpl(
     exclusive_resources.push_back(buffer_state);
   }
 
+  scoped_trace.AddStep("Acquire resources");
   auto task = base::MakeRefCounted<ResourceTask>(
       std::move(shared_resources), std::move(exclusive_resources),
       base::BindOnce(
@@ -370,7 +379,7 @@ void GraphImplTflite::DispatchImpl(
              base::flat_map<
                  int, scoped_refptr<QueueableResourceState<BufferContent>>>
                  output_buffer_states,
-             base::OnceClosure completion_closure) {
+             ScopedTrace scoped_trace, base::OnceClosure completion_closure) {
             ComputeResources* raw_compute_resources =
                 compute_resources_state->GetExclusivelyLockedResource();
 
@@ -388,12 +397,12 @@ void GraphImplTflite::DispatchImpl(
                     // a `QueueableResourceState` corresponding to
                     // `raw_compute_resources` is held by the
                     // `ResourceTask` until `completion_closure` is run below.
-                    base::Unretained(raw_compute_resources),
-                    std::move(buffers)),
+                    base::Unretained(raw_compute_resources), std::move(buffers),
+                    std::move(scoped_trace)),
                 std::move(completion_closure));
           },
           compute_resources_state_, std::move(input_buffer_states),
-          std::move(output_buffer_states)));
+          std::move(output_buffer_states), std::move(scoped_trace)));
   task->Enqueue();
 }
 

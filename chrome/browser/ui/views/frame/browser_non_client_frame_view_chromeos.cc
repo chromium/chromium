@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -556,13 +556,11 @@ bool BrowserNonClientFrameViewChromeOS::DoesIntersectRect(
   }
 
   bool should_leave_to_top_container = false;
-#if BUILDFLAG(IS_CHROMEOS)
   // In immersive mode, the caption buttons container is reparented to the
   // TopContainerView and hence |rect| should not be claimed here.  See
   // BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted().
   should_leave_to_top_container =
       browser_view()->immersive_mode_controller()->IsRevealed();
-#endif
 
   return !should_leave_to_top_container;
 }
@@ -687,7 +685,7 @@ bool BrowserNonClientFrameViewChromeOS::ShouldTabIconViewAnimate() const {
   // TabIconView we host is initialized, so we need to null check the selected
   // WebContents because in this condition there is not yet a selected tab.
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
-  return current_tab && current_tab->IsLoading();
+  return current_tab && current_tab->ShouldShowLoadingUI();
 }
 
 ui::ImageModel BrowserNonClientFrameViewChromeOS::GetFaviconForTabIconView() {
@@ -936,8 +934,7 @@ bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
 void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
   const bool should_show_caption_buttons = GetShowCaptionButtons();
   caption_button_container_->SetVisible(should_show_caption_buttons);
-  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled() ||
-      browser_view()->GetIsWebAppType()) {
+  if (browser_view()->GetIsWebAppType()) {
     // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
     // BrowserView is re-layed out to take into account these changes.
     browser_view()->InvalidateLayout();
@@ -1182,16 +1179,20 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController(
     return false;
   }
 
-  // Enabling immersive mode controller would allow for the user to exit
-  // fullscreen. We don't want this for locked fullscreen windows.
-  if (!CanUserExitFullscreen()) {
+  // Disable immersive mode controller in locked fullscreen mode to prevent
+  // users from exiting this mode. One exception for this is when the browsing
+  // instance is locked for OnTask. Only applicable for non-web browser
+  // scenarios.
+  bool is_locked_for_on_task = browser_view()->browser()->IsLockedForOnTask();
+  if (!CanUserExitFullscreen() && !is_locked_for_on_task) {
     return false;
   }
 
-  // If tablet mode is just enabled, we should exit immersive mode for TabStrip.
-  // Note that we can still enter immersive mode if it's toggled after entering
-  // tablet mode.
-  if (on_tablet_enabled && browser_view()->GetSupportsTabStrip()) {
+  // If tablet mode is just enabled and not locked for OnTask, we should exit
+  // immersive mode for TabStrip. Note that we can still enter immersive mode if
+  // it's toggled after entering tablet mode.
+  if (on_tablet_enabled && !is_locked_for_on_task &&
+      browser_view()->GetSupportsTabStrip()) {
     return false;
   }
 

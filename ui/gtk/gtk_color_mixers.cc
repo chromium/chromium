@@ -177,6 +177,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetFgColor("treeview.view button label")};
   mixer[ui::kColorTableHeaderSeparator] = {
       GetBorderColor("treeview.view button")};
+  mixer[ui::kColorTableRowHighlight] = {ui::kColorSysStateHoverOnSubtle};
   mixer[ui::kColorTextfieldBackground] = {GetBgColor("textview.view")};
   mixer[ui::kColorTextfieldBackgroundDisabled] = {
       GetBgColor("textview.view:disabled")};

@@ -72,20 +72,22 @@ public class LocalTabGroupMutationHelperUnitTest {
     private static final GURL TAB_URL_1 = new GURL("https://url1.com");
     private static final GURL TAB_URL_2 = new GURL("https://url2.com");
     private static final GURL UNSYNCABLE_URL_1 = new GURL("chrome://flags");
+    private static final String COLLABORATION_ID = "collab_id";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
-    private MockTabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncUtilsJni mTabGroupSyncUtilsJni;
+
+    @Captor private ArgumentCaptor<EventDetails> mEventDetailsCaptor;
+
+    private MockTabModel mTabModel;
     private LocalTabGroupMutationHelper mLocalMutationHelper;
     private TestTabCreationDelegate mTabCreationDelegate;
-
     private Tab mTab1;
     private Tab mTab2;
-    private @Captor ArgumentCaptor<EventDetails> mEventDetailsCaptor;
 
     @Before
     public void setUp() {
@@ -98,9 +100,9 @@ public class LocalTabGroupMutationHelperUnitTest {
                 new LocalTabGroupMutationHelper(
                         mTabGroupModelFilter, mTabGroupSyncService, mTabCreationDelegate);
 
-        when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(Tab.INVALID_TAB_ID);
-        when(mTabGroupModelFilter.getRootIdFromStableId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
-        when(mTabGroupModelFilter.getStableIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.getTabGroupIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
 
         Mockito.doNothing()
                 .when(mTabGroupSyncService)
@@ -166,7 +168,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
-        verify(mTabGroupModelFilter).createSingleTabGroup(any(), eq(false));
+        verify(mTabGroupModelFilter).createSingleTabGroup(any());
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
         verify(mTabGroupModelFilter).setTabGroupTitle(anyInt(), any());
         verify(mTabGroupSyncService)
@@ -196,7 +198,11 @@ public class LocalTabGroupMutationHelperUnitTest {
                 createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {null, null});
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
-        verify(mTabRemover).forceCloseTabs(argThat(params -> params.tabs.size() == 1));
+        verify(mTabRemover)
+                .forceCloseTabs(
+                        argThat(
+                                params ->
+                                        params.tabs.size() == 1 && params.saveToTabRestoreService));
     }
 
     @Test
@@ -355,7 +361,21 @@ public class LocalTabGroupMutationHelperUnitTest {
     public void testCloseTabGroup() {
         mTabModel.addTab(TAB_ID_1);
         mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
-        verify(mTabRemover).forceCloseTabs(any());
+        verify(mTabRemover).forceCloseTabs(argThat(params -> params.saveToTabRestoreService));
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(
+                        eq(LOCAL_TAB_GROUP_ID_1), eq(ClosingSource.CLOSED_BY_USER));
+    }
+
+    @Test
+    public void testCloseTabGroup_Collaboration() {
+        mTabModel.addTab(TAB_ID_1);
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        savedTabGroup.collaborationId = COLLABORATION_ID;
+        when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
+        mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
+        verify(mTabRemover).forceCloseTabs(argThat(params -> !params.saveToTabRestoreService));
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(
                         eq(LOCAL_TAB_GROUP_ID_1), eq(ClosingSource.CLOSED_BY_USER));

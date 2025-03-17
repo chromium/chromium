@@ -200,8 +200,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // field.
   virtual std::u16string GetValueForControl() const;
 
-  // See `AXNode::GetUnignoredSelection`.
+  // Gets the unignored selection from the accessibility tree, meaning the
+  // selection whose endpoints are on unignored nodes. (An "ignored" node is a
+  // node that is not exposed to platform APIs: See `IsIgnored`.)
   virtual const AXSelection GetUnignoredSelection() const;
+  // Gets an unignored selection but the endpoints are adjusted so that they
+  // never fall on text objects, but are moved to the text nodes' parents
+  // instead, for compatibility with Text/Hypertext interfaces uses for IA2/ATK.
+  virtual const AXSelection GetHypertextSelection() const;
 
   // Creates a text position rooted at this object if it's a leaf node, or a
   // tree position otherwise.
@@ -318,7 +324,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Returns true if this is a top-level browser window that doesn't have a
   // parent accessible node, or its parent is the application accessible node on
   // platforms that have one.
-  virtual bool IsToplevelBrowserWindow();
+  bool IsToplevelBrowserWindow() const;
 
   // If this object is exposed to the platform's accessibility layer, returns
   // this object. Otherwise, returns the platform leaf or lowest unignored
@@ -387,10 +393,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // clipping behavior is set to clipped, clipping is applied. If an offscreen
   // result address is provided, it will be populated depending on whether the
   // returned bounding box is onscreen or offscreen.
-  virtual gfx::Rect GetBoundsRect(
-      const AXCoordinateSystem coordinate_system,
-      const AXClippingBehavior clipping_behavior,
-      AXOffscreenResult* offscreen_result = nullptr) const;
+  virtual gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
+                                  const AXClippingBehavior clipping_behavior,
+                                  AXOffscreenResult* offscreen_result) const;
+  gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
+                          const AXClippingBehavior clipping_behavior) const {
+    return GetBoundsRect(coordinate_system, clipping_behavior, nullptr);
+  }
 
   // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
   gfx::Rect GetClippedScreenBoundsRect(
@@ -545,6 +554,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // uses the default interface language.
   std::string GetLanguage() const;
 
+  // Returns the URL associated with the root of the tree containing this node.
+  std::string GetRootURL() const;
+
   //
   // Tables. All of these should be called on a node that has a table-like
   // role, otherwise they return nullopt.
@@ -610,7 +622,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   //
 
   // Return the platform-native GUI object that should be used as a target
-  // for accessibility events.
+  // for accessibility events. This function is performance-critical and must
+  // remain efficient.
   virtual gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent();
 
   //

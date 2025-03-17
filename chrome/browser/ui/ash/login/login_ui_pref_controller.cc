@@ -19,7 +19,9 @@
 
 namespace ash {
 
-LoginUIPrefController::LoginUIPrefController() {
+LoginUIPrefController::LoginUIPrefController(
+    bool update_geolocation_usage_allowed)
+    : update_geolocation_usage_allowed_(update_geolocation_usage_allowed) {
   PrefService* prefs = g_browser_process->local_state();
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
@@ -35,10 +37,13 @@ LoginUIPrefController::LoginUIPrefController() {
       prefs::kOwnerTapToClickEnabled,
       base::BindRepeating(&LoginUIPrefController::UpdateTapToClickEnabled,
                           weak_factory_.GetWeakPtr()));
-  pref_change_registrar_.Add(
-      ash::prefs::kDeviceGeolocationAllowed,
-      base::BindRepeating(&LoginUIPrefController::UpdateGeolocationUsageAllowed,
-                          weak_factory_.GetWeakPtr()));
+  if (update_geolocation_usage_allowed_) {
+    pref_change_registrar_.Add(
+        ash::prefs::kDeviceGeolocationAllowed,
+        base::BindRepeating(
+            &LoginUIPrefController::UpdateGeolocationUsageAllowed,
+            weak_factory_.GetWeakPtr()));
+  }
 
   if (prefs->GetAllPrefStoresInitializationStatus() ==
       PrefService::INITIALIZATION_STATUS_WAITING) {
@@ -88,7 +93,9 @@ void LoginUIPrefController::InitOwnerPreferences(bool success) {
   UpdatePrimaryMouseButtonRight();
   UpdatePrimaryPointingStickButtonRight();
   UpdateTapToClickEnabled();
-  UpdateGeolocationUsageAllowed();
+  if (update_geolocation_usage_allowed_) {
+    UpdateGeolocationUsageAllowed();
+  }
 }
 
 }  // namespace ash

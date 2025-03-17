@@ -669,6 +669,11 @@ void DemoSession::OnSessionStateChanged() {
       if (!components_) {
         components_ = std::make_unique<DemoComponents>(GetDemoConfig());
       }
+
+      // Create the window closer.
+      window_closer_ = std::make_unique<DemoModeWindowCloser>(
+          base::BindRepeating(&TriggerLaunchDemoModeApp));
+
       if (features::IsGrowthCampaignsInDemoModeEnabled()) {
         auto* campaigns_manager = growth::CampaignsManager::Get();
         CHECK(campaigns_manager);
@@ -695,21 +700,6 @@ void DemoSession::OnSessionStateChanged() {
 
       // Register the device with in the A/A experiment
       RegisterDemoModeAAExperiment();
-
-      // Create the window closer.
-      // TODO(crbug.com/302583338): Remove this feature flag.
-      if (ash::features::IsDemoModeGMSCoreWindowCloserEnabled()) {
-        window_closer_ = std::make_unique<DemoModeWindowCloser>(
-            base::BindRepeating(&TriggerLaunchDemoModeApp));
-      }
-
-      // TODO(b/292454543): Remove this after issue is resolved.
-      if (InstallAttributes::IsInitialized()) {
-        LOG(WARNING) << "Demo Mode DeviceMode: "
-                     << InstallAttributes::Get()->GetMode();
-        LOG(WARNING) << "Demo Mode domain: "
-                     << InstallAttributes::Get()->GetDomain();
-      }
 
       // When the session successfully starts, we record the action
       // DemoMode.DemoSessionStarts.
@@ -748,7 +738,8 @@ void DemoSession::OnDemoAppComponentLoaded() {
 
   TriggerLaunchDemoModeApp();
 
-  if (features::IsDemoModeSignInEnabled() && window_closer_) {
+  if (demo_mode::IsDemoAccountSignInEnabled()) {
+    CHECK(window_closer_);
     idle_handler_ = std::make_unique<DemoModeIdleHandler>(window_closer_.get());
   }
 }

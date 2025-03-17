@@ -30,8 +30,6 @@ const AccountId kDefaultOwnerAccountId =
     AccountId::FromUserEmailGaiaId(test::kTestEmail, GaiaId(test::kTestGaiaId));
 const AccountId kManagedUserAccountId =
     AccountId::FromUserEmail("example@example.com");
-const AccountId kActiveDirectoryUserAccountId =
-    AccountId::AdFromUserEmailObjGuid("active@gmail.com", "obj-guid");
 }  // namespace
 
 // Test params:
@@ -230,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, GuestUser) {
   logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;
@@ -268,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest, KioskAppUser) {
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;
@@ -287,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;
@@ -306,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;

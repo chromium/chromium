@@ -4,6 +4,7 @@
 
 #include "headless/lib/browser/headless_content_browser_client.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -31,6 +32,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "headless/lib/browser/headless_bluetooth_delegate.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
@@ -158,8 +160,9 @@ HeadlessContentBrowserClient::CreateBrowserMainParts(
   return std::make_unique<HeadlessBrowserMainParts>(*browser_);
 }
 
-void HeadlessContentBrowserClient::OverrideWebkitPrefs(
+void HeadlessContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* prefs) {
   prefs->lazy_load_enabled = browser_->options()->lazy_load_enabled;
 
@@ -528,6 +531,14 @@ void HeadlessContentBrowserClient::SetEncryptionKey(
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
 #endif
+}
+
+content::BluetoothDelegate*
+HeadlessContentBrowserClient::GetBluetoothDelegate() {
+  if (!bluetooth_delegate_) {
+    bluetooth_delegate_ = std::make_unique<HeadlessBluetoothDelegate>();
+  }
+  return bluetooth_delegate_.get();
 }
 
 }  // namespace headless

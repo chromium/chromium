@@ -18,7 +18,7 @@
 namespace shape_detection {
 
 constexpr struct TestParams {
-  base::FilePath::StringPieceType filename;
+  base::FilePath::StringViewType filename;
   std::string_view expected_value;
   float x;
   float y;
@@ -62,7 +62,7 @@ class BarcodeDetectionImplBarhopperTest
     return barcode_service;
   }
 
-  SkBitmap LoadTestImage(base::FilePath::StringPieceType filename) {
+  SkBitmap LoadTestImage(base::FilePath::StringViewType filename) {
     // Load image data from test directory.
     base::FilePath image_path;
     EXPECT_TRUE(

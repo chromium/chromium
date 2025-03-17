@@ -63,25 +63,24 @@ an action button:
 1. A toast with an action button must also have a "X" close button.
 2. A toast with an action button cannot have a three dot menu.
 
-#### Registering Global Toast
+#### Registering a Toast with a Menu
 ```
 void ToastService::RegisterToast(BrowserWindowInterface* interface) {
   ...
   toast_registry_->RegisterToast(
     ToastId,
     ToastSpecification::Builder(vector_icon, string_id)
-        .AddGlobalScope()
+        .AddMenu()
         .Build());
 }
 ```
+Even though you have registered the toast with the ToastService, when you
+trigger the toast, you must remember to pass in a non-null menu model to
+populate the menu in `ToastParams` when you trigger your toast.
 
-Toasts are not global scoped by default because most toasts are only relevant
-for the active page and should hide when the user switches tabs or navigates
-to another page.
-
-However, toasts can be globally scoped so that they will not automatically
-dismiss due to tab switch or page navigation. The toast will automatically
-dismiss after showing for a certain duration similar to tab scoped toasts.
+Also note that toasts with a menu cannot have a "X" close button. If this
+behavior is needed, please consult with UX on how to design this in a way
+that supports both.
 
 ### 3. Trigger your Toast
 When you want to trigger your toast to show, you will need to retrieve the
@@ -107,6 +106,17 @@ if (toast_controller) {
   ToastParams params = ToastParams(ToastId);
   params.body_string_replacement_params_ = {string_1, string_2};
   params.action_button_string_replacement_params_ = {string_3};
+  toast_controller->MaybeShowToast(ToastParams(std::move(params)));
+}
+```
+
+#### Triggering a Toast with a Menu
+```
+ToastController* const toast_controller = browser_window_features->toast_controller();
+if (toast_controller) {
+  std::unique_ptr<MyCustomMenuModel> menu_model = ...
+  ToastParams params = ToastParams(ToastId);
+  params.menu_model = std::move(menu_model);
   toast_controller->MaybeShowToast(ToastParams(std::move(params)));
 }
 ```

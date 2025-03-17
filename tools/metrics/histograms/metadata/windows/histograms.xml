@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.Enclave.{Type}.Available" enum="BooleanAvailable"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>brucedawson@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.LegacyDisplayIdAlgorithm" enum="UsedDisplayIdFallback"
-    expires_after="2025-05-04">
+    expires_after="2025-07-13">
   <owner>btriebw@google.com</owner>
   <owner>msw@google.com</owner>
   <summary>
@@ -191,6 +191,36 @@ chromium-metrics-reviews@google.com.
     each monitor detected by the OS during startup of chrome and after any
     monitor topology changes (addition/removal) thereafter.
   </summary>
+</histogram>
+
+<histogram name="Windows.LegacyDisplayIdAlgorithm2"
+    enum="UsedDisplayIdFallback" expires_after="2025-07-13">
+  <owner>btriebw@google.com</owner>
+  <owner>msw@google.com</owner>
+  <summary>
+    Records when a monitor is missing DISPLAYCONFIG_PATH_INFO to derive a
+    display ID and instead used the fallback legacy algorithm. Recorded once for
+    each monitor detected by the OS during startup of chrome and after any
+    monitor topology changes (addition/removal) thereafter.
+
+    Subsampled to 1/100.
+  </summary>
+</histogram>
+
+<histogram name="Windows.OneDriveSyncState.{SyncedState}" enum="BooleanEnabled"
+    expires_after="2025-12-31">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <summary>
+    Records Windows OneDrive personal sync state. This is recorded once per
+    browser session, on startup.
+  </summary>
+  <token key="SyncedState">
+    <variant name="DesktopSynced"
+        summary="Desktop file path is synced with cloud provided."/>
+    <variant name="Synced"
+        summary="File path storage is synced with cloud provided."/>
+  </token>
 </histogram>
 
 <histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
@@ -252,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2025-06-01">
+    expires_after="2025-08-10">
   <owner>rkc@chromium.org</owner>
   <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
@@ -276,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.TimeInSelectFileDialog" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <summary>
@@ -285,6 +315,33 @@ chromium-metrics-reviews@google.com.
     Eliminating hangs that occur when opening the file select dialog should move
     this metric. Reported every time ui::ExecuteSelectFile is called via
     UtilWinImpl::CallExecuteSelectFile.
+  </summary>
+</histogram>
+
+<histogram name="Windows.Win11HardwareRequirements.{Type}Check"
+    enum="BooleanEnabled" expires_after="2025-08-03">
+  <owner>estalin@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Records only on Win10 if the current hardware {Type} passes requirements for
+    Win11. This is recorded once per browser session, on startup.
+  </summary>
+  <token key="Type">
+    <variant name="CPU" summary="Checks supported processor type"/>
+    <variant name="Disk" summary="Checks total installed disk space"/>
+    <variant name="Firmware" summary="Checks if secure boot capable"/>
+    <variant name="Memory" summary="Checks total installed memory"/>
+    <variant name="TPM" summary="Checks if TPM version is 2 or higher"/>
+  </token>
+</histogram>
+
+<histogram name="Windows.Win11UpgradeEligible" enum="BooleanEnabled"
+    expires_after="2025-08-03">
+  <owner>estalin@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Records only on Win10 if the current hardware is capable of being upgraded
+    to Win11. This is recorded once per browser session, on startup.
   </summary>
 </histogram>
 

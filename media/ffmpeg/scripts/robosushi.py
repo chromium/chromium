@@ -162,7 +162,7 @@ LoadTargets(
                     func=robo_build.ObliterateOldBuildOutputIfNeeded),
               Target(name="create_sushi_branch",
                      desc="Create a sushi-MDY branch if we're not on one",
-                     func=robo_branch.CreateAndCheckoutDatedSushiBranch),
+                     func=robo_branch.CreateAndCheckoutDatedSushiBranchIfNeeded),
               Target(name="merge_from_upstream",
                      desc="Merge upstream/master to our local sushi-MDY branch",
                      func=robo_branch.MergeUpstreamToSushiBranchIfNeeded),

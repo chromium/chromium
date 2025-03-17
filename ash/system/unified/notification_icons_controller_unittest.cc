@@ -56,8 +56,8 @@ class NotificationIconsControllerTest : public AshTestBase {
             message_center::NotifierId(
                 message_center::NotifierType::SYSTEM_COMPONENT, notifier_id,
                 NotificationCatalogName::kTestCatalogName),
-            rich_notification_data, nullptr /* delegate */, gfx::VectorIcon(),
-            warning_level));
+            rich_notification_data, nullptr /* delegate */,
+            gfx::VectorIcon::EmptyIcon(), warning_level));
     notification_id_++;
 
     return id;
@@ -73,7 +73,7 @@ class NotificationIconsControllerTest : public AshTestBase {
 
     // Log in.
     constexpr char kUserEmail[] = "user@gmail.com";
-    SimulateUserLogin(kUserEmail);
+    SimulateUserLogin({kUserEmail});
 
     // Set the user's shelf auto-hide preference to always hide.
     auto accountId = AccountId::FromUserEmail(kUserEmail);
@@ -455,7 +455,7 @@ TEST_F(NotificationIconsControllerTest, NotificationCenterTrayAccessibleName) {
     EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
               controller->notification_counter_view()
                   ->image_view()
-                  ->GetCachedTooltipText());
+                  ->GetTooltipText());
   }
 
   // If the NotificationCounterView's image tooltip text is updated, the tray

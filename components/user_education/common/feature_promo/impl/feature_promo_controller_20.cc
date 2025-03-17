@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 
 namespace user_education {
 
@@ -188,32 +189,27 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
   // For rotating promos, cycle forward to the next valid index.
   auto* anchor_spec = spec;
   if (spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating) {
-    int current_index = lifecycle->GetPromoIndex();
+    int index = lifecycle->GetPromoIndex();
     // In demos, when repeating the same repeating promo to test it, the index
     // should cycle. However, the updated index is not written until the
     // previous promo is ended, which happens later. In order to simulate this,
     // base the starting index off the one being used by the previous promo.
     if (current_promo() && current_promo()->iph_feature() == &*params.feature) {
-      current_index = (current_promo()->GetPromoIndex() + 1) %
-                      spec->rotating_promos().size();
+      index = (current_promo()->GetPromoIndex() + 1) %
+              spec->rotating_promos().size();
     }
 
     // Find the next index in the rotation that has a valid promo. This is the
     // actual index that will be used.
-    int index = current_index;
-    while (!spec->rotating_promos().at(index).has_value()) {
-      index = (index + 1) % spec->rotating_promos().size();
-      CHECK_NE(index, current_index)
-          << "Wrapped around while looking for a valid rotating promo; this "
-             "should have been caught during promo registration.";
-    }
+    index = spec->GetNextValidIndex(index);
     lifecycle->SetPromoIndex(index);
     anchor_spec = &*spec->rotating_promos().at(index);
   }
 
-  // Fetch the anchor element. For now, assume all elements are Views.
+  // Fetch the anchor element. Instead of using the index parameter, use the
+  // anchor spec that has already been found.
   ui::TrackedElement* const anchor_element =
-      anchor_spec->GetAnchorElement(GetAnchorContext());
+      anchor_spec->GetAnchorElement(GetAnchorContext(), std::nullopt);
   if (!anchor_element) {
     return FeaturePromoResult::kBlockedByUi;
   }
@@ -432,8 +428,12 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoCommon(
 
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
-  const bool screen_reader_available =
-      CheckScreenReaderPromptAvailable(for_demo || in_iph_demo_mode_);
+  bool screen_reader_available = false;
+  if (outputs.display_spec->promo_type() !=
+      FeaturePromoSpecification::PromoType::kCustomUi) {
+    screen_reader_available =
+        CheckExtendedPropertiesPromptAvailable(for_demo || in_iph_demo_mode_);
+  }
 
   if (!for_demo && !feature_engagement_tracker()->ShouldTriggerHelpUI(
                        params.feature.get())) {
@@ -445,17 +445,17 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoCommon(
   DCHECK(!current_promo());
   set_current_promo(std::move(outputs.lifecycle));
   // Construct the parameters for the promotion.
-  ShowPromoBubbleParams show_params;
-  show_params.spec = outputs.display_spec;
-  show_params.anchor_element = outputs.anchor_element;
-  show_params.screen_reader_prompt_available = screen_reader_available;
-  show_params.body_format = std::move(params.body_params);
-  show_params.screen_reader_format = std::move(params.screen_reader_params);
-  show_params.title_format = std::move(params.title_params);
-  show_params.can_snooze = current_promo()->CanSnooze();
+  FeaturePromoSpecification::BuildHelpBubbleParams build_params;
+  build_params.spec = outputs.display_spec;
+  build_params.anchor_element = outputs.anchor_element;
+  build_params.screen_reader_prompt_available = screen_reader_available;
+  build_params.body_format = std::move(params.body_params);
+  build_params.screen_reader_format = std::move(params.screen_reader_params);
+  build_params.title_format = std::move(params.title_params);
+  build_params.can_snooze = current_promo()->CanSnooze();
 
   // Try to show the bubble and bail out if we cannot.
-  auto bubble = ShowPromoBubbleImpl(std::move(show_params));
+  auto bubble = ShowPromoBubbleImpl(std::move(build_params));
   if (!bubble) {
     set_current_promo(nullptr);
     if (!for_demo) {

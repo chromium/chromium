@@ -85,27 +85,37 @@ net::HttpRequestHeaders ComputeAttributionReportingHeaders(
 
   uint64_t grease_bits = base::RandUint64();
 
-  std::string eligible_header = SerializeAttributionReportingEligibleHeader(
-      effective_eligibility,
-      AttributionReportingHeaderGreaseOptions::FromBits(grease_bits & 0xff));
+  std::string reporting_eligible_header =
+      SerializeAttributionReportingEligibleHeader(
+          effective_eligibility,
+          AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
+                                                            0xff));
   grease_bits >>= 8;
 
   headers.SetHeader("Attribution-Reporting-Eligible",
-                    std::move(eligible_header));
+                    std::move(reporting_eligible_header));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAttributionReportingCrossAppWeb)) {
-    base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
-                                  request.attribution_reporting_support);
+  if (base::FeatureList::IsEnabled(features::kAdAuctionEventRegistration)) {
+    std::string ad_auction_registration_eligible =
+        SerializeAdAuctionRegistrationEligibleHeader(
+            request.attribution_reporting_eligibility,
+            AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
+                                                              0xff));
+    grease_bits >>= 8;
+    headers.SetHeader("Ad-Auction-Registration-Eligible",
+                      std::move(ad_auction_registration_eligible));
+  }
 
-    if (is_attribution_reporting_support_set) {
-      headers.SetHeader("Attribution-Reporting-Support",
-                        GetAttributionSupportHeader(
-                            request.attribution_reporting_support,
-                            AttributionReportingHeaderGreaseOptions::FromBits(
-                                grease_bits & 0xff)));
-      grease_bits >>= 8;
-    }
+  base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
+                                request.attribution_reporting_support);
+
+  if (is_attribution_reporting_support_set) {
+    headers.SetHeader("Attribution-Reporting-Support",
+                      GetAttributionSupportHeader(
+                          request.attribution_reporting_support,
+                          AttributionReportingHeaderGreaseOptions::FromBits(
+                              grease_bits & 0xff)));
+    grease_bits >>= 8;
   }
 
   return headers;

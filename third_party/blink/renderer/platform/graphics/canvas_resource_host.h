@@ -9,8 +9,8 @@
 
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
+#include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -23,6 +23,18 @@ namespace blink {
 
 class CanvasResourceProvider;
 class SharedContextRateLimiter;
+
+// Specifies whether the provider should rasterize paint commands on the CPU
+// or GPU. This is used to support software raster with GPU compositing.
+enum class RasterMode {
+  kGPU,
+  kCPU,
+};
+
+enum class RasterModeHint {
+  kPreferGPU,
+  kPreferCPU,
+};
 
 class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
  public:
@@ -129,6 +141,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   bool is_displayed_ = false;
   bool context_lost_ = false;
   bool shared_bitmap_gpu_channel_lost_ = false;
+  bool is_opaque_ = false;
   unsigned frames_since_last_commit_ = 0;
   std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
@@ -140,7 +153,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   // this superclass of CanvasRenderingContextHost, is only used by 2D
   // canvases.
   scoped_refptr<cc::TextureLayer> cc_layer_;
-  OpacityMode opacity_mode_ = kNonOpaque;
 };
 
 }  // namespace blink

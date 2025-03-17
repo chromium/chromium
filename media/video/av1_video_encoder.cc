@@ -530,7 +530,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   bool key_frame = encode_options.key_frame;
-  auto duration_us = GetFrameDuration(*frame).InMicroseconds();
+  int64_t duration_us = GetFrameDuration(*frame).InMicroseconds();
   last_frame_timestamp_ = frame->timestamp();
   if (last_frame_color_space_ != frame->ColorSpace()) {
     last_frame_color_space_ = frame->ColorSpace();
@@ -595,12 +595,17 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   auto error =
       aom_codec_encode(codec_.get(), image, artificial_timestamp_, duration_us,
                        key_frame ? AOM_EFLAG_FORCE_KF : 0);
-  artificial_timestamp_ += duration_us;
-
   if (error != AOM_CODEC_OK) {
     auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
+    return;
+  }
+  if (!base::CheckAdd(artificial_timestamp_, duration_us)
+           .AssignIfValid(&artificial_timestamp_)) {
+    std::move(done_cb).Run(EncoderStatus(
+        EncoderStatus::Codes::kEncoderFailedEncode,
+        "Timestamp overflow. Most likely, frame's duration is too large."));
     return;
   }
   auto output = GetEncoderOutput(std::move(temporal_id_status).value(),

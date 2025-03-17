@@ -37,8 +37,8 @@ class AutoclickScrollPositionView : public views::View {
 AutoclickScrollPositionView::AutoclickScrollPositionView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddChildView(std::make_unique<views::ImageView>())
-      ->SetImage(
-          gfx::CreateVectorIcon(kAutoclickScrollIcon, 24, SK_ColorWHITE));
+      ->SetImage(ui::ImageModel::FromVectorIcon(kAutoclickScrollIcon,
+                                                SK_ColorWHITE, 24));
 }
 
 void AutoclickScrollPositionView::OnPaintBackground(gfx::Canvas* canvas) {

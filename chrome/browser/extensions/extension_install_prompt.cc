@@ -426,7 +426,7 @@ ExtensionInstallPrompt::ExtensionInstallPrompt(content::WebContents* contents)
                    ? Profile::FromBrowserContext(contents->GetBrowserContext())
                    : nullptr),
       extension_(nullptr),
-      install_ui_(std::make_unique<ExtensionInstallUI>(profile_)),
+      install_ui_(ExtensionInstallUI::Create(profile_)),
       show_params_(new ExtensionInstallPromptShowParams(contents)),
       did_call_show_dialog_(false) {}
 
@@ -434,7 +434,7 @@ ExtensionInstallPrompt::ExtensionInstallPrompt(Profile* profile,
                                                gfx::NativeWindow native_window)
     : profile_(profile),
       extension_(nullptr),
-      install_ui_(std::make_unique<ExtensionInstallUI>(profile_)),
+      install_ui_(ExtensionInstallUI::Create(profile_)),
       show_params_(
           new ExtensionInstallPromptShowParams(profile, native_window)),
       did_call_show_dialog_(false) {}
@@ -633,3 +633,14 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
 
   NOTREACHED();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// static
+ExtensionInstallPrompt::ShowDialogCallback
+ExtensionInstallPrompt::GetDefaultShowDialogCallback() {
+  // TODO(crbug.com/397754565): Implement this function. On other platforms
+  // the implementation lives in //chrome/browser/ui/views/extensions.
+  NOTIMPLEMENTED() << "GetDefaultShowDialogCallback";
+  return base::DoNothing();
+}
+#endif

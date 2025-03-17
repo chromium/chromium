@@ -30,8 +30,8 @@ def _gtest_test_spec_finalize(builder_name, test_name, settings, spec_value):
         _targets_common.update_spec_for_android_presentation(settings, spec_value)
         spec_value["args"] = args_lib.listify(spec_value["args"], "--recover-devices")
     default_merge_script = "standard_isolated_script_merge" if use_isolated_scripts_api else "standard_gtest_merge"
-    spec_value = _targets_common.spec_finalize(builder_name, settings, spec_value, default_merge_script)
-    return "gtest_tests", test_name, spec_value
+    test_type, spec_value = _targets_common.spec_finalize(builder_name, settings, spec_value, default_merge_script, default_test_type = "gtest_tests")
+    return test_type, test_name, spec_value
 
 _gtest_test_spec_handler = _targets_common.spec_handler(
     type_name = "gtest",

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_common.h"
@@ -46,8 +47,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
   // (e.g., password submission, PIN submission, etc.)
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnPasswordSubmit(const std::u16string& password) {}
-    virtual void OnPinSubmit(const std::u16string& pin) {}
+    virtual void OnPasswordSubmit(std::u16string_view password) {}
+    virtual void OnPinSubmit(std::u16string_view pin) {}
     // Escape key was pressed.
     virtual void OnEscape() {}
     // Something happened on the view e.g: the switch button was pressed or the
@@ -104,7 +105,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
   void SetHasPin(bool has_pin);
   bool HasPin() const;
   void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
-  const std::u16string& GetPinStatusMessage() const;
+  std::u16string_view GetPinStatusMessage() const;
 
   // Enables or disables the following UI elements:
   // - View
@@ -117,8 +118,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
   // Actions:
   void ToggleCurrentAuthType();
-  void PinSubmit(const std::u16string& pin) const;
-  void PasswordSubmit(const std::u16string& password) const;
+  void PinSubmit(std::u16string_view pin) const;
+  void PasswordSubmit(std::u16string_view password) const;
   void Escape() const;
   void ContentsChanged() const;
   // Reset the input fields text and visibility.

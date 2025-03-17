@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//ui/webui/webui_features.gni")
+
 static_library("webui") {
   sources = [
     "mojo_web_ui_controller.cc",
@@ -45,6 +48,12 @@ static_library("webui") {
       "color_change_listener/color_change_handler.h",
     ]
   }
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags =
+      [ "ENABLE_WEBUI_GENERATE_CODE_CACHE=$enable_webui_generate_code_cache" ]
 }
 
 source_set("test_support") {

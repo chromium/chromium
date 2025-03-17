@@ -13,6 +13,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -39,6 +40,8 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/media/base/media_channel.h"
 
+using base::StringPrintf;
+
 namespace blink {
 
 using EchoCancellationType =
@@ -54,14 +57,18 @@ void SendLogMessage(const std::string& message) {
 void* const kProcessedLocalAudioSourceIdentifier =
     const_cast<void**>(&kProcessedLocalAudioSourceIdentifier);
 
+std::string EffectsToString(int effects) {
+  return media::AudioParameters::EffectsMaskToString(effects);
+}
+
 std::string GetEnsureSourceIsStartedLogString(
     const blink::MediaStreamDevice& device) {
   return base::StringPrintf(
-      "EnsureSourceIsStarted({session_id=%s}, {channel_layout=%d}, "
-      "{sample_rate=%d}, {buffer_size=%d}, {effects=%d})",
-      device.session_id().ToString().c_str(), device.input.channel_layout(),
-      device.input.sample_rate(), device.input.frames_per_buffer(),
-      device.input.effects());
+      "EnsureSourceIsStarted({channel_layout=%d}, "
+      "{sample_rate=%d}, {buffer_size=%d}, {effects=[%s]})[session_id=%s]",
+      device.input.channel_layout(), device.input.sample_rate(),
+      device.input.frames_per_buffer(), EffectsToString(device.input.effects()),
+      device.session_id().ToString().c_str());
 }
 
 std::string GetAudioProcesingPropertiesLogString(
@@ -78,25 +85,26 @@ std::string GetAudioProcesingPropertiesLogString(
             return "system";
         }
       };
-  auto bool_to_string = [](bool value) { return value ? "true" : "false"; };
   auto str = base::StringPrintf(
-      "aec: %s, "
+      "echo_cancellation_type: %s, "
       "disable_hw_ns: %s, "
       "auto_gain_control: %s, "
       "noise_suppression: %s",
       aec_to_string(properties.echo_cancellation_type),
-      bool_to_string(properties.disable_hw_noise_suppression),
-      bool_to_string(properties.auto_gain_control),
-      bool_to_string(properties.noise_suppression));
+      base::ToString(properties.disable_hw_noise_suppression).c_str(),
+      base::ToString(properties.auto_gain_control).c_str(),
+      base::ToString(properties.noise_suppression).c_str());
   return str;
 }
 
 // Returns whether system noise suppression is allowed to be used regardless of
 // whether the noise suppression constraint is set, or whether a browser-based
 // AEC is active. This is currently the default on at least MacOS but is not
-// allowed for ChromeOS setups.
+// allowed for ChromeOS or Windows setups. On Windows. the system effects AEC,
+// NS and AGC always come as a "package" and it it not possible to enable or
+// disable the system NS independently.
 constexpr bool IsIndependentSystemNsAllowed() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   return false;
 #else
   return true;
@@ -146,17 +154,11 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
       allow_invalid_render_frame_id_for_testing_(false) {
   DCHECK(frame.DomWindow());
   SetDevice(device);
-  DVLOG(1) << "ProcessedLocalAudioSource: system AEC available = "
-           << !!(device.input.effects() &
-                 media::AudioParameters::ECHO_CANCELLER)
-           << " remote APM = " << use_remote_apm_
-           << "\naudio_processing_properties_ : ["
-           << GetAudioProcesingPropertiesLogString(audio_processing_properties_)
-           << "]";
-  SendLogMessage(
-      base::StringPrintf("ProcessedLocalAudioSource({session_id=%s}, {APM:%s})",
-                         device.session_id().ToString().c_str(),
-                         use_remote_apm_ ? "remote" : "local"));
+  SendLogMessage(StringPrintf(
+      "%s({audio_processing_properties=[%s]}, {APM=%s})[session_id=%s]",
+      __func__,
+      GetAudioProcesingPropertiesLogString(audio_processing_properties_),
+      use_remote_apm_ ? "remote" : "local", device.session_id().ToString()));
 }
 
 ProcessedLocalAudioSource::~ProcessedLocalAudioSource() {
@@ -204,10 +206,6 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   }
 
   SendLogMessage(GetEnsureSourceIsStartedLogString(device()));
-  SendLogMessageWithSessionId(base::StringPrintf(
-      "EnsureSourceIsStarted() => (audio_processing_properties=[%s])",
-      GetAudioProcesingPropertiesLogString(audio_processing_properties_)
-          .c_str()));
 
   blink::MediaStreamDevice modified_device(device());
   bool device_is_modified = false;
@@ -219,8 +217,6 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   if (audio_processing_properties_.echo_cancellation_type !=
           EchoCancellationType::kEchoCancellationSystem &&
       device().input.effects() & media::AudioParameters::ECHO_CANCELLER) {
-    DVLOG(1)
-        << "ProcessedLocalAudioSource: resetting system echo cancellation flag";
     modified_device.input.set_effects(modified_device.input.effects() &
                                       ~media::AudioParameters::ECHO_CANCELLER);
     if (!IsIndependentSystemNsAllowed()) {
@@ -232,8 +228,14 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
         modified_device.input.effects() &
         ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
     device_is_modified = true;
+    SendLogMessage(StringPrintf(
+        "%s() => (AEC: modified system effect mask from [%s] to [%s])",
+        __func__, EffectsToString(device().input.effects()),
+        EffectsToString(modified_device.input.effects())));
   }
-
+// On Windows we can only modify system NS and AGC support if system AEC was
+// supported but disabled via a constraint.
+#if !BUILDFLAG(IS_WIN)
   // Optionally disable system noise suppression.
   if (device().input.effects() & media::AudioParameters::NOISE_SUPPRESSION) {
     // Disable noise suppression on the device if the properties explicitly
@@ -243,7 +245,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
     if (!IsIndependentSystemNsAllowed()) {
       // Disable noise suppression on the device if browser-based echo
-      // cancellation is active, since that otherwise breaks the AEC.
+      // cancellation is active since that otherwise breaks the AEC.
       const bool browser_based_aec_active =
           audio_processing_properties_.echo_cancellation_type ==
           AudioProcessingProperties::EchoCancellationType::
@@ -259,25 +261,31 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     }
 
     if (disable_system_noise_suppression) {
+      blink::MediaStreamDevice device_before_ns_mods(modified_device);
       modified_device.input.set_effects(
           modified_device.input.effects() &
           ~media::AudioParameters::NOISE_SUPPRESSION);
       device_is_modified = true;
+      SendLogMessage(StringPrintf(
+          "%s() => (NS: modified system effect mask from [%s] to [%s])",
+          __func__, EffectsToString(device_before_ns_mods.input.effects()),
+          EffectsToString(modified_device.input.effects())));
     }
   }
 
   // Optionally disable system automatic gain control.
   if (device().input.effects() &
       media::AudioParameters::AUTOMATIC_GAIN_CONTROL) {
+    blink::MediaStreamDevice device_before_agc_mods(modified_device);
     // Disable automatic gain control on the device if browser-based echo
-    // cancellation is, since that otherwise breaks the AEC.
+    // cancellation is actrive since that otherwise breaks the AEC.
     const bool browser_based_aec_active =
         audio_processing_properties_.echo_cancellation_type ==
         AudioProcessingProperties::EchoCancellationType::kEchoCancellationAec3;
     bool disable_system_automatic_gain_control = browser_based_aec_active;
 
-    // Disable automatic gain control on the device if the constraints dictates
-    // that.
+    // Disable automatic gain control on the device if the constraints
+    // dictates that.
     disable_system_automatic_gain_control =
         disable_system_automatic_gain_control ||
         !audio_processing_properties_.auto_gain_control;
@@ -287,8 +295,13 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
           modified_device.input.effects() &
           ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
       device_is_modified = true;
+      SendLogMessage(StringPrintf(
+          "%s() => (AGC: modified system effect mask from [%s] to [%s])",
+          __func__, EffectsToString(device_before_agc_mods.input.effects()),
+          EffectsToString(modified_device.input.effects())));
     }
   }
+#endif  // #if !BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kCrOSSystemVoiceIsolationOption) &&
@@ -577,7 +590,7 @@ void ProcessedLocalAudioSource::OnCaptureError(
 
 void ProcessedLocalAudioSource::OnCaptureMuted(bool is_muted) {
   SendLogMessageWithSessionId(base::StringPrintf(
-      "OnCaptureMuted({is_muted=%s})", is_muted ? "true" : "false"));
+      "OnCaptureMuted({is_muted=%s})", base::ToString(is_muted).c_str()));
   SetMutedState(is_muted);
 }
 

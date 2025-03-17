@@ -204,25 +204,6 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
   EXPECT_TRUE(ExpectAdapterToReturnFacets(expected_facets));
 }
 
-// Verifies that affiliations are not fetched if DisableSource is ever called.
-TEST_F(PasswordAffiliationSourceAdapterTest, TestDisableSourceEmptyReturn) {
-  AddLoginAndWait(GetTestCredential(kTestWebRealmAlpha1));
-  AddLoginAndWait(GetTestCredential(kTestAndroidRealmAlpha3));
-  adapter()->DisableSource();
-  EXPECT_TRUE(ExpectAdapterToReturnFacets({}));
-}
-
-// Verifies that the observer is not signaled that new domains have been added
-// after DisableSourceing is called.
-TEST_F(PasswordAffiliationSourceAdapterTest,
-       TestDisableSourceDisablesObserving) {
-  adapter()->StartObserving(mock_source_observer());
-  adapter()->DisableSource();
-
-  EXPECT_CALL(*mock_source_observer(), OnFacetsAdded).Times(0);
-  AddLoginAndWait(GetTestCredential(kTestAndroidRealmAlpha3));
-}
-
 // Verifies that the observer is signaled that new domains have been added after
 // the adapter started observing the password store. It also tests that changes
 // are no-op before StartObserving.

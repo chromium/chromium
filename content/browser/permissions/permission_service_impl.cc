@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 #include "content/browser/permissions/permission_controller_impl.h"
@@ -70,7 +70,7 @@ PermissionStatusToEmbeddedPermissionControlResult(PermissionStatus status) {
 void EmbeddedPermissionRequestCallbackWrapper(
     base::OnceCallback<void(EmbeddedPermissionControlResult)> callback,
     const std::vector<PermissionStatus>& statuses) {
-  DCHECK(base::ranges::all_of(
+  DCHECK(std::ranges::all_of(
       statuses, [&](auto const& status) { return statuses[0] == status; }));
   std::move(callback).Run(
       PermissionStatusToEmbeddedPermissionControlResult(statuses[0]));
@@ -98,6 +98,20 @@ std::vector<blink::PermissionType> GetPermissionTypesAndCheckDuplicates(
   }
 
   return types;
+}
+
+// Helper check if permission types are all supported by Page Embedded
+// Permission.
+bool CheckPageEmbeddedPermissionTypes(
+    const std::vector<blink::PermissionType>& permission_types) {
+  for (auto permission_type : permission_types) {
+    if (permission_type != blink::PermissionType::GEOLOCATION &&
+        permission_type != blink::PermissionType::AUDIO_CAPTURE &&
+        permission_type != blink::PermissionType::VIDEO_CAPTURE) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // anonymous namespace
@@ -148,7 +162,7 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
       web_contents->GetPrimaryPage());
 
   std::set<PermissionName> permission_names;
-  base::ranges::transform(
+  std::ranges::transform(
       permissions, std::inserter(permission_names, permission_names.begin()),
       [](const auto& p) { return p->name; });
   if (permissions.size() != permission_names.size()) {
@@ -175,7 +189,7 @@ void PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered(
   }
 
   std::vector<PermissionStatus> statuses(permissions.size());
-  base::ranges::transform(
+  std::ranges::transform(
       permissions, statuses.begin(), [&](const auto& permission) {
         return this->GetCombinedPermissionAndDeviceStatus(permission);
       });
@@ -197,7 +211,8 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
   if (auto* browser_context = context_->GetBrowserContext()) {
     std::vector<blink::PermissionType> permission_types =
         GetPermissionTypesAndCheckDuplicates(descriptor->permissions);
-    if (permission_types.empty()) {
+    if (permission_types.empty() ||
+        !CheckPageEmbeddedPermissionTypes(permission_types)) {
       ReceivedBadMessage();
       return;
     }

@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
@@ -20,20 +21,43 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
 namespace content {
 
-using blink::performance_scenarios::LoadingScenario;
-using blink::performance_scenarios::PerformanceScenarioObserverList;
-using blink::performance_scenarios::ScenarioScope;
+using performance_scenarios::LoadingScenario;
+using performance_scenarios::PerformanceScenarioObserverList;
+using performance_scenarios::ScenarioScope;
 using SpareProcessMaybeTakeAction =
     content::RenderProcessHostImpl::SpareProcessMaybeTakeAction;
 
 namespace {
 
+// Enables killing spare renders when memory pressure signal is received.
+BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
+             "KillSpareRenderOnMemoryPressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr char kSpareRendererDispatchResultUmaName[] =
     "BrowserRenderProcessHost.SpareRendererDispatchResult";
+constexpr char kPreviouslyTakenSourceUmaName[] =
+    "BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Source";
+constexpr char kPreviouslyTakenStageUmaName[] =
+    "BrowserRenderProcessHost.SpareRendererPreviouslyTaken.Stage";
+constexpr char kPreviouslyTakenForCOOPUMAName[] =
+    "BrowserRenderProcessHost.SpareRendererPreviouslyTaken.ForCOOP";
+constexpr char kSameNavigationStageCombinationUMAName[] =
+    "BrowserRenderProcessHost.SpareRendererTakenInSameNavigation."
+    "StageCombination";
+constexpr char kSameNavigationForCOOPUMAName[] =
+    "BrowserRenderProcessHost.SpareRendererTakenInSameNavigation.ForCOOP";
+
+int ToStageCombinationValue(ProcessAllocationNavigationStage previous_stage,
+                            ProcessAllocationNavigationStage current_stage) {
+  static_assert(static_cast<int>(ProcessAllocationNavigationStage::kMaxValue) <
+                10);
+  return static_cast<int>(previous_stage) * 100 +
+         static_cast<int>(current_stage);
+}
 
 content::NoSpareRendererReason MapToNoSpareRendererReason(
     content::SpareRendererDispatchResult dispatch_result) {
@@ -87,6 +111,51 @@ std::string GetCategorizedSpareProcessMaybeTakeTimeUMAName(
       {"BrowserRenderProcessHost.SpareProcessMaybeTakeTime.", action_name});
 }
 
+std::string_view GetNoSpareRendererReasonName(NoSpareRendererReason reason) {
+  switch (reason) {
+    case NoSpareRendererReason::kNotYetCreated:
+      return "NotYetCreated";
+    case NoSpareRendererReason::kTakenByPreviousNavigation:
+      return "TakenByPreviousNavigation";
+    case NoSpareRendererReason::kTimeout:
+      return "Timeout";
+    case NoSpareRendererReason::kNotEnabled:
+      return "NotEnabled";
+    case NoSpareRendererReason::kProcessLimit:
+      return "ProcessLimit";
+    case NoSpareRendererReason::kMemoryPressure:
+      return "MemoryPressure";
+    case NoSpareRendererReason::kProcessExited:
+      return "ProcessExited";
+    case NoSpareRendererReason::kProcessHostDestroyed:
+      return "ProcessHostDestroyed";
+    case NoSpareRendererReason::kNotYetCreatedFirstLaunch:
+      return "NotYetCreatedFirstLaunch";
+    case NoSpareRendererReason::kNotYetCreatedAfterWarmup:
+      return "NotYetCreatedAfterWarmup";
+  }
+}
+
+std::string GetNoSpareRendererAllocationSourceUMAName(
+    NoSpareRendererReason reason) {
+  return base::StrCat(
+      {"BrowserRenderProcessHost.NoSpareRenderer.AllocationSource.",
+       GetNoSpareRendererReasonName(reason)});
+}
+
+std::string GetNoSpareRendererAllocationNavigationStageUMAName(
+    NoSpareRendererReason reason) {
+  return base::StrCat(
+      {"BrowserRenderProcessHost.NoSpareRenderer.NavigationStage.",
+       GetNoSpareRendererReasonName(reason)});
+}
+
+std::string GetNoSpareRendererAllocationForCOOPUMAName(
+    NoSpareRendererReason reason) {
+  return base::StrCat({"BrowserRenderProcessHost.NoSpareRenderer.ForCOOP.",
+                       GetNoSpareRendererReasonName(reason)});
+}
+
 bool IsCurrentlyUnderMemoryPressure() {
   base::MemoryPressureMonitor* memory_pressure_monitor =
       base::MemoryPressureMonitor::Get();
@@ -107,6 +176,79 @@ size_t GetSpareRPHCount() {
     return 1u;
   }
   return features::kMultipleSpareRPHsCount.Get();
+}
+
+void LogAllocationContext(const std::string& source_uma_name,
+                          const std::string& stage_uma_name,
+                          const std::string& for_coop_uma_name,
+                          const ProcessAllocationContext& context) {
+  base::UmaHistogramEnumeration(source_uma_name, context.source);
+  if (context.source == ProcessAllocationSource::kNavigationRequest) {
+    CHECK(context.navigation_context.has_value());
+    base::UmaHistogramEnumeration(stage_uma_name,
+                                  context.navigation_context->stage);
+    base::UmaHistogramBoolean(
+        for_coop_uma_name,
+        context.navigation_context->requires_new_process_for_coop);
+  }
+}
+
+void LogNoSparePresentUmas(
+    NoSpareRendererReason no_spare_renderer_reason,
+    const ProcessAllocationContext& allocation_context,
+    const std::optional<ProcessAllocationContext>& previous_taken_context) {
+  base::UmaHistogramEnumeration(
+      "BrowserRenderProcessHost.NoSparePresentReason2",
+      no_spare_renderer_reason);
+  // Log the allocation context, categorized by NoSpareRendererReason.
+  LogAllocationContext(
+      GetNoSpareRendererAllocationSourceUMAName(no_spare_renderer_reason),
+      GetNoSpareRendererAllocationNavigationStageUMAName(
+          no_spare_renderer_reason),
+      GetNoSpareRendererAllocationForCOOPUMAName(no_spare_renderer_reason),
+      allocation_context);
+  if (no_spare_renderer_reason ==
+          NoSpareRendererReason::kTakenByPreviousNavigation &&
+      previous_taken_context.has_value()) {
+    LogAllocationContext(
+        kPreviouslyTakenSourceUmaName, kPreviouslyTakenStageUmaName,
+        kPreviouslyTakenForCOOPUMAName, previous_taken_context.value());
+    const auto& previous_navigation_context =
+        previous_taken_context->navigation_context;
+    const auto& current_navigation_context =
+        allocation_context.navigation_context;
+    // Especially, if both the previous and the current allocation happens
+    // during the navigation. We will log the combination of the navigation
+    // stage and whether the allocation is caused by a COOP swap.
+    if (previous_navigation_context.has_value() &&
+        current_navigation_context.has_value() &&
+        previous_navigation_context->navigation_id ==
+            current_navigation_context->navigation_id) {
+      base::UmaHistogramSparse(
+          kSameNavigationStageCombinationUMAName,
+          ToStageCombinationValue(previous_navigation_context->stage,
+                                  current_navigation_context->stage));
+      // Local traces found that the spare renderer allocation tends to fail
+      // if we receive a COOP header in the response. The UMA is added to verify
+      // the frequency.
+      base::UmaHistogramBoolean(
+          kSameNavigationForCOOPUMAName,
+          current_navigation_context->requires_new_process_for_coop);
+    }
+  }
+}
+
+void LogSpareProcessTakeActionUMAs(
+    SpareProcessMaybeTakeAction action,
+    NoSpareRendererReason no_spare_renderer_reason,
+    const ProcessAllocationContext& allocation_context,
+    const std::optional<ProcessAllocationContext>& previous_taken_context) {
+  base::UmaHistogramEnumeration(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeAction", action);
+  if (action == SpareProcessMaybeTakeAction::kNoSparePresent) {
+    LogNoSparePresentUmas(no_spare_renderer_reason, allocation_context,
+                          previous_taken_context);
+  }
 }
 
 }  // namespace
@@ -144,7 +286,7 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
     performance_scenario_observer_list->AddObserver(this);
 
     is_browser_idle_ =
-        blink::performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
+        performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
             ->load(std::memory_order_relaxed) ==
         LoadingScenario::kNoPageLoading;
   }
@@ -338,7 +480,8 @@ void SpareRenderProcessHostManagerImpl::DeferredWarmupSpare(
 
 RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
     BrowserContext* browser_context,
-    SiteInstanceImpl* site_instance) {
+    SiteInstanceImpl* site_instance,
+    const ProcessAllocationContext& allocation_context) {
   // Give embedder a chance to disable using a spare RenderProcessHost for
   // certain SiteInstances.  Some navigations, such as to NTP or extensions,
   // require passing command-line flags to the renderer process at process
@@ -380,22 +523,21 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
         V8OptimizationsDisabled;
   }
 
+  // V8 feature flags are globally initialized during renderer process startup,
+  // and spare renderers allow V8 feature flag overrides by default. As such
+  // spare renderers should not be used when v8 flag overrides are disabled.
+  if (GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
+          site_instance->GetSiteInfo().process_lock_url())) {
+    embedder_allows_spare_usage = false;
+    refuse_reason = ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
+        DisallowV8FeatureFlagOverrides;
+  }
+
   if (refuse_reason.has_value()) {
     base::UmaHistogramEnumeration(
         "BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason",
         refuse_reason.value());
   }
-
-  // Do not use spare renderer if running an experiment to run FontDataManager.
-  // FontDataManager needs to be initialized during renderer creation.
-  // This is temporary and will be removed after the experiment has concluded;
-  // see crbug.com/335680565.
-  bool use_font_data_manager = false;
-#if BUILDFLAG(IS_WIN)
-  use_font_data_manager =
-      GetContentClient()->browser()->ShouldUseFontDataManager(
-          site_instance->GetSiteURL());
-#endif
 
   // We shouldn't use the spare if:
   // 1. The SiteInstance has already got an associated process.  This is
@@ -437,13 +579,8 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
   } else {
     action = SpareProcessMaybeTakeAction::kSpareTaken;
   }
-  UMA_HISTOGRAM_ENUMERATION(
-      "BrowserRenderProcessHost.SpareProcessMaybeTakeAction", action);
-  if (action == SpareProcessMaybeTakeAction::kNoSparePresent) {
-    base::UmaHistogramEnumeration(
-        "BrowserRenderProcessHost.NoSparePresentReason2",
-        no_spare_renderer_reason_);
-  }
+  LogSpareProcessTakeActionUMAs(action, no_spare_renderer_reason_,
+                                allocation_context, previous_taken_context_);
   if (spare_renderer_maybe_take_timer_) {
     auto maybe_take_time = spare_renderer_maybe_take_timer_->Elapsed();
     base::UmaHistogramLongTimes(
@@ -459,8 +596,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       browser_context == next_spare_rph->GetBrowserContext() &&
       next_spare_rph->InSameStoragePartition(site_storage) &&
       !site_instance->IsGuest() && embedder_allows_spare_usage &&
-      site_instance_allows_spare_usage && !hosts_pdf_content &&
-      !use_font_data_manager) {
+      site_instance_allows_spare_usage && !hosts_pdf_content) {
     CHECK(next_spare_rph->HostHasNotBeenUsed());
 
     // If the spare process ends up getting killed, the spare manager should
@@ -469,6 +605,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
 
     DCHECK_EQ(SpareProcessMaybeTakeAction::kSpareTaken, action);
     returned_process = next_spare_rph;
+    previous_taken_context_ = allocation_context;
     ReleaseSpare(next_spare_rph, SpareRendererDispatchResult::kUsed);
   } else if (!RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     // If the spare shouldn't be kept around, then discard it as soon as we
@@ -652,7 +789,8 @@ void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   CHECK_NE(memory_pressure_level,
            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
-  if (check_memory_pressure_timer_.IsRunning()) {
+  if (check_memory_pressure_timer_.IsRunning() ||
+      !base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
     return;
   }
 

@@ -13,6 +13,8 @@
                         (NSString*)nextButtonAccessibilityLabel
                 previousButtonAccessibilityLabel:
                     (NSString*)previousButtonAccessibilityLabel
+                           manualFillButtonTitle:
+                               (NSString*)manualFillButtonTitle
               manualFillButtonAccessibilityLabel:
                   (NSString*)manualFillButtonAccessibilityLabel
       passwordManualFillButtonAccessibilityLabel:
@@ -26,6 +28,7 @@
     _closeButtonAccessibilityLabel = [closeButtonAccessibilityLabel copy];
     _nextButtonAccessibilityLabel = [nextButtonAccessibilityLabel copy];
     _previousButtonAccessibilityLabel = [previousButtonAccessibilityLabel copy];
+    _manualFillButtonTitle = [manualFillButtonTitle copy];
     _manualFillButtonAccessibilityLabel =
         [manualFillButtonAccessibilityLabel copy];
     _passwordManualFillButtonAccessibilityLabel =

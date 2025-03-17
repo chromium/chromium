@@ -14,7 +14,9 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/video_frame.h"
@@ -198,7 +200,7 @@ class MockVaapiWrapper : public VaapiWrapper {
                    const gfx::Size& va_surface_dst_size,
                    std::optional<gfx::Rect> src_rect = std::nullopt,
                    std::optional<gfx::Rect> dest_rect = std::nullopt
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                    ,
                    VAProtectedSessionID va_protected_session_id = VA_INVALID_ID
 #endif
@@ -247,6 +249,7 @@ class MockVP9VaapiVideoEncoderDelegate : public VP9VaapiVideoEncoderDelegate {
     return false;
   }
 };
+
 }  // namespace
 
 struct VaapiVideoEncodeAcceleratorTestParam;
@@ -279,6 +282,7 @@ class VaapiVideoEncodeAcceleratorTest
   void SetUp() override {
     mock_vaapi_wrapper_ = base::MakeRefCounted<MockVaapiWrapper>(
         VaapiWrapper::kEncodeConstantBitrate);
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
 
     // In real usage, the VaapiWrapper expects to be constructed, used, and
     // destroyed on the same sequence. For testing, however, we create it in the
@@ -568,7 +572,9 @@ class VaapiVideoEncodeAcceleratorTest
     run_loop.Run();
   }
 
-  void EncodeSequenceForVP9MultipleSpatialLayers(size_t num_spatial_layers) {
+  void EncodeSequenceForVP9MultipleSpatialLayers(
+      size_t num_spatial_layers,
+      gpu::TestSharedImageInterface* test_sii) {
     constexpr auto kBitstreamIds = std::to_array<int32_t>({12, 13, 14});
     constexpr auto kEncodedChunkSizes =
         std::to_array<uint64_t>({1234, 1235, 1236});
@@ -735,12 +741,26 @@ class VaapiVideoEncodeAcceleratorTest
           }));
     }
 
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-        std::make_unique<FakeGpuMemoryBuffer>(
-            kDefaultEncodeSize, gfx::BufferFormat::YUV_420_BIPLANAR);
-    auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(kDefaultEncodeSize), kDefaultEncodeSize, std::move(gmb),
+    // Setting some default usage in order to get a mappable shared image.
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    CHECK(test_sii);
+
+    auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+    // Create a mappable shared image.
+    auto pixmap_handle =
+        CreatePixmapHandleForTesting(kDefaultEncodeSize, buffer_format);
+    auto shared_image = test_sii->CreateSharedImage(
+        {viz::GetSharedImageFormat(buffer_format), kDefaultEncodeSize,
+         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         "VaapiVideoEncodeAcceleratorTest"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+        std::move(pixmap_handle));
+    auto frame = VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+        base::NullCallback(), gfx::Rect(kDefaultEncodeSize), kDefaultEncodeSize,
         base::TimeDelta());
+
     ASSERT_TRUE(frame);
     encoder_->Encode(std::move(frame), /*force_keyframe=*/false);
     run_loop.Run();
@@ -755,6 +775,7 @@ class VaapiVideoEncodeAcceleratorTest
   // calls Destroy() so that destruction threading is respected.
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   scoped_refptr<MockVaapiWrapper> mock_vpp_vaapi_wrapper_;
   raw_ptr<MockVP9VaapiVideoEncoderDelegate, AcrossTasksDanglingUntriaged>
       mock_encoder_ = nullptr;
@@ -863,7 +884,8 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithMultipleSpatialLayers) {
   SetDefaultMocksBehavior(config);
 
   InitializeSequenceForVP9(config);
-  EncodeSequenceForVP9MultipleSpatialLayers(num_of_spatial_layers);
+  EncodeSequenceForVP9MultipleSpatialLayers(num_of_spatial_layers,
+                                            test_sii_.get());
 }
 
 // This test verifies Initialize() fails with correct corresponding error

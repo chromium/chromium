@@ -4,19 +4,22 @@
 
 package org.chromium.chrome.browser.password_manager.account_storage_notice;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -32,6 +35,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Coordinator for the UI described in account_storage_notice.h, meant to be used from native. */
+@NullMarked
 class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     // The reason the notice was closed.
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -95,7 +99,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
             WindowAndroid windowAndroid, PrefService prefService) {
         AccountStorageNoticeCoordinator coordinator =
                 new AccountStorageNoticeCoordinator(windowAndroid);
-        BottomSheetControllerProvider.from(windowAndroid)
+        assumeNonNull(BottomSheetControllerProvider.from(windowAndroid))
                 .requestShowContent(coordinator.mView, /* animate= */ true);
         prefService.setBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN, true);
         return coordinator;
@@ -111,8 +115,9 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
         mView =
                 new AccountStorageNoticeView(
                         context, this::onButtonClicked, this::onSettingsLinkClicked);
-        @Nullable
-        BottomSheetController controller = BottomSheetControllerProvider.from(mWindowAndroid);
+
+        @Nullable BottomSheetController controller =
+                BottomSheetControllerProvider.from(mWindowAndroid);
         // Was checked in canShow() before.
         assert controller != null;
         controller.addObserver(this);
@@ -139,14 +144,14 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
         mShowingSheet = false;
 
         // The observer was notified, so the controller should be alive.
-        BottomSheetControllerProvider.from(mWindowAndroid).removeObserver(this);
+        assumeNonNull(BottomSheetControllerProvider.from(mWindowAndroid)).removeObserver(this);
 
         if (mCloseReason == CloseReason.OTHER
                 && (reason == StateChangeReason.SWIPE || reason == StateChangeReason.BACK_PRESS)) {
             mCloseReason = CloseReason.USER_DISMISSED;
         }
         RecordHistogram.recordEnumeratedHistogram(
-                CLOSE_REASON_METRIC, mCloseReason, CloseReason.MAX_VALUE + 1);
+                CLOSE_REASON_METRIC, mCloseReason, CloseReason.MAX_VALUE);
 
         if (mNativeCoordinatorObserver != 0) {
             AccountStorageNoticeCoordinatorJni.get().onClosed(mNativeCoordinatorObserver);
@@ -156,7 +161,9 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     @Override
     public void onSheetOpened(@StateChangeReason int reason) {
         // The observer was notified, so the controller should be alive.
-        if (BottomSheetControllerProvider.from(mWindowAndroid).getCurrentSheetContent() == mView) {
+        if (assumeNonNull(BottomSheetControllerProvider.from(mWindowAndroid))
+                        .getCurrentSheetContent()
+                == mView) {
             mShowingSheet = true;
         }
     }
@@ -187,8 +194,9 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     }
 
     private void hideWithReason(@CloseReason int closeReason, boolean animate) {
-        @Nullable
-        BottomSheetController controller = BottomSheetControllerProvider.from(mWindowAndroid);
+
+        @Nullable BottomSheetController controller =
+                BottomSheetControllerProvider.from(mWindowAndroid);
         if (controller == null) {
             // There isn't even a sheet controller anymore, nothing else to do.
             return;

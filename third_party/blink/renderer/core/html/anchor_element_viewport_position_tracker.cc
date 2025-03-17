@@ -193,11 +193,11 @@ void AnchorElementViewportPositionTracker::RemoveAnchor(
     HTMLAnchorElementBase& anchor) {
   if (DOMNodeId node_id = DOMNodeIds::ExistingIdForNode(&anchor);
       node_id && max_number_of_observations_) {
-    // Note: We use base::ranges::find instead of std::set::find here
+    // Note: We use std::ranges::find instead of std::set::find here
     // (and below) as we don't have a way to map HTMLAnchorElementBase ->
     // AnchorObservation. We could add one if doing an O(N) find here is too
     // expensive.
-    if (auto observed_anchors_it = base::ranges::find(
+    if (auto observed_anchors_it = std::ranges::find(
             observed_anchors_, node_id, &AnchorObservation::dom_node_id);
         observed_anchors_it != observed_anchors_.end()) {
       if (intersection_observer_) {
@@ -215,8 +215,8 @@ void AnchorElementViewportPositionTracker::RemoveAnchor(
             not_observed_anchors_.extract(largest_non_observed_anchor_it));
       }
     } else if (auto not_observed_anchors_it =
-                   base::ranges::find(not_observed_anchors_, node_id,
-                                      &AnchorObservation::dom_node_id);
+                   std::ranges::find(not_observed_anchors_, node_id,
+                                     &AnchorObservation::dom_node_id);
                not_observed_anchors_it != not_observed_anchors_.end()) {
       not_observed_anchors_.erase(not_observed_anchors_it);
     }

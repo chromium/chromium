@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/access_code_input.h"
@@ -108,7 +109,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
                    const std::u16string& description);
 
  private:
-  void OnAuthSubmit(bool authenticated_by_pin, const std::u16string& password);
+  void OnAuthSubmit(bool authenticated_by_pin, std::u16string_view password);
 
   void OnAuthComplete(std::unique_ptr<UserContext> user_context,
                       std::optional<AuthenticationError> authentication_error);

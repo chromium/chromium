@@ -9,8 +9,11 @@
 
 namespace data_sharing::features {
 namespace {
-const char kDataSharingDefaultUrl[] =
-    "https://shared-tabs-v3-dot-googwebreview.appspot.com/chrome/tabshare/";
+const char kDataSharingDefaultUrl[] = "https://www.google.com/chrome/tabshare/";
+const char kLearnMoreSharedTabGroupPageDefaultUrl[] = "https://support.google.com/chrome/?p=chrome_collaboration";
+const char kLearnAboutBlockedAccountsDefaultUrl[] = "https://support.google.com/accounts/answer/6388749";
+const char kActivityLogsDefaultUrl[] = "https://myactivity.google.com/product/chrome_shared_tab_group_activity?utm_source=chrome_collab";
+
 }
 
 BASE_FEATURE(kDataSharingFeature,
@@ -21,14 +24,49 @@ BASE_FEATURE(kDataSharingJoinOnly,
              "DataSharingJoinOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDataSharingAndroidV2,
-             "DataSharingAndroidV2",
+BASE_FEATURE(kDataSharingNonProductionEnvironment,
+             "DataSharingNonProductionEnvironment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",
     kDataSharingDefaultUrl);
+
+constexpr base::FeatureParam<ServerEnvironment>::Option
+    kServerEnvironmentOptions[] = {
+        {ServerEnvironment::kProduction, "production"},
+        {ServerEnvironment::kStaging, "staging"},
+        {ServerEnvironment::kAutopush, "autopush"}};
+
+constexpr base::FeatureParam<ServerEnvironment> kServerEnvironment(
+    &kDataSharingNonProductionEnvironment,
+    "server_environment",
+    ServerEnvironment::kAutopush,
+    &kServerEnvironmentOptions);
+
+ServerEnvironment GetServerEnvironmentParam() {
+  if (base::FeatureList::IsEnabled(kDataSharingNonProductionEnvironment)) {
+    return kServerEnvironment.Get();
+  } else {
+    return ServerEnvironment::kProduction;
+  }
+}
+
+constexpr base::FeatureParam<std::string> kLearnMoreSharedTabGroupPageURL(
+    &kDataSharingFeature,
+    "learn_more_shared_tab_group_page_url",
+    kLearnMoreSharedTabGroupPageDefaultUrl);
+
+constexpr base::FeatureParam<std::string> kLearnAboutBlockedAccountsURL(
+    &kDataSharingFeature,
+    "learn_about_blocked_accounts_url",
+    kLearnAboutBlockedAccountsDefaultUrl);
+
+constexpr base::FeatureParam<std::string> kActivityLogsURL(
+    &kDataSharingFeature,
+    "activity_logs_url",
+    kActivityLogsDefaultUrl);
 
 constexpr base::FeatureParam<base::TimeDelta>
     kDataSharingGroupDataPeriodicPollingInterval(

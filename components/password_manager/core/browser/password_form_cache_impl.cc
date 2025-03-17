@@ -60,7 +60,7 @@ void PasswordFormCacheImpl::AddFormManager(
 
 void PasswordFormCacheImpl::ResetSubmittedManager() {
   auto submitted_manager =
-      base::ranges::find_if(form_managers_, &PasswordFormManager::is_submitted);
+      std::ranges::find_if(form_managers_, &PasswordFormManager::is_submitted);
   if (submitted_manager != form_managers_.end()) {
     form_managers_.erase(submitted_manager);
   }

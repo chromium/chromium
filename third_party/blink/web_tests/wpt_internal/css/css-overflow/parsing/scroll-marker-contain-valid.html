@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Overflow: parsing scroll-marker-contain property valid values</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10916">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<div id="target"></div>
+<script>
+  test_valid_value('scroll-marker-contain', 'initial');
+  test_valid_value('scroll-marker-contain', 'inherit');
+  test_valid_value('scroll-marker-contain', 'unset');
+  test_valid_value('scroll-marker-contain', 'revert');
+
+  test_valid_value("scroll-marker-contain", 'none');
+  test_valid_value("scroll-marker-contain", 'auto');
+</script>

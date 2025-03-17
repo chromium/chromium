@@ -92,6 +92,9 @@ class USER_MANAGER_EXPORT User {
   // The displayed (non-canonical) user email.
   std::string display_email() const;
 
+  // Returns whether the User is managed by policy.
+  const std::optional<bool>& is_managed() const;
+
   // True if the user is affiliated to the device. Returns false if the
   // affiliation is not known. Use IsAffiliatedAsync if it's possible the call
   // is done before affiliation is established.
@@ -122,6 +125,8 @@ class USER_MANAGER_EXPORT User {
   // Returns the account name part of the email. Use the display form of the
   // email if available and use_display_name == true. Otherwise use canonical.
   std::string GetAccountName(bool use_display_email) const;
+
+  const std::string* GetAccountLocale() const { return account_locale_.get(); }
 
   // True if the user's session can be locked (i.e. the user has a password with
   // which to unlock the session).
@@ -220,8 +225,6 @@ class USER_MANAGER_EXPORT User {
 
   User(const AccountId& account_id, UserType type);
 
-  const std::string* GetAccountLocale() const { return account_locale_.get(); }
-
   // Setters are private so only UserManager can call them.
   void SetAccountLocale(const std::string& resolved_account_locale);
   void SetImage(std::unique_ptr<UserImage> user_image, int image_index);
@@ -259,8 +262,8 @@ class USER_MANAGER_EXPORT User {
     force_online_signin_ = force_online_signin;
   }
 
-  void set_username_hash(const std::string& username_hash) {
-    username_hash_ = username_hash;
+  void set_username_hash(std::string_view username_hash) {
+    username_hash_ = std::string(username_hash);
   }
 
   void set_is_logged_in(bool is_logged_in) { is_logged_in_ = is_logged_in; }
@@ -271,7 +274,7 @@ class USER_MANAGER_EXPORT User {
 
   void SetProfilePrefs(PrefService* prefs) { profile_prefs_ = prefs; }
 
-  void SetAffiliated(bool is_affiliated);
+  void SetUserPolicyStatus(bool is_managed, bool is_affiliated);
 
   AccountId account_id_;
   UserType type_;
@@ -320,6 +323,9 @@ class USER_MANAGER_EXPORT User {
 
   // True if the user is affiliated to the device.
   std::optional<bool> is_affiliated_;
+
+  // True if the user is managed by policy.
+  std::optional<bool> is_managed_;
 
   std::vector<base::OnceClosure> on_profile_created_observers_;
   std::vector<base::OnceCallback<void(bool is_affiliated)>>

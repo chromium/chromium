@@ -6,12 +6,14 @@
 #define NET_SOCKET_SOCKS_CONNECT_JOB_H_
 
 #include <memory>
+#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
@@ -122,6 +124,8 @@ class NET_EXPORT_PRIVATE SOCKSConnectJob : public ConnectJob,
                         HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         ConnectJob* job) override;
+  Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                        ConnectJob* job) override;
 
   // Runs the state transition loop.
   int DoLoop(int result);

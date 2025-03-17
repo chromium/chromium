@@ -9,7 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_holder.h"
+#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_cache.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_preferences.h"
@@ -142,8 +142,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
  private:
   class GLTextureIRepresentation;
   class DawnRepresentation;
+  class SkiaGraphiteDawnMetalRepresentation;
   class SkiaGaneshRepresentation;
-  class SkiaGraphiteRepresentation;
+  class SkiaGraphiteMetalRepresentation;
   class OverlayRepresentation;
 
   // SharedImageBacking:
@@ -211,11 +212,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   const uint32_t io_surface_format_;
   const gfx::GenericSharedMemoryId io_surface_id_;
 
-  // DawnSharedTextureHolder that keeps an internal cache of per-device
+  // DawnSharedTextureCache that keeps an internal cache of per-device
   // SharedTextureData that vends WebGPU textures for the underlying IOSurface.
-  std::unique_ptr<DawnSharedTextureHolder> dawn_texture_holder_;
+  scoped_refptr<DawnSharedTextureCache> dawn_texture_cache_;
 
-  DawnSharedTextureHolder* GetDawnTextureHolder();
+  const scoped_refptr<DawnSharedTextureCache>& GetDawnTextureCache();
 
   // Tracks the number of currently-ongoing accesses to a given WGPU texture.
   base::flat_map<WGPUTexture, int> wgpu_texture_ongoing_accesses_;

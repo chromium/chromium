@@ -137,18 +137,22 @@ void TabUsageRecorderBrowserAgent::RecordTabSwitched(
   // since the last time this tab was selected.  I.e. going to incognito and
   // back to normal mode is an event we want to track, but simply going into
   // stack view and back out, without changing modes, isn't.
-  if (new_web_state == old_web_state && new_web_state != mode_switch_web_state_)
+  if (new_web_state == old_web_state &&
+      new_web_state != mode_switch_web_state_) {
     return;
+  }
   mode_switch_web_state_ = nullptr;
 
   // Disregard opening a new tab with no previous tab. Or closing the last tab.
-  if (!old_web_state || !new_web_state)
+  if (!old_web_state || !new_web_state) {
     return;
+  }
 
   ResetEvictedTab();
 
-  if (ShouldIgnoreWebState(new_web_state) || was_just_created)
+  if (ShouldIgnoreWebState(new_web_state) || was_just_created) {
     return;
+  }
 
   // Should never happen.  Keeping the check to ensure that the prerender logic
   // is never overlooked, should behavior at the tab_model level change.
@@ -178,8 +182,9 @@ void TabUsageRecorderBrowserAgent::RecordPrimaryBrowserChange(
   if (primary_browser) {
     // User just came back to this tab model, so record a tab selection even
     // though the current tab was reselected.
-    if (mode_switch_web_state_ == active_web_state)
+    if (mode_switch_web_state_ == active_web_state) {
       RecordTabSwitched(active_web_state, active_web_state);
+    }
   } else {
     // Keep track of the selected tab when this tab model is moved to
     // background. This way when the tab model is moved to the foreground, and
@@ -197,10 +202,12 @@ void TabUsageRecorderBrowserAgent::RecordPageLoadStart(
       // On the iPad, there is no notification that a tab is being re-selected
       // after changing modes.  This catches the case where the pre-incognito
       // selected tab is selected again when leaving incognito mode.
-      if (mode_switch_web_state_ == web_state)
+      if (mode_switch_web_state_ == web_state) {
         RecordTabSwitched(web_state, web_state);
-      if (evicted_web_state_ == web_state)
+      }
+      if (evicted_web_state_ == web_state) {
         RecordRestoreStartTime();
+      }
     }
   } else {
     ResetEvictedTab();
@@ -209,8 +216,9 @@ void TabUsageRecorderBrowserAgent::RecordPageLoadStart(
 
 void TabUsageRecorderBrowserAgent::RecordPageLoadDone(
     web::WebState* web_state) {
-  if (!web_state)
+  if (!web_state) {
     return;
+  }
   if (web_state == evicted_web_state_) {
     ResetEvictedTab();
   }
@@ -348,8 +356,9 @@ bool TabUsageRecorderBrowserAgent::WebStateAlreadyEvicted(
 
 tab_usage_recorder::TabStateWhenSelected
 TabUsageRecorderBrowserAgent::ExtractWebStateState(web::WebState* web_state) {
-  if (!web_state->IsEvicted())
+  if (!web_state->IsEvicted()) {
     return tab_usage_recorder::IN_MEMORY;
+  }
 
   auto iter = evicted_web_states_.find(web_state);
   if (iter != evicted_web_states_.end()) {
@@ -373,26 +382,31 @@ void TabUsageRecorderBrowserAgent::RecordRestoreStartTime() {
 int TabUsageRecorderBrowserAgent::GetLiveWebStatesCount() const {
   int count = 0;
   for (int index = 0; index < web_state_list_->count(); ++index) {
-    if (!web_state_list_->GetWebStateAt(index)->IsEvicted())
+    if (!web_state_list_->GetWebStateAt(index)->IsEvicted()) {
       ++count;
+    }
   }
   return count;
 }
 
 void TabUsageRecorderBrowserAgent::OnWebStateDestroyed(
     web::WebState* web_state) {
-  if (web_state == web_state_created_selected_)
+  if (web_state == web_state_created_selected_) {
     web_state_created_selected_ = nullptr;
+  }
 
-  if (web_state == evicted_web_state_)
+  if (web_state == evicted_web_state_) {
     evicted_web_state_ = nullptr;
+  }
 
-  if (web_state == mode_switch_web_state_)
+  if (web_state == mode_switch_web_state_) {
     mode_switch_web_state_ = nullptr;
+  }
 
   auto evicted_web_states_iter = evicted_web_states_.find(web_state);
-  if (evicted_web_states_iter != evicted_web_states_.end())
+  if (evicted_web_states_iter != evicted_web_states_.end()) {
     evicted_web_states_.erase(evicted_web_states_iter);
+  }
 
   web_state->RemoveObserver(this);
 }
@@ -400,11 +414,13 @@ void TabUsageRecorderBrowserAgent::OnWebStateDestroyed(
 bool TabUsageRecorderBrowserAgent::IsTransitionBetweenDesktopAndMobileUserAgent(
     web::UserAgentType agent_type,
     web::UserAgentType other_agent_type) {
-  if (agent_type == web::UserAgentType::NONE)
+  if (agent_type == web::UserAgentType::NONE) {
     return false;
+  }
 
-  if (other_agent_type == web::UserAgentType::NONE)
+  if (other_agent_type == web::UserAgentType::NONE) {
     return false;
+  }
 
   return agent_type != other_agent_type;
 }

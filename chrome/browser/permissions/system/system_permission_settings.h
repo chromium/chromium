@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "components/content_settings/core/common/content_settings_types.h"

@@ -21,7 +21,7 @@ ArImageTransport::ArImageTransport(
 
 ArImageTransport::~ArImageTransport() = default;
 
-void ArImageTransport::DoRuntimeInitialization(int texture_taget) {
+void ArImageTransport::DoRuntimeInitialization() {
   renderer_ = std::make_unique<XrRenderer>();
   glGenTextures(1, &camera_texture_arcore_.id);
   camera_texture_arcore_.target = GL_TEXTURE_EXTERNAL_OES;

@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
@@ -151,7 +152,7 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
 
 void StartPrint(content::WebContents* contents) {
   printing::StartPrint(contents,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
 #endif
                        /*print_preview_disabled=*/false,

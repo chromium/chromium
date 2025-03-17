@@ -18,8 +18,6 @@
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/signin/public/identity_manager/tribool.h"
-#import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/credentials_cleaner_runner_factory.h"
@@ -34,17 +32,6 @@ namespace {
 
 using affiliations::AffiliationService;
 using password_manager::AffiliatedMatchHelper;
-
-// Returns what the profile store should do when sync is disabled, that is,
-// whether passwords might need to be deleted.
-syncer::WipeModelUponSyncDisabledBehavior
-GetWipeModelUponSyncDisabledBehaviorForProfileStore() {
-  if (IsFirstSessionAfterDeviceRestore() != signin::Tribool::kTrue) {
-    return syncer::WipeModelUponSyncDisabledBehavior::kNever;
-  }
-
-  return syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata;
-}
 
 }  // namespace
 
@@ -102,7 +89,7 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
       base::MakeRefCounted<password_manager::PasswordStore>(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
-              GetWipeModelUponSyncDisabledBehaviorForProfileStore(),
+              syncer::WipeModelUponSyncDisabledBehavior::kNever,
               profile->GetPrefs(), os_crypt_async));
 
   AffiliationService* affiliation_service =

@@ -54,8 +54,9 @@ std::string GetLocaleString(const icu::Locale& locale) {
     result += country;
   }
 
-  if (variant != nullptr && *variant != '\0')
+  if (variant != nullptr && *variant != '\0') {
     result += '@' + base::ToLowerASCII(variant);
+  }
 
   return result;
 }
@@ -71,10 +72,12 @@ base::i18n::TextDirection GetCharacterDirection(UChar32 character) {
     std::string force_flag =
         command_line->GetSwitchValueASCII(switches::kForceTextDirection);
 
-    if (force_flag == switches::kForceDirectionRTL)
+    if (force_flag == switches::kForceDirectionRTL) {
       return base::i18n::RIGHT_TO_LEFT;
-    if (force_flag == switches::kForceDirectionLTR)
+    }
+    if (force_flag == switches::kForceDirectionLTR) {
       return base::i18n::LEFT_TO_RIGHT;
+    }
   }
   // Now that we have the character, we use ICU in order to query for the
   // appropriate Unicode BiDi character type.
@@ -113,11 +116,13 @@ std::string GetCanonicalLocale(const std::string& locale) {
 // Convert Chrome locale name to ICU locale name
 std::string ICULocaleName(const std::string& locale_string) {
   // If not Spanish, just return it.
-  if (locale_string.substr(0, 2) != "es")
+  if (locale_string.substr(0, 2) != "es") {
     return locale_string;
+  }
   // Expand es to es-ES.
-  if (EqualsCaseInsensitiveASCII(locale_string, "es"))
+  if (EqualsCaseInsensitiveASCII(locale_string, "es")) {
     return "es-ES";
+  }
   // Map es-419 (Latin American Spanish) to es-FOO depending on the system
   // locale.  If it's es-RR other than es-ES, map to es-RR. Otherwise, map
   // to es-MX (the most populous in Spanish-speaking Latin America).
@@ -178,8 +183,9 @@ bool ICUIsRTL() {
 TextDirection GetForcedTextDirection() {
 // On iOS, check for RTL forcing.
 #if BUILDFLAG(IS_IOS)
-  if (base::ios::IsInForcedRTL())
+  if (base::ios::IsInForcedRTL()) {
     return base::i18n::RIGHT_TO_LEFT;
+  }
 #endif
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -187,11 +193,13 @@ TextDirection GetForcedTextDirection() {
     std::string force_flag =
         command_line->GetSwitchValueASCII(switches::kForceUIDirection);
 
-    if (force_flag == switches::kForceDirectionLTR)
+    if (force_flag == switches::kForceDirectionLTR) {
       return base::i18n::LEFT_TO_RIGHT;
+    }
 
-    if (force_flag == switches::kForceDirectionRTL)
+    if (force_flag == switches::kForceDirectionRTL) {
       return base::i18n::RIGHT_TO_LEFT;
+    }
   }
 
   return base::i18n::UNKNOWN_DIRECTION;
@@ -200,8 +208,9 @@ TextDirection GetForcedTextDirection() {
 TextDirection GetTextDirectionForLocaleInStartUp(const char* locale_name) {
   // Check for direction forcing.
   TextDirection forced_direction = GetForcedTextDirection();
-  if (forced_direction != UNKNOWN_DIRECTION)
+  if (forced_direction != UNKNOWN_DIRECTION) {
     return forced_direction;
+  }
 
   CHECK(locale_name && locale_name[0]);
 
@@ -217,8 +226,9 @@ TextDirection GetTextDirectionForLocaleInStartUp(const char* locale_name) {
 TextDirection GetTextDirectionForLocale(const char* locale_name) {
   // Check for direction forcing.
   TextDirection forced_direction = GetForcedTextDirection();
-  if (forced_direction != UNKNOWN_DIRECTION)
+  if (forced_direction != UNKNOWN_DIRECTION) {
     return forced_direction;
+  }
 
   UErrorCode status = U_ZERO_ERROR;
   ULayoutType layout_dir = uloc_getCharacterOrientation(locale_name, &status);
@@ -235,8 +245,9 @@ TextDirection GetFirstStrongCharacterDirection(std::u16string_view text) {
     size_t next_position = position;
     U16_NEXT(text, next_position, length, character);
     TextDirection direction = GetCharacterDirection(character);
-    if (direction != UNKNOWN_DIRECTION)
+    if (direction != UNKNOWN_DIRECTION) {
       return direction;
+    }
     position = next_position;
   }
   return LEFT_TO_RIGHT;
@@ -249,8 +260,9 @@ TextDirection GetLastStrongCharacterDirection(std::u16string_view text) {
     size_t prev_position = position;
     U16_PREV(text, 0, prev_position, character);
     TextDirection direction = GetCharacterDirection(character);
-    if (direction != UNKNOWN_DIRECTION)
+    if (direction != UNKNOWN_DIRECTION) {
       return direction;
+    }
     position = prev_position;
   }
   return LEFT_TO_RIGHT;
@@ -267,8 +279,9 @@ TextDirection GetStringDirection(std::u16string_view text) {
     U16_NEXT(text, next_position, length, character);
     TextDirection direction = GetCharacterDirection(character);
     if (direction != UNKNOWN_DIRECTION) {
-      if (result != UNKNOWN_DIRECTION && result != direction)
+      if (result != UNKNOWN_DIRECTION && result != direction) {
         return UNKNOWN_DIRECTION;
+      }
       result = direction;
     }
     position = next_position;
@@ -281,23 +294,26 @@ TextDirection GetStringDirection(std::u16string_view text) {
 
 #if BUILDFLAG(IS_WIN)
 bool AdjustStringForLocaleDirection(std::u16string* text) {
-  if (!IsRTL() || text->empty())
+  if (!IsRTL() || text->empty()) {
     return false;
+  }
 
   // Marking the string as LTR if the locale is RTL and the string does not
   // contain strong RTL characters. Otherwise, mark the string as RTL.
   bool has_rtl_chars = StringContainsStrongRTLChars(*text);
-  if (!has_rtl_chars)
+  if (!has_rtl_chars) {
     WrapStringWithLTRFormatting(text);
-  else
+  } else {
     WrapStringWithRTLFormatting(text);
+  }
 
   return true;
 }
 
 bool UnadjustStringForLocaleDirection(std::u16string* text) {
-  if (!IsRTL() || text->empty())
+  if (!IsRTL() || text->empty()) {
     return false;
+  }
 
   *text = StripWrappingBidiControlCharacters(*text);
   return true;
@@ -329,8 +345,9 @@ bool AdjustStringForLocaleDirection(std::u16string* text) {
   // Unlike Windows, Linux and OS X can correctly display RTL glyphs out of the
   // box so there is no issue with displaying zero-width bidi control characters
   // on any system.  Thus no need for the !IsRTL() check here.
-  if (text->empty())
+  if (text->empty()) {
     return false;
+  }
 
   bool ui_direction_is_rtl = IsRTL();
 
@@ -358,20 +375,19 @@ bool AdjustStringForLocaleDirection(std::u16string* text) {
 }
 
 bool UnadjustStringForLocaleDirection(std::u16string* text) {
-  if (text->empty())
+  if (text->empty()) {
     return false;
+  }
 
   size_t begin_index = 0;
   char16_t begin = text->at(begin_index);
-  if (begin == kLeftToRightMark ||
-      begin == kRightToLeftMark) {
+  if (begin == kLeftToRightMark || begin == kRightToLeftMark) {
     ++begin_index;
   }
 
   size_t end_index = text->length() - 1;
   char16_t end = text->at(end_index);
-  if (end == kLeftToRightMark ||
-      end == kRightToLeftMark) {
+  if (end == kLeftToRightMark || end == kRightToLeftMark) {
     --end_index;
   }
 
@@ -393,8 +409,9 @@ void EnsureTerminatedDirectionalFormatting(std::u16string* text) {
       --count;
     }
   }
-  for (int j = 0; j < count; j++)
+  for (int j = 0; j < count; j++) {
     text->push_back(kPopDirectionalFormatting);
+  }
 }
 
 void SanitizeUserSuppliedString(std::u16string* text) {
@@ -413,8 +430,9 @@ bool StringContainsStrongRTLChars(std::u16string_view text) {
     // Now that we have the character, we use ICU in order to query for the
     // appropriate Unicode BiDi character type.
     int32_t property = u_getIntPropertyValue(character, UCHAR_BIDI_CLASS);
-    if ((property == U_RIGHT_TO_LEFT) || (property == U_RIGHT_TO_LEFT_ARABIC))
+    if ((property == U_RIGHT_TO_LEFT) || (property == U_RIGHT_TO_LEFT_ARABIC)) {
       return true;
+    }
 
     position = next_position;
   }
@@ -423,8 +441,9 @@ bool StringContainsStrongRTLChars(std::u16string_view text) {
 }
 
 void WrapStringWithLTRFormatting(std::u16string* text) {
-  if (text->empty())
+  if (text->empty()) {
     return;
+  }
 
   // Inserting an LRE (Left-To-Right Embedding) mark as the first character.
   text->insert(static_cast<size_t>(0), static_cast<size_t>(1),
@@ -435,8 +454,9 @@ void WrapStringWithLTRFormatting(std::u16string* text) {
 }
 
 void WrapStringWithRTLFormatting(std::u16string* text) {
-  if (text->empty())
+  if (text->empty()) {
     return;
+  }
 
   // Inserting an RLE (Right-To-Left Embedding) mark as the first character.
   text->insert(static_cast<size_t>(0), static_cast<size_t>(1),
@@ -481,13 +501,14 @@ std::u16string StripWrappingBidiControlCharacters(std::u16string_view text) {
   size_t begin_index = 0;
   char16_t begin = text[begin_index];
   if (begin == kLeftToRightEmbeddingMark ||
-      begin == kRightToLeftEmbeddingMark ||
-      begin == kLeftToRightOverride ||
-      begin == kRightToLeftOverride)
+      begin == kRightToLeftEmbeddingMark || begin == kLeftToRightOverride ||
+      begin == kRightToLeftOverride) {
     ++begin_index;
+  }
   size_t end_index = text.length() - 1;
-  if (text[end_index] == kPopDirectionalFormatting)
+  if (text[end_index] == kPopDirectionalFormatting) {
     --end_index;
+  }
   return std::u16string(text.substr(begin_index, end_index - begin_index + 1));
 }
 

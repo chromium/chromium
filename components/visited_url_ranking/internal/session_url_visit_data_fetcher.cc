@@ -110,8 +110,6 @@ void SessionURLVisitDataFetcher::FetchURLVisitData(
     return;
   }
 
-  // TODO(crbug.com/335200723): Integrate client configurable merging and
-  // deduplication strategies provided via `FetchOptions`.
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
   if (base::Contains(fetcher_sources, Source::kForeign)) {
     std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>

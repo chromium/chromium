@@ -14,9 +14,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/echo/echo_util.h"
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/extensions/api/echo_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ash/components/report/utils/time_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
@@ -33,18 +35,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/echo_private_ash.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/lacros/window_utility.h"
-#include "chromeos/crosapi/mojom/echo_private.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace echo_api = extensions::api::echo_private;
 
@@ -77,23 +67,10 @@ EchoPrivateGetRegistrationCodeFunction::Run() {
 
   auto callback = base::BindOnce(
       &EchoPrivateGetRegistrationCodeFunction::RespondWithResult, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->echo_private_ash()
       ->GetRegistrationCode(type.value(), std::move(callback));
-#else
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
-      static_cast<uint32_t>(
-          lacros_service->GetInterfaceVersion<crosapi::mojom::EchoPrivate>()) >=
-          crosapi::mojom::EchoPrivate::kGetRegistrationCodeMinVersion) {
-    lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()
-        ->GetRegistrationCode(type.value(), std::move(callback));
-  } else {
-    return RespondNow(Error("EchoPrivate unavailable."));
-  }
-#endif
   return RespondLater();
 }
 
@@ -153,21 +130,16 @@ EchoPrivateGetOobeTimestampFunction::~EchoPrivateGetOobeTimestampFunction() =
     default;
 
 ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
-  chromeos::echo_util::GetOobeTimestamp(base::BindOnce(
-      &EchoPrivateGetOobeTimestampFunction::RespondWithResult, this));
-  return RespondLater();
-}
+  std::optional<base::Time> timestamp =
+      ash::report::utils::GetFirstActiveWeek();
 
-void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
-    std::optional<base::Time> timestamp) {
   if (!timestamp.has_value()) {
     // Returns an empty string on error.
-    Respond(WithArguments(std::string()));
-    return;
+    return RespondNow(WithArguments(std::string()));
   }
   std::string result = base::UnlocalizedTimeFormatWithPattern(
       timestamp.value(), "y-M-d", icu::TimeZone::getGMT());
-  Respond(WithArguments(std::move(result)));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction() =
@@ -214,7 +186,6 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
   }
 
   DCHECK(web_contents);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->echo_private_ash()
@@ -223,20 +194,6 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
           params->consent_requester.service_name,
           params->consent_requester.origin,
           base::BindOnce(&EchoPrivateGetUserConsentFunction::Finalize, this));
-#else
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>()) {
-    const std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
-        web_contents->GetTopLevelNativeWindow());
-    lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()
-        ->CheckRedeemOffersAllowed(
-            std::move(window_id), params->consent_requester.service_name,
-            params->consent_requester.origin,
-            base::BindOnce(&EchoPrivateGetUserConsentFunction::Finalize, this));
-  } else {
-    return RespondNow(Error("EchoPrivate unavailable."));
-  }
-#endif
   return RespondLater();
 }
 

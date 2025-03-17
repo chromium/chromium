@@ -17,8 +17,8 @@ import {installMock} from './test_support.js';
 
 suite('LensUploadDialogTest', () => {
   let uploadDialog: LensUploadDialogElement;
-  let wrapperElement: HTMLDivElement;
-  let outsideClickTarget: HTMLDivElement;
+  let wrapperElement: HTMLElement;
+  let outsideClickTarget: HTMLElement;
   let windowProxy: TestMock<WindowProxy>;
   let metrics: MetricsTracker;
 
@@ -76,7 +76,7 @@ suite('LensUploadDialogTest', () => {
   test('hides when close button is clicked', async () => {
     // Act.
     const closeButton =
-        uploadDialog.shadowRoot!.querySelector<HTMLElement>('#closeButton');
+        uploadDialog.shadowRoot.querySelector<HTMLElement>('#closeButton');
     assertTrue(!!closeButton);
     closeButton.click();
     await microtasksFinished();
@@ -217,7 +217,7 @@ suite('LensUploadDialogTest', () => {
 
     // Assert.
     assertTrue(
-        isVisible(uploadDialog.shadowRoot!.querySelector('#offlineContainer')));
+        isVisible(uploadDialog.shadowRoot.querySelector('#offlineContainer')));
 
     // Reset.
     windowProxy.setResultFor('onLine', true);
@@ -237,22 +237,22 @@ suite('LensUploadDialogTest', () => {
 
         // Assert. (consistency check)
         assertTrue(isVisible(
-            uploadDialog.shadowRoot!.querySelector('#offlineContainer')));
+            uploadDialog.shadowRoot.querySelector('#offlineContainer')));
 
         // Arrange.
         windowProxy.setResultFor('onLine', true);
 
         // Act.
-        uploadDialog.shadowRoot!
+        uploadDialog.shadowRoot
             .querySelector<HTMLElement>('#offlineRetryButton')!.click();
         await microtasksFinished();
 
         // Assert.
         assertFalse(isVisible(
-            uploadDialog.shadowRoot!.querySelector('#offlineContainer')));
+            uploadDialog.shadowRoot.querySelector('#offlineContainer')));
       });
 
-  test('submit url does not submit with empty url', async () => {
+  test('submit url does not submit with empty url', () => {
     // Act.
     clickInputSubmit();
 
@@ -260,21 +260,20 @@ suite('LensUploadDialogTest', () => {
     assertFalse(submitUrlCalled);
   });
 
-  test(
-      'submit valid url by clicking submit button should submit ', async () => {
-        // Arrange.
-        const url = 'http://google.com/image.png';
+  test('submit valid url by clicking submit button should submit ', () => {
+    // Arrange.
+    const url = 'http://google.com/image.png';
 
-        // Act.
-        setInputBoxValue(url);
-        clickInputSubmit();
+    // Act.
+    setInputBoxValue(url);
+    clickInputSubmit();
 
-        // Assert.
-        assertTrue(submitUrlCalled);
-        assertEquals(url, submittedUrl);
-      });
+    // Assert.
+    assertTrue(submitUrlCalled);
+    assertEquals(url, submittedUrl);
+  });
 
-  test('pressing enter in input box should submit valid url', async () => {
+  test('pressing enter in input box should submit valid url', () => {
     // Arrange.
     const url = 'http://google.com/image.png';
 
@@ -287,7 +286,7 @@ suite('LensUploadDialogTest', () => {
     assertEquals(url, submittedUrl);
   });
 
-  test('pressing enter in search button should submit valid url', async () => {
+  test('pressing enter in search button should submit valid url', () => {
     // Arrange.
     const url = 'http://google.com/image.png';
 
@@ -301,7 +300,7 @@ suite('LensUploadDialogTest', () => {
     assertEquals(url, submittedUrl);
   });
 
-  test('pressing space in search button should submit valid url', async () => {
+  test('pressing space in search button should submit valid url', () => {
     // Arrange.
     const url = 'http://google.com/image.png';
 
@@ -337,14 +336,15 @@ suite('LensUploadDialogTest', () => {
         await microtasksFinished();
         // Assert.
         assertTrue(isVisible(
-            uploadDialog.shadowRoot!.querySelector('#urlUploadContainer')));
+            uploadDialog.shadowRoot.querySelector('#urlUploadContainer')));
       });
 
   test('drop event should submit files', async () => {
     // Arrange.
     let submitFileListCalled = false;
-    uploadDialog.$.lensForm.submitFileList = async (_fileList: FileList) => {
+    uploadDialog.$.lensForm.submitFileList = (_fileList: FileList) => {
       submitFileListCalled = true;
+      return Promise.resolve();
     };
     // Act.
     const dataTransfer = new DataTransfer();
@@ -366,7 +366,7 @@ suite('LensUploadDialogTest', () => {
 
     // Assert.
     assertTrue(
-        isVisible(uploadDialog.shadowRoot!.querySelector('#dragDropError')));
+        isVisible(uploadDialog.shadowRoot.querySelector('#dragDropError')));
     assertEquals(
         1,
         metrics.count(
@@ -391,7 +391,7 @@ suite('LensUploadDialogTest', () => {
 
     // Assert.
     assertFalse(
-        isVisible(uploadDialog.shadowRoot!.querySelector('#dragDropError')));
+        isVisible(uploadDialog.shadowRoot.querySelector('#dragDropError')));
   });
 
   test('shows loading state when file is submitted', async () => {
@@ -403,7 +403,7 @@ suite('LensUploadDialogTest', () => {
 
     // Assert.
     assertTrue(
-        isVisible(uploadDialog.shadowRoot!.querySelector('#loadingContainer')));
+        isVisible(uploadDialog.shadowRoot.querySelector('#loadingContainer')));
     assertEquals(
         1,
         metrics.count(
@@ -420,7 +420,7 @@ suite('LensUploadDialogTest', () => {
 
     // Assert.
     assertTrue(
-        isVisible(uploadDialog.shadowRoot!.querySelector('#loadingContainer')));
+        isVisible(uploadDialog.shadowRoot.querySelector('#loadingContainer')));
     assertEquals(
         1,
         metrics.count(
@@ -429,7 +429,7 @@ suite('LensUploadDialogTest', () => {
   });
 
   function getInputBox(): HTMLInputElement {
-    return uploadDialog.shadowRoot!.querySelector('#inputBox')!;
+    return uploadDialog.shadowRoot.querySelector('#inputBox')!;
   }
 
   function setInputBoxValue(value: string) {
@@ -439,7 +439,7 @@ suite('LensUploadDialogTest', () => {
   }
 
   function getInputSubmit(): HTMLInputElement {
-    return uploadDialog.shadowRoot!.querySelector('#inputSubmit')!;
+    return uploadDialog.shadowRoot.querySelector('#inputSubmit')!;
   }
 
   function clickInputSubmit() {

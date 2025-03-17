@@ -5,10 +5,72 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_DATA_MODEL_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_DATA_MODEL_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 namespace autofill::data_util {
+
+// A date consists of a year, month, and day.
+// Zero values represent that the value is absent.
+struct Date {
+  friend bool operator==(const Date&, const Date&) = default;
+
+  int year = 0;
+  int month = 0;
+  int day = 0;
+};
+
+// Indicates if `format` is (only) a date format string.
+//
+// A format string contains
+// - at least a year, a month, or a day placeholder
+// - at most one year, at most one month, and at most one day placeholder,
+// - optional separators between these placeholders, and
+// - nothing else.
+//
+// A year placeholder is YYYY or YY, a month placeholder is MM or M, a day
+// placeholder is DD or D. Separators are /, ., -, optionally surrounded by
+// one space on each side, or space itself. If `format` contains two separators,
+// they must be identical.
+//
+// This is to ensure that `format` does not encode non-trivial information.
+bool IsValidDateFormat(std::u16string_view format);
+
+// Parses `date` according to `format` and populates the values in `result`
+// accordingly. Returns `true` iff `date` matches the `format`.
+//
+// For example, ParseDate(u"2025-09-10", u"YYYY-MM-DD", result) returns true and
+// sets `result` to Date{.year = 2025, .month = 9, .day = 10}.
+//
+// For partial matches, the first matches are populated in `result`. For
+// example, ParseDate(u"2025-XX-10", u"YYYY-MM-DD", result) returns false but
+// does populate `result.year`.
+//
+// This function is minimalistic and cheap (~1000x cheaper than parsing with
+// ICU without caching the SimpleDateFormat).
+bool ParseDate(std::u16string_view date,
+               std::u16string_view format,
+               Date& result);
+
+// Returns true iff all values requested by `format` are valid in `date`:
+// - If `format` contains a year, the date's year must be in the range 1 to 9999
+//   (inclusive).
+// - If `format` contains a month, the date's month must be in the range 1 to 12
+//   (inclusive).
+// - If `format` contains a day, the date's day must be in the range 1 to 28,
+//   29, 30, or 31 (inclusive) depending on the month and year in the date. If
+//   the date's month and/or year are zero, the function leans towards the
+//   maximum (i.e., it assumes the year is a leap year and/or the month has 31
+//   days).
+bool IsValidDateForFormat(const Date& date, std::u16string_view format);
+
+// Replaces the occurrences of YYYY, YY, MM, M, DD, D in `format` with the
+// values from `date`.
+//
+// This function is minimalistic and cheap (~400x cheaper than parsing with
+// ICU without caching the SimpleDateFormat).
+std::u16string FormatDate(Date date, std::u16string_view format);
 
 // Converts the integer |expiration_month| to std::u16string. Returns a value
 // between ["01"-"12"].

@@ -20,11 +20,12 @@ class MockSessionAuthzServiceClient : public SessionAuthzServiceClient {
   MOCK_METHOD(void, GenerateHostToken, (GenerateHostTokenCallback callback));
   MOCK_METHOD(void,
               VerifySessionToken,
-              (const internal::VerifySessionTokenRequestStruct& request,
+              (std::string_view session_token,
                VerifySessionTokenCallback callback));
   MOCK_METHOD(void,
               ReauthorizeHost,
-              (const internal::ReauthorizeHostRequestStruct& request,
+              (std::string_view session_reauth_token,
+               std::string_view session_id,
                ReauthorizeHostCallback callback));
 };
 

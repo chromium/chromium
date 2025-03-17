@@ -85,7 +85,7 @@ suite('SitePermissionsBySite', function() {
     await microtasksFinished();
 
     const sitePermissionGroups =
-        element.shadowRoot!.querySelectorAll<HTMLElement>(
+        element.shadowRoot.querySelectorAll<HTMLElement>(
             'site-permissions-site-group');
     assertEquals(2, sitePermissionGroups.length);
   });
@@ -112,7 +112,7 @@ suite('SitePermissionsBySite', function() {
         await microtasksFinished();
 
         const sitePermissionGroups =
-            element.shadowRoot!.querySelectorAll<HTMLElement>(
+            element.shadowRoot.querySelectorAll<HTMLElement>(
                 'site-permissions-site-group');
         assertEquals(1, sitePermissionGroups.length);
       });
@@ -143,7 +143,7 @@ suite('SitePermissionsBySite', function() {
         await microtasksFinished();
 
         const sitePermissionGroups =
-            element.shadowRoot!.querySelectorAll<HTMLElement>(
+            element.shadowRoot.querySelectorAll<HTMLElement>(
                 'site-permissions-site-group');
         assertEquals(1, sitePermissionGroups.length);
       });

@@ -56,6 +56,7 @@ namespace net {
 
 class DnsClient;
 class DnsProbeRunner;
+class HostResolverInternalResult;
 class IPAddress;
 class MDnsClient;
 class ClientSocketFactory;
@@ -197,6 +198,8 @@ class NET_EXPORT HostResolverManager
   void SetDnsConfigOverrides(DnsConfigOverrides overrides);
 
   void SetIPv6ReachabilityOverride(bool reachability_override);
+
+  bool IsHappyEyeballsV3Enabled() const;
 
   // Support for invalidating cached per-context data on changes to network or
   // DNS configuration. ContextHostResolvers should register/deregister
@@ -396,8 +399,8 @@ class NET_EXPORT HostResolverManager
 
   // Iff we have a DnsClient with a valid DnsConfig and we're not about to
   // attempt a system lookup, then try to resolve the query using the HOSTS
-  // file.
-  std::optional<HostCache::Entry> ServeFromHosts(
+  // file. Returns empty set if HOSTS lookup not attempted.
+  std::set<std::unique_ptr<HostResolverInternalResult>> ServeFromHosts(
       std::string_view hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,
@@ -573,6 +576,10 @@ class NET_EXPORT HostResolverManager
 
   // When true, query AAAA even when the globally reachable check failed.
   bool ipv6_reachability_override_ = false;
+
+  // Optional boolean that explicitly enables or disables the HappyEyeballsV3
+  // feature.
+  const std::optional<bool> is_happy_eyeballs_v3_enabled_;
 
   // Any resolver flags that should be added to a request by default.
   HostResolverFlags additional_resolver_flags_ = 0;

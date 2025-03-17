@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/cert/internal/trust_store_nss.h"
 
 #include <cert.h>
@@ -110,12 +115,10 @@ bool IsMozillaCaPolicyProvided(PK11SlotInfo* slot,
                               /*haslock=*/PR_FALSE) == CK_TRUE;
 }
 
-bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
-  // In this path, `cert` could be a client certificate, so we should not skip
-  // the chaps module.
+bool IsCertOnlyInNSSRoots(CERTCertificate* cert, bool ignore_chaps_module) {
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
       slots_and_handles_for_cert =
-          GetAllSlotsAndHandlesForCert(cert, /*ignore_chaps_module=*/false);
+          GetAllSlotsAndHandlesForCert(cert, ignore_chaps_module);
   for (const auto& [slot, handle] : slots_and_handles_for_cert) {
     if (IsMozillaCaPolicyProvided(slot.get(), handle)) {
       // Cert is an NSS root. Continue looking to see if it also is present in
@@ -220,6 +223,13 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 
 std::vector<TrustStoreNSS::ListCertsResult>
 TrustStoreNSS::ListCertsIgnoringNSSRoots() {
+  // In this path, the returned certs could include client certificates, so we
+  // should not skip the chaps module.
+  return ListCertsIgnoringNSSRootsImpl(/*ignore_chaps_module=*/false);
+}
+
+std::vector<TrustStoreNSS::ListCertsResult>
+TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
   crypto::ScopedCERTCertList cert_list;
@@ -245,7 +255,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
   CERTCertListNode* node;
   for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
        node = CERT_LIST_NEXT(node)) {
-    if (IsCertOnlyInNSSRoots(node->cert)) {
+    if (IsCertOnlyInNSSRoots(node->cert, ignore_chaps_module)) {
       continue;
     }
     results.emplace_back(x509_util::DupCERTCertificate(node->cert),
@@ -516,7 +526,11 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
 std::vector<PlatformTrustStore::CertWithTrust>
 TrustStoreNSS::GetAllUserAddedCerts() {
   std::vector<PlatformTrustStore::CertWithTrust> user_added_certs;
-  for (const auto& cert_result : ListCertsIgnoringNSSRoots()) {
+  // Do not consider certs from Chaps here, as there should be no way for a
+  // user to have client cert in Chaps with a server auth trust setting.
+  std::vector<ListCertsResult> certs =
+      ListCertsIgnoringNSSRootsImpl(/*ignore_chaps_module=*/true);
+  for (const auto& cert_result : certs) {
     // Skip user certs, unless the user added the user cert with specific
     // server auth trust settings.
     if (cert_result.trust.HasUnspecifiedTrust() &&

@@ -6,7 +6,7 @@
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -16,9 +16,7 @@ bool ShouldShowCardMetadata(const CreditCard& card) {
   // The product name and the art image must both be valid.
   return !card.product_description().empty() &&
          card.card_art_url().is_valid() &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardProductName) &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
+         base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
 }
 
 bool DidDisplayBenefitForCard(const CreditCard& card,

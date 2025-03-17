@@ -4,16 +4,19 @@
 
 #include "components/ip_protection/common/ip_protection_token_mojo_fetcher.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/mojom/core.mojom.h"
-#include "components/ip_protection/mojom/data_types_mojom_traits.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ip_protection {
 

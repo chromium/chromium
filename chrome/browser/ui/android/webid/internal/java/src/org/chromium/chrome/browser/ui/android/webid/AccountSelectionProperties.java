@@ -32,6 +32,22 @@ class AccountSelectionProperties {
     public static final int ITEM_TYPE_ACCOUNT = 1;
     public static final int ITEM_TYPE_ADD_ACCOUNT = 2;
 
+    /**
+     * The data needed for a button in the AccountSelection sheet. It may be a continue button for
+     * an account, a login URL for an IDP, or an error dialog, so we need to include Account and IDP
+     * information.
+     */
+    static class ButtonData {
+        ButtonData(Account account, IdentityProviderMetadata idpMetadata) {
+            mAccount = account;
+            mIdpMetadata = idpMetadata;
+        }
+
+        public Account mAccount;
+        public IdentityProviderMetadata mIdpMetadata;
+    }
+    ;
+
     /** Properties for an account entry in AccountSelection sheet. */
     static class AccountProperties {
         static class Avatar {
@@ -51,10 +67,12 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("avatar");
         static final ReadableObjectPropertyKey<Account> ACCOUNT =
                 new ReadableObjectPropertyKey<>("account");
-        static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
+        static final ReadableBooleanPropertyKey SHOW_IDP =
+                new ReadableBooleanPropertyKey("show_idp");
+        static final ReadableObjectPropertyKey<Callback<ButtonData>> ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("on_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {AVATAR, ACCOUNT, ON_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = {AVATAR, ACCOUNT, SHOW_IDP, ON_CLICK_LISTENER};
 
         private AccountProperties() {}
     }
@@ -71,7 +89,7 @@ class AccountSelectionProperties {
             SIGN_IN_TO_IDP_STATIC,
             SIGN_IN_ERROR,
             LOADING,
-            REQUEST_PERMISSION
+            REQUEST_PERMISSION_MODAL
         }
 
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
@@ -93,6 +111,8 @@ class AccountSelectionProperties {
                 new ReadableBooleanPropertyKey("is_multiple_account_chooser");
         static final ReadableObjectPropertyKey<Callback<View>> SET_FOCUS_VIEW_CALLBACK =
                 new ReadableObjectPropertyKey<>("set_focus_view_callback");
+        static final ReadableBooleanPropertyKey IS_MULTIPLE_IDPS =
+                new ReadableBooleanPropertyKey("is_multiple_idps");
 
         static final PropertyKey[] ALL_KEYS = {
             CLOSE_ON_CLICK_LISTENER,
@@ -104,7 +124,8 @@ class AccountSelectionProperties {
             RP_CONTEXT,
             RP_MODE,
             IS_MULTIPLE_ACCOUNT_CHOOSER,
-            SET_FOCUS_VIEW_CALLBACK
+            SET_FOCUS_VIEW_CALLBACK,
+            IS_MULTIPLE_IDPS
         };
 
         private HeaderProperties() {}
@@ -141,7 +162,7 @@ class AccountSelectionProperties {
         static class Properties {
             public Account mAccount;
             public IdentityProviderMetadata mIdpMetadata;
-            public Callback<Account> mOnClickListener;
+            public Callback<ButtonData> mOnClickListener;
             public HeaderProperties.HeaderType mHeaderType;
             public Callback<View> mSetFocusViewCallback;
         }
@@ -161,7 +182,7 @@ class AccountSelectionProperties {
     static class AddAccountButtonProperties {
         static class Properties {
             public IdentityProviderMetadata mIdpMetadata;
-            public Callback<Account> mOnClickListener;
+            public Callback<ButtonData> mOnClickListener;
             public @RpMode.EnumType int mRpMode;
         }
 

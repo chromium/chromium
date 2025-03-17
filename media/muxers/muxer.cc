@@ -17,17 +17,20 @@ Muxer::VideoParameters::VideoParameters(const VideoFrame& frame)
     : visible_rect_size(frame.visible_rect().size()),
       frame_rate(frame.metadata().frame_rate.value_or(0.0)),
       codec(VideoCodec::kUnknown),
-      color_space(frame.ColorSpace()) {}
+      color_space(frame.ColorSpace()),
+      transformation(frame.metadata().transformation) {}
 
 Muxer::VideoParameters::VideoParameters(
     gfx::Size visible_rect_size,
     double frame_rate,
     VideoCodec codec,
-    std::optional<gfx::ColorSpace> color_space)
+    std::optional<gfx::ColorSpace> color_space,
+    std::optional<VideoTransformation> transformation)
     : visible_rect_size(visible_rect_size),
       frame_rate(frame_rate),
       codec(codec),
-      color_space(color_space) {}
+      color_space(color_space),
+      transformation(transformation) {}
 
 Muxer::VideoParameters::VideoParameters(const VideoParameters&) = default;
 

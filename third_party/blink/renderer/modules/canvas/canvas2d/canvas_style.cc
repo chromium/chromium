@@ -129,7 +129,7 @@ void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags,
       break;
     case kImagePattern:
       GetCanvasPattern()->GetPattern()->ApplyToFlags(
-          flags, AffineTransformToSkMatrix(GetCanvasPattern()->GetTransform()));
+          flags, GetCanvasPattern()->GetTransform().ToSkMatrix());
       flags.setColor(SkColor4f(0.0f, 0.0f, 0.0f, global_alpha));
       break;
     default:

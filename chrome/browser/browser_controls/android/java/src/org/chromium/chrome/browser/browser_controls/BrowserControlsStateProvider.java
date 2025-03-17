@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.browser_controls;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** An interface for retrieving and monitoring browser controls state. */
+@NullMarked
 public interface BrowserControlsStateProvider {
     /**
      * The possible positions of the control container, which contains the browsing mode toolbar.
@@ -84,11 +85,13 @@ public interface BrowserControlsStateProvider {
          *     the controls will no longer be moved by viz, which happens only when the browser is
          *     forcing the controls to be fully shown/hidden.
          * @param constraints the visibility constraints of the browser controls.
+         * @param shouldUpdateOffsets should the offset be updated with the renderer's offset.
          */
         default void onControlsConstraintsChanged(
                 BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                 BrowserControlsOffsetTagsInfo offsetTagsInfo,
-                @BrowserControlsState int constraints) {}
+                @BrowserControlsState int constraints,
+                boolean shouldUpdateOffsets) {}
 
         /** Called when the background color of the controls container changes. */
         default void onBottomControlsBackgroundColorChanged(@ColorInt int color) {}
@@ -111,7 +114,8 @@ public interface BrowserControlsStateProvider {
     void removeObserver(Observer obs);
 
     /**
-     * @return The height of the top controls in pixels.
+     * @return The height of the top controls in pixels. During an animation that changes the
+     *     height, this function returns the final height after animation completes.
      */
     int getTopControlsHeight();
 

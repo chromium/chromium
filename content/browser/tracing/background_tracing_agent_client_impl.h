@@ -27,9 +27,9 @@ class BackgroundTracingAgentClientImpl
 
   // tracing::mojom::BackgroundTracingAgentClient methods:
   void OnInitialized() override;
-  void OnTriggerBackgroundTrace(
-      tracing::mojom::BackgroundTracingRulePtr rule,
-      std::optional<int32_t> histogram_value) override;
+  void OnTriggerBackgroundTrace(tracing::mojom::BackgroundTracingRulePtr rule,
+                                std::optional<int32_t> histogram_value,
+                                uint64_t flow_id) override;
 
  private:
   explicit BackgroundTracingAgentClientImpl(

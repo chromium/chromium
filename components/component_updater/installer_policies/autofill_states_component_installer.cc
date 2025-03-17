@@ -4,11 +4,12 @@
 
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 
+#include <algorithm>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -86,7 +87,7 @@ bool AutofillStatesComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // Verify that state files are present.
-  return base::ranges::count(
+  return std::ranges::count(
              AutofillStateFileNames(), true, [&](const auto& filename) {
                return base::PathExists(install_dir.Append(filename));
              }) > 0;

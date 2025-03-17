@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TraceReportElement} from './trace_report.js';
 import {ReportUploadState} from './trace_report.mojom-webui.js';
@@ -39,7 +39,12 @@ export function getHtml(this: TraceReportElement) {
           @click="${this.onCopyUploadRuleClick_}">
         ${this.trace.uploadRuleName}
       </button>
-      <div class="info">Trigger rule</div>
+      ${this.trace.uploadRuleValue !== null ? html`
+        <div class="trace-trigger-value">
+          Value: ${this.trace.uploadRuleValue}
+        </div>
+      ` : nothing}
+      <div class="info">Triggered rule</div>
     </div>
     <div class="trace-size-container">
       <div class="trace-size-value">${this.getTraceSize_()}</div>

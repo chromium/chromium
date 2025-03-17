@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_H_
 
+#include <deque>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -58,7 +59,6 @@ class DisplayResourceProvider;
 class FrameIntervalDecider;
 class OutputSurface;
 class RendererSettings;
-class SharedBitmapManager;
 class SkiaOutputSurface;
 class SoftwareRenderer;
 class OcclusionCuller;
@@ -88,7 +88,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // TODO(penghuang): Remove skia_output_surface when all DirectRenderer
   // subclasses are replaced by SkiaRenderer.
   Display(
-      SharedBitmapManager* bitmap_manager,
       gpu::SharedImageManager* shared_image_manager,
       gpu::Scheduler* gpu_scheduler,
       const RendererSettings& settings,
@@ -290,7 +289,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // ContextLostObserver implementation.
   void OnContextLost() override;
 
-  const raw_ptr<SharedBitmapManager> bitmap_manager_;
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
   const raw_ptr<gpu::Scheduler> gpu_scheduler_;
   const RendererSettings settings_;
@@ -362,9 +360,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // Callback that will be run after all pending swaps have acked.
   base::OnceClosure no_pending_swaps_callback_;
 
-  int64_t swapped_trace_id_ = 0;
-  int64_t last_swap_ack_trace_id_ = 0;
-  int64_t last_presented_trace_id_ = 0;
+  std::deque<int64_t> pending_swap_ack_trace_ids_;
+  std::deque<int64_t> pending_presented_trace_ids_;
   int pending_swaps_ = 0;
 
   uint64_t frame_sequence_number_ = 0;

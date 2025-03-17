@@ -7,16 +7,18 @@ import 'chrome://os-feedback/search_page.js';
 import 'chrome://os-feedback/share_data_page.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
+import type {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
 import {fakeFeedbackContext, fakeFeedbackContextWithoutLinkedCrossDevicePhone, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {AdditionalContextQueryParam, FeedbackFlowButtonClickEvent, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent, FeedbackFlowElement} from 'chrome://os-feedback/feedback_flow.js';
+import {AdditionalContextQueryParam, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {OS_FEEDBACK_TRUSTED_ORIGIN} from 'chrome://os-feedback/help_content.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
-import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, SendReportStatus} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
+import type {FeedbackContext} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
+import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, SendReportStatus} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
-import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
+import type {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -76,7 +78,7 @@ suite('FeedbackFlowTestSuite', () => {
       SearchPageElement|ShareDataPageElement|ConfirmationPageElement;
 
   function getActivePage<T extends ActivePageElement>(): T {
-    return page!.shadowRoot!.querySelector('.iron-selected') as T;
+    return page!.shadowRoot!.querySelector<T>('.iron-selected')!;
   }
 
   function verifyRecordExitPathCalled(
@@ -276,8 +278,8 @@ suite('FeedbackFlowTestSuite', () => {
     continueButton.click();
     await clickPromise;
 
-    assertEquals(FeedbackFlowState.SEARCH, eventDetail!.detail!.currentState);
-    assertEquals('abc', eventDetail!.detail!.description);
+    assertEquals(FeedbackFlowState.SEARCH, eventDetail!.detail.currentState);
+    assertEquals('abc', eventDetail!.detail.description);
 
     // Should move to share data page when click the continue button.
     activePage = getActivePage<ShareDataPageElement>();
@@ -437,16 +439,15 @@ suite('FeedbackFlowTestSuite', () => {
 
     const searchPage = findChildElement(page, '.iron-selected');
     assertTrue(!!searchPage);
-    assertEquals('searchPage', searchPage!.id);
+    assertEquals('searchPage', searchPage.id);
 
-    const inputElement = findChildElement(searchPage as Element, 'textarea') as
-        HTMLTextAreaElement;
+    const inputElement =
+        findChildElement(searchPage, 'textarea') as HTMLTextAreaElement;
     inputElement.value = 'wifi wi-fi internet network hotspot';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
     const continueButton =
-        findChildElement(searchPage as Element, '#buttonContinue') as
-        CrButtonElement;
+        findChildElement(searchPage, '#buttonContinue') as CrButtonElement;
     continueButton.click();
     await flushTasks();
 
@@ -467,14 +468,13 @@ suite('FeedbackFlowTestSuite', () => {
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    const inputElement = findChildElement(searchPage as Element, 'textarea') as
-        HTMLTextAreaElement;
+    const inputElement =
+        findChildElement(searchPage, 'textarea') as HTMLTextAreaElement;
     inputElement.value = 'wi-fi';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
     const continueButton =
-        findChildElement(searchPage as Element, '#buttonContinue') as
-        CrButtonElement;
+        findChildElement(searchPage, '#buttonContinue') as CrButtonElement;
     continueButton.click();
     await flushTasks();
 
@@ -495,14 +495,13 @@ suite('FeedbackFlowTestSuite', () => {
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    const inputElement = findChildElement(searchPage as Element, 'textarea') as
-        HTMLTextAreaElement;
+    const inputElement =
+        findChildElement(searchPage, 'textarea') as HTMLTextAreaElement;
     inputElement.value = 'wi-fi';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
     const continueButton =
-        findChildElement(searchPage as Element, '#buttonContinue') as
-        CrButtonElement;
+        findChildElement(searchPage, '#buttonContinue') as CrButtonElement;
     continueButton.click();
     await flushTasks();
 
@@ -904,7 +903,7 @@ suite('FeedbackFlowTestSuite', () => {
     await clickPromise;
 
     assertEquals(
-        FeedbackFlowState.CONFIRMATION, eventDetail!.detail!.currentState);
+        FeedbackFlowState.CONFIRMATION, eventDetail!.detail.currentState);
 
     // Should navigate to search page.
     const newActivePage = getActivePage<SearchPageElement>();
@@ -945,7 +944,7 @@ suite('FeedbackFlowTestSuite', () => {
 
     // Click send new report button.
     strictQuery(
-        '#buttonNewReport', confirmationPage!.shadowRoot, CrButtonElement)
+        '#buttonNewReport', confirmationPage.shadowRoot, CrButtonElement)
         .click();
     await goBackClickPromise;
 
@@ -956,7 +955,7 @@ suite('FeedbackFlowTestSuite', () => {
 
     // Add some text and clicks continue button.
     searchPage.setDescription(/*text=*/ 'abc123');
-    strictQuery('#buttonContinue', searchPage!.shadowRoot, CrButtonElement)
+    strictQuery('#buttonContinue', searchPage.shadowRoot, CrButtonElement)
         .click();
     await continueClickPromise;
 
@@ -1108,7 +1107,7 @@ suite('FeedbackFlowTestSuite', () => {
     const data = {
       id: 'help-content-clicked-for-testing',
     };
-    iframe.contentWindow!.parent!.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
+    iframe.contentWindow!.parent.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
 
     // Wait for the "help-content-clicked" message has been received.
     await resolver.promise;

@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -98,12 +98,12 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
   EXPECT_EQ(1, chromeos::FakePowerManagerClient::Get()
                    ->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(2u, disk_mount_manager_.unmounting_mount_paths().size());
-  EXPECT_EQ(1, base::ranges::count(disk_mount_manager_.unmounting_mount_paths(),
-                                   kDummyMountPathUsb));
-  EXPECT_EQ(1, base::ranges::count(disk_mount_manager_.unmounting_mount_paths(),
-                                   kDummyMountPathSd));
-  EXPECT_EQ(0, base::ranges::count(disk_mount_manager_.unmounting_mount_paths(),
-                                   kDummyMountPathUnknown));
+  EXPECT_EQ(1, std::ranges::count(disk_mount_manager_.unmounting_mount_paths(),
+                                  kDummyMountPathUsb));
+  EXPECT_EQ(1, std::ranges::count(disk_mount_manager_.unmounting_mount_paths(),
+                                  kDummyMountPathSd));
+  EXPECT_EQ(0, std::ranges::count(disk_mount_manager_.unmounting_mount_paths(),
+                                  kDummyMountPathUnknown));
   disk_mount_manager_.NotifyUnmountDeviceComplete(MountError::kSuccess);
   EXPECT_EQ(0, chromeos::FakePowerManagerClient::Get()
                    ->num_pending_suspend_readiness_callbacks());

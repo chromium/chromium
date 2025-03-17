@@ -52,7 +52,8 @@ AudioWorkletNode::AudioWorkletNode(
       param_automation_rate = AudioParamHandler::AutomationRate::kControl;
     }
     AudioParam* audio_param = AudioParam::Create(
-        context, Uuid(), AudioParamHandler::kParamTypeAudioWorklet,
+        context, Uuid(),
+        AudioParamHandler::AudioParamType::kParamTypeAudioWorklet,
         param_info.DefaultValue(), param_automation_rate,
         AudioParamHandler::AutomationRateMode::kVariable, param_info.MinValue(),
         param_info.MaxValue());
@@ -217,7 +218,9 @@ void AudioWorkletNode::FireProcessorError(
     AudioWorkletProcessorErrorState error_state) {
   DCHECK(IsMainThread());
   DCHECK(error_state == AudioWorkletProcessorErrorState::kConstructionError ||
-         error_state == AudioWorkletProcessorErrorState::kProcessError);
+         error_state == AudioWorkletProcessorErrorState::kProcessError ||
+         error_state ==
+             AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
 
   String error_message = "an error thrown from ";
   switch (error_state) {
@@ -228,6 +231,11 @@ void AudioWorkletNode::FireProcessorError(
       break;
     case AudioWorkletProcessorErrorState::kProcessError:
       error_message = error_message + "AudioWorkletProcessor::process() method";
+      break;
+    case AudioWorkletProcessorErrorState::kProcessMethodUndefinedError:
+      error_message = error_message +
+                      "AudioWorkletProcessor::process() method is undefined "
+                      "from the processor";
       break;
   }
   ErrorEvent* event = ErrorEvent::Create(

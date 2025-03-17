@@ -11,7 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
@@ -63,7 +63,11 @@ TEST_F(BrowserAccessibilityStateImplTest,
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility based on usage of accessibility APIs.
+  // This is screen reader mode, but doesn't mean a screen reader is running.
   state_->OnScreenReaderDetected();
+  // Indicate that an actual screen reader is not running (a screen reader
+  // will prevent auto-disable from taking place).
+  state_->SetKnownScreenReaderAppActive(false);
   EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
@@ -95,7 +99,11 @@ TEST_F(BrowserAccessibilityStateImplTest,
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility based on usage of accessibility APIs.
+  // This is screen reader mode, but doesn't mean a screen reader is running.
   state_->OnScreenReaderDetected();
+  // Indicate that an actual screen reader is not running (a screen reader
+  // will prevent auto-disable from taking place).
+  state_->SetKnownScreenReaderAppActive(false);
   EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 

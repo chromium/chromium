@@ -23,9 +23,6 @@
 
 namespace {
 
-constexpr base::TimeDelta kRendererHighMemoryUsageDetectionWindow =
-    base::Seconds(60);
-
 content::WebContents* g_last_visible_web_contents = nullptr;
 
 bool IsLastVisibleWebContents(content::WebContents* web_contents) {
@@ -208,10 +205,6 @@ void OomInterventionTabHelper::StartMonitoringIfNeeded() {
     if (receiver_.is_bound())
       return;
     StartDetectionInRenderer();
-  } else if (config->is_swap_monitor_enabled()) {
-    subscription_ = NearOomMonitor::GetInstance()->RegisterCallback(
-        base::BindRepeating(&OomInterventionTabHelper::OnNearOomDetected,
-                            base::Unretained(this)));
   }
 }
 
@@ -258,28 +251,6 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
   intervention_->StartDetection(
       receiver_.BindNewPipeAndPassRemote(), std::move(detection_args),
       renderer_pause_enabled, navigate_ads_enabled, purge_v8_memory_enabled);
-}
-
-void OomInterventionTabHelper::OnNearOomDetected() {
-  DCHECK(!OomInterventionConfig::GetInstance()->should_detect_in_renderer());
-  DCHECK_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
-  DCHECK(!near_oom_detected_time_);
-  subscription_ = {};
-
-  StartDetectionInRenderer();
-  DCHECK(!renderer_detection_timer_.IsRunning());
-  renderer_detection_timer_.Start(
-      FROM_HERE, kRendererHighMemoryUsageDetectionWindow,
-      base::BindOnce(&OomInterventionTabHelper::
-                         OnDetectionWindowElapsedWithoutHighMemoryUsage,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void OomInterventionTabHelper::
-    OnDetectionWindowElapsedWithoutHighMemoryUsage() {
-  ResetInterventionState();
-  ResetInterfaces();
-  StartMonitoringIfNeeded();
 }
 
 void OomInterventionTabHelper::ResetInterventionState() {

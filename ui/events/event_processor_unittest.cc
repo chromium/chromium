@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -381,9 +376,9 @@ TEST_F(EventProcessorTest, HandlerSequence) {
                    gfx::Point(10, 10), EventTimeForNow(), EF_NONE, EF_NONE);
   DispatchEvent(&mouse);
 
-  std::string expected[] = { "PreR", "PreC", "PreG", "G", "PostG", "PostC",
-      "PostR", "PreR", "PreC", "C", "PostC", "PostR", "PreR", "R", "PostR" };
-  EXPECT_EQ(std::vector<std::string>(expected, expected + std::size(expected)),
+  EXPECT_EQ(std::vector<std::string>({"PreR", "PreC", "PreG", "G", "PostG",
+                                      "PostC", "PostR", "PreR", "PreC", "C",
+                                      "PostC", "PostR", "PreR", "R", "PostR"}),
             recorder);
 
   grandchild_r->RemovePreTargetHandler(&pre_grandchild);

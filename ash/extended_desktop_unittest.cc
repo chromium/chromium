@@ -830,7 +830,7 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   views::Widget* lock_widget = CreateTestWidget(
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
   views::Textfield* textfield = new views::Textfield;
-  lock_widget->client_view()->AddChildView(textfield);
+  lock_widget->client_view()->AddChildViewRaw(textfield);
 
   Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                       kShellWindowId_LockScreenContainer)

@@ -4,8 +4,9 @@
 
 #include "ui/gtk/native_theme_gtk.h"
 
+#include <algorithm>
+
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -166,7 +167,7 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
   // HighContrast (GNOME) and ContrastHighInverse (MATE).  So infer the contrast
   // based on if the theme name contains both "high" and "contrast",
   // case-insensitive.
-  base::ranges::transform(theme_name, theme_name.begin(), ::tolower);
+  std::ranges::transform(theme_name, theme_name.begin(), ::tolower);
   bool high_contrast = theme_name.find("high") != std::string::npos &&
                        theme_name.find("contrast") != std::string::npos;
   SetPreferredContrast(

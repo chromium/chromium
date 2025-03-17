@@ -247,11 +247,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
   // WARNING: Make sure that features which load Chrome extension are not among
   // enabled_features (see |Set| test for the reason).
   std::vector<std::string> enabled_features = {
-      "cursorColor",
-      "cursorHighlight",
-      "highContrast",
-      "largeCursor",
-      "stickyKeys",
+      "cursorColor", "cursorHighlight", "highContrast",
+      "largeCursor", "stickyKeys",
   };
 
   std::vector<std::string> disabled_features = {
@@ -305,15 +302,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
   };
 
   std::vector<std::string> disabled_features = {
-      "autoclick",
-      "caretHighlight",
-      "cursorColor",
-      "focusHighlight",
-      "screenMagnifier",
-      "selectToSpeak",
-      "spokenFeedback",
-      "switchAccess",
-      "virtualKeyboard",
+      "autoclick",      "caretHighlight",  "cursorColor",
+      "focusHighlight", "screenMagnifier", "selectToSpeak",
+      "spokenFeedback", "switchAccess",    "virtualKeyboard",
   };
 
   ASSERT_TRUE(

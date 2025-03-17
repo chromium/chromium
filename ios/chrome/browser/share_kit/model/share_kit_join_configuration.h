@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "components/data_sharing/public/group_data.h"
 
-class GURL;
+@protocol ApplicationCommands;
+enum class ShareKitFlowOutcome;
+@class ShareKitPreviewItem;
 
 // Configuration object for joining a shared group.
 @interface ShareKitJoinConfiguration : NSObject
@@ -17,16 +20,28 @@ class GURL;
 // The base view controller on which the join flow will be presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
-// The URL used to join the group, containing the collab ID and the token.
-// TODO(crbug.com/377306986): Remove this.
-@property(nonatomic, assign) GURL URL;
+// Application commands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // The token used to join the group, containing the collab ID and the secret.
 @property(nonatomic, assign) data_sharing::GroupToken token;
 
-// Executed when the join flow ended. The `result` parameter indicates whether
-// the user successfully joined the group.
-@property(nonatomic, copy) void (^completionBlock)(BOOL result);
+// Executed when the join flow ended.
+@property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
+
+// The display name of the shared group.
+@property(nonatomic, copy) NSString* displayName;
+
+// The preview image to show in the Join screen.
+@property(nonatomic, strong) UIImage *previewImage;
+
+// The preview items to show in the preview screen.
+@property(nonatomic, copy) NSArray<ShareKitPreviewItem*>* previewItems;
+
+// Callback to be called when the collaboration group has been successfully
+// joined. The callback parameter is to be called to dismiss the screen.
+@property(nonatomic, copy) void (^joinCollaborationGroupSuccessBlock)
+    (ProceduralBlock);
 
 @end
 

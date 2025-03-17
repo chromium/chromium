@@ -4,18 +4,19 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+#include <algorithm>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <tuple>
 
+#include "base/check.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "url/gurl.h"
@@ -104,7 +105,7 @@ std::optional<StorageKey> StorageKey::Deserialize(std::string_view in) {
 
   // More than three encoded attributes (delimited by carets) indicates a
   // malformed input.
-  if (base::ranges::count(in, '^') > 3) {
+  if (std::ranges::count(in, '^') > 3) {
     return std::nullopt;
   }
 
@@ -195,7 +196,7 @@ std::optional<StorageKey> StorageKey::Deserialize(std::string_view in) {
       // Neither should be opaque and they cannot match as that would mean
       // we should have simply encoded the origin and the input is malformed.
       if (key_origin.opaque() || key_top_level_site.opaque() ||
-          net::SchemefulSite(key_origin) == key_top_level_site) {
+          key_top_level_site.IsSameSiteWith(key_origin)) {
         return std::nullopt;
       }
 
@@ -538,6 +539,10 @@ StorageKey StorageKey::Create(const url::Origin& origin,
 StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info) {
+  // Support for creating a StorageKey from IsolationInfos with special
+  // NetworkIsolationPartition is not implemented.
+  CHECK_EQ(isolation_info.GetNetworkIsolationPartition(),
+           net::NetworkIsolationPartition::kGeneral);
   if (isolation_info.nonce()) {
     // If the nonce is set we can use the simpler construction path.
     return CreateWithNonce(origin, *isolation_info.nonce());
@@ -551,7 +556,7 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
   // CrossSite. Otherwise if the top level site matches the new origin and the
   // site for cookies isn't empty it must be SameSite.
   if (!origin.opaque() && !top_level_site.opaque() &&
-      net::SchemefulSite(origin) == top_level_site &&
+      top_level_site.IsSameSiteWith(origin) &&
       !isolation_info.site_for_cookies().IsNull()) {
     ancestor_chain_bit = blink::mojom::AncestorChainBit::kSameSite;
   }
@@ -583,13 +588,13 @@ StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
     // necessarily be kSameSite if the TLS and origin do match, so we won't
     // adjust the other way.
     if (ancestor_chain_bit == blink::mojom::AncestorChainBit::kSameSite &&
-        net::SchemefulSite(origin) != top_level_site_) {
+        !top_level_site_.IsSameSiteWith(origin)) {
       ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
     }
 
     if (ancestor_chain_bit_if_third_party_enabled ==
             blink::mojom::AncestorChainBit::kSameSite &&
-        net::SchemefulSite(origin) != top_level_site_if_third_party_enabled) {
+        !top_level_site_if_third_party_enabled.IsSameSiteWith(origin)) {
       ancestor_chain_bit_if_third_party_enabled =
           blink::mojom::AncestorChainBit::kCrossSite;
     }
@@ -694,7 +699,7 @@ std::string StorageKey::Serialize() const {
               .GetTupleOrPrecursorTupleIfOpaque()
               .Serialize(),
       });
-    } else if (top_level_site_ == net::SchemefulSite(origin_)) {
+    } else if (top_level_site_.IsSameSiteWith(origin_)) {
       // Case 2.
       return base::StrCat({
           origin_.GetURL().spec(),
@@ -762,7 +767,7 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
         ancestor_full_string.substr(0, max_length - memory_dump_str.length()));
   }
 
-  base::ranges::replace_if(
+  std::ranges::replace_if(
       memory_dump_str.begin(), memory_dump_str.end(),
       [](char c) {
         return !absl::ascii_isalnum(static_cast<unsigned char>(c));
@@ -832,9 +837,8 @@ bool StorageKey::MatchesOriginForTrustedStorageDeletion(
   // SchemefulSites.
   // TODO(crbug.com/1410196): Test that StorageKeys corresponding to anonymous
   // iframes are handled appropriately here.
-  return IsFirstPartyContext()
-             ? (origin_ == origin)
-             : (top_level_site_ == net::SchemefulSite(origin));
+  return IsFirstPartyContext() ? (origin_ == origin)
+                               : (top_level_site_.IsSameSiteWith(origin));
 }
 
 bool StorageKey::MatchesRegistrableDomainForTrustedStorageDeletion(
@@ -850,24 +854,6 @@ bool StorageKey::ExactMatchForTesting(const StorageKey& other) const {
              other.ancestor_chain_bit_if_third_party_enabled_ &&
          this->top_level_site_if_third_party_enabled_ ==
              other.top_level_site_if_third_party_enabled_;
-}
-
-bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
-  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
-                  lhs.ancestor_chain_bit_) ==
-         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
-                  rhs.ancestor_chain_bit_);
-}
-
-bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
-  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
-                  lhs.ancestor_chain_bit_) <
-         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
-                  rhs.ancestor_chain_bit_);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk) {
@@ -890,7 +876,7 @@ bool StorageKey::IsValid() const {
   // If this key's "normal" members indicate a 3p key, then the
   // *_if_third_party_enabled counterparts must match them.
   if (!origin_.opaque() &&
-      (top_level_site_ != net::SchemefulSite(origin_) ||
+      (!top_level_site_.IsSameSiteWith(origin_) ||
        ancestor_chain_bit_ != blink::mojom::AncestorChainBit::kSameSite)) {
     if (top_level_site_ != top_level_site_if_third_party_enabled_) {
       return false;
@@ -903,13 +889,13 @@ bool StorageKey::IsValid() const {
   // If top_level_site* is cross-site to origin, then ancestor_chain_bit* must
   // indicate that. An opaque top_level_site* must have a cross-site
   // ancestor_chain_bit*.
-  if (top_level_site_ != net::SchemefulSite(origin_)) {
+  if (!top_level_site_.IsSameSiteWith(origin_)) {
     if (ancestor_chain_bit_ != blink::mojom::AncestorChainBit::kCrossSite) {
       return false;
     }
   }
 
-  if (top_level_site_if_third_party_enabled_ != net::SchemefulSite(origin_)) {
+  if (!top_level_site_if_third_party_enabled_.IsSameSiteWith(origin_)) {
     if (ancestor_chain_bit_if_third_party_enabled_ !=
         blink::mojom::AncestorChainBit::kCrossSite) {
       return false;
@@ -921,11 +907,11 @@ bool StorageKey::IsValid() const {
     if (nonce_->is_empty()) {
       return false;
     }
-    if (top_level_site_ != net::SchemefulSite(origin_)) {
+    if (!top_level_site_.IsSameSiteWith(origin_)) {
       return false;
     }
 
-    if (top_level_site_if_third_party_enabled_ != net::SchemefulSite(origin_)) {
+    if (!top_level_site_if_third_party_enabled_.IsSameSiteWith(origin_)) {
       return false;
     }
 

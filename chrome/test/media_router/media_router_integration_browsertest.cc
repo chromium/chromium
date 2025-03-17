@@ -18,7 +18,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -44,9 +43,9 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::WebContents;
 using testing::Optional;
@@ -88,14 +87,13 @@ MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest(
   feature_list_.InitWithFeatures(
       {
           media::kGlobalMediaControls,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           // Without this flag, SodaInstaller::GetInstance() fails a DCHECK
           // on Chrome OS. The call to SodaInstaller::GetInstance() is in
           // MediaDialogView::AddedToWidget(), which is called indirectly
           // from MediaDialogView::ShowDialogForPresentationRequest().
           ash::features::kOnDeviceSpeechRecognition,
-#endif
-#if !BUILDFLAG(IS_CHROMEOS)
+#else
           media::kGlobalMediaControlsUpdatedUI,
 #endif
       },
@@ -276,14 +274,14 @@ MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndChooseSink() {
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPage(
-    base::FilePath::StringPieceType file_name) {
+    base::FilePath::StringViewType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetTestPageUrl(full_path)));
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
-    base::FilePath::StringPieceType file_name) {
+    base::FilePath::StringViewType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestPageUrl(full_path),
@@ -310,7 +308,7 @@ void MediaRouterIntegrationBrowserTest::CheckStartFailed(
 }
 
 base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
-    base::FilePath::StringPieceType relative_path) const {
+    base::FilePath::StringViewType relative_path) const {
   const base::FilePath full_path =
       base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
           .Append(FILE_PATH_LITERAL("media_router/browser_test_resources/"))

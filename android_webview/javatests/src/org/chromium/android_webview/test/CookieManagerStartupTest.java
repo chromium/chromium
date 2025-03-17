@@ -46,7 +46,9 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
         mActivityTestRule =
                 new AwActivityTestRule(param.getMutation()) {
                     @Override
-                    public boolean needsAwBrowserContextCreated() {
+                    public boolean needsNativeInitialized() {
+                        // We don't want native to be initialized by default, as some CookieManager
+                        // tests here rely on it not being initialized by default.
                         return false;
                     }
 
@@ -78,12 +80,10 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
     }
 
     /**
-     * Called when a test wants to initiate normal Chromium process startup, after
-     * doing any CookieManager calls that are supposed to happen before the UI thread
-     * is committed.
+     * Called when a test wants to initiate normal Chromium process startup, after doing any
+     * CookieManager calls that are supposed to happen before the UI thread is committed.
      */
     private void startChromiumWithClient(TestAwContentsClient contentsClient) {
-        mActivityTestRule.createAwBrowserContext();
         mActivityTestRule.startBrowserProcess();
         mContentsClient = contentsClient;
         final AwTestContainerView testContainerView =

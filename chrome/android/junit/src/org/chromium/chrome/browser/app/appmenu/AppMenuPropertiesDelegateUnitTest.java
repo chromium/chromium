@@ -50,13 +50,13 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -76,6 +77,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -129,6 +131,7 @@ import java.util.Optional;
 /** Unit tests for {@link AppMenuPropertiesDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
+@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
 public class AppMenuPropertiesDelegateUnitTest {
 
     @Mock private ActivityTabProvider mActivityTabProvider;
@@ -173,7 +176,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     private ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
 
-    private final TestValues mTestValues = new TestValues();
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
     private MenuUiState mMenuUiState;
     private ShadowPackageManager mShadowPackageManager;
@@ -263,12 +265,10 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setupFeatureDefaults() {
         setShoppingListEligible(false);
-        FeatureList.setTestValues(mTestValues);
     }
 
     private void setShoppingListEligible(boolean enabled) {
         doReturn(enabled).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
-        FeatureList.setTestValues(mTestValues);
     }
 
     @Test
@@ -330,6 +330,50 @@ public class AppMenuPropertiesDelegateUnitTest {
                                                 .getDisplayMetrics()
                                                 .density));
         assertTrue(mAppMenuPropertiesDelegate.shouldShowIconRow());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw600dp")
+    public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndEnabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertTrue(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw600dp")
+    public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOffAndEnabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertFalse(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw600dp")
+    public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndDisabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(false);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertFalse(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    @Config(qualifiers = "sw320dp")
+    public void testShouldShowDownloadPageMenuItem_Phone_WithFeatureOnAndEnabledDownloadPage() {
+        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        assertFalse(
+                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
+                        mActivityTabProvider.get()));
     }
 
     @Test
@@ -396,6 +440,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             R.id.divider_line_id,
             R.id.share_row_menu_id,
             R.id.find_in_page_id,
+            R.id.open_with_id,
             R.id.divider_line_id,
             R.id.preferences_id,
             R.id.help_id
@@ -1129,6 +1174,21 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION})
+    public void testCustomizeNewTabPageOption() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        MenuItem item = menu.findItem(R.id.ntp_customization_id);
+        assertTrue(item.isEnabled());
+    }
+
+    @Test
     public void testShouldShowNewMenu_alreadyMaxWindows_returnsFalse() {
         assertFalse(
                 doTestShouldShowNewMenu(
@@ -1387,6 +1447,77 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     public void testReadaloudMenuItem_noChangeInReadability_readable() {
         testReadAloudMenuItemUpdates(/* initiallyReadable= */ true, /* laterReadable= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiWebMenuItem() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertTrue(
+                "AI Web menu item should be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertFalse(
+                "AI PDF menu item should not be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiWebMenuItem_shouldAppearOnWebPages() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertTrue(
+                "AI Web menu item should be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertFalse(
+                "AI PDF menu item should not be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiPdfMenuItem_shouldAppearOnPdfPages() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1_WITH_PDF_PATH);
+        var pdfNativePage = mock(PdfPage.class);
+        when(mTab.getNativePage()).thenReturn(pdfNativePage);
+        when(mTab.isNativePage()).thenReturn(true);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertFalse(
+                "AI Web menu item should not be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertTrue(
+                "AI PDF menu item should be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiMenuItems_shouldNotAppearIfDisabled() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertFalse(
+                "AI Web menu item should not be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertFalse(
+                "AI PDF menu item should not be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
     }
 
     private void testReadAloudMenuItemUpdates(boolean initiallyReadable, boolean laterReadable) {

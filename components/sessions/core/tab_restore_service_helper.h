@@ -87,6 +87,19 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
 
   void SetHelperObserver(Observer* observer);
 
+  // Creates a mapping of local to saved ids for groups that have a
+  // saved_group_id. Take in a window's group storage type, and outputs a type
+  // usable for UpdateSavedGroupIDsForTabEntries.
+  static std::map<tab_groups::TabGroupId, base::Uuid>
+  CreateLocalSavedGroupIDMapping(
+      const std::map<tab_groups::TabGroupId, std::unique_ptr<Group>>& groups);
+
+  // Updates the saved group IDs for tabs based on the provided group mapping.
+  // Used by RestoreEntryByID.
+  static void UpdateSavedGroupIDsForTabEntries(
+      std::vector<std::unique_ptr<tab_restore::Tab>>& tabs,
+      const std::map<tab_groups::TabGroupId, base::Uuid>& group_mapping);
+
   // Helper methods used to implement TabRestoreService.
   void AddObserver(TabRestoreServiceObserver* observer);
   void RemoveObserver(TabRestoreServiceObserver* observer);

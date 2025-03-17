@@ -135,7 +135,7 @@ public class UndoIntegrationTest {
         TabStripUtils.settleDownCompositor(
                 TabStripUtils.getStripLayoutHelperManager(cta).getStripLayoutHelper(false));
 
-        TabModel model = cta.getTabModelSelector().getModel(/* isIncognito= */ false);
+        TabModel model = cta.getTabModelSelector().getModel(/* incognito= */ false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     closeTabViaButton(cta, model.getTabAt(1).getId());
@@ -147,7 +147,7 @@ public class UndoIntegrationTest {
 
     private void closeTabViaButton(ChromeTabbedActivity cta, int tabId) {
         final StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(cta, /* isIncognito= */ false, tabId);
+                TabStripUtils.findStripLayoutTab(cta, /* incognito= */ false, tabId);
         tab.getCloseButton().handleClick(SystemClock.uptimeMillis());
     }
 }

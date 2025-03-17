@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.uid;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface used for uniquely identifying an installation of Chrome. To get an instance you should
  * use {@link UniqueIdentificationGeneratorFactory}.
  */
+@NullMarked
 public interface UniqueIdentificationGenerator {
     /**
      * Creates a string that uniquely identifies this installation.

@@ -8,18 +8,19 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <queue>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
@@ -58,6 +59,7 @@ class FakeTraceWriter : public perfetto::TraceWriterBase,
   void FinishTracePacket() override { NOTREACHED(); }
   void Flush(std::function<void()> callback = {}) override {}
   uint64_t written() const override { return 0u; }
+  uint64_t drop_count() const override { return 0u; }
 
   // protozero::MessageFinalizationListener:
   void OnMessageFinalized(protozero::Message* message) override {
@@ -93,48 +95,66 @@ struct CSwitchData {
 
 // Returns the MOF encoding of a sid, including the leading uint32_t and
 // TOKEN_USER.
-base::HeapArray<uint8_t> EncodeSid() {
-  static constexpr uint8_t kBytes[] = {
-      0x04, 0x00, 0x00, 0x00, 0x20, 0xA8, 0xA4, 0x5C, 0x86, 0xD1, 0xFF,
-      0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x12, 0x00, 0x00, 0x00};
-  return base::HeapArray<uint8_t>::CopiedFrom({kBytes});
+base::HeapArray<uint8_t> EncodeSid(size_t pointer_size) {
+  static constexpr uint8_t kLeadingBytes[] = {0x04, 0x00, 0x00, 0x00};
+  static constexpr uint8_t kTokenUserBytes[] = {
+      0x20, 0xA8, 0xA4, 0x5C, 0x86, 0xD1, 0xFF, 0xFF,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  static constexpr uint8_t kSidBytes[] = {0x01, 0x01, 0x00, 0x00, 0x00, 0x00,
+                                          0x00, 0x05, 0x12, 0x00, 0x00, 0x00};
+
+  std::vector<uint8_t> buffer;
+  auto iter = std::back_inserter(buffer);
+  std::ranges::copy(base::as_byte_span(kLeadingBytes), iter);
+  std::ranges::copy(base::span(kTokenUserBytes).first(2 * pointer_size), iter);
+  std::ranges::copy(base::as_byte_span(kSidBytes), iter);
+
+  return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
 
-// Returns the MOF encoding of a Process event (v4 by default).
+// Returns the MOF encoding of a Process event.
 base::HeapArray<uint8_t> EncodeProcess(const ProcessData& process,
-                                       int version = 4) {
+                                       int version,
+                                       size_t pointer_size) {
   std::vector<uint8_t> buffer;
   auto iter = std::back_inserter(buffer);
   if (version == 0) {
     // ProcessId and ParentId are pointer-sized in version 0.
-    uintptr_t value = process.process_id;
-    base::ranges::copy(base::byte_span_from_ref(value), iter);
-    value = process.parent_id;
-    base::ranges::copy(base::byte_span_from_ref(value), iter);
-    base::ranges::copy(EncodeSid(), iter);
-    base::ranges::copy(process.image_file_name, iter);
+    if (pointer_size == sizeof(uint64_t)) {
+      uint64_t value = process.process_id;
+      std::ranges::copy(base::byte_span_from_ref(value), iter);
+      value = process.parent_id;
+      std::ranges::copy(base::byte_span_from_ref(value), iter);
+    } else {
+      CHECK_EQ(pointer_size, sizeof(uint32_t));
+      uint32_t value = process.process_id;
+      std::ranges::copy(base::byte_span_from_ref(value), iter);
+      value = process.parent_id;
+      std::ranges::copy(base::byte_span_from_ref(value), iter);
+    }
+    std::ranges::copy(EncodeSid(pointer_size), iter);
+    std::ranges::copy(process.image_file_name, iter);
     buffer.insert(buffer.end(), '\0');  // ImageFileName terminator
   } else {
     if (version == 1) {
       // PageDirectoryBase
-      buffer.insert(buffer.end(), sizeof(void*), 0);
+      buffer.insert(buffer.end(), pointer_size, 0);
     } else if (version >= 2) {
       // UniqueProcessKey
-      buffer.insert(buffer.end(), sizeof(void*), 0);
+      buffer.insert(buffer.end(), pointer_size, 0);
     }
-    base::ranges::copy(base::byte_span_from_ref(process.process_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(process.parent_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(process.session_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(process.process_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(process.parent_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(process.session_id), iter);
     buffer.insert(buffer.end(), sizeof(int32_t), 0);  // ExitStatus
     if (version >= 3) {
-      buffer.insert(buffer.end(), sizeof(void*), 0);  // DirectoryTableBase
+      buffer.insert(buffer.end(), pointer_size, 0);  // DirectoryTableBase
     }
-    base::ranges::copy(EncodeSid(), iter);
-    base::ranges::copy(process.image_file_name, iter);
+    std::ranges::copy(EncodeSid(pointer_size), iter);
+    std::ranges::copy(process.image_file_name, iter);
     buffer.insert(buffer.end(), '\0');  // ImageFileName terminator
     if (version >= 2) {
-      base::ranges::copy(base::as_byte_span(process.command_line), iter);
+      std::ranges::copy(base::as_byte_span(process.command_line), iter);
       buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // terminator
     }
     if (version >= 4) {
@@ -151,33 +171,33 @@ base::HeapArray<uint8_t> EncodeThread(const ThreadData& thread,
   std::vector<uint8_t> buffer;
   auto iter = std::back_inserter(buffer);
   if (version == 0) {
-    base::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
   } else {
-    base::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
     uintptr_t a_pointer = 0;
     uint32_t an_int = 0;
     // StackBase
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // StackLimit
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // UserStackBase
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // UserStackLimit
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // StartAddr (1, 2) / Affinity (>=3)
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // Win32StartAddr
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     if (version == 1) {
       // WaitMode
       buffer.insert(buffer.end(), 0x0a);
     } else if (version >= 2) {
       // TebBase
-      base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+      std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
       // SubProcessTag
-      base::ranges::copy(base::byte_span_from_ref(++an_int), iter);
+      std::ranges::copy(base::byte_span_from_ref(++an_int), iter);
     }
     if (version >= 3) {
       buffer.insert(buffer.end(), 0x0a);  // BasePriority
@@ -186,7 +206,7 @@ base::HeapArray<uint8_t> EncodeThread(const ThreadData& thread,
       buffer.insert(buffer.end(), 0x0d);  // ThreadFlags
     }
     if (version >= 4 && thread.thread_name.has_value()) {
-      base::ranges::copy(base::as_byte_span(*thread.thread_name), iter);
+      std::ranges::copy(base::as_byte_span(*thread.thread_name), iter);
       buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // ThreadName terminator
     }
   }
@@ -198,9 +218,9 @@ base::HeapArray<uint8_t> EncodeThreadSetName(uint32_t process_id,
                                              base::wcstring_view thread_name) {
   std::vector<uint8_t> buffer;
   auto iter = std::back_inserter(buffer);
-  base::ranges::copy(base::byte_span_from_ref(process_id), iter);
-  base::ranges::copy(base::byte_span_from_ref(thread_id), iter);
-  base::ranges::copy(base::as_byte_span(thread_name), iter);
+  std::ranges::copy(base::byte_span_from_ref(process_id), iter);
+  std::ranges::copy(base::byte_span_from_ref(thread_id), iter);
+  std::ranges::copy(base::as_byte_span(thread_name), iter);
   buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // ThreadName terminator
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
@@ -209,8 +229,8 @@ base::HeapArray<uint8_t> EncodeThreadSetName(uint32_t process_id,
 base::HeapArray<uint8_t> EncodeCSwitch(const CSwitchData& c_switch) {
   std::vector<uint8_t> buffer;
   auto iter = std::back_inserter(buffer);
-  base::ranges::copy(base::byte_span_from_ref(c_switch.new_thread_id), iter);
-  base::ranges::copy(base::byte_span_from_ref(c_switch.old_thread_id), iter);
+  std::ranges::copy(base::byte_span_from_ref(c_switch.new_thread_id), iter);
+  std::ranges::copy(base::byte_span_from_ref(c_switch.old_thread_id), iter);
   buffer.insert(buffer.end(), 0x01);  // NewThreadPriority
   buffer.insert(buffer.end(), 0x02);  // OldThreadPriority
   buffer.insert(buffer.end(), 0x03);  // PreviousCState
@@ -220,7 +240,7 @@ base::HeapArray<uint8_t> EncodeCSwitch(const CSwitchData& c_switch) {
   buffer.insert(buffer.end(), 7);     // OldThreadState = DEFERRED_READY
   buffer.insert(buffer.end(), 0x04);  // OldThreadWaitIdealProcessor
   const uint32_t new_thread_wait_time = 0x05;
-  base::ranges::copy(base::byte_span_from_ref(new_thread_wait_time), iter);
+  std::ranges::copy(base::byte_span_from_ref(new_thread_wait_time), iter);
   buffer.insert(buffer.end(), sizeof(uint32_t), 0x42);  // Reserved
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
@@ -409,8 +429,19 @@ class EtwConsumerTest : public testing::Test {
                  version, opcode, packet_data);
   }
 
+  // Returns the MOF encoding of a Process event (v4 by default).
+  base::HeapArray<uint8_t> EncodeProcess(const ProcessData& process,
+                                         int version = 4) {
+    // We are using EVENT_HEADER_FLAG_64_BIT_HEADER flag, so the pointer size
+    // should be 8 bytes.
+    const size_t pointer_size = EtwConsumer::GetPointerSize(kEventHeaderFlags);
+    CHECK_EQ(pointer_size, sizeof(uint64_t));
+    return ::tracing::EncodeProcess(process, version, pointer_size);
+  }
+
  private:
   static constexpr uint16_t kTestProcessorIndex = 47;
+  static constexpr uint16_t kEventHeaderFlags = EVENT_HEADER_FLAG_64_BIT_HEADER;
 
   // Generates an ETW EVENT_RECORD for a given trace provider of a particular
   // version and opcode with `packet_data` as its payload and sends it to the
@@ -421,7 +452,7 @@ class EtwConsumerTest : public testing::Test {
                     uint8_t opcode,
                     base::span<const uint8_t> packet_data) {
     EVENT_RECORD event_record = {
-        .EventHeader = {.Flags = EVENT_HEADER_FLAG_64_BIT_HEADER,
+        .EventHeader = {.Flags = kEventHeaderFlags,
                         .ProviderId = provider,
                         .EventDescriptor = {.Version = version,
                                             .Opcode = opcode}},

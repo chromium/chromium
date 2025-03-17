@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/test/fuzzing/kombucha_in_process_fuzzer.h"
-#include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -27,7 +28,7 @@
 #if BUILDFLAG(IS_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/test/ui_controls_ash.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
@@ -91,7 +92,7 @@ void KombuchaInProcessFuzzer::SetUp() {
   // that live outside the ui_interaction_test directory.
   // The following is copied from
   // chrome/test/base/interactive_ui_tests_main.cc
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::test::EnableUIControlsAsh();
 #elif BUILDFLAG(IS_WIN)
   com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
@@ -293,15 +294,14 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
         bool right_click = step.click_tab().right_click();
 
         AddStep(input_buffer,
-                If([]() { return true; },
-                   [&, target]() {
+                If([]() { return true; }, Then([&, target]() {
                      auto index =
                          target % browser()->tab_strip_model()->count();
                      return Steps(ClickTab(index, right_click),
                                   Log("[KOMB] Added ClickTab index:", index,
                                       " target: ", target, " tab_count: ",
                                       browser()->tab_strip_model()->count()));
-                   }()));
+                   }())));
         break;
       }
       case test::fuzzing::ui_fuzzing::Step::kClickTabGroupHeader: {
@@ -312,7 +312,7 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                     [this]() {
                       return browser()->tab_strip_model()->SupportsTabGroups();
                     },
-                    [this, target, right_click]() {
+                    Then([this, target, right_click]() {
                       auto groups = browser()
                                         ->tab_strip_model()
                                         ->group_model()
@@ -325,7 +325,7 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                       }
                       auto tab_group = groups[target % size];
                       return ClickTabGroupHeader(tab_group, right_click);
-                    }()));
+                    }())));
         break;
       }
       case test::fuzzing::ui_fuzzing::Step::kSaveTabGroup: {
@@ -337,7 +337,7 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                     [this]() {
                       return browser()->tab_strip_model()->SupportsTabGroups();
                     },
-                    [this, target, close_editor]() {
+                    Then([this, target, close_editor]() {
                       TabStripModel* tab_strip = browser()->tab_strip_model();
                       auto groups = tab_strip->group_model()->ListTabGroups();
                       int size = groups.size();
@@ -350,7 +350,7 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                       return close_editor
                                  ? SaveGroupAndCloseEditorBubble(tab_group)
                                  : SaveGroupLeaveEditorBubbleOpen(tab_group);
-                    }()));
+                    }())));
         break;
       }
 
@@ -363,7 +363,7 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                 [this]() {
                   return browser()->tab_strip_model()->SupportsTabGroups();
                 },
-                [this, target]() {
+                Then([this, target]() {
                   return Steps(
                       Do([this, target]() {
                         int actual_target =
@@ -372,7 +372,7 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                             {actual_target});
                       }),
                       Log("[KOMB] Added New Tab Group with Target: ", target));
-                }()));
+                }())));
         break;
       }
       default:  // Unspecified Value

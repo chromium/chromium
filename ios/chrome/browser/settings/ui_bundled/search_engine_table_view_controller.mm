@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
 
+#import <algorithm>
+#import <functional>
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -12,20 +14,18 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
-#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_search_engine_item.h"
@@ -78,8 +78,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 @implementation SearchEngineTableViewController {
   raw_ptr<TemplateURLService> _templateURLService;  // weak
   raw_ptr<PrefService> _prefService;                // weak
-  raw_ptr<search_engines::SearchEngineChoiceService>
-      _searchEngineChoiceService;  // weak
+  raw_ptr<regional_capabilities::RegionalCapabilitiesService>
+      _regionalCapabilitiesService;  // weak
   std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of choice screen search engines retrieved from the
   // TemplateURLService.
@@ -117,8 +117,8 @@ const char kUmaSelectDefaultSearchEngine[] =
     _faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     _prefService = profile->GetPrefs();
 
-    _searchEngineChoiceService =
-        ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+    _regionalCapabilitiesService =
+        ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
 
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
@@ -241,8 +241,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_firstList.size() > 0) {
     [model addSectionWithIdentifier:SectionIdentifierFirstList];
 
-    if (search_engines::IsEeaChoiceCountry(
-            _searchEngineChoiceService->GetCountryId())) {
+    if (_regionalCapabilitiesService->IsInEeaCountry()) {
       TableViewTextHeaderFooterItem* header =
           [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
       header.subtitle =
@@ -300,7 +299,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Clear C++ ivars.
   _templateURLService = nullptr;
   _prefService = nullptr;
-  _searchEngineChoiceService = nullptr;
+  _regionalCapabilitiesService = nullptr;
   _faviconLoader = nullptr;
 
   _settingsAreDismissed = YES;
@@ -495,9 +494,9 @@ const char kUmaSelectDefaultSearchEngine[] =
                     });
 
   // Keep the search engines visited within `kMaxVisitAge` and erase others.
-  auto cutBegin = base::ranges::lower_bound(
+  auto cutBegin = std::ranges::lower_bound(
       begin, pivot, base::Time::Now() - kMaxVisitAge,
-      base::ranges::greater_equal(), &TemplateURL::last_visited);
+      std::ranges::greater_equal(), &TemplateURL::last_visited);
   _secondList.erase(cutBegin, end);
 }
 
@@ -525,7 +524,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
   __weak __typeof(self) weakSelf = self;
   GetSearchEngineFavicon(
-      *templateURL, _searchEngineChoiceService, _templateURLService,
+      *templateURL, *_regionalCapabilitiesService, _templateURLService,
       _faviconLoader, ^(FaviconAttributes* attributes) {
         [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
       });

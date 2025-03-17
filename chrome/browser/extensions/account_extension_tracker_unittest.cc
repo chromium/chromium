@@ -8,13 +8,14 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 
@@ -34,6 +35,9 @@ class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
 
     service()->Init();
     ASSERT_TRUE(extension_system()->is_ready());
+
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
   }
 
  protected:
@@ -45,6 +49,14 @@ class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
       const ExtensionId& id) {
     return AccountExtensionTracker::Get(profile())->GetAccountExtensionType(id);
   }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
+
+ private:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
 };
 
 // Test that an extension's AccountExtensionType is set to the right value based
@@ -57,13 +69,9 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeSignedIn) {
 
   UninstallExtension(kGoodCrx);
 
-  // Use a test identity environment to mimic signing a user in with sync
-  // enabled.
-  auto identity_test_env_profile_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                    signin::ConsentLevel::kSync);
+  // Mimic signing a user in with sync enabled.
+  identity_test_env()->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                                   signin::ConsentLevel::kSync);
 
   // Reinstall `kGoodCrx` while there is a signed in user. Since `kGoodCrx` is
   // syncable, it should be associated with the user's account data, and since
@@ -94,17 +102,7 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
   // Enable extension syncing in transport mode.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncEnableExtensionsInTransportMode);
-
-  // Use a test identity environment to mimic signing a user in with sync
-  // disabled (transport mode).
-  auto identity_test_env_profile_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  identity_test_env_profile_adaptor->identity_test_env()->MakeAccountAvailable(
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
-          .Build("testy@mctestface.com"));
+      switches::kEnableExtensionsExplicitBrowserSignin);
 
   // The extension's AccountExtensionType is `kLocal` because the user has not
   // explicitly signed in yet.
@@ -115,8 +113,7 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
 
   UninstallExtension(kGoodCrx);
 
-  // Pretend the user has now explcitly signed in.
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   // Reinstall the extension. Since the user has now signed in properly. the
   // extension should be associated with the user's account data and have an
@@ -146,19 +143,9 @@ TEST_F(AccountExtensionTrackerUnitTest,
   // Enable extension syncing in transport mode.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncEnableExtensionsInTransportMode);
+      switches::kEnableExtensionsExplicitBrowserSignin);
 
-  // Use a test identity environment to mimic signing a user in with sync
-  // disabled (transport mode).
-  auto identity_test_env_profile_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  auto account_info =
-      identity_test_env_profile_adaptor->identity_test_env()
-          ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                        signin::ConsentLevel::kSignin);
-
-  // Pretend the user has now explcitly signed in.
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
   InstallCRX(good_crx_path, INSTALL_NEW);
@@ -168,9 +155,48 @@ TEST_F(AccountExtensionTrackerUnitTest,
 
   // Sign the user out and verify that `kGoodCrx` is now treated as a local
   // extension again.
-  identity_test_env_profile_adaptor->identity_test_env()->ClearPrimaryAccount();
+  identity_test_env()->ClearPrimaryAccount();
+  EXPECT_TRUE(registry()->GetInstalledExtension(kGoodCrx));
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             GetAccountExtensionType(kGoodCrx));
+}
+
+TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionsRemovedWhenSignedOut) {
+  // Enable extension syncing in transport mode.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kEnableExtensionsExplicitBrowserSignin);
+
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  InstallCRX(good_crx_path, INSTALL_NEW);
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Install an extension and pretend it's a `kAccountInstalledSignedIn`
+  // extension.
+  ChromeTestExtensionLoader extension_loader(profile());
+  extension_loader.set_pack_extension(true);
+  scoped_refptr<const Extension> other_extension =
+      extension_loader.LoadExtension(
+          data_dir().AppendASCII("simple_with_file"));
+  const ExtensionId other_extension_id = other_extension->id();
+  AccountExtensionTracker::Get(profile())->SetAccountExtensionTypeForTesting(
+      other_extension_id,
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally);
+
+  // Set the uninstall flag.
+  AccountExtensionTracker::Get(profile())
+      ->set_uninstall_account_extensions_on_signout(true);
+
+  // Sign the user out and verify that `kGoodCrx` is now uninstalled.
+  identity_test_env()->ClearPrimaryAccount();
+  EXPECT_FALSE(registry()->GetInstalledExtension(kGoodCrx));
+
+  // But `other_extension` is still installed.
+  EXPECT_TRUE(registry()->GetInstalledExtension(other_extension_id));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

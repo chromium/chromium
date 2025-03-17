@@ -148,9 +148,9 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
       channel_, stream_id_, default_task_runner_, buffer_mapper_);
-  bind_result_ =
-      command_buffer_->Initialize(/*shared_command_buffer=*/nullptr,
-                                  stream_priority_, attributes_, active_url_);
+  bind_result_ = command_buffer_->Initialize(
+      /*shared_command_buffer=*/nullptr, stream_priority_, attributes_,
+      active_url_, command_buffer_metrics::ContextTypeToString(context_type_));
   if (bind_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "GpuChannelHost failed to create command buffer.";
     command_buffer_metrics::UmaRecordContextInitFailed(context_type_);
@@ -413,7 +413,7 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
     return gr_context_->get();
   }
 
-  if (attributes_.enable_oop_rasterization) {
+  if (attributes_.enable_gpu_rasterization) {
     return nullptr;
   }
 

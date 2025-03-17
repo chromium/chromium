@@ -60,6 +60,7 @@ component("manager") {
   deps = [
     "//base",
     "//chromeos/ash/components/system",
+    "//chromeos/constants",
     "//chromeos/ui/base",
     "//components/device_event_log",
     "//third_party/re2:re2",

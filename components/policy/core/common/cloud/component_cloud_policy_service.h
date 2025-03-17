@@ -142,8 +142,9 @@ class POLICY_EXPORT ComponentCloudPolicyService
 
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;
-  void OnRegistrationStateChanged(CloudPolicyClient* client) override;
-  void OnClientError(CloudPolicyClient* client) override;
+  // CloudPolicyClient::Observer::OnRegistrationStateChanged is ignored since
+  // the registration state is tracked by looking at the CloudPolicyStore
+  // instead.
 
  private:
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

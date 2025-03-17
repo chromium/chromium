@@ -4,17 +4,24 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -81,43 +88,63 @@ public class HistoricalTabModelObserver implements TabModelObserver {
     }
 
     private void buildGroupsAndCreateClosure(List<Tab> tabs) {
-        HashMap<Integer, HistoricalEntry> idToGroup = new HashMap<>();
+        HashMap<Token, HistoricalEntry> tabGroupIdToGroup = new HashMap<>();
         List<HistoricalEntry> entries = new ArrayList<>();
 
+        Profile profile = mTabGroupModelFilter.getTabModel().getProfile();
+        @Nullable
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(tabs);
+                mTabGroupModelFilter.getLazyAllTabGroupIds(
+                        tabs, /* includePendingClosures= */ true);
         for (Tab tab : tabs) {
-            // Ignore complete tab groups that are being hidden. They will be accessible from the
-            // tab group pane instead. Still process closures for events that don't finish hiding
-            // the group.
             @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId != null) {
-                if (mTabGroupModelFilter.isTabGroupHiding(tabGroupId)
-                        && !tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
-                    continue;
-                }
+            if (tabGroupId == null) {
+                entries.add(new HistoricalEntry(tab));
+                continue;
+            }
+
+            // If an entire tab group is closing we do not want to save it if:
+            //
+            // 1) The tab group is being hidden so it remains in the TabGroupSyncService.
+            // 2) It is for a collaboration that is fully deleted. I.e. the user left the group
+            //    or deleted it as the owner.
+            //
+            // A tab group is fully closing if the comprehensive model no longer contains the tab
+            // group ID. If the entry is still present in the comprehensive model, the tab group is
+            // not fully closing and we can proceed with the process of saving an event to recent
+            // tabs.
+            if ((mTabGroupModelFilter.isTabGroupHiding(tabGroupId)
+                            || isCollaborationTabGroup(tabGroupSyncService, tabGroupId))
+                    && !tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
+                continue;
             }
 
             // {@link TabGroupModelFilter} removes tabs from its data model as soon as they are
             // pending closure so it cannot be directly relied upon for group structure. Instead
-            // rely on the underlying root ID in the tab's persisted data which is used to restore
-            // groups across an pending closure cancellation (undo). The root ID is the group ID
-            // unless the tab is ungrouped in which case the root ID is the tab's ID.
-            int rootId = tab.getRootId();
-            if (idToGroup.containsKey(rootId)) {
-                idToGroup.get(rootId).getTabs().add(tab);
+            // rely on the underlying tab group ID in the tab's persisted data which is used to
+            // restore groups across an pending closure cancellation (undo).
+            @Nullable HistoricalEntry tabGroupEntry = tabGroupIdToGroup.get(tabGroupId);
+            if (tabGroupEntry != null) {
+                tabGroupEntry.getTabs().add(tab);
                 continue;
             }
-            // null title for default title is handled in HistoricalTabSaver.
+
+            // TODO(crbug.com/399354986): rootId is still the key for tab group metadata this should
+            // be migrated in the future.
+            int rootId = tab.getRootId();
+            // A null title (default title) is handled in HistoricalTabSaver.
             String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
             // Give a tab group the first color in the color list as a placeholder.
             @TabGroupColorId int color = mTabGroupModelFilter.getTabGroupColorWithFallback(rootId);
+
             List<Tab> groupTabs = new ArrayList<>();
             groupTabs.add(tab);
             HistoricalEntry historicalGroup =
-                    new HistoricalEntry(rootId, tabGroupId, title, color, groupTabs);
+                    new HistoricalEntry(tabGroupId, title, color, groupTabs);
             entries.add(historicalGroup);
-            idToGroup.put(rootId, historicalGroup);
+            tabGroupIdToGroup.put(tabGroupId, historicalGroup);
         }
 
         // If only a subset of tabs in the tab group are closing tabs should be saved individually
@@ -139,32 +166,36 @@ public class HistoricalTabModelObserver implements TabModelObserver {
     }
 
     private boolean shouldSaveSeparateTabs(HistoricalEntry entry) {
-        if (entry.getRootId() == Tab.INVALID_TAB_ID) return false;
+        @Nullable Token tabGroupId = entry.getTabGroupId();
+        if (tabGroupId == null) return false;
 
-        int rootId = entry.getRootId();
-        boolean groupExists = mTabGroupModelFilter.tabGroupExistsForRootId(rootId);
+        boolean groupExists = mTabGroupModelFilter.tabGroupExists(tabGroupId);
         if (groupExists
-                && entry.getTabs().size()
-                        != mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)) {
+                && entry.getTabs().size() != mTabGroupModelFilter.getTabCountForGroup(tabGroupId)) {
             // Case: Group information not lost yet (non-undoable closure). Rely on whether all the
             // tabs in the group are closing.
             return true;
         } else if (!groupExists) {
             // Case: Group information already lost (undoable closure). Rely on whether any unclosed
-            // tabs share a root ID with the closing group.
+            // tabs share a tab group id with the closing group.
             TabList comprehensiveModel = mTabGroupModelFilter.getTabModel().getComprehensiveModel();
             for (int i = 0; i < comprehensiveModel.getCount(); i++) {
-                if (rootId == comprehensiveModel.getTabAt(i).getRootId()) return true;
+                if (tabGroupId.equals(comprehensiveModel.getTabAt(i).getTabGroupId())) return true;
             }
         }
         return false;
     }
 
     private boolean isTabGroupWithOneTab(Tab tab) {
-        int rootId = tab.getRootId();
-        if (!mTabGroupModelFilter.tabGroupExistsForRootId(rootId)) {
-            Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null) return false;
+        @Nullable Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId == null) return false;
+
+        if (mTabGroupModelFilter.tabGroupExists(tabGroupId)) {
+            // Case: Group information not lost yet (non-undoable closure). Rely on whether the tab
+            // is the only tab in its tab group.
+            return mTabGroupModelFilter.isTabInTabGroup(tab)
+                    && mTabGroupModelFilter.getTabCountForGroup(tabGroupId) == 1;
+        } else {
             // Case: Group information already lost (undoable closure). Rely on whether the tab
             // still has a tab group ID.
             TabList comprehensiveModel = mTabGroupModelFilter.getTabModel().getComprehensiveModel();
@@ -172,11 +203,16 @@ public class HistoricalTabModelObserver implements TabModelObserver {
                 if (tabGroupId.equals(comprehensiveModel.getTabAt(i).getTabGroupId())) return false;
             }
             return true;
-        } else {
-            // Case: Group information not lost yet (non-undoable closure). Rely on whether the tab
-            // is the only tab in its tab group.
-            return mTabGroupModelFilter.isTabInTabGroup(tab)
-                    && mTabGroupModelFilter.getRelatedTabCountForRootId(rootId) == 1;
         }
+    }
+
+    private boolean isCollaborationTabGroup(
+            @Nullable TabGroupSyncService tabGroupSyncService, Token tabGroupId) {
+        if (tabGroupSyncService == null) return false;
+
+        SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+        if (savedTabGroup == null) return false;
+
+        return !TextUtils.isEmpty(savedTabGroup.collaborationId);
     }
 }

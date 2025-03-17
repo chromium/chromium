@@ -5,8 +5,11 @@
 #include "remoting/host/desktop_interaction_strategy.h"
 
 #include <memory>
+#include <utility>
 
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer_differ_wrapper.h"
 
 namespace remoting {

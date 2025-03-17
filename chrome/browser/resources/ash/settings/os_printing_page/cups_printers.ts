@@ -22,10 +22,10 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import '../icons.html.js';
 import './cups_edit_printer_dialog.js';
 import './cups_enterprise_printers.js';
+import './cups_nearby_printers.js';
 import './cups_printer_shared.css.js';
 import './cups_printer_types.js';
 import './cups_printers_browser_proxy.js';
-import './cups_printers_entry.js';
 import './cups_printers_entry_manager.js';
 import './cups_saved_printers.js';
 import './cups_settings_add_printer_dialog.js';

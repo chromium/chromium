@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -15,11 +14,9 @@
 namespace viz {
 
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
-    SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::Scheduler* scheduler)
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
-      shared_bitmap_manager_(shared_bitmap_manager),
       shared_image_manager_(shared_image_manager),
       gpu_scheduler_(scheduler) {
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
@@ -53,36 +50,20 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
   // Determine whether this resource is using a software SharedImage or a legacy
   // shared bitmap.
-  if (resource->transferable.IsSoftwareSharedImage()) {
-    DCHECK(shared_image_manager_);
-    auto it = resource_shared_images_.find(id);
-    if (it == resource_shared_images_.end()) {
-      const gpu::Mailbox& mailbox = resource->transferable.mailbox();
-      auto access = std::make_unique<SharedImageAccess>();
-      access->representation = GetSharedImageRepresentation(
-          mailbox, resource->transferable.sync_token());
-      if (!access->representation) {
-        return nullptr;
-      }
+  DCHECK(shared_image_manager_);
+  auto it = resource_shared_images_.find(id);
+  if (it == resource_shared_images_.end()) {
+    const gpu::Mailbox& mailbox = resource->transferable.mailbox();
+    auto access = std::make_unique<SharedImageAccess>();
+    access->representation = GetSharedImageRepresentation(
+        mailbox, resource->transferable.sync_token());
+    if (!access->representation) {
+      return nullptr;
+    }
 
-      access->read_access = access->representation->BeginScopedReadAccess();
-      resource_shared_images_.emplace(id, std::move(access));
-    }
-  } else {
-    if (!resource->shared_bitmap) {
-      const SharedBitmapId& shared_bitmap_id =
-          resource->transferable.shared_bitmap_id();
-      std::unique_ptr<SharedBitmap> bitmap =
-          shared_bitmap_manager_->GetSharedBitmapFromId(
-              resource->transferable.size, resource->transferable.format,
-              shared_bitmap_id);
-      if (bitmap) {
-        resource->shared_bitmap = std::move(bitmap);
-        resource->shared_bitmap_tracing_guid =
-            shared_bitmap_manager_->GetSharedBitmapTracingGUIDFromId(
-                shared_bitmap_id);
-      }
-    }
+    access->read_access = access->representation->BeginScopedReadAccess();
+    resource_shared_images_.emplace(id, std::move(access));
+    resource->shared_image_representation_created_and_set = true;
   }
 
   resource->lock_for_read_count++;
@@ -151,19 +132,6 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
   return to_return;
 }
 
-void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
-    SkBitmap* sk_bitmap,
-    const ChildResource* resource,
-    SkAlphaType alpha_type) {
-  DCHECK(resource->transferable.format.IsBitmapFormatSupported());
-  SkImageInfo info =
-      SkImageInfo::MakeN32(resource->transferable.size.width(),
-                           resource->transferable.size.height(), alpha_type);
-  bool pixels_installed = sk_bitmap->installPixels(
-      info, resource->shared_bitmap->pixels(), info.minRowBytes());
-  DCHECK(pixels_installed);
-}
-
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     DisplayResourceProviderSoftware* resource_provider,
     ResourceId resource_id,
@@ -185,25 +153,18 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
   auto si_image_it =
       resource_provider->resource_shared_images_.find(resource_id);
 
-  if (resource->shared_bitmap) {
-    SkBitmap sk_bitmap;
-    resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource,
-                                                    alpha_type);
-    sk_bitmap.setImmutable();
-    sk_image_ = SkImages::RasterFromBitmap(sk_bitmap);
-    resource_provider_->resource_sk_images_[resource_id] = sk_image_;
-  } else if (si_image_it != resource_provider->resource_shared_images_.end()) {
+  if (si_image_it != resource_provider->resource_shared_images_.end()) {
     sk_image_ = SkImages::RasterFromPixmap(
         si_image_it->second->read_access->pixmap(), nullptr, nullptr);
     resource_provider_->resource_sk_images_[resource_id] = sk_image_;
   } else {
-    // If a CompositorFrameSink is destroyed, it destroys all SharedBitmapIds
-    // that it registered. In this case, a CompositorFrame can be drawn with
-    // SharedBitmapIds that are not known in the viz service. As well, a
-    // misbehaved client can use SharedBitampIds that it did not report to
-    // the service. Then the |shared_bitmap| will be null, and this read lock
-    // will not be valid. Software-compositing users of this read lock must
-    // check for valid() to deal with this scenario.
+    // If a CompositorFrameSink is destroyed, it destroys all reported
+    // resource_shared_images_. In this case, a CompositorFrame can be drawn
+    // with Mailboxes that are not known in the viz service. As well, a
+    // misbehaved client can use software shared_image that it did not report to
+    // the service. Then this read lock will not be valid. Software-compositing
+    // users of this read lock must check for valid() to deal with this
+    // scenario.
     sk_image_ = nullptr;
     return;
   }

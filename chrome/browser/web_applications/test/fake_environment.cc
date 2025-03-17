@@ -17,15 +17,13 @@ void FakeEnvironment::Set(std::string_view name, const std::string& value) {
   variables_[key] = value;
 }
 
-bool FakeEnvironment::GetVar(std::string_view variable_name,
-                             std::string* result) {
+std::optional<std::string> FakeEnvironment::GetVar(
+    std::string_view variable_name) {
   const std::string key(variable_name);
-  if (base::Contains(variables_, key)) {
-    *result = variables_[key];
-    return true;
+  if (!base::Contains(variables_, key)) {
+    return std::nullopt;
   }
-
-  return false;
+  return variables_[key];
 }
 
 bool FakeEnvironment::SetVar(std::string_view variable_name,

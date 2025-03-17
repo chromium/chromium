@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
+#include "components/performance_manager/public/mojom/lifecycle.mojom-forward.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -24,16 +23,13 @@ class WebContents;
 
 namespace resource_coordinator {
 
-class UsageClock;
-class TabLifecycleObserver;
-
 // Time during which backgrounded tabs are protected from urgent discarding
 // (not on ChromeOS).
-static constexpr base::TimeDelta kBackgroundUrgentProtectionTime =
+inline constexpr base::TimeDelta kBackgroundUrgentProtectionTime =
     base::Minutes(10);
 
 // Time during which a tab cannot be discarded after having played audio.
-static constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
+inline constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
 
 // Represents a tab.
 class TabLifecycleUnitSource::TabLifecycleUnit
@@ -44,17 +40,12 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // |observers| is a list of observers to notify when the discarded state or
   // the auto-discardable state of this tab changes. It can be modified outside
   // of this TabLifecycleUnit, but only on the sequence on which this
-  // constructor is invoked. |usage_clock| is a clock that measures Chrome usage
-  // time. |web_contents| and |tab_strip_model| are the WebContents and
-  // TabStripModel associated with this tab. The |source| is optional and may be
-  // nullptr.
-  TabLifecycleUnit(
-      TabLifecycleUnitSource* source,
-      base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged*
-          observers,
-      UsageClock* usage_clock,
-      content::WebContents* web_contents,
-      TabStripModel* tab_strip_model);
+  // constructor is invoked. |web_contents| and |tab_strip_model| are the
+  // WebContents and TabStripModel associated with this tab. The |source| is
+  // optional and may be nullptr.
+  TabLifecycleUnit(TabLifecycleUnitSource* source,
+                   content::WebContents* web_contents,
+                   TabStripModel* tab_strip_model);
 
   TabLifecycleUnit(const TabLifecycleUnit&) = delete;
   TabLifecycleUnit& operator=(const TabLifecycleUnit&) = delete;
@@ -87,14 +78,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
 
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
-  std::u16string GetTitle() const override;
   base::TimeTicks GetLastFocusedTimeTicks() const override;
-  base::ProcessHandle GetProcessHandle() const override;
   SortKey GetSortKey() const override;
-  content::Visibility GetVisibility() const override;
   LifecycleUnitLoadingState GetLoadingState() const override;
   bool Load() override;
-  int GetEstimatedMemoryFreedOnDiscardKB() const override;
   bool CanDiscard(LifecycleUnitDiscardReason reason,
                   DecisionDetails* decision_details) const override;
   LifecycleUnitDiscardReason GetDiscardReason() const override;
@@ -112,6 +99,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // LifecycleUnit and TabLifecycleUnitExternal:
   base::Time GetLastFocusedTime() const override;
 
+  base::TimeTicks GetWallTimeWhenHiddenForTesting() const {
+    return wall_time_when_hidden_;
+  }
+
  protected:
   friend class TabManagerTest;
 
@@ -120,6 +111,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   friend class TabLifecycleUnitSource;
 
  private:
+  void RecomputeLifecycleUnitState(LifecycleUnitStateChangeReason reason);
+
   // Same as GetSource, but cast to the most derived type.
   TabLifecycleUnitSource* GetTabSource() const;
 
@@ -148,11 +141,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   void AttemptFastKillForDiscard(content::WebContents* web_contents,
                                  LifecycleUnitDiscardReason discard_reason);
 
-  // LifecycleUnitBase:
-  void OnLifecycleUnitStateChanged(
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason) override;
-
   // content::WebContentsObserver:
   void DidStartLoading() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -160,12 +148,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // Updates |decision_details| based on device usage by the tab (USB or
   // Bluetooth).
   void CheckDeviceUsage(DecisionDetails* decision_details) const;
-
-  // List of observers to notify when the discarded state or the auto-
-  // discardable state of this tab changes.
-  raw_ptr<
-      base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged>
-      observers_;
 
   // TabStripModel to which this tab belongs.
   raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
@@ -199,6 +181,18 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // TimeTicks() if the tab was never "recently audible", last time at which the
   // tab was "recently audible" otherwise.
   base::TimeTicks recently_audible_time_;
+
+  // The wall time when this LifecycleUnit was last hidden, or TimeDelta::Max()
+  // if this LifecycleUnit is currently visible.
+  base::TimeTicks wall_time_when_hidden_;
+
+  // `page_lifecycle_state_` is the lifecycle state of the associated `PageNode`
+  // (`kFrozen` if all frames are frozen, `kActive` otherwise). `is_discarded_`
+  // indicates whether the tab is discarded. Together, these properties fully
+  // determine the `LifecycleUnitState`.
+  performance_manager::mojom::LifecycleState page_lifecycle_state_ =
+      performance_manager::mojom::LifecycleState::kRunning;
+  bool is_discarded_ = false;
 };
 
 }  // namespace resource_coordinator

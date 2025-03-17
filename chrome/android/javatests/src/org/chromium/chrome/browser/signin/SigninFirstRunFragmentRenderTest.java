@@ -42,7 +42,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
-import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -83,24 +82,16 @@ public class SigninFirstRunFragmentRenderTest {
         private static List<ParameterSet> sParams =
                 Arrays.asList(
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ false,
-                                        Configuration.ORIENTATION_PORTRAIT)
+                                .value(/* firstArg= */ false, Configuration.ORIENTATION_PORTRAIT)
                                 .name("NightModeDisabled_Portrait"),
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ false,
-                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .value(/* firstArg= */ false, Configuration.ORIENTATION_LANDSCAPE)
                                 .name("NightModeDisabled_Landscape"),
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ true,
-                                        Configuration.ORIENTATION_PORTRAIT)
+                                .value(/* firstArg= */ true, Configuration.ORIENTATION_PORTRAIT)
                                 .name("NightModeEnabled_Portrait"),
                         new ParameterSet()
-                                .value(
-                                        /* nightModeEnabled= */ true,
-                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .value(/* firstArg= */ true, Configuration.ORIENTATION_LANDSCAPE)
                                 .name("NightModeEnabled_Landscape"));
 
         @Override

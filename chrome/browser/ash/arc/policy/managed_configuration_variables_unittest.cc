@@ -40,7 +40,7 @@ typedef Parameter ParameterGetter(bool);
 constexpr const char kKey1[] = "key1";
 constexpr const char kKey2[] = "key2";
 
-constexpr char kTestGaiaId[] = "0123456789";
+constexpr GaiaId::Literal kTestGaiaId("0123456789");
 constexpr char kTestEmail[] = "username@somedomain.com";
 constexpr char kTestEmailName[] = "username";
 constexpr char kTestEmailDomain[] = "somedomain.com";
@@ -205,7 +205,7 @@ class ManagedConfigurationVariablesBase {
     // Set up a fake user and capture its profile.
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId)));
+        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());

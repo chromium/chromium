@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {
 
@@ -41,6 +43,8 @@ class ResizeObservation;
 class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
+class InterestInvokerData;
+class InterestInvokerTargetData;
 class OutOfFlowData;
 class HTMLElement;
 
@@ -81,8 +85,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kRestrictionTargetId = 28,
     kStyleScopeData = 29,
     kOutOfFlowData = 30,
+    kInterestInvokerData = 31,
+    kInterestInvokerTargetData = 32,
 
-    kNumFields = 31,
+    kNumFields = 33,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -99,7 +105,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     }
 
    private:
-    GC_PLUGIN_IGNORE("Why is std::unique_ptr failing? http://crbug.com/1395024")
     T data_;
   };
 
@@ -157,6 +162,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PseudoElement* GetPseudoElement(
       PseudoId,
       const AtomicString& document_transition_tag = g_null_atom) const;
+  bool HasViewTransitionGroupPseudoElement() const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
   void AddColumnPseudoElement(ColumnPseudoElement&);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
@@ -263,6 +269,14 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PopoverData* GetPopoverData() const;
   PopoverData& EnsurePopoverData();
   void RemovePopoverData();
+
+  InterestInvokerData* GetInterestInvokerData() const;
+  InterestInvokerData& EnsureInterestInvokerData();
+  void RemoveInterestInvokerData();
+
+  InterestInvokerTargetData* GetInterestInvokerTargetData() const;
+  InterestInvokerTargetData& EnsureInterestInvokerTargetData();
+  void RemoveInterestInvokerTargetData();
 
   bool HasElementFlag(ElementFlags mask) const {
     return element_flags_ & static_cast<uint16_t>(mask);

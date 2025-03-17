@@ -16,7 +16,7 @@
 //
 // Must be in sync with PushNotificationClientId enum in
 // tools/metrics/histograms/metadata/ios/enums.xml.
-// LINT.IfChange
+// LINT.IfChange(PushNotificationClientId)
 enum class PushNotificationClientId {
   kCommerce = 1,
   kContent = 2,
@@ -24,7 +24,8 @@ enum class PushNotificationClientId {
   kSports = 4,
   kSafetyCheck = 5,
   kSendTab = 6,
-  kMaxValue = kSendTab,
+  kReminders = 7,
+  kMaxValue = kReminders,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientId)
 

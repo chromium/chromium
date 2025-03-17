@@ -24,26 +24,24 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
-#include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
-#include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
-#include "chrome/services/file_util/public/cpp/sandboxed_dmg_analyzer_mac.h"
-#endif
 
 namespace network {
 class SimpleURLLoader;
 }
 
 namespace safe_browsing {
+
+class DownloadProtectionService;
+
+#if !BUILDFLAG(IS_ANDROID)
+class SafeBrowsingTokenFetcher;
+#endif
 
 class CheckClientDownloadRequestBase {
  public:
@@ -68,6 +66,8 @@ class CheckClientDownloadRequestBase {
   DownloadProtectionService* service() const { return service_; }
 
   virtual download::DownloadItem* item() const = 0;
+
+  CheckDownloadCallback TakeCallback() { return std::move(callback_); }
 
  protected:
   // Subclasses can call this method to mark the request as finished (for
@@ -121,12 +121,16 @@ class CheckClientDownloadRequestBase {
       const ClientDownloadResponse::Verdict& verdict,
       const ClientDownloadResponse::TailoredVerdict& tailored_verdict) = 0;
 
+  // TODO(crbug.com/397407934): Download feedback is not supported on Android
+  // yet, but it will be.
+#if !BUILDFLAG(IS_ANDROID)
   // Called when a valid response has been received from the server.
   virtual void MaybeBeginFeedbackForDownload(
       DownloadCheckResult result,
       bool upload_requested,
       const std::string& request_data,
       const std::string& response_body) = 0;
+#endif
 
   // Returns whether or not the file should be uploaded to Safe Browsing for
   // deep scanning. Returns the settings to apply for analysis if the file
@@ -146,10 +150,8 @@ class CheckClientDownloadRequestBase {
                                      DownloadCheckResultReason reason) = 0;
 
   // Called when finishing the download, to decide whether to
-  // immediately start deep scanning or not. Implementations should log
-  // metrics only when `log_metrics` is true.
-  virtual bool ShouldImmediatelyDeepScan(bool server_requests_prompt,
-                                         bool log_metrics) const = 0;
+  // immediately start deep scanning or not.
+  virtual bool ShouldImmediatelyDeepScan(bool server_requests_prompt) const = 0;
 
   // Called when finishing the download, to decide whether to prompt the user
   // for deep scanning or not.
@@ -161,8 +163,10 @@ class CheckClientDownloadRequestBase {
   virtual bool ShouldPromptForLocalDecryption(
       bool server_requests_prompt) const = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Called when |token_fetcher_| has finished fetching the access token.
   void OnGotAccessToken(const std::string& access_token);
+#endif
 
   // Called at the request start to determine if we should bailout due to the
   // file being allowlisted by policy
@@ -215,12 +219,14 @@ class CheckClientDownloadRequestBase {
   bool is_incognito_ = false;
   bool is_enhanced_protection_ = false;
 
+#if !BUILDFLAG(IS_ANDROID)
   // The token fetcher used to attach OAuth access tokens to requests for
   // appropriately consented users.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
   // The OAuth access token for the user profile, if needed in the request.
   std::string access_token_;
+#endif
 
   // Used to create the download request proto.
   std::unique_ptr<DownloadRequestMaker> download_request_maker_;

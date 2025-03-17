@@ -44,10 +44,8 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
-  // Used by ChromeOS tast tests. This is used by both Lacros and Ash, which
-  // is why it's in ChromeBrowserMainPartsLinux, even though it's not used in
-  // Linux. ChromeBrowserMainPartsLinux is the base class of both
-  // ChromeBrowserMainPartsAsh and ChromeBrowserMainPartsLacros.
+  // Used by ChromeOS tast tests. This is in ChromeBrowserMainPartsLinux for
+  // historical reasons and should be moved to ChromeBrowserMainPartsAsh.
   scoped_refptr<metrics::StackSamplingRecorder> stack_sampling_recorder_;
 #endif
 };

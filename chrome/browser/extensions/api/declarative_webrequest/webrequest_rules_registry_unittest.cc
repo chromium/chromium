@@ -28,6 +28,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
@@ -71,7 +72,7 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
   explicit TestWebRequestRulesRegistry(content::BrowserContext* context)
       : WebRequestRulesRegistry(context,
                                 nullptr /* cache_delegate */,
-                                RulesRegistryService::kDefaultRulesRegistryID),
+                                rules_registry_ids::kDefaultRulesRegistryID),
         num_clear_cache_calls_(0) {}
 
   // Returns how often the in-memory caches of the renderers were instructed
@@ -251,11 +252,10 @@ void WebRequestRulesRegistryTest::SetUp() {
   CHECK(ExtensionRegistry::Get(&profile_));
   ExtensionRegistry::Get(&profile_)->AddEnabled(extension_);
   ExtensionPrefs::Get(&profile_)->OnExtensionInstalled(
-      extension_.get(), Extension::State::ENABLED, syncer::StringOrdinal(), "");
+      extension_.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
   ExtensionRegistry::Get(&profile_)->AddEnabled(extension2_);
   ExtensionPrefs::Get(&profile_)->OnExtensionInstalled(
-      extension2_.get(), Extension::State::ENABLED, syncer::StringOrdinal(),
-      "");
+      extension2_.get(), /*disable_reasons=*/{}, syncer::StringOrdinal(), "");
 }
 
 

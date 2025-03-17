@@ -30,12 +30,6 @@ namespace SkNamedTransferFnExt {
 static constexpr skcms_TransferFunction kSRGB =
     SkNamedTransferFn::kIEC61966_2_1;
 
-// 'a98-rgb'
-static constexpr skcms_TransferFunction kA98RGB = {2.2f, 1.};
-
-// 'prophoto-rgb'
-static constexpr skcms_TransferFunction kProPhotoRGB = {1.8f, 1.};
-
 // 'rec2020' uses the same transfer function as kRec709.
 static constexpr skcms_TransferFunction kRec2020 = SkNamedTransferFn::kRec709;
 

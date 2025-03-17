@@ -102,6 +102,9 @@ class MODULES_EXPORT DecoderTemplate
   // classes if needed.
   virtual void SetHardwarePreference(HardwarePreference preference);
 
+  // Called when the active configuration changes after a configure().
+  virtual void OnActiveConfigChanged(const MediaConfigType& config);
+
   // Virtual for UTs.
   virtual MediaDecoderType* decoder() { return decoder_.get(); }
 

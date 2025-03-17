@@ -6,6 +6,7 @@
 
 #include <absl/cleanup/cleanup.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -27,10 +28,10 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -814,11 +815,11 @@ std::vector<raw_ptr<aura::Window, VectorExperimental>> Desk::GetAllAppWindows()
   // that we do not modify `windows_` in place. This also gives us a filtered
   // list with all of the app windows that we need to remove.
   std::vector<raw_ptr<aura::Window, VectorExperimental>> app_windows;
-  base::ranges::copy_if(windows_, std::back_inserter(app_windows),
-                        [](aura::Window* window) {
-                          return window->GetProperty(chromeos::kAppTypeKey) !=
-                                 chromeos::AppType::NON_APP;
-                        });
+  std::ranges::copy_if(windows_, std::back_inserter(app_windows),
+                       [](aura::Window* window) {
+                         return window->GetProperty(chromeos::kAppTypeKey) !=
+                                chromeos::AppType::NON_APP;
+                       });
   // Note that floated window is also app window but needs to be handled
   // separately since it doesn't store in desk container.
   if (aura::Window* floated_window =
@@ -836,7 +837,7 @@ Desk::GetAllAssociatedWindows() const {
   if (auto* floated_window =
           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this)) {
     std::vector<raw_ptr<aura::Window, VectorExperimental>> all_windows;
-    base::ranges::copy(windows_, std::back_inserter(all_windows));
+    std::ranges::copy(windows_, std::back_inserter(all_windows));
     all_windows.push_back(floated_window);
     return all_windows;
   }
@@ -957,7 +958,7 @@ void Desk::UntrackAllDeskWindow(aura::Window* window,
 
   auto& adw_data = all_desk_window_stacking_[recent_root];
   auto it =
-      base::ranges::find(adw_data, window, &AllDeskWindowStackingData::window);
+      std::ranges::find(adw_data, window, &AllDeskWindowStackingData::window);
   if (it == adw_data.end()) {
     // This will happen when the desk was created after the window was made into
     // an all desk window. In this case, there's nothing to do since this desk

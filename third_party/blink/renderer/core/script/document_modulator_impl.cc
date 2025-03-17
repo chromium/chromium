@@ -88,7 +88,7 @@ void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
   // scoped_resolved_module_map.
   toplevel_resolved_module_set_.insert(specifier);
   Vector<AtomicString> specifier_prefixes = FindUrlPrefixes(specifier);
-  for (auto specifier_prefix : specifier_prefixes) {
+  for (const auto& specifier_prefix : specifier_prefixes) {
     toplevel_resolved_module_set_.insert(specifier_prefix);
   }
 
@@ -97,7 +97,7 @@ void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
   }
   Vector<AtomicString> referring_script_prefixes =
       FindUrlPrefixes(referring_script_url.value());
-  for (auto referring_script_prefix : referring_script_prefixes) {
+  for (const auto& referring_script_prefix : referring_script_prefixes) {
     const auto& current_set_it =
         scoped_resolved_module_map_.find(referring_script_prefix);
     HashSet<AtomicString>* current_set = nullptr;
@@ -110,7 +110,7 @@ void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
                 .stored_value->value);
     }
     current_set->insert(specifier);
-    for (auto specifier_prefix : specifier_prefixes) {
+    for (const auto& specifier_prefix : specifier_prefixes) {
       current_set->insert(specifier_prefix);
     }
   }

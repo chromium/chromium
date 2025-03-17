@@ -31,6 +31,7 @@
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -127,9 +128,11 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
-          static_cast<HelpBubbleViews*>(
-              GetTutorialService()->currently_displayed_bubble_for_testing())
-              ->bubble_view()
+          AsViewClass<user_education::HelpBubbleView>(
+              GetTutorialService()
+                  ->currently_displayed_bubble_for_testing()
+                  ->AsA<HelpBubbleViews>()
+                  ->bubble_view_for_testing())
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
 

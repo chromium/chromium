@@ -18,6 +18,10 @@
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/url_loader_network_service_observer.h"
 
+namespace net {
+class ClientCertStore;
+}  // namespace net
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -29,13 +33,16 @@ class ProtobufHttpRequestBase;
 // Helper class for executing REST/Protobuf requests over HTTP.
 class ProtobufHttpClient final {
  public:
-  // |server_endpoint| is the hostname of the server.
-  // |token_getter| is nullable if none of the requests are authenticated.
-  // |token_getter| must outlive |this|.
+  // |server_endpoint|: the hostname of the server.
+  // |token_getter|: nullable if none of the requests are authenticated. Must
+  //     outlive |this|.
+  // |client_cert_store|: nullable if none of the requests have
+  //     provide_certificate set to true.
   ProtobufHttpClient(
       const std::string& server_endpoint,
       OAuthTokenGetter* token_getter,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store = nullptr);
   ~ProtobufHttpClient();
   ProtobufHttpClient(const ProtobufHttpClient&) = delete;
   ProtobufHttpClient& operator=(const ProtobufHttpClient&) = delete;
@@ -68,6 +75,7 @@ class ProtobufHttpClient final {
   raw_ptr<OAuthTokenGetter> token_getter_;
   std::optional<UrlLoaderNetworkServiceObserver> service_observer_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<net::ClientCertStore> client_cert_store_;
   PendingRequestList pending_requests_;
 
   SEQUENCE_CHECKER(sequence_checker_);

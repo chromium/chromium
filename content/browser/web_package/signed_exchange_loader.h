@@ -107,8 +107,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   void ConnectToClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);

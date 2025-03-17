@@ -11,8 +11,10 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** A wrapper around the PackageManager that may be overridden for testing. */
+@NullMarked
 public class PackageManagerDelegate {
     /** See {@link PackageManager#getApplicationInfo(String, int)} */
     public ApplicationInfo getApplicationInfo(String packageName, int flags)

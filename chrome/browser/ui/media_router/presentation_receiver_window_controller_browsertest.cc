@@ -47,14 +47,14 @@ using testing::Invoke;
 namespace {
 
 constexpr char kPresentationId[] = "test_id";
-const base::FilePath::StringPieceType kResourcePath =
+const base::FilePath::StringViewType kResourcePath =
     FILE_PATH_LITERAL("media/router/");
 
 base::RepeatingCallback<void(const std::string&)> GetNoopTitleChangeCallback() {
   return base::BindRepeating([](const std::string& title) {});
 }
 
-base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path) {
+base::FilePath GetResourceFile(base::FilePath::StringViewType relative_path) {
   base::FilePath base_dir;
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &base_dir)) {
     return base::FilePath();

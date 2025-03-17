@@ -175,15 +175,15 @@ public class AppLanguagePromoDialogTest {
         LinkedHashSet<String> uiLanguages =
                 new LinkedHashSet<>(Arrays.asList("af", "en-US", "en-GB", "es", "es-419"));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUiLanguage("af-ZA", uiLanguages), "af");
+                "af", AppLanguagePromoDialog.getPotentialUiLanguage("af-ZA", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUiLanguage("en-GB", uiLanguages), "en-GB");
+                "en-GB", AppLanguagePromoDialog.getPotentialUiLanguage("en-GB", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUiLanguage("en-ZA", uiLanguages), "en");
+                "en", AppLanguagePromoDialog.getPotentialUiLanguage("en-ZA", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUiLanguage("es-AR", uiLanguages), "es");
+                "es", AppLanguagePromoDialog.getPotentialUiLanguage("es-AR", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUiLanguage("es-419", uiLanguages), "es-419");
+                "es-419", AppLanguagePromoDialog.getPotentialUiLanguage("es-419", uiLanguages));
     }
 
     // Test LanguageItemAdapter getItemCount

@@ -15,8 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.TimeUtils;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,13 +41,14 @@ public class AuxiliarySearchControllerImpl
     private final @NonNull AuxiliarySearchProvider mAuxiliarySearchProvider;
     private final @NonNull AuxiliarySearchDonor mDonor;
     private final boolean mIsFaviconEnabled;
+    private final boolean mSupportMultiDataSource;
     private final int mZeroStateFaviconNumber;
     private final int mDefaultFaviconSize;
 
     private @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
-    private boolean mSharedTabsWithOsState;
+    private CallbackController mCallbackController = new CallbackController();
 
     @VisibleForTesting
     public AuxiliarySearchControllerImpl(
@@ -61,15 +63,13 @@ public class AuxiliarySearchControllerImpl
         mDonor = auxiliarySearchDonor;
         mFaviconHelper = faviconHelper;
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
+        mSupportMultiDataSource =
+                ChromeFeatureList.sAndroidAppIntegrationMultiDataSource.isEnabled();
 
         mZeroStateFaviconNumber =
                 sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
 
-        mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
-        if (mSharedTabsWithOsState) {
-            initDonor();
-        }
         AuxiliarySearchConfigManager.getInstance().addListener(this);
     }
 
@@ -86,7 +86,7 @@ public class AuxiliarySearchControllerImpl
                 context,
                 profile,
                 new AuxiliarySearchProvider(context, profile, tabModelSelector),
-                new AuxiliarySearchDonor(context),
+                AuxiliarySearchDonor.getInstance(),
                 new FaviconHelper());
     }
 
@@ -101,8 +101,6 @@ public class AuxiliarySearchControllerImpl
 
     @Override
     public void onResumeWithNative() {
-        if (!mSharedTabsWithOsState) return;
-
         deleteAllTabs();
     }
 
@@ -113,29 +111,32 @@ public class AuxiliarySearchControllerImpl
 
     @Override
     public void destroy() {
+        if (mCallbackController == null) return;
+
+        mCallbackController.destroy();
+        mCallbackController = null;
         AuxiliarySearchConfigManager.getInstance().removeListener(this);
 
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
         }
-        if (mDonor != null) {
-            mDonor.destroy();
-        }
+
         mFaviconHelper.destroy();
     }
 
     @Override
-    public void onBackgroundTaskStart(
-            @NonNull List<AuxiliarySearchEntry> tabs,
-            @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
+    public <T> void onBackgroundTaskStart(
+            @NonNull List<T> entries,
+            @NonNull Map<T, Bitmap> entryToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMillis) {
-        assert mSharedTabsWithOsState;
+        if (!mDonor.canDonate()) return;
 
+        // mDonor will cache the donation list if the initialization of the donor is in progress.
         mDonor.donateFavicons(
-                tabs,
-                tabIdToFaviconMap,
+                entries,
+                entryToFaviconMap,
                 (success) -> {
                     callback.onResult(success);
                     AuxiliarySearchMetrics.recordScheduledDonateTime(
@@ -146,26 +147,23 @@ public class AuxiliarySearchControllerImpl
     // AuxiliarySearchConfigManager.ShareTabsWithOsStateListener implementations.
     @Override
     public void onConfigChanged(boolean enabled) {
-        if (mSharedTabsWithOsState == enabled) return;
-
-        mSharedTabsWithOsState = enabled;
-        AuxiliarySearchUtils.setSharedTabsWithOs(enabled);
-        if (enabled) {
-            // Initializes the session now.
-            initDonor();
-        } else {
-            // When disabled, remove all shared Tabs and closes the session.
-            deleteAllTabs();
-            mDonor.destroy();
-        }
+        long startTimeMs = TimeUtils.uptimeMillis();
+        mDonor.onConfigChanged(enabled, (success) -> onAllTabDeleted(success, startTimeMs));
     }
 
     private void tryDonateTabs() {
-        if (mHasDeletingTask || !mSharedTabsWithOsState) return;
+        if (mHasDeletingTask || !mDonor.canDonate()) return;
 
         long startTime = TimeUtils.uptimeMillis();
-        mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
-                (tabs) -> onNonSensitiveTabsAvailable(tabs, startTime));
+        if (mSupportMultiDataSource) {
+            mAuxiliarySearchProvider.getHistorySearchableDataProtoAsync(
+                    mCallbackController.makeCancelable(
+                            (entries) -> onNonSensitiveHistoryDataAvailable(entries, startTime)));
+        } else {
+            mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
+                    mCallbackController.makeCancelable(
+                            (tabs) -> onNonSensitiveTabsAvailable(tabs, startTime)));
+        }
     }
 
     /**
@@ -175,98 +173,135 @@ public class AuxiliarySearchControllerImpl
      * @param startTimeMs The starting time to query the tab list.
      */
     @VisibleForTesting
-    public void onNonSensitiveTabsAvailable(@NonNull List<Tab> tabs, long startTimeMs) {
+    public void onNonSensitiveTabsAvailable(@Nullable List<Tab> tabs, long startTimeMs) {
         AuxiliarySearchMetrics.recordQueryTabTime(TimeUtils.uptimeMillis() - startTimeMs);
 
-        if (tabs.isEmpty()) return;
+        if (tabs == null || tabs.isEmpty()) return;
 
         if (mIsFaviconEnabled) {
             tabs.sort(AuxiliarySearchProvider.sComparator);
         }
 
+        onNonSensitiveDataAvailable(tabs, startTimeMs);
+    }
+
+    @VisibleForTesting
+    <T> void onNonSensitiveDataAvailable(List<T> entries, long startTimeMs) {
+        int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
         Callback<Boolean> onDonationCompleteCallback =
                 (success) -> {
+                    AuxiliarySearchMetrics.recordDonationCount(counts);
                     AuxiliarySearchMetrics.recordDonateTime(TimeUtils.uptimeMillis() - startTimeMs);
                     AuxiliarySearchMetrics.recordDonationRequestStatus(
                             success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL);
                 };
 
-        // Donates the list of tabs without favicons.
-        mDonor.donateTabs(tabs, onDonationCompleteCallback);
+        // Donates the list of entries without favicons.
+        mDonor.donateEntries(entries, counts, onDonationCompleteCallback);
 
         if (!mIsFaviconEnabled) {
             return;
         }
 
         mTaskFinishedCount = 0;
-        Map<Tab, Bitmap> tabToFaviconMap = new HashMap<>();
-        int zeroStateFaviconFetchedNumber =
-                mIsFaviconEnabled ? Math.min(tabs.size(), mZeroStateFaviconNumber) : 0;
+        Map<T, Bitmap> entryToFaviconMap = new HashMap<>();
+        int zeroStateFaviconFetchedNumber = Math.min(entries.size(), mZeroStateFaviconNumber);
 
         long faviconStartTimeMs = TimeUtils.uptimeMillis();
+        int metaDataVersion = AuxiliarySearchUtils.getMetadataVersion(entries.get(0));
+
         // When donating favicon is enabled, Chrome only donates the favicons of the most
         // recently visited tabs in the first round.
         for (int i = 0; i < zeroStateFaviconFetchedNumber; i++) {
-            Tab tab = tabs.get(i);
+            T entry = entries.get(i);
 
+            GURL entryUrl;
+            if (entry instanceof Tab tab) {
+                entryUrl = tab.getUrl();
+            } else {
+                entryUrl = ((AuxiliarySearchDataEntry) entry).url;
+            }
             mFaviconHelper.getLocalFaviconImageForURL(
                     mProfile,
-                    tab.getUrl(),
+                    entryUrl,
                     mDefaultFaviconSize,
                     (image, url) -> {
                         mTaskFinishedCount++;
                         if (image != null) {
-                            tabToFaviconMap.put(tab, image);
+                            entryToFaviconMap.put(entry, image);
                         }
 
-                        // Once all favicon fetching is completed, donates all tabs with favicons if
-                        // exists.
+                        // Once all favicon fetching is completed, donates all entries with favicons
+                        // if exists.
                         if (mTaskFinishedCount == zeroStateFaviconFetchedNumber) {
                             AuxiliarySearchMetrics.recordFaviconFirstDonationCount(
-                                    tabToFaviconMap.size());
+                                    entryToFaviconMap.size());
                             AuxiliarySearchMetrics.recordQueryFaviconTime(
                                     TimeUtils.uptimeMillis() - faviconStartTimeMs);
 
-                            if (!tabToFaviconMap.isEmpty()) {
-                                mDonor.donateTabs(tabToFaviconMap, onDonationCompleteCallback);
+                            if (!entryToFaviconMap.isEmpty()) {
+                                mDonor.donateEntries(entryToFaviconMap, onDonationCompleteCallback);
                             }
                         }
                     });
         }
 
-        int remainingFaviconFetchCount = tabs.size() - zeroStateFaviconFetchedNumber;
-        if (mIsFaviconEnabled && remainingFaviconFetchCount > 0) {
+        int remainingFaviconFetchCount = entries.size() - zeroStateFaviconFetchedNumber;
+        if (remainingFaviconFetchCount > 0) {
 
-            // Saves the metadata of tabs in a local file.
+            // Saves the metadata of entries in a local file.
             mAuxiliarySearchProvider.saveTabMetadataToFile(
                     AuxiliarySearchUtils.getTabDonateFile(mContext),
-                    tabs,
+                    metaDataVersion,
+                    entries,
                     zeroStateFaviconFetchedNumber,
                     remainingFaviconFetchCount);
 
-            // Schedules a background task to donate favicons of the remaining tabs.
+            // Schedules a background task to donate favicons of the remaining entries.
             mAuxiliarySearchProvider.scheduleBackgroundTask(
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs.getValue(),
                     TimeUtils.uptimeMillis());
         }
     }
 
+    /**
+     * Called when a list of up to 100 non sensitive entries is available.
+     *
+     * @param entries A list of non sensitive entries.
+     * @param startTimeMs The starting time to query the data.
+     */
+    @VisibleForTesting
+    public void onNonSensitiveHistoryDataAvailable(
+            @Nullable List<AuxiliarySearchDataEntry> entries, long startTimeMs) {
+        AuxiliarySearchMetrics.recordQueryHistoryDataTime(TimeUtils.uptimeMillis() - startTimeMs);
+
+        if (entries == null || entries.isEmpty()) return;
+
+        onNonSensitiveDataAvailable(entries, startTimeMs);
+    }
+
     private void deleteAllTabs() {
         long startTimeMs = TimeUtils.uptimeMillis();
 
         mHasDeletingTask = true;
-        mDonor.deleteAllTabs(
+        if (!mDonor.deleteAllTabs(
                 (success) -> {
-                    mHasDeletingTask = false;
-                    AuxiliarySearchMetrics.recordDeleteTime(
-                            TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
-                    AuxiliarySearchMetrics.recordDeletionRequestStatus(
-                            success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
-                            AuxiliarySearchDataType.TAB);
-                });
+                    onAllTabDeleted(success, startTimeMs);
+                })) {
+            mHasDeletingTask = false;
+        }
     }
 
-    private void initDonor() {
-        mDonor.createSessionAndInit();
+    private void onAllTabDeleted(boolean success, long startTimeMs) {
+        mHasDeletingTask = false;
+        AuxiliarySearchMetrics.recordDeleteTime(
+                TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
+        AuxiliarySearchMetrics.recordDeletionRequestStatus(
+                success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
+                AuxiliarySearchDataType.TAB);
+    }
+
+    public boolean getHasDeletingTaskForTesting() {
+        return mHasDeletingTask;
     }
 }

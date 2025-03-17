@@ -74,13 +74,13 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     bool is_override = state & 0x4;
     ++state;
 
-    TextRun subrun = text_run.SubRun(from, to - from);
-    subrun.SetDirection(is_rtl ? TextDirection::kRtl : TextDirection::kLtr);
-    subrun.SetDirectionalOverride(is_override);
+    TextRun subrun(StringView(text_run.ToStringView(), from, to - from),
+                   is_rtl ? TextDirection::kRtl : TextDirection::kLtr,
+                   is_override);
 
     TextRunPaintInfo subrun_info(subrun);
     ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(subrun_info, &buffer);
+    word_shaper.FillResultBuffer(subrun, &buffer);
     ShapeResultBloberizer::FillGlyphs bloberizer(
         font.GetFontDescription(), subrun_info, buffer,
         ShapeResultBloberizer::Type::kEmitText);

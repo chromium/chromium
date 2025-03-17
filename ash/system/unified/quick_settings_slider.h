@@ -75,6 +75,7 @@ class ASH_EXPORT QuickSettingsSlider : public views::Slider {
   int GetInactiveRadioSliderRoundedCornerRadius();
 
   void SetIsToggleableVolumeSlider(bool is_toggleable_volume_slider);
+
   bool is_toggleable_volume_slider() { return is_toggleable_volume_slider_; }
 
  private:

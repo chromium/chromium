@@ -90,7 +90,7 @@ suite('AsyncMapDirectiveTest', function() {
     override connectedCallback() {
       super.connectedCallback();
       this.observer_ = new MutationObserver(() => this.onChildListChanged_());
-      const target = this.shadowRoot!.querySelector('div');
+      const target = this.shadowRoot.querySelector('div');
       assertTrue(!!target);
       this.observer_.observe(target, {childList: true});
     }
@@ -104,7 +104,7 @@ suite('AsyncMapDirectiveTest', function() {
     }
 
     private onChildListChanged_() {
-      const children = this.shadowRoot!.querySelectorAll('test-child');
+      const children = this.shadowRoot.querySelectorAll('test-child');
       const rendered = children.length;
       this.itemsRendered_.push(rendered);
       if (rendered === this.items.length) {
@@ -115,7 +115,7 @@ suite('AsyncMapDirectiveTest', function() {
     allItemsRendered(): Promise<number[]> {
       // Early return since MutationObserver doesn't always fire in cases
       // where all items get added at once.
-      if (this.shadowRoot!.querySelectorAll('test-child').length ===
+      if (this.shadowRoot.querySelectorAll('test-child').length ===
           this.items.length) {
         return Promise.resolve([]);
       }
@@ -146,7 +146,7 @@ suite('AsyncMapDirectiveTest', function() {
     // consistent with an initialCount of 2.
     assertGT(itemsRendered.length, 1);
     assertEquals(
-        12, testElement.shadowRoot!.querySelectorAll('test-child').length);
+        12, testElement.shadowRoot.querySelectorAll('test-child').length);
   });
 
   test('Different initial count', async () => {
@@ -160,7 +160,7 @@ suite('AsyncMapDirectiveTest', function() {
 
     // Make sure the items are actually in the DOM.
     assertEquals(
-        12, testElement.shadowRoot!.querySelectorAll('test-child').length);
+        12, testElement.shadowRoot.querySelectorAll('test-child').length);
   });
 
   test('Long list', async () => {
@@ -176,7 +176,7 @@ suite('AsyncMapDirectiveTest', function() {
     document.body.appendChild(testElement);
     await testElement.allItemsRendered();
     assertEquals(
-        600, testElement.shadowRoot!.querySelectorAll('test-child').length);
+        600, testElement.shadowRoot.querySelectorAll('test-child').length);
   });
 
   test('Modify list', async () => {
@@ -187,15 +187,14 @@ suite('AsyncMapDirectiveTest', function() {
 
     await testElement.allItemsRendered();
     assertEquals(
-        12, testElement.shadowRoot!.querySelectorAll('test-child').length);
+        12, testElement.shadowRoot.querySelectorAll('test-child').length);
 
     // Set a new array.
     testElement.reset();
     testElement.items = ['Hello', 'World', 'Goodbye'];
     await testElement.allItemsRendered();
     let renderedItems =
-        testElement.shadowRoot!.querySelectorAll<TestChildElement>(
-            'test-child');
+        testElement.shadowRoot.querySelectorAll<TestChildElement>('test-child');
     assertEquals(3, renderedItems.length);
     assertEquals('Hello', renderedItems[0]!.name);
     assertEquals('World', renderedItems[1]!.name);
@@ -206,7 +205,7 @@ suite('AsyncMapDirectiveTest', function() {
     testElement.items = [];
     await testElement.allItemsRendered();
     assertEquals(
-        0, testElement.shadowRoot!.querySelectorAll('test-child').length);
+        0, testElement.shadowRoot.querySelectorAll('test-child').length);
 
     // Set the array multiple times in one cycle and confirm only the last
     // set of data is rendered.
@@ -221,8 +220,8 @@ suite('AsyncMapDirectiveTest', function() {
         ['Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen'];
     await testElement.allItemsRendered();
     await microtasksFinished();
-    renderedItems = testElement.shadowRoot!.querySelectorAll<TestChildElement>(
-        'test-child');
+    renderedItems =
+        testElement.shadowRoot.querySelectorAll<TestChildElement>('test-child');
     assertEquals(6, renderedItems.length);
     assertEquals(
         JSON.stringify(testElement.items),
@@ -236,24 +235,26 @@ suite('AsyncMapDirectiveTest', function() {
     document.body.appendChild(testElement);
 
     await testElement.allItemsRendered();
-    let renderedItems = testElement.shadowRoot!.querySelectorAll('test-child');
+    let renderedItems =
+        testElement.shadowRoot.querySelectorAll<CrLitElement>('test-child');
     assertEquals(12, renderedItems.length);
 
     // Check that the rendered items aren't displaying the feature enabled div.
     renderedItems.forEach(item => {
-      const featureDiv = item.shadowRoot!.querySelector('.feature');
+      const featureDiv = item.shadowRoot.querySelector('.feature');
       assertFalse(!!featureDiv);
     });
 
     // Set the feature to enabled. There should still be 12 items.
     testElement.featureEnabled = true;
     await microtasksFinished();
-    renderedItems = testElement.shadowRoot!.querySelectorAll('test-child');
+    renderedItems =
+        testElement.shadowRoot.querySelectorAll<CrLitElement>('test-child');
     assertEquals(12, renderedItems.length);
 
     // Check that the feature div is displayed for a few items.
     renderedItems.forEach(item => {
-      const featureDiv = item.shadowRoot!.querySelector('.feature');
+      const featureDiv = item.shadowRoot.querySelector('.feature');
       assertTrue(!!featureDiv);
       assertTrue(isVisible(featureDiv));
       assertEquals('Cool Feature Enabled!', featureDiv.textContent);
@@ -275,6 +276,6 @@ suite('AsyncMapDirectiveTest', function() {
     document.body.appendChild(testElement);
     await testElement.allItemsRendered();
     assertEquals(
-        13, testElement.shadowRoot!.querySelectorAll('test-child').length);
+        13, testElement.shadowRoot.querySelectorAll('test-child').length);
   });
 });

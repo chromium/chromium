@@ -33,11 +33,13 @@ bool BrowserSigninPolicyHandler::CheckPolicySettings(
   // `GetValueUnsafe` is used to differentiate between the policy value being
   // unset vs being set with an incorrect type.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
-  if (!value)
+  if (!value) {
     return true;
+  }
 
-  if (!SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors))
+  if (!SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors)) {
     return false;
+  }
 
   return true;
 }
@@ -46,8 +48,9 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::INTEGER);
-  if (!value)
+  if (!value) {
     return;
+  }
 
   const int int_value = value->GetInt();
   if (static_cast<int>(BrowserSigninMode::kDisabled) > int_value ||

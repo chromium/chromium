@@ -398,8 +398,7 @@ void APIRequestHandler::AsyncResultHandler::CallCustomCallback(
                               response_args.end());
 
   JSRunner::Get(context)->RunJSFunction(custom_callback_.Get(isolate), context,
-                                        custom_callback_args.size(),
-                                        custom_callback_args.data());
+                                        custom_callback_args);
 }
 
 APIRequestHandler::Request::Request() = default;

@@ -10,7 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -218,7 +217,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
     browser()->window()->GetLocationBar()->FocusLocation(false);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS doesn't have a way to just focus the app menu, so we use Alt+F to
   // bring up the menu.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F, false,
@@ -243,7 +242,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
 
   // See above comment. Since we already brought up the menu, no need to do this
   // on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (alternate_key_sequence) {
     SendKeyPress(browser(), ui::VKEY_DOWN);
   } else {
@@ -401,7 +400,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
 }
 
 // http://crbug.com/62310.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestMenuKeyboardAccess DISABLED_TestMenuKeyboardAccess
 #elif BUILDFLAG(IS_MAC)
 // No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952
@@ -415,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_TestMenuKeyboardAccess) {
 }
 
 // http://crbug.com/62310.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestAltMenuKeyboardAccess DISABLED_TestAltMenuKeyboardAccess
 #elif BUILDFLAG(IS_MAC)
 // No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952

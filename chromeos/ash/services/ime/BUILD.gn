@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("constants") {
   output_name = "ash_ime_constants"
@@ -57,7 +55,6 @@ source_set("lib") {
     ":ime_shared_library",
     "//ash/constants",
     "//base",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
     "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
     "//chromeos/ash/services/ime/public/mojom",

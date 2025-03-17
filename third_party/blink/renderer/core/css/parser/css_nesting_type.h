@@ -23,6 +23,10 @@ enum class CSSNestingType {
   // We are in a css-nesting nesting context, and '&' resolves according to:
   // https://drafts.csswg.org/css-nesting-1/#nest-selector
   kNesting,
+  // We are inside @function. The parsing behavior is generally the same as
+  // kNesting, except we don't allow qualified rules, and we emit
+  // CSSFunctionDeclarations instead of CSSNestedDeclarations.
+  kFunction,
 };
 
 }  // namespace blink

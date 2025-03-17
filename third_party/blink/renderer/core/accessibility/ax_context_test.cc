@@ -29,7 +29,7 @@ TEST_F(AXContextTest, AXContextSetsAXMode) {
   SetBodyInnerHTML(R"HTML(<p>Hello, world</p>)HTML");
 
   constexpr ui::AXMode mode_1 = ui::AXMode::kWebContents;
-  constexpr ui::AXMode mode_2 = ui::AXMode::kScreenReader;
+  constexpr ui::AXMode mode_2 = ui::AXMode::kExtendedProperties;
   ui::AXMode mode_combined = mode_1;
   mode_combined |= mode_2;
 

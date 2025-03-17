@@ -6,12 +6,12 @@
 
 #include <AppKit/AppKit.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -32,6 +32,10 @@
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/widget/native_widget.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/widget/glic_widget.h"
+#endif
 
 namespace {
 
@@ -107,7 +111,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 
       // Move the tab strip to the `tab_overlay_widget`, the host of the
       // `tab_overlay_view`.
-      browser_view_->tab_overlay_view()->AddChildView(
+      browser_view_->tab_overlay_view()->AddChildViewRaw(
           browser_view_->tab_strip_region_view());
 
       browser_view_->tab_strip_region_view()->SetBorder(
@@ -157,6 +161,10 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // Move top chrome to the overlay view.
     browser_view_->OnImmersiveRevealStarted();
     browser_view_->InvalidateLayout();
+
+    for (Observer& observer : observers_) {
+      observer.OnImmersiveFullscreenEntered();
+    }
 
     views::NativeWidgetMacNSWindowHost* overlay_host =
         views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
@@ -383,8 +391,8 @@ void ImmersiveModeControllerMac::MoveChildren(views::Widget* from_widget,
     return;
   }
 
-  views::Widget::Widgets widgets;
-  views::Widget::GetAllChildWidgets(from_widget->GetNativeView(), &widgets);
+  views::Widget::Widgets widgets =
+      views::Widget::GetAllChildWidgets(from_widget->GetNativeView());
   for (views::Widget* widget : widgets) {
     if (ShouldMoveChild(widget)) {
       views::Widget::ReparentNativeView(widget->GetNativeView(),
@@ -414,8 +422,11 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
   const void* widget_identifier =
       child->GetNativeWindowProperty(views::kWidgetIdentifierKey);
   if (widget_identifier ==
-          constrained_window::kConstrainedWindowWidgetIdentifier ||
-      widget_identifier == kLensOverlayPreselectionWidgetIdentifier) {
+          constrained_window::kConstrainedWindowWidgetIdentifier
+#if BUILDFLAG(ENABLE_GLIC)
+      || widget_identifier == glic::kGlicWidgetIdentifier
+#endif
+  ) {
     return true;
   }
 
@@ -446,7 +457,19 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
 
 void ImmersiveModeControllerMac::OnImmersiveModeToolbarRevealChanged(
     bool is_revealed) {
+  if (is_revealed_ == is_revealed) {
+    return;
+  }
   is_revealed_ = is_revealed;
+
+  // Notify observers that immersive reveal has started.
+  for (Observer& observer : observers_) {
+    if (is_revealed) {
+      observer.OnImmersiveRevealStarted();
+    } else {
+      observer.OnImmersiveRevealEnded();
+    }
+  }
 }
 
 void ImmersiveModeControllerMac::OnImmersiveModeMenuBarRevealChanged(
@@ -530,7 +553,7 @@ views::View* ImmersiveModeFocusSearchMac::FindNextFocusableView(
     traverse_order.push_back(browser_view_->tab_overlay_widget());
   }
 
-  auto current_widget_it = base::ranges::find_if(
+  auto current_widget_it = std::ranges::find_if(
       traverse_order, [starting_view](const views::Widget* widget) {
         return widget->GetRootView()->Contains(starting_view);
       });

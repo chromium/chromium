@@ -9,8 +9,9 @@
 
 #include "media/midi/usb_midi_descriptor_parser.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 
 namespace midi {
@@ -261,8 +262,7 @@ bool UsbMidiDescriptorParser::ParseCSEndpoint(const uint8_t* data,
 
   for (size_t i = 0; i < num_jacks; ++i) {
     uint8_t jack = data[kSizeForEmptyJacks + i];
-    auto it =
-        base::ranges::find(incomplete_jacks_, jack, &UsbMidiJack::jack_id);
+    auto it = std::ranges::find(incomplete_jacks_, jack, &UsbMidiJack::jack_id);
     if (it == incomplete_jacks_.end()) {
       DVLOG(1) << "A non-existing MIDI jack is associated.";
       return false;

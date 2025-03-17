@@ -7,12 +7,13 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_list.h"
 #include "net/dns/public/host_resolver_results.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
 namespace network {
@@ -24,16 +25,29 @@ class NetworkContext;
 
 namespace content {
 
-class DirectSocketsDelegate;
+class ServiceWorkerVersion;
+class SharedWorkerHost;
 
 // Implementation of the DirectSocketsService Mojo service.
 class CONTENT_EXPORT DirectSocketsServiceImpl
-    : public DocumentService<blink::mojom::DirectSocketsService> {
+    : public blink::mojom::DirectSocketsService {
  public:
+  using Context = absl::variant<const raw_ptr<RenderFrameHost>,
+                                base::WeakPtr<SharedWorkerHost>,
+                                base::WeakPtr<ServiceWorkerVersion>>;
+
   ~DirectSocketsServiceImpl() override;
 
   static void CreateForFrame(
       RenderFrameHost*,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  static void CreateForSharedWorker(
+      SharedWorkerHost&,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  static void CreateForServiceWorker(
+      ServiceWorkerVersion&,
       mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
 
   // blink::mojom::DirectSocketsService:
@@ -65,10 +79,9 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-  DirectSocketsServiceImpl(
-      RenderFrameHost*,
-      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+  explicit DirectSocketsServiceImpl(Context context);
 
+  // Might return nullptr.
   network::mojom::NetworkContext* GetNetworkContext() const;
 
   void OnResolveCompleteForTCPSocket(
@@ -107,6 +120,7 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       base::OnceCallback<void(int32_t, const std::optional<net::IPEndPoint>&)>
           callback);
 
+  Context context_;
   std::unique_ptr<network::SimpleHostResolver> resolver_;
 
 #if BUILDFLAG(IS_CHROMEOS)

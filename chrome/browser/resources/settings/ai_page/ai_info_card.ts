@@ -9,7 +9,6 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -31,16 +30,10 @@ export class SettingsAiInfoCardElement extends PolymerElement {
         type: String,
         computed: 'computeIcon3_()',
       },
-
-      sublabel3_: {
-        type: TrustedHTML,
-        computed: 'computeSublabel3_()',
-      },
     };
   }
 
   private icon3_: string;
-  private sublabel3_: TrustedHTML;
 
   private isManaged_(): boolean {
     return loadTimeData.getBoolean('isManaged');
@@ -49,13 +42,6 @@ export class SettingsAiInfoCardElement extends PolymerElement {
   private computeIcon3_(): string {
     return this.isManaged_() ? loadTimeData.getString('managedByIcon') :
                                'settings20:account-box';
-  }
-
-  private computeSublabel3_(): TrustedHTML {
-    return sanitizeInnerHtml(
-        this.isManaged_() ?
-            loadTimeData.getString('aiPageMainManagedSublabel3') :
-            loadTimeData.getString('aiPageMainSublabel3'));
   }
 }
 

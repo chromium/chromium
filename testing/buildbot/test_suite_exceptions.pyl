@@ -180,17 +180,6 @@
       },
     },
   },
-  'expected_color_pixel_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM': {
-    'modifications': {
-      'ChromeOS FYI Release Skylab (volteer)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=/creds/service_accounts/skylab-drone.json',
-        ],
-      },
-    },
-  },
   'expected_color_pixel_validating_test': {
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -375,17 +364,6 @@
   'pixel_skia_gold_passthrough_test JACUZZI_RELEASE_LKGM': {
     'modifications': {
       'ChromeOS FYI Release Skylab (jacuzzi)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=/creds/service_accounts/skylab-drone.json',
-        ],
-      },
-    },
-  },
-  'pixel_skia_gold_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM': {
-    'modifications': {
-      'ChromeOS FYI Release Skylab (volteer)': {
         'args': [
           # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
           # automatically get the service account to authenticate with.

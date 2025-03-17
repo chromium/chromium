@@ -7,7 +7,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/data_sharing/public/features.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
-#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -39,9 +38,6 @@ class ShareKitServiceFactoryTest : public PlatformTest {
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    builder.AddTestingFactory(
-        IOSChromeFaviconLoaderFactory::GetInstance(),
-        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
   }
 
@@ -52,6 +48,10 @@ class ShareKitServiceFactoryTest : public PlatformTest {
 
 // Tests that the factory isn't returning a service in incognito.
 TEST_F(ShareKitServiceFactoryTest, NoProfileInIncognito) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   ShareKitService* regular_service =
       ShareKitServiceFactory::GetForProfile(profile_.get());
   ShareKitService* off_the_record_service =

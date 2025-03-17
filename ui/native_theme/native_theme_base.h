@@ -5,6 +5,7 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/native_theme/native_theme.h"
@@ -17,7 +18,7 @@ class Size;
 namespace ui {
 
 // Theme support for non-Windows toolkits.
-class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
  public:
   NativeThemeBase(const NativeThemeBase&) = delete;
   NativeThemeBase& operator=(const NativeThemeBase&) = delete;
@@ -272,6 +273,21 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
   SkColor GetControlColor(ControlColorId color_id,
                           ColorScheme color_scheme,
                           const ColorProvider* color_provider) const;
+
+  // Adjust the colors set in `extra_params` for scrollbar buttons and thumb
+  // when the parts are hovered or pressed. The function returns a darker or
+  // lighter version of `fg_color` and ensures that it has enough contrast with
+  // `bg_color` (if present) to still be visible. Dark colors will become
+  // lighter, and light colors will become lighter; whether a color is dark is
+  // determined by `color_utils::IsDark()`. When there are no CSS colors, both
+  // `fg_color` and `bg_color` are `std::nullopt` and the function returns
+  // `std::nullopt`.
+  std::optional<SkColor> GetContrastingPressedOrHoveredColor(
+      std::optional<SkColor> color,
+      std::optional<SkColor> bg_color,
+      State state,
+      Part part) const;
+
   virtual SkColor ControlsAccentColorForState(
       State state,
       ColorScheme color_scheme,
@@ -296,11 +312,14 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
       State state,
       ColorScheme color_scheme,
       const ColorProvider* color_provider) const;
-
+  virtual float GetContrastRatioForState(State state, Part part) const;
+  // Only scrollbar parts that change colors when hovered are supported.
+  bool SupportedPartsForContrastingColor(Part part) const;
   int scrollbar_width_ = 15;
 
  private:
   friend class NativeThemeAuraTest;
+  friend class NativeThemeBaseTest;
 
   gfx::Rect BoundingRectForArrow(const gfx::Rect& rect) const;
 

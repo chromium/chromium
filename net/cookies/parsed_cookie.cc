@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // Portions of this code based on Mozilla:
 //   (netwerk/cookie/src/nsCookieService.cpp)
 /* ***** BEGIN LICENSE BLOCK *****
@@ -469,7 +474,7 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   if (name.empty() && value.empty()) {
     if (status_out != nullptr) {
       status_out->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_NO_COOKIE_CONTENT);
     }
     // TODO(crbug.com/40189703) Note - if the exclusion reasons change to no
     // longer be the same, we'll need to not return right away and evaluate all
@@ -484,7 +489,8 @@ bool ParsedCookie::IsValidCookieNameValuePair(
       (name_value_pair_size.ValueOrDie() > kMaxCookieNamePlusValueSize)) {
     if (status_out != nullptr) {
       status_out->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE);
+          CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE);
     }
     return false;
   }
@@ -494,7 +500,7 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   if (!IsValidCookieName(name) || !IsValidCookieValue(value)) {
     if (status_out != nullptr) {
       status_out->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER);
     }
     return false;
   }
@@ -518,14 +524,14 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
   // Block cookies that were truncated by control characters.
   if (end < cookie_line.end()) {
     status_out.AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER);
     return;
   }
 
   // Exit early for an empty cookie string.
   if (it == end) {
     status_out.AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_NO_COOKIE_CONTENT);
     return;
   }
 
@@ -595,8 +601,8 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
       // this attribute name is one of the allowed ones here, so just re-use
       // the cookie name check.
       if (!IsValidCookieName(pair.first)) {
-        status_out.AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+        status_out.AddExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                          EXCLUDE_DISALLOWED_CHARACTER);
         pairs_.clear();
         break;
       }
@@ -604,8 +610,8 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
       if (!CookieAttributeValueHasValidCharSet(pair.second)) {
         // If the attribute value contains invalid characters, the whole
         // cookie should be ignored.
-        status_out.AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+        status_out.AddExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                          EXCLUDE_DISALLOWED_CHARACTER);
         pairs_.clear();
         break;
       }
@@ -613,8 +619,8 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
       if (!CookieAttributeValueHasValidSize(pair.second)) {
         // If the attribute value is too large, it should be ignored.
         ignore_pair = true;
-        status_out.AddWarningReason(
-            CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+        status_out.AddWarningReason(CookieInclusionStatus::WarningReason::
+                                        WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
       }
     }
 

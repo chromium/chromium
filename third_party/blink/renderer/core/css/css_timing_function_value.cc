@@ -24,7 +24,9 @@
  */
 
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
-#include "base/ranges/algorithm.h"
+
+#include <algorithm>
+
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -48,7 +50,7 @@ String CSSLinearTimingFunctionValue::CustomCSSText() const {
 
 bool CSSLinearTimingFunctionValue::Equals(
     const CSSLinearTimingFunctionValue& other) const {
-  return base::ranges::equal(points_, other.points_);
+  return std::ranges::equal(points_, other.points_);
 }
 
 String CSSCubicBezierTimingFunctionValue::CustomCSSText() const {

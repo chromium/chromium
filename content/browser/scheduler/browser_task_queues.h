@@ -49,11 +49,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // practice.
     kBestEffort,
 
-    // Those are tasks that affect the UI, but not urgent enough to run
-    // immediately, those tasks are either deferred or run based on the
-    // scheduling policy.
-    kDeferrableUserBlocking,
-
     // base::TaskPriority::kUserBlocking maps to this task queue. It's for tasks
     // that affect the UI immediately after a user interaction. Has the same
     // priority as kDefault.
@@ -158,15 +153,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
     std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>
         browser_task_runners_;
   };
-
-  // Creates queue voters for all task queues created within this
-  // BrowserTaskQueues object.
-  // NOTE: You can only call this function from the thread that owns the
-  // task queues, and you can only use the voters on the same thread.
-  std::array<
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
-      kNumQueueTypes>
-  CreateQueueEnabledVoters() const;
 
   // |sequence_manager| must outlive this instance.
   explicit BrowserTaskQueues(

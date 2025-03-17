@@ -8,6 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
@@ -22,6 +25,7 @@ import java.util.PriorityQueue;
  * TODO(qinmin): convert all notification code to use this class instead of directly sending
  * notifications to the NotificationManager.
  */
+@NullMarked
 public class ThrottlingNotificationScheduler {
     // To avoid notification updates being throttled by Android, using 350 ms as the interval
     // so that no more than 3 updates are posted per second.
@@ -120,7 +124,7 @@ public class ThrottlingNotificationScheduler {
      * Removes a pending task from the task queue and return it.
      * @param taskId ID of the task.
      */
-    private PendingNotificationTask removePendingNotificationTask(Object taskId) {
+    private @Nullable PendingNotificationTask removePendingNotificationTask(Object taskId) {
         Iterator<PendingNotificationTask> iter = mPendingNotificationTasks.iterator();
         while (iter.hasNext()) {
             PendingNotificationTask task = iter.next();

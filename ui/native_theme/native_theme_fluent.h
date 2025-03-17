@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "ui/native_theme/native_theme_base.h"
 
 namespace gfx {
@@ -20,7 +21,8 @@ class SkTypeface;
 
 namespace ui {
 
-class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
+    : public NativeThemeBase {
  public:
   explicit NativeThemeFluent(bool should_only_use_dark_colors);
 
@@ -70,6 +72,7 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
                         State state,
                         const ExtraParams& extra) const override;
   int GetPaintedScrollbarTrackInset() const override;
+  float GetContrastRatioForState(State state, Part part) const override;
 
  private:
   friend class NativeThemeFluentTest;

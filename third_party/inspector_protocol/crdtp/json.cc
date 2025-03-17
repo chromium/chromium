@@ -899,7 +899,7 @@ class JsonParser {
           HandleError(Error::JSON_PARSER_INVALID_STRING, token_start);
           return;
         }
-        handler_->HandleString16(span<uint16_t>(value.data(), value.size()));
+        handler_->HandleString16(value);
         break;
       }
       case ArrayBegin: {
@@ -946,7 +946,7 @@ class JsonParser {
             HandleError(Error::JSON_PARSER_INVALID_STRING, token_start);
             return;
           }
-          handler_->HandleString16(span<uint16_t>(key.data(), key.size()));
+          handler_->HandleString16(key);
           start = token_end;
 
           token = ParseToken(start, end, &token_start, &token_end);

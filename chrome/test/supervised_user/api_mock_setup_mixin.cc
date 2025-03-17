@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -36,7 +37,7 @@ constexpr std::string_view kKidsManagementServiceEndpoint{
 void WaitUntilReady(InProcessBrowserTest* test_base,
                     std::string_view preference,
                     std::string_view value) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   PrefService* pref_service =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
 #else

@@ -11,6 +11,8 @@
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 
+using update_client::ComponentState;
+
 AIOnDeviceModelComponentObserver::AIOnDeviceModelComponentObserver(
     AIManager* ai_manager)
     : ai_manager_(ai_manager) {
@@ -32,11 +34,12 @@ void AIOnDeviceModelComponentObserver::OnEvent(
     return;
   }
 
-  if (item.state == update_client::ComponentState::kDownloading ||
-      item.state == update_client::ComponentState::kDownloadingDiff ||
-      item.state == update_client::ComponentState::kUpdating ||
-      item.state == update_client::ComponentState::kUpdatingDiff ||
-      item.state == update_client::ComponentState::kUpToDate) {
+  is_downloading_ = item.state == ComponentState::kDownloading ||
+                    item.state == ComponentState::kDownloadingDiff ||
+                    item.state == ComponentState::kUpdating ||
+                    item.state == ComponentState::kUpdatingDiff;
+
+  if (is_downloading_ || item.state == ComponentState::kUpToDate) {
     if (item.downloaded_bytes >= 0 && item.total_bytes >= 0) {
       ai_manager_->OnTextModelDownloadProgressChange(
           base::PassKey<AIOnDeviceModelComponentObserver>(),

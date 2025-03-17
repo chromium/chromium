@@ -8,6 +8,7 @@
 #include <functional>
 #include <initializer_list>
 #include <optional>
+#include <set>
 #include <string>
 #include <variant>
 #include <vector>
@@ -15,8 +16,12 @@
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/user_education/common/anchor_element_provider.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
+#include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/user_education_metadata.h"
@@ -153,7 +158,12 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
     // Because they are shown over and over, possibly at startup, this type
     // requires being on an allowlist.
     kRotating = 6,
-    kMaxValue = kRotating
+    // These promos do not use standard blue bubbles, but instead some other
+    // UI specifically tuned to the purpose of the promo. Because they must
+    // be vetted for compliance with User Education policies, this type
+    // requires being on an allowlist.
+    kCustomUi = 7,
+    kMaxValue = kCustomUi
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -239,6 +249,53 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
     ListType promos_;
   };
 
+  // Parameters passed to the factory method that makes help bubbles.
+  //
+  // This is typically combined with a `FeaturePromoSpecification` to create the
+  // final `HelpBubbleParams`.
+  struct BuildHelpBubbleParams {
+    BuildHelpBubbleParams();
+    BuildHelpBubbleParams(const BuildHelpBubbleParams&);
+    BuildHelpBubbleParams(BuildHelpBubbleParams&&) noexcept;
+    BuildHelpBubbleParams& operator=(const BuildHelpBubbleParams&);
+    BuildHelpBubbleParams& operator=(BuildHelpBubbleParams&&) noexcept;
+    ~BuildHelpBubbleParams();
+
+    // The feature promo specification. Required.
+    raw_ptr<const FeaturePromoSpecification> spec = nullptr;
+
+    // The anchor element to attach to. Required.
+    raw_ptr<ui::TrackedElement> anchor_element = nullptr;
+
+    // Forwarded from `FeaturePromoParams`; can be used by the custom help
+    // bubble UI construction code to perform string substitutions.
+    FormatParameters body_format;
+    FormatParameters screen_reader_format;
+    FormatParameters title_format;
+
+    // Whether the promo *could* snooze, if that's relevant. (Not all promos
+    // will ever have a snooze button.)
+    bool can_snooze = false;
+
+    // Whether the bubble should consider prompting the user on how to focus it.
+    bool screen_reader_prompt_available = false;
+  };
+
+  // Represents a factory callback that generates a custom help bubble from
+  // `build_params`. The `from_context` is the context of the promo controller
+  // which is trying to create the custom UI help bubble.
+  //
+  // Depending on the type of bubble being created, a factory method such as
+  // `CreateCustomHelpBubbleViewFactoryCallback()` may be used to create this
+  // callback rather than constructing an object of T directly.
+  template <typename T>
+    requires IsCustomHelpBubble<T>
+  using CustomHelpBubbleFactoryCallback =
+      base::RepeatingCallback<std::unique_ptr<T>(
+          ui::ElementContext from_context,
+          HelpBubbleArrow arrow,
+          BuildHelpBubbleParams build_params)>;
+
   FeaturePromoSpecification();
   FeaturePromoSpecification(FeaturePromoSpecification&& other) noexcept;
   FeaturePromoSpecification& operator=(
@@ -310,6 +367,52 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   static FeaturePromoSpecification CreateForRotatingPromo(
       const base::Feature& feature,
       RotatingPromos rotating_promos);
+
+  // Specifies a promo that uses a custom UI.
+  //
+  // When the promo is triggered for `feature`, `bubble_factory_callback` will
+  // be called to generate a `HelpBubble` anchored to `anchor_element_id`. The
+  // help bubble will manage your custom UI.
+  //
+  // Notes:
+  //  - Custom UI IPH triggering and rate-limiting logic is the same as for any
+  //    other heavyweight promo at the same priority.
+  //  - When your custom UI calls `NotifyUserAction()` the help bubble will be
+  //    closed, which may destroy your custom UI; plan accordingly.
+  //
+  // The `callback_for_custom_action` is called if the custom UI returns
+  // `UserAction::kAction`. It should only be specified if the custom promo UI
+  // does not perform the custom action itself.
+  //
+  // So for example, if your custom UI has links that open web pages in new tabs
+  // in the browser, then when the user clicks a link it is sufficient to simply
+  // open that link and call `NotifyUserAction(UserAction::kAction)`. In ths
+  // case, `callback_for_custom_action` should be omitted.
+  //
+  // However, if you want a button to, say, start a tutorial, or do some other
+  // thing that requires significant work after the UI is closed, then it might
+  // be easier to only call `NotifyUserAction(UserAction::kAction)` in your UI
+  // code, specify `callback_for_custom_action` here, and do the follow-up
+  // logic in the callback.
+  //
+  // If your custom UI can perform several different actions, your options are:
+  //  - Handle each of them in the custom UI code.
+  //  - Store which action to do somewhere safe (possibly your systems'
+  //    controller), send `UserAction::kAction` from your UI for all of them,
+  //    and retrieve which action to perform in `callback_for_custom_action`.
+  template <typename T>
+    requires IsCustomHelpBubble<T>
+  static FeaturePromoSpecification CreateForCustomUi(
+      const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
+      CustomHelpBubbleFactoryCallback<T> bubble_factory_callback,
+      CustomActionCallback callback_for_custom_action =
+          CustomActionCallback()) {
+    return CreateForCustomUi(
+        feature, anchor_element_id,
+        WrapCustomHelpBubbleFactoryCallback(std::move(bubble_factory_callback)),
+        std::move(callback_for_custom_action));
+  }
 
   // Specifies a promo that shows a rotating set of promos.
   //
@@ -404,12 +507,10 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // unique context.
   FeaturePromoSpecification& SetInAnyContext(bool in_any_context);
 
-  // Get the anchor element based on `anchor_element_id`,
-  // `anchor_element_filter`, and `context`.
-  //
-  // For rotating promos, call this method on the specific sub-promo.
-  ui::TrackedElement* GetAnchorElement(
-      ui::ElementContext context) const override;
+  // AnchorElementProvider:
+  ui::TrackedElement* GetAnchorElement(ui::ElementContext context,
+                                       std::optional<int> index) const override;
+  int GetNextValidIndex(int index) const override;
 
   const base::Feature* feature() const { return feature_; }
   PromoType promo_type() const { return promo_type_; }
@@ -466,6 +567,15 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
     return additional_conditions_;
   }
 
+  // Sets exempt preconditions. Only has an effect in UE2.5; requires
+  // allowlisting; use sparingly. Note that only certain preconditions may be
+  // exempted; attempting to exempt other preconditions will have no effect.
+  FeaturePromoSpecification& AddPreconditionExemption(
+      FeaturePromoPrecondition::Identifier exempt_precondition);
+  bool is_exempt_from(FeaturePromoPrecondition::Identifier precondition) const {
+    return exempt_preconditions_.contains(precondition);
+  }
+
   // Sets the metadata for this promotion.
   FeaturePromoSpecification& SetMetadata(Metadata metadata);
   const Metadata& metadata() const { return metadata_; }
@@ -493,9 +603,39 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
       const base::Feature& feature,
       RotatingPromos rotating_promos);
 
+  // Builds a custom help bubble from the given information.
+  // This must be a promo of type `kCustomUi`.
+  using CustomHelpBubbleResult = std::tuple<std::unique_ptr<HelpBubble>,
+                                            base::WeakPtr<CustomHelpBubbleUi>>;
+  CustomHelpBubbleResult BuildCustomHelpBubble(
+      ui::ElementContext from_context,
+      HelpBubbleArrow arrow,
+      BuildHelpBubbleParams params) const;
+
  private:
   static constexpr HelpBubbleArrow kDefaultBubbleArrow =
       HelpBubbleArrow::kTopRight;
+
+  // This is the non-template version of `CustomHelpBubbleFactoryCallback` used
+  // internally.
+  using WrappedCustomHelpBubbleFactoryCallback =
+      base::RepeatingCallback<CustomHelpBubbleResult(ui::ElementContext,
+                                                     HelpBubbleArrow,
+                                                     BuildHelpBubbleParams)>;
+
+  // Converts a `CustomHelpBubbleFactoryCallback` to a
+  // `WrappedCustomHelpBubbleFactoryCallback`.
+  template <typename T>
+    requires IsCustomHelpBubble<T>
+  static WrappedCustomHelpBubbleFactoryCallback
+  WrapCustomHelpBubbleFactoryCallback(
+      CustomHelpBubbleFactoryCallback<T> callback);
+
+  static FeaturePromoSpecification CreateForCustomUi(
+      const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
+      WrappedCustomHelpBubbleFactoryCallback bubble_factory_callback,
+      CustomActionCallback callback_for_custom_action);
 
   FeaturePromoSpecification(const base::Feature* feature,
                             PromoType promo_type,
@@ -564,8 +704,14 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // Additional conditions describing when the promo can show.
   AdditionalConditions additional_conditions_;
 
+  // Preconditions this promo is exempt from. Requires explicit allowlisting.
+  std::set<FeaturePromoPrecondition::Identifier> exempt_preconditions_;
+
   // For rotating promos, maintain a list of sub-promos.
   RotatingPromos rotating_promos_;
+
+  // If specified, holds the callback to create a custom help bubble UI.
+  WrappedCustomHelpBubbleFactoryCallback custom_ui_factory_callback_;
 
   // Metadata for this promo.
   Metadata metadata_;
@@ -575,6 +721,27 @@ std::ostream& operator<<(std::ostream& oss,
                          FeaturePromoSpecification::PromoType promo_type);
 std::ostream& operator<<(std::ostream& oss,
                          FeaturePromoSpecification::PromoSubtype promo_subtype);
+
+// static
+template <typename T>
+  requires IsCustomHelpBubble<T>
+FeaturePromoSpecification::WrappedCustomHelpBubbleFactoryCallback
+FeaturePromoSpecification::WrapCustomHelpBubbleFactoryCallback(
+    CustomHelpBubbleFactoryCallback<T> callback) {
+  CHECK(callback);
+  return base::BindRepeating(
+      [](const CustomHelpBubbleFactoryCallback<T>& callback,
+         ui::ElementContext ctx, HelpBubbleArrow arrow,
+         BuildHelpBubbleParams params) {
+        std::unique_ptr<T> result = callback.Run(ctx, arrow, std::move(params));
+        auto ui_ptr = static_cast<CustomHelpBubble*>(result.get())
+                          ->custom_bubble_ui()
+                          ->GetCustomUiAsWeakPtr();
+        return std::tuple(std::unique_ptr<HelpBubble>(std::move(result)),
+                          ui_ptr);
+      },
+      std::move(callback));
+}
 
 }  // namespace user_education
 

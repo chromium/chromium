@@ -120,10 +120,10 @@ id<GREYMatcher> CreditCardManualFillViewTab() {
 }
 
 // Matcher for the overflow menu button shown in the payment method cells.
-id<GREYMatcher> OverflowMenuButton() {
-  return grey_allOf(
-      grey_accessibilityID(manual_fill::kExpandedManualFillOverflowMenuID),
-      grey_interactable(), nullptr);
+id<GREYMatcher> OverflowMenuButton(NSInteger cell_index) {
+  return grey_allOf(grey_accessibilityID([ManualFillUtil
+                        expandedManualFillOverflowMenuID:cell_index]),
+                    grey_interactable(), nullptr);
 }
 
 // Matcher for the "Edit" action made available by the overflow menu button.
@@ -274,7 +274,7 @@ void CheckChipButtonsOfLocalCard() {
 
 // Opens the payment method manual fill view when there are no saved payment
 // methods and verifies that the card view controller is visible afterwards.
-// Only useful when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
+// Only useful when the Keyboard Accessory Upgrade feature is enabled.
 void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   // Tap the button to open the expanded manual fill view.
   [[EarlGrey selectElementWithMatcher:CreditCardManualFillViewButton()]
@@ -320,8 +320,8 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
   // Set up histogram tester.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
@@ -332,8 +332,8 @@ void DismissPaymentBottomSheet() {
 
   // Clean up histogram tester.
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -341,9 +341,9 @@ void DismissPaymentBottomSheet() {
   AppLaunchConfiguration config;
 
   if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
 
   return config;
@@ -988,10 +988,10 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_sufficientlyVisible()];
   } else {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_notVisible()];
   }
 }
@@ -1022,7 +1022,7 @@ void DismissPaymentBottomSheet() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // The overflow menu button should not be visible.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -1050,7 +1050,7 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -1097,7 +1097,7 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -1136,7 +1136,7 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Tap the overflow menu button and select the "Show Details" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuShowDetailsAction()]
       performAction:grey_tap()];
@@ -1301,7 +1301,7 @@ void DismissPaymentBottomSheet() {
 
 @end
 
-// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgrade
+// Rerun all the tests in this file but with Keyboard Accessory Upgrade
 // disabled. This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
 @interface CreditCardViewControllerKeyboardAccessoryUpgradeDisabledTestCase

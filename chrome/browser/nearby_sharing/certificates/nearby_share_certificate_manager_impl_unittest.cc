@@ -4,6 +4,9 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
 
+#include <string>
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,7 +18,6 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
-#include "chrome/browser/nearby_sharing/common/fake_nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_manager.h"
@@ -73,10 +75,6 @@ class NearbyShareCertificateManagerImplTest
 
     contact_manager_ = std::make_unique<FakeNearbyShareContactManager>();
 
-    profile_info_provider_ =
-        std::make_unique<FakeNearbyShareProfileInfoProvider>();
-    profile_info_provider_->set_profile_user_name(kTestProfileUserName);
-
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kNearbySharingSchedulerDownloadPublicCertificatesPrefName);
@@ -113,11 +111,13 @@ class NearbyShareCertificateManagerImplTest
 
   void TearDown() override {
     cert_manager_->RemoveObserver(this);
+    cert_manager_.reset();
     ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(nullptr);
     NearbyShareCertificateStorageImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
-  void InitCertificateManager(bool use_floss) {
+  void InitCertificateManager(bool use_floss,
+                              std::string user_email = kTestProfileUserName) {
     if (use_floss) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
@@ -126,9 +126,10 @@ class NearbyShareCertificateManagerImplTest
     }
 
     cert_manager_ = NearbyShareCertificateManagerImpl::Factory::Create(
-        local_device_data_manager_.get(), contact_manager_.get(),
-        profile_info_provider_.get(), pref_service_.get(),
-        /*proto_database_provider=*/nullptr, base::FilePath(), &client_factory_,
+        std::move(user_email), /*profile_path=*/base::FilePath(),
+        pref_service_.get(), local_device_data_manager_.get(),
+        contact_manager_.get(),
+        /*proto_database_provider=*/nullptr, &client_factory_,
         task_environment_.GetMockClock());
     cert_manager_->AddObserver(this);
 
@@ -499,7 +500,6 @@ class NearbyShareCertificateManagerImplTest
   std::unique_ptr<FakeNearbyShareLocalDeviceDataManager>
       local_device_data_manager_;
   std::unique_ptr<FakeNearbyShareContactManager> contact_manager_;
-  std::unique_ptr<FakeNearbyShareProfileInfoProvider> profile_info_provider_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<NearbyShareCertificateManager> cert_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -863,12 +863,10 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_MissingAccountName) {
-  InitCertificateManager(/*use_floss=*/false);
+  // Full name is missing in local device data manager.
+  InitCertificateManager(/*use_floss=*/false, /*user_email=*/std::string());
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
-
-  // Full name and icon URL are missing in local device data manager.
-  profile_info_provider_->set_profile_user_name(std::nullopt);
 
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,

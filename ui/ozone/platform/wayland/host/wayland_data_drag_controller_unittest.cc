@@ -1476,8 +1476,9 @@ class PerSurfaceScaleWaylandDataDragControllerTest
       const PerSurfaceScaleWaylandDataDragControllerTest&) = delete;
 
   void SetUp() override {
-    CHECK(
-        !base::Contains(enabled_features_, features::kWaylandPerSurfaceScale));
+    CHECK(!base::Contains(
+        enabled_features_,
+        base::test::FeatureRef(features::kWaylandPerSurfaceScale)));
     enabled_features_.push_back(features::kWaylandPerSurfaceScale);
 
     WaylandDataDragControllerTest::SetUp();

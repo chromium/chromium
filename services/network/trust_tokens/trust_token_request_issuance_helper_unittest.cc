@@ -201,7 +201,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfTooManyIssuers) {
   auto request = MakeURLRequest("https://issuer.com/");
   request->set_initiator(issuer);
   EXPECT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
-            mojom::TrustTokenOperationStatus::kResourceLimited);
+            mojom::TrustTokenOperationStatus::kSiteIssuerLimit);
 }
 
 // Check that issuance fails if the number of tokens stored for the issuer is

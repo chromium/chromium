@@ -4,17 +4,19 @@
 
 #include "components/browsing_topics/browsing_topics_state.h"
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/browsing_topics/util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -77,7 +79,7 @@ class BrowsingTopicsStateTest : public testing::Test {
     // during tests where expiration is irrelevant.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kBrowsingTopics, {}},
+        {{network::features::kBrowsingTopics, {}},
          {blink::features::kBrowsingTopicsParameters,
           {{"epoch_retention_duration", "3650000d"}}}},
         /*disabled_features=*/{});
@@ -156,7 +158,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromNoFile_SaveToDiskAfterDelay) {
 
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 
   EXPECT_TRUE(state.HasScheduledSaveForTesting());
   EXPECT_TRUE(observed_state_loaded());
@@ -189,7 +191,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + kNextScheduledCalculationDelay);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 
   EXPECT_TRUE(state.HasScheduledSaveForTesting());
 
@@ -280,7 +282,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
 
   // The `next_scheduled_calculation_time` and `hmac_key` are unaffected.
   EXPECT_EQ(state.next_scheduled_calculation_time(), base::Time());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, EpochsForSite_Empty) {
@@ -394,7 +396,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_PhaseOutTime) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration", "28d"}}}},
       /*disabled_features=*/{});
@@ -596,7 +598,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_CorruptedHmacKey) {
 
   EXPECT_EQ(state.epochs().size(), 0u);
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kZeroKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kZeroKey));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", false,
@@ -621,7 +623,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -654,7 +656,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -687,7 +689,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -712,7 +714,7 @@ TEST_F(BrowsingTopicsStateTest,
 
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -748,7 +750,7 @@ TEST_F(BrowsingTopicsStateTest, ClearOneEpoch) {
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + kNextScheduledCalculationDelay);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
@@ -777,7 +779,7 @@ TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + kNextScheduledCalculationDelay);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, ClearTopic) {
@@ -887,7 +889,7 @@ TEST_F(BrowsingTopicsStateTest, ScheduleEpochsExpiration) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration", "28s"}}}},
       /*disabled_features=*/{});
@@ -946,7 +948,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpochAndVerifyExpiration) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration", "28s"}}}},
       /*disabled_features=*/{});

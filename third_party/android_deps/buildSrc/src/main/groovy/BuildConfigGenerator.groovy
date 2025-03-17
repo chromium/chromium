@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 import groovy.json.JsonOutput
 import groovy.text.SimpleTemplateEngine
 import groovy.text.Template
@@ -13,13 +14,10 @@ import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
-import java.util.concurrent.Executors
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Future
-import java.util.regex.Pattern
+import java.util.concurrent.*
+import java.time.*
 import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Task to download dependencies specified in {@link ChromiumPlugin} and configure the Chromium build to integrate them.
@@ -49,95 +47,69 @@ class BuildConfigGenerator extends DefaultTask {
     // https://source.chromium.org/chromium/infra/infra/+/master:recipes/recipe_modules/support_3pp/resolved_spec.py?q=symbol:PACKAGE_EPOCH&ss=chromium
     private static final String THREEPP_EPOCH = '2'
 
+    // Used to disable breaking changes while the migration to autorolling
+    // portions of android_deps is complete. See http://crbug.com/40774645
+    private static final boolean AUTOROLL_MIGRATION_IN_PROGRESS = true
+
     // Use this to exclude a dep from being depended upon but keep the target.
     private static final List<String> DISALLOW_DEPS = [
-        // Only useful for SDK < Q where monochrome cannot use profiles because webview.
-        'androidx_profileinstaller_profileinstaller',
+            // Only useful for SDK < Q where monochrome cannot use profiles because webview.
+            'androidx_profileinstaller_profileinstaller',
     ]
 
     // These targets will not be downloaded from maven. Deps onto them will be made
     // to point to the existing targets instead.
     static final Map<String, String> EXISTING_LIBS = [
-        com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
-        com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
-        com_google_guava_listenablefuture: '//third_party/android_deps:guava_android_java',
-        com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
-        junit_junit: '//third_party/junit:junit',
-        net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
-        org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
-        org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
-        org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
-        org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib_jdk7: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib_jdk8: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
+            com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
+            com_google_guava_listenablefuture: '//third_party/android_deps:guava_android_java',
+            com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
+            junit_junit: '//third_party/junit:junit',
+            net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
+            org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
+            org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
+            org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
+            org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_jdk7: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_jdk8: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
     ]
 
     // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is
     // enforced by presubmit checks for Windows. This mapping shortens the name for .info files.
     // Needs to match mapping in fetch_all.py.
     private static final Map<String, String> REDUCED_ID_LENGTH_MAP = [
-        'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
-            'com_google_android_accessibility_test_framework',
+            'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
+                    'com_google_android_accessibility_test_framework',
     ]
 
     // These targets will still be downloaded from maven. Any deps onto them will be made
     // to point to the aliased target instead.
     static final Map<String, String> ALIASED_LIBS = [
-        // Use fully-qualified labels here since androidx might refer to them.
-        com_google_android_material_material: '//third_party/android_deps:material_design_java',
-        com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
-        com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
-        com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
-        com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
-        com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
-        com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
-        net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
-        // Logic for google_play_services_package added below.
+            // Use fully-qualified labels here since androidx might refer to them.
+            com_google_android_material_material: '//third_party/android_deps:material_design_java',
+            com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
+            com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
+            com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
+            com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
+            com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
+            com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
+            net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
+            // Logic for google_play_services_package added below.
     ]
 
     // Targets that are disabled when enable_chrome_android_internal=true.
     static final Map<String, String> CONDITIONAL_LIBS = [
-        com_google_android_material_material: '!defined(material_design_target)',
-        com_google_android_play_feature_delivery: '!defined(playcore_target)',
-        com_google_dagger_dagger_compiler: '!defined(dagger_annotation_processor_target)',
-        com_google_dagger_dagger_producers: '!defined(dagger_annotation_processor_target)',
-        com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
-        com_google_dagger_dagger: '!defined(dagger_java_target)',
-        com_google_guava_guava_android: '!defined(guava_android_target)',
-        com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
-        // Logic for google_play_services_package added below.
-    ]
-
-    /**
-     * Prefixes of androidx dependencies which are allowed to use non-SNAPSHOT
-     * versions. These are the legacy androidx targets that are no longer being
-     * released regularly (thus are not part of the snapshots) but are still
-     * required by chromium.
-     *
-     * If an assert fails pointing at a dep which *does* exist in the androidx
-     * snapshot then adding it here will only silence the sanity check rather
-     * than fix the underlying issue (which is we should always use the snapshot
-     * versions of androidx deps when possible). A better solution could be to
-     * add it in //third_party/androidx/build.gradle.template
-     *
-     * If running fetch_all.py, you must first run fetch_all_androidx.py for
-     * changes to its build.gradle.template to take effect.
-     */
-    static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
-      'androidx_compose_material_material_icons_core_android',
-      'androidx_constraintlayout',
-      'androidx_legacy',
-      'androidx_localbroadcastmanager_localbroadcastmanager',
-      'androidx_media3_media3',
-      'androidx_multidex_multidex',
-      'androidx_pdf_pdf',
-      'androidx_privacysandbox_ads_ads_adservices',
-      'androidx_slice_slice_builders_java',
-      'androidx_slice_slice_core_java',
-      'androidx_slice_slice_view_java',
-      'androidx_test',
+            com_google_android_material_material: '!defined(material_design_target)',
+            com_google_android_play_feature_delivery: '!defined(playcore_target)',
+            com_google_dagger_dagger_compiler: '!defined(dagger_annotation_processor_target)',
+            com_google_dagger_dagger_producers: '!defined(dagger_annotation_processor_target)',
+            com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
+            com_google_dagger_dagger: '!defined(dagger_java_target)',
+            com_google_guava_guava_android: '!defined(guava_android_target)',
+            com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
+            // Logic for google_play_services_package added below.
     ]
 
     // Prefixes of autorolled libraries in //third_party/android_deps_autorolled.
@@ -186,6 +158,10 @@ class BuildConfigGenerator extends DefaultTask {
     /** Whether .info files and BUILD.gn are in a cipd/ subdirectory. */
     @Input
     boolean allFilesInCipd
+
+    /** Whether to write a bill_of_materials.json file. */
+    @Input
+    boolean writeBoM
 
     /** The URI of the file BuildConfigGenerator.groovy */
     @Input
@@ -242,22 +218,22 @@ class BuildConfigGenerator extends DefaultTask {
         String cpePrefix = dependency.cpePrefix ? dependency.cpePrefix : 'unknown'
 
         return """\
-            Name: ${dependency.displayName}
-            Short Name: ${dependency.name}
-            URL: ${dependency.url}
-            Version: ${dependency.version}
-            License: ${licenseString}
-            License File: LICENSE
-            CPEPrefix: ${cpePrefix}
-            Security Critical: ${securityCritical ? 'yes' : 'no'}
-            Shipped: ${dependency.isShipped ? 'yes' : 'no'}
-            ${dependency.licenseAndroidCompatible ? 'License Android Compatible: yes' : ''}
-            Description:
-            ${dependency.description}
+Name: ${dependency.displayName}
+Short Name: ${dependency.name}
+URL: ${dependency.url}
+Version: ${dependency.version}
+License: ${licenseString}
+License File: LICENSE
+CPEPrefix: ${cpePrefix}
+Security Critical: ${securityCritical ? 'yes' : 'no'}
+Shipped: ${dependency.isShipped ? 'yes' : 'no'}
+${dependency.licenseAndroidCompatible ? 'License Android Compatible: yes\n' : ''}
+Description:
+${dependency.description}
 
-            Local Modifications:
-            No modifications.
-            """.stripIndent(/* forceGroovyBehavior */ true)
+Local Modifications:
+No modifications.
+"""
     }
 
     static String makeCipdYaml(ChromiumDepGraph.DependencyDescription dependency, String cipdBucket, String repoPath) {
@@ -309,12 +285,12 @@ class BuildConfigGenerator extends DefaultTask {
                     downloadFile(dependency.id, license.url, destFile)
                     if (destFile.text.contains('<html')) {
                         throw new RuntimeException("Found HTML in LICENSE file at ${license.url}. "
-                        + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.")
+                                + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.")
                     }
                 })
             }
         }
-                                 }
+    }
 
     static void mergeLicenses(ChromiumDepGraph.DependencyDescription dependency, String normalisedRepoPath) {
         String depDir = computeDepDir(dependency)
@@ -356,8 +332,8 @@ class BuildConfigGenerator extends DefaultTask {
 
     static String make3ppFetch(Template fetchTemplate, ChromiumDepGraph.DependencyDescription dependency) {
         Map bindMap = [
-            copyrightHeader: COPYRIGHT_HEADER,
-            dependency: dependency,
+                copyrightHeader: COPYRIGHT_HEADER,
+                dependency: dependency,
         ]
         return fetchTemplate.make(bindMap).toString()
     }
@@ -377,8 +353,8 @@ class BuildConfigGenerator extends DefaultTask {
         // *template*. Generally the actual license can be found in the source code.
         if (sourceUrl.contains('://opensource.org/licenses')) {
             throw new RuntimeException('Found templated license URL for dependency '
-                + id + ': ' + sourceUrl
-                + '. You will need to edit PROPERTY_OVERRIDES for this dep.')
+                    + id + ': ' + sourceUrl
+                    + '. You will need to edit PROPERTY_OVERRIDES for this dep.')
         }
         URL urlObj = new URL(sourceUrl)
         HttpURLConnection connection
@@ -432,7 +408,9 @@ class BuildConfigGenerator extends DefaultTask {
         String normalisedRepoPath = normalisePath(repositoryPath)
 
         // 1. Parse the dependency data
-        graph.collectDependencies()
+        graph.timeIt("** Collecting all dependencies info") {
+            graph.collectDependencies()
+        }
 
         // 2. Import artifacts into the local repository
         List<String> dependencyDirectories = []
@@ -440,7 +418,7 @@ class BuildConfigGenerator extends DefaultTask {
         List<Future> downloadTasks = []
         List<ChromiumDepGraph.DependencyDescription> mergeLicensesDeps = []
         graph.dependencies.values().each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
+            if (excludeDependency(dependency) || dependency.extension == 'group') {
                 return
             }
 
@@ -448,25 +426,36 @@ class BuildConfigGenerator extends DefaultTask {
             // jsonDump() throws StackOverflowError for ResolvedArtifact.
             dependencyForLogging.artifact = null
 
-            logger.debug "Processing ${dependency.name}: \n${jsonDump(dependencyForLogging)}"
+            logger.debug "Processing ${dependency.id}: \n${jsonDump(dependencyForLogging)}"
             String depDir = BuildConfigGenerator.computeDepDir(dependency)
             String absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 
-            dependencyDirectories.add(depDir)
+            if (!dependency.artifact) {
+                logger.debug("${dependency.id} has no artifact, skipping.")
+                return
+            }
+
+            if (project.hasProperty('readmePrefix')) {
+                dependencyDirectories.add(project.readmePrefix + depDir)
+            } else {
+                dependencyDirectories.add(depDir)
+            }
 
             if (new File("${absoluteDepDir}/${dependency.fileName}").exists()) {
                 logger.quiet("${dependency.id} exists, skipping.")
                 return
             }
-
             project.copy {
                 from dependency.artifact.file
                 into absoluteDepDir
             }
-
             new File("${absoluteDepDir}/README.chromium").write(makeReadme(dependency))
+            // fetch_all.py parses cipd.yaml to get information about each dep, even if cipd.yaml isn't needed (e.g. androidx).
             new File("${absoluteDepDir}/cipd.yaml").write(makeCipdYaml(dependency, cipdBucket, repositoryPath))
-            new File("${absoluteDepDir}/OWNERS").write(makeOwners())
+            if (!allFilesInCipd) {
+                // When all the files are in CIPD there is no need for individual OWNERS files.
+                new File("${absoluteDepDir}/OWNERS").write(makeOwners())
+            }
 
             // Enable 3pp flow for //third_party/android_deps only.
             // TODO(crbug.com/1132368): Enable 3pp flow for subprojects as well.
@@ -499,31 +488,44 @@ class BuildConfigGenerator extends DefaultTask {
             mergeLicenses(dependency, normalisedRepoPath)
         }
 
-        // Skip when --no-subprojects is passed.
-        if (project.subprojects) {
-            validateAndroidX(graph.dependencies.values())
-        }
-
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph, normalisedRepoPath)
         if (!ignoreDEPS) {
             updateDepsDeclaration(graph, cipdBucket, repositoryPath,
-                                  "${normalisedRepoPath}/../../DEPS")
+                    "${normalisedRepoPath}/../../DEPS")
         }
         dependencyDirectories.sort { path1, path2 -> return path1 <=> path2 }
         updateReadmeReferenceFile(dependencyDirectories,
-                                  "${normalisedRepoPath}/additional_readme_paths.json")
+                "${normalisedRepoPath}/additional_readme_paths.json")
+
+        if (writeBoM) {
+            new File("${normalisedRepoPath}/bill_of_materials.json").write(makeBillOfMaterials(graph.dependencies.values()))
+        }
+    }
+
+    String makeBillOfMaterials(Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
+        def bom = []
+        dependencies.each { dependency ->
+            def description = [:] as Map<String, String>
+            description.put('name', dependency.name)
+            description.put('group', dependency.group)
+            description.put('version', dependency.version)
+            bom.add(description)
+        }
+        // Ensure that the bom order is stable to improve git diffs.
+        bom.sort { d1, d2 -> return "${d1.group}:${d1.name}" <=> "${d2.group}:${d2.name}"}
+        return JsonOutput.prettyPrint(JsonOutput.toJson(bom))
     }
 
     void appendBuildTarget(ChromiumDepGraph.DependencyDescription dependency,
                            Map<String, ChromiumDepGraph.DependencyDescription> allDependencies,
                            StringBuilder sb) {
-        if (excludeDependency(dependency) || !dependency.generateTarget) {
+        if (excludeDependency(dependency)) {
             return
         }
 
         String targetName = translateTargetName(dependency.id) + '_java'
-        List<String> javaDeps = computeJavaGroupForwardingTargets(dependency) ?: dependency.children
+        List<String> javaDeps = dependency.children
         Set<String> addedDeps = new HashSet<String>();
 
         String depsStr = ''
@@ -561,7 +563,7 @@ class BuildConfigGenerator extends DefaultTask {
 
             if (targetName.contains('guava') && (
                     gnTarget == '//third_party/android_deps:guava_android_java' ||
-                    gnTarget == ':com_google_guava_guava_java')) {
+                            gnTarget == ':com_google_guava_guava_java')) {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
                 return
             }
@@ -573,14 +575,14 @@ class BuildConfigGenerator extends DefaultTask {
 
         String condition = CONDITIONAL_LIBS.get(dependency.id)
         if (isPlayServicesTarget(dependency.id)) {
-          assert condition == null : dependency.id
-          condition = 'google_play_services_package == "//third_party/android_deps"'
+            assert condition == null: dependency.id
+            condition = 'google_play_services_package == "//third_party/android_deps"'
         }
 
         String libPath = "${LIBS_DIRECTORY}/${dependency.directoryName}"
         sb.append(GEN_REMINDER)
         if (condition != null) {
-          sb.append("if ($condition) {\n")
+            sb.append("if ($condition) {\n")
         }
         boolean isAndroidX = targetName.startsWith('androidx')
         if (dependency.extension == 'jar') {
@@ -590,8 +592,15 @@ class BuildConfigGenerator extends DefaultTask {
                   jar_path = "${DOWNLOAD_ROOT_DIRECTORY}/${libPath}/${dependency.fileName}"
                   output_name = "${dependency.id}"
                 """.stripIndent(/* forceGroovyBehavior */ true))
-            if (dependency.supportsAndroid) {
+            if (dependency.isRobolectric) {
+                sb.append('  is_robolectric = true\n')
+            } else {
+              if (dependency.supportsAndroid) {
                 sb.append('  supports_android = true\n')
+              }
+              if (dependency.requiresAndroid) {
+                  sb.append('  requires_android = true\n')
+              }
             }
         } else if (dependency.extension == 'aar') {
             String targetType = isAndroidX ? 'androidx_android_aar_prebuilt' : 'android_aar_prebuilt'
@@ -631,7 +640,7 @@ class BuildConfigGenerator extends DefaultTask {
 
         sb.append('}\n')
         if (condition != null) {
-          sb.append("}\n")
+            sb.append("}\n")
         }
     }
 
@@ -642,7 +651,7 @@ class BuildConfigGenerator extends DefaultTask {
             // Cannot add only the specific target because doing so breaks nested template target.
             String visibilityLabel = aliasedLib.replaceAll(':.*', ':*')
             if (CONDITIONAL_LIBS.containsKey(dependency.id)) {
-              sb.append('  # Target is swapped out when internal code is enabled.\n')
+                sb.append('  # Target is swapped out when internal code is enabled.\n')
             }
             sb.append("  # Please depend on $aliasedLib instead.\n")
             sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
@@ -655,7 +664,7 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     boolean excludeDependency(ChromiumDepGraph.DependencyDescription dependency) {
-        if (dependency.exclude || EXISTING_LIBS.get(dependency.id)) {
+        if (dependency.exclude || EXISTING_LIBS.containsKey(dependency.id)) {
             return true
         }
         return isInDifferentRepo(dependency)
@@ -663,26 +672,20 @@ class BuildConfigGenerator extends DefaultTask {
 
     boolean isInDifferentRepo(ChromiumDepGraph.DependencyDescription dependency) {
         boolean isAndroidxRepository = repositoryPath.startsWith('third_party/androidx')
+        boolean isAutorolledRepository = repositoryPath.startsWith('third_party/android_deps/autorolled')
         boolean isAndroidxDependency = dependency.id.startsWith('androidx')
-        if (isAndroidxRepository != isAndroidxDependency) {
-            return true
+        if (isAndroidxRepository || isAndroidxDependency) {
+            // Androidx targets always go to the androidx project regardless of
+            // dep.isAutorolled
+            return isAndroidxRepository != isAndroidxDependency
+        } else {
+            if (AUTOROLL_MIGRATION_IN_PROGRESS) {
+                // During the migration, keep the autorolled targets in the main
+                // BUILD.gn until the migration is complete.
+                return isAutorolledRepository && !dependency.isAutorolled
+            }
+            return dependency.isAutorolled != isAutorolledRepository
         }
-        if (repositoryPath == AUTOROLLED_REPO_PATH) {
-            String targetName = translateTargetName(dependency.id) + '_java'
-            return !isTargetAutorolled(targetName)
-        }
-        return false
-    }
-
-    /** If |dependency| should be a java_group(), returns target to forward to. Returns null otherwise. */
-    List<String> computeJavaGroupForwardingTargets(ChromiumDepGraph.DependencyDescription dependency) {
-        String targetName = translateTargetName(dependency.id) + '_java'
-        if (repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName)) {
-            return ["//${AUTOROLLED_REPO_PATH}:${targetName}"]
-        } else if (dependency.extension == 'group') {
-            return dependency.children
-        }
-        return []
     }
 
     private static String reducedDepencencyId(String dependencyId) {
@@ -708,21 +711,10 @@ class BuildConfigGenerator extends DefaultTask {
     private static void addSpecialTreatment(StringBuilder sb, String dependencyId, String dependencyExtension) {
         addPreconditionsOverrideTreatment(sb, dependencyId)
 
-        if (dependencyId.startsWith('org_robolectric')) {
-            sb.append('  is_robolectric = true\n')
-        }
         if (dependencyExtension == 'aar' && dependencyId.startsWith('com_android_support')) {
             // The androidx and com_android_support libraries have duplicate resources such as
             // 'primary_text_default_material_dark'.
             sb.append('  resource_overlay = true\n')
-        }
-        if (dependencyExtension == 'jar' && (
-                dependencyId.startsWith('io_grpc_') ||
-                dependencyId == 'com_google_firebase_firebase_encoders' ||
-                dependencyId == 'com_google_dagger_hilt_core' ||
-                dependencyId == 'com_google_guava_guava_android')) {
-            sb.append('  # https://crbug.com/1412551\n')
-            sb.append('  requires_android = true\n')
         }
 
         switch (dependencyId) {
@@ -819,14 +811,6 @@ class BuildConfigGenerator extends DefaultTask {
                 // and android_aar_prebuilt template will fail if it's not set explictly.
                 sb.append('  extract_native_libraries = true\n')
                 break
-            case 'com_google_dagger_hilt_core':
-                sb.append('\n')
-                sb.append('  # Google3 organizes targets differently from maven. Restrict to the only classes we use.\n')
-                sb.append('  jar_included_patterns = [\n')
-                sb.append('    "dagger/hilt/internal/GeneratedComponentManager.class",\n')
-                sb.append('    "dagger/hilt/internal/GeneratedComponentManagerHolder.class",\n')
-                sb.append('  ]\n')
-                break
             case 'com_google_auto_service_auto_service_annotations_java':
                 sb.append('  preferred_dep = true\n')
                 break
@@ -853,17 +837,17 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  ]')
                 }
                 break
+            case 'com_google_ar_impress':
+                sb.append('\n')
+                sb.append('  # Rules are unnecessary.\n')
+                sb.append('  ignore_proguard_configs = true\n')
+                sb.append('\n')
+                sb.append('  # Chrome does not use the APIs that require the native library.\n')
+                sb.append('  ignore_native_libraries = true\n')
+                break
             case 'net_sf_kxml_kxml2':
                 sb.append('  # Target needs to exclude *xmlpull* files as already included in Android SDK.\n')
                 sb.append('  jar_excluded_patterns = [ "*xmlpull*" ]\n')
-                break
-            case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
-            case 'org_jetbrains_kotlinx_kotlinx_coroutines_guava':
-                sb.append('requires_android = true')
-                break
-            case 'org_mockito_mockito_android':
-                sb.append('  # Depends on third_party/byte_buddy:byte_buddy_android_java\n')
-                sb.append('  requires_android = true\n')
                 break
             case 'org_mockito_mockito_core':
                 sb.append('  # Uses java.time which does not exist until API 26.\n')
@@ -876,14 +860,17 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # Because of dep on byte_buddy_android_java.\n')
                 sb.append('  bypass_platform_checks = true\n')
                 break
+            case 'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
+                sb.append('  proguard_configs = [ "local_modifications/accessibility_test_framework.pcfg" ]')
+                break
         }
     }
 
     private static void addPreconditionsOverrideTreatment(StringBuilder sb, String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-          case 'com_google_guava_guava_android':
-          case 'google_play_services_basement':
+            case 'com_google_guava_guava_android':
+            case 'google_play_services_basement':
                 String libraryDep = '//third_party/android_deps/local_modifications/preconditions:' +
                         computePreconditionsStubLibraryForDep(dependencyId)
                 sb.append("""
@@ -970,24 +957,6 @@ class BuildConfigGenerator extends DefaultTask {
         buildFile.write(matcher.replaceFirst(Matcher.quoteReplacement(out)))
     }
 
-    private void validateAndroidX(
-            Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
-        dependencies.each { dependency ->
-            if (dependency.id.contains('androidx') &&
-                    dependency.fileName && !dependency.fileName.contains('SNAPSHOT')) {
-                boolean hasAllowedDep = ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES.any {
-                    allowedPrefix -> dependency.id.startsWith(allowedPrefix)
-                }
-                if (!hasAllowedDep) {
-                    String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version. "
-                          + "If this is expected, add ${dependency.id} to "
-                          + '|ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES| list.')
-                    throw new IllegalStateException(errorMsg)
-                }
-            }
-        }
-    }
-
     private void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdBucket,
                                        String repoPath, String depsFilePath) {
         File depsFile = new File(depsFilePath)
@@ -1002,7 +971,11 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
+            if (excludeDependency(dependency) || dependency.extension == 'group') {
+                return
+            }
+            if (!dependency.artifact) {
+                logger.debug("Skipping ${dependency.id} because it has no artifact")
                 return
             }
             String depPath = "${LIBS_DIRECTORY}/${dependency.directoryName}"
@@ -1027,15 +1000,6 @@ class BuildConfigGenerator extends DefaultTask {
             throw new IllegalStateException('DEPS insertion point not found.')
         }
         depsFile.write(matcher.replaceFirst("${DEPS_TOKEN_START}\n${sb}\n  ${DEPS_TOKEN_END}"))
-    }
-
-    private boolean isTargetAutorolled(String targetName) {
-        for (String autorolledLibPrefix in AUTOROLLED_LIB_PREFIXES) {
-            if (targetName.startsWith(autorolledLibPrefix)) {
-                return true
-            }
-        }
-        return false
     }
 
     private String normalisePath(String pathRelativeToChromiumRoot) {

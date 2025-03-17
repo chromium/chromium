@@ -147,8 +147,8 @@ class USER_MANAGER_EXPORT KnownUser final {
   // to find known account_id on Chrome restart.
   void SaveKnownUser(const AccountId& account_id);
 
-  // Updates |account_id.account_type_| and |account_id.GetGaiaId()| or
-  // |account_id.GetObjGuid()| for user with |account_id|.
+  // Updates `account_id.account_type_` and `account_id.gaia_id_` for user with
+  // `account_id`.
   void UpdateId(const AccountId& account_id);
 
   // Find GAIA ID for user with `account_id`, returns `nullptr` if not found.
@@ -298,14 +298,8 @@ class USER_MANAGER_EXPORT KnownUser final {
   const base::Value::Dict* FindPrefs(const AccountId& account_id) const;
 
   // Removes all user preferences associated with |account_id|.
-  // Not exported as code should not be calling this outside this component
+  // Not exported, as code should not be calling this outside this component.
   void RemovePrefs(const AccountId& account_id);
-
-  // Removes all ephemeral users.
-  void CleanEphemeralUsers();
-
-  // Marks if user is ephemeral and should be removed on log out.
-  void SetIsEphemeralUser(const AccountId& account_id, bool is_ephemeral);
 
   // Removes all obsolete prefs from all users.
   void CleanObsoletePrefs();

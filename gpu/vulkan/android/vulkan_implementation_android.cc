@@ -5,6 +5,7 @@
 #include "gpu/vulkan/android/vulkan_implementation_android.h"
 
 #include "base/android/android_hardware_buffer_compat.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -19,6 +20,16 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
+namespace {
+
+// VK_KHR_external_memory_capabilities + VK_KHR_external_semaphore_capabilities
+// were promoted in Vulkan 1.1 so we shouldn't need to list them in the required
+// extensions.
+BASE_FEATURE(kRequirePromotedVulkanExtensions,
+             "RequirePromotedVulkanExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 VulkanImplementationAndroid::VulkanImplementationAndroid() = default;
 
@@ -27,9 +38,13 @@ VulkanImplementationAndroid::~VulkanImplementationAndroid() = default;
 bool VulkanImplementationAndroid::InitializeVulkanInstance(bool using_surface) {
   DCHECK(using_surface);
   std::vector<const char*> required_extensions = {
-      VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
-      VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
-      VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME};
+      VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME};
+  if (base::FeatureList::IsEnabled(kRequirePromotedVulkanExtensions)) {
+    required_extensions.push_back(
+        VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME);
+    required_extensions.push_back(
+        VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME);
+  }
 
   return vulkan_instance_.Initialize(base::FilePath("libvulkan.so"),
                                      required_extensions, {});

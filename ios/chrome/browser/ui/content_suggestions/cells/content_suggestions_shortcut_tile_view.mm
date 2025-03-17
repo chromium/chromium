@@ -75,7 +75,7 @@ const CGFloat kCountBorderWidth = 24;
 - (void)updateConfiguration:(ContentSuggestionsMostVisitedActionItem*)config {
   _config = config;
   self.titleLabel.text = config.title;
-    self.titleLabel.font = [self titleLabelFont];
+  self.titleLabel.font = [self titleLabelFont];
   self.accessibilityTraits =
       UIAccessibilityTraitButton | config.accessibilityTraits;
   self.accessibilityLabel = config.accessibilityLabel.length

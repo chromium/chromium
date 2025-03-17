@@ -83,7 +83,17 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
       content::NavigationHandle* handle,
       navigation_interception::SynchronyMode mode);
 
-  bool ShouldIgnoreNavigation(content::NavigationHandle* navigation_handle);
+  void ShouldIgnoreNavigation(
+      content::NavigationHandle* navigation_handle,
+      bool should_run_async,
+      InterceptNavigationThrottle::ResultCallback result_callback);
+
+  void OnShouldIgnoreNavigationResult(bool should_ignore);
+
+  // Requests that clients finish any pending ShouldIgnore checks synchronously.
+  // If finishing the check synchronously is not possible, further
+  // redirects/commits will be deferred.
+  void RequestFinishPendingShouldIgnoreCheck();
 
   // See ContentBrowserClient::HandleExternalProtocol for the semantics around
   // |out_factory|.
@@ -117,6 +127,9 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
   // An empty URL if an async action is pending, or a URL to redirect to when
   // the URLLoader is ready.
   std::unique_ptr<GURL> subframe_redirect_url_;
+
+  InterceptNavigationThrottle::ResultCallback should_ignore_result_callback_;
+
   base::WeakPtrFactory<InterceptNavigationDelegate> weak_ptr_factory_{this};
 };
 

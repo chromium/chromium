@@ -28,9 +28,11 @@
 #include "ipc/ipc_sender.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
@@ -40,7 +42,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,18 +54,19 @@
 
 class GURL;
 
+namespace network {
+class PermissionsPolicy;
+}  // namespace network
 namespace base {
 class UnguessableToken;
 }  // namespace base
 
 namespace blink {
 class AssociatedInterfaceProvider;
-class PermissionsPolicy;
 class StorageKey;
 
 namespace mojom {
 enum class AuthenticatorStatus;
-enum class PermissionsPolicyFeature;
 class MediaPlayerAction;
 }  // namespace mojom
 }  // namespace blink
@@ -88,7 +90,7 @@ namespace network {
 namespace mojom {
 class URLLoaderFactory;
 class URLResponseHead;
-}
+}  // namespace mojom
 }  // namespace network
 
 namespace perfetto::protos::pbzero {
@@ -115,6 +117,7 @@ class BrowserContext;
 class DocumentRef;
 struct GlobalRenderFrameHostId;
 struct GlobalRenderFrameHostToken;
+class NavigationController;
 class NavigationHandle;
 class RenderProcessHost;
 class RenderViewHost;
@@ -218,6 +221,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual ui::AXTreeID GetAXTreeID() = 0;
 
   using AXTreeSnapshotCallback = base::OnceCallback<void(ui::AXTreeUpdate&)>;
+
+  // Gets the NavigationController for the frame tree of this RenderFrameHost.
+  // This method is preferred over other means to get the controller, e.g.
+  // getting it directly from the frame_tree().
+  // Note: this may be different than the NavigationController for the
+  // WebContents that includes this RenderFrameHost.
+  // Note: the controller may change over the lifetime of the RenderFrameHost,
+  // due to prerendering.
+  virtual NavigationController& GetController() = 0;
 
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same
@@ -365,8 +377,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual RenderFrameHost* GetOutermostMainFrameOrEmbedder() = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
-  // Returns true if this document is the root of a fenced frame tree. This
-  // supports both Shadow DOM and MPArch implementations.
+  // Returns true if this document is the root of a fenced frame tree.
   //
   // In particular, this always returns false for frames loaded inside a
   // <fencedframe> element, if the frame is not the top-level <fencedframe>
@@ -376,8 +387,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if `this` was loaded in a <fencedframe> element directly or if
-  // one of `this` ancestors was loaded in a <fencedframe> element. This
-  // supports both Shadow DOM and MPArch implementations.
+  // one of `this` ancestors was loaded in a <fencedframe> element.
   virtual bool IsNestedWithinFencedFrame() const = 0;
 
   // Check if the frame has untrusted network access disabled.
@@ -861,16 +871,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       blink::mojom::SuddenTerminationDisablerType disabler_type) = 0;
 
   // Returns the permission policy for this frame.
-  virtual const blink::PermissionsPolicy* GetPermissionsPolicy() = 0;
+  virtual const network::PermissionsPolicy* GetPermissionsPolicy() = 0;
 
   // Returns the parsed permissions policy header for this frame.
-  virtual const blink::ParsedPermissionsPolicy&
+  virtual const network::ParsedPermissionsPolicy&
   GetPermissionsPolicyHeader() = 0;
 
   // Returns true if the queried PermissionsPolicyFeature is allowed by
   // permissions policy.
   virtual bool IsFeatureEnabled(
-      blink::mojom::PermissionsPolicyFeature feature) = 0;
+      network::mojom::PermissionsPolicyFeature feature) = 0;
 
   // Opens view-source tab for the document last committed in this
   // RenderFrameHost.
@@ -1132,13 +1142,22 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool IsClipboardOwner(
       ui::ClipboardSequenceNumberToken seqno) const = 0;
 
-  // Marks `seqno` as originating from this RFH.
-  virtual void MarkClipboardOwner(ui::ClipboardSequenceNumberToken seqno) = 0;
-
   // Returns true if RenderFrameHostImpl has non-null PolicyContainerHost.
   // TODO(crbug.com/346386726): Delete this method once we have solidified the
   //   lifetime expectations of the PolicyContainerHost object.
   virtual bool HasPolicyContainerHost() const = 0;
+
+  // Returns the cross origin embedder policy for this frame. Must have a
+  // non-null PolicyContainerHost, otherwise a crash will occur.
+  // `HasPolicyContainerHost()` can be used to check if it is non-null.
+  virtual const network::CrossOriginEmbedderPolicy&
+  GetCrossOriginEmbedderPolicy() const = 0;
+
+  // Returns true if this RenderFrameHost is in a partitioned popin and is not
+  // within a fenced frame (as this prevents the popin from impacting
+  // partitioning).
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  virtual bool ShouldPartitionAsPopin() const = 0;
 
  private:
   // This interface should only be implemented inside content.

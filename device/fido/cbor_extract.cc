@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cbor_extract.h"
 
+#include <array>
 #include <type_traits>
 
 #include "base/check_op.h"
@@ -82,7 +78,7 @@ class Extractor {
 
       // kExpectedCBORTypes is an array of bitmaps of acceptable types for each
       // |Type|.
-      static constexpr uint8_t kExpectedCBORTypes[] = {
+      static constexpr auto kExpectedCBORTypes = std::to_array<uint8_t>({
           // kBytestring
           CBORTypeToBitfield(cbor::Value::Type::BYTE_STRING),
           // kString
@@ -98,7 +94,7 @@ class Extractor {
           CBORTypeToBitfield(cbor::Value::Type::ARRAY),
           // kValue
           0xff,
-      };
+      });
 
       const cbor::Value& value = map_it->second;
       const unsigned cbor_type_u = static_cast<unsigned>(value.type());

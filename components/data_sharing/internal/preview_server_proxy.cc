@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -22,6 +23,8 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -50,7 +53,7 @@ constexpr char kStableAndBetaServiceBaseUrl[] =
     "https://chromesyncsharedentities-pa.googleapis.com/v1";
 
 // How many share entities to retrieve for preview.
-constexpr int kDefaultPreviewDataSize = 100;
+constexpr int kDefaultPreviewDataSize = 550;
 constexpr base::FeatureParam<int> kPreviewDataSize{
     &features::kDataSharingFeature, "preview_data_size",
     kDefaultPreviewDataSize};
@@ -69,7 +72,6 @@ constexpr char kTabKey[] = "tab";
 constexpr char kTabGroupKey[] = "tabGroup";
 constexpr char kUrlKey[] = "url";
 constexpr char kTitleKey[] = "title";
-constexpr char kFaviconUrlKey[] = "faviconUrl";
 constexpr char kSharedTabGroupGuidKey[] = "sharedTabGroupGuid";
 constexpr char kUniquePositionKey[] = "uniquePosition";
 constexpr char kCustomCompressedV1Key[] = "customCompressedV1";
@@ -164,13 +166,10 @@ std::optional<sync_pb::SharedTab> ParseSharedTab(
   shared_tab->set_url(*url);
   shared_tab->set_title(*title);
   shared_tab->set_shared_tab_group_guid(*shared_tab_group_guid);
-  auto* favicon_url = dict.FindString(kFaviconUrlKey);
-  if (favicon_url) {
-    shared_tab->set_favicon_url(*favicon_url);
-  }
   if (custom_compressed) {
-    shared_tab->mutable_unique_position()->set_custom_compressed_v1(
-        custom_compressed.value());
+    std::string decoded;
+    base::Base64Decode(custom_compressed.value(), &decoded);
+    shared_tab->mutable_unique_position()->set_custom_compressed_v1(decoded);
   }
   return shared_tab;
 }
@@ -284,8 +283,8 @@ void PreviewServerProxy::GetSharedDataPreview(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            base::unexpected(DataSharingService::PeopleGroupActionFailure::
-                                 kPersistentFailure)));
+            base::unexpected(
+                DataSharingService::DataPreviewActionFailure::kOtherFailure)));
     return;
   }
   std::string data_type_str;
@@ -351,8 +350,14 @@ void PreviewServerProxy::HandleServerResponse(
   if (response->http_status_code != net::HTTP_OK || response->error_type) {
     DLOG(ERROR) << "Got bad response (" << response->http_status_code
                 << ") for shared data preview!";
-    std::move(callback).Run(base::unexpected(
-        DataSharingService::PeopleGroupActionFailure::kTransientFailure));
+    DataSharingService::DataPreviewActionFailure failure =
+        DataSharingService::DataPreviewActionFailure::kOtherFailure;
+    if (response->http_status_code == net::HTTP_CONFLICT) {
+      failure = DataSharingService::DataPreviewActionFailure::kGroupFull;
+    } else if (response->http_status_code == net::HTTP_FORBIDDEN) {
+      failure = DataSharingService::DataPreviewActionFailure::kPermissionDenied;
+    }
+    std::move(callback).Run(base::unexpected(failure));
     return;
   }
 
@@ -400,7 +405,7 @@ void PreviewServerProxy::OnResponseJsonParsed(
   }
   if (!preview.shared_tab_group_preview) {
     std::move(callback).Run(base::unexpected(
-        DataSharingService::PeopleGroupActionFailure::kPersistentFailure));
+        DataSharingService::DataPreviewActionFailure::kOtherFailure));
   } else {
     std::move(callback).Run(std::move(preview));
   }

@@ -51,7 +51,7 @@ class DepsChecker(DepsBuilder):
     """Creates a new DepsChecker.
 
     Args:
-      base_directory: OS-compatible path to root of checkout, e.g. C:\chr\src.
+      base_directory: OS-compatible path to root of checkout, e.g. C:\\chr\\src.
       verbose: Set to true for debug output.
       being_tested: Set to true to ignore the DEPS file at
                     buildtools/checkdeps/DEPS.

@@ -39,9 +39,16 @@
       "matches": [ "https://docs.google.com/document*",
                    "https://docs.sandbox.google.com/document*" ],
       "all_frames": true,
+{% if is_manifest_v3 == '1' %}
+      "js": [
+        "switch_access/gdocs_script.js"
+      ],
+      "world": "MAIN",
+{% else %}
       "js": [
         "common/gdocs_script.js"
       ],
+{% endif %}
       "run_at": "document_start"
     }
   ]

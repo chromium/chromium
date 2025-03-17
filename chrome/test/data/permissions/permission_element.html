@@ -6,6 +6,8 @@
       font-size: xxx-large;
       margin: 0px;
       border: 0px;
+      width: 188px;
+      height: 1.2em;
     }
   </style>
 </head>
@@ -23,6 +25,12 @@
     });
     document.getElementById('parent').addEventListener('dismiss', (event) => {
       console.log(event.target.id + '-dismiss');
+    });
+    document.getElementById('parent').addEventListener('promptaction', (event) => {
+      console.log(event.target.id + '-promptaction');
+    });
+    document.getElementById('parent').addEventListener('promptdismiss', (event) => {
+      console.log(event.target.id + '-promptdismiss');
     });
 
     function clickById(element_id) {

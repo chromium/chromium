@@ -287,6 +287,7 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
   // Attach compositor after `LayerTreeHost` has been created.
   root_window->AttachCompositor(this);
   OnUpdateOverlayTransform();
+  OnAdaptiveRefreshRateInfoChanged();
   host_->SetRoot(root_window_->GetLayer());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());
@@ -731,6 +732,20 @@ void CompositorImpl::OnUpdateSupportedRefreshRates(
   }
 }
 
+void CompositorImpl::OnAdaptiveRefreshRateInfoChanged() {
+  if (root_window_ && display_private_) {
+    ui::WindowAndroid::AdaptiveRefreshRateInfo arr_info =
+        root_window_->adaptive_refresh_rate_info();
+    display_private_->SetAdaptiveRefreshRateInfo(
+        arr_info.supports_adaptive_refresh_rate,
+        arr_info.suggested_frame_rate_normal,
+        arr_info.suggested_frame_rate_high, arr_info.supported_frame_rates,
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(root_window_)
+            .device_scale_factor());
+  }
+}
+
 // WindowAndroid can call this callback
 // 1. when display rotation is changed
 // 2. when display type is changed in fold device(e.g., main->sub, sub->main),
@@ -803,6 +818,7 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   display_private_->SetSupportedRefreshRates(
       root_window_->GetSupportedRefreshRates());
   MaybeUpdateObserveBeginFrame();
+  OnAdaptiveRefreshRateInfoChanged();
 
   auto frame_sink = cc::slim::FrameSink::Create(
       std::move(sink_remote), std::move(client_receiver),

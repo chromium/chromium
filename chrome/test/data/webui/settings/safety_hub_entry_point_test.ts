@@ -26,7 +26,7 @@ suite('SafetyHubEntryPoint', function() {
     await flushTasks();
   }
 
-  setup(async function() {
+  setup(function() {
     browserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(browserProxy);
   });
@@ -52,7 +52,7 @@ suite('SafetyHubEntryPoint', function() {
         page.$.module.getAttribute('header-icon-color')!.trim(), 'blue');
 
     // Entry point has primary button leading to Safety Hub.
-    assertEquals(page.$.button!.getAttribute('class'), 'action-button');
+    assertEquals(page.$.button.getAttribute('class'), 'action-button');
     page.$.button.click();
     assertEquals(Router.getInstance().getCurrentRoute(), routes.SAFETY_HUB);
   });
@@ -75,7 +75,7 @@ suite('SafetyHubEntryPoint', function() {
     assertEquals(page.$.module.getAttribute('header-icon-color')!.trim(), '');
 
     // Entry point has secondary button leading to Safety Hub.
-    assertEquals(page.$.button!.getAttribute('class'), '');
+    assertEquals(page.$.button.getAttribute('class'), '');
     page.$.button.click();
     assertEquals(Router.getInstance().getCurrentRoute(), routes.SAFETY_HUB);
   });

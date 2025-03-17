@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,15 +30,22 @@ TEST(DataBufferTest, Constructor_ZeroCapacity) {
 }
 
 TEST(DataBufferTest, Constructor_NonZeroCapacity) {
-  // Buffer size should be set.
-  scoped_refptr<DataBuffer> buffer = base::MakeRefCounted<DataBuffer>(10);
-  EXPECT_FALSE(buffer->data().empty());
-  EXPECT_FALSE(buffer->writable_data().empty());
+  constexpr size_t kBufferSize = 10u;
+  auto buffer = base::MakeRefCounted<DataBuffer>(kBufferSize);
+
+  // Buffer should be properly initialized.
   EXPECT_EQ(0u, buffer->size());
-  EXPECT_EQ(10u, buffer->capacity());
-  EXPECT_EQ(10u, buffer->data().size());
-  EXPECT_EQ(10u, buffer->writable_data().size());
+  EXPECT_EQ(kBufferSize, buffer->capacity());
   EXPECT_FALSE(buffer->end_of_stream());
+
+  // The immutable data() should only return the portion of the buffer that has
+  // been written to.
+  EXPECT_TRUE(buffer->data().empty());
+  EXPECT_EQ(0u, buffer->data().size());
+
+  // The mutable writable_data() should return the entire buffer.
+  EXPECT_FALSE(buffer->writable_data().empty());
+  EXPECT_EQ(kBufferSize, buffer->writable_data().size());
 }
 
 TEST(DataBufferTest, Constructor_ScopedArray) {
@@ -103,7 +111,7 @@ TEST(DataBufferTest, Duration) {
   EXPECT_EQ(buffer->duration(), kDurationB);
 }
 
-TEST(DataBufferTest, DISABLED_ReadingWriting) {
+TEST(DataBufferTest, ReadingWriting) {
   constexpr const char kData[] = "hello";
   constexpr const char kNewData[] = "chromium";
   const auto kDataSpan = base::byte_span_from_cstring(kData);
@@ -115,11 +123,19 @@ TEST(DataBufferTest, DISABLED_ReadingWriting) {
   EXPECT_EQ(buffer->writable_data(), buffer->data());
   EXPECT_EQ(buffer->data(), kDataSpan);
 
-  auto buffer2 = base::MakeRefCounted<DataBuffer>(kNewDataSpan.size() + 10);
-  buffer2->Append(kNewDataSpan);
-  EXPECT_EQ(kNewDataSpan.size(), buffer2->size());
-  EXPECT_EQ(buffer2->writable_data(), buffer2->data());
-  EXPECT_EQ(buffer2->data().first(buffer2->size()), kNewDataSpan);
+  constexpr size_t kBufferTwoSize = kNewDataSpan.size() + 10;
+  auto buffer_two = base::MakeRefCounted<DataBuffer>(kBufferTwoSize);
+  buffer_two->Append(kNewDataSpan);
+
+  EXPECT_EQ(kNewDataSpan.size(), buffer_two->size());
+  EXPECT_EQ(buffer_two->data(), kNewDataSpan);
+  EXPECT_EQ(buffer_two->data().first(buffer_two->size()), kNewDataSpan);
+
+  // NOTE: the writable_data() method returns the uninitialized portion of the
+  // buffer as well. Only compare the portion that has been written to.
+  EXPECT_EQ(buffer_two->writable_data().size(), kBufferTwoSize);
+  EXPECT_EQ(buffer_two->writable_data().first(buffer_two->size()),
+            kNewDataSpan);
 }
 
 }  // namespace media

@@ -6,6 +6,8 @@ package org.chromium.components.safe_browsing;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -13,18 +15,20 @@ import java.lang.annotation.RetentionPolicy;
  * Java interface that a SafeBrowsingApiHandler must implement when used with
  * {@code SafeBrowsingApiBridge}.
  */
+@NullMarked
 public interface SafeBrowsingApiHandler {
     /** Observer to be notified when the SafeBrowsingApiHandler determines the verdict for a url. */
     interface Observer {
         /**
          * Called when the SafeBrowsingApiHandler gets a response from the SafeBrowsing API.
+         *
          * @param callbackId The same ID provided when {@link #startUriLookup(long, String, int[],
-         *         int)} is called.
+         *     int)} is called.
          * @param lookupResult The result of the API call. Self-defined.
          * @param threatType The threatType that is returned from the API.
          * @param threatAttributes The threatAttributes that is returned from the API.
          * @param responseStatus The responseStatus that is returned from the API.
-         * @param checkDeltaMs The time the remote call took in microseconds.
+         * @param checkDeltaUs The time the remote call took in microseconds.
          */
         void onUrlCheckDone(
                 long callbackId,
@@ -32,7 +36,7 @@ public interface SafeBrowsingApiHandler {
                 int threatType,
                 int[] threatAttributes,
                 int responseStatus,
-                long checkDeltaMs);
+                long checkDeltaUs);
     }
 
     // Possible values for lookupResult. Native side has the same definitions. See the native side

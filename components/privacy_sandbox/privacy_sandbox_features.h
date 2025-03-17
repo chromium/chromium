@@ -164,22 +164,9 @@ BASE_DECLARE_FEATURE(kAlwaysBlock3pcsIncognito);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kFingerprintingProtectionUx);
 
-// Enables displaying fingerprinting protection status in User Bypass and Page
-// Info.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kFingerprintingProtectionUserBypass);
-
-// Enables IP Protection setting behavior.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kIpProtectionV1);
-
 // Enables showing IP Protection toggle on the settings page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUx);
-
-// Enables displaying IP protection status in User Bypass and Page Info.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kIpProtectionUserBypass);
 
 // Enables displaying ACT features in User Bypass.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -211,6 +198,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwa);
 // Triggers UserBypass logic for Progressive Web Apps on Android
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwaTrigger);
+
+// Enables wildcard display on the Clank content settings UI.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kDisplayWildcardInContentSettings);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables the notice storage for pref storage.
@@ -245,10 +236,7 @@ extern const base::FeatureParam<bool>
     kPrivacySandboxActivityTypeStorageSkipPreFirstTab;
 
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics);
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel);
+BASE_DECLARE_FEATURE(kPrivacySandboxAdTopicsContentParity);
 
 // If true, provides a link to the Privacy Policy on the Topics Consent notice.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -306,6 +294,21 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<std::string>
     kPrivacySandboxCctAdsNoticeSurveyAppId;
 
+// The delay in milliseconds from ads notice close to the attempt to surface a
+// survey.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<int>
+    kPrivacySandboxCctAdsNoticeSurveyDelaysMilliseconds;
+
+// If true, enables debouncing for button clicks on all Android notices.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxNoticeActionDebouncingAndroid);
+
+// The delay in milliseconds between the first click and the next accepted
+// click.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<int> kPrivacySandboxDebouncingDelayMilliseconds;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If true, displays the Ads APIs UX Enancements.
@@ -315,6 +318,15 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
 // If true, will not block prompt when third party cookies are blocked.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies);
+
+// If true, the Privacy Sandbox prompt will show dismissal buttons with
+// equalized styling.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxEqualizedPromptButtons);
+
+// If true, migrates Privacy Sandbox Notice & Consent prefs to V2.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2);
 
 }  // namespace privacy_sandbox
 

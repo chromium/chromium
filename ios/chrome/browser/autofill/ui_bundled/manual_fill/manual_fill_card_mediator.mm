@@ -11,8 +11,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
@@ -62,15 +63,16 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 std::vector<CreditCard> FetchCards(
     const autofill::PersonalDataManager& personal_data_manager) {
   std::vector<const CreditCard*> fetched_cards =
-      personal_data_manager.payments_data_manager().GetCreditCardsToSuggest();
+      autofill::GetCreditCardsToSuggest(
+          personal_data_manager.payments_data_manager());
   std::vector<CreditCard> cards;
   cards.reserve(fetched_cards.size());
 
   // Make copies of the received `fetched_cards` to not make any assumption over
   // their lifetime and make sure that the CreditCard objects stay valid
   // throughout the lifetime of this class.
-  base::ranges::transform(fetched_cards, std::back_inserter(cards),
-                          [](const CreditCard* card) { return *card; });
+  std::ranges::transform(fetched_cards, std::back_inserter(cards),
+                         [](const CreditCard* card) { return *card; });
 
   return cards;
 }
@@ -128,8 +130,9 @@ std::vector<CreditCard> FetchCards(
 - (std::optional<const CreditCard>)findCreditCardfromGUID:(NSString*)GUID {
   for (const CreditCard& card : _cards) {
     NSString* cppGUID = base::SysUTF8ToNSString(card.guid());
-    if ([cppGUID isEqualToString:GUID])
+    if ([cppGUID isEqualToString:GUID]) {
       return card;
+    }
   }
   return std::nullopt;
 }

@@ -48,7 +48,10 @@ config("tflite_config") {
     "src/third_party/xla/third_party/tsl",
     "//third_party/pthreadpool/src/include",
   ]
-  defines = [ "TFL_STATIC_LIBRARY_BUILD" ]
+  defines = [
+    "TFL_STATIC_LIBRARY_BUILD",
+    "LITERT_DISABLE_OPENCL_SUPPORT",
+  ]
   if (is_android) {
     libs = [ "log" ]
   }
@@ -81,9 +84,11 @@ config("tflite_flags") {
   defines = [
     "FARMHASH_NO_CXX_STRING",
     "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
-    "TF_LITE_STRIP_ERROR_STRINGS",
     "TFL_STATIC_LIBRARY_BUILD",
   ]
+  if (!is_debug) {
+    defines += [ "TF_LITE_STRIP_ERROR_STRINGS" ]
+  }
 
   if (build_tflite_with_xnnpack) {
     defines += [
@@ -108,7 +113,7 @@ config("tflite_flags") {
 
   if (build_tflite_with_ruy) {
     defines += [ "TFLITE_WITH_RUY" ]
-  } else if (is_linux || is_chromeos_lacros) {
+  } else if (is_linux) {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
   }
 }

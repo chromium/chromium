@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/fonts/string_truncator.h"
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -101,8 +102,11 @@ static base::span<const UChar> RightTruncateToBuffer(const String& string,
 
 static float StringWidth(const Font& renderer,
                          base::span<const UChar> characters) {
-  TextRun run(characters.data(), characters.size());
-  return renderer.Width(run);
+  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+    return PlainTextPainter::Shared().ComputeInlineSize(TextRun(characters),
+                                                        renderer);
+  }
+  return renderer.Width(TextRun(characters));
 }
 
 static String TruncateString(const String& string,

@@ -42,7 +42,6 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -857,8 +856,8 @@ bool IsValidCrashReportId(const char* buf, size_t bytes_read,
     WriteLog(msg, sizeof(msg) - 1);
     return false;
   }
-  return base::ranges::all_of(base::span(buf, bytes_read),
-                              base::IsHexDigit<char>);
+  return std::ranges::all_of(base::span(buf, bytes_read),
+                             base::IsHexDigit<char>);
 }
 
 // |buf| should be |expected_len| + 1 characters in size and nullptr terminated.

@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -25,6 +28,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -36,6 +40,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -57,19 +62,28 @@ public class SigninPromoDelegateTest {
     private @Mock Profile mProfile;
     private @Mock SigninAndHistorySyncActivityLauncher mLauncher;
     private @Mock Runnable mOnPromoStateChange;
+    private @Mock Runnable mOnOpenSettings;
     private @Mock IdentityServicesProvider mIdentityServicesProvider;
     private @Mock IdentityManager mIdentityManager;
     private @Mock SigninManager mSigninManager;
     private @Mock SyncService mSyncService;
     private @Mock HistorySyncHelper mHistorySyncHelper;
 
+    private Context mContext;
     private SigninPromoDelegate mDelegate;
 
     @Before
     public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
-        doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
+        lenient()
+                .doReturn(mIdentityManager)
+                .when(mIdentityServicesProvider)
+                .getIdentityManager(mProfile);
+        lenient()
+                .doReturn(mSigninManager)
+                .when(mIdentityServicesProvider)
+                .getSigninManager(mProfile);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
     }
 
@@ -90,81 +104,117 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    public void testBookmarkPromoShown() {
+    public void testBookmarkSigninPromoShown() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, /* visibleAccount= */ null);
 
-        assertTrue(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertTrue(mDelegate.canShowPromo());
+        assertEquals(
+                mDelegate.getTitle(), mContext.getString(R.string.signin_promo_title_bookmarks));
+        assertEquals(
+                mDelegate.getDescription(),
+                mContext.getString(R.string.signin_promo_description_bookmarks));
     }
 
     @Test
     public void testNtpPromoShown() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
 
-        assertTrue(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertTrue(mDelegate.canShowPromo());
     }
 
     @Test
-    public void testBookmarkPromoHidden_hasPrimaryAccount() {
+    public void testBookmarkAccountSettingsPromoShown_hasPrimaryAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
 
-        assertFalse(mDelegate.canShowPromo(TestAccounts.ACCOUNT1));
+        assertTrue(mDelegate.canShowPromo());
+        assertEquals(mDelegate.getTitle(), mContext.getString(R.string.sync_promo_title_bookmarks));
+        assertEquals(
+                mDelegate.getDescription(),
+                mContext.getString(R.string.account_settings_promo_description_bookmarks));
     }
 
     @Test
     public void testNtpPromoHidden_hasPrimaryAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
 
-        assertFalse(mDelegate.canShowPromo(TestAccounts.ACCOUNT1));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
     public void testBookmarkPromoHidden_signInNotAllowed() {
-        createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
     public void testNtpPromoHidden_signInNotAllowed() {
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
     public void testBookmarkPromoHidden_typeManagedByPolicy() {
-        doReturn(true).when(mSigninManager).isSigninAllowed();
         doReturn(true).when(mSyncService).isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
-        createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
     public void testBookmarkPromoHidden_typesAlreadyEnabled() {
-        doReturn(true).when(mSigninManager).isSigninAllowed();
         doReturn(Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST))
                 .when(mSyncService)
                 .getSelectedTypes();
-        createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
     public void testBookmarkPromoHidden_dismissedBefore() {
-        doReturn(true).when(mSigninManager).isSigninAllowed();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, true);
-        createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testHistoryPagePromoHidden_signedOut() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testHistoryPagePromoShown_hasPrimaryAccount_historySyncAvailable() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(false).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        setupDelegate(SigninAccessPoint.HISTORY_PAGE, TestAccounts.ACCOUNT1);
+
+        assertTrue(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testHistoryPagePromoHidden_hasPrimaryAccount_historySyncSuppressed() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
+
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
@@ -172,18 +222,18 @@ public class SigninPromoDelegateTest {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)
     public void testNtpPromoHidden_disabledByForce() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
@@ -196,9 +246,9 @@ public class SigninPromoDelegateTest {
                 .writeLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
                         System.currentTimeMillis() - timeSinceFirstShownLimitMs);
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
@@ -208,27 +258,27 @@ public class SigninPromoDelegateTest {
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
                 .findExtendedAccountInfoByEmailAddress(TestAccounts.ACCOUNT1.getEmail());
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
 
-        assertTrue(mDelegate.canShowPromo(TestAccounts.ACCOUNT1));
+        assertTrue(mDelegate.canShowPromo());
     }
 
     @Test
     public void testNtpPromoHidden_extendedAccountInfoNotAvailable() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
 
-        assertFalse(mDelegate.canShowPromo(TestAccounts.ACCOUNT1));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
     public void testRecentTabsPromoShown_signinAllowed() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        createDelegate(SigninAccessPoint.RECENT_TABS);
+        setupDelegate(SigninAccessPoint.RECENT_TABS, /* visibleAccount= */ null);
 
-        assertTrue(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertTrue(mDelegate.canShowPromo());
     }
 
     @Test
@@ -236,17 +286,17 @@ public class SigninPromoDelegateTest {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        createDelegate(SigninAccessPoint.RECENT_TABS);
+        setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
 
-        assertTrue(mDelegate.canShowPromo(TestAccounts.ACCOUNT1));
+        assertTrue(mDelegate.canShowPromo());
     }
 
     @Test
     public void testRecentTabsPromoHidden_signinNotAllowed() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        createDelegate(SigninAccessPoint.RECENT_TABS);
+        setupDelegate(SigninAccessPoint.RECENT_TABS, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
     @Test
@@ -254,22 +304,25 @@ public class SigninPromoDelegateTest {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        createDelegate(SigninAccessPoint.RECENT_TABS);
+        setupDelegate(SigninAccessPoint.RECENT_TABS, /* visibleAccount= */ null);
 
-        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+        assertFalse(mDelegate.canShowPromo());
     }
 
-    private void createDelegate(@SigninAccessPoint int accessPoint) {
-        Context context = ApplicationProvider.getApplicationContext();
+    private void setupDelegate(
+            @SigninAccessPoint int accessPoint, @Nullable CoreAccountInfo visibleAccount) {
         mDelegate =
                 switch (accessPoint) {
                     case SigninAccessPoint.BOOKMARK_MANAGER -> new BookmarkSigninPromoDelegate(
-                            context, mProfile, mLauncher, mOnPromoStateChange);
+                            mContext, mProfile, mLauncher, mOnPromoStateChange, mOnOpenSettings);
+                    case SigninAccessPoint.HISTORY_PAGE -> new HistoryPageSigninPromoDelegate(
+                            mContext, mProfile, mLauncher, mOnPromoStateChange);
                     case SigninAccessPoint.NTP_FEED_TOP_PROMO -> new NtpSigninPromoDelegate(
-                            context, mProfile, mLauncher, mOnPromoStateChange);
+                            mContext, mProfile, mLauncher, mOnPromoStateChange);
                     case SigninAccessPoint.RECENT_TABS -> new RecentTabsSigninPromoDelegate(
-                            context, mProfile, mLauncher, mOnPromoStateChange);
+                            mContext, mProfile, mLauncher, mOnPromoStateChange);
                     default -> throw new IllegalArgumentException();
                 };
+        mDelegate.refreshPromoState(visibleAccount);
     }
 }

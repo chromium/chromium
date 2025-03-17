@@ -111,6 +111,10 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   // emphasis mark at left/right side of |LayoutTextCombine|.
   DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
 
+  if (text_item.IsEllipsis()) {
+    return false;
+  }
+
   if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
     return !text_item.HasOverAnnotation();
   }
@@ -244,11 +248,13 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 #endif
 
-  ObjectPainter object_painter(*layout_object);
-  if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
-    object_painter.RecordHitTestData(paint_info,
-                                     ToPixelSnappedRect(physical_box),
-                                     *text_item.GetDisplayItemClient());
+  if (paint_info.phase == PaintPhase::kForeground) {
+    ObjectPainter object_painter(*layout_object);
+    if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
+      object_painter.RecordHitTestData(paint_info,
+                                       ToPixelSnappedRect(physical_box),
+                                       *text_item.GetDisplayItemClient());
+    }
   }
 
   // Determine whether or not we’ll need a writing-mode rotation, but don’t
@@ -385,7 +391,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   TextPainter text_painter(context, paint_info.GetSvgContextPaints(), *font,
-                           visual_rect, text_origin, is_horizontal);
+                           visual_rect, text_origin);
   TextDecorationPainter decoration_painter(text_painter, inline_context_,
                                            paint_info, style, text_style,
                                            rotated_box, selection);
@@ -465,7 +471,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // overlays are active, but paint shadows in full <https://crbug.com/1147859>
   if (ShouldPaintEmphasisMark(style, *layout_object, text_item)) {
     text_painter.SetEmphasisMark(style.TextEmphasisMarkString(),
-                                 style.GetTextEmphasisPosition());
+                                 style.GetTextEmphasisLineLogicalSide());
   }
 
   DOMNodeId node_id = kInvalidDOMNodeId;

@@ -6,6 +6,8 @@
 #define ASH_SHELL_DELEGATE_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -19,10 +21,10 @@
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/video_capture/public/mojom/multi_capture_service.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
+class AccountId;
 namespace aura {
 class Window;
 }
@@ -137,7 +139,7 @@ class ASH_EXPORT ShellDelegate {
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
 
   // Sets the tab scrubber |enabled_| field to |enabled|.
-  virtual void SetTabScrubberChromeOSEnabled(bool enabled) = 0;
+  virtual void SetTabScrubberEnabled(bool enabled) = 0;
 
   // Returns true if |window| allows default touch behaviors. If false, it means
   // no default touch behavior is allowed (i.e., the touch action of window is
@@ -163,12 +165,6 @@ class ASH_EXPORT ShellDelegate {
   // Binds a MultiDeviceSetup receiver for the primary profile.
   virtual void BindMultiDeviceSetup(
       mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
-          receiver) = 0;
-
-  // Binds a MultiCaptureService receiver to start observing
-  // MultiCaptureStarted() and MultiCaptureStopped() events.
-  virtual void BindMultiCaptureService(
-      mojo::PendingReceiver<video_capture::mojom::MultiCaptureService>
           receiver) = 0;
 
   // Returns an interface to the Media Session service, or null if not
@@ -203,6 +199,18 @@ class ASH_EXPORT ShellDelegate {
   virtual void OpenFeedbackDialog(FeedbackSource source,
                                   const std::string& description_template,
                                   const std::string& category_tag) = 0;
+
+  // Uploads feedback about a specialized feature after redacting the given
+  // description using the given account ID.
+  // Returns false if there is no feedback uploader for the given account ID.
+  // See //chromeos/ash/components/specialized_features/feedback.h for more
+  // details.
+  virtual bool SendSpecializedFeatureFeedback(
+      const AccountId& account_id,
+      int product_id,
+      std::string description,
+      std::optional<std::string> image,
+      std::optional<std::string> image_mime_type) = 0;
 
   // Calls browser service to open the profile manager.
   virtual void OpenProfileManager() = 0;

@@ -13,7 +13,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -117,15 +116,15 @@ bool MatchesHeaderConditions(
     // The condition for `header` does not match if there's an excluded value,
     // continue to the next header.
     if (header_condition->excluded_values() &&
-        base::ranges::any_of(*header_condition->excluded_values(),
-                             has_header_value)) {
+        std::ranges::any_of(*header_condition->excluded_values(),
+                            has_header_value)) {
       continue;
     }
 
     // Match if the response contains at least one header value in
     // `header_condition->values()`.
     if (!header_condition->values() ||
-        base::ranges::any_of(*header_condition->values(), has_header_value)) {
+        std::ranges::any_of(*header_condition->values(), has_header_value)) {
       return true;
     }
   }

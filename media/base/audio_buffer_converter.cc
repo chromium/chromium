@@ -41,7 +41,7 @@ AudioBufferConverter::AudioBufferConverter(const AudioParameters& output_params)
       io_sample_rate_ratio_(1.0),
       timestamp_helper_(output_params_.sample_rate()),
       is_flushing_(false),
-      pool_(new AudioBufferMemoryPool()) {}
+      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {}
 
 AudioBufferConverter::~AudioBufferConverter() = default;
 

@@ -42,7 +42,8 @@ TEST_P(CanvasFilterTest, CreatesFilterOperations) {
   V8TestingScope scope;
   EXPECT_THAT(
       CanvasFilter::CreateFilterOperations(
-          CHECK_DEREF(ParseFilter(scope, GetParam().filter)), Font(),
+          CHECK_DEREF(ParseFilter(scope, GetParam().filter)),
+          MakeGarbageCollected<Font>(),
           /*style_resolution_host=*/nullptr,
           CHECK_DEREF(scope.GetExecutionContext()), scope.GetExceptionState())
           .Operations(),

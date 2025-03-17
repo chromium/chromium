@@ -70,6 +70,9 @@
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #cmakedefine LT_OBJDIR "@LT_OBJDIR@"
 
+/* plugin file extension */
+#define MODULE_EXTENSION "@MODULE_EXTENSION@"
+
 /* Name of package */
 #cmakedefine PACKAGE "@PACKAGE@"
 

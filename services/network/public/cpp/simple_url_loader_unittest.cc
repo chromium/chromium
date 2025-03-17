@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "services/network/public/cpp/simple_url_loader.h"
 
 #include <stdint.h>
@@ -2350,8 +2355,6 @@ class MockURLLoader : public network::mojom::URLLoader {
                    int32_t intra_priority_value) override {
     NOTREACHED();
   }
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   network::mojom::URLLoaderClient* client() const { return client_.get(); }
 

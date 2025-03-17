@@ -64,8 +64,9 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
     // If `languages` is empty, punycode in `login_host` will always be decoded.
     std::u16string login_host =
         url_formatter::IDNToUnicode(landing_url_.host());
-    if (base::i18n::IsRTL())
+    if (base::i18n::IsRTL()) {
       base::i18n::WrapStringWithLTRFormatting(&login_host);
+    }
 
     paragraph = l10n_util::GetStringFUTF16(
         IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_WIFI, login_host);

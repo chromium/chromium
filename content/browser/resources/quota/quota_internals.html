@@ -20,8 +20,7 @@
             <thead>
               <th>Total Space</th>
               <th>Available Space</th>
-              <th>Temporary Storage Usage</th>
-              <th>Syncable Storage Usage</th>
+              <th>Total Storage Usage</th>
               <th>Temp Pool Size</th>
             </thead>
             <tbody id="listeners-tbody"></tbody>
@@ -60,7 +59,6 @@
           <table>
             <thead>
               <th>Storage Key</th>
-              <th>Storage Type</th>
               <th>Bucket</th>
               <th>Usage (B)</th>
               <th>Use Count</th>
@@ -76,8 +74,7 @@
       <tr>
         <td class="total-space"></td>
         <td class="available-space"></td>
-        <td class="temporary-global-and-unlimited-usage"></td>
-        <td class="syncable-global-and-unlimited-usage"></td>
+        <td class="global-and-unlimited-usage"></td>
         <td class="temp-pool-size"></td>
       </tr>
     </template>
@@ -92,7 +89,6 @@
     <template id="usage-and-quota-row">
         <tr class="usage-and-quota-template-row">
           <td class="storage-key"></td>
-          <td class="storage-type"></td>
           <td class="bucket"></td>
           <td class="usage"></td>
           <td class="use-count"></td>

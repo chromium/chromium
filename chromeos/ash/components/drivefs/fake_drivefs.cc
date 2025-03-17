@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 
+#include <algorithm>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -243,7 +243,7 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
           // If we do not know the MIME type the file may or may not match. Thus
           // we only test MIME type match if we know the files MIME type.
           if (!content_mime_type.empty()) {
-            if (base::ranges::none_of(
+            if (std::ranges::none_of(
                     mime_types,
                     [content_mime_type](const std::string& mime_type) {
                       return net::MatchesMimeType(mime_type, content_mime_type);
@@ -698,7 +698,7 @@ void FakeDriveFs::ToggleSyncForPath(
     syncing_paths_.push_back(path);
   } else {
     // status == drivefs::mojom::MirrorPathStatus::kStop.
-    auto element = base::ranges::find(syncing_paths_, path);
+    auto element = std::ranges::find(syncing_paths_, path);
     syncing_paths_.erase(element);
   }
   std::move(callback).Run(drive::FileError::FILE_ERROR_OK);

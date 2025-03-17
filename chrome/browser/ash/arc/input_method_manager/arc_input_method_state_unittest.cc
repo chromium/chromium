@@ -7,11 +7,11 @@
 #include <memory>
 #include <optional>
 
-#include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/mojom/input_method_manager.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/extension_ime_util.h"

@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -37,11 +37,13 @@ class AutofillDriver;
 #endif  // !BUILDFLAG(IS_IOS)
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
+class MockBnplManager;
 class TouchToFillDelegate;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
 
+class BnplManager;
 class PaymentsWindowManager;
 
 // This class is for easier writing of tests. It is owned by TestAutofillClient.
@@ -105,6 +107,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
+  BnplManager* GetPaymentsBnplManager() override;
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
@@ -120,6 +123,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 #endif
   MockMandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
+  PaymentsDataManager& GetPaymentsDataManager() final;
+  void ShowUnmaskAuthenticatorSelectionDialog(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmask_challenge_option_callback,
+      base::OnceClosure cancel_unmasking_closure) override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
@@ -152,6 +161,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   }
 
   bool risk_data_loaded() const { return risk_data_loaded_; }
+  void set_risk_data_loaded(bool risk_data_loaded) {
+    risk_data_loaded_ = risk_data_loaded;
+  }
 
   bool ConfirmUploadIbanToCloudWasCalled() const {
     return confirm_upload_iban_to_cloud_called_ &&
@@ -185,6 +197,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   void set_autofill_offer_manager(
       std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
+  }
+
+  MockBnplManager& CreateOrGetMockBnplManager();
+
+  bool unmask_authenticator_selection_dialog_shown() const {
+    return unmask_authenticator_selection_dialog_shown_;
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -240,6 +258,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
 
+  std::unique_ptr<BnplManager> bnpl_manager_;
+
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
@@ -251,6 +271,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // respectively.
   bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
   bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
+
+  bool unmask_authenticator_selection_dialog_shown_ = false;
 
   std::unique_ptr<MockIbanManager> mock_iban_manager_;
 

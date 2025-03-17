@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
@@ -26,6 +25,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
@@ -55,7 +55,7 @@ std::string GetCallerId(
 }  // namespace
 
 void ParentAccessUiHandlerImpl::RecordParentAccessWidgetError(
-    ParentAccessUiHandlerImpl::ParentAccessWidgetError error) {
+    supervised_user::ParentAccessWidgetError error) {
   if (delegate_) {
     base::UmaHistogramEnumeration(
         parent_access::GetHistogramTitleForFlowType(
@@ -120,7 +120,7 @@ void ParentAccessUiHandlerImpl::OnAccessTokenFetchComplete(
     DLOG(ERROR) << "ParentAccessUiHandlerImpl: OAuth2 token request failed. "
                 << error.state() << ": " << error.ToString();
     RecordParentAccessWidgetError(
-        ParentAccessUiHandlerImpl::ParentAccessWidgetError::kOAuthError);
+        supervised_user::ParentAccessWidgetError::kOAuthError);
     std::move(callback).Run(
         parent_access_ui::mojom::GetOauthTokenStatus::kError,
         "" /* No token */);
@@ -137,8 +137,7 @@ void ParentAccessUiHandlerImpl::GetParentAccessParams(
     LOG(ERROR) << "Delegate not available in ParentAccessUiHandler - WebUI was "
                   "probably created without a dialog";
     RecordParentAccessWidgetError(
-        ParentAccessUiHandlerImpl::ParentAccessWidgetError::
-            kDelegateNotAvailable);
+        supervised_user::ParentAccessWidgetError::kDelegateNotAvailable);
     std::move(callback).Run(parent_access_ui::mojom::ParentAccessParams::New());
     return;
   }
@@ -153,8 +152,7 @@ void ParentAccessUiHandlerImpl::OnParentAccessDone(
     LOG(ERROR) << "Delegate not available in ParentAccessUiHandler - WebUI was "
                   "probably created without a dialog";
     RecordParentAccessWidgetError(
-        ParentAccessUiHandlerImpl::ParentAccessWidgetError::
-            kDelegateNotAvailable);
+        supervised_user::ParentAccessWidgetError::kDelegateNotAvailable);
     std::move(callback).Run();
     return;
   }
@@ -202,8 +200,7 @@ void ParentAccessUiHandlerImpl::GetParentAccessUrl(
     LOG(ERROR) << "Delegate not available in ParentAccessUiHandler - WebUI was "
                   "probably created without a dialog";
     RecordParentAccessWidgetError(
-        ParentAccessUiHandlerImpl::ParentAccessWidgetError::
-            kDelegateNotAvailable);
+        supervised_user::ParentAccessWidgetError::kDelegateNotAvailable);
     std::move(callback).Run("");
     return;
   }
@@ -255,12 +252,13 @@ void ParentAccessUiHandlerImpl::OnParentAccessCallbackReceived(
   std::string decoded_parent_access_callback;
   parent_access_ui::mojom::ParentAccessServerMessagePtr message =
       parent_access_ui::mojom::ParentAccessServerMessage::New();
+
   if (!base::Base64Decode(encoded_parent_access_callback_proto,
                           &decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
                   "parent_access_result from base64";
     RecordParentAccessWidgetError(
-        ParentAccessUiHandlerImpl::ParentAccessWidgetError::kDecodingError);
+        supervised_user::ParentAccessWidgetError::kDecodingError);
 
     message->type =
         parent_access_ui::mojom::ParentAccessServerMessageType::kError;
@@ -274,7 +272,7 @@ void ParentAccessUiHandlerImpl::OnParentAccessCallbackReceived(
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error parsing "
                   "decoded_parent_access_result to proto";
     RecordParentAccessWidgetError(
-        ParentAccessUiHandlerImpl::ParentAccessWidgetError::kParsingError);
+        supervised_user::ParentAccessWidgetError::kParsingError);
 
     message->type =
         parent_access_ui::mojom::ParentAccessServerMessageType::kError;
@@ -308,7 +306,7 @@ void ParentAccessUiHandlerImpl::OnParentAccessCallbackReceived(
                  "callback received and ignored: "
               << parent_access_callback.callback_case();
       RecordParentAccessWidgetError(
-          ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback);
+          supervised_user::ParentAccessWidgetError::kUnknownCallback);
       message->type =
           parent_access_ui::mojom::ParentAccessServerMessageType::kIgnore;
       std::move(callback).Run(std::move(message));

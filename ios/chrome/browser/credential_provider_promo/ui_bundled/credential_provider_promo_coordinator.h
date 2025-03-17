@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_PROMO_UI_BUNDLED_CREDENTIAL_PROVIDER_PROMO_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 
 @protocol PromosManagerUIHandler;

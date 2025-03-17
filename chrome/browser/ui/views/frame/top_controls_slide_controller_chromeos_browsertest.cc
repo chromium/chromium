@@ -102,7 +102,7 @@ class LayoutTestView : public views::View {
  public:
   explicit LayoutTestView(BrowserView* parent) {
     DCHECK(parent);
-    parent->AddChildView(this);
+    parent->AddChildViewRaw(this);
     parent->GetWidget()->LayoutRootViewIfNecessary();
     layout_count_ = 0;
   }
@@ -698,15 +698,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
 }
 
 // Fails on Linux ChromiumOS MSan Tests (https://crbug.com/1194575).
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestScrollingPageAndSwitchingToNTP \
-  DISABLED_TestScrollingPageAndSwitchingToNTP
-#else
-#define MAYBE_TestScrollingPageAndSwitchingToNTP \
-  TestScrollingPageAndSwitchingToNTP
-#endif
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       MAYBE_TestScrollingPageAndSwitchingToNTP) {
+                       DISABLED_TestScrollingPageAndSwitchingToNTP) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -765,12 +758,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 }
 
 // Fails on Linux Chromium OS Tests (https://crbug.com/1191327).
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestClosingATab DISABLED_TestClosingATab
-#else
-#define MAYBE_TestClosingATab TestClosingATab
-#endif
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestClosingATab) {
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       DISABLED_TestClosingATab) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());

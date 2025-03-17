@@ -36,6 +36,14 @@ public class BrowserBoundKey {
     /** The signature algorithm to use for signing with the browser bound key. */
     private static final String SHA256_WITH_ECDSA = "SHA256withECDSA";
 
+    /**
+     * The cose algorithm identifier for SHA256 with ECDSA.
+     *
+     * <p>See the <a href="https://www.iana.org/assignments/cose/cose.xhtml#algorithms">COSE
+     * Algorithms registry</a>
+     */
+    public static final int COSE_ALGORITHM_ES256 = -7;
+
     private final KeyPair mKeyPair;
 
     BrowserBoundKey(KeyPair keyPair) {
@@ -114,8 +122,7 @@ public class BrowserBoundKey {
             // https://www.iana.org/assignments/cose/cose.xhtml#key-type
 
             putCborInteger(coseKeyBuffer, 3); // Key restricted to algorithm (alg)
-            putCborInteger(coseKeyBuffer, -7); // ECDSA with SHA256. See
-            // https://www.iana.org/assignments/cose/cose.xhtml#algorithms
+            putCborInteger(coseKeyBuffer, COSE_ALGORITHM_ES256);
 
             // The remaining pairs are key type parameters. See
             // https://www.iana.org/assignments/cose/cose.xhtml#key-type-parameters

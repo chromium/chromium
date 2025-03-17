@@ -8,9 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,7 +21,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,7 +63,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     /** Drawable ConstantState used to expedite creation of Focus ripples. */
-    private static Drawable.ConstantState sFocusableDrawableState;
+    @VisibleForTesting static Drawable.ConstantState sFocusableDrawableState;
 
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
@@ -287,44 +284,25 @@ public final class BaseSuggestionViewBinder<T extends View>
         // Use a throwaway metadata object if caching is off to simplify branching; the performance
         // difference will still manifest because it's not persisted.
         BaseSuggestionViewMetadata metadata = ensureViewMetadata(view);
+        Drawable background;
 
-        if (sFocusableDrawableState != null) {
+        if (sFocusableDrawableState == null) {
+            var context = view.getContext();
+            @BrandedColorScheme int scheme = model.get(SuggestionCommonProperties.COLOR_SCHEME);
+            background =
+                    OmniboxResourceProvider.getStatefulSuggestionBackground(
+                            context,
+                            OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                                    context, scheme),
+                            scheme);
+            sFocusableDrawableState = background.getConstantState();
+        } else {
             if (sFocusableDrawableState == metadata.backgroundConstantState) return;
-            view.setBackground(sFocusableDrawableState.newDrawable());
-            metadata.backgroundConstantState = sFocusableDrawableState;
-            return;
+            background = sFocusableDrawableState.newDrawable();
         }
 
-        // Background color to be used for suggestions
-        var ctx = view.getContext();
-        var background = new ColorDrawable(getSuggestionBackgroundColor(model, view.getContext()));
-        // Ripple effect to use when the user interacts with the suggestion.
-        var ripple =
-                OmniboxResourceProvider.resolveAttributeToDrawable(
-                        ctx,
-                        model.get(SuggestionCommonProperties.COLOR_SCHEME),
-                        R.attr.selectableItemBackground);
-
-        var layer = new LayerDrawable(new Drawable[] {background, ripple});
-
-        // Cache the drawable state for faster retrieval.
-        // See go/omnibox:drawables for more details.
-        sFocusableDrawableState = layer.getConstantState();
+        view.setBackground(background);
         metadata.backgroundConstantState = sFocusableDrawableState;
-        view.setBackground(layer);
-    }
-
-    /**
-     * Retrieve the background color to be applied to suggestion.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param ctx Context used to retrieve appropriate color value.
-     * @return The @ColorInt value representing the color to be applied.
-     */
-    public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
-        return isIncognito(model)
-                ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
-                : OmniboxResourceProvider.getStandardSuggestionBackgroundColor(ctx);
     }
 
     /**

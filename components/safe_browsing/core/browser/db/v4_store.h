@@ -307,8 +307,7 @@ class V4Store {
   ApplyUpdateResult MergeUpdate(
       const HashPrefixMapView& old_hash_prefix_map,
       const HashPrefixMapView& additions_map,
-      const ::google::protobuf::RepeatedField<::google::protobuf::int32>*
-          raw_removals,
+      const ::google::protobuf::RepeatedField<int32_t>* raw_removals,
       const std::string& expected_checksum);
 
   // Processes the FULL_UPDATE |response| from the server, and writes the

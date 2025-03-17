@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_runner.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -39,7 +40,7 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   return nullptr;
-#endif
+#else
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
 
@@ -48,18 +49,34 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  // If there are no passwords saved, there is nothing to export prior to
-  // deprecation.
-  if (prefs->GetBoolean(
-          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // Reset the pref if the flag is off, to ensure that if a client switches
+    // from the "Enabled" to the "Disabled" group, they redo the export once
+    // the feature is eventually enabled for them.
+    prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
+                      false);
     return nullptr;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
+  if (prefs->GetBoolean(
+          password_manager::prefs::kUpmUnmigratedPasswordsExported)) {
+    // Since saving new passwords is disabled, one export is enough to guarantee
+    // that all passwords have been preserved outside of the login database.
+    return nullptr;
+  }
+
+  // If there are no passwords saved, there is nothing to export prior to
+  // deprecation, so mark the export as done without instantiating the exporter.
+  if (prefs->GetBoolean(
+          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
+    prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
+                      true);
     return nullptr;
   }
 
   return std::make_unique<password_manager::LoginDbDeprecationRunner>(
-      profile->GetPrefs(), profile->GetPath());
+      std::make_unique<password_manager::LoginDbDeprecationPasswordExporter>(
+          profile->GetPrefs(), profile->GetPath()));
+#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }

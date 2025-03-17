@@ -17,7 +17,7 @@ namespace {
 // The list of code points which has Indic_Syllabic_Category=Virama property.
 // Must be sorted.
 // See http://www.unicode.org/Public/9.0.0/ucd/IndicSyllabicCategory-9.0.0d2.txt
-const auto kIndicSyllabicCategoryViramaList = std::to_array<uint32_t>({
+constexpr auto kIndicSyllabicCategoryViramaList = std::to_array<uint32_t>({
     // Do not include 0+0BCD TAMIL SIGN VIRAMA as Tamil works differently from
     // other Indic languages. See crbug.com/693687.
     0x094D,  0x09CD,  0x0A4D,  0x0ACD,  0x0B4D,  0x0C4D,  0x0CCD,  0x0D4D,

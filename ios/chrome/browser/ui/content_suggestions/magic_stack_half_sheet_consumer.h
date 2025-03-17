@@ -10,6 +10,14 @@
 // Consumer of the MagicStackHalfSheetMediator.
 @protocol MagicStackHalfSheetConsumer
 
+// Indicates to the consumer whether to display the toggle for most visited
+// tiles.
+- (void)showMostVisitedSitesToggle:(BOOL)show;
+
+// Indicates to the consumer that `mostVisitedSitesEnabled`. Should only be
+// invoked when the most visited sites tile is in magic stack.
+- (void)setMostVisitedSitesEnabled:(BOOL)mostVisitedSitesEnabled;
+
 // Indicates to the consumer whether to `showSetUpList`.
 - (void)showSetUpList:(BOOL)showSetUpList;
 

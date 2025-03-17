@@ -34,7 +34,7 @@ class ConditionalFeaturesTest(unittest.TestCase):
     definition = parser.Parse(source, "my_file.mojom")
     conditional_features.RemoveDisabledDefinitions(definition, ENABLED_FEATURES)
     expected = parser.Parse(expected_source, "my_file.mojom")
-    self.assertEquals(definition, expected)
+    self.assertEqual(definition, expected)
 
   def testFilterConst(self):
     """Test that Consts are correctly filtered."""

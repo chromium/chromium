@@ -24,19 +24,18 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Controller that allows the native autofill code to show a progress bar (spinner).
- * For example: When unmasking a virtual card, we show a progress bar while
- * we contact the bank.
+ * Controller that allows the native autofill code to show a progress bar (spinner). For example:
+ * When unmasking a virtual card, we show a progress bar while we contact the bank.
  *
- * Note: The progress bar dialog only shows a negative button which dismisses the dialog.
+ * <p>Note: The progress bar dialog only shows a negative button which dismisses the dialog.
  */
 @JNINamespace("autofill")
 public class AutofillProgressDialogBridge {
     private static final int SUCCESS_VIEW_DURATION_MILLIS = 500;
 
-    private final long mNativeAutofillProgressDialogView;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
+    private long mNativeAutofillProgressDialogView;
     private PropertyModel mDialogModel;
     private View mProgressDialogContentView;
 
@@ -50,8 +49,10 @@ public class AutofillProgressDialogBridge {
 
                 @Override
                 public void onDismiss(PropertyModel model, int dismissalCause) {
-                    AutofillProgressDialogBridgeJni.get()
-                            .onDismissed(mNativeAutofillProgressDialogView);
+                    if (mNativeAutofillProgressDialogView != 0) {
+                        AutofillProgressDialogBridgeJni.get()
+                                .onDismissed(mNativeAutofillProgressDialogView);
+                    }
                 }
             };
 
@@ -117,9 +118,11 @@ public class AutofillProgressDialogBridge {
             mProgressDialogContentView
                     .findViewById(R.id.confirmation_icon)
                     .setVisibility(View.VISIBLE);
-            ((TextView) mProgressDialogContentView.findViewById(R.id.message))
-                    .setText(confirmationMessage);
-            mProgressDialogContentView.announceForAccessibility(confirmationMessage);
+            TextView confirmationMessageView =
+                    ((TextView) mProgressDialogContentView.findViewById(R.id.message));
+            confirmationMessageView.setAccessibilityLiveRegion(
+                    View.ACCESSIBILITY_LIVE_REGION_POLITE);
+            confirmationMessageView.setText(confirmationMessage);
             // TODO(crbug.com/40195445): Dismiss the Java View after some delay if confirmation has
             // been shown.
         }
@@ -131,6 +134,11 @@ public class AutofillProgressDialogBridge {
     @CalledByNative
     public void dismiss() {
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+    }
+
+    @CalledByNative
+    public void destroy() {
+        mNativeAutofillProgressDialogView = 0;
     }
 
     @NativeMethods

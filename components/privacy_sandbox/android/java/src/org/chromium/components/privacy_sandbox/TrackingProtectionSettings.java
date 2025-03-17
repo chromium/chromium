@@ -51,12 +51,6 @@ import java.util.Locale;
 public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
         implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
-    private static final String PREF_IP_PROTECTION_TOGGLE = "ip_protection_toggle";
-    private static final String PREF_IP_PROTECTION_LEARN_MORE = "ip_protection_learn_more";
-    private static final String PREF_FINGERPRINTING_PROTECTION_TOGGLE =
-            "fingerprinting_protection_toggle";
-    private static final String PREF_FINGERPRINTING_PROTECTION_LEARN_MORE =
-            "fingerprinting_protection_learn_more";
     private static final String PREF_BULLET_TWO = "bullet_point_two";
     private static final String ALLOWED_GROUP = "allowed_group";
     public static final String ADD_EXCEPTION_KEY = "add_exception";
@@ -104,14 +98,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
 
         ChromeSwitchPreference blockAll3pCookiesSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
-        ChromeSwitchPreference ipProtectionSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_IP_PROTECTION_TOGGLE);
-        TextMessagePreference ipProtectionLearnMore =
-                (TextMessagePreference) findPreference(PREF_IP_PROTECTION_LEARN_MORE);
-        ChromeSwitchPreference fingerprintingProtectionSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_FINGERPRINTING_PROTECTION_TOGGLE);
-        TextMessagePreference fingerprintingProtectionLearnMore =
-                (TextMessagePreference) findPreference(PREF_FINGERPRINTING_PROTECTION_LEARN_MORE);
 
         // Block all 3rd party cookies switch.
         blockAll3pCookiesSwitch.setChecked(mDelegate.isBlockAll3pcEnabled());
@@ -120,52 +106,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                     mDelegate.setBlockAll3pc((boolean) newValue);
                     return true;
                 });
-
-        // IP protection switch.
-        if (mDelegate.shouldDisplayIpProtection()) {
-            ipProtectionSwitch.setVisible(true);
-            ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
-            ipProtectionSwitch.setOnPreferenceChangeListener(
-                    (preference, newValue) -> {
-                        mDelegate.setIpProtection((boolean) newValue);
-                        return true;
-                    });
-            ipProtectionLearnMore.setVisible(true);
-            ipProtectionLearnMore.setSummary(
-                    SpanApplier.applySpans(
-                            getResources()
-                                    .getString(
-                                            R.string.tracking_protection_ip_protection_learn_more),
-                            new SpanApplier.SpanInfo(
-                                    "<link>",
-                                    "</link>",
-                                    new ChromeClickableSpan(
-                                            getContext(), (view) -> onLearnMoreClicked()))));
-        }
-
-        // Fingerprinting protection switch.
-        if (mDelegate.shouldDisplayFingerprintingProtection()) {
-            fingerprintingProtectionSwitch.setVisible(true);
-            fingerprintingProtectionSwitch.setChecked(
-                    mDelegate.isFingerprintingProtectionEnabled());
-            fingerprintingProtectionSwitch.setOnPreferenceChangeListener(
-                    (preference, newValue) -> {
-                        mDelegate.setFingerprintingProtection((boolean) newValue);
-                        return true;
-                    });
-            fingerprintingProtectionLearnMore.setVisible(true);
-            fingerprintingProtectionLearnMore.setSummary(
-                    SpanApplier.applySpans(
-                            getResources()
-                                    .getString(
-                                            R.string
-                                                    .tracking_protection_fingerprinting_protection_learn_more),
-                            new SpanApplier.SpanInfo(
-                                    "<link>",
-                                    "</link>",
-                                    new ChromeClickableSpan(
-                                            getContext(), (view) -> onLearnMoreClicked()))));
-        }
         mAllowListExpanded = true;
         mAllowedSiteCount = 0;
         ExpandablePreferenceGroup allowedGroup =

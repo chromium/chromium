@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Մուտքագրեք ճիշտ արժեք: Մոտակա երկու ճիշտ արժեքներն են՝ <ph name="VALID_VALUE_LOW" /> և <ph name="VALID_VALUE_HIGHER" />:</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
 <translation id="4664250907885839816">«<ph name="ATSIGN" />»-ին հաջորդող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
+<translation id="4703271465972936359">Ձայնուղիներ</translation>
 <translation id="4718048029184481307">Նվագարկվում է «նկար նկարի մեջ» ռեժիմում</translation>
 <translation id="4812940957355064477">Մուտքագրեք համար:</translation>
 <translation id="4975562563186953947">Ընտրված է՝ <ph name="SELECTED_COUNT" /></translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք աջ/ձախ մասում</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
+<translation id="5868587040512539609">Տեսահոլովակներ</translation>
 <translation id="588258955323874662">Լիաէկրան</translation>
 <translation id="5888666972993069672">Հեռարձակում <ph name="DEVICE_FRIENDLY_NAME" /> սարքին</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Գեղեցիկ ձևաչափում</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
+<translation id="6661136971638885481">Կոմպոզիցիա #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Այլ…</translation>
 <translation id="6709093583001123835">Արժեքը պետք է լինի <ph name="VALUE" />։</translation>
 <translation id="6709570249143506788">Նվագարկման վատ որակ</translation>

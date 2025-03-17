@@ -13,9 +13,14 @@
 
 namespace tabs {
 
-TabGroupTabCollection::TabGroupTabCollection(tab_groups::TabGroupId group_id)
-    : group_id_(group_id),
-      impl_(std::make_unique<TabCollectionStorage>(*this)) {}
+TabGroupTabCollection::TabGroupTabCollection(
+    tab_groups::TabGroupId group_id,
+    tab_groups::TabGroupVisualData visual_data,
+    TabGroupController* controller)
+    : TabCollection(TabCollection::Type::GROUP),
+      impl_(std::make_unique<TabCollectionStorage>(*this)) {
+  group_ = std::make_unique<TabGroup>(controller, group_id, visual_data);
+}
 
 TabGroupTabCollection::~TabGroupTabCollection() = default;
 
@@ -25,7 +30,7 @@ void TabGroupTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
   CHECK(tab_model);
 
   TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
-  inserted_tab_model->SetGroup(/*group=*/group_id_);
+  inserted_tab_model->SetGroup(/*group=*/GetTabGroupId());
   inserted_tab_model->OnReparented(this, GetPassKey());
 }
 
@@ -47,6 +52,19 @@ void TabGroupTabCollection::CloseTab(TabModel* tab_model) {
 tabs::TabModel* TabGroupTabCollection::GetTabAtIndex(size_t index) const {
   CHECK(index < ChildCount() && index >= 0);
   return impl_->GetTabAtIndex(index);
+}
+
+std::vector<tabs::TabModel*> TabGroupTabCollection::GetTabs() const {
+  const auto& children = impl_->GetChildren();
+  std::vector<tabs::TabModel*> tab_models;
+
+  for (const auto& child : children) {
+    CHECK(std::holds_alternative<std::unique_ptr<TabModel>>(child));
+    const auto& tab_model_ptr = std::get<std::unique_ptr<TabModel>>(child);
+    tab_models.push_back(tab_model_ptr.get());
+  }
+
+  return tab_models;
 }
 
 bool TabGroupTabCollection::ContainsTab(const TabInterface* tab) const {

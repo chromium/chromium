@@ -1,16 +1,18 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {stringToMojoString16} from './mojo_type_util.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {MessagePipe} from '//system_apps/message_pipe.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {PageHandlerFactory, PageHandlerRemote} from './help_app_ui.mojom-webui.js';
 import {Index} from './index.mojom-webui.js';
-import {MessagePipe} from '//system_apps/message_pipe.js';
 import {Message} from './message_types.js';
-import {SearchConcept, SearchHandler} from './search.mojom-webui.js';
-import {Content, ResponseStatus, Result} from './types.mojom-webui.js';
+import {stringToMojoString16} from './mojo_type_util.js';
+import type {SearchConcept} from './search.mojom-webui.js';
+import {SearchHandler} from './search.mojom-webui.js';
+import type {Content, Result} from './types.mojom-webui.js';
+import {ResponseStatus} from './types.mojom-webui.js';
 
 const helpApp = {
   handler: new PageHandlerRemote(),

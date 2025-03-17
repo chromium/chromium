@@ -4,6 +4,7 @@
 
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
 
+#include "chrome/browser/data_sharing/data_sharing_navigation_utils.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/public/features.h"
@@ -19,9 +20,27 @@ bool ShouldHandleShareURLNavigation(
     return false;
   }
 
-  if (navigation_handle->IsRendererInitiated() &&
-      !navigation_handle->HasUserGesture()) {
+  // If this is a session or tab restore, don't intercept the
+  // navigation to avoid showing the dialog on each browser
+  // start.
+  if (navigation_handle->GetRestoreType() == content::RestoreType::kRestored) {
     return false;
+  }
+
+  if (navigation_handle->IsRendererInitiated()) {
+    if (navigation_handle->HasUserGesture()) {
+      return true;
+    }
+
+    if (DataSharingNavigationUtils::GetInstance()->IsLastUserInteractionExpired(
+            navigation_handle->GetWebContents())) {
+      return false;
+    }
+
+    // Only allow redirect if the user interaction has not expired.
+    if (navigation_handle->GetRedirectChain().size() <= 1) {
+      return false;
+    }
   }
 
   return true;
@@ -93,6 +112,14 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
       navigation_handle()->GetWebContents()->ClosePage();
     }
     return CANCEL;
+  }
+
+  // Update interaction time to handle the case of client redirect.
+  if (navigation_handle()->IsInMainFrame() &&
+      (!navigation_handle()->IsRendererInitiated() ||
+       navigation_handle()->HasUserGesture())) {
+    DataSharingNavigationUtils::GetInstance()->UpdateLastUserInteractionTime(
+        web_contents);
   }
   return PROCEED;
 }

@@ -354,7 +354,7 @@ export class SiteListElement extends SiteListElementBase {
     const element: HTMLElement|null|undefined =
         this.shadowRoot?.querySelector(`#${elementId}`);
     if (element !== null && element !== undefined) {
-      element!.addEventListener('click', (me: MouseEvent) => {
+      element.addEventListener('click', (me: MouseEvent) => {
         this.onSystemPermissionSettingsLinkClick_(me);
       });
       // Set the correct aria label describing the link target.
@@ -489,8 +489,8 @@ export class SiteListElement extends SiteListElementBase {
   private setContentSettingForActionMenuSite_(contentSetting: ContentSetting) {
     assert(this.actionMenuSite_);
     this.browserProxy.setCategoryPermissionForPattern(
-        this.actionMenuSite_!.origin, this.actionMenuSite_!.embeddingOrigin,
-        this.category, contentSetting, this.actionMenuSite_!.incognito);
+        this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
+        this.category, contentSetting, this.actionMenuSite_.incognito);
   }
 
   private onAllowClick_() {

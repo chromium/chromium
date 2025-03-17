@@ -6,7 +6,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_visibility_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -24,19 +23,34 @@ namespace blink {
 namespace {
 
 void DidFocus(ScriptPromiseResolver<ServiceWorkerWindowClient>* resolver,
-              mojom::blink::ServiceWorkerClientInfoPtr client) {
+              mojom::blink::FocusResultPtr result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
 
-  if (!client) {
-    resolver->Reject(ServiceWorkerError::GetException(
-        resolver, mojom::blink::ServiceWorkerErrorType::kNotFound,
-        "The client was not found."));
-    return;
+  switch (result->which()) {
+    case mojom::blink::FocusResult::Tag::kErrorCode: {
+      switch (result->get_error_code()) {
+        case mojom::blink::FocusError::CLIENT_NOT_FOUND:
+          resolver->Reject(ServiceWorkerError::AsException(
+              mojom::blink::ServiceWorkerErrorType::kNotFound,
+              "The client was not found."));
+          return;
+
+        case mojom::blink::FocusError::CLIENT_INACTIVE:
+          ScriptState::Scope scope(resolver->GetScriptState());
+          resolver->Reject(V8ThrowException::CreateTypeError(
+              resolver->GetScriptState()->GetIsolate(),
+              "The client is inactive."));
+          return;
+      }
+    }
+    case mojom::blink::FocusResult::Tag::kClient:
+      resolver->Resolve(MakeGarbageCollected<ServiceWorkerWindowClient>(
+          *result->get_client()));
+      return;
   }
-  resolver->Resolve(MakeGarbageCollected<ServiceWorkerWindowClient>(*client));
 }
 
 void DidNavigateOrOpenWindow(

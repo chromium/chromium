@@ -407,6 +407,41 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // Emits histograms relating to a fake notice's shown or suppression status.
   void MaybeEmitFakeNoticePromptMetrics(bool third_party_cookies_blocked);
 
+  // Returns true if the user is in the server trial that allows the prompt to
+  // be shown even if 3PC are blocked. This will also set the Pref that the
+  // trial is registered. This is so we know to re-register for the trial on
+  // subsequent restarts when the Notice is shown, and the profile is therefore
+  // no longer eligible for a prompt.
+
+  // Approach:
+  // The persistent pref tracks whether the server-side trial has been
+  // *activated* for a user.  The pref is set whenever the server-side trial is
+  // activated (via base::FeatureList::IsEnabled()), regardless of the resulting
+  // group (Enabled or Control). On subsequent restarts when the Conditions for
+  // a normal server activation are no longer met (Happens to the Enabled
+  // Group), the pref can be reused to reactivate the trial if needed. This is
+  // to achieve true session consistency even if the conditions for triggering
+  // the server trial are no longer true.
+
+  // Handling Group Changes (Control -> Enabled):
+  // If a user moves from Control to Enabled due to server-side config changes,
+  // we'll continue to activate based on the pref, which will remain set.
+
+  // Timing:
+  // Trial activation happens *before* the promo is shown,
+  // but *after* we confirm the user is a candidate (3P cookies blocked at some
+  // point in the past).
+
+  // Why No Synthetic Trial:
+  // Checking the pref and re-activating the *server-side* trial directly
+  // achieves persistent activation and maintains balance, making a synthetic
+  // trial redundant.
+
+  // Rollout Beyond 50%:
+  // This allows for 100% rollout. The pref-based activation works even when
+  // A/B comparison is no longer the goal.
+  bool CheckAndRegisterAllowPromptForBlocked3PCookiesTrial();
+
   bool force_chrome_build_for_tests_ = false;
   bool should_emit_dark_launch_startup_metrics_ = true;
   // Temporary flag signifying not to requeue if the prompt has been suppressed.

@@ -92,6 +92,9 @@ enum ViewID {
   // Docked dev tools.
   VIEW_ID_DEV_TOOLS_DOCKED,
 
+  // Lens overlay.
+  VIEW_ID_LENS_OVERLAY,
+
   // The contents split.
   VIEW_ID_CONTENTS_SPLIT,
 

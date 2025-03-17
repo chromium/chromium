@@ -11,6 +11,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -133,6 +136,27 @@ void BindCfmServiceContext(
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+void BindMimeHandlerService(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<mime_handler::MimeHandlerService> receiver) {
+  auto* guest_view = MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
+  if (!guest_view) {
+    return;
+  }
+  MimeHandlerServiceImpl::Create(guest_view->GetStreamWeakPtr(),
+                                 std::move(receiver));
+}
+
+void BindBeforeUnloadControl(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<mime_handler::BeforeUnloadControl> receiver) {
+  auto* guest_view = MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
+  if (!guest_view) {
+    return;
+  }
+  guest_view->FuseBeforeUnloadControl(std::move(receiver));
+}
+
 }  // namespace
 
 void PopulateChromeFrameBindersForExtension(
@@ -248,6 +272,11 @@ void PopulateChromeFrameBindersForExtension(
 #endif  // BUILDFLAG(PLATFORM_CFM)
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  binder_map->Add<mime_handler::MimeHandlerService>(
+      base::BindRepeating(&BindMimeHandlerService));
+  binder_map->Add<mime_handler::BeforeUnloadControl>(
+      base::BindRepeating(&BindBeforeUnloadControl));
 }
 
 }  // namespace extensions

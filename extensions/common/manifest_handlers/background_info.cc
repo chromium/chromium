@@ -41,8 +41,9 @@ static base::LazyInstance<BackgroundInfo>::DestructorAtExit
 const BackgroundInfo& GetBackgroundInfo(const Extension* extension) {
   BackgroundInfo* info = static_cast<BackgroundInfo*>(
       extension->GetManifestData(kBackground));
-  if (!info)
+  if (!info) {
     return g_empty_background_info.Get();
+  }
   return *info;
 }
 
@@ -53,14 +54,14 @@ BackgroundInfo::BackgroundInfo()
       allow_js_access_(true) {
 }
 
-BackgroundInfo::~BackgroundInfo() {
-}
+BackgroundInfo::~BackgroundInfo() = default;
 
 // static
 GURL BackgroundInfo::GetBackgroundURL(const Extension* extension) {
   const BackgroundInfo& info = GetBackgroundInfo(extension);
-  if (info.background_scripts_.empty())
+  if (info.background_scripts_.empty()) {
     return info.background_url_;
+  }
   return extension->GetResourceURL(kGeneratedBackgroundPageFilename);
 }
 
@@ -145,8 +146,9 @@ bool BackgroundInfo::LoadBackgroundScripts(const Extension* extension,
                                            std::u16string* error) {
   const base::Value* background_scripts_value =
       extension->manifest()->FindPath(key);
-  if (background_scripts_value == nullptr)
+  if (background_scripts_value == nullptr) {
     return true;
+  }
 
   CHECK(background_scripts_value);
   if (!background_scripts_value->is_list()) {
@@ -173,8 +175,9 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
                                         std::u16string* error) {
   const base::Value* background_page_value =
       extension->manifest()->FindPath(key);
-  if (background_page_value == nullptr)
+  if (background_page_value == nullptr) {
     return true;
+  }
 
   if (!background_page_value->is_string()) {
     *error = errors::kInvalidBackground;
@@ -272,8 +275,9 @@ bool BackgroundInfo::LoadBackgroundPersistent(const Extension* extension,
 
   const base::Value* background_persistent =
       extension->manifest()->FindPath(keys::kBackgroundPersistent);
-  if (background_persistent == nullptr)
+  if (background_persistent == nullptr) {
     return true;
+  }
 
   if (!background_persistent->is_bool()) {
     *error = errors::kInvalidBackgroundPersistent;
@@ -293,8 +297,9 @@ bool BackgroundInfo::LoadAllowJSAccess(const Extension* extension,
                                        std::u16string* error) {
   const base::Value* allow_js_access =
       extension->manifest()->FindPath(keys::kBackgroundAllowJsAccess);
-  if (allow_js_access == nullptr)
+  if (allow_js_access == nullptr) {
     return true;
+  }
 
   if (!allow_js_access->is_bool()) {
     *error = errors::kInvalidBackgroundAllowJsAccess;
@@ -304,17 +309,15 @@ bool BackgroundInfo::LoadAllowJSAccess(const Extension* extension,
   return true;
 }
 
-BackgroundManifestHandler::BackgroundManifestHandler() {
-}
-
-BackgroundManifestHandler::~BackgroundManifestHandler() {
-}
+BackgroundManifestHandler::BackgroundManifestHandler() = default;
+BackgroundManifestHandler::~BackgroundManifestHandler() = default;
 
 bool BackgroundManifestHandler::Parse(Extension* extension,
                                       std::u16string* error) {
   std::unique_ptr<BackgroundInfo> info(new BackgroundInfo);
-  if (!info->Parse(extension, error))
+  if (!info->Parse(extension, error)) {
     return false;
+  }
 
   // Platform apps must have background pages.
   if (extension->is_platform_app() && !info->has_background_page()) {
@@ -347,12 +350,12 @@ bool BackgroundManifestHandler::Validate(
   // Validate that background scripts exist.
   const std::vector<std::string>& background_scripts =
       BackgroundInfo::GetBackgroundScripts(extension);
-  for (size_t i = 0; i < background_scripts.size(); ++i) {
+  for (const auto& background_script : background_scripts) {
     if (!base::PathExists(
-            extension->GetResource(background_scripts[i]).GetFilePath())) {
-      *error = l10n_util::GetStringFUTF8(
-          IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
-          base::UTF8ToUTF16(background_scripts[i]));
+            extension->GetResource(background_script).GetFilePath())) {
+      *error =
+          l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
+                                    base::UTF8ToUTF16(background_script));
       return false;
     }
   }

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 static_library("access_code_cast_integration_base") {
   testonly = true
 
@@ -43,11 +41,7 @@ static_library("access_code_cast_integration_base") {
     "//content/test:test_support",
   ]
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
-
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ui/ash/cast_config" ]
   }
 }

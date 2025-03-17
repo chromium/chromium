@@ -14,7 +14,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -95,8 +94,6 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_WIFI);
 
-    feature_list_.InitWithFeatures({features::kAccessCodeCastRememberDevices},
-                                   {});
     GetTestingPrefs()->SetManagedPref(::prefs::kEnableMediaRouter,
                                       std::make_unique<base::Value>(true));
     GetTestingPrefs()->SetManagedPref(prefs::kAccessCodeCastEnabled,
@@ -246,8 +243,6 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<media_router::MockMediaRouter> router_;
   std::unique_ptr<LoggerImpl> logger_;
-
-  base::test::ScopedFeatureList feature_list_;
 
   static std::vector<DiscoveryNetworkInfo> fake_network_info_;
 

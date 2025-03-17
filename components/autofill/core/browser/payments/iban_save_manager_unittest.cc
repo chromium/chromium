@@ -11,7 +11,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -142,8 +142,6 @@ class IbanSaveManagerTest : public testing::Test {
   TestAutofillClient autofill_client_;
   std::unique_ptr<IbanSaveManager> iban_save_manager_;
   raw_ptr<TestStrikeDatabase> strike_database_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableServerIban};
 };
 
 TEST_F(IbanSaveManagerTest, AttemptToOfferSave_NewIban_ShouldOfferSave) {
@@ -160,17 +158,6 @@ TEST_F(IbanSaveManagerTest, AttemptToOfferSave_LocalIban_ShouldOfferSave) {
   Iban another_iban;
   another_iban.set_value(iban.value());
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
-}
-
-// Test that new IBANs should not be offered upload save to Google Payments if
-// flag is off.
-TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_NewIban_FlagOff) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(features::kAutofillEnableServerIban);
-  Iban iban;
-  iban.set_value(std::u16string(test::kIbanValue16));
-  EXPECT_EQ(IbanSaveManager::TypeOfOfferToSave::kOfferLocalSave,
-            GetIbanSaveManager().DetermineHowToSaveIbanForTesting(iban));
 }
 
 // Test that new IBANs should not be offered upload save due to reaching the
@@ -886,9 +873,8 @@ TEST_F(IbanSaveManagerTest, Metric_IgnoredOfferedIbanOrigin_LocalIban) {
 }
 
 TEST_F(IbanSaveManagerTest, Metric_CountryOfSaveOffered_LocalIban) {
-  base::test::ScopedFeatureList disable_server_iban;
-  disable_server_iban.InitAndDisableFeature(
-      features::kAutofillEnableServerIban);
+  // Set the SyncService to paused state.
+  sync_service_.SetPersistentAuthError();
   base::HistogramTester histogram_tester;
   Iban iban;
   iban.set_value(u"FR7630006000011234567890189");

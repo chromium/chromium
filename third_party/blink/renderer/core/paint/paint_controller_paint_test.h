@@ -95,14 +95,16 @@ class PaintControllerPaintTestBase : public RenderingTest {
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = display_item_list.size();
     while (begin_index < end_index &&
-           display_item_list[begin_index].ClientId() == GetLayoutView().Id()) {
+           UNSAFE_TODO(display_item_list[begin_index]).ClientId() ==
+               GetLayoutView().Id()) {
       begin_index++;
     }
     while (end_index > begin_index &&
-           IsNotContentType(display_item_list[end_index - 1].GetType())) {
+           IsNotContentType(
+               UNSAFE_TODO(display_item_list[end_index - 1]).GetType())) {
       end_index--;
     }
-    return display_item_list.ItemsInRange(begin_index, end_index);
+    return UNSAFE_TODO(display_item_list.ItemsInRange(begin_index, end_index));
   }
 
   // Excludes paint chunks for LayoutView non-scrolling background and scroll

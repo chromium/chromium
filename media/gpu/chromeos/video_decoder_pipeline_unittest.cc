@@ -22,17 +22,18 @@
 #include "media/base/mock_media_log.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
+#include "media/gpu/chromeos/default_video_frame_converter.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check does not account for BUILDFLAG(), so including this header will
-// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// make gn check fail for builds other than ChromeOS. See gn help nogncheck
 // for more information.
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::test::RunClosure;
 using ::testing::_;
@@ -104,7 +105,7 @@ class MockDecoder : public VideoDecoderMixin {
   MOCK_CONST_METHOD0(GetDecoderType, VideoDecoderType());
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr uint8_t kEncryptedData[] = {1, 8, 9};
 constexpr uint8_t kTranscryptedData[] = {9, 2, 4};
 constexpr uint64_t kFakeSecureHandle = 75;
@@ -149,7 +150,7 @@ class FakeCdmContextRef : public CdmContextRef {
  private:
   raw_ptr<CdmContext> cdm_context_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MockImageProcessor : public ImageProcessor {
  public:
@@ -200,9 +201,11 @@ class VideoDecoderPipelineTest
     auto pool = std::make_unique<MockVideoFramePool>();
     pool_ = pool.get();
     decoder_ = base::WrapUnique(new VideoDecoderPipeline(
+        VideoDecoderPipeline::DecoderReservation::Take(
+            std::numeric_limits<int>::max()),
         gpu::GpuDriverBugWorkarounds(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(pool),
-        /*frame_converter=*/nullptr,
+        DefaultFrameConverter::Create(),
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<MockMediaLog>(),
         // This callback needs to be configured in the individual tests.
@@ -267,7 +270,7 @@ class VideoDecoderPipelineTest
     testing::Mock::VerifyAndClearExpectations(this);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void InitializeForTranscrypt(bool vp9 = false) {
     decoder_->allow_encrypted_content_for_testing_ = true;
     if (vp9) {
@@ -300,7 +303,7 @@ class VideoDecoderPipelineTest
     encrypted_buffer_ = DecoderBuffer::CopyFrom(kEncryptedData);
     transcrypted_buffer_ = DecoderBuffer::CopyFrom(kTranscryptedData);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static std::unique_ptr<VideoDecoderMixin> CreateNullMockDecoder(
       std::unique_ptr<MediaLog> /* media_log */,
@@ -397,14 +400,14 @@ class VideoDecoderPipelineTest
   base::test::TaskEnvironment task_environment_;
   VideoDecoderConfig config_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MockCdmContext cdm_context_;  // Keep this before |decoder_|.
   MockChromeOsCdmContext chromeos_cdm_context_;
   StrictMock<MockDecryptor> decryptor_;
   scoped_refptr<DecoderBuffer> encrypted_buffer_;
   scoped_refptr<DecoderBuffer> transcrypted_buffer_;
   media::CallbackRegistry<CdmContext::EventCB::RunType> event_callbacks_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<VideoDecoderPipeline> decoder_;
   raw_ptr<MockVideoFramePool> pool_;
 };
@@ -429,7 +432,7 @@ const struct DecoderPipelineTestParams kDecoderPipelineTestParams[] = {
     {base::BindRepeating(&VideoDecoderPipelineTest::CreateGoodMockDecoder),
      DecoderStatus::Codes::kOk},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // A CreateDecoderFunctionCB for transcryption, where Create() is ok, and
     // the decoder will Initialize OK, but then the pipeline will not create the
     // transcryptor due to a missing CdmContext. This will succeed if called
@@ -437,7 +440,7 @@ const struct DecoderPipelineTestParams kDecoderPipelineTestParams[] = {
     {base::BindRepeating(
          &VideoDecoderPipelineTest::CreateGoodMockTranscryptDecoder),
      DecoderStatus::Codes::kUnsupportedEncryptionMode},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // A CreateDecoderFunctionCB that Create()s ok but fails to Initialize()
     // correctly.
@@ -489,7 +492,7 @@ TEST_F(VideoDecoderPipelineTest, Reset) {
                                  base::Unretained(this)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(VideoDecoderPipelineTest, TranscryptThenEos) {
   InitializeForTranscrypt();
 
@@ -1060,7 +1063,7 @@ TEST_F(VideoDecoderPipelineTest, SplitVp9Superframe) {
   testing::Mock::VerifyAndClearExpectations(this);
 }
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
 // as expected.
@@ -1138,10 +1141,9 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
   DetachDecoderSequenceChecker();
 }
 
-// These tests only work on non-linux and non-lacros vaapi systems, since on
-// linux and lacros there is no support for different modifiers.
-#if BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
+// These tests only work on non-linux vaapi systems, since on linux there is no
+// support for different modifiers.
+#if BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX)
 
 // Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
 // as expected when the pool returns linear buffers. It should allocate an image
@@ -1224,8 +1226,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatUnsupportedModifier) {
   DetachDecoderSequenceChecker();
 }
 
-#endif  // BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX) &&
-        // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX)
 
 // Verifies that ReleaseAllFrames is called on the frame pool when we receive
 // the kDecoderStateLost event through the waiting callback. This can occur

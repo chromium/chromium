@@ -28,7 +28,7 @@ class AXNode;
 class AX_EXPORT AXComputedNodeData final {
  public:
   explicit AXComputedNodeData(const AXNode& node);
-  virtual ~AXComputedNodeData();
+  ~AXComputedNodeData();
   AXComputedNodeData(const AXComputedNodeData& other) = delete;
   AXComputedNodeData& operator=(const AXComputedNodeData& other) = delete;
 

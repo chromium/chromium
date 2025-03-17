@@ -37,6 +37,10 @@ class DesktopDriverFactory(DriverFactory):
       options.add_argument(f'variations-test-seed-path={seed_file}')
       options.add_argument(
         f'fake-variations-channel={self.channel}')
+      # TODO(http://crbug.com/379869158) -- remove this once the new
+      # seed loading mechanism is fixed.
+      options.add_argument(
+        '--force-fieldtrials=SeedFileTrial/Default')
     options.add_experimental_option('excludeSwitches',
                                     ['disable-background-networking'])
     driver = None

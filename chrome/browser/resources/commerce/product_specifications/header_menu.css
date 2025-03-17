@@ -1,0 +1,23 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+cr-action-menu {
+  --cr-menu-border-radius: 12px;
+}
+
+cr-icon {
+  --icon-size: 20px;
+  --iron-icon-height: var(--icon-size);
+  --iron-icon-width: var(--icon-size);
+}
+
+.dropdown-item {
+  gap: 8px;
+  padding: 0 20px;
+}

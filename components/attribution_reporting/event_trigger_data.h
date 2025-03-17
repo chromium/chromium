@@ -11,16 +11,20 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerValue {
  public:
   static base::expected<EventTriggerValue, mojom::TriggerRegistrationError>
-  Parse(const base::Value::Dict&);
+  Parse(const base::DictValue&);
 
   EventTriggerValue() = default;
 
@@ -39,7 +43,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerValue {
     return value_;
   }
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
  private:
   uint32_t value_ = 1;
@@ -77,7 +81,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
                    std::optional<uint64_t> dedup_key,
                    FilterPair);
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const EventTriggerData&,
                          const EventTriggerData&) = default;

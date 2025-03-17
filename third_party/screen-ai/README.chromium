@@ -1,9 +1,12 @@
 Name: ScreenAI Library
 Short Name: screen-ai
-URL: https://source.corp.google.com/piper///depot/google3/chrome/accessibility/machine_intelligence/chrome_screen_ai/README.md
-Version: 121.2
+URL: https://source.corp.google.com/piper///depot/google3/chrome/accessibility/machine_intelligence/chrome_screen_ai
+Version: 127.17
+License: Apache-2.0,Apache-with-LLVM-Exception,BLAS,BSD-2-Clause,BSD-3-Clause,BSD-3-Clause-Attribution,BSD-3-Clause-OpenMPI,BSD-4-Clause,BSD-4-Clause-UC,BSD-4.3TAHOE,BSD-Source-Code,BSL-1.0,Beerware,CC-BY-3.0,CC-BY-4.0,CC0-1.0,CERN,Caffe,Entenssa,FFT2D,GNU-All-permissive-Copying-License,GPL-2.0,GPL-2.0-with-autoconf-exception,GPL-3.0-with-autoconf-exception,ICU,IJG,ISC,Khronos,LGPL-2.1,Libpng,Libpng-2.0,LicenseRef-OpenGLUT,LicenseRef-base64-cpp,MIT,MPL-2.0,NAIST-2003,NCSA,OpenSSL,PngSuite,Punycode,SGI-B-2.0,SSLeay,SolarDesigner,Spencer-86,SunPro,Unicode-3.0,Unicode-DFS-2015,Unicode-DFS-2016,Unlicense,WebM-Project-Patent,X11,X11-Lucent,Zlib,blessing,libtiff,unicode_org
+License File: THIRD_PARTY_LICENSES
 Shipped: yes
 Security Critical: no
+License Android Compatible: no
 
 Description:
 Provides ML models for Reading Mode and PDF OCR. Chrome downloads the binary of
@@ -15,21 +18,3 @@ Note that this binary is shipped to Chrome via Component Updater from
 (only Googler can access the following) go/chrome_screen_ai_source on Windows,
 Linux, and macOS, but metadata for credits is kept in this directory for license
 attribution.
-
--------------------- DEPENDENCY DIVIDER --------------------
-
-Name: Eigen
-Short Name: eigen
-URL: https://gitlab.com/libeigen/eigen
-Version: 3.4
-License: Apache-2.0
-License File: LICENSE
-Shipped: yes
-Security Critical: no
-
-Description:
-Eigen is a C++ template library for linear algebra, matrices, vectors,
-numerical solvers, and related algorithms.
-
-Local Modifications:
-(none)

@@ -65,8 +65,7 @@ namespace {
 // For safe shutdown, must be called before the ProfileIOSIOData is
 // destroyed.
 void NotifyContextGettersOfShutdownOnIO(
-    std::unique_ptr<
-        ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
+    std::unique_ptr<ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
         getters) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   for (auto& chrome_context_getter : *getters) {
@@ -116,14 +115,12 @@ ProfileIOSIOData::~ProfileIOSIOData() {
   }
 }
 
-net::URLRequestContext* ProfileIOSIOData::GetMainRequestContext()
-    const {
+net::URLRequestContext* ProfileIOSIOData::GetMainRequestContext() const {
   DCHECK(initialized_);
   return main_request_context_.get();
 }
 
-HostContentSettingsMap* ProfileIOSIOData::GetHostContentSettingsMap()
-    const {
+HostContentSettingsMap* ProfileIOSIOData::GetHostContentSettingsMap() const {
   DCHECK(initialized_);
   return host_content_settings_map_.get();
 }
@@ -146,8 +143,7 @@ bool ProfileIOSIOData::GetMetricsEnabledStateOnIOThread() const {
   return enable_metrics_.GetValue();
 }
 
-void ProfileIOSIOData::Init(
-    ProtocolHandlerMap* protocol_handlers) const {
+void ProfileIOSIOData::Init(ProtocolHandlerMap* protocol_handlers) const {
   // The basic logic is implemented here. The specific initialization
   // is done in InitializeInternal(), implemented by subtypes. Static helper
   // functions have been provided to assist in common operations.

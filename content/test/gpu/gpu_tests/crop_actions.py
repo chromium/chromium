@@ -98,7 +98,7 @@ class NonWhiteContentCropAction(BaseCropAction):
       # Samsung A13.
       'SM-A137F',
       # Samsung A23.
-      'SM-A235M',
+      'SM-A236B',
   }
 
   def __init__(self, initial_crop: Optional[BaseCropAction] = None):

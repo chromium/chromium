@@ -76,7 +76,7 @@ bool HTMLEmbedElement::IsPresentationAttribute(
 void HTMLEmbedElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kHiddenAttr) {
     AddPropertyToPresentationAttributeStyle(
         style, CSSPropertyID::kWidth, 0, CSSPrimitiveValue::UnitType::kPixels);

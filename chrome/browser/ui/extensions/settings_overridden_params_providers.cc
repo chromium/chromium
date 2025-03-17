@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -41,8 +42,8 @@ size_t GetNumberOfExtensionsThatOverrideSearch(Profile* profile) {
     auto* const settings = extensions::SettingsOverrides::Get(extension.get());
     return settings && settings->search_engine;
   };
-  return base::ranges::count_if(registry->enabled_extensions(),
-                                overrides_search);
+  return std::ranges::count_if(registry->enabled_extensions(),
+                               overrides_search);
 }
 
 // Returns true if the given |template_url| corresponds to Google search.

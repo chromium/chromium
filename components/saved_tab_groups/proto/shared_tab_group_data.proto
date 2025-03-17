@@ -19,6 +19,11 @@ message LocalSharedTabGroupData {
   // Whether the tab group is transitioning from shared to saved, but not
   // yet completed.
   optional bool is_transitioning_to_saved = 2;
+
+  // Whether the group should be hidden from UI and not be shown to the user.
+  // For example, the originating shared tab groups will be hidden after
+  // transitioning to saved groups.
+  optional bool is_group_hidden = 3;
 }
 
 // Message to store shared tab groups in DataTypeStore.

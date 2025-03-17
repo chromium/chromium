@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -78,6 +78,13 @@ void AutofillImageFetcher::FetchImagesForURLs(
   for (const auto& image_url : image_urls) {
     FetchImageForURL(barrier_callback, image_url);
   }
+}
+
+// Only implemented in Android clients. Pay with Pix is only available in Chrome
+// on Android.
+void AutofillImageFetcher::FetchPixAccountImages(
+    base::span<const GURL> image_urls) {
+  NOTREACHED();
 }
 
 GURL AutofillImageFetcher::ResolveCardArtURL(const GURL& card_art_url) {

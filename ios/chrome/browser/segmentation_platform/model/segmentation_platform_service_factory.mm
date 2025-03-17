@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
+#import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
@@ -127,11 +127,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->history_service = ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
-  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformUserVisibleTaskRunner)) {
     priority = base::TaskPriority::USER_VISIBLE;
   }
-  params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), priority});
+  params->task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock(), priority});
   params->storage_dir =
       profile_path.Append(kSegmentationPlatformStorageDirName);
   params->db_provider = protodb_provider;

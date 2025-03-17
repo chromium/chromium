@@ -15,6 +15,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
+#include "services/network/public/cpp/features.h"
 
 namespace browsing_topics {
 
@@ -23,7 +24,7 @@ class BrowsingTopicsRedirectObserverTest
  public:
   BrowsingTopicsRedirectObserverTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kBrowsingTopics},
+        /*enabled_features=*/{network::features::kBrowsingTopics},
         /*disabled_features=*/{});
   }
 
@@ -52,10 +53,10 @@ TEST_F(BrowsingTopicsRedirectObserverTest, TwoNavigationsRacingCommit) {
   ukm::SourceId source_id =
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
-  EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()->redirect_count(), 0);
   EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()
-                ->redirect_with_topics_invoked_count(),
-            0);
+                ->redirect_hosts_with_topics_invoked()
+                .size(),
+            1u);
   EXPECT_EQ(
       GetBrowsingTopicsPageLoadDataTracker()->source_id_before_redirects(),
       source_id);
@@ -66,16 +67,20 @@ TEST_F(BrowsingTopicsRedirectObserverTest, TwoNavigationsRacingCommit) {
   navigation1->ReadyToCommit();
 
   auto navigation2 = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://bar.com"), main_rfh());
+      GURL("https://baz.com"), main_rfh());
   navigation2->SetHasUserGesture(false);
   navigation2->Start();
 
   navigation1->Commit();
 
-  EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()->redirect_count(), 1);
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), "abc.com", /*history_service=*/nullptr,
+      /*observe=*/false);
+
   EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()
-                ->redirect_with_topics_invoked_count(),
-            1);
+                ->redirect_hosts_with_topics_invoked()
+                .size(),
+            2u);
   EXPECT_EQ(
       GetBrowsingTopicsPageLoadDataTracker()->source_id_before_redirects(),
       source_id);
@@ -83,14 +88,16 @@ TEST_F(BrowsingTopicsRedirectObserverTest, TwoNavigationsRacingCommit) {
   navigation2->ReadyToCommit();
   navigation2->Commit();
 
-  // The `redirect_count()` is 2 because the second navigation gets to
-  // ReadyToCommit after the first one committed.
-  // `redirect_with_topics_invoked_count()` is still 1 because Topics API wasn't
-  // invoked.
-  EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()->redirect_count(), 2);
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), "abc.com", /*history_service=*/nullptr,
+      /*observe=*/false);
+
+  // The size of redirect hosts is 3 because the `navigation2` reached
+  // ReadyToCommit after `navigation1` committed.
   EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()
-                ->redirect_with_topics_invoked_count(),
-            1);
+                ->redirect_hosts_with_topics_invoked()
+                .size(),
+            3u);
   EXPECT_EQ(
       GetBrowsingTopicsPageLoadDataTracker()->source_id_before_redirects(),
       source_id);

@@ -4,13 +4,13 @@
 
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
@@ -149,7 +149,7 @@ SyncBasedUrlKeyedDataCollectionConsentHelper::GetConsentState() {
     }
   }
 
-  DCHECK(base::ranges::all_of(sync_data_type_states_, [](auto& state) {
+  DCHECK(std::ranges::all_of(sync_data_type_states_, [](auto& state) {
     return state.second == syncer::UploadState::ACTIVE;
   })) << "Nothing is NOT_ACTIVE or INITIALIZING, so all must be ACTIVE.";
   return State::kEnabled;

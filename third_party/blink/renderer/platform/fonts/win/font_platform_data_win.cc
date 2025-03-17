@@ -86,7 +86,8 @@ WebFontRenderStyle FontPlatformData::QuerySystemForRenderStyle() {
   style.use_anti_alias = 0;
   style.use_subpixel_rendering = 0;
 
-  if (WebTestSupport::IsRunningWebTest()) {
+  if (WebTestSupport::IsRunningWebTest() ||
+      RuntimeEnabledFeatures::NoFontAntialiasingEnabled()) {
     if (WebTestSupport::IsFontAntialiasingEnabledForTest()) {
       style.use_anti_alias = 1;
     }

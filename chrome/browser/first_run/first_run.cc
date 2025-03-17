@@ -4,6 +4,7 @@
 
 #include "chrome/browser/first_run/first_run.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/no_destructor.h"
 #include "base/one_shot_event.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -183,7 +183,7 @@ void ConvertStringVectorToGURLVector(
     const std::vector<std::string>& src,
     std::vector<GURL>* ret) {
   ret->resize(src.size());
-  base::ranges::transform(src, ret->begin(), &UrlFromString);
+  std::ranges::transform(src, ret->begin(), &UrlFromString);
 }
 
 base::FilePath& GetInitialPrefsPathForTesting() {
@@ -375,13 +375,6 @@ std::unique_ptr<installer::InitialPreferences> LoadInitialPrefs() {
   base::FilePath initial_prefs_path;
   if (!GetInitialPrefsPathForTesting().empty()) {
     initial_prefs_path = GetInitialPrefsPathForTesting();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  } else if (const base::CommandLine* command_line =
-                 base::CommandLine::ForCurrentProcess();
-             command_line->HasSwitch(switches::kInitialPreferencesFile)) {
-    initial_prefs_path =
-        command_line->GetSwitchValuePath(switches::kInitialPreferencesFile);
-#endif
   } else {
     initial_prefs_path =
         base::FilePath(first_run::internal::InitialPrefsPath());

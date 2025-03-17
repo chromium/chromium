@@ -1,0 +1,37 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Loyalty cards coming from Google Wallet.
+
+// Next tag: 6
+message AutofillLoyaltyCardSpecifics {
+  // The card id.
+  optional string id = 1;
+
+  // The merchant name e.g. "Deutsche Bahn".
+  optional string merchant_name = 2;
+
+  // The program name e.g. "BahnBonus".
+  optional string program_name = 3;
+
+  // The logo URL.
+  optional string program_logo = 4;
+
+  // The unmasked suffix of the loyalty card text code.
+  // Full text code of the loyalty card is not shared via sync and requested
+  // separately on demand.
+  optional string loyalty_card_suffix = 5;
+}

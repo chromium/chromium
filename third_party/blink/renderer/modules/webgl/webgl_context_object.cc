@@ -38,15 +38,23 @@ bool WebGLContextObject::Validate(
   // The contexts and context groups no longer maintain references to all
   // the objects they ever created, so there's no way to invalidate them
   // eagerly during context loss. The invalidation is discovered lazily.
-  return context == context_ &&
-         CachedNumberOfContextLosses() == context->NumberOfContextLosses();
+  return (context == context_ && context_ != nullptr &&
+          CachedNumberOfContextLosses() == context->NumberOfContextLosses());
 }
 
 uint32_t WebGLContextObject::CurrentNumberOfContextLosses() const {
+  if (!context_) {
+    return 0;
+  }
+
   return context_->NumberOfContextLosses();
 }
 
 gpu::gles2::GLES2Interface* WebGLContextObject::GetAGLInterface() const {
+  if (!context_) {
+    return nullptr;
+  }
+
   return context_->ContextGL();
 }
 

@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -74,6 +74,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
+
 using safe_browsing::SafeBrowsingNavigationObserverManager;
 
 namespace extensions {
@@ -104,10 +108,9 @@ class PendingApprovals : public ProfileObserver {
 
   ~PendingApprovals() override = default;
 
-  void PushApproval(std::unique_ptr<WebstoreInstaller::Approval> approval);
-  std::unique_ptr<WebstoreInstaller::Approval> PopApproval(
-      Profile* profile,
-      const std::string& id);
+  void PushApproval(std::unique_ptr<InstallApproval> approval);
+  std::unique_ptr<InstallApproval> PopApproval(Profile* profile,
+                                               const std::string& id);
   void Clear();
 
   int GetCount() const { return approvals_.size(); }
@@ -139,27 +142,25 @@ class PendingApprovals : public ProfileObserver {
     observation_.RemoveObservation(profile);
   }
 
-  using ApprovalList =
-      std::vector<std::unique_ptr<WebstoreInstaller::Approval>>;
+  using ApprovalList = std::vector<std::unique_ptr<InstallApproval>>;
 
   ApprovalList approvals_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver> observation_{
       this};
 };
 
-void PendingApprovals::PushApproval(
-    std::unique_ptr<WebstoreInstaller::Approval> approval) {
+void PendingApprovals::PushApproval(std::unique_ptr<InstallApproval> approval) {
   MaybeAddObservation(approval->profile);
   approvals_.push_back(std::move(approval));
 }
 
-std::unique_ptr<WebstoreInstaller::Approval> PendingApprovals::PopApproval(
+std::unique_ptr<InstallApproval> PendingApprovals::PopApproval(
     Profile* profile,
     const std::string& id) {
   for (auto iter = approvals_.begin(); iter != approvals_.end(); ++iter) {
     if (iter->get()->extension_id == id &&
         profile->IsSameOrParent(iter->get()->profile)) {
-      std::unique_ptr<WebstoreInstaller::Approval> approval = std::move(*iter);
+      std::unique_ptr<InstallApproval> approval = std::move(*iter);
       approvals_.erase(iter);
       MaybeRemoveObservation(approval->profile);
       return approval;
@@ -208,8 +209,10 @@ const char kIncognitoError[] =
 const char kParentBlockedExtensionInstallError[] =
     "Parent has blocked extension/app installation";
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // The number of user gestures to trace back for the referrer chain.
 const int kExtensionReferrerUserGestureLimit = 2;
+#endif
 
 WebstorePrivateApi::Delegate* test_delegate = nullptr;
 
@@ -390,9 +393,9 @@ WebstorePrivateApi::SetDelegateForTesting(Delegate* delegate) {
 }
 
 // static
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstorePrivateApi::PopApprovalForTesting(Profile* profile,
-                                          const std::string& extension_id) {
+std::unique_ptr<InstallApproval> WebstorePrivateApi::PopApprovalForTesting(
+    Profile* profile,
+    const std::string& extension_id) {
   return g_pending_approvals.Get().PopApproval(profile, extension_id);
 }
 
@@ -794,8 +797,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed(
   // the future we may also want to add time-based expiration, where an
   // allowlist entry is only valid for some number of minutes.
   DCHECK(parsed_manifest_);
-  std::unique_ptr<WebstoreInstaller::Approval> approval(
-      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
+  std::unique_ptr<InstallApproval> approval(
+      InstallApproval::CreateWithNoInstallPrompt(
           profile_, details().id, std::move(*parsed_manifest_), false));
   approval->use_app_installed_bubble = !!details().app_install_bubble;
   // If we are enabling the launcher, we should not show the app list in order
@@ -1205,6 +1208,7 @@ WebstorePrivateGetReferrerChainFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateGetReferrerChainFunction::Run() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
           profile->GetPrefs(), g_browser_process->safe_browsing_service()))
@@ -1253,6 +1257,10 @@ WebstorePrivateGetReferrerChainFunction::Run() {
   return RespondNow(
       ArgumentList(api::webstore_private::GetReferrerChain::Results::Create(
           base::Base64Encode(request.SerializeAsString()))));
+#else
+  return RespondNow(ArgumentList(
+      api::webstore_private::GetReferrerChain::Results::Create("")));
+#endif
 }
 
 WebstorePrivateGetExtensionStatusFunction::

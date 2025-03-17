@@ -37,6 +37,18 @@ struct GpuDevice {
   gl.mojom.GpuPreference gpu_preference;
 };
 
+// gpu::SkiaBackendType
+enum SkiaBackendType {
+  kUnknown,
+  kNone,
+  kGaneshGL,
+  kGaneshVulkan,
+  kGraphiteDawnVulkan,
+  kGraphiteDawnMetal,
+  kGraphiteDawnD3D11,
+  kGraphiteDawnD3D12,
+};
+
 // gpu::VideoCodecProfile
 enum VideoCodecProfile {
   VIDEO_CODEC_PROFILE_UNKNOWN = -1,
@@ -174,6 +186,7 @@ struct GpuInfo {
   string machine_model_name;
   string machine_model_version;
   string display_type;
+  SkiaBackendType skia_backend_type;
   string gl_version;
   string gl_vendor;
   string gl_renderer;

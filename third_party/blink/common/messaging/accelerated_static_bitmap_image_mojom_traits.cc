@@ -65,9 +65,6 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
     return false;
   }
 
-  out->supports_display_compositing = data.supports_display_compositing();
-  out->is_overlay_candidate = data.is_overlay_candidate();
-
   auto callback = data.TakeReleaseCallback<
       mojo::PendingRemote<blink::mojom::ImageReleaseCallback>>();
   if (!callback) {

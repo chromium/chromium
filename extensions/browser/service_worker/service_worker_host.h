@@ -7,13 +7,12 @@
 
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
@@ -37,12 +36,12 @@ class RenderProcessHost;
 
 namespace extensions {
 
+class Extension;
 class ExtensionFunctionDispatcher;
 
 // This class is the host of service worker execution context for extension
 // in the renderer process. Lives on the UI thread.
 class ServiceWorkerHost :
-    public PermissionsManager::Observer,
     public mojom::ServiceWorkerHost,
     public content::RenderProcessHostObserver {
  public:
@@ -57,6 +56,11 @@ class ServiceWorkerHost :
   static void BindReceiver(
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver);
+
+  // Returns all ServiceWorkerHosts associated with RenderProcessHost `rph`.
+  // Returns an empty vector if there are none.
+  static std::vector<ServiceWorkerHost*> GetServiceWorkerHostList(
+      content::RenderProcessHost* rph);
 
   // mojom::ServiceWorkerHost:
   void DidInitializeServiceWorkerContext(
@@ -106,11 +110,10 @@ class ServiceWorkerHost :
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
           port_host) override;
 
-  // PermissionManager::Observer overrides.
-  void OnExtensionPermissionsUpdated(
-      const Extension& extension,
-      const PermissionSet& permissions,
-      PermissionsManager::UpdateReason reason) override;
+  // Sends a message to the service worker in the renderer to update its
+  // permissions.
+  void UpdateExtensionPermissions(const Extension& extension,
+                                  const PermissionSet& permissions);
 
   // Returns the mojo channel to the service worker. It may be null
   // if the service worker doesn't have a live service worker matching
@@ -145,9 +148,6 @@ class ServiceWorkerHost :
   mojo::AssociatedReceiver<mojom::ServiceWorkerHost> receiver_{this};
   mojo::AssociatedRemote<mojom::ServiceWorker> remote_;
   WorkerId worker_id_;
-
-  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
-      permissions_observer_{this};
 };
 
 }  // namespace extensions

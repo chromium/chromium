@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/lazy_instance.h"
@@ -19,6 +20,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
@@ -31,6 +33,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/painter.h"
@@ -49,7 +52,7 @@ constexpr Button::ButtonState kEnabledStates[] = {
 
 LabelButton::LabelButton(
     PressedCallback callback,
-    const std::u16string& text,
+    std::u16string_view text,
     int button_context,
     std::unique_ptr<LabelButtonImageContainer> image_container)
     : Button(std::move(callback)),
@@ -78,13 +81,6 @@ LabelButton::LabelButton(
   SetTextInternal(text);
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
   GetViewAccessibility().SetIsDefault(is_default_);
-
-#if BUILDFLAG(IS_WIN)
-  // Paint image(s) to a layer so that the canvas is snapped to pixel
-  // boundaries.
-  image_container_view()->SetPaintToLayer();
-  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
-#endif
 }
 
 LabelButton::~LabelButton() {
@@ -127,11 +123,11 @@ bool LabelButton::HasImage(ButtonState state) const {
          !button_state_image_models_[state]->IsEmpty();
 }
 
-const std::u16string& LabelButton::GetText() const {
+std::u16string_view LabelButton::GetText() const {
   return label_->GetText();
 }
 
-void LabelButton::SetText(const std::u16string& text) {
+void LabelButton::SetText(std::u16string_view text) {
   SetTextInternal(text);
 }
 
@@ -150,22 +146,12 @@ void LabelButton::ShrinkDownThenClearText() {
   ClearTextIfShrunkDown();
 }
 
-void LabelButton::SetTextColor(ButtonState for_state, SkColor color) {
+void LabelButton::SetTextColor(ButtonState for_state, ui::ColorVariant color) {
   button_state_colors_[for_state] = color;
   if (for_state == STATE_DISABLED) {
     label_->SetDisabledColor(color);
   } else if (for_state == GetState()) {
     label_->SetEnabledColor(color);
-  }
-  explicitly_set_colors_[for_state] = true;
-}
-
-void LabelButton::SetTextColorId(ButtonState for_state, ui::ColorId color_id) {
-  button_state_colors_[for_state] = color_id;
-  if (for_state == STATE_DISABLED) {
-    label_->SetDisabledColorId(color_id);
-  } else if (for_state == GetState()) {
-    label_->SetEnabledColorId(color_id);
   }
   explicitly_set_colors_[for_state] = true;
 }
@@ -200,8 +186,8 @@ void LabelButton::SetFocusRingCornerRadius(float radius) {
   SetFocusRingCornerRadii(gfx::RoundedCornersF(radius));
 }
 
-void LabelButton::SetEnabledTextColors(std::optional<SkColor> color) {
-  if (color.has_value()) {
+void LabelButton::SetEnabledTextColors(std::optional<ui::ColorVariant> color) {
+  if (color) {
     for (auto state : kEnabledStates) {
       SetTextColor(state, color.value());
     }
@@ -213,14 +199,8 @@ void LabelButton::SetEnabledTextColors(std::optional<SkColor> color) {
   ResetColorsFromNativeTheme();
 }
 
-void LabelButton::SetEnabledTextColorIds(ui::ColorId color_id) {
-  for (auto state : kEnabledStates) {
-    SetTextColorId(state, color_id);
-  }
-}
-
 SkColor LabelButton::GetCurrentTextColor() const {
-  return label_->GetEnabledColor();
+  return static_cast<Label*>(label_)->GetEnabledColor();
 }
 
 void LabelButton::SetTextShadows(const gfx::ShadowValues& shadows) {
@@ -539,10 +519,8 @@ void LabelButton::UpdateImage() {
 
 void LabelButton::AddLayerToRegion(ui::Layer* new_layer,
                                    views::LayerRegion region) {
-#if !BUILDFLAG(IS_WIN)
   image_container_view()->SetPaintToLayer();
   image_container_view()->layer()->SetFillsBoundsOpaquely(false);
-#endif
   ink_drop_container()->SetVisible(true);
   ink_drop_container()->AddLayerToRegion(new_layer, region);
 }
@@ -550,9 +528,7 @@ void LabelButton::AddLayerToRegion(ui::Layer* new_layer,
 void LabelButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
   ink_drop_container()->RemoveLayerFromRegions(old_layer);
   ink_drop_container()->SetVisible(false);
-#if !BUILDFLAG(IS_WIN)
   image_container_view()->DestroyLayer();
-#endif
 }
 
 std::unique_ptr<ActionViewInterface> LabelButton::GetActionViewInterface() {
@@ -634,8 +610,8 @@ void LabelButton::StateChanged(ButtonState old_state) {
   VisualStateChanged();
 }
 
-void LabelButton::SetTextInternal(const std::u16string& text) {
-  GetViewAccessibility().SetName(text);
+void LabelButton::SetTextInternal(std::u16string_view text) {
+  GetViewAccessibility().SetName(std::u16string(text));
   label_->SetText(text);
 
   // Setting text cancels ShrinkDownThenClearText().
@@ -714,7 +690,7 @@ void LabelButton::ResetColorsFromNativeTheme() {
 
   for (size_t state = STATE_NORMAL; state < STATE_COUNT; ++state) {
     if (!explicitly_set_colors_[state]) {
-      SetTextColorId(static_cast<ButtonState>(state), color_ids[state]);
+      SetTextColor(static_cast<ButtonState>(state), color_ids[state]);
       explicitly_set_colors_[state] = false;
     }
   }
@@ -724,15 +700,17 @@ void LabelButton::ResetLabelEnabledColor() {
   if (GetState() == STATE_DISABLED) {
     return;
   }
-  const absl::variant<SkColor, ui::ColorId>& color =
-      button_state_colors_[GetState()];
-  if (absl::holds_alternative<SkColor>(color) &&
-      label_->GetEnabledColor() != absl::get<SkColor>(color)) {
-    label_->SetEnabledColor(absl::get<SkColor>(color));
-  } else if (absl::holds_alternative<ui::ColorId>(color)) {
-    // Omitting the check that the new color id differs from the existing color
-    // id, because the setter already does that check.
-    label_->SetEnabledColorId(absl::get<ui::ColorId>(color));
+
+  const auto& color_variant = button_state_colors_[GetState()];
+  if (color_variant) {
+    if (auto color = color_variant->GetSkColor();
+        color && color != label_->GetEnabledColor()) {
+      label_->SetEnabledColor(*color);
+    } else if (auto color_id = color_variant->GetColorId()) {
+      // Omitting the check that the new color id differs from the existing
+      // color id, because the setter already does that check.
+      label_->SetEnabledColor(*color_id);
+    }
   }
 }
 
@@ -760,7 +738,7 @@ void LabelButtonActionViewInterface::ActionItemChangedImpl(
 }
 
 BEGIN_METADATA(LabelButton)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinSize)
 ADD_PROPERTY_METADATA(gfx::Size, MaxSize)

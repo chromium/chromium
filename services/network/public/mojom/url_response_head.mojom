@@ -16,6 +16,7 @@ import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/parsed_request_cookie.mojom";
@@ -304,4 +305,10 @@ struct URLResponseHead {
   // True if the client should load the response content after setting the
   // environment's `has storage access` bit.
   bool load_with_storage_access = false;
+
+  // List of content decoding algorithms to attempt. The client needs to decode
+  // the response body using these algorithms, in the reverse order.
+  // This is only non-empty if `client_size_content_decoding_enabled` was set to
+  // true on the request?
+  array<SourceType> client_side_content_decoding_types;
 };

@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/policy_export.h"
@@ -29,7 +28,7 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
     return has_local_browser_managment_status_provider_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void AddChromeOsStatusProvider(
       std::unique_ptr<ManagementStatusProvider> provider);
   bool has_cros_status_provider() const { return has_cros_status_provider_; }
@@ -57,7 +56,7 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
   ~PlatformManagementService() override;
 
   bool has_local_browser_managment_status_provider_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool has_cros_status_provider_;
 #endif
 };

@@ -9,6 +9,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 
 namespace tab_groups {
 
@@ -48,19 +49,21 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
                const LocalTabID& tab_id,
                int new_group_index) override;
   void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
-                     const LocalTabID& tab_id) override;
-  std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
-  GetCurrentlySelectedTabID() override;
+                     const LocalTabID& tab_id,
+                     const std::u16string& tab_title) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SaveGroup(SavedTabGroup group) override;
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                          std::string_view collaboration_id) override;
+                          std::string_view collaboration_id,
+                          TabGroupSharingCallback callback) override;
   void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id,
                               base::OnceClosure on_complete_callback) override;
   void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
                                  bool success) override;
+  void OnCollaborationRemoved(
+      const syncer::CollaborationId& collaboration_id) override;
   std::vector<SavedTabGroup> GetAllGroups() const override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
@@ -101,11 +104,6 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-
-  // For testing.
-  void PrepareFakeSavedTabGroups();
-  void RemoveGroupAtIndex(unsigned int index);
-  void ClearGroups();
 
  private:
   // Helpers.

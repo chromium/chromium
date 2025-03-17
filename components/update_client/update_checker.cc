@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -21,7 +22,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -66,6 +66,7 @@ class UpdateCheckerImpl : public UpdateChecker {
       scoped_refptr<UpdateContext> context,
       const std::vector<GURL>& urls,
       const base::flat_map<std::string, std::string>& additional_attributes,
+      const std::multimap<std::string, std::string>& cache_contents,
       const UpdaterStateAttributes& updater_state_attributes,
       const std::set<std::string>& active_ids);
 
@@ -111,23 +112,35 @@ void UpdateCheckerImpl::CheckForUpdates(
       &UpdateCheckerImpl::CheckForUpdatesHelper, weak_factory_.GetWeakPtr(),
       context, config_->UpdateUrl(), additional_attributes);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, kTaskTraits,
-      base::BindOnce(&UpdateCheckerImpl::ReadUpdaterStateAttributes,
-                     config_->GetUpdaterStateProvider(),
-                     !config_->IsPerUserInstall()),
-      base::BindOnce(
-          [](base::OnceCallback<void(const UpdaterStateAttributes&,
-                                     const std::set<std::string>&)>
-                 check_for_updates_invoker,
-             scoped_refptr<Configurator> config, std::vector<std::string> ids,
-             const UpdaterStateAttributes& updater_state_attributes) {
-            config->GetPersistedData()->GetActiveBits(
-                ids, base::BindOnce(std::move(check_for_updates_invoker),
-                                    updater_state_attributes));
-          },
-          std::move(check_for_updates_invoker), config_,
-          context->components_to_check_for_updates));
+  context->crx_cache_->ListHashesByAppId(base::BindOnce(
+      [](base::OnceCallback<void(const std::multimap<std::string, std::string>&,
+                                 const UpdaterStateAttributes&,
+                                 const std::set<std::string>&)>
+             check_for_updates_invoker,
+         scoped_refptr<Configurator> config, std::vector<std::string> ids,
+         const std::multimap<std::string, std::string>& cache_contents) {
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, kTaskTraits,
+            base::BindOnce(&UpdateCheckerImpl::ReadUpdaterStateAttributes,
+                           config->GetUpdaterStateProvider(),
+                           !config->IsPerUserInstall()),
+            base::BindOnce(
+                [](base::OnceCallback<void(const UpdaterStateAttributes&,
+                                           const std::set<std::string>&)>
+                       check_for_updates_invoker,
+                   scoped_refptr<Configurator> config,
+                   std::vector<std::string> ids,
+                   const UpdaterStateAttributes& updater_state_attributes) {
+                  config->GetPersistedData()->GetActiveBits(
+                      ids, base::BindOnce(std::move(check_for_updates_invoker),
+                                          updater_state_attributes));
+                },
+                base::BindOnce(std::move(check_for_updates_invoker),
+                               cache_contents),
+                config, ids));
+      },
+      std::move(check_for_updates_invoker), config_,
+      context->components_to_check_for_updates));
 }
 
 // This function runs on the blocking pool task runner.
@@ -148,6 +161,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
     scoped_refptr<UpdateContext> context,
     const std::vector<GURL>& urls,
     const base::flat_map<std::string, std::string>& additional_attributes,
+    const std::multimap<std::string, std::string>& cache_contents,
     const UpdaterStateAttributes& updater_state_attributes,
     const std::set<std::string>& active_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -165,7 +179,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
   CHECK(!context->components.empty());
   const bool is_foreground =
       context->components.cbegin()->second->is_foreground();
-  CHECK(base::ranges::all_of(
+  CHECK(std::ranges::all_of(
       context->components,
       [is_foreground](IdToComponentPtrMap::const_reference& elem) {
         return is_foreground == elem.second->is_foreground();
@@ -197,14 +211,23 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
       install_source = "ondemand";
     }
 
+    std::vector<std::string> cached_hashes;
+    auto range = cache_contents.equal_range(app_id);
+    for (auto i = range.first; i != range.second; i++) {
+      cached_hashes.push_back(i->second);
+    }
+
     apps.push_back(MakeProtocolApp(
         app_id, crx_component->version, crx_component->ap, crx_component->brand,
-        metadata->GetInstallId(app_id), config_->GetLang(),
+        active_ids.find(app_id) != active_ids.end()
+            ? metadata->GetInstallId(app_id)
+            : "",
+        crx_component->lang.empty() ? config_->GetLang() : crx_component->lang,
         metadata->GetInstallDate(app_id), install_source,
-        crx_component->install_location, crx_component->fingerprint,
-        crx_component->installer_attributes, metadata->GetCohort(app_id),
-        metadata->GetCohortHint(app_id), metadata->GetCohortName(app_id),
-        crx_component->channel, crx_component->disabled_reasons,
+        crx_component->install_location, crx_component->installer_attributes,
+        metadata->GetCohort(app_id), metadata->GetCohortHint(app_id),
+        metadata->GetCohortName(app_id), crx_component->channel,
+        crx_component->disabled_reasons, cached_hashes,
         MakeProtocolUpdateCheck(
             !crx_component->updates_enabled ||
                 (!crx_component->allow_updates_on_metered_connection &&
@@ -257,8 +280,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
                                &UpdateCheckerImpl::CheckForUpdatesHelper,
                                weak_factory_.GetWeakPtr(), context,
                                std::vector<GURL>(urls.begin() + 1, urls.end()),
-                               additional_attributes, updater_state_attributes,
-                               active_ids))
+                               additional_attributes, cache_contents,
+                               updater_state_attributes, active_ids))
                          : std::nullopt)));
 }
 
@@ -303,18 +326,15 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
 
   PersistedData* metadata = config_->GetPersistedData();
   const int daynum = results.daystart_elapsed_days;
-  for (const auto& result : results.list) {
-    auto entry = result.cohort_attrs.find(ProtocolParser::Result::kCohort);
-    if (entry != result.cohort_attrs.end()) {
-      metadata->SetCohort(result.extension_id, entry->second);
+  for (const auto& result : results.apps) {
+    if (result.cohort) {
+      metadata->SetCohort(result.app_id, *result.cohort);
     }
-    entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortName);
-    if (entry != result.cohort_attrs.end()) {
-      metadata->SetCohortName(result.extension_id, entry->second);
+    if (result.cohort_name) {
+      metadata->SetCohortName(result.app_id, *result.cohort_name);
     }
-    entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortHint);
-    if (entry != result.cohort_attrs.end()) {
-      metadata->SetCohortHint(result.extension_id, entry->second);
+    if (result.cohort_hint) {
+      metadata->SetCohortHint(result.app_id, *result.cohort_hint);
     }
   }
 

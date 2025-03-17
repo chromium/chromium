@@ -28,6 +28,8 @@ struct AudioGlitchInfo;
 class AudioCapturerSource
     : public base::RefCountedThreadSafe<media::AudioCapturerSource> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   enum class ErrorCode {
     kUnknown = 0,
     kSystemPermissions = 1,
@@ -92,7 +94,7 @@ class AudioCapturerSource
 
  protected:
   friend class base::RefCountedThreadSafe<AudioCapturerSource>;
-  virtual ~AudioCapturerSource() {}
+  virtual ~AudioCapturerSource() = default;
 };
 
 }  // namespace media

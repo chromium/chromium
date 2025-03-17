@@ -25,7 +25,6 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -227,10 +226,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
                   base::BindOnce(
                       std::move(callback),
                       OptimizationGuideStreamingResult(
-                          ComposeResponse(true, "Cucumbers"), true, false,
-                          std::make_unique<
-                              optimization_guide::ModelQualityLogEntry>(
-                              nullptr))));
+                          ComposeResponse(true, "Cucumbers"), true, false)));
             })));
   }
 
@@ -274,12 +270,10 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
   OptimizationGuideStreamingResult(
       const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true,
-      bool provided_by_on_device = false,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
-          nullptr) {
+      bool provided_by_on_device = false) {
     return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
         base::ok(OptimizationGuideResponse(compose_response, is_complete)),
-        provided_by_on_device, std::move(log_entry));
+        provided_by_on_device);
   }
 
   optimization_guide::proto::ComposeResponse ComposeResponse(

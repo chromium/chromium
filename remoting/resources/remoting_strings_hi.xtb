@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">क्लाइंट के डिवाइस पर <ph name="URL" /> नहीं खोला जा सका.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2366718077645204424">होस्‍ट तक पहुंचने में असमर्थ. यह संभवत:   उपयोग किए जाने वाले नेटवर्क के कॉन्फ़िगरेशन के कारण है.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> को 'सुलभता' अनुमति दें</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> से कनेक्‍ट है</translation>
 <translation id="2540992418118313681">क्या आप इस कंप्यूटर को किसी दूसरे उपयोगकर्ता से शेयर करना चाहते हैं ताकि वह इसे देख और नियंत्रित कर सके?</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">स्क्रीन किसी टच स्क्रीन की तरह काम करती है</translation>
 <translation id="7116737094673640201">Chrome दूरस्‍थ डेस्‍कटॉप में आपका स्वागत है</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="7312846573060934304">होस्ट ऑफ़लाइन है.</translation>
 <translation id="7319983568955948908">शेयर करना बंद करें</translation>
 <translation id="7359298090707901886">कंप्यूटर पर यूआरएल खोलने के लिए, चुने गए ब्राउज़र का इस्तेमाल नहीं किया जा सकता.</translation>
@@ -149,7 +151,6 @@
 <translation id="7693372326588366043">होस्ट की सूची रीफ्रेश करें</translation>
 <translation id="7714222945760997814">इसकी रिपोर्ट करें</translation>
 <translation id="7868137160098754906">कृपया दूरस्थ कंप्यूटर के लिए अपना पिन डालें.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="7895403300744144251">दूरस्थ कंप्यूटर की सुरक्षा नीतियां आपके खाते से कनेक्शन की अनुमति नहीं देती हैं.</translation>
 <translation id="7936528439960309876">दाईं ओर डॉक करें</translation>
 <translation id="7970576581263377361">पुष्टि नहीं हो पाई. कृपया क्रोमियम में फिर से साइन इन करें.</translation>
@@ -181,7 +182,6 @@
 <translation id="8747048596626351634">सत्र बंद हो गया या शुरू नहीं हो पाया. अगर दूरस्थ कंप्यूटर पर ~/.chrome-remote-desktop-session मौजूद है, तो पक्का करें कि यह डेस्कटॉप परिवेश या विंडो मैनेजर जैसी देर तक चलने वाली फ़ोरग्राउंड प्रक्रिया चालू कर देता है.</translation>
 <translation id="8804164990146287819">निजता नीति</translation>
 <translation id="8906511416443321782">ऑडियो कैप्चर करने और उसे 'Chrome रिमोट डेस्कटॉप' क्लाइंट पर स्ट्रीम करने के लिए, माइक्रोफ़ोन का ऐक्सेस ज़रूरी है.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="9111855907838866522">आप कहीं और मौजूद अपने डिवाइस से जुड़े हुए हैं. मेन्यू खोलने के लिए, कृपया स्क्रीन पर चार अंगुलियों से टैप करें.</translation>
 <translation id="9126115402994542723">इस डिवाइस से इस होस्ट को कनेक्ट करते समय दोबारा पिन न मांगें.</translation>
 <translation id="916856682307586697">डिफ़ॉल्ट XSession को लॉन्च करें</translation>

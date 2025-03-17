@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "build/buildflag.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -26,9 +26,9 @@
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {
 
@@ -109,10 +109,10 @@ const char ComponentUpdaterPolicyTest::component_id_[] =
 
 ComponentUpdaterPolicyTest::ComponentUpdaterPolicyTest()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_feature_list_.InitAndDisableFeature(
       ash::features::kGrowthCampaignsInConsumerSession);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ComponentUpdaterPolicyTest::~ComponentUpdaterPolicyTest() = default;
@@ -256,7 +256,7 @@ void ComponentUpdaterPolicyTest::VerifyExpectations(bool update_disabled) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto* update_check =
-        (*root->GetDict().FindDict("request")->FindList("app"))[0]
+        (*root->GetDict().FindDict("request")->FindList("apps"))[0]
             .GetDict()
             .FindDict("updatecheck");
     ASSERT_TRUE(update_check);

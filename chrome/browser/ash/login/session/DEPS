@@ -50,7 +50,6 @@ include_rules = [
   "+chrome/browser/ash/release_notes",
   "+chrome/browser/ash/session_length_limiter.h",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/ash/sparky/sparky_manager_service_factory.h",
   "+chrome/browser/ash/system_web_apps/apps/help_app",
   "+chrome/browser/ash/tether",
   "+chrome/browser/ash/tpm",

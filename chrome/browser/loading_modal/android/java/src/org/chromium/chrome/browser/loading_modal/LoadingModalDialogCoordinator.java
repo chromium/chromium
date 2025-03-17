@@ -12,11 +12,10 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -26,9 +25,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Coordinator class for displaying the loading modal dialog.
- * It proxies the communication to the {@link LoadingModalDialogMediator}.
- * */
+ * Coordinator class for displaying the loading modal dialog. It proxies the communication to the
+ * {@link LoadingModalDialogMediator}.
+ */
+@NullMarked
 public class LoadingModalDialogCoordinator {
     private final LoadingModalDialogMediator mMediator;
     private final RelativeLayout mCustomView;
@@ -106,6 +106,7 @@ public class LoadingModalDialogCoordinator {
                 (RelativeLayout)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.loading_modal_button_bar, null);
+        assert buttonsView != null;
         return new LoadingModalDialogCoordinator(dialogMediator, dialogView, buttonsView);
     }
 
@@ -116,17 +117,17 @@ public class LoadingModalDialogCoordinator {
      * @param dialogView The custom view with dialog content.
      */
     private LoadingModalDialogCoordinator(
-            @NonNull LoadingModalDialogMediator dialogMediator,
-            @NonNull RelativeLayout dialogView,
-            @Nullable View buttonsView) {
+            LoadingModalDialogMediator dialogMediator,
+            RelativeLayout dialogView,
+            View buttonsView) {
         mMediator = dialogMediator;
         mCustomView = dialogView;
         mButtonsView = buttonsView;
     }
 
     /**
-     * Schedules the dialog to be shown after delay. The dialog will not be shown if
-     * {@link #finishLoading()} called before it become visible.
+     * Schedules the dialog to be shown after delay. The dialog will not be shown if {@link
+     * #finishLoading()} called before it become visible.
      */
     public void show() {
         PropertyModel dialogModel =

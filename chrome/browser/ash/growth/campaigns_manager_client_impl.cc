@@ -204,7 +204,14 @@ const std::string CampaignsManagerClientImpl::GetCountryCode() const {
 
 const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {
   auto* demo_session = ash::DemoSession::Get();
-  CHECK(demo_session);
+  if (!demo_session) {
+    // When campaigns are loaded and fetched in `DemoLoginController`,
+    // `DemoSession` is not available yet. In this case, we will return empty
+    // version so campaigns that are targeting a specific app version won't be
+    // matched.
+    static const base::NoDestructor<base::Version> empty_version;
+    return *empty_version;
+  }
 
   const auto& version = demo_session->components()->app_component_version();
   if (!version.has_value()) {
@@ -331,6 +338,19 @@ void CampaignsManagerClientImpl::OnReadyToLogImpression(
   RecordImpressionEvents(campaign_id, group_id);
 }
 
+void CampaignsManagerClientImpl::RecordImpressionEvents(
+    int campaign_id,
+    std::optional<int> group_id) {
+  campaigns_manager_->RecordEvent(GetEventName(
+      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id)));
+
+  if (group_id) {
+    campaigns_manager_->RecordEvent(
+        GetEventName(growth::CampaignEvent::kGroupImpression,
+                     base::NumberToString(group_id.value())));
+  }
+}
+
 void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
                                              std::optional<int> group_id,
                                              bool should_mark_dismissed,
@@ -408,19 +428,6 @@ void CampaignsManagerClientImpl::UpdateConfig(
   config_provider_.SetConfig(params);
   tracker->UpdateConfig(feature_engagement::kIPHGrowthFramework,
                         &config_provider_);
-}
-
-void CampaignsManagerClientImpl::RecordImpressionEvents(
-    int campaign_id,
-    std::optional<int> group_id) {
-  campaigns_manager_->RecordEvent(GetEventName(
-      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id)));
-
-  if (group_id) {
-    campaigns_manager_->RecordEvent(
-        GetEventName(growth::CampaignEvent::kGroupImpression,
-                     base::NumberToString(group_id.value())));
-  }
 }
 
 void CampaignsManagerClientImpl::RecordDismissalEvents(

@@ -51,7 +51,6 @@ import java.util.Locale;
 @NullMarked
 public class ProxyChangeListener {
     private static final String TAG = "ProxyChangeListener";
-    private static boolean sEnabled = true;
 
     private final @Nullable Looper mLooper;
     private final Handler mHandler;
@@ -124,10 +123,6 @@ public class ProxyChangeListener {
         assert myLooper != null;
         mLooper = myLooper;
         mHandler = new Handler(mLooper);
-    }
-
-    public static void setEnabled(boolean enabled) {
-        sEnabled = enabled;
     }
 
     public void setDelegateForTesting(Delegate delegate) {
@@ -235,9 +230,6 @@ public class ProxyChangeListener {
     private void proxySettingsChanged(@Nullable ProxyConfig cfg) {
         assertOnThread();
 
-        if (!sEnabled) {
-            return;
-        }
         if (mDelegate != null) {
             // proxySettingsChanged is called even if mNativePtr == 0, for testing purposes.
             mDelegate.proxySettingsChanged();

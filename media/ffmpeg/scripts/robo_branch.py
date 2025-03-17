@@ -82,7 +82,7 @@ def AreThereAnyUntrackedAutorenamesUnderCwd(cfg):
          "*autorename*"]) != ""
 
 
-def CreateAndCheckoutDatedSushiBranch(cfg):
+def CreateAndCheckoutDatedSushiBranchIfNeeded(cfg):
     """Create a dated branch from upstream/HEAD if we're not already on one."""
     if cfg.sushi_branch_name():
         shell.log(f"Already on sushi branch {cfg.sushi_branch_name()}")

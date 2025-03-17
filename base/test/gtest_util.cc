@@ -77,33 +77,40 @@ bool ReadTestNamesFromFile(const FilePath& path,
   std::string error_message;
   std::unique_ptr<Value> value =
       deserializer.Deserialize(&error_code, &error_message);
-  if (!value.get())
+  if (!value.get()) {
     return false;
+  }
 
-  if (!value->is_list())
+  if (!value->is_list()) {
     return false;
+  }
 
   std::vector<TestIdentifier> result;
   for (const Value& item : value->GetList()) {
-    if (!item.is_dict())
+    if (!item.is_dict()) {
       return false;
+    }
 
     const Value::Dict& dict = item.GetDict();
     const std::string* test_case_name = dict.FindString("test_case_name");
-    if (!test_case_name || !IsStringASCII(*test_case_name))
+    if (!test_case_name || !IsStringASCII(*test_case_name)) {
       return false;
+    }
 
     const std::string* test_name = dict.FindString("test_name");
-    if (!test_name || !IsStringASCII(*test_name))
+    if (!test_name || !IsStringASCII(*test_name)) {
       return false;
+    }
 
     const std::string* file = dict.FindString("file");
-    if (!file || !IsStringASCII(*file))
+    if (!file || !IsStringASCII(*file)) {
       return false;
+    }
 
     std::optional<int> line = dict.FindInt("line");
-    if (!line.has_value())
+    if (!line.has_value()) {
       return false;
+    }
 
     TestIdentifier test_data;
     test_data.test_case_name = *test_case_name;

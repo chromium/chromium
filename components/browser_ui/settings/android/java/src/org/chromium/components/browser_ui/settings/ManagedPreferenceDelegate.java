@@ -7,6 +7,8 @@ package org.chromium.components.browser_ui.settings;
 import androidx.annotation.LayoutRes;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A delegate that determines whether a Preference is managed by enterprise policy. This is used
  * in various Preference subclasses (e.g. ChromeSwitchPreference) to determine whether to show
@@ -28,6 +30,7 @@ import androidx.preference.Preference;
  *   ChromeSwitchPreference enableRocketsPref = ...;
  *   enableRocketsPref.setManagedPreferenceDelegate(new RocketManagedPreferenceDelegate());
  */
+@NullMarked
 public interface ManagedPreferenceDelegate {
     /**
      * Returns whether the given Preference is controlled by an enterprise policy.

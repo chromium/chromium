@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {MantaStatusCode, RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenObserverInterface, SeaPenObserverRemote, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import type {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
+import type {RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenObserverInterface, SeaPenObserverRemote, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -100,6 +101,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   shouldShowSeaPenIntroductionDialogResponse = true;
 
+  shouldShowSeaPenFreeformIntroductionDialogResponse = true;
+
   isInTabletModeResponse = false;
 
   constructor() {
@@ -113,6 +116,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       'deleteRecentSeaPenImage',
       'shouldShowSeaPenIntroductionDialog',
       'handleSeaPenIntroductionDialogClosed',
+      'shouldShowSeaPenFreeformIntroductionDialog',
+      'handleSeaPenFreeformIntroductionDialogClosed',
       'isInTabletMode',
       'makeTransparent',
     ]);
@@ -161,7 +166,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   deleteRecentSeaPenImage(id: SeaPenImageId) {
     assertTrue(
-        isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
+        isSeaPenImageId(id), `id must rbe SeaPenImageId but received: ${id}`);
     this.methodCalled('deleteRecentSeaPenImage', id);
     this.recentImageIds = this.recentImageIds.filter(x => x !== id);
     return Promise.resolve({success: true});
@@ -181,6 +186,19 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   handleSeaPenIntroductionDialogClosed() {
     this.methodCalled('handleSeaPenIntroductionDialogClosed');
     this.shouldShowSeaPenIntroductionDialogResponse = false;
+  }
+
+  shouldShowSeaPenFreeformIntroductionDialog() {
+    this.methodCalled('shouldShowSeaPenFreeformIntroductionDialog');
+    return Promise.resolve({
+      shouldShowFreeformDialog:
+          this.shouldShowSeaPenFreeformIntroductionDialogResponse,
+    });
+  }
+
+  handleSeaPenFreeformIntroductionDialogClosed() {
+    this.methodCalled('handleSeaPenFreeformIntroductionDialogClosed');
+    this.shouldShowSeaPenFreeformIntroductionDialogResponse = false;
   }
 
   isInTabletMode() {

@@ -6,9 +6,9 @@
 
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_management/feed_management_view_controller.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_management/feed_management_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 
 @interface FeedManagementCoordinator ()
 

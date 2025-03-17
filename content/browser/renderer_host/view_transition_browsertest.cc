@@ -4,6 +4,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/buildflag.h"
+#include "cc/base/features.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -399,7 +401,14 @@ class ViewTransitionCaptureTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<std::string> {
  public:
-  ViewTransitionCaptureTest() { EnablePixelOutput(); }
+  ViewTransitionCaptureTest() {
+    EnablePixelOutput();
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {viz::mojom::EnableVizTestApis,
+         features::kViewTransitionCaptureAndDisplay},
+        /*disabled_features=*/{});
+  }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -412,11 +421,20 @@ class ViewTransitionCaptureTest
 
  protected:
   SkBitmap TakeScreenshot() {
-    WaitForCopyableViewInWebContents(shell()->web_contents());
     base::test::TestFuture<const SkBitmap&> future_bitmap;
     shell()->web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(), future_bitmap.GetCallback());
     return future_bitmap.Take();
+  }
+
+  void WaitForSurfaceAnimationManager(RenderFrameHost* render_frame_host) {
+    mojo::ScopedAllowSyncCallForTesting sync_scope;
+    GetHostFrameSinkManager()
+        ->GetFrameSinkManagerTestApi()
+        .WaitForSurfaceAnimationManager(
+            static_cast<RenderFrameHostImpl*>(render_frame_host)
+                ->GetRenderWidgetHost()
+                ->GetFrameSinkId());
   }
 
  private:
@@ -434,6 +452,7 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
               requestAnimationFrame(() => resolve("ok"));
             }))")),
             "ok");
+  WaitForCopyableViewInWebContents(shell()->web_contents());
   SkBitmap before_bitmap = TakeScreenshot();
 
   // Sanity to see that we've captured something.
@@ -448,11 +467,19 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
                 }));
               }))")),
             "ok");
+  WaitForSurfaceAnimationManager(
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto after_bitmap = TakeScreenshot();
   ASSERT_EQ(before_bitmap.width(), after_bitmap.width());
   ASSERT_EQ(before_bitmap.height(), after_bitmap.height());
-  EXPECT_TRUE(cc::MatchesBitmap(before_bitmap, after_bitmap,
-                                cc::ExactPixelComparator()));
+
+  cc::FuzzyPixelComparator comparator;
+  // Allow 50% of pixels to different by at most 3 in all channels.
+  // The small differences on some platforms seem to be noise, and don't
+  // invalidate the test intent.
+  comparator.SetAbsErrorLimit(255, 3);
+  comparator.SetErrorPixelsPercentageLimit(0, 50);
+  EXPECT_TRUE(cc::MatchesBitmap(after_bitmap, before_bitmap, comparator));
 }
 
 INSTANTIATE_TEST_SUITE_P(

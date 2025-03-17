@@ -34,6 +34,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#endif
+
 namespace {
 
 void UpdateAccountsPrefs(
@@ -79,11 +83,13 @@ void UpdateAccountsPrefs(
 }  // namespace
 
 GAIAInfoUpdateService::GAIAInfoUpdateService(
+    Profile* profile,
     signin::IdentityManager* identity_manager,
     ProfileAttributesStorage* profile_attributes_storage,
     PrefService& pref_service,
     const base::FilePath& profile_path)
-    : identity_manager_(identity_manager),
+    : profile_(profile),
+      identity_manager_(identity_manager),
       profile_attributes_storage_(profile_attributes_storage),
       pref_service_(pref_service),
       profile_path_(profile_path) {
@@ -100,6 +106,10 @@ GAIAInfoUpdateService::GAIAInfoUpdateService(
   }
 
   gaia_id_of_profile_attribute_entry_ = entry->GetGAIAId();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  entry->SetIsGlicEligible(glic::GlicEnabling::IsEnabledForProfile(profile_));
+#endif
 }
 
 GAIAInfoUpdateService::~GAIAInfoUpdateService() = default;
@@ -143,11 +153,18 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
     entry->SetGAIAPicture(info.last_downloaded_image_url_with_size,
                           info.account_image);
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // TODO(crbug.com/388211126): Make the setter name match with the
+  // `GlicEnabling` function.
+  entry->SetIsGlicEligible(glic::GlicEnabling::IsEnabledForProfile(profile_));
+#endif
 }
 
 void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
-  if (!info.IsValid())
+  if (!info.IsValid()) {
     return;
+  }
 
   ProfileAttributesEntry* entry =
       profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
@@ -171,6 +188,7 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
+  entry->SetIsGlicEligible(false);
 }
 
 void GAIAInfoUpdateService::Shutdown() {

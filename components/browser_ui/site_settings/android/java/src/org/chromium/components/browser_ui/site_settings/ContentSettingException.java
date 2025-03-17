@@ -6,9 +6,8 @@ package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
@@ -17,16 +16,17 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import java.io.Serializable;
 
 /** Exception information for a given origin. */
+@NullMarked
 public class ContentSettingException implements Serializable {
     private final @ContentSettingsType.EnumType int mContentSettingType;
     private final String mPrimaryPattern;
-    private final String mSecondaryPattern;
+    private final @Nullable String mSecondaryPattern;
     // TODO(crbug.com/40231949): Convert {@link #mSource} to enum to enable merging {@link #mSource}
     // and {@link #mIsEmbargoed}.
     private final @ProviderType.EnumType int mSource;
-    private final Integer mExpirationInDays;
+    private final @Nullable Integer mExpirationInDays;
     private final boolean mIsEmbargoed;
-    private @ContentSettingValues @Nullable Integer mContentSetting;
+    private @ContentSettingValues int mContentSetting;
 
     /**
      * Construct a ContentSettingException.
@@ -41,10 +41,10 @@ public class ContentSettingException implements Serializable {
     public ContentSettingException(
             @ContentSettingsType.EnumType int type,
             String primaryPattern,
-            String secondaryPattern,
-            @ContentSettingValues @Nullable Integer setting,
+            @Nullable String secondaryPattern,
+            @ContentSettingValues int setting,
             @ProviderType.EnumType int source,
-            final Integer expirationInDays,
+            final @Nullable Integer expirationInDays,
             boolean isEmbargoed) {
         mContentSettingType = type;
         mPrimaryPattern = primaryPattern;
@@ -61,7 +61,7 @@ public class ContentSettingException implements Serializable {
     public ContentSettingException(
             @ContentSettingsType.EnumType int type,
             String primaryPattern,
-            @ContentSettingValues @Nullable Integer setting,
+            @ContentSettingValues int setting,
             @ProviderType.EnumType int source,
             boolean isEmbargoed) {
         this(
@@ -78,11 +78,11 @@ public class ContentSettingException implements Serializable {
         return mPrimaryPattern;
     }
 
-    public String getSecondaryPattern() {
+    public @Nullable String getSecondaryPattern() {
         return mSecondaryPattern;
     }
 
-    private @NonNull String getSecondaryPatternSafe() {
+    private String getSecondaryPatternSafe() {
         return (mSecondaryPattern == null) ? SITE_WILDCARD : mSecondaryPattern;
     }
 
@@ -90,7 +90,7 @@ public class ContentSettingException implements Serializable {
         return mSource;
     }
 
-    public @ContentSettingValues @Nullable Integer getContentSetting() {
+    public @ContentSettingValues int getContentSetting() {
         return mContentSetting;
     }
 
@@ -102,7 +102,7 @@ public class ContentSettingException implements Serializable {
         return mExpirationInDays != null;
     }
 
-    public Integer getExpirationInDays() {
+    public @Nullable Integer getExpirationInDays() {
         return mExpirationInDays;
     }
 

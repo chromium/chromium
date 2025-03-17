@@ -266,7 +266,7 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
 
   DisplayItem& new_item =
       new_paint_artifact_->GetDisplayItemList().AppendByMoving(
-          CurrentDisplayItemList()[cached_item]);
+          UNSAFE_TODO(CurrentDisplayItemList()[cached_item]));
   new_item.SetPaintInvalidationReason(PaintInvalidationReason::kNone);
   ProcessNewItem(client, new_item);
 
@@ -312,7 +312,8 @@ const DisplayItem* PaintController::MatchingCachedItemToBeRepainted() const {
   if (last_matching_item_ == kNotFound) {
     return nullptr;
   }
-  const DisplayItem& item = CurrentDisplayItemList()[last_matching_item_];
+  const DisplayItem& item =
+      UNSAFE_TODO(CurrentDisplayItemList()[last_matching_item_]);
   DCHECK(!item.IsTombstone());
   return &item;
 }
@@ -352,7 +353,7 @@ bool PaintController::UseCachedSubsequenceIfPossible(
   wtf_size_t end_item_index =
       CurrentPaintChunks()[markers.end_chunk_index - 1].end_index;
   if (end_item_index > start_item_index &&
-      CurrentDisplayItemList()[start_item_index].IsTombstone()) {
+      UNSAFE_TODO(CurrentDisplayItemList()[start_item_index].IsTombstone())) {
     // The subsequence has already been matched, indicating that the same client
     // created multiple subsequences. If DCHECK_IS_ON(), then we should have
     // encountered the DCHECK at the end of EndSubsequence() during the previous
@@ -480,7 +481,7 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
                  .ToString(*new_paint_artifact_, /*concise=*/true)
                  .Utf8()
           << ")\n has duplicated id with previous "
-          << new_display_item_list[index]
+          << UNSAFE_TODO(new_display_item_list[index])
                  .AsDebugString(*new_paint_artifact_)
                  .Utf8()
           << " (index=" << index << " in chunk "
@@ -629,7 +630,7 @@ wtf_size_t PaintController::FindItemFromIdIndexMap(
     return kNotFound;
 
   wtf_size_t index = it->value;
-  const DisplayItem& existing_item = list[index];
+  const DisplayItem& existing_item = UNSAFE_TODO(list[index]);
   if (existing_item.IsTombstone())
     return kNotFound;
   DCHECK_EQ(existing_item.GetId(), id);
@@ -651,7 +652,8 @@ wtf_size_t PaintController::FindCachedItem(const DisplayItemClient& client,
     // to update and lookup the index, which is fast. This is the common case
     // that the current list and the new list are in the same order around the
     // new item.
-    const DisplayItem& item = CurrentDisplayItemList()[next_item_to_match_];
+    const DisplayItem& item =
+        UNSAFE_TODO(CurrentDisplayItemList()[next_item_to_match_]);
     // We encounter an item that has already been moved which indicates we
     // can't do sequential matching.
     if (!item.IsTombstone() && id == item.GetId()) {
@@ -679,7 +681,7 @@ wtf_size_t PaintController::FindOutOfOrderCachedItemForward(
     const DisplayItemClient& client,
     const DisplayItem::Id& id) {
   for (auto i = next_item_to_index_; i < CurrentDisplayItemList().size(); ++i) {
-    const DisplayItem& item = CurrentDisplayItemList()[i];
+    const DisplayItem& item = UNSAFE_TODO(CurrentDisplayItemList()[i]);
     if (item.IsTombstone())
       continue;
     if (id == item.GetId()) {
@@ -754,8 +756,8 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
       current_chunks[end_chunk_index - 1].end_index);
 
   bool skip_cache = IsSkippingCache();
-  for (auto& item : new_display_item_list.ItemsInRange(
-           new_item_start_index, new_display_item_list.size())) {
+  for (auto& item : UNSAFE_TODO(new_display_item_list.ItemsInRange(
+           new_item_start_index, new_display_item_list.size()))) {
     DCHECK(!item.IsTombstone());
     // This item was copied from the cache, so client must already be valid,
     // hence we don't call MarkClientForValidation(client).

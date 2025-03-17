@@ -93,6 +93,14 @@ source_set("startup") {
   ]
 }
 
+source_set("utils") {
+  sources = [
+    "app_startup_utils.h",
+    "app_startup_utils.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "chrome_app_startup_parameters_unittest.mm" ]

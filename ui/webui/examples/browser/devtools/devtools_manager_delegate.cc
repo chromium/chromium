@@ -24,7 +24,8 @@ content::BrowserContext* DevToolsManagerDelegate::GetDefaultBrowserContext() {
 scoped_refptr<content::DevToolsAgentHost>
 DevToolsManagerDelegate::CreateNewTarget(
     const GURL& url,
-    content::DevToolsManagerDelegate::TargetType target_type) {
+    content::DevToolsManagerDelegate::TargetType target_type,
+    bool new_window) {
   content::WebContents* web_content =
       create_content_window_func_.Run(browser_context_.get(), url);
   return target_type == content::DevToolsManagerDelegate::kTab

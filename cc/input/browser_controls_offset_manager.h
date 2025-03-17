@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/browser_controls_params.h"
@@ -54,7 +54,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   float TopControlsShownRatio() const;
   float TopControlsHeight() const;
   float TopControlsMinHeight() const;
-  int TopControlsHairlineHeight() const;
+  int TopControlsAdditionalHeight() const;
 
   // The minimum shown ratio top controls can have.
   float TopControlsMinShownRatio() const;
@@ -90,6 +90,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   viz::OffsetTag BottomControlsOffsetTag() const;
 
+  bool HasOffsetTag() const;
+
   // Valid shown ratio range for the top controls. The values will be (0, 1) if
   // there is no animation running.
   std::pair<float, float> TopControlsShownRatioRange();
@@ -111,7 +113,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
 
   // Return the browser control constraint that must be synced to the
   // main renderer thread (to trigger viewport and related changes).
@@ -202,10 +205,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   float top_controls_min_height_offset_;
   float bottom_controls_min_height_offset_;
 
-  // Top/bottom controls shadow height.
-  int top_controls_hairline_height_ = 0;
-  int bottom_controls_additional_height_ = 0;
-
   // Minimum and maximum values |top_controls_min_height_offset_| can take
   // during the current min-height change animation.
   std::optional<std::pair<float, float>> top_min_height_offset_animation_range_;
@@ -223,12 +222,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // gesture, then we reorder the animation until after the scroll.
   bool show_controls_when_scroll_completes_ = false;
 
-  // The tags used to accompany scroll offsets in the render frame's metadata.
-  // During surface aggregation, the layers with the same token will have the
-  // corresponding offsets applied.
-  viz::OffsetTag bottom_controls_offset_tag_;
-  viz::OffsetTag content_offset_tag_;
-  viz::OffsetTag top_controls_offset_tag_;
+  BrowserControlsOffsetTagModifications offset_tag_modifications_;
 
   // Class that holds and manages the state of the controls animations.
   class Animation {

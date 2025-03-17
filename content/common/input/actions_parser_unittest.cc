@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/test/fuzztest_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace content {
 
@@ -202,5 +204,39 @@ TEST(ActionsParserTest, ParsePointerActionSequenceInvalidPointerType) {
   EXPECT_EQ("source type wheel is an unsupported input type",
             actions_parser.error_message());
 }
+
+void ParsesJSONCorrectly(base::Value value) {
+  content::ActionsParser parser(std::move(value));
+  std::ignore = parser.Parse();
+}
+
+FUZZ_TEST(ActionsParserFuzzTest, ParsesJSONCorrectly)
+    .WithSeeds({
+        *base::JSONReader::Read(R"JSON([{
+          "source":"mouse",
+          "id":0,
+          "actions":[
+             { "name":"pointerDown" , "x":2 , "y":3 , "button":0 } ,
+             { "name":"pointerUp"   , "x":2 , "y":3 , "button":0 }
+          ]
+        }])JSON"),
+        *base::JSONReader::Read(R"JSON([{
+          "source":"touch",
+          "id":1,
+          "actions":[
+             { "name":"pointerDown" , "x":3  , "y":5 }  ,
+             { "name":"pointerMove" , "x":30 , "y":30 } ,
+             { "name":"pointerUp" }
+          ]
+        },{
+          "source":"touch",
+          "id":2,
+          "actions":[
+             { "name":"pointerDown" , "x":10 , "y":10 } ,
+             { "name":"pointerMove" , "x":50 , "y":50 } ,
+             { "name":"pointerUp" }
+          ]
+        }])JSON"),
+    });
 
 }  // namespace content

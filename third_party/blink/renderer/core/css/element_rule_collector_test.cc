@@ -40,6 +40,7 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
   rule_set->AddStyleRule(style_rule, /*parent_rule=*/nullptr, *medium,
                          kRuleHasNoSpecialState, /*within_mixin=*/false);
+  rule_set->CompactRulesIfNeeded();
   return rule_set;
 }
 
@@ -75,9 +76,11 @@ class ElementRuleCollectorTest : public PageTestBase {
       return std::nullopt;
     }
 
-    MatchRequest request(rule_set, scope);
+    RuleSetGroup rule_set_group(/*rule_set_group_index=*/0u);
+    rule_set_group.AddRuleSet(rule_set);
 
-    collector.CollectMatchingRules(request, /*part_names*/ nullptr);
+    collector.CollectMatchingRules(MatchRequest(rule_set_group, scope),
+                                   /*part_names*/ nullptr);
     collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
                                           /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
@@ -98,32 +101,37 @@ class ElementRuleCollectorTest : public PageTestBase {
     return link_match_type;
   }
 
-  Vector<MatchedRule> GetAllMatchedRules(Element* element, RuleSet* rule_set) {
+  HeapVector<MatchedRule> GetAllMatchedRules(Element* element,
+                                             RuleSet* rule_set) {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
     ElementRuleCollector collector(context, StyleRecalcContext(), filter,
                                    result, InsideLink(element));
 
-    MatchRequest request(rule_set, {});
+    RuleSetGroup rule_set_group(/*rule_set_group_index=*/0u);
+    rule_set_group.AddRuleSet(rule_set);
 
-    collector.CollectMatchingRules(request, /*part_names*/ nullptr);
-    return Vector<MatchedRule>{collector.MatchedRulesForTest()};
+    collector.CollectMatchingRules(
+        MatchRequest(rule_set_group, /*scope=*/nullptr),
+        /*part_names*/ nullptr);
+    return HeapVector<MatchedRule>{collector.MatchedRulesForTest()};
   }
 
-  RuleIndexList* GetMatchedCSSRuleList(Element* element,
-                                       RuleSet* rule_set,
-                                       const CSSStyleSheet* sheet) {
+  RuleIndexList* GetMatchedCSSRuleList(Element* element, RuleSet* rule_set) {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
     ElementRuleCollector collector(context, StyleRecalcContext(), filter,
                                    result, InsideLink(element));
 
-    MatchRequest request(rule_set, {}, sheet);
+    RuleSetGroup rule_set_group(/*rule_set_group_index=*/0u);
+    rule_set_group.AddRuleSet(rule_set);
 
     collector.SetMode(SelectorChecker::kCollectingCSSRules);
-    collector.CollectMatchingRules(request, /*part_names*/ nullptr);
+    collector.CollectMatchingRules(
+        MatchRequest(rule_set_group, /*scope=*/nullptr),
+        /*part_names*/ nullptr);
     collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
                                           /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
@@ -354,8 +362,12 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     ElementRuleCollector collector(context, StyleRecalcContext(),
                                    SelectorFilter(), result,
                                    EInsideLink::kNotInsideLink);
-    collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr},
-                                   /*part_names*/ nullptr);
+    sheet->GetRuleSet().CompactRulesIfNeeded();
+    RuleSetGroup rule_set_group(/*rule_set_group_index=*/0u);
+    rule_set_group.AddRuleSet(&sheet->GetRuleSet());
+    collector.CollectMatchingRules(
+        MatchRequest(rule_set_group, /*scope=*/nullptr),
+        /*part_names*/ nullptr);
 
     // Pretty-print the arguments for debugging.
     StringBuilder args{};
@@ -431,16 +443,16 @@ TEST_F(ElementRuleCollectorTest, DirectNesting) {
   ASSERT_NE(nullptr, bar);
   ASSERT_NE(nullptr, baz);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   ASSERT_EQ(2u, foo_rules.size());
-  EXPECT_EQ("#foo", foo_rules[0].GetRuleData()->Selector().SelectorText());
-  EXPECT_EQ("&.a", foo_rules[1].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("#foo", foo_rules[0].Selector().SelectorText());
+  EXPECT_EQ("&.a", foo_rules[1].Selector().SelectorText());
 
-  Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
+  HeapVector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
   ASSERT_EQ(1u, bar_rules.size());
-  EXPECT_EQ("& > .b", bar_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("& > .b", bar_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
+  HeapVector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
   ASSERT_EQ(0u, baz_rules.size());
 }
 
@@ -463,13 +475,13 @@ TEST_F(ElementRuleCollectorTest, RuleNotStartingWithAmpersand) {
   ASSERT_NE(nullptr, foo);
   ASSERT_NE(nullptr, bar);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   ASSERT_EQ(1u, foo_rules.size());
-  EXPECT_EQ("#foo", foo_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("#foo", foo_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
+  HeapVector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
   ASSERT_EQ(1u, bar_rules.size());
-  EXPECT_EQ(":not(&)", bar_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ(":not(&)", bar_rules[0].Selector().SelectorText());
 }
 
 TEST_F(ElementRuleCollectorTest, NestingAtToplevelMatchesNothing) {
@@ -485,7 +497,7 @@ TEST_F(ElementRuleCollectorTest, NestingAtToplevelMatchesNothing) {
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
   ASSERT_NE(nullptr, foo);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   EXPECT_EQ(0u, foo_rules.size());
 }
 
@@ -512,15 +524,15 @@ TEST_F(ElementRuleCollectorTest, NestedRulesInMediaQuery) {
   ASSERT_NE(nullptr, bar);
   ASSERT_NE(nullptr, baz);
 
-  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  HeapVector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   ASSERT_EQ(1u, foo_rules.size());
-  EXPECT_EQ("#foo", foo_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("#foo", foo_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
+  HeapVector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
   ASSERT_EQ(1u, bar_rules.size());
-  EXPECT_EQ("& .c", bar_rules[0].GetRuleData()->Selector().SelectorText());
+  EXPECT_EQ("& .c", bar_rules[0].Selector().SelectorText());
 
-  Vector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
+  HeapVector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
   EXPECT_EQ(0u, baz_rules.size());
 }
 
@@ -550,14 +562,14 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
   ASSERT_NE(nullptr, foo);
   ASSERT_NE(nullptr, bar);
 
-  RuleIndexList* foo_css_rules = GetMatchedCSSRuleList(foo, rule_set, sheet);
+  RuleIndexList* foo_css_rules = GetMatchedCSSRuleList(foo, rule_set);
   ASSERT_EQ(2u, foo_css_rules->size());
   CSSRule* foo_css_rule_1 = foo_css_rules->at(0).first;
   EXPECT_EQ("#foo", DynamicTo<CSSStyleRule>(foo_css_rule_1)->selectorText());
   CSSRule* foo_css_rule_2 = foo_css_rules->at(1).first;
   EXPECT_EQ("&.a", DynamicTo<CSSStyleRule>(foo_css_rule_2)->selectorText());
 
-  RuleIndexList* bar_css_rules = GetMatchedCSSRuleList(bar, rule_set, sheet);
+  RuleIndexList* bar_css_rules = GetMatchedCSSRuleList(bar, rule_set);
   ASSERT_EQ(1u, bar_css_rules->size());
   CSSRule* bar_css_rule_1 = bar_css_rules->at(0).first;
   EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());

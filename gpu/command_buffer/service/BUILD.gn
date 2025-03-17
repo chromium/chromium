@@ -276,6 +276,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_image_gl_utils.h",
     "shared_image/shared_image_manager.cc",
     "shared_image/shared_image_manager.h",
+    "shared_image/shared_image_pool_service.cc",
+    "shared_image/shared_image_pool_service.h",
     "shared_image/shared_image_representation.cc",
     "shared_image/shared_image_representation.h",
     "shared_image/shared_memory_image_backing.cc",
@@ -370,7 +372,6 @@ target(link_target_type, "gles2_sources") {
     ":service",
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/crash/core/common",
     "//components/viz/common:shared_image_format",
     "//gpu/command_buffer/client",
@@ -524,8 +525,8 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "dawn_context_provider.cc",
       "dawn_context_provider.h",
-      "shared_image/dawn_shared_texture_holder.cc",
-      "shared_image/dawn_shared_texture_holder.h",
+      "shared_image/dawn_shared_texture_cache.cc",
+      "shared_image/dawn_shared_texture_cache.h",
       "shared_image/skia_graphite_dawn_image_representation.cc",
       "shared_image/skia_graphite_dawn_image_representation.h",
     ]

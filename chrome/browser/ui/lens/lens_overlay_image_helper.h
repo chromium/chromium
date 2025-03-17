@@ -95,6 +95,9 @@ SkColor FindBestMatchedColorOrTransparent(
     const std::vector<SkColor>& candidate_colors,
     SkColor seed_color,
     float min_chroma);
+
+// Returns whether the bitmaps are equal.
+bool AreBitmapsEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_IMAGE_HELPER_H_

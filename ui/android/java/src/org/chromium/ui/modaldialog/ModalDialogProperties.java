@@ -4,6 +4,7 @@
 
 package org.chromium.ui.modaldialog;
 
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -223,8 +224,15 @@ public class ModalDialogProperties {
             new ReadableObjectPropertyKey<>();
 
     /** Configure a button group UI component. */
-    public static final ReadableObjectPropertyKey<ModalDialogButtonSpec[]>
-            BUTTON_GROUP_BUTTON_SPEC_LIST = new ReadableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ModalDialogButtonSpec[]>
+            BUTTON_GROUP_BUTTON_SPEC_LIST = new WritableObjectPropertyKey<>();
+
+    /**
+     * Configure if this dialog can dynamically switch between using the button spec list and the
+     * in-built positive/negative buttons or if the dialog can dynamically change its custom view.
+     */
+    public static final ReadableBooleanPropertyKey CHANGE_CUSTOM_VIEW_OR_BUTTONS =
+            new ReadableBooleanPropertyKey();
 
     /** Whether the title is scrollable with the message. */
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
@@ -277,6 +285,15 @@ public class ModalDialogProperties {
     /** The minimum vertical margin used by the dialog relative to the window. */
     public static final WritableIntPropertyKey VERTICAL_MARGIN = new WritableIntPropertyKey();
 
+    /** The padding used by the dialog content view. */
+    public static final WritableObjectPropertyKey<Rect> PADDING = new WritableObjectPropertyKey();
+
+    /**
+     * Block all inputs on the rest of the dialog view. Note that this does not override any
+     * existing behaviour for touching the scrim or system backpress handling.
+     */
+    public static final WritableBooleanPropertyKey BLOCK_INPUTS = new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 NAME,
@@ -298,6 +315,7 @@ public class ModalDialogProperties {
                 FOOTER_MESSAGE,
                 CANCEL_ON_TOUCH_OUTSIDE,
                 BUTTON_GROUP_BUTTON_SPEC_LIST,
+                CHANGE_CUSTOM_VIEW_OR_BUTTONS,
                 TOUCH_FILTERED_CALLBACK,
                 FILTER_TOUCH_FOR_SECURITY,
                 WRAP_CUSTOM_VIEW_IN_SCROLLABLE,
@@ -310,5 +328,7 @@ public class ModalDialogProperties {
                 TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE,
                 HORIZONTAL_MARGIN,
                 VERTICAL_MARGIN,
+                PADDING,
+                BLOCK_INPUTS,
             };
 }

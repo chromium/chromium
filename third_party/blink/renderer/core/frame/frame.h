@@ -42,7 +42,6 @@
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_policy.mojom-blink-forward.h"
@@ -273,14 +272,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return had_sticky_user_activation_before_nav_;
   }
 
-  void SetAllowFocusDuringFocusAdvance(bool value) {
-    allow_focus_during_focus_advance_ = value;
-  }
-
-  bool AllowFocusDuringFocusAdvance() const {
-    return allow_focus_during_focus_advance_;
-  }
-
   bool IsAttached() const {
     return lifecycle_.GetState() == FrameLifecycle::kAttached;
   }
@@ -443,15 +434,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   // Returns false if fenced frames are disabled. Returns true if the
   // feature is enabled and if `this` or any of its ancestor nodes is a
-  // fenced frame. For MPArch based fenced frames returns the value of
-  // Page::IsMainFrameFencedFrameRoot and for shadowDOM based fenced frames
-  // returns true, if the FrameTree that this frame is in is not the outermost
-  // FrameTree.
+  // fenced frame. Returns the value of Page::IsMainFrameFencedFrameRoot.
   bool IsInFencedFrameTree() const;
 
   // Returns false if fenced frames are disabled. Otherwise, returns true if
-  // this frame is the main frame of a fenced frame tree. Works for both MPArch
-  // and ShadowDOM based fenced frames.
+  // this frame is the main frame of a fenced frame tree.
   bool IsFencedFrameRoot() const;
 
   // Returns the mode set on the fenced frame if the frame is inside a fenced
@@ -462,6 +449,9 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   // Returns all the resources under the frame tree of this node.
   HeapVector<Member<Resource>> AllResourcesUnderFrame();
+
+  // Iterates through the frame owner's ancestor nodes and adjusts the offset.
+  void AdjustOffsetByAncestorFrames(gfx::Point* origin_point);
 
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or
@@ -599,10 +589,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // The sticky user activation state of the current frame before eTLD+1
   // navigation.  This is used in autoplay.
   bool had_sticky_user_activation_before_nav_ = false;
-
-  // This is used in focus delegation scenario when
-  // focus-without-user-activation permission policy is set.
-  bool allow_focus_during_focus_advance_ = false;
 
   // This identifier represents the stable identifier between a
   // LocalFrame  <--> RenderFrameHostImpl or a

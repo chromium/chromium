@@ -148,6 +148,12 @@ export class AllSitesElement extends AllSitesElementBase {
         readOnly: true,
       },
 
+      isRelatedWebsiteSetsV2UiEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
+      },
+
       /**
        * Stores the last selected item in the All Sites list.
        */
@@ -200,6 +206,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private totalUsage_: string;
   private metricsBrowserProxy: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -460,9 +467,18 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.filteredList_.length > 0;
   }
 
-  private shouldShowRwsLearnMore_(): boolean {
+  private hasFilteredRwsSites_(): boolean {
     return this.isRwsFiltered_() && this.filteredList_ &&
         this.filteredList_.length > 0;
+  }
+
+  private hasFilteredRwsSitesV2Ui_(): boolean {
+    return this.isRelatedWebsiteSetsV2UiEnabled_ && this.hasFilteredRwsSites_();
+  }
+
+  private shouldShowRwsV1LearnMore_(): boolean {
+    return !this.isRelatedWebsiteSetsV2UiEnabled_ &&
+        this.hasFilteredRwsSites_();
   }
 
   private onShowRelatedSites_() {
@@ -581,11 +597,25 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.filter.startsWith(RWS_RELATED_SEARCH_PREFIX);
   }
 
+  /**
+   * Checks if the RWS V2 UI is enabled and an RWS filter is applied.
+   * @return True if the RWS V2 UI is enabled and `isRwsFiltered_` is true.
+   */
+  private isRwsV2Filtered_(): boolean {
+    return this.isRelatedWebsiteSetsV2UiEnabled_ && this.isRwsFiltered_();
+  }
+
   private getRwsLearnMoreLabel_() {
     const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
     return loadTimeData.getStringF(
         'siteSettingsRelatedWebsiteSetsLearnMore', rwsOwner);
   }
+
+  private getShowRwsButtonLabel_() {
+    return this.i18n(this.isRelatedWebsiteSetsV2UiEnabled_ ?
+      'allSitesShowRwsButton' : 'relatedWebsiteSetsShowRelatedSitesButton');
+  }
+
   /**
    * Selects the appropriate string to display for clear button based on whether
    * a filter is applied.
@@ -593,7 +623,7 @@ export class AllSitesElement extends AllSitesElementBase {
    *     is applied.
    */
   private getClearDataButtonString_(): string {
-    const buttonStringId = this.isFiltered_() ?
+    const buttonStringId = this.isFiltered_() && !this.isRwsV2Filtered_() ?
         'siteSettingsDeleteDisplayedStorageLabel' :
         'siteSettingsDeleteAllStorageLabel';
     return this.i18n(buttonStringId);
@@ -606,9 +636,12 @@ export class AllSitesElement extends AllSitesElementBase {
    *     is applied.
    */
   private getClearStorageDescription_(): string {
-    const descriptionId = this.isFiltered_() ?
-        'siteSettingsClearDisplayedStorageDescription' :
-        'siteSettingsClearAllStorageDescription';
+    let descriptionId = 'siteSettingsClearAllStorageDescription';
+    if (this.hasFilteredRwsSitesV2Ui_()) {
+      descriptionId = 'allSitesRwsFilterViewStorageDescription';
+    } else if (this.isFiltered_()) {
+      descriptionId = 'siteSettingsClearDisplayedStorageDescription';
+    }
     return loadTimeData.substituteString(
         this.i18n(descriptionId), this.totalUsage_);
   }
@@ -724,7 +757,7 @@ export class AllSitesElement extends AllSitesElementBase {
    * @return The appropriate title for clear storage confirmation dialog.
    */
   private getClearAllStorageDialogTitle_(): string {
-    const titleId = this.isFiltered_() ?
+    const titleId = this.isFiltered_() && !this.isRwsV2Filtered_() ?
         'siteSettingsDeleteDisplayedStorageDialogTitle' :
         'siteSettingsDeleteAllStorageDialogTitle';
     return loadTimeData.substituteString(this.i18n(titleId), this.totalUsage_);
@@ -732,11 +765,20 @@ export class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Get the appropriate label for the clear data confirmation dialog, depending
-   * on whether any apps are installed and/or filter is applied.
+   * on whether any apps are installed, a filter is applied, and/or the RWS V2
+   * view is shown.
    * @return The appropriate description for clear data confirmation dialog.
    */
   private getClearAllStorageDialogDescription_(): string {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
+    if (this.isRwsV2Filtered_()) {
+      const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
+      const messageId = anyAppsInstalled ?
+          'siteSettingsDeleteRwsStorageConfirmationInstalled' :
+          'siteSettingsDeleteRwsStorageConfirmation';
+      return loadTimeData.getStringF(messageId, this.totalUsage_, rwsOwner);
+    }
+
     let messageId;
     if (anyAppsInstalled) {
       messageId = this.isFiltered_() ?
@@ -756,13 +798,16 @@ export class AllSitesElement extends AllSitesElementBase {
    * Selects the appropriate string to display for the sign-out string in
    * confirmation popup based on whether a filter is applied.
    * @return The appropriate sign out confirmation string based on whether a
-   *     filter is applied.
+   *     filter is applied and/or the RWS V2 view is shown.
    */
   private getClearAllStorageDialogSignOutLabel_(): string {
-    const signOutLabelId = this.isFiltered_() ?
-        'siteSettingsClearDisplayedStorageSignOut' :
-        'siteSettingsClearAllStorageSignOut';
-    return this.i18n(signOutLabelId);
+    if (this.isFiltered_()) {
+      const messageId = this.isRwsV2Filtered_() ?
+          'siteSettingsClearRwsStorageSignOut' :
+          'siteSettingsClearDisplayedStorageSignOut';
+      return this.i18n(messageId);
+    }
+    return this.i18n('siteSettingsClearAllStorageSignOut');
   }
 
   private recordUserAction_(scopes: string[]) {

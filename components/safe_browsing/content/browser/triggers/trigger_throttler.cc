@@ -4,9 +4,10 @@
 
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/default_clock.h"
@@ -46,7 +47,7 @@ bool TryFindQuotaForTrigger(
     const TriggerType trigger_type,
     const std::vector<TriggerTypeAndQuotaItem>& trigger_quota_list,
     size_t* out_quota) {
-  const auto& trigger_quota_iter = base::ranges::find(
+  const auto& trigger_quota_iter = std::ranges::find(
       trigger_quota_list, trigger_type, &TriggerTypeAndQuotaItem::first);
   if (trigger_quota_iter != trigger_quota_list.end()) {
     *out_quota = trigger_quota_iter->second;

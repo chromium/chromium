@@ -99,6 +99,42 @@ class UserScriptsUpdateFunction : public ExtensionFunction {
   void OnUserScriptsUpdated(const std::optional<std::string>& error);
 };
 
+class UserScriptsExecuteFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("userScripts.execute", USERSCRIPTS_EXECUTE)
+
+  UserScriptsExecuteFunction() = default;
+  UserScriptsExecuteFunction(const UserScriptsExecuteFunction&) = delete;
+  const UserScriptsExecuteFunction& operator=(
+      const UserScriptsExecuteFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~UserScriptsExecuteFunction() override = default;
+
+  // Called when the resource files to be injected has been loaded.
+  void DidLoadResources(ScriptExecutor* script_executor,
+                        ScriptExecutor::FrameScope frame_scope,
+                        std::set<int> frame_ids,
+                        std::vector<std::optional<mojom::JSSourcePtr>> sources,
+                        std::vector<scripting::InjectedFileSource> file_sources,
+                        std::optional<std::string> load_error);
+
+  // Triggers the execution of `sources` in the appropriate context.
+  void Execute(std::vector<std::optional<mojom::JSSourcePtr>> sources,
+               ScriptExecutor* script_executor,
+               ScriptExecutor::FrameScope frame_scope,
+               std::set<int> frame_ids,
+               std::string* error);
+
+  // Invoked when script execution is complete.
+  void OnScriptExecuted(std::vector<ScriptExecutor::FrameResult> frame_results);
+
+  api::user_scripts::UserScriptInjection injection_;
+};
+
 class UserScriptsConfigureWorldFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("userScripts.configureWorld",

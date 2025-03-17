@@ -31,6 +31,7 @@ using PictureDeserializationContext =
     base::flat_map<uint32_t, sk_sp<SkPicture>>;
 using TypefaceDeserializationContext =
     base::flat_map<uint32_t, sk_sp<SkTypeface>>;
+using ImageDeserializationContext = base::flat_map<uint32_t, sk_sp<SkImage>>;
 
 // Stores the mapping between content's unique id and its corresponding frame
 // proxy token.
@@ -38,6 +39,9 @@ using PictureSerializationContext = ContentToProxyTokenMap;
 
 // Stores the set of typeface unique ids used by the picture frame content.
 using TypefaceSerializationContext = ContentProxySet;
+
+// Stores the set of serialized image ids used by the content.
+using ImageSerializationContext = ContentProxySet;
 
 sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,
@@ -51,11 +55,13 @@ sk_sp<SkDocument> MakeXpsDocument(SkWStream* stream);
 #endif
 
 SkSerialProcs SerializationProcs(PictureSerializationContext* picture_ctx,
-                                 TypefaceSerializationContext* typeface_ctx);
+                                 TypefaceSerializationContext* typeface_ctx,
+                                 ImageSerializationContext* image_ctx);
 
 SkDeserialProcs DeserializationProcs(
     PictureDeserializationContext* picture_ctx,
-    TypefaceDeserializationContext* typeface_ctx);
+    TypefaceDeserializationContext* typeface_ctx,
+    ImageDeserializationContext* image_ctx);
 
 }  // namespace printing
 

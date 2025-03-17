@@ -21,7 +21,7 @@ TEST_P(BoxPainterTest, EmptyDecorationBackground) {
     <style>
       body {
         margin: 0;
-        /* to force a subsequene and paint chunk */
+        /* to force a subsequence and paint chunk */
         opacity: 0.5;
         /* to verify child empty backgrounds expand chunk bounds */
         height: 0;
@@ -216,10 +216,7 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
               scroll_hit_test_data, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
               2, 3,
-              PaintChunk::Id(container.Id(),
-                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                                 ? kScrollingBackgroundChunkType
-                                 : kClippedContentsBackgroundChunkType),
+              PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
               scrolling_contents_properties)));
 
   // We always create scroll node for the root layer.

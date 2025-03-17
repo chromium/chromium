@@ -35,3 +35,14 @@ Inherited transitions for pseudo ::before
 First inherited entry contains transitions from "#element": TRUE
 Second inherited entry is empty (.parent does not have any transitions): TRUE
 
+Animations for pseudo ::before when its origin element does not have any animations
+There is only 1 animation: TRUE
+The name of the animation is --color: TRUE
+The color property is animated: TRUE
+
+Scroll driven animations in a non-scrollable container
+There is no animation: TRUE
+
+Animations with `animation-start-delay`
+There is no animation: TRUE
+

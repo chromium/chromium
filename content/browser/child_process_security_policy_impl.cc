@@ -4,6 +4,7 @@
 
 #include "content/browser/child_process_security_policy_impl.h"
 
+#include <algorithm>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -20,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1136,8 +1136,20 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOfSpecificFile(
   }
 
   // When the child process has been commanded to request a file:// URL,
-  // then we grant it the capability for that URL only.
-  state->second->GrantRequestOfSpecificFile(path);
+  // then we grant it the capability for that URL only. Canonicalize the path
+  // via roundtrip to file:// URL so it will match the incoming URL we validate
+  // against (crbug.com/382645162), except android content:// URLs.
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    state->second->GrantRequestOfSpecificFile(path);
+    return;
+  }
+#endif
+  GURL url = net::FilePathToFileURL(path);
+  base::FilePath canonical_path;
+  if (net::FileURLToFilePath(url, &canonical_path)) {
+    state->second->GrantRequestOfSpecificFile(canonical_path);
+  }
 }
 
 void ChildProcessSecurityPolicyImpl::GrantReadFile(int child_id,
@@ -1527,10 +1539,10 @@ bool ChildProcessSecurityPolicyImpl::CanReadFile(int child_id,
 bool ChildProcessSecurityPolicyImpl::CanReadAllFiles(
     int child_id,
     const std::vector<base::FilePath>& files) {
-  return base::ranges::all_of(files,
-                              [this, child_id](const base::FilePath& file) {
-                                return CanReadFile(child_id, file);
-                              });
+  return std::ranges::all_of(files,
+                             [this, child_id](const base::FilePath& file) {
+                               return CanReadFile(child_id, file);
+                             });
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
@@ -2495,7 +2507,7 @@ void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(
     BrowserContext* browser_context) {
   std::vector<IsolatedOriginPattern> patterns;
   patterns.reserve(origins_to_add.size());
-  base::ranges::transform(
+  std::ranges::transform(
       origins_to_add, std::back_inserter(patterns),
       [](const url::Origin& o) { return IsolatedOriginPattern(o); });
   AddFutureIsolatedOrigins(patterns, source, browser_context);
@@ -2904,7 +2916,7 @@ ChildProcessSecurityPolicyImpl::LookupOriginIsolationState(
     return nullptr;
   }
   auto& origin_list = it_isolation_by_browsing_instance->second;
-  auto it_origin_list = base::ranges::find(
+  auto it_origin_list = std::ranges::find(
       origin_list, origin, &OriginAgentClusterOptInEntry::origin);
   if (it_origin_list != origin_list.end())
     return &(it_origin_list->oac_isolation_state);

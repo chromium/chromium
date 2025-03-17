@@ -103,7 +103,7 @@ UkmEntry PreloadingPredictionUkmEntryBuilder::BuildEntry(
 }
 
 void ExpectPreloadingAttemptUkm(
-    ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
     const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
         expected_attempt_entries) {
   auto attempt_entries = ukm_recorder.GetEntries(
@@ -116,7 +116,7 @@ void ExpectPreloadingAttemptUkm(
 }
 
 void ExpectPreloadingPredictionUkm(
-    ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
     const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
         expected_prediction_entries) {
   auto prediction_entries = ukm_recorder.GetEntries(

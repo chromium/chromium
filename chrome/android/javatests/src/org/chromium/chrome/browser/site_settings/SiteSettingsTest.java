@@ -11,6 +11,7 @@ import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -73,6 +74,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -113,9 +115,11 @@ import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
+import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.site_settings.RwsCookieSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
@@ -136,6 +140,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -162,6 +167,12 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
+})
+@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI})
+// TODO(crbug.com/370008370): Update individual tests after launch.
+@DisableFeatures({
+    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+    ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
 public class SiteSettingsTest {
@@ -213,6 +224,26 @@ public class SiteSettingsTest {
         "anti_abuse_things_to_consider_header",
         "anti_abuse_things_to_consider_section_one"
     };
+
+    private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
+        public static String TEST_MESSAGE = "testJavascriptOptimizerMessage";
+
+        private boolean mIsJavascriptOptimizerPermissionGranted;
+
+        public TestPermissionProvider(boolean isJavascriptOptimizerPermissionGranted) {
+            mIsJavascriptOptimizerPermissionGranted = isJavascriptOptimizerPermissionGranted;
+        }
+
+        @Override
+        public boolean hasJavascriptOptimizerPermission() {
+            return mIsJavascriptOptimizerPermissionGranted;
+        }
+
+        @Override
+        public String getJavascriptOptimizerMessage(Context context) {
+            return TestPermissionProvider.TEST_MESSAGE;
+        }
+    }
 
     @Before
     public void setUp() throws TimeoutException {
@@ -391,6 +422,39 @@ public class SiteSettingsTest {
                         false));
 
         return site;
+    }
+
+    private void createAndSetRwsCookieInfo(Website owner, List<Website> websiteList) {
+        RwsCookieInfo rwsInfo = new RwsCookieInfo(owner.getAddress().getOrigin(), websiteList);
+        owner.setRwsCookieInfo(rwsInfo);
+    }
+
+    private Website getRwsOwnerSite() {
+        Website origin1 = new Website(WebsiteAddress.create("https://one.test.com"), null);
+        Website origin2 = new Website(WebsiteAddress.create("https://two.test.com"), null);
+        createAndSetRwsCookieInfo(origin1, List.of(origin1, origin2));
+        return origin1;
+    }
+
+    private WebsiteGroup getRwsSiteGroup() {
+        Website origin1 = new Website(WebsiteAddress.create("https://one.test.com"), null);
+        Website origin2 = new Website(WebsiteAddress.create("https://two.test.com"), null);
+        createAndSetRwsCookieInfo(origin1, List.of(origin1, origin2));
+        return new WebsiteGroup(origin1.getAddress().getOrigin(), Arrays.asList(origin1, origin2));
+    }
+
+    private Website getRwsOwnerSiteForUrls(String url1, String url2) {
+        Website origin1 = new Website(WebsiteAddress.create(url1), null);
+        Website origin2 = new Website(WebsiteAddress.create(url2), null);
+        createAndSetRwsCookieInfo(origin1, List.of(origin1, origin2));
+        return origin1;
+    }
+
+    private WebsiteGroup getRwsSiteGroupForUrls(String url1, String url2) {
+        Website origin1 = new Website(WebsiteAddress.create(url1), null);
+        Website origin2 = new Website(WebsiteAddress.create(url2), null);
+        createAndSetRwsCookieInfo(origin1, List.of(origin1, origin2));
+        return new WebsiteGroup(origin1.getAddress().getOrigin(), Arrays.asList(origin1, origin2));
     }
 
     /** Sets Allow Location Enabled to be true and make sure it is set correctly. */
@@ -627,6 +691,12 @@ public class SiteSettingsTest {
             settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(type);
         }
 
+        checkPreferencesForSettingsActivity(settingsActivity, expectedKeys);
+        settingsActivity.finish();
+    }
+
+    private void checkPreferencesForSettingsActivity(
+            SettingsActivity settingsActivity, String[] expectedKeys) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PreferenceFragmentCompat preferenceFragment =
@@ -648,7 +718,6 @@ public class SiteSettingsTest {
                             actualKeys,
                             expectedKeys.length == 0 ? emptyIterable() : contains(expectedKeys));
                 });
-        settingsActivity.finish();
     }
 
     private void testExpectedPreferences(
@@ -878,6 +947,94 @@ public class SiteSettingsTest {
         // Load the page again and ensure the cookie is gone.
         mPermissionRule.loadUrl(url);
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+    }
+
+    /** Tests clearing cookies for the RWS group from SingleWebsiteSettings. */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void clearCookiesForRwsOwner() throws Exception {
+        final String url1 =
+                mPermissionRule.getURLWithHostName(
+                        "one.example.com", "/chrome/test/data/android/cookie.html");
+        final String url2 =
+                mPermissionRule.getURLWithHostName(
+                        "two.example.com", "/chrome/test/data/android/cookie.html");
+        Website rwsOwner = getRwsOwnerSiteForUrls(url1, url2);
+
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        resetRwsGroupOnSingleWebsiteSettings(rwsOwner);
+
+        // Load the page again and ensure the cookie is gone.
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+    }
+
+    /** Tests clearing cookies for the RWS group from GroupedWebsiteSettings. */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void clearCookiesForRwsGroup() throws Exception {
+        final String url1 =
+                mPermissionRule.getURLWithHostName(
+                        "one.example.com", "/chrome/test/data/android/cookie.html");
+        final String url2 =
+                mPermissionRule.getURLWithHostName(
+                        "two.example.com", "/chrome/test/data/android/cookie.html");
+        final String url3 =
+                mPermissionRule.getURLWithHostName(
+                        "foo.com", "/chrome/test/data/android/cookie.html");
+        WebsiteGroup rwsGroup = getRwsSiteGroupForUrls(url1, url2);
+
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url3);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".foo.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        resetRwsGroupOnGroupedWebsiteSettings(rwsGroup);
+
+        // 1 and 2 got cleared; 3 stays intact.
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url3);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /**
@@ -1147,6 +1304,30 @@ public class SiteSettingsTest {
                     GroupedWebsitesSettings websitePreferences =
                             (GroupedWebsitesSettings) settingsActivity.getMainFragment();
                     websitePreferences.resetGroup();
+                });
+        settingsActivity.finish();
+    }
+
+    private void resetRwsGroupOnSingleWebsiteSettings(Website website) {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    websitePreferences.resetRwsData();
+                });
+        settingsActivity.finish();
+    }
+
+    private void resetRwsGroupOnGroupedWebsiteSettings(WebsiteGroup group) {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(group);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    GroupedWebsitesSettings websitePreferences =
+                            (GroupedWebsitesSettings) settingsActivity.getMainFragment();
+                    websitePreferences.resetRwsData();
                 });
         settingsActivity.finish();
     }
@@ -2035,6 +2216,61 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testAllowNotifications() {
+        new TwoStatePermissionTestCase(
+                        "Notifications",
+                        SiteSettingsCategory.Type.NOTIFICATIONS,
+                        ContentSettingsType.NOTIFICATIONS,
+                        true)
+                .withExpectedPrefKeys(SingleCategorySettings.NOTIFICATIONS_TRI_STATE_PREF_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testBlockNotifications() {
+        new TwoStatePermissionTestCase(
+                        "Notifications",
+                        SiteSettingsCategory.Type.NOTIFICATIONS,
+                        ContentSettingsType.NOTIFICATIONS,
+                        false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    @DisabledTest(message = "crbug.com/402655848")
+    public void testAllowGeolocation() {
+        new TwoStatePermissionTestCase(
+                        "Geolocation",
+                        SiteSettingsCategory.Type.DEVICE_LOCATION,
+                        ContentSettingsType.GEOLOCATION,
+                        true)
+                .withExpectedPrefKeys(SingleCategorySettings.LOCATION_TRI_STATE_PREF_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testBlockGeolocation() {
+        new TwoStatePermissionTestCase(
+                        "Geolocation",
+                        SiteSettingsCategory.Type.DEVICE_LOCATION,
+                        ContentSettingsType.GEOLOCATION,
+                        false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     public void testAllowUsb() {
         new TwoStatePermissionTestCase(
                         "USB", SiteSettingsCategory.Type.USB, ContentSettingsType.USB_GUARD, true)
@@ -2387,6 +2623,155 @@ public class SiteSettingsTest {
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testOsBlocksJavascriptOptimizer() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ServiceLoaderUtil.setInstanceForTesting(
+                            OsAdditionalSecurityPermissionProvider.class,
+                            new TestPermissionProvider(
+                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                });
+
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleCategorySettings singleCategorySettings =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
+
+                    checkPreferencesForSettingsActivity(
+                            settingsActivity,
+                            new String[] {
+                                SingleCategorySettings.INFO_TEXT_KEY,
+                                SingleCategorySettings.BINARY_TOGGLE_KEY,
+                                SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA
+                            });
+
+                    ChromeSwitchPreference binaryToggle =
+                            (ChromeSwitchPreference)
+                                    singleCategorySettings.findPreference(
+                                            SingleCategorySettings.BINARY_TOGGLE_KEY);
+                    Assert.assertFalse(binaryToggle.isChecked());
+                    Assert.assertFalse(binaryToggle.isEnabled());
+
+                    Preference osWarningPreference =
+                            singleCategorySettings.findPreference(
+                                    SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA);
+                    Assert.assertEquals(
+                            TestPermissionProvider.TEST_MESSAGE, osWarningPreference.getTitle());
+
+                    settingsActivity.finish();
+                });
+    }
+
+    /**
+     * Test that if the Javascript-optimizer is enabled by enterprise policy but disabled by the
+     * Android OS setting that the enterprise policy is given precedence.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({@Policies.Item(key = "DefaultJavaScriptOptimizerSetting", string = "1")})
+    public void testPolicyHigherPriorityThanOsBlockingJavascriptOptimizer() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ServiceLoaderUtil.setInstanceForTesting(
+                            OsAdditionalSecurityPermissionProvider.class,
+                            new TestPermissionProvider(
+                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                });
+
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleCategorySettings singleCategorySettings =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
+
+                    // TODO(crbug.com/399933929) Do not show "Add Exception" button.
+                    checkPreferencesForSettingsActivity(
+                            settingsActivity,
+                            new String[] {
+                                SingleCategorySettings.INFO_TEXT_KEY,
+                                SingleCategorySettings.BINARY_TOGGLE_KEY,
+                                SingleCategorySettings.ADD_EXCEPTION_KEY
+                            });
+
+                    ChromeSwitchPreference binaryToggle =
+                            (ChromeSwitchPreference)
+                                    singleCategorySettings.findPreference(
+                                            SingleCategorySettings.BINARY_TOGGLE_KEY);
+                    Assert.assertTrue(binaryToggle.isChecked());
+                    Assert.assertFalse(binaryToggle.isEnabled());
+
+                    onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
+                            .inAdapterView(
+                                    allOf(
+                                            withContentDescription(
+                                                    R.string.managed_by_your_organization),
+                                            withText(R.string.managed_by_your_organization),
+                                            isDisplayed()));
+
+                    settingsActivity.finish();
+                });
+    }
+
+    /**
+     * Test that when: - Javascript-optimizer permission toggle is present on the {@link
+     * SingleWebsiteSettings} screen AND - Javascript-optimizer permission is denied by the
+     * operating system THAT the toggle is disabled.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testOsBlocksJavascriptOptimizerSingleWebsite() throws Exception {
+        final String pageUrl = mPermissionRule.getURL("/chrome/test/data/android/simple.html");
+        String pageOrigin = mPermissionRule.getOrigin();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            new GURL(pageOrigin),
+                            new GURL(pageOrigin),
+                            ContentSettingValues.ALLOW);
+                    ServiceLoaderUtil.setInstanceForTesting(
+                            OsAdditionalSecurityPermissionProvider.class,
+                            new TestPermissionProvider(
+                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                });
+
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent =
+                settingsNavigation.createSettingsIntent(
+                        context,
+                        SingleWebsiteSettings.class,
+                        SingleWebsiteSettings.createFragmentArgsForSite(pageUrl));
+        final SettingsActivity settingsActivity =
+                (SettingsActivity)
+                        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    Preference javascriptOptimizerPreference =
+                            websitePreferences.findPreference("javascript_optimizer");
+                    Assert.assertFalse(javascriptOptimizerPreference.isEnabled());
+                });
+        settingsActivity.finish();
     }
 
     @Test
@@ -2775,6 +3160,24 @@ public class SiteSettingsTest {
         renderSettingsPage(settingsActivity, name);
     }
 
+    private void renderClearDataDialogView(SettingsActivity settingsActivity, String name)
+            throws IOException {
+        onView(withId(R.id.clear_reset_dialog))
+                .inRoot(isDialog())
+                .check(
+                        (view, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            try {
+                                ChromeRenderTestRule.sanitize(view);
+                                mRenderTestRule.render(view, name);
+                            } catch (IOException e) {
+                                assert false : "Render test failed due to " + e;
+                            }
+                        });
+        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
+        settingsActivity.finish();
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
@@ -2792,6 +3195,104 @@ public class SiteSettingsTest {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startStorageAccessSettingsActivity(getStorageAccessSite());
         renderSettingsPage(settingsActivity, "site_settings_storage_access_subpage");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderRwsSingleWebsiteSettings() throws Exception {
+        createStorageAccessExceptions();
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(getRwsOwnerSite());
+        renderSettingsPage(settingsActivity, "site_settings_rws_single_website");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderRwsGroupedWebsiteSettings() throws Exception {
+        createStorageAccessExceptions();
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(getRwsSiteGroup());
+        renderSettingsPage(settingsActivity, "site_settings_rws_grouped_website_settings");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderRwsSingleWebsiteSettingsDeleteAllDataDialog() throws Exception {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(getRwsOwnerSite());
+
+        onView(withText(R.string.site_settings_rws_delete_button_label))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(R.string.site_settings_delete_rws_storage_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.site_settings_delete_rws_storage_sign_out))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.webstorage_delete_data_dialog_offline_message))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.storage_delete_dialog_clear_storage_option))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        renderClearDataDialogView(
+                settingsActivity, "site_settings_rws_single_website_delete_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderRwsGroupedWebsiteSettingsDeleteAllDataDialog() throws Exception {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(getRwsSiteGroup());
+
+        onView(withText(R.string.site_settings_rws_delete_button_label))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(R.string.site_settings_delete_rws_storage_dialog_title))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.site_settings_delete_rws_storage_sign_out))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.webstorage_delete_data_dialog_offline_message))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.storage_delete_dialog_clear_storage_option))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        renderClearDataDialogView(
+                settingsActivity, "site_settings_rws_grouped_website_settings_delete_dialog");
+    }
+
+    // TODO(crbug.com/396463421): Remove once RWS UI V2 launched.
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI)
+    public void renderRwsSingleWebsiteSettingsRwsV2UiDisabled() throws Exception {
+        createStorageAccessExceptions();
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(getRwsOwnerSite());
+        renderSettingsPage(settingsActivity, "site_settings_rws_single_website_v2_disabled");
+    }
+
+    // TODO(crbug.com/396463421): Remove once RWS UI V2 launched.
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI)
+    public void renderRwsGroupedWebsiteSettingsRwsV2UiDisabled() throws Exception {
+        createStorageAccessExceptions();
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(getRwsSiteGroup());
+        renderSettingsPage(
+                settingsActivity, "site_settings_rws_grouped_website_settings_v2_disabled");
     }
 
     @Test
@@ -2871,12 +3372,14 @@ public class SiteSettingsTest {
     @Policies.Add({
         @Policies.Item(key = "DefaultJavaScriptSetting", string = "2"),
         @Policies.Item(key = "DefaultPopupsSetting", string = "2"),
-        @Policies.Item(key = "DefaultGeolocationSetting", string = "2")
+        @Policies.Item(key = "DefaultGeolocationSetting", string = "2"),
+        @Policies.Item(key = "DefaultJavaScriptOptimizerSetting", string = "2")
     })
     public void testAllTwoStateToggleDisabledByPolicy() {
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.POPUPS);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.DEVICE_LOCATION);
+        testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
         // TODO(crbug.com/40879457): add a test for sensors once crash in the sensors settings page
         // is
         // resolved.
@@ -3044,7 +3547,13 @@ public class SiteSettingsTest {
                 String testName, int siteSettingsType, int contentSettingsType, boolean enabled) {
             super(testName, siteSettingsType, contentSettingsType, enabled);
 
-            mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_TOGGLE_KEY);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                    && siteSettingsType != SiteSettingsCategory.Type.ANTI_ABUSE) {
+                mExpectedPreferenceKeys.add(SingleCategorySettings.INFO_TEXT_KEY);
+                mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+            } else {
+                mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_TOGGLE_KEY);
+            }
         }
 
         @Override
@@ -3069,50 +3578,86 @@ public class SiteSettingsTest {
                             + mSiteSettingsType
                             + ">.";
 
-            ChromeSwitchPreference toggle =
-                    singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
-            assertNotNull("Toggle should not be null.", toggle);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+                BinaryStatePermissionPreference radioButton =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                assertNotNull("Toggle should not be null.", radioButton);
 
-            singleCategorySettings.onPreferenceChange(toggle, mIsCategoryEnabled);
-            Assert.assertEquals(
-                    exceptionString,
-                    mIsCategoryEnabled,
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), mContentSettingsType));
+                singleCategorySettings.onPreferenceChange(radioButton, mIsCategoryEnabled);
+                Assert.assertEquals(
+                        exceptionString,
+                        mIsCategoryEnabled,
+                        WebsitePreferenceBridge.isCategoryEnabled(
+                                getBrowserContextHandle(), mContentSettingsType));
+            } else {
+                ChromeSwitchPreference toggle =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_TOGGLE_KEY);
+                assertNotNull("Toggle should not be null.", toggle);
+
+                singleCategorySettings.onPreferenceChange(toggle, mIsCategoryEnabled);
+                Assert.assertEquals(
+                        exceptionString,
+                        mIsCategoryEnabled,
+                        WebsitePreferenceBridge.isCategoryEnabled(
+                                getBrowserContextHandle(), mContentSettingsType));
+            }
         }
 
         /** Verfiy {@link ContentSettingsResources} is set correctly. */
         private void assertToggleTitleAndSummary(SingleCategorySettings singleCategorySettings) {
-            ChromeSwitchPreference toggle =
-                    singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
-            assert toggle != null;
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+                BinaryStatePermissionPreference radio_button =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                assert radio_button != null;
 
-            Assert.assertEquals(
-                    "Preference title is not set correctly.",
-                    singleCategorySettings
-                            .getResources()
-                            .getString(ContentSettingsResources.getTitle(mContentSettingsType)),
-                    toggle.getTitle());
-            assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
-            assertNotNull("Disabled summary text should not be null.", toggle.getSummaryOff());
+                Assert.assertEquals(
+                        "Preference text is not set correctly.",
+                        ContentSettingsResources.getBinaryStateSettingResourceIDs(
+                                mContentSettingsType)[0],
+                        radio_button.getDescriptionIds()[0]);
+                Assert.assertEquals(
+                        "Preference text is not set correctly.",
+                        ContentSettingsResources.getBinaryStateSettingResourceIDs(
+                                mContentSettingsType)[1],
+                        radio_button.getDescriptionIds()[1]);
+            } else {
+                ChromeSwitchPreference toggle =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_TOGGLE_KEY);
+                assert toggle != null;
 
-            String summary =
-                    mIsCategoryEnabled
-                            ? toggle.getSummaryOn().toString()
-                            : toggle.getSummaryOff().toString();
-            String expected =
-                    singleCategorySettings
-                            .getResources()
-                            .getString(
-                                    mIsCategoryEnabled
-                                            ? ContentSettingsResources.getEnabledSummary(
-                                                    mContentSettingsType)
-                                            : ContentSettingsResources.getDisabledSummary(
-                                                    mContentSettingsType));
-            Assert.assertEquals(
-                    "Summary text in state <" + mIsCategoryEnabled + "> does not match.",
-                    expected,
-                    summary);
+                Assert.assertEquals(
+                        "Preference title is not set correctly.",
+                        singleCategorySettings
+                                .getResources()
+                                .getString(ContentSettingsResources.getTitle(mContentSettingsType)),
+                        toggle.getTitle());
+                assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
+                assertNotNull("Disabled summary text should not be null.", toggle.getSummaryOff());
+
+                String summary =
+                        mIsCategoryEnabled
+                                ? toggle.getSummaryOn().toString()
+                                : toggle.getSummaryOff().toString();
+                String expected =
+                        singleCategorySettings
+                                .getResources()
+                                .getString(
+                                        mIsCategoryEnabled
+                                                ? ContentSettingsResources.getEnabledSummary(
+                                                        mContentSettingsType)
+                                                : ContentSettingsResources.getDisabledSummary(
+                                                        mContentSettingsType));
+                Assert.assertEquals(
+                        "Summary text in state <" + mIsCategoryEnabled + "> does not match.",
+                        expected,
+                        summary);
+            }
         }
     }
 }

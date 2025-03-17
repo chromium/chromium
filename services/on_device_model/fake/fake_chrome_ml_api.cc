@@ -38,13 +38,17 @@ std::string PieceToString(const ml::InputPiece& piece) {
   NOTREACHED();
 }
 
-int g_active_non_clone_sessions = 0;
+std::string ReadFile(PlatformFile api_file) {
+  base::File file(static_cast<base::PlatformFile>(api_file));
+  std::vector<uint8_t> contents;
+  contents.resize(file.GetLength());
+  if (!file.ReadAndCheck(0, contents)) {
+    return std::string();
+  }
+  return std::string(contents.begin(), contents.end());
+}
 
 }  // namespace
-
-int GetActiveNonCloneSessions() {
-  return g_active_non_clone_sessions;
-}
 
 void InitDawnProcs(const DawnProcTable& procs) {}
 
@@ -64,6 +68,13 @@ bool QueryGPUAdapter(void (*adapter_callback_fn)(WGPUAdapter adapter,
   return false;
 }
 
+bool GetCapabilities(PlatformFile file, ChromeMLCapabilities& capabilities) {
+  std::string contents = ReadFile(file);
+  capabilities.image_input = contents.find("image") != std::string::npos;
+  capabilities.audio_input = contents.find("audio") != std::string::npos;
+  return true;
+}
+
 struct FakeModelInstance {
   ml::ModelBackendType backend_type_;
   ml::ModelPerformanceHint performance_hint;
@@ -72,9 +83,11 @@ struct FakeModelInstance {
 
 struct FakeSessionInstance {
   std::string adaptation_data_;
+  std::optional<uint32_t> adaptation_file_id_;
   std::vector<std::string> context_;
   bool cloned;
   bool enable_image_input;
+  bool enable_audio_input;
 };
 
 struct FakeTsModelInstance {
@@ -84,16 +97,6 @@ struct FakeTsModelInstance {
 struct FakeCancelInstance {
   bool cancelled = false;
 };
-
-std::string ReadFile(PlatformFile api_file) {
-  base::File file(static_cast<base::PlatformFile>(api_file));
-  std::vector<uint8_t> contents;
-  contents.resize(file.GetLength());
-  if (!file.ReadAndCheck(0, contents)) {
-    return std::string();
-  }
-  return std::string(contents.begin(), contents.end());
-}
 
 ChromeMLModel SessionCreateModel(const ChromeMLModelDescriptor* descriptor,
                                  uintptr_t context,
@@ -118,12 +121,13 @@ ChromeMLSafetyResult ClassifyTextSafety(ChromeMLModel model,
 
 ChromeMLSession CreateSession(ChromeMLModel model,
                               const ChromeMLAdaptationDescriptor* descriptor) {
-  g_active_non_clone_sessions++;
   auto* model_instance = reinterpret_cast<FakeModelInstance*>(model);
   auto* instance = new FakeSessionInstance{};
   if (descriptor) {
     instance->enable_image_input = descriptor->enable_image_input;
+    instance->enable_audio_input = descriptor->enable_audio_input;
     if (descriptor->model_data) {
+      instance->adaptation_file_id_ = descriptor->model_data->file_id;
       if (model_instance->backend_type_ == ml::ModelBackendType::kGpuBackend) {
         instance->adaptation_data_ =
             ReadFile(descriptor->model_data->weights_file);
@@ -142,17 +146,16 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
   return reinterpret_cast<ChromeMLSession>(new FakeSessionInstance{
       .adaptation_data_ = instance->adaptation_data_,
+      .adaptation_file_id_ = instance->adaptation_file_id_,
       .context_ = instance->context_,
       .cloned = true,
       .enable_image_input = instance->enable_image_input,
+      .enable_audio_input = instance->enable_audio_input,
   });
 }
 
 void DestroySession(ChromeMLSession session) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
-  if (!instance->cloned) {
-    g_active_non_clone_sessions--;
-  }
   delete instance;
 }
 
@@ -175,7 +178,8 @@ bool SessionExecuteModel(ChromeMLSession session,
 
     CHECK(!std::holds_alternative<SkBitmap>(piece) ||
           instance->enable_image_input);
-
+    CHECK(!std::holds_alternative<ml::AudioBuffer>(piece) ||
+          instance->enable_audio_input);
     text += PieceToString(piece);
   }
   if (options->token_offset > 0) {
@@ -214,15 +218,17 @@ bool SessionExecuteModel(ChromeMLSession session,
     OutputChunk("Fastest inference\n");
   }
   if (!instance->adaptation_data_.empty()) {
-    OutputChunk("Adaptation: " + instance->adaptation_data_ + "\n");
+    std::string adaptation_str = "Adaptation: " + instance->adaptation_data_;
+    if (instance->adaptation_file_id_) {
+      adaptation_str +=
+          " (" + base::NumberToString(*instance->adaptation_file_id_) + ")";
+    }
+    OutputChunk(adaptation_str + "\n");
   }
   if (!instance->context_.empty()) {
-    const std::string last = instance->context_.back();
-    instance->context_.pop_back();
     for (const std::string& context : instance->context_) {
       OutputChunk("Context: " + context + "\n");
     }
-    OutputChunk("Input: " + last + "\n");
   }
   OutputChunk("");
   return true;
@@ -302,6 +308,7 @@ const ChromeMLAPI g_api = {
     .DestroyModel = &DestroyModel,
     .GetEstimatedPerformance = &GetEstimatedPerformance,
     .QueryGPUAdapter = &QueryGPUAdapter,
+    .GetCapabilities = &GetCapabilities,
     .SetFatalErrorNonGpuFn = &SetFatalErrorNonGpuFn,
 
     .SessionCreateModel = &SessionCreateModel,

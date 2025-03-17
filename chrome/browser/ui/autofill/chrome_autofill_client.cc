@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +24,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
+#include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
+#include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -31,6 +35,7 @@
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -61,12 +66,13 @@
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -99,6 +105,7 @@
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -110,6 +117,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/variations/service/google_groups_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -138,7 +146,7 @@
 #include "components/strings/grit/components_strings.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
-#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -150,9 +158,9 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
-#include "components/autofill_ai/core/browser/autofill_ai_features.h"  // nogncheck
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -171,6 +179,11 @@ namespace autofill {
 
 namespace {
 
+// Default minimum delay in milliseconds for Plus Address HaTS surveys.
+static constexpr base::TimeDelta kDefaultMinDelay = base::Seconds(10);
+// Default maximum delay in milliseconds for Plus Address HaTS surveys.
+static constexpr base::TimeDelta kDefaultMaxDelay = base::Seconds(60);
+
 AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
     AutofillSuggestionTriggerSource source) {
   return AutoselectFirstSuggestion(
@@ -181,7 +194,7 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
 const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
-      return feature_engagement::kIPHAutofillPredictionImprovementsFeature;
+      return feature_engagement::kIPHAutofillAiOptInFeature;
   }
   NOTREACHED();
 }
@@ -189,7 +202,7 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
 ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
-      return kAutofillPredictionImprovementsIphElementId;
+      return autofill::PopupViewViews::kAutofillAiOptInIphElementId;
   }
   NOTREACHED();
 }
@@ -201,73 +214,120 @@ void LaunchPlusAddressUserPerceptionSurvey(
     AutofillPlusAddressDelegate* delegate,
     plus_addresses::hats::SurveyType survey_type) {
   std::string survey_trigger;
+  base::TimeDelta min_delay;
+  base::TimeDelta max_delay;
+
+  const auto get_min_delay = [](const base::Feature* feature) {
+    return base::Milliseconds(
+        base::FeatureParam<int>(feature, plus_addresses::hats::kMinDelayMs, 0)
+            .Get());
+  };
+  const auto get_max_delay = [](const base::Feature* feature) {
+    return base::Milliseconds(
+        base::FeatureParam<int>(feature, plus_addresses::hats::kMaxDelayMs, 0)
+            .Get());
+  };
+
   switch (survey_type) {
     case plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
+              features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
+      min_delay =
+          get_min_delay(&features::kPlusAddressAcceptedFirstTimeCreateSurvey);
+      max_delay =
+          get_max_delay(&features::kPlusAddressAcceptedFirstTimeCreateSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
+              features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
+      min_delay =
+          get_min_delay(&features::kPlusAddressDeclinedFirstTimeCreateSurvey);
+      max_delay =
+          get_max_delay(&features::kPlusAddressDeclinedFirstTimeCreateSurvey);
       break;
     case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
+              features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses;
+      min_delay = get_min_delay(
+          &features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
+      max_delay = get_max_delay(
+          &features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
       break;
     case plus_addresses::hats::SurveyType::kCreatedPlusAddressViaManualFallback:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
+              features::
                   kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback;
+      min_delay = get_min_delay(
+          &features::kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
+      max_delay = get_max_delay(
+          &features::kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressUserDidChoosePlusAddressOverEmailSurvey)) {
+              features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey;
+      min_delay = get_min_delay(
+          &features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
+      max_delay = get_max_delay(
+          &features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressUserDidChooseEmailOverPlusAddressSurvey)) {
+              features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey;
+      min_delay = get_min_delay(
+          &features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
+      max_delay = get_max_delay(
+          &features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
       break;
     case plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressFilledPlusAddressViaManualFallbackSurvey)) {
+              features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback;
+      min_delay = get_min_delay(
+          &features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
+      max_delay = get_max_delay(
+          &features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
       break;
   }
 
-  hats_service->LaunchSurveyForWebContents(
-      survey_trigger, web_contents,
+  // Set default delays if the delays are not configured in the finch config or
+  // are configured to invalid values.
+  if (min_delay >= max_delay || min_delay.is_negative()) {
+    min_delay = kDefaultMinDelay;
+    max_delay = kDefaultMaxDelay;
+  }
+  const base::TimeDelta delay = base::RandTimeDelta(min_delay, max_delay);
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      survey_trigger, web_contents, delay.InMilliseconds(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       delegate->GetPlusAddressHatsData(),
+      /*navigation_behaviour=*/HatsService::NavigationBehaviour::ALLOW_ANY,
       /*success_callback=*/base::DoNothing(),
       /*failure_callback=*/base::DoNothing());
 }
@@ -372,6 +432,12 @@ PersonalDataManager& ChromeAutofillClient::GetPersonalDataManager() {
       web_contents()->GetBrowserContext()));
 }
 
+EntityDataManager* ChromeAutofillClient::GetEntityDataManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return AutofillEntityDataManagerFactory::GetForProfile(profile);
+}
+
 SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {
   return single_field_fill_router_;
 }
@@ -414,6 +480,18 @@ AutofillAiDelegate* ChromeAutofillClient::GetAutofillAiDelegate() {
   }
 #endif
   return nullptr;
+}
+
+AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return AutofillAiModelCacheFactory::GetForProfile(profile);
+}
+
+AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return AutofillAiModelExecutorFactory::GetForProfile(profile);
 }
 
 void ChromeAutofillClient::OfferPlusAddressCreation(
@@ -473,6 +551,16 @@ const signin::IdentityManager* ChromeAutofillClient::GetIdentityManager()
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+}
+
+const GoogleGroupsManager* ChromeAutofillClient::GetGoogleGroupsManager()
+    const {
+  // Always return the GoogleGroupsManager of the original profile to allow us
+  // to do per-profile feature checks.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return GoogleGroupsManagerFactory::GetForBrowserContext(
+      profile->GetOriginalProfile());
 }
 
 FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
@@ -603,6 +691,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case SuggestionType::kManageAddress:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
+      case SuggestionType::kManageAutofillAi:
+        chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
+        return;
       case SuggestionType::kManagePlusAddress:
         CHECK(base::FeatureList::IsEnabled(
             plus_addresses::features::kPlusAddressesEnabled));
@@ -700,12 +791,6 @@ base::span<const Suggestion> ChromeAutofillClient::GetAutofillSuggestions()
                                 : base::span<const Suggestion>();
 }
 
-void ChromeAutofillClient::PinAutofillSuggestions() {
-  if (suggestion_controller_.get()) {
-    suggestion_controller_->PinView();
-  }
-}
-
 std::optional<AutofillClient::PopupScreenLocation>
 ChromeAutofillClient::GetPopupScreenLocation() const {
   return suggestion_controller_
@@ -768,10 +853,7 @@ void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     // with the feature.
     hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerAutofillAddressUserPerception, web_contents(),
-        /*timeout_ms=*/5000, /*product_specific_bits_data=*/
-        {{"granular filling available",
-          base::FeatureList::IsEnabled(
-              features::kAutofillGranularFillingAvailable)}},
+        /*timeout_ms=*/5000, /*product_specific_bits_data=*/{},
         field_filling_stats_data);
   } else {
     hats_service->LaunchDelayedSurveyForWebContents(
@@ -801,8 +883,9 @@ bool ChromeAutofillClient::IsAutocompleteEnabled() const {
 bool ChromeAutofillClient::IsPasswordManagerEnabled() const {
   password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(GetProfile());
-  return settings_service->IsSettingEnabled(
-      password_manager::PasswordManagerSetting::kOfferToSavePasswords);
+  return settings_service &&
+         settings_service->IsSettingEnabled(
+             password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
 void ChromeAutofillClient::DidFillForm(AutofillTriggerSource trigger_source,

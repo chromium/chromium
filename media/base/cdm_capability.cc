@@ -35,11 +35,13 @@ CdmCapability::CdmCapability(
     base::flat_set<AudioCodec> audio_codecs,
     VideoCodecMap video_codecs,
     base::flat_set<EncryptionScheme> encryption_schemes,
-    base::flat_set<CdmSessionType> session_types)
+    base::flat_set<CdmSessionType> session_types,
+    base::Version version)
     : audio_codecs(std::move(audio_codecs)),
       video_codecs(std::move(video_codecs)),
       encryption_schemes(std::move(encryption_schemes)),
-      session_types(std::move(session_types)) {}
+      session_types(std::move(session_types)),
+      version(std::move(version)) {}
 
 CdmCapability::CdmCapability(const CdmCapability& other) = default;
 
@@ -93,6 +95,9 @@ std::string CdmCapabilityQueryStatusToString(
              "system.";
     case CdmCapabilityQueryStatus::kUnexpectedEmptyCapability:
       return "kUnexpectedEmptyCapability";
+    case CdmCapabilityQueryStatus::kNoMediaDrmSupport:
+      return "MediaDrm not available for the key system and robustness "
+             "specified.";
   }
 
   NOTREACHED();

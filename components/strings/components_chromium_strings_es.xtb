@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">Chromium ha bloqueado esta página</translation>
 <translation id="48558539577516920">Configura tu cortafuegos o tu antivirus para permitir el acceso de Chromium
           a la red.</translation>
+<translation id="4949828774841497663">Ve a Aplicaciones &gt; Ajustes del sistema &gt; Red, selecciona la red activa, haz clic en el botón Detalles... y desmarca los proxies que puedan estar seleccionados.</translation>
 <translation id="580822234363523061">Accede al
           menú de Chromium, haz clic en
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           y asegúrate de que esté seleccionada la opción de configuración sin proxy o directa.</translation>
+<translation id="648062525172759633">Estas páginas están pensadas para que las usen los desarrolladores de Chromium y es posible que no se mantengan ni se prueben activamente. Para habilitarlas, ve a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, haz clic en el botón para habilitar las páginas de depuración y vuelve a esta página.</translation>
 <translation id="6549378540556750549">Chromium también se ha podido crear gracias a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Los cambios se aplicarán la próxima vez que reinicies Chromium.</translation>
 <translation id="691026815377248078">Chromium necesita acceso al Bluetooth para continuar 
@@ -42,9 +44,6 @@
           y desactiva la opción "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Si esto no soluciona el problema, te recomendamos que vuelvas a seleccionar esta opción
           para conseguir un mejor rendimiento.</translation>
-<translation id="8187289872471304532">Accede a
-          Aplicaciones &gt; Preferencias del Sistema &gt; Red &gt; Configuración avanzada &gt; Proxies
-          y desactiva las casillas de verificación de los proxies seleccionados.</translation>
 <translation id="8597726643333341451">Estás viendo una página segura de Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium no se ha cerrado correctamente.</translation>
 </translationbundle>

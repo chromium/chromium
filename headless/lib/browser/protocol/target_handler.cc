@@ -4,11 +4,15 @@
 
 #include "headless/lib/browser/protocol/target_handler.h"
 
+#include <ranges>
+#include <string_view>
+
 #include "build/build_config.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "ui/gfx/geometry/size.h"
+#include "headless/public/headless_window_state.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace headless {
 namespace protocol {
@@ -28,8 +32,11 @@ Response TargetHandler::Disable() {
 
 Response TargetHandler::CreateTarget(
     const std::string& url,
+    std::optional<int> left,
+    std::optional<int> top,
     std::optional<int> width,
     std::optional<int> height,
+    std::optional<std::string> window_state,
     std::optional<std::string> context_id,
     std::optional<bool> enable_begin_frame_control,
     std::optional<bool> new_window,
@@ -42,6 +49,15 @@ Response TargetHandler::CreateTarget(
         "BeginFrameControl is not supported on MacOS yet");
   }
 #endif
+
+  std::optional<HeadlessWindowState> headless_window_state;
+  if (window_state) {
+    headless_window_state = GetWindowStateFromProtocol(*window_state);
+    if (!headless_window_state) {
+      return Response::InvalidParams("Invalid target window state: " +
+                                     *window_state);
+    }
+  }
 
   HeadlessBrowserContext* context;
   if (context_id.has_value()) {
@@ -63,12 +79,19 @@ Response TargetHandler::CreateTarget(
     gurl = GURL(url::kAboutBlankURL);
   }
 
+  const gfx::Rect target_window_bounds(
+      left.value_or(0), top.value_or(0),
+      width.value_or(browser_->options()->window_size.width()),
+      height.value_or(browser_->options()->window_size.height()));
+
+  const HeadlessWindowState target_window_state =
+      headless_window_state.value_or(HeadlessWindowState::kNormal);
+
   HeadlessWebContentsImpl* web_contents_impl = HeadlessWebContentsImpl::From(
       context->CreateWebContentsBuilder()
           .SetInitialURL(gurl)
-          .SetWindowSize(gfx::Size(
-              width.value_or(browser_->options()->window_size.width()),
-              height.value_or(browser_->options()->window_size.height())))
+          .SetWindowBounds(target_window_bounds)
+          .SetWindowState(target_window_state)
           .SetEnableBeginFrameControl(
               enable_begin_frame_control.value_or(false))
           .Build());

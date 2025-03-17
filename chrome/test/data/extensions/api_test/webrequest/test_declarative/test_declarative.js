@@ -39,6 +39,11 @@ function getURLHttpSimpleB() {
   return getServerURL("extensions/api_test/webrequest/simpleLoad/b.html");
 }
 
+function getURLHttpNotCached() {
+  return getServerURL(
+    "extensions/api_test/webrequest/simpleLoad/not-cached.html");
+}
+
 function getURLHttpComplex() {
   return getServerURL(
       "extensions/api_test/webrequest/complexLoad/a.html");
@@ -471,7 +476,7 @@ let allTests = [
           event: "onBeforeRedirect",
           details: {
             url: getURLHttpWithHeaders(),
-            redirectUrl: getURLHttpSimple(),
+            redirectUrl: getURLHttpNotCached(),
             statusLine: "HTTP/1.1 302 Found",
             statusCode: 302,
             fromCache: false,
@@ -483,8 +488,8 @@ let allTests = [
           event: "onBeforeRequest",
           details: {
             type: "main_frame",
-            url: getURLHttpSimple(),
-            frameUrl: getURLHttpSimple(),
+            url: getURLHttpNotCached(),
+            frameUrl: getURLHttpNotCached(),
             initiator: getServerDomain(initiators.BROWSER_INITIATED)
           },
         },
@@ -492,7 +497,7 @@ let allTests = [
           event: "onCompleted",
           details: {
             ip: "127.0.0.1",
-            url: getURLHttpSimple(),
+            url: getURLHttpNotCached(),
             fromCache: false,
             statusCode: 200,
             statusLine: "HTTP/1.1 200 OK",
@@ -506,7 +511,7 @@ let allTests = [
     onRequest.addRules(
       [ {'conditions': [new RequestMatcher({'contentType': ["text/plain"]})],
          'actions': [
-             new RedirectRequest({'redirectUrl': getURLHttpSimple()})]}
+             new RedirectRequest({'redirectUrl': getURLHttpNotCached()})]}
       ],
       function() {navigateAndWait(getURLHttpWithHeaders());}
     );

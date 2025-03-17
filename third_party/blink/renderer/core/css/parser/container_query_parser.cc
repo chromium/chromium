@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -84,25 +83,7 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
     return false;
   }
   bool SupportsRange() const override { return true; }
-};
-
-class StyleFeatureSet : public MediaQueryParser::FeatureSet {
-  STACK_ALLOCATED();
-
- public:
-  bool IsAllowed(const AtomicString& feature) const override {
-    // TODO(crbug.com/1302630): Only support querying custom properties for now.
-    return CSSVariableParser::IsValidVariableName(feature);
-  }
-  bool IsAllowedWithoutValue(const AtomicString& feature,
-                             const ExecutionContext*) const override {
-    return true;
-  }
-  bool IsCaseSensitive(const AtomicString& feature) const override {
-    // TODO(crbug.com/1302630): non-custom properties are case-insensitive.
-    return true;
-  }
-  bool SupportsRange() const override { return false; }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 class StateFeatureSet : public MediaQueryParser::FeatureSet {
@@ -125,6 +106,7 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
     return false;
   }
   bool SupportsRange() const override { return false; }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 }  // namespace

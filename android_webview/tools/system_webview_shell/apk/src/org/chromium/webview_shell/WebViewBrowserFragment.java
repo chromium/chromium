@@ -46,9 +46,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.webkit.WebViewClientCompat;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
@@ -362,23 +365,33 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     @Override
+    @OptIn(markerClass = WebViewCompat.ExperimentalSaveState.class)
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        // Deliberately don't catch TransactionTooLargeException here.
-        mWebView.saveState(savedInstanceState);
 
-        // TODO(timav): Remove this hack after http://crbug.com/626202 is fixed.
-        // Drop the saved state of it is too long since Android N and above
-        // can't handle large states without a crash.
-        byte[] webViewState = savedInstanceState.getByteArray(SAVE_RESTORE_STATE_KEY);
-        if (webViewState != null && webViewState.length > MAX_STATE_LENGTH) {
-            savedInstanceState.remove(SAVE_RESTORE_STATE_KEY);
-            String message =
-                    String.format(
-                            Locale.US,
-                            "Can't save state: %dkb is too long",
-                            webViewState.length / 1024);
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.SAVE_STATE)) {
+            WebViewCompat.saveState(
+                    mWebView,
+                    savedInstanceState,
+                    MAX_STATE_LENGTH,
+                    /* includeForwardState= */ true);
+        } else {
+            // Deliberately don't catch TransactionTooLargeException here.
+            mWebView.saveState(savedInstanceState);
+
+            // TODO(timav): Remove this hack after http://crbug.com/626202 is fixed.
+            // Drop the saved state of it is too long since Android N and above
+            // can't handle large states without a crash.
+            byte[] webViewState = savedInstanceState.getByteArray(SAVE_RESTORE_STATE_KEY);
+            if (webViewState != null && webViewState.length > MAX_STATE_LENGTH) {
+                savedInstanceState.remove(SAVE_RESTORE_STATE_KEY);
+                String message =
+                        String.format(
+                                Locale.US,
+                                "Can't save state: %dkb is too long",
+                                webViewState.length / 1024);
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

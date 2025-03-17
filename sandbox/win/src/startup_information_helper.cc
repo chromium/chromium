@@ -11,11 +11,11 @@
 
 #include <Windows.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/startup_information.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container.h"
@@ -65,7 +65,7 @@ void StartupInformationHelper::SetStdHandles(HANDLE stdout_handle,
 
 void StartupInformationHelper::AddInheritedHandle(HANDLE handle) {
   if (handle != INVALID_HANDLE_VALUE) {
-    auto it = base::ranges::find(inherited_handle_list_, handle);
+    auto it = std::ranges::find(inherited_handle_list_, handle);
     if (it == inherited_handle_list_.end())
       inherited_handle_list_.push_back(handle);
   }

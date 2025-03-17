@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -52,6 +53,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/begin_frame_args_test.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -66,6 +68,15 @@ using testing::StrictMock;
 
 namespace cc {
 namespace {
+
+DrawImage DrawImageForDecoding(const PaintImage& paint_image,
+                               const TargetColorParams& color_params) {
+  return DrawImage(paint_image,
+                   /*use_dark_mode=*/false,
+                   SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+                   PaintFlags::FilterQuality::kNone, SkM44(),
+                   PaintImage::kDefaultFrameIndex, color_params);
+}
 
 // A version of simple task runner that lets the user control if all tasks
 // posted should run synchronously.
@@ -127,15 +138,6 @@ class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
   }
 
   TileManager* tile_manager() { return host_impl()->tile_manager(); }
-
-  class StubGpuBacking : public ResourcePool::GpuBacking {
-   public:
-    void OnMemoryDump(
-        base::trace_event::ProcessMemoryDump* pmd,
-        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-        uint64_t tracing_process_id,
-        int importance) const override {}
-  };
 };
 
 TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
@@ -1601,7 +1603,8 @@ TEST_F(TileManagerTilePriorityQueueTest,
       host_impl()->resource_pool()->AcquireResource(
           gfx::Size(256, 256), viz::SinglePlaneFormat::kRGBA_8888,
           gfx::ColorSpace());
-  resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
+  resource.set_backing(std::make_unique<ResourcePool::Backing>(
+      resource.size(), resource.format(), resource.color_space()));
 
   host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
   EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
@@ -1764,24 +1767,14 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
   }
 }
 
-class TestSoftwareBacking : public ResourcePool::SoftwareBacking {
- public:
-  // No tracing is done during these tests.
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {}
-
-  std::unique_ptr<uint32_t[]> pixels;
-};
-
-// A RasterBufferProvider that allocates software backings with a standard
-// array as the backing. Overrides Playback() on the RasterBuffer to raster
-// into the pixels in the array.
+// A RasterBufferProvider that creates an SII internally and allocates
+// Backings via that SII.
 class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
  public:
-  static constexpr bool kIsGpuCompositing = true;
+  TestSoftwareRasterBufferProvider() {
+    sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  }
+
   static constexpr viz::SharedImageFormat kSharedImageFormat =
       viz::SinglePlaneFormat::kRGBA_8888;
 
@@ -1792,25 +1785,22 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
-    if (!resource.software_backing()) {
-      auto backing = std::make_unique<TestSoftwareBacking>();
-      backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
-      backing->pixels = std::make_unique<uint32_t[]>(
-          viz::ResourceSizes::CheckedSizeInBytes<size_t>(resource.size(),
-                                                         kSharedImageFormat));
-      resource.set_software_backing(std::move(backing));
+    if (!resource.backing()) {
+      resource.InstallSoftwareBacking(sii_, "TextureLayerTest");
+
+      resource.backing()->mailbox_sync_token = sii_->GenVerifiedSyncToken();
+
+      is_software_ = true;
     }
-    auto* backing =
-        static_cast<TestSoftwareBacking*>(resource.software_backing());
     return std::make_unique<TestRasterBuffer>(resource.size(),
-                                              backing->pixels.get());
+                                              resource.backing());
   }
 
  private:
   class TestRasterBuffer : public RasterBuffer {
    public:
-    TestRasterBuffer(const gfx::Size& size, void* pixels)
-        : size_(size), pixels_(pixels) {}
+    TestRasterBuffer(const gfx::Size& size, ResourcePool::Backing* backing)
+        : size_(size), backing_(backing) {}
 
     void Playback(const RasterSource* raster_source,
                   const gfx::Rect& raster_full_rect,
@@ -1819,18 +1809,22 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
                   const gfx::AxisTransform2d& transform,
                   const RasterSource::PlaybackSettings& playback_settings,
                   const GURL& url) override {
+      auto mapping = backing_->shared_image()->Map();
+      void* memory = mapping->GetMemoryForPlane(0).data();
       RasterBufferProvider::PlaybackToMemory(
-          pixels_, kSharedImageFormat, size_, /*stride=*/0, raster_source,
+          memory, kSharedImageFormat, size_, /*stride=*/0, raster_source,
           raster_full_rect, /*canvas_playback_rect=*/raster_full_rect,
-          transform, gfx::ColorSpace(), kIsGpuCompositing, playback_settings);
+          transform, gfx::ColorSpace(), playback_settings);
     }
 
     bool SupportsBackgroundThreadPriority() const override { return true; }
 
    private:
     gfx::Size size_;
-    raw_ptr<void> pixels_;
+    raw_ptr<ResourcePool::Backing> backing_;
   };
+
+  scoped_refptr<gpu::TestSharedImageInterface> sii_;
 };
 
 class TileManagerTest : public TestLayerTreeHostBase {
@@ -1939,6 +1933,44 @@ TEST_F(TileManagerTest, AllWorkFinished) {
     host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
     run_loop.Run();
   }
+}
+
+// Same test as `AllWorkFinished` above, but with kFastPathNoRaster enabled.
+TEST_F(TileManagerTest, FastPathWhenNoRasterWork) {
+  base::test::ScopedFeatureList feature_list{features::kFastPathNoRaster};
+  base::HistogramTester histogram_tester;
+
+  host_impl()->tile_manager()->DisbleMetricsSubsamplingForTesting();
+
+  // Check with no tile work enqueued.
+  {
+    base::RunLoop run_loop;
+    EXPECT_FALSE(
+        host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    EXPECT_CALL(MockHostImpl(), NotifyReadyToDraw());
+    EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+        .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    EXPECT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    run_loop.Run();
+  }
+
+  // Check that the "schedule more work" path also triggers the expected
+  // callback.
+  {
+    base::RunLoop run_loop;
+    EXPECT_FALSE(
+        host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    EXPECT_CALL(MockHostImpl(), NotifyReadyToDraw());
+    EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+        .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    host_impl()->tile_manager()->SetMoreTilesNeedToBeRasterizedForTesting();
+    EXPECT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    run_loop.Run();
+  }
+  histogram_tester.ExpectTotalCount(
+      "Compositing.TileManager.RasterTasksDuration", 2u);
 }
 
 TEST_F(TileManagerTest, ActivateAndDrawWhenOOM) {
@@ -2122,8 +2154,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     std::unique_ptr<PictureLayerImpl> layer =
         PictureLayerImpl::Create(host_impl()->pending_tree(), 1);
     layer->SetBounds(size);
-    Region invalidation;
-    layer->UpdateRasterSource(raster, &invalidation);
+    layer->SetRasterSourceForTesting(raster);
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
     layer->set_contributes_to_drawn_render_surface(true);
 
@@ -2151,16 +2182,16 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
 
     gfx::Size resource_size = tile->draw_info().resource_size();
     SkColorType ct = ToClosestSkColorType(
-        TestSoftwareRasterBufferProvider::kIsGpuCompositing,
         TestSoftwareRasterBufferProvider::kSharedImageFormat);
     auto info = SkImageInfo::Make(resource_size.width(), resource_size.height(),
                                   ct, kPremul_SkAlphaType);
     // CreateLayerTreeFrameSink() sets up a software compositing, so the
     // tile resource will be a bitmap.
-    auto* backing = static_cast<TestSoftwareBacking*>(
-        tile->draw_info().GetResource().software_backing());
+    auto* backing = tile->draw_info().GetResource().backing();
     SkBitmap bitmap;
-    bitmap.installPixels(info, backing->pixels.get(), info.minRowBytes());
+    auto mapping = backing->shared_image()->Map();
+    void* pixels = mapping->GetMemoryForPlane(0).data();
+    bitmap.installPixels(info, pixels, info.minRowBytes());
 
     for (int x = 0; x < size.width(); ++x) {
       for (int y = 0; y < size.height(); ++y) {
@@ -2359,10 +2390,18 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Ensure there's a resource with our |kInvalidatedId| in the resource pool.
   ResourcePool::InUsePoolResource resource =
       host_impl->resource_pool()->AcquireResource(
-          kTileSize, viz::SinglePlaneFormat::kRGBA_8888,
+          kTileSize, viz::SinglePlaneFormat::kBGRA_8888,
           gfx::ColorSpace::CreateSRGB());
 
-  resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
+  auto backing = std::make_unique<ResourcePool::Backing>(
+      resource.size(), resource.format(), resource.color_space());
+  backing->SetSharedImageForTesting(gpu::ClientSharedImage::CreateForTesting(
+      resource.format(), GL_TEXTURE_2D));
+  backing->mailbox_sync_token.Set(gpu::GPU_IO,
+                                  gpu::CommandBufferId::FromUnsafeValue(1), 1);
+
+  resource.set_backing(std::move(backing));
+  raster_buffer_provider.is_software_ = true;
   host_impl->resource_pool()->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest);
 
@@ -2538,23 +2577,14 @@ class InvalidResourceRasterBufferProvider
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
-    if (!resource.gpu_backing()) {
-      auto backing = std::make_unique<StubGpuBacking>();
+    if (!resource.backing()) {
+      auto backing = std::make_unique<ResourcePool::Backing>(
+          resource.size(), resource.format(), resource.color_space());
       // Don't set a mailbox to signal invalid resource.
-      resource.set_gpu_backing(std::move(backing));
+      resource.set_backing(std::move(backing));
     }
     return std::make_unique<FakeRasterBuffer>();
   }
-
- private:
-  class StubGpuBacking : public ResourcePool::GpuBacking {
-   public:
-    void OnMemoryDump(
-        base::trace_event::ProcessMemoryDump* pmd,
-        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-        uint64_t tracing_process_id,
-        int importance) const override {}
-  };
 };
 
 class InvalidResourceTileManagerTest : public TileManagerTest {
@@ -2625,8 +2655,17 @@ class MockReadyToDrawRasterBufferProviderImpl
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
-    if (!resource.software_backing())
-      resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
+    if (!resource.backing()) {
+      auto backing = std::make_unique<ResourcePool::Backing>(
+          resource.size(), resource.format(), resource.color_space());
+      backing->SetSharedImageForTesting(
+          gpu::ClientSharedImage::CreateForTesting(resource.format(),
+                                                   GL_TEXTURE_2D));
+      backing->mailbox_sync_token.Set(
+          gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
+      resource.set_backing(std::move(backing));
+      is_software_ = true;
+    }
     return std::make_unique<FakeRasterBuffer>(expected_hdr_headroom_);
   }
 
@@ -3862,9 +3901,9 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
 
   // Add the images to our decoded_image_tracker.
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image1, TargetColorParams(), base::DoNothing());
+      DrawImageForDecoding(image1, TargetColorParams()), base::DoNothing());
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image2, TargetColorParams(), base::DoNothing());
+      DrawImageForDecoding(image2, TargetColorParams()), base::DoNothing());
   EXPECT_EQ(0u, host_impl()
                     ->tile_manager()
                     ->decoded_image_tracker()
@@ -3946,7 +3985,8 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     TargetColorParams target_color_params;
     target_color_params.color_space = output_cs;
     host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-        hdr_image, target_color_params, base::DoNothing());
+        DrawImageForDecoding(hdr_image, target_color_params),
+        base::DoNothing());
     FlushDecodeTasks();
 
     // Add images to a fake recording source.

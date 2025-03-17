@@ -30,9 +30,7 @@ PrefService* InformedRestoreTestBase::GetTestPrefService() {
 void InformedRestoreTestBase::SetUp() {
   AshTestBase::SetUp();
 
-  TestSessionControllerClient* session_controller =
-      GetSessionControllerClient();
-  session_controller->Reset();
+  ClearLogin();
 
   // Inject our own PrefService as the restore preference is normally
   // registered in chrome/browser/ash/ and is not registered in ash unit
@@ -46,16 +44,7 @@ void InformedRestoreTestBase::SetUp() {
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
 
-  session_controller->AddUserSession(kTestUserEmail,
-                                     user_manager::UserType::kRegular,
-                                     /*provide_pref_service=*/false);
-  session_controller->SetUserPrefService(
-      AccountId::FromUserEmail(kTestUserEmail), std::move(test_prefs));
-
-  // Switch to the test user and simulate login.
-  session_controller->SwitchActiveUser(
-      AccountId::FromUserEmail(kTestUserEmail));
-  session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
+  SimulateUserLogin({kTestUserEmail}, std::nullopt, std::move(test_prefs));
 }
 
 }  // namespace ash

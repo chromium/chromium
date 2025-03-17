@@ -27,6 +27,7 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
+import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -61,7 +62,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -158,7 +159,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param tabGroupModelFilterSupplier The supplier of the tab model filter fo rthis pane.
      * @param tabContentManager For management of thumbnails.
      * @param browserControlsStateProvider For determining thumbnail size.
-     * @param scrimCoordinator The scrim coordinator to use for the tab grid dialog.
+     * @param scrimManager The scrim component to use for the tab grid dialog.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
@@ -183,7 +184,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ScrimManager scrimManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
@@ -251,7 +252,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 getGridCardOnClickListenerProvider(),
                                                 TabSwitcherPaneCoordinator.this
                                                         ::getTabGridDialogAnimationSourceView,
-                                                scrimCoordinator,
+                                                scrimManager,
                                                 actionConfirmationManager,
                                                 mModalDialogManager,
                                                 desktopWindowStateManager);
@@ -314,7 +315,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                     ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
                                     : Resources.ID_NULL,
                             onTabGroupCreation,
-                            /* backgroundColorSupplier= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator = tabListCoordinator;
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
@@ -474,14 +474,43 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Returns a {@link Supplier} that provides dialog visibility information. */
-    public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+    public @NonNull Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
         return mTabGridDialogVisibilitySupplier;
+    }
+
+    /** Provides information on whether the tab grid dialog is showing or animating. */
+    public @Nullable ObservableSupplier<Boolean> getTabGridDialogShowingOrAnimationSupplier() {
+        return mTabGridDialogCoordinator != null
+                ? mTabGridDialogCoordinator.getShowingOrAnimationSupplier()
+                : null;
+    }
+
+    /** Provides the tab ID for the most recently swiped tab. */
+    public @NonNull ObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
+        return mTabListCoordinator.getRecentlySwipedTabSupplier();
+    }
+
+    /** Returns whether the TabListEditor needs a clean up. */
+    public boolean doesTabListEditorNeedCleanup() {
+        @Nullable
+        TabListEditorCoordinator.TabListEditorController controller =
+                mMediator.getTabListEditorController();
+        return controller != null && controller.needsCleanUp();
     }
 
     /** Returns a {@link TabSwitcherCustomViewManager.Delegate} for supplying custom views. */
     public @Nullable TabSwitcherCustomViewManager.Delegate
             getTabSwitcherCustomViewManagerDelegate() {
         return mMediator;
+    }
+
+    /** Indicates whether any animator for the {@link TabListRecyclerView} is running. */
+    public @Nullable ObservableSupplier<Boolean> getIsRecyclerViewAnimatorRunning() {
+        TabListRecyclerView containerView = mTabListCoordinator.getContainerView();
+        if (containerView == null) {
+            return null;
+        }
+        return containerView.getIsAnimatorRunningSupplier();
     }
 
     /** Returns the number of elements in the tab switcher's tab list model. */
@@ -590,9 +619,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private View getTabGridDialogAnimationSourceView(int tabId) {
-        // If we are animating to show or hide the HubLayout, the TabGridDialog should hide or show
-        // via fade instead of animating from a tab. Return null so that this happens.
-        if (mIsAnimatingSupplier.get()) return null;
+        // Returning null causes the animation to be a fade.
+        // Do so if we are animating to show or hide the HubLayout or this is a low end device.
+        if (mIsAnimatingSupplier.get() || SysUtils.isLowEndDevice()) return null;
 
         TabListCoordinator coordinator = mTabListCoordinator;
         int index = coordinator.getTabIndexFromTabId(tabId);

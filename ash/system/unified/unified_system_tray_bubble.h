@@ -87,7 +87,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   int GetCurrentTrayHeight() const;
 
   // Fire a notification that an accessibility event has occured on this object.
-  void NotifyAccessibilityEvent(ax::mojom::Event event, bool send_native_event);
+  void NotifyAccessibilityEventDeprecated(ax::mojom::Event event,
+                                          bool send_native_event);
 
   // Whether the bubble is currently showing audio details or display details or
   // calendar view.

@@ -18,6 +18,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
 import java.util.ArrayList;
@@ -60,6 +63,7 @@ import java.util.ArrayList;
  *
  * TODO(newt): finalize animation timings and interpolators.
  */
+@NullMarked
 public class InfoBarContainerLayout extends OptimizedFrameLayout {
     /** Creates an empty InfoBarContainerLayout. */
     public InfoBarContainerLayout(
@@ -140,7 +144,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      * should implement prepareAnimation(), createAnimator(), and onAnimationEnd() as needed.
      */
     private abstract class InfoBarAnimation {
-        private Animator mAnimator;
+        private @Nullable Animator mAnimator;
 
         final boolean isStarted() {
             return mAnimator != null;
@@ -184,6 +188,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
          * Called before the animation begins. This is the time to add views to the hierarchy and
          * adjust layout parameters.
          */
+        @Initializer
         void prepareAnimation() {}
 
         /**
@@ -211,7 +216,9 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      */
     private class FirstInfoBarAppearingAnimation extends InfoBarAnimation {
         private InfoBarUiItem mFrontItem;
+
         private InfoBarWrapper mFrontWrapper;
+
         private View mFrontContents;
 
         FirstInfoBarAppearingAnimation(InfoBarUiItem frontItem) {
@@ -458,6 +465,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      * The infobar simply slides down out of the container.
      */
     private class InfoBarDisappearingAnimation extends InfoBarAnimation {
+        @SuppressWarnings("NullAway.Init")
         private InfoBarWrapper mDisappearingWrapper;
 
         @Override
@@ -561,8 +569,10 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
         private boolean mIsFloating;
 
         /** The shadows that appear on the sides of the infobars in floating mode. */
+        @SuppressWarnings("NullAway.Init")
         private View mLeftShadowView;
 
+        @SuppressWarnings("NullAway.Init")
         private View mRightShadowView;
 
         FloatingBehavior(FrameLayout layout) {
@@ -670,7 +680,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
     private final InfoBarAnimationListener mAnimationListener;
 
     /** The current animation, or null if no animation is happening currently. */
-    private InfoBarAnimation mAnimation;
+    private @Nullable InfoBarAnimation mAnimation;
 
     private FloatingBehavior mFloatingBehavior;
 

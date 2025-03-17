@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -156,7 +158,7 @@ void CardUnmaskPromptControllerImpl::OnUnmaskDialogClosed() {
 }
 
 void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
-    const std::u16string& cvc,
+    std::u16string_view cvc,
     const std::u16string& exp_month,
     const std::u16string& exp_year,
     bool enable_fido_auth,
@@ -333,7 +335,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetCvcImageAnnouncement() const {
 #endif
 
 bool CardUnmaskPromptControllerImpl::InputCvcIsValid(
-    const std::u16string& input_text) const {
+    std::u16string_view input_text) const {
   std::u16string trimmed_text;
   base::TrimWhitespace(input_text, base::TRIM_ALL, &trimmed_text);
 

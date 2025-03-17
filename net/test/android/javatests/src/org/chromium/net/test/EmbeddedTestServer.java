@@ -515,9 +515,27 @@ public class EmbeddedTestServer {
     }
 
     /**
+     * Get the request count observed on the server for the given relative URL.
+     *
+     * @param relativeUrl The relative URL for which request count should be returned.
+     * @return The request count.
+     */
+    public int getRequestCountForUrl(final String relativeUrl) {
+        try {
+            synchronized (mImplMonitor) {
+                checkServiceLocked();
+                return mImpl.getRequestCountForUrl(relativeUrl);
+            }
+        } catch (RemoteException e) {
+            throw new EmbeddedTestServerFailure(
+                    "Failed to get request count for " + relativeUrl, e);
+        }
+    }
+
+    /**
      * Stop and destroy the server.
      *
-     * This handles stopping the server and destroying the native object.
+     * <p>This handles stopping the server and destroying the native object.
      */
     public void stopAndDestroyServer() {
         synchronized (mImplMonitor) {

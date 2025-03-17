@@ -73,7 +73,7 @@ class IDLUpdater:
         print('Check if update is needed by building the target...')
         # Use -j 1 since otherwise the exact build output is not deterministic.
         proc = subprocess.run([
-            'autoninja.bat', '-remote_jobs', '1', '-C', self.output_dir,
+            'autoninja.bat', '-j', '1', '-C', self.output_dir,
             self.idl_gn_target
         ],
                               capture_output=True,
@@ -92,9 +92,9 @@ class IDLUpdater:
         # Exclude blank lines.
         lines = list(filter(None, stdout.splitlines()))
 
-        if (len(lines) < 3 or 'build failed' not in lines[-4]
-                or 'copy /y' not in lines[-5]
-                or 'To rebaseline:' not in lines[-6]):
+        if (len(lines) < 3 or 'build stopped' not in lines[-1]
+                or 'copy /y' not in lines[-2]
+                or 'To rebaseline:' not in lines[-3]):
             print('-' * 80)
             print('STDOUT:')
             print(stdout)
@@ -103,15 +103,15 @@ class IDLUpdater:
             print(stderr)
             print('-' * 80)
             print('LINE:')
-            print(lines[-4])
-            print(lines[-5])
-            print(lines[-6])
+            print(lines[-1])
+            print(lines[-2])
+            print(lines[-3])
 
             raise IDLUpdateError(
                 'Unexpected autoninja error (see output above). Update this '
                 'tool if the output format has changed.')
 
-        return lines[-5].strip().replace('..\\..\\', '')
+        return lines[-2].strip().replace('..\\..\\', '')
 
 
 def check_running_environment() -> None:
@@ -144,6 +144,8 @@ def main():
 
     for target_cpu in ['arm64', 'x64', 'x86']:
         for idl_target in [
+                'chrome/windows_services/elevated_tracing_service:' + \
+                'tracing_service_idl',
                 'chrome/windows_services/service_program:test_service_idl',
                 'elevation_service_idl',
                 'gaia_credential_provider_idl',

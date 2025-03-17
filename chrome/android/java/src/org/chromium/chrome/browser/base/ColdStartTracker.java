@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Build;
 import android.os.Build.VERSION;
@@ -17,6 +19,9 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatAppComponentFactory.ProcessCreationReason;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 
@@ -54,10 +59,11 @@ import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetecto
  * sometimes appear as cold even if it has been fully initialized a little bit in advance. UMA
  * histograms based on this heuristic may feature an unwanted population-biased hump.
  */
+@NullMarked
 public class ColdStartTracker implements ActivityStateListener {
-    private static ColdStartTracker sColdStartTracker;
+    private static @Nullable ColdStartTracker sColdStartTracker;
 
-    private Boolean mStartedAsCold;
+    private @Nullable Boolean mStartedAsCold;
 
     private ColdStartTracker() {
         assert ApplicationStatus.isInitialized();
@@ -65,6 +71,7 @@ public class ColdStartTracker implements ActivityStateListener {
     }
 
     /** Must be called after {@link ApplicationStatus} is initialized. */
+    @EnsuresNonNull("sColdStartTracker")
     public static void initialize() {
         assert sColdStartTracker == null;
         sColdStartTracker = new ColdStartTracker();
@@ -92,6 +99,7 @@ public class ColdStartTracker implements ActivityStateListener {
     }
 
     // Must be called during onCreate() (or earlier) of the first activity created in the process.
+    @EnsuresNonNull("mStartedAsCold")
     private void detectStartedAsCold() {
         if (mStartedAsCold != null) return;
         if (VERSION.SDK_INT >= VERSION_CODES.P) {
@@ -136,6 +144,7 @@ public class ColdStartTracker implements ActivityStateListener {
      */
     public static boolean wasColdOnFirstActivityCreationOrNow() {
         if (BuildConfig.IS_FOR_TEST && sColdStartTracker == null) return false;
+        assumeNonNull(sColdStartTracker);
         return sColdStartTracker.firstActivityWasColdOrDidNotGetCreatedYet();
     }
 

@@ -11,7 +11,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_utils.h"
@@ -96,7 +96,7 @@ class TestPageActionIconView : public PageActionIconView {
   // PageActionIconView:
   void OnExecuting(ExecuteSource execute_source) override {}
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return gfx::kNoneIcon;
+    return gfx::VectorIcon::EmptyIcon();
   }
   void UpdateImpl() override {}
 
@@ -177,21 +177,21 @@ TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
 TEST_F(PageActionIconViewTest, TooltipText) {
   view()->AnimateIn(std::nullopt);
   EXPECT_FALSE(view()->IsBubbleShowing());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()),
             view()->GetTextForTooltipAndAccessibleName());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"TestTooltip");
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()), u"TestTooltip");
 
   view()->GetViewAccessibility().SetName(u"NewTooltip");
 
   EXPECT_FALSE(view()->IsBubbleShowing());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()),
             view()->GetTextForTooltipAndAccessibleName());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"NewTooltip");
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()), u"NewTooltip");
 
   view()->SetIsBubbleShowingOverride(true);
 
   EXPECT_TRUE(view()->IsBubbleShowing());
-  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"");
+  EXPECT_EQ(view()->GetRenderedTooltipText(gfx::Point()), u"");
 }
 
 TEST_F(PageActionIconViewTest, TooltipTextAccessibility) {

@@ -37,6 +37,8 @@ class BirchChipButtonBase : public views::Button {
   // background, focus ring). This depends on whether the selection widget is
   // visible, which only the birch coral chip has.
   void UpdateRoundedCorners(bool selection_widget_visible);
+
+  int GetRoundedCornerRadius() const;
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButtonBase, views::Button)

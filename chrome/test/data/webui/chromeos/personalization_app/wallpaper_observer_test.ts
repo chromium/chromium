@@ -4,12 +4,13 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {emptyState, FullscreenPreviewState, setFullscreenStateAction, setSelectedImageAction, SetSelectedImageAction, WallpaperActionName, WallpaperObserver} from 'chrome://personalization/js/personalization_app.js';
+import type {SetSelectedImageAction} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, FullscreenPreviewState, setFullscreenStateAction, setSelectedImageAction, WallpaperActionName, WallpaperObserver} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('WallpaperObserverTest', function() {
   let wallpaperProvider: TestWallpaperProvider;

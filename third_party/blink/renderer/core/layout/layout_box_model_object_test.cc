@@ -351,14 +351,14 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
   EXPECT_EQ(10.f, constraints->top_inset->ToFloat());
 
   // The coordinates of the constraint rects should all be with respect to the
-  // unscrolled scroller.
-  EXPECT_EQ(gfx::Rect(2000, 100, 200, 400),
+  // unscrolled scroller, and not corrected for scroll origin.
+  EXPECT_EQ(gfx::Rect(-100, 100, 200, 400),
             ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   EXPECT_EQ(
-      gfx::Rect(2190, 100, 10, 10),
+      gfx::Rect(90, 100, 10, 10),
       ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(-2100, 0, 100, 100),
             ToEnclosingRect(constraints->constraining_rect));
 }
 
@@ -1277,12 +1277,11 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
   auto* target_element = GetElementById("target");
   auto* target = target_element->GetLayoutBoxModelObject();
   auto* parent = target->Parent();
-  auto* original_compositing_container =
-      target->Layer()->CompositingContainer();
+  auto* original_painting_container = target->Layer()->PaintingContainer();
   EXPECT_FALSE(target->IsStackingContext());
   EXPECT_TRUE(target->IsStacked());
   EXPECT_FALSE(parent->IsStacked());
-  EXPECT_NE(parent, original_compositing_container->GetLayoutObject());
+  EXPECT_NE(parent, original_painting_container->GetLayoutObject());
 
   target_element->setAttribute(html_names::kClassAttr,
                                AtomicString("non-stacked"));
@@ -1291,9 +1290,9 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
 
   EXPECT_FALSE(target->IsStacked());
   EXPECT_TRUE(target->Layer()->SelfNeedsRepaint());
-  EXPECT_TRUE(original_compositing_container->DescendantNeedsRepaint());
-  auto* new_compositing_container = target->Layer()->CompositingContainer();
-  EXPECT_EQ(parent, new_compositing_container->GetLayoutObject());
+  EXPECT_TRUE(original_painting_container->DescendantNeedsRepaint());
+  auto* new_painting_container = target->Layer()->PaintingContainer();
+  EXPECT_EQ(parent, new_painting_container->GetLayoutObject());
 
   UpdateAllLifecyclePhasesForTest();
   target_element->setAttribute(html_names::kClassAttr, AtomicString("stacked"));
@@ -1302,9 +1301,8 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
 
   EXPECT_TRUE(target->IsStacked());
   EXPECT_TRUE(target->Layer()->SelfNeedsRepaint());
-  EXPECT_TRUE(new_compositing_container->DescendantNeedsRepaint());
-  EXPECT_EQ(original_compositing_container,
-            target->Layer()->CompositingContainer());
+  EXPECT_TRUE(new_painting_container->DescendantNeedsRepaint());
+  EXPECT_EQ(original_painting_container, target->Layer()->PaintingContainer());
 }
 
 TEST_P(LayoutBoxModelObjectTest, BackfaceVisibilityChange) {

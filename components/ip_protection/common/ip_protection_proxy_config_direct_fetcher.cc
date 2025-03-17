@@ -4,11 +4,15 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/base64.h"
-#include "base/functional/callback.h"
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -18,11 +22,13 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
 #include "url/gurl.h"
@@ -316,8 +322,11 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kGetProxyConfigTrafficAnnotation);
   // Retry on network changes, as sometimes this occurs during browser startup.
+  // A network change during DNS resolution results in a DNS error rather than
+  // a network change error, so retry in those cases as well.
   url_loader->SetRetryOptions(
-      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+             network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
 
   url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();

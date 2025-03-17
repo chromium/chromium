@@ -23,8 +23,8 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Base64 data of a PNG image.
@@ -72,7 +72,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // The ID param for calling JS, and will be regained in the message sent back.
 const int kCallJavaScriptId = 66666;
-}
+}  // namespace
 
 class ImageFetchJavaScriptFeatureTest
     : public PlatformTest,

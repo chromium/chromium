@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
-
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
 namespace ios {
 namespace provider {

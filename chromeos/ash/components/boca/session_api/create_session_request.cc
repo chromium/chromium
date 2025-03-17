@@ -22,6 +22,7 @@ namespace ash::boca {
 //=================CreateSessionRequest================
 CreateSessionRequest::CreateSessionRequest(
     google_apis::RequestSender* sender,
+    std::string url_base,
     ::boca::UserIdentity teacher,
     base::TimeDelta duration,
     ::boca::Session::SessionState session_state,
@@ -32,7 +33,7 @@ CreateSessionRequest::CreateSessionRequest(
       teacher_(std::move(teacher)),
       duration_(duration),
       session_state_(session_state),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(url_base),
       callback_(std::move(callback)) {}
 
 CreateSessionRequest ::~CreateSessionRequest() = default;

@@ -1,0 +1,42 @@
+diff --git a/src/google/protobuf/dynamic_message.cc b/src/google/protobuf/dynamic_message.cc
+index b7a7482729a75..0fd0d1a40ddcb 100644
+--- a/src/google/protobuf/dynamic_message.cc
++++ b/src/google/protobuf/dynamic_message.cc
+@@ -274,7 +274,9 @@ struct DynamicMessageFactory::TypeInfo {
+           &DynamicMessage::MergeImpl,
+           internal::MessageCreator(),  // to be filled later
+           &DynamicMessage::DestroyImpl,
++#if defined(PROTOBUF_CUSTOM_VTABLE)
+           static_cast<void (MessageLite::*)()>(&DynamicMessage::ClearImpl),
++#endif  // PROTOBUF_CUSTOM_VTABLE
+           DynamicMessage::ByteSizeLongImpl,
+           DynamicMessage::_InternalSerializeImpl,
+           PROTOBUF_FIELD_OFFSET(DynamicMessage, cached_byte_size_),
+diff --git a/src/google/protobuf/implicit_weak_message.cc b/src/google/protobuf/implicit_weak_message.cc
+index d53daf64780e6..9d74777043389 100644
+--- a/src/google/protobuf/implicit_weak_message.cc
++++ b/src/google/protobuf/implicit_weak_message.cc
+@@ -73,7 +73,9 @@ constexpr ClassDataLite<1> ImplicitWeakMessage::class_data_ = {
+                                  sizeof(ImplicitWeakMessage),
+                                  alignof(ImplicitWeakMessage)),
+         &DestroyImpl,
++#if defined(PROTOBUF_CUSTOM_VTABLE)
+         GetClearImpl<ImplicitWeakMessage>(),
++#endif  // PROTOBUF_CUSTOM_VTABLE
+         &ByteSizeLongImpl,
+         &_InternalSerializeImpl,
+         PROTOBUF_FIELD_OFFSET(ImplicitWeakMessage, cached_size_),
+diff --git a/src/google/protobuf/message_lite.h b/src/google/protobuf/message_lite.h
+index be759007a11d3..99bb9fe038aa5 100644
+--- a/src/google/protobuf/message_lite.h
++++ b/src/google/protobuf/message_lite.h
+@@ -382,7 +382,9 @@ struct PROTOBUF_EXPORT ClassData {
+       void (*merge_to_from)(MessageLite& to, const MessageLite& from_msg),
+       internal::MessageCreator message_creator,
+       void (*destroy_message)(MessageLite& msg),  //
++#if defined(PROTOBUF_CUSTOM_VTABLE)
+       void (MessageLite::*clear)(),
++#endif  // PROTOBUF_CUSTOM_VTABLE
+       size_t (*byte_size_long)(const MessageLite&),
+       uint8_t* (*serialize)(const MessageLite& msg, uint8_t* ptr,
+                             io::EpsCopyOutputStream* stream),

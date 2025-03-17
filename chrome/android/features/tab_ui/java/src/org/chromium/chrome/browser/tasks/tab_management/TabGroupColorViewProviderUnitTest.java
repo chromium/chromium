@@ -54,6 +54,7 @@ import org.chromium.ui.base.TestActivity;
 public class TabGroupColorViewProviderUnitTest {
     private static final Token REGULAR_TAB_GROUP_ID = new Token(3L, 4L);
     private static final Token INCOGNITO_TAB_GROUP_ID = new Token(5L, 6L);
+    private static final Token OTHER_TAB_GROUP_ID = new Token(3L, 89L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -69,7 +70,6 @@ public class TabGroupColorViewProviderUnitTest {
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
-    private SharedGroupTestHelper mSharedGroupTestHelper;
     private Context mContext;
     private TabGroupColorViewProvider mRegularColorViewProvider;
     private TabGroupColorViewProvider mIncognitoColorViewProvider;
@@ -79,8 +79,6 @@ public class TabGroupColorViewProviderUnitTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
-
-        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }
@@ -121,9 +119,12 @@ public class TabGroupColorViewProviderUnitTest {
     }
 
     @Test
-    public void testGetTabGroupId() {
-        assertEquals(REGULAR_TAB_GROUP_ID, mRegularColorViewProvider.getTabGroupId());
-        assertEquals(INCOGNITO_TAB_GROUP_ID, mIncognitoColorViewProvider.getTabGroupId());
+    public void testSetAndGetTabGroupId() {
+        assertEquals(REGULAR_TAB_GROUP_ID, mRegularColorViewProvider.getTabGroupIdForTesting());
+        assertEquals(INCOGNITO_TAB_GROUP_ID, mIncognitoColorViewProvider.getTabGroupIdForTesting());
+
+        mRegularColorViewProvider.setTabGroupId(OTHER_TAB_GROUP_ID);
+        assertEquals(OTHER_TAB_GROUP_ID, mRegularColorViewProvider.getTabGroupIdForTesting());
     }
 
     @Test
@@ -175,6 +176,48 @@ public class TabGroupColorViewProviderUnitTest {
     }
 
     @Test
+    public void testColorView_SharedToNotSharedIdChange() {
+        verifyColorView(
+                mRegularColorViewProvider,
+                /* isIncognito= */ false,
+                TabGroupColorId.RED,
+                TabGroupColorId.CYAN);
+
+        createCollaboration();
+
+        verifyColorViewCollaboration(TabGroupColorId.CYAN);
+
+        mRegularColorViewProvider.setTabGroupId(OTHER_TAB_GROUP_ID);
+        assertFalse(mRegularColorViewProvider.hasCollaborationId());
+
+        // Verify the view is back to the unshared state.
+        verifyColorView(
+                mRegularColorViewProvider,
+                /* isIncognito= */ false,
+                TabGroupColorId.CYAN,
+                TabGroupColorId.GREY);
+    }
+
+    @Test
+    public void testColorView_NotSharedToSharedIdChange() {
+        mRegularColorViewProvider.setTabGroupId(OTHER_TAB_GROUP_ID);
+
+        verifyColorView(
+                mRegularColorViewProvider,
+                /* isIncognito= */ false,
+                TabGroupColorId.RED,
+                TabGroupColorId.CYAN);
+
+        createCollaboration();
+        assertFalse(mRegularColorViewProvider.hasCollaborationId());
+
+        mRegularColorViewProvider.setTabGroupId(REGULAR_TAB_GROUP_ID);
+        assertTrue(mRegularColorViewProvider.hasCollaborationId());
+
+        verifyColorViewCollaboration(TabGroupColorId.CYAN);
+    }
+
+    @Test
     public void testColorView_Shared_NotCreatedYet() {
         createCollaboration();
 
@@ -194,12 +237,12 @@ public class TabGroupColorViewProviderUnitTest {
     private void createCollaboration() {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = COLLABORATION_ID1;
-        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
-        mSharingObserverCaptor
-                .getValue()
-                .onGroupAdded(
-                        SharedGroupTestHelper.newGroupData(
-                                COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2));
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(REGULAR_TAB_GROUP_ID)))
+                .thenReturn(savedTabGroup);
+        var groupData =
+                SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        mSharingObserverCaptor.getValue().onGroupAdded(groupData);
+        when(mCollaborationService.getGroupData(COLLABORATION_ID1)).thenReturn(groupData);
     }
 
     private void verifyColorView(

@@ -57,13 +57,14 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonObject& json_object) {
               << std::endl;
   }
 
-  std::optional<base::Value> parsed = base::JSONReader::Read(serialized_json);
+  std::optional<base::Value::Dict> parsed =
+      base::JSONReader::ReadDict(serialized_json);
   // Sometimes, `json_proto::JsonProtoConverter` produces an unparsable string.
-  if (!parsed.has_value() || !parsed->is_dict()) {
+  if (!parsed) {
     return;
   }
 
-  auto run = AttributionInteropRun::Parse(std::move(*parsed).TakeDict(),
+  auto run = AttributionInteropRun::Parse(std::move(*parsed),
                                           AttributionInteropConfig());
   if (!run.has_value()) {
     return;

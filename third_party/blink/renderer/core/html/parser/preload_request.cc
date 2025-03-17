@@ -116,15 +116,14 @@ Resource* PreloadRequest::Start(Document* document) {
       ResourceFetcher::DetermineRequestContext(resource_type_, is_image_set_));
   resource_request.SetRequestDestination(
       ResourceFetcher::DetermineRequestDestination(resource_type_));
-
+  resource_request.SetExpectedSignatures(integrity_metadata_);
   resource_request.SetFetchPriorityHint(fetch_priority_hint_);
 
   // Disable issue logging to avoid duplicates, since `CanRegister()` will be
   // called again later.
   if (is_attribution_reporting_eligible_img_or_script_ &&
       document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-          url, /*element=*/nullptr,
-          /*request_id=*/std::nullopt, /*log_issues=*/false)) {
+          url, /*element=*/nullptr, /*log_issues=*/false)) {
     resource_request.SetAttributionReportingEligibility(
         network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
@@ -140,6 +139,12 @@ Resource* PreloadRequest::Start(Document* document) {
     CHECK_EQ(resource_type_, ResourceType::kImage);
     UseCounter::Count(document, WebFeature::kSharedStorageAPI_Image_Attribute);
   }
+
+  bool browsing_topics =
+      browsing_topics_eligible_ && RuntimeEnabledFeatures::TopicsAPIEnabled() &&
+      document->domWindow()->IsSecureContext() &&
+      !document->domWindow()->GetSecurityOrigin()->IsOpaque();
+  resource_request.SetBrowsingTopics(browsing_topics);
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_HOST_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <optional>
 #include <string>
@@ -13,12 +14,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -55,7 +58,8 @@ class CONTENT_EXPORT PrivateAggregationHost
     kEnableDebugModeCalledMultipleTimes = 4,
     kNegativeValue = 5,
     kFilteringIdInvalid = 6,
-    kMaxValue = kFilteringIdInvalid,
+    kNecessaryFeatureNotEnabled = 7,
+    kMaxValue = kNecessaryFeatureNotEnabled,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -111,50 +115,39 @@ class CONTENT_EXPORT PrivateAggregationHost
   static constexpr base::TimeDelta kTimeForLocalProcessing =
       base::Milliseconds(100);
 
-  // Returns the maximum number of contributions that can go in an
-  // `AggregatableReport` after merging. Marked public for testing; this enables
-  // golden report unittests to match the browser's actual behavior.
-  static size_t GetMaxNumContributions(PrivateAggregationCallerApi api);
+  // Returns the effective maximum number of contributions that can go in an
+  // `AggregatableReport` after merging. The `requested_max_contributions`
+  // parameter comes from the web-visible `maxContributions` field.
+  //
+  // This method is marked public for testing; this enables golden report
+  // unittests to match the browser's actual behavior.
+  static base::StrictNumeric<size_t> GetEffectiveMaxContributions(
+      PrivateAggregationCallerApi caller_api,
+      std::optional<size_t> requested_max_contributions);
 
   // `on_report_request_details_received` and `browser_context` must be
   // non-null.
   PrivateAggregationHost(
-      base::RepeatingCallback<void(
-          ReportRequestGenerator,
-          std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-          PrivateAggregationBudgetKey,
-          NullReportBehavior)> on_report_request_details_received,
+      base::RepeatingCallback<
+          void(ReportRequestGenerator,
+               PrivateAggregationPendingContributions::Wrapper,
+               PrivateAggregationBudgetKey,
+               NullReportBehavior)> on_report_request_details_received,
       BrowserContext* browser_context);
   PrivateAggregationHost(const PrivateAggregationHost&) = delete;
   PrivateAggregationHost& operator=(const PrivateAggregationHost&) = delete;
   ~PrivateAggregationHost() override;
 
-  // Attempts to bind a new pending receiver for a worklet, allowing messages to
-  // be sent and processed. The return value indicates whether the receiver was
-  // accepted. Virtual for testing.
-  //
-  // The receiver will only be bound when all of these conditions are met:
-  // * `worklet_origin` is potentially trustworthy.
-  // * `context_id`, if set, is not too long.
-  // * `aggregation_coordinator_origin`, if set, is on the allowlist.
-  // * `filtering_id_max_bytes` is positive and no greater than
-  //   `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`.
-  // * `timeout` is set iff a report should be sent deterministically, i.e.
-  //   `PrivateAggregationManager::ShouldSendReportDeterministically(context_id,
-  //   filtering_id_max_bytes)` is true.
-  //
-  // When `timeout` is set and developer mode is not enabled, this host will
-  // send a report after the given duration of time has passed, regardless of
-  // when the receiver is actually disconnected. It is a fatal error for
-  // `timeout` to be zero or negative.
+  // See `PrivateAggregationManager::BindNewReceiver()`.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationCallerApi api,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t filtering_id_max_bytes,
+      std::optional<size_t> max_contributions,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver);
 
@@ -163,6 +156,10 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   // blink::mojom::PrivateAggregationHost:
   void ContributeToHistogram(
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+          contribution_ptrs) override;
+  void ContributeToHistogramOnEvent(
+      blink::mojom::PrivateAggregationErrorEvent error_event,
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contribution_ptrs) override;
   void EnableDebugMode(blink::mojom::DebugKeyPtr debug_key) override;
@@ -181,11 +178,11 @@ class CONTENT_EXPORT PrivateAggregationHost
       AggregatableReportRequest::DelayType delay_type,
       base::Uuid report_id,
       const url::Origin& reporting_origin,
-      PrivateAggregationCallerApi api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t specified_filtering_id_max_bytes,
-      size_t max_num_contributions,
+      size_t max_contributions,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions);
 
@@ -195,24 +192,30 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   void OnReceiverDisconnected();
 
-  void SendReportOnTimeoutOrDisconnect(ReceiverContext& current_context,
-                                       base::TimeDelta remaining_timeout);
+  void SendReportOnTimeoutOrDisconnect(
+      ReceiverContext& current_context,
+      base::TimeDelta remaining_timeout,
+      PrivateAggregationPendingContributions::TimeoutOrDisconnect
+          timeout_or_disconnect);
+
+  // Performs shared validation for `ContributeToHistogram()` and
+  // `ContributeToHistogramOnEvent()` calls.
+  bool ValidateContributeCall(
+      const std::vector<
+          blink::mojom::AggregatableReportHistogramContributionPtr>&
+          contribution_ptrs);
 
   // Set iff the private aggregation developer mode is set.
   bool should_not_delay_reports_;
 
-  base::RepeatingCallback<void(
-      ReportRequestGenerator,
-      std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-      PrivateAggregationBudgetKey,
-      NullReportBehavior)>
+  base::RepeatingCallback<void(ReportRequestGenerator,
+                               PrivateAggregationPendingContributions::Wrapper,
+                               PrivateAggregationBudgetKey,
+                               NullReportBehavior)>
       on_report_request_details_received_;
 
   mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>
       receiver_set_;
-
-  // The number of open pipes where a timeout was specified.
-  int pipes_with_timeout_count_ = 0;
 
   // `this` is indirectly owned by the StoragePartitionImpl, which itself is
   // owned by `browser_context_`.

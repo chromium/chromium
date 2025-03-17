@@ -223,7 +223,8 @@ std::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
     return std::nullopt;
   }
   return std::optional<base::FilePath>(
-      crx_cache_root_temp_dir_.GetPath().AppendASCII("crx_cache"));
+      crx_cache_root_temp_dir_.GetPath().Append(
+          FILE_PATH_LITERAL("crx_cache")));
 }
 
 bool TestConfigurator::IsConnectionMetered() const {

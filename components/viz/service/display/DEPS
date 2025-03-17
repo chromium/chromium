@@ -84,6 +84,10 @@ specific_include_rules = {
     "+ui/gl/gl_implementation.h",
     "+third_party/zlib/google",
   ],
+  "test_resource_factory\.*" : [
+    "+components/viz/client",
+    "+components/viz/test",
+  ],
   "delegated_ink_point_renderer\.*" : [
     "+mojo/public/cpp/bindings",
   ],
@@ -92,5 +96,8 @@ specific_include_rules = {
   ],
   "output_surface\.h": [
     "+mojo/public/cpp/bindings/pending_receiver.h",
-  ]
+  ],
+  "frame_interval_matchers_unittest\.cc": [
+    "+perfetto/test/traced_value_test_support.h",
+  ],
 }

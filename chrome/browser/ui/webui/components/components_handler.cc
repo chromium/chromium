@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/update_client/crx_update_item.h"
 #include "ui/base/l10n/l10n_util.h"

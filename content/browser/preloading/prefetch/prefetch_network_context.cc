@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
@@ -21,7 +22,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace content {
 
@@ -50,8 +51,8 @@ PrefetchNetworkContext::PrefetchNetworkContext(
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
 
-network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
-    PrefetchService* service) {
+scoped_refptr<network::SharedURLLoaderFactory>
+PrefetchNetworkContext::GetURLLoaderFactory(PrefetchService* service) {
   if (!url_loader_factory_) {
     if (use_isolated_network_context_) {
       CreateIsolatedURLLoaderFactory(service);
@@ -65,7 +66,7 @@ network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
     }
   }
   CHECK(url_loader_factory_);
-  return url_loader_factory_.get();
+  return url_loader_factory_;
 }
 
 network::mojom::CookieManager* PrefetchNetworkContext::GetCookieManager() {
@@ -94,10 +95,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-  context_params->user_agent =
-      GetReducedUserAgent(base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              switches::kUseMobileUserAgent),
-                          delegate ? delegate->GetMajorVersionNumber() : "");
+  context_params->user_agent = embedder_support::GetUserAgent();
   // The verifier created here does not have the same parameters as used in the
   // profile (where additional parameters are added in
   // chrome/browser/net/profile_network_context_service.h
@@ -114,7 +112,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
   // the profile verifier.
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  context_params->cors_exempt_header_list = {kCorsExemptPurposeHeaderName};
+  context_params->cors_exempt_header_list = {blink::kPurposeHeaderName};
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();
 

@@ -93,6 +93,12 @@
 #include <unistd.h>
 #endif
 
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
+#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) ||
+        // PA_BUILDFLAG(IS_CHROMEOS)
+
 // In the MTE world, the upper bits of a pointer can be decorated with a tag,
 // thus allowing many versions of the same pointer to exist. These macros take
 // that into account when comparing.
@@ -385,6 +391,7 @@ class PartitionAllocTest
     // Requires explicit `FreeFlag` to activate, no effect otherwise.
     opts.zapping_by_free_flags = PartitionOptions::kEnabled;
     opts.eventually_zero_freed_memory = PartitionOptions::kEnabled;
+    opts.fewer_memory_regions = PartitionOptions::kDisabled;
     opts.scheduler_loop_quarantine = PartitionOptions::kEnabled;
     opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
         std::numeric_limits<size_t>::max();
@@ -856,7 +863,7 @@ TEST_P(PartitionAllocTest, MultiAlloc) {
   ptrdiff_t diff = UntagPtr(ptr2) - UntagPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(ActualTestAllocSize()), diff);
 
-  // Check that we re-use the just-freed slot.
+  // Check that we reuse the just-freed slot.
   allocator.root()->Free(ptr2);
   ptr2 = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr2);
@@ -988,7 +995,7 @@ TEST_P(PartitionAllocTest, ExtraAllocSize) {
   PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
   ASSERT_EQ(bucket->slot_size, slot_size);
 
-  // The first allocation is expected to span exactly the capcity of the slot.
+  // The first allocation is expected to span exactly the capacity of the slot.
   // The second one should overflow into a higher-size slot, and not fill its
   // capacity.
   size_t requested_size1 = slot_size - ExtraAllocSize(allocator);
@@ -2488,7 +2495,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 // Disable these tests on Android because, due to the allocation-heavy behavior,
 // they tend to get OOM-killed rather than pass.
 //
-// Disable these test on Windows, since they run slower, so tend to timout and
+// Disable these test on Windows, since they run slower, so tend to timeout and
 // cause flake.
 #if !PA_BUILDFLAG(IS_WIN) &&                                         \
         (!PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) ||                       \
@@ -3838,7 +3845,7 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   void* ptr = allocator.root()->Alloc(1, type_name);
   EXPECT_TRUE(ptr);
   memset(ptr, 'A', 1);
-  constexpr auto kFlags = FreeFlags::kZap | FreeFlags::kSchedulerLoopQuarantine;
+  constexpr auto kFlags = FreeFlags::kSchedulerLoopQuarantine;
   allocator.root()->Free<kFlags>(ptr);
   // Accessing memory after free requires a retag.
   ptr = TagPtr(ptr);
@@ -3859,6 +3866,137 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   // Make sure the quarantine is empty before the root is reset.
   allocator.root()->GetSchedulerLoopQuarantineBranchForTesting().Purge();
 }
+
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
+
+TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
+  auto* root = allocator.root();
+  ASSERT_FALSE(root->settings.fewer_memory_regions);
+
+  // Look for an allocation size that matches a bucket which doesn't fill its
+  // last PartitionPage.  Scan through allocation sizes rather than buckets, as
+  // depending on the bucket distribution, some buckets may not be active.
+  PartitionBucket* incomplete_bucket = nullptr;
+  // Only regular buckets, give up if we can't find one (and GTEST_SKIP()
+  // below).
+  for (size_t alloc_size = 0;
+       alloc_size < MaxRegularSlotSpanSize() - ExtraAllocSize(allocator);
+       alloc_size++) {
+    size_t index = SizeToIndex(alloc_size + ExtraAllocSize(allocator));
+    auto& bucket = root->buckets[index];
+    if (bucket.get_bytes_per_span() != bucket.get_pages_per_slot_span()
+                                           << PartitionPageShift()) {
+      incomplete_bucket = &bucket;
+      break;
+    }
+  }
+
+  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikely,
+  // but so be it.
+  if (!incomplete_bucket) {
+    GTEST_SKIP();
+  }
+
+  // Allocate memory, get the end of the slot span, and check that there is an
+  // inaccessible region starting there.
+  void* ptr =
+      root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
+  ASSERT_TRUE(ptr);
+  uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(UntagPtr(ptr)));
+  uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
+
+  std::string proc_maps;
+  std::vector<base::debug::MappedMemoryRegion> regions;
+  ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
+  ASSERT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
+  bool found = false;
+  for (const auto& region : regions) {
+    if (region.start == end) {
+      found = true;
+      EXPECT_EQ(region.permissions, base::debug::MappedMemoryRegion::PRIVATE);
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+
+  root->Free(ptr);
+}
+
+TEST_P(PartitionAllocTest, FewerMemoryRegions) {
+  auto* root = allocator.root();
+  ASSERT_FALSE(root->settings.fewer_memory_regions);
+  root->settings.fewer_memory_regions = true;
+
+  // Look for an allocation size that matches a bucket which doesn't fill its
+  // last PartitionPage.  Scan through allocation sizes rather than buckets, as
+  // depending on the bucket distribution, some buckets may not be active.
+  PartitionBucket* incomplete_bucket = nullptr;
+  // Only regular buckets, give up if we can't find one (and GTEST_SKIP()
+  // below).
+  for (size_t alloc_size = 0;
+       alloc_size < MaxRegularSlotSpanSize() - ExtraAllocSize(allocator);
+       alloc_size++) {
+    size_t index = SizeToIndex(alloc_size + ExtraAllocSize(allocator));
+    auto& bucket = root->buckets[index];
+    if (bucket.get_bytes_per_span() != bucket.get_pages_per_slot_span()
+                                           << PartitionPageShift()) {
+      incomplete_bucket = &bucket;
+      break;
+    }
+  }
+
+  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikely,
+  // but so be it.
+  if (!incomplete_bucket) {
+    GTEST_SKIP();
+  }
+
+  // Allocate memory, get the end of the slot span, and check that there is an
+  // inaccessible region starting there.
+  void* ptr =
+      root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
+  ASSERT_TRUE(ptr);
+  uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(UntagPtr(ptr)));
+  uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
+
+  std::string proc_maps;
+  std::vector<base::debug::MappedMemoryRegion> regions;
+  ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
+  ASSERT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
+
+  // Cannot find a region that starts exactly at the end of the incomplete slot
+  // span.
+  bool found = false;
+  for (const auto& region : regions) {
+    if (region.start == end) {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found);
+
+  // The enclosing region has RW permissions.
+  found = false;
+  for (const auto& region : regions) {
+    if (region.start <= end && region.end >= end) {
+      EXPECT_EQ(region.permissions,
+                base::debug::MappedMemoryRegion::READ |
+                    base::debug::MappedMemoryRegion::WRITE |
+                    base::debug::MappedMemoryRegion::PRIVATE);
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+
+  root->Free(ptr);
+}
+
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) ||
+        // PA_BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(PartitionAllocTest, ZeroFreedMemory) {
   auto* root = allocator.root();
@@ -3898,7 +4036,7 @@ TEST_P(PartitionAllocTest, ZeroFreedMemory) {
 
 TEST_P(PartitionAllocTest, Bug_897585) {
   // Need sizes big enough to be direct mapped and a delta small enough to
-  // allow re-use of the slot span when cookied. These numbers fall out of the
+  // allow reuse of the slot span when cookied. These numbers fall out of the
   // test case in the indicated bug.
   size_t kInitialSize = 983050;
   size_t kDesiredSize = 983100;
@@ -4363,7 +4501,7 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
                 root.total_size_of_direct_mapped_pages);
 
       // Freeing memory in the diret map decommits pages right away. The address
-      // space is released for re-use too.
+      // space is released for reuse too.
       root.Free(ptr);
       expected_committed_size -= aligned_size;
       expected_direct_map_size = 0;
@@ -4501,6 +4639,93 @@ TEST_P(PartitionAllocTest, RefCountRealloc) {
     RunRefCountReallocSubtest(alloc_size, alloc_size / 10 * 11);
     RunRefCountReallocSubtest(alloc_size, alloc_size / 10 * 9);
   }
+}
+
+TEST_P(PartitionAllocTest, ExtraExtrasSize) {
+  constexpr size_t kExtraExtrasSize = 4;
+  constexpr size_t kSlotSize = 64;
+
+  std::unique_ptr<PartitionRoot> root_with_extra = CreateCustomTestRoot(
+      [&]() {
+        PartitionOptions opts = GetCommonPartitionOptions();
+        opts.backup_ref_ptr = PartitionOptions::kEnabled;
+        opts.backup_ref_ptr_extra_extras_size = kExtraExtrasSize;
+        return opts;
+      }(),
+      {});
+  std::unique_ptr<PartitionRoot> root_no_extra = CreateCustomTestRoot(
+      [&]() {
+        PartitionOptions opts = GetCommonPartitionOptions();
+        opts.backup_ref_ptr = PartitionOptions::kEnabled;
+        return opts;
+      }(),
+      {});
+
+  // Max size which fits within 64 bytes bucket when there is no extra.
+  const size_t alloc_size =
+      root_no_extra->AdjustSizeForExtrasSubtract(kSlotSize);
+
+  EXPECT_EQ(
+      root_with_extra->AdjustSizeForExtrasAdd(alloc_size),
+      root_no_extra->AdjustSizeForExtrasAdd(alloc_size) + kExtraExtrasSize);
+
+  void* ptr1 = root_with_extra->Alloc(alloc_size, type_name);
+  auto* slot_span1 =
+      SlotSpan::FromSlotStart(root_with_extra->ObjectToSlotStart(ptr1));
+
+  void* ptr2 = root_no_extra->Alloc(alloc_size, type_name);
+  auto* slot_span2 =
+      SlotSpan::FromSlotStart(root_no_extra->ObjectToSlotStart(ptr2));
+
+  // Verify adding extra consumes more memory.
+  EXPECT_NE(slot_span1->bucket->slot_size, slot_span2->bucket->slot_size);
+
+  root_no_extra->Free(ptr2);
+}
+
+TEST_P(PartitionAllocTest, ExtraExtrasNullfyOffByOneDetection) {
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  GTEST_SKIP()
+      << "This test is not compatible with 32-bit bucket distribution.";
+#else
+  std::unique_ptr<PartitionRoot> root_no_extra = CreateCustomTestRoot(
+      [&]() {
+        PartitionOptions opts = GetCommonPartitionOptions();
+        opts.backup_ref_ptr = PartitionOptions::kEnabled;
+        return opts;
+      }(),
+      {});
+
+  // `ptr1` can be located at page start hence lacks in-slot style
+  // `InSlotMetadata`. See `InSlotMetadataPointer`.
+  int64_t* ptr1 = static_cast<int64_t*>(root_no_extra->Alloc(8));
+  int64_t* ptr2 = static_cast<int64_t*>(root_no_extra->Alloc(8));
+
+  // Off-by-one (8 bytes).
+  EXPECT_DEATH_IF_SUPPORTED((ptr2[1] = 0, root_no_extra->Free(ptr2)), "");
+
+  root_no_extra->Free(ptr2);
+  root_no_extra->Free(ptr1);
+
+  // Repeat the same but with extra extras of 8 bytes.
+  std::unique_ptr<PartitionRoot> root_with_extra = CreateCustomTestRoot(
+      [&]() {
+        PartitionOptions opts = GetCommonPartitionOptions();
+        opts.backup_ref_ptr = PartitionOptions::kEnabled;
+        opts.backup_ref_ptr_extra_extras_size = 8;
+        return opts;
+      }(),
+      {});
+
+  ptr1 = static_cast<int64_t*>(root_with_extra->Alloc(8));
+  ptr2 = static_cast<int64_t*>(root_with_extra->Alloc(8));
+
+  // This off-by-one overwrites the extra extras and does not corrupt
+  // `InSlotMetadata`.
+  ptr2[1] = 0;
+  root_with_extra->Free(ptr2);
+  root_with_extra->Free(ptr1);
+#endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 }
 
 int g_unretained_dangling_raw_ptr_detected_count = 0;
@@ -5011,7 +5236,7 @@ TEST_P(PartitionAllocTest, DanglingPtrReleaseAfterSchedulerLoopQuarantineExit) {
 #if PA_USE_DEATH_TESTS()
 // DCHECK message are stripped in official build. It causes death tests with
 // matchers to fail.
-#if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
+#if !defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG)
 
 // Acquire() once, Release() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
@@ -5045,7 +5270,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
   allocator.root()->Free(ptr);
 }
 
-#endif  //! defined(OFFICIAL_BUILD) || !defined(NDEBUG)
+#endif  //! defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG)
 #endif  // PA_USE_DEATH_TESTS()
 #endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
@@ -5207,11 +5432,11 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
 
   // DCHECKs don't work with EXPECT_DEATH on official builds.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) && \
-    (!defined(OFFICIAL_BUILD) || !defined(NDEBUG))
+    (!defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG))
   // Expect to DCHECK on unallocated region.
   EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(address_to_check), "");
 #endif  //  PA_BUILDFLAG(DCHECKS_ARE_ON) && (!defined(OFFICIAL_BUILD) ||
-        //  !defined(NDEBUG))
+        //  PA_BUILDFLAG(IS_DEBUG))
 
   EXPECT_FALSE(
       IsManagedByNormalBucketsForTesting(address_to_check, allocator.root()));
@@ -5282,14 +5507,14 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
 #if PA_USE_DEATH_TESTS()
 // DCHECK message are stripped in official build. It causes death tests with
 // matchers to fail.
-#if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
+#if !defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG)
 
 TEST_P(PartitionAllocDeathTest, CheckTriggered) {
   PA_EXPECT_DCHECK_DEATH_WITH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
   EXPECT_DEATH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
 }
 
-#endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
+#endif  // !defined(OFFICIAL_BUILD) && PA_BUILDFLAG(IS_DEBUG)
 #endif  // PA_USE_DEATH_TESTS()
 
 // Not on chromecast, since gtest considers extra output from itself as a test

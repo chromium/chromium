@@ -17,6 +17,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Rational;
 
 import androidx.annotation.IntDef;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -235,6 +235,7 @@ public class CustomTabMinimizationManager
     }
 
     @Override
+    @SuppressWarnings("TimeUnitMismatch") // Using seconds; recordTimesHistogram wants milliseconds.
     public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
         if (!mMinimized) return;
 
@@ -340,8 +341,11 @@ public class CustomTabMinimizationManager
                     DomDistillerUrlUtils.isDistilledPage(tab.getUrl())
                             ? tab.getOriginalUrl()
                             : tab.getUrl();
-            String host =
-                    UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_CRYPTOGRAPHIC);
+            String host = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(url);
+            if (TextUtils.isEmpty(host)
+                    || host.startsWith(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
+                host = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
+            }
             String title =
                     ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(host) ? "" : tab.getTitle();
             mModel =

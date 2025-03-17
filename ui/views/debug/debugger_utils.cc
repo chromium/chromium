@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 
 namespace views::debug {
 
@@ -23,7 +24,7 @@ constexpr int kElementIndent = 2;
 constexpr int kAttributeIndent = 4;
 
 std::string ToString(bool val) {
-  return val ? "true" : "false";
+  return base::ToString(val);
 }
 
 std::string ToString(int val) {

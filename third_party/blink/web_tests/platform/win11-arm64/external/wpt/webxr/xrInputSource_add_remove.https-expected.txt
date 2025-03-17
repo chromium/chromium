@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] XRInputSources can be properly added and removed from the session - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRInputSources can be properly added and removed from the session - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

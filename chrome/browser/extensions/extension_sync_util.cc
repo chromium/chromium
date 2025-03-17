@@ -9,9 +9,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/sync_helper.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -42,6 +42,10 @@ bool ShouldSync(content::BrowserContext* context, const Extension* extension) {
 }
 
 bool IsSyncingExtensionsEnabled(Profile* profile) {
+  // TODO(crbug.com/388557898): If this method is called from
+  // IdentityManagerObserver::OnPrimaryAccountChanged, then it could return the
+  // wrong value since the sync service also piggybacks on that event to update
+  // which data types are syncing.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   return sync_service &&
@@ -50,17 +54,14 @@ bool IsSyncingExtensionsEnabled(Profile* profile) {
 }
 
 bool IsSyncingExtensionsInTransportMode(Profile* profile) {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  return IsSyncingExtensionsEnabled(profile) && !sync_service->HasSyncConsent();
-}
-
-bool IsExtensionsExplicitSigninEnabled() {
-  // Explicit sign ins for extensions are enabled if extensions can be synced if
-  // the user signs into transport mode.
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         base::FeatureList::IsEnabled(
-             syncer::kSyncEnableExtensionsInTransportMode);
+  // Prefer querying the IdentityManager for consent levels since it's the base
+  // source of truth, and something like sync_service->HasSyncConsent() is a bit
+  // slower to update since it observes IdentityManager.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  return IsSyncingExtensionsEnabled(profile) &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 }  // namespace extensions::sync_util

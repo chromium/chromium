@@ -269,7 +269,7 @@ class KeyboardAccessoryMediator
             // When the accessory just (dis)appeared, there should be no active tab.
             mTabSwitcher.closeActiveTab();
             if (!mModel.get(VISIBLE)) {
-                // TODO(fhorschig|ioanap): Maybe the generation bridge should take care of that.
+                // TODO: crbug.com/398065928 - The generation controller should control the timing..
                 onItemAvailable(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC, new Action[0]);
             }
             return;

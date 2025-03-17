@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/client_socket_pool_manager.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -36,10 +32,10 @@ namespace net {
 namespace {
 
 // Limit of sockets of each socket pool.
-int g_max_sockets_per_pool[] = {
-  256,  // NORMAL_SOCKET_POOL
-  256   // WEBSOCKET_SOCKET_POOL
-};
+auto g_max_sockets_per_pool = std::to_array<int>({
+    256,  // NORMAL_SOCKET_POOL
+    256   // WEBSOCKET_SOCKET_POOL
+});
 
 static_assert(std::size(g_max_sockets_per_pool) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
@@ -53,10 +49,10 @@ static_assert(std::size(g_max_sockets_per_pool) ==
 // than normal other connections. Use a limit of 255, so the limit for wss will
 // be the same as the limit for ws. Also note that Firefox uses a limit of 200.
 // See http://crbug.com/486800
-int g_max_sockets_per_group[] = {
+auto g_max_sockets_per_group = std::to_array<int>({
     6,   // NORMAL_SOCKET_POOL
     255  // WEBSOCKET_SOCKET_POOL
-};
+});
 
 static_assert(std::size(g_max_sockets_per_group) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
@@ -65,10 +61,10 @@ static_assert(std::size(g_max_sockets_per_group) ==
 // The max number of sockets to allow per proxy chain.  This applies both to
 // http and SOCKS proxies.  See http://crbug.com/12066 and
 // http://crbug.com/44501 for details about proxy chain connection limits.
-int g_max_sockets_per_proxy_chain[] = {
+auto g_max_sockets_per_proxy_chain = std::to_array<int>({
     kDefaultMaxSocketsPerProxyChain,  // NORMAL_SOCKET_POOL
     kDefaultMaxSocketsPerProxyChain   // WEBSOCKET_SOCKET_POOL
-};
+});
 
 static_assert(std::size(g_max_sockets_per_proxy_chain) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
@@ -101,7 +97,8 @@ int InitSocketPoolHelper(
     ClientSocketHandle* socket_handle,
     HttpNetworkSession::SocketPoolType socket_pool_type,
     CompletionOnceCallback callback,
-    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback) {
+    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+    bool fail_if_alias_requires_proxy_override) {
   DCHECK(endpoint.IsValid());
 
   session->ApplyTestingFixedPort(endpoint);
@@ -128,13 +125,15 @@ int InitSocketPoolHelper(
   if (num_preconnect_streams) {
     return pool->RequestSockets(connection_group, std::move(socket_params),
                                 proxy_annotation, num_preconnect_streams,
+                                fail_if_alias_requires_proxy_override,
                                 std::move(callback), net_log);
   }
 
-  return socket_handle->Init(connection_group, std::move(socket_params),
-                             proxy_annotation, request_priority, socket_tag,
-                             respect_limits, std::move(callback),
-                             proxy_auth_callback, pool, net_log);
+  return socket_handle->Init(
+      connection_group, std::move(socket_params), proxy_annotation,
+      request_priority, socket_tag, respect_limits, std::move(callback),
+      proxy_auth_callback, fail_if_alias_requires_proxy_override, pool,
+      net_log);
 }
 
 }  // namespace
@@ -225,14 +224,16 @@ int InitSocketHandleForHttpRequest(
     const NetLogWithSource& net_log,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
-    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback) {
+    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+    bool fail_if_alias_requires_proxy_override) {
   DCHECK(socket_handle);
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, socket_tag,
       net_log, 0, socket_handle, HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::move(callback), proxy_auth_callback);
+      std::move(callback), proxy_auth_callback,
+      fail_if_alias_requires_proxy_override);
 }
 
 int InitSocketHandleForWebSocketRequest(
@@ -247,7 +248,8 @@ int InitSocketHandleForWebSocketRequest(
     const NetLogWithSource& net_log,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
-    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback) {
+    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+    bool fail_if_alias_requires_proxy_override) {
   DCHECK(socket_handle);
 
   // QUIC proxies are currently not supported through this method.
@@ -264,7 +266,7 @@ int InitSocketHandleForWebSocketRequest(
       std::move(network_anonymization_key), SecureDnsPolicy::kAllow,
       SocketTag(), net_log, 0, socket_handle,
       HttpNetworkSession::WEBSOCKET_SOCKET_POOL, std::move(callback),
-      proxy_auth_callback);
+      proxy_auth_callback, fail_if_alias_requires_proxy_override);
 }
 
 int PreconnectSocketsForHttpRequest(
@@ -279,6 +281,7 @@ int PreconnectSocketsForHttpRequest(
     SecureDnsPolicy secure_dns_policy,
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
+    bool fail_if_alias_requires_proxy_override,
     CompletionOnceCallback callback) {
   // Expect websocket schemes (ws and wss) to be converted to the http(s)
   // equivalent.
@@ -291,7 +294,8 @@ int PreconnectSocketsForHttpRequest(
       std::move(network_anonymization_key), secure_dns_policy, SocketTag(),
       net_log, num_preconnect_streams, nullptr,
       HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
-      ClientSocketPool::ProxyAuthCallback());
+      ClientSocketPool::ProxyAuthCallback(),
+      fail_if_alias_requires_proxy_override);
 }
 
 }  // namespace net

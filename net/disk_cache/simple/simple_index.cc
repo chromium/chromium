@@ -612,10 +612,10 @@ void SimpleIndex::MergeInitializingSet(
                    entries_set_.size(), 0, 100000, 50);
   SIMPLE_CACHE_UMA(
       MEMORY_KB, "CacheSizeOnInit", cache_type_,
-      static_cast<base::HistogramBase::Sample>(cache_size_ / kBytesInKb));
+      static_cast<base::HistogramBase::Sample32>(cache_size_ / kBytesInKb));
   SIMPLE_CACHE_UMA(
       MEMORY_KB, "MaxCacheSizeOnInit", cache_type_,
-      static_cast<base::HistogramBase::Sample>(max_size_ / kBytesInKb));
+      static_cast<base::HistogramBase::Sample32>(max_size_ / kBytesInKb));
 
   // Run all callbacks waiting for the index to come up.
   for (auto& callback : to_run_when_initialized_) {

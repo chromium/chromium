@@ -28,7 +28,6 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,7 +79,6 @@ public class TabListContainerViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFocusTabIndexForAccessibilityProperty() {
         MockViewHolder viewHolder = spy(new MockViewHolder(mViewMock1));
         doReturn(viewHolder).when(mTabListRecyclerViewMock).findViewHolderForAdapterPosition(eq(2));
@@ -97,7 +95,6 @@ public class TabListContainerViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFetchViewByIndexCallback() {
         MockViewHolder viewHolder1 = spy(new MockViewHolder(mViewMock1));
         MockViewHolder viewHolder2 = spy(new MockViewHolder(mViewMock2));
@@ -118,7 +115,6 @@ public class TabListContainerViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetVisibleRangeCallback() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)
@@ -138,7 +134,6 @@ public class TabListContainerViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsScrollingSupplierCallback() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)

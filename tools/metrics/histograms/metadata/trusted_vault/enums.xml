@@ -64,6 +64,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationState) -->
 
+<!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
+
+<enum name="TrustedVaultDownloadKeysStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Member not found or corrupted (deprecated)"/>
+  <int value="2" label="No new keys"/>
+  <int value="3" label="Key proof verification failed"/>
+  <int value="4" label="Access token fetching failed"/>
+  <int value="5" label="Other error"/>
+  <int value="6" label="Member not found"/>
+  <int value="7" label="Membership not found"/>
+  <int value="8" label="Membership corrupted"/>
+  <int value="9" label="Membership empty"/>
+  <int value="10" label="No primary account"/>
+  <int value="11" label="Device not registered"/>
+  <int value="12" label="Throttled client side"/>
+  <int value="13" label="Corrupted local device registration"/>
+  <int value="14" label="Aborted"/>
+  <int value="15" label="Network error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDownloadKeysStatus) -->
+
 <!-- LINT.IfChange(TrustedVaultFileReadStatus) -->
 
 <enum name="TrustedVaultFileReadStatus">
@@ -76,6 +99,26 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultListSecurityDomainMembersPinStatus) -->
+
+<enum name="TrustedVaultListSecurityDomainMembersPinStatus">
+  <int value="0" label="The PIN is present and usable for recovery"/>
+  <int value="1" label="The PIN is present but not usable for recovery"/>
+  <int value="2" label="The PIN is not present"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultListSecurityDomainMembersPinStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoverabilityStatus) -->
+
+<enum name="TrustedVaultRecoverabilityStatus">
+  <int value="0" label="Not degraded"/>
+  <int value="1" label="Degraded"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultRecoverabilityStatus) -->
 
 </enums>
 

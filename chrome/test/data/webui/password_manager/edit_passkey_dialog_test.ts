@@ -37,7 +37,7 @@ suite('EditPasskeyDialogTest', function() {
     await flushTasks();
   });
 
-  test('passkey displayed correctly', async function() {
+  test('passkey displayed correctly', function() {
     assertEquals(dialog.$.usernameInput.value, passkey.username);
     assertEquals(
         dialog.$.usernameInput.placeholder,
@@ -51,7 +51,7 @@ suite('EditPasskeyDialogTest', function() {
         dialog.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(listItemElements.length, 1);
     assertEquals(listItemElements[0]!.textContent!.trim(), 'test.com');
-    assertEquals(listItemElements[0]!.href, passkey.affiliatedDomains![0]!.url);
+    assertEquals(listItemElements[0]!.href, passkey.affiliatedDomains[0]!.url);
   });
 
   test('passkey is updated', async function() {

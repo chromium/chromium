@@ -4,6 +4,7 @@
 
 #include <jni.h>
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/browser_ui/site_settings/android/storage_info_fetcher.h"
 #include "components/browser_ui/site_settings/android/website_preference_bridge_util.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -35,6 +35,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
@@ -161,13 +162,20 @@ void GetOrigins(JNIEnv* env,
 
   // Now add all origins that have a non-default setting to the list.
   for (const auto& settings_it : all_settings) {
-    if (settings_it.GetContentSetting() == default_content_setting)
+    if (!base::FeatureList::IsEnabled(
+            permissions::features::kPermissionSiteSettingsRadioButton) &&
+        settings_it.GetContentSetting() == default_content_setting) {
       continue;
+    }
     if (managedOnly &&
         settings_it.source != content_settings::ProviderType::kPolicyProvider) {
       continue;
     }
     const std::string origin = settings_it.primary_pattern.ToString();
+    if (origin == "*") {
+      continue;
+    }
+
     const std::string embedder = settings_it.secondary_pattern.ToString();
 
     ScopedJavaLocalRef<jstring> jembedder;
@@ -307,24 +315,15 @@ bool GetBooleanForContentSetting(
   }
 }
 
-bool IsContentSettingManaged(
+content_settings::SettingSource GetDefaultContentSettingProviderSource(
     const JavaParamRef<jobject>& jbrowser_context_handle,
     ContentSettingsType content_settings_type) {
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
-  content_settings::ProviderType provider;
-  content_settings->GetDefaultContentSetting(content_settings_type, &provider);
-  return provider == content_settings::ProviderType::kPolicyProvider;
-}
-
-bool IsContentSettingManagedByCustodian(
-    const JavaParamRef<jobject>& jbrowser_context_handle,
-    ContentSettingsType content_settings_type) {
-  HostContentSettingsMap* content_settings =
-      GetHostContentSettingsMap(jbrowser_context_handle);
-  content_settings::ProviderType provider;
-  content_settings->GetDefaultContentSetting(content_settings_type, &provider);
-  return provider == content_settings::ProviderType::kSupervisedProvider;
+  content_settings::ProviderType provider_type;
+  content_settings->GetDefaultContentSetting(
+      static_cast<ContentSettingsType>(content_settings_type), &provider_type);
+  return content_settings::GetSettingSourceFromProviderType(provider_type);
 }
 
 bool IsContentSettingUserModifiable(
@@ -586,8 +585,8 @@ void OnStorageInfoReady(const ScopedJavaGlobalRef<jobject>& java_callback,
       continue;
     ScopedJavaLocalRef<jstring> host = ConvertUTF8ToJavaString(env, i->host);
 
-    Java_WebsitePreferenceBridge_insertStorageInfoIntoList(
-        env, list, host, static_cast<jint>(i->type), i->usage);
+    Java_WebsitePreferenceBridge_insertStorageInfoIntoList(env, list, host,
+                                                           i->usage);
   }
 
   base::android::RunObjectCallbackAndroid(java_callback, list);
@@ -619,11 +618,11 @@ void OnLocalStorageModelInfoLoaded(
 
   std::vector<std::pair<url::Origin, bool>> important_notations(
       local_storage_info.size());
-  base::ranges::transform(local_storage_info, important_notations.begin(),
-                          [](const content::StorageUsageInfo& info) {
-                            return std::make_pair(info.storage_key.origin(),
-                                                  false);
-                          });
+  std::ranges::transform(local_storage_info, important_notations.begin(),
+                         [](const content::StorageUsageInfo& info) {
+                           return std::make_pair(info.storage_key.origin(),
+                                                 false);
+                         });
   if (fetch_important) {
     permissions::PermissionsClient::Get()->AreSitesImportant(
         browser_context, &important_notations);
@@ -760,7 +759,6 @@ static void JNI_WebsitePreferenceBridge_ClearStorageData(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     const JavaParamRef<jstring>& jhost,
-    jint type,
     const JavaParamRef<jobject>& java_callback) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   std::string host = ConvertJavaStringToUTF8(env, jhost);
@@ -768,9 +766,8 @@ static void JNI_WebsitePreferenceBridge_ClearStorageData(
   auto storage_info_fetcher =
       base::MakeRefCounted<browser_ui::StorageInfoFetcher>(browser_context);
   storage_info_fetcher->ClearStorage(
-      host, static_cast<blink::mojom::StorageType>(type),
-      base::BindOnce(&OnStorageInfoCleared,
-                     ScopedJavaGlobalRef<jobject>(java_callback)));
+      host, base::BindOnce(&OnStorageInfoCleared,
+                           ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
 static void JNI_WebsitePreferenceBridge_ClearCookieData(
@@ -834,15 +831,6 @@ static void JNI_WebsitePreferenceBridge_ResetNotificationsSettingsForTest(
     const JavaParamRef<jobject>& jbrowser_context_handle) {
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
-}
-
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingManaged(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jbrowser_context_handle,
-    int content_settings_type) {
-  return IsContentSettingManaged(
-      jbrowser_context_handle,
-      static_cast<ContentSettingsType>(content_settings_type));
 }
 
 static jboolean JNI_WebsitePreferenceBridge_IsCookieDeletionDisabled(
@@ -1084,21 +1072,23 @@ static jboolean JNI_WebsitePreferenceBridge_IsContentSettingUserModifiable(
       static_cast<ContentSettingsType>(content_settings_type));
 }
 
-static jboolean JNI_WebsitePreferenceBridge_IsContentSettingManagedByCustodian(
+static jint JNI_WebsitePreferenceBridge_GetDefaultContentSettingProviderSource(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type) {
-  return IsContentSettingManagedByCustodian(
+  return static_cast<jint>(GetDefaultContentSettingProviderSource(
       jbrowser_context_handle,
-      static_cast<ContentSettingsType>(content_settings_type));
+      static_cast<ContentSettingsType>(content_settings_type)));
 }
 
 static jboolean JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle) {
-  if (!IsContentSettingManaged(jbrowser_context_handle,
-                               ContentSettingsType::GEOLOCATION))
+  if (GetDefaultContentSettingProviderSource(
+          jbrowser_context_handle, ContentSettingsType::GEOLOCATION) !=
+      content_settings::SettingSource::kPolicy) {
     return false;
+  }
   return GetHostContentSettingsMap(jbrowser_context_handle)
              ->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                         nullptr) == CONTENT_SETTING_ALLOW;

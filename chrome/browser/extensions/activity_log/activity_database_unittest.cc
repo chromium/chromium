@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/cstring_view.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -43,8 +44,11 @@ class ActivityDatabaseTestPolicy : public ActivityDatabase::Delegate {
  public:
   ActivityDatabaseTestPolicy() = default;
 
-  static const char* const kTableContentFields[];
-  static const char* const kTableFieldTypes[];
+  static constexpr base::cstring_view kTableContentFields[] = {
+      "extension_id", "time", "action_type", "api_name"};
+
+  static constexpr base::cstring_view kTableFieldTypes[] = {
+      "LONGVARCHAR NOT NULL", "INTEGER", "INTEGER", "LONGVARCHAR"};
 
   virtual void Record(ActivityDatabase* db, scoped_refptr<Action> action);
 
@@ -57,15 +61,9 @@ class ActivityDatabaseTestPolicy : public ActivityDatabase::Delegate {
   std::vector<scoped_refptr<Action> > queue_;
 };
 
-const char* const ActivityDatabaseTestPolicy::kTableContentFields[] = {
-    "extension_id", "time", "action_type", "api_name"};
-const char* const ActivityDatabaseTestPolicy::kTableFieldTypes[] = {
-    "LONGVARCHAR NOT NULL", "INTEGER", "INTEGER", "LONGVARCHAR"};
-
 bool ActivityDatabaseTestPolicy::InitDatabase(sql::Database* db) {
   return ActivityDatabase::InitializeTable(db, "actions", kTableContentFields,
-                                           kTableFieldTypes,
-                                           std::size(kTableContentFields));
+                                           kTableFieldTypes);
 }
 
 bool ActivityDatabaseTestPolicy::FlushDatabase(sql::Database* db) {

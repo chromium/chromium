@@ -190,20 +190,6 @@ apps::AppInstallService& AppServiceProxyAsh::AppInstallService() {
   return *app_install_service_;
 }
 
-void AppServiceProxyAsh::RegisterCrosApiSubScriber(
-    SubscriberCrosapi* subscriber) {
-  crosapi_subscriber_ = subscriber;
-
-  crosapi_subscriber_->InitializeApps();
-
-  // Initialise the Preferred Apps in the `crosapi_subscriber_` on register.
-  if (preferred_apps_impl_ &&
-      preferred_apps_impl_->preferred_apps_list().IsInitialized()) {
-    crosapi_subscriber_->InitializePreferredApps(
-        preferred_apps_impl_->preferred_apps_list().GetValue());
-  }
-}
-
 void AppServiceProxyAsh::SetPublisherUnavailable(AppType app_type) {
   UnregisterPublisher(app_type);
 
@@ -250,10 +236,6 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
         base::Contains(uninstall_dialogs_, delta->app_id)) {
       uninstall_dialogs_[delta->app_id]->CloseDialog();
     }
-  }
-
-  if (crosapi_subscriber_) {
-    crosapi_subscriber_->OnApps(deltas, app_type, should_notify_initialized);
   }
 
   AppServiceProxyBase::OnApps(std::move(deltas), app_type,
@@ -498,8 +480,6 @@ void AppServiceProxyAsh::SetAppLocale(const std::string& app_id,
 }
 
 void AppServiceProxyAsh::Shutdown() {
-  crosapi_subscriber_ = nullptr;
-
   app_platform_metrics_service_.reset();
 
   uninstall_dialogs_.clear();
@@ -567,26 +547,6 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
   auto it = uninstall_dialogs_.find(app_id);
   CHECK(it != uninstall_dialogs_.end(), base::NotFatalUntil::M130);
   uninstall_dialogs_.erase(it);
-}
-
-void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
-  AppServiceProxyBase::InitializePreferredAppsForAllSubscribers();
-  if (crosapi_subscriber_ && preferred_apps_impl_) {
-    crosapi_subscriber_->InitializePreferredApps(
-        preferred_apps_impl_->preferred_apps_list().GetValue());
-  }
-}
-
-void AppServiceProxyAsh::OnPreferredAppsChanged(
-    PreferredAppChangesPtr changes) {
-  if (!crosapi_subscriber_) {
-    AppServiceProxyBase::OnPreferredAppsChanged(std::move(changes));
-    return;
-  }
-
-  DCHECK(changes);
-  AppServiceProxyBase::OnPreferredAppsChanged(changes->Clone());
-  crosapi_subscriber_->OnPreferredAppsChanged(std::move(changes));
 }
 
 bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(

@@ -25,6 +25,12 @@
 #include "components/prefs/pref_service.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
+
 SystemMenuModelDelegate::SystemMenuModelDelegate(
     ui::AcceleratorProvider* provider,
     Browser* browser)
@@ -68,6 +74,11 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
         browser_->window()->GetNativeWindow());
   }
 #endif
+#if BUILDFLAG(ENABLE_GLIC)
+  if (command_id == IDC_GLIC_TOGGLE_PIN) {
+    return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
+  }
+#endif
   return true;
 }
 
@@ -78,27 +89,43 @@ bool SystemMenuModelDelegate::GetAcceleratorForCommandId(
 }
 
 bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
-  return command_id == IDC_RESTORE_TAB;
+  return std::set{IDC_RESTORE_TAB, IDC_GLIC_TOGGLE_PIN}.contains(command_id);
 }
 
 std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
     int command_id) const {
-  DCHECK_EQ(command_id, IDC_RESTORE_TAB);
+  DCHECK(IsItemForCommandIdDynamic(command_id));
 
-  int string_id = IDS_RESTORE_TAB;
-  if (IsCommandIdEnabled(command_id)) {
-    sessions::TabRestoreService* trs =
-        TabRestoreServiceFactory::GetForProfile(browser_->profile());
-    DCHECK(trs);
-    trs->LoadTabsFromLastSession();
-    if (!trs->entries().empty()) {
-      if (trs->entries().front()->type == sessions::tab_restore::Type::WINDOW) {
-        string_id = IDS_REOPEN_WINDOW;
-      } else if (trs->entries().front()->type ==
-                 sessions::tab_restore::Type::GROUP) {
-        string_id = IDS_REOPEN_GROUP;
+  int string_id;
+  switch (command_id) {
+    case IDC_RESTORE_TAB:
+      string_id = IDS_RESTORE_TAB;
+      if (IsCommandIdEnabled(command_id)) {
+        sessions::TabRestoreService* trs =
+            TabRestoreServiceFactory::GetForProfile(browser_->profile());
+        DCHECK(trs);
+        trs->LoadTabsFromLastSession();
+        if (!trs->entries().empty()) {
+          if (trs->entries().front()->type ==
+              sessions::tab_restore::Type::WINDOW) {
+            string_id = IDS_REOPEN_WINDOW;
+          } else if (trs->entries().front()->type ==
+                     sessions::tab_restore::Type::GROUP) {
+            string_id = IDS_REOPEN_GROUP;
+          }
+        }
       }
-    }
+      break;
+#if BUILDFLAG(ENABLE_GLIC)
+    case IDC_GLIC_TOGGLE_PIN:
+      string_id = browser_->profile()->GetPrefs()->GetBoolean(
+                      glic::prefs::kGlicPinnedToTabstrip)
+                      ? IDS_GLIC_UNPIN
+                      : IDS_GLIC_PIN;
+      break;
+#endif
+    default:
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(string_id);
 }

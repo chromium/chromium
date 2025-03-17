@@ -84,6 +84,12 @@
         {CustomizationToggleType::kTips,
          [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]});
   }
+  if (ShouldPutMostVisitedSitesInMagicStack(
+          FeedActivityBucketForPrefs(_prefService))) {
+    toggleMap.insert({CustomizationToggleType::kMostVisited,
+                      [self isMagicStackCardEnabledForType:
+                                CustomizationToggleType::kMostVisited]});
+  }
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
@@ -93,6 +99,8 @@
 - (BOOL)isModuleEnabledForType:(CustomizationToggleType)type {
   switch (type) {
     case CustomizationToggleType::kMostVisited:
+      CHECK(!ShouldPutMostVisitedSitesInMagicStack(
+          FeedActivityBucketForPrefs(_prefService)));
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMostVisitedEnabled);
     case CustomizationToggleType::kMagicStack:
@@ -126,6 +134,11 @@
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTipsEnabled);
     }
+    case CustomizationToggleType::kMostVisited:
+      CHECK(ShouldPutMostVisitedSitesInMagicStack(
+          FeedActivityBucketForPrefs(_prefService)));
+      return _prefService->GetBoolean(
+          prefs::kHomeCustomizationMostVisitedEnabled);
     default:
       NOTREACHED();
   }

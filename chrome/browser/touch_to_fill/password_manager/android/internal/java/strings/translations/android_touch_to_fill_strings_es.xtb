@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">La lista de credenciales que puedes rellenar con un toque está abierta a altura completa.</translation>
 <translation id="5591247451101092906">¿Usar contraseña o llave de acceso guardada?</translation>
 <translation id="5624120631404540903">Gestionar contraseñas</translation>
+<translation id="592182999816790476">Contraseña de <ph name="USERNAME" /> guardada para <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Llave de acceso de <ph name="USERNAME" />, usa tu bloqueo de pantalla</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nueva contraseña para este sitio}other{Nuevas contraseñas para este sitio}}</translation>
 <translation id="7286867818472074330">Seleccionar llave de acceso</translation>

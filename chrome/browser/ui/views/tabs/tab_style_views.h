@@ -38,8 +38,8 @@ class TabStyleViews {
   TabStyleViews();
   virtual ~TabStyleViews();
 
-  // Gets the specific |path_type| associated with the specific |tab|.
-  // If |force_active| is true, applies an active appearance on the tab (usually
+  // Gets the specific `path_type` associated with the specific `tab`.
+  // If `force_active` is true, applies an active appearance on the tab (usually
   // involving painting an optional stroke) even if the tab is not the active
   //  tab.
   virtual SkPath GetPath(TabStyle::PathType path_type,
@@ -63,18 +63,11 @@ class TabStyleViews {
   // active opacity.
   virtual TabActive GetApparentActiveState() const = 0;
 
-  // Returns the target opacity of the "active" portion of the tab's state. The
-  // current opacity may be animating towards this value.
-  virtual float GetTargetActiveOpacity() const = 0;
-
   // Returns the current opacity of the "active" portion of the tab's state.
   virtual float GetCurrentActiveOpacity() const = 0;
 
   // Derives and returns colors for the tab. See TabColors, above.
   virtual TabStyle::TabColors CalculateTargetColors() const = 0;
-
-  // Sets the center of the radial highlight in the hover animation.
-  virtual void SetHoverLocation(const gfx::Point& location) = 0;
 
   // Shows the hover animation.
   virtual void ShowHover(TabStyle::ShowHoverStyle style) = 0;

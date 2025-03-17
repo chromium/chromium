@@ -4,9 +4,13 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.widget.ButtonCompat;
@@ -14,6 +18,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import java.util.List;
 
 /** Handles toolbar functionality for the {@ContactsPickerDialog}. */
+@NullMarked
 public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails> {
     /** A delegate that handles dialog actions. */
     public interface ContactsToolbarDelegate {
@@ -22,7 +27,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     }
 
     // A delegate to notify when the dialog should close.
-    private ContactsToolbarDelegate mDelegate;
+    private @Nullable ContactsToolbarDelegate mDelegate;
 
     // Whether any filter chips are selected. Default to true because all filter chips are selected
     // by default when opening the dialog.
@@ -55,6 +60,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         if (isSearching()) {
             super.onSearchNavigationBack();
         } else {
+            assumeNonNull(mDelegate);
             mDelegate.onNavigationBackCallback();
         }
     }

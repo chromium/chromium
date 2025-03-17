@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("accessibility") {
   sources = [
@@ -43,6 +43,7 @@ static_library("accessibility") {
     "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions/api/braille_display_private:controller",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/common",
@@ -202,6 +203,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/preferences",
+    "//chrome/browser/extensions/api/braille_display_private:controller",
     "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",
@@ -209,6 +211,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//components/live_caption:constants",
+    "//components/live_caption:live_caption",
     "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
 

@@ -1,0 +1,51 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_dice_support)
+
+source_set("signout_confirmation") {
+  sources = [
+    "signout_confirmation_handler.h",
+    "signout_confirmation_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/ui/signin:signin",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/webui",
+  ]
+}
+
+source_set("signout_confirmation_impl") {
+  sources = [
+    "signout_confirmation_handler.cc",
+    "signout_confirmation_ui.cc",
+  ]
+
+  deps = [
+    ":signout_confirmation",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/signin/signout_confirmation:resources_grit",
+    "//chrome/browser/ui/webui",
+  ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "signout_confirmation.mojom" ]
+  webui_module_path = "/"
+}

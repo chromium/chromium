@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
 namespace sandbox::policy::features {
@@ -41,9 +40,9 @@ SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kEnableCsrssLockdown);
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxFilterServiceEnvironment);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kSpectreVariant2Mitigation);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kHigherRendererMemoryLimit);

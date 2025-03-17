@@ -163,6 +163,11 @@ void DeviceRestrictionScheduleController::RemoveObserver(Observer* observer) {
 }
 
 void DeviceRestrictionScheduleController::LoggedInStateChanged() {
+  if (intervals_.empty()) {
+    // Do nothing if the policy isn't set.
+    return;
+  }
+  // Re-run the logic when a login event happens.
   Run();
 }
 
@@ -297,11 +302,6 @@ std::optional<base::Time> DeviceRestrictionScheduleController::GetNextRunTime(
 DeviceRestrictionScheduleController::State
 DeviceRestrictionScheduleController::GetCurrentState(
     base::Time current_time) const {
-  if (HasTimeBeenTamperedWith(current_time)) {
-    // Somebody tampered with the time, just go to restricted schedule.
-    return State::kRestricted;
-  }
-
   auto current_weekly_time_checked =
       WeeklyTimeChecked::FromTimeAsLocalTime(current_time);
   return IntervalsContainTime(intervals_, current_weekly_time_checked)

@@ -8,9 +8,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_navigation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_table_view_controller.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface TabsSettingsCoordinator () <TabsSettingsNavigationCommands>
 @end
@@ -39,8 +38,8 @@
 - (void)start {
   _viewController = [[TabsSettingsTableViewController alloc] init];
   _mediator = [[TabsSettingsMediator alloc]
-      initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
-                          consumer:_viewController];
+      initWithProfilePrefService:self.browser->GetProfile()->GetPrefs()
+                        consumer:_viewController];
 
   _viewController.delegate = _mediator;
   _mediator.handler = self;

@@ -29,17 +29,18 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.device.bluetooth.wrapper.BluetoothAdapterWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
+import org.chromium.device.bluetooth.wrapper.DeviceBondStateReceiverWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Exposes android.bluetooth.BluetoothAdapter as necessary for C++
- * device::BluetoothAdapterAndroid, which implements the cross platform
- * device::BluetoothAdapter.
+ * Exposes android.bluetooth.BluetoothAdapter as necessary for C++ device::BluetoothAdapterAndroid,
+ * which implements the cross platform device::BluetoothAdapter.
  *
- * Lifetime is controlled by device::BluetoothAdapterAndroid.
+ * <p>Lifetime is controlled by device::BluetoothAdapterAndroid.
  */
 @JNINamespace("device")
 @NullMarked
@@ -50,6 +51,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
     // mAdapter is final to ensure registerReceiver is followed by unregisterReceiver.
     private final @Nullable BluetoothAdapterWrapper mAdapter;
     private final @Nullable ChromeBluetoothLeScanner mLeScanner;
+
+    private @Nullable DeviceBondStateReceiverWrapper mDeviceBondStateReceiver;
 
     // ---------------------------------------------------------------------------------------------
     // Construction and handler for C++ object destruction.
@@ -87,6 +90,9 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         stopScan();
         mNativeBluetoothAdapterAndroid = 0;
         unregisterBroadcastReceiver();
+        if (mDeviceBondStateReceiver != null && mAdapter != null) {
+            mAdapter.getContext().unregisterReceiver(mDeviceBondStateReceiver);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -146,6 +152,20 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         }
     }
 
+    // Implements BluetoothAdapterAndroid::GetOsPermissionStatus.
+    // No need to check whether we are allowed to show permission request dialogs. The front end
+    // code takes care of it.
+    @CalledByNative
+    private int getOsPermissionStatus() {
+        if (!isPresent()) {
+            return PermissionStatus.DENIED;
+        }
+        if (hasPermissionToScan()) {
+            return PermissionStatus.ALLOWED;
+        }
+        return PermissionStatus.DENIED;
+    }
+
     // Implements BluetoothAdapterAndroid::IsDiscoverable.
     @CalledByNative
     private boolean isDiscoverable() {
@@ -167,7 +187,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      */
     @CalledByNative
     private boolean startScan(List<ScanFilter> filters) {
-        if (!isPresent() || !canScan()) {
+        if (!isPresent() || !hasPermissionToScan()) {
             return false;
         }
 
@@ -188,6 +208,35 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         return mLeScanner.stopScan();
     }
 
+    /** Populates paired devices. */
+    @CalledByNative
+    private void populatePairedDevices() {
+        if (!isPresent()) {
+            return;
+        }
+
+        if (!mAdapter.hasBluetoothFeature()) {
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Context context = mAdapter.getContext();
+            if (context.checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+        }
+
+        final Set<BluetoothDeviceWrapper> devices = mAdapter.getBondedDevices();
+        if (devices == null) {
+            return;
+        }
+
+        for (BluetoothDeviceWrapper device : devices) {
+            populatePairedDevice(device);
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Implementation details:
 
@@ -196,7 +245,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      *     are on.
      */
     @RequiresNonNull("mAdapter")
-    private boolean canScan() {
+    private boolean hasPermissionToScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Context context = mAdapter.getContext();
             return context.checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
@@ -233,6 +282,15 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         if (mAdapter != null) {
             mAdapter.getContext().unregisterReceiver(this);
         }
+    }
+
+    private void populatePairedDevice(BluetoothDeviceWrapper deviceWrapper) {
+        ChromeBluetoothAdapterJni.get()
+                .populatePairedDevice(
+                        mNativeBluetoothAdapterAndroid,
+                        this,
+                        deviceWrapper.getAddress(),
+                        deviceWrapper);
     }
 
     /**
@@ -395,6 +453,13 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                 int[] manufacturerDataKeys,
                 Object[] manufacturerDataValues,
                 int advertiseFlags);
+
+        // Binds to BluetoothAdapterAndroid::PopulatePairedDevice.
+        void populatePairedDevice(
+                long nativeBluetoothAdapterAndroid,
+                ChromeBluetoothAdapter caller,
+                String address,
+                BluetoothDeviceWrapper deviceWrapper);
 
         // Binds to BluetoothAdapterAndroid::nativeOnAdapterStateChanged
         void onAdapterStateChanged(

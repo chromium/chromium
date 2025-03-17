@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 
 #include <string.h>
@@ -103,6 +108,14 @@ void SodaSpeechRecognitionEngineImpl::StartRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   is_start_recognition_ = true;
+}
+
+void SodaSpeechRecognitionEngineImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  if (speech_recognition_recognizer_.is_bound()) {
+    speech_recognition_recognizer_->UpdateRecognitionContext(
+        recognition_context);
+  }
 }
 
 void SodaSpeechRecognitionEngineImpl::EndRecognition() {

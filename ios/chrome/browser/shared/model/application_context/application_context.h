@@ -16,6 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
+namespace auto_deletion {
+class AutoDeletionService;
+}  // namespace auto_deletion
+
 namespace component_updater {
 class ComponentUpdateService;
 }
@@ -218,6 +222,9 @@ class ApplicationContext {
   // Returns the application's AdditionalFeaturesController that manages some
   // features not declared by `BASE_DECLARE_FEATURE()`.
   virtual AdditionalFeaturesController* GetAdditionalFeaturesController() = 0;
+
+  // Returns the AutoDeletionService instance.
+  virtual auto_deletion::AutoDeletionService* GetAutoDeletionService() = 0;
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   // Returns the application's OnDeviceModelServiceController which manages the

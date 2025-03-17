@@ -41,13 +41,14 @@ RegisterScreenRequest::RegisterScreenRequest(
     google_apis::RequestSender* sender,
     std::string session_id,
     RegisterScreenParam register_screen_param,
+    std::string url_base,
     RegisterScreenRequestCallback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
       session_id_(std::move(session_id)),
       register_screen_param_(std::move(register_screen_param)),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(url_base)),
       callback_(std::move(callback)) {}
 
 RegisterScreenRequest ::~RegisterScreenRequest() = default;
@@ -83,16 +84,15 @@ bool RegisterScreenRequest::GetContentData(std::string* upload_content_type,
   base::Value::Dict host_device_info;
 
   connection_param.Set(kSpotlightConnectionCode,
-                       std::move(register_screen_param_.connection_code));
+                       register_screen_param_.connection_code);
   root.Set(kSpotlightConnectionParam, std::move(connection_param));
 
   base::Value::Dict host;
-  host.Set(kGaiaId, std::move(register_screen_param_.student_gaia_id));
+  host.Set(kGaiaId, register_screen_param_.student_gaia_id);
   host_device_info.Set(kUser, std::move(host));
 
   base::Value::Dict host_device;
-  host_device.Set(kDeviceId,
-                  std::move(register_screen_param_.student_device_id));
+  host_device.Set(kDeviceId, register_screen_param_.student_device_id);
   host_device_info.Set(kDeviceInfo, std::move(host_device));
   root.Set(kHostDevice, std::move(host_device_info));
 

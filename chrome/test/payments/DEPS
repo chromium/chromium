@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/public/cpp/external_arc/overlay",
+  "+chromeos/ash/experiences/arc/overlay",
   "+components/network_session_configurator/common",
   "+components/payments",
   "+components/webauthn",

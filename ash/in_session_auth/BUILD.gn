@@ -4,7 +4,7 @@
 
 import("//build/config/ui.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("in_session_auth") {
   sources = [

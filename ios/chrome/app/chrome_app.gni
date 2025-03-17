@@ -86,14 +86,16 @@ template("chrome_app") {
         output_name = target_name
         transparent = true
 
-        configs += [ "//build/config/ios:ios_extension_executable_flags" ]
-
         deps = [
           ":${_outer_target}_framework+link",
           "//content/app/ios/appex:${_process_target}",
         ]
 
-        ldflags = [
+        if (!defined(ldflags)) {
+          ldflags = []
+        }
+
+        ldflags += [
           "-Wl,--ignore-auto-link-option=CoreAudioTypes",
           "-Wl,-no_application_extension",
           "-Wl,-rpath,@executable_path/../../Frameworks",
@@ -105,19 +107,23 @@ template("chrome_app") {
       }
     }
 
+    set_defaults("browserkit_extension") {
+      configs = [ "//build/config/ios:ios_extension_executable_flags" ]
+    }
+
     browserkit_extension("gpu_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.GPUProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.GPUProcessExtension"
     }
 
     browserkit_extension("network_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.NetworkProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.NetworkProcessExtension"
     }
 
     browserkit_extension("content_process") {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      bundle_identifier = "$ios_chromium_bundle_id.ContentProcess"
+      bundle_identifier = "$ios_chromium_bundle_id.ContentProcessExtension"
     }
 
     ios_app_bundle(_target_name) {

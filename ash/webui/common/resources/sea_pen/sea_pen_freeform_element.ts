@@ -12,15 +12,17 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 
-import {FreeformTab, SeaPenSamplePrompt} from './constants.js';
-import {MantaStatusCode, SeaPenQuery} from './sea_pen.mojom-webui.js';
+import type {SeaPenSamplePrompt} from './constants.js';
+import {FreeformTab} from './constants.js';
+import type {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
 import {logSamplePromptShuffleClicked, logSeaPenFreeformTabClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
-import {isArrayEqual, shuffle} from './sea_pen_utils.js';
+import {IronAnnounceEvent, isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
 
 export interface SeaPenFreeformElement {
   $: {
@@ -28,7 +30,7 @@ export interface SeaPenFreeformElement {
     resultsTab: HTMLElement,
     tabContainer: HTMLElement,
     tabKeys: IronA11yKeysElement,
-  }
+  };
 }
 
 export class SeaPenFreeformElement extends WithSeaPenStore {
@@ -60,6 +62,10 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
         type: Object,
         observer: 'onThumbnailResponseStatusCodeChanged_',
       },
+
+      thumbnails_: {
+        type: Object,
+      },
     };
   }
 
@@ -67,6 +73,12 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   private freeformTab_: FreeformTab;
   private seaPenQuery_: SeaPenQuery|null;
   private thumbnailResponseStatusCode_: MantaStatusCode|null;
+  private thumbnails_: SeaPenThumbnail[]|null;
+
+  override ready() {
+    super.ready();
+    IronA11yAnnouncer.requestAvailability();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -75,8 +87,18 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     this.watch<SeaPenFreeformElement['thumbnailResponseStatusCode_']>(
         'thumbnailResponseStatusCode_',
         state => state.thumbnailResponseStatusCode);
+    this.watch<SeaPenFreeformElement['thumbnails_']>(
+        'thumbnails_', state => state.thumbnails);
     this.updateFromStore();
     this.shuffleSamplePrompts_();
+    // The tab container is hidden when there are no results to show. In that
+    // case, show the sample prompts tab.
+    this.freeformTab_ =
+        this.isTabContainerHidden_(
+            this.seaPenQuery_, this.thumbnailResponseStatusCode_,
+            this.thumbnails_) ?
+        FreeformTab.SAMPLE_PROMPTS :
+        FreeformTab.RESULTS;
     this.$.tabKeys.target = this.$.tabContainer;
   }
 
@@ -102,7 +124,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     // Remove focus state of focused tab.
     focusedElement?.removeAttribute('tabindex');
 
-    const nextTab = this.getOtherTab_(focusedElement)
+    const nextTab = this.getOtherTab_(focusedElement);
     if (nextTab) {
       // Add focus state for next tab.
       nextTab.setAttribute('tabindex', '0');
@@ -127,9 +149,12 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   }
 
   private isTabContainerHidden_(
-      query: SeaPenQuery,
-      thumbnailResponseStatusCode: MantaStatusCode|null): boolean {
-    return !query?.textQuery && !thumbnailResponseStatusCode;
+      query: SeaPenQuery|null,
+      thumbnailResponseStatusCode: MantaStatusCode|null,
+      thumbnails: SeaPenThumbnail[]|null): boolean {
+    // The tab container should appear whenever the user has generated images.
+    return !query?.textQuery && !thumbnailResponseStatusCode &&
+        !isNonEmptyArray(thumbnails);
   }
 
   private isSamplePromptsTabSelected_(tab: FreeformTab): boolean {
@@ -141,11 +166,11 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   }
 
   private getSamplePromptsTabIndex_(tab: FreeformTab): string {
-    return this.isSamplePromptsTabSelected_(tab) ? '0' : '-1'
+    return this.isSamplePromptsTabSelected_(tab) ? '0' : '-1';
   }
 
   private getResultsTabIndex_(tab: FreeformTab): string {
-    return this.isResultsTabSelected_(tab) ? '0' : '-1'
+    return this.isResultsTabSelected_(tab) ? '0' : '-1';
   }
 
   private getOtherTab_(element: Element|null): HTMLElement|null {
@@ -161,6 +186,8 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   private onShuffleClicked_(): void {
     logSamplePromptShuffleClicked();
     this.shuffleSamplePrompts_();
+    this.dispatchEvent(
+        new IronAnnounceEvent(this.i18n('ariaAnnounceSamplePromptsShuffled')));
   }
 
   private shuffleSamplePrompts_(): void {

@@ -37,6 +37,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/stale_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/net_buildflags.h"
 #include "net/network_error_logging/network_error_logging_service.h"
@@ -148,6 +149,13 @@ class NET_EXPORT URLRequestContextBuilder {
 
   // Sets whether Zstd compression is enabled. Disabled by default.
   void set_enable_zstd(bool enable_zstd) { enable_zstd_ = enable_zstd; }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Sets whether StaleHostResolver is enabled. Disabled by default.
+  void enable_stale_dns_resolver(bool stale_dns_enabled) {
+    stale_dns_enabled_ = stale_dns_enabled;
+  }
+#endif
 
   // Sets whether Compression Dictionary is enabled. Disabled by default.
   void set_enable_shared_dictionary(bool enable_shared_dictionary) {
@@ -457,6 +465,7 @@ class NET_EXPORT URLRequestContextBuilder {
   bool http_cache_enabled_ = true;
   bool cookie_store_set_by_client_ = false;
   bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
+  bool stale_dns_enabled_ = false;
 
   handles::NetworkHandle bound_network_ = handles::kInvalidNetworkHandle;
   // Used only if the context is bound to a network to customize the

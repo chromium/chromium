@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
-import {Macro, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
+import type {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
+import type {Macro} from '/common/action_fulfillment/macros/macro.js';
+import {ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -59,7 +60,9 @@ export class BubbleController {
     } = this.getState_();
 
     if (heldMacros) {
-      heldMacros.forEach((displayText) => {this.baseText_.push(displayText)});
+      heldMacros.forEach((displayText) => {
+        this.baseText_.push(displayText);
+      });
     }
 
     if (precision) {
@@ -99,7 +102,7 @@ export class BubbleController {
 
     return chrome.i18n.getMessage('facegaze_display_text', [
       BubbleController.getDisplayTextForMacro_(macro),
-      BubbleController.getDisplayTextForGesture_(gesture)
+      BubbleController.getDisplayTextForGesture_(gesture),
     ]);
   }
 

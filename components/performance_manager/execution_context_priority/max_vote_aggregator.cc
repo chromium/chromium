@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 
 #include <algorithm>
 #include <tuple>
@@ -21,7 +21,14 @@ VotingChannel MaxVoteAggregator::GetVotingChannel() {
 }
 
 void MaxVoteAggregator::SetUpstreamVotingChannel(VotingChannel channel) {
+  CHECK(!channel_.IsValid());
+  CHECK(channel.IsValid());
   channel_ = std::move(channel);
+}
+
+void MaxVoteAggregator::ResetUpstreamVotingChannel() {
+  CHECK(channel_.IsValid());
+  channel_.Reset();
 }
 
 void MaxVoteAggregator::OnVoteSubmitted(

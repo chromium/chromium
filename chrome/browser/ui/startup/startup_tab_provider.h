@@ -202,7 +202,7 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // can't parse the URL. In that case we return an empty one. `maybe_profile`
   // should be provided for better accuracy in the parsing.
   static ParsedCommandLineTabArg ParseTabFromCommandLineArg(
-      base::FilePath::StringPieceType arg,
+      base::FilePath::StringViewType arg,
       const base::FilePath& cur_dir,
       Profile* maybe_profile);
 };

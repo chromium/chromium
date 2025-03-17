@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
@@ -40,7 +40,7 @@ class MockMahiWebContentsManager : public ::mahi::FakeMahiWebContentsManager {
               OnContextMenuClicked,
               (int64_t display_id,
                ::chromeos::mahi::ButtonType button_type,
-               const std::u16string& question,
+               std::u16string_view question,
                const gfx::Rect& mahi_menu_bounds),
               (override));
 };

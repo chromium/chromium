@@ -5,14 +5,17 @@
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** The bottom sheet content that contains a list of recent activities for a collaboration. */
+@NullMarked
 class RecentActivityBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
@@ -30,9 +33,8 @@ class RecentActivityBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -64,7 +66,6 @@ class RecentActivityBottomSheetContent implements BottomSheetContent {
         return HeightMode.WRAP_CONTENT;
     }
 
-    @NonNull
     @Override
     public String getSheetContentDescription(Context context) {
         return context.getString(
@@ -72,19 +73,19 @@ class RecentActivityBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
         assert false : "This method should not be called";
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.data_sharing_recent_activity_bottom_sheet_accessibility_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.data_sharing_recent_activity_bottom_sheet_accessibility_closed;
     }
 }

@@ -4,6 +4,7 @@
 
 #include "ash/system/time/calendar_model.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <list>
@@ -26,7 +27,6 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -182,8 +182,7 @@ class CalendarModelTest
 
     // Register a mock `CalendarClient` to the `CalendarController`.
     const std::string email = "user1@email.com";
-    auto account_id = AccountId::FromUserEmail(email);
-    SimulateUserLogin(account_id);
+    auto account_id = SimulateUserLogin({email});
     calendar_model_ = std::make_unique<CalendarModel>();
     calendar_client_ =
         std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
@@ -298,9 +297,9 @@ class CalendarModelTest
   }
 
   AccountId SimulateLogin(const std::string& email, bool is_child = false) {
-    auto account_id = AccountId::FromUserEmail(email);
-    SimulateUserLogin(account_id, is_child ? user_manager::UserType::kChild
-                                           : user_manager::UserType::kRegular);
+    auto account_id =
+        SimulateUserLogin({email, is_child ? user_manager::UserType::kChild
+                                           : user_manager::UserType::kRegular});
     Shell::Get()->calendar_controller()->RegisterClientForUser(
         account_id, calendar_client_.get());
     return account_id;
@@ -1136,8 +1135,8 @@ TEST_P(CalendarModelTest, ShouldFilterEvents) {
   EXPECT_FALSE(events.empty());
 
   std::vector<std::string> filtered_event_ids;
-  base::ranges::transform(events, std::back_inserter(filtered_event_ids),
-                          &CalendarEvent::id);
+  std::ranges::transform(events, std::back_inserter(filtered_event_ids),
+                         &CalendarEvent::id);
   EXPECT_THAT(filtered_event_ids,
               testing::UnorderedElementsAreArray(std::vector<std::string>{
                   "confirmed+accepted", "tentative+accepted",

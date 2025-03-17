@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
@@ -100,6 +100,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -141,13 +142,8 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/menus/simple_menu_model.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
-#endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
-#include "components/lens/lens_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -840,7 +836,7 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS) && defined(OFFICIAL_BUILD)
     int help_string_id = IDS_GET_HELP;
 #else
     int help_string_id = IDS_HELP_PAGE;
@@ -921,8 +917,7 @@ void ToolsMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                                    kNameWindowIcon);
 
-  if (base::FeatureList::IsEnabled(features::kToolbarPinning) &&
-      CustomizeChromePageHandler::IsSupported(
+  if (CustomizeChromePageHandler::IsSupported(
           NtpCustomBackgroundServiceFactory::GetForProfile(browser->profile()),
           browser->profile())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
@@ -953,7 +948,7 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddItemWithStringIdAndVectorIcon(this, IDC_TASK_MANAGER_APP_MENU,
                                      IDS_TASK_MANAGER, kTaskManagerIcon);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AddItemWithStringId(IDC_TAKE_SCREENSHOT, IDS_TAKE_SCREENSHOT);
 #endif
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1547,7 +1542,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
 
       // Profile submenu.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     case IDC_CUSTOMIZE_CHROME:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.CustomizeChrome",
@@ -1825,7 +1820,7 @@ void AppMenuModel::Build() {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   sub_menus_.push_back(std::make_unique<ProfileSubMenuModel>(
       this, browser()->profile(), browser()->window()->GetColorProvider()));
   auto* const profile_submenu_model =
@@ -1878,8 +1873,7 @@ void AppMenuModel::Build() {
                            kBookmarksMenuItem);
   }
 
-  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
-      browser_->profile()->IsRegularProfile()) {
+  if (browser_->profile()->IsRegularProfile()) {
     auto saved_tab_groups_model = std::make_unique<ui::SimpleMenuModel>(this);
     sub_menus_.push_back(std::move(saved_tab_groups_model));
     AddSubMenuWithStringIdAndVectorIcon(
@@ -1909,14 +1903,18 @@ void AppMenuModel::Build() {
 
   AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (browser()
           ->GetFeatures()
           .lens_overlay_entry_point_controller()
           ->IsEnabled()) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_CONTENT_CONTEXT_LENS_OVERLAY, IDS_SHOW_LENS_OVERLAY,
-        vector_icons::kGoogleLensMonochromeLogoIcon);
+    const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+        vector_icons::kSearchChromeRefreshIcon;
+#endif
+    AddItemWithStringIdAndVectorIcon(this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+                                     IDS_SHOW_LENS_OVERLAY, icon);
     const int lens_command_index =
         GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value();
     SetElementIdentifierAt(lens_command_index, kShowLensOverlay);
@@ -1924,7 +1922,6 @@ void AppMenuModel::Build() {
                       browser()->window()->MaybeShowNewBadgeFor(
                           lens::features::kLensOverlay));
   }
-#endif
 
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE,
                                    kTranslateIcon);
@@ -1969,10 +1966,11 @@ void AppMenuModel::Build() {
   AddSubMenuWithStringIdAndVectorIcon(this, IDC_HELP_MENU, IDS_HELP_MENU,
                                       sub_menus_.back().get(), kHelpMenuIcon);
 #else
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #else
-  AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
+  AddItemWithStringIdAndVectorIcon(this, IDC_ABOUT, IDS_ABOUT,
+                                   vector_icons::kInfoRefreshIcon);
 #endif
 #endif
 
@@ -1985,20 +1983,19 @@ void AppMenuModel::Build() {
 
   // On Chrome OS, similar UI is displayed in the system tray menu, instead of
   // this menu.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chrome::ShouldDisplayManagedUi(browser_->profile())) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (ShouldDisplayManagedUi(browser_->profile())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithIcon(IDC_SHOW_MANAGEMENT_PAGE,
-                    chrome::GetManagedUiMenuItemLabel(browser_->profile()),
-                    ui::ImageModel::FromVectorIcon(
-                        chrome::GetManagedUiIcon(browser_->profile()),
-                        ui::kColorMenuIcon, kDefaultIconSize));
+    AddItemWithIcon(
+        IDC_SHOW_MANAGEMENT_PAGE,
+        GetManagedUiMenuItemLabel(browser_->profile()),
+        ui::ImageModel::FromVectorIcon(GetManagedUiIcon(browser_->profile()),
+                                       ui::kColorMenuIcon, kDefaultIconSize));
 
-    SetAccessibleNameAt(
-        GetIndexOfCommandId(IDC_SHOW_MANAGEMENT_PAGE).value(),
-        chrome::GetManagedUiMenuItemTooltip(browser_->profile()));
+    SetAccessibleNameAt(GetIndexOfCommandId(IDC_SHOW_MANAGEMENT_PAGE).value(),
+                        GetManagedUiMenuItemTooltip(browser_->profile()));
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   uma_action_recorded_ = false;
 }
@@ -2076,11 +2073,6 @@ bool AppMenuModel::AddDefaultBrowserMenuItems() {
 }
 
 bool AppMenuModel::AddSafetyHubMenuItem() {
-  // TODO(crbug.com/40267370): Remove when the service is only created when the
-  // feature is enabled.
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return false;
-  }
   auto* safety_hub_menu_notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(
           browser_->profile());

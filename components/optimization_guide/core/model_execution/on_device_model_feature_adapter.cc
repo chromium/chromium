@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
@@ -61,10 +62,10 @@ OnDeviceModelFeatureAdapter::OnDeviceModelFeatureAdapter(
 OnDeviceModelFeatureAdapter::~OnDeviceModelFeatureAdapter() = default;
 
 std::string OnDeviceModelFeatureAdapter::GetStringToCheckForRedacting(
-    const google::protobuf::MessageLite& message) const {
+    MultimodalMessageReadView message) const {
   for (const auto& proto_field :
        config_.output_config().redact_rules().fields_to_check()) {
-    std::optional<proto::Value> value = GetProtoValue(message, proto_field);
+    std::optional<proto::Value> value = message.GetValue(proto_field);
     if (value) {
       const std::string string_value = GetStringFromValue(*value);
       if (!string_value.empty()) {
@@ -77,7 +78,7 @@ std::string OnDeviceModelFeatureAdapter::GetStringToCheckForRedacting(
 
 std::optional<SubstitutionResult>
 OnDeviceModelFeatureAdapter::ConstructInputString(
-    const google::protobuf::MessageLite& request,
+    MultimodalMessageReadView request,
     bool want_input_context) const {
   if (!config_.has_input_config()) {
     return std::nullopt;
@@ -92,7 +93,7 @@ OnDeviceModelFeatureAdapter::ConstructInputString(
 }
 
 RedactResult OnDeviceModelFeatureAdapter::Redact(
-    const google::protobuf::MessageLite& last_message,
+    MultimodalMessageReadView last_message,
     std::string& current_response) const {
   auto redact_string_input = GetStringToCheckForRedacting(last_message);
   base::ElapsedTimer elapsed_timer;
@@ -111,12 +112,12 @@ bool OnDeviceModelFeatureAdapter::ShouldParseResponse(
 }
 
 void OnDeviceModelFeatureAdapter::ParseResponse(
-    const google::protobuf::MessageLite& request,
+    const MultimodalMessage& request,
     const std::string& model_response,
     size_t previous_response_pos,
     ResponseParser::ResultCallback callback) const {
   std::string redacted_response = model_response;
-  auto redact_result = Redact(request, redacted_response);
+  auto redact_result = Redact(request.read(), redacted_response);
   if (redact_result != RedactResult::kContinue) {
     std::move(callback).Run(
         base::unexpected(ResponseParsingError::kRejectedPii));
@@ -145,7 +146,7 @@ void OnDeviceModelFeatureAdapter::ParseResponse(
 
 std::optional<proto::TextSafetyRequest>
 OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
-    const google::protobuf::MessageLite& request,
+    MultimodalMessageReadView request,
     const std::string& text) const {
   if (!config_.has_text_safety_fallback_config()) {
     return std::nullopt;
@@ -157,8 +158,8 @@ OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
   text_safety_request.set_text(text);
 
   if (text_safety_fallback_config.has_input_url_proto_field()) {
-    std::optional<proto::Value> input_url_value = GetProtoValue(
-        request, text_safety_fallback_config.input_url_proto_field());
+    std::optional<proto::Value> input_url_value =
+        request.GetValue(text_safety_fallback_config.input_url_proto_field());
     if (input_url_value) {
       const std::string string_value = GetStringFromValue(*input_url_value);
       text_safety_request.set_url(string_value);
@@ -170,11 +171,17 @@ OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
   return text_safety_request;
 }
 
-std::optional<SamplingParamsConfig>
-OnDeviceModelFeatureAdapter::MaybeSamplingParamsConfig() const {
+SamplingParamsConfig OnDeviceModelFeatureAdapter::GetSamplingParamsConfig()
+    const {
   if (!config_.has_sampling_params()) {
-    return std::nullopt;
+    // Returns default value if the sampling params are not configured.
+    return SamplingParamsConfig{
+        .default_top_k = uint32_t(features::GetOnDeviceModelDefaultTopK()),
+        .default_temperature =
+            float(features::GetOnDeviceModelDefaultTemperature()),
+    };
   }
+
   return SamplingParamsConfig{
       .default_top_k = config_.sampling_params().top_k(),
       .default_temperature = config_.sampling_params().temperature(),

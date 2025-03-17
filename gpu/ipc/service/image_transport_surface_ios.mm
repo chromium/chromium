@@ -22,7 +22,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2 ||
       gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
     return base::MakeRefCounted<ImageTransportSurfaceOverlayMacEGL>(
-        dawn_context_provider);
+        surface_handle, dawn_context_provider);
   }
 
   return nullptr;

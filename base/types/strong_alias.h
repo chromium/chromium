@@ -113,19 +113,6 @@ class StrongAlias {
   friend bool operator==(const StrongAlias& lhs,
                          const StrongAlias& rhs) = default;
 
-  // Hasher to use in std::unordered_map, std::unordered_set, etc.
-  //
-  // Example usage:
-  //     using MyType = base::StrongAlias<...>;
-  //     using MySet = std::unordered_set<MyType, typename MyType::Hasher>;
-  struct Hasher {
-    using argument_type = StrongAlias;
-    using result_type = std::size_t;
-    result_type operator()(const argument_type& id) const {
-      return std::hash<UnderlyingType>()(id.value());
-    }
-  };
-
   // If UnderlyingType can be serialised into trace, its alias is also
   // serialisable.
   template <class U = UnderlyingType>

@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
@@ -47,13 +46,13 @@
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check does not account for BUILDFLAG(), so including these headers will
-// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// make gn check fail for builds other than ChromeOS. See gn help nogncheck
 // for more information.
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
@@ -207,7 +206,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // don't want |decoder_| to have a dangling pointer. We also destroy
     // |cdm_event_cb_registration_| before |cdm_context_ref_| so that we have a
     // CDM at the moment of destroying the callback registration.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     cdm_event_cb_registration_ = nullptr;
 #endif
     cdm_context_ref_ = nullptr;
@@ -224,7 +223,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(output_frames_.empty());
 
   if (config.is_encrypted()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     SetErrorState("encrypted content is not supported");
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
@@ -237,9 +236,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     bool encrypted_av1_support = false;
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
     encrypted_av1_support = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    encrypted_av1_support = base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kLacrosUseChromeosProtectedAv1);
 #endif
     if (config.codec() != VideoCodec::kH264 &&
         config.codec() != VideoCodec::kVP9 &&
@@ -264,7 +260,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   const VideoCodecProfile profile = config.profile();
   if (!IsConfiguredForTesting()) {
     auto vaapi_wrapper_or_error = VaapiWrapper::CreateForVideoCodec(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         (!cdm_context_ref_ || transcryption_) ? VaapiWrapper::kDecode
                                               : VaapiWrapper::kDecodeProtected,
 #else
@@ -436,7 +432,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
       // If we have lost our protected HW session, it should be recoverable, so
       // indicate that we have lost our decoder state so it can be reloaded.
       if (decoder_delegate_->HasInitiatedProtectedRecovery()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         // We only do the VAContext recreation for Chrome playback because there
         // is no mechanism in ARC to re-seek so we would end up using invalid
         // reference frames.
@@ -460,7 +456,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
             return;
           }
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         waiting_cb_.Run(WaitingReason::kDecoderStateLost);
       }
       break;
@@ -588,7 +584,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
     frame = std::move(wrapped_frame);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (cdm_context_ref_ && !transcryption_) {
     // Store the VA-API protected session ID so that it can be re-used for
     // scaling the decoded video frame later in the pipeline.
@@ -603,7 +599,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
         "does not match the type exposed by VaapiWrapper");
     frame->metadata().hw_va_protected_session_id = va_protected_session_id;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const auto gfx_color_space = color_space.ToGfxColorSpace();
   if (gfx_color_space.IsValid())
@@ -631,7 +627,7 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     // protected content requires overlays currently.
     // NOTE: Only use this for protected content as other requirements for using
     // it are tied to protected content.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     cdm_context_ref_->GetCdmContext()
         ->GetChromeOsCdmContext()
         ->GetScreenResolutions(
@@ -757,7 +753,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     profile_ = decoder_->GetProfile();
     auto new_vaapi_wrapper =
         VaapiWrapper::CreateForVideoCodec(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             (!cdm_context_ref_ || transcryption_)
                 ? VaapiWrapper::kDecode
                 : VaapiWrapper::kDecodeProtected,
@@ -787,13 +783,6 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 #if BUILDFLAG(IS_LINUX)
   std::optional<DmabufVideoFramePool::CreateFrameCB> allocator =
       base::BindRepeating(&AllocateCustomFrameProxy, weak_this_);
-  std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
-      {.fourcc = *format_fourcc,
-       .size = decoder_pic_size,
-       .modifier = gfx::NativePixmapHandle::kNoModifier}};
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<DmabufVideoFramePool::CreateFrameCB> allocator = std::nullopt;
-
   std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
       {.fourcc = *format_fourcc,
        .size = decoder_pic_size,
@@ -957,7 +946,7 @@ bool VaapiVideoDecoder::NeedsTranscryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kWaitingForInput);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // We do not need to invoke transcryption if this is coming from a remote CDM
   // since it will already have been done.
   if (cdm_context_ref_ &&
@@ -967,7 +956,7 @@ bool VaapiVideoDecoder::NeedsTranscryption() {
           ->IsRemoteCdm()) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return transcryption_;
 }
 

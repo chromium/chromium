@@ -16,7 +16,7 @@
 #include "third_party/webrtc/rtc_base/checks.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
-namespace rtc {
+namespace webrtc {
 
 //////////////////////////////////////////////////////////////////////
 // Note that the non-standard LoggingSeverity aliases exist because they are
@@ -137,6 +137,20 @@ RTC_EXPORT void InitDiagnosticLoggingDelegateFunction(
 void SetExtraLoggingInit(
     void (*function)(void (*delegate)(const std::string&)));
 
+}  // namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::DiagnosticLogMessage;
+using ::webrtc::InitDiagnosticLoggingDelegateFunction;
+using ::webrtc::LogMessage;
+using ::webrtc::LogMessageVoidify;
+using ::webrtc::LogErrorContext;
+using enum ::webrtc::LogErrorContext;
+using ::webrtc::LoggingSeverity;
+using enum ::webrtc::LoggingSeverity;
+using ::webrtc::SetExtraLoggingInit;
 }  // namespace rtc
 
 #endif  // THIRD_PARTY_WEBRTC_OVERRIDES_WEBRTC_RTC_BASE_DIAGNOSTIC_LOGGING_H_

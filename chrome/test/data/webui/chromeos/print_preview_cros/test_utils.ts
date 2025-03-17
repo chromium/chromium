@@ -10,7 +10,7 @@ import {PRINT_REQUEST_FINISHED_EVENT, PRINT_TICKET_MANAGER_SESSION_INITIALIZED, 
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {resetProvidersForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {type Destination, PrinterStatusReason, PrinterType} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
-import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import type {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // Counter for unique destination IDs.

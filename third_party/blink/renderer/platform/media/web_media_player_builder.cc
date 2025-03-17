@@ -19,17 +19,18 @@
 #include "media/base/renderer_factory_selector.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
+#include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/media/video_frame_compositor.h"
 #include "third_party/blink/renderer/platform/media/web_media_player_impl.h"
 
 namespace blink {
@@ -72,7 +73,7 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     WebMediaPlayerEncryptedMediaClient* encrypted_client,
     WebMediaPlayerDelegate* delegate,
     std::unique_ptr<media::RendererFactorySelector> factory_selector,
-    std::unique_ptr<VideoFrameCompositor> compositor,
+    std::unique_ptr<WebVideoFrameSubmitter> video_frame_submitter,
     std::unique_ptr<media::MediaLog> media_log,
     media::MediaPlayerLoggingID player_id,
     DeferLoadCB defer_load_cb,
@@ -96,12 +97,14 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     bool is_background_video_track_optimization_supported,
     std::unique_ptr<media::Demuxer> demuxer_override,
     scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces) {
-  DCHECK_EQ(&static_cast<FrameFetchContext*>(fetch_context_.get())->frame(),
-            frame);
+  CHECK_EQ(&static_cast<FrameFetchContext*>(fetch_context_.get())->frame(),
+           frame);
+  auto video_frame_compositor = std::make_unique<VideoFrameCompositor>(
+      video_frame_compositor_task_runner, std::move(video_frame_submitter));
   return std::make_unique<WebMediaPlayerImpl>(
       frame, static_cast<MediaPlayerClient*>(client), encrypted_client,
       delegate, std::move(factory_selector), url_index_.get(),
-      std::move(compositor), std::move(media_log), player_id,
+      std::move(video_frame_compositor), std::move(media_log), player_id,
       std::move(defer_load_cb), std::move(audio_renderer_sink),
       std::move(media_task_runner), std::move(worker_task_runner),
       std::move(compositor_task_runner),

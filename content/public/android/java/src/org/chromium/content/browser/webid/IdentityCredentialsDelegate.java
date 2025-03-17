@@ -6,7 +6,6 @@ package org.chromium.content.browser.webid;
 
 import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.IntentSender.SendIntentException;
 import android.os.Build;
@@ -25,21 +24,40 @@ import com.google.android.gms.identitycredentials.IntentHelper;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
+@NullMarked
 public class IdentityCredentialsDelegate {
     private static final String TAG = "IdentityCredentials";
 
     // Arbitrary request code that is used when invoking the GMSCore API.
     private static final int REQUEST_CODE_DIGITAL_CREDENTIALS = 777;
 
-    public Promise<String> get(String origin, String request) {
+    public static class DigitalCredential {
+        @Nullable public String mProtocol;
+        public String mData;
+
+        public DigitalCredential(@Nullable String protocol, byte[] data) {
+            this.mProtocol = protocol;
+            this.mData = new String(data);
+        }
+
+        public DigitalCredential(@Nullable String protocol, String data) {
+            this.mProtocol = protocol;
+            this.mData = data;
+        }
+    }
+
+    public @Nullable Promise<String> get(String origin, String request) {
         // TODO(crbug.com/40257092): implement this.
         return null;
     }
 
-    public Promise<byte[]> get(Activity window, String origin, String request) {
+    public Promise<DigitalCredential> get(Activity window, String origin, String request) {
         final IdentityCredentialClient client;
         try {
             client = IdentityCredentialManager.Companion.getClient(window);
@@ -49,12 +67,12 @@ public class IdentityCredentialsDelegate {
             return Promise.rejected();
         }
 
-        final Promise<byte[]> result = new Promise<byte[]>();
+        final Promise<DigitalCredential> result = new Promise<DigitalCredential>();
 
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     // android.credentials.GetCredentialException requires API level 34
-                    @SuppressLint("NewApi")
+                    @SuppressWarnings("NewApi")
                     @Override
                     protected void onReceiveResult(int code, Bundle data) {
                         Log.d(TAG, "Received a response");
@@ -64,7 +82,10 @@ public class IdentityCredentialsDelegate {
                                     response.getCredential()
                                             .getData()
                                             .getByteArray("identityToken");
-                            result.fulfill(token);
+                            // TODO(crbug.com/336329411): Extract the protocol from the `response`,
+                            // instead of always using null.
+                            result.fulfill(
+                                    new DigitalCredential(null, Objects.requireNonNull(token)));
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
 

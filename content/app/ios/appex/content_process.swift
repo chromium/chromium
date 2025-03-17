@@ -7,12 +7,17 @@ import ExtensionFoundation
 import Foundation
 
 @main
-class ContentProcess: WebContentExtension {
-  required init() {
-    ChildProcessInit()
+class ContentProcess: NSObject, ChildProcessExtension, WebContentExtension {
+  override required init() {
+    super.init()
+    ChildProcessInit(self)
   }
 
   public func handle(xpcConnection: xpc_connection_t) {
     ChildProcessHandleNewConnection(xpcConnection)
+  }
+
+  public func applySandbox() {
+    self.applyRestrictedSandbox(revision: .revision1)
   }
 }

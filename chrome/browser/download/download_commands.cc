@@ -20,6 +20,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/common/url_constants.h"
+#include "components/download/public/common/download_features.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
@@ -49,15 +50,19 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
   ImageClipboardCopyManager& operator=(const ImageClipboardCopyManager&) =
       delete;
 
-  static void Start(const base::FilePath& file_path,
+  static void Start(const base::FilePath file_path,
+                    const base::FilePath file_name_to_report_user,
                     base::SequencedTaskRunner* task_runner) {
-    new ImageClipboardCopyManager(file_path, task_runner);
+    new ImageClipboardCopyManager(
+        std::move(file_path), std::move(file_name_to_report_user), task_runner);
   }
 
  private:
-  ImageClipboardCopyManager(const base::FilePath& file_path,
+  ImageClipboardCopyManager(const base::FilePath file_path,
+                            const base::FilePath file_name_to_report_user,
                             base::SequencedTaskRunner* task_runner)
-      : file_path_(file_path) {
+      : file_path_(std::move(file_path)),
+        file_name_to_report_user_(std::move(file_name_to_report_user)) {
     // Constructor must be called in the UI thread.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -96,8 +101,14 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
     scw.Reset();
 
-    if (!decoded_image.empty() && !decoded_image.isNull())
+    if (!decoded_image.empty() && !decoded_image.isNull()) {
+      if (base::FeatureList::IsEnabled(
+              download::features::kCopyImageFilenameToClipboard)) {
+        scw.WriteFilenames(ui::FileInfosToURIList(
+            {ui::FileInfo(file_path_, file_name_to_report_user_)}));
+      }
       scw.WriteImage(decoded_image);
+    }
 
     delete this;
   }
@@ -116,6 +127,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
   }
 
   const base::FilePath file_path_;
+  const base::FilePath file_name_to_report_user_;
 };
 
 }  // namespace
@@ -203,14 +215,15 @@ void DownloadCommands::CopyFileAsImageToClipboard() {
   if (!model_->HasSupportedImageMimeType())
     return;
 
-  base::FilePath file_path = model_->GetFullPath();
-
   if (!task_runner_) {
     task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
-  ImageClipboardCopyManager::Start(file_path, task_runner_.get());
+
+  ImageClipboardCopyManager::Start(model_->GetFullPath(),
+                                   model_->GetFileNameToReportUser(),
+                                   task_runner_.get());
 }
 
 bool DownloadCommands::CanBeCopiedToClipboard() const {

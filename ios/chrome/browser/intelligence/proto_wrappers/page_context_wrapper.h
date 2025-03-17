@@ -8,11 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/functional/callback_forward.h"
-#import "components/optimization_guide/optimization_guide_buildflags.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace web {
 class WebState;
@@ -29,7 +25,6 @@ class WebState;
 // disable-by-default behaviour.
 @interface PageContextWrapper : NSObject
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 // Initializer which takes everything needed to construct the PageContext proto
 // as arguments.
@@ -52,6 +47,13 @@ class WebState;
 // nothing if `shouldGetSnapshot` is NO.
 @property(nonatomic, assign) BOOL shouldForceUpdateMissingSnapshots;
 
+// Text to highlight in the snapshot. Will be highlighted just before taking the
+// snapshot, and unhighlighted right after. Nil if no text should be
+// highlighted. Only applies if the tab being processed is currently visible,
+// and if `shouldGetSnapshot` is enabled. Beware this does visibly highlight
+// said text in the webpage for the user for a split-second.
+@property(nonatomic, assign) NSString* textToHighlight;
+
 // Boolean flags for enabling/disabling the async tasks that the PageContext
 // wrapper can execute.
 
@@ -69,7 +71,6 @@ class WebState;
 // origin as the main WebFrame.
 @property(nonatomic, assign) BOOL shouldGetInnerText;
 
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end
 

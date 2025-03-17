@@ -42,8 +42,10 @@ class AccountSelectionView {
    public:
     virtual ~Delegate() = default;
     // Informs the controller that the user has made a selection.
-    virtual void OnAccountSelected(const GURL& idp_config_url,
-                                   const Account& account) = 0;
+    virtual void OnAccountSelected(
+        const GURL& idp_config_url,
+        const std::string& account_id,
+        const content::IdentityRequestAccount::LoginState& login_state) = 0;
     // TODO(https://crbug.com/377803489): Rename this method to
     // OnUserCancelled.
     // This method is called when the user interacts with the UI in a way that

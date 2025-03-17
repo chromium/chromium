@@ -23,7 +23,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
@@ -55,7 +54,6 @@
 #include "components/user_manager/known_user.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 
 namespace extensions {
 namespace {
@@ -224,7 +222,6 @@ class QuickUnlockPrivateUnitTest
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(pref_service), u"Test profile",
         1 /* avatar_id */, GetTestingFactories());
-    OnUserProfileCreated(profile_name, profile);
 
     // Setup a primary user.
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
@@ -617,9 +614,8 @@ class QuickUnlockPrivateUnitTest
                                          base::Value::List params) {
     base::RunLoop().RunUntilIdle();
     std::optional<base::Value> result =
-        api_test_utils::RunFunctionWithDelegateAndReturnSingleResult(
-            std::move(func), std::move(params),
-            std::make_unique<ExtensionFunctionDispatcher>(profile()),
+        api_test_utils::RunFunctionAndReturnSingleResult(
+            std::move(func), std::move(params), profile(),
             api_test_utils::FunctionMode::kNone);
     base::RunLoop().RunUntilIdle();
     return result;
@@ -629,9 +625,7 @@ class QuickUnlockPrivateUnitTest
   std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> func,
                                         base::Value::List params) {
     base::RunLoop().RunUntilIdle();
-    auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
-    api_test_utils::RunFunction(func.get(), std::move(params),
-                                std::move(dispatcher),
+    api_test_utils::RunFunction(func.get(), std::move(params), profile(),
                                 api_test_utils::FunctionMode::kNone);
     EXPECT_TRUE(func->GetResultListForTest()->empty());
     base::RunLoop().RunUntilIdle();

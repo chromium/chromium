@@ -199,6 +199,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest,
       "runMochaSuite('SelectionOverlay InvocationSourceContextMenuImage')");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, SelectionOverlaySimplifiedSelection) {
+  RunOverlayTest("lens/overlay/selection_overlay_test.js",
+                 "runMochaSuite('SelectionOverlay SimplifiedSelection')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, SimplifiedSelection) {
+  RunOverlayTest("lens/overlay/simplified_selection_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, PostSelectionRenderer) {
   RunOverlayTest("lens/overlay/post_selection_renderer_test.js", "mocha.run()");
 }

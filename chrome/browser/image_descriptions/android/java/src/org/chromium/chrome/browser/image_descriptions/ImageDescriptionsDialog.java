@@ -155,13 +155,9 @@ public class ImageDescriptionsDialog
                     }
 
                     @Override
-                    public void destroy() {
-                        super.destroy();
-                        // If no dismissal cause has been set, web contents were destroyed.
-                        if (mDismissalCause == DialogDismissalCause.UNKNOWN) {
-                            mDismissalCause = DialogDismissalCause.WEB_CONTENTS_DESTROYED;
-                        }
-                        dismiss();
+                    public void webContentsDestroyed() {
+                        mDismissalCause = DialogDismissalCause.WEB_CONTENTS_DESTROYED;
+                        unregisterObserverAndDismiss();
                     }
                 };
 
@@ -274,7 +270,8 @@ public class ImageDescriptionsDialog
      * or on user action. The call to #destroy() will also dismiss the dialog.
      */
     private void unregisterObserverAndDismiss() {
-        mWebContentsObserver.destroy();
+        mWebContentsObserver.observe(null);
+        dismiss();
     }
 
     /** Helper method to display this dialog. */

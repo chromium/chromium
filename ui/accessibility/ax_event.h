@@ -23,7 +23,7 @@ struct AX_BASE_EXPORT AXEvent final {
           ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
           const std::vector<AXEventIntent>& event_intents = {},
           int action_request_id = -1);
-  virtual ~AXEvent();
+  ~AXEvent();
 
   AXEvent& operator=(AXEvent&& event);
   AXEvent(AXEvent&& other);

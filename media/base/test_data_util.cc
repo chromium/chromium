@@ -17,9 +17,11 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "media/base/decoder_buffer.h"
 
 namespace media {
 
@@ -238,7 +240,7 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name) {
 
   int file_size = base::checked_cast<int>(tmp.value());
 
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(file_size));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(file_size);
   auto* data = reinterpret_cast<char*>(buffer->writable_data());
   CHECK_EQ(file_size, base::ReadFile(file_path, data, file_size))
       << "Failed to read '" << name << "'";

@@ -151,6 +151,10 @@ ContentSettingsType kPermissionType[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     ContentSettingsType::WEB_PRINTING,
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/400455013): Enable on Android.
+    ContentSettingsType::LOCAL_NETWORK_ACCESS,
+#endif  // BUIDLFLAG(IS_ANDROID)
 };
 
 // The list of setting types which request permission for a pair of requesting
@@ -227,7 +231,7 @@ const PageInfo::ChooserUIInfo kChooserUIInfo[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     {ContentSettingsType::SMART_CARD_DATA,
      IDS_PAGE_INFO_SMART_CARD_READER_SECONDARY_LABEL,
-     /*allowed_by_policy_description_string_id=*/-1,
+     IDS_PAGE_INFO_SMART_CARD_READER_ALLOWED_BY_POLICY_LABEL,
      IDS_PAGE_INFO_DELETE_SMART_CARD_READER_WITH_NAME},
 #endif
     {ContentSettingsType::SERIAL_CHOOSER_DATA,
@@ -971,47 +975,38 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 
   if (certificate_ &&
       (!net::IsCertStatusError(visible_security_state.cert_status))) {
-    // HTTPS with no or minor errors.
-    if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
-#if BUILDFLAG(IS_CHROMEOS)
-      site_identity_status_ = SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT;
-#else
-      DCHECK(false) << "Policy certificates exist only on ChromeOS";
-#endif
+    // No major or minor errors.
+    if (visible_security_state.cert_status & net::CERT_STATUS_IS_EV) {
+      // EV HTTPS page.
+      site_identity_status_ = SITE_IDENTITY_STATUS_EV_CERT;
     } else {
-      // No major or minor errors.
-      if (visible_security_state.cert_status & net::CERT_STATUS_IS_EV) {
-        // EV HTTPS page.
-        site_identity_status_ = SITE_IDENTITY_STATUS_EV_CERT;
-      } else {
-        // Non-EV OK HTTPS page.
-        site_identity_status_ = SITE_IDENTITY_STATUS_CERT;
-        std::u16string issuer_name(
-            UTF8ToUTF16(certificate_->issuer().GetDisplayName()));
-        if (issuer_name.empty()) {
-          issuer_name.assign(l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_SECURITY_TAB_UNKNOWN_PARTY));
-        }
+      // Non-EV OK HTTPS page.
+      site_identity_status_ = SITE_IDENTITY_STATUS_CERT;
+      std::u16string issuer_name(
+          UTF8ToUTF16(certificate_->issuer().GetDisplayName()));
+      if (issuer_name.empty()) {
+        issuer_name.assign(l10n_util::GetStringUTF16(
+            IDS_PAGE_INFO_SECURITY_TAB_UNKNOWN_PARTY));
+      }
 
 #if BUILDFLAG(IS_ANDROID)
-        // This string is shown on all non-error HTTPS sites on Android when
-        // the user taps "Details" link on page info.
-        identity_status_description_android_.assign(l10n_util::GetStringFUTF16(
-            IDS_PAGE_INFO_SECURE_IDENTITY_VERIFIED,
-            delegate_->GetClientApplicationName(), issuer_name));
+      // This string is shown on all non-error HTTPS sites on Android when
+      // the user taps "Details" link on page info.
+      identity_status_description_android_.assign(l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_SECURE_IDENTITY_VERIFIED,
+          delegate_->GetClientApplicationName(), issuer_name));
 #endif
-      }
-      if (security_state::IsSHA1InChain(visible_security_state)) {
-        site_identity_status_ =
-            SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM;
+    }
+    if (security_state::IsSHA1InChain(visible_security_state)) {
+      site_identity_status_ =
+          SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM;
 
 #if BUILDFLAG(IS_ANDROID)
-        identity_status_description_android_ +=
-            u"\n\n" +
-            l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_SECURITY_TAB_DEPRECATED_SIGNATURE_ALGORITHM);
+      identity_status_description_android_ +=
+          u"\n\n" +
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_SECURITY_TAB_DEPRECATED_SIGNATURE_ALGORITHM);
 #endif
-      }
     }
   } else {
     // HTTP or HTTPS with errors (not warnings).
@@ -1411,7 +1406,7 @@ void PageInfo::PresentSitePermissions() {
       ContentSetting setting = content_settings->GetContentSetting(
           requester.GetURL(), site_url_, permission_info.type, &info);
 
-      if (IsGrantedByRelatedWebsiteSets(type, info.metadata) &&
+      if (info.metadata.decided_by_related_website_sets() &&
           !base::FeatureList::IsEnabled(
               permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
         continue;
@@ -1475,7 +1470,7 @@ std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
       if (setting.primary_pattern.Matches(site_url_)) {
         continue;  // Skip first-party settings.
       }
-      if (IsGrantedByRelatedWebsiteSets(type, setting.metadata) &&
+      if (setting.metadata.decided_by_related_website_sets() &&
           !base::FeatureList::IsEnabled(
               permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
         continue;

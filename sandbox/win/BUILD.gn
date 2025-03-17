@@ -217,6 +217,7 @@ test("sbox_integration_tests") {
     ":sandbox",
     ":test_support",
     "//base/test:test_support",
+    "//sandbox/policy:integration_tests",
     "//sandbox/policy:tests",
     "//testing/gtest",
   ]

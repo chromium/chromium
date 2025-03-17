@@ -8,10 +8,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
-/**
- * Tests for Observable#flatMap().
- */
+import org.chromium.base.test.util.Batch;
+
+/** Tests for Observable#flatMap(). */
 @RunWith(BlockJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ObservableFlatMapTest {
     @Test
     public void testFlatMapWithIdentity() {
@@ -51,8 +52,8 @@ public class ObservableFlatMapTest {
                 ReactiveRecorder.record(src.flatMap(person -> person.name.and(person.age)));
         r.verify().end();
         src.set(new Person(Observable.just("Alice"), Observable.just(30)));
-        r.verify().opened(Both.both("Alice", 30)).end();
+        r.verify().opened(Both.of("Alice", 30)).end();
         src.set(new Person(Observable.just("Bob"), Observable.just(29)));
-        r.verify().closed(Both.both("Alice", 30)).opened(Both.both("Bob", 29)).end();
+        r.verify().closed(Both.of("Alice", 30)).opened(Both.of("Bob", 29)).end();
     }
 }

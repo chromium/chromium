@@ -401,9 +401,8 @@ enum class TextEmphasisPosition : unsigned {
   kOverLeft,
   kUnderRight,
   kUnderLeft,
+  kAuto,
 };
-
-enum class StyleViewTransitionCaptureMode : unsigned { kFlat, kLayered };
 
 inline bool IsOver(TextEmphasisPosition position) {
   return position == TextEmphasisPosition::kOverRight ||
@@ -519,6 +518,13 @@ enum class TryTactic : uint8_t {
   kFlipBlock,
   kFlipInline,
   kFlipStart,
+};
+
+enum class EAnimationTriggerType : uint8_t {
+  kOnce,
+  kRepeat,
+  kAlternate,
+  kState,
 };
 
 // TODO(crbug.com/332933527): Support anchors-valid.

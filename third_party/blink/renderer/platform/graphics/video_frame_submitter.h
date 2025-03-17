@@ -17,7 +17,6 @@
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "gpu/ipc/client/gpu_channel_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -159,6 +158,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // Notify `surface_embedder_` if the opacity of the most recent video frame
   // has changed.
   void NotifyOpacityIfNeeded(Opacity new_opacity);
+
+  void ClearFrameResources();
 
   raw_ptr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;

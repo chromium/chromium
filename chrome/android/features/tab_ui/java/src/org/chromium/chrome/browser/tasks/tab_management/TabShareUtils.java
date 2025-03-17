@@ -11,20 +11,13 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionFailure;
-import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.List;
-import java.util.Objects;
 
 /** Static utilities for interacting with shared tab groups. */
 public class TabShareUtils {
@@ -50,7 +43,21 @@ public class TabShareUtils {
         Token localGroupId = tab.getTabGroupId();
         if (localGroupId == null) return null;
 
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(localGroupId);
+        return getCollaborationIdOrNull(localGroupId, tabGroupSyncService);
+    }
+
+    /**
+     * Tries to get the collaboration id from a tab's group.
+     *
+     * @param tabGroupId The id of the tab group.
+     * @param tabGroupSyncService The sync service with tab group data.
+     * @return The collaboration id or null.
+     */
+    public static @Nullable String getCollaborationIdOrNull(
+            @Nullable Token tabGroupId, @Nullable TabGroupSyncService tabGroupSyncService) {
+        if (tabGroupId == null || tabGroupSyncService == null) return null;
+
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
         return savedTabGroup == null ? null : savedTabGroup.collaborationId;
     }
@@ -64,19 +71,6 @@ public class TabShareUtils {
      */
     public static boolean isCollaborationIdValid(String collaborationId) {
         return !TextUtils.isEmpty(collaborationId);
-    }
-
-    /**
-     * @param outcome The result of a group read.
-     * @return The state of the group.
-     */
-    public static @GroupSharedState int discernSharedGroupState(
-            @Nullable GroupDataOrFailureOutcome outcome) {
-        if (outcome == null || outcome.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
-            return GroupSharedState.NOT_SHARED;
-        } else {
-            return discernSharedGroupState(outcome.groupData);
-        }
     }
 
     /**
@@ -96,19 +90,6 @@ public class TabShareUtils {
     }
 
     /**
-     * @param outcome The result of a group read.
-     * @return The members of the group or null.
-     */
-    public static @Nullable List<GroupMember> getGroupMembers(
-            @Nullable GroupDataOrFailureOutcome outcome) {
-        if (outcome == null || outcome.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
-            return null;
-        } else {
-            return getGroupMembers(outcome.groupData);
-        }
-    }
-
-    /**
      * @param groupData The shared group data.
      * @return The members of the group or null
      */
@@ -123,56 +104,10 @@ public class TabShareUtils {
     }
 
     /**
-     * @param outcome The result of a group read.
-     * @return Whether the group has multiple collaborators.
-     */
-    public static boolean hasMultipleCollaborators(@Nullable GroupDataOrFailureOutcome outcome) {
-        return discernSharedGroupState(outcome) == GroupSharedState.HAS_OTHER_USERS;
-    }
-
-    /**
      * @param groupData The shared group data.
      * @return Whether the group has multiple collaborators.
      */
     public static boolean hasMultipleCollaborators(@Nullable GroupData groupData) {
         return discernSharedGroupState(groupData) == GroupSharedState.HAS_OTHER_USERS;
-    }
-
-    /**
-     * Tries to figure out if the signed in user account has a role in a given group, and if so,
-     * which role they have.
-     *
-     * @param outcome The result of a readGroup call to the sharing service.
-     * @param identityManager Used to fetch account information.
-     * @return The role the currently signed in account has in the group.
-     */
-    public static @MemberRole int getSelfMemberRole(
-            @Nullable GroupDataOrFailureOutcome outcome,
-            @Nullable IdentityManager identityManager) {
-        if (outcome == null || identityManager == null) return MemberRole.UNKNOWN;
-
-        @Nullable
-        CoreAccountInfo account = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (account == null) return MemberRole.UNKNOWN;
-
-        return getSelfMemberRole(outcome.groupData, account.getGaiaId());
-    }
-
-    /**
-     * Same as {@link #getSelfMemberRole(GroupDataOrFailureOutcome, IdentityManager)} but with a
-     * supplied gaiaId.
-     */
-    public static @MemberRole int getSelfMemberRole(@Nullable GroupData groupData, String gaiaId) {
-        if (groupData == null || groupData.members == null) {
-            return MemberRole.UNKNOWN;
-        }
-
-        for (GroupMember member : groupData.members) {
-            if (Objects.equals(gaiaId, member.gaiaId)) {
-                return member.role;
-            }
-        }
-
-        return MemberRole.UNKNOWN;
     }
 }

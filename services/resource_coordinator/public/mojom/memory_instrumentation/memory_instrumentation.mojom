@@ -156,6 +156,11 @@ struct RawOSMemDump {
   // Each bit corresponds to a page. The bit is set if the page
   // is mapped and resident in memory.
   array<uint8> native_library_pages_bitmap;
+
+  // How many memory mappings exist in the process. 0 is an invalid value, ie
+  // that collection failed.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 mappings_count = 0;
 };
 
 // These structs are public:
@@ -183,6 +188,16 @@ struct OSMemDump {
   // Android only.
   [EnableIf=is_android|is_chromeos|is_linux]
   uint32 private_footprint_swap_kb = 0;
+
+  // How many memory mappings exist in the process. 0 is an invalid value
+  // (collection failed)
+  //
+  // The number of VMAs a process is allowed to have is limited by the kernel,
+  // by default to a bit less than 2^16 (see DEFAULT_MAX_MAP_COUNT in
+  // include/linux/mm.h in the kernel), and Chromium occasionally bumps into the
+  // limit. Report it.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 mappings_count = 0;
 };
 
 // This struct contains information about a particular allocator dump

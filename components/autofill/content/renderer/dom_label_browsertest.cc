@@ -99,7 +99,7 @@ class DomLabelTest : public content::RenderViewTest,
   std::vector<FormData> ExtractFormDatas() {
     blink::WebDocument document = GetMainFrame()->GetDocument();
     // `GetTopLevelForms()` returns forms in DOM order.
-    blink::WebVector<blink::WebFormElement> form_elements =
+    std::vector<blink::WebFormElement> form_elements =
         document.GetTopLevelForms();
     // Add a null WebFormElement to extract unowned fields into a separate form.
     form_elements.emplace_back();

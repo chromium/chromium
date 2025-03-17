@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
@@ -31,7 +30,9 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
 
 namespace autofill {
@@ -49,6 +50,27 @@ std::ostream& operator<<(std::ostream& out,
     }
   }
   return out;
+}
+
+// Returns a `FieldPrediction::Source` that is guaranteed to be in the bounds
+// of the enum.
+FieldPrediction::Source ToSafeFieldPredictionSource(
+    FieldPrediction::Source source) {
+  FieldPrediction::Source result = FieldPrediction::SOURCE_UNSPECIFIED;
+  switch (source) {
+    case FieldPrediction::SOURCE_UNSPECIFIED:
+    case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
+    case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
+    case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
+    case FieldPrediction::SOURCE_FIELD_RANKS:
+    case FieldPrediction::SOURCE_OVERRIDE:
+    case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
+    case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
+    case FieldPrediction::SOURCE_AUTOFILL_AI:
+      result = source;
+      break;
+  }
+  return result;
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -74,11 +96,12 @@ std::deque<FieldSuggestion> MergeManualAndServerOverrides(
     std::deque<FieldSuggestion> server_overrides) {
   std::deque<FieldSuggestion> result;
   while (!manual_overrides.empty() && !server_overrides.empty()) {
-    // If the manual override has a no type specified, it means that the
-    // server prediction should be used.
-    result.push_back(manual_overrides.front().predictions().empty()
-                         ? server_overrides.front()
-                         : manual_overrides.front());
+    // If the manual override has a no type or format string specified, it means
+    // that the server prediction should be used.
+    result.push_back(!manual_overrides.front().predictions().empty() ||
+                             manual_overrides.front().has_format_string()
+                         ? manual_overrides.front()
+                         : server_overrides.front());
 
     manual_overrides.pop_front();
     // Generally consume the first element of each override source. However,
@@ -89,8 +112,8 @@ std::deque<FieldSuggestion> MergeManualAndServerOverrides(
     }
   }
   // At most one override source is non-empty - preserve the values.
-  base::ranges::move(manual_overrides, std::back_inserter(result));
-  base::ranges::move(server_overrides, std::back_inserter(result));
+  std::ranges::move(manual_overrides, std::back_inserter(result));
+  std::ranges::move(server_overrides, std::back_inserter(result));
 
   return result;
 }
@@ -240,57 +263,94 @@ void PopulateRandomizedFieldMetadata(
     const FormStructure& form,
     const AutofillField& field,
     AutofillRandomizedFieldMetadata* metadata) {
-  const FormSignature form_signature = form.form_signature();
-  const FieldSignature field_signature = field.GetFieldSignature();
+  // Shorthand for encoding values.
+  auto encode_value = [&, form_signature = form.form_signature(),
+                       field_signature = field.GetFieldSignature()](
+                          std::string_view data_type, auto data_value,
+                          AutofillRandomizedValue* output) {
+    EncodeRandomizedValue(encoder, form_signature, field_signature, data_type,
+                          data_value,
+                          /*include_checksum=*/false, output);
+  };
+
   if (!field.id_attribute().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldId, field.id_attribute(),
-                          /*include_checksum=*/false, metadata->mutable_id());
+    encode_value(RandomizedEncoder::kFieldId, field.id_attribute(),
+                 metadata->mutable_id());
   }
   if (!field.name_attribute().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldName, field.name_attribute(),
-                          /*include_checksum=*/false, metadata->mutable_name());
+    encode_value(RandomizedEncoder::kFieldName, field.name_attribute(),
+                 metadata->mutable_name());
   }
-  EncodeRandomizedValue(encoder, form_signature, field_signature,
-                        RandomizedEncoder::kFieldControlType,
-                        FormControlTypeToString(field.form_control_type()),
-                        /*include_checksum=*/false, metadata->mutable_type());
+  encode_value(RandomizedEncoder::kFieldControlType,
+               FormControlTypeToString(field.form_control_type()),
+               metadata->mutable_type());
   if (!field.label().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldLabel, field.label(),
-                          /*include_checksum=*/false,
-                          metadata->mutable_label());
+    encode_value(RandomizedEncoder::kFieldLabel, field.label(),
+                 metadata->mutable_label());
   }
   if (!field.aria_label().empty()) {
-    EncodeRandomizedValue(
-        encoder, form_signature, field_signature,
-        RandomizedEncoder::kFieldAriaLabel, field.aria_label(),
-        /*include_checksum=*/false, metadata->mutable_aria_label());
+    encode_value(RandomizedEncoder::kFieldAriaLabel, field.aria_label(),
+                 metadata->mutable_aria_label());
   }
   if (!field.aria_description().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldAriaDescription,
-                          field.aria_description(), /*include_checksum=*/false,
-                          metadata->mutable_aria_description());
+    encode_value(RandomizedEncoder::kFieldAriaDescription,
+                 field.aria_description(),
+                 metadata->mutable_aria_description());
   }
   if (!field.css_classes().empty()) {
-    EncodeRandomizedValue(
-        encoder, form_signature, field_signature,
-        RandomizedEncoder::kFieldCssClasses, field.css_classes(),
-        /*include_checksum=*/false, metadata->mutable_css_class());
+    encode_value(RandomizedEncoder::kFieldCssClasses, field.css_classes(),
+                 metadata->mutable_css_class());
   }
   if (!field.placeholder().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldPlaceholder,
-                          field.placeholder(), /*include_checksum=*/false,
-                          metadata->mutable_placeholder());
+    encode_value(RandomizedEncoder::kFieldPlaceholder, field.placeholder(),
+                 metadata->mutable_placeholder());
   }
   if (!field.autocomplete_attribute().empty()) {
-    EncodeRandomizedValue(
-        encoder, form_signature, field_signature,
-        RandomizedEncoder::kFieldAutocomplete, field.autocomplete_attribute(),
-        /*include_checksum=*/false, metadata->mutable_autocomplete());
+    encode_value(RandomizedEncoder::kFieldAutocomplete,
+                 field.autocomplete_attribute(),
+                 metadata->mutable_autocomplete());
+  }
+  if (!field.pattern().empty()) {
+    encode_value(RandomizedEncoder::kFieldPattern, field.pattern(),
+
+                 metadata->mutable_pattern());
+  }
+  // 0 is the default value for fields that do not allow free input, while
+  // `kDefaultMaxLength` is the default value for fields that allow free input.
+  if (field.max_length() != 0 &&
+      field.max_length() != FormFieldData::kDefaultMaxLength &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillIncludeMaxLengthInCrowdsourcing)) {
+    encode_value(RandomizedEncoder::kFieldMaxLength,
+                 base::NumberToString(field.max_length()),
+                 metadata->mutable_max_length());
+  }
+  if (field.IsSelectElement() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillIncludeSelectOptionsInCrowdsourcing)) {
+    auto add_option = [&](const SelectOption& option) {
+      auto* proto_option = metadata->add_select_option();
+      if (!option.text.empty()) {
+        encode_value(RandomizedEncoder::kFieldSelectOptionText, option.text,
+                     proto_option->mutable_text());
+      }
+      // Only emit `value` if it differs from `text` because both `value` and
+      // `text` have the same value if the <option> has neither an explicit
+      // value nor an explicit label attribute.
+      if (!option.value.empty() && option.value != option.text) {
+        encode_value(RandomizedEncoder::kFieldSelectOptionValue, option.value,
+                     proto_option->mutable_value());
+      }
+    };
+    if (field.options().size() > 0) {
+      add_option(field.options()[0]);
+    }
+    if (field.options().size() > 1) {
+      add_option(field.options()[1]);
+    }
+    if (field.options().size() > 2) {
+      add_option(field.options().back());
+    }
   }
 }
 
@@ -479,12 +539,19 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
         if (!suggestion.has_value() || suggestion->predictions().empty()) {
           return 0;  // Lowest priority
         }
-        switch (suggestion->predictions().begin()->source()) {
+        switch (ToSafeFieldPredictionSource(
+            suggestion->predictions().begin()->source())) {
+          case FieldPrediction::SOURCE_AUTOFILL_AI:
+            return base::FeatureList::IsEnabled(
+                       features::kAutofillAiWithDataSchema)
+                       ? 2
+                       : 0;
           case FieldPrediction::SOURCE_UNSPECIFIED:
           case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
           case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
           case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
           case FieldPrediction::SOURCE_FIELD_RANKS:
+          case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
             return std::ranges::all_of(suggestion->predictions(),
                                        [](const auto& prediction) {
                                          return prediction.type() ==
@@ -497,6 +564,7 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
           case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
             return 4;
         }
+        NOTREACHED();
       };
   // Fetch suggestions from form signature, host form signature and alternative
   // form signature.
@@ -518,12 +586,11 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
   // This precedence rule is less important than the source precedence rule,
   // which means that it is only applicable for suggestions with equal source
   // priority.
+  std::vector<base::optional_ref<FieldSuggestion>> suggestions = {
+      main_frame_field_suggestion, iframe_field_suggestion,
+      alternative_field_suggestion};
   base::optional_ref<FieldSuggestion> preferred_field_suggestion =
-      base::ranges::max(
-          std::vector<base::optional_ref<FieldSuggestion>>{
-              main_frame_field_suggestion, iframe_field_suggestion,
-              alternative_field_suggestion},
-          {}, get_suggestion_priority);
+      *std::ranges::max_element(suggestions, {}, get_suggestion_priority);
 
   // Add predictions for PasswordManager from `iframe_field_suggestions` if
   // `field_suggestion` is missing them. This is only relevant for
@@ -565,21 +632,38 @@ GetSuggestionsMapFromResponse(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::test::kAutofillOverridePredictions)) {
-    auto maybe_insert_overrides =
-        [&fields_suggestions](const base::FeatureParam<std::string>& param) {
-          if (std::string param_value = param.Get(); !param_value.empty()) {
-            InsertParsedOverrides(ParseServerPredictionOverrides(param_value),
-                                  fields_suggestions);
-          }
-        };
-    maybe_insert_overrides(
-        features::test::kAutofillOverridePredictionsSpecification);
-    maybe_insert_overrides(
-        features::test::
-            kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification);
+    if (std::string param =
+            features::test::kAutofillOverridePredictionsSpecification.Get();
+        !param.empty()) {
+      InsertParsedOverrides(
+          ParseServerPredictionOverrides(param, OverrideFormat::kSpec),
+          fields_suggestions);
+    }
+    if (std::string param =
+            features::test::kAutofillOverridePredictionsJson.Get();
+        !param.empty()) {
+      InsertParsedOverrides(
+          ParseServerPredictionOverrides(param, OverrideFormat::kJson),
+          fields_suggestions);
+    }
   }
 #endif
   return fields_suggestions;
+}
+
+base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
+    const AutofillQueryResponse& response,
+    const std::vector<FormSignature>& queried_form_signatures) {
+  std::vector<FormSignature> forms;
+  const int num_of_forms =
+      std::min(response.form_suggestions_size(),
+               base::checked_cast<int>(queried_form_signatures.size()));
+  for (int i = 0; i < num_of_forms; ++i) {
+    if (response.form_suggestions(i).run_autofill_ai_model()) {
+      forms.push_back(queried_form_signatures[i]);
+    }
+  }
+  return base::MakeFlatSet<FormSignature>(std::move(forms));
 }
 
 }  // namespace
@@ -647,8 +731,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   }
 
   std::vector<AutofillField*> upload_fields(form.fields().size());
-  base::ranges::transform(form.fields(), upload_fields.begin(),
-                          &std::unique_ptr<AutofillField>::get);
+  std::ranges::transform(form.fields(), upload_fields.begin(),
+                         &std::unique_ptr<AutofillField>::get);
   EncodeFormFieldsForUpload(form, upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
@@ -661,8 +745,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
            field->host_form_signature() == form.form_signature();
   });
   // Partition `upload_fields` with respect to the forms' renderer id.
-  base::ranges::stable_sort(upload_fields, /*comp=*/{},
-                            &FormFieldData::renderer_form_id);
+  std::ranges::stable_sort(upload_fields, /*comp=*/{},
+                           &FormFieldData::renderer_form_id);
 
   for (auto subform_begin = upload_fields.begin();
        subform_begin != upload_fields.end();) {
@@ -763,8 +847,14 @@ void ProcessServerPredictionsQueryResponse(
       fields_suggestions =
           GetSuggestionsMapFromResponse(response, queried_form_signatures);
 
+  const base::flat_set<FormSignature> forms_for_which_to_run_ai_model =
+      GetFormsForWhichToRunAiModel(response, queried_form_signatures);
+
   // Copy the field types into the actual form.
   for (FormStructure* form : forms) {
+    form->set_may_run_autofill_ai_model(
+        forms_for_which_to_run_ai_model.contains(form->form_signature()));
+
     // Fields can share the same field signature. This map records for each
     // signature how many fields with the same signature have been observed.
     std::map<FieldSignature, size_t> field_rank_map;
@@ -790,6 +880,11 @@ void ProcessServerPredictionsQueryResponse(
       if (field_suggestion->has_password_requirements()) {
         field->SetPasswordRequirements(
             field_suggestion->password_requirements());
+      }
+      if (field_suggestion->has_format_string()) {
+        field->set_format_string_unless_overruled(
+            base::UTF8ToUTF16(field_suggestion->format_string()),
+            AutofillField::FormatStringSource::kServer);
       }
       ++field_rank_map[field->GetFieldSignature()];
 

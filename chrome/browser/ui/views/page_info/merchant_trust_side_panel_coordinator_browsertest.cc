@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -49,10 +50,15 @@ page_info::MerchantData CreateValidMerchantData() {
 
 class MockMerchantTrustService : public page_info::MerchantTrustService {
  public:
-  MockMerchantTrustService() : MerchantTrustService(nullptr, false, nullptr) {}
+  MockMerchantTrustService()
+      : MerchantTrustService(nullptr, nullptr, false, nullptr) {}
   MOCK_METHOD(void,
               GetMerchantTrustInfo,
               (const GURL&, page_info::MerchantDataCallback),
+              (const, override));
+  MOCK_METHOD(void,
+              RecordMerchantTrustInteraction,
+              (const GURL&, page_info::MerchantTrustInteraction),
               (const, override));
 };
 
@@ -131,6 +137,11 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
             std::move(callback).Run(
                 url, std::make_optional(CreateValidMerchantData()));
           }));
+
+  EXPECT_CALL(*service(), RecordMerchantTrustInteraction(
+                              _, page_info::MerchantTrustInteraction::
+                                     kSidePanelOpenedOnSameTabNavigation))
+      .Times(1);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
 
@@ -157,6 +168,10 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
           Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
             std::move(callback).Run(url, std::nullopt);
           }));
+  EXPECT_CALL(*service(), RecordMerchantTrustInteraction(
+                              _, page_info::MerchantTrustInteraction::
+                                     kSidePanelClosedOnSameTabNavigation))
+      .Times(1);
   GURL kGURLWithoutMerchantTrustData = CreateUrl(kUrlWithoutMerchantTrustData);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithoutMerchantTrustData));
@@ -319,4 +334,20 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
       browser(), CreateUrl(kUrlWithoutMerchantTrustData)));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
+                       SidePanelEntryUrlHasQueryParams) {
+  ShowMerchantTrustSidePanel(web_contents(), CreateUrl(kMerchantReviewsUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  auto view = side_panel_coordinator()
+                  ->GetCurrentSidePanelEntryForTesting()
+                  ->GetContent();
+  auto* side_panel_view = static_cast<WebViewSidePanelView*>(view.get());
+
+  EXPECT_EQ(side_panel_view->GetLastUrlForTesting(),
+            CreateUrl(kMerchantReviewsUrl).spec() + "?s=CHROME_SIDE_PANEL");
 }

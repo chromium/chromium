@@ -16,10 +16,10 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace blink {
 enum class PermissionType;
@@ -46,6 +46,17 @@ enum class ActivityIndicatorState {
 
   // Always keep at the end.
   kMaxValue = kBlockedOnSystemLevel,
+};
+
+// Used for UMA histograms to record model execution stats for the different
+// models we use for a permission prediction.
+// When updating, you also need to update the PredictionModels variant in
+//      tools/metrics/histograms/metadata/permissions/histograms.xml.
+enum class PredictionModelType {
+  kUnknown = 0,
+  kServerSide = 1,      // url based cpss v2
+  kTfLiteOnDevice = 2,  // on device cpss v1
+  kGenAiOnDevice = 3,   // on device genAI v1
 };
 
 // Used for UMA to record the types of permission prompts shown.
@@ -402,7 +413,7 @@ enum class PermissionAutoRevocationHistory {
 
 // This enum backs up the `AutoDSEPermissionRevertTransition` histogram enum.
 // Never reuse values and mirror any updates to it.
-// Describes the transition that has occured for the setting of a DSE origin
+// Describes the transition that has occurred for the setting of a DSE origin
 // when DSE autogrant becomes disabled.
 enum class AutoDSEPermissionRevertTransition {
   // The user has not previously made any decision so it results in an `ASK` end
@@ -431,16 +442,23 @@ enum class AutoDSEPermissionRevertTransition {
   kMaxValue = INVALID_END_STATE,
 };
 
+// LINT.IfChange(PermissionPredictionSource)
+
 // This enum backs up the 'PermissionPredictionSource` histogram enum. It
 // indicates whether the permission prediction was done by the local on device
-// model or by the server side model.
+// model or by the server side model (or both).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class PermissionPredictionSource {
-  ON_DEVICE = 0,
+  ON_DEVICE_TFLITE = 0,
   SERVER_SIDE = 1,
+  ONDEVICE_AI_AND_SERVER_SIDE = 2,
 
   // Always keep at the end.
-  kMaxValue = SERVER_SIDE,
+  kMaxValue = ONDEVICE_AI_AND_SERVER_SIDE,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionPredictionSource)
 
 // This enum backs up the 'PageInfoDialogAccessType' histogram enum.
 // It is used for collecting page info access type metrics in the context of
@@ -597,8 +615,13 @@ enum class DismissalType {
   // quietly dismissed.
   kAutodismissOsDenied = 4,
 
+  // It's possible that the modal dialog manager is null when showing a dialog,
+  // for example if the tab has been navigated/closed or the layout might not be
+  // inflated in some embedders (e.g WebEngine).
+  kAutodismissNoDialogManager = 5,
+
   // Always keep this at the end.
-  kMaxValue = kAutodismissOsDenied,
+  kMaxValue = kAutodismissNoDialogManager,
 };
 
 // Provides a convenient way of logging UMA for permission related operations.
@@ -668,11 +691,12 @@ class PermissionUmaUtil {
       bool show_infobar,
       bool page_reload);
 
-  // Recorded when a permission prompt creation is in progress.
+  // This gets recorded during the creation process of a prompt, but only for
+  // prompts that aren't labeled as abusive or disruptive.
   static void RecordPermissionPromptAttempt(
       const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
           requests,
-      bool IsLocationBarEditingOrEmpty);
+      bool can_display_prompt);
 
   // UMA specifically for when permission prompts are shown. This should be
   // roughly equivalent to the metrics above, however it is
@@ -697,6 +721,7 @@ class PermissionUmaUtil {
       std::optional<PermissionPromptDispositionReason> ui_reason,
       std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
       std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<PermissionRequestRelevance> permission_request_relevance,
       std::optional<bool> prediction_decision_held_back,
       std::optional<permissions::PermissionIgnoredReason> ignored_reason,
       bool did_show_prompt,
@@ -739,6 +764,7 @@ class PermissionUmaUtil {
                                     const GURL& requesting_origin);
 
   static void RecordPermissionUsageNotificationShown(
+      bool did_user_always_allow_notifications,
       bool is_allowlisted,
       int suspicious_score,
       content::BrowserContext* browser_context,
@@ -790,6 +816,8 @@ class PermissionUmaUtil {
 
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
+
+  static std::string GetPredictionModelString(PredictionModelType model_type);
 
   static std::string GetPromptDispositionString(
       PermissionPromptDisposition ui_disposition);
@@ -861,6 +889,9 @@ class PermissionUmaUtil {
       RequestTypeForUma request_type,
       base::TimeDelta time_delta);
 
+  static void RecordPermissionRequestRelevance(
+      PermissionRequestRelevance permission_request_relevance);
+
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation
   // condition is met (from ALLOW to something else).
@@ -914,6 +945,7 @@ class PermissionUmaUtil {
       content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<PermissionRequestRelevance> permission_request_relevance,
       std::optional<bool> prediction_decision_held_back);
 
   // Records |count| total prior actions for a prompt of type |permission|

@@ -47,13 +47,14 @@ ViewScreenParam::~ViewScreenParam() = default;
 ViewScreenRequest::ViewScreenRequest(google_apis::RequestSender* sender,
                                      std::string session_id,
                                      ViewScreenParam view_screen_param,
+                                     std::string url_base,
                                      ViewScreenRequestCallback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
       session_id_(std::move(session_id)),
       view_screen_param_(std::move(view_screen_param)),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(url_base)),
       callback_(std::move(callback)) {}
 
 ViewScreenRequest ::~ViewScreenRequest() = default;
@@ -85,23 +86,22 @@ bool ViewScreenRequest::GetContentData(std::string* upload_content_type,
   base::Value::Dict root;
   base::Value::Dict teacher_info;
   base::Value::Dict teacher;
-  teacher.Set(kGaiaId, std::move(view_screen_param_.teacher_gaia_id));
+  teacher.Set(kGaiaId, view_screen_param_.teacher_gaia_id);
   teacher_info.Set(kUser, std::move(teacher));
 
   base::Value::Dict teacher_device;
-  teacher_device.Set(kDeviceId,
-                     std::move(view_screen_param_.teacher_device_id));
+  teacher_device.Set(kDeviceId, view_screen_param_.teacher_device_id);
   teacher_info.Set(kDeviceInfo, std::move(teacher_device));
 
   root.Set(kTeacherClientDevice, std::move(teacher_info));
 
   base::Value::Dict host_device_info;
   base::Value::Dict host;
-  host.Set(kGaiaId, std::move(view_screen_param_.student_gaia_id));
+  host.Set(kGaiaId, view_screen_param_.student_gaia_id);
   host_device_info.Set(kUser, std::move(host));
 
   base::Value::Dict host_device;
-  host_device.Set(kDeviceId, std::move(view_screen_param_.student_device_id));
+  host_device.Set(kDeviceId, view_screen_param_.student_device_id);
   host_device_info.Set(kDeviceInfo, std::move(host_device));
   root.Set(kHostDevice, std::move(host_device_info));
 

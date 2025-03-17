@@ -24,7 +24,6 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
@@ -314,8 +313,8 @@ bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
 
   return base::MakeStrictNum(response->size()) <=
              static_cast<int>(specs.max_event_level_reports()) &&
-         base::ranges::all_of(*response, [&](const FakeEventLevelReport&
-                                                 report) {
+         std::ranges::all_of(*response, [&](const FakeEventLevelReport&
+                                                report) {
            const auto spec = specs.find(report.trigger_data,
                                         mojom::TriggerDataMatching::kExact);
            return spec != specs.end() && report.window_index >= 0 &&

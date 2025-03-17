@@ -8,7 +8,7 @@ export function getFolderLabel(folder: chrome.bookmarks.BookmarkTreeNode|
     undefined): string {
   if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
     folder.id !== loadTimeData.getString('mobileBookmarksId')) {
-    return folder!.title;
+    return folder.title;
   } else {
     return loadTimeData.getString('allBookmarks');
   }

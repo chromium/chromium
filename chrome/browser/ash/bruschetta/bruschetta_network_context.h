@@ -27,6 +27,8 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace bruschetta {
 
 // Provides an isolated NetworkContext which uses the client certificate store
@@ -36,7 +38,7 @@ class BruschettaNetworkContext
     : public network::mojom::URLLoaderNetworkServiceObserver {
  public:
   // Class should not outlive the passed-in profile.
-  explicit BruschettaNetworkContext(Profile* profile);
+  BruschettaNetworkContext(Profile* profile, PrefService& local_state);
 
   BruschettaNetworkContext(const BruschettaNetworkContext&) = delete;
   BruschettaNetworkContext& operator=(const BruschettaNetworkContext&) = delete;
@@ -95,6 +97,11 @@ class BruschettaNetworkContext
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
       network::mojom::IPAddressSpace ip_address_space) override;
+  void OnUrlLoaderConnectedToPrivateNetwork(
+      const GURL& request_url,
+      network::mojom::IPAddressSpace response_address_space,
+      network::mojom::IPAddressSpace client_address_space,
+      network::mojom::IPAddressSpace target_address_space) override;
 
  private:
   void ContinueWithCertificate(

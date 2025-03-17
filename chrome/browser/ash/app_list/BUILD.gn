@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//rlz/buildflags/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_list") {
   sources = [
@@ -59,7 +59,6 @@ static_library("app_list") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/hats",
     "//chrome/browser/profiles:profile",
@@ -74,7 +73,6 @@ static_library("app_list") {
   deps = [
     "//ash",
     "//ash/app_list",
-    "//ash/components/arc:arc_app_constants",
     "//ash/resources/vector_icons",
     "//ash/webui/mall:app_id",
     "//ash/webui/projector_app/public/cpp",
@@ -93,6 +91,8 @@ static_library("app_list") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/constants",
     "//components/app_constants",
     "//components/pref_registry",
@@ -143,7 +143,6 @@ source_set("unit_tests") {
   deps = [
     ":app_list",
     "//ash/app_list/model:app_list_model",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -158,7 +157,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/reorder",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
@@ -168,7 +166,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
     "//components/crx_file",
     "//components/keyed_service/core",
@@ -253,6 +251,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/assistant",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",

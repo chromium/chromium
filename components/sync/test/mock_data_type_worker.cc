@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -258,7 +259,7 @@ syncer::UpdateResponseData MockDataTypeWorker::GenerateUpdateData(
 syncer::UpdateResponseData MockDataTypeWorker::GenerateSharedUpdateData(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics,
-    const std::string& collaboration_id) {
+    const CollaborationId& collaboration_id) {
   syncer::UpdateResponseData response_data =
       GenerateUpdateData(tag_hash, specifics);
   response_data.entity.collaboration_metadata =

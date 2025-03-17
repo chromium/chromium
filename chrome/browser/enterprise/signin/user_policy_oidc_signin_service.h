@@ -72,7 +72,6 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
 
   // CloudPolicyService::Observer implementation:
   void OnCloudPolicyServiceInitializationCompleted() override;
-  std::string_view name() const override;
 
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;

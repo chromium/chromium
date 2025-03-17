@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/widget/visual_properties.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace blink {
 
@@ -19,8 +19,9 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          auto_resize_enabled == other.auto_resize_enabled &&
          min_size_for_auto_resize == other.min_size_for_auto_resize &&
          max_size_for_auto_resize == other.max_size_for_auto_resize &&
-         new_size == other.new_size &&
-         visible_viewport_size == other.visible_viewport_size &&
+         new_size_device_px == other.new_size_device_px &&
+         visible_viewport_size_device_px ==
+             other.visible_viewport_size_device_px &&
          compositor_viewport_pixel_rect ==
              other.compositor_viewport_pixel_rect &&
          browser_controls_params == other.browser_controls_params &&

@@ -265,21 +265,29 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * classes before the provider can function
      */
     protected void initializeFirstPartyOptionsInOrder() {
-        maybeAddPageInfoFirstPartyOption();
         maybeAddCopyFirstPartyOption();
+
+        // TODO(386833405): Decide on priority for this option.
+        maybeAddCollaborateFirstPartyOption();
+
         // Only show a limited first party share selection for automotive and PDF pages.
-        if (!isAutomotive() && !isPdfTab()) {
-            maybeAddLongScreenshotFirstPartyOption();
+        if (!isAutomotive()) {
+            if (!isPdfTab()) {
+                maybeAddLongScreenshotFirstPartyOption();
+            }
             maybeAddPrintFirstPartyOption();
         }
         maybeAddSendTabToSelfFirstPartyOption();
         maybeAddQrCodeFirstPartyOption();
     }
 
-    private void maybeAddPageInfoFirstPartyOption() {
-        FirstPartyOption pageInfoOption = createPageInfoFirstPartyOption();
-        if (pageInfoOption != null) {
-            mOrderedFirstPartyOptions.add(pageInfoOption);
+    private void maybeAddCollaborateFirstPartyOption() {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
+            return;
+        }
+        FirstPartyOption option = createCollaborateFirstPartyOption();
+        if (option != null) {
+            mOrderedFirstPartyOptions.add(option);
         }
     }
 
@@ -465,7 +473,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected abstract @Nullable FirstPartyOption createLongScreenshotsFirstPartyOption();
 
     /**
-     * Create a {@link FirstPartyOption} used for page info sharing. Return null if not supported.
+     * Create a {@link FirstPartyOption} used for sharing as collaboration. Return null if not
+     * supported.
      */
-    protected abstract @Nullable FirstPartyOption createPageInfoFirstPartyOption();
+    protected abstract @Nullable FirstPartyOption createCollaborateFirstPartyOption();
 }

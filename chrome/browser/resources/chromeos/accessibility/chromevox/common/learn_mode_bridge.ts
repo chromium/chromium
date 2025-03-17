@@ -9,7 +9,7 @@
 import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {BrailleKeyEvent} from './braille/braille_key_types.js';
+import type {BrailleKeyEvent} from './braille/braille_key_types.js';
 import {BridgeConstants} from './bridge_constants.js';
 
 const TARGET = BridgeConstants.LearnMode.TARGET;

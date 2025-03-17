@@ -65,12 +65,6 @@ void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
   }
 }
 
-void ChromePDFDocumentHelperClient::OnPDFHasUnsupportedFeature(
-    content::WebContents* contents) {
-  // There is no more Adobe plugin for PDF so there is not much we can do in
-  // this case. Maybe simply download the file.
-}
-
 void ChromePDFDocumentHelperClient::OnSaveURL(content::WebContents* contents) {
   RecordDownloadSource(DOWNLOAD_INITIATED_BY_PDF_SAVE);
 }

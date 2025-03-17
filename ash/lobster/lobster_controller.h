@@ -12,8 +12,10 @@
 #include "ash/ash_export.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
+#include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/ime/text_input_client.h"
 
 namespace ash {
 
@@ -27,7 +29,8 @@ class ASH_EXPORT LobsterController {
    public:
     explicit Trigger(std::unique_ptr<LobsterClient> client,
                      LobsterEntryPoint entry_point,
-                     LobsterMode mode);
+                     LobsterMode mode,
+                     const LobsterTextInputContext& text_input_context);
     ~Trigger();
 
     void Fire(std::optional<std::string> query);
@@ -46,6 +49,8 @@ class ASH_EXPORT LobsterController {
     LobsterEntryPoint entry_point_;
 
     LobsterMode mode_;
+
+    LobsterTextInputContext text_input_context_;
   };
 
   LobsterController();
@@ -53,8 +58,11 @@ class ASH_EXPORT LobsterController {
 
   void SetClientFactory(LobsterClientFactory* client_factory);
 
-  std::unique_ptr<Trigger> CreateTrigger(LobsterEntryPoint entry_point,
-                                         bool support_image_insertion);
+  std::unique_ptr<Trigger> CreateTrigger(
+      LobsterEntryPoint entry_point,
+      ui::TextInputClient* text_input_client);
+
+  void LoadUIFromCachedContext();
 
  private:
   friend class Trigger;
@@ -62,7 +70,8 @@ class ASH_EXPORT LobsterController {
   void StartSession(std::unique_ptr<LobsterClient> client,
                     std::optional<std::string> query,
                     LobsterEntryPoint entry_point,
-                    LobsterMode mode);
+                    LobsterMode mode,
+                    const LobsterTextInputContext& text_input_context);
 
   // Not owned by this class.
   raw_ptr<LobsterClientFactory> client_factory_;

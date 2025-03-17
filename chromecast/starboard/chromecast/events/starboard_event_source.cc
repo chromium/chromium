@@ -35,6 +35,8 @@ constexpr auto kSbKeyToDomCodeMap = base::MakeFixedFlatMap<SbKey, ui::DomCode>({
     {kSbKeyLeft, ui::DomCode::ARROW_LEFT},
     {kSbKeyRight, ui::DomCode::ARROW_RIGHT},
     {kSbKeyBack, ui::DomCode::BROWSER_BACK},
+    {kSbKeyEscape, ui::DomCode::BROWSER_BACK},
+
 
     // Keys which are used by the Cast SDK when the DPAD UI is enabled.
     {kSbKeyMediaPlayPause, ui::DomCode::MEDIA_PLAY_PAUSE},
@@ -85,14 +87,17 @@ void StarboardEventSource::SbEventHandleInternal(const SbEvent* event) {
   SbTimeMonotonic raw_timestamp = event->timestamp;
   SbInputEventType raw_type = input_data->type;
   SbKey raw_key = input_data->key;
+  SbInputVector raw_position = input_data->position;
   if (raw_type != kSbInputEventTypePress &&
-      raw_type != kSbInputEventTypeUnpress) {
+      raw_type != kSbInputEventTypeUnpress &&
+      raw_type != kSbInputEventTypeMove) {
     return;
   }
 
   // Find out if the press is supported by Cast.
   auto it = kSbKeyToDomCodeMap.find(raw_key);
-  if (it == kSbKeyToDomCodeMap.end()) {
+  if (it == kSbKeyToDomCodeMap.end() && raw_key != kSbKeyMouse1 &&
+      raw_type != kSbInputEventTypeMove) {
     return;
   }
 
@@ -101,18 +106,35 @@ void StarboardEventSource::SbEventHandleInternal(const SbEvent* event) {
   ui::KeyboardCode key_code;
   ui::DomCode dom_code = it->second;
   int flags = 0;
-  if (!DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &key_code)) {
+  if (DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &key_code)) {
+    // Key press.
+    ui::EventType event_type = raw_type == kSbInputEventTypePress
+                                   ? ui::EventType::kKeyPressed
+                                   : ui::EventType::kKeyReleased;
+    ui_event = std::make_unique<ui::KeyEvent>(
+        event_type, key_code, dom_code, flags, dom_key,
+        /*time_stamp=*/base::TimeTicks() + base::Microseconds(raw_timestamp));
+  } else if (raw_key == kSbKeyMouse1) {
+    // Mouse left click.
+    ui::EventType event_type = raw_type == kSbInputEventTypePress
+                                   ? ui::EventType::kMousePressed
+                                   : ui::EventType::kMouseReleased;
+    ui_event = std::make_unique<ui::MouseEvent>(
+        event_type, gfx::PointF(raw_position.x, raw_position.y),
+        gfx::PointF(raw_position.x, raw_position.y),
+        base::TimeTicks() + base::Microseconds(raw_timestamp),
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  } else if (raw_type == kSbInputEventTypeMove) {
+    // Mouse move.
+    ui::EventType event_type = ui::EventType::kMouseMoved;
+    ui_event = std::make_unique<ui::MouseEvent>(
+        event_type, gfx::PointF(raw_position.x, raw_position.y),
+        gfx::PointF(raw_position.x, raw_position.y),
+        base::TimeTicks() + base::Microseconds(raw_timestamp), flags, flags);
+  } else {
+    // Unsupported by Cast.
     return;
   }
-
-  // Key press.
-  ui::EventType event_type = raw_type == kSbInputEventTypePress
-                                 ? ui::EventType::kKeyPressed
-                                 : ui::EventType::kKeyReleased;
-  ui_event = std::make_unique<ui::KeyEvent>(
-      event_type, key_code, dom_code, flags, dom_key,
-      /*time_stamp=*/
-      base::TimeTicks() + base::Microseconds(raw_timestamp));
 
   ui::Event::Properties properties;
   properties[chromecast::kPropertyFromStarboard] =

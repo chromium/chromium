@@ -59,6 +59,11 @@ void GeoNotifier::SetUseCachedPosition() {
 void GeoNotifier::RunSuccessCallback(Geoposition* position) {
   LocalDOMWindow* win = geolocation_->DomWindow();
   UseCounter::Count(win, WebFeature::kGeolocationSucceeded);
+
+  if (called_with_ad_script_in_stack_) {
+    UseCounter::Count(win,
+                      WebFeature::kGeolocationWouldSucceedWhenAdScriptInStack);
+  }
   if (!win->IsInjectionMitigatedContext()) {
     UseCounter::Count(
         win, WebFeature::kGeolocationSucceededWithoutInjectionMitigation);

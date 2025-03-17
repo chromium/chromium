@@ -168,7 +168,12 @@ enum class ProfileKeepAliveOrigin {
   // not destroyed while visible.
   kGlicView = 40,
 
-  kMaxValue = kGlicView,
+  // Used by the `ProfilePickerGlicFlowController` to ensure the loaded profile
+  // is not destroyed before opening the `GlicView` instead of relying on
+  // `kWaitingForFirstBrowserWindow`.
+  kWaitingForGlicView = 41,
+
+  kMaxValue = kWaitingForGlicView,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml)
 

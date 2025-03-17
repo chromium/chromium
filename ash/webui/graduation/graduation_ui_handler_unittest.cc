@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -31,7 +32,7 @@
 namespace ash::graduation {
 
 namespace {
-constexpr char kUserGaiaId[] = "111";
+constexpr GaiaId::Literal kUserGaiaId("111");
 constexpr char kUserEmail[] = "user1test@gmail.com";
 constexpr char kWebviewHostName[] = "graduation";
 
@@ -55,10 +56,13 @@ class GraduationUiHandlerTest : public testing::Test {
   ~GraduationUiHandlerTest() override = default;
 
   void SetUp() override {
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kUserGaiaId));
-    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
-    auto* user = fake_user_manager_->AddUser(account_id);
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+
+    auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kUserGaiaId);
+    auto* user = fake_user_manager_->AddGaiaUser(
+        account_id, user_manager::UserType::kRegular);
 
     handler_ = std::make_unique<GraduationUiHandler>(
         handler_remote_.BindNewPipeAndPassReceiver(),
@@ -78,6 +82,7 @@ class GraduationUiHandlerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
   content::TestBrowserContext test_context_;
   mojo::Remote<graduation_ui::mojom::GraduationUiHandler> handler_remote_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>

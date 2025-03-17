@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -30,7 +31,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -151,7 +151,7 @@ class WindowCloseObserver : public aura::WindowObserver {
 
     // If any of the observed windows belong to an ARC app, we need to handle
     // things a bit differently.
-    has_arc_app_ = base::ranges::any_of(windows, &IsArcWindow);
+    has_arc_app_ = std::ranges::any_of(windows, &IsArcWindow);
 
     // Observe the windows that we are going to close. Since `windows` here are
     // all non-all-desks windows or non-transient windows, we can observe all
@@ -430,9 +430,10 @@ void SavedDeskPresenter::LaunchSavedDesk(
   Desk* new_desk = desks_controller->CreateNewDeskForSavedDesk(
       saved_desk_type, saved_desk->template_name());
 
-  // Set the lacros profile ID for the newly created desk. This is effectively a
-  // no-op if `lacros_profile_id` returns zero.
-  new_desk->SetLacrosProfileId(saved_desk->lacros_profile_id());
+  if (saved_desk->type() == DeskTemplateType::kCoral) {
+    new_desk->set_tab_app_entities(
+        mojo::Clone(saved_desk->coral_tab_app_entities()));
+  }
 
   LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 

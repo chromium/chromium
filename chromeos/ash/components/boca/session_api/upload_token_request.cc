@@ -20,6 +20,7 @@ bool ParseResponse(std::string json) {
 namespace ash::boca {
 
 UploadTokenRequest::UploadTokenRequest(google_apis::RequestSender* sender,
+                                       std::string base_url,
                                        GaiaId gaia_id,
                                        std::string token,
                                        UploadTokenCallback callback)
@@ -28,7 +29,7 @@ UploadTokenRequest::UploadTokenRequest(google_apis::RequestSender* sender,
                           google_apis::ProgressCallback()),
       gaia_id_(gaia_id),
       token_(token),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(base_url)),
       callback_(std::move(callback)) {}
 
 UploadTokenRequest ::~UploadTokenRequest() = default;

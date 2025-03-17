@@ -35,6 +35,12 @@ void RedirectUtil::UpdateHttpRequest(
       request_headers->RemoveHeader(key);
   }
 
+  // The status code check and method updating to GET from step 12 of
+  // 4.4 HTTP-redirect fetch
+  // (https://fetch.spec.whatwg.org/#http-redirect-fetch) is handled in
+  // RedirectInfo::ComputeRedirectInfo. The remaining parts are implemented here
+  // by setting the flag to clear the request body and removing the
+  // "request-body-headers".
   if (redirect_info.new_method != original_method) {
     // TODO(davidben): This logic still needs to be replicated at the consumers.
     //

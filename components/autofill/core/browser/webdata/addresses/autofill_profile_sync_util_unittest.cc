@@ -8,10 +8,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -33,9 +34,6 @@ using syncer::EntityData;
 constexpr char kGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 constexpr char kGuidInvalid[] = "EDC609ED";
 
-constexpr base::Time kJune2017 =
-    base::Time::FromSecondsSinceUnixEpoch(1497552271);
-
 // Returns a profile with all fields set.  Contains identical data to the data
 // returned from ConstructBaseSpecifics().
 AutofillProfile ConstructBaseProfile(
@@ -43,20 +41,24 @@ AutofillProfile ConstructBaseProfile(
   AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           country_code);
 
-  profile.set_use_count(7);
-  profile.set_use_date(base::Time::FromTimeT(1423182152));
+  profile.usage_history().set_use_count(7);
+  profile.usage_history().set_use_date(base::Time::FromTimeT(1423182152));
 
   profile.set_profile_label("profile_label");
 
   // Set testing values and statuses for the name.
-  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. von Doe",
                                            VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"K.",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"von Doe",
                                            VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_PREFIX, u"von",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_CORE, u"Doe",
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_FIRST, u"D",
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"e",
@@ -346,10 +348,20 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.add_name_last("Doe");
+  specifics.add_name_last("von Doe");
   specifics.add_name_last_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.add_name_last_prefix("von");
+  specifics.add_name_last_prefix_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.add_name_last_core("Doe");
+  specifics.add_name_last_core_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.add_name_last_first("D");
   specifics.add_name_last_first_status(
@@ -366,7 +378,7 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_PARSED);
 
-  specifics.add_name_full("John K. Doe");
+  specifics.add_name_full("John K. von Doe");
   specifics.add_name_full_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
@@ -939,16 +951,17 @@ class AutofillProfileSyncUtilTest
  public:
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
-                                features::kAutofillUseCAAddressModel,
-                                features::kAutofillUseDEAddressModel,
-                                features::kAutofillUseFRAddressModel,
-                                features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel,
-                                features::kAutofillUseNLAddressModel,
-                                features::kAutofillSupportPhoneticNameForJP},
-                               {});
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    features_.InitWithFeatures(
+        {
+            features::kAutofillUseFRAddressModel,
+            features::kAutofillUseINAddressModel,
+            features::kAutofillUseITAddressModel,
+            features::kAutofillUseNLAddressModel,
+            features::kAutofillSupportPhoneticNameForJP,
+            features::kAutofillSupportLastNamePrefix,
+        },
+        {});
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
   }
 
   AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {

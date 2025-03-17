@@ -21,10 +21,6 @@
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "device/fido/features.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 namespace password_manager {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -111,35 +107,21 @@ void PasskeyCredential::SetAuthenticatorLabel(
 
 std::u16string PasskeyCredential::GetAuthenticatorLabelBySourceType() const {
   int id;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  bool is_updated_labels =
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
-#else
-  bool is_updated_labels = false;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   switch (source_) {
     case Source::kWindowsHello:
-      id = is_updated_labels
-               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW
-               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO;
       break;
     case Source::kTouchId:
-      id = is_updated_labels
-               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW
-               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE;
       break;
     case Source::kICloudKeychain:
-      id = is_updated_labels
-               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN_NEW
-               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
       break;
     case Source::kAndroidPhone:
       id = GetAuthenticationLabelForPasskeysFromAndroid();
       break;
     case Source::kGooglePasswordManager:
-      id = is_updated_labels
-               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW
-               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER;
       break;
     case Source::kOther:
       id = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;

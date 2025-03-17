@@ -18,7 +18,7 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   function queryTiles() {
     return Array.from(
-        mostVisited.shadowRoot!.querySelectorAll<HTMLElement>('.tile'));
+        mostVisited.shadowRoot.querySelectorAll<HTMLElement>('.tile'));
   }
 
   async function addTiles(n: number): Promise<void> {

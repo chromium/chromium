@@ -17,7 +17,6 @@ namespace extensions::content_verifier_utils {
 //     to content verifier via extension_protocols) and manifest.json paths
 //     also specify '/' separators.
 //   - In case-insensitive OS, lower casing path.
-//   - In Windows, trimming "dot-space" suffix in path.
 using CanonicalRelativePath =
     ::base::StrongAlias<class CanonicalRelativePathTag,
                         base::FilePath::StringType>;
@@ -33,16 +32,8 @@ constexpr bool IsFileAccessCaseSensitive() {
 
 // Returns true if this system/OS ignores (.| )+ suffix in a filepath while
 // accessing the file.
-constexpr bool IsDotSpaceFilenameSuffixIgnored() {
-#if BUILDFLAG(IS_WIN)
-  static_assert(!IsFileAccessCaseSensitive(),
-                "DotSpace suffix should only be ignored in case-insensitive"
-                "systems");
-  return true;
-#else
-  return false;
-#endif
-}
+// TODO(https://crbug.com/400119351): Remove this in M138.
+bool IsDotSpaceFilenameSuffixIgnored();
 
 // Returns platform specific canonicalized version of |relative_path| for
 // content verification system.

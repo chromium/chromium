@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -167,7 +166,7 @@ TEST_F(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
   ASSERT_TRUE(result_file_path.IsAbsolute());
 
   std::string result_file_path_str = result_file_path.AsUTF8Unsafe();
-  auto it = base::ranges::find(result_file_path_str, '\\');
+  auto it = std::ranges::find(result_file_path_str, '\\');
   while (it != result_file_path_str.end()) {
     auto it2 = result_file_path_str.insert(it, '\\');
     it = std::find(it2 + 2, result_file_path_str.end(), '\\');

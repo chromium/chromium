@@ -2,13 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# [VPYTHON:BEGIN]
-# python_version: "3.8"
-# wheel: <
-#   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:300"
-# >
-# [VPYTHON:END]
 """Run the given command as the standard user.
 
 All arguments provided to this program will be used to reconstruct the command
@@ -57,25 +50,6 @@ def LogToSTDERR(title, output):
     logging.error('%s  %s ends  %s', '=' * 30, title, '=' * 30)
 
 
-def ExcludeUpdaterPathsFromWindowsDefender():
-    """Put Updater paths into the Windows Defender exclusion list.
-
-    Once in a while, Windows Defender flags the updater binaries as malware,
-    which leads to test failures. Stop Windows Defender scanning the paths that
-    updater could work on.
-    """
-    paths_to_exclude = [
-        '%ProgramFiles%', '%ProgramFiles(x86)%', '%LocalAppData%'
-    ]
-    logging.info('Excluding %s from Windows Defender.', paths_to_exclude)
-
-    quote_path_if_needed = lambda p: p if p.startswith('"') else '"' + p + '"'
-    subprocess.call([
-        'powershell.exe', 'Add-MpPreference', '-ExclusionPath',
-        ', '.join([quote_path_if_needed(p) for p in paths_to_exclude])
-    ])
-
-
 def KeepAliveThread():
     """Function logs periodically to notify parent this process is still alive.
 
@@ -117,8 +91,6 @@ def main():
     # but hopefully this works well enough in all real scenarios.
     command_line = subprocess.list2cmdline([command] + remaining_args)
     logging.error('Full command line: %s', command_line)
-
-    ExcludeUpdaterPathsFromWindowsDefender()
 
     keep_alive_thread = threading.Thread(target=KeepAliveThread)
     keep_alive_thread.setDaemon(True)  # Do not block process on exit.

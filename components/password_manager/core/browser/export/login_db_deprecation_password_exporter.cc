@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -18,8 +19,6 @@
 namespace password_manager {
 
 namespace {
-constexpr std::string_view kExportedPasswordsFileName = "ChromePasswords.csv";
-
 void LogExportResult(LoginDbDeprecationExportResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.UPM.LoginDbDeprecationExport.Result", result);
@@ -51,6 +50,7 @@ LoginDbDeprecationPasswordExporter::~LoginDbDeprecationPasswordExporter() =
 void LoginDbDeprecationPasswordExporter::Start(
     scoped_refptr<PasswordStoreInterface> password_store,
     base::OnceClosure export_cleanup_calback) {
+  password_store_ = password_store;
   export_cleanup_callback_ = std::move(export_cleanup_calback);
   start_time_ = base::Time::Now();
   password_store->GetAutofillableLogins(weak_factory_.GetWeakPtr());
@@ -125,12 +125,20 @@ void LoginDbDeprecationPasswordExporter::OnExportComplete() {
 void LoginDbDeprecationPasswordExporter::OnExportCompleteWithResult(
     LoginDbDeprecationExportResult result) {
   LogExportResult(result);
+
   // If the export wasn't successful and there are passwords to export,
   // it will be re-attempted on the next startup.
   if (result == LoginDbDeprecationExportResult::kSuccess) {
     LogExportLatency(base::Time::Now() - start_time_);
     pref_service_->SetBoolean(prefs::kUpmUnmigratedPasswordsExported, true);
+    password_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                                base::Time::Max());
+  } else if (result == LoginDbDeprecationExportResult::kNoPasswords) {
+    // Nothing to export, so the export can be marked as done.
+    pref_service_->SetBoolean(
+        password_manager::prefs::kUpmUnmigratedPasswordsExported, true);
   }
+
   std::move(export_cleanup_callback_).Run();
   // The callback above destroys `this`.
 }

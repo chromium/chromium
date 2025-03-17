@@ -18,7 +18,6 @@ namespace blink {
 WebAudioMediaStreamSource::WebAudioMediaStreamSource(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : MediaStreamAudioSource(std::move(task_runner), false /* is_remote */),
-      is_registered_consumer_(false),
       fifo_(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebAudioMediaStreamSource::DeliverRebufferedAudio,
           WTF::CrossThreadUnretained(this)))) {
@@ -27,7 +26,6 @@ WebAudioMediaStreamSource::WebAudioMediaStreamSource(
 
 WebAudioMediaStreamSource::~WebAudioMediaStreamSource() {
   DVLOG(1) << "WebAudioMediaStreamSource::~WebAudioMediaStreamSource()";
-  EnsureSourceIsStopped();
 }
 
 void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
@@ -53,30 +51,6 @@ void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
 
   if (!wrapper_bus_ || wrapper_bus_->channels() != params.channels())
     wrapper_bus_ = media::AudioBus::CreateWrapper(params.channels());
-}
-
-bool WebAudioMediaStreamSource::EnsureSourceIsStarted() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_registered_consumer_)
-    return true;
-  if (!media_stream_source_ || !media_stream_source_->RequiresAudioConsumer())
-    return false;
-  VLOG(1) << "Starting WebAudio media stream source.";
-  media_stream_source_->SetAudioConsumer(this);
-  is_registered_consumer_ = true;
-  return true;
-}
-
-void WebAudioMediaStreamSource::EnsureSourceIsStopped() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!is_registered_consumer_)
-    return;
-  is_registered_consumer_ = false;
-  DCHECK(media_stream_source_);
-  media_stream_source_->RemoveAudioConsumer();
-  media_stream_source_ = nullptr;
-  VLOG(1) << "Stopped WebAudio media stream source. Final audio parameters={"
-          << GetAudioParameters().AsHumanReadableString() << "}.";
 }
 
 void WebAudioMediaStreamSource::ConsumeAudio(

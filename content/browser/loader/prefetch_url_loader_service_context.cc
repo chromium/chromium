@@ -39,6 +39,8 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     const network::ResourceRequest& resource_request_in,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  TRACE_EVENT("loading",
+              "PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart");
   CHECK(IsPrefetchRequest(resource_request_in));
 
   // Make a copy of |resource_request_in|, because we may need to modify the

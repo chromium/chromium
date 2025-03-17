@@ -19,15 +19,16 @@ namespace {
 // Entries in this array may either refer to features defined in the header of
 // this file or in other locations in the code base (e.g.
 // components/permissions/features.h).
-const base::Feature* kFeaturesExposedToJava[] = {
+const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidCancelPermissionPromptOnTouchOutside,
     &features::kOneTimePermission,
+    &features::kOsAdditionalSecurityPermissionKillSwitch,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 

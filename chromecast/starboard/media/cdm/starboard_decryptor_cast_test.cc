@@ -144,13 +144,15 @@ class StarboardDecryptorCastTest : public ::testing::Test {
 
 TEST_F(StarboardDecryptorCastTest,
        SendsProvisionRequestToWidevineProvisioningServer) {
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
       /*media_resource_tracker=*/nullptr);
 
   const std::string provision_request_data = "request data";
+  const base::span<const uint8_t> provision_request_span =
+      base::as_byte_span(provision_request_data);
   const std::string provision_response_data = "response data";
   const std::string session_id = "some_session";
 
@@ -200,9 +202,11 @@ TEST_F(StarboardDecryptorCastTest,
   decryptor_provided_callbacks->update_request_fn(
       &fake_drm_system_, decryptor_provided_callbacks->context, ticket,
       kStarboardDrmStatusSuccess,
-      kStarboardDrmSessionRequestTypeIndividualizationRequest,
-      error_message.c_str(), session_id.c_str(), session_id.size(),
-      provision_request_data.c_str(), provision_request_data.size(), nullptr);
+      kStarboardDrmSessionRequestTypeIndividualizationRequest, error_message,
+      session_id,
+      std::vector<uint8_t>(provision_request_span.begin(),
+                           provision_request_span.end()),
+      "");
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -215,7 +219,7 @@ TEST_F(StarboardDecryptorCastTest, SendsSessionUpdateToStarboard) {
   std::vector<uint8_t> key_vec(key.size());
   memcpy(key_vec.data(), key.c_str(), key_vec.size());
 
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
@@ -273,8 +277,7 @@ TEST_F(StarboardDecryptorCastTest, SendsSessionUpdateToStarboard) {
   ASSERT_THAT(decryptor_provided_callbacks->session_updated_fn, NotNull());
   decryptor_provided_callbacks->session_updated_fn(
       &fake_drm_system_, decryptor_provided_callbacks->context, ticket,
-      kStarboardDrmStatusSuccess, nullptr, session_id.c_str(),
-      session_id.size());
+      kStarboardDrmStatusSuccess, /*error_message=*/"", session_id);
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -298,7 +301,7 @@ TEST_F(StarboardDecryptorCastTest, CallsKeyChangeCallbackOnKeyUpdate) {
   const StarboardDrmKeyStatus starboard_key_status =
       kStarboardDrmKeyStatusUsable;
 
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
@@ -334,9 +337,8 @@ TEST_F(StarboardDecryptorCastTest, CallsKeyChangeCallbackOnKeyUpdate) {
   // Notify the decryptor that the key status changed. This should trigger the
   // expected call to session_keys_change_cb_ above.
   decryptor_provided_callbacks->key_statuses_changed_fn(
-      &fake_drm_system_, decryptor_provided_callbacks->context,
-      session_id.c_str(), session_id.size(), /*number_of_keys=*/1,
-      &starboard_key_id, &starboard_key_status);
+      &fake_drm_system_, decryptor_provided_callbacks->context, session_id,
+      {starboard_key_id}, {starboard_key_status});
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -372,7 +374,7 @@ TEST_F(StarboardDecryptorCastTest,
   const StarboardDrmKeyStatus starboard_key_released_status =
       kStarboardDrmKeyStatusReleased;
 
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
@@ -416,9 +418,8 @@ TEST_F(StarboardDecryptorCastTest,
   // Notify the decryptor that the key status changed. This should trigger the
   // expected call to session_keys_change_cb_ above.
   decryptor_provided_callbacks->key_statuses_changed_fn(
-      &fake_drm_system_, decryptor_provided_callbacks->context,
-      session_id.c_str(), session_id.size(), /*number_of_keys=*/1,
-      &starboard_key_id, &starboard_key_status);
+      &fake_drm_system_, decryptor_provided_callbacks->context, session_id,
+      {starboard_key_id}, {starboard_key_status});
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -431,9 +432,8 @@ TEST_F(StarboardDecryptorCastTest,
 
   // Verify that the key is removed when the status changes to removed.
   decryptor_provided_callbacks->key_statuses_changed_fn(
-      &fake_drm_system_, decryptor_provided_callbacks->context,
-      session_id.c_str(), session_id.size(), /*number_of_keys=*/1,
-      &starboard_key_id, &starboard_key_released_status);
+      &fake_drm_system_, decryptor_provided_callbacks->context, session_id,
+      {starboard_key_id}, {starboard_key_released_status});
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -446,14 +446,12 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRequest) {
   constexpr char kLicenseUrl[] = "www.example.com";
   const std::string session_id = "session_id";
   const std::string content = "license_request_content";
+  const base::span<const uint8_t> content_span = base::as_byte_span(content);
   const ::media::EmeInitDataType init_type = ::media::EmeInitDataType::CENC;
   const std::string init_data_str = "init_data";
-  const std::vector<uint8_t> init_data(
-      reinterpret_cast<const uint8_t*>(init_data_str.c_str()),
-      reinterpret_cast<const uint8_t*>(init_data_str.c_str()) +
-          init_data_str.size());
+  const base::span<const uint8_t> init_data = base::as_byte_span(init_data_str);
 
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
@@ -498,7 +496,8 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRequest) {
 
   // Trigger the session creation.
   decryptor->CreateSessionAndGenerateRequest(
-      ::media::CdmSessionType::kTemporary, init_type, init_data,
+      ::media::CdmSessionType::kTemporary, init_type,
+      std::vector<uint8_t>(init_data.begin(), init_data.end()),
       std::make_unique<::media::CdmCallbackPromise<std::string>>(
           /*resolve_cb=*/base::BindOnce(
               +[](bool* b, std::string* out_session_id,
@@ -522,8 +521,9 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRequest) {
   decryptor_provided_callbacks->update_request_fn(
       &fake_drm_system_, decryptor_provided_callbacks->context, ticket,
       kStarboardDrmStatusSuccess, kStarboardDrmSessionRequestTypeLicenseRequest,
-      /*error_message=*/nullptr, session_id.c_str(), session_id.size(),
-      content.c_str(), content.size(), kLicenseUrl);
+      /*error_message=*/"", session_id,
+      std::vector<uint8_t>(content_span.begin(), content_span.end()),
+      kLicenseUrl);
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -536,14 +536,12 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRenewal) {
   constexpr char kLicenseUrl[] = "www.example.com";
   const std::string session_id = "session_id";
   const std::string content = "license_request_content";
+  const base::span<const uint8_t> content_span = base::as_byte_span(content);
   const ::media::EmeInitDataType init_type = ::media::EmeInitDataType::CENC;
   const std::string init_data_str = "init_data";
-  const std::vector<uint8_t> init_data(
-      reinterpret_cast<const uint8_t*>(init_data_str.c_str()),
-      reinterpret_cast<const uint8_t*>(init_data_str.c_str()) +
-          init_data_str.size());
+  const base::span<const uint8_t> init_data = base::as_byte_span(init_data_str);
 
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
@@ -589,7 +587,8 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRenewal) {
 
   // Trigger the session creation.
   decryptor->CreateSessionAndGenerateRequest(
-      ::media::CdmSessionType::kTemporary, init_type, init_data,
+      ::media::CdmSessionType::kTemporary, init_type,
+      std::vector<uint8_t>(init_data.begin(), init_data.end()),
       std::make_unique<::media::CdmCallbackPromise<std::string>>(
           /*resolve_cb=*/base::BindOnce(
               +[](bool* b, std::string* out_session_id,
@@ -613,8 +612,9 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRenewal) {
   decryptor_provided_callbacks->update_request_fn(
       &fake_drm_system_, decryptor_provided_callbacks->context, ticket,
       kStarboardDrmStatusSuccess, kStarboardDrmSessionRequestTypeLicenseRenewal,
-      /*error_message=*/nullptr, session_id.c_str(), session_id.size(),
-      content.c_str(), content.size(), kLicenseUrl);
+      /*error_message=*/"", session_id,
+      std::vector<uint8_t>(content_span.begin(), content_span.end()),
+      kLicenseUrl);
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -626,7 +626,7 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRenewal) {
 TEST_F(StarboardDecryptorCastTest, ForwardsCloseSessionToStarboard) {
   const std::string session_id = "session_id";
 
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
@@ -681,8 +681,7 @@ TEST_F(StarboardDecryptorCastTest, ForwardsCloseSessionToStarboard) {
   // Simulate starboard's response to drm_close_session_fn.
   ASSERT_THAT(decryptor_provided_callbacks->session_closed_fn, NotNull());
   decryptor_provided_callbacks->session_closed_fn(
-      &fake_drm_system_, decryptor_provided_callbacks->context,
-      session_id.c_str(), session_id.size());
+      &fake_drm_system_, decryptor_provided_callbacks->context, session_id);
 
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
@@ -695,7 +694,7 @@ TEST_F(StarboardDecryptorCastTest, DestroysSbDrmSystemOnDestruction) {
       .WillOnce(Return(&fake_drm_system_));
   EXPECT_CALL(*starboard_, DrmDestroySystem(&fake_drm_system_)).Times(1);
 
-  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),

@@ -36,7 +36,8 @@ TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
              fieldType:kObfuscatedFieldType
                   type:kTestFocusType
             typedValue:kTestTypedValue
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   EXPECT_TRUE([formQuery hasFocusType]);
 }
@@ -52,7 +53,8 @@ TEST_F(FormSuggestionProviderQueryTest, InputInTextField) {
              fieldType:kTestTextFieldType
                   type:kTestInputType
             typedValue:kTestTypedValue
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   EXPECT_FALSE([formQuery hasFocusType]);
 }

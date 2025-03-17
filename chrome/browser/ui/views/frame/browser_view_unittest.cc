@@ -5,9 +5,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -63,26 +64,6 @@
 
 namespace {
 
-// Class for BrowserView unit tests for the loading animation feature.
-// Creates a Browser with a |features_list| where
-// kStopLoadingAnimationForHiddenWindow is enabled before setting GPU thread.
-class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
-    : public TestWithBrowserView {
- public:
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow() {
-    feature_list_.InitAndEnableFeature(
-        features::kStopLoadingAnimationForHiddenWindow);
-  }
-
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow(
-      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow& operator=(
-      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
   gfx::Rect tabstrip_bounds(browser_view->frame()->GetBoundsForTabStripRegion(
@@ -93,12 +74,12 @@ gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
   return tabstrip_region_origin;
 }
 
-// Helper function to take a printf-style format string and substitute the
-// browser name (like "Chromium" or "Google Chrome") for %s, and return the
-// result as a std::u16string.
-std::u16string SubBrowserName(const char* fmt) {
-  return base::UTF8ToUTF16(base::StringPrintfNonConstexpr(
-      fmt, l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str()));
+// Helper function to take a prefix and suffix and insert the browser name (like
+// "Chromium" or "Google Chrome") in the middle.
+std::u16string SubBrowserName(std::u16string_view prefix,
+                              std::u16string_view suffix) {
+  return base::StrCat(
+      {prefix, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), suffix});
 }
 
 }  // namespace
@@ -480,21 +461,21 @@ TEST_F(BrowserViewTest, MAYBE_BookmarkBarInvisibleOnShutdown) {
 }
 
 TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
-  EXPECT_EQ(SubBrowserName("Untitled - %s"),
+  EXPECT_EQ(SubBrowserName(u"Untitled - ", u""),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::STABLE, browser()->profile()));
-  EXPECT_EQ(SubBrowserName("Untitled - %s Beta"),
+  EXPECT_EQ(SubBrowserName(u"Untitled - ", u" Beta"),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::BETA, browser()->profile()));
-  EXPECT_EQ(SubBrowserName("Untitled - %s Dev"),
+  EXPECT_EQ(SubBrowserName(u"Untitled - ", u" Dev"),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::DEV, browser()->profile()));
-  EXPECT_EQ(SubBrowserName("Untitled - %s Canary"),
+  EXPECT_EQ(SubBrowserName(u"Untitled - ", u" Canary"),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::CANARY, browser()->profile()));
 
   AddTab(browser(), GURL("about:blank"));
-  EXPECT_EQ(SubBrowserName("about:blank - %s"),
+  EXPECT_EQ(SubBrowserName(u"about:blank - ", u""),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::STABLE, browser()->profile()));
 
@@ -502,24 +483,24 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
   TabRendererData start_media;
   start_media.alert_state = {TabAlertState::AUDIO_PLAYING};
   tab->SetData(std::move(start_media));
-  EXPECT_EQ(SubBrowserName("about:blank - Audio playing - %s"),
+  EXPECT_EQ(SubBrowserName(u"about:blank - Audio playing - ", u""),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::STABLE, browser()->profile()));
 
   TabRendererData network_error;
   network_error.network_state = TabNetworkState::kError;
   tab->SetData(std::move(network_error));
-  EXPECT_EQ(SubBrowserName("about:blank - Network error - %s Beta"),
+  EXPECT_EQ(SubBrowserName(u"about:blank - Network error - ", u" Beta"),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::BETA, browser()->profile()));
 
   TestingProfile* profile = profile_manager()->CreateTestingProfile("Sadia");
-  EXPECT_EQ(SubBrowserName("about:blank - Network error - %s Dev - Sadia"),
+  EXPECT_EQ(SubBrowserName(u"about:blank - Network error - ", u" Dev - Sadia"),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::DEV, profile));
 
   EXPECT_EQ(
-      SubBrowserName("about:blank - Network error - %s Canary (Incognito)"),
+      SubBrowserName(u"about:blank - Network error - ", u" Canary (Incognito)"),
       browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
           version_info::Channel::CANARY,
           TestingProfile::Builder().BuildIncognito(profile)));
@@ -554,7 +535,7 @@ TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   tab->SetData(std::move(memory_usage));
 
   // Expect that low memory usage isn't in the window title.
-  EXPECT_EQ(SubBrowserName("about:blank - %s"),
+  EXPECT_EQ(SubBrowserName(u"about:blank - ", u""),
             browser_view()->GetAccessibleWindowTitle());
   uint64_t memory_used = TabResourceUsage::kHighMemoryUsageThresholdBytes + 1;
   tab_resource_usage_->SetMemoryUsageInBytes(memory_used);
@@ -641,6 +622,30 @@ TEST_F(BrowserViewTest, AccessibleProperties) {
   EXPECT_EQ(
       root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       browser_view()->GetAccessibleWindowTitle());
+}
+
+TEST_F(BrowserViewTest, UpdateAccessibleURL) {
+  const GURL before_url(u"data:text/html,before");
+  AddTab(browser(), before_url);
+
+  ui::AXNodeData node_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            before_url);
+
+  const GURL after_url(u"data:text/html,after");
+  AddTab(browser(), after_url);
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            after_url);
 }
 
 //  Macs do not have fullscreen policy.
@@ -743,8 +748,7 @@ TEST_F(BrowserViewWindowTypeTest, TestWindowIsNotReturned) {
 
 // Tests Feature to ensure that the loading animation is not rendered after the
 // window changes to hidden.
-TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
-       LoadingAnimationNotRenderedWhenWindowHidden) {
+TEST_F(TestWithBrowserView, LoadingAnimationNotRenderedWhenWindowHidden) {
   TabActivitySimulator tab_activity_simulator;
   content::WebContents* web_contents =
       tab_activity_simulator.AddWebContentsAndNavigate(
@@ -756,11 +760,11 @@ TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
 
   browser_view()->frame()->Show();
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
-  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunning());
 
   browser_view()->frame()->Hide();
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
-  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunning());
 }

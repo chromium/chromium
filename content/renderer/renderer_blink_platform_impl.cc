@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/renderer_blink_platform_impl.h"
 
 #include <algorithm>
@@ -41,10 +36,10 @@
 #include "build/build_config.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/input/input_constants.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
-#include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
 #include "content/common/user_level_memory_pressure_signal_features.h"
 #include "content/public/common/content_features.h"
@@ -110,7 +105,6 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
@@ -122,6 +116,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "content/child/child_process_sandbox_support_impl_win.h"
 #include "content/renderer/font_data/font_data_manager.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/web/win/web_font_rendering.h"
@@ -149,7 +144,6 @@ using blink::WebAudioSinkDescriptor;
 using blink::WebMediaStreamTrack;
 using blink::WebString;
 using blink::WebURL;
-using blink::WebVector;
 
 namespace content {
 
@@ -213,8 +207,12 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kUseFontDataManager)) {
+    // Create a FontDataManager if it's enabled, and if we're not in a
+    // single-process environment. In single process, the SkFontMgr is already
+    // installed by browser process code at this point.
+    if (base::FeatureList::IsEnabled(
+            features::kFontDataServiceAllWebContents) &&
+        sandboxEnabled()) {
       sk_sp<font_data_service::FontDataManager> font_data_manager =
           sk_make_sp<font_data_service::FontDataManager>();
 
@@ -224,10 +222,13 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #endif
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   if (sandboxEnabled()) {
 #if BUILDFLAG(IS_MAC)
     sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
+#elif BUILDFLAG(IS_WIN)
+    sandbox_support_ = std::make_unique<WebSandboxSupportWin>();
 #else
     sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader);
 #endif
@@ -284,8 +285,18 @@ void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
 }
 #endif
 
+std::optional<int>
+RendererBlinkPlatformImpl::GetWebUIBundledCodeCacheResourceId(
+    const GURL& webui_resource_url) {
+  auto it = webui_resource_to_code_cache_id_map_.find(webui_resource_url);
+  return it == webui_resource_to_code_cache_id_map_.end()
+             ? std::nullopt
+             : std::optional<int>(it->second);
+}
+
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   return sandbox_support_.get();
 #else
   // These platforms do not require sandbox support.
@@ -494,7 +505,7 @@ unsigned RendererBlinkPlatformImpl::AudioHardwareOutputChannels() {
 }
 
 base::TimeDelta RendererBlinkPlatformImpl::GetHungRendererDelay() {
-  return kHungRendererDelay;
+  return input::kHungRendererDelay;
 }
 
 std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
@@ -715,19 +726,22 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
     gl_info->error_message = WebString::FromUTF8(error_message);
     return nullptr;
   }
-  Collect3DContextInformation(gl_info, gpu_channel_host->gpu_info());
+  const auto& gpu_info = gpu_channel_host->gpu_info();
+  Collect3DContextInformation(gl_info, gpu_info);
 
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
-  attributes.enable_oop_rasterization =
+  // TODO(zmo): today if Skia backend is set, Chrome either runs in GPU
+  // acceleration mode, either on top of real GPU, or on top of SwiftShader
+  // (for testing). This may change in the future if we move Skia software
+  // rendering to be OOP as well.
+  attributes.enable_gpu_rasterization =
       attributes.enable_raster_interface &&
-      gpu_channel_host->gpu_feature_info()
-              .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled;
-  attributes.enable_gles2_interface = !attributes.enable_oop_rasterization;
+      gpu_info.skia_backend_type != gpu::SkiaBackendType::kNone;
+  attributes.enable_gles2_interface = !attributes.enable_gpu_rasterization;
   attributes.enable_grcontext =
-      !attributes.enable_oop_rasterization && web_attributes.support_grcontext;
+      !attributes.enable_gpu_rasterization && web_attributes.support_grcontext;
 
   attributes.gpu_preference = web_attributes.prefer_low_power_gpu
                                   ? gl::GpuPreference::kLowPower
@@ -941,7 +955,7 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  // TODO(crbug.com/40241479): plumb `router_rules` with the function callers
+  // TODO(crbug.com/402806160): plumb `router_rules` with the function callers
   // if there is such use case. As of 2023-06-01, only
   // `DedicatedOrSharedWorkerFetchContextImpl` calls the function, and
   // no need to allow it set the `router_rules`.
@@ -1048,16 +1062,27 @@ RendererBlinkPlatformImpl::CreateWebV8ValueConverter() {
   return std::make_unique<V8ValueConverterImpl>();
 }
 
+bool RendererBlinkPlatformImpl::DisallowV8FeatureFlagOverrides() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisallowV8FeatureFlagOverrides);
+}
+
 void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
     const blink::WebURL& url,
-    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {
+    std::vector<blink::WebContentSecurityPolicyHeader>* csp) {
   GetContentClient()->renderer()->AppendContentSecurityPolicy(url, csp);
+}
+
+bool RendererBlinkPlatformImpl::IsFilePickerAllowedForCrossOriginSubframe(
+    const blink::WebSecurityOrigin& origin) {
+  return GetContentClient()->IsFilePickerAllowedForCrossOriginSubframe(origin);
 }
 
 base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
   auto io_task_runner = GetIOTaskRunner();
-  if (!io_task_runner)
+  if (!io_task_runner) {
     return base::kInvalidThreadId;
+  }
   // Cannot be called from IO thread due to potential deadlock.
   CHECK(!io_task_runner->BelongsToCurrentThread());
   {

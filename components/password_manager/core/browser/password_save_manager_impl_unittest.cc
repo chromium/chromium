@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/vote_uploads_test_matchers.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -313,8 +314,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
         .WillByDefault(Return(&mock_autofill_crowdsourcing_manager_));
     ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .WillByDefault(Return(true));
-    ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
-        .WillByDefault(Return(PasswordForm::Store::kProfileStore));
+    ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageEnabled)
+        .WillByDefault(Return(false));
   }
   PasswordSaveManagerImplTestBase(const PasswordSaveManagerImplTestBase&) =
       delete;
@@ -323,7 +324,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
 
   PasswordForm Parse(const FormData& form_data) {
     return *FormDataParser().Parse(form_data, FormDataParser::Mode::kSaving,
-                                   /*stored_usernames=*/{});
+                                   /*stored_usernames=*/{},
+                                   /*ukm_source_id=*/std::nullopt);
   }
 
   void DestroySaveManagerAndMetricsRecorder() {
@@ -369,8 +371,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   }
 
   void SetAccountStoreEnabled(bool is_enabled) {
-    ON_CALL(*client()->GetPasswordFeatureManager(),
-            IsOptedInForAccountStorage())
+    ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
         .WillByDefault(Return(is_enabled));
     ON_CALL(*client()->GetPasswordFeatureManager(),
             ComputePasswordAccountStorageUsageLevel)
@@ -379,11 +380,6 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
                              kUsingAccountStorage
                        : features_util::PasswordAccountStorageUsageLevel::
                              kNotUsingAccountStorage));
-  }
-
-  void SetDefaultPasswordStore(const PasswordForm::Store& store) {
-    ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-        .WillByDefault(Return(store));
   }
 
   PasswordForm CreateSavedFederated() {
@@ -1432,8 +1428,6 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 
   fetcher()->NotifyFetchCompleted();
 
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
-
   password_save_manager_impl()->CreatePendingCredentials(
       parsed_submitted_form_, &observed_form_, submitted_form_,
       /*is_http_auth=*/false,
@@ -1448,32 +1442,10 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       DoNotSaveInAccountStoreWhenAccountStoreDisabled) {
+       SaveInProfileStoreWhenAccountStoreDisabled) {
   SetAccountStoreEnabled(/*is_enabled=*/false);
 
   fetcher()->NotifyFetchCompleted();
-
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
-
-  password_save_manager_impl()->CreatePendingCredentials(
-      parsed_submitted_form_, &observed_form_, submitted_form_,
-      /*is_http_auth=*/false,
-      /*is_credential_api_save=*/false);
-
-  EXPECT_TRUE(password_save_manager_impl()->IsNewLogin());
-
-  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
-  EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
-
-  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
-}
-
-TEST_F(MultiStorePasswordSaveManagerTest, SaveInProfileStore) {
-  SetAccountStoreEnabled(/*is_enabled=*/true);
-
-  fetcher()->NotifyFetchCompleted();
-
-  SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
 
   password_save_manager_impl()->CreatePendingCredentials(
       parsed_submitted_form_, &observed_form_, submitted_form_,
@@ -1554,7 +1526,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, UpdateInBothStores) {
   PasswordForm saved_match_in_profile_store(saved_match_in_account_store);
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
   signin::GaiaIdHash user_id_hash =
-      signin::GaiaIdHash::FromGaiaId("user@gmail.com");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("user@gmail.com"));
   saved_match_in_profile_store.moving_blocked_for_list.push_back(user_id_hash);
 
   SetNonFederatedAndNotifyFetchCompleted(
@@ -1683,7 +1655,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
       base::Time::Now() - base::Days(10);
   saved_match_in_profile_store.times_used_in_html_form = 10;
   saved_match_in_profile_store.moving_blocked_for_list.push_back(
-      signin::GaiaIdHash::FromGaiaId("email@gmail.com"));
+      signin::GaiaIdHash::FromGaiaId(GaiaId("email@gmail.com")));
 
   PasswordForm saved_match_in_account_store(saved_match_in_profile_store);
   saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
@@ -1860,7 +1832,6 @@ TEST_F(MultiStorePasswordSaveManagerTest,
        BlocklistInAccountStoreWhenAccountStoreEnabled) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
   const PasswordFormDigest form_digest(saved_match_);
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
   EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest)).Times(0);
   EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest));
@@ -1868,21 +1839,9 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       BlocklistInProfileStoreAlthoughAccountStoreEnabled) {
-  SetAccountStoreEnabled(/*is_enabled=*/true);
-  const PasswordFormDigest form_digest(saved_match_);
-  SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
-
-  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
-  EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest)).Times(0);
-  password_save_manager_impl()->Blocklist(form_digest);
-}
-
-TEST_F(MultiStorePasswordSaveManagerTest,
        BlocklistInProfileStoreWhenAccountStoreDisabled) {
   SetAccountStoreEnabled(/*is_enabled=*/false);
   const PasswordFormDigest form_digest(saved_match_);
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
   EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
   EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest)).Times(0);
@@ -1896,7 +1855,7 @@ TEST_F(MultiStorePasswordSaveManagerTest,
   PasswordForm saved_match_in_profile_store(saved_match_);
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
   saved_match_in_profile_store.moving_blocked_for_list.push_back(
-      signin::GaiaIdHash::FromGaiaId("user@gmail.com"));
+      signin::GaiaIdHash::FromGaiaId(GaiaId("user@gmail.com")));
   SetNonFederatedAndNotifyFetchCompleted({saved_match_in_profile_store});
 
   password_save_manager_impl()->CreatePendingCredentials(
@@ -1924,7 +1883,7 @@ TEST_F(MultiStorePasswordSaveManagerTest,
   PasswordForm saved_match_in_profile_store(saved_match_);
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
   saved_match_in_profile_store.moving_blocked_for_list.push_back(
-      signin::GaiaIdHash::FromGaiaId("user@gmail.com"));
+      signin::GaiaIdHash::FromGaiaId(GaiaId("user@gmail.com")));
   SetNonFederatedAndNotifyFetchCompleted({saved_match_in_profile_store});
 
   password_save_manager_impl()->CreatePendingCredentials(
@@ -2090,9 +2049,9 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 
 TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInProfileStore) {
   signin::GaiaIdHash user1_id_hash =
-      signin::GaiaIdHash::FromGaiaId("user1@gmail.com");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("user1@gmail.com"));
   signin::GaiaIdHash user2_id_hash =
-      signin::GaiaIdHash::FromGaiaId("user2@gmail.com");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("user2@gmail.com"));
 
   PasswordForm profile_saved_match(saved_match_);
   profile_saved_match.username_value = parsed_submitted_form_.username_value;
@@ -2120,9 +2079,9 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInProfileStore) {
 
 TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInBothStores) {
   signin::GaiaIdHash user1_id_hash =
-      signin::GaiaIdHash::FromGaiaId("user1@gmail.com");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("user1@gmail.com"));
   signin::GaiaIdHash user2_id_hash =
-      signin::GaiaIdHash::FromGaiaId("user2@gmail.com");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("user2@gmail.com"));
 
   PasswordForm account_saved_match(saved_match_);
   account_saved_match.username_value = parsed_submitted_form_.username_value;
@@ -2151,28 +2110,10 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInBothStores) {
   password_save_manager_impl()->BlockMovingToAccountStoreFor(user2_id_hash);
 }
 
-TEST_F(
-    MultiStorePasswordSaveManagerTest,
-    PresaveGeneratedPasswordInAccountStoreIfOptedInAndDefaultStoreIsAccount) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+TEST_F(MultiStorePasswordSaveManagerTest,
+       PresaveGeneratedPasswordInAccountStoreIfAccountStorageEnabled) {
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
-
-  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
-  EXPECT_CALL(*mock_account_form_saver(), Save);
-
-  password_save_manager_impl()->PresaveGeneratedPassword(
-      parsed_submitted_form_);
-}
-
-TEST_F(
-    MultiStorePasswordSaveManagerTest,
-    PresaveGeneratedPasswordInAccountStoreIfOptedInAndDefaultStoreIsProfile) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
 
   EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
   EXPECT_CALL(*mock_account_form_saver(), Save);
@@ -2182,14 +2123,12 @@ TEST_F(
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       PresaveGeneratedPasswordInProfileStoreIfOptedOutOfAccountStorage) {
-  // Generation is offered only to users who are either syncing or have opted-in
-  // for account store. Therefore, if the user isn't opted in, it is guaranteed
+       PresaveGeneratedPasswordInProfileStoreIfAccountStorageDisabled) {
+  // Generation is offered only to users who are either syncing or have account
+  // storage enabled. Therefore, if account storage is disabled, it's guaranteed
   // they are syncing and the password should be stored in the profile store.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
       .WillByDefault(Return(false));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
 
   EXPECT_CALL(*mock_profile_form_saver(), Save);
   EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
@@ -2201,7 +2140,6 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 TEST_F(MultiStorePasswordSaveManagerTest,
        GetPasswordStoreForSavingReturnsAccountForNewPasswordWhenEnabled) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
   PasswordForm::Store store_to_save =
       password_save_manager_impl()->GetPasswordStoreForSaving(
           parsed_observed_form_);
@@ -2221,7 +2159,6 @@ TEST_F(
 TEST_F(MultiStorePasswordSaveManagerTest,
        GetPasswordStoreForSavingReturnsProfileWhenUpdatingInProfile) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
   saved_match_.in_store = PasswordForm::Store::kProfileStore;
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
@@ -2235,7 +2172,6 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 TEST_F(MultiStorePasswordSaveManagerTest,
        GetPasswordStoreForSavingReturnsBothWhenCredentialDuplicated) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
   saved_match_.in_store =
       PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
@@ -2253,7 +2189,6 @@ TEST_F(
     MultiStorePasswordSaveManagerTest,
     GetPasswordStoreForSavingReturnsBothForUpdateInProfileWithGeneratedPassword) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
-  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
   saved_match_.in_store = PasswordForm::Store::kProfileStore;
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});

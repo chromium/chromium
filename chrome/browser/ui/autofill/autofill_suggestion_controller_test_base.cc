@@ -39,12 +39,7 @@ AutofillExternalDelegateForPopupTest::~AutofillExternalDelegateForPopupTest() =
 AutofillSuggestionControllerForTest::AutofillSuggestionControllerForTest(
     base::WeakPtr<AutofillExternalDelegate> external_delegate,
     content::WebContents* web_contents,
-    const gfx::RectF& element_bounds
-#if BUILDFLAG(IS_ANDROID)
-    ,
-    ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
-#endif
-    )
+    const gfx::RectF& element_bounds)
     : AutofillSuggestionControllerForTestBase(
           external_delegate,
           web_contents,
@@ -53,8 +48,6 @@ AutofillSuggestionControllerForTest::AutofillSuggestionControllerForTest(
                                 nullptr),
 #if !BUILDFLAG(IS_ANDROID)
           /*form_control_ax_id=*/0
-#else
-          std::move(show_pwd_migration_warning_callback)
 #endif
       ) {
 }

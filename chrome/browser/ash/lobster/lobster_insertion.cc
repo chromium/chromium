@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/lobster/lobster_insertion.h"
 
-#include "ash/lobster/lobster_image_actuator.h"
+#include "ash/lobster/lobster_image_insert_or_copy_actuator.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -35,7 +35,7 @@ ui::TextInputClient* GetFocusedTextInputClient() {
 }  // namespace
 
 LobsterInsertion::LobsterInsertion(const std::string& image_bytes,
-                                   ash::StatusCallback insert_status_callback)
+                                   StatusCallback insert_status_callback)
     : pending_image_bytes_(image_bytes),
       state_(State::kPending),
       insert_status_callback_(std::move(insert_status_callback)) {

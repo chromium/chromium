@@ -92,6 +92,9 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
       ScoredURLUserAction action,
       const std::string& visit_id,
       segmentation_platform::TrainingRequestId visit_request_id) override;
+  void RegisterTransformer(
+      URLVisitAggregatesTransformType type,
+      std::unique_ptr<URLVisitAggregatesTransformer> transformer) override;
 
  private:
   // Trigger training data collection with the user action.

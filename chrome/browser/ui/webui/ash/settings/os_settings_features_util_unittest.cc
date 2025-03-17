@@ -14,6 +14,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // #include "components/user_manager/fake_chrome_user_manager.h"
@@ -36,7 +37,7 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
 
   const AccountId MakeAccountId() {
     return AccountId::FromUserEmailGaiaId("test-user@testdomain.com",
-                                          "1234567890");
+                                          GaiaId("1234567890"));
   }
 
   ash::StubInstallAttributes& stub_install_attributes() {

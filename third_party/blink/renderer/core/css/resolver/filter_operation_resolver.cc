@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 
 #include "third_party/blink/renderer/core/css/css_function_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -190,12 +189,10 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
       CountFilterUse(FilterOperation::OperationType::kReference,
                      state.GetDocument());
 
-      SVGResource* resource =
-          state.GetElementStyleResources().GetSVGResourceFromValue(property_id,
-                                                                   *url_value);
       operations.Operations().push_back(
           MakeGarbageCollected<ReferenceFilterOperation>(
-              url_value->ValueForSerialization(), resource));
+              url_value->ValueForSerialization(),
+              state.GetSVGResource(property_id, *url_value)));
       continue;
     }
 
@@ -255,7 +252,7 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
 
 FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
     const CSSValue& in_value,
-    const Font& font) {
+    const Font* font) {
   FilterOperations operations;
 
   if (auto* in_identifier_value = DynamicTo<CSSIdentifierValue>(in_value)) {
@@ -266,7 +263,7 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
   // TODO(layout-dev): Should document zoom factor apply for offscreen canvas?
   float zoom = 1.0f;
   CSSToLengthConversionData::FontSizes font_sizes(
-      kOffScreenCanvasEmFontSize, kOffScreenCanvasRemFontSize, &font, zoom);
+      kOffScreenCanvasEmFontSize, kOffScreenCanvasRemFontSize, font, zoom);
   CSSToLengthConversionData::LineHeightSize line_height_size;
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;

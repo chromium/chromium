@@ -43,6 +43,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
+import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -197,7 +199,6 @@ public class NewTabPage
     @VisibleForTesting
     public static class NtpSmoothTransitionDelegate implements SmoothTransitionDelegate {
         private static final int SMOOTH_TRANSITION_DURATION_MS = 100;
-        private static final int MAX_FEED_RESTORATION_DURATION = 1000;
 
         private View mView;
         private Animator mAnimator;
@@ -214,6 +215,7 @@ public class NewTabPage
                             mRestoringState.removeObserver(this);
                             mAnimatorStarted = true;
                             mHandler.removeCallbacks(mFallback);
+                            BackPressMetrics.recordNTPSmoothTransitionMethod(false);
                         }
                     }
                 };
@@ -223,6 +225,7 @@ public class NewTabPage
                         mAnimator.start();
                         mAnimatorStarted = true;
                         mRestoringState.removeObserver(mOnScrollStateChanged);
+                        BackPressMetrics.recordNTPSmoothTransitionMethod(true);
                     }
                 };
 
@@ -230,6 +233,22 @@ public class NewTabPage
             mView = view;
             mAnimator = buildSmoothTransition(view);
             mRestoringState = restoringState;
+
+            // Fallback added for metric records only.
+            restoringState.addObserver(
+                    new Callback<Integer>() {
+                        long mStart;
+
+                        @Override
+                        public void onResult(Integer result) {
+                            if (result == RestoringState.WAITING_TO_RESTORE) {
+                                mStart = TimeUtils.currentTimeMillis();
+                            } else if (result == RestoringState.RESTORED) {
+                                BackPressMetrics.recordNTPFeedRestorationDuration(
+                                        TimeUtils.currentTimeMillis() - mStart);
+                            }
+                        }
+                    });
         }
 
         @Override
@@ -253,7 +272,8 @@ public class NewTabPage
                         }
                     });
             mRestoringState.addObserver(mOnScrollStateChanged);
-            mHandler.postDelayed(mFallback, MAX_FEED_RESTORATION_DURATION);
+            mHandler.postDelayed(
+                    mFallback, BackPressMetrics.maxFallbackDelayOfNtpSmoothTransition());
         }
 
         @Override
@@ -452,6 +472,7 @@ public class NewTabPage
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      * @param moduleRegistrySupplier Supplier for the {@link ModuleRegistry}.
      * @param edgeToEdgeControllerSupplier Supplier for the {@link EdgeToEdgeController}.
+     * @param startupMetricsTracker Used to record NTP startup metric.
      */
     public NewTabPage(
             Activity activity,
@@ -475,7 +496,8 @@ public class NewTabPage
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             ObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            StartupMetricsTracker startupMetricsTracker) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -574,7 +596,8 @@ public class NewTabPage
                 isInNightMode,
                 shareDelegateSupplier,
                 url,
-                edgeToEdgeControllerSupplier);
+                edgeToEdgeControllerSupplier,
+                startupMetricsTracker);
 
         // It is possible that the NewTabPage is created when the Tab model hasn't been initialized.
         // For example, the user changes theme when a NTP is showing, which leads to the recreation
@@ -644,6 +667,7 @@ public class NewTabPage
      * @param shareDelegateSupplier Supplies a delegate used to open SharingHub.
      * @param url The URL used to identify NTP's launch origin
      * @param edgeToEdgeControllerSupplier The supplier to {@link EdgeToEdgeController}.
+     * @param startupMetricsTracker Used to record NTP startup metric.
      */
     protected void initializeMainView(
             Activity activity,
@@ -652,7 +676,8 @@ public class NewTabPage
             boolean isInNightMode,
             Supplier<ShareDelegate> shareDelegateSupplier,
             String url,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            StartupMetricsTracker startupMetricsTracker) {
         Profile profile = mTab.getProfile();
 
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -701,6 +726,7 @@ public class NewTabPage
                         actionDelegate,
                         mTabStripHeightSupplier,
                         edgeToEdgeControllerSupplier);
+        startupMetricsTracker.registerNtpViewObserver(mFeedSurfaceProvider.getView());
     }
 
     /** Initialize the single tab card on home surface NTP or magic stack. */
@@ -737,7 +763,7 @@ public class NewTabPage
      * @param isTablet Whether the activity is running in tablet mode.
      * @param searchProviderHasLogo Whether the default search engine has logo.
      * @return Whether the NTP is in single url bar mode, i.e. the url bar is shown in-line on the
-     *         NTP.
+     *     NTP.
      */
     public static boolean isInSingleUrlBarMode(boolean isTablet, boolean searchProviderHasLogo) {
         return !isTablet && searchProviderHasLogo;

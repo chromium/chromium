@@ -103,7 +103,7 @@ std::vector<std::string> EmbeddedTestServerAndroid::GetRequestHeadersForUrl(
     const base::android::JavaParamRef<jstring>& jrelative_url) {
   base::AutoLock auto_lock(lock_);
   std::string path = base::android::ConvertJavaStringToUTF8(env, jrelative_url);
-  CHECK(request_headers_by_path_.contains(path)) << path;
+  CHECK(requests_by_path_.contains(path)) << path;
 
   // Copy headers from HttpRequest::HeaderMap to std::vector for passing them to
   // Java. For the required SDK version in Cronet, std::map is not available
@@ -111,11 +111,23 @@ std::vector<std::string> EmbeddedTestServerAndroid::GetRequestHeadersForUrl(
   // alternates between header names (even indices) and their corresponding
   // values (odd indices).
   std::vector<std::string> headers;
-  for (auto [key, value] : request_headers_by_path_[path]) {
+  for (auto [key, value] : requests_by_path_[path].headers) {
     headers.push_back(key);
     headers.push_back(value);
   }
   return headers;
+}
+
+int EmbeddedTestServerAndroid::GetRequestCountForUrl(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jrelative_url) {
+  base::AutoLock auto_lock(lock_);
+  std::string path = base::android::ConvertJavaStringToUTF8(env, jrelative_url);
+  auto it = requests_by_path_.find(path);
+  if (it == requests_by_path_.end()) {
+    return 0;
+  }
+  return it->second.count;
 }
 
 void EmbeddedTestServerAndroid::AddDefaultHandlers(
@@ -184,8 +196,34 @@ static void JNI_EmbeddedTestServerImpl_Init(
 void EmbeddedTestServerAndroid::MonitorResourceRequest(
     const net::test_server::HttpRequest& request) {
   base::AutoLock auto_lock(lock_);
-  request_headers_by_path_.emplace(request.GetURL().PathForRequest(),
-                                   request.headers);
+
+  // Currently, when multiple requests are sent to the same URL, only the first
+  // request can record the headers.
+  std::string path = request.GetURL().PathForRequest();
+  auto it = requests_by_path_.find(path);
+  if (it != requests_by_path_.end()) {
+    it->second.count++;
+    return;
+  }
+
+  RequestInfoByPath info;
+  info.headers = request.headers;
+  info.count++;
+  requests_by_path_.emplace(path, std::move(info));
 }
+
+EmbeddedTestServerAndroid::RequestInfoByPath::RequestInfoByPath() = default;
+EmbeddedTestServerAndroid::RequestInfoByPath::~RequestInfoByPath() = default;
+
+EmbeddedTestServerAndroid::RequestInfoByPath::RequestInfoByPath(
+    EmbeddedTestServerAndroid::RequestInfoByPath&& other) = default;
+EmbeddedTestServerAndroid::RequestInfoByPath&
+EmbeddedTestServerAndroid::RequestInfoByPath::operator=(
+    EmbeddedTestServerAndroid::RequestInfoByPath&& other) = default;
+EmbeddedTestServerAndroid::RequestInfoByPath::RequestInfoByPath(
+    const EmbeddedTestServerAndroid::RequestInfoByPath& other) = default;
+EmbeddedTestServerAndroid::RequestInfoByPath&
+EmbeddedTestServerAndroid::RequestInfoByPath::operator=(
+    const EmbeddedTestServerAndroid::RequestInfoByPath& other) = default;
 
 }  // namespace net::test_server

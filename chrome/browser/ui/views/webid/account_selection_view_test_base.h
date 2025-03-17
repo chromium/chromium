@@ -11,6 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 
+namespace webid {
+
 const std::u16string kRpETLDPlusOne = u"rp-example.com";
 const std::u16string kIdpETLDPlusOne = u"idp-example.com";
 const std::u16string kSecondIdpETLDPlusOne = u"idp2.com";
@@ -29,6 +31,8 @@ inline constexpr char kIdpForDisplay[] = "idp-example.com";
 // The char version of `kSecondIdpETLDPlusOne`.
 inline constexpr char kSecondIdpForDisplay[] = "idp2.com";
 inline constexpr char kIdBase[] = "id";
+inline constexpr char kDisplayIdentifierBase[] = "displayid";
+inline constexpr char kDisplayNameBase[] = "displayname";
 inline constexpr char kEmailBase[] = "email";
 inline constexpr char kNameBase[] = "name";
 inline constexpr char kGivenNameBase[] = "given_name";
@@ -102,5 +106,7 @@ class AccountSelectionViewTestBase {
   views::View* GetViewWithClassName(views::View* parent,
                                     const std::string& class_name);
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_TEST_BASE_H_

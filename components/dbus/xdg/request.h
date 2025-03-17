@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   // is of type DbusParameters, or can be any DbusType if there's exactly one
   // argument. The `options` dictionary contains any options except for
   // handle_token which will be set and managed internally.
+  // `test_portal_service_name` may be provided to override in tests.
   // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
   Request(scoped_refptr<dbus::Bus> bus,
           dbus::ObjectProxy* object_proxy,
@@ -47,7 +48,8 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
           const std::string& method_name,
           const DbusType& arguments,
           DbusDictionary&& options,
-          ResponseCallback callback);
+          ResponseCallback callback,
+          const std::string& test_portal_service_name = std::string());
 
   Request(Request&& other) noexcept = delete;
   Request& operator=(Request&& other) noexcept = delete;
@@ -57,7 +59,8 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   ~Request();
 
  private:
-  void OnMethodResponse(dbus::Response* response);
+  void OnMethodResponse(dbus::Response* response,
+                        dbus::ErrorResponse* error_response);
   void OnResponseSignal(dbus::Signal* signal);
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
@@ -68,6 +71,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   scoped_refptr<dbus::Bus> bus_;
   dbus::ObjectPath request_object_path_;
   ResponseCallback callback_;
+  std::string portal_service_name_;
   base::WeakPtrFactory<Request> weak_ptr_factory_{this};
 };
 

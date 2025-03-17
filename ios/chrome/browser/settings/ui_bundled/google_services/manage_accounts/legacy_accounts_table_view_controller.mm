@@ -17,16 +17,18 @@
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
-#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"
-#import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -55,11 +57,6 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -78,7 +75,6 @@ const CGFloat kSymbolAddAccountPointSize = 20;
 
 typedef NS_ENUM(NSInteger, AccountsSectionIdentifier) {
   SectionIdentifierAccounts = kSectionIdentifierEnumZero,
-  SectionIdentifierError,
   SectionIdentifierSignOut,
 };
 
@@ -94,14 +90,7 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
   // Detailed description of the actions taken by sign out, e.g. turning off
   // sync.
   ItemTypeSignOutSyncingFooter,
-  // Indicates the errors related to the signed in account.
-  ItemTypeAccountErrorMessage,
-  // Button to resolve the account error.
-  ItemTypeAccountErrorButton,
 };
-
-// Size of the symbols.
-constexpr CGFloat kErrorSymbolSize = 22.;
 
 }  // namespace
 
@@ -118,13 +107,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
-
-  // The type of account error that is being displayed in the error section for
-  // syncing accounts. Is set to kNone when there is no error section.
-  syncer::SyncService::UserActionableError _diplayedAccountErrorType;
-
-  // The type of actionable the syncing user needs to take to resolve the error.
-  AccountErrorUserActionableType _accountErrorUserActionableType;
 
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
@@ -172,7 +154,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
     _applicationHandler = applicationCommandsHandler;
     _signoutDismissalByParentCoordinator = signoutDismissalByParentCoordinator;
-    _accountErrorUserActionableType = AccountErrorUserActionableType::kNoAction;
   }
 
   return self;
@@ -290,32 +271,18 @@ constexpr CGFloat kErrorSymbolSize = 22.;
         forSectionWithIdentifier:SectionIdentifierAccounts];
   }
 
-  // Account Storage errors section.
-  [self updateErrorSectionModelAndReloadViewIfNeeded:NO];
-
   // Sign out section.
   [model addSectionWithIdentifier:SectionIdentifierSignOut];
   [model addItem:[self signOutItem]
       toSectionWithIdentifier:SectionIdentifierSignOut];
 
-  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  BOOL hasSyncConsent =
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  TableViewLinkHeaderFooterItem* footerItem = nil;
   if ([self authService]->GetServiceStatus() ==
       AuthenticationService::ServiceStatus::SigninForcedByPolicy) {
-    if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-      footerItem =
-          [self signOutSyncingFooterItemForForcedSignin:hasSyncConsent];
-    }
-  } else if (hasSyncConsent) {
-    footerItem = [self signOutSyncingFooterItem];
+    TableViewLinkHeaderFooterItem* footerItem =
+        [self signOutSyncingFooterItemForForcedSignin];
+    [model setFooter:footerItem
+        forSectionWithIdentifier:SectionIdentifierSignOut];
   }
-
-  [model setFooter:footerItem
-      forSectionWithIdentifier:SectionIdentifierSignOut];
 }
 
 #pragma mark - Model objects
@@ -327,32 +294,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   return header;
 }
 
-- (TableViewLinkHeaderFooterItem*)signOutSyncingFooterItem {
+- (TableViewLinkHeaderFooterItem*)signOutSyncingFooterItemForForcedSignin {
   TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
       initWithType:ItemTypeSignOutSyncingFooter];
   footer.text = l10n_util::GetNSString(
-      IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE);
-  return footer;
-}
-
-- (TableViewLinkHeaderFooterItem*)signOutSyncingFooterItemForForcedSignin:
-    (BOOL)syncConsent {
-  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
-      initWithType:ItemTypeSignOutSyncingFooter];
-
-  if (syncConsent) {
-    NSString* text = l10n_util::GetNSString(
-        IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE);
-    text = [text stringByAppendingString:@"\n\n"];
-    text = [text
-        stringByAppendingString:
-            l10n_util::GetNSString(
-                IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE)];
-    footer.text = text;
-  } else {
-    footer.text = l10n_util::GetNSString(
-        IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
-  }
+      IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
 
   footer.urls = @[ [[CrURL alloc] initWithGURL:GURL(kChromeUIManagementURL)] ];
   return footer;
@@ -401,32 +347,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       [[TableViewTextItem alloc] initWithType:ItemTypeSignOut];
   item.text =
       l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
-  item.textColor = [self.modelIdentityDataSource isAccountSignedInNotSyncing]
-                       ? [UIColor colorNamed:kBlueColor]
-                       : [UIColor colorNamed:kRedColor];
+  item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.accessibilityIdentifier = kSettingsAccountsTableViewSignoutCellId;
-  return item;
-}
-
-// Initializes the passphrase error message item.
-- (TableViewItem*)accountErrorMessageItemWithMessageID:(int)messageID {
-  SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
-      initWithType:ItemTypeAccountErrorMessage];
-  item.detailText = l10n_util::GetNSString(messageID);
-  item.image =
-      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
-  item.imageViewTintColor = [UIColor colorNamed:kRed500Color];
-  return item;
-}
-
-// Initializes the passphrase error button to open the passphrase dialog.
-- (TableViewItem*)accountErrorButtonItemWithLabelID:(int)labelID {
-  TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:ItemTypeAccountErrorButton];
-  item.text = l10n_util::GetNSString(labelID);
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
 
@@ -492,17 +415,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       [self showSignOutWithItemView:itemView];
       break;
     }
-    case ItemTypeAccountErrorButton: {
-      base::RecordAction(
-          base::UserMetricsAction("Signin_AccountsTableView_ErrorButton"));
-      [self handleAccountErrorUserActionable];
-      break;
-    }
-    case ItemTypeAccountErrorMessage:
-      // Do not handle row selection on the account error message item because
-      // its selection is disabled. The only purpose of the item is to show a
-      // message that gives details on the error.
-      break;
     case ItemTypeSignInHeader:
     case ItemTypeSignOutSyncingFooter:
     case ItemTypeRestrictedAccountsFooter:
@@ -525,7 +437,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
-            accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
+            accessPoint:AccessPoint::kSettings
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
                           id<SystemIdentity> completionIdentity) {
@@ -813,78 +725,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [_applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
-#pragma mark - Internal
-
-- (void)handleAccountErrorUserActionable {
-  switch (_accountErrorUserActionableType) {
-    case AccountErrorUserActionableType::kEnterPassphrase: {
-      [self openPassphraseDialog];
-      break;
-    }
-    case AccountErrorUserActionableType::kReauthForFetchKeys: {
-      [self openTrustedVaultReauthForFetchKeys];
-      break;
-    }
-    case AccountErrorUserActionableType::kReauthForDegradedRecoverability: {
-      [self openTrustedVaultReauthForDegradedRecoverability];
-      break;
-    }
-    case AccountErrorUserActionableType::kNoAction:
-      break;
-  }
-}
-
-// Opens the trusted vault reauth dialog for fetch keys.
-- (void)openTrustedVaultReauthForFetchKeys {
-  trusted_vault::SecurityDomainId securityDomainID =
-      trusted_vault::SecurityDomainId::kChromeSync;
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
-  [_applicationHandler
-      showTrustedVaultReauthForFetchKeysFromViewController:self
-                                          securityDomainID:securityDomainID
-                                                   trigger:trigger
-                                               accessPoint:accessPoint];
-}
-
-// Opens the trusted vault reauth dialog for degraded recoverability.
-- (void)openTrustedVaultReauthForDegradedRecoverability {
-  trusted_vault::SecurityDomainId securityDomainID =
-      trusted_vault::SecurityDomainId::kChromeSync;
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
-  [_applicationHandler
-      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
-                                                       securityDomainID:
-                                                           securityDomainID
-                                                                trigger:trigger
-                                                            accessPoint:
-                                                                accessPoint];
-}
-
-// Opens the passphrase dialog.
-- (void)openPassphraseDialog {
-  SceneState* sceneState = _browser->GetSceneState();
-  if (sceneState.isUIBlocked) {
-    // This could occur due to race condition with multiple windows and
-    // simultaneous taps. See crbug.com/368310663.
-    return;
-  }
-  UIViewController<SettingsRootViewControlling>* controllerToPush =
-      [[SyncEncryptionPassphraseTableViewController alloc]
-          initWithBrowser:_browser];
-
-  // Verify that the accounts table is displayed from a navigation controller.
-  DCHECK(self.navigationController);
-
-  [self configureHandlersForRootViewController:controllerToPush];
-  [self.navigationController pushViewController:controllerToPush animated:YES];
-}
-
 #pragma mark - Private methods
 
 - (void)dismissRemoveOrMyGoogleChooserAlert {
@@ -914,91 +754,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (void)popView {
   [self popViewIfSignedOut];
-}
-
-// Updates the error section in the table view model to indicate the latest
-// account error if the states of the account error and the table view model
-// don't match. If `reloadViewIfNeeded` is NO, only the model will be
-// updated without reloading the view. Can refresh, add or remove the error
-// section when an update is needed.
-- (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded {
-  if ([self.modelIdentityDataSource isAccountSignedInNotSyncing]) {
-    // If the account is signed in not syncing, the error handling will be
-    // shown previously in account settings page and no need to load it in
-    // this view.
-    return;
-  }
-  AccountErrorUIInfo* errorInfo =
-      [self.modelIdentityDataSource accountErrorUIInfo];
-  BOOL hadErrorSection = [self.tableViewModel
-      hasSectionForSectionIdentifier:SectionIdentifierError];
-  syncer::SyncService::UserActionableError newErrorType =
-      errorInfo ? errorInfo.errorType
-                : syncer::SyncService::UserActionableError::kNone;
-
-  if (newErrorType == syncer::SyncService::UserActionableError::kNone &&
-      _diplayedAccountErrorType ==
-          syncer::SyncService::UserActionableError::kNone) {
-    DCHECK(!hadErrorSection);
-    // Don't update if there is no error to indicate or to remove.
-    return;
-  }
-
-  if (reloadViewIfNeeded && newErrorType == _diplayedAccountErrorType) {
-    DCHECK(hadErrorSection);
-    // Don't update if there is already a model and a view, and the state of
-    // the model already matches the error that has to be indicated.
-    return;
-  }
-
-  _diplayedAccountErrorType = newErrorType;
-  _accountErrorUserActionableType = errorInfo.userActionableType;
-
-  if (hadErrorSection) {
-    // Remove the section from the model to either clear the error section
-    // when there is no error or to update the type of error to indicate.
-    NSUInteger index = [self.tableViewModel
-        sectionForSectionIdentifier:SectionIdentifierError];
-    [self.tableViewModel removeSectionWithIdentifier:SectionIdentifierError];
-
-    if (errorInfo == nil) {
-      // Delete the error section in the view when there is an error section
-      // while there is no account error to indicate.
-      if (reloadViewIfNeeded) {
-        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:index]
-                      withRowAnimation:UITableViewRowAnimationAutomatic];
-      }
-      return;
-    }
-  }
-
-  // Update the error section in the model to indicate the latest account
-  // error.
-  NSInteger sectionIndex =
-      [self.tableViewModel
-          sectionForSectionIdentifier:SectionIdentifierAccounts] +
-      1;
-  [self.tableViewModel insertSectionWithIdentifier:SectionIdentifierError
-                                           atIndex:sectionIndex];
-  [self.tableViewModel addItem:[self accountErrorMessageItemWithMessageID:
-                                         errorInfo.messageID]
-       toSectionWithIdentifier:SectionIdentifierError];
-  [self.tableViewModel addItem:[self accountErrorButtonItemWithLabelID:
-                                         errorInfo.buttonLabelID]
-       toSectionWithIdentifier:SectionIdentifierError];
-
-  if (reloadViewIfNeeded) {
-    if (hadErrorSection) {
-      // Only refresh the section if there was already an error section, where
-      // there was a change in the type of error to indicate (excluding
-      // kNone).
-      [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
-    } else {
-      [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
-  }
 }
 
 - (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem {

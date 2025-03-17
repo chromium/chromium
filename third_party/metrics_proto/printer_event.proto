@@ -13,7 +13,7 @@ package metrics;
 
 // Stores information about a printer that a user is setting up/has attempted to
 // set up.
-// Next tag: 9
+// Next tag: 21
 message PrinterEventProto {
   // The detected printer manufacuter name.
   optional string usb_printer_manufacturer = 1;
@@ -60,4 +60,104 @@ message PrinterEventProto {
 
   // The event for which this was recorded.
   optional EventType event_type = 8;
+
+  // List of document formats the printer supports. MIME-types.
+  repeated string document_format_supported = 9;
+
+  // The printer's document-format-preferred attribute. MIME-type.
+  optional string document_format_preferred = 10;
+
+  // Document format used when the user does not supply a document-format
+  // attribute. MIME-type.
+  optional string document_format_default = 11;
+
+  // Supported printing modes for URF printing.
+  repeated string urf_supported = 12;
+
+  // PDF versions which printers can support. See
+  // https://ftp.pwg.org/pub/pwg/candidates/cs-ippnodriver20-20230301-5100.13.pdf
+  // for details.
+  // Next tag: 20
+  enum PdfVersion {
+    PDF_VERSION_UNKNOWN = 0;
+    ADOBE_1_3 = 1;
+    ADOBE_1_4 = 2;
+    ADOBE_1_5 = 3;
+    ADOBE_1_6 = 4;
+    ADOBE_1_7 = 5;
+    ISO_15930_1_2001 = 6;
+    ISO_15930_3_2002 = 7;
+    ISO_15930_4_2003 = 8;
+    ISO_15930_6_2003 = 9;
+    ISO_15930_7_2010 = 10;
+    ISO_15930_8_2010 = 11;
+    ISO_16612_2_2010 = 12;
+    ISO_19005_1_2005 = 13;
+    ISO_19005_2_2011 = 14;
+    ISO_19005_3_2012 = 15;
+    ISO_23504_1_2020 = 16;
+    ISO_32000_1_2008 = 17;
+    ISO_32000_2_2017 = 18;
+    PWG_5102_3 = 19;
+  }
+
+  // PDF versions supported by the printer.
+  repeated PdfVersion pdf_versions_supported = 13;
+
+  // IPP extension features printers can support. See
+  // https://ftp.pwg.org/pub/pwg/candidates/cs-ippnodriver20-20230301-5100.13.pdf
+  // for details.
+  // Next tag: 29
+  enum IppFeature {
+    IPP_FEATURE_UNKNOWN = 0;
+    ADF = 1;
+    FILM_READER = 2;
+    PLATEN = 3;
+    DOCUMENT_OBJECT = 4;
+    FAXOUT = 5;
+    ICC_COLOR_MATCHING = 6;
+    INFRASTRUCTURE_PRINTER = 7;
+    IPP_3D = 8;
+    IPP_EVERYWHERE = 9;
+    IPP_EVERYWHERE_SERVER = 10;
+    JOB_RELEASE = 11;
+    JOB_SAVE = 12;
+    JOB_STORAGE = 13;
+    NONE = 14;
+    PAGE_OVERRIDES = 15;
+    PRINT_POLICY = 16;
+    PRODUCTION = 17;
+    PROOF_AND_SUSPEND = 18;
+    PROOF_PRINT = 19;
+    RESOURCE_OBJECT = 20;
+    SCAN = 21;
+    SUBSCRIPTION_OBJECT = 22;
+    SYSTEM_OBJECT = 23;
+    WFDS_PRINT_1_0 = 24;
+    AIRPRINT_1_6 = 25;
+    AIRPRINT_1_7 = 26;
+    AIRPRINT_1_8 = 27;
+    AIRPRINT_2_1 = 28;
+  }
+
+  // List of IPP extension features supported by the printer.
+  repeated IppFeature ipp_features_supported = 14;
+
+  // Mopria certification level of the printer.
+  optional string mopria_certified = 15;
+
+  // Categories of printing supported by the printer.
+  repeated string printer_kind = 16;
+
+  // Whether or not the printer supports roll sizes.
+  optional bool roll_sizes_available = 17;
+
+  // The name of the PPD file that was used to set up the printer.
+  optional string ppd_file_name = 18;
+
+  // All of the CUPS filters used by the printer.
+  repeated string cups_filters = 19;
+
+  // IEEE 1284 Device ID string.
+  optional string device_id = 20;
 }

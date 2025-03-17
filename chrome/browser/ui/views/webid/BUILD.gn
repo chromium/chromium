@@ -21,7 +21,10 @@ source_set("test_support") {
     "//ui/gfx",
     "//ui/views",
   ]
-  deps = [ "//ui/events:test_support" ]
+  deps = [
+    "//ui/events:test_support",
+    "//ui/views:test_support",
+  ]
 }
 
 source_set("interactive_ui_tests") {

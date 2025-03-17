@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_op_reader.h"
 
 #include <stddef.h>
@@ -61,6 +56,8 @@
 namespace cc {
 namespace {
 
+static_assert(std::is_same_v<unsigned char, uint8_t>);
+
 bool IsValidPaintShaderType(PaintShader::Type type) {
   return static_cast<uint8_t>(type) <
          static_cast<uint8_t>(PaintShader::Type::kShaderCount);
@@ -72,6 +69,40 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
 }
 
 }  // namespace
+
+// Being a friend to `PaintOpReader`, this cannot be in the anonymous namespace.
+template <typename ValueType>
+void ReadSimpleValueUniformsHelper(
+    PaintOpReader& reader,
+    std::vector<PaintShader::Uniform<ValueType>>* output_uniforms) {
+  CHECK(output_uniforms);
+  size_t count = 0u;
+  reader.ReadSize(&count);
+  if (!reader.valid() || count == 0u) {
+    return;
+  }
+  if (count > PaintShader::kMaxNumUniformsPerType ||
+      count > output_uniforms->max_size()) {
+    reader.valid_ = false;
+    return;
+  }
+  output_uniforms->reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    SkString name;
+    reader.Read(&name);
+    if (!reader.valid()) {
+      return;
+    }
+    CHECK(!name.isEmpty());
+    ValueType value;
+    reader.ReadSimple(&value);
+    if (!reader.valid()) {
+      return;
+    }
+    output_uniforms->push_back(
+        {.name = std::move(name), .value = std::move(value)});
+  }
+}
 
 PaintOpReader::PaintOpReader(const volatile void* memory,
                              size_t size,
@@ -145,7 +176,7 @@ void PaintOpReader::ReadSimple(T* val) {
   // use assignment.
   *val = *reinterpret_cast<const T*>(const_cast<const uint8_t*>(memory_));
 
-  memory_ += size;
+  UNSAFE_TODO(memory_ += size);
   remaining_bytes_ -= size;
   AssertFieldAlignment();
 }
@@ -532,7 +563,7 @@ void PaintOpReader::Read(sk_sp<SkData>* data) {
 
   // This is safe to cast away the volatile as it is just a memcpy internally.
   *data = gfx::MakeSkDataFromSpanWithCopy(
-      base::span(const_cast<const uint8_t*>(memory_), bytes));
+      UNSAFE_TODO(base::span(const_cast<const uint8_t*>(memory_), bytes)));
   DidRead(bytes);
 }
 
@@ -746,6 +777,10 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadVectorContent(positions_size, ref.positions_);
 
   Read(&ref.sksl_command_);
+  Read(&ref.scalar_uniforms_);
+  Read(&ref.float2_uniforms_);
+  Read(&ref.float4_uniforms_);
+  Read(&ref.int_uniforms_);
 
   // We don't write the cached shader, so don't attempt to read it either.
 
@@ -919,7 +954,6 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
 }
 
 void PaintOpReader::Read(SkString* sk_string) {
-  static_assert(std::is_same_v<unsigned char, uint8_t>);
   size_t size = 0;
   // We always serialize the empty string's size (0u).
   ReadSize(&size);
@@ -934,6 +968,22 @@ void PaintOpReader::Read(SkString* sk_string) {
   DidRead(size);
 }
 
+void PaintOpReader::Read(std::vector<PaintShader::FloatUniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<SkScalar>(*this, uniforms);
+}
+
+void PaintOpReader::Read(std::vector<PaintShader::Float2Uniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<SkV2>(*this, uniforms);
+}
+
+void PaintOpReader::Read(std::vector<PaintShader::Float4Uniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<SkV4>(*this, uniforms);
+}
+
+void PaintOpReader::Read(std::vector<PaintShader::IntUniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<int>(*this, uniforms);
+}
+
 void PaintOpReader::AlignMemory(size_t alignment) {
   DCHECK_GE(alignment, PaintOpWriter::kDefaultAlignment);
   DCHECK_LE(alignment, BufferAlignment());
@@ -943,7 +993,7 @@ void PaintOpReader::AlignMemory(size_t alignment) {
   if (padding > remaining_bytes_)
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_AlignMemory);
 
-  memory_ += padding;
+  UNSAFE_TODO(memory_ += padding);
   remaining_bytes_ -= padding;
 }
 
@@ -1352,7 +1402,8 @@ void PaintOpReader::ReadRecordPaintFilter(
 
   ReadSimple(&record_bounds);
   ReadSimple(&raster_scale);
-  if (raster_scale.width() <= 0.f || raster_scale.height() <= 0.f) {
+  if (!std::isfinite(raster_scale.width()) || raster_scale.width() <= 0.f ||
+      !std::isfinite(raster_scale.height()) || raster_scale.height() <= 0.f) {
     SetInvalid(DeserializationError::kInvalidRasterScale);
     return;
   }
@@ -1657,7 +1708,7 @@ inline void PaintOpReader::DidRead(size_t bytes_read) {
       base::bits::AlignUp(bytes_read, PaintOpWriter::kDefaultAlignment);
   DCHECK_LE(aligned_bytes, remaining_bytes_);
   bytes_read = std::min(aligned_bytes, remaining_bytes_);
-  memory_ += bytes_read;
+  UNSAFE_TODO(memory_ += bytes_read);
   remaining_bytes_ -= bytes_read;
 }
 

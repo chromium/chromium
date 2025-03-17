@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/navigation/navigation_manager_impl.h"
-
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/test/navigation_test_util.h"

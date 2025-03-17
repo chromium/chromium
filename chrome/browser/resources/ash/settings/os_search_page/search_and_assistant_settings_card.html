@@ -75,30 +75,74 @@
     <iron-collapse opened="[[prefs.settings.magic_boost_enabled.value]]"
         id="magicBoostCollapse">
       <div class="sub-item">
-        <settings-toggle-button id="helpMeReadToggle"
-            class="hr"
-            icon="os-settings:help-me-read"
-            pref="{{prefs.settings.mahi_enabled}}"
-            label="$i18n{enableHelpMeRead}"
-            sub-label="$i18n{enableHelpMeReadDesc}"
-            deep-link-focus-id$="[[Setting.kMahiOnOff]]"
-            learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
-        </settings-toggle-button>
+        <!-- \`restamp\` is needed to ensure that deep links work correctly if
+         \`isHmrAllowedByEnterprisePolicy_\` changes. -->
+        <template is="dom-if" restamp if="[[!isHmrAllowedByEnterprisePolicy_]]">
+          <!-- As the enterprise policy is under a different pref, use that one
+               here to make this toggle appear as managed. The toggle needs to
+               be explicitly disabled in case the policy is recommended. -->
+          <settings-toggle-button
+              id="helpMeReadEnterpriseToggle"
+              class="hr"
+              icon="os-settings:help-me-read"
+              pref="{{prefs.settings.managed.help_me_read}}"
+              numeric-unchecked-values="[[enterprisePolicyToggleUncheckedValues_]]"
+              disabled
+              no-set-pref
+              label="$i18n{enableHelpMeRead}"
+              sub-label="$i18n{enableHelpMeReadDesc}"
+              deep-link-focus-id$="[[Setting.kMahiOnOff]]"
+              learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+          </settings-toggle-button>
+        </template>
+        <template is="dom-if" restamp if="[[isHmrAllowedByEnterprisePolicy_]]">
+          <settings-toggle-button id="helpMeReadToggle"
+              class="hr"
+              icon="os-settings:help-me-read"
+              pref="{{prefs.settings.mahi_enabled}}"
+              label="$i18n{enableHelpMeRead}"
+              sub-label="$i18n{enableHelpMeReadDesc}"
+              deep-link-focus-id$="[[Setting.kMahiOnOff]]"
+              learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+          </settings-toggle-button>
+        </template>
       </div>
       <div class="sub-item">
-        <settings-toggle-button id="helpMeWriteToggle"
-            class="hr"
-            icon="os-settings:help-me-write"
-            pref="{{prefs.assistive_input.orca_enabled}}"
-            label="$i18n{enableHelpMeWrite}"
-            sub-label="$i18n{enableHelpMeWriteDesc}"
-            deep-link-focus-id$="[[Setting.kShowOrca]]"
-            learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
-        </settings-toggle-button>
+        <!-- \`restamp\` is needed to ensure that deep links work correctly if
+         \`isHmwAllowedByEnterprisePolicy_\` changes. -->
+        <template is="dom-if" restamp if="[[!isHmwAllowedByEnterprisePolicy_]]">
+          <!-- As the enterprise policy is under a different pref, use that one
+               here to make this toggle appear as managed. The toggle needs to
+               be explicitly disabled in case the policy is recommended. -->
+          <settings-toggle-button
+              id="helpMeWriteEnterpriseToggle"
+              class="hr"
+              icon="os-settings:help-me-write"
+              pref="{{prefs.settings.managed.help_me_write}}"
+              numeric-unchecked-values=
+                "[[enterprisePolicyToggleUncheckedValues_]]"
+              disabled
+              no-set-pref
+              label="$i18n{enableHelpMeWrite}"
+              sub-label="$i18n{enableHelpMeWriteDesc}"
+              deep-link-focus-id$="[[Setting.kShowOrca]]"
+              learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+          </settings-toggle-button>
+        </template>
+        <template is="dom-if" restamp if="[[isHmwAllowedByEnterprisePolicy_]]">
+          <settings-toggle-button id="helpMeWriteToggle"
+              class="hr"
+              icon="os-settings:help-me-write"
+              pref="{{prefs.assistive_input.orca_enabled}}"
+              label="$i18n{enableHelpMeWrite}"
+              sub-label="$i18n{enableHelpMeWriteDesc}"
+              deep-link-focus-id$="[[Setting.kShowOrca]]"
+              learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+          </settings-toggle-button>
+        </template>
       </div>
 <if expr="_google_chrome">
       <div class="sub-item">
-        <!-- TODO(b:348516125): add the learn more link -->
         <template is="dom-if" if="[[isLobsterSettingsToggleVisible_]]">
           <settings-toggle-button id="lobsterToggle"
               class="hr"
@@ -106,7 +150,9 @@
               pref="{{prefs.settings.lobster_enabled}}"
               label="$i18n{enableLobster}"
               sub-label="$i18n{enableLobsterDesc}"
-              deep-link-focus-id$="[[Setting.kLobsterOnOff]]">
+              deep-link-focus-id$="[[Setting.kLobsterOnOff]]"
+              learn-more-url="$i18n{lobsterLearnMoreUrl}"
+              >
           </settings-toggle-button>
         </template>
       </div>
@@ -115,7 +161,7 @@
   </template>
 
   <template is="dom-if" if="[[isSunfishSettingsToggleVisible_]]">
-    <!-- TODO: b/368184169 - Localise the label and add an icon, sublabel and
+    <!-- TODO: b/395736972 - Localise the label and add an icon, sublabel and
         learn more link. -->
     <settings-toggle-button
         id="sunfishToggle"
@@ -124,6 +170,40 @@
         label="Enable Sunfish"
         deep-link-focus-id$="[[Setting.kSunfishOnOff]]">
     </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[isScannerSettingsToggleVisible_]]">
+    <!-- TODO: b/368184169 - Localise the label and add an icon, sublabel and
+        learn more link. -->
+    <!-- \`restamp\` is needed to ensure that deep links work correctly if
+         \`isScannerAllowedByEnterprisePolicy_\` changes. -->
+    <template is="dom-if" restamp if="[[!isScannerAllowedByEnterprisePolicy_]]">
+      <!-- As the enterprise policy is under a different pref, use that one here
+           to make this toggle appear as managed. The toggle needs to be
+           explicitly disabled in case the policy is recommended. -->
+      <settings-toggle-button
+          id="scannerEnterpriseToggle"
+          class="hr"
+          pref="{{prefs.ash.scanner.enterprise_policy_allowed}}"
+          numeric-unchecked-values="[[enterprisePolicyToggleUncheckedValues_]]"
+          disabled
+          no-set-pref
+          icon="[[scannerIcon_]]"
+          label="[[scannerLabel_]]"
+          sub-label="[[scannerSubLabel_]]"
+          deep-link-focus-id$="[[Setting.kScannerOnOff]]">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" restamp if="[[isScannerAllowedByEnterprisePolicy_]]">
+      <settings-toggle-button
+          id="scannerToggle"
+          class="hr"
+          pref="{{prefs.ash.scanner.enabled}}"
+          icon="[[scannerIcon_]]"
+          label="[[scannerLabel_]]"
+          sub-label="[[scannerSubLabel_]]"
+          deep-link-focus-id$="[[Setting.kScannerOnOff]]">
+      </settings-toggle-button>
+    </template>
   </template>
 
 </settings-card>

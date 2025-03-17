@@ -8,12 +8,14 @@ import android.content.Context;
 import android.text.format.DateUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.util.R;
 
 import java.util.Calendar;
 import java.util.Date;
 
 /** Helper methods to deal with converting dates to various strings. */
+@NullMarked
 public class StringUtils {
     private static final class LazyHolder {
         private static Calendar sCalendar1 = CalendarFactory.get();

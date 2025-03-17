@@ -24,6 +24,7 @@
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
@@ -92,9 +93,19 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       public RenderWidgetSignals::Observer,
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
-  // Duration before rendering is considered starved by render-blocking tasks,
-  // which is a safeguard against pathological cases for render-blocking image
-  // prioritization.
+  // Duration after which rendering is considered starved, in which case the
+  // compositor task queues will have an increased priority until the next
+  // BeginMainFrame. This excludes `UseCase::kCompositorGesture` (see
+  // `kThreadedScrollPreventRenderingStarvation). Note that the elevated
+  // priority is lower than that of render-blocking tasks, and a separate higher
+  // threshold is used to prevent starvation by those tasks (see
+  // `kRenderBlockingStarvationThreshold`).
+  static constexpr base::TimeDelta kDefaultRenderingStarvationThreshold =
+      base::Milliseconds(100);
+
+  // Duration after which rendering is considered starved by render-blocking
+  // tasks, which is a safeguard against pathological cases for render-blocking
+  // loading task prioritization.
   static constexpr base::TimeDelta kRenderBlockingStarvationThreshold =
       base::Milliseconds(500);
 
@@ -147,10 +158,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::optional<features::TaskDeferralPolicy>
         discrete_input_task_deferral_policy;
 
-    // If we haven't run BeginMainFrame in this many milliseconds, give the next
-    // BeginMainFrame task elevated priority.
-    base::TimeDelta prioritize_compositing_after_delay_pre_fcp;
-    base::TimeDelta prioritize_compositing_after_delay_post_fcp;
+    bool input_scenario_priority_boost_enabled;
   };
 
   static const char* RAILModeToString(RAILMode rail_mode);
@@ -206,11 +214,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // ThreadScheduler implementation:
   bool ShouldYieldForHighPriorityWork() override;
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override;
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta delay,
                            Thread::IdleTask) override;
+  void RemoveCancelledIdleTasks() override;
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> V8UserVisibleTaskRunner()
       override;
@@ -377,7 +384,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();
   scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
-  scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
   scoped_refptr<MainThreadTaskQueue> V8TaskQueue();
 
   // `current_use_case` will be overwritten by the next call to UpdatePolicy.
@@ -488,8 +494,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       base::TimeTicks now,
       base::TimeDelta* next_long_idle_period_delay_out) override;
   void IsNotQuiescent() override {}
-  void OnIdlePeriodStarted() override;
-  void OnIdlePeriodEnded() override;
   void OnPendingTasksChanged(bool has_tasks) override;
 
   void DispatchRequestBeginMainFrameNotExpected(bool has_tasks);
@@ -612,8 +616,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // on the current `RenderingPrioritizationState`.
   std::optional<TaskPriority> ComputeCompositorPriorityForMainFrame() const;
 
-  static void RunIdleTask(Thread::IdleTask, base::TimeTicks deadline);
-
   void ShutdownAllQueues();
 
   bool AllPagesFrozen() const;
@@ -699,12 +701,14 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeTicks current_policy_expiration_time;
     base::TimeTicks estimated_next_frame_begin;
     base::TimeTicks current_task_start_time;
+    base::TimeTicks discrete_input_response_start_time;
     base::TimeDelta compositor_frame_interval;
     TraceableCounter<int, TracingCategory::kInfo>
         renderer_pause_count;  // Renderer is paused if non-zero.
 
     bool renderer_hidden = false;
     std::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
+    std::optional<base::ScopedSampleMetadata> renderer_frozen_metadata;
     bool renderer_backgrounded = kLaunchingProcessIsBackgrounded;
     TraceableState<bool, TracingCategory::kDefault>
         blocking_input_expected_soon;
@@ -764,11 +768,15 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
 
-    Persistent<HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>
+    Persistent<GCedHeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>
         agent_group_schedulers;
     // Task queues that have been detached from their scheduler and may have
     // pending tasks that need to run.
     WTF::HashSet<scoped_refptr<MainThreadTaskQueue>> detached_task_queues;
+
+    // Temporarily boosts the main thread priority. Only used if
+    // kInputScenarioPriorityBoost is enabled.
+    std::optional<base::ScopedBoostPriority> main_thread_priority_boost;
   };
 
   struct AnyThread {
@@ -776,12 +784,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     ~AnyThread();
 
     PendingUserInput::Monitor pending_input_monitor;
-    base::TimeTicks last_idle_period_end_time;
     UserModel user_model;
     TraceableState<bool, TracingCategory::kInfo> awaiting_touch_start_response;
     TraceableState<bool, TracingCategory::kInfo>
         awaiting_discrete_input_response;
-    TraceableState<bool, TracingCategory::kInfo> in_idle_period;
     TraceableState<bool, TracingCategory::kInfo>
         begin_main_frame_on_critical_path;
     TraceableState<bool, TracingCategory::kInfo>

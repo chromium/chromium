@@ -199,7 +199,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                     modelDelegate,
                     tabRemover,
                     /* supportUndo= */ false,
-                    /* trackInNativeModelList= */ true);
+                    /* isArchivedTabModel= */ true);
         }
 
         @Override

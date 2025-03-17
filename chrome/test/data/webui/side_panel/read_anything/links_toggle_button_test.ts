@@ -4,27 +4,21 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LINK_TOGGLE_BUTTON_ID, LINKS_DISABLED_ICON, LINKS_ENABLED_ICON, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('LinksToggle', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let toolbar: ReadAnythingToolbarElement;
   let menuButton: CrIconButtonElement;
   let linksToggled: boolean;
 
-  setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
@@ -33,8 +27,8 @@ suite('LinksToggle', () => {
     document.addEventListener(ToolbarEvent.LINKS, () => linksToggled = true);
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
-    flush();
-    menuButton = toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
+    await microtasksFinished();
+    menuButton = toolbar.shadowRoot.querySelector<CrIconButtonElement>(
         '#' + LINK_TOGGLE_BUTTON_ID)!;
   });
 
@@ -48,6 +42,7 @@ suite('LinksToggle', () => {
   suite('on first click', () => {
     setup(() => {
       menuButton.click();
+      return microtasksFinished();
     });
 
     test('links are turned off', () => {
@@ -60,19 +55,22 @@ suite('LinksToggle', () => {
       assertTrue(linksToggled);
     });
 
-    test('when unpaused, button is disabled', () => {
+    test('when unpaused, button is disabled', async () => {
       toolbar.isSpeechActive = true;
+      await microtasksFinished();
       assertTrue(menuButton.disabled);
     });
 
-    test('when paused, button is enabled', () => {
+    test('when paused, button is enabled', async () => {
       toolbar.isSpeechActive = false;
+      await microtasksFinished();
       assertFalse(menuButton.disabled);
     });
 
     suite('on next click', () => {
       setup(() => {
         menuButton.click();
+        return microtasksFinished();
       });
 
       test('links are turned back on', () => {
@@ -85,13 +83,15 @@ suite('LinksToggle', () => {
         assertTrue(linksToggled);
       });
 
-      test('when unpaused, button is disabled', () => {
+      test('when unpaused, button is disabled', async () => {
         toolbar.isSpeechActive = true;
+        await microtasksFinished();
         assertTrue(menuButton.disabled);
       });
 
-      test('when paused, button is enabled', () => {
+      test('when paused, button is enabled', async () => {
         toolbar.isSpeechActive = false;
+        await microtasksFinished();
         assertFalse(menuButton.disabled);
       });
     });

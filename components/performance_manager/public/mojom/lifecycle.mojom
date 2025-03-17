@@ -4,10 +4,8 @@
 
 module performance_manager.mojom;
 
-// A lifecycle unit (a page, frame, tab or application) can be in one of
-// these lifecycle states.
+// A page of frame can be in one of these lifecycle states.
 enum LifecycleState {
   kRunning,
   kFrozen,
-  kDiscarded
 };

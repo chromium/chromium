@@ -19,22 +19,22 @@ text.
   `NotifyTextPaint` and `NotifyImagePaint` methods are called by the paint code
   as text and image paints occur. It tracks the largest image and text paint
   size and time, and calls
-  [`DocumentLoader::DidChangePerformanceTiming()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/loader/document_loader.cc;l=639;drc=bff7fcba732aa420926466bf53dbd1d9504ba22f)
+  [`DocumentLoader::DidChangePerformanceTiming()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/loader/document_loader.cc;l=905;drc=c88039d9b092e23fcd29c6acc32f398e2696ef6a)
   which eventually results in a mojo IPC being scheduled in
-  [`PageTimingMetricsSender::Update`()](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/page_timing_metrics_sender.cc;l=103;drc=054e08864177603f17edbc111db7ebc8586906bd;bpv=1;bpt=1?q=page_timing_metrics_sender.h&ss=chromium%2Fchromium%2Fsrc).
+  [`PageTimingMetricsSender::Update`()](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/page_timing_metrics_sender.cc;l=260;drc=b3deb703f9b4820b9b6f52ce4ff1dc7febb72474).
   (More info on the data flow
   [here](../../passing_data_from_renderer_to_browser.md)).
 
   In this codepath,
-  [`MetricsRenderFrameObserver::GetTiming()`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/metrics_render_frame_observer.cc;l=5;drc=bff7fcba732aa420926466bf53dbd1d9504ba22f;bpv=1;bpt=1?q=metrics_render_frame_&ss=chromium%2Fchromium%2Fsrc)
+  [`MetricsRenderFrameObserver::GetTiming()`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/renderer/metrics_render_frame_observer.cc;drc=29646f92766d515808be74c85bd5b511e032c023;l=653)
   gets the values to report to the browser process about the largest contentful
   image and text from `WebPerformance`, which gets them from
-  [`LargestContentfulPaintCalculator`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.cc;l=73;drc=11b5b115b432e67d5c2a572d11cebe6a81ced05e).
-* [`ImagePaintTimingDetector`](/third_party/blink/renderer/core/paint/image_paint_timing_detector.cc)
+  [`LargestContentfulPaintCalculator`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.cc;l=125;drc=cdc3dd63349f3838a7680090d097ffc895612684).
+* [`ImagePaintTimingDetector`](/third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.cc)
   manages records of image paints in a frame and tracks the largest.
-* [`TextPaintTimingDetector`](/third_party/blink/renderer/core/paint/text_paint_timing_detector.h)
+* [`TextPaintTimingDetector`](/third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h)
   manages records of text paints in a frame and tracks the largest.
-* [`LargestContentfulPaintCalculator`](/third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.h)
+* [`LargestContentfulPaintCalculator`](/third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h)
   reports new largest image and text paints to performance timeline and tracing.
 
 ## Reporting in web performance APIs and trace events
@@ -43,13 +43,13 @@ text.
   reports each candidate (the largest contentful paint *so far*) as it is
   painted.
 
-  [`LargestContentfulPaintCalculator::UpdateLargestContentfulPaintCandidate()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.cc;l=25;drc=bff7fcba732aa420926466bf53dbd1d9504ba22f;bpv=1;bpt=1)
+  [`LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulPaintIfNeeded()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.cc;l=62;drc=cdc3dd63349f3838a7680090d097ffc895612684)
   is called from the paint timing detector each time a new largest text
   or image candidate is found. If the candidate is larger than the previous
-  largest candidate of either type, either `UpdateLargestContentfulImage()` or
-  `UpdateLargestContentfulText()` is called, depending on the type of the
+  largest candidate of either type, either `UpdateWebExposedLargestContentfulImage()` or
+  `UpdateWebExposedLargestContentfulText()` is called, depending on the type of the
   new largest candidate. Both methods call
-  [`WindowPerformance::OnLargestContentfulPaintUpdated()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/timing/window_performance.cc;l=655;drc=bff7fcba732aa420926466bf53dbd1d9504ba22f),
+  [`WindowPerformance::OnLargestContentfulPaintUpdated()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/timing/window_performance.cc;drc=29646f92766d515808be74c85bd5b511e032c023;l=1423),
   which report the timing via the API.
 * Each of the above methods also emits a trace event with the following
   categories: "loading,rail,devtools.timeline". The title of the trace event is
@@ -64,7 +64,7 @@ infrastructure.
 In the browser, PageLoadMetricsObservers can call
 `GetDelegate().GetLargestContentfulPaintHandler().MergeMainFrameAndSubFrames()`.
 
-[`LargestContentfulPaintHandler::MergeMainFrameAndSubframes()`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.cc;l=225;drc=bff7fcba732aa420926466bf53dbd1d9504ba22f;bpv=1;bpt=1)
+[`LargestContentfulPaintHandler::MergeMainFrameAndSubframes()`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.cc;l=272;drc=29646f92766d515808be74c85bd5b511e032c023)
 returns the largest text or image candidate across the main frame and all
 subframes.
 

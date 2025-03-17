@@ -9,7 +9,6 @@ import android.app.Activity;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
@@ -43,7 +42,6 @@ public class TrustedWebActivityCoordinator {
         if (showSplashScreen) {
             new TwaSplashController(activity, splashControllerSupplier, intentDataProvider);
         }
-        TrustedWebActivityUmaRecorder.recordSplashScreenUsage(showSplashScreen);
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
     }

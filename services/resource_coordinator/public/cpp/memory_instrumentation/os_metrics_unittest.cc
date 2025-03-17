@@ -259,6 +259,35 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
   EXPECT_EQ(pages == accessed_pages_set, true);
 }
 
+TEST(OSMetricsTest, CountMappings) {
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, &dump));
+  uint32_t mappings_count = dump.mappings_count;
+  EXPECT_GT(dump.mappings_count, 0u);
+
+  // Map a large-ish area (100 pages) R/W, then create a lot of isolated single
+  // page inaccessible regions in the middle of it. This forces VMAs to split,
+  // increasing the total count. We cannot assert on the exact value, as it may
+  // be influenced by external factors, but at least we check that there is an
+  // increase.
+  constexpr size_t kPageCount = 100;
+  size_t page_size = base::GetPageSize();
+  void* addr = mmap(nullptr, kPageCount * page_size, PROT_READ | PROT_WRITE,
+                    MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  ASSERT_NE(addr, MAP_FAILED);
+  for (size_t index = 1; index < kPageCount; index += 2) {
+    uintptr_t start = reinterpret_cast<uintptr_t>(addr) + index * page_size;
+    ASSERT_EQ(0,
+              mprotect(reinterpret_cast<void*>(start), page_size, PROT_NONE));
+  }
+
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, &dump));
+  EXPECT_GT(dump.mappings_count, mappings_count);
+
+  munmap(addr, kPageCount * page_size);
+}
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 

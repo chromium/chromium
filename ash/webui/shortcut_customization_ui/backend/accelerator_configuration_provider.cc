@@ -444,10 +444,6 @@ std::string GetUuid(mojom::AcceleratorSource source,
 // or specific device property.
 bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   switch (details.action_id) {
-    // Hide user switching shortcuts for lacros builds.
-    case kSwitchToNextUser:
-    case kSwitchToPreviousUser:
-      return crosapi::lacros_startup_state::IsLacrosEnabled();
     case kPrivacyScreenToggle:
       return !accelerators::CanTogglePrivacyScreen();
     case kTilingWindowResizeLeft:
@@ -463,6 +459,8 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
       return !features::IsAppLaunchShortcutEnabled();
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
+    case kToggleCameraAllowed:
+      return !features::IsToggleCameraShortcutEnabled();
   }
 
   return false;
@@ -1151,6 +1149,12 @@ void AcceleratorConfigurationProvider::RecordEditDialogCompletedActions(
   base::UmaHistogramEnumeration(
       "Ash.ShortcutCustomization.EditDialogCompletedActions",
       completed_actions);
+}
+
+void AcceleratorConfigurationProvider::HasCustomAccelerators(
+    HasCustomAcceleratorsCallback callback) {
+  std::move(callback).Run(
+      ash_accelerator_configuration_->HasCustomAccelerators());
 }
 
 void AcceleratorConfigurationProvider::RecordAddOrEditSubactions(

@@ -34,6 +34,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -49,15 +50,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -67,7 +66,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -86,8 +84,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     private static final String EMPTY_DATA = "";
     private static MultiInstanceState sState;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected final int mMaxInstances;
+    @VisibleForTesting protected final int mMaxInstances;
 
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
@@ -182,7 +179,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 getInstanceInfo());
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void moveTabAction(InstanceInfo info, Tab tab, int tabAtIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         if (targetActivity != null) {
@@ -197,7 +194,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
+    void moveTabGroupAction(InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
+        Activity targetActivity = getActivityById(info.instanceId);
+        assert targetActivity != null;
+        reparentTabGroupToRunningActivity(
+                (ChromeTabbedActivity) targetActivity, tabGroupMetadata, startIndex);
+    }
+
+    @VisibleForTesting
     void moveAndReparentTabToNewWindow(
             Tab tab,
             int instanceId,
@@ -215,9 +220,42 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 null);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void reparentTabToRunningActivity(
             ChromeTabbedActivity targetActivity, Tab tab, int tabAtIndex) {
+        Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
+        setupIntentForTabReparenting(tab, intent, null);
+
+        targetActivity.onNewIntent(intent);
+        bringTaskForeground(targetActivity.getTaskId());
+    }
+
+    @VisibleForTesting
+    void reparentTabGroupToRunningActivity(
+            ChromeTabbedActivity targetActivity,
+            TabGroupMetadata tabGroupMetadata,
+            int tabAtIndex) {
+        // Pause writes to TabPersistentStore while detaching the grouped Tabs.
+        TabPersistentStore tabPersistentStore =
+                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
+        tabPersistentStore.pauseSaveTabList();
+
+        // Setup the re-parenting intent, detaching the grouped tabs from the current activity.
+        Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
+        setupIntentForGroupReparenting(tabGroupMetadata, intent, null);
+
+        // Resume writes to TabPersistentStore after detaching the grouped Tabs. Don't begin
+        // re-attaching the Tabs to the target activity until they have been cleared from this
+        // activity's TabPersistentStore.
+        tabPersistentStore.resumeSaveTabList(
+                () -> {
+                    targetActivity.onNewIntent(intent);
+                    bringTaskForeground(targetActivity.getTaskId());
+                });
+    }
+
+    private Intent createIntentForGeneralReparenting(
+            ChromeTabbedActivity targetActivity, int tabAtIndex) {
         assert targetActivity != null;
         Intent intent = new Intent();
         Context appContext = ContextUtils.getApplicationContext();
@@ -230,10 +268,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (tabAtIndex != TabList.INVALID_TAB_INDEX) {
             intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, tabAtIndex);
         }
-        setupIntentForReparenting(tab, intent, null);
-
-        targetActivity.onNewIntent(intent);
-        bringTaskForeground(targetActivity.getTaskId());
+        return intent;
     }
 
     @Override
@@ -307,7 +342,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return allInstances.get(0).instanceId;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected boolean isRunningInAdjacentWindow(
             SparseBooleanArray visibleTasks, Activity activity) {
         assert activity != mActivity;
@@ -434,7 +469,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         writeTabCount(mInstanceId, selector);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected void installTabModelObserver() {
         TabModelSelector selector = mTabModelOrchestratorSupplier.get().getTabModelSelector();
         mTabModelObserver =
@@ -507,7 +542,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(String.valueOf(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void updateTaskMap(int instanceId, int taskId) {
         ChromeSharedPreferences.getInstance().writeInt(taskMapKey(instanceId), taskId);
     }
@@ -601,7 +636,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static Activity getActivityById(int id) {
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         for (Activity activity : getAllRunningActivities()) {
@@ -648,28 +683,30 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 mMaxInstances + 1);
     }
 
-    private static String incognitoSelectedKey(int index) {
+    @VisibleForTesting
+    static String incognitoSelectedKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
                 String.valueOf(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void writeIncognitoSelected(int index, Tab tab) {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(incognitoSelectedKey(index), tab.isIncognito());
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static boolean readIncognitoSelected(int index) {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(incognitoSelectedKey(index), false);
     }
 
-    private static String urlKey(int index) {
+    @VisibleForTesting
+    static String urlKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static String readUrl(int index) {
         return ChromeSharedPreferences.getInstance().readString(urlKey(index), null);
     }
@@ -683,11 +720,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         writeUrl(index, tab.getOriginalUrl().getSpec());
     }
 
-    private static String titleKey(int index) {
+    @VisibleForTesting
+    static String titleKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TITLE.createKey(String.valueOf(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static String readTitle(int index) {
         return ChromeSharedPreferences.getInstance().readString(titleKey(index), null);
     }
@@ -701,26 +739,32 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         ChromeSharedPreferences.getInstance().writeString(titleKey(index), title);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static String tabCountKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
+    }
+
+    @VisibleForTesting
+    static String tabCountForRelaunchKey(int index) {
+        return MultiWindowUtils.getTabCountForRelaunchKey(index);
     }
 
     static int readTabCount(int index) {
         return ChromeSharedPreferences.getInstance().readInt(tabCountKey(index));
     }
 
-    private static String incognitoTabCountKey(int index) {
+    @VisibleForTesting
+    static String incognitoTabCountKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT.createKey(
                 String.valueOf(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static int readIncognitoTabCount(int index) {
         return ChromeSharedPreferences.getInstance().readInt(incognitoTabCountKey(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void writeTabCount(int index, TabModelSelector selector) {
         if (!selector.isTabStateInitialized()) return;
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
@@ -737,7 +781,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return readLastAccessedTime(index) != 0;
     }
 
-    private static String lastAccessedTimeKey(int index) {
+    @VisibleForTesting
+    static String lastAccessedTimeKey(int index) {
         return MultiWindowUtils.lastAccessedTimeKey(index);
     }
 
@@ -745,7 +790,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return MultiWindowUtils.readLastAccessedTime(index);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void writeLastAccessedTime(int index) {
         MultiWindowUtils.writeLastAccessedTime(index);
     }
@@ -833,10 +878,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     /**
      * Close a given task/activity instance.
+     *
      * @param instanceId ID of the activity instance.
      * @param taskId ID of the task including the activity.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected void closeInstance(int instanceId, int taskId) {
         removeInstanceInfo(instanceId);
         TabModelSelector selector =
@@ -864,8 +910,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @VisibleForTesting
-    void setupIntentForReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {
-        ReparentingTask.from(tab).setupIntent(mActivity, intent, finalizeCallback);
+    void setupIntentForTabReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {
+        ReparentingTask.from(tab).setupIntent(intent, finalizeCallback);
+    }
+
+    @VisibleForTesting
+    void setupIntentForGroupReparenting(
+            TabGroupMetadata tabGroupMetadata, Intent intent, Runnable finalizeCallback) {
+        ReparentingTabGroupTask.from(tabGroupMetadata).setupIntent(intent, finalizeCallback);
     }
 
     @VisibleForTesting
@@ -902,11 +954,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         super.onDestroy();
     }
 
-    private static void removeInstanceInfo(int index) {
+    @VisibleForTesting
+    static void removeInstanceInfo(int index) {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKey(urlKey(index));
         prefs.removeKey(titleKey(index));
         prefs.removeKey(tabCountKey(index));
+        prefs.removeKey(tabCountForRelaunchKey(index));
         prefs.removeKey(incognitoTabCountKey(index));
         prefs.removeKey(incognitoSelectedKey(index));
         prefs.removeKey(lastAccessedTimeKey(index));
@@ -1009,7 +1063,28 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    /**
+     * Move an entire tab group to the current instance of the ChromeTabbedActivity window.
+     *
+     * @param activity Activity of the Chrome Window in which the tab group is to be moved.
+     * @param tabGroupMetadata The object containing the metadata of the tab group.
+     * @param atIndex Tab position index in the destination window instance.
+     */
+    @Override
+    public void moveTabGroupToWindow(
+            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
+
+        // Get the current instance and move tab there.
+        InstanceInfo info = getInstanceInfoFor(activity);
+        if (info != null) {
+            moveTabGroupAction(info, tabGroupMetadata, atIndex);
+        } else {
+            Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
+        }
+    }
+
+    @VisibleForTesting
     InstanceInfo getInstanceInfoFor(Activity activity) {
         // Loop thru all instances to determine if the destination activity is present.
         int destinationWindowTaskId = INVALID_TASK_ID;
@@ -1091,13 +1166,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                         .getTabModelSelectorById(info.get(0).instanceId);
         assert selector != null;
 
-        TabGroupModelFilter filter =
-                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+        cleanupSyncedTabGroups(selector);
+    }
 
-        Profile profile = filter.getTabModel().getProfile();
-        if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
-
-        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, filter);
+    @Override
+    public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
+        TabModelUtils.runOnTabStateInitialized(
+                selector,
+                (TabModelSelector initializedSelector) -> cleanupSyncedTabGroupsIfLastInstance());
     }
 }

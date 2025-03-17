@@ -4,8 +4,9 @@
 
 #include "components/enterprise/connectors/core/common.h"
 
+#include <algorithm>
+
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -292,7 +293,7 @@ GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
 #endif  // BUILDFLAG(USE_BLINK)
 
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
-  return base::ranges::any_of(response.results(), [](const auto& result) {
+  return std::ranges::any_of(response.results(), [](const auto& result) {
     return result.tag() == kMalwareTag && !result.triggered_rules().empty();
   });
 }
@@ -327,6 +328,30 @@ EnterpriseReportingEventType GetUmaEnumFromEventName(
   return it != kEventNameToUmaEnumMap.end()
              ? it->second
              : EnterpriseReportingEventType::kUnknownEvent;
+}
+
+
+EnterpriseReportingEventType GetUmaEnumFromEventCase(EventCase eventCase) {
+  auto it = kEventCaseToUmaEnumMap.find(eventCase);
+  return it != kEventCaseToUmaEnumMap.end()
+             ? it->second
+             : EnterpriseReportingEventType::kUnknownEvent;
+}
+
+std::string EventResultToString(EventResult result) {
+  switch (result) {
+    case EventResult::UNKNOWN:
+      return "EVENT_RESULT_UNKNOWN";
+    case EventResult::ALLOWED:
+      return "EVENT_RESULT_ALLOWED";
+    case EventResult::WARNED:
+      return "EVENT_RESULT_WARNED";
+    case EventResult::BLOCKED:
+      return "EVENT_RESULT_BLOCKED";
+    case EventResult::BYPASSED:
+      return "EVENT_RESULT_BYPASSED";
+  }
+  NOTREACHED();
 }
 
 }  // namespace enterprise_connectors

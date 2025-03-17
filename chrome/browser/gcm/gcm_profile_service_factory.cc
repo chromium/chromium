@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
+
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,6 +42,12 @@ namespace gcm {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
+// When enabled, GCM will use a dedicated thread for network operations instead
+// of the IO thread.
+BASE_FEATURE(kGCMUseDedicatedNetworkThread,
+             "GCMUseDedicatedNetworkThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Requests a ProxyResolvingSocketFactory on the UI thread. Note that a WeakPtr
 // of GCMProfileService is needed to detect when the KeyedService shuts down,
 // and avoid calling into |profile| which might have also been destroyed.
@@ -47,8 +56,9 @@ void RequestProxyResolvingSocketFactoryOnUIThread(
     base::WeakPtr<GCMProfileService> service,
     mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
         receiver) {
-  if (!service || !profile)
+  if (!service || !profile) {
     return;
+  }
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
@@ -65,7 +75,18 @@ void RequestProxyResolvingSocketFactory(
                                 std::move(profile), std::move(service),
                                 std::move(receiver)));
 }
-#endif
+
+scoped_refptr<base::SequencedTaskRunner> GetNetworkThreadTaskRunner() {
+  if (base::FeatureList::IsEnabled(kGCMUseDedicatedNetworkThread)) {
+    return base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::SingleThreadTaskRunnerThreadMode::SHARED);
+  }
+  return content::GetIOThreadTaskRunner({});
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 GCMProfileServiceFactory::GlobalTestingFactory& GetTestingFactory() {
   static base::NoDestructor<GCMProfileServiceFactory::GlobalTestingFactory>
@@ -161,7 +182,7 @@ GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
       gcm::GetProductCategoryForSubtypes(profile->GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),
       std::make_unique<GCMClientFactory>(), content::GetUIThreadTaskRunner({}),
-      content::GetIOThreadTaskRunner({}), blocking_task_runner);
+      GetNetworkThreadTaskRunner(), blocking_task_runner);
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // TODO(crbug.com/40260641): Removing image fetcher references here breaks

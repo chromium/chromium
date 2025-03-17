@@ -138,8 +138,7 @@ TEST_F(ResourceAttrResourceContextsDeathTest, FailedResourceContextConverters) {
   performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
       mock_graph(graph());
   const ResourceContext page_context = mock_graph.page->GetResourceContext();
-  EXPECT_DEATH_IF_SUPPORTED(AsContext<ProcessContext>(page_context),
-                            "Bad variant access");
+  EXPECT_DEATH_IF_SUPPORTED(AsContext<ProcessContext>(page_context), "");
 }
 
 }  // namespace

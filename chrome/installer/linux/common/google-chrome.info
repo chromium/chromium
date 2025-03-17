@@ -38,3 +38,5 @@ DEVELOPER_NAME="Google"
 BUGTRACKERURL="https://support.google.com/chrome/?p=feedback"
 
 HELPURL="https://support.google.com/chrome"
+
+RDN="com.google.Chrome"

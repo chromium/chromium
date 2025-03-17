@@ -47,7 +47,7 @@ struct DecorationInfo {
   raw_ptr<views::View> view;
 
   // The width computed by the layout process.
-  double computed_width;
+  double computed_width = 0;
 };
 
 DecorationInfo::DecorationInfo(int y,
@@ -63,8 +63,7 @@ DecorationInfo::DecorationInfo(int y,
       max_fraction(max_fraction),
       intra_item_padding(intra_item_padding),
       edge_item_padding(edge_item_padding),
-      view(view),
-      computed_width(0) {
+      view(view) {
   DCHECK((max_fraction == 0.0) || (!auto_collapse && (max_fraction > 0.0)));
 }
 

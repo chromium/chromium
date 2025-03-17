@@ -79,7 +79,7 @@ void GetEmitTextNSURL(NSURL** result) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_data_path));
   base::FilePath emit_text_path =
-      test_data_path.AppendASCII(kEmitTextTestBinaryName);
+      test_data_path.Append(kEmitTextTestBinaryName);
   ASSERT_TRUE(base::PathExists(emit_text_path))
       << "cannot find: " << emit_text_path;
   *result = base::apple::FilePathToNSURL(emit_text_path);
@@ -356,8 +356,8 @@ TEST(CRURegistrationTest, WrapMissingTaskTargetError) {
   // capture the error that ensues from running it.
   base::ScopedTempDir empty_dir;
   ASSERT_TRUE(empty_dir.CreateUniqueTempDir());
-  NSURL* nonexistent_path = base::apple::FilePathToNSURL(
-      empty_dir.GetPath().AppendASCII("nonexistent"));
+  NSURL* nonexistent_path =
+      base::apple::FilePathToNSURL(empty_dir.GetPath().Append("nonexistent"));
   NSTask* will_fail = [[NSTask alloc] init];
   will_fail.executableURL = nonexistent_path;
   NSError* bad_task_error;
@@ -407,6 +407,31 @@ TEST(CRURegistrationTest, WrapErrorUnchanged) {
   EXPECT_FALSE(wrapped_internal_error.userInfo[CRUStdoutKey]);
   EXPECT_FALSE(wrapped_internal_error.userInfo[CRUStderrKey]);
   EXPECT_FALSE(wrapped_internal_error.userInfo[NSUnderlyingErrorKey]);
+}
+
+TEST(CRURegistrationTest, CannotInstallMissingArchive) {
+  CRURegistration* registration = [[CRURegistration alloc]
+             initWithAppId:
+                 @"org.chromium.ChromiumUpdater.CRURegistrationTest.NoArchive"
+      existenceCheckerPath:@"IGNORED"];
+
+  __block NSError* install_error = nil;
+  NSConditionLock* results_lock = [[NSConditionLock alloc] initWithCondition:0];
+
+  [registration installUpdaterWithReply:^(NSError* error) {
+    [results_lock lock];
+    install_error = error;
+    [results_lock unlockWithCondition:1];
+  }];
+
+  ASSERT_TRUE([results_lock
+      lockWhenCondition:1
+             beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
+
+  EXPECT_NSEQ(install_error.domain, CRURegistrationErrorDomain);
+  EXPECT_EQ(install_error.code, CRURegistrationErrorUpdaterArchiveNotFound);
+
+  [results_lock unlock];
 }
 
 }  // namespace

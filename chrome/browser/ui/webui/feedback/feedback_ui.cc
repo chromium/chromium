@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -20,10 +19,10 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void AddStringResources(content::WebUIDataSource* source,
                         const Profile* profile) {
@@ -58,7 +57,7 @@ void AddStringResources(content::WebUIDataSource* source,
   };
 
   source->AddLocalizedStrings(kStrings);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddLocalizedString("mayBeSharedWithPartnerNote",
                              IDS_FEEDBACK_TOOL_MAY_BE_SHARED_NOTE);
   source->AddLocalizedString(
@@ -69,7 +68,7 @@ void AddStringResources(content::WebUIDataSource* source,
 #else
   source->AddLocalizedString("sysInfo",
                              IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_CHKBOX);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void CreateAndAddFeedbackHTMLSource(Profile* profile) {
@@ -93,10 +92,10 @@ bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
 
 void FeedbackUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 FeedbackUIConfig::FeedbackUIConfig()

@@ -9,8 +9,10 @@ import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPL
 import android.content.Context;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Helper functions for SplitCompat classes. */
+@NullMarked
 public class SplitCompatUtils {
 
     private SplitCompatUtils() {}

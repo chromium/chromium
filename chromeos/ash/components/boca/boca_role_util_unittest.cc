@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -24,10 +25,13 @@ class BocaRoleUtilTest : public testing::Test {
     user_manager_ =
         std::make_unique<user_manager::FakeUserManager>(&local_state_);
     user_manager_->Initialize();
-    affiliated_user_ = user_manager_->AddUserWithAffiliation(
-        affiliated_user_account_, /*is_affiliated=*/true);
-    unaffiliated_user_ = user_manager_->AddUserWithAffiliation(
-        unaffiliated_user_account_, /*is_affiliated=*/false);
+    affiliated_user_ = user_manager_->AddGaiaUser(
+        affiliated_user_account_, user_manager::UserType::kRegular);
+    user_manager_->SetUserPolicyStatus(affiliated_user_account_,
+                                       /*is_managed=*/true,
+                                       /*is_affiliated=*/true);
+    unaffiliated_user_ = user_manager_->AddGaiaUser(
+        unaffiliated_user_account_, user_manager::UserType::kRegular);
   }
 
   void TearDown() override {
@@ -39,9 +43,9 @@ class BocaRoleUtilTest : public testing::Test {
 
  protected:
   const AccountId affiliated_user_account_ =
-      AccountId::FromUserEmail("user1@gmail.com");
+      AccountId::FromUserEmailGaiaId("user1@gmail.com", GaiaId("fakegaia1"));
   const AccountId unaffiliated_user_account_ =
-      AccountId::FromUserEmail("user2@gmail.com");
+      AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId("fakegaia2"));
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple local_state_;
   raw_ptr<const user_manager::User> affiliated_user_;

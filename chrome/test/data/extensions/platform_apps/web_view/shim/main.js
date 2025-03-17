@@ -1902,20 +1902,28 @@ function testContentLoadEventWithDisplayNone() {
 // This test verifies that the WebRequest API onBeforeRequest event fires on
 // webview.
 function testWebRequestAPI() {
-  var webview = new WebView();
-  webview.request.onBeforeRequest.addListener(function(e) {
+  let webview = new WebView();
+  let gotOnBeforeRequest = false;
+  webview.request.onBeforeRequest.addListener(() => {
+    gotOnBeforeRequest = true;
+  }, { urls: ['<all_urls>']});
+  webview.addEventListener('loadstop', () => {
+    embedder.test.assertTrue(gotOnBeforeRequest);
     embedder.test.succeed();
-  }, { urls: ['<all_urls>']}) ;
+  });
+  webview.addEventListener('loadabort', () => {
+    embedder.test.fail();
+  });
   webview.src = embedder.windowOpenGuestURL;
   document.body.appendChild(webview);
 }
 
 // Like above, but ensures that a webview doesn't get events for other webviews.
 function testWebRequestAPIOnlyForInstance() {
-  var tempWebview = new WebView();
-  tempWebview.request.onBeforeRequest.addListener(function(e) {
+  let otherWebview = new WebView();
+  otherWebview.request.onBeforeRequest.addListener(() => {
     embedder.test.fail();
-  }, { urls: ['<all_urls>']}) ;
+  }, { urls: ['<all_urls>']});
   testWebRequestAPI();
 }
 
@@ -3574,6 +3582,21 @@ function testAddFencedFrame() {
   document.body.appendChild(webview);
 }
 
+function testZoomFencedFrame() {
+  let fencedFrameHostURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/fenced_frame_host.html';
+
+  let webview = new WebView();
+  webview.src = fencedFrameHostURL;
+  webview.addEventListener('loadstop', async () => {
+    // Adjust zoom. Verify in native test that the RenderWidgetHost for the
+    // FencedFrame has the expected zoom.
+    await setZoomP(webview, 0.95);
+    embedder.test.succeed();
+  });
+  document.body.appendChild(webview);
+}
+
 // This test and several tests below test scenarios where a webview element is
 // created and/or attached by different documents. In this test, we create a
 // webview element with the main frame's document, but embed it in an iframe's
@@ -4094,6 +4117,7 @@ embedder.test.testList = {
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
   'testAddFencedFrame': testAddFencedFrame,
+  'testZoomFencedFrame': testZoomFencedFrame,
   'testInsertIntoIframe': testInsertIntoIframe,
   'testCreateAndInsertInIframe': testCreateAndInsertInIframe,
   'testInsertIntoMainFrameFromIframe': testInsertIntoMainFrameFromIframe,

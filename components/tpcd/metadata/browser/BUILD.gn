@@ -23,10 +23,7 @@ source_set("browser") {
     "parser.cc",
     "parser.h",
   ]
-  deps = [
-    "//components/tpcd/metadata/common/proto",
-    ":prefs",
-  ]
+  deps = [ ":prefs" ]
   public_deps = [
     "//base",
     "//components/content_settings/core/common",
@@ -34,6 +31,7 @@ source_set("browser") {
     "//components/content_settings/core/common:features",
     "//components/prefs",
     "//components/tpcd/metadata/common",
+    "//components/tpcd/metadata/common/proto",
     "//net",
     "//third_party/abseil-cpp:absl",
     "//third_party/zlib/google:compression_utils",
@@ -56,10 +54,7 @@ source_set("test_support") {
     "//third_party/zlib/google:compression_utils",
   ]
 
-  deps = [
-    ":browser",
-    "//components/tpcd/metadata/common/proto",
-  ]
+  deps = [ ":browser" ]
 }
 
 source_set("unit_tests") {
@@ -71,7 +66,6 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
-    "//components/tpcd/metadata/common/proto",
     ":prefs",
     ":test_support",
     "//base/test:test_support",

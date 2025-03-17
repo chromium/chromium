@@ -44,9 +44,4 @@ void ComponentCloudPolicyService::OnStoreError(CloudPolicyStore* store) {}
 
 void ComponentCloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {}
 
-void ComponentCloudPolicyService::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {}
-
-void ComponentCloudPolicyService::OnClientError(CloudPolicyClient* client) {}
-
 }  // namespace policy

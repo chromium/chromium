@@ -36,11 +36,11 @@ TEST(FeaturePromoControllerTest,
 
   EXPECT_FALSE(controller.IsPromoActive(kTestIPHFeature,
                                         FeaturePromoStatus::kContinued));
-  EXPECT_FALSE(controller.IsPromoActive(kTestIPHFeature,
-                                        FeaturePromoStatus::kQueuedForStartup));
+  EXPECT_FALSE(
+      controller.IsPromoActive(kTestIPHFeature, FeaturePromoStatus::kQueued));
   EXPECT_FALSE(controller.IsPromoActive(kTestIPHFeature,
                                         FeaturePromoStatus::kContinued,
-                                        FeaturePromoStatus::kQueuedForStartup));
+                                        FeaturePromoStatus::kQueued));
 }
 
 TEST(FeaturePromoControllerTest, IsPromoShowing_IsShowing) {
@@ -59,11 +59,11 @@ TEST(FeaturePromoControllerTest,
 
   EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
                                        FeaturePromoStatus::kContinued));
-  EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
-                                       FeaturePromoStatus::kQueuedForStartup));
+  EXPECT_TRUE(
+      controller.IsPromoActive(kTestIPHFeature, FeaturePromoStatus::kQueued));
   EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
                                        FeaturePromoStatus::kContinued,
-                                       FeaturePromoStatus::kQueuedForStartup));
+                                       FeaturePromoStatus::kQueued));
 }
 
 TEST(FeaturePromoControllerTest, IsPromoShowing_Continued) {
@@ -84,35 +84,35 @@ TEST(FeaturePromoControllerTest,
   EXPECT_FALSE(controller.IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
                                        FeaturePromoStatus::kContinued));
-  EXPECT_FALSE(controller.IsPromoActive(kTestIPHFeature,
-                                        FeaturePromoStatus::kQueuedForStartup));
+  EXPECT_FALSE(
+      controller.IsPromoActive(kTestIPHFeature, FeaturePromoStatus::kQueued));
   EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
                                        FeaturePromoStatus::kContinued,
-                                       FeaturePromoStatus::kQueuedForStartup));
+                                       FeaturePromoStatus::kQueued));
 }
 
 TEST(FeaturePromoControllerTest, IsPromoShowing_Queued) {
   StrictMock<test::MockFeaturePromoController> controller;
   EXPECT_CALL(controller, GetPromoStatus(Ref(kTestIPHFeature)))
-      .WillOnce(Return(FeaturePromoStatus::kQueuedForStartup));
+      .WillOnce(Return(FeaturePromoStatus::kQueued));
 
-  EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
-                                       FeaturePromoStatus::kQueuedForStartup));
+  EXPECT_TRUE(
+      controller.IsPromoActive(kTestIPHFeature, FeaturePromoStatus::kQueued));
 }
 
 TEST(FeaturePromoControllerTest, IsPromoShowing_QueuedWithDifferentVariations) {
   StrictMock<test::MockFeaturePromoController> controller;
   EXPECT_CALL(controller, GetPromoStatus(Ref(kTestIPHFeature)))
-      .WillRepeatedly(Return(FeaturePromoStatus::kQueuedForStartup));
+      .WillRepeatedly(Return(FeaturePromoStatus::kQueued));
 
   EXPECT_FALSE(controller.IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(controller.IsPromoActive(kTestIPHFeature,
                                         FeaturePromoStatus::kContinued));
-  EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
-                                       FeaturePromoStatus::kQueuedForStartup));
+  EXPECT_TRUE(
+      controller.IsPromoActive(kTestIPHFeature, FeaturePromoStatus::kQueued));
   EXPECT_TRUE(controller.IsPromoActive(kTestIPHFeature,
                                        FeaturePromoStatus::kContinued,
-                                       FeaturePromoStatus::kQueuedForStartup));
+                                       FeaturePromoStatus::kQueued));
 }
 
 }  // namespace user_education

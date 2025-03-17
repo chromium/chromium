@@ -360,7 +360,7 @@ public class CardUnmaskPrompt
         setOverlayVisibility(View.VISIBLE);
         mVerificationProgressBar.setVisibility(View.VISIBLE);
         mVerificationView.setText(R.string.autofill_card_unmask_verification_in_progress);
-        mVerificationView.announceForAccessibility(mVerificationView.getText());
+        ViewCompat.setAccessibilityPaneTitle(mVerificationView, mVerificationView.getText());
         clearInputError();
     }
 
@@ -387,7 +387,8 @@ public class CardUnmaskPrompt
                 mVerificationProgressBar.setVisibility(View.GONE);
                 mMainView.findViewById(R.id.verification_success).setVisibility(View.VISIBLE);
                 mVerificationView.setText(R.string.autofill_card_unmask_verification_success);
-                mVerificationView.announceForAccessibility(mVerificationView.getText());
+                ViewCompat.setAccessibilityPaneTitle(
+                        mVerificationView, mVerificationView.getText());
                 new Handler().postDelayed(dismissRunnable, mSuccessMessageDurationMilliseconds);
             } else {
                 new Handler().post(dismissRunnable);
@@ -586,7 +587,7 @@ public class CardUnmaskPrompt
     private void setNoRetryError(String message) {
         mNoRetryErrorMessage.setText(message);
         mNoRetryErrorMessage.setVisibility(View.VISIBLE);
-        mNoRetryErrorMessage.announceForAccessibility(message);
+        ViewCompat.setAccessibilityPaneTitle(mNoRetryErrorMessage, message);
     }
 
     private void logCheckBoxInitialStateStats(boolean isChecked) {

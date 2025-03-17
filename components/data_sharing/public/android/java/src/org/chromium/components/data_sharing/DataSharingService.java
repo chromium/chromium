@@ -6,6 +6,8 @@ package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
  * DataSharingService is the core class for managing data sharing. It represents a native
  * DataSharingService object in Java.
  */
+@NullMarked
 public interface DataSharingService {
     /** Result that contains group data and an outcome of the action that was requested. */
     class GroupDataOrFailureOutcome {
@@ -41,13 +44,14 @@ public interface DataSharingService {
          *
          * <p>The list if null if the request failed. Group IDs cannot be repeated in the list.
          */
-        public final List<GroupData> groupDataSet;
+        public final @Nullable List<GroupData> groupDataSet;
 
         /** Result of the action */
         public final @PeopleGroupActionFailure int actionFailure;
 
         public GroupsDataSetOrFailureOutcome(
-                List<GroupData> groupDataSet, @PeopleGroupActionFailure int actionFailure) {
+                @Nullable List<GroupData> groupDataSet,
+                @PeopleGroupActionFailure int actionFailure) {
             this.groupDataSet = groupDataSet;
             this.actionFailure = actionFailure;
         }
@@ -65,10 +69,10 @@ public interface DataSharingService {
         public final SharedDataPreview sharedDataPreview;
 
         /** Result of the action, UNKNOWN if the action was successful. */
-        public final @PeopleGroupActionFailure int actionFailure;
+        public final @DataPreviewActionFailure int actionFailure;
 
         public SharedDataPreviewOrFailureOutcome(
-                SharedDataPreview sharedDataPreview, @PeopleGroupActionFailure int actionFailure) {
+                SharedDataPreview sharedDataPreview, @DataPreviewActionFailure int actionFailure) {
             this.sharedDataPreview = sharedDataPreview;
             this.actionFailure = actionFailure;
         }
@@ -137,14 +141,6 @@ public interface DataSharingService {
      * @param callback Return a created group data on success.
      */
     void createGroup(String groupName, Callback<GroupDataOrFailureOutcome> callback);
-
-    /**
-     * Attempt to delete a group.
-     *
-     * @param groupId The group ID to delete.
-     * @param callback The deletion result as PeopleGroupActionOutcome.
-     */
-    void deleteGroup(String groupId, Callback</* PeopleGroupActionOutcome= */ Integer> callback);
 
     /**
      * Attempt to invite a new user to the group.
@@ -234,4 +230,9 @@ public interface DataSharingService {
 
     /** Returns The current instance of {@link DataSharingUIDelegate}. */
     DataSharingUIDelegate getUiDelegate();
+
+    /**
+     * @return {@link Logger} used for recording data sharing logs.
+     */
+    Logger getLogger();
 }

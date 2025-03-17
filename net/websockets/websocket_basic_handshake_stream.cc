@@ -221,20 +221,34 @@ int WebSocketBasicHandshakeStream::InitializeStream(
     CompletionOnceCallback callback) {
   url_ = request_info_->url;
   net_log_ = net_log;
+  state_.Initialize(request_info_, priority, net_log);
+  // RequestInfo is no longer needed after this point.
+  request_info_ = nullptr;
   // The WebSocket may receive a socket in the early data state from
   // HttpNetworkTransaction, which means it must call ConfirmHandshake() for
   // requests that need replay protection. However, the first request on any
   // WebSocket stream is a GET with an idempotent request
-  // (https://tools.ietf.org/html/rfc6455#section-1.3), so there is no need to
-  // call ConfirmHandshake().
+  // (https://tools.ietf.org/html/rfc6455#section-1.3), so ConfirmHandshake()
+  // only needs to be called if |can_send_early| is false which can happen when:
+  //   1. 0-RTT is rejected, or
+  //   2. HTTP 425 Too Early is returned by the server.
   //
   // Data after the WebSockets handshake may not be replayable, but the
   // handshake is guaranteed to be confirmed once the HTTP response is received.
-  DCHECK(can_send_early);
-  state_.Initialize(request_info_, priority, net_log);
-  // RequestInfo is no longer needed after this point.
-  request_info_ = nullptr;
-  return OK;
+  int ret = OK;
+  if (!can_send_early) {
+    // parser() cannot outlive `this`, so we can use base::Unretained().
+    ret = parser()->ConfirmHandshake(
+        base::BindOnce(&WebSocketBasicHandshakeStream::OnHandshakeConfirmed,
+                       base::Unretained(this), std::move(callback)));
+  }
+  return ret;
+}
+
+void WebSocketBasicHandshakeStream::OnHandshakeConfirmed(
+    CompletionOnceCallback callback,
+    int rv) {
+  std::move(callback).Run(rv);
 }
 
 int WebSocketBasicHandshakeStream::SendRequest(
@@ -305,7 +319,7 @@ int WebSocketBasicHandshakeStream::ReadResponseBody(
 
 void WebSocketBasicHandshakeStream::Close(bool not_reusable) {
   // This class ignores the value of `not_reusable` and never lets the socket be
-  // re-used.
+  // reused.
   state_.Close(/*not_reusable=*/true);
 }
 

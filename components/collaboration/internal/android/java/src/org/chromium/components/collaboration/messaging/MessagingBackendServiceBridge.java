@@ -9,8 +9,9 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
-import org.chromium.components.collaboration.messaging.EitherId.EitherGroupId;
-import org.chromium.components.collaboration.messaging.EitherId.EitherTabId;
+import org.chromium.components.tab_group_sync.EitherId;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 import java.util.ArrayList;
@@ -149,6 +150,32 @@ import java.util.Optional;
                 .getActivityLog(mNativeMessagingBackendServiceBridge, this, params.collaborationId);
     }
 
+    @Override
+    public void clearDirtyTabMessagesForGroup(String collaborationId) {
+        if (mNativeMessagingBackendServiceBridge == 0) {
+            return;
+        }
+
+        MessagingBackendServiceBridgeJni.get()
+                .clearDirtyTabMessagesForGroup(
+                        mNativeMessagingBackendServiceBridge, this, collaborationId);
+    }
+
+    @Override
+    public void clearPersistentMessage(
+            String messageId, Optional</* @PersistentNotificationType */ Integer> type) {
+        Integer type_int;
+        if (type == null || !type.isPresent()) {
+            type_int = PersistentNotificationType.UNDEFINED;
+        } else {
+            type_int = type.get();
+        }
+
+        MessagingBackendServiceBridgeJni.get()
+                .clearPersistentMessage(
+                        mNativeMessagingBackendServiceBridge, this, messageId, type_int);
+    }
+
     @CalledByNative
     private static MessagingBackendServiceBridge create(long nativeMessagingBackendServiceBridge) {
         return new MessagingBackendServiceBridge(nativeMessagingBackendServiceBridge);
@@ -181,20 +208,25 @@ import java.util.Optional;
     }
 
     @CalledByNative
-    private void displayInstantaneousMessage(InstantMessage message, long nativeCallback) {
-        if (mInstantMessageDelegate != null) {
-            mInstantMessageDelegate.displayInstantaneousMessage(
-                    message,
-                    (Boolean success) -> {
-                        assert success != null;
-                        MessagingBackendServiceBridgeJni.get()
-                                .runInstantaneousMessageSuccessCallback(
-                                        mNativeMessagingBackendServiceBridge,
-                                        this,
-                                        nativeCallback,
-                                        success);
-                    });
+    private void displayInstantaneousMessage(List<InstantMessage> messages, long nativeCallback) {
+        if (mInstantMessageDelegate == null) {
+            MessagingBackendServiceBridgeJni.get()
+                    .runInstantaneousMessageSuccessCallback(
+                            mNativeMessagingBackendServiceBridge, this, nativeCallback, false);
+            return;
         }
+
+        mInstantMessageDelegate.displayInstantaneousMessage(
+                messages,
+                (Boolean success) -> {
+                    assert success != null;
+                    MessagingBackendServiceBridgeJni.get()
+                            .runInstantaneousMessageSuccessCallback(
+                                    mNativeMessagingBackendServiceBridge,
+                                    this,
+                                    nativeCallback,
+                                    success);
+                });
     }
 
     @NativeMethods
@@ -226,10 +258,21 @@ import java.util.Optional;
                 MessagingBackendServiceBridge caller,
                 String collaborationId);
 
+        void clearDirtyTabMessagesForGroup(
+                long nativeMessagingBackendServiceBridge,
+                MessagingBackendServiceBridge caller,
+                String collaborationId);
+
         void runInstantaneousMessageSuccessCallback(
                 long nativeMessagingBackendServiceBridge,
                 MessagingBackendServiceBridge caller,
                 long callback,
                 boolean success);
+
+        void clearPersistentMessage(
+                long nativeMessagingBackendServiceBridge,
+                MessagingBackendServiceBridge caller,
+                String messageId,
+                @PersistentNotificationType int type);
     }
 }

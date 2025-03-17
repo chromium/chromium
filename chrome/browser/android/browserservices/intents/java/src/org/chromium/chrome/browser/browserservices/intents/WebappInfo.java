@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.browser.trusted.sharing.ShareData;
 
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 /** Stores info about a web app. */
+@NullMarked
 public class WebappInfo {
-    private final @NonNull BrowserServicesIntentDataProvider mProvider;
+    private final BrowserServicesIntentDataProvider mProvider;
 
     // Initialized lazily by {@link getWebApkExtras()}.
     private @Nullable WebApkExtras mWebApkExtras;
@@ -31,15 +32,16 @@ public class WebappInfo {
      * Construct a WebappInfo.
      * @param intent Intent containing info about the app.
      */
-    public static WebappInfo create(@Nullable BrowserServicesIntentDataProvider provider) {
+    public static @Nullable WebappInfo create(
+            @Nullable BrowserServicesIntentDataProvider provider) {
         return (provider == null) ? null : new WebappInfo(provider);
     }
 
-    protected WebappInfo(@NonNull BrowserServicesIntentDataProvider provider) {
+    protected WebappInfo(BrowserServicesIntentDataProvider provider) {
         mProvider = provider;
     }
 
-    public @NonNull BrowserServicesIntentDataProvider getProvider() {
+    public BrowserServicesIntentDataProvider getProvider() {
         return mProvider;
     }
 
@@ -79,7 +81,7 @@ public class WebappInfo {
         return !TextUtils.isEmpty(webApkPackageName());
     }
 
-    public String webApkPackageName() {
+    public @Nullable String webApkPackageName() {
         return getWebApkExtras().webApkPackageName;
     }
 
@@ -161,7 +163,7 @@ public class WebappInfo {
     }
 
     /** Returns the icon. */
-    public @NonNull WebappIcon icon() {
+    public WebappIcon icon() {
         return getWebappExtras().icon;
     }
 
@@ -184,7 +186,7 @@ public class WebappInfo {
     }
 
     /** Returns the WebAPK's splash icon. */
-    public @NonNull WebappIcon splashIcon() {
+    public WebappIcon splashIcon() {
         return getWebApkExtras().splashIcon;
     }
 
@@ -193,7 +195,7 @@ public class WebappInfo {
     }
 
     /** Returns data about the WebAPK's share intent handlers. */
-    public @NonNull WebApkShareTarget shareTarget() {
+    public @Nullable WebApkShareTarget shareTarget() {
         return getWebApkExtras().shareTarget;
     }
 
@@ -206,19 +208,18 @@ public class WebappInfo {
         return getWebApkExtras().shellApkVersion;
     }
 
-    public String manifestUrl() {
+    public @Nullable String manifestUrl() {
         return getWebApkExtras().manifestUrl;
     }
 
-    public String manifestStartUrl() {
+    public @Nullable String manifestStartUrl() {
         return getWebApkExtras().manifestStartUrl;
     }
 
     /**
      * Return the WebAPK's manifest ID. This returns null for legacy WebAPK (shell version <155).
      */
-    @Nullable
-    public String manifestId() {
+    public @Nullable String manifestId() {
         return getWebApkExtras().manifestId;
     }
 
@@ -226,12 +227,11 @@ public class WebappInfo {
      * Return the WebAPK's manifest ID. This returns the fallback (start url) for legacy WebAPKs
      * (shell version <155). Note that this can still be null if start_url is empty.
      */
-    @Nullable
-    public String manifestIdWithFallback() {
+    public @Nullable String manifestIdWithFallback() {
         return TextUtils.isEmpty(manifestId()) ? manifestStartUrl() : manifestId();
     }
 
-    public String appKey() {
+    public @Nullable String appKey() {
         return getWebApkExtras().appKey;
     }
 
@@ -239,16 +239,14 @@ public class WebappInfo {
         return getWebApkExtras().distributor;
     }
 
-    @NonNull
     public Map<String, String> iconUrlToMurmur2HashMap() {
         return getWebApkExtras().iconUrlToMurmur2HashMap;
     }
 
-    public ShareData shareData() {
+    public @Nullable ShareData shareData() {
         return mProvider.getShareData();
     }
 
-    @NonNull
     public List<ShortcutItem> shortcutItems() {
         return getWebApkExtras().shortcutItems;
     }
@@ -280,7 +278,7 @@ public class WebappInfo {
         return extras;
     }
 
-    protected @NonNull WebApkExtras getWebApkExtras() {
+    protected WebApkExtras getWebApkExtras() {
         if (mWebApkExtras != null) return mWebApkExtras;
 
         mWebApkExtras = mProvider.getWebApkExtras();

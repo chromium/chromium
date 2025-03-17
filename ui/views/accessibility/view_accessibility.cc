@@ -4,12 +4,12 @@
 
 #include "ui/views/accessibility/view_accessibility.h"
 
+#include <algorithm>
+#include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -21,12 +21,21 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/views/accessibility/view_ax_platform_node_delegate_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "ui/views/accessibility/view_ax_platform_node_delegate_mac.h"
+#elif BUILDFLAG(IS_LINUX)
+#include "ui/views/accessibility/view_ax_platform_node_delegate_auralinux.h"
+#endif
 
 namespace views {
 
@@ -73,13 +82,28 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
          "initialization of the accessibility cache. Instead, set the "  \
          "attributes directly on `AXNodeData` parameter.";
 
-#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+  // With the feature enabled, the accessibility tree for Views is built using
+  // the `BrowserAccessibilityManager` owned by the `BrowserViewsAXManager`.
+  // ViewAccessibility is only used to managed the current accessibility state
+  // for a view.
+  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+    // Cannot use std::make_unique because constructor is protected.
+    return base::WrapUnique(new ViewAccessibility(view));
+  }
+
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
   // Cannot use std::make_unique because constructor is protected.
   return base::WrapUnique(new ViewAccessibility(view));
-}
+#elif BUILDFLAG(IS_WIN)
+  return ViewAXPlatformNodeDelegateWin::CreatePlatformSpecific(view);
+#elif BUILDFLAG(IS_MAC)
+  return ViewAXPlatformNodeDelegateMac::CreatePlatformSpecific(view);
+#elif BUILDFLAG(IS_LINUX)
+  return ViewAXPlatformNodeDelegateAuraLinux::CreatePlatformSpecific(view);
 #endif
+}
 
 ViewAccessibility::ViewAccessibility(View* view)
     : view_(view), focused_virtual_child_(nullptr) {
@@ -97,6 +121,7 @@ void ViewAccessibility::AddVirtualChildView(
 void ViewAccessibility::AddVirtualChildViewAt(
     std::unique_ptr<AXVirtualView> virtual_view,
     size_t index) {
+  CHECK(view_);
   DCHECK(virtual_view);
   DCHECK_LE(index, virtual_children_.size());
 
@@ -113,6 +138,9 @@ void ViewAccessibility::AddVirtualChildViewAt(
   auto insert_iterator =
       virtual_children_.begin() + static_cast<ptrdiff_t>(index);
   virtual_children_.insert(insert_iterator, std::move(virtual_view));
+
+  AXVirtualView* added_view = virtual_children_[index].get();
+  added_view->OnViewHasNewAncestor(view_);
 }
 
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
@@ -128,7 +156,6 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
   virtual_children_.erase(virtual_children_.begin() +
                           static_cast<ptrdiff_t>(cur_index.value()));
   child->set_parent_view(nullptr);
-  child->UnsetPopulateDataCallback();
   if (focused_virtual_child_ && child->Contains(focused_virtual_child_)) {
     OverrideFocus(nullptr);
   }
@@ -156,8 +183,8 @@ bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
 std::optional<size_t> ViewAccessibility::GetIndexOf(
     const AXVirtualView* virtual_view) const {
   DCHECK(virtual_view);
-  const auto iter = base::ranges::find(virtual_children_, virtual_view,
-                                       &std::unique_ptr<AXVirtualView>::get);
+  const auto iter = std::ranges::find(virtual_children_, virtual_view,
+                                      &std::unique_ptr<AXVirtualView>::get);
   return iter != virtual_children_.end()
              ? std::make_optional(
                    static_cast<size_t>(iter - virtual_children_.begin()))
@@ -165,6 +192,7 @@ std::optional<size_t> ViewAccessibility::GetIndexOf(
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
+  CHECK(view_);
   if (is_widget_closed_) {
     // Views may misbehave if their widget is closed; set "null-like" attributes
     // rather than possibly crashing.
@@ -178,8 +206,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->SetName(GetCachedName());
   }
 
-  view_->GetAccessibleNodeData(data);
-
   DCHECK(!data->HasChildTreeID()) << "Please annotate child tree ids using "
                                      "ViewAccessibility::SetChildTreeID.";
 
@@ -191,25 +217,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   data->relative_bounds.bounds = gfx::RectF(view_->bounds());
 
-  // TODO(crbug.com/378724151): Remove once all Views cache their tooltip.
-  // This was previously found earlier in the function. It has been moved here,
-  // after the call to `ViewAccessibility::Merge`, so that we only check the
-  // `data` after all the attributes have been set. Otherwise, there was a bug
-  // where the description was not yet populated into the out `data` member in
-  // `Merge` and so we were falling into the `if` block below, which led to
-  // hangs. See https://crbug.com/326509144 for more details.
-  if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
-      view_->GetCachedTooltipText().empty()) {
-    std::u16string tooltip = view_->GetTooltipText(gfx::Point());
-    // Some screen readers announce the accessible description right after the
-    // accessible name. Only use the tooltip as the accessible description if
-    // it's different from the name, otherwise it could lead to double speak.
-    if (!tooltip.empty() && tooltip != data->GetString16Attribute(
-                                           ax::mojom::StringAttribute::kName)) {
-      data->SetDescription(base::UTF16ToUTF8(tooltip));
-    }
-  }
-
   // Nothing should be added beyond this point. Reach out to the Chromium
   // accessibility team in Slack, or to benjamin.beaudry@microsoft.com if you
   // absolutely need to add something past this point.
@@ -217,6 +224,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
 void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
                                     bool send_native_event) {
+  CHECK(view_);
   // If `ready_to_notify_events_` is false, it means we are initializing
   // property values. In this specific case, we do not want to notify platform
   // assistive technologies that a property has changed.
@@ -232,7 +240,7 @@ void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
     return;
   }
 
-  AXEventManager::Get()->NotifyViewEvent(view_, event_type);
+  AXUpdateNotifier::Get()->NotifyViewEvent(view_, event_type);
 
   if (send_native_event && widget) {
     FireNativeEvent(event_type);
@@ -248,8 +256,7 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
 
   if (view_->HasFocus()) {
     if (focused_virtual_child_) {
-      focused_virtual_child_->NotifyAccessibilityEvent(
-          ax::mojom::Event::kFocus);
+      focused_virtual_child_->NotifyEvent(ax::mojom::Event::kFocus, true);
     } else {
       NotifyEvent(ax::mojom::Event::kFocus, true);
     }
@@ -257,7 +264,14 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
 }
 
 bool ViewAccessibility::IsAccessibilityFocusable() const {
-  return data_.HasState(ax::mojom::State::kFocusable);
+  bool focusable = data_.HasState(ax::mojom::State::kFocusable);
+  if (focusable) {
+    CHECK(!should_be_invisible_ &&
+          !data_.HasState(ax::mojom::State::kInvisible))
+        << "A view that is focusable should not be marked as invisible. This is"
+           "also enforced in RunAccessibilityPaintChecks.";
+  }
+  return focusable;
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
@@ -311,6 +325,8 @@ void ViewAccessibility::SetReadOnly(bool read_only) {
   } else {
     data_.RemoveIntAttribute(ax::mojom::IntAttribute::kRestriction);
   }
+
+  NotifyDataChanged();
 }
 
 bool ViewAccessibility::GetIsPruned() const {
@@ -324,6 +340,7 @@ void ViewAccessibility::SetCharacterOffsets(
 
   OnIntListAttributeChanged(ax::mojom::IntListAttribute::kCharacterOffsets,
                             offsets);
+  NotifyDataChanged();
 }
 
 const std::vector<int32_t>& ViewAccessibility::GetCharacterOffsets() const {
@@ -335,6 +352,7 @@ void ViewAccessibility::SetWordStarts(const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts, offsets);
 
   OnIntListAttributeChanged(ax::mojom::IntListAttribute::kWordStarts, offsets);
+  NotifyDataChanged();
 }
 
 const std::vector<int32_t>& ViewAccessibility::GetWordStarts() const {
@@ -345,6 +363,7 @@ void ViewAccessibility::SetWordEnds(const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, offsets);
 
   OnIntListAttributeChanged(ax::mojom::IntListAttribute::kWordEnds, offsets);
+  NotifyDataChanged();
 }
 
 const std::vector<int32_t>& ViewAccessibility::GetWordEnds() const {
@@ -362,14 +381,17 @@ void ViewAccessibility::ClearTextOffsets() {
                             std::nullopt);
   OnIntListAttributeChanged(ax::mojom::IntListAttribute::kWordEnds,
                             std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetControlIds(const std::vector<int32_t>& ids) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds, ids);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveControlIds() {
   data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetClipsChildren(bool clips_children) {
@@ -378,16 +400,19 @@ void ViewAccessibility::SetClipsChildren(bool clips_children) {
 
   OnBoolAttributeChanged(ax::mojom::BoolAttribute::kClipsChildren,
                          clips_children);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetClassName(const std::string& class_name) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kClassName, class_name);
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kClassName, class_name);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
   data_.SetHasPopup(has_popup);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role) {
@@ -415,6 +440,8 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   UpdateInvisibleState();
 
   OnRoleChanged(role);
+
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
@@ -429,12 +456,10 @@ void ViewAccessibility::SetName(std::u16string name,
                                 ax::mojom::NameFrom name_from) {
   RETURN_IF_UNAVAILABLE();
 
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
-
   // Allow subclasses to adjust the name.
-  view_->AdjustAccessibleName(name, name_from);
+  if (view_) {
+    view_->AdjustAccessibleName(name, name_from);
+  }
 
   // Ensure we have a current `name_from` value. For instance, the name might
   // still be an empty string, but a view is now indicating that this is by
@@ -450,79 +475,60 @@ void ViewAccessibility::SetName(std::u16string name,
   if (name.empty()) {
     data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
   } else {
-    // |AXNodeData::SetName| expects a valid role. Some Views call |SetRole|
-    // prior to setting the name. For those that don't, see if we can get the
-    // default role from the View.
-    // TODO(crbug.com/325137417): This is a temporary workaround to avoid a
-    // DCHECK, once we have migrated all Views to use the new setters and we
-    // always set a role in the constructors for views, we can remove this.
-    if (data_.role == ax::mojom::Role::kUnknown) {
-      ui::AXNodeData data;
-      view_->GetAccessibleNodeData(&data);
-      data_.role = data.role;
-    }
-
     data_.SetNameChecked(name);
   }
 
-  // If previously the accessible name was the same as the tooltip text, we
-  // weren't using the tooltip text as the description, however now that the
-  // name has changed, we should check if the tooltip text should be used as the
-  // description.
-  if (!old_name.empty() && old_name == view_->GetCachedTooltipText()) {
-    OnTooltipTextChanged();
-  }
+  if (view_) {
+    // If previously the accessible name was the same as the tooltip text, we
+    // weren't using the tooltip text as the description, however now that the
+    // name has changed, we should check if the tooltip text should be used as
+    // the description.
+    if (!old_name.empty() && old_name == view_->GetTooltipText()) {
+      OnTooltipTextChanged();
+    }
 
-  view_->OnAccessibleNameChanged(name);
+    // If a View sets the tooltip text before setting the accessible name, which
+    // is a common pattern, and then the View sets the accessible name to the
+    // same string, we need to make sure that we clear the description.
+    // Otherwise we'll end up with the same accessible name and description.
+    if (GetCachedName() == view_->GetTooltipText() &&
+        GetCachedDescription() == view_->GetTooltipText()) {
+      RemoveDescription();
+    }
+
+    view_->OnAccessibleNameChanged(name);
+  }
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kName,
                            base::UTF16ToUTF8(name));
 
   NotifyEvent(ax::mojom::Event::kTextChanged, true);
+  NotifyDataChanged();
 }
 
-void ViewAccessibility::SetName(const std::string& name,
+void ViewAccessibility::SetName(std::string_view name,
                                 ax::mojom::NameFrom name_from) {
-  std::u16string string_name = base::UTF8ToUTF16(name);
-  SetName(string_name, name_from);
+  SetName(base::UTF8ToUTF16(name), name_from);
 }
 
-void ViewAccessibility::SetName(const std::string& name) {
+void ViewAccessibility::SetName(std::string_view name) {
   SetName(name, GetCachedNameFrom());
 }
 
-void ViewAccessibility::SetName(const std::u16string& name) {
-  SetName(name, GetCachedNameFrom());
+void ViewAccessibility::SetName(std::u16string name) {
+  SetName(std::move(name), GetCachedNameFrom());
 }
 
 void ViewAccessibility::SetName(View& naming_view) {
   DCHECK_NE(view_, &naming_view);
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
 
-  // TODO(crbug.com/325137417): This is a temporary workaround to avoid the
-  // DCHECK below in the scenario where the View's accessible name is being set
-  // through either the GetAccessibleNodeData override pipeline or the
-  // SetAccessibleName pipeline, which would make the call to `GetCachedName`
-  // return an empty string. (this is the case for `Label` view). Once these are
-  // migrated we can remove this `if`, otherwise we must retrieve the name from
-  // there if needed.
-  if (naming_view.GetViewAccessibility().GetCachedName().empty()) {
-    ui::AXNodeData label_data;
-    const_cast<View&>(naming_view).GetAccessibleNodeData(&label_data);
-    const std::string& name =
-        label_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    DCHECK(!name.empty());
-    SetName(name, ax::mojom::NameFrom::kRelatedElement);
-  } else {
-    std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
-    DCHECK(!name.empty());
-    SetName(name, ax::mojom::NameFrom::kRelatedElement);
-  }
+  std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
+  DCHECK(!name.empty());
+  SetName(std::move(name), ax::mojom::NameFrom::kRelatedElement);
 
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                             {naming_view.GetViewAccessibility().GetUniqueId()});
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveName() {
@@ -530,6 +536,7 @@ void ViewAccessibility::RemoveName() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kNameFrom);
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kName, std::nullopt);
+  NotifyDataChanged();
 }
 
 std::u16string ViewAccessibility::GetCachedName() const {
@@ -561,6 +568,7 @@ void ViewAccessibility::SetRoleDescription(
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kRoleDescription,
                            base::UTF16ToUTF8(role_description));
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetRoleDescription(
@@ -578,6 +586,7 @@ void ViewAccessibility::RemoveRoleDescription() {
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kRoleDescription,
                            std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsEditable(bool editable) {
@@ -590,72 +599,84 @@ void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
   }
   data_.relative_bounds.bounds = bounds;
   NotifyEvent(ax::mojom::Event::kLocationChanged, false);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetPosInSet(int pos_in_set) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, pos_in_set);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kPosInSet, pos_in_set);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetSetSize(int set_size) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kSetSize, set_size);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearPosInSet() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kPosInSet);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kPosInSet, 0);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearSetSize() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kSetSize, 0);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetScrollX(int scroll_x) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollX, scroll_x);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollX, scroll_x);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetScrollXMin(int scroll_x_min) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin, scroll_x_min);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollXMin, scroll_x_min);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetScrollXMax(int scroll_x_max) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMax, scroll_x_max);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollXMax, scroll_x_max);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetScrollY(int scroll_y) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollY, scroll_y);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollY, scroll_y);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetScrollYMin(int scroll_y_min) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin, scroll_y_min);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollYMin, scroll_y_min);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetScrollYMax(int scroll_y_max) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMax, scroll_y_max);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollYMax, scroll_y_max);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsScrollable(bool is_scrollable) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable, is_scrollable);
 
   OnBoolAttributeChanged(ax::mojom::BoolAttribute::kScrollable, is_scrollable);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetActiveDescendant(views::View& view) {
@@ -672,6 +693,7 @@ void ViewAccessibility::SetActiveDescendant(ui::AXPlatformNodeId id) {
   OnIntAttributeChanged(ax::mojom::IntAttribute::kActivedescendantId, id);
 
   NotifyEvent(ax::mojom::Event::kActiveDescendantChanged, true);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearActiveDescendant() {
@@ -684,10 +706,17 @@ void ViewAccessibility::ClearActiveDescendant() {
                         std::nullopt);
 
   NotifyEvent(ax::mojom::Event::kActiveDescendantChanged, true);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsInvisible(bool is_invisible) {
-  SetState(ax::mojom::State::kInvisible, is_invisible);
+  if (is_invisible == should_be_invisible_) {
+    return;
+  }
+
+  should_be_invisible_ = is_invisible;
+
+  UpdateInvisibleState();
 }
 
 void ViewAccessibility::SetIsDefault(bool is_default) {
@@ -718,6 +747,12 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
     data_.SetRestriction(ax::mojom::Restriction::kNone);
   }
 
+  // AXVirtualViews should be marked as disabled if their
+  // owner View is disabled.
+  for (auto& virtual_child : virtual_children()) {
+    virtual_child->SetIsEnabledRecursive(is_enabled);
+  }
+
   UpdateFocusableState();
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kRestriction,
@@ -727,6 +762,7 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   // this. Some platforms have specific state-changed events and this generic
   // event does not suggest what changed.
   NotifyEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyDataChanged();
 }
 
 bool ViewAccessibility::GetIsEnabled() const {
@@ -737,6 +773,7 @@ void ViewAccessibility::SetTableRowCount(int row_count) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount, row_count);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kTableRowCount, row_count);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetTableColumnCount(int column_count) {
@@ -745,12 +782,14 @@ void ViewAccessibility::SetTableColumnCount(int column_count) {
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kTableColumnCount,
                         column_count);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetAriaTableRowCount(int row_count) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kAriaRowCount, row_count);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaRowCount, row_count);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetAriaTableColumnCount(int column_count) {
@@ -759,12 +798,14 @@ void ViewAccessibility::SetAriaTableColumnCount(int column_count) {
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaColumnCount,
                         column_count);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearTableRowCount() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kTableRowCount);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kTableRowCount, std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearTableColumnCount() {
@@ -772,12 +813,14 @@ void ViewAccessibility::ClearTableColumnCount() {
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kTableColumnCount,
                         std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearAriaTableRowCount() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kAriaRowCount);
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaRowCount, std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearAriaTableColumnCount() {
@@ -785,6 +828,60 @@ void ViewAccessibility::ClearAriaTableColumnCount() {
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaColumnCount,
                         std::nullopt);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetTableRowIndex(int cell_index) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex, cell_index);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableRowIndex, cell_index);
+  NotifyDataChanged();
+}
+
+int ViewAccessibility::GetTableRowIndex() const {
+  return data_.GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex);
+}
+
+void ViewAccessibility::SetTableCellColumnIndex(int cell_index) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex,
+                        cell_index);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellColumnIndex,
+                        cell_index);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetTableCellRowIndex(int row_index) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, row_index);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellRowIndex, row_index);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetTableCellRowSpan(int row_span) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan, row_span);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellRowSpan, row_span);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetTableCellColumnSpan(int column_span) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan,
+                        column_span);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellColumnSpan,
+                        column_span);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetSortDirection(
+    ax::mojom::SortDirection sort_direction) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(sort_direction));
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(sort_direction));
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
@@ -792,6 +889,7 @@ void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kDescription,
                            std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveDescription() {
@@ -802,14 +900,12 @@ void ViewAccessibility::RemoveDescription() {
                            std::nullopt);
   OnIntAttributeChanged(ax::mojom::IntAttribute::kDescriptionFrom,
                         std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
   if (description.empty() &&
       description_from !=
           ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
@@ -825,6 +921,7 @@ void ViewAccessibility::SetDescription(
                            description);
   OnIntAttributeChanged(ax::mojom::IntAttribute::kDescriptionFrom,
                         static_cast<int>(description_from));
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetDescription(
@@ -834,10 +931,8 @@ void ViewAccessibility::SetDescription(
 }
 
 void ViewAccessibility::SetDescription(View& describing_view) {
+  CHECK(view_);
   DCHECK_NE(view_, &describing_view);
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
 
   std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
   DCHECK(!name.empty())
@@ -850,6 +945,7 @@ void ViewAccessibility::SetDescription(View& describing_view) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds, ids);
 
   OnIntListAttributeChanged(ax::mojom::IntListAttribute::kDescribedbyIds, ids);
+  NotifyDataChanged();
 }
 
 std::u16string ViewAccessibility::GetCachedDescription() const {
@@ -862,15 +958,19 @@ std::u16string ViewAccessibility::GetCachedDescription() const {
 
 void ViewAccessibility::OnTooltipTextChanged(
     std::optional<std::u16string> old_tooltip_text) {
+  if (!view_) {
+    return;
+  }
+
   if (data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
-      view_->GetCachedTooltipText() == GetCachedDescription()) {
+      view_->GetTooltipText() == GetCachedDescription()) {
     return;
   }
   // Some screen readers announce the accessible description right after the
   // accessible name. Only use the tooltip as the accessible description if
   // it's different from the name, otherwise users might be puzzled as to why
   // their screen reader is announcing the same thing twice.
-  const std::u16string tooltip = view_->GetCachedTooltipText();
+  const std::u16string tooltip = view_->GetTooltipText();
   // We only want to update the description if we were previously using the
   // tooltip as the description or if we had no description.
   if ((old_tooltip_text.has_value() &&
@@ -889,12 +989,13 @@ void ViewAccessibility::OnViewAddedToWidget() {
   // this would be done in the ctor, but due to inheritance and the
   // implementation of `GetClassName`, it would not work. As such, we set it
   // here, since at this point the view object is fully initialized.
-  SetClassName(view_->GetClassName());
+  SetClassName(std::string(view_->GetClassName()));
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
                            placeholder);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::AddAction(ax::mojom::Action action) {
@@ -903,6 +1004,7 @@ void ViewAccessibility::AddAction(ax::mojom::Action action) {
   }
 
   data_.AddAction(action);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
@@ -915,6 +1017,7 @@ void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
                         static_cast<int>(checked_state));
 
   NotifyEvent(ax::mojom::Event::kCheckedStateChanged, true);
+  NotifyDataChanged();
 }
 
 ax::mojom::CheckedState ViewAccessibility::GetCheckedState() const {
@@ -926,33 +1029,40 @@ void ViewAccessibility::RemoveCheckedState() {
     data_.RemoveIntAttribute(ax::mojom::IntAttribute::kCheckedState);
 
     OnIntAttributeChanged(ax::mojom::IntAttribute::kCheckedState, std::nullopt);
+    NotifyDataChanged();
   }
 }
 
 void ViewAccessibility::SetKeyShortcuts(const std::string& key_shortcuts) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                            key_shortcuts);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveKeyShortcuts() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetAccessKey(const std::string& access_key) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kAccessKey, access_key);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveAccessKey() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kAccessKey);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetChildTreeNodeAppId(const std::string& app_id) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
                            app_id);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveChildTreeNodeAppId() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsSelected(bool selected) {
@@ -971,19 +1081,24 @@ void ViewAccessibility::SetIsSelected(bool selected) {
   if (selected) {
     NotifyEvent(ax::mojom::Event::kSelection, true);
   }
+
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsMultiselectable(bool multiselectable) {
   SetState(ax::mojom::State::kMultiselectable, multiselectable);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsModal(bool modal) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kModal, modal);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::AddHTMLAttributes(
     std::pair<std::string, std::string> attribute) {
   data_.html_attributes.push_back(attribute);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsIgnored(bool is_ignored) {
@@ -1039,11 +1154,19 @@ void ViewAccessibility::SetShowContextMenu(bool show_context_menu) {
   } else {
     data_.RemoveAction(ax::mojom::Action::kShowContextMenu);
   }
+
+  // We must add/remove the action to any virtual children as well.
+  for (auto& virtual_child : virtual_children()) {
+    virtual_child->SetShowContextMenuRecursive(show_context_menu);
+  }
+
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetContainerLiveStatus(const std::string& status) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
                            status);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveContainerLiveStatus() {
@@ -1052,6 +1175,7 @@ void ViewAccessibility::RemoveContainerLiveStatus() {
     return;
   }
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetValue(const std::string& value) {
@@ -1060,12 +1184,15 @@ void ViewAccessibility::SetValue(const std::string& value) {
   }
   data_.AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
 
-  OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, value);
+  if (ready_to_notify_events_) {
+    OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, value);
+    NotifyEvent(ax::mojom::Event::kValueChanged, true);
+  }
 
-  NotifyEvent(ax::mojom::Event::kValueChanged, true);
+  NotifyDataChanged();
 }
 
-void ViewAccessibility::SetValue(const std::u16string& value) {
+void ViewAccessibility::SetValue(std::u16string_view value) {
   SetValue(base::UTF16ToUTF8(value));
 }
 
@@ -1078,6 +1205,7 @@ void ViewAccessibility::RemoveValue() {
   OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, std::nullopt);
 
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
+  NotifyDataChanged();
 }
 
 std::u16string ViewAccessibility::GetValue() const {
@@ -1099,38 +1227,150 @@ void ViewAccessibility::RemoveDefaultActionVerb() {
 
   OnIntAttributeChanged(ax::mojom::IntAttribute::kDefaultActionVerb,
                         std::nullopt);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetAutoComplete(const std::string& autocomplete) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
                            autocomplete);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetHasFocusableAncestor(bool ancestor_focusable) {
+  has_focusable_ancestor_ = ancestor_focusable;
+  UpdateIgnoredState();
+}
+
+void ViewAccessibility::SetHasFocusableAncestorRecursive(
+    bool ancestor_focusable) {
+  if (view_) {
+    for (auto& child : view_->children()) {
+      child->GetViewAccessibility().SetHasFocusableAncestor(ancestor_focusable);
+      // If the child has been explicitly set to focusable, we skip its subtree
+      // since their state will be respected and should already be up to date.
+      if (child->GetFocusBehavior() != View::FocusBehavior::NEVER) {
+        continue;
+      }
+      child->GetViewAccessibility().SetHasFocusableAncestorRecursive(
+          ancestor_focusable);
+    }
+  }
+
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->SetHasFocusableAncestor(ancestor_focusable);
+    child->SetHasFocusableAncestorRecursive(ancestor_focusable);
+  }
+
+  UpdateIgnoredState();
 }
 
 void ViewAccessibility::UpdateFocusableState() {
+  CHECK(view_);
   bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-                      GetIsEnabled() && view_->IsDrawn() &&
+                      GetIsEnabled() &&
+                      !data_.HasState(ax::mojom::State::kInvisible) &&
                       !ViewAccessibility::GetIsIgnored();
+  if (is_focusable) {
+    CHECK(!should_be_invisible_ &&
+          !data_.HasState(ax::mojom::State::kInvisible))
+        << "A view that focusable should not be marked as invisible. This is a "
+           "check we also make in the Paint Checks.";
+  }
   SetState(ax::mojom::State::kFocusable, is_focusable);
 }
 
-void ViewAccessibility::UpdateFocusableStateRecursive() {
+void ViewAccessibility::UpdateInvisibleByInheritanceRecursive(
+    const View* initial_view,
+    bool invisible_by_inheritance) {
+  CHECK(view_);
   internal::ScopedChildrenLock lock(view_);
-  UpdateFocusableState();
+  if (view_.get() != initial_view) {
+    is_invisible_by_inheritance_ = invisible_by_inheritance;
+    if (!view_->GetVisible()) {
+      return;
+    }
+  }
+  UpdateInvisibleState();
+
   for (auto& child : view_->children()) {
-    child->GetViewAccessibility().UpdateFocusableStateRecursive();
+    child->GetViewAccessibility().UpdateInvisibleByInheritanceRecursive(
+        initial_view, invisible_by_inheritance);
+  }
+
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->UpdateParentViewIsDrawnRecursive(initial_view,
+                                            !invisible_by_inheritance);
   }
 }
 
-void ViewAccessibility::UpdateStatesForViewAndDescendants() {
+void ViewAccessibility::OnViewHasNewAncestor(const View* new_ancestor) {
+  CHECK(view_->parent());
+  // We need to make sure that we are propagating the right values down the
+  // recursive calls. For the invisible state, this means we look at the direct
+  // parent, rather than the `new_ancestor`, which in subsequent recursive calls
+  // could be a root of an entire tree that is getting reparented. This is
+  // because if at some point during the recursion, the parent is invisible, it
+  // should affect its descendants, even if `new_ancestor` is not. For example,
+  // if we have a tree like this:
+  // A (visible)
+  //   B (invisible)
+  // and then a separate tree:
+  // C (invisible)
+  //   D (invisible by inheritance of C)
+  // and then we reparent C to be a child of A:
+  // A (visible)
+  //   B (invisible)
+  //   C (invisible)
+  //     D (invisible by inheritance of C)
+  // Even though `A` is visible ( A would be `new_ancestor`), we need to make
+  // sure that during the recursion, we don't mark `D` as visible, since it's
+  // parent is invisible.
+  bool parent_invisible =
+      view_->parent()->GetViewAccessibility().is_invisible_by_inheritance() ||
+      !view_->parent()->GetVisible();
+  bool ancestor_focusable =
+      new_ancestor->GetFocusBehavior() != View::FocusBehavior::NEVER ||
+      new_ancestor->GetViewAccessibility().has_focusable_ancestor();
+
   internal::ScopedChildrenLock lock(view_);
-  UpdateFocusableState();
+
+  is_invisible_by_inheritance_ = parent_invisible;
+
+  UpdateInvisibleState();
+
+  // We only want to propagate the `ancestor_focusable` value if it's true. This
+  // is because if this view is unfocusable, and it gets added to a tree with a
+  // focusable ancestor, it should now be marked as ignored. However, being
+  // added to a tree with an unfocusable ancestor doesn't affect the ignored
+  // state of this view or its descendants.
+  if (ancestor_focusable) {
+    SetHasFocusableAncestor(ancestor_focusable);
+  }
+
   UpdateReadyToNotifyEvents();
   for (auto& child : view_->children()) {
-    child->GetViewAccessibility().UpdateStatesForViewAndDescendants();
+    child->GetViewAccessibility().OnViewHasNewAncestor(new_ancestor);
   }
+
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->OnViewHasNewAncestor(ancestor_focusable);
+  }
+}
+
+void ViewAccessibility::SetRootViewURL(const std::string& url) {
+  CHECK(view_);
+  CHECK(!view_->parent())
+      << "This method should only be called on the RootView.";
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kUrl, url);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetRootViewIsReadyToNotifyEvents() {
+  CHECK(view_);
   CHECK(!view_->parent())
       << "This method should only be called on the RootView.";
   ready_to_notify_events_ = true;
@@ -1138,11 +1378,14 @@ void ViewAccessibility::SetRootViewIsReadyToNotifyEvents() {
 
 void ViewAccessibility::UpdateInvisibleState() {
   bool is_invisible =
-      !view_->GetVisible() && data_.role != ax::mojom::Role::kAlert;
+      (!view_->GetVisible() && data_.role != ax::mojom::Role::kAlert) ||
+      is_invisible_by_inheritance_ || should_be_invisible_;
   SetState(ax::mojom::State::kInvisible, is_invisible);
+  UpdateFocusableState();
 }
 
 void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
+  CHECK(view_);
   if (tree_id != ui::AXTreeIDUnknown()) {
     data_.AddChildTreeId(tree_id);
 
@@ -1164,6 +1407,7 @@ void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
 
     OnStringAttributeChanged(ax::mojom::StringAttribute::kChildTreeId,
                              tree_id.ToString());
+    NotifyDataChanged();
   }
 }
 
@@ -1177,12 +1421,14 @@ void ViewAccessibility::RemoveChildTreeID() {
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kChildTreeId,
                            std::string());
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
   if (data_.HasChildTreeID()) {
     data_.AddFloatAttribute(ax::mojom::FloatAttribute::kChildTreeScale,
                             scale_factor);
+    NotifyDataChanged();
   }
 }
 
@@ -1190,27 +1436,29 @@ gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
   return nullptr;
 }
 
-void ViewAccessibility::AnnounceAlert(const std::u16string& text) {
+void ViewAccessibility::AnnounceAlert(std::u16string_view text) {
+  CHECK(view_);
   if (auto* const widget = view_->GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
-      root_view->AnnounceTextAs(text,
+      root_view->AnnounceTextAs(std::u16string(text),
                                 ui::AXPlatformNode::AnnouncementType::kAlert);
     }
   }
 }
 
-void ViewAccessibility::AnnouncePolitely(const std::u16string& text) {
+void ViewAccessibility::AnnouncePolitely(std::u16string_view text) {
+  CHECK(view_);
   if (auto* const widget = view_->GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
-      root_view->AnnounceTextAs(text,
+      root_view->AnnounceTextAs(std::u16string(text),
                                 ui::AXPlatformNode::AnnouncementType::kPolite);
     }
   }
 }
 
-void ViewAccessibility::AnnounceText(const std::u16string& text) {
+void ViewAccessibility::AnnounceText(std::u16string_view text) {
   AnnounceAlert(text);
 }
 
@@ -1224,6 +1472,7 @@ ViewAccessibility::GetAtomicViewAXTreeManagerForTesting() const {
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
+  CHECK(view_);
   if (focused_virtual_child_) {
     return focused_virtual_child_->GetNativeObject();
   }
@@ -1247,7 +1496,9 @@ void ViewAccessibility::set_accessibility_events_callback(
 }
 
 void ViewAccessibility::CompleteCacheInitializationRecursive() {
-  internal::ScopedChildrenLock lock(view_);
+  if (view_) {
+    internal::ScopedChildrenLock lock(view_);
+  }
   if (initialization_state_ == State::kInitialized) {
     return;
   }
@@ -1255,7 +1506,9 @@ void ViewAccessibility::CompleteCacheInitializationRecursive() {
   initialization_state_ = State::kInitializing;
 
   ui::AXNodeData data;
-  view_->OnAccessibilityInitializing(&data);
+  if (view_) {
+    view_->OnAccessibilityInitializing(&data);
+  }
 
 #if DCHECK_IS_ON()
   views::ViewAccessibilityUtils::ValidateAttributesNotSet(data, data_);
@@ -1266,29 +1519,16 @@ void ViewAccessibility::CompleteCacheInitializationRecursive() {
 
   initialization_state_ = State::kInitialized;
 
-  for (auto& child : view_->children()) {
-    child->GetViewAccessibility().CompleteCacheInitializationRecursive();
-  }
-}
-
-void ViewAccessibility::InitializeRoleIfNeeded() {
-  RETURN_IF_UNAVAILABLE();
-  if (data_.role != ax::mojom::Role::kUnknown) {
-    return;
+  if (view_) {
+    for (auto& child : view_->children()) {
+      child->GetViewAccessibility().CompleteCacheInitializationRecursive();
+    }
   }
 
-  // TODO(crbug.com/325137417): We should initialize the id and class name
-  // attributes right here, but cannot do it at the moment because there are
-  // setters called from views' constructors. Once all constructors are cleared
-  // from accessibility setters (the initial state should be set from
-  // `View::GetAccessibleNodeData`), add those missing attributes.
-  ui::AXNodeData data;
-  view_->GetAccessibleNodeData(&data);
-
-  data_.role = data.role;
-
-  UpdateIgnoredState();
-  UpdateInvisibleState();
+  // Now we do the same for any virtual children.
+  for (auto& child : virtual_children()) {
+    child->CompleteCacheInitializationRecursive();
+  }
 }
 
 void ViewAccessibility::OnWidgetClosing(Widget* widget) {
@@ -1339,6 +1579,7 @@ bool ViewAccessibility::IsAccessibilityEnabled() const {
 }
 
 void ViewAccessibility::PruneSubtree() {
+  CHECK(view_);
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = true;
@@ -1352,6 +1593,7 @@ void ViewAccessibility::PruneSubtree() {
 }
 
 void ViewAccessibility::UnpruneSubtree() {
+  CHECK(view_);
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = false;
@@ -1371,13 +1613,24 @@ void ViewAccessibility::UnpruneSubtree() {
 }
 
 void ViewAccessibility::UpdateIgnoredState() {
-  bool is_ignored =
-      should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
+// TODO(crbug.com/371237539): In ChromeOS, its not an expectation that being
+// a view unfocusable descendant of a focusable ancestor will make the view
+// ignored.
+#if !BUILDFLAG(IS_CHROMEOS)
+  bool is_ignored = should_be_ignored_ || pruned_ ||
+                    GetCachedRole() == ax::mojom::Role::kNone ||
+                    (has_focusable_ancestor_ &&
+                     view_->GetFocusBehavior() == View::FocusBehavior::NEVER);
+#else
+  bool is_ignored = should_be_ignored_ || pruned_ ||
+                    GetCachedRole() == ax::mojom::Role::kNone;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   SetState(ax::mojom::State::kIgnored, is_ignored);
   UpdateFocusableState();
 }
 
 void ViewAccessibility::UpdateReadyToNotifyEvents() {
+  CHECK(view_);
   View* parent = view_->parent();
   if (parent && parent->GetViewAccessibility().ready_to_notify_events_) {
     SetReadyToNotifyEvents();
@@ -1391,9 +1644,15 @@ void ViewAccessibility::SetReadyToNotifyEvents() {
 void ViewAccessibility::SetWidgetClosedRecursive(Widget* widget, bool value) {
   is_widget_closed_ = value;
 
-  internal::ScopedChildrenLock lock(view_);
-  for (auto& child : view_->children()) {
-    child->GetViewAccessibility().SetWidgetClosedRecursive(widget, value);
+  if (view_) {
+    internal::ScopedChildrenLock lock(view_);
+    for (auto& child : view_->children()) {
+      child->GetViewAccessibility().SetWidgetClosedRecursive(widget, value);
+    }
+  }
+
+  for (auto& child : virtual_children()) {
+    child->SetWidgetClosedRecursive(widget, value);
   }
 }
 
@@ -1525,6 +1784,7 @@ void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
   }
 
   OnStateChanged(state, is_enabled);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetBlockNotifyEvents(bool block) {
@@ -1556,6 +1816,7 @@ bool ViewAccessibility::GetIsHovered() const {
 
 void ViewAccessibility::SetPopupForId(ui::AXPlatformNodeId popup_for_id) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, popup_for_id);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetTextDirection(int text_direction) {
@@ -1565,6 +1826,7 @@ void ViewAccessibility::SetTextDirection(int text_direction) {
            static_cast<int32_t>(ax::mojom::WritingDirection::kMaxValue));
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTextDirection,
                         text_direction);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetIsProtected(bool is_protected) {
@@ -1637,39 +1899,47 @@ void ViewAccessibility::SetIsVertical(bool vertical) {
 
 void ViewAccessibility::SetTextSelStart(int32_t text_sel_start) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart, text_sel_start);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetTextSelEnd(int32_t text_sel_end) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, text_sel_end);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetLiveAtomic(bool live_atomic) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, live_atomic);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetLiveStatus(const std::string& live_status) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
                            live_status);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetLiveRelevant(const std::string& live_relevant) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
                            live_relevant);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveLiveRelevant() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kLiveRelevant);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::SetContainerLiveRelevant(
     const std::string& live_relevant) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveRelevant,
                            live_relevant);
+  NotifyDataChanged();
 }
 
 void ViewAccessibility::RemoveContainerLiveRelevant() {
   data_.RemoveStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveRelevant);
+  NotifyDataChanged();
 }
 
 ui::AXAttributeChangedCallbacks*
@@ -1680,6 +1950,11 @@ ViewAccessibility::GetOrCreateAXAttributeChangedCallbacks() {
   }
 
   return attribute_changed_callbacks_.get();
+}
+
+void ViewAccessibility::NotifyDataChanged() {
+  CHECK(view_);
+  AXUpdateNotifier::Get()->NotifyViewDataChanged(view_);
 }
 
 }  // namespace views

@@ -82,9 +82,9 @@ scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                                             int duration_secs);
 scoped_refptr<SkottieWrapper> CreateSkottieFromString(std::string_view json);
 std::string LoadSkottieFileFromTestData(
-    base::FilePath::StringPieceType animation_file_name);
+    base::FilePath::StringViewType animation_file_name);
 scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
-    base::FilePath::StringPieceType animation_file_name);
+    base::FilePath::StringViewType animation_file_name);
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size);
 

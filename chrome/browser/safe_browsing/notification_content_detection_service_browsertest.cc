@@ -8,8 +8,11 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/notification_permission_context.h"
+#include "chrome/browser/notifications/persistent_notification_handler.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -20,8 +23,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -262,6 +267,8 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::PermissionUsage_NotificationShown::kEntryName);
   EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "DidUserAlwaysAllowNotifications", false);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", false);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
 }
@@ -345,6 +352,8 @@ IN_PROC_BROWSER_TEST_F(
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::PermissionUsage_NotificationShown::kEntryName);
   EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "DidUserAlwaysAllowNotifications", false);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", true);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
 
@@ -356,7 +365,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
     NotificationDisplayedWhenModelNotAvailable) {
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
   service()->DisplayPersistentNotification(
@@ -436,6 +444,18 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_FALSE(
         IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
   }
+  histogram_tester().ExpectTotalCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      2);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kRequested=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kFinished=*/1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -464,21 +484,26 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
   // When the model is checked for all allowlisted sites and the suspicious
-  // threshold is 0, the notification is suspicious.
-  if (GetAllowlistSamplingRate() == "100" &&
-      GetSuspiciousNotificationThreshold() == "0") {
-    EXPECT_TRUE(
-        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
-  } else {
-    EXPECT_FALSE(
-        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
-  }
+  // threshold is 0, the notification is not suspicious for allowlisted URLs.
+  EXPECT_FALSE(
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  histogram_tester().ExpectTotalCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      2);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kRequested=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kFinished=*/1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
     NotificationContentDetectionShowWarningsEnabledBrowserTest,
     NotificationDisplayedWhenModelNotAvailable) {
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
   service()->DisplayPersistentNotification(
@@ -494,6 +519,136 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
   EXPECT_FALSE(
       IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  histogram_tester().ExpectTotalCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      2);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kRequested=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kFinished=*/1, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    OriginalNotificationDisplayedWhenUserAllowlistsOrigin) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
+  // `kNonAllowlistedUrl`.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetWebsiteSettingCustomScope(
+          ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+          base::Value(base::Value::Dict().Set(kIsAllowlistedByUserKey, true)));
+
+  UpdateNotificationContentDetectionModel();
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL() /* service_worker_scope */,
+      GURL(kNonAllowlistedUrl), data, blink::NotificationResources());
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      1);
+
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  // Notification should never be considered suspicious when the user has
+  // allowlisted the origin.
+  EXPECT_FALSE(
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  // Check that we are recording the UKM with the correct metric values.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "DidUserAlwaysAllowNotifications", true);
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", false);
+  test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    WarningShownWhenUserAllowlistsOriginThenUnsubscribesThenResubscribes) {
+  // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
+  // `kNonAllowlistedUrl`.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetWebsiteSettingCustomScope(
+          ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+          base::Value(base::Value::Dict().Set(kIsAllowlistedByUserKey, true)));
+
+  // Unsubscribe from notifications then re-enable them.
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->DisableNotifications(browser()->profile(), GURL(kNonAllowlistedUrl));
+  NotificationPermissionContext::UpdatePermission(
+      browser()->profile(), GURL(kNonAllowlistedUrl), CONTENT_SETTING_ALLOW);
+
+  // Display persistent notification.
+  UpdateNotificationContentDetectionModel();
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL() /* service_worker_scope */,
+      GURL(kNonAllowlistedUrl), data, blink::NotificationResources());
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      1);
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+
+  // When the suspicious threshold is 0, every non-allowlisted notification is
+  // suspicious.
+  if (GetSuspiciousNotificationThreshold() == "0") {
+    EXPECT_TRUE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  } else {
+    EXPECT_FALSE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
+                       EnterpriseAllowlistedSiteDoesNotExecuteModel) {
+  // Setup enterprise allowlist.
+  base::Value::List allowlist;
+  allowlist.Append("enterprise-domain.com");
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
+
+  UpdateNotificationContentDetectionModel();
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId,
+      GURL("https://www.enterprise-domain.com") /* service_worker_scope */,
+      GURL("https://www.enterprise-domain.com"), data,
+      blink::NotificationResources());
+
+  // No logging should have occurred, but the notification should have been
+  // displayed.
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      0);
+  histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 0);
+  histogram_tester().ExpectTotalCount(kSuspiciousScoreHistogram, 0);
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
 }
 
 }  // namespace safe_browsing

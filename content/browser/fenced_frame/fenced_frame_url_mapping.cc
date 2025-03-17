@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -18,9 +19,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
-#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "ui/display/screen.h"
@@ -84,6 +87,53 @@ GURL SubstituteSizeIntoURL(const blink::AdDescriptor& ad_descriptor) {
 
   return GURL(SubstituteMappedStrings(ad_descriptor.url.spec(), substitutions));
 }
+
+// For each ad component and its parent, we examine its SchemefulSite, and
+// increment a count of how many ads correspond to that site. We then log the
+// highest number of ads which are same-site to one another (the largest value
+// in the map below) as a UMA metric. The purpose of this metric is to explore
+// how often ads are same-site with one another, which may inform future limits
+// on same-site fenced frames. We also log a separate UMA metric to count the
+// total number of ad components regardless of their site.
+class AdComponentMetrics {
+ public:
+  explicit AdComponentMetrics(int total_component_count)
+      : total_component_count_(total_component_count) {}
+
+  void UpdateForSite(net::SchemefulSite component_site) {
+    auto iter = components_per_site_counts_.find(component_site);
+    if (iter == components_per_site_counts_.end()) {
+      components_per_site_counts_.insert({component_site, 1});
+    } else {
+      iter->second += 1;
+    }
+    int count_for_current_site =
+        iter == components_per_site_counts_.end() ? 1 : iter->second;
+    if (count_for_current_site > same_site_component_max_count_) {
+      same_site_component_max_count_ = count_for_current_site;
+    }
+  }
+
+  void LogSameSiteMetric() {
+    base::UmaHistogramExactLinear(
+        blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram,
+        same_site_component_max_count_,
+        // We shouldn't allow the histogram bucket count to change over time, so
+        // assume the largest allowed number of components per auction.
+        blink::kMaxAdAuctionAdComponentsConfigLimit + 1);
+  }
+
+  void LogTotalCountMetric() {
+    base::UmaHistogramExactLinear(
+        blink::kAdComponentsCountForWinningBidHistogram, total_component_count_,
+        blink::kMaxAdAuctionAdComponentsConfigLimit + 1);
+  }
+
+ private:
+  std::map<net::SchemefulSite, int> components_per_site_counts_;
+  int same_site_component_max_count_ = 0;
+  int total_component_count_ = 0;
+};
 
 }  // namespace
 
@@ -156,12 +206,12 @@ std::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
   // Shared Storage permissions set. To be safe, we set both here.
   config.effective_enabled_permissions_.insert(
       config.effective_enabled_permissions_.end(),
-      std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
-      std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
+      std::begin(network::kFencedFrameFledgeDefaultRequiredFeatures),
+      std::end(network::kFencedFrameFledgeDefaultRequiredFeatures));
   config.effective_enabled_permissions_.insert(
       config.effective_enabled_permissions_.end(),
-      std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
-      std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
+      std::begin(network::kFencedFrameSharedStorageDefaultRequiredFeatures),
+      std::end(network::kFencedFrameSharedStorageDefaultRequiredFeatures));
   return urn;
 }
 
@@ -239,10 +289,11 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.on_navigate_callback_ = std::move(on_navigate_callback);
 
   config.effective_enabled_permissions_ =
-      std::vector<blink::mojom::PermissionsPolicyFeature>(
-          std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
-          std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
+      std::vector<network::mojom::PermissionsPolicyFeature>(
+          std::begin(network::kFencedFrameFledgeDefaultRequiredFeatures),
+          std::end(network::kFencedFrameFledgeDefaultRequiredFeatures));
 
+  AdComponentMetrics metrics(ad_component_descriptors.size());
   std::vector<FencedFrameConfig> nested_configs;
   nested_configs.reserve(ad_component_descriptors.size());
   for (const auto& ad_component_descriptor : ad_component_descriptors) {
@@ -274,7 +325,10 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     nested_configs.back().ad_auction_data_.emplace(
         ad_auction_data, VisibilityToEmbedder::kOpaque,
         VisibilityToContent::kOpaque);
+
+    metrics.UpdateForSite(net::SchemefulSite(ad_component_descriptor.url));
   }
+
   config.nested_configs_.emplace(std::move(nested_configs),
                                  VisibilityToEmbedder::kOpaque,
                                  VisibilityToContent::kTransparent);
@@ -282,6 +336,17 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
   config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   config.allows_information_inflow_ = false;
+
+  // If we have no ad components, then skip logging our component UMA metrics so
+  // we don't dilute them. If we do have components, include the top-level ad's
+  // site in the metrics, since the top-level ad might be same-site to one or
+  // more components as well.
+  if (ad_component_descriptors.size() > 0) {
+    metrics.UpdateForSite(net::SchemefulSite(ad_descriptor.url));
+    metrics.LogSameSiteMetric();
+  }
+
+  metrics.LogTotalCountMetric();
 
   return config.RedactFor(FencedFrameEntity::kEmbedder);
 }
@@ -369,8 +434,8 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
                                std::move(mapping_result.fenced_frame_reporter));
     config->mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
     config->effective_enabled_permissions_ = {
-        std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
-        std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures)};
+        std::begin(network::kFencedFrameSharedStorageDefaultRequiredFeatures),
+        std::end(network::kFencedFrameSharedStorageDefaultRequiredFeatures)};
     config->allows_information_inflow_ = true;
 
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
@@ -399,8 +464,9 @@ FencedFrameURLMapping::GetSharedStorageBudgetMetadataForTesting(
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   CHECK(it != urn_uuid_to_url_map_.end(), base::NotFatalUntil::M130);
 
-  if (!it->second.shared_storage_budget_metadata_)
+  if (!it->second.shared_storage_budget_metadata_) {
     return nullptr;
+  }
 
   return &it->second.shared_storage_budget_metadata_->value_;
 }

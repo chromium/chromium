@@ -239,7 +239,8 @@ TEST_F(ConsentSyncBridgeImplTest,
   ASSERT_THAT(GetAllDataForDebugging(), SizeIs(2));
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete(first_storage_key));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete(first_storage_key, syncer::EntityData()));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);

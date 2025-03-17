@@ -81,7 +81,7 @@ void PopulateNumericCapabilities(Capabilities* caps,
 void PopulateGLCapabilities(GLCapabilities* caps,
                             const FeatureInfo* feature_info);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PopulateDRMCapabilities(Capabilities* caps,
                              const FeatureInfo* feature_info);
 #endif

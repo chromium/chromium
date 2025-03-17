@@ -151,7 +151,7 @@ class TranslateBubbleViewUITest
 
   InteractiveTestApi::MultiStep WaitForBucket(
       const std::string& histogram_name,
-      base::HistogramBase::Sample sample) {
+      base::HistogramBase::Sample32 sample) {
     return InteractiveTestApi::Steps(InteractiveTestApi::Do(
         base::BindOnce(&TranslateBubbleViewUITest::WaitForBucketImpl,
                        base::Unretained(this), histogram_name, sample)));
@@ -220,7 +220,7 @@ class TranslateBubbleViewUITest
   }
 
   void WaitForBucketImpl(const std::string& histogram_name,
-                         base::HistogramBase::Sample sample) {
+                         base::HistogramBase::Sample32 sample) {
     // Wait until the bucket is recorded.
     base::RunLoop run_loop;
     while (run_loop.running()) {
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickOpenLanguageSettings) {
         WaitForLanguageSettingInNewTab(kTranslateSettingsElementId),
         // V2. Verify the histogram is recorded correctly.
         WaitForBucket(translate::kTranslateUiInteractionEvent,
-                      static_cast<base::HistogramBase::Sample>(
+                      static_cast<base::HistogramBase::Sample32>(
                           translate::UIInteraction::kOpenLanguageSettings)));
   }
 }

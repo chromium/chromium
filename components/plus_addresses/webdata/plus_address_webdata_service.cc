@@ -79,7 +79,7 @@ PlusAddressWebDataService::SyncBridgeDBSequenceWrapper::
     ~SyncBridgeDBSequenceWrapper() = default;
 
 void PlusAddressWebDataService::GetPlusProfiles(
-    WebDataServiceConsumer* consumer) {
+    WebDataServiceRequestCallback consumer) {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
@@ -88,7 +88,7 @@ void PlusAddressWebDataService::GetPlusProfiles(
             PLUS_ADDRESS_RESULT,
             PlusAddressTable::FromWebDatabase(db)->GetPlusProfiles());
       }),
-      consumer);
+      std::move(consumer));
 }
 
 void PlusAddressWebDataService::AddOrUpdatePlusProfile(

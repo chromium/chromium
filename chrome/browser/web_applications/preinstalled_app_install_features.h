@@ -18,11 +18,11 @@ namespace web_app {
 // tabbed, by default. Always false on non-CrOS.
 bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile);
 
-// Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
-// corresponds to |feature_name|. Used by external app install configs to gate
-// installation on features listed in |kPreinstalledAppInstallFeatures|.
-bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name,
-                                            const Profile& profile);
+// Returns whether the feature in |kPreinstalledAppInstallFeatures| that
+// corresponds to `feature_name` is enabled. Used by external app install
+// configs to gate installation on features listed in
+// `kPreinstalledAppInstallFeatures`.
+bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name);
 
 base::AutoReset<bool> SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 

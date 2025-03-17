@@ -48,8 +48,8 @@ suite('SiteListEntry', function() {
     flush();
     const prefIndicator = testElement.$$('cr-policy-pref-indicator');
     assertTrue(!!prefIndicator);
-    const icon = prefIndicator!.shadowRoot!.querySelector('cr-tooltip-icon')!;
-    const crTooltip = icon.shadowRoot!.querySelector('cr-tooltip')!;
+    const icon = prefIndicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    const crTooltip = icon.shadowRoot.querySelector('cr-tooltip')!;
     // Never shown since site-list will show a common tooltip.
     assertTooltipIsHidden(crTooltip);
     const wait = eventToPromise('show-tooltip', document);
@@ -85,7 +85,7 @@ suite('SiteListEntry', function() {
     assertTrue(!subpageArrow);
     const separator = settingsRow.querySelector('.separator');
     assertTrue(!separator);
-    settingsRow!.click();
+    settingsRow.click();
     assertEquals(
         routes.SITE_SETTINGS.path, Router.getInstance().getCurrentRoute().path);
   });

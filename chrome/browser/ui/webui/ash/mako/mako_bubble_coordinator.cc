@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_consent_view.h"
@@ -82,7 +83,7 @@ void MakoBubbleCoordinator::LoadEditorUI(
   url = net::AppendOrReplaceQueryParameter(url, kOrcaHostLanguageParamKey,
                                            GetSystemLocale());
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFeedbackEnabledParamKey,
-                                           feedback_enabled ? "true" : "false");
+                                           base::ToString(feedback_enabled));
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   url = net::AppendOrReplaceQueryParameter(
       url, kOrcaMagicBoostParamKey,

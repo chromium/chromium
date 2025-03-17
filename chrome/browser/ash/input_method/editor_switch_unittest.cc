@@ -19,6 +19,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -36,6 +38,7 @@
 namespace ash::input_method {
 namespace {
 
+using ::chromeos::editor_menu::EditorMode;
 using ::testing::ElementsAreArray;
 using ::testing::TestWithParam;
 
@@ -89,7 +92,7 @@ class FakeSystem : public EditorContext::System {
 class FakeEditorSwitchObserver : public EditorSwitch::Observer {
  public:
   // EditorSwitch::Observer overrides
-  void OnEditorModeChanged(const EditorMode& mode) override {}
+  void OnEditorModeChanged(EditorMode mode) override {}
 };
 
 struct EditorSwitchAvailabilityWithoutPolicyTestCase {
@@ -226,7 +229,7 @@ TEST_P(EditorSwitchAvailabilityWithPolicyTest,
 
   TestingProfile profile;
   profile.GetTestingPrefService()->SetManagedPref(
-      prefs::kOrcaEnabled, base::Value(test_case.enabled_by_policy));
+      prefs::kHmwManagedSettings, base::Value(test_case.enabled_by_policy));
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
@@ -254,7 +257,7 @@ struct EditorSwitchTriggerTestCase {
   bool is_in_tablet_mode;
   net::NetworkChangeNotifier::ConnectionType network_status;
   bool user_pref;
-  ConsentStatus consent_status;
+  chromeos::editor_menu::EditorConsentStatus consent_status;
   size_t num_chars_selected;
 
   EditorMode expected_editor_mode;
@@ -280,7 +283,8 @@ INSTANTIATE_TEST_SUITE_P(
             .is_in_tablet_mode = false,
             .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
             .user_pref = true,
-            .consent_status = ConsentStatus::kDeclined,
+            .consent_status =
+                chromeos::editor_menu::EditorConsentStatus::kDeclined,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kSoftBlocked,
             .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -299,7 +303,8 @@ INSTANTIATE_TEST_SUITE_P(
             .is_in_tablet_mode = false,
             .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
             .user_pref = true,
-            .consent_status = ConsentStatus::kApproved,
+            .consent_status =
+                chromeos::editor_menu::EditorConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kSoftBlocked,
             .expected_editor_opportunity_mode =
@@ -318,7 +323,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kWrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -334,7 +340,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kWrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -351,7 +358,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kWrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -368,7 +376,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kSoftBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -385,7 +394,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kWrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -401,7 +411,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = false,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kSoftBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -417,7 +428,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = true,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kSoftBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -434,7 +446,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_NONE,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kSoftBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -451,7 +464,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 10001,
          .expected_editor_mode = EditorMode::kSoftBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
@@ -469,7 +483,7 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kPending,
+         .consent_status = chromeos::editor_menu::EditorConsentStatus::kPending,
          .num_chars_selected = 100,
          .expected_editor_mode = EditorMode::kConsentNeeded,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
@@ -485,7 +499,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 0,
          .expected_editor_mode = EditorMode::kWrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
@@ -501,7 +516,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 100,
          .expected_editor_mode = EditorMode::kRewrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
@@ -518,7 +534,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 100,
          .expected_editor_mode = EditorMode::kRewrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
@@ -535,7 +552,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 100,
          .expected_editor_mode = EditorMode::kRewrite,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
@@ -552,7 +570,8 @@ INSTANTIATE_TEST_SUITE_P(
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
-         .consent_status = ConsentStatus::kApproved,
+         .consent_status =
+             chromeos::editor_menu::EditorConsentStatus::kApproved,
          .num_chars_selected = 100,
          .expected_editor_mode = EditorMode::kSoftBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
@@ -681,7 +700,9 @@ TEST_P(EditorSwitchDenylistTest, IsBlockedWhenVisitingUrlInDenylist) {
 
   profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile->GetPrefs()->SetInteger(
-      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+      prefs::kOrcaConsentStatus,
+      base::to_underlying(
+          chromeos::editor_menu::EditorConsentStatus::kApproved));
   context.OnTabletModeUpdated(false);
   context.OnActivateIme(kUsEngineId);
   context.OnInputContextUpdated(
@@ -711,7 +732,8 @@ class InternationalizeTestSuite : public TestWithParam<InputMethodTestCase> {
     profile_->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
     profile_->GetPrefs()->SetInteger(
         prefs::kOrcaConsentStatus,
-        base::to_underlying(ConsentStatus::kApproved));
+        base::to_underlying(
+            chromeos::editor_menu::EditorConsentStatus::kApproved));
   }
 
  protected:

@@ -23,8 +23,8 @@ function prepareDatabase()
 
 function clear()
 {
-    evalAndExpectException("db.transaction('foo', 'readonly', {durability: 'relaxed'}).objectStore('foo').clear();", "0", "'ReadOnlyError'");
-    transaction = evalAndLog("db.transaction('foo', 'readwrite', {durability: 'relaxed'})");
+    evalAndExpectException("db.transaction('foo', 'readonly').objectStore('foo').clear();", "0", "'ReadOnlyError'");
+    transaction = evalAndLog("db.transaction('foo', 'readwrite')");
     evalAndLog("transaction.objectStore('foo').clear();");
     transaction.oncomplete = cleared;
     transaction.onabort = unexpectedAbortCallback;
@@ -32,7 +32,7 @@ function clear()
 
 function cleared()
 {
-    request = evalAndLog("request = db.transaction('foo', 'readonly', {durability: 'relaxed'}).objectStore('foo').openCursor();");
+    request = evalAndLog("request = db.transaction('foo', 'readonly').objectStore('foo').openCursor();");
     request.onsuccess = areWeClearYet;
     request.onerror = unexpectedErrorCallback;
 }

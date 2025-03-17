@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("web_contents") {
   sources = [
@@ -23,7 +23,6 @@ static_library("web_contents") {
     "//ash",
     "//ash/constants",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/content_extraction",
     "//chrome/browser/favicon",
@@ -55,7 +54,6 @@ source_set("unit_tests") {
   deps = [
     ":web_contents",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/ash/mahi/web_contents/test_support",
     "//chrome/browser/ui",
@@ -80,7 +78,6 @@ source_set("browser_tests") {
     "//ash:test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ash/mahi/web_contents/test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",

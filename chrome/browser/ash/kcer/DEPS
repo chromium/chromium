@@ -23,3 +23,9 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "kcer_factory_ash_no_nss_browsertest\\.cc": [
+    "+chrome/browser/ui/browser.h"
+  ]
+}

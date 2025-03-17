@@ -59,8 +59,9 @@ void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
     for (Node* node = bucket.load(std::memory_order_relaxed); node;
          node = node->next) {
       void* key = node->key.load(std::memory_order_relaxed);
-      if (key)
+      if (key) {
         Insert(key);
+      }
     }
   }
 }

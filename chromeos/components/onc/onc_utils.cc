@@ -772,6 +772,13 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
   } else if (&signature == &kL2TPSignature ||
              &signature == &kOpenVPNSignature) {
     ExpandField(::onc::vpn::kUsername, variable_expander, onc_object);
+  } else if (&signature == &kIssuerSubjectPatternSignature) {
+    ExpandField(::onc::client_cert::kCommonName, variable_expander, onc_object);
+    ExpandField(::onc::client_cert::kLocality, variable_expander, onc_object);
+    ExpandField(::onc::client_cert::kOrganization, variable_expander,
+                onc_object);
+    ExpandField(::onc::client_cert::kOrganizationalUnit, variable_expander,
+                onc_object);
   }
 
   // Recurse into nested objects.

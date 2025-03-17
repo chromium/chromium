@@ -20,4 +20,12 @@ struct PresentationFeedback {
   mojo_base.mojom.TimeTicks writes_done_timestamp;
 [EnableIf=is_apple]
   CALayerResult ca_layer_error_code;
+
+  // A unique ID used by the graphics pipeline to trace each individual frame
+  // swap. This value is present only if the feedback is coming from/via
+  // viz::Display. It's set in viz::Display::DidReceivePresentationFeedback().
+  // It should only be used for performance tracing purposes. See also
+  // gpu::SwapBuffersCompleteParams.swap_trace_id and
+  // perfetto::protos::pbzero::ChromeTrackEvent.event_latency.display_trace_id.
+  int64? display_trace_id;
 };

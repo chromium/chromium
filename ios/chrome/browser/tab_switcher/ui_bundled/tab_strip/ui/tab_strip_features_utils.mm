@@ -11,10 +11,7 @@
 @implementation TabStripFeaturesUtils
 
 + (BOOL)isModernTabStripNewTabButtonDynamic {
-  CHECK(IsModernTabStripOrRaccoonEnabled());
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kModernTabStrip, kModernTabStripParameterName);
-  return feature_param != kModernTabStripNTBStaticParam;
+  return YES;
 }
 
 + (BOOL)isModernTabStripWithTabGroups {
@@ -22,53 +19,43 @@
 }
 
 + (BOOL)hasCloserNTB {
-  return GetFieldTrialParamByFeatureAsBool(kModernTabStrip,
-                                           kModernTabStripCloserNTB, false);
+  return YES;
 }
 
 + (BOOL)hasDarkerBackground {
-  return GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripDarkerBackground, false);
+  return NO;
 }
 
 + (BOOL)hasDarkerBackgroundV3 {
-  return GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripDarkerBackgroundV3, false);
+  return YES;
 }
 
 + (BOOL)hasNoNTBBackground {
-  return GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripNTBNoBackground, false);
+  return NO;
 }
 
 + (BOOL)hasBlackBackground {
-  return GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripBlackBackground, false);
+  return NO;
 }
 
 + (BOOL)hasBiggerNTB {
-  return GetFieldTrialParamByFeatureAsBool(kModernTabStrip,
-                                           kModernTabStripBiggerNTB, false);
+  return YES;
 }
 
 + (BOOL)hasCloseButtonsVisible {
-  return GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripCloseButtonsVisible, false);
+  return NO;
 }
 
 + (BOOL)hasHighContrastInactiveTabs {
-  return GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripInactiveTabsHighContrast, false);
+  return YES;
 }
 
 + (BOOL)hasHighContrastNTB {
-  return GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripHighContrastNTB, false);
+  return NO;
 }
 
 + (BOOL)hasDetachedTabs {
-  return GetFieldTrialParamByFeatureAsBool(kModernTabStrip,
-                                           kModernTabStripDetachedTabs, false);
+  return NO;
 }
 
 @end

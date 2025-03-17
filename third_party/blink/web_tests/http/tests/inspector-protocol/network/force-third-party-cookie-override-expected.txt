@@ -1,0 +1,5 @@
+Test that devtools cookie setting overrides affect document.cookie
+cookie response: cookie=foo
+cookie response: 
+cookie response: cookie=foo; cookie2=foo
+

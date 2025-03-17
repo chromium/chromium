@@ -50,18 +50,18 @@ suite('SitePermissionsSiteGroupElement', function() {
     assertEquals(PERMITTED_TEXT, element.$.etldOrSiteSubtext.innerText);
 
     const sitesList =
-        element.shadowRoot!.querySelector<HTMLElement>('#sites-list');
+        element.shadowRoot.querySelector<HTMLElement>('#sites-list');
     assertFalse(isVisible(sitesList));
-    const expandButton = element.shadowRoot!.querySelector('cr-expand-button');
+    const expandButton = element.shadowRoot.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
     expandButton.click();
     await expandButton.updateComplete;
 
     assertTrue(isVisible(sitesList));
     const expandedSites =
-        element.shadowRoot!.querySelectorAll<HTMLElement>('#sites-list .site');
+        element.shadowRoot.querySelectorAll<HTMLElement>('#sites-list .site');
     const expandedIncludesSubdomains =
-        element.shadowRoot!.querySelectorAll<HTMLElement>(
+        element.shadowRoot.querySelectorAll<HTMLElement>(
             '#sites-list .includes-subdomains');
 
     assertEquals('images.google.ca', expandedSites[0]!.innerText);
@@ -97,14 +97,14 @@ suite('SitePermissionsSiteGroupElement', function() {
     assertEquals('google.ca', element.$.etldOrSite.innerText);
     assertEquals('', element.$.etldOrSiteSubtext.innerText);
 
-    const expandButton = element.shadowRoot!.querySelector('cr-expand-button');
+    const expandButton = element.shadowRoot.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
     expandButton.click();
     await expandButton.updateComplete;
 
     assertTrue(isVisible(
-        element.shadowRoot!.querySelector<HTMLElement>('#sites-list')));
-    const expandedSites = element.shadowRoot!.querySelectorAll<HTMLElement>(
+        element.shadowRoot.querySelector<HTMLElement>('#sites-list')));
+    const expandedSites = element.shadowRoot.querySelectorAll<HTMLElement>(
         '#sites-list .site-subtext');
 
     // The subtext for each expanded site should show which set it's from.
@@ -129,7 +129,7 @@ suite('SitePermissionsSiteGroupElement', function() {
     assertEquals(PERMITTED_TEXT, element.$.etldOrSiteSubtext.innerText);
 
     assertFalse(isVisible(
-        element.shadowRoot!.querySelector<HTMLElement>('cr-expand-button')));
+        element.shadowRoot.querySelector<HTMLElement>('cr-expand-button')));
 
     // Now set the element's one site in the group to match subdomains.
     element.data = {
@@ -164,14 +164,14 @@ suite('SitePermissionsSiteGroupElement', function() {
         };
         await microtasksFinished();
 
-        const editSiteButton = element.shadowRoot!.querySelector<HTMLElement>(
+        const editSiteButton = element.shadowRoot.querySelector<HTMLElement>(
             '#edit-one-site-button');
         assertTrue(isVisible(editSiteButton));
 
         editSiteButton!.click();
         await microtasksFinished();
 
-        const dialog = element.shadowRoot!.querySelector(
+        const dialog = element.shadowRoot.querySelector(
             'site-permissions-edit-permissions-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
@@ -202,18 +202,18 @@ suite('SitePermissionsSiteGroupElement', function() {
         };
         await microtasksFinished();
 
-        element.shadowRoot!.querySelector<HTMLElement>(
-                               'cr-expand-button')!.click();
+        element.shadowRoot.querySelector<HTMLElement>(
+                              'cr-expand-button')!.click();
         await microtasksFinished();
 
         const editSiteButtons =
-            element.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
+            element.shadowRoot.querySelectorAll<HTMLElement>('cr-icon-button');
         assertEquals(2, editSiteButtons.length);
 
         editSiteButtons[1]!.click();
         await microtasksFinished();
 
-        const dialog = element.shadowRoot!.querySelector(
+        const dialog = element.shadowRoot.querySelector(
             'site-permissions-edit-permissions-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);

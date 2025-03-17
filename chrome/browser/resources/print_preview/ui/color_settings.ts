@@ -31,7 +31,8 @@ export class PrintPreviewColorSettingsElement extends
 
       disabled_: {
         type: Boolean,
-        computed: 'computeDisabled_(disabled, settings.color.setByPolicy)',
+        computed: 'computeDisabled_(disabled, ' +
+            'settings.color.setByGlobalPolicy)',
       },
     };
   }

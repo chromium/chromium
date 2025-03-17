@@ -4,6 +4,8 @@
 
 #include "base/test/power_monitor_test_utils.h"
 
+#include "base/time/time.h"
+
 namespace base::test {
 
 TestSamplingEventSource::TestSamplingEventSource() = default;
@@ -12,6 +14,12 @@ TestSamplingEventSource::~TestSamplingEventSource() = default;
 bool TestSamplingEventSource::Start(SamplingEventCallback callback) {
   sampling_event_callback_ = std::move(callback);
   return true;
+}
+
+TimeDelta TestSamplingEventSource::GetSampleInterval() {
+  // This value is meaningless because samples are taken manually, but we need
+  // a valid value for tests.
+  return base::Minutes(1);
 }
 
 void TestSamplingEventSource::SimulateEvent() {

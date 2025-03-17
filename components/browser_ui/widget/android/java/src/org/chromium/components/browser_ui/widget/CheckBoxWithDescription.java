@@ -16,12 +16,15 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A CheckBox with a primary and descriptive text to the right.
  * The object will be inflated from {@link R.layout.checkbox_with_description).
  * TODO(crbug.com/40862238): Add CompoundButtonWithDescription to avoid duplicate code with
  * RadioButtonWithDescription.
  */
+@NullMarked
 public class CheckBoxWithDescription extends ConstraintLayout implements OnClickListener {
     private CheckBox mCheckBox;
     private TextView mPrimary;

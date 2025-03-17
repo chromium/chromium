@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -264,10 +264,11 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
   // To ensure a consistent order with the output files, sort the profiles by
   // modification date. This corresponds to the order in which the profiles
   // were imported (or updated).
-  base::ranges::sort(imported_profiles,
-                     [](const AutofillProfile* a, const AutofillProfile* b) {
-                       return a->modification_date() < b->modification_date();
-                     });
+  std::ranges::sort(imported_profiles,
+                    [](const AutofillProfile* a, const AutofillProfile* b) {
+                      return a->usage_history().modification_date() <
+                             b->usage_history().modification_date();
+                    });
   *merged_profiles = SerializeProfiles(imported_profiles);
 }
 

@@ -5,13 +5,19 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MANAGER_IMPL_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MANAGER_IMPL_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -102,9 +108,6 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   // construction time.
   const int batch_size_;
   const size_t cache_low_water_mark_;
-
-  // Feature flag to safely introduce token caching by geo.
-  bool enable_token_caching_by_geo_ = false;
 
   // The last time token rates were measured and the counts since then.
   base::TimeTicks last_token_rate_measurement_;

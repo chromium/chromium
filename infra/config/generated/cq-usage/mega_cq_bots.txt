@@ -1,4 +1,6 @@
 chromium/try/android-10-arm64-rel
+chromium/try/android-10-x86-rel
+chromium/try/android-11-x86-rel
 chromium/try/android-12-x64-rel
 chromium/try/android-12l-landscape-x64-dbg
 chromium/try/android-12l-x64-dbg
@@ -19,7 +21,8 @@ chromium/try/android-clobber-rel
 chromium/try/android-dawn-arm-rel
 chromium/try/android-dawn-arm64-rel
 chromium/try/android-dawn-arm64-s24-rel
-chromium/try/android-desktop-x64-compile-rel
+chromium/try/android-desktop-15-x64-rel
+chromium/try/android-desktop-x64-rel
 chromium/try/android-official
 chromium/try/android-oreo-x86-rel
 chromium/try/android-pie-arm64-dbg
@@ -64,8 +67,6 @@ chromium/try/dawn-try-win-x64-intel-uhd770-rel
 chromium/try/dawn-try-win-x64-nvidia-exp
 chromium/try/dawn-try-win-x86-intel-exp
 chromium/try/dawn-try-win-x86-nvidia-exp
-chromium/try/dawn-try-win10-x64-intel-asan
-chromium/try/dawn-try-win10-x64-nvidia-asan
 chromium/try/dawn-try-win10-x86-rel
 chromium/try/dawn-win10-x64-deps-rel
 chromium/try/dawn-win10-x86-deps-rel
@@ -74,6 +75,7 @@ chromium/try/fuchsia-arm64-cast-receiver-rel
 chromium/try/fuchsia-fyi-arm64-dbg
 chromium/try/fuchsia-fyi-x64-asan
 chromium/try/fuchsia-fyi-x64-dbg-persistent-emulator
+chromium/try/fuchsia-netstack2-x64-cast-receiver-rel
 chromium/try/fuchsia-x64-cast-receiver-dbg
 chromium/try/fuchsia-x64-cast-receiver-dbg-compile
 chromium/try/fuchsia-x64-cast-receiver-rel
@@ -114,7 +116,9 @@ chromium/try/linux-gcc-rel
 chromium/try/linux-libfuzzer-asan-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel
+chromium/try/linux-oi-rel
 chromium/try/linux-rel
+chromium/try/linux-rel-test-selection
 chromium/try/linux-tsan-dbg
 chromium/try/linux-tsan-rel
 chromium/try/linux-ubsan-rel
@@ -142,6 +146,7 @@ chromium/try/mac-asan-media-rel
 chromium/try/mac-asan-rel
 chromium/try/mac-clobber-rel
 chromium/try/mac-dawn-rel
+chromium/try/mac-libfuzzer-asan-rel
 chromium/try/mac-official
 chromium/try/mac11-arm64-rel
 chromium/try/mac12-arm64-rel

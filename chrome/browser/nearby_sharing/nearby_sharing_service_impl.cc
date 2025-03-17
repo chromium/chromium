@@ -309,15 +309,15 @@ NearbyShareEncryptedMetadataKey AdvertisementToKey(
 }  // namespace
 
 NearbySharingServiceImpl::NearbySharingServiceImpl(
-    PrefService* prefs,
-    NotificationDisplayService* notification_display_service,
+    user_manager::User& user,
     Profile* profile,
+    NotificationDisplayService* notification_display_service,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     ash::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client,
     std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler)
-    : prefs_(prefs),
-      profile_(profile),
+    : profile_(profile),
+      prefs_(profile_->GetPrefs()),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
       process_manager_(process_manager),
       power_client_(std::move(power_client)),
@@ -326,30 +326,27 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           IdentityManagerFactory::GetForProfile(profile),
           profile->GetURLLoaderFactory(),
           &nearby_share_http_notifier_)),
-      profile_info_provider_(
-          std::make_unique<NearbyShareProfileInfoProviderImpl>(profile_)),
       local_device_data_manager_(
           NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
-              prefs,
-              http_client_factory_.get(),
-              profile_info_provider_.get())),
+              user,
+              http_client_factory_.get())),
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
-          prefs,
+          profile_->GetProfileUserName(),
+          prefs_,
           http_client_factory_.get(),
-          local_device_data_manager_.get(),
-          profile_info_provider_.get())),
+          local_device_data_manager_.get())),
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
+          profile_->GetProfileUserName(),
+          profile->GetPath(),
+          prefs_,
           local_device_data_manager_.get(),
           contact_manager_.get(),
-          profile_info_provider_.get(),
-          prefs,
           profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
-          profile->GetPath(),
           http_client_factory_.get())),
       transfer_profiler_(std::make_unique<NearbyShareTransferProfiler>()),
       logger_(std::make_unique<NearbyShareLogger>()),
-      settings_(prefs, local_device_data_manager_.get()),
-      feature_usage_metrics_(prefs),
+      settings_(prefs_, local_device_data_manager_.get()),
+      feature_usage_metrics_(prefs_),
       on_network_changed_delay_timer_(
           FROM_HERE,
           kProcessNetworkChangeTimerDelay,
@@ -398,7 +395,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   GetBluetoothAdapter();
 
   nearby_notification_manager_ = std::make_unique<NearbyNotificationManager>(
-      notification_display_service, this, prefs, profile_);
+      notification_display_service, this, prefs_, profile_);
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
@@ -3053,8 +3050,8 @@ void NearbySharingServiceImpl::SendIntroduction(
   v1_frame->set_type(sharing::nearby::V1Frame::INTRODUCTION);
   v1_frame->set_allocated_introduction(introduction.release());
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
   connection->Write(std::move(data));
 
   // We've successfully written the introduction, so we now have to wait for the
@@ -3231,8 +3228,8 @@ void NearbySharingServiceImpl::WriteResponse(
   v1_frame->set_type(sharing::nearby::V1Frame::RESPONSE);
   v1_frame->mutable_connection_response()->set_status(status);
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection.Write(std::move(data));
 }
@@ -3245,8 +3242,8 @@ void NearbySharingServiceImpl::WriteCancel(NearbyConnection& connection) {
   sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
   v1_frame->set_type(sharing::nearby::V1Frame::CANCEL);
 
-  std::vector<uint8_t> data(frame.ByteSize());
-  frame.SerializeToArray(data.data(), frame.ByteSize());
+  std::vector<uint8_t> data(frame.ByteSizeLong());
+  frame.SerializeToArray(data.data(), frame.ByteSizeLong());
 
   connection.Write(std::move(data));
 }

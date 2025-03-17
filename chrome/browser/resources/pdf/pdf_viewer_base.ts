@@ -152,7 +152,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
       browserApi: BrowserApi, scroller: HTMLElement, sizer: HTMLElement,
       content: HTMLElement) {
     this.browserApi = browserApi;
-    this.originalUrl = this.browserApi!.getStreamInfo().originalUrl;
+    this.originalUrl = this.browserApi.getStreamInfo().originalUrl;
     this.pdfCr23Enabled =
         document.documentElement.hasAttribute('pdfCr23Enabled');
     this.pdfOopifEnabled =
@@ -162,21 +162,21 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
 
     // Create the viewport.
     const defaultZoom =
-        this.browserApi!.getZoomBehavior() === ZoomBehavior.MANAGE ?
-        this.browserApi!.getDefaultZoom() :
+        this.browserApi.getZoomBehavior() === ZoomBehavior.MANAGE ?
+        this.browserApi.getDefaultZoom() :
         1.0;
 
     assert(!this.viewport_);
     this.viewport_ = new Viewport(
         scroller, sizer, content, getScrollbarWidth(), defaultZoom);
-    this.viewport_!.setViewportChangedCallback(() => this.viewportChanged_());
-    this.viewport_!.setBeforeZoomCallback(
+    this.viewport_.setViewportChangedCallback(() => this.viewportChanged_());
+    this.viewport_.setBeforeZoomCallback(
         () => this.currentController!.beforeZoom());
-    this.viewport_!.setAfterZoomCallback(() => {
+    this.viewport_.setAfterZoomCallback(() => {
       this.currentController!.afterZoom();
       this.afterZoom(this.viewport_!.getZoom());
     });
-    this.viewport_!.setUserInitiatedCallback(
+    this.viewport_.setUserInitiatedCallback(
         userInitiated => this.setUserInitiated_(userInitiated));
 
     // Handle scripting messages from outside the extension that wish to
@@ -222,11 +222,11 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
 
     // Set up the ZoomManager.
     this.zoomManager_ = ZoomManager.create(
-        this.browserApi!.getZoomBehavior(), () => this.viewport_!.getZoom(),
+        this.browserApi.getZoomBehavior(), () => this.viewport_!.getZoom(),
         zoom => this.browserApi!.setZoom(zoom),
-        this.browserApi!.getInitialZoom());
-    this.viewport_!.setZoomManager(this.zoomManager_);
-    this.browserApi!.addZoomEventListener(
+        this.browserApi.getInitialZoom());
+    this.viewport_.setZoomManager(this.zoomManager_);
+    this.browserApi.addZoomEventListener(
         (zoom: number) => this.zoomManager_!.onBrowserZoomChange(zoom));
 
     // Request translated strings.
@@ -253,7 +253,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
         this.viewport_!.setPosition(this.lastViewportPosition);
       }
       this.paramsParser!.getViewportFromUrlParams(this.originalUrl)
-          .then(params => this.handleUrlParams_(params));
+          .then(params => this.handleUrlParams(params));
       this.setLoadState(LoadState.SUCCESS);
       this.sendDocumentLoadedMessage();
       while (this.delayedScriptingMessages_.length > 0) {
@@ -385,7 +385,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
    *     initial load of the PDF.
    */
   get loaded(): Promise<void>|null {
-    return this.loaded_ ? this.loaded_!.promise : null;
+    return this.loaded_ ? this.loaded_.promise : null;
   }
 
   get viewport(): Viewport {
@@ -448,7 +448,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
    * later actions can override the effects of previous actions.
    * @param params The open params passed in the URL.
    */
-  private handleUrlParams_(params: OpenPdfParams) {
+  handleUrlParams(params: OpenPdfParams) {
     assert(this.viewport_);
 
     if (params.zoom) {
@@ -471,7 +471,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
       this.viewport_.setFittingType(params.view, fittingTypeParams);
       this.forceFit(params.view);
       this.isUserInitiatedEvent = true;
-    } else if (!params.position && params.page) {
+    } else if (!params.position && params.page !== undefined) {
       // No fitting type provided, so just go to page.
       this.viewport_.goToPage(params.page);
     }
@@ -511,7 +511,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
         targetOrigin = this.originalUrl;
       }
       try {
-        this.parentWindow_!.postMessage(message, targetOrigin);
+        this.parentWindow_.postMessage(message, targetOrigin);
       } catch (ok) {
         // TODO(crbug.com/40647731): targetOrigin probably was rejected, such as
         // a "data:" URL. This shouldn't cause this method to throw, though.

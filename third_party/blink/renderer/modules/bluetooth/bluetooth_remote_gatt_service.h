@@ -22,11 +22,6 @@ class ScriptState;
 // Represents a GATT Service within a Bluetooth Peripheral, a collection of
 // characteristics and relationships to other services that encapsulate the
 // behavior of part of a device.
-//
-// Callbacks providing WebBluetoothRemoteGATTService objects are handled by
-// CallbackPromiseAdapter templatized with this class. See this class's
-// "Interface required by CallbackPromiseAdapter" section and the
-// CallbackPromiseAdapter class comments.
 class BluetoothRemoteGATTService final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

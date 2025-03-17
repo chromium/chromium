@@ -204,6 +204,8 @@ class WTF_EXPORT String {
     return StringImpl::Create(converter.Span());
   }
 
+  static String Boolean(bool value) { return String(value ? "true" : "false"); }
+
   [[nodiscard]] static String Number(float);
 
   [[nodiscard]] static String Number(double, unsigned precision = 6);
@@ -635,7 +637,7 @@ inline bool String::ContainsOnlyLatin1OrEmpty() const {
   if (Is8Bit())
     return true;
 
-  return base::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
+  return std::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
 }
 
 #ifdef __OBJC__

@@ -91,10 +91,18 @@ class CORE_EXPORT DisplayLockContext final
 
   // Lifecycle state functions.
   ALWAYS_INLINE bool ShouldStyleChildren() const {
+    // Any of the following allows style:
+    // - This isn't locked.
+    // - Style and layout tree are forced for this lock.
+    // - This is an activatable lock and all activatable locks are forced.
+    // - This is content-visibility: auto within an element with a non-none
+    //   scroll-marker-group property.
+    // - This is an activatable for a11y lock and a11y is enabled.
     return !is_locked_ ||
            forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree) ||
            (IsActivatable(DisplayLockActivationReason::kAny) &&
             ActivatableDisplayLocksForced()) ||
+           (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
            (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
             document_->ExistingAXObjectCache());
   }
@@ -102,12 +110,22 @@ class CORE_EXPORT DisplayLockContext final
   void DidStyleSelf();
   void DidStyleChildren();
   ALWAYS_INLINE bool ShouldLayoutChildren() const {
+    // Any of the following allows layout:
+    // - This isn't locked.
+    // - Layout is forced for this lock.
+    // - This is an activatable lock and all activatable locks are forced.
+    // - We're doing a container query, and one of the following is true:
+    //   - This is content-visibility: auto within an element with a non-none
+    //     scroll-marker-group property.
+    //   - This is an activatable for a11y lock and a11y is enabled.
+    // TODO(400977357): Optimize layout for the scroll-marker-group cases.
     return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
            (IsActivatable(DisplayLockActivationReason::kAny) &&
             ActivatableDisplayLocksForced()) ||
-           (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
-            document_->ExistingAXObjectCache() &&
-            document_->GetStyleEngine().SkippedContainerRecalc());
+           (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
+           (document_->GetStyleEngine().SkippedContainerRecalc() &&
+            IsActivatable(DisplayLockActivationReason::kAccessibility) &&
+            document_->ExistingAXObjectCache());
   }
   void DidLayoutChildren();
   ALWAYS_INLINE bool ShouldPrePaintChildren() const {
@@ -254,6 +272,16 @@ class CORE_EXPORT DisplayLockContext final
   // an OOF positioned element from outside the display lock's subtree.
   bool DescendantIsAnchorTargetFromOutsideDisplayLock();
 
+  // Sets whether this lock is in a subtree of an element with a
+  // scroll-marker-group non-none property. This is set after setting the
+  // requested state of the lock. Note that this affects whether auto locks
+  // process style and layout, but does not affect whether the context is
+  // unlocked.
+  void SetHasScrollerWithScrollMarkerGroup(bool flag) {
+    render_affecting_state_[static_cast<int>(
+        RenderAffectingState::kHasScrollerWithScrollMarkerGroup)] = flag;
+  }
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.
@@ -392,6 +420,13 @@ class CORE_EXPORT DisplayLockContext final
   void ScheduleStateChangeEventIfNeeded();
   void DispatchStateChangeEventIfNeeded();
 
+  // Returns true if this lock is within an element with a non-none
+  // scroll-marker-group property.
+  ALWAYS_INLINE bool HasScrollerWithScrollMarkerGroup() const {
+    return render_affecting_state_[static_cast<int>(
+        RenderAffectingState::kHasScrollerWithScrollMarkerGroup)];
+  }
+
   WeakMember<Element> element_;
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;
@@ -508,6 +543,7 @@ class CORE_EXPORT DisplayLockContext final
     kSubtreeHasTopLayerElement,
     kDescendantIsViewTransitionElement,
     kDescendantIsAnchorTarget,
+    kHasScrollerWithScrollMarkerGroup,
     kNumRenderAffectingStates
   };
   void SetRenderAffectingState(RenderAffectingState state, bool flag);

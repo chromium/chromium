@@ -93,7 +93,8 @@ AggregatableReportRequest CreateExampleRequest(
         blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
     std::optional<url::Origin> aggregation_coordinator_origin = std::nullopt,
-    std::optional<AggregatableReportRequest::DelayType> = std::nullopt);
+    std::optional<AggregatableReportRequest::DelayType> =
+        AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,

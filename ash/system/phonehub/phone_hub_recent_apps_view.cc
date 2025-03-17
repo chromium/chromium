@@ -25,7 +25,6 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -87,7 +86,7 @@ constexpr int kRecentAppsTransitionDurationMs = 200;
 void LayoutAppButtonsView(views::View* buttons_view) {
   const gfx::Rect child_area = buttons_view->GetContentsBounds();
   views::View::Views visible_children;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       buttons_view->children(), std::back_inserter(visible_children),
       [](const views::View* v) {
         return v->GetVisible() && (v->GetPreferredSize().width() > 0);
@@ -315,9 +314,9 @@ PhoneHubRecentAppsView::LoadingView::LoadingView() {
 
   for (size_t i = 0; i < 5; i++) {
     app_loading_icons_.push_back(
-        AddChildView(new AppLoadingIcon(AppIcon::kSizeNormal)));
+        AddChildViewRaw(new AppLoadingIcon(AppIcon::kSizeNormal)));
   }
-  more_apps_button_ = AddChildView(new PhoneHubMoreAppsButton());
+  more_apps_button_ = AddChildViewRaw(new PhoneHubMoreAppsButton());
 
   StartLoadingAnimation();
 }
@@ -559,7 +558,7 @@ std::unique_ptr<views::View> PhoneHubRecentAppsView::GenerateMoreAppsButton() {
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::ExtractSubset(image, kMoreAppsButtonArea)));
-  more_apps_button->SetBackground(views::CreateThemedRoundedRectBackground(
+  more_apps_button->SetBackground(views::CreateRoundedRectBackground(
       kColorAshControlBackgroundColorInactive, kMoreAppsButtonRadius));
   more_apps_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));

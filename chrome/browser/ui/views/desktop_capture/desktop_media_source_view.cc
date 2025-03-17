@@ -30,11 +30,10 @@ constexpr int kCornerRadius = 8;
 
 using content::DesktopMediaID;
 
-DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
-    const DesktopMediaSourceViewStyle& style) = default;
+DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle() = default;
 
 DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
-    int columns,
+    size_t columns,
     const gfx::Size& item_size,
     const gfx::Rect& icon_rect,
     const gfx::Rect& label_rect,
@@ -46,6 +45,12 @@ DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
       label_rect(label_rect),
       text_alignment(text_alignment),
       image_rect(image_rect) {}
+
+DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
+    const DesktopMediaSourceViewStyle& style) = default;
+
+DesktopMediaSourceViewStyle& DesktopMediaSourceViewStyle::operator=(
+    const DesktopMediaSourceViewStyle& style) = default;
 
 DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaListView* parent,
@@ -94,11 +99,11 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
     // Unselect all other sources.
     Views neighbours;
     parent()->GetViewsInGroup(GetGroup(), &neighbours);
-    for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
-      if (*i != this) {
-        DCHECK(views::IsViewClass<DesktopMediaSourceView>(*i));
+    for (auto& neighbour : neighbours) {
+      if (neighbour != this) {
+        DCHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour));
         DesktopMediaSourceView* source_view =
-            static_cast<DesktopMediaSourceView*>(*i);
+            static_cast<DesktopMediaSourceView*>(neighbour);
         source_view->SetSelected(false);
       }
     }
@@ -145,10 +150,10 @@ views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
     return nullptr;
   }
 
-  for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
-    DCHECK(views::IsViewClass<DesktopMediaSourceView>(*i));
+  for (auto& neighbour : neighbours) {
+    DCHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour));
     DesktopMediaSourceView* source_view =
-        static_cast<DesktopMediaSourceView*>(*i);
+        static_cast<DesktopMediaSourceView*>(neighbour);
     if (source_view->selected_) {
       return source_view;
     }
@@ -189,7 +194,7 @@ void DesktopMediaSourceView::UpdateAccessibleName() {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
   } else {
-    GetViewAccessibility().SetName(label_->GetText());
+    GetViewAccessibility().SetName(std::u16string(label_->GetText()));
   }
 }
 

@@ -43,7 +43,7 @@ ScrollBar::Orientation ScrollBar::GetOrientation() const {
 void ScrollBar::SetThumb(BaseScrollBarThumb* thumb) {
   DCHECK(!thumb_);
   thumb_ = thumb;
-  AddChildView(thumb);
+  AddChildViewRaw(thumb);
   thumb->set_context_menu_controller(this);
 }
 
@@ -202,6 +202,11 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
             : event->details().velocity_y());
     event->SetHandled();
   }
+}
+
+void ScrollBar::OnThemeChanged() {
+  View::OnThemeChanged();
+  SchedulePaint();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

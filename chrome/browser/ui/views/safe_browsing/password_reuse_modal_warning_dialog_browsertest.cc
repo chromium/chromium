@@ -23,8 +23,7 @@ namespace safe_browsing {
 
 class PasswordReuseModalWarningTest : public DialogBrowserTest {
  public:
-  PasswordReuseModalWarningTest()
-      : dialog_(nullptr), latest_user_action_(WarningAction::SHOWN) {}
+  PasswordReuseModalWarningTest() : dialog_(nullptr) {}
 
   PasswordReuseModalWarningTest(const PasswordReuseModalWarningTest&) = delete;
   PasswordReuseModalWarningTest& operator=(
@@ -60,7 +59,7 @@ class PasswordReuseModalWarningTest : public DialogBrowserTest {
  protected:
   raw_ptr<PasswordReuseModalWarningDialog, AcrossTasksDanglingUntriaged>
       dialog_;
-  WarningAction latest_user_action_;
+  WarningAction latest_user_action_ = WarningAction::SHOWN;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordReuseModalWarningTest, InvokeUi_default) {

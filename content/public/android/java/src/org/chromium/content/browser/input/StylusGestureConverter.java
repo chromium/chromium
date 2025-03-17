@@ -23,6 +23,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink.mojom.StylusWritingGestureGranularity;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.gfx.mojom.Rect;
 import org.chromium.mojo_base.mojom.String16;
 
@@ -33,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
  * Converts stylus rich gestures from their Android representation to their Blink representation.
  */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@NullMarked
 public class StylusGestureConverter {
     // Should be kept in sync with StylusHandwritingGesture in tools/metrics/histograms/enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
@@ -74,7 +77,7 @@ public class StylusGestureConverter {
                 "InputMethod.StylusHandwriting.Gesture", gestureType, UmaGestureType.NUM_ENTRIES);
     }
 
-    public static StylusWritingGestureData createGestureData(HandwritingGesture gesture) {
+    public static @Nullable StylusWritingGestureData createGestureData(HandwritingGesture gesture) {
         if (gesture instanceof SelectGesture) {
             logGestureType(UmaGestureType.SELECT);
             return createGestureData((SelectGesture) gesture);
@@ -269,10 +272,13 @@ public class StylusGestureConverter {
      * @return A String16 object which wraps an array of short integers for each character in the
      * string.
      */
-    private static String16 toMojoString(String string) {
-        int len = string != null ? string.length() : 0;
+    private static String16 toMojoString(@Nullable String string) {
+        if (string == null) {
+            string = "";
+        }
+        int len = string.length();
         short[] data = new short[len];
-        for (int i = 0; i < data.length; i++) {
+        for (int i = 0; i < len; i++) {
             data[i] = (short) string.charAt(i);
         }
         String16 mojoString = new String16();

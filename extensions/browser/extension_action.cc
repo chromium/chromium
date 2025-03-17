@@ -164,8 +164,9 @@ gfx::Image ExtensionAction::GetExplicitlySetIcon(int tab_id) const {
 bool ExtensionAction::SetIsVisible(int tab_id, bool new_visibility) {
   const bool old_visibility = GetValue(is_visible_, tab_id);
 
-  if (old_visibility == new_visibility)
+  if (old_visibility == new_visibility) {
     return false;
+  }
 
   SetValue(&is_visible_, tab_id, new_visibility);
 
@@ -180,8 +181,9 @@ void ExtensionAction::DeclarativeShow(int tab_id) {
 void ExtensionAction::UndoDeclarativeShow(int tab_id) {
   int& show_count = declarative_show_count_[tab_id];
   DCHECK_GT(show_count, 0);
-  if (--show_count == 0)
+  if (--show_count == 0) {
     declarative_show_count_.erase(tab_id);
+  }
 }
 
 void ExtensionAction::DeclarativeSetIcon(int tab_id,
@@ -234,8 +236,9 @@ void ExtensionAction::SetDefaultIconImage(
 gfx::Image ExtensionAction::GetDefaultIconImage() const {
   // If we have a default icon, it should be loaded before trying to use it.
   DCHECK(!default_icon_image_ == !default_icon_);
-  if (default_icon_image_)
+  if (default_icon_image_) {
     return default_icon_image_->image();
+  }
 
   return GetPlaceholderIconImage();
 }
@@ -316,8 +319,9 @@ void ExtensionAction::Populate(const Extension& extension,
   } else {
     // Fall back to the product icons if no action icon exists.
     const ExtensionIconSet& product_icons = IconsInfo::GetIcons(&extension);
-    if (!product_icons.empty())
+    if (!product_icons.empty()) {
       default_icon_ = std::make_unique<ExtensionIconSet>(product_icons);
+    }
   }
 }
 
@@ -325,12 +329,14 @@ void ExtensionAction::Populate(const Extension& extension,
 int ExtensionAction::GetIconWidth(int tab_id) const {
   // If icon has been set, return its width.
   gfx::Image icon = GetValue(icon_, tab_id);
-  if (!icon.IsEmpty())
+  if (!icon.IsEmpty()) {
     return icon.Width();
+  }
   // If there is a default icon, the icon width will be set depending on our
   // action type.
-  if (default_icon_)
+  if (default_icon_) {
     return ActionIconSize();
+  }
 
   // If no icon has been set and there is no default icon, we need favicon
   // width.
@@ -343,8 +349,9 @@ bool ExtensionAction::GetIsVisibleInternal(int tab_id,
     return *tab_is_visible;
   }
 
-  if (include_declarative && base::Contains(declarative_show_count_, tab_id))
+  if (include_declarative && base::Contains(declarative_show_count_, tab_id)) {
     return true;
+  }
 
   if (const bool* default_is_visible =
           base::FindOrNull(is_visible_, kDefaultTabId)) {

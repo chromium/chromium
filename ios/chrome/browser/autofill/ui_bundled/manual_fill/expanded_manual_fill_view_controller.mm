@@ -14,6 +14,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using manual_fill::ManualFillDataType;
@@ -33,6 +34,8 @@ constexpr CGFloat kHeaderViewBottomPadding = 12;
 constexpr CGFloat kHeaderViewHorizontalPadding = 16;
 // Top padding for the header view.
 constexpr CGFloat kHeaderViewTopPadding = 8;
+// Top padding for the header view when in a bottom popover.
+constexpr CGFloat kHeaderViewPopoverTopPadding = 22;
 // Height of the segmented control.
 constexpr CGFloat kSegmentedControlHeight = 32;
 // Multiplier used to constraint the view's height.
@@ -104,6 +107,12 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   // Header view's trailing constraint.
   NSLayoutConstraint* _headerViewTrailingConstraint;
 
+  // Header view's top constraint.
+  NSLayoutConstraint* _headerViewTopConstraint;
+
+  // Header view's top constraint, when presented in a popover.
+  NSLayoutConstraint* _headerViewPopoverTopConstraint;
+
   // Image view containing the Chrome logo.
   UIImageView* _chromeLogo;
 
@@ -171,9 +180,14 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   _headerViewTrailingConstraint = [_headerView.trailingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                      constant:-kHeaderViewHorizontalPadding];
+  _headerViewTopConstraint =
+      [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                            constant:kHeaderViewTopPadding];
+  _headerViewPopoverTopConstraint = [_headerView.topAnchor
+      constraintEqualToAnchor:self.view.topAnchor
+                     constant:kHeaderViewPopoverTopPadding];
   [NSLayoutConstraint activateConstraints:@[
-    [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                          constant:kHeaderViewTopPadding],
+    _headerViewTopConstraint,
     _headerViewLeadingConstraint,
     _headerViewTrailingConstraint,
   ]];
@@ -188,6 +202,17 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
     };
     [self registerForTraitChanges:traits withHandler:handler];
   }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  // The top padding must take into account the arrow of the popover view if the
+  // arrow is at the top of the view.
+  BOOL isPopoverUpArrow = self.popoverPresentationController.arrowDirection ==
+                          UIPopoverArrowDirectionUp;
+  _headerViewTopConstraint.active = !isPopoverUpArrow;
+  _headerViewPopoverTopConstraint.active = isPopoverUpArrow;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

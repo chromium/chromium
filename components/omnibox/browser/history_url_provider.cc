@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -434,8 +433,8 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto [autocomplete_input, starter_pack_engine] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService());
+      AdjustInputForStarterPackKeyword(input,
+                                       client()->GetTemplateURLService());
 
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.
@@ -446,8 +445,10 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // likely to be looking for a starer pack scope than a URL. However,
   // URLs containing '@' before the host, such as '@history.com', area valid
   // URLs and still needs to run autocompletion.
-  if (autocomplete_input.text().starts_with('@'))
+  if (autocomplete_input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
     fixup_return.second = u"@" + fixup_return.second;
+  }
 
   url::Parsed parts;
   url_formatter::SegmentURL(fixup_return.second, &parts);
@@ -1086,7 +1087,7 @@ size_t HistoryURLProvider::RemoveSubsequentMatchesOf(
 
   // Find the first occurrence of any URL in the redirect chain. We want to
   // keep this one since it is rated the highest.
-  history::HistoryMatches::iterator first(base::ranges::find_first_of(
+  history::HistoryMatches::iterator first(std::ranges::find_first_of(
       *matches, remove, history::HistoryMatch::EqualsGURL));
   CHECK(first != matches->end(), base::NotFatalUntil::M130)
       << "We should have always found at least the "

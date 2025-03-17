@@ -51,10 +51,13 @@ dictionary AuctionAdConfig {
   long maxTrustedScoringSignalsURLLength;
   [RuntimeEnabled=FledgeTrustedSignalsKVv2Support]
   USVString trustedScoringSignalsCoordinator;
+  [RuntimeEnabled=FledgeTrustedSignalsKVv1CreativeScanning]
+  boolean sendCreativeScanningMetadata;
   sequence<USVString> interestGroupBuyers;
   Promise<any> auctionSignals;
   Promise<any> sellerSignals;
 
+  [RuntimeEnabled=FledgeDirectFromSellerSignalsWebBundles]
   Promise<USVString?> directFromSellerSignals;
   [RuntimeEnabled=FledgeDirectFromSellerSignalsHeaderAdSlot]
   Promise<DOMString?> directFromSellerSignalsHeaderAdSlot;
@@ -69,7 +72,6 @@ dictionary AuctionAdConfig {
   Promise<record<USVString, unsigned long long>?> perBuyerTimeouts;
   Promise<record<USVString, unsigned long long>?> perBuyerCumulativeTimeouts;
 
-  [RuntimeEnabled=FledgeReportingTimeout]
   unsigned long long reportingTimeout;
 
   USVString sellerCurrency;

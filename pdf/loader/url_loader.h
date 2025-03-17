@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
+#include "pdf/loader/result_codes.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 
 namespace blink {
@@ -91,6 +92,8 @@ struct UrlResponse final {
 // `content::PepperURLLoaderHost` and `ppapi::proxy::URLLoaderResource`.
 class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
  public:
+  using OpenCallback = base::OnceCallback<void(Result)>;
+
   // Client interface required by `UrlLoader`. Instances should be passed using
   // weak pointers, as the loader can be shared, and may outlive the client.
   class Client {
@@ -127,7 +130,7 @@ class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
   ~UrlLoader() override;
 
   // Mimic `pp::URLLoader`:
-  void Open(const UrlRequest& request, base::OnceCallback<void(int)> callback);
+  void Open(const UrlRequest& request, OpenCallback callback);
   void ReadResponseBody(base::span<char> buffer,
                         base::OnceCallback<void(int)> callback);
   void Close();
@@ -166,22 +169,22 @@ class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
   };
 
   // Aborts the load with `result`. Runs callback if pending.
-  void AbortLoad(int32_t result);
+  void AbortLoad(Result result);
 
   // Runs callback for `ReadResponseBody()` if pending.
   void RunReadCallback();
 
-  void SetLoadComplete(int32_t result);
+  void SetLoadComplete(Result result);
 
   base::WeakPtr<Client> client_;
 
   LoadingState state_ = LoadingState::kWaitingToOpen;
-  int32_t complete_result_ = 0;
+  Result complete_result_ = Result::kSuccess;
 
   std::unique_ptr<blink::WebAssociatedURLLoader> blink_loader_;
 
   bool ignore_redirects_ = false;
-  base::OnceCallback<void(int)> open_callback_;
+  OpenCallback open_callback_;
 
   UrlResponse response_;
 

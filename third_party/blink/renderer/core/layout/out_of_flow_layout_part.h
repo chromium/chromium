@@ -254,7 +254,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool overflows_containing_block = false;
 
     Member<Element> accessibility_anchor;
-    Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
+    Member<GCedHeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 
     void Trace(Visitor* visitor) const;
   };
@@ -353,7 +353,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const NodeInfo& node_info,
       const ComputedStyle& style,
       AnchorEvaluatorImpl&,
+      std::optional<wtf_size_t> option_index,
       bool try_fit_available_space,
+      PhysicalOffset default_anchor_scroll_shift,
       NonOverflowingScrollRange* out_scroll_range);
 
   const LayoutResult* Layout(
@@ -444,9 +446,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   const BlockBreakToken* PreviousFragmentainerBreakToken(wtf_size_t) const;
 
   BoxFragmentBuilder* container_builder_;
-  // The builder for the outer block fragmentation context when this is an inner
-  // layout of nested block fragmentation.
-  BoxFragmentBuilder* outer_container_builder_ = nullptr;
+  // The OutOfFlowLayoutPart for the outer block fragmentation context when this
+  // is an inner layout of nested block fragmentation.
+  OutOfFlowLayoutPart* outer_oof_layout_part_ = nullptr;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>

@@ -12,20 +12,17 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/renderer/google_accounts_private_api_util.h"
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
-#include "device/fido/features.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -40,7 +37,6 @@
 #include "v8/include/v8-primitive.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -262,20 +258,17 @@ void TrustedVaultEncryptionKeysExtension::Install() {
                 .ToLocalChecked())
       .Check();
 
-  if (base::FeatureList::IsEnabled(
-          trusted_vault::kSetClientEncryptionKeysJsApi) ||
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    chrome
-        ->Set(context, gin::StringToSymbol(isolate, "setClientEncryptionKeys"),
-              gin::CreateFunctionTemplate(
-                  isolate,
-                  base::BindRepeating(&TrustedVaultEncryptionKeysExtension::
-                                          SetClientEncryptionKeys,
-                                      weak_ptr_factory_.GetWeakPtr()))
-                  ->GetFunction(context)
-                  .ToLocalChecked())
-        .Check();
-  }
+  chrome
+      ->Set(
+          context, gin::StringToSymbol(isolate, "setClientEncryptionKeys"),
+          gin::CreateFunctionTemplate(
+              isolate,
+              base::BindRepeating(
+                  &TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys,
+                  weak_ptr_factory_.GetWeakPtr()))
+              ->GetFunction(context)
+              .ToLocalChecked())
+      .Check();
 #endif
 
   chrome

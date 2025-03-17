@@ -8,6 +8,7 @@
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -29,12 +30,15 @@
 
 namespace autofill {
 
-const char kDefaultTestPromoCode[] = "5PCTOFFSHOES";
-const char kDefaultTestValuePropText[] = "5% off on shoes. Up to $50.";
-const char kDefaultTestSeeDetailsText[] = "See details";
-const char kDefaultTestUsageInstructionsText[] =
+namespace {
+constexpr char kDefaultTestPromoCode[] = "5PCTOFFSHOES";
+constexpr char kDefaultTestValuePropText[] = "5% off on shoes. Up to $50.";
+constexpr char kDefaultTestSeeDetailsText[] = "See details";
+constexpr char kDefaultTestUsageInstructionsText[] =
     "Click the promo code field at checkout to autofill it.";
-const char kDefaultTestDetailsUrlString[] = "https://pay.google.com";
+constexpr char kDefaultTestDetailsUrlString[] = "https://pay.google.com";
+constexpr int64_t kCreditCardInstrumentId = 0x4444;
+}  // namespace
 
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}

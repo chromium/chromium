@@ -26,6 +26,10 @@ class SyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   static SyncServiceFactory* GetInstance();
 
+  // Iterates over all profiles that have been loaded so far and extract their
+  // SyncService if present. Returned pointers are guaranteed to be not null.
+  static std::vector<const syncer::SyncService*> GetAllSyncServices();
+
  private:
   friend class base::NoDestructor<SyncServiceFactory>;
 

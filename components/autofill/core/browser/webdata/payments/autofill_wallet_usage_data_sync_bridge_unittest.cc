@@ -190,7 +190,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   // `virtual_card_usage_data2`.
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateDelete(
-      *virtual_card_usage_data1.usage_data_id()));
+      *virtual_card_usage_data1.usage_data_id(), syncer::EntityData()));
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       *virtual_card_usage_data2.usage_data_id(),
       VirtualCardUsageDataToEntity(virtual_card_usage_data2)));

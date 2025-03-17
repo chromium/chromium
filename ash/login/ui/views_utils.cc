@@ -4,11 +4,11 @@
 
 #include "ash/login/ui/views_utils.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -51,7 +51,7 @@ class ContainerView : public NonAccessibleView,
       return child->GetVisible() &&
              child->HitTestRect(gfx::ToEnclosingRect(child_rect));
     };
-    return base::ranges::any_of(children, hits_child);
+    return std::ranges::any_of(children, hits_child);
   }
 };
 
@@ -162,7 +162,7 @@ std::unique_ptr<views::Label> CreateThemedBubbleLabel(
     int line_height) {
   auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
                                          font_list, line_height);
-  label->SetEnabledColorId(enabled_color_type);
+  label->SetEnabledColor(enabled_color_type);
   return label;
 }
 

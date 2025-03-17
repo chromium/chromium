@@ -22,14 +22,14 @@ using Result = SessionInclusionRules::InclusionResult;
 // These tests depend on the registry_controlled_domains code, so assert ahead
 // of time that the eTLD+1 is what we expect, for clarity and to avoid confusing
 // test failures.
-#define ASSERT_DOMAIN_AND_REGISTRY(origin, expected_domain_and_registry)      \
-  {                                                                           \
-    ASSERT_EQ(                                                                \
-        registry_controlled_domains::GetDomainAndRegistry(                    \
-            origin, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES), \
-        expected_domain_and_registry)                                         \
-        << "Unexpected domain and registry.";                                 \
-  }
+void AssertDomainAndRegistry(const url::Origin& origin,
+                             const std::string& expected_domain_and_registry) {
+  ASSERT_EQ(
+      registry_controlled_domains::GetDomainAndRegistry(
+          origin, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES),
+      expected_domain_and_registry)
+      << "Unexpected domain and registry.";
+}
 
 struct EvaluateUrlTestCase {
   const char* url;
@@ -78,7 +78,7 @@ TEST(SessionInclusionRulesTest, DefaultIncludeOriginMayNotIncludeSite) {
   url::Origin subdomain_origin =
       url::Origin::Create(GURL("https://some.site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(subdomain_origin, "site.test");
+  AssertDomainAndRegistry(subdomain_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{subdomain_origin};
   EXPECT_FALSE(inclusion_rules.may_include_site_for_testing());
@@ -105,7 +105,7 @@ TEST(SessionInclusionRulesTest, DefaultIncludeOriginMayNotIncludeSite) {
 TEST(SessionInclusionRulesTest, DefaultIncludeOriginThoughMayIncludeSite) {
   url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(root_site_origin, "site.test");
+  AssertDomainAndRegistry(root_site_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{root_site_origin};
   EXPECT_TRUE(inclusion_rules.may_include_site_for_testing());
@@ -136,7 +136,7 @@ TEST(SessionInclusionRulesTest, IncludeSiteAttemptedButNotAllowed) {
   url::Origin subdomain_origin =
       url::Origin::Create(GURL("https://some.site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(subdomain_origin, "site.test");
+  AssertDomainAndRegistry(subdomain_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{subdomain_origin};
   EXPECT_FALSE(inclusion_rules.may_include_site_for_testing());
@@ -159,7 +159,7 @@ TEST(SessionInclusionRulesTest, IncludeSiteAttemptedButNotAllowed) {
 TEST(SessionInclusionRulesTest, IncludeSite) {
   url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(root_site_origin, "site.test");
+  AssertDomainAndRegistry(root_site_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{root_site_origin};
   EXPECT_TRUE(inclusion_rules.may_include_site_for_testing());
@@ -190,7 +190,7 @@ TEST(SessionInclusionRulesTest, AddUrlRuleToOriginOnly) {
   url::Origin subdomain_origin =
       url::Origin::Create(GURL("https://some.site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(subdomain_origin, "site.test");
+  AssertDomainAndRegistry(subdomain_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{subdomain_origin};
   EXPECT_FALSE(inclusion_rules.may_include_site_for_testing());
@@ -239,7 +239,7 @@ TEST(SessionInclusionRulesTest, AddUrlRuleToOriginOnly) {
 TEST(SessionInclusionRulesTest, AddUrlRuleToOriginThatMayIncludeSite) {
   url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(root_site_origin, "site.test");
+  AssertDomainAndRegistry(root_site_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{root_site_origin};
   EXPECT_TRUE(inclusion_rules.may_include_site_for_testing());
@@ -279,7 +279,7 @@ TEST(SessionInclusionRulesTest, AddUrlRuleToOriginThatMayIncludeSite) {
 TEST(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingSite) {
   url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(root_site_origin, "site.test");
+  AssertDomainAndRegistry(root_site_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{root_site_origin};
   EXPECT_TRUE(inclusion_rules.may_include_site_for_testing());
@@ -335,7 +335,7 @@ TEST(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingSite) {
 TEST(SessionInclusionRulesTest, UrlRuleParsing) {
   url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(root_site_origin, "site.test");
+  AssertDomainAndRegistry(root_site_origin, "site.test");
 
   // Use the most permissive type of inclusion_rules, to hit the interesting
   // edge cases.
@@ -376,7 +376,7 @@ TEST(SessionInclusionRulesTest, UrlRuleParsing) {
 TEST(SessionInclusionRulesTest, UrlRuleParsingTopLevelDomain) {
   url::Origin tld_origin = url::Origin::Create(GURL("https://com"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(tld_origin, "");
+  AssertDomainAndRegistry(tld_origin, "");
 
   SessionInclusionRules inclusion_rules{tld_origin};
   EXPECT_FALSE(inclusion_rules.may_include_site_for_testing());
@@ -396,7 +396,7 @@ TEST(SessionInclusionRulesTest, UrlRuleParsingTopLevelDomain) {
 TEST(SessionInclusionRulesTest, UrlRuleParsingIPv4Address) {
   url::Origin ip_origin = url::Origin::Create(GURL("https://4.31.198.44"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(ip_origin, "");
+  AssertDomainAndRegistry(ip_origin, "");
 
   SessionInclusionRules inclusion_rules{ip_origin};
   EXPECT_FALSE(inclusion_rules.may_include_site_for_testing());
@@ -418,7 +418,7 @@ TEST(SessionInclusionRulesTest, UrlRuleParsingIPv6Address) {
   url::Origin ipv6_origin =
       url::Origin::Create(GURL("https://[1:abcd::3:4:ff]"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(ipv6_origin, "");
+  AssertDomainAndRegistry(ipv6_origin, "");
 
   SessionInclusionRules inclusion_rules{ipv6_origin};
   EXPECT_FALSE(inclusion_rules.may_include_site_for_testing());
@@ -450,7 +450,7 @@ TEST(SessionInclusionRulesTest, NonstandardPort) {
   url::Origin nonstandard_port_origin =
       url::Origin::Create(GURL("https://site.test:8888"));
 
-  ASSERT_DOMAIN_AND_REGISTRY(nonstandard_port_origin, "site.test");
+  AssertDomainAndRegistry(nonstandard_port_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{nonstandard_port_origin};
   EXPECT_TRUE(inclusion_rules.may_include_site_for_testing());
@@ -507,7 +507,7 @@ TEST(SessionInclusionRulesTest, ToFromProto) {
   // Create a valid SessionInclusionRules object with default inclusion rule and
   // a couple of additional URL rules.
   url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
-  ASSERT_DOMAIN_AND_REGISTRY(root_site_origin, "site.test");
+  AssertDomainAndRegistry(root_site_origin, "site.test");
 
   SessionInclusionRules inclusion_rules{root_site_origin};
   EXPECT_TRUE(inclusion_rules.may_include_site_for_testing());

@@ -49,7 +49,7 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
       AnsiArcName=r->ArcName;
 #ifdef _WIN_ALL
       if (!AreFileApisANSI())
-        IntToExt(r->ArcName,AnsiArcName);
+        OemToExt(r->ArcName,AnsiArcName);
 #endif
     }
 
@@ -369,7 +369,7 @@ int PASCAL ProcessFile(HANDLE hArcData,int Operation,char *DestPath,char *DestNa
         // We must not apply OemToCharBuffA directly to DestPath,
         // because we do not know DestPath length and OemToCharBuffA
         // does not stop at 0.
-        IntToExt(ExtrPathA,ExtrPathA);
+        OemToExt(ExtrPathA,ExtrPathA);
 #endif
         CharToWide(ExtrPathA,Data->Cmd.ExtrPath);
         AddEndSlash(Data->Cmd.ExtrPath);
@@ -381,7 +381,7 @@ int PASCAL ProcessFile(HANDLE hArcData,int Operation,char *DestPath,char *DestNa
         // We must not apply OemToCharBuffA directly to DestName,
         // because we do not know DestName length and OemToCharBuffA
         // does not stop at 0.
-        IntToExt(DestNameA,DestNameA);
+        OemToExt(DestNameA,DestNameA);
 #endif
         CharToWide(DestNameA,Data->Cmd.DllDestName);
       }

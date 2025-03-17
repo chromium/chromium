@@ -1,0 +1,16 @@
+Verifies issue creation for a `Signature-Input` which has expired.
+Issue reported: {
+    issue : {
+        code : SRIMessageSignatureIssue
+        details : {
+            sriMessageSignatureIssueDetails : {
+                error : SignatureInputHeaderValueNotInnerList
+                request : {
+                    requestId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/sri-message-signature-test.php?digest=sha-256%3D%3AX48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE%3D%3A&signature=signature%3D%3AgHim9e5Pk2H7c9BStOmxSmkyc8%2BioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9p7C0hzW4o4Qpkm5aApd6WLLCw%3D%3D%3A&input=signature%3D%3AgHim9e5Pk2H7c9BStOmxSmkyc8%2BioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9p7C0hzW4o4Qpkm5aApd6WLLCw%3D%3D%3A%3Bexpires%3D1
+                }
+            }
+        }
+    }
+}
+

@@ -6,11 +6,11 @@
 #define IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_APP_INTERFACE_H_
 
 #import <Foundation/Foundation.h>
-
 #import <UIKit/UIKit.h>
 
 @class ElementSelector;
 @protocol GREYAction;
+typedef NS_ENUM(NSInteger, GREYDirection);
 
 // Helper class to return actions for EG tests.  These helpers are compiled
 // into the app binary and can be called from either app or test code.
@@ -69,6 +69,11 @@
 // triggering scroll view delegate methods as there is no way to actually
 // trigger the gesture.
 + (id<GREYAction>)accessibilitySwipeRight;
+
+// Swipes down and to the left or right depending on the given `direction`.
+// Use `kGREYDirectionDown` to indicate that the swipe should only be down and
+// not have a horizontal component.
++ (id<GREYAction>)overscrollSwipe:(GREYDirection)direction;
 
 @end
 

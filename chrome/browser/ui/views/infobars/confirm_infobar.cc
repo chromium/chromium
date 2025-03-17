@@ -110,8 +110,8 @@ void ConfirmInfoBar::Layout(PassKey) {
     order_of_buttons.push_back(cancel_button_);
   }
 
-  if (!views::PlatformStyle::kIsOkButtonLeading) {
-    base::ranges::reverse(order_of_buttons);
+  if constexpr (!views::PlatformStyle::kIsOkButtonLeading) {
+    std::ranges::reverse(order_of_buttons);
   }
 
   for (views::MdTextButton* button : order_of_buttons) {

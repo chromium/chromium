@@ -55,6 +55,7 @@
 #include "net/base/load_flags.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/quic/web_transport_error.h"
 #include "net/ssl/ssl_info.h"
@@ -228,11 +229,12 @@ BuildAttributionReportingIssue(
   protocol::String violation_type = BuildAttributionReportingIssueViolationType(
       issue_details->violation_type);
 
-  CHECK(issue_details->request->url.has_value());
   auto request = protocol::Audits::AffectedRequest::Create()
-                     .SetRequestId(issue_details->request->request_id)
-                     .SetUrl(issue_details->request->url.value())
+                     .SetUrl(issue_details->request->url)
                      .Build();
+  if (issue_details->request->request_id.has_value()) {
+    request->SetRequestId(issue_details->request->request_id.value());
+  }
   auto attribution_reporting_issue_details =
       protocol::Audits::AttributionReportingIssueDetails::Create()
           .SetViolationType(violation_type)
@@ -391,6 +393,12 @@ FederatedAuthRequestResultToProtocol(
     }
     case FederatedAuthRequestResult::kTypeNotMatching: {
       return FederatedAuthRequestIssueReasonEnum::TypeNotMatching;
+    }
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
+      return FederatedAuthRequestIssueReasonEnum::UiDismissedNoEmbargo;
+    }
+    case FederatedAuthRequestResult::kCorsError: {
+      return FederatedAuthRequestIssueReasonEnum::CorsError;
     }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED();
@@ -559,6 +567,44 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildBounceTrackingIssue(
   return issue;
 }
 
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildPartitioningBlobURLIssue(
+    const blink::mojom::PartitioningBlobURLIssueDetailsPtr& issue_details) {
+  protocol::String partitioning_blob_url_info_string;
+  switch (issue_details->partitioning_blob_url_info) {
+    case blink::mojom::PartitioningBlobURLInfo::kBlockedCrossPartitionFetching:
+      partitioning_blob_url_info_string = protocol::Audits::
+          PartitioningBlobURLInfoEnum::BlockedCrossPartitionFetching;
+      break;
+    case blink::mojom::PartitioningBlobURLInfo::kEnforceNoopenerForNavigation:
+      partitioning_blob_url_info_string = protocol::Audits::
+          PartitioningBlobURLInfoEnum::EnforceNoopenerForNavigation;
+      break;
+    default:
+      partitioning_blob_url_info_string = "Unknown";
+      break;
+  }
+
+  auto partitioning_blob_url_issue_details =
+      protocol::Audits::PartitioningBlobURLIssueDetails::Create()
+          .SetUrl(issue_details->url.spec())
+          .SetPartitioningBlobURLInfo(partitioning_blob_url_info_string)
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetPartitioningBlobURLIssueDetails(
+              std::move(partitioning_blob_url_issue_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                PartitioningBlobURLIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
+
+  return issue;
+}
+
 void UpdateChildFrameTrees(FrameTreeNode* ftn, bool update_target_info) {
   if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(ftn))) {
@@ -720,12 +766,17 @@ void DidUpdatePrefetchStatus(
     return;
   }
 
+  // See a comment in `PreloadingDecider::ctor()`.
+  auto* devtools_preload_storage =
+      DevToolsPreloadStorage::GetForCurrentDocument(ftn->current_frame_host());
+  if (!devtools_preload_storage) {
+    return;
+  }
+
   // We update DevToolsPreloadStorage, even if there are no active DevTools
   // sessions, to persist the latest status update.
-  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
-      ftn->current_frame_host())
-      ->UpdatePrefetchStatus(prefetch_url, preload_pipeline_id, status,
-                             prefetch_status, request_id);
+  devtools_preload_storage->UpdatePrefetchStatus(
+      prefetch_url, preload_pipeline_id, status, prefetch_status, request_id);
 
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
@@ -830,13 +881,18 @@ void DidUpdatePrerenderStatus(
     return;
   }
 
+  // See a comment in `PreloadingDecider::ctor()`.
+  auto* devtools_preload_storage =
+      DevToolsPreloadStorage::GetForCurrentDocument(ftn->current_frame_host());
+  if (!devtools_preload_storage) {
+    return;
+  }
+
   // We update DevToolsPreloadStorage, even if there are no active DevTools
   // sessions, to persist the latest status update.
-  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
-      ftn->current_frame_host())
-      ->UpdatePrerenderStatus(prerender_url, target_hint, preload_pipeline_id,
-                              status, prerender_status,
-                              disallowed_mojo_interface, mismatched_headers);
+  devtools_preload_storage->UpdatePrerenderStatus(
+      prerender_url, target_hint, preload_pipeline_id, status, prerender_status,
+      disallowed_mojo_interface, mismatched_headers);
 
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                    initiator_devtools_navigation_token, prerender_url,
@@ -1255,7 +1311,7 @@ void ApplyNetworkRequestOverrides(
     bool* disable_cache,
     bool* network_instrumentation_enabled,
     bool* skip_service_worker,
-    std::optional<std::vector<net::SourceStream::SourceType>>*
+    std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden) {
@@ -1309,7 +1365,7 @@ void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
-    std::optional<std::vector<net::SourceStream::SourceType>>*
+    std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden) {
@@ -1352,6 +1408,33 @@ bool ApplyUserAgentMetadataOverrides(
   }
 
   return result;
+}
+
+bool ApplyNetworkCookieControlsOverrides(
+    RenderFrameHostImpl& rfh,
+    net::CookieSettingOverrides& overrides) {
+  FrameTreeNode* ftn = rfh.frame_tree_node();
+  if (!ftn) {
+    return false;
+  }
+  DevToolsAgentHostImpl* agent_host =
+      GetDevToolsAgentHostForNetworkOverrides(ftn);
+
+  return ApplyNetworkCookieControlsOverrides(agent_host, overrides);
+}
+
+bool ApplyNetworkCookieControlsOverrides(
+    DevToolsAgentHostImpl* agent_host,
+    net::CookieSettingOverrides& overrides) {
+  if (!agent_host) {
+    return false;
+  }
+  for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
+    if (network->enabled()) {
+      network->ApplyCookieControlsOverrides(overrides);
+    }
+  }
+  return !overrides.empty();
 }
 
 namespace {
@@ -1739,54 +1822,54 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
   auto exclusion_reasons =
       std::make_unique<protocol::Array<protocol::String>>();
   if (status.HasExclusionReason(
-          net::CookieInclusionStatus::
+          net::CookieInclusionStatus::ExclusionReason::
               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX)) {
     exclusion_reasons->push_back(protocol::Audits::CookieExclusionReasonEnum::
                                      ExcludeSameSiteUnspecifiedTreatedAsLax);
   }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE)) {
+  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_SAMESITE_NONE_INSECURE)) {
     exclusion_reasons->push_back(protocol::Audits::CookieExclusionReasonEnum::
                                      ExcludeSameSiteNoneInsecure);
   }
   if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX)) {
+          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteLax);
   }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT)) {
+  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_SAMESITE_STRICT)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteStrict);
   }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII)) {
+  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_DOMAIN_NON_ASCII)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeDomainNonASCII);
   }
   if (status.HasExclusionReason(
-          net::CookieInclusionStatus::
+          net::CookieInclusionStatus::ExclusionReason::
               EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::
             ExcludeThirdPartyCookieBlockedInFirstPartySet);
   }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
+  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_THIRD_PARTY_PHASEOUT)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeThirdPartyPhaseout);
   }
 
   if (base::FeatureList::IsEnabled(net::features::kEnablePortBoundCookies) &&
       status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_PORT_MISMATCH)) {
+          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_PORT_MISMATCH)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludePortMismatch);
   }
 
   if (base::FeatureList::IsEnabled(net::features::kEnableSchemeBoundCookies) &&
-      status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH)) {
+      status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_SCHEME_MISMATCH)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeSchemeMismatch);
   }
@@ -1797,63 +1880,63 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
 std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
     net::CookieInclusionStatus status) {
   auto warning_reasons = std::make_unique<protocol::Array<protocol::String>>();
-  if (status.HasWarningReason(
-          net::CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE)) {
+  if (status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
+                                  WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnAttributeValueExceedsMaxSize);
   }
   if (status.HasWarningReason(
-          net::CookieInclusionStatus::
+          net::CookieInclusionStatus::WarningReason::
               WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteUnspecifiedCrossSiteContext);
   }
-  if (status.HasWarningReason(
-          net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE)) {
+  if (status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
+                                  WARN_SAMESITE_NONE_INSECURE)) {
     warning_reasons->push_back(
         protocol::Audits::CookieWarningReasonEnum::WarnSameSiteNoneInsecure);
   }
-  if (status.HasWarningReason(net::CookieInclusionStatus::
+  if (status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
                                   WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteUnspecifiedLaxAllowUnsafe);
   }
 
   // There can only be one of the following warnings.
-  if (status.HasWarningReason(net::CookieInclusionStatus::
+  if (status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
                                   WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteStrictLaxDowngradeStrict);
   } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::
+                 net::CookieInclusionStatus::WarningReason::
                      WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteStrictCrossDowngradeStrict);
   } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::
+                 net::CookieInclusionStatus::WarningReason::
                      WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteStrictCrossDowngradeLax);
   } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::
+                 net::CookieInclusionStatus::WarningReason::
                      WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteLaxCrossDowngradeStrict);
   } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::
+                 net::CookieInclusionStatus::WarningReason::
                      WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteLaxCrossDowngradeLax);
   }
 
   if (status.HasWarningReason(
-          net::CookieInclusionStatus::WARN_DOMAIN_NON_ASCII)) {
+          net::CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII)) {
     warning_reasons->push_back(
         protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII);
   }
 
-  if (status.HasWarningReason(
-          net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+  if (status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
+                                  WARN_THIRD_PARTY_PHASEOUT)) {
     warning_reasons->push_back(
         protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout);
   }
@@ -1873,7 +1956,7 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
   if (base::FeatureList::IsEnabled(
           net::features::kCookieSameSiteConsidersRedirectChain) &&
       status.HasWarningReason(
-          net::CookieInclusionStatus::
+          net::CookieInclusionStatus::WarningReason::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
     warning_reasons->push_back(
         protocol::Audits::CookieWarningReasonEnum::
@@ -2068,6 +2151,10 @@ void BuildAndReportBrowserInitiatedIssue(
              blink::mojom::InspectorIssueCode::kBounceTrackingIssue) {
     issue =
         BuildBounceTrackingIssue(info->details->bounce_tracking_issue_details);
+  } else if (info->code ==
+             blink::mojom::InspectorIssueCode::kPartitioningBlobURLIssue) {
+    issue = BuildPartitioningBlobURLIssue(
+        info->details->partitioning_blob_url_issue_details);
   } else if (info->code == blink::mojom::InspectorIssueCode::
                                kCookieDeprecationMetadataIssue) {
     issue = BuildCookieDeprecationMetadataIssue(
@@ -2497,6 +2584,14 @@ void OnFencedFrameReportResponseReceived(
 void DidChangeFrameLoadingState(FrameTreeNode& ftn) {
   DispatchToAgents(&ftn, &protocol::PageHandler::DidChangeFrameLoadingState,
                    ftn);
+}
+
+void DidStartNavigating(FrameTreeNode& ftn,
+                        const GURL& url,
+                        const base::UnguessableToken& loader_id,
+                        const blink::mojom::NavigationType& navigation_type) {
+  DispatchToAgents(&ftn, &protocol::PageHandler::DidStartNavigating, ftn, url,
+                   loader_id, navigation_type);
 }
 
 }  // namespace devtools_instrumentation

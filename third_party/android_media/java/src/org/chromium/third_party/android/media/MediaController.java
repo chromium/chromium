@@ -16,6 +16,8 @@
 
 package org.chromium.third_party.android.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
@@ -29,7 +31,8 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.chromium.third_party.android.media.R;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -40,6 +43,7 @@ import java.util.Locale;
  * customize the look as we want. This file is taken directly from the public Android sample for
  * supportv4, with tiny bug fixes.
  */
+@NullMarked
 public class MediaController extends FrameLayout {
     /**
      * The interface that allows media controller to actually control media and provides some
@@ -83,26 +87,29 @@ public class MediaController extends FrameLayout {
         long getActionFlags();
     }
 
-    private Delegate mDelegate;
+    private @Nullable Delegate mDelegate;
     private Context mContext;
-    private ViewGroup mProgressGroup;
-    private SeekBar mProgressBar;
-    private TextView mEndTime;
-    private TextView mCurrentTime;
+    private @Nullable ViewGroup mProgressGroup;
+    private @Nullable SeekBar mProgressBar;
+    private @Nullable TextView mEndTime;
+    private @Nullable TextView mCurrentTime;
     private boolean mDragging;
     private boolean mUseFastForward;
     private boolean mListenersSet;
     private boolean mShowNext;
     private boolean mShowPrev;
-    private View.OnClickListener mNextListener;
-    private View.OnClickListener mPrevListener;
-    private StringBuilder mFormatBuilder;
-    private Formatter mFormatter;
-    private ImageButton mPauseButton;
-    private ImageButton mFfwdButton;
-    private ImageButton mRewButton;
-    private ImageButton mNextButton;
-    private ImageButton mPrevButton;
+    private View.@Nullable OnClickListener mNextListener;
+    private View.@Nullable OnClickListener mPrevListener;
+
+    private @Nullable StringBuilder mFormatBuilder;
+
+    private @Nullable Formatter mFormatter;
+
+    private @Nullable ImageButton mPauseButton;
+    private @Nullable ImageButton mFfwdButton;
+    private @Nullable ImageButton mRewButton;
+    private @Nullable ImageButton mNextButton;
+    private @Nullable ImageButton mPrevButton;
 
     public MediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -222,11 +229,13 @@ public class MediaController extends FrameLayout {
         int minutes = (totalSeconds / 60) % 60;
         int hours = totalSeconds / 3600;
 
-        mFormatBuilder.setLength(0);
+        assumeNonNull(mFormatBuilder).setLength(0);
         if (hours > 0) {
-            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+            return assumeNonNull(mFormatter)
+                    .format("%d:%02d:%02d", hours, minutes, seconds)
+                    .toString();
         } else {
-            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+            return assumeNonNull(mFormatter).format("%02d:%02d", minutes, seconds).toString();
         }
     }
 

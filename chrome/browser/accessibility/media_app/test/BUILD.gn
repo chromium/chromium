@@ -4,7 +4,7 @@
 
 import("//services/screen_ai/buildflags/features.gni")
 
-assert(is_chromeos_ash, "AXMediaApp is ash-chrome only")
+assert(is_chromeos, "AXMediaApp is ChromeOS only")
 
 source_set("test_support") {
   testonly = true

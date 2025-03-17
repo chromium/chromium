@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
@@ -13,59 +14,58 @@ import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
   // The model is readily available and the text session can be created.
-  kReadily = 0,
+  kAvailable = 0,
   // The model is not available but the test session can be created after
-  // downloading the model
-  kAfterDownload = 1,
+  // downloading the model.
+  kDownloadable = 1,
+  // The model is not available but it's being downloaded.
+  kDownloading = 2,
   // The model cannot be created because the service is not running.
-  kNoServiceNotRunning = 2,
+  kUnavailableServiceNotRunning = 3,
+  // The model does not support the requested language options.
+  kUnavailableUnsupportedLanguage = 4,
 
   // The following reasons are from
   // `optimization_guide::OnDeviceModelEligibilityReason`.
 
   // The model is not available because of unknown reason.
-  kNoUnknown = 3,
+  kUnavailableUnknown = 5,
   // The model is not available because the feature flag gating on-device model
   // execution was disabled.
-  kNoFeatureNotEnabled = 4,
-  // DEPRECATED: it's now split into kModelNotEligible and
-  // kNoInsufficientDiskSpace.
-  // The model is not available because there was no on-device model available.
-  // kNoModelNotAvailable = 5,
+  kUnavailableFeatureNotEnabled = 6,
   // The model is not available because the on-device model was available but
   // there was not an execution config available for the feature.
-  kNoConfigNotAvailableForFeature = 6,
+  kUnavailableConfigNotAvailableForFeature = 7,
   // The model is not available because the GPU is blocked.
-  kNoGpuBlocked = 7,
+  kUnavailableGpuBlocked = 8,
   // The model is not available because the on-device model process crashed too
   // many times for this version.
-  kNoTooManyRecentCrashes = 8,
-  // The model is not available because the on-device model took too long too
-  // many times for this version.
-  kNoTooManyRecentTimeouts = 9,
+  kUnavailableTooManyRecentCrashes = 9,
   // The model is not available because the on-device safety model was required
   // but not available.
-  kNoSafetyModelNotAvailable = 10,
+  kUnavailableSafetyModelNotAvailable = 10,
   // The model is not available because the on-device safety model was
   // available but there was not a safety config available for the feature.
-  kNoSafetyConfigNotAvailableForFeature = 11,
+  kUnavailableSafetyConfigNotAvailableForFeature = 11,
   // The model is not available because the on-device language detection model
   // was required but not available.
-  kNoLanguageDetectionModelNotAvailable = 12,
+  kUnavailableLanguageDetectionModelNotAvailable = 12,
   // The model is not available because the on-device model execution for this
   // feature was not enabled.
-  kNoFeatureExecutionNotEnabled = 13,
+  kUnavailableFeatureExecutionNotEnabled = 13,
   // The model is not available because the on-device model adaptation was
   // required but not available.
-  kNoModelAdaptationNotAvailable = 14,
+  kUnavailableModelAdaptationNotAvailable = 14,
   // Validation has not completed for the model yet.
-  kNoValidationPending = 15,
+  kUnavailableValidationPending = 15,
   // Validation failed for the model.
-  kNoValidationFailed = 16,
+  kUnavailableValidationFailed = 16,
   // The device is not eligible for running on-device model.
-  kModelNotEligible = 17,
+  kUnavailableModelNotEligible = 17,
   // The device does not have sufficient disk space for the on-device model.
-  kNoInsufficientDiskSpace = 18,
+  kUnavailableInsufficientDiskSpace = 18,
+  // The on-device translation is not available for the given pair of languages.
+  kUnavailableTranslationNotEligible = 19,
 
   // Append new line here
 };
@@ -74,31 +74,39 @@ enum ModelAvailabilityCheckResult {
 // The client interface that receives an AIWriter from an AIManager.
 interface AIManagerCreateWriterClient {
   // Called with a created writer's mojo interface as a result for the
-  // CreateWriter() method of the AIManager. When failed to create a
-  // AIWriter, this method is called with a null pending remote.
-  OnResult(pending_remote<blink.mojom.AIWriter>? writer);
+  // CreateWriter() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AIWriter> writer);
+
+  // Called when the manager cannot create an AIWriter.
+  OnError(AIManagerCreateClientError error);
 };
 
 // The client interface that receives an AIRewriter from an AIManager.
 interface AIManagerCreateRewriterClient {
   // Called with a created rewriter's mojo interface as a result for the
-  // CreateRewriter() method of the AIManager. When failed to create a
-  // AIRewriter, this method is called with a null pending remote.
-  OnResult(pending_remote<blink.mojom.AIRewriter>? rewriter);
+  // CreateRewriter() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AIRewriter> rewriter);
+
+  // Called when the manager cannot create an AIRewriter.
+  OnError(AIManagerCreateClientError error);
 };
 
 // The client interface that receives an AISummarizer from an AIManager.
 interface AIManagerCreateSummarizerClient {
   // Called with a created summarizer's mojo interface as a result for the
-  // CreateSummarizer() method of the AIManager. When failed to create a
-  // AISummarizer, this method is called with a null pending remote.
-  OnResult(pending_remote<blink.mojom.AISummarizer>? summarizer);
+  // CreateSummarizer() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AISummarizer> summarizer);
+
+  // Called when the manager cannot create an AISummarizer.
+  OnError(AIManagerCreateClientError error);
 };
 
 // The manager that could create a new session for the model.
 interface AIManager {
   // Returns language model availability info from the underlying service.
-  CanCreateLanguageModel() => (ModelAvailabilityCheckResult result);
+  CanCreateLanguageModel(
+    array<AILanguageCode>? expected_input_languages
+  ) => (ModelAvailabilityCheckResult result);
   // Creates a new language model.
   // Note that this could return nullptr even if the previous
   // `CanCreateLanguageModel()` returns `kReadily`, because some errors can only
@@ -110,14 +118,18 @@ interface AIManager {
     AILanguageModelCreateOptions options
   );
   // Returns summarizer model availability info from the underlying service.
-  CanCreateSummarizer() => (ModelAvailabilityCheckResult result);
+  // TODO(crbug.com/390477782): `options` field is optional since it is not
+  // supplied by `capabilities()` API. Make it non-optional once
+  // `capabilities()` is removed.
+  CanCreateSummarizer(AISummarizerCreateOptions? options) =>
+    (ModelAvailabilityCheckResult result);
   // Creates a summarizer.
   CreateSummarizer(
     pending_remote<AIManagerCreateSummarizerClient> client,
     AISummarizerCreateOptions options);
-  // Returns the default configuration for the text model information.
-  GetModelInfo() => (
-    AIModelInfo model_info
+  // Returns the model params for the language model API.
+  GetLanguageModelParams() => (
+    AILanguageModelParams? language_model_params
   );
   // Returns writer model availability info from the underlying service.
   CanCreateWriter(AIWriterCreateOptions options) =>

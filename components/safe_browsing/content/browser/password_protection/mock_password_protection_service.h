@@ -31,9 +31,6 @@ class MockPasswordProtectionService : public PasswordProtectionService {
   ~MockPasswordProtectionService() override;
 
   // safe_browsing::PasswordProtectionService
-  MOCK_CONST_METHOD0(GetSyncAccountType,
-                     safe_browsing::LoginReputationClientRequest::
-                         PasswordReuseEvent::SyncAccountType());
   MOCK_CONST_METHOD0(
       GetUrlDisplayExperiment,
       safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment());

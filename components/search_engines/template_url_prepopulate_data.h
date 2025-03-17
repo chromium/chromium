@@ -18,15 +18,14 @@
 class PrefService;
 struct TemplateURLData;
 
-namespace search_engines {
-class SearchEngineChoiceService;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
 namespace TemplateURLPrepopulateData {
+
+// The ID of a country. See `//components/country_codes` for details.
+typedef int CountryID;
 
 struct PrepopulatedEngine;
 
@@ -50,31 +49,27 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // file then it returns the version specified there.
 int GetDataVersion(PrefService* prefs);
 
-// Returns the prepopulated URLs for the current country.
-// `search_engine_choice_service` is used for obtaining the country code and
-// shouldn't be null outside of tests.
+// Returns the prepopulated URLs for the given country.
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service);
+    PrefService& prefs,
+    CountryID country_id);
 
-// Returns the prepopulated search engine with the given |prepopulated_id|
-// from the profile country's known prepopulated search engines, or `nullptr`
+// Returns the prepopulated search engine with the given `prepopulated_id`
+// from the given country's known prepopulated search engines, or `nullptr`
 // if it's not known there.
-// `search_engine_choice_service` is used for obtaining the country code and
-// shouldn't be null outside of tests.
-std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
-    int prepopulated_id);
+std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService& prefs,
+                                                       CountryID country_id,
+                                                       int prepopulated_id);
 
-// Returns the prepopulated search engine with the given |prepopulated_id|
+// Returns the prepopulated search engine with the given `prepopulated_id`
 // from the full list of known prepopulated search engines, or `nullptr` if
 // it's not known there.
-// `search_engine_choice_service` is used for obtaining the country code and
-// shouldn't be null outside of tests.
+// `country_id` is used to ensure we prioritise returning a search engine
+// relevant for the given country, for cases where the `prepopulated_id` could
+// be associated with multiple country-specific variants.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    PrefService& prefs,
+    CountryID country_id,
     int prepopulated_id);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -94,13 +89,14 @@ void ClearPrepopulatedEnginesInPrefs(PrefService* prefs);
 // list of prepopulated search engines.
 // Search provider overrides are read from `prefs`, so they won't be used if
 // it's null.
-// `search_engine_choice_service` is used for obtaining the country code and
-// shouldn't be null outside of tests.
+// `country_id` is used to ensure we prioritise returning a search engine
+// relevant for the given country, for cases where the `prepopulated_id` could
+// be associated with multiple country-specific variants.
 // May return `nullptr` if for some reason there are no prepopulated search
 // engines available.
 std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service);
+    PrefService& prefs,
+    CountryID country_id);
 
 // Returns all prepopulated engines for all locales.
 const base::span<const PrepopulatedEngine* const> GetAllPrepopulatedEngines();
@@ -115,7 +111,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetDefaultPrepopulatedEngines();
 // Test Utilities -------------------------------------------------------------
 
 const std::vector<raw_ptr<const PrepopulatedEngine>>
-GetPrepopulationSetFromCountryIDForTesting(int country_id);
+GetPrepopulationSetFromCountryIDForTesting(CountryID country_id);
 
 }  // namespace TemplateURLPrepopulateData
 

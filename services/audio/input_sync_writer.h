@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -128,7 +128,7 @@ class InputSyncWriter final : public InputController::SyncWriter {
   base::TimeTicks last_write_time_;
 
   // Size in bytes of each audio bus.
-  const int audio_bus_memory_size_;
+  const uint32_t audio_bus_memory_size_;
 
   // The id for the next buffer that we will write into shared memory. Starts at
   // 0 and increases by one for each buffer written into shared memory.

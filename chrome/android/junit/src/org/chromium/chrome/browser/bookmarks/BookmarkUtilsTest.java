@@ -28,13 +28,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,16 +50,16 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BookmarkUtils}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
 public class BookmarkUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -80,11 +80,13 @@ public class BookmarkUtilsTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
     private CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
+            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", new GaiaId("testGaiaId"));
 
     @Before
     public void setup() {
@@ -128,7 +130,9 @@ public class BookmarkUtilsTest {
                 new GURL("https://test.com"),
                 mSnackbarManager,
                 mProfile,
-                mBottomSheetController);
+                mBottomSheetController,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager);
         // Normally, a snackbar is shown.
         verify(mSnackbarManager).showSnackbar(any());
         verify(mTracker).notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
@@ -153,7 +157,9 @@ public class BookmarkUtilsTest {
                 new GURL("https://test.com"),
                 mSnackbarManager,
                 mProfile,
-                mBottomSheetController);
+                mBottomSheetController,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager);
         // When account bookmarks are enabled, reading list saves use the regular save flow.
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mTracker).notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
@@ -180,7 +186,9 @@ public class BookmarkUtilsTest {
                 mActivity,
                 BookmarkType.NORMAL,
                 mBookmarkIdCallback,
-                /* fromExplicitTrackUi= */ false);
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager);
 
         histograms.assertExpected();
     }
@@ -204,7 +212,9 @@ public class BookmarkUtilsTest {
                 mActivity,
                 BookmarkType.READING_LIST,
                 mBookmarkIdCallback,
-                /* fromExplicitTrackUi= */ false);
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager);
 
         histograms.assertExpected();
     }
@@ -237,5 +247,21 @@ public class BookmarkUtilsTest {
         BookmarkId managedFolder =
                 mBookmarkModel.addManagedFolder(mBookmarkModel.getMobileFolderId(), "managed");
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, managedFolder));
+    }
+
+    @Test
+    public void isReadingListSupported() {
+        assertFalse(BookmarkUtils.isReadingListSupported(null));
+        assertFalse(BookmarkUtils.isReadingListSupported(GURL.emptyGURL()));
+        assertFalse(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.NTP_URL));
+        assertTrue(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.EXAMPLE_URL));
+        assertTrue(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.HTTP_URL));
+
+        // empty url
+        GURL testUrl = GURL.emptyGURL();
+        assertFalse(BookmarkUtils.isReadingListSupported(testUrl));
+
+        // invalid url
+        assertFalse(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.INVALID_URL));
     }
 }

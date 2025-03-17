@@ -24,9 +24,18 @@
 namespace optimization_guide {
 namespace {
 
+using ::testing::UnorderedElementsAre;
+
 const base::Value::Dict kTestManifest = base::Value::Dict().Set(
     "BaseModelSpec",
     base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
+const base::Value::Dict kTestManifestWithPerfHints = base::Value::Dict().Set(
+    "BaseModelSpec",
+    base::Value::Dict()
+        .Set("version", "0.0.1")
+        .Set("name", "Test")
+        .Set("supported_performance_hints",
+             base::Value::List().Append(1).Append(2).Append(1).Append(0)));
 
 class StubObserver : public OnDeviceModelComponentStateManager::Observer {
  public:
@@ -55,7 +64,8 @@ class OnDeviceModelComponentTest : public testing::Test {
         {{features::kOptimizationGuideModelExecution, {}},
          {features::kOptimizationGuideOnDeviceModel, {}},
          {features::kOnDeviceModelPerformanceParams,
-          {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
+          {{"compatible_on_device_performance_classes", "3,4,5,6"},
+           {"compatible_low_tier_on_device_performance_classes", "3"}}}},
         /*disabled_features=*/{});
   }
 
@@ -547,6 +557,10 @@ TEST_F(OnDeviceModelComponentTest, SetPrefsWhenManifestContainsBaseModelSpec) {
                       kTestManifest);  // manifest is populated with test data.
   EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
   EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
+  EXPECT_TRUE(manager()
+                  ->GetState()
+                  ->GetBaseModelSpec()
+                  .supported_performance_hints.empty());
 }
 
 TEST_F(OnDeviceModelComponentTest, SetStateWhenModelOverridden) {
@@ -556,6 +570,42 @@ TEST_F(OnDeviceModelComponentTest, SetStateWhenModelOverridden) {
   EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "override");
   EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version,
             "override");
+}
+
+TEST_F(OnDeviceModelComponentTest, SetReadyManifestContainsPerformanceHints) {
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kHigh);
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      kTestManifestWithPerfHints);
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
+  EXPECT_THAT(
+      manager()->GetState()->GetBaseModelSpec().supported_performance_hints,
+      UnorderedElementsAre(
+          proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY));
+}
+
+TEST_F(OnDeviceModelComponentTest,
+       SetReadyManifestContainsPerformanceHintsLowTierDevice) {
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->DevicePerformanceClassChanged(OnDeviceModelPerformanceClass::kLow);
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      kTestManifestWithPerfHints);
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
+  EXPECT_THAT(
+      manager()->GetState()->GetBaseModelSpec().supported_performance_hints,
+      UnorderedElementsAre(
+          proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE));
 }
 
 }  // namespace

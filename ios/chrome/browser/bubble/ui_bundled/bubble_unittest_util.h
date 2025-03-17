@@ -9,7 +9,6 @@
 
 UIButton* GetCloseButtonFromBubbleView(BubbleView* bubble_view);
 UILabel* GetTitleLabelFromBubbleView(BubbleView* bubble_view);
-UIImageView* GetImageViewFromBubbleView(BubbleView* bubble_view);
 UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubble_view);
 UIView* GetArrowViewFromBubbleView(BubbleView* bubble_view);
 

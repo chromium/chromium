@@ -57,6 +57,7 @@
 //ios/chrome/test/data/policy/pref_mapping/OptimizationGuideFetchingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ParcelTrackingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PasswordManagerEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/PasswordManagerPasskeysEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PasswordSharingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PolicyAtomicGroupsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PolicyDictionaryMultipleSourceMergeList.json
@@ -66,6 +67,7 @@
 //ios/chrome/test/data/policy/pref_mapping/PopupsAllowedForUrls.json
 //ios/chrome/test/data/policy/pref_mapping/PopupsBlockedForUrls.json
 //ios/chrome/test/data/policy/pref_mapping/PrintingEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/ProfileSeparationDataMigrationSettings.json
 //ios/chrome/test/data/policy/pref_mapping/RestrictAccountsToPatterns.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProtectionLevel.json

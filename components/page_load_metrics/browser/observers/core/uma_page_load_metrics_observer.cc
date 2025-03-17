@@ -20,7 +20,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_data_validation.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
@@ -138,11 +137,17 @@ const char kHistogramLargestContentfulPaintCrossSiteSubFrame[] =
 const char kHistogramLargestContentfulPaintSetSpeculationRulesPrerender[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
     "SetSpeculationRulesPrerender";
+const char kHistogramLargestContentfulPaintIncognito[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Incognito";
 const char kHistogramNumInteractions[] =
     "PageLoad.InteractiveTiming.NumInteractions";
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
     "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
     "MaxEventDuration";
+const char
+    kHistogramUserInteractionLatencyHighPercentile2MaxEventDurationIncognito[] =
+        "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
+        "MaxEventDuration.Incognito";
 const char kHistogramInpOffset[] = "PageLoad.InteractiveTiming.INPOffset";
 const char kHistogramInpTime[] = "PageLoad.InteractiveTiming.INPTime";
 const char kHistogramWorstUserInteractionLatencyMaxEventDuration[] =
@@ -190,6 +195,9 @@ const char kHistogramLoadTypeFirstContentfulPaintForwardBackNoStore[] =
 const char kHistogramLoadTypeFirstContentfulPaintNewNavigation[] =
     "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.LoadType."
     "NewNavigation";
+
+const char kHistogramFirstContentfulPaintIncognito[] =
+    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Incognito";
 
 const char kHistogramPageTimingForegroundDuration[] =
     "PageLoad.PageTiming.ForegroundDuration";
@@ -307,12 +315,13 @@ const char kHistogramMemoryTotal[] =
 
 }  // namespace internal
 
-UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
+UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver(bool is_incognito)
     : transition_(ui::PAGE_TRANSITION_LINK),
       was_no_store_main_resource_(false),
       cache_bytes_(0),
       network_bytes_(0),
-      network_bytes_including_headers_(0) {
+      network_bytes_including_headers_(0),
+      is_incognito_(is_incognito) {
   // Emit a trigger to allow trace collection tied to navigations. For
   // simplicity, this signal happens during `WillStartRequest`, which is a bit
   // later than the `navigation_start` timestamp used in
@@ -442,6 +451,11 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramParseStartToFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value() -
                             timing.parse_timing->parse_start.value());
+
+    if (is_incognito_) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstContentfulPaintIncognito,
+                          timing.paint_timing->first_contentful_paint.value());
+    }
 
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint,
@@ -917,6 +931,11 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
       EmitLCPTraceEvent(lcp_time);
       PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint, lcp_time);
 
+      if (is_incognito_) {
+        PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaintIncognito,
+                            lcp_time);
+      }
+
       if (content::WebContents* web_contents = GetDelegate().GetWebContents()) {
         if (content::PreloadingData* preloading_data =
                 content::PreloadingData::GetForWebContents(web_contents)) {
@@ -970,6 +989,14 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   UmaHistogramCustomTimes(
       internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
       inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
+
+  if (is_incognito_) {
+    UmaHistogramCustomTimes(
+        internal::
+            kHistogramUserInteractionLatencyHighPercentile2MaxEventDurationIncognito,
+        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
+  }
+
   base::TimeDelta interaction_time =
       inp->interaction_time - GetDelegate().GetNavigationStart();
   UmaHistogramCustomTimes(internal::kHistogramInpTime, interaction_time,

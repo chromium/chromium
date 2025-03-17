@@ -17,6 +17,54 @@
 
 namespace net {
 
+namespace {
+
+// When `a_is_site` is true, `a` is actually a SchemefulSite internal
+// `site_as_origin_`.
+bool IsSameSiteInternal(const url::Origin& a,
+                        const url::Origin& b,
+                        bool a_is_site) {
+  if (a.opaque() || b.opaque()) {
+    return a == b;
+  }
+
+  if (a.scheme() != b.scheme()) {
+    return false;
+  }
+
+  // The remaining code largely matches what `SameDomainOrHost()` would do, with
+  // one exception: we consider equal-but-empty hosts to be same-site.
+
+  // Host equality covers two cases:
+  // 1. Non-network schemes where origins are passed through unchanged.
+  // 2. Network schemes where equal hosts will have equal sites (and site
+  //    computation is idempotent in cases where `a` is already a site).
+  if (a.host() == b.host()) {
+    return true;
+  }
+
+  std::string_view b_site = GetDomainAndRegistryAsStringPiece(
+      b, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  // If either `a_site` or `b_site` is empty, their associated SchemefulSites
+  // will have origins passed through without modification, and the positive
+  // result would be covered in the host check above.
+  if (b_site.empty()) {
+    return false;
+  }
+
+  // Avoid re-calculating the site for `a` if it has already been done.
+  std::string_view a_site =
+      a_is_site
+          ? a.host()
+          : GetDomainAndRegistryAsStringPiece(
+                a,
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return a_site == b_site;
+}
+
+}  // namespace
+
 struct SchemefulSite::ObtainASiteResult {
   // This is only set if the supplied origin differs from calculated one.
   std::optional<url::Origin> origin;
@@ -102,6 +150,40 @@ SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) noexcept =
     default;
 
 // static
+bool SchemefulSite::IsSameSite(const url::Origin& a, const url::Origin& b) {
+  bool same_site = IsSameSiteInternal(a, b, /*a_is_site=*/false);
+  DCHECK_EQ(same_site, SchemefulSite(a) == SchemefulSite(b));
+  return same_site;
+}
+
+bool SchemefulSite::IsSameSiteWith(const url::Origin& other) const {
+  bool same_site =
+      IsSameSiteInternal(internal_value(), other, /*a_is_site=*/true);
+  DCHECK_EQ(same_site, *this == SchemefulSite(other));
+  return same_site;
+}
+
+// TODO(csharrison): Consider augmenting the below SameSite methods to avoid
+// creating intermediate Origins. For now, we sacrifice some performance for
+// simplicity as GURL --> Origin conversion can be quite subtle.
+// We could likely fast-path simple cases (e.g. valid http/https GURLs).
+
+// static
+bool SchemefulSite::IsSameSite(const GURL& a, const GURL& b) {
+  bool same_site = IsSameSiteInternal(
+      url::Origin::Create(a), url::Origin::Create(b), /*a_is_site=*/false);
+  DCHECK_EQ(same_site, SchemefulSite(a) == SchemefulSite(b));
+  return same_site;
+}
+
+bool SchemefulSite::IsSameSiteWith(const GURL& other) const {
+  bool same_site = IsSameSiteInternal(
+      internal_value(), url::Origin::Create(other), /*a_is_site=*/true);
+  DCHECK_EQ(same_site, *this == SchemefulSite(other));
+  return same_site;
+}
+
+// static
 bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
                              SchemefulSite* out) {
   // The origin passed into this constructor may not match the
@@ -162,20 +244,6 @@ const url::Origin& SchemefulSite::GetInternalOriginForTesting() const {
 
 size_t SchemefulSite::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(site_as_origin_);
-}
-
-bool SchemefulSite::operator==(const SchemefulSite& other) const {
-  return site_as_origin_ == other.site_as_origin_;
-}
-
-bool SchemefulSite::operator!=(const SchemefulSite& other) const {
-  return !(*this == other);
-}
-
-// Allows SchemefulSite to be used as a key in STL containers (for example, a
-// std::set or std::map).
-bool SchemefulSite::operator<(const SchemefulSite& other) const {
-  return site_as_origin_ < other.site_as_origin_;
 }
 
 // static

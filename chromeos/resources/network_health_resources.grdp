@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_NETWORK_DIAGNOSTICS_MOJOM_LITE_JS"
-      file="${mojom_root}/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js"
-      resource_path="mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js"
-      use_base_dir="false"
-      type="BINDATA" />
-</grit-part>

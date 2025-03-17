@@ -15,7 +15,9 @@
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_switches.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 
 namespace content {
 namespace internal {
@@ -280,9 +282,50 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
     xpc_connection_t xpc_connection =
         launch_result->CreateXPCConnection(&error);
     if (xpc_connection) {
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+          client_task_runner_;
+      bool is_gpu_process = GetProcessType() == switches::kGpuProcess;
+
       xpc_connection_set_event_handler(xpc_connection, ^(xpc_object_t event) {
-        if (event == XPC_ERROR_CONNECTION_INTERRUPTED) {
+        if (event == XPC_ERROR_CONNECTION_INTERRUPTED ||
+            event == XPC_ERROR_CONNECTION_INVALID) {
           OnChildProcessTerminatedOnAnyThread(process_id);
+        }
+
+        const char* message_type = xpc_dictionary_get_string(event, "message");
+        if (message_type && strcmp(message_type, "layerHandle") == 0) {
+          // We only expect this message from the GPU process.
+          if (!is_gpu_process) {
+            xpc_connection_cancel(xpc_connection);
+            return;
+          }
+          xpc_object_t ca_layer_handle =
+              xpc_dictionary_get_value(event, "layer");
+          gpu::SurfaceHandle view_handle =
+              xpc_dictionary_get_uint64(event, "handle");
+
+          // Validate arguments.
+          if (!ca_layer_handle || !view_handle) {
+            xpc_connection_cancel(xpc_connection);
+            return;
+          }
+
+          client_task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](gpu::SurfaceHandle view_handle,
+                     xpc_object_t ca_layer_handle) {
+                    NSError* error = nullptr;
+                    BELayerHierarchyHandle* be_handle = [BELayerHierarchyHandle
+                        handleWithXPCRepresentation:ca_layer_handle
+                                              error:&error];
+                    CALayerFrameSinkProvider* sink =
+                        [CALayerFrameSinkProvider lookupByHandle:view_handle];
+                    if (sink) {
+                      sink.handle = be_handle;
+                    }
+                  },
+                  view_handle, ca_layer_handle));
         }
       });
       xpc_connection_resume(xpc_connection);
@@ -293,6 +336,8 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
         xpc_array_append_value(args_array, value);
       }
       xpc_dictionary_set_value(message, "args", args_array);
+      xpc_dictionary_set_fd(message, "stdout", STDOUT_FILENO);
+      xpc_dictionary_set_fd(message, "stderr", STDERR_FILENO);
       xpc_dictionary_set_mach_send(
           message, "port", rendezvous_server_->GetMachSendRight().get());
       xpc_connection_send_message(xpc_connection, message);

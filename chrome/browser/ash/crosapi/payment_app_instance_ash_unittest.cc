@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
-#include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +16,8 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/overlay/test/test_arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_payment_app_bridge_test_support.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom-forward.h"
 #include "components/payments/core/android_app_description.h"

@@ -9,7 +9,8 @@
 
 #include "components/history_clusters/core/history_clusters_util.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/history/core/browser/history_types.h"
@@ -265,10 +266,10 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
   auto add_cluster = [&](int64_t cluster_id, std::vector<float> visit_scores) {
     history::Cluster cluster;
     cluster.cluster_id = cluster_id;
-    base::ranges::transform(visit_scores, std::back_inserter(cluster.visits),
-                            [&](const auto& visit_score) {
-                              return GetHardcodedClusterVisit(1, visit_score);
-                            });
+    std::ranges::transform(visit_scores, std::back_inserter(cluster.visits),
+                           [&](const auto& visit_score) {
+                             return GetHardcodedClusterVisit(1, visit_score);
+                           });
     cluster.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
     all_clusters.push_back(cluster);
   };

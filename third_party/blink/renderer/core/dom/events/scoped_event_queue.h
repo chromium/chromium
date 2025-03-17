@@ -61,7 +61,7 @@ class CORE_EXPORT ScopedEventQueue {
   void DispatchAllEvents();
   void DispatchEvent(Event&) const;
 
-  Persistent<HeapVector<Member<Event>>> queued_events_;
+  Persistent<GCedHeapVector<Member<Event>>> queued_events_;
   unsigned scoping_level_;
 
   static ScopedEventQueue* instance_;

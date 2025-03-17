@@ -14,10 +14,12 @@
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
+#include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -123,6 +125,16 @@ class SessionStateNotificationBlockerTest
         CreateDummyNotification(notification_id));
   }
 
+  bool ShouldShowRemoteScreenSharingNotification() {
+    return blocker_->ShouldShowNotification(
+        CreateDummyNotification(ash::kRemotingScreenShareNotificationId));
+  }
+
+  bool ShouldShowRemoteScreenSharingNotificationAsPopup() {
+    return blocker_->ShouldShowNotificationAsPopup(
+        CreateDummyNotification(ash::kRemotingScreenShareNotificationId));
+  }
+
   void SetLockedState(bool locked) {
     GetSessionControllerClient()->SetSessionState(
         locked ? SessionState::LOCKED : SessionState::ACTIVE);
@@ -172,7 +184,7 @@ TEST_F(SessionStateNotificationBlockerTest, BaseTest) {
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
@@ -217,7 +229,7 @@ TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
@@ -233,46 +245,6 @@ TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
-}
-
-TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
-  // OOBE.
-  GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  message_center::NotifierId notifier_id(
-      message_center::NotifierType::APPLICATION, "test-notifier");
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  // Login screen.
-  GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  // Simulates login event sequence in production code:
-  // - Add a user session;
-  // - User session is set as active session;
-  // - Session state changes to active;
-  // - User PrefService is initialized sometime later.
-  const AccountId kUserAccountId = AccountId::FromUserEmail("user@test.com");
-  TestSessionControllerClient* const session_controller_client =
-      GetSessionControllerClient();
-  session_controller_client->AddUserSession(kUserAccountId.GetUserEmail(),
-                                            user_manager::UserType::kRegular,
-                                            false /* provide_pref_service */);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  session_controller_client->SwitchActiveUser(kUserAccountId);
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  session_controller_client->SetSessionState(SessionState::ACTIVE);
-  EXPECT_EQ(1, GetStateChangedCountAndReset());
-  EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-
-  session_controller_client->ProvidePrefServiceForUser(kUserAccountId);
-  EXPECT_EQ(1, GetStateChangedCountAndReset());
-  EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
 }
 
 TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
@@ -292,7 +264,7 @@ TEST_F(SessionStateNotificationBlockerTest, DelayAfterLogin) {
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
 
   // Non system notification should not be shown immediately after login.
   message_center::NotifierId notifier_id(
@@ -319,7 +291,7 @@ TEST_F(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
   EXPECT_FALSE(ShouldShowDoNotDisturbNotification());
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_TRUE(ShouldShowDoNotDisturbNotification());
 
   // Lock.
@@ -343,7 +315,7 @@ TEST_F(SessionStateNotificationBlockerTest, LockScreenNotification) {
       lock_screen_notification_controller()->CreateNotification().get()));
 
   // Logged in as a normal user.
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_FALSE(ShouldShowNotification(
       lock_screen_notification_controller()->CreateNotification().get()));
 
@@ -382,6 +354,20 @@ TEST_F(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
                 test_case.second);
     }
   }
+}
+
+TEST_F(SessionStateNotificationBlockerTest,
+       AlwaysAllowRemoteScreenShareNotification) {
+  EXPECT_TRUE(ShouldShowRemoteScreenSharingNotification());
+  EXPECT_TRUE(ShouldShowRemoteScreenSharingNotificationAsPopup());
+}
+
+TEST_F(SessionStateNotificationBlockerTest,
+       ShouldNotAllowRemoteScreenShareNotificationDuringKioskSession) {
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  EXPECT_FALSE(ShouldShowRemoteScreenSharingNotification());
+  EXPECT_FALSE(ShouldShowRemoteScreenSharingNotificationAsPopup());
 }
 
 }  // namespace ash

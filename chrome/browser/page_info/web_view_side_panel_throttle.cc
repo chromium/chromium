@@ -16,6 +16,28 @@
 const char kWebViewSidePanelWebContentsUserDataKey[] =
     "web_view_side_panel_web_contents_user_data";
 
+namespace {
+
+bool CanNavigateInPanel(content::NavigationHandle* handle,
+                        const GURL& observed_url,
+                        const GURL& next_url) {
+  // Server redirects of the observed_url URL are allowed to stay in the
+  // SidePanel.
+  const GURL& original_url = handle->GetRedirectChain().front();
+  if (handle->WasServerRedirect() && original_url == observed_url) {
+    return true;
+  }
+  // Same URL navigations are allowed to stay in the SidePanel.
+  const GURL& current_url = handle->GetWebContents()->GetURL();
+  if (next_url == current_url) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
+
 WebViewSidePanelWebContentsUserData::WebViewSidePanelWebContentsUserData(
     base::WeakPtr<Delegate> delegate)
     : delegate_(delegate) {}
@@ -31,27 +53,39 @@ MaybeCreateWebViewSidePanelThrottleFor(content::NavigationHandle* handle) {
           kWebViewSidePanelWebContentsUserDataKey)) {
     return nullptr;
   }
+  const GURL& observed_url = handle->GetURL();
   return std::make_unique<navigation_interception::InterceptNavigationThrottle>(
-      handle, base::BindRepeating([](content::NavigationHandle* handle) {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-        auto* data = static_cast<WebViewSidePanelWebContentsUserData*>(
-            handle->GetWebContents()->GetUserData(
-                kWebViewSidePanelWebContentsUserDataKey));
-        // The delegate is stored in a WeakPtr. Check if it is still there.
-        if (!data->delegate())
-          return true;
-        if (data->delegate()->IsNavigationAllowed(
-                handle->GetURL(), handle->GetWebContents()->GetURL()))
-          return false;
+      handle,
+      base::BindRepeating(
+          [](const GURL& observed_url, content::NavigationHandle* handle,
+             bool should_run_async,
+             navigation_interception::InterceptNavigationThrottle::
+                 ResultCallback result_callback) {
+            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+            CHECK(!should_run_async);
+            auto* data = static_cast<WebViewSidePanelWebContentsUserData*>(
+                handle->GetWebContents()->GetUserData(
+                    kWebViewSidePanelWebContentsUserDataKey));
+            // The delegate is stored in a WeakPtr. Check if it is still there.
+            if (!data->delegate()) {
+              std::move(result_callback).Run(true);
+              return;
+            }
+            const GURL& next_url = handle->GetURL();
+            if (CanNavigateInPanel(handle, observed_url, next_url)) {
+              std::move(result_callback).Run(false);
+              return;
+            }
 
-        content::OpenURLParams params(
-            handle->GetURL(), content::Referrer(handle->GetReferrer()),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB,
-            handle->GetPageTransition(), handle->IsRendererInitiated());
-        params.initiator_origin = handle->GetInitiatorOrigin();
-        params.initiator_base_url = handle->GetInitiatorBaseUrl();
-        data->delegate()->OpenUrlInBrowser(params);
-        return true;
-      }),
-      navigation_interception::SynchronyMode::kSync);
+            content::OpenURLParams params(
+                next_url, content::Referrer(handle->GetReferrer()),
+                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                handle->GetPageTransition(), handle->IsRendererInitiated());
+            params.initiator_origin = handle->GetInitiatorOrigin();
+            params.initiator_base_url = handle->GetInitiatorBaseUrl();
+            data->delegate()->OpenUrlInBrowser(params);
+            std::move(result_callback).Run(true);
+          },
+          observed_url),
+      navigation_interception::SynchronyMode::kSync, std::nullopt);
 }

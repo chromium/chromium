@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/js_messaging/web_frame_impl.h"
-
 #import <WebKit/WebKit.h>
 
 #import "base/functional/bind.h"
@@ -11,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -38,7 +37,7 @@ web::WebFrame* GetChildWebFrameForWebState(web::WebState* web_state) {
   }
   return iframe;
 }
-}
+}  // namespace
 
 namespace web {
 

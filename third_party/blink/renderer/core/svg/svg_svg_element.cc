@@ -22,7 +22,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -212,7 +213,7 @@ bool SVGSVGElement::IsPresentationAttribute(const QualifiedName& name) const {
 void SVGSVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
   // bail here in that case to avoid having the generic logic in SVGElement
   // picking it up.
@@ -362,7 +363,7 @@ HeapVector<Member<Element>> ComputeIntersectionList(
   elements.erase(to_remove, elements.end());
   // Hit-testing traverses the tree from last to first child for each
   // container, so the result needs to be reversed.
-  base::ranges::reverse(elements);
+  std::ranges::reverse(elements);
   return elements;
 }
 
@@ -607,7 +608,9 @@ void SVGSVGElement::RemovedFrom(ContainerNode& root_parent) {
   if (root_parent.isConnected()) {
     SVGDocumentExtensions& svg_extensions = GetDocument().AccessSVGExtensions();
     svg_extensions.RemoveTimeContainer(this);
-    svg_extensions.RemoveSVGRootWithRelativeLengthDescendents(this);
+    if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+      svg_extensions.RemoveSVGRootWithRelativeLengthDescendents(this);
+    }
   }
 
   SVGGraphicsElement::RemovedFrom(root_parent);
@@ -734,8 +737,12 @@ void SVGSVGElement::SetViewSpec(const SVGViewSpec* view_spec) {
   if (!view_spec_ && !view_spec)
     return;
   view_spec_ = view_spec;
-  if (LayoutObject* layout_object = GetLayoutObject())
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*layout_object)) {
+      svg_root->IntrinsicSizingInfoChanged();
+    }
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
+  }
 }
 
 const SVGViewSpec* SVGSVGElement::ParseViewSpec(
@@ -821,7 +828,7 @@ void SVGSVGElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGSVGElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

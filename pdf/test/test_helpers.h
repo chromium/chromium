@@ -25,6 +25,14 @@ namespace chrome_pdf {
 // the empty path if the source root can't be found.
 base::FilePath GetTestDataFilePath(const base::FilePath& path);
 
+// Gets a file path that includes a platform-identifying suffix in its file
+// name. If `filename` has an extension, then the suffix is inserted right
+// before that. Since expectation files are typically generated on Linux, no
+// suffix is generated for that platform.  A suffix is only generated for
+// Windows or macOS platforms.
+base::FilePath::StringType GetTestDataPathWithPlatformSuffix(
+    std::string_view filename);
+
 // Matches `actual_image` against the PNG at the file path `expected_png_file`.
 // The path must be relative to //pdf/test/data.
 testing::AssertionResult MatchesPngFile(

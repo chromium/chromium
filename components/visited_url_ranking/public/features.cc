@@ -19,7 +19,11 @@ constexpr base::FeatureParam<bool>
     kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits{
         &kVisitedURLRankingService,
         /*name=*/"history_fetcher_discard_zero_duration_visits",
+#if BUILDFLAG(IS_ANDROID)
+        /*default_value=*/false};
+#else
         /*default_value=*/true};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 constexpr base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam{
     &kVisitedURLRankingService,
@@ -137,5 +141,9 @@ constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdCCTVisit{
     &kVisitedURLRankingScoreThreshold,
     /*name=*/"cct_visit_score_threshold",
     /*default_value=*/0};
+
+BASE_FEATURE(kGroupSuggestionService,
+             "GroupSuggestionService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace visited_url_ranking::features

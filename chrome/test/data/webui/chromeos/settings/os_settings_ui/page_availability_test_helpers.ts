@@ -7,7 +7,7 @@
  * Exports common helpers for page availability browser tests.
  */
 
-import {routesMojom} from 'chrome://os-settings/os_settings.js';
+import type {routesMojom} from 'chrome://os-settings/os_settings.js';
 
 export type SectionName = keyof typeof routesMojom.Section;
 

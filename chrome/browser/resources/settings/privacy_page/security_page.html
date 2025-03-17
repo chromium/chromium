@@ -44,12 +44,8 @@
             var(--cr-radio-button-checked-ripple-color);
       }
 
-      #secureConnectionsSection {
-        padding: 24px var(--cr-section-padding) 8px;
-      }
-
       #secureConnectionsSection h2 {
-        padding: 0;
+        padding: 24px var(--cr-section-padding) 8px;
       }
 
       #httpsOnlyModeToggle,
@@ -231,41 +227,41 @@
     <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
       <div id="secureConnectionsSection">
         <h2 class="cr-title-text">$i18n{secureConnectionsSectionTitle}</h2>
-      </div>
-      <settings-toggle-button id="httpsFirstModeToggle" class="cr-row first"
-          pref="{{prefs.generated.https_first_mode_enabled}}"
-          label="$i18n{httpsOnlyModeTitle}"
-          sub-label="[[getHttpsFirstModeSubLabel_(
-              prefs.generated.https_first_mode_enabled.*)]]"
-          numeric-unchecked-values="[[httpsFirstModeUncheckedValues_]]"
-          numeric-checked-value=
-              "[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]">
-      </settings-toggle-button>
-      <cr-collapse id="httpsFirstModeRadioGroupCollapse"
-          opened="[[isHttpsFirstModeExpanded_(
-                      prefs.generated.https_first_mode_enabled.value)]]">
-        <div class="cr-row continuation https-first-mode-radio-group">
-          <settings-radio-group id="httpsFirstModeRadioGroup"
-              pref="{{prefs.generated.https_first_mode_enabled}}">
-            <controlled-radio-button id="httpsFirstModeEnabledBalanced"
-              name="[[getName_(
-                        httpsFirstModeSettingEnum_.ENABLED_BALANCED)]]"
-              pref="[[prefs.generated.https_first_mode_enabled]]"
-              label="$i18n{httpsFirstModeEnabledBalancedLabel}"
-              class="list-item">
-          </controlled-radio-button>
-            <controlled-radio-button id="httpsFirstModeEnabledStrict"
-                name="[[getName_(httpsFirstModeSettingEnum_.ENABLED_FULL)]]"
+        <settings-toggle-button id="httpsFirstModeToggle" class="cr-row first"
+            pref="{{prefs.generated.https_first_mode_enabled}}"
+            label="$i18n{httpsOnlyModeTitle}"
+            sub-label="[[getHttpsFirstModeSubLabel_(
+                prefs.generated.https_first_mode_enabled.*)]]"
+            numeric-unchecked-values="[[httpsFirstModeUncheckedValues_]]"
+            numeric-checked-value=
+                "[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]">
+        </settings-toggle-button>
+        <cr-collapse id="httpsFirstModeRadioGroupCollapse"
+            opened="[[isHttpsFirstModeExpanded_(
+                        prefs.generated.https_first_mode_enabled.value)]]">
+          <div class="cr-row continuation https-first-mode-radio-group">
+            <settings-radio-group id="httpsFirstModeRadioGroup"
+                pref="{{prefs.generated.https_first_mode_enabled}}">
+              <controlled-radio-button id="httpsFirstModeEnabledBalanced"
+                name="[[getName_(
+                          httpsFirstModeSettingEnum_.ENABLED_BALANCED)]]"
                 pref="[[prefs.generated.https_first_mode_enabled]]"
-                label="$i18n{httpsFirstModeEnabledStrictLabel}"
+                label="$i18n{httpsFirstModeEnabledBalancedLabel}"
                 class="list-item">
-              <div class="cr-secondary-text">
-                $i18n{httpsFirstModeEnabledStrictSubLabel}
-              </div>
             </controlled-radio-button>
-          </settings-radio-group>
-        </div>
-      </cr-collapse>
+              <controlled-radio-button id="httpsFirstModeEnabledStrict"
+                  name="[[getName_(httpsFirstModeSettingEnum_.ENABLED_FULL)]]"
+                  pref="[[prefs.generated.https_first_mode_enabled]]"
+                  label="$i18n{httpsFirstModeEnabledStrictLabel}"
+                  class="list-item">
+                <div class="cr-secondary-text">
+                  $i18n{httpsFirstModeEnabledStrictSubLabel}
+                </div>
+              </controlled-radio-button>
+            </settings-radio-group>
+          </div>
+        </cr-collapse>
+      </div>
     </template>
     <div class="cr-row first">
       <h2 class="cr-title-text">$i18n{advancedPageTitle}</h2>
@@ -294,7 +290,9 @@
     </template>
     <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}" class="no-hr"
+        <settings-secure-dns prefs="{{prefs}}"
+            class$="[[computeSecureDnsSettingClass_(
+                      enablePasswordLeakToggleMove_)]]"
             id="secureDnsSettingNew">
         </settings-secure-dns>
       </template>

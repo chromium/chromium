@@ -177,12 +177,16 @@ class CONTENT_EXPORT Navigator {
           std::nullopt);
 
   // Called after BeforeUnloadCompleted callback is invoked from the renderer.
-  // If |frame_tree_node| has a NavigationRequest waiting for the renderer
+  // If `frame_tree_node` has a NavigationRequest waiting for the renderer
   // response, then the request is either started or canceled, depending on the
-  // value of |proceed|.
+  // value of `proceed`. If `for_legacy` is true, then this beforeunload flow
+  // was only used to post a task and no beforeunload handlers were run. If
+  // `showed_dialog` is true, then a beforeunload dialog was displayed.
   void BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
                              bool proceed,
-                             const base::TimeTicks& proceed_time);
+                             const base::TimeTicks& proceed_time,
+                             bool for_legacy,
+                             bool showed_dialog);
 
   // Used to start a new renderer-initiated navigation, following a
   // BeginNavigation IPC from the renderer.
@@ -224,6 +228,10 @@ class CONTENT_EXPORT Navigator {
 
   // Returns the NavigationController associated with this Navigator.
   NavigationControllerImpl& controller() { return controller_; }
+  const NavigationControllerImpl& controller() const { return controller_; }
+
+  void SetWillNavigateFromFrameProxyCallbackForTesting(
+      const base::RepeatingClosure& callback);
 
  private:
   friend class NavigatorTestWithBrowserSideNavigation;
@@ -263,6 +271,9 @@ class CONTENT_EXPORT Navigator {
 
   // Tracks metrics for each navigation.
   std::unique_ptr<Navigator::NavigationMetricsData> metrics_data_;
+
+  // Called every time NavigateFromFrameProxy() is called.
+  base::RepeatingClosure will_navigate_from_frame_proxy_callback_for_testing_;
 };
 
 }  // namespace content

@@ -25,8 +25,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
-#include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom.h"
 
+// TODO(b:401999532): These tests use the chromeos.kiosk API, which is a dead
+// feature and should be removed. Adapt or remove the tests.
 class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
  public:
   CrosAppsApiAccessControlBrowsertestBase() {
@@ -77,9 +78,9 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
     CHECK(profile);
 
     CrosAppsApiMutableRegistry::GetInstance(profile).AddOrReplaceForTesting(
-        std::move(CrosAppsApiInfo(CrosAppsApiId::kBlinkExtensionDiagnostics,
+        std::move(CrosAppsApiInfo(CrosAppsApiId::kBlinkExtensionChromeOSKiosk,
                                   &blink::RuntimeFeatureStateContext::
-                                      SetBlinkExtensionDiagnosticsEnabled)
+                                      SetBlinkExtensionChromeOSKioskEnabled)
                       .AddAllowlistedOrigins(allowlisted_origins)
                       .SetRequiredFeatures(required_features)));
 
@@ -100,7 +101,7 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
   }
 
   bool IsTestApiExposed(const content::ToRenderFrameHost& to_rfh) {
-    return IsIdentifierDefined(to_rfh, "chromeos.diagnostics").ExtractBool();
+    return IsIdentifierDefined(to_rfh, "chromeos.kiosk").ExtractBool();
   }
 
   bool IsChromeOSGlobalExposed(const content::ToRenderFrameHost& to_rfh) {
@@ -110,33 +111,16 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
   void ExpectRendererCrashOnBindTestInterface(
       const content::ToRenderFrameHost& to_rfh,
       std::string_view expected_error) {
-// TOOD(b/320182347): Remove the #if condition when we have the a test interface
-// that's available in Ash.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    content::ScopedAllowRendererCrashes scoped_allow_renderer_crash(
-        to_rfh.render_frame_host());
-    content::RenderProcessHostBadMojoMessageWaiter crash_watcher(
-        to_rfh.render_frame_host()->GetProcess());
-
-    EXPECT_TRUE(content::ExecJs(
-        to_rfh, content::JsReplace(
-                    "const {handle0, handle1} = Mojo.createMessagePipe();"
-                    "Mojo.bindInterface($1, handle0);",
-                    kTestMojoInterfaceName)));
-    auto crash_message = crash_watcher.Wait();
-    EXPECT_TRUE(crash_message);
-    EXPECT_EQ(crash_message.value(), expected_error);
-#endif
+    // TOOD(crbug.com/320182347): Add assertions when we have a test interface.
   }
 
   static constexpr char kFooHost[] = "foo.com";
   static constexpr char kBarHost[] = "bar.com";
   const GURL KDataUrl = GURL("data:text/html,<body></body>");
 
-  const std::string kTestMojoInterfaceName =
-      blink::mojom::CrosDiagnostics::Name_;
+  const std::string kTestMojoInterfaceName = "kiosk";
   const std::string kTestApiId =
-      base::ToString(CrosAppsApiId::kBlinkExtensionDiagnostics);
+      base::ToString(CrosAppsApiId::kBlinkExtensionChromeOSKiosk);
   const std::string kNoBinderFoundError = base::StringPrintf(
       "Received bad user message: No binder found for interface %s for the "
       "frame/document scope",
@@ -226,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsApiAccessControlWithNoFeatureFlagsBrowsertest,
                        AllowlistedOriginIsGatedByBaseFeature) {
   SetUpTestApi(
       /*allowlisted_origin*/ {test_server().GetOrigin(kFooHost)},
-      /*required_features=*/{chromeos::features::kBlinkExtensionDiagnostics});
+      /*required_features=*/{chromeos::features::kBlinkExtensionKiosk});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -304,7 +288,7 @@ class CrosAppsApiAccessControlWithEnabledTestBaseFeatureBrowsertest
  public:
   CrosAppsApiAccessControlWithEnabledTestBaseFeatureBrowsertest() {
     features_.InitAndEnableFeature(
-        chromeos::features::kBlinkExtensionDiagnostics);
+        chromeos::features::kBlinkExtensionKiosk);
   }
 
   ~CrosAppsApiAccessControlWithEnabledTestBaseFeatureBrowsertest() override =
@@ -319,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(
     EmptyAllowlistDoesNotEnableApi) {
   SetUpTestApi(
       /*allowlisted_origins=*/{},
-      /*required_features=*/{chromeos::features::kBlinkExtensionDiagnostics});
+      /*required_features=*/{chromeos::features::kBlinkExtensionKiosk});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -344,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(
     DataUrlDoesNotHaveApi) {
   SetUpTestApi(
       /*allowlisted_origins=*/{test_server().GetOrigin(kFooHost)},
-      /*required_features=*/{chromeos::features::kBlinkExtensionDiagnostics});
+      /*required_features=*/{chromeos::features::kBlinkExtensionKiosk});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -361,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(
   const auto kAllowlistedOrigin = test_server().GetOrigin(kFooHost);
   SetUpTestApi(
       /*allowlisted_origins=*/{kAllowlistedOrigin},
-      /*required_features=*/{chromeos::features::kBlinkExtensionDiagnostics});
+      /*required_features=*/{chromeos::features::kBlinkExtensionKiosk});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(web_contents,
@@ -398,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(
     OnlyAllowlistedOriginHasApi) {
   SetUpTestApi(
       /*allowlisted_origins=*/{test_server().GetOrigin(kFooHost)},
-      /*required_features=*/{chromeos::features::kBlinkExtensionDiagnostics});
+      /*required_features=*/{chromeos::features::kBlinkExtensionKiosk});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -420,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(
     OnlyEnableApiInMainFrame) {
   SetUpTestApi(
       /*allowlisted_origins=*/{test_server().GetOrigin(kFooHost)},
-      /*required_features=*/{chromeos::features::kBlinkExtensionDiagnostics});
+      /*required_features=*/{chromeos::features::kBlinkExtensionKiosk});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 

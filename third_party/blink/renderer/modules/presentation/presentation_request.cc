@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_latency.h"
@@ -243,7 +244,7 @@ ScriptPromise<PresentationConnection> PresentationRequest::reconnect(
           script_state, exception_state.GetContext());
 
   ControllerPresentationConnection* existing_connection =
-      controller->FindExistingConnection(urls_, id);
+      controller->FindExistingConnection(base::ToVector(urls_, ToWebURL), id);
   if (existing_connection) {
     controller->GetPresentationService()->ReconnectPresentation(
         urls_, id,

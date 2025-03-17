@@ -93,8 +93,6 @@ class ProductSpecificationsButton
     entry_point_controller_ = controller;
   }
 
-  base::TimeDelta GetAnimationDuration(base::TimeDelta duration);
-
   // View where, if the mouse is currently over its bounds, the expansion state
   // will not change. Changes will be staged until after the mouse exits the
   // bounds of this View.

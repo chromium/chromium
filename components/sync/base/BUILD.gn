@@ -2,24 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 declare_args() {
   # Controls the product part of the user agent calculated in sync_util.cc.
   sync_user_agent_product = "Chrome"
-}
-
-if (is_ios) {
-  # TODO(crbug.com/371589349): This import from //ios is temporary. It is needed
-  # because passkey sync on that platform needs to be enabled iff the
-  # Credential Provider Extension is built with passkey support.
-  import("//ios/build/chrome_build.gni")
-  buildflag_header("ios_cpe_passkey_buildflag") {
-    header = "ios_cpe_passkey_buildflag.h"
-    flags = [ "IOS_PASSKEYS_ENABLED=$ios_cpe_enable_passkey_capabilities" ]
-  }
 }
 
 source_set("features") {
@@ -28,10 +16,6 @@ source_set("features") {
     "features.h",
   ]
   deps = [ "//base" ]
-
-  if (is_ios) {
-    deps += [ ":ios_cpe_passkey_buildflag" ]
-  }
 }
 
 static_library("base") {
@@ -40,6 +24,7 @@ static_library("base") {
     "account_pref_utils.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
+    "collaboration_id.h",
     "command_line_switches.cc",
     "command_line_switches.h",
     "data_type.cc",
@@ -92,7 +77,6 @@ static_library("base") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/base",
@@ -105,4 +89,9 @@ static_library("base") {
   ]
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
+}
+
+fuzzer_test("unique_position_fuzzer") {
+  sources = [ "unique_position_fuzzer.cc" ]
+  deps = [ ":base" ]
 }

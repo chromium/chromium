@@ -231,31 +231,39 @@ std::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
     mojom::RequestDestination request_destination,
     bool request_include_credentials,
     const CrossOriginEmbedderPolicy& embedder_policy,
-    mojom::CrossOriginEmbedderPolicyReporter* reporter,
-    const DocumentIsolationPolicy& document_isolation_policy) {
+    mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
+    const DocumentIsolationPolicy& document_isolation_policy,
+    mojom::DocumentIsolationPolicyReporter* dip_reporter) {
   constexpr auto kBlockedDueToCoep = mojom::BlockedByResponseReason::
       kCorpNotSameOriginAfterDefaultedToSameOriginByCoep;
+  constexpr auto kBlockedDueToDip = mojom::BlockedByResponseReason::
+      kCorpNotSameOriginAfterDefaultedToSameOriginByDip;
   constexpr auto kBlockedDueToCoepAndDip = mojom::BlockedByResponseReason::
       kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
-  if ((embedder_policy.report_only_value ==
-           mojom::CrossOriginEmbedderPolicyValue::kRequireCorp ||
-       (embedder_policy.report_only_value ==
-            mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
-        request_mode == mojom::RequestMode::kNavigate)) &&
-      reporter) {
-    const auto result = IsBlockedInternal(
-        policy, request_url, request_initiator, request_mode,
-        request_include_credentials, embedder_policy.report_only_value,
-        document_isolation_policy.report_only_value);
-    if (result == kBlockedDueToCoep || result == kBlockedDueToCoepAndDip ||
-        (result.has_value() && request_mode == mojom::RequestMode::kNavigate)) {
-      reporter->QueueCorpViolationReport(original_url, request_destination,
-                                         /*report_only=*/true);
-    }
 
-    // TODO(https://issues.chromium.org/issues/333029815)
-    // Emit a report when Document-Isolation-Policy enforcement would block
-    // subresource load.
+  // First, check if enforcing report-only COEP or report-only
+  // DocumentIsolationPolicy would cause the request to be blocked.
+  const auto report_only_result = IsBlockedInternal(
+      policy, request_url, request_initiator, request_mode,
+      request_include_credentials, embedder_policy.report_only_value,
+      document_isolation_policy.report_only_value);
+
+  if ((report_only_result == kBlockedDueToCoep ||
+       report_only_result == kBlockedDueToCoepAndDip ||
+       (report_only_result.has_value() &&
+        request_mode == mojom::RequestMode::kNavigate &&
+        embedder_policy.report_only_value !=
+            mojom::CrossOriginEmbedderPolicyValue::kNone)) &&
+      coep_reporter) {
+    coep_reporter->QueueCorpViolationReport(original_url, request_destination,
+                                            /*report_only=*/true);
+  }
+
+  if ((report_only_result == kBlockedDueToDip ||
+       report_only_result == kBlockedDueToCoepAndDip) &&
+      dip_reporter) {
+    dip_reporter->QueueCorpViolationReport(original_url, request_destination,
+                                           /*report_only=*/true);
   }
 
   if (request_mode == mojom::RequestMode::kNavigate &&
@@ -267,16 +275,19 @@ std::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
       IsBlockedInternal(policy, request_url, request_initiator, request_mode,
                         request_include_credentials, embedder_policy.value,
                         document_isolation_policy.value);
-  if (reporter &&
+  if (coep_reporter &&
       (result == kBlockedDueToCoep || result == kBlockedDueToCoepAndDip ||
        (result.has_value() && request_mode == mojom::RequestMode::kNavigate))) {
-    reporter->QueueCorpViolationReport(original_url, request_destination,
-                                       /*report_only=*/false);
+    coep_reporter->QueueCorpViolationReport(original_url, request_destination,
+                                            /*report_only=*/false);
   }
 
-  // TODO(https://issues.chromium.org/issues/333029815)
-  // Emit a report when Document-Isolation-Policy enforcement blocks
-  // subresource load.
+  if (dip_reporter &&
+      (result == kBlockedDueToDip || result == kBlockedDueToCoepAndDip)) {
+    dip_reporter->QueueCorpViolationReport(original_url, request_destination,
+                                           /*report_only=*/false);
+  }
+
   return result;
 }
 
@@ -296,8 +307,9 @@ CrossOriginResourcePolicy::IsBlocked(
     mojom::RequestMode request_mode,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
-    mojom::CrossOriginEmbedderPolicyReporter* reporter,
-    const DocumentIsolationPolicy& document_isolation_policy) {
+    mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
+    const DocumentIsolationPolicy& document_isolation_policy,
+    mojom::DocumentIsolationPolicyReporter* dip_reporter) {
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 1. If request’s mode is not "no-cors", then return allowed.
   if (request_mode != mojom::RequestMode::kNoCors)
@@ -316,7 +328,7 @@ CrossOriginResourcePolicy::IsBlocked(
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator, request_mode,
       request_destination, response.request_include_credentials,
-      embedder_policy, reporter, document_isolation_policy);
+      embedder_policy, coep_reporter, document_isolation_policy, dip_reporter);
 }
 
 // static
@@ -330,8 +342,9 @@ CrossOriginResourcePolicy::IsBlockedByHeaderValue(
     mojom::RequestDestination request_destination,
     bool request_include_credentials,
     const CrossOriginEmbedderPolicy& embedder_policy,
-    mojom::CrossOriginEmbedderPolicyReporter* reporter,
-    const DocumentIsolationPolicy& document_isolation_policy) {
+    mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
+    const DocumentIsolationPolicy& document_isolation_policy,
+    mojom::DocumentIsolationPolicyReporter* dip_reporter) {
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 1. If request’s mode is not "no-cors", then return allowed.
   if (request_mode != mojom::RequestMode::kNoCors)
@@ -342,7 +355,7 @@ CrossOriginResourcePolicy::IsBlockedByHeaderValue(
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator, request_mode,
       request_destination, request_include_credentials, embedder_policy,
-      reporter, document_isolation_policy);
+      coep_reporter, document_isolation_policy, dip_reporter);
 }
 
 // static
@@ -354,15 +367,17 @@ CrossOriginResourcePolicy::IsNavigationBlocked(
     const network::mojom::URLResponseHead& response,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
-    mojom::CrossOriginEmbedderPolicyReporter* reporter) {
+    mojom::CrossOriginEmbedderPolicyReporter* coep_reporter) {
   ParsedHeader policy =
       ParseHeaderByHttpResponseHeaders(response.headers.get());
 
+  // DocumentIsolationPolicy is not checked on navigations, so pass a default
+  // DocumentIsolationPolicy and a null DocumentIsolationPolicyReporter.
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator,
       mojom::RequestMode::kNavigate, request_destination,
-      response.request_include_credentials, embedder_policy, reporter,
-      DocumentIsolationPolicy());
+      response.request_include_credentials, embedder_policy, coep_reporter,
+      DocumentIsolationPolicy(), nullptr);
 }
 
 // static

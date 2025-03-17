@@ -26,6 +26,7 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -33,7 +34,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/common/skia_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -47,6 +47,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
@@ -103,13 +104,28 @@ void HandleRendererErrorTestParameters(const base::CommandLine& command_line) {
     WaitForDebugger("Renderer");
 }
 
+BASE_FEATURE(kBusyLoopOnRendererMain,
+             "BusyLoopOnMainThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBusyLoopTime,
+                   &kBusyLoopOnRendererMain,
+                   "busy_loop_for",
+                   base::Milliseconds(2));
+
 std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
+  std::unique_ptr<base::MessagePump> message_pump;
 #if BUILDFLAG(IS_FUCHSIA)
   // Allow FIDL APIs on renderer main thread.
-  return base::MessagePump::Create(base::MessagePumpType::IO);
+  message_pump = base::MessagePump::Create(base::MessagePumpType::IO);
 #else
-  return base::MessagePump::Create(base::MessagePumpType::DEFAULT);
+  message_pump = base::MessagePump::Create(base::MessagePumpType::DEFAULT);
 #endif
+  if (base::FeatureList::IsEnabled(kBusyLoopOnRendererMain)) {
+    message_pump->SetBusyLoop(kBusyLoopTime.Get());
+  }
+
+  return message_pump;
 }
 
 void LogTimeToStartRunLoop(const base::CommandLine& command_line,
@@ -153,8 +169,6 @@ int RendererMain(MainFunctionParams parameters) {
 
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_RENDERER);
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventRendererProcessSortIndex);
 
   const base::CommandLine& command_line = *parameters.command_line;
 
@@ -256,24 +270,18 @@ int RendererMain(MainFunctionParams parameters) {
     // It also needs to be registered before the process has multiple threads,
     // which may race with application of the sandbox.
     SandboxedProcessThreadTypeHandler::Create();
-
-    // Change the main thread type. On Linux and ChromeOS this needs to be
-    // done only if kHandleRendererThreadTypeChangesInBrowser is enabled to
-    // avoid child threads inheriting the main thread settings.
-    if (base::FeatureList::IsEnabled(
-            features::kMainThreadCompositingPriority)) {
-      base::PlatformThread::SetCurrentThreadType(
-          base::ThreadType::kDisplayCritical);
-    }
-#else
-    if (base::FeatureList::IsEnabled(
-            features::kMainThreadCompositingPriority)) {
-      base::PlatformThread::SetCurrentThreadType(
-          base::ThreadType::kDisplayCritical);
-    } else {
-      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
-    }
 #endif
+    // Consider CrRendererMain a display critical thread. While some Javascript
+    // running on the main thread might not be, experiments demonstrated that
+    // overall this improves user-perceived performance.
+    // If kInputScenarioPriorityBoost is enabled, the main thread will only be
+    // display critical when user input is detected.
+    base::ThreadType thread_type =
+        base::FeatureList::IsEnabled(
+            blink::features::kInputScenarioPriorityBoost)
+            ? base::ThreadType::kDefault
+            : base::ThreadType::kDisplayCritical;
+    base::PlatformThread::SetCurrentThreadType(thread_type);
 
     std::unique_ptr<RenderProcess> render_process = RenderProcessImpl::Create();
     // It's not a memory leak since RenderThread has the same lifetime

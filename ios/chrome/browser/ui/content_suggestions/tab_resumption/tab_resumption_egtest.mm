@@ -8,6 +8,8 @@
 #import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
 #import "components/visited_url_ranking/public/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -15,8 +17,6 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tabs/ui_bundled/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/tabs/ui_bundled/tests/fake_distant_tab.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
@@ -94,26 +94,9 @@ NSString* HostnameFromGURL(GURL URL) {
 
 @implementation TabResumptionTestCase
 
-- (BOOL)isUsingTabResumption15 {
-  return [self.name containsString:@"TR15"];
-}
-
-- (BOOL)isUsingTabResumption2 {
-  return [self.name containsString:@"TR2"];
-}
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isUsingTabResumption15]) {
-    config.features_enabled.push_back(kTabResumption1_5);
-  } else {
-    config.features_disabled.push_back(kTabResumption1_5);
-  }
-  if ([self isUsingTabResumption2]) {
-    config.features_enabled.push_back(kTabResumption2);
-  } else {
-    config.features_disabled.push_back(kTabResumption2);
-  }
+
   config.additional_args.push_back(std::string("--") +
                                    kTabResumptionShowItemImmediately);
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
@@ -157,11 +140,9 @@ NSString* HostnameFromGURL(GURL URL) {
 
 - (void)tearDownHelper {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
-  [ChromeEarlGrey resetDataForLocalStatePref:tab_resumption_prefs::
-                                                 kTabResumptioDisabledPref];
+  [ChromeEarlGrey
+      clearUserPrefWithName:tab_resumption_prefs::kTabResumptionDisabledPref];
   [ChromeEarlGrey clearUserPrefWithName:tab_resumption_prefs::
                                             kTabResumptionLastOpenedTabURLPref];
   [super tearDownHelper];
@@ -184,17 +165,14 @@ NSString* HostnameFromGURL(GURL URL) {
 
   // Check that the tile is displayed when there is a distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
-  [[EarlGrey
-      selectElementWithMatcher:TabResumptionLabelMatcher(@"FROM \"DESKTOP\"")]
-      assertWithMatcher:grey_sufficientlyVisible()];
   // Tab resumption 2 displays Tab0 in that case.
-  NSString* displayedTab = [self isUsingTabResumption2] ? @"Tab 0" : @"Tab 3";
+  NSString* displayedTab = @"Tab 3";
   [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(displayedTab)]
       assertWithMatcher:grey_sufficientlyVisible()];
   NSString* footerLabel =
       [NSString stringWithFormat:@"%@ • %@",
                                  HostnameFromGURL(self.testServer->base_url()),
-                                 @"5 mins ago"];
+                                 @"Desktop"];
   [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(footerLabel)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -207,13 +185,6 @@ NSString* HostnameFromGURL(GURL URL) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
                             self.testServer->base_url().host())];
-}
-
-// Tests that the tab resumption 2 tile is correctly displayed for a distant
-// tab.
-// TODO(crbug.com/346713831): This test timed out on some configs.
-- (void)DISABLED_testTabResumptionTileDisplayedForDistantTabTR2 {
-  [self testTabResumptionTileDisplayedForDistantTab];
 }
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
@@ -256,11 +227,6 @@ NSString* HostnameFromGURL(GURL URL) {
       waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 }
 
-// Tests that the tab resumption 2 tile is correctly displayed for a local tab.
-- (void)testTabResumptionTileDisplayedForLocalTabTR2 {
-  [self testTabResumptionTileDisplayedForLocalTab];
-}
-
 // Tests that interacting with the Magic Stack edit button works when the tab
 // resumption tile is displayed.
 - (void)testInteractWithAnotherTile {
@@ -288,12 +254,6 @@ NSString* HostnameFromGURL(GURL URL) {
       onElementWithMatcher:grey_accessibilityID(
                                kMagicStackScrollViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the tab resumption 2 tile is correctly displayed for a distant
-// tab.
-- (void)testInteractWithAnotherTileTR2 {
-  [self testInteractWithAnotherTile];
 }
 
 // Tests that the context menu has the correct action and correctly hides the
@@ -336,14 +296,7 @@ NSString* HostnameFromGURL(GURL URL) {
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 }
 
-// Tests that the context menu has the correct action and correctly hides the
-// tile.
-// TODO(crbug.com/333500324): Test is flaky.
-- (void)FLAKY_testTabResumptionTileLongPressTR2 {
-  [self testTabResumptionTileLongPress];
-}
-
-- (void)testShowMoreVisibleTR15 {
+- (void)testShowMoreVisible {
   // Check that the tile is not displayed when there is no local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 
@@ -365,27 +318,6 @@ NSString* HostnameFromGURL(GURL URL) {
                          kRecentTabsTableViewControllerAccessibilityIdentifier),
                      grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-- (void)testShowMoreNotVisible {
-  // Check that the tile is not displayed when there is no local tab.
-  WaitUntilTabResumptionTileVisibleOrTimeout(false);
-
-  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
-
-  // Relaunch the app.
-  [self relaunchAppWithStartSurfaceEnabled];
-
-  // Check that the tile is displayed when there is a local tab.
-  WaitUntilTabResumptionTileVisibleOrTimeout(true);
-  NSError* error = nil;
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"See more"),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()
-                  error:&error];
-  GREYAssertTrue(error, @"See more button is visible.");
 }
 
 @end

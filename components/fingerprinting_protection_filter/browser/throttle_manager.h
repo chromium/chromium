@@ -95,8 +95,17 @@ class ThrottleManager : public base::SupportsUserData::Data,
   // navigation and post-navigation contexts. Once a throttle-manager-holding
   // page is created, the throttle manager will be transferred into its user
   // data. `FromPage` will retrieve the throttle manager from the given `Page`.
+  //
   // Note: a fenced frame page will not have a throttle manager so this will
   // return nullptr in that case.
+  //
+  // Note: RenderFrameHosts are sometimes reused across navigations. This could
+  // result in RenderFrameHost::GetPage() returning the Page for the previous
+  // origin. For example, if a page navigates from about:blank to a.com,
+  // RenderFrameHost::GetPage() could return the Page corresponding to
+  // about:blank, which would lead to this function returning the
+  // ThrottleManager for about:blank. Avoid calling this function during
+  // navigation to avoid this issue.
   static ThrottleManager* FromPage(content::Page& page);
 
   // `FromNavigationHandle` will retrieve a throttle manager that should be used
@@ -106,7 +115,7 @@ class ThrottleManager : public base::SupportsUserData::Data,
   // manager, that is: main-frame, cross-document navigations that are not
   // making an existing page primary. In other cases, `FromNavigationHandle`
   // will look up the throttle manager from the page it is navigating in. This
-  // cannot (will CHECK) be used for prerendering or BFCache activating
+  // cannot (will return nullptr) be used for prerendering or BFCache activating
   // navigations because which page to get a throttle manager from is ambiguous:
   // the navigation occurs in the primary frame tree but the non-primary page is
   // the resulting page.
@@ -137,11 +146,14 @@ class ThrottleManager : public base::SupportsUserData::Data,
       content::NavigationHandle* navigation_handle,
       std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles);
 
+  // On a DISALLOW or WOULD_DISALLOW load policy decision, notify the throttle
+  // manager to log the associated ukm metrics, i.e. `ActivationDecision`,
+  // `DryRun`.
+  void NotifyDisallowLoadPolicy(content::NavigationHandle* navigation_handle);
+
   subresource_filter::VerifiedRuleset::Handle* ruleset_handle_for_testing() {
     return ruleset_handle_.get();
   }
-
-  void NotifyDisallowLoadPolicy(content::NavigationHandle* navigation_handle);
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(

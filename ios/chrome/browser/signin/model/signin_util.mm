@@ -15,6 +15,7 @@
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
+#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
 namespace {
 
@@ -97,7 +99,7 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
 }
 
 signin::Tribool IsFirstSessionAfterDeviceRestore() {
-  if (experimental_flags::SimulatePostDeviceRestore()) {
+  if (SimulatePostDeviceRestore()) {
     return signin::Tribool::kTrue;
   }
   static signin::Tribool is_first_session_after_device_restore =
@@ -115,7 +117,7 @@ void StorePreRestoreIdentity(PrefService* profile_pref,
                              bool history_sync_enabled) {
   ScopedDictPrefUpdate update(profile_pref, prefs::kIosPreRestoreAccountInfo);
   update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
-  update->Set(kAccountInfoKeyGaia, account.gaia);
+  update->Set(kAccountInfoKeyGaia, account.gaia.ToString());
   update->Set(kAccountInfoKeyEmail, account.email);
   update->Set(kAccountInfoKeyFullName, account.full_name);
   update->Set(kAccountInfoKeyGivenName, account.given_name);
@@ -160,4 +162,11 @@ void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
             // Ignore the result.
         }));
   }
+}
+
+bool SimulatePostDeviceRestore() {
+  // We simulate post device restore if required either by experimental settings
+  // or test flag.
+  return tests_hook::SimulatePostDeviceRestore() ||
+         experimental_flags::SimulatePostDeviceRestore();
 }

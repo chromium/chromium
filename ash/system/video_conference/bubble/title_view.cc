@@ -67,14 +67,14 @@ TitleView::TitleView(base::OnceClosure close_bubble_callback) {
           .SetImageSize(kIconSize)
           .Build());
 
-  auto* title_label = title_column->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(
-              l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE))
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(kColorAshTextColorPrimary)
-          .SetAutoColorReadabilityEnabled(false)
-          .Build());
+  auto* title_label =
+      title_column->AddChildView(views::Builder<views::Label>()
+                                     .SetText(l10n_util::GetStringUTF16(
+                                         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE))
+                                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                                     .SetEnabledColor(kColorAshTextColorPrimary)
+                                     .SetAutoColorReadabilityEnabled(false)
+                                     .Build());
 
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                         *title_label);
@@ -107,10 +107,10 @@ MicTestButton::MicTestButton() {
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   auto* background_layer = background_view_->layer();
   background_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
-  background_layer->SetFillsBoundsOpaquely(false);
 
-  AddChildView(std::make_unique<MicTestButtonContainer>(base::BindRepeating(
-      &MicTestButton::OnMicTestButtonClicked, base::Unretained(this))));
+  button_container_ =
+      AddChildView(std::make_unique<MicTestButtonContainer>(base::BindRepeating(
+          &MicTestButton::OnMicTestButtonClicked, base::Unretained(this))));
 }
 
 void MicTestButton::OnThemeChanged() {
@@ -121,6 +121,7 @@ void MicTestButton::OnThemeChanged() {
           ? cros_tokens::kCrosSysSystemPrimaryContainer
           : cros_tokens::kCrosSysSystemOnBase);
   background_view_->layer()->SetColor(color);
+  button_container_->OnThemeChanged();
 }
 
 void MicTestButton::OnMicTestButtonClicked(const ui::Event& event) {
@@ -221,6 +222,10 @@ void MicTestButtonContainer::OnThemeChanged() {
                       : cros_tokens::kCrosSysOnSurface;
   sidetone_icon_->SetImage(
       ui::ImageModel::FromVectorIcon(kVideoConferenceSidetoneIcon, color_id));
+  if (features::IsVcTrayMicIndicatorEnabled()) {
+    CHECK(mic_indicator_);
+    mic_indicator_->OnThemeChanged();
+  }
 }
 
 MicTestButtonContainer::~MicTestButtonContainer() = default;

@@ -19,11 +19,13 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMous
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -39,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -131,6 +134,7 @@ public class TouchToFillIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = 34)
     public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
         runOnUiThreadBlocking(
                 () -> {
@@ -139,7 +143,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -158,7 +162,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -182,7 +186,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.singletonList(sCam),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -206,7 +210,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -230,7 +234,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -253,7 +257,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -285,7 +289,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ true,
                             /* showCredManEntry= */ false);
@@ -358,18 +362,21 @@ public class TouchToFillIntegrationTest {
                                         }
 
                                         @Override
-                                        public int getSheetHalfHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetHalfHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetFullHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetFullHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetClosedAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetClosedAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
                                     };
                             mBottomSheetController.requestShowContent(
@@ -387,7 +394,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -418,7 +425,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ true);

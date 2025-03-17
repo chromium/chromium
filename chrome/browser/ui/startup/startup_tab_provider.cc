@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
@@ -11,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
@@ -70,7 +70,7 @@ namespace {
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
 bool ProfileHasOtherTabbedBrowser(Profile* profile) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       *BrowserList::GetInstance(), [profile](Browser* browser) {
         return browser->profile() == profile && browser->is_type_normal() &&
                !browser->tab_strip_model()->empty();
@@ -379,7 +379,7 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
   // available in |other_startup_tabs|.
   StartupTabs tabs;
   const bool suitable_tab_available =
-      base::ranges::any_of(other_startup_tabs, [&](const StartupTab& tab) {
+      std::ranges::any_of(other_startup_tabs, [&](const StartupTab& tab) {
         // The generic new tab URL is only suitable if the user has a Chrome
         // controlled New Tab Page.
         if (tab.url.host() == chrome::kChromeUINewTabHost) {
@@ -425,7 +425,7 @@ GURL StartupTabProviderImpl::GetTriggeredResetSettingsUrl() {
 // static
 StartupTabProviderImpl::ParsedCommandLineTabArg
 StartupTabProviderImpl::ParseTabFromCommandLineArg(
-    base::FilePath::StringPieceType arg,
+    base::FilePath::StringViewType arg,
     const base::FilePath& cur_dir,
     Profile* maybe_profile) {
   // Note: Type/encoding of |arg| matches with the one of FilePath.

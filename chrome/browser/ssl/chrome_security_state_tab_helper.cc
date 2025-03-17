@@ -12,11 +12,9 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/common/chrome_features.h"
@@ -50,13 +48,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 using password_manager::metrics_util::PasswordType;
@@ -165,20 +162,9 @@ void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
-bool ChromeSecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  policy::PolicyCertService* service =
-      policy::PolicyCertServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  if (service && service->UsedPolicyCertificates()) {
-    return true;
-  }
-#endif
-  return false;
-}
-
 security_state::MaliciousContentStatus
 ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   using enum safe_browsing::SBThreatType;
 
   content::NavigationEntry* entry =
@@ -266,5 +252,6 @@ ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
         NOTREACHED();
     }
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }

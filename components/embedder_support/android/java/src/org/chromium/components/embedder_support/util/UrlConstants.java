@@ -4,6 +4,7 @@
 
 package org.chromium.components.embedder_support.util;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
@@ -12,6 +13,7 @@ import org.chromium.url.GURL;
  * <p>Do not add any more NTP related constants. TODO(crbug.com/40281619) Move NTP related constants
  * to ChromeUrlConstants.java
  */
+@NullMarked
 public class UrlConstants {
     public static final String APP_INTENT_SCHEME = "android-app";
     public static final String BLOB_SCHEME = "blob";
@@ -122,18 +124,7 @@ public class UrlConstants {
             "https://myactivity.google.com/myactivity?utm_source=chrome_qd";
 
     public static final String GOOGLE_PRIVACY_POLICY = "https://policies.google.com/privacy";
-
-    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY =
-            "https://policies.google.com/privacy/embedded";
-
-    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE =
-            "https://policies.google.com/privacy/embedded?color_scheme=dark";
-
-    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_CHINA =
-            "https://policies.google.cn/privacy/embedded";
-
-    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE_CHINA =
-            "https://policies.google.cn/privacy/embedded?color_scheme=dark";
+    public static final String GOOGLE_PRIVACY_POLICY_CHINA = "https://policies.google.cn/privacy";
 
     public static final String GOOGLE_URL = "https://www.google.com/";
 

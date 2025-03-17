@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionProperties.DESTROYABLE;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.View;
@@ -13,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
@@ -68,7 +71,7 @@ class TabListEditorMediator
 
     private @Nullable TabListCoordinator mTabListCoordinator;
     private @Nullable TabListEditorCoordinator.ResetHandler mResetHandler;
-    private PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
+    private @Nullable PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
     private ListModelChangeProcessor mActionChangeProcessor;
     private TabListEditorMenu mTabListEditorMenu;
     private SnackbarManager mSnackbarManager;
@@ -126,6 +129,7 @@ class TabListEditorMediator
                         // force hiding the selection editor.
                         if (type == TabLaunchType.FROM_RESTORE
                                 || type == TabLaunchType.FROM_REPARENTING
+                                || type == TabLaunchType.FROM_REPARENTING_BACKGROUND
                                 || type == TabLaunchType.FROM_STARTUP) {
                             mNavigationProvider.goBack();
                         }
@@ -227,7 +231,6 @@ class TabListEditorMediator
         mTabListCoordinator.prepareTabGridView();
         mVisibleTabs.clear();
         mVisibleTabs.addAll(tabs);
-        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
 
         mResetHandler.resetWithListOfTabs(tabs, recyclerViewPosition, /* quickMode= */ false);
 
@@ -255,6 +258,7 @@ class TabListEditorMediator
             mActionListModel.addObserver(mActionChangeProcessor);
         }
 
+        runListDestroyables();
         mActionListModel.clear();
         for (TabListEditorAction action : actions) {
             action.configure(
@@ -331,6 +335,11 @@ class TabListEditorMediator
     }
 
     @Override
+    public boolean needsCleanUp() {
+        return false;
+    }
+
+    @Override
     public void setToolbarTitle(String title) {
         mModel.set(TabListEditorProperties.TOOLBAR_TITLE, title);
     }
@@ -397,11 +406,23 @@ class TabListEditorMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
+        runListDestroyables();
+
         removeTabGroupModelFilterObserver(mCurrentTabGroupModelFilterSupplier.get());
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
 
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
+        }
+    }
+
+    private void runListDestroyables() {
+        if (mActionListModel == null) return;
+        for (PropertyModel model : mActionListModel) {
+            @Nullable Destroyable destroyable = model.get(DESTROYABLE);
+            if (destroyable != null) {
+                destroyable.destroy();
+            }
         }
     }
 

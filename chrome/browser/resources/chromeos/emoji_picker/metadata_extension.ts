@@ -10,7 +10,8 @@
  */
 
 
-import {CategoryData, CategoryEnum, GifSubcategoryData, SubcategoryData} from './types.js';
+import type {CategoryData, GifSubcategoryData, SubcategoryData} from './types.js';
+import {CategoryEnum} from './types.js';
 
 const RECENTLY_USED_NAME = 'Recently used';
 

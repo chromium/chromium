@@ -5,6 +5,8 @@
 #ifndef ASH_LOGIN_UI_PIN_STATUS_MESSAGE_VIEW_H_
 #define ASH_LOGIN_UI_PIN_STATUS_MESSAGE_VIEW_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -23,7 +25,7 @@ class PinStatusMessageView : public views::View {
     explicit TestApi(PinStatusMessageView* view);
     ~TestApi();
 
-    const std::u16string& GetPinStatusMessageContent() const;
+    std::u16string_view GetPinStatusMessageContent() const;
 
    private:
     const raw_ptr<PinStatusMessageView> view_;

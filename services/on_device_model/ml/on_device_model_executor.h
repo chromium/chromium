@@ -24,6 +24,7 @@
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ml {
 
@@ -35,7 +36,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
   SessionImpl(const ChromeML& chrome_ml,
               ChromeMLModel model,
               SessionAccessor::Ptr session,
-              SessionAccessor::Ptr empty_session,
               uint32_t max_tokens,
               std::optional<uint32_t> adaptation_id);
   ~SessionImpl();
@@ -43,12 +43,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
   SessionImpl(const SessionImpl&) = delete;
   SessionImpl& operator=(const SessionImpl&) = delete;
 
-  void AddContext(
-      on_device_model::mojom::InputOptionsPtr input,
-      mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
-      base::OnceClosure on_complete);
-  void Execute(
-      on_device_model::mojom::InputOptionsPtr input,
+  void Append(on_device_model::mojom::AppendOptionsPtr options,
+              mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
+              base::OnceClosure on_complete);
+  void Generate(
+      on_device_model::mojom::GenerateOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
       base::OnceClosure on_complete);
   void SizeInTokens(on_device_model::mojom::InputPtr input,
@@ -62,7 +61,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLModel model_;
   SessionAccessor::Ptr session_;
-  SessionAccessor::Ptr empty_session_;
   const uint32_t max_tokens_;
   std::unique_ptr<Responder> responder_;
   std::set<std::unique_ptr<ContextHolder>> context_holders_;
@@ -98,12 +96,15 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
                    on_device_model::mojom::LoadModelParamsPtr params,
                    base::OnceClosure on_complete);
 
+  static on_device_model::Capabilities GetCapabilities(
+      const ChromeML& chrome_ml,
+      on_device_model::ModelAssets assets);
+
   std::unique_ptr<SessionImpl> CreateSession(
-      const ScopedAdaptation* adaptation);
-  base::expected<std::unique_ptr<ScopedAdaptation>,
-                 on_device_model::mojom::LoadModelResult>
-  LoadAdaptation(on_device_model::mojom::LoadAdaptationParamsPtr params,
-                 base::OnceClosure on_complete);
+      const ScopedAdaptation* adaptation,
+      on_device_model::mojom::SessionParamsPtr params);
+  std::unique_ptr<ScopedAdaptation> LoadAdaptation(
+      on_device_model::mojom::LoadAdaptationParamsPtr params);
 
  private:
   on_device_model::mojom::LoadModelResult Init(
@@ -114,12 +115,14 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
 
   const raw_ref<const ChromeML> chrome_ml_;
 
-  // Empty sessions keyed by the adaptation ID that can be cloned from.
-  std::map<std::optional<uint32_t>, SessionAccessor::Ptr> base_sessions_;
+  // Params for adaptations that have been loaded.
+  absl::flat_hash_map<uint32_t, on_device_model::mojom::LoadAdaptationParamsPtr>
+      adaptation_params_;
 
   ChromeMLModel model_ = 0;
   scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
   uint32_t max_tokens_ = 0;
+  uint32_t next_adaptation_id_ = 0;
   base::WeakPtrFactory<OnDeviceModelExecutor> weak_ptr_factory_{this};
 };
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRELOADING_PREFETCH_CHROME_PREFETCH_MANAGER_H_
 #define CHROME_BROWSER_PRELOADING_PREFETCH_CHROME_PREFETCH_MANAGER_H_
 
+#include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -30,6 +31,8 @@ class ChromePrefetchManager
  private:
   explicit ChromePrefetchManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<ChromePrefetchManager>;
+
+  std::vector<std::unique_ptr<content::PrefetchHandle>> all_prefetches_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

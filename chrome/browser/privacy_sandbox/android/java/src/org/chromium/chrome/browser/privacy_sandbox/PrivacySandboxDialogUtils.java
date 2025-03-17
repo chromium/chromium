@@ -75,7 +75,7 @@ public class PrivacySandboxDialogUtils {
 
         String description =
                 context.getString(
-                        R.string.concat_two_strings_with_periods,
+                        R.string.concat_two_strings_with_comma,
                         dropdownButtonText,
                         collapseOrExpandedText);
         dropdownElement.setContentDescription(description);
@@ -123,5 +123,23 @@ public class PrivacySandboxDialogUtils {
                                         R.style.TextAppearance_TextMediumThick_Secondary)));
         spannableString.setSpan(new ChromeBulletSpan(context), 0, spannableString.length(), 0);
         view.setText(spannableString);
+    }
+
+    /**
+     * Returns the correct SurfaceType as a string. Mainly used for histogram recording purposes.
+     *
+     * @param int SurfaceType surface type enum.
+     * @throws IllegalArgumentException if it receives invalid surfaceType.
+     */
+    public static String getSurfaceTypeAsString(@SurfaceType int surfaceType) {
+
+        switch (surfaceType) {
+            case SurfaceType.BR_APP:
+                return "ClankBrApp";
+            case SurfaceType.AGACCT:
+                return "ClankCCT";
+            default:
+                throw new IllegalArgumentException("Invalid surfaceType: " + surfaceType);
+        }
     }
 }

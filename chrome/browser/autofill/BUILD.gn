@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
@@ -17,6 +16,12 @@ static_library("autofill") {
     "address_normalizer_factory.h",
     "autocomplete_history_manager_factory.cc",
     "autocomplete_history_manager_factory.h",
+    "autofill_ai_model_cache_factory.cc",
+    "autofill_ai_model_cache_factory.h",
+    "autofill_ai_model_executor_factory.cc",
+    "autofill_ai_model_executor_factory.h",
+    "autofill_entity_data_manager_factory.cc",
+    "autofill_entity_data_manager_factory.h",
     "autofill_image_fetcher_factory.cc",
     "autofill_image_fetcher_factory.h",
     "autofill_offer_manager_factory.cc",
@@ -27,6 +32,8 @@ static_library("autofill") {
     "iban_manager_factory.h",
     "merchant_promo_code_manager_factory.cc",
     "merchant_promo_code_manager_factory.h",
+    "passes_data_manager_factory.cc",
+    "passes_data_manager_factory.h",
     "personal_data_manager_factory.cc",
     "personal_data_manager_factory.h",
     "strike_database_factory.cc",
@@ -266,7 +273,7 @@ if (!is_android) {
       "//ui/events:events_base",
     ]
 
-    if (is_chromeos_ash && enable_extensions) {
+    if (is_chromeos && enable_extensions) {
       deps += [
         "//chrome/browser/ash/accessibility",
         "//chrome/browser/ash/accessibility:test_support",

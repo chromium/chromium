@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_mediator.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -96,7 +96,6 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
                      initWithDownloadTask:download_task_.get()
                        saveToDriveHandler:[OCMArg any]
                 manageStorageAlertHandler:[OCMArg any]
-                       applicationHandler:[OCMArg any]
                      accountPickerHandler:[OCMArg any]
                               prefService:pref_service_
                     accountManagerService:account_manager_service_
@@ -158,8 +157,6 @@ TEST_F(SaveToDriveCoordinatorTest, StartsAndDisconnectsMediator) {
                        saveToDriveHandler:static_cast<id<SaveToDriveCommands>>(
                                               browser_->GetCommandDispatcher())
                 manageStorageAlertHandler:manage_storage_commands
-                       applicationHandler:static_cast<id<ApplicationCommands>>(
-                                              browser_->GetCommandDispatcher())
                      accountPickerHandler:account_picker_commands
                               prefService:pref_service_
                     accountManagerService:account_manager_service_
@@ -251,9 +248,8 @@ TEST_F(SaveToDriveCoordinatorTest, ShowsAddAccount) {
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);
                 EXPECT_FALSE(command.identity);
-                EXPECT_EQ(
-                    signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS,
-                    command.accessPoint);
+                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToDriveIos,
+                          command.accessPoint);
                 EXPECT_EQ(
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
                     command.promoAction);

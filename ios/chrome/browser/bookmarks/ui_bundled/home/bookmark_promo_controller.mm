@@ -13,6 +13,10 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_settings_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -21,10 +25,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 
 @interface BookmarkPromoController () <SigninPromoViewConsumer,
                                        IdentityManagerObserverBridgeDelegate>
@@ -64,8 +64,7 @@
                                      profile)
                      prefService:profile->GetPrefs()
                      syncService:syncService
-                     accessPoint:signin_metrics::AccessPoint::
-                                     ACCESS_POINT_BOOKMARK_MANAGER
+                     accessPoint:signin_metrics::AccessPoint::kBookmarkManager
                  signinPresenter:signinPresenter
         accountSettingsPresenter:accountSettingsPresenter];
     _signinPromoViewMediator.consumer = self;
@@ -136,7 +135,7 @@
   CHECK(signinPromoAction.has_value());
   if (![SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
+              signin_metrics::AccessPoint::kBookmarkManager
                                     signinPromoAction:signinPromoAction.value()
                                 authenticationService:authenticationService
                                           prefService:profile->GetPrefs()]) {

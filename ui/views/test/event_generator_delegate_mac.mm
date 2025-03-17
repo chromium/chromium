@@ -460,7 +460,7 @@ void EventGeneratorDelegateMac::OnKeyEvent(ui::KeyEvent* event) {
   NSEvent* ns_event = cocoa_test_event_utils::SynthesizeKeyEvent(
       target_window_, event->type() == ui::EventType::kKeyPressed,
       event->key_code(), modifiers,
-      event->is_char() ? event->GetDomKey() : ui::DomKey::NONE);
+      event->is_char() ? event->GetDomKey() : ui::DomKey(ui::DomKey::NONE));
 
   using Target = ui::test::EventGenerator::Target;
   switch (owner_->target()) {

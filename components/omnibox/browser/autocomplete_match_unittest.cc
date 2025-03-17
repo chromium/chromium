@@ -1037,7 +1037,7 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
       AutocompleteMatch::BetterDuplicate(create_match(document_provider, 0),
                                          create_match(history_provider, 1000)));
 
-  // Prefer document provider matches over other providers, even if scored
+  // Prefer bookmark provider matches over other providers, even if scored
   // lower.
   EXPECT_TRUE(
       AutocompleteMatch::BetterDuplicate(create_match(bookmark_provider, 0),
@@ -1203,94 +1203,27 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
     std::string test_name;
     // This is what will get added to the AutocompleteMatch.
     std::vector<ActionType> types_to_add;
-    // Whether to show Reviews (true) or Calls (false) first.
-    bool promote_reviews;
-    // Retention variant to apply. See ActionsInSuggestRemoveActionTypes.
-    const char* retention_variant;
     // This is the expected result (and order).
     std::vector<ActionType> types_to_expect;
   } test_cases[]{
       // clang-format off
       // Retain all
-      {"retain all - no actions, promote reviews", {}, true, "", {}},
-      {"retain all - no actions, promote calls", {}, false, "", {}},
+      {"retain all - no actions, promote calls", {}, {}},
       {"retain all - have no reviews, promote reviews",
-       {CALL, CALL, CALL}, true, "", {CALL, CALL, CALL}},
-      {"retain all - have reviews, promote reviews",
-       {CALL, CALL, REVS}, true, "", {REVS, CALL, CALL}},
-      {"retain all - have all types, promote reviews",
-       {CALL, NAV, REVS}, true, "", {REVS, NAV, CALL}},
-      {"retain all - have all types, promote calls",
-       {CALL, NAV, REVS}, false, "", {CALL, NAV, REVS}},
-      {"retain all - have multiple reviews, promote reviews",
-       {REVS, NAV, REVS}, true, "", {REVS, REVS, NAV}},
-      {"retain all - have multiple reviews, promote calls",
-       {REVS, NAV, REVS}, false, "", {NAV, REVS, REVS}},
+       {CALL, CALL, CALL}, {CALL, CALL, CALL}},
+      {"retain all - have reviews",
+       {CALL, CALL, REVS}, {CALL, CALL, REVS}},
+      {"retain all - have all types",
+       {CALL, NAV, REVS}, {CALL, NAV, REVS}},
+      {"retain all - have all types, sort",
+       {REVS, CALL, NAV}, {CALL, NAV, REVS}},
+      {"retain all - have multiple reviews, sort",
+       {REVS, NAV, REVS}, {NAV, REVS, REVS}},
 
-      // Prune calls.
-      {"prine calls - no actions, promote reviews",
-       {}, true, "call", {}},
-      {"prune calls - no actions, promote calls",
-       {}, false, "call", {}},
-      {"prune calls - have no reviews, promote reviews",
-       {CALL, CALL, CALL}, true, "call", {}},
-      {"prune calls - have reviews, promote reviews",
-       {CALL, CALL, REVS}, true, "call", {REVS}},
-      {"prune calls - have all types, promote reviews",
-       {CALL, NAV, REVS}, true, "call", {REVS, NAV}},
-      {"prune calls - have all types, promote calls",
-       {CALL, NAV, REVS}, false, "call", {NAV, REVS}},
-      {"prune calls - have multiple reviews, promote reviews",
-       {REVS, NAV, REVS}, true, "call", {REVS, REVS, NAV}},
-      {"prune calls - have multiple reviews, promote calls",
-       {REVS, NAV, REVS}, false, "call", {NAV, REVS, REVS}},
-
-      // Prune directions.
-      {"prune directions - no actions, promote reviews",
-       {}, true, "directions", {}},
-      {"prune directions - no actions, promote calls",
-       {}, false, "directions", {}},
-      {"prune directions - have no reviews, promote reviews",
-       {CALL, CALL, CALL}, true, "directions", {CALL, CALL, CALL}},
-      {"prune directions - have reviews, promote reviews",
-       {CALL, CALL, REVS}, true, "directions", {REVS, CALL, CALL}},
-      {"prune directions - have all types, promote reviews",
-       {CALL, NAV, REVS}, true, "directions", {REVS, CALL}},
-      {"prune directions - have all types, promote calls",
-       {CALL, NAV, REVS}, false, "directions", {CALL, REVS}},
-      {"prune directions - have multiple reviews, promote reviews",
-       {REVS, NAV, REVS}, true, "directions", {REVS, REVS}},
-      {"prune directions - have multiple reviews, promote calls",
-       {REVS, NAV, REVS}, false, "directions", {REVS, REVS}},
-
-      // Prune reviews.
-      {"prune reviews - no actions, promote reviews",
-       {}, true, "reviews", {}},
-      {"prune reviews - no actions, promote calls",
-       {}, false, "reviews", {}},
-      {"prune reviews - have no reviews, promote reviews",
-       {CALL, CALL, CALL}, true, "reviews", {CALL, CALL, CALL}},
-      {"prune reviews - have reviews, promote reviews",
-       {CALL, CALL, REVS}, true, "reviews", {CALL, CALL}},
-      {"prune reviews - have all types, promote reviews",
-       {CALL, NAV, REVS}, true, "reviews", {NAV, CALL}},
-      {"prune reviews - have all types, promote calls",
-       {CALL, NAV, REVS}, false, "reviews", {CALL, NAV}},
-      {"prune reviews - have multiple reviews, promote reviews",
-       {REVS, NAV, REVS}, true, "reviews", {NAV}},
-      {"prune reviews - have multiple reviews, promote calls",
-       {REVS, NAV, REVS}, true, "reviews", {NAV}},
       // clang-format on
   };
 
   for (const auto& test_case : test_cases) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kActionsInSuggest,
-        {{OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
-          test_case.retention_variant},
-         {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name,
-          test_case.promote_reviews ? "true" : "false"}});
     AutocompleteMatch match(provider.get(), 1, false,
                             AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
 

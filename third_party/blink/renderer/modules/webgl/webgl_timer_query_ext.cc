@@ -19,6 +19,10 @@ WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLRenderingContextBase* ctx)
       query_result_available_(false),
       query_result_(0),
       task_runner_(ctx->GetContextTaskRunner()) {
+  if (!ctx || ctx->isContextLost()) {
+    return;
+  }
+
   Context()->ContextGL()->GenQueriesEXT(1, &query_id_);
 }
 
@@ -35,6 +39,8 @@ void WebGLTimerQueryEXT::ResetCachedResult() {
 }
 
 void WebGLTimerQueryEXT::UpdateCachedResult(gpu::gles2::GLES2Interface* gl) {
+  // Context loss is checked at higher levels.
+
   if (query_result_available_)
     return;
 

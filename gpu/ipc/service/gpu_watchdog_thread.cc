@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 
 #include <memory>
@@ -34,6 +39,10 @@
 #include "gpu/config/gpu_crash_keys.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/result_codes.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace gpu {
 
@@ -83,17 +92,8 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
   else
     watched_thread_name_str_uma_ = ".main";
 
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40187449): Remove this once macOS uses system-wide ids.
-  // On macOS the thread ids used by CrashPad are not the same as the ones
-  // provided by PlatformThread
-  uint64_t watched_thread_id;
-  pthread_threadid_np(pthread_self(), &watched_thread_id);
-  watched_thread_id_str_ = base::NumberToString(watched_thread_id);
-#else
   watched_thread_id_str_ =
-      base::NumberToString(base::PlatformThread::CurrentId());
-#endif
+      base::NumberToString(base::PlatformThread::CurrentId().raw());
 
 #if BUILDFLAG(IS_WIN)
   // GetCurrentThread returns a pseudo-handle that cannot be used by one thread

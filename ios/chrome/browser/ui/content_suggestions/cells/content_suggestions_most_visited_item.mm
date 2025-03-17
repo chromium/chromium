@@ -30,11 +30,12 @@
                            IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)
                 target:self
               selector:@selector(openInNewIncognitoTab)];
-  UIAccessibilityCustomAction* removeMostVisited = [
-      [UIAccessibilityCustomAction alloc]
-      initWithName:l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
-            target:self
-          selector:@selector(removeMostVisited)];
+  UIAccessibilityCustomAction* removeMostVisited =
+      [[UIAccessibilityCustomAction alloc]
+          initWithName:l10n_util::GetNSString(
+                           IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
+                target:self
+              selector:@selector(removeMostVisited)];
 
   if (self.incognitoAvailable) {
     return [NSArray arrayWithObjects:openInNewTab, openInNewIncognitoTab,

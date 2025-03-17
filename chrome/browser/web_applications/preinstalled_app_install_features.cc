@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
@@ -96,8 +97,7 @@ bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name,
-                                            const Profile& profile) {
+bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name) {
   if (g_always_enabled_for_testing) {
     return true;
   }

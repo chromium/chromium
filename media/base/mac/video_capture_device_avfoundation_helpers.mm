@@ -4,6 +4,8 @@
 
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
@@ -12,6 +14,9 @@ namespace media {
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseAVCaptureDeviceTypeExternal,
              "UseAVCaptureDeviceTypeExternal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAVCaptureDeviceTypeContinuity,
+             "UseAVCaptureDeviceTypeContinuity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -33,18 +38,36 @@ NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
       captureDeviceTypes = [captureDeviceTypes
           arrayByAddingObject:AVCaptureDeviceTypeExternalUnknown];
     }
+    // Continuity cameras are available from MacOS 14.0 and also have to
+    // be queried.
+    if (base::FeatureList::IsEnabled(kUseAVCaptureDeviceTypeContinuity)) {
+      captureDeviceTypes = [captureDeviceTypes
+          arrayByAddingObject:AVCaptureDeviceTypeContinuityCamera];
+    }
   } else {
     captureDeviceTypes = [captureDeviceTypes
         arrayByAddingObject:AVCaptureDeviceTypeExternalUnknown];
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
-      [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:captureDeviceTypes
-                                mediaType:AVMediaTypeVideo
-                                 position:AVCaptureDevicePositionUnspecified];
-  return deviceDiscoverySession.devices;
+  @try {
+    AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
+        [AVCaptureDeviceDiscoverySession
+            discoverySessionWithDeviceTypes:captureDeviceTypes
+                                  mediaType:AVMediaTypeVideo
+                                   position:AVCaptureDevicePositionUnspecified];
+    return deviceDiscoverySession.devices;
+  } @catch (NSException* exception) {
+    SCOPED_CRASH_KEY_STRING1024("AVCaptureDeviceCrash", "Exception_name",
+                                exception.name.UTF8String);
+    SCOPED_CRASH_KEY_STRING1024("AVCaptureDeviceCrash", "Exception_reason",
+                                exception.reason.UTF8String);
+
+    base::debug::DumpWithoutCrashing();
+
+    // Return empty array when catching exception.
+    return @[];
+  }
 }
 
 }  // namespace media

@@ -15,8 +15,6 @@
 
 namespace blink {
 
-class InlineItem;
-
 // A context object given to layout. The same instance should be given to
 // children of a parent node, but layout algorithm should be prepared to be
 // given a new instance when yield or fragmentation occur.
@@ -55,10 +53,9 @@ class CORE_EXPORT InlineChildLayoutContext {
   //
   // To determine this, callers must call |SetItemIndex| to set the end of the
   // current line.
-  InlineLayoutStateStack* BoxStatesIfValidForItemIndex(
-      const HeapVector<InlineItem>& items,
-      unsigned item_index);
-  void SetItemIndex(const HeapVector<InlineItem>& items, unsigned item_index) {
+  InlineLayoutStateStack* BoxStatesIfValidForItemIndex(const InlineItems& items,
+                                                       unsigned item_index);
+  void SetItemIndex(const InlineItems& items, unsigned item_index) {
     items_ = &items;
     item_index_ = item_index;
   }
@@ -96,7 +93,7 @@ class CORE_EXPORT InlineChildLayoutContext {
   std::optional<InlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.
-  const HeapVector<InlineItem>* items_ = nullptr;
+  const InlineItems* items_ = nullptr;
   unsigned item_index_ = 0;
 
   HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;

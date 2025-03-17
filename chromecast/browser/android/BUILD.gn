@@ -159,10 +159,6 @@ common_android_library_deps = [
 
   # TODO(slan): We may need to pass this in as a parameter.
   "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
-  "//third_party/androidx:androidx_slice_slice_builders_java",
-
-  # Used internally for Settings UI.
-  "//third_party/androidx:androidx_slice_slice_core_java",
   "//ui/android:ui_java",
 ]
 
@@ -179,7 +175,6 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsIntentUtils.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsScopes.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsSurfaceHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/TaskRemovedMonitorService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
@@ -241,7 +236,6 @@ robolectric_binary("cast_shell_junit_tests") {
     "junit/src/org/chromium/chromecast/shell/CastWebContentsActivityTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsComponentTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsIntentUtilsTest.java",
-    "junit/src/org/chromium/chromecast/shell/CastWebContentsServiceTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsSurfaceHelperTest.java",
     "junit/src/org/chromium/chromecast/shell/ElidedLogcatProviderUnitTest.java",
     "junit/src/org/chromium/chromecast/shell/HandlerSchedulerTest.java",

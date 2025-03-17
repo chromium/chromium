@@ -9,8 +9,11 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A helper class for WebView-specific handling of Java crashes. */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwCrashReporterClient {
     // The filename prefix used by Chromium proguarding, which we use to
     // recognise stack frames that reference WebView.

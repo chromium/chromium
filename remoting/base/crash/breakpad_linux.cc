@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/crash/breakpad.h"
+#include "remoting/base/crash/breakpad_linux.h"
 
 #include <memory>
 #include <utility>
@@ -14,29 +14,6 @@
 #include "third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.h"
 
 namespace remoting {
-
-namespace {
-
-class BreakpadLinux {
- public:
-  BreakpadLinux();
-
-  BreakpadLinux(const BreakpadLinux&) = delete;
-  BreakpadLinux& operator=(const BreakpadLinux&) = delete;
-
-  ~BreakpadLinux() = delete;
-
-  static BreakpadLinux& GetInstance();
-
-  BreakpadHelper& helper() { return helper_; }
-
- private:
-  // Breakpad exception handler.
-  std::unique_ptr<google_breakpad::ExceptionHandler> breakpad_;
-
-  // Shared logic for handling exceptions and minidump processing.
-  BreakpadHelper helper_;
-};
 
 bool FilterCallback(void* context) {
   // If an exception is already being handled, this thread will be put to sleep.
@@ -67,13 +44,6 @@ BreakpadLinux::BreakpadLinux() {
 BreakpadLinux& BreakpadLinux::GetInstance() {
   static base::NoDestructor<BreakpadLinux> instance;
   return *instance;
-}
-
-}  // namespace
-
-void InitializeCrashReporting() {
-  // Touch the object to make sure it is initialized.
-  BreakpadLinux::GetInstance();
 }
 
 }  // namespace remoting

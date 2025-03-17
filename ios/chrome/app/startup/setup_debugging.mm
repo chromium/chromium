@@ -66,7 +66,8 @@ void SwizzleUIImageImageNamed() {
 
   id swizzleBlock = ^(id self, NSString* imageName) {
     // Call the original [UIImage imageNamed:] method.
-    UIImage* (*imp)(id, SEL, id) = (UIImage*(*)(id,SEL,id))*originalImpPtr;
+    UIImage* (*imp)(id, SEL, id) =
+        (UIImage * (*)(id, SEL, id)) * originalImpPtr;
     Class aClass = objc_getClass("UIImage");
     UIImage* image = imp(aClass, @selector(imageNamed:), imageName);
 

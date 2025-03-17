@@ -9,6 +9,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/platform_test.h"
 
 using signin::constants::kNoHostedDomainFound;
@@ -23,28 +24,40 @@ base::Value::Dict CreateUserInfoWithValues(const char* email,
                                            const char* full_name,
                                            const char* given_name,
                                            const char* locale,
-                                           const char* picture_url) {
+                                           const char* picture_url,
+                                           const char* sub = nullptr) {
   base::Value::Dict user_info;
-  if (email)
+  if (email) {
     user_info.Set("email", base::Value(email));
+  }
 
-  if (gaia)
+  if (gaia) {
     user_info.Set("id", base::Value(gaia));
+  }
 
-  if (hosted_domain)
+  if (hosted_domain) {
     user_info.Set("hd", base::Value(hosted_domain));
+  }
 
-  if (full_name)
+  if (full_name) {
     user_info.Set("name", base::Value(full_name));
+  }
 
-  if (given_name)
+  if (given_name) {
     user_info.Set("given_name", base::Value(given_name));
+  }
 
-  if (locale)
+  if (locale) {
     user_info.Set("locale", base::Value(locale));
+  }
 
-  if (picture_url)
+  if (picture_url) {
     user_info.Set("picture", base::Value(picture_url));
+  }
+
+  if (sub) {
+    user_info.Set("sub", base::Value(sub));
+  }
 
   return user_info;
 }
@@ -82,7 +95,55 @@ TEST_F(AccountInfoUtilTest, FromUserInfo) {
 
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia, "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.hosted_domain, "example.com");
+  ASSERT_EQ(account_info.full_name, "full name");
+  ASSERT_EQ(account_info.given_name, "given name");
+  ASSERT_EQ(account_info.locale, "locale");
+  ASSERT_EQ(account_info.picture_url, "https://example.com/picture/user");
+}
+
+// Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
+// extracted from the passed base::Value when the GAIA ID is stored in
+// the "sub" value.
+TEST_F(AccountInfoUtilTest, FromUserInfoWithSub) {
+  std::optional<AccountInfo> maybe_account_info =
+      AccountInfoFromUserInfo(CreateUserInfoWithValues(
+          /*email=*/"user@example.com", /*gaia=*/nullptr,
+          /*hosted_domain=*/"example.com", /*full_name=*/"full name",
+          /*given_name=*/"given name", /*locale=*/"locale",
+          /*picture_url=*/"https://example.com/picture/user",
+          /*sub=*/"gaia_id_user_example_com"));
+
+  ASSERT_TRUE(maybe_account_info.has_value());
+
+  AccountInfo& account_info = maybe_account_info.value();
+  ASSERT_EQ(account_info.email, "user@example.com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.hosted_domain, "example.com");
+  ASSERT_EQ(account_info.full_name, "full name");
+  ASSERT_EQ(account_info.given_name, "given name");
+  ASSERT_EQ(account_info.locale, "locale");
+  ASSERT_EQ(account_info.picture_url, "https://example.com/picture/user");
+}
+
+// Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
+// extracted from the passed base::Value, and that the GAIA ID stored in "id"
+// takes precedence over the "sub" value.
+TEST_F(AccountInfoUtilTest, FromUserInfoWithIdAndSub) {
+  std::optional<AccountInfo> maybe_account_info =
+      AccountInfoFromUserInfo(CreateUserInfoWithValues(
+          /*email=*/"user@example.com", /*gaia=*/"gaia_id_user_example_com",
+          /*hosted_domain=*/"example.com", /*full_name=*/"full name",
+          /*given_name=*/"given name", /*locale=*/"locale",
+          /*picture_url=*/"https://example.com/picture/user",
+          /*sub=*/"gaia_sub_user_example_com"));
+
+  ASSERT_TRUE(maybe_account_info.has_value());
+
+  AccountInfo& account_info = maybe_account_info.value();
+  ASSERT_EQ(account_info.email, "user@example.com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.hosted_domain, "example.com");
   ASSERT_EQ(account_info.full_name, "full name");
   ASSERT_EQ(account_info.given_name, "given name");
@@ -104,7 +165,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyValues) {
 
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia, "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.hosted_domain, kNoHostedDomainFound);
   ASSERT_EQ(account_info.full_name, std::string());
   ASSERT_EQ(account_info.given_name, std::string());

@@ -24,6 +24,19 @@ namespace web_app::test {
 void AddForceInstalledIwaToPolicy(PrefService* prefs,
                                   base::Value::Dict policy_entry);
 
+// Removes the policy entry associated with the given `web_bundle_id` from
+// `prefs::kIsolatedWebAppInstallForceList`.
+void RemoveForceInstalledIwaFromPolicy(
+    PrefService* prefs,
+    const web_package::SignedWebBundleId& web_bundle_id);
+
+// Edits the policy entry associated with the given `web_bundle_id` in
+// `prefs::kIsolatedWebAppInstallForceList`.
+void EditForceInstalledIwaPolicy(
+    PrefService* prefs,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    base::Value::Dict policy_entry);
+
 // Generates a policy entry that can be appended to
 // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
 base::Value::Dict CreateForceInstallIwaPolicyEntry(

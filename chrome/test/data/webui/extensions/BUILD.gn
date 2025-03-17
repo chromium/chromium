@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("../build_webui_tests.gni")
 
@@ -30,6 +29,7 @@ build_webui_tests("build") {
     "manager_test_with_activity_log_flag.ts",
     "manager_test_with_id_query_param.ts",
     "manager_unit_test.ts",
+    "service_unit_test.ts",
     "manager_unit_test_with_activity_log_flag.ts",
     "mv2_deprecation_panel_disabled_test.ts",
     "mv2_deprecation_panel_unsupported_test.ts",
@@ -40,7 +40,6 @@ build_webui_tests("build") {
     "review_panel_test.ts",
     "runtime_host_permissions_test.ts",
     "runtime_hosts_dialog_test.ts",
-    "shortcut_input_test.ts",
     "sidebar_test.ts",
     "site_permissions_by_site_test.ts",
     "site_permissions_edit_permissions_dialog_test.ts",
@@ -62,6 +61,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/extensions:build_ts",
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/cr_shortcut_input:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

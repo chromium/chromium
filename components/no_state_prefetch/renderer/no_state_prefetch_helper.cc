@@ -43,8 +43,9 @@ NoStatePrefetchHelper::MaybeCreateThrottle(
       render_frame
           ? NoStatePrefetchHelper::Get(render_frame->GetMainRenderFrame())
           : nullptr;
-  if (!helper)
+  if (!helper) {
     return nullptr;
+  }
 
   mojo::PendingRemote<mojom::NoStatePrefetchCanceler> canceler;
   render_frame->GetBrowserInterfaceBroker().GetInterface(
@@ -64,8 +65,9 @@ bool NoStatePrefetchHelper::IsPrefetching(
 
 void NoStatePrefetchHelper::DidDispatchDOMContentLoadedEvent() {
   prefetch_finished_ = true;
-  if (prefetch_count_ == 0)
+  if (prefetch_count_ == 0) {
     SendPrefetchFinished();
+  }
 }
 
 void NoStatePrefetchHelper::OnDestruct() {

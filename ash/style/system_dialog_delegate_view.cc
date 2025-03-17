@@ -219,8 +219,8 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
           kRoundedCornerRadius,
           views::HighlightBorder::Type::kHighlightBorderOnShadow),
       kBorderInsets));
-  SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColorId,
-                                                         kRoundedCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(kBackgroundColorId,
+                                                   kRoundedCornerRadius));
 
   // Set shadow.
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
@@ -248,7 +248,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   typography_provider->StyleLabel(kTitleFont, *title_);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetAutoColorReadabilityEnabled(false);
-  title_->SetEnabledColorId(kTitleColorId);
+  title_->SetEnabledColor(kTitleColorId);
   title_->SetVisible(false);
   title_->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
   title_->SetProperty(views::kElementIdentifierKey, kTitleTextIdForTesting);
@@ -265,7 +265,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   description_->SetMultiLine(true);
   description_->SetAllowCharacterBreak(true);
   description_->SetAutoColorReadabilityEnabled(false);
-  description_->SetEnabledColorId(kBodyColorId);
+  description_->SetEnabledColor(kBodyColorId);
   description_->SetVisible(false);
   description_->SetProperty(views::kElementIdentifierKey,
                             kDescriptionTextIdForTesting);

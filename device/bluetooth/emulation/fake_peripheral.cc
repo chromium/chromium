@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/emulation/fake_peripheral.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -75,7 +75,7 @@ void FakePeripheral::SetNextGATTDiscoveryResponse(uint16_t code) {
 
 bool FakePeripheral::AllResponsesConsumed() {
   return !next_connection_response_ && !next_discovery_response_ &&
-         base::ranges::all_of(gatt_services_, [](const auto& e) {
+         std::ranges::all_of(gatt_services_, [](const auto& e) {
            return static_cast<FakeRemoteGattService*>(e.second.get())
                ->AllResponsesConsumed();
          });
@@ -122,7 +122,7 @@ uint32_t FakePeripheral::GetBluetoothClass() const {
   NOTREACHED();
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 device::BluetoothTransport FakePeripheral::GetType() const {
   NOTREACHED();
 }

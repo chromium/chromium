@@ -33,6 +33,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kBreakIterator:
       blink_feature = WebFeature::kBreakIterator;
+      deprecated = true;
       break;
     case v8::Isolate::kSloppyMode:
       blink_feature = WebFeature::kV8SloppyMode;
@@ -433,7 +434,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       blink_feature = WebFeature::kLocaleInfoObsoletedGetters;
       break;
     case v8::Isolate::kLocaleInfoFunctions:
-      webdx_feature = WebDXFeature::kLocaleInfoFunctions;
+      webdx_feature = WebDXFeature::kIntlLocaleInfo;
       break;
     case v8::Isolate::kExtendingNonExtensibleWithPrivate:
       blink_feature = WebFeature::kV8ExtendingNonExtensibleWithPrivate;
@@ -452,6 +453,18 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kErrorIsError:
       webdx_feature = WebDXFeature::kDRAFT_ErrorIsError;
+      break;
+    case v8::Isolate::kRegExpEscape:
+      webdx_feature = WebDXFeature::kRegexpEscape;
+      break;
+    case v8::Isolate::kFloat16Array:
+      webdx_feature = WebDXFeature::kFloat16array;
+      break;
+    case v8::Isolate::kWasmBranchHinting:
+      webdx_feature = WebDXFeature::kDRAFT_WasmBranchHinting;
+      break;
+    case v8::Isolate::kExplicitResourceManagement:
+      webdx_feature = WebDXFeature::kDRAFT_ExplicitResourceManagement;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

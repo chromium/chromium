@@ -4,13 +4,13 @@
 
 #include "net/tools/tld_cleanup/tld_cleanup_util.h"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -188,10 +188,10 @@ NormalizeResult NormalizeDataToRuleMap(const std::string& data,
     }
   }
 
-  base::ranges::copy_if(extra_rules, std::inserter(rules, rules.end()),
-                        [&](const auto& extra_rule) {
-                          return !base::Contains(rules, extra_rule.first);
-                        });
+  std::ranges::copy_if(extra_rules, std::inserter(rules, rules.end()),
+                       [&](const auto& extra_rule) {
+                         return !base::Contains(rules, extra_rule.first);
+                       });
 
   return result;
 }

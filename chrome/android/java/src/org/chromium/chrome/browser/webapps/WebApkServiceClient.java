@@ -156,7 +156,7 @@ public class WebApkServiceClient {
                     extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
                     try {
                         ActivityOptions options = ActivityOptions.makeBasic();
-                        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(
+                        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(
                                 options);
                         permissionRequestIntent.send(
                                 ContextUtils.getApplicationContext(),

@@ -1,28 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <!-- Trigger suggestion -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT" desc="Suggestion shown when the user focuses a Autofill with AI field.">
-    Autofill with AI
+  <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
+  <!-- Entities -->
+  <message name="IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME" desc="Used as a general label for the passport entity." translateable="false">
+    Passport
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME" desc="Used as a general label for the driver's license entity." translateable="false">
+    Driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="Used as a general label for the vehicle entity." translateable="false">
+    Vehicle
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
+  <!-- Add entity strings -->
+  <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY" desc="The title of the &quot;Add passport&quot; settings UI." translateable="false">
+    Add passport
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY" desc="The title of the &quot;Add driver's license&quot; settings UI." translateable="false">
+    Add driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="The title of the &quot;Add car&quot; settings UI." translateable="false">
+    Add vehicle
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
+  <!-- Edit entity strings -->
+  <message name="IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY" desc="The title of the &quot;Edit passport&quot; settings UI." translateable="false">
+    Edit passport
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of the &quot;Edit car&quot; settings UI." translateable="false">
+    Edit vehicle
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of the &quot;Edit driver's license&quot; settings UI." translateable="false">
+    Edit driver's license
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make passport strings translateable. -->
+  <!-- Attributes of the passport entity -->
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the passport name attribute." translateable="false">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the passport number attribute." translateable="false">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME" desc="Used as a general label for the passport country attribute." translateable="false">
+    Country
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport expiry date attribute." translateable="false">
+    Expiration date
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport issue date attribute." translateable="false">
+    Issue date
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make driver's license strings translateable. -->
+  <!-- Attributes of the driver's license entity -->
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute." translateable="false">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license region attribute." translateable="false">
+    State
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license number attribute." translateable="false">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license expiration date attribute." translateable="false">
+    Expiration date
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license issue date attribute." translateable="false">
+    Issue date
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make vehicle strings translateable. -->
+  <!-- Attributes of the vehicle entity -->
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle make attribute." translateable="false">
+    Make
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle model attribute." translateable="false">
+    Model
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle year attribute." translateable="false">
+    Year
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle owner attribute." translateable="false">
+    Owner
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle license plate attribute." translateable="false">
+    License plate
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle plate state attribute." translateable="false">
+    Plate state
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle VIN attribute." translateable="false">
+    VIN (vehicle identification number)
   </message>
 
   <!-- Fill suggestion -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT" desc="Suggestion shown on the second level menu of Autofill with AI, used to fill all fields.">
     Fill fields with AI
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT" desc="Text shown as a label when the user sees a prediction improvements suggestion.">
-    Fill
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_SEPARATOR" desc="The separator character used in the prediction improvements label.">
-    , '''
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_ONE_MORE_FIELD" desc="Text displayed as label to indicate more fields will be filled.">
-    &amp; 1 more field
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_N_MORE_FIELDS" desc="Text displayed as label to indicate more fields will be filled.">
-    &amp; <ph name="N_FIELDS">$1<ex>4</ex></ph> more fields
+  <!-- Manage suggestion -->
+  <message name="IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT" desc="Main text for the suggestion that opens the Autofill AI section in settings" translateable="false">
+    Manage information
   </message>
 
-  <!-- Save prompt -->
+  <!-- Save/Update prompt -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE" desc="Text displayed on the top of the save autofill with AI dialog.">
     Save your info to autofill
   </message>
@@ -36,24 +119,9 @@
     Saved info and the page from <ph name="WEBSITE">$1<ex>airline.com</ex></ph> are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
 
-  <!-- Error state-->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT" desc="Text displayed on the Autofill with AI error suggestions">
-    Chrome had trouble getting your information
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_NO_INFO_POPUP_MAIN_TEXT"
-    desc="Text displayed when there are no suggestions from prediction improvements, Autofill or Autocomplete to show."
-    translateable="false">
-    Chrome didn't find info to fill this field.
-  </message>
-
   <!-- General -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" desc="Text displayed on different surfaces that is a link which will redirect the user to the settings page.">
     Manage autofill with AI
-  </message>
-
-  <!-- Edit information suggestion -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_EDIT_INFORMATION_SUGGESTION_MAIN_TEXT" desc="Text displayed on the suggestion that opens the prediction improvements settings page.">
-    Manage your info
   </message>
 
   <!-- Loading suggestions -->
@@ -69,40 +137,43 @@
     Info you have saved and this page get sent to Google to see if autofill can help fill this form. Data may be seen by human reviewers to improve this feature.
   </message>
 
-  <!-- Feedback -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT" desc="Text displayed on prediction improvements feedback suggestion.">
-    Autofill with AI is an experimental feature and won’t always get it right. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage autofill with AI</ex></ph>.
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_MANAGE_LINK_A11Y_HINT" desc="Accessibility text that replaces the 'Manage prediction improvements' link on a prediction improvements feedback view.">
-    Press enter to manage prediction improvements
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_FEEDBACK_BUTTONS_A11Y_HINT" desc="Accessibility text that is added to a prediction improvements feedback view announcement to help the user find the feedback buttons.">
-    Use left and right keys to navigate to feedback buttons.
-   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_UP_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs up button tooltip.">
-    Thumbs up submits feedback that you like autofill with AI
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_DOWN_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs down button tooltip.">
-    Thumbs down submits feedback that you dislike autofill with AI
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Autofill prediction improvements feedback form.">
-    Send feedback for Autofill with AI.
-  </message>
-
   <!-- Iph -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE" desc="Text displayed in the prediction improvements iph title.">
-    Prediction improvements
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE" translateable="false" desc="The title of a promotional bubble that is likely the user's first engagement with Autofill for AI. Many users are familiar with Chrome Autofill and use it to automatically fill in things like passwords and credit cards. This service promoted on this screen frames the new service as the autofill that users are familiar with but better, because it's powered by AI and can do more for you.">
+    Autofill just got better
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY" desc="Text displayed in the prediction improvements iph body.">
-    Turn on prediction improvements
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_BODY" translateable="false" desc="The body text in a promotional bubble that appears beneath the title: “Autofill just got better”. * “Turn on”: This new feature is opt in, so we want to encourage users to click “Go to settings” and turn the feature on. “autofill with AI” is what we're calling this new feature. We want users to associate the new feature with the familiar autofill functionality they're already used to but want to convey how it's different (AI). * “automatically” should feel valuable to users as the autofill service is making tasks for them simpler. * “more fields”: the existing autofill functionality in Chrome covers things like passwords, credit cards, and building addresses. With this new service, we can also cover 1) passports, 2) vehicles, and 3) driver's licenses.">
+    Turn on autofill with AI to automatically fill more fields
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS" desc="Text displayed in the prediction improvements IPH bubble.">
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_GO_TO_SETTINGS" translateable="false" desc="A button label that opens Chrome settings and allows the user to turn on this new enhanced autofill.">
     Go to settings
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH" desc="Body of the in Product Help when user has successfully imported their autofill data.">
-    This feature uses information you've already saved with autofill, such as your address
+
+  <!-- Save/ Update dialog-->
+  <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a vehicle entity" translateable="false">
+    Save vehicle?
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_BOOTSTRAPPING_IPH_SCREENREADER" desc="The a11y announcement after user has enabled autofill prediction improvements which successfully imported their autofill data.">
-    This feature uses information you've already saved with autofill, such as your address. You can review and manage this data on this page.
+  <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a driver's license entity" translateable="false">
+    Save driver's license?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a passport entity" translateable="false">
+    Save passport?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a vehicle entity" translateable="false">
+    Update vehicle?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a driver's license entity" translateable="false">
+    Update driver's license?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a passport entity" translateable="false">
+    Update passport?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info." translateable="false">
+    Save your info so that autofill can fill in more fields for you next time
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with updated attributes" translateable="false">
+    <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> updated
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with new attributes" translateable="false">
+    <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> added
   </message>
 </grit-part>

@@ -12,6 +12,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/wm/core/cursor_loader.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -58,6 +60,9 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
   EXPECT_EQ(cursor, webcursor.cursor());
 
 #if defined(USE_AURA)
+  auto cursor_shape_client = std::make_unique<wm::CursorLoader>();
+  aura::client::SetCursorShapeClient(cursor_shape_client.get());
+
   // Test if the custom cursor is correctly cached and updated
   // on aura platform.
   EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
@@ -91,11 +96,15 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
   EXPECT_EQ(gfx::Point(5, 10), native_cursor.custom_hotspot());
 #endif
 
+  aura::client::SetCursorShapeClient(nullptr);
 #endif  // defined(USE_AURA)
 }
 
 #if defined(USE_AURA)
 TEST(WebCursorTest, CursorScaleFactor) {
+  auto cursor_shape_client = std::make_unique<wm::CursorLoader>();
+  aura::client::SetCursorShapeClient(cursor_shape_client.get());
+
   constexpr float kImageScale = 2.0f;
   constexpr float kDeviceScale = 4.2f;
 
@@ -124,7 +133,10 @@ TEST(WebCursorTest, CursorScaleFactor) {
   // The scale factor of the cursor image should match the device scale factor,
   // regardless of the cursor size.
   EXPECT_EQ(webcursor.GetNativeCursor().image_scale_factor(), kDeviceScale);
+
+  aura::client::SetCursorShapeClient(nullptr);
 }
+
 #endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_WIN)
@@ -149,9 +161,14 @@ void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
 }
 
 TEST(WebCursorTest, WindowsCursorScaledAtHiDpi) {
+  auto cursor_shape_client = std::make_unique<wm::CursorLoader>();
+  aura::client::SetCursorShapeClient(cursor_shape_client.get());
+
   ScaleCursor(2.0f, 4, 6);
   ScaleCursor(1.5f, 2, 8);
   ScaleCursor(1.25f, 3, 7);
+
+  aura::client::SetCursorShapeClient(nullptr);
 }
 #endif
 

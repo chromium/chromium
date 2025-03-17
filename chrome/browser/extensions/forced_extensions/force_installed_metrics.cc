@@ -10,13 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/updater/extension_downloader.h"
@@ -41,8 +40,9 @@ ForceInstalledMetrics::UserType ConvertUserType(
     InstallStageTracker::UserInfo user_info) {
   switch (user_info.user_type) {
     case user_manager::UserType::kRegular: {
-      if (user_info.is_new_user)
+      if (user_info.is_new_user) {
         return ForceInstalledMetrics::UserType::USER_TYPE_REGULAR_NEW;
+      }
       return ForceInstalledMetrics::UserType::USER_TYPE_REGULAR_EXISTING;
     }
     case user_manager::UserType::kGuest:
@@ -54,9 +54,9 @@ ForceInstalledMetrics::UserType ConvertUserType(
     case user_manager::UserType::kChild:
       return ForceInstalledMetrics::UserType::USER_TYPE_CHILD;
     case user_manager::UserType::kWebKioskApp:
-    // TODO(crbug.com/358536558): Process a new user type for IWA kiosk
-    case user_manager::UserType::kKioskIWA:
       return ForceInstalledMetrics::UserType::USER_TYPE_WEB_KIOSK_APP;
+    case user_manager::UserType::kKioskIWA:
+      return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_IWA;
     default:
       NOTREACHED();
   }
@@ -365,9 +365,7 @@ void ReportDetailedFailureReasons(
     base::UmaHistogramBoolean(
         "Extensions."
         "ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled",
-        ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->extensions_enabled());
+        ExtensionRegistrar::Get(profile)->extensions_enabled());
   }
 }
 
@@ -413,12 +411,15 @@ ForceInstalledMetrics::~ForceInstalledMetrics() = default;
 
 void ForceInstalledMetrics::ReportDisableReason(
     const ExtensionId& extension_id) {
-  int disable_reasons =
+  DisableReasonSet all_disable_reasons =
       ExtensionPrefs::Get(profile_)->GetDisableReasons(extension_id);
-  // Choose any disable reason among the disable reasons for this extension.
-  disable_reasons = disable_reasons & ~(disable_reasons - 1);
+  // Choose the disable reason with the lowest value.
+  int smallest_disable_reason =
+      all_disable_reasons.empty()
+          ? 0
+          : *std::ranges::min_element(all_disable_reasons);
   base::UmaHistogramSparse("Extensions.ForceInstalledNotLoadedDisableReason",
-                           disable_reasons);
+                           smallest_disable_reason);
 }
 
 void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {

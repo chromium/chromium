@@ -27,9 +27,10 @@ enum FormControlType {
   kInputText = 9,
   kInputUrl = 10,
   kSelectOne = 11,
-  kSelectMultiple = 12,
+  // deprecated: kSelectMultiple = 12,
   // deprecated: kSelectList = 13
   kTextArea = 14,
+  kInputDate = 15,
 };
 
 // The list of all HTML autocomplete field mode hints supported by Chrome.
@@ -364,6 +365,7 @@ struct FormFieldData {
   FormControlType form_control_type;
   string autocomplete_attribute;
   AutocompleteParsingResult? parsed_autocomplete;
+  mojo_base.mojom.String16 pattern;
   mojo_base.mojom.String16 placeholder;
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
@@ -483,6 +485,7 @@ struct PasswordFormFillData {
   array<PasswordAndMetadata> additional_logins;
   bool wait_for_username;
   array<FieldRendererId> suggestion_banned_fields;
+  bool notify_browser_of_successful_filling;
 };
 
 // autofill::PasswordFormGenerationData
@@ -502,7 +505,7 @@ struct PasswordGenerationUIData {
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
   FormData form_data;
-  bool input_field_empty;
+  bool generation_rejected;
 };
 
 // autofill::PasswordSuggestionRequest
@@ -587,7 +590,7 @@ enum AutofillSuggestionTriggerSource {
   // contenteditable element rather than a form control element.
   kContentEditableClicked = 3,
   // Suggestions triggered by modifying the content of a text input.
-  kTextFieldDidChange = 4,
+  kTextFieldValueChanged = 4,
   // Suggestions triggered by pressing the down key on a text input. This auto
   // selects the first suggestion.
   kTextFieldDidReceiveKeyDown = 5,

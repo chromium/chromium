@@ -13,10 +13,6 @@ void LifecycleUnitObserver::OnLifecycleUnitStateChanged(
     LifecycleUnitState last_state,
     LifecycleUnitStateChangeReason reason) {}
 
-void LifecycleUnitObserver::OnLifecycleUnitVisibilityChanged(
-    LifecycleUnit* lifecycle_unit,
-    content::Visibility visibility) {}
-
 void LifecycleUnitObserver::OnLifecycleUnitDestroyed(
     LifecycleUnit* lifecycle_unit) {}
 

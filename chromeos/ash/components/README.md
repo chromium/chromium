@@ -14,9 +14,9 @@ Some subdirectories contain low-level utility code. For example,
 //chromeos/ash/components/disks has utilities for mounting and unmounting disk
 volumes.
 
-Much of this code used to live in //chromeos/components. The
-[Lacros project](/docs/lacros.md) is extracting browser functionality into a
-separate binary. As part of this migration, code used only by the ash-chrome
-binary moved into "ash" directories. See the
+Much of this code used to live in //chromeos/components. The now sunsetted
+Lacros project was extracting browser functionality into a separate binary. As
+part of this migration, code used only by the ash-chrome binary moved into "ash"
+directories. See the
 [Chrome OS source directory migration](https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE/edit)
 design doc for details.

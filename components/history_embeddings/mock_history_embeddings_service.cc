@@ -4,18 +4,19 @@
 
 #include "components/history_embeddings/mock_history_embeddings_service.h"
 
-#include "components/history_embeddings/mock_embedder.h"
-
 namespace history_embeddings {
 
 MockHistoryEmbeddingsService::MockHistoryEmbeddingsService(
     os_crypt_async::OSCryptAsync* os_crypt_async,
-    history::HistoryService* history_service)
-    : HistoryEmbeddingsService(/*os_crypt_async=*/os_crypt_async,
+    history::HistoryService* history_service,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+    passage_embeddings::Embedder* embedder)
+    : HistoryEmbeddingsService(os_crypt_async,
                                history_service,
-                               nullptr,
-                               nullptr,
-                               /*embedder=*/std::make_unique<MockEmbedder>(),
+                               /*page_content_annotations_service=*/nullptr,
+                               /*optimization_guide_decider=*/nullptr,
+                               embedder_metadata_provider,
+                               embedder,
                                /*answerer=*/nullptr,
                                /*intent_classifier=*/nullptr) {}
 

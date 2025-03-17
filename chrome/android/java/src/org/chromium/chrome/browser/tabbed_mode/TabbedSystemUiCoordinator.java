@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.InsetObserver;
 
 import java.util.Optional;
@@ -61,6 +61,7 @@ public class TabbedSystemUiCoordinator {
      * @param accessorySheetVisualStateSupplier Supplies an {@link
      *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
      *     sheet.
+     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
@@ -79,13 +80,14 @@ public class TabbedSystemUiCoordinator {
             @NonNull
                     ObservableSupplier<AccessorySheetVisualStateProvider>
                             accessorySheetVisualStateSupplier,
+            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
-            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
+            @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
                     new TabbedNavigationBarColorController(
-                            window,
+                            window.getContext(),
                             tabModelSelector,
                             layoutManagerSupplier,
                             fullscreenManager,
@@ -97,8 +99,9 @@ public class TabbedSystemUiCoordinator {
                             bottomSheetController,
                             omniboxSuggestionsVisualState,
                             accessorySheetVisualStateSupplier,
+                            overviewColorSupplier,
                             insetObserver,
-                            edgeToEdgeManager);
+                            edgeToEdgeSystemBarColorHelper);
         }
     }
 

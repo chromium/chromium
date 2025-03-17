@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("boca") {
   sources = [
@@ -24,10 +24,13 @@ static_library("boca") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/boca/babelorca",
+    "//chrome/browser/ash/boca/spotlight",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca:spotlight",
     "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/boca/session_api",
@@ -56,6 +59,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca:spotlight",
     "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/browser_context_helper:test_support",

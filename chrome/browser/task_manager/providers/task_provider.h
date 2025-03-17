@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 
 namespace task_manager {
@@ -57,9 +56,8 @@ class TaskProvider {
       Task* existing_task,
       base::ProcessHandle new_process_handle,
       base::ProcessId new_process_id) const;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void NotifyObserverTaskIdsListToBeInvalidated() const;
-  void NotifyObserverActiveTaskFetched(TaskId task_id) const;
 #endif
 
  private:

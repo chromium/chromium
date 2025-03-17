@@ -50,11 +50,11 @@ function removeApp(apps: AppMap, action: RemoveAppAction): AppMap {
 export function updateApps(apps: AppMap, action: AppManagementActions): AppMap {
   switch (action.name) {
     case 'add-app':
-      return addApp(apps, action as AddAppAction);
+      return addApp(apps, action);
     case 'change-app':
-      return changeApp(apps, action as ChangeAppAction);
+      return changeApp(apps, action);
     case 'remove-app':
-      return removeApp(apps, action as RemoveAppAction);
+      return removeApp(apps, action);
     default:
       return apps;
   }

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -66,6 +67,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,7 +84,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
 
@@ -173,12 +175,6 @@ enum class EnforcementAndEnrollmentStatus {
   kAttestationsEnforcedMainHostUnenrolled = 1,
   kAttestationsEnforcedMainHostEnrolled = 2,
 };
-
-#if BUILDFLAG(IS_ANDROID)
-base::FilePath GetChromeTestDataDir() {
-  return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
-}
-#endif
 
 // With `WebContentsConsoleObserver`, we can only wait for the last message in a
 // group.
@@ -404,7 +400,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     base::test::TaskEnvironment task_environment;
 
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kSharedStorageAPI,
+        /*enabled_features=*/{network::features::kSharedStorageAPI,
                               features::kPrivacySandboxAdsAPIsOverride,
                               privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},
@@ -826,9 +822,9 @@ class SharedStoragePrefBrowserTest
   SharedStoragePrefBrowserTest() {
     base::FieldTrialParams params;
     params["ExposeDebugMessageForSettingsStatus"] =
-        EnableDebugMessages() ? "true" : "false";
+        base::ToString(EnableDebugMessages());
     shared_storage_feature_.InitAndEnableFeatureWithParameters(
-        blink::features::kSharedStorageAPI, params);
+        network::features::kSharedStorageAPI, params);
     fenced_frame_api_change_feature_.InitWithFeatureState(
         blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
     fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
@@ -4220,7 +4216,7 @@ class SharedStorageFencedFrameChromeBrowserTest
 
     shared_storage_feature_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kSharedStorageAPI,
+        {{network::features::kSharedStorageAPI,
           {{"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)}}}},
         /*disabled_features=*/{});
 
@@ -4351,9 +4347,14 @@ class SharedStorageFencedFrameChromeBrowserTest
   base::test::ScopedFeatureList fenced_frame_feature_;
   base::test::ScopedFeatureList attestation_feature_;
 };
-
+// TODO(https://crbug.com/396718068): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FencedFrameNavigateTop_BudgetWithdrawal DISABLED_FencedFrameNavigateTop_BudgetWithdrawal
+#else
+#define MAYBE_FencedFrameNavigateTop_BudgetWithdrawal FencedFrameNavigateTop_BudgetWithdrawal
+#endif
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
-                       FencedFrameNavigateTop_BudgetWithdrawal) {
+                       MAYBE_FencedFrameNavigateTop_BudgetWithdrawal) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
@@ -5123,7 +5124,7 @@ class SharedStorageExtensionBrowserTest
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kSharedStorageAPI,
+        {network::features::kSharedStorageAPI,
          features::kPrivacySandboxAdsAPIsOverride,
          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting,
          blink::features::kFencedFrames,
@@ -5277,7 +5278,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will remove the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/std::nullopt));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5342,7 +5343,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will remove the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/std::nullopt));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5410,7 +5411,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will modify the "Sec-Shared-Storage-Data-Origin"
   // request header value to "https://google.com".
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/"https://google.com"));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5482,7 +5483,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will modify the "Sec-Shared-Storage-Data-Origin"
   // request header value to "https://google.com".
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/"https://google.com"));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5558,7 +5559,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will add the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/origin_str));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage({});
 
@@ -5636,7 +5637,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will add the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/origin_str));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage({});
 

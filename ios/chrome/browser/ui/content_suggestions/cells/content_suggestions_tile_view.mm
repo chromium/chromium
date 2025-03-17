@@ -32,8 +32,9 @@ const CGFloat kCornerRadius = 8.0;
 
 @implementation ContentSuggestionsTileView {
   ContentSuggestionsTileType _type;
-  BOOL _inMagicStack;
 }
+
+@synthesize inMagicStack = _inMagicStack;
 
 - (instancetype)initWithFrame:(CGRect)frame
                      tileType:(ContentSuggestionsTileType)type
@@ -147,8 +148,9 @@ const CGFloat kCornerRadius = 8.0;
                        styleForRegion:(UIPointerRegion*)region {
   // The preview APIs require the view to be in a window. Ensure they are before
   // proceeding.
-  if (!self.window)
+  if (!self.window) {
     return nil;
+  }
 
   UITargetedPreview* preview =
       [[UITargetedPreview alloc] initWithView:_imageContainerView];
@@ -164,18 +166,20 @@ const CGFloat kCornerRadius = 8.0;
 // size if it is in the Magic Stack since the Magic Stack has a fixed height,
 // limiting the space available for multiple lines of text.
 - (void)updateTitleLabelNumberOfLines {
-  if (!_inMagicStack) {
+  if (!self.inMagicStack) {
     return;
   }
 
   UIContentSizeCategory category =
       self.traitCollection.preferredContentSizeCategory;
   NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
-      category, UIContentSizeCategoryExtraLarge);
+      category, UIContentSizeCategoryExtraExtraExtraLarge);
   if (result == NSOrderedAscending) {
     self.titleLabel.numberOfLines = kLabelNumLines;
+    self.titleLabel.lineBreakMode = NSLineBreakByCharWrapping;
   } else {
     self.titleLabel.numberOfLines = 1;
+    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   }
 }
 

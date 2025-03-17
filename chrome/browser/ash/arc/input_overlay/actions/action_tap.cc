@@ -82,17 +82,6 @@ class ActionTap::ActionTapView : public ActionView {
     }
   }
 
-  void OnKeyBindingChange(ActionLabel* action_label,
-                          ui::DomCode code) override {
-    DCHECK(labels_.size() == 1 && labels_[0] == action_label);
-    if (labels_.size() != 1 || labels_[0] != action_label) {
-      return;
-    }
-
-    auto input_element = InputElement::CreateActionTapKeyElement(code);
-    ChangeInputBinding(action_, action_label, std::move(input_element));
-  }
-
   void OnBindingToKeyboard() override {
     if (!IsMouseBound(action_->GetCurrentDisplayedInput())) {
       return;

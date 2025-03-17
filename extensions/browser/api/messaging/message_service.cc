@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -17,7 +19,6 @@
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -40,16 +41,18 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/message_service_api.h"
 #include "extensions/browser/message_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension.h"
@@ -61,6 +64,10 @@
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -181,6 +188,30 @@ std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
   return origins;
 }
 
+// Verifies (via CHECK()) that the lazy context for the given `extension` is
+// currently active and registered in the ProcessManager.
+void VerifyLazyContextActive(
+    const Extension* extension,
+    const LazyContextTaskQueue::ContextInfo& context_info) {
+  CHECK(extension);
+  ProcessManager* process_manager =
+      ProcessManager::Get(context_info.browser_context);
+  if (BackgroundInfo::IsServiceWorkerBased(extension)) {
+    std::vector<WorkerId> service_workers =
+        process_manager->GetServiceWorkersForExtension(extension->id());
+    CHECK(!service_workers.empty());
+    CHECK(std::ranges::find_if(
+              service_workers, [&context_info](const WorkerId& worker_id) {
+                return worker_id.version_id ==
+                           context_info.service_worker_version_id &&
+                       worker_id.thread_id == context_info.worker_thread_id;
+              }) != service_workers.end());
+  } else {
+    CHECK(BackgroundInfo::HasLazyBackgroundPage(extension));
+    CHECK(process_manager->GetBackgroundHostForExtension(extension->id()));
+  }
+}
+
 }  // namespace
 
 struct MessageService::MessageChannel {
@@ -287,7 +318,13 @@ class MessageServiceFactory
     : public BrowserContextKeyedAPIFactory<MessageService>,
       public MessageServiceApi {
  public:
-  MessageServiceFactory() { MessageServiceApi::SetMessageService(this); }
+  MessageServiceFactory() {
+    DependsOn(ProcessManagerFactory::GetInstance());
+    DependsOn(ExtensionPrefsFactory::GetInstance());
+    DependsOn(ExtensionRegistryFactory::GetInstance());
+
+    MessageServiceApi::SetMessageService(this);
+  }
   ~MessageServiceFactory() override {
     MessageServiceApi::SetMessageService(nullptr);
   }
@@ -341,7 +378,7 @@ class MessageServiceFactory
  private:
   ChannelEndpoint GetEndpoint(content::BrowserContext* context,
                               const Source& source) {
-    return absl::visit(
+    return std::visit(
         base::Overloaded{
             [&](const WorkerId& worker) {
               return ChannelEndpoint(
@@ -541,6 +578,7 @@ void MessageService::OpenChannelToExtension(
     source_frame = ExtensionApiFrameIdMap::Get()->GetFrameData(
         source_render_frame_host->GetGlobalId());
   } else {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     // Check to see if it was a WebView making the request.
     // Sending messages from WebViews to extensions breaks webview isolation,
     // so only allow component extensions to receive messages from WebViews.
@@ -550,6 +588,7 @@ void MessageService::OpenChannelToExtension(
         Manifest::IsComponentLocation(target_extension->location())) {
       include_guest_process_info = true;
     }
+#endif
   }
 
   std::unique_ptr<OpenChannelParams> params =
@@ -589,7 +628,7 @@ void MessageService::OpenChannelToExtension(
         "extension.onRequestExternal",
     };
     const bool has_event_listener =
-        base::ranges::any_of(events, [&](const char* event) {
+        std::ranges::any_of(events, [&](const char* event) {
           return event_router->ExtensionHasEventListener(target_extension_id,
                                                          event);
         });
@@ -739,10 +778,8 @@ void MessageService::OpenChannelToTabImpl(
       receiver_contents->GetPrimaryMainFrame());
 
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
-  std::unique_ptr<MessagePort> receiver =
-      messaging_delegate_->CreateReceiverForTab(
-          weak_factory_.GetWeakPtr(), extension_id, receiver_port_id,
-          receiver_contents, frame_id, document_id);
+  std::unique_ptr<MessagePort> receiver = CreateReceiverForTab(
+      extension_id, receiver_port_id, receiver_contents, frame_id, document_id);
   if (!receiver.get()) {
     opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
@@ -783,6 +820,55 @@ void MessageService::OpenChannelToTabImpl(
           false);  // Connections to tabs aren't webview guests.
   OpenChannelImpl(receiver_context, std::move(params), extension,
                   false /* did_enqueue */);
+}
+
+std::unique_ptr<MessagePort> MessageService::CreateReceiverForTab(
+    const ExtensionId& extension_id,
+    const PortId& receiver_port_id,
+    content::WebContents* receiver_contents,
+    int receiver_frame_id,
+    const std::string& receiver_document_id) {
+  // Frame ID -1 is every frame in the tab.
+  bool include_child_frames =
+      receiver_frame_id == -1 && receiver_document_id.empty();
+
+  content::RenderFrameHost* receiver_render_frame_host = nullptr;
+  if (include_child_frames) {
+    // The target is the active outermost main frame of the WebContents.
+    receiver_render_frame_host = receiver_contents->GetPrimaryMainFrame();
+  } else if (!receiver_document_id.empty()) {
+    ExtensionApiFrameIdMap::DocumentId document_id =
+        ExtensionApiFrameIdMap::DocumentIdFromString(receiver_document_id);
+
+    // Return early for invalid documentIds.
+    if (!document_id) {
+      return nullptr;
+    }
+
+    receiver_render_frame_host =
+        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+            document_id);
+
+    // If both |document_id| and |receiver_frame_id| are provided they
+    // should find the same RenderFrameHost, if not return early.
+    if (receiver_frame_id != -1 &&
+        ExtensionApiFrameIdMap::GetRenderFrameHostById(receiver_contents,
+                                                       receiver_frame_id) !=
+            receiver_render_frame_host) {
+      return nullptr;
+    }
+  } else {
+    DCHECK_GT(receiver_frame_id, -1);
+    receiver_render_frame_host = ExtensionApiFrameIdMap::GetRenderFrameHostById(
+        receiver_contents, receiver_frame_id);
+  }
+  if (!receiver_render_frame_host) {
+    return nullptr;
+  }
+
+  return ExtensionMessagePort::CreateForTab(
+      weak_factory_.GetWeakPtr(), receiver_port_id, extension_id,
+      receiver_render_frame_host, include_child_frames);
 }
 
 void MessageService::OpenChannelImpl(BrowserContext* browser_context,
@@ -859,6 +945,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
 
   int guest_process_id = content::ChildProcessHost::kInvalidUniqueID;
   int guest_render_frame_routing_id = MSG_ROUTING_NONE;
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (params->include_guest_process_info &&
       // TODO(lazyboy): Investigate <webview> SW messaging.
       source.is_for_render_frame()) {
@@ -868,6 +955,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
 
     DCHECK(WebViewGuest::FromRenderFrameHost(source.GetRenderFrameHost()));
   }
+#endif
 
   // Send the connect event to the receiver.  Give it the opener's port ID (the
   // opener has the opposite port ID).
@@ -1283,6 +1371,11 @@ void MessageService::PendingLazyContextOpenChannel(
       ExtensionRegistry::Get(context_info->browser_context)
           ->enabled_extensions()
           .GetByID(context_info->extension_id);
+
+  // Verify the lazy context is properly registered. Otherwise, we'll fail to
+  // find it when we try to connect.
+  VerifyLazyContextActive(extension, *context_info);
+
   OpenChannelImpl(context_info->browser_context, std::move(params), extension,
                   true /* did_enqueue */);
 }

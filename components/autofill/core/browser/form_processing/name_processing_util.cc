@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 
@@ -56,7 +55,7 @@ void MaybeRemoveAffix(base::span<std::u16string_view> strings,
   if (std::ranges::all_of(strings, [&](std::u16string_view s) {
         return IsValidParseableName(RemoveAffix(s));
       })) {
-    base::ranges::transform(strings, strings.begin(), RemoveAffix);
+    std::ranges::transform(strings, strings.begin(), RemoveAffix);
   }
 }
 

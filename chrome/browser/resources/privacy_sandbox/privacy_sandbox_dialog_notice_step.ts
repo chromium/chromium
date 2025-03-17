@@ -101,11 +101,11 @@ export class PrivacySandboxDialogNoticeStepElement extends
   }
 
   private getSettingsButtonsClass_() {
-    return this.shouldShowV2() ? 'tonal-button' : '';
+    return this.equalizedButtons() ? 'tonal-button' : '';
   }
 
   private getAckButtonsClass_() {
-    return this.shouldShowV2() ? 'tonal-button' : 'action-button';
+    return this.equalizedButtons() ? 'tonal-button' : 'action-button';
   }
 }
 

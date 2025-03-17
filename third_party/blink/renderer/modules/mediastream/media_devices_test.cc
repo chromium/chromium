@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "media/base/media_permission.h"
 #include "media/base/output_device_info.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
+#include "third_party/blink/renderer/modules/mediastream/media_permission_testing_platform.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -536,6 +538,45 @@ void ProduceSubCaptureTargetAndGetTester(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+class MockMediaPermission : public media::MediaPermission {
+ public:
+  MockMediaPermission() = default;
+
+  void HasPermission(Type type,
+                     PermissionStatusCB permission_status_cb) override {
+    bool has_permission = false;
+    if (type == Type::kAudioCapture) {
+      has_permission = has_microphone_permission_;
+    } else if (type == Type::kVideoCapture) {
+      has_permission = has_camera_permission_;
+    }
+
+    std::move(permission_status_cb).Run(has_permission);
+  }
+
+  void RequestPermission(Type type,
+                         PermissionStatusCB permission_status_cb) override {}
+
+  bool IsEncryptedMediaEnabled() override { return false; }
+
+#if BUILDFLAG(IS_WIN)
+  void IsHardwareSecureDecryptionAllowed(
+      IsHardwareSecureDecryptionAllowedCB cb) override {}
+#endif  // BUILDFLAG(IS_WIN)
+
+  void SetCameraPermission(bool has_permission) {
+    has_camera_permission_ = has_permission;
+  }
+
+  void SetMicrophonePermission(bool has_permission) {
+    has_microphone_permission_ = has_permission;
+  }
+
+ private:
+  bool has_camera_permission_ = true;
+  bool has_microphone_permission_ = true;
+};
+
 }  // namespace
 
 class MediaDevicesTest : public PageTestBase {
@@ -543,7 +584,8 @@ class MediaDevicesTest : public PageTestBase {
   using MediaDeviceInfos = HeapVector<Member<MediaDeviceInfo>>;
 
   MediaDevicesTest()
-      : dispatcher_host_(std::make_unique<MockMediaDevicesDispatcherHost>()),
+      : platform_(std::make_unique<MockMediaPermission>()),
+        dispatcher_host_(std::make_unique<MockMediaDevicesDispatcherHost>()),
         device_infos_(MakeGarbageCollected<MediaDeviceInfos>()) {}
 
   MediaDevices* GetMediaDevices(LocalDOMWindow& window) {
@@ -560,7 +602,9 @@ class MediaDevicesTest : public PageTestBase {
   void OnListenerConnectionError() { listener_connection_error_ = true; }
   bool listener_connection_error() const { return listener_connection_error_; }
 
-  ScopedTestingPlatformSupport<TestingPlatformSupport>& platform() {
+  ScopedTestingPlatformSupport<MediaPermissionTestingPlatform,
+                               std::unique_ptr<media::MediaPermission>>&
+  platform() {
     return platform_;
   }
 
@@ -618,8 +662,22 @@ class MediaDevicesTest : public PageTestBase {
                                        tester.Value().V8Value());
   }
 
+  void SetCameraPermission(bool has_permission) {
+    static_cast<MockMediaPermission*>(
+        platform()->GetWebRTCMediaPermission(nullptr))
+        ->SetCameraPermission(has_permission);
+  }
+
+  void SetMicrophonePermission(bool has_permission) {
+    static_cast<MockMediaPermission*>(
+        platform()->GetWebRTCMediaPermission(nullptr))
+        ->SetMicrophonePermission(has_permission);
+  }
+
  private:
-  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
+  ScopedTestingPlatformSupport<MediaPermissionTestingPlatform,
+                               std::unique_ptr<media::MediaPermission>>
+      platform_;
   std::unique_ptr<MockMediaDevicesDispatcherHost> dispatcher_host_;
   Persistent<MediaDeviceInfos> device_infos_;
   bool listener_connection_error_ = false;
@@ -813,6 +871,46 @@ TEST_F(MediaDevicesTest, RenameLabelFiresDeviceChange) {
 
   EXPECT_CALL(*event_listener, Invoke(_, _));
   dispatcher_host().AudioOutputDevices().begin()->label = "new_label";
+  NotifyDeviceChanges();
+}
+
+TEST_F(MediaDevicesTest, ObserveDeviceChangeEventPermissions) {
+  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
+    return;
+  }
+  StrictMock<MockDeviceChangeEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
+  AddDeviceChangeListener(event_listener);
+
+  SetCameraPermission(false);
+  SetMicrophonePermission(true);
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  dispatcher_host().VideoInputDevices().begin()->device_id = "new_device_id";
+  NotifyDeviceChanges();
+
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().AudioInputDevices().begin()->device_id = "new_device_id";
+  NotifyDeviceChanges();
+
+  SetCameraPermission(true);
+  SetMicrophonePermission(false);
+
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().VideoInputDevices().begin()->device_id = "new_device_id_2";
+  NotifyDeviceChanges();
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  dispatcher_host().AudioInputDevices().begin()->device_id = "new_device_id_2";
+  NotifyDeviceChanges();
+
+  SetCameraPermission(false);
+  SetMicrophonePermission(false);
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  dispatcher_host().VideoInputDevices().begin()->device_id = "new_device_id_3";
+  NotifyDeviceChanges();
+  dispatcher_host().AudioInputDevices().begin()->device_id = "new_device_id_3";
   NotifyDeviceChanges();
 }
 
@@ -1060,6 +1158,34 @@ TEST_F(MediaDevicesTest, SetPreferredSinkTimeout) {
 
   EXPECT_EQ(dom_exception->code(),
             static_cast<uint16_t>(DOMExceptionCode::kTimeoutError));
+}
+
+// Regression test for crbug.com/403348706. This ensures that device change
+// events, queued before the LocalFrame's ExecutionContext was destroyed,
+// resolve without crashing the renderer.
+TEST_F(MediaDevicesTest,
+       DeviceChangeEventsDoNotCrashWhenExecutionContextDestroyed) {
+  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
+    return;
+  }
+
+  // Simulate resolution of a `MaybeFireDeviceChangeEvent()` task.
+  MediaDevices* media_devices = GetMediaDevices(*GetDocument().domWindow());
+  media_devices->MaybeFireDeviceChangeEvent(true);
+
+  // Navigate the local frame's document, this will replace and destroy the
+  // frame's document and dom window, and consequently the observed
+  // ExecutionContext.
+  Document& initial_document = GetDocument();
+  LocalDOMWindow* initial_dom_window = GetDocument().domWindow();
+  NavigateTo(KURL("https://example.com"));
+  EXPECT_NE(GetDocument(), initial_document);
+  EXPECT_NE(GetDocument().domWindow(), initial_dom_window);
+
+  // Simulate the resolution of a `MaybeFireDeviceChangeEvent()` task, queued
+  // before the observed context was destroyed. This should resolve without
+  // crashing.
+  media_devices->MaybeFireDeviceChangeEvent(true);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

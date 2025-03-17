@@ -271,6 +271,18 @@ EVENT_TYPE(HOST_RESOLVER_DNS_TASK_TIMEOUT)
 //   }
 EVENT_TYPE(HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED)
 
+// Logged when a DnsTaskResultsManager receives stale results. Contains the
+// following parameters:
+//
+//   {
+//      "endpoints": [{
+//        "ipv4_endpoints": <List of IPv4 endpoint>,
+//        "ipv6_endpoints": <List of IPv6 endpoint>,
+//        "metadata": <ConnectionEndpointMetadata of this service endpoint>
+//      }]
+//   }
+EVENT_TYPE(HOST_RESOLVER_SERVICE_ENDPOINTS_STALE_RESULTS)
+
 // Logged when a DnsTaskResultsManager's resolution timer is timed out,
 // or AAAA response is received before the timer timed out.
 //   {
@@ -887,6 +899,15 @@ EVENT_TYPE(TRANSPORT_CONNECT_JOB_IPV6_FALLBACK)
 //   }
 EVENT_TYPE(TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT)
 
+// This event is logged whenever the SSLConnectJob attempts a
+// SSLClientSocket::Connect().
+//
+//   {
+//     "ech_enabled": <True when ECH is enabled>,
+//     "ech_config_list": <The binary representation of ECH config list>,
+//   }
+EVENT_TYPE(SSL_CONNECT_JOB_SSL_CONNECT)
+
 // ------------------------------------------------------------------------
 // ClientSocketPoolBaseHelper
 // ------------------------------------------------------------------------
@@ -1170,6 +1191,19 @@ EVENT_TYPE(HTTP_CACHE_CALLER_REQUEST_HEADERS)
 EVENT_TYPE(HTTP_CACHE_RESTART_PARTIAL_REQUEST)
 EVENT_TYPE(HTTP_CACHE_RE_SEND_PARTIAL_REQUEST)
 
+// Indicates that an entry from the NoVarySearchCache was used to rewrite the
+// URL for this request.
+// For the BEGIN phase, the following parameters are attached:
+//   {
+//     "request_url": <String of the URL we were requested to retrieve>,
+//     "cached_url": <String of the URL that we will use instead>,
+//   }
+// For the END phase, the following parameter is optionally attached:
+//   {
+//     "restart_reason": <String of one of NoVarySearchUseResult enum's values>
+//   }
+EVENT_TYPE(HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL)
+
 // ------------------------------------------------------------------------
 // Disk Cache / Memory Cache
 // ------------------------------------------------------------------------
@@ -1407,6 +1441,10 @@ EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 //      "origin_destination": <The destination of the origin>,
 //      "alternative_destination": <The destination of the alternative, if
 //                                  exists>,
+//      "enable_ip_based_pooling": <True when the job enables IP based pooling>,
+//      "enable_alternative_services": <True when the job enables alternative
+//                                      services>,
+//      "respect_limits": <True when the job respects stream limits>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE)
 
@@ -1425,14 +1463,22 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_JOB_BOUND)
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND)
 
 // Marks the start/end of a HttpStreamPool::Job.
-// The following parameters are attached:
+// The BEGIN phase contains the following parameters:
 //   {
 //      "stream_key": <The HttpStreamKey of the job>,
 //      "quic_version": <The QUIC version to attempt>,
 //      "allowed_alpns": <List of allowed ALPNs>,
 //      "source_dependency": <The source identifier of the JobController>,
 //   }
+// The END phase contains the following parameters:
+//   {
+//      "net_error": <Optional; the result of the job>,
+//      "negotiated_protocol": <Optional; the negotiated protocol>,
+//   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
+
+// Marks the start/end of a pause of an HttpStreamPool::Job.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_PAUSED)
 
 // Marks the start/end of a HttpStreamPool::Group.
 // The following parameters are attached:
@@ -1441,6 +1487,16 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
 //      "force_quic": <True when QUIC is forced for the group>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
+
+// Emitted when an HttpStreamPool::Job is paused in an HttpStreamPool::Group.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_PAUSED)
+
+// Emitted when an HttpStreamPool::Job is resumed in an HttpStreamPool::Group.
+// The following parameters are attached:
+//   {
+//      "elapsed_ms": <Time taken for the job to resume in milliseconds>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_RESUMED)
 
 // Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
 // reference to HttpStreamPool::Group's net log.
@@ -1469,6 +1525,13 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB)
 // Records on the caller's NetLog to indicate that an
 // HttpStreamPool::AttemptManager starts a Job.
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND)
+
+// Emitted when an HttpStreamPool::AttemptManager calculated its initial
+// attempt state. The event parameter is:
+//   {
+//      "initial_state": <The initial state of the manager>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_INITIAL_ATTEMPT_STATE)
 
 // Emitted when an HttpStreamPool::AttemptManager is requested a preconnect. The
 // event parameter is:
@@ -1531,13 +1594,39 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE)
 
+// Emitted when DNS resolution on an HttpStreamPool::AttemptManager is updated.
+// The event parameters are:
+//   {
+//     "endpoints": <The current endpoints of the resolution>,
+//     "endpoints_crypto_ready": <True when the manager is ready for
+//                                cryptographic handshake>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_UPDATED)
+
 // Emitted when DNS resolution on an HttpStreamPool::AttemptManager finishes.
 // The event parameters are:
 //   {
+//     "endpoints": <The current endpoints of the resolution>,
+//     "endpoints_crypto_ready": <True when the manager is ready for
+//                                cryptographic handshake>,
 //     "result": <String representation of the result>,
 //     "resolve_error": <DNS resolution error code integer>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED)
+
+// Emitted when an HttpStreamPool::AttemptManager finds a matching SPDY session
+// after DNS resolution.
+//   {
+//     "source_dependency": <The source identifier of the SPDY session>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED)
+
+// Emitted when an HttpStreamPool::AttemptManager finds a matching QUIC session
+// after DNS resolution.
+//   {
+//     "source_dependency": <The source identifier of the QUIC session>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED)
 
 // Emitted when the stream attempt delay has passed on an
 // HttpStreamPool::AttemptManager. The event parameter is:
@@ -1549,6 +1638,13 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
 // Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
 // HttpStreamPool::QuicTask is bound to the AttemptManager.
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
+
+// Emitted when an HttpStreamPool::QuicTask tries to attempt a session.
+// The event parameters are:
+//   {
+//     "endpoint": <The endpoint of the attempt, if any>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_MAYBE_ATTEMPT)
 
 // Emitted when an HttpStreamPool::QuicTask is completed.
 // This event has the common event parameters (see above).
@@ -2575,6 +2671,12 @@ EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_SESSION_READY)
 
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
+
+// Records the state of a QUIC 0-RTT handshake.
+//   {
+//     "state": <The state of 0-RTT handshake>
+//   }
+EVENT_TYPE(QUIC_SESSION_ZERO_RTT_STATE)
 
 // Records that the QUIC session received a default network change signal.
 //   {
@@ -3771,6 +3873,7 @@ EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_CERT)
 //      "digest_policy": <Specifies which digest methods are accepted in this
 //                        attempt.>
 //      "is_ev_attempt": <True if this is an EV verification attempt.>
+//      "is_qwac_attempt": <True if this is a QWAC verification attempt.>
 //      "is_network_time_attempt": <True if this attempt used the network time.>
 //      "network_time_value": <Int - time in milliseconds since the unix epoch,
 //                             only populated if is_network_time_attempt is
@@ -4369,7 +4472,7 @@ EVENT_TYPE(COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE)
 //    "domain": <Domain of the cookie>,
 //    "path": <Path of the cookie>,
 //    "partition_key": <partition key of the cookie, if any>
-//    "operation": <Operation, either "send" or "store">
+//    "operation": <Operation: "send", "store", or "expire">
 //  }
 EVENT_TYPE(COOKIE_INCLUSION_STATUS)
 
@@ -4836,3 +4939,10 @@ EVENT_TYPE(DBSC_REGISTRATION_REQUEST)
 //     "status": <string>,
 //   }
 EVENT_TYPE(DBSC_REFRESH_RESULT)
+
+// This event is logged when a device bound session registration request
+// completes. It contains the following parameters:
+//   {
+//     "status": <string>,
+//   }
+EVENT_TYPE(DBSC_REGISTRATION_RESULT)

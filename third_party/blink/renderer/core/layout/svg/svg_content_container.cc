@@ -19,28 +19,37 @@ namespace blink {
 
 namespace {
 
-void UpdateSVGLayoutIfNeeded(LayoutObject* child,
+bool UpdateSVGLayoutIfNeeded(LayoutObject* child,
                              const SVGLayoutInfo& layout_info) {
-  if (child->NeedsLayout()) {
-    child->UpdateSVGLayout(layout_info);
+  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled() &&
+      layout_info.viewport_changed && child->HasViewportDependence()) {
+    child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
+                          kMarkOnlyThis);
   }
+  if (child->NeedsLayout()) {
+    const SVGLayoutResult child_result = child->UpdateSVGLayout(layout_info);
+    child->SetHasViewportDependence(child_result.has_viewport_dependence);
+  }
+  return child->HasViewportDependence();
 }
 
-void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object,
+bool LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object,
                                    const SVGLayoutInfo& layout_info) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
-    return;
+    return false;
+  bool has_viewport_dependence = false;
   const ComputedStyle& style = layout_object.StyleRef();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerStartResource()))
-    UpdateSVGLayoutIfNeeded(marker, layout_info);
+    has_viewport_dependence |= UpdateSVGLayoutIfNeeded(marker, layout_info);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerMidResource()))
-    UpdateSVGLayoutIfNeeded(marker, layout_info);
+    has_viewport_dependence |= UpdateSVGLayoutIfNeeded(marker, layout_info);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerEndResource()))
-    UpdateSVGLayoutIfNeeded(marker, layout_info);
+    has_viewport_dependence |= UpdateSVGLayoutIfNeeded(marker, layout_info);
+  return has_viewport_dependence;
 }
 
 // Update a bounding box taking into account the validity of the other bounding
@@ -60,8 +69,8 @@ bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
   if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
     return !svg_shape->IsShapeEmpty();
   }
-  if (auto* ng_text = DynamicTo<LayoutSVGText>(object)) {
-    return ng_text->IsObjectBoundingBoxValid();
+  if (auto* text = DynamicTo<LayoutSVGText>(object)) {
+    return text->IsObjectBoundingBoxValid();
   }
   if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
     return svg_container->IsObjectBoundingBoxValid() &&
@@ -105,9 +114,8 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
 }
 
 SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
-  SVGLayoutResult result;
-  result.bounds_changed =
-      std::exchange(bounds_dirty_from_removed_child_, false);
+  bool bounds_changed = std::exchange(bounds_dirty_from_removed_child_, false);
+  bool has_viewport_dependence = false;
 
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
@@ -116,36 +124,36 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
     if (layout_info.scale_factor_changed) {
       // If the screen scaling factor changed we need to update the text
       // metrics (note: this also happens for layoutSizeChanged=true).
-      if (auto* ng_text = DynamicTo<LayoutSVGText>(child)) {
-        ng_text->SetNeedsTextMetricsUpdate();
+      if (auto* text = DynamicTo<LayoutSVGText>(child)) {
+        text->SetNeedsTextMetricsUpdate();
       }
       force_child_layout = true;
     }
 
-    if (layout_info.viewport_changed) {
-      // When selfNeedsLayout is false and the layout size changed, we have to
-      // check whether this child uses relative lengths
-      if (auto* element = DynamicTo<SVGElement>(child->GetNode())) {
-        if (element->HasRelativeLengths()) {
-          // FIXME: this should be done on invalidation, not during layout.
-          // When the layout size changed and when using relative values tell
-          // the LayoutSVGShape to update its shape object
-          if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
-            shape->SetNeedsShapeUpdate();
-          } else if (auto* ng_text = DynamicTo<LayoutSVGText>(*child)) {
-            ng_text->SetNeedsTextMetricsUpdate();
-          } else if (auto* container =
-                         DynamicTo<LayoutSVGTransformableContainer>(*child)) {
-            container->SetNeedsTransformUpdate();
-          }
+    bool child_has_viewport_dependence = false;
+    if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+      child_has_viewport_dependence = child->HasViewportDependence();
+    } else if (auto* element = DynamicTo<SVGElement>(child->GetNode())) {
+      child_has_viewport_dependence = element->HasRelativeLengths();
+    }
 
-          force_child_layout = true;
-        }
-        if (!child->NeedsLayout() &&
-            child->SVGSelfOrDescendantHasViewportDependency()) {
-          force_child_layout = true;
-        }
+    if (layout_info.viewport_changed && child_has_viewport_dependence) {
+      if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
+        shape->SetNeedsShapeUpdate();
+      } else if (auto* text = DynamicTo<LayoutSVGText>(*child)) {
+        text->SetNeedsTextMetricsUpdate();
+      } else if (auto* container =
+                     DynamicTo<LayoutSVGTransformableContainer>(*child)) {
+        container->SetNeedsTransformUpdate();
       }
+
+      force_child_layout = true;
+    }
+
+    if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled() &&
+        layout_info.viewport_changed && !child->NeedsLayout() &&
+        child->SVGSelfOrDescendantHasViewportDependency()) {
+      force_child_layout = true;
     }
 
     DCHECK(!child->IsSVGRoot());
@@ -155,19 +163,22 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
     }
 
     // Lay out any referenced resources before the child.
-    LayoutMarkerResourcesIfNeeded(*child, layout_info);
+    has_viewport_dependence |=
+        LayoutMarkerResourcesIfNeeded(*child, layout_info);
 
-    if (!child->NeedsLayout()) {
-      continue;
+    if (child->NeedsLayout()) {
+      const SVGLayoutResult child_result = child->UpdateSVGLayout(layout_info);
+      bounds_changed |= child_result.bounds_changed;
+      child->SetHasViewportDependence(child_result.has_viewport_dependence);
     }
-    const SVGLayoutResult child_result = child->UpdateSVGLayout(layout_info);
-    result.bounds_changed |= child_result.bounds_changed;
+
+    has_viewport_dependence |= child->HasViewportDependence();
   }
 
-  if (result.bounds_changed) {
-    result.bounds_changed = UpdateBoundingBoxes();
+  if (bounds_changed) {
+    bounds_changed = UpdateBoundingBoxes();
   }
-  return result;
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool SVGContentContainer::HitTest(HitTestResult& result,

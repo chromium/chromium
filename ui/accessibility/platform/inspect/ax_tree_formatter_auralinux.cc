@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
@@ -439,7 +440,7 @@ void AXTreeFormatterAuraLinux::AddTableProperties(
   // Caption details.
   AtkObject* caption = atk_table_get_caption(table);
   table_properties.Append(
-      base::StringPrintf("caption=%s;", caption ? "true" : "false"));
+      base::StringPrintf("caption=%s;", base::ToString<bool>(caption)));
 
   // Summarize information about the cells from the table's perspective here.
   std::vector<std::string> span_info;

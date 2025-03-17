@@ -20,13 +20,6 @@ export interface PrivacyGuideBrowserProxy {
 
   /** @return If the Ad Topics Card should be shown. */
   privacySandboxPrivacyGuideShouldShowAdTopicsCard(): Promise<boolean>;
-
-  /**
-   * @return If the V2 of the Ad Privacy row sub label should be shown in the
-   *     completion card.
-   */
-  privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel():
-      Promise<boolean>;
 }
 
 export class PrivacyGuideBrowserProxyImpl implements PrivacyGuideBrowserProxy {
@@ -46,11 +39,6 @@ export class PrivacyGuideBrowserProxyImpl implements PrivacyGuideBrowserProxy {
 
   privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
     return sendWithPromise('privacySandboxPrivacyGuideShouldShowAdTopicsCard');
-  }
-
-  privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel() {
-    return sendWithPromise(
-        'privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel');
   }
 
   static getInstance(): PrivacyGuideBrowserProxy {

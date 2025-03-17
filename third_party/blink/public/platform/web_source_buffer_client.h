@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SOURCE_BUFFER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SOURCE_BUFFER_CLIENT_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -40,7 +41,7 @@ class WebSourceBufferClient {
   // media tracks found in the new init segment. The return value is true in
   // case of success.
   virtual bool InitializationSegmentReceived(
-      const WebVector<MediaTrackInfo>& tracks) = 0;
+      const std::vector<MediaTrackInfo>& tracks) = 0;
 
   // Notifies SourceBuffer of parse warning.
   virtual void NotifyParseWarning(const ParseWarning) = 0;

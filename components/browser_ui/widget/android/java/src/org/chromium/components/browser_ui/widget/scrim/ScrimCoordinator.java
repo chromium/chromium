@@ -9,56 +9,30 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * The coordinator for the scrim widget used to bring focus to certain elements on screen.
- *
- * <p>To use the scrim, {@link #showScrim(PropertyModel)} must be called to set the params for how
- * the scrim will behave:
- *
- * <p>PropertyModel model = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)...
- *
- * <p>After that, users can either allow the default animation to run or change the view's alpha
- * manually using {@link #setAlpha(float)}. Once the scrim is done being used, {@link
- * #hideScrim(boolean)} should be called.
+ * The coordinator for the scrim components. Creating and owning the mediator and view, and scoped
+ * to a single model. Outside clients however should typically not directly interact with the
+ * coordinator, instead they should go through the {@link ScrimManager} to facilitate stacking
+ * scrims.
  */
+@NullMarked
 public class ScrimCoordinator {
 
     /** The duration for the scrim animation. */
-    private static final int ANIM_DURATION_MS = 300;
-
-    /** A delegate to expose functionality that changes the scrim over the system UI. */
-    public interface SystemUiScrimDelegate {
-        /**
-         * Pass the current scrim color to the relevant system UI elements.
-         * @param scrimColor The current base color of the scrim.
-         */
-        default void setScrimColor(@ColorInt int scrimColor) {
-            // Default no-op, since we fallback to R.color.default_scrim_color if this isn't called.
-        }
-
-        /**
-         * Set the amount of scrim over the status bar. The implementor may choose to not respect
-         * the value provided to this method.
-         * @param scrimFraction The scrim fraction over the status bar. 0 is completely hidden, 1 is
-         *                      completely shown.
-         */
-        void setStatusBarScrimFraction(float scrimFraction);
-
-        /**
-         * Set the amount of scrim over the navigation bar. The implementor may choose to not
-         * respect the value provided to this method.
-         * @param scrimFraction The scrim fraction over the status bar. 0 is completely hidden, 1 is
-         *                      completely shown.
-         */
-        void setNavigationBarScrimFraction(float scrimFraction);
-    }
+    /* package */ static final int ANIM_DURATION_MS = 300;
 
     /** A mechanism for delegating motion events out to the mediator. */
     interface TouchEventDelegate {
@@ -69,8 +43,14 @@ public class ScrimCoordinator {
         boolean onTouchEvent(MotionEvent event);
     }
 
-    public interface Observer {
+    public interface Observer extends Callback<Boolean> {
         void scrimVisibilityChanged(boolean scrimVisible);
+
+        @Deprecated
+        @Override
+        default void onResult(Boolean result) {
+            scrimVisibilityChanged(result);
+        }
     }
 
     private final ObserverList<Observer> mScrimVisibilityObservers = new ObserverList<>();
@@ -88,22 +68,18 @@ public class ScrimCoordinator {
      * {@link #showScrim(PropertyModel)} is called, this view is recreated, so all old state is
      * discarded.
      */
-    private ScrimView mView;
+    private @Nullable ScrimView mView;
 
     /** A handle to the object pushing updates from the model to the view. */
-    private PropertyModelChangeProcessor mChangeProcessor;
+    private @Nullable PropertyModelChangeProcessor mChangeProcessor;
 
     /**
      * @param context An Android {@link Context} for creating the view.
-     * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      * @param parent The {@link ViewGroup} the scrim should exist in.
-     * @param defaultColor The default color of the scrim.
      */
-    public ScrimCoordinator(
-            Context context,
-            SystemUiScrimDelegate systemUiScrimDelegate,
-            ViewGroup parent,
-            @ColorInt int defaultColor) {
+    /* package */ ScrimCoordinator(Context context, ViewGroup parent) {
+        @ColorInt
+        int defaultScrimColor = ContextCompat.getColor(context, R.color.default_scrim_color);
         mMediator =
                 new ScrimMediator(
                         () -> {
@@ -111,13 +87,32 @@ public class ScrimCoordinator {
                             if (mView != null) UiUtils.removeViewFromParent(mView);
                             mView = null;
                             mChangeProcessor = null;
+                            notifyVisibilityObservers();
                         },
-                        systemUiScrimDelegate);
+                        defaultScrimColor);
         mScrimViewBuilder =
                 () -> {
-                    ScrimView view = new ScrimView(context, parent, defaultColor);
+                    ScrimView view = new ScrimView(context, parent);
                     return view;
                 };
+    }
+
+    /**
+     * Returns the current color being applied by the current scrim to the status bar. If there is
+     * no active scrim or the scrim doesn't affect the status bar, then a fully transparent color
+     * will be returned.
+     */
+    public ObservableSupplier<Integer> getStatusBarColorSupplier() {
+        return mMediator.getStatusBarColorSupplier();
+    }
+
+    /**
+     * Returns the current color being applied by the current scrim to the nav bar. If there is no
+     * active scrim or the scrim doesn't affect the nav bar, then a fully transparent color will be
+     * returned.
+     */
+    public ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+        return mMediator.getNavigationBarColorSupplier();
     }
 
     /**
@@ -132,7 +127,7 @@ public class ScrimCoordinator {
         // Ensure the previous scrim is hidden before showing the new one. This logic should be in
         // the mediator, but it depends on the old view and binder being available which are
         // replaced prior to mediator#showScrim being called.
-        if (mMediator.isActive()) mMediator.hideScrim(false, ANIM_DURATION_MS);
+        if (mMediator.isActive()) mMediator.hideScrim(/* animate= */ false, ANIM_DURATION_MS);
 
         if (mChangeProcessor != null) mChangeProcessor.destroy();
 
@@ -145,8 +140,6 @@ public class ScrimCoordinator {
     }
 
     /**
-     * Hide the scrim.
-     *
      * @param animate Whether the scrim should animate and fade out.
      */
     public void hideScrim(boolean animate) {
@@ -154,8 +147,6 @@ public class ScrimCoordinator {
     }
 
     /**
-     * Hide the scrim.
-     *
      * @param animate Whether the scrim should animate and fade out.
      * @param duration Duration for animation.
      */
@@ -167,9 +158,7 @@ public class ScrimCoordinator {
         }
     }
 
-    /**
-     * @return Whether the scrim is being shown.
-     */
+    /** Returns whether the scrim is being shown. */
     public boolean isShowingScrim() {
         return mMediator.isActive();
     }
@@ -195,11 +184,23 @@ public class ScrimCoordinator {
     }
 
     /**
-     * Manually set the alpha for the scrim.
+     * Manually set the alpha for the scrim. This is exposed as part of the public API and should
+     * not be called as part of animations as it cancels the currently running one.
+     *
      * @param alpha The alpha in range [0, 1].
      */
     public void setAlpha(float alpha) {
         mMediator.setAlpha(alpha);
+    }
+
+    /**
+     * Changes the target color of a full scrim, though the current color being applied will still
+     * be subject to the current alpha. Safe to call this during animations.
+     *
+     * @param scrimColor The color to set the scrim to.
+     */
+    public void setScrimColor(@ColorInt int scrimColor) {
+        mMediator.setScrimColor(scrimColor);
     }
 
     /** Clean up this coordinator. */
@@ -207,11 +208,19 @@ public class ScrimCoordinator {
         mMediator.destroy();
     }
 
+    /* package */ int getIndexInParent() {
+        if (mView == null || mView.getParent() == null) {
+            return -1;
+        } else {
+            return ((ViewGroup) mView.getParent()).indexOfChild(mView);
+        }
+    }
+
     public void disableAnimationForTesting(boolean disable) {
         mMediator.disableAnimationForTesting(disable);
     }
 
-    public ScrimView getViewForTesting() {
+    public @Nullable ScrimView getViewForTesting() {
         return mView;
     }
 

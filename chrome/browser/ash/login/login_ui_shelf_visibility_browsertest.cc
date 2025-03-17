@@ -35,10 +35,9 @@ namespace ash {
 namespace {
 
 constexpr char kExistingUserEmail[] = "existing@gmail.com";
-constexpr char kExistingUserGaiaId[] = "9876543210";
+constexpr GaiaId::Literal kExistingUserGaiaId("9876543210");
 
 constexpr char kNewUserEmail[] = "new@gmail.com";
-constexpr char kNewUserGaiaId[] = "0123456789";
 
 class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
  public:
@@ -64,7 +63,7 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
     LoginDisplayHost::default_host()
         ->GetOobeUI()
         ->GetView<GaiaScreenHandler>()
-        ->ShowSigninScreenForTest(kNewUserEmail, kNewUserGaiaId,
+        ->ShowSigninScreenForTest(kNewUserEmail, "FakePassword",
                                   FakeGaiaMixin::kEmptyUserServices);
 
     // Wait for the exiting of the sign-in screen which will be followed
@@ -74,8 +73,7 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
 
  private:
   LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId(kExistingUserEmail,
-                                     GaiaId(kExistingUserGaiaId))};
+      AccountId::FromUserEmailGaiaId(kExistingUserEmail, kExistingUserGaiaId)};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
   EmbeddedTestServerSetupMixin test_server_mixin_{&mixin_host_,
                                                   embedded_test_server()};

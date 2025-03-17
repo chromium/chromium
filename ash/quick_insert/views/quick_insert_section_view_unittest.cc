@@ -28,6 +28,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -55,8 +56,15 @@ std::unique_ptr<QuickInsertImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
   return std::make_unique<QuickInsertImageItemView>(
       std::make_unique<QuickInsertGifView>(
-          /*frames_fetcher=*/base::DoNothing(),
-          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions),
+          /*frames_fetcher=*/base::IgnoreArgs<
+              QuickInsertGifView::FramesFetchedCallback>(
+              base::ReturnValueOnce<std::unique_ptr<network::SimpleURLLoader>>(
+                  nullptr)),
+          /*preview_image_fetcher=*/
+          base::IgnoreArgs<QuickInsertGifView::PreviewImageFetchedCallback>(
+              base::ReturnValueOnce<std::unique_ptr<network::SimpleURLLoader>>(
+                  nullptr)),
+          gif_dimensions),
       u"gif", base::DoNothing());
 }
 
@@ -67,7 +75,9 @@ TEST_F(QuickInsertSectionViewTest, HasListRole) {
                                       /*asset_fetcher=*/nullptr,
                                       /*submenu_controller=*/nullptr);
 
-  EXPECT_EQ(section_view.GetAccessibleRole(), ax::mojom::Role::kList);
+  ui::AXNodeData node_data;
+  section_view.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kList);
 }
 
 TEST_F(QuickInsertSectionViewTest, CreatesTitleLabel) {
@@ -90,8 +100,11 @@ TEST_F(QuickInsertSectionViewTest, TitleHasHeadingRole) {
                                       &submenu_controller);
   section_view.AddTitleLabel(u"Section");
 
-  EXPECT_THAT(section_view.title_label_for_testing()->GetAccessibleRole(),
-              ax::mojom::Role::kHeading);
+  ui::AXNodeData node_data;
+  section_view.title_label_for_testing()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kHeading);
 }
 
 TEST_F(QuickInsertSectionViewTest, AddsListItem) {

@@ -91,13 +91,13 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
       std::make_unique<views::Label>(device_name, views::style::CONTEXT_LABEL,
                                      views::style::STYLE_BODY_2));
   device_name_label_->SetCanProcessEventsWithinSubtree(false);
-  device_name_label_->SetEnabledColorId(device_name_color_id);
+  device_name_label_->SetEnabledColor(device_name_color_id);
 
   status_text_label_ = label_column->AddChildView(
       std::make_unique<views::Label>(status_text, views::style::CONTEXT_LABEL,
                                      views::style::STYLE_BODY_4));
   status_text_label_->SetCanProcessEventsWithinSubtree(false);
-  status_text_label_->SetEnabledColorId(status_text_color_id);
+  status_text_label_->SetEnabledColor(status_text_color_id);
 }
 
 gfx::Size IssueHoverButton::CalculatePreferredSize(
@@ -118,10 +118,10 @@ CastDeviceSelectorView::CastDeviceSelectorView(
     : device_list_host_(std::move(device_list_host)),
       device_list_client_(this, std::move(device_list_client)),
       media_color_theme_(media_color_theme) {
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme_.device_selector_border_color_id));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.device_selector_background_color_id,
       kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -320,7 +320,7 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
     device_entry_button->SetBorder(
         views::CreateEmptyBorder(kIconHoverButtonInsets));
     device_entry_button->SetLabelStyle(views::style::STYLE_BODY_2);
-    device_entry_button->SetEnabledTextColorIds(
+    device_entry_button->SetEnabledTextColors(
         media_color_theme_.secondary_foreground_color_id);
     device_entry_button->SetImageLabelSpacing(kDeviceEntrySeparator);
   }

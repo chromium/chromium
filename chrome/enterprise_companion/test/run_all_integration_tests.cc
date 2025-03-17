@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -11,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/flags.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
@@ -31,8 +37,8 @@ bool IsUserElevated() {
 std::optional<base::FilePath> GetLogFilePath() {
   const char* var = std::getenv("ISOLATED_OUTDIR");
   return var ? std::make_optional(
-                   base::FilePath::FromUTF8Unsafe(var).AppendASCII(
-                       "enterprise_companion_integration_test.log"))
+                   base::FilePath::FromUTF8Unsafe(var).Append(FILE_PATH_LITERAL(
+                       "enterprise_companion_integration_test.log")))
              : std::nullopt;
 }
 

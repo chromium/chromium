@@ -65,9 +65,9 @@ class ExternalConstantsBuilder {
       crx_file::VerifierFormat crx_verifier_format);
   ExternalConstantsBuilder& ClearCrxVerifierFormat();
 
-  ExternalConstantsBuilder& SetGroupPolicies(
-      const base::Value::Dict& group_policies);
-  ExternalConstantsBuilder& ClearGroupPolicies();
+  ExternalConstantsBuilder& SetDictPolicies(
+      const base::Value::Dict& dict_policies);
+  ExternalConstantsBuilder& ClearDictPolicies();
 
   ExternalConstantsBuilder& SetOverinstallTimeout(
       base::TimeDelta overinstall_timeout);
@@ -80,9 +80,6 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetMachineManaged(
       std::optional<bool> is_managed_device);
   ExternalConstantsBuilder& ClearMachineManaged();
-
-  ExternalConstantsBuilder& SetEnableDiffUpdates(bool enable_diffs);
-  ExternalConstantsBuilder& ClearEnableDiffUpdates();
 
   ExternalConstantsBuilder& SetCecaConnectionTimeout(
       base::TimeDelta ceca_connection_timeout);

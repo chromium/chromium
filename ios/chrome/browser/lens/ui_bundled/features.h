@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kLensUnaryApisWithHttpTransportEnabled);
 // Whether to use HTTP transport for unary requests.
 BASE_DECLARE_FEATURE(kLensUnaryHttpTransportEnabled);
 
+// Whether to enable the unary salient text API.
+BASE_DECLARE_FEATURE(kLensUnaryApiSalientTextEnabled);
+
 // Whether to enable background uploading for clearcut logs.
 BASE_DECLARE_FEATURE(kLensClearcutBackgroundUploadEnabled);
 
@@ -42,5 +45,32 @@ BASE_DECLARE_FEATURE(kLensClearcutLoggerFastQosEnabled);
 
 // Whether to disable single tap text selection.
 BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
+
+// Whether to disable the Ink library's multi-sample mode.
+BASE_DECLARE_FEATURE(kLensInkMultiSampleModeDisabled);
+
+// Whether to disable gesture text selection.
+BASE_DECLARE_FEATURE(kLensGestureTextSelectionDisabled);
+
+// Whether to enable the vsint param.
+BASE_DECLARE_FEATURE(kLensVsintParamEnabled);
+
+// Whether to enable the unary client data header.
+BASE_DECLARE_FEATURE(kLensUnaryClientDataHeaderEnabled);
+
+// Whether to block fetch objects interaction RPCs on separate handshake.
+BASE_DECLARE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake);
+
+// Whether to prewarm hard stickiness in Input Selection.
+BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInInputSelection);
+
+// Whether to prewarm hard stickiness in query formulation.
+BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation);
+
+// Whether to enable the fetch srp API.
+BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
+
+// Whether to enable the QR parsing code fix.
+BASE_DECLARE_FEATURE(kLensQRCodeParsingFix);
 
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

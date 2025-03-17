@@ -25,8 +25,8 @@ public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P>
      * @param <V> The view object that is changing.
      * @param <P> The property of the view that changed.
      */
-    public interface ViewBinder<M, V, P> {
-        void bind(M model, @Nullable V view, @Nullable P propertyKey);
+    public interface ViewBinder<M, V, P extends @Nullable Object> {
+        void bind(M model, V view, P propertyKey);
     }
 
     private final V mView;
@@ -90,7 +90,7 @@ public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P>
         mModel.removeObserver(mPropertyObserver);
     }
 
-    private void onPropertyChanged(PropertyObservable<P> source, @Nullable P propertyKey) {
+    private void onPropertyChanged(PropertyObservable<P> source, P propertyKey) {
         assert source == mModel;
 
         // TODO(bauerb): Add support for batching updates.

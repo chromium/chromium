@@ -4,6 +4,8 @@
 
 #include "ash/system/status_area_animation_controller.h"
 
+#include <algorithm>
+
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
@@ -14,7 +16,6 @@
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"

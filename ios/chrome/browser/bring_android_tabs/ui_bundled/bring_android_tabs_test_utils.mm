@@ -7,13 +7,13 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_app_interface.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -54,6 +54,10 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
+  // TODO(crbug.com/379306137): If feature is not launched, fix
+  // SignInViaFREWithHistorySyncEnabled() by moving the default browser
+  // dismissal to after sign-in and sync.
+  config.additional_args.push_back("--enable-features=UpdatedFirstRunSequence");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
@@ -62,14 +66,14 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
 void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fake_identity];
+  // Default browser promo dismissal.
+  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
   // Sign in.
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
   // Enable history/tab sync if appropriate.
   TapPromoStyleButton(enable_history_sync
                           ? kPromoStylePrimaryActionAccessibilityIdentifier
                           : kPromoStyleSecondaryActionAccessibilityIdentifier);
-  // Default browser promo dismissal.
-  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
@@ -113,8 +117,6 @@ void VerifyThatPromptDoesNotShowOnRestart(const GURL& test_server) {
 
 void CleanUp() {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
   [ChromeEarlGrey
       clearUserPrefWithName:"ios.bring_android_tabs.prompt_displayed"];

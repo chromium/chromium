@@ -20,11 +20,12 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThreadNested;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.os.SystemClock;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -40,6 +41,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -48,6 +50,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -74,18 +77,19 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.SwipingToTabFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
-import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.sensitive_content.SensitiveContentClient;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -129,13 +133,14 @@ public class SensitiveContentTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public final BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(mActivityTestRule);
+    private final ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
+            new ChromeTabbedActivityPublicTransitEntryPoints(mActivityTestRule);
 
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private TabWindowManager mTabWindowManager;
+    @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ViewGroup mContentView;
 
     private WebPageStation mPage;
     private EmbeddedTestServer mTestServer;
@@ -144,36 +149,26 @@ public class SensitiveContentTest {
 
     @Before
     public void setUp() throws Exception {
-        mPage = mInitialStateRule.startOnBlankPage();
+        mPage = mEntryPoints.startOnBlankPageNonBatched();
         mTestServer = mActivityTestRule.getTestServer();
     }
 
     @Test
     @MediumTest
     public void testTabHasSensitiveContentWhileSensitiveFieldsArePresent() {
-        assertNotEquals(
-                "Initially, the tab does not have sensitive content",
-                getContentViewOfCurrentTab().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+        assertNotSensitive(mPage);
 
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
-        waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        assertSensitive(page);
 
-        page.loadPageProgrammatically(
-                mTestServer.getURL(NOT_SENSITIVE_FILE), WebPageStation.newBuilder());
-        waitForContentSensitivity(
-                getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
+        assertNotSensitive(page);
     }
 
     @Test
     @MediumTest
     public void testSensitiveContentClientObserver() {
-        assertNotEquals(
-                "Initially, the tab does not have sensitive content",
-                getContentViewOfCurrentTab().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+        assertNotSensitive(mPage);
 
         final SensitiveContentClient client =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -185,36 +180,25 @@ public class SensitiveContentTest {
         ThreadUtils.runOnUiThreadBlocking(() -> client.addObserver(observer));
 
         assertFalse(observer.getContentSensitivity());
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
-        waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        assertSensitive(page);
         assertTrue(observer.getContentSensitivity());
 
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(NOT_SENSITIVE_FILE), WebPageStation.newBuilder());
-        waitForContentSensitivity(
-                getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
+        assertNotSensitive(page);
         assertFalse(observer.getContentSensitivity());
 
         // After observation is removed, the observer will not be notified anymore.
         ThreadUtils.runOnUiThreadBlocking(() -> client.removeObserver(observer));
-        page.loadPageProgrammatically(
-                mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
-        waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        assertSensitive(page);
         assertFalse(observer.getContentSensitivity());
     }
 
     @Test
     @MediumTest
     public void testSwapViewAndroidDelegate() {
-        mPage.loadPageProgrammatically(
-                mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
-        pollUiThread(
-                () ->
-                        getContentViewOfCurrentTab().getContentSensitivity()
-                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+        mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -226,8 +210,8 @@ public class SensitiveContentTest {
                             ViewAndroidDelegate.createBasicDelegate(newContainerView);
                     assertEquals(
                             "Initially, the content view does not have sensitive content",
-                            newContainerView.getContentSensitivity(),
-                            View.CONTENT_SENSITIVITY_AUTO);
+                            View.CONTENT_SENSITIVITY_AUTO,
+                            newContainerView.getContentSensitivity());
 
                     webContents.setDelegates(
                             "",
@@ -246,24 +230,15 @@ public class SensitiveContentTest {
     @MediumTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testTabHasSensitiveContentAttributeIsUpdated() {
-        assertNotEquals(
-                "Initially, the tab does not have sensitive content",
-                getContentViewOfCurrentTab().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
-
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         assertFalse(tab.getTabHasSensitiveContent());
 
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
-        waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        assertSensitive(page);
         assertTrue(tab.getTabHasSensitiveContent());
 
-        page.loadPageProgrammatically(
-                mTestServer.getURL(NOT_SENSITIVE_FILE), WebPageStation.newBuilder());
-        waitForContentSensitivity(
-                getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
+        assertNotSensitive(page);
         assertFalse(tab.getTabHasSensitiveContent());
     }
 
@@ -274,14 +249,12 @@ public class SensitiveContentTest {
     public void testRegularTabSwitcherBecomesSensitive() {
         final String histogram = "SensitiveContent.TabSwitching.RegularTabSwitcherPane.Sensitivity";
         HistogramWatcher histogramWatcherForTrueBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Open a second tab.
         PageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.getLoadedTab();
         // Load sensitive content only into the second tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTab.getTabHasSensitiveContent());
         // Open the tab switcher.
         RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
@@ -296,7 +269,7 @@ public class SensitiveContentTest {
         histogramWatcherForTrueBucket.assertExpected();
 
         HistogramWatcher histogramWatcherForFalseBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ false);
         // Open the tab switcher.
         regularTabSwitcher = page.openRegularTabSwitcher();
         // Check that the tab switcher is not sensitive anymore.
@@ -316,16 +289,14 @@ public class SensitiveContentTest {
         final String histogram =
                 "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity";
         HistogramWatcher histogramWatcherForTrueBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Open the first incognito tab.
         PageStation page = mPage.openNewIncognitoTabFast();
         // Open the second incognito tab.
         page = page.openNewIncognitoTabFast();
         final Tab secondIncognitoTab = page.getLoadedTab();
         // Load sensitive content only into the second incognito tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondIncognitoTab.getTabHasSensitiveContent());
         // Open the incognito tab switcher.
         IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
@@ -335,12 +306,12 @@ public class SensitiveContentTest {
         histogramWatcherForTrueBucket.assertExpected();
 
         HistogramWatcher histogramWatcherForFalseBucket =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ false);
         // Close the second incognito tab (the only tab with sensitive content).
         incognitoTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(1, IncognitoTabSwitcherStation.class);
         // Select the only remaining incognito tab.
-        page = incognitoTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
+        page = incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
         // Open the incognito tab switcher.
         incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         // Check that the incognito tab switcher is not sensitive anymore.
@@ -349,7 +320,7 @@ public class SensitiveContentTest {
         histogramWatcherForFalseBucket.assertExpected();
 
         // Go back to a tab to cleanup tab state.
-        incognitoTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
+        incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
     }
 
     @Test
@@ -361,9 +332,7 @@ public class SensitiveContentTest {
         PageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.getLoadedTab();
         // Load sensitive content only into the second tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTab.getTabHasSensitiveContent());
         // Group the tabs.
         TabUiTestHelper.createTabGroup(
@@ -390,9 +359,7 @@ public class SensitiveContentTest {
         page = page.openNewIncognitoTabFast();
         final Tab secondIncognitoTab = page.getLoadedTab();
         // Load sensitive content only into the second incognito tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondIncognitoTab.getTabHasSensitiveContent());
         // Group the incognito tabs.
         TabUiTestHelper.createTabGroup(
@@ -418,12 +385,10 @@ public class SensitiveContentTest {
     public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() {
         final String histogram = "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity";
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Load sensitive content only into the first tab.
         final Tab firstTab = mPage.getLoadedTab();
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> firstTab.getTabHasSensitiveContent());
         // Open a second tab.
         page = page.openNewTabFast();
@@ -450,21 +415,17 @@ public class SensitiveContentTest {
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSwipingBetweenTabsIsSensitive() {
+        PageStation page = mPage;
         // Set up.
-        final View contentContainer =
-                mActivityTestRule.getActivity().findViewById(android.R.id.content);
         // Open a second tab.
-        PageStation page = mPage.openNewTabFast();
+        page = page.openNewTabFast();
         // Open a third tab.
         page = page.openNewTabFast();
-        final Tab thirdTab = page.getLoadedTab();
         // Load sensitive content into the third tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
-        pollUiThread(() -> thirdTab.getTabHasSensitiveContent());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        assertTrue(page.getLoadedTab().getTabHasSensitiveContent());
         // Open a fourth tab.
-        page.openNewTabFast();
+        page = page.openNewTabFast();
 
         final String histogram = "SensitiveContent.SensitiveTabSwitchingAnimations";
         HistogramWatcher histogramWatcher =
@@ -475,28 +436,61 @@ public class SensitiveContentTest {
                                 /* times= */ 2)
                         .build();
 
+        SwipingToTabFacility partialSwipe;
+        assertNotSensitive(page);
+
         // Swiping from a not sensitive tab to a sensitive one should mark the content container as
         // sensitive.
-        performSwipeAndCheckSensitivity(
-                ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ true);
+        partialSwipe = page.swipeToolbarToPreviousTabPartial();
+        assertSensitive(page.getActivity());
+        page = partialSwipe.finishSwipe(WebPageStation.newBuilder());
         // After the swipe ends, the content container should return to not being sensitive.
-        waitForContentSensitivity(contentContainer, View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        assertNotSensitive(page.getActivity());
+        assertSensitive(page);
 
         // Swiping from a sensitive tab to a not sensitive one should mark the content container as
         // sensitive.
-        performSwipeAndCheckSensitivity(
-                ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ true);
+        partialSwipe = page.swipeToolbarToPreviousTabPartial();
+        assertSensitive(page.getActivity());
+        page = partialSwipe.finishSwipe(RegularNewTabPageStation.newBuilder());
         // After the swipe ends, the content container should return to not being sensitive.
-        waitForContentSensitivity(contentContainer, View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        assertNotSensitive(page.getActivity());
+        assertNotSensitive(page);
 
         // Swiping between 2 not sensitive tabs should not mark the content container as sensitive.
-        performSwipeAndCheckSensitivity(
-                ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ false);
+        partialSwipe = page.swipeToolbarToPreviousTabPartial();
+        assertNotSensitive(page.getActivity());
+        page = partialSwipe.finishSwipe(WebPageStation.newBuilder());
         // Even after the swipe ends, the content container should not be sensitive.
-        assertEquals(
-                contentContainer.getContentSensitivity(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        assertNotSensitive(page.getActivity());
+        assertNotSensitive(page);
 
         histogramWatcher.assertExpected();
+    }
+
+    private void assertNotSensitive(Activity activity) {
+        assertNotEquals(
+                View.CONTENT_SENSITIVITY_SENSITIVE, getActivityContentSensitivity(activity));
+    }
+
+    private void assertSensitive(Activity activity) {
+        assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, getActivityContentSensitivity(activity));
+    }
+
+    private int getActivityContentSensitivity(Activity activity) {
+        return activity.findViewById(android.R.id.content).getContentSensitivity();
+    }
+
+    private void assertNotSensitive(PageStation page) {
+        assertNotEquals(View.CONTENT_SENSITIVITY_SENSITIVE, getPageContentSensitivity(page));
+    }
+
+    private void assertSensitive(PageStation page) {
+        assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, getPageContentSensitivity(page));
+    }
+
+    private int getPageContentSensitivity(PageStation page) {
+        return page.getLoadedTab().getContentView().getContentSensitivity();
     }
 
     // The tested animation occurs for example when a link is opened in a new tab or in a new tab in
@@ -550,16 +544,18 @@ public class SensitiveContentTest {
                                     TabCreationState.LIVE_IN_BACKGROUND);
                     // The content container should become sensitive before the animation starts.
                     assertEquals(
-                            mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
-                            View.CONTENT_SENSITIVITY_SENSITIVE);
+                            View.CONTENT_SENSITIVITY_SENSITIVE,
+                            mLayoutManagerChromePhone
+                                    .getContentContainer()
+                                    .getContentSensitivity());
 
                     assertTrue(
                             "LayoutManager took too long to finish the animations",
                             simulateTime(mLayoutManagerChromePhone, 1000));
                     assertEquals(
                             "Incorrect active LayoutType",
-                            mLayoutManagerChromePhone.getActiveLayout().getLayoutType(),
-                            LayoutType.SIMPLE_ANIMATION);
+                            LayoutType.SIMPLE_ANIMATION,
+                            mLayoutManagerChromePhone.getActiveLayout().getLayoutType());
                     assertTrue(
                             "Incorrect active Layout",
                             mLayoutManagerChromePhone.isLayoutVisible(LayoutType.SIMPLE_ANIMATION));
@@ -574,8 +570,8 @@ public class SensitiveContentTest {
 
         // Check that the content container is still sensitive before the animation finishes.
         assertEquals(
-                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+                View.CONTENT_SENSITIVITY_SENSITIVE,
+                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Simulate hiding animation.
@@ -586,8 +582,8 @@ public class SensitiveContentTest {
         // Check that the content container is not sensitive anymore after the animation
         // finishes.
         assertEquals(
-                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+                View.CONTENT_SENSITIVITY_NOT_SENSITIVE,
+                mLayoutManagerChromePhone.getContentContainer().getContentSensitivity());
 
         histogramWatcher.assertExpected();
     }
@@ -599,9 +595,7 @@ public class SensitiveContentTest {
         // Create a new tab.
         PageStation page = mPage.openNewTabFast();
         final Tab secondTabBeforeFreeze = page.getLoadedTab();
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTabBeforeFreeze.getTabHasSensitiveContent());
 
         // Save the state of the second tab (the only tab with sensitive content).
@@ -644,8 +638,8 @@ public class SensitiveContentTest {
                                         secondTabAfterFreeze[0].getWebContents()));
         assertTrue(client.getContentRestoredFromTabStateIsSensitive().orElse(false));
         assertEquals(
-                secondTabAfterFreeze[0].getContentView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+                View.CONTENT_SENSITIVITY_SENSITIVE,
+                secondTabAfterFreeze[0].getContentView().getContentSensitivity());
     }
 
     private void checkContentSensitivityOfViewWithId(int viewId, boolean contentIsSensitive) {
@@ -663,43 +657,6 @@ public class SensitiveContentTest {
 
     private View getContentViewOfCurrentTab() {
         return mActivityTestRule.getActivity().getActivityTab().getContentView();
-    }
-
-    private void waitForContentSensitivity(View view, int contentSensitivity) {
-        pollUiThread(() -> view.getContentSensitivity() == contentSensitivity);
-    }
-
-    private void performSwipeAndCheckSensitivity(
-            @ScrollDirection int direction, boolean contentContainerShouldBeSensitive) {
-        assertTrue(
-                "Unexpected direction for side swipe " + direction,
-                direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT);
-
-        final View contentContainer =
-                mActivityTestRule.getActivity().findViewById(android.R.id.content);
-        final View toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
-
-        int[] toolbarPos = new int[2];
-        toolbar.getLocationOnScreen(toolbarPos);
-        final int width = toolbar.getWidth();
-        final int height = toolbar.getHeight();
-
-        final int fromX = toolbarPos[0] + width / 2;
-        final int toX = toolbarPos[0] + (direction == ScrollDirection.LEFT ? 0 : width);
-        final int y = toolbarPos[1] + height / 2;
-        final int stepCount = 25;
-        final long downTime = SystemClock.uptimeMillis();
-
-        TouchCommon.dragStart(mActivityTestRule.getActivity(), fromX, y, downTime);
-        TouchCommon.dragTo(mActivityTestRule.getActivity(), fromX, toX, y, y, stepCount, downTime);
-
-        if (contentContainerShouldBeSensitive) {
-            waitForContentSensitivity(contentContainer, View.CONTENT_SENSITIVITY_SENSITIVE);
-        } else {
-            assertNotEquals(
-                    contentContainer.getContentSensitivity(), View.CONTENT_SENSITIVITY_SENSITIVE);
-        }
-        TouchCommon.dragEnd(mActivityTestRule.getActivity(), toX, y, downTime);
     }
 
     private void initializeLayoutManagerPhone(
@@ -751,12 +708,19 @@ public class SensitiveContentTest {
                         () -> mTabModelSelector,
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
-                        mHubLayoutDependencyHolder);
+                        mHubLayoutDependencyHolder,
+                        mCompositorViewHolderSupplier,
+                        mContentView);
 
         tabContentManagerSupplier.set(tabContentManager);
         CompositorAnimationHandler.setTestingMode(true);
         mLayoutManagerChromePhone.init(
-                mTabModelSelector, null, null, null, mTopUiThemeColorProvider, () -> 0);
+                mTabModelSelector,
+                null,
+                null,
+                null,
+                mTopUiThemeColorProvider,
+                new ObservableSupplierImpl<>(0));
     }
 
     /**

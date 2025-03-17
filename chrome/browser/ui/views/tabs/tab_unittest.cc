@@ -259,7 +259,7 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
             views::kFlexBehaviorKey,
             views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kUnbounded));
-    parent->AddChildView(tab_strip_.get());
+    parent->AddChildViewRaw(tab_strip_.get());
 
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -782,8 +782,6 @@ TEST_F(AlertIndicatorButtonTest, ShowsAndHidesAlertIndicator) {
 // visible at least for 5 seconds even if a camera/mic stopped being used.
 TEST_F(AlertIndicatorButtonTest, MinHoldDurationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
 
   controller_->AddTab(0, TabActive::kActive);
   Tab* media_tab = tab_strip_->tab_at(0);
@@ -815,8 +813,6 @@ TEST_F(AlertIndicatorButtonTest, MinHoldDurationTest) {
 // 1-second fadeout animation after it was visible for longer than 5 seconds.
 TEST_F(AlertIndicatorButtonTest, 1SecondFadeoutAnimationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
 
   controller_->AddTab(0, TabActive::kActive);
   Tab* media_tab = tab_strip_->tab_at(0);

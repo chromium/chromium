@@ -19,19 +19,22 @@ class MODULES_EXPORT ShapeDetector : public ScriptWrappable {
  public:
   ~ShapeDetector() override = default;
 
- protected:
-  std::optional<SkBitmap> GetBitmapFromSource(
+  // Returns the SkBitmap data from an ImageBitmapSource. Throws an exception
+  // and returns nullopt if the source is inaccessible, incompatible, etc.
+  // https://html.spec.whatwg.org/C/#imagebitmapsource
+  static std::optional<SkBitmap> GetBitmapFromSource(
       ScriptState* script_state,
       const V8ImageBitmapSource* image_source,
       ExceptionState&);
 
  private:
-  std::optional<SkBitmap> GetBitmapFromImageData(ScriptState*,
-                                                 ImageData*,
-                                                 ExceptionState&);
-  std::optional<SkBitmap> GetBitmapFromImageElement(ScriptState*,
-                                                    const HTMLImageElement*,
-                                                    ExceptionState&);
+  static std::optional<SkBitmap> GetBitmapFromImageData(ScriptState*,
+                                                        ImageData*,
+                                                        ExceptionState&);
+  static std::optional<SkBitmap> GetBitmapFromImageElement(
+      ScriptState*,
+      const HTMLImageElement*,
+      ExceptionState&);
 };
 
 }  // namespace blink

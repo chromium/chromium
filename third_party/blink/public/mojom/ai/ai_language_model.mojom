@@ -4,6 +4,9 @@
 
 module blink.mojom;
 
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // Most of the mojo definition in this file can be viewed as a representation
@@ -21,17 +24,16 @@ struct AILanguageModelSamplingParams {
   float temperature;
 };
 
-// This struct contains the information describing the default and max values
-// for session creation.
-struct AIModelInfo {
-  uint32 default_top_k;
-  uint32 max_top_k;
-  float default_temperature;
+// This struct contains the information describing the default and max
+// sampling params for session creation.
+struct AILanguageModelParams {
+  AILanguageModelSamplingParams default_sampling_params;
+  AILanguageModelSamplingParams max_sampling_params;
 };
 
 // The information of an AILanguageModel instance, this should be returned
 // from any method that creates a new AILanguageModel.
-struct AILanguageModelInfo {
+struct AILanguageModelInstanceInfo {
   // The maximum number of tokens that the AILanguageModel can hold in the
   // context. When the new prompt or response is being stored in the context,
   // the AILanguageModel will ensure the context stores no more than
@@ -40,23 +42,36 @@ struct AILanguageModelInfo {
   // The number of tokens that are already in the context.
   uint64 current_tokens;
 
+  // The following values are the same as the one provided by the caller when
+  // creating the AILanguageModel.
   AILanguageModelSamplingParams sampling_params;
+  array<AILanguageCode>? expected_input_languages;
 };
 
-// The enum describes the possible roles in the initial prompt.
-enum AILanguageModelInitialPromptRole {
+// The role for a given prompt. See AILanguageModelPromptRole in IDL.
+enum AILanguageModelPromptRole {
   kSystem = 0,
   kUser = 1,
   kAssistant = 2,
-
-  // Append new line here
 };
 
-// Each initial prompt contains a role and the actual content.
-struct AILanguageModelInitialPrompt {
-  AILanguageModelInitialPromptRole role;
-  // This can be any arbitrary string taken from the JavaScript API.
-  string content;
+// The supported prompt input content types. These each contain arbitrary data
+// provided via the JavaScript API. See AILanguageModelPromptContent in IDL.
+union AILanguageModelPromptContent {
+  // Text provided as input.
+  string text;
+
+  // Bitmap provided as input.
+  skia.mojom.BitmapMappedFromTrustedProcess bitmap;
+
+  // Audio provided as input.
+  on_device_model.mojom.AudioData audio;
+};
+
+// A prompt includes a role and content. See AILanguageModelPromptDict in IDL.
+struct AILanguageModelPrompt {
+  AILanguageModelPromptRole role;
+  AILanguageModelPromptContent content;
 };
 
 // This is used when creating a new AILanguageModel.
@@ -64,18 +79,8 @@ struct AILanguageModelCreateOptions {
   AILanguageModelSamplingParams? sampling_params;
   // This can be any arbitrary string taken from the JavaScript API.
   string? system_prompt;
-  array<AILanguageModelInitialPrompt> initial_prompts;
-};
-
-enum AIManagerCreateLanguageModelError {
-  // The underlying service fails to create the on-device session.
-  kUnableToCreateSession = 0,
-  // The manager is unable to calculate the token size of the initial prompt.
-  kUnableToCalculateTokenSize = 1,
-  // The initial prompt is too large to fit in the context.
-  kInitialPromptsTooLarge = 2,
-
-  // Append new line here
+  array<AILanguageModelPrompt> initial_prompts;
+  array<AILanguageCode>? expected_input_languages;
 };
 
 // The client interface that receives an AILanguageModel or errors from an
@@ -88,10 +93,10 @@ interface AIManagerCreateLanguageModelClient {
   // successfully.
   OnResult(
     pending_remote<blink.mojom.AILanguageModel> language_model_remote,
-    AILanguageModelInfo info
+    AILanguageModelInstanceInfo info
   );
   // Called when the manager cannot create an AILanguageModel.
-  OnError(AIManagerCreateLanguageModelError error);
+  OnError(AIManagerCreateClientError error);
 };
 
 // The client interface that receives the number of tokens counted by the
@@ -102,13 +107,12 @@ interface AILanguageModelCountPromptTokensClient {
   OnResult(uint32 number_of_tokens);
 };
 
-// A session for a model that allows executing an input and streaming the
-// output.
+// A session for prompting a model with inputs to obtain streaming responses.
 interface AILanguageModel {
-  // Prompts the model on the given input which can be an arbitrary string
-  // from the JavaScript API.
+  // Prompts the model with arbitrary content provided via the JavaScript API.
   Prompt(
-    string input, pending_remote<ModelStreamingResponder> pending_responder
+    array<AILanguageModelPrompt> prompts,
+    pending_remote<ModelStreamingResponder> pending_responder
   );
   // Creates a new session with the same configuration and existing context
   // as the current session.

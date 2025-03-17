@@ -7,7 +7,8 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-type Annotation = any;
+export type Annotation = any;
+export type SerializedAnnotation = any;
 
 /** The serialized format of a spannable. */
 export interface SerializedSpannable {
@@ -360,8 +361,8 @@ export class Spannable {
    */
   static registerSerializableSpan(
       constructor: Function, name: string,
-      fromJson: (json: SerializedSpan) => Annotation,
-      toJson: () => SerializedSpan): void {
+      fromJson: (json: SerializedAnnotation) => Annotation,
+      toJson: () => SerializedAnnotation): void {
     const obj: SerializeInfo = {name, fromJson, toJson};
     serializableSpansByName.set(name, obj);
     serializableSpansByConstructor.set(constructor, obj);
@@ -429,14 +430,14 @@ interface SpanStruct {
 /** Describes how to convert a span type to/from serializable json. */
 interface SerializeInfo {
   name: string;
-  fromJson: (json: SerializedSpan) => Annotation;
-  toJson?: () => SerializedSpan;
+  fromJson: (json: SerializedAnnotation) => Annotation;
+  toJson?: () => SerializedAnnotation;
 }
 
 /** The format of a single annotation in a serialized spannable. */
 interface SerializedSpan {
   type: string;
-  value: Annotation;
+  value: SerializedAnnotation;
   start: number;
   end: number;
 }

@@ -20,7 +20,7 @@ window.addEventListener('message', function(message: MessageEvent) {
     return;
   }
   if (payload.hasOwnProperty('type') &&
-      payload.type == 'org.chromium.registerForFrameMessaging') {
+      payload.type === 'org.chromium.registerForFrameMessaging') {
     gCrWeb.message.getExistingFrames();
   }
 });

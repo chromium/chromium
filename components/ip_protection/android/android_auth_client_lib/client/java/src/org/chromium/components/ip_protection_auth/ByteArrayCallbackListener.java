@@ -4,11 +4,11 @@
 
 package org.chromium.components.ip_protection_auth;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * ByteArrayCallbackListener uses JNI to notify native code when RPCs to the auth server return.
@@ -20,11 +20,12 @@ import org.jni_zero.NativeMethods;
  * <p>The callback MUST only be called once.
  */
 @JNINamespace("ip_protection::android")
+@NullMarked
 final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
     private long mNativeListener;
 
     @Override
-    public void onResult(@NonNull byte[] response) {
+    public void onResult(byte[] response) {
         if (mNativeListener == 0) {
             throw new IllegalStateException("callback already used");
         }

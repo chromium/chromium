@@ -280,5 +280,187 @@ TEST_F(WKWebViewConfigurationProviderTest, SameDataStoreForSameID) {
             config2.websiteDataStore.httpCookieStore);
 }
 
+// Tests `GetWebSiteDataStore()` for Non-OffTheRecord browser.
+TEST_F(WKWebViewConfigurationProviderTest,
+       GetWebSiteDataStore_NoneOffTheRecord) {
+  browser_state_.SetOffTheRecord(false);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state_);
+  WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
+  EXPECT_TRUE(data_store.isPersistent);
+  // Default data store shares same pointer.
+  EXPECT_NSEQ(WKWebsiteDataStore.defaultDataStore, data_store);
+}
+
+// Tests `GetWebSiteDataStore()` for OffTheRecord browser.
+TEST_F(WKWebViewConfigurationProviderTest, GetWebSiteDataStore_OffTheRecord) {
+  browser_state_.SetOffTheRecord(true);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state_);
+  WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
+  ASSERT_TRUE(data_store);
+  EXPECT_FALSE(data_store.isPersistent);
+}
+
+// Tests `GetWebSiteDataStore()` returns different data store if browser state
+// returns a different storage ID.
+TEST_F(WKWebViewConfigurationProviderTest,
+       GetWebSiteDataStore_DifferentDataStore) {
+  // Create a data store with an identifier.
+  auto browser_state1 = std::make_unique<FakeBrowserState>();
+  browser_state1->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
+  WKWebViewConfigurationProvider* provider1 =
+      &GetProvider(browser_state1.get());
+  WKWebsiteDataStore* data_store1 = provider1->GetWebsiteDataStore();
+  EXPECT_TRUE(data_store1);
+  EXPECT_TRUE(data_store1.isPersistent);
+
+  // Create another data store with another identifier.
+  auto browser_state2 = std::make_unique<FakeBrowserState>();
+  browser_state2->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
+  WKWebViewConfigurationProvider* provider2 =
+      &GetProvider(browser_state2.get());
+  WKWebsiteDataStore* data_store2 = provider2->GetWebsiteDataStore();
+  EXPECT_TRUE(data_store2);
+  EXPECT_TRUE(data_store2.isPersistent);
+
+  if (@available(iOS 17.0, *)) {
+    // `dataStoreForIdentifier:` is available after iOS 17.
+    // Check if the data store is different.
+    EXPECT_NSNE(data_store1, data_store2);
+    EXPECT_NSNE(data_store1.httpCookieStore, data_store2.httpCookieStore);
+  } else {
+    // Otherwise, the default data store should be used.
+    EXPECT_NSEQ(data_store1, data_store2);
+    EXPECT_NSEQ(data_store1.httpCookieStore, data_store2.httpCookieStore);
+  }
+}
+
+// Tests `GetWebSiteDataStore()` returns the same data store if browser state
+// returns the same storage ID.
+TEST_F(WKWebViewConfigurationProviderTest,
+       GetWebSiteDataStore_SameDataStoreForSameID) {
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+
+  // Create a data store with an identifier.
+  auto browser_state1 = std::make_unique<FakeBrowserState>();
+  browser_state1->SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider1 =
+      &GetProvider(browser_state1.get());
+  WKWebsiteDataStore* data_store1 = provider1->GetWebsiteDataStore();
+  EXPECT_TRUE(data_store1);
+  EXPECT_TRUE(data_store1.persistent);
+
+  // Create another data store with the same identifier.
+  auto browser_state2 = std::make_unique<FakeBrowserState>();
+  browser_state2->SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider2 =
+      &GetProvider(browser_state2.get());
+  WKWebsiteDataStore* data_store2 = provider2->GetWebsiteDataStore();
+  EXPECT_TRUE(data_store2);
+  EXPECT_TRUE(data_store2.persistent);
+
+  // The data store should be the same.
+  EXPECT_NSEQ(data_store1, data_store2);
+  EXPECT_NSEQ(data_store1.httpCookieStore, data_store2.httpCookieStore);
+}
+
+// Tests `GetWebSiteDataStore()` returns same data store with the data store
+// configuration used.
+TEST_F(WKWebViewConfigurationProviderTest,
+       GetWebSiteDataStore_SameConfigurationDataStore) {
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state_);
+
+  WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
+  EXPECT_TRUE(data_store.isPersistent);
+  EXPECT_NSEQ(WKWebsiteDataStore.defaultDataStore, data_store);
+
+  WKWebViewConfiguration* config = provider.GetWebViewConfiguration();
+  WKWebsiteDataStore* config_data_store = config.websiteDataStore;
+  EXPECT_NSEQ(data_store, config_data_store);
+}
+
+// Tests data store is reset correctly when configuration is reset.
+TEST_F(WKWebViewConfigurationProviderTest,
+       GetWebSiteDataStore_ResetConfiguration) {
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state_);
+
+  WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
+  EXPECT_TRUE(data_store.isPersistent);
+  EXPECT_NSEQ(WKWebsiteDataStore.defaultDataStore, data_store);
+
+  // Register a callback to be notified when new configuration object are
+  // created and check that it is not invoked as part of the registration.
+  __block WKWebsiteDataStore* recorded_data_store;
+  base::CallbackListSubscription subscription =
+      provider.RegisterConfigurationCreatedCallback(
+          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
+            recorded_data_store = new_configuration.websiteDataStore;
+          }));
+  ASSERT_FALSE(recorded_data_store);
+
+  provider.ResetWithWebViewConfiguration(nil);
+  // Ensure data store is not reset for the same `//ios/web` managed browser.
+  EXPECT_NSEQ(data_store, recorded_data_store);
+
+  WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+  WKWebsiteDataStore* config_data_store =
+      WKWebsiteDataStore.nonPersistentDataStore;
+  config.websiteDataStore = config_data_store;
+  provider.ResetWithWebViewConfiguration(config);
+  EXPECT_NSEQ(config_data_store, recorded_data_store);
+  // Ensure data store is reset for the configuration not originated from the
+  // `//ios/web`.
+  EXPECT_NSNE(data_store, recorded_data_store);
+
+  provider.ResetWithWebViewConfiguration(nil);
+  EXPECT_NSEQ(data_store, recorded_data_store);
+  // Ensure data store is reset again for `//ios/web` managed browser.
+  EXPECT_NSNE(config_data_store, recorded_data_store);
+}
+
+// Tests data store is reset correctly when configuration is reset for
+// OffTheRecord browser.
+TEST_F(WKWebViewConfigurationProviderTest,
+       GetWebSiteDataStore_OffTheRecordResetConfiguration) {
+  browser_state_.SetOffTheRecord(true);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state_);
+
+  WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
+  EXPECT_FALSE(data_store.isPersistent);
+
+  // Register a callback to be notified when new configuration object are
+  // created and check that it is not invoked as part of the registration.
+  __block WKWebsiteDataStore* recorded_data_store;
+  base::CallbackListSubscription subscription =
+      provider.RegisterConfigurationCreatedCallback(
+          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
+            recorded_data_store = new_configuration.websiteDataStore;
+          }));
+  ASSERT_FALSE(recorded_data_store);
+
+  // The non-persistent data store is not expected to be changed for the same
+  // OffTheRecord browser. Note that
+  // `WKWebsiteDataStore.nonPersistentDataStore` will always return a new
+  // instance.
+  provider.ResetWithWebViewConfiguration(nil);
+  EXPECT_NSEQ(data_store, recorded_data_store);
+
+  WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+  WKWebsiteDataStore* config_data_store =
+      WKWebsiteDataStore.nonPersistentDataStore;
+  config.websiteDataStore = config_data_store;
+  provider.ResetWithWebViewConfiguration(config);
+  EXPECT_NSEQ(config_data_store, recorded_data_store);
+  // Ensure data store is reset for the configuration not originated from the
+  // `//ios/web`.
+  EXPECT_NSNE(data_store, recorded_data_store);
+
+  provider.ResetWithWebViewConfiguration(nil);
+  // `WKWebsiteDataStore.nonPersistentDataStore` will always return a new
+  // instance, so the data store should be different.
+  EXPECT_NSNE(data_store, recorded_data_store);
+  // Ensure data store is reset again for `//ios/web` managed browser.
+  EXPECT_NSNE(config_data_store, recorded_data_store);
+}
+
 }  // namespace
 }  // namespace web

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/policy_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -11,7 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
@@ -66,7 +67,7 @@ PolicyManager::PolicyManager(base::Value::Dict policies)
     : policies_(std::move(policies)) {
   constexpr size_t kInstallAppPrefixLength =
       std::string_view(kInstallAppPrefix).length();
-  base::ranges::for_each(policies_, [&](const auto& policy) {
+  std::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
     VLOG_IF(1, policy_name != base::ToLowerASCII(policy_name))
         << "Policy [" << policy_name
@@ -99,7 +100,7 @@ std::optional<bool> PolicyManager::CloudPolicyOverridesPlatformPolicy() const {
 }
 
 bool PolicyManager::HasActiveDevicePolicies() const {
-  return !policies_.empty();
+  return true;
 }
 
 std::string PolicyManager::source() const {
@@ -214,9 +215,9 @@ std::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
       kUpdateAppPrefix,        kTargetVersionPrefix, kTargetChannel,
       kRollbackToTargetVersion};
   std::vector<std::string> apps_with_policy;
-  base::ranges::for_each(policies_, [&](const auto& policy) {
+  std::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
-    base::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
+    std::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
       if (base::StartsWith(policy_name, base::ToLowerASCII(prefix)) &&
           !prefixed_policy_names.contains(policy_name)) {
         apps_with_policy.push_back(
@@ -238,4 +239,12 @@ std::optional<std::string> PolicyManager::GetStringPolicy(
   const std::string* policy = policies_.FindString(base::ToLowerASCII(key));
   return policy ? std::make_optional(*policy) : std::nullopt;
 }
+
+scoped_refptr<PolicyManagerInterface> CreateDictPolicyManager(
+    base::Value::Dict policies) {
+  return policies.empty()
+             ? nullptr
+             : base::MakeRefCounted<PolicyManager>(std::move(policies));
+}
+
 }  // namespace updater

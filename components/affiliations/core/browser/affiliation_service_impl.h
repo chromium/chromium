@@ -33,10 +33,6 @@ class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace url {
-class SchemeHostPort;
-}
-
 namespace affiliations {
 
 extern const char kGetChangePasswordURLMetricName[];
@@ -60,7 +56,9 @@ enum class GetChangePasswordUrlMetric {
   // Used when a url was used, which corresponds to a site from within same
   // FacetGroup.
   kGroupUrlOverrideUsed = 3,
-  kMaxValue = kGroupUrlOverrideUsed,
+  // Used when change password info was available for the main domain only.
+  kMainDomainUsed = 4,
+  kMaxValue = kMainDomainUsed,
 };
 
 class AffiliationServiceImpl : public AffiliationService,
@@ -69,6 +67,7 @@ class AffiliationServiceImpl : public AffiliationService,
   struct ChangePasswordUrlMatch {
     GURL change_password_url;
     bool group_url_override;
+    bool main_domain_override;
   };
 
   explicit AffiliationServiceImpl(
@@ -91,12 +90,8 @@ class AffiliationServiceImpl : public AffiliationService,
   // map. Creates a unique fetcher and appends it to |pending_fetches_|
   // along with |urls| and |callback|. When prefetch is finished or a fetcher
   // gets destroyed as a result of Clear() a callback is run.
-  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                  base::OnceClosure callback) override;
-
-  // Clears the |change_password_urls_| map and cancels prefetch requests if
-  // still running.
-  void Clear() override;
+  void PrefetchChangePasswordURL(const GURL& url,
+                                 base::OnceClosure callback) override;
 
   // In case no valid URL was found, a method returns an empty URL.
   GURL GetChangePasswordURL(const GURL& url) const override;
@@ -113,7 +108,6 @@ class AffiliationServiceImpl : public AffiliationService,
 
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
-      AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
       ResultCallback result_callback) override;
 
   void Prefetch(const FacetURI& facet_uri,
@@ -157,7 +151,7 @@ class AffiliationServiceImpl : public AffiliationService,
   void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
+  std::map<FacetURI, ChangePasswordUrlMatch> change_password_urls_;
   std::vector<FetchInfo> pending_fetches_;
   std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   AffiliationPrefetcher prefetcher_{this};

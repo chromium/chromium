@@ -95,7 +95,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
 
   // Used to filter process information.
   static std::vector<base::FilePath> GetSupportedImageNames();
-  bool IsSupportedImageName(base::FilePath::StringPieceType image_name) const;
+  bool IsSupportedImageName(base::FilePath::StringViewType image_name) const;
 
   // Captures a snapshot of data for all chrome processes.
   // Runs on the worker thread.

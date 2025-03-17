@@ -17,10 +17,11 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/dialogs/oobe_modal_dialog.js';
 import '../../components/gaia_dialog.js';
 
-import {Authenticator, AuthFlow, AuthMode, SUPPORTED_PARAMS} from '//oobe/gaia_auth_host/authenticator.js';
+import type {Authenticator} from '//oobe/gaia_auth_host/authenticator.js';
+import {AuthFlow, AuthMode, SUPPORTED_PARAMS} from '//oobe/gaia_auth_host/authenticator.js';
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
@@ -531,7 +532,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     const gaiaDialog =
         this.shadowRoot?.querySelector<GaiaDialog>('#signin-frame-dialog');
     assert(!!gaiaDialog);
-    return gaiaDialog.getFrame() as chrome.webviewTag.WebView;
+    return gaiaDialog.getFrame();
   }
 
   /**
@@ -568,7 +569,6 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     params.menuEnterpriseEnrollment =
         !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
-    params.obfuscatedOwnerId = data.obfuscatedOwnerId;
 
     this.authenticatorParams = params;
 

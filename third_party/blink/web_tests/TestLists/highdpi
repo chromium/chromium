@@ -212,8 +212,6 @@ css3/blending/svg-blend-overlapping-elements.html
 css3/calc/css3-radial-gradients.html
 css3/calc/gradient-color-stops.html
 css3/filters/add-filter-rendering.html
-css3/filters/backdrop-filter-border-radius.html
-css3/filters/backdrop-filter-clip-rect-zoom.html
 css3/filters/composited-layer-promotion-after-outset-overlap-change-using-composited-shadow.html
 css3/filters/composited-layer-promotion-after-outset-overlap-change-using-sw-shadow.html
 css3/filters/effect-blur.html
@@ -579,6 +577,7 @@ external/wpt/css/cssom-view/table-border-collapse-client-width-height.html
 external/wpt/css/cssom/style-sheet-interfaces-002.html
 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-004.html
 external/wpt/css/filter-effects/backdrop-filter-basic-blur.html
+external/wpt/css/filter-effects/backdrop-filter-clip-rect-zoom.html
 external/wpt/css/filter-effects/filter-function/filter-function-007.html
 external/wpt/css/filter-effects/parsing/backdrop-filter-parsing-valid.html
 external/wpt/css/filter-effects/svg-shorthand-drop-shadow-001.html
@@ -850,7 +849,7 @@ external/wpt/html/semantics/forms/the-option-element/option-text-backslash.html
 external/wpt/html/semantics/forms/the-output-element/output-setcustomvalidity.html
 external/wpt/html/semantics/forms/the-progress-element/progress.html
 external/wpt/html/semantics/forms/the-select-element/select-add.html
-external/wpt/html/semantics/forms/the-select-element/select-events.tentative.html
+external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events-2.tentative.html
 external/wpt/html/semantics/forms/the-textarea-element/wrap-enumerated-ascii-case-insensitive.html
 external/wpt/html/semantics/grouping-content/the-dd-element/grouping-dd.html
 external/wpt/html/semantics/grouping-content/the-div-element/grouping-div.html
@@ -1301,7 +1300,7 @@ html/details_summary/details-add-summary.html
 html/document_metadata/head-has-text-1.html
 html/grouping_content/listing.html
 html/tabular_data/table_createcaption.html
-html/text_level_semantics/font-weight-bold-for-b-and-strong.html
+html/text_level_semantics/font-weight-bolder-for-b-and-strong.html
 http/tests/css/css-resources-referrer.html
 http/tests/csspaint/border-color.html
 http/tests/csspaint/entire-canvas-visible-zoom.html

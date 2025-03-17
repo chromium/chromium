@@ -72,34 +72,29 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl@brya",
   "terminal.SSH@brya",
 
-  # b/354660409, tests will be re-enabled after the tast test is updated to work with the new change. Disabling these to unblock uprev and LKGM.
-  "inputs.PhysicalKeyboardEmojiSuggestion",
-  "inputs.PhysicalKeyboardEmojiSuggestion.guest",
-  "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
-
   # b/352703668: tests failing on trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
-
-  # b/359336803: These tests are failing on brya (specifically kano) and
-  # blocking LKGM.
-  "shimlessrma.SelectComponentsNoneNextCancel.critical@brya",
-  "shimlessrma.WelcomeNextCancel.critical@brya",
-  "shimlessrma.WelcomeCancel.critical@brya",
-
-  # b/374043687
-  "crostini.AppFirefox.bookworm_clamshell_stable@volteer",
-  "crostini.AppFirefoxWindowOperations.maximize_bookworm_clamshell_stable@volteer",
-  "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable@volteer",
-  "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
-
-  # b/383280237
-  "audio.CrasNoiseCancellation.aec",
-  "audio.CrasNoiseCancellation.no_effects",
 
   # b/384060114
   "inputs.InputMethodShelfInputs@reven-vmtest",
   "inputs.VirtualKeyboardHandwriting.docked@reven-vmtest",
   "inputs.VirtualKeyboardHandwriting.floating@reven-vmtest",
+
+  # b/394108883
+  "security.NetworkListenersNonARC@jacuzzi",
+  "security.NetworkListenersNonARC@octopus",
+
+  # https://crbug.com/394821952
+  "ui.WebUIJSErrors",
+  "ui.WebUIJSErrors.field_trial_off",
+  "ui.WebUIJSErrors.field_trial_on",
+
+  # b/394409115
+  "network.AllowCACertificateManagement",
+  "network.AllowClientCertificateManagement",
+
+  #b/400849446
+  "network.ARCCreateWifiInShillByCmd.manual_proxy",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]

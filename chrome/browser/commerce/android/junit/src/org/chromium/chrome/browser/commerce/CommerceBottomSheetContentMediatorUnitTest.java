@@ -51,6 +51,7 @@ public class CommerceBottomSheetContentMediatorUnitTest {
         return new PropertyModel.Builder(CommerceBottomSheetContentProperties.ALL_KEYS)
                 .with(CommerceBottomSheetContentProperties.TYPE, type)
                 .with(CommerceBottomSheetContentProperties.HAS_TITLE, true)
+                .with(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING, true)
                 .with(CommerceBottomSheetContentProperties.TITLE, "title")
                 .with(CommerceBottomSheetContentProperties.CUSTOM_VIEW, mContentItemCustomView)
                 .build();

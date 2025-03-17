@@ -88,7 +88,7 @@ MATCHER_P2(HasTrainingLabel,
   return testing::ExplainMatchResult(
       testing::Field(
           &TrainingLabels::output_metric,
-          testing::Eq(std::pair<std::string, base::HistogramBase::Sample>(
+          testing::Eq(std::pair<std::string, base::HistogramBase::Sample32>(
               histogram_name, histogram_value))),
       arg, result_listener);
 }

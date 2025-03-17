@@ -9,7 +9,6 @@
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -43,6 +42,9 @@ const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.autofill_prediction_improvements_"
     "enterprise_policy_allowed";
 
+const char kPasswordChangeSubmissionEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.password_change_submission_"
+    "enterprise_policy_allowed";
 }  // namespace prefs
 
 namespace features {
@@ -187,6 +189,18 @@ void RegisterHistorySearch() {
   SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
 }
 
+void RegisterPasswordChangeSubmission() {
+  EnterprisePolicyPref enterprise_policy =
+      EnterprisePolicyRegistry::GetInstance().Register(
+          prefs::kPasswordChangeSubmissionEnterprisePolicyAllowed);
+
+  auto ui_metadata = std::make_unique<SettingsUiMetadata>(
+      "PasswordChangeSubmission",
+      UserVisibleFeatureKey::kPasswordChangeSubmission,
+      std::move(enterprise_policy));
+  SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
+}
+
 void RegisterProductSpecifications() {
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
@@ -246,6 +260,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterHistorySearch();
     RegisterProductSpecifications();
     RegisterAutofillPredictions();
+    RegisterPasswordChangeSubmission();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

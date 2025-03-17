@@ -103,9 +103,6 @@ void AssociateParamsFromExperiment(
     const VariationsSeedProcessor::UIStringOverrideCallback& callback,
     base::FeatureList* feature_list) {
   if (ShouldSkipExperiment(experiment, feature_list)) {
-    LOG(WARNING) << "Field trial config study skipped: " << study_name << "."
-                 << experiment.name
-                 << " (some of its features are already overridden)";
     return;
   }
   if (experiment.params.size() != 0) {
@@ -119,9 +116,6 @@ void AssociateParamsFromExperiment(
       base::FieldTrialList::CreateFieldTrial(study_name, experiment.name);
 
   if (!trial) {
-    LOG(WARNING) << "Field trial config study skipped: " << study_name << "."
-                 << experiment.name
-                 << " (it is overridden from chrome://flags)";
     return;
   }
 
@@ -232,12 +226,9 @@ void AssociateParamsFromFieldTrialConfig(
     Study::FormFactor current_form_factor,
     base::FeatureList* feature_list) {
   for (const FieldTrialTestingStudy& study : config.studies) {
-    if (study.experiments.size() > 0) {
-      ChooseExperiment(study, callback, platform, current_form_factor,
-                       feature_list);
-    } else {
-      DLOG(ERROR) << "Unexpected empty study: " << study.name;
-    }
+    CHECK(!study.experiments.empty());
+    ChooseExperiment(study, callback, platform, current_form_factor,
+                     feature_list);
   }
 }
 

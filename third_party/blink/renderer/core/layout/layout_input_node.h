@@ -197,15 +197,7 @@ class CORE_EXPORT LayoutInputNode {
 
   // Returns true if this node should pass its percentage resolution block-size
   // to its children. Typically only quirks-mode, auto block-size, block nodes.
-  bool UseParentPercentageResolutionBlockSizeForChildren() const {
-    auto* layout_block = DynamicTo<LayoutBlock>(box_.Get());
-    if (IsBlock() && layout_block) {
-      return LayoutBoxUtils::SkipContainingBlockForPercentHeightCalculation(
-          layout_block);
-    }
-
-    return false;
-  }
+  bool UseParentPercentageResolutionBlockSizeForChildren() const;
 
   // Returns intrinsic sizing information for replaced elements.
   // ComputeReplacedSize can use it to compute actual replaced size.

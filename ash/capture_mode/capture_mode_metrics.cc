@@ -86,6 +86,21 @@ void MaybeRecordCaptureModeEducationNudgeActions() {
       NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge);
 }
 
+std::string BuildHistogramNameInternal(const char* root_word,
+                                       const char* client_metric_component,
+                                       bool append_ui_mode_suffix) {
+  std::string histogram_name(kCaptureModeMetricCommonPrefix);
+  if (client_metric_component) {
+    histogram_name.append(client_metric_component);
+  }
+  histogram_name.append(root_word);
+  if (append_ui_mode_suffix) {
+    histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
+                                                         : ".ClamshellMode");
+  }
+  return histogram_name;
+}
+
 }  // namespace
 
 void RecordEndRecordingReason(EndRecordingReason reason) {
@@ -152,7 +167,7 @@ void RecordCaptureModeRecordingDuration(base::TimeDelta recording_duration,
 }
 
 void RecordVideoFileSizeKB(bool is_gif,
-                           const CaptureModeBehavior* behavior,
+                           const char* client_metric_component,
                            int size_in_kb) {
   if (!Shell::HasInstance()) {
     // This function can be called asynchronously after the `Shell` instance had
@@ -166,9 +181,10 @@ void RecordVideoFileSizeKB(bool is_gif,
   }
 
   base::UmaHistogramMemoryKB(
-      BuildHistogramName(is_gif ? kGifRecordingFileSizeRootWord
-                                : kScreenRecordingFileSizeRootWord,
-                         behavior, /*append_ui_mode_suffix=*/true),
+      BuildHistogramNameInternal(is_gif ? kGifRecordingFileSizeRootWord
+                                        : kScreenRecordingFileSizeRootWord,
+                                 client_metric_component,
+                                 /*append_ui_mode_suffix=*/true),
       size_in_kb);
 }
 
@@ -369,16 +385,9 @@ void RecordMultimodalSearchRequest() {
 std::string BuildHistogramName(const char* const root_word,
                                const CaptureModeBehavior* behavior,
                                bool append_ui_mode_suffix) {
-  std::string histogram_name(kCaptureModeMetricCommonPrefix);
-  if (behavior) {
-    histogram_name.append(behavior->GetClientMetricComponent());
-  }
-  histogram_name.append(root_word);
-  if (append_ui_mode_suffix) {
-    histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                         : ".ClamshellMode");
-  }
-  return histogram_name;
+  return BuildHistogramNameInternal(
+      root_word, behavior ? behavior->GetClientMetricComponent() : nullptr,
+      append_ui_mode_suffix);
 }
 
 }  // namespace ash

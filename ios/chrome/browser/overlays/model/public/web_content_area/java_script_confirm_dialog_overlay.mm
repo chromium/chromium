@@ -31,8 +31,9 @@ const size_t kConfirmBlockButtonIndex = 2;
 std::unique_ptr<OverlayResponse> CreateDialogResponse(
     std::unique_ptr<OverlayResponse> response) {
   AlertResponse* alert_response = response->GetInfo<AlertResponse>();
-  if (!alert_response)
+  if (!alert_response) {
     return nullptr;
+  }
 
   JavaScriptConfirmDialogResponse::Action action =
       JavaScriptConfirmDialogResponse::Action::kCancel;

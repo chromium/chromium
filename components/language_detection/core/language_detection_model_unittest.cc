@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_provider.h"
 #include "components/language_detection/testing/language_detection_test_utils.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -241,6 +242,13 @@ TEST_F(LanguageDetectionValidTest, DetectWithSampling) {
   }
 }
 
+TEST_F(LanguageDetectionValidTest, PredictWithScanEmptyInput) {
+  std::u16string empty_string;
+  std::vector<Prediction> results_empty =
+      language_detection_model_->PredictWithScan(empty_string);
+  ASSERT_EQ(TopPrediction(results_empty).language, kUnknownLanguageCode);
+}
+
 TEST_F(LanguageDetectionValidTest, PredictWithScan) {
   std::string predicted_language;
   std::u16string en_sample = u"This is a page apparently written in English.";
@@ -291,32 +299,6 @@ TEST_F(LanguageDetectionValidTest, PredictWithScan) {
 TEST_F(LanguageDetectionValidTest, Truncation) {
   std::u16string contents = u"This is a page apparently written in English.";
 
-  // Short string with truncation.
-  {
-    base::HistogramTester histogram_tester_;
-    auto prediction = TopPrediction(
-        language_detection_model_->Predict(contents, /*truncate=*/true));
-    EXPECT_EQ("en", prediction.language);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size", contents.length(),
-        1);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation",
-        contents.length(), 1);
-  }
-  // Short string without truncation.
-  {
-    base::HistogramTester histogram_tester_;
-    auto prediction = TopPrediction(
-        language_detection_model_->Predict(contents, /*truncate=*/false));
-    EXPECT_EQ("en", prediction.language);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size", contents.length(),
-        1);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation",
-        contents.length(), 1);
-  }
   // Make a longer string. Much long than the truncation length to make sure
   // different histogram buckets are involved.
   contents += contents;
@@ -326,31 +308,12 @@ TEST_F(LanguageDetectionValidTest, Truncation) {
   contents += contents;
   ASSERT_GE(contents.length(), kModelTruncationLength * 4);
   // Long string with truncation.
-  {
-    base::HistogramTester histogram_tester_;
-    auto prediction = TopPrediction(
-        language_detection_model_->Predict(contents, /*truncate=*/true));
-    EXPECT_EQ("en", prediction.language);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size",
-        kModelTruncationLength, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation",
-        contents.length(), 1);
-  }
-  // Long string without truncation.
-  {
-    base::HistogramTester histogram_tester_;
-    auto prediction = TopPrediction(
-        language_detection_model_->Predict(contents, /*truncate=*/false));
-    EXPECT_EQ("en", prediction.language);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size", contents.length(),
-        1);
-    histogram_tester_.ExpectUniqueSample(
-        "LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation",
-        contents.length(), 1);
-  }
+  base::HistogramTester histogram_tester_;
+  auto prediction = TopPrediction(language_detection_model_->Predict(contents));
+  EXPECT_EQ("en", prediction.language);
+  histogram_tester_.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.ClassifyText.Size", kModelTruncationLength,
+      1);
 }
 
 // Regression test for https://crbug.com/1414235. This test is expecting that

@@ -28,7 +28,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await addPrefetchAndWait(outerUrl + '?prefetch-1', innerUrl);
 
   await TestRunner.NetworkAgent.setCacheDisabled(false);
+  // With the cache re-enabled `iframe-2` should have a cached request.
   await TestRunner.addIframe(outerUrl + '?iframe-2');
+  // The prefetch has a different cache partition key and so will not be cached.
   await addPrefetchAndWait(outerUrl + '?prefetch-2', innerUrl);
 
   for (var request of NetworkTestRunner.networkLog().requests()) {

@@ -7,13 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -28,7 +26,6 @@ namespace {
 using assistant::FakePlatformDelegate;
 using assistant::mojom::AssistantAudioDecoderFactory;
 using ::assistant_client::OutputStreamMetadata;
-using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
 
 constexpr char kFakeDeviceId[] = "device_id";
@@ -147,47 +144,7 @@ class AssistantAudioDeviceOwnerTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
 };
 
-TEST(AudioOutputProviderImplTest, StartDecoderServiceWithBindCall) {
-  ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kStartAssistantAudioDecoderOnDemand);
-
-  SingleThreadTaskEnvironment task_environment;
-
-  auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
-
-  FakePlatformDelegate platform_delegate;
-  mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate;
-  { auto unused = audio_output_delegate.InitWithNewPipeAndPassReceiver(); }
-  provider->Bind(std::move(audio_output_delegate), &platform_delegate);
-
-  provider->BindAudioDecoderFactory();
-
-  mojo::PendingReceiver<AssistantAudioDecoderFactory>
-      audio_decoder_factory_pending_receiver =
-          platform_delegate.audio_decoder_factory_receiver();
-  FakeAssistantAudioDecoderFactory fake_assistant_audio_decoder_factory;
-  mojo::Receiver<AssistantAudioDecoderFactory>
-      assistant_audio_decoder_factory_receiver(
-          &fake_assistant_audio_decoder_factory,
-          std::move(audio_decoder_factory_pending_receiver));
-  // If the flag is off, we expect that AudioDecoderFactory will be bound after
-  // BindAudioDecoderFactory call.
-  EXPECT_TRUE(assistant_audio_decoder_factory_receiver.is_bound());
-
-  bool disconnected = false;
-  assistant_audio_decoder_factory_receiver.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { disconnected = true; }));
-
-  provider->UnBindAudioDecoderFactory();
-  task_environment.RunUntilIdle();
-
-  // Confirm that it's disconnected after UnBindAudioDecoderFactory call.
-  EXPECT_TRUE(disconnected);
-}
-
 TEST(AudioOutputProviderImplTest, StartDecoderServiceOnDemand) {
-  ASSERT_TRUE(features::IsStartAssistantAudioDecoderOnDemandEnabled());
   SingleThreadTaskEnvironment task_environment;
 
   auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
@@ -196,11 +153,6 @@ TEST(AudioOutputProviderImplTest, StartDecoderServiceOnDemand) {
   mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate;
   { auto unused = audio_output_delegate.InitWithNewPipeAndPassReceiver(); }
   provider->Bind(std::move(audio_output_delegate), &platform_delegate);
-
-  provider->BindAudioDecoderFactory();
-  // If the flag is on, AudioDecoderFactory should not be bound with
-  // BindAudioDecoderFactory, i.e. It should not be valid.
-  EXPECT_FALSE(platform_delegate.audio_decoder_factory_receiver().is_valid());
 
   // Set encoding format to MP3 as we use AudioDecoder only if it's in encoded
   // format.
@@ -266,14 +218,10 @@ TEST(AudioOutputProviderImplTest, StartDecoderServiceOnDemand) {
   third_output.reset();
   task_environment.RunUntilIdle();
   EXPECT_TRUE(disconnected);
-
-  provider->UnBindAudioDecoderFactory();
 }
 
 // We do not use AssistantAudioDecoder if audio format is in raw format.
 TEST(AudioOutputProviderImplTest, DoNotStartAudioServiceForRawFormat) {
-  ScopedFeatureList scoped_feature_list(
-      features::kStartAssistantAudioDecoderOnDemand);
   SingleThreadTaskEnvironment task_environment;
   FakeAssistantAudioDecoderFactory fake_assistant_audio_decoder_factory;
 
@@ -283,9 +231,6 @@ TEST(AudioOutputProviderImplTest, DoNotStartAudioServiceForRawFormat) {
   mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate;
   { auto unused = audio_output_delegate.InitWithNewPipeAndPassReceiver(); }
   provider->Bind(std::move(audio_output_delegate), &platform_delegate);
-
-  provider->BindAudioDecoderFactory();
-  EXPECT_FALSE(platform_delegate.audio_decoder_factory_receiver().is_valid());
 
   OutputStreamMetadata metadata = {
       .buffer_stream_format = {
@@ -307,9 +252,6 @@ TEST(AudioOutputProviderImplTest, DoNotStartAudioServiceForRawFormat) {
   EXPECT_FALSE(platform_delegate.audio_decoder_factory_receiver().is_valid());
 
   output.reset();
-  task_environment.RunUntilIdle();
-
-  provider->UnBindAudioDecoderFactory();
   task_environment.RunUntilIdle();
 }
 

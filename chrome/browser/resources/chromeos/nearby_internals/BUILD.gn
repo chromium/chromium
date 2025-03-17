@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 build_webui("build") {
   grd_prefix = "nearby_internals"
 
@@ -18,19 +18,19 @@ build_webui("build") {
     "http_message_object.ts",
     "http_tab.ts",
     "log_object.ts",
-    "logging_tab.ts",
     "log_types.ts",
-    "ui_trigger_list_object.ts",
-    "np_list_object.ts",
-    "ui_trigger_tab.ts",
+    "logging_tab.ts",
     "nearby_internals.ts",
+    "np_list_object.ts",
+    "ui_trigger_list_object.ts",
+    "ui_trigger_tab.ts",
   ]
   non_web_component_files = [
+    "cross_device_logs_browser_proxy.ts",
     "nearby_contact_browser_proxy.ts",
     "nearby_http_browser_proxy.ts",
-    "cross_device_logs_browser_proxy.ts",
-    "nearby_presence_browser_proxy.ts",
     "nearby_prefs_browser_proxy.ts",
+    "nearby_presence_browser_proxy.ts",
     "nearby_ui_trigger_browser_proxy.ts",
     "types.ts",
   ]

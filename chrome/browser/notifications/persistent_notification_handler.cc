@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -17,10 +18,14 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_event_dispatcher.h"
@@ -139,17 +144,17 @@ void PersistentNotificationHandler::OnClick(
 
   // TODO(crbug.com/40280229)
   if (!origin.is_empty()) {
-    // Notification clicks are considered a form of engagement with the
-    // |origin|, thus we log the interaction with the Site Engagement service.
-    site_engagement::SiteEngagementService::Get(profile)
-        ->HandleNotificationInteraction(origin);
-
     auto* service =
         NotificationsEngagementServiceFactory::GetForProfile(profile);
     // This service might be missing for incognito profiles and in tests.
     if (service) {
       service->RecordNotificationInteraction(origin);
     }
+
+    // Notification clicks are considered a form of engagement with the
+    // |origin|, thus we log the interaction with the Site Engagement service.
+    site_engagement::SiteEngagementService::Get(profile)
+        ->HandleNotificationInteraction(origin);
   }
 
   content::NotificationEventDispatcher::GetInstance()
@@ -207,6 +212,16 @@ void PersistentNotificationHandler::DisableNotifications(Profile* profile,
   NotificationPermissionContext::UpdatePermission(profile, origin,
                                                   CONTENT_SETTING_BLOCK);
 #endif
+  // Remove `origin` from user allowlisted sites when user unsubscribes.
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
+  if (hcsm && origin.is_valid()) {
+    hcsm->SetWebsiteSettingCustomScope(
+        ContentSettingsPattern::FromURLNoWildcard(origin),
+        ContentSettingsPattern::Wildcard(),
+        ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+        base::Value(base::Value::Dict().Set(
+            safe_browsing::kIsAllowlistedByUserKey, false)));
+  }
 }
 
 void PersistentNotificationHandler::OpenSettings(Profile* profile,

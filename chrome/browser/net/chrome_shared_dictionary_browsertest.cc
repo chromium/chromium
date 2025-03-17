@@ -535,6 +535,39 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       UseCounterMainFrameNavigationAsDictionary) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/dictionary")));
+  WaitForDictionaryReady(*embedded_test_server());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  base::HistogramTester histograms;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/path/brotli_compressed")));
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   "document.body.innerText")
+                .ExtractString());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  CheckSharedDictionaryUseCounter(
+      histograms,
+      /*expected_used_count_with_sbr=*/1,
+      /*expected_used_count_with_zstd_d=*/0,
+      /*expected_used_for_navigation_count=*/1,
+      /*expected_used_for_main_frame_navigation_count=*/1,
+      /*expected_used_for_sub_frame_navigation_count=*/0,
+      /*expected_used_for_subresource_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        UseCounterSubFrameNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -726,18 +759,31 @@ class SharedDictionaryDevToolsBrowserTest
     : public InProcessBrowserTest,
       public content::TestDevToolsProtocolClient {
  public:
-  explicit SharedDictionaryDevToolsBrowserTest(bool enable_feature = true) {
+  explicit SharedDictionaryDevToolsBrowserTest(
+      bool enable_feature = true,
+      bool enable_navigation_feature = true) {
     if (enable_feature) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {network::features::kCompressionDictionaryTransportBackend,
-           network::features::kCompressionDictionaryTransport},
-          /*disabled_features=*/
-          {});
+      if (enable_navigation_feature) {
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/
+            {network::features::kCompressionDictionaryTransportBackend,
+             network::features::kCompressionDictionaryTransport,
+             network::features::kSharedDictionaryRegisterNavigationRequests},
+            /*disabled_features=*/
+            {});
+      } else {
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/
+            {network::features::kCompressionDictionaryTransportBackend,
+             network::features::kCompressionDictionaryTransport},
+            /*disabled_features=*/
+            {network::features::kSharedDictionaryRegisterNavigationRequests});
+      }
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {network::features::kCompressionDictionaryTransportBackend},
+          {network::features::kCompressionDictionaryTransportBackend,
+           network::features::kSharedDictionaryRegisterNavigationRequests},
           /*disabled_features=*/
           {network::features::kCompressionDictionaryTransport});
     }
@@ -849,6 +895,17 @@ class DevToolsSharedDictionaryFeatureDisabledBrowserTest
   DevToolsSharedDictionaryFeatureDisabledBrowserTest()
       : SharedDictionaryDevToolsBrowserTest(/*enable_feature=*/false) {}
   ~DevToolsSharedDictionaryFeatureDisabledBrowserTest() override = default;
+};
+
+class SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest
+    : public SharedDictionaryDevToolsBrowserTest {
+ public:
+  SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest()
+      : SharedDictionaryDevToolsBrowserTest(
+            /*enable_feature=*/true,
+            /*enable_navigation_feature=*/false) {}
+  ~SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest() override =
+      default;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
@@ -1019,8 +1076,9 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
   RunCustomHeaderTest("WriteErrorInvalidStructuredHeader", "match=\"");
 }
 
-IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
-                       WriteErrorNavigationRequest) {
+IN_PROC_BROWSER_TEST_F(
+    SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest,
+    WriteErrorNavigationRequest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   NavigateAndEnableAudits(
       embedded_test_server()->GetURL("/shared_dictionary/blank.html"));

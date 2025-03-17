@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] 2d
+  assert_equals: ctx.direction === 'inherit' (got ltr[string], expected inherit[string]) expected "inherit" but got "ltr"
+Harness: the test ran to completion.
+

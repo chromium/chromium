@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -48,8 +49,9 @@ std::vector<std::string> ReadCertificateChainFromFile(
 std::vector<std::string> ReadCertificateChainFromString(const char* str) {
   std::vector<std::string> certs;
   bssl::PEMTokenizer pem_tokenizer(str, {"CERTIFICATE"});
-  while (pem_tokenizer.GetNext())
+  while (pem_tokenizer.GetNext()) {
     certs.push_back(pem_tokenizer.data());
+  }
 
   if (certs.empty()) {
     LOG(WARNING) << "Certificate chain is empty.";

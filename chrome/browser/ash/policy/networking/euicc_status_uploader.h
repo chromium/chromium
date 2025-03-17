@@ -85,9 +85,6 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
   // CloudPolicyClient::Observer:
   void OnRegistrationStateChanged(CloudPolicyClient* client) override;
   void OnPolicyFetched(CloudPolicyClient* client) override;
-  void OnClientError(CloudPolicyClient* client) override {}
-  void OnServiceAccountSet(CloudPolicyClient* client,
-                           const std::string& account_email) override {}
 
   // ash::HermesManagerClient:
   void OnAvailableEuiccListChanged() override;

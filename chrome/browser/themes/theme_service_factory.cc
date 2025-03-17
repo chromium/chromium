@@ -8,8 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/pref_names.h"
@@ -25,13 +24,8 @@
 #include "chrome/browser/themes/theme_helper_win.h"
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/themes/theme_service_aura_linux.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "ui/linux/linux_ui_factory.h"
 #endif
 
@@ -101,7 +95,7 @@ ThemeServiceFactory::ThemeServiceFactory()
               .Build()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
-  DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
 }
 
 ThemeServiceFactory::~ThemeServiceFactory() = default;
@@ -121,15 +115,9 @@ ThemeServiceFactory::BuildServiceInstanceForBrowserContext(
 
 void ThemeServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::SystemTheme default_system_theme = ui::SystemTheme::kDefault;
 #if BUILDFLAG(IS_LINUX)
-  default_system_theme = ui::GetDefaultSystemTheme();
-#endif
   registry->RegisterIntegerPref(prefs::kSystemTheme,
-                                static_cast<int>(default_system_theme));
+                                static_cast<int>(ui::GetDefaultSystemTheme()));
 #endif
   registry->RegisterFilePathPref(prefs::kCurrentThemePackFilename,
                                  base::FilePath());

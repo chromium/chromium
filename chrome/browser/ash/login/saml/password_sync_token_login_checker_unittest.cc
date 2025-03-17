@@ -23,10 +23,10 @@
 namespace ash {
 namespace {
 
-const char kSAMLUserId[] = "12345";
-const char kSAMLUserEmail[] = "alice@corp.example.com";
+constexpr GaiaId::Literal kSAMLUserId("12345");
+constexpr char kSAMLUserEmail[] = "alice@corp.example.com";
 
-const char kSyncToken[] = "sync-token-1";
+constexpr char kSyncToken[] = "sync-token-1";
 
 constexpr base::TimeDelta kSamlTokenDelay = base::Seconds(60);
 
@@ -41,7 +41,7 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
   void OnTokenVerified(bool is_verified);
 
   const AccountId saml_login_account_id_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail, GaiaId(kSAMLUserId));
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail, kSAMLUserId);
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

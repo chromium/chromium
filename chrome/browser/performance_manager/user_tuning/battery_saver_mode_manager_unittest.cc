@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/test_support/fake_child_process_tuning_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_freezing_delegate.h"
@@ -30,7 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "dbus/mock_bus.h"
@@ -85,7 +86,7 @@ class MockObserver : public performance_manager::user_tuning::
   MOCK_METHOD1(OnDeviceHasBatteryChanged, void(bool));
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 base::BatteryLevelProvider::BatteryState CreateBatteryState(
     bool under_threshold) {
@@ -98,7 +99,7 @@ base::BatteryLevelProvider::BatteryState CreateBatteryState(
       .capture_time = base::TimeTicks::Now()};
 }
 
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // BUILDFLAG(IS_CHROMEOS)
 
 class ScopedFakePowerManagerClientLifetime {
  public:
@@ -111,7 +112,7 @@ class ScopedFakePowerManagerClientLifetime {
   }
 };
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -172,7 +173,7 @@ class BatterySaverModeManagerTest : public ::testing::Test {
       battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ScopedFakePowerManagerClientLifetime fake_power_manager_client_lifetime_;
 #endif
   raw_ptr<FakePowerMonitorSource, DanglingUntriaged> power_monitor_source_;
@@ -183,7 +184,7 @@ class BatterySaverModeManagerTest : public ::testing::Test {
 };
 
 // Battery Saver is controlled by the OS on ChromeOS
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(BatterySaverModeManagerTest, TemporaryBatterySaver) {
   StartManager();
@@ -587,7 +588,7 @@ TEST_F(BatterySaverModeManagerTest,
   EXPECT_EQ(100, manager()->SampledBatteryPercentage());
 }
 
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(BatterySaverModeManagerTest, ManagedFromPowerManager) {
   base::test::ScopedFeatureList feature_list;
@@ -646,6 +647,6 @@ TEST_F(BatterySaverModeManagerTest,
   EXPECT_TRUE(child_process_tuning_enabled());
   EXPECT_TRUE(freezing_enabled());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace performance_manager::user_tuning

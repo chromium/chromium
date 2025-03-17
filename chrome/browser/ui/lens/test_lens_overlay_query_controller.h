@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "lens_overlay_query_controller.h"
 
 namespace lens {
@@ -29,8 +30,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   explicit TestLensOverlayQueryController(
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
+      LensOverlayInteractionResponseCallback interaction_callback,
       LensOverlaySuggestInputsCallback interaction_data_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
+      UploadProgressCallback upload_progress_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
       Profile* profile,
@@ -79,8 +82,12 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return sent_client_logs_;
   }
 
-  const lens::LensOverlayRequestId& sent_request_id() const {
-    return sent_request_id_;
+  const lens::LensOverlayRequestId& sent_full_image_request_id() const {
+    return sent_full_image_request_id_;
+  }
+
+  const lens::LensOverlayRequestId& sent_interaction_request_id() const {
+    return sent_interaction_request_id_;
   }
 
   const lens::LensOverlayRequestId& sent_page_content_request_id() const {
@@ -120,6 +127,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_queried_region_bytes_;
   }
 
+  lens::Payload last_sent_page_content_payload() const {
+    return last_sent_page_content_payload_;
+  }
+
   base::span<const uint8_t> last_sent_underlying_content_bytes() const {
     return last_sent_underlying_content_bytes_;
   }
@@ -128,14 +139,27 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_sent_underlying_content_type_;
   }
 
-  base::span<const std::u16string> last_sent_partial_content() const {
+  const lens::LensOverlayDocument& last_sent_partial_content() const {
     return last_sent_partial_content_;
   }
 
   const GURL& last_sent_page_url() const { return last_sent_page_url_; }
 
+  const std::vector<lens::mojom::CenterRotatedBoxPtr>&
+  last_sent_significant_region_boxes() const {
+    return last_sent_significant_region_boxes_;
+  }
+
   const std::optional<lens::mojom::UserAction>& last_user_action() const {
     return last_user_action_;
+  }
+
+  const std::optional<lens::mojom::SemanticEvent>& last_semantic_event() const {
+    return last_semantic_event_;
+  }
+
+  const int& num_full_image_requests_sent() const {
+    return num_full_image_requests_sent_;
   }
 
   const int& num_interaction_requests_sent() const {
@@ -150,6 +174,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return num_full_page_objects_gen204_pings_sent_;
   }
 
+  const int& num_page_content_update_requests_sent() const {
+    return num_page_content_update_requests_sent_;
+  }
+
   const int& num_partial_page_content_requests_sent() const {
     return num_partial_page_content_requests_sent_;
   }
@@ -160,18 +188,39 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return it == latency_gen_204_counter_.end() ? 0 : it->second;
   }
 
+  const std::optional<lens::LensOverlayRequestId>& last_latency_gen204_request_id()
+      const {
+    return last_latency_gen204_request_id_;
+  }
+
+  const std::optional<std::string>& last_latency_gen204_analytics_id() const {
+    return last_latency_gen204_analytics_id_;
+  }
+
+  const std::optional<lens::LensOverlayRequestId>&
+  last_semantic_event_gen204_request_id() const {
+    return last_semantic_event_gen204_request_id_;
+  }
+
+  const std::optional<std::string>& last_task_completion_gen204_analytics_id()
+      const {
+    return last_task_completion_gen204_analytics_id_;
+  }
+
+  const std::optional<lens::LensOverlayRequestId>&
+  last_task_completion_gen204_request_id() const {
+    return last_task_completion_gen204_request_id_;
+  }
+
   void StartQueryFlow(
       const SkBitmap& screenshot,
       GURL page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> underlying_content_bytes,
-      lens::MimeType underlying_content_type,
+      base::span<const lens::PageContent> underlying_page_contents,
+      lens::MimeType primary_content_type,
       float ui_scale_factor,
       base::TimeTicks invocation_time) override;
-
-  void SendTaskCompletionGen204IfEnabled(
-      lens::mojom::UserAction user_action) override;
 
   void SendRegionSearch(
       lens::mojom::CenterRotatedBoxPtr region,
@@ -197,13 +246,6 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params)
       override;
 
-  void SendPageContentUpdateRequest(base::span<const uint8_t> new_content_bytes,
-                                    lens::MimeType new_content_type,
-                                    GURL new_page_url) override;
-
-  void SendPartialPageContentRequest(
-      base::span<const std::u16string> partial_content) override;
-
   // Resets the test state.
   void ResetTestingState();
 
@@ -211,7 +253,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest* request,
       const GURL& fetch_url,
-      const std::string& http_method,
+      const HttpMethod& http_method,
       const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers,
@@ -222,7 +264,17 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       base::TimeTicks start_time_ticks,
       std::string vit_query_param_value,
       std::optional<base::TimeDelta> cluster_info_latency,
-      std::optional<std::string> encoded_analytics_id) override;
+      std::optional<std::string> encoded_analytics_id,
+      std::optional<lens::LensOverlayRequestId> request_id) override;
+
+  void SendTaskCompletionGen204IfEnabled(
+      std::string encoded_analytics_id,
+      lens::mojom::UserAction user_action,
+      lens::LensOverlayRequestId request_id) override;
+
+  void SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent event,
+      std::optional<lens::LensOverlayRequestId> request_id) override;
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
@@ -249,8 +301,12 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last client logs sent by the query controller.
   lens::LensOverlayClientLogs sent_client_logs_;
 
-  // The last request id sent by the query controller.
-  lens::LensOverlayRequestId sent_request_id_;
+  // The last request id sent by the query controller for a full image request.
+  lens::LensOverlayRequestId sent_full_image_request_id_;
+
+  // The last request id sent by the query controller for an interaction
+  // request.
+  lens::LensOverlayRequestId sent_interaction_request_id_;
 
   // The last request id sent by the query controller for a page content upload
   // request.
@@ -280,20 +336,37 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last region bytes sent by the query controller.
   std::optional<SkBitmap> last_queried_region_bytes_;
 
+  // The last page content data sent by the query controller. Used to prevent
+  // dangling references by the underlying content bytes span.
+  std::string last_sent_page_content_data_;
+
+  // The Payload proto sent in the last page content upload.
+  lens::Payload last_sent_page_content_payload_;
+
   // The last underlying content bytes sent by the query controller.
   base::raw_span<const uint8_t> last_sent_underlying_content_bytes_;
 
   // The last underlying content type sent by the query controller.
-  lens::MimeType last_sent_underlying_content_type_;
+  lens::MimeType last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
 
   // The last partial content sent by the query controller.
-  base::raw_span<const std::u16string> last_sent_partial_content_;
+  lens::LensOverlayDocument last_sent_partial_content_;
 
   // The last page url sent by the query controller.
   GURL last_sent_page_url_;
 
+  // The last significant region boxes sent to the query controller.
+  std::vector<lens::mojom::CenterRotatedBoxPtr>
+      last_sent_significant_region_boxes_;
+
   // The last user action sent by the query controller.
   std::optional<lens::mojom::UserAction> last_user_action_;
+
+  // The last semantic event sent by the query controller.
+  std::optional<lens::mojom::SemanticEvent> last_semantic_event_;
+
+  // The number of full image objects requests sent by the query controller.
+  int num_full_image_requests_sent_ = 0;
 
   // The number of interaction requests sent by the query controller.
   int num_interaction_requests_sent_ = 0;
@@ -313,6 +386,23 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The number of partial page content requests sent by the query controller.
   int num_partial_page_content_requests_sent_ = 0;
+
+  // The last encoded request id attached to a latency gen204 ping.
+  std::optional<lens::LensOverlayRequestId> last_latency_gen204_request_id_;
+
+  // The last analytics id attached to a latency gen204 ping.
+  std::optional<std::string> last_latency_gen204_analytics_id_;
+
+  // The last analytics id attached to a task completion gen204 ping.
+  std::optional<std::string> last_task_completion_gen204_analytics_id_;
+
+  // The last encoded request id attached to a task completion gen204 ping.
+  std::optional<lens::LensOverlayRequestId>
+      last_task_completion_gen204_request_id_;
+
+  // The last encoded request id attached to a semantic event gen204 ping.
+  std::optional<lens::LensOverlayRequestId>
+      last_semantic_event_gen204_request_id_;
 
   // Tracker for the number of latency request events sent by the query
   // controller.

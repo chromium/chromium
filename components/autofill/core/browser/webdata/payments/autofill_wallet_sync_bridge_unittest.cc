@@ -22,13 +22,13 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
-#include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
-#include "components/autofill/core/browser/data_model/payments_metadata.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit_test_api.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
@@ -98,8 +98,6 @@ constexpr char kPaymentInstrumentCreationOptionClientTag[] =
 // Payment Instrument Creation Option ID should always be synced with
 // kPaymentInstrumentCreationOptionClientTag.
 constexpr char kPaymentInstrumentCreationOptionId[] = "1234";
-
-constexpr auto kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 constexpr char kDefaultCacheGuid[] = "CacheGuid";
 
@@ -221,12 +219,13 @@ std::string WalletMaskedIbanSpecificsAsDebugString(
   return output.str();
 }
 
-std::string BnplIssuerDetailsAsDebugString(
-    const sync_pb::BnplIssuerDetails& bnpl_issuer_details) {
+std::string BnplCreationOptionAsDebugString(
+    const sync_pb::BnplCreationOption& bnpl_creation_option) {
   std::ostringstream output;
-  output << "[issuer_id: " << bnpl_issuer_details.issuer_id()
+  output << "[issuer_id: " << bnpl_creation_option.issuer_id()
          << ", eligible_price_range: {";
-  for (auto eligible_price_range : bnpl_issuer_details.eligible_price_range()) {
+  for (auto eligible_price_range :
+       bnpl_creation_option.eligible_price_range()) {
     output << "[currency: " << eligible_price_range.currency()
            << ", min_price_in_micros: "
            << eligible_price_range.min_price_in_micros()
@@ -244,7 +243,7 @@ std::string WalletPaymentInstrumentCreationOptionAsDebugString(
   if (specifics.payment_instrument_creation_option()
           .has_buy_now_pay_later_option()) {
     output << ", buy_now_pay_later_option: {"
-           << BnplIssuerDetailsAsDebugString(
+           << BnplCreationOptionAsDebugString(
                   specifics.payment_instrument_creation_option()
                       .buy_now_pay_later_option())
            << "}";
@@ -323,7 +322,7 @@ class AutofillWalletSyncBridgeTestBase {
  public:
   AutofillWalletSyncBridgeTestBase()
       : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);

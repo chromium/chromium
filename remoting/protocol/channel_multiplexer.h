@@ -5,6 +5,7 @@
 #ifndef REMOTING_PROTOCOL_CHANNEL_MULTIPLEXER_H_
 #define REMOTING_PROTOCOL_CHANNEL_MULTIPLEXER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

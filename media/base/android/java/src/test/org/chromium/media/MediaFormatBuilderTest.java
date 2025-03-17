@@ -178,8 +178,8 @@ public class MediaFormatBuilderTest {
                         true,
                         dvProfile5);
         assertEquals(
-                format.getInteger(MediaFormat.KEY_PROFILE),
-                MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheStn);
+                MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheStn,
+                format.getInteger(MediaFormat.KEY_PROFILE));
 
         format =
                 MediaFormatBuilder.createVideoDecoderFormat(
@@ -191,8 +191,8 @@ public class MediaFormatBuilderTest {
                         true,
                         dvProfile8);
         assertEquals(
-                format.getInteger(MediaFormat.KEY_PROFILE),
-                MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheSt);
+                MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheSt,
+                format.getInteger(MediaFormat.KEY_PROFILE));
     }
 
     @Test
@@ -211,7 +211,7 @@ public class MediaFormatBuilderTest {
                         null,
                         true,
                         VideoCodecProfile.DOLBYVISION_PROFILE5);
-        assertEquals(format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE), expectedMaxInputSize);
+        assertEquals(expectedMaxInputSize, format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE));
     }
 
     @Test
@@ -227,13 +227,13 @@ public class MediaFormatBuilderTest {
                         VIDEO_ENCODER_I_FRAME_INTERVAL,
                         VIDEO_ENCODER_COLOR_FORMAT,
                         false);
-        assertEquals(format.getInteger(MediaFormat.KEY_BIT_RATE), VIDEO_ENCODER_BIT_RATE);
-        assertEquals(format.getInteger(MediaFormat.KEY_BITRATE_MODE), BITRATE_MODE_CBR);
-        assertEquals(format.getInteger(MediaFormat.KEY_FRAME_RATE), VIDEO_ENCODER_FRAME_RATE);
+        assertEquals(VIDEO_ENCODER_BIT_RATE, format.getInteger(MediaFormat.KEY_BIT_RATE));
+        assertEquals(BITRATE_MODE_CBR, format.getInteger(MediaFormat.KEY_BITRATE_MODE));
+        assertEquals(VIDEO_ENCODER_FRAME_RATE, format.getInteger(MediaFormat.KEY_FRAME_RATE));
         assertEquals(
-                format.getInteger(MediaFormat.KEY_I_FRAME_INTERVAL),
-                VIDEO_ENCODER_I_FRAME_INTERVAL);
-        assertEquals(format.getInteger(MediaFormat.KEY_COLOR_FORMAT), VIDEO_ENCODER_COLOR_FORMAT);
+                VIDEO_ENCODER_I_FRAME_INTERVAL,
+                format.getInteger(MediaFormat.KEY_I_FRAME_INTERVAL));
+        assertEquals(VIDEO_ENCODER_COLOR_FORMAT, format.getInteger(MediaFormat.KEY_COLOR_FORMAT));
     }
 
     @Test
@@ -293,7 +293,7 @@ public class MediaFormatBuilderTest {
                         AUDIO_DECODER_CHANNEL_COUNT,
                         csds,
                         true);
-        assertEquals(format.getInteger(MediaFormat.KEY_IS_ADTS), 1);
+        assertEquals(1, format.getInteger(MediaFormat.KEY_IS_ADTS));
     }
 
     @Test

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("help_app") {
   sources = [
@@ -22,9 +22,9 @@ static_library("help_app") {
     "//ash/webui/help_app_ui",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//content/public/browser",
     "//ui/gfx/geometry",
   ]
@@ -105,7 +105,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service/app_install:implementation",
@@ -137,6 +136,7 @@ source_set("browser_tests") {
     "//ui/display",
     "//ui/display/types",
     "//ui/events:events_base",
+    "//ui/events:test_support",
     "//ui/gfx:color_utils",
     "//ui/gfx/geometry",
     "//ui/views",

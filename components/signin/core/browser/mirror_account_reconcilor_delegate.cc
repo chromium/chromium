@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 
 namespace signin {
@@ -40,7 +39,7 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
 
 ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40067189): Migrate away from `ConsentLevel::kSync` on
   // Ash.
   return ConsentLevel::kSync;
@@ -74,8 +73,9 @@ void MirrorAccountReconcilorDelegate::OnPrimaryAccountChanged(
   // DisableReconcile logs out all accounts even if it was already disabled.
   bool should_enable_reconcile =
       identity_manager_->HasPrimaryAccount(GetConsentLevelForPrimaryAccount());
-  if (reconcile_enabled_ == should_enable_reconcile)
+  if (reconcile_enabled_ == should_enable_reconcile) {
     return;
+  }
 
   reconcile_enabled_ = should_enable_reconcile;
   if (should_enable_reconcile) {

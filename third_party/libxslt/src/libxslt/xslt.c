@@ -147,9 +147,19 @@ xsltParseContentError(xsltStylesheetPtr style,
  * in case of error
  */
 static int
-exclPrefixPush(xsltStylesheetPtr style, xmlChar * value)
+exclPrefixPush(xsltStylesheetPtr style, xmlChar * orig)
 {
+    xmlChar *value;
     int i;
+
+    /*
+     * orig can come from a namespace definition on a node which
+     * could be deleted later, for example in xsltParseTemplateContent.
+     * Store the string in stylesheet's dict to avoid use after free.
+     */
+    value = (xmlChar *) xmlDictLookup(style->dict, orig, -1);
+    if (value == NULL)
+        return(-1);
 
     /* do not push duplicates */
     for (i = 0;i < style->exclPrefixNr;i++) {

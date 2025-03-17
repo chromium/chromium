@@ -61,6 +61,9 @@
 @property(nonatomic, assign) NSInteger tabIndex;
 @property(nonatomic, assign) NSInteger numberOfTabs;
 
+// Whether this cell has blue dot.
+@property(nonatomic, assign) BOOL hasBlueDot;
+
 // Sets the title of the cell.
 - (void)setTitle:(NSString*)title;
 // Sets the favicon for the page. Passing nil sets the default image.

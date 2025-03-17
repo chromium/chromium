@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -194,6 +195,10 @@ class ExtensionsBrowserClient {
       content::BrowserContext* context) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Returns true if `browser_context` is the active one.
+  virtual bool IsActiveContext(
+      content::BrowserContext* browser_context) const = 0;
+
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.
   virtual std::string GetUserIdHashFromContext(
@@ -420,9 +425,6 @@ class ExtensionsBrowserClient {
   // for the given BrowserContext.
   virtual void SignalContentScriptsLoaded(content::BrowserContext* context);
 
-  // Returns the user agent used by the content module.
-  virtual std::string GetUserAgent() const;
-
   // Returns whether |scheme| should bypass extension-specific navigation checks
   // (e.g. whether the |scheme| is allowed to initiate navigations to extension
   // resources that are not declared as web accessible).
@@ -443,12 +445,19 @@ class ExtensionsBrowserClient {
   // Protection policy.
   virtual bool IsScreenshotRestricted(content::WebContents* web_contents) const;
 
-  // Returns true if the given |tab_id| exists.
-  virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
+  // Returns true if `tab_id` exists on `browser_context`.
+  virtual bool IsValidTabId(content::BrowserContext* browser_context,
+                            int tab_id,
+                            bool include_incognito,
+                            content::WebContents** web_contents) const;
 
   // Returns true if chrome extension telemetry service is enabled.
   virtual bool IsExtensionTelemetryServiceEnabled(
       content::BrowserContext* context) const;
+
+  // Returns the script executor for `web_contents`.
+  virtual ScriptExecutor* GetScriptExecutorForTab(
+      content::WebContents& web_contents);
 
   // TODO(anunoy): This is a temporary implementation of notifying the
   // extension telemetry service of the tabs.executeScript API invocation
@@ -472,14 +481,6 @@ class ExtensionsBrowserClient {
       const ExtensionId& extension_id,
       const GURL& request_url,
       const GURL& redirect_url) const;
-
-  // TODO(zackhan): This is a temporary implementation of notifying the
-  // extension telemetry service when there are web requests initiated from
-  // chrome extensions. Its usefulness will be evaluated.
-  virtual void NotifyExtensionRemoteHostContacted(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const GURL& url) const;
 
   // Return true if the USB device is allowed by policy.
   virtual bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
@@ -552,6 +553,11 @@ class ExtensionsBrowserClient {
   // device IDs. Can be null if the embedder does not support persistent salts.
   virtual media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context);
+
+  // TODO(crbug.com/399198255): as per rdcronin@: this doesn't belong here,
+  // since extensions shouldn't have knowledge of Controlled Frame.
+  virtual bool HasControlledFrameCapability(content::BrowserContext* context,
+                                            const GURL& url);
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

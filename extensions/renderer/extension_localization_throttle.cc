@@ -122,12 +122,6 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
                    int32_t intra_priority_value) override {
     source_url_loader_->SetPriority(priority, intra_priority_value);
   }
-  void PauseReadingBodyFromNet() override {
-    source_url_loader_->PauseReadingBodyFromNet();
-  }
-  void ResumeReadingBodyFromNet() override {
-    source_url_loader_->ResumeReadingBodyFromNet();
-  }
 
   // mojo::DataPipeDrainer
   void OnDataAvailable(base::span<const uint8_t> data) override {
@@ -243,9 +237,11 @@ void ExtensionLocalizationThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  // ExtensionURLLoader can only redirect requests within the
-  // chrome-extension:// scheme.
-  DCHECK(response_url.SchemeIs(extensions::kExtensionScheme));
+  if (!response_url.SchemeIs(extensions::kExtensionScheme)) {
+    // The chrome-extension:// URL resource request was redirected by
+    // webRequest API. In that case, we don't process the response.
+    return;
+  }
   if (!base::StartsWith(response_head->mime_type, "text/css",
                         base::CompareCase::INSENSITIVE_ASCII)) {
     return;

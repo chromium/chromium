@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.layouts.animation;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
  * The handler responsible for managing and pushing updates to all of the active
  * CompositorAnimators.
  */
+@NullMarked
 public class CompositorAnimationHandler {
     /** Whether or not testing mode is enabled. In this mode, animations end immediately. */
     private static boolean sIsInTestingMode;
@@ -46,7 +48,7 @@ public class CompositorAnimationHandler {
      * @param renderRequestRunnable A {@link Runnable} responsible for requesting frames when an
      *                              animation updates.
      */
-    public CompositorAnimationHandler(@NonNull Runnable renderRequestRunnable) {
+    public CompositorAnimationHandler(Runnable renderRequestRunnable) {
         assert renderRequestRunnable != null;
         mRenderRequestRunnable = renderRequestRunnable;
     }

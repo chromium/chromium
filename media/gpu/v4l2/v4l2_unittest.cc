@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// gtest.h has to be included first.
-// See http://code.google.com/p/googletest/issues/detail?id=371
-#include "testing/gtest/include/gtest/gtest.h"
+#include <drm.h>
+#include <fcntl.h>
+#include <gbm.h>
+#include <string.h>
+#include <xf86drm.h>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
@@ -20,14 +23,9 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "ui/gfx/linux/gbm_defines.h"
-
-#include <drm.h>
-#include <fcntl.h>
-#include <gbm.h>
-#include <string.h>
-#include <xf86drm.h>
 
 namespace media {
 
@@ -188,7 +186,7 @@ TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
   const auto video_codec_profile = std::get<0>(GetParam());
   const gfx::Size resolution = std::get<1>(GetParam());
 
-  scoped_refptr<V4L2Device> device(new V4L2Device());
+  auto device = base::MakeRefCounted<V4L2Device>();
 
   const auto fourcc_stateful =
       VideoCodecProfileToV4L2PixFmt(video_codec_profile, /*slice_based=*/false);

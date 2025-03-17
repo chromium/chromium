@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/base32/base32.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
-#include "components/base32/base32.h"
 
 base32::Base32EncodePolicy GetBase32EncodePolicyFromUint8(uint8_t value) {
   // Dummy switch to detect changes to the enum definition.
@@ -37,6 +38,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       const base::span<const uint8_t> input_bytes(data + 1, size - 1));
   std::string encoded_string = base32::Base32Encode(input_bytes, encode_policy);
   std::vector<uint8_t> decoded_bytes = base32::Base32Decode(encoded_string);
-  CHECK(base::ranges::equal(input_bytes, decoded_bytes));
+  CHECK(std::ranges::equal(input_bytes, decoded_bytes));
   return 0;
 }

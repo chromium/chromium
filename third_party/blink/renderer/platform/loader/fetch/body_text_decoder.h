@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_encoding_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace WTF {
 class String;
@@ -18,7 +19,11 @@ class BodyTextDecoder {
  public:
   virtual ~BodyTextDecoder() = default;
 
-  virtual WTF::String Decode(base::span<const char> data) = 0;
+  virtual WTF::String Decode(base::span<const char> data,
+                             WTF::String* auto_detected_charset) = 0;
+  WTF::String Decode(base::span<const char> data) {
+    return Decode(data, nullptr);
+  }
   virtual WTF::String Flush() = 0;
   virtual WebEncodingData GetEncodingData() const = 0;
 };

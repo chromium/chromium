@@ -30,7 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -54,6 +54,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(AllSiteSettingsTest.TEST_BATCH_NAME)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI})
 public class AllSiteSettingsTest {
     public static final String TEST_BATCH_NAME = "AllSiteSettingsTest";
     private static final String A_GITHUB_IO = "a.github.io";
@@ -194,8 +195,7 @@ public class AllSiteSettingsTest {
 
     @Test
     @SmallTest
-    @Feature({"Preferences"})
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI)
+    @Feature({"Preferences", "RenderTest"})
     public void testOneRwsGroupWithRelatedFilter() throws Exception {
         FakeRwsPrivacySandboxBridge fakeRwsPrivacySandboxBridge =
                 new FakeRwsPrivacySandboxBridge(C_GITHUB_IO, Set.of(A_GITHUB_IO, B_GITHUB_IO));
@@ -233,6 +233,16 @@ public class AllSiteSettingsTest {
         onView(withText(A_GITHUB_IO)).check(matches(isDisplayed()));
         onView(withText(B_GITHUB_IO)).check(matches(isDisplayed()));
         onView(withText(D_GITHUB_IO)).check(doesNotExist());
+
+        View view =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            PreferenceFragmentCompat preferenceFragment =
+                                    (PreferenceFragmentCompat) settingsActivity.getMainFragment();
+                            return preferenceFragment.getView();
+                        });
+        ChromeRenderTestRule.sanitize(view);
+        mRenderTestRule.render(view, "site_settings_all_sites_rws_group_with_filter");
 
         settingsActivity.finish();
     }

@@ -319,37 +319,36 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
   RunTestSequence(
       // Step 0: Dialog.
       InAnyContext(WaitForDialogVisibility(true)),
-      InSameContext(Steps(
+      InSameContext(
           CheckDialogAcceptButtonFocus(true), CheckDialogAcceptButtonText(),
           CheckDialogCancelButtonText(),
           CheckDialogDescription(IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT),
           CheckDialogTitle(IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT),
-          PressDialogAcceptButton())),
+          PressDialogAcceptButton()),
 
       // Step 1: Shelf.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(
-          Steps(CheckHelpBubbleAnchor(ash::kShelfViewElementId),
-                CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
-                    IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)),
-                CheckHelpBubbleDefaultButtonFocus(true),
-                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                PressHelpBubbleDefaultButton())),
+      InSameContext(CheckHelpBubbleAnchor(ash::kShelfViewElementId),
+                    CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
+                        IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)),
+                    CheckHelpBubbleDefaultButtonFocus(true),
+                    CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+                    PressHelpBubbleDefaultButton()),
 
       // Step 2 in V1: Status area.
       If([&] { return !ash::features::IsWelcomeTourV3Enabled(); },
-         InAnyContext(
-             Steps(WaitForHelpBubble(),
-                   CheckHelpBubbleAnchor(ash::kUnifiedSystemTrayElementId),
-                   CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
-                       IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)),
-                   CheckHelpBubbleDefaultButtonFocus(true),
-                   CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                   PressHelpBubbleDefaultButton()))),
+         Then(InAnyContext(
+             WaitForHelpBubble(),
+             CheckHelpBubbleAnchor(ash::kUnifiedSystemTrayElementId),
+             CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
+                 IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)),
+             CheckHelpBubbleDefaultButtonFocus(true),
+             CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+             PressHelpBubbleDefaultButton()))),
 
       // Step 3 in V1 and step 2 in V3: Home button.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(Steps(
+      InSameContext(
           CheckHelpBubbleAnchor(ash::kHomeButtonElementId),
           CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
               (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook)
@@ -358,45 +357,44 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
               product_name)),
           CheckHelpBubbleDefaultButtonFocus(true),
           CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-          PressHelpBubbleDefaultButton())),
+          PressHelpBubbleDefaultButton()),
 
       // Step 4 in V1 and step 3 in V3: Search box.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(Steps(
+      InSameContext(
           CheckAppListBubbleVisibility(true),
           CheckHelpBubbleAnchor(ash::kSearchBoxViewElementId),
           CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
               IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT, product_name)),
           CheckHelpBubbleDefaultButtonFocus(true),
           CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-          PressHelpBubbleDefaultButton())),
+          PressHelpBubbleDefaultButton()),
 
       // Step 4 in V3: Files app.
       If([&] { return ash::features::IsWelcomeTourV3Enabled(); },
-         InAnyContext(
-             Steps(WaitForHelpBubble(), CheckAppListBubbleVisibility(true),
-                   CheckHelpBubbleAnchor(ash::kFilesAppElementId),
-                   CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
-                       IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT)),
-                   CheckHelpBubbleDefaultButtonFocus(true),
-                   CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                   PressHelpBubbleDefaultButton()))),
+         Then(InAnyContext(
+             WaitForHelpBubble(), CheckAppListBubbleVisibility(true),
+             CheckHelpBubbleAnchor(ash::kFilesAppElementId),
+             CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
+                 IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT)),
+             CheckHelpBubbleDefaultButtonFocus(true),
+             CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+             PressHelpBubbleDefaultButton()))),
 
       // Step 5: Settings app.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(
-          Steps(CheckAppListBubbleVisibility(true),
-                CheckHelpBubbleAnchor(ash::kSettingsAppElementId),
-                CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
-                    IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
-                    product_name)),
-                CheckHelpBubbleDefaultButtonFocus(true),
-                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                PressHelpBubbleDefaultButton())),
+      InSameContext(CheckAppListBubbleVisibility(true),
+                    CheckHelpBubbleAnchor(ash::kSettingsAppElementId),
+                    CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
+                        IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                        product_name)),
+                    CheckHelpBubbleDefaultButtonFocus(true),
+                    CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+                    PressHelpBubbleDefaultButton()),
 
       // Step 6: Explore app.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(Steps(
+      InSameContext(
           CheckAppListBubbleVisibility(true),
           CheckHelpBubbleAnchor(ash::kExploreAppElementId),
           CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
@@ -404,22 +402,23 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
           CheckHelpBubbleDefaultButtonFocus(true),
           CheckHelpBubbleDefaultButtonText(
               IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT),
-          PressHelpBubbleDefaultButton())),
+          PressHelpBubbleDefaultButton()),
 
       // Step 7: Explore app window.
       InAnyContext(WaitForBrowser()),
-      InSameContext(Steps(WaitForAppListBubbleToHide(),
-                          CheckBrowserIsForWebApp(ash::kHelpAppId))));
+      InSameContext(WaitForAppListBubbleToHide(),
+                    CheckBrowserIsForWebApp(ash::kHelpAppId)));
 }
 
 // An interactive UI test that locks the screen during the Welcome Tour.
+// Disabled due to frequent timeouts; see https://crbug.com/394975522.
 IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest,
-                       LockScreenDuringWelcomeTour) {
+                       DISABLED_LockScreenDuringWelcomeTour) {
   RunTestSequence(
       // Wait for the Welcome Tour dialog to show.
       InAnyContext(WaitForDialogVisibility(true)),
 
-      InSameContext(Steps(
+      InSameContext(
           // Lock screen through accelerator.
           Do([]() {
             ui::test::EventGenerator(ash::Shell::GetPrimaryRootWindow())
@@ -428,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest,
           }),
 
           // Wait for the Welcome Tour dialog to hide.
-          WaitForDialogVisibility(false))),
+          WaitForDialogVisibility(false)),
 
       // Wait for the login user view to show.
       InAnyContext(WaitForLoginUserView()));

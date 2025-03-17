@@ -43,9 +43,6 @@ import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
-export const GOOGLE_PAY_HELP_URL =
-    'https://support.google.com/googlepay?p=card_benefits_chrome';
-
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
   anchorElement: HTMLElement,
@@ -107,6 +104,14 @@ export class SettingsPaymentsSectionElement extends
        * An array of all saved IBANs.
        */
       ibans: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * An array of all saved pay over time issuers.
+       */
+      payOverTimeIssuers: {
         type: Array,
         value: () => [],
       },
@@ -193,12 +198,35 @@ export class SettingsPaymentsSectionElement extends
           return loadTimeData.getString('cardBenefitsToggleSublabel');
         },
       },
+
+      /**
+       * Checks if pay over time should be shown from the settings page.
+       */
+      shouldShowPayOverTimeSettings_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Sublabel for the pay over time toggle. The sublabel text also includes
+       * a link to learn about pay over time.
+       */
+      payOverTimeSublabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('autofillPayOverTimeSettingsSublabel');
+        },
+      },
     };
   }
 
   prefs: {[key: string]: any};
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
+  payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
   private showIbanSettingsEnabled_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
@@ -219,6 +247,7 @@ export class SettingsPaymentsSectionElement extends
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
   private cardBenefitsFlagEnabled_: boolean;
   private cardBenefitsSublabel_: string;
+  private shouldShowPayOverTimeSettings_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -230,9 +259,12 @@ export class SettingsPaymentsSectionElement extends
         };
 
     const setPersonalDataListener: PersonalDataChangedListener =
-        (_addressList, cardList, ibanList) => {
+        (_addressList, cardList, ibanList, payOverTimeIssuerList) => {
           this.creditCards = cardList;
           this.ibans = ibanList;
+          if (this.shouldShowPayOverTimeSettings_) {
+            this.payOverTimeIssuers = payOverTimeIssuerList;
+          }
         };
 
     const setIbansListener = (ibanList: chrome.autofillPrivate.IbanEntry[]) => {
@@ -245,6 +277,12 @@ export class SettingsPaymentsSectionElement extends
     // Request initial data.
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
+    if (this.shouldShowPayOverTimeSettings_) {
+      this.paymentsManager_.getPayOverTimeIssuerList().then(
+          (issuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[]) => {
+            this.payOverTimeIssuers = issuers;
+          });
+    }
 
     // Listen for changes.
     this.paymentsManager_.setPersonalDataManagerListener(
@@ -262,8 +300,9 @@ export class SettingsPaymentsSectionElement extends
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    assert(this.setPersonalDataListener_);
     this.paymentsManager_.removePersonalDataManagerListener(
-        this.setPersonalDataListener_!);
+        this.setPersonalDataListener_);
     this.setPersonalDataListener_ = null;
   }
 
@@ -553,21 +592,19 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private shouldShowAddVirtualCardButton_(): boolean {
-    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_.metadata) {
       return false;
     }
-    return !!this.activeCreditCard_!.metadata!
-                 .isVirtualCardEnrollmentEligible &&
-        !this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
+    return !!this.activeCreditCard_.metadata.isVirtualCardEnrollmentEligible &&
+        !this.activeCreditCard_.metadata.isVirtualCardEnrolled;
   }
 
   private shouldShowRemoveVirtualCardButton_(): boolean {
-    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_.metadata) {
       return false;
     }
-    return !!this.activeCreditCard_!.metadata!
-                 .isVirtualCardEnrollmentEligible &&
-        !!this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
+    return !!this.activeCreditCard_.metadata.isVirtualCardEnrollmentEligible &&
+        !!this.activeCreditCard_.metadata.isVirtualCardEnrolled;
   }
 
   /**
@@ -671,7 +708,8 @@ export class SettingsPaymentsSectionElement extends
    * sublabel link is clicked.
    */
   private onCardBenefitsSublabelLinkClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(GOOGLE_PAY_HELP_URL);
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('cardBenefitsToggleLearnMoreUrl'));
   }
 
   /**
@@ -683,6 +721,15 @@ export class SettingsPaymentsSectionElement extends
     return this.i18n(
         card === undefined ? 'enableCvcStorageAriaLabelForNoCvcSaved' :
                              'enableCvcStorageLabel');
+  }
+
+  /**
+   * Opens an article to learn about pay over time when the pay over time
+   * toggle sublabel link is clicked.
+   */
+  private onPayOverTimeSublabelLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('autofillPayOverTimeSettingsLearnMoreUrl'));
   }
 }
 

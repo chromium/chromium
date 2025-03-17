@@ -29,15 +29,24 @@ void CreateAndAddHTMLSource(Profile* profile, const std::string& host_name) {
   } else if (host_name == chrome::kChromeUIExtensionsHost) {
     page_title = l10n_util::GetStringUTF16(IDS_EXTENSIONS_TOOLBAR_TITLE);
   } else if (host_name == password_manager::kChromeUIPasswordManagerHost) {
+#if !BUILDFLAG(IS_ANDROID)
     page_title = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_TITLE);
+#endif
   } else {
     page_title = base::UTF8ToUTF16(host_name);
   }
 
   source->AddString("pageTitle", page_title);
+
+// TODO(crbug.com/391777809): Make the message available on desktop android
+// without adding unused strings.
+#if BUILDFLAG(IS_ANDROID)
+  source->AddString("pageHeading", "");
+#else
   std::u16string page_heading = l10n_util::GetStringFUTF16(
       IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING, page_title);
   source->AddString("pageHeading", page_heading);
+#endif
 
   source->SetDefaultResource(IDR_PAGE_NOT_AVAILABLE_FOR_GUEST_APP_HTML);
 }

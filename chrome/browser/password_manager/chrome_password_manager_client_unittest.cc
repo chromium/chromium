@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -278,8 +278,7 @@ class FakePasswordAutofillAgent
       const std::u16string& username,
       const std::u16string& password) override {}
 
-  void InformNoSavedCredentials(
-      bool should_show_popup_without_passwords) override {}
+  void InformNoSavedCredentials() override {}
 
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override {}
@@ -304,8 +303,6 @@ class FakePasswordAutofillAgent
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  void KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard) override {}
-
   void TriggerFormSubmission() override {}
 #endif
 
@@ -336,7 +333,6 @@ class MockPasswordAccessoryControllerImpl
             password_client,
             driver_supplier,
             /*grouped_credential_sheet_controller=*/nullptr,
-            base::DoNothing(),
             nullptr) {}
 
   MOCK_METHOD(void,
@@ -629,9 +625,10 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kAutofillServer);
 
-  EXPECT_THAT(
-      GetClient()->GetPasswordManager()->GetServerPredictionsForTesting(),
-      UnorderedElementsAre(Key(CalculateFormSignature(form))));
+  EXPECT_THAT(static_cast<const password_manager::PasswordManager*>(
+                  GetClient()->GetPasswordManager())
+                  ->GetServerPredictionsForTesting(),
+              UnorderedElementsAre(Key(CalculateFormSignature(form))));
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -665,16 +662,17 @@ TEST_F(ChromePasswordManagerClientTest,
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
 
-  auto received_predictions = GetClient()
-                                  ->GetPasswordManager()
-                                  ->GetClassifierModelPredictionsForTesting();
+  auto received_predictions =
+      static_cast<const password_manager::PasswordManager*>(
+          GetClient()->GetPasswordManager())
+          ->GetClassifierModelPredictionsForTesting();
   // Check that predictions are available for the form.
   auto form_key = std::make_pair(password_driver, form.renderer_id());
   ASSERT_THAT(received_predictions, UnorderedElementsAre(Key(form_key)));
   // Check that predictions are available for all form fields.
   EXPECT_THAT(received_predictions[form_key],
-              UnorderedElementsAre(Key(form.fields()[0].global_id()),
-                                   Key(form.fields()[1].global_id())));
+              UnorderedElementsAre(Key(form.fields()[0].renderer_id()),
+                                   Key(form.fields()[1].renderer_id())));
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -831,7 +829,7 @@ TEST_F(ChromePasswordManagerClientTest,
       GURL("https://passwords.google.com/path?query=1")));
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Test that authentication is not possible if the `authenticator` is `nullptr`.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoAuthenticator) {
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(
@@ -861,7 +859,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingDisabled) {
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Test that authentication is possible if both the biometric authentication
@@ -877,7 +875,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingEnabled) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that authentication is possible if biometric authentication
 // hardware is available, the user configured the corresponding setting and the
 // feature flag is enabled.
@@ -1091,7 +1089,7 @@ TEST_P(ChromePasswordManagerClientSchemeTest,
   EXPECT_EQ(url::Origin::Create(url).GetURL(),
             GetClient()->GetLastCommittedOrigin().GetURL());
 
-  auto* it = base::ranges::find_if(kSchemeTestCases, [](auto test_case) {
+  auto* it = std::ranges::find_if(kSchemeTestCases, [](auto test_case) {
     return strcmp(test_case.scheme, GetParam()) == 0;
   });
   // If saving isn't allowed it shouldn't be due to the setting, so make

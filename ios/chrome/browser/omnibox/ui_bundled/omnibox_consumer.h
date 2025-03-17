@@ -34,9 +34,9 @@
 // Notifies the consumer to update the text immediately.
 - (void)updateText:(NSAttributedString*)text;
 
-// Notifies the consumer to update the additional text. Pass `nil` to
-// remove additional text.
-- (void)updateAdditionalText:(NSAttributedString*)additionalText;
+/// Sets the thumbnail image used for image search. Set to`nil` to hide the
+/// thumbnail.
+- (void)setThumbnailImage:(UIImage*)image;
 
 @end
 

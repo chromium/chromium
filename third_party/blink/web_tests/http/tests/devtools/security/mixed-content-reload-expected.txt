@@ -7,8 +7,6 @@ Before Refresh --------------
         <#document-fragment >
             <SPAN style=--icon-url: var(--image-file-warning); >
             </SPAN>
-            <STYLE >
-            </STYLE>
         </#document-fragment>
     </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
@@ -35,8 +33,6 @@ Refresh --------------
         <#document-fragment >
             <SPAN style=--icon-url: var(--image-file-warning); >
             </SPAN>
-            <STYLE >
-            </STYLE>
         </#document-fragment>
     </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >

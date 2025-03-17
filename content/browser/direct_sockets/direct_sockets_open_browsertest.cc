@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -609,5 +610,149 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcpServerOptions) {
             "ipv6Only can only be specified when localAddress is [::]"));
   }
 }
+
+enum class WorkerType { kShared, kService };
+enum class FeatureState { kDefault, kDisabled, kEnabled };
+
+template <WorkerType worker_type>
+class DirectSocketsWorkerExposureBrowserTest
+    : public DirectSocketsOpenBrowserTest,
+      public testing::WithParamInterface<FeatureState> {
+ public:
+  DirectSocketsWorkerExposureBrowserTest() {
+    switch (GetFeatureState()) {
+      case FeatureState::kDefault:
+        break;
+      case FeatureState::kEnabled:
+        InitWith(&base::test::ScopedFeatureList::InitAndEnableFeature);
+        break;
+      case FeatureState::kDisabled:
+        InitWith(&base::test::ScopedFeatureList::InitAndDisableFeature);
+        break;
+    }
+  }
+
+  void SetUp() override {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &DirectSocketsWorkerExposureBrowserTest::HandleRequest,
+        base::Unretained(this)));
+    DirectSocketsOpenBrowserTest::SetUp();
+  }
+
+  bool ShouldBeExposed() { return GetFeatureState() == FeatureState::kEnabled; }
+
+ private:
+  FeatureState GetFeatureState() { return GetParam(); }
+
+  void InitWith(auto init) {
+    switch (worker_type) {
+      case WorkerType::kService:
+        std::invoke(init, features_,
+                    blink::features::kDirectSocketsInServiceWorkers);
+        break;
+      case WorkerType::kShared:
+        std::invoke(init, features_,
+                    blink::features::kDirectSocketsInSharedWorkers);
+        break;
+    }
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url.ends_with("shared_worker.js")) {
+      auto response = WorkerScriptResponse();
+      response->set_content(R"(
+        onconnect = e => {
+          const port = e.ports[0];
+          port.start();
+          port.postMessage({
+            'TCPSocket': typeof TCPSocket,
+            'UDPSocket': typeof UDPSocket,
+            'TCPServerSocket': typeof TCPServerSocket,
+          });
+        };
+      )");
+      return response;
+    }
+    if (request.relative_url.ends_with("service_worker.js")) {
+      auto response = WorkerScriptResponse();
+      response->set_content(R"(
+        addEventListener('message', e => {
+          e.source.postMessage({
+            'TCPSocket': typeof TCPSocket,
+            'UDPSocket': typeof UDPSocket,
+            'TCPServerSocket': typeof TCPServerSocket,
+          });
+        });
+      )");
+      return response;
+    }
+    return nullptr;
+  }
+
+  std::unique_ptr<net::test_server::BasicHttpResponse> WorkerScriptResponse() {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("application/javascript");
+    response->AddCustomHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    response->AddCustomHeader("Cross-Origin-Resource-Policy", "same-origin");
+    return response;
+  }
+
+  base::test::ScopedFeatureList features_;
+};
+
+using DirectSocketsSharedWorkerExposureBrowserTest =
+    DirectSocketsWorkerExposureBrowserTest<WorkerType::kShared>;
+
+IN_PROC_BROWSER_TEST_P(DirectSocketsSharedWorkerExposureBrowserTest, Exposure) {
+  static constexpr char kSharedWorkerStart[] = R"(
+    new Promise(resolve => {
+      const worker = new SharedWorker('/shared_worker.js');
+      worker.port.onmessage = e => resolve(e.data);
+    });
+  )";
+
+  std::string expected_typeof = ShouldBeExposed() ? "function" : "undefined";
+  EXPECT_EQ(EvalJs(shell(), kSharedWorkerStart).value.GetDict(),
+            base::Value::Dict()
+                .Set("TCPSocket", expected_typeof)
+                .Set("UDPSocket", expected_typeof)
+                .Set("TCPServerSocket", expected_typeof));
+}
+
+using DirectSocketsServiceWorkerExposureBrowserTest =
+    DirectSocketsWorkerExposureBrowserTest<WorkerType::kService>;
+
+IN_PROC_BROWSER_TEST_P(DirectSocketsServiceWorkerExposureBrowserTest,
+                       Exposure) {
+  static constexpr char kServiceWorkerStart[] = R"(
+    new Promise(async (resolve) => {
+      await navigator.serviceWorker.register('/service_worker.js');
+      navigator.serviceWorker.addEventListener('message', e => resolve(e.data));
+      const reg = await navigator.serviceWorker.ready;
+      reg.active.postMessage(null);
+    });
+  )";
+
+  std::string expected_typeof = ShouldBeExposed() ? "function" : "undefined";
+  EXPECT_EQ(EvalJs(shell(), kServiceWorkerStart).value.GetDict(),
+            base::Value::Dict()
+                .Set("TCPSocket", expected_typeof)
+                .Set("UDPSocket", expected_typeof)
+                .Set("TCPServerSocket", expected_typeof));
+}
+
+INSTANTIATE_TEST_SUITE_P(/**/,
+                         DirectSocketsSharedWorkerExposureBrowserTest,
+                         testing::Values(FeatureState::kDefault,
+                                         FeatureState::kEnabled,
+                                         FeatureState::kDisabled));
+
+INSTANTIATE_TEST_SUITE_P(/**/,
+                         DirectSocketsServiceWorkerExposureBrowserTest,
+                         testing::Values(FeatureState::kDefault,
+                                         FeatureState::kEnabled,
+                                         FeatureState::kDisabled));
 
 }  // namespace content

@@ -10,7 +10,6 @@
 #include <memory>
 #include <sstream>
 #include <string_view>
-#include <tuple>
 #include <vector>
 
 #include "base/check.h"
@@ -45,20 +44,6 @@ SocketPermissionEntry::SocketPermissionEntry()
       match_subdomains_(false) {}
 
 SocketPermissionEntry::~SocketPermissionEntry() = default;
-
-bool SocketPermissionEntry::operator<(const SocketPermissionEntry& rhs) const {
-  return std::tie(pattern_.type, pattern_.host, match_subdomains_,
-                  pattern_.port) <
-         std::tie(rhs.pattern_.type, rhs.pattern_.host, rhs.match_subdomains_,
-                  rhs.pattern_.port);
-}
-
-bool SocketPermissionEntry::operator==(const SocketPermissionEntry& rhs) const {
-  return (pattern_.type == rhs.pattern_.type) &&
-         (pattern_.host == rhs.pattern_.host) &&
-         (match_subdomains_ == rhs.match_subdomains_) &&
-         (pattern_.port == rhs.pattern_.port);
-}
 
 bool SocketPermissionEntry::Check(
     const content::SocketPermissionRequest& request) const {

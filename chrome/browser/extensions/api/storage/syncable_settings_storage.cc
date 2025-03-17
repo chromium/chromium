@@ -68,6 +68,11 @@ T SyncableSettingsStorage::HandleResult(T result) {
   return result;
 }
 
+ValueStore::ReadResult SyncableSettingsStorage::GetKeys() {
+  DCHECK(IsOnBackendSequence());
+  return HandleResult(delegate_->GetKeys());
+}
+
 ValueStore::ReadResult SyncableSettingsStorage::Get(
     const std::string& key) {
   DCHECK(IsOnBackendSequence());

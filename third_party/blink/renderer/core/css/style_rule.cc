@@ -19,19 +19,17 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
+#include "third_party/blink/renderer/core/css/css_function_declarations_rule.h"
+#include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -62,6 +60,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
@@ -130,6 +129,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kNestedDeclarations:
       To<StyleRuleNestedDeclarations>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kFunctionDeclarations:
+      To<StyleRuleFunctionDeclarations>(this)->TraceAfterDispatch(visitor);
       return;
     case kScope:
       To<StyleRuleScope>(this)->TraceAfterDispatch(visitor);
@@ -218,6 +220,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kNestedDeclarations:
       To<StyleRuleNestedDeclarations>(this)->~StyleRuleNestedDeclarations();
       return;
+    case kFunctionDeclarations:
+      To<StyleRuleFunctionDeclarations>(this)->~StyleRuleFunctionDeclarations();
+      return;
     case kScope:
       To<StyleRuleScope>(this)->~StyleRuleScope();
       return;
@@ -292,6 +297,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleMedia>(this)->Copy();
     case kNestedDeclarations:
       return To<StyleRuleNestedDeclarations>(this)->Copy();
+    case kFunctionDeclarations:
+      return To<StyleRuleFunctionDeclarations>(this)->Copy();
     case kScope:
       return To<StyleRuleScope>(this)->Copy();
     case kSupports:
@@ -374,6 +381,14 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSNestedDeclarationsRule>(
           To<StyleRuleNestedDeclarations>(self), parent_sheet);
       break;
+    case kFunctionDeclarations:
+      rule = MakeGarbageCollected<CSSFunctionDeclarationsRule>(
+          To<StyleRuleFunctionDeclarations>(self), parent_sheet);
+      break;
+    case kFunction:
+      rule = MakeGarbageCollected<CSSFunctionRule>(To<StyleRuleFunction>(self),
+                                                   parent_sheet);
+      break;
     case kScope:
       rule = MakeGarbageCollected<CSSScopeRule>(To<StyleRuleScope>(self),
                                                 parent_sheet);
@@ -425,7 +440,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kFontFeature:
     case kKeyframe:
     case kCharset:
-    case kFunction:
     case kMixin:
     case kApplyMixin:
       NOTREACHED();
@@ -482,14 +496,16 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
 StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
     : StyleRuleBase(kStyle), properties_(other.Properties().MutableCopy()) {
   for (unsigned i = 0; i < flattened_size; ++i) {
-    new (&SelectorArray()[i]) CSSSelector(other.SelectorArray()[i]);
+    UNSAFE_TODO(new (&SelectorArray()[i])
+                    CSSSelector(other.SelectorArray()[i]));
   }
   if (other.child_rules_ != nullptr) {
     // Since we are getting copied, we also need to copy any child rules
     // so that both old and new can be freely mutated. This also
     // parses them eagerly (see comment in StyleSheetContents'
     // copy constructor).
-    child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
+    child_rules_ =
+        MakeGarbageCollected<GCedHeapVector<Member<StyleRuleBase>>>();
     child_rules_->ReserveInitialCapacity(other.child_rules_->size());
     for (const StyleRuleBase* child_rule : *other.child_rules_) {
       child_rules_->push_back(child_rule->Copy());
@@ -505,9 +521,8 @@ StyleRule::~StyleRule() {
     selector->~CSSSelector();
     if (is_last) {
       break;
-    } else {
-      ++selector;
     }
+    UNSAFE_TODO(++selector);
   }
 }
 
@@ -538,7 +553,7 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   const CSSSelector* current = SelectorArray();
   do {
     visitor->Trace(*current);
-  } while (!(current++)->IsLastInSelectorList());
+  } while (!(UNSAFE_TODO(current++))->IsLastInSelectorList());
 
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
@@ -648,6 +663,10 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
       return MakeGarbageCollected<StyleRuleNestedDeclarations>(
           nested_declarations_rule->NestingType(), new_inner_rule);
     }
+    case kFunctionDeclarations:
+    case kFunction:
+      // Can not contain style rules.
+      return this;
     case kPageMargin:
     case kProperty:
     case kFontFace:
@@ -662,7 +681,6 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
     case kKeyframe:
     case kCharset:
     case kViewTransition:
-    case kFunction:
     case kPositionTry:
       // Cannot have any child rules.
       return this;
@@ -976,20 +994,24 @@ StyleRuleStartingStyle::StyleRuleStartingStyle(
     HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleGroup(kStartingStyle, std::move(rules)) {}
 
+void StyleRuleFunction::Parameter::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(default_value);
+}
+
 StyleRuleFunction::StyleRuleFunction(
     AtomicString name,
-    Vector<StyleRuleFunction::Parameter> parameters,
-    CSSVariableData* function_body,
-    StyleRuleFunction::Type return_type)
-    : StyleRuleBase(kFunction),
+    HeapVector<StyleRuleFunction::Parameter> parameters,
+    HeapVector<Member<StyleRuleBase>> child_rules,
+    CSSSyntaxDefinition return_type)
+    : StyleRuleGroup(kFunction, std::move(child_rules)),
       name_(std::move(name)),
       parameters_(std::move(parameters)),
-      function_body_(function_body),
       return_type_(return_type) {}
 
 void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(function_body_);
-  StyleRuleBase::TraceAfterDispatch(visitor);
+  StyleRuleGroup::TraceAfterDispatch(visitor);
+  visitor->Trace(parameters_);
+  visitor->Trace(layer_);
 }
 
 StyleRuleMixin::StyleRuleMixin(AtomicString name, StyleRule* fake_parent_rule)

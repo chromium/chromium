@@ -4,18 +4,16 @@
 
 #include "components/update_client/crx_cache.h"
 
+#include <map>
+#include <memory>
 #include <string>
 
-#include "base/base_paths.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -26,218 +24,162 @@
 namespace update_client {
 namespace {
 
-base::FilePath BuildCrxFilePathForTest(const base::FilePath& dir_path,
-                                       const std::string& id,
-                                       const std::string& fp) {
-  return dir_path.AppendASCII("crx_cache_unittest_cache_dir")
-      .AppendASCII(base::JoinString({id, fp}, "_"));
+auto ExpectPathExists() {
+  return base::BindOnce(
+      [](base::expected<base::FilePath, UnpackerError> result) {
+        ASSERT_TRUE(result.has_value()) << static_cast<int>(result.error());
+        EXPECT_TRUE(base::PathExists(result.value())) << result.value().value();
+      });
+}
+
+auto ExpectError(UnpackerError error) {
+  return base::BindOnce(
+      [](UnpackerError error,
+         base::expected<base::FilePath, UnpackerError> result) {
+        ASSERT_FALSE(result.has_value()) << result.value();
+        EXPECT_EQ(result.error(), error);
+      },
+      error);
+}
+
+auto ExpectHashes(
+    const std::multimap<std::string, std::string>& expected_hashes) {
+  return base::BindOnce(
+      [](const std::multimap<std::string, std::string>& expected_hashes,
+         const std::multimap<std::string, std::string>& result) {
+        EXPECT_EQ(result, expected_hashes);
+      },
+      expected_hashes);
 }
 
 }  // namespace
 
 class CrxCacheTest : public testing::Test {
+ protected:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  base::FilePath TempPath(const std::string& basename) {
+    return temp_dir_.GetPath().AppendUTF8(basename);
+  }
+
+  base::FilePath MakeFile() {
+    base::FilePath out;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &out));
+    return out;
+  }
+
+  void RunLoop() {
+    loop_->Run();
+    loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  base::RepeatingClosure Quit() { return loop_->QuitClosure(); }
+
  private:
+  base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment env_;
+  std::unique_ptr<base::RunLoop> loop_ = std::make_unique<base::RunLoop>();
 };
 
-TEST_F(CrxCacheTest, CheckGetSucceeds) {
-  std::string id = "rightid";
-  std::string fp = "rightfp";
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath expected_crx_path =
-      BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
-  EXPECT_TRUE(base::CreateDirectory(expected_crx_path.DirName()));
-  {
-    base::File crx_file(expected_crx_path, base::File::FLAG_CREATE_ALWAYS |
-                                               base::File::FLAG_WRITE |
-                                               base::File::FLAG_READ);
-  }
+TEST_F(CrxCacheTest, PutGet) {
   scoped_refptr<CrxCache> cache =
-      base::MakeRefCounted<CrxCache>(expected_crx_path.DirName());
-  base::RunLoop loop;
-  cache->Get(id, fp,
-             base::BindLambdaForTesting(
-                 [&loop, &expected_crx_path](
-                     base::expected<base::FilePath, UnpackerError> result) {
-                   ASSERT_TRUE(result.has_value());
-                   base::FilePath crx_cache_path = result.value();
-                   EXPECT_TRUE(base::DirectoryExists(crx_cache_path.DirName()));
-                   EXPECT_TRUE(base::PathExists(crx_cache_path));
-                   EXPECT_EQ(crx_cache_path, expected_crx_path);
-                   loop.Quit();
-                 }));
-  loop.Run();
-  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
+      base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
+  cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
+  cache->GetByFp("fp", ExpectPathExists());
+  cache->GetByHash("hash", ExpectPathExists().Then(Quit()));
+  RunLoop();
 }
 
-TEST_F(CrxCacheTest, CheckGetWithMissingFileFails) {
-  std::string id = "rightid";
-  std::string fp = "rightfp";
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath expected_crx_path =
-      BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
-  EXPECT_TRUE(base::CreateDirectory(expected_crx_path.DirName()));
-  {
-    base::File crx_file(expected_crx_path, base::File::FLAG_CREATE_ALWAYS |
-                                               base::File::FLAG_WRITE |
-                                               base::File::FLAG_READ);
-  }
+TEST_F(CrxCacheTest, GetMissing) {
   scoped_refptr<CrxCache> cache =
-      base::MakeRefCounted<CrxCache>(expected_crx_path.DirName());
-  base::RunLoop loop;
-  cache->Get("wrong_id", "wrong_fp",
-             base::BindLambdaForTesting(
-                 [&loop](base::expected<base::FilePath, UnpackerError> result) {
-                   EXPECT_EQ(result.error(),
-                             UnpackerError::kPuffinMissingPreviousCrx);
-                   loop.Quit();
-                 }));
-  loop.Run();
-  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
+      base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
+  cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
+  cache->GetByFp("fp2", ExpectError(UnpackerError::kCrxCacheFileNotCached));
+  cache->GetByHash(
+      "hash2", ExpectError(UnpackerError::kCrxCacheFileNotCached).Then(Quit()));
+  RunLoop();
 }
 
-TEST_F(CrxCacheTest, CheckPutWithExistingEmptyCrxCachePathSucceeds) {
-  std::string id = "rightid";
-  std::string fp = "rightfp";
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath expected_crx_path =
-      BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
-  EXPECT_TRUE(base::CreateDirectory(expected_crx_path.DirName()));
-  base::RunLoop loop;
+TEST_F(CrxCacheTest, PutReplacesByAppId) {
   scoped_refptr<CrxCache> cache =
-      base::MakeRefCounted<CrxCache>(expected_crx_path.DirName());
-  cache->Put(DuplicateTestFile(temp_dir.GetPath(),
-                               "jebgalgnebhfojomionfpkfelancnnkf.crx"),
-             id, fp,
-             base::BindLambdaForTesting(
-                 [&loop](base::expected<base::FilePath, UnpackerError> result) {
-                   ASSERT_TRUE(result.has_value());
-                   base::FilePath crx_cache_path = result.value();
-                   EXPECT_TRUE(base::DirectoryExists(crx_cache_path.DirName()));
-                   loop.Quit();
-                 }));
-  loop.Run();
-  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
+      base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
+  cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
+  cache->GetByHash("hash", ExpectPathExists().Then(Quit()));
+  RunLoop();
+  cache->Put(MakeFile(), "appid", "hash2", "fp2", ExpectPathExists());
+  cache->GetByHash("hash", ExpectError(UnpackerError::kCrxCacheFileNotCached));
+  cache->GetByHash("hash2", ExpectPathExists().Then(Quit()));
+  RunLoop();
 }
 
-TEST_F(CrxCacheTest, CheckPutWithNonExistentCrxCacheDirSucceeds) {
-  std::string id = "rightid";
-  std::string fp = "rightfp";
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath expected_crx_path =
-      BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
-  base::RunLoop loop;
+TEST_F(CrxCacheTest, PutAlreadyCached) {
   scoped_refptr<CrxCache> cache =
-      base::MakeRefCounted<CrxCache>(expected_crx_path.DirName());
-  cache->Put(DuplicateTestFile(temp_dir.GetPath(),
-                               "jebgalgnebhfojomionfpkfelancnnkf.crx"),
-             id, fp,
-             base::BindLambdaForTesting(
-                 [&loop](base::expected<base::FilePath, UnpackerError> result) {
-                   EXPECT_TRUE(result.has_value());
-                   base::FilePath crx_cache_path = result.value();
-                   EXPECT_TRUE(base::DirectoryExists(crx_cache_path.DirName()));
-                   loop.Quit();
-                 }));
-  loop.Run();
-  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
+      base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
+  cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
+  cache->GetByHash(
+      "hash",
+      base::BindLambdaForTesting(
+          [&](base::expected<base::FilePath, UnpackerError> result) {
+            if (!result.has_value()) {
+              Quit().Run();
+            }
+            ASSERT_TRUE(result.has_value()) << static_cast<int>(result.error());
+            cache->Put(
+                result.value(), "appid", "hash", "fp",
+                base::BindLambdaForTesting(
+                    [&](base::expected<base::FilePath, UnpackerError> result2) {
+                      if (!result2.has_value()) {
+                        Quit().Run();
+                      }
+                      ASSERT_TRUE(result2.has_value())
+                          << static_cast<int>(result2.error());
+                      cache->GetByHash("hash", ExpectPathExists().Then(Quit()));
+                    }));
+          }));
+  RunLoop();
 }
 
-TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
-  std::string id = "rightid";
-  std::string fp = "rightfp";
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath expected_crx_path =
-      BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
-  base::FilePath jebg_duplicate_path = DuplicateTestFile(
-      temp_dir.GetPath(), "jebgalgnebhfojomionfpkfelancnnkf.crx");
-  {
-    base::RunLoop loop;
-    // Put jebg successfully.
-    scoped_refptr<CrxCache> cache =
-        base::MakeRefCounted<CrxCache>(expected_crx_path.DirName());
-    cache->Put(
-        jebg_duplicate_path, id, fp,
-        base::BindLambdaForTesting(
-            [&loop](base::expected<base::FilePath, UnpackerError> result) {
-              ASSERT_TRUE(result.has_value());
-              EXPECT_TRUE(base::ContentsEqual(
-                  GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
-                  result.value()));
-              EXPECT_TRUE(base::DeleteFile(result.value()));
-              // Corrupt the file for the next test, so we can verify it was
-              // actually replaced.
-              std::string corrupted_data("c0rrupt3d d4t4");
-              EXPECT_TRUE(base::WriteFile(result.value(), corrupted_data));
-              EXPECT_FALSE(base::ContentsEqual(
-                  GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
-                  result.value()));
-              loop.Quit();
-            }));
-    loop.Run();
-  }
-
-  {
-    base::RunLoop loop;
-    // Put replaces existing jebg to avoid error path.
-    scoped_refptr<CrxCache> cache =
-        base::MakeRefCounted<CrxCache>(expected_crx_path.DirName());
-    // Duplicate the input file (again) since the old file was moved to the
-    // cache.
-    cache->Put(
-        DuplicateTestFile(temp_dir.GetPath(),
-                          "jebgalgnebhfojomionfpkfelancnnkf.crx"),
-        id, fp,
-        base::BindLambdaForTesting(
-            [&loop](base::expected<base::FilePath, UnpackerError> result) {
-              ASSERT_TRUE(result.has_value());
-              EXPECT_TRUE(base::PathExists(result.value()));
-              EXPECT_TRUE(base::ContentsEqual(
-                  GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
-                  result.value()));
-              loop.Quit();
-            }));
-    loop.Run();
-  }
-  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
+TEST_F(CrxCacheTest, CacheNotProvided) {
+  scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(std::nullopt);
+  cache->Put(base::FilePath(FILE_PATH_LITERAL("crxcache_test_file")), "appid",
+             "hash", "fp", ExpectError(UnpackerError::kCrxCacheNotProvided));
+  cache->GetByFp("fp", ExpectError(UnpackerError::kCrxCacheNotProvided));
+  cache->GetByHash("hash", ExpectError(UnpackerError::kCrxCacheNotProvided));
+  cache->RemoveAll("appid");
+  cache->ListHashesByAppId(ExpectHashes({}).Then(Quit()));
+  RunLoop();
 }
 
-TEST_F(CrxCacheTest, CheckPutCachedCrxSucceeds) {
-  std::string id = "rightid";
-  std::string fp = "rightfp";
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath expected_crx_path =
-      BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
-  EXPECT_TRUE(base::CreateDirectory(expected_crx_path.DirName()));
-  {
-    base::File crx_file(expected_crx_path, base::File::FLAG_CREATE_ALWAYS |
-                                               base::File::FLAG_WRITE |
-                                               base::File::FLAG_READ);
-  }
+TEST_F(CrxCacheTest, ListHashesByAppId) {
   scoped_refptr<CrxCache> cache =
-      base::MakeRefCounted<CrxCache>(expected_crx_path.DirName());
-  base::RunLoop loop;
-  // The CRX is already in the cache so Put should succeed immediately.
-  cache->Put(expected_crx_path, id, fp,
-             base::BindLambdaForTesting(
-                 [&loop, &expected_crx_path](
-                     base::expected<base::FilePath, UnpackerError> result) {
-                   ASSERT_TRUE(result.has_value())
-                       << "Error: " << static_cast<int>(result.error());
-                   base::FilePath crx_cache_path = result.value();
-                   EXPECT_TRUE(base::DirectoryExists(crx_cache_path.DirName()));
-                   EXPECT_TRUE(base::PathExists(crx_cache_path));
-                   EXPECT_EQ(crx_cache_path, expected_crx_path);
-                   loop.Quit();
-                 }));
-  loop.Run();
-  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
+      base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
+  cache->ListHashesByAppId(ExpectHashes({}));
+  cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
+  cache->ListHashesByAppId(ExpectHashes({{"appid", "hash"}}));
+  cache->Put(MakeFile(), "appid2", "hash2", "fp2", ExpectPathExists());
+  cache->ListHashesByAppId(
+      ExpectHashes({{"appid", "hash"}, {"appid2", "hash2"}}).Then(Quit()));
+  RunLoop();
+  cache->Put(MakeFile(), "appid", "hash3", "fp3", ExpectPathExists());
+  cache->ListHashesByAppId(
+      ExpectHashes({{"appid", "hash3"}, {"appid2", "hash2"}}).Then(Quit()));
+  RunLoop();
+}
+
+TEST_F(CrxCacheTest, RemoveAll) {
+  scoped_refptr<CrxCache> cache =
+      base::MakeRefCounted<CrxCache>(TempPath("cache_dir"));
+  cache->Put(MakeFile(), "appid", "hash", "fp", ExpectPathExists());
+  cache->Put(MakeFile(), "appid2", "hash2", "fp2", ExpectPathExists());
+  cache->ListHashesByAppId(
+      ExpectHashes({{"appid", "hash"}, {"appid2", "hash2"}}).Then(Quit()));
+  RunLoop();
+  cache->RemoveAll("appid");
+  cache->ListHashesByAppId(ExpectHashes({{"appid2", "hash2"}}).Then(Quit()));
+  RunLoop();
+  cache->RemoveAll("appid2");
+  cache->ListHashesByAppId(ExpectHashes({}).Then(Quit()));
+  RunLoop();
 }
 
 }  // namespace update_client

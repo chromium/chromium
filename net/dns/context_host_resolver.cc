@@ -157,6 +157,10 @@ void ContextHostResolver::SetRequestContext(
   resolve_context_->set_url_request_context(request_context);
 }
 
+bool ContextHostResolver::IsHappyEyeballsV3Enabled() const {
+  return manager_->IsHappyEyeballsV3Enabled();
+}
+
 HostResolverManager* ContextHostResolver::GetManagerForTesting() {
   return manager_;
 }

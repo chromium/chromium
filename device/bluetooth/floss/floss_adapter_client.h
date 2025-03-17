@@ -154,6 +154,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     // some amount of time ago).
     virtual void AdapterClearedDevice(const FlossDeviceId& device_cleared) {}
 
+    // Notification sent when a found device has forgotten its keys or been
+    // reset. It will be sent when bond loss is detected.
+    virtual void AdapterKeyMissingDevice(const FlossDeviceId& device) {}
+
     // Notification sent when a device property has changed.
     virtual void AdapterDevicePropertyChanged(BtPropertyType prop_type,
                                               const FlossDeviceId& device) {}
@@ -409,6 +413,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle callback |OnDeviceCleared| on exported object path.
   void OnDeviceCleared(dbus::MethodCall* method_call,
                        dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDeviceKeyMissing| on exported object path.
+  void OnDeviceKeyMissing(dbus::MethodCall* method_call,
+                          dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnDevicePropertiesChanged| on exported object path.
   void OnDevicePropertiesChanged(

@@ -16,7 +16,7 @@ suite('OverlayTranslatePromo', () => {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let lensOverlayElement: LensOverlayAppElement;
 
-  setup(async () => {
+  setup(() => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
     // attached to the DOM.

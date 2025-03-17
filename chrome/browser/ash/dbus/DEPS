@@ -19,7 +19,7 @@ include_rules = [
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/arc/test",
   "+chrome/browser/ash/arc/tracing",
-  "+chrome/browser/ash/arc/video",
+  "+chromeos/ash/experiences/arc/video",
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/exo",
@@ -55,4 +55,6 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
+
+  "+mojo/core",
 ]

@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_progress_value.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_superellipse_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -95,6 +97,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -274,6 +277,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSPathValue>(*this, other);
       case kShapeClass:
         return CompareCSSValues<cssvalue::CSSShapeValue>(*this, other);
+      case kSuperellipseClass:
+        return CompareCSSValues<cssvalue::CSSSuperellipseValue>(*this, other);
       case kNumericLiteralClass:
         return CompareCSSValues<CSSNumericLiteralValue>(*this, other);
       case kMathFunctionClass:
@@ -296,6 +301,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSShadowValue>(*this, other);
       case kStringClass:
         return CompareCSSValues<CSSStringValue>(*this, other);
+      case kProgressClass:
+        return CompareCSSValues<cssvalue::CSSProgressValue>(*this, other);
       case kLinearTimingFunctionClass:
         return CompareCSSValues<cssvalue::CSSLinearTimingFunctionValue>(*this,
                                                                         other);
@@ -442,6 +449,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSPathValue>(this)->CustomCSSText();
     case kShapeClass:
       return To<cssvalue::CSSShapeValue>(this)->CustomCSSText();
+    case kSuperellipseClass:
+      return To<cssvalue::CSSSuperellipseValue>(this)->CustomCSSText();
     case kNumericLiteralClass:
       return To<CSSNumericLiteralValue>(this)->CustomCSSText();
     case kMathFunctionClass:
@@ -464,6 +473,8 @@ String CSSValue::CssText() const {
       return To<CSSShadowValue>(this)->CustomCSSText();
     case kStringClass:
       return To<CSSStringValue>(this)->CustomCSSText();
+    case kProgressClass:
+      return To<cssvalue::CSSProgressValue>(this)->CustomCSSText();
     case kLinearTimingFunctionClass:
       return To<cssvalue::CSSLinearTimingFunctionValue>(this)->CustomCSSText();
     case kCubicBezierTimingFunctionClass:
@@ -552,6 +563,10 @@ unsigned CSSValue::Hash() const {
     case kValuePairClass:
       return WTF::HashInts(GetClassType(),
                            To<CSSValuePair>(this)->CustomHash());
+    case kSuperellipseClass:
+      return WTF::HashInts(
+          GetClassType(),
+          To<cssvalue::CSSSuperellipseValue>(this)->CustomHash());
     // These don't have any values.
     case kInheritedClass:
     case kInitialClass:
@@ -584,6 +599,7 @@ unsigned CSSValue::Hash() const {
     case kRadialGradientClass:
     case kConicGradientClass:
     case kConstantGradientClass:
+    case kProgressClass:
     case kLinearTimingFunctionClass:
     case kCubicBezierTimingFunctionClass:
     case kStepsTimingFunctionClass:
@@ -779,6 +795,9 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kShapeClass:
       To<cssvalue::CSSShapeValue>(this)->TraceAfterDispatch(visitor);
       return;
+    case kSuperellipseClass:
+      To<cssvalue::CSSSuperellipseValue>(this)->TraceAfterDispatch(visitor);
+      return;
     case kNumericLiteralClass:
       To<CSSNumericLiteralValue>(this)->TraceAfterDispatch(visitor);
       return;
@@ -811,6 +830,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kStringClass:
       To<CSSStringValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kProgressClass:
+      To<cssvalue::CSSProgressValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kLinearTimingFunctionClass:
       To<cssvalue::CSSLinearTimingFunctionValue>(this)->TraceAfterDispatch(
@@ -962,6 +984,8 @@ String CSSValue::ClassTypeToString() const {
       return "ConicGradientClass";
     case kConstantGradientClass:
       return "ConstantGradientClass";
+    case kProgressClass:
+      return "kProgressTypeClass";
     case kLinearTimingFunctionClass:
       return "LinearTimingFunctionClass";
     case kCubicBezierTimingFunctionClass:
@@ -1006,6 +1030,8 @@ String CSSValue::ClassTypeToString() const {
       return "RayClass";
     case kShapeClass:
       return "ShapeClass";
+    case kSuperellipseClass:
+      return "SuperellipseClass";
     case kUnparsedDeclarationClass:
       return "UnparsedDeclarationClass";
     case kPendingSubstitutionValueClass:

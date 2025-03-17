@@ -22,8 +22,9 @@ final class AccountPickerBottomSheetTestUtil {
                         .build();
             case SigninAccessPoint.WEB_SIGNIN:
                 return new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_dialog_title)
-                        .setSubtitleStringId(R.string.signin_account_picker_bottom_sheet_subtitle)
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .setSubtitleStringId(
+                                R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
                         .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
                         .build();
             case SigninAccessPoint.BOOKMARK_MANAGER:

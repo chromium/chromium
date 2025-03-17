@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/bigint.h"
@@ -485,24 +486,23 @@ template <bindings::IDLStringConvMode mode>
 struct NativeValueTraits<IDLStringStringContextTrustedHTMLBase<mode>>
     : public NativeValueTraitsBase<
           IDLStringStringContextTrustedHTMLBase<mode>> {
-  static AtomicString NativeValue(v8::Isolate* isolate,
-                                  v8::Local<v8::Value> value,
-                                  ExceptionState& exception_state,
-                                  const char* interface_name,
-                                  const char* property_name,
-                                  ExecutionContext* execution_context) {
+  static String NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state,
+                            const char* interface_name,
+                            const char* property_name,
+                            ExecutionContext* execution_context) {
     if (TrustedHTML* trusted_html =
             V8TrustedHTML::ToWrappable(isolate, value)) {
-      return AtomicString(trusted_html->toString());
+      return trusted_html->toString();
     }
 
     auto&& string = NativeValueTraits<IDLStringBase<mode>>::NativeValue(
         isolate, value, exception_state);
     if (exception_state.HadException())
       return g_null_atom;
-    return AtomicString(TrustedTypesCheckForHTML(string, execution_context,
-                                                 interface_name, property_name,
-                                                 exception_state));
+    return TrustedTypesCheckForHTML(string, execution_context, interface_name,
+                                    property_name, exception_state);
   }
 };
 
@@ -511,12 +511,12 @@ struct CORE_EXPORT
     NativeValueTraits<IDLNullable<IDLStringStringContextTrustedHTML>>
     : public NativeValueTraitsBase<
           IDLNullable<IDLStringStringContextTrustedHTML>> {
-  static AtomicString NativeValue(v8::Isolate* isolate,
-                                  v8::Local<v8::Value> value,
-                                  ExceptionState& exception_state,
-                                  const char* interface_name,
-                                  const char* property_name,
-                                  ExecutionContext* execution_context) {
+  static String NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state,
+                            const char* interface_name,
+                            const char* property_name,
+                            ExecutionContext* execution_context) {
     return NativeValueTraits<IDLStringStringContextTrustedHTMLBase<
         bindings::IDLStringConvMode::kNullable>>::
         NativeValue(isolate, value, exception_state, interface_name,
@@ -528,24 +528,23 @@ template <bindings::IDLStringConvMode mode>
 struct NativeValueTraits<IDLStringStringContextTrustedScriptBase<mode>>
     : public NativeValueTraitsBase<
           IDLStringStringContextTrustedScriptBase<mode>> {
-  static AtomicString NativeValue(v8::Isolate* isolate,
-                                  v8::Local<v8::Value> value,
-                                  ExceptionState& exception_state,
-                                  const char* interface_name,
-                                  const char* property_name,
-                                  ExecutionContext* execution_context) {
+  static String NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state,
+                            const char* interface_name,
+                            const char* property_name,
+                            ExecutionContext* execution_context) {
     if (TrustedScript* trusted_script =
             V8TrustedScript::ToWrappable(isolate, value)) {
-      return AtomicString(trusted_script->toString());
+      return trusted_script->toString();
     }
 
     auto&& string = NativeValueTraits<IDLStringBase<mode>>::NativeValue(
         isolate, value, exception_state);
     if (exception_state.HadException())
       return g_null_atom;
-    return AtomicString(
-        TrustedTypesCheckForScript(string, execution_context, interface_name,
-                                   property_name, exception_state));
+    return TrustedTypesCheckForScript(string, execution_context, interface_name,
+                                      property_name, exception_state);
   }
 };
 
@@ -554,12 +553,12 @@ struct CORE_EXPORT
     NativeValueTraits<IDLNullable<IDLStringStringContextTrustedScript>>
     : public NativeValueTraitsBase<
           IDLNullable<IDLStringStringContextTrustedScript>> {
-  static AtomicString NativeValue(v8::Isolate* isolate,
-                                  v8::Local<v8::Value> value,
-                                  ExceptionState& exception_state,
-                                  const char* interface_name,
-                                  const char* property_name,
-                                  ExecutionContext* execution_context) {
+  static String NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state,
+                            const char* interface_name,
+                            const char* property_name,
+                            ExecutionContext* execution_context) {
     return NativeValueTraits<IDLStringStringContextTrustedScriptBase<
         bindings::IDLStringConvMode::kNullable>>::
         NativeValue(isolate, value, exception_state, interface_name,
@@ -571,24 +570,24 @@ template <bindings::IDLStringConvMode mode>
 struct NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBase<mode>>
     : public NativeValueTraitsBase<
           IDLUSVStringStringContextTrustedScriptURLBase<mode>> {
-  static AtomicString NativeValue(v8::Isolate* isolate,
-                                  v8::Local<v8::Value> value,
-                                  ExceptionState& exception_state,
-                                  const char* interface_name,
-                                  const char* property_name,
-                                  ExecutionContext* execution_context) {
+  static String NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state,
+                            const char* interface_name,
+                            const char* property_name,
+                            ExecutionContext* execution_context) {
     if (TrustedScriptURL* trusted_script_url =
             V8TrustedScriptURL::ToWrappable(isolate, value)) {
-      return AtomicString(trusted_script_url->toString());
+      return trusted_script_url->toString();
     }
 
     auto&& string = NativeValueTraits<IDLUSVStringBase<mode>>::NativeValue(
         isolate, value, exception_state);
     if (exception_state.HadException())
       return g_null_atom;
-    return AtomicString(
-        TrustedTypesCheckForScriptURL(string, execution_context, interface_name,
-                                      property_name, exception_state));
+    return TrustedTypesCheckForScriptURL(string, execution_context,
+                                         interface_name, property_name,
+                                         exception_state);
   }
 };
 
@@ -597,12 +596,12 @@ struct CORE_EXPORT
     NativeValueTraits<IDLNullable<IDLUSVStringStringContextTrustedScriptURL>>
     : public NativeValueTraitsBase<
           IDLNullable<IDLUSVStringStringContextTrustedScriptURL>> {
-  static AtomicString NativeValue(v8::Isolate* isolate,
-                                  v8::Local<v8::Value> value,
-                                  ExceptionState& exception_state,
-                                  const char* interface_name,
-                                  const char* property_name,
-                                  ExecutionContext* execution_context) {
+  static String NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state,
+                            const char* interface_name,
+                            const char* property_name,
+                            ExecutionContext* execution_context) {
     return NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBase<
         bindings::IDLStringConvMode::kNullable>>::
         NativeValue(isolate, value, exception_state, interface_name,

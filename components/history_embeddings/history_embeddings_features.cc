@@ -131,7 +131,7 @@ const base::FeatureParam<int> kMockAnswererStatus(&kHistoryEmbeddings,
 
 const base::FeatureParam<bool> kEnableImagesForResults(&kHistoryEmbeddings,
                                                        "EnableImagesForResults",
-                                                       false);
+                                                       true);
 
 const base::FeatureParam<bool> kOmniboxScoped(&kHistoryEmbeddings,
                                               "OmniboxScoped",
@@ -144,10 +144,6 @@ const base::FeatureParam<bool> kOmniboxUnscoped(&kHistoryEmbeddings,
 const base::FeatureParam<bool> kAnswersInOmniboxScoped(&kHistoryEmbeddings,
                                                        "AnswersInOmniboxScoped",
                                                        true);
-
-const base::FeatureParam<int> kScheduledEmbeddingsMax(&kHistoryEmbeddings,
-                                                      "ScheduledEmbeddingsMax",
-                                                      1);
 
 const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
                                                "SendQualityLog",
@@ -267,7 +263,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   omnibox_scoped = kOmniboxScoped.Get();
   omnibox_unscoped = kOmniboxUnscoped.Get();
   answers_in_omnibox_scoped = kAnswersInOmniboxScoped.Get();
-  scheduled_embeddings_max = kScheduledEmbeddingsMax.Get();
   send_quality_log = kSendQualityLog.Get();
   send_quality_log_v2 = kSendQualityLogV2.Get();
   max_passages_per_page = kMaxPassagesPerPage.Get();

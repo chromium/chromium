@@ -5,6 +5,7 @@
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_frame_host.h"
@@ -16,22 +17,21 @@
 namespace {
 
 using ProtocolType = content::DirectSocketsDelegate::ProtocolType;
+using RequestDetails = content::DirectSocketsDelegate::RequestDetails;
 
 bool ValidateAddressAndPortForChromeApp(const extensions::Extension* extension,
-                                        const std::string& address,
-                                        uint16_t port,
-                                        ProtocolType protocol) {
-  switch (protocol) {
+                                        const RequestDetails& request) {
+  switch (request.protocol) {
     case ProtocolType::kTcp:
       return extensions::SocketsManifestData::CheckRequest(
           extension,
-          /*request=*/{content::SocketPermissionRequest::TCP_CONNECT, address,
-                       port});
+          /*request=*/{content::SocketPermissionRequest::TCP_CONNECT,
+                       request.address, request.port});
     case ProtocolType::kConnectedUdp:
       return extensions::SocketsManifestData::CheckRequest(
           extension,
-          /*request=*/{content::SocketPermissionRequest::UDP_SEND_TO, address,
-                       port});
+          /*request=*/{content::SocketPermissionRequest::UDP_SEND_TO,
+                       request.address, request.port});
     case ProtocolType::kBoundUdp:
       // For kBoundUdp we check both UDP_BIND for the given |address| and
       // |port| as well as ensure that UDP_SEND_TO allows routing packets
@@ -39,7 +39,7 @@ bool ValidateAddressAndPortForChromeApp(const extensions::Extension* extension,
       return extensions::SocketsManifestData::CheckRequest(
                  extension,
                  /*request=*/{content::SocketPermissionRequest::UDP_BIND,
-                              address, port}) &&
+                              request.address, request.port}) &&
              extensions::SocketsManifestData::CheckRequest(
                  extension,
                  /*request=*/{content::SocketPermissionRequest::UDP_SEND_TO,
@@ -47,68 +47,79 @@ bool ValidateAddressAndPortForChromeApp(const extensions::Extension* extension,
     case ProtocolType::kTcpServer:
       return extensions::SocketsManifestData::CheckRequest(
           extension, /*request=*/{content::SocketPermissionRequest::TCP_LISTEN,
-                                  address, port});
+                                  request.address, request.port});
   }
 }
 
-bool ValidateAddressAndPortForIwa(const std::string& address,
-                                  uint16_t port,
-                                  ProtocolType protocol) {
-  switch (protocol) {
+bool ValidateAddressAndPortForIwa(const RequestDetails& request) {
+  switch (request.protocol) {
     case ProtocolType::kTcp:
     case ProtocolType::kConnectedUdp:
       return true;
     case ProtocolType::kBoundUdp:
       // Port 0 indicates automatic port allocation.
       // Ports below 1024 are usually system ports and should not be exposed.
-      return port == 0 || port >= 1024;
+      return request.port == 0 || request.port >= 1024;
     case ProtocolType::kTcpServer:
       // Port 0 indicates automatic port allocation.
       // Ports below 1024 are usually system ports and should not be exposed.
       // Port numbers between 1024 and 32767 are usually specific to selected
       // apps (which predominantly communicate over TCP).
-      return port == 0 || port >= 32768;
+      return request.port == 0 || request.port >= 32768;
   }
+}
+
+bool IsContentSettingAllowedForUrl(content::BrowserContext* browser_context,
+                                   const GURL& url,
+                                   ContentSettingsType content_setting) {
+  return HostContentSettingsMapFactory::GetForProfile(browser_context)
+             ->GetContentSetting(url, url, content_setting) ==
+         CONTENT_SETTING_ALLOW;
 }
 
 }  // namespace
 
-bool ChromeDirectSocketsDelegate::IsAPIAccessAllowed(
-    content::RenderFrameHost& rfh) {
-  // No additional rules for Chrome Apps.
-  if (extensions::ProcessMap::Get(rfh.GetBrowserContext())
-          ->Contains(rfh.GetProcess()->GetDeprecatedID())) {
-    return true;
-  }
-
-  const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
-  return HostContentSettingsMapFactory::GetForProfile(rfh.GetBrowserContext())
-             ->GetContentSetting(url, url,
-                                 ContentSettingsType::DIRECT_SOCKETS) ==
-         CONTENT_SETTING_ALLOW;
-}
-
-bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
+bool ChromeDirectSocketsDelegate::ValidateRequest(
     content::RenderFrameHost& rfh,
-    const std::string& address,
-    uint16_t port,
-    ProtocolType protocol) {
+    const RequestDetails& request) {
   // If we're running an extension, follow the chrome.sockets.* permission
   // model.
   if (const extensions::Extension* extension =
           extensions::ProcessMap::Get(rfh.GetBrowserContext())
               ->GetEnabledExtensionByProcessID(
                   rfh.GetProcess()->GetDeprecatedID())) {
-    return ValidateAddressAndPortForChromeApp(extension, address, port,
-                                              protocol);
+    return ValidateAddressAndPortForChromeApp(extension, request);
   }
 
-  if (rfh.GetMainFrame()->GetLastCommittedURL().SchemeIs(
-          chrome::kIsolatedAppScheme)) {
-    return ValidateAddressAndPortForIwa(address, port, protocol);
+  const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
+  if (!IsContentSettingAllowedForUrl(rfh.GetBrowserContext(), url,
+                                     ContentSettingsType::DIRECT_SOCKETS)) {
+    return false;
+  }
+
+  if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    return ValidateAddressAndPortForIwa(request);
   }
 
   return false;
+}
+
+bool ChromeDirectSocketsDelegate::ValidateRequestForSharedWorker(
+    content::BrowserContext* browser_context,
+    const GURL& shared_worker_url,
+    const RequestDetails& request) {
+  return IsContentSettingAllowedForUrl(browser_context, shared_worker_url,
+                                       ContentSettingsType::DIRECT_SOCKETS) &&
+         ValidateAddressAndPortForIwa(request);
+}
+
+bool ChromeDirectSocketsDelegate::ValidateRequestForServiceWorker(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin,
+    const RequestDetails& request) {
+  return IsContentSettingAllowedForUrl(browser_context, origin.GetURL(),
+                                       ContentSettingsType::DIRECT_SOCKETS) &&
+         ValidateAddressAndPortForIwa(request);
 }
 
 void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
@@ -121,13 +132,26 @@ void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
     return;
   }
 
-  // TODO(crbug.com/368266657): Show a permission prompt for DS-PNA & ponder
-  // whether this requires transient activation.
-  const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
-  std::move(callback).Run(
-      HostContentSettingsMapFactory::GetForProfile(rfh.GetBrowserContext())
-          ->GetContentSetting(
-              url, url,
-              ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS) ==
-      CONTENT_SETTING_ALLOW);
+  // TODO(crbug.com/368266657): Show a permission prompt for DS-PNA &
+  // ponder whether this requires transient activation.
+  std::move(callback).Run(IsContentSettingAllowedForUrl(
+      rfh.GetBrowserContext(), rfh.GetMainFrame()->GetLastCommittedURL(),
+      ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS));
+}
+
+bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForSharedWorker(
+    content::BrowserContext* browser_context,
+    const GURL& shared_worker_url) {
+  return IsContentSettingAllowedForUrl(
+      browser_context, shared_worker_url,
+      ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS);
+}
+
+bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForServiceWorker(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  const GURL& url = origin.GetURL();
+  return IsContentSettingAllowedForUrl(
+      browser_context, url,
+      ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS);
 }

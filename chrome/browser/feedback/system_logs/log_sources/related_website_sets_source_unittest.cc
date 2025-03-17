@@ -155,13 +155,15 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
   // The context config of the profile adds a new set:
   // { primary: "https://primary2.test",
   // serviceSites: ["https://service.test"}
-  SetContextConfig(net::FirstPartySetsContextConfig(
-      {{primary2_site,
-        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kPrimary, std::nullopt))},
-       {service_site,
-        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kService, std::nullopt))}}));
+  SetContextConfig(
+      net::FirstPartySetsContextConfig::Create(
+          {{primary2_site,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                primary2_site, net::SiteType::kPrimary, std::nullopt))},
+           {service_site,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                primary2_site, net::SiteType::kService, std::nullopt))}})
+          .value());
 
   service()->InitForTesting();
   base::Value::List expected =

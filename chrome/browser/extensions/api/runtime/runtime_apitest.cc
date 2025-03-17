@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/common/url_constants.h"
@@ -45,11 +46,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -61,16 +59,10 @@ namespace extensions {
 
 using ContextType = extensions::browser_test_util::ContextType;
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionApiTestBase = ExtensionPlatformApiTest;
-#else
-using ExtensionApiTestBase = ExtensionApiTest;
-#endif
-
-class RuntimeApiTest : public ExtensionApiTestBase,
+class RuntimeApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
  public:
-  RuntimeApiTest() : ExtensionApiTestBase(GetParam()) {}
+  RuntimeApiTest() : ExtensionApiTest(GetParam()) {}
   ~RuntimeApiTest() override = default;
   RuntimeApiTest(const RuntimeApiTest&) = delete;
   RuntimeApiTest& operator=(const RuntimeApiTest&) = delete;
@@ -539,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension.get());
   extension_service()->AddExtension(extension.get());
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
   TabStripModel* tabs = browser()->tab_strip_model();
 
   ASSERT_EQ(1, tabs->count());
@@ -581,7 +573,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension.get());
   extension_service()->AddExtension(extension.get());
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
 
   // Uninstall the extension and expect its uninstall url to open.
   extension_service()->UninstallExtension(
@@ -605,7 +597,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                                 .AppendASCII("sets_uninstall_url"));
   EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
   extension_service()->AddExtension(extension.get());
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
 
   // Blocklist extension.
   blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
@@ -689,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class RuntimeGetContextsApiTest : public ExtensionApiTestBase {
+class RuntimeGetContextsApiTest : public ExtensionApiTest {
  public:
   RuntimeGetContextsApiTest() = default;
   RuntimeGetContextsApiTest(const RuntimeGetContextsApiTest&) = delete;
@@ -698,7 +690,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTestBase {
   ~RuntimeGetContextsApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionApiTestBase::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     static constexpr char kManifest[] =
         R"({

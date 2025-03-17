@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 
 /** Wrapper for the dom_distiller::DistilledPagePrefs. */
 @JNINamespace("dom_distiller::android")
+@NullMarked
 public final class DistilledPagePrefs {
 
     private final long mDistilledPagePrefsAndroid;

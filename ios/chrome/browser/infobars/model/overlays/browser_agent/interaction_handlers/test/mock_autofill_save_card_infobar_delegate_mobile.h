@@ -7,8 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -23,10 +24,10 @@ class MockAutofillSaveCardInfoBarDelegateMobile
   MockAutofillSaveCardInfoBarDelegateMobile(
       autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const autofill::CreditCard& card,
-      absl::variant<autofill::payments::PaymentsAutofillClient::
-                        LocalSaveCardPromptCallback,
-                    autofill::payments::PaymentsAutofillClient::
-                        UploadSaveCardPromptCallback> callback,
+      std::variant<autofill::payments::PaymentsAutofillClient::
+                       LocalSaveCardPromptCallback,
+                   autofill::payments::PaymentsAutofillClient::
+                       UploadSaveCardPromptCallback> callback,
       const autofill::LegalMessageLines& legal_message_lines,
       const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;
@@ -64,7 +65,9 @@ class MockAutofillSaveCardInfoBarDelegateMobileFactory {
   static std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
   CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
       bool upload,
-      autofill::CreditCard card);
+      autofill::CreditCard card,
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
+          options = {});
 
  private:
   autofill::CreditCard credit_card_;

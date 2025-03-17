@@ -39,12 +39,12 @@ perfetto::TraceConfig GetDefaultTraceConfig(
 MockProducer::MockProducer() = default;
 MockProducer::~MockProducer() = default;
 
-void MockProducer::Connect(PerfettoService* service,
+void MockProducer::Connect(perfetto::TracingService* service,
                            const std::string& producer_name,
                            uid_t uid,
                            pid_t pid) {
   producer_name_ = producer_name;
-  service_endpoint_ = service->GetService()->ConnectProducer(
+  service_endpoint_ = service->ConnectProducer(
       this, perfetto::ClientIdentity(uid, pid), producer_name, 0,
       /*in_process=*/true,
       perfetto::TracingService::ProducerSMBScrapingMode::kDefault, 0, nullptr);

@@ -26,7 +26,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   let bluetoothPairingUi: SettingsBluetoothPairingUiElement;
   let bluetoothConfig: FakeBluetoothConfig;
 
-  setup(async function() {
+  setup(function() {
     bluetoothConfig = new FakeBluetoothConfig();
     bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
     setBluetoothConfigForTesting(bluetoothConfig);

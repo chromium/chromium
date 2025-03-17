@@ -4,10 +4,15 @@
 
 package org.chromium.components.image_fetcher;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /** Factory to provide the image fetcher best suited for the given config. */
+@NullMarked
 public class ImageFetcherFactory {
     /** Alias for createImageFetcher below. */
     public static ImageFetcher createImageFetcher(
@@ -57,7 +62,7 @@ public class ImageFetcherFactory {
     static ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config,
             ImageFetcherBridge imageFetcherBridge,
-            DiscardableReferencePool discardableReferencePool,
+            @Nullable DiscardableReferencePool discardableReferencePool,
             int inMemoryCacheSize) {
         // TODO(crbug.com/41449848):Allow server-side configuration image fetcher clients.
         switch (config) {
@@ -87,7 +92,8 @@ public class ImageFetcherFactory {
                         discardableReferencePool,
                         inMemoryCacheSize);
             default:
-                return null;
+                assert false : "Was " + config;
+                return assumeNonNull(null);
         }
     }
 }

@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 
 namespace cc {
 
@@ -262,8 +263,17 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
         accumulated_metrics_.erase(key);
       }
 
-      if (metrics->HasEnoughDataForReporting())
-        metrics->ReportMetrics();
+      if (metrics->HasEnoughDataForReporting()) {
+        // This value is guaranteed to be positive by the
+        // previous HasEnoughDataForReporting check.
+        int percent_dropped_frames4 = metrics->ReportMetrics();
+        CHECK_GE(percent_dropped_frames4, 0);
+        if (ukm_dropped_frames_data_) {
+          UkmDroppedFramesData dropped_frames_data;
+          dropped_frames_data.percent_dropped_frames = percent_dropped_frames4;
+          ukm_dropped_frames_data_->Write(dropped_frames_data);
+        }
+      }
       if (metrics->HasDataLeftForReporting())
         accumulated_metrics_[key] = std::move(metrics);
     }
@@ -352,6 +362,11 @@ void FrameSequenceTrackerCollection::AddSortedFrame(
   }
 
   DestroyTrackers();
+}
+
+void FrameSequenceTrackerCollection::SetUkmDroppedFramesDestination(
+    UkmDroppedFramesDataShared* dropped_frames_data) {
+  ukm_dropped_frames_data_ = dropped_frames_data;
 }
 
 }  // namespace cc

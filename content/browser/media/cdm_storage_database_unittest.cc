@@ -96,7 +96,7 @@ class MockCdmStorageDatabaseV1 {
  public:
   // The database will be in-memory if `path` is empty.
   explicit MockCdmStorageDatabaseV1()
-      : db_(sql::DatabaseOptions{.page_size = 32768, .cache_size = 8},
+      : db_(sql::DatabaseOptions().set_page_size(32768).set_cache_size(8),
             sql::test::kTestTag) {}
   ~MockCdmStorageDatabaseV1() = default;
 

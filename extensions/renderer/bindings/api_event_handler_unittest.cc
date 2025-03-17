@@ -1208,10 +1208,10 @@ TEST_F(APIEventHandlerTest,
     v8::Local<v8::Function> remove_listener_function =
         FunctionFromString(context, kRemoveListenerFunction);
     {
-      v8::Local<v8::Value> argv[] = {event, listener1};
+      v8::Local<v8::Value> args[] = {event, listener1};
       // Note: Use JSRunner() so that script suspension is respected.
       JSRunner::Get(context)->RunJSFunction(remove_listener_function, context,
-                                            std::size(argv), argv);
+                                            args);
     }
 
     // Since script has been suspended, there should still be two listeners, and

@@ -55,7 +55,7 @@ void Socket::WriteData() {
 
   DCHECK(request.byte_count >= request.bytes_written);
   auto span = request.io_buffer->span()
-                  .subspan(0u, request.byte_count)
+                  .first(request.byte_count)
                   .subspan(request.bytes_written);
   io_buffer_write_ =
       base::MakeRefCounted<net::WrappedIOBuffer>(std::move(span));

@@ -182,7 +182,7 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
     // `GetMobileNotificationPermissionStatusForClient()`.
     BOOL enabled = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
-            PushNotificationClientId::kSafetyCheck, "");
+            PushNotificationClientId::kSafetyCheck, GaiaId());
 
     [self.consumer setSafetyCheckNotificationsEnabled:enabled];
   }

@@ -187,7 +187,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         }
 
         var model =
-                new PropertyModel.Builder(TileViewProperties.ALL_KEYS)
+                new PropertyModel.Builder(MostVisitedTileViewProperties.ALL_KEYS)
                         .with(TileViewProperties.TITLE, title)
                         .with(TileViewProperties.TITLE_LINES, 1)
                         .with(
@@ -198,7 +198,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         .with(
                                 TileViewProperties.ICON_TINT,
                                 ChromeColors.getSecondaryIconTint(
-                                        mContext, /* isIncognito= */ false))
+                                        mContext, /* forceLightIconTint= */ false))
                         .with(TileViewProperties.CONTENT_DESCRIPTION, contentDescription)
                         .with(TileViewProperties.ICON, decoration)
                         .with(

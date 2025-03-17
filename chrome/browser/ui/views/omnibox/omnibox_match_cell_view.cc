@@ -115,17 +115,21 @@ class RoundedCornerImageView : public views::ImageView {
   METADATA_HEADER(RoundedCornerImageView, views::ImageView)
 
  public:
-  RoundedCornerImageView() = default;
+  RoundedCornerImageView();
+
   RoundedCornerImageView(const RoundedCornerImageView&) = delete;
   RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
 
-  // views::ImageView:
-  bool GetCanProcessEventsWithinSubtree() const override { return false; }
+  ~RoundedCornerImageView() override = default;
 
  protected:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override;
 };
+
+RoundedCornerImageView::RoundedCornerImageView() {
+  SetCanProcessEventsWithinSubtree(false);
+}
 
 void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   SkPath mask;
@@ -231,15 +235,23 @@ OmniboxMatchCellView::~OmniboxMatchCellView() = default;
 
 // static
 bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
+  // Extension suggestions in unscoped mode can have an `image_url` specified,
+  // but they should be displayed as icon view instead of an image view (i.e.
+  // following the default icon view size instead the larger image view size).
   return match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
          match.type == AutocompleteMatchType::CALCULATOR ||
-         !match.image_url.is_empty();
+         (!match.image_url.is_empty() &&
+          match.provider->type() !=
+              AutocompleteProvider::TYPE_UNSCOPED_EXTENSION);
 }
 
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
   if (ShouldDisplayImage(match)) {
-    CHECK(AutocompleteMatch::IsSearchType(match.type));
+    // Enterprise search aggregator people suggestions may display an image.
+    CHECK(AutocompleteMatch::IsSearchType(match.type) ||
+          match.provider->type() ==
+              AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE;
   } else if (AutocompleteMatch::IsSearchType(match.type)) {
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION;
@@ -306,10 +318,14 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
       apply_vector_icon(
           AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer_type));
     } else {
+      // Use the hovered background color as the default placeholder color.
       SkColor color = GetColorProvider()->GetColor(
-          GetOmniboxBackgroundColorId(result_view->GetThemeState()));
-      content::ParseHexColorString(match.image_dominant_color, &color);
-      color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
+          GetOmniboxBackgroundColorId(OmniboxPartState::HOVERED));
+      // If `image_dominant_color` is provided, override the default.
+      if (!match.image_dominant_color.empty()) {
+        content::ParseHexColorString(match.image_dominant_color, &color);
+        color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
+      }
 
       gfx::Size size(kUniformRowHeightIconSize, kUniformRowHeightIconSize);
       answer_image_view_->SetImageSize(size);
@@ -352,8 +368,7 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
   const bool is_journeys_suggestion_row =
       match.type == AutocompleteMatchType::HISTORY_CLUSTER;
   const bool is_instant_keyword_row =
-      match.type == AutocompleteMatchType::STARTER_PACK ||
-      match.type == AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH;
+      AutocompleteMatch::IsFeaturedSearchType(match.type);
   if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
       is_instant_keyword_row) {
     // When a PEDAL suggestion has been split out to its own row, apply a square

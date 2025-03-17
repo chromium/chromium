@@ -24,6 +24,8 @@ import {
 class WithTooltip extends AsyncDirective {
   private tooltip: Tooltip|null = null;
 
+  private parentElement: HTMLElement = document.body;
+
   constructor(partInfo: PartInfo) {
     super(partInfo);
     assert(
@@ -36,6 +38,9 @@ class WithTooltip extends AsyncDirective {
     const tooltip = new Tooltip();
     tooltip.ariaHidden = 'true';
     tooltip.anchorElement = element;
+    if (element.parentElement !== null) {
+      this.parentElement = element.parentElement;
+    }
     return tooltip;
   }
 
@@ -47,7 +52,7 @@ class WithTooltip extends AsyncDirective {
     const element = assertInstanceof(part.element, HTMLElement);
     if (this.tooltip === null) {
       this.tooltip = this.createTooltip(element);
-      document.body.appendChild(this.tooltip);
+      this.parentElement.appendChild(this.tooltip);
     }
 
     if (label === undefined) {
@@ -64,13 +69,13 @@ class WithTooltip extends AsyncDirective {
 
   protected override disconnected(): void {
     if (this.tooltip !== null) {
-      document.body.removeChild(this.tooltip);
+      this.parentElement.removeChild(this.tooltip);
     }
   }
 
   protected override reconnected(): void {
     if (this.tooltip !== null) {
-      document.body.appendChild(this.tooltip);
+      this.parentElement.appendChild(this.tooltip);
     }
   }
 

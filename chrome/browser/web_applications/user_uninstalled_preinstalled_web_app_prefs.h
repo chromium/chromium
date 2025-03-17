@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -66,9 +67,10 @@ class UserUninstalledPreinstalledWebAppPrefs {
       const base::flat_map<WebAppManagement::Type,
                            WebApp::ExternalManagementConfig>& url_map,
       const bool only_default);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Clear all apps marked as user uninstalled. Only used for Lacros
   // disablement.
+  // TODO(crbug.com/380780352): Remove after stepping stone.
   void ClearAllApps();
 #endif
 

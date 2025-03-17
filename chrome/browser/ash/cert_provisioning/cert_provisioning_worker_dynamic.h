@@ -53,6 +53,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void MarkWorkerForReset() override;
   bool IsWorkerMarkedForReset() const override;
   bool IsWaiting() const override;
+  const std::string& GetProcessId() const override;
   const CertProfile& GetCertProfile() const override;
   const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;
@@ -60,7 +61,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   base::Time GetLastUpdateTime() const override;
   const std::optional<BackendServerError>& GetLastBackendServerError()
       const override;
-  std::string GetFailureMessage() const override;
+  std::string GetFailureMessageWithPii() const override;
 
  private:
   friend class CertProvisioningSerializer;
@@ -193,7 +194,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
 
   // A convenience method to generate a string that contains some additional
   // info and should be included in all logs.
-  std::string GetLogInfoBlock();
+  std::string GetLogInfoBlock() const;
 
   std::string process_id_;
   CertScope cert_scope_ = CertScope::kUser;
@@ -266,13 +267,13 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // Holds a message describing the reason for failure when the worker fails.
   // This may not contain PII or stable identifiers as it will be logged.
   // If the worker did not fail, this message is empty.
-  std::string failure_message_;
+  std::string failure_message_no_pii_;
   // Optionally holds a message like `failure_message_` but containing PII or
   // stable identifiers for display on the UI.
   // If the worker did not fail, this is absent.
   // If the worker did fail and this is absent, the UI should display
   // failure_message_.
-  std::optional<std::string> failure_message_ui_;
+  std::optional<std::string> failure_message_with_pii_;
 
   // IMPORTANT:
   // Increment this when you add/change any member in

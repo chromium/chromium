@@ -43,34 +43,24 @@ QuickInsertGifView::QuickInsertGifView(
     : original_dimensions_(original_dimensions) {
   // Show a placeholder rect while the gif loads.
   views::Builder<QuickInsertGifView>(this)
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysAppBaseShaded, kQuickInsertGifCornerRadius))
       .SetImage(ui::ImageModel::FromImageSkia(
           image_util::CreateEmptyImage(original_dimensions)))
       .BuildChildren();
 
   fetch_frames_start_time_ = base::TimeTicks::Now();
-  std::move(preview_image_fetcher)
-      .Run(base::BindOnce(&QuickInsertGifView::OnPreviewImageFetched,
-                          weak_factory_.GetWeakPtr()));
-  std::move(frames_fetcher)
-      .Run(base::BindOnce(&QuickInsertGifView::OnFramesFetched,
-                          weak_factory_.GetWeakPtr()));
+  preview_request_ =
+      std::move(preview_image_fetcher)
+          .Run(base::BindOnce(&QuickInsertGifView::OnPreviewImageFetched,
+                              weak_factory_.GetWeakPtr()));
+  frames_request_ =
+      std::move(frames_fetcher)
+          .Run(base::BindOnce(&QuickInsertGifView::OnFramesFetched,
+                              weak_factory_.GetWeakPtr()));
 }
 
 QuickInsertGifView::~QuickInsertGifView() = default;
-
-gfx::Size QuickInsertGifView::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  // Calculate the height to retain aspect ratio.
-  const int preferred_width =
-      views::ImageView::CalculatePreferredSize(available_size).width();
-  const int height = original_dimensions_.width() == 0
-                         ? 0
-                         : (preferred_width * original_dimensions_.height()) /
-                               original_dimensions_.width();
-  return gfx::Size(preferred_width, height);
-}
 
 void QuickInsertGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   views::ImageView::OnBoundsChanged(previous_bounds);
@@ -84,7 +74,11 @@ void QuickInsertGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void QuickInsertGifView::UpdateFrame() {
   CHECK(next_frame_index_ < frames_.size());
-  SetImage(ui::ImageModel::FromImageSkia(frames_[next_frame_index_].image));
+  // Don't update the frame image if the view is not visible, but keep the timer
+  // going.
+  if (!GetVisibleBounds().IsEmpty()) {
+    SetImage(ui::ImageModel::FromImageSkia(frames_[next_frame_index_].image));
+  }
 
   // Schedule next frame update.
   update_frame_timer_.Start(FROM_HERE, frames_[next_frame_index_].duration,

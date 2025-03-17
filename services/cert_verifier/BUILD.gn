@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
 
@@ -18,7 +17,6 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/network_time/time_tracker",
     "//mojo/public/cpp/base:protobuf_support",
     "//net",
@@ -52,7 +50,6 @@ source_set("tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//crypto:test_support",
     "//mojo/public/cpp/base:protobuf_support",
     "//net",

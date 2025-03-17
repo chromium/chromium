@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(lxj): use es6 module when it is ready crbug/1004256
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './crostini_upgrader.mojom-lite.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './crostini_upgrader.mojom-webui.js';
 
 export class BrowserProxy {
   constructor() {
-    /** @type {ash.crostiniUpgrader.mojom.PageCallbackRouter} */
-    this.callbackRouter = new ash.crostiniUpgrader.mojom.PageCallbackRouter();
-    /** @type {ash.crostiniUpgrader.mojom.PageHandlerRemote} */
-    this.handler = new ash.crostiniUpgrader.mojom.PageHandlerRemote();
+    /** @type {PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
+    /** @type {PageHandlerRemote} */
+    this.handler = new PageHandlerRemote();
 
-    const factory = ash.crostiniUpgrader.mojom.PageHandlerFactory.getRemote();
+    const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());

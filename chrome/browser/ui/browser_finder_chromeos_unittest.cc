@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/ui_base_features.h"
 
 namespace test {
@@ -23,6 +24,7 @@ namespace {
 
 constexpr char kTestAccount1[] = "user1@test.com";
 constexpr char kTestAccount2[] = "user2@test.com";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
 
 }  // namespace
 
@@ -47,7 +49,7 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     // Create secondary user/profile.
-    LogIn(kTestAccount2);
+    LogIn(kTestAccount2, kFakeGaia2);
     second_profile_ = CreateProfile(kTestAccount2);
   }
 

@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/wallpaper_handlers",
   "+chrome/browser/ash/wallpaper",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/signin",
   "+chrome/browser/sync",

@@ -14,7 +14,7 @@ ColorChooserExample::~ColorChooserExample() = default;
 
 void ColorChooserExample::CreateExampleView(View* container) {
   container->SetUseDefaultFillLayout(true);
-  container->AddChildView(
+  container->AddChildViewRaw(
       chooser_.MakeWidgetDelegate()->TransferOwnershipOfContentsView());
 }
 

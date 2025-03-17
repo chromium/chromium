@@ -23,10 +23,6 @@ class TabStrip;
 class TabStripRegionView;
 class WebAppFrameToolbarView;
 
-namespace gfx {
-class Point;
-}  // namespace gfx
-
 namespace views {
 class View;
 class Label;
@@ -53,6 +49,7 @@ class BrowserViewLayout : public views::LayoutManager {
   // |browser_view| may be null in tests.
   BrowserViewLayout(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
                     BrowserView* browser_view,
+                    views::View* window_scrim,
                     views::View* top_container,
                     WebAppFrameToolbarView* web_app_frame_toolbar,
                     views::Label* web_app_window_title,
@@ -88,9 +85,7 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     contents_border_widget_ = contents_border_widget;
   }
-  void set_compact_mode(bool is_compact_mode) {
-    is_compact_mode_ = is_compact_mode;
-  }
+
   views::Widget* contents_border_widget() { return contents_border_widget_; }
 
   // Sets the bounds for the contents border.
@@ -107,12 +102,6 @@ class BrowserViewLayout : public views::LayoutManager {
 
   // Returns the view against which the dialog is positioned and parented.
   gfx::NativeView GetHostView();
-
-  // Tests to see if the specified |point| (in nonclient view's coordinates)
-  // is within the views managed by the laymanager. Returns one of
-  // HitTestCompat enum defined in ui/base/hit_test.h.
-  // See also ClientView::NonClientHitTest.
-  int NonClientHitTest(const gfx::Point& point);
 
   // views::LayoutManager overrides:
   void Layout(views::View* host) override;
@@ -177,44 +166,38 @@ class BrowserViewLayout : public views::LayoutManager {
   const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
 
   // The owning browser view.
-  const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
 
   // Child views that the layout manager manages.
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged> top_container_;
-  const raw_ptr<WebAppFrameToolbarView, DanglingUntriaged>
-      web_app_frame_toolbar_;
-  const raw_ptr<views::Label, DanglingUntriaged> web_app_window_title_;
-  const raw_ptr<TabStripRegionView, AcrossTasksDanglingUntriaged>
-      tab_strip_region_view_;
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged> toolbar_;
-  const raw_ptr<InfoBarContainerView, AcrossTasksDanglingUntriaged>
-      infobar_container_;
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged> contents_container_;
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged>
-      left_aligned_side_panel_separator_;
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged> unified_side_panel_;
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged>
-      right_aligned_side_panel_separator_;
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged>
-      side_panel_rounded_corner_;
-  const raw_ptr<ImmersiveModeController, AcrossTasksDanglingUntriaged>
-      immersive_mode_controller_;
-  const raw_ptr<views::View, AcrossTasksDanglingUntriaged> contents_separator_;
+  const raw_ptr<views::View> window_scrim_;
+  const raw_ptr<views::View> top_container_;
+  const raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_;
+  const raw_ptr<views::Label> web_app_window_title_;
+  const raw_ptr<TabStripRegionView> tab_strip_region_view_;
+  const raw_ptr<views::View> toolbar_;
+  const raw_ptr<InfoBarContainerView> infobar_container_;
+  const raw_ptr<views::View> contents_container_;
+  const raw_ptr<views::View> left_aligned_side_panel_separator_;
+  const raw_ptr<views::View> unified_side_panel_;
+  const raw_ptr<views::View> right_aligned_side_panel_separator_;
+  const raw_ptr<views::View> side_panel_rounded_corner_;
+  const raw_ptr<ImmersiveModeController> immersive_mode_controller_;
+  const raw_ptr<views::View> contents_separator_;
 
-  raw_ptr<views::View, DanglingUntriaged> webui_tab_strip_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> loading_bar_ = nullptr;
-  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_ = nullptr;
-  raw_ptr<BookmarkBarView, AcrossTasksDanglingUntriaged> bookmark_bar_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged> download_shelf_ = nullptr;
+  // These views are dynamically set.
+  raw_ptr<views::View> webui_tab_strip_ = nullptr;
+  raw_ptr<views::View> loading_bar_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<BookmarkBarView> bookmark_bar_ = nullptr;
+  raw_ptr<views::View> download_shelf_ = nullptr;
 
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.
+  // TODO(crbug.com/393551539): reset the pointer at appropriate time and
+  // remove the DanglingUntriaged tag.
   raw_ptr<views::Widget, DanglingUntriaged> contents_border_widget_ = nullptr;
-
-  bool is_compact_mode_ = false;
 
   // The bounds within which the vertically-stacked contents of the BrowserView
   // should be laid out within. This is just the local bounds of the

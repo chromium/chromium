@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
-@interface FormObserverHelper ()<FormActivityObserver, WebStateListObserving>
+@interface FormObserverHelper () <FormActivityObserver, WebStateListObserving>
 // The WebStateList this instance is observing in order to update the
 // active WebState.
 @property(nonatomic, assign) WebStateList* webStateList;

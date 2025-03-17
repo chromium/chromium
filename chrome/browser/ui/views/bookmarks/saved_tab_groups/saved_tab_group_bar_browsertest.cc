@@ -43,17 +43,14 @@ class SavedTabGroupBarBrowserTest : public InProcessBrowserTest,
   SavedTabGroupBarBrowserTest() {
     if (GetParam()) {
       features_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration,
-           tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2},
-          {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
     } else {
       features_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
-               tab_groups::kTabGroupsSaveV2});
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
     }
   }
 
-  bool IsV2UIMigrationEnabled() const { return GetParam(); }
+  bool IsMigrationEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -91,7 +88,7 @@ struct ScopedAddObservation : public TabGroupSyncService::Observer {
 // it is already open, we will find that group and focus it.
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
                        ValidGroupIsOpenedInTabstripOnce) {
-  if (IsV2UIMigrationEnabled()) {
+  if (IsMigrationEnabled()) {
     TabGroupSyncService* service =
         TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
     TabStripModel* model = browser()->tab_strip_model();
@@ -156,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
                        DeletedSavedTabGroupDoesNotOpen) {
-  if (IsV2UIMigrationEnabled()) {
+  if (IsMigrationEnabled()) {
     TabGroupSyncService* service =
         TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
     TabStripModel* model = browser()->tab_strip_model();
@@ -224,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
                        SavedTabGroupLoadStoredEntriesV1) {
-  if (IsV2UIMigrationEnabled()) {
+  if (IsMigrationEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 
@@ -253,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
                        SavedTabGroupAddedFromSyncV2) {
-  if (!IsV2UIMigrationEnabled()) {
+  if (!IsMigrationEnabled()) {
     GTEST_SKIP() << "N/A for V1";
   }
   ASSERT_TRUE(SavedTabGroupUtils::IsEnabledForProfile(browser()->profile()));
@@ -306,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
                        EmptySavedTabGroupDoesntDisplayV1) {
-  if (IsV2UIMigrationEnabled()) {
+  if (IsMigrationEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 
@@ -333,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
                        EmptySavedTabGroupDoesntDisplayV2) {
-  if (!IsV2UIMigrationEnabled()) {
+  if (!IsMigrationEnabled()) {
     GTEST_SKIP() << "N/A for V1";
   }
   ASSERT_TRUE(SavedTabGroupUtils::IsEnabledForProfile(browser()->profile()));

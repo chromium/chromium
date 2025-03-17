@@ -4,11 +4,14 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.concurrent.Executor;
 
 /** Boundary interface for TracingController. */
+@NullMarked
 public interface TracingControllerBoundaryInterface {
     boolean isTracing();
 

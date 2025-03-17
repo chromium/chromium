@@ -19,7 +19,9 @@ export enum Page {
   CRS_CERTS = 'crscerts',
   // Sub-pages
   ADMIN_CERTS = 'localcerts/admincerts',
+  // <if expr="not is_chromeos">
   PLATFORM_CERTS = 'localcerts/platformcerts',
+  // </if>
   USER_CERTS = 'localcerts/usercerts',
   PLATFORM_CLIENT_CERTS = 'clientcerts/platformclientcerts',
 }
@@ -38,7 +40,9 @@ export class Route {
   isSubpage(): boolean {
     switch (this.page) {
       case Page.ADMIN_CERTS:
+      // <if expr="not is_chromeos">
       case Page.PLATFORM_CERTS:
+      // </if>
       case Page.PLATFORM_CLIENT_CERTS:
       case Page.USER_CERTS:
         return true;
@@ -96,6 +100,8 @@ export class Router {
       return;
     }
 
+    this.recordMetrics(page);
+
     const oldRoute = this.currentRoute_;
     this.currentRoute_ = newRoute;
     const path = this.currentRoute_.path();
@@ -129,11 +135,47 @@ export class Router {
       return;
     }
 
+    this.recordMetrics(page);
+
     const oldRoute = this.currentRoute_;
     this.currentRoute_ = new Route(oldRoute.page);
     this.currentRoute_.page = page;
     this.notifyObservers_(oldRoute);
   }
+
+  // LINT.IfChange(PageHistogramEnum)
+
+  private pageToMetricInt(page: Page) {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    switch (page) {
+      case Page.LOCAL_CERTS:
+        return 0;
+      case Page.CLIENT_CERTS:
+        return 1;
+      case Page.CRS_CERTS:
+        return 2;
+      case Page.ADMIN_CERTS:
+        return 3;
+      case Page.PLATFORM_CLIENT_CERTS:
+        return 4;
+      // <if expr="not is_chromeos">
+      case Page.PLATFORM_CERTS:
+        return 5;
+      // </if>
+      case Page.USER_CERTS:
+        return 6;
+    }
+  }
+
+  private recordMetrics(page: Page) {
+    const histogramMaxValue = 6;
+    const metricName = 'Net.CertificateManager.PageVisits';
+    chrome.metricsPrivate.recordEnumerationValue(
+        metricName, this.pageToMetricInt(page), histogramMaxValue + 1);
+  }
+
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/net/enums.xml:CertManagerPageEnum)
 }
 
 let routerInstance: Router|null = null;

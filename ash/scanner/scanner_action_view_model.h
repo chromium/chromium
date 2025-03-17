@@ -8,10 +8,10 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/scanner/scanner_action_handler.h"
-#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/manta/proto/scanner.pb.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -19,15 +19,13 @@ struct VectorIcon;
 
 namespace ash {
 
-class ScannerCommandDelegate;
-
 // A view model wrapper around a `ScannerUnpopulatedAction`, which handles the
 // conversion to a user-facing text string, icon, and a callback.
 class ASH_EXPORT ScannerActionViewModel {
  public:
   explicit ScannerActionViewModel(
-      ScannerUnpopulatedAction unpopulated_action,
-      base::WeakPtr<ScannerCommandDelegate> delegate);
+      manta::proto::ScannerAction unpopulated_action,
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes);
   ScannerActionViewModel(const ScannerActionViewModel&);
   ScannerActionViewModel& operator=(const ScannerActionViewModel&);
   ScannerActionViewModel(ScannerActionViewModel&&);
@@ -38,14 +36,18 @@ class ASH_EXPORT ScannerActionViewModel {
   // This may crash if this action has been previously moved.
   std::u16string GetText() const;
   const gfx::VectorIcon& GetIcon() const;
+  manta::proto::ScannerAction::ActionCase GetActionCase() const;
 
-  // Executes this action, running the provided callback with a success value
-  // when the execution finishes.
-  void ExecuteAction(ScannerCommandCallback action_finished_callback) const;
+  const manta::proto::ScannerAction& unpopulated_action() const {
+    return unpopulated_action_;
+  }
+  const scoped_refptr<base::RefCountedMemory>& downscaled_jpeg_bytes() const {
+    return downscaled_jpeg_bytes_;
+  }
 
  private:
-  ScannerUnpopulatedAction unpopulated_action_;
-  base::WeakPtr<ScannerCommandDelegate> delegate_;
+  manta::proto::ScannerAction unpopulated_action_;
+  scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes_;
 };
 
 }  // namespace ash

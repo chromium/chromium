@@ -21,27 +21,6 @@
 #include "url/gurl.h"
 
 namespace commerce {
-bool UrlContainsDiscountUtmTag(const GURL& url) {
-  std::string utm_source;
-  std::string utm_medium;
-  std::string utm_campaign;
-  if (!net::GetValueForKeyInQuery(url, commerce::kUTMSourceLabel,
-                                  &utm_source)) {
-    return false;
-  }
-  if (!net::GetValueForKeyInQuery(url, commerce::kUTMMediumLabel,
-                                  &utm_medium)) {
-    return false;
-  }
-  if (!net::GetValueForKeyInQuery(url, commerce::kUTMCampaignLabel,
-                                  &utm_campaign)) {
-    return false;
-  }
-  return utm_source == commerce::kUTMSourceValue &&
-         utm_medium == commerce::kUTMMediumValue &&
-         utm_campaign == commerce::kUTMCampaignValueForDiscounts;
-}
-
 GURL GetProductSpecsTabUrl(const std::vector<GURL>& urls) {
   auto urls_list = base::Value::List();
 

@@ -125,10 +125,9 @@ class TestShelfModel : public ShelfModel {
     }
   }
 
-  void AddBrowserIcon(bool is_lacros) {
+  void AddBrowserIcon() {
     ShelfItem item;
-    item.id = ShelfID(is_lacros ? app_constants::kLacrosAppId
-                                : app_constants::kChromeAppId);
+    item.id = ShelfID(app_constants::kChromeAppId);
     item.type = TYPE_PINNED_APP;
     Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
   }
@@ -147,9 +146,8 @@ class TestShelfModel : public ShelfModel {
     }
   }
 
-  void SetIconLoadedForBrowser(bool is_lacros) {
-    const ShelfID id(is_lacros ? app_constants::kLacrosAppId
-                               : app_constants::kChromeAppId);
+  void SetIconLoadedForBrowser() {
+    const ShelfID id(app_constants::kChromeAppId);
     int index = ItemIndexByID(id);
     // Expect item exists.
     ASSERT_GE(index, 0);
@@ -201,19 +199,17 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
   }
 
   void LoginOwner() {
-    SimulateUserLogin(kDefaultUserEmail);
+    SimulateUserLogin(kRegularUserLoginInfo);
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
                                         LoginState::LOGGED_IN_USER_REGULAR);
   }
 
   void AddScheduledRestoreWindows(
       const std::vector<int>& browser_ids,
-      bool is_lacros,
       const std::vector<int>& non_browser_ids = {}) {
     std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> window_ids;
     for (int n : browser_ids) {
-      std::string app_name =
-          is_lacros ? app_constants::kLacrosAppId : app_constants::kChromeAppId;
+      std::string app_name = app_constants::kChromeAppId;
       window_ids.emplace_back(n, std::move(app_name));
     }
     for (int n : non_browser_ids) {
@@ -431,19 +427,16 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
 
 class LoginUnlockThroughputRecorderWindowRestoreTest
     : public LoginUnlockThroughputRecorderTestBase,
-      public testing::WithParamInterface<
-          std::tuple</*is_lacros=*/bool, /*has_display=*/bool>> {};
+      public testing::WithParamInterface</*has_display=*/bool> {};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LoginUnlockThroughputRecorderWindowRestoreTest,
-                         testing::Combine(/*is_lacros=*/testing::Bool(),
-                                          /*has_display=*/testing::Bool()));
+                         /*has_display=*/testing::Bool());
 
 // Verifies that window restore metrics are reported correctly.
 TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
        ReportWindowRestoreMetrics) {
-  const bool is_lacros = std::get<0>(GetParam());
-  const bool has_display = std::get<1>(GetParam());
+  const bool has_display = GetParam();
 
   StrictMock<MockPostLoginEventObserver> mock_observer(throughput_recorder());
   StrictMock<MockFunction<void(const char* check_point_name)>> check_point;
@@ -490,8 +483,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 
   check_point.Call("login_done");
 
-  AddScheduledRestoreWindows({1, 2, 3, 4, 5, 6}, is_lacros,
-                             {7, 8, 9, 10, 11, 12});
+  AddScheduledRestoreWindows({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
 
   check_point.Call("restore_windows_scheduled");
 
@@ -535,8 +527,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 // loaded but only after windows were restored.
 TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
        ReportLoginAnimationDurationOnlyAfterWindowsRestore) {
-  const bool is_lacros = std::get<0>(GetParam());
-  const bool has_display = std::get<1>(GetParam());
+  const bool has_display = GetParam();
 
   StrictMock<MockPostLoginEventObserver> mock_observer(throughput_recorder());
   StrictMock<MockFunction<void(const char* check_point_name)>> check_point;
@@ -598,7 +589,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 
   check_point.Call("login_done");
 
-  AddScheduledRestoreWindows({1, 2, 3}, is_lacros);
+  AddScheduledRestoreWindows({1, 2, 3});
 
   check_point.Call("restore_windows_scheduled");
 
@@ -616,9 +607,9 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 
   TestShelfModel model;
   model.InitializeIconList({1, 2, 3});
-  model.AddBrowserIcon(is_lacros);
+  model.AddBrowserIcon();
   model.SetIconsLoadedFor({1, 2, 3});
-  model.SetIconLoadedForBrowser(is_lacros);
+  model.SetIconLoadedForBrowser();
   throughput_recorder()->InitShelfIconList(&model);
 
   check_point.Call("shelf_icons_loaded");
@@ -634,8 +625,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 // were restored but only after shelf icons were loaded.
 TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
        ReportLoginAnimationDurationOnlyAfterShelfIconsLoaded) {
-  const bool is_lacros = std::get<0>(GetParam());
-  const bool has_display = std::get<1>(GetParam());
+  const bool has_display = GetParam();
 
   StrictMock<MockPostLoginEventObserver> mock_observer(throughput_recorder());
   StrictMock<MockFunction<void(const char* check_point_name)>> check_point;
@@ -703,16 +693,16 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 
   TestShelfModel model;
   model.InitializeIconList({1, 2, 3});
-  model.AddBrowserIcon(is_lacros);
+  model.AddBrowserIcon();
   model.SetIconsLoadedFor({1, 2, 3});
-  model.SetIconLoadedForBrowser(is_lacros);
+  model.SetIconLoadedForBrowser();
   throughput_recorder()->InitShelfIconList(&model);
   test::RunSimpleAnimation();
   GiveItSomeTime(base::Milliseconds(100));
 
   check_point.Call("shelf_icons_loaded");
 
-  AddScheduledRestoreWindows({1, 2, 3}, is_lacros);
+  AddScheduledRestoreWindows({1, 2, 3});
 
   check_point.Call("restore_windows_scheduled");
 

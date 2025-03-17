@@ -218,6 +218,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       sidenavCollapsed_: {type: Boolean},
       title_: {type: String},
       twoUpViewEnabled_: {type: Boolean},
+
+      // <if expr="enable_pdf_ink2">
+      useSidePanelForInk_: {type: Boolean},
+      // </if>
+
       viewportZoom_: {type: Number},
       zoomBounds_: {type: Object},
     };
@@ -231,7 +236,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected clockwiseRotations_: number = 0;
   // <if expr="enable_pdf_ink2">
   protected currentBrushColor_?: Color;
-  protected currentBrushSize_: number = 0;
+  protected currentBrushSize_?: number = 0;
   protected currentBrushType_: AnnotationBrushType = AnnotationBrushType.PEN;
   // </if>
   protected docLength_: number = 0;
@@ -293,6 +298,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected title_: string = '';
   protected toolbarEnabled_: boolean = false;
   protected twoUpViewEnabled_: boolean = false;
+  // <if expr="enable_pdf_ink2">
+  private useSidePanelForInk_: boolean = false;
+  // </if>
   protected viewportZoom_: number = 1;
   protected zoomBounds_: ZoomBounds = {min: 0, max: 0};
   private hasSearchifyText_: boolean = false;
@@ -324,7 +332,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     super.connectedCallback();
     this.tracker.add(window, 'beforeunload', this.onBeforeUnload_.bind(this));
     // <if expr="enable_pdf_ink2">
-    this.tracker.add(window, 'resize', this.onResize_.bind(this));
+    const mediaQuery = window.matchMedia('(min-width: 960px)');
+    this.useSidePanelForInk_ = mediaQuery.matches;
+    this.tracker.add(
+        mediaQuery, 'change',
+        () => this.useSidePanelForInk_ = mediaQuery.matches);
     // </if> enable_pdf_ink2
   }
 
@@ -378,6 +390,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     } else {
       chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
     }
+
+    // Listen for hash updates from the browser.
+    chrome.pdfViewerPrivate.onShouldUpdateViewport.addListener(
+        this.handleMaybeUpdateViewport_.bind(this));
 
     this.embedded_ = this.browserApi!.getStreamInfo().embedded;
 
@@ -499,7 +515,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private waitForSidenavTransition_(): Promise<void> {
     return eventToPromise(
         'transitionend',
-        this.shadowRoot!.querySelector<ViewerPdfSidenavElement>(
+        this.shadowRoot.querySelector<ViewerPdfSidenavElement>(
             '#sidenav-container')!);
   }
 
@@ -649,7 +665,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.pluginController_.setPresentationMode(false);
 
     // Ensure that directional keys still work after exiting.
-    this.shadowRoot!.querySelector('embed')!.focus();
+    this.shadowRoot.querySelector('embed')!.focus();
 
     // Set zoom back to original zoom before presentation mode.
     this.viewport.restoreZoomState();
@@ -737,6 +753,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.loadProgress_ = progress;
     }
     super.updateProgress(progress);
+
+    // Text fragment directives should be handled after the document is set to
+    // finished loading.
+    if (progress === 100) {
+      this.maybeRenderTextDirectiveHighlights_(this.originalUrl);
+    }
   }
 
   protected onErrorDialog_() {
@@ -745,9 +767,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       return;
     }
 
-    const errorDialog =
-        this.shadowRoot!.querySelector<ViewerErrorDialogElement>(
-            '#error-dialog')!;
+    const errorDialog = this.shadowRoot.querySelector<ViewerErrorDialogElement>(
+        '#error-dialog')!;
     errorDialog.reloadFn = () => {
       chrome.tabs.reload(this.browserApi!.getStreamInfo().tabId);
     };
@@ -755,7 +776,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   private closePasswordDialog_() {
     const passwordDialog =
-        this.shadowRoot!.querySelector<ViewerPasswordDialogElement>(
+        this.shadowRoot.querySelector<ViewerPasswordDialogElement>(
             '#password-dialog')!;
     if (passwordDialog) {
       passwordDialog.close();
@@ -927,11 +948,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.hasEdits_ = true;
         return;
       case 'setHasSearchifyText':
-        // TODO(crbug.com/360803943): Add test for metrics.
         this.hasSearchifyText_ = true;
         return;
       case 'showSearchifyInProgress':
-        // TODO(crbug.com/360803943): Add test.
         if ((data as unknown as {
               show: boolean,
             }).show) {
@@ -1000,7 +1019,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.sendScriptingMessage({type: 'passwordPrompted'});
     } else {
       const passwordDialog =
-          this.shadowRoot!.querySelector<ViewerPasswordDialogElement>(
+          this.shadowRoot.querySelector<ViewerPasswordDialogElement>(
               '#password-dialog')!;
       assert(passwordDialog);
       passwordDialog.deny();
@@ -1011,6 +1030,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private handleNavigate_(url: string, disposition: WindowOpenDisposition):
       void {
     this.navigator_!.navigate(url, disposition);
+  }
+
+  /** Handles updating viewport params based on the `newUrl` provided. */
+  private handleMaybeUpdateViewport_(newUrl: string) {
+    assert(this.paramsParser);
+    this.paramsParser.getViewportFromUrlParams(newUrl).then(
+        params => this.handleUrlParams(params));
+    this.maybeRenderTextDirectiveHighlights_(newUrl);
   }
 
   // <if expr="enable_pdf_ink2">
@@ -1095,27 +1122,37 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     const blob = new Blob(dataArray);
     const fileName = this.attachments_[index].name;
-    // TODO(crbug.com/373852607): Update to `showSaveFilePicker`.
-    chrome.fileSystem.chooseEntry(
-        {type: 'saveFile', suggestedName: fileName},
-        (entry?: FileSystemFileEntry) => {
-          if (chrome.runtime.lastError) {
-            if (chrome.runtime.lastError.message !== 'User cancelled') {
-              console.error(
-                  'chrome.fileSystem.chooseEntry failed: ' +
-                  chrome.runtime.lastError.message);
-            }
-            return;
-          }
-          entry!.createWriter((writer: FileWriter) => {
-            writer.write(blob);
-            // <if expr="enable_ink">
-            // Unblock closing the window now that the user has saved
-            // successfully.
-            this.setShowBeforeUnloadDialog_(false);
-            // </if>
-          });
+    if (this.pdfUseShowSaveFilePicker_) {
+      try {
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: fileName,
         });
+
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('window.showSaveFilePicker failed: ' + error);
+        }
+      }
+    } else {
+      chrome.fileSystem.chooseEntry(
+          {type: 'saveFile', suggestedName: fileName},
+          (entry?: FileSystemFileEntry) => {
+            if (chrome.runtime.lastError) {
+              if (chrome.runtime.lastError.message !== 'User cancelled') {
+                console.error(
+                    'chrome.fileSystem.chooseEntry failed: ' +
+                    chrome.runtime.lastError.message);
+              }
+              return;
+            }
+            entry!.createWriter((writer: FileWriter) => {
+              writer.write(blob);
+            });
+          });
+    }
   }
 
   /**
@@ -1123,7 +1160,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * save.
    * @param streamUrl Unique identifier for a PDF Viewer instance.
    */
-  private async onSave_(streamUrl: string) {
+  private onSave_(streamUrl: string) {
     if (streamUrl !== this.browserApi!.getStreamInfo().streamUrl) {
       return;
     }
@@ -1140,6 +1177,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       saveMode = SaveRequestType.ANNOTATION;
     } else if (this.hasEdits_) {
       saveMode = SaveRequestType.EDITED;
+    } else if (this.hasSearchifyText_) {
+      saveMode = SaveRequestType.SEARCHIFIED;
     } else {
       saveMode = SaveRequestType.ORIGINAL;
     }
@@ -1179,7 +1218,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // Workaround for crbug.com/1119944, so that the PDF plugin resizes only
     // once when the sidenav is opened/closed.
-    const container = this.shadowRoot!.querySelector('#sidenav-container')!;
+    const container = this.shadowRoot.querySelector('#sidenav-container')!;
     if (!this.sidenavCollapsed_) {
       container.classList.add('floating');
       container.addEventListener('transitionend', () => {
@@ -1260,10 +1299,27 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
 
   /**
+   * Sends a message to the PDF plugin to highlight the provided text
+   * directives if any.
+   */
+  private maybeRenderTextDirectiveHighlights_(url: string) {
+    assert(this.paramsParser);
+    const textDirectives = this.paramsParser.getTextFragments(url);
+    if (textDirectives.length > 0) {
+      this.pluginController_.highlightTextFragments(textDirectives);
+    }
+  }
+
+  /**
    * Saves the current PDF document to disk.
    */
   private async save_(requestType: SaveRequestType) {
     this.recordSaveMetrics_(requestType);
+
+    // TODO(crbug.com/382610226): Update for `SaveRequestType.SEARCHIFIED` to
+    // allow users to select saving original PDF or text extracted one.
+    // To do so, the save type should be asked first, and then content would be
+    // fetched based on the selected type.
 
     // If we have entered annotation mode we must require the local
     // contents to ensure annotations are saved, unless the user specifically
@@ -1301,17 +1357,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
 
     // Make sure file extension is .pdf, avoids dangerous extensions.
-    let fileName = result!.fileName;
+    let fileName = result.fileName;
     if (!fileName.toLowerCase().endsWith('.pdf')) {
       fileName = fileName + '.pdf';
     }
 
     // Create blob before callback to avoid race condition.
     const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
-    // TODO(crbug.com/373852607): When  OOPIF PDF is enabled, cross origin
-    // checks block the request for `showSaveFilePicker`. Fix the issue by
-    // allow-listing the request from PDF Viewer.
-    if (!this.pdfOopifEnabled && this.pdfUseShowSaveFilePicker_) {
+    if (this.pdfUseShowSaveFilePicker_) {
       try {
         const fileHandle = await window.showSaveFilePicker({
           suggestedName: fileName,
@@ -1409,17 +1462,31 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case SaveRequestType.EDITED:
         record(UserAction.SAVE_EDITED);
         break;
+      case SaveRequestType.SEARCHIFIED:
+        // TODO(crbug.com/382610226): Update metric after the code is updated to
+        // give users the option to save searchified or original PDF, and add
+        // test.
+        record(UserAction.SAVE_SEARCHIFIED);
+        break;
     }
   }
 
+  // <if expr="enable_ink">
   protected async onPrint_() {
     record(UserAction.PRINT);
-    // <if expr="enable_ink">
     await this.exitAnnotationMode_();
-    // </if>
     assert(this.currentController);
     this.currentController.print();
   }
+  // </if>
+
+  // <if expr="not enable_ink">
+  protected onPrint_() {
+    record(UserAction.PRINT);
+    assert(this.currentController);
+    this.currentController.print();
+  }
+  // </if>
 
   /**
    * Updates the toolbar's annotation available flag depending on current
@@ -1441,7 +1508,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    *     shown if the Ink side panel is shown.
    */
   protected shouldShowInkBottomToolbar_(): boolean {
-    return this.inInk2AnnotationMode_() && !this.shouldShowInkSidePanel_();
+    return this.inInk2AnnotationMode_() && !this.useSidePanelForInk_;
   }
 
   /**
@@ -1450,16 +1517,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    *     window width is at least a certain width.
    */
   protected shouldShowInkSidePanel_(): boolean {
-    return this.inInk2AnnotationMode_() && window.innerWidth >= 960;
-  }
-
-  /**
-   * On resize, request updates so that the correct Ink elements will be shown.
-   */
-  private onResize_() {
-    if (this.inInk2AnnotationMode_()) {
-      this.requestUpdate();
-    }
+    return this.inInk2AnnotationMode_() && this.useSidePanelForInk_;
   }
 
   /**

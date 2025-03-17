@@ -8,13 +8,13 @@
 // components/autofill/core/browser/autofill_regexes_unittest.cc.
 // Only these tests will be kept once the pattern provider launches.
 
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
@@ -178,9 +178,9 @@ TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   std::erase_if(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_file()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, LanguageCode(""), pattern_file()),
               UnorderedElementsAreArray(expected));
-  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_file()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, LanguageCode(""), pattern_file()),
               Each(Not(IsSupplementary)));
 }
 
@@ -190,8 +190,8 @@ TEST_P(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   const LanguageCode kNonexistingLanguage("foo");
   EXPECT_THAT(GetMatchPatterns(kSomeName, kNonexistingLanguage, pattern_file()),
-              ElementsAreArray(
-                  GetMatchPatterns(kSomeName, std::nullopt, pattern_file())));
+              ElementsAreArray(GetMatchPatterns(kSomeName, LanguageCode(""),
+                                                pattern_file())));
 }
 
 // Tests that for a given pattern name, the non-English languages are

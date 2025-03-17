@@ -73,7 +73,7 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The 'identity-credentials-get' feature is not enabled in this "
@@ -82,11 +82,6 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
   }
 
   DCHECK(provider);
-
-  if (!provider->hasConfigURL()) {
-    resolver->RejectWithTypeError("Missing the provider's configURL.");
-    return promise;
-  }
 
   KURL provider_url(provider->configURL());
   String client_id = provider->clientId();

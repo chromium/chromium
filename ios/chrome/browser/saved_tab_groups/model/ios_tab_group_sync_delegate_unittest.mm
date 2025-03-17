@@ -17,6 +17,7 @@
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
@@ -453,7 +454,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroup) {
 
   // Move the second tab at the end and remove the first tab.
   saved_group.MoveTabLocally(kSecondTabId, 2);
-  saved_group.RemoveTabFromSync(kFirstTabId);
+  saved_group.RemoveTabFromSync(kFirstTabId, GaiaId());
   delegate_->UpdateLocalTabGroup(saved_group);
   second_web_state = web_state_list->GetWebStateAt(2);
   third_web_state = web_state_list->GetWebStateAt(1);

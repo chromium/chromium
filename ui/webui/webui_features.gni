@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 
 declare_args() {
   # Optimize parts of Chrome's UI written with web technologies (HTML/CSS/JS)
@@ -17,4 +18,34 @@ declare_args() {
   # Whether to inline source maps during build. Cannot be enabled when
   # `optimize_webui=true`.
   enable_webui_inline_sourcemaps = use_javascript_coverage
+
+  # Flag used for loading WebUI files directly from disk instead of .pak files.
+  # It causes additional file path info for each file to be added into Grit
+  # generated '*_resource_map.cc' files during the build, which is then used at
+  # runtime to read such files.
+  # Meant to be used during local development only (requires a local checkout
+  # and build) with the runtime --load-webui-from-disk command line switch.
+  load_webui_from_disk = false
+
+  # Enable generation of compiled JS bytecode for opted-in WebUI scripts for
+  # compatible build configurations (see comment for the
+  # `enable_webui_generate_code_cache` update below).
+  enable_webui_generate_code_cache = true
+}
+
+# Build-time WebUI code caching is only used in optimize_webui builds. When the
+# host and current toolchains are the same there are issues instrumenting the
+# code_cache_generator msan binaries, see crbug.com/40055221#comment17.
+# TODO(crbug.com/399764218): Enable this build-step on cross-compiled builds.
+# This is necessary for universalized mac builds that produce x64 / arm64 chrome
+# builds in the same package.
+if (enable_webui_generate_code_cache) {
+  enable_webui_generate_code_cache =
+      optimize_webui && host_toolchain == current_toolchain && !is_msan &&
+      (is_linux || is_win)
+}
+
+if (load_webui_from_disk) {
+  assert(is_linux || is_mac || is_win || is_chromeos,
+         "load_webui_from_disk not available")
 }

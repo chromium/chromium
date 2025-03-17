@@ -244,9 +244,6 @@ Database* DatabaseContext::OpenDatabase(const String& name,
   }
 
   SetHasOpenDatabases();
-  ExecutionContext* context = GetExecutionContext();
-  DatabaseClient::From(context)->DidOpenDatabase(
-      database, context->GetSecurityOrigin()->Host(), name, expected_version);
   DCHECK(database);
   return database;
 }

@@ -124,7 +124,9 @@ void AppInstall::SendPing(int exit_code, base::OnceClosure callback) {
           base::BindOnce(
               [](base::OnceClosure callback, UpdaterScope scope,
                  int exit_code) {
-                if (exit_code == kErrorOk || !AreRawUsageStatsEnabled(scope)) {
+                if (exit_code == kErrorOk ||
+                    !UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+                        scope)) {
                   std::move(callback).Run();
                   return;
                 }
@@ -139,7 +141,8 @@ void AppInstall::SendPing(int exit_code, base::OnceClosure callback) {
                         {
                             .event_type =
                                 update_client::protocol_request::kEventInstall,
-                            .result = 1,
+                            .result = update_client::protocol_request::
+                                kEventResultError,
                             .error_code = exit_code,
                         },
                         base::BindOnce(
@@ -206,7 +209,7 @@ void AppInstall::FirstTaskRun() {
     app_name_ = app_args.app_name;
   } else {
     // If no apps are present, try to use --app-id, if present.
-    app_id_ = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+    app_id_ = base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
         kAppIdSwitch);
   }
 
@@ -225,17 +228,7 @@ void AppInstall::GetVersionDone(const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG_IF(1, version.IsValid()) << "Active version: " << version.GetString();
   if (version.IsValid() && version >= base::Version(kUpdaterVersion)) {
-    update_service_->FetchPolicies(base::BindOnce(
-        [](scoped_refptr<AppInstall> app_install, int result) {
-          if (result != kErrorOk) {
-            LOG(ERROR) << "FetchPolicies failed: " << result;
-            app_install->PingAndShutdown(result);
-            return;
-          }
-
-          app_install->MaybeInstallApp();
-        },
-        base::WrapRefCounted(this)));
+    MaybeInstallApp();
     return;
   }
   InstallCandidate(updater_scope(),
@@ -252,7 +245,7 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
   }
 
   if (valid_version) {
-    FetchPolicies();
+    RegisterUpdater();
     return;
   }
 
@@ -290,23 +283,7 @@ void AppInstall::WakeCandidate() {
   // qualify, and possibly promote this version as a result.
   CreateUpdateServiceInternalProxy(updater_scope())
       ->Hello(base::BindOnce(&AppInstall::CreateUpdateServiceProxy, this)
-                  .Then(base::BindOnce(&AppInstall::FetchPolicies, this)));
-}
-
-void AppInstall::FetchPolicies() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  update_service_->FetchPolicies(base::BindOnce(
-      [](scoped_refptr<AppInstall> app_install, int result) {
-        if (result != kErrorOk) {
-          LOG(ERROR) << "FetchPolicies failed: " << result;
-          app_install->PingAndShutdown(result);
-          return;
-        }
-
-        app_install->RegisterUpdater();
-      },
-      base::WrapRefCounted(this)));
+                  .Then(base::BindOnce(&AppInstall::RegisterUpdater, this)));
 }
 
 void AppInstall::RegisterUpdater() {

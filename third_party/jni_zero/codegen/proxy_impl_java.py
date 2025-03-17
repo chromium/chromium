@@ -23,7 +23,6 @@ class _Context:
     imports = jni_obj.GetClassesToBeImported() + [
         java_types.JavaClass('org/jni_zero/CheckDiscard'),
         java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),
-        java_types.JavaClass('org/jni_zero/NativeLibraryLoadedStatus'),
         java_types.JavaClass('org/jni_zero/internal/NullUnmarked'),
         java_types.JavaClass('org/jni_zero/internal/Nullable'),
     ]
@@ -50,7 +49,7 @@ public {return_type_str} {native.name}({sig_params})""")
       sb(f'assert {native.params[0].name} != 0;\n')
     for p in native.params:
       if not p.java_type.is_primitive() and not p.java_type.nullable:
-        sb(f'assert {p.name} != null;\n')
+        sb(f'assert {p.name} != null : "Parameter \\"{p.name}\\" was null. Add @Nullable to it?";\n')
     with sb.statement():
       if not native.return_type.is_void():
         sb(f'return ({return_type_str}) ')
@@ -76,7 +75,6 @@ public static {ctx.interface_name} get() {{
   if (holder != null && holder.value != null) {{
     return ({ctx.interface_name}) holder.value;
   }}
-  NativeLibraryLoadedStatus.checkLoaded();
   return new {ctx.proxy_class.name}();
 }}
 

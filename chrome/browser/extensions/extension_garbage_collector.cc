@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_tracker.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -245,15 +244,15 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
 
 void ExtensionGarbageCollector::OnBeginCrxInstall(
     content::BrowserContext* context,
-    const CrxInstaller& installer,
     const ExtensionId& extension_id) {
   crx_installs_in_progress_++;
 }
 
 void ExtensionGarbageCollector::OnFinishCrxInstall(
     content::BrowserContext* context,
-    const CrxInstaller& installer,
+    const base::FilePath& source_file,
     const ExtensionId& extension_id,
+    const Extension* extension,
     bool success) {
   crx_installs_in_progress_--;
   if (crx_installs_in_progress_ < 0) {

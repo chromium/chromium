@@ -156,9 +156,9 @@ public class SplitPreloaderTest {
         assertThat(mContext.getUiThreadContextNames()).containsExactly(SPLIT_A);
         assertThat(mContext.getBackgroundThreadContextNames()).containsExactly(SPLIT_A);
         assertTrue(tracker.getUiContext().wasCreatedOnUiThread());
-        assertEquals(tracker.getUiContext().getName(), SPLIT_A);
+        assertEquals(SPLIT_A, tracker.getUiContext().getName());
         assertFalse(tracker.getBackgroundContext().wasCreatedOnUiThread());
-        assertEquals(tracker.getBackgroundContext().getName(), SPLIT_A);
+        assertEquals(SPLIT_A, tracker.getBackgroundContext().getName());
     }
 
     @Test
@@ -174,7 +174,7 @@ public class SplitPreloaderTest {
         assertThat(mContext.getUiThreadContextNames()).containsExactly(SPLIT_A);
         assertThat(mContext.getBackgroundThreadContextNames()).containsExactly(SPLIT_A);
         assertTrue(tracker.getUiContext().wasCreatedOnUiThread());
-        assertEquals(tracker.getUiContext().getName(), SPLIT_A);
+        assertEquals(SPLIT_A, tracker.getUiContext().getName());
     }
 
     @Test
@@ -192,10 +192,10 @@ public class SplitPreloaderTest {
         assertThat(mContext.getUiThreadContextNames()).containsExactly(SPLIT_A, SPLIT_B);
         assertThat(mContext.getBackgroundThreadContextNames()).containsExactly(SPLIT_A, SPLIT_B);
         assertTrue(trackerA.getUiContext().wasCreatedOnUiThread());
-        assertEquals(trackerA.getUiContext().getName(), SPLIT_A);
+        assertEquals(SPLIT_A, trackerA.getUiContext().getName());
 
         assertTrue(trackerB.getUiContext().wasCreatedOnUiThread());
-        assertEquals(trackerB.getUiContext().getName(), SPLIT_B);
+        assertEquals(SPLIT_B, trackerB.getUiContext().getName());
     }
 
     @Test

@@ -6,10 +6,10 @@
 
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_page_handler_impl.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/data_sharing_internals_resources.h"
-#include "chrome/grit/data_sharing_internals_resources_map.h"
+#include "components/data_sharing/data_sharing_internals/webui/data_sharing_internals_page_handler_impl.h"
+#include "components/grit/data_sharing_internals_resources.h"
+#include "components/grit/data_sharing_internals_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"

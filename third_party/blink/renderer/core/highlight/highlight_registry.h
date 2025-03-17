@@ -98,6 +98,8 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
       const HighlightsFromPointOptions* options);
 
  private:
+  bool IsAbstractRangePaintable(AbstractRange*, Document*) const;
+
   HighlightRegistryMap highlights_;
   Member<LocalFrame> frame_;
   // Only valid after ValidateHighlightMarkers(), used to optimize painting.

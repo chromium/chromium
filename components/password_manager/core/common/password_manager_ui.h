@@ -60,7 +60,7 @@ enum State {
   BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
 
   // A form that contained generated password and was missing username, was
-  // successfully submited. Only used when there were no credentials saved for
+  // successfully submitted. Only used when there were no credentials saved for
   // current domain.
   GENERATED_PASSWORD_CONFIRMATION_STATE,
 
@@ -76,10 +76,6 @@ enum State {
 
   // Move credential bubble opened from the footer in manage bubble.
   MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE,
-
-  // DefaultStoreChanged bubble opened before showing save/update bubble, since
-  // the password store was changed without user interaction.
-  PASSWORD_STORE_CHANGED_BUBBLE_STATE,
 
   // Passkey was successfully created and saved.
   PASSKEY_SAVED_CONFIRMATION_STATE,

@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -61,9 +62,10 @@ void AndroidCdmFactory::Create(
   // TODO (b/263310318) Remove AesDecryptor once ClearKey on Android is fixed.
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting) &&
       IsExternalClearKey(cdm_config.key_system)) {
-    scoped_refptr<ContentDecryptionModule> cdm(
-        new AesDecryptor(session_message_cb, session_closed_cb,
-                         session_keys_change_cb, session_expiration_update_cb));
+    scoped_refptr<ContentDecryptionModule> cdm =
+        base::MakeRefCounted<AesDecryptor>(
+            session_message_cb, session_closed_cb, session_keys_change_cb,
+            session_expiration_update_cb);
     std::move(bound_cdm_created_cb).Run(cdm, CreateCdmStatus::kSuccess);
     return;
   }

@@ -39,10 +39,6 @@ extern const char kCleanupForDowngradeVersion[];
 extern const char kConfigureBrowserInDirectory[];
 
 inline constexpr std::string_view kDeveloper = "developer";
-inline constexpr std::string_view kDisableSystemTracing =
-    "disable-system-tracing";
-inline constexpr std::string_view kEnableSystemTracing =
-    "enable-system-tracing";
 
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];

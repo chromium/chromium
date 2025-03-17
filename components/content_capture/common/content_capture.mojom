@@ -11,6 +11,25 @@ import "components/content_capture/common/content_capture_data.mojom";
 // content. The interface has one instance per RenderFrameHost in the
 // browser process. All methods are called by renderer.
 interface ContentCaptureReceiver {
+  // Invoked to notify that a batch of Content Capture has completed.
+  // Usually called immediately after all callings to DidCaptureContent,
+  // DidUpdateContent and DidRemoveContent within a frame update.
+  // This notifies the downstream recipient the end of a batch content capture
+  // events, usually correspond to a frame update. The downstream may leverage
+  // signal as the opportunity to start processing the previously received
+  // events.
+  // The example calling sequence is shown below:
+  // browser -> renderer: ContentCaptureSender::StartCapture
+  // browser <- renderer: ContentCaptureReceiver::DidCaptureContent
+  // browser <- renderer: ContentCaptureReceiver::DidUpdateContent
+  // browser <- renderer: ContentCaptureReceiver::DidUpdateContent
+  // ...
+  // browser <- renderer: ContentCaptureReceiver::DidRemoveContent
+  // ... (these 3 callbacks are randomly called case by case)
+  // browser <- renderer: ContentCaptureReceiver::DidCompleteBatchCaptureContent
+  // browser -> renderer: ContentCaptureSender::StopCapture
+  DidCompleteBatchCaptureContent();
+
   // Invoked when the |data| is captured, |first_data| indicates if
   // this is first data from the document.
   DidCaptureContent(ContentCaptureData data, bool first_data);

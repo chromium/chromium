@@ -7,6 +7,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -23,7 +24,7 @@ TEST(AccountPrefUtils, ShouldGetAndSetScalarPref) {
   pref_service.registry()->RegisterDictionaryPref(kPrefPathScalar);
 
   const signin::GaiaIdHash gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId("gaia_id");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id"));
 
   ASSERT_FALSE(
       GetAccountKeyedPrefValue(&pref_service, kPrefPathScalar, gaia_id_hash));
@@ -48,9 +49,9 @@ TEST(AccountPrefUtils, ShouldKeepGaiaIdsSeparateForScalarPref) {
   pref_service.registry()->RegisterDictionaryPref(kPrefPathScalar);
 
   const signin::GaiaIdHash gaia_id_hash_1 =
-      signin::GaiaIdHash::FromGaiaId("gaia_id_1");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_1"));
   const signin::GaiaIdHash gaia_id_hash_2 =
-      signin::GaiaIdHash::FromGaiaId("gaia_id_2");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_2"));
 
   SetAccountKeyedPrefValue(&pref_service, kPrefPathScalar, gaia_id_hash_1,
                            base::Value("value_1"));
@@ -72,7 +73,7 @@ TEST(AccountPrefUtils, ShouldGetAndSetDictPrefEntries) {
   pref_service.registry()->RegisterDictionaryPref(kPrefPathDict);
 
   const signin::GaiaIdHash gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId("gaia_id");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id"));
 
   const char kKey1[] = "key1";
   const char kKey2[] = "key2";
@@ -112,9 +113,9 @@ TEST(AccountPrefUtils, ShouldKeepGaiaIdsSeparateForDictPref) {
   pref_service.registry()->RegisterDictionaryPref(kPrefPathDict);
 
   const signin::GaiaIdHash gaia_id_hash_1 =
-      signin::GaiaIdHash::FromGaiaId("gaia_id_1");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_1"));
   const signin::GaiaIdHash gaia_id_hash_2 =
-      signin::GaiaIdHash::FromGaiaId("gaia_id_2");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_2"));
 
   const char kKey[] = "key";
 
@@ -139,11 +140,11 @@ TEST(AccountPrefUtils, ShouldClearValuesForUnlistedAccounts) {
   pref_service.registry()->RegisterDictionaryPref(kPrefPathDict);
 
   const signin::GaiaIdHash gaia_id_hash_1 =
-      signin::GaiaIdHash::FromGaiaId("gaia_id_1");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_1"));
   const signin::GaiaIdHash gaia_id_hash_2 =
-      signin::GaiaIdHash::FromGaiaId("gaia_id_2");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_2"));
   const signin::GaiaIdHash gaia_id_hash_3 =
-      signin::GaiaIdHash::FromGaiaId("gaia_id_3");
+      signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_3"));
 
   const char kKey[] = "key";
 

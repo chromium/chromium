@@ -8,6 +8,7 @@
 
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 

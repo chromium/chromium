@@ -4,6 +4,7 @@
 
 #include "ash/webui/personalization_app/search/search_handler.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -22,7 +23,6 @@
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -497,7 +497,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, NoTimeOfDayWallpaperResults) {
     std::vector<mojom::SearchResultPtr> time_of_day_search_results =
         RunSearch(message_id);
 
-    auto time_of_day_result = base::ranges::find_if(
+    auto time_of_day_result = std::ranges::find_if(
         time_of_day_search_results, [](const auto& result) {
           return result->search_concept_id ==
                  mojom::SearchConceptId::kTimeOfDayWallpaper;
@@ -512,7 +512,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, NoAmbientModeTimeOfDayResults) {
     std::vector<mojom::SearchResultPtr> time_of_day_search_results =
         RunSearch(message_id);
 
-    auto time_of_day_result = base::ranges::find_if(
+    auto time_of_day_result = std::ranges::find_if(
         time_of_day_search_results, [](const auto& result) {
           return result->search_concept_id ==
                  mojom::SearchConceptId::kAmbientModeTimeOfDay;
@@ -539,7 +539,7 @@ TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest, TimeOfDayWallpaperSearch) {
     std::vector<mojom::SearchResultPtr> time_of_day_search_results =
         RunSearch(message_id);
 
-    auto time_of_day_result = base::ranges::find_if(
+    auto time_of_day_result = std::ranges::find_if(
         time_of_day_search_results, [](const auto& result) {
           return result->search_concept_id ==
                  mojom::SearchConceptId::kTimeOfDayWallpaper;
@@ -557,7 +557,7 @@ TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
     std::vector<mojom::SearchResultPtr> time_of_day_search_results =
         RunSearch(message_id);
 
-    auto time_of_day_result = base::ranges::find_if(
+    auto time_of_day_result = std::ranges::find_if(
         time_of_day_search_results, [](const auto& result) {
           return result->search_concept_id ==
                  mojom::SearchConceptId::kAmbientModeTimeOfDay;
@@ -577,7 +577,7 @@ TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
     std::vector<mojom::SearchResultPtr> time_of_day_search_results =
         RunSearch(message_id);
 
-    auto time_of_day_result = base::ranges::find_if(
+    auto time_of_day_result = std::ranges::find_if(
         time_of_day_search_results, [](const auto& result) {
           return result->search_concept_id ==
                  mojom::SearchConceptId::kTimeOfDayWallpaper;
@@ -593,7 +593,7 @@ TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
   // to false. This cannot happen during a session for a given account, so no
   // need for an observer method. Log in as a non-eligible account and clear and
   // recreate the search handler to receive updates.
-  SimulateUserLogin("asdf@example.com");
+  SimulateUserLogin({"asdf@example.com"});
   ClearSearchTagRegistry();
   InitSearchHandler();
   {
@@ -602,7 +602,7 @@ TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
     std::vector<mojom::SearchResultPtr> other_search_results =
         RunSearch(IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER);
     auto desired_result =
-        base::ranges::find_if(other_search_results, [](const auto& result) {
+        std::ranges::find_if(other_search_results, [](const auto& result) {
           return result->search_concept_id ==
                  mojom::SearchConceptId::kChangeWallpaper;
         });
@@ -613,7 +613,7 @@ TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
     std::vector<mojom::SearchResultPtr> time_of_day_search_results =
         RunSearch(message_id);
 
-    auto time_of_day_result = base::ranges::find_if(
+    auto time_of_day_result = std::ranges::find_if(
         time_of_day_search_results, [](const auto& result) {
           return result->search_concept_id ==
                  mojom::SearchConceptId::kAmbientModeTimeOfDay;

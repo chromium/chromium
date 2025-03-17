@@ -46,6 +46,7 @@ android_apk("system_webview_shell_apk") {
 android_library("system_webview_shell_apk_java") {
   testonly = true
   sources = [
+    "apk/src/org/chromium/webview_shell/EdgeToEdgeUtil.java",
     "apk/src/org/chromium/webview_shell/JankActivity.java",
     "apk/src/org/chromium/webview_shell/MultiFileSelector.java",
     "apk/src/org/chromium/webview_shell/PageCyclerTestActivity.java",
@@ -70,6 +71,7 @@ android_library("system_webview_shell_apk_java") {
     "//net/android:net_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -154,13 +156,14 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     ":system_webview_shell_apk_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
   data = [
     "test/data/",
-    "//third_party/chromium-variations",
+    "//components/variations/test_data/cipd",
   ]
 
   # Tell GN to ignore 'incremental_install' even if the user has it in their GN

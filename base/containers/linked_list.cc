@@ -6,9 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace base {
-
-namespace internal {
+namespace base::internal {
 
 LinkNodeBase::LinkNodeBase() = default;
 
@@ -56,6 +54,4 @@ void LinkNodeBase::InsertAfterBase(LinkNodeBase* e) {
   e->next_ = this;
 }
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal

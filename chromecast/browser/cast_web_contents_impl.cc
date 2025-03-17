@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/cast_web_contents_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -66,7 +66,7 @@ size_t next_id = 0;
 // Remove the given CastWebContents pointer from the global instance vector.
 void RemoveCastWebContents(CastWebContents* instance) {
   auto& all_cast_web_contents = CastWebContents::GetAll();
-  auto it = base::ranges::find(all_cast_web_contents, instance);
+  auto it = std::ranges::find(all_cast_web_contents, instance);
   if (it != all_cast_web_contents.end()) {
     all_cast_web_contents.erase(it);
   }
@@ -95,8 +95,8 @@ std::vector<CastWebContents*>& CastWebContents::GetAll() {
 CastWebContents* CastWebContents::FromWebContents(
     content::WebContents* web_contents) {
   auto& all_cast_web_contents = CastWebContents::GetAll();
-  auto it = base::ranges::find(all_cast_web_contents, web_contents,
-                               &CastWebContents::web_contents);
+  auto it = std::ranges::find(all_cast_web_contents, web_contents,
+                              &CastWebContents::web_contents);
   if (it == all_cast_web_contents.end()) {
     return nullptr;
   }

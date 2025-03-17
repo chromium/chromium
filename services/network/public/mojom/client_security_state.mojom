@@ -19,8 +19,13 @@ import "services/network/public/mojom/ip_address_space.mojom";
 //  - public to local
 //  - private to local
 //
-// See the definition in the Private Network Access specification:
+// See the definition in the Private Network Access(PNA) specification:
 // https://wicg.github.io/private-network-access/#ip-address-space
+//
+// Note: work is being done to move from the PNA specification to LNA.
+//
+// Explainer:
+// https://github.com/explainers-by-googlers/local-network-access
 enum PrivateNetworkRequestPolicy {
   // Allow the requests.
   kAllow,
@@ -38,6 +43,15 @@ enum PrivateNetworkRequestPolicy {
   // Send a preflight ahead of the actual request, and block the request if
   // the preflight request fails.
   kPreflightBlock,
+
+
+  // Display a warning in devtools when a request will require user permission
+  // in the future when LNA launches.
+  kPermissionWarn,
+
+  // Block requests unless the user explicitly grants permission for the
+  // request to proceed.
+  kPermissionBlock,
 };
 
 struct ClientSecurityState {

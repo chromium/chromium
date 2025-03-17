@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/web_view/public/cwv_preview_element_info.h"
+
 #import "ios/web_view/internal/cwv_preview_element_info_internal.h"
 
 @implementation CWVPreviewElementInfo

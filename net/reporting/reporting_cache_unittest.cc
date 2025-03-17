@@ -547,13 +547,14 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
   ASSERT_EQ(3u, reports.size());
 
   const auto report1 =
-      base::ranges::find(reports, source1, &ReportingReport::reporting_source);
+      std::ranges::find(reports, source1, &ReportingReport::reporting_source);
   CHECK(report1 != reports.end());
   const auto report2 =
-      base::ranges::find(reports, source2, &ReportingReport::reporting_source);
+      std::ranges::find(reports, source2, &ReportingReport::reporting_source);
   CHECK(report2 != reports.end());
-  const auto report3 = base::ranges::find(reports, std::nullopt,
-                                          &ReportingReport::reporting_source);
+  const auto report3 =
+      std::ranges::find(reports, std::optional<base::UnguessableToken>(),
+                        &ReportingReport::reporting_source);
   CHECK(report3 != reports.end());
 
   // Get the reports for Source 1 and check the status of all reports.

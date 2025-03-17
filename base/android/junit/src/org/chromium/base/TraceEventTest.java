@@ -80,8 +80,8 @@ public class TraceEventTest {
                 TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX
                         + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
         Assert.assertEquals(
-                TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
-                TraceEvent.BasicLooperMonitor.FILTERED_EVENT_NAME);
+                TraceEvent.BasicLooperMonitor.FILTERED_EVENT_NAME,
+                TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName));
     }
 
     @Test
@@ -122,13 +122,25 @@ public class TraceEventTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testWebViewStartupStage2() {
+    public void testWebViewStartupFirstInstance() {
         TraceEvent.setEnabled(true);
         long startTime = 10;
         long duration = 50;
-        boolean isCold = true;
-        TraceEvent.webViewStartupStage2(startTime, duration, isCold);
-        verify(mNativeMock).webViewStartupStage2(startTime, duration, isCold);
+        boolean includedGlobalStartup = true;
+        TraceEvent.webViewStartupFirstInstance(startTime, duration, includedGlobalStartup);
+        verify(mNativeMock).webViewStartupFirstInstance(startTime, duration, includedGlobalStartup);
+        TraceEvent.setEnabled(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testWebViewStartupNotFirstInstance() {
+        TraceEvent.setEnabled(true);
+        long startTime = 10;
+        long duration = 50;
+        TraceEvent.webViewStartupNotFirstInstance(startTime, duration);
+        verify(mNativeMock).webViewStartupNotFirstInstance(startTime, duration);
         TraceEvent.setEnabled(false);
     }
 }

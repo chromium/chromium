@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_UTIL_H_
 
 #import <Foundation/Foundation.h>
+
 #import "base/feature_list.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 

@@ -118,10 +118,6 @@ struct FeatureParameters {
   // the '@history' scope. No-op if `kOmniboxScoped` is false.
   bool answers_in_omnibox_scoped = true;
 
-  // The maximum number of embeddings to submit to the primary (ML) embedder
-  // in a single batch via the scheduling embedder.
-  int scheduled_embeddings_max = 1;
-
   // Whether quality logging data should be sent.
   bool send_quality_log = true;
   bool send_quality_log_v2 = true;

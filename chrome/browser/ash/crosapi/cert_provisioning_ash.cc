@@ -152,11 +152,12 @@ void CertProvisioningAsh::AppendWorkerStatuses(
 
   result.reserve(result.size() + worker_map.size() + failed_workers_map.size());
 
-  for (const auto& [id, worker] : worker_map) {
+  for (const auto& [profile_id, worker] : worker_map) {
     result.push_back(mojom::CertProvisioningProcessStatus::New());
     mojom::CertProvisioningProcessStatusPtr& status = result.back();
 
-    status->cert_profile_id = id;
+    status->process_id = worker->GetProcessId();
+    status->cert_profile_id = profile_id;
     status->cert_profile_name = worker->GetCertProfile().name;
     status->public_key = worker->GetPublicKey();
     status->last_update_time = worker->GetLastUpdateTime();
@@ -172,11 +173,12 @@ void CertProvisioningAsh::AppendWorkerStatuses(
     }
   }
 
-  for (const auto& [id, worker] : failed_workers_map) {
+  for (const auto& [profile_id, worker] : failed_workers_map) {
     result.push_back(mojom::CertProvisioningProcessStatus::New());
     mojom::CertProvisioningProcessStatusPtr& status = result.back();
 
-    status->cert_profile_id = id;
+    status->process_id = worker.process_id;
+    status->cert_profile_id = profile_id;
     status->cert_profile_name = worker.cert_profile_name;
     status->public_key = worker.public_key;
     status->last_update_time = worker.last_update_time;

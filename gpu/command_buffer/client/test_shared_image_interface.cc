@@ -67,7 +67,7 @@ gfx::GpuMemoryBufferHandle CreateGMBHandle(
   handle.offset = 0;
   handle.stride = static_cast<uint32_t>(
       gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
-  handle.region = std::move(shared_memory_region);
+  handle.set_region(std::move(shared_memory_region));
 
   return handle;
 }
@@ -293,24 +293,6 @@ TestSharedImageInterface::CreateSharedImage(
       mailbox, si_info.meta, sync_token, holder_, buffer_handle.type);
 }
 
-SharedImageInterface::SharedImageMapping
-TestSharedImageInterface::CreateSharedImage(
-    const SharedImageInfo& si_info) {
-  base::WritableSharedMemoryMapping mapping;
-  gfx::GpuMemoryBufferHandle handle;
-  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
-
-  auto mailbox = Mailbox::Generate();
-  shared_images_.insert(mailbox);
-  most_recent_size_ = si_info.meta.size;
-
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  shared_image_mapping.mapping = std::move(mapping);
-  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_, handle.type);
-  return shared_image_mapping;
-}
-
 scoped_refptr<ClientSharedImage>
 TestSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
@@ -332,6 +314,7 @@ void TestSharedImageInterface::UpdateSharedImage(
     const Mailbox& mailbox) {
   base::AutoLock locked(lock_);
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
+  num_update_shared_image_no_fence_calls_++;
 }
 
 void TestSharedImageInterface::UpdateSharedImage(
@@ -342,16 +325,12 @@ void TestSharedImageInterface::UpdateSharedImage(
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
 }
 
-scoped_refptr<ClientSharedImage>
-TestSharedImageInterface::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
+scoped_refptr<ClientSharedImage> TestSharedImageInterface::ImportSharedImage(
+    ExportedSharedImage exported_shared_image) {
   shared_images_.insert(exported_shared_image.mailbox_);
 
   return base::WrapRefCounted<ClientSharedImage>(
-      new ClientSharedImage(
-          exported_shared_image.mailbox_, exported_shared_image.metadata_,
-          exported_shared_image.creation_sync_token_, holder_,
-          exported_shared_image.texture_target_));
+      new ClientSharedImage(std::move(exported_shared_image), holder_));
 }
 
 void TestSharedImageInterface::DestroySharedImage(
@@ -438,16 +417,6 @@ void TestSharedImageInterface::VerifySyncToken(SyncToken& sync_token) {
 
 void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
   NOTREACHED();
-}
-
-void TestSharedImageInterface::Flush() {
-  // No need to flush in this implementation. DoFlush() is for mock.
-  DoFlush();
-}
-
-scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(
-    const Mailbox& mailbox) {
-  return nullptr;
 }
 
 bool TestSharedImageInterface::CheckSharedImageExists(

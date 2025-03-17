@@ -6,14 +6,14 @@
 
 #include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 BackgroundSyncPermissionContext::BackgroundSyncPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::BACKGROUND_SYNC,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::BACKGROUND_SYNC,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void BackgroundSyncPermissionContext::DecidePermission(
     permissions::PermissionRequestData request_Data,

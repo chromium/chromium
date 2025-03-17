@@ -46,8 +46,9 @@ DownloadControllerImpl::~DownloadControllerImpl() {
     task->Cancel();
   }
 
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnDownloadControllerDestroyed(this);
+  }
 
   DCHECK(!delegate_);
 }

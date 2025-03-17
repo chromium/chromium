@@ -10,6 +10,8 @@ import android.app.NotificationChannelGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
@@ -19,6 +21,7 @@ import java.util.function.Function;
  * this once AsyncNofificationManagerProxy is set to default.
  */
 @MockedInTests
+@NullMarked
 public interface BaseNotificationManagerProxy {
     /**
      * @see <a
@@ -103,7 +106,7 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel()">
      *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel()</a>
      */
-    void getNotificationChannel(String channelId, Callback<NotificationChannel> callback);
+    void getNotificationChannel(String channelId, Callback<@Nullable NotificationChannel> callback);
 
     /**
      * A proxy for Android's StatusBarNotification.

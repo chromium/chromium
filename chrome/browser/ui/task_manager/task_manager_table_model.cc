@@ -11,21 +11,28 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/string_search.h"
 #include "base/i18n/time_formatting.h"
+#include "base/i18n/unicodestring.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -37,6 +44,8 @@
 #include "components/nacl/common/nacl_switches.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/common/result_codes.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
+#include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
@@ -125,13 +134,12 @@ int OrderUnavailableValue(bool v1, bool v2) {
   return v1 ? 1 : -1;
 }
 
-bool ShouldKeepTaskForTabs(Task::Type type, Task::SubType subtype) {
-  return type == Task::RENDERER && subtype != Task::SubType::kSpareRenderer &&
-         subtype != Task::SubType::kUnknownRenderer;
-}
-
-bool ShouldKeepTaskForExtensions(Task::Type type) {
+bool ShouldKeepTaskForTabsAndExtensions(Task::Type type,
+                                        Task::SubType subtype) {
   switch (type) {
+    case Task::RENDERER:
+      return subtype != Task::SubType::kSpareRenderer &&
+             subtype != Task::SubType::kUnknownRenderer;
     case Task::EXTENSION:
     case Task::GUEST:
     case Task::PLUGIN:
@@ -709,6 +717,103 @@ int TaskManagerTableModel::CompareValues(size_t row1,
   }
 }
 
+std::u16string TaskManagerTableModel::GetAXNameForHeader(
+    const std::vector<std::u16string>& visible_column_titles) {
+  // Gate the header change for task manager behind feature flag. Clean it up
+  // once refreshed task manager is launched.
+  // TODO(crbug.com/364926055): Chromium Task Manager Refresh Cleanup.
+  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    return TableModel::GetAXNameForHeader(visible_column_titles);
+  }
+
+  CHECK(!visible_column_titles.empty());
+  return FormatListToString(visible_column_titles);
+}
+
+std::u16string TaskManagerTableModel::GetAXNameForRow(
+    size_t row,
+    const std::vector<int>& visible_column_ids) {
+  // Gate the row change for task manager behind feature flag. Clean it up
+  // once refreshed task manager is launched.
+  // TODO(crbug.com/364926055): Chromium Task Manager Refresh Cleanup.
+  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    return TableModel::GetAXNameForRow(row, visible_column_ids);
+  }
+
+  DCHECK_LT(row, RowCount());
+  DCHECK(!visible_column_ids.empty());
+
+  // Holds all visible column values for the `row`.
+  std::vector<std::u16string> column_names;
+  column_names.reserve(visible_column_ids.size());
+  std::ranges::transform(
+      visible_column_ids, std::back_inserter(column_names),
+      [this, row](const auto& col_id) { return GetText(row, col_id); });
+  std::erase_if(column_names,
+                [](const auto& column_name) { return column_name.empty(); });
+
+  // Holds all other task titles in the same task group with the 'row'.
+  std::vector<std::u16string> other_task_titles;
+  if (IsTaskFirstInGroup(row)) {
+    const auto current_task = tasks_.begin() + row;
+    const base::ProcessId current_process_id =
+        observed_task_manager()->GetProcessId(tasks_[row]);
+    // Record the end of the column names for the task.
+    const auto mismatch_task = std::ranges::find_if_not(
+        current_task, tasks_.end(),
+        [this, current_process_id](const auto& task_id) {
+          return observed_task_manager()->GetProcessId(task_id) ==
+                 current_process_id;
+        });
+
+    if (mismatch_task - current_task > 1) {
+      const TaskIdList group_tasks =
+          observed_task_manager()->GetIdsOfTasksSharingSameProcess(tasks_[row]);
+      DCHECK(!group_tasks.empty());
+      other_task_titles.reserve(group_tasks.size() - 1);
+      // If there is at least one task other than the `row` in the same task
+      // group existing in `tasks_`, insert the connect text and the title of
+      // the other tasks.
+      // Add other tasks in the same task group in `other_task_titles` .
+      std::ranges::transform(
+          current_task + 1, mismatch_task,
+          std::back_inserter(other_task_titles), [this](const auto& task_id) {
+            return observed_task_manager()->GetTitle(task_id);
+          });
+    }
+  }
+
+  return base::i18n::MessageFormatter::FormatWithNamedArgs(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_TASK_GROUP_CONNECT_TEXT),
+      "NUM_TASKS", base::checked_cast<int>(other_task_titles.size()),
+      "TASK_ROW", FormatListToString(column_names), "OTHER_TASKS",
+      FormatListToString(other_task_titles));
+}
+
+std::u16string TaskManagerTableModel::FormatListToString(
+    base::span<const std::u16string> items) {
+  if (items.empty()) {
+    return std::u16string();
+  }
+
+  std::vector<icu::UnicodeString> strings;
+  strings.reserve(items.size());
+  for (const auto& item : items) {
+    strings.emplace_back(item.data(), item.size());
+  }
+
+  UErrorCode status = U_ZERO_ERROR;
+  const auto formatter =
+      base::WrapUnique(icu::ListFormatter::createInstance(status));
+  CHECK(U_SUCCESS(status));
+
+  icu::UnicodeString formatted;
+  formatter->format(strings.data(), strings.size(), formatted, status);
+  CHECK(U_SUCCESS(status));
+
+  return base::i18n::UnicodeStringToString16(formatted);
+}
+
 void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
                                               size_t* out_start,
                                               size_t* out_length) {
@@ -734,11 +839,17 @@ void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
 
 void TaskManagerTableModel::FilterTaskList(std::vector<TaskId>& tasks) {
   std::erase_if(tasks, [this](const TaskId& task_id) {
+    // Remove each node whose root doesn't match the Type criteria.
     return !ShouldKeepTask(task_id);
   });
 }
 
 void TaskManagerTableModel::OnTaskAdded(TaskId id) {
+  if (!search_terms_.empty()) {
+    // Update matched process id if task manager is in search mode.
+    UpdateMatchedProcessSetById(id);
+  }
+
   // For the table view scrollbar to behave correctly we must inform it that
   // a new task has been added.
 
@@ -754,17 +865,22 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
 
   if (table_model_observer_) {
     std::vector<TaskId>::difference_type index =
-        base::ranges::find(tasks_, id) - tasks_.begin();
+        std::ranges::find(tasks_, id) - tasks_.begin();
     table_model_observer_->OnItemsAdded(index, 1);
   }
 }
 
 void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
+  if (!search_terms_.empty() && !HasMatchInTasksSharingSameProcess(id)) {
+    // Update matched process set if task manager is in search mode.
+    matched_process_set_.erase(observed_task_manager()->GetProcessId(id));
+  }
+
   if (!ShouldKeepTask(id)) {
     return;
   }
 
-  auto index = base::ranges::find(tasks_, id);
+  auto index = std::ranges::find(tasks_, id);
   if (index == tasks_.end()) {
     return;
   }
@@ -776,15 +892,13 @@ void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
 }
 
 void TaskManagerTableModel::OnTasksRefreshed(const TaskIdList& task_ids) {
-  tasks_ = task_ids;
-  FilterTaskList(tasks_);
-  OnRefresh();
+  OnRefresh(task_ids);
 }
 
-void TaskManagerTableModel::OnActiveTaskFetched(TaskId id) {
-  if (!active_task_id_.has_value()) {
-    active_task_id_ = id;
-    table_view_delegate_->MaybeHighlightActiveTask();
+void TaskManagerTableModel::OnTasksRefreshedWithBackgroundCalculations(
+    const TaskIdList& task_ids) {
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    OnRefresh(task_ids);
   }
 }
 
@@ -912,7 +1026,8 @@ bool TaskManagerTableModel::IsTaskKillable(size_t row_index) const {
   return observed_task_manager()->IsTaskKillable(tasks_[row_index]);
 }
 
-void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
+void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable(
+    bool default_sorted_column_to_cpu) {
   if (!g_browser_process->local_state()) {
     return;
   }
@@ -948,6 +1063,13 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
       if (sorted_col_id && *sorted_col_id == col_id_key) {
         table_view_delegate_->SetSortDescriptor(
             TableSortDescriptor(col_id, sort_is_ascending));
+      } else if (default_sorted_column_to_cpu && !sorted_col_id &&
+                 col_id_key ==
+                     GetColumnIdAsString(IDS_TASK_MANAGER_CPU_COLUMN)) {
+        // If there is no user selected column, the sorting default should be
+        // the CPU column if it's visible.
+        table_view_delegate_->SetSortDescriptor(
+            TableSortDescriptor(IDS_TASK_MANAGER_CPU_COLUMN, false));
       }
     }
   }
@@ -990,7 +1112,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
     content::WebContents* web_contents) {
   TaskId task_id =
       observed_task_manager()->GetTaskIdForWebContents(web_contents);
-  auto index = base::ranges::find(tasks_, task_id);
+  auto index = std::ranges::find(tasks_, task_id);
   if (index == tasks_.end()) {
     return std::nullopt;
   }
@@ -1001,7 +1123,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
   if (!active_task_id_.has_value()) {
     return std::nullopt;
   }
-  auto index = base::ranges::find(tasks_, active_task_id_.value());
+  auto index = std::ranges::find(tasks_, active_task_id_.value());
   if (index == tasks_.end()) {
     return std::nullopt;
   }
@@ -1010,9 +1132,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
 
 void TaskManagerTableModel::StartUpdating() {
   TaskManagerInterface::GetTaskManager()->AddObserver(this);
-  tasks_ = observed_task_manager()->GetTaskIdsList();
-  FilterTaskList(tasks_);
-  OnRefresh();
+  OnRefresh(observed_task_manager()->GetTaskIdsList());
 
   // In order for the scrollbar of the TableView to work properly on startup of
   // the task manager, we must invoke TableModelObserver::OnModelChanged() which
@@ -1027,7 +1147,9 @@ void TaskManagerTableModel::StopUpdating() {
   observed_task_manager()->RemoveObserver(this);
 }
 
-void TaskManagerTableModel::OnRefresh() {
+void TaskManagerTableModel::OnRefresh(const TaskIdList& task_ids) {
+  tasks_ = task_ids;
+  FilterTaskList(tasks_);
   if (table_model_observer_) {
     table_model_observer_->OnItemsChanged(0, RowCount());
   }
@@ -1051,24 +1173,176 @@ bool TaskManagerTableModel::IsTaskFirstInGroup(size_t row_index) const {
   return false;
 }
 
-bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
+bool TaskManagerTableModel::FetchTaskTypes(TaskId child_task_id,
+                                           Task::Type& out_type,
+                                           Task::SubType& out_subtype) const {
+  const TaskId root = observed_task_manager()->GetRootTaskId(child_task_id);
+  if (!observed_task_manager()->IsTaskValid(root)) {
+    return false;
+  }
+
+  out_type = observed_task_manager()->GetType(root);
+  out_subtype = observed_task_manager()->GetSubType(root);
+  return true;
+}
+
+bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
+    TaskId task_id) const {
+  // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
+  // Used for backward compatibility with the prod. task manager.
   if (display_category_ == DisplayCategory::kAll) {
     return true;
   }
 
-  const Task::Type type = observed_task_manager()->GetType(task_id);
-  const Task::SubType subtype = observed_task_manager()->GetSubType(task_id);
+  Task::Type type;
+  Task::SubType subtype;
+
+  if (!FetchTaskTypes(task_id, type, subtype)) {
+    // crbug.com/396002122: It is possible that the root task id is not
+    // valid/tracked anymore, so discard this task.
+    return false;
+  }
+
+  return ShouldKeepTaskForTabsAndExtensions(type, subtype) ||
+         ShouldKeepTaskForSystem(type, subtype);
+}
+
+bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
+  if (!search_terms_.empty()) {
+    // In search mode, keep the task if it falls in a supported category as well
+    // as if it is in the same task group with tasks matching the current search
+    // term.
+    return ShouldKeepTaskForSupportedType(task_id) &&
+           matched_process_set_.contains(
+               observed_task_manager()->GetProcessId(task_id));
+  }
+
+  // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
+  // Used for backward compatibility with the prod. task manager.
+  if (display_category_ == DisplayCategory::kAll) {
+    return true;
+  }
+
+  Task::Type type;
+  Task::SubType subtype;
+
+  // Keep any TaskId iff the task that spawned it (root node) has a type that
+  // matches the current category.
+  if (!FetchTaskTypes(task_id, type, subtype)) {
+    // crbug.com/396002122: It is possible that the root task id is not
+    // valid/tracked anymore, so discard this task.
+    return false;
+  }
 
   switch (display_category_) {
-    case DisplayCategory::kTabs:
-      return ShouldKeepTaskForTabs(type, subtype);
-    case DisplayCategory::kExtensions:
-      return ShouldKeepTaskForExtensions(type);
+    case DisplayCategory::kTabsAndExtensions:
+      return ShouldKeepTaskForTabsAndExtensions(type, subtype);
     case DisplayCategory::kSystem:
       return ShouldKeepTaskForSystem(type, subtype);
     default:
       NOTREACHED();
   }
+}
+
+bool TaskManagerTableModel::HasMatchInTasksSharingSameProcess(
+    TaskId task_id) const {
+  if (tasks_.empty()) {
+    return false;
+  }
+
+  for (TaskId id :
+       observed_task_manager()->GetIdsOfTasksSharingSameProcess(task_id)) {
+    if (base::i18n::StringSearchIgnoringCaseAndAccents(
+            search_terms_, observed_task_manager()->GetTitle(id),
+            /*match_index=*/nullptr, /*match_length=*/nullptr) &&
+        std::ranges::find(tasks_, id) != tasks_.end()) {
+      // There is at least one matched task in task group, we need to
+      // keep it.
+      return true;
+    }
+  }
+  return false;
+}
+
+void TaskManagerTableModel::UpdateMatchedProcessSet() {
+  matched_process_set_.clear();
+
+  if (search_terms_.empty()) {
+    return;
+  }
+
+  for (TaskId task_id : observed_task_manager()->GetTaskIdsList()) {
+    UpdateMatchedProcessSetById(task_id);
+  }
+}
+
+void TaskManagerTableModel::UpdateMatchedProcessSetById(TaskId task_id) {
+  // Excludes the task from search term match if it does not fall in any
+  // category.
+  if (ShouldKeepTaskForSupportedType(task_id) &&
+      base::i18n::StringSearchIgnoringCaseAndAccents(
+          search_terms_, observed_task_manager()->GetTitle(task_id),
+          /*match_index=*/nullptr, /*match_length=*/nullptr)) {
+    matched_process_set_.insert(observed_task_manager()->GetProcessId(task_id));
+  }
+}
+
+bool TaskManagerTableModel::UpdateModel(const DisplayCategory display_category,
+                                        std::u16string_view search_term) {
+  if (search_terms_ == search_term && display_category_ == display_category) {
+    // Early return if no real change happens.
+    return false;
+  }
+
+  search_terms_ = std::u16string(search_term);
+  display_category_ = display_category;
+
+  // Precalculate matched processes for search terms.
+  UpdateMatchedProcessSet();
+
+  if (!table_model_observer_) {
+    return false;
+  }
+
+  // Task list which will be used for filter logic.
+  const auto task_list = observed_task_manager()->GetTaskIdsList();
+
+  // The final task list after applying the filter logic. It will be used to
+  // find the insert position for the new task in the final list.
+  auto filtered_task_list = task_list;
+  FilterTaskList(filtered_task_list);
+
+  for (TaskId id : task_list) {
+    auto filtered_iter = std::ranges::find(filtered_task_list, id);
+    bool should_keep_task = filtered_iter != filtered_task_list.end();
+    // Indicate if the task is in current task list.
+    auto task_iter = std::ranges::find(tasks_, id);
+    bool task_id_exists = task_iter != tasks_.end();
+    if (should_keep_task == task_id_exists) {
+      // The task already displays as the filter logic.
+      // Case 1 : The task in the complete task list which matches the filter
+      // logic already exists in current task list.
+      // Case 2 : The task in the complete task list which does not match  the
+      // filter logic does not exist in current task list.
+      continue;
+    }
+
+    if (should_keep_task) {
+      // Need to find a place to insert the task and update the table model.
+      std::vector<TaskId>::difference_type index =
+          filtered_iter - filtered_task_list.begin();
+      CHECK_LE(static_cast<size_t>(index), tasks_.size())
+          << " out of bounds insert index " << index;
+      tasks_.insert(tasks_.begin() + index, id);
+      table_model_observer_->OnItemsAdded(index, 1);
+    } else {
+      // Need to remove the task and update the table model.
+      auto removed_index = static_cast<size_t>(task_iter - tasks_.begin());
+      tasks_.erase(task_iter);
+      table_model_observer_->OnItemsRemoved(removed_index, 1);
+    }
+  }
+  return true;
 }
 
 }  // namespace task_manager

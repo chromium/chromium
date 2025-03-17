@@ -28,9 +28,7 @@ void SimpleMainThreadScheduler::PostDelayedIdleTask(const base::Location&,
                                                     base::TimeDelta delay,
                                                     Thread::IdleTask) {}
 
-void SimpleMainThreadScheduler::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {}
+void SimpleMainThreadScheduler::RemoveCancelledIdleTasks() {}
 
 void SimpleMainThreadScheduler::AddRAILModeObserver(
     RAILModeObserver* observer) {}

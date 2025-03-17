@@ -148,10 +148,6 @@ class OverviewWindowDragControllerTest : public AshTestBase {
         desks_bar_view->GetWidget()->GetNativeWindow()->GetRootWindow(),
         DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kOverviewSessionInitOptimizations};
 };
 
 TEST_F(OverviewWindowDragControllerTest, NoDragToCloseUsingMouse) {

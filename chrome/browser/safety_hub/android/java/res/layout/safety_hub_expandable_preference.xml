@@ -31,7 +31,15 @@ found in the LICENSE file.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:maxHeight="24dp"
-                app:maxWidth="24dp" />
+                app:maxWidth="24dp"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:indeterminate="true"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <RelativeLayout

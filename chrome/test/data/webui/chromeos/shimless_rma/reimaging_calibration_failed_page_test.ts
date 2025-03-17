@@ -15,7 +15,8 @@ import {fakeCalibrationComponentsWithFails, fakeCalibrationComponentsWithoutFail
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationFailedPage} from 'chrome://shimless-rma/reimaging_calibration_failed_page.js';
-import {CalibrationComponentStatus, CalibrationStatus, ComponentType, StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import type {CalibrationComponentStatus, StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

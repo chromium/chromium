@@ -4,10 +4,10 @@
 
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"

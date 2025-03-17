@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("print_spooler") {
   sources = [
@@ -19,13 +19,14 @@ static_library("print_spooler") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/intent_helper",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
     "//chrome/services/printing/public/mojom",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/custom_tab",
+    "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/crosapi/mojom",
     "//components/keyed_service/core",
     "//components/prefs",

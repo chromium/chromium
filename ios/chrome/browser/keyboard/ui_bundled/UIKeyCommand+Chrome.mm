@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 
 namespace {
@@ -261,21 +260,30 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
 }
 
 + (UIKeyCommand*)cr_select1 {
-  return [self keyCommandWithInput:@"1"
-                     modifierFlags:Command
-                            action:@selector(keyCommand_select1)];
+  UIKeyCommand* keyCommand =
+      [self keyCommandWithInput:@"1"
+                  modifierFlags:Command
+                         action:@selector(keyCommand_select1)];
+  keyCommand.allowsAutomaticLocalization = NO;
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_select2 {
-  return [self keyCommandWithInput:@"2"
-                     modifierFlags:Command
-                            action:@selector(keyCommand_select2)];
+  UIKeyCommand* keyCommand =
+      [self keyCommandWithInput:@"2"
+                  modifierFlags:Command
+                         action:@selector(keyCommand_select2)];
+  keyCommand.allowsAutomaticLocalization = NO;
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_select3 {
-  return [self keyCommandWithInput:@"3"
-                     modifierFlags:Command
-                            action:@selector(keyCommand_select3)];
+  UIKeyCommand* keyCommand =
+      [self keyCommandWithInput:@"3"
+                  modifierFlags:Command
+                         action:@selector(keyCommand_select3)];
+  keyCommand.allowsAutomaticLocalization = NO;
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_select4 {

@@ -16,8 +16,8 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -91,12 +91,13 @@ const char kKrb5CCFile[] = "krb5cc";
 const char kKrb5ConfFile[] = "krb5.conf";
 
 KerberosFilesHandler::KerberosFilesHandler(
+    PrefService& local_state,
     base::RepeatingClosure get_kerberos_files)
     : get_kerberos_files_(std::move(get_kerberos_files)) {
   // Listen to kDisableAuthNegotiateCnameLookup pref. It might change the
   // Kerberos config.
   negotiate_disable_cname_lookup_.Init(
-      prefs::kDisableAuthNegotiateCnameLookup, g_browser_process->local_state(),
+      prefs::kDisableAuthNegotiateCnameLookup, &local_state,
       base::BindRepeating(
           &KerberosFilesHandler::OnDisabledAuthNegotiateCnameLookupChanged,
           weak_factory_.GetWeakPtr()));

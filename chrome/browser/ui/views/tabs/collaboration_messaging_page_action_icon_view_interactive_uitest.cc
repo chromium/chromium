@@ -23,8 +23,9 @@ using collaboration::messaging::PersistentMessage;
 
 namespace {
 
+constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
+
 PersistentMessage CreateChipMessage(std::string given_name,
-                                    std::string avatar_url,
                                     CollaborationEvent event,
                                     tabs::TabInterface* tab) {
   using collaboration::messaging::MessageAttribution;
@@ -38,7 +39,7 @@ PersistentMessage CreateChipMessage(std::string given_name,
 
   GroupMember member;
   member.given_name = given_name;
-  member.avatar_url = GURL(avatar_url);
+  member.avatar_url = GURL("");
 
   TabMessageMetadata tab_metadata;
   tab_metadata.local_tab_id = tab_id;
@@ -67,7 +68,6 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
   CollaborationMessagingPageActionIconViewInteractiveTest() {
     features_.InitWithFeatures(
         {
-            tab_groups::kTabGroupsSaveV2,
             tab_groups::kTabGroupSyncServiceDesktopMigration,
             data_sharing::features::kDataSharingFeature,
         },
@@ -77,6 +77,42 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
  private:
   base::test::ScopedFeatureList features_;
 };
+
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
+                       ShowPageActionWithAvatarFallback) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStripModel* model = browser()->tab_strip_model();
+  tab_groups::TabGroupId group = model->AddToNewGroup({0});
+
+  EXPECT_EQ(1, model->count());
+  EXPECT_EQ(1u, model->group_model()->GetTabGroup(group)->ListTabs().length());
+
+  auto* collaboration_message_observer =
+      tab_groups::CollaborationMessagingObserverFactory::GetForProfile(
+          browser()->profile());
+
+  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto message = CreateChipMessage("User", CollaborationEvent::TAB_ADDED, tab);
+
+  RunTestSequence(
+      Do([&]() {
+        // Dispatch "added" message.
+        collaboration_message_observer->DispatchMessageForTests(
+            message, /*display=*/true);
+      }),
+      WaitForShow(kCollaborationMessagingPageActionIconElementId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kSkipPixelTestsReason),
+      Screenshot(kCollaborationMessagingPageActionIconElementId,
+                 "page_action_with_avatar_fallback", "6313918"),
+      Do([&]() {
+        // Hide message.
+        collaboration_message_observer->DispatchMessageForTests(
+            message, /*display=*/false);
+      }),
+      WaitForHide(kCollaborationMessagingPageActionIconElementId));
+}
 
 IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
                        ReactsToChangesInTabData) {
@@ -98,14 +134,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
           browser()->profile());
 
   auto* tab = browser()->tab_strip_model()->GetActiveTab();
-  auto message = CreateChipMessage("User", "https://google.com/chrome/",
-                                   CollaborationEvent::TAB_ADDED, tab);
-
-  auto* collaboration_message_tab_data =
-      tab->GetTabFeatures()->collaboration_messaging_tab_data();
-  // Set mocked avatar to avoid network request and set message data
-  // synchronously.
-  collaboration_message_tab_data->set_mocked_avatar_for_testing(gfx::Image());
+  auto message = CreateChipMessage("User", CollaborationEvent::TAB_ADDED, tab);
 
   RunTestSequence(Do([&]() {
                     // Dispatch "added" message.

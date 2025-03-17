@@ -150,7 +150,7 @@ struct CORE_EXPORT PhysicalAnchorReference
   PhysicalAnchorReference(const Element& element,
                           const PhysicalRect& rect,
                           bool is_out_of_flow,
-                          HeapHashSet<Member<Element>>* display_locks)
+                          GCedHeapHashSet<Member<Element>>* display_locks)
       : rect(rect),
         element(&element),
         display_locks(display_locks),
@@ -168,7 +168,7 @@ struct CORE_EXPORT PhysicalAnchorReference
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
   Member<PhysicalAnchorReference> next;
-  Member<HeapHashSet<Member<Element>>> display_locks;
+  Member<GCedHeapHashSet<Member<Element>>> display_locks;
   bool is_out_of_flow = false;
 };
 
@@ -247,7 +247,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         container_writing_direction_(container_writing_direction),
         containing_block_rect_(offset_to_padding_box, available_size),
         display_locks_affected_by_anchors_(
-            MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
+            MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_query_);
   }
 
@@ -267,7 +267,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         container_writing_direction_(container_writing_direction),
         containing_block_rect_(offset_to_padding_box, available_size),
         display_locks_affected_by_anchors_(
-            MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
+            MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_queries_);
     DCHECK(containing_block_);
   }
@@ -304,7 +304,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   Element* AccessibilityAnchor() const;
   void ClearAccessibilityAnchor();
 
-  HeapHashSet<Member<Element>>* GetDisplayLocksAffectedByAnchors() const {
+  GCedHeapHashSet<Member<Element>>* GetDisplayLocksAffectedByAnchors() const {
     return display_locks_affected_by_anchors_;
   }
 
@@ -420,7 +420,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   // A set of elements whose display locks' skipping status are potentially
   // impacted by anchors found by this evaluator.
-  mutable HeapHashSet<Member<Element>>* display_locks_affected_by_anchors_ =
+  mutable GCedHeapHashSet<Member<Element>>* display_locks_affected_by_anchors_ =
       nullptr;
 };
 

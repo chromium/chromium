@@ -25,10 +25,9 @@ class Browser;
 namespace web_app {
 
 // These test functions work only with the new intent picker UX and requires the
-// following flags to be enabled: features::kPwaNavigationCapturing on
-// Windows, Mac and Linux. apps::features::kLinkCapturingUiUpdate on CrOS.
-// Without these flags set on their respective platforms, the tests will CHECK
-// fail.
+// `kPwaNavigationCapturing` flag to be set on Windows, Mac and Linux. On
+// ChromeOS, this will work by default. Without these flags set on their
+// respective platforms, the tests will CHECK fail.
 IntentChipButton* GetIntentPickerIcon(Browser* browser);
 
 IntentPickerBubbleView* intent_picker_bubble();

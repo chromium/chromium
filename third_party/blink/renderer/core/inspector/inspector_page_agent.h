@@ -93,25 +93,10 @@ class CORE_EXPORT InspectorPageAgent final
     kOtherResource
   };
 
-  class CORE_EXPORT PageReloadScriptInjection {
-   private:
-    String script_to_evaluate_on_load_once_;
-    String target_url_for_active_script_;
-    InspectorAgentState::String pending_script_to_evaluate_on_load_once_;
-    InspectorAgentState::String target_url_for_pending_script_;
-
-   public:
-    explicit PageReloadScriptInjection(InspectorAgentState&);
-
-    void clear();
-    void SetPending(String script, const KURL& target_url);
-    void PromoteToLoadOnce();
-    String GetScriptForInjection(const KURL& target_url);
-  };
-
   static bool CachedResourceContent(const Resource*,
                                     String* result,
-                                    bool* base64_encoded);
+                                    bool* base64_encoded,
+                                    bool* was_cached);
   static bool SegmentedBufferContent(const SegmentedBuffer*,
                                      const String& mime_type,
                                      const String& text_encoding_name,
@@ -125,12 +110,14 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorPageAgent(InspectedFrames*,
                      Client*,
                      InspectorResourceContentLoader*,
-                     v8_inspector::V8InspectorSession*);
+                     v8_inspector::V8InspectorSession*,
+                     const String& script_to_evaluate_on_load);
   InspectorPageAgent(const InspectorPageAgent&) = delete;
   InspectorPageAgent& operator=(const InspectorPageAgent&) = delete;
 
   // Page API for frontend
-  protocol::Response enable() override;
+  protocol::Response enable(
+      std::optional<bool> enable_file_chooser_opened_event) override;
   protocol::Response disable() override;
   protocol::Response addScriptToEvaluateOnLoad(const String& script_source,
                                                String* identifier) override;
@@ -214,7 +201,9 @@ class CORE_EXPORT InspectorPageAgent final
                                          const protocol::Binary& data) override;
   protocol::Response clearCompilationCache() override;
   protocol::Response waitForDebugger() override;
-  protocol::Response setInterceptFileChooserDialog(bool enabled) override;
+  protocol::Response setInterceptFileChooserDialog(
+      bool enabled,
+      std::optional<bool> cancel) override;
 
   // InspectorInstrumentation API
   void DidCreateMainWorldContext(LocalFrame*);
@@ -265,7 +254,8 @@ class CORE_EXPORT InspectorPageAgent final
   void FileChooserOpened(LocalFrame* frame,
                          HTMLInputElement* element,
                          bool multiple,
-                         bool* intercepted);
+                         bool* suppressed,
+                         bool* canceled);
 
   // Inspector Controller API
   void Restore() override;
@@ -332,7 +322,7 @@ class CORE_EXPORT InspectorPageAgent final
 
   HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
       pending_isolated_worlds_;
-  using FrameIsolatedWorlds = HeapHashMap<String, Member<DOMWrapperWorld>>;
+  using FrameIsolatedWorlds = GCedHeapHashMap<String, Member<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, Member<FrameIsolatedWorlds>>
       isolated_worlds_;
   HashMap<String, std::unique_ptr<blink::AdScriptIdentifier>>
@@ -341,8 +331,10 @@ class CORE_EXPORT InspectorPageAgent final
   Client* client_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;
   int resource_content_loader_client_id_;
-  InspectorAgentState::Boolean intercept_file_chooser_;
+  InspectorAgentState::Boolean suppress_file_chooser_;
+  InspectorAgentState::Boolean cancel_file_chooser_;
   InspectorAgentState::Boolean enabled_;
+  InspectorAgentState::Boolean enable_file_chooser_opened_event_;
   InspectorAgentState::Boolean screencast_enabled_;
   InspectorAgentState::Boolean lifecycle_events_enabled_;
   InspectorAgentState::Boolean bypass_csp_enabled_;
@@ -353,7 +345,8 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
   InspectorAgentState::Bytes script_font_families_cbor_;
-  PageReloadScriptInjection script_injection_on_load_;
+  String script_injection_on_load_once_;
+  String pending_script_injection_on_load_;
 };
 
 }  // namespace blink

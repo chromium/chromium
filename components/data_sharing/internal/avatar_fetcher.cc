@@ -37,11 +37,9 @@ void AvatarFetcher::Fetch(const GURL& avatar_url,
   // filled person icon as the default. So no_silhouette is set to true to
   // enforce an empty image which will be handled by
   // AvatarFetcher::OnImageFetched.
-  // TODO(crbug.com/381288090): Add crop option. `avatar_url` could be legacy or
-  // content. See GetAvatarImageURLWithOptions. It handles legacy and content
-  // urls nicely but missing crop option.
   GURL image_url_with_size = signin::GetAvatarImageURLWithOptions(
-      avatar_url, size, /*no_silhouette=*/true);
+      avatar_url, size, /*no_silhouette=*/true,
+      signin::AvatarCropType::kCircle);
 
   image_fetcher->FetchImage(
       image_url_with_size,
@@ -54,12 +52,6 @@ void AvatarFetcher::OnImageFetched(
     ImageCallback callback,
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
-  if (image.IsEmpty()) {
-    // TODO(crbug.com/381288296): Return a filled person icon as fallback. If
-    // Android needs a different style of silhouette, add a signal no_silhoutte
-    // to DataSharingService::GetAvatarImageForURL so this simply returns an
-    // empty image and Android can draw its own default image.
-  }
   std::move(callback).Run(image);
 }
 }  // namespace data_sharing

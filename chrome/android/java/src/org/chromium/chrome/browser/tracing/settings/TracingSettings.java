@@ -60,7 +60,7 @@ public class TracingSettings extends PreferenceFragmentCompat
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
 
-    private static final ObservableSupplier<String> sPageTitle =
+    private final ObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_TRACING_TITLE);
 
     @VisibleForTesting
@@ -228,7 +228,7 @@ public class TracingSettings extends PreferenceFragmentCompat
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
     }
 
     @Override
@@ -250,11 +250,17 @@ public class TracingSettings extends PreferenceFragmentCompat
     }
 
     private void updatePreferences() {
+        TracingNotificationManager.browserNotificationsEnabled(
+                (notificationsEnabled) -> {
+                    updatePreferences(notificationsEnabled);
+                });
+    }
+
+    private void updatePreferences(boolean notificationsEnabled) {
         @TracingController.State int state = TracingController.getInstance().getState();
         boolean initialized = state != TracingController.State.INITIALIZING;
         boolean idle = state == TracingController.State.IDLE || !initialized;
         boolean hasTrace = state == TracingController.State.STOPPED;
-        boolean notificationsEnabled = TracingNotificationManager.browserNotificationsEnabled();
 
         mPrefDefaultCategories.setEnabled(initialized);
         mPrefNondefaultCategories.setEnabled(initialized);

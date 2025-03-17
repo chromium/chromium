@@ -32,8 +32,8 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       const blink::web_pref::WebPreferences& preferences) override;
   void UpdateRendererPreferences(
       const blink::RendererPreferences& preferences) override;
-  void SetHistoryOffsetAndLength(int32_t history_offset,
-                                 int32_t history_length) override;
+  void SetHistoryIndexAndLength(int32_t history_index,
+                                int32_t history_length) override;
   void SetPageBaseBackgroundColor(std::optional<SkColor> color) override;
   void CreateRemoteMainFrame(
       const blink::RemoteFrameToken& token,

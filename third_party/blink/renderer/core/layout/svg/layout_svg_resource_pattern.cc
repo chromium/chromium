@@ -195,8 +195,7 @@ bool LayoutSVGResourcePattern::ApplyShader(
   AffineTransform transform = pattern_data->transform;
   if (additional_transform)
     transform = *additional_transform * transform;
-  pattern_data->pattern->ApplyToFlags(flags,
-                                      AffineTransformToSkMatrix(transform));
+  pattern_data->pattern->ApplyToFlags(flags, transform.ToSkMatrix());
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   return true;
 }
@@ -231,7 +230,7 @@ PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
     SVGObjectPainter(*child, nullptr).PaintResourceSubtree(builder.Context());
   }
   canvas->save();
-  canvas->concat(AffineTransformToSkM44(tile_transform));
+  canvas->concat(tile_transform.ToSkM44());
   builder.EndRecording(*canvas);
   canvas->restore();
   return paint_recorder.finishRecordingAsPicture();

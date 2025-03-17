@@ -210,9 +210,9 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       new FeatureInfo(workarounds, gpu_feature_info);
 
   group_ = scoped_refptr<ContextGroup>(new ContextGroup(
-      gpu_preferences_, GetParam(), std::move(memory_tracker_),
-      &shader_translator_cache_, &framebuffer_completeness_cache_, feature_info,
-      normalized_init.bind_generates_resource, nullptr /* progress_reporter */,
+      gpu_preferences_, std::move(memory_tracker_), &shader_translator_cache_,
+      &framebuffer_completeness_cache_, feature_info,
+      normalized_init.bind_generates_resource, /*progress_reporter=*/nullptr,
       gpu_feature_info, &discardable_manager_, nullptr,
       &shared_image_manager_));
   bool use_default_textures = normalized_init.bind_generates_resource;
@@ -438,6 +438,13 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
     EXPECT_CALL(*gl_, ClearColor(0, 0, 0, 0)).Times(1).RetiresOnSaturation();
   }
 #endif
+
+  if (init.context_type == CONTEXT_TYPE_WEBGL2 &&
+      group_->feature_info()->gl_version_info().is_es3) {
+    EXPECT_CALL(*gl_, Enable(GL_PRIMITIVE_RESTART_FIXED_INDEX))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
 
   if (context_->HasRobustness()) {
     EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
@@ -2367,10 +2374,10 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
 
   scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
   group_ = new gles2::ContextGroup(
-      gpu_preferences_, true, nullptr /* memory_tracker */,
-      &shader_translator_cache_, &framebuffer_completeness_cache_, feature_info,
+      gpu_preferences_, /*memory_tracker=*/nullptr, &shader_translator_cache_,
+      &framebuffer_completeness_cache_, feature_info,
       context_creation_attribs_.bind_generates_resource,
-      nullptr /* progress_reporter */, GpuFeatureInfo(), &discardable_manager_,
+      /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));

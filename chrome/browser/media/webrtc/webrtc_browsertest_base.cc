@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -538,7 +539,7 @@ void WebRtcTestBase::SetDefaultVideoCodec(content::WebContents* tab,
 
   EXPECT_EQ("ok", ExecuteJavascript(
                       "setDefaultVideoCodec('" + video_codec + "'," +
-                          (prefer_hw_codec ? "true" : "false") + "," +
+                          base::ToString(prefer_hw_codec) + "," +
                           (codec_profile.empty() ? "null"
                                                  : "'" + codec_profile + "'") +
                           ")",

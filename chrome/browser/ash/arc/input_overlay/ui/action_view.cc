@@ -47,13 +47,6 @@ void ActionView::OnContentBoundsSizeChanged() {
 }
 
 void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
-  DCHECK(mode != DisplayMode::kEducation && mode != DisplayMode::kMenu &&
-         mode != DisplayMode::kPreMenu);
-  if (mode == DisplayMode::kEducation || mode == DisplayMode::kMenu ||
-      mode == DisplayMode::kPreMenu) {
-    return;
-  }
-
   // Set display mode for ActionLabel first and then other components update the
   // layout according to ActionLabel.
   if (!editing_label) {
@@ -101,33 +94,7 @@ void ActionView::ChangeInputBinding(
     std::unique_ptr<InputElement> input_element) {
   display_overlay_controller_->OnInputBindingChange(action,
                                                     std::move(input_element));
-  SetDisplayMode(DisplayMode::kEditedSuccess, action_label);
-}
-
-void ActionView::OnResetBinding() {
-  if (const auto& input_binding = action_->GetCurrentDisplayedInput();
-      !IsInputBound(input_binding) ||
-      input_binding == *action_->current_input()) {
-    return;
-  }
-
-  auto input_element =
-      std::make_unique<InputElement>(*(action_->current_input()));
-  display_overlay_controller_->OnInputBindingChange(action_,
-                                                    std::move(input_element));
-}
-
-void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
-  if (labels_.size() == 1u) {
-    return;
-  }
-
-  for (arc::input_overlay::ActionLabel* label : labels_) {
-    if (label == child) {
-      continue;
-    }
-    label->OnSiblingUpdateFocus(focus);
-  }
+  SetDisplayMode(DisplayMode::kEdit, action_label);
 }
 
 void ActionView::RemoveNewState() {

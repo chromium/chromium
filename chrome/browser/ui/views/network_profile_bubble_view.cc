@@ -24,8 +24,6 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace {
-
 class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(NetworkProfileBubbleView, views::BubbleDialogDelegateView)
 
@@ -81,7 +79,7 @@ void NetworkProfileBubbleView::Init() {
   constexpr int kNotificationBubbleWidth = 250;
   label->SizeToFit(kNotificationBubbleWidth);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(label);
+  AddChildViewRaw(label);
 }
 
 bool NetworkProfileBubbleView::Accept() {
@@ -111,8 +109,6 @@ void NetworkProfileBubbleView::LinkClicked(const ui::Event& event) {
 
 BEGIN_METADATA(NetworkProfileBubbleView)
 END_METADATA
-
-}  // namespace
 
 // static
 void NetworkProfileBubble::ShowNotification(Browser* browser) {

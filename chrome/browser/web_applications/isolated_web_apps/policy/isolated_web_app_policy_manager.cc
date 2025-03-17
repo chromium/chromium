@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -30,12 +31,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -43,6 +45,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -171,6 +174,25 @@ GetOnInstallTaskCompletedCallbackForTesting() {
   return *kCallback;
 }
 
+bool IsOnDemandComponentUpdateFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate);
+}
+
+// If there are potential IWAs to be processed, will run `callback` after we've
+// attempted to fetch the latest component data. Otherwise runs it immediately.
+void OnComponentDataReady(PrefService* prefs, base::OnceClosure callback) {
+  if (!IsOnDemandComponentUpdateFeatureEnabled() ||
+      prefs->GetList(prefs::kIsolatedWebAppInstallForceList).empty()) {
+    // We don't need the latest component data.
+    std::move(callback).Run();
+    return;
+  }
+
+  IwaKeyDistributionInfoProvider::GetInstance()
+      ->OnMaybeDownloadedComponentDataReady()
+      .Post(FROM_HERE, std::move(callback));
+}
+
 }  // namespace
 
 BASE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate,
@@ -200,7 +222,7 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+  if (!content::AreIsolatedWebAppsEnabled(profile_)) {
     std::move(on_started_callback).Run();
     return;
   }
@@ -214,23 +236,18 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  process_logs_.AppendCompletedStep(
+  auto debug_log =
       base::Value::Dict()
           .Set("start_time",
                base::TimeFormatFriendlyDateAndTime(base::Time::Now()))
-          .Set("info", "IsolatedWebAppPolicyManager::Start()"));
+          .Set("info", "IsolatedWebAppPolicyManager::Start()");
+  IwaKeyDistributionInfoProvider::GetInstance()->WriteComponentMetadata(
+      debug_log);
+  process_logs_.AppendCompletedStep(std::move(debug_log));
 
-  if (base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate) &&
-      !profile_->GetPrefs()
-           ->GetList(prefs::kIsolatedWebAppInstallForceList)
-           .empty()) {
-    IwaKeyDistributionInfoProvider::GetInstance()
-        ->OnMaybeDownloadedComponentDataReady()
-        .Post(FROM_HERE, base::BindOnce(&IsolatedWebAppPolicyManager::StartImpl,
-                                        weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    StartImpl();
-  }
+  OnComponentDataReady(profile_->GetPrefs(),
+                       base::BindOnce(&IsolatedWebAppPolicyManager::StartImpl,
+                                      weak_ptr_factory_.GetWeakPtr()));
 
   std::move(on_started_callback).Run();
 }
@@ -309,8 +326,8 @@ void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kIsolatedWebAppInstallForceList,
-      base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&IsolatedWebAppPolicyManager::OnPolicyChanged,
+                          base::Unretained(this)));
 }
 
 void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
@@ -377,7 +394,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     }
     const WebApp& installed_app = maybe_installed_app->get();
 
-    static_assert(base::ranges::is_sorted(
+    static_assert(std::ranges::is_sorted(
         std::vector{WebAppManagement::Type::kIwaShimlessRma,
                     // Add further higher priority IWA sources here and make
                     // sure that the `case` statements below are sorted
@@ -555,7 +572,7 @@ void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
     return;
   }
 
-  const bool any_task_failed = base::ranges::any_of(
+  const bool any_task_failed = std::ranges::any_of(
       install_results, [](const IwaInstaller::Result& result) {
         return result.type() != IwaInstallerResultType::kSuccess;
       });
@@ -605,6 +622,13 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
           base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
                          CleanupOrphanedIsolatedWebAppsCommandError>>(
           std::move(finished_closure)));
+}
+
+void IsolatedWebAppPolicyManager::OnPolicyChanged() {
+  OnComponentDataReady(
+      profile_->GetPrefs(),
+      base::BindOnce(&IsolatedWebAppPolicyManager::ProcessPolicy,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(

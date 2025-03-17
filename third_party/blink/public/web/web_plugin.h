@@ -32,6 +32,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_H_
 
+#include <vector>
+
 #include "base/containers/span.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
@@ -62,8 +64,6 @@ class WebURLResponse;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
 struct WebURLError;
-template <typename T>
-class WebVector;
 
 class WebPlugin {
  public:
@@ -182,11 +182,12 @@ class WebPlugin {
   // Sets composition text from input method, and returns true if the
   // composition is set successfully. If |replacementRange| is not null, the
   // text inside |replacementRange| will be replaced by |text|
-  virtual bool SetComposition(const WebString& text,
-                              const WebVector<ui::ImeTextSpan>& ime_text_spans,
-                              const WebRange& replacement_range,
-                              int selection_start,
-                              int selection_end) {
+  virtual bool SetComposition(
+      const WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const WebRange& replacement_range,
+      int selection_start,
+      int selection_end) {
     return false;
   }
 
@@ -194,7 +195,7 @@ class WebPlugin {
   // moves the caret according to relativeCaretPosition. If |replacementRange|
   // is not null, the text inside |replacementRange| will be replaced by |text|.
   virtual bool CommitText(const WebString& text,
-                          const WebVector<ui::ImeTextSpan>& ime_text_spans,
+                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                           const WebRange& replacement_range,
                           int relative_caret_position) {
     return false;

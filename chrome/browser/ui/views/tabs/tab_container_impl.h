@@ -52,9 +52,8 @@ class TabContainerImpl : public TabContainer,
   void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback) override;
 
-  Tab* AddTab(std::unique_ptr<Tab> tab,
-              int model_index,
-              TabPinned pinned) override;
+  std::vector<Tab*> AddTabs(
+      std::vector<TabInsertionParams> tabs_params) override;
   void MoveTab(int from_model_index, int to_model_index) override;
   void RemoveTab(int index, bool was_active) override;
   void SetTabPinned(int model_index, TabPinned pinned) override;
@@ -209,12 +208,20 @@ class TabContainerImpl : public TabContainer,
   // Private getter to retrieve the visible rect of the scroll container.
   std::optional<gfx::Rect> GetVisibleContentRect();
 
+  // Uses `bounds_animator_` to animate `view` to `target`. Use this rather than
+  // calling `bounds_animator_.AnimateViewTo()` directly so animations correctly
+  // track changes in rich animation enable state.
+  void AnimateViewTo(
+      View* view,
+      const gfx::Rect& target,
+      std::unique_ptr<gfx::AnimationDelegate> delegate = nullptr);
+
   // Animates and scrolls the tab container from the start_edge to the
   // target_edge. If the target_edge is beyond the tab strip it will be clamped
   // bounds of the tabstrip.
   void AnimateScrollToShowXCoordinate(const int start_edge,
                                       const int target_edge);
-  // Animates |tab_slot_view| to |target_bounds|
+  // Animates `tab_slot_view` to `target_bounds`
   void AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
                             const gfx::Rect& target_bounds);
 
@@ -233,7 +240,7 @@ class TabContainerImpl : public TabContainer,
   // mode.
   int CalculateAvailableWidthForTabs() const;
 
-  // Invoked from |AddTab| after the newly created tab has been inserted.
+  // Invoked from `AddTab` after the newly created tab has been inserted.
   void StartInsertTabAnimation(int model_index);
 
   void StartRemoveTabAnimation(Tab* tab, int former_model_index);
@@ -255,8 +262,8 @@ class TabContainerImpl : public TabContainer,
   // Call when `tab` is going away to remove the tab from data structures.
   void OnTabRemoved(Tab* tab);
 
-  // Updates |override_available_width_for_tabs_|, if necessary, to account for
-  // the removal of the tab at |model_index|.
+  // Updates `override_available_width_for_tabs_`, if necessary, to account for
+  // the removal of the tab at `model_index`.
   void UpdateClosingModeOnRemovedTab(int model_index, bool was_active);
 
   // Perform an animated resize-relayout of the TabContainer immediately.
@@ -266,7 +273,7 @@ class TabContainerImpl : public TabContainer,
   // are in a drag session this restarts the timer.
   void ResizeLayoutTabsFromTouch();
 
-  // Restarts |resize_layout_timer_|.
+  // Restarts `resize_layout_timer_`.
   void StartResizeLayoutTabsFromTouchTimer();
 
   bool IsDragSessionActive() const;
@@ -277,7 +284,7 @@ class TabContainerImpl : public TabContainer,
   void AddMessageLoopObserver();
   void RemoveMessageLoopObserver();
 
-  // Moves |slot_view| within children() to match |layout_helper_|'s slot
+  // Moves `slot_view` within children() to match `layout_helper_`'s slot
   // ordering.
   void OrderTabSlotView(TabSlotView* slot_view);
 
@@ -295,7 +302,7 @@ class TabContainerImpl : public TabContainer,
   // Returns true if the tab is not partly or fully clipped (due to overflow),
   // and the tab couldn't become partly clipped due to changing the selected tab
   // (for example, if currently the strip has the last tab selected, and
-  // changing that to the first tab would cause |tab| to be pushed over enough
+  // changing that to the first tab would cause `tab` to be pushed over enough
   // to clip).
   bool ShouldTabBeVisible(const Tab* tab) const;
 
@@ -306,15 +313,15 @@ class TabContainerImpl : public TabContainer,
   // -- Link Drag & Drop ------------------------------------------------------
 
   // Returns the bounds to render the drop at, in screen coordinates. Sets
-  // |is_beneath| to indicate whether the arrow is beneath the tab, or above
+  // `is_beneath` to indicate whether the arrow is beneath the tab, or above
   // it.
   gfx::Rect GetDropBounds(int drop_index,
                           bool drop_before,
                           bool drop_in_group,
                           bool* is_beneath);
 
-  // Show drop arrow with passed |tab_data_index| and |drop_before|.
-  // If |tab_data_index| is negative, the arrow will disappear.
+  // Show drop arrow with passed `tab_data_index` and `drop_before`.
+  // If `tab_data_index` is negative, the arrow will disappear.
   void SetDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
 
   // Updates the indexes and count for AX data on all tabs. Used by some screen
@@ -326,12 +333,12 @@ class TabContainerImpl : public TabContainer,
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
 
   // There is a one-to-one mapping between each of the
-  // tabs in the TabStripModel and |tabs_view_model_|.
+  // tabs in the TabStripModel and `tabs_view_model_`.
   // Because we animate tab removal there exists a
   // period of time where a tab is displayed but not
   // in the model. When this occurs the tab is removed
-  // from |tabs_view_model_|, but remains in
-  // |layout_helper_| (and remains a View child) until
+  // from `tabs_view_model_`, but remains in
+  // `layout_helper_` (and remains a View child) until
   // the remove animation completes.
   views::ViewModelT<Tab> tabs_view_model_;
 
@@ -345,7 +352,7 @@ class TabContainerImpl : public TabContainer,
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 
-  // The View that is to be scrolled by |tab_scrolling_animation_|. May be
+  // The View that is to be scrolled by `tab_scrolling_animation_`. May be
   // nullptr in tests.
   const raw_ptr<views::View> scroll_contents_view_;
 

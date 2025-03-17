@@ -122,6 +122,11 @@ void EditablePasswordCombobox::SetPasswordIconTooltips(
     const std::u16string& toggled_tooltip_text) {
   eye_->SetTooltipText(tooltip_text);
   eye_->SetToggledTooltipText(toggled_tooltip_text);
+  // The eye is implemented as a `ToggleImageButton`. Screen readers typically
+  // announce whether the toggle is selected, and as a result the accessible
+  // name should not change when selected. The state is conveyed by the
+  // "selected" or "unselected" status instead.
+  eye_->SetToggledAccessibleName(tooltip_text);
 }
 
 void EditablePasswordCombobox::RevealPasswords(bool revealed) {

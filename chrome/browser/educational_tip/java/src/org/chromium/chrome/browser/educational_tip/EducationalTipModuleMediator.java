@@ -5,11 +5,8 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -24,8 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class EducationalTipModuleMediator {
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final Profile mProfile;
-    private final @ModuleType int mModuleType;
-    private final @EducationalTipCardType int mCardType;
+    private @ModuleType int mModuleType;
     private final PropertyModel mModel;
     private final ModuleDelegate mModuleDelegate;
     private final CallbackController mCallbackController;
@@ -41,7 +37,6 @@ public class EducationalTipModuleMediator {
             EducationTipModuleActionDelegate actionDelegate,
             @NonNull Profile profile) {
         mModuleType = moduleType;
-        mCardType = EducationalTipModuleUtils.getCardType(mModuleType);
         mModel = model;
         mModuleDelegate = moduleDelegate;
         mActionDelegate = actionDelegate;
@@ -54,39 +49,14 @@ public class EducationalTipModuleMediator {
 
     /** Show the educational tip module. */
     void showModule() {
-        showModuleWithCardInfo(mCardType);
-    }
-
-    /** Called when the educational tip module is visible to users on the magic stack. */
-    void onViewCreated() {
-        if (mCardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
-            boolean shouldDisplay =
-                    mTracker.shouldTriggerHelpUi(
-                            FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
-            if (shouldDisplay) {
-                DefaultBrowserPromoUtils defaultBrowserPromoUtils =
-                        DefaultBrowserPromoUtils.getInstance();
-                defaultBrowserPromoUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
-                defaultBrowserPromoUtils.notifyDefaultBrowserPromoVisible();
-            }
-        }
-    }
-
-    @VisibleForTesting
-    void showModuleWithCardInfo(@Nullable Integer cardType) {
-        if (cardType == null) {
-            mModuleDelegate.onDataFetchFailed(mModuleType);
-            return;
-        }
-
-        if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
+        if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO) {
             DefaultBrowserPromoUtils.getInstance()
                     .addListener(mDefaultBrowserPromoTriggerStateListener);
         }
 
         mEducationalTipCardProvider =
                 EducationalTipCardProviderFactory.createInstance(
-                        cardType, this::onCardClicked, mCallbackController, mActionDelegate);
+                        mModuleType, this::onCardClicked, mCallbackController, mActionDelegate);
 
         mModel.set(
                 EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING,
@@ -104,6 +74,21 @@ public class EducationalTipModuleMediator {
                 });
 
         mModuleDelegate.onDataReady(mModuleType, mModel);
+    }
+
+    /** Called when the educational tip module is visible to users on the magic stack. */
+    void onViewCreated() {
+        if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO) {
+            boolean shouldDisplay =
+                    mTracker.shouldTriggerHelpUi(
+                            FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
+            if (shouldDisplay) {
+                DefaultBrowserPromoUtils defaultBrowserPromoUtils =
+                        DefaultBrowserPromoUtils.getInstance();
+                defaultBrowserPromoUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
+                defaultBrowserPromoUtils.notifyDefaultBrowserPromoVisible();
+            }
+        }
     }
 
     @ModuleType
@@ -145,5 +130,9 @@ public class EducationalTipModuleMediator {
 
     DefaultBrowserPromoTriggerStateListener getDefaultBrowserPromoTriggerStateListenerForTesting() {
         return mDefaultBrowserPromoTriggerStateListener;
+    }
+
+    void setModuleTypeForTesting(@ModuleType int moduleType) {
+        mModuleType = moduleType;
     }
 }

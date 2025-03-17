@@ -122,6 +122,14 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
   RunTest("cancel_job.html");
 }
 
+IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetJobStatus) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
+
+  RunTest("get_print_job_status.html");
+}
+
 INSTANTIATE_TEST_SUITE_P(/**/,
                          PrintingApiTest,
                          testing::Values(ExtensionType::kChromeApp,

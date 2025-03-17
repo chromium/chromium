@@ -9,10 +9,12 @@ import android.text.TextUtils;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.UUID;
 
 /** Allows access to cloud management functionalities implemented downstream. */
+@NullMarked
 public class CloudManagementAndroidConnection {
     private static class LazyHolder {
         private static final CloudManagementAndroidConnection INSTANCE =

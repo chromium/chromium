@@ -50,7 +50,6 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
   void OpenPlayStorePage(GURL play_store_uri) override;
 
  private:
-  TestingPrefServiceSimple pref_service_;
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
       nullptr;
   std::map<std::string, bool> companion_app_installed_ = {};

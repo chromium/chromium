@@ -1,0 +1,64 @@
+<style>
+  :host {
+    display: flex;
+    height: 100%;
+    user-select: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      background: var(--google-grey-900);
+    }
+  }
+
+  print-preview-sidebar {
+    flex: none;
+    width: var(--print-preview-sidebar-width);
+  }
+
+  #preview-area-container {
+    align-items: center;
+    background-color: var(--preview-area-background-color);
+    flex: 1;
+  }
+</style>
+<print-preview-state id="state" state="{{state}}" error="{{error_}}">
+</print-preview-state>
+<print-preview-model id="model" settings="{{settings}}"
+    settings-managed="{{settingsManaged_}}" destination="[[destination_]]"
+    document-settings="[[documentSettings_]]"
+    margins="[[margins_]]" page-size="[[pageSize_]]"
+    max-sheets="{{maxSheets_}}"
+    on-preview-setting-changed="onPreviewSettingChanged_"
+    on-sticky-setting-changed="onStickySettingChanged_"
+    on-setting-valid-changed="onSettingValidChanged_">
+</print-preview-model>
+<print-preview-document-info id="documentInfo"
+    document-settings="{{documentSettings_}}" margins="{{margins_}}"
+    page-size="{{pageSize_}}">
+</print-preview-document-info>
+<div id="preview-area-container">
+  <print-preview-preview-area id="previewArea" settings="[[settings]]"
+      destination="[[destination_]]" error="{{error_}}"
+      document-modifiable="[[documentSettings_.isModifiable]]"
+      margins="[[margins_]]" page-size="[[pageSize_]]" state="[[state]]"
+      measurement-system="[[measurementSystem_]]"
+      preview-state="{{previewState_}}" on-preview-start="onPreviewStart_">
+  </print-preview-preview-area>
+</div>
+<print-preview-sidebar id="sidebar"
+    destination-state="{{destinationState_}}"
+    controls-managed="[[controlsManaged_]]" destination="{{destination_}}"
+    error="{{error_}}" is-pdf="[[!documentSettings_.isModifiable]]"
+    page-count="[[documentSettings_.pageCount]]"
+    settings="[[settings]]" state="[[state]]"
+    max-sheets="[[maxSheets_]]" on-focus="onSidebarFocus_"
+<if expr="is_macosx">
+    on-open-pdf-in-preview="onOpenPdfInPreview_"
+</if>
+<if expr="not is_chromeos">
+    on-print-with-system-dialog="onPrintWithSystemDialog_"
+</if>
+    on-print-requested="onPrintRequested_"
+    on-cancel-requested="onCancelRequested_">
+</print-preview-sidebar>

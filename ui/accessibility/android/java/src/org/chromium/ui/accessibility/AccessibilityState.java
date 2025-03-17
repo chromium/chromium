@@ -46,6 +46,7 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -649,8 +650,8 @@ public class AccessibilityState {
         // immediately. To ensure we always have an up-to-date value, check that the
         // set of services match, and if they don't, schedule an update with an exponential
         // back-off.
-        Collections.sort(runningServiceNames);
-        Collections.sort(enabledServiceNames);
+        runningServiceNames.sort(Comparator.naturalOrder());
+        enabledServiceNames.sort(Comparator.naturalOrder());
 
         // In some cases, Autofill will be running but will not be listed as an enabled service,
         // such as when some third-party password managers are running. In these cases, we will
@@ -820,6 +821,17 @@ public class AccessibilityState {
 
         return new Pair<Boolean, Boolean>(
                 isTalkBackEnabled, isTalkBackEnabled && isOnlyOneServiceEnabled);
+    }
+
+    /**
+     * Checks whether or not a known screen reader is running, i.e. TalkBack. This differs from the
+     * isScreenReaderEnabled method in that this method is based on a running Bundle ID, and the
+     * other method is based on a heuristic that identifies screen-reader-like services.
+     *
+     * @return True when a known screen reader is running (e.g. TalkBack).
+     */
+    public static boolean isKnownScreenReaderRunning() {
+        return getTalkBackEnabledState().first;
     }
 
     /**

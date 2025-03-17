@@ -47,14 +47,16 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
   // as a key frame.  If it is provided repeatedly as delta frames, the minimum
   // quantizer value should be repeatedly generated since there is no difference
   // between frames.
-  EXPECT_EQ(4.0, qe.EstimateForKeyFrame(*black_frame));
-  for (int i = 0; i < 3; ++i)
-    EXPECT_EQ(4.0, qe.EstimateForDeltaFrame(*black_frame));
+  EXPECT_EQ(4.0, qe.EstimateForKeyFrame(*black_frame).value());
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_EQ(4.0, qe.EstimateForDeltaFrame(*black_frame).value());
+  }
 
   const auto checkerboard_frame_data =
       std::make_unique<uint8_t[]>(frame_size.GetArea());
-  for (int i = 0, end = frame_size.GetArea(); i < end; ++i)
+  for (int i = 0, end = frame_size.GetArea(); i < end; ++i) {
     checkerboard_frame_data.get()[i] = (((i % 2) == 0) ? 0 : 255);
+  }
   const scoped_refptr<VideoFrame> checkerboard_frame =
       CreateFrame(checkerboard_frame_data.get(), frame_size);
 
@@ -62,7 +64,7 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
   // will have a difference of 255, and half will have zero difference.
   // Therefore, the Shannon Entropy should be 1.0 and the resulting quantizer
   // estimate should be ~11.9.
-  EXPECT_NEAR(11.9, qe.EstimateForDeltaFrame(*checkerboard_frame), 0.1);
+  EXPECT_NEAR(11.9, qe.EstimateForDeltaFrame(*checkerboard_frame).value(), 0.1);
 
   // Now, introduce a series of frames with "random snow" in them.  Expect this
   // results in high quantizer estimates.
@@ -76,7 +78,7 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
     }
     const scoped_refptr<VideoFrame> random_frame =
         CreateFrame(random_frame_data.get(), frame_size);
-    EXPECT_LE(50.0, qe.EstimateForDeltaFrame(*random_frame));
+    EXPECT_LE(50.0, qe.EstimateForDeltaFrame(*random_frame).value());
   }
 }
 

@@ -21,6 +21,7 @@ source_set("ui_bundled") {
     ":constants",
     ":ui_util",
     "//base",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/strings",
     "//ios/chrome/app/application_delegate:app_state",
@@ -28,6 +29,7 @@ source_set("ui_bundled") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/search_engine_choice/model",
     "//ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more",
     "//ios/chrome/browser/search_engines/model",
@@ -64,6 +66,7 @@ source_set("ui_util") {
   ]
   deps = [
     "//base",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/common/ui/favicon",
@@ -106,6 +109,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/signin/public/base:signin_switches",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",

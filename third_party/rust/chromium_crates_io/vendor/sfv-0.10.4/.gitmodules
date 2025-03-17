@@ -1,0 +1,3 @@
+[submodule "tests/spec_tests"]
+	path = tests/spec_tests
+	url = https://github.com/httpwg/structured-header-tests.git

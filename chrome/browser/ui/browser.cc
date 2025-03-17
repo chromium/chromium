@@ -32,7 +32,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/background/background_contents.h"
@@ -61,7 +60,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -145,6 +143,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -259,7 +258,7 @@
 #include "ui/base/win/shell.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -339,7 +338,7 @@ const extensions::Extension* GetExtensionForOrigin(
 }
 
 bool IsOnKioskSplashScreen() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
   if (!session_manager) {
@@ -999,15 +998,7 @@ std::u16string Browser::GetWindowTitleFromWebContents(
                            : base::UTF8ToUTF16(app_name());
   }
   // Include the app name in window titles for tabbed browser windows when
-  // requested with |include_app_name|. Exception: On Lacros, when the OS is
-  // collecting window titles to render for desk overview mode, this function
-  // would get called with include_app_name=true. In this case,
-  // include_app_name=true would be ignored and no app name would be included
-  // in the title string that is to be returned. So always set
-  // `include_app_name` to false.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  include_app_name = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  // requested with |include_app_name|.
   return ((is_type_normal() || is_type_popup()) && include_app_name)
              ? l10n_util::GetStringFUTF16(IDS_BROWSER_WINDOW_TITLE_FORMAT,
                                           title)
@@ -1140,8 +1131,8 @@ Browser* Browser::GetBrowserForOpeningWebUi() {
   return opener_browser_;
 }
 
-StatusBubble* Browser::GetStatusBubbleForTesting() {
-  return GetStatusBubble();
+std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
+  return GetStatusBubbles();
 }
 
 void Browser::SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
@@ -1196,6 +1187,10 @@ views::View* Browser::TopContainer() {
   return window_->GetTopContainer();
 }
 
+views::View* Browser::LensOverlayView() {
+  return window_->GetLensOverlayView();
+}
+
 base::CallbackListSubscription Browser::RegisterActiveTabDidChange(
     ActiveTabChangeCallback callback) {
   return did_active_tab_change_callback_list_.Add(std::move(callback));
@@ -1214,7 +1209,7 @@ Browser::GetWebContentsModalDialogHostForWindow() {
   return window_->GetWebContentsModalDialogHost();
 }
 
-bool Browser::IsActive() {
+bool Browser::IsActive() const {
 // TODO(https://crbug.com/376306245): This is a temporary workaround for the
 // fact that window_->IsActive() does not return the right result for macOS
 // standalone PWA windows. This new behavior is still not technically correct,
@@ -1222,14 +1217,11 @@ bool Browser::IsActive() {
 // whether `this` is active.
 #if BUILDFLAG(IS_MAC)
   // If this is a standalone PWA window, check BrowserList instead.
-  if (GetAppBrowserController()) {
+  if (app_controller_) {
     return BrowserList::GetInstance()->GetLastActive() == this;
-  } else {
-    return window_->IsActive();
   }
-#else
-  return window_->IsActive();
 #endif
+  return is_active_;
 }
 
 base::CallbackListSubscription Browser::RegisterDidBecomeActive(
@@ -1244,6 +1236,10 @@ base::CallbackListSubscription Browser::RegisterDidBecomeInactive(
 
 ExclusiveAccessManager* Browser::GetExclusiveAccessManager() {
   return exclusive_access_manager();
+}
+
+ImmersiveModeController* Browser::GetImmersiveModeController() {
+  return GetBrowserView().immersive_mode_controller();
 }
 
 BrowserActions* Browser::GetActions() {
@@ -1275,16 +1271,22 @@ Browser* Browser::GetBrowserForMigrationOnly() {
 }
 
 void Browser::DidBecomeActive() {
-  BrowserList::SetLastActive(this);
-  did_become_active_callback_list_.Notify(this);
+  if (!is_active_) {
+    is_active_ = true;
+    BrowserList::SetLastActive(this);
+    did_become_active_callback_list_.Notify(this);
+  }
 }
 
 void Browser::DidBecomeInactive() {
-  BrowserList::NotifyBrowserNoLongerActive(this);
-  did_become_inactive_callback_list_.Notify(this);
+  if (is_active_) {
+    is_active_ = false;
+    BrowserList::NotifyBrowserNoLongerActive(this);
+    did_become_inactive_callback_list_.Notify(this);
+  }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool Browser::IsLockedForOnTask() {
   return on_task_locked_;
 }
@@ -1468,8 +1470,9 @@ void Browser::OpenFile() {
 }
 
 void Browser::UpdateDownloadShelfVisibility(bool visible) {
-  if (GetStatusBubble()) {
-    GetStatusBubble()->UpdateDownloadShelfVisibility(visible);
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
+    status_bubble->UpdateDownloadShelfVisibility(visible);
   }
 }
 
@@ -1504,8 +1507,9 @@ void Browser::UpdateUIForNavigationInTab(WebContents* contents,
     window()->GetLocationBar()->Revert();
   }
 
-  if (GetStatusBubble()) {
-    GetStatusBubble()->Hide();
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
+    status_bubble->Hide();
   }
 
   // Update the location bar. This is synchronous. We specifically don't
@@ -1560,6 +1564,14 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
                tab_strip_model, "change", change);
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
+      // Initialize find bar controller when tab having active find session
+      // is inserted in a new window.
+      find_in_page::FindTabHelper* find_tab_helper =
+          find_in_page::FindTabHelper::FromWebContents(selection.new_contents);
+      if (!HasFindBarController() && find_tab_helper &&
+          find_tab_helper->is_find_session_active()) {
+        GetFindBarController();
+      }
       for (const auto& contents : change.GetInsert()->contents) {
         OnTabInsertedAt(contents.contents, contents.index);
       }
@@ -1619,9 +1631,24 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   // would be the best way to achieve that.
   DCHECK(!IsRelevantToAppSessionService(type_));
   DCHECK(tab_strip_model_->group_model());
+
   if (change.type == TabGroupChange::kVisualsChanged) {
     UpdateTabGroupSessionMetadata(this, change.group);
-  } else if (change.type == TabGroupChange::kClosed) {
+  } else if (change.type == TabGroupChange::kCreated &&
+             change.GetCreateChange()->reason() ==
+                 TabGroupChange::TabGroupCreationReason::
+                     kInsertedFromAnotherTabstrip) {
+    // When a detached group is inserted, we need to update the group of all the
+    // corresponding detached tab in session service.
+    for (tabs::TabInterface* tab :
+         change.GetCreateChange()->GetDetachedTabs()) {
+      UpdateTabGroupSessionDataForTab(tab, change.group);
+    }
+  } else if (change.type == TabGroupChange::kClosed &&
+             change.GetCloseChange()->reason() ==
+                 TabGroupChange::TabGroupClosureReason::kGroupClosed) {
+    // When a group is detached, we do not need to add the information for all
+    // the detached tabs in tab restore service.
     sessions::TabRestoreService* tab_restore_service =
         TabRestoreServiceFactory::GetForProfile(profile());
     if (tab_restore_service) {
@@ -1647,9 +1674,17 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 }
 
 void Browser::TabGroupedStateChanged(
-    std::optional<tab_groups::TabGroupId> group,
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
+  UpdateTabGroupSessionDataForTab(tab, new_group);
+}
+
+void Browser::UpdateTabGroupSessionDataForTab(
+    tabs::TabInterface* tab,
+    std::optional<tab_groups::TabGroupId> group) {
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
   SessionService* const session_service =
@@ -1732,6 +1767,11 @@ void Browser::SetFocusToLocationBar() {
   window_->SetFocusToLocationBar(false);
 }
 
+bool Browser::PreHandleMouseEvent(content::WebContents* source,
+                                  const blink::WebMouseEvent& event) {
+  return window()->PreHandleMouseEvent(event);
+}
+
 content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
     content::WebContents* source,
     const NativeWebKeyboardEvent& event) {
@@ -1769,7 +1809,7 @@ bool Browser::PreHandleGestureEvent(content::WebContents* source,
 bool Browser::CanDragEnter(content::WebContents* source,
                            const content::DropData& data,
                            blink::DragOperationsMask operations_allowed) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Disallow drag-and-drop navigation for Settings windows which do not support
   // external navigation.
   if ((operations_allowed & blink::kDragOperationLink) &&
@@ -1851,11 +1891,11 @@ content::PreloadingEligibility Browser::IsPrerender2Supported(
 }
 
 bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return source == tab_strip_model_->GetActiveWebContents();
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // TODO(crbug.com/40177301): Remove this.
@@ -2057,7 +2097,7 @@ content::WebContents* Browser::AddNewContents(
     // cannot switch their independent spaces simultaneously (crbug.com/1315749)
     auto web_contents_creation_callback = base::BindOnce(
         &chrome::AddWebContents, this, source, std::move(new_contents),
-        target_url, disposition, window_features, window_action);
+        target_url, disposition, window_features, window_action, user_gesture);
     fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
         base::IgnoreResult(std::move(web_contents_creation_callback))));
     return nullptr;
@@ -2065,7 +2105,7 @@ content::WebContents* Browser::AddNewContents(
 
   return chrome::AddWebContents(this, source, std::move(new_contents),
                                 target_url, disposition, window_features,
-                                window_action);
+                                window_action, user_gesture);
 }
 
 void Browser::ActivateContents(WebContents* contents) {
@@ -2112,12 +2152,16 @@ void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
 }
 
 void Browser::UpdateTargetURL(WebContents* source, const GURL& url) {
-  if (!GetStatusBubble()) {
-    return;
-  }
-
-  if (source == tab_strip_model_->GetActiveWebContents()) {
-    GetStatusBubble()->SetURL(url);
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
+    StatusBubbleViews* status_bubble_views =
+        static_cast<StatusBubbleViews*>(status_bubble);
+    ContentsWebView* anchor =
+        static_cast<ContentsWebView*>(status_bubble_views->base_view());
+    if (source == anchor->GetWebContents()) {
+      status_bubble->SetURL(url);
+      break;
+    }
   }
 }
 
@@ -2132,11 +2176,19 @@ void Browser::ContentsMouseEvent(WebContents* source, const ui::Event& event) {
   }
 
   // Mouse motion events update the status bubble, if it exists.
-  if (GetStatusBubble() && source == tab_strip_model_->GetActiveWebContents() &&
-      (type == ui::EventType::kMouseMoved || exited)) {
-    GetStatusBubble()->MouseMoved(exited);
-    if (exited) {
-      GetStatusBubble()->SetURL(GURL());
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
+    StatusBubbleViews* status_bubble_views =
+        static_cast<StatusBubbleViews*>(status_bubble);
+    ContentsWebView* anchor =
+        static_cast<ContentsWebView*>(status_bubble_views->base_view());
+    if (source == anchor->GetWebContents() &&
+        (type == ui::EventType::kMouseMoved || exited)) {
+      status_bubble->MouseMoved(exited);
+      if (exited) {
+        status_bubble->SetURL(GURL());
+      }
+      break;
     }
   }
 }
@@ -2364,8 +2416,8 @@ bool Browser::CanUseWindowingControls(
   return true;
 }
 
-void Browser::OnCanResizeFromWebAPIChanged() {
-  window_->OnCanResizeFromWebAPIChanged();
+void Browser::OnWebApiWindowResizableChanged() {
+  window_->OnWebApiWindowResizableChanged();
 }
 
 bool Browser::GetCanResize() {
@@ -2728,6 +2780,10 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
   if (!blocked && contents_is_active && browser_active) {
     web_contents->Focus();
   }
+
+  if (contents_is_active) {
+    window_->SetContentScrimVisibility(/*visible=*/blocked);
+  }
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -2918,6 +2974,9 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   // OnActiveTabChanged() below.
   UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_TAB_SWITCH);
 
+  bool is_blocked = tab_strip_model_->IsTabBlocked(index);
+  window_->SetContentScrimVisibility(/*visible=*/is_blocked);
+
   // Let the BrowserWindow do its handling.  On e.g. views this changes the
   // focused object, which should happen before we update the toolbar below,
   // since the omnibox expects the correct element to already be focused when it
@@ -2941,19 +3000,28 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   command_controller_->TabStateChanged();
 
   // Reset the status bubble.
-  StatusBubble* status_bubble = GetStatusBubble();
-  if (status_bubble) {
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
     status_bubble->Hide();
 
     // Show the loading state (if any).
-    status_bubble->SetStatus(
-        CoreTabHelper::FromWebContents(tab_strip_model_->GetActiveWebContents())
-            ->GetStatusText());
+    if (status_bubble == status_bubbles.front()) {
+      status_bubble->SetStatus(CoreTabHelper::FromWebContents(
+                                   tab_strip_model_->GetActiveWebContents())
+                                   ->GetStatusText());
+    }
   }
 
   if (HasFindBarController()) {
     find_bar_controller_->ChangeWebContents(new_contents);
     find_bar_controller_->find_bar()->MoveWindowIfNecessary();
+    find_in_page::FindTabHelper* find_tab_helper =
+        find_in_page::FindTabHelper::FromWebContents(new_contents);
+    if (find_tab_helper && find_tab_helper->find_ui_active()) {
+      if (!find_bar_controller_->find_bar()->HasFocus()) {
+        find_bar_controller_->find_bar()->RestoreSavedFocus();
+      }
+    }
   }
 
   // Update sessions (selected tab index and last active time). Don't force
@@ -3019,7 +3087,7 @@ void Browser::OnDevToolsAvailabilityChanged() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void Browser::OnLockedForOnTaskUpdated() {
   bool is_locked = IsLockedForOnTask();
   BrowserView* const browser_view = static_cast<BrowserView*>(window());
@@ -3135,8 +3203,9 @@ void Browser::ProcessPendingUIUpdates() {
       // Updates that only matter when the tab is selected go here.
 
       // Updating the URL happens synchronously in ScheduleUIUpdate.
-      if (flags & content::INVALIDATE_TYPE_LOAD && GetStatusBubble()) {
-        GetStatusBubble()->SetStatus(
+      std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+      if (flags & content::INVALIDATE_TYPE_LOAD && status_bubbles.size() > 0) {
+        status_bubbles.front()->SetStatus(
             CoreTabHelper::FromWebContents(
                 tab_strip_model_->GetActiveWebContents())
                 ->GetStatusText());
@@ -3186,10 +3255,10 @@ void Browser::RemoveScheduledUpdatesFor(WebContents* contents) {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Getters for UI (private):
 
-StatusBubble* Browser::GetStatusBubble() {
+std::vector<StatusBubble*> Browser::GetStatusBubbles() {
   // For kiosk and exclusive app mode we want to always hide the status bubble.
   if (IsRunningInAppMode()) {
-    return nullptr;
+    return {};
   }
 
   // We hide the status bar for web apps windows as this matches native
@@ -3197,10 +3266,14 @@ StatusBubble* Browser::GetStatusBubble() {
   // mode, as the minimal browser UI includes the status bar.
   if (web_app::AppBrowserController::IsWebApp(this) &&
       !app_controller()->HasMinimalUiButtons()) {
-    return nullptr;
+    return {};
   }
 
-  return window_ ? window_->GetStatusBubble() : nullptr;
+  if (window_) {
+    return window_->GetStatusBubbles();
+  } else {
+    return {};
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3244,7 +3317,7 @@ void Browser::SyncHistoryWithTabs(int index) {
 // Browser, In-progress download termination handling (private):
 
 bool Browser::CanCloseWithInProgressDownloads() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // On Mac and ChromeOS, non-incognito and non-Guest downloads can still
   // continue after window is closed.
   if (!profile_->IsOffTheRecord()) {
@@ -3385,10 +3458,11 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
   if (source == selected_contents) {
     bool is_loading = source->IsLoading() && should_show_loading_ui;
     command_controller_->LoadingStateChanged(is_loading, false);
-    if (GetStatusBubble()) {
-      GetStatusBubble()->SetStatus(CoreTabHelper::FromWebContents(
-                                       tab_strip_model_->GetActiveWebContents())
-                                       ->GetStatusText());
+
+    std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+    if (status_bubbles.size() > 0) {
+      status_bubbles.front()->SetStatus(
+          CoreTabHelper::FromWebContents(selected_contents)->GetStatusText());
     }
   }
 }
@@ -3472,7 +3546,7 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(b/64863368): Consider Fullscreen mode.
 bool Browser::CustomTabBrowserSupportsWindowFeature(
     WindowFeature feature) const {
@@ -3520,7 +3594,7 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
     case TYPE_DEVTOOLS:
     case TYPE_APP_POPUP:
       return AppPopupBrowserSupportsWindowFeature(feature, check_can_support);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case TYPE_CUSTOM_TAB:
       return CustomTabBrowserSupportsWindowFeature(feature);
 #endif
@@ -3632,7 +3706,7 @@ bool Browser::ShouldCreateBackgroundContents(
 
   // Ensure that we're trying to open this from the extension's process.
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile_);
-  if (!source_site_instance->GetProcess() ||
+  if (!source_site_instance->HasProcess() ||
       !process_map->Contains(
           extension->id(),
           source_site_instance->GetProcess()->GetDeprecatedID())) {

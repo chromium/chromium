@@ -62,7 +62,6 @@ class BucketContextTest : public testing::Test {
 
   void SetQuotaLeft(int64_t quota_manager_response) {
     quota_manager_->SetQuota(bucket_context_->bucket_locator().storage_key,
-                             blink::mojom::StorageType::kTemporary,
                              quota_manager_response);
   }
 

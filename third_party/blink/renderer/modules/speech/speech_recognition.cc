@@ -23,16 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/speech/speech_recognition.h"
 
 #include <algorithm>
 
-#include "base/feature_list.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
@@ -41,6 +36,7 @@
 #include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom-blink.h"
+#include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -48,6 +44,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -60,6 +57,27 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+namespace {
+blink::V8AvailabilityStatus AvailabilityStatusToV8(
+    media::mojom::blink::AvailabilityStatus status) {
+  switch (status) {
+    case media::mojom::blink::AvailabilityStatus::kUnavailable:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kUnavailable);
+    case media::mojom::blink::AvailabilityStatus::kDownloadable:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kDownloadable);
+    case media::mojom::blink::AvailabilityStatus::kDownloading:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kDownloading);
+    case media::mojom::blink::AvailabilityStatus::kAvailable:
+      return blink::V8AvailabilityStatus(
+          blink::V8AvailabilityStatus::Enum::kAvailable);
+  }
+}
+}  // namespace
 
 namespace blink {
 
@@ -135,44 +153,84 @@ void SpeechRecognition::abort() {
   }
 }
 
-ScriptPromise<IDLBoolean> SpeechRecognition::onDeviceWebSpeechAvailable(
+void SpeechRecognition::updateContext(SpeechRecognitionContext* context,
+                                      ExceptionState& exception_state) {
+  if (!session_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "An ongoing speech recognition session is required to update the "
+        "recognition context.");
+    return;
+  }
+
+  WTF::Vector<media::mojom::blink::SpeechRecognitionPhrasePtr> phrases;
+  if (context->phrases()) {
+    for (unsigned int i = 0; i < context->phrases()->length(); i++) {
+      SpeechRecognitionPhrase* phrase = context->phrases()->item(i);
+      phrases.emplace_back(media::mojom::blink::SpeechRecognitionPhrase::New(
+          phrase->phrase(), phrase->boost()));
+    }
+  }
+  media::mojom::blink::SpeechRecognitionRecognitionContextPtr
+      recognition_context =
+          media::mojom::blink::SpeechRecognitionRecognitionContext::New(
+              std::move(phrases));
+  session_->UpdateRecognitionContext(std::move(recognition_context));
+}
+
+// Returns a promise that resolves to a enum indicating whether on-device
+// speech recognition is available for a given BCP-47 language code.
+ScriptPromise<V8AvailabilityStatus> SpeechRecognition::availableOnDevice(
     ScriptState* script_state,
     const String& lang,
     ExceptionState& exception_state) {
-  if (!controller_ || !GetExecutionContext()) {
+  LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
+  auto* controller = SpeechRecognitionController::From(window);
+
+  if (!controller || !script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Execution context is detached.");
     return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8AvailabilityStatus>>(
+          script_state, exception_state.GetContext());
   auto result = resolver->Promise();
-
-  controller_->OnDeviceWebSpeechAvailable(
-      lang, WTF::BindOnce([](SpeechRecognition*,
-                             ScriptPromiseResolver<IDLBoolean>* resolver,
-                             bool available) { resolver->Resolve(available); },
-                          WrapPersistent(this), WrapPersistent(resolver)));
+  controller->OnDeviceWebSpeechAvailable(
+      lang, WTF::BindOnce(
+                [](ScriptPromiseResolver<V8AvailabilityStatus>* resolver,
+                   media::mojom::blink::AvailabilityStatus status) {
+                  resolver->Resolve(AvailabilityStatusToV8(status));
+                },
+                WrapPersistent(resolver)));
 
   return result;
 }
 
-ScriptPromise<IDLBoolean> SpeechRecognition::installOnDeviceSpeechRecognition(
+// Returns a promise that resolves to a boolean indicating whether the
+// installation of an on-device speech recognition language pack for a given
+// BCP-47 language code was initiated successfully.
+ScriptPromise<IDLBoolean> SpeechRecognition::installOnDevice(
     ScriptState* script_state,
     const String& lang,
     ExceptionState& exception_state) {
-  if (!controller_ || !GetExecutionContext()) {
+  LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
+  auto* controller = SpeechRecognitionController::From(window);
+
+  if (!controller || !script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Execution context is detached.");
     return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
-
-  controller_->InstallOnDeviceSpeechRecognition(
-      lang, WTF::BindOnce([](SpeechRecognition*,
-                             ScriptPromiseResolver<IDLBoolean>* resolver,
+  controller->InstallOnDeviceSpeechRecognition(
+      lang, WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
                              bool success) { resolver->Resolve(success); },
-                          WrapPersistent(this), WrapPersistent(resolver)));
+                          WrapPersistent(resolver)));
 
   return result;
 }
@@ -210,8 +268,9 @@ void SpeechRecognition::ResultRetrieved(
   HeapVector<Member<SpeechRecognitionResult>> new_final_results;
   new_final_results.ReserveInitialCapacity(aggregated_results.size() -
                                            provisional_count);
-  new_final_results.AppendRange(aggregated_results.begin(),
-                                aggregated_results.end() - provisional_count);
+  new_final_results.AppendRange(
+      aggregated_results.begin(),
+      UNSAFE_TODO(aggregated_results.end() - provisional_count));
   final_results_ = std::move(new_final_results);
 
   // We dispatch an event with (1) + (2) + (3).
@@ -292,8 +351,14 @@ void SpeechRecognition::OnConnectionError() {
 }
 
 void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
-  if (!controller_ || !GetExecutionContext())
+  if (!controller_ || !GetExecutionContext()) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Cannot start speech recognition on a detached document.");
+    }
     return;
+  }
 
   if (started_) {
     // https://wicg.github.io/speech-api/#dom-speechrecognition-start
@@ -311,23 +376,21 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
   }
   final_results_.clear();
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kMediaStreamTrackWebSpeech) &&
+  auto task_runner =
+      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+  if (RuntimeEnabledFeatures::MediaStreamTrackWebSpeechEnabled() &&
       stream_track_) {
     SpeechRecognitionMediaStreamAudioSink* sink =
         MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
             GetExecutionContext(),
             WTF::BindOnce(&SpeechRecognition::StartController,
                           WrapPersistent(this),
-                          session_.BindNewPipeAndPassReceiver(
-                              GetExecutionContext()->GetTaskRunner(
-                                  TaskType::kMiscPlatformAPI))));
+                          session_.BindNewPipeAndPassReceiver(task_runner)));
     WebMediaStreamAudioSink::AddToAudioTrack(
         sink, WebMediaStreamTrack(stream_track_->Component()));
     stream_track_->RegisterSink(sink);
   } else {
-    StartController(session_.BindNewPipeAndPassReceiver(
-        GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    StartController(session_.BindNewPipeAndPassReceiver(task_runner));
   }
 
   started_ = true;
@@ -347,11 +410,16 @@ void SpeechRecognition::StartController(
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
-  controller_->Start(std::move(session_receiver), std::move(session_client),
-                     *grammars_, lang_, continuous_, interim_results_,
-                     max_alternatives_, local_service_, allow_cloud_fallback_,
-                     std::move(audio_forwarder_receiver),
-                     std::move(audio_parameters));
+  auto params = controller_->BuildStartSpeechRecognitionRequestParams(
+      std::move(session_receiver), std::move(session_client), *grammars_,
+      context(), lang_, continuous_, interim_results_, max_alternatives_,
+      /*on_device=*/
+      (mode_ == V8SpeechRecognitionMode::Enum::kOndevicePreferred ||
+       mode_ == V8SpeechRecognitionMode::Enum::kOndeviceOnly),
+      /*allow_cloud_fallback=*/
+      (mode_ != V8SpeechRecognitionMode::Enum::kOndeviceOnly),
+      std::move(audio_forwarder_receiver), std::move(audio_parameters));
+  controller_->Start(std::move(params));
 }
 
 SpeechRecognition::SpeechRecognition(LocalDOMWindow* window)
@@ -371,6 +439,7 @@ SpeechRecognition::~SpeechRecognition() = default;
 void SpeechRecognition::Trace(Visitor* visitor) const {
   visitor->Trace(stream_track_);
   visitor->Trace(grammars_);
+  visitor->Trace(context_);
   visitor->Trace(controller_);
   visitor->Trace(final_results_);
   visitor->Trace(receiver_);

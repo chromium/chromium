@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -91,7 +91,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
             return;
         }
 
-        SurveyConfig config = SurveyConfig.get(SENTIMENT_ORGANIC_SURVEY_TRIGGER);
+        SurveyConfig config = SurveyConfig.get(mProfile, SENTIMENT_ORGANIC_SURVEY_TRIGGER);
         SurveyClient surveyClient =
                 SurveyClientFactory.getInstance()
                         .createClient(config, mSafetyHubSurveyUiDelegate, mProfile);
@@ -101,7 +101,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
         }
         surveyClient.showSurvey(
                 activity,
-                /* lifecyclerDispatcher= */ null,
+                /* lifecycleDispatcher= */ null,
                 getSurveyPsbBitValues(),
                 getSurveyPsbStringValues());
     }
@@ -109,6 +109,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
     void triggerControlHatsSurvey(TabModelSelector tabModelSelector) {
         mModuleType = CONTROL_NOTIFICATION_MODULE;
         mHasTappedCard = false;
+        mHasVisited = false;
         triggerHatsSurveyIfEnabled(tabModelSelector);
     }
 
@@ -177,6 +178,12 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
         if (tab.isOffTheRecord() || webContents == null) {
             return;
         }
+
+        boolean shouldQueryOverallState =
+                mModuleType.equals(CONTROL_NOTIFICATION_MODULE)
+                        || !ChromeFeatureList.sSafetyHub.isEnabled();
+        String overallState = shouldQueryOverallState ? "" : getOverallState();
+
         boolean didShowSurvey =
                 SafetyHubHatsBridge.triggerHatsSurveyIfEnabled(
                         mProfile,
@@ -184,7 +191,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
                         getModuleType(),
                         mHasTappedCard,
                         mHasVisited,
-                        getOverallState());
+                        overallState);
         if (didShowSurvey) {
             removeObserver();
         }
@@ -211,11 +218,15 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
     /**
      * Returns a string that represents the overall state of Safety Hub. The overall state
      * represents the most severe state of all the modules. The logic for the state of each module
-     * should be equivalent to {@link SafetyHubModuleViewBinder#getModuleState()}.
+     * should be equivalent to {@link DeprecatedSafetyHubModuleViewBinder#getModuleState()}.
      */
     @VisibleForTesting
     @NonNull
     String getOverallState() {
+        if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
+            return "";
+        }
+
         @ModuleState int[] moduleStates = new int[5];
 
         moduleStates[0] = getPasswordModuleState();
@@ -247,7 +258,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
 
     /**
      * Returns the state of the password module. This computation differs slightly from the one in
-     * {@link SafetyHubModuleViewBinder#getModuleState()}.
+     * {@link DeprecatedSafetyHubModuleViewBinder#getModuleState()}.
      */
     private @ModuleState int getPasswordModuleState() {
         int compromisedPasswordsCount =

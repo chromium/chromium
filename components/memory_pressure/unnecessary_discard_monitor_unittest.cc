@@ -229,4 +229,42 @@ TEST_F(UnnecessaryDiscardMonitorTest, TestTwoPreceedingReclaimTargets) {
                                       1, 1);
 }
 
+TEST_F(UnnecessaryDiscardMonitorTest, TestCorrectReclaimTargetToZero) {
+  monitor_.OnReclaimTargetBegin({100, base::TimeTicks::Now()});
+
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+
+  base::TimeTicks next_reclaim_target_time = base::TimeTicks::Now();
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  monitor_.OnDiscard(150, base::TimeTicks::Now());
+  monitor_.OnReclaimTargetEnd();
+
+  ReclaimTarget next_target{100, next_reclaim_target_time};
+
+  ReclaimTarget corrected_target = monitor_.CorrectReclaimTarget(next_target);
+
+  ASSERT_EQ(corrected_target.target_kb, 0u);
+}
+
+TEST_F(UnnecessaryDiscardMonitorTest, TestCorrectReclaimTargetToNonZero) {
+  monitor_.OnReclaimTargetBegin({50, base::TimeTicks::Now()});
+
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+
+  base::TimeTicks next_reclaim_target_time = base::TimeTicks::Now();
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  monitor_.OnDiscard(50, base::TimeTicks::Now());
+  monitor_.OnReclaimTargetEnd();
+
+  ReclaimTarget next_target{100, next_reclaim_target_time};
+
+  ReclaimTarget corrected_target = monitor_.CorrectReclaimTarget(next_target);
+
+  ASSERT_EQ(corrected_target.target_kb, 50u);
+}
+
 }  // namespace memory_pressure

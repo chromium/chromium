@@ -34,12 +34,12 @@ suite('TabOrganizationSelectorTest', () => {
     document.body.appendChild(selector);
     await microtasksFinished();
 
-    noSelectionState = selector.shadowRoot!.querySelector('#buttonContainer')!;
+    noSelectionState = selector.shadowRoot.querySelector('#buttonContainer')!;
     assertTrue(!!noSelectionState);
     autoTabGroupsState =
-        selector.shadowRoot!.querySelector('auto-tab-groups-page')!;
+        selector.shadowRoot.querySelector('auto-tab-groups-page')!;
     assertTrue(!!autoTabGroupsState);
-    declutterState = selector.shadowRoot!.querySelector('declutter-page')!;
+    declutterState = selector.shadowRoot.querySelector('declutter-page')!;
     assertTrue(!!declutterState);
   }
 
@@ -58,7 +58,7 @@ suite('TabOrganizationSelectorTest', () => {
     assertFalse(isVisible(declutterState));
 
     const autoTabGroupsButton =
-        selector.shadowRoot!.querySelector<HTMLElement>('#autoTabGroupsButton');
+        selector.shadowRoot.querySelector<HTMLElement>('#autoTabGroupsButton');
     assertTrue(!!autoTabGroupsButton);
     autoTabGroupsButton.click();
     await microtasksFinished();
@@ -75,7 +75,7 @@ suite('TabOrganizationSelectorTest', () => {
     assertFalse(isVisible(declutterState));
 
     const declutterButton =
-        selector.shadowRoot!.querySelector<HTMLElement>('#declutterButton');
+        selector.shadowRoot.querySelector<HTMLElement>('#declutterButton');
     assertTrue(!!declutterButton);
     declutterButton.click();
     await microtasksFinished();
@@ -88,7 +88,7 @@ suite('TabOrganizationSelectorTest', () => {
   test('Declutter navigates to selector', async () => {
     await selectorSetup();
     const declutterButton =
-        selector.shadowRoot!.querySelector<HTMLElement>('#declutterButton');
+        selector.shadowRoot.querySelector<HTMLElement>('#declutterButton');
     assertTrue(!!declutterButton);
     declutterButton.click();
     await microtasksFinished();
@@ -98,7 +98,7 @@ suite('TabOrganizationSelectorTest', () => {
     assertTrue(isVisible(declutterState));
 
     const declutterBackButton =
-        declutterState.shadowRoot!.querySelector('cr-icon-button');
+        declutterState.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!declutterBackButton);
     declutterBackButton.click();
     await microtasksFinished();
@@ -111,7 +111,7 @@ suite('TabOrganizationSelectorTest', () => {
   test('Auto tab groups base state navigates to selector', async () => {
     await selectorSetup();
     const autoTabGroupsButton =
-        selector.shadowRoot!.querySelector<HTMLElement>('#autoTabGroupsButton');
+        selector.shadowRoot.querySelector<HTMLElement>('#autoTabGroupsButton');
     assertTrue(!!autoTabGroupsButton);
     autoTabGroupsButton.click();
     await microtasksFinished();
@@ -121,7 +121,7 @@ suite('TabOrganizationSelectorTest', () => {
     assertFalse(isVisible(declutterState));
 
     const autoTabGroupsBackButton =
-        autoTabGroupsState.shadowRoot!.querySelector<HTMLElement>(
+        autoTabGroupsState.shadowRoot.querySelector<HTMLElement>(
             '.back-button');
     assertTrue(!!autoTabGroupsBackButton);
     autoTabGroupsBackButton.click();
@@ -144,7 +144,7 @@ suite('TabOrganizationSelectorTest', () => {
         await microtasksFinished();
 
         const autoTabGroupsButton =
-            selector.shadowRoot!.querySelector<HTMLElement>(
+            selector.shadowRoot.querySelector<HTMLElement>(
                 '#autoTabGroupsButton');
         assertTrue(!!autoTabGroupsButton);
         autoTabGroupsButton.click();
@@ -155,7 +155,7 @@ suite('TabOrganizationSelectorTest', () => {
         assertFalse(isVisible(declutterState));
 
         const autoTabGroupsBackButton =
-            autoTabGroupsState.shadowRoot!.querySelector('cr-icon-button');
+            autoTabGroupsState.shadowRoot.querySelector('cr-icon-button');
         assertTrue(!!autoTabGroupsBackButton);
         autoTabGroupsBackButton.click();
         await microtasksFinished();
@@ -169,9 +169,8 @@ suite('TabOrganizationSelectorTest', () => {
     await selectorSetup(0);
 
     const declutterButton =
-        selector.shadowRoot!
-            .querySelector<TabOrganizationSelectorButtonElement>(
-                '#declutterButton');
+        selector.shadowRoot.querySelector<TabOrganizationSelectorButtonElement>(
+            '#declutterButton');
     assertTrue(!!declutterButton);
     assertTrue(declutterButton.disabled);
 
@@ -187,7 +186,7 @@ suite('TabOrganizationSelectorTest', () => {
     assertEquals(0, testApiProxy.getCallCount('setOrganizationFeature'));
 
     const declutterButton =
-        selector.shadowRoot!.querySelector<HTMLElement>('#declutterButton');
+        selector.shadowRoot.querySelector<HTMLElement>('#declutterButton');
     assertTrue(!!declutterButton);
     declutterButton.click();
 
@@ -197,7 +196,7 @@ suite('TabOrganizationSelectorTest', () => {
     testApiProxy.resetResolver('setOrganizationFeature');
 
     const declutterBackButton =
-        declutterState.shadowRoot!.querySelector('cr-icon-button');
+        declutterState.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!declutterBackButton);
     declutterBackButton.click();
 
@@ -207,7 +206,7 @@ suite('TabOrganizationSelectorTest', () => {
     testApiProxy.resetResolver('setOrganizationFeature');
 
     const autoTabGroupsButton =
-        selector.shadowRoot!.querySelector<HTMLElement>('#autoTabGroupsButton');
+        selector.shadowRoot.querySelector<HTMLElement>('#autoTabGroupsButton');
     assertTrue(!!autoTabGroupsButton);
     autoTabGroupsButton.click();
 

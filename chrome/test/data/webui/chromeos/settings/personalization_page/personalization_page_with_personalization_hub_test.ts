@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {PersonalizationHubBrowserProxyImpl, SettingsPersonalizationPageElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPersonalizationPageElement} from 'chrome://os-settings/os_settings.js';
+import {PersonalizationHubBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

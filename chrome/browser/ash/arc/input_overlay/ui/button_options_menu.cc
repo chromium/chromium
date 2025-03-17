@@ -119,15 +119,15 @@ class DoneButton : public views::LabelButton {
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL));
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase,
-        /*radius=*/kDoneButtonCornerRadius));
+    SetBackground(
+        views::CreateRoundedRectBackground(cros_tokens::kCrosSysSystemOnBase,
+                                           /*radius=*/kDoneButtonCornerRadius));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(14, 0)));
     SetProperty(views::kMarginsKey, gfx::Insets::TLBR(12, 0, 0, 0));
 
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosButton2, *label());
-    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
+    SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
     // Set highlight path.
@@ -240,7 +240,7 @@ void ButtonOptionsMenu::AddActionSelection() {
   // | |feature_tile| |feature_title| |
   // ----------------------------------
   auto* container = AddChildView(std::make_unique<views::View>());
-  container->SetBackground(views::CreateThemedRoundedRectBackground(
+  container->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/16.0f,
       /*bottom_radius=*/0.0f));
   container->SetUseDefaultFillLayout(true);

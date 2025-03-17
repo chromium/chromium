@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_SELECTION_H_
 #define UI_ACCESSIBILITY_AX_SELECTION_H_
 
-// #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -32,13 +32,17 @@ class AX_EXPORT AXSelection final {
 
   bool is_backward = false;
   AXNodeID anchor_object_id = kInvalidAXNodeID;
-  int anchor_offset = -1;
+  int anchor_offset = ax::mojom::kNoSelectionOffset;
   ax::mojom::TextAffinity anchor_affinity;
   AXNodeID focus_object_id = kInvalidAXNodeID;
-  int focus_offset = -1;
+  int focus_offset = ax::mojom::kNoSelectionOffset;
   ax::mojom::TextAffinity focus_affinity;
 
-  AXSelection& ToUnignoredSelection();
+  // Returns a selection that does not use ignored nodes for endpoints.
+  // If non_text_endpoints is true, returns an unignored selection but the
+  // endpoints are adjusted so that they never fall on text objects, but are
+  // moved to the text nodes' parents instead.
+  AXSelection& ToUnignoredSelection(bool non_text_endpoints = false);
 
  private:
   AXTreeID tree_id_;

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_OPEN_GROUP_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_OPEN_GROUP_HELPER_H_
 
+#include <set>
+
 #include "base/scoped_observation.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"

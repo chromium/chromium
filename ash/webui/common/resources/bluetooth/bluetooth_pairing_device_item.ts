@@ -14,7 +14,8 @@ import {FocusRowMixin} from '//resources/ash/common/cr_elements/focus_row_mixin.
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
-import {BluetoothDeviceProperties, DeviceType} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothDeviceProperties} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {DeviceType} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_device_item.html.js';

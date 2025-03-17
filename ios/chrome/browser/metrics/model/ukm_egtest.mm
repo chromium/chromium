@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -47,9 +47,6 @@ using chrome_test_util::SettingsDoneButton;
     [ChromeEarlGrey clearBrowsingHistory];
   }
 
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM was not enabled.");
   // Sign in to Chrome and enable history sync.
@@ -59,9 +56,8 @@ using chrome_test_util::SettingsDoneButton;
   // user flow that enables UKM.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:YES
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:
+                      syncher::kSyncUKMOperationsTimeout];
 
   // Grant metrics consent and update MetricsServicesManager.
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
@@ -73,9 +69,8 @@ using chrome_test_util::SettingsDoneButton;
 }
 
 - (void)tearDownHelper {
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:YES
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:
+                      syncher::kSyncUKMOperationsTimeout];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 
@@ -93,9 +88,6 @@ using chrome_test_util::SettingsDoneButton;
   // UKM.
   [SigninEarlGrey signOut];
 
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
   [super tearDownHelper];
@@ -148,9 +140,7 @@ using chrome_test_util::SettingsDoneButton;
 // metrics/ukm_browsertest.cc.
 
 // Make sure that UKM is disabled while an incognito tab is open.
-//
-// Corresponds to RegularPlusIncognitoCheck in //chrome/browser/metrics/
-// ukm_browsertest.cc.
+// LINT.IfChange(RegularPlusIncognitoCheck)
 - (void)testRegularPlusIncognito {
   // Note: Tests begin with an open regular tab. This tab is opened in setUp.
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
@@ -197,11 +187,10 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssertEqual(originalClientID, [MetricsAppInterface UKMClientID],
                   @"Client ID was reset.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:RegularPlusIncognitoCheck)
 
 // Make sure opening a real tab after Incognito doesn't enable UKM.
-//
-// Corresponds to IncognitoPlusRegularCheck in //chrome/browser/metrics/
-// ukm_browsertest.cc.
+// LINT.IfChange(IncognitoPlusRegularCheck)
 - (void)testIncognitoPlusRegular {
   // Note: Tests begin with an open regular tab. This tab is opened in setUp.
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
@@ -230,15 +219,14 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssertEqual(originalClientID, [MetricsAppInterface UKMClientID],
                   @"Client ID was reset.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:IncognitoPlusRegularCheck)
 
 // testRegularPlusGuest is unnecessary since there can't be multiple profiles.
 
 // testOpenNonSync is unnecessary since there can't be multiple profiles.
 
 // Make sure that UKM is disabled when metrics consent is revoked.
-//
-// Corresponds to MetricsConsentCheck in //chrome/browser/metrics/
-// ukm_browsertest.cc.
+// LINT.IfChange(MetricsConsentCheck)
 - (void)testMetricsConsent {
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
@@ -255,13 +243,12 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssertNotEqual(originalClientID, [MetricsAppInterface UKMClientID],
                      @"Client ID was not reset.");
 }
-
-// The tests corresponding to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/ukm_browsertest.cc. are in demographics_egtest.mm.
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:MetricsConsentCheck)
 
 // Make sure that providing metrics consent doesn't enable UKM when the user
 // is signed-in but history sync is disabled.
-- (void)testConsentAddedButNoHistorySync {
+// LINT.IfChange(ConsentAddedButNoSyncCheck)
+- (void)testConsentAddedButNoSyncCheck {
   [SigninEarlGrey signOut];
   [MetricsAppInterface setMetricsAndCrashReportingForTesting:NO];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
@@ -277,12 +264,15 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:ConsentAddedButNoSyncCheck)
 
 // Make sure that UKM is disabled when "Make searches and browsing better" is
 // disabled.
 //
 // Corresponds to ClientIdResetWhenConsentRemoved in //chrome/browser/metrics/
 // ukm_browsertest.cc.
+
+// LINT.IfChange(ClientIdResetWhenConsentRemoved)
 - (void)testClientIdResetWhenConsentRemoved {
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
@@ -316,9 +306,11 @@ using chrome_test_util::SettingsDoneButton;
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:ClientIdResetWhenConsentRemoved)
 
 // Make sure that UKM is disabled when the user is signed out.
-- (void)testSingleSignout {
+// LINT.IfChange(SingleSignoutCheck)
+- (void)testSingleSyncSignoutCheck {
   const uint64_t clientID1 = [MetricsAppInterface UKMClientID];
 
   [SigninEarlGrey signOut];
@@ -340,15 +332,15 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssertEqual(clientID2, [MetricsAppInterface UKMClientID],
                   @"Client ID was reset.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:SingleSignoutCheck)
 
 // testMultiSyncSignout is unnecessary since there can't be multiple profiles.
 
 // testMetricsReporting is unnecessary since iOS doesn't use sampling.
 
 // Tests that pending data is deleted when the user deletes their history.
-//
-// Corresponds to HistoryDeleteCheck in //chrome/browser/metrics/
-// ukm_browsertest.cc.
+
+// LINT.IfChange(HistoryDeleteCheck)
 - (void)testHistoryDelete {
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
@@ -370,5 +362,6 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:HistoryDeleteCheck)
 
 @end

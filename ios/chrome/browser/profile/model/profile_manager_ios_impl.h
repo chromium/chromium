@@ -14,9 +14,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/profile/model/profile_deleter_ios.h"
+#include "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
@@ -58,6 +60,8 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   void UnloadProfile(std::string_view name) override;
   void UnloadAllProfiles() override;
   void MarkProfileForDeletion(std::string_view name) override;
+  bool IsProfileMarkedForDeletion(std::string_view name) const override;
+  void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // ProfileIOS::Delegate:
@@ -90,6 +94,12 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   void DoFinalInit(ProfileIOS* profile);
   void DoFinalInitForServices(ProfileIOS* profile);
 
+  // Invoked when a profile deletion attempts complete with success or not.
+  // Will invoke `closure` after updating the ProfileAttributesStorageIOS.
+  void OnProfileDeletionComplete(base::OnceClosure closure,
+                                 const std::string& profile_name,
+                                 ProfileDeleterIOS::Result result);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The PrefService storing the local state.
@@ -102,10 +112,16 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   ProfileMap profiles_map_;
 
   // The owned ProfileAttributesStorageIOS instance.
-  ProfileAttributesStorageIOS profile_attributes_storage_;
+  MutableProfileAttributesStorageIOS profile_attributes_storage_;
+
+  // The owned ProfileDeleterIOS instance.
+  ProfileDeleterIOS profile_deleter_;
 
   // The list of registered observers.
   base::ObserverList<ProfileManagerObserverIOS, true> observers_;
+
+  // Factory for weak pointers.
+  base::WeakPtrFactory<ProfileManagerIOSImpl> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_MANAGER_IOS_IMPL_H_

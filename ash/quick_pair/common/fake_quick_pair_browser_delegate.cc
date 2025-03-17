@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "ash/quick_pair/common/fake_quick_pair_browser_delegate.h"
+
 #include <cstddef>
-#include "ash/constants/ash_pref_names.h"
+
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/quick_pair/repository/fast_pair/device_address_map.h"
-#include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
-#include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 
 namespace ash::quick_pair {
 
@@ -20,11 +20,6 @@ FakeQuickPairBrowserDelegate* g_instance = nullptr;
 FakeQuickPairBrowserDelegate::FakeQuickPairBrowserDelegate() {
   SetInstanceForTesting(this);
   g_instance = this;
-  PendingWriteStore::RegisterProfilePrefs(pref_service_.registry());
-  SavedDeviceRegistry::RegisterProfilePrefs(pref_service_.registry());
-  DeviceAddressMap::RegisterLocalStatePrefs(pref_service_.registry());
-  pref_service_.registry()->RegisterBooleanPref(ash::prefs::kFastPairEnabled,
-                                                /*default_value=*/true);
 }
 
 FakeQuickPairBrowserDelegate::~FakeQuickPairBrowserDelegate() {
@@ -51,7 +46,7 @@ FakeQuickPairBrowserDelegate* FakeQuickPairBrowserDelegate::Get() {
 }
 
 PrefService* FakeQuickPairBrowserDelegate::GetActivePrefService() {
-  return &pref_service_;
+  return Shell::Get()->session_controller()->GetActivePrefService();
 }
 
 void FakeQuickPairBrowserDelegate::RequestService(

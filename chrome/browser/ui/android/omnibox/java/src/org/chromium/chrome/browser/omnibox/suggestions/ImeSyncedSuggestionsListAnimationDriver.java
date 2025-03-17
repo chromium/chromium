@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.Window;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -18,6 +16,8 @@ import androidx.core.view.WindowInsetsControllerCompat.OnControllableInsetsChang
 
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
@@ -29,6 +29,7 @@ import java.util.List;
  * "Driver" class that synchronizes the omnibox suggestions list appearance animation with the IME
  * appearance animation.
  */
+@NullMarked
 public class ImeSyncedSuggestionsListAnimationDriver
         implements WindowInsetsAnimationListener,
                 OnControllableInsetsChangedListener,
@@ -36,18 +37,18 @@ public class ImeSyncedSuggestionsListAnimationDriver
                 SuggestionsListAnimationDriver {
 
     private static final long MAX_ANIMATION_DELAY_MS = 450;
-    @NonNull private final InsetObserver mInsetObserver;
-    @NonNull private final PropertyModel mListPropertyModel;
-    @NonNull private final Handler mHandler;
-    @NonNull private final Supplier<Float> mOmniboxVerticalTranslationSupplier;
-    @NonNull private final Runnable mShowSuggestionsListCallback;
+    private final InsetObserver mInsetObserver;
+    private final PropertyModel mListPropertyModel;
+    private final Handler mHandler;
+    private final Supplier<Float> mOmniboxVerticalTranslationSupplier;
+    private final Runnable mShowSuggestionsListCallback;
     private final float mAdditionalVerticalOffset;
 
-    @NonNull private final Window mWindow;
+    private final Window mWindow;
 
-    private WindowInsetsAnimationCompat mAnimation;
-    @Nullable private WindowInsetsControllerCompat mInsetsController;
-    @Nullable private TimingMetric mFocusToImeAnimationTimingMetric;
+    private @Nullable WindowInsetsAnimationCompat mAnimation;
+    private @Nullable WindowInsetsControllerCompat mInsetsController;
+    private @Nullable TimingMetric mFocusToImeAnimationTimingMetric;
     private boolean mImeAnimationEnabled;
     private boolean mCancelled;
 
@@ -67,13 +68,13 @@ public class ImeSyncedSuggestionsListAnimationDriver
      * @param window Window in which we're operating. Used to access WindowInsetsController* APIS.
      */
     public ImeSyncedSuggestionsListAnimationDriver(
-            @NonNull InsetObserver insetObserver,
-            @NonNull PropertyModel listPropertyModel,
-            @NonNull Supplier<Float> omniboxVerticalTranslationSupplier,
-            @NonNull Runnable showSuggestionsListCallback,
+            InsetObserver insetObserver,
+            PropertyModel listPropertyModel,
+            Supplier<Float> omniboxVerticalTranslationSupplier,
+            Runnable showSuggestionsListCallback,
             int additionalVerticalOffset,
-            @NonNull Handler handler,
-            @NonNull Window window) {
+            Handler handler,
+            Window window) {
         mInsetObserver = insetObserver;
         mListPropertyModel = listPropertyModel;
         mOmniboxVerticalTranslationSupplier = omniboxVerticalTranslationSupplier;
@@ -133,8 +134,7 @@ public class ImeSyncedSuggestionsListAnimationDriver
     // OnControllableInsetsChangedListener impl.
     @Override
     public void onControllableInsetsChanged(
-            @NonNull WindowInsetsControllerCompat windowInsetsControllerCompat,
-            int controllableTypesMask) {
+            WindowInsetsControllerCompat windowInsetsControllerCompat, int controllableTypesMask) {
         // Only enable animations if IME insets are controllable; they can't be animated if they
         // can't be controlled.
         // controllableTypesMask is a bitmask of every currently controllable type; '&
@@ -144,7 +144,7 @@ public class ImeSyncedSuggestionsListAnimationDriver
 
     // WindowInsetsAnimationListener impl.
     @Override
-    public void onPrepare(@NonNull WindowInsetsAnimationCompat animation) {
+    public void onPrepare(WindowInsetsAnimationCompat animation) {
         // This method is called for any inset animation, including for types we don't care about.
         // Ignore any animation that doesn't affect IME insets.
         if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0
@@ -152,7 +152,10 @@ public class ImeSyncedSuggestionsListAnimationDriver
             return;
         }
 
-        mFocusToImeAnimationTimingMetric.close();
+        if (mFocusToImeAnimationTimingMetric != null) {
+            mFocusToImeAnimationTimingMetric.close();
+        }
+
         if (mCancelled) {
             // When cancelling after a timeout, we keep our listener active until onPrepare solely
             // for the purposes of measuring the true focus->onPrepare latency. Otherwise we would
@@ -170,11 +173,11 @@ public class ImeSyncedSuggestionsListAnimationDriver
 
     @Override
     public void onStart(
-            @NonNull WindowInsetsAnimationCompat animation,
-            @NonNull WindowInsetsAnimationCompat.BoundsCompat bounds) {}
+            WindowInsetsAnimationCompat animation,
+            WindowInsetsAnimationCompat.BoundsCompat bounds) {}
 
     @Override
-    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
+    public void onEnd(WindowInsetsAnimationCompat animation) {
         if (mCancelled || animation != mAnimation) return;
         removeInsetListener();
         mAnimation = null;
@@ -184,8 +187,8 @@ public class ImeSyncedSuggestionsListAnimationDriver
 
     @Override
     public void onProgress(
-            @NonNull WindowInsetsCompat windowInsetsCompat,
-            @NonNull List<WindowInsetsAnimationCompat> runningAnimations) {
+            WindowInsetsCompat windowInsetsCompat,
+            List<WindowInsetsAnimationCompat> runningAnimations) {
         if (mCancelled || mAnimation == null || !runningAnimations.contains(mAnimation)) return;
 
         float interpolatedFraction = mAnimation.getInterpolatedFraction();

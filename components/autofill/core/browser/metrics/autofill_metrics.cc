@@ -18,8 +18,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -292,6 +292,8 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "CardInfoRetrievalEnrolledUnmask";
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return "3dsFetchVirtualCard";
+    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+      return "BnplFetchVirtualCard";
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
@@ -679,7 +681,8 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   // Iterate over all of the cards and gather metrics.
   const base::Time now = AutofillClock::Now();
   for (const CreditCard* card : credit_cards) {
-    const base::TimeDelta time_since_last_use = now - card->use_date();
+    const base::TimeDelta time_since_last_use =
+        now - card->usage_history().use_date();
     const int days_since_last_use = time_since_last_use.InDays();
     const int disused_delta =
         (time_since_last_use > disused_data_threshold) ? 1 : 0;
@@ -749,7 +752,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   }
 
   // Log the number of server cards that are enrolled with virtual cards.
-  size_t virtual_card_enabled_card_count = base::ranges::count_if(
+  size_t virtual_card_enabled_card_count = std::ranges::count_if(
       server_cards, [](const std::unique_ptr<CreditCard>& card) {
         return card->virtual_card_enrollment_state() ==
                CreditCard::VirtualCardEnrollmentState::kEnrolled;

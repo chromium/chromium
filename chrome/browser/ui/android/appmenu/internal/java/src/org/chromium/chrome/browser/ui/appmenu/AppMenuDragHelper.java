@@ -15,8 +15,10 @@ import android.view.ViewConfiguration;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -134,7 +136,8 @@ class AppMenuDragHelper {
         // If the menu is being dismissed, we cannot access mAppMenu.getPopup().getListView()
         // needed to by menuItemAction. Only clear highlighting if the menu is still showing.
         // See crbug.com/589805.
-        if (mAppMenu.getPopup().isShowing()) {
+        @Nullable PopupWindow popupWindow = mAppMenu.getPopup();
+        if (popupWindow != null && popupWindow.isShowing()) {
             menuItemAction(0, 0, ItemAction.CLEAR_HIGHLIGHT_ALL);
         }
         mDragScrolling.cancel();

@@ -8,10 +8,13 @@
 #include <optional>
 #include <string>
 
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "url/gurl.h"
 
 namespace tab_groups {
+
+extern const char kChromeSavedTabGroupUnsupportedURL[];
 
 // Whether the local IDs are persisted, which is true for Android / iOS, but
 // false in desktop.
@@ -34,6 +37,15 @@ std::pair<GURL, std::u16string> GetDefaultUrlAndTitle();
 // a title for the URL, it may be controlled by attacker and thus cannot
 // be always trusted,.
 std::u16string GetTitleFromUrlForDisplay(const GURL& url);
+
+std::string TabGroupToShortLogString(const std::string_view& prefix,
+                                     const SavedTabGroup* group);
+
+std::string TabGroupIdsToShortLogString(
+    const std::string_view& prefix,
+    base::Uuid group_id,
+    const std::optional<CollaborationId> collaboration_id);
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_UTILS_H_

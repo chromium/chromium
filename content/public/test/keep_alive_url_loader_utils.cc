@@ -135,14 +135,6 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
     EXPECT_THAT(on_complete_processed_status_,
                 testing::Pointwise(ErrorCodeEq(), error_codes));
   }
-  // Waits for `PauseReadingBodyFromNetProcessed()` to be called `total` times.
-  void WaitForTotalPauseReadingBodyFromNetProcessed(size_t total) {
-    pause_reading_body_from_net_processed_count_.WaitUntil(total);
-  }
-  // Waits for `ResumeReadingBodyFromNetProcessed()` to be called `total` times.
-  void WaitForTotalResumeReadingBodyFromNetProcessed(size_t total) {
-    resume_reading_body_from_net_processed_count_.WaitUntil(total);
-  }
 
  private:
   ~TestObserverImpl() override = default;
@@ -182,13 +174,6 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
     on_complete_processed_status_.push_back(completion_status);
   }
 
-  void PauseReadingBodyFromNetProcessed(KeepAliveURLLoader* loader) override {
-    pause_reading_body_from_net_processed_count_.Increment();
-  }
-  void ResumeReadingBodyFromNetProcessed(KeepAliveURLLoader* loader) override {
-    resume_reading_body_from_net_processed_count_.Increment();
-  }
-
   // OnReceiveRedirect*:
   AtomicCounter on_receive_redirect_forwarded_count_;
   AtomicCounter on_receive_redirect_processed_count_;
@@ -200,9 +185,6 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
   AtomicCounter on_complete_count_;
   AtomicCounter on_complete_forwarded_count_;
   AtomicCounter on_complete_processed_count_;
-
-  AtomicCounter pause_reading_body_from_net_processed_count_;
-  AtomicCounter resume_reading_body_from_net_processed_count_;
 
   std::vector<network::URLLoaderCompletionStatus> on_complete_status_;
   std::vector<network::URLLoaderCompletionStatus> on_complete_forwarded_status_;
@@ -273,16 +255,6 @@ void KeepAliveURLLoadersTestObserver::WaitForTotalOnCompleteForwarded(
 void KeepAliveURLLoadersTestObserver::WaitForTotalOnCompleteProcessed(
     const std::vector<int>& error_codes) {
   impl_->get()->WaitForTotalOnCompleteProcessed(error_codes);
-}
-
-void KeepAliveURLLoadersTestObserver::
-    WaitForTotalPauseReadingBodyFromNetProcessed(size_t total) {
-  impl_->get()->WaitForTotalPauseReadingBodyFromNetProcessed(total);
-}
-
-void KeepAliveURLLoadersTestObserver::
-    WaitForTotalResumeReadingBodyFromNetProcessed(size_t total) {
-  impl_->get()->WaitForTotalResumeReadingBodyFromNetProcessed(total);
 }
 
 }  // namespace content

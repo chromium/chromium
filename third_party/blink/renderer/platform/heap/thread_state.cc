@@ -103,6 +103,16 @@ ThreadState* ThreadState::AttachCurrentThreadForTesting(
   return thread_state;
 }
 
+namespace {
+void RecoverCppHeap(std::unique_ptr<v8::CppHeap> cpp_heap) {
+  ThreadState::Current()->SetCppHeap(std::move(cpp_heap));
+}
+}  // namespace
+
+void ThreadState::RecoverCppHeapAfterIsolateTearDown() {
+  isolate_->SetReleaseCppHeapCallbackForTesting(RecoverCppHeap);
+}
+
 // static
 void ThreadState::DetachCurrentThread() {
   auto* state = ThreadState::Current();
@@ -112,30 +122,36 @@ void ThreadState::DetachCurrentThread() {
 
 void ThreadState::AttachToIsolate(v8::Isolate* isolate,
                                   V8BuildEmbedderGraphCallback) {
-  isolate->AttachCppHeap(cpp_heap_.get());
-  CHECK_EQ(cpp_heap_.get(), isolate->GetCppHeap());
+  CHECK(!owning_cpp_heap_);
+  CHECK_EQ(cpp_heap_, isolate->GetCppHeap());
   isolate_ = isolate;
   embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>(isolate);
   isolate_->SetEmbedderRootsHandler(embedder_roots_handler_.get());
 }
 
 void ThreadState::DetachFromIsolate() {
-  CHECK_EQ(cpp_heap_.get(), isolate_->GetCppHeap());
-  isolate_->DetachCppHeap();
+  CHECK(!owning_cpp_heap_);
+  CHECK_EQ(cpp_heap_, isolate_->GetCppHeap());
   isolate_->SetEmbedderRootsHandler(nullptr);
   isolate_ = nullptr;
+  cpp_heap_ = nullptr;
+}
+
+std::unique_ptr<v8::CppHeap> ThreadState::ReleaseCppHeap() {
+  return std::move(owning_cpp_heap_);
 }
 
 ThreadState::ThreadState(v8::Platform* platform)
-    : cpp_heap_(v8::CppHeap::Create(
+    : owning_cpp_heap_(v8::CppHeap::Create(
           platform,
           v8::CppHeapCreateParams(CustomSpaces::CreateCustomSpaces()))),
+      cpp_heap_(owning_cpp_heap_.get()),
       heap_handle_(cpp_heap_->GetHeapHandle()),
       thread_id_(CurrentThread()) {}
 
 ThreadState::~ThreadState() {
   DCHECK(IsCreationThread());
-  cpp_heap_->Terminate();
+  owning_cpp_heap_.reset();
   ThreadStateStorage::DetachNonMainThread(*ThreadStateStorage::Current());
 }
 
@@ -207,6 +223,17 @@ void ThreadState::CollectNodeAndCssStatistics(
 
 void ThreadState::EnableDetachedGarbageCollectionsForTesting() {
   cpp_heap().EnableDetachedGarbageCollectionsForTesting();
+}
+
+void ThreadState::SetCppHeap(std::unique_ptr<v8::CppHeap> cpp_heap) {
+  CHECK(!owning_cpp_heap_);
+  CHECK(!cpp_heap_);
+  // We want to keep the invariant that the ThreadState does not own a CppHeap
+  // while it is attached to an isolate. When it's attached to an isolate, the
+  // isolate owns the CppHeap.
+  CHECK(!isolate_);
+  owning_cpp_heap_ = std::move(cpp_heap);
+  cpp_heap_ = owning_cpp_heap_.get();
 }
 
 bool ThreadState::IsIncrementalMarking() {

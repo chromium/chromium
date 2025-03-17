@@ -27,10 +27,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -47,7 +45,6 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import java.lang.ref.WeakReference;
 
 @RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
 public class ChromeTabbedOnDragListenerUnitTest {
     private static final int SOURCE_INSTANCE_ID = 1;
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
@@ -87,7 +84,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(Mockito.mock(TabModel.class));
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(SOURCE_INSTANCE_ID);
         when(mDragDropGlobalState.getData())
-                .thenReturn(new ChromeDropDataAndroid.Builder().withTab(mTab).build());
+                .thenReturn(new ChromeTabDropDataAndroid.Builder().withTab(mTab).build());
         when(mDragDropGlobalState.isDragSourceInstance(SOURCE_INSTANCE_ID)).thenReturn(true);
         DragDropGlobalState.setInstanceForTesting(mDragDropGlobalState);
         Activity activity = Mockito.mock(Activity.class);
@@ -213,7 +210,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
         // The tab being dragged is in a tab group.
         when(mDragDropGlobalState.getData())
                 .thenReturn(
-                        new ChromeDropDataAndroid.Builder()
+                        new ChromeTabDropDataAndroid.Builder()
                                 .withTab(mTab)
                                 .withTabInGroup(true)
                                 .build());

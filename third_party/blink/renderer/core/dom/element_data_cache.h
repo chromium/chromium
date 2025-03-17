@@ -40,16 +40,20 @@ class ElementDataCache final : public GarbageCollected<ElementDataCache> {
  public:
   ElementDataCache();
 
+  // NOTE: Since the presentation attribute depends on the tag name,
+  // and that is part of ShareableElementData, we need to include
+  // tag_name in the cache key.
   ShareableElementData* CachedShareableElementDataWithAttributes(
+      const StringImpl* tag_name,
       const Vector<Attribute, kAttributePrealloc>&);
 
   void Trace(Visitor*) const;
 
  private:
-  typedef HeapHashMap<unsigned,
-                      Member<ShareableElementData>,
-                      AlreadyHashedTraits>
-      ShareableElementDataCache;
+  using ShareableElementDataCache =
+      HeapHashMap<unsigned,
+                  std::pair<const StringImpl*, Member<ShareableElementData>>,
+                  AlreadyHashedTraits>;
   ShareableElementDataCache shareable_element_data_cache_;
 };
 

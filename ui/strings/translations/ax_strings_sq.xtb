@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">citim i theksuar</translation>
 <translation id="1681022320378710418">ora aktuale</translation>
 <translation id="1727839386348365796">Pikatorja</translation>
+<translation id="1771761307086386028">Lëviz djathtas</translation>
 <translation id="1787192514241997742">koha totale: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">rrjeta pemë</translation>
 <translation id="1822429046913737220">Paradite/Pasdite</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">zgjedhësi i javës</translation>
 <translation id="3706100364254443312">çelësi</translation>
 <translation id="3808586225841795776">termi</translation>
-<translation id="3914173277599553213">Kërkohet</translation>
 <translation id="3920932319529768807">konkluzion</translation>
 <translation id="3924558731517983934">aplikacion</translation>
 <translation id="3944740393230681990">prolog</translation>
 <translation id="3960700977367013758">shiriti i lëvizjes</translation>
+<translation id="4021716437419160885">Lëviz poshtë</translation>
 <translation id="4103419683916926126">Milisekonda</translation>
 <translation id="4151657705144244502">grafik</translation>
 <translation id="4160057747563657758">telefon</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">pemë</translation>
 <translation id="4668956016107839909">shtojcë</translation>
 <translation id="4698212723196775569">kodi</translation>
+<translation id="4710792130811321440">shfaq menynë e zgjedhjes së pjesëve zanore</translation>
 <translation id="4742539557769756338">kapak</translation>
 <translation id="4748357248530471599">kalo tek ekrani i plotë tek prerja e ekranit</translation>
 <translation id="4757246831282535685">paneli i skedave</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">koment</translation>
 <translation id="4924138096460353083">i papërcaktuar</translation>
 <translation id="4950364064308314478">Shfaq zgjedhësin e datës dhe orës lokale</translation>
+<translation id="495046168593986294">Lëviz lart</translation>
 <translation id="4971739861736909480">Përzgjedhur: <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">grupi i rreshtit</translation>
 <translation id="5034860022980953847">treguesi i progresit</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">butoni i rrotullimit</translation>
 <translation id="6011459053400940133">rrëshqitësi i volumit</translation>
 <translation id="6015796118275082299">Viti</translation>
+<translation id="602001110135236999">Lëviz majtas</translation>
 <translation id="6023896073578205740">kutia e listës</translation>
 <translation id="6119846243427417423">aktivizo</translation>
 <translation id="6150588977291308318">bibliografi</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">shtyp</translation>
 <translation id="6885760532393684712">direktoria</translation>
 <translation id="689129560213475294">kolofon</translation>
+<translation id="6919089238568236262">shfaq menynë e zgjedhjes së pjesëve të videove</translation>
 <translation id="6934078000481955284">thonjëza mbyllëse</translation>
 <translation id="693476918119313863">koka e faqes</translation>
 <translation id="6941933287844615239">shkarko media</translation>

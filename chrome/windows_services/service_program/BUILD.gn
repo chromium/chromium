@@ -27,9 +27,40 @@ config("winver") {
   ]
 }
 
-source_set("service_program") {
+# A source set for services that do not wish to run a crashpad handler.
+source_set("service_program_without_crashpad") {
+  public_deps = [ ":service_program_main" ]
+  sources = [
+    "crashpad_handler.h",
+    "crashpad_handler_stub.cc",
+  ]
+}
+
+# A source set for services that expect to run a crashpad handler.
+source_set("service_program_with_crashpad") {
+  public_deps = [ ":service_program_main" ]
+  sources = [
+    "crashpad_handler.cc",
+    "crashpad_handler.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:non_code_constants",
+    "//components/crash/core/app:run_as_crashpad_handler",
+    "//content/public/common:static_switches",
+  ]
+}
+
+source_set("service_program_main") {
+  visibility = [
+    ":service_program_with_crashpad",
+    ":service_program_without_crashpad",
+  ]
   public = [ "service_program_main.h" ]
-  sources = [ "service_program_main.cc" ]
+  sources = [
+    "crashpad_handler.h",
+    "service_program_main.cc",
+  ]
   deps = [
     ":delegate",
     ":lib",
@@ -53,6 +84,30 @@ source_set("common") {
     "scoped_client_impersonation.cc",
   ]
   libs = [ "rpcrt4.lib" ]
+}
+
+source_set("crash_integration") {
+  public = [
+    "crash_reporting.h",
+    "is_running_unattended.h",
+    "user_crash_state.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "crash_reporting.cc",
+    "is_running_unattended.cc",
+    "user_crash_state.cc",
+  ]
+  deps = [
+    ":common",
+    ":constants",
+    "//base/version_info:channel",
+    "//chrome/common:version_header",
+    "//chrome/install_static:install_static_util",
+    "//chrome/installer/util:constants",
+    "//components/crash/core/app",
+    "//components/crash/core/common",
+  ]
 }
 
 source_set("lib") {
@@ -79,7 +134,7 @@ source_set("lib") {
     "//chrome/install_static:install_static_util",
   ]
   visibility = [
-    ":service_program",
+    ":service_program_main",
     "//chrome/elevation_service:elevation_service_unittests",
     "//chrome/updater:base",
     "//chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests",
@@ -117,12 +172,16 @@ executable("test_service") {
   ]
   deps = [
     ":common",
+    ":crash_integration",
     ":delegate",
-    ":service_program",
+    ":service_program_with_crashpad",
     ":test_service_idl",
     "//base",
     "//build/win:default_exe_manifest",
+    "//chrome/common:version_header",
     "//chrome/common/win:eventlog_provider",
+    "//components/crash/core/app",
+    "//components/crash/core/app:crash_export_thunks",
   ]
   configs -= [
     "//build/config/win:console",
@@ -142,9 +201,11 @@ source_set("unit_tests") {
     ":test_service_idl",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:non_code_constants",
     "//chrome/windows_services/service_program/test_support",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
+    "//third_party/crashpad/crashpad/client",
   ]
   data_deps = [ ":test_service" ]
 }

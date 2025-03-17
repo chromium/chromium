@@ -4,10 +4,6 @@
 
 import("//third_party/blink/renderer/modules/modules.gni")
 
-# The Serial API will not be supported on Android. Assert here to ensure it
-# doesn't sneak back into the build.
-assert(!is_android)
-
 blink_modules_sources("serial") {
   sources = [
     "serial.cc",

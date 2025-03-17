@@ -50,12 +50,14 @@ public class PdfPageUnitTest {
     private AutoCloseable mCloseableMocks;
     private PdfInfo mPdfInfo;
     private String mPdfPageUrl;
+    private String mPdfPageBlobUrl;
 
     private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
     private static final int TAB_ID = 123;
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
     private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
+    private static final String PDF_BLOB_URL = "blob:https://www.foo.com/abc";
     private static final String EXAMPLE_URL = "https://www.example.com/";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
     private static final String FILE_NAME = "sample.pdf";
@@ -75,6 +77,7 @@ public class PdfPageUnitTest {
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         PdfCoordinator.skipLoadPdfForTesting(true);
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
+        mPdfPageBlobUrl = PdfUtils.encodePdfPageUrl(PDF_BLOB_URL);
     }
 
     @After
@@ -122,7 +125,7 @@ public class PdfPageUnitTest {
         JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
         Assert.assertEquals(
                 "File uri should match.",
-                pdfPage.mPdfCoordinator.getUriForTesting().toString(),
+                pdfPage.mPdfCoordinator.getUri().toString(),
                 metadata.get("file_uri"));
         Assert.assertEquals(
                 "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));
@@ -167,7 +170,16 @@ public class PdfPageUnitTest {
     }
 
     @Test
-    public void testCreatePdfPage_WithPdfLink() throws Exception {
+    public void testCreatePdfPage_WithPdfLink_Https() throws Exception {
+        testCreatePdfPage_WithPdfLink(mPdfPageUrl);
+    }
+
+    @Test
+    public void testCreatePdfPage_WithPdfLink_Blob() throws Exception {
+        testCreatePdfPage_WithPdfLink(mPdfPageBlobUrl);
+    }
+
+    private void testCreatePdfPage_WithPdfLink(String pdfPageUrl) throws Exception {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord("Android.Pdf.AssistContent.IsWorkProfile", false)
@@ -177,7 +189,7 @@ public class PdfPageUnitTest {
                         mMockNativePageHost,
                         mMockProfile,
                         mActivity,
-                        mPdfPageUrl,
+                        pdfPageUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
                         TAB_ID);
@@ -194,7 +206,7 @@ public class PdfPageUnitTest {
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());
-        Assert.assertEquals("Pdf page url should match.", mPdfPageUrl, pdfPage.getUrl());
+        Assert.assertEquals("Pdf page url should match.", pdfPageUrl, pdfPage.getUrl());
         Assert.assertFalse(
                 "Pdf should not be loaded when the view is not attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
@@ -213,7 +225,7 @@ public class PdfPageUnitTest {
         JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
         Assert.assertEquals(
                 "File uri should match.",
-                pdfPage.mPdfCoordinator.getUriForTesting().toString(),
+                pdfPage.mPdfCoordinator.getUri().toString(),
                 metadata.get("file_uri"));
         Assert.assertEquals(
                 "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));

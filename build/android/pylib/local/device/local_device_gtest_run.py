@@ -13,6 +13,7 @@ import os
 import posixpath
 import subprocess
 import shutil
+import sys
 import time
 
 from devil import base_error
@@ -21,6 +22,8 @@ from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import logcat_monitor
 from devil.android import ports
+from devil.android.ndk import abis
+from devil.android.tools import system_app
 from devil.android.sdk import version_codes
 from devil.utils import reraiser_thread
 from incremental_install import installer
@@ -543,9 +546,54 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         for step in steps:
           step()
 
-    self._env.parallel_devices.pMap(
-        individual_device_set_up,
-        self._test_instance.GetDataDependencies())
+      if self._test_instance.deploy_mock_openxr_runtime:
+
+        def deploy_openxr_runtime(dev):
+          apk_path = dev.GetApplicationPaths(
+              'org.chromium.device.vr.openxr_test_support')
+          apk_dir = os.path.dirname(apk_path[0])
+
+          abi = device.product_cpu_abi
+          # Some architectures don't map 1:1 with the folder names.
+          arch_path = {abis.ARM_64: 'arm64', abis.ARM: 'arm'}.get(abi, abi)
+
+          device_openxr_runtime_path = os.path.join(apk_dir, 'lib', arch_path,
+                                                    'libopenxrruntime.so')
+          if not dev.PathExists(device_openxr_runtime_path, as_root=True):
+            logging.exception('Could not locate OpenXr runtime on device. '
+                              'Note that openxr deployment seems to fail with '
+                              'incremental_install=True')
+            sys.exit(1)
+
+          local_json_path = os.path.join(constants.GetOutDirectory(),
+                                         'mock_vr_clients', 'bin', 'openxr',
+                                         'openxr.json')
+          device_json_path = '/product/etc/openxr/1/active_runtime.json'
+          with open(local_json_path, 'r') as local_json_file:
+            openxr_json_contents = local_json_file.read()
+          openxr_json_contents = openxr_json_contents.replace(
+              'OPENXR_RUNTIME_PATH', device_openxr_runtime_path)
+
+          # Enabling SystemAppModification is a slow process, and the files that
+          # need to be deployed this way are pretty static. As an optimization
+          # (especially for local development), only attempt a re-deployment if
+          # the contents of the files have changed.
+          try:
+            device_json_contents = dev.ReadFile(device_json_path, as_root=True)
+            replace_openxr_json = (device_json_contents != openxr_json_contents)
+          except device_errors.CommandFailedError:
+            replace_openxr_json = True
+
+          if replace_openxr_json:
+            with system_app.EnableSystemAppModification(device):
+              dev.WriteFile(device_json_path,
+                            openxr_json_contents,
+                            as_root=True)
+
+        deploy_openxr_runtime(device)
+
+    self._env.parallel_devices.pMap(individual_device_set_up,
+                                    self._test_instance.GetDataDependencies())
 
   #override
   def _ShouldShardTestsForDevices(self):

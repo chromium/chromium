@@ -8,10 +8,11 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './product_selection_menu.js';
 
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ProductSelectionMenuElement} from './product_selection_menu.js';
-import {getTemplate} from './product_selector.html.js';
+import {getCss} from './product_selector.css.js';
+import {getHtml} from './product_selector.html.js';
 import {getAbbreviatedUrl} from './utils.js';
 import type {UrlListEntry} from './utils.js';
 
@@ -23,42 +24,43 @@ export interface ProductSelectorElement {
   };
 }
 
-export class ProductSelectorElement extends PolymerElement {
+export class ProductSelectorElement extends CrLitElement {
   static get is() {
     return 'product-selector';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      selectedItem: {
-        type: Object,
-        value: null,
-      },
-
-      excludedUrls: {
-        type: Array,
-        value: () => [],
-      },
+      selectedItem: {type: Object},
+      excludedUrls: {type: Array},
     };
   }
 
-  selectedItem: UrlListEntry|null;
-  excludedUrls: string[];
+  selectedItem: UrlListEntry|null = null;
+  excludedUrls: string[] = [];
 
-  private showMenu_() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  closeMenu() {
+    this.$.productSelectionMenu.close();
+  }
+
+  protected showMenu_() {
     this.$.productSelectionMenu.showAt(this.$.currentProductContainer);
     this.$.currentProductContainer.classList.add('showing-menu');
   }
 
-  private onCloseMenu_() {
+  protected onCloseMenu_() {
     this.$.currentProductContainer.classList.remove('showing-menu');
   }
 
-  private onCurrentProductContainerKeyDown_(e: KeyboardEvent) {
+  protected onCurrentProductContainerKeyDown_(e: KeyboardEvent) {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
@@ -66,11 +68,11 @@ export class ProductSelectorElement extends PolymerElement {
     }
   }
 
-  private getUrl_(item: UrlListEntry) {
+  protected getUrl_(item: UrlListEntry) {
     return getAbbreviatedUrl(item.url);
   }
 
-  private getSelectedUrl_() {
+  protected getSelectedUrl_() {
     return this.selectedItem?.url ?? '';
   }
 }

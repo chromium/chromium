@@ -4,6 +4,7 @@
 
 package org.chromium.components.messages;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The public interface for Messages. To interact with messages, feature should obtain a reference
  * to MessageDispatcher through MessageDispatcherProvider and call methods of MessageDispatcher.
  */
+@NullMarked
 public interface MessageDispatcher {
     /**
      * Enqueues a message defined by its properties.

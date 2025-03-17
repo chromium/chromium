@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.window;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.window.extensions.WindowExtensionsProvider;
@@ -10,14 +12,18 @@ import androidx.window.extensions.core.util.function.Consumer;
 import androidx.window.extensions.layout.WindowLayoutComponent;
 import androidx.window.extensions.layout.WindowLayoutInfo;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Helpers for using androidx.window.extensions APIs.
  *
  * <p>For documentation, see:
  * https://android.googlesource.com/platform/frameworks/support/+/androidx-main/window/extensions/extensions/src/main/java/androidx/window/extensions/layout/WindowLayoutComponent.java
  */
+@NullMarked
 public class WindowUtil {
-    private static final WindowLayoutComponent sWindowLayoutComponent;
+    private static final @Nullable WindowLayoutComponent sWindowLayoutComponent;
 
     static {
         WindowLayoutComponent value = null;
@@ -42,10 +48,10 @@ public class WindowUtil {
 
     public static void addWindowLayoutInfoListener(
             Context context, Consumer<WindowLayoutInfo> consumer) {
-        sWindowLayoutComponent.addWindowLayoutInfoListener(context, consumer);
+        assumeNonNull(sWindowLayoutComponent).addWindowLayoutInfoListener(context, consumer);
     }
 
     public static void removeWindowLayoutInfoListener(Consumer<WindowLayoutInfo> consumer) {
-        sWindowLayoutComponent.removeWindowLayoutInfoListener(consumer);
+        assumeNonNull(sWindowLayoutComponent).removeWindowLayoutInfoListener(consumer);
     }
 }

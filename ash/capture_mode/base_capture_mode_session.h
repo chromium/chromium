@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_BASE_CAPTURE_MODE_SESSION_H_
 #define ASH_CAPTURE_MODE_BASE_CAPTURE_MODE_SESSION_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -20,6 +21,7 @@
 namespace ash {
 
 class ActionButtonView;
+enum class ScannerEntryPoint;
 
 // An interface for different kinds of capture mode sessions. This class is a
 // LayerOwner and will transfer ownership of its texture layer to a recording
@@ -146,7 +148,7 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
 
   // If there's a user nudge currently showing, it will be dismissed forever,
   // and will no longer be shown to the user.
-  virtual void MaybeDismissUserNudgeForever() = 0;
+  virtual void MaybeDismissSunfishRegionNudgeForever() = 0;
 
   // Handles changing `root_window_`. For example, moving the mouse cursor to
   // another display, a display was removed or the game window of the
@@ -187,14 +189,39 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
       ActionButtonRank rank,
       ActionButtonViewID id) = 0;
 
-  // Called when Scanner actions have been fetched. This will add action buttons
-  // corresponding to `scanner_actions` and stop loading animations if needed.
-  virtual void OnScannerActionsFetched(
-      std::vector<ScannerActionViewModel> scanner_actions) = 0;
+  // Adds an action button that can be clicked to fetch smart actions if the
+  // current behaviour allows showing it, and the device is online.
+  // This should only be called when the active behavior is `DefaultBehavior`.
+  virtual void AddSmartActionsButton() = 0;
 
-  // Called when text has been detected in the selected region during an active
-  // session.
-  virtual void OnTextDetected() = 0;
+  // Checks if the Scanner disclaimer should be shown for a given entry-point
+  // and shows if necessary.
+  // `accept_callback` is run if disclaimer is accepted or if already accepted
+  // previously.
+  // `decline_callback` is run if the disclaimer's decline button is
+  // pressed.
+  // Both callbacks take a repeating closure because the button that triggers
+  // this (Smart actions button) will continue to appear after the disclaimer is
+  // dismissed, allowing the user to click on it again and trigger the callback
+  // again.
+  virtual void MaybeShowScannerDisclaimer(
+      ScannerEntryPoint entry_point,
+      base::RepeatingClosure accept_callback,
+      base::RepeatingClosure decline_callback) = 0;
+
+  // Called when the Scanner feature has processed a captured image to suggest
+  // available Scanner actions. This will stop loading animations and add action
+  // buttons corresponding to `actions_response`, or show an error if needed.
+  virtual void OnScannerActionsFetched(
+      ScannerSession::FetchActionsResponse actions_response) = 0;
+
+  // Shows `error_message` in the action container.
+  virtual void ShowActionContainerError(
+      const std::u16string& error_message) = 0;
+
+  // Called when the search results panel is created, as it may need to be
+  // observed by the session focus cycler.
+  virtual void OnSearchResultsPanelCreated(views::Widget* panel_widget) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

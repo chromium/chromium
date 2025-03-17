@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/feature_engagement/public/feature_list.h"
+
+#include <vector>
 
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -21,8 +18,10 @@ namespace {
 const base::Feature* const kAllFeatures[] = {
     &kIPHDummyFeature,  // Ensures non-empty array for all platforms.
 #if BUILDFLAG(IS_ANDROID)
+    &kIPHAccountSettingsHistorySync,
     &kIPHAndroidTabDeclutter,
     &kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
+    &kIPHAdaptiveButtonInTopToolbarCustomizationOpenInBrowserFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
@@ -82,11 +81,13 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHShoppingListMenuItemFeature,
     &kIPHShoppingListSaveFlowFeature,
     &kIPHTabGroupCreationDialogSyncTextFeature,
-    &kIPHTabGroupSyncOnStripFeature,
     &kIPHTabGroupsDragAndDropFeature,
+    &kIPHTabGroupShareNoticeFeature,
+    &kIPHTabGroupShareNotificationBubbleOnStripFeature,
     &kIPHTabGroupsRemoteGroupFeature,
     &kIPHTabGroupsSurfaceFeature,
     &kIPHTabGroupsSurfaceOnHideFeature,
+    &kIPHTabGroupSyncOnStripFeature,
     &kIPHTabSwitcherButtonFeature,
     &kIPHTabSwitcherButtonSwitchIncognitoFeature,
     &kIPHTranslateMenuButtonFeature,
@@ -129,16 +130,20 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPriceNotificationsWhileBrowsingFeature,
     &kIPHiOSDefaultBrowserBadgeEligibilityFeature,
     &kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
+    &kIPHiOSDownloadAutoDeletionFeature,
     &kIPHiOSLensKeyboardFeature,
     &kIPHiOSPromoAppStoreFeature,
     &kIPHiOSPromoWhatsNewFeature,
+    &kIPHiOSPromoSigninFullscreenFeature,
     &kIPHiOSPromoPostRestoreFeature,
     &kIPHiOSPromoCredentialProviderExtensionFeature,
     &kIPHiOSPromoDefaultBrowserReminderFeature,
     &kIPHiOSHistoryOnOverflowMenuFeature,
     &kIPHiOSPromoPostRestoreDefaultBrowserFeature,
+    &kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature,
+    &kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature,
+    &kIPHiOSPromoNonModalShareDefaultBrowserFeature,
     &kIPHiOSPromoPasswordManagerWidgetFeature,
-    &kIPHiOSParcelTrackingFeature,
     &kIPHiOSPullToRefreshFeature,
     &kIPHiOSReplaceSyncPromosWithSignInPromos,
     &kIPHiOSTabGridSwipeRightForIncognito,
@@ -159,7 +164,12 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSContextualPanelPriceInsightsFeature,
     &kIPHHomeCustomizationMenuFeature,
     &kIPHiOSLensOverlayEntrypointTipFeature,
+    &kIPHiOSLensOverlayEscapeHatchTipFeature,
     &kIPHiOSSharedTabGroupForeground,
+    &kIPHiOSDefaultBrowserBannerPromoFeature,
+    &kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
+    &kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
+    &kIPHiOSSettingsInOverflowMenuBubbleFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -174,7 +184,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDesktopCustomizeChromeRefreshFeature,
     &kIPHDesktopNewTabPageModulesCustomizeFeature,
-    &kIPHDesktopReEngagementFeature,
     &kIPHDiscardRingFeature,
     &kIPHDownloadEsbPromoFeature,
     &kIPHExperimentalAIPromoFeature,
@@ -192,6 +201,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHLensOverlayFeature,
     &kIPHLensOverlayTranslateButtonFeature,
     &kIPHLiveCaptionFeature,
+    &kIPHMerchantTrustFeature,
     &kIPHTabAudioMutingFeature,
     &kIPHPasswordsManagementBubbleAfterSaveFeature,
     &kIPHPasswordsManagementBubbleDuringSigninFeature,
@@ -216,9 +226,10 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSideSearchAutoTriggeringFeature,
     &kIPHSideSearchPageActionLabelFeature,
     &kIPHSignoutWebInterceptFeature,
-    &kIPHSupervisedUserProfileSigninFeature,
     &kIPHTabGroupsSaveV2IntroFeature,
     &kIPHTabGroupsSaveV2CloseGroupFeature,
+    &kIPHTabGroupsSharedTabChangedFeature,
+    &kIPHTabGroupsSharedTabFeedbackFeature,
     &kIPHTabOrganizationSuccessFeature,
     &kIPHTabSearchFeature,
     &kIPHWebUITabStripFeature,
@@ -234,12 +245,12 @@ const base::Feature* const kAllFeatures[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    &kIPHAutofillAiOptInFeature,
+    &kIPHAutofillBnplAffirmOrZipSuggestionFeature,
     &kIPHAutofillCardInfoRetrievalSuggestionFeature,
     &kIPHAutofillCreditCardBenefitFeature,
     &kIPHAutofillDisabledVirtualCardSuggestionFeature,
     &kIPHAutofillExternalAccountProfileSuggestionFeature,
-    &kIPHAutofillPredictionImprovementsFeature,
-    &kIPHAutofillPredictionImprovementsBootstrappingFeature,
     &kIPHAutofillVirtualCardCVCSuggestionFeature,
     &kIPHAutofillVirtualCardSuggestionFeature,
     &kIPHCookieControlsFeature,
@@ -289,6 +300,7 @@ const base::Feature* const kAllFeatures[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     &kIPHDesktopPWAsLinkCapturingLaunch,
     &kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+    &kIPHSupervisedUserProfileSigninFeature,
 #endif  // BUILDFLAG(IS_WIN) ||  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -300,8 +312,8 @@ const base::Feature* const kAllFeatures[] = {
 }  // namespace
 
 std::vector<const base::Feature*> GetAllFeatures() {
-  return std::vector<const base::Feature*>(
-      kAllFeatures, kAllFeatures + std::size(kAllFeatures));
+  return std::vector<const base::Feature*>(std::begin(kAllFeatures),
+                                           std::end(kAllFeatures));
 }
 
 }  // namespace feature_engagement

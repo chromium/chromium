@@ -7,10 +7,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <cinttypes>
 #include <concepts>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -21,8 +23,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -170,8 +170,8 @@ struct EnumStringsMap;
   std::optional<T> ui::metadata::TypeConverter<T>::FromString(              \
       const std::u16string& str) {                                          \
     const auto& map = EnumStringsMap<T>::Get();                             \
-    using Pair = base::ranges::range_value_t<decltype(map)>;                \
-    auto it = base::ranges::find(map, str, &Pair::second);                  \
+    using Pair = std::ranges::range_value_t<decltype(map)>;                 \
+    auto it = std::ranges::find(map, str, &Pair::second);                   \
     return it != map.end() ? std::make_optional(it->first) : std::nullopt;  \
   }                                                                         \
                                                                             \
@@ -179,7 +179,7 @@ struct EnumStringsMap;
   ui::metadata::ValidStrings                                                \
   ui::metadata::TypeConverter<T>::GetValidStrings() {                       \
     ValidStrings string_values;                                             \
-    base::ranges::transform(                                                \
+    std::ranges::transform(                                                 \
         EnumStringsMap<T>::Get(), std::back_inserter(string_values),        \
         [](const auto& pair) { return std::u16string(pair.second); });      \
     return string_values;                                                   \
@@ -307,8 +307,8 @@ struct TypeConverter<std::vector<T>>
     : BaseTypeConverter<TypeConverter<T>::is_serializable> {
   static std::u16string ToString(ArgType<std::vector<T>> source_value) {
     std::vector<std::u16string> serialized;
-    base::ranges::transform(source_value, std::back_inserter(serialized),
-                            &TypeConverter<T>::ToString);
+    std::ranges::transform(source_value, std::back_inserter(serialized),
+                           &TypeConverter<T>::ToString);
     return u"{" + base::JoinString(serialized, u",") + u"}";
   }
   static std::optional<std::vector<T>> FromString(

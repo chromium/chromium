@@ -83,6 +83,7 @@ class WebAppScopeExtensionsBrowserTest
                             base::Unretained(this)));
     ASSERT_TRUE(primary_server_.Start());
     primary_origin_ = primary_server_.GetOrigin();
+    primary_scope_ = primary_server_.GetURL("/web_apps/basic.html");
 
     secondary_server_.AddDefaultHandlers(GetChromeTestDataDir());
     secondary_server_.RegisterRequestHandler(
@@ -90,6 +91,7 @@ class WebAppScopeExtensionsBrowserTest
                             base::Unretained(this)));
     ASSERT_TRUE(secondary_server_.Start());
     secondary_origin_ = secondary_server_.GetOrigin();
+    secondary_scope_ = secondary_server_.GetURL("/web_apps/basic.html");
 
     unrelated_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(unrelated_server_.Start());
@@ -174,9 +176,11 @@ class WebAppScopeExtensionsBrowserTest
  protected:
   net::EmbeddedTestServer primary_server_;
   url::Origin primary_origin_;
+  GURL primary_scope_;
 
   net::EmbeddedTestServer secondary_server_;
   url::Origin secondary_origin_;
+  GURL secondary_scope_;
 
   net::EmbeddedTestServer unrelated_server_;
   GURL unrelated_url_;
@@ -189,8 +193,51 @@ class WebAppScopeExtensionsBrowserTest
   content::ContentMockCertVerifier cert_verifier_;
 };
 
-// TODO(crbug.com/376498171): Add test that verifies functionality of 'scope'
-// field in the well-known file.
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
+                       ExtendedLinkCapturingProperlyLimitsScope) {
+  InstallScopeExtendedWebApp(
+      /*manifest_file=*/base::ReplaceStringPlaceholders(
+          R"(
+          {
+            "Name": "Test app",
+            "start_url": "/",
+            "scope": "/",
+            "scope_extensions": [{
+              "type": "origin", "value": "$1"
+            }]
+          })",
+          {secondary_origin_.Serialize()}, nullptr),
+      /*association_file=*/base::ReplaceStringPlaceholders(
+          R"(
+          {
+            "$1" : { "scope": "/scope-limiter" }
+          })",
+          {primary_origin_.Serialize()}, nullptr));
+
+  EXPECT_THAT(app_->scope_extensions(),
+              testing::ElementsAre(
+                  ScopeExtensionInfo::CreateForOrigin(secondary_origin_)));
+
+  // We expect that validated scope extensions differ from the requested
+  // scope_extension defined in the app manifest.
+  EXPECT_NE(app_->scope_extensions(), app_->validated_scope_extensions());
+  GURL limited_scope(secondary_origin_.Serialize() + "/scope-limiter");
+  EXPECT_THAT(
+      app_->validated_scope_extensions(),
+      testing::ElementsAre(ScopeExtensionInfo::CreateForScope(limited_scope)));
+
+  // primary_server_ is the web app's server
+  GURL primary_server_launch_url =
+      primary_server_.GetURL("/web_apps/basic.html");
+  EXPECT_TRUE(WebAppCapturesUrl(primary_server_launch_url));
+
+  // secondary_server_ is the associate's server. We expect this navigation to
+  // not capture since it is not in the extended scope "/scope-limiter"
+  GURL secondary_server_launch_url =
+      secondary_server_.GetURL("/web_apps/basic.html");
+  EXPECT_FALSE(WebAppCapturesUrl(secondary_server_launch_url));
+}
+
 IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
                        ExtendedLinkCapturingBasic) {
   InstallScopeExtendedWebApp(
@@ -201,21 +248,24 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
             "start_url": "/",
             "scope": "/",
             "scope_extensions": [{
-              "origin": "$1"
+              "type": "origin", "value": "$1"
             }]
           })",
           {secondary_origin_.Serialize()}, nullptr),
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "$1" : {}
+            "$1" : { "scope": "/web_apps/basic.html" }
           })",
           {primary_origin_.Serialize()}, nullptr));
 
-  EXPECT_THAT(
-      app_->scope_extensions(),
-      testing::ElementsAre(ScopeExtensionInfo{.origin = secondary_origin_}));
-  EXPECT_EQ(app_->scope_extensions(), app_->validated_scope_extensions());
+  EXPECT_THAT(app_->scope_extensions(),
+              testing::ElementsAre(
+                  ScopeExtensionInfo::CreateForOrigin(secondary_origin_)));
+
+  EXPECT_THAT(app_->validated_scope_extensions(),
+              testing::ElementsAre(
+                  ScopeExtensionInfo::CreateForScope(secondary_scope_)));
 
   EXPECT_TRUE(
       WebAppCapturesUrl(primary_server_.GetURL("/web_apps/basic.html")));
@@ -233,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
             "start_url": "/simple.html",
             "scope": "/",
             "scope_extensions": [{
-              "origin": "$1"
+              "type": "origin", "value": "$1"
             }],
             "launch_handler": {
               "client_mode": "focus-existing"
@@ -298,7 +348,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
             "start_url": "/",
             "scope": "/",
             "scope_extensions": [{
-              "origin": "$1"
+              "type": "origin", "value": "$1"
             }]
           })",
           {secondary_origin_.Serialize()}, nullptr),
@@ -314,7 +364,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppScopeExtensionsBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
@@ -339,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsDisabledBrowserTest,
             "start_url": "/",
             "scope": "/",
             "scope_extensions": [{
-              "origin": "$1"
+              "type": "origin", "value": "$1"
             }]
           })",
           {secondary_origin_.Serialize()}, nullptr),
@@ -363,7 +414,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppScopeExtensionsDisabledBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
@@ -429,7 +481,7 @@ constexpr char kTestManifestBody[] = R"({
   }],
   "scope_extensions": [
     {
-      "origin": "https://test.com"
+      "type": "origin", "value": "https://test.com"
     }
   ]
 })";
@@ -494,8 +546,9 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsOriginTrialBrowserTest,
 
   // Origin trial should grant the app access.
   base::flat_set<ScopeExtensionInfo> expected_scope_extensions = {
-      ScopeExtensionInfo(url::Origin::Create(GURL(kTestAssociatedOrigin)),
-                         /*has_origin_wildcard=*/false)};
+      ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL(kTestAssociatedOrigin)),
+          /*has_origin_wildcard=*/false)};
   EXPECT_EQ(expected_scope_extensions,
             provider.registrar_unsafe().GetValidatedScopeExtensions(app_id));
   EXPECT_TRUE(provider.registrar_unsafe().IsUrlInAppExtendedScope(

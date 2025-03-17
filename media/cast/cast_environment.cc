@@ -7,26 +7,29 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/tick_clock.h"
 
-using base::SingleThreadTaskRunner;
-
-namespace media {
-namespace cast {
+namespace media::cast {
 
 CastEnvironment::CastEnvironment(
-    const base::TickClock* clock,
-    scoped_refptr<SingleThreadTaskRunner> main_thread_proxy,
-    scoped_refptr<SingleThreadTaskRunner> audio_thread_proxy,
-    scoped_refptr<SingleThreadTaskRunner> video_thread_proxy)
+    const base::TickClock& clock,
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_proxy,
+    scoped_refptr<base::SingleThreadTaskRunner> audio_thread_proxy,
+    scoped_refptr<base::SingleThreadTaskRunner> video_thread_proxy,
+    base::OnceClosure deletion_cb)
     : main_thread_proxy_(main_thread_proxy),
       audio_thread_proxy_(audio_thread_proxy),
       video_thread_proxy_(video_thread_proxy),
       clock_(clock),
-      logger_(this) {}
-
+      logger_(main_thread_proxy, std::move(deletion_cb)) {
+  CHECK(main_thread_proxy);
+  CHECK(audio_thread_proxy);
+  CHECK(video_thread_proxy);
+}
 CastEnvironment::~CastEnvironment() = default;
 
 bool CastEnvironment::PostTask(ThreadId identifier,
@@ -43,35 +46,24 @@ bool CastEnvironment::PostDelayedTask(ThreadId identifier,
       ->PostDelayedTask(from_here, std::move(task), delay);
 }
 
-scoped_refptr<SingleThreadTaskRunner> CastEnvironment::GetTaskRunner(
+base::TimeTicks CastEnvironment::NowTicks() const {
+  return Clock().NowTicks();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner> CastEnvironment::GetTaskRunner(
     ThreadId identifier) const {
   switch (identifier) {
-    case CastEnvironment::MAIN:
+    case ThreadId::kMain:
       return main_thread_proxy_;
-    case CastEnvironment::AUDIO:
+    case ThreadId::kAudio:
       return audio_thread_proxy_;
-    case CastEnvironment::VIDEO:
+    case ThreadId::kVideo:
       return video_thread_proxy_;
-    default:
-      NOTREACHED() << "Invalid Thread identifier";
   }
 }
 
-bool CastEnvironment::CurrentlyOn(ThreadId identifier) {
-  switch (identifier) {
-    case CastEnvironment::MAIN:
-      return main_thread_proxy_.get() &&
-             main_thread_proxy_->RunsTasksInCurrentSequence();
-    case CastEnvironment::AUDIO:
-      return audio_thread_proxy_.get() &&
-             audio_thread_proxy_->RunsTasksInCurrentSequence();
-    case CastEnvironment::VIDEO:
-      return video_thread_proxy_.get() &&
-             video_thread_proxy_->RunsTasksInCurrentSequence();
-    default:
-      NOTREACHED() << "Invalid thread identifier";
-  }
+bool CastEnvironment::CurrentlyOn(ThreadId identifier) const {
+  return GetTaskRunner(identifier)->RunsTasksInCurrentSequence();
 }
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

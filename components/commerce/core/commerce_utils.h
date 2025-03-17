@@ -15,9 +15,6 @@ class Uuid;
 }  // namespace base
 
 namespace commerce {
-// Returns whether the `url` contains the discount utm tags.
-bool UrlContainsDiscountUtmTag(const GURL& url);
-
 // Gets the url for the ProductSpec page based on `urls`.
 GURL GetProductSpecsTabUrl(const std::vector<GURL>& urls);
 

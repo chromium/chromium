@@ -202,7 +202,7 @@ void GameDashboardButton::UpdateViews() {
                   kAlphaForButtonBorder)));
 
   const bool enabled = GetEnabled();
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       enabled ? GetBackgroundEnabledColorId(is_recording_)
               : cros_tokens::kCrosSysDisabledContainer,
       container_corner_radius_));
@@ -212,7 +212,7 @@ void GameDashboardButton::UpdateViews() {
               : cros_tokens::kCrosSysDisabled;
   gamepad_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       chromeos::kGameDashboardGamepadIcon, icon_and_label_color, kIconHeight));
-  title_view_->SetEnabledColorId(icon_and_label_color);
+  title_view_->SetEnabledColor(icon_and_label_color);
   UpdateArrowIcon();
 }
 

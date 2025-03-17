@@ -40,13 +40,32 @@ public object BuildCompat {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @VisibleForTesting
     public fun isAtLeastPreReleaseCodename(codename: String, buildCodename: String): Boolean {
+        fun codenameToInt(codename: String): Int? =
+            when (codename.uppercase()) {
+                "BAKLAVA" -> 0
+                else -> null
+            }
+
         // Special case "REL", which means the build is not a pre-release build.
         if ("REL" == buildCodename) {
             return false
         }
-        // Otherwise lexically compare them.  Return true if the build codename is equal to or
-        // greater than the requested codename.
-        return buildCodename.uppercase() >= codename.uppercase()
+
+        // Starting with Baklava, the Android dessert names wrapped around to the start of the
+        // alphabet; handle these "new" codenames explicitly; lexically compare "old" codenames.
+        // Return true if the build codename is equal to or greater than the requested codename.
+        val buildCodenameInt = codenameToInt(buildCodename)
+        val codenameInt = codenameToInt(codename)
+        if (buildCodenameInt != null && codenameInt != null) {
+            // both codenames are "new" -> use hard-coded int values
+            return buildCodenameInt >= codenameInt
+        } else if (buildCodenameInt == null && codenameInt == null) {
+            // both codenames are "old" -> use lexical comparison
+            return buildCodename.uppercase() >= codename.uppercase()
+        } else {
+            // one codename is "new", one is "old"
+            return buildCodenameInt != null
+        }
     }
 
     /**
@@ -258,10 +277,33 @@ public object BuildCompat {
      */
     @JvmStatic
     @ChecksSdkIntAtLeast(api = 35, codename = "VanillaIceCream")
+    @Deprecated(
+        message =
+            "Android VanillaIceCream is a finalized release and this method is no longer " +
+                "necessary. It will be removed in a future release of this library. Instead, use " +
+                "`Build.VERSION.SDK_INT >= 35`.",
+        ReplaceWith("android.os.Build.VERSION.SDK_INT >= 35")
+    )
     public fun isAtLeastV(): Boolean =
         Build.VERSION.SDK_INT >= 35 ||
             (Build.VERSION.SDK_INT >= 34 &&
                 isAtLeastPreReleaseCodename("VanillaIceCream", Build.VERSION.CODENAME))
+
+    /**
+     * Checks if the device is running on a pre-release version of Android Baklava or a release
+     * version of Android Baklava or newer.
+     *
+     * **Note:** When Android Baklava is finalized for release, this method will be removed and all
+     * calls must be replaced with `Build.VERSION.SDK_INT >= 36`.
+     *
+     * @return `true` if Baklava APIs are available for use, `false` otherwise
+     */
+    @JvmStatic
+    @ChecksSdkIntAtLeast(api = 36, codename = "Baklava")
+    public fun isAtLeastB(): Boolean =
+        Build.VERSION.SDK_INT >= 36 ||
+            (Build.VERSION.SDK_INT >= 35 &&
+                isAtLeastPreReleaseCodename("Baklava", Build.VERSION.CODENAME))
 
     /**
      * Experimental feature set for pre-release SDK checks.

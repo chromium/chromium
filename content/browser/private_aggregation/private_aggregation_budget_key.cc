@@ -30,29 +30,31 @@ PrivateAggregationBudgetKey::TimeWindow::TimeWindow(base::Time start_time)
 PrivateAggregationBudgetKey::PrivateAggregationBudgetKey(
     url::Origin origin,
     base::Time api_invocation_time,
-    PrivateAggregationCallerApi api)
-    : origin_(std::move(origin)), time_window_(api_invocation_time), api_(api) {
+    PrivateAggregationCallerApi caller_api)
+    : origin_(std::move(origin)),
+      time_window_(api_invocation_time),
+      caller_api_(caller_api) {
   CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 }
 
 std::optional<PrivateAggregationBudgetKey> PrivateAggregationBudgetKey::Create(
     url::Origin origin,
     base::Time api_invocation_time,
-    PrivateAggregationCallerApi api) {
+    PrivateAggregationCallerApi caller_api) {
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
     return std::nullopt;
   }
 
   return PrivateAggregationBudgetKey(std::move(origin), api_invocation_time,
-                                     api);
+                                     caller_api);
 }
 
 PrivateAggregationBudgetKey PrivateAggregationBudgetKey::CreateForTesting(
     url::Origin origin,
     base::Time api_invocation_time,
-    PrivateAggregationCallerApi api) {
+    PrivateAggregationCallerApi caller_api) {
   return PrivateAggregationBudgetKey(std::move(origin), api_invocation_time,
-                                     api);
+                                     caller_api);
 }
 
 }  // namespace content

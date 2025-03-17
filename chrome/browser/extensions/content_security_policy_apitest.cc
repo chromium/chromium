@@ -6,15 +6,18 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 namespace extensions {
 
@@ -120,7 +123,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that MV3 disallows localhost in packed extensions.
+// TODO(https://crbug.com/391924202): Enable on Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
                        ManifestV3DisallowsLocalhostForPackedExtensions) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -186,6 +192,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
 
   EXPECT_EQ(2u, console_observer.messages().size());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // A simple subclass that also sets up page navigation with the host resolver.
 class ExtensionCspApiTestWithPageNavigation : public ExtensionCspApiTest {

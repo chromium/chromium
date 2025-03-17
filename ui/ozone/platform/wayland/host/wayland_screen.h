@@ -18,7 +18,6 @@
 #include "build/config/linux/dbus/buildflags.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/tablet_state.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/linux/device_scale_factor_observer.h"

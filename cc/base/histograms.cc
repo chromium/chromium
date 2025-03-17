@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "cc/base/histograms.h"
 
 #include <stdint.h>
@@ -62,8 +67,8 @@ ScopedUMAHistogramAreaTimerBase::ScopedUMAHistogramAreaTimerBase() : area_(0) {
 ScopedUMAHistogramAreaTimerBase::~ScopedUMAHistogramAreaTimerBase() = default;
 
 bool ScopedUMAHistogramAreaTimerBase::GetHistogramValues(
-    Sample* time_microseconds,
-    Sample* pixels_per_ms) const {
+    Sample32* time_microseconds,
+    Sample32* pixels_per_ms) const {
   return GetHistogramValues(
       timer_.Elapsed(), area_.ValueOrDefault(std::numeric_limits<int>::max()),
       time_microseconds, pixels_per_ms);
@@ -73,16 +78,16 @@ bool ScopedUMAHistogramAreaTimerBase::GetHistogramValues(
 bool ScopedUMAHistogramAreaTimerBase::GetHistogramValues(
     base::TimeDelta elapsed,
     int area,
-    Sample* time_microseconds,
-    Sample* pixels_per_ms) {
+    Sample32* time_microseconds,
+    Sample32* pixels_per_ms) {
   elapsed = std::max(elapsed, base::Microseconds(kMinimumTimeMicroseconds));
   double area_per_time = area / elapsed.InMillisecondsF();
   // It is not clear how NaN can get here, but we've gotten crashes from
   // saturated_cast. http://crbug.com/486214
   if (std::isnan(area_per_time))
     return false;
-  *time_microseconds = base::saturated_cast<Sample>(elapsed.InMicroseconds());
-  *pixels_per_ms = base::saturated_cast<Sample>(area_per_time);
+  *time_microseconds = base::saturated_cast<Sample32>(elapsed.InMicroseconds());
+  *pixels_per_ms = base::saturated_cast<Sample32>(area_per_time);
   return true;
 }
 

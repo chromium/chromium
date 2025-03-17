@@ -5,21 +5,21 @@
 #import <ChromeWebView/ChromeWebView.h>
 #import <Foundation/Foundation.h>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/variations/variations_ids_provider.h"
+#import "components/variations/variations_ids_provider.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest_mac.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // A stub object that observes the |webViewDidFinishNavigation| event of
 // CWVNavigationDelegate. CWVNavigationDelegate is also used as navigation
@@ -216,11 +216,10 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
                            frameID:[OCMArg any]
                              value:kTestAddressFieldValue
                      userInitiated:NO];
-  NSString* blur_script =
-      [NSString stringWithFormat:
-                    @"var event = new Event('blur', {bubbles:true});"
-                     "document.getElementById('%@').dispatchEvent(event);",
-                    kTestAddressFieldID];
+  NSString* blur_script = [NSString
+      stringWithFormat:@"var event = new Event('blur', {bubbles:true});"
+                        "document.getElementById('%@').dispatchEvent(event);",
+                       kTestAddressFieldID];
   NSError* blur_error = nil;
   test::EvaluateJavaScript(web_view_, blur_script, &blur_error);
   ASSERT_FALSE(blur_error);
@@ -237,11 +236,10 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
                       userInitiated:NO];
   // The 'input' event listener defined in form.js is only called during the
   // bubbling phase.
-  NSString* input_script =
-      [NSString stringWithFormat:
-                    @"var event = new Event('input', {'bubbles': true});"
-                     "document.getElementById('%@').dispatchEvent(event);",
-                    kTestAddressFieldID];
+  NSString* input_script = [NSString
+      stringWithFormat:@"var event = new Event('input', {'bubbles': true});"
+                        "document.getElementById('%@').dispatchEvent(event);",
+                       kTestAddressFieldID];
   NSError* input_error = nil;
   test::EvaluateJavaScript(web_view_, input_script, &input_error);
   ASSERT_FALSE(input_error);
@@ -257,11 +255,10 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
               userInitiated:[OCMArg any]];
   // The 'submit' event listener defined in form.js is only called during the
   // bubbling phase.
-  NSString* submit_script =
-      [NSString stringWithFormat:
-                    @"var event = new Event('submit', {'bubbles': true});"
-                     "document.getElementById('%@').dispatchEvent(event);",
-                    kTestFormID];
+  NSString* submit_script = [NSString
+      stringWithFormat:@"var event = new Event('submit', {'bubbles': true});"
+                        "document.getElementById('%@').dispatchEvent(event);",
+                       kTestFormID];
   NSError* submit_error = nil;
   test::EvaluateJavaScript(web_view_, submit_script, &submit_error);
   ASSERT_FALSE(submit_error);
@@ -341,8 +338,9 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
     // If there is an error, early return so the ASSERT catch the error.
     LOG(INFO) << base::SysNSStringToUTF8(filled_value);
     LOG(INFO) << base::SysNSStringToUTF8(fetched_suggestion.value);
-    if (filled_error)
+    if (filled_error) {
       return true;
+    }
     return [fetched_suggestion.value isEqualToString:filled_value];
   }));
   ASSERT_FALSE(filled_error);
@@ -358,8 +356,9 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
     NSString* current_value =
         test::EvaluateJavaScript(web_view_, cleared_script, &cleared_error);
     // If there is an error, early return so the ASSERT catch the error.
-    if (cleared_error)
+    if (cleared_error) {
       return true;
+    }
     return [current_value isEqualToString:@""];
   }));
   EXPECT_FALSE(cleared_error);

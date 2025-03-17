@@ -47,7 +47,8 @@ class CheckTraceVisitor : public clang::RecursiveASTVisitor<CheckTraceVisitor> {
   bool IsWeakCallback() const;
 
   void MarkTraced(RecordInfo::Fields::iterator it);
-  void FoundField(clang::FieldDecl* field);
+  void MarkTracedIfNeeded(RecordInfo::Fields::iterator it);
+  void FoundField(clang::FieldDecl* field, bool is_trace_if_needed);
   void MarkAllWeakMembersTraced();
 
   clang::CXXMethodDecl* trace_;

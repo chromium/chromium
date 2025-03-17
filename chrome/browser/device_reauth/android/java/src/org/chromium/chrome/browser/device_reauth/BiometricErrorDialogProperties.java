@@ -5,10 +5,12 @@ package org.chromium.chrome.browser.device_reauth;
 
 import android.text.SpannableString;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
+@NullMarked
 public class BiometricErrorDialogProperties {
     private BiometricErrorDialogProperties() {}
 

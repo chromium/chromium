@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void BindRenderInputRouterInterfaces(
       mojo::PendingRemote<blink::mojom::RenderInputRouterClient> remote);
 
-  void RendererWidgetCreated(bool for_frame_widget);
+  void RendererWidgetCreated(bool for_frame_widget, bool is_in_viz);
 
   InputRouter* input_router() { return input_router_.get(); }
   RenderInputRouterDelegate* delegate() { return delegate_; }
@@ -85,8 +85,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds) override;
   void OnImeCancelComposition() override;
   StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
@@ -106,8 +105,6 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
       const blink::WebInputEvent& event,
       const ui::LatencyInfo& latency_info) override;
   void IncrementInFlightEventCount() override;
-  void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) override;
   void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
@@ -120,6 +117,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void ForwardWheelEventWithLatencyInfo(
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) override;
+  DispatchToRendererCallback GetDispatchToRendererCallback() override;
 
   // InputDispositionHandler
   void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
@@ -157,7 +155,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
                               const ui::mojom::MenuSourceType source_type);
 
   void SendGestureEventWithLatencyInfo(
-      const GestureEventWithLatencyInfo& gesture_with_latency);
+      const GestureEventWithLatencyInfo& gesture_with_latency,
+      DispatchToRendererCallback& dispatch_callback);
 
   // Signals if this host has forwarded a GestureScrollBegin without yet having
   // forwarded a matching GestureScrollEnd/GestureFlingStart.
@@ -195,16 +194,54 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
     return input_target_client_;
   }
 
+  size_t in_flight_event_count() const { return in_flight_event_count_; }
+
   void SetInputTargetClientForTesting(
       mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
+  void SetWidgetInputHandlerForTesting(
+      mojo::Remote<blink::mojom::WidgetInputHandler> widget_input_handler);
   FlingSchedulerBase* GetFlingSchedulerForTesting() {
     return fling_scheduler_.get();
   }
 
+  // Stops all existing hang monitor timeouts and assumes the renderer is
+  // responsive.
+  void StopInputEventAckTimeout();
+  void RestartInputEventAckTimeoutIfNecessary();
+
+  void StartInputEventAckTimeoutForTesting() { StartInputEventAckTimeout(); }
+
  private:
   friend content::MockRenderInputRouter;
 
+  // Called when an input event gets finally dispatched to renderer or ended up
+  // getting filtered.
+  void OnInputDispatchedToRendererResult(const blink::WebInputEvent& event,
+                                         DispatchToRendererResult result);
+
+  // Starts a hang monitor timeout. If there's already a hang monitor timeout
+  // the new one will only fire if it has a shorter delay than the time
+  // left on the existing timeouts.
+  void StartInputEventAckTimeout();
+
+  // Called by |input_event_ack_timeout_| when an input event timed out without
+  // getting an ack from the renderer.
+  void OnInputEventAckTimeout();
+
   bool is_currently_scrolling_viewport_ = false;
+
+  // We access this value quite a lot, so we cache switches::kDisableHangMonitor
+  // here.
+  const bool should_disable_hang_monitor_;
+
+  // This value denotes the number of input events yet to be acknowledged
+  // by the renderer.
+  int in_flight_event_count_ = 0;
+
+  base::OneShotTimer input_event_ack_timeout_;
+
+  // This value indicates how long to wait before we consider a renderer hung.
+  base::TimeDelta hung_renderer_delay_;
 
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
@@ -237,6 +274,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   bool force_enable_zoom_ = false;
 
   base::WeakPtr<RenderWidgetHostViewInput> view_input_;
+
+  base::WeakPtrFactory<RenderInputRouter> weak_factory_{this};
 };
 
 }  // namespace input

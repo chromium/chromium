@@ -156,7 +156,7 @@ public class TabGroupModelFilterProvider {
 
     private void onCurrentTabModelChanged(TabModel model) {
         for (TabGroupModelFilter filter : mTabGroupModelFilterInternalList) {
-            if (filter.isCurrentlySelectedFilter()) {
+            if (filter.getTabModel().isActiveModel()) {
                 mCurrentTabGroupModelFilterSupplier.set(filter);
                 return;
             }

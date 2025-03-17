@@ -4,9 +4,9 @@
 
 #include "base/features.h"
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/platform_thread.h"
+#include "build/blink_buildflags.h"
 #include "build/buildflag.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -16,8 +16,12 @@
 #if BUILDFLAG(IS_APPLE)
 #include "base/files/file.h"
 #include "base/message_loop/message_pump_apple.h"
-#include "base/message_loop/message_pump_kqueue.h"
 #include "base/synchronization/condition_variable.h"
+
+#if !BUILDFLAG(IS_IOS) || !BUILDFLAG(USE_BLINK)
+#include "base/message_loop/message_pump_kqueue.h"
+#endif
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -26,39 +30,38 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
-#include "base/threading/platform_thread_win.h"
 #endif
 
 namespace base::features {
 
 // Alphabetical:
 
-// Activate base::FeatureParamWithCache internal cache.
-// TODO(https://crbug.com/340824113): Remove the feature flag below.
+// Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled
+// so that ScopedFeatureList can disable it to turn off caching.
 BASE_FEATURE(kFeatureParamWithCache,
              "FeatureParamWithCache",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// Use the Rust JSON parser. Enabled everywhere except Android, where the switch
-// from using the C++ parser in-thread to using the Rust parser in a thread-pool
-// introduces too much latency.
+// Use the Rust JSON parser. Enabled everywhere.
 BASE_FEATURE(kUseRustJsonParser,
              "UseRustJsonParser",
-#if BUILDFLAG(IS_ANDROID)
-             FEATURE_DISABLED_BY_DEFAULT
-#else
-             FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_ANDROID)
-);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // If true, use the Rust JSON parser in-thread; otherwise, it runs in a thread
 // pool.
-const base::FeatureParam<bool> kUseRustJsonParserInCurrentSequence{
-    &kUseRustJsonParser, "UseRustJsonParserInCurrentSequence", false};
+BASE_FEATURE_PARAM(bool,
+                   kUseRustJsonParserInCurrentSequence,
+                   &kUseRustJsonParser,
+                   "UseRustJsonParserInCurrentSequence",
+                   true);
 
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+// LINT.IfChange
+#define LOW_MEMORY_DEVICE_THRESHOLD_MB 1024
+// LINT.ThenChange(//base/android/java/src/org/chromium/base/SysUtils.java)
+#elif BUILDFLAG(IS_IOS)
 // For M99, 45% of devices have 2GB of RAM, and 55% have more.
 #define LOW_MEMORY_DEVICE_THRESHOLD_MB 1024
 #else
@@ -68,9 +71,11 @@ const base::FeatureParam<bool> kUseRustJsonParserInCurrentSequence{
 BASE_FEATURE(kLowEndMemoryExperiment,
              "LowEndMemoryExperiment",
              FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kLowMemoryDeviceThresholdMB{
-    &kLowEndMemoryExperiment, "LowMemoryDeviceThresholdMB",
-    LOW_MEMORY_DEVICE_THRESHOLD_MB};
+BASE_FEATURE_PARAM(size_t,
+                   kLowMemoryDeviceThresholdMB,
+                   &kLowEndMemoryExperiment,
+                   "LowMemoryDeviceThresholdMB",
+                   LOW_MEMORY_DEVICE_THRESHOLD_MB);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.
@@ -117,7 +122,6 @@ BASE_FEATURE(kPostGetMyMemoryStateToBackground,
 
 void Init(EmitThreadControllerProfilerMetadata
               emit_thread_controller_profiler_metadata) {
-  InitializeCpuReductionExperiment();
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
   sequence_manager::internal::ThreadController::InitializeFeatures(
       emit_thread_controller_profiler_metadata);
@@ -133,7 +137,12 @@ void Init(EmitThreadControllerProfilerMetadata
 #if BUILDFLAG(IS_APPLE)
   File::InitializeFeatures();
   MessagePumpCFRunLoopBase::InitializeFeatures();
+
+// Kqueue is not used for ios blink.
+#if !BUILDFLAG(IS_IOS) || !BUILDFLAG(USE_BLINK)
   MessagePumpKqueue::InitializeFeatures();
+#endif
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -143,7 +152,6 @@ void Init(EmitThreadControllerProfilerMetadata
 #if BUILDFLAG(IS_WIN)
   sequence_manager::internal::ThreadControllerPowerMonitor::
       InitializeFeatures();
-  InitializePlatformThreadFeatures();
 #endif
 }
 

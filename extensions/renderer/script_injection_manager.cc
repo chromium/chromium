@@ -4,17 +4,16 @@
 
 #include "extensions/renderer/script_injection_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -490,8 +489,8 @@ void ScriptInjectionManager::ExecuteDeclarativeScript(
 
 void ScriptInjectionManager::OnPermitScriptInjectionHandled(
     ScriptInjection* injection) {
-  auto iter = base::ranges::find(pending_injections_, injection,
-                                 &std::unique_ptr<ScriptInjection>::get);
+  auto iter = std::ranges::find(pending_injections_, injection,
+                                &std::unique_ptr<ScriptInjection>::get);
   if (iter == pending_injections_.end())
     return;
   DCHECK((*iter)->host_id().type == mojom::HostID::HostType::kExtensions);

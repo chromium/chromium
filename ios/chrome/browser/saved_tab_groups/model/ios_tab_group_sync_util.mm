@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -301,12 +303,39 @@ bool IsTabGroupShared(const TabGroup* tab_group,
   return shared;
 }
 
+data_sharing::MemberRole GetUserRoleForGroup(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service,
+    collaboration::CollaborationService* collaboration_service) {
+  if (!collaboration_service) {
+    return data_sharing::MemberRole::kUnknown;
+  }
+
+  CollaborationId collab_id =
+      GetTabGroupCollabID(tab_group, tab_group_sync_service);
+  if (collab_id == CollaborationId()) {
+    return data_sharing::MemberRole::kUnknown;
+  }
+
+  data_sharing::GroupId group_id = data_sharing::GroupId(collab_id.value());
+  return collaboration_service->GetCurrentUserRoleForGroup(group_id);
+}
+
 CollaborationId GetTabGroupCollabID(
     const TabGroup* tab_group,
     TabGroupSyncService* tab_group_sync_service) {
-  if (tab_group_sync_service && tab_group) {
+  if (!tab_group) {
+    return CollaborationId();
+  }
+  return GetTabGroupCollabID(tab_group->tab_group_id(), tab_group_sync_service);
+}
+
+CollaborationId GetTabGroupCollabID(
+    const tab_groups::EitherGroupID& tab_group_id,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (tab_group_sync_service) {
     std::optional<tab_groups::SavedTabGroup> saved_group =
-        tab_group_sync_service->GetGroup(tab_group->tab_group_id());
+        tab_group_sync_service->GetGroup(tab_group_id);
     if (saved_group.has_value() &&
         saved_group->collaboration_id().has_value()) {
       return saved_group->collaboration_id().value();

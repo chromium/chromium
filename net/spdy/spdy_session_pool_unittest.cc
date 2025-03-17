@@ -1791,7 +1791,7 @@ struct SSLServerTests {
   const char* proxy_pac_string;
   bool expect_invalidated;
 };
-const auto kSSLServerTests = std::to_array<SSLServerTests>({
+constexpr auto kSSLServerTests = std::to_array<SSLServerTests>({
     // If the host and port match, the session should be invalidated.
     {"https://config-changed.test", "DIRECT", true},
     // If host and port do not match, the session should not be invalidated.

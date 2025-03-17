@@ -9,8 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 namespace {
 
 using ::testing::DoAll;
@@ -49,9 +48,7 @@ TEST(MockMessagePumpTest, KeepsRunningIfNotAllowedToAdvanceTime) {
       .WillOnce(Return(NextWorkInfo(TimeTicks())))
       .WillOnce(Return(NextWorkInfo(TimeTicks())))
       .WillOnce(Return(NextWorkInfo(kFutureTime)));
-  EXPECT_CALL(delegate, DoIdleWork).WillOnce(Invoke([&] {
-    pump.Quit();
-  }));
+  EXPECT_CALL(delegate, DoIdleWork).WillOnce(Invoke([&] { pump.Quit(); }));
 
   pump.Run(&delegate);
 
@@ -182,5 +179,4 @@ TEST(MockMessagePumpTest,
 }
 
 }  // namespace
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

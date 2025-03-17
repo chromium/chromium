@@ -21,7 +21,6 @@ class BrowserContext;
 namespace extensions {
 
 namespace api::app_runtime {
-struct ActionData;
 struct LaunchData;
 }  // namespace api::app_runtime
 
@@ -70,8 +69,7 @@ class AppRuntimeEventRouter {
       AppLaunchSource source,
       const std::string& handler_id,
       const std::vector<EntryInfo>& entries,
-      const std::vector<GrantedFileEntry>& file_entries,
-      std::optional<api::app_runtime::ActionData> action_data);
+      const std::vector<GrantedFileEntry>& file_entries);
 
   // |handler_id| corresponds to the id of the url_handlers item
   // in the manifest that resulted in a match which triggered this launch.

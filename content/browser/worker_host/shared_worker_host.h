@@ -68,6 +68,7 @@ namespace content {
 
 class ContentBrowserClient;
 class CrossOriginEmbedderPolicyReporter;
+class DocumentIsolationPolicyReporter;
 class ServiceWorkerMainResourceHandle;
 class SharedWorkerContentSettingsProxyImpl;
 class SharedWorkerServiceImpl;
@@ -364,6 +365,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   network::mojom::ClientSecurityStatePtr worker_client_security_state_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
+
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 };

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
 
 #include <algorithm>
@@ -12,7 +17,6 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1091,7 +1095,7 @@ TEST_F(StreamMixerTest, PostProcessorDelayListedDeviceId) {
   delays.push_back(common_delay + kTtsProcessorDelay);
 
   // Convert delay from frames to microseconds.
-  base::ranges::transform(delays, delays.begin(), &FramesToDelayUs);
+  std::ranges::transform(delays, delays.begin(), &FramesToDelayUs);
 
   for (size_t i = 0; i < inputs.size(); ++i) {
     EXPECT_CALL(*inputs[i], InitializeAudioPlayback(_, _)).Times(1);

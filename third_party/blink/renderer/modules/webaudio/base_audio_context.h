@@ -328,9 +328,9 @@ class MODULES_EXPORT BaseAudioContext
   bool CheckExecutionContextAndThrowIfNecessary(ExceptionState&);
 
  protected:
-  enum ContextType { kRealtimeContext, kOfflineContext };
+  enum class ContextType { kRealtimeContext, kOfflineContext };
 
-  explicit BaseAudioContext(LocalDOMWindow*, enum ContextType);
+  explicit BaseAudioContext(LocalDOMWindow*, ContextType);
 
   void Initialize();
   virtual void Uninitialize();

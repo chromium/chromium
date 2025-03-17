@@ -7,12 +7,13 @@
 #include <string>
 #include <variant>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -26,109 +27,114 @@ namespace {
 // It is not to be modified except by the Frizzle team.
 bool IsAllowedLegalNotice(const base::Feature& promo_feature) {
   // Add the text names of allowlisted critical promos here:
-  static const char* const kAllowedPromoNames[] = {};
-  for (const auto* promo_name : kAllowedPromoNames) {
-    if (!strcmp(promo_feature.name, promo_name)) {
-      return true;
-    }
-  }
+  // static constexpr auto kAllowedPromoNames =
+  //     base::MakeFixedFlatSet<std::string_view>({ });
+  // return kAllowedPromoNames.contains(promo_feature.name);
   return false;
 }
 
 bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
   // Add the text names of allowlisted actionable alerts here:
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_DownloadEsbPromo",
-      "IPH_HighEfficiencyMode",
-      "IPH_SupervisedUserProfileSignin",
-  };
-  for (const auto* promo_name : kAllowedPromoNames) {
-    if (!strcmp(promo_feature.name, promo_name)) {
-      return true;
-    }
-  }
-  return false;
+  static constexpr auto kAllowedPromoNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          "IPH_DownloadEsbPromo",
+          "IPH_HighEfficiencyMode",
+          "IPH_SupervisedUserProfileSignin",
+      });
+  return kAllowedPromoNames.contains(promo_feature.name);
 }
 
 bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
   // Add the text names of allowlisted keyed notices here:
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_DesktopPWAsLinkCapturingLaunch",
-      "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
-      "IPH_ExplicitBrowserSigninPreferenceRemembered",
-      "IPH_SignoutWebIntercept",
-      "IPH_PwaQuietNotification",
-  };
-  for (const auto* promo_name : kAllowedPromoNames) {
-    if (!strcmp(promo_feature.name, promo_name)) {
-      return true;
-    }
-  }
-  return false;
+  static constexpr auto kAllowedPromoNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          "IPH_DesktopPWAsLinkCapturingLaunch",
+          "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
+          "IPH_ExplicitBrowserSigninPreferenceRemembered",
+          "IPH_SignoutWebIntercept",
+          "IPH_PwaQuietNotification",
+      });
+  return kAllowedPromoNames.contains(promo_feature.name);
 }
 
 bool IsAllowedRotatingPromo(const base::Feature& promo_feature) {
-  // Add the text names of allowlisted keyed notices here:
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_DesktopReEngagement",
-  };
-  for (const auto* promo_name : kAllowedPromoNames) {
-    if (!strcmp(promo_feature.name, promo_name)) {
-      return true;
-    }
+  // Add the text names of allowlisted rotating promos here:
+  // static constexpr auto kAllowedPromoNames =
+  //     base::MakeFixedFlatSet<std::string_view>({ });
+  // return kAllowedPromoNames.contains(promo_feature.name);
+  return false;
+}
+
+bool IsAllowedCustomUiPromo(const base::Feature& promo_feature) {
+  // Test-only features are allowed.
+  if (std::string(promo_feature.name).starts_with("TEST_")) {
+    return true;
   }
+
+  // IMPORTANT NOTE: Because Custom UI promos can potentially violate
+  // best-practice rules, be sure to include a link to a screenshot or mock of
+  // your UI with a description of how it works in your CL in addition to
+  // requesting an exception here.
+  //
+  // Or better yet, reach out to Frizzle (User Education) Team before adding
+  // code for your new Custom UI promo.
+  //
+  // Add the text names of allowlisted rotating promos here:
+  // static constexpr auto kAllowedPromoNames =
+  //     base::MakeFixedFlatSet<std::string_view>({ });
+  // return kAllowedPromoNames.contains(promo_feature.name);
   return false;
 }
 
 bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
   // NOTE: LEGACY PROMOS ARE DEPRECATED.
   // NO NEW ITEMS SHOULD BE ADDED TO THIS LIST, EVER.
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_AutofillExternalAccountProfileSuggestion",
-      "IPH_AutofillVirtualCardSuggestion",
-      "IPH_DesktopPwaInstall",
-      "IPH_DesktopSharedHighlighting",
-      "IPH_GMCCastStartStop",
-      "IPH_PriceTrackingInSidePanel",
-      "IPH_ReadingListDiscovery",
-      "IPH_ReadingListInSidePanel",
-      "IPH_TabSearch",
-      "IPH_WebUITabStrip",
-  };
-
-  const std::string name = promo_feature.name;
-  for (const auto* promo_name : kAllowedPromoNames) {
-    if (name == promo_name) {
-      return true;
-    }
-  }
-
-  return false;
+  static constexpr auto kAllowedPromoNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          "IPH_AutofillExternalAccountProfileSuggestion",
+          "IPH_AutofillVirtualCardSuggestion",
+          "IPH_DesktopPwaInstall",
+          "IPH_DesktopSharedHighlighting",
+          "IPH_GMCCastStartStop",
+          "IPH_PriceTrackingInSidePanel",
+          "IPH_ReadingListDiscovery",
+          "IPH_ReadingListInSidePanel",
+          "IPH_TabSearch",
+          "IPH_WebUITabStrip",
+      });
+  return kAllowedPromoNames.contains(promo_feature.name);
 }
 
 bool IsAllowedToastWithoutScreenreaderText(const base::Feature& promo_feature) {
+  // Features used for tests have this prefix and are excluded.
+  if (std::string_view(promo_feature.name).starts_with("TEST_")) {
+    return true;
+  }
+
   // Some toasts are purely informational and their normal text also works for
   // low-vision users. This is a very small percentage of toasts, and so only
   // specific such promos are allowlisted.
   //
   // TODO(dfried): Merge legacy promos into this category, eliminating the entry
   // point and promo type entirely.
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_DesktopReEngagement",
-  };
+  //
+  // Add exceptions here:
+  // static constexpr auto kAllowedPromoNames =
+  //     base::MakeFixedFlatSet<std::string_view>({ });
+  // return kAllowedPromoNames.contains(promo_feature.name);
+  return false;
+}
 
-  const std::string name = promo_feature.name;
-  for (const auto* promo_name : kAllowedPromoNames) {
-    if (name == promo_name) {
-      return true;
-    }
-  }
-
+bool IsAllowedPreconditionExemption(const base::Feature& promo_feature) {
   // Features used for tests have this prefix and are excluded.
-  if (name.starts_with("TEST_")) {
+  if (std::string_view(promo_feature.name).starts_with("TEST_")) {
     return true;
   }
 
+  // Add exceptions here:
+  // static constexpr auto kAllowedPromoNames =
+  //     base::MakeFixedFlatSet<std::string_view>({ });
+  // return kAllowedPromoNames.contains(promo_feature.name);
   return false;
 }
 
@@ -227,6 +233,21 @@ FeaturePromoSpecification::RotatingPromos::operator=(
     RotatingPromos&&) noexcept = default;
 FeaturePromoSpecification::RotatingPromos::~RotatingPromos() = default;
 
+FeaturePromoSpecification::BuildHelpBubbleParams::BuildHelpBubbleParams() =
+    default;
+FeaturePromoSpecification::BuildHelpBubbleParams::BuildHelpBubbleParams(
+    const BuildHelpBubbleParams&) = default;
+FeaturePromoSpecification::BuildHelpBubbleParams::BuildHelpBubbleParams(
+    BuildHelpBubbleParams&&) noexcept = default;
+FeaturePromoSpecification::BuildHelpBubbleParams&
+FeaturePromoSpecification::BuildHelpBubbleParams::operator=(
+    const BuildHelpBubbleParams&) = default;
+FeaturePromoSpecification::BuildHelpBubbleParams&
+FeaturePromoSpecification::BuildHelpBubbleParams::operator=(
+    BuildHelpBubbleParams&&) noexcept = default;
+FeaturePromoSpecification::BuildHelpBubbleParams::~BuildHelpBubbleParams() =
+    default;
+
 // static
 constexpr HelpBubbleArrow FeaturePromoSpecification::kDefaultBubbleArrow;
 
@@ -246,7 +267,7 @@ FeaturePromoSpecification::FeaturePromoSpecification(
       bubble_body_string_id_(bubble_body_string_id),
       custom_action_dismiss_string_id_(IDS_PROMO_DISMISS_BUTTON) {
   DCHECK_NE(promo_type, PromoType::kUnspecified);
-  DCHECK(bubble_body_string_id_);
+  DCHECK(promo_type == PromoType::kCustomUi || bubble_body_string_id_ != 0);
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::operator=(
@@ -390,6 +411,20 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForRotatingPromo(
 }
 
 // static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForCustomUi(
+    const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
+    WrappedCustomHelpBubbleFactoryCallback bubble_factory_callback,
+    CustomActionCallback custom_action_callback) {
+  CHECK(IsAllowedCustomUiPromo(feature));
+  FeaturePromoSpecification spec(&feature, PromoType::kCustomUi,
+                                 anchor_element_id, 0);
+  spec.custom_ui_factory_callback_ = std::move(bubble_factory_callback);
+  spec.custom_action_callback_ = std::move(custom_action_callback);
+  return spec;
+}
+
+// static
 FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
     const base::Feature* feature,
     ui::ElementIdentifier anchor_element_id,
@@ -509,6 +544,13 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetAdditionalConditions(
   return *this;
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::AddPreconditionExemption(
+    FeaturePromoPrecondition::Identifier exempt_precondition) {
+  CHECK(IsAllowedPreconditionExemption(*feature_));
+  exempt_preconditions_.insert(exempt_precondition);
+  return *this;
+}
+
 FeaturePromoSpecification& FeaturePromoSpecification::SetMetadata(
     Metadata metadata) {
   metadata_ = std::move(metadata);
@@ -537,11 +579,28 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetHighlightedMenuItem(
 }
 
 ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
-    ui::ElementContext context) const {
-  // Should not be called directly on a rotating promo.
-  CHECK_NE(PromoType::kRotating, promo_type_);
+    ui::ElementContext context,
+    std::optional<int> index) const {
+  if (index) {
+    CHECK_EQ(PromoType::kRotating, promo_type_);
+    return rotating_promos_.at(*index)->GetAnchorElement(context, std::nullopt);
+  } else {
+    // Should not be called directly on a rotating promo.
+    CHECK_NE(PromoType::kRotating, promo_type_);
+    return AnchorElementProviderCommon::GetAnchorElement(context, index);
+  }
+}
 
-  return AnchorElementProviderCommon::GetAnchorElement(context);
+int FeaturePromoSpecification::GetNextValidIndex(int starting_index) const {
+  CHECK_EQ(PromoType::kRotating, promo_type_);
+  int index = starting_index;
+  while (!rotating_promos_.at(index).has_value()) {
+    index = (index + 1) % rotating_promos_.size();
+    CHECK_NE(index, starting_index)
+        << "Wrapped around while looking for a valid rotating promo; this "
+           "should have been caught during promo registration.";
+  }
+  return index;
 }
 
 // static
@@ -554,6 +613,16 @@ FeaturePromoSpecification::CreateRotatingPromoForTesting(
   spec.promo_type_ = PromoType::kRotating;
   spec.rotating_promos_ = std::move(rotating_promos);
   return spec;
+}
+
+FeaturePromoSpecification::CustomHelpBubbleResult
+FeaturePromoSpecification::BuildCustomHelpBubble(
+    ui::ElementContext from_context,
+    HelpBubbleArrow arrow,
+    BuildHelpBubbleParams params) const {
+  CHECK_EQ(PromoType::kCustomUi, promo_type_);
+  return custom_ui_factory_callback_.Run(from_context, arrow,
+                                         std::move(params));
 }
 
 std::ostream& operator<<(std::ostream& oss,
@@ -579,6 +648,9 @@ std::ostream& operator<<(std::ostream& oss,
       break;
     case FeaturePromoSpecification::PromoType::kRotating:
       oss << "kRotating";
+      break;
+    case FeaturePromoSpecification::PromoType::kCustomUi:
+      oss << "kCustomUi";
       break;
   }
   return oss;

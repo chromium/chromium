@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -25,12 +26,12 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -99,7 +100,7 @@ bool IsWebAppInstalled(Profile& profile, const KioskApp& app) {
 
 bool IsWebAppInstalled(Profile& profile, const GURL& install_url) {
   auto [state, __] = chromeos::GetKioskWebAppInstallState(profile, install_url);
-  return crosapi::mojom::WebKioskInstallState::kInstalled == state;
+  return chromeos::WebKioskInstallState::kInstalled == state;
 }
 
 bool IsAppInstalled(Profile& profile, const KioskApp& app) {
@@ -116,15 +117,23 @@ bool IsAppInstalled(Profile& profile, const KioskApp& app) {
 }
 
 std::string InstalledChromeAppVersion(Profile& profile, const KioskApp& app) {
-  auto& chrome_app =
-      CHECK_DEREF(FindInExtensionRegistry(profile, app.id().app_id.value()));
+  CHECK_EQ(app.id().type, KioskAppType::kChromeApp);
+  return InstalledChromeAppVersion(profile, app.id().app_id.value());
+}
+
+std::string InstalledChromeAppVersion(Profile& profile,
+                                      std::string_view app_id) {
+  auto& chrome_app = CHECK_DEREF(FindInExtensionRegistry(profile, app_id));
   return chrome_app.version().GetString();
 }
 
 std::string CachedChromeAppVersion(const KioskApp& app) {
+  return CachedChromeAppVersion(app.id().app_id.value());
+}
+
+std::string CachedChromeAppVersion(std::string_view app_id) {
   auto& manager = CHECK_DEREF(KioskChromeAppManager::Get());
-  auto [_, cached_crx_version] =
-      manager.GetCachedCrx(app.id().app_id.value()).value();
+  auto [_, cached_crx_version] = manager.GetCachedCrx(app_id).value();
   return cached_crx_version;
 }
 
@@ -143,6 +152,11 @@ void WaitNetworkScreen() {
 bool PressNetworkAccelerator() {
   return LoginScreenTestApi::PressAccelerator(
       ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
+}
+
+bool PressBailoutAccelerator() {
+  return LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kAppLaunchBailout);
 }
 
 void CloseAppWindow(const KioskApp& app) {

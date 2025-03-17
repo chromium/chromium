@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <tuple>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -31,7 +32,9 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -41,6 +44,7 @@
 #include "components/policy/core/common/cloud/mock_signing_service.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -51,7 +55,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
@@ -109,8 +113,7 @@ constexpr char kIdToken[] = "id_token";
 constexpr char kOidcState[] = "fake-oidc-state";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 constexpr char kBrowserEnrollmentToken[] = "browser_enrollment_token";
 #endif
 
@@ -337,8 +340,7 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
   return request;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 em::DeviceManagementRequest GetEnrollmentRequest() {
   em::DeviceManagementRequest request;
 
@@ -461,7 +463,7 @@ class CloudPolicyClientTest : public testing::Test {
         job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   "fake_serial_number");
 #endif
@@ -510,6 +512,26 @@ class CloudPolicyClientTest : public testing::Test {
     event_list.Append(std::move(event));
     return policy::RealtimeReportingJobConfiguration::BuildReport(
         std::move(event_list), std::move(context));
+  }
+
+  ::chrome::cros::reporting::proto::UploadEventsRequest
+  MakeDefaultUploadEventsRequest() {
+    ::chrome::cros::reporting::proto::UploadEventsRequest request;
+    request.mutable_profile()->set_gaia_email("name@gmail.com");
+    request.mutable_browser()->set_user_agent("User-Agent");
+    request.mutable_profile()->set_profile_name("Profile 1");
+    request.mutable_profile()->set_profile_path("C:\\User Data\\Profile 1");
+
+    auto* event = request.add_events();
+    event->mutable_time()->set_seconds(1738787610);
+    event->set_event_id("foo");
+    event->mutable_browser_extension_install_event()->set_name("foo");
+    event->mutable_browser_extension_install_event()->set_id("123abc");
+    event->mutable_browser_extension_install_event()->set_extension_action_type(
+        ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+            INSTALL);
+
+    return request;
   }
 
   void RunClientTaskAndWaitRegistration(base::OnceClosure task) {
@@ -608,7 +630,7 @@ class CloudPolicyClientTest : public testing::Test {
   std::unique_ptr<CloudPolicyClient> client_;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
@@ -914,8 +936,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   CheckPolicyResponse(policy_response);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 TEST_F(CloudPolicyClientTest, BrowserRegistrationWithTokenAndPolicyFetch) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
@@ -2233,9 +2254,8 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
   client_->UploadPolicyValidationReport(
       CloudPolicyValidatorBase::VALIDATION_VALUE_WARNING, issues, kStore,
       policy_type_, kPolicyToken, result_future.GetCallback());
-
-
   const CloudPolicyClient::Result result = result_future.Get();
+
   EXPECT_TRUE(result.IsSuccess());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_UPLOAD_POLICY_VALIDATION_REPORT,
@@ -2429,18 +2449,8 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 
-class CloudPolicyClientUploadSecurityEventTest
-    : public CloudPolicyClientTest,
-      public testing::WithParamInterface<bool> {
- public:
-  bool include_device_info() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         CloudPolicyClientUploadSecurityEventTest,
-                         testing::Bool());
-
-TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNotRegistered) {
+TEST_F(CloudPolicyClientTest,
+       UploadSecurityEventReportDeprecatedNotRegistered) {
   ASSERT_FALSE(client_->is_registered());
 
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
@@ -2454,7 +2464,44 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNotRegistered) {
             CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
 }
 
-TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
+TEST_F(CloudPolicyClientTest, UploadSecurityEventNotRegistered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+  ASSERT_FALSE(client_->is_registered());
+
+  base::test::TestFuture<CloudPolicyClient::Result> result_future;
+
+  client_->UploadSecurityEvent(/*include_device_info=*/false,
+                               MakeDefaultUploadEventsRequest(),
+                               result_future.GetCallback());
+
+  const CloudPolicyClient::Result result = result_future.Get();
+  EXPECT_EQ(result,
+            CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
+}
+
+class CloudPolicyClientUploadSecurityEventReportDeprecatedTest
+    : public CloudPolicyClientTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CloudPolicyClientUploadSecurityEventReportDeprecatedTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        policy::features::kEnhancedSecurityEventFields);
+  }
+  bool include_device_info() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
+    testing::Bool());
+
+TEST_P(CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
+       TestWithDeprecatedDictFormat) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
@@ -2505,6 +2552,14 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
               *payload_dict.FindStringByDottedPath(
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetNamePath()));
+    EXPECT_EQ(policy::GetDeviceFqdn(),
+              *payload_dict.FindStringByDottedPath(
+                  ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                      GetDeviceFqdnPath()));
+    EXPECT_EQ(policy::GetNetworkName(),
+              *payload_dict.FindStringByDottedPath(
+                  ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                      GetNetworkNamePath()));
   } else {
     EXPECT_FALSE(payload_dict.FindStringByDottedPath(
         ReportingJobConfigurationBase::DeviceDictionaryBuilder::
@@ -2523,6 +2578,12 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
             GetOSVersionPath()));
     EXPECT_FALSE(payload_dict.FindStringByDottedPath(
         ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetNamePath()));
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
+        ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            GetDeviceFqdnPath()));
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
+        ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            GetNetworkNamePath()));
   }
 
   const base::Value* events =
@@ -2531,7 +2592,136 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
   EXPECT_EQ(1u, events->GetList().size());
 }
 
+class CloudPolicyClientUploadSecurityEventTest
+    : public CloudPolicyClientTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CloudPolicyClientUploadSecurityEventTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {policy::kUploadRealtimeReportingEventsUsingProto,
+         policy::features::kEnhancedSecurityEventFields},
+        {});
+  }
+  bool include_device_info() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CloudPolicyClientUploadSecurityEventTest,
+                         testing::Bool());
+
+TEST_P(CloudPolicyClientUploadSecurityEventTest, TestWithProtoFormat) {
+  RegisterClient();
+
+  ExpectAndCaptureJSONJob(/*response=*/"{}");
+
+  base::test::TestFuture<CloudPolicyClient::Result> result_future;
+
+  client_->UploadSecurityEvent(include_device_info(),
+                               MakeDefaultUploadEventsRequest(),
+                               result_future.GetCallback());
+
+  const CloudPolicyClient::Result result = result_future.Get();
+  EXPECT_TRUE(result.IsSuccess());
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
+      job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
+
+  ::chrome::cros::reporting::proto::UploadEventsRequest request;
+  request.ParseFromString(job_payload_);
+
+  ASSERT_FALSE(policy::GetDeviceName().empty());
+  EXPECT_EQ(version_info::GetVersionNumber(),
+            request.browser().chrome_version());
+
+  if (include_device_info()) {
+    EXPECT_EQ(kDMToken, request.device().dm_token());
+    EXPECT_EQ(client_id_, request.device().client_id());
+    EXPECT_EQ(policy::GetOSUsername(), request.browser().machine_user());
+    EXPECT_EQ(GetOSPlatform(), request.device().os_platform());
+    EXPECT_EQ(GetOSVersion(), request.device().os_version());
+    EXPECT_EQ(policy::GetDeviceName(), request.device().name());
+    EXPECT_EQ(policy::GetDeviceFqdn(), request.device().device_fqdn());
+    EXPECT_EQ(policy::GetNetworkName(), request.device().network_name());
+  } else {
+    EXPECT_EQ(request.device().dm_token(), "");
+    EXPECT_EQ(request.device().client_id(), "");
+    EXPECT_EQ(request.browser().machine_user(), "");
+    EXPECT_EQ(request.device().os_platform(), "");
+    EXPECT_EQ(request.device().os_version(), "");
+    EXPECT_EQ(request.device().name(), "");
+    EXPECT_EQ(request.device().device_fqdn(), "");
+    EXPECT_EQ(request.device().network_name(), "");
+  }
+
+  EXPECT_EQ(1, request.events_size());
+}
+
 TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+
+  auto config = std::make_unique<RealtimeReportingJobConfiguration>(
+      client_.get(), service_.configuration()->GetRealtimeReportingServerUrl(),
+      /*include_device_info*/ true,
+      RealtimeReportingJobConfiguration::UploadCompleteCallback());
+
+  // Add one report to the config.
+  {
+    ::chrome::cros::reporting::proto::UploadEventsRequest request1;
+    request1.mutable_profile()->set_gaia_email("name@gmail.com");
+    request1.mutable_browser()->set_user_agent("User-Agent");
+    request1.mutable_profile()->set_profile_name("Profile 1");
+    request1.mutable_profile()->set_profile_path("C:\\User Data\\Profile 1");
+
+    auto* event = request1.add_events();
+    event->mutable_time()->set_seconds(1738787610);
+    event->set_event_id("foo");
+    event->mutable_browser_extension_install_event()->set_name("foo");
+    event->mutable_browser_extension_install_event()->set_id("123abc");
+    event->mutable_browser_extension_install_event()->set_extension_action_type(
+        ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+            INSTALL);
+    ASSERT_TRUE(config->AddRequest(std::move(request1)));
+  }
+
+  // Add a second report to the config with a different context.
+  {
+    ::chrome::cros::reporting::proto::UploadEventsRequest request2;
+    request2.mutable_profile()->set_gaia_email("name2@gmail.com");
+    request2.mutable_browser()->set_user_agent("User-Agent2");
+    request2.mutable_browser()->set_chrome_version("1.0.0.0");
+
+    auto* event = request2.add_events();
+    event->mutable_time()->set_seconds(1738787610);
+    event->set_event_id("foo");
+    event->mutable_browser_extension_install_event()->set_name("bar");
+    event->mutable_browser_extension_install_event()->set_id("456def");
+    event->mutable_browser_extension_install_event()->set_extension_action_type(
+        ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::UPDATE);
+    ASSERT_TRUE(config->AddRequest(std::move(request2)));
+  }
+
+  // The second config should trump the first.
+  DeviceManagementService::JobConfiguration* job_config = config.get();
+  ::chrome::cros::reporting::proto::UploadEventsRequest merged_request;
+  merged_request.ParseFromString(job_config->GetPayload());
+
+  ASSERT_EQ("name2@gmail.com", merged_request.profile().gaia_email());
+  ASSERT_EQ("User-Agent2", merged_request.browser().user_agent());
+  ASSERT_EQ("Profile 1", merged_request.profile().profile_name());
+  ASSERT_EQ("C:\\User Data\\Profile 1",
+            merged_request.profile().profile_path());
+  ASSERT_EQ("1.0.0.0", merged_request.browser().chrome_version());
+  ASSERT_EQ(2, merged_request.events_size());
+}
+
+TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
   auto config = std::make_unique<RealtimeReportingJobConfiguration>(
       client_.get(), service_.configuration()->GetRealtimeReportingServerUrl(),
       /*include_device_info*/ true,
@@ -2560,7 +2750,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
     report.Set(RealtimeReportingJobConfiguration::kContextKey,
                std::move(context));
 
-    ASSERT_TRUE(config->AddReport(std::move(report)));
+    ASSERT_TRUE(config->AddReportDeprecated(std::move(report)));
   }
 
   // Add a second report to the config with a different context.
@@ -2585,7 +2775,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
     report.Set(RealtimeReportingJobConfiguration::kContextKey,
                std::move(context));
 
-    ASSERT_TRUE(config->AddReport(std::move(report)));
+    ASSERT_TRUE(config->AddReportDeprecated(std::move(report)));
   }
 
   // The second config should trump the first.
@@ -3274,6 +3464,42 @@ TEST_F(CloudPolicyClientTest, UploadFmRegistrationTokenRequest) {
   EXPECT_TRUE(result.IsSuccess());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_UPLOAD_FM_REGISTRATION_TOKEN,
+            job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            expected_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
+}
+
+TEST_F(CloudPolicyClientTest, DeterminePromotionEligibilityRequest) {
+  RegisterClient();
+
+  em::DeviceManagementRequest expected_request;
+  expected_request.mutable_determine_promotion_eligibility_request();
+
+  em::DeviceManagementResponse outer_response;
+  em::GetUserEligiblePromotionsResponse* fake_response =
+      outer_response.mutable_get_user_eligible_promotions_response();
+
+  em::PromotionEligibilityList* promotion_eligibility_list =
+      fake_response->mutable_promotions();
+
+  promotion_eligibility_list->set_policy_page_promotion(
+      em::PromotionType::CHROME_ENTERPRISE_CORE);
+
+  ExpectAndCaptureJob(outer_response);
+
+  base::test::TestFuture<const em::GetUserEligiblePromotionsResponse>
+      result_future;
+
+  base::RunLoop run_loop;
+  client_->DeterminePromotionEligibility(
+      result_future.GetCallback().Then(run_loop.QuitClosure()));
+
+  client_->SetOAuthTokenAsAdditionalAuth(kOAuthToken);
+  run_loop.Run();
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::
+                TYPE_DETERMINE_PROMOTION_ELIGIBILITY,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             expected_request.SerializePartialAsString());

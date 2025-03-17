@@ -27,8 +27,15 @@ void EchoAISummarizer::Summarize(
         pending_responder) {
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
-  responder->OnStreaming("Model not available in Chromium\n" + input);
+  responder->OnStreaming("Model not available in Chromium\n" + input,
+                         blink::mojom::ModelStreamingResponderAction::kReplace);
   responder->OnCompletion(/*context_info=*/nullptr);
+}
+
+void EchoAISummarizer::MeasureUsage(const std::string& input,
+                                    const std::string& context,
+                                    MeasureUsageCallback callback) {
+  std::move(callback).Run(input.size() + context.size());
 }
 
 }  // namespace content

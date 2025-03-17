@@ -125,6 +125,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   }
 
   private getAllowOptionForCategory_(): ContentSetting {
+    // Keep elements in alphabetical order within their groups.
     switch (this.category) {
       case ContentSettingsTypes.ADS:
       case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
@@ -157,6 +158,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.IDLE_DETECTION:
       case ContentSettingsTypes.KEYBOARD_LOCK:
       case ContentSettingsTypes.LOCAL_FONTS:
+      case ContentSettingsTypes.LOCAL_NETWORK_ACCESS:
       case ContentSettingsTypes.MIC:
       case ContentSettingsTypes.MIDI_DEVICES:
       case ContentSettingsTypes.NOTIFICATIONS:

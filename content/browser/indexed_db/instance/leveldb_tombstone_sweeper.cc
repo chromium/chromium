@@ -7,10 +7,10 @@
 #include <string>
 #include <string_view>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -66,6 +66,19 @@ const typename T::value_type& WrappingIterator<T>::Value() const {
   return *inner_;
 }
 
+namespace {
+// The number of iterations for every 'round' of the tombstone sweeper.
+// A new sweep task will be scheduled after reaching current round limit.
+constexpr int kTombstoneSweeperRoundIterations = 1000;
+// The maximum total iterations for the tombstone sweeper.
+constexpr int kTombstoneSweeperMaxIterations = 10 * 1000 * 1000;
+}  // namespace
+
+LevelDbTombstoneSweeper::LevelDbTombstoneSweeper(leveldb::DB* database)
+    : LevelDbTombstoneSweeper(kTombstoneSweeperRoundIterations,
+                              kTombstoneSweeperMaxIterations,
+                              database) {}
+
 LevelDbTombstoneSweeper::LevelDbTombstoneSweeper(int round_iterations,
                                                  int max_iterations,
                                                  leveldb::DB* database)
@@ -78,7 +91,10 @@ LevelDbTombstoneSweeper::LevelDbTombstoneSweeper(int round_iterations,
   sweep_state_.start_index_seed = static_cast<size_t>(base::RandUint64());
 }
 
-LevelDbTombstoneSweeper::~LevelDbTombstoneSweeper() {}
+LevelDbTombstoneSweeper::~LevelDbTombstoneSweeper() {
+  base::UmaHistogramCounts1M(
+      "IndexedDB.LevelDbTombstoneSweeper.TombstonesFound", tombstones_found_);
+}
 
 bool LevelDbTombstoneSweeper::RequiresMetadata() const {
   return true;
@@ -314,6 +330,7 @@ bool LevelDbTombstoneSweeper::IterateIndex(
     if (decoded_exists_version != index_data_version) {
       has_writes_ = true;
       round_deletion_batch_.Delete(key_slice);
+      ++tombstones_found_;
     }
 
     iterator_->Next();

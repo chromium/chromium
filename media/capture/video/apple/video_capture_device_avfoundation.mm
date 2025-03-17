@@ -226,6 +226,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   base::Lock _lock;
   // Used to avoid UAF in -captureOutput.
   base::Lock _destructionLock;
+  base::Lock _metadataLock;
   raw_ptr<media::VideoCaptureDeviceAVFoundationFrameReceiver> _frameReceiver
       GUARDED_BY(_lock);  // weak.
   bool _capturedFirstFrame GUARDED_BY(_lock);
@@ -266,8 +267,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // For testing.
   base::RepeatingCallback<void()> _onPhotoOutputStopped;
-  std::optional<bool> _isPortraitEffectSupportedForTesting;
-  std::optional<bool> _isPortraitEffectActiveForTesting;
+  std::optional<bool> _isPortraitEffectSupportedForTesting
+      GUARDED_BY(_metadataLock);
+  std::optional<bool> _isPortraitEffectActiveForTesting
+      GUARDED_BY(_metadataLock);
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
@@ -1232,11 +1235,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 - (void)setIsPortraitEffectSupportedForTesting:
     (bool)isPortraitEffectSupportedForTesting {
+  base::AutoLock lock(_metadataLock);
   _isPortraitEffectSupportedForTesting = isPortraitEffectSupportedForTesting;
 }
 
 - (bool)isPortraitEffectSupported {
-  DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  base::AutoLock lock(_metadataLock);
   if (_isPortraitEffectSupportedForTesting.has_value()) {
     return _isPortraitEffectSupportedForTesting.value();
   }
@@ -1248,16 +1252,19 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 - (void)setIsPortraitEffectActiveForTesting:
     (bool)isPortraitEffectActiveForTesting {
-  if (_isPortraitEffectActiveForTesting.has_value() &&
-      _isPortraitEffectActiveForTesting == isPortraitEffectActiveForTesting) {
-    return;
+  {
+    base::AutoLock lock(_metadataLock);
+    if (_isPortraitEffectActiveForTesting.has_value() &&
+        _isPortraitEffectActiveForTesting == isPortraitEffectActiveForTesting) {
+      return;
+    }
+    _isPortraitEffectActiveForTesting = isPortraitEffectActiveForTesting;
   }
-  _isPortraitEffectActiveForTesting = isPortraitEffectActiveForTesting;
   [self captureConfigurationChanged];
 }
 
 - (bool)isPortraitEffectActive {
-  DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  base::AutoLock lock(_metadataLock);
   if (_isPortraitEffectActiveForTesting.has_value()) {
     return _isPortraitEffectActiveForTesting.value();
   }

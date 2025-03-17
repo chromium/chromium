@@ -15,17 +15,16 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
-#include "chrome/browser/passage_embeddings/embedder_service.h"
-#include "chrome/browser/passage_embeddings/embedder_service_factory.h"
+#include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
+#include "components/passage_embeddings/passage_embedder_model_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "url/gurl.h"
 
@@ -43,9 +42,10 @@ blink::mojom::InnerTextParamsPtr MakeInnerTextParams() {
 
 void OnGotEmbeddings(base::ElapsedTimer embeddings_computation_timer,
                      std::vector<std::string> passages,
-                     std::vector<std::vector<float>> embeddings,
+                     std::vector<Embedding> embeddings,
+                     Embedder::TaskId task_id,
                      ComputeEmbeddingsStatus status) {
-  if (status != ComputeEmbeddingsStatus::KSuccess) {
+  if (status != ComputeEmbeddingsStatus::kSuccess) {
     return;
   }
   VLOG(3) << "Embeddings computed in "
@@ -62,7 +62,7 @@ EmbedderTabObserver::~EmbedderTabObserver() = default;
 void EmbedderTabObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!EmbedderServiceFactory::GetForProfile(GetProfile()) ||
+  if (!PassageEmbedderModelObserverFactory::GetForProfile(GetProfile()) ||
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(GetProfile())) {
     return;
   }
@@ -93,7 +93,13 @@ bool EmbedderTabObserver::ScheduleExtraction(
 
 void EmbedderTabObserver::MaybeExtractPassages(
     content::WeakDocumentPtr weak_render_frame_host) {
-  if (resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount() > 0) {
+  // Do not wait for all tabs when using performance scenario.
+  // SchedulingEmbedder will use performance scenario which takes loading states
+  // into account. By not enforcing this custom non-contention logic, the
+  // performance scenario load state handling can be tuned and the feature
+  // behavior will follow.
+  if (resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount() > 0 &&
+      !kUsePerformanceScenario.Get()) {
     VLOG(3) << "Extraction to be rescheduled; tabs still loading";
     ScheduleExtraction(weak_render_frame_host);
     return;
@@ -151,9 +157,10 @@ void EmbedderTabObserver::OnGotPassages(
           << total_text_size;
 
   base::ElapsedTimer embeddings_computation_timer;
-  EmbedderServiceFactory::GetForProfile(GetProfile())
+  ChromePassageEmbeddingsServiceController::Get()
+      ->GetEmbedder()
       ->ComputePassagesEmbeddings(
-          mojom::PassagePriority::kPassive, std::move(passages),
+          PassagePriority::kPassive, std::move(passages),
           base::BindOnce(&OnGotEmbeddings,
                          std::move(embeddings_computation_timer)));
 }

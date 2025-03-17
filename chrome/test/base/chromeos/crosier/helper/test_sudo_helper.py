@@ -102,11 +102,16 @@ def _run_cmd(sock: socket.socket, cmd: str):
         _send_code_and_string(sock, 0xFF, str(e))
 
 
-def _wait_for_fake_chrome():
+# Returns True if fake_chrome is started as expected, False otherwise.
+def _wait_for_fake_chrome(session_manager_proc):
     pid = None
 
     # Loop until `fake_chrome` PID is available.
     while True:
+        # session_manager can terminate before fake_chrome is started.
+        if session_manager_proc.poll() != None:
+            return False
+
         process = subprocess.run(
             "pgrep fake_chrome -P $(pgrep session_manager) | head -n 1",
             stdout=subprocess.PIPE,
@@ -120,7 +125,7 @@ def _wait_for_fake_chrome():
         time.sleep(0.1)
 
     assert pid
-    return
+    return True
 
 
 class SessionManagerRunner(threading.Thread):
@@ -165,8 +170,15 @@ class SessionManagerRunner(threading.Thread):
                 env=sm_env,
                 preexec_fn=preexec)
 
-            _wait_for_fake_chrome()
-            _send_code_and_string(self._sock, 0, "started")
+            if _wait_for_fake_chrome(self._session_manager_proc):
+                _send_code_and_string(self._sock, 0, "started")
+            else:
+                _send_code_and_string(self._sock, 0xFF,
+                                      "unexpectedly terminated")
+                self._session_manager_proc = None
+                self._sock.close()
+                return
+
         except Exception as e:
             logging.error("Exception: %s", e)
 

@@ -46,22 +46,18 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -69,9 +65,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "components/account_id/account_id.h"
 #include "components/component_updater/ash/component_manager_ash.h"
@@ -105,9 +99,21 @@ namespace {
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-bool RemoveLacrosUserDataDir() {
-  const base::FilePath lacros_data_dir = browser_util::GetUserDataDir();
+base::FilePath GetUserDataDir() {
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    // NOTE: On device this function is privacy/security sensitive. The
+    // directory must be inside the encrypted user partition.
+    return base::FilePath(crosapi::kLacrosUserDataPath);
+  }
+  // For developers on Linux desktop, put the directory under the developer's
+  // specified --user-data-dir.
+  base::FilePath base_path;
+  base::PathService::Get(chrome::DIR_USER_DATA, &base_path);
+  return base_path.Append("lacros");
+}
 
+bool RemoveLacrosUserDataDir() {
+  const base::FilePath lacros_data_dir = GetUserDataDir();
   return base::PathExists(lacros_data_dir) &&
          base::DeletePathRecursively(lacros_data_dir);
 }
@@ -152,7 +158,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
-  crosapi::lacros_startup_state::SetLacrosStartupState(false);
   SetState(State::UNAVAILABLE);
   ClearLacrosData();
 }

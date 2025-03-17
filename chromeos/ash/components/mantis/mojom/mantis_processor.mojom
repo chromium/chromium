@@ -34,6 +34,8 @@ enum SafetyClassifierVerdict {
   [Default] kFail,
   [MinVersion=3] kFailedText,
   [MinVersion=3] kFailedImage,
+  [MinVersion=4] kServiceNotAvailable,
+  [MinVersion=5] kNoInternetConnection,
 };
 
 // Interface for processing images. The processor should already be initialized
@@ -68,4 +70,11 @@ interface MantisProcessor {
   [MinVersion=2]
   ClassifyImageSafety@3(array<uint8> image)
       => (SafetyClassifierVerdict verdict);
+
+  // Outpaints the image based on the mask and seed. Pass the same `seed` across
+  // method calls to get identical result. The `image`, `mask`, and `result` are
+  // byte arrays containing the encoded format of an image (e.g., PNG, JPEG).
+  [MinVersion=6]
+  Outpainting@4(array<uint8> image, array<uint8> mask, uint32 seed)
+      => (MantisResult result);
 };

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -61,7 +63,7 @@ class RichControlsContainerView : public views::FlexLayoutView {
   // on the button.
   void SetTitleTextStyleAndColor(int style, ui::ColorId color_id);
 
-  const std::u16string& GetTitleForTesting();
+  std::u16string_view GetTitleForTesting() const;
   const ui::ImageModel GetIconForTesting();
   const ui::ImageModel GetEnforcedIconForTesting();
 

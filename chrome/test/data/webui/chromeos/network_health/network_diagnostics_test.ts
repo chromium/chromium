@@ -79,7 +79,7 @@ suite('NetworkDiagnosticsTest', () => {
     for (const group of getRoutineGroups()) {
       assertTrue(!!group);
       const icon =
-          group!.shadowRoot!.querySelector<HTMLImageElement>('.routine-icon');
+          group.shadowRoot!.querySelector<HTMLImageElement>('.routine-icon');
       assertTrue(!!icon);
       const src = icon!.src;
       assertTrue(!!src);
@@ -120,7 +120,7 @@ suite('NetworkDiagnosticsTest', () => {
       assertGT(routineContainers.length, 0);
       for (const routine of routineContainers) {
         const msg = routine.querySelector('#result-msg')!.textContent!.trim();
-        const parts = msg!.split(': ');
+        const parts = msg.split(': ');
 
         switch (verdict) {
           case RoutineVerdict.kNoProblem:

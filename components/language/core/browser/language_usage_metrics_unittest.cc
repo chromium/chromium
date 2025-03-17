@@ -37,7 +37,7 @@ class MetricsRecorder {
     EXPECT_EQ(count, GetTotalCount());
   }
 
-  void CheckValueCount(HistogramBase::Sample value, int count) {
+  void CheckValueCount(HistogramBase::Sample32 value, int count) {
     Snapshot();
     EXPECT_EQ(count, GetCountWithoutSnapshot(value));
   }
@@ -50,19 +50,19 @@ class MetricsRecorder {
     samples_ = histogram->SnapshotSamples();
   }
 
-  HistogramBase::Count GetCountWithoutSnapshot(HistogramBase::Sample value) {
+  HistogramBase::Count32 GetCountWithoutSnapshot(HistogramBase::Sample32 value) {
     if (!samples_)
       return 0;
-    HistogramBase::Count count = samples_->GetCount(value);
+    HistogramBase::Count32 count = samples_->GetCount(value);
     if (!base_samples_)
       return count;
     return count - base_samples_->GetCount(value);
   }
 
-  HistogramBase::Count GetTotalCount() {
+  HistogramBase::Count32 GetTotalCount() {
     if (!samples_)
       return 0;
-    HistogramBase::Count count = samples_->TotalCount();
+    HistogramBase::Count32 count = samples_->TotalCount();
     if (!base_samples_)
       return count;
     return count - base_samples_->TotalCount();
@@ -250,7 +250,7 @@ TEST(LanguageUsageMetricsTest, ToLanguageCodeHash) {
   // Case is ignored.
   EXPECT_EQ(SPANISH, LanguageUsageMetrics::ToLanguageCodeHash("Es"));
 
-  // Coutry code is ignored.
+  // Country code is ignored.
   EXPECT_EQ(JAPANESE, LanguageUsageMetrics::ToLanguageCodeHash("ja-JP"));
 
   // Invalid locales are considered as unknown language.

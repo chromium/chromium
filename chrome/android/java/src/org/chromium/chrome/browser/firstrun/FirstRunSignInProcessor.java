@@ -30,10 +30,4 @@ public final class FirstRunSignInProcessor {
                     activity, ManageSyncSettings.class, ManageSyncSettings.createArguments(true));
         }
     }
-
-    /** Sets the preference to schedule opening sync settings after the FRE finishes. */
-    public static void scheduleOpeningSettings() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, true);
-    }
 }

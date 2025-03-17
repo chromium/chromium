@@ -50,7 +50,7 @@ bool LogWebUICreated(const GURL& web_ui_url) {
 
   uint32_t hash = base::Hash(web_ui_url.DeprecatedGetOriginAsURL().spec());
   base::UmaHistogramSparse(kWebUICreatedForUrl,
-                           static_cast<base::HistogramBase::Sample>(hash));
+                           static_cast<base::HistogramBase::Sample32>(hash));
   return true;
 }
 
@@ -61,7 +61,7 @@ bool LogWebUIShown(const GURL& web_ui_url) {
 
   uint32_t hash = base::Hash(web_ui_url.DeprecatedGetOriginAsURL().spec());
   base::UmaHistogramSparse(kWebUIShownUrl,
-                           static_cast<base::HistogramBase::Sample>(hash));
+                           static_cast<base::HistogramBase::Sample32>(hash));
   return true;
 }
 

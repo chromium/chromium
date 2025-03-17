@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/url_pattern/url_pattern_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_options.h"
@@ -377,7 +377,7 @@ bool Component::ShouldTreatAsStandardURL() const {
   };
 
   should_treat_as_standard_url_ =
-      base::ranges::any_of(url::GetStandardSchemes(), protocol_matches);
+      std::ranges::any_of(url::GetStandardSchemes(), protocol_matches);
   return *should_treat_as_standard_url_;
 }
 

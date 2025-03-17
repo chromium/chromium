@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -20,14 +20,15 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Android wrapper of the SigninManager which provides access from the Java layer.
- * <p/>
- * This class handles common paths during the sign-in and sign-out flows.
- * <p/>
- * Only usable from the UI thread as the native SigninManager requires its access to be in the
- * UI thread.
- * <p/>
- * See chrome/browser/android/signin/signin_manager_android.h for more details.
+ *
+ * <p>This class handles common paths during the sign-in and sign-out flows.
+ *
+ * <p>Only usable from the UI thread as the native SigninManager requires its access to be in the UI
+ * thread.
+ *
+ * <p>See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
+@NullMarked
 public interface SigninManager {
     /** What type of data to delete when data deletion is requested. */
     @IntDef({DataWipeOption.WIPE_SYNC_DATA, DataWipeOption.WIPE_ALL_PROFILE_DATA})
@@ -192,14 +193,14 @@ public interface SigninManager {
      * Signs out of Chrome. This method clears the signed-in username, stops sync and sends out a
      * sign-out notification on the native side.
      *
-     * @param signoutSource describes the event driving the signout (e.g.
-     *         {@link SignoutReason#USER_CLICKED_SIGNOUT_SETTINGS}).
+     * @param signoutSource describes the event driving the signout (e.g. {@link
+     *     SignoutReason#USER_CLICKED_SIGNOUT_SETTINGS}).
      * @param signOutCallback Callback to notify about the sign-out progress.
      * @param forceWipeUserData Whether user selected to wipe all device data.
      */
     void signOut(
             @SignoutReason int signoutSource,
-            SignOutCallback signOutCallback,
+            @Nullable SignOutCallback signOutCallback,
             boolean forceWipeUserData);
 
     /**
@@ -229,7 +230,7 @@ public interface SigninManager {
      * @param callback The callback that will receive true if the account is managed, false
      *     otherwise.
      */
-    void isAccountManaged(@NonNull CoreAccountInfo accountInfo, Callback<Boolean> callback);
+    void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback);
 
     /**
      * Wipes the user's bookmarks and sync data.

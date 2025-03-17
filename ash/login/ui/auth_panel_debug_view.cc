@@ -54,7 +54,7 @@ AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
       .SetCollapseMargins(false);
 
   ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
-  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   if (use_legacy_authpanel) {
     auto* auth_hub = AuthHub::Get();
@@ -65,7 +65,7 @@ AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
   } else {
     auto* auth_panel = AddChildView(std::make_unique<AuthContainerView>(
         AuthFactorSet{AuthInputType::kPassword, AuthInputType::kPin}));
-    auth_panel->SetBackground(views::CreateThemedRoundedRectBackground(
+    auth_panel->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBase, /*radius=*/8));
   }
 }
@@ -108,7 +108,7 @@ void AuthPanelDebugView::OnUserAuthAttemptConfirmed(
       base::BindRepeating(&AuthPanelDebugView::OnAuthPanelPreferredSizeChanged,
                           weak_ptr_factory_.GetWeakPtr()),
       connector));
-  auth_panel->SetBackground(views::CreateThemedRoundedRectBackground(
+  auth_panel->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBase, /*radius=*/8));
   LOG(ERROR) << "auth panel visible: " << auth_panel->GetVisible();
   LOG(ERROR) << "auth panel visible bounds: "

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Mouse-wheel scrolling with vertical snap-area overflow
+  assert_equals: Wheel-scroll moved scroll position expected 50 but got 0
+Harness: the test ran to completion.
+

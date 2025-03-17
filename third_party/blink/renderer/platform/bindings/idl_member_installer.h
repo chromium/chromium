@@ -52,7 +52,6 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
     AttributeConfig& operator=(const AttributeConfig&) = delete;
 
     const char* property_name;
-    const char* interface_name;
     v8::FunctionCallback callback_for_get;
     v8::FunctionCallback callback_for_set;
     unsigned v8_property_attribute : 3;       // v8::PropertyAttribute
@@ -70,6 +69,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
                                 v8::Local<v8::Template> prototype_template,
                                 v8::Local<v8::Template> interface_template,
                                 v8::Local<v8::Signature> signature,
+                                const char* interface_name,
                                 base::span<const AttributeConfig> configs);
   static void InstallAttributes(v8::Isolate* isolate,
                                 const DOMWrapperWorld& world,
@@ -77,6 +77,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
                                 v8::Local<v8::Object> prototype_object,
                                 v8::Local<v8::Object> interface_object,
                                 v8::Local<v8::Signature> signature,
+                                const char* interface_name,
                                 base::span<const AttributeConfig> configs);
 
   struct NoAllocDirectCallAttributeConfig {
@@ -94,6 +95,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       v8::Local<v8::Template> prototype_template,
       v8::Local<v8::Template> interface_template,
       v8::Local<v8::Signature> signature,
+      const char* interface_name,
       base::span<const NoAllocDirectCallAttributeConfig> configs);
   static void InstallAttributes(
       v8::Isolate* isolate,
@@ -102,23 +104,8 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       v8::Local<v8::Object> prototype_object,
       v8::Local<v8::Object> interface_object,
       v8::Local<v8::Signature> signature,
+      const char* interface_name,
       base::span<const NoAllocDirectCallAttributeConfig> configs);
-
-  // Web IDL constant
-  struct ConstantCallbackConfig {
-    ConstantCallbackConfig& operator=(const ConstantCallbackConfig&) = delete;
-
-    const char* name;
-    v8::AccessorNameGetterCallback callback;
-  };
-  static void InstallConstants(
-      v8::Isolate* isolate,
-      const DOMWrapperWorld& world,
-      v8::Local<v8::Template> instance_template,
-      v8::Local<v8::Template> prototype_template,
-      v8::Local<v8::Template> interface_template,
-      v8::Local<v8::Signature> signature,
-      base::span<const ConstantCallbackConfig> configs);
 
   struct ConstantValueConfig {
     ConstantValueConfig& operator=(const ConstantValueConfig&) = delete;
@@ -139,7 +126,6 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
     OperationConfig& operator=(const OperationConfig&) = delete;
 
     const char* property_name;
-    const char* interface_name;
     v8::FunctionCallback callback;
     unsigned length : 8;
     unsigned v8_property_attribute : 3;  // v8::PropertyAttribute
@@ -155,6 +141,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
                                 v8::Local<v8::Template> prototype_template,
                                 v8::Local<v8::Template> interface_template,
                                 v8::Local<v8::Signature> signature,
+                                const char* interface_name,
                                 base::span<const OperationConfig> configs);
   static void InstallOperations(v8::Isolate* isolate,
                                 const DOMWrapperWorld& world,
@@ -162,6 +149,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
                                 v8::Local<v8::Object> prototype_object,
                                 v8::Local<v8::Object> interface_object,
                                 v8::Local<v8::Signature> signature,
+                                const char* interface_name,
                                 base::span<const OperationConfig> configs);
 
   struct NoAllocDirectCallOperationConfig {
@@ -176,6 +164,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       v8::Local<v8::Template> prototype_template,
       v8::Local<v8::Template> interface_template,
       v8::Local<v8::Signature> signature,
+      const char* interface_name,
       base::span<const NoAllocDirectCallOperationConfig> configs);
   static void InstallOperations(
       v8::Isolate* isolate,
@@ -184,6 +173,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       v8::Local<v8::Object> prototype_object,
       v8::Local<v8::Object> interface_object,
       v8::Local<v8::Signature> signature,
+      const char* interface_name,
       base::span<const NoAllocDirectCallOperationConfig> configs);
 
   // Global property reference

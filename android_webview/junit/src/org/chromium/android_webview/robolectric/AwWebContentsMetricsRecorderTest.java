@@ -43,7 +43,7 @@ public class AwWebContentsMetricsRecorderTest {
         AwWebContentsMetricsRecorder.recordDarkModeMetrics(
                 DarkModeHelper.NightMode.NIGHT_MODE_ON,
                 DarkModeHelper.LightTheme.LIGHT_THEME_TRUE,
-                /* isDarkMode= */ true,
+                /* isForceDarkApplied= */ true,
                 AwSettings.FORCE_DARK_ON,
                 AwSettings.MEDIA_QUERY_ONLY,
                 DarkModeHelper.TextLuminance.TEXT_LUMINACE_LIGHT);

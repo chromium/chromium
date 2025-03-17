@@ -118,7 +118,7 @@ void NotificationIconTrayItemView::MaybeReset() {
 void NotificationIconTrayItemView::Reset() {
   notification_id_ = std::string();
   notification_.reset();
-  image_view()->SetImage(gfx::ImageSkia());
+  image_view()->SetImage(ui::ImageModel());
   image_view()->SetTooltipText(std::u16string());
 }
 
@@ -175,7 +175,7 @@ void NotificationIconTrayItemView::UpdateImageViewColor() {
       color_provider->GetColor(ui::kColorNotificationIconBackground),
       color_provider->GetColor(ui::kColorNotificationIconForeground));
   if (!masked_small_icon.IsEmpty()) {
-    image_view()->SetImage(masked_small_icon.AsImageSkia());
+    image_view()->SetImage(ui::ImageModel::FromImage(masked_small_icon));
   } else {
     image_view()->SetImage(ui::ImageModel::FromVectorIcon(
         message_center::kProductIcon, color_id, kUnifiedTrayIconSize));

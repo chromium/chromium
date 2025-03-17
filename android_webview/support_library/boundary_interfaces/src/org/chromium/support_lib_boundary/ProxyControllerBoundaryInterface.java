@@ -4,9 +4,12 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.concurrent.Executor;
 
 /** Boundary interface for ProxyController. */
+@NullMarked
 public interface ProxyControllerBoundaryInterface {
     void setProxyOverride(
             String[][] proxyRules, String[] bypassRules, Runnable listener, Executor executor);

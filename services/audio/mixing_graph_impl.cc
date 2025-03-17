@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/loopback_audio_converter.h"
+#include "media/base/vector_math.h"
 #include "services/audio/sync_mixing_graph_input.h"
 
 namespace audio {
@@ -28,17 +29,8 @@ std::unique_ptr<media::LoopbackAudioConverter> CreateConverter(
 
 // Clamps all samples to the interval [-1, 1].
 void SanitizeOutput(media::AudioBus* bus) {
-  for (int channel = 0; channel < bus->channels(); ++channel) {
-    float* data = bus->channel(channel);
-    for (int frame = 0; frame < bus->frames(); frame++) {
-      float value = data[frame];
-      if (value * value <= 1.0f) [[likely]] {
-        continue;
-      }
-      // The sample is out of range. Negative values are clamped to -1. Positive
-      // values and NaN are clamped to 1.
-      data[frame] = value < 0.0f ? -1.0f : 1.0f;
-    }
+  for (auto channel : bus->AllChannels()) {
+    media::vector_math::FCLAMP(channel, channel);
   }
 }
 

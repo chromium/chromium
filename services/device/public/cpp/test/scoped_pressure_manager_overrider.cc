@@ -16,27 +16,24 @@ FakePressureManager::~FakePressureManager() = default;
 
 void FakePressureManager::Bind(
     mojo::PendingReceiver<mojom::PressureManager> receiver) {
-  receivers_.Add(this, std::move(receiver));
+  manager_receivers_.Add(this, std::move(receiver));
 }
 
 bool FakePressureManager::is_bound() const {
-  return !receivers_.empty();
+  return !manager_receivers_.empty();
 }
 
 void FakePressureManager::AddClient(
     mojom::PressureSource source,
     const std::optional<base::UnguessableToken>& token,
+    mojo::PendingAssociatedRemote<mojom::PressureClient> client,
     AddClientCallback callback) {
   if (is_supported_) {
-    mojo::Remote<mojom::PressureClient> client_remote;
-    auto pending_receiver = client_remote.BindNewPipeAndPassReceiver();
-    clients_[source].Add(std::move(client_remote));
-    std::move(callback).Run(
-        mojom::PressureManagerAddClientResult::NewPressureClient(
-            std::move(pending_receiver)));
+    clients_[source].Add(std::move(client));
+    std::move(callback).Run(mojom::PressureManagerAddClientResult::kOk);
   } else {
-    std::move(callback).Run(mojom::PressureManagerAddClientResult::NewError(
-        mojom::PressureManagerAddClientError::kNotSupported));
+    std::move(callback).Run(
+        mojom::PressureManagerAddClientResult::kNotSupported);
   }
 }
 

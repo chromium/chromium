@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!--
+Test that VideoEncoder can successfully encode frames coming from different sources.
+-->
+<html>
+
+<head>
+  <title>Manual SVC encoding test</title>
+  <script src="webcodecs_common.js"></script>
+  <script src="mixed-source-encoding.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    addManualTestButton([{
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-software'
+    },
+    {
+      'codec': 'avc1.64001E',
+      'acceleration':'prefer-hardware'
+    }]);
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

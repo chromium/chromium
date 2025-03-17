@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 
-#import "base/ranges/algorithm.h"
+#import <algorithm>
+
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
@@ -145,24 +146,24 @@ std::vector<CredentialUIEntry> GetPasswordsForWarningType(
 
   switch (warning_type) {
     case WarningType::kCompromisedPasswordsWarning:
-      base::ranges::copy_if(insecure_credentials,
-                            std::back_inserter(filtered_credentials),
-                            IsCredentialUnmutedCompromised);
+      std::ranges::copy_if(insecure_credentials,
+                           std::back_inserter(filtered_credentials),
+                           IsCredentialUnmutedCompromised);
       break;
     case WarningType::kWeakPasswordsWarning:
-      base::ranges::copy_if(insecure_credentials,
-                            std::back_inserter(filtered_credentials),
-                            std::mem_fn(&CredentialUIEntry::IsWeak));
+      std::ranges::copy_if(insecure_credentials,
+                           std::back_inserter(filtered_credentials),
+                           std::mem_fn(&CredentialUIEntry::IsWeak));
       break;
     case WarningType::kReusedPasswordsWarning:
-      base::ranges::copy_if(insecure_credentials,
-                            std::back_inserter(filtered_credentials),
-                            std::mem_fn(&CredentialUIEntry::IsReused));
+      std::ranges::copy_if(insecure_credentials,
+                           std::back_inserter(filtered_credentials),
+                           std::mem_fn(&CredentialUIEntry::IsReused));
       break;
     case WarningType::kDismissedWarningsWarning:
-      base::ranges::copy_if(insecure_credentials,
-                            std::back_inserter(filtered_credentials),
-                            std::mem_fn(&CredentialUIEntry::IsMuted));
+      std::ranges::copy_if(insecure_credentials,
+                           std::back_inserter(filtered_credentials),
+                           std::mem_fn(&CredentialUIEntry::IsMuted));
       break;
     case WarningType::kNoInsecurePasswordsWarning:
       NOTREACHED();

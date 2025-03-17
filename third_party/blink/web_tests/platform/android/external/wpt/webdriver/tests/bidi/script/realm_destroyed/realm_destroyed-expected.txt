@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_dedicated_worker
+  asyncio.exceptions.CancelledError
+[FAIL] test_shared_worker
+  asyncio.exceptions.CancelledError
+Harness: the test ran to completion.
+

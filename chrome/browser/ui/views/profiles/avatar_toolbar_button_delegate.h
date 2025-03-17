@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -32,11 +33,6 @@ namespace internal {
 class StateManager;
 enum class ButtonState;
 }  // namespace internal
-
-namespace gfx {
-class Canvas;
-class Rect;
-}  // namespace gfx
 
 // Handles the business logic for AvatarToolbarButton.
 // Listens to Chrome and Profile changes in order to compute the proper state of
@@ -69,15 +65,15 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
 
   // These info are based on the `ButtonState`.
   std::pair<std::u16string, std::optional<SkColor>> GetTextAndColor(
-      const ui::ColorProvider* const color_provider) const;
-  SkColor GetHighlightTextColor(
-      const ui::ColorProvider* const color_provider) const;
+      const ui::ColorProvider* color_provider) const;
+  SkColor GetHighlightTextColor(const ui::ColorProvider* color_provider) const;
   std::optional<std::u16string> GetAccessibilityLabel() const;
   std::u16string GetAvatarTooltipText() const;
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const;
-  ui::ImageModel GetAvatarIcon(int icon_size, SkColor icon_color) const;
+  ui::ImageModel GetAvatarIcon(int icon_size,
+                               SkColor icon_color,
+                               const ui::ColorProvider* color_provider) const;
   bool ShouldPaintBorder() const;
-  void PaintIcon(gfx::Canvas* canvas, const gfx::Rect& icon_bounds) const;
 
   [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
       const std::u16string& text,

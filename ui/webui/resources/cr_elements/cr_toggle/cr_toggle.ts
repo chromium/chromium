@@ -183,8 +183,7 @@ export class CrToggleElement extends CrToggleElementBase {
     // with 2-way bindings on the `checked` attribute are updated first.
     await this.updateComplete;
 
-    this.dispatchEvent(new CustomEvent(
-        'change', {bubbles: true, composed: true, detail: this.checked}));
+    this.fire('change', this.checked);
   }
 
   private onKeyDown_(e: KeyboardEvent) {

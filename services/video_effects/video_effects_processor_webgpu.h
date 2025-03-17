@@ -5,15 +5,18 @@
 #ifndef SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_WEBGPU_H_
 #define SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_WEBGPU_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
+#include "services/video_effects/calculators/video_effects_graph_config.h"
+#include "services/video_effects/calculators/video_effects_graph_webgpu.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/mediapipe/buildflags.h"
 
 namespace viz {
 class ContextProviderCommandBuffer;
@@ -44,15 +47,20 @@ class VideoEffectsProcessorWebGpu {
   bool Initialize();
 
   void PostProcess(
+      const RuntimeConfig& runtime_config,
       media::mojom::VideoBufferHandlePtr input_frame_data,
       media::mojom::VideoFrameInfoPtr input_frame_info,
       media::mojom::VideoBufferHandlePtr result_frame_data,
       media::VideoPixelFormat result_pixel_format,
       mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb);
 
+  void SetBackgroundSegmentationModel(base::span<const uint8_t> model_blob);
+
  private:
   // Ensures that awaiting WebGPUInterface commands are flushed.
   void EnsureFlush();
+
+  void OnFrameProcessed(wgpu::Texture texture);
 
   void QueryDone(
       GLuint query_id,
@@ -63,18 +71,21 @@ class VideoEffectsProcessorWebGpu {
       media::VideoPixelFormat result_pixel_format,
       mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb);
 
-  wgpu::ComputePipeline CreateComputePipeline();
+  void MaybeInitializeInferenceEngine();
 
   wgpu::Device device_;
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
   scoped_refptr<viz::RasterContextProvider> raster_interface_context_provider_;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
-  // Compute pipeline executing basic compute shader on a video frame.
-  wgpu::ComputePipeline compute_pipeline_;
+  // Model to be used for background segmentation. It will be empty if the model
+  // is unavailable. This can happen either when we have not received the model
+  // yet, or if we have been told to stop using an existing model.
+  std::vector<uint8_t> background_segmentation_model_;
 
-  // WebGPU buffer that we use to send the parameters to our compute shader.
-  wgpu::Buffer uniforms_buffer_;
+#if BUILDFLAG(MEDIAPIPE_BUILD_WITH_GPU_SUPPORT)
+  std::unique_ptr<VideoEffectsGraphWebGpu> graph_;
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

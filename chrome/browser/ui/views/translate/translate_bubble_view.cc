@@ -38,6 +38,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -45,7 +46,6 @@
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -101,13 +101,10 @@ std::unique_ptr<views::View> CreateWordmarkView() {
   view->SetLayoutManager(std::make_unique<views::BoxLayout>());
 
   // Translate icon
-  const int translate_icon_id = IDR_TRANSLATE_TAB_WORDMARK;
   std::unique_ptr<views::ImageView> translate_icon =
       std::make_unique<views::ImageView>();
-  gfx::ImageSkia* translate_icon_image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          translate_icon_id);
-  translate_icon->SetImage(*translate_icon_image);
+  translate_icon->SetImage(
+      ui::ImageModel::FromResourceId(IDR_TRANSLATE_TAB_WORDMARK));
   view->AddChildView(std::move(translate_icon));
 
   return view;
@@ -157,7 +154,7 @@ TranslateBubbleView::~TranslateBubbleView() {
   advanced_done_button_source_ = nullptr;
   advanced_done_button_target_ = nullptr;
   RemoveAllChildViews();
-  if (features::IsToolbarPinningEnabled() && translate_action_item_.get()) {
+  if (translate_action_item_.get()) {
     translate_action_item_.get()->SetIsShowingBubble(false);
   }
 }
@@ -217,17 +214,15 @@ void TranslateBubbleView::Init() {
     model_->ShowError(error_type_);
   }
 
-  if (features::IsToolbarPinningEnabled()) {
-    Browser* browser = chrome::FindLastActive();
-    if (browser) {
-      translate_action_item_ =
-          actions::ActionManager::Get()
-              .FindAction(kActionShowTranslate,
-                          browser->browser_actions()->root_action_item())
-              ->GetAsWeakPtr();
-      CHECK(translate_action_item_.get());
-      translate_action_item_.get()->SetIsShowingBubble(true);
-    }
+  Browser* browser = chrome::FindLastActive();
+  if (browser) {
+    translate_action_item_ =
+        actions::ActionManager::Get()
+            .FindAction(kActionShowTranslate,
+                        browser->browser_actions()->root_action_item())
+            ->GetAsWeakPtr();
+    CHECK(translate_action_item_.get());
+    translate_action_item_.get()->SetIsShowingBubble(true);
   }
 }
 
@@ -344,14 +339,14 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   // Don't show "Always translate <language>" in incognito mode, because it
   // doesn't do anything anyways. Don't show if the source language is unknown.
   if (!is_in_incognito_window_ &&
-      source_language_code != translate::kUnknownLanguageCode) {
+      source_language_code != language_detection::kUnknownLanguageCode) {
     options_menu_model_->AddCheckItem(
         OptionsMenuItem::ALWAYS_TRANSLATE_LANGUAGE,
         l10n_util::GetStringFUTF16(IDS_TRANSLATE_BUBBLE_ALWAYS_TRANSLATE_LANG,
                                    source_language));
   }
 
-  if (source_language_code != translate::kUnknownLanguageCode) {
+  if (source_language_code != language_detection::kUnknownLanguageCode) {
     options_menu_model_->AddCheckItem(
         OptionsMenuItem::NEVER_TRANSLATE_LANGUAGE,
         l10n_util::GetStringFUTF16(IDS_TRANSLATE_BUBBLE_NEVER_TRANSLATE_LANG,
@@ -657,7 +652,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
   // unknown.
   auto source_language_code = model_->GetSourceLanguageCode();
   if (model_->ShouldShowAlwaysTranslateShortcut() &&
-      source_language_code != translate::kUnknownLanguageCode) {
+      source_language_code != language_detection::kUnknownLanguageCode) {
     auto before_always_translate_checkbox = std::make_unique<views::Checkbox>(
         l10n_util::GetStringFUTF16(
             IDS_TRANSLATE_BUBBLE_ALWAYS_TRANSLATE_LANG,
@@ -795,7 +790,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
   std::unique_ptr<views::Checkbox> advanced_always_translate_checkbox;
   auto source_language_code = model_->GetSourceLanguageCode();
   if (!is_in_incognito_window_ &&
-      source_language_code != translate::kUnknownLanguageCode) {
+      source_language_code != language_detection::kUnknownLanguageCode) {
     advanced_always_translate_checkbox = std::make_unique<views::Checkbox>(
         l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_ALWAYS),
         base::BindRepeating(&TranslateBubbleView::AlwaysTranslatePressed,

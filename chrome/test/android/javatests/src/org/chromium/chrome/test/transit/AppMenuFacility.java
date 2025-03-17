@@ -10,10 +10,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
+import android.widget.ListView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -29,16 +32,22 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -49,6 +58,8 @@ import java.util.function.Function;
  */
 public abstract class AppMenuFacility<HostStationT extends Station<?>>
         extends ScrollableFacility<HostStationT> {
+
+    private ViewElement mMenuList;
 
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
     protected Item<Void> declareStubMenuItem(ItemsBuilder items, @IdRes int id) {
@@ -136,7 +147,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(MENU_LIST);
+        mMenuList = elements.declareView(MENU_LIST);
 
         super.declareElements(elements);
     }
@@ -162,6 +173,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                 .withIsOpeningTabs(1)
                 .withIsSelectingTabs(1)
                 .build();
+    }
+
+    /** Default behavior for "Delete browsing data". */
+    protected QuickDeleteDialogFacility createQuickDeleteDialogFacility() {
+        return new QuickDeleteDialogFacility();
     }
 
     /** Default behavior for "Settings". */
@@ -213,4 +229,38 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
         mHostStation.exitFacilitySync(
                 this, () -> onView(MENU_LIST_MATCHER).perform(clickBetweenViewAndLeftEdge));
     }
+
+    /** Close the menu programmatically. */
+    public void closeProgrammatically() {
+        mHostStation.exitFacilitySync(
+                this,
+                Transition.runTriggerOnUiThreadOption(),
+                () -> getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
+    }
+
+    /** Get the menu list {@link ListView}. */
+    public ListView getView() {
+        assertSuppliersCanBeUsed();
+        return (ListView) mMenuList.get();
+    }
+
+    /** Verify that the menu model has the expected menu item ids and nothing beyond them. */
+    public void verifyModelItems(List<Integer> expectedPresentItemIds) {
+        AppMenuCoordinator appMenuCoordinator = getAppMenuCoordinator();
+        for (Integer itemId : expectedPresentItemIds) {
+            assertNotNull(
+                    "Expected item with id "
+                            + mHostStation.getActivity().getResources().getResourceName(itemId),
+                    AppMenuTestSupport.getMenuItemPropertyModel(appMenuCoordinator, itemId));
+        }
+
+        MVCListAdapter.ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(appMenuCoordinator);
+        assertEquals(
+                "Menu model has more items than expected",
+                expectedPresentItemIds.size(),
+                menuItemsModelList.size());
+    }
+
+    public abstract AppMenuCoordinator getAppMenuCoordinator();
 }

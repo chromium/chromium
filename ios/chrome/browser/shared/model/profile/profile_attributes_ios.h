@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_id.h"
 
 // Stores information about a single profile.
 //
@@ -23,7 +24,7 @@
 class ProfileAttributesIOS {
  public:
   // Represents a set of gaia ids.
-  using GaiaIdSet = std::set<std::string, std::less<>>;
+  using GaiaIdSet = std::set<GaiaId, std::less<>>;
 
   // Represents a set of session ids.
   using SessionIds = std::set<std::string>;
@@ -36,6 +37,9 @@ class ProfileAttributesIOS {
   static ProfileAttributesIOS WithAttrs(std::string_view profile_name,
                                         const base::Value::Dict& storage);
 
+  // Creates a ProfileAttributesIOS for a deleted profile named `profile_name`.
+  static ProfileAttributesIOS DeletedProfile(std::string_view profile_name);
+
   ProfileAttributesIOS(ProfileAttributesIOS&&);
   ProfileAttributesIOS& operator=(ProfileAttributesIOS&&);
 
@@ -44,15 +48,20 @@ class ProfileAttributesIOS {
   // Returns the name of the profile (immutable).
   const std::string& GetProfileName() const;
 
-  // Gets information related to the profile.
   // IsNewProfile() is true if the profile has been registered with
   // ProfileAttributesStorageIOS, but has never been loaded.
   bool IsNewProfile() const;
+
   // IsFullyInitialized() is true if the profile has been loaded at least once,
   // and all first-time setup steps have been completed (e.g. for work profiles,
   // this includes signing in the corresponding managed account).
   bool IsFullyInitialized() const;
-  const std::string& GetGaiaId() const;
+
+  // IsDeletedProfile() is true if the profile has been marked for deletion.
+  bool IsDeletedProfile() const;
+
+  // Gets information related to the profile.
+  GaiaId GetGaiaId() const;
   const std::string& GetUserName() const;
   bool HasAuthenticationError() const;
   GaiaIdSet GetAttachedGaiaIds() const;
@@ -64,8 +73,7 @@ class ProfileAttributesIOS {
   // Sets information related to the profile.
   void ClearIsNewProfile();
   void SetFullyInitialized();
-  void SetAuthenticationInfo(std::string_view gaia_id,
-                             std::string_view user_name);
+  void SetAuthenticationInfo(const GaiaId& gaia_id, std::string_view user_name);
   void SetHasAuthenticationError(bool value);
   void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);

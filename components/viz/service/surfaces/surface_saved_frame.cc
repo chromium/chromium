@@ -4,8 +4,6 @@
 
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 
-#include <GLES2/gl2.h>
-
 #include <algorithm>
 #include <iterator>
 #include <utility>
@@ -33,6 +31,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
@@ -65,20 +64,20 @@ size_t GetSharedPassIndex(
 
 // static
 std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrame::CreateForTesting(
-    CompositorFrameTransitionDirective directive) {
-  return base::WrapUnique(new SurfaceSavedFrame(
-      base::PassKey<SurfaceSavedFrame>(), std::move(directive)));
+    CompositorFrameTransitionDirective directive,
+    gpu::SharedImageInterface* shared_image_interface) {
+  return base::WrapUnique(
+      new SurfaceSavedFrame(base::PassKey<SurfaceSavedFrame>(),
+                            std::move(directive), shared_image_interface));
 }
 
 SurfaceSavedFrame::SurfaceSavedFrame(
     CompositorFrameTransitionDirective directive,
     gpu::SharedImageInterface* shared_image_interface)
     : directive_(std::move(directive)),
-      shared_image_interface_(shared_image_interface),
-      use_blit_requests_(base::FeatureList::IsEnabled(
-          features::kBlitRequestsForViewTransition)) {
+      shared_image_interface_(shared_image_interface) {
   // If we're using BlitRequests, then we better have a shared image interface.
-  CHECK(!use_blit_requests_ || shared_image_interface_);
+  CHECK(shared_image_interface_);
 
   // We should only be constructing a saved frame from a save directive.
   DCHECK_EQ(directive_.type(), CompositorFrameTransitionDirective::Type::kSave);
@@ -86,8 +85,10 @@ SurfaceSavedFrame::SurfaceSavedFrame(
 
 SurfaceSavedFrame::SurfaceSavedFrame(
     base::PassKey<SurfaceSavedFrame>,
-    CompositorFrameTransitionDirective directive)
-    : directive_(std::move(directive)), use_blit_requests_(true) {
+    CompositorFrameTransitionDirective directive,
+    gpu::SharedImageInterface* shared_image_interface)
+    : directive_(std::move(directive)),
+      shared_image_interface_(shared_image_interface) {
   frame_result_.emplace();
 }
 
@@ -106,8 +107,7 @@ SurfaceSavedFrame::GetEmptyResourceIds() const {
 }
 
 bool SurfaceSavedFrame::IsValid() const {
-  return frame_result_ &&
-         (valid_result_count_ == ExpectedResultCount() || use_blit_requests_);
+  return frame_result_.has_value();
 }
 
 void SurfaceSavedFrame::RequestCopyOfOutput(
@@ -143,7 +143,6 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
   // If we're using BlitRequests, then we need to create the result bundle
   // immediately, since it can be imported before the copy output results
   // arrive.
-  if (use_blit_requests_) {
     for (auto& [index, shared_image] : blit_shared_images_) {
       OutputCopyResult* slot = &frame_result_->shared_results[index].emplace();
 
@@ -158,7 +157,6 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
           },
           std::move(shared_image));
     }
-  }
 
   if (copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
@@ -189,7 +187,6 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
                      weak_factory_.GetMutableWeakPtr(), shared_pass_index));
   request->set_result_task_runner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  if (use_blit_requests_) {
     scoped_refptr<gpu::ClientSharedImage>& shared_image =
         blit_shared_images_[shared_pass_index];
 
@@ -205,10 +202,9 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
     if (is_software) {
       gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
       shared_image =
-          shared_image_interface_
-              ->CreateSharedImage({image_format, draw_data.size, color_space,
-                                   flags, "ViewTransitionTexture"})
-              .shared_image;
+          shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+              {image_format, draw_data.size, color_space, flags,
+               "ViewTransitionTexture"});
     } else {
       gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
@@ -222,7 +218,7 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
         gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
         shared_image->mailbox(), shared_image->creation_sync_token(),
         /*populates_gpu_memory_buffer=*/false));
-  }
+
   return request;
 }
 
@@ -259,44 +255,6 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   }
 
   ++valid_result_count_;
-  // We imported this when we created copy output requests, so there's nothing
-  // to do other than bookkeeping here.
-  if (use_blit_requests_) {
-    return;
-  }
-
-  CHECK(frame_result_);
-  CHECK_LT(shared_index, frame_result_->shared_results.size());
-  DCHECK(!frame_result_->shared_results[shared_index]);
-  OutputCopyResult* slot =
-      &frame_result_->shared_results[shared_index].emplace();
-
-  const RenderPassDrawData& data = draw_data_[shared_index];
-
-  DCHECK(slot);
-  DCHECK_EQ(output_copy->size(), data.size);
-  DCHECK_EQ(output_copy->format(), CopyOutputResult::Format::RGBA);
-  if (output_copy->destination() ==
-      CopyOutputResult::Destination::kSystemMemory) {
-    slot->bitmap = output_copy->ScopedAccessSkBitmap().GetOutScopedBitmap();
-    slot->is_software = true;
-  } else {
-    auto output_copy_texture = *output_copy->GetTextureResult();
-    slot->mailbox = output_copy_texture.mailbox;
-    slot->sync_token = gpu::SyncToken();
-    slot->color_space = output_copy_texture.color_space;
-    slot->is_software = false;
-
-    CopyOutputResult::ReleaseCallbacks release_callbacks =
-        output_copy->TakeTextureOwnership();
-
-    // CopyOutputResults carrying RGBA format contain a single texture, there
-    // should be only one release callback:
-    DCHECK_EQ(1u, release_callbacks.size());
-    slot->release_callback = std::move(release_callbacks[0]);
-  }
-
-  slot->draw_data = data;
 }
 
 SurfaceSavedFrame::FrameResult SurfaceSavedFrame::TakeResult() {
@@ -307,15 +265,17 @@ SurfaceSavedFrame::FrameResult SurfaceSavedFrame::TakeResult() {
 }
 
 void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
-  SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(kDefaultTextureSizeForTesting.width(),
-                                 kDefaultTextureSizeForTesting.height()));
-
   frame_result_->shared_results.resize(directive_.shared_elements().size());
   for (auto& result : frame_result_->shared_results) {
     result.emplace();
-    result->bitmap = std::move(bitmap);
+    result->shared_image =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {SinglePlaneFormat::kBGRA_8888, kDefaultTextureSizeForTesting,
+             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "SurfaceSavedFrameForTesting"});
+    result->sync_token = shared_image_interface_->GenVerifiedSyncToken();
+    result->release_callback =
+        base::DoNothingWithBoundArgs(result->shared_image);
     result->draw_data.size = kDefaultTextureSizeForTesting;
     result->is_software = true;
   }
@@ -353,9 +313,6 @@ SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
 
   color_space = std::move(other.color_space);
   other.color_space = gfx::ColorSpace();
-
-  bitmap = std::move(other.bitmap);
-  other.bitmap = SkBitmap();
 
   shared_image = std::move(other.shared_image);
 

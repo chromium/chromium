@@ -100,6 +100,13 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   safe_browsing::ClientSideDetectionType
   GetCachedRealTimeUrlClientSideDetectionType(const GURL& url);
 
+  // Returns true if the most matching verdict to the provided url contains a
+  // LlamaForcedTriggerInfo. |out_llama_forced_trigger_info| will hold the cache
+  // result.
+  bool GetCachedRealTimeLlamaForcedTriggerInfo(
+      const GURL& url,
+      safe_browsing::LlamaForcedTriggerInfo* out_llama_forced_trigger_info);
+
   // Creates a page load token that is tied with the hostname of the |url|.
   // The token is stored in memory.
   ChromeUserPopulation::PageLoadToken CreatePageLoadToken(const GURL& url);

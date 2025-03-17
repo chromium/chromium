@@ -41,7 +41,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/parameter_pack.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -126,16 +125,17 @@ std::vector<QuickInsertSearchResult> ConvertGifResponse(
     return {};
   }
 
-  std::vector<QuickInsertGifResult> gif_results;
+  size_t rank = 0;
   return base::ToVector(
-      (*response)->results, [](const tenor::mojom::GifResponsePtr& result) {
+      (*response)->results,
+      [&rank](const tenor::mojom::GifResponsePtr& result) {
         CHECK(result);
         const tenor::mojom::GifUrlsPtr& urls = result->url;
         CHECK(urls);
         return QuickInsertSearchResult(QuickInsertGifResult(
             urls->preview, urls->preview_image, result->preview_size,
             urls->full, result->full_size,
-            base::UTF8ToUTF16(result->content_description)));
+            base::UTF8ToUTF16(result->content_description), rank++));
       });
 }
 
@@ -441,10 +441,10 @@ void QuickInsertSearchRequest::MaybeCallDoneClosure() {
   if (!can_call_done_closure_) {
     return;
   }
-  if (base::ranges::any_of(search_starts_,
-                           [](std::optional<base::TimeTicks>& start) {
-                             return start.has_value();
-                           })) {
+  if (std::ranges::any_of(search_starts_,
+                          [](std::optional<base::TimeTicks>& start) {
+                            return start.has_value();
+                          })) {
     return;
   }
 

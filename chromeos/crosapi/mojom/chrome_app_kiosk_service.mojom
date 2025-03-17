@@ -29,6 +29,10 @@ enum ChromeKioskInstallResult {
   kSecondaryAppInstallFailed = 4,
   // The primary app does not have kiosk support in the manifest
   kPrimaryAppNotKioskEnabled = 5,
+  // Update of primary app failed, but an installed version already exists.
+  kPrimaryAppUpdateFailed = 6,
+  // Update of secondary app failed, but an installed version already exists.
+  kSecondaryAppUpdateFailed = 7,
 };
 
 [Extensible]
@@ -69,10 +73,10 @@ interface ChromeKioskLaunchController {
 // Next MinVersion: 1
 // Next ID: 1
 [Uuid="7aca9ca3-6d25-450d-83ee-1a0069df0eb3"]
-interface ChromeAppKioskService{
+interface ChromeAppKioskService {
   // Binds the ChromeAppKioskInstaller interface, which allows the
   // Kiosk startup process running in ash-chrome to trigger the installation of
   // the kiosk app into lacros-chrome.
   BindLaunchController@0(
-    pending_remote<ChromeKioskLaunchController> controller);
+      pending_remote<ChromeKioskLaunchController> controller);
 };

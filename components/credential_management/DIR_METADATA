@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Credential Management"
+}
+team_email: "anki-team@google.com"
+buganizer_public: {
+  component_id: 1746343
+}

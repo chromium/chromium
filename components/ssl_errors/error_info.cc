@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/ssl_errors/error_info.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
@@ -102,7 +99,7 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
       break;
     case CERT_KNOWN_INTERCEPTION_BLOCKED:
     case CERT_AUTHORITY_INVALID:
-    case CERT_SYMANTEC_LEGACY:
+    case CERT_SELF_SIGNED_LOCAL_NETWORK:
       details =
           l10n_util::GetStringFUTF16(IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS,
                                      UTF8ToUTF16(request_url.host()));
@@ -234,10 +231,10 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
       return CERT_PINNED_KEY_MISSING;
     case net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED:
       return CERTIFICATE_TRANSPARENCY_REQUIRED;
-    case net::ERR_CERT_SYMANTEC_LEGACY:
-      return CERT_SYMANTEC_LEGACY;
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return CERT_KNOWN_INTERCEPTION_BLOCKED;
+    case net::ERR_CERT_SELF_SIGNED_LOCAL_NETWORK:
+      return CERT_SELF_SIGNED_LOCAL_NETWORK;
     default:
       NOTREACHED();
   }
@@ -249,7 +246,7 @@ void ErrorInfo::GetErrorsForCertStatus(
     net::CertStatus cert_status,
     const GURL& url,
     std::vector<ErrorInfo>* errors) {
-  const net::CertStatus kErrorFlags[] = {
+  const auto kErrorFlags = std::to_array<net::CertStatus>({
       net::CERT_STATUS_COMMON_NAME_INVALID,
       net::CERT_STATUS_DATE_INVALID,
       net::CERT_STATUS_AUTHORITY_INVALID,
@@ -263,11 +260,10 @@ void ErrorInfo::GetErrorsForCertStatus(
       net::CERT_STATUS_NAME_CONSTRAINT_VIOLATION,
       net::CERT_STATUS_VALIDITY_TOO_LONG,
       net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED,
-      net::CERT_STATUS_SYMANTEC_LEGACY,
       net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED,
-  };
+  });
 
-  const ErrorType kErrorTypes[] = {
+  const auto kErrorTypes = std::to_array<ErrorType>({
       CERT_COMMON_NAME_INVALID,
       CERT_DATE_INVALID,
       CERT_AUTHORITY_INVALID,
@@ -281,9 +277,8 @@ void ErrorInfo::GetErrorsForCertStatus(
       CERT_NAME_CONSTRAINT_VIOLATION,
       CERT_VALIDITY_TOO_LONG,
       CERTIFICATE_TRANSPARENCY_REQUIRED,
-      CERT_SYMANTEC_LEGACY,
       CERT_KNOWN_INTERCEPTION_BLOCKED,
-  };
+  });
   DCHECK(std::size(kErrorFlags) == std::size(kErrorTypes));
 
   for (size_t i = 0; i < std::size(kErrorFlags); ++i) {

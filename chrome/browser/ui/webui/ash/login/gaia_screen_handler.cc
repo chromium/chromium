@@ -448,16 +448,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   const AccountId& owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
   params.Set("hasDeviceOwner", owner_account_id.is_valid());
-  if (owner_account_id.is_valid() &&
-      !::features::IsParentAccessCodeForReauthEnabled()) {
-    // Some Autotest policy tests appear to wipe the user list in Local State
-    // but preserve a policy file referencing an owner: https://crbug.com/850139
-    const user_manager::User* owner_user =
-        user_manager::UserManager::Get()->FindUser(owner_account_id);
-    if (owner_user && owner_user->GetType() == user_manager::UserType::kChild) {
-      params.Set("obfuscatedOwnerId", owner_account_id.GetGaiaId().ToString());
-    }
-  }
 
   const GaiaUrls& gaia_urls = *GaiaUrls::GetInstance();
 

@@ -193,10 +193,6 @@ found in the LICENSE file.
     <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
     <dimen name="app_menu_elevation">@dimen/default_elevation_2</dimen>
 
-    <!-- Surface color elevations -->
-    <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
-    <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
-
     <!-- Empty view layout dimensions -->
     <dimen name="empty_state_text_width">341dp</dimen>
     <dimen name="empty_state_heading_padding_top">18dp</dimen>
@@ -223,9 +219,12 @@ found in the LICENSE file.
     <dimen name="switch_pre_scale_min_height">60dp</dimen>
     <dimen name="switch_with_text_min_height">@dimen/min_touch_target_size</dimen>
 
-    <!-- Default values for GradientParagraphLoadingIndicator. -->
-    <item type="integer" name="loading_text_line_count">3</item>
-    <dimen name="loading_text_line_height">14dp</dimen>
-    <dimen name="loading_text_line_spacing">6dp</dimen>
-    <item type="fraction" format="fraction" name="loading_text_last_line_width_fraction">50%</item>
+    <!-- Price change indicator dimens -->
+    <dimen name="price_change_indicator_card_radius">8dp</dimen>
+    <dimen name="price_change_indicator_card_height">24dp</dimen>
+
+    <!-- Loading Fullscreen dimens -->
+    <dimen name="left_right_padding">16dp</dimen>
+    <dimen name="top_bottom_padding">18dp</dimen>
+    <dimen name="text_bottom_padding">30dp</dimen>
 </resources>

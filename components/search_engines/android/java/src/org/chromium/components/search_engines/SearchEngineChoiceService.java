@@ -5,12 +5,7 @@ package org.chromium.components.search_engines;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
-import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
@@ -20,6 +15,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
 import java.lang.annotation.Retention;
@@ -37,9 +34,10 @@ import java.time.Instant;
  * <p>The object is a singleton rather than being profile-scoped as device properties apply to all
  * profiles, it also allows an instance to be created before the native is initialized.
  */
+@NullMarked
 public class SearchEngineChoiceService {
     private static final String TAG = "DeviceChoiceDialog";
-    private static SearchEngineChoiceService sInstance;
+    private static @Nullable SearchEngineChoiceService sInstance;
 
     /**
      * Gets reset to {@code null} after the device country is obtained.
@@ -123,7 +121,7 @@ public class SearchEngineChoiceService {
     /** Overrides the instance of the singleton for tests. */
     @MainThread
     @VisibleForTesting
-    public static void setInstanceForTests(SearchEngineChoiceService instance) {
+    public static void setInstanceForTests(@Nullable SearchEngineChoiceService instance) {
         ThreadUtils.checkUiThread();
         sInstance = instance;
         if (instance != null) {
@@ -133,7 +131,7 @@ public class SearchEngineChoiceService {
 
     @VisibleForTesting
     @MainThread
-    public SearchEngineChoiceService(@NonNull SearchEngineCountryDelegate delegate) {
+    public SearchEngineChoiceService(SearchEngineCountryDelegate delegate) {
         ThreadUtils.checkUiThread();
         mDelegate = delegate;
 
@@ -307,7 +305,7 @@ public class SearchEngineChoiceService {
     }
 
     private static ObservableSupplier<Boolean> createIsDeviceChoiceRequiredSupplier(
-            @NonNull SearchEngineCountryDelegate delegate) {
+            SearchEngineCountryDelegate delegate) {
         var alwaysFalseSupplier = new ObservableSupplierImpl<>(false);
 
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
@@ -335,28 +333,6 @@ public class SearchEngineChoiceService {
                 : supplier;
     }
 
-    private void requestCountryFromPlayApiInternal(long ptrToNativeCallback) {
-        if (mDeviceCountryPromise.isPending()) {
-            // When `SearchEngineCountryDelegate` replies with the result - the result will be
-            // reported to native using the queued callback.
-            mDeviceCountryPromise.then(
-                    deviceCountry ->
-                            SearchEngineChoiceServiceJni.get()
-                                    .processCountryFromPlayApi(ptrToNativeCallback, deviceCountry),
-                    ignoredException ->
-                            SearchEngineChoiceServiceJni.get()
-                                    .processCountryFromPlayApi(ptrToNativeCallback, null));
-            return;
-        }
-        // The result is ready - call native so it can save the result in prefs.
-        SearchEngineChoiceServiceJni.get()
-                .processCountryFromPlayApi(
-                        ptrToNativeCallback,
-                        mDeviceCountryPromise.isFulfilled()
-                                ? mDeviceCountryPromise.getResult()
-                                : null);
-    }
-
     private boolean isDefaultBrowserPromoSuppressedInternal() {
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) return false;
 
@@ -374,16 +350,5 @@ public class SearchEngineChoiceService {
         } catch (DateTimeException e) {
             return false;
         }
-    }
-
-    @CalledByNative
-    private static void requestCountryFromPlayApi(long ptrToNativeCallback) {
-        ThreadUtils.checkUiThread();
-        getInstance().requestCountryFromPlayApiInternal(ptrToNativeCallback);
-    }
-
-    @NativeMethods
-    public interface Natives {
-        void processCountryFromPlayApi(long ptrToNativeCallback, @Nullable String deviceCountry);
     }
 }

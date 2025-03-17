@@ -59,6 +59,14 @@
       </extension-controlled-indicator>
     </div>
   </template>
+  <template is="dom-if" if="[[isPasskeyUpgradeSettingsToggleVisible_]]">
+    <pref-toggle-button id="passkeyUpgradeToggle"
+        label="$i18n{passkeyUpgradeSettingsToggleLabel}"
+        sub-label="$i18n{passkeyUpgradeSettingsToggleSubLabel}"
+        pref="{{prefs.password_manager.automatic_passkey_upgrades}}"
+        hidden="[[!prefs.credentials_enable_service.value]]">
+    </pref-toggle-button>
+  </template>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"
@@ -153,12 +161,9 @@
       </cr-link-row>
     </template>
   </if>
-  <template is="dom-if"
-      if="[[isDeleteAllPasswordManagerDataRowAvailable_]]" restamp>
-    <full-data-reset is-account-store-user="[[isAccountStoreUser]]"
-        is-syncing-passwords="[[isSyncingPasswords]]">
-    </full-data-reset>
-  </template>
+  <full-data-reset is-account-store-user="[[isAccountStoreUser]]"
+      is-syncing-passwords="[[isSyncingPasswords]]">
+  </full-data-reset>
 </div>
 <div hidden="[[!blockedSites_.length]]">
   <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>

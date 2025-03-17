@@ -135,14 +135,7 @@ ShortcutsDatabase::Shortcut::~Shortcut() = default;
 // ShortcutsDatabase ----------------------------------------------------------
 
 ShortcutsDatabase::ShortcutsDatabase(const base::FilePath& database_path)
-    : db_(
-          {// Set the database page size to something a little larger to give us
-           // better performance (we're typically seek rather than bandwidth
-           // limited). Must be a power of 2 and a max of 65536.
-           .page_size = 4096,
-           .cache_size = 500},
-          /*tag=*/"Shortcuts"),
-      database_path_(database_path) {}
+    : db_(/*tag=*/"Shortcuts"), database_path_(database_path) {}
 
 bool ShortcutsDatabase::Init() {
   if (!db_.has_error_callback()) {
@@ -229,6 +222,10 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
   DCHECK(shortcuts);
   shortcuts->clear();
 
+  // List of shortcuts that need to be purged from the shortcuts DB (e.g. due to
+  // using a deprecated suggestion type).
+  ShortcutIDs invalid_shortcuts;
+
   static constexpr char kSelectSql[] =
       // clang-format off
       "SELECT id,text,fill_into_edit,url,document_type,contents,contents_class,"
@@ -252,6 +249,18 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
     if (!AutocompleteMatchType::FromInteger(s.ColumnInt(10), &type))
       continue;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    // Given that support for HISTORY_KEYWORD suggestions has been deprecated,
+    // this code is necessary in order to purge any old HISTORY_KEYWORD
+    // entries that might still be present in the shortcuts DB, thereby
+    // preventing ShortcutsProvider from surfacing these invalid suggestions.
+    if (type == AutocompleteMatchType::HISTORY_KEYWORD) {
+      invalid_shortcuts.push_back(s.ColumnString(0));
+      continue;
+    }
+#pragma GCC diagnostic pop
+
     const int page_transition_integer = s.ColumnInt(9);
     if (!ui::IsValidPageTransitionType(page_transition_integer)) {
       continue;
@@ -260,16 +269,16 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
         ui::PageTransitionFromInt(page_transition_integer);
 
     Shortcut::MatchCore match_core =
-        Shortcut::MatchCore(s.ColumnString16(2),      // fill_into_edit
-                            GURL(s.ColumnString(3)),  // destination_url
-                            document_type,            // document_type
-                            s.ColumnString16(5),      // contents
-                            s.ColumnString(6),        // contents_class
-                            s.ColumnString16(7),      // description
-                            s.ColumnString(8),        // description_class
-                            transition,               // transition
-                            type,                     // type
-                            s.ColumnString16(11));    // keyword
+        Shortcut::MatchCore(s.ColumnString16(2),          // fill_into_edit
+                            GURL(s.ColumnStringView(3)),  // destination_url
+                            document_type,                // document_type
+                            s.ColumnString16(5),          // contents
+                            s.ColumnString(6),            // contents_class
+                            s.ColumnString16(7),          // description
+                            s.ColumnString(8),            // description_class
+                            transition,                   // transition
+                            type,                         // type
+                            s.ColumnString16(11));        // keyword
 
     std::stringstream debug_stream;
     debug_stream << "Contents: " << match_core.contents;
@@ -290,6 +299,8 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
                                 s.ColumnTime(12),       // last_access_time
                                 s.ColumnInt(13))));     // number_of_hits
   }
+
+  DeleteShortcutsWithIDs(invalid_shortcuts);
 }
 
 ShortcutsDatabase::~ShortcutsDatabase() = default;

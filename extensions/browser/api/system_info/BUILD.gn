@@ -30,7 +30,10 @@ source_set("system_info") {
 
   # TODO(crbug.com/371321982): port system.storage api on desktop android.
   if (enable_extensions) {
-    deps += [ "//components/storage_monitor" ]
+    deps += [
+      "//components/storage_monitor",
+      "//extensions/browser/api/system_display:display_info_provider",
+    ]
   }
 
   public_deps = [ "//extensions/browser:browser_sources" ]

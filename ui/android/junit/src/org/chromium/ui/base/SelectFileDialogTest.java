@@ -8,6 +8,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -274,6 +275,10 @@ public class SelectFileDialogTest {
     }
 
     public void verifyFileSystemAccessIntent(String intentAction) throws Exception {
+        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("png", "image/png");
+
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         String[] fileTypes = {"image/jpeg", "image/png"};
@@ -285,16 +290,28 @@ public class SelectFileDialogTest {
                             // Validate intent.
                             Intent intent = (Intent) invocation.getArguments()[0];
                             assertEquals(null, intent.getExtra(Intent.EXTRA_INTENT));
-                            if (Intent.ACTION_OPEN_DOCUMENT_TREE.equals(intentAction)) {
-                                assertEquals(null, intent.getType());
-                                assertEquals(null, intent.getExtra(Intent.EXTRA_MIME_TYPES));
-                                assertFalse(intent.hasCategory(Intent.CATEGORY_OPENABLE));
-                            } else {
+                            if (Intent.ACTION_OPEN_DOCUMENT.equals(intentAction)) {
                                 assertEquals("*/*", intent.getType());
+                                assertEquals(true, intent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
                                 assertArrayEquals(
                                         fileTypes,
                                         (String[]) intent.getExtra(Intent.EXTRA_MIME_TYPES));
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_TITLE));
                                 assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            } else if (Intent.ACTION_OPEN_DOCUMENT_TREE.equals(intentAction)) {
+                                assertEquals(null, intent.getType());
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_MIME_TYPES));
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_TITLE));
+                                assertFalse(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            } else if (Intent.ACTION_CREATE_DOCUMENT.equals(intentAction)) {
+                                assertEquals("image/jpeg", intent.getType());
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_MIME_TYPES));
+                                assertEquals("suggested.txt", intent.getExtra(Intent.EXTRA_TITLE));
+                                assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            } else {
+                                fail("unknown intent " + intentAction);
                             }
                             assertEquals(
                                     Uri.parse("content://authority/tree/123"),
@@ -317,7 +334,7 @@ public class SelectFileDialogTest {
                 intentAction,
                 fileTypes,
                 /* capture= */ false,
-                /* multiple= */ false,
+                /* multiple= */ true,
                 /* defaultDirectory= */ "content://authority/tree/123",
                 /* suggestedName= */ "suggested.txt",
                 windowAndroid);
@@ -949,8 +966,8 @@ public class SelectFileDialogTest {
                 selectFileDialog
                 .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
         task.doInBackground();
-        assertEquals(task.mFilePaths[0].toString(), "///storage/emulated/0/DCIM/Camera/IMG_0.jpg");
-        assertEquals(task.mFilePaths[1].toString(), "///storage/emulated/0/DCIM/Camera/IMG_1.jpg");
+        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_0.jpg", task.mFilePaths[0].toString());
+        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_1.jpg", task.mFilePaths[1].toString());
     }
 
     private void testFilePath(

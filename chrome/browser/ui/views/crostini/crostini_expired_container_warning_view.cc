@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,8 +83,8 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
       },
       weak_ptr_factory_.GetWeakPtr()));
 
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -98,7 +97,7 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label);
+  AddChildViewRaw(message_label);
 }
 
 CrostiniExpiredContainerWarningView::~CrostiniExpiredContainerWarningView() {

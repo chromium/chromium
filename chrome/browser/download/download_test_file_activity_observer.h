@@ -31,6 +31,10 @@ class DownloadTestFileActivityObserver {
   // this method was called.
   bool TestAndResetDidShowFileChooser();
 
+  // Sets whether the MockDownloadManagerDelegate calls the base class for
+  // OpenDownload(), instead of overriding it as a no-op.
+  void SetAllowOpenDownload(bool allow);
+
  private:
   class MockDownloadManagerDelegate;
 

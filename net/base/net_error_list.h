@@ -131,6 +131,9 @@ NET_ERROR(BLOCKED_BY_ORB, -32)
 // network access.
 NET_ERROR(NETWORK_ACCESS_REVOKED, -33)
 
+// The request was blocked by fingerprinting protections.
+NET_ERROR(BLOCKED_BY_FINGERPRINTING_PROTECTION, -34)
+
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)
 
@@ -547,9 +550,7 @@ NET_ERROR(CERT_VALIDITY_TOO_LONG, -213)
 // did not provide CT information that complied with the policy.
 NET_ERROR(CERTIFICATE_TRANSPARENCY_REQUIRED, -214)
 
-// The certificate chained to a legacy Symantec root that is no longer trusted.
-// https://g.co/chrome/symantecpkicerts
-NET_ERROR(CERT_SYMANTEC_LEGACY, -215)
+// Error -215 was removed (CERT_SYMANTEC_LEGACY)
 
 // -216 was QUIC_CERT_ROOT_NOT_KNOWN which has been renumbered to not be in the
 // certificate error range.
@@ -561,13 +562,17 @@ NET_ERROR(CERT_KNOWN_INTERCEPTION_BLOCKED, -217)
 // -218 was SSL_OBSOLETE_VERSION which is not longer used. TLS 1.0/1.1 instead
 // cause SSL_VERSION_OR_CIPHER_MISMATCH now.
 
+// The certificate is self signed and it's being used for either an RFC1918 IP
+// literal URL, or a url ending in .local.
+NET_ERROR(CERT_SELF_SIGNED_LOCAL_NETWORK, -219)
+
 // Add new certificate error codes here.
 //
 // Update the value of CERT_END whenever you add a new certificate error
 // code.
 
 // The value immediately past the last certificate error code.
-NET_ERROR(CERT_END, -219)
+NET_ERROR(CERT_END, -220)
 
 // The URL is invalid.
 NET_ERROR(INVALID_URL, -300)
@@ -753,6 +758,9 @@ NET_ERROR(PROXY_HTTP_1_1_REQUIRED, -366)
 
 // The PAC script terminated fatally and must be reloaded.
 NET_ERROR(PAC_SCRIPT_TERMINATED, -367)
+
+// Signals that the request requires the IPP proxy.
+NET_ERROR(PROXY_REQUIRED, -368)
 
 // Obsolete. Kept here to avoid reuse.
 // Request is throttled because of a Backoff header.

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -93,9 +92,7 @@ views::View* GetAnchorViewForShare(const BrowserView* browser_view,
 
 DataSharingBubbleController::~DataSharingBubbleController() = default;
 
-void DataSharingBubbleController::Show(
-    std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken>
-        request_info) {
+void DataSharingBubbleController::Show(data_sharing::RequestInfo request_info) {
   if (bubble_view_) {
     return;
   }
@@ -116,7 +113,7 @@ void DataSharingBubbleController::Show(
   views::View* anchor_view_for_share = nullptr;
   if (flow_value == data_sharing::kFlowShare) {
     anchor_view_for_share = GetAnchorViewForShare(
-        browser_view, std::get<tab_groups::TabGroupId>(request_info));
+        browser_view, std::get<tab_groups::TabGroupId>(request_info.id));
     if (!anchor_view_for_share) {
       // The share bubble has nothing to anchor from; return early.
       return;
@@ -129,6 +126,7 @@ void DataSharingBubbleController::Show(
           IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
+  contents_wrapper->GetWebUIController()->SetDelegate(this);
 
   auto bubble_view = std::make_unique<DataSharingBubbleDialogView>(
       &GetBrowser(), anchor_view_for_share, std::move(contents_wrapper));
@@ -146,6 +144,10 @@ void DataSharingBubbleController::Show(
     constrained_window::CreateBrowserModalDialogViews(
         std::move(bubble_view), browser_view->GetNativeWindow());
   }
+
+  views::Widget* widget = bubble_view_->GetWidget();
+  CHECK(widget);
+  bubble_widget_observation_.Observe(widget);
 }
 
 void DataSharingBubbleController::Close() {
@@ -156,6 +158,33 @@ void DataSharingBubbleController::Close() {
   bubble_view_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
   bubble_view_ = nullptr;
+}
+
+void DataSharingBubbleController::SetOnCloseCallback(
+    base::OnceCallback<void()> callback) {
+  on_close_callback_ = std::move(callback);
+}
+
+void DataSharingBubbleController::SetShowErrorDialogCallback(
+    base::OnceCallback<void()> callback) {
+  on_error_callback_ = std::move(callback);
+}
+
+void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
+  bubble_widget_observation_.Reset();
+  if (on_close_callback_) {
+    std::move(on_close_callback_).Run();
+  }
+}
+
+void DataSharingBubbleController::ApiInitComplete() {
+  // No-op for this class.
+}
+
+void DataSharingBubbleController::ShowErrorDialog(int status_code) {
+  if (on_error_callback_) {
+    std::move(on_error_callback_).Run();
+  }
 }
 
 DataSharingBubbleController::DataSharingBubbleController(Browser* browser)

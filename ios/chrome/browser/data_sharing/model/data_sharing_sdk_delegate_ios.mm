@@ -47,6 +47,10 @@ void DataSharingSDKDelegateIOS::ReadGroups(
     param.collabID = base::SysUTF8ToNSString(group_param.group_id());
     param.consistencyToken =
         base::SysUTF8ToNSString(group_param.consistency_token());
+    std::string token_secret = group_param.access_token();
+    if (!token_secret.empty()) {
+      param.tokenSecret = base::SysUTF8ToNSString(token_secret);
+    }
     [groupsParam addObject:param];
   }
   ShareKitReadConfiguration* config = [[ShareKitReadConfiguration alloc] init];

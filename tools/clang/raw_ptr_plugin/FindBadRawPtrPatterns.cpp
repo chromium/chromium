@@ -365,7 +365,7 @@ void FindBadRawPtrPatterns(const Options& options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
   llvm::StringMap<llvm::TimeRecord> Records;
-  MatchFinder::MatchFinderOptions FinderOptions;
+  MatchFinderOptions FinderOptions;
   if (options.enable_match_profiling) {
     FinderOptions.CheckProfiling.emplace(Records);
   }

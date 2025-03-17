@@ -45,6 +45,11 @@ bool TestPermissionBubbleViewDelegate::RecreateView() {
   return false;
 }
 
+const permissions::PermissionPrompt*
+TestPermissionBubbleViewDelegate::GetCurrentPrompt() const {
+  return nullptr;
+}
+
 content::WebContents*
 TestPermissionBubbleViewDelegate::GetAssociatedWebContents() {
   return nullptr;

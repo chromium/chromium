@@ -8,6 +8,9 @@ namespace gl {
 
 DCLayerOverlayParams::DCLayerOverlayParams() = default;
 DCLayerOverlayParams::~DCLayerOverlayParams() = default;
+DCLayerOverlayParams::DCLayerOverlayParams(DCLayerOverlayParams&&) = default;
+DCLayerOverlayParams& DCLayerOverlayParams::operator=(DCLayerOverlayParams&&) =
+    default;
 
 DCLayerOverlayParams::VideoParams::VideoParams() = default;
 DCLayerOverlayParams::VideoParams::~VideoParams() = default;

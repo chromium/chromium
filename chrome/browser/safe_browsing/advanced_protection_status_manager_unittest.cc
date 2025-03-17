@@ -8,7 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -303,7 +303,7 @@ TEST_F(AdvancedProtectionStatusManagerTest, StayInAdvancedProtection) {
               testing::ElementsAre(base::Bucket(UmaEvent::kEnabled, 1)));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Not applicable to Chrome OS.
 TEST_F(AdvancedProtectionStatusManagerTest, SignInAndSignOutEvent) {
   base::HistogramTester histograms;
@@ -442,7 +442,7 @@ TEST_F(AdvancedProtectionStatusManagerTest,
 
 // On ChromeOS, there is no unconsented primary account. We can only track the
 // primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AdvancedProtectionStatusManagerTest, TracksUnconsentedPrimaryAccount) {
   base::HistogramTester histograms;
 

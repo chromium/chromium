@@ -21,6 +21,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace hud_display {
@@ -79,7 +80,7 @@ LegendEntry::LegendEntry(const Legend::Entry& data)
       std::make_unique<views::Label>(data.label, views::style::CONTEXT_LABEL));
   label->SetEnabledColor(kHUDDefaultColor);
   if (!data.tooltip.empty())
-    label->SetTooltipText(data.tooltip);
+    label->SetCustomTooltipText(data.tooltip);
 
   constexpr int kLabelToValueSpece = 5;
   value_ = AddChildView(std::make_unique<views::Label>(
@@ -183,23 +184,17 @@ void Legend::Layout(PassKey) {
   gfx::Size max_size;
   bool updated = false;
   for (views::View* view : children()) {
-    if (std::string_view(view->GetClassName()) !=
-        std::string_view(LegendEntry::kViewClassName)) {
-      continue;
+    if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+      views::View* value = entry->value();
+      max_size.SetToMax(value->GetPreferredSize());
+      updated |= max_size != value->GetPreferredSize();
     }
-
-    views::View* value = static_cast<LegendEntry*>(view)->value();
-    max_size.SetToMax(value->GetPreferredSize());
-    updated |= max_size != value->GetPreferredSize();
   }
   if (updated) {
     for (views::View* view : children()) {
-      if (std::string_view(view->GetClassName()) !=
-          std::string_view(LegendEntry::kViewClassName)) {
-        continue;
+      if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+        entry->value()->SetPreferredSize(max_size);
       }
-
-      static_cast<LegendEntry*>(view)->value()->SetPreferredSize(max_size);
     }
     LayoutSuperclass<views::View>(this);
   }
@@ -207,23 +202,17 @@ void Legend::Layout(PassKey) {
 
 void Legend::SetValuesIndex(size_t index) {
   for (views::View* view : children()) {
-    if (std::string_view(view->GetClassName()) !=
-        std::string_view(LegendEntry::kViewClassName)) {
-      continue;
+    if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+      entry->SetValueIndex(index);
     }
-
-    static_cast<LegendEntry*>(view)->SetValueIndex(index);
   }
 }
 
 void Legend::RefreshValues() {
   for (views::View* view : children()) {
-    if (std::string_view(view->GetClassName()) !=
-        std::string_view(LegendEntry::kViewClassName)) {
-      continue;
+    if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+      entry->RefreshValue();
     }
-
-    static_cast<LegendEntry*>(view)->RefreshValue();
   }
 }
 

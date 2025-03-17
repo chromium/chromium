@@ -157,12 +157,6 @@ struct StructTraits<
     return m.redirect_type_bug_1221316;
   }
 
-  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
-  http_method_bug_1221316(
-      const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
-    return m.http_method_bug_1221316;
-  }
-
   static bool Read(network::mojom::CookieSameSiteContextMetadataDataView,
                    net::CookieOptions::SameSiteCookieContext::ContextMetadata*);
 };

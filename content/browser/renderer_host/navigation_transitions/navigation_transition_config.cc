@@ -25,6 +25,10 @@ const base::FeatureParam<base::TimeDelta> kInvisibleCacheCleanupDelay{
     &blink::features::kBackForwardTransitions, "invisible-cache-cleanup-delay",
     base::Minutes(7)};
 
+const base::FeatureParam<bool> kTransferScreenshotInBackgroundPriority{
+    &blink::features::kBackForwardTransitions,
+    "transfer-screenshot-in-background-priority", false};
+
 size_t GetMaxCacheSizeInBytes() {
   constexpr int kLowEndMax = 32 * 1024 * 1024;  // 32MB
   constexpr int kOtherMax = 128 * 1024 * 1024;  // 128MB
@@ -72,6 +76,12 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
 base::TimeDelta
 NavigationTransitionConfig::GetCleanupDelayForInvisibleCaches() {
   return kInvisibleCacheCleanupDelay.Get();
+}
+
+// static
+bool NavigationTransitionConfig::
+    ShouldTransferScreenshotInBackgroundPriority() {
+  return kTransferScreenshotInBackgroundPriority.Get();
 }
 
 }  // namespace content

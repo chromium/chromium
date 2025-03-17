@@ -8,7 +8,7 @@
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,9 +25,9 @@
 #include "content/public/test/download_test_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {
 
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory) {
   EXPECT_FALSE(base::PathExists(initial_dir.Append(file)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verifies that the download directory can be forced to Google Drive by policy.
 IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory_Drive) {
   // Override the download directory with the policy.
@@ -124,6 +124,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory_Drive) {
                 .DownloadPath()
                 .StripTrailingSeparators());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

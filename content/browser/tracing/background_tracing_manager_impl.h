@@ -130,6 +130,8 @@ class BackgroundTracingManagerImpl
   // TracingScenario::Delegate:
   bool OnScenarioActive(TracingScenario* scenario) override;
   bool OnScenarioIdle(TracingScenario* scenario) override;
+  void OnScenarioError(TracingScenario* scenario,
+                       perfetto::TracingError error) override;
   bool OnScenarioCloned(TracingScenario* scenario) override;
   void OnScenarioRecording(TracingScenario* scenario) override;
   void SaveTrace(TracingScenario* scenario,
@@ -156,9 +158,9 @@ class BackgroundTracingManagerImpl
   CONTENT_EXPORT std::vector<std::string> GetEnabledScenarios() const;
 
   bool HasTraceToUpload() override;
-  void GetTraceToUpload(
-      base::OnceCallback<void(std::optional<std::string>,
-                              std::optional<std::string>)>) override;
+  void GetTraceToUpload(base::OnceCallback<void(std::optional<std::string>,
+                                                std::optional<std::string>,
+                                                base::OnceClosure)>) override;
   void SetSystemProfileRecorder(
       base::RepeatingCallback<std::string()> recorder) override;
 
@@ -189,12 +191,11 @@ class BackgroundTracingManagerImpl
   void AddAgentObserver(AgentObserver* observer);
   void RemoveAgentObserver(AgentObserver* observer);
 
-  void AddMetadataGeneratorFunction();
-
   void OnStartTracingDone();
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
                            const std::string& rule_name,
+                           std::optional<int32_t> rule_value,
                            bool privacy_filter_enabled,
                            bool is_local_scenario,
                            bool force_upload,
@@ -218,6 +219,10 @@ class BackgroundTracingManagerImpl
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);
 
+  // Returns the embedder's tracing delegate, or null if it does not provide
+  // one.
+  TracingDelegate* tracing_delegate() { return delegate_.get(); }
+
  private:
 #if BUILDFLAG(IS_ANDROID)
   // ~1MB compressed size.
@@ -228,10 +233,13 @@ class BackgroundTracingManagerImpl
 #endif
 
   bool RequestActivateScenario();
+  void DisableScenarios();
+  void AddMetadataGeneratorFunction();
 
   // Named triggers
   bool DoEmitNamedTrigger(const std::string& trigger_name,
-                          std::optional<int32_t>) override;
+                          std::optional<int32_t>,
+                          uint64_t) override;
 
   void OnScenarioAborted();
   static void AddPendingAgent(
@@ -247,7 +255,7 @@ class BackgroundTracingManagerImpl
                               bool success);
   void OnTraceDatabaseUpdated(ScenarioCountMap scenario_saved_counts);
   void OnTraceSaved(const std::string& scenario_name,
-                    std::optional<NewTraceReport> trace_to_upload,
+                    std::optional<BaseTraceReport> trace_to_upload,
                     bool success);
   void CleanDatabase();
   size_t GetTraceUploadLimitKb() const;
@@ -287,7 +295,7 @@ class BackgroundTracingManagerImpl
   std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
       trace_database_;
 
-  std::optional<NewTraceReport> trace_report_to_upload_;
+  std::optional<BaseTraceReport> trace_report_to_upload_;
 
   // Timer to delete traces older than 2 weeks.
   base::RepeatingTimer clean_database_timer_;

@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/ip_protection/aw_ip_protection_core_host.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,8 +19,8 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
@@ -157,6 +158,12 @@ void AwIpProtectionCoreHost::TryGetAuthTokens(
 
   ip_protection_token_fetcher_->TryGetAuthTokens(batch_size, proxy_layer,
                                                  std::move(callback_with_refs));
+}
+
+void AwIpProtectionCoreHost::TryGetProbabilisticRevealTokens(
+    TryGetProbabilisticRevealTokensCallback callback) {
+  // PRTs are not supported in WebView.
+  NOTREACHED();
 }
 
 void AwIpProtectionCoreHost::Shutdown() {

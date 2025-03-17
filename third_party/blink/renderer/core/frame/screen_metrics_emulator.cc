@@ -13,13 +13,13 @@ namespace blink {
 ScreenMetricsEmulator::ScreenMetricsEmulator(
     WebFrameWidgetImpl* frame_widget,
     const display::ScreenInfos& screen_infos,
-    const gfx::Size& widget_size,
+    const gfx::Size& widget_size_dips,
     const gfx::Size& visible_viewport_size,
     const gfx::Rect& view_screen_rect,
     const gfx::Rect& window_screen_rect)
     : frame_widget_(frame_widget),
       original_screen_infos_(screen_infos),
-      original_widget_size_(widget_size),
+      original_widget_size_dips_(widget_size_dips),
       original_visible_viewport_size_(visible_viewport_size),
       original_view_screen_rect_(view_screen_rect),
       original_window_screen_rect_(window_screen_rect) {}
@@ -39,7 +39,7 @@ void ScreenMetricsEmulator::DisableAndApply() {
                                 original_window_screen_rect_);
   frame_widget_->SetViewportSegments(original_root_viewport_segments_);
   frame_widget_->SetScreenInfoAndSize(original_screen_infos_,
-                                      original_widget_size_,
+                                      original_widget_size_dips_,
                                       original_visible_viewport_size_);
   // The posture service will restore the original device posture coming from
   // the platform.
@@ -64,7 +64,7 @@ gfx::Point ScreenMetricsEmulator::ViewRectOrigin() {
 void ScreenMetricsEmulator::Apply() {
   // The WidgetScreenRect gets derived from the widget size of the main frame
   // widget, not from the original WidgetScreenRect.
-  gfx::Size widget_size = original_widget_size_;
+  gfx::Size widget_size = original_widget_size_dips_;
   // The WindowScreenRect gets derived from the original WindowScreenRect,
   // though.
   gfx::Size window_size = original_window_rect().size();
@@ -178,8 +178,13 @@ void ScreenMetricsEmulator::UpdateVisualProperties(
   DCHECK(!frame_widget_->AutoResizeMode());
 
   original_screen_infos_ = visual_properties.screen_infos;
-  original_widget_size_ = visual_properties.new_size;
-  original_visible_viewport_size_ = visual_properties.visible_viewport_size;
+
+  original_widget_size_dips_ = gfx::ScaleToFlooredSize(
+      visual_properties.new_size_device_px,
+      1 / original_screen_infos_.current().device_scale_factor);
+
+  original_visible_viewport_size_ =
+      visual_properties.visible_viewport_size_device_px;
   original_root_viewport_segments_ =
       visual_properties.root_widget_viewport_segments;
   Apply();

@@ -64,7 +64,7 @@ PowerButtonMenuView::PowerButtonMenuView(
       kPowerButtonMenuCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
   SetBackground(
-      views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
+      views::CreateSolidBackground(kPowerButtonMenuBackgroundColorId));
 
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));

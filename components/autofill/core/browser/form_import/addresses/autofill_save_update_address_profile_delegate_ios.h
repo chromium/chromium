@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 

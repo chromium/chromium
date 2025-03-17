@@ -4,12 +4,12 @@
 
 #include "components/services/storage/dom_storage/session_storage_namespace_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 
 namespace storage {
 
@@ -93,7 +93,7 @@ void SessionStorageNamespaceImpl::PopulateAsClone(
   state_ = State::kPopulated;
   pending_population_from_parent_namespace_.clear();
   namespace_entry_ = namespace_metadata;
-  base::ranges::transform(
+  std::ranges::transform(
       areas_to_clone,
       std::inserter(storage_key_areas_, storage_key_areas_.begin()),
       [namespace_metadata](const auto& source) {

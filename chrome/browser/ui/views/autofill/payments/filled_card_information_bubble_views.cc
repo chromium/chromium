@@ -8,8 +8,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments/payments_service_url.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -127,9 +126,14 @@ void FilledCardInformationBubbleViews::Init() {
 }
 
 void FilledCardInformationBubbleViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  if (controller_->ShouldShowGooglePayIconInTitle()) {
+    GetBubbleFrameView()->SetTitleView(
+        std::make_unique<TitleWithIconAfterLabelView>(
+            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  } else {
+    GetBubbleFrameView()->SetTitleView(std::make_unique<views::Label>(
+        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE));
+  }
 }
 
 std::u16string FilledCardInformationBubbleViews::GetWindowTitle() const {
@@ -192,8 +196,10 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
 
-  card_information_container->AddChildView(std::make_unique<views::ImageView>(
-      ui::ImageModel::FromImage(options.card_image)));
+  auto* card_image_view = card_information_container->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
+          controller_->GetCardImageForDescriptionView())));
+  card_image_view->SetID(kCardImage);
 
   // Add a child container view for the two-line text view.
   auto* card_text_view = card_information_container->AddChildView(
@@ -213,8 +219,9 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
   auto* card_name_view =
       first_line->AddChildView(std::make_unique<views::Label>(
-          options.masked_card_name, views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_PRIMARY));
+          controller_->GetMaskedCardNameForDescriptionView(),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  card_name_view->SetID(kCardName);
   card_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   first_line->SetFlexForView(card_name_view, /*flex=*/1);
   first_line->AddChildView(std::make_unique<views::Label>(
@@ -303,8 +310,7 @@ void FilledCardInformationBubbleViews::
 
 void FilledCardInformationBubbleViews::LearnMoreLinkClicked() {
   if (controller_) {
-    controller_->OnLinkClicked(
-        autofill::payments::GetVirtualCardEnrollmentSupportUrl());
+    controller_->OnLinkClicked();
   }
 }
 

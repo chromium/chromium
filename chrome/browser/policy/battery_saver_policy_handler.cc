@@ -5,14 +5,15 @@
 #include "chrome/browser/policy/battery_saver_policy_handler.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "build/build_config.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {
 
@@ -31,9 +32,9 @@ void BatterySaverPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   }
   switch (value->GetInt()) {
     case base::strict_cast<int>(BatterySaverModeState::kDisabled):
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       prefs->SetBoolean(ash::prefs::kPowerBatterySaver, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
       prefs->SetInteger(
           performance_manager::user_tuning::prefs::kBatterySaverModeState,

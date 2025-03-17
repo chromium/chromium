@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -55,9 +57,9 @@ bool CheckSecureContext(RenderFrameHost& frame) {
   return is_secure_frame;
 }
 
-using AccessScope = SharedStorageLockManager::AccessScope;
-using AccessType =
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
+using AccessScope = blink::SharedStorageAccessScope;
+using AccessMethod =
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
 
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
@@ -89,12 +91,12 @@ const char kSharedStorageMethodFromInsecureContextMessage[] =
     "Attempted to invoke a sharedStorage method from an insecure context";
 
 // NOTE: To preserve user privacy, the default value of the
-// `blink::features::kSharedStorageExposeDebugMessageForSettingsStatus`
+// `network::features::kSharedStorageExposeDebugMessageForSettingsStatus`
 // feature param MUST remain set to false (although the value can be overridden
 // via the command line or in tests).
 std::string GetSharedStorageErrorMessage(const std::string& debug_message,
                                          const std::string& input_message) {
-  return blink::features::kSharedStorageExposeDebugMessageForSettingsStatus
+  return network::features::kSharedStorageExposeDebugMessageForSettingsStatus
                  .Get()
              ? base::StrCat({input_message, "\nDebug: ", debug_message})
              : input_message;
@@ -116,6 +118,7 @@ void SharedStorageDocumentServiceImpl::Bind(
 void SharedStorageDocumentServiceImpl::CreateWorklet(
     const GURL& script_source_url,
     const url::Origin& data_origin,
+    blink::mojom::SharedStorageDataOriginType data_origin_type,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
@@ -156,7 +159,7 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
 
   GetSharedStorageRuntimeManager()->CreateWorkletHost(
       this, render_frame_host().GetLastCommittedOrigin(), data_origin,
-      script_source_url, credentials_mode, creation_method,
+      data_origin_type, script_source_url, credentials_mode, creation_method,
       origin_trial_features, std::move(worklet_host),
       base::BindOnce(
           &SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted,
@@ -182,7 +185,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
   }
 
   if (!render_frame_host().GetPermissionsPolicy()->IsFeatureEnabled(
-      blink::mojom::PermissionsPolicyFeature::kFencedUnpartitionedStorageRead)) {
+          network::mojom::PermissionsPolicyFeature::
+              kFencedUnpartitionedStorageRead)) {
     // We already check for this permissions policy in the renderer.
     receiver_.ReportBadMessage("Attempted to call get() in a fenced frame "
         "with the fenced-unpartitioned-storage-read permissions policy "
@@ -226,7 +230,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
   }
 
   GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
-      AccessType::kDocumentGet, main_frame_id(), SerializeLastCommittedOrigin(),
+      AccessScope::kWindow, AccessMethod::kGet, main_frame_id(),
+      SerializeLastCommittedOrigin(),
       SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
 
   auto operation_completed_callback = base::BindOnce(

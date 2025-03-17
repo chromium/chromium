@@ -64,7 +64,7 @@ Network.requestWillBeSent{
         remoteIPAddress : <string>
         remotePort : 8443
         responseTime : <number>
-        securityState : insecure
+        securityState : secure
         status : 302
         statusText : Found
         timing : <object>

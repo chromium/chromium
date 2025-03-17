@@ -28,7 +28,6 @@ import android.widget.LinearLayout.LayoutParams;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,34 +44,26 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import org.chromium.ui.test.util.RenderTestRule;
-
-import java.util.List;
 
 /** Render tests of SyncPromoController. */
 @RunWith(ParameterizedRunner.class)
@@ -103,7 +94,6 @@ public class SyncPromoControllerUiTest {
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     @Before
@@ -147,50 +137,8 @@ public class SyncPromoControllerUiTest {
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
-    // TODO(crbug.com/329216953): Move these tests into SyncPromoControllerTest after it's converted
-    // to device unit tests.
     @Test
     @MediumTest
-    public void testExistsNonGmailAccountReturnsTrue() {
-        SigninManager signinManager =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                IdentityServicesProvider.get()
-                                        .getSigninManager(
-                                                ProfileManager.getLastUsedRegularProfile()));
-        List<CoreAccountInfo> accounts =
-                List.of(
-                        CoreAccountInfo.createFromEmailAndGaiaId(
-                                "test1@" + SyncPromoController.GMAIL_DOMAIN, "unused"),
-                        CoreAccountInfo.createFromEmailAndGaiaId("test2@nongmail.com", "unused"));
-
-        Assert.assertTrue(SyncPromoController.existsNonGmailAccount(signinManager, accounts));
-    }
-
-    // TODO(crbug.com/329216953): Move these tests into SyncPromoControllerTest after it's converted
-    // to device unit tests.
-    @Test
-    @MediumTest
-    public void testExistsNonGmailAccountReturnsFalse() {
-        SigninManager signinManager =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                IdentityServicesProvider.get()
-                                        .getSigninManager(
-                                                ProfileManager.getLastUsedRegularProfile()));
-        List<CoreAccountInfo> accounts =
-                List.of(
-                        CoreAccountInfo.createFromEmailAndGaiaId(
-                                "test1@" + SyncPromoController.GMAIL_DOMAIN, "unused"),
-                        CoreAccountInfo.createFromEmailAndGaiaId(
-                                "test2@" + SyncPromoController.GMAIL_DOMAIN, "unused"));
-
-        Assert.assertFalse(SyncPromoController.existsNonGmailAccount(signinManager, accounts));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testBookmarkSyncPromoContinueButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -223,7 +171,6 @@ public class SyncPromoControllerUiTest {
     @MediumTest
     // Disabled on Automotive since the choose account button doesn't exist on Automotive.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -437,7 +384,9 @@ public class SyncPromoControllerUiTest {
     }
 
     private View setUpSyncPromoView(
-            @AccessPoint int accessPoint, ProfileDataCache profileDataCache, int layoutResId) {
+            @SigninAccessPoint int accessPoint,
+            ProfileDataCache profileDataCache,
+            int layoutResId) {
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -457,7 +406,6 @@ public class SyncPromoControllerUiTest {
                                             ProfileManager.getLastUsedRegularProfile(),
                                             BOTTOM_SHEET_STRINGS,
                                             accessPoint,
-                                            mSyncConsentActivityLauncher,
                                             mSigninAndHistorySyncActivityLauncher);
                             syncPromoController.setUpSyncPromoView(
                                     profileDataCache,

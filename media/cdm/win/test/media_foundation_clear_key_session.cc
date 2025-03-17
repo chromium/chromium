@@ -283,8 +283,10 @@ STDMETHODIMP MediaFoundationClearKeySession::GetKeyStatuses(
       return E_OUTOFMEMORY;
     }
 
-    CHECK(keys_info_[i]->key_id != kCrashKeyId)
-        << "Crash on special crash key ID.";
+    // Crash on special crash key ID.
+    if (keys_info_[i]->key_id == kCrashKeyId) {
+      base::ImmediateCrash();
+    }
 
     key_status_array[i].eMediaKeyStatus = ToMFKeyStatus(keys_info_[i]->status);
     memcpy(key_status_array[i].pbKeyId, keys_info_[i]->key_id.data(),

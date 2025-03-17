@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_H_
 
+#include <cstdint>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -16,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
@@ -81,9 +83,7 @@ struct Suggestion {
 
   struct AutofillAiPayload final {
     AutofillAiPayload();
-    AutofillAiPayload(
-        const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
-        const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons);
+    explicit AutofillAiPayload(base::Uuid guid);
     AutofillAiPayload(const AutofillAiPayload&);
     AutofillAiPayload(AutofillAiPayload&&);
     AutofillAiPayload& operator=(const AutofillAiPayload&);
@@ -93,10 +93,7 @@ struct Suggestion {
     friend bool operator==(const AutofillAiPayload&,
                            const AutofillAiPayload&) = default;
 
-    // Values to be filled into fields with corresponding ids.
-    base::flat_map<FieldGlobalId, std::u16string> values_to_fill;
-    // Autofill skip reasons to be ignored.
-    DenseSet<FieldFillingSkipReason> ignorable_skip_reasons;
+    base::Uuid guid;
   };
 
   struct PaymentsPayload final {
@@ -118,6 +115,11 @@ struct Suggestion {
     // If true, the user will be presented with a "Terms apply for card
     // benefits" message below the suggestions list on TTF for mobile.
     bool should_display_terms_available = false;
+
+    // The amount of the payment as extracted from the page. For example, used
+    // for BNPL suggestions to confirm the amount is in the supported range for
+    // a BNPL provider.
+    std::optional<uint64_t> extracted_amount_in_micros = std::nullopt;
   };
 
   using Guid = base::StrongAlias<class GuidTag, std::string>;
@@ -240,18 +242,18 @@ struct Suggestion {
     kDevice,
     kEdit,
     kEmail,
-    kEmpty,
     kError,
     kGlobe,
     kGoogle,
     kGoogleMonochrome,
     kGooglePasswordManager,
     kGooglePay,
-    kGooglePayDark,
     kHttpWarning,
     kHttpsInvalid,
+    kIdCard,
     kKey,
     kLocation,
+    kLoyalty,
     kMagic,
     kOfferTag,
     kPenSpark,
@@ -260,6 +262,7 @@ struct Suggestion {
     kSettings,
     kSettingsAndroid,
     kUndo,
+    kVehicle,
     // Payment method icons
     kCardGeneric,
     kCardAmericanExpress,
@@ -275,7 +278,7 @@ struct Suggestion {
     kCardVisa,
     kIban,
     kBnpl,
-    kAutofillAi,
+    kSaveAndFill,
   };
 
   // This enum is used to control filtration of suggestions (see it's used in
@@ -379,6 +382,8 @@ struct Suggestion {
         // use this.
         return absl::holds_alternative<Guid>(payload) ||
                absl::holds_alternative<PaymentsPayload>(payload);
+      case SuggestionType::kBnplEntry:
+        return absl::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:
         return absl::holds_alternative<Guid>(payload) ||

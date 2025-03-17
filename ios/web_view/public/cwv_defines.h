@@ -111,4 +111,10 @@
 // Supports AccountAddressSyncing
 #define IOS_WEB_VIEW_SUPPORTS_ACCOUNT_ADDRESS_SYNC 1
 
+// Supports CWVGlobalState.
+#define IOS_WEB_VIEW_SUPPORTS_GLOBAL_STATE 1
+
+// Supports early initialization.
+#define IOS_WEB_VIEW_SUPPORTS_EARLY_INITIALIZATION 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

@@ -4,6 +4,10 @@
 
 #include "ui/gfx/win/direct_write.h"
 
+#include <dwrite.h>
+#include <dwrite_2.h>
+#include <dwrite_3.h>
+#include <wrl.h>
 #include <wrl/client.h>
 
 #include <string>
@@ -26,6 +30,83 @@ namespace {
 // Pointer to the global IDWriteFactory interface.
 IDWriteFactory* g_direct_write_factory = nullptr;
 
+// Used in tests to allow a known font to masquerade as a locally installed
+// font. Usually this is the Ahem.ttf font. Leaked at shutdown.
+std::vector<base::FilePath>* g_sideloaded_fonts = nullptr;
+
+bool GetFontCollection(Microsoft::WRL::ComPtr<IDWriteFactory>& factory,
+                       IDWriteFontCollection** collection) {
+  if (!g_sideloaded_fonts) {
+    // Normal path - The DirectWrite font manager will use the system's font
+    // collection with no sideloading when passed `nullptr` for the collection.
+    return false;
+  }
+
+  // QueryInterface for IDWriteFactory2. This should succeed since we only
+  // support >= Win10.
+  Microsoft::WRL::ComPtr<IDWriteFactory2> factory2;
+  factory.As<IDWriteFactory2>(&factory2);
+  DCHECK(factory2);
+
+  // QueryInterface for IDwriteFactory3, needed for MatchUniqueFont on Windows.
+  // This should succeed since we only support >= Win10.
+  Microsoft::WRL::ComPtr<IDWriteFactory3> factory3;
+  factory2.As<IDWriteFactory3>(&factory3);
+  DCHECK(factory3);
+
+  // If sideloading - build a font set with sideloads then add the system font
+  // collection.
+  Microsoft::WRL::ComPtr<IDWriteFontSetBuilder> font_set_builder;
+  HRESULT hr = factory3->CreateFontSetBuilder(&font_set_builder);
+  DCHECK(SUCCEEDED(hr));
+
+  for (auto& path : *g_sideloaded_fonts) {
+    Microsoft::WRL::ComPtr<IDWriteFontFile> font_file;
+    hr = factory3->CreateFontFileReference(path.value().c_str(), nullptr,
+                                           &font_file);
+    DCHECK(SUCCEEDED(hr));
+
+    BOOL supported;
+    DWRITE_FONT_FILE_TYPE file_type;
+    UINT32 n_fonts;
+    hr = font_file->Analyze(&supported, &file_type, nullptr, &n_fonts);
+    DCHECK(SUCCEEDED(hr));
+
+    for (UINT32 font_index = 0; font_index < n_fonts; ++font_index) {
+      Microsoft::WRL::ComPtr<IDWriteFontFaceReference> font_face;
+      hr = factory3->CreateFontFaceReference(font_file.Get(), font_index,
+                                             DWRITE_FONT_SIMULATIONS_NONE,
+                                             &font_face);
+      DCHECK(SUCCEEDED(hr));
+
+      hr = font_set_builder->AddFontFaceReference(font_face.Get());
+      DCHECK(SUCCEEDED(hr));
+    }
+  }
+  // Now add the system fonts.
+  Microsoft::WRL::ComPtr<IDWriteFontSet> system_font_set;
+  hr = factory3->GetSystemFontSet(&system_font_set);
+  DCHECK(SUCCEEDED(hr));
+
+  hr = font_set_builder->AddFontSet(system_font_set.Get());
+  DCHECK(SUCCEEDED(hr));
+
+  // Make the set.
+  Microsoft::WRL::ComPtr<IDWriteFontSet> font_set;
+  hr = font_set_builder->CreateFontSet(&font_set);
+  DCHECK(SUCCEEDED(hr));
+
+  // Make the collection.
+  Microsoft::WRL::ComPtr<IDWriteFontCollection1> collection1;
+  hr = factory3->CreateFontCollectionFromFontSet(font_set.Get(), &collection1);
+  DCHECK(SUCCEEDED(hr));
+
+  hr = collection1->QueryInterface(collection);
+  DCHECK(SUCCEEDED(hr));
+
+  return true;
+}
+
 void SetDirectWriteFactory(IDWriteFactory* factory) {
   DCHECK(!g_direct_write_factory);
   // We grab a reference on the DirectWrite factory. This reference is
@@ -35,6 +116,14 @@ void SetDirectWriteFactory(IDWriteFactory* factory) {
 }
 
 }  // anonymous namespace
+
+void SideLoadFontForTesting(base::FilePath path) {
+  if (!g_sideloaded_fonts) {
+    // Note: this list is leaked.
+    g_sideloaded_fonts = new std::vector<base::FilePath>();
+  }
+  g_sideloaded_fonts->push_back(path);
+}
 
 void CreateDWriteFactory(IDWriteFactory** factory) {
   Microsoft::WRL::ComPtr<IUnknown> factory_unknown;
@@ -60,8 +149,19 @@ void InitializeDirectWrite() {
   CHECK(!!factory);
   SetDirectWriteFactory(factory.Get());
 
-  sk_sp<SkFontMgr> direct_write_font_mgr =
-      SkFontMgr_New_DirectWrite(factory.Get());
+  // Get a font collection that contains sideloaded fonts for web tests, or
+  // nullptr to tell the DirectWrite FontMgr to use the system font collection.
+  // SkFontMgr_DirectWrite increments this object's ref count.
+  Microsoft::WRL::ComPtr<IDWriteFontCollection> collection;
+  bool should_use_collection = GetFontCollection(factory, &collection);
+  if (g_sideloaded_fonts) {
+    DCHECK(should_use_collection);
+  } else {
+    DCHECK(!should_use_collection);
+  }
+
+  sk_sp<SkFontMgr> direct_write_font_mgr = SkFontMgr_New_DirectWrite(
+      factory.Get(), should_use_collection ? collection.Get() : nullptr);
   CHECK(!!direct_write_font_mgr);
 
   // Override the default skia font manager. This must be called before any

@@ -21,7 +21,8 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './sanitize_initial.html.js';
-import {SettingsResetter, SettingsResetterInterface} from './sanitize_ui.mojom-webui.js';
+import type {SettingsResetterInterface} from './sanitize_ui.mojom-webui.js';
+import {SettingsResetter} from './sanitize_ui.mojom-webui.js';
 
 // Implemented by Ash, provides the interface that kickstarts the sanitize
 // process.

@@ -1,0 +1,247 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+package org.chromium.chrome.browser.tasks.tab_management;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ROW_CLICK_RUNNABLE;
+import static org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason.INTERACTION_COMPLETE;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.Token;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/** Unit tests for {@link TabGroupListBottomSheetMediator}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class TabGroupListBottomSheetMediatorUnitTest {
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private TabGroupListBottomSheetCoordinatorDelegate mDelegate;
+    @Mock private TabGroupModelFilter mFilter;
+    @Mock private TabGroupCreationCallback mTabGroupCreationCallback;
+    @Mock private FaviconResolver mFaviconResolver;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+    @Mock private SavedTabGroup mSavedTabGroup1;
+    @Mock private SavedTabGroup mSavedTabGroup2;
+    @Mock private SavedTabGroupTab mSavedTabGroupTab1;
+    @Mock private SavedTabGroupTab mSavedTabGroupTab2;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
+
+    private ModelList mModelList;
+    private TabGroupListBottomSheetMediator mMediator;
+
+    @Before
+    public void setUp() {
+        mModelList = spy(new ModelList());
+        mMediator =
+                new TabGroupListBottomSheetMediator(
+                        mModelList,
+                        mFilter,
+                        mTabGroupCreationCallback,
+                        mFaviconResolver,
+                        mTabGroupSyncService,
+                        mDataSharingService,
+                        mCollaborationService,
+                        mBottomSheetController,
+                        mDelegate,
+                        /* showNewGroupRow= */ true);
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab2.getId()).thenReturn(2);
+
+        mSavedTabGroup1.updateTimeMs = 1L;
+        mSavedTabGroup2.updateTimeMs = 2L;
+
+        mSavedTabGroup1.savedTabs = List.of(mSavedTabGroupTab1);
+        mSavedTabGroup2.savedTabs = List.of(mSavedTabGroupTab2);
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"1", "2"});
+        when(mTabGroupSyncService.getGroup("1")).thenReturn(mSavedTabGroup1);
+        when(mTabGroupSyncService.getGroup("2")).thenReturn(mSavedTabGroup2);
+    }
+
+    @Test
+    public void testRequestShowContent_delegateRejects() {
+        when(mDelegate.requestShowContent()).thenReturn(false);
+
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        verify(mBottomSheetController, never()).addObserver(any());
+    }
+
+    @Test
+    public void testRequestShowContent_delegateAccepts() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        InOrder inOrder = inOrder(mModelList, mDelegate, mBottomSheetController);
+        // Verify that model list is populated before requesting show content
+        inOrder.verify(mModelList).clear();
+        inOrder.verify(mModelList, times(3)).add(any());
+        inOrder.verify(mDelegate).requestShowContent();
+        inOrder.verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        assertEquals(3, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
+    }
+
+    @Test
+    public void testHide() {
+        mMediator.hide(INTERACTION_COMPLETE);
+        verify(mDelegate).hide(INTERACTION_COMPLETE);
+    }
+
+    @Test
+    public void testBottomSheetObserver_onSheetClosed() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        observer.onSheetClosed(StateChangeReason.BACK_PRESS);
+
+        verify(mDelegate).onSheetClosed();
+        verify(mBottomSheetController).removeObserver(observer);
+        assertTrue(mModelList.isEmpty());
+    }
+
+    @Test
+    public void testBottomSheetObserver_onSheetStateChanged() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+
+        verify(mDelegate, never()).onSheetClosed();
+        verify(mBottomSheetController, never()).removeObserver(any());
+        assertFalse(mModelList.isEmpty());
+    }
+
+    @Test
+    public void testBottomSheetObserver_onSheetStateChanged_hidden() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        observer.onSheetStateChanged(SheetState.HIDDEN, INTERACTION_COMPLETE);
+
+        verify(mDelegate).onSheetClosed();
+        verify(mBottomSheetController).removeObserver(observer);
+        assertTrue(mModelList.isEmpty());
+    }
+
+    @Test
+    public void testPopulateList_withGroups() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        // New group row, plus two rows representing existing groups.
+        assertEquals(3, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(1).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(2).type);
+
+        assertEquals(
+                mSavedTabGroup2.updateTimeMs,
+                mModelList.get(1).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
+        assertEquals(
+                mSavedTabGroup1.updateTimeMs,
+                mModelList.get(2).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
+    }
+
+    @Test
+    public void testCreateNewGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(Token.createRandom());
+        when(mDelegate.requestShowContent()).thenReturn(true);
+
+        List<Tab> tabs = Arrays.asList(mTab1, mTab2);
+        mMediator.requestShowContent(tabs);
+
+        // Simulate clicking the "New Group" row.
+        mModelList.get(0).model.get(ROW_CLICK_RUNNABLE).run();
+
+        verify(mFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyBoolean());
+        verify(mDelegate).hide(INTERACTION_COMPLETE);
+        verify(mTabGroupCreationCallback).onTabGroupCreated(any());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testCreateNewGroup_emptyTabs() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(new ArrayList<>());
+
+        // Simulate clicking the "New Group" row with an empty tab list.
+        Runnable onClickRunnable = mModelList.get(0).model.get(ROW_CLICK_RUNNABLE);
+        onClickRunnable.run();
+    }
+
+    @Test
+    public void testPopulateList_noNewGroupRow() {
+        mMediator =
+                new TabGroupListBottomSheetMediator(
+                        mModelList,
+                        mFilter,
+                        mTabGroupCreationCallback,
+                        mFaviconResolver,
+                        mTabGroupSyncService,
+                        mDataSharingService,
+                        mCollaborationService,
+                        mBottomSheetController,
+                        mDelegate,
+                        /* showNewGroupRow= */ false);
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+        assertEquals(2, mModelList.size());
+    }
+}

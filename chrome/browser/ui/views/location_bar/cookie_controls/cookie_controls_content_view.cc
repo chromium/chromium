@@ -243,7 +243,7 @@ void CookieControlsContentView::AddDescriptionRow() {
   // TODO(https://b/344856056): Update this accessibility label for the new UI.
   // This function call is left in temporarily for testing.
   toggle_button_->GetViewAccessibility().SetName(
-      description_row_->title()->GetText());
+      std::u16string(description_row_->title()->GetText()));
 }
 
 const ui::ElementIdentifier CookieControlsContentView::GetFeatureIdentifier(

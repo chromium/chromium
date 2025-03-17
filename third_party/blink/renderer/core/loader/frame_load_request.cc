@@ -102,14 +102,6 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
       requestor_base_url_ = origin_window->BaseURL();
     }
 
-    if (resource_request.Url().ProtocolIs("blob")) {
-      blob_url_token_ = base::MakeRefCounted<
-          base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>();
-      origin_window->GetPublicURLManager().Resolve(
-          resource_request.Url(),
-          blob_url_token_->data.BindNewPipeAndPassReceiver());
-    }
-
     SetReferrerForRequest(origin_window, resource_request_);
 
     SetSourceLocation(CaptureSourceLocation(origin_window));
@@ -139,6 +131,17 @@ bool FrameLoadRequest::CanDisplay(const KURL& url) const {
 
 const LocalFrameToken* FrameLoadRequest::GetInitiatorFrameToken() const {
   return base::OptionalToPtr(initiator_frame_token_);
+}
+
+void FrameLoadRequest::ResolveBlobURLIfNeeded() {
+  if (resource_request_.Url().ProtocolIs("blob") && origin_window_) {
+    blob_url_token_ = base::MakeRefCounted<
+        base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>();
+    origin_window_->GetPublicURLManager().ResolveForNavigation(
+        resource_request_.Url(),
+        blob_url_token_->data.BindNewPipeAndPassReceiver(),
+        GetFrameType() == mojom::blink::RequestContextFrameType::kTopLevel);
+  }
 }
 
 const AtomicString& FrameLoadRequest::CleanNavigationTarget(

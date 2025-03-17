@@ -65,11 +65,6 @@ gfx::SizeF SVGViewportResolver::ResolveViewport() const {
       }
       return inner_svg->Viewport().size();
     }
-    if (auto* hidden_container = DynamicTo<LayoutSVGHiddenContainer>(*object)) {
-      if (IsA<SVGSymbolElement>(*hidden_container->GetElement())) {
-        return gfx::SizeF();
-      }
-    }
   }
   return gfx::SizeF();
 }

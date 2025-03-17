@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
@@ -14,6 +15,7 @@
 #import "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
@@ -341,9 +343,14 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 // Loads the country codes and names and sets the default selected country code.
 - (void)loadCountries {
   autofill::CountryComboboxModel countryModel;
-  countryModel.SetCountries(*_personalDataManager,
-                            base::RepeatingCallback<bool(const std::string&)>(),
-                            GetApplicationContext()->GetApplicationLocale());
+  const variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  countryModel.SetCountries(
+      GeoIpCountryCode(variations_service
+                           ? variations_service->GetLatestCountry()
+                           : std::string()),
+      base::RepeatingCallback<bool(const std::string&)>(),
+      GetApplicationContext()->GetApplicationLocale());
   const autofill::CountryComboboxModel::CountryVector& countriesVector =
       countryModel.countries();
 

@@ -110,11 +110,11 @@ void SilencePhoneQuickActionController::SetItemState(ActionState state) {
   if (state == ActionState::kDisabled) {
     item_->SetTooltip(l10n_util::GetStringUTF16(state_text_id));
   } else {
-    std::u16string tooltip_state =
-        l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
+    std::u16string tooltip_state = l10n_util::GetStringFUTF16(
+        state_text_id, std::u16string(item_->GetItemLabel()));
     item_->SetTooltip(l10n_util::GetStringFUTF16(
-        IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
-        tooltip_state));
+        IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP,
+        std::u16string(item_->GetItemLabel()), tooltip_state));
   }
 }
 

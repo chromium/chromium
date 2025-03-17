@@ -123,8 +123,6 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
         browser()->profile());
   }
 
-  void MaybeSaveLocalTabGroup(const tab_groups::LocalTabGroupID& local_id);
-
 #if BUILDFLAG(IS_CHROMEOS)
   aura::Window* root_window() { return test_helper_.GetContext(); }
 #endif
@@ -180,21 +178,6 @@ void TabsApiUnitTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS)
   test_helper_.TearDown();
 #endif
-}
-
-void TabsApiUnitTest::MaybeSaveLocalTabGroup(
-    const tab_groups::LocalTabGroupID& local_id) {
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    // In V2, all tab groups are automatically saved by default. For this
-    // reason, there is no need to manually save the group again.
-    return;
-  }
-
-  tab_groups::SavedTabGroup saved_group =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id);
-  sync_service()->SaveGroup(std::move(saved_group));
-
-  ASSERT_TRUE(sync_service()->GetGroup(local_id));
 }
 
 bool TabsApiUnitTest::CommitPendingLoadForController(
@@ -595,8 +578,6 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  MaybeSaveLocalTabGroup(group);
-
   EXPECT_TRUE(
       ExtensionTabUtil::TabIsInSavedTabGroup(raw_contents, GetTabStripModel()));
 
@@ -981,8 +962,6 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  MaybeSaveLocalTabGroup(group);
-
   // Use the TabsUpdateFunction to navigate to chromium.org
   int tab_extension_id = sessions::SessionTabHelper::IdForTab(
                              GetTabStripModel()->GetWebContentsAt(0))
@@ -1244,7 +1223,6 @@ TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTab) {
 
   // group the first tab. make sure its saved.
   tab_groups::TabGroupId old_group = GetTabStripModel()->AddToNewGroup({0});
-  MaybeSaveLocalTabGroup(old_group);
 
   // with extensions group the 2 tabs into a new group.
   auto function = base::MakeRefCounted<TabsGroupFunction>();
@@ -1341,8 +1319,6 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroup) {
       ->group_model()
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
-
-  MaybeSaveLocalTabGroup(group);
 
   auto function = base::MakeRefCounted<TabsUngroupFunction>();
   function->set_extension(extension);
@@ -1509,8 +1485,6 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTab) {
       ->group_model()
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
-
-  MaybeSaveLocalTabGroup(group);
 
   {
     auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
@@ -1808,8 +1782,6 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  MaybeSaveLocalTabGroup(group);
-
   // The tab discard function should fail.
   auto function = base::MakeRefCounted<TabsDiscardFunction>();
   function->set_extension(extension);
@@ -1860,8 +1832,6 @@ TEST_F(TabsApiUnitTest,
       ->group_model()
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
-
-  MaybeSaveLocalTabGroup(group);
 
   // The tab discard function should not fail.
   auto function = base::MakeRefCounted<TabsDiscardFunction>();

@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -35,6 +37,7 @@
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
@@ -79,8 +82,9 @@ class ExternalCacheImpl::AnyInstallFailureObserver
 
   // extensions::InstallObserver:
   void OnFinishCrxInstall(content::BrowserContext* context,
-                          const extensions::CrxInstaller& installer,
+                          const base::FilePath& source_file,
                           const std::string& extension_id,
+                          const extensions::Extension* extension,
                           bool success) override;
 
   bool IsAnyObservedProfileUsingTracker(
@@ -157,11 +161,12 @@ void ExternalCacheImpl::AnyInstallFailureObserver::
 
 void ExternalCacheImpl::AnyInstallFailureObserver::OnFinishCrxInstall(
     content::BrowserContext* context,
-    const extensions::CrxInstaller& installer,
+    const base::FilePath& source_file,
     const std::string& extension_id,
+    const extensions::Extension* extension,
     bool success) {
   if (!success) {
-    owner_->OnCrxInstallFailure(context, installer);
+    owner_->OnCrxInstallFailure(context, source_file);
   }
 }
 
@@ -307,10 +312,9 @@ void ExternalCacheImpl::SetBackoffPolicy(
   }
 }
 
-void ExternalCacheImpl::OnCrxInstallFailure(
-    content::BrowserContext* context,
-    const extensions::CrxInstaller& installer) {
-  OnDamagedFileDetected(installer.source_file());
+void ExternalCacheImpl::OnCrxInstallFailure(content::BrowserContext* context,
+                                            const base::FilePath& source_file) {
+  OnDamagedFileDetected(source_file);
 }
 
 void ExternalCacheImpl::OnExtensionDownloadFailed(

@@ -240,8 +240,6 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kFillColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
-  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
 #if BUILDFLAG(IS_MAC)
   // Mac does not have default selection in tests
@@ -258,8 +256,6 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kFillColor));
-  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
@@ -291,7 +287,6 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
         ::highlight(highlight1) {
           text-decoration-line: underline;
           text-decoration-color: red;
-          -webkit-text-fill-color: blue;
         }
       </style>
       <div id="div">Some text</div>
@@ -327,10 +322,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
 
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
-  EXPECT_FALSE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kFillColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
-      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
+      HighlightStyleUtils::HighlightColorProperty::kFillColor));
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
   EXPECT_FALSE(highlight_paint_style.properties_using_current_color.Has(
@@ -349,8 +342,8 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
       :root {
         --root-color: green;
       }
-      ::selection {
-        /* This rule should not apply */
+      :root::selection {
+        /* Should not affect div::selection */
         --selection-color: blue;
       }
       div::selection {
@@ -722,6 +715,53 @@ TEST_F(HighlightStyleUtilsTest, ContainerIsOriginatingElement) {
   EXPECT_EQ(FloatValueForLength(thickness.Thickness(), 1), 4);
   Length offset = text_decoration.UnderlineOffset();
   EXPECT_EQ(FloatValueForLength(offset, 1), 4);
+}
+
+TEST_F(HighlightStyleUtilsTest, LigthDarkColor) {
+  ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      .dark {
+         color-scheme: dark;
+      }
+
+      div::selection {
+        color: light-dark(green, blue);
+      }
+    </style>
+    <div class="dark">Dark</div>
+  )HTML");
+
+  // Select some text.
+  auto* div_node =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  Window().getSelection()->setBaseAndExtent(div_node, 0, div_node, 1);
+  Compositor().BeginFrame();
+
+  PaintController controller;
+  GraphicsContext context(controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
+  TextPaintStyle paint_style;
+  const ComputedStyle& div_style = div_node->ComputedStyleRef();
+  const ComputedStyle* div_pseudo_style =
+      HighlightStyleUtils::HighlightPseudoStyle(div_node, div_style,
+                                                kPseudoIdSelection);
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+                    GetDocument(), div_style, div_pseudo_style, div_node,
+                    kPseudoIdSelection, paint_style, paint_info,
+                    SearchTextIsActiveMatch::kNo)
+                    .style;
+
+  EXPECT_EQ(Color(0, 0, 255), paint_style.fill_color);
 }
 
 }  // namespace blink

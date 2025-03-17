@@ -36,6 +36,15 @@ class EmptyMessagingBackendService : public MessagingBackendService {
       std::optional<PersistentNotificationType> type) override;
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
+  void ClearDirtyTabMessagesForGroup(
+      const data_sharing::GroupId& collaboration_group_id) override;
+  void ClearPersistentMessage(
+      const base::Uuid& message_id,
+      std::optional<PersistentNotificationType> type) override;
+  void RemoveMessages(const std::vector<base::Uuid>& message_ids) override;
+  void AddActivityLogForTesting(
+      data_sharing::GroupId collaboration_id,
+      const std::vector<ActivityLogItem>& activity_log) override;
 };
 
 }  // namespace collaboration::messaging

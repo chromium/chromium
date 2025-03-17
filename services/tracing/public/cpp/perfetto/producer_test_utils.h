@@ -71,6 +71,7 @@ class DummyTraceWriter : public perfetto::TraceWriter {
   void Flush(std::function<void()> callback) override;
   perfetto::WriterID writer_id() const override;
   uint64_t written() const override;
+  uint64_t drop_count() const override;
 
  private:
   protozero::RootMessage<perfetto::protos::pbzero::TracePacket> trace_packet_;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.invitation_dialog;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -12,10 +14,11 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator class responsible for handling button clicks and controlling the dialog state. */
+@NullMarked
 class DataSharingInvitationDialogMediator
         implements ModalDialogProperties.Controller, ModalDialogManagerObserver {
 
-    private PropertyModel mModel;
+    private @Nullable PropertyModel mModel;
     private final ModalDialogManager mDialogManager;
 
     /**

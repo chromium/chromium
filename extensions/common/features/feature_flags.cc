@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/common/extension_features.h"
 
 namespace extensions {
@@ -24,25 +24,28 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiContentSettingsClipboard,
     &extensions_features::kApiEnterpriseKioskInput,
     &extensions_features::kApiPermissionsHostAccessRequests,
+    &extensions_features::kApiPrintingMarginsAndScale,
+    &extensions_features::kApiUserScriptsExecute,
     &extensions_features::kApiUserScriptsMultipleWorlds,
     &extensions_features::kApiOdfsConfigPrivate,
     &extensions_features::kExperimentalOmniboxLabs,
     &extensions_features::kExtensionIconVariants,
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
-    &extensions_features::kApiEnterpriseReportingPrivateReportDataMaskingEvent,
+    &extensions_features::
+        kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
 };
 
 constinit base::span<const base::Feature*> g_feature_flags_test_override;
 
 const base::Feature* GetFeature(const std::string& feature_flag) {
   if (!g_feature_flags_test_override.empty()) [[unlikely]] {
-    auto iter = base::ranges::find(g_feature_flags_test_override, feature_flag,
-                                   &base::Feature::name);
+    auto iter = std::ranges::find(g_feature_flags_test_override, feature_flag,
+                                  &base::Feature::name);
     return iter == g_feature_flags_test_override.end() ? nullptr : *iter;
   }
 
   const base::Feature** feature =
-      base::ranges::find(kFeatureFlags, feature_flag, &base::Feature::name);
+      std::ranges::find(kFeatureFlags, feature_flag, &base::Feature::name);
 
   return feature == std::end(kFeatureFlags) ? nullptr : *feature;
 }

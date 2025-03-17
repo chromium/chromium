@@ -1120,7 +1120,22 @@ const struct RequiresValidationTestData requires_validation_tests[] = {
      "stale-while-revalidate=3600\n"
      "\n",
      VALIDATION_SYNCHRONOUS},
+    // must-revalidate overrides stale-while-revalidate, so synchronous
+    // validation is needed.
+    {"HTTP/1.1 200 OK\n"
+     "date: Wed, 28 Nov 2007 00:40:11 GMT\n"
+     "cache-control: must-revalidate, max-age=300, "
+     "stale-while-revalidate=3600\n"
+     "\n",
+     VALIDATION_SYNCHRONOUS},
 
+    // must-revalidate overrides stale-while-revalidate even when they appear
+    // in reverse order in the header
+    {"HTTP/1.1 200 OK\n"
+     "date: Wed, 28 Nov 2007 00:40:11 GMT\n"
+     "cache-control: stale-while-revalidate=30, must-revalidate\n"
+     "\n",
+     VALIDATION_SYNCHRONOUS},
     // TODO(darin): Add many many more tests here.
 };
 
@@ -2808,6 +2823,64 @@ TEST(HttpResponseHeadersTest, StrictlyEqualsRawMismatch) {
 // There's no known way to produce an HttpResponseHeaders object with the same
 // `raw_headers_` but different `parsed_` structures, so there's no test for
 // that.
+
+struct FreshnessLifetimesTestCase {
+  const char* headers;
+  base::TimeDelta freshness;
+  base::TimeDelta staleness;
+};
+
+class HttpResponseHeadersFreshnessTest
+    : public testing::TestWithParam<FreshnessLifetimesTestCase> {};
+
+TEST_P(HttpResponseHeadersFreshnessTest, GetFreshnessLifetimes) {
+  const FreshnessLifetimesTestCase& test_case = GetParam();
+
+  scoped_refptr<HttpResponseHeaders> parsed(
+      new HttpResponseHeaders(HttpUtil::AssembleRawHeaders(test_case.headers)));
+
+  base::Time response_time = base::Time::Now();
+
+  HttpResponseHeaders::FreshnessLifetimes lifetimes =
+      parsed->GetFreshnessLifetimes(response_time);
+
+  EXPECT_EQ(test_case.freshness, lifetimes.freshness);
+  EXPECT_EQ(test_case.staleness, lifetimes.staleness);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HttpResponseHeaders,
+    HttpResponseHeadersFreshnessTest,
+    testing::Values(
+        // Basic max-age directive
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: max-age10, max-age=8a0, "
+                                   "max-age= 500, max-age=900\n\n",
+                                   base::Seconds(500), base::TimeDelta()},
+        // max-age with stale-while-revalidate
+        FreshnessLifetimesTestCase{
+            "HTTP/1.1 200 OK\n"
+            "Cache-Control: max-age=300, stale-while-revalidate=600\n\n",
+            base::Seconds(300), base::Seconds(600)},
+        // must-revalidate overrides stale-while-revalidate
+        FreshnessLifetimesTestCase{
+            "HTTP/1.1 200 OK\n"
+            "Cache-Control: max-age=400, must-revalidate, "
+            "stale-while-revalidate=200\n\n",
+            base::Seconds(400), base::TimeDelta()},
+        // no-store directive should have zero freshness and staleness
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: no-store\n\n",
+                                   base::TimeDelta(), base::TimeDelta()},
+        // no-cache directive should have zero freshness and staleness
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: no-cache\n\n",
+                                   base::TimeDelta(), base::TimeDelta()},
+        // no-store overrides max-age and stale-while-revalidate
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: max-age=500, "
+                                   "stale-while-revalidate=600, no-store\n\n",
+                                   base::TimeDelta(), base::TimeDelta()}));
 
 }  // namespace
 
